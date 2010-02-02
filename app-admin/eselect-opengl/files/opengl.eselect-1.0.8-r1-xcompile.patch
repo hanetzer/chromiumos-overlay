@@ -1,0 +1,37 @@
+--- opengl.eselect.orig	2009-10-16 18:03:57.000000000 +0000
++++ opengl.eselect	2009-10-16 18:04:24.000000000 +0000
+@@ -23,13 +23,13 @@
+ USE_PROFILE_HEADERS="no"
+ 
+ relpath() {
+-	local src=$2
+-	local dst=$1
++	local src=$(echo $2 | sed 's/\/\/*/\//g')
++	local dst=$(echo $1 | sed 's/\/\/*/\//g')
+ 	local curpath="."
+ 
+ 	while [ "${dst#${src}}" == "${dst}" ]; do
+ 		curpath=${curpath}/..
+-		src=$(readlink -f ${src}/${curpath})
++		src=$(readlink -f ${src}/..)
+ 	done
+ 
+ 	echo ${curpath}${dst#${src}}
+@@ -103,6 +103,7 @@
+ set_new_implementation() {
+ 	local gl_implem=${1}
+ 	local avail_implems=$(get_implementations)
++	local linkfile
+ 
+ 	# Set a sane umask... bug #83115
+ 	umask 022
+@@ -162,7 +163,8 @@
+ 						if [[ ${file%.la} != ${file} ]] ; then
+ 							sed "s:${PREFIX}/[^/]*/opengl/[^/]*/lib:${DST_PREFIX}/${libdir}:g" "${file}" > "$(basename "${file}")" || die -q "Failed to create ${DST_PREFIX}/${libdir}/${moduledir}/extensions/$(basename "${file}")"
+ 						else
+-							ln -s "${file}" || die -q "Failed to create ${libdir}/$(basename "${file}")"
++							linkfile=$(relpath ${file} $(pwd))
++							ln -s "${linkfile}" || die -q "Failed to create ${libdir}/$(basename "${file}")"
+ 						fi
+ 					done
+ 				popd &> /dev/null

@@ -1,0 +1,91 @@
+We need to build the dbus-binding-tool with the host toolchain,
+because we have to execute it later during the building process.
+
+--- configure.ac	2008-06-05 20:55:24.000000000 +0200
++++ configure.ac.new	2008-09-17 14:09:58.000000000 +0200
+@@ -78,6 +78,9 @@
+     AC_DEFINE(G_DISABLE_CHECKS,1,[Disable GLib public API sanity checking])
+ fi
+ 
++dnl Check if we are crosscompiling
++AM_CONDITIONAL(CROSS_COMPILING, [ test $cross_compiling = yes ])
++
+ #### gcc warning flags
+ 
+ AC_DEFUN([AC_CC_TRY_FLAG], [
+
+--- tools/Makefile.am	2008-09-17 16:57:54.000000000 +0200
++++ tools/Makefile.am.new	2008-09-17 16:59:55.000000000 +0200
+@@ -3,8 +3,13 @@
+ nodist_libdbus_glib_HEADERS = dbus-glib-bindings.h
+ libdbus_glibdir = $(includedir)/dbus-1.0/dbus
+ 
++if CROSS_COMPILING
++dbus-glib-bindings.h: dbus-bus-introspect.xml
++	dbus-binding-tool --mode=glib-client --prefix=dbus_bus --output=dbus-glib-bindings.h dbus-bus-introspect.xml
++else
+ dbus-glib-bindings.h: dbus-bus-introspect.xml $(top_builddir)/dbus/dbus-binding-tool$(EXEEXT)
+ 	$(top_builddir)/dbus/dbus-binding-tool --mode=glib-client --prefix=dbus_bus --output=dbus-glib-bindings.h dbus-bus-introspect.xml
++endif
+ 
+ BUILT_SOURCES = dbus-glib-bindings.h dbus-bus-introspect.xml
+ 
+
+--- dbus/examples/Makefile.am	2008-05-14 12:21:15.000000000 +0200
++++ dbus/examples/Makefile.am.new	2008-09-17 17:04:42.000000000 +0200
+@@ -1,5 +1,11 @@
+ SUBDIRS = . statemachine
+ 
++if CROSS_COMPILING
++DBUS_BINDING_TOOL=dbus-binding-tool
++else
++DBUS_BINDING_TOOL=$(top_builddir)/dbus/dbus-binding-tool
++endif
++
+ INCLUDES = \
+ 	-I$(top_srcdir)				\
+ 	-I$(top_builddir)			\
+@@ -21,7 +27,7 @@
+ BUILT_SOURCES = example-service-glue.h
+ 
+ example-service-glue.h: example-service.xml
+-	$(LIBTOOL) --mode=execute $(top_builddir)/dbus/dbus-binding-tool --prefix=some_object --mode=glib-server --output=example-service-glue.h $(srcdir)/example-service.xml
++	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) --prefix=some_object --mode=glib-server --output=example-service-glue.h $(srcdir)/example-service.xml
+ 
+ 
+ ## Makefile.am bits for another client/server pair
+@@ -37,7 +43,7 @@
+ BUILT_SOURCES += example-signal-emitter-glue.h
+ 
+ example-signal-emitter-glue.h: example-signal-emitter.xml
+-	$(LIBTOOL) --mode=execute $(top_builddir)/dbus/dbus-binding-tool --prefix=test_object --mode=glib-server --output=example-signal-emitter-glue.h $(srcdir)/example-signal-emitter.xml
++	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) --prefix=test_object --mode=glib-server --output=example-signal-emitter-glue.h $(srcdir)/example-signal-emitter.xml
+ 
+ CLEANFILES = $(BUILT_SOURCES)
+ 
+
+--- dbus/examples/statemachine/Makefile.am	2008-05-14 12:21:15.000000000 +0200
++++ dbus/examples/statemachine/Makefile.am.new	2008-09-17 17:06:59.000000000 +0200
+@@ -1,3 +1,9 @@
++if CROSS_COMPILING
++DBUS_BINDING_TOOL=dbus-binding-tool
++else
++DBUS_BINDING_TOOL=$(top_builddir)/dbus/dbus-binding-tool
++endif
++
+ INCLUDES = \
+ 	-I$(top_srcdir)				\
+ 	-I$(top_builddir)			\
+@@ -26,10 +32,10 @@
+ BUILT_SOURCES = statemachine-server-glue.h statemachine-glue.h
+ 
+ statemachine-server-glue.h: statemachine-server.xml
+-	$(LIBTOOL) --mode=execute $(top_builddir)/dbus/dbus-binding-tool --prefix=sm_server --mode=glib-server --output=$@ $<
++	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) --prefix=sm_server --mode=glib-server --output=$@ $<
+ 
+ statemachine-glue.h: statemachine.xml
+-	$(LIBTOOL) --mode=execute $(top_builddir)/dbus/dbus-binding-tool --prefix=sm_object --mode=glib-server --output=$@ $<
++	$(LIBTOOL) --mode=execute $(DBUS_BINDING_TOOL) --prefix=sm_object --mode=glib-server --output=$@ $<
+ 
+ sm-marshal.c: Makefile sm-marshal.list
+ 	@GLIB_GENMARSHAL@ --prefix=sm_marshal $(srcdir)/sm-marshal.list --header --body > $@.tmp && mv $@.tmp $@

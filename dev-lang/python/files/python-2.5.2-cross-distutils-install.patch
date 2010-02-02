@@ -1,0 +1,36 @@
+Extensions should be installed to the targets libdir. This is important if e.g. host
+has a 64bit /usr/lib64, but the target is 32bit and has $ROOT/usr/lib. Make sure we
+respect the target's lib structure by getting the libdirname from Makefile.
+
+--- Lib/distutils/command/install.py	2009-03-06 22:18:21.000000000 +0000
++++ Lib/distutils/command/install.py.new	2009-03-06 22:23:17.000000000 +0000
+@@ -38,8 +38,8 @@
+ 
+ INSTALL_SCHEMES = {
+     'unix_prefix': {
+-        'purelib': '$base/@@GENTOO_LIBDIR@@/python$py_version_short/site-packages',
+-        'platlib': '$platbase/@@GENTOO_LIBDIR@@/python$py_version_short/site-packages',
++        'purelib': '$base/$libdirname/python$py_version_short/site-packages',
++        'platlib': '$platbase/$libdirname/python$py_version_short/site-packages',
+         'headers': '$base/include/python$py_version_short/$dist_name',
+         'scripts': '$base/bin',
+         'data'   : '$base',
+@@ -289,6 +289,7 @@
+         # everything else.
+         self.config_vars['base'] = self.install_base
+         self.config_vars['platbase'] = self.install_platbase
++        self.config_vars['libdirname'] = self.install_libdirname
+ 
+         if DEBUG:
+             from pprint import pprint
+@@ -394,6 +395,10 @@
+ 
+             self.install_base = self.prefix
+             self.install_platbase = self.exec_prefix
++            self.install_libdirname = get_config_vars('LIBDIRNAME')[0]
++            if self.install_libdirname is None:
++                self.install_libdirname = @@GENTOO_LIBDIR@@
++
+             self.select_scheme("unix_prefix")
+ 
+     # finalize_unix ()

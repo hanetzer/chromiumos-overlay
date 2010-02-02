@@ -1,0 +1,10 @@
+# ChangeLog for sys-fs/e4fsprogs
+# Copyright 2010 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+*e4fsprogs-1.41.7-1 (29 Jan 2010)
+
+  29 Jan 2010; The Chromium OS Authors <chromium-os-dev@chromium.org>
+
+  e4fsprogs-1.41.7-1.ebuild:
+  Create to support fork for lazy resizing in Chromium OS.

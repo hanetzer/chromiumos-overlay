@@ -1,0 +1,60 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=2
+
+DESCRIPTION="List of packages that are needed on the buildhost (meta package)"
+HOMEPAGE="http://src.chromium.org"
+
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="amd64 x86"
+IUSE=""
+
+# Needed to run setup crossdev, run build scripts, and make a bootable image.
+RDEPEND="${RDEPEND}
+	app-admin/sudo
+	sys-devel/crossdev
+	sys-devel/crossdev-wrappers
+	sys-boot/syslinux
+	"
+
+# Host dependencies for building cross-compiled packages.
+RDEPEND="${RDEPEND}
+	app-admin/eselect-opengl
+	app-arch/cabextract
+	app-arch/unzip
+	dev-lang/python
+	dev-lang/swig
+	dev-libs/glib
+	dev-libs/libxslt
+	dev-libs/dbus-glib[tools]
+	dev-libs/nss[utils]
+	dev-libs/protobuf
+	dev-python/pygobject
+	dev-util/cmake
+	dev-util/gperf
+	dev-util/gob
+	>=dev-util/intltool-0.30
+	dev-util/gperf
+	>=dev-util/gtk-doc-am-1.10
+	dev-util/scons
+	gnome-base/gconf
+	=gnome-base/orbit-2.14.17
+	>=media-libs/freetype-2.2.1
+	sys-apps/module-init-tools
+	x11-apps/mkfontdir
+	x11-apps/xkbcomp
+	>=x11-misc/util-macros-1.2
+	x11-libs/gtk+
+	sys-apps/nih-dbus-tool
+	"
+
+# Useful utilities for developers.
+RDEPEND="${RDEPEND}
+	app-portage/gentoolkit
+	app-portage/portage-utils
+	app-editors/qemacs
+	"
+
+DEPEND=""

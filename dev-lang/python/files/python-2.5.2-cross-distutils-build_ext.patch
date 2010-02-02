@@ -1,0 +1,15 @@
+--- Lib/distutils/command/build_ext.py	2009-03-02 18:54:19.000000000 +0000
++++ Lib/distutils/command/build_ext.py.new	2009-03-02 18:53:54.000000000 +0000
+@@ -201,7 +201,11 @@
+                 and sysconfig.get_config_var('Py_ENABLE_SHARED'):
+             if sys.executable.startswith(os.path.join(sys.exec_prefix, "bin")):
+                 # building third party extensions
+-                self.library_dirs.append(sysconfig.get_config_var('LIBDIR'))
++                sysroot = os.getenv('SYSROOT')
++                if sysroot is None:
++                    sysroot = ''
++
++                self.library_dirs.append(sysroot+sysconfig.get_config_var('LIBDIR'))
+             else:
+                 # building python standard extensions
+                 self.library_dirs.append('.')

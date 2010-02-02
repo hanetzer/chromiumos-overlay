@@ -1,0 +1,47 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHOST=i686-pc-linux-gnu
+CBUILD=x86_64-pc-linux-gnu
+ARCH=x86
+
+HOSTCC=x86_64-pc-linux-gnu-gcc
+#E_MACHINE=__E_MACHINE__
+
+ROOT=/usr/${CHOST}/
+
+ACCEPT_KEYWORDS="x86"
+
+USE="${ARCH} zlib bindist make-symlinks"
+USE="${USE} mmx sse sse2 dri"
+
+MARCH_TUNE="-march=core2 -mtune=generic -mfpmath=sse"
+
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/"
+CXXFLAGS="${CFLAGS}"
+LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
+
+# msb: Fix for libstdc++ 
+#LDFLAGS="${LDFLAGS} -L${ROOT}usr/lib/gcc/${CHOST}/4.4.1"
+
+FEATURES="collision-protect sandbox buildpkg noman noinfo nodoc"
+
+# Be sure we dont overwrite pkgs from another repo..
+PKGDIR=${ROOT}packages/
+PORTAGE_TMPDIR=${ROOT}tmp/
+
+ELIBC="glibc"
+
+PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/"
+
+LIBDIR_${ARCH}="lib"
+LIBDIR_amd64=lib64
+MAKEOPTS=-j3
+PORTDIR_OVERLAY="/usr/local/portage"
+
+VIDEO_CARDS="intel"
+INPUT_DEVICES="evdev keyboard mouse synaptics"
+
+# Since our portage comes from version control, we redirect distfiles
+DISTDIR="/var/lib/portage/distfiles"

@@ -1,0 +1,12 @@
+--- configure.in.orig	2010-01-20 23:40:07.000000000 +0800
++++ configure.in	2010-01-20 23:40:32.000000000 +0800
+@@ -1989,7 +1989,8 @@
+             AC_HELP_STRING(--with-system-ffi, build _ctypes module using an installed ffi library))
+ 
+ if test "$with_system_ffi" = "yes"; then
+-    LIBFFI_INCLUDEDIR="`pkg-config libffi --cflags-only-I 2>/dev/null | sed -e 's/^-I//'`"
++    PKG_PROG_PKG_CONFIG([0.20])
++    LIBFFI_INCLUDEDIR="`${PKG_CONFIG} libffi --cflags-only-I 2>/dev/null | sed -e 's/^-I//'`"
+ else
+     LIBFFI_INCLUDEDIR=""
+ fi

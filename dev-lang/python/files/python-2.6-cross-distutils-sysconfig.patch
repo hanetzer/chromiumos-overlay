@@ -1,0 +1,43 @@
+--- Lib/distutils/sysconfig.py.orig	2009-04-20 08:25:43.000000000 +0300
++++ Lib/distutils/sysconfig.py	2009-04-20 08:27:50.000000000 +0300
+@@ -19,9 +19,16 @@
+ from distutils.errors import DistutilsPlatformError
+ 
+ # These are needed in a couple of spots, so just compute them once.
++SYSROOT = os.getenv('SYSROOT')
+ PREFIX = os.path.normpath(sys.prefix)
+ EXEC_PREFIX = os.path.normpath(sys.exec_prefix)
+ 
++# Make sure we respect the user specified SYSROOT environment variable
++# This is the first step to get distutils to crosscompile stuff
++if SYSROOT is not None:
++    PREFIX = os.path.normpath(SYSROOT+os.path.sep+PREFIX)
++    EXEC_PREFIX = os.path.normpath(SYSROOT+os.path.sep+EXEC_PREFIX)
++
+ # Path to the base directory of the project. On Windows the binary may
+ # live in project/PCBuild9.  If we're dealing with an x64 Windows build,
+ # it'll live in project/PCbuild/amd64.
+@@ -110,6 +117,10 @@
+ 
+     If 'prefix' is supplied, use it instead of sys.prefix or
+     sys.exec_prefix -- i.e., ignore 'plat_specific'.
++
++    For the posix system we can not always assume to have a lib64 directory
++    e.g. for cross-compile between 32 & 64 bit systems. So we test if the
++    'lib64' directory exists and use the normal 'lib' dir as fallback.
+     """
+     if prefix is None:
+         prefix = plat_specific and EXEC_PREFIX or PREFIX
+@@ -118,6 +129,12 @@
+         libpython = os.path.join(prefix,
+                                 "@@GENTOO_LIBDIR@@",
+                                 "python" + get_python_version())
++
++        if not os.path.exists(libpython):
++            libpython = os.path.join(prefix,
++                                     "lib", 
++                                     "python" + get_python_version())
++
+         if standard_lib:
+             return libpython
+         else:

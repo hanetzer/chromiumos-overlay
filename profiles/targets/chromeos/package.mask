@@ -1,0 +1,3 @@
+
+# Chrome binaries currently use libjpeg-6b, so we need to mask out libjpeg-7
+>=media-libs/jpeg-7

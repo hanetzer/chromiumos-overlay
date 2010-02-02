@@ -1,0 +1,27 @@
+diff -Naur dbus-glib-0.80.orig/Makefile.am dbus-glib-0.80.new/Makefile.am
+--- Makefile.am	2008-05-14 10:21:15.000000000 +0000
++++ Makefile.am	2009-10-20 02:23:38.000000000 +0000
+@@ -1,7 +1,7 @@
+ GLIB_PC=dbus-glib-1.pc
+
+-SUBDIRS=dbus tools test doc
+-DIST_SUBDIRS=dbus tools test doc m4
++SUBDIRS=dbus test doc
++DIST_SUBDIRS=dbus test doc m4
+
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = $(GLIB_PC)
+diff -Naur dbus-glib-0.80.orig/Makefile.in dbus-glib-0.80.new/Makefile.in
+--- Makefile.in	2009-02-02 20:41:24.000000000 +0000
++++ Makefile.in	2009-10-20 02:24:28.000000000 +0000
+@@ -267,8 +267,8 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ GLIB_PC = dbus-glib-1.pc
+-SUBDIRS = dbus tools test doc
+-DIST_SUBDIRS = dbus tools test doc m4
++SUBDIRS = dbus test doc
++DIST_SUBDIRS = dbus test doc m4
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = $(GLIB_PC)
+ DISTCLEANFILES = \

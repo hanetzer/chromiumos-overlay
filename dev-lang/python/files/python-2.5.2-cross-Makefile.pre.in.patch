@@ -1,0 +1,16 @@
+--- Makefile.pre.in	2009-03-06 18:39:38.000000000 +0000
++++ Makefile.pre.in.new	2009-03-06 18:40:08.000000000 +0000
+@@ -87,11 +87,12 @@
+ 
+ # Expanded directories
+ BINDIR=		$(exec_prefix)/bin
+-LIBDIR=		$(exec_prefix)/@@GENTOO_LIBDIR@@
++LIBDIR=		@libdir@
+ MANDIR=		@mandir@
+ INCLUDEDIR=	@includedir@
+ CONFINCLUDEDIR=	$(exec_prefix)/include
+ SCRIPTDIR=	$(prefix)/@@GENTOO_LIBDIR@@
++LIBDIRNAME=	@@GENTOO_LIBDIR@@
+ 
+ # Detailed destination directories
+ BINLIBDEST=	$(LIBDIR)/python$(VERSION)
