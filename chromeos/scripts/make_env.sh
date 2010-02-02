@@ -198,14 +198,14 @@ if [[ -n "$USEPKG" ]]; then
   CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
 fi
 
-bash_chroot crossdev \
+bash_chroot PORTAGE_BINHOST="$CROSS_X86_BINHOST" crossdev \
   --target $CROSS_X86_TARGET \
   $CROSS_BINUTILS \
   $CROSS_GCC      \
   $CROSS_KERNEL   \
   $CROSS_LIBC     \
   $CROSS_USEPKG
-bash_chroot crossdev \
+bash_chroot PORTAGE_BINHOST="$CROSS_ARM_BINHOST" crossdev \
   --target $CROSS_ARM_TARGET \
   $CROSS_BINUTILS \
   $CROSS_GCC      \
