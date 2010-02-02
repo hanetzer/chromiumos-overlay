@@ -162,9 +162,8 @@ in_chroot env-update
 bash_chroot ls -l /etc/make.conf
 bash_chroot ls -l /etc/make.profile
 bash_chroot ls -l /usr/local/portage/chromiumos/profiles/default/linux/amd64/10.0
-bash_chroot emerge -v $USEPKG crossdev crossdev-wrappers sudo #ToDo(msb): remove this hack
-#ToDo(msb): bash_chroot emerge -uDNv $USEPKG world $EMERGE_JOBS
-#ToDo(msb): bash_chroot emerge -uDNv $USEPKG chromeos-base/hard-host-depends $EMERGE_JOBS
+bash_chroot emerge -uDNv $USEPKG world $EMERGE_JOBS
+bash_chroot emerge -uDNv $USEPKG chromeos-base/hard-host-depends $EMERGE_JOBS
 
 # Niceties for interactive logins ('enter_chroot.sh'); these are ignored
 # when specifying a command to enter_chroot.sh.
