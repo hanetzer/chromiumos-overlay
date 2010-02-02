@@ -192,40 +192,36 @@ CROSS_ARM_BINHOST="${BINHOST}/cross/${CROSS_ARM_TARGET}/"
 CROSS_BINUTILS="--binutils 2.19.1-r1"
 CROSS_GCC="--gcc 4.4.1"
 CROSS_KERNEL="--kernel 2.6.30-r1"
-CROSS_LIBC="--libc 2.9_p20081201-r2"
+CROSS_LIBC="--libc 2.10.1-r1"
 CROSS_USEPKG=""
 if [[ -n "$USEPKG" ]]; then
   CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
 fi
 
-bash_chroot PORTAGE_BINHOST="$CROSS_X86_BINHOST" crossdev \
-  --target $CROSS_X86_TARGET $CROSS_USEPKG
-#bash_chroot crossdev \
-#  --target $CROSS_X86_TARGET \
-#  $CROSS_BINUTILS \
-#  $CROSS_GCC      \
-#  $CROSS_KERNEL   \
-#  $CROSS_LIBC     \
-#  $CROSS_USEPKG
-bash_chroot PORTAGE_BINHOST="$CROSS_ARM_BINHOST" crossdev \
-  --target $CROSS_ARM_TARGET $CROSS_USEPKG
-#bash_chroot crossdev \
-#  --target $CROSS_ARM_TARGET \
-#  $CROSS_BINUTILS \
-#  $CROSS_GCC      \
-#  $CROSS_KERNEL   \
-#  $CROSS_LIBC     \
-#  $CROSS_USEPKG
+bash_chroot crossdev \
+  --target $CROSS_X86_TARGET \
+  $CROSS_BINUTILS \
+  $CROSS_GCC      \
+  $CROSS_KERNEL   \
+  $CROSS_LIBC     \
+  $CROSS_USEPKG
+bash_chroot crossdev \
+  --target $CROSS_ARM_TARGET \
+  $CROSS_BINUTILS \
+  $CROSS_GCC      \
+  $CROSS_KERNEL   \
+  $CROSS_LIBC     \
+  $CROSS_USEPKG
 bash_chroot emerge-wrapper --init
 
 # tell portage that glic is already built
 # TODO: this is a hack and should really be done in crossdev-wrappers
 PROFILE_DIR="${FLAGS_chroot}/usr/${CROSS_X86_TARGET}/etc/portage/profile"
 sudo mkdir -p "${PROFILE_DIR}"
-sudo bash -c "echo sys-libs/glibc-2.10.1 > ""${PROFILE_DIR}""/package.provided"
+sudo bash -c "echo sys-libs/glibc-2.10.1-r1 > ""${PROFILE_DIR}""/package.provided"
 PROFILE_DIR="${FLAGS_chroot}/usr/${CROSS_ARM_TARGET}/etc/portage/profile"
 sudo mkdir -p "${PROFILE_DIR}"
-sudo bash -c "echo sys-libs/glibc-2.9 > ""${PROFILE_DIR}""/package.provided"
+sudo bash -c "echo sys-libs/glibc-2.10.1-r1 > ""${PROFILE_DIR}""/package.provided"
 unset PROFILE_DIR
 
 # Symlink for libstdc++.la issues. It appears that when packages get merged
