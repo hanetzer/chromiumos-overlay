@@ -35,6 +35,10 @@ LIBDIR_amd64=lib64
 UCLIBC_CPU_DEFAULT="GENERIC_ARM"
 MAKEOPTS=-j3
 PORTDIR_OVERLAY="/usr/local/portage"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
+
+# TODO: Point to a proper repository and not tedbo!
+PORTAGE_BINHOST="http://www.corp.google.com/~tedbo/no_crawl/chronos/prebuilt/host/"
 
 VIDEO_CARDS="fbdev"
 INPUT_DEVICES="keyboard mouse synaptics"
