@@ -79,6 +79,7 @@ add_group() {
 
 # TODO: Image is missing some key directories. What package is supposed to
 # create them?
+sudo chmod 0755 "${ROOT_FS_DIR}/."
 sudo mkdir -p "${ROOT_FS_DIR}/dev"
 sudo mkdir -p "${ROOT_FS_DIR}/home"
 sudo mkdir -p "${ROOT_FS_DIR}/proc"
@@ -98,25 +99,15 @@ sudo rm -rf "${ROOT_FS_DIR}/etc/init"
 sudo mv "${ROOT_FS_DIR}/etc/init.chromiumos" \
   "${ROOT_FS_DIR}/etc/init"
 
-if [[ "$FLAGS_target" = "x86" ]]; then
-  # Create getty on tty2 on x86
-  cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/init/tty2.conf
-start on runlevel [2345]
-stop on runlevel [!2345]
+# Create getty on tty2
+# TODO: Move this into platform/init and fix "start on" clause.
+cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/init/tty2.conf
+start on startup
+stop on starting halt or starting reboot
 
 respawn
 exec /sbin/agetty 38400 tty2 linux
 EOF
-else
-  # Create getty on ttyMSM2 on ARM
-  cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/init/ttyMSM2.conf
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-respawn
-exec /sbin/agetty 115200 ttyMSM2 linux
-EOF
-fi
 
 # Set up a default dev user and add to sudo and the video groups.
 # TODO: Make the default user (and password) customizeable
@@ -185,6 +176,7 @@ sudo ln -s /usr/bin/dbus-daemon "${ROOT_FS_DIR}/bin/dbus-daemon"
 sudo ln -s /usr/lib "${ROOT_FS_DIR}/usr/lib64"
 
 # TODO: Temporarily create fake xterm symlink until we do proper xinitrc
+sudo chmod 0755 "${ROOT_FS_DIR}/usr/bin/aterm"
 sudo ln -s aterm "${ROOT_FS_DIR}/usr/bin/xterm"
 
 # TODO: Until libGL.so is fixed, create symlink libGL.so.1 -> libGL.so
