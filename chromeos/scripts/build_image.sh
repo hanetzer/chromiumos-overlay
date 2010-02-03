@@ -74,6 +74,11 @@ case "$FLAGS_target" in
     exit 1
 esac
 
+# Hack to fix bug where x86_64 CHOST line gets incorrectly added
+# ToDo(msb): remove this hack
+PACKAGES_FILE="/usr/${CROSS_TARGET}/packages/Packages"
+sudo sed -e "s/CHOST: x86_64-pc-linux-gnu//" -i "${PACKAGES_FILE}"
+
 # Handle existing directory
 if [[ -e "$OUTPUT_DIR" ]]; then
   if [[ $FLAGS_replace -eq $FLAGS_TRUE ]]; then
