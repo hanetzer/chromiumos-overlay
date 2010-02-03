@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -31,5 +31,5 @@ src_install() {
   dodir /usr/sbin
 
   install -m 0755 -o root -g root "${S}"/chromeos-* "${D}"/usr/sbin
-  ln -s usr/sbin/chromeos-postinst "${D}"/postinst
+  dosym usr/sbin/chromeos-postinst /postinst
 }
