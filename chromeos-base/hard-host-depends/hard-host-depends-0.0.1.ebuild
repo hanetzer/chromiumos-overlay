@@ -33,13 +33,14 @@ RDEPEND="${RDEPEND}
 	dev-libs/protobuf
 	dev-python/pygobject
 	dev-util/cmake
-	dev-util/gperf
 	dev-util/gob
-	>=dev-util/intltool-0.30
 	dev-util/gperf
+	dev-util/gtk-doc
 	>=dev-util/gtk-doc-am-1.10
+	>=dev-util/intltool-0.30
 	dev-util/scons
 	gnome-base/gconf
+	gnome-base/gnome-common
 	=gnome-base/orbit-2.14.17
 	>=media-libs/freetype-2.2.1
 	sys-apps/module-init-tools
