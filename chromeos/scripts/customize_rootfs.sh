@@ -266,7 +266,9 @@ fi
 # TODO(msb): Ugly Hack fix for pango-querymodules
 # pango-querymodules needs to be run on the target so we ran it on the target
 # and stored the result which we copy here
-sudo cp /usr/portage/chromeos/files/pango.modules "${ROOT_FS_DIR}"/etc/pango/
+CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos"
+sudo cp "${CHROMIUMOS_OVERLAY}/chromeos/files/pango.modules" \
+  "${ROOT_FS_DIR}"/etc/pango/
 sudo chmod 0644 "${ROOT_FS_DIR}"/etc/pango/pango.modules
 
 # TODO: This is a temporary script to start chromeos chrome.
