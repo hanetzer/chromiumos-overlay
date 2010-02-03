@@ -63,11 +63,11 @@ CROSS_TARGET=""
 case "$FLAGS_target" in
   x86)
     CROSS_TARGET="i686-pc-linux-gnu"
-    GLIBC="2.10.1"
+    GLIBC="2.10.1-r1"
     ;;
   arm)
     CROSS_TARGET="armv7a-softfloat-linux-gnueabi"
-    GLIBC="2.9_p20081201-r3"
+    GLIBC="2.10.1-r1"
     ;;
   *)
     echo "Error: Invalid target specified: ${FLAGS_target}"
