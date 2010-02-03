@@ -14,6 +14,6 @@ net-nds/openldap	minimal
 net-wireless/wpa_supplicant	dbus -readline
 sys-apps/dbus		-X
 sys-apps/util-linux	-perl
-sys-fs/udev		-devfs-compat
+sys-fs/udev		-devfs-compat extras
 sys-libs/ncurses	-unicode minimal
 x11-apps/xinit          minimal
