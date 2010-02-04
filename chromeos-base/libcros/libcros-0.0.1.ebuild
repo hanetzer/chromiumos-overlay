@@ -11,15 +11,22 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 
-DEPEND="chromeos-base/libchrome
-        chromeos-base/libchromeos
-        chromeos-base/synaptics"
+# TODO: chromeos-base/synaptics is not a run-time dependency, but until
+# we can stop using --root-deps=rdeps we have to explicitly add it as a
+# run-time dependency here. It can't go in hard-target-depends because it
+# depends on stuff in hard-target-depends.
 RDEPEND="app-i18n/ibus
+	 chromeos-base/synaptics
          dev-libs/dbus-glib
          dev-libs/glib
          dev-libs/libpcre
          sys-apps/dbus
          sys-fs/udev"
+
+DEPEND="${RDEPEND}
+	chromeos-base/libchrome
+        chromeos-base/libchromeos
+	chromeos-base/synaptics"
 
 src_unpack() {
         local platform="${CHROMEOS_ROOT}/src/platform/"
