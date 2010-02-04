@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 
 # Script to build a bootable keyfob-based chromeos system image from within
-# a gentoo setup. This assumes that all needed packages have been built into
+# a chromiumos setup. This assumes that all needed packages have been built into
 # the given target's root with binary packages turned on. This script will
 # build the Chrome OS image using only pre-built binary packages.
 #
@@ -203,7 +203,7 @@ WITH_DEV=""
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   WITH_DEV="--withdev"
 fi
-"${SCRIPTS_DIR}/gentoo_customize_rootfs.sh" \
+"${SCRIPTS_DIR}/new_customize_rootfs.sh" \
   --root="$ROOT_FS_DIR" \
   --target="$FLAGS_target" \
   $WITH_DEV

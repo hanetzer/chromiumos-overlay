@@ -169,7 +169,7 @@ bash_chroot emerge -uDNv $USEPKG chromeos-base/hard-host-depends $EMERGE_JOBS
 # when specifying a command to enter_chroot.sh.
 # Warn less when apt-get installing packqages
 echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
-echo "export PS1=\"(gentoo) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
+echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
 chmod a+x "$FLAGS_chroot/home/$USER/.bashrc"
 # Automatically change to scripts directory
 echo "cd trunk/src/scripts" >> "$FLAGS_chroot/home/$USER/.profile"
