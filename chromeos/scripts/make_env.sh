@@ -183,7 +183,7 @@ done
 
 # Set up cross compilers for arm and x86
 # TODO: If possible, nail down specific versions to use for each target arch.
-BINHOST="http://www.corp.google.com/~tedbo/no_crawl/chronos/prebuilt/host/"
+BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
 CROSS_X86_TARGET="i686-pc-linux-gnu"
 CROSS_ARM_TARGET="armv7a-softfloat-linux-gnueabi"
 CROSS_X86_BINHOST="${BINHOST}/cross/${CROSS_X86_TARGET}/"

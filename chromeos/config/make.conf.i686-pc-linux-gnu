@@ -41,11 +41,12 @@ MAKEOPTS=-j3
 PORTDIR_OVERLAY="/usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 
-# TODO: Point to a proper repository and not tedbo!
-PORTAGE_BINHOST="http://www.corp.google.com/~tedbo/no_crawl/chronos/prebuilt/host/cross/${CHOST}/"
+PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/cross/${CHOST}/"
 
 VIDEO_CARDS="intel"
 INPUT_DEVICES="evdev keyboard mouse synaptics"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
+
+GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"

@@ -16,7 +16,8 @@ PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 # Where to store built packages.
 PKGDIR="/var/lib/portage/pkgs"
 
-# TODO: Point to a proper repository and not tedbo!
-PORTAGE_BINHOST="http://www.corp.google.com/~tedbo/no_crawl/chronos/prebuilt/host/"
+PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
 
 USE="${USE} -cups"
+
+GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
