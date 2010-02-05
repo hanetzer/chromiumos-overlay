@@ -32,6 +32,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/nss[utils]
 	dev-libs/protobuf
 	dev-python/pygobject
+	dev-python/webpy
 	dev-util/cmake
 	dev-util/gob
 	dev-util/gperf
