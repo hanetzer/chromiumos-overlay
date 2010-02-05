@@ -41,8 +41,6 @@ MAKEOPTS=-j3
 PORTDIR_OVERLAY="/usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 
-PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/cross/${CHOST}/"
-
 VIDEO_CARDS="intel"
 INPUT_DEVICES="evdev keyboard mouse synaptics"
 
