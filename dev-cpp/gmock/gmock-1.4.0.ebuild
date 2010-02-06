@@ -16,3 +16,7 @@ DEPENDS=">=dev-cpp/gtest-1.4.0"
 src_configure() {
        econf --with-gtest="${ROOT}/usr" || die "gmock configure failed."
 }
+
+src_install() {
+	emake DESTDIR="${D}" install || die "emake install failed"
+}
