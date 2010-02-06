@@ -24,11 +24,12 @@ if [[ ! -d "${OVERLAY}" ]]; then
   exit 1
 fi
 
-# Clean out any old scripts that may exist. 
+# Clean out any old scripts that may exist.
 rm -f "${SCRIPTS}/new_make_env.sh"
 rm -f "${SCRIPTS}/new_build_pkgs.sh"
 rm -f "${SCRIPTS}/new_build_image.sh"
 rm -f "${SCRIPTS}/new_customize_rootfs.sh"
+rm -f "${SCRIPTS}/setup_board"
 
 # Set up symlinks to the new build scripts
 ln -s "${OVERLAY_SCRIPTS_RELPATH}"/make_env.sh \
@@ -39,3 +40,5 @@ ln -s "${OVERLAY_SCRIPTS_RELPATH}"/build_image.sh \
   "${SCRIPTS}/new_build_image.sh"
 ln -s "${OVERLAY_SCRIPTS_RELPATH}"/customize_rootfs.sh \
   "${SCRIPTS}/new_customize_rootfs.sh"
+ln -s "${OVERLAY_SCRIPTS_RELPATH}"/setup_board \
+  "${SCRIPTS}/setup_board"

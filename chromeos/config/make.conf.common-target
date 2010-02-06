@@ -1,0 +1,41 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# NOTE: This assumes that the following have already been defined:
+#  { ROOT, ARCH, CHOST, [BOARD_OVERLAY] }
+
+# TODO: This will have to come from somewhere else when we support a 32-bit
+# build host environment.
+CBUILD=x86_64-pc-linux-gnu
+HOSTCC=x86_64-pc-linux-gnu-gcc
+
+ACCEPT_KEYWORDS="${ARCH}"
+USE="${ARCH} zlib bindist make-symlinks"
+
+# Be sure we don't overwrite pkgs from another sysroot.
+PKGDIR=${ROOT}packages/
+PORTAGE_TMPDIR=${ROOT}tmp/
+
+FEATURES="collision-protect sandbox buildpkg noman noinfo nodoc"
+
+PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"
+MAKEOPTS=-j3
+ELIBC="glibc"
+
+PORTDIR_OVERLAY="/usr/local/portage"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
+
+# Since our portage comes from version control, we redirect distfiles.
+DISTDIR="/var/lib/portage/distfiles"
+
+# Our chromium mirror should be more stable since we won't discard packages.
+GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
+
+# TODO(msb): Fix for libstdc++
+#LDFLAGS="${LDFLAGS} -L${ROOT}usr/lib/gcc/${CHOST}/4.4.1"
+
+# TODO: What are these for?
+LIBDIR_${ARCH}="lib"
+LIBDIR_amd64=lib64

@@ -1,0 +1,167 @@
+#!/bin/bash
+
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script sets up a the sysroot for a particular target board.
+
+. "$(dirname "$0")/common.sh"
+
+# Script must be run inside the chroot
+assert_inside_chroot
+
+# Define command line flags
+# See http://code.google.com/p/shflags/wiki/Documentation10x
+
+DEFINE_string board "" "The name of the board to set up."
+DEFINE_string board_overlay "" "Location of the board overlay."
+DEFINE_string toolchain "i686-pc-linux-gnu" \
+  "The toolchain to use. For arm, use 'armv7a-softfloat-linux-gnueabi'."
+DEFINE_string arch "x86" "Architecture: { x86, arm }"
+DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
+
+DEFINE_string buildroot "/build" "Location for build output and sysroots."
+DEFINE_string binutils_version "2.19.1-r1" "Version of binutils to use."
+DEFINE_string gcc_version "4.4.1" "Version of gcc to use."
+DEFINE_string libc_version "2.10.1-r1" "Version of libc to use."
+DEFINE_string kernel_version "2.6.30-r1" "Version of kernel headers to use."
+
+# Parse command line flags
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+
+# Only now can we die on error.  shflags functions leak non-zero error codes,
+# so will die prematurely if 'set -e' is specified before now.
+set -e
+
+# Check on the board that they are trying to set up.
+if [ -z "$FLAGS_board" ] ; then
+  echo "Error: --board required."
+  exit 1
+fi
+BOARD="$FLAGS_board"
+BOARD_ROOT="${FLAGS_buildroot}/${BOARD}"
+if [ -d "$BOARD_ROOT" ] ; then
+  echo "Error: Board output directory '$BOARD_ROOT' already exists."
+  exit 1
+fi
+
+# If the toolchain does not exist, then build it!
+TOOLCHAIN_ROOT="/usr/${FLAGS_toolchain}"
+if [ ! -d "$TOOLCHAIN_ROOT" ] ; then
+  BINHOST=$(portageq envvar PORTAGE_BINHOST)
+  CROSS_BINHOST="${BINHOST}/cross/$FLAGS_toolchain/"
+  CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
+  CROSS_GCC="--gcc $FLAGS_gcc_version"
+  CROSS_KERNEL="--kernel $FLAGS_kernel_version"
+  CROSS_LIBC="--libc $FLAGS_libc_version"
+  CROSS_USEPKG=""
+  if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+    CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
+  fi
+  sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
+    --target "$FLAGS_toolchain" \
+    $CROSS_BINUTILS \
+    $CROSS_GCC      \
+    $CROSS_KERNEL   \
+    $CROSS_LIBC     \
+    $CROSS_USEPKG
+fi
+
+sudo mkdir -p "$BOARD_ROOT"
+
+# Set up toolchain wrappers to force $SYSROOT. For each compiler we wrap it
+# in a script that calls "--sysroot=$SYSROOT" if the variable is set.
+# TODO: There has to be a cleaner way to do this!
+SYSROOT_WRAPPER_SCRIPT=$(mktemp)
+cat <<"EOF" > "$SYSROOT_WRAPPER_SCRIPT"
+#!/bin/bash
+if [ -n "$SYSROOT" ] ; then
+  exec "${0}.real" --sysroot="$SYSROOT" "$@"
+else
+  echo "Invocation with missing SYSROOT: ${0} $@" >> /tmp/sysroot_wrapper.error
+  exec "${0}.real" "$@"
+fi
+EOF
+GCC_PROFILE="${FLAGS_toolchain}-${FLAGS_gcc_version}"
+GCC_BIN_PATH=$(gcc-config --get-bin-path "$GCC_PROFILE")
+for i in c++ cpp g++ gcc gfortran ; do
+  GCC_BINARY="${GCC_BIN_PATH}/$FLAGS_toolchain-${i}"
+  if [ ! -f "${GCC_BINARY}.real" ] ; then
+    sudo mv "$GCC_BINARY" "${GCC_BINARY}.real"
+    sudo install --mode=0755 "$SYSROOT_WRAPPER_SCRIPT" "$GCC_BINARY"
+  fi
+done
+
+# Copy the toolchain libs, headers, etc into the board sysroot.
+sudo cp -a "$TOOLCHAIN_ROOT"/* "$BOARD_ROOT"
+
+# Symlink for libstdc++.la issues. It appears that when packages get merged
+# the .la files will be updated, and for libstdc++ it will use the wrong
+# location. This works around that issue.
+sudo ln -sf /usr/lib64/gcc "${BOARD_ROOT}/usr/lib/gcc"
+
+# Setup make.conf and make.profile as symlinks to ones in revision control
+CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos/"
+CHROMIUMOS_CONFIG="${CHROMIUMOS_OVERLAY}/chromeos/config"
+CHROMIUMOS_PROFILES="${CHROMIUMOS_OVERLAY}/profiles"
+BOARD_ETC="${BOARD_ROOT}/etc"
+BOARD_PROFILE="${BOARD_ETC}/portage/profile"
+sudo mkdir -p "${BOARD_ETC}" "${BOARD_PROFILE}"
+
+# Start with the crossdev etc
+# TODO(tedbo): The sed lines are hacks to fix an issue where the crossdev
+# wrapper wants to assume that SYSROOT is /usr/${CHOST}. We should fix this
+# in the crossdev code and try to upstream.
+sudo cp -a /usr/share/crossdev/etc/* "${BOARD_ETC}"
+sudo sed -i 's/${CHOST}/${SYSROOT}/g' "${BOARD_ETC}/portage/bashrc"
+sudo sed -i 's/CROSS_ROOT=""/CROSS_ROOT="$1"/g' /usr/bin/cross-fix-root
+
+# Tell portage that glibc is already built
+# TODO: This is a hack; is there a better way?
+echo "sys-libs/glibc-${FLAGS_libc_version}" \
+  | sudo dd of="${BOARD_PROFILE}/package.provided" > /dev/null 2>&1
+
+# Setup the make.confs. We use the following:
+#    make.conf             <- Overall target make.conf [arm, x86, etc. version]
+#    make.conf.board_setup <- Declares CHOST, ROOT, etc.
+#    make.conf.common      <- Common settings across all targets
+#    make.conf.board       <- Optional board-supplied make.conf
+sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${FLAGS_arch}-target" \
+  "${BOARD_ROOT}/etc/make.conf"
+sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
+  "${BOARD_ROOT}/etc/make.conf.common"
+cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"
+# Created by setup_board
+CHOST="${FLAGS_toolchain}"
+ROOT="${BOARD_ROOT}/"
+BOARD_OVERLAY="$FLAGS_board_overlay"
+EOF
+sudo touch "${BOARD_ETC}/make.conf.board"  # TODO(tedbo): Add this feature.
+
+# Setup make.globals and the profile.
+sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
+sudo rm "${BOARD_ROOT}/etc/make.profile"
+sudo ln -sf \
+  "${CHROMIUMOS_PROFILES}/default/linux/${FLAGS_arch}/10.0/chromeos/" \
+  "${BOARD_ROOT}/etc/make.profile"
+
+# Create emerge wrapper
+EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD}"
+cat <<EOF | sudo dd of="$EMERGE_WRAPPER" > /dev/null 2>&1
+#!/bin/bash
+
+export CHROMEOS_ROOT="$GCLIENT_ROOT"
+export CHOST="$FLAGS_toolchain"
+export PORTAGE_CONFIGROOT="$BOARD_ROOT"
+export SYSROOT="$BOARD_ROOT"
+
+exec emerge --root-deps=rdeps "\$@"
+
+EOF
+sudo chmod +x "$EMERGE_WRAPPER"
+
+echo "Done!"
+echo "You can use the emerge wrapper: ${EMERGE_WRAPPER}"
+echo "The SYSROOT is: ${BOARD_ROOT}"
