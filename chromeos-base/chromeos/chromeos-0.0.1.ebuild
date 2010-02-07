@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-shells/dash
+	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-metrics_daemon
