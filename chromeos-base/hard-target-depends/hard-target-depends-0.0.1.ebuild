@@ -32,6 +32,8 @@ RDEPEND="chromeos-base/libchrome
 	>=x11-proto/xf86dgaproto-2.0.3
 	>=x11-proto/xf86driproto-2.0.4
 	>=x11-proto/xf86vidmodeproto-2.2.2
-	>=x11-proto/xineramaproto-1.1.2"
+	>=x11-proto/xineramaproto-1.1.2
+	arm? ( sys-boot/u-boot )
+	"
 
 DEPEND=""
