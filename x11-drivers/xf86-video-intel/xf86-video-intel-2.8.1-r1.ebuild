@@ -32,8 +32,13 @@ PATCHES=(
 )
 
 pkg_setup() {
-	export ac_cv_file__usr_i686_pc_linux_gnu_usr_include_xorg_dri_h=yes
-	export ac_cv_file__usr_i686_pc_linux_gnu_usr_include_xorg_sarea_h=yes
-	export ac_cv_file__usr_i686_pc_linux_gnu_usr_include_xorg_dristruct_h=yes
+	if tc-is-cross-compiler ; then
+		local ac_sysroot="${SYSROOT//\//_}"
+		local ac_include_prefix="ac_cv_file_${ac_sysroot}_usr_include"
+		eval export ${ac_include_prefix}_xorg_dri_h=yes
+		eval export ${ac_include_prefix}_xorg_sarea_h=yes
+		eval export ${ac_include_prefix}_xorg_dristruct_h=yes
+	fi
+
 	CONFIGURE_OPTIONS="$(use_enable dri)"
 }
