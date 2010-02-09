@@ -57,6 +57,7 @@ RDEPEND="${RDEPEND}
 	app-portage/gentoolkit
 	app-portage/portage-utils
 	app-editors/qemacs
+	app-editors/vim
 	"
 
 DEPEND=""
