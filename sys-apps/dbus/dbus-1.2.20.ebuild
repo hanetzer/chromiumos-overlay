@@ -1,8 +1,8 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/dbus-1.3.0.ebuild,v 1.5 2009/08/08 20:45:16 flameeyes Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/dbus-1.2.12.ebuild,v 1.3 2009/04/23 05:46:44 nirbheek Exp $
 
-inherit autotools eutils multilib flag-o-matic
+inherit eutils multilib flag-o-matic
 
 DESCRIPTION="A message bus system, a simple way for applications to talk to each other"
 HOMEPAGE="http://dbus.freedesktop.org/"
@@ -30,11 +30,6 @@ src_unpack() {
 	# Tests were restricted because of this
 	sed -e 's/.*bus_dispatch_test.*/printf ("Disabled due to excess noise\\n");/' \
 		-e '/"dispatch"/d' -i "${S}/bus/test-main.c"
-	epatch "${FILESDIR}"/${P}-asneeded.patch
-	epatch "${FILESDIR}"/${P}-no-cloexec.patch
-	# required for asneeded patch but also for bug 263909, cross-compile so
-	# don't remove eautoreconf
-	eautoreconf
 }
 
 src_compile() {
@@ -54,7 +49,7 @@ src_compile() {
 		$(use_enable test tests) \
 		$(use_enable test asserts) \
 		--with-xml=expat \
-		--with-system-pid-file=/var/run/dbus/dbus.pid \
+		--with-system-pid-file=/var/run/dbus.pid \
 		--with-system-socket=/var/run/dbus/system_bus_socket \
 		--with-session-socket-dir=/tmp \
 		--with-dbus-user=messagebus \
