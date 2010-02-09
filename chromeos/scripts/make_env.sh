@@ -120,6 +120,7 @@ sudo mkdir -p "${FLAGS_chroot}/usr"
 sudo ln -sf "${CHROOT_TRUNK}/src/third_party/portage" \
   "${FLAGS_chroot}/usr/portage"
 sudo mkdir -p "${FLAGS_chroot}/usr/local/portage"
+sudo chmod 755 "${FLAGS_chroot}/usr/local/portage"
 sudo ln -sf "${CHROOT_TRUNK}/src/third_party/chromiumos-overlay" \
   "${FLAGS_chroot}"/"${CHROOT_OVERLAY}"
 
