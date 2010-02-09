@@ -125,6 +125,7 @@ cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"
 CHOST="${FLAGS_toolchain}"
 ROOT="${BOARD_ROOT}/"
 BOARD_OVERLAY="$FLAGS_board_overlay"
+MAKEOPTS="-j${NUM_JOBS}"
 EOF
 sudo touch "${BOARD_ETC}/make.conf.board"  # TODO(tedbo): Add this feature.
 
