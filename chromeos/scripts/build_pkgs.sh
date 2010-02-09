@@ -20,9 +20,9 @@
 assert_inside_chroot
 
 # Flags
-DEFINE_string target "x86" \
-  "The target architecture to build for. One of { x86, arm }."
-DEFINE_boolean usepkg $FLAGS_TRUE \
+DEFINE_string board "" \
+  "The board to build packages for."
+DEFINE_boolean usepkg $FLAGS_FALSE \
   "Use binary packages to bootstrap when possible."
 DEFINE_boolean withdev $FLAGS_TRUE \
   "Build useful developer friendly utilities."
@@ -36,19 +36,10 @@ eval set -- "${FLAGS_ARGV}"
 # Die on any errors.
 set -e
 
-# What cross-build are we targeting?
-CROSS_TARGET=""
-case "$FLAGS_target" in
-  x86)
-    CROSS_TARGET="i686-pc-linux-gnu"
-    ;;
-  arm)
-    CROSS_TARGET="armv7a-softfloat-linux-gnueabi"
-    ;;
-  *)
-    echo "Error: Invalid target specified: ${FLAGS_target}"
-    exit 1
-esac
+if [ -z "$FLAGS_board" ] ; then
+  echo "Error: --board is required."
+  exit 1
+fi
 
 USEPKG=""
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
@@ -59,11 +50,11 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   EMERGE_JOBS="--jobs=$FLAGS_jobs"
 fi
 
-sudo CHROMEOS_ROOT="$SRC_ROOT/.." emerge-${CROSS_TARGET} \
+sudo emerge-${FLAGS_board} \
   -uDNv $USEPKG chromeos-base/hard-target-depends $EMERGE_JOBS
-sudo CHROMEOS_ROOT="$SRC_ROOT/.." emerge-${CROSS_TARGET} \
+sudo emerge-${FLAGS_board} \
   -uDNv $USEPKG chromeos-base/chromeos $EMERGE_JOBS
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
-  sudo CHROMEOS_ROOT="$SRC_ROOT/.." emerge-${CROSS_TARGET} \
+  sudo emerge-${FLAGS_board} \
     -uDNv $USEPKG chromeos-base/chromeos-dev $EMERGE_JOBS
 fi

@@ -20,6 +20,11 @@
 assert_inside_chroot
 
 # Flags
+DEFINE_string board "" \
+  "The board to build an image for."
+DEFINE_string board_root "/build" \
+  "The root location for board sysroots."
+
 DEFINE_string target "x86" \
   "The target architecture to build for. One of { x86, arm }."
 DEFINE_integer build_attempt 1                                \
@@ -44,17 +49,25 @@ eval set -- "${FLAGS_ARGV}"
 # Die on any errors.
 set -e
 
+if [ -z "$FLAGS_board" ] ; then
+  echo "Error: --board is required."
+  exit 1
+fi
+
 # Determine build version
 . "${SCRIPTS_DIR}/chromeos_version.sh"
 
 # Use canonical path since some tools (e.g. mount) do not like symlinks
 # Append build attempt to output directory
 IMAGE_SUBDIR="${CHROMEOS_VERSION_STRING}-a${FLAGS_build_attempt}"
-OUTPUT_DIR="${FLAGS_output_root}/g-${IMAGE_SUBDIR}"
+OUTPUT_DIR="${FLAGS_output_root}/${FLAGS_board}/${IMAGE_SUBDIR}"
 ROOT_FS_DIR="${OUTPUT_DIR}/rootfs"
 ROOT_FS_IMG="${OUTPUT_DIR}/rootfs.image"
 MBR_IMG="${OUTPUT_DIR}/mbr.image"
 OUTPUT_IMG="${OUTPUT_DIR}/usb.img"
+
+BOARD="${FLAGS_board}"
+BOARD_DIR="${FLAGS_board_root}/${BOARD}"
 
 LOOP_DEV=
 
@@ -76,7 +89,7 @@ esac
 
 # Hack to fix bug where x86_64 CHOST line gets incorrectly added
 # ToDo(msb): remove this hack
-PACKAGES_FILE="/usr/${CROSS_TARGET}/packages/Packages"
+PACKAGES_FILE="${BOARD_DIR}/packages/Packages"
 sudo sed -e "s/CHOST: x86_64-pc-linux-gnu//" -i "${PACKAGES_FILE}"
 
 # Handle existing directory
@@ -188,10 +201,10 @@ fi
 # Ex: INSTALL_MASK=" *.a *.la /usr/include/ /usr/lib/gcc /usr/share/doc /usr/share/gtk-doc /usr/share/info /usr/share/man"
 # TODO: Whatever fanciness we can to reduce image size. Also uncomment when
 # ready!
-sudo INSTALL_MASK="$INSTALL_MASK" emerge-${CROSS_TARGET} \
+sudo INSTALL_MASK="$INSTALL_MASK" emerge-${BOARD} \
   --root="$ROOT_FS_DIR" --usepkgonly chromeos $EMERGE_JOBS
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
-  sudo INSTALL_MASK="$INSTALL_MASK" emerge-${CROSS_TARGET} \
+  sudo INSTALL_MASK="$INSTALL_MASK" emerge-${BOARD} \
     --root="$ROOT_FS_DIR" --usepkgonly chromeos-dev $EMERGE_JOBS
 
   # The ldd tool is a useful shell script but lives in glibc; just copy it.

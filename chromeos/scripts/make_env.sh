@@ -181,66 +181,6 @@ do
     >> "$FLAGS_chroot/home/$USER/.profile"
 done
 
-# Set up cross compilers for arm and x86
-# TODO: If possible, nail down specific versions to use for each target arch.
-BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
-CROSS_X86_TARGET="i686-pc-linux-gnu"
-CROSS_ARM_TARGET="armv7a-softfloat-linux-gnueabi"
-CROSS_X86_BINHOST="${BINHOST}/cross/${CROSS_X86_TARGET}/"
-CROSS_ARM_BINHOST="${BINHOST}/cross/${CROSS_ARM_TARGET}/"
-CROSS_BINUTILS="--binutils 2.19.1-r1"
-CROSS_GCC="--gcc 4.4.1"
-CROSS_KERNEL="--kernel 2.6.30-r1"
-CROSS_LIBC="--libc 2.10.1-r1"
-CROSS_USEPKG=""
-if [[ -n "$USEPKG" ]]; then
-  CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
-fi
-
-bash_chroot PORTAGE_BINHOST="$CROSS_X86_BINHOST" crossdev \
-  --target $CROSS_X86_TARGET \
-  $CROSS_BINUTILS \
-  $CROSS_GCC      \
-  $CROSS_KERNEL   \
-  $CROSS_LIBC     \
-  $CROSS_USEPKG
-bash_chroot PORTAGE_BINHOST="$CROSS_ARM_BINHOST" crossdev \
-  --target $CROSS_ARM_TARGET \
-  $CROSS_BINUTILS \
-  $CROSS_GCC      \
-  $CROSS_KERNEL   \
-  $CROSS_LIBC     \
-  $CROSS_USEPKG
-bash_chroot emerge-wrapper --init
-
-# tell portage that glic is already built
-# TODO: this is a hack and should really be done in crossdev-wrappers
-PROFILE_DIR="${FLAGS_chroot}/usr/${CROSS_X86_TARGET}/etc/portage/profile"
-sudo mkdir -p "${PROFILE_DIR}"
-sudo bash -c "echo sys-libs/glibc-2.10.1-r1 > ""${PROFILE_DIR}""/package.provided"
-PROFILE_DIR="${FLAGS_chroot}/usr/${CROSS_ARM_TARGET}/etc/portage/profile"
-sudo mkdir -p "${PROFILE_DIR}"
-sudo bash -c "echo sys-libs/glibc-2.10.1-r1 > ""${PROFILE_DIR}""/package.provided"
-unset PROFILE_DIR
-
-# Symlink for libstdc++.la issues. It appears that when packages get merged
-# the .la files will be updated, and for libstdc++ it will use the wrong
-# location. This works around that issue.
-sudo ln -sf /usr/lib64/gcc \
-  "${FLAGS_chroot}/usr/${CROSS_ARM_TARGET}/usr/lib/gcc"
-sudo ln -sf /usr/lib64/gcc \
-  "${FLAGS_chroot}/usr/${CROSS_X86_TARGET}/usr/lib/gcc"
-
-# Setup make.conf and make.profile as symlinks to ones in revision control
-sudo ln -sf "${CHROOT_CONFIG}/make.conf.${CROSS_ARM_TARGET}" \
-  "${FLAGS_chroot}/usr/${CROSS_ARM_TARGET}/etc/make.conf"
-sudo ln -sf "${CHROOT_OVERLAY}/profiles/default/linux/arm/10.0/chromeos/" \
-  "${FLAGS_chroot}/usr/${CROSS_ARM_TARGET}/etc/make.profile"
-sudo ln -sf "${CHROOT_CONFIG}/make.conf.${CROSS_X86_TARGET}" \
-  "${FLAGS_chroot}/usr/${CROSS_X86_TARGET}/etc/make.conf"
-sudo ln -sf "${CHROOT_OVERLAY}/profiles/default/linux/x86/10.0/chromeos/" \
-  "${FLAGS_chroot}/usr/${CROSS_X86_TARGET}/etc/make.profile"
-
 if [[ "$USER" = "chrome-bot" ]]; then
   # Copy ssh keys, so chroot'd chrome-bot can scp files from chrome-web.
   cp -r ~/.ssh "$FLAGS_chroot/home/$USER/"
