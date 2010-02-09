@@ -31,6 +31,9 @@ src_install() {
 	install --owner=root --group=root --mode=0644 \
 	  "${S}"/*.conf "${D}/etc/init.chromiumos/"
 
+	# Install process killing util functions.
+	dosbin "${S}/killers"
+
 	# Install startup/shutdown scripts.
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
 
