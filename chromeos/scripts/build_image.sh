@@ -223,21 +223,19 @@ fi
 
 cleanup_rootfs_loop
 
-if [[ "$FLAGS_target" = "x86" ]]; then
-  # Create a master boot record.
-  # Start with the syslinux master boot record. We need to zero-pad to
-  # fill out a 512-byte sector size.
-  SYSLINUX_MBR="/usr/share/syslinux/mbr.bin"
-  dd if="$SYSLINUX_MBR" of="$MBR_IMG" bs=512 count=1 conv=sync
-  # Create a partition table in the MBR.
-  NUM_SECTORS=$((`stat --format="%s" "$ROOT_FS_IMG"` / 512))
-  sudo sfdisk -H64 -S32 -uS -f "$MBR_IMG" <<EOF
+# Create a master boot record.
+# Start with the syslinux master boot record. We need to zero-pad to
+# fill out a 512-byte sector size.
+SYSLINUX_MBR="/usr/share/syslinux/mbr.bin"
+dd if="$SYSLINUX_MBR" of="$MBR_IMG" bs=512 count=1 conv=sync
+# Create a partition table in the MBR.
+NUM_SECTORS=$((`stat --format="%s" "$ROOT_FS_IMG"` / 512))
+sudo sfdisk -H64 -S32 -uS -f "$MBR_IMG" <<EOF
 ,$NUM_SECTORS,L,-,
 ,$NUM_SECTORS,S,-,
 ,$NUM_SECTORS,L,*,
 ;
 EOF
-fi
 
 OUTSIDE_OUTPUT_DIR="~/chromeos/src/build/images/${IMAGE_SUBDIR}"
 echo "Done.  Image created in ${OUTPUT_DIR}"
