@@ -36,6 +36,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/memento_softwareupdate
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google
+	chromeos-base/xscreensaver
 	x86? ( media-gfx/ply-image )
 	x86? ( sys-power/acpid )
 	net-misc/ntp
