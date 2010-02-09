@@ -18,7 +18,6 @@ DEFINE_string board "" "The name of the board to set up."
 DEFINE_string board_overlay "" "Location of the board overlay."
 DEFINE_string toolchain "i686-pc-linux-gnu" \
   "The toolchain to use. For arm, use 'armv7a-softfloat-linux-gnueabi'."
-DEFINE_string arch "x86" "Architecture: { x86, arm }"
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 
 DEFINE_string buildroot "/build" "Location for build output and sysroots."
@@ -46,6 +45,20 @@ if [ -d "$BOARD_ROOT" ] ; then
   echo "Error: Board output directory '$BOARD_ROOT' already exists."
   exit 1
 fi
+
+# Figure out ARCH from the given toolchain
+TC_ARCH=$(echo "$FLAGS_toolchain" | awk -F'-' '{ print $1 }')
+case "$TC_ARCH" in
+  arm*)
+    ARCH="arm"
+    ;;
+  *86)
+    ARCH="x86"
+    ;;
+  *)
+    echo "Error: Unable to determine ARCH from toolchain: $FLAGS_toolcahin"
+    exit 1
+esac
 
 # If the toolchain does not exist, then build it!
 TOOLCHAIN_ROOT="/usr/${FLAGS_toolchain}"
@@ -116,7 +129,7 @@ echo "sys-libs/glibc-${FLAGS_libc_version}" \
 #    make.conf.board_setup <- Declares CHOST, ROOT, etc.
 #    make.conf.common      <- Common settings across all targets
 #    make.conf.board       <- Optional board-supplied make.conf
-sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${FLAGS_arch}-target" \
+sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
   "${BOARD_ROOT}/etc/make.conf"
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
   "${BOARD_ROOT}/etc/make.conf.common"
@@ -133,7 +146,7 @@ sudo touch "${BOARD_ETC}/make.conf.board"  # TODO(tedbo): Add this feature.
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
 sudo rm "${BOARD_ROOT}/etc/make.profile"
 sudo ln -sf \
-  "${CHROMIUMOS_PROFILES}/default/linux/${FLAGS_arch}/10.0/chromeos/" \
+  "${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/" \
   "${BOARD_ROOT}/etc/make.profile"
 
 # Create emerge wrapper
