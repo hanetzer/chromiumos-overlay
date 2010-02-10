@@ -192,6 +192,10 @@ if [[ ! -f "${ROOT_FS_DIR}/usr/bin/slim" ]]; then
   sudo ln -s /bin/true "${ROOT_FS_DIR}/usr/bin/slim"
 fi
 
+# TODO: until we switch away from the old build altogether
+sudo mkdir -p  "${ROOT_FS_DIR}/usr/bin/X11"
+sudo ln -s  /usr/bin/Xorg  "${ROOT_FS_DIR}/usr/bin/X11/X"
+
 # Setup our xorg.conf. This allows us to avoid HAL overhead.
 # TODO: Note that this is different from the latest chromeos one for now.
 if [ -d "${ROOT_FS_DIR}/etc/X11" ]; then
