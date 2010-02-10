@@ -47,6 +47,7 @@ if [ -d "$BOARD_ROOT" ] ; then
 fi
 
 # Figure out ARCH from the given toolchain
+# TODO: Move to common.sh as a function after scripts are switched over.
 TC_ARCH=$(echo "$FLAGS_toolchain" | awk -F'-' '{ print $1 }')
 case "$TC_ARCH" in
   arm*)
@@ -139,6 +140,7 @@ CHOST="${FLAGS_toolchain}"
 ROOT="${BOARD_ROOT}/"
 BOARD_OVERLAY="$FLAGS_board_overlay"
 MAKEOPTS="-j${NUM_JOBS}"
+LIBC_VERSION="$FLAGS_libc_version"
 EOF
 sudo touch "${BOARD_ETC}/make.conf.board"  # TODO(tedbo): Add this feature.
 
