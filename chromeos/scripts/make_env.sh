@@ -13,6 +13,13 @@
 # The path to common.sh should be relative to your script's location.
 . "$(dirname "$0")/common.sh"
 
+# Check if the host machine architecture is supported.
+ARCHITECTURE="$(uname -m)"
+if [[ "$ARCHITECTURE" != "x86_64" ]]; then
+  echo "$ARCHITECTURE is not supported as a host machine architecture."
+  exit 1
+fi
+
 # Script must be run outside the chroot
 assert_outside_chroot
 
