@@ -1,0 +1,68 @@
+--- a/cross-fix-root	2010-02-09 03:53:31.423311000 +0000
++++ b/cross-fix-root	2010-02-10 18:36:32.553313357 +0000
+@@ -6,38 +6,51 @@
+ # - solar
+ 
+ CROSS_ROOT=""
+-[[ $1 != "" ]] && [ -e /usr/$1 ] && CROSS_ROOT="/usr/$1"
+-[[ -e ${CROSS_ROOT} ]] || exit 0
++case "${1}" in
++	"") ;;  # Do nothing on empty string.
++	/*) CROSS_ROOT="${1}";;
++	*) CROSS_ROOT="/usr/${1}";;
++esac
++
++if [ ! -d "${CROSS_ROOT}" ]; then
++	echo "Invalid sysroot or CHOST: ${1}"
++	echo "Usage ${0} <sysroot abs path or CHOST>"
++	exit 1
++fi
+ 
+ function strip_path() {
+-        echo $1 | grep -Eo "[^\/]+$"
++	echo $1 | grep -Eo "[^\/]+$"
+ }
+ 
+ function re_safe() {
+-        echo $1 | gawk '{ gsub("/","\\/"); print }'
++	echo $1 | gawk '{ gsub(";","\\;"); print }'
+ }
+ 
+ fix_la_files() {
+-	count=0
+-	for LA in $(find $CROSS_ROOT/usr/lib/ -iname *.la); do
++	local count=0
++	local safe_cross_root=$(re_safe "${CROSS_ROOT}")
++	for LA in $(find ${CROSS_ROOT}/usr/lib/ -iname *.la); do
+ 		[ -e $LA ] || continue
+ 		count=$(($count+1))
+-		sed  -i -e "s;libdir='/usr/lib';libdir='$CROSS_ROOT/usr/lib';" \
+-			-e s@" /usr/lib"@" ${CROSS_ROOT}/usr/lib"@g $LA
+-		[[ $? != 0 ]] && printf "FAIL $LA or $CROSS_ROOT FAILED sucka\n"
++		sed  -i -e "s;libdir='/usr/lib';libdir='${safe_cross_root}/usr/lib';" \
++			-e "s; /usr/lib; ${safe_cross_root}/usr/lib;g" $LA
++		[[ $? != 0 ]] && printf "FAIL ${LA} or ${CROSS_ROOT} FAILED sucka\n"
+ 	done
+-	return $count
++	return ${count}
+ }
+ 
+ fix_pc_files() {
+-	count=0
++	local count=0
++	local safe_cross_root=$(re_safe "${CROSS_ROOT}")
+ 	for PC in "${CROSS_ROOT}"/usr/lib/pkgconfig/*.pc "${CROSS_ROOT}"/usr/share/pkgconfig/*.pc; do
+ 		[ -e "${PC}" ] || continue
+-		sed -i -e "s/^prefix\\=\\/usr$/prefix\=$(re_safe "${CROSS_ROOT}")\\/usr/" "${PC}"
+-		count=$(($count+1))
++		grep -q 'exec_prefix=/usr' "${PC}" && echo " --!!!-- Bad exec_prefix found in ${PC}"
++		sed -i -e "s;^prefix=/usr\$;prefix=${safe_cross_root}/usr;" \
++		       -e "s;^exec_prefix=/usr\$;exec_prefix=\$\{prefix\};" "${PC}"
++		count=$((${count}+1))
+ 		[[ $? != 0 ]] && printf "Fixing ${PC} for ${CROSS_ROOT} FAILED sucka\n"
+ 	done
+-	return $count
++	return ${count}
+ }
+ 
+ fix_la_files ${CROSS_ROOT}
