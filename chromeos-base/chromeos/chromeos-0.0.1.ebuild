@@ -32,7 +32,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
-	x86? ( chromeos-base/kernel )
+	chromeos-base/kernel
 	chromeos-base/memento_softwareupdate
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google

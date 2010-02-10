@@ -16,22 +16,34 @@ DEPEND=""
 RDEPEND="${DEPEND}"
 
 src_unpack() {
-	local files="${CHROMEOS_ROOT}/src/third_party/kernel/files"
-	elog "Using kernel files: $files"
-	mkdir -p "${S}"
-	cp -ar "${files}"/* "${S}" || die
-	
-	# copy config
+	local files
+
+	# Setup arch specific flags.
+	#
+	# For now, we require a clone of kernel-qualcomm next to
+	# third_party/kernel if we want to do an ARM build.
+	#
 	if [ "${ARCH}" = "x86" ]; then
+		files="${CHROMEOS_ROOT}/src/third_party/kernel/files"
 		config_file="${files}"/chromeos/config/chromeos-intel-menlow
 	elif [ "${ARCH}" = "arm" ]; then
-		config_file="${files}"/chromeos/config/generic-arm
+		files="${CHROMEOS_ROOT}/src/third_party/kernel-qualcomm"
+		config_file="${files}"/arch/arm/configs/qsd8650-st1_defconfig
+
+		# kernel-qualcomm currently requires its own git clone
+		[ -f "${config_file}" ] || \
+			die "kernel-qualcomm requires its own git clone."
 	else
 		die no config file for arch: "${ARCH}"
 	fi
 
-	elog using config file "${config_file}"
-	cp -a "${config_file}" "${S}/.config"
+	elog "Using kernel files: ${files}"
+	mkdir -p "${S}"
+	cp -ar "${files}"/* "${S}" || die
+
+	# copy config
+	elog "Using config file ${config_file}"
+	cp "${config_file}" "${S}/.config"
 
 	# make modules output directory
 	mkdir "${S}"/mod_obj
@@ -59,9 +71,9 @@ src_install() {
 
 	# copy kernel, config, system.map
 	dodir /boot
-  cp -a "${S}"/arch/"${ARCH}"/boot/bzImage \
+	cp -a "${S}"/arch/"${ARCH}"/boot/bzImage \
 		"${D}/boot/vmlinuz-${KCONFIG_NAME}" || \
-  	cp -a "${S}"/arch/"${ARCH}"/boot/zImage \
+		cp -a "${S}"/arch/"${ARCH}"/boot/zImage \
 		"${D}/boot/vmlinuz-${KCONFIG_NAME}" || die
 	cp -a "${S}"/System.map "${D}/boot/System.map-${KCONFIG_NAME}" || die
 	cp -a "${S}"/.config "${D}/boot/config-${KCONFIG_NAME}" || die
