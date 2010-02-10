@@ -26,8 +26,8 @@ RDEPEND="${RDEPEND}
 	dev-lang/python
 	dev-util/strace
 	net-misc/iputils
-	net-misc/iw
 	net-misc/openssh
+	net-wireless/iw
 	net-wireless/wireless-tools
 	sys-apps/findutils
 	sys-apps/less
