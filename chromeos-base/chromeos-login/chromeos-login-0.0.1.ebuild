@@ -41,7 +41,7 @@ src_compile() {
 
        pushd login_manager
        # TODO: We can't use emake because the makefile will fail with -j
-       make CXX="${CXX}" CXXFLAGS="$CFLAGS" || \
+       make CXX="${CXX}" CXXFLAGS="$CFLAGS" session_manager || \
          die "chromeos-login compile failed."
        popd
 }
@@ -72,6 +72,7 @@ src_install() {
        dodir /etc/X11
        install --mode=0755 "${S}/chromeos-xsession" "${D}/etc/X11"
 
+       into /
        dosbin "${S}/session_manager_setup.sh"
        dosbin "${S}/session_manager"
        dosbin "${S}/xstart.sh"
