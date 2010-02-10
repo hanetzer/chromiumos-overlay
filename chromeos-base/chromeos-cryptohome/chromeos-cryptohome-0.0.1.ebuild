@@ -11,17 +11,22 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="test"
 
-# TODO: Need e4fsprogs, dmsetup
-RDEPEND="sys-auth/pam_mount
-	 dev-libs/dbus-glib
-	 dev-libs/glib
-	 dev-libs/openssl
-	 app-shells/bash
-         sys-libs/pam"
+RDEPEND="
+	sys-auth/pam_mount
+	sys-fs/lvm2
+	sys-fs/e4fsprogs
+	dev-libs/dbus-glib
+	dev-libs/glib
+	dev-libs/openssl
+	app-shells/bash
+	sys-libs/pam"
 
-DEPEND="${RDEPEND}"
+DEPEND="
+	test? ( dev-cpp/gtest )
+	chromeos-base/libchromeos
+	${RDEPEND}"
 
 src_unpack() {
 	local platform="${CHROMEOS_ROOT}/src/platform"
@@ -38,12 +43,31 @@ src_compile() {
 		tc-getRANLIB
 		tc-getLD
 		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
 
 	pushd cryptohome
-	scons || die "cryptohome compile failed."
+	# Only build the daemon
+	scons cryptohomed || die "cryptohome compile failed."
+	popd
+}
+
+src_test() {
+	if tc-is-cross-compiler ; then
+		tc-getCC
+		tc-getCXX
+		tc-getAR
+		tc-getRANLIB
+		tc-getLD
+		tc-getNM
+		export CCFLAGS="$CFLAGS"
+	fi
+
+	pushd cryptohome
+	# Only build the tests
+	# TODO(wad) eclass-ify this.
+	scons cryptohome_testrunner ||
+		die "cryptohome_testrunner compile failed."
 	popd
 }
 
@@ -60,11 +84,11 @@ src_install() {
 
 	dodir /etc/dbus-1/system.d
 	cp "${S}/etc/Cryptohome.conf" \
-	  "${D}/etc/dbus-1/system.d/Cryptohome.conf"
+		"${D}/etc/dbus-1/system.d/Cryptohome.conf"
 
 	dodir /usr/share/dbus-1/services/
 	cp "${S}/share/org.chromium.Cryptohome.service" \
-	  "${D}/usr/share/dbus-1/services/"
+		"${D}/usr/share/dbus-1/services/"
 
 	dodir /usr/lib/chromeos-cryptohome
 	cp -a "${S}"/lib/* "${D}/usr/lib/chromeos-cryptohome"

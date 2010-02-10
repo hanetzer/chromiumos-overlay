@@ -30,6 +30,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-init
+	chromeos-base/chromeos-login
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/kernel
