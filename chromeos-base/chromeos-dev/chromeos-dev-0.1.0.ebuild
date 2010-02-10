@@ -23,14 +23,19 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-editors/vim
 	app-shells/bash
+	dev-lang/python
 	dev-util/strace
 	net-misc/iputils
+	net-misc/iw
+	net-misc/openssh
 	net-wireless/wireless-tools
 	sys-apps/findutils
 	sys-apps/less
 	sys-apps/which
+	sys-devel/gdb
 	sys-process/procps
 	"
+
 # TODO: Add qemacs back in when ready:	x86? ( app-editors/qemacs )
 
 # meta package which contains target build dependencies. Doesn't get
