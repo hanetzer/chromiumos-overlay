@@ -11,7 +11,7 @@ KEYWORDS="x86 arm"
 IUSE=""
 
 # TODO: If arm? then download the proper arm build.
-CHROME_BUILD=${CHROME_BUILD:-"35576"}
+CHROME_BUILD=${CHROME_BUILD:-"38617"}
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/chromium-rel-linux-chromiumos"}
 SRC_URI="${CHROME_BASE}/${CHROME_BUILD}/chrome-linux.zip"
 
