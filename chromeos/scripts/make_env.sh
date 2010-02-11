@@ -167,7 +167,7 @@ if [[ $FLAGS_delete  -eq $FLAGS_TRUE || \
       $FLAGS_replace -eq $FLAGS_TRUE ]]; then
   delete_existing
   echo "$PROG: Done."
-  exit 0
+  [[ $FLAGS_delete -eq $FLAGS_TRUE ]] && exit 0
 fi
 
 CHROOT_TRUNK="${CHROOT_TRUNK_DIR}"
