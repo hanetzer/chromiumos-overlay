@@ -161,7 +161,7 @@ export CHOST="$FLAGS_toolchain"
 export PORTAGE_CONFIGROOT="$BOARD_ROOT"
 export SYSROOT="$BOARD_ROOT"
 
-exec emerge --root-deps=rdeps "\$@"
+exec sudo -E emerge --root-deps=rdeps "\$@"
 
 EOF
 sudo chmod +x "$EMERGE_WRAPPER"
