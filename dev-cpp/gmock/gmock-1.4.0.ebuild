@@ -14,7 +14,11 @@ IUSE=""
 DEPENDS=">=dev-cpp/gtest-1.4.0"
 
 src_configure() {
-       econf --with-gtest="${ROOT}/usr" || die "gmock configure failed."
+	econf --with-gtest="${ROOT}/usr" || die "gmock configure failed."
+}
+
+src_compile() {
+	emake GTEST_LDFLAGS= || die "emake failed"
 }
 
 src_install() {
