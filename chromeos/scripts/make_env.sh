@@ -77,6 +77,7 @@ function delete_existing {
     cleanup
     echo "$PROG: Deleting $FLAGS_chroot..."
     sudo rm -rf "$FLAGS_chroot"
+    echo "$PROG: Done."
   fi
 }
 
@@ -89,7 +90,7 @@ function init_users () {
 }
 
 function init_setup () {
-   echo "Running init_setup()..."
+   echo "$PROG: Running init_setup()..."
    sudo mkdir -p "${FLAGS_chroot}/usr"
    sudo ln -sf "${CHROOT_TRUNK}/src/third_party/portage" \
      "${FLAGS_chroot}/usr/portage"
@@ -166,7 +167,6 @@ function init_setup () {
 if [[ $FLAGS_delete  -eq $FLAGS_TRUE || \
       $FLAGS_replace -eq $FLAGS_TRUE ]]; then
   delete_existing
-  echo "$PROG: Done."
   [[ $FLAGS_delete -eq $FLAGS_TRUE ]] && exit 0
 fi
 
@@ -178,17 +178,17 @@ CHROOT_CONFIG="${CHROOT_TRUNK}/src/third_party/chromiumos-overlay/chromeos/confi
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
 
-# Create the destination directory
-mkdir -p "$FLAGS_chroot"
-
 # Create the base Gentoo stage3 based on last version put in chroot
 STAGE3="${OVERLAY}/chromeos/stage3/stage3-amd64-2009.10.09.tar.bz2"
 if [ -f $CHROOT_STATE ] && \
-  ! egrep -q "^STAGE3=$STAGE3" $CHROOT_STATE >/dev/null 2>&1
+  ! sudo egrep -q "^STAGE3=$STAGE3" $CHROOT_STATE >/dev/null 2>&1
 then
   echo "$PROG: STAGE3 version has changed."
   delete_existing
 fi
+
+# Create the destination directory
+mkdir -p "$FLAGS_chroot"
 
 echo
 if [ -f $CHROOT_STATE ]
