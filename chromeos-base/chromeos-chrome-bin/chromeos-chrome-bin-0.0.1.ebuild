@@ -25,6 +25,7 @@ RDEPEND="dev-libs/atk
 	dev-libs/nss
 	gnome-base/gconf
 	x11-libs/cairo
+	x11-libs/libXScrnSaver
 	x11-libs/gtk+
 	x11-libs/pango
 	media-libs/alsa-lib
@@ -37,6 +38,8 @@ src_install() {
 	local dest="${D}/opt/google/chrome"
 	mkdir -p --mode=0755 "${dest}"
 	cp -a "${S}"/* "${dest}" || die "install failed"
+	chmod 6755 "${dest}/session" || die "install failed"
+        chmod 6755 "${dest}/emit_login_prompt_ready" || die "install failed"
 
 	local platform="${CHROMEOS_ROOT}/src/platform/"
 	mkdir -p --mode=0755 "${D}/usr/bin"

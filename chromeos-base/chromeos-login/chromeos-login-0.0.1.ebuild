@@ -67,7 +67,8 @@ src_install() {
        # based login for now.
        if use pam_google ; then
                insinto /etc/pam.d
-               doins "${S}/slim"
+               doins "${S}/chrome"
+               ln -s /etc/pam.d/chrome "${D}/etc/pam.d/slim"
        fi
 
        dodir /etc/X11
