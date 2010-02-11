@@ -31,6 +31,7 @@
 =sys-apps/util-linux-2.16.1	x86 arm
 =sys-auth/pam_mount-1.32	x86 arm
 =sys-fs/e2fsprogs-1.41.9	x86 arm
+=sys-fs/lvm2-2.02.51-r1		x86 arm
 =sys-fs/udev-146		x86 arm
 =sys-kernel/linux-headers-2.6.30-r1	x86 arm
 =sys-libs/e2fsprogs-libs-1.41.9	x86 arm
