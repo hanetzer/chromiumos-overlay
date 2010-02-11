@@ -14,6 +14,7 @@ KEYWORDS="amd64 x86 arm"
 IUSE="pam_google slim"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
+	 chromeos-base/chromeos-minijail
          pam_google? ( chromeos-base/pam_google )
          slim? ( x11-misc/slim )"
 
