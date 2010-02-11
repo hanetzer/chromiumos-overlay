@@ -11,14 +11,20 @@ SRC_URI=""
 LICENSE="GPL-2 BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="nls"
 
-RDEPEND="nls? ( virtual/libintl )"
-DEPEND="${RDEPEND}
+# TODO(wad) pulling in util-linux but it seems to need zlib even if
+#           it isn't in the deps.
+RDEPEND="nls? ( virtual/libintl )
+	sys-libs/zlib
+	>=sys-apps/util-linux-2.16"
+
+DEPEND="
 	nls? ( sys-devel/gettext )
 	dev-util/pkgconfig
-	sys-apps/texinfo"
-
+	sys-apps/texinfo
+	sys-devel/bc
+	${RDEPEND}"
 
 src_unpack() {
 	if [ -n "$CHROMEOS_ROOT" ] ; then
@@ -32,24 +38,22 @@ src_unpack() {
 	fi
 }
 
-src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
+src_prepare() {
+	# as noted in e2fsprogs-lib:
+	# stupid configure script clobbers CC for us
+	sed -i '/if test -z "$CC" ; then CC=cc; fi/d' configure
+}
 
+src_configure() {
 	econf || die "$PN configure failed."
-	emake libs && emake progs || die "$PN compile failed."
+}
+
+src_compile() {
+	emake subs && emake libs && emake progs || die "$PN compile failed."
 }
 
 src_install() {
-	into "/usr/lib/${PN}/"
+	into "/usr/lib/${PN}-git/"
 	dobin "${S}/misc/e4defrag"
 	dobin "${S}/resize/resize2fs"
 	dobin "${S}/e2fsck/e2fsck"
