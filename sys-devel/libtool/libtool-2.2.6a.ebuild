@@ -14,12 +14,12 @@ SLOT="1.5"
 KEYWORDS="alpha amd64 arm hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="vanilla test"
 
-RDEPEND="sys-devel/gnuconfig
-	>=sys-devel/autoconf-2.60
-	>=sys-devel/automake-1.10.1"
+RDEPEND="sys-devel/gnuconfig"
 DEPEND="${RDEPEND}
 	|| ( app-arch/xz-utils app-arch/lzma-utils )
-	sys-apps/help2man"
+	sys-apps/help2man
+	>=sys-devel/autoconf-2.60
+	>=sys-devel/automake-1.10.1"
 
 S=${WORKDIR}/${P%a}
 
