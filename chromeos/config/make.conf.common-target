@@ -20,7 +20,6 @@ PORTAGE_TMPDIR=${ROOT}tmp/
 FEATURES="collision-protect sandbox buildpkg noman noinfo nodoc"
 
 PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"
-MAKEOPTS=-j3
 ELIBC="glibc"
 
 PORTDIR_OVERLAY="/usr/local/portage"
