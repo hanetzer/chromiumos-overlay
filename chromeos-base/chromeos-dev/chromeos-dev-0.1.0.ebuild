@@ -23,7 +23,7 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-editors/vim
 	app-shells/bash
-	dev-lang/python
+	=dev-lang/python-2.4.6
 	dev-util/strace
 	net-misc/iputils
 	net-misc/openssh
