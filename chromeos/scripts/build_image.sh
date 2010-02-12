@@ -239,6 +239,7 @@ sudo sfdisk -H64 -S32 -uS -f "$MBR_IMG" <<EOF
 ,$NUM_SECTORS,L,-,
 ,$NUM_SECTORS,S,-,
 ,$NUM_SECTORS,L,*,
+,8192,L,-,
 ;
 EOF
 
