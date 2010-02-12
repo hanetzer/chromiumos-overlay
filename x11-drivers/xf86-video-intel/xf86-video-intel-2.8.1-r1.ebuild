@@ -33,7 +33,8 @@ PATCHES=(
 
 pkg_setup() {
 	if tc-is-cross-compiler ; then
-		local ac_sysroot="${SYSROOT//\//_}"
+		local temp="${SYSROOT//\//_}"
+		local ac_sysroot="${temp//-/_}"
 		local ac_include_prefix="ac_cv_file_${ac_sysroot}_usr_include"
 		eval export ${ac_include_prefix}_xorg_dri_h=yes
 		eval export ${ac_include_prefix}_xorg_sarea_h=yes
