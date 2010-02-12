@@ -12,22 +12,28 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE=""
 
-DEPEND=""
-RDEPEND=""
+DEPEND="chromeos-base/kernel"
+RDEPEND="${DEPEND}"
+
+u_boot=${CHROMEOS_U_BOOT:-"u-boot/files"}
+config=${CHROMEOS_U_BOOT_CONFIG:-"versatile_config"}
+files="${CHROMEOS_ROOT}/src/third_party/${u_boot}"
 
 src_unpack() {
-	local files="${CHROMEOS_ROOT}/src/third_party/u-boot/files"
-	elog "Using u-boot dir: $files"
+	elog "Using U-Boot files: ${files}"
+
 	mkdir -p "${S}"
 	cp -a "${files}"/* "${S}" || die "U-Boot copy failed"
 }
 
 src_configure() {
+	elog "Using U-Boot config: ${config}"
+
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \
 	      USE_PRIVATE_LIBGCC=yes \
-	      QSD8x50_surf_config || die "U-Boot configuration failed"
+	      ${config} || die "U-Boot configuration failed"
 }
 
 src_compile() {
@@ -39,7 +45,19 @@ src_compile() {
 }
 
 src_install() {
-	      dodir /u-boot
+	dodir /u-boot
 
-	      cp -a "${S}"/u-boot.bin "${D}"/u-boot/
+	cp -a "${S}"/u-boot.bin "${D}"/u-boot/
+
+	dodir /boot
+
+	"${S}"/tools/mkimage -A "${ARCH}" \
+			     -O linux \
+			     -T kernel \
+			     -C none \
+			     -a 0x20008000 \
+			     -e 0x20008000 \
+			     -n kernel \
+			     -d "${ROOT}"/boot/vmlinuz \
+			     "${D}"/boot/vmlinux.uimg
 }
