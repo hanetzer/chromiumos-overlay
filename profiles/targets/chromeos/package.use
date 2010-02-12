@@ -12,7 +12,7 @@ chromeos-base/chromeos-login   pam_google
 chromeos-base/flimflam	dnsproxy debug
 net-misc/ntp            caps
 net-nds/openldap	minimal
-net-wireless/wpa_supplicant	dbus -readline
+net-wireless/wpa_supplicant	dbus debug -readline
 sys-apps/dbus		-X
 sys-apps/util-linux	-perl
 sys-fs/udev		-devfs-compat extras
