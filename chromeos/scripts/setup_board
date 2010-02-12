@@ -16,8 +16,7 @@ assert_inside_chroot
 
 DEFINE_string board "" "The name of the board to set up."
 DEFINE_string board_overlay "" "Location of the board overlay."
-DEFINE_string toolchain "i686-pc-linux-gnu" \
-  "The toolchain to use. For arm, use 'armv7a-softfloat-linux-gnueabi'."
+DEFINE_string toolchain "" "The toolchain to use.  For example: i686-pc-linux-gnu, armv7a-softfloat-linux-gnueabi"
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 
 DEFINE_string buildroot "/build" "Location for build output and sysroots."
@@ -46,8 +45,62 @@ if [ -d "$BOARD_ROOT" ] ; then
   exit 1
 fi
 
+#
+# Check if there are any board overlays.  There should be at least a top
+# level board specific overlay.
+#
+PRIMARY_BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${BOARD}"
+BOARD_OVERLAY_LIST=""
+BOARD_MAKE_CONF=""
+
+if [ ! -d "${PRIMARY_BOARD_OVERLAY}" ]; then
+  warn "No board overlay found. [${PRIMARY_BOARD_OVERLAY}]"
+else
+  #
+  # Link make.conf.board to the board overlay's make.conf.  It must exist.
+  #
+  BOARD_MAKE_CONF="${PRIMARY_BOARD_OVERLAY}/make.conf"
+
+  if [ ! -f "${BOARD_MAKE_CONF}" ]; then
+    error "No board make.conf found. [${BOARD_MAKE_CONF}]"
+    exit 1
+  fi
+
+  #
+  # Fetch the toolchain from the board overlay.
+  #
+  BOARD_TOOL_CHAIN="${PRIMARY_BOARD_OVERLAY}/toolchain.conf"
+
+  if [ -f "${BOARD_TOOL_CHAIN}" -a -z "${FLAGS_toolchain}" ]; then
+    FLAGS_toolchain=$(cat ${BOARD_TOOL_CHAIN})
+  fi
+
+  #
+  # Populate the BOARD_OVERLAY_LIST with the primary board overlay and any
+  # additional overlays.
+  #
+
+  EXTRA_BOARD_OVERLAY_LIST=$(find \
+    "${SRC_ROOT}/overlays" \
+    -maxdepth 1 \
+    -type d \
+    -name "overlay-${BOARD}-*" | sort)
+
+  BOARD_OVERLAY_LIST="${PRIMARY_BOARD_OVERLAY} ${EXTRA_BOARD_OVERLAY_LIST}"
+fi
+
+#
+# Finally, add in any user requested board overlays.
+#
+BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${FLAGS_board_overlay}"
+
 # Figure out ARCH from the given toolchain
 # TODO: Move to common.sh as a function after scripts are switched over.
+if [ -z "${FLAGS_toolchain}" ]; then
+  error "No toolchain specified in board overlay or on command line."
+  exit 1
+fi
+
 TC_ARCH=$(echo "$FLAGS_toolchain" | awk -F'-' '{ print $1 }')
 case "$TC_ARCH" in
   arm*)
@@ -131,18 +184,23 @@ echo "sys-libs/glibc-${FLAGS_libc_version}" \
 #    make.conf.common      <- Common settings across all targets
 #    make.conf.board       <- Optional board-supplied make.conf
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
-  "${BOARD_ROOT}/etc/make.conf"
+  "${BOARD_ETC}/make.conf"
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
-  "${BOARD_ROOT}/etc/make.conf.common"
+  "${BOARD_ETC}/make.conf.common"
 cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"
 # Created by setup_board
 CHOST="${FLAGS_toolchain}"
 ROOT="${BOARD_ROOT}/"
-BOARD_OVERLAY="$FLAGS_board_overlay"
+BOARD_OVERLAY="${BOARD_OVERLAY_LIST}"
 MAKEOPTS="-j${NUM_JOBS}"
 LIBC_VERSION="$FLAGS_libc_version"
 EOF
-sudo touch "${BOARD_ETC}/make.conf.board"  # TODO(tedbo): Add this feature.
+
+if [ -f "${BOARD_MAKE_CONF}" ]; then
+  sudo ln -sf "${BOARD_MAKE_CONF}" "${BOARD_ETC}/make.conf.board"
+else
+  sudo touch "${BOARD_ETC}/make.conf.board"
+fi
 
 # Setup make.globals and the profile.
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
