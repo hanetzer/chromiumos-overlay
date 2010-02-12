@@ -19,6 +19,7 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 	epatch "${FILESDIR}"/${PN}-2.31-no-bs-namespace.patch
+	epatch "${FILESDIR}"/${P}-installkernel-symlinks.patch
 }
 
 src_compile() {
