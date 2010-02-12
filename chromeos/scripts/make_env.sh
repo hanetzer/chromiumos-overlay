@@ -108,6 +108,7 @@ function init_setup () {
    bash_chroot "echo %adm ALL=\(ALL\) ALL >> /etc/sudoers"
    bash_chroot "echo $USER ALL=NOPASSWD: ALL >> /etc/sudoers"
    bash_chroot chmod 0440 /etc/sudoers
+   bash_chroot chown root:root /etc/sudoers # Fix bad group on some systems
 
    echo "$PROG: Setting up hosts/resolv..."
    # Copy config from outside chroot into chroot
