@@ -13,6 +13,7 @@ IUSE=""
 
 RDEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
+	dev-cpp/gflags
 	dev-cpp/gtest
 	dev-cpp/gtkmm
 	sys-devel/flex
