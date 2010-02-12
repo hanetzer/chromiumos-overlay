@@ -16,6 +16,7 @@ RDEPEND="chromeos-base/libchrome
 	dev-cpp/gflags
 	dev-cpp/gtest
 	dev-cpp/gtkmm
+	dev-libs/vectormath
 	sys-devel/flex
 	>=x11-proto/bigreqsproto-1.0.2
 	>=x11-proto/compositeproto-0.4

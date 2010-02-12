@@ -23,6 +23,7 @@ RDEPEND="dev-libs/libpcre
 	x11-libs/libX11"
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
+	dev-libs/vectormath
 	${RDEPEND}"
 
 src_unpack() {
