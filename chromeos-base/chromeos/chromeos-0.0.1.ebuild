@@ -19,7 +19,6 @@ RDEPEND="${RDEPEND}
 		media-fonts/corefonts
 		>=x11-base/xorg-server-1.6.3
 		x11-apps/xinit
-		x11-misc/slim
 	)
 	"
 
@@ -34,6 +33,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/kernel
+	x86? ( chromeos-base/libcros )
 	chromeos-base/memento_softwareupdate
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google

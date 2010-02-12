@@ -11,12 +11,11 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE="pam_google slim"
+IUSE="pam_google"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	 chromeos-base/chromeos-minijail
-         pam_google? ( chromeos-base/pam_google )
-         slim? ( x11-misc/slim )"
+         pam_google? ( chromeos-base/pam_google )"
 
 DEPEND="${RDEPEND}
         dev-cpp/gmock"
@@ -49,19 +48,6 @@ src_compile() {
 
 src_install() {
        S="${S}/login_manager"
-
-       if use slim ; then
-               insinto /usr/share/slim/themes/chromeos
-               doins "${S}/slim.theme"
-
-               ln -s /usr/share/chromeos-assets/images/login_background.png \
-                 "${D}/usr/share/slim/themes/chromeos/background.png"
-               ln -s /usr/share/chromeos-assets/images/login_panel.png \
-                 "${D}/usr/share/slim/themes/chromeos/panel.png"
-
-               insinto /etc
-               doins "${S}/slim.conf"
-       fi
 
        # NOTE: The "slim" pam file is used for both slim-based and chromium-
        # based login for now.
