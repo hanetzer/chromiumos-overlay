@@ -17,7 +17,7 @@ RDEPEND="=dev-lang/python-2.4.6"
 
 DEPEND="
 	${RDEPEND}"
-	
+
 # Create python package init files for top level test case dirs.
 function touchInitPy() {
 	local dirs=${1}
@@ -36,7 +36,7 @@ src_unpack() {
 	local third_party="${CHROMEOS_ROOT}/src/third_party"
 	elog "Using third_party: $third_party"
 	mkdir -p "${S}"
-	cp -a "${third_party}/autotest/files"/* "${S}" || die	
+	cp -fpru ${third_party}/autotest/files/{client,conmux,server,tko,utils,global_config.ini,shadow_config.ini} ${S} || die
 }
 
 src_configure() {
@@ -57,10 +57,12 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 	# Do not use sudo, it'll unset all your environment
-	client/bin/autotest "$FLAGS_control"
+	client/bin/autotest_client "$FLAGS_control"
 }
 
 src_install() {
 	insinto "/usr/local/autotest"
+	diropts "-g ${SUDO_GID} -o ${SUDO_UID}"
+	insopts "-g ${SUDO_GID} -o ${SUDO_UID}"
 	doins -r "${S}"/*
 }
