@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
-DEPEND=""
+DEPEND="sys-apps/debianutils"
 RDEPEND="${DEPEND}"
 
 kernel=${CHROMEOS_KERNEL:-"kernel/files"}
