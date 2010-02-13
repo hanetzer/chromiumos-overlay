@@ -70,4 +70,24 @@ src_install() {
           CROSS_COMPILE="${CHOST}-" \
           INSTALL_MOD_PATH="${D}" \
           firmware_install || die
+
+	if [ "${ARCH}" = "arm" ]; then
+		version=$(ls "${D}"/lib/modules)
+
+		cp -a \
+		   "${S}"/arch/"${ARCH}"/boot/zImage \
+		   "${D}/boot/vmlinuz-${version}" || die
+
+		cp -a \
+		   "${S}"/System.map \
+		   "${D}/boot/System.map-${version}" || die
+
+		cp -a \
+		   "${S}"/.config \
+		   "${D}/boot/config-${version}" || die
+
+		ln -sf "vmlinuz-${version}"    "${D}"/boot/vmlinuz    || die
+		ln -sf "System.map-${version}" "${D}"/boot/System.map || die
+		ln -sf "config-${version}"     "${D}"/boot/config     || die
+	fi
 }
