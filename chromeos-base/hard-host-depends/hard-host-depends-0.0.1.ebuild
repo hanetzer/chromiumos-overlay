@@ -34,9 +34,11 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/webpy
 	dev-util/cmake
+	dev-util/git[cvs,subversion,webdav,curl]
 	dev-util/gob
 	dev-util/gperf
 	dev-util/gtk-doc
+	dev-util/subversion[-dso]
 	>=dev-util/gtk-doc-am-1.10
 	>=dev-util/intltool-0.30
 	dev-util/scons

@@ -1,0 +1,10 @@
+--- .gclient	2010-02-05 10:19:47.000000000 -0800
++++ .gclient	2010-02-05 10:20:47.000000000 -0800
+@@ -19,4 +19,7 @@
+     },
+     "safesync_url": ""
+   },
++  { "name"        : "cros_deps",
++    "url"         : "http://src.chromium.org/svn/trunk/cros_deps",
++  },
+ ]

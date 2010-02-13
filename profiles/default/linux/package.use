@@ -1,5 +1,7 @@
 dev-libs/nss		utils
 dev-libs/dbus-glib	tools
 dev-libs/protobuf 	-python
+dev-util/git		cvs subversion webdav curl
+dev-util/subversion	-dso
 x11-libs/cairo		X
 sys-auth/pam_mount      -crypt
