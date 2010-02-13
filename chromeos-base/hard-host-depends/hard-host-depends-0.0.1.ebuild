@@ -52,6 +52,11 @@ RDEPEND="${RDEPEND}
 	sys-apps/nih-dbus-tool
 	"
 
+# Host dependencies that create usernames/groups we need to pull over to target.
+RDEPEND="${RDEPEND}
+	sys-apps/dbus
+	"
+
 # Useful utilities for developers.
 RDEPEND="${RDEPEND}
 	app-portage/gentoolkit

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/dbus-1.2.12.ebuild,v 1.3 2009/04/23 05:46:44 nirbheek Exp $
 
-inherit eutils multilib flag-o-matic
+inherit eutils multilib flag-o-matic useradd
 
 DESCRIPTION="A message bus system, a simple way for applications to talk to each other"
 HOMEPAGE="http://dbus.freedesktop.org/"
@@ -101,8 +101,18 @@ src_install() {
 }
 
 pkg_preinst() {
-	enewgroup messagebus
-	enewuser messagebus -1 "-1" -1 messagebus
+	if ${ROOT}="/"; then
+	        enewgroup messagebus
+	        enewuser messagebus -1 "-1" -1 messagebus
+	else
+		# we have made dbus a hard-host-depend, so that the user will
+		# exist on the host for certain.
+		MB_UID=$(id -u "messagebus")
+		MB_GID=$(id -g "messagebus")
+		add_group "messagebus" ${MB_GID}
+		add_user "messagebus" "*" ${MB_UID} ${MB_GID} "dbus_user" \
+			 /dev/null /bin/false
+	fi
 }
 
 pkg_postinst() {

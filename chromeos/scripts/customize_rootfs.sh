@@ -148,10 +148,6 @@ fi
 end script
 EOF
 
-# Add messagebus user for dbus
-add_user "messagebus" "*" 101 101 "dbus_user" /dev/null /bin/false
-add_group "messagebus" 101
-
 # Add ntp user for ntp
 add_user "ntp" "*" 102 102 "ntp_user" /dev/null /bin/false
 add_group "ntp" 102
