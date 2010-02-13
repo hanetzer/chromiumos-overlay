@@ -40,6 +40,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/xscreensaver
 	x86? ( media-gfx/ply-image )
 	x86? ( sys-power/acpid )
+	media-sound/pulseaudio
 	net-misc/ntp
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
