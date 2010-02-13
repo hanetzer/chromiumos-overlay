@@ -17,10 +17,12 @@ KEYWORDS="amd64 x86 arm"
 # depends on stuff in hard-target-depends.
 RDEPEND="app-i18n/ibus
 	 chromeos-base/synaptics
+	 chromeos-base/flimflam
          dev-libs/dbus-glib
          dev-libs/glib
          dev-libs/libpcre
          sys-apps/dbus
+         sys-auth/consolekit
          sys-fs/udev"
 
 DEPEND="${RDEPEND}
