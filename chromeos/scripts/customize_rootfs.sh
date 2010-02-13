@@ -148,6 +148,12 @@ fi
 end script
 EOF
 
+# Add messagebus user for dbus; grab uid/gid values from host system.
+MB_UID=$(id -u "messagebus")
+MB_GID=$(id -g "messagebus")
+add_user "messagebus" "*" ${MB_UID} ${MB_GID} "dbus_user" /dev/null /bin/false
+add_group "messagebus" ${MB_GID}
+
 # Add ntp user for ntp
 add_user "ntp" "*" 102 102 "ntp_user" /dev/null /bin/false
 add_group "ntp" 102
