@@ -50,6 +50,7 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   EMERGE_JOBS="--jobs=$FLAGS_jobs"
 fi
 
+sudo emerge -uDNv $USEPKG world $EMERGE_JOBS
 sudo emerge-${FLAGS_board} \
   -uDNv $USEPKG chromeos-base/hard-target-depends $EMERGE_JOBS
 sudo emerge-${FLAGS_board} \
