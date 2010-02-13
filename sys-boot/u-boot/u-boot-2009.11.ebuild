@@ -47,7 +47,7 @@ src_compile() {
 src_install() {
 	dodir /u-boot
 
-	cp -a "${S}"/u-boot.bin "${D}"/u-boot/
+	cp -a "${S}"/u-boot.bin "${D}"/u-boot/ || die
 
 	dodir /boot
 
@@ -59,5 +59,5 @@ src_install() {
 			     -e 0x20008000 \
 			     -n kernel \
 			     -d "${ROOT}"/boot/vmlinuz \
-			     "${D}"/boot/vmlinux.uimg
+			     "${D}"/boot/vmlinux.uimg || die
 }
