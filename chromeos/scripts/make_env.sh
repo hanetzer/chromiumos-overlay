@@ -229,6 +229,9 @@ echo
 echo "$PROG: Running emerge hard-host-depends..."
 bash_chroot emerge -uDNv $USEPKG chromeos-base/hard-host-depends $EMERGE_JOBS
 
+echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
+  "${FLAGS_chroot}/home/$USER/.bashrc"
+
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
 
