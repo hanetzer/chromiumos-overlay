@@ -13,15 +13,15 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="x11-libs/libXmu  
+RDEPEND="chromeos-base/pam_offline
+	x11-libs/libXmu  
 	x11-libs/libXrandr  
 	x11-libs/libXt
 	x11-libs/libX11
 	x11-libs/libXext
         sys-libs/pam"
 
-DEPEND="chromeos-base/pam_offline  
-	x11-proto/xextproto
+DEPEND="x11-proto/xextproto
 	x11-proto/scrnsaverproto
 	x11-proto/recordproto  
 	sys-devel/bc	
@@ -59,5 +59,9 @@ src_compile() {
 src_install() {
 	emake prefix="${D}/usr" install
 	dodir "etc/X11/app-defaults"
-	cp XScreenSaver "${D}/etc/X11/app-defaults/XScreenSaver"  
+	cp XScreenSaver "${D}/etc/X11/app-defaults/XScreenSaver"
+
+	dodir "etc/pam.d"
+	cp "${CHROMEOS_ROOT}/src/platform/screenlocker/portage-xscreensaver" \
+	   "${D}/etc/pam.d/xscreensaver"
 }
