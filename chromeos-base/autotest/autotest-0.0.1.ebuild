@@ -57,7 +57,7 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 	# Do not use sudo, it'll unset all your environment
-	client/bin/autotest_client "$FLAGS_control"
+	LOGNAME=${SUDO_USER} client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST}
 }
 
 src_install() {
