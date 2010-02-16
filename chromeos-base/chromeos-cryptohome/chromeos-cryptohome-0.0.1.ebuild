@@ -79,9 +79,6 @@ src_install() {
 	dosbin "${S}/cryptohomed"
 	dolib "${S}/libcryptohome_service.so"
 
-	dodir /etc/security
-	cp "${S}/pam_mount.conf.xml" "${D}/etc/security/"
-
 	dodir /etc/dbus-1/system.d
 	cp "${S}/etc/Cryptohome.conf" \
 		"${D}/etc/dbus-1/system.d/Cryptohome.conf"

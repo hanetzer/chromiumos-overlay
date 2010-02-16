@@ -31,6 +31,11 @@ src_compile() {
 }
 
 src_install() {
+	local cryptohome="${CHROMEOS_ROOT}/src/platform/cryptohome"
+	elog "Using cryptohome source: $cryptohome"
+	cp -f "${cryptohome}/pam_mount.conf.xml" "${S}/config/pam_mount.conf.xml" ||
+		die "pam_mount.conf.xml overwrite failed"
+
 	emake DESTDIR="${D}" install || die "make install failed"
 	dodoc doc/*.txt || die "dodoc failed"
 }
