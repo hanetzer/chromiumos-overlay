@@ -29,7 +29,8 @@ RDEPEND="${RDEPEND}
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-init
-	chromeos-base/chromeos-login
+	x86? ( chromeos-base/chromeos-login )
+	arm? ( chromeos-base/chromeos-login[slim] )
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/kernel

@@ -231,20 +231,6 @@ EndSection
 EOF
 fi
 
-# TODO: Replace with chromeos-login ebuild.
-sudo cp "${SRC_ROOT}"/platform/login_manager/slim.conf \
-  "${ROOT_FS_DIR}/etc/slim.conf"
-sudo mkdir -p "${ROOT_FS_DIR}/usr/share/slim/themes/chromeos"
-sudo cp "${SRC_ROOT}"/platform/login_manager/slim.theme \
-  "${ROOT_FS_DIR}/usr/share/slim/themes/chromeos/"
-sudo ln -s /usr/share/chromeos-assets/images/login_background.png \
-  "${ROOT_FS_DIR}/usr/share/slim/themes/chromeos/background.png"
-sudo ln -s /usr/share/chromeos-assets/images/login_panel.png \
-  "${ROOT_FS_DIR}//usr/share/slim/themes/chromeos/panel.png"
-sudo cp "${SRC_ROOT}"/platform/login_manager/chromeos-xsession \
-  "${ROOT_FS_DIR}/etc/X11"
-sudo chmod 0755 "${ROOT_FS_DIR}/etc/X11/chromeos-xsession"
-
 # If dash is installed then we want to use that as our default /bin/sh
 if [[ -x "${ROOT_FS_DIR}/bin/dash" ]] ; then
   sudo ln -sf dash "${ROOT_FS_DIR}/bin/sh"
