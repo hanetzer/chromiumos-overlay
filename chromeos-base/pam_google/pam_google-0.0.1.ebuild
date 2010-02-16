@@ -51,4 +51,6 @@ src_install() {
 	  "${D}/lib/security/pam_google.so"
 	cp -a "${S}/pam_google/verisign_class3.pem" \
           "${D}/etc/login_trust_root.pem"
+	chown root:root "${D}/etc/login_trust_root.pem"
+	chmod 0644 "${D}/etc/login_trust_root.pem"
 }

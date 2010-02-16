@@ -113,15 +113,17 @@ EOF
 # TODO: Make the default user (and password) customizeable
 # TODO: Make the default user conditional on building a dev image.
 DEV_USER="chronos"
+DEV_UID="1000"
 SHELL="/bin/sh"
 if [[ -x "${ROOT_FS_DIR}/bin/bash" ]] ; then
   SHELL="/bin/bash"
 fi
-add_user "${DEV_USER}" "x" 1000 1000 "dev_user" "/home/${DEV_USER}" "$SHELL"
+add_user "${DEV_USER}" "x" "${DEV_UID}" "${DEV_UID}" "dev_user" \
+  "/home/${DEV_USER}" "$SHELL"
 add_shadow "${DEV_USER}" ""
-add_group "${DEV_USER}" 1000
+add_group "${DEV_USER}" "${DEV_UID}"
 sudo mkdir -p "${ROOT_FS_DIR}/home/${DEV_USER}"
-sudo chown 1000.1000 "${ROOT_FS_DIR}/home/${DEV_USER}"
+sudo chown "${DEV_UID}.${DEV_UID}" "${ROOT_FS_DIR}/home/${DEV_USER}"
 cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/sudoers" conv=notrunc oflag=append
 %adm ALL=(ALL) ALL
 $DEV_USER ALL=NOPASSWD: ALL
@@ -197,6 +199,10 @@ fi
 # TODO: until we switch away from the old build altogether
 sudo mkdir -p  "${ROOT_FS_DIR}/usr/bin/X11"
 sudo ln -s  /usr/bin/Xorg  "${ROOT_FS_DIR}/usr/bin/X11/X"
+
+# TODO: until we get the login logic into chrome itself
+sudo chown "root:${DEV_UID}" "${ROOT_FS_DIR}/opt/google/chrome/session"
+sudo chmod 6711 "${ROOT_FS_DIR}/opt/google/chrome/session"
 
 # Setup our xorg.conf. This allows us to avoid HAL overhead.
 # TODO: Note that this is different from the latest chromeos one for now.
