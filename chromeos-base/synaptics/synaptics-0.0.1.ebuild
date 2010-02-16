@@ -13,7 +13,9 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-DEPEND=""
+DEPEND="x11-libs/libX11
+	x11-proto/inputproto
+	x11-proto/xproto"
 
 RDEPEND=""
 
