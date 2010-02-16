@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-DEPENDS=">=dev-cpp/gtest-1.4.0"
+DEPEND=">=dev-cpp/gtest-1.4.0"
 
 src_configure() {
 	econf --with-gtest="${ROOT}/usr" || die "gmock configure failed."
