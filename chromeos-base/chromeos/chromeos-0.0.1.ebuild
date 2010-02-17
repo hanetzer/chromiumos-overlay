@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/devicekit-power
 	sys-apps/kbd
 	sys-apps/coreutils
+	sys-apps/eject
 	sys-apps/grep
 	sys-apps/mawk
 	sys-apps/module-init-tools
