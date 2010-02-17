@@ -33,6 +33,8 @@ RDEPEND="${RDEPEND}
 	sys-apps/less
 	sys-apps/which
 	sys-devel/gdb
+	sys-fs/fuse[-kernel_linux]	
+	sys-fs/sshfs-fuse
 	sys-process/procps
 	"
 

@@ -1,0 +1,6 @@
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+# Chris Sosa <sosa@chromium.org> (17 February 2010)
+# For Chromium OS to allow fuse to build without building kernel module
+sys-fs/fuse kernel_linux
