@@ -20,6 +20,7 @@ app-admin/eselect-vi-1.1.5
 
 app-arch/cabextract-1.2-r1
 app-arch/dpkg-1.15.2
+app-arch/unzip-6.0-r1
 
 app-portage/portage-utils-0.1.29
 
