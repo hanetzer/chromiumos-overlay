@@ -12,16 +12,17 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
-DEPEND="sys-apps/debianutils"
-RDEPEND="${DEPEND}"
+DEPEND="app-arch/dpkg
+	sys-apps/debianutils"
+RDEPEND=""
 
 kernel=${CHROMEOS_KERNEL:-"kernel/files"}
 files="${CHROMEOS_ROOT}/src/third_party/${kernel}"
 
 if [ "${ARCH}" = "x86" ]; then
-  config=${CHROMEOS_KERNEL_CONFIG:-"chromeos/config/chromeos-intel-menlow"}
+  config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
 elif [ "${ARCH}" = "arm" ]; then
-  config=${CHROMEOS_KERNEL_CONFIG:-"versatile_defconfig"}
+  config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
 fi
 
 src_unpack() {
@@ -32,16 +33,14 @@ src_unpack() {
 }
 
 src_configure() {
-	elog "Using kernel config file: ${config}"
+	elog "Using kernel config: ${config}"
 
 	if [ "${ARCH}" = "x86" ]; then
-		cp "${files}/${config}" "${S}/.config"
+		debian/rules "prepare-${config}" arch=i386 || die
 	elif [ "${ARCH}" = "arm" ]; then
-		emake \
-		  ARCH=$(tc-arch-kernel) \
-		  CROSS_COMPILE="${CHOST}-" \
-		  ${config} || die "Kernel config failed for ${config}"
+		debian/rules "prepare-${config}" arch=armel || die
         fi
+	cp "debian/build/build-${config}/.config" . || die
 }
 
 src_compile() {
