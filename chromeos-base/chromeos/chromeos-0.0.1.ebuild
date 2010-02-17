@@ -45,6 +45,7 @@ RDEPEND="${RDEPEND}
 	net-misc/ntp
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
+	sys-apps/devicekit-power
 	sys-apps/kbd
 	sys-apps/coreutils
 	sys-apps/grep
