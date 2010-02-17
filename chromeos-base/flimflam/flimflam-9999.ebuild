@@ -13,11 +13,12 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="3G bluetooth debug +dhclient dnsproxy doc +ethernet modemmanager ofono policykit ppp resolvconf threads tools +udev +wifi"
+IUSE="3G bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf threads tools +udev +wifi"
 # ospm wimax
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
+	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )
 	dhclient? ( net-misc/dhcp )
 	modemmanager? ( net-misc/modemmanager )
