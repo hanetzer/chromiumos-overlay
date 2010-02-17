@@ -180,8 +180,11 @@ sudo ln -s /usr/bin/dbus-daemon "${ROOT_FS_DIR}/bin/dbus-daemon"
 sudo ln -s /usr/lib "${ROOT_FS_DIR}/usr/lib64"
 
 # TODO: Temporarily create fake xterm symlink until we do proper xinitrc
-sudo chmod 0755 "${ROOT_FS_DIR}/usr/bin/aterm"
-sudo ln -s aterm "${ROOT_FS_DIR}/usr/bin/xterm"
+ATERM="${ROOT_FS_DIR}/usr/bin/aterm"
+if [[ -f "${ATERM}" ]]; then
+  sudo chmod 0755 "${ROOT_FS_DIR}/usr/bin/aterm"
+  sudo ln -s aterm "${ROOT_FS_DIR}/usr/bin/xterm"
+fi
 
 # TODO: Until libGL.so is fixed, create symlink libGL.so.1 -> libGL.so
 sudo ln -s libGL.so "${ROOT_FS_DIR}/usr/lib/libGL.so.1"
