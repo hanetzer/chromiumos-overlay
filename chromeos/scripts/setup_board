@@ -149,8 +149,13 @@ for i in c++ cpp g++ gcc gfortran ; do
   fi
 done
 
-# Copy the toolchain libs, headers, etc into the board sysroot.
-sudo cp -a "$TOOLCHAIN_ROOT"/* "$BOARD_ROOT"
+#
+# Untar glibc to get most of the headers required to build.
+#
+PKGDIR=$(portageq envvar PKGDIR)
+sudo tar jxpf \
+  "${PKGDIR}/cross/${FLAGS_toolchain}/cross-${FLAGS_toolchain}"/glibc-${FLAGS_libc_version}.tbz2 \
+  -C "${BOARD_ROOT}" --strip-components=3
 
 # Symlink for libstdc++.la issues. It appears that when packages get merged
 # the .la files will be updated, and for libstdc++ it will use the wrong
@@ -225,6 +230,11 @@ exec sudo -E emerge --root-deps "\$@"
 
 EOF
 sudo chmod +x "$EMERGE_WRAPPER"
+
+#
+# Emerge the kernel headers into the board build root.
+#
+sudo "${EMERGE_WRAPPER}" --quiet kernel-headers
 
 echo "Done!"
 echo "You can use the emerge wrapper: ${EMERGE_WRAPPER}"
