@@ -62,8 +62,3 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/vixie-cron
 	"
-
-# meta package which contains target build dependencies. Doesn't get
-# built by this ebuild because we use --root-deps=rdeps but
-# including it as an FYI.
-DEPEND="chromeos-base/hard-target-depends"

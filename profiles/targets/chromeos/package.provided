@@ -1,0 +1,56 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+# This file lists packages that ebuilds DEPEND on, sometimes implicitly,
+# but really are only needed on the build host. This allows us to use
+# --root-deps without "--rootdeps=rdeps" to install package DEPEND into
+# the sysroot as part of the build process without also having to cross-
+# compile and drag in the below packages as dependencies. See "man portage".
+
+# NOTE: Toolchain packages (gcc, glibc, binutils) are specified in the
+# dynamically generated ${BOARD_DIR}/etc/portage/profile/package.provided
+# created by the setup_board script.
+
+app-admin/eselect-1.2.3
+app-admin/eselect-esd-20060719
+app-admin/eselect-fontconfig-1.0
+app-admin/eselect-opengl-1.0.8-r1
+app-admin/eselect-python-20090824
+app-admin/eselect-vi-1.1.5
+
+app-arch/cabextract-1.2-r1
+app-arch/dpkg-1.15.2
+
+app-portage/portage-utils-0.1.29
+
+dev-lang/perl-5.8.8-r5
+
+# Needed for the xsltproc command line tool
+dev-libs/libxslt-1.1.24-r1
+
+dev-perl/XML-Parser-2.36
+
+dev-util/cmake-2.6.4
+dev-util/ctags-5.7
+dev-util/gperf-3.0.3
+dev-util/gtk-doc-am-1.11
+dev-util/pkgconfig-0.23
+
+sys-apps/debianutils-3.1.3-r1
+sys-apps/help2man-1.36.4
+sys-apps/texinfo-4.13
+
+sys-devel/autoconf-2.63-r1
+sys-devel/automake-1.10.2
+sys-devel/bc-1.06.95
+sys-devel/bison-2.3
+sys-devel/gettext-0.17
+sys-devel/gnuconfig-20090203
+sys-devel/m4-1.4.12
+
+# TODO: Remove these when we have our linux-headers ebuild set up?
+sys-kernel/gentoo-sources-2.6.30-r6
+sys-kernel/linux-headers-2.6.30-r1
+
+x11-apps/mkfontscale-1.0.6
+x11-misc/makedepend-1.0.1

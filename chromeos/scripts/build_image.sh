@@ -200,17 +200,17 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   EMERGE_JOBS="--jobs=$FLAGS_jobs"
 fi
 
-# We "emerge --root=$ROOT_FS_DIR --usepkgonly" all of the runtime
-# packages for chrome os. This builds up a chrome os image. We'll use
-# INSTALL_MASK and other tricks to trim the size as much as possible.
-# Ex: INSTALL_MASK=" *.a *.la /usr/include/ /usr/lib/gcc /usr/share/doc /usr/share/gtk-doc /usr/share/info /usr/share/man"
-# TODO: Whatever fanciness we can to reduce image size. Also uncomment when
-# ready!
+# We "emerge --root=$ROOT_FS_DIR --root-deps=rdeps --usepkgonly" all of the
+# runtime packages for chrome os. This builds up a chrome os image from binary
+# packages with runtime dependencies only.  We use INSTALL_MASK to trim the
+# image size as much as possible.
 sudo INSTALL_MASK="$INSTALL_MASK" emerge-${BOARD} \
-  --root="$ROOT_FS_DIR" --usepkgonly chromeos $EMERGE_JOBS
+  --root="$ROOT_FS_DIR" --root-deps=rdeps \
+  --usepkgonly chromeos $EMERGE_JOBS
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   sudo INSTALL_MASK="$INSTALL_MASK" emerge-${BOARD} \
-    --root="$ROOT_FS_DIR" --usepkgonly chromeos-dev $EMERGE_JOBS
+    --root="$ROOT_FS_DIR" --root-deps=rdeps \
+    --usepkgonly chromeos-dev $EMERGE_JOBS
 
   # The ldd tool is a useful shell script but lives in glibc; just copy it.
   sudo cp -a "$(which ldd)" "${ROOT_FS_DIR}/usr/bin"

@@ -173,10 +173,12 @@ sudo cp -a /usr/share/crossdev/etc/* "${BOARD_ETC}"
 sudo sed -i 's/${CHOST}/${SYSROOT}/g' "${BOARD_ETC}/portage/bashrc"
 sudo sed -i 's/CROSS_ROOT=""/CROSS_ROOT="$1"/g' /usr/bin/cross-fix-root
 
-# Tell portage that glibc is already built
-# TODO: This is a hack; is there a better way?
-echo "sys-libs/glibc-${FLAGS_libc_version}" \
-  | sudo dd of="${BOARD_PROFILE}/package.provided" > /dev/null 2>&1
+# Tell portage that toolchain packages are already installed in the sysroot.
+PROVIDED="${BOARD_PROFILE}/package.provided"
+sudo sh -c \
+  "echo \"sys-devel/binutils-${FLAGS_binutils_version}\" >> \"${PROVIDED}\""
+sudo sh -c "echo \"sys-devel/gcc-${FLAGS_gcc_version}\" >> \"${PROVIDED}\""
+sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
 
 # Setup the make.confs. We use the following:
 #    make.conf             <- Overall target make.conf [arm, x86, etc. version]
@@ -219,7 +221,7 @@ export CHOST="$FLAGS_toolchain"
 export PORTAGE_CONFIGROOT="$BOARD_ROOT"
 export SYSROOT="$BOARD_ROOT"
 
-exec sudo -E emerge --root-deps=rdeps "\$@"
+exec sudo -E emerge --root-deps "\$@"
 
 EOF
 sudo chmod +x "$EMERGE_WRAPPER"
