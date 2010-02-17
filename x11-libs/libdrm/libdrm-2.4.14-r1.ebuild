@@ -22,7 +22,8 @@ IUSE=""
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
-         sys-fs/udev"
+         sys-fs/udev
+	 x11-libs/cairo"
 DEPEND="${RDEPEND}"
 
 CONFIGURE_OPTIONS="--enable-udev --enable-nouveau-experimental-api --enable-radeon-experimental-api"
