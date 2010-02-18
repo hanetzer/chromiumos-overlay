@@ -243,11 +243,12 @@ sudo sfdisk -H64 -S32 -uS -f "$MBR_IMG" <<EOF
 ;
 EOF
 
-OUTSIDE_OUTPUT_DIR="~/chromeos/src/build/images/${IMAGE_SUBDIR}"
+OUTSIDE_OUTPUT_DIR="../build/images/${FLAGS_board}/${IMAGE_SUBDIR}"
 echo "Done.  Image created in ${OUTPUT_DIR}"
-echo "To copy to USB keyfob, outside the chroot, do something like:"
+echo "To copy to USB keyfob, OUTSIDE the chroot, do something like:"
 echo "  ./image_to_usb.sh --from=${OUTSIDE_OUTPUT_DIR} --to=/dev/sdb"
-echo "To convert to VMWare image, outside the chroot, do something like:"
+echo "To convert to VMWare image, OUTSIDE the chroot, do something like:"
 echo "  ./image_to_vmware.sh --from=${OUTSIDE_OUTPUT_DIR}"
+echo "from the scripts directory where you entered the chroot."
 
 trap - EXIT
