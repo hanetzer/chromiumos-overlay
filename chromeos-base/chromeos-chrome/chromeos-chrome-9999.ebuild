@@ -34,8 +34,7 @@ RDEPEND="app-arch/bzip2
   x11-libs/libXScrnSaver"
 DEPEND="${RDEPEND}
   >=dev-util/gperf-3.0.3
-  >=dev-util/pkgconfig-0.23
-  dev-util/subversion"
+  >=dev-util/pkgconfig-0.23"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
