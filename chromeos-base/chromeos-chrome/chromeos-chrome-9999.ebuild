@@ -66,6 +66,8 @@ src_unpack() {
   
   export GYP_GENERATORS="${BUILD_TOOL}"
   export GYP_DEFINES="${BUILD_DEFINES}"
+  # Prevents gclient from updating self.
+  export DEPOT_TOOLS_UPDATE=0
 
   if [ ! -z "${CHROME_ROOT}" ]; then
     einfo "using existing chrome at ${CHROME_ROOT}"
