@@ -22,6 +22,8 @@ assert_inside_chroot
 # Flags
 DEFINE_string target "x86" \
   "The target architecture to build for. One of { x86, arm }."
+DEFINE_string board ""      \
+  "The board to build an image for."
 DEFINE_string root ""      \
   "The root file system to customize."
 DEFINE_boolean withdev $FLAGS_TRUE \
@@ -298,6 +300,7 @@ else
 fi
 
 # Set google-specific version numbers:
+# CHROMEOS_RELEASE_BOARD is the target board identifier.
 # CHROMEOS_RELEASE_CODENAME is the codename of the release.
 # CHROMEOS_RELEASE_DESCRIPTION is the version displayed by Chrome; see
 #   chrome/browser/chromeos/chromeos_version_loader.cc.
@@ -307,6 +310,7 @@ fi
 # TODO(skrul):  Remove GOOGLE_RELEASE once Chromium is updated to look at
 #   CHROMEOS_RELEASE_VERSION for UserAgent data.
 cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/lsb-release"
+CHROMEOS_RELEASE_BOARD=$FLAGS_board
 CHROMEOS_RELEASE_CODENAME=$CHROMEOS_VERSION_CODENAME
 CHROMEOS_RELEASE_DESCRIPTION=$CHROMEOS_VERSION_DESCRIPTION
 CHROMEOS_RELEASE_NAME=$CHROMEOS_VERSION_NAME

@@ -224,6 +224,7 @@ fi
 "${SCRIPTS_DIR}/new_customize_rootfs.sh" \
   --root="$ROOT_FS_DIR" \
   --target="$ARCH" \
+  --board="$BOARD" \
   $WITH_DEV
 
 cleanup_rootfs_loop
