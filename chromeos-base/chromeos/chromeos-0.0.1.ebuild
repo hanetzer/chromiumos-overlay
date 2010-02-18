@@ -28,6 +28,7 @@ RDEPEND="${RDEPEND}
 	app-shells/dash
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
+	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	x86? ( chromeos-base/chromeos-login )
@@ -42,6 +43,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/xscreensaver
 	x86? ( media-gfx/ply-image )
 	x86? ( sys-power/acpid )
+	media-plugins/alsa-plugins
 	media-sound/pulseaudio
 	net-misc/ntp
 	>=sys-apps/baselayout-2.0.0
