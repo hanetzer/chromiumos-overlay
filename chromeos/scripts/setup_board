@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,6 +18,7 @@ DEFINE_string board "" "The name of the board to set up."
 DEFINE_string board_overlay "" "Location of the board overlay."
 DEFINE_string toolchain "" "The toolchain to use.  For example: i686-pc-linux-gnu, armv7a-softfloat-linux-gnueabi"
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
+DEFINE_boolean  force $FLAGS_FALSE "Force re-creating board root."
 
 DEFINE_string buildroot "/build" "Location for build output and sysroots."
 DEFINE_string binutils_version "2.19.1-r1" "Version of binutils to use."
@@ -42,7 +43,12 @@ BOARD="$FLAGS_board"
 BOARD_ROOT="${FLAGS_buildroot}/${BOARD}"
 if [ -d "$BOARD_ROOT" ] ; then
   echo "Error: Board output directory '$BOARD_ROOT' already exists."
-  exit 1
+  if [[ $FLAGS_force -eq $FLAGS_TRUE ]]; then
+    echo "--force set.  Re-creating $BOARD_ROOT..."
+    sudo rm -rf $BOARD_ROOT
+  else
+    exit 1
+  fi
 fi
 
 #
