@@ -1,4 +1,3 @@
-app-arch/dpkg		-nls
 dev-libs/nss		utils
 dev-libs/dbus-glib	tools
 dev-libs/protobuf 	-python

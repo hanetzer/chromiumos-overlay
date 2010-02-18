@@ -14,3 +14,7 @@ sys-libs/glibc hardened
 # Older versions also had an OSS compatibility wrapper on that USE so
 # they are excluded.
 >=media-sound/pulseaudio-0.9.16_rc5 oss
+
+# If building dpkg with nls it pulls in a bunch of packages, including po4a
+# which will hang if output is redirected. This was stalling our buildbots.
+app-arch/dpkg nls
