@@ -35,6 +35,7 @@ src_unpack() {
 src_configure() {
 	elog "Using kernel config: ${config}"
 
+	export CROSS_COMPILE="${CHOST}-"
 	if [ "${ARCH}" = "x86" ]; then
 		debian/rules "prepare-${config}" arch=i386 || die
 	elif [ "${ARCH}" = "arm" ]; then
