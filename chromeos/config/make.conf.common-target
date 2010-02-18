@@ -32,9 +32,3 @@ DISTDIR="/var/lib/portage/distfiles"
 # Our chromium mirror should be more stable since we won't discard packages.
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 
-# TODO(msb): Fix for libstdc++
-#LDFLAGS="${LDFLAGS} -L${ROOT}usr/lib/gcc/${CHOST}/4.4.1"
-
-# TODO: What are these for?
-LIBDIR_${ARCH}="lib"
-LIBDIR_amd64=lib64
