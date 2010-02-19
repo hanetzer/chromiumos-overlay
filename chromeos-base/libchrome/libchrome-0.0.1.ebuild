@@ -39,43 +39,51 @@ src_compile() {
 }
 
 src_install() {
-	mkdir -p "${D}/usr/lib" \
-		"${D}/usr/include/base" \
-		"${D}/usr/include/base/third_party/icu" \
-		"${D}/usr/include/base/third_party/nspr" \
-		"${D}/usr/include/build"
+	dodir "/usr/lib"
+	dodir "/usr/include/base"
+	dodir "/usr/include/base/third_party/icu"
+	dodir "/usr/include/base/third_party/nspr"
+	dodir "/usr/include/build"
 
-	cp "${S}/libbase.a" "${D}/usr/lib"
-	cp "${S}/files/base/third_party/icu/icu_utf.h" "${D}/usr/include/base/third_party/icu"
-	cp "${S}/files/base/third_party/nspr/prtime.h" "${D}/usr/include/base/third_party/nspr"
-	cp "${S}/files/base/at_exit.h" \
-		"${S}/files/base/atomicops_internals_x86_gcc.h" \
-		"${S}/files/base/base_switches.h" \
-		"${S}/files/base/basictypes.h" \
-		"${S}/files/base/command_line.h" \
-		"${S}/files/base/compiler_specific.h" \
-		"${S}/files/base/debug_util.h" \
-		"${S}/files/base/dynamic_annotations.h" \
-		"${S}/files/base/file_descriptor_posix.h" \
-		"${S}/files/base/file_path.h" \
-		"${S}/files/base/file_util.h" \
-		"${S}/files/base/hash_tables.h" \
-		"${S}/files/base/logging.h" \
-		"${S}/files/base/platform_file.h" \
-		"${S}/files/base/port.h" \
-		"${S}/files/base/safe_strerror_posix.h" \
-		"${S}/files/base/scoped_ptr.h" \
-		"${S}/files/base/setproctitle_linux.h" \
-		"${S}/files/base/stl_util-inl.h" \
-		"${S}/files/base/string16.h" \
-		"${S}/files/base/string_piece.h" \
-		"${S}/files/base/string_util.h" \
-		"${S}/files/base/string_util_posix.h" \
-		"${S}/files/base/time.h" \
-		"${S}/files/base/utf_string_conversion_utils.h" \
-		"${S}/files/base/utf_string_conversions.h" \
-		"${D}/usr/include/base/"
+	insopts -m0644
+	insinto "/usr/lib"
+	doins "${S}/libbase.a"
 
-	cp "${S}/files/build/build_config.h" "${D}/usr/include/build"
+	insinto "/usr/include/base/third_party/icu"
+	doins "${S}/files/base/third_party/icu/icu_utf.h"
+
+	insinto "/usr/include/base/third_party/nspr"
+	doins "${S}/files/base/third_party/nspr/prtime.h"
+
+	insinto "/usr/include/base/"
+	doins "${S}/files/base/at_exit.h"
+	doins "${S}/files/base/atomicops_internals_x86_gcc.h"
+	doins "${S}/files/base/base_switches.h"
+	doins "${S}/files/base/basictypes.h"
+	doins "${S}/files/base/command_line.h"
+	doins "${S}/files/base/compiler_specific.h"
+	doins "${S}/files/base/debug_util.h"
+	doins "${S}/files/base/dynamic_annotations.h"
+	doins "${S}/files/base/file_descriptor_posix.h"
+	doins "${S}/files/base/file_path.h"
+	doins "${S}/files/base/file_util.h"
+	doins "${S}/files/base/hash_tables.h"
+	doins "${S}/files/base/logging.h"
+	doins "${S}/files/base/platform_file.h"
+	doins "${S}/files/base/port.h"
+	doins "${S}/files/base/safe_strerror_posix.h"
+	doins "${S}/files/base/scoped_ptr.h"
+	doins "${S}/files/base/setproctitle_linux.h"
+	doins "${S}/files/base/stl_util-inl.h"
+	doins "${S}/files/base/string16.h"
+	doins "${S}/files/base/string_piece.h"
+	doins "${S}/files/base/string_util.h"
+	doins "${S}/files/base/string_util_posix.h"
+	doins "${S}/files/base/time.h"
+	doins "${S}/files/base/utf_string_conversion_utils.h"
+	doins "${S}/files/base/utf_string_conversions.h"
+
+	insinto "/usr/include/build"
+	doins "${S}/files/build/build_config.h"
 }
 
