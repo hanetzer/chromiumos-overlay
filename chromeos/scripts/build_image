@@ -221,7 +221,7 @@ WITH_DEV=""
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   WITH_DEV="--withdev"
 fi
-"${SCRIPTS_DIR}/new_customize_rootfs.sh" \
+"${SCRIPTS_DIR}/customize_rootfs" \
   --root="$ROOT_FS_DIR" \
   --target="$ARCH" \
   --board="$BOARD" \
