@@ -24,7 +24,7 @@ src_unpack() {
 
 	EPATCH_OPTS="-p1"
 	epatch "${FILESDIR}"/${PN}-arm-dbus-fix.patch
-	cp "${FILESDIR}"/linux-gnu "${S}"/site
+	install --mode=0644 "${FILESDIR}"/linux-gnu "${S}"/site
 }
 
 src_compile() {
