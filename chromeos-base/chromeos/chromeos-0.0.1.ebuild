@@ -48,6 +48,7 @@ RDEPEND="${RDEPEND}
 	media-plugins/alsa-plugins
 	media-sound/pulseaudio
 	net-misc/ntp
+	x86? ( >=net-wireless/iwl5000-ucode-8.24.2.12 )
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
 	sys-apps/devicekit-power

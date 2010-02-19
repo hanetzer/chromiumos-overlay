@@ -23,6 +23,7 @@
 =chromeos-base/flimflam-9999	x86 arm
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/modemmanager-0.2_p20090925 x86 arm
+=net-wireless/iwl5000-ucode-8.24.2.12 x86
 =net-wireless/wpa_supplicant-0.7.0	x86 arm
 =sys-apps/baselayout-2.0.1	x86 arm
 =sys-apps/dbus-1.2.20		x86 arm
