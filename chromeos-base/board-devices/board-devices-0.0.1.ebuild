@@ -11,3 +11,8 @@ KEYWORDS="arm x86"
 IUSE=""
 
 RDEPEND=""
+
+#
+# WARNING: Nothing should be added to this ebuild.  This ebuild is overriden
+# in most of the board specific overlays, or will be.
+#
