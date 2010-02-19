@@ -70,6 +70,7 @@ src_unpack() {
 		cd "${S}"
 		epatch "${WORKDIR}/${PN}-${PATCHVER}.patch"
 	fi
+	epatch "${FILESDIR}"/set_portage_username-2.1.6.13.patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -i "s/^VERSION=.*/VERSION=\"${PVR}\"/" pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"

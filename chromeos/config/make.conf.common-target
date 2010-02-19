@@ -17,8 +17,10 @@ USE="${ARCH} zlib bindist make-symlinks"
 PKGDIR=${ROOT}packages/
 PORTAGE_TMPDIR=${ROOT}tmp/
 
-FEATURES="collision-protect sandbox buildpkg noman noinfo nodoc"
+FEATURES="collision-protect sandbox buildpkg noman noinfo nodoc userfetch \
+  userpriv usersandbox"
 
+PORTAGE_WORKDIR_MODE="0755"
 PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"
 ELIBC="glibc"
 

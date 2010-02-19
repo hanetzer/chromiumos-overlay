@@ -1,0 +1,17 @@
+diff -Naur portage-2.1.6-orig/pym/portage/data.py portage-2.1.6/pym/portage/data.py
+--- portage-2.1.6-orig/pym/portage/data.py	2010-02-18 22:57:34.000000000 +0000
++++ portage-2.1.6/pym/portage/data.py	2010-02-18 22:59:21.000000000 +0000
+@@ -72,9 +72,12 @@
+ except KeyError:
+ 	pass
+ 
++# Allow the overriding of the user used for 'userpriv' and 'userfetch'
++portage_uname=os.environ.get("PORTAGE_USERNAME", 'portage')
++
+ #Discover the uid and gid of the portage user/group
+ try:
+-	portage_uid=pwd.getpwnam("portage")[2]
++	portage_uid=pwd.getpwnam(portage_uname)[2]
+ 	portage_gid=grp.getgrnam("portage")[2]
+ 	if secpass < 1 and portage_gid in os.getgroups():
+ 		secpass=1
