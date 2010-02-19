@@ -16,7 +16,9 @@ RDEPEND="${RDEPEND}
 	X? (
 		x86? ( chromeos-base/chromeos-chrome-bin )
 		chromeos-base/chromeos-wm
-		media-fonts/corefonts
+		media-fonts/droid
+		media-fonts/sil-abyssinica
+		media-fonts/dejavu
 		>=x11-base/xorg-server-1.6.3
 		x11-apps/xinit
 	)

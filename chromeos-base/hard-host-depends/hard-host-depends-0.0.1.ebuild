@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	>=media-libs/freetype-2.2.1
 	sys-apps/module-init-tools
 	x11-apps/mkfontdir
+	x11-apps/xcursorgen
 	x11-apps/xkbcomp
 	>=x11-misc/util-macros-1.2
 	x11-libs/gtk+
