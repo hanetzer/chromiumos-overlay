@@ -44,24 +44,27 @@ src_compile() {
 }
 
 src_install() {
-	mkdir -p "${D}/usr/lib" \
-		"${D}/usr/include/chromeos" \
-		"${D}/usr/include/chromeos/dbus" \
-		"${D}/usr/include/chromeos/glib"
+	dodir "/usr/lib"
+	dodir "/usr/include/chromeos"
+	dodir "/usr/include/chromeos/dbus"
+	dodir "/usr/include/chromeos/glib"
 
-	cp "${S}/libchromeos.a" "${D}/usr/lib"
+	insopts -m0644
+	insinto "/usr/lib"
+	doins "${S}/libchromeos.a"
 
-	cp "${S}/chromeos/callback.h" \
-		"${S}/chromeos/exception.h" \
-		"${S}/chromeos/obsolete_logging.h" \
-		"${S}/chromeos/string.h" \
-		"${S}/chromeos/utility.h" \
-		"${D}/usr/include/chromeos"
+	insinto "/usr/include/chromeos"
+	doins "${S}/chromeos/callback.h"
+	doins "${S}/chromeos/exception.h"
+	doins "${S}/chromeos/obsolete_logging.h"
+	doins "${S}/chromeos/string.h"
+	doins "${S}/chromeos/utility.h"
 
-	cp "${S}/chromeos/dbus/abstract_dbus_service.h" \
-		"${S}/chromeos/dbus/dbus.h" \
-		"${S}/chromeos/dbus/service_constants.h" \
-		"${D}/usr/include/chromeos/dbus"
+	insinto "/usr/include/chromeos/dbus"
+	doins "${S}/chromeos/dbus/abstract_dbus_service.h"
+	doins "${S}/chromeos/dbus/dbus.h"
+	doins "${S}/chromeos/dbus/service_constants.h"
 
-	cp "${S}/chromeos/glib/object.h" "${D}/usr/include/chromeos/glib"
+	insinto "/usr/include/chromeos/glib"
+	doins "${S}/chromeos/glib/object.h"
 }
