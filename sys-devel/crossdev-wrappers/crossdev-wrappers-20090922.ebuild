@@ -24,6 +24,8 @@ src_unpack() {
 
 	EPATCH_OPTS="-p1"
 	epatch "${FILESDIR}"/${PN}-arm-dbus-fix.patch
+	epatch "${FILESDIR}"/${PN}-cross-fix-root-regex.patch
+	epatch "${FILESDIR}"/${PN}-cross-pkg-config-stronger-warn.patch
 	install --mode=0644 "${FILESDIR}"/linux-gnu "${S}"/site
 }
 
