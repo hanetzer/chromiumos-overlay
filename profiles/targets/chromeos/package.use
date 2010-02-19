@@ -14,6 +14,7 @@ chromeos-base/flimflam	dnsproxy debug
 media-plugins/alsa-plugins	pulseaudio
 media-sound/pulseaudio	-esd dbus
 net-misc/ntp            caps
+net-misc/openssh	-X
 net-nds/openldap	minimal
 net-wireless/wpa_supplicant	dbus debug -readline
 sys-apps/dbus		-X

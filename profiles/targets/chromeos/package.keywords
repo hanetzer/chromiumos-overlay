@@ -39,6 +39,7 @@
 =sys-fs/lvm2-2.02.51-r1		x86 arm
 =sys-fs/fuse-2.7.4		x86 arm
 =sys-fs/udev-146		x86 arm
+=sys-fs/sshfs-fuse-2.2		x86 arm
 =sys-kernel/linux-headers-2.6.30-r1	x86 arm
 =sys-libs/e2fsprogs-libs-1.41.9	x86 arm
 =sys-libs/libhx-3.1		x86 arm
