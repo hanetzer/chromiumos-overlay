@@ -52,8 +52,6 @@ fi
 
 sudo emerge -uDNv $USEPKG world $EMERGE_JOBS
 sudo emerge-${FLAGS_board} \
-  -uDNv $USEPKG chromeos-base/hard-target-depends $EMERGE_JOBS
-sudo emerge-${FLAGS_board} \
   -uDNv $USEPKG chromeos-base/chromeos $EMERGE_JOBS
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   sudo emerge-${FLAGS_board} \

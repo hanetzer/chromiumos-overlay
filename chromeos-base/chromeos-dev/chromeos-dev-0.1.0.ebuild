@@ -33,14 +33,9 @@ RDEPEND="${RDEPEND}
 	sys-apps/less
 	sys-apps/which
 	sys-devel/gdb
-	sys-fs/fuse[-kernel_linux]	
+	sys-fs/fuse[-kernel_linux]
 	sys-fs/sshfs-fuse
 	sys-process/procps
 	"
 
 # TODO: Add qemacs back in when ready:	x86? ( app-editors/qemacs )
-
-# meta package which contains target build dependencies. Doesn't get
-# built by this ebuild because we use --root-deps=rdeps but
-# including it as an FYI.
-DEPEND="chromeos-base/hard-target-depends"
