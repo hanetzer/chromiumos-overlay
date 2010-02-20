@@ -19,7 +19,8 @@ SRC_URI="${CHROME_BASE}/${CHROME_BUILD}/chrome-linux.zip"
 S="${WORKDIR}/chrome-linux"
 
 DEPEND=""
-RDEPEND="dev-libs/atk
+RDEPEND="chromeos-base/chromeos-theme
+        dev-libs/atk
 	dev-libs/glib
 	dev-libs/nspr
 	dev-libs/nss
