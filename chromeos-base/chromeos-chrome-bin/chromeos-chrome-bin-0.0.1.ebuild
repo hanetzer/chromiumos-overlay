@@ -11,55 +11,76 @@ KEYWORDS="x86 arm"
 IUSE=""
 
 # TODO: If arm? then download the proper arm build.
-CHROME_BUILD=${CHROME_BUILD:-"38617"}
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/chromium-rel-linux-chromiumos"}
-SRC_URI="${CHROME_BASE}/${CHROME_BUILD}/chrome-linux.zip"
-
-# Chrome unpacks itself in a directory without the version number.
-S="${WORKDIR}/chrome-linux"
 
 DEPEND=""
 RDEPEND="chromeos-base/chromeos-theme
-        dev-libs/atk
-	dev-libs/glib
-	dev-libs/nspr
-	dev-libs/nss
-	gnome-base/gconf
-	x11-libs/cairo
-	x11-libs/libXScrnSaver
-	x11-libs/gtk+
-	x11-libs/pango
-	media-libs/alsa-lib
-	media-libs/fontconfig
-	media-libs/freetype
-	media-libs/jpeg
-	sys-libs/zlib"
+         dev-libs/atk
+         dev-libs/glib
+         dev-libs/nspr
+         dev-libs/nss
+         gnome-base/gconf
+         x11-libs/cairo
+         x11-libs/libXScrnSaver
+         x11-libs/gtk+
+         x11-libs/pango
+         media-libs/alsa-lib
+         media-libs/fontconfig
+         media-libs/freetype
+         media-libs/jpeg
+         sys-libs/zlib"
+
+src_unpack() {
+  if [ -z "${CHROME_BUILD}" ]; then
+    elog "Finding latest Chrome build"
+    CHROME_BUILD=$(wget -q -O - "${CHROME_BASE}"/LATEST)
+  fi
+  test -n "${CHROME_BUILD}" || die CHROME_BUILD not set
+  elog "Fetching Chrome build $CHROME_BUILD"
+  FILENAME="chrome-linux.zip"
+  URL="${CHROME_BASE}/${CHROME_BUILD}/${FILENAME}"
+  
+  mkdir -p "${S}"
+  cd "${S}"
+  wget "${URL}" || die Download "${URL}" failed
+  unzip "${FILENAME}" || die unzip failed
+  
+  rm "${FILENAME}"
+}
 
 src_install() {
-	local dest="${D}/opt/google/chrome"
-	mkdir -p --mode=0755 "${dest}"
-	cp -a "${S}"/* "${dest}" || die "install failed"
-	chmod 6755 "${dest}/session" || die "install failed"
-        chmod 6755 "${dest}/emit_login_prompt_ready" || die "install failed"
+  local chrome_dir="/opt/google/chrome"
+  local dest="${D}/${chrome_dir}"
 
-	local platform="${CHROMEOS_ROOT}/src/platform/"
-	mkdir -p --mode=0755 "${D}/usr/bin"
-	cp -a "${platform}"/chrome/chromeos-chrome-loop \
-          "${D}"/usr/bin/chromeos-chrome-loop || die "install failed."
-	cp -a "${platform}"/chrome/bottle.sh "${dest}" \
-          || die "install failed."
-	cp -a "${platform}"/chrome/log.sh "${dest}" \
-          || die "install failed."
-	chmod 0755 "${D}"/usr/bin/chromeos-chrome-loop \
-          "${dest}/bottle.sh" "${dest}/log.sh" || die "install failed."
+  dodir "${chrome_dir}"
 
-	# The following symlinks are needed in order to run chrome.
-	mkdir -p --mode=0755 "${D}"/usr/lib
-	ln -s nss/libnss3.so "${D}"/usr/lib/libnss3.so.1d
-	ln -s nss/libnssutil3.so.12 "${D}"/usr/lib/libnssutil3.so.1d
-	ln -s nss/libsmime3.so.12 "${D}"/usr/lib/libsmime3.so.1d
-	ln -s nss/libssl3.so.12 "${D}"/usr/lib/libssl3.so.1d
-	ln -s nspr/libplds4.so "${D}"/usr/lib/libplds4.so.0d
-	ln -s nspr/libplc4.so "${D}"/usr/lib/libplc4.so.0d
-	ln -s nspr/libnspr4.so "${D}"/usr/lib/libnspr4.so.0d
+  cp -a "${S}"/chrome-linux/* "${dest}"
+
+  # TODO(adlr): replace 1000 with 'chronos' gid
+  chown root:1000 "${dest}/session" || die "chown failed"
+  chmod 6755 "${dest}/session" || die "chmod failed"
+  chmod 6755 "${dest}/emit_login_prompt_ready" || die "chmod failed"
+
+  local platform="${CHROMEOS_ROOT}/src/platform/"
+  
+  insinto "${chrome_dir}"
+  insopts -m0755
+  doins "${platform}"/chrome/bottle.sh
+  doins "${platform}"/chrome/log.sh
+
+  insinto /usr/bin
+  doins "${platform}"/chrome/chromeos-chrome-loop
+  
+  # Fix some perms
+  chmod -R a+r "${D}"
+  find "${D}" -perm /111 -print0 | xargs -0 chmod a+x 
+
+  # The following symlinks are needed in order to run chrome.
+  dosym nss/libnss3.so /usr/lib/libnss3.so.1d
+  dosym nss/libnssutil3.so.12 /usr/lib/libnssutil3.so.1d
+  dosym nss/libsmime3.so.12 /usr/lib/libsmime3.so.1d
+  dosym nss/libssl3.so.12 /usr/lib/libssl3.so.1d
+  dosym nspr/libplds4.so /usr/lib/libplds4.so.0d
+  dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
+  dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
 }

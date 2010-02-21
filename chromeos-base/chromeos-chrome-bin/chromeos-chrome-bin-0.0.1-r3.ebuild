@@ -1,0 +1,1 @@
+chromeos-chrome-bin-0.0.1.ebuild
