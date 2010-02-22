@@ -1,0 +1,2 @@
+# Chrome cannot compile WebKit with gperf 3.0.4
+>dev-util/gperf-3.0.3
