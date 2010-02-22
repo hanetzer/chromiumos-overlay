@@ -62,8 +62,11 @@ src_compile() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
+	local third_party="${CHROMEOS_ROOT}/src/third_party"
 
+	emake DESTDIR="${D}" install || die
+	rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
+	cp "${third_party}/ibus/files/candidate_window.xml" "${D}/usr/share/ibus/component/" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
 
