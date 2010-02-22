@@ -11,12 +11,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 
-# TODO: chromeos-base/synaptics is not a run-time dependency, but until
-# we can stop using --root-deps=rdeps we have to explicitly add it as a
-# run-time dependency here. It can't go in hard-target-depends because it
-# depends on stuff in hard-target-depends.
 RDEPEND="app-i18n/ibus
-	 chromeos-base/synaptics
 	 chromeos-base/flimflam
          dev-libs/dbus-glib
          dev-libs/glib
