@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	x86? ( sys-power/acpid )
 	media-plugins/alsa-plugins
 	media-sound/pulseaudio
+	net-firewall/iptables
 	net-misc/ntp
 	x86? ( >=net-wireless/iwl5000-ucode-8.24.2.12 
                net-wireless/iwl1000-ucode
