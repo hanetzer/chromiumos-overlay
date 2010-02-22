@@ -29,6 +29,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	x86? ( app-i18n/ibus-pinyin )
+	x86? ( app-laptop/laptop-mode-tools )
 	app-shells/dash
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets

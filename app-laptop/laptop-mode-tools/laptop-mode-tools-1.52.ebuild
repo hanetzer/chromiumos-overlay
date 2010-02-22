@@ -10,13 +10,12 @@ MY_P="${PN}_${PV}"
 
 DESCRIPTION="Linux kernel laptop_mode user-space utilities"
 HOMEPAGE="http://www.samwel.tk/laptop_mode/"
-SRC_URI="http://www.samwel.tk/laptop_mode/tools/downloads/${MY_P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86"
+KEYWORDS="~amd64 ~ppc x86"
 
-IUSE="acpi apm bluetooth hal scsi"
+IUSE="bluetooth"
 
 DEPEND=""
 
@@ -33,7 +32,13 @@ RDEPEND="sys-apps/ethtool
 		scsi? ( sys-apps/sdparm )
 		sys-apps/hdparm"
 
-S="${WORKDIR}/${MY_P}"
+S="${WORKDIR}"
+
+src_unpack() {
+	local third_party="${CHROMEOS_ROOT}/src/third_party"
+	local laptop_mode_tools="${third_party}/laptop-mode-tools/${MY_P}/"
+	cp -a "${laptop_mode_tools}"/* "${S}" || die
+}
 
 src_compile() {
 	:
