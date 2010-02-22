@@ -55,6 +55,7 @@ RDEPEND="${RDEPEND}
                net-wireless/iwl1000-ucode
 	       net-wireless/iwl6000-ucode
 	)
+	net-wireless/ath6k
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
 	sys-apps/devicekit-power
