@@ -41,19 +41,20 @@ if [ -z "$FLAGS_board" ] ; then
   exit 1
 fi
 
-USEPKG=""
+EMERGE_FLAGS=""
+
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-  USEPKG="--getbinpkg --usepkg"
+  EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg"
 fi
 
 if [[ $FLAGS_jobs -ne -1 ]]; then
-  EMERGE_JOBS="--jobs=$FLAGS_jobs"
+  EMERGE_FLAGS="${EMERGE_FLAGS} --jobs=$FLAGS_jobs"
 fi
 
-sudo emerge -uDNv $USEPKG world $EMERGE_JOBS
-sudo emerge-${FLAGS_board} \
-  -uDNv $USEPKG chromeos-base/chromeos $EMERGE_JOBS
+sudo emerge -uDNv $EMERGE_FLAGS world
+
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
-  sudo emerge-${FLAGS_board} \
-    -uDNv $USEPKG chromeos-base/chromeos-dev $EMERGE_JOBS
+  sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-dev
+else
+  sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
 fi
