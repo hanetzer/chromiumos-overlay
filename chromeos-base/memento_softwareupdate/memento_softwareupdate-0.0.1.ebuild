@@ -3,6 +3,8 @@
 
 EAPI=2
 
+inherit toolchain-funcs
+
 DESCRIPTION="Chrome OS Memento Updater"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
@@ -27,6 +29,22 @@ src_unpack() {
   cp -a "${updater}"/* "${S}" || die
 }
 
+src_compile() {
+  if tc-is-cross-compiler ; then
+    tc-getCC
+    tc-getCXX
+    tc-getAR
+    tc-getRANLIB
+    tc-getLD
+    tc-getNM
+    export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
+    export CCFLAGS="$CFLAGS"
+  fi
+
+  make || die "window_manager compile failed"
+}
+
+
 src_install() {
   dodir /opt/google/memento_updater
 
@@ -34,8 +52,11 @@ src_install() {
     memento_updater.sh \
     memento_updater_logging.sh \
     ping_omaha.sh \
-    software_update.sh; do
+    software_update.sh \
+    suid_exec; do
     install -m 0755 -o root -g root "${S}"/"${i}" \
       "${D}"/opt/google/memento_updater/
   done
+  
+  chmod 4711 "${D}"/opt/google/memento_updater/suid_exec || die suid failed
 }
