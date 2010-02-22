@@ -52,16 +52,31 @@ if [ -d "$BOARD_ROOT" ] ; then
 fi
 
 #
+# Construct board overlay list.
+#
+BOARD_OVERLAY_LIST=""
+
+#
+# Check for chromeos-overlay and add it to the BOARD_OVERLAY_LIST.
+#
+CHROMEOS_OVERLAY="${SRC_ROOT}/overlays/chromeos-overlay"
+
+if [ -d "${CHROMEOS_OVERLAY}" ]; then
+  BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${CHROMEOS_OVERLAY}"
+fi
+
+#
 # Check if there are any board overlays.  There should be at least a top
 # level board specific overlay.
 #
 PRIMARY_BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${BOARD}"
-BOARD_OVERLAY_LIST=""
 BOARD_MAKE_CONF=""
 
 if [ ! -d "${PRIMARY_BOARD_OVERLAY}" ]; then
   warn "No board overlay found. [${PRIMARY_BOARD_OVERLAY}]"
 else
+  BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${PRIMARY_BOARD_OVERLAY}"
+
   #
   # Link make.conf.board to the board overlay's make.conf.  It must exist.
   #
@@ -77,9 +92,12 @@ else
   #
   BOARD_TOOL_CHAIN="${PRIMARY_BOARD_OVERLAY}/toolchain.conf"
 
-  if [ -f "${BOARD_TOOL_CHAIN}" -a -z "${FLAGS_toolchain}" ]; then
-    FLAGS_toolchain=$(cat ${BOARD_TOOL_CHAIN})
+  if [ ! -f "${BOARD_TOOL_CHAIN}" ]; then
+    error "No board toolchain.conf found. [${BOARD_TOOL_CHAIN}]"
+    exit 1
   fi
+
+  FLAGS_toolchain=${FLAGS_toolchain:-$(cat ${BOARD_TOOL_CHAIN})}
 
   #
   # Populate the BOARD_OVERLAY_LIST with the primary board overlay and any
@@ -90,9 +108,9 @@ else
     "${SRC_ROOT}/overlays" \
     -maxdepth 1 \
     -type d \
-    -name "overlay-${BOARD}-*" | sort)
+    -name "overlay-${BOARD}-*" | sort -r)
 
-  BOARD_OVERLAY_LIST="${PRIMARY_BOARD_OVERLAY} ${EXTRA_BOARD_OVERLAY_LIST}"
+  BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
 fi
 
 #
