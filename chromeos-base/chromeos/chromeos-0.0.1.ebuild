@@ -25,8 +25,10 @@ RDEPEND="${RDEPEND}
 	"
 
 # Base System
+# TODO(yusukes): remove x86? from the ibus-* lines once we get ibus running on ARM.
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
+	x86? ( app-i18n/ibus-pinyin )
 	app-shells/dash
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
