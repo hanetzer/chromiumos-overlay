@@ -227,7 +227,7 @@ src_test() {
 
 pkg_postinst() {
 	add_group sshd 22
-	add_user "sshd" "*" -1 22 "sshd_user" /dev/null /bin/false
+	add_user "sshd" "*" 22 22 "sshd_user" /dev/null /bin/false
 
 	# help fix broken perms caused by older ebuilds.
 	# can probably cut this after the next stage release.
@@ -236,7 +236,7 @@ pkg_postinst() {
 	# Genereates ssh host keys.
 	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_key -N '' -t rsa1
 	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_rsa_key -N '' -t rsa
-	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_dsa_kay -N '' -t dsa
+	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_dsa_key -N '' -t dsa
 
 	ewarn "Remember to merge your config files in /etc/ssh/ and then"
 	ewarn "reload sshd: '/etc/init.d/sshd reload'."
