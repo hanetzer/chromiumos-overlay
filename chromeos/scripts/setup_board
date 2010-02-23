@@ -25,6 +25,7 @@ DEFINE_string binutils_version "2.19.1-r1" "Version of binutils to use."
 DEFINE_string gcc_version "4.4.1" "Version of gcc to use."
 DEFINE_string libc_version "2.10.1-r1" "Version of libc to use."
 DEFINE_string kernel_version "2.6.30-r1" "Version of kernel headers to use."
+DEFINE_boolean default $FLAGS_FALSE "Set board to the default board in your chroot"
 
 # Parse command line flags
 FLAGS "$@" || exit 1
@@ -260,6 +261,10 @@ sudo chmod +x "$EMERGE_WRAPPER"
 # Emerge the kernel headers into the board build root.
 #
 sudo "${EMERGE_WRAPPER}" --quiet kernel-headers
+
+if [ $FLAGS_default -eq $FLAGS_true ] ; then
+  echo $FLAGS_board > "$GCLIENT_ROOT/src/scripts/.default_board"
+fi
 
 echo "Done!"
 echo "You can use the emerge wrapper: ${EMERGE_WRAPPER}"

@@ -19,8 +19,10 @@
 # Script must be run inside the chroot
 assert_inside_chroot
 
+get_default_board
+
 # Flags
-DEFINE_string board "" \
+DEFINE_string board "$DEFAULT_BOARD" \
   "The board to build packages for."
 DEFINE_boolean usepkg $FLAGS_FALSE \
   "Use binary packages to bootstrap when possible."
