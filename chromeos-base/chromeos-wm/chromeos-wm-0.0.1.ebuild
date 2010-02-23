@@ -53,15 +53,16 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
-	# TODO: breakpad should have it's own ebuild and we should add to
+	# TODO: breakpad should have its own ebuild and we should add to
 	# hard-target-depends. Perhaps the same for src/third_party/chrome
 	# and src/common
 	pushd "window_manager"
-	scons wm || die "window_manager compile failed"
+	scons wm screenshot || die "window_manager compile failed"
 	popd
 }
 
 src_install() {
 	mkdir -p "${D}/usr/bin"
 	cp "${S}/window_manager/wm" "${D}/usr/bin/chromeos-wm"
+	cp "${S}/window_manager/screenshot" "${D}/usr/bin/screenshot"
 }
