@@ -56,6 +56,7 @@ src_compile() {
 		tc-getRANLIB
 		tc-getLD
 		tc-getNM
+		tc-getSTRIP
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
