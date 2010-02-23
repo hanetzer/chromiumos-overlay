@@ -44,7 +44,10 @@ fi
 EMERGE_FLAGS=""
 
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-  EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg"
+  # Use binary packages. Include all build-time dependencies,
+  # so as to avoid unnecessary differences between source
+  # and binary builds.
+  EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg --with-bdeps y"
 fi
 
 if [[ $FLAGS_jobs -ne -1 ]]; then
