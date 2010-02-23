@@ -21,6 +21,7 @@ RDEPEND="${RDEPEND}
 # Useful utilities
 RDEPEND="${RDEPEND}
 	app-admin/sudo
+	app-arch/tar
 	app-editors/vim
 	app-shells/bash
 	=dev-lang/python-2.4.6
@@ -31,6 +32,8 @@ RDEPEND="${RDEPEND}
 	net-wireless/wireless-tools
 	sys-apps/findutils
 	sys-apps/less
+	x86? ( sys-apps/pciutils )
+	sys-apps/usbutils
 	sys-apps/which
 	sys-devel/gdb
 	sys-fs/fuse[-kernel_linux]
