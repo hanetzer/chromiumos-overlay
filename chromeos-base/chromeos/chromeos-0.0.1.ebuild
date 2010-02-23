@@ -14,7 +14,7 @@ IUSE="X"
 # XServer
 RDEPEND="${RDEPEND}
 	X? (
-		x86? ( chromeos-base/chromeos-chrome-bin )
+		x86? ( chromeos-base/chromeos-chrome )
 		chromeos-base/chromeos-wm
 		media-fonts/droid
 		media-fonts/sil-abyssinica
