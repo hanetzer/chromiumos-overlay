@@ -120,9 +120,22 @@ SHELL="/bin/sh"
 if [[ -x "${ROOT_FS_DIR}/bin/bash" ]] ; then
   SHELL="/bin/bash"
 fi
+# Determine what password to use for the default user.
+CRYPTED_PASSWD_FILE="${SCRIPTS_DIR}/shared_user_passwd.txt"
+if [ -f $CRYPTED_PASSWD_FILE ]; then
+  echo "Using password from $CRYPTED_PASSWD_FILE"
+  CRYPTED_PASSWD=$(cat $CRYPTED_PASSWD_FILE)
+else
+  # Use a random password.  unix_md5_crypt will generate a random salt.
+  echo "Using random password."
+  PASSWORD="$(base64 /dev/urandom | head -1)"
+  CRYPTED_PASSWD="$(echo "$PASSWORD" | openssl passwd -1 -stdin)"
+  PASSWORD="gone now"
+fi
+
 add_user "${DEV_USER}" "x" "${DEV_UID}" "${DEV_UID}" "dev_user" \
   "/home/${DEV_USER}" "$SHELL"
-add_shadow "${DEV_USER}" ""
+add_shadow "${DEV_USER}" "${CRYPTED_PASSWD}"
 add_group "${DEV_USER}" "${DEV_UID}"
 sudo mkdir -p "${ROOT_FS_DIR}/home/${DEV_USER}"
 sudo chown "${DEV_UID}.${DEV_UID}" "${ROOT_FS_DIR}/home/${DEV_USER}"
