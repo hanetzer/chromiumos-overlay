@@ -102,6 +102,7 @@ src_unpack() {
 	[[ -n ${HPN_PATCH} ]] && use hpn && epatch "${DISTDIR}"/${HPN_PATCH}
 	epatch "${FILESDIR}"/${PN}-4.7p1-selinux.diff #191665
 	epatch "${FILESDIR}"/${P}-autoconf.patch
+	epatch "${FILESDIR}"/chromiumos-config.patch
 
 	# in 5.2p1, the AES-CTR multithreaded variant is temporarily broken, and
 	# causes random hangs when combined with the -f switch of ssh.
@@ -168,7 +169,7 @@ src_install() {
 	emake install-nokeys DESTDIR="${D}" || die
 	fperms 600 /etc/ssh/sshd_config
 	dobin contrib/ssh-copy-id
-	newinitd "${FILESDIR}"/sshd.rc6 sshd
+
 	newconfd "${FILESDIR}"/sshd.confd sshd
 	keepdir /var/empty
 
@@ -232,11 +233,6 @@ pkg_postinst() {
 	# help fix broken perms caused by older ebuilds.
 	# can probably cut this after the next stage release.
 	chmod u+x "${ROOT}"/etc/skel/.ssh >& /dev/null
-
-	# Genereates ssh host keys.
-	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_key -N '' -t rsa1
-	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_rsa_key -N '' -t rsa
-	ssh-keygen -q -f ${ROOT}/etc/ssh/ssh_host_dsa_key -N '' -t dsa
 
 	ewarn "Remember to merge your config files in /etc/ssh/ and then"
 	ewarn "reload sshd: '/etc/init.d/sshd reload'."
