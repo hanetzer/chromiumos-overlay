@@ -43,6 +43,9 @@ src_configure() {
 	cd ${S}
 	touchInitPy client/tests client/site_tests
 	touch __init__.py
+	# Cleanup checked-in binaries that don't support the target architecture
+	[[ ${E_MACHINE} == "" ]] && return 0;
+	rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 }
 
 src_compile() {
@@ -66,3 +69,4 @@ src_install() {
 	insopts "-g ${SUDO_GID} -o ${SUDO_UID}"
 	doins -r "${S}"/*
 }
+
