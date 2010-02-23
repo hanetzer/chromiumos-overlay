@@ -90,15 +90,15 @@ src_unpack() {
     fi
     test -n "${CHROME_BUILD}" || die CHROME_BUILD not set
     elog "Fetching Chrome build $CHROME_BUILD"
-    FILENAME="chrome-linux.zip"
-    URL="${CHROME_BASE}/${CHROME_BUILD}/${FILENAME}"
+    CHROME_FILENAME=${CHROME_FILENAME:-"chrome-linux.zip"}
+    URL="${CHROME_BASE}/${CHROME_BUILD}/${CHROME_FILENAME}"
     
     mkdir -p "${S}"
     cd "${S}"
     wget "${URL}" || die Download "${URL}" failed
-    unzip "${FILENAME}" || die unzip failed
+    unzip "${CHROME_FILENAME}" || die unzip failed
     
-    rm "${FILENAME}"
+    rm "${CHROME_FILENAME}"
   else
     # Using local source
     if [ "$CHROME_ORIGIN" = "LOCAL_SOURCE" ]; then
