@@ -57,6 +57,7 @@ RDEPEND="app-arch/bzip2
          media-libs/libpng
          media-libs/mesa
          sys-libs/zlib
+	 x86? ( www-plugins/adobe-flash )
          >=x11-libs/gtk+-2.14.7
          x11-libs/libXScrnSaver"
 DEPEND="${RDEPEND}
@@ -164,6 +165,7 @@ src_install() {
   D_CHROME_DIR="${D}/${CHROME_DIR}"
 
   dodir "${CHROME_DIR}"
+  dodir "${CHROME_DIR}"/plugins
 
   exeinto "${CHROME_DIR}"
   doexe "${FROM}"/candidate_window
@@ -205,4 +207,7 @@ src_install() {
   dosym nspr/libplds4.so /usr/lib/libplds4.so.0d
   dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
+  
+  dosym /opt/netscape/plugins/libflashplayer.so \
+    "${CHROME_DIR}"/plugins/libflashplayer.so 
 }
