@@ -36,6 +36,8 @@ eval set -- "${FLAGS_ARGV}"
 # Die on any errors.
 set -e
 
+. "${SCRIPTS_DIR}/chromeos_version.sh"
+
 if [ -z "$FLAGS_board" ] ; then
   echo "Error: --board is required."
   exit 1
