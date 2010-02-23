@@ -23,7 +23,8 @@ RDEPEND="app-i18n/ibus
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
         chromeos-base/libchromeos
-	chromeos-base/synaptics"
+        chromeos-base/synaptics
+        dev-cpp/gtest"
 
 src_unpack() {
         local platform="${CHROMEOS_ROOT}/src/platform/"
