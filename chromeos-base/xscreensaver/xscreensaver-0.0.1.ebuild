@@ -56,12 +56,11 @@ src_compile() {
 	emake || die "xscreensaver compile failed."
 }
 
-src_install() {
+src_install() {    
 	emake prefix="${D}/usr" install
-	dodir "etc/X11/app-defaults"
-	cp XScreenSaver "${D}/etc/X11/app-defaults/XScreenSaver"
+	insinto "/etc/X11/app-defaults"
+	doins XScreenSaver
 
-	dodir "etc/pam.d"
-	cp "${CHROMEOS_ROOT}/src/platform/screenlocker/portage-xscreensaver" \
-	   "${D}/etc/pam.d/xscreensaver"
+	insinto "/etc/pam.d"
+	doins "${CHROMEOS_ROOT}/src/platform/screenlocker/xscreensaver"
 }
