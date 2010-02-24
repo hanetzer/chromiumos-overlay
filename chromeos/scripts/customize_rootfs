@@ -145,6 +145,11 @@ $DEV_USER ALL=NOPASSWD: ALL
 EOF
 sudo chmod 0440 "${ROOT_FS_DIR}/etc/sudoers"
 
+echo "# Allow chronos user to renice processes so that chrome will adjust tab priorities" | \
+  sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
+echo "chronos hard nice 0" | \
+  sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
+
 # Add the dev user to the video group
 sudo sed -i "{ s/video::27:root/video::27:root,${DEV_USER}/ }" \
   "${ROOT_FS_DIR}/etc/group"
