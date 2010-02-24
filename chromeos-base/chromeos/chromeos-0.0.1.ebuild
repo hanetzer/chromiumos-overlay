@@ -33,6 +33,7 @@ RDEPEND="${RDEPEND}
 	x86? ( app-laptop/laptop-mode-tools )
 	app-shells/dash
 	chromeos-base/board-devices
+	x86? ( chromeos-base/chromeos-acpi )
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-init
@@ -48,7 +49,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/pam_google
 	chromeos-base/xscreensaver
 	x86? ( media-gfx/ply-image )
-	x86? ( sys-power/acpid )
 	media-plugins/alsa-plugins
 	media-sound/pulseaudio
 	net-firewall/iptables
