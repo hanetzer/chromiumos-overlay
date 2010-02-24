@@ -13,7 +13,7 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
-RDEPEND="=dev-lang/python-2.4.6"
+RDEPEND="dev-lang/python"
 
 DEPEND="
 	${RDEPEND}"

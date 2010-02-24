@@ -24,7 +24,7 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	app-editors/vim
 	app-shells/bash
-	=dev-lang/python-2.4.6
+	dev-lang/python
 	dev-util/strace
 	net-misc/iputils
 	net-misc/openssh
