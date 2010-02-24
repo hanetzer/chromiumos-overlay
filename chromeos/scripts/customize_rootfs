@@ -293,7 +293,7 @@ sudo rm -rf "${ROOT_FS_DIR}/var/lib/dbus"
 sudo ln -s /var/cache "${ROOT_FS_DIR}/var/lib/dbus"
 
 # Python-wrapper does not work in portage build, fix python symlink
-if [ $FLAGS_withdev -eq $FLAGS_TRUE ]
+if [ $FLAGS_withdev -eq $FLAGS_TRUE ] ; then
   sudo ln -s /usr/bin/python2 /usr/bin/python
 fi
 
