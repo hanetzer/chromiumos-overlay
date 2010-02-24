@@ -262,7 +262,7 @@ sudo chmod +x "$EMERGE_WRAPPER"
 #
 sudo "${EMERGE_WRAPPER}" --quiet kernel-headers
 
-if [ $FLAGS_default -eq $FLAGS_true ] ; then
+if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
   echo $FLAGS_board > "$GCLIENT_ROOT/src/scripts/.default_board"
 fi
 
