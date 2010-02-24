@@ -1,0 +1,33 @@
+Need to get the dbus build to use the local one
+
+--- a/configure.ac	2010-02-23 15:52:04.027243000 -0800
++++ b/configure.ac	2010-02-23 15:52:57.798620000 -0800
+@@ -34,6 +34,8 @@
+ 
+ GTK_DOC_CHECK([1.3])
+ 
++AM_CONDITIONAL(CROSS_COMPILING, [ test $cross_compiling = yes ])
++
+ #### gcc warning flags
+ 
+ if test "x$GCC" = "xyes"; then
+--- a/src/eggdbus/Makefile.am	2010-02-23 15:17:42.832018000 -0800
++++ b/src/eggdbus/Makefile.am	2010-02-23 15:36:31.494204000 -0800
+@@ -129,8 +129,16 @@
+ 	eggdbus-built-sources.stamp					\
+ 	$(NULL)
+ 
++if CROSS_COMPILING
++EGGDBUS_BINDING_TOOL = eggdbus-binding-tool
++EGGDBUS_GENMARSHAL = eggdbus-glib-genmarshal
++else
++EGGDBUS_BINDING_TOOL = $(top_builddir)/src/eggdbus/eggdbus-binding-tool
++EGGDBUS_GENMARSHAL = $(top_builddir)/src/eggdbus/eggdbus-glib-genmarshal
++endif
++
+ eggdbus-built-sources.stamp : eggdbus-binding-tool Makefile.am org.freedesktop.DBus.xml org.freedesktop.DBus.Peer.xml org.freedesktop.DBus.Properties.xml org.freedesktop.DBus.Introspectable.xml eggdbus-glib-genmarshal
+-	EGG_DBUS_GENMARSHAL=$(top_builddir)/src/eggdbus/eggdbus-glib-genmarshal $(top_builddir)/src/eggdbus/eggdbus-binding-tool							\
++	EGG_DBUS_GENMARSHAL=$(EGGDBUS_GENMARSHAL) $(EGGDBUS_BINDING_TOOL) \
+ 		--namespace EggDBus									\
+ 		--dbus-namespace org.freedesktop.DBus							\
+ 		--interfaces-only									\

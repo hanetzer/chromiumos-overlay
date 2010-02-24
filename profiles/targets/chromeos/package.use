@@ -18,6 +18,7 @@ net-misc/openssh	-X
 net-nds/openldap	minimal
 net-wireless/wpa_supplicant	dbus debug -readline
 sys-apps/dbus		-X
+sys-apps/parted         device-mapper
 sys-apps/util-linux	-perl
 sys-fs/udev		-devfs-compat extras
 sys-libs/ncurses	-unicode minimal

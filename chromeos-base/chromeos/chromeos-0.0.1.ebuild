@@ -61,6 +61,7 @@ RDEPEND="${RDEPEND}
 	net-wireless/ath6k
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
+	x86? ( sys-apps/devicekit-disks )
 	sys-apps/devicekit-power
 	sys-apps/kbd
 	sys-apps/coreutils
