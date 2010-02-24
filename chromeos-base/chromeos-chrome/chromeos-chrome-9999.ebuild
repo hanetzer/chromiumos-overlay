@@ -155,7 +155,7 @@ src_compile() {
 
 src_install() {
   if [ "${CHROME_ORIGIN}" = "SERVER_BINARY" ]; then
-    FROM="${S}"/chrome-linux
+    FROM="${S}"/${CHROME_FILENAME/.zip/}
   else
     FROM="${CHROME_ROOT}/src/out/${BUILDTYPE}"
   fi
