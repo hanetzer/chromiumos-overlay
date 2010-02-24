@@ -28,6 +28,7 @@ RDEPEND="${RDEPEND}
 # TODO(yusukes): remove x86? from the ibus-* lines once we get ibus running on ARM.
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
+	x86? ( app-i18n/ibus-hangul )
 	x86? ( app-i18n/ibus-pinyin )
 	x86? ( app-laptop/laptop-mode-tools )
 	app-shells/dash
