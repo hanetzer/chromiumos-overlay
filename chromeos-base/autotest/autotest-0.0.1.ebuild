@@ -66,8 +66,11 @@ src_compile() {
 
 src_install() {
 	insinto "/usr/local/autotest"
-	diropts "-g ${SUDO_GID} -o ${SUDO_UID}"
-	insopts "-g ${SUDO_GID} -o ${SUDO_UID}"
 	doins -r "${S}"/*
+}
+
+pkg_postinst() {
+  chown -R ${SUDO_UID}:${SUDO_GID} "${SYSROOT}/usr/local/autotest"
+  chmod -R 755 "${SYSROOT}/usr/local/autotest"
 }
 
