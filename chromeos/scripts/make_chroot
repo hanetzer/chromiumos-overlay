@@ -151,6 +151,9 @@ function init_setup () {
    # Automatically change to scripts directory
    echo "cd trunk/src/scripts" >> "$FLAGS_chroot/home/$USER/.bash_profile"
 
+   # Enable bash completion for build scripts
+   echo ". bash_completion" >> "$FLAGS_chroot/home/$USER/.bash_profile"
+
    # Warn if attempting to use source control commands inside the chroot
    for NOUSE in svn gcl gclient
    do
