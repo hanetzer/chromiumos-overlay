@@ -97,6 +97,7 @@ src_configure() {
 	echo "CONFIG_EAP_LEAP=y" >> .config
 	echo "CONFIG_PKCS12=y" >> .config
 	echo "CONFIG_PEERKEY=y" >> .config
+	echo "CONFIG_BGSCAN_SIMPLE=y" >> .config
 
 	if use dbus ; then
 		echo "CONFIG_CTRL_IFACE_DBUS=y" >> .config
@@ -104,6 +105,7 @@ src_configure() {
 
 	if use debug ; then
 		echo "CONFIG_DEBUG_SYSLOG=y" >> .config
+		echo "CONFIG_DEBUG_SYSLOG_FACILITY=LOG_LOCAL6" >> .config
 	fi
 
 	if use eap-sim ; then
