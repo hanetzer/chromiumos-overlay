@@ -24,8 +24,10 @@ RDEPEND=">=dev-libs/glib-2.16
         net-dialup/ppp
         "
 
-DEPEND="dev-util/pkgconfig
-    dev-util/intltool"
+DEPEND=">=sys-fs/udev-145[extras]
+        dev-util/pkgconfig
+        dev-util/intltool
+        "
 
 
 src_unpack() {
