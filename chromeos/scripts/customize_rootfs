@@ -294,7 +294,7 @@ sudo ln -s /var/cache "${ROOT_FS_DIR}/var/lib/dbus"
 
 # Python-wrapper does not work in portage build, fix python symlink
 if [ $FLAGS_withdev -eq $FLAGS_TRUE ] ; then
-  sudo ln -sf /usr/bin/python2 /usr/bin/python
+  sudo ln -sf "/usr/bin/python2" "${ROOT_FS_DIR}/usr/bin/python"
 fi
 
 # Write stock lsb-release file
