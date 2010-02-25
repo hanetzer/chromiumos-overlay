@@ -33,7 +33,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/findutils
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
-	sys-apps/sed
 	sys-apps/usbutils
 	sys-apps/which
 	sys-devel/gdb

@@ -69,6 +69,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/grep
 	sys-apps/mawk
 	sys-apps/module-init-tools
+	sys-apps/sed
 	sys-apps/upstart
 	sys-apps/util-linux
 	sys-apps/shadow
