@@ -11,16 +11,17 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="opengles"
 
 RDEPEND="dev-libs/libpcre
 	dev-libs/protobuf
 	dev-cpp/gflags
 	dev-cpp/glog
-	media-libs/clutter
 	x11-libs/gtk+
 	x11-libs/libXcomposite
-	x11-libs/libX11"
+	x11-libs/libX11
+	!opengles? ( virtual/opengl )
+	opengles? ( x11-drivers/opengles )"
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
 	dev-cpp/gtkmm
@@ -33,12 +34,6 @@ src_unpack() {
 	mkdir -p "${S}/window_manager"
 
 	cp -a "${platform}"/window_manager/* "${S}/window_manager" || die
-
-	# TODO: This is a quick hack to remove the __arm__ define so that
-	# we always build the window_manager using glx. This is so that the
-	# generic arm build can go through for now.
-	sed -i "s/__arm__/0/g" "${S}/window_manager"/*.cc
-	sed -i "s/__arm__/0/g" "${S}/window_manager"/*.h
 }
 
 src_compile() {
@@ -53,11 +48,18 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
+	local backend
+	if use opengles ; then
+		backend=OPENGLES
+	else
+		backend=OPENGL
+	fi
+
 	# TODO: breakpad should have its own ebuild and we should add to
 	# hard-target-depends. Perhaps the same for src/third_party/chrome
 	# and src/common
 	pushd "window_manager"
-	scons wm screenshot || die "window_manager compile failed"
+	scons BACKEND="$backend" wm screenshot || die "window_manager compile failed"
 	popd
 }
 
