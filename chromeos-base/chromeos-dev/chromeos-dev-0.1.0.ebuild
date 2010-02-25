@@ -24,6 +24,7 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	app-editors/vim
 	app-shells/bash
+	chromeos-base/flimflam-testscripts
 	dev-lang/python
 	dev-util/strace
 	net-misc/iputils
