@@ -62,6 +62,8 @@ src_compile() {
 	fi
 	# Do not use sudo, it'll unset all your environment
 	LOGNAME=${SUDO_USER} client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST}
+        # Cleanup some temp files after compiling
+        find . -name '*.[ado]' -delete
 }
 
 src_install() {
