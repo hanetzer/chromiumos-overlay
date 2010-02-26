@@ -3,6 +3,17 @@
 
 EAPI=2
 
+KEYWORDS="~amd64 ~x86 ~arm"
+
+if [[ ${PV} != "9999" ]] ; then
+	inherit git
+
+	KEYWORDS="amd64 x86 arm"
+
+	EGIT_REPO_URI="http://src.chromium.org/git/pam_google.git"
+	EGIT_TREE="f1464cc3c3ab4d754a36ef03a5835fcb27e47369"
+fi
+
 inherit toolchain-funcs
 
 DESCRIPTION="PAM module for Google login."
@@ -10,7 +21,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+
 IUSE=""
 
 RDEPEND="dev-cpp/gflags
@@ -22,10 +33,17 @@ DEPEND="chromeos-base/libchromeos
 	${RDEPEND}"
 
 src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
-	mkdir -p "${S}/pam_google"
-	cp -a "${platform}/pam_google" "${S}" || die
+	if [[ -n "${EGIT_REPO_URI}" ]] ; then
+		git_src_unpack
+	else
+		local platform="${CHROMEOS_ROOT}/src/platform"
+		elog "Using platform: $platform"
+		cp -a "${platform}/pam_google" "${S}" || die
+	fi
+}
+
+src_prepare() {
+	ln -sf "${S}" "${S}/../pam_google"
 }
 
 src_compile() {
@@ -40,9 +58,7 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
-	pushd pam_google
 	scons || die "pam_google compile failed."
-	popd
 }
 
 src_install() {
