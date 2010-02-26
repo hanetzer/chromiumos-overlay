@@ -31,7 +31,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.4-tests.patch
 	epatch "${FILESDIR}"/${PN}-0.5-leakfix.patch
 	epatch "${FILESDIR}"/${PN}-0.5-cross-compile.patch
-	eautoreconf
+	eautoreconf || die
 }
 
 src_configure() {
