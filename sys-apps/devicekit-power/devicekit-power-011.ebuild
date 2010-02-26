@@ -37,7 +37,8 @@ S="${WORKDIR}/${MY_PN}-${PV}"
 function check_battery() {
 	# check sysfs power interface, bug #263959
 	local CONFIG_CHECK="ACPI_SYSFS_POWER"
-	check_extra_config
+	# TODO(msb): fix build and re-enable check_extra_config
+	#check_extra_config
 }
 
 pkg_setup() {
@@ -48,6 +49,7 @@ pkg_setup() {
 		--enable-man-pages
 		$(use_enable debug verbose-mode)
 		$(use_enable test tests)
+		--with-backend=linux
 	"
 
 	check_battery
