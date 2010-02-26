@@ -11,9 +11,12 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE=""
+IUSE="+autox"
 
-RDEPEND="dev-lang/python"
+RDEPEND="
+  dev-lang/python
+  autox? ( chromeos-base/autox )
+  "
 
 DEPEND="
 	${RDEPEND}"
