@@ -25,14 +25,14 @@ EGCLIENT_REPO_URI="http://src.chromium.org/svn/trunk/src/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE=""
+IUSE="-build_tests"
 
 # By default, pull from server
 CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT disable_nacl=1 linux_use_tcmalloc=0 chromeos=1"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 disable_nacl=1 linux_use_tcmalloc=0 chromeos=1"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
 # For pulling from build bot
@@ -140,8 +140,13 @@ src_compile() {
   if [ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]; then
     return
   fi
-
   cd "${CHROME_ROOT}"/src || die
+  
+  if use build_tests; then
+    TEST_TARGETS="browser_tests reliability_tests pyautolib"
+    echo Building test targets: ${TEST_TARGETS}
+  fi
+
   emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
     CXX=$(tc-getCXX) \
     CC=$(tc-getCC) \
@@ -150,6 +155,7 @@ src_compile() {
     RANLIB=$(tc-getRANLIB) \
     LD=$(tc-getLD) \
     chrome candidate_window session \
+    ${TEST_TARGETS} \
     || die "compilation failed"
 }
 
@@ -192,6 +198,51 @@ src_install() {
   doins "${PLATFORM_CHROME}"/bottle.sh
   doins "${PLATFORM_CHROME}"/log.sh
   
+  # Chrome test resources 
+  if use build_tests; then
+    // We are bypassing the image on purpose. These bits will be picked
+    // up later by autotest build. 
+    TEST_DIR="${SYSROOT}"/usr/local/autotest-chrome/
+    FROM_LIB="${FROM}/lib.target/chrome"
+    FROM_TESTS="${FROM}"
+
+    echo Copying Chrome tests into "${TEST_DIR}"
+    sudo rm -rf "${TEST_DIR}"
+    sudo mkdir -p "${TEST_DIR}"
+    sudo mkdir -p "${TEST_DIR}/out/${BUILDTYPE}"
+  
+    sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
+        "${TEST_DIR}/out/${BUILDTYPE}"
+    
+    sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/${BUILDTYPE}
+    sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/${BUILDTYPE}
+    sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/${BUILDTYPE}
+    sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/${BUILDTYPE}
+
+    sudo mkdir -p "${TEST_DIR}"/out/${BUILDTYPE}/chromeos
+    sudo ln -s "${CHROME_DIR}"/chromeos/libcros.so \
+        "${TEST_DIR}"/out/${BUILDTYPE}/chromeos/libcros.so
+    
+    sudo mkdir -p "${TEST_DIR}"/base
+    sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+    
+    sudo mkdir -p "${TEST_DIR}"/chrome/test/data
+    sudo cp -r "${CHROME_ROOT}"/src/chrome/test/data/* \
+        "${TEST_DIR}"/chrome/test/data
+
+    sudo mkdir -p "${TEST_DIR}"/net/tools/testserver
+    sudo cp -r "${CHROME_ROOT}"/src/net/tools/testserver/* \
+        "${TEST_DIR}"/net/tools/testserver
+
+    sudo mkdir -p "${TEST_DIR}"/third_party/tlslite
+    sudo cp -r "${CHROME_ROOT}"/src/third_party/tlslite/* \
+        "${TEST_DIR}"/third_party/tlslite
+
+    sudo mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
+    sudo cp -r "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
+        "${TEST_DIR}"/third_party/pyftpdlib
+  fi
+
   insinto /usr/bin
   doins "${PLATFORM_CHROME}"/chromeos-chrome-loop
 
