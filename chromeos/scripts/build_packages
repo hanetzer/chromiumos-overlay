@@ -28,6 +28,8 @@ DEFINE_boolean usepkg $FLAGS_FALSE \
   "Use binary packages to bootstrap when possible."
 DEFINE_boolean withdev $FLAGS_TRUE \
   "Build useful developer friendly utilities."
+DEFINE_boolean withautotest $FLAGS_FALSE \
+  "Build autotest client code."
 DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
 
@@ -64,4 +66,8 @@ if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-dev
 else
   sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+fi
+
+if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
+  ./build_autotest.sh --noprompt --board=${FLAGS_board}
 fi
