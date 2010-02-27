@@ -154,6 +154,9 @@ echo "chronos hard nice 0" | \
 # Add the dev user to the video group
 sudo sed -i "{ s/video::27:root/video::27:root,${DEV_USER}/ }" \
   "${ROOT_FS_DIR}/etc/group"
+# Add the dev user to the audio group
+sudo sed -i "{ s/audio::18:/audio::18:${DEV_USER}/ }" \
+  "${ROOT_FS_DIR}/etc/group"
 
 # TODO: Since the stateful partition may not have a chronos home directory
 # on it, we create one here if necessary.
