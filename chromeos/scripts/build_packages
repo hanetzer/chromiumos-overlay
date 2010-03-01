@@ -60,6 +60,10 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   EMERGE_FLAGS="${EMERGE_FLAGS} --jobs=$FLAGS_jobs"
 fi
 
+# Hacks to avoid forcing users to create a new chroot
+# TODO(msb): Remove these hacks at some point
+sudo touch /etc/make.conf.user
+
 sudo emerge -uDNv $EMERGE_FLAGS world
 
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then

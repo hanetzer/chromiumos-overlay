@@ -236,6 +236,7 @@ fi
 
 # Setup make.globals and the profile.
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
+sudo ln -sf /etc/make.conf.user "${BOARD_ROOT}/etc/make.conf.user"
 sudo rm "${BOARD_ROOT}/etc/make.profile"
 sudo ln -sf \
   "${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/" \

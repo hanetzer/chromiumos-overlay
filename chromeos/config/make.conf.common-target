@@ -34,3 +34,5 @@ DISTDIR="/var/lib/portage/distfiles"
 # Our chromium mirror should be more stable since we won't discard packages.
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 
+# Allow the user to override or define additional settings.
+source make.conf.user
