@@ -365,11 +365,6 @@ sudo chmod +x "$ROOT_FS_DIR"/usr/bin/chromeos-chrome
 sudo rm -rf "${ROOT_FS_DIR}/var/lib/dbus"
 sudo ln -s /var/cache "${ROOT_FS_DIR}/var/lib/dbus"
 
-# Python-wrapper does not work in portage build, fix python symlink
-if [ $FLAGS_withdev -eq $FLAGS_TRUE ] ; then
-  sudo ln -sf "/usr/bin/python2" "${ROOT_FS_DIR}/usr/bin/python"
-fi
-
 # Write stock lsb-release file
 # Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)# Was removed from chromeos_version.sh which can also be run outside of chroot
 # where CHROMEOS_REVISION is set
