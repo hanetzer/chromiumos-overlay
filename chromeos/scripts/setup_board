@@ -273,6 +273,12 @@ EOF
 #
 sudo "${EMERGE_WRAPPER}" --quiet kernel-headers
 
+# We need to install libstdc++ manually from the cross toolchain.
+# TODO: Figure out a better way of doing this?
+sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/*/libgcc_s.so* "${BOARD_ROOT}/lib"
+sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/*/libstdc++.so* \
+  "${BOARD_ROOT}/usr/lib"
+
 if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
   echo $FLAGS_board > "$GCLIENT_ROOT/src/scripts/.default_board"
 fi
