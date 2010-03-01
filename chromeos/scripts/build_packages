@@ -63,6 +63,7 @@ fi
 # Hacks to avoid forcing users to create a new chroot
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
+sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 
 sudo emerge -uDNv $EMERGE_FLAGS world
 
