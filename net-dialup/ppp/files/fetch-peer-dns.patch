@@ -1,0 +1,63 @@
+*** pppd/ipcp.c.orig	Tue Mar  2 13:07:56 2010
+--- pppd/ipcp.c	Tue Mar  2 13:08:22 2010
+*************** struct notifier *ip_down_notifier = NULL
+*** 89,95 ****
+  /* local vars */
+  static int default_route_set[NUM_PPP];	/* Have set up a default route */
+  static int proxy_arp_set[NUM_PPP];	/* Have created proxy arp entry */
+! static bool usepeerdns;			/* Ask peer for DNS addrs */
+  static bool usepeerwins;		/* Ask peer for WINS addrs */
+  static int ipcp_is_up;			/* have called np_up() */
+  static int ipcp_is_open;		/* haven't called np_finished() */
+--- 89,96 ----
+  /* local vars */
+  static int default_route_set[NUM_PPP];	/* Have set up a default route */
+  static int proxy_arp_set[NUM_PPP];	/* Have created proxy arp entry */
+! static bool fetchpeerdns;		/* Ask peer for DNS addrs */
+! static bool usepeerdns;			/* Update resolv.conf */
+  static bool usepeerwins;		/* Ask peer for WINS addrs */
+  static int ipcp_is_up;			/* have called np_up() */
+  static int ipcp_is_open;		/* haven't called np_finished() */
+*************** static option_t ipcp_option_list[] = {
+*** 207,215 ****
+        "disable proxyarp option", OPT_ALIAS | OPT_A2CLR,
+        &ipcp_wantoptions[0].proxy_arp },
+  
+!     { "usepeerdns", o_bool, &usepeerdns,
+        "Ask peer for DNS address(es)", 1 },
+  
+      { "usepeerwins", o_bool, &usepeerwins,
+        "Ask peer for WINS address(es)", 1 },
+  
+--- 208,219 ----
+        "disable proxyarp option", OPT_ALIAS | OPT_A2CLR,
+        &ipcp_wantoptions[0].proxy_arp },
+  
+!     { "fetchpeerdns", o_bool, &fetchpeerdns,
+        "Ask peer for DNS address(es)", 1 },
+  
++     { "usepeerdns", o_bool, &usepeerdns,
++       "Update resolv.conf with DNS address(es)", 1 },
++ 
+      { "usepeerwins", o_bool, &usepeerwins,
+        "Ask peer for WINS address(es)", 1 },
+  
+*************** ipcp_resetci(f)
+*** 689,696 ****
+  	wo->accept_local = 1;
+      if (wo->hisaddr == 0)
+  	wo->accept_remote = 1;
+!     wo->req_dns1 = usepeerdns;	/* Request DNS addresses from the peer */
+!     wo->req_dns2 = usepeerdns;
+      wo->req_wins1 = usepeerwins; /* Request WINS addresses from the peer */
+      wo->req_wins2 = usepeerwins;
+      *go = *wo;
+--- 693,700 ----
+  	wo->accept_local = 1;
+      if (wo->hisaddr == 0)
+  	wo->accept_remote = 1;
+!     wo->req_dns1 = fetchpeerdns || usepeerdns;	/* Request DNS addresses from the peer */
+!     wo->req_dns2 = fetchpeerdns || usepeerdns;
+      wo->req_wins1 = usepeerwins; /* Request WINS addresses from the peer */
+      wo->req_wins2 = usepeerwins;
+      *go = *wo;
