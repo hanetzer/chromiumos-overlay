@@ -261,39 +261,6 @@ fi
 sudo mkdir -p  "${ROOT_FS_DIR}/usr/bin/X11"
 sudo ln -s  /usr/bin/Xorg  "${ROOT_FS_DIR}/usr/bin/X11/X"
 
-# Setup our xorg.conf. This allows us to avoid HAL overhead.
-# TODO: Note that this is different from the latest chromeos one for now.
-if [ -d "${ROOT_FS_DIR}/etc/X11" ]; then
-  cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/X11/xorg.conf
-Section "ServerFlags"
-    Option "AutoAddDevices" "false"
-    Option "DontZap" "false"
-EndSection
-
-Section "InputDevice"
-    Identifier "Keyboard1"
-    Driver     "kbd"
-    Option     "AutoRepeat" "250 30"
-    Option     "XkbRules"   "xorg"
-    Option     "XkbModel"   "pc104"
-    Option     "CoreKeyboard"
-EndSection
-
-Section "InputDevice"
-        Identifier "Mouse1"
-        Driver     "synaptics"
-        Option     "SendCoreEvents" "true"
-        Option     "Protocol" "auto-dev"
-        Option     "HorizScrollDelta"  "0"
-        Option     "SHMConfig" "on"
-        Option     "CorePointer"
-        Option     "TapButton1" "1"
-        Option     "TapButton2" "2"
-EndSection
-
-EOF
-fi
-
 POLICY_CONFIG="${ROOT_FS_DIR}/usr/share/polkit-1/actions/org.freedesktop.devicekit.disks.policy"
 if [ -f "$POLICY_CONFIG" ]; then
   POLICY_TMP="$(mktemp)"

@@ -16,6 +16,7 @@ RDEPEND="${RDEPEND}
 	X? (
 		x86? ( chromeos-base/chromeos-chrome )
 		chromeos-base/chromeos-wm
+		chromeos-base/xorg-conf
 		media-fonts/droid
 		media-fonts/sil-abyssinica
 		media-fonts/dejavu
@@ -54,7 +55,7 @@ RDEPEND="${RDEPEND}
 	media-sound/pulseaudio
 	net-firewall/iptables
 	net-misc/ntp
-	x86? ( >=net-wireless/iwl5000-ucode-8.24.2.12 
+	x86? ( >=net-wireless/iwl5000-ucode-8.24.2.12
                net-wireless/iwl1000-ucode
 	       net-wireless/iwl6000-ucode
 	)
