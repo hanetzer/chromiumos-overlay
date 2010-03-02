@@ -66,7 +66,7 @@ src_test() {
        make CXX="${CXX}" CXXFLAGS="$CFLAGS" session_manager_unittest \
          signaller || die "chromeos-login compile tests failed."	
 
-       if [ $(tc-arch) == "x86" ]; then
+       if use x86 ; then
          LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
          # Set the library paths appropriately and
          # run the unit tests with the right loader.
