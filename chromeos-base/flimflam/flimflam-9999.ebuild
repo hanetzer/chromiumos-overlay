@@ -96,4 +96,10 @@ src_install() {
 		echo "nameserver 127.0.0.1" > "${D}"/etc/resolv.conf
 		chmod 0644 "${D}"/etc/resolv.conf
 	fi
+
+	if use ppp; then
+	       local ppp_dir="${D}"/etc/ppp/ip-up.d/
+	       mkdir -p ${ppp_dir}
+	       cp "${D}"/usr/lib/connman/scripts/60-connman.sh ${ppp_dir}
+	fi
 }
