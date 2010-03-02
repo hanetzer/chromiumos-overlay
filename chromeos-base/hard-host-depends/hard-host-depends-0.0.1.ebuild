@@ -41,6 +41,7 @@ RDEPEND="${RDEPEND}
 	dev-util/gob
 	dev-util/gperf
 	dev-util/gtk-doc
+	dev-util/quilt
 	dev-util/subversion[-dso]
 	>=dev-util/gtk-doc-am-1.10
 	>=dev-util/intltool-0.30
