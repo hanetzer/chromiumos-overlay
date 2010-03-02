@@ -38,6 +38,9 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 # For pulling from build bot
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/chromium-rel-linux-chromiumos"}
 
+TEST_FILES="ffmpeg_tests
+            omx_test"
+
 RDEPEND="app-arch/bzip2
          chromeos-base/chromeos-theme
          dev-libs/atk
@@ -100,6 +103,14 @@ src_unpack() {
     unzip "${CHROME_FILENAME}" || die unzip failed
     
     rm "${CHROME_FILENAME}"
+    
+    if use build_tests; then
+      cd "${CHROME_FILENAME/.zip/}"
+      TEST_URL="${CHROME_BASE}/${CHROME_BUILD}/chrome-linux.test"
+      for f in ${TEST_FILES}; do
+        wget "$TEST_URL/$f"
+      done
+    fi
   else
     # Using local source
     if [ "$CHROME_ORIGIN" = "LOCAL_SOURCE" ]; then
@@ -165,7 +176,7 @@ src_install() {
   else
     FROM="${CHROME_ROOT}/src/out/${BUILDTYPE}"
   fi
-
+  
   # First, things from the chrome build output directory
   CHROME_DIR=/opt/google/chrome
   D_CHROME_DIR="${D}/${CHROME_DIR}"
@@ -200,8 +211,8 @@ src_install() {
   
   # Chrome test resources 
   if use build_tests; then
-    // We are bypassing the image on purpose. These bits will be picked
-    // up later by autotest build. 
+    # For test binaries, we are bypassing the image on purpose. These bits will
+    # be picked up later by autotest build. 
     TEST_DIR="${SYSROOT}"/usr/local/autotest-chrome/
     FROM_LIB="${FROM}/lib.target/chrome"
     FROM_TESTS="${FROM}"
@@ -241,6 +252,10 @@ src_install() {
     sudo mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
     sudo cp -r "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
         "${TEST_DIR}"/third_party/pyftpdlib
+    
+    for f in ${TEST_FILES}; do
+      sudo cp "${FROM}/${f}" "${TEST_DIR}"
+    done
   fi
 
   insinto /usr/bin
