@@ -235,6 +235,7 @@ else
 fi
 
 # Setup make.globals and the profile.
+sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
 sudo ln -sf /etc/make.conf.user "${BOARD_ROOT}/etc/make.conf.user"
 sudo rm "${BOARD_ROOT}/etc/make.profile"
