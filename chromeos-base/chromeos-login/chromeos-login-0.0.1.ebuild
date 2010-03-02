@@ -11,15 +11,17 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE="pam_google slim"
+IUSE="pam_google slim test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	 chromeos-base/chromeos-minijail
          pam_google? ( chromeos-base/pam_google )
          slim? ( x11-misc/slim )"
 
-DEPEND="${RDEPEND}
-        dev-cpp/gmock"
+DEPEND="
+	test? ( dev-cpp/gtest )
+        dev-cpp/gmock
+	${RDEPEND}"
 
 src_unpack() {
        local platform="${CHROMEOS_ROOT}/src/platform"
@@ -45,6 +47,35 @@ src_compile() {
        make CXX="${CXX}" CXXFLAGS="$CFLAGS" session_manager || \
          die "chromeos-login compile failed."
        popd
+}
+
+src_test() {
+       if tc-is-cross-compiler ; then
+               tc-getCC
+               tc-getCXX
+               tc-getAR
+               tc-getRANLIB
+               tc-getLD
+               tc-getNM
+               export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
+               export CCFLAGS="$CFLAGS"
+       fi
+
+       pushd login_manager
+       # TODO: We can't use emake because the makefile will fail with -j
+       make CXX="${CXX}" CXXFLAGS="$CFLAGS" session_manager_unittest \
+         signaller || die "chromeos-login compile tests failed."	
+
+       if [ $(tc-arch) == "x86" ]; then
+         LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
+         # Set the library paths appropriately and
+         # run the unit tests with the right loader.
+         LD_LIBRARY_PATH=${SYSROOT}/usr/lib:${SYSROOT}/lib:${LIBC_PATH} \
+	   ${SYSROOT}/lib/ld-linux.so.2 ./session_manager_unittest \
+	     ${GTEST_ARGS} || die "unit tests (with ${GTEST_ARGS}) failed!"
+       fi
+       popd
+
 }
 
 src_install() {
