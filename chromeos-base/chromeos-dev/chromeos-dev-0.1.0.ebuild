@@ -25,6 +25,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-shells/bash
 	chromeos-base/flimflam-testscripts
+	chromeos-base/gmerge
 	dev-lang/python
 	dev-util/strace
 	net-misc/iputils
