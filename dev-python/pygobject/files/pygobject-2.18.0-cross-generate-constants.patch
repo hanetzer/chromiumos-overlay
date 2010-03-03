@@ -1,0 +1,37 @@
+--- configure.ac	2009-02-18 00:20:53.000000000 +0100
++++ configure.ac.new	2009-06-16 22:37:05.000000000 +0200
+@@ -214,6 +214,20 @@
+ 
+ fi
+ 
++dnl Get the host compiler if cross-compiling
++dnl
++AM_CONDITIONAL(CROSS_COMPILING, [ test $cross_compiling = yes ])
++AC_MSG_CHECKING([for CC_FOR_BUILD])
++if test "x${CC_FOR_BUILD+set}" != "xset" ; then
++  if test "x$cross_compiling" = "xyes" ; then
++    CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
++  else
++    CC_FOR_BUILD=${CC}
++  fi
++fi
++AC_MSG_RESULT([$CC_FOR_BUILD])
++AC_SUBST(CC_FOR_BUILD)
++
+ AC_CONFIG_FILES(
+   Makefile
+   pygobject-2.0.pc
+--- gobject/Makefile.am	2009-06-16 22:58:36.000000000 +0200
++++ gobject/Makefile.am.new	2009-06-16 23:01:55.000000000 +0200
+@@ -71,6 +71,12 @@
+ if PLATFORM_WIN32
+ _gobject_la_CFLAGS += -DPLATFORM_WIN32
+ endif
++
++generate-constants$(EXEEXT): generate-constants.c
++	$(CC) $(generate_constants_CFLAGS) -E -o generate-constants.pre.c generate-constants.c
++	$(CC_FOR_BUILD) -o $@ generate-constants.pre.c
++	rm -f generate-constants.pre.c
++
+
+

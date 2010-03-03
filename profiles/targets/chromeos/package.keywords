@@ -19,6 +19,7 @@
 =dev-libs/libffi-3.0.9          x86 arm
 =dev-libs/protobuf-2.2.0	x86 arm
 =dev-python/dbus-python-0.83.0-r1	x86 arm
+=dev-python/numpy-1.4.0		x86 arm
 =dev-python/pyxdg-0.17-r1	x86 arm
 =gnome-base/orbit-2.14.17	x86 arm
 =media-fonts/droid-112_p1 x86 arm
@@ -42,7 +43,7 @@
 =sys-apps/openrc-0.4.3-r4	x86 arm
 =sys-apps/parted-1.9.0		x86 arm
 =sys-apps/rescan-scsi-bus-1.29  x86 arm
-=sys-apps/sg3_utils-1.27.20090411	x86 arm 
+=sys-apps/sg3_utils-1.27.20090411	x86 arm
 =sys-apps/sysvinit-2.86-r12	x86 arm
 =sys-apps/usbutils-0.86-r1	x86 arm
 =sys-apps/util-linux-2.16.1	x86 arm
