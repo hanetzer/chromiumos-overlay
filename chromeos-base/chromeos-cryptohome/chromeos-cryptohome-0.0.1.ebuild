@@ -67,7 +67,20 @@ src_test() {
 	# Only build the tests
 	# TODO(wad) eclass-ify this.
 	scons cryptohome_testrunner ||
-		die "cryptohome_testrunner compile failed."
+		die "cryptohome_testrunner compile failed."	
+
+	if use x86 ; then
+		# Create data for unittests
+		./init_cryptohome_data.sh test_image_dir
+
+		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
+		LIB_PATHS=".:${SYSROOT}/usr/lib:${SYSROOT}/lib"
+		# Set the library paths appropriately and
+        	# run the unit tests with the right loader.
+        	LD_LIBRARY_PATH=$LIB_PATHS:${LIBC_PATH} \
+			${SYSROOT}/lib/ld-linux.so.2 ./cryptohome_testrunner \
+			${GTEST_ARGS} || die "unit tests failed!"
+	fi
 	popd
 }
 
@@ -80,13 +93,14 @@ src_install() {
 	dolib "${S}/libcryptohome_service.so"
 
 	dodir /etc/dbus-1/system.d
-	cp "${S}/etc/Cryptohome.conf" \
-		"${D}/etc/dbus-1/system.d/Cryptohome.conf"
+	insinto /etc/dbus-1/system.d
+	doins "${S}/etc/Cryptohome.conf"
 
 	dodir /usr/share/dbus-1/services/
-	cp "${S}/share/org.chromium.Cryptohome.service" \
-		"${D}/usr/share/dbus-1/services/"
+	insinto /usr/share/dbus-1/services/
+	doins "${S}/share/org.chromium.Cryptohome.service"
 
 	dodir /usr/lib/chromeos-cryptohome
-	cp -a "${S}"/lib/* "${D}/usr/lib/chromeos-cryptohome"
+	insinto /usr/lib/chromeos-cryptohome
+	doins "${S}"/lib/*
 }
