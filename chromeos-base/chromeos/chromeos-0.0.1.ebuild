@@ -11,6 +11,8 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="X"
 
+DEPEND="sys-apps/baselayout"
+
 # XServer
 RDEPEND="${RDEPEND}
 	X? (

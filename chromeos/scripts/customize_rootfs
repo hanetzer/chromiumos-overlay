@@ -48,50 +48,8 @@ if [[ ! -d "$ROOT_FS_DIR" ]]; then
   exit 1
 fi
 
-# Add entry to /etc/passwd
-#
-# $1 - Username (e.g. "messagebus")
-# $2 - "*" to indicate not shadowed, "x" to indicate shadowed
-# $3 - UID (e.g. 200)
-# $4 - GID (e.g. 200)
-# $5 - full name (e.g. "")
-# $6 - home dir (e.g. "/home/foo" or "/var/run/dbus")
-# $7 - shell (e.g. "/bin/sh" or "/bin/false")
-add_user() {
-  echo "${1}:${2}:${3}:${4}:${5}:${6}:${7}" | \
-    sudo dd of="${ROOT_FS_DIR}/etc/passwd" conv=notrunc oflag=append
-}
-
-# Add entry to /etc/shadow
-#
-# $1 - Username
-# $2 - Crypted password
-add_shadow() {
-  echo "${1}:${2}:14500:0:99999::::" | \
-    sudo dd of="${ROOT_FS_DIR}/etc/shadow" conv=notrunc oflag=append
-}
-
-# Add entry to /etc/group
-# $1 - Groupname (e.g. "messagebus")
-# $2 - GID (e.g. 200)
-add_group() {
-  echo "${1}:x:${2}:" | \
-    sudo dd of="${ROOT_FS_DIR}/etc/group" conv=notrunc oflag=append
-}
-
-# TODO: Image is missing some key directories. What package is supposed to
-# create them?
+# TODO: Is this still necessary?
 sudo chmod 0755 "${ROOT_FS_DIR}/."
-sudo mkdir -p "${ROOT_FS_DIR}/dev"
-sudo mkdir -p "${ROOT_FS_DIR}/home"
-sudo mkdir -p "${ROOT_FS_DIR}/proc"
-sudo mkdir -p "${ROOT_FS_DIR}/root"
-sudo mkdir -p "${ROOT_FS_DIR}/sys"
-sudo mkdir -p "${ROOT_FS_DIR}/var/lock"
-sudo mkdir -p "${ROOT_FS_DIR}/media"
-
-# On boot we mount the stateful partition here:
-sudo mkdir -p "${ROOT_FS_DIR}/mnt/stateful_partition"
 
 # TODO: Temporarily pre-seed the devices in /dev for debugging purposes.
 sudo cp -a "${ROOT_FS_DIR}/lib/chromiumos/devices/"* "${ROOT_FS_DIR}/dev"
@@ -112,11 +70,10 @@ respawn
 exec /sbin/agetty 38400 tty2 linux
 EOF
 
-# Set up a default dev user and add to sudo and the video groups.
-# TODO: Make the default user (and password) customizeable
+# Set up a default dev user, update the password entry, and add to sudo.
 # TODO: Make the default user conditional on building a dev image.
 DEV_USER="chronos"
-DEV_UID="1000"
+DEV_UID="1000"  # NOTE: Some scripts expect the system user id to be 1000.
 SHELL="/bin/sh"
 if [[ -x "${ROOT_FS_DIR}/bin/bash" ]] ; then
   SHELL="/bin/bash"
@@ -133,11 +90,12 @@ else
   CRYPTED_PASSWD="$(echo "$PASSWORD" | openssl passwd -1 -stdin)"
   PASSWORD="gone now"
 fi
-
-add_user "${DEV_USER}" "x" "${DEV_UID}" "${DEV_UID}" "dev_user" \
-  "/home/${DEV_USER}" "$SHELL"
-add_shadow "${DEV_USER}" "${CRYPTED_PASSWD}"
-add_group "${DEV_USER}" "${DEV_UID}"
+# Replace the DEV_USER passwd entry with one that sets the proper shell and
+# specifies that the passwd should come from /etc/shadow.
+sudo sed -i "{ s|${DEV_USER}:\*:\(.*\):.*|${DEV_USER}:x:\1:${SHELL}| }" \
+  "${ROOT_FS_DIR}/etc/passwd"
+echo "${DEV_USER}:${CRYPTED_PASSWD}:14500:0:99999::::" \
+  | sudo dd of="${ROOT_FS_DIR}/etc/shadow" conv=notrunc oflag=append
 sudo mkdir -p "${ROOT_FS_DIR}/home/${DEV_USER}"
 sudo chown "${DEV_UID}.${DEV_UID}" "${ROOT_FS_DIR}/home/${DEV_USER}"
 cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/sudoers" conv=notrunc oflag=append
@@ -150,13 +108,6 @@ echo "# Allow chronos user to renice processes so that chrome will adjust tab pr
   sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
 echo "chronos hard nice 0" | \
   sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
-
-# Add the dev user to the video group
-sudo sed -i "{ s/video::27:root/video::27:root,${DEV_USER}/ }" \
-  "${ROOT_FS_DIR}/etc/group"
-# Add the dev user to the audio group
-sudo sed -i "{ s/audio::18:/audio::18:${DEV_USER}/ }" \
-  "${ROOT_FS_DIR}/etc/group"
 
 # TODO: Since the stateful partition may not have a chronos home directory
 # on it, we create one here if necessary.
@@ -173,20 +124,6 @@ fi
 
 end script
 EOF
-
-# Add messagebus user for dbus; grab uid/gid values from host system.
-MB_UID=$(id -u "messagebus")
-MB_GID=$(id -g "messagebus")
-add_user "messagebus" "*" ${MB_UID} ${MB_GID} "dbus_user" /dev/null /bin/false
-add_group "messagebus" ${MB_GID}
-
-# Add ntp user for ntp
-add_user "ntp" "*" 102 102 "ntp_user" /dev/null /bin/false
-add_group "ntp" 102
-
-# Add syslog user for rsyslog
-add_user "syslog" "*" 103 103 "syslog_user" /dev/null /bin/false
-add_group "syslog" 103
 
 # Clobber stock rsyslog.conf with our own
 RSYSLOG_CONF="$ROOT_FS_DIR"/etc/rsyslog.conf
