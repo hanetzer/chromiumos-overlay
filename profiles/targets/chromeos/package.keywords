@@ -23,6 +23,7 @@
 =dev-python/pyxdg-0.17-r1	x86 arm
 =gnome-base/orbit-2.14.17	x86 arm
 =media-fonts/droid-112_p1 x86 arm
+=media-fonts/ja-ipafonts-003.02 x86 arm
 =media-libs/clutter-1.0.6	x86 arm
 =media-libs/fontconfig-2.7.1-r1	x86 arm
 =media-libs/jpeg-6b-r9          x86 arm

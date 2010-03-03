@@ -17,9 +17,10 @@ RDEPEND="${RDEPEND}
 		x86? ( chromeos-base/chromeos-chrome )
 		chromeos-base/chromeos-wm
 		chromeos-base/xorg-conf
-		media-fonts/droid
-		media-fonts/sil-abyssinica
 		media-fonts/dejavu
+		media-fonts/droid
+		media-fonts/ja-ipafonts
+		media-fonts/sil-abyssinica
 		>=x11-base/xorg-server-1.6.3
 		x11-apps/xinit
 	)
