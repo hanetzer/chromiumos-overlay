@@ -1,6 +1,7 @@
 #!/bin/bash
+PROG=$(basename $0)
 
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,6 +25,10 @@ get_default_board
 # Flags
 DEFINE_string board "$DEFAULT_BOARD" \
   "The board to build packages for."
+DEFINE_string chromebuild "" \
+  "The optional version or revision of chrome to pull."
+DEFINE_string chromebase "" \
+  "The optional base URL to pull chrome from."
 DEFINE_boolean usepkg $FLAGS_FALSE \
   "Use binary packages to bootstrap when possible."
 DEFINE_boolean withdev $FLAGS_TRUE \
@@ -71,6 +76,21 @@ if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-dev
 else
   sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+fi
+
+# Pull a different version of chrome if requested and force a non-update
+# emerge build of chrome with those values.
+# If $FLAGS_chromebuild is unset the ebuild takes care of getting "LATEST"
+if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
+  echo "$PROG: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
+  echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
+
+  # if chromebase contains an internal identifier, change CHROME_FILENAME
+  [[ "$FLAGS_chromebase" =~ \.jail ]] && CHROME_FILENAME=chrome-chromeos.zip
+
+  CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild} \
+  CHROME_FILENAME=$CHROME_FILENAME \
+  emerge-${FLAGS_board} chromeos-base/chromeos-chrome
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
