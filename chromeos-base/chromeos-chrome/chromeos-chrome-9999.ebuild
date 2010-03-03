@@ -220,20 +220,16 @@ src_install() {
     echo Copying Chrome tests into "${TEST_DIR}"
     sudo rm -rf "${TEST_DIR}"
     sudo mkdir -p "${TEST_DIR}"
-    sudo mkdir -p "${TEST_DIR}/out/${BUILDTYPE}"
+    sudo mkdir -p "${TEST_DIR}/out/Release"
   
     sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
-        "${TEST_DIR}/out/${BUILDTYPE}"
+        "${TEST_DIR}/out/Release"
     
-    sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/${BUILDTYPE}
-    sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/${BUILDTYPE}
-    sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/${BUILDTYPE}
-    sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/${BUILDTYPE}
+    sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
+    sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
+    sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
+    sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
 
-    sudo mkdir -p "${TEST_DIR}"/out/${BUILDTYPE}/chromeos
-    sudo ln -s "${CHROME_DIR}"/chromeos/libcros.so \
-        "${TEST_DIR}"/out/${BUILDTYPE}/chromeos/libcros.so
-    
     sudo mkdir -p "${TEST_DIR}"/base
     sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
     
@@ -256,6 +252,8 @@ src_install() {
     for f in ${TEST_FILES}; do
       sudo cp "${FROM}/${f}" "${TEST_DIR}"
     done
+    sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
+    sudo chmod -R 755 "${TEST_DIR}"
   fi
 
   insinto /usr/bin
