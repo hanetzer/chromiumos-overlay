@@ -229,6 +229,11 @@ fi
   --board="$BOARD" \
   $WITH_DEV
 
+# Check that the image has been correctly created
+"${SCRIPTS_DIR}/test_image" \
+  --root="$ROOT_FS_DIR" \
+  --target="$ARCH"
+
 cleanup_rootfs_loop
 
 # Create a master boot record.
