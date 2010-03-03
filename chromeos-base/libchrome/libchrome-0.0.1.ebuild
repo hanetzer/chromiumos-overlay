@@ -64,6 +64,7 @@ src_install() {
 	doins "${S}/files/base/compiler_specific.h"
 	doins "${S}/files/base/debug_util.h"
 	doins "${S}/files/base/dynamic_annotations.h"
+	doins "${S}/files/base/eintr_wrapper.h"
 	doins "${S}/files/base/file_descriptor_posix.h"
 	doins "${S}/files/base/file_path.h"
 	doins "${S}/files/base/file_util.h"
