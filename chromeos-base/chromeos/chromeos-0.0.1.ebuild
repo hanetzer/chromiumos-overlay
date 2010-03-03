@@ -30,8 +30,8 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	x86? ( app-i18n/ibus-chewing )
-	x86? ( app-i18n/ibus-hangul )
-	x86? ( app-i18n/ibus-pinyin )
+	app-i18n/ibus-hangul
+	app-i18n/ibus-pinyin
 	x86? ( app-laptop/laptop-mode-tools )
 	app-shells/dash
 	chromeos-base/board-devices
@@ -45,7 +45,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/kernel
-	x86? ( chromeos-base/libcros )
+	chromeos-base/libcros
 	chromeos-base/memento_softwareupdate
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google
