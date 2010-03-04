@@ -65,6 +65,38 @@ src_compile() {
 	popd
 }
 
+src_test() {
+	if tc-is-cross-compiler ; then
+		tc-getCC
+		tc-getCXX
+		tc-getAR
+		tc-getRANLIB
+		tc-getLD
+		tc-getNM
+		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
+		export CCFLAGS="$CFLAGS"
+	fi
+
+	pushd "window_manager"
+	scons tests || die "failed to build tests"
+	popd
+
+	if ! use x86 ; then
+		echo Skipping tests on non-x86 platform...
+	else
+		LIB_PATH="${SYSROOT}/usr/lib:${SYSROOT}/lib"
+		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
+		X11_PATH="${SYSROOT}/usr/lib/opengl/xorg-x11/lib"
+		pushd "window_manager"
+		for test in ./*_test; do
+			LD_LIBRARY_PATH="$LIB_PATH:$LIBC_PATH:$X11_PATH" \
+			    "${SYSROOT}/lib/ld-linux.so.2" \
+			    "$test" ${GTEST_ARGS} || die "$test failed"
+		done
+		popd
+	fi
+}
+
 src_install() {
 	mkdir -p "${D}/usr/bin"
 	cp "${S}/window_manager/wm" "${D}/usr/bin/chromeos-wm"
