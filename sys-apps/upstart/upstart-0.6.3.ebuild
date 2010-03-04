@@ -10,7 +10,7 @@ SRC_URI="http://upstart.ubuntu.com/download/0.6/${P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE="nls"
+IUSE="examples nls"
 
 DEPEND=">=dev-libs/expat-2.0.0
 	>=sys-apps/dbus-1.2.16
@@ -37,4 +37,9 @@ src_compile() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die "make install failed"
+
+	if ! use examples ; then
+		elog "Removing example .conf files."
+		rm "${D}"/etc/init/*.conf
+	fi
 }

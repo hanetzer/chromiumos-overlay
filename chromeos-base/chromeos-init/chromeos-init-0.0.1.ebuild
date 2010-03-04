@@ -27,9 +27,9 @@ src_install() {
 	into /  # We want /sbin, not /usr/sbin, etc.
 
 	# Install Upstart configuration files.
-	dodir /etc/init.chromiumos
+	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
-	  "${S}"/*.conf "${D}/etc/init.chromiumos/"
+	  "${S}"/*.conf "${D}/etc/init/"
 
 	# Install process killing util functions.
 	dosbin "${S}/killers"
