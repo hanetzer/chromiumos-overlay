@@ -24,7 +24,6 @@ RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
 	app-arch/cabextract
 	app-arch/rpm2targz
-	app-arch/dpkg
 	app-arch/unzip
 	dev-lang/python
 	dev-lang/swig
