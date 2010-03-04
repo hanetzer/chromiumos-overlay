@@ -11,10 +11,12 @@
 # Script must be run inside the chroot
 assert_inside_chroot
 
+get_default_board
+
 # Define command line flags
 # See http://code.google.com/p/shflags/wiki/Documentation10x
 
-DEFINE_string board "" "The name of the board to set up."
+DEFINE_string board "$DEFAULT_BOARD" "The name of the board to set up."
 DEFINE_string board_overlay "" "Location of the board overlay."
 DEFINE_string toolchain "" "The toolchain to use.  For example: i686-pc-linux-gnu, armv7a-softfloat-linux-gnueabi"
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
