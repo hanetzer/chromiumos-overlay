@@ -170,6 +170,64 @@ src_compile() {
     || die "compilation failed"
 }
 
+
+install_chrome_test_resources() {
+  if [ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]; then
+    return
+  fi
+  # For test binaries, we are bypassing the image on purpose. These bits will
+  # be picked up later by autotest build. 
+  TEST_DIR="${SYSROOT}"/usr/local/autotest-chrome/
+  FROM_LIB="${FROM}/lib.target/chrome"
+  FROM_TESTS="${FROM}"
+
+  echo Copying Chrome tests into "${TEST_DIR}"
+  sudo rm -rf "${TEST_DIR}"
+  sudo mkdir -p "${TEST_DIR}"
+  sudo mkdir -p "${TEST_DIR}/out/Release"
+
+  sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
+      "${TEST_DIR}/out/Release"
+  
+  sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
+  sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+
+  sudo mkdir -p "${TEST_DIR}"/base
+  sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+  
+  sudo mkdir -p "${TEST_DIR}"/chrome/test/data
+  sudo cp -r "${CHROME_ROOT}"/src/chrome/test/data/* \
+      "${TEST_DIR}"/chrome/test/data
+
+  sudo mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
+  sudo cp -r "${CHROME_ROOT}"/src/net/data/ssl/certificates/* \
+      "${TEST_DIR}"/net/data/ssl/certificates
+
+  sudo mkdir -p "${TEST_DIR}"/net/tools/testserver
+  sudo cp -r "${CHROME_ROOT}"/src/net/tools/testserver/* \
+      "${TEST_DIR}"/net/tools/testserver
+
+  sudo mkdir -p "${TEST_DIR}"/third_party/tlslite
+  sudo cp -r "${CHROME_ROOT}"/src/third_party/tlslite/* \
+      "${TEST_DIR}"/third_party/tlslite
+
+  sudo mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
+  sudo cp -r "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
+      "${TEST_DIR}"/third_party/pyftpdlib
+  
+  for f in ${TEST_FILES}; do
+    sudo cp "${FROM}/${f}" "${TEST_DIR}"
+  done
+  
+  sudo cp "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
+      "${TEST_DIR}"/out/Release
+  
+  sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
+  sudo chmod -R 755 "${TEST_DIR}"
+}
+    
 src_install() {
   if [ "${CHROME_ORIGIN}" = "SERVER_BINARY" ]; then
     FROM="${S}"/${CHROME_FILENAME/.zip/}
@@ -211,49 +269,7 @@ src_install() {
   
   # Chrome test resources 
   if use build_tests; then
-    # For test binaries, we are bypassing the image on purpose. These bits will
-    # be picked up later by autotest build. 
-    TEST_DIR="${SYSROOT}"/usr/local/autotest-chrome/
-    FROM_LIB="${FROM}/lib.target/chrome"
-    FROM_TESTS="${FROM}"
-
-    echo Copying Chrome tests into "${TEST_DIR}"
-    sudo rm -rf "${TEST_DIR}"
-    sudo mkdir -p "${TEST_DIR}"
-    sudo mkdir -p "${TEST_DIR}/out/Release"
-  
-    sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
-        "${TEST_DIR}/out/Release"
-    
-    sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
-    sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
-    sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
-    sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
-
-    sudo mkdir -p "${TEST_DIR}"/base
-    sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
-    
-    sudo mkdir -p "${TEST_DIR}"/chrome/test/data
-    sudo cp -r "${CHROME_ROOT}"/src/chrome/test/data/* \
-        "${TEST_DIR}"/chrome/test/data
-
-    sudo mkdir -p "${TEST_DIR}"/net/tools/testserver
-    sudo cp -r "${CHROME_ROOT}"/src/net/tools/testserver/* \
-        "${TEST_DIR}"/net/tools/testserver
-
-    sudo mkdir -p "${TEST_DIR}"/third_party/tlslite
-    sudo cp -r "${CHROME_ROOT}"/src/third_party/tlslite/* \
-        "${TEST_DIR}"/third_party/tlslite
-
-    sudo mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
-    sudo cp -r "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
-        "${TEST_DIR}"/third_party/pyftpdlib
-    
-    for f in ${TEST_FILES}; do
-      sudo cp "${FROM}/${f}" "${TEST_DIR}"
-    done
-    sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
-    sudo chmod -R 755 "${TEST_DIR}"
+    install_chrome_test_resources
   fi
 
   insinto /usr/bin
