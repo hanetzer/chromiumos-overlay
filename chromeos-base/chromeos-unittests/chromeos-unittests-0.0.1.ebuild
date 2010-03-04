@@ -46,7 +46,7 @@ src_compile() {
 	do
 		elog "building platform/$i"
 		cd "platform/${i}"
-		OUT_DIR="${S}/tests" ./make_tests.sh
+		OUT_DIR="${S}/tests" ./make_tests.sh || die "Could not build tests for ${i}"
 		cd -          
 	done	
 
