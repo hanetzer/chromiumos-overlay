@@ -141,7 +141,7 @@ $ModLoad imklog.so # kernel logging (formerly provided by rklogd)
 
 # Log anything (except mail) of level info or higher.
 # Don't log private authentication messages!
-*.*;mail.none;authpriv.none;cron.none                  -/var/log/syslog
+*.*;mail.none;authpriv.none;cron.none                  -/var/log/messages
 
 # The authpriv file has restricted access.
 authpriv.*                                              /var/log/secure
