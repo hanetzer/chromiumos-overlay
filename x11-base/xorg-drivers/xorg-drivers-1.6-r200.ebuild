@@ -52,6 +52,7 @@ IUSE_VIDEO_CARDS="
 	video_cards_neomagic
 	video_cards_newport
 	video_cards_nv
+	video_cards_omapfb
 	video_cards_r128
 	video_cards_radeon
 	video_cards_radeonhd
@@ -126,6 +127,7 @@ PDEPEND="
 	video_cards_newport?       ( x11-drivers/xf86-video-newport )
 	video_cards_nv?            ( x11-drivers/xf86-video-nv )
 	video_cards_nvidia?        ( x11-drivers/nvidia-drivers )
+	video_cards_omapfb?        ( x11-drivers/xf86-video-omapfb )
 	video_cards_fglrx?         ( x11-drivers/ati-drivers )
 	video_cards_r128?          ( x11-drivers/xf86-video-r128 )
 	video_cards_radeon?        ( x11-drivers/xf86-video-ati )
