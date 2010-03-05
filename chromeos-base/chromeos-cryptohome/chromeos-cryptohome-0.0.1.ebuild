@@ -103,4 +103,8 @@ src_install() {
 	dodir /usr/lib/chromeos-cryptohome
 	insinto /usr/lib/chromeos-cryptohome
 	doins "${S}"/lib/*
+
+	dodir /usr/lib/chromeos-cryptohome/utils
+	insinto /usr/lib/chromeos-cryptohome/utils
+	doins "${S}"/lib/utils/*
 }
