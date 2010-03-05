@@ -245,6 +245,10 @@ src_install() {
   else
     FROM="${CHROME_ROOT}/src/out/${BUILDTYPE}"
   fi
+
+  # Override default strip flags and lose the '-R .comment'
+  # in order to play nice with the crash server.
+  export PORTAGE_STRIP_FLAGS="--strip-unneeded"
   
   # First, things from the chrome build output directory
   CHROME_DIR=/opt/google/chrome
