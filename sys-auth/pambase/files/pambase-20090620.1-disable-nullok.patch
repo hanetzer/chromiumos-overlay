@@ -1,0 +1,21 @@
+diff -Naur pambase-20090620.1.orig/system-auth.in pambase-20090620.1/system-auth.in
+--- pambase-20090620.1.orig/system-auth.in	2009-06-20 13:59:32.000000000 -0700
++++ pambase-20090620.1/system-auth.in	2010-03-04 13:20:50.437848000 -0800
+@@ -4,7 +4,7 @@
+ #if HAVE_PAM_SSH
+ auth		sufficient	pam_ssh.so
+ #endif
+-auth		required	pam_unix.so try_first_pass LIKEAUTH nullok DEBUG
++auth		required	pam_unix.so try_first_pass LIKEAUTH DEBUG
+  
+ account		required	pam_unix.so DEBUG
+  
+@@ -14,7 +14,7 @@
+ #if HAVE_PASSWDQC
+ password	required	pam_passwdqc.so min=8,8,8,8,8 retry=3
+ #endif
+-password	required	pam_unix.so try_first_pass AUTHTOK nullok UNIX_EXTENDED_ENCRYPTION DEBUG
++password	required	pam_unix.so try_first_pass AUTHTOK UNIX_EXTENDED_ENCRYPTION DEBUG
+  
+ #if HAVE_LIMITS
+ session		required	pam_limits.so DEBUG

@@ -35,6 +35,11 @@ RDEPEND="
 	!<sys-libs/pam-0.99.9.0-r1"
 DEPEND="app-portage/portage-utils"
 
+src_prepare() {
+        # Disable nullok option.
+        epatch "${FILESDIR}/${P}-disable-nullok.patch"
+}
+
 src_compile() {
 	local implementation=
 	local linux_pam_version=
