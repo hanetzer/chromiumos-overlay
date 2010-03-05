@@ -47,4 +47,13 @@ src_install() {
 	rm -rf "${D}"/usr/include/sound
 	rm -rf "${D}"/usr/include/scsi
 	rm -rf "${D}"/usr/include/drm
+
+	#
+	# Double hack, install the Qualcomm drm header anyway, its not included in
+	# libdrm, and is required to build xf86-video-msm.
+	#
+	if [ -r "${S}"/include/drm/kgsl_drm.h ]; then
+		insinto /usr/include/drm
+		doins "${S}"/include/drm/kgsl_drm.h
+	fi
 }
