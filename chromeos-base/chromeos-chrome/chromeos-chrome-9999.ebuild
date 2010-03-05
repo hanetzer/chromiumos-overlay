@@ -71,6 +71,17 @@ export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
 HH="${HOME}"
 
+# Must write our own. wget --tries ignores 'connection refused' or 'not found's
+wget_retry () {
+  local i=
+
+  # Retry 3 times
+  for i in $(seq 3); do
+    wget $* && return 0
+  done
+  return 1
+}
+
 src_unpack() {
   # These are set here because $(whoami) returns the proper user here,
   # but 'root' at the root level of the file
@@ -90,7 +101,7 @@ src_unpack() {
 
     if [ -z "${CHROME_BUILD}" ]; then
       elog "Finding latest Chrome build"
-      CHROME_BUILD=$(wget -q -O - "${CHROME_BASE}"/LATEST)
+      CHROME_BUILD=$(wget_retry -q -O - "${CHROME_BASE}"/LATEST)
     fi
     test -n "${CHROME_BUILD}" || die CHROME_BUILD not set
     elog "Fetching Chrome build $CHROME_BUILD"
@@ -99,7 +110,7 @@ src_unpack() {
     
     mkdir -p "${S}"
     cd "${S}"
-    wget "${URL}" || die Download "${URL}" failed
+    wget_retry "${URL}" || die Download "${URL}" failed
     unzip "${CHROME_FILENAME}" || die unzip failed
     
     rm "${CHROME_FILENAME}"
@@ -108,7 +119,7 @@ src_unpack() {
       cd "${CHROME_FILENAME/.zip/}"
       TEST_URL="${CHROME_BASE}/${CHROME_BUILD}/chrome-linux.test"
       for f in ${TEST_FILES}; do
-        wget "$TEST_URL/$f"
+        wget_retry "$TEST_URL/$f"
       done
     fi
   else
