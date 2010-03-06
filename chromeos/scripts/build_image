@@ -8,9 +8,6 @@
 # a chromiumos setup. This assumes that all needed packages have been built into
 # the given target's root with binary packages turned on. This script will
 # build the Chrome OS image using only pre-built binary packages.
-#
-# NOTE: This script must be run from the chromeos build chroot environment.
-#
 
 # Load common constants.  This should be the first executable line.
 # The path to common.sh should be relative to your script's location.
@@ -24,14 +21,12 @@ get_default_board
 # Flags
 DEFINE_string board "$DEFAULT_BOARD" \
   "The board to build an image for."
-DEFINE_string board_root "/build" \
+DEFINE_string build_root "/build" \
   "The root location for board sysroots."
-DEFINE_integer build_attempt 1                                \
+DEFINE_integer build_attempt 1 \
   "The build attempt for this image build."
-DEFINE_string output_root "${DEFAULT_BUILD_ROOT}/images"      \
+DEFINE_string output_root "${DEFAULT_BUILD_ROOT}/images" \
   "Directory in which to place image result directories (named by version)"
-DEFINE_string build_root "$DEFAULT_BUILD_ROOT"                \
-  "Root of build output"
 DEFINE_boolean replace $FLAGS_FALSE \
   "Overwrite existing output, if any."
 DEFINE_boolean withdev $FLAGS_TRUE \
@@ -44,17 +39,20 @@ DEFINE_integer jobs -1 \
 # DEPRECATED
 DEFINE_string target "DEPRECATED" \
   "This flag is deprecated and should be removed when buildbots are updated."
+DEFINE_string board_root "DEPRECATED" \
+  "This flag is deprecated and should be removed when buildbots are updated."
 
 
 # Parse command line
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
-# Die on any errors.
+# Only now can we die on error.  shflags functions leak non-zero error codes,
+# so will die prematurely if 'set -e' is specified before now.
 set -e
 
 if [ -z "$FLAGS_board" ] ; then
-  echo "Error: --board is required."
+  error "--board is required."
   exit 1
 fi
 
@@ -71,12 +69,12 @@ MBR_IMG="${OUTPUT_DIR}/mbr.image"
 OUTPUT_IMG="${OUTPUT_DIR}/usb.img"
 
 BOARD="${FLAGS_board}"
-BOARD_DIR="${FLAGS_board_root}/${BOARD}"
+BOARD_ROOT="${FLAGS_build_root}/${BOARD}"
 
 LOOP_DEV=
 
 # What cross-build are we targeting?
-. "${BOARD_DIR}/etc/make.conf.board_setup"
+. "${BOARD_ROOT}/etc/make.conf.board_setup"
 LIBC_VERSION=${LIBC_VERSION:-"2.10.1-r1"}
 
 # Figure out ARCH from the given toolchain
@@ -90,13 +88,13 @@ case "$TC_ARCH" in
     ARCH="x86"
     ;;
   *)
-    echo "Error: Unable to determine ARCH from toolchain: $CHOST"
+    error "Unable to determine ARCH from toolchain: $CHOST"
     exit 1
 esac
 
 # Hack to fix bug where x86_64 CHOST line gets incorrectly added
 # ToDo(msb): remove this hack
-PACKAGES_FILE="${BOARD_DIR}/packages/Packages"
+PACKAGES_FILE="${BOARD_ROOT}/packages/Packages"
 sudo sed -e "s/CHOST: x86_64-pc-linux-gnu//" -i "${PACKAGES_FILE}"
 
 # Handle existing directory
@@ -190,8 +188,8 @@ sudo tar jxvpf \
 
 # We need to install libstdc++ manually from the cross toolchain.
 # TODO: Figure out a better way of doing this?
-sudo cp -a "${BOARD_DIR}"/lib/libgcc_s.so* "${ROOT_FS_DIR}/lib"
-sudo cp -a "${BOARD_DIR}"/usr/lib/libstdc++.so* "${ROOT_FS_DIR}/usr/lib"
+sudo cp -a "${BOARD_ROOT}"/lib/libgcc_s.so* "${ROOT_FS_DIR}/lib"
+sudo cp -a "${BOARD_ROOT}"/usr/lib/libstdc++.so* "${ROOT_FS_DIR}/usr/lib"
 
 INSTALL_MASK=""
 if [[ $FLAGS_installmask -eq $FLAGS_TRUE ]] ; then

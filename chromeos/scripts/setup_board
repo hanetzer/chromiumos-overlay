@@ -6,6 +6,8 @@
 
 # This script sets up a the sysroot for a particular target board.
 
+# Load common constants.  This should be the first executable line.
+# The path to common.sh should be relative to your script's location.
 . "$(dirname "$0")/common.sh"
 
 # Script must be run inside the chroot
@@ -13,21 +15,29 @@ assert_inside_chroot
 
 get_default_board
 
-# Define command line flags
-# See http://code.google.com/p/shflags/wiki/Documentation10x
-
-DEFINE_string board "$DEFAULT_BOARD" "The name of the board to set up."
-DEFINE_string board_overlay "" "Location of the board overlay."
-DEFINE_string toolchain "" "The toolchain to use.  For example: i686-pc-linux-gnu, armv7a-softfloat-linux-gnueabi"
-DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
-DEFINE_boolean  force $FLAGS_FALSE "Force re-creating board root."
-
-DEFINE_string buildroot "/build" "Location for build output and sysroots."
-DEFINE_string binutils_version "2.19.1-r1" "Version of binutils to use."
-DEFINE_string gcc_version "4.4.1" "Version of gcc to use."
-DEFINE_string libc_version "2.10.1-r1" "Version of libc to use."
-DEFINE_string kernel_version "2.6.30-r1" "Version of kernel headers to use."
-DEFINE_boolean default $FLAGS_FALSE "Set board to the default board in your chroot"
+# Flags
+DEFINE_string board "" \
+  "The name of the board to set up."
+DEFINE_string build_root "/build" \
+  "The root location for board sysroots."
+DEFINE_string board_overlay "" \
+  "Location of the board overlay."
+DEFINE_string toolchain "" \
+  "Toolchain.  For example: i686-pc-linux-gnu, armv7a-softfloat-linux-gnueabi"
+DEFINE_boolean usepkg $FLAGS_TRUE \
+  "Use binary packages to bootstrap."
+DEFINE_boolean force $FLAGS_FALSE \
+  "Force re-creating board root."
+DEFINE_string binutils_version "2.19.1-r1" \
+  "Version of binutils to use."
+DEFINE_string gcc_version "4.4.1" \
+  "Version of gcc to use."
+DEFINE_string libc_version "2.10.1-r1" \
+  "Version of libc to use."
+DEFINE_string kernel_version "2.6.30-r1" \
+  "Version of kernel headers to use."
+DEFINE_boolean default $FLAGS_FALSE \
+  "Set board to the default board in your chroot"
 
 # Parse command line flags
 FLAGS "$@" || exit 1
@@ -37,19 +47,18 @@ eval set -- "${FLAGS_ARGV}"
 # so will die prematurely if 'set -e' is specified before now.
 set -e
 
-# Check on the board that they are trying to set up.
 if [ -z "$FLAGS_board" ] ; then
-  echo "Error: --board required."
+  error "--board required."
   exit 1
 fi
 BOARD="$FLAGS_board"
-BOARD_ROOT="${FLAGS_buildroot}/${BOARD}"
+BOARD_ROOT="${FLAGS_build_root}/${BOARD}"
 if [ -d "$BOARD_ROOT" ] ; then
-  echo "Error: Board output directory '$BOARD_ROOT' already exists."
   if [[ $FLAGS_force -eq $FLAGS_TRUE ]]; then
     echo "--force set.  Re-creating $BOARD_ROOT..."
     sudo rm -rf $BOARD_ROOT
   else
+    error "Board output directory '$BOARD_ROOT' already exists."
     exit 1
   fi
 fi
@@ -137,7 +146,7 @@ case "$TC_ARCH" in
     ARCH="x86"
     ;;
   *)
-    echo "Error: Unable to determine ARCH from toolchain: $FLAGS_toolcahin"
+    error "Unable to determine ARCH from toolchain: $FLAGS_toolcahin"
     exit 1
 esac
 
