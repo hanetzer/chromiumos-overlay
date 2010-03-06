@@ -117,7 +117,6 @@ src_configure() {
 	econf $(use_enable readline) \
 		$(use_enable selinux) \
 		--enable-pkgconfig \
-		--libdir=/usr/$(get_libdir) \
 		${myconf} \
 		CLDFLAGS="${LDFLAGS}" || die
 }
