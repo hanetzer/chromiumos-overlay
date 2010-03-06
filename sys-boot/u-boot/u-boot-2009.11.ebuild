@@ -49,6 +49,9 @@ src_install() {
 
 	cp -a "${S}"/u-boot.bin "${D}"/u-boot/ || die
 
+        cp "${S}"/tools/mkimage "${D}"/u-boot/ && gzip "${D}"/u-boot/mkimage \
+              || die
+
 	dodir /boot
 
 	"${S}"/tools/mkimage -A "${ARCH}" \
