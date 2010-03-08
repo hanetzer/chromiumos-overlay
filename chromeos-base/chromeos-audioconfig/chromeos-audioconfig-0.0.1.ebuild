@@ -17,16 +17,24 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 ASOUNDCONF="${S}/${PN}/etc/asound.conf"
+PULSE_DIR="${S}/${PN}/etc/pulse"
 
 src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
+	local audioconfig="${CHROMEOS_ROOT}/src/platform/audioconfig"
+	elog "Using audioconfig: ${audioconfig}"
 	mkdir -p $(dirname "${ASOUNDCONF}")
-	cp -a "${platform}/audioconfig/asound.conf" "${ASOUNDCONF}" || die
-	chmod 0644 "${ASOUNDRC}"
+	cp -a "${audioconfig}"/asound.conf "${ASOUNDCONF}" || die
+
+	mkdir -p "${PULSE_DIR}"
+	cp -a "${audioconfig}"/pulse/* "${PULSE_DIR}" || die
 }
 
 src_install() {
-	dodir "/etc"
-	cp -a "${ASOUNDCONF}" "${D}/etc/"
+	dodir /etc
+	insinto /etc
+	doins "${ASOUNDCONF}"
+
+	dodir /etc/pulse
+	insinto /etc/pulse
+	doins "${PULSE_DIR}"/*
 }

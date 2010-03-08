@@ -301,3 +301,7 @@ GOOGLE_RELEASE=$CHROMEOS_VERSION_STRING
 CHROMEOS_AUSERVER=$CHROMEOS_VERSION_AUSERVER
 CHROMEOS_DEVSERVER=$CHROMEOS_VERSION_DEVSERVER
 EOF
+
+# We need to replace /etc/pulse/client.conf with our own version.
+sudo mv "${ROOT_FS_DIR}/etc/pulse/client-cros.conf" \
+  "${ROOT_FS_DIR}/etc/pulse/client.conf"
