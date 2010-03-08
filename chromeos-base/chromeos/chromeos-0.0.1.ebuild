@@ -64,6 +64,7 @@ RDEPEND="${RDEPEND}
 	       net-wireless/iwl6000-ucode
 	)
 	net-wireless/ath6k
+	net-wireless/bluez
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
 	x86? ( sys-apps/devicekit-disks )
