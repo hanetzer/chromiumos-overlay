@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 app-editors/qemacs	-X
+app-i18n/ibus-m17n	-nls
 app-shells/bash		-net
 dev-cpp/glog		gflags
 dev-lang/python		-berkdb -gdbm

@@ -34,6 +34,7 @@ RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	x86? ( app-i18n/ibus-chewing )
 	app-i18n/ibus-hangul
+	x86? ( app-i18n/ibus-m17n )
 	app-i18n/ibus-pinyin
 	x86? ( app-laptop/laptop-mode-tools )
 	app-shells/dash
