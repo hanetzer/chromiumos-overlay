@@ -41,11 +41,28 @@ src_compile() {
                 tc-getRANLIB
                 tc-getLD
                 tc-getNM
+		tc-getPROG PKG_CONFIG pkg-config
                 export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
                 export CCFLAGS="$CFLAGS"
         fi
 
         scons -f SConstruct.chromiumos || die "cros compile failed."
+}
+
+src_test() {
+        if tc-is-cross-compiler ; then
+                tc-getCC
+                tc-getCXX
+                tc-getAR
+                tc-getRANLIB
+                tc-getLD
+                tc-getNM
+		tc-getPROG PKG_CONFIG pkg-config
+                export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
+                export CCFLAGS="$CFLAGS"
+        fi
+
+        scons -f SConstruct.chromiumos test || die "cros tests compile failed."
 }
 
 src_install() {
