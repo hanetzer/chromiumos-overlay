@@ -22,7 +22,8 @@ src_unpack() {
 }
 
 src_compile() {
-	export CCFLAGS="$CFLAGS"
+	tc-getCC
+	tc-getAR
 	emake -j1 || die "emake failed"
 }
 
