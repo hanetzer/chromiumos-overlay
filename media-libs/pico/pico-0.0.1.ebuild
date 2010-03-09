@@ -30,6 +30,9 @@ src_unpack() {
 }
 
 src_compile() {
+	# Use cross-compiler, otherwise a 64-bit binary is created.
+	tc-getCC
+	tc-getAR
 	export CCFLAGS="$CFLAGS"
 	emake -j1 || die "emake failed"
 }
