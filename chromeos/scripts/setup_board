@@ -16,7 +16,7 @@ assert_inside_chroot
 get_default_board
 
 # Flags
-DEFINE_string board "" \
+DEFINE_string board "$DEFAULT_BOARD" \
   "The name of the board to set up."
 DEFINE_string build_root "/build" \
   "The root location for board sysroots."
