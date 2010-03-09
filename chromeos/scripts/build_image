@@ -36,12 +36,6 @@ DEFINE_boolean installmask $FLAGS_TRUE \
 DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
 
-# DEPRECATED
-DEFINE_string target "DEPRECATED" \
-  "This flag is deprecated and should be removed when buildbots are updated."
-DEFINE_string board_root "DEPRECATED" \
-  "This flag is deprecated and should be removed when buildbots are updated."
-
 
 # Parse command line
 FLAGS "$@" || exit 1
