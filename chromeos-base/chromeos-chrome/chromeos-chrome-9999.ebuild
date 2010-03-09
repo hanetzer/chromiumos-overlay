@@ -41,6 +41,7 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/chromiu
 TEST_FILES="ffmpeg_tests
             omx_test"
 
+# TODO(cmasone): Remove pam dependency when "session" target is removed
 RDEPEND="app-arch/bzip2
          chromeos-base/chromeos-theme
          dev-libs/atk
@@ -59,8 +60,9 @@ RDEPEND="app-arch/bzip2
          media-libs/jpeg
          media-libs/libpng
          media-libs/mesa
+         sys-libs/pam
          sys-libs/zlib
-	 x86? ( www-plugins/adobe-flash )
+         x86? ( www-plugins/adobe-flash )
          >=x11-libs/gtk+-2.14.7
          x11-libs/libXScrnSaver"
 DEPEND="${RDEPEND}
