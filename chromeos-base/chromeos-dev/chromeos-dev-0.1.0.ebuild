@@ -40,6 +40,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/gdb
 	sys-fs/fuse[-kernel_linux]
 	sys-fs/sshfs-fuse
+	sys-power/powertop
 	sys-process/procps
 	"
 
