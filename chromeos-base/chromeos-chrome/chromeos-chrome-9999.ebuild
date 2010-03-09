@@ -157,6 +157,9 @@ src_prepare() {
   cd "${CHROME_ROOT}"/src || die
 
   test -n "${EGCLIENT}" || die EGCLIENT unset
+
+  [ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
+
   ${EGCLIENT} runhooks --force
 }
 
@@ -191,7 +194,7 @@ install_chrome_test_resources() {
   # For test binaries, we are bypassing the image on purpose. These bits will
   # be picked up later by autotest build. 
   TEST_DIR="${SYSROOT}"/usr/local/autotest-chrome/
-  FROM_LIB="${FROM}/lib.target/chrome"
+  FROM_LIB="${FROM}/lib.target"
   FROM_TESTS="${FROM}"
 
   echo Copying Chrome tests into "${TEST_DIR}"
