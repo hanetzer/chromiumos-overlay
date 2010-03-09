@@ -21,7 +21,6 @@ CDEPEND="alsa? ( media-libs/alsa-lib )
 		>=media-libs/gst-plugins-base-0.10 )
 	usb? ( dev-libs/libusb )
 	cups? ( net-print/cups )
-	sys-fs/udev
 	dev-libs/glib
 	sys-apps/dbus
 	media-libs/libsndfile
@@ -105,22 +104,10 @@ src_install() {
 		cd "${S}"
 	fi
 
-	newinitd "${FILESDIR}/4.18/bluetooth-init.d" bluetooth || die
-	newconfd "${FILESDIR}/4.18/bluetooth-conf.d" bluetooth || die
-
 	if use old-daemons; then
 		newconfd "${FILESDIR}/4.18/conf.d-hidd" hidd || die
 		newinitd "${FILESDIR}/4.18/init.d-hidd" hidd || die
 	fi
-
-	# bug #84431
-	insinto /etc/udev/rules.d/
-	newins "${FILESDIR}/${PN}-4.18-udev.rules" 70-bluetooth.rules || die
-	newins "${S}/scripts/bluetooth.rules" 70-bluetooth-pcmcia.rules || die
-
-	exeinto /$(get_libdir)/udev/
-	newexe "${FILESDIR}/${PN}-4.18-udev.script" bluetooth.sh || die
-	doexe  "${S}/scripts/bluetooth_serial" || die
 
 	insinto /etc/bluetooth
 	doins \
@@ -130,8 +117,6 @@ src_install() {
 }
 
 pkg_postinst() {
-	udevadm control --reload_rules && udevadm trigger
-
 	elog
 	elog "To use dial up networking you must install net-dialup/ppp."
 	elog ""
@@ -163,9 +148,6 @@ pkg_postinst() {
 		elog "to the required runleves using rc-update <runlevel> add hidd. If"
 		elog "you need init scripts for the other daemons, please file requests"
 		elog "to https://bugs.gentoo.org."
-	else
-		elog "The bluetooth service should be started automatically by udev"
-		elog "when the required hardware is inserted next time."
 	fi
 	elog
 	ewarn "On first install you need to run /etc/init.d/dbus reload or hcid"
