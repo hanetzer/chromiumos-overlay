@@ -287,7 +287,7 @@ EOF
 
 cat <<EOF | sudo dd of="$EBUILD_WRAPPER" \
         oflag=append conv=notrunc > /dev/null 2>&1
-export ROOT="$BUILD_ROOT"
+export ROOT="$BOARD_ROOT"
 exec sudo -E ebuild "\$@"
 EOF
 
