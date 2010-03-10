@@ -13,20 +13,19 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="opengles"
 
-RDEPEND="dev-libs/libpcre
-	dev-libs/protobuf
-	dev-cpp/gflags
+RDEPEND="dev-cpp/gflags
 	dev-cpp/glog
-	x11-libs/gtk+
-	x11-libs/libXcomposite
+	dev-libs/libpcre
+	dev-libs/protobuf
+	media-libs/libpng
+	x11-libs/cairo
+	x11-libs/libxcb
+	x11-libs/libX11
 	x11-libs/libXdamage
 	x11-libs/libXext
-	x11-libs/libX11
 	!opengles? ( virtual/opengl )
 	opengles? ( x11-drivers/opengles )"
 DEPEND="chromeos-base/libchrome
-	chromeos-base/libchromeos
-	dev-cpp/gtkmm
 	dev-libs/vectormath
 	${RDEPEND}"
 
