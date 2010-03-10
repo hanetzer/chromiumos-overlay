@@ -313,5 +313,8 @@ if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
 fi
 
 echo "Done!"
-echo "You can use the emerge wrapper: ${EMERGE_WRAPPER}"
+echo "You can use the following wrappers:"
+echo "  ${EMERGE_WRAPPER}"
+echo "  ${EBUILD_WRAPPER}"
+echo "  ${EQUERY_WRAPPER}"
 echo "The SYSROOT is: ${BOARD_ROOT}"
