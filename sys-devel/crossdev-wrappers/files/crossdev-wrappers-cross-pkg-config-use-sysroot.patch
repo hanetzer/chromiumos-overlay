@@ -1,0 +1,20 @@
+diff -Naur crossdev-wrappers-orig/cross-pkg-config crossdev-wrappers/cross-pkg-config
+--- crossdev-wrappers-orig/cross-pkg-config	2010-03-05 14:57:11.000000000 -0800
++++ crossdev-wrappers/cross-pkg-config	2010-03-05 15:02:22.000000000 -0800
+@@ -6,7 +6,7 @@
+ # -solar
+ # Also uses vapier's code from uclinux-dist 
+ 
+-if [[ "x$ROOT" == "x" ]]; then
++if [[ "x$SYSROOT" == "x" ]]; then
+ 	exit 1
+ fi
+ 
+@@ -20,7 +20,6 @@
+ }
+ 
+ 
+-SYSROOT="$ROOT"
+ export PKG_CONFIG_LIBDIR="${SYSROOT}/usr/lib/pkgconfig:${SYSROOT}/usr/share/pkgconfig"
+ unset PKG_CONFIG_PATH PKG_CONFIG_ALLOW_SYSTEM_CFLAGS PKG_CONFIG_ALLOW_SYSTEM_LIBS
+ #export PKG_CONFIG_DEBUG_SPEW="yes" #enable for debug
