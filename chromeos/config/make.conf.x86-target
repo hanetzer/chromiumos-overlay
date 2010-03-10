@@ -20,7 +20,7 @@ CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/"
 CXXFLAGS="${CFLAGS}"
 LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
 
-VIDEO_CARDS="intel"
+VIDEO_CARDS="intel vmware vesa"
 INPUT_DEVICES="evdev keyboard mouse synaptics"
 
 # Allow a board to override or define additional settings.
