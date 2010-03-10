@@ -27,6 +27,7 @@ src_unpack() {
 	epatch "${FILESDIR}"/${PN}-cross-fix-root-regex.patch
 	epatch "${FILESDIR}"/${PN}-cross-pkg-config-stronger-warn.patch
 	epatch "${FILESDIR}"/${PN}-cross-fix-root-binaries.patch
+	epatch "${FILESDIR}"/${PN}-cross-pkg-config-use-sysroot.patch
 	install --mode=0644 "${FILESDIR}"/linux-gnu "${S}"/site
 }
 
