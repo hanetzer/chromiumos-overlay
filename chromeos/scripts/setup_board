@@ -265,6 +265,7 @@ sudo ln -sf \
 # Create emerge wrapper
 EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD}"
 EBUILD_WRAPPER="/usr/local/bin/ebuild-${BOARD}"
+EQUERY_WRAPPER="/usr/local/bin/equery-${BOARD}"
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" > /dev/null 2>&1
 #!/bin/bash
 
@@ -277,6 +278,7 @@ EOF
 
 sudo chmod +x "$EMERGE_WRAPPER"
 sudo cp "$EMERGE_WRAPPER" "$EBUILD_WRAPPER"
+sudo cp "$EMERGE_WRAPPER" "$EQUERY_WRAPPER"
 
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" \
         oflag=append conv=notrunc > /dev/null 2>&1
@@ -287,6 +289,12 @@ cat <<EOF | sudo dd of="$EBUILD_WRAPPER" \
         oflag=append conv=notrunc > /dev/null 2>&1
 export ROOT="$BUILD_ROOT"
 exec sudo -E ebuild "\$@"
+EOF
+
+cat <<EOF | sudo dd of="$EQUERY_WRAPPER" \
+        oflag=append conv=notrunc > /dev/null 2>&1
+export ROOT="$BOARD_ROOT"
+exec sudo -E equery "\$@"
 EOF
 
 #
