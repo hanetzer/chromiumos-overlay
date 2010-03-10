@@ -56,7 +56,10 @@ BOARD_ROOT="${FLAGS_build_root}/${BOARD}"
 if [ -d "$BOARD_ROOT" ] ; then
   if [[ $FLAGS_force -eq $FLAGS_TRUE ]]; then
     echo "--force set.  Re-creating $BOARD_ROOT..."
-    sudo rm -rf $BOARD_ROOT
+    # Removal takes long. Make it asynchronous.
+    TEMP_DIR=`mktemp -d`
+    sudo mv $BOARD_ROOT $TEMP_DIR
+    sudo rm -rf $TEMP_DIR &
   else
     error "Board output directory '$BOARD_ROOT' already exists."
     exit 1
