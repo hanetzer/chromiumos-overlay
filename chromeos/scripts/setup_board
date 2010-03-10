@@ -185,6 +185,11 @@ for i in c++ cpp g++ gcc gfortran ; do
   fi
 done
 
+# TODO(cmasone): Do this more cleanly, if we figure out what "cleanly" means.
+# Set up wrapper for pkg-config.  Point a board-specific wrapper at the
+# generic wrapper script created by crossdev-wrapper
+sudo ln -s "/usr/bin/cross-pkg-config" "/usr/bin/${FLAGS_toolchain}-pkg-config"
+
 #
 # Untar glibc to get most of the headers required to build.
 #
