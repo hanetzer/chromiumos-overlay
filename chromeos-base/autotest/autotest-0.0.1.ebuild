@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+autox"
+IUSE="+autox buildcheck"
 
 RDEPEND="
   dev-lang/python
@@ -64,7 +64,9 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 	# Do not use sudo, it'll unset all your environment
-	LOGNAME=${SUDO_USER} client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST}
+	LOGNAME=${SUDO_USER} \
+          client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST} \
+          || ! use buildcheck || die "Tests failed to build."
         # Cleanup some temp files after compiling
         find . -name '*.[ado]' -delete
 }
