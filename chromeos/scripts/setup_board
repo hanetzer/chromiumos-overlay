@@ -85,7 +85,7 @@ fi
 # level board specific overlay.
 #
 PRIMARY_BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${BOARD}"
-BOARD_MAKE_CONF=""
+BOARD_MAKE_CONF_LIST=""
 
 if [ ! -d "${PRIMARY_BOARD_OVERLAY}" ]; then
   warn "No board overlay found. [${PRIMARY_BOARD_OVERLAY}]"
@@ -96,6 +96,7 @@ else
   # Link make.conf.board to the board overlay's make.conf.  It must exist.
   #
   BOARD_MAKE_CONF="${PRIMARY_BOARD_OVERLAY}/make.conf"
+  BOARD_MAKE_CONF_LIST="${PRIMARY_BOARD_MAKE_CONF}"
 
   if [ ! -f "${BOARD_MAKE_CONF}" ]; then
     error "No board make.conf found. [${BOARD_MAKE_CONF}]"
@@ -118,7 +119,6 @@ else
   # Populate the BOARD_OVERLAY_LIST with the primary board overlay and any
   # additional overlays.
   #
-
   EXTRA_BOARD_OVERLAY_LIST=$(find \
     "${SRC_ROOT}/overlays" \
     -maxdepth 1 \
@@ -126,6 +126,15 @@ else
     -name "overlay-${BOARD}-*" | sort -r)
 
   BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
+
+  #
+  # Populate the BOARD_MAKE_CONF_LIST with any additional make.conf files.
+  #
+  for overlay in ${BOARD_OVERLAY_LIST} ; do
+    if [ -f "${overlay}/make.conf" ]; then
+      BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
+    fi
+  done
 fi
 
 #
@@ -247,11 +256,11 @@ MAKEOPTS="-j${NUM_JOBS}"
 LIBC_VERSION="$FLAGS_libc_version"
 EOF
 
-if [ -f "${BOARD_MAKE_CONF}" ]; then
-  sudo ln -sf "${BOARD_MAKE_CONF}" "${BOARD_ETC}/make.conf.board"
-else
-  sudo touch "${BOARD_ETC}/make.conf.board"
-fi
+sudo touch "${BOARD_ETC}/make.conf.board"
+
+for make_conf in ${BOARD_MAKE_CONF_LIST} ; do
+  sudo bash -c "echo source ${make_conf} >> ${BOARD_ETC}/make.conf.board"
+done
 
 # Setup make.globals and the profile.
 sudo touch /etc/make.conf.user
