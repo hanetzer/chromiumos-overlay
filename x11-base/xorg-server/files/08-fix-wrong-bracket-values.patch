@@ -1,0 +1,121 @@
+From ed5b62184ca07005afc63522cd518ae754d71c9b Mon Sep 17 00:00:00 2001
+From: David James <davidjames@google.com>
+Date: Thu, 11 Mar 2010 10:36:37 -0800
+Subject: [PATCH] Fix wrong bracket values when startOver = FALSE.
+ Currently, SyncComputeBracketValues reuses old values of bracket_greater
+ and bracket_less when startOver = FALSE. This can result in incorrect bracket
+ values. To fix this issue, the startOver parameter is removed, and we do not
+ reuse old values of bracket_greater and bracket_less.
+
+X.Org Bug 27023 <http://bugs.freedesktop.org/show_bug.cgi?id=27023>
+---
+ xorg-server-1.6.4/Xext/sync.c |   21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
+
+--- xorg-server-1.6.4/Xext/sync.c~	2010-03-10 20:46:58.345688000 -0800
++++ xorg-server-1.6.4/Xext/sync.c	2010-03-11 10:18:01.367711000 -0800
+@@ -222,8 +222,7 @@
+ );
+ 
+ static void SyncComputeBracketValues(
+-    SyncCounter * /* pCounter */,
+-    Bool /* startOver */
++    SyncCounter * /* pCounter */
+ );
+ 
+ static void
+@@ -333,7 +332,7 @@
+     }
+     
+     if (IsSystemCounter(pTrigger->pCounter))
+-	SyncComputeBracketValues(pTrigger->pCounter, /*startOver*/ TRUE);
++	SyncComputeBracketValues(pTrigger->pCounter);
+ }
+ 
+ 
+@@ -361,7 +360,7 @@
+     pTrigger->pCounter->pTriglist = pCur;
+ 
+     if (IsSystemCounter(pTrigger->pCounter))
+-	SyncComputeBracketValues(pTrigger->pCounter, /*startOver*/ TRUE);
++	SyncComputeBracketValues(pTrigger->pCounter);
+ 
+     return Success;
+ }
+@@ -531,7 +530,7 @@
+     }
+     else if (IsSystemCounter(pCounter))
+     {
+-	SyncComputeBracketValues(pCounter, /*startOver*/ TRUE);
++	SyncComputeBracketValues(pCounter);
+     }
+     
+     return Success;
+@@ -835,7 +834,7 @@
+ 
+     if (IsSystemCounter(pCounter))
+     {
+-	SyncComputeBracketValues(pCounter, /* startOver */ FALSE);
++	SyncComputeBracketValues(pCounter);
+     }
+ }
+ 
+@@ -1117,9 +1116,8 @@
+ }
+ 
+ static void
+-SyncComputeBracketValues(pCounter, startOver)
++SyncComputeBracketValues(pCounter)
+     SyncCounter *pCounter;
+-    Bool startOver;
+ {
+     SyncTriggerList *pCur;
+     SyncTrigger *pTrigger;
+@@ -1136,11 +1134,8 @@
+     if (ct == XSyncCounterNeverChanges)
+ 	return;
+ 
+-    if (startOver)
+-    {
+-	XSyncMaxValue(&psci->bracket_greater);
+-	XSyncMinValue(&psci->bracket_less);
+-    }
++    XSyncMaxValue(&psci->bracket_greater);
++    XSyncMinValue(&psci->bracket_less);
+ 
+     for (pCur = pCounter->pTriglist; pCur; pCur = pCur->next)
+     {
+--
+Reproduction recipe:
+  1. Setup a positive transition alarm for when idle time exceeds 2000ms
+  2. Setup a positive transition alarm for when idle time exceeds 5000ms
+  3. Become idle, and wait for the alarms to trigger.
+
+Expected result:
+  - When idle time exceeds 2000ms, the first alarm triggers.
+  - When idle time exceeds 5000ms, the second alarm triggers.
+
+Actual result:
+  - When idle time exceeds 2000ms, the first alarm triggers.
+  - When idle time exceeds 5000ms, the second alarm does not trigger.
+
+Analysis:
+
+ 1) When you first setup the alarms, the SyncComputeBracketValues function is
+called with startOver = TRUE. In this case, the bracket values are calculated
+correctly, and the member variable "bracket_greater" on the idle time counter
+is set to 2000.
+ 2) When the first alarm triggers, the SyncComputeBracketValues function is
+called with startOver = FALSE, from SyncChangeCounter. In this case, the second
+alarm should be set up, and the member variable "bracket_greater" on the idle
+time counter should be set to 5000. However, because the test value (5000) is
+greater than the previous value of bracket_greater (2000), this alarm is not
+enabled.
+
+Solution:
+
+To fix this problem, I updated the SyncChangeCounter function to call
+SyncComputeBracketValues with startOver = TRUE. This causes "bracket_greater"
+to be reset and the alarm to be triggered correctly. After doing this, the
+startOver variable is always set to TRUE, so I also cleaned up the code and
+eliminated this parameter altogether.

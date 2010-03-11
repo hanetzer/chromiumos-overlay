@@ -114,6 +114,7 @@ PATCHES=(
 	"${FILESDIR}/05moblin-xorg-x11-nonroot-vesa.patch"
 	"${FILESDIR}/06moblin-xserver-boottime.patch"
 	"${FILESDIR}/07moblin-use-sloppy-heuristic-first-for-initial-mode.patch"
+	"${FILESDIR}/08-fix-wrong-bracket-values.patch"
 	)
 
 pkg_setup() {
