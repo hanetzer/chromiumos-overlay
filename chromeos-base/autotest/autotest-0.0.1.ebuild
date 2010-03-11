@@ -11,11 +11,14 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+autox buildcheck"
+IUSE="+autox buildcheck +xset"
 
+# TODO(snanda): Remove xset dependence once power_LoadTest is switched over
+# to use power manager
 RDEPEND="
   dev-lang/python
   autox? ( chromeos-base/autox )
+  xset? ( x11-apps/xset )
   "
 
 DEPEND="
