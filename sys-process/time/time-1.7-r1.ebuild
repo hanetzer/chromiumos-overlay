@@ -22,7 +22,14 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-build.patch
 	epatch "${FILESDIR}"/${PV}-info-dir-entry.patch
+	epatch "${FILESDIR}"/${P}-wait3.patch
 	eautoreconf
+}
+
+src_compile() {   
+  tc-export CC
+  econf || die
+  emake || die
 }
 
 src_install() {

@@ -1,0 +1,11 @@
+--- configure.in
++++ configure.in
+@@ -28,6 +28,8 @@
+ AC_FUNC_WAIT3
+ AC_CHECK_FUNCS(strerror)
+ 
++AC_CHECK_FUNC(wait3, AC_DEFINE(HAVE_WAIT3))
++
+ AC_MSG_CHECKING(for getpagesize)
+ AC_TRY_LINK([#include <sys/param.h>],
+ [getpagesize();], have_gp=yes, have_gp=no)

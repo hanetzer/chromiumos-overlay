@@ -42,6 +42,7 @@ RDEPEND="${RDEPEND}
 	sys-fs/sshfs-fuse
 	sys-power/powertop
 	sys-process/procps
+	sys-process/time
 	"
 
 # TODO: Add qemacs back in when ready:	x86? ( app-editors/qemacs )
