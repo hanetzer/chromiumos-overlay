@@ -17,6 +17,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/crossdev
 	sys-devel/crossdev-wrappers
 	sys-boot/syslinux
+        sys-block/gpt
 	"
 
 # Host dependencies for building cross-compiled packages.

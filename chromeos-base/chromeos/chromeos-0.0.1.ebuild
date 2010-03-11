@@ -81,6 +81,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/shadow
 	sys-auth/consolekit
 	arm? ( sys-boot/u-boot )
+        x86? ( sys-block/gpt )
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	sys-process/lsof
