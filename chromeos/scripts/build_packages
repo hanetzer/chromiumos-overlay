@@ -72,10 +72,10 @@ sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 
 sudo emerge -uDNv $EMERGE_FLAGS world
 
+sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
   sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-dev
-else
-  sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
 fi
 
 # Pull a different version of chrome if requested and force a non-update
