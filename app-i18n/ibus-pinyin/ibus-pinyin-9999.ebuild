@@ -27,6 +27,7 @@ IUSE="nls"
 # TODO(yusukes): Ask someone if we should support Open Phrase DB or not.
 
 RDEPEND=">=app-i18n/ibus-1.1.0
+	dev-libs/libsigc++
 	>=dev-db/sqlite-3.6.18
 	nls? ( virtual/libintl )"
 
