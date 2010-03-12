@@ -281,10 +281,6 @@ if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]] ; then
       --usepkgonly chromeos-dev $EMERGE_JOBS
  
   if [ $FLAGS_statefuldev -eq $FLAGS_TRUE ] ; then
-    # chromeos_startup checks file and mounts /usr/local if it exists.
-    sudo mkdir -p "$ROOTF_FS_DIR/root"
-    sudo touch "$ROOTFS_DIR/root/.dev_mode"
- 
     # Fix symlinks so they work on live system.
     for path in bin include lib libexec sbin share; do
       sudo unlink $DEV_IMAGE_ROOT/usr/$path
@@ -320,6 +316,12 @@ fi
 "${SCRIPTS_DIR}/test_image" \
   --root="$ROOT_FS_DIR" \
   --target="$ARCH"
+
+# Set dev_mode flag and update library cache.
+if [ $FLAGS_statefuldev -eq $FLAGS_TRUE ] ; then
+  sudo touch "$ROOT_FS_DIR/root/.dev_mode"
+  sudo /sbin/ldconfig -r "$ROOT_FS_DIR"
+fi
 
 # Only bound if installing dev to stateful.
 if [ $FLAGS_statefuldev -eq $FLAGS_TRUE ] ; then
