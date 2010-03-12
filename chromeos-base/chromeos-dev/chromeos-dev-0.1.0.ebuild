@@ -11,8 +11,6 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="X"
 
-RDEPEND="chromeos-base/chromeos"
-
 # XServer
 RDEPEND="${RDEPEND}
 	X? ( x11-terms/aterm )
