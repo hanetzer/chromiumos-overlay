@@ -353,7 +353,7 @@ if [[ "$ARCH" = "arm" ]]; then
   echo -e "echo\necho ---- ChromeOS Boot ----\necho\n" \
           "mmc read 1 C0008000 0x$KERNEL_OFFSET 0x$KERNEL_SECS_HEX\n" \
           "bootm C0008000" > ${MBR_SCRIPT}
-  MKIMAGE="${BOARD_DIR}/u-boot/mkimage"
+  MKIMAGE="${BOARD_ROOT}/u-boot/mkimage"
   if [[ -f "$MKIMAGE".gz ]]; then
     sudo gunzip "$MKIMAGE".gz
   fi
