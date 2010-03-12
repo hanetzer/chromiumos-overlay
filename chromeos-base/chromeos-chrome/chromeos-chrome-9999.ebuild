@@ -32,8 +32,9 @@ CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 disable_nacl=1 linux_use_tcmalloc=0 chromeos=1"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS disable_nacl=1 linux_use_tcmalloc=0 chromeos=1"
 BUILDTYPE="${BUILDTYPE:-Release}"
+BUILD_OUT="${BOARD}_out"
 
 # For pulling from build bot
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/chromium-rel-linux-chromiumos"}
@@ -143,6 +144,7 @@ src_unpack() {
       
       export GYP_GENERATORS="${BUILD_TOOL}"
       export GYP_DEFINES="${BUILD_DEFINES}"
+      export builddir_name="${BUILD_OUT}"
       # Prevents gclient from updating self.
       export DEPOT_TOOLS_UPDATE=0
     fi
@@ -170,7 +172,7 @@ src_compile() {
   cd "${CHROME_ROOT}"/src || die
   
   if use build_tests; then
-    TEST_TARGETS="browser_tests reliability_tests pyautolib"
+    TEST_TARGETS="browser_tests pyautolib reliability_tests startup_tests ui_tests"
     echo Building test targets: ${TEST_TARGETS}
   fi
 
@@ -205,10 +207,11 @@ install_chrome_test_resources() {
   sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
       "${TEST_DIR}/out/Release"
   
-  sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
-  sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
-  sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
   sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
 
   sudo mkdir -p "${TEST_DIR}"/base
   sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
@@ -248,7 +251,7 @@ src_install() {
   if [ "${CHROME_ORIGIN}" = "SERVER_BINARY" ]; then
     FROM="${S}"/${CHROME_FILENAME/.zip/}
   else
-    FROM="${CHROME_ROOT}/src/out/${BUILDTYPE}"
+    FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
   fi
 
   # Override default strip flags and lose the '-R .comment'
