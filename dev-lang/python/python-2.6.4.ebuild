@@ -175,7 +175,8 @@ src_configure() {
 	if tc-is-cross-compiler; then
 		OPT="-O1" CFLAGS="" LDFLAGS="" CC="" \
 		./configure --{build,host}=${CBUILD} || die "cross-configure failed"
-		emake python Parser/pgen || die "cross-make failed"
+		# Does not support parallel building
+		emake -j1 python Parser/pgen || die "cross-make failed"
 		mv python hostpython
 		mv Parser/pgen Parser/hostpgen
 		make distclean
@@ -249,7 +250,8 @@ src_test() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" altinstall maninstall || die "emake altinstall maninstall failed"
+	# Does not support parallel building
+	emake -j1 DESTDIR="${D}" altinstall maninstall || die "emake altinstall maninstall failed"
 
 	mv "${D}usr/bin/python${PYVER}-config" "${D}usr/bin/python-config-${PYVER}"
 
