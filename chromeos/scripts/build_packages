@@ -37,6 +37,8 @@ DEFINE_boolean withautotest $FLAGS_FALSE \
   "Build autotest client code."
 DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
+DEFINE_integer retries -1 \
+  "On build failure, the number of times to retry"
 
 # Parse command line
 FLAGS "$@" || exit 1
@@ -62,20 +64,38 @@ if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
 fi
 
 if [[ $FLAGS_jobs -ne -1 ]]; then
-  EMERGE_FLAGS="${EMERGE_FLAGS} --jobs=$FLAGS_jobs"
+  EMERGE_JOBS="--jobs=$FLAGS_jobs"
+  if [[ $FLAGS_retries -eq -1 ]]; then
+    # The jobs flag can be flaky. Retry once by default,
+    # without the jobs flag.
+    FLAGS_retries=1
+  fi
 fi
+
+# Retry an emerge command according to $FLAGS_retries
+# The $EMERGE_JOBS flags will only be added the first time the command is run
+function eretry () {
+  $* $EMERGE_JOBS && return 0
+  local i=
+  for i in $(seq $FLAGS_retries); do
+    echo Retrying $*
+    $* && return 0
+  done
+  return 1
+}
 
 # Hacks to avoid forcing users to create a new chroot
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 
-sudo emerge -uDNv $EMERGE_FLAGS world
-
-sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+eretry sudo emerge -uDNv $EMERGE_FLAGS world
 
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
-  sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-dev
+  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
+    chromeos-base/chromeos chromeos-base/chromeos-dev
+else
+  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
 fi
 
 # Pull a different version of chrome if requested and force a non-update
@@ -90,7 +110,7 @@ if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
 
   CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild} \
   CHROME_FILENAME=$CHROME_FILENAME \
-  emerge-${FLAGS_board} chromeos-base/chromeos-chrome
+  eretry emerge-${FLAGS_board} chromeos-base/chromeos-chrome
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
