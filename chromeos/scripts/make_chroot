@@ -33,6 +33,8 @@ DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
 DEFINE_integer jobs -1 "How many packages to build in parallel at maximum."
+DEFINE_string stage3_date "2009.10.09" \
+  "Use the stage3 with the given date."
 
 # Parse command line flags
 FLAGS "$@" || exit 1
@@ -193,7 +195,7 @@ CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
 
 # Create the base Gentoo stage3 based on last version put in chroot
-STAGE3="${OVERLAY}/chromeos/stage3/stage3-amd64-2009.10.09.tar.bz2"
+STAGE3="${OVERLAY}/chromeos/stage3/stage3-amd64-${FLAGS_stage3_date}.tar.bz2"
 if [ -f $CHROOT_STATE ] && \
   ! sudo egrep -q "^STAGE3=$STAGE3" $CHROOT_STATE >/dev/null 2>&1
 then

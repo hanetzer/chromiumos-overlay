@@ -18,7 +18,7 @@ PKGDIR=${ROOT}packages/
 PORTAGE_TMPDIR=${ROOT}tmp/
 
 FEATURES="buildpkg collision-protect digest nodoc noinfo noman sandbox \
-          userfetch userpriv usersandbox"
+          -strict userfetch userpriv usersandbox"
 
 PORTAGE_WORKDIR_MODE="0755"
 PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"

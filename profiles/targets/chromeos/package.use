@@ -22,6 +22,7 @@ sys-apps/dbus		-X
 sys-apps/parted         device-mapper
 sys-apps/util-linux	-perl
 sys-auth/pambase	consolekit
+sys-fs/lvm2		-lvm1 -readline -static
 sys-fs/udev		-devfs-compat extras
 sys-libs/ncurses	-unicode minimal
 x11-apps/xinit          minimal

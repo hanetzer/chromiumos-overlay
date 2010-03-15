@@ -1,2 +1,11 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
 # Chrome cannot compile WebKit with gperf 3.0.4
 >dev-util/gperf-3.0.3
+
+# Use the crossdev-wrappers in our overlay for now.
+>sys-devel/crossdev-wrappers-20090922-r200
+
+# TODO: Remove when we have updated our python to 2.6.4-r1.
+>dev-lang/python-2.6.4

@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit toolchain-funcs
+inherit autotools toolchain-funcs
 
 DESCRIPTION="Provides a daemon for managing internet connections"
 HOMEPAGE="http://connman.net"
@@ -44,6 +44,10 @@ src_unpack() {
 	fi
 }
 
+src_prepare() {
+	eautoreconf
+}
+
 src_configure() {
 	if tc-is-cross-compiler ; then
 		if use wifi ; then
@@ -54,7 +58,6 @@ src_configure() {
 		fi
 	fi
 
-	autoreconf
 	econf \
 		--localstatedir=/var \
 		--enable-loopback=builtin \

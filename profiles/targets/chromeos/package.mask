@@ -1,3 +1,46 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
 
 # Chrome binaries currently use libjpeg-6b, so we need to mask out libjpeg-7
 >=media-libs/jpeg-7
+
+# TODO: Fix cross compile autoconf failure.
+>sys-apps/kbd-1.13-r1
+
+# TODO: Update our overlay to work with nss-3.12.5
+>dev-libs/nss-3.12.3-r1
+
+# TODO: Update our overlay to work with udev-149
+>sys-fs/udev-146
+
+# TODO: Update our overlay to work with python-2.6.4-r1
+>dev-lang/python-2.6.4
+
+# TODO: Newer versions don't compile properly due to missing dm_* headers.
+>sys-fs/lvm2-2.02.51-r3
+
+# TODO: Update to newer mesa and fix cross compile.
+>media-libs/mesa-7.5.1-r1
+
+# TODO: Switch to xf86-video-intel-2.9.1 (CL already pending update to mesa)
+>x11-drivers/xf86-video-intel-2.8.1-r1
+
+# TODO: Fix lsof to cross compile on ARM
+>sys-process/lsof-4.81-r2
+
+# TODO: Fix cross compile on ARM of gdbm-1.8.3-r4
+>sys-libs/gdbm-1.8.3-r3
+
+# TODO: Fix cross compile on ARM of sys-libs/pam-1.1.0
+>sys-libs/pam-1.0.4
+
+# TODO: Fix cross compile on ARM of sys-power/powertop-1.9-r1
+#  NOTE: A simple USE="-unicode" will allow for compile but make
+#        sure that we are not modifying powertop in our overlay.
+>sys-power/powertop-1.9-r1
+
+# TODO: Fails with message about not knowing what kernel to use.
+>sys-fs/fuse-2.7.4
+
+# TODO: The dbus-python-0.83.1 ebuild puts stuff in /usr/lib64.
+>dev-python/dbus-python-0.83.0-r1
