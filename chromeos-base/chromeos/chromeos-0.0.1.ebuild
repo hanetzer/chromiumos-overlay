@@ -68,7 +68,6 @@ RDEPEND="${RDEPEND}
 	)
 	net-wireless/ath6k
 	net-wireless/bluez
-	sci-geosciences/gpsd
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/dbus
 	x86? ( sys-apps/devicekit-disks )
