@@ -1,9 +1,10 @@
---- a/cross-fix-root	2010-02-09 03:53:31.423311000 +0000
-+++ b/cross-fix-root	2010-02-10 18:36:32.553313357 +0000
-@@ -6,38 +6,51 @@
+--- a/cross-fix-root	2010-03-12 01:14:47.000000000 -0800
++++ b/cross-fix-root	2010-03-12 01:14:40.000000000 -0800
+@@ -5,44 +5,82 @@
+ 
  # - solar
  
- CROSS_ROOT=""
+-CROSS_ROOT=""
 -[[ $1 != "" ]] && [ -e /usr/$1 ] && CROSS_ROOT="/usr/$1"
 -[[ -e ${CROSS_ROOT} ]] || exit 0
 +case "${1}" in
@@ -17,6 +18,8 @@
 +	echo "Usage ${0} <sysroot abs path or CHOST>"
 +	exit 1
 +fi
++
++. /etc/init.d/functions.sh  # For einfo
  
  function strip_path() {
 -        echo $1 | grep -Eo "[^\/]+$"
@@ -49,20 +52,53 @@
  
  fix_pc_files() {
 -	count=0
-+	local count=0
++	local scanned_count=0  # Number of .pc files scanned.
++	local prefix_count=0   # Number of .pc files where we added the CROSS_ROOT prefix.
++	local fixed_count=0    # Number of .pc files that were broken and fixed.
 +	local safe_cross_root=$(re_safe "${CROSS_ROOT}")
  	for PC in "${CROSS_ROOT}"/usr/lib/pkgconfig/*.pc "${CROSS_ROOT}"/usr/share/pkgconfig/*.pc; do
  		[ -e "${PC}" ] || continue
 -		sed -i -e "s/^prefix\\=\\/usr$/prefix\=$(re_safe "${CROSS_ROOT}")\\/usr/" "${PC}"
 -		count=$(($count+1))
-+		grep -q 'exec_prefix=/usr' "${PC}" && echo " --!!!-- Bad exec_prefix found in ${PC}"
-+		sed -i -e "s;^prefix=/usr\$;prefix=${safe_cross_root}/usr;" \
-+		       -e "s;^exec_prefix=/usr\$;exec_prefix=\$\{prefix\};" "${PC}"
-+		count=$((${count}+1))
- 		[[ $? != 0 ]] && printf "Fixing ${PC} for ${CROSS_ROOT} FAILED sucka\n"
+-		[[ $? != 0 ]] && printf "Fixing ${PC} for ${CROSS_ROOT} FAILED sucka\n"
++		scanned_count=$((${scanned_count}+1))
++	
++		# Fix up the .pc prefix to include our CROSS_ROOT
++		grep -q '^prefix=/usr$' "${PC}" && \
++			sed -i -e "s;^prefix=/usr\$;prefix=${safe_cross_root}/usr;" "${PC}" && \
++			prefix_count=$((${prefix_count}+1))
++
++		# Attempt to fix the following common problems:
++		#  exec_prefix=/usr             <-- Should be "exec_prefix=${prefix}"
++		#  libdir=/usr/lib/...          <-- Should be "libdir=${exec_prefix}/lib"
++		#  includedir=/usr/include/...  <-- Should be "includedir=${prefix}/include/..."
++		grep -q '^exec_prefix=/usr$' "${PC}" || \
++		grep -q '^libdir=/usr/' "${PC}" || \
++		grep -q '^includedir=/usr/' "${PC}" || \
++			continue
++	
++		sed --in-place=".broken"                                            \
++		       	-e "s;^exec_prefix=/usr\$;exec_prefix=\$\{prefix\};"        \
++		       	-e "s;^libdir=/usr/\(.*\);libdir=\$\{exec_prefix\}/\1;"     \
++		       	-e "s;^includedir=/usr/\(/*\);includedir=\$\{prefix\}/\1;"  \
++			"${PC}"
++		if [[ $? = 0 ]]; then
++			einfo "Fixed broken pkgconfig file: ${PC}; see ${PC}.broken"
++			fixed_count=$((${fixed_count}+1))
++		else
++			einfo "Fixing ${PC} for ${CROSS_ROOT} FAILED sucka!"
++		fi
  	done
 -	return $count
-+	return ${count}
++	einfo "Scanned ${scanned_count} "'*'".pc files;" \
++	      " replaced prefix in ${prefix_count}; fixed ${fixed_count}"
  }
  
  fix_la_files ${CROSS_ROOT}
+ la_count=$?
++einfo "Scanned/Fixed ${la_count} "'*'".la files"
++
+ fix_pc_files ${CROSS_ROOT}
+-pc_count=$?
+-:
+-( . /etc/init.d/functions.sh; einfo "Scanned/Fixed ${pc_count} "'*'".pc and ${la_count} "'*'".la files" )
