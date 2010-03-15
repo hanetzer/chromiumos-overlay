@@ -18,6 +18,7 @@ net-misc/ntp            caps
 net-misc/openssh	-X
 net-nds/openldap	minimal
 net-wireless/wpa_supplicant	dbus debug -readline
+sci-geosciences/gpsd -X -ntp
 sys-apps/dbus		-X
 sys-apps/parted         device-mapper
 sys-apps/util-linux	-perl
