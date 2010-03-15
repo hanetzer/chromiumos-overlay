@@ -11,12 +11,14 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="X"
 
-DEPEND="sys-apps/baselayout"
+DEPEND="sys-apps/baselayout
+	chromeos-base/internal"
 
 # XServer
 RDEPEND="${RDEPEND}
 	X? (
 		x86? ( chromeos-base/chromeos-chrome )
+		chromeos-base/internal
 		chromeos-base/chromeos-wm
 		chromeos-base/xorg-conf
 		media-fonts/dejavu
@@ -48,6 +50,7 @@ RDEPEND="${RDEPEND}
 	arm? ( chromeos-base/chromeos-login[slim] )
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
+	chromeos-base/internal
 	chromeos-base/kernel
 	chromeos-base/libcros
 	chromeos-base/memento_softwareupdate
