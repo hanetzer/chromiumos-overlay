@@ -39,6 +39,8 @@ DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
 DEFINE_integer retries -1 \
   "On build failure, the number of times to retry"
+DEFINE_boolean withtest $FLAGS_FALSE \
+  "Build packages required for testing"
 
 # Parse command line
 FLAGS "$@" || exit 1
@@ -96,6 +98,10 @@ if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
     chromeos-base/chromeos chromeos-base/chromeos-dev
 else
   eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+fi
+
+if [[ $FLAGS_withtest -eq $FLAGS_TRUE ]]; then
+  sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
 fi
 
 # Pull a different version of chrome if requested and force a non-update
