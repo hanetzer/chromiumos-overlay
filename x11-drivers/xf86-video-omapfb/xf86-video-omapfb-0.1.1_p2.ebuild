@@ -1,28 +1,31 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-# $Header$
 
-# Must be before x-modular eclass is inherited
-SNAPSHOT="yes"
-PATCHES="${FILESDIR}/omapfb-configure.patch"
+EAPI=2
 
-inherit x-modular
+inherit eutils toolchain-funcs autotools
 
-MY_PN='xserver-xorg-video-omapfb'
-MY_PV="${PV/_p/-}"
-MY_PFN="${PN}_${MY_PV}.tar.gz"
-C_URI="
-	http://luke.dashjr.org/programs/gentoo-n8x0/distfiles/${MY_PFN}
-"
 DESCRIPTION="X.Org driver for TI OMAP framebuffers"
+IUSE="+neon"
 KEYWORDS="arm"
+LICENSE="as-is"
+SLOT="0"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/other/${P}.tar.gz"
+
 RDEPEND="x11-base/xorg-server"
 DEPEND="${RDEPEND}
 	x11-proto/renderproto"
-S="${WORKDIR}/${P/_p*/}"
-IUSE="+neon"
-LICENSE="as-is"
 
-pkg_setup() {
-	CONFIGURE_OPTIONS="$(use_enable neon)"
+src_prepare() {
+	epatch "${FILESDIR}/${P}-configure.patch" || die
+	eautoreconf || die
+}
+
+src_configure() {
+	econf --enable-maintainer-mode "$(use_enable_neon)" || die
+}
+
+src_install() {
+	insinto /usr/lib/xorg/modules/drivers
+	doins "${S}"/src/.libs/omapfb_drv.so
 }
