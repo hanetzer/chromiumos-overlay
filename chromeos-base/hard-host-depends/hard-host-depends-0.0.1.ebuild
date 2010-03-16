@@ -65,6 +65,11 @@ RDEPEND="${RDEPEND}
 	sys-apps/dbus
 	"
 
+# Host dependencies that are needed by mod_image_for_test.
+RDEPEND="${RDEPEND}
+	sys-process/lsof
+	"
+
 # Useful utilities for developers.
 RDEPEND="${RDEPEND}
 	app-portage/gentoolkit
