@@ -21,6 +21,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )
 	dhclient? ( net-misc/dhcp )
+	modemmanager? ( net-misc/mobile-broadband-provider-info )
 	modemmanager? ( net-misc/modemmanager )
 	ofono? ( net-misc/ofono )
 	policykit? ( >=sys-auth/policykit-0.7 )
