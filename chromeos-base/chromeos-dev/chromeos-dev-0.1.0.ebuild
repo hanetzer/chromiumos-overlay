@@ -13,10 +13,7 @@ IUSE="X"
 
 # XServer
 RDEPEND="${RDEPEND}
-	X? (
-		x11-apps/setxkbmap
-		x11-terms/aterm 
-	)
+	X? ( x11-terms/aterm )
 	"
 
 # Useful utilities
