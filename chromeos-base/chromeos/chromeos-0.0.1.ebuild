@@ -56,6 +56,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/memento_softwareupdate
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google
+	chromeos-base/speech_synthesis
 	chromeos-base/xscreensaver
 	x86? ( media-gfx/ply-image )
 	media-plugins/alsa-plugins
