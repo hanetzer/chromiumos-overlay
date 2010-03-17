@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
         app-arch/dpkg
 	app-arch/rpm2targz
 	app-arch/unzip
+	app-text/texi2html
 	dev-lang/python
 	dev-lang/swig
 	dev-libs/glib

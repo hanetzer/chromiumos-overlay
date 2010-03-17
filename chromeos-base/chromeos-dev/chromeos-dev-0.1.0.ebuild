@@ -20,6 +20,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
+	x86? ( app-editors/qemacs )
 	app-editors/vim
 	app-shells/bash
 	chromeos-base/flimflam-testscripts
@@ -43,4 +44,3 @@ RDEPEND="${RDEPEND}
 	"
 
 # TODO: Re-add strace once we can compile it again dev-util/strace
-# TODO: Add qemacs back in when ready:	x86? ( app-editors/qemacs )
