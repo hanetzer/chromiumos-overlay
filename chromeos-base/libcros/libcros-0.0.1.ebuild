@@ -18,7 +18,8 @@ RDEPEND="app-i18n/ibus
          dev-libs/libpcre
          sys-apps/dbus
          sys-auth/consolekit
-         sys-fs/udev"
+         sys-fs/udev
+         x11-libs/libxklavier"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
