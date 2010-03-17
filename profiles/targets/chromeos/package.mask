@@ -44,3 +44,12 @@
 
 # TODO: The dbus-python-0.83.1 ebuild puts stuff in /usr/lib64.
 >dev-python/dbus-python-0.83.0-r1
+
+# The following are here because we override the ebuilds from the
+# portage tree for a reason other than adding an ebuild from upstream
+# that wasn't yet in our portage tree. We want to keep using our
+# version of these packages even if a newer stable version becomes
+# available in portage:
+
+# Required patch; pending work to upstream.
+>net-dialup/ppp-2.4.4-r23
