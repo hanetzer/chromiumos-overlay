@@ -25,7 +25,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-testscripts
 	chromeos-base/gmerge
 	dev-lang/python
-	dev-util/strace
 	net-misc/iputils
 	net-misc/openssh
 	net-wireless/iw
@@ -43,4 +42,5 @@ RDEPEND="${RDEPEND}
 	sys-process/time
 	"
 
+# TODO: Re-add strace once we can compile it again dev-util/strace
 # TODO: Add qemacs back in when ready:	x86? ( app-editors/qemacs )
