@@ -8,7 +8,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 x86 arm"
 IUSE=""
 
 RDEPEND="sys-libs/e2fsprogs-libs"
