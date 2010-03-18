@@ -24,7 +24,8 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-libpng14.patch \
-		"${FILESDIR}"/${P}-maxcolors.patch
+		"${FILESDIR}"/${P}-maxcolors.patch \
+		"${FILESDIR}"/${P}-cross.patch
 
 	eautoconf
 	find . -type f -print0 | xargs -0 touch -r configure

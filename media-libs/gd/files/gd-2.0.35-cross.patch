@@ -1,0 +1,17 @@
+--- gd-2.0.35.orig/configure.ac	2010-03-17 19:54:58.000000000 -0700
++++ gd-2.0.35/configure.ac	2010-03-17 19:54:32.000000000 -0700
+@@ -353,9 +353,12 @@
+   AC_PATH_PROG([LIBPNG12_CONFIG], [libpng12-config])
+   AC_PATH_PROG([LIBPNG_CONFIG], [libpng-config])
+   if test -n "$LIBPNG12_CONFIG"; then
+-    libpng_CPPFLAGS=`libpng12-config --cflags`
++    PATH_STORE="$PATH"
++    PATH=$SYSROOT/usr/bin
++    libpng_CPPFLAGS="$SYSROOT"`libpng12-config --cflags`
+     # should be --ldopts, but it's currently broken
+-    libpng_LDFLAGS=`libpng12-config --ldflags`
++    libpng_LDFLAGS="$SYSROOT"`libpng12-config --ldflags`
++    PATH="$PATH_STORE"
+     libpng_LDFLAGS=`echo " $libpng_LDFLAGS" | sed 's/ -l[[^ ]][[^ ]]*//g'`
+   elif test -n "$LIBPNG_CONFIG"; then
+     libpng_CPPFLAGS=`libpng-config --cflags`
