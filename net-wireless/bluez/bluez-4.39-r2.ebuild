@@ -34,6 +34,11 @@ DEPEND="sys-devel/flex
 RDEPEND="${CDEPEND}
 	consolekit? ( sys-auth/pambase[consolekit] )"
 
+# The default local state directory is /var/lib, however, this
+# location is read-only on Chromium OS. So, moving to the stateful
+# partition. Also, using per-device state (as opposed to per-user).
+LOCALSTATEDIR=/home/chronos/.bluetooth
+
 src_prepare() {
 	epatch \
 		"${FILESDIR}/4.31-as_needed.patch" \
@@ -83,11 +88,12 @@ src_configure() {
 		--disable-initscripts \
 		--disable-pcmciarules \
 		$(use_enable debug) \
-		--localstatedir=/var
+		--localstatedir="${LOCALSTATEDIR}"
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "make install failed"
+        # Set statedir to empty string to prevent creation of ${LOCALSTATEDIR}.
+	emake DESTDIR="${D}" statedir= install || die "make install failed"
 
 	dodoc AUTHORS ChangeLog README || die
 
