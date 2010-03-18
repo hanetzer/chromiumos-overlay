@@ -189,11 +189,15 @@ sudo mkdir -p "$BOARD_ROOT"
 # Set up toolchain wrappers to force $SYSROOT and perform sanity checks.
 GCC_PROFILE="${FLAGS_toolchain}-${FLAGS_gcc_version}"
 GCC_BIN_PATH=$(gcc-config --get-bin-path "$GCC_PROFILE")
+CCACHE_BIN=$(which ccache || true)
 for i in c++ cpp g++ gcc gfortran ; do
   GCC_BINARY="${GCC_BIN_PATH}/$FLAGS_toolchain-${i}"
   if [ ! -f "${GCC_BINARY}.real" ] ; then
     sudo mv "$GCC_BINARY" "${GCC_BINARY}.real"
     sudo ln -s "${SCRIPTS_DIR}/sysroot_wrapper" "$GCC_BINARY"
+  fi
+  if [ -f "${CCACHE_BIN}" ]; then
+    sudo ln -sf "${CCACHE_BIN}" "/usr/lib/ccache/bin/${FLAGS_toolchain}-${i}"
   fi
 done
 
