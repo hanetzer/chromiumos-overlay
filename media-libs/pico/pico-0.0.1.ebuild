@@ -13,7 +13,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
-EGIT_REPO_URI="git://android.git.kernel.org/platform/external/svox.git"
+EGIT_REPO_URI="http://android.git.kernel.org/platform/external/svox.git"
 EGIT_TREE="196be3b6348f4a6c975d25dbee135fc3952e0ac7"
 
 src_unpack() {
