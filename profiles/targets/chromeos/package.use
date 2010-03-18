@@ -17,7 +17,7 @@ chromeos-base/chromeos	X
 chromeos-base/chromeos-login   pam_google
 chromeos-base/flimflam	dnsproxy debug
 media-plugins/alsa-plugins	pulseaudio
-media-sound/pulseaudio	-esd dbus
+media-sound/pulseaudio	bluetooth dbus -esd
 net-misc/ntp            caps
 net-misc/openssh	-X
 net-nds/openldap	minimal
