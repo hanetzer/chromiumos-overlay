@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="dev-libs/libpcre
+RDEPEND="chromeos-base/libchromeos
+	dev-libs/libpcre
         x11-libs/libX11
         x11-libs/libXtst"
 
