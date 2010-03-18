@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X"
+IUSE="X opengl"
 
 # XServer
 RDEPEND="${RDEPEND}
@@ -41,6 +41,7 @@ RDEPEND="${RDEPEND}
 	sys-power/powertop
 	sys-process/procps
 	sys-process/time
+        opengl? ( x11-apps/mesa-progs )
 	"
 
 # TODO: Re-add strace once we can compile it again dev-util/strace
