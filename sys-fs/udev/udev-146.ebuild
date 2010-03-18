@@ -172,6 +172,7 @@ src_unpack() {
 
 	fi
 	epatch "${FILESDIR}"/udev-146-cross-pci-ids.patch
+	epatch "${FILESDIR}"/add-huawei-devices.patch
 	eautoreconf
 }
 

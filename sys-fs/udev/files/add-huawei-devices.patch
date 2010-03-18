@@ -1,0 +1,10 @@
+--- a/extras/modem-modeswitch/61-option-modem-modeswitch.rules	2010-03-12 11:08:06.000000000 -0500
++++ b/extras/modem-modeswitch/61-option-modem-modeswitch.rules	2010-03-12 11:10:33.000000000 -0500
+@@ -35,5 +35,7 @@
+ ATTRS{idVendor}=="0af0", ATTRS{idProduct}=="7601", RUN+="modem-modeswitch -v 0x%s{idVendor} -p 0x%s{idProduct} -t option-zerocd"
+ ATTRS{idVendor}=="0af0", ATTRS{idProduct}=="7901", RUN+="modem-modeswitch -v 0x%s{idVendor} -p 0x%s{idProduct} -t option-zerocd"
+ ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="1446", RUN+="modem-modeswitch -v 0x%s{idVendor} -p 0x%s{idProduct} -t option-zerocd"
++ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="1520", RUN+="modem-modeswitch -v 0x%s{idVendor} -p 0x%s{idProduct} -t option-zerocd"
++ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="1521", RUN+="modem-modeswitch -v 0x%s{idVendor} -p 0x%s{idProduct} -t option-zerocd"
+ 
+ LABEL="option_zerocd_end"
