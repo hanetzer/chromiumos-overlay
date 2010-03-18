@@ -29,7 +29,7 @@ DEFINE_string chromebuild "" \
   "The optional version or revision of chrome to pull."
 DEFINE_string chromebase "" \
   "The optional base URL to pull chrome from."
-DEFINE_boolean usepkg $FLAGS_FALSE \
+DEFINE_boolean usepkg $FLAGS_TRUE \
   "Use binary packages to bootstrap when possible."
 DEFINE_boolean withdev $FLAGS_TRUE \
   "Build useful developer friendly utilities."
