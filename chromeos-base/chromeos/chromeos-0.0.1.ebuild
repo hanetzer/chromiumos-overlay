@@ -9,10 +9,19 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X"
+IUSE="X +localssh"
 
 DEPEND="sys-apps/baselayout
 	chromeos-base/internal"
+
+# Enable ssh locally for chromium-os device.
+RDEPEND="${RDEPEND}
+	localssh? (
+		app-admin/sudo
+		net-misc/openssh
+		X? ( x11-terms/aterm )
+	)
+	"
 
 # XServer
 RDEPEND="${RDEPEND}
