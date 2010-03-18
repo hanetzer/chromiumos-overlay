@@ -5,12 +5,16 @@
 {
   'WATCHLIST_DEFINITIONS': {
     'all': {
-      'filepath': '/',
+      'filepath': '.',
+    },
+    'bluez': {
+      'filepath': 'bluez',
     },
   },
   'WATCHLISTS': {
     'all': ['adlr@chromium.org', 'ajwong@chromium.org',
             'cmasone@chromium.org', 'msb@chromium.org',
             'rtc@chromium.org', 'tedbo@chromium.org'],
+    'bluez': ['petkov@chromium.org']
   },
 }
