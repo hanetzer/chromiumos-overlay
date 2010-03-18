@@ -1,2 +1,0 @@
-# Build chromeos-login with slim enabled for ARM
-chromeos-base/chromeos-login slim

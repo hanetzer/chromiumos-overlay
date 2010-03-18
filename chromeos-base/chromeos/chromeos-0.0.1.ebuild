@@ -17,7 +17,7 @@ DEPEND="sys-apps/baselayout
 # XServer
 RDEPEND="${RDEPEND}
 	X? (
-		x86? ( chromeos-base/chromeos-chrome )
+		chromeos-base/chromeos-chrome
 		chromeos-base/internal
 		chromeos-base/chromeos-wm
 		chromeos-base/xorg-conf
@@ -46,8 +46,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
-	x86? ( chromeos-base/chromeos-login )
-	arm? ( chromeos-base/chromeos-login[slim] )
+	chromeos-base/chromeos-login
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/internal
