@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-DEPEND="dev-libs/dbus-glib"
+DEPEND="dev-cpp/gtest
+	dev-libs/dbus-glib"
 
 # TODO: Ideally this is only a build depend, but there is an ordering
 # issue where we need to make sure that libchrome is built first.
