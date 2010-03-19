@@ -34,7 +34,7 @@ CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 BUILD_TOOL=make
 BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS disable_nacl=1 linux_use_tcmalloc=0 chromeos=1"
 BUILDTYPE="${BUILDTYPE:-Release}"
-BUILD_OUT="${BOARD}_out"
+BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
 
 # For pulling from build bot
 if [ "$ARCH" = "x86" ]; then
