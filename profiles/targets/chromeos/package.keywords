@@ -28,7 +28,6 @@
 =media-libs/fontconfig-2.7.1-r1	x86 arm
 =media-libs/freeglut-2.4.0-r2   x86 arm
 =media-libs/jpeg-6b-r9          x86 arm
-=media-sound/pulseaudio-0.9.19-r50	x86 arm
 =chromeos-base/flimflam-9999-r1	x86 arm
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/mobile-broadband-provider-info-20100122 x86 arm

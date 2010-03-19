@@ -1,0 +1,117 @@
+diff --git a/pulseaudio-0.9.21/src/modules/module-device-restore.c b/pulseaudio-0.9.21/src/modules/module-device-restore.c
+index da6c966..9c0f56a 100644
+--- a/pulseaudio-0.9.21/src/modules/module-device-restore.c
++++ b/pulseaudio-0.9.21/src/modules/module-device-restore.c
+@@ -57,7 +57,12 @@ PA_MODULE_LOAD_ONCE(TRUE);
+ PA_MODULE_USAGE(
+         "restore_port=<Save/restore port?> "
+         "restore_volume=<Save/restore volumes?> "
+-        "restore_muted=<Save/restore muted states?>");
++        "restore_muted=<Save/restore muted states?>"
++        "default_sink_volume=<new sink volume.  -1 for normal volume. >"
++        "default_sink_muted=<new sink mute state.>"
++        "default_source_volume=<new source volume. -1 for normal volume. >"
++        "default_source_muted=<new source mute state.>"
++        );
+ 
+ #define SAVE_INTERVAL (10 * PA_USEC_PER_SEC)
+ 
+@@ -65,6 +70,10 @@ static const char* const valid_modargs[] = {
+     "restore_volume",
+     "restore_muted",
+     "restore_port",
++    "default_sink_volume",
++    "default_sink_muted",
++    "default_source_volume",
++    "default_source_muted",
+     NULL
+ };
+ 
+@@ -83,6 +92,10 @@ struct userdata {
+     pa_bool_t restore_volume:1;
+     pa_bool_t restore_muted:1;
+     pa_bool_t restore_port:1;
++    pa_bool_t default_source_muted:1;
++    pa_bool_t default_sink_muted:1;
++    pa_volume_t default_source_volume;
++    pa_volume_t default_sink_volume;
+ };
+ 
+ #define ENTRY_VERSION 2
+@@ -358,6 +371,20 @@ static pa_hook_result_t sink_fixate_hook_callback(pa_core *c, pa_sink_new_data *
+         }
+ 
+         pa_xfree(e);
++    } else {
++
++      if (u->default_sink_volume != PA_VOLUME_INVALID) {
++        pa_cvolume v;
++        pa_cvolume_set(&v, new_data->sample_spec.channels, u->default_sink_volume);
++        if (pa_cvolume_valid(&v) == TRUE) {
++          pa_sink_new_data_set_volume(new_data, &v);
++        } else {
++          char buf[32];
++          pa_volume_snprint(buf, sizeof(buf), u->default_sink_volume);
++          pa_log_warn("Invalid default sink volume: %s for %s.", buf, new_data->name);
++        }
++      }
++      pa_sink_new_data_set_muted(new_data, u->default_sink_muted);
+     }
+ 
+     pa_xfree(name);
+@@ -435,6 +462,20 @@ static pa_hook_result_t source_fixate_hook_callback(pa_core *c, pa_source_new_da
+         }
+ 
+         pa_xfree(e);
++    } else {
++
++      if (u->default_source_volume != PA_VOLUME_INVALID) {
++        pa_cvolume v;
++        pa_cvolume_set(&v, new_data->sample_spec.channels, u->default_source_volume);
++        if (pa_cvolume_valid(&v) == TRUE) {
++          pa_source_new_data_set_volume(new_data, &v);
++        } else {
++          char buf[32];
++          pa_volume_snprint(buf, sizeof(buf), u->default_source_volume);
++          pa_log_warn("Invalid default source volume: %s for %s.", buf, new_data->name);
++        }
++      }
++      pa_source_new_data_set_muted(new_data, u->default_source_muted);
+     }
+ 
+     pa_xfree(name);
+@@ -450,6 +491,9 @@ int pa__init(pa_module*m) {
+     pa_source *source;
+     uint32_t idx;
+     pa_bool_t restore_volume = TRUE, restore_muted = TRUE, restore_port = TRUE;
++    pa_bool_t default_source_muted = TRUE, default_sink_muted = FALSE;
++    pa_volume_t default_source_volume = PA_VOLUME_INVALID;
++    pa_volume_t default_sink_volume = PA_VOLUME_INVALID;
+ 
+     pa_assert(m);
+ 
+@@ -460,7 +504,12 @@ int pa__init(pa_module*m) {
+ 
+     if (pa_modargs_get_value_boolean(ma, "restore_volume", &restore_volume) < 0 ||
+         pa_modargs_get_value_boolean(ma, "restore_muted", &restore_muted) < 0 ||
+-        pa_modargs_get_value_boolean(ma, "restore_port", &restore_port) < 0) {
++        pa_modargs_get_value_boolean(ma, "restore_port", &restore_port) < 0 ||
++        pa_modargs_get_value_u32(ma, "default_sink_volume", &default_sink_volume) < 0 ||
++        pa_modargs_get_value_u32(ma, "default_source_volume", &default_source_volume) < 0 ||
++        pa_modargs_get_value_boolean(ma, "default_sink_muted", &default_sink_muted) < 0 ||
++        pa_modargs_get_value_boolean(ma, "default_source_muted", &default_source_muted) < 0
++        ) {
+         pa_log("restore_port=, restore_volume= and restore_muted= expect boolean arguments");
+         goto fail;
+     }
+@@ -474,6 +523,10 @@ int pa__init(pa_module*m) {
+     u->restore_volume = restore_volume;
+     u->restore_muted = restore_muted;
+     u->restore_port = restore_port;
++    u->default_source_muted = default_source_muted;
++    u->default_sink_muted = default_sink_muted;
++    u->default_source_volume = default_source_volume;
++    u->default_sink_volume = default_sink_volume;
+ 
+     u->subscription = pa_subscription_new(m->core, PA_SUBSCRIPTION_MASK_SINK|PA_SUBSCRIPTION_MASK_SOURCE, subscribe_callback, u);
+ 
