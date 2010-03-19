@@ -302,6 +302,12 @@ CHROMEOS_AUSERVER=$CHROMEOS_VERSION_AUSERVER
 CHROMEOS_DEVSERVER=$CHROMEOS_VERSION_DEVSERVER
 EOF
 
-# We need to replace /etc/pulse/client.conf with our own version.
+# We need to replace /etc/pulse/client.conf and /etc/pulse/default.pa with our
+# own versions.
+#
+# TODO(ajwong): Find a way to override the default pulseaudio config files,
+# ideally in an ebuild.
 sudo mv "${ROOT_FS_DIR}/etc/pulse/client-cros.conf" \
   "${ROOT_FS_DIR}/etc/pulse/client.conf"
+sudo mv "${ROOT_FS_DIR}/etc/pulse/default-cros.pa" \
+  "${ROOT_FS_DIR}/etc/pulse/default.pa"
