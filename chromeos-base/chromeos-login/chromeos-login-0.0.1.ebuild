@@ -3,6 +3,17 @@
 
 EAPI=2
 
+KEYWORDS="~amd64 ~x86 ~arm"
+
+if [[ ${PV} != "9999" ]] ; then
+	inherit git
+
+	KEYWORDS="amd64 x86 arm"
+
+	EGIT_REPO_URI="http://src.chromium.org/git/login_manager.git"
+	EGIT_COMMIT="v${PV}"
+fi
+
 inherit toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
@@ -10,7 +21,6 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
 IUSE="pam_google slim test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
@@ -23,10 +33,14 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
+	if [[ -n "${EGIT_REPO_URI}" ]] ; then
+		git_src_unpack
+	else
+		local platform="${CHROMEOS_ROOT}/src/platform"
 
-	elog "Using platform: $platform"
-	cp -a "${platform}/login_manager" "${S}" || die
+		elog "Using platform: $platform"
+		cp -a "${platform}/login_manager" "${S}" || die
+	fi
 	ln -sf "${S}" "${S}/../login_manager"
 }
 
