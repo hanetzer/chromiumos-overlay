@@ -68,6 +68,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/xscreensaver
 	x86? ( media-gfx/ply-image )
 	media-plugins/alsa-plugins
+	media-sound/alsa-utils
 	media-sound/pulseaudio
 	net-firewall/iptables
 	net-misc/ntp
