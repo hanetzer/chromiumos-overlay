@@ -277,6 +277,11 @@ src_install() {
   # TODO(adlr): replace 1000 with 'chronos' gid
   chown root:1000 "${D_CHROME_DIR}/session" || die "chown failed"
   chmod 6755 "${D_CHROME_DIR}/session" || die "chmod failed"
+
+  # enable the chromeos local account, if the environment dictates
+  if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
+    echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
+  fi
   
   insinto "${CHROME_DIR}"
   doins "${FROM}"/chrome-wrapper
