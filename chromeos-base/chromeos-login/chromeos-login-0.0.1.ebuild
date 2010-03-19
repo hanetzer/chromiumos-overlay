@@ -45,15 +45,13 @@ src_unpack() {
 }
 
 src_compile() {
-	tc-getCXX
-	export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
+	tc-export CXX PKG_CONFIG
 
 	emake -j1 session_manager || die "chromeos-login compile failed."
 }
 
 src_test() {
-	tc-getCXX
-	export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
+	tc-export CXX PKG_CONFIG
 
 	emake -j1 session_manager_unittest signaller || \
 		die "chromeos-login compile tests failed."
