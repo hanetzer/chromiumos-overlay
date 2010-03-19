@@ -24,7 +24,7 @@ RDEPEND="dev-cpp/gflags
 	x11-libs/libXdamage
 	x11-libs/libXext
 	!opengles? ( virtual/opengl )
-	opengles? ( x11-drivers/opengles )"
+	opengles? ( virtual/opengles )"
 DEPEND="chromeos-base/libchrome
 	dev-libs/vectormath
 	${RDEPEND}"
