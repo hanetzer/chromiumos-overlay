@@ -1,5 +1,6 @@
 dev-libs/nss		utils
 dev-libs/dbus-glib	tools
+media-libs/gd           png
 dev-libs/protobuf 	-python
 dev-util/git		cvs subversion webdav curl
 dev-util/subversion	-dso
