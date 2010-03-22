@@ -11,9 +11,9 @@ HOMEPAGE="http://bluez.sourceforge.net/"
 SRC_URI="mirror://kernel/linux/bluetooth/${P}.tar.gz"
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 arm x86"
 
-IUSE="alsa caps +consolekit cups debug gstreamer old-daemons pcmcia test-programs usb"
+IUSE="alsa caps +consolekit +cros cups debug gstreamer old-daemons pcmcia test-programs usb"
 
 CDEPEND="alsa? (
 		media-libs/alsa-lib[alsa_pcm_plugins_extplug,alsa_pcm_plugins_ioplug]
@@ -63,6 +63,11 @@ src_prepare() {
 }
 
 src_configure() {
+        # The default local state directory is /var/lib, however, this
+        # location is read-only on Chromium OS. So, moving to the stateful
+        # partition. Also, using per-device state (as opposed to per-user).
+	LOCALSTATEDIR=/var
+        use cros && LOCALSTATEDIR=/home/chronos/.bluetooth
 	econf \
 		$(use_enable caps capng) \
 		--enable-network \
@@ -87,11 +92,13 @@ src_configure() {
 		--enable-configfiles \
 		$(use_enable pcmcia) \
 		$(use_enable debug) \
-		--localstatedir=/var
+		--localstatedir=${LOCALSTATEDIR}
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "make install failed"
+        # Set statedir to empty string to prevent creation of the state
+        # directory -- it will get created by the daemon anyway.
+	emake DESTDIR="${D}" statedir= install || die "make install failed"
 
 	dodoc AUTHORS ChangeLog README || die
 
