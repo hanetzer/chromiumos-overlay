@@ -51,6 +51,8 @@ src_prepare() {
 }
 
 src_compile() {
+	tc-export CC CXX AR RANLIB LD NM
+        export CCFLAGS="$CFLAGS"
         emake
 }
 
