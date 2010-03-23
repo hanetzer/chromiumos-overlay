@@ -11,8 +11,9 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="sys-libs/e2fsprogs-libs"
-
+DEPEND="sys-apps/util-linux
+	sys-libs/e2fsprogs-libs
+	sys-libs/zlib"
 
 # Where is source directory?
 SRCPATH=src/third_party/gpt
