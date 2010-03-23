@@ -43,8 +43,10 @@ DEFINE_boolean withtest $FLAGS_FALSE \
   "Build packages required for testing"
 
 # Parse command line
+FLAGS_HELP="usage: $0 [flags]"
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
+check_flags_only_and_allow_null_arg "$@" && set --
 
 # Die on any errors.
 set -e

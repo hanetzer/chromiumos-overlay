@@ -37,8 +37,10 @@ DEFINE_string stage3_date "2010.03.09" \
   "Use the stage3 with the given date."
 
 # Parse command line flags
+FLAGS_HELP="usage: $0 [flags]"
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
+check_flags_only_and_allow_null_arg "$@" && set --
 
 # Only now can we die on error.  shflags functions leak non-zero error codes,
 # so will die prematurely if 'set -e' is specified before now.
