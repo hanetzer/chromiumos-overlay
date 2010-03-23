@@ -126,21 +126,21 @@ else
     -name "overlay-${BOARD}-*" | sort -r)
 
   BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
-
-  #
-  # Populate the BOARD_MAKE_CONF_LIST with any additional make.conf files.
-  #
-  for overlay in ${BOARD_OVERLAY_LIST} ; do
-    if [ -f "${overlay}/make.conf" ]; then
-      BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
-    fi
-  done
 fi
 
 #
 # Finally, add in any user requested board overlays.
 #
 BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${FLAGS_board_overlay}"
+
+#
+# Populate the BOARD_MAKE_CONF_LIST with any additional make.conf files.
+#
+for overlay in ${BOARD_OVERLAY_LIST} ; do
+  if [ -f "${overlay}/make.conf" ]; then
+    BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
+  fi
+done
 
 # Figure out ARCH from the given toolchain
 # TODO: Move to common.sh as a function after scripts are switched over.
