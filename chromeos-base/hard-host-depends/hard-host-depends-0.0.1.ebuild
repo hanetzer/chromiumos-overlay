@@ -36,6 +36,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/dbus-glib[tools]
 	dev-libs/nss[utils]
 	dev-libs/protobuf
+	dev-python/dbus-python
 	dev-python/pygobject
 	dev-python/webpy
 	dev-util/cmake
