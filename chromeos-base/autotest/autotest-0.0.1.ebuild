@@ -66,6 +66,10 @@ src_compile() {
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
+
+	# Ensure the configures run by autotest pick up the right config.site
+	export CONFIG_SITE=/usr/share/config.site
+
 	# Do not use sudo, it'll unset all your environment
 	LOGNAME=${SUDO_USER} \
           client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST} \
