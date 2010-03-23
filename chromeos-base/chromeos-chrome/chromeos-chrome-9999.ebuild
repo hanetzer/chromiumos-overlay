@@ -85,7 +85,9 @@ wget_retry () {
 
   # Retry 3 times
   for i in $(seq 3); do
-    wget $* && return 0
+    # Buildbot will timeout and kill -9 @ 1200 seconds.  Get these retries done
+    # before that happens in case wget read hangs.
+    wget --timeout=30 $* && return 0
   done
   return 1
 }
