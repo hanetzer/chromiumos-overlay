@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-pinyin/ibus-pinyin-1.2.0.20090915.ebuild,v 1.1 2009/09/15 15:11:20 matsuu Exp $
 
 EAPI="2"
-inherit eutils python
+inherit eutils
 
 #PYDB_TAR="pinyin-database-0.1.10.6.tar.bz2"
 DESCRIPTION="Chinese PinYin IMEngine for IBus Framework"
@@ -23,6 +23,7 @@ IUSE="nls"
 # - Modified src_compile(). We have to run autogen.sh before econf.
 # - Modified src_unpack() so we can use our ${third_party}/ibus-pinyin/files tree and don't copy
 #   Open Phrase PinYin DB (pinyin-database-0.1.10.6.tar.bz2) to the source tree.
+# - Modified src_install() so emerge removes Python related files.
 
 # TODO(yusukes): Ask someone if we should support Open Phrase DB or not.
 
@@ -57,8 +58,10 @@ src_compile() {
 }
 
 src_install() {
-	# TODO(yusukes): Would be better to remove Python related files?
 	emake DESTDIR="${D}" install || die
+	# Remove all Python related files
+	rm "${D}/usr/libexec/ibus-setup-pinyin" || die
+	rm -rf "${D}/usr/share/ibus-pinyin/setup" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
 
@@ -68,10 +71,4 @@ pkg_postinst() {
 	elog
 	elog "You should run ibus-setup and enable IM Engines you want to use!"
 	elog
-
-	python_mod_optimize /usr/share/${PN}
-}
-
-pkg_postrm() {
-	python_mod_cleanup /usr/share/${PN}
 }
