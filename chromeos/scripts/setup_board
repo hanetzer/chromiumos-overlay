@@ -22,6 +22,8 @@ DEFINE_string build_root "/build" \
   "The root location for board sysroots."
 DEFINE_string board_overlay "" \
   "Location of the board overlay."
+DEFINE_string variant "" \
+  "Board variant."
 DEFINE_string toolchain "" \
   "Toolchain.  For example: i686-pc-linux-gnu, armv7a-softfloat-linux-gnueabi"
 DEFINE_boolean usepkg $FLAGS_TRUE \
@@ -51,8 +53,17 @@ if [ -z "$FLAGS_board" ] ; then
   error "--board required."
   exit 1
 fi
-BOARD="$FLAGS_board"
-BOARD_ROOT="${FLAGS_build_root}/${BOARD}"
+
+BOARD=$(echo "$FLAGS_board" |cut -d '_' -f 1)
+VARIANT=${FLAGS_variant:-$(echo "$FLAGS_board" |cut -s -d '_' -f 2)}
+
+if [ -n "$VARIANT" ] ; then
+  BOARD_VARIANT="${BOARD}_${VARIANT}"
+else
+  BOARD_VARIANT="${BOARD}"
+fi
+
+BOARD_ROOT="${FLAGS_build_root}/${BOARD_VARIANT}"
 if [ -d "$BOARD_ROOT" ] ; then
   if [[ $FLAGS_force -eq $FLAGS_TRUE ]]; then
     echo "--force set.  Re-creating $BOARD_ROOT..."
@@ -126,6 +137,15 @@ else
     -name "overlay-${BOARD}-*" | sort -r)
 
   BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
+
+  if [ -n "$VARIANT" ] ; then
+    VARIANT_OVERLAY="${SRC_ROOT}/overlays/overlay-variant-${BOARD}-${VARIANT}"
+    if [ ! -d "$VARIANT_OVERLAY" ] ; then
+      error "Can't find variant overlay directory $VARIANT_OVERLAY"
+      exit 1
+    fi
+    BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${VARIANT_OVERLAY}"
+  fi
 fi
 
 #
@@ -276,9 +296,9 @@ sudo ln -sf \
   "${BOARD_ROOT}/etc/make.profile"
 
 # Create emerge wrapper
-EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD}"
-EBUILD_WRAPPER="/usr/local/bin/ebuild-${BOARD}"
-EQUERY_WRAPPER="/usr/local/bin/equery-${BOARD}"
+EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD_VARIANT}"
+EBUILD_WRAPPER="/usr/local/bin/ebuild-${BOARD_VARIANT}"
+EQUERY_WRAPPER="/usr/local/bin/equery-${BOARD_VARIANT}"
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" > /dev/null 2>&1
 #!/bin/bash
 
@@ -322,7 +342,7 @@ sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/*/libstdc++.so* \
   "${BOARD_ROOT}/usr/lib"
 
 if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
-  echo $FLAGS_board > "$GCLIENT_ROOT/src/scripts/.default_board"
+  echo $BOARD_VARIANT > "$GCLIENT_ROOT/src/scripts/.default_board"
 fi
 
 echo "Done!"
