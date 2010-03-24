@@ -23,7 +23,6 @@ RDEPEND="${RDEPEND}
 	x86? ( app-editors/qemacs )
 	app-editors/vim
 	app-shells/bash
-	chromeos-base/autox
 	chromeos-base/flimflam-testscripts
 	chromeos-base/gmerge
 	dev-lang/python
