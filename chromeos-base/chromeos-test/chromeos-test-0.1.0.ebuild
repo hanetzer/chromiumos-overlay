@@ -16,7 +16,7 @@ IUSE="-autotest"
 
 # Packages for getting autotest onto image.
 RDEPEND="${RDEPEND}
-	autotest? ( 
+	autotest? (
 		chromeos-base/autotest[autox, buildcheck, xset]
 	)
 	"
@@ -25,6 +25,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
+	chromeos-base/autox
 	chromeos-base/flimflam-testscripts
 	dev-lang/python
 	net-misc/openssh
