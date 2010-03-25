@@ -78,6 +78,7 @@ RDEPEND="${RDEPEND}
 	app-portage/portage-utils
 	app-editors/qemacs
 	app-editors/vim
+	sys-apps/ack
 	"
 
 DEPEND=""
