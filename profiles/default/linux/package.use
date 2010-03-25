@@ -6,3 +6,4 @@ dev-util/git		cvs subversion webdav curl
 dev-util/subversion	-dso
 x11-libs/cairo		X
 sys-auth/pam_mount      -crypt
+sys-block/gpt           static

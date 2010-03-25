@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 inherit toolchain-funcs
+inherit flag-o-matic
 
 DESCRIPTION="GUID partition table maintenance utility"
 HOMEPAGE="http://src.chromium.org"
@@ -9,7 +10,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="static"
 
 DEPEND="sys-apps/util-linux
 	sys-libs/e2fsprogs-libs
@@ -29,6 +30,7 @@ src_unpack() {
 
 src_compile() {
 	tc-getCC
+	use static && append-flags "-static"
 	emake || die "${SRCPATH} compile failed."
 }
 
