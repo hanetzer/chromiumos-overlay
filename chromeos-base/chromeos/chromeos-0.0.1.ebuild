@@ -57,7 +57,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-login
-	chromeos-base/chromeos-metrics_collection
+	x86? ( chromeos-base/chromeos-metrics_collection )
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/internal
