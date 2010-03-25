@@ -18,10 +18,20 @@ RDEPEND=""
 kernel=${CHROMEOS_KERNEL:-"kernel/files"}
 files="${CHROMEOS_ROOT}/src/third_party/${kernel}"
 
-if [ "${ARCH}" = "x86" ]; then
-  config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
-elif [ "${ARCH}" = "arm" ]; then
-  config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
+# Use a single or split kernel config as specified in the board or variant
+# make.conf overlay. Default to the arch specific split config if an
+# overlay or variant does not set either CHROMEOS_KERNEL_CONFIG or
+# CHROMEOS_KERNEL_SPLITCONFIG. CHROMEOS_KERNEL_CONFIG is set relative 
+# to the root of the kernel source tree.
+
+if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
+	config="${files}/${CHROMEOS_KERNEL_CONFIG}"
+else
+	if [ "${ARCH}" = "x86" ]; then
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
+	elif [ "${ARCH}" = "arm" ]; then
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
+	fi
 fi
 
 src_unpack() {
@@ -33,7 +43,12 @@ src_unpack() {
 
 src_configure() {
 	elog "Using kernel config: ${config}"
-	chromeos/scripts/prepareconfig ${config} || die
+
+	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
+		cp -f "${config}" "${S}"/.config || die
+	else
+		chromeos/scripts/prepareconfig ${config} || die
+	fi
 	emake ARCH=$(tc-arch-kernel) oldconfig || die
 }
 
