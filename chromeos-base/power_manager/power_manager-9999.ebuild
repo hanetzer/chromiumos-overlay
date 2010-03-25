@@ -12,12 +12,18 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="amd64 x86 arm"
 
-RDEPEND="x11-libs/libX11
+RDEPEND="dev-cpp/gflags
+         dev-cpp/glog
+         x11-base/xorg-server
+         x11-libs/gtk+
+         x11-libs/libX11
          x11-libs/libXext"
 
 DEPEND="${RDEPEND}
+        chromeos-base/libchrome
         x11-proto/xextproto
-        test? ( dev-cpp/gtest )"
+        test? ( dev-cpp/gtest )
+        test? ( x11-libs/libXtst )"
 
 src_unpack() {
 	local platform="${CHROMEOS_ROOT}/src/platform/"
@@ -79,6 +85,8 @@ src_test() {
 }
 
 src_install() {
-	mkdir -p "${D}/usr/bin"
-	cp "${S}/power_manager/xidle-example" "${D}/usr/bin"
+	exeinto "/usr/bin"
+	doexe "${S}/power_manager/backlight-tool"
+	doexe "${S}/power_manager/powerd"
+	doexe "${S}/power_manager/xidle-example"
 }
