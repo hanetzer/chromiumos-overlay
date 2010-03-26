@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-testscripts
 	chromeos-base/gmerge
 	dev-lang/python
+	dev-python/pyopenssl
 	net-misc/iputils
 	net-misc/openssh
 	net-wireless/iw

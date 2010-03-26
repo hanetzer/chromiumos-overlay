@@ -28,6 +28,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/autox
 	chromeos-base/flimflam-testscripts
 	dev-lang/python
+	dev-python/pyopenssl
 	net-misc/openssh
 	net-misc/rsync
 	sys-power/powertop

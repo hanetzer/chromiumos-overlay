@@ -38,6 +38,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/protobuf
 	dev-python/dbus-python
 	dev-python/pygobject
+	dev-python/pyopenssl
 	dev-python/webpy
 	dev-util/cmake
 	dev-util/git[cvs,subversion,webdav,curl]
