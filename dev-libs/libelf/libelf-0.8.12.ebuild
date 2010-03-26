@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/libelf/libelf-0.8.12.ebuild,v 1.1 2009/11/21 09:24:32 patrick Exp $
 
-inherit multilib eutils
+EAPI=2
+
+inherit autotools eutils multilib
 
 DESCRIPTION="A ELF object file access library"
 HOMEPAGE="http://www.mr511.de/software/"
@@ -10,7 +12,7 @@ SRC_URI="http://www.mr511.de/software/${P}.tar.gz"
 
 LICENSE="LGPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~hppa ~ppc ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="arm ~alpha amd64 ~hppa ~ppc ~sparc x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="debug nls elibc_FreeBSD"
 
 DEPEND="!dev-libs/elfutils
@@ -32,12 +34,19 @@ src_unpack() {
 	fi
 }
 
-src_compile() {
+src_prepare() {
+	eautoreconf
+}
+
+src_configure() {
 	econf \
 		$(use_enable nls) \
 		$(use_enable debug) \
 		--enable-shared \
 		|| die "econf failed"
+}
+
+src_compile() {
 	emake || die "emake failed"
 }
 
