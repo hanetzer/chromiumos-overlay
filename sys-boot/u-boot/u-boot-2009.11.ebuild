@@ -18,6 +18,7 @@ RDEPEND="${DEPEND}"
 u_boot=${CHROMEOS_U_BOOT:-"u-boot/files"}
 config=${CHROMEOS_U_BOOT_CONFIG:-"versatile_config"}
 files="${CHROMEOS_ROOT}/src/third_party/${u_boot}"
+vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
 src_unpack() {
 	elog "Using U-Boot files: ${files}"
@@ -58,8 +59,8 @@ src_install() {
 			     -O linux \
 			     -T kernel \
 			     -C none \
-			     -a 0x20008000 \
-			     -e 0x20008000 \
+			     -a ${vmlinux_text_base} \
+			     -e ${vmlinux_text_base} \
 			     -n kernel \
 			     -d "${ROOT}"/boot/vmlinuz \
 			     "${D}"/boot/vmlinux.uimg || die
