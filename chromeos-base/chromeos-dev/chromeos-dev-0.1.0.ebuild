@@ -36,7 +36,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/findutils
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
-	x86? ( sys-apps/superiotool )
 	sys-apps/usbutils
 	sys-apps/which
 	sys-devel/gdb
