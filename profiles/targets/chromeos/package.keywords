@@ -43,6 +43,7 @@
 =sys-apps/devicekit-003		x86 arm
 =sys-apps/devicekit-disks-009   x86 arm
 =sys-apps/devicekit-power-009	x86 arm
+=sys-apps/flashrom-0.9.1	x86
 =sys-apps/mawk-1.3.3_p20090820	x86 arm
 =sys-apps/openrc-0.4.3-r4	x86 arm
 =sys-apps/parted-1.9.0		x86 arm

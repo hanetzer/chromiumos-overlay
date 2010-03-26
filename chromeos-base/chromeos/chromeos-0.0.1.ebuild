@@ -89,6 +89,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/kbd
 	sys-apps/coreutils
 	sys-apps/eject
+	x86? ( sys-apps/flashrom )
 	sys-apps/grep
 	sys-apps/mawk
 	sys-apps/module-init-tools

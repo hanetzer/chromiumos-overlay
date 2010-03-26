@@ -32,9 +32,11 @@ RDEPEND="${RDEPEND}
 	net-misc/openssh
 	net-wireless/iw
 	net-wireless/wireless-tools
+	x86? ( sys-apps/dmidecode )
 	sys-apps/findutils
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
+	x86? ( sys-apps/superiotool )
 	sys-apps/usbutils
 	sys-apps/which
 	sys-devel/gdb
