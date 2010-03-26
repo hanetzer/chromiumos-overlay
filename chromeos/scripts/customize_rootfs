@@ -311,3 +311,7 @@ sudo mv "${ROOT_FS_DIR}/etc/pulse/client-cros.conf" \
   "${ROOT_FS_DIR}/etc/pulse/client.conf"
 sudo mv "${ROOT_FS_DIR}/etc/pulse/default-cros.pa" \
   "${ROOT_FS_DIR}/etc/pulse/default.pa"
+
+# We need to replace udev rules file for gps devices.
+sudo cp "${CHROMIUMOS_OVERLAY}/chromeos/files/99-gpsd-usb.rules" \
+  "${ROOT_FS_DIR}/etc/udev/rules.d/99-gpsd-usb.rules"
