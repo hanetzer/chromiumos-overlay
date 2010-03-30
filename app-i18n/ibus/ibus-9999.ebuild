@@ -15,7 +15,6 @@ IUSE="doc nls"
 
 RDEPEND=">=dev-libs/glib-2.18
 	>=x11-libs/gtk+-2
-	>=gnome-base/gconf-2.12
 	>=gnome-base/librsvg-2
 	sys-apps/dbus
 	app-text/iso-codes
@@ -56,6 +55,7 @@ src_unpack() {
 src_compile() {
 	NOCONFIGURE=1 ./autogen.sh
 	econf \
+		--disable-gconf \
 		$(use_enable doc gtk-doc) \
 		$(use_enable nls) || die
 	emake || die
