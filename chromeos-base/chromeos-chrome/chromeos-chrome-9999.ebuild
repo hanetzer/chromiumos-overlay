@@ -1,6 +1,5 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/www-client/chromium/chromium-9999.ebuild,v 1.2 2009/10/02 14:29:23 voyageur Exp $
 
 # Usage: by default, downloads chromium browser from the build server.
 # If CHROME_ORIGIN is set to one of {SERVER_BINARY,LOCAL_SOURCE,LOCAL_BINARY},
