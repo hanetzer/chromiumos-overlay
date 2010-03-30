@@ -11,9 +11,20 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="X opengl"
 
-# XServer
+# X11 apps
 RDEPEND="${RDEPEND}
-	X? ( x11-terms/aterm )
+	x11-apps/xauth
+	x11-apps/xdpyinfo
+	x11-apps/xdriinfo
+	x11-apps/xhost
+	x11-apps/xlsatoms
+	x11-apps/xlsclients
+	x11-apps/xmodmap
+	x11-apps/xprop
+	x11-apps/xrdb
+	x11-apps/xset
+	x11-apps/xwininfo
+	x11-terms/aterm
 	"
 
 # Useful utilities
@@ -44,7 +55,7 @@ RDEPEND="${RDEPEND}
 	sys-power/powertop
 	sys-process/procps
 	sys-process/time
-        opengl? ( x11-apps/mesa-progs )
+	opengl? ( x11-apps/mesa-progs )
 	"
 
 # TODO: Re-add strace once we can compile it again dev-util/strace

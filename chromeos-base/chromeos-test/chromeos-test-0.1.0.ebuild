@@ -21,7 +21,7 @@ RDEPEND="${RDEPEND}
 	)
 	"
 
-# Packages required for testing."
+# Packages required for testing.
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
@@ -34,4 +34,11 @@ RDEPEND="${RDEPEND}
 	sys-power/powertop
 	sys-process/procps
 	sys-process/time
+	"
+
+# Used to disable Caps Lock and keyboard autorepeat, which can have bad
+# effects on keyboard tests.
+RDEPEND="${RDEPEND}
+	x11-apps/xmodmap
+	x11-apps/xset
 	"
