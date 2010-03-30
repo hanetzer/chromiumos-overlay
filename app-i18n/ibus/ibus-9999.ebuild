@@ -11,7 +11,7 @@ HOMEPAGE="http://code.google.com/p/ibus/"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc nls"
+IUSE="doc nls python"
 
 RDEPEND=">=dev-libs/glib-2.18
 	>=x11-libs/gtk+-2
@@ -19,17 +19,17 @@ RDEPEND=">=dev-libs/glib-2.18
 	sys-apps/dbus
 	app-text/iso-codes
 	x11-libs/libX11
-	>=dev-lang/python-2.5
-	>=dev-python/pygobject-2.14
+	python? ( >=dev-lang/python-2.5 )
+	python? ( >=dev-python/pygobject-2.14 )
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	doc? ( >=dev-util/gtk-doc-1.9 )
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 RDEPEND="${RDEPEND}
-	dev-python/pygtk
-	>=dev-python/dbus-python-0.83
-	dev-python/pyxdg"
+	python? ( dev-python/pygtk )
+	python? ( >=dev-python/dbus-python-0.83 )
+	python? ( dev-python/pyxdg )"
 
 pkg_setup() {
 	# An arch specific config directory is used on multilib systems
@@ -57,7 +57,8 @@ src_compile() {
 	econf \
 		--disable-gconf \
 		$(use_enable doc gtk-doc) \
-		$(use_enable nls) || die
+		$(use_enable nls) \
+		$(use_enable python) || die
 	emake || die
 }
 
@@ -65,7 +66,9 @@ src_install() {
 	local third_party="${CHROMEOS_ROOT}/src/third_party"
 
 	emake DESTDIR="${D}" install || die
-	rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
+	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
+		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
+	fi
 	cp "${third_party}/ibus/files/candidate_window.xml" "${D}/usr/share/ibus/component/" || die
 	chmod 644 "${D}/usr/share/ibus/component/candidate_window.xml" || die
 	dodoc AUTHORS ChangeLog NEWS README
@@ -94,12 +97,16 @@ pkg_postinst() {
 	( echo '/usr/lib/gtk-2.0/2.10.0/immodules/im-ibus.so';
 	  echo '"ibus" "IBus (Intelligent Input Bus)" "ibus" "" "ja:ko:zh:*"' ) > "${ROOT}/${GTK2_CONFDIR}/gtk.immodules"
 
-	python_mod_optimize /usr/share/${PN}
+	if use python; then
+		python_mod_optimize /usr/share/${PN}
+	fi
 }
 
 pkg_postrm() {
 	[ "${ROOT}" = "/" -a -x /usr/bin/gtk-query-immodules-2.0 ] && \
 		gtk-query-immodules-2.0 > "${ROOT}/${GTK2_CONFDIR}/gtk.immodules"
 
-	python_mod_cleanup /usr/share/${PN}
+	if use python; then
+		python_mod_cleanup /usr/share/${PN}
+	fi
 }
