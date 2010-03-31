@@ -72,11 +72,17 @@ src_install() {
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda2" b 8 2
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda3" b 8 3
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda4" b 8 4
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda5" b 8 5
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda6" b 8 6
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda7" b 8 7
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb"  b 8 16
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb1" b 8 17
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb2" b 8 18
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb3" b 8 19
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb4" b 8 20
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb5" b 8 21
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb6" b 8 22
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb7" b 8 23
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mouse0" c 13 32
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mice"   c 13 63
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event0" c 13 64
