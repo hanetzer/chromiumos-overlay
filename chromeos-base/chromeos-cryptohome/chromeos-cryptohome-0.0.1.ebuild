@@ -72,14 +72,8 @@ src_test() {
 	if use x86 ; then
 		# Create data for unittests
 		./init_cryptohome_data.sh test_image_dir
-
-		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
-		LIB_PATHS=".:${SYSROOT}/usr/lib:${SYSROOT}/lib"
-		# Set the library paths appropriately and
-        	# run the unit tests with the right loader.
-        	LD_LIBRARY_PATH=$LIB_PATHS:${LIBC_PATH} \
-			${SYSROOT}/lib/ld-linux.so.2 ./cryptohome_testrunner \
-			${GTEST_ARGS} || die "unit tests failed!"
+		./cryptohome_testrunner ${GTEST_ARGS} || \
+		    die "unit tests (with ${GTEST_ARGS}) failed!"
 	fi
 	popd
 }

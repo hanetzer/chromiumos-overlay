@@ -83,14 +83,9 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		LIB_PATH="${SYSROOT}/usr/lib:${SYSROOT}/lib"
-		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
-		X11_PATH="${SYSROOT}/usr/lib/opengl/xorg-x11/lib"
 		pushd "window_manager"
 		for test in ./*_test; do
-			LD_LIBRARY_PATH="$LIB_PATH:$LIBC_PATH:$X11_PATH" \
-			    "${SYSROOT}/lib/ld-linux.so.2" \
-			    "$test" ${GTEST_ARGS} || die "$test failed"
+			"$test" ${GTEST_ARGS} || die "$test failed"
 		done
 		popd
 	fi

@@ -57,13 +57,8 @@ src_test() {
 		die "chromeos-login compile tests failed."
 
 	if use x86 ; then
-		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
-		# Set the library paths appropriately and
-		# run the unit tests with the right loader.
-		LD_LIBRARY_PATH=${SYSROOT}/usr/lib:${SYSROOT}/lib:${LIBC_PATH} \
-			${SYSROOT}/lib/ld-linux.so.2 \
-			./session_manager_unittest ${GTEST_ARGS} || \
-			die "unit tests (with ${GTEST_ARGS}) failed!"
+		./session_manager_unittest ${GTEST_ARGS} || \
+		    die "unit tests (with ${GTEST_ARGS}) failed!"
 	fi
 }
 

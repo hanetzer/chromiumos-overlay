@@ -71,13 +71,10 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		LIB_PATH="${SYSROOT}/usr/lib:${SYSROOT}/lib"
-		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
-		LD="${SYSROOT}/lib/ld-linux.so.2"
-		export DISPLAY=:1 LD_LIBRARY_PATH="${LIB_PATH}:${LIBC_PATH}"
+		export DISPLAY=:1 
 		trap 'kill %1 && wait' exit
-		"${LD}" "${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
-		"${LD}" "${S}/power_manager/xidle_unittest" \
+		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
+		"${S}/power_manager/xidle_unittest" \
 		    ${GTEST_ARGS} || die "unit tests failed"
 		kill %1 && wait
 		trap - exit
