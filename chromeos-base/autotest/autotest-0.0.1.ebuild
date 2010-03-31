@@ -24,8 +24,13 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}"
 
+export PORTAGE_QUIET=1
+
+# Ensure the configures run by autotest pick up the right config.site
+export CONFIG_SITE=/usr/share/config.site
+
 # Create python package init files for top level test case dirs.
-function touchInitPy() {
+function touch_init_py() {
 	local dirs=${1}
 	for base_dir in $dirs
 	do
@@ -38,23 +43,17 @@ function touchInitPy() {
 	done
 }
 
-src_unpack() {
-	local third_party="${CHROMEOS_ROOT}/src/third_party"
-	elog "Using third_party: $third_party"
-	mkdir -p "${S}"
-	cp -fpru ${third_party}/autotest/files/{client,conmux,server,tko,utils,global_config.ini,shadow_config.ini} ${S} || die
+function setup_ssh() {
+	eval $(ssh-agent) > /dev/null
+	ssh-add \
+		${CHROMEOS_ROOT}/src/scripts/mod_for_test_scripts/ssh_keys/testing_rsa
 }
 
-src_configure() {
-	cd ${S}
-	touchInitPy client/tests client/site_tests
-	touch __init__.py
-	# Cleanup checked-in binaries that don't support the target architecture
-	[[ ${E_MACHINE} == "" ]] && return 0;
-	rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+function teardown_ssh() {
+	ssh-agent -k > /dev/null
 }
 
-src_compile() {
+function setup_cross_toolchain() {
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX
@@ -66,16 +65,36 @@ src_compile() {
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
+}
 
-	# Ensure the configures run by autotest pick up the right config.site
-	export CONFIG_SITE=/usr/share/config.site
+function copy_src() {
+	local dst=$1
+	local autotest_files="${CHROMEOS_ROOT}/src/third_party/autotest/files"
+	mkdir -p "${dst}"
+	cp -fpru "${autotest_files}"/{client,conmux,server,tko,utils} ${dst} || die
+	cp -fpru "${autotest_files}"/{global_config.ini,shadow_config.ini} ${dst} \
+		|| die
+}
+
+src_configure() {
+	copy_src "${S}"
+	cd "${S}"
+	touch_init_py client/tests client/site_tests
+	touch __init__.py
+	# Cleanup checked-in binaries that don't support the target architecture
+	[[ ${E_MACHINE} == "" ]] && return 0;
+	rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+}
+
+src_compile() {
+	setup_cross_toolchain
 
 	# Do not use sudo, it'll unset all your environment
 	LOGNAME=${SUDO_USER} \
-          client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST} \
-          || ! use buildcheck || die "Tests failed to build."
-        # Cleanup some temp files after compiling
-        find . -name '*.[ado]' -delete
+		client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST} \
+		|| ! use buildcheck || die "Tests failed to build."
+	# Cleanup some temp files after compiling
+	find . -name '*.[ado]' -delete
 }
 
 src_install() {
@@ -84,7 +103,27 @@ src_install() {
 }
 
 pkg_postinst() {
-  chown -R ${SUDO_UID}:${SUDO_GID} "${SYSROOT}/usr/local/autotest"
-  chmod -R 755 "${SYSROOT}/usr/local/autotest"
+	chown -R ${SUDO_UID}:${SUDO_GID} "${SYSROOT}/usr/local/autotest"
+	chmod -R 755 "${SYSROOT}/usr/local/autotest"
+}
+
+# Define a directory which will not be cleaned by portage automatically. So we
+# could achieve incremental build between two autoserv runs.
+BUILD_STAGE=${PORTAGE_BUILDDIR}/staging
+
+src_test() {
+	local third_party="${CHROMEOS_ROOT}/src/third_party"
+	copy_src "${BUILD_STAGE}"
+
+	setup_ssh
+	cd "${BUILD_STAGE}"
+
+	setup_cross_toolchain
+
+	local timestamp=$(date +%Y-%m-%d-%H.%M.%S)
+	# Do not use sudo, it'll unset all your environment
+	LOGNAME=${SUDO_USER} ./server/autoserv -r /tmp/results.${timestamp} \
+		${AUTOSERV_ARGS}
+	teardown_ssh
 }
 
