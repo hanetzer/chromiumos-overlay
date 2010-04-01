@@ -29,11 +29,16 @@ DEPEND="chromeos-base/libchrome
 	dev-libs/vectormath
 	${RDEPEND}"
 
+# Print the number of jobs from $MAKEOPTS.
+print_num_jobs() {
+	local JOBS=$(echo $MAKEOPTS | sed -nre 's/(^|.* )-j\s*([0-9]+)($| .*)/\2/p')
+	echo ${JOBS:-1}
+}
+
 src_unpack() {
 	local platform="${CHROMEOS_ROOT}/src/platform/"
 	elog "Using platform dir: $platform"
 	mkdir -p "${S}/window_manager"
-
 	cp -a "${platform}"/window_manager/* "${S}/window_manager" || die
 }
 
@@ -60,7 +65,8 @@ src_compile() {
 	# hard-target-depends. Perhaps the same for src/third_party/chrome
 	# and src/common
 	pushd "window_manager"
-	scons BACKEND="$backend" wm screenshot || die "window_manager compile failed"
+	scons BACKEND="$backend" -j$(print_num_jobs) wm screenshot || \
+		die "window_manager compile failed"
 	popd
 }
 
@@ -77,7 +83,7 @@ src_test() {
 	fi
 
 	pushd "window_manager"
-	scons tests || die "failed to build tests"
+	scons -j$(print_num_jobs) tests || die "failed to build tests"
 	popd
 
 	if ! use x86 ; then
