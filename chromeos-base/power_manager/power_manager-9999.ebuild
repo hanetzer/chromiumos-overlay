@@ -21,9 +21,10 @@ RDEPEND="dev-cpp/gflags
 
 DEPEND="${RDEPEND}
         chromeos-base/libchrome
-        x11-proto/xextproto
+        test? ( dev-cpp/gmock )
         test? ( dev-cpp/gtest )
-        test? ( x11-libs/libXtst )"
+        test? ( x11-libs/libXtst )
+        x11-proto/xextproto"
 
 src_unpack() {
 	local platform="${CHROMEOS_ROOT}/src/platform/"
@@ -64,7 +65,7 @@ src_test() {
 
 	# Build tests
 	pushd power_manager
-	scons xidle_unittest || die "xidle_unittest compile failed."
+	scons tests || die "tests compile failed."
 	popd
 
 	# Run tests if we're on x86
@@ -74,10 +75,13 @@ src_test() {
 		export DISPLAY=:1 
 		trap 'kill %1 && wait' exit
 		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
+		sleep 2
 		"${S}/power_manager/xidle_unittest" \
-		    ${GTEST_ARGS} || die "unit tests failed"
+		    ${GTEST_ARGS} || die "xidle_unittest failed"
 		kill %1 && wait
 		trap - exit
+		"${S}/power_manager/idle_dimmer_unittest" \
+		    ${GTEST_ARGS} || die "idle_dimmer_unittest failed"
 	fi
 }
 
