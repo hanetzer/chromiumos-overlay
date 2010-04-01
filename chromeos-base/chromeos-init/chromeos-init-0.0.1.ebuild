@@ -23,6 +23,19 @@ src_unpack() {
 	cp -a "${platform}/init"/* "${S}" || die
 }
 
+make_partition_devices() {
+	block=$1
+	partition_prefix=$2
+	major=$3
+	minor=$4
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/${block}" b ${major} ${minor}
+	for i in `seq 1 7` ; do
+		partition_minor=$((${minor} + ${i}))
+		name="${D}/${DEVICES_DIR}/${partition_prefix}${i}"
+		mknod --mode=0660 "${name}" b ${major} ${partition_minor}
+	done
+}
+
 src_install() {
 	into /  # We want /sbin, not /usr/sbin, etc.
 
@@ -67,22 +80,10 @@ src_install() {
 	mknod --mode=0600 "${D}/${DEVICES_DIR}/console" c 5 1
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/ptmx" c 5 2
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/loop0" b 7 0
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda"  b 8 0
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda1" b 8 1
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda2" b 8 2
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda3" b 8 3
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda4" b 8 4
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda5" b 8 5
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda6" b 8 6
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sda7" b 8 7
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb"  b 8 16
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb1" b 8 17
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb2" b 8 18
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb3" b 8 19
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb4" b 8 20
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb5" b 8 21
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb6" b 8 22
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/sdb7" b 8 23
+	make_partition_devices "sda" "sda" 8 0
+	make_partition_devices "sdb" "sdb" 8 16
+	make_partition_devices "mmcblk0" "mmcblk0p" 179 0
+	make_partition_devices "mmcblk1" "mmcblk1p" 179 16
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mouse0" c 13 32
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mice"   c 13 63
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event0" c 13 64
@@ -95,12 +96,6 @@ src_install() {
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event7" c 13 71
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event8" c 13 72
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/fb0" c 29 0
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/mmcblk0" b 179 0
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/mmcblk0p1" b 179 1
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/mmcblk0p4" b 179 4
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/mmcblk1" b 179 16
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/mmcblk1p1" b 179 17
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/mmcblk1p4" b 179 20
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/dri/card0" c 226 0
 	chown root.tty "${D}/${DEVICES_DIR}"/tty*
 	chown root.kmem "${D}/${DEVICES_DIR}"/mem
