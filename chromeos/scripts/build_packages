@@ -122,5 +122,5 @@ if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
-  ./build_autotest.sh --noprompt --board=${FLAGS_board} ${EMERGE_JOBS}
+  ./autotest --build=all --noprompt --board=${FLAGS_board} ${EMERGE_JOBS}
 fi
