@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	chromeos-base/autox
 	chromeos-base/flimflam-testscripts
+	chromeos-base/minifakedns
 	dev-lang/python
 	dev-python/pyopenssl
 	net-misc/openssh

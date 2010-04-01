@@ -38,6 +38,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/autox
 	chromeos-base/flimflam-testscripts
 	chromeos-base/gmerge
+	chromeos-base/minifakedns
 	dev-lang/python
 	dev-python/pyopenssl
 	net-misc/iputils
