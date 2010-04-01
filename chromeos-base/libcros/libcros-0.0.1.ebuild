@@ -16,6 +16,8 @@ RDEPEND="app-i18n/ibus
          dev-libs/dbus-glib
          dev-libs/glib
          dev-libs/libpcre
+	 net-libs/gupnp
+	 net-libs/gupnp-av
          sys-apps/dbus
          sys-auth/consolekit
          sys-fs/udev

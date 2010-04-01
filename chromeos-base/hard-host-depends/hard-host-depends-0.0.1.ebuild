@@ -32,6 +32,7 @@ RDEPEND="${RDEPEND}
 	dev-lang/swig
 	dev-libs/glib
         dev-libs/eggdbus
+	dev-libs/libgcrypt
 	dev-libs/libxslt
 	dev-libs/dbus-glib[tools]
 	dev-libs/nss[utils]

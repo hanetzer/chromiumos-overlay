@@ -30,6 +30,10 @@
 =media-libs/freeglut-2.4.0-r2   x86 arm
 =media-libs/jpeg-6b-r9          x86 arm
 =chromeos-base/flimflam-9999-r1	x86 arm
+=net-libs/gnutls-2.9.5		x86 arm
+=net-libs/gssdp-0.7.1           x86 arm
+=net-libs/gupnp-0.13.2          x86 arm
+=net-libs/gupnp-av-0.5.2	x86 arm
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/mobile-broadband-provider-info-20100122 x86 arm
 =net-misc/modemmanager-0.2_p20090925 x86 arm
