@@ -13,6 +13,7 @@ IUSE="X opengl"
 
 # X11 apps
 RDEPEND="${RDEPEND}
+	x11-apps/setxkbmap
 	x11-apps/xauth
 	x11-apps/xdpyinfo
 	x11-apps/xdriinfo
