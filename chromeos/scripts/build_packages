@@ -76,18 +76,6 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   fi
 fi
 
-# Retry an emerge command according to $FLAGS_retries
-# The $EMERGE_JOBS flags will only be added the first time the command is run
-function eretry () {
-  $* $EMERGE_JOBS && return 0
-  local i=
-  for i in $(seq $FLAGS_retries); do
-    echo Retrying $*
-    $* && return 0
-  done
-  return 1
-}
-
 # Hacks to avoid forcing users to create a new chroot
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user

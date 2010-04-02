@@ -62,6 +62,7 @@ RDEPEND="${RDEPEND}
 	>=x11-misc/util-macros-1.2
 	x11-libs/gtk+
 	sys-apps/nih-dbus-tool
+	sys-fs/sshfs-fuse
 	"
 
 # Host dependencies that create usernames/groups we need to pull over to target.
