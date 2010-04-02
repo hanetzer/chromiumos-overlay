@@ -3,8 +3,6 @@
 
 EAPI=2
 
-inherit toolchain-funcs
-
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
@@ -16,7 +14,8 @@ IUSE=""
 DEPEND=""
 
 # TODO(adlr): remove coreutils dep if we move to busybox
-RDEPEND="sys-apps/coreutils
+RDEPEND="dev-libs/shflags
+         sys-apps/coreutils
          sys-apps/util-linux
          sys-fs/e2fsprogs"
 

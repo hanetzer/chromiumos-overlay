@@ -18,6 +18,7 @@ DEPEND=""
 RDEPEND="app-arch/gzip
          app-shells/bash
          dev-libs/openssl
+         dev-libs/shflags
          net-misc/wget
          sys-apps/coreutils
          sys-apps/util-linux"
@@ -41,9 +42,8 @@ src_compile() {
     export CCFLAGS="$CFLAGS"
   fi
 
-  make || die "window_manager compile failed"
+  make || die "memento_softwareupdate compile failed"
 }
-
 
 src_install() {
   dodir /opt/google/memento_updater
