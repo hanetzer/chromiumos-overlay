@@ -31,7 +31,7 @@ DEPEND="chromeos-base/libchrome
 
 # Print the number of jobs from $MAKEOPTS.
 print_num_jobs() {
-	local JOBS=$(echo $MAKEOPTS | sed -nre 's/(^|.* )-j\s*([0-9]+)($| .*)/\2/p')
+	local JOBS=$(echo $MAKEOPTS | sed -nre 's/.*-j\s*([0-9]+).*/\1/p')
 	echo ${JOBS:-1}
 }
 
@@ -43,16 +43,8 @@ src_unpack() {
 }
 
 src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM
+	export CCFLAGS="$CFLAGS"
 
 	local backend
 	if use opengles ; then
@@ -71,16 +63,8 @@ src_compile() {
 }
 
 src_test() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM
+	export CCFLAGS="$CFLAGS"
 
 	pushd "window_manager"
 	scons -j$(print_num_jobs) tests || die "failed to build tests"
@@ -98,7 +82,6 @@ src_test() {
 }
 
 src_install() {
-	mkdir -p "${D}/usr/bin"
-	cp "${S}/window_manager/wm" "${D}/usr/bin/chromeos-wm"
-	cp "${S}/window_manager/screenshot" "${D}/usr/bin/screenshot"
+	newbin window_manager/wm chromeos-wm
+	dobin window_manager/screenshot
 }
