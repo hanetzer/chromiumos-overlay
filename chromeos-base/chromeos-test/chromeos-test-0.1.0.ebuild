@@ -25,7 +25,6 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
-	app-crypt/nss
 	chromeos-base/autox
 	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns

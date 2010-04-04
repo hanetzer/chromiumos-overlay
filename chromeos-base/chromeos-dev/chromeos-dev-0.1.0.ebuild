@@ -32,7 +32,6 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
-	app-crypt/nss
 	x86? ( app-editors/qemacs )
 	app-editors/vim
 	app-shells/bash
