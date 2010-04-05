@@ -180,10 +180,6 @@ fi
 # TODO: Until libGL.so is fixed, create symlink libGL.so.1 -> libGL.so
 sudo ln -s libGL.so "${ROOT_FS_DIR}/usr/lib/libGL.so.1"
 
-# TODO: Until xkb is reconfigured for its stateful directory
-sudo rm -rf "${ROOT_FS_DIR}/var/lib/xkb"
-sudo ln -s /var/cache "${ROOT_FS_DIR}/var/lib/xkb"
-
 # TODO: If slim is not installed, we fake it out so that our init script
 # will return a success result.
 if [[ ! -f "${ROOT_FS_DIR}/usr/bin/slim" ]]; then
@@ -261,9 +257,9 @@ exec /opt/google/chrome/chrome
 EOF
 sudo chmod +x "$ROOT_FS_DIR"/usr/bin/chromeos-chrome
 
-# dbus-uuidgen writes machine-id to /var/lib/dbus.
-sudo rm -rf "${ROOT_FS_DIR}/var/lib/dbus"
-sudo ln -s /var/cache "${ROOT_FS_DIR}/var/lib/dbus"
+# Clean out var as it will be on stateful at run-time
+sudo rm -rf "${ROOT_FS_DIR}/var"
+sudo mkdir "${ROOT_FS_DIR}/var"
 
 # Write stock lsb-release file
 # Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)# Was removed from chromeos_version.sh which can also be run outside of chroot
