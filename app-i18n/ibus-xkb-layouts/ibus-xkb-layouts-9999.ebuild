@@ -8,8 +8,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND=">=app-i18n/ibus-1.2
-	 x11-libs/libxklavier"
+RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
@@ -30,7 +29,8 @@ src_unpack() {
 
 src_compile() {
 	NOCONFIGURE=1 ./autogen.sh
-	econf || die
+	# Since X for Chrome OS does not use evdev, we use xorg.xml.
+	econf --with-xkb-rules-xml=/usr/share/X11/xkb/rules/xorg.xml || die
 	emake || die
 }
 
