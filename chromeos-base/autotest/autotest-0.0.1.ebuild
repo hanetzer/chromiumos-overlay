@@ -11,14 +11,18 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+autox buildcheck +xset"
+IUSE="+autox buildcheck +xset +tpmtools"
 
 # TODO(snanda): Remove xset dependence once power_LoadTest is switched over
 # to use power manager
+# TODO(semenzato): tpm-tools is included for hardware_TpmFirmware (and at this
+# time only one binary is used, tpm_takeownership).  Once we have a testing
+# image, a better way would be to add tpm-tools to the image.
 RDEPEND="
   dev-lang/python
   autox? ( chromeos-base/autox )
   xset? ( x11-apps/xset )
+  tpmtools? ( app-crypt/tpm-tools )
   "
 
 DEPEND="
