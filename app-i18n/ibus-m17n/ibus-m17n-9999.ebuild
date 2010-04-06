@@ -2,21 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-m17n/ibus-m17n-1.2.0.20090617.ebuild,v 1.1 2009/06/18 15:40:00 matsuu Exp $
 
+EAPI="2"
+
 DESCRIPTION="The M17N engine IMEngine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/ibus/"
 #SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="nls"
 
 RDEPEND=">=app-i18n/ibus-1.2
 	dev-libs/m17n-lib
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
-	dev-util/pkgconfig
 	dev-db/m17n-db
+	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
 
 # Chromium OS change:
@@ -35,13 +37,17 @@ src_unpack() {
 	else
 		unpack ${A}
 	fi
+}
 
-	cd "${S}"
+src_prepare() {
+	NOCONFIGURE=1 ./autogen.sh
+}
+
+src_configure() {
+	econf $(use_enable nls) || die
 }
 
 src_compile() {
-	NOCONFIGURE=1 ./autogen.sh
-	econf $(use_enable nls) || die
 	emake || die
 }
 

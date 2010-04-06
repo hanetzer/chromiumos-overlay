@@ -2,13 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-hangul/ibus-hangul-1.2.0.20090617.ebuild,v 1.1 2009/06/18 15:40:05 matsuu Exp $
 
+EAPI="2"
+
 DESCRIPTION="The Hangul engine for IBus input platform"
 HOMEPAGE="http://code.google.com/p/ibus/"
 #SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="nls"
 
 RDEPEND=">=app-i18n/ibus-1.2
@@ -32,9 +34,15 @@ src_unpack() {
 	ln -s "$(type -P true)" py-compile || die
 }
 
-src_compile() {
+src_prepare() {
 	NOCONFIGURE=1 ./autogen.sh
+}
+
+src_configure() {
 	econf $(use_enable nls) || die
+}
+
+src_compile() {
 	emake || die
 }
 

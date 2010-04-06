@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-chewing/ibus-chewing-1.2.0.20090917.ebuild,v 1.1 2009/09/17 16:17:22 matsuu Exp $
 
-EAPI="1"
+EAPI="2"
 inherit cmake-utils
 
 MY_P="${P}-Source"
@@ -12,14 +12,14 @@ HOMEPAGE="http://code.google.com/p/ibus/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="nls"
 
-RDEPEND="x11-libs/libXtst
-	>=app-i18n/ibus-1.1
+RDEPEND=">=app-i18n/ibus-1.1
 	>=dev-libs/libchewing-0.3.2
+	dev-util/gob:2
 	x11-libs/gtk+:2
-	dev-util/gob:2"
+	x11-libs/libXtst"
 DEPEND="${RDEPEND}
 	dev-util/cmake
 	dev-util/pkgconfig"
@@ -43,6 +43,4 @@ src_unpack() {
 	else
 		unpack ${A}
 	fi
-
-	cd "${S}"
 }

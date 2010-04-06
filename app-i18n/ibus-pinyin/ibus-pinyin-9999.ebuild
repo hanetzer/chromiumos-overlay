@@ -13,7 +13,7 @@ HOMEPAGE="http://code.google.com/p/ibus/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="nls"
 
 # Changes:
@@ -28,8 +28,8 @@ IUSE="nls"
 # TODO(yusukes): Ask someone if we should support Open Phrase DB or not.
 
 RDEPEND=">=app-i18n/ibus-1.1.0
-	dev-libs/libsigc++
 	>=dev-db/sqlite-3.6.18
+	dev-libs/libsigc++
 	nls? ( virtual/libintl )"
 
 DEPEND="${RDEPEND}
@@ -51,9 +51,15 @@ src_unpack() {
 	ln -sf "$(type -P true)" py-compile || die
 }
 
-src_compile() {
+src_prepare() {
 	NOCONFIGURE=1 ./autogen.sh
+}
+
+src_configure() {
 	econf $(use_enable nls) || die
+}
+
+src_compile() {
 	emake || die
 }
 
