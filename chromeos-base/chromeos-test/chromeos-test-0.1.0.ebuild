@@ -30,6 +30,8 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns
 	dev-lang/python
+	dev-python/dbus-python
+	dev-python/pygobject
 	dev-python/pyopenssl
 	net-misc/openssh
 	net-misc/rsync
