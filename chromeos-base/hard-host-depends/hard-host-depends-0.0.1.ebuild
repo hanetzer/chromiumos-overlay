@@ -14,10 +14,12 @@ IUSE=""
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
 RDEPEND="${RDEPEND}
 	app-admin/sudo
+	sys-block/gpt
+	sys-boot/grub
+	sys-boot/syslinux
 	sys-devel/crossdev
 	sys-devel/crossdev-wrappers
-	sys-boot/syslinux
-        sys-block/gpt
+	sys-fs/dosfstools
 	"
 
 # Host dependencies for building cross-compiled packages.
