@@ -17,6 +17,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xauth
 	x11-apps/xdpyinfo
 	x11-apps/xdriinfo
+	x11-apps/xev
 	x11-apps/xhost
 	x11-apps/xlsatoms
 	x11-apps/xlsclients
