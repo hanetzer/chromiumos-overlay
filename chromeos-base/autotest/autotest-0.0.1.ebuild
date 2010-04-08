@@ -77,8 +77,9 @@ function copy_src() {
 	local autotest_files="${CHROMEOS_ROOT}/src/third_party/autotest/files"
 	mkdir -p "${dst}"
 	cp -fpru "${autotest_files}"/{client,conmux,server,tko,utils} ${dst} || die
-	cp -fpru "${autotest_files}"/{global_config.ini,shadow_config.ini} ${dst} \
-		|| die
+	cp -fpru "${autotest_files}"/shadow_config.ini ${dst} || die
+	sed "/^enable_server_prebuild/d" "${autotest_files}"/global_config.ini > \
+		${dst}/global_config.ini
 }
 
 src_configure() {
