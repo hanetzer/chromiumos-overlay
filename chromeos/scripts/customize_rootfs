@@ -28,6 +28,8 @@ DEFINE_string root ""      \
   "The root file system to customize."
 DEFINE_boolean withdev $FLAGS_TRUE \
   "Include useful developer friendly utilities in the image."
+DEFINE_string factory_server $FLAGS_FALSE \
+  "Build a factory install image pointing to given server."
 
 # Parse command line
 FLAGS "$@" || exit 1
@@ -272,6 +274,11 @@ else
   export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Developer Build ${CHROMEOS_REVISION:?} - $(date) - $CHROMEOS_RELEASE_CODENAME)"
 fi
 
+if [ -n "$FLAGS_factory_server" ]; then
+  CHROMEOS_VERSION_AUSERVER="$FLAGS_factory_server"
+  CHROMEOS_VERSION_DEVSERVER=""
+fi
+
 # Set google-specific version numbers:
 # CHROMEOS_RELEASE_BOARD is the target board identifier.
 # CHROMEOS_RELEASE_CODENAME is the codename of the release.
@@ -293,6 +300,15 @@ GOOGLE_RELEASE=$CHROMEOS_VERSION_STRING
 CHROMEOS_AUSERVER=$CHROMEOS_VERSION_AUSERVER
 CHROMEOS_DEVSERVER=$CHROMEOS_VERSION_DEVSERVER
 EOF
+
+if [ -n "$FLAGS_factory_server" ]; then
+  cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/lsb-release" \
+              oflag=append conv=notrunc
+FACTORY_INSTALL=1
+HTTP_SERVER_OVERRIDE=true
+EOF
+  sudo sed -i '/CHROMEOS_DEVSERVER=/d' "${ROOT_FS_DIR}/etc/lsb-release"
+fi
 
 # We need to replace /etc/pulse/client.conf and /etc/pulse/default.pa with our
 # own versions.
