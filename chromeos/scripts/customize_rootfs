@@ -257,10 +257,6 @@ exec /opt/google/chrome/chrome
 EOF
 sudo chmod +x "$ROOT_FS_DIR"/usr/bin/chromeos-chrome
 
-# Clean out var as it will be on stateful at run-time
-sudo rm -rf "${ROOT_FS_DIR}/var"
-sudo mkdir "${ROOT_FS_DIR}/var"
-
 # Write stock lsb-release file
 # Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)# Was removed from chromeos_version.sh which can also be run outside of chroot
 # where CHROMEOS_REVISION is set
