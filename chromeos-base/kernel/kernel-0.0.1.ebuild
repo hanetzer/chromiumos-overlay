@@ -14,6 +14,7 @@ IUSE=""
 
 DEPEND="sys-apps/debianutils"
 RDEPEND=""
+RESTRICT="strip"
 
 kernel=${CHROMEOS_KERNEL:-"kernel/files"}
 files="${CHROMEOS_ROOT}/src/third_party/${kernel}"
@@ -78,6 +79,15 @@ src_install() {
           CROSS_COMPILE="${CHOST}-" \
           INSTALL_MOD_PATH="${D}" \
           firmware_install || die
+
+	elog "Copying sources from" `pwd` "to ${D}usr/src/linux"
+	dodir /usr/src/linux || die
+  	rsync -r \
+ 		--exclude '*.o' \
+		--exclude '*.ko' \
+		--exclude '*.c' \
+		* .config "${D}usr/src/linux" || die
+  	chmod -R a+rX "${D}usr/src/linux" # root umask may be wrong
 
 	if [ "${ARCH}" = "arm" ]; then
 		version=$(ls "${D}"/lib/modules)
