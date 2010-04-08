@@ -20,7 +20,7 @@ RDEPEND="dev-lang/python"
 
 src_install() {
     local third_party="${CHROMEOS_ROOT}/src/third_party"
-    local files="${third_party}/flimflam/files/test"
-    dodir /usr/local/lib/connman/test || die
-    cp -ar "${files}"/* "${D}"/usr/local/lib/connman/test || die
+    local files="${third_party}/flimflam/files/test/*"
+    exeinto /usr/local/lib/connman/test
+    doexe ${files}
 }
