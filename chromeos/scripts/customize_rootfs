@@ -308,6 +308,9 @@ FACTORY_INSTALL=1
 HTTP_SERVER_OVERRIDE=true
 EOF
   sudo sed -i '/CHROMEOS_DEVSERVER=/d' "${ROOT_FS_DIR}/etc/lsb-release"
+  # Remove ui.conf startup script, which will make sure chrome doesn't
+  # run, since it tries to update on startup
+  sudo rm -f "${ROOT_FS_DIR}/etc/init/ui.conf"
 fi
 
 # We need to replace /etc/pulse/client.conf and /etc/pulse/default.pa with our
