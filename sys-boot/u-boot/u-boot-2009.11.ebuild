@@ -12,13 +12,12 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE=""
 
-DEPEND="chromeos-base/kernel"
+DEPEND=""
 RDEPEND="${DEPEND}"
 
 u_boot=${CHROMEOS_U_BOOT:-"u-boot/files"}
 config=${CHROMEOS_U_BOOT_CONFIG:-"versatile_config"}
 files="${CHROMEOS_ROOT}/src/third_party/${u_boot}"
-vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
 src_unpack() {
 	elog "Using U-Boot files: ${files}"
@@ -49,19 +48,4 @@ src_install() {
 	dodir /u-boot
 
 	cp -a "${S}"/u-boot.bin "${D}"/u-boot/ || die
-
-        cp "${S}"/tools/mkimage "${D}"/u-boot/ && gzip "${D}"/u-boot/mkimage \
-              || die
-
-	dodir /boot
-
-	"${S}"/tools/mkimage -A "${ARCH}" \
-			     -O linux \
-			     -T kernel \
-			     -C none \
-			     -a ${vmlinux_text_base} \
-			     -e ${vmlinux_text_base} \
-			     -n kernel \
-			     -d "${ROOT}"/boot/vmlinuz \
-			     "${D}"/boot/vmlinux.uimg || die
 }

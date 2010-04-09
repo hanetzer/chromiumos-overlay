@@ -17,6 +17,7 @@ RDEPEND=""
 
 kernel=${CHROMEOS_KERNEL:-"kernel/files"}
 files="${CHROMEOS_ROOT}/src/third_party/${kernel}"
+vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
 # Use a single or split kernel config as specified in the board or variant
 # make.conf overlay. Default to the arch specific split config if an
@@ -97,5 +98,17 @@ src_install() {
 		ln -sf "vmlinuz-${version}"    "${D}"/boot/vmlinuz    || die
 		ln -sf "System.map-${version}" "${D}"/boot/System.map || die
 		ln -sf "config-${version}"     "${D}"/boot/config     || die
+		
+		dodir /boot
+
+		/usr/bin/mkimage -A "${ARCH}" \
+						 -O linux \
+						 -T kernel \
+						 -C none \
+						 -a ${vmlinux_text_base} \
+						 -e ${vmlinux_text_base} \
+						 -n kernel \
+						 -d "${D}"/boot/vmlinuz \
+						 "${D}"/boot/vmlinux.uimg || die
 	fi
 }

@@ -14,6 +14,7 @@ IUSE=""
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
 RDEPEND="${RDEPEND}
 	app-admin/sudo
+	dev-embedded/u-boot-tools
 	sys-block/gpt
 	sys-boot/grub
 	sys-boot/syslinux
