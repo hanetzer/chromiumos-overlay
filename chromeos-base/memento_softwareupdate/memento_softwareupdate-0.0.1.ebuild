@@ -46,16 +46,16 @@ src_compile() {
 }
 
 src_install() {
-  dodir /opt/google/memento_updater
+  exeinto /opt/google/memento_updater
 
   for i in \
     memento_updater.sh \
     memento_updater_logging.sh \
     ping_omaha.sh \
     software_update.sh \
+    split_write \
     suid_exec; do
-    install -m 0755 -o root -g root "${S}"/"${i}" \
-      "${D}"/opt/google/memento_updater/
+    doexe "${i}"
   done
   
   chmod 4711 "${D}"/opt/google/memento_updater/suid_exec || die suid failed
