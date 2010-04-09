@@ -28,7 +28,7 @@ DEFINE_string root ""      \
   "The root file system to customize."
 DEFINE_boolean withdev $FLAGS_TRUE \
   "Include useful developer friendly utilities in the image."
-DEFINE_string factory_server $FLAGS_FALSE \
+DEFINE_string factory_server "" \
   "Build a factory install image pointing to given server."
 
 # Parse command line
