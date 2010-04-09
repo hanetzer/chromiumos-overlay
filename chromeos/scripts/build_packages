@@ -41,6 +41,8 @@ DEFINE_integer retries -1 \
   "On build failure, the number of times to retry"
 DEFINE_boolean withtest $FLAGS_FALSE \
   "Build packages required for testing"
+DEFINE_boolean withfactory $FLAGS_TRUE \
+  "Build factory installer"
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -107,6 +109,11 @@ if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
   CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild} \
   CHROME_FILENAME=$CHROME_FILENAME \
   eretry emerge-${FLAGS_board} chromeos-base/chromeos-chrome
+fi
+
+if [ "$FLAGS_withfactory" -eq "$FLAGS_TRUE" ]; then
+  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
+    chromeos-base/chromeos-factoryinstall
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
