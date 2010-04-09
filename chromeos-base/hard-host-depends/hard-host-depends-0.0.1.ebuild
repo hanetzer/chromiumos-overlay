@@ -37,7 +37,7 @@ RDEPEND="${RDEPEND}
         dev-libs/eggdbus
 	dev-libs/libgcrypt
 	dev-libs/libxslt
-	dev-libs/dbus-glib[tools]
+	dev-libs/dbus-glib
 	dev-libs/nss[utils]
 	dev-libs/protobuf
 	dev-python/dbus-python
