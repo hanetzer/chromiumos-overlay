@@ -37,10 +37,20 @@ src_configure() {
 }
 
 src_compile() {
+
+	if tc-is-cross-compiler ; then
+		tc-getCC
+		tc-getSTRIP
+		export HOSTCC=${CC}
+		export HOSTSTRIP=${STRIP}
+	fi
+
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \
 	      USE_PRIVATE_LIBGCC=yes \
+	      HOSTCC=${CC} \
+	      HOSTSTRIP=$STRIP \
 	      all || die "U-Boot compile failed"
 }
 
@@ -48,4 +58,7 @@ src_install() {
 	dodir /u-boot
 
 	cp -a "${S}"/u-boot.bin "${D}"/u-boot/ || die
+
+	dodir /usr/bin
+	dobin "${S}"/tools/mkimage || die
 }
