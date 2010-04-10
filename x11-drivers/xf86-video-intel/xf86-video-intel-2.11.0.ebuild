@@ -2,9 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-video-intel/xf86-video-intel-2.11.0.ebuild,v 1.1 2010/04/01 21:39:23 remi Exp $
 
-EAPI=3
-
-inherit linux-info xorg-2
+EAPI=2
+inherit x-modular
 
 DESCRIPTION="X.Org driver for Intel cards"
 
@@ -29,21 +28,14 @@ DEPEND="${RDEPEND}
 	       x11-proto/glproto )"
 
 pkg_setup() {
-	xorg-2_pkg_setup
-	CONFIGURE_OPTIONS="$(use_enable dri) --enable-xvmc"
-}
-
-pkg_postinst() {
-	if linux_config_exists \
-		&& ! linux_chkconfig_present DRM_I915_KMS; then
-		echo
-		ewarn "This driver requires KMS support in your kernel"
-		ewarn "  Device Drivers --->"
-		ewarn "    Graphics support --->"
-		ewarn "      Direct Rendering Manager (XFree86 4.1.0 and higher DRI support)  --->"
-		ewarn "      <*>   Intel 830M, 845G, 852GM, 855GM, 865G (i915 driver)  --->"
-		ewarn "              i915 driver"
-		ewarn "      [*]       Enable modesetting on intel by default"
-		echo
+	if tc-is-cross-compiler ; then
+		local temp="${SYSROOT//\//_}"
+		local ac_sysroot="${temp//-/_}"
+		local ac_include_prefix="ac_cv_file_${ac_sysroot}_usr_include"
+		eval export ${ac_include_prefix}_xorg_dri_h=yes
+		eval export ${ac_include_prefix}_xorg_sarea_h=yes
+		eval export ${ac_include_prefix}_xorg_dristruct_h=yes
 	fi
+
+	CONFIGURE_OPTIONS="$(use_enable dri) --enable-xvmc"
 }
