@@ -53,3 +53,6 @@
 
 # Required patch; pending work to upstream.
 >net-dialup/ppp-2.4.4-r23
+
+# Cross compile fix in the ebuild.
+>x11-libs/libxcb-1.5

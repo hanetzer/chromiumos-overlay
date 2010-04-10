@@ -29,3 +29,9 @@ pkg_setup() {
 		$(use_enable selinux)
 		--enable-xinput"
 }
+
+src_compile() {
+	if [ -f Makefile ] || [ -f GNUmakefile ] || [ -f makefile ] ; then
+		emake XCBPROTO_XCBINCLUDEDIR="${ROOT}/usr/share/xcb" || die "emake failed"
+	fi
+}
