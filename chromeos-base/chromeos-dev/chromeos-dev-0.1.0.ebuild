@@ -31,7 +31,7 @@ RDEPEND="${RDEPEND}
 
 # Useful utilities
 # TODO(sosa): Remove python packages from dev build once we switch to using
-# the test build for the test image (dbus-python, pygobject...).
+# the test build for the test image (dbus-python, pygobject, pygtk...).
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
@@ -46,6 +46,7 @@ RDEPEND="${RDEPEND}
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
+	dev-python/pygtk
 	dev-python/pyopenssl
 	net-misc/iputils
 	net-misc/openssh

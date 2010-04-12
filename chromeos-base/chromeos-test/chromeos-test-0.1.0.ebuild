@@ -32,6 +32,7 @@ RDEPEND="${RDEPEND}
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
+	dev-python/pygtk
 	dev-python/pyopenssl
 	net-misc/openssh
 	net-misc/rsync
