@@ -299,6 +299,7 @@ sudo ln -sf \
 EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD_VARIANT}"
 EBUILD_WRAPPER="/usr/local/bin/ebuild-${BOARD_VARIANT}"
 EQUERY_WRAPPER="/usr/local/bin/equery-${BOARD_VARIANT}"
+PORTAGEQ_WRAPPER="/usr/local/bin/portageq-${BOARD_VARIANT}"
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" > /dev/null 2>&1
 #!/bin/bash
 
@@ -312,6 +313,7 @@ EOF
 sudo chmod +x "$EMERGE_WRAPPER"
 sudo cp "$EMERGE_WRAPPER" "$EBUILD_WRAPPER"
 sudo cp "$EMERGE_WRAPPER" "$EQUERY_WRAPPER"
+sudo cp "$EMERGE_WRAPPER" "$PORTAGEQ_WRAPPER"
 
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" \
         oflag=append conv=notrunc > /dev/null 2>&1
@@ -328,6 +330,12 @@ cat <<EOF | sudo dd of="$EQUERY_WRAPPER" \
         oflag=append conv=notrunc > /dev/null 2>&1
 export ROOT="$BOARD_ROOT"
 exec sudo -E equery "\$@"
+EOF
+
+cat <<EOF | sudo dd of="$PORTAGEQ_WRAPPER" \
+        oflag=append conv=notrunc > /dev/null 2>&1
+export ROOT="$BOARD_ROOT"
+exec sudo -E portageq "\$@"
 EOF
 
 #
@@ -350,4 +358,5 @@ echo "You can use the following wrappers:"
 echo "  ${EMERGE_WRAPPER}"
 echo "  ${EBUILD_WRAPPER}"
 echo "  ${EQUERY_WRAPPER}"
+echo "  ${PORTAGEQ_WRAPPER}"
 echo "The SYSROOT is: ${BOARD_ROOT}"
