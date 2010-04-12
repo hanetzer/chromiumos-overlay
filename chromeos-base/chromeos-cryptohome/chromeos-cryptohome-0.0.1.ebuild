@@ -14,14 +14,16 @@ KEYWORDS="amd64 x86 arm"
 IUSE="test"
 
 RDEPEND="
-	sys-auth/pam_mount
-	sys-fs/lvm2
-	sys-fs/e4fsprogs
+	app-shells/bash
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/openssl
-	app-shells/bash
-	sys-libs/pam"
+	dev-util/xxd
+	sys-fs/e4fsprogs
+	sys-fs/lvm2
+	sys-auth/pam_mount
+	sys-libs/pam
+	"
 
 DEPEND="
 	test? ( dev-cpp/gtest )
