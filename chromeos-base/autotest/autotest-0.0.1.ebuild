@@ -33,6 +33,7 @@ export PORTAGE_QUIET=1
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE=/usr/share/config.site
+export AUTOTEST_SRC="${CHROMEOS_ROOT}/src/third_party/autotest/files"
 
 # Create python package init files for top level test case dirs.
 function touch_init_py() {
@@ -74,16 +75,15 @@ function setup_cross_toolchain() {
 
 function copy_src() {
 	local dst=$1
-	local autotest_files="${CHROMEOS_ROOT}/src/third_party/autotest/files"
 	mkdir -p "${dst}"
-	cp -fpru "${autotest_files}"/{client,conmux,server,tko,utils} ${dst} || die
-	cp -fpru "${autotest_files}"/shadow_config.ini ${dst} || die
-	sed "/^enable_server_prebuild/d" "${autotest_files}"/global_config.ini > \
-		${dst}/global_config.ini
+	cp -fpru "${AUTOTEST_SRC}"/{client,conmux,server,tko,utils} "${dst}" || die
+	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${dst}" || die
 }
 
 src_configure() {
 	copy_src "${S}"
+	sed "/^enable_server_prebuild/d" "${AUTOTEST_SRC}/global_config.ini" > \
+		"${S}/global_config.ini"
 	cd "${S}"
 	touch_init_py client/tests client/site_tests
 	touch __init__.py
@@ -120,6 +120,7 @@ BUILD_STAGE=${PORTAGE_BUILDDIR}/staging
 src_test() {
 	local third_party="${CHROMEOS_ROOT}/src/third_party"
 	copy_src "${BUILD_STAGE}"
+	cp -fpru "${AUTOTEST_SRC}/global_config.ini" "${BUILD_STAGE}"
 
 	setup_ssh
 	cd "${BUILD_STAGE}"
