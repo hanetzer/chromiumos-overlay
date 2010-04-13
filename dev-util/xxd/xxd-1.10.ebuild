@@ -12,7 +12,7 @@ SRC_URI="http://ftp.uni-erlangen.de/pub/utilities/etc/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="~x86 ~amd64 ~arm"
 IUSE=""
 
 DEPEND=""
