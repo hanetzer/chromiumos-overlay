@@ -43,6 +43,7 @@ src_compile() {
 src_install() {
   pushd platform/metrics_collection
   dodir /usr/bin
+  dodir /usr/lib
   dodir /usr/sbin
   emake DESTDIR="${D}" install || die "metrics_collection install failed."
   chmod 0555 "${D}/usr/sbin/omaha_tracker.sh"
