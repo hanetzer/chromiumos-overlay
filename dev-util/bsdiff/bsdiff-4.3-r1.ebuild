@@ -8,14 +8,20 @@ IUSE=""
 
 DESCRIPTION="bsdiff: Binary Differencer using a suffix alg"
 HOMEPAGE="http://www.daemonology.net/bsdiff/"
-SRC_URI="http://www.daemonology.net/bsdiff/${P}.tar.gz"
 
 SLOT="0"
 LICENSE="BSD-2"
-KEYWORDS="alpha amd64 hppa ia64 mips ppc sparc x86 ~x86-fbsd ~x86-freebsd ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="alpha amd64 arm hppa ia64 mips ppc sparc x86 ~x86-fbsd ~x86-freebsd ~amd64-linux ~x86-linux ~ppc-macos"
 
 DEPEND="app-arch/bzip2"
 RDEPEND="${DEPEND}"
+
+src_unpack() {
+	local third_party="${CHROMEOS_ROOT}/src/third_party"
+	elog "Using third_party: $third_party"
+	mkdir -p "${S}"
+	cp -a "${third_party}/bsdiff/files"/* "${S}" || die
+}
 
 src_compile() {
 	append-lfs-flags
