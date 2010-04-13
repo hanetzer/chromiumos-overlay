@@ -13,6 +13,7 @@
 =app-i18n/libhangul-0.0.10	x86 arm
 =dev-cpp/gflags-1.2		x86 arm
 =dev-cpp/glog-0.3.0		x86 arm
+=dev-libs/dbus-c++-0.0.1	x86 arm
 =dev-libs/dbus-glib-0.82	x86 arm
 =dev-libs/eggdbus-0.5		x86 arm
 =dev-libs/glib-2.22.4		x86 arm
