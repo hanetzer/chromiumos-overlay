@@ -13,13 +13,13 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="chromeos-base/libchrome
+RDEPEND="chromeos-base/chromeos-metrics_collection
+         chromeos-base/libchrome
          >=dev-libs/glib-2.0
          dev-libs/dbus-glib
          sys-apps/dbus"
 
-DEPEND="chromeos-base/libchrome
-        dev-cpp/gflags
+DEPEND="dev-cpp/gflags
         dev-cpp/gtest
         ${RDEPEND}"
 
