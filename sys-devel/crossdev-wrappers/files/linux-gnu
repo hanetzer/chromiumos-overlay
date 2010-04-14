@@ -15,6 +15,12 @@ sudo_cv_func_unsetenv_void=no
 # dev-libs/glib-2.20.5
 ac_cv_func_posix_getpwuid_r=yes
 ac_cv_func_posix_getgrgid_r=yes
+# The following force glib to believe we have a "good printf"
+# which keeps it from using its internal replacement.
+ac_cv_func_vsnprintf_c99=yes
+ac_cv_func_printf_unix98=yes
+ac_cv_sizeof_long_long=${ac_cv_sizeof_long_long=8}
+glib_cv_long_long_format=${glib_cv_long_long_format=ll}
 
 # dev-libs/libIDL-0.8.12
 libIDL_cv_long_long_format=${libIDL_cv_long_long_format=ll}
