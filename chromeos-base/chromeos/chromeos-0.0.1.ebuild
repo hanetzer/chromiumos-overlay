@@ -58,13 +58,12 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-login
-	chromeos-base/chromeos-metrics_collection
-	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/flimflam
 	chromeos-base/internal
 	chromeos-base/kernel
 	chromeos-base/libcros
 	chromeos-base/memento_softwareupdate
+	chromeos-base/metrics
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google
 	chromeos-base/power_manager
