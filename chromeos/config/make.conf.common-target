@@ -34,5 +34,11 @@ DISTDIR="/var/lib/portage/distfiles"
 # Our chromium mirror should be more stable since we won't discard packages.
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 
+# Packages that use python will run a small python script to find the
+# pythondir. Unfortunately, if the build chroot is 64-bit then that
+# will output /usr/lib64/python2.6 rather than /usr/lib/python2.6.
+# TODO(tedbo): Find a better place or fix for this "hack". 
+am_cv_python_pythondir="\${prefix}/lib/python2.6/site-packages"
+
 # Allow the user to override or define additional settings.
 source make.conf.user
