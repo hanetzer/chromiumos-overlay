@@ -19,11 +19,10 @@
 # TODO: Newer versions don't compile properly due to missing dm_* headers.
 >sys-fs/lvm2-2.02.51-r3
 
-# TODO: Update to newer mesa and fix cross compile.
->media-libs/mesa-7.5.1-r1
-
-# TODO: Switch to xf86-video-intel-2.9.1 (CL already pending update to mesa)
->x11-drivers/xf86-video-intel-2.8.1-r1
+# TODO: ARM is temporarily stuck on mesa-7.5.1-r1 but x86 uses a newer
+# version so we mask out only mesa-7.5.2 here. This is a temporary measure
+# until we can get per-board cascading profile support.
+=media-libs/mesa-7.5.2
 
 # TODO: Fix lsof to cross compile on ARM
 >sys-process/lsof-4.81-r2
