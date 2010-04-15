@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE=""
+IUSE="-compat_wireless"
 
 DEPEND="sys-apps/debianutils"
 RDEPEND=""
@@ -51,12 +51,23 @@ src_configure() {
 		chromeos/scripts/prepareconfig ${config} || die
 	fi
 	emake ARCH=$(tc-arch-kernel) oldconfig || die
+
+	if use compat_wireless; then
+		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
+	fi
 }
 
 src_compile() {
 	emake \
           ARCH=$(tc-arch-kernel) \
           CROSS_COMPILE="${CHOST}-" || die
+
+	if use compat_wireless; then
+		# compat-wireless support must be done after
+		emake M=chromeos/compat-wireless \
+		  ARCH=$(tc-arch-kernel) \
+		  CROSS_COMPILE="${CHOST}-" || die
+	fi
 }
 
 src_install() {
@@ -73,6 +84,15 @@ src_install() {
           CROSS_COMPILE="${CHOST}-" \
           INSTALL_MOD_PATH="${D}" \
           modules_install || die
+
+	if use compat_wireless; then
+		# compat-wireless modules are built+installed separately
+		emake M=chromeos/compat-wireless \
+		  ARCH=$(tc-arch-kernel) \
+		  CROSS_COMPILE="${CHOST}-" \
+		  INSTALL_MOD_PATH="${D}" \
+		  modules_install || die
+	fi
 
 	emake \
           ARCH=$(tc-arch-kernel) \

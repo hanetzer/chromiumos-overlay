@@ -218,6 +218,9 @@ src_install() {
 	newexe "${FILESDIR}"/write_root_link_rule-125 write_root_link_rule \
 		|| die "write_root_link_rule not installed properly"
 
+	doexe "${FILESDIR}"/compat_firmware.sh \
+		|| die "compat_firmware.sh not installed properly"
+
 	doexe "${scriptdir}"/shell-compat-KV.sh \
 		|| die "shell-compat.sh not installed properly"
 	doexe "${scriptdir}"/shell-compat-addon.sh \
@@ -245,6 +248,10 @@ src_install() {
 	doins gentoo/??-*.rules
 	doins packages/40-alsa.rules
 	doins packages/40-isdn.rules
+
+	# compat-wireless firmware loading (needs compat_firmware.sh above)
+	doins "${FILESDIR}"/50-compat_firmware.rules \
+		|| die "compat_firmware.rules not installed properly"
 
 	# Adding arch specific rules
 	if [[ -f packages/40-${ARCH}.rules ]]
