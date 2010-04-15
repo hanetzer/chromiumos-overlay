@@ -141,6 +141,10 @@ $ModLoad imklog.so # kernel logging (formerly provided by rklogd)
 # Don't log private authentication messages!
 *.*;mail.none;authpriv.none;cron.none                  -/var/log/messages
 
+# Copy these messages to tty8 to help with troubleshooting.
+# Don't log authentication messages, mail, cron, or wpa_supplicant(local6).
+*.*;mail.none;authpriv.none;cron.none;local6.none       /dev/tty8
+
 # The authpriv file has restricted access.
 authpriv.*                                              /var/log/secure
 
