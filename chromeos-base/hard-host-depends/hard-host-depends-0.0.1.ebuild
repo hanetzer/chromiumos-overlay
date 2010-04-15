@@ -87,4 +87,13 @@ RDEPEND="${RDEPEND}
 	sys-apps/ack
 	"
 
+# Host dependencies that are needed to build Icedtea
+RDEPEND="${RDEPEND}
+	app-arch/zip
+	dev-java/ant-core
+	dev-java/xalan
+	dev-java/xerces
+	sys-apps/lsb-release
+	"
+
 DEPEND=""
