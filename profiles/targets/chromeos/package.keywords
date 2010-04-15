@@ -6,9 +6,9 @@
 =app-i18n/ibus-9999		x86 arm
 =app-i18n/ibus-anthy-1.2.0.20090917	x86 arm
 =app-i18n/ibus-chewing-9999	x86 arm
-=app-i18n/ibus-mozc-9999	x86 arm
 =app-i18n/ibus-hangul-9999	x86 arm
 =app-i18n/ibus-m17n-9999	x86 arm
+=app-i18n/ibus-mozc-9999	x86 arm
 =app-i18n/ibus-pinyin-9999   x86 arm
 =app-i18n/ibus-xkb-layouts-9999   x86 arm
 =app-i18n/libhangul-0.0.10	x86 arm
