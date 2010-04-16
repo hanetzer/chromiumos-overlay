@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="3G bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf threads tools +udev +wifi"
+IUSE="bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf threads tools +udev +wifi"
 # ospm wimax
 
 RDEPEND=">=dev-libs/glib-2.16
@@ -62,10 +62,6 @@ src_configure() {
 	econf \
 		--localstatedir=/var \
 		--enable-loopback=builtin \
-		$(use_enable 3G novatel) \
-		$(use_enable 3G huawei) \
-		$(use_enable 3G hso) \
-		$(use_enable 3G mbm) \
 		$(use_enable bluetooth) \
 		$(use_enable debug) \
 		$(use_enable dhclient dhclient builtin) \
