@@ -128,16 +128,16 @@ src_configure() {
 	if use gallium; then
 		elog "You have enabled gallium infrastructure."
 		elog "This infrastructure currently support these drivers:"
-		elog "    Intel: works only i915."
+		elog "    Intel: works only i915 (but too unstable)."
 		elog "    Nouveau: Support for nVidia NV30 and later cards."
 		elog "    Radeon: Newest implementation of r300-r500 driver."
 		elog "    Svga: VMWare Virtual GPU driver."
 		echo
 		myconf="${myconf}
+			--disable-gallium-intel
 			--with-state-trackers=glx,dri,egl
 			$(use_enable video_cards_svga gallium-svga)
-			$(use_enable video_cards_nouveau gallium-nouveau)
-			$(use_enable video_cards_intel gallium-intel)"
+			$(use_enable video_cards_nouveau gallium-nouveau)"
 		if use video_cards_radeon || use video_cards_radeonhd; then
 			myconf="${myconf} --enable-gallium-radeon"
 		else
