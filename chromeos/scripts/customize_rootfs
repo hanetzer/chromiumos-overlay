@@ -139,7 +139,7 @@ $ModLoad imklog.so # kernel logging (formerly provided by rklogd)
 
 # Log anything (except mail) of level info or higher.
 # Don't log private authentication messages!
-*.*;mail.none;authpriv.none;cron.none;local6.none      -/var/log/messages
+*.*;mail.none;authpriv.none;cron.none;local5.none;local6.none -/var/log/messages
 
 # Copy these messages to tty8 to help with troubleshooting.
 # Don't log authentication messages, mail, cron, or wpa_supplicant(local6).
@@ -159,6 +159,9 @@ local7.*                                                /var/log/boot.log
 
 # wpa_supplicant/hostapd can be configured to log to local6
 local6.*                                                /var/log/hostap.log
+
+# laptop-mode can be configured to log to local5
+local5.*                                                /var/log/laptopmode.log
 EOF
 
 # Add mtab
