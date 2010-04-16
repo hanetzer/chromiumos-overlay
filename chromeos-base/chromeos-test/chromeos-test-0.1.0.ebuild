@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	app-crypt/nss
 	chromeos-base/autox
+        chromeos-base/client-id-uploader
 	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns
 	dev-lang/python

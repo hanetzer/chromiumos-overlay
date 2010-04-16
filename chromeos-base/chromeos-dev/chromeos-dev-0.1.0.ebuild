@@ -40,6 +40,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-shells/bash
 	chromeos-base/autox
+        chromeos-base/client-id-uploader
 	chromeos-base/flimflam-testscripts
 	chromeos-base/gmerge
 	chromeos-base/minifakedns
