@@ -89,6 +89,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "sshd" 204
 	copy_or_add_daemon_user "pulse" 205       # For pulseaudio
 	copy_or_add_daemon_user "polkituser" 206  # For policykit
+	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
 
 	# The system_user needs to be part of the audio and video groups.
 	test $(grep -e "^audio\:" "${ROOT}/etc/group" | \
