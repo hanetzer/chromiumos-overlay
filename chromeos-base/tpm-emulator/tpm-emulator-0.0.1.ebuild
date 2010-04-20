@@ -16,15 +16,13 @@ KEYWORDS="x86 amd64 arm"
 DEPEND="app-crypt/trousers
         dev-libs/gmp"
 
-RDEPEND="${DEPEND}"
-
 src_unpack() {
 	if [ -n "$CHROMEOS_ROOT" ] ; then
     		local dir="${CHROMEOS_ROOT}/src/third_party/tpm-emulator"
 		elog "Using dir: $dir"
 		mkdir -p "${S}"
 		cp -a "${dir}"/* "${S}" || die
-		# removes possible garbage (although we're not building there)
+		# removes possible garbage
 		(cd "${S}"; rm -rf build)
 	else
 		die CHROMEOS_ROOT is not set
@@ -39,15 +37,6 @@ src_configure() {
 
 src_compile() {
         cmake-utils_src_compile
-        # This would be normally done in kernel module build, but we have
-        # copied the kernel module to the kernel tree.
-        TPMD_DEV_SRC_DIR="${S}/tpmd_dev/linux"
-        TPMD_DEV_BUILD_DIR="${CMAKE_BUILD_DIR}/tpmd_dev/linux"
-        mkdir -p ${TPMD_DEV_BUILD_DIR}
-        sed -e "s/\$TPM_GROUP/tss/g" \
-                < ${TPMD_DEV_SRC_DIR}/tpmd_dev.rules.in \
-                > ${TPMD_DEV_BUILD_DIR}/tpmd_dev.rules
-        
 }
 
 src_install() {
@@ -60,9 +49,4 @@ src_install() {
 	# doins ${S}/tpmd/unix/tpmemu.h
 	exeinto /usr/sbin
 	doexe ${CMAKE_BUILD_DIR}/tpmd/unix/tpmd
-        insinto /etc/udev/rules.d
-        TPMD_DEV_BUILD_DIR="${CMAKE_BUILD_DIR}/tpmd_dev/linux"
-        RULES_FILE=${TPMD_DEV_BUILD_DIR}/tpmd_dev.rules
-        chmod 644 ${RULES_FILE}
-	newins ${RULES_FILE} 80-tpmd_dev.rules
 }

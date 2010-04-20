@@ -37,12 +37,11 @@ src_unpack() {
 	fi
 }
 
-# pkg_setup() {
-#        # New user/group for the daemon
-#        # [For Chrome/Chromium OS we do this elsewhere.]
-#        enewgroup tss
-#        enewuser tss -1 -1 /var/lib/tpm tss
-# }
+pkg_setup() {
+	# New user/group for the daemon
+	enewgroup tss
+	enewuser tss -1 -1 /var/lib/tpm tss
+}
 
 src_prepare() {
 	base_src_prepare
