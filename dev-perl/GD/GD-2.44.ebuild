@@ -50,7 +50,15 @@ src_configure() {
 	use xpm && myconf="${myconf},XPM"
 	use gif && myconf="${myconf},GIF"
 	myconf="-options \"${myconf:1}\""
-	perl-module_src_configure
+	
+	LIBS=-lgd LIBPATH=-L${ROOT}/usr/lib INC=-I${ROOT}/usr/include \
+	perl Makefile.PL \
+		PREFIX=/usr \
+		INSTALLDIRS=vendor \
+		INSTALLMAN3DIR='none' \
+		DESTDIR="${D}" \
+		lib_gd_path="${ROOT}/usr/lib"
+		${myconf} --ignore_missing_gd
 }
 src_test() {
 	if use png || use jpeg || use gif ; then
