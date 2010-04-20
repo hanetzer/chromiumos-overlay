@@ -18,6 +18,7 @@ dev-util/perf		-doc -demangle
 chromeos-base/chromeos	X
 chromeos-base/chromeos-login   pam_google
 chromeos-base/flimflam	dnsproxy debug
+chromeos-base/kernel	compat_wireless
 media-plugins/alsa-plugins	pulseaudio
 media-sound/alsa-utils	-nls
 media-sound/pulseaudio	bluetooth dbus -esd
