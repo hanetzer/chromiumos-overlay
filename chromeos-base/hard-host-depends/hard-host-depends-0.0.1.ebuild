@@ -30,6 +30,7 @@ RDEPEND="${RDEPEND}
         app-arch/dpkg
 	app-arch/rpm2targz
 	app-arch/unzip
+	>=app-emulation/qemu-user-0.12.2
 	app-text/texi2html
 	dev-lang/python
 	dev-lang/swig

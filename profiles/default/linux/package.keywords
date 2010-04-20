@@ -11,3 +11,5 @@
 =dev-python/webpy-0.32          amd64 x86
 =app-emulation/qemu-softmmu-0.10.1 amd64 x86
 =x11-libs/pixman-0.17.2		amd64 x86
+# Need a later qemu-user so it will build statically.
+=app-emulation/qemu-user-0.12.2 amd64 x86
