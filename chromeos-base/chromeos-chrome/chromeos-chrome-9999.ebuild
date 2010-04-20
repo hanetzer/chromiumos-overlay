@@ -24,7 +24,7 @@ EGCLIENT_REPO_URI="http://src.chromium.org/svn/trunk/src/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-build_tests"
+IUSE="-build_tests -local_flash"
 
 # By default, pull from server
 CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
@@ -68,9 +68,10 @@ RDEPEND="app-arch/bzip2
          media-libs/mesa
          sys-libs/pam
          sys-libs/zlib
-         x86? ( www-plugins/adobe-flash )
+         x86? ( !local_flash? ( www-plugins/adobe-flash ) )
          >=x11-libs/gtk+-2.14.7
          x11-libs/libXScrnSaver"
+
 DEPEND="${RDEPEND}
         >=dev-util/gperf-3.0.3
         >=dev-util/pkgconfig-0.23"
@@ -323,6 +324,12 @@ src_install() {
   dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
   
-  dosym /opt/netscape/plugins/libflashplayer.so \
-    "${CHROME_DIR}"/plugins/libflashplayer.so 
+  # Install Flash plugin.
+  if use local_flash; then
+    exeinto "${CHROME_DIR}/plugins"
+    doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/linux/libgcflashplayer.so
+  else
+    dosym /opt/netscape/plugins/libflashplayer.so \
+        "${CHROME_DIR}"/plugins/libflashplayer.so
+  fi       
 }
