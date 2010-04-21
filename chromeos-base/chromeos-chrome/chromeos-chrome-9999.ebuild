@@ -276,6 +276,7 @@ src_install() {
   exeinto "${CHROME_DIR}"
   doexe "${FROM}"/candidate_window
   doexe "${FROM}"/chrome
+  doexe "${FROM}"/libffmpegsumo.so
   doexe "${FROM}"/session
   # TODO(adlr): replace 1000 with 'chronos' gid
   chown root:1000 "${D_CHROME_DIR}/session" || die "chown failed"
@@ -291,7 +292,6 @@ src_install() {
   doins "${FROM}"/chrome.pak
   doins "${FROM}"/emit_login_prompt_ready
   chmod 6755 "${D_CHROME_DIR}/emit_login_prompt_ready" || die "chmod failed"
-  doins "${FROM}"/libffmpegsumo.so
   doins -r "${FROM}"/locales
   doins -r "${FROM}"/resources
   doins "${FROM}"/xdg-settings
@@ -325,11 +325,23 @@ src_install() {
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
   
   # Install Flash plugin.
-  if use local_flash; then
-    exeinto "${CHROME_DIR}/plugins"
-    doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/linux/libgcflashplayer.so
+  if [ -f "${FROM}/libgcflashplayer.so" ]; then
+    # Install Flash from the binary drop.
+    exeinto "${CHROME_DIR}"
+    doexe "${FROM}/libgcflashplayer.so"
+    dosym "${CHROME_DIR}"/libgcflashplayer.so \
+        "${CHROME_DIR}"/plugins/libgcflashplayer.so
   else
-    dosym /opt/netscape/plugins/libflashplayer.so \
-        "${CHROME_DIR}"/plugins/libflashplayer.so
-  fi       
+    if [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
+      # Install Flash from the local source repository.
+      exeinto "${CHROME_DIR}"
+      doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/linux/libgcflashplayer.so
+      dosym "${CHROME_DIR}"/libgcflashplayer.so \
+          "${CHROME_DIR}"/plugins/libgcflashplayer.so
+    else
+      # Use Flash from www-plugins/adobe-flash package.
+      dosym /opt/netscape/plugins/libflashplayer.so \
+          "${CHROME_DIR}"/plugins/libflashplayer.so
+    fi
+  fi
 }
