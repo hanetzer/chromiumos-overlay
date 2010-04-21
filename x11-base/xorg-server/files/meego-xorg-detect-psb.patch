@@ -1,0 +1,16 @@
+diff --git a/hw/xfree86/common/xf86AutoConfig.c b/hw/xfree86/common/xf86AutoConfig.c
+index 7f4ada8..9773d07 100644
+--- a/hw/xfree86/common/xf86AutoConfig.c
++++ b/hw/xfree86/common/xf86AutoConfig.c
+@@ -184,8 +184,9 @@ videoPtrToDriverList(struct pci_device *dev,
+ 	case 0x8086:
+ 	    if ((dev->device_id == 0x00d1) || (dev->device_id == 0x7800)) {
+ 		driverList[0] = "i740";
+-            } else if (dev->device_id == 0x8108) {
+-                break; /* "hooray" for poulsbo */
++            } else if ((dev->device_id == 0x8108) || (dev->device_id == 0x8109) || (dev->device_id == 0x4102)) {
++		driverList[0] = "psb";
++		driverList[1] = "pvr";
+ 	    } else {
+ 		driverList[0] = "intel";
+ 	    }
