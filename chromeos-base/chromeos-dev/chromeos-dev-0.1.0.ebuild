@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
+        media-gfx/imagemagick
 	media-gfx/perceptualdiff
 	net-misc/iputils
 	net-misc/openssh
