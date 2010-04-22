@@ -324,24 +324,26 @@ src_install() {
   dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
   
-  # Install Flash plugin.
-  if [ -f "${FROM}/libgcflashplayer.so" ]; then
-    # Install Flash from the binary drop.
-    exeinto "${CHROME_DIR}"
-    doexe "${FROM}/libgcflashplayer.so"
-    dosym "${CHROME_DIR}"/libgcflashplayer.so \
-        "${CHROME_DIR}"/plugins/libgcflashplayer.so
-  else
-    if [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
-      # Install Flash from the local source repository.
+  if use x86; then
+    # Install Flash plugin.
+    if [ -f "${FROM}/libgcflashplayer.so" ]; then
+      # Install Flash from the binary drop.
       exeinto "${CHROME_DIR}"
-      doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/linux/libgcflashplayer.so
+      doexe "${FROM}/libgcflashplayer.so"
       dosym "${CHROME_DIR}"/libgcflashplayer.so \
           "${CHROME_DIR}"/plugins/libgcflashplayer.so
     else
-      # Use Flash from www-plugins/adobe-flash package.
-      dosym /opt/netscape/plugins/libflashplayer.so \
-          "${CHROME_DIR}"/plugins/libflashplayer.so
+      if [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
+        # Install Flash from the local source repository.
+        exeinto "${CHROME_DIR}"
+        doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/linux/libgcflashplayer.so
+        dosym "${CHROME_DIR}"/libgcflashplayer.so \
+            "${CHROME_DIR}"/plugins/libgcflashplayer.so
+      else
+        # Use Flash from www-plugins/adobe-flash package.
+        dosym /opt/netscape/plugins/libflashplayer.so \
+            "${CHROME_DIR}"/plugins/libflashplayer.so
+      fi
     fi
   fi
 }
