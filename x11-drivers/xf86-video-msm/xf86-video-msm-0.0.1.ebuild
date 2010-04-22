@@ -21,6 +21,9 @@ DEPEND="${RDEPEND}
 	"
 
 files="${CHROMEOS_ROOT}/src/third_party/xf86-video-msm"
+if [[ -n "${ST1Q_SOURCES_QUALCOMM}" ]] ; then
+	files="${CHROMEOS_ROOT}/${ST1Q_SOURCES_QUALCOMM}/xf86-video-msm"
+fi
 
 src_unpack() {
 	elog "Using xf86-video-msm files: ${files}"
