@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-# NOTE: This is based on the baseleyout-2.0.1 ebuild but has been completely
+# NOTE: This is based on the baselayout-2.0.1 ebuild but has been completely
 # stripped down to be Chromium OS specific for use in both the build
 # environment and the target rootfs. For example, we pre-create the entire
 # set of users needed in order to work around problems with UIDs when building
@@ -89,6 +89,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "sshd" 204
 	copy_or_add_daemon_user "pulse" 205       # For pulseaudio
 	copy_or_add_daemon_user "polkituser" 206  # For policykit
+	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
 
 	# The system_user needs to be part of the audio and video groups.
 	test $(grep -e "^audio\:" "${ROOT}/etc/group" | \
