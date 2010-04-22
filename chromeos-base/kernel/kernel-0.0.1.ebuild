@@ -59,14 +59,14 @@ src_configure() {
 
 src_compile() {
 	emake \
-          ARCH=$(tc-arch-kernel) \
-          CROSS_COMPILE="${CHOST}-" || die
+		ARCH=$(tc-arch-kernel) \
+		CROSS_COMPILE="${CHOST}-" || die
 
 	if use compat_wireless; then
 		# compat-wireless support must be done after
 		emake M=chromeos/compat-wireless \
-		  ARCH=$(tc-arch-kernel) \
-		  CROSS_COMPILE="${CHOST}-" || die
+			ARCH=$(tc-arch-kernel) \
+			CROSS_COMPILE="${CHOST}-" || die
 	fi
 }
 
@@ -74,46 +74,46 @@ src_install() {
 	dodir boot
 
 	emake \
- 	  ARCH=$(tc-arch-kernel) \
-	  CROSS_COMPILE="${CHOST}-" \
-          INSTALL_PATH="${D}/boot" \
-          install || die
+		ARCH=$(tc-arch-kernel) \
+		CROSS_COMPILE="${CHOST}-" \
+		INSTALL_PATH="${D}/boot" \
+		install || die
 
 	emake \
-          ARCH=$(tc-arch-kernel) \
-          CROSS_COMPILE="${CHOST}-" \
-          INSTALL_MOD_PATH="${D}" \
-          modules_install || die
+		ARCH=$(tc-arch-kernel) \
+		CROSS_COMPILE="${CHOST}-" \
+		INSTALL_MOD_PATH="${D}" \
+		modules_install || die
 
 	if use compat_wireless; then
 		# compat-wireless modules are built+installed separately
 		emake M=chromeos/compat-wireless \
-		  ARCH=$(tc-arch-kernel) \
-		  CROSS_COMPILE="${CHOST}-" \
-		  INSTALL_MOD_PATH="${D}" \
-		  modules_install || die
+			ARCH=$(tc-arch-kernel) \
+			CROSS_COMPILE="${CHOST}-" \
+			INSTALL_MOD_PATH="${D}" \
+			modules_install || die
 	fi
 
 	emake \
-          ARCH=$(tc-arch-kernel) \
-          CROSS_COMPILE="${CHOST}-" \
-          INSTALL_MOD_PATH="${D}" \
-          firmware_install || die
+		ARCH=$(tc-arch-kernel) \
+		CROSS_COMPILE="${CHOST}-" \
+		INSTALL_MOD_PATH="${D}" \
+		firmware_install || die
 
 	if [ "${ARCH}" = "arm" ]; then
 		version=$(ls "${D}"/lib/modules)
 
 		cp -a \
-		   "${S}"/arch/"${ARCH}"/boot/zImage \
-		   "${D}/boot/vmlinuz-${version}" || die
+			"${S}"/arch/"${ARCH}"/boot/zImage \
+			"${D}/boot/vmlinuz-${version}" || die
 
 		cp -a \
-		   "${S}"/System.map \
-		   "${D}/boot/System.map-${version}" || die
+			"${S}"/System.map \
+			"${D}/boot/System.map-${version}" || die
 
 		cp -a \
-		   "${S}"/.config \
-		   "${D}/boot/config-${version}" || die
+			"${S}"/.config \
+			"${D}/boot/config-${version}" || die
 
 		ln -sf "vmlinuz-${version}"    "${D}"/boot/vmlinuz    || die
 		ln -sf "System.map-${version}" "${D}"/boot/System.map || die
@@ -122,13 +122,13 @@ src_install() {
 		dodir /boot
 
 		/usr/bin/mkimage -A "${ARCH}" \
-						 -O linux \
-						 -T kernel \
-						 -C none \
-						 -a ${vmlinux_text_base} \
-						 -e ${vmlinux_text_base} \
-						 -n kernel \
-						 -d "${D}"/boot/vmlinuz \
-						 "${D}"/boot/vmlinux.uimg || die
+							-O linux \
+							-T kernel \
+							-C none \
+							-a ${vmlinux_text_base} \
+							-e ${vmlinux_text_base} \
+							-n kernel \
+							-d "${D}"/boot/vmlinuz \
+							"${D}"/boot/vmlinux.uimg || die
 	fi
 }
