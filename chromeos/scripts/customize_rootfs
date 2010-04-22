@@ -56,18 +56,6 @@ sudo chmod 0755 "${ROOT_FS_DIR}/."
 # TODO: Temporarily pre-seed the devices in /dev for debugging purposes.
 sudo cp -a "${ROOT_FS_DIR}/lib/chromiumos/devices/"* "${ROOT_FS_DIR}/dev"
 
-# Create getty on tty2
-# TODO: Move this into platform/init and fix "start on" clause.
-if [ ! -f "$ROOT_FS_DIR"/etc/init/tty2.conf ]; then
-  cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/init/tty2.conf
-start on startup
-stop on starting halt or starting reboot
-
-respawn
-exec /sbin/agetty 38400 tty2 linux
-EOF
-fi
-
 # Set up a default dev user, update the password entry, and add to sudo.
 # TODO: Make the default user conditional on building a dev image.
 DEV_USER="chronos"
