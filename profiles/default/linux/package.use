@@ -2,8 +2,10 @@ dev-libs/nss		utils
 dev-libs/dbus-glib	tools
 media-libs/gd           png
 dev-libs/protobuf 	-python
+dev-perl/GD             png
 dev-util/git		cvs subversion webdav curl
 dev-util/subversion	-dso
+media-libs/gd           png
 x11-libs/cairo		X
 sys-auth/pam_mount      -crypt
 sys-block/gpt           static
