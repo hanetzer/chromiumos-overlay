@@ -112,6 +112,9 @@ src_prepare() {
 		Modules/Setup.dist \
 		Modules/getpath.c \
 		setup.py || die "sed failed to replace @@GENTOO_LIBDIR@@"
+		
+	sed -i -e "s:sys.exec_prefix]:sys.exec_prefix, '/usr/local']:g" \
+		Lib/site.py || die "sed failed to add /usr/local to prefixes"
 
 	# Fix os.utime() on hppa. utimes it not supported but unfortunately reported as working - gmsoft (22 May 04)
 	# PLEASE LEAVE THIS FIX FOR NEXT VERSIONS AS IT'S A CRITICAL FIX !!!
