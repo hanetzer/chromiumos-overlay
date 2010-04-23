@@ -187,6 +187,11 @@ fi
 sudo mkdir -p  "${ROOT_FS_DIR}/usr/bin/X11"
 sudo ln -s  /usr/bin/Xorg  "${ROOT_FS_DIR}/usr/bin/X11/X"
 
+# TODO: we can't change /etc/localtime to indicate the current timezone.
+# Symlink /etc/localtime to something on the stateful partition, which we can
+# then change around at runtime.
+sudo ln -sf /var/lib/localtime "${ROOT_FS_DIR}/etc/localtime"
+
 POLICY_CONFIG="${ROOT_FS_DIR}/usr/share/polkit-1/actions/org.freedesktop.devicekit.disks.policy"
 if [ -f "$POLICY_CONFIG" ]; then
   POLICY_TMP="$(mktemp)"

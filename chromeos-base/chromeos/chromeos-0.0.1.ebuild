@@ -84,26 +84,27 @@ RDEPEND="${RDEPEND}
 	net-wireless/bluez
 	sci-geosciences/gpsd
 	>=sys-apps/baselayout-2.0.0
+	sys-apps/coreutils
 	sys-apps/dbus
 	x86? ( sys-apps/devicekit-disks )
 	sys-apps/devicekit-power
-	sys-apps/kbd
-	sys-apps/coreutils
 	sys-apps/eject
 	x86? ( sys-apps/flashrom )
 	sys-apps/grep
+	sys-apps/kbd
 	sys-apps/mawk
 	sys-apps/module-init-tools
+        sys-apps/rootdev
 	sys-apps/sed
+	sys-apps/shadow
 	sys-apps/upstart
 	sys-apps/util-linux
-	sys-apps/shadow
 	sys-auth/consolekit
-        sys-apps/rootdev
 	arm? ( sys-boot/u-boot )
         sys-block/gpt
 	sys-fs/e2fsprogs
 	sys-fs/udev
+	sys-libs/timezone-data
 	sys-process/lsof
 	sys-process/procps
 	sys-process/vixie-cron
