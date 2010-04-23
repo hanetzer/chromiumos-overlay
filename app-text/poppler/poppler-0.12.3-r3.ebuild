@@ -49,6 +49,7 @@ src_prepare() {
 
 src_configure() {
 	mycmakeargs=(
+		-DCMAKE_PREFIX_PATH=${SYSROOT}
 		-DBUILD_GTK_TESTS=OFF
 		-DBUILD_QT4_TESTS=OFF
 		-DWITH_Qt3=OFF
