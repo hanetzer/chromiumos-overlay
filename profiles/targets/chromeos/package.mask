@@ -61,3 +61,6 @@
 
 # Cross compile fix in the ebuild.
 >x11-libs/libxcb-1.5
+
+# Cross compile fix in the ebuild (Icedtea -> cups -> libgcrypt).
+>dev-libs/libgcrypt-1.4.4
