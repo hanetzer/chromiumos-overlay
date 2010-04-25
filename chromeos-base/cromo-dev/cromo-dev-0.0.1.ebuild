@@ -15,11 +15,13 @@ RDEPEND=""
 
 src_unpack() {
 	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
-	mkdir -p "${S}/cromo"
-	cp -a "${platform}/cromo" "${S}" || die
+	cp -a "${platform}/cromo" "${S}" || die "Failed to unpack sources"
+}
+
+src_compile() {
+	elog "No compile"
 }
 
 src_install() {
-	(cd cromo && emake DESTDIR=${D} "install-headers")
+	emake DESTDIR=${D} "install-headers"
 }
