@@ -1,0 +1,1 @@
+ath6k-34.ebuild
