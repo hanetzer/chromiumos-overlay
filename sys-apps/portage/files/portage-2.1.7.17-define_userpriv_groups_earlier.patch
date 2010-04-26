@@ -1,0 +1,26 @@
+From fc323d93e380fa9e95c5af7fc9683146c5152272 Mon Sep 17 00:00:00 2001
+From: Zac Medico <zmedico@gentoo.org>
+Date: Fri, 29 Jan 2010 21:59:41 +0000
+Subject: [PATCH] Define userpriv_groups earlier in order to avoid an AttributeError from
+ lazy import code. Thanks to antarus for reporting.
+
+svn path=/main/trunk/; revision=15277
+---
+ pym/portage/data.py |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/pym/portage/data.py b/pym/portage/data.py
+index c30a368..9ec3bc9 100644
+--- a/pym/portage/data.py
++++ b/pym/portage/data.py
+@@ -84,6 +84,7 @@ try:
+ except KeyError:
+ 	portage_uid=0
+ 	portage_gid=0
++	userpriv_groups = [portage_gid]
+ 	writemsg(colorize("BAD",
+ 		_("portage: 'portage' user or group missing.")) + "\n", noiselevel=-1)
+ 	writemsg(_(
+-- 
+1.6.4.4
+
