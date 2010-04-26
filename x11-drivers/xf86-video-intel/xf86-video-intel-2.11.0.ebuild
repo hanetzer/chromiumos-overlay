@@ -27,6 +27,10 @@ DEPEND="${RDEPEND}
 	dri? ( x11-proto/xf86driproto
 	       x11-proto/glproto )"
 
+PATCHES=(
+	"${FILESDIR}/meego-${PV}-copy-fb.patch"
+)
+
 pkg_setup() {
 	if tc-is-cross-compiler ; then
 		local temp="${SYSROOT//\//_}"
