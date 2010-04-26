@@ -43,10 +43,7 @@ src_compile() {
 	export CCFLAGS="$CFLAGS"
 
 	pushd "update_engine"
-	scons ${MAKEOPTS} \
-		update_engine \
-		delta_generator \
-		|| die "update_engine compile failed"
+	scons ${MAKEOPTS} || die "update_engine compile failed"
 	popd
 }
 
@@ -79,8 +76,19 @@ src_test() {
 }
 
 src_install() {
+	dodir /usr/sbin
+	exeinto /usr/sbin
+	doexe "${S}/update_engine/update_engine"
+
 	dodir /usr/bin
 	exeinto /usr/bin
+	doexe "${S}/update_engine/update_engine_client"
 
-	doexe "${S}/update_engine/update_engine"
+	dodir /usr/share/dbus-1/services
+	insinto /usr/share/dbus-1/services
+	doins "${S}/update_engine/org.chromium.UpdateEngine.service"
+
+	dodir /etc/dbus-1/system.d
+	insinto /etc/dbus-1/system.d
+	doins "${S}/update_engine/UpdateEngine.conf"
 }
