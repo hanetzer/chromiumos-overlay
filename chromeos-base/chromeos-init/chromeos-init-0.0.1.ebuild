@@ -99,9 +99,11 @@ src_install() {
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event8" c 13 72
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/fb0" c 29 0
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/dri/card0" c 226 0
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/tpm" c 10 224
 	chown root.tty "${D}/${DEVICES_DIR}"/tty*
 	chown root.kmem "${D}/${DEVICES_DIR}"/mem
 	chown root.disk "${D}/${DEVICES_DIR}"/sda*
 	chown root.video "${D}/${DEVICES_DIR}"/fb0
 	chown root.video "${D}/${DEVICES_DIR}"/dri/card0
+	chown root.tss "${D}/${DEVICES_DIR}/tpm"
 }
