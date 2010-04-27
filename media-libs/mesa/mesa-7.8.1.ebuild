@@ -33,7 +33,7 @@ LICENSE="LGPL-2"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
 
-VIDEO_CARDS="intel mach64 mga none nouveau r128 radeon radeonhd savage sis svga tdfx via"
+VIDEO_CARDS="intel mach64 mga none nouveau r128 radeon radeonhd savage sis svga tdfx via msm"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -133,9 +133,15 @@ src_configure() {
 		elog "    Radeon: Newest implementation of r300-r500 driver."
 		elog "    Svga: VMWare Virtual GPU driver."
 		echo
+		statetrackers="--with-state-trackers=glx,dri"
+
+		if ! use video_cards_msm ; then
+			statetrackers="${statetrackers},egl"
+		fi
+
 		myconf="${myconf}
 			--disable-gallium-intel
-			--with-state-trackers=glx,dri,egl
+			${statetrackers}
 			$(use_enable video_cards_svga gallium-svga)
 			$(use_enable video_cards_nouveau gallium-nouveau)"
 		if use video_cards_radeon || use video_cards_radeonhd; then
@@ -148,6 +154,10 @@ src_configure() {
 			elog "SVGA and nouveau drivers are available only via gallium interface."
 			elog "Enable gallium useflag if you want to use them."
 		fi
+	fi
+
+	if use video_cards_msm ; then
+		myconf="${myconf} --disable-egl"
 	fi
 
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
