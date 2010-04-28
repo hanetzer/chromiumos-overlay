@@ -127,10 +127,15 @@ src_test() {
 
 	setup_cross_toolchain
 
+        local args=()
+        if [[ -n ${AUTOSERV_TEST_ARGS} ]] ; then
+          args=("-a" "${AUTOSERV_TEST_ARGS}")
+        fi
+
 	local timestamp=$(date +%Y-%m-%d-%H.%M.%S)
 	# Do not use sudo, it'll unset all your environment
 	LOGNAME=${SUDO_USER} ./server/autoserv -r /tmp/results.${timestamp} \
-		${AUTOSERV_ARGS}
+		${AUTOSERV_ARGS} "${args[@]}"
 	teardown_ssh
 }
 
