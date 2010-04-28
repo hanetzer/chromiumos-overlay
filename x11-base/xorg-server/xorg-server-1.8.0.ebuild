@@ -130,6 +130,8 @@ PATCHES=(
 	"${FILESDIR}/meego-xorg-detect-psb.patch"
 	"${FILESDIR}/07moblin-use-sloppy-heuristic-first-for-initial-mode.patch"
 	"${FILESDIR}/meego-cache-xkbcomp-output-for-fast-start-up.patch"
+	# Fix for bug http://bugs.freedesktop.org/show_bug.cgi?id=27023
+	"${FILESDIR}/1.7.6-fix-wrong-bracket-values.patch"
 	)
 
 pkg_setup() {

@@ -130,6 +130,8 @@ UPSTREAMED_PATCHES=(
 
 PATCHES=(
 	"${UPSTREAMED_PATCHES[@]}"
+	# Fix for bug http://bugs.freedesktop.org/show_bug.cgi?id=27023
+	"${FILESDIR}/1.7.6-fix-wrong-bracket-values.patch"
 	)
 
 pkg_setup() {
