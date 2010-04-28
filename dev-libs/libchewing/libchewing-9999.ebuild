@@ -29,6 +29,7 @@ src_unpack() {
 }
 
 src_compile() {
+	./autogen.sh || die
 	econf $(use_enable debug) || die
 	emake || die
 }
