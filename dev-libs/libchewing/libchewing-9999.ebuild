@@ -6,7 +6,6 @@ inherit multilib
 
 DESCRIPTION="Library for Chinese Phonetic input method"
 HOMEPAGE="http://chewing.csie.net/"
-SRC_URI="http://chewing.csie.net/download/libchewing/${P}.tar.bz2"
 
 SLOT="0"
 LICENSE="GPL-2"
@@ -17,6 +16,17 @@ RDEPEND="sys-libs/ncurses"
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	test? ( >=dev-libs/check-0.9.4 )"
+
+# Chromium OS changes:
+# - Add src_unpack().
+
+src_unpack() {
+	local third_party="${CHROMEOS_ROOT}/src/third_party"
+	local chewing="${third_party}/libchewing/files"
+	elog "Using libchewing dir: $chewing"
+	mkdir -p "${S}"
+	cp -a "${chewing}"/* "${S}" || die
+}
 
 src_compile() {
 	econf $(use_enable debug) || die
