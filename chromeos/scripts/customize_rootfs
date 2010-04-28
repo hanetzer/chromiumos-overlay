@@ -308,6 +308,9 @@ EOF
   # Remove ui.conf startup script, which will make sure chrome doesn't
   # run, since it tries to update on startup
   sudo rm -f "${ROOT_FS_DIR}/etc/init/ui.conf"
+  # Set network to start up another way
+  sudo sed -i 's/login-prompt-ready/stopping startup/' \
+      "${ROOT_FS_DIR}/etc/init/dump-boot-stats.conf"
 fi
 
 # We need to replace /etc/pulse/client.conf and /etc/pulse/default.pa with our
