@@ -40,6 +40,10 @@ src_unpack() {
 	elog "Using platform dir: $platform"
 	mkdir -p "${S}/window_manager"
 	cp -a "${platform}"/window_manager/* "${S}/window_manager" || die
+	# TODO: It'd be better if libcros installed its headers so we could pull
+	# them from /usr/include instead of copying over the one we want.
+	mkdir -p "${S}/cros"
+	cp "${platform}"/cros/chromeos_wm_ipc_enums.h "${S}/cros" || die
 }
 
 src_compile() {
