@@ -3,16 +3,7 @@
 
 EAPI=2
 
-KEYWORDS="~amd64 ~x86 ~arm"
-
-if [[ ${PV} != "9999" ]] ; then
-	inherit git
-
-	KEYWORDS="amd64 x86 arm"
-
-	EGIT_REPO_URI="http://src.chromium.org/git/login_manager.git"
-	EGIT_COMMIT="v${PV}"
-fi
+KEYWORDS="amd64 x86 arm"
 
 inherit toolchain-funcs
 
@@ -33,14 +24,10 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_unpack() {
-	if [[ -n "${EGIT_REPO_URI}" ]] ; then
-		git_src_unpack
-	else
-		local platform="${CHROMEOS_ROOT}/src/platform"
+	local platform="${CHROMEOS_ROOT}/src/platform"
 
-		elog "Using platform: $platform"
-		cp -a "${platform}/login_manager" "${S}" || die
-	fi
+	elog "Using platform: $platform"
+	cp -a "${platform}/login_manager" "${S}" || die
 	ln -sf "${S}" "${S}/../login_manager"
 }
 
