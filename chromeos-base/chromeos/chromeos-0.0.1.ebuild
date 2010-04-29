@@ -82,6 +82,7 @@ RDEPEND="${RDEPEND}
 	)
 	net-wireless/ath6k
 	net-wireless/bluez
+	net-wireless/marvell_sd8787
 	sci-geosciences/gpsd
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/coreutils
