@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-boot/syslinux/syslinux-3.83.ebuild,v 1.3 2010/02/26 12:10:54 fauli Exp $
 
-inherit eutils
+inherit eutils flag-o-matic
 
 DESCRIPTION="SysLinux, IsoLinux and PXELinux bootloader"
 HOMEPAGE="http://syslinux.zytor.com/"
@@ -19,12 +19,6 @@ RDEPEND="sys-fs/mtools
 DEPEND="${RDEPEND}
 	dev-lang/nasm"
 
-# This ebuild is a departure from the old way of rebuilding everything in syslinux
-# This departure is necessary since hpa doesn't support the rebuilding of anything other
-# than the installers.
-
-# removed all the unpack/patching stuff since we aren't rebuilding the core stuff anymore
-
 src_unpack() {
 	unpack ${A}
 	cd "${S}"
@@ -32,11 +26,29 @@ src_unpack() {
 	# Don't prestrip, makes portage angry
 	epatch "${FILESDIR}"/${PN}-3.72-nostrip.patch
 
+	# Don't try to build win32/syslinux.exe
+	epatch "${FILESDIR}/"${P}-disable_win32.patch
+
+	# Disable the text banner for quieter boot.
+	epatch "${FILESDIR}/"${P}-disable_banner.patch
+
+	# Disable the blinking cursor as early as possible.
+	epatch "${FILESDIR}/"${P}-disable_cursor.patch
+
 	rm -f gethostip #bug 137081
 }
 
 src_compile() {
-	emake installer || die
+	# By default, syslinux wants you to use pre-built binaries
+	# and only compile part of the package. Since we want to rebuild
+	# everything from scratch we need to remove the prebuilts or else
+	# some things don't get built with standard make.
+	emake spotless || die "make spotless failed"
+
+	# The syslinux build can't tolerate "-Wl,-O*"
+	filter-ldflags -Wl,-O1 -Wl,-O2 -Wl,-Os
+
+	emake || die "make failed"
 }
 
 src_install() {
