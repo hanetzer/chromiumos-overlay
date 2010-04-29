@@ -87,9 +87,11 @@ src_install() {
 
 	if use compat_wireless; then
 		# compat-wireless modules are built+installed separately
+		# NB: the updates dir is handled specially by depmod
 		emake M=chromeos/compat-wireless \
 			ARCH=$(tc-arch-kernel) \
 			CROSS_COMPILE="${CHOST}-" \
+			INSTALL_MOD_DIR=updates \
 			INSTALL_MOD_PATH="${D}" \
 			modules_install || die
 	fi
