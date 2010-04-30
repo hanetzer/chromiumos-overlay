@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="pulseaudio"
 
 DEPEND=""
 RDEPEND="sys-apps/upstart"
@@ -43,6 +43,10 @@ src_install() {
 	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
 	  "${S}"/*.conf "${D}/etc/init/"
+
+	if ! use pulseaudio; then
+		rm "${D}/etc/init/pulseaudio.conf"
+	fi
 
 	# Install process killing util functions.
 	dosbin "${S}/killers"
