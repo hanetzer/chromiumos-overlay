@@ -35,7 +35,7 @@ S="${WORKDIR}/${PN}-${TARBALL_VERSION}"
 RDEPEND=">=sys-devel/gcc-4.3
 	>=sys-libs/glibc-2.9
 	>=media-libs/giflib-4.1.6-r1
-	=media-libs/jpeg-8*
+	media-libs/jpeg
 	>=media-libs/libpng-1.2.38
 	>=sys-libs/zlib-1.2.3-r1
 	alsa? ( >=media-libs/alsa-lib-1.0.20 )
