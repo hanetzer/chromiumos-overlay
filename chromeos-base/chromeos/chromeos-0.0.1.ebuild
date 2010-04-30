@@ -71,6 +71,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/power_manager
 	x86? ( chromeos-base/speech_synthesis )
 	chromeos-base/xscreensaver
+        dev-util/perf
 	x86? ( media-gfx/ply-image )
 	media-plugins/alsa-plugins
 	media-sound/alsa-utils
