@@ -27,8 +27,9 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	X? (
 		chromeos-base/chromeos-chrome
-		chromeos-base/internal
 		chromeos-base/chromeos-wm
+		chromeos-base/flash-war
+		chromeos-base/internal
 		chromeos-base/xorg-conf
 		media-fonts/dejavu
 		media-fonts/droid
