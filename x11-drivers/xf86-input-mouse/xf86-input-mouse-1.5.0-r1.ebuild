@@ -1,1 +1,0 @@
-xf86-input-mouse-1.5.0.ebuild

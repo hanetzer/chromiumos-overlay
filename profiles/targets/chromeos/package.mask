@@ -57,7 +57,7 @@
 >net-dialup/ppp-2.4.4-r23
 
 # Cross compile fix in the ebuild and custom patch(es).
->x11-drivers/xf86-video-intel-2.11.0-r2
+>x11-drivers/xf86-video-intel-2.11.0-r1
 
 # Cross compile fix in the ebuild.
 >x11-libs/libxcb-1.5

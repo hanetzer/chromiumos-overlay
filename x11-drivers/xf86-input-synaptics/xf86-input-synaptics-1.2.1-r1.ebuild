@@ -1,1 +1,0 @@
-xf86-input-synaptics-1.2.1.ebuild
