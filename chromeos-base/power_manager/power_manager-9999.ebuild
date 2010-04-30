@@ -12,7 +12,8 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="amd64 x86 arm"
 
-RDEPEND="dev-cpp/gflags
+RDEPEND="chromeos-base/libcros
+         dev-cpp/gflags
          dev-cpp/glog
          x11-base/xorg-server
          x11-libs/gtk+
@@ -31,6 +32,8 @@ src_unpack() {
 	elog "Using platform: $platform"
 	mkdir -p "${S}/power_manager"
 	cp -a "${platform}"/power_manager/* "${S}/power_manager" || die
+	mkdir -p "${S}/cros"
+	cp -a "${platform}"/cros/* "${S}/cros" || die
 }
 
 src_compile() {
@@ -82,6 +85,8 @@ src_test() {
 		trap - exit
 		"${S}/power_manager/idle_dimmer_unittest" \
 		    ${GTEST_ARGS} || die "idle_dimmer_unittest failed"
+		"${S}/power_manager/plug_dimmer_unittest" \
+		    ${GTEST_ARGS} || die "plug_dimmer_unittest failed"
 	fi
 }
 
