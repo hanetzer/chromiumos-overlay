@@ -1,0 +1,43 @@
+From 36c966cc44dcb287e20f434a4c64e5ea44bb7a78 Mon Sep 17 00:00:00 2001
+From: Zac Medico <zmedico@gentoo.org>
+Date: Tue, 27 Apr 2010 15:49:05 -0700
+Subject: [PATCH] In bintree.inject(), ensure that _pkgindex_entry returns local metadata
+ rather than remote metadata. Thanks to Kenneth Waters <kwaters@chromium.org>
+ for reporting.
+
+---
+ pym/portage/dbapi/bintree.py |   11 ++++++-----
+ 1 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/pym/portage/dbapi/bintree.py b/pym/portage/dbapi/bintree.py
+index e817e3d..3ba1978 100644
+--- a/pym/portage/dbapi/bintree.py
++++ b/pym/portage/dbapi/bintree.py
+@@ -906,6 +906,12 @@ class binarytree(object):
+ 			if not self._pkgindex_version_supported(pkgindex):
+ 				pkgindex = self._new_pkgindex()
+ 
++			# Discard remote metadata to ensure that _pkgindex_entry
++			# gets the local metadata. This also updates state for future
++			# isremote calls.
++			if self._remotepkgs is not None:
++				self._remotepkgs.pop(cpv, None)
++
+ 			try:
+ 				d = self._pkgindex_entry(cpv)
+ 			except portage.exception.InvalidDependString:
+@@ -944,11 +950,6 @@ class binarytree(object):
+ 			if pkgindex_lock:
+ 				unlockfile(pkgindex_lock)
+ 
+-		if self._remotepkgs is not None:
+-			# When a remote package is downloaded and injected,
+-			# update state so self.isremote() returns False.
+-			self._remotepkgs.pop(cpv, None)
+-
+ 	def _pkgindex_entry(self, cpv):
+ 		"""
+ 		Performs checksums and evaluates USE flag conditionals.
+-- 
+1.7.0.1
+

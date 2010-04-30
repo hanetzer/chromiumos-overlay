@@ -108,6 +108,7 @@ src_prepare() {
 	fi
 	epatch "${FILESDIR}"/set_portage_username-2.1.6.13.patch
 	epatch "${FILESDIR}/${P}-define_userpriv_groups_earlier".patch
+	epatch "${FILESDIR}/${P}-fix_getbinpkg".patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -i "s/^VERSION=.*/VERSION=\"${PVR}\"/" pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"
