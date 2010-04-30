@@ -13,14 +13,14 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="test"
-PLUGINDIR="/usr/local/cromo/plugins"
+PLUGINDIR="/usr/lib/cromo/plugins"
 DBUSDATADIR="/etc/dbus-1/system.d"
 
 RDEPEND=">=dev-libs/glib-2.0
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
 	dev-cpp/gflags"
-DEPEND="${DEPEND}"
+DEPEND="${RDEPEND}"
 
 # Don't strip, since plugins need to resolve symbols
 # in the cromo executable

@@ -10,7 +10,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 
-DEPEND=""
+DEPEND="dev-libs/dbus-c++"
 RDEPEND=""
 
 src_unpack() {

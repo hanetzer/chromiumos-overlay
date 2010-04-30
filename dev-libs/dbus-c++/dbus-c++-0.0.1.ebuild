@@ -36,6 +36,11 @@ src_unpack() {
 	if [[ -n "${EGIT_REPO_URI}" ]] ; then
 		git_src_unpack
 	else
+		# CHROMEOS_ROOT won't be set if the build
+		# is being run from make_chroot.
+		if [ -z "${CHROMEOS_ROOT}" ] ; then
+			local CHROMEOS_ROOT=$(eval echo -n ~${SUDO_USER}/trunk)
+		fi
 		local dbus="${CHROMEOS_ROOT}/src/third_party/dbus-c++"
 
 		elog "Using source: $dbus"
