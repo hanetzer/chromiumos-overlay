@@ -51,9 +51,8 @@ src_configure() {
 		chromeos/scripts/prepareconfig ${config} || die
 	fi
 
-	# Disable any options not explitly set in splitconfig
-	export KCONFIG_ALLCONFIG=.config
-	emake ARCH=$(tc-arch-kernel) allnoconfig || die
+	# Use default for any options not explitly set in splitconfig
+	yes "" | emake ARCH=$(tc-arch-kernel) oldconfig || die
 
 	if use compat_wireless; then
 		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
