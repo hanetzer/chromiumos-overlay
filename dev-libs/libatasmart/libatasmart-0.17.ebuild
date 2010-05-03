@@ -4,6 +4,8 @@
 
 EAPI="2"
 
+inherit eutils
+
 DESCRIPTION="Lean and small library for ATA S.M.A.R.T. hard disks"
 HOMEPAGE="http://0pointer.de/blog/projects/being-smart.html"
 SRC_URI="http://0pointer.de/public/${P}.tar.gz"
@@ -15,6 +17,11 @@ IUSE=""
 
 RDEPEND="sys-fs/udev"
 DEPEND="${RDEPEND}"
+
+src_prepare() {
+	epatch "${FILESDIR}/${P}-cross-compile.patch"
+	${S}/bootstrap.sh
+}
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"

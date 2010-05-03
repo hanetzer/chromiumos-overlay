@@ -1,0 +1,67 @@
+diff -ruN libatasmart-0.17/Makefile.am libatasmart-0.17.new/Makefile.am
+--- libatasmart-0.17/Makefile.am	2009-10-26 19:26:55.000000000 -0700
++++ libatasmart-0.17.new/Makefile.am	2010-05-02 19:56:01.000000000 -0700
+@@ -89,8 +89,8 @@
+ libatasmart_la_CFLAGS = \
+ 	$(LIBUDEV_CFLAGS)
+ 
+-strpool_SOURCES = \
+-	strpool.c
++strpool: strpool.c
++	$(CC_FOR_BUILD) strpool.c -o $(top_builddir)/strpool
+ 
+ BUILT_SOURCES = \
+ 	atasmart.strpool.c
+diff -ruN libatasmart-0.17/bootstrap.sh libatasmart-0.17.new/bootstrap.sh
+--- libatasmart-0.17/bootstrap.sh	2009-08-06 12:27:15.000000000 -0700
++++ libatasmart-0.17.new/bootstrap.sh	2010-05-02 19:55:21.000000000 -0700
+@@ -18,7 +18,7 @@
+ # License along with libatasmart. If not, If not, see
+ # <http://www.gnu.org/licenses/>.
+ 
+-VERSION=1.11
++VERSION=1.10
+ 
+ run_versioned() {
+     local P
+diff -ruN libatasmart-0.17/configure.ac libatasmart-0.17.new/configure.ac
+--- libatasmart-0.17/configure.ac	2009-10-26 19:12:03.000000000 -0700
++++ libatasmart-0.17.new/configure.ac	2010-05-02 19:55:21.000000000 -0700
+@@ -26,7 +26,7 @@
+ AC_CONFIG_HEADERS([config.h])
+ AC_CONFIG_MACRO_DIR(m4)
+ 
+-AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules tar-pax])
++AM_INIT_AUTOMAKE([foreign 1.10 -Wall -Wno-portability tar-pax])
+ 
+ AC_SUBST(PACKAGE_URL, [http://git.0pointer.de/?p=libatasmart.git])
+ 
+@@ -34,7 +34,7 @@
+ 
+ AC_CANONICAL_HOST
+ 
+-AM_SILENT_RULES([yes])
++#AM_SILENT_RULES([yes])
+ 
+ if type -p stow > /dev/null && test -d /usr/local/stow ; then
+    AC_MSG_NOTICE([*** Found /usr/local/stow: default install prefix set to /usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION} ***])
+@@ -55,6 +55,19 @@
+ AC_PROG_CXX
+ 
+ # GCC flags
++dnl Get the host compiler if cross-compiling
++dnl
++AM_CONDITIONAL(CROSS_COMPILING, [ test $cross_compiling = yes ])
++AC_MSG_CHECKING([for CC_FOR_BUILD])
++if test "x${CC_FOR_BUILD+set}" != "xset" ; then
++  if test "x$cross_compiling" = "xyes" ; then
++    CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
++  else
++    CC_FOR_BUILD=${CC}
++  fi
++fi
++AC_MSG_RESULT([$CC_FOR_BUILD])
++AC_SUBST(CC_FOR_BUILD)
+ 
+ test_gcc_flag() {
+     AC_LANG_CONFTEST([int main(int argc, char*argv[]) {}])
