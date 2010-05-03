@@ -277,10 +277,6 @@ src_install() {
   doexe "${FROM}"/candidate_window
   doexe "${FROM}"/chrome
   doexe "${FROM}"/libffmpegsumo.so
-  doexe "${FROM}"/session
-  # TODO(adlr): replace 1000 with 'chronos' gid
-  chown root:1000 "${D_CHROME_DIR}/session" || die "chown failed"
-  chmod 6755 "${D_CHROME_DIR}/session" || die "chmod failed"
 
   # enable the chromeos local account, if the environment dictates
   if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
@@ -290,8 +286,6 @@ src_install() {
   insinto "${CHROME_DIR}"
   doins "${FROM}"/chrome-wrapper
   doins "${FROM}"/chrome.pak
-  doins "${FROM}"/emit_login_prompt_ready
-  chmod 6755 "${D_CHROME_DIR}/emit_login_prompt_ready" || die "chmod failed"
   doins -r "${FROM}"/locales
   doins -r "${FROM}"/resources
   doins "${FROM}"/xdg-settings
