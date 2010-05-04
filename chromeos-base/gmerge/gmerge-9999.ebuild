@@ -18,6 +18,8 @@ DEPEND="${RDEPEND}"
 
 src_install() {
   local devserver="${CHROMEOS_ROOT}/src/platform/dev"
-  mkdir -p ${D}/usr/bin
-  cp -a "${devserver}"/gmerge ${D}/usr/bin || die
+  exeinto /usr/bin  
+  doexe "${devserver}"/gmerge
+  doexe "${devserver}"/stateful_update
 }
+
