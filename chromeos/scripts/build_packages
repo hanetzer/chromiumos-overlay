@@ -58,6 +58,10 @@ set -e
 if [ -z "$FLAGS_board" ] ; then
   echo "Error: --board is required."
   exit 1
+  fi
+
+if [ -f /etc/hardened ] ; then
+   FLAGS_usepkg=$FLAGS_FALSE
 fi
 
 EMERGE_FLAGS=""

@@ -1,0 +1,25 @@
+# See "man make.conf" for the available options.
+
+ACCEPT_KEYWORDS="amd64"
+CHOST="x86_64-pc-linux-gnu"
+CFLAGS="-O2 -pipe"
+FEATURES="buildpkg digest"
+
+# Since our portage comes from version control, we redirect distfiles
+DISTDIR="/var/lib/portage/distfiles"
+
+# We modify the portage tree directly but use an empty overlay to
+# satisfy crossdev.
+PORTDIR_OVERLAY=""
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/hardened-dev"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
+
+# Where to store built packages.
+PKGDIR="/var/lib/portage/pkgs"
+
+PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
+
+USE="${USE} -cups hardened pic pie"
+
+GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"

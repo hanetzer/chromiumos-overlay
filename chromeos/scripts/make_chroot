@@ -29,6 +29,7 @@ assert_outside_chroot
 
 DEFINE_string chroot "$DEFAULT_CHROOT_DIR" \
   "Destination dir for the chroot environment."
+DEFINE_boolean hardened $FLAGS_FALSE "Setup for a hardened toolchain."
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
@@ -107,6 +108,10 @@ function init_setup () {
      "${FLAGS_chroot}/usr/portage"
    sudo mkdir -p "${FLAGS_chroot}/usr/local/portage"
    sudo chmod 755 "${FLAGS_chroot}/usr/local/portage"
+   if [[ $FLAGS_hardened -eq $FLAGS_TRUE ]]; then
+      sudo ln -sf "${CHROOT_TRUNK}/src/third_party/hardened-dev" \
+        "${FLAGS_chroot}"/"${CHROOT_HARDENED_OVERLAY}"
+   fi
    sudo ln -sf "${CHROOT_TRUNK}/src/third_party/chromiumos-overlay" \
      "${FLAGS_chroot}"/"${CHROOT_OVERLAY}"
 
@@ -133,8 +138,14 @@ function init_setup () {
    # TODO: This should really be part of a profile in the portage
    echo "$PROG: Setting up /etc/make.*..."
    sudo mv "${FLAGS_chroot}"/etc/make.conf{,.orig}
-   sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
-     "${FLAGS_chroot}/etc/make.conf"
+   if [[ $FLAGS_hardened -eq $FLAGS_TRUE ]]; then
+      sudo ln -sf "${CHROOT_CONFIG}/make-hardened.conf.amd64-host" \
+        "${FLAGS_chroot}/etc/make.conf"
+      sudo touch "${FLAGS_chroot}/etc/hardened"
+   else
+      sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
+        "${FLAGS_chroot}/etc/make.conf"
+   fi
    sudo mv "${FLAGS_chroot}"/etc/make.profile{,.orig}
    sudo ln -sf "${CHROOT_OVERLAY}/profiles/default/linux/amd64/10.0" \
      "${FLAGS_chroot}/etc/make.profile"
@@ -195,6 +206,7 @@ CONFIG_DIR="${OVERLAY}/chromeos/config"
 CHROOT_CONFIG="${CHROOT_TRUNK}/src/third_party/chromiumos-overlay/chromeos/config"
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
+CHROOT_HARDENED_OVERLAY="/usr/local/portage/hardened-dev"
 
 # Create the base Gentoo stage3 based on last version put in chroot
 STAGE3="${OVERLAY}/chromeos/stage3/stage3-amd64-${FLAGS_stage3_date}.tar.bz2"

@@ -45,6 +45,14 @@ DEFINE_boolean default $FLAGS_FALSE \
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
+# Hardened requires gcc 4.4.3.  There are no pre-builts for it.
+# TODO(fes): Once we have pre-builts, modify the script to allow for their use.
+if [ -f /etc/hardened ] ; then
+   echo "Hardened toolchain--overriding GCC version and forcing rebuild."
+   FLAGS_gcc_version="4.4.3-r3"
+   FLAGS_usepkg=$FLAGS_FALSE
+fi
+
 # Only now can we die on error.  shflags functions leak non-zero error codes,
 # so will die prematurely if 'set -e' is specified before now.
 set -e
@@ -207,7 +215,8 @@ fi
 sudo mkdir -p "$BOARD_ROOT"
 
 # Set up toolchain wrappers to force $SYSROOT and perform sanity checks.
-GCC_PROFILE="${FLAGS_toolchain}-${FLAGS_gcc_version}"
+GCC_VERSION=`echo ${FLAGS_gcc_version} | sed -e 's/\-r[0-9]*$//g'`
+GCC_PROFILE="${FLAGS_toolchain}-${GCC_VERSION}"
 GCC_BIN_PATH=$(gcc-config --get-bin-path "$GCC_PROFILE")
 CCACHE_BIN=$(which ccache || true)
 for i in c++ cpp g++ gcc gfortran ; do
@@ -345,8 +354,8 @@ sudo "${EMERGE_WRAPPER}" --quiet kernel-headers
 
 # We need to install libstdc++ manually from the cross toolchain.
 # TODO: Figure out a better way of doing this?
-sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/*/libgcc_s.so* "${BOARD_ROOT}/lib"
-sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/*/libstdc++.so* \
+sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/lib"
+sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* \
   "${BOARD_ROOT}/usr/lib"
 
 if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
