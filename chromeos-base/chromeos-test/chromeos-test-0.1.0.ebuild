@@ -17,7 +17,7 @@ IUSE="-autotest"
 # Packages for getting autotest onto image.
 RDEPEND="${RDEPEND}
 	autotest? (
-		chromeos-base/autotest[autox, buildcheck, xset]
+		chromeos-base/autotest[autox,buildcheck,xset]
 	)
 	"
 
