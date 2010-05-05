@@ -95,6 +95,7 @@ RDEPEND="${RDEPEND}
 	dev-java/xalan
 	dev-java/xerces
 	sys-apps/lsb-release
+	x11-libs/libXtst
 	"
 
 DEPEND=""
