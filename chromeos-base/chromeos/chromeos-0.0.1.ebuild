@@ -60,6 +60,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-login
+	chromeos-base/crash-reporter
 	chromeos-base/flimflam
 	chromeos-base/internal
 	chromeos-base/kernel
