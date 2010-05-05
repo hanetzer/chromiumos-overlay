@@ -9,7 +9,7 @@
 
 EAPI="2"
 
-inherit pax-utils java-pkg-2 java-vm-2
+inherit pax-utils java-pkg-2 java-vm-2 autotools
 
 LICENSE="Apache-1.1 Apache-2.0 GPL-1 GPL-2 GPL-2-with-linking-exception LGPL-2 MPL-1.0 MPL-1.1 public-domain W3C"
 SLOT="6"
@@ -115,6 +115,10 @@ pkg_setup() {
 		die "Rebuild with the npplugin USE flag enabled."
 	fi
 
+	# force java VM because has_version won't work if local host is
+	# different than target
+	JAVA_PKG_FORCE_VM="icedtea6-bin"
+
 	# quite a hack since java-config does not provide a way for a package
 	# to limit supported VM's for building and their preferred order
 	if [[ -n "${JAVA_PKG_FORCE_VM}" ]]; then
@@ -151,6 +155,14 @@ src_unpack() {
 		die "Unable to find a supported VM for building"
 	fi
 	unpack ${ICEDTEA_PKG}.tar.gz
+}
+
+src_prepare() {
+	epatch "${FILESDIR}/chromeos-Makefile.am.patch"
+	cp "${FILESDIR}/chromeos-adlc.make.patch" patches/openjdk
+	cp "${FILESDIR}/chromeos-gcc.make.patch" patches/openjdk
+	cp "${FILESDIR}/chromeos-hotspot_Makefile.patch" patches/openjdk
+	eautoreconf
 }
 
 unset_vars() {
@@ -237,6 +249,8 @@ src_compile() {
 }
 
 src_install() {
+	local vm=$(java-pkg_get-current-vm)
+	local vmhome="/usr/lib/jvm/${vm}"
 	local dest="/usr/$(get_libdir)/icedtea${SLOT}"
 	local ddest="${D}/${dest}"
 	dodir "${dest}" || die
@@ -288,7 +302,7 @@ src_install() {
 	for c in /usr/share/ca-certificates/*/*.crt; do
 		openssl x509 -text -in "${c}" >> all.crt || die
 	done
-	./generate-cacerts.pl "${ddest}/bin/keytool" all.crt || die
+	./generate-cacerts.pl "${vmhome}/bin/keytool" all.crt || die
 	cp -vRP cacerts "${ddest}/jre/lib/security/" || die
 	chmod 644 "${ddest}/jre/lib/security/cacerts" || die
 

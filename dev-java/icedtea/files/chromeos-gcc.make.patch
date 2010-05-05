@@ -1,0 +1,21 @@
+--- openjdk.ori/hotspot/make/linux/makefiles/gcc.make	2010-04-29 17:43:57.000000000 -0700
++++ openjdk/hotspot/make/linux/makefiles/gcc.make	2010-04-29 17:45:02.000000000 -0700
+@@ -25,8 +25,7 @@
+ #------------------------------------------------------------------------
+ # CC, CPP & AS
+ 
+-CPP = g++$(GCC_SUFFIX)
+-CC  = gcc$(GCC_SUFFIX)
++CPP = $(CXX)
+ AS  = $(CC) -c
+ 
+ # -dumpversion in gcc-2.91 shows "egcs-2.91.66". In later version, it only
+@@ -99,7 +98,7 @@
+ endif
+ 
+ # Compiler warnings are treated as errors
+-WARNINGS_ARE_ERRORS = -Werror
++WARNINGS_ARE_ERRORS =
+ 
+ # Except for a few acceptable ones
+ # Since GCC 4.3, -Wconversion has changed its meanings to warn these implicit

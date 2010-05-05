@@ -1,0 +1,40 @@
+--- Makefile.am	2010-02-26 06:25:40.000000000 -0800
++++ Makefile.am.NEW	2010-04-30 17:16:55.856245000 -0700
+@@ -309,7 +309,10 @@
+ 	patches/icedtea-linux-separate-debuginfo.patch \
+ 	patches/icedtea-parisc.patch \
+ 	patches/icedtea-sh4-support.patch \
+-	patches/libpng.patch
++	patches/libpng.patch \
++	patches/openjdk/chromeos-gcc.make.patch \
++	patches/openjdk/chromeos-adlc.make.patch \
++	patches/openjdk/chromeos-hotspot_Makefile.patch
+ 
+ if WITH_RHINO
+ ICEDTEA_PATCHES += \
+@@ -1215,6 +1218,17 @@
+                "cannot be found or is corrupted." ; \
+            exit 1; \
+         fi
++	if test $(ARCH) = "x86"; then \
++	  if ! test -d bootstrap/jdk1.6.0/jre/lib/i386; then \
++	    sudo cp -r $(SYSROOT)$(ICEDTEA_HOME)/jre/lib/i386 \
++	        bootstrap/jdk1.6.0/jre/lib; \
++            if ! test -d bootstrap/jdk1.6.0/jre/lib/i386; then \
++	      echo "bootstrap/jdk1.6.0/jre/lib/i386" \
++	          "cannot be found or is corrupted." ; \
++	      exit 1; \
++	    fi; \
++          fi; \
++	fi
+ 	mkdir -p stamps
+ 	touch stamps/bootstrap-directory-symlink.stamp
+ 
+@@ -1235,6 +1249,7 @@
+ 	stamps/pulse-java.stamp stamps/rewrite-rhino.stamp
+ 	$(ARCH_PREFIX) $(MAKE) \
+ 	  $(ICEDTEA_ENV) \
++	  CC=$(CC) AR=$(AR) CXX=$(CXX) RANLIB=$(RANLIB) LD=$(LD) NM=$(NM) \
+ 	  -C openjdk \
+ 	  $(ICEDTEA_BUILD_TARGET)
+ 	mkdir -p $(BUILD_OUTPUT_DIR)/j2sdk-image/jre/lib/$(INSTALL_ARCH_DIR)

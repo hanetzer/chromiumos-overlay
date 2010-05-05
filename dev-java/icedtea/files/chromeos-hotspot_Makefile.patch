@@ -1,0 +1,17 @@
+--- openjdk.ori/hotspot/make/Makefile	2010-04-29 17:43:57.000000000 -0700
++++ openjdk/hotspot/make/Makefile	2010-04-29 17:45:02.000000000 -0700
+@@ -237,6 +237,14 @@
+ 	$(MAKE) ALT_EXPORT_PATH=$(JDK_IMAGE_DIR)/debug \
+ 		VM_SUBDIR=${VM_DEBUG}                        generic_export
+ 
++ifndef VM_PLATFORM
++  ifeq ($(ZERO_BUILD), true)
++    VM_PLATFORM     = $(OSNAME)_$(VARIANTARCH)
++  else
++    VM_PLATFORM     = $(OSNAME)_$(BUILDARCH)
++  endif
++  HS_ARCH = x86
++endif
+ 
+ # Export file copy rules
+ XUSAGE=$(HS_SRC_DIR)/share/vm/Xusage.txt

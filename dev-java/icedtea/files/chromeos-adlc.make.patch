@@ -1,0 +1,11 @@
+--- openjdk.ori/hotspot/make/linux/makefiles/adlc.make	2010-04-29 17:43:57.000000000 -0700
++++ openjdk/hotspot/make/linux/makefiles/adlc.make	2010-04-29 17:45:02.000000000 -0700
+@@ -62,7 +62,7 @@
+ 
+ # CFLAGS_WARN holds compiler options to suppress/enable warnings.
+ # Compiler warnings are treated as errors
+-CFLAGS_WARN = -Werror
++CFLAGS_WARN =
+ CFLAGS += $(CFLAGS_WARN)
+ 
+ OBJECTNAMES = \
