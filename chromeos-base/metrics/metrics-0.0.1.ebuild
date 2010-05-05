@@ -33,8 +33,20 @@ src_unpack() {
 }
 
 src_compile() {
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	tc-export CXX AR PKG_CONFIG
 	emake || die "metrics compile failed."
+}
+
+src_test() {
+	tc-export CXX AR PKG_CONFIG
+	emake tests || die "could not build tests"
+	if ! use x86; then
+		echo Skipping unit tests on non-x86 platform
+	else
+		for test in ./*_test; do
+			"${test}" ${GTEST_ARGS} || die "${test} failed"
+		done
+	fi
 }
 
 src_install() {
