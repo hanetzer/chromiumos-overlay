@@ -58,7 +58,7 @@ if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   # Use binary packages. Include all build-time dependencies,
   # so as to avoid unnecessary differences between source
   # and binary builds.
-  USEPKG="${EMERGE_FLAGS} --getbinpkg --usepkg --with-bdeps y"
+  USEPKG="--getbinpkg --usepkg --with-bdeps y"
 fi
 
 
