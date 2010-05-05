@@ -21,40 +21,32 @@ src_unpack() {
 	local platform_dir="${CHROMEOS_ROOT}/src/platform"
 	# Symbolic link for third-party for includes from other packages
 	local third_party_dir="${CHROMEOS_ROOT}/src/third_party"  # For includes
-    
-	mkdir -p "${S}"  
+
+	mkdir -p "${S}"
 	# TODO(sosa@chromium.org) - Only copy packages we need for building tests
 	cp -rfpu "$platform_dir" "${S}/platform"
-	ln -s "${third_party_dir}" "${S}/third_party" 
-} 
+	ln -s "${third_party_dir}" "${S}/third_party"
+}
 
 src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi  
-	
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	export CCFLAGS="$CFLAGS"
+
 	# |TEST_DIRS| must be defined by the caller - usually build_tests.sh
-	mkdir -p "${S}/tests"	
+	mkdir -p "${S}/tests"
 	for i in ${TEST_DIRS}
 	do
 		elog "building platform/$i"
 		cd "platform/${i}"
 		OUT_DIR="${S}/tests" ./make_tests.sh || die "Could not build tests for ${i}"
-		cd -          
-	done	
+		cd -
+	done
 
-	elog "All tests built."	
+	elog "All tests built."
 }
 
 src_install() {
 	insinto "/tests"
-	insopts "-m0755 "	
+	insopts "-m0755 "
 	doins "${S}/tests"/*
 }
