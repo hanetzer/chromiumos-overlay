@@ -21,7 +21,9 @@ RDEPEND="app-i18n/ibus
          sys-apps/dbus
          sys-auth/consolekit
          sys-fs/udev
+         x11-apps/setxkbmap
          x11-libs/libxklavier"
+# TODO(suzhe): Remove x11-apps/setxkbmap when issue 2536 is fixed.
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
