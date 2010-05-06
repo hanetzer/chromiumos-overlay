@@ -149,7 +149,7 @@ local7.*                                                /var/log/boot.log
 local6.*                                                /var/log/hostap.log
 
 # laptop-mode can be configured to log to local5
-local5.*                                                /var/log/laptopmode.log
+local5.info                                             /var/log/laptopmode.log
 EOF
 
 # Add mtab
