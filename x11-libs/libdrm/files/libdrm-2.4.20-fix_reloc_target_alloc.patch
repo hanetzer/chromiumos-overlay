@@ -1,0 +1,16 @@
+intel: Use the correct size when allocating reloc_target_info array
+
+See http://cgit.freedesktop.org/mesa/drm/commit/?id=3506173ba7e726a9d0a17ec42734a925a885b01e
+
+diff --git a/intel/intel_bufmgr_gem.c b/intel/intel_bufmgr_gem.c
+index 8e46e37..a2cf6e6 100644
+--- a/intel/intel_bufmgr_gem.c
++++ b/intel/intel_bufmgr_gem.c
+@@ -470,7 +470,7 @@ drm_intel_setup_reloc_list(drm_intel_bo *bo)
+ 	bo_gem->relocs = malloc(max_relocs *
+ 				sizeof(struct drm_i915_gem_relocation_entry));
+ 	bo_gem->reloc_target_info = malloc(max_relocs *
+-					   sizeof(drm_intel_reloc_target *));
++					   sizeof(drm_intel_reloc_target));
+ 	if (bo_gem->relocs == NULL || bo_gem->reloc_target_info == NULL) {
+ 		bo_gem->has_error = 1;

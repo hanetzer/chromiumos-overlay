@@ -21,6 +21,10 @@ RESTRICT="test" # see bug #236845
 RDEPEND="dev-libs/libpthread-stubs"
 DEPEND="${RDEPEND}"
 
+PATCHES=(
+	"${FILESDIR}"/libdrm-2.4.20-fix_reloc_target_alloc.patch
+	)
+
 pkg_setup() {
 	# Fails to build on ARM if dev-libs/libatomic_ops is installed, bug 297630
 	CONFIGURE_OPTIONS="--enable-udev
