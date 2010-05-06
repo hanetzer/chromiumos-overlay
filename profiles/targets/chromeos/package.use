@@ -18,6 +18,7 @@ dev-util/perf		-doc -demangle
 chromeos-base/chromeos	X
 chromeos-base/chromeos-login   pam_google
 chromeos-base/flimflam	dnsproxy debug
+media-gfx/imagemagick   png
 media-sound/alsa-utils	-nls
 media-sound/pulseaudio	bluetooth dbus -esd
 net-libs/libsoup	-ssl

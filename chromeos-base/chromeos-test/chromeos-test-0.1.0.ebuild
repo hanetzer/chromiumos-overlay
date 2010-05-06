@@ -27,7 +27,7 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	app-crypt/nss
 	chromeos-base/autox
-        chromeos-base/client-id-uploader
+	chromeos-base/client-id-uploader
 	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns
 	dev-lang/python
@@ -35,6 +35,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
+	media-gfx/imagemagick[png]
 	net-misc/openssh
 	net-misc/rsync
 	sys-power/powertop

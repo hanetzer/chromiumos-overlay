@@ -30,8 +30,10 @@ RDEPEND="${RDEPEND}
 	"
 
 # Useful utilities
-# TODO(sosa): Remove python packages from dev build once we switch to using
-# the test build for the test image (dbus-python, pygobject, pygtk...).
+# TODO(sosa): Remove packages from dev build once we switch to using
+# the test build for the test image:
+# - python packages: (dbus-python, pygobject, pygtk...)
+# - media-gfx/imagemagick
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
@@ -40,7 +42,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-shells/bash
 	chromeos-base/autox
-        chromeos-base/client-id-uploader
+	chromeos-base/client-id-uploader
 	chromeos-base/flimflam-testscripts
 	chromeos-base/gmerge
 	chromeos-base/minifakedns
@@ -49,7 +51,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
-        media-gfx/imagemagick
+	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
 	net-misc/iputils
 	net-misc/openssh

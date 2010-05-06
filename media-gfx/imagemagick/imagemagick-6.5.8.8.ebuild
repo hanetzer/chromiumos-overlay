@@ -166,6 +166,14 @@ src_test() {
 src_install() {
 	emake DESTDIR="${D}" install || die "Installation of files into image failed"
 
+	elog "Preserving .la files needed at runtime by placing in tar file." 
+	elog "  Avoids removal due to *.la in INSTALL_MASK"
+	pushd "${D}"/usr/$(get_libdir) || die
+	tar zcf "${S}"/la_files.tar.gz $(find -name '*.la' -type f) || die
+	popd
+	insinto /usr/$(get_libdir)/${P}
+	doins "${S}"/la_files.tar.gz
+
 	# dont need these files with runtime plugins
 	rm -f "${D}"/usr/$(get_libdir)/*/*/*.{la,a}
 
@@ -174,4 +182,19 @@ src_install() {
 
 	# Fix perllocal.pod file collision
 	use perl && fixlocalpod
+}
+
+pkg_postinst() {
+	elog "Restoring .la files from tar file"
+	pushd "${ROOT}"/usr/$(get_libdir) || die
+	tar -xvzpf ${P}/la_files.tar.gz || die
+	popd
+}
+
+pkg_prerm() {
+	elog "Clean up untarred .la files"
+	pushd "${ROOT}"/usr/$(get_libdir) || die
+	tar -tf ${P}/la_files.tar.gz | xargs rm
+	assert
+	popd
 }
