@@ -20,9 +20,7 @@ RDEPEND=">=dev-libs/glib-2.0
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
 	dev-cpp/gflags"
-DEPEND="${RDEPEND}
-	net-misc/modemmanager
-	"
+DEPEND="${RDEPEND}"
 
 # Don't strip, since plugins need to resolve symbols
 # in the cromo executable
