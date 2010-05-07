@@ -53,6 +53,7 @@ src_compile() {
         fi
 
         scons -f SConstruct.chromiumos || die "cros compile failed."
+        scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
 }
 
 src_test() {
@@ -72,6 +73,11 @@ src_test() {
 }
 
 src_install() {
+	dolib.a "${S}/libcrosapi.a"
+
+	insinto /usr/include/cros
+	doins *.h
+
         insinto /opt/google/chrome/chromeos
 	insopts -m0755
 	doins "${S}/libcros.so"
