@@ -3,13 +3,14 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit flag-o-matic toolchain-funcs
 
 DESCRIPTION="Bridge library for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
+IUSE="debug"
 
 RDEPEND="app-i18n/ibus
 	 chromeos-base/flimflam
@@ -38,6 +39,7 @@ src_unpack() {
 }
 
 src_compile() {
+        use debug || append-flags -DNDEBUG
         if tc-is-cross-compiler ; then
                 tc-getCC
                 tc-getCXX
