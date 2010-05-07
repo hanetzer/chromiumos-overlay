@@ -75,6 +75,7 @@ RDEPEND="${RDEPEND}
 	x86? ( dev-util/perf )
 	x86? ( media-gfx/ply-image )
 	media-plugins/alsa-plugins
+	x86? ( media-plugins/o3d )
 	media-sound/alsa-utils
 	media-sound/pulseaudio
 	net-firewall/iptables
