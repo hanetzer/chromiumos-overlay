@@ -26,8 +26,6 @@ DEFINE_string board ""      \
   "The board to build an image for."
 DEFINE_string root ""      \
   "The root file system to customize."
-DEFINE_boolean withdev $FLAGS_TRUE \
-  "Include useful developer friendly utilities in the image."
 
 # Parse command line
 FLAGS "$@" || exit 1
@@ -59,9 +57,10 @@ sudo cp -a "${ROOT_FS_DIR}/lib/chromiumos/devices/"* "${ROOT_FS_DIR}/dev"
 DEV_USER="chronos"
 DEV_UID="1000"  # NOTE: Some scripts expect the system user id to be 1000.
 SHELL="/bin/sh"
-if [[ -x "${ROOT_FS_DIR}/bin/bash" ]] ; then
-  SHELL="/bin/bash"
+if [[ -x "${ROOT_FS_DIR}/usr/local/bin/bash" ]] ; then
+  SHELL="/usr/local/bin/bash"
 fi
+
 # Determine what password to use for the default user.
 CRYPTED_PASSWD_FILE="${SCRIPTS_DIR}/shared_user_passwd.txt"
 if [ -f $CRYPTED_PASSWD_FILE ]; then
