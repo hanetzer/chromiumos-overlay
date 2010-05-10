@@ -15,3 +15,4 @@
 =x11-libs/pixman-0.17.2		amd64 x86
 # Need a later qemu-user so it will build statically.
 =app-emulation/qemu-user-0.12.2 amd64 x86
+=sys-devel/automake-1.11.1      amd64 x86
