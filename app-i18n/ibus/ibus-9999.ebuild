@@ -59,6 +59,7 @@ src_prepare() {
 src_configure() {
 	econf \
 		--disable-gconf \
+		--disable-key-snooper \
 		$(use_enable doc gtk-doc) \
 		$(use_enable nls) \
 		$(use_enable python) || die
