@@ -31,8 +31,10 @@ RDEPEND=">=app-i18n/ibus-1.1.0
 	>=dev-db/sqlite-3.6.18
 	dev-libs/libsigc++
 	nls? ( virtual/libintl )"
+# TODO(yusukes): Remove libsigc++ later.
 
 DEPEND="${RDEPEND}
+	>=dev-libs/boost-1.39.0
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
