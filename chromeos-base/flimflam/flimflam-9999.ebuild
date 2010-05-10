@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf threads tools +udev +wifi"
+IUSE="bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles threads tools +udev +wifi"
 # ospm wimax
 
 RDEPEND=">=dev-libs/glib-2.16
@@ -73,6 +73,7 @@ src_configure() {
 		$(use_enable policykit polkit) \
 		$(use_enable ppp) \
 		$(use_enable resolvconf) \
+		$(use_enable resolvfiles resolvfiles builtin) \
 		$(use_enable threads) \
 		$(use_enable tools) \
 		$(use_enable udev) \
@@ -91,7 +92,12 @@ src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 	keepdir /var/lib/${PN} || die
 
-	if use dnsproxy ; then
+        if use resolvfiles ; then
+		mkdir -p "${D}"/etc/
+		ln -s /var/run/connman/resolv.conf "${D}"/etc/resolv.conf
+        elif use resolvconf; then
+		:
+	elif use dnsproxy ; then
 		mkdir -p "${D}"/etc/
 		echo "nameserver 127.0.0.1" > "${D}"/etc/resolv.conf
 		chmod 0644 "${D}"/etc/resolv.conf
