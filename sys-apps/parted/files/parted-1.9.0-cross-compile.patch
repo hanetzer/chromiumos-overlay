@@ -1,0 +1,25 @@
+diff -ruN parted-1.9.0/libparted/arch/linux.c parted-1.9.0.new/libparted/arch/linux.c
+--- parted-1.9.0/libparted/arch/linux.c	2009-07-23 10:52:08.000000000 -0700
++++ parted-1.9.0.new/libparted/arch/linux.c	2010-05-10 17:36:01.000000000 -0700
+@@ -1477,20 +1477,13 @@
+ 
+ #if SIZEOF_OFF_T < 8
+ 
+-static _syscall5(int,_llseek,
+-                 unsigned int, fd,
+-                 unsigned long, offset_high,
+-                 unsigned long, offset_low,
+-                 loff_t*, result,
+-                 unsigned int, origin)
+-
+ loff_t
+ llseek (unsigned int fd, loff_t offset, unsigned int whence)
+ {
+         loff_t result;
+         int retval;
+ 
+-        retval = _llseek(fd,
++        retval = syscall(__NR__llseek,fd,
+                          ((unsigned long long)offset) >> 32,
+                          ((unsigned long long)offset) & 0xffffffff,
+                          &result,
