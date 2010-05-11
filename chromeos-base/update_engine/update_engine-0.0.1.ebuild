@@ -27,6 +27,9 @@ DEPEND="dev-cpp/gtest
         ${RDEPEND}"
 
 src_unpack() {
+	if [ -z "${CHROMEOS_ROOT}" ]; then
+		die "CHROMEOS_ROOT unset"
+	fi
 	local platform="${CHROMEOS_ROOT}/src/platform/"
 	elog "Using platform dir: $platform"
 	mkdir -p "${S}/update_engine"
