@@ -20,6 +20,9 @@ DEPEND="${RDEPEND}"
 
 pkg_setup() {
 	enewgroup pkcs11
+        # TODO(njw): Once we have non-root users of opencryptoki, this
+        # group will need to exist on the device with those users,
+        # which this does not accomplish.
 }
 
 src_prepare() {
@@ -48,6 +51,7 @@ src_install() {
 	# tpmtoken_* binaries expect to find the libraries in /usr/lib/.
 	dosym opencryptoki/stdll/libpkcs11_sw.so.0.0.0 "/usr/$(get_libdir)/libpkcs11_sw.so"
 	dosym opencryptoki/stdll/libpkcs11_tpm.so.0.0.0 "/usr/$(get_libdir)/libpkcs11_tpm.so"
+	dosym opencryptoki/libopencryptoki.so.0.0.0 "/usr/$(get_libdir)/libopencryptoki.so"
 
 	dodoc doc/openCryptoki-HOWTO.pdf
 }

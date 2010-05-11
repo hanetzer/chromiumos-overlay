@@ -29,7 +29,7 @@ DEPEND="dev-libs/libnl
 		x11-libs/qt-svg:4 )
 	!qt4? ( qt3? ( x11-libs/qt:3 ) )
 	readline? ( sys-libs/ncurses sys-libs/readline )
-	ssl? ( dev-libs/openssl )
+	ssl? ( dev-libs/openssl dev-libs/opencryptoki dev-libs/engine_pkcs11 )
 	!ssl? ( gnutls? ( net-libs/gnutls ) )
 	!ssl? ( !gnutls? ( dev-libs/libtommath ) )"
 RDEPEND="${DEPEND}"
