@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="dev-lang/v8
+RDEPEND="chromeos-base/libcros
+	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent
 	 net-misc/curl"
