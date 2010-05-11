@@ -95,4 +95,13 @@ src_install() {
 	doexe "${S}/power_manager/backlight-tool"
 	doexe "${S}/power_manager/powerd"
 	doexe "${S}/power_manager/xidle-example"
+	insinto "/var/lib/power_manager"
+	doins "${S}/power_manager/config/plugged_brightness_offset"
+	doins "${S}/power_manager/config/plugged_dim_ms"
+	doins "${S}/power_manager/config/plugged_off_ms"
+	doins "${S}/power_manager/config/plugged_suspend_ms"
+	doins "${S}/power_manager/config/unplugged_brightness_offset"
+	doins "${S}/power_manager/config/unplugged_dim_ms"
+	doins "${S}/power_manager/config/unplugged_off_ms"
+	doins "${S}/power_manager/config/unplugged_suspend_ms"
 }

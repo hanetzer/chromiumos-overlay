@@ -88,6 +88,11 @@ RDEPEND="${RDEPEND}
 	sys-apps/ack
 	"
 
+# Host dependencies that are needed for unit tests
+RDEPEND="${RDEPEND}
+	x11-misc/xkeyboard-config
+	"
+
 # Host dependencies that are needed to build Icedtea
 RDEPEND="${RDEPEND}
 	app-arch/zip
