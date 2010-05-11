@@ -11,6 +11,7 @@ RDEPEND=">=app-i18n/ibus-1.2
          net-misc/curl"
 DEPEND="${RDEPEND}"
 SLOT="0"
+KEYWORDS="~amd64 ~x86 ~arm"
 
 BUILDTYPE="${BUILDTYPE:-Release}"
 MOZCDIR="${MOZCDIR:-files/src}"
