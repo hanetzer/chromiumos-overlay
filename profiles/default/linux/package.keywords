@@ -1,19 +1,20 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Need a later qemu-user so it will build statically.
+=app-emulation/qemu-softmmu-0.10.1 amd64 x86
+=app-emulation/qemu-user-0.12.2 amd64 x86
 =dev-cpp/gflags-1.2             amd64 x86
 =dev-cpp/glog-0.3.0             amd64 x86
-=dev-util/lcov-1.7              amd64 x86
 =dev-db/sqlite-3.6.19		amd64 x86
-=dev-libs/dbus-glib-0.82	amd64 x86
-=dev-libs/protobuf-2.2.0	amd64 x86
-=sys-apps/dbus-1.2.20		amd64 x86
 =dev-libs/dbus-c++-0.0.1	amd64 x86
+=dev-libs/dbus-glib-0.82	amd64 x86
 =dev-libs/eggdbus-0.5		amd64 x86
-=dev-util/boost-build-1.42.0	amd64 x86
+=dev-libs/protobuf-2.2.0	amd64 x86
 =dev-python/webpy-0.32          amd64 x86
-=app-emulation/qemu-softmmu-0.10.1 amd64 x86
-=x11-libs/pixman-0.17.2		amd64 x86
-# Need a later qemu-user so it will build statically.
-=app-emulation/qemu-user-0.12.2 amd64 x86
+=dev-util/boost-build-1.42.0	amd64 x86
+=dev-util/lcov-1.7              amd64 x86
+=sys-apps/dbus-1.2.20		amd64 x86
 =sys-devel/automake-1.11.1      amd64 x86
+=sys-devel/automake-wrapper-5  amd64 x86
+=x11-libs/pixman-0.17.2		amd64 x86
