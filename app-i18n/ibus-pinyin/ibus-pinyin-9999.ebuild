@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-pinyin/ibus-pinyin-1.2.0.20090915.ebuild,v 1.1 2009/09/15 15:11:20 matsuu Exp $
 
 EAPI="2"
-inherit eutils
+inherit flag-o-matic eutils
 
 #PYDB_TAR="pinyin-database-0.1.10.6.tar.bz2"
 DESCRIPTION="Chinese PinYin IMEngine for IBus Framework"
@@ -33,6 +33,7 @@ RDEPEND=">=app-i18n/ibus-1.1.0
 	nls? ( virtual/libintl )"
 
 DEPEND="${RDEPEND}
+	=dev-libs/boost-1.42.0
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
@@ -52,6 +53,7 @@ src_unpack() {
 }
 
 src_prepare() {
+	append-flags "-I${SYSROOT}/usr/include/boost-1_42"
 	NOCONFIGURE=1 ./autogen.sh
 }
 

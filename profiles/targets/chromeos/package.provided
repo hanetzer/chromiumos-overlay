@@ -37,6 +37,7 @@ dev-libs/libxslt-1.1.24-r1
 
 dev-perl/XML-Parser-2.36
 
+dev-util/boost-build-1.42.0
 dev-util/cmake-2.6.4
 dev-util/ctags-5.7
 dev-util/gperf-3.0.3

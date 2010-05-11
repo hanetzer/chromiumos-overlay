@@ -45,6 +45,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pyopenssl
 	dev-python/webpy
+	=dev-util/boost-build-1.42.0
 	dev-util/cmake
 	dev-util/git[cvs,subversion,webdav,curl]
 	dev-util/gob
