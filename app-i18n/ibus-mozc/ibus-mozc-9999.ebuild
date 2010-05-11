@@ -5,7 +5,7 @@ EAPI="2"
 inherit toolchain-funcs
 
 DESCRIPTION="The Mozc engine for IBus Framework"
-HOMEPAGE="http://www.google.com/"
+HOMEPAGE="http://code.google.com/p/mozc"
 LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.2
          net-misc/curl"
@@ -13,13 +13,21 @@ DEPEND="${RDEPEND}"
 SLOT="0"
 
 BUILDTYPE="${BUILDTYPE:-Release}"
-# TODO(mazda): Set the correct default path
-MOZCDIR="${MOZCDIR:-files/mozc}"
+MOZCDIR="${MOZCDIR:-files/src}"
 
 src_unpack() {
   local src="${CHROMEOS_ROOT}/src/third_party/ibus-mozc/files"
   mkdir -p "${S}"
   cp -a "${src}" "${S}" || die
+}
+
+# TODO(mazda): Use dev libraries and delete this command
+src_prepare() {
+  cd "${MOZCDIR}" || die
+  local gtest_svn_url="http://googletest.googlecode.com/svn/trunk"
+  svn checkout "${gtest_svn_url}@424" third_party/gtest || die
+  local protobuf_svn_url="http://protobuf.googlecode.com/svn/trunk"
+  svn checkout "${protobuf_svn_url}@332" protobuf/files || die
 }
 
 src_configure() {
@@ -49,7 +57,6 @@ src_compile() {
 
 src_install() {
   exeinto /usr/libexec || die
-  # TODO(mazda): Specify the correct output path
   newexe "${MOZCDIR}"/out/${BUILDTYPE}/ibus_mozc ibus-engine-mozc || die
 
   insinto /usr/share/ibus/component || die
