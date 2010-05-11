@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless"
+IUSE="-compat_wireless -gobi"
 
 DEPEND="sys-apps/debianutils"
 RDEPEND=""
@@ -40,7 +40,20 @@ src_unpack() {
 
 	mkdir -p "${S}"
 	cp -ar "${files}"/* "${S}" || die
-}
+
+	if use gobi; then
+		# Until we can get these files upstreamed we will copy them
+		# into the tree.  This is a temporary measure
+
+		local partner="${CHROMEOS_ROOT}/src/partner_private"
+		local gobi_files="${partner}/source-cromo_qualcomm-private/kernel/"
+		local gobi_source="${S}/chromeos/drivers/gobi"
+
+		elog "Using gobi files: ${gobi_files}"
+		mkdir -p "${gobi_source}"
+		cp -ar "${gobi_files}"/* "${gobi_source}"
+	fi
+ }
 
 src_configure() {
 	elog "Using kernel config: ${config}"
@@ -96,6 +109,13 @@ src_install() {
 			INSTALL_MOD_DIR=updates \
 			INSTALL_MOD_PATH="${D}" \
 			modules_install || die
+	fi
+
+	if use gobi; then
+		emake -C ${S}/chromeos/drivers/gobi \
+ 			DESTDIR="${D}" \
+		  	HOST_MODULES_DIR=${S} \
+			install || die "Cannot compile gobi modules"
 	fi
 
 	emake \
