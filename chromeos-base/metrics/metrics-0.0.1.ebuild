@@ -13,14 +13,10 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="debug"
 
-# TODO(petkov): Remove dependences on metrics_collection and metrics_daemon
-# and the empty ebuilds once the build dust settles.
-RDEPEND="chromeos-base/chromeos-metrics_collection
-	chromeos-base/chromeos-metrics_daemon
-	chromeos-base/libchrome
+RDEPEND="chromeos-base/libchrome
 	dev-cpp/gflags
-	>=dev-libs/glib-2.0
 	dev-libs/dbus-glib
+	>=dev-libs/glib-2.0
 	sys-apps/dbus
 	"
 
