@@ -29,7 +29,6 @@ IUSE="nls"
 
 RDEPEND=">=app-i18n/ibus-1.1.0
 	>=dev-db/sqlite-3.6.18
-	dev-libs/libsigc++
 	nls? ( virtual/libintl )"
 
 DEPEND="${RDEPEND}
