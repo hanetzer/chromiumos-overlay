@@ -16,12 +16,15 @@ RDEPEND="app-arch/bzip2
          chromeos-base/libchrome
          dev-cpp/gflags
          dev-cpp/glog
+         dev-libs/glib
          dev-libs/libpcre
+         dev-libs/libxml2
          dev-libs/protobuf
          dev-util/bsdiff
+         net-misc/curl
          sys-libs/zlib"
 DEPEND="dev-cpp/gtest
-        dev-util/lcov
+        dev-libs/dbus-glib
         net-misc/wget
         sys-apps/fakeroot
         ${RDEPEND}"

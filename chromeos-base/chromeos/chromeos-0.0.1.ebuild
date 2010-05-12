@@ -72,7 +72,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/pam_google
 	chromeos-base/power_manager
 	x86? ( chromeos-base/speech_synthesis )
-	x86? ( chromeos-base/update_engine )
+	chromeos-base/update_engine
 	chromeos-base/xscreensaver
 	x86? ( dev-util/perf )
 	x86? ( media-gfx/ply-image )
