@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit flag-o-matic toolchain-funcs
 
 DESCRIPTION="Chrome OS Metrics Collection Utilities"
 HOMEPAGE="http://src.chromium.org"
@@ -11,20 +11,23 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="debug"
 
 # TODO(petkov): Remove dependences on metrics_collection and metrics_daemon
 # and the empty ebuilds once the build dust settles.
 RDEPEND="chromeos-base/chromeos-metrics_collection
 	chromeos-base/chromeos-metrics_daemon
 	chromeos-base/libchrome
+	dev-cpp/gflags
 	>=dev-libs/glib-2.0
 	dev-libs/dbus-glib
-	sys-apps/dbus"
+	sys-apps/dbus
+	"
 
-DEPEND="dev-cpp/gflags
+DEPEND="${RDEPEND}
+	dev-cpp/gmock
 	dev-cpp/gtest
-	${RDEPEND}"
+	"
 
 src_unpack() {
 	local metrics="${CHROMEOS_ROOT}/src/platform/metrics"
@@ -33,6 +36,7 @@ src_unpack() {
 }
 
 src_compile() {
+	use debug || append-flags -DNDEBUG
 	tc-export CXX AR PKG_CONFIG
 	emake || die "metrics compile failed."
 }
