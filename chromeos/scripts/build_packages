@@ -39,7 +39,7 @@ DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
 DEFINE_integer retries -1 \
   "On build failure, the number of times to retry"
-DEFINE_boolean withtest $FLAGS_FALSE \
+DEFINE_boolean withtest $FLAGS_TRUE \
   "Build packages required for testing"
 DEFINE_boolean withfactory $FLAGS_TRUE \
   "Build factory installer"
