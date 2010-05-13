@@ -96,9 +96,7 @@ DEPEND="${RDEPEND}
 	)
 	sys-apps/lsb-release"
 
-# We don't do the following during pkg_setup so it won't be called when we
-# build Chromium OS* test image.
-pkg_setup_compile_time_only() {
+pkg_setup() {
 # Shark support disabled for now - still experimental and needs sys-devel/llvm
 #	if use shark ; then
 #	  if ( ! use x86 && ! use sparc && ! use ppc ) ; then
@@ -153,8 +151,6 @@ pkg_setup_compile_time_only() {
 }
 
 src_unpack() {
-	pkg_setup_compile_time_only
-
 	if [[ -n ${DIE_IF_NOT_BINPKG} ]]; then
 		die "Unable to find a supported VM for building"
 	fi

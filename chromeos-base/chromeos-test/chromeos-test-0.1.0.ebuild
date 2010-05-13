@@ -30,7 +30,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/client-id-uploader
 	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns
-	dev-java/icedtea
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
