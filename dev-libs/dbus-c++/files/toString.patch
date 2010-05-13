@@ -1,0 +1,80 @@
+diff --git a/examples/echo/echo-client.cpp b/examples/echo/echo-client.cpp
+index 093595f..8fe7ad7 100644
+--- a/examples/echo/echo-client.cpp
++++ b/examples/echo/echo-client.cpp
+@@ -6,6 +6,7 @@
+ #include <iostream>
+ #include <pthread.h>
+ #include <signal.h>
++#include <stdio.h>
+ 
+ using namespace std;
+ 
+diff --git a/include/dbus-c++/eventloop-integration.h b/include/dbus-c++/eventloop-integration.h
+index fd56c6e..2579273 100644
+--- a/include/dbus-c++/eventloop-integration.h
++++ b/include/dbus-c++/eventloop-integration.h
+@@ -26,6 +26,7 @@
+ #define __DBUSXX_EVENTLOOP_INTEGRATION_H
+ 
+ #include <errno.h>
++#include <string.h>
+ #include "api.h"
+ #include "dispatcher.h"
+ #include "util.h"
+@@ -68,8 +69,12 @@ public:
+ 		//pipe to create a new fd used to unlock a dispatcher at any
+     // moment (used by leave function)
+ 		int ret = pipe(_pipe);
+-		if (ret == -1) throw Error("PipeError:errno", toString(errno).c_str());
+-    
++		if (ret == -1) {
++                  char buffer[128]; // buffer copied in Error constructor
++                  throw Error("PipeError:errno", strerror_r(errno,
++                                                            buffer,
++                                                            sizeof(buffer)));
++                }
+ 		_fdunlock[0] = _pipe[0];
+ 		_fdunlock[1] = _pipe[1];
+ 		
+diff --git a/src/eventloop-integration.cpp b/src/eventloop-integration.cpp
+index d801574..53aea5f 100644
+--- a/src/eventloop-integration.cpp
++++ b/src/eventloop-integration.cpp
+@@ -90,8 +90,12 @@ void BusDispatcher::leave()
+ 	_running = false;
+   
+ 	int ret = write(_fdunlock[1],"exit",strlen("exit"));
+-	if (ret == -1) throw Error("WriteError:errno", toString(errno).c_str());
+-  
++	if (ret == -1) {
++          char buffer[128]; // buffer copied in Error constructor
++          throw Error("PipeError:errno", strerror_r(errno,
++                                                    buffer,
++                                                    sizeof(buffer)));
++        }
+ 	close(_fdunlock[1]);
+ 	close(_fdunlock[0]);
+ }
+@@ -172,4 +176,3 @@ void BusDispatcher::watch_ready(DefaultWatch &ew)
+ 
+ 	watch->handle(flags);
+ }
+-
+diff --git a/src/error.cpp b/src/error.cpp
+index 840365b..c34430b 100644
+--- a/src/error.cpp
++++ b/src/error.cpp
+@@ -79,11 +79,10 @@ bool Error::is_set() const
+ 
+ void Error::set(const char *name, const char *message)
+ {
+-	dbus_set_error_const(&(_int->error), name, message);
++	dbus_set_error(&(_int->error), name, message);
+ }
+ 
+ const char *Error::what() const throw()
+ {
+ 	return _int->error.message;
+ }
+-
