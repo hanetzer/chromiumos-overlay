@@ -10,8 +10,11 @@ if [[ ${PV} != "9999" ]] ; then
 
 	KEYWORDS="amd64 x86 arm"
 
-	EGIT_REPO_URI="git://anongit.freedesktop.org/git/dbus/dbus-c++/"
-	EGIT_COMMIT="e508c71612549333553ac2b4d418284d91c4845e"
+	EGIT_REPO_URI="http://src.chromium.org/git/dbus-cplusplus.git"
+	EGIT_BRANCH="with_exceptions"
+	# Commit required to ensure we get a specific version
+	# TODO(jglasgow): debug git eclass
+	EGIT_COMMIT="2964a7fdd18bfe751e648869fa49fc899838b3bc"
 fi
 
 inherit toolchain-funcs
@@ -50,13 +53,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [[ -n "${EGIT_REPO_URI}" ]] ; then
-		# Until we can get this patch upstreamed, we need to fix
-		# remove the usage of toString(errno)
-		(cd ${S} && epatch "${FILESDIR}"/toString.patch) || \
-			die "failed to apply patch"
-	fi
-
 	./bootstrap || die "failed to bootstrap autotools"
 }
 

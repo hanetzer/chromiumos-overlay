@@ -34,11 +34,12 @@ RDEPEND="${RDEPEND}
 	app-text/texi2html
 	dev-lang/python
 	dev-lang/swig
+	dev-libs/dbus-c++
+	dev-libs/dbus-glib
 	dev-libs/glib
         dev-libs/eggdbus
 	dev-libs/libgcrypt
 	dev-libs/libxslt
-	dev-libs/dbus-glib
 	dev-libs/nss[utils]
 	dev-libs/protobuf
 	dev-python/dbus-python

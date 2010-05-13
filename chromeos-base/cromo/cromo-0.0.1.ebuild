@@ -16,17 +16,20 @@ IUSE="test"
 PLUGINDIR="/usr/lib/cromo/plugins"
 DBUSDATADIR="/etc/dbus-1/system.d"
 
-RDEPEND=">=dev-libs/glib-2.0
+RDEPEND="chromeos-base/libchrome
+	>=dev-libs/glib-2.0
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
 	dev-cpp/gflags"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	net-misc/modemmanager"
 
 # Don't strip, since plugins need to resolve symbols
 # in the cromo executable
 RESTRICT="strip"
 
 src_unpack() {
+	# TODO(jglasgow): Implement 9999 scheme
 	local platform="${CHROMEOS_ROOT}/src/platform"
 	cp -a "${platform}/cromo" "${S}" || die "Failed to unpack sources"
 }
