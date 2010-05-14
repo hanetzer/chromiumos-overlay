@@ -50,10 +50,14 @@ src_test() {
 }
 
 src_install() {
-	dodir /usr/bin
-	dodir /usr/include
-	dodir /usr/lib
-	dodir /usr/sbin
-	emake DESTDIR="${D}" install || die "metrics install failed."
-	chmod 0555 "${D}/usr/sbin/omaha_tracker.sh"
+	dobin "${S}/metrics_client"
+	dobin "${S}/metrics_daemon"
+	dobin "${S}/syslog_parser.sh"
+	dolib.a "${S}/libmetrics.a"
+	dolib.so "${S}/libmetrics.so"
+	dosbin "${S}/omaha_tracker.sh"
+
+	insinto "/usr/include/metrics"
+	doins "${S}/metrics_library.h"
+	doins "${S}/metrics_library_mock.h"
 }
