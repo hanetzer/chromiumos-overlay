@@ -16,11 +16,11 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 src_install() {
-  local feedback_dir="${CHROMEOS_ROOT}/src/platform/userfeedback"
+	local feedback_dir="${CHROMEOS_ROOT}/src/platform/userfeedback"
 
-  exeinto /usr/bin/syslogs/scripts
-  doexe "${feedback_dir}"/scripts/*
+	exeinto /usr/share/userfeedback/scripts
+	doexe "${feedback_dir}"/scripts/*
 
-  insinto /usr/bin/syslogs/etc
-  doins "${feedback_dir}"/etc/*
+	insinto /usr/share/userfeedback/etc
+	doins "${feedback_dir}"/etc/*
 }
