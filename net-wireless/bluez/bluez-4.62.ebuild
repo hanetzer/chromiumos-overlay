@@ -59,6 +59,9 @@ src_prepare() {
 	# Fix alsa files location
 	epatch "${FILESDIR}/${PN}-alsa_location.patch"
 
+	# Incorporate ATH3k support
+	epatch "${FILESDIR}/${PN}-ath3k.patch"
+
 	eautoreconf
 }
 
