@@ -83,7 +83,7 @@ pkg_setup() {
 src_prepare() {
 	# fix doc dir, bug #91911
 	sed -i -e \
-		's:DOCUMENTATION_PATH="${DATA_DIR}/doc/${DOCUMENTATION_RELATIVE_PATH}":DOCUMENTATION_PATH="/usr/share/doc/${PF}":g' \
+		's:DOCUMENTATION_PATH="${DATA_DIR}/doc/${DOCUMENTATION_RELATIVE_PATH}":DOCUMENTATION_PATH="/usr/local/share/doc/${PF}":g' \
 		"${S}"/configure || die
 }
 
@@ -116,7 +116,7 @@ src_configure() {
 		myconf="${myconf} --disable-openmp"
 	fi
 
-	use truetype && myconf="${myconf} $(use_with corefonts windows-font-dir /usr/share/fonts/corefonts)"
+	use truetype && myconf="${myconf} $(use_with corefonts windows-font-dir /usr/local/share/fonts/corefonts)"
 
 	econf \
 		${myconf} \
@@ -127,7 +127,7 @@ src_configure() {
 		--with-modules \
 		$(use_with perl) \
 		--with-perl-options='INSTALLDIRS=vendor' \
-		--with-gs-font-dir=/usr/share/fonts/default/ghostscript \
+		--with-gs-font-dir=/usr/local/share/fonts/default/ghostscript \
 		$(use_enable hdri) \
 		$(use_with !nocxx magick-plus-plus) \
 		$(use_with autotrace) \
@@ -151,7 +151,11 @@ src_configure() {
 		$(use_with wmf) \
 		$(use_with xml) \
 		$(use_with zlib) \
-		$(use_with X x)
+		$(use_with X x) \
+		--prefix=/usr/local \
+		--mandir=/usr/local/share/man \
+		--infodir=/usr/local/share/info \
+		--datadir=/usr/local/share
 }
 
 src_test() {
@@ -168,16 +172,16 @@ src_install() {
 
 	elog "Preserving .la files needed at runtime by placing in tar file." 
 	elog "  Avoids removal due to *.la in INSTALL_MASK"
-	pushd "${D}"/usr/$(get_libdir) || die
+	pushd "${D}"/usr/local/$(get_libdir) || die
 	tar zcf "${S}"/la_files.tar.gz $(find -name '*.la' -type f) || die
 	popd
-	insinto /usr/$(get_libdir)/${P}
+	insinto /usr/local/$(get_libdir)/${P}
 	doins "${S}"/la_files.tar.gz
 
 	# dont need these files with runtime plugins
-	rm -f "${D}"/usr/$(get_libdir)/*/*/*.{la,a}
+	rm -f "${D}"/usr/local/$(get_libdir)/*/*/*.{la,a}
 
-	use doc || rm -r "${D}"/usr/share/doc/${PF}/{www,images,index.html}
+	use doc || rm -r "${D}"/usr/local/share/doc/${PF}/{www,images,index.html}
 	dodoc NEWS.txt ChangeLog AUTHORS.txt README.txt
 
 	# Fix perllocal.pod file collision
@@ -186,14 +190,14 @@ src_install() {
 
 pkg_postinst() {
 	elog "Restoring .la files from tar file"
-	pushd "${ROOT}"/usr/$(get_libdir) || die
+	pushd "${ROOT}"/usr/local/$(get_libdir) || die
 	tar -xvzpf ${P}/la_files.tar.gz || die
 	popd
 }
 
 pkg_prerm() {
 	elog "Clean up untarred .la files"
-	pushd "${ROOT}"/usr/$(get_libdir) || die
+	pushd "${ROOT}"/usr/local/$(get_libdir) || die
 	tar -tf ${P}/la_files.tar.gz | xargs rm
 	assert
 	popd
