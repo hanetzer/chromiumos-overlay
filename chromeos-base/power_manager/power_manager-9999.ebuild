@@ -62,14 +62,16 @@ src_test() {
 		trap 'kill %1 && wait' exit
 		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
 		sleep 2
-		"${S}/power_manager/xidle_unittest" \
-			${GTEST_ARGS} || die "xidle_unittest failed"
+		for ut in powerd xidle; do
+			"${S}/power_manager/${ut}_unittest" \
+				${GTEST_ARGS} || die "${ut}_unittest failed"
+		done
 		kill %1 && wait
 		trap - exit
-		"${S}/power_manager/idle_dimmer_unittest" \
-			${GTEST_ARGS} || die "idle_dimmer_unittest failed"
-		"${S}/power_manager/plug_dimmer_unittest" \
-			${GTEST_ARGS} || die "plug_dimmer_unittest failed"
+		for ut in idle_dimmer plug_dimmer; do
+			"${S}/power_manager/${ut}_unittest" \
+				${GTEST_ARGS} || die "${ut}_unittest failed"
+		done
 	fi
 }
 
