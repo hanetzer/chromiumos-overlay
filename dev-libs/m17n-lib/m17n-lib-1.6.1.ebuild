@@ -1,6 +1,5 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/m17n-lib/m17n-lib-1.5.5.ebuild,v 1.1 2010/01/26 15:27:44 matsuu Exp $
 
 EAPI=2
 inherit flag-o-matic
@@ -12,29 +11,26 @@ SRC_URI="http://www.m17n.org/m17n-lib-download/${P}.tar.gz"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~sh ~sparc ~x86"
-#IUSE="anthy gd ispell"
-IUSE="gd"
+IUSE=""
 
-RDEPEND="x11-libs/libXaw
-	x11-libs/libICE
-	x11-libs/libSM
-	x11-libs/libXrender
-	x11-libs/libXft
-	dev-libs/libxml2
-	dev-libs/fribidi
-	>=media-libs/freetype-2.1
-	gd? ( media-libs/gd[png] )
-	>=dev-db/m17n-db-${PV}"
-# linguas_th? ( || ( app-i18n/libthai app-i18n/wordcut ) )
-# anthy? ( app-i18n/anthy )
-# ispell? ( app-text/ispell )
+RDEPEND=">=dev-db/m17n-db-${PV}
+	dev-libs/libxml2"
 
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
 
 src_configure() {
 	append-flags -fPIC
-	econf $(use_with gd) --without-libotf --without-fontconfig --without-gui || die
+
+	# The configure script warns that the --without-gui option is an
+	# unrecognized option, but it's not true. Actually, the "unrecognized"
+	# option effectively removes almost all optional modules of m17n-lib
+	# that we don't use (namely X11, Xaw, fribidi, freetype, xft2, and
+	# fontconfig modules). And as far as I know, there is no way to disable
+	# these modules except the --without-gui option. Note that the X11 and
+	# freetype modules in m17n-lib-1.6.1 does not compile on Chrome OS
+	# since they are not cross-compile friendly.
+	econf --without-gui || die
 }
 
 src_compile() {
