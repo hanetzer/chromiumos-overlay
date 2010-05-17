@@ -35,7 +35,7 @@ src_configure() {
   cd "${MOZCDIR}" || die
 
   # Generate make files
-  export GYP_DEFINES="sysroot=${SYSROOT}"
+  export GYP_DEFINES="chromeos=1 sysroot=${SYSROOT}"
   export BUILD_COMMAND="emake"
   python build_mozc.py gyp || die
 }

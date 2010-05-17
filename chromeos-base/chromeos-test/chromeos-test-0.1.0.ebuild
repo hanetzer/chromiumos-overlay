@@ -30,6 +30,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/client-id-uploader
 	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns
+	x86? ( dev-java/icedtea )
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
@@ -37,8 +38,10 @@ RDEPEND="${RDEPEND}
 	dev-python/pyopenssl
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
+	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
+	sys-apps/findutils
 	sys-power/powertop
 	sys-process/procps
 	sys-process/time

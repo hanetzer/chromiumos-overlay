@@ -173,10 +173,50 @@ src_prepare() {
   ${EGCLIENT} runhooks --force
 }
 
+# Extract the version number from lines like:
+# kCrosAPIMinVersion = 29,
+# kCrosAPIVersion = 30
+extract_cros_version() {
+  NAME="$1"
+  FILE="$2"
+  VERSION=$(perl -ne "print \$1 if /^\\s*${NAME}\\s*=\\s*(\\d+)/" "$FILE")
+  test -z "$VERSION" && die "Failed to get $NAME from $FILE"
+  echo $VERSION
+}
+
+# Check the libcros version compatibility, like we do in libcros at run time.
+# See also platform/cros/version_check.cc and load.cc.
+check_cros_version() {
+  # Get the version of libcros in the chromium tree.
+  VERSION=$(extract_cros_version kCrosAPIVersion \
+            "$CHROME_ROOT/src/third_party/cros/chromeos_cros_api.h")
+  elog "Libcros version in chromium tree: $VERSION"
+
+  # Get the min version of libcros in the chromium os tree.
+  MIN_VERSION=$(extract_cros_version kCrosAPIMinVersion \
+               "$CHROMEOS_ROOT/src/platform/cros/chromeos_cros_api.h")
+  elog "Libcros min version in chromium os tree: $MIN_VERSION"
+
+  # Get the max version of libcros in the chromium os tree.
+  MAX_VERSION=$(extract_cros_version kCrosAPIVersion \
+               "$CHROMEOS_ROOT/src/platform/cros/chromeos_cros_api.h")
+  elog "Libcros max version in chromium os tree: $MAX_VERSION"
+
+  if [ "$MIN_VERSION" -gt "$VERSION" ]; then
+    die "Libcros version check failed. Forgot to sync the chromium tree?"
+  fi
+  if [ "$VERSION" -gt "$MAX_VERSION" ]; then
+    die "Libcros version check failed. Forgot to sync the chromium os tree?"
+  fi
+}
+
 src_compile() {
   if [ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]; then
     return
   fi
+
+  check_cros_version
+
   cd "${CHROME_ROOT}"/src || die
   
   if use build_tests; then

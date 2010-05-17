@@ -75,7 +75,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
 	chromeos-base/xscreensaver
-	x86? ( dev-util/perf )
 	x86? ( media-gfx/ply-image )
 	media-plugins/alsa-plugins
 	x86? ( media-plugins/o3d )

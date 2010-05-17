@@ -122,15 +122,18 @@ src_test() {
 	copy_src "${BUILD_STAGE}"
 	cp -fpru "${AUTOTEST_SRC}/global_config.ini" "${BUILD_STAGE}"
 
+	sudo chown -R ${SUDO_UID}:${SUDO_GID} "${BUILD_STAGE}"
+	sudo chmod -R 755 "${BUILD_STAGE}"
+
 	setup_ssh
 	cd "${BUILD_STAGE}"
 
 	setup_cross_toolchain
 
-        local args=()
-        if [[ -n ${AUTOSERV_TEST_ARGS} ]] ; then
-          args=("-a" "${AUTOSERV_TEST_ARGS}")
-        fi
+	local args=()
+	if [[ -n ${AUTOSERV_TEST_ARGS} ]]; then
+		args=("-a" "${AUTOSERV_TEST_ARGS}")
+	fi
 
 	local timestamp=$(date +%Y-%m-%d-%H.%M.%S)
 	# Do not use sudo, it'll unset all your environment
