@@ -85,6 +85,7 @@ RDEPEND="${RDEPEND}
                net-wireless/iwl1000-ucode
 	       net-wireless/iwl6000-ucode
 	)
+	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/bluez
 	net-wireless/marvell_sd8787
