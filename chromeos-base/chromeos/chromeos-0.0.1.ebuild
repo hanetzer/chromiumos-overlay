@@ -40,22 +40,38 @@ RDEPEND="${RDEPEND}
 	)
 	"
 
-# Base System
+DEPEND="${RDEPEND}
+	x86? (
+		sys-apps/flashrom
+		app-i18n/ibus-chewing
+		app-i18n/ibus-m17n
+		media-plugins/o3d
+		app-laptop/laptop-mode-tools
+		chromeos-base/chromeos-acpi
+		chromeos-base/speech_synthesis
+		>=net-wireless/iwl5000-ucode-8.24.2.12
+		net-wireless/iwl1000-ucode
+		net-wireless/iwl6000-ucode
+	)
+	"
+
+RDEPEND="${RDEPEND}
+	arm? (
+		sys-boot/u-boot
+	)
+	"
+
 # TODO(yusukes): remove x86? from the ibus-* lines once we get ibus running on ARM.
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-crypt/tpm-emulator
         app-crypt/trousers
-	x86? ( app-i18n/ibus-chewing )
 	app-i18n/ibus-hangul
-	x86? ( app-i18n/ibus-m17n )
 	app-i18n/ibus-mozc
 	app-i18n/ibus-pinyin
 	app-i18n/ibus-xkb-layouts
-	x86? ( app-laptop/laptop-mode-tools )
 	app-shells/dash
 	chromeos-base/board-devices
-	x86? ( chromeos-base/chromeos-acpi )
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-init
@@ -72,20 +88,14 @@ RDEPEND="${RDEPEND}
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google
 	chromeos-base/power_manager
-	x86? ( chromeos-base/speech_synthesis )
 	chromeos-base/update_engine
 	chromeos-base/xscreensaver
-	x86? ( media-gfx/ply-image )
+	media-gfx/ply-image
 	media-plugins/alsa-plugins
-	x86? ( media-plugins/o3d )
 	media-sound/alsa-utils
 	media-sound/pulseaudio
 	net-firewall/iptables
 	net-misc/ntp
-	x86? ( >=net-wireless/iwl5000-ucode-8.24.2.12
-               net-wireless/iwl1000-ucode
-	       net-wireless/iwl6000-ucode
-	)
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/bluez
@@ -94,10 +104,9 @@ RDEPEND="${RDEPEND}
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/coreutils
 	sys-apps/dbus
-	x86? ( sys-apps/devicekit-disks )
+	sys-apps/devicekit-disks
 	sys-apps/devicekit-power
 	sys-apps/eject
-	x86? ( sys-apps/flashrom )
 	sys-apps/grep
 	sys-apps/kbd
 	sys-apps/mawk
@@ -108,7 +117,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/upstart
 	sys-apps/util-linux
 	sys-auth/consolekit
-	arm? ( sys-boot/u-boot )
         sys-block/gpt
 	sys-fs/e2fsprogs
 	sys-fs/udev
