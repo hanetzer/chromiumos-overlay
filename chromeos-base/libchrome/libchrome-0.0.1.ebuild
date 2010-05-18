@@ -62,6 +62,7 @@ src_install() {
 	insinto "/usr/include/base/"
 	doins "${S}/files/base/at_exit.h"
 	doins "${S}/files/base/atomicops.h"
+	doins "${S}/files/base/atomicops_internals_arm_gcc.h"
 	doins "${S}/files/base/atomicops_internals_x86_gcc.h"
 	doins "${S}/files/base/base_switches.h"
 	doins "${S}/files/base/basictypes.h"
