@@ -8,6 +8,7 @@ DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
 LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.2
+         dev-libs/protobuf
          net-misc/curl"
 DEPEND="${RDEPEND}"
 SLOT="0"
@@ -22,22 +23,14 @@ src_unpack() {
   cp -a "${src}" "${S}" || die
 }
 
-# TODO(mazda): Use dev libraries and delete this command
-src_prepare() {
-  cd "${MOZCDIR}" || die
-  local gtest_svn_url="http://googletest.googlecode.com/svn/trunk"
-  svn checkout "${gtest_svn_url}@424" third_party/gtest || die
-  local protobuf_svn_url="http://protobuf.googlecode.com/svn/trunk"
-  svn checkout "${protobuf_svn_url}@332" protobuf/files || die
-}
-
 src_configure() {
   cd "${MOZCDIR}" || die
 
   # Generate make files
-  export GYP_DEFINES="chromeos=1 sysroot=${SYSROOT}"
+  export GYP_DEFINES="chromeos=1"
   export BUILD_COMMAND="emake"
-  python build_mozc.py gyp || die
+  local gypdir="${CHROMEOS_ROOT}/src/third_party/gyp/files"
+  python build_mozc.py gyp --gypdir="${gypdir}" || die
 }
 
 src_compile() {
