@@ -31,7 +31,7 @@ CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS disable_nacl=1 linux_use_tcmalloc=0 chromeos=1 ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
 
@@ -140,7 +140,7 @@ src_unpack() {
       if [ "$ARCH" = "x86" ]; then
         BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
       elif [ "$ARCH" = "arm" ]; then
-        BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1";
+        BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
       else
         die Unsupported architecture: "$ARCH"
       fi
