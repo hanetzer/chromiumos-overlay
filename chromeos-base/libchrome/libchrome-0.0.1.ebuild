@@ -43,6 +43,7 @@ src_install() {
 	dodir "/usr/include/base"
 	dodir "/usr/include/base/third_party/icu"
 	dodir "/usr/include/base/third_party/nspr"
+	dodir "/usr/include/base/third_party/valgrind"
 	dodir "/usr/include/build"
 
 	insopts -m0644
@@ -55,8 +56,13 @@ src_install() {
 	insinto "/usr/include/base/third_party/nspr"
 	doins "${S}/files/base/third_party/nspr/prtime.h"
 
+	insinto "/usr/include/base/third_party/valgrind"
+	doins "${S}/files/base/third_party/valgrind/valgrind.h"
+
 	insinto "/usr/include/base/"
 	doins "${S}/files/base/at_exit.h"
+	doins "${S}/files/base/atomicops.h"
+	doins "${S}/files/base/atomicops_internals_arm_gcc.h"
 	doins "${S}/files/base/atomicops_internals_x86_gcc.h"
 	doins "${S}/files/base/base_switches.h"
 	doins "${S}/files/base/basictypes.h"
@@ -69,12 +75,16 @@ src_install() {
 	doins "${S}/files/base/file_path.h"
 	doins "${S}/files/base/file_util.h"
 	doins "${S}/files/base/hash_tables.h"
+	doins "${S}/files/base/lock.h"
+	doins "${S}/files/base/lock_impl.h"
 	doins "${S}/files/base/logging.h"
 	doins "${S}/files/base/platform_file.h"
+	doins "${S}/files/base/platform_thread.h"
 	doins "${S}/files/base/port.h"
 	doins "${S}/files/base/safe_strerror_posix.h"
 	doins "${S}/files/base/scoped_ptr.h"
 	doins "${S}/files/base/setproctitle_linux.h"
+	doins "${S}/files/base/singleton.h"
 	doins "${S}/files/base/stl_util-inl.h"
 	doins "${S}/files/base/string16.h"
 	doins "${S}/files/base/string_piece.h"

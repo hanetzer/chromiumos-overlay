@@ -46,12 +46,15 @@ src_install() {
 	newinitd "${FILESDIR}/pkcsslotd.init" pkcsslotd
 
 	# No need for this.
-	rm -rf "${D}/etc/ld.so.conf.d"
+	rm -rf "${D}/etc/ld.so.conf.d"  # TODO(cmasone): Are we sure?
 
 	# tpmtoken_* binaries expect to find the libraries in /usr/lib/.
 	dosym opencryptoki/stdll/libpkcs11_sw.so.0.0.0 "/usr/$(get_libdir)/libpkcs11_sw.so"
 	dosym opencryptoki/stdll/libpkcs11_tpm.so.0.0.0 "/usr/$(get_libdir)/libpkcs11_tpm.so"
 	dosym opencryptoki/libopencryptoki.so.0.0.0 "/usr/$(get_libdir)/libopencryptoki.so"
+	dosym opencryptoki/stdll/libpkcs11_sw.so.0.0.0 "/usr/$(get_libdir)/libpkcs11_sw.so.0"
+	dosym opencryptoki/stdll/libpkcs11_tpm.so.0.0.0 "/usr/$(get_libdir)/libpkcs11_tpm.so.0"
+	dosym opencryptoki/libopencryptoki.so.0.0.0 "/usr/$(get_libdir)/libopencryptoki.so.0"
 
 	dodoc doc/openCryptoki-HOWTO.pdf
 }
