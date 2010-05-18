@@ -17,6 +17,7 @@ RDEPEND="chromeos-base/libcros
 	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent
+	 dev-libs/opencryptoki
 	 net-misc/curl"
 
 DEPEND="chromeos-base/libchrome
