@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	x86? ( app-i18n/ibus-chewing )
 	app-i18n/ibus-hangul
 	x86? ( app-i18n/ibus-m17n )
+	app-i18n/ibus-mozc
 	app-i18n/ibus-pinyin
 	app-i18n/ibus-xkb-layouts
 	x86? ( app-laptop/laptop-mode-tools )
