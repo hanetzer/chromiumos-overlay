@@ -57,13 +57,15 @@ RDEPEND="${RDEPEND}
 	arm? (
 		sys-boot/u-boot
 	)
+	x86? (
+		app-i18n/ibus-chewing
+	)
 	"
 
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-crypt/tpm-emulator
         app-crypt/trousers
-	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
