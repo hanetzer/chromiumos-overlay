@@ -40,10 +40,11 @@ RDEPEND="${RDEPEND}
 	)
 	"
 
-DEPEND="${RDEPEND}
+RDEPEND="${RDEPEND}
 	x86? (
 		sys-apps/flashrom
 		media-plugins/o3d
+		app-i18n/ibus-chewing
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
 		chromeos-base/speech_synthesis
@@ -56,9 +57,6 @@ DEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	arm? (
 		sys-boot/u-boot
-	)
-	x86? (
-		app-i18n/ibus-chewing
 	)
 	"
 
