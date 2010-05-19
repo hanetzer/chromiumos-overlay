@@ -228,11 +228,6 @@ if [[ -x "${ROOT_FS_DIR}/bin/dash" ]] ; then
   sudo ln -sf dash "${ROOT_FS_DIR}/bin/sh"
 fi
 
-# If vim is installed, then a vi symlink would probably help
-if [[ -x "${ROOT_FS_DIR}/usr/local/bin/vim" ]] ; then
-  sudo ln -sf vim "${ROOT_FS_DIR}/usr/local/bin/vi"
-fi
-
 # If mawk is installed, awk should symlink to that.
 # TODO: Maybe fix this by using a virtual/awk?
 if [[ -x "${ROOT_FS_DIR}/usr/bin/mawk" ]] ; then
