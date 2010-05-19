@@ -4,7 +4,7 @@
 EAPI="2"
 
 # Must be before x-modular eclass is inherited
-#SNAPSHOT="yes"
+SNAPSHOT="yes"
 
 inherit x-modular multilib versionator
 
@@ -132,6 +132,8 @@ PATCHES=(
 	"${FILESDIR}/meego-cache-xkbcomp-output-for-fast-start-up.patch"
 	# Fix for bug http://bugs.freedesktop.org/show_bug.cgi?id=27023
 	"${FILESDIR}/1.7.6-fix-wrong-bracket-values.patch"
+	# Allow usage of monotonic clock while cross-compiling
+	"${FILESDIR}/monotonic-clock-fix.patch"
 	)
 
 pkg_setup() {

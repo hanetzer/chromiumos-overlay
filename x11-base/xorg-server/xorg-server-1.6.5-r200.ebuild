@@ -5,7 +5,7 @@
 EAPI="2"
 
 # Must be before x-modular eclass is inherited
-#SNAPSHOT="yes"
+SNAPSHOT="yes"
 
 inherit x-modular multilib versionator
 
@@ -115,6 +115,7 @@ PATCHES=(
 	"${FILESDIR}/06moblin-xserver-boottime.patch"
 	"${FILESDIR}/07moblin-use-sloppy-heuristic-first-for-initial-mode.patch"
 	"${FILESDIR}/08-fix-wrong-bracket-values.patch"
+	"${FILESDIR}/monotonic-clock-fix.patch"
 	)
 
 pkg_setup() {
