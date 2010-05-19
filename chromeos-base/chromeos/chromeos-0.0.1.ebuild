@@ -43,8 +43,6 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}
 	x86? (
 		sys-apps/flashrom
-		app-i18n/ibus-chewing
-		app-i18n/ibus-m17n
 		media-plugins/o3d
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
@@ -61,12 +59,13 @@ RDEPEND="${RDEPEND}
 	)
 	"
 
-# TODO(yusukes): remove x86? from the ibus-* lines once we get ibus running on ARM.
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-crypt/tpm-emulator
         app-crypt/trousers
+	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
+	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
 	app-i18n/ibus-pinyin
 	app-i18n/ibus-xkb-layouts
