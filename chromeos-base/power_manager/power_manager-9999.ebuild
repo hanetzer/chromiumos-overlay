@@ -78,6 +78,7 @@ src_test() {
 src_install() {
 	dobin "${S}/power_manager/backlight-tool"
 	dobin "${S}/power_manager/powerd"
+	dobin "${S}/power_manager/send_metrics_on_resume"
 	dobin "${S}/power_manager/xidle-example"
 	insinto "/var/lib/power_manager"
 	doins "${S}/power_manager/config/plugged_brightness_offset"
