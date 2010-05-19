@@ -58,6 +58,7 @@ src_install() {
 	doins "${S}/chromeos/callback.h"
 	doins "${S}/chromeos/exception.h"
 	doins "${S}/chromeos/obsolete_logging.h"
+	doins "${S}/chromeos/profiler.h"
 	doins "${S}/chromeos/string.h"
 	doins "${S}/chromeos/utility.h"
 
