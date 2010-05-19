@@ -1,0 +1,11 @@
+--- minidump_upload.cc	2010-03-27 00:30:21.000000000 -0700
++++ minidump_upload.cc.new	2010-05-12 21:45:53.000000000 -0700
+@@ -33,6 +33,8 @@
+ //  ver: the product version
+ //  symbol_file: the breakpad format symbol file
+ 
++#include <stdio.h>  // for printf() and stderr
++#include <stdlib.h>  // for exit()
+ #include <unistd.h>
+ 
+ #include <string>

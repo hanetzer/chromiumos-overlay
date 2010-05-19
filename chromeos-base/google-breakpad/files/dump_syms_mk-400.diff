@@ -1,0 +1,17 @@
+--- Makefile	2010-03-27 00:30:21.000000000 -0700
++++ Makefile.new	2010-05-13 11:42:31.000000000 -0700
+@@ -1,8 +1,9 @@
+-CXX=g++
+-CC=gcc
+-
+-CPPFLAGS=-DNDEBUG
+-CXXFLAGS=-g3 -O2 -Wall -m32
++# Take portage defaults
++#CXX=g++
++#CC=gcc
++#
++#CPPFLAGS=-DNDEBUG  
++#CXXFLAGS=-g3 -O2 -Wall -m32
+ 
+ 
+ # These flags are necessary to compile correctly; the 'override'

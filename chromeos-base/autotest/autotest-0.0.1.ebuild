@@ -19,6 +19,7 @@ IUSE="+autox buildcheck +xset +tpmtools"
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
+  chromeos-base/google-breakpad
   dev-cpp/gtest
   dev-lang/python
   autox? ( chromeos-base/autox )

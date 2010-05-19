@@ -1,0 +1,10 @@
+--- sym_upload.cc	2010-03-27 00:30:21.000000000 -0700
++++ sym_upload.cc.new	2010-05-12 21:46:00.000000000 -0700
+@@ -39,6 +39,7 @@
+ //  cpu: the CPU that the module was built for
+ //  symbol_file: the contents of the breakpad-format symbol file
+ 
++#include <stdlib.h>  // for exit()
+ #include <unistd.h>
+ 
+ #include <cstdio>

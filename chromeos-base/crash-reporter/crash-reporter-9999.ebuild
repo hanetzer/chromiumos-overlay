@@ -13,9 +13,10 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="test"
 
-RDEPEND="chromeos-base/libchrome
+RDEPEND="chromeos-base/google-breakpad
+         chromeos-base/libchrome
          chromeos-base/metrics
-	 dev-cpp/gflags
+         dev-cpp/gflags
          test? ( dev-cpp/gtest )"
 DEPEND="${RDEPEND}"
 
@@ -30,7 +31,7 @@ src_unpack() {
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	pushd "crash"
-	emake crash_reporter || die "crash_reporter compile failed."
+	emake || die "crash_reporter compile failed."
 	popd
 }
 
@@ -50,5 +51,12 @@ src_test() {
 
 src_install() {
 	into /
-	dosbin "${S}/crash/crash_reporter"
+	dosbin "${S}/crash/crash_reporter" || die
+	dosbin "${S}/crash/crash_sender" || die
+	into /usr
+	dolib.so "${S}/crash/libcrash_dumper.so" || die
+	insinto /usr/include/crash
+	doins "${S}/crash/crash_dumper.h" || die
+	exeinto /etc/cron.hourly || die
+	doexe "${S}/crash/crash_sender.hourly" || die
 }

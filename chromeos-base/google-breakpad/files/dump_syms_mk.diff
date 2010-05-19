@@ -1,0 +1,16 @@
+--- Makefile	2010-05-15 15:35:02.000000000 -0700
++++ Makefile.new	2010-05-15 16:50:21.000000000 -0700
+@@ -24,9 +24,10 @@
+ .PHONY: all clean check coverage coverage-reset
+ 
+ ### Variables that are useful to override on the command line.
+-CC = gcc
+-CXX = g++
+-CXXFLAGS = -g3 -O2 -Wall -m32
++# Use portage
++# CC = gcc
++# CXX = g++
++# CXXFLAGS = -g3 -O2 -Wall -m32
+ 
+ # To produce test coverage reports:
+ # 1) Build all .o files and executables without optimization and with

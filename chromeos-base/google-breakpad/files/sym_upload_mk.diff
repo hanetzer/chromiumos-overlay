@@ -1,0 +1,14 @@
+--- Makefile	2010-03-27 00:30:21.000000000 -0700
++++ Makefile.new	2010-05-13 12:02:21.000000000 -0700
+@@ -1,6 +1,8 @@
+-CXX=g++
+-
+-CXXFLAGS=-gstabs -I../../.. -Wall -D_REENTRANT
++# Take portage defaults
++#CXX=g++
++#
++#CXXFLAGS=-gstabs -I../../.. -Wall -D_REENTRANT
++CXXFLAGS+=-I../../.. -D_REENTRANT
+ 
+ .PHONY:all clean
+ 
