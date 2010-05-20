@@ -231,7 +231,7 @@ src_compile() {
     AS=$(tc-getAS) \
     RANLIB=$(tc-getRANLIB) \
     LD=$(tc-getLD) \
-    chrome candidate_window session \
+    chrome candidate_window \
     ${TEST_TARGETS} \
     || die "compilation failed"
 }
