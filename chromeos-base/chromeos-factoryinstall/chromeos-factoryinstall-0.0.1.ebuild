@@ -52,6 +52,9 @@ EOF
 	# No devserver.
 	sed -i '/CHROMEOS_DEVSERVER=/d' "${ROOT}/etc/lsb-release"
 
+	# Mark this image as being a factory install shim.
+	touch "${ROOT}/root/.factory_installer"
+
 	# Remove ui.conf startup script, which will make sure chrome doesn't
 	# run, since it tries to update on startup
 	sed -i 's/start on stopping startup/start on never/' \
@@ -59,8 +62,5 @@ EOF
 	# Set network to start up another way
 	sed -i 's/login-prompt-ready/stopping startup/' \
 		"${ROOT}/etc/init/dump-boot-stats.conf"
-	# Allow text progress for now.
-	sed -i 's/\[ \-x \/usr\/bin\/ply\-image \]/false/' \
-		"${ROOT}/sbin/chromeos_startup"
 }
 
