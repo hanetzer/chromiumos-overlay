@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="opengles"
 
-RDEPEND="dev-cpp/gflags
+RDEPEND="chromeos-base/crash-dumper
+	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/libpcre
 	dev-libs/protobuf

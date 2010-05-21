@@ -17,6 +17,7 @@ IUSE="pam_google slim test"
 RDEPEND="chromeos-base/chromeos-cryptohome
 	 chromeos-base/chromeos-minijail
          pam_google? ( chromeos-base/pam_google )
+         chromeos-base/crash-dumper
          slim? ( x11-misc/slim )"
 
 DEPEND="${RDEPEND}

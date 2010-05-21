@@ -16,7 +16,8 @@ KEYWORDS="~arm ~amd64 ~x86"
 IUSE="bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles threads tools +udev +wifi"
 # ospm wimax
 
-RDEPEND=">=dev-libs/glib-2.16
+RDEPEND="chromeos-base/crash-dumper
+	>=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
 	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )

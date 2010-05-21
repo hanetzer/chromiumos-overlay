@@ -8,12 +8,12 @@ inherit toolchain-funcs
 DESCRIPTION="Build chromeos crash handler"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
-LICENSE="GPL-2"
+LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="test"
 
-RDEPEND="chromeos-base/google-breakpad
+RDEPEND="chromeos-base/crash-dumper
          chromeos-base/libchrome
          chromeos-base/metrics
          dev-cpp/gflags
@@ -31,7 +31,7 @@ src_unpack() {
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	pushd "crash"
-	emake || die "crash_reporter compile failed."
+	emake crash_reporter || die "crash_reporter compile failed."
 	popd
 }
 
@@ -53,10 +53,6 @@ src_install() {
 	into /
 	dosbin "${S}/crash/crash_reporter" || die
 	dosbin "${S}/crash/crash_sender" || die
-	into /usr
-	dolib.so "${S}/crash/libcrash_dumper.so" || die
-	insinto /usr/include/crash
-	doins "${S}/crash/crash_dumper.h" || die
 	exeinto /etc/cron.hourly || die
 	doexe "${S}/crash/crash_sender.hourly" || die
 }
