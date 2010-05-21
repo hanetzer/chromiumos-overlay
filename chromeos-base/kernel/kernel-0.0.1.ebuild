@@ -22,7 +22,7 @@ vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 # Use a single or split kernel config as specified in the board or variant
 # make.conf overlay. Default to the arch specific split config if an
 # overlay or variant does not set either CHROMEOS_KERNEL_CONFIG or
-# CHROMEOS_KERNEL_SPLITCONFIG. CHROMEOS_KERNEL_CONFIG is set relative 
+# CHROMEOS_KERNEL_SPLITCONFIG. CHROMEOS_KERNEL_CONFIG is set relative
 # to the root of the kernel source tree.
 
 if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
@@ -41,13 +41,14 @@ src_unpack() {
 	mkdir -p "${S}"
 	cp -ar "${files}"/* "${S}" || die
 
-	if use gobi; then
+	local partner="${CHROMEOS_ROOT}/src/partner_private"
+	local gobi_files="${partner}/source-cromo_qualcomm-private/kernel/"
+
+	if [ -d ${gobi_files} ] ; then
 		# Until we can get these files upstreamed we will copy them
 		# into the tree.  This is a temporary measure
 
-		local partner="${CHROMEOS_ROOT}/src/partner_private"
-		local gobi_files="${partner}/source-cromo_qualcomm-private/kernel/"
-		local gobi_source="${S}/chromeos/drivers/gobi"
+		gobi_source="${S}/chromeos/drivers/gobi"
 
 		elog "Using gobi files: ${gobi_files}"
 		mkdir -p "${gobi_source}"
@@ -83,6 +84,14 @@ src_compile() {
 			ARCH=$(tc-arch-kernel) \
 			CROSS_COMPILE="${CHOST}-" || die
 	fi
+
+	if [ -n "${gobi_source}" ] ; then
+		for dir in QCQMI QCSerial2k QCUSBNet2k ; do
+			emake M=chromeos/drivers/gobi/${dir} \
+				ARCH=$(tc-arch-kernel) \
+				CROSS_COMPILE="${CHOST}-" || die
+		done
+	fi
 }
 
 src_install() {
@@ -111,11 +120,15 @@ src_install() {
 			modules_install || die
 	fi
 
-	if use gobi; then
-		emake -C ${S}/chromeos/drivers/gobi \
- 			DESTDIR="${D}" \
-		  	HOST_MODULES_DIR=${S} \
-			install || die "Cannot compile gobi modules"
+	if [ -n "${gobi_source}" ] ; then
+		for dir in QCQMI QCSerial2k QCUSBNet2k ; do
+			emake M=chromeos/drivers/gobi/${dir} \
+				ARCH=$(tc-arch-kernel) \
+				CROSS_COMPILE="${CHOST}-" \
+				INSTALL_MOD_DIR=updates \
+				INSTALL_MOD_PATH="${D}" \
+				modules_install || die
+		done
 	fi
 
 	emake \
@@ -142,7 +155,7 @@ src_install() {
 		ln -sf "vmlinuz-${version}"    "${D}"/boot/vmlinuz    || die
 		ln -sf "System.map-${version}" "${D}"/boot/System.map || die
 		ln -sf "config-${version}"     "${D}"/boot/config     || die
-		
+
 		dodir /boot
 
 		/usr/bin/mkimage -A "${ARCH}" \
