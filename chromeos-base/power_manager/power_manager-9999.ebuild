@@ -89,4 +89,5 @@ src_install() {
 	doins "${S}/power_manager/config/unplugged_dim_ms"
 	doins "${S}/power_manager/config/unplugged_off_ms"
 	doins "${S}/power_manager/config/unplugged_suspend_ms"
+	doins "${S}/power_manager/config/lock_ms"
 }
