@@ -11,8 +11,8 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="X +localssh"
 
-DEPEND="sys-apps/baselayout
-	chromeos-base/internal"
+DEPEND="chromeos-base/internal
+       sys-apps/baselayout"
 
 # Enable ssh locally for chromium-os device.
 RDEPEND="${RDEPEND}
@@ -35,22 +35,22 @@ RDEPEND="${RDEPEND}
 		media-fonts/droid
 		media-fonts/ja-ipafonts
 		media-fonts/sil-abyssinica
-		>=x11-base/xorg-server-1.6.3
 		x11-apps/xinit
+		>=x11-base/xorg-server-1.6.3
 	)
 	"
 
 RDEPEND="${RDEPEND}
 	x86? (
-		sys-apps/flashrom
-		media-plugins/o3d
 		app-i18n/ibus-chewing
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
 		chromeos-base/speech_synthesis
-		>=net-wireless/iwl5000-ucode-8.24.2.12
+		media-plugins/o3d
 		net-wireless/iwl1000-ucode
+		>=net-wireless/iwl5000-ucode-8.24.2.12
 		net-wireless/iwl6000-ucode
+		sys-apps/flashrom
 	)
 	"
 
