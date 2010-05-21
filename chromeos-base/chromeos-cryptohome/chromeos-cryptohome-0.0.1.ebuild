@@ -103,4 +103,7 @@ src_install() {
 	dodir /usr/lib/chromeos-cryptohome/utils
 	insinto /usr/lib/chromeos-cryptohome/utils
 	doins "${S}"/lib/utils/*
+
+	# For opencryptoki.
+	dodir /etc/skel/.tpm
 }
