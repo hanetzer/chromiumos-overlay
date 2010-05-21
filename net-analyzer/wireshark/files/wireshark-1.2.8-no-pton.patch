@@ -1,0 +1,11 @@
+--- Makefile.am.orig	2010-05-21 08:47:16.000000000 -0700
++++ Makefile.am	2010-05-21 08:45:58.000000000 -0700
+@@ -299,6 +299,8 @@
+ # @SOCKET_LIBS@ or @NSL_LIBS@, as those should also be included in
+ # @GTK_LIBS@ (as those are also needed for X applications, and GTK+
+ # applications are X applications).
++wireshark_DEPENDENCIES = \
++	@INET_PTON_LO@
+ wireshark_LDADD = \
+ 	$(wireshark_optional_objects)	\
+ 	gtk/libui.a			\

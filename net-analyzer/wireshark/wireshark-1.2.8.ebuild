@@ -59,7 +59,11 @@ src_prepare() {
 	epatch "${FILESDIR}/wireshark-except-double-free.diff"
 
 	cd "${S}"
-	epatch "${FILESDIR}/${PN}-1.1.2--as-needed.patch"
+	epatch "${FILESDIR}/${PN}-1.2.8--as-needed.patch"
+
+	cd "${S}"
+	epatch "${FILESDIR}/${PN}-1.2.8-no-pton.patch"
+
 	eautoreconf
 }
 
