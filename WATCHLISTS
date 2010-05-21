@@ -14,7 +14,8 @@
   'WATCHLISTS': {
     'all': ['adlr@chromium.org', 'ajwong@chromium.org',
             'cmasone@chromium.org', 'msb@chromium.org',
-            'rtc@chromium.org', 'tedbo@chromium.org'],
+            'rtc@chromium.org', 'tedbo@chromium.org',
+	    'anush@chromium.org'],
     'bluez': ['petkov@chromium.org']
   },
 }
