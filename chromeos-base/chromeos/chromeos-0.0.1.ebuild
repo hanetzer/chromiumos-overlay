@@ -96,6 +96,7 @@ RDEPEND="${RDEPEND}
 	media-sound/pulseaudio
 	net-firewall/iptables
 	net-misc/ntp
+	net-misc/htpdate
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/bluez
