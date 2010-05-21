@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="chromeos-base/libcros
+RDEPEND="app-crypt/tpm-tools
+	 chromeos-base/libcros
 	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent
