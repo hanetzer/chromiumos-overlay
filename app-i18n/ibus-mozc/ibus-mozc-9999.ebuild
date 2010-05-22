@@ -21,6 +21,8 @@ src_unpack() {
   local src="${CHROMEOS_ROOT}/src/third_party/ibus-mozc/files"
   mkdir -p "${S}"
   cp -a "${src}" "${S}" || die
+
+  # ADD_SCRIPTS_FOR_INTERNAL_RELEASE_HERE
 }
 
 src_configure() {
