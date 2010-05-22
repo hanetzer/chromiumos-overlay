@@ -86,6 +86,7 @@ src_install() {
 	mknod --mode=0600 "${D}/${DEVICES_DIR}/console" c 5 1
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/ptmx" c 5 2
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/loop0" b 7 0
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/dm-0" b 254 0
 	make_partition_devices "sda" "sda" 8 0
 	make_partition_devices "sdb" "sdb" 8 16
 	make_partition_devices "mmcblk0" "mmcblk0p" 179 0
@@ -107,6 +108,7 @@ src_install() {
 	chown root.tty "${D}/${DEVICES_DIR}"/tty*
 	chown root.kmem "${D}/${DEVICES_DIR}"/mem
 	chown root.disk "${D}/${DEVICES_DIR}"/sda*
+	chown root.disk "${D}/${DEVICES_DIR}"/dm-0
 	chown root.video "${D}/${DEVICES_DIR}"/fb0
 	chown root.video "${D}/${DEVICES_DIR}"/dri/card0
 	chown root.tss "${D}/${DEVICES_DIR}/tpm"
