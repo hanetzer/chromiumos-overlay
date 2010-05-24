@@ -230,9 +230,13 @@ git_fetch() {
 	if [[ ! -d ${EGIT_STORE_DIR} ]] ; then
 		debug-print "${FUNCNAME}: initial clone. creating git directory"
 		addwrite /
+		# TODO(rochberg): Figure out why emask sometimes isn't already 002
+		local old_umask="`umask`"
+		umask 002
 		mkdir -p "${EGIT_STORE_DIR}" \
 			|| die "${EGIT}: can't mkdir ${EGIT_STORE_DIR}."
 		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+		umask ${old_umask}
 	fi
 
 	cd -P "${EGIT_STORE_DIR}" || die "${EGIT}: can't chdir to ${EGIT_STORE_DIR}"
