@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+autox buildcheck +xset +tpmtools"
+IUSE="+autox buildcheck +xset +tpmtools opengles"
 
 # TODO(snanda): Remove xset dependence once power_LoadTest is switched over
 # to use power manager
@@ -96,8 +96,14 @@ src_configure() {
 src_compile() {
 	setup_cross_toolchain
 
+        if use opengles ; then
+          graphics_backend=OPENGLES
+        else
+          graphics_backend=OPENGL
+        fi
+
 	# Do not use sudo, it'll unset all your environment
-	LOGNAME=${SUDO_USER} \
+	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
 		client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST} \
 		|| ! use buildcheck || die "Tests failed to build."
 	# Cleanup some temp files after compiling
