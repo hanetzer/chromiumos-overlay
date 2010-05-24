@@ -44,6 +44,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/protobuf
 	dev-python/dbus-python
 	dev-python/pygobject
+        dev-python/pygtk
 	dev-python/pyopenssl
 	dev-python/webpy
 	=dev-util/boost-build-1.42.0
