@@ -17,8 +17,8 @@ RDEPEND="chromeos-base/chromeos-installer
          chromeos-base/chromeos-init"
 
 src_unpack() {
-	local recovery_installer="${CHROMEOS_ROOT}/src/platform/" \
-		"recovery_installer"
+	local recovery_installer="${CHROMEOS_ROOT}/src/platform/\
+recovery_installer"
 	elog "Using recovery_installer: $recovery_installer"
 	mkdir "${S}"
 	cp -a "${recovery_installer}"/* "${S}" || die
