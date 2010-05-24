@@ -29,7 +29,7 @@ make_partition_devices() {
 	major=$3
 	minor=$4
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/${block}" b ${major} ${minor}
-	for i in `seq 1 7` ; do
+	for i in `seq 1 12` ; do
 		partition_minor=$((${minor} + ${i}))
 		name="${D}/${DEVICES_DIR}/${partition_prefix}${i}"
 		mknod --mode=0660 "${name}" b ${major} ${partition_minor}
@@ -89,6 +89,9 @@ src_install() {
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/dm-0" b 254 0
 	make_partition_devices "sda" "sda" 8 0
 	make_partition_devices "sdb" "sdb" 8 16
+	make_partition_devices "sdc" "sdc" 8 32
+	make_partition_devices "sdd" "sdd" 8 48
+	make_partition_devices "sde" "sde" 8 64
 	make_partition_devices "mmcblk0" "mmcblk0p" 179 0
 	make_partition_devices "mmcblk1" "mmcblk1p" 179 16
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mouse0" c 13 32
