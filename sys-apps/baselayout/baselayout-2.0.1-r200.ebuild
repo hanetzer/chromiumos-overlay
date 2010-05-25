@@ -90,6 +90,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "pulse" 205       # For pulseaudio
 	copy_or_add_daemon_user "polkituser" 206  # For policykit
 	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
+	copy_or_add_daemon_user "pkcs11" 208      # For opencryptoki
 
 	# The system_user needs to be part of the audio and video groups.
 	test $(grep -e "^audio\:" "${ROOT}/etc/group" | \
@@ -99,6 +100,10 @@ pkg_postinst() {
 	test $(grep -e "^video\:" "${ROOT}/etc/group" | \
 		grep "${system_user}") || \
 		sed -i "{ s/video::27:\(.*\)/video::27:\1,${system_user}/ }" \
+			"${ROOT}/etc/group"
+	test $(grep -e "^pkcs11\:" "${ROOT}/etc/group" | \
+		grep "root") || \
+		sed -i "{ s/pkcs11:x:208:\(.*\)/pkcs11:x:208:\1,root/ }" \
 			"${ROOT}/etc/group"
 
 	# Some default directories. These are created here rather than at

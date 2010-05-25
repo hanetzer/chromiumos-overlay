@@ -21,9 +21,7 @@ DEPEND="${RDEPEND}"
 
 pkg_setup() {
 	enewgroup pkcs11
-        # TODO(njw): Once we have non-root users of opencryptoki, this
-        # group will need to exist on the device with those users,
-        # which this does not accomplish.
+	# A pkcs11 group and user are added in the sys-apps/baselayout ebuild.
 }
 
 src_prepare() {
