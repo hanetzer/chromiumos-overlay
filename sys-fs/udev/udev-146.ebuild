@@ -237,9 +237,6 @@ src_install() {
 	echo "# If you need to change mount-options, do it in /etc/fstab" \
 	>> "${D}"/etc/udev/udev.conf
 
-	# let the dir exist at least
-	keepdir /etc/udev/rules.d
-
 	# Now installing rules
 	cd "${S}"/rules
 	insinto "${udev_libexec_dir}"/rules.d/
@@ -503,6 +500,19 @@ pkg_postinst() {
 	then
 			rm -f "${ROOT}"/etc/udev/rules.d/64-device-mapper.rules
 			einfo "Removed unneeded file 64-device-mapper.rules"
+	fi
+
+	# Make rules.d directory writable
+	if [[ ! -L ${ROOT}/etc/udev/rules.d ]]
+	then
+		mkdir -p ${ROOT}/var/lib/udev/rules.d
+		if [[ -d ${ROOT}/etc/udev/rules.d ]]
+		then
+			# For incremental builds
+			mv ${ROOT}/etc/udev/rules.d/* ${ROOT}/var/lib/udev/rules.d
+		fi
+		rm -rf ${ROOT}/etc/udev/rules.d
+		ln -s ../../var/lib/udev/rules.d ${ROOT}/etc/udev
 	fi
 
 	# requested in bug #275974, added 2009/09/05
