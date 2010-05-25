@@ -27,7 +27,6 @@
 =dev-libs/libffi-3.0.9          x86 arm
 =dev-libs/libp11-0.2.7          x86 arm
 =dev-libs/m17n-lib-1.6.1	x86 arm
->=dev-libs/opencryptoki-2.2.8    x86 arm
 =dev-libs/protobuf-2.2.0	x86 arm
 =dev-python/numpy-1.4.0		x86 arm
 =dev-python/python-xlib-0.14    x86 arm
