@@ -14,6 +14,7 @@
 =app-i18n/libhangul-0.0.10	x86 arm
 =dev-cpp/gflags-1.2		x86 arm
 =dev-cpp/glog-0.3.0		x86 arm
+=dev-db/m17n-contrib-1.1.10	x86 arm
 =dev-db/m17n-db-1.6.1		x86 arm
 =dev-java/icedtea-6.1.7.1	x86
 =dev-libs/boost-1.42.0		x86 arm

@@ -17,6 +17,7 @@ RDEPEND=">=app-i18n/ibus-1.2
 	>=dev-libs/m17n-lib-1.6.1
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
+	=dev-db/m17n-contrib-1.1.10
 	>=dev-db/m17n-db-1.6.1
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
