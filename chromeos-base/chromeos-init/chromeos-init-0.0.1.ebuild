@@ -50,8 +50,6 @@ src_install() {
 
 	# Install process killing util functions.
 	dosbin "${S}/killers"
-	# Install dbus daemon launcher to allow individual session instances
-	dosbin "${S}/dbus-daemon-session"
 
 	# Install startup/shutdown scripts.
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
