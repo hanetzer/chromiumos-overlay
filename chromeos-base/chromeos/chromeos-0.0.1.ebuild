@@ -18,8 +18,8 @@ DEPEND="chromeos-base/internal
 RDEPEND="${RDEPEND}
 	localssh? (
 		app-admin/sudo
+		app-arch/tar
 		net-misc/openssh
-		X? ( x11-terms/aterm )
 	)
 	"
 
