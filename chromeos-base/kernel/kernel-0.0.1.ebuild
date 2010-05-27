@@ -42,17 +42,22 @@ src_unpack() {
 	cp -ar "${files}"/* "${S}" || die
 
 	local partner="${CHROMEOS_ROOT}/src/partner_private"
-	local gobi_files="${partner}/source-cromo_qualcomm-private/kernel/"
+	local qcqmiobj="${partner}/source-cromo_qualcomm-private/kernel/QCQMI/QCQMIOBJ.o"
 
-	if [ -d ${gobi_files} ] ; then
-		# Until we can get these files upstreamed we will copy them
-		# into the tree.  This is a temporary measure
+	if use gobi ; then
 
-		gobi_source="${S}/chromeos/drivers/gobi"
+		# The QCQMI kernel modules depends on a single .o that
+		# has not been made publically available.  Copy it
+		# from a private repository when building GOBI drivers.
 
-		elog "Using gobi files: ${gobi_files}"
-		mkdir -p "${gobi_source}"
-		cp -ar "${gobi_files}"/* "${gobi_source}"
+		if [ ! -r ${qcqmiobj} ] ; then
+			die "USE=gobi requires source-cromo_qualcomm-private repo"
+		fi
+
+		gobi_source="${S}/chromeos/drivers/gobi/"
+
+		elog "Using GOBI object: ${qcqmiobj}"
+		cp -a "${qcqmiobj}" "${gobi_source}/QCQMI/" || die
 	fi
  }
 
@@ -64,6 +69,11 @@ src_configure() {
 	else
 		chromeos/scripts/prepareconfig ${config} || die
 	fi
+	if use gobi; then
+		sed -e 's/# CONFIG_GOBI is not set/CONFIG_GOBI=m/' -i \
+		    "${S}"/.config
+	fi
+
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | emake ARCH=$(tc-arch-kernel) oldconfig || die
@@ -83,14 +93,6 @@ src_compile() {
 		emake M=chromeos/compat-wireless \
 			ARCH=$(tc-arch-kernel) \
 			CROSS_COMPILE="${CHOST}-" || die
-	fi
-
-	if [ -n "${gobi_source}" ] ; then
-		for dir in QCQMI QCSerial2k QCUSBNet2k ; do
-			emake M=chromeos/drivers/gobi/${dir} \
-				ARCH=$(tc-arch-kernel) \
-				CROSS_COMPILE="${CHOST}-" || die
-		done
 	fi
 }
 
@@ -118,17 +120,6 @@ src_install() {
 			INSTALL_MOD_DIR=updates \
 			INSTALL_MOD_PATH="${D}" \
 			modules_install || die
-	fi
-
-	if [ -n "${gobi_source}" ] ; then
-		for dir in QCQMI QCSerial2k QCUSBNet2k ; do
-			emake M=chromeos/drivers/gobi/${dir} \
-				ARCH=$(tc-arch-kernel) \
-				CROSS_COMPILE="${CHOST}-" \
-				INSTALL_MOD_DIR=updates \
-				INSTALL_MOD_PATH="${D}" \
-				modules_install || die
-		done
 	fi
 
 	emake \
