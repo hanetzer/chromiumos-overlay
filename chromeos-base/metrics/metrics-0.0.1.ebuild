@@ -50,6 +50,7 @@ src_test() {
 }
 
 src_install() {
+	dobin "${S}/generate_logs"
 	dobin "${S}/hardware_class"
 	dobin "${S}/metrics_client"
 	dobin "${S}/metrics_daemon"
