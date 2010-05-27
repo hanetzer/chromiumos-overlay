@@ -16,6 +16,7 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	dev-embedded/u-boot-tools
 	sys-block/gpt
+        sys-boot/bootstub
 	sys-boot/grub
 	sys-boot/syslinux
 	sys-devel/crossdev
@@ -104,6 +105,11 @@ RDEPEND="${RDEPEND}
 	dev-java/xerces
 	sys-apps/lsb-release
 	x11-libs/libXtst
+	"
+
+# Host dependencies that are needed to sign images
+RDEPEND="${RDEPEND}
+	chromeos-base/vboot_reference
 	"
 
 DEPEND=""
