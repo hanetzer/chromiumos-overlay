@@ -13,12 +13,15 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="dev-libs/openssl
+RDEPEND="chromeos-base/libcros
+         dev-libs/dbus-glib
+         dev-libs/glib
+         dev-libs/openssl
 	 sys-libs/pam"
 
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
-	${RDEPEND}"
+        ${RDEPEND}"
 
 src_unpack() {
        local platform="${CHROMEOS_ROOT}/src/platform"

@@ -53,6 +53,8 @@ src_compile() {
         fi
 
         scons -f SConstruct.chromiumos || die "cros compile failed."
+        # Add -fPIC when building libcrosapi.a so that it works on ARM
+        export CCFLAGS="$CCFLAGS -fPIC"
         scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
 }
 

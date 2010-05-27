@@ -14,15 +14,11 @@ KEYWORDS="amd64 x86 arm"
 IUSE="test"
 
 RDEPEND="
-	app-shells/bash
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/openssl
-	dev-util/xxd
-	sys-fs/e4fsprogs
-	sys-fs/lvm2
-	sys-auth/pam_mount
-	sys-libs/pam
+	sys-apps/keyutils
+	sys-fs/ecryptfs-utils
 	"
 
 DEPEND="
@@ -49,8 +45,9 @@ src_compile() {
 	fi
 
 	pushd cryptohome
-	# Only build the daemon
-	scons cryptohomed || die "cryptohome compile failed."
+	# Build the daemon and command line client
+	scons cryptohomed || die "cryptohomed compile failed."
+	scons cryptohome || die "cryptohome compile failed."
 	popd
 }
 
@@ -82,10 +79,9 @@ src_test() {
 
 src_install() {
 	S="${S}/cryptohome"
-	newsbin "${S}/bin/mount" mount.cryptohome
-	newsbin "${S}/bin/umount" umount.cryptohome
 
 	dosbin "${S}/cryptohomed"
+	dosbin "${S}/cryptohome"
 	dolib "${S}/libcryptohome_service.so"
 
 	dodir /etc/dbus-1/system.d
