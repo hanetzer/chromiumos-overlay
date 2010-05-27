@@ -22,7 +22,26 @@ src_unpack() {
   mkdir -p "${S}"
   cp -a "${src}" "${S}" || die
 
-  # ADD_SCRIPTS_FOR_INTERNAL_RELEASE_HERE
+  # TODO(mazda): Move this block to the ebuild under chromeos-overlay.
+  # Parts of sources for building the official ibus-mozc are stored in an
+  # internal only directory under chromeos-overlay.
+  local overlay_dir=src/overlays/chromeos-overlay/app-i18n/ibus-mozc/files
+  local internal_src="${CHROMEOS_ROOT}/${overlay_dir}"
+  if [ -d "${internal_src}" ]
+  then
+    # Replace parts of sources with the internal sources.
+    rm -rf "${S}"/files/src/data/dictionary || die
+    cp -a "${internal_src}"/src/data/dictionary "${S}"/files/src/data || die
+    rm -rf "${S}"/files/src/dictionary/file || die
+    cp -a "${internal_src}"/src/dictionary/file "${S}"/files/src/dictionary \
+        || die
+    rm -rf "${S}"/files/src/dictionary/system || die
+    cp -a "${internal_src}"/src/dictionary/system "${S}"/files/src/dictionary \
+        || die
+    export BRANDING=GoogleJapaneseInput
+  else
+    export BRANDING=Mozc
+  fi
 }
 
 src_configure() {
@@ -32,7 +51,8 @@ src_configure() {
   export GYP_DEFINES="chromeos=1"
   export BUILD_COMMAND="emake"
   local gypdir="${CHROMEOS_ROOT}/src/third_party/gyp/files"
-  python build_mozc.py gyp --gypdir="${gypdir}" || die
+  python build_mozc.py gyp --gypdir="${gypdir}" \
+    --branding="${BRANDING}" || die
 }
 
 src_compile() {
