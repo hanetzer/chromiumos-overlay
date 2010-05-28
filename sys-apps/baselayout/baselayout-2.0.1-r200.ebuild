@@ -101,10 +101,11 @@ pkg_postinst() {
 		grep "${system_user}") || \
 		sed -i "{ s/video::27:\(.*\)/video::27:\1,${system_user}/ }" \
 			"${ROOT}/etc/group"
-	regexp="{ s/pkcs11:x:208:\(.*\)/pkcs11:x:208:\1,${system_user}/ }"
-	test $(grep -e "^pkcs11\:" "${ROOT}/etc/group" | \
-		grep "${system_user}") || \
-		sed -i "$regexp" "${ROOT}/etc/group"
+
+        # The root and ${system_user} users must be in the pkcs11 group, which
+        # must have the group id 208.
+        sed -i "{ s/pkcs11:x:.*/pkcs11:x:208:root,${system_user}/ }" \
+          "${ROOT}/etc/group"
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
