@@ -17,7 +17,7 @@ DEPEND="media-libs/glew
         x11-libs/libsvg-cairo
         x11-libs/gtk+"
 RDEPEND="${DEPEND}"
-O3D_REVISION=46544
+O3D_REVISION=48537
 
 # Print the number of jobs from $MAKEOPTS.
 print_num_jobs() {
