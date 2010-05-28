@@ -35,6 +35,16 @@ else
 	fi
 fi
 
+
+# Allow override of kernel arch.
+kernel_arch=${CHROMEOS_KERNEL_ARCH:-"$(tc-arch-kernel)"}
+
+cross=${CHOST}-
+# Hack for using 64-bit kernel with 32-bit user-space
+if [ "${ARCH}" = "x86" -a "${kernel_arch}" = "x86_64" ]; then
+    cross=${CBUILD}-
+fi
+
 src_unpack() {
 	elog "Using kernel files: ${files}"
 
@@ -76,7 +86,7 @@ src_configure() {
 
 
 	# Use default for any options not explitly set in splitconfig
-	yes "" | emake ARCH=$(tc-arch-kernel) oldconfig || die
+	yes "" | emake ARCH=${kernel_arch} oldconfig || die
 
 	if use compat_wireless; then
 		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
@@ -85,14 +95,14 @@ src_configure() {
 
 src_compile() {
 	emake \
-		ARCH=$(tc-arch-kernel) \
-		CROSS_COMPILE="${CHOST}-" || die
+		ARCH=${kernel_arch} \
+		CROSS_COMPILE="${cross}" || die
 
 	if use compat_wireless; then
 		# compat-wireless support must be done after
 		emake M=chromeos/compat-wireless \
-			ARCH=$(tc-arch-kernel) \
-			CROSS_COMPILE="${CHOST}-" || die
+			ARCH=${kernel_arch} \
+			CROSS_COMPILE="${cross}" || die
 	fi
 }
 
@@ -100,14 +110,14 @@ src_install() {
 	dodir boot
 
 	emake \
-		ARCH=$(tc-arch-kernel) \
-		CROSS_COMPILE="${CHOST}-" \
+		ARCH=${kernel_arch}\
+		CROSS_COMPILE="${cross}" \
 		INSTALL_PATH="${D}/boot" \
 		install || die
 
 	emake \
-		ARCH=$(tc-arch-kernel) \
-		CROSS_COMPILE="${CHOST}-" \
+		ARCH=${kernel_arch}\
+		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		modules_install || die
 
@@ -115,16 +125,16 @@ src_install() {
 		# compat-wireless modules are built+installed separately
 		# NB: the updates dir is handled specially by depmod
 		emake M=chromeos/compat-wireless \
-			ARCH=$(tc-arch-kernel) \
-			CROSS_COMPILE="${CHOST}-" \
+			ARCH=${kernel_arch}\
+			CROSS_COMPILE="${cross}" \
 			INSTALL_MOD_DIR=updates \
 			INSTALL_MOD_PATH="${D}" \
 			modules_install || die
 	fi
 
 	emake \
-		ARCH=$(tc-arch-kernel) \
-		CROSS_COMPILE="${CHOST}-" \
+		ARCH=${kernel_arch}\
+		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		firmware_install || die
 
