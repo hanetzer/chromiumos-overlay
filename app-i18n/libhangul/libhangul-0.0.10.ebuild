@@ -6,7 +6,7 @@
 DESCRIPTION="libhangul is a generalized and portable library for processing
 hangul."
 HOMEPAGE="http://kldp.net/projects/hangul/"
-SRC_URI="http://kldp.net/frs/download.php/5417/${P}.tar.gz"
+SRC_URI="mirror://gentoo/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"

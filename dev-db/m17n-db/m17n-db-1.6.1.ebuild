@@ -4,7 +4,7 @@
 
 DESCRIPTION="Database for the m17n library"
 HOMEPAGE="http://www.m17n.org/m17n-lib/"
-SRC_URI="http://www.m17n.org/m17n-lib-download/${P}.tar.gz"
+SRC_URI="mirror://gentoo/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"

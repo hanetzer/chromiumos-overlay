@@ -12,7 +12,7 @@ inherit font
 MY_P="IPAfont${PV/.}"
 DESCRIPTION="Japanese TrueType fonts developed by IPA (Information-technology Promotion Agency, Japan)"
 HOMEPAGE="http://ossipedia.ipa.go.jp/ipafont/"
-SRC_URI="http://info.openlab.ipa.go.jp/ipafont/fontdata/${MY_P}.zip"
+SRC_URI="mirror://gentoo/${MY_P}.zip"
 
 LICENSE="IPAfont"
 SLOT="0"
