@@ -81,13 +81,7 @@ src_install() {
 	dobin "${S}/power_manager/send_metrics_on_resume"
 	dobin "${S}/power_manager/xidle-example"
 	insinto "/var/lib/power_manager"
-	doins "${S}/power_manager/config/plugged_brightness_offset"
-	doins "${S}/power_manager/config/plugged_dim_ms"
-	doins "${S}/power_manager/config/plugged_off_ms"
-	doins "${S}/power_manager/config/plugged_suspend_ms"
-	doins "${S}/power_manager/config/unplugged_brightness_offset"
-	doins "${S}/power_manager/config/unplugged_dim_ms"
-	doins "${S}/power_manager/config/unplugged_off_ms"
-	doins "${S}/power_manager/config/unplugged_suspend_ms"
-	doins "${S}/power_manager/config/lock_ms"
+	for item in ${S}/power_manager/config/*; do
+		doins ${item}
+	done
 }
