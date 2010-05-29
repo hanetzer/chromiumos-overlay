@@ -13,6 +13,7 @@ KEYWORDS="x86"
 IUSE=""
 DEPEND="media-libs/glew
         media-libs/fontconfig
+        net-misc/curl
         dev-libs/nss
         x11-libs/libsvg-cairo
         x11-libs/gtk+"
