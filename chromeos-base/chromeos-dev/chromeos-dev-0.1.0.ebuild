@@ -73,6 +73,8 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/time
 	opengl? ( x11-apps/mesa-progs )
+	x86? ( x11-misc/read-edid )
+	x86? ( sys-apps/i2c-tools )
 	"
 
 # TODO: Re-add strace once we can compile it again dev-util/strace
