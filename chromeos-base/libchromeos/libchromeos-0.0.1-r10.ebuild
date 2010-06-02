@@ -1,0 +1,1 @@
+chromeos-base/libchromeos/libchromeos-0.0.1.ebuild
