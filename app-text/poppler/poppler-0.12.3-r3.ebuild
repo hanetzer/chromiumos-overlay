@@ -68,6 +68,7 @@ src_configure() {
 		$(cmake-utils_use exceptions USE_EXCEPTIONS)
 	)
 
+	tc-export CC CXX AR RANLIB LD NM
 	cmake-utils_src_configure
 }
 
