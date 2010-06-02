@@ -230,13 +230,9 @@ git_fetch() {
 	if [[ ! -d ${EGIT_STORE_DIR} ]] ; then
 		debug-print "${FUNCNAME}: initial clone. creating git directory"
 		addwrite /
-		# TODO(rochberg): Figure out why emask sometimes isn't already 002
-		local old_umask="`umask`"
-		umask 002
 		mkdir -p "${EGIT_STORE_DIR}" \
 			|| die "${EGIT}: can't mkdir ${EGIT_STORE_DIR}."
 		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
-		umask ${old_umask}
 	fi
 
 	cd -P "${EGIT_STORE_DIR}" || die "${EGIT}: can't chdir to ${EGIT_STORE_DIR}"
@@ -280,9 +276,13 @@ git_fetch() {
 		${elogcmd} "   repository: 		${EGIT_REPO_URI}"
 
 		debug-print "${EGIT_FETCH_CMD} ${extra_clone_opts} ${EGIT_OPTIONS} \"${EGIT_REPO_URI}\" ${GIT_DIR}"
+		# TODO(rochberg): Figure out why umask sometimes isn't already 002
+		local old_umask="`umask`"
+		umask 002
 		${EGIT_FETCH_CMD} ${extra_clone_opts} ${EGIT_OPTIONS} "${EGIT_REPO_URI}" ${GIT_DIR} \
 			|| die "${EGIT}: can't fetch from ${EGIT_REPO_URI}."
 
+		umask ${old_umask}
 		pushd "${GIT_DIR}" &> /dev/null
 		cursha1=$(git rev-parse ${upstream_branch})
 		${elogcmd} "   at the commit:		${cursha1}"
