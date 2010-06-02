@@ -43,8 +43,6 @@ DEFINE_boolean withtest $FLAGS_TRUE \
   "Build packages required for testing"
 DEFINE_boolean withfactory $FLAGS_TRUE \
   "Build factory installer"
-DEFINE_boolean withrecovery $FLAGS_TRUE \
-  "Build recovery installer. Default: True"
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -120,11 +118,6 @@ fi
 if [ "$FLAGS_withfactory" -eq "$FLAGS_TRUE" ]; then
   eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
     chromeos-base/chromeos-factoryinstall
-fi
-
-if [ "$FLAGS_withrecovery" -eq "$FLAGS_TRUE" ]; then
-  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
-    chromeos-base/chromeos-recovery
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
