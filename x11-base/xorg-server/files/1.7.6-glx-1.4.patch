@@ -1,0 +1,156 @@
+commit ad5c0d9efa47476ed5cf75c82265c73919e468b4
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Tue Sep 29 16:43:43 2009 -0700
+
+    GLX: Enable GLX 1.4 on DRI2
+    
+    Return the minimum GLX version supported by all screens.  Assume that
+    DRI2 screens have all the required features for GLX 1.4.  Assume that
+    everyone else can only support GLX 1.2.
+    
+    Reviewed-by: Kristian Høgsberg <krh@redhat.com>
+    Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+
+diff --git a/glx/glxcmds.c b/glx/glxcmds.c
+index b1061a8..30c25a9 100644
+--- a/glx/glxcmds.c
++++ b/glx/glxcmds.c
+@@ -739,8 +739,8 @@ int __glXDisp_QueryVersion(__GLXclientState *cl, GLbyte *pc)
+     ** client if it wants to work with older clients; however, in this
+     ** implementation the server just returns its version number.
+     */
+-    reply.majorVersion = SERVER_GLX_MAJOR_VERSION;
+-    reply.minorVersion = SERVER_GLX_MINOR_VERSION;
++    reply.majorVersion = glxMajorVersion;
++    reply.minorVersion = glxMinorVersion;
+     reply.length = 0;
+     reply.type = X_Reply;
+     reply.sequenceNumber = client->sequence;
+@@ -2360,6 +2360,7 @@ int __glXDisp_QueryServerString(__GLXclientState *cl, GLbyte *pc)
+     char *buf;
+     __GLXscreen *pGlxScreen;
+     int err;
++    char ver_str[16];
+ 
+     if (!validGlxScreen(client, req->screen, &pGlxScreen, &err))
+ 	return err;
+@@ -2369,7 +2370,11 @@ int __glXDisp_QueryServerString(__GLXclientState *cl, GLbyte *pc)
+ 	    ptr = pGlxScreen->GLXvendor;
+ 	    break;
+ 	case GLX_VERSION:
+-	    ptr = pGlxScreen->GLXversion;
++	    /* Return to the server version rather than the screen version
++	     * to prevent confusion when they do not match.
++	     */
++	    snprintf(ver_str, 16, "%d.%d", glxMajorVersion, glxMinorVersion);
++	    ptr = ver_str;
+ 	    break;
+ 	case GLX_EXTENSIONS:
+ 	    ptr = pGlxScreen->GLXextensions;
+diff --git a/glx/glxdri2.c b/glx/glxdri2.c
+index ed7fb4c..82568e6 100644
+--- a/glx/glxdri2.c
++++ b/glx/glxdri2.c
+@@ -685,6 +685,20 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 				       screen->base.GLXextensions);
+     }
+ 
++    /* We know that the X server supports the protocol for at least GLX 1.4.
++     * When a new version of GLX is created, we'll have to revisit this.  We're
++     * also going to assume (perhaps incorrectly?) that all DRI2-enabled
++     * drivers support the required extension for GLX 1.3.  The extensions
++     * we're assuming are:
++     *
++     *    - GLX_SGI_make_current_read (1.3)
++     *    - GLX_SGIX_fbconfig (1.3)
++     *    - GLX_SGIX_pbuffer (1.3)
++     *    - GLX_ARB_multisample (1.4)
++     */
++    screen->base.GLXmajor = 1;
++    screen->base.GLXminor = 4;
++    
+     screen->enterVT = pScrn->EnterVT;
+     pScrn->EnterVT = glxDRIEnterVT; 
+     screen->leaveVT = pScrn->LeaveVT;
+diff --git a/glx/glxext.c b/glx/glxext.c
+index 19d70d4..2de8b84 100644
+--- a/glx/glxext.c
++++ b/glx/glxext.c
+@@ -360,12 +360,18 @@ void GlxExtensionInit(void)
+ 	pScreen = screenInfo.screens[i];
+ 
+ 	for (p = __glXProviderStack; p != NULL; p = p->next) {
+-	    if (p->screenProbe(pScreen) != NULL) {
++	    __GLXscreen *glxScreen;
++
++	    glxScreen = p->screenProbe(pScreen);
++	    if (glxScreen != NULL) {
+ 		LogMessage(X_INFO,
+ 			   "GLX: Initialized %s GL provider for screen %d\n",
+ 			   p->name, i);
+ 		break;
+ 	    }
++
++	    if (glxScreen->GLXminor < glxMinorVersion)
++		glxMinorVersion = glxScreen->GLXminor;
+ 	}
+ 
+ 	if (!p)
+diff --git a/glx/glxscreens.c b/glx/glxscreens.c
+index 81faddd..ee3788d 100644
+--- a/glx/glxscreens.c
++++ b/glx/glxscreens.c
+@@ -162,7 +162,8 @@ static const char GLServerExtensions[] =
+ ** supported across all screens in a multi-screen system.
+ */
+ static char GLXServerVendorName[] = "SGI";
+-static char GLXServerVersion[] = "1.2";
++unsigned glxMajorVersion = 1;
++unsigned glxMinorVersion = 4;
+ static char GLXServerExtensions[] =
+ 			"GLX_ARB_multisample "
+ 			"GLX_EXT_visual_info "
+@@ -430,8 +431,9 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
+     pGlxScreen->pScreen       = pScreen;
+     pGlxScreen->GLextensions  = xstrdup(GLServerExtensions);
+     pGlxScreen->GLXvendor     = xstrdup(GLXServerVendorName);
+-    pGlxScreen->GLXversion    = xstrdup(GLXServerVersion);
+     pGlxScreen->GLXextensions = xstrdup(GLXServerExtensions);
++    pGlxScreen->GLXmajor      = 1;
++    pGlxScreen->GLXminor      = 2;
+ 
+     pGlxScreen->CloseScreen = pScreen->CloseScreen;
+     pScreen->CloseScreen = glxCloseScreen;
+@@ -506,7 +508,6 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
+ void __glXScreenDestroy(__GLXscreen *screen)
+ {
+     xfree(screen->GLXvendor);
+-    xfree(screen->GLXversion);
+     xfree(screen->GLXextensions);
+     xfree(screen->GLextensions);
+ }
+diff --git a/glx/glxscreens.h b/glx/glxscreens.h
+index 3c1bdd4..2d696d2 100644
+--- a/glx/glxscreens.h
++++ b/glx/glxscreens.h
+@@ -160,6 +160,8 @@ struct __GLXscreen {
+     char *GLXvendor;
+     char *GLXversion;
+     char *GLXextensions;
++    unsigned GLXmajor;
++    unsigned GLXminor;
+ 
+     Bool (*CloseScreen)(int index, ScreenPtr pScreen);
+     Bool (*DestroyWindow)(WindowPtr pWindow);
+diff --git a/glx/glxserver.h b/glx/glxserver.h
+index 4aa8c2e..80f1b28 100644
+--- a/glx/glxserver.h
++++ b/glx/glxserver.h
+@@ -248,4 +248,7 @@ extern int __glXImageSize(GLenum format, GLenum type,
+     GLint imageHeight, GLint rowLength, GLint skipImages, GLint skipRows,
+     GLint alignment);
+ 
++extern unsigned glxMajorVersion;
++extern unsigned glxMinorVersion;
++
+ #endif /* !__GLX_server_h__ */

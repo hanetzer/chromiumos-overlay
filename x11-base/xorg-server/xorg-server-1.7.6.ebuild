@@ -126,6 +126,8 @@ UPSTREAMED_PATCHES=(
 	"${FILESDIR}/1.7.3.901-0001-dix-if-owner-events-is-true-for-passive-grabs-add-th.patch"
 	# Fix for bug #304067
 	"${FILESDIR}/1.7.5.902-fix-tslib-1.0-check.patch"
+        # coming from 1.8 branch
+	"${FILESDIR}/1.7.6-glx-1.4.patch"
 	)
 
 PATCHES=(
