@@ -230,8 +230,13 @@ git_fetch() {
 	if [[ ! -d ${EGIT_STORE_DIR} ]] ; then
 		debug-print "${FUNCNAME}: initial clone. creating git directory"
 		addwrite /
+		# TODO(ers): Remove this workaround once we figure out how to make
+		# sure the directories are owned by the user instead of by root.
+		local old_umask="`umask`"
+		umask 002
 		mkdir -p "${EGIT_STORE_DIR}" \
 			|| die "${EGIT}: can't mkdir ${EGIT_STORE_DIR}."
+		umask ${old_umask}
 		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
 	fi
 
@@ -276,7 +281,8 @@ git_fetch() {
 		${elogcmd} "   repository: 		${EGIT_REPO_URI}"
 
 		debug-print "${EGIT_FETCH_CMD} ${extra_clone_opts} ${EGIT_OPTIONS} \"${EGIT_REPO_URI}\" ${GIT_DIR}"
-		# TODO(rochberg): Figure out why umask sometimes isn't already 002
+		# TODO(ers): Remove this workaround once we figure out how to make
+		# sure the directories are owned by the user instead of by root.
 		local old_umask="`umask`"
 		umask 002
 		${EGIT_FETCH_CMD} ${extra_clone_opts} ${EGIT_OPTIONS} "${EGIT_REPO_URI}" ${GIT_DIR} \
