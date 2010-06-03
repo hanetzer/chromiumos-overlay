@@ -5,14 +5,23 @@
 
 EAPI="2"
 
-inherit autotools base eutils linux-info
+KEYWORDS="~amd64 ~arm ~x86"
+if [[ ${PV} != "9999" ]] ; then
+	KEYWORDS="amd64 arm x86"
+fi
+
+inherit autotools base eutils git linux-info
 
 DESCRIPTION="An open-source TCG Software Stack (TSS) v1.1 implementation"
 HOMEPAGE="http://trousers.sf.net"
 LICENSE="CPL-1.0"
+CHROMEOS_GIT_REPO=${CHROMEOS_GIT_REPO:-"http://src.chromium.org/git"}
+CHROMEOS_SRCROOT=${CHROMEOS_SRCROOT:-"${CHROMEOS_ROOT}/src/third_party/"}
+EGIT_REPO_URI="${CHROMEOS_GIT_REPO}/trousers.git"
+EGIT_COMMIT="master"
+
 SLOT="0"
 IUSE="doc"
-KEYWORDS="x86 amd64 arm"
 
 RDEPEND=">=dev-libs/glib-2
 	>=x11-libs/gtk+-2
@@ -25,15 +34,12 @@ DEPEND="${RDEPEND}
 ## PATCHES=(	"${FILESDIR}/${PN}-0.2.3-nouseradd.patch" )
 
 src_unpack() {
-	if [ -n "$CHROMEOS_ROOT" ] ; then
-		local third_party="${CHROMEOS_ROOT}/src/third_party"
-		local trousers="${third_party}/trousers"
-		elog "Using trousers dir: $trousers"
+	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
 		mkdir -p "${S}"
-		cp -a "${trousers}"/* "${S}" || die
+		cp -a "${CHROMEOS_SRCROOT}"/trousers/* "${S}" || die
                 (cd "${S}"; make clean)  # removes possible garbage
 	else
-		die CHROMEOS_ROOT is not set
+		git_src_unpack
 	fi
 }
 
