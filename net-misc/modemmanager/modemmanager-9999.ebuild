@@ -42,7 +42,11 @@ src_unpack() {
     fi
 
     cd "${S}"
-    eautoreconf || die "autoreconf failed"
+    #    eautoreconf || die "autoreconf failed"
+    autoreconf --install --symlink &&\
+    intltoolize --force &&\
+    autoreconf &&\
+    ./configure --enable-maintainer-mode $@
 }
 
 src_configure() {
