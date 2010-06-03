@@ -38,7 +38,7 @@ src_unpack() {
 	if [ -n "$CHROMEOS_ROOT" ] ; then
 		local third_party="${CHROMEOS_ROOT}/src/third_party"
 		local flimflam="${third_party}/flimflam/files"
-		elog "Using connman dir: $flimflam"
+		elog "Using flimflam dir: $flimflam"
 		mkdir -p "${S}"
 		cp -a "${flimflam}"/* "${S}" || die
 	else
@@ -95,7 +95,7 @@ src_install() {
 
         if use resolvfiles ; then
 		mkdir -p "${D}"/etc/
-		ln -s /var/run/connman/resolv.conf "${D}"/etc/resolv.conf
+		ln -s /var/run/flimflam/resolv.conf "${D}"/etc/resolv.conf
         elif use resolvconf; then
 		:
 	elif use dnsproxy ; then
@@ -107,6 +107,6 @@ src_install() {
 	if use ppp; then
 	       local ppp_dir="${D}"/etc/ppp/ip-up.d/
 	       mkdir -p ${ppp_dir}
-	       cp "${D}"/usr/lib/connman/scripts/60-connman.sh ${ppp_dir}
+	       cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
 	fi
 }

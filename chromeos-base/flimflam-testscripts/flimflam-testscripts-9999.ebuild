@@ -5,7 +5,7 @@ EAPI="2"
 
 inherit eutils
 
-DESCRIPTION="Python test scripts for controlling connman"
+DESCRIPTION="Python test scripts for controlling flimflam"
 HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 
@@ -21,6 +21,6 @@ RDEPEND="dev-lang/python"
 src_install() {
     local third_party="${CHROMEOS_ROOT}/src/third_party"
     local files="${third_party}/flimflam/files/test/*"
-    exeinto /usr/local/lib/connman/test
+    exeinto /usr/local/lib/flimflam/test
     doexe ${files}
 }
