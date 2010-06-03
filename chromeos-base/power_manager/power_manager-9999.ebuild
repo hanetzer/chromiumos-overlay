@@ -80,7 +80,7 @@ src_install() {
 	dobin "${S}/power_manager/powerd"
 	dobin "${S}/power_manager/send_metrics_on_resume"
 	dobin "${S}/power_manager/xidle-example"
-	insinto "/var/lib/power_manager"
+	insinto "/usr/share/power_manager"
 	for item in ${S}/power_manager/config/*; do
 		doins ${item}
 	done
