@@ -21,6 +21,7 @@ src_unpack() {
 	elog "Using third_party: $third_party"
 	mkdir -p "${S}"
 	cp -a "${third_party}"/chrome/* "${S}" || die
+	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 }
 
 src_compile() {
