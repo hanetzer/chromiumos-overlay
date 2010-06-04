@@ -44,6 +44,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/findutils
 	sys-power/powertop
 	sys-process/procps
+	sys-process/psmisc
 	sys-process/time
 	"
 
