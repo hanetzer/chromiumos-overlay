@@ -1,0 +1,76 @@
+--- fontconfig-2.7.1-orig/conf.d/30-metric-aliases.conf	2009-07-27 14:54:02.000000000 -0700
++++ fontconfig-2.7.1/conf.d/30-metric-aliases.conf	2010-06-03 14:52:14.000000000 -0700
+@@ -29,6 +29,11 @@
+ 			Albany AMT
+ 			Thorndale AMT
+ 			Cumberland AMT
++		Ascender fonts (eval):
++			Ascender Sans
++			Ascender Serif
++			Ascender Sans Mono
++			Ascender Symbol
+ 
+ 	     Of these, URW fonts are design compatible with PostScrict fonts,
+ 	     and the Liberation, StarOffice, and AMT ones are compatible with
+@@ -75,6 +80,7 @@
+ 
+ 	<!-- Microsoft -->
+ 	<alias binding="same">
++	  <family>Ascender Sans</family>
+ 	  <family>Liberation Sans</family>
+ 	  <family>Albany</family>
+ 	  <family>Albany AMT</family>
+@@ -84,6 +90,7 @@
+ 	</alias>
+ 
+ 	<alias binding="same">
++	  <family>Ascender Serif</family>
+ 	  <family>Liberation Serif</family>
+ 	  <family>Thorndale</family>
+ 	  <family>Thorndale AMT</family>
+@@ -93,6 +100,7 @@
+ 	</alias>
+ 
+ 	<alias binding="same">
++	  <family>Ascender Sans Mono</family>
+ 	  <family>Liberation Mono</family>
+ 	  <family>Cumberland</family>
+ 	  <family>Cumberland AMT</family>
+@@ -101,6 +109,13 @@
+ 	  </default>
+ 	</alias>
+ 
++	<alias binding="same">
++	  <family>Ascender Symbol</family>
++	  <default>
++	  <family>Symbol</family>
++	  </default>
++	</alias>
++
+ 
+ 
+ <!-- Accept the other group as fallback -->
+@@ -183,6 +198,7 @@
+ 	<alias binding="same">
+ 	  <family>Arial</family>
+ 	  <accept>
++	  <family>Ascender Sans</family>
+ 	  <family>Liberation Sans</family>
+ 	  <family>Albany</family>
+ 	  <family>Albany AMT</family>
+@@ -192,6 +208,7 @@
+ 	<alias binding="same">
+ 	  <family>Times New Roman</family>
+ 	  <accept>
++	  <family>Ascender Serif</family>
+ 	  <family>Liberation Serif</family>
+ 	  <family>Thorndale</family>
+ 	  <family>Thorndale AMT</family>
+@@ -201,6 +218,7 @@
+ 	<alias binding="same">
+ 	  <family>Courier New</family>
+ 	  <accept>
++	  <family>Ascender Sans Mono</family>
+ 	  <family>Liberation Mono</family>
+ 	  <family>Cumberland</family>
+ 	  <family>Cumberland AMT</family>

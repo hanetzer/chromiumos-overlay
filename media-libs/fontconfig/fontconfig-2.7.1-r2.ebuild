@@ -34,7 +34,8 @@ PDEPEND="app-admin/eselect-fontconfig"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-latin-reorder.patch	#130466
-    epatch "${FILESDIR}"/${P}-fonts-config.patch
+	epatch "${FILESDIR}"/${P}-fonts-config.patch
+	epatch "${FILESDIR}"/${P}-metric-aliases.patch
 	epunt_cxx	#74077
 
 	# Needed to get a sane .so versioning on fbsd, please dont drop
