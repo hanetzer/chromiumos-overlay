@@ -43,7 +43,7 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins "${S}/SpeechSynthesizer.conf"
 
-	insinto /usr/share/dbus-1/services
+	insinto /usr/share/dbus-1/system-services
 	doins "${S}/org.chromium.SpeechSynthesizer.service"
 
 	dolib "${S}/libtts.so"
