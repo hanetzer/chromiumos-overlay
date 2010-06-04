@@ -12,13 +12,12 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="pam_google slim test"
+IUSE="pam_google test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	 chromeos-base/chromeos-minijail
          pam_google? ( chromeos-base/pam_google )
-         chromeos-base/crash-dumper
-         slim? ( x11-misc/slim )"
+         chromeos-base/crash-dumper"
 
 DEPEND="${RDEPEND}
 	dev-cpp/gmock
@@ -51,27 +50,6 @@ src_test() {
 }
 
 src_install() {
-	if use slim ; then
-		insinto /usr/share/slim/themes/chromeos
-		doins "${S}/slim.theme"
-
-		ln -s /usr/share/chromeos-assets/images/login_background.png \
-			"${D}/usr/share/slim/themes/chromeos/background.png"
-		ln -s /usr/share/chromeos-assets/images/login_panel.png \
-			"${D}/usr/share/slim/themes/chromeos/panel.png"
-
-		insinto /etc
-		doins "${S}/slim.conf"
-	fi
-
-	# NOTE: The "slim" pam file is used for both slim-based and chromium-
-	# based login for now.
-	if use pam_google ; then
-		insinto /etc/pam.d
-	        doins "${S}/chrome"
-		ln -s /etc/pam.d/chrome "${D}/etc/pam.d/slim"
-	fi
-
 	dodir /etc/X11
 	install --mode=0755 "${S}/chromeos-xsession" "${D}/etc/X11"
 
