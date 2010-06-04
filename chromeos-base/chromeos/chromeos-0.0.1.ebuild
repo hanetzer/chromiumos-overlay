@@ -46,7 +46,6 @@ RDEPEND="${RDEPEND}
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
 		chromeos-base/speech_synthesis
-		chromeos-base/chromeos-utils
 		media-plugins/o3d
 		net-wireless/iwl1000-ucode
 		>=net-wireless/iwl5000-ucode-8.24.2.12
