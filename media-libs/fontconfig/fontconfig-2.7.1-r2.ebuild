@@ -12,7 +12,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.gz"
 
 LICENSE="fontconfig"
 SLOT="1.0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="~alpha ~amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="doc"
 
 # Purposefully dropped the xml USE flag and libxml2 support. Having this is
@@ -72,6 +72,7 @@ src_install() {
 
 	insinto /etc/fonts
 	doins "${S}"/fonts.conf
+	doins "${FILESDIR}"/local.conf
 
 	doman $(find "${S}" -type f -name *.1 -print)
 	newman doc/fonts-conf.5 fonts.conf.5
