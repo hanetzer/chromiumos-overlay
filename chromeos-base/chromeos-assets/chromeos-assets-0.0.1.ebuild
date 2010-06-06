@@ -52,9 +52,6 @@ src_install() {
   insinto /usr/share/fonts/truetype/ttf-droid-thai
   doins "${S}"/fonts/DroidThai*
 
-  insinto /etc/fonts
-  doins "${S}"/fontconfig/local.conf
-
   local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 
   mkdir -p "${CURSOR_DIR}"
