@@ -36,6 +36,7 @@ src_unpack() {
         elog "Using platform: $platform"
         mkdir -p "${S}"
         cp -a "${platform}"/cros/* "${S}" || die
+        cp "${platform}/update_engine/update_engine.xml" "${S}"
 }
 
 src_compile() {
