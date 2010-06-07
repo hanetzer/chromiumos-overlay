@@ -78,6 +78,8 @@ src_test() {
 src_install() {
 	dobin "${S}/power_manager/backlight-tool"
 	dobin "${S}/power_manager/powerd"
+	dobin "${S}/power_manager/powerd_lock_screen"
+	dobin "${S}/power_manager/powerd_suspend"
 	dobin "${S}/power_manager/send_metrics_on_resume"
 	dobin "${S}/power_manager/xidle-example"
 	insinto "/usr/share/power_manager"
