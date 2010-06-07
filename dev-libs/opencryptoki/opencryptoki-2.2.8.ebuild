@@ -33,6 +33,7 @@ src_prepare() {
 	epatch "${WORKDIR}/opencryptoki-tpm_stdll-sw_fallback-June012006.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.4.1-tpm_util.c.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.8-steal_shmem.patch"
+	epatch "${FILESDIR}/opencryptoki-2.2.8-remove_openlog.patch"
 	eautoreconf
 }
 
