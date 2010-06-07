@@ -11,7 +11,7 @@ LICENSE="GPL-2"
 HOMEPAGE="//https://developer.berlios.de/projects/tpm-emulator"
 SLOT="0"
 IUSE="doc"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 
 DEPEND="app-crypt/trousers
 	dev-libs/gmp"
