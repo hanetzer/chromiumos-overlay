@@ -21,6 +21,6 @@ RDEPEND="dev-lang/python"
 src_install() {
     local third_party="${CHROMEOS_ROOT}/src/third_party"
     local files="${third_party}/flimflam/files/test/*"
-    exeinto /usr/local/lib/flimflam/test
+    exeinto /usr/lib/flimflam/test
     doexe ${files}
 }
