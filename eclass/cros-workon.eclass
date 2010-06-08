@@ -11,6 +11,11 @@
 # Directory where git repositories of packages are checked out
 : ${CROS_WORKON_PROJECT:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
+# @DESCRIPTION:
+# Sub-directory which is added to create full source checkout path
+: ${CROS_WORKON_SUBDIR:=}
+
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
 # Git URL which is prefixed to CROS_WORKON_PROJECT
@@ -43,9 +48,12 @@ cros-workon_src_unpack() {
 		srcroot="${CROS_WORKON_SRCROOT}"
 	fi
 
+
 	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
+		local path="${srcroot}/${project}/${CROS_WORKON_SUBDIR}"
+
 		mkdir -p "${S}"
-		cp -a "${srcroot}/${project}"/* "${S}" || die
+		cp -a "${path}"/* "${S}" || die
 	else
 		EGIT_REPO_URI="${repo}/${project}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
