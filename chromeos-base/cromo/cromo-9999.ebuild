@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 PLUGINDIR="/usr/lib/cromo/plugins"
 DBUSDATADIR="/etc/dbus-1/system.d"
 
