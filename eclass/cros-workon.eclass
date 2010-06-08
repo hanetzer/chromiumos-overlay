@@ -9,7 +9,7 @@
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
 # Directory where git repositories of packages are checked out
-: ${CROS_WORKON_SRCROOT:=${CHROMEOS_ROOT}/src/third_party}
+: ${CROS_WORKON_PROJECT:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
@@ -29,9 +29,19 @@
 inherit git
 
 cros-workon_src_unpack() {
-	local srcroot=${CROS_WORKON_SRCROOT}
 	local project=${CROS_WORKON_PROJECT}
 	local repo=${CROS_WORKON_REPO}
+	local srcroot
+
+	if [ -z "${CROS_WORKON_SRCROOT}" ] ; then
+		if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
+			srcroot="${CHROMEOS_ROOT}"/src/platform
+		else
+			srcroot="${CHROMEOS_ROOT}"/src/third_party
+		fi
+	else
+		srcroot="${CROS_WORKON_SRCROOT}"
+	fi
 
 	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
 		mkdir -p "${S}"
