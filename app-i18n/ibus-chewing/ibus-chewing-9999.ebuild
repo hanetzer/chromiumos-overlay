@@ -31,7 +31,12 @@ CMAKE_IN_SOURCE_BUILD=1
 DOCS="AUTHORS ChangeLog NEWS README"
 
 # Chromium OS changes:
-# - Add src_unpack().
+# - Add src_configure() and src_unpack().
+
+src_configure() {
+	tc-export CC CXX LD AR RANLIB NM
+	cmake-utils_src_configure
+}
 
 src_unpack() {
 	if [ -n "$CHROMEOS_ROOT" ] ; then

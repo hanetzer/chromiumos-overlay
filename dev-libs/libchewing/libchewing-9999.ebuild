@@ -30,6 +30,7 @@ src_unpack() {
 
 src_compile() {
 	./autogen.sh || die
+	export CC_FOR_BUILD="${HOSTCC}"
 	econf $(use_enable debug) || die
 	emake || die
 }
