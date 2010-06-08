@@ -89,4 +89,7 @@ src_test() {
 src_install() {
 	newbin window_manager/wm chromeos-wm
 	dobin window_manager/screenshot
+	dobin window_manager/bin/cros-term
+	dobin window_manager/bin/crosh
+	dobin window_manager/bin/crosh-dev
 }

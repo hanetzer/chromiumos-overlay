@@ -20,6 +20,7 @@ RDEPEND="${RDEPEND}
 		app-admin/sudo
 		app-arch/tar
 		net-misc/openssh
+		x11-terms/aterm
 	)
 	"
 
