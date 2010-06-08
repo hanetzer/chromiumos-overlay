@@ -46,6 +46,7 @@ RDEPEND="${RDEPEND}
 		app-i18n/ibus-chewing
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
+		chromeos-base/firmware-utils
 		chromeos-base/speech_synthesis
 		media-plugins/o3d
 		net-wireless/iwl1000-ucode
