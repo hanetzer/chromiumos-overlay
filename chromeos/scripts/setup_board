@@ -93,7 +93,7 @@ BOARD_OVERLAY_LIST=""
 #
 # Check for chromeos-overlay and add it to the BOARD_OVERLAY_LIST.
 #
-CHROMEOS_OVERLAY="${SRC_ROOT}/overlays/chromeos-overlay"
+CHROMEOS_OVERLAY="${SRC_ROOT}/private-overlays/chromeos-overlay"
 
 if [ -d "${CHROMEOS_OVERLAY}" ]; then
   BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${CHROMEOS_OVERLAY}"
@@ -139,7 +139,7 @@ else
   # additional overlays.
   #
   EXTRA_BOARD_OVERLAY_LIST=$(find \
-    "${SRC_ROOT}/overlays" \
+    "${SRC_ROOT}/private-overlays" \
     -maxdepth 1 \
     -type d \
     -name "overlay-${BOARD}-*" | sort -r)
