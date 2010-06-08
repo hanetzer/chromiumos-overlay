@@ -3,14 +3,14 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Monitor Reconfig"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 DEPEND="chromeos-base/libchrome
@@ -20,11 +20,10 @@ DEPEND="chromeos-base/libchrome
 RDEPEND="${DEPEND}
 	x11-apps/xrandr"
 
+# TODO(msb): remove this hack
 src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
-	mkdir -p "${S}/monitor_reconfig"
-	cp -a "${platform}"/monitor_reconfig/* "${S}/monitor_reconfig" || die
+	cros-workon_src_unpack
+	ln -s "${S}" "${S}/${PN}"
 }
 
 src_compile() {
