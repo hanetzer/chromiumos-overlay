@@ -12,7 +12,7 @@ HOMEPAGE="http://code.google.com/p/ibus/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="nls"
 
 RDEPEND=">=app-i18n/ibus-1.2
