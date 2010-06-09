@@ -92,4 +92,5 @@ src_install() {
 	dobin window_manager/bin/cros-term
 	dobin window_manager/bin/crosh
 	dobin window_manager/bin/crosh-dev
+	dobin window_manager/bin/crosh-usb
 }
