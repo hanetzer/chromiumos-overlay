@@ -115,6 +115,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/kbd
 	sys-apps/mawk
 	sys-apps/module-init-tools
+	sys-apps/net-tools
         sys-apps/rootdev
 	sys-apps/sed
 	sys-apps/shadow

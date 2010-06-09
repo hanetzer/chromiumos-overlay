@@ -55,6 +55,7 @@ RDEPEND="${RDEPEND}
 	dev-util/strace
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
+	net-misc/dhcp
 	net-misc/iputils
 	net-misc/openssh
 	net-wireless/iw

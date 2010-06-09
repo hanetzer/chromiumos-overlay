@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="arm amd64 x86"
-IUSE="bluetooth +debug +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles threads tools +udev +wifi"
+IUSE="bluetooth +debug +dhcpcd +dhclient dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles threads tools +udev +wifi"
 # ospm wimax
 
 RDEPEND="chromeos-base/crash-dumper
@@ -22,6 +22,7 @@ RDEPEND="chromeos-base/crash-dumper
 	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )
 	dhclient? ( net-misc/dhcp )
+	dhcpcd? ( net-misc/dhcpcd )
 	modemmanager? ( net-misc/mobile-broadband-provider-info )
 	modemmanager? ( net-misc/modemmanager )
 	ofono? ( net-misc/ofono )
@@ -65,7 +66,8 @@ src_configure() {
 		--enable-loopback=builtin \
 		$(use_enable bluetooth) \
 		$(use_enable debug) \
-		$(use_enable dhclient dhclient builtin) \
+		$(use_enable dhclient dhclient) \
+		$(use_enable dhcpcd dhcpcd) \
 		$(use_enable dnsproxy dnsproxy builtin) \
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
