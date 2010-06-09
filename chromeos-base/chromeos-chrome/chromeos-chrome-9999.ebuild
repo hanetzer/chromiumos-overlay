@@ -66,6 +66,7 @@ RDEPEND="app-arch/bzip2
          media-libs/jpeg
          media-libs/libpng
          media-libs/mesa
+         media-sound/pulseaudio
          sys-libs/pam
          sys-libs/zlib
          x86? ( !local_flash? ( www-plugins/adobe-flash ) )
