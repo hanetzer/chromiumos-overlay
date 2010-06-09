@@ -54,8 +54,8 @@ cros-workon_src_unpack() {
 
 
 	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
-		local path="${srcroot}/${project}/${CROS_WORKON_SUBDIR}"
 		local project=${CROS_WORKON_LOCALNAME}
+		local path="${srcroot}/${project}/${CROS_WORKON_SUBDIR}"
 
 		mkdir -p "${S}"
 		cp -a "${path}"/* "${S}" || die
