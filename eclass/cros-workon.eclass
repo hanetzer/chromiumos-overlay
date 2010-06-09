@@ -26,6 +26,11 @@
 # Git project name which is suffixed to CROS_WORKON_REPO
 : ${CROS_WORKON_PROJECT:=${PN}}}
 
+# @ECLASS-VARIABLE: CROS_WORKON_LOCALNAME
+# @DESCRIPTION:
+# Temporary local name in third_party
+: ${CROS_WORKON_LOCALNAME:=${PN}}}
+
 # @ECLASS-VARIABLE: CROS_WORKON_COMMIT
 # @DESCRIPTION:
 # Git commit to checkout to
@@ -34,7 +39,6 @@
 inherit git
 
 cros-workon_src_unpack() {
-	local project=${CROS_WORKON_PROJECT}
 	local repo=${CROS_WORKON_REPO}
 	local srcroot
 
@@ -51,10 +55,12 @@ cros-workon_src_unpack() {
 
 	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
 		local path="${srcroot}/${project}/${CROS_WORKON_SUBDIR}"
+		local project=${CROS_WORKON_LOCALNAME}
 
 		mkdir -p "${S}"
 		cp -a "${path}"/* "${S}" || die
 	else
+		local project=${CROS_WORKON_PROJECT}
 		EGIT_REPO_URI="${repo}/${project}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
 		git_src_unpack
