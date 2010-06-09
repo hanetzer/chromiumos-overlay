@@ -88,7 +88,6 @@ fi
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
-
 eretry sudo emerge -uDNv $EMERGE_FLAGS world
 
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
