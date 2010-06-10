@@ -49,6 +49,7 @@ src_unpack() {
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
+	CFLAGS="${CFLAGS} -ggdb"
 	export CCFLAGS="$CFLAGS"
 
 	local backend
@@ -64,6 +65,8 @@ src_compile() {
 	pushd "window_manager"
 	scons BACKEND="$backend" -j$(print_num_jobs) wm screenshot || \
 		die "window_manager compile failed"
+	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 wm > wm.sym \
+	        2>/dev/null || die "symbol extraction failed"
 	popd
 }
 
@@ -93,4 +96,7 @@ src_install() {
 	dobin window_manager/bin/crosh
 	dobin window_manager/bin/crosh-dev
 	dobin window_manager/bin/crosh-usb
+
+	insinto /usr/lib/debug
+	doins window_manager/wm.sym
 }

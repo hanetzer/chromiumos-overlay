@@ -89,6 +89,8 @@ src_configure() {
 src_compile() {
 	emake clean-generic || die "emake clean failed"
 	emake || die "emake failed"
+	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 src/flimflamd > \
+	        flimflamd.sym 2>/dev/null || die "symbol extraction failed"
 }
 
 src_install() {
@@ -111,4 +113,7 @@ src_install() {
 	       mkdir -p ${ppp_dir}
 	       cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
 	fi
+
+	insinto /usr/lib/debug
+	doins flimflamd.sym
 }
