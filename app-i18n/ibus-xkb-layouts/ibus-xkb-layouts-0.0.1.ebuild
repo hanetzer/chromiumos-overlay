@@ -10,7 +10,7 @@ HOMEPAGE="http://github.com/suzhe/ibus-xkb-layouts"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}

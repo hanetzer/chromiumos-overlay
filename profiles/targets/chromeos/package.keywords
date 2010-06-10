@@ -6,7 +6,6 @@
 =app-i18n/ibus-anthy-1.2.0.20090917	x86 arm
 =app-i18n/ibus-mozc-9999	x86 arm
 =app-i18n/ibus-pinyin-9999   x86 arm
-=app-i18n/ibus-xkb-layouts-9999   x86 arm
 =app-i18n/libhangul-0.0.10	x86 arm
 =dev-cpp/gflags-1.2		x86 arm
 =dev-cpp/glog-0.3.0		x86 arm
