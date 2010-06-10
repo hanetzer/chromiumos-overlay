@@ -43,7 +43,6 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	x86? (
-		app-i18n/ibus-chewing
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
 		chromeos-base/firmware-utils
@@ -67,6 +66,7 @@ RDEPEND="${RDEPEND}
 	app-arch/sharutils
 	app-crypt/tpm-emulator
         app-crypt/trousers
+	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
