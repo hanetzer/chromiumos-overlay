@@ -47,6 +47,10 @@ src_install() {
 	dodir "${ENTD_CONF_DIR}"
 	insinto "${ENTD_CONF_DIR}"
 	doins "${S}"/entd/base_policy/*
+
+	insinto /etc
+	doins "${S}/entd/nsswitch.conf"
+
 	# Install the temporary tpm init helper
 	# TODO(wad) remove when integrated into login/cryptohome
 	dosbin "${S}/entd/tpm_helpers/chromeos_tpm_init"
