@@ -9,7 +9,12 @@
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
 # Directory where git repositories of packages are checked out
-: ${CROS_WORKON_SRCROOT:=${CHROMEOS_ROOT}/src/third_party}
+: ${CROS_WORKON_PROJECT:=}
+
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
+# @DESCRIPTION:
+# Sub-directory which is added to create full source checkout path
+: ${CROS_WORKON_SUBDIR:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
@@ -21,6 +26,11 @@
 # Git project name which is suffixed to CROS_WORKON_REPO
 : ${CROS_WORKON_PROJECT:=${PN}}}
 
+# @ECLASS-VARIABLE: CROS_WORKON_LOCALNAME
+# @DESCRIPTION:
+# Temporary local name in third_party
+: ${CROS_WORKON_LOCALNAME:=${PN}}}
+
 # @ECLASS-VARIABLE: CROS_WORKON_COMMIT
 # @DESCRIPTION:
 # Git commit to checkout to
@@ -29,14 +39,28 @@
 inherit git
 
 cros-workon_src_unpack() {
-	local srcroot=${CROS_WORKON_SRCROOT}
-	local project=${CROS_WORKON_PROJECT}
 	local repo=${CROS_WORKON_REPO}
+	local srcroot
+
+	if [ -z "${CROS_WORKON_SRCROOT}" ] ; then
+		if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
+			srcroot="${CHROMEOS_ROOT}"/src/platform
+		else
+			srcroot="${CHROMEOS_ROOT}"/src/third_party
+		fi
+	else
+		srcroot="${CROS_WORKON_SRCROOT}"
+	fi
+
 
 	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
+		local project=${CROS_WORKON_LOCALNAME}
+		local path="${srcroot}/${project}/${CROS_WORKON_SUBDIR}"
+
 		mkdir -p "${S}"
-		cp -a "${srcroot}/${project}"/* "${S}" || die
+		cp -a "${path}"/* "${S}" || die
 	else
+		local project=${CROS_WORKON_PROJECT}
 		EGIT_REPO_URI="${repo}/${project}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
 		git_src_unpack

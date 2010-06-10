@@ -20,6 +20,7 @@ RDEPEND="${RDEPEND}
 		app-admin/sudo
 		app-arch/tar
 		net-misc/openssh
+		x11-terms/aterm
 	)
 	"
 
@@ -42,9 +43,9 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	x86? (
-		app-i18n/ibus-chewing
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
+		chromeos-base/firmware-utils
 		chromeos-base/speech_synthesis
 		media-plugins/o3d
 		net-wireless/iwl1000-ucode
@@ -65,6 +66,7 @@ RDEPEND="${RDEPEND}
 	app-arch/sharutils
 	app-crypt/tpm-emulator
         app-crypt/trousers
+	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
@@ -113,6 +115,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/kbd
 	sys-apps/mawk
 	sys-apps/module-init-tools
+	sys-apps/net-tools
         sys-apps/rootdev
 	sys-apps/sed
 	sys-apps/shadow

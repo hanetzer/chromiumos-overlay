@@ -3,14 +3,9 @@
 
 =app-admin/rsyslog-3.22.1	x86 arm
 =app-crypt/tpm-tools-1.3.1	x86 arm
-=app-i18n/ibus-9999		x86 arm
 =app-i18n/ibus-anthy-1.2.0.20090917	x86 arm
-=app-i18n/ibus-chewing-9999	x86 arm
-=app-i18n/ibus-hangul-9999	x86 arm
-=app-i18n/ibus-m17n-9999	x86 arm
 =app-i18n/ibus-mozc-9999	x86 arm
 =app-i18n/ibus-pinyin-9999   x86 arm
-=app-i18n/ibus-xkb-layouts-9999   x86 arm
 =app-i18n/libhangul-0.0.10	x86 arm
 =dev-cpp/gflags-1.2		x86 arm
 =dev-cpp/glog-0.3.0		x86 arm
@@ -51,7 +46,6 @@
 =net-wireless/iwl1000-ucode-128.50.3.1 x86
 =net-wireless/iwl5000-ucode-8.24.2.12 x86
 =net-wireless/iwl6000-ucode-9.176.4.1 x86
-=net-wireless/wpa_supplicant-0.7.0	x86 arm
 =sci-geosciences/gpsd-2.38  x86 arm
 =sys-apps/baselayout-2.0.1	x86 arm
 =sys-apps/dbus-1.2.20		x86 arm

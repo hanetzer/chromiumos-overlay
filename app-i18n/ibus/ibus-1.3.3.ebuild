@@ -10,7 +10,7 @@ HOMEPAGE="http://code.google.com/p/ibus/"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="doc nls python"
 
 RDEPEND="app-text/iso-codes

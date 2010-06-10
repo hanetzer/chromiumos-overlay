@@ -55,15 +55,17 @@ RDEPEND="${RDEPEND}
 	dev-util/strace
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
+	net-misc/dhcp
 	net-misc/iputils
 	net-misc/openssh
 	net-wireless/iw
 	net-wireless/wireless-tools
+	sys-apps/diffutils
 	x86? ( sys-apps/dmidecode )
 	sys-apps/findutils
+	x86? ( sys-apps/iotools )
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
-	x86? ( sys-apps/iotools )
 	sys-apps/usbutils
 	sys-apps/which
 	sys-devel/gdb

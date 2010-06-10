@@ -4,13 +4,15 @@
 
 EAPI="2"
 
+inherit cros-workon
+
 DESCRIPTION="The Hangul engine for IBus input platform"
 HOMEPAGE="http://code.google.com/p/ibus/"
 #SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="nls"
 
 RDEPEND=">=app-i18n/ibus-1.2
@@ -20,16 +22,10 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
+CROS_WORKON_SUBDIR="files"
+
 src_unpack() {
-	if [ -n "$CHROMEOS_ROOT" ] ; then
-		local third_party="${CHROMEOS_ROOT}/src/third_party"
-		local ibus="${third_party}/ibus-hangul/files"
-		elog "Using ibus-hangul dir: $ibus"
-		mkdir -p "${S}"
-		cp -a "${ibus}"/* "${S}" || die
-	else
-		unpack ${A}
-	fi
+	cros-workon_src_unpack
 	cd "${S}"
 	ln -s "$(type -P true)" py-compile || die
 }

@@ -2,9 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
-# If CHROME_ORIGIN is set to one of {SERVER_BINARY,LOCAL_SOURCE,LOCAL_BINARY},
-# The build comes from the build server, locally provided source, or
+# If CHROME_ORIGIN is set to one of {SERVER_SOURCE SERVER_BINARY,LOCAL_SOURCE, \
+#    LOCAL_BINARY},
+# The build comes from the chromimum source repository (gclient sync), \
+# build server, locally provided source, or
 # precompiled locally provided source, respectively.
+# If you are using SERVER_SOURCE, a gclient tempalte file that is in the files
+# directory, which will be copied automatically during the build and used as
+# the .gclient for 'gclient sync'
 # If building from either LOCAL_SOURCE or LOCAL_BINARY, specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
@@ -19,12 +24,18 @@ inherit eutils multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
-EGCLIENT_REPO_URI="http://src.chromium.org/svn/trunk/src/"
+SRC_URI=""
+EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-build_tests -local_flash"
+IUSE="-build_tests"
+
+# chrome sources store directory
+[[ -z ${ECHROME_STORE_DIR} ]] &&
+ECHROME_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/chrome-src"
+addwrite "${ECHROME_STORE_DIR}"
 
 # By default, pull from server
 CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
@@ -66,9 +77,10 @@ RDEPEND="app-arch/bzip2
          media-libs/jpeg
          media-libs/libpng
          media-libs/mesa
+         media-sound/pulseaudio
          sys-libs/pam
          sys-libs/zlib
-         x86? ( !local_flash? ( www-plugins/adobe-flash ) )
+         x86? ( www-plugins/adobe-flash )
          >=x11-libs/gtk+-2.14.7
          x11-libs/libXScrnSaver"
 
@@ -77,8 +89,6 @@ DEPEND="${RDEPEND}
         >=dev-util/pkgconfig-0.23"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
-
-HH="${HOME}"
 
 # Must write our own. wget --tries ignores 'connection refused' or 'not found's
 wget_retry () {
@@ -98,14 +108,43 @@ src_unpack() {
   # but 'root' at the root level of the file
   export CHROME_ROOT="${CHROME_ROOT:-/home/$(whoami)/chrome_root}"
   export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
+  export DEPOT_TOOLS_UPDATE=0
 
   case "${CHROME_ORIGIN}" in
-    SERVER_BINARY|LOCAL_SOURCE|LOCAL_BINARY)
+    SERVER_BINARY|LOCAL_SOURCE|LOCAL_BINARY |SERVER_SOURCE)
+	elog "CHROME_ORIGIN VALUE is ${CHROME_ORIGIN}"
       ;;
     *)
-      die CHROME_ORIGIN not one of SERVER_BINARY, LOCAL_SOURCE, LOCAL_BINARY
+      die "CHROME_ORIGIN not one of SERVER_BINARY, LOCAL_SOURCE, LOCAL_BINARY \
+	or SERVER_SOURCE"
       ;;
   esac
+
+  if [ "$CHROME_ORIGIN" = "SERVER_SOURCE" ]; then
+    # We are going to fetch source and build chrome
+      elog  "making ${ECHROME_STORE_DIR}"
+      mkdir -p ${ECHROME_STORE_DIR} || die "cannot create ${ECHROME_STORE_DIR}"
+      elog "Copying chromium.gclient  ${ECHROME_STORE_DIR}/.gclient"
+      rm -f ${ECHROME_STORE_DIR}/.gclient
+      cp -fp ${FILESDIR}/chromium.gclient ${ECHROME_STORE_DIR}/.gclient || die
+	  "cannot copy chromium.gclient to ${ECHROME_STORE_DIR}/.gcleint:$!"
+      pushd "${ECHROME_STORE_DIR}" || die "Cannot chdir to ${ECHROME_STORE_DIR}"
+      elog "Syncing google chrome sources using ${EGCLIENT}"
+      ${EGCLIENT} sync  --nohooks || die "${EGCLIENT} sync failed"
+      elog "Setting up cros directory structure"
+      rm -rf src/third_party/cros/ || die "cannot cleanup \
+	  cros source directory in chrome build"
+      elog mkdir -p  src/third_party/cros/
+      elog cp -rfp ${CHROMEOS_ROOT}/src/platform/cros
+      cp -rfp ${CHROMEOS_ROOT}/src/platform/cros \
+	  src/third_party/  || die "Failed to copy \
+	  cros sources to  ${ECHROME_STORE_DIR}"
+      elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
+      elog "From this point onwards there is no difference between \
+            SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
+      export CHROME_ORIGIN=LOCAL_SOURCE
+      export CHROME_ROOT=${ECHROME_STORE_DIR}
+  fi
 
   if [ "$CHROME_ORIGIN" = "SERVER_BINARY" ]; then
     # Using build server.
@@ -142,7 +181,7 @@ src_unpack() {
       elif [ "$ARCH" = "arm" ]; then
         BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
       else
-        die Unsupported architecture: "$ARCH"
+        die Unsupported architecture: "${ARCH}"
       fi
     
       # This saves time and bytes.
@@ -164,15 +203,15 @@ src_prepare() {
     return
   fi
 
-  cd "${CHROME_ROOT}"/src || die
+  elog "${CHROME_ROOT} should be set here properly"
+  cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
 
   test -n "${EGCLIENT}" || die EGCLIENT unset
 
   [ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
 
-  ${EGCLIENT} runhooks --force
+  ${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 }
-
 # Extract the version number from lines like:
 # kCrosAPIMinVersion = 29,
 # kCrosAPIVersion = 30
@@ -217,7 +256,7 @@ src_compile() {
 
   check_cros_version
 
-  cd "${CHROME_ROOT}"/src || die
+  cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
   
   if use build_tests; then
     TEST_TARGETS="browser_tests pyautolib reliability_tests startup_tests ui_tests"
@@ -294,7 +333,7 @@ install_chrome_test_resources() {
   sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
   sudo chmod -R 755 "${TEST_DIR}"
 }
-    
+
 src_install() {
   if [ "${CHROME_ORIGIN}" = "SERVER_BINARY" ]; then
     FROM="${S}"/${CHROME_FILENAME/.zip/}
@@ -357,27 +396,4 @@ src_install() {
   dosym nspr/libplds4.so /usr/lib/libplds4.so.0d
   dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
-  
-  if use x86; then
-    # Install Flash plugin.
-    if [ -f "${FROM}/libgcflashplayer.so" ]; then
-      # Install Flash from the binary drop.
-      exeinto "${CHROME_DIR}"
-      doexe "${FROM}/libgcflashplayer.so"
-      dosym "${CHROME_DIR}"/libgcflashplayer.so \
-          "${CHROME_DIR}"/plugins/libgcflashplayer.so
-    else
-      if [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
-        # Install Flash from the local source repository.
-        exeinto "${CHROME_DIR}"
-        doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/linux/libgcflashplayer.so
-        dosym "${CHROME_DIR}"/libgcflashplayer.so \
-            "${CHROME_DIR}"/plugins/libgcflashplayer.so
-      else
-        # Use Flash from www-plugins/adobe-flash package.
-        dosym /opt/netscape/plugins/libflashplayer.so \
-            "${CHROME_DIR}"/plugins/libflashplayer.so
-      fi
-    fi
-  fi
 }

@@ -8,11 +8,11 @@ inherit eutils toolchain-funcs qt3 qt4
 
 DESCRIPTION="IEEE 802.1X/WPA supplicant for secure wireless transfers"
 HOMEPAGE="http://hostap.epitest.fi/wpa_supplicant/"
-SRC_URI="http://hostap.epitest.fi/releases/${P}.tar.gz"
+#SRC_URI="http://hostap.epitest.fi/releases/${P}.tar.gz"
 LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
-KEYWORDS="amd64 ~arm ppc ppc64 x86 ~x86-fbsd"
+KEYWORDS="amd64 arm ppc ppc64 x86 ~x86-fbsd"
 IUSE="dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline ssl wps kernel_linux kernel_FreeBSD"
 
 DEPEND="dev-libs/libnl
@@ -78,6 +78,9 @@ src_prepare() {
 src_configure() {
 	# Toolchain setup
 	echo "CC = $(tc-getCC)" > .config
+
+	# Enable crash reporting
+	echo "LIBS += -lcrash" >> .config
 
 	# Basic setup
 	echo "CONFIG_CTRL_IFACE=y" >> .config
@@ -197,7 +200,6 @@ src_install() {
 	fi
 
 	exeinto /etc/wpa_supplicant/
-	newexe "${FILESDIR}"/wpa_cli.sh wpa_cli.sh
 
 	dodoc ChangeLog {eap_testing,todo}.txt README{,-WPS} \
 		wpa_supplicant.conf || die "dodoc failed"

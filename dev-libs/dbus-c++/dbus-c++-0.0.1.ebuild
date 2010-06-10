@@ -3,21 +3,7 @@
 
 EAPI=2
 
-KEYWORDS="~amd64 ~x86 ~arm"
-
-if [[ ${PV} != "9999" ]] ; then
-	inherit git
-
-	KEYWORDS="amd64 x86 arm"
-
-	EGIT_REPO_URI="http://src.chromium.org/git/dbus-cplusplus.git"
-	EGIT_BRANCH="with_exceptions"
-	# Commit required to ensure we get a specific version
-	# TODO(jglasgow): debug git eclass
-	EGIT_COMMIT="42d1b537170739a1650bb26de6b439074c1d675e"
-fi
-
-inherit toolchain-funcs
+inherit toolchain-funcs cros-workon
 
 DESCRIPTION="C++ D-Bus bindings"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/dbus-c%2B%2B"
@@ -25,6 +11,11 @@ SRC_URI=""
 LICENSE="LGPL-2"
 SLOT="1"
 IUSE="debug doc +glib"
+KEYWORDS="amd64 x86 arm"
+
+CROS_WORKON_PROJECT=dbus-cplusplus
+CROS_WORKON_COMMIT="42d1b537170739a1650bb26de6b439074c1d675e"
+#branch = with_exceptions
 
 RDEPEND="
 	glib? ( >=dev-libs/dbus-glib-0.76 )
@@ -34,23 +25,6 @@ DEPEND="${DEPEND}
 	doc? ( dev-libs/libxslt )
 	doc? ( app-doc/doxygen )
 	dev-util/pkgconfig"
-
-src_unpack() {
-	if [[ -n "${EGIT_REPO_URI}" ]] ; then
-		git_src_unpack
-	else
-		# CHROMEOS_ROOT won't be set if the build
-		# is being run from make_chroot.
-		if [ -z "${CHROMEOS_ROOT}" ] ; then
-			local CHROMEOS_ROOT=$(eval echo -n ~${SUDO_USER}/trunk)
-		fi
-		local dbus="${CHROMEOS_ROOT}/src/third_party/dbus-c++"
-
-		elog "Using source: $dbus"
-		cp -a "${dbus}" "${S}" || die
-	fi
-	ln -sf "${S}" "${S}/../dbus-c++"
-}
 
 src_prepare() {
 	./bootstrap || die "failed to bootstrap autotools"

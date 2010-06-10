@@ -84,6 +84,8 @@ src_install() {
 	dosbin "${S}/cryptohome"
 	dolib "${S}/libcryptohome_service.so"
 
+	dobin "${S}/email_to_image"
+
 	dodir /etc/dbus-1/system.d
 	insinto /etc/dbus-1/system.d
 	doins "${S}/etc/Cryptohome.conf"

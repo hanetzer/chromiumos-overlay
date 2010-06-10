@@ -24,7 +24,8 @@ SLOT="0"
 IUSE="test valgrind splitdebug"
 
 RDEPEND="chromeos-base/libchrome
-	 chromeos-base/libchromeos"
+	 chromeos-base/libchromeos
+	 dev-libs/openssl"
 
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.
@@ -62,10 +63,11 @@ src_test() {
 	tc-export CC
 	tc-export OBJCOPY
 	tc-export STRIP
+	# TODO(wad) add a verbose use flag to change the MODE=
 	emake -C ${SRC} \
 		OUT=${S}/build \
 		VALGRIND=$(use valgrind && echo 1) \
-		MODE=dbg \
+		MODE=opt \
 		SPLITDEBUG=0 \
 		tests || die "unit tests (with ${GTEST_ARGS}) failed!"
 }
