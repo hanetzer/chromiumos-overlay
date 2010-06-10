@@ -42,9 +42,6 @@
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/mobile-broadband-provider-info-20100122 x86 arm
 =net-misc/modemmanager-0.2_p20090925 x86 arm
-=net-wireless/iwl1000-ucode-128.50.3.1 x86
-=net-wireless/iwl5000-ucode-8.24.2.12 x86
-=net-wireless/iwl6000-ucode-9.176.4.1 x86
 =sci-geosciences/gpsd-2.38  x86 arm
 =sys-apps/baselayout-2.0.1	x86 arm
 =sys-apps/dbus-1.2.20		x86 arm

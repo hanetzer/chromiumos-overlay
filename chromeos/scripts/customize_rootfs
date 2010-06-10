@@ -291,10 +291,6 @@ sudo mv "${ROOT_FS_DIR}/etc/pulse/default-cros.pa" \
 sudo cp "${CHROMIUMOS_OVERLAY}/chromeos/files/99-gpsd-usb.rules" \
   "${ROOT_FS_DIR}/etc/udev/rules.d/99-gpsd-usb.rules"
 
-# TODO(sleffler) temporary workaround for iwl problems; disable 11n
-echo 'options iwlagn 11n_disable50=1' | \
-    sudo tee "${ROOT_FS_DIR}/etc/modprobe.d/iwlagn.conf"
-
 # Run the emulator to generate the font cache. It needs to be copied
 # temporarily into the sysroot because we chroot to it. fc-cache
 # needs the font files to be located in their final resting place.

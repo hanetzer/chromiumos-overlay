@@ -31,4 +31,8 @@ src_install() {
   doins "${S}/iwlwifi-6000-4.ucode"
 
   dodoc README* || die "dodoc failed"
+
+  # NB: temp workaround for 6200 issues; disable 11n
+  insinto /etc/modprobe.d
+  doins "${FILESDIR}/iwlagn.conf"
 }
