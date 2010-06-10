@@ -17,3 +17,15 @@ DEPEND="${RDEPEND}
 	x11-proto/inputproto
 	x11-proto/randrproto
 	x11-proto/xproto"
+
+EPATCH_FORCE="yes"
+EPATCH_SUFFIX="patch"
+
+# These have been sent upstream
+UPSTREAMED_PATCHES=(
+	)
+
+PATCHES=(
+	"${UPSTREAMED_PATCHES[@]}"
+	"${FILESDIR}/1.5.0-omit-sleep-for-mouse.patch"
+	)

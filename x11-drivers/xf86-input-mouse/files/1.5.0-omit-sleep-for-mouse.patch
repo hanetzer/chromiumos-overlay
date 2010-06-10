@@ -1,0 +1,57 @@
+diff -u -r old/src/mouse.c new/src/mouse.c
+--- old/src/mouse.c	2010-06-10 10:13:51.000000000 -0700
++++ new/src/mouse.c	2010-06-10 10:16:18.000000000 -0700
+@@ -2823,15 +2823,11 @@
+ 	    do_ps2Reset(pInfo);
+ 	    if (paramlen > 0) {
+ 		if (!ps2SendPacket(pInfo,param,paramlen)) {
+-		    usleep(30000);
+-		    xf86FlushInput(pInfo->fd);
+ 		    if (!count--)
+ 			return TRUE;
+ 		    goto REDO;
+ 		}
+ 		ps2GetDeviceID(pInfo);
+-		usleep(30000);
+-		xf86FlushInput(pInfo->fd);
+ 	    }
+ 	    
+ 	    if (osInfo->SetPS2Res) {
+@@ -2886,8 +2882,6 @@
+ 			return TRUE;
+ 		    goto REDO;
+ 		}
+-		usleep(30000);
+-		xf86FlushInput(pInfo->fd);
+ 		if (!ps2EnableDataReporting(pInfo)) {
+ 		    xf86Msg(X_INFO, "%s: ps2EnableDataReporting: failed\n",
+ 			    pInfo->name);
+@@ -2910,8 +2904,6 @@
+ 	    if (xf86WriteSerial(pInfo->fd, param, paramlen) != paramlen)
+ 		xf86Msg(X_ERROR, "%s: Mouse initialization failed\n",
+ 			pInfo->name);
+-	    usleep(30000);
+-	    xf86FlushInput(pInfo->fd);
+ 	}
+     }
+ 
+diff -u -r old/src/pnp.c new/src/pnp.c
+--- old/src/pnp.c	2010-06-10 10:13:51.000000000 -0700
++++ new/src/pnp.c	2010-06-10 10:16:18.000000000 -0700
+@@ -593,7 +593,6 @@
+     for (i = 0; i < len; i++) {
+ 	for (j = 0; j < 10; j++) {
+ 	    xf86WriteSerial(pInfo->fd, bytes + i, 1);
+-	    usleep(10000);
+ 	    if (!readMouse(pInfo,&c)) {
+ #ifdef DEBUG
+ 		xf86ErrorF("sending 0x%x to PS/2 unsuccessful\n",*(bytes + i));
+@@ -647,8 +646,6 @@
+     unsigned char u;
+     unsigned char packet[] = { 0xf2 };
+ 
+-    usleep(30000);
+-    xf86FlushInput(pInfo->fd);
+     if (!ps2SendPacket(pInfo, packet, sizeof(packet))) 
+ 	return -1;
+     while (1) {
