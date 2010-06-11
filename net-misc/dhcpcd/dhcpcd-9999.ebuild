@@ -14,7 +14,7 @@ KEYWORDS="~amd64 arm x86"
 IUSE=""
 
 RDEPEND=">=sys-apps/dbus-1.2
-	chromeos-base/crash-reporter"
+	chromeos-base/crash-dumper"
 DEPEND="${RDEPEND}"
 
 src_unpack() {
