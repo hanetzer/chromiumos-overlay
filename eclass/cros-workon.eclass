@@ -9,7 +9,7 @@
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
 # Directory where git repositories of packages are checked out
-: ${CROS_WORKON_PROJECT:=}
+: ${CROS_WORKON_SRCROOT:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
 # @DESCRIPTION:
