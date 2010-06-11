@@ -3,14 +3,14 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="test"
 
 RDEPEND="
@@ -26,11 +26,16 @@ DEPEND="
 	chromeos-base/libchromeos
 	${RDEPEND}"
 
+CROS_WORKON_PROJECT="cryptohome"
+CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
+
+# TODO(msb): fix this ugly hackery
 src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
-	mkdir -p "${S}/cryptohome"
-	cp -a "${platform}/cryptohome" "${S}" || die
+	cros-workon_src_unpack
+	pushd "${S}"
+	mkdir "${CROS_WORKON_PROJECT}"
+	mv * "${CROS_WORKON_PROJECT}"
+	popd
 }
 
 src_compile() {
