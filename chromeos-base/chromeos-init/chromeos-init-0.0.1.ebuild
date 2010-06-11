@@ -55,6 +55,12 @@ src_install() {
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
 	dosbin "${S}/clobber-state"
 
+        # Install log cleaning script and run it daily.
+        into /usr
+        dosbin "${S}/chromeos-cleanup-logs"
+        exeinto /etc/cron.daily
+        doexe "${S}/cleanup-logs.daily"
+
 	# Preseed /lib/chromiumos/devices which is by chromeos_startup to
 	# populate /dev with enough devices to be able to do early init and
 	# start the X server.
