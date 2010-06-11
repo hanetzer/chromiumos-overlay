@@ -18,7 +18,8 @@ RDEPEND="chromeos-base/libchrome
 	>=dev-libs/glib-2.0
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
-	dev-cpp/gflags"
+	dev-cpp/gflags
+   dev-cpp/glog"
 DEPEND="${RDEPEND}
 	net-misc/modemmanager"
 
