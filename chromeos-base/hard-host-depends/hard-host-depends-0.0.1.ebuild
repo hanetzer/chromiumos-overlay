@@ -15,7 +15,7 @@ IUSE=""
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	dev-embedded/u-boot-tools
-        sys-boot/bootstub
+	sys-boot/bootstub
 	sys-boot/grub
 	sys-boot/syslinux
 	sys-devel/crossdev
@@ -27,7 +27,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
 	app-arch/cabextract
-        app-arch/dpkg
+	app-arch/dpkg
 	app-arch/rpm2targz
 	app-arch/sharutils
 	app-arch/unzip
@@ -38,14 +38,14 @@ RDEPEND="${RDEPEND}
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/glib
-        dev-libs/eggdbus
+	dev-libs/eggdbus
 	dev-libs/libgcrypt
 	dev-libs/libxslt
 	dev-libs/nss[utils]
 	dev-libs/protobuf
 	dev-python/dbus-python
 	dev-python/pygobject
-        dev-python/pygtk
+	dev-python/pygtk
 	dev-python/pyopenssl
 	dev-python/webpy
 	=dev-util/boost-build-1.42.0
@@ -111,6 +111,12 @@ RDEPEND="${RDEPEND}
 # Host dependencies that are needed to sign images
 RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
+	"
+
+# Host dependency needed to dump symbols from binaries.
+# See http://crosbug.com/3437.
+RDEPEND="${RDEPEND}
+	chromeos-base/dump-syms
 	"
 
 DEPEND=""
