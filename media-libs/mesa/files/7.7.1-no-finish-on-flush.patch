@@ -1,0 +1,27 @@
+diff --git a/src/mesa/drivers/dri/intel/intel_context.c b/src/mesa/drivers/dri/intel/intel_context.c
+index 6275df3..d014414 100644
+--- a/src/mesa/drivers/dri/intel/intel_context.c
++++ b/src/mesa/drivers/dri/intel/intel_context.c
+@@ -522,6 +522,8 @@ static void
+ intel_glFlush(GLcontext *ctx)
+ {
+    struct intel_context *intel = intel_context(ctx);
++   drm_intel_bo *bo = intel->first_post_swapbuffers_batch;
++   intel->first_post_swapbuffers_batch = NULL;
+ 
+    intel_flush(ctx, GL_TRUE);
+ 
+@@ -537,10 +539,9 @@ intel_glFlush(GLcontext *ctx)
+     * and getting our hands on that doesn't seem worth it, so we just us the
+     * first batch we emitted after the last swap.
+     */
+-   if (intel->first_post_swapbuffers_batch != NULL) {
+-      drm_intel_bo_wait_rendering(intel->first_post_swapbuffers_batch);
+-      drm_intel_bo_unreference(intel->first_post_swapbuffers_batch);
+-      intel->first_post_swapbuffers_batch = NULL;
++   if (bo != NULL) {
++      drm_intel_bo_wait_rendering(bo);
++      drm_intel_bo_unreference(bo);
+    }
+ }
+ 

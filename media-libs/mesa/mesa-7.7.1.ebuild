@@ -32,7 +32,7 @@ fi
 
 LICENSE="LGPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86 ~x86-fbsd"
 
 VIDEO_CARDS="intel mach64 mga none nouveau r128 radeon radeonhd savage sis sunffb svga tdfx via msm"
 for card in ${VIDEO_CARDS}; do
@@ -99,6 +99,8 @@ src_prepare() {
 	# FreeBSD 6.* doesn't have posix_memalign().
 	[[ ${CHOST} == *-freebsd6.* ]] && \
 		sed -i -e "s/-DHAVE_POSIX_MEMALIGN//" configure.ac
+
+        epatch "${FILESDIR}"/${PV}-no-finish-on-flush.patch
 
 	eautoreconf
 }
