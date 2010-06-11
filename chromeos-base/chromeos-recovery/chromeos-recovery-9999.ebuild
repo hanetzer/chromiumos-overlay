@@ -3,12 +3,14 @@
 
 EAPI=2
 
+inherit cros-workon
+
 DESCRIPTION="Chrome OS Recovery Image Installer"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="~x86 ~arm"
 IUSE=""
 
 DEPEND=""
@@ -16,13 +18,8 @@ DEPEND=""
 RDEPEND="chromeos-base/chromeos-installer
          chromeos-base/chromeos-init"
 
-src_unpack() {
-	local recovery_installer="${CHROMEOS_ROOT}/src/platform/\
-recovery_installer"
-	elog "Using recovery_installer: $recovery_installer"
-	mkdir "${S}"
-	cp -a "${recovery_installer}"/* "${S}" || die
-}
+CROS_WORKON_LOCALNAME="recovery_installer"
+CROS_WORKON_PROJECT="recovery_installer"
 
 src_install() {
 	insinto /etc/init
