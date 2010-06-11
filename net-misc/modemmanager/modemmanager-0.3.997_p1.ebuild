@@ -15,7 +15,7 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~amd64 arm x86"
 IUSE=""
 
 RDEPEND=">=dev-libs/glib-2.16
