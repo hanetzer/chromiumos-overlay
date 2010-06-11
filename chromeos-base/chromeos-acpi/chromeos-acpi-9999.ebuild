@@ -3,26 +3,22 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon
 
 DESCRIPTION="Chrome OS ACPI Scripts"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 IUSE=""
 
 DEPEND=""
 
 RDEPEND="sys-power/acpid"
 
-src_unpack() {
-  local acpi="${CHROMEOS_ROOT}/src/platform/acpi"
-  elog "Using acpi: $acpi"
-  mkdir "${S}"
-  cp -a "${acpi}"/* "${S}" || die
-}
+CROS_WORKON_LOCALNAME="acpi"
+CROS_WORKON_PROJECT="acpi"
 
 src_install() {
   dodir /etc/acpi/events
