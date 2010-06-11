@@ -93,6 +93,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/power_manager
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
+	chromeos-base/vboot_reference
 	chromeos-base/xscreensaver
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
@@ -122,7 +123,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/upstart
 	sys-apps/util-linux
 	sys-auth/consolekit
-        sys-block/gpt
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	sys-libs/timezone-data

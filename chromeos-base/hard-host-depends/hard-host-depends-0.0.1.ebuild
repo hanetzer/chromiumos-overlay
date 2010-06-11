@@ -15,7 +15,6 @@ IUSE=""
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	dev-embedded/u-boot-tools
-	sys-block/gpt
         sys-boot/bootstub
 	sys-boot/grub
 	sys-boot/syslinux

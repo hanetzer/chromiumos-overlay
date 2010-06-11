@@ -8,7 +8,6 @@ dev-util/subversion	-dso
 media-libs/gd           png
 x11-libs/cairo		X
 sys-auth/pam_mount      -crypt
-sys-block/gpt           static
 # Build emulation statically so that we can execute it within a chroot and
 # still find the shared libraries.
 app-emulation/qemu-user static
