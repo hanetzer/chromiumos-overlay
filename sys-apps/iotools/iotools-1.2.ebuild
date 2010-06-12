@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit toolchain-funcs
+inherit eutils toolchain-funcs
 
 DESCRIPTION="Simple commands to access hardware device registers"
 HOMEPAGE="http://code.google.com/p/iotools/"
@@ -15,11 +15,18 @@ IUSE=""
 SRC_URI="http://iotools.googlecode.com/files/${P}.tar.gz"
 
 src_compile() {
+	# If we are on hardened/x86, turn off PIE because the code uses %ebx
+	if use x86 ; then
+		if [ -f /etc/hardened ] ; then
+			epatch "${FILESDIR}"/iotools-1.2.nopie.patch
+		fi
+	fi
+
 	emake CC="$(tc-getCC)" || die "emake failed"
 }
 
 IOTOOLS_COMMANDS="and btr bts busy_loop cmos_read cmos_write cpu_list \
-                  cpuid io_read16 io_read32 io_read8 io_write16 io_write32 \
+		  cpuid io_read16 io_read32 io_read8 io_write16 io_write32 \
 		  io_write8 mmio_dump mmio_read16 mmio_read32 mmio_read64 \
 		  mmio_read8 mmio_write16 mmio_write32 mmio_write64 \
 		  mmio_write8 not or pci_list pci_read16 pci_read32 pci_read8 \

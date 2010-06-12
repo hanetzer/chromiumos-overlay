@@ -49,7 +49,7 @@ eval set -- "${FLAGS_ARGV}"
 # TODO(fes): Once we have pre-builts, modify the script to allow for their use.
 if [ -f /etc/hardened ] ; then
    echo "Hardened toolchain--overriding GCC version and forcing rebuild."
-   FLAGS_gcc_version="4.4.3-r3"
+   FLAGS_gcc_version="4.4.3-r4"
    FLAGS_usepkg=$FLAGS_FALSE
 fi
 

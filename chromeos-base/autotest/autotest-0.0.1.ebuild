@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit toolchain-funcs flag-o-matic
 
 DESCRIPTION="Autotest build_autotest wrapper"
 HOMEPAGE="http://src.chromium.org"
@@ -71,6 +71,17 @@ function setup_cross_toolchain() {
 		tc-getSTRIP
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
+	fi
+
+	# TODO(fes): Check for /etc/hardened for now instead of the hardened
+	# use flag because we aren't enabling hardened on the target board.
+	# Rather, right now we're using hardened only during toolchain compile.
+	# Various tests/etc. use %ebx in here, so we have to turn off PIE when
+	# using the hardened compiler
+	if use x86 ; then
+		if [ -f /etc/hardened ] ; then
+			CC="${CC} -nopie"
+		fi
 	fi
 }
 
