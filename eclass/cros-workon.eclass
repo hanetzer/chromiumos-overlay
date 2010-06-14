@@ -68,6 +68,7 @@ cros-workon_src_unpack() {
 	if [ -n "${CROS_WORKON_SUBDIR}" ]; then
 		path+="/${CROS_WORKON_SUBDIR}"
 	fi
+	einfo "Using local source dir: $path"
 
 	mkdir -p "${S}"
 	cp -a "${path}"/* "${S}" || die "cp -a ${path}/* ${S}"
