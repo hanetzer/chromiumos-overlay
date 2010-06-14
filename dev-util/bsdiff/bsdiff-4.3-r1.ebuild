@@ -2,12 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r1.ebuild,v 1.12 2010/01/15 21:21:10 fauli Exp $
 
-inherit toolchain-funcs flag-o-matic
+inherit eutils toolchain-funcs flag-o-matic
 
+EAPI=2
 IUSE=""
 
 DESCRIPTION="bsdiff: Binary Differencer using a suffix alg"
 HOMEPAGE="http://www.daemonology.net/bsdiff/"
+SRC_URI="http://www.daemonology.net/bsdiff/${P}.tar.gz"
 
 SLOT="0"
 LICENSE="BSD-2"
@@ -16,11 +18,8 @@ KEYWORDS="alpha amd64 arm hppa ia64 mips ppc sparc x86 ~x86-fbsd ~x86-freebsd ~a
 DEPEND="app-arch/bzip2"
 RDEPEND="${DEPEND}"
 
-src_unpack() {
-	local third_party="${CHROMEOS_ROOT}/src/third_party"
-	elog "Using third_party: $third_party"
-	mkdir -p "${S}"
-	cp -a "${third_party}/bsdiff/files"/* "${S}" || die
+src_prepare() {
+	epatch ${FILESDIR}/4.3_bspatch-support-input-output-positioning.patch
 }
 
 src_compile() {
