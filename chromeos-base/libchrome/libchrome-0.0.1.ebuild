@@ -84,6 +84,7 @@ src_install() {
 	doins "${S}/files/base/port.h"
 	doins "${S}/files/base/safe_strerror_posix.h"
 	doins "${S}/files/base/scoped_ptr.h"
+	doins "${S}/files/base/scoped_vector.h"
 	doins "${S}/files/base/setproctitle_linux.h"
 	doins "${S}/files/base/singleton.h"
 	doins "${S}/files/base/stl_util-inl.h"
