@@ -8,7 +8,7 @@ inherit cros-workon toolchain-funcs autotools
 DESCRIPTION="X.Org driver for MSM SOC"
 LICENSE=""
 SLOT="0"
-KEYWORDS="arm"
+KEYWORDS="~arm"
 IUSE="dri"
 
 RDEPEND=">=x11-base/xorg-server-1.4
