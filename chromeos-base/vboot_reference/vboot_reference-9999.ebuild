@@ -6,7 +6,7 @@ inherit cros-workon
 DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="minimal"
 EAPI="2"
 
