@@ -39,7 +39,15 @@
 inherit git
 
 cros-workon_src_unpack() {
-	local repo=${CROS_WORKON_REPO}
+	if [[ -z "${CHROMEOS_ROOT}" && "${PV}" != "9999" ]] ; then
+		local repo=${CROS_WORKON_REPO}
+		local project=${CROS_WORKON_PROJECT}
+		EGIT_REPO_URI="${repo}/${project}"
+		EGIT_COMMIT=${CROS_WORKON_COMMIT}
+		git_src_unpack
+		return
+	fi
+
 	local srcroot
 
 	if [ -z "${CROS_WORKON_SRCROOT}" ] ; then
@@ -53,18 +61,16 @@ cros-workon_src_unpack() {
 	fi
 
 
-	if [[ -n "${CHROMEOS_ROOT}" || "${PV}" == "9999" ]] ; then
-		local project=${CROS_WORKON_LOCALNAME}
-		local path="${srcroot}/${project}/${CROS_WORKON_SUBDIR}"
-
-		mkdir -p "${S}"
-		cp -a "${path}"/* "${S}" || die
-	else
-		local project=${CROS_WORKON_PROJECT}
-		EGIT_REPO_URI="${repo}/${project}"
-		EGIT_COMMIT=${CROS_WORKON_COMMIT}
-		git_src_unpack
+	local path="${srcroot}"
+	if [ -n "${CROS_WORKON_LOCALNAME}" ]; then
+		path+="/${CROS_WORKON_LOCALNAME}"
 	fi
+	if [ -n "${CROS_WORKON_SUBDIR}" ]; then
+		path+="/${CROS_WORKON_SUBDIR}"
+	fi
+
+	mkdir -p "${S}"
+	cp -a "${path}"/* "${S}" || die "cp -a ${path}/* ${S}"
 }
 
 EXPORT_FUNCTIONS src_unpack
