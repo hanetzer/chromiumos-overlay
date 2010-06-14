@@ -3,12 +3,14 @@
 
 EAPI=2
 
+inherit cros-workon
+
 DESCRIPTION="Chrome OS Factory Installer"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="~x86 ~arm"
 IUSE=""
 
 DEPEND=""
@@ -19,13 +21,8 @@ RDEPEND="chromeos-base/chromeos-installer
 
 FACTORY_SERVER="${FACTORY_SERVER:-meatball.mtv.corp.google.com}"
 
-
-src_unpack() {
-	local factory_installer="${CHROMEOS_ROOT}/src/platform/factory_installer"
-	elog "Using factory_installer: $factory_installer"
-	mkdir "${S}"
-	cp -a "${factory_installer}"/* "${S}" || die
-}
+CROS_WORKON_LOCALNAME="factory_installer"
+CROS_WORKON_PROJECT="factory_installer"
 
 src_install() {
 	insinto /etc/init
