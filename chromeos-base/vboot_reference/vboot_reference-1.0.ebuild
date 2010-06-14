@@ -13,12 +13,9 @@ EAPI="2"
 DEPEND="dev-libs/openssl
         sys-apps/util-linux"
 
-EGIT_REPO_URI=git://chromiumos-git/git/repos/not-yet-populated.git
-SRCPATH=src/platform/vboot_reference
-
 src_compile() {
 	tc-export CC AR CXX
-	err_msg="${SRCPATH} compile failed. "
+	err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
 	emake || die "${err_msg}"
 }
@@ -26,9 +23,9 @@ src_compile() {
 src_install() {
 	if use minimal ; then
         	emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C cgpt \
-		      install || die "${SRCPATH} install failed."
+		      install || die "${PN} install failed."
 	else
         	emake DESTDIR="${D}/usr/bin" install || \
-	        	die "${SRCPATH} install failed."
+	        	die "${PN} install failed."
 	fi
 }
