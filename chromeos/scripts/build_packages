@@ -98,7 +98,7 @@ else
 fi
 
 if [[ $FLAGS_withtest -eq $FLAGS_TRUE ]]; then
-  sudo emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
+  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
 fi
 
 # Pull a different version of chrome if requested and force a non-update
