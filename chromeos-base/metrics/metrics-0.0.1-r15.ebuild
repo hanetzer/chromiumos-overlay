@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit flag-o-matic toolchain-funcs
+inherit cros-workon flag-o-matic
 
 DESCRIPTION="Chrome OS Metrics Collection Utilities"
 HOMEPAGE="http://src.chromium.org"
@@ -24,12 +24,6 @@ DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	dev-cpp/gtest
 	"
-
-src_unpack() {
-	local metrics="${CHROMEOS_ROOT}/src/platform/metrics"
-	elog "Using metrics sources: $metrics"
-	cp -ar "${metrics}" "${S}" || die
-}
 
 src_compile() {
 	use debug || append-flags -DNDEBUG
