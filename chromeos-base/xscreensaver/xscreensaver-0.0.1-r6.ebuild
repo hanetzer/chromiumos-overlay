@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon
 
 DESCRIPTION="Screen locker for Chrome OS."
 HOMEPAGE="http://src.chromium.org"
@@ -13,13 +13,14 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-RDEPEND="chromeos-base/pam_offline
+RDEPEND="chromeos-base/chromeos-assets
+    chromeos-base/pam_offline
 	x11-libs/libXmu  
 	x11-libs/libXrandr  
 	x11-libs/libXt
 	x11-libs/libX11
 	x11-libs/libXext
-        sys-libs/pam"
+    sys-libs/pam"
 
 DEPEND="x11-proto/xextproto
 	x11-proto/scrnsaverproto
@@ -28,20 +29,25 @@ DEPEND="x11-proto/xextproto
 	${RDEPEND}"
 
 src_unpack() {
-	local asset_images="${CHROMEOS_ROOT}/src/platform/assets/images"
-	local third_party="${CHROMEOS_ROOT}/src/third_party"
-	elog "Using third_party: $third_party"
-	mkdir -p "${S}"
-	cp -a "${third_party}/xscreensaver/xscreensaver-5.08"/* "${S}" || die
-	mkdir -p "${S}/utils/images"
-	cp "${asset_images}/screenlocker.xpm" "${S}/utils/images"
+	# Force category to be original for xscreensaver.
+	CATEGORY="x11-misc"
+	cros-workon_src_unpack
+	
+	# Get screenlocker image from chromeos-assets.
+	local asset_images="${SYSROOT}/usr/share/chromeos-assets/images"
+	mkdir -p "${S}/xscreensaver-5.08/utils/images"
+	cp "${asset_images}/screenlocker.xpm" \
+		"${S}/xscreensaver-5.08/utils/images" || die
 }
 
-src_configure() {  
-	econf --without-xf86vmode-ext --without-xf86gamma-ext  
+src_configure() {
+	pushd xscreensaver-5.08
+	econf --without-xf86vmode-ext --without-xf86gamma-ext
+	popd
 }
 
 src_compile() {
+	pushd xscreensaver-5.08
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX
@@ -54,13 +60,17 @@ src_compile() {
 	fi
 	
 	emake || die "xscreensaver compile failed."
+	popd
 }
 
-src_install() {    
-	emake prefix="${D}/usr" install
+src_install() {
+	pushd xscreensaver-5.08
+	emake prefix="${D}/usr" install || die "Install failed"
+
 	insinto "/etc/X11/app-defaults"
 	doins XScreenSaver
 
 	insinto "/etc/pam.d"
-	doins "${CHROMEOS_ROOT}/src/platform/screenlocker/xscreensaver"
+	doins "pam.d/xscreensaver"
+	popd
 }
