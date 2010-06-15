@@ -367,22 +367,14 @@ src_install() {
   doins "${FROM}"/chrome.pak
   doins -r "${FROM}"/locales
   doins -r "${FROM}"/resources
+  doins "${FROM}"/resources.pak
   doins "${FROM}"/xdg-settings
   doins "${FROM}"/*.png
 
-  # Next, some scripts from the chromeos source tree
-  PLATFORM_CHROME="${CHROMEOS_ROOT}"/src/platform/chrome
-  
-  doins "${PLATFORM_CHROME}"/bottle.sh
-  doins "${PLATFORM_CHROME}"/log.sh
-  
   # Chrome test resources 
   if use build_tests; then
     install_chrome_test_resources
   fi
-
-  insinto /usr/bin
-  doins "${PLATFORM_CHROME}"/chromeos-chrome-loop
 
   # Fix some perms
   chmod -R a+r "${D}"
