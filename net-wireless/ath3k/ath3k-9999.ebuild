@@ -10,7 +10,7 @@ HOMEPAGE="http://www.atheros.com/"
 LICENSE="Atheros"
 
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RESTRICT="binchecks strip test"
