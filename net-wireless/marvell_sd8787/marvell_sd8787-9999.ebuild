@@ -10,7 +10,7 @@ HOMEPAGE="http://www.marvell.com/"
 LICENSE="Marvell International Ltd."
 
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="~x86 ~arm"
 IUSE=""
 
 RESTRICT="binchecks strip test"
