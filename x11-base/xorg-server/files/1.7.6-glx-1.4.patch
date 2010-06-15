@@ -1,16 +1,3 @@
-commit ad5c0d9efa47476ed5cf75c82265c73919e468b4
-Author: Ian Romanick <ian.d.romanick@intel.com>
-Date:   Tue Sep 29 16:43:43 2009 -0700
-
-    GLX: Enable GLX 1.4 on DRI2
-    
-    Return the minimum GLX version supported by all screens.  Assume that
-    DRI2 screens have all the required features for GLX 1.4.  Assume that
-    everyone else can only support GLX 1.2.
-    
-    Reviewed-by: Kristian Høgsberg <krh@redhat.com>
-    Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
-
 diff --git a/glx/glxcmds.c b/glx/glxcmds.c
 index b1061a8..30c25a9 100644
 --- a/glx/glxcmds.c
@@ -73,7 +60,7 @@ index ed7fb4c..82568e6 100644
      pScrn->EnterVT = glxDRIEnterVT; 
      screen->leaveVT = pScrn->LeaveVT;
 diff --git a/glx/glxext.c b/glx/glxext.c
-index 19d70d4..2de8b84 100644
+index 19d70d4..9f9c0ed 100644
 --- a/glx/glxext.c
 +++ b/glx/glxext.c
 @@ -360,12 +360,18 @@ void GlxExtensionInit(void)
@@ -85,19 +72,19 @@ index 19d70d4..2de8b84 100644
 +
 +	    glxScreen = p->screenProbe(pScreen);
 +	    if (glxScreen != NULL) {
++	        if (glxScreen->GLXminor < glxMinorVersion)
++		    glxMinorVersion = glxScreen->GLXminor;
  		LogMessage(X_INFO,
  			   "GLX: Initialized %s GL provider for screen %d\n",
  			   p->name, i);
  		break;
  	    }
 +
-+	    if (glxScreen->GLXminor < glxMinorVersion)
-+		glxMinorVersion = glxScreen->GLXminor;
  	}
  
  	if (!p)
 diff --git a/glx/glxscreens.c b/glx/glxscreens.c
-index 81faddd..ee3788d 100644
+index 7d29d31..6ce24b2 100644
 --- a/glx/glxscreens.c
 +++ b/glx/glxscreens.c
 @@ -162,7 +162,8 @@ static const char GLServerExtensions[] =
@@ -110,7 +97,7 @@ index 81faddd..ee3788d 100644
  static char GLXServerExtensions[] =
  			"GLX_ARB_multisample "
  			"GLX_EXT_visual_info "
-@@ -430,8 +431,9 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
+@@ -378,8 +379,9 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
      pGlxScreen->pScreen       = pScreen;
      pGlxScreen->GLextensions  = xstrdup(GLServerExtensions);
      pGlxScreen->GLXvendor     = xstrdup(GLXServerVendorName);
@@ -121,7 +108,7 @@ index 81faddd..ee3788d 100644
  
      pGlxScreen->CloseScreen = pScreen->CloseScreen;
      pScreen->CloseScreen = glxCloseScreen;
-@@ -506,7 +508,6 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
+@@ -454,7 +456,6 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
  void __glXScreenDestroy(__GLXscreen *screen)
  {
      xfree(screen->GLXvendor);
