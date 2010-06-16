@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless -gobi"
+IUSE="-compat_wireless"
 
 DEPEND="sys-apps/debianutils"
 RDEPEND=""
@@ -50,25 +50,6 @@ src_unpack() {
 
 	mkdir -p "${S}"
 	cp -ar "${files}"/* "${S}" || die
-
-	local partner="${CHROMEOS_ROOT}/src/partner_private"
-	local qcqmiobj="${partner}/source-cromo_qualcomm-private/kernel/QCQMI/QCQMIOBJ.o"
-
-	if use gobi ; then
-
-		# The QCQMI kernel modules depends on a single .o that
-		# has not been made publically available.  Copy it
-		# from a private repository when building GOBI drivers.
-
-		if [ ! -r ${qcqmiobj} ] ; then
-			die "USE=gobi requires source-cromo_qualcomm-private repo"
-		fi
-
-		gobi_source="${S}/chromeos/drivers/gobi/"
-
-		elog "Using GOBI object: ${qcqmiobj}"
-		cp -a "${qcqmiobj}" "${gobi_source}/QCQMI/" || die
-	fi
  }
 
 src_configure() {
@@ -79,11 +60,6 @@ src_configure() {
 	else
 		chromeos/scripts/prepareconfig ${config} || die
 	fi
-	if use gobi; then
-		sed -e 's/# CONFIG_GOBI is not set/CONFIG_GOBI=m/' -i \
-		    "${S}"/.config
-	fi
-
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | emake ARCH=${kernel_arch} oldconfig || die
