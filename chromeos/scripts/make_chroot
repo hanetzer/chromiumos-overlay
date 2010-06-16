@@ -289,6 +289,8 @@ else
   CHROOT_EXAMPLE_OPT="--chroot=$FLAGS_chroot"
 fi
 
+print_time_elapsed
+
 echo
 echo "$PROG: All set up.  To enter the chroot, run:"
 echo "$PROG: $ $SCRIPTS_DIR/enter_chroot.sh $CHROOT_EXAMPLE_OPT"

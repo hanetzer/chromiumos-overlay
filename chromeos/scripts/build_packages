@@ -145,4 +145,6 @@ if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
   ./autotest --build=all --noprompt --board=${FLAGS_board} ${EMERGE_JOBS} 
 fi
 
+echo "Builds complete"
+print_time_elapsed
 echo "Done"
