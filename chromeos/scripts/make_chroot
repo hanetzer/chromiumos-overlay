@@ -61,6 +61,12 @@ if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   USEPKG="--getbinpkg --usepkg --with-bdeps y"
 fi
 
+# Support faster build if necessary.
+EMERGE_CMD="emerge"
+if [ -e "$(dirname $0)/.emerge" ]; then
+  TOP_SCRIPTS_DIR="/home/${USER}/trunk/src/scripts"
+  .  "$(dirname $0)/.emerge"
+fi
 
 function in_chroot {
   sudo chroot "$FLAGS_chroot" "$@"
@@ -257,9 +263,15 @@ sudo sh -c "echo STAGE3=$STAGE3 > $CHROOT_STATE"
 
 echo "$PROG: Running emerge world..."
 bash_chroot emerge -uDNv $USEPKG world $EMERGE_JOBS
-echo
+
+if [ -e "$(dirname $0)/.emerge" ]; then
+  echo "Setup fast emerge"
+  bash_chroot ${EMERGE_SETUP}
+fi
+
 echo "$PROG: Running emerge hard-host-depends..."
-bash_chroot emerge -uDNv $USEPKG chromeos-base/hard-host-depends $EMERGE_JOBS
+bash_chroot $EMERGE_CMD -uDNv $USEPKG \
+    chromeos-base/hard-host-depends $EMERGE_JOBS
 
 echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
   "${FLAGS_chroot}/home/$USER/.bashrc"

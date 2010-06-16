@@ -68,6 +68,14 @@ fi
 
 EMERGE_FLAGS=""
 
+EMERGE_CMD="emerge"
+EMERGE_BOARD_CMD="emerge-${FLAGS_board}"
+TOP_SCRIPTS_DIR=$(dirname "$0")
+if [ -e "${TOP_SCRIPTS_DIR}/.emerge" ]; then
+  echo "Using alternate emerge"
+  .  "${TOP_SCRIPTS_DIR}/.emerge"
+fi
+
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   # Use binary packages. Include all build-time dependencies,
   # so as to avoid unnecessary differences between source
@@ -88,23 +96,27 @@ fi
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
-eretry sudo emerge -uDNv $EMERGE_FLAGS world
+eretry sudo $EMERGE_CMD -uDNv $EMERGE_FLAGS world
 
 if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
-  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
+  echo "Building Chrome OS, dev"
+  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS \
     chromeos-base/chromeos chromeos-base/chromeos-dev
 else
-  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+  echo "Building Chrome OS"
+  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos
 fi
 
 if [[ $FLAGS_withtest -eq $FLAGS_TRUE ]]; then
-  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
+  echo "Building Test Package"
+  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
 fi
 
 # Pull a different version of chrome if requested and force a non-update
 # emerge build of chrome with those values.
 # If $FLAGS_chromebuild is unset the ebuild takes care of getting "LATEST"
 if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
+  echo "Building Chrome"
   echo "$PROG: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
   echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
 
@@ -113,19 +125,24 @@ if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
 
   CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild} \
   CHROME_FILENAME=$CHROME_FILENAME \
-  eretry emerge-${FLAGS_board} chromeos-base/chromeos-chrome
+  eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
 fi
 
 if [ "$FLAGS_withfactory" -eq "$FLAGS_TRUE" ]; then
-  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
+  echo "Building Factory Install"
+  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS \
     chromeos-base/chromeos-factoryinstall
 fi
 
 if [ "$FLAGS_withrecovery" -eq "$FLAGS_TRUE" ]; then
-  eretry emerge-${FLAGS_board} -uDNv $EMERGE_FLAGS \
-    chromeos-base/chromeos-recovery
+  echo "Building Recovery"
+  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS \
+    chromeos-base/chromeos-recovery 
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
-  ./autotest --build=all --noprompt --board=${FLAGS_board} ${EMERGE_JOBS}
+  echo "Building Autotest"
+  ./autotest --build=all --noprompt --board=${FLAGS_board} ${EMERGE_JOBS} 
 fi
+
+echo "Done"
