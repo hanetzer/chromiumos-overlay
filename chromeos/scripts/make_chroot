@@ -269,9 +269,9 @@ if [ -e "$(dirname $0)/.emerge" ]; then
   bash_chroot ${EMERGE_SETUP}
 fi
 
-echo "$PROG: Running emerge hard-host-depends..."
+echo "$PROG: Running emerge ccache crossdev etc ..."
 bash_chroot $EMERGE_CMD -uDNv $USEPKG \
-    chromeos-base/hard-host-depends $EMERGE_JOBS
+    ccache crossdev crossdev-wrappers portage sudo $EMERGE_JOBS
 
 echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
   "${FLAGS_chroot}/home/$USER/.bashrc"
