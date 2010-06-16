@@ -36,6 +36,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-latin-reorder.patch	#130466
 	epatch "${FILESDIR}"/${P}-fonts-config.patch
 	epatch "${FILESDIR}"/${P}-metric-aliases.patch
+	epatch "${FILESDIR}"/${P}-conf-d.patch
 	epunt_cxx	#74077
 
 	# Needed to get a sane .so versioning on fbsd, please dont drop
@@ -95,27 +96,6 @@ src_install() {
 	# As of fontconfig 2.7, everything sticks their noses in here.
 	dodir /etc/sandbox.d
 	echo 'SANDBOX_PREDICT="/var/cache/fontconfig"' > "${D}"/etc/sandbox.d/37fontconfig
-}
-
-pkg_preinst() {
-	# Bug #193476
-	# /etc/fonts/conf.d/ contains symlinks to ../conf.avail/ to include various
-	# config files.  If we install as-is, we'll blow away user settings.
-
-	ebegin "Syncing fontconfig configuration to system"
-	if [[ -e ${ROOT}/etc/fonts/conf.d ]]; then
-		for file in "${ROOT}"/etc/fonts/conf.avail/*; do
-			f=${file##*/}
-			if [[ -L ${ROOT}/etc/fonts/conf.d/${f} ]]; then
-				[[ -f ${D}etc/fonts/conf.avail/${f} ]] \
-					&& ln -sf ../conf.avail/"${f}" "${D}"etc/fonts/conf.d/ &>/dev/null
-			else
-				[[ -f ${D}etc/fonts/conf.avail/${f} ]] \
-					&& rm "${D}"etc/fonts/conf.d/"${f}" &>/dev/null
-			fi
-		done
-	fi
-	eend $?
 }
 
 pkg_postinst() {

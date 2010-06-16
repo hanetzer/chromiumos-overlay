@@ -35,7 +35,7 @@ DISTDIR="/var/lib/portage/distfiles"
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 
 # We want emerge to overwrite fontconfig files automatically.
-CONFIG_PROTECT_MASK="$CONFIG_PROTECT_MASK /etc/fonts/conf.avail"
+CONFIG_PROTECT_MASK="$CONFIG_PROTECT_MASK /etc/fonts/conf.avail /etc/fonts/conf.d"
 
 # Packages that use python will run a small python script to find the
 # pythondir. Unfortunately, if the build chroot is 64-bit then that
