@@ -3,25 +3,21 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Upstart init scripts for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="pulseaudio"
 
 DEPEND=""
 RDEPEND="sys-apps/upstart"
 
-src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
-	mkdir -p "${S}"
-	cp -a "${platform}/init"/* "${S}" || die
-}
+CROS_WORKON_LOCALNAME="init"
+CROS_WORKON_PROJECT="init"
 
 make_partition_devices() {
 	block=$1
