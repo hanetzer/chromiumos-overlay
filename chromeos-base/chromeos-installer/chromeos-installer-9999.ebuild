@@ -3,12 +3,14 @@
 
 EAPI=2
 
+inherit cros-workon
+
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 DEPEND=""
@@ -19,12 +21,8 @@ RDEPEND="dev-libs/shflags
          sys-apps/util-linux
          sys-fs/e2fsprogs"
 
-src_unpack() {
-  local installer="${CHROMEOS_ROOT}/src/platform/installer"
-  elog "Using installer: $installer"
-  mkdir "${S}"
-  cp -a "${installer}"/* "${S}" || die
-}
+CROS_WORKON_LOCALNAME="installer"
+CROS_WORKON_PROJECT="installer"
 
 src_install() {
   dodir /usr/sbin
