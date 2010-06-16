@@ -1,6 +1,6 @@
---- a/etc/portage/bashrc	2010-02-20 01:41:57.000000000 +0000
-+++ b/etc/portage/bashrc	2010-02-20 00:33:16.000000000 +0000
-@@ -8,10 +8,10 @@
+--- a/etc/portage/bashrc	2010-06-15 16:46:22.000000000 -0700
++++ b/etc/portage/bashrc	2010-06-15 16:53:18.000000000 -0700
+@@ -8,10 +8,15 @@
  		cmdline+=" -e ^${EM}[[:space:]]";        
  	done
  	output="$( cd ${D} && scanelf -RmyBF%a . | grep -v ${cmdline} )"
@@ -10,5 +10,10 @@
  # We dont functionize this to avoid sandboxing.
  if [[ $EBUILD_PHASE == "postinst" ]]; then
 -	[[ $EMERGE_FROM != binary ]] && cross-fix-root ${CHOST}
-+	cross-fix-root ${SYSROOT}
++	# chromiumos hack: only fix-root for build_packages
++	# Old behavior was to fix-root SYSROOT but that doesn't make any
++	# if SYSROOT != ROOT.
++	if [[ $(readlink -f "${SYSROOT}") == $(readlink -f "${ROOT}") ]]; then 
++		cross-fix-root ${SYSROOT}
++	fi
  fi
