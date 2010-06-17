@@ -24,30 +24,16 @@ CROS_WORKON_PROJECT="minijail"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM
+	export CCFLAGS="$CFLAGS"
 
 	# Only build the tool
 	scons minijail || die "minijail compile failed."
 }
 
 src_test() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM
+	export CCFLAGS="$CFLAGS"
 
 	# Only build the tests
 	# TODO(wad) eclass-ify this.
@@ -57,5 +43,5 @@ src_test() {
 
 src_install() {
         into /
-        dosbin "${S}/minijail/minijail"
+        dosbin minijail || die
 }
