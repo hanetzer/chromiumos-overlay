@@ -19,6 +19,7 @@ RDEPEND="${RDEPEND}
 	localssh? (
 		app-admin/sudo
 		app-arch/tar
+                chromeos-base/workarounds
 		net-misc/openssh
 		x11-terms/aterm
 	)
