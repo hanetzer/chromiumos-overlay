@@ -13,7 +13,7 @@ DESCRIPTION="Various TPM tools"
 LICENSE="BSD"
 HOMEPAGE="http://src.chromium.org"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 
 DEPEND="app-crypt/trousers"
 
