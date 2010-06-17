@@ -1,0 +1,1 @@
+xf86-video-intel-2.11.0.ebuild

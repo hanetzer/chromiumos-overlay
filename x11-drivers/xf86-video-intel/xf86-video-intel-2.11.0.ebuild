@@ -7,7 +7,7 @@ inherit x-modular
 
 DESCRIPTION="X.Org driver for Intel cards"
 
-KEYWORDS="~amd64 ~ia64 ~x86 ~x86-fbsd"
+KEYWORDS="~amd64 ~ia64 x86 ~x86-fbsd"
 IUSE="dri"
 
 RDEPEND=">=x11-base/xorg-server-1.6
@@ -27,10 +27,11 @@ DEPEND="${RDEPEND}
 	dri? ( x11-proto/xf86driproto
 	       x11-proto/glproto )"
 
-# TODO: Re-apply after we update to xorg-server-1.8.0 with proper patches.
-#PATCHES=(
-#	"${FILESDIR}/meego-${PV}-copy-fb.patch"
-#)
+PATCHES=(
+	# Copy the initial framebuffer contents when starting X so we can get
+	# seamless transitions.
+	"${FILESDIR}/meego-${PV}-copy-fb.patch"
+)
 
 pkg_setup() {
 	if tc-is-cross-compiler ; then

@@ -137,6 +137,12 @@ PATCHES=(
 	# Allow usage of monotonic clock while cross-compiling
 	"${FILESDIR}/monotonic-clock-fix.patch"
 	"${FILESDIR}/1.7.6-cache-xkbcomp-for-fast-start-up.patch"
+	# Make the root window get created without a background so we can get
+	# seamless transitions when X starts.  This looks like it may be upstreamed
+	# soon (as a -nr flag; we just enable it by default so we can use the same
+	# command line for older X servers):
+	# http://www.mail-archive.com/xorg-devel@lists.x.org/msg09360.html
+	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
 	)
 
 pkg_setup() {

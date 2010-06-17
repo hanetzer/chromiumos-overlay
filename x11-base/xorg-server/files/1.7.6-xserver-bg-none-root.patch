@@ -1,0 +1,104 @@
+This is Kristian Høgsberg's patch to omit a background for the root window
+to support seamless transitions when X starts:
+
+From a3e15680da24cb8259f6a83dee0c930dab024290 Mon Sep 17 00:00:00 2001
+From: Kristian <krh@redhat.com>
+Date: Fri, 15 Aug 2008 15:15:14 +1000
+Subject: [PATCH] Add nr for background=none root
+
+It has been modified to not add a -nr flag and instead always enable the
+new behavior if the driver claims to support it.  This lets us get the new
+feature while still using the same command line as before to start X, so we
+don't have problems with architectures that are using an older version of X.
+
+diff --git a/dix/window.c b/dix/window.c
+index 2676a54..3e59a54 100644
+--- a/dix/window.c
++++ b/dix/window.c
+@@ -466,23 +466,17 @@ InitRootWindow(WindowPtr pWin)
+     pWin->optional->cursor = rootCursor;
+     rootCursor->refcnt++;
+ 
++    pWin->backingStore = defaultBackingStore;
++    pWin->forcedBS = (defaultBackingStore != NotUseful);
+ 
+     if (party_like_its_1989) {
+         MakeRootTile(pWin);
+         backFlag |= CWBackPixmap;
++        (*pScreen->ChangeWindowAttributes)(pWin, backFlag);
+     } else {
+-	if (whiteRoot)
+-            pWin->background.pixel = pScreen->whitePixel;
+-        else
+-            pWin->background.pixel = pScreen->blackPixel;
+-        backFlag |= CWBackPixel;
++	/* nothing, handled in xf86CreateRootWindow */
+     } 
+ 
+-    pWin->backingStore = defaultBackingStore;
+-    pWin->forcedBS = (defaultBackingStore != NotUseful);
+-    /* We SHOULD check for an error value here XXX */
+-    (*pScreen->ChangeWindowAttributes)(pWin, backFlag);
+-
+     MapWindow(pWin, serverClient);
+ }
+ 
+diff --git a/hw/xfree86/common/xf86Init.c b/hw/xfree86/common/xf86Init.c
+index d3de670..298413a 100644
+--- a/hw/xfree86/common/xf86Init.c
++++ b/hw/xfree86/common/xf86Init.c
+@@ -77,6 +77,7 @@
+ #ifdef RENDER
+ #include "picturestr.h"
+ #endif
++#include "xace.h"
+ 
+ #include "xf86VGAarbiter.h"
+ #include "globals.h"
+@@ -249,6 +250,7 @@ xf86CreateRootWindow(WindowPtr pWin)
+   int ret = TRUE;
+   int err = Success;
+   ScreenPtr pScreen = pWin->drawable.pScreen;
++  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+   RootWinPropPtr pProp;
+   CreateWindowProcPtr CreateWindow = (CreateWindowProcPtr)
+       dixLookupPrivate(&pScreen->devPrivates, xf86CreateRootWindowKey);
+@@ -300,6 +302,15 @@ xf86CreateRootWindow(WindowPtr pWin)
+     }
+   }
+ 
++  if (pScrn->canDoBGNoneRoot) {
++    pWin->backgroundState = XaceBackgroundNoneState(pWin);
++    pWin->background.pixel = pScreen->whitePixel;
++    pScreen->ChangeWindowAttributes(pWin, CWBackPixmap | CWBorderPixel | CWCursor | CWBackingStore);
++  } else {
++    pWin->background.pixel = pScreen->blackPixel;
++    pScreen->ChangeWindowAttributes(pWin, CWBackPixel | CWBorderPixel | CWCursor | CWBackingStore);
++  }
++
+   DebugF("xf86CreateRootWindow() returns %d\n", ret);
+   return (ret);
+ }
+diff --git a/hw/xfree86/common/xf86str.h b/hw/xfree86/common/xf86str.h
+index b9a2e06..fd28664 100644
+--- a/hw/xfree86/common/xf86str.h
++++ b/hw/xfree86/common/xf86str.h
+@@ -516,7 +516,7 @@ typedef struct _confdrirec {
+ } confDRIRec, *confDRIPtr;
+ 
+ /* These values should be adjusted when new fields are added to ScrnInfoRec */
+-#define NUM_RESERVED_INTS		16
++#define NUM_RESERVED_INTS		15
+ #define NUM_RESERVED_POINTERS		14
+ #define NUM_RESERVED_FUNCS		11
+ 
+@@ -788,6 +788,9 @@ typedef struct _ScrnInfoRec {
+     ClockRangesPtr	clockRanges;
+     int			adjustFlags;
+ 
++    /* -nr support */
++    int                        canDoBGNoneRoot;
++
+     /*
+      * These can be used when the minor ABI version is incremented.
+      * The NUM_* parameters must be reduced appropriately to keep the
