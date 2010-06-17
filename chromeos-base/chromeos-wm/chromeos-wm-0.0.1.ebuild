@@ -97,6 +97,9 @@ src_install() {
 	dobin window_manager/bin/crosh-dev
 	dobin window_manager/bin/crosh-usb
 
+	into /
+	dosbin window_manager/bin/window-manager-session.sh
+
 	insinto /usr/lib/debug
 	doins window_manager/wm.sym
 }
