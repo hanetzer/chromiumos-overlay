@@ -143,6 +143,7 @@ PATCHES=(
 	# command line for older X servers):
 	# http://www.mail-archive.com/xorg-devel@lists.x.org/msg09360.html
 	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
+	"${FILESDIR}/1.7.6-skip-vendor-and-device-names.patch"
 	)
 
 pkg_setup() {

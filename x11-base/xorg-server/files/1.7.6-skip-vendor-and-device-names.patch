@@ -1,0 +1,307 @@
+From tiago.vignatti@nokia.com Wed Jun  9 06:49:41 2010
+Delivered-To: jrbarnette@corp-gmail.corp.google.com
+Received: by 10.142.207.21 with SMTP id e21cs6336wfg;
+        Wed, 9 Jun 2010 06:49:41 -0700 (PDT)
+X-pstn-nxp: bodyHash=e30d15c0c0846d43d53f890c5e07ebd26e7554aa, headerHash=94ecf6042ec7d1185348b61e3c331cf6c10338ab, keyName=4, rcptHash=4287dd538b9ce49b08e3f083a188304833016dcb, sourceip=209.85.222.200, version=1
+Received: by 10.115.113.31 with SMTP id q31mr14292746wam.1.1276091381825;
+        Wed, 09 Jun 2010 06:49:41 -0700 (PDT)
+Return-Path: <xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org>
+Received: from hpaq2.eem.corp.google.com (hpaq2.eem.corp.google.com [172.25.149.2])
+        by mx.google.com with ESMTPS id o17si16488118wac.2.2010.06.09.06.49.40
+        (version=TLSv1/SSLv3 cipher=RC4-MD5);
+        Wed, 09 Jun 2010 06:49:41 -0700 (PDT)
+Received-SPF: neutral (google.com: 209.85.222.200 is neither permitted nor denied by best guess record for domain of xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org) client-ip=209.85.222.200;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 209.85.222.200 is neither permitted nor denied by best guess record for domain of xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org) smtp.mail=xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org
+Received: from smtp.google.com (wpzn1.hot.corp.google.com [192.168.134.146])
+	by hpaq2.eem.corp.google.com with ESMTP id o59DnYUU003851
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT)
+	for <jrbarnette@google.com>; Wed, 9 Jun 2010 06:49:36 -0700
+Received: from psmtp.com (na3sys009amx211.postini.com [74.125.149.51])
+	by smtp.google.com (MX) with SMTP id o59DnRkf013068
+	for <jrbarnette@google.com>; Wed, 9 Jun 2010 13:49:29 GMT
+X-Relay-IP: 74.125.149.51
+Received: from source ([209.85.222.200]) by na3sys009amx211.postini.com ([74.125.148.10]) with SMTP;
+	Wed, 09 Jun 2010 06:49:29 PDT
+Received: by pzk38 with SMTP id 38sf1232993pzk.28
+        for <jrbarnette@google.com>; Wed, 09 Jun 2010 06:49:26 -0700 (PDT)
+Received: by 10.141.124.3 with SMTP id b3mr14487664rvn.123.1276091366435;
+        Wed, 09 Jun 2010 06:49:26 -0700 (PDT)
+Received: by 10.141.124.3 with SMTP id b3mr14487661rvn.123.1276091366338;
+        Wed, 09 Jun 2010 06:49:26 -0700 (PDT)
+Received: from gabe.freedesktop.org (gabe.freedesktop.org [131.252.210.177])
+        by mx.google.com with ESMTP id q10si11393312rvp.34.2010.06.09.06.49.26;
+        Wed, 09 Jun 2010 06:49:26 -0700 (PDT)
+Received-SPF: neutral (google.com: 131.252.210.177 is neither permitted nor denied by best guess record for domain of xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org) client-ip=131.252.210.177;
+Received: from gabe.freedesktop.org (localhost [127.0.0.1])
+	by gabe.freedesktop.org (Postfix) with ESMTP id 46CB69EB3B
+	for <jrbarnette@chromium.org>; Wed,  9 Jun 2010 06:49:26 -0700 (PDT)
+X-Original-To: xorg-devel@lists.freedesktop.org
+Delivered-To: xorg-devel@lists.freedesktop.org
+Received: from mgw-mx09.nokia.com (smtp.nokia.com [192.100.105.134])
+	by gabe.freedesktop.org (Postfix) with ESMTP id B2B169E76F
+	for <xorg-devel@lists.freedesktop.org>;
+	Wed,  9 Jun 2010 06:49:07 -0700 (PDT)
+Received: from esebh105.NOE.Nokia.com (esebh105.ntc.nokia.com [172.21.138.211])
+	by mgw-mx09.nokia.com (Switch-3.3.3/Switch-3.3.3) with ESMTP id
+	o59Dm7Cu026860
+	for <xorg-devel@lists.freedesktop.org>; Wed, 9 Jun 2010 08:49:05 -0500
+Received: from esebh102.NOE.Nokia.com ([172.21.138.183]) by
+	esebh105.NOE.Nokia.com with Microsoft SMTPSVC(6.0.3790.4675); 
+	Wed, 9 Jun 2010 16:48:16 +0300
+Received: from mgw-da02.ext.nokia.com ([147.243.128.26]) by
+	esebh102.NOE.Nokia.com over TLS secured channel with Microsoft
+	SMTPSVC(6.0.3790.4675); Wed, 9 Jun 2010 16:48:16 +0300
+Received: from localhost (xeron.research.nokia.com [172.21.41.62])
+	by mgw-da02.ext.nokia.com (Switch-3.3.3/Switch-3.3.3) with ESMTP id
+	o59DmAF2019282; Wed, 9 Jun 2010 16:48:12 +0300
+From: Tiago Vignatti <tiago.vignatti@nokia.com>
+To: "X.Org Devel List" <xorg-devel@lists.freedesktop.org>
+Subject: [PATCH 1/2] xfree86: pci: remove superfluous vendor and card name
+	logging
+Date: Wed,  9 Jun 2010 16:22:04 +0300
+Message-Id: <1276089725-24744-1-git-send-email-tiago.vignatti@nokia.com>
+X-Mailer: git-send-email 1.7.1.226.g770c5
+In-Reply-To: <AANLkTin4xkisyghn5wlE6odECuubQdIIg2Zm6c_ZP98Z@mail.gmail.com>
+References: <AANLkTin4xkisyghn5wlE6odECuubQdIIg2Zm6c_ZP98Z@mail.gmail.com>
+X-OriginalArrivalTime: 09 Jun 2010 13:48:16.0413 (UTC)
+	FILETIME=[697B14D0:01CB07DA]
+X-Nokia-AV: Clean
+X-BeenThere: xorg-devel@lists.x.org
+X-Mailman-Version: 2.1.11
+Precedence: list
+List-Id: "X.Org development list" <xorg-devel.lists.x.org>
+List-Unsubscribe: <http://lists.x.org/mailman/options/xorg-devel>,
+	<mailto:xorg-devel-request@lists.x.org?subject=unsubscribe>
+List-Archive: <http://lists.x.org/archives/xorg-devel>
+List-Post: <mailto:xorg-devel@lists.x.org>
+List-Help: <mailto:xorg-devel-request@lists.x.org?subject=help>
+List-Subscribe: <http://lists.x.org/mailman/listinfo/xorg-devel>,
+	<mailto:xorg-devel-request@lists.x.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org
+Errors-To: xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org
+X-pstn-neptune: 1/1/1.00/91
+X-pstn-levels: (S:99.90000/99.90000 CV:99.9000 FC:95.5390 LC:95.5390 R:95.9108 P:95.9108 M:97.0282 C:98.6951 )
+X-pstn-settings: 1 (0.1500:0.1500) cv gt3 gt2 gt1
+X-pstn-addresses: from <tiago.vignatti@nokia.com> [db-null]
+X-pstn-nvp: sourceip=209.85.222.200,bodyHash=e30d15c0c0846d43d53f890c5e07ebd26e7554aa,headerHash=94ecf6042ec7d1185348b61e3c331cf6c10338ab,rcptHash=4287dd538b9ce49b08e3f083a188304833016dcb,version=1,keyName=4,sig=aa5bb48e2becaad
+
+X server suffers in startup time when relying on the pciaccess's linear search
+to fetch vendor and video device name from PCI ID file (when existent). Such
+names are only used to write the log, which may be superfluous. Users can get
+the same information about external tools like lspci or scanpci.
+
+This patch remove the references of those functions from X start up.
+
+Reported-by: Richard Barnette <jrbarnette@chromium.org>
+Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+---
+What about this one guys? Richard, can you please test and see if works for
+you?
+
+ hw/xfree86/common/xf86pciBus.c |   13 +------------
+ 1 files changed, 1 insertions(+), 12 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86pciBus.c b/hw/xfree86/common/xf86pciBus.c
+index 184f221..8d13266 100644
+--- a/hw/xfree86/common/xf86pciBus.c
++++ b/hw/xfree86/common/xf86pciBus.c
+@@ -151,18 +151,13 @@ xf86PciProbe(void)
+     
+     /* Print a summary of the video devices found */
+     for (k = 0; k < num; k++) {
+-	const char *vendorname = NULL, *chipname = NULL;
+ 	const char *prim = " ";
+ 	Bool memdone = FALSE, iodone = FALSE;
+ 
+ 
+ 	info = xf86PciVideoInfo[k];
+ 
+-	vendorname = pci_device_get_vendor_name( info );
+-	chipname = pci_device_get_device_name( info );
+-
+-	if ((!vendorname || !chipname) &&
+-	    !PCIALWAYSPRINTCLASSES(info->device_class))
++	if (!PCIALWAYSPRINTCLASSES(info->device_class))
+ 	    continue;
+ 
+ 	if (xf86IsPrimaryPci(info))
+@@ -173,12 +168,6 @@ xf86PciProbe(void)
+ 		info->vendor_id, info->device_id,
+ 		info->subvendor_id, info->subdevice_id);
+ 
+-	if (vendorname)
+-	    xf86ErrorF("%s ", vendorname);
+-
+-	if (chipname)
+-	    xf86ErrorF("%s ", chipname);
+-
+ 	xf86ErrorF("rev %d", info->revision);
+ 
+ 	for (i = 0; i < 6; i++) {
+-- 
+1.7.1.226.g770c5
+
+_______________________________________________
+xorg-devel@lists.x.org: X.Org development
+Archives: http://lists.x.org/archives/xorg-devel
+Info: http://lists.x.org/mailman/listinfo/xorg-devel
+
+From tiago.vignatti@nokia.com Wed Jun  9 06:50:45 2010
+Delivered-To: jrbarnette@corp-gmail.corp.google.com
+Received: by 10.142.207.21 with SMTP id e21cs6343wfg;
+        Wed, 9 Jun 2010 06:50:48 -0700 (PDT)
+X-pstn-nxp: bodyHash=3f9aec56123598d12c1075a201b5c698c9f255a0, headerHash=c02505265492a703094ed36753187106ef77131d, keyName=4, rcptHash=4287dd538b9ce49b08e3f083a188304833016dcb, sourceip=74.125.83.175, version=1
+Received: by 10.90.241.4 with SMTP id o4mr88941agh.99.1276091445821;
+        Wed, 09 Jun 2010 06:50:45 -0700 (PDT)
+Return-Path: <xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org>
+Received: from wpaz17.hot.corp.google.com (wpaz17.hot.corp.google.com [172.24.198.81])
+        by mx.google.com with ESMTPS id 42si6886574ywh.44.2010.06.09.06.50.45
+        (version=TLSv1/SSLv3 cipher=RC4-MD5);
+        Wed, 09 Jun 2010 06:50:45 -0700 (PDT)
+Received-SPF: neutral (google.com: 74.125.83.175 is neither permitted nor denied by best guess record for domain of xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org) client-ip=74.125.83.175;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 74.125.83.175 is neither permitted nor denied by best guess record for domain of xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org) smtp.mail=xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org
+Received: from smtp.google.com (hpzb2.eem.corp.google.com [192.168.128.98])
+	by wpaz17.hot.corp.google.com with ESMTP id o59Dofxv005008
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT)
+	for <jrbarnette@google.com>; Wed, 9 Jun 2010 06:50:42 -0700
+Received: from psmtp.com (na3sys009amx178.postini.com [74.125.149.159])
+	by smtp.google.com (MX) with SMTP id o59DoQ2p024137
+	for <jrbarnette@google.com>; Wed, 9 Jun 2010 13:50:28 GMT
+X-Relay-IP: 74.125.149.159
+Received: from source ([74.125.83.175]) by na3sys009amx178.postini.com ([74.125.148.10]) with SMTP;
+	Wed, 09 Jun 2010 09:50:29 EDT
+Received: by pvc7 with SMTP id 7sf248897pvc.20
+        for <jrbarnette@google.com>; Wed, 09 Jun 2010 06:50:26 -0700 (PDT)
+Received: by 10.140.255.17 with SMTP id c17mr14519365rvi.179.1276091425878;
+        Wed, 09 Jun 2010 06:50:25 -0700 (PDT)
+Received: by 10.140.255.17 with SMTP id c17mr14519363rvi.179.1276091425717;
+        Wed, 09 Jun 2010 06:50:25 -0700 (PDT)
+Received: from gabe.freedesktop.org (gabe.freedesktop.org [131.252.210.177])
+        by mx.google.com with ESMTP id s9si6788445rvl.111.2010.06.09.06.50.25;
+        Wed, 09 Jun 2010 06:50:25 -0700 (PDT)
+Received-SPF: neutral (google.com: 131.252.210.177 is neither permitted nor denied by best guess record for domain of xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org) client-ip=131.252.210.177;
+Received: from gabe.freedesktop.org (localhost [127.0.0.1])
+	by gabe.freedesktop.org (Postfix) with ESMTP id 7133C9E7D5
+	for <jrbarnette@chromium.org>; Wed,  9 Jun 2010 06:50:25 -0700 (PDT)
+X-Original-To: xorg-devel@lists.freedesktop.org
+Delivered-To: xorg-devel@lists.freedesktop.org
+Received: from mgw-mx03.nokia.com (smtp.nokia.com [192.100.122.230])
+	by gabe.freedesktop.org (Postfix) with ESMTP id 22A279EB0A
+	for <xorg-devel@lists.freedesktop.org>;
+	Wed,  9 Jun 2010 06:50:01 -0700 (PDT)
+Received: from esebh106.NOE.Nokia.com (esebh106.ntc.nokia.com [172.21.138.213])
+	by mgw-mx03.nokia.com (Switch-3.3.3/Switch-3.3.3) with ESMTP id
+	o59DnigI020394
+	for <xorg-devel@lists.freedesktop.org>; Wed, 9 Jun 2010 16:49:59 +0300
+Received: from vaebh104.NOE.Nokia.com ([10.160.244.30]) by
+	esebh106.NOE.Nokia.com with Microsoft SMTPSVC(6.0.3790.4675); 
+	Wed, 9 Jun 2010 16:48:14 +0300
+Received: from mgw-sa02.ext.nokia.com ([147.243.1.48]) by
+	vaebh104.NOE.Nokia.com over TLS secured channel with Microsoft
+	SMTPSVC(6.0.3790.4675); Wed, 9 Jun 2010 16:48:14 +0300
+Received: from localhost (xeron.research.nokia.com [172.21.41.62])
+	by mgw-sa02.ext.nokia.com (Switch-3.3.3/Switch-3.3.3) with ESMTP id
+	o59DmDWj006269; Wed, 9 Jun 2010 16:48:13 +0300
+From: Tiago Vignatti <tiago.vignatti@nokia.com>
+To: "X.Org Devel List" <xorg-devel@lists.freedesktop.org>
+Subject: [PATCH 2/2] xfree86: configure: remove vendor and card name matching
+	rules
+Date: Wed,  9 Jun 2010 16:22:05 +0300
+Message-Id: <1276089725-24744-2-git-send-email-tiago.vignatti@nokia.com>
+X-Mailer: git-send-email 1.7.1.226.g770c5
+In-Reply-To: <AANLkTin4xkisyghn5wlE6odECuubQdIIg2Zm6c_ZP98Z@mail.gmail.com>
+References: <AANLkTin4xkisyghn5wlE6odECuubQdIIg2Zm6c_ZP98Z@mail.gmail.com>
+X-OriginalArrivalTime: 09 Jun 2010 13:48:14.0912 (UTC)
+	FILETIME=[68960C00:01CB07DA]
+X-Nokia-AV: Clean
+X-BeenThere: xorg-devel@lists.x.org
+X-Mailman-Version: 2.1.11
+Precedence: list
+List-Id: "X.Org development list" <xorg-devel.lists.x.org>
+List-Unsubscribe: <http://lists.x.org/mailman/options/xorg-devel>,
+	<mailto:xorg-devel-request@lists.x.org?subject=unsubscribe>
+List-Archive: <http://lists.x.org/archives/xorg-devel>
+List-Post: <mailto:xorg-devel@lists.x.org>
+List-Help: <mailto:xorg-devel-request@lists.x.org?subject=help>
+List-Subscribe: <http://lists.x.org/mailman/listinfo/xorg-devel>,
+	<mailto:xorg-devel-request@lists.x.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org
+Errors-To: xorg-devel-bounces+jrbarnette=chromium.org@lists.x.org
+X-pstn-neptune: 1/1/1.00/91
+X-pstn-levels: (S:99.90000/99.90000 CV:99.9000 FC:95.5390 LC:95.5390 R:95.9108 P:95.9108 M:97.0282 C:98.6951 )
+X-pstn-settings: 1 (0.1500:0.1500) cv gt3 gt2 gt1
+X-pstn-addresses: from <tiago.vignatti@nokia.com> [db-null]
+X-pstn-nvp: sourceip=74.125.83.175,bodyHash=3f9aec56123598d12c1075a201b5c698c9f255a0,headerHash=c02505265492a703094ed36753187106ef77131d,rcptHash=4287dd538b9ce49b08e3f083a188304833016dcb,version=1,keyName=4,sig=10e6a87d6ae53fc4
+
+Vendor and board naming were never used to create the configure file a device.
+This patch remove their references.
+
+Reported-by: Richard Barnette <jrbarnette@chromium.org>
+Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+---
+Please, test it.
+
+ hw/xfree86/common/xf86Configure.c |   23 -----------------------
+ 1 files changed, 0 insertions(+), 23 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86Configure.c b/hw/xfree86/common/xf86Configure.c
+index 2f93bb1..4663323 100644
+--- a/hw/xfree86/common/xf86Configure.c
++++ b/hw/xfree86/common/xf86Configure.c
+@@ -107,8 +107,6 @@ bus_sbus_configure(void *busData)
+ static void
+ bus_pci_newdev_configure(void *busData, int i, int *chipset)
+ {
+-	const char *VendorName;
+-	const char *CardName;
+ 	char busnum[8];
+     struct pci_device * pVideo = NULL;
+ 
+@@ -116,26 +114,6 @@ bus_pci_newdev_configure(void *busData, int i, int *chipset)
+ 
+ 	DevToConfig[i].pVideo = pVideo;
+ 
+-	VendorName = pci_device_get_vendor_name( pVideo );
+-	CardName = pci_device_get_device_name( pVideo );
+-
+-	if (!VendorName) {
+-	    VendorName = xnfalloc(15);
+-	    sprintf((char*)VendorName, "Unknown Vendor");
+-	}
+-
+-	if (!CardName) {
+-	    CardName = xnfalloc(14);
+-	    sprintf((char*)CardName, "Unknown Board");
+-	}
+-
+-	DevToConfig[i].GDev.identifier =
+-	    xnfalloc(strlen(VendorName) + strlen(CardName) + 2);
+-	sprintf(DevToConfig[i].GDev.identifier, "%s %s", VendorName, CardName);
+-
+-	DevToConfig[i].GDev.vendor = (char *)VendorName;
+-	DevToConfig[i].GDev.board = (char *)CardName;
+-
+ 	DevToConfig[i].GDev.busID = xnfalloc(16);
+ 	xf86FormatPciBusNumber(pVideo->bus, busnum);
+ 	sprintf(DevToConfig[i].GDev.busID, "PCI:%s:%d:%d",
+@@ -357,7 +335,6 @@ configureDeviceSection (int screennum)
+     /* Move device info to parser structure */
+     sprintf(identifier, "Card%d", screennum);
+     ptr->dev_identifier = strdup(identifier);
+-/*    ptr->dev_identifier = DevToConfig[screennum].GDev.identifier;*/
+     ptr->dev_vendor = DevToConfig[screennum].GDev.vendor;
+     ptr->dev_board = DevToConfig[screennum].GDev.board;
+     ptr->dev_chipset = DevToConfig[screennum].GDev.chipset;
+-- 
+1.7.1.226.g770c5
+
+_______________________________________________
+xorg-devel@lists.x.org: X.Org development
+Archives: http://lists.x.org/archives/xorg-devel
+Info: http://lists.x.org/mailman/listinfo/xorg-devel
