@@ -3,14 +3,14 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Memento Updater"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 DEPEND=""
@@ -23,13 +23,6 @@ RDEPEND="app-arch/gzip
          net-misc/wget
          sys-apps/coreutils
          sys-apps/util-linux"
-
-src_unpack() {
-  local updater="${CHROMEOS_ROOT}/src/platform/memento_softwareupdate"
-  elog "Using updater: $updater"
-  mkdir "${S}"
-  cp -a "${updater}"/* "${S}" || die
-}
 
 src_compile() {
   if tc-is-cross-compiler ; then
