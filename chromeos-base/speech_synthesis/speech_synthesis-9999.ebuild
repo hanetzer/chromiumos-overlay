@@ -4,14 +4,14 @@
 
 EAPI="2"
 
-inherit eutils
+inherit cros-workon eutils
 
 DESCRIPTION="This is the text-to-speech (TTS) synthesis library."
 HOMEPAGE="http://www.svox.com"
 SRC_URI=""
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="x86"
+KEYWORDS="~x86"
 IUSE=""
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
@@ -23,13 +23,6 @@ DEPEND="chromeos-base/libchrome
 	media-sound/pulseaudio"
 
 RDEPEND="${DEPEND}"
-
-src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform/"
-	elog "Using platform: $platform"
-	mkdir -p "${S}"
-	cp -a "${platform}"/speech_synthesis/* "${S}" || die
-}
 
 src_compile() {
 	tc-getCXX
