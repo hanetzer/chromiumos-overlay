@@ -12,7 +12,7 @@ SRC_URI="http://chewing.csie.net/download/libchewing/${P}.tar.bz2"
 
 SLOT="0"
 LICENSE="GPL-2"
-KEYWORDS="~amd64 ~ppc x86"
+KEYWORDS="amd64 x86 arm"
 IUSE="debug test"
 
 RDEPEND="sys-libs/ncurses"
