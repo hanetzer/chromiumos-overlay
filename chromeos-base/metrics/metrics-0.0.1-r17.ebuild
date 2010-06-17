@@ -54,6 +54,7 @@ src_install() {
 	dosbin "${S}/omaha_tracker.sh"
 
 	insinto "/usr/include/metrics"
+	doins "${S}/c_metrics_library.h"
 	doins "${S}/metrics_library.h"
 	doins "${S}/metrics_library_mock.h"
 }
