@@ -31,14 +31,22 @@ src_unpack() {
 }
 
 src_configure() {
-	econf --prefix= --libexecdir=/lib/dhcpcd --dbdir=/var/lib/dhcpcd \
+	econf --with-ccopts=-ggdb --prefix= \
+		--libexecdir=/lib/dhcpcd \
+		--dbdir=/var/lib/dhcpcd \
 		--localstatedir=/var
 }
 
 src_compile() {
 	emake || die
+
+	dump_syms.i386 dhcpcd > dhcpcd.sym \
+		2>/dev/null || die "symbol extraction failed"
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die
+
+	insinto /usr/lib/debug
+	doins dhcpcd.sym
 }

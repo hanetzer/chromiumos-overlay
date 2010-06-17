@@ -15,7 +15,8 @@ SLOT="0"
 KEYWORDS="amd64 arm ppc ppc64 x86 ~x86-fbsd"
 IUSE="dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline ssl wps kernel_linux kernel_FreeBSD"
 
-DEPEND="dev-libs/libnl
+DEPEND="chromeos-base/crash-dumper
+	dev-libs/libnl
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
 		eap-sim? ( sys-apps/pcsc-lite )
@@ -79,7 +80,8 @@ src_configure() {
 	# Toolchain setup
 	echo "CC = $(tc-getCC)" > .config
 
-	# Enable crash reporting
+	# Build w/ debug symbols and enable crash reporting
+	echo "CFLAGS += -ggdb" >> .config
 	echo "LIBS += -lcrash" >> .config
 
 	# Basic setup
@@ -185,6 +187,9 @@ src_compile() {
 		eqmake3 wpa_gui.pro
 		emake || die "Qt3 wpa_gui compilation failed"
 	fi
+
+	dump_syms.i386 wpa_supplicant > wpa_supplicant.sym 2>/dev/null || \
+		die "symbol extraction failed ${S}"
 }
 
 src_install() {
@@ -227,6 +232,9 @@ src_install() {
 		newins dbus/fi.epitest.hostap.WPASupplicant.service 'fi.epitest.hostap.WPASupplicant.service' || die
 		keepdir /var/run/wpa_supplicant
 	fi
+
+	insinto /usr/lib/debug
+	doins wpa_supplicant.sym
 }
 
 pkg_postinst() {
