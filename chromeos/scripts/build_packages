@@ -25,6 +25,8 @@ get_default_board
 # Flags
 DEFINE_string board "$DEFAULT_BOARD" \
   "The board to build packages for."
+DEFINE_boolean chromefromsource $FLAGS_FALSE \
+  "Build chrome browser from source. Default: False"
 DEFINE_string chromebuild "" \
   "The optional version or revision of chrome to pull."
 DEFINE_string chromebase "" \
@@ -112,10 +114,18 @@ if [[ $FLAGS_withtest -eq $FLAGS_TRUE ]]; then
   eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
 fi
 
+#We are building chrome from source if chromefromsource is 'TRUE'
+if [[ $FLAGS_chromefromsource -eq $FLAGS_TRUE ]]; then
+  echo "Building Chrome Browser from source"
+  echo "Running CHROME_ORIGIN=SERVER_SOURCE eretry $EMERGE_BOARD_CMD \
+  			chromeos-base/chromeos-chrome "
+  CHROME_ORIGIN=SERVER_SOURCE eretry $EMERGE_BOARD_CMD \
+  			chromeos-base/chromeos-chrome
+
 # Pull a different version of chrome if requested and force a non-update
 # emerge build of chrome with those values.
 # If $FLAGS_chromebuild is unset the ebuild takes care of getting "LATEST"
-if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
+elif [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
   echo "Building Chrome"
   echo "$PROG: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
   echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
@@ -126,6 +136,8 @@ if [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
   CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild} \
   CHROME_FILENAME=$CHROME_FILENAME \
   eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
+else
+  echo "no valid specifications for chrome browser"
 fi
 
 if [ "$FLAGS_withfactory" -eq "$FLAGS_TRUE" ]; then
