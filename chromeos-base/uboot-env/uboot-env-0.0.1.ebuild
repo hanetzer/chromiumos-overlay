@@ -3,6 +3,8 @@
 
 EAPI=2
 
+inherit cros-workon
+
 DESCRIPTION="Python script to read/write u-boot environment"
 SLOT="0"
 KEYWORDS="arm x86"
@@ -12,5 +14,5 @@ DEPEND=">=dev-lang/python-2.5"
 RDEPEND="${DEPEND}"
 
 src_install() {
-	dobin ${CHROMEOS_ROOT}/src/platform/uboot-env/uboot-env.py || die
+	dobin ${S}/uboot-env.py || die
 }
