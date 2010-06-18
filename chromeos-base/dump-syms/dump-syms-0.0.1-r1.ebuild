@@ -20,8 +20,6 @@ IUSE=""
 DEPEND=""
 RDEPEND=""
 
-CROS_WORKON_PROJECT="crash"
-
 src_install() {
-	dobin "${S}"/dump_syms.i386
+	dobin dump_syms.i386
 }

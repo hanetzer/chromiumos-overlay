@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~x86 ~arm"
+KEYWORDS="x86 arm"
 IUSE="test"
 
 RDEPEND="chromeos-base/google-breakpad"
