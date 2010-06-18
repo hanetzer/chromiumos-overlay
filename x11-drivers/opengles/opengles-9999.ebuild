@@ -10,7 +10,7 @@ HOMEPAGE="http://www.khronos.org/opengles/2_X/"
 SRC_URI=""
 LICENSE="SGI-B-2.0"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="~x86 ~arm"
 IUSE=""
 
 RDEPEND="x11-libs/libX11"
