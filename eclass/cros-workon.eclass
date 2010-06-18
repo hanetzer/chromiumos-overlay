@@ -44,15 +44,19 @@ cros-workon_src_unpack() {
 	# http://groups.google.com/a/chromium.org/group/chromium-os-dev/browse_thread/thread/5e85f28f551eeda/3ae57db97ae327ae
 	ln -s "${S}" "${WORKDIR}/${CROS_WORKON_LOCALNAME}"
 
+	local repo=${CROS_WORKON_REPO}
+	local project=${CROS_WORKON_PROJECT}
+
 	if [[ -z "${CHROMEOS_ROOT}" && "${PV}" != "9999" ]] ; then
-		local repo=${CROS_WORKON_REPO}
-		local project=${CROS_WORKON_PROJECT}
 		EGIT_REPO_URI="${repo}/${project}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
+		# clones to /var, copies src tree to the /build/<board>/tmp
 		git_src_unpack
 		return
 	fi
 
+	# Use an existing source tree if CHROMEOS_ROOT is set or
+	# clone and checkout into the existing directory layout
 	local srcroot
 
 	if [ -z "${CROS_WORKON_SRCROOT}" ] ; then
@@ -75,6 +79,37 @@ cros-workon_src_unpack() {
 	fi
 	einfo "Using local source dir: $path"
 
+	# Clone from the git host + repository path specified by
+	# CROS_WORKON_REPO + CROS_WORKON_PROJECT. Checkout source from
+	# the branch specified by CROS_WORKON_COMMIT into the # the 
+	# CROS_WORKON_SRCROOT + CROS_WORKON_LOCALNAME + CROS_WORKON_SUBDIR
+	# workspace path.
+	# If the repository exists just punt and let it be copied off for build.
+	if [[ "${PV}" == "9999" && ! -d ${path} ]] ; then
+
+		addwrite / 
+		local old_umask="`umask`"
+
+		einfo "Cloning ${repo}/${project}"
+		einfo "   to path: ${path}"
+		einfo "   branch: ${CROS_WORKON_COMMIT}"
+
+		git clone -n "${repo}/${project}" "${path}"
+		pushd "${path}" &> /dev/null
+		local ref="`git symbolic-ref HEAD 2> /dev/null`"
+		if [[ "${ref#refs/heads/}" != "${CROS_WORKON_COMMIT}" ]] ; then
+			# switch to CROS_WORKON_COMMIT if it is not already the current HEAD
+			git checkout -b ${CROS_WORKON_COMMIT} origin/${CROS_WORKON_COMMIT}
+		else
+			git checkout ${CROS_WORKON_COMMIT}
+		fi
+		popd &> /dev/null
+
+		umask ${old_umask}
+		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+	fi
+
+	# Copy source tree to /build/<board>/tmp for building
 	mkdir -p "${S}"
 	cp -a "${path}"/* "${S}" || die "cp -a ${path}/* ${S}"
 }
