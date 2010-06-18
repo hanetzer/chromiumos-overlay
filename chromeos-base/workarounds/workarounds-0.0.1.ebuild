@@ -18,6 +18,7 @@ src_unpack() {
 }
 
 src_install() {
+        dobin "${S}/crosh-workarounds"
         dobin "${S}/mkcrosusb"
         dosym /usr/bin/mkcrosusb /usr/bin/channel_change
 }
