@@ -97,12 +97,14 @@ function delete_existing {
 
 function init_users () {
    echo "$PROG: Set timezone..."
-   # Default to PST8PDT - this covers the case of an unknown TZ or PST which
-   # doesn't exist either.
-   TZ=$(date +%Z)
+   # date +%Z has trouble with daylight time, so use host's info
+   if [ -f /etc/localtime ] ; then
+      sudo cp /etc/localtime "${FLAGS_chroot}/etc"
+   else
    in_chroot [ -f /usr/share/zoneinfo/$TZ ] || TZ=PST8PDT
-   in_chroot rm -f /etc/localtime
-   in_chroot ln -sf /usr/share/zoneinfo/$TZ /etc/localtime
+     in_chroot rm -f /etc/localtime
+     in_chroot ln -sf /usr/share/zoneinfo/PST8PDT /etc/localtime
+   fi
    echo "$PROG: Adding user/group..."
    # Add ourselves as a user inside the chroot
    in_chroot groupadd -g 5000 eng
