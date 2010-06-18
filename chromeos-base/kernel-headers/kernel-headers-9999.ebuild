@@ -9,13 +9,12 @@ DESCRIPTION="Chrome OS Kernel Headers"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 DEPEND="sys-apps/debianutils"
 RDEPEND="${DEPEND}"
 
-CROS_WORKON_PROJECT="kernel"
 CROS_WORKON_LOCALNAME="kernel"
 CROS_WORKON_SUBDIR="files"
 
