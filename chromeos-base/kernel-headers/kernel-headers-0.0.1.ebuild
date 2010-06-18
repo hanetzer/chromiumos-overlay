@@ -3,31 +3,34 @@
 
 EAPI=2
 
-inherit cros-workon
+inherit toolchain-funcs
 
 DESCRIPTION="Chrome OS Kernel Headers"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="x86 arm"
 IUSE=""
 
 DEPEND="sys-apps/debianutils"
 RDEPEND="${DEPEND}"
 
-CROS_WORKON_PROJECT="kernel"
-CROS_WORKON_LOCALNAME="kernel"
-CROS_WORKON_SUBDIR="files"
+kernel=${CHROMEOS_KERNEL:-"kernel/files"}
+files="${CHROMEOS_ROOT}/src/third_party/${kernel}"
 
 src_unpack() {
-	# Set category to force cros-workon_src_unpack go to the right
-	# directory.
-        CATEGORY="kernel"
-        cros-workon_src_unpack
+	elog "Using kernel files: ${files}"
+
+	mkdir -p "${S}"
+	cp -ar "${files}"/* "${S}" || die
+}
+
+src_configure() {
+	elog "Nothing to configure."
 }
 
 src_compile() {
-      :  # Ensure it does not try to run make here.
+	elog "Nothing to compile."
 }
 
 src_install() {
@@ -41,12 +44,9 @@ src_install() {
 	# These subdirectories are installed by various ebuilds and we don't
 	# want to conflict with them.
 	#
-	for d in sound scsi drm; do
-	    local target="${D}"/usr/include/"${d}"
-	    if [ -d ${target} ]; then
-	        rm -rf ${target}
-	    fi
-	done
+	rm -rf "${D}"/usr/include/sound
+	rm -rf "${D}"/usr/include/scsi
+	rm -rf "${D}"/usr/include/drm
 
 	#
 	# Double hack, install the Qualcomm drm header anyway, its not included in
@@ -54,6 +54,6 @@ src_install() {
 	#
 	if [ -r "${S}"/include/drm/kgsl_drm.h ]; then
 		insinto /usr/include/drm
-		doins "${S}"/include/drm/kgsl_drm.h || die
+		doins "${S}"/include/drm/kgsl_drm.h
 	fi
 }
