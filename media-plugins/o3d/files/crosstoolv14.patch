@@ -1,0 +1,13 @@
+--- work/O3D/v8/src/scanner.h.orig	2010-06-17 18:39:33.000000000 -0700
++++ work/O3D/v8/src/scanner.h	2010-06-17 18:40:59.000000000 -0700
+@@ -148,7 +148,9 @@
+ //  *: Actually "future reserved keywords". These are the only ones we
+ //     recognized, the remaining are allowed as identifiers.
+  public:
+-  KeywordMatcher() : state_(INITIAL), token_(Token::IDENTIFIER) {}
++  // Added to make crosstoolv14 happy.
++  KeywordMatcher() : state_(INITIAL), token_(Token::IDENTIFIER),
++  keyword_(NULL), keyword_token_(Token::ILLEGAL) {}
+ 
+   Token::Value token() { return token_; }
+ 

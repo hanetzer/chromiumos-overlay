@@ -3,7 +3,8 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+# added eutils to patch
+inherit toolchain-funcs eutils
 
 DESCRIPTION="O3D Plugin"
 HOMEPAGE="http://code.google.com/p/o3d/"
@@ -53,7 +54,11 @@ src_compile() {
         export GYP_GENERATORS=make
         # TODO zhurunz: support ARM and x64 later.
         export GYP_DEFINES="target_arch=ia32";
-        ${EGCLIENT} sync --revision o3d@${O3D_REVISION}
+        ${EGCLIENT} sync --revision o3d@${O3D_REVISION} --force
+
+        # added crosstoolv14 patch for constructor fix
+        epatch "${FILESDIR}"/crosstoolv14.patch
+
         make BUILDTYPE=Release npo3dautoplugin -k -j $(print_num_jobs)
 
         mkdir -p "${WORKDIR}/opt/google/o3d" \
