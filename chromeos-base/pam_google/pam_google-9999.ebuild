@@ -3,30 +3,23 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="PAM module for Google login."
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE=""
 
 RDEPEND="dev-cpp/gflags
-	 net-misc/curl
-         sys-libs/pam"
+	net-misc/curl
+	sys-libs/pam"
 
 DEPEND="chromeos-base/libchromeos
 	dev-cpp/gtest
 	${RDEPEND}"
-
-src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-	elog "Using platform: $platform"
-	mkdir -p "${S}/pam_google"
-	cp -a "${platform}/pam_google" "${S}" || die
-}
 
 src_compile() {
 	if tc-is-cross-compiler ; then
@@ -40,9 +33,20 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
-	pushd pam_google
 	scons || die "pam_google compile failed."
-	popd
+}
+
+src_test() {
+	tc-export CC CXX AR RANLIB LD NM
+	export CCFLAGS="$CFLAGS"
+
+	scons pam_google_unittests || die "Failed to build tests"
+
+	if ! use x86 ; then
+		echo Skipping tests on non-x86 platform...
+	else
+		"${S}/pam_google/pam_google_unittests" ${GTEST_ARGS} || die "$test failed"
+	fi
 }
 
 src_install() {
