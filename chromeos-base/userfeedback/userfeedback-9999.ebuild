@@ -3,12 +3,14 @@
 
 EAPI="2"
 
+inherit cros-workon
+
 DESCRIPTION="Log scripts used by userfeedback to report cros system information"
 HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="~arm ~x86"
 IUSE=""
 
 RDEPEND=""
@@ -16,11 +18,9 @@ RDEPEND=""
 DEPEND="${RDEPEND}"
 
 src_install() {
-	local feedback_dir="${CHROMEOS_ROOT}/src/platform/userfeedback"
-
 	exeinto /usr/share/userfeedback/scripts
-	doexe "${feedback_dir}"/scripts/*
+	doexe scripts/* || die "Could not copy scripts"
 
 	insinto /usr/share/userfeedback/etc
-	doins "${feedback_dir}"/etc/*
+	doins etc/* || die "Could not copy etc"
 }
