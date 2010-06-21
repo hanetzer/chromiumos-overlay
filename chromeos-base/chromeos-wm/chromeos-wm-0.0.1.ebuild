@@ -49,7 +49,7 @@ src_unpack() {
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
-	CFLAGS="${CFLAGS} -ggdb"
+	CFLAGS="${CFLAGS} -gstabs"
 	export CCFLAGS="$CFLAGS"
 
 	local backend
@@ -65,8 +65,10 @@ src_compile() {
 	pushd "window_manager"
 	scons BACKEND="$backend" -j$(print_num_jobs) wm screenshot || \
 		die "window_manager compile failed"
-	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 wm > wm.sym \
-	        2>/dev/null || die "symbol extraction failed"
+	# The exec name in dump_syms output must match the installed name.
+	cp wm chromeos-wm
+	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 chromeos-wm > \
+	        chromeos-wm.sym 2>/dev/null || die "symbol extraction failed"
 	popd
 }
 
@@ -101,5 +103,5 @@ src_install() {
 	dosbin window_manager/bin/window-manager-session.sh
 
 	insinto /usr/lib/debug
-	doins window_manager/wm.sym
+	doins window_manager/chromeos-wm.sym
 }

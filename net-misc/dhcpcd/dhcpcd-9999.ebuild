@@ -31,7 +31,7 @@ src_unpack() {
 }
 
 src_configure() {
-	econf --with-ccopts=-ggdb --prefix= \
+	econf --with-ccopts=-gstabs --prefix= \
 		--libexecdir=/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
 		--localstatedir=/var

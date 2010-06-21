@@ -61,6 +61,9 @@ src_configure() {
 		fi
 	fi
 
+	tc-export CC
+	export CFLAGS="${CFLAGS} -gstabs"
+
 	econf \
 		--localstatedir=/var \
 		--enable-loopback=builtin \
@@ -89,7 +92,7 @@ src_configure() {
 src_compile() {
 	emake clean-generic || die "emake clean failed"
 	emake || die "emake failed"
-	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 src/flimflamd > \
+	dump_syms.i386 src/flimflamd > \
 	        flimflamd.sym 2>/dev/null || die "symbol extraction failed"
 }
 

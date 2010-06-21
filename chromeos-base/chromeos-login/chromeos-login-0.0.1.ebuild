@@ -33,7 +33,7 @@ src_unpack() {
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
-	export CXXFLAGS="${CXXFLAGS} -ggdb"
+	export CXXFLAGS="${CXXFLAGS} -gstabs"
 	emake -j1 session_manager || die "chromeos-login compile failed."
 	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 session_manager > \
 	        session_manager.sym 2>/dev/null || \
