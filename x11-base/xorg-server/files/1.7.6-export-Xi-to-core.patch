@@ -1,0 +1,12 @@
+diff -u -r ../xorg-server-1.7.6.orig/include/dix.h ./include/dix.h
+--- ../xorg-server-1.7.6.orig/include/dix.h	2010-05-21 18:23:23.701958856 -0700
++++ ./include/dix.h	2010-05-21 18:24:02.475464080 -0700
+@@ -585,7 +585,7 @@
+     DeviceIntPtr device;
+ } DeviceEventInfoRec;
+ 
+-extern int XItoCoreType(int xi_type);
++extern int _X_EXPORT XItoCoreType(int xi_type);
+ extern Bool DevHasCursor(DeviceIntPtr pDev);
+ extern Bool _X_EXPORT IsPointerDevice( DeviceIntPtr dev);
+ extern Bool _X_EXPORT IsKeyboardDevice(DeviceIntPtr dev);

@@ -144,6 +144,7 @@ PATCHES=(
 	# http://www.mail-archive.com/xorg-devel@lists.x.org/msg09360.html
 	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
 	"${FILESDIR}/1.7.6-skip-vendor-and-device-names.patch"
+	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
 	)
 
 pkg_setup() {
