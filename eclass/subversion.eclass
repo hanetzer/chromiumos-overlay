@@ -30,7 +30,7 @@ esac
 
 DESCRIPTION="Based on the ${ECLASS} eclass"
 
-SUBVERSION_DEPEND="dev-util/subversion
+SUBVERSION_DEPEND="dev-util/subversion[webdav-neon,webdav-serf]
 	net-misc/rsync"
 
 if [[ -z "${ESVN_DISABLE_DEPENDENCIES}" ]]; then
@@ -197,14 +197,6 @@ subversion_fetch() {
 
 	case "${protocol}" in
 		http|https)
-			if ! built_with_use -o dev-util/subversion webdav-neon webdav-serf; then
-				echo
-				eerror "In order to emerge this package, you need to"
-				eerror "reinstall Subversion with support for WebDAV."
-				eerror "Subversion requires either Neon or Serf to support WebDAV."
-				echo
-				die "${ESVN}: reinstall Subversion with support for WebDAV."
-			fi
 			;;
 		svn|svn+ssh)
 			;;
