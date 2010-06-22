@@ -122,12 +122,20 @@ src_unpack() {
 
   if [ "$CHROME_ORIGIN" = "SERVER_SOURCE" ]; then
     # We are going to fetch source and build chrome
-      elog  "making ${ECHROME_STORE_DIR}"
-      mkdir -p ${ECHROME_STORE_DIR} || die "cannot create ${ECHROME_STORE_DIR}"
+
+    # initial clone, we have to create chrome-src storage directory and play
+    # nicely with sandbox
+    if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
+      debug-print "${FUNCNAME}: Creating chrome-src directory"
+      addwrite /
+      mkdir -p "${ECHROME_STORE_DIR}" \
+        || die "can't mkdir ${ECHROME_STORE_DIR}."
+      export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+    fi
       elog "Copying chromium.gclient  ${ECHROME_STORE_DIR}/.gclient"
       rm -f ${ECHROME_STORE_DIR}/.gclient
       cp -fp ${FILESDIR}/chromium.gclient ${ECHROME_STORE_DIR}/.gclient || die
-	  "cannot copy chromium.gclient to ${ECHROME_STORE_DIR}/.gcleint:$!"
+	  "cannot copy chromium.gclient to ${ECHROME_STORE_DIR}/.gclient:$!"
       pushd "${ECHROME_STORE_DIR}" || die "Cannot chdir to ${ECHROME_STORE_DIR}"
       elog "Syncing google chrome sources using ${EGCLIENT}"
       ${EGCLIENT} sync  --nohooks || die "${EGCLIENT} sync failed"
