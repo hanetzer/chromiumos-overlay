@@ -7,7 +7,7 @@ DESCRIPTION="GNU GRUB 2 boot loader"
 HOMEPAGE="http://www.gnu.org/software/grub/"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="~amd64"
 IUSE=""
 EAPI="2"
 
