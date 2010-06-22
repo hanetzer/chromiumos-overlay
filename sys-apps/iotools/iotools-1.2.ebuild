@@ -10,14 +10,14 @@ HOMEPAGE="http://code.google.com/p/iotools/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 amd64"
-IUSE=""
+IUSE="hardened"
 
 SRC_URI="http://iotools.googlecode.com/files/${P}.tar.gz"
 
 src_compile() {
 	# If we are on hardened/x86, turn off PIE because the code uses %ebx
 	if use x86 ; then
-		if [ -f /etc/hardened ] ; then
+		if use hardened ; then
 			epatch "${FILESDIR}"/iotools-1.2.nopie.patch
 		fi
 	fi

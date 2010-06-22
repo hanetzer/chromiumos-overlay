@@ -64,10 +64,6 @@ if [ -z "$FLAGS_board" ] ; then
   exit 1
   fi
 
-if [ -f /etc/hardened ] ; then
-   FLAGS_usepkg=$FLAGS_FALSE
-fi
-
 EMERGE_FLAGS=""
 
 EMERGE_CMD="emerge"

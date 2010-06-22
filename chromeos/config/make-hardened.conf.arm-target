@@ -1,0 +1,30 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Pull in definition of at least { ROOT, CHOST, [BOARD_OVERLAY] }
+source make.conf.board_setup
+
+E_MACHINE=EM_ARM
+ARCH=arm
+
+# Common settings across all board targets.
+source make.conf.common
+
+# Recommended arm-specific USE flags.
+USE="${USE} threads hardened"
+
+# Recommended MARCH_TUNE, CFLAGS, etc.
+MARCH_TUNE="-march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp"
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/"
+CXXFLAGS="${CFLAGS}"
+LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
+
+# TODO: What is this for?
+UCLIBC_CPU_DEFAULT="GENERIC_ARM"
+
+VIDEO_CARDS="fbdev"
+INPUT_DEVICES="keyboard mouse synaptics"
+
+# Allow a board to override or define additional settings.
+source make.conf.board

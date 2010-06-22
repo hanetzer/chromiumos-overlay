@@ -45,12 +45,15 @@ DEFINE_boolean default $FLAGS_FALSE \
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
-# Hardened requires gcc 4.4.3.  There are no pre-builts for it.
-# TODO(fes): Once we have pre-builts, modify the script to allow for their use.
-if [ -f /etc/hardened ] ; then
-   echo "Hardened toolchain--overriding GCC version and forcing rebuild."
+HARDENED=0
+if emerge --info |grep hardened > /dev/null
+then
+  HARDENED=1
+fi
+
+# Hardened requires gcc 4.4.3 to get the proper specs files, etc. applied.
+if [ "$HARDENED" -eq "1" ] ; then
    FLAGS_gcc_version="4.4.3-r4"
-   FLAGS_usepkg=$FLAGS_FALSE
 fi
 
 # Only now can we die on error.  shflags functions leak non-zero error codes,
@@ -201,7 +204,10 @@ if [ ! -d "$TOOLCHAIN_ROOT" ] ; then
   CROSS_LIBC="--libc $FLAGS_libc_version"
   CROSS_USEPKG=""
   if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-    CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
+    # TODO(fes): Once there are pre-built packages for hardened, replace the
+    # --usepkgonly flag
+    #CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
+    CROSS_USEPKG="--portage --getbinpkg --portage"
   fi
   sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
     --target "$FLAGS_toolchain" \
@@ -276,8 +282,13 @@ sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
 #    make.conf.board_setup <- Declares CHOST, ROOT, etc.
 #    make.conf.common      <- Common settings across all targets
 #    make.conf.board       <- Optional board-supplied make.conf
-sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
-  "${BOARD_ETC}/make.conf"
+if [ "$HARDENED" -eq "1" ] ; then
+  sudo ln -sf "${CHROMIUMOS_CONFIG}/make-hardened.conf.${ARCH}-target" \
+    "${BOARD_ETC}/make.conf"
+else
+  sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
+    "${BOARD_ETC}/make.conf"
+fi
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
   "${BOARD_ETC}/make.conf.common"
 cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"

@@ -29,7 +29,7 @@ assert_outside_chroot
 
 DEFINE_string chroot "$DEFAULT_CHROOT_DIR" \
   "Destination dir for the chroot environment."
-DEFINE_boolean hardened $FLAGS_FALSE "Setup for a hardened toolchain."
+DEFINE_boolean hardened $FLAGS_TRUE "Setup for a hardened toolchain."
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
@@ -152,7 +152,6 @@ function init_setup () {
    if [[ $FLAGS_hardened -eq $FLAGS_TRUE ]]; then
       sudo ln -sf "${CHROOT_CONFIG}/make-hardened.conf.amd64-host" \
         "${FLAGS_chroot}/etc/make.conf"
-      sudo touch "${FLAGS_chroot}/etc/hardened"
    else
       sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
         "${FLAGS_chroot}/etc/make.conf"

@@ -1,0 +1,27 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Pull in definition of at least { ROOT, CHOST, [BOARD_OVERLAY] }
+source make.conf.board_setup
+
+# E_MACHINE=EM_X86 <- TODO: Some builds use EM_386 so comment this for now.
+ARCH=x86
+
+# Common settings across all board targets.
+source make.conf.common
+
+# Recommended x86-specific USE flags.
+USE="${USE} mmx sse sse2 dri hardened"
+
+# Recommended MARCH_TUNE, CFLAGS, etc.
+MARCH_TUNE="-march=core2 -mtune=generic -mfpmath=sse"
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/"
+CXXFLAGS="${CFLAGS}"
+LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
+
+VIDEO_CARDS="intel vmware vesa"
+INPUT_DEVICES="evdev keyboard mouse synaptics"
+
+# Allow a board to override or define additional settings.
+source make.conf.board

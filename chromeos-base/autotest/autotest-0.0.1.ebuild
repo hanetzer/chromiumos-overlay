@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+autox buildcheck +xset +tpmtools opengles"
+IUSE="+autox buildcheck +xset +tpmtools opengles hardened"
 
 # TODO(snanda): Remove xset dependence once power_LoadTest is switched over
 # to use power manager
@@ -79,8 +79,9 @@ function setup_cross_toolchain() {
 	# Various tests/etc. use %ebx in here, so we have to turn off PIE when
 	# using the hardened compiler
 	if use x86 ; then
-		if [ -f /etc/hardened ] ; then
-			CC="${CC} -nopie"
+		if use hardened ; then
+			#CC="${CC} -nopie"
+			append-flags -nopie
 		fi
 	fi
 }
