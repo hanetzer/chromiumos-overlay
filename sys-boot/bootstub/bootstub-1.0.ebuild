@@ -18,7 +18,8 @@ src_unpack() {
 	if [ -z "${CHROMEOS_ROOT}" ] ; then
 		local CHROMEOS_ROOT=$(eval echo -n ~${SUDO_USER}/trunk)
 	fi
-	cp -a "${CHROMEOS_ROOT}/${SRCPATH}" "${S}" || die
+	mkdir "${S}"
+	cp -a "${CHROMEOS_ROOT}/${SRCPATH}"/* "${S}"/ || die
 }
 
 
