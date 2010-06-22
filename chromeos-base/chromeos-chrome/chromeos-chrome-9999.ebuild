@@ -20,7 +20,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit eutils multilib toolchain-funcs
+inherit eutils multilib toolchain-funcs flag-o-matic
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
@@ -30,7 +30,7 @@ EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-build_tests"
+IUSE="-build_tests hardened x86"
 
 # chrome sources store directory
 [[ -z ${ECHROME_STORE_DIR} ]] &&
@@ -269,6 +269,12 @@ src_compile() {
   if use build_tests; then
     TEST_TARGETS="browser_tests pyautolib reliability_tests startup_tests ui_tests"
     echo Building test targets: ${TEST_TARGETS}
+  fi
+
+  if use x86 ; then
+    if use hardened ; then
+      append-flags -nopie
+    fi
   fi
 
   emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
