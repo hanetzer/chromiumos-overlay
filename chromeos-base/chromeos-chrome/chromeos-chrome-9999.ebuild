@@ -37,12 +37,16 @@ IUSE="-build_tests hardened x86"
 ECHROME_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/chrome-src"
 addwrite "${ECHROME_STORE_DIR}"
 
+# chrome destination directory
+CHROME_DIR=/opt/google/chrome
+D_CHROME_DIR="${D}/${CHROME_DIR}"
+
 # By default, pull from server
 CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
 
@@ -284,7 +288,7 @@ src_compile() {
     AS=$(tc-getAS) \
     RANLIB=$(tc-getRANLIB) \
     LD=$(tc-getLD) \
-    chrome candidate_window \
+    chrome candidate_window chrome_sandbox \
     ${TEST_TARGETS} \
     || die "compilation failed"
 }
@@ -360,9 +364,6 @@ src_install() {
   export PORTAGE_STRIP_FLAGS="--strip-unneeded"
   
   # First, things from the chrome build output directory
-  CHROME_DIR=/opt/google/chrome
-  D_CHROME_DIR="${D}/${CHROME_DIR}"
-
   dodir "${CHROME_DIR}"
   dodir "${CHROME_DIR}"/plugins
 
@@ -370,6 +371,10 @@ src_install() {
   doexe "${FROM}"/candidate_window
   doexe "${FROM}"/chrome
   doexe "${FROM}"/libffmpegsumo.so
+
+  exeopts -m4755  # setuid the sandbox
+  newexe "${FROM}/chrome_sandbox" chrome-sandbox
+  exeopts -m0755
 
   # enable the chromeos local account, if the environment dictates
   if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
@@ -392,7 +397,7 @@ src_install() {
 
   # Fix some perms
   chmod -R a+r "${D}"
-  find "${D}" -perm /111 -print0 | xargs -0 chmod a+x 
+  find "${D}" -perm /111 -print0 | xargs -0 chmod a+x
 
   # The following symlinks are needed in order to run chrome.
   dosym nss/libnss3.so /usr/lib/libnss3.so.1d
