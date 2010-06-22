@@ -6,7 +6,7 @@ inherit eutils toolchain-funcs cros-workon
 DESCRIPTION="Chrome OS embedded bootstub"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="~amd64"
 IUSE=""
 EAPI="2"
 
