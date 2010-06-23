@@ -3,11 +3,12 @@
 
 EAPI=2
 
-inherit eutils toolchain-funcs
+inherit eutils subversion toolchain-funcs
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
 SRC_URI=""
+ESVN_REPO_URI="http://google-breakpad.googlecode.com/svn/trunk@${PV}"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
@@ -15,13 +16,6 @@ IUSE=""
 
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
-
-src_unpack() {
-        local third_party="${CHROMEOS_ROOT}/src/third_party"
-        elog "Using third_party: $third_party"
-        mkdir -p "${S}"
-        cp -a "${third_party}"/google-breakpad/files/* "${S}" || die
-}
 
 src_prepare() {
         pushd "${S}"/src/tools/linux/symupload
