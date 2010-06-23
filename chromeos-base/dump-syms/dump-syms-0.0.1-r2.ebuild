@@ -22,4 +22,5 @@ RDEPEND=""
 
 src_install() {
 	dobin dump_syms.i386
+	dobin sym_upload.i386
 }

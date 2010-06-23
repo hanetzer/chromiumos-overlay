@@ -1,0 +1,253 @@
+Index: src/tools/linux/dump_syms/dump_syms.cc
+===================================================================
+--- src/tools/linux/dump_syms/dump_syms.cc	(revision 598)
++++ src/tools/linux/dump_syms/dump_syms.cc	(working copy)
+@@ -35,14 +35,19 @@
+ using namespace google_breakpad;
+ 
+ int main(int argc, char **argv) {
+-  if (argc != 2) {
+-    fprintf(stderr, "Usage: %s <binary-with-debugging-info>\n", argv[0]);
++  if (argc != 2 && argc != 3) {
++    fprintf(stderr, "Usage:\n\n"
++            "  For a standard ELF file with both debug info and code:\n"
++            "    %s <single-ELF>\n\n"
++            "  For a pair of ELF files split into debug info and code:\n"
++            "    %s <debug-ELF> <code-ELF>\n\n", argv[0], argv[0]);
+     return 1;
+   }
+ 
+-  const char *binary = argv[1];
++  const char *debug_file = argv[1];
++  const char *text_file = argc == 3 ? argv[2] : argv[1];
+ 
+-  if (!WriteSymbolFile(binary, stdout)) {
++  if (!WriteSymbolFile(debug_file, text_file, stdout)) {
+     fprintf(stderr, "Failed to write symbol file.\n");
+     return 1;
+   }
+Index: src/common/linux/dump_symbols.cc
+===================================================================
+--- src/common/linux/dump_symbols.cc	(revision 598)
++++ src/common/linux/dump_symbols.cc	(working copy)
+@@ -323,80 +323,90 @@
+   return true;
+ }
+ 
+-static bool LoadSymbols(const std::string &obj_file, ElfW(Ehdr) *elf_header,
++static bool LoadSymbols(const std::string &debug_file,
++                        ElfW(Ehdr) *debug_header,
++                        const std::string &text_file,
++                        ElfW(Ehdr) *text_header,
+                         Module *module) {
+   // Translate all offsets in section headers into address.
+-  FixAddress(elf_header);
++  FixAddress(text_header);
++  FixAddress(debug_header);
+   ElfW(Addr) loading_addr = GetLoadingAddress(
+-      reinterpret_cast<ElfW(Phdr) *>(elf_header->e_phoff),
+-      elf_header->e_phnum);
++      reinterpret_cast<ElfW(Phdr) *>(text_header->e_phoff),
++      text_header->e_phnum);
+   module->SetLoadAddress(loading_addr);
+ 
+-  const ElfW(Shdr) *sections =
+-      reinterpret_cast<ElfW(Shdr) *>(elf_header->e_shoff);
+-  const ElfW(Shdr) *section_names = sections + elf_header->e_shstrndx;
++  const ElfW(Shdr) *debug_sections =
++      reinterpret_cast<ElfW(Shdr) *>(debug_header->e_shoff);
++  const ElfW(Shdr) *debug_section_names = debug_sections +
++      debug_header->e_shstrndx;
+   bool found_debug_info_section = false;
+ 
+   // Look for STABS debugging information, and load it if present.
+   const ElfW(Shdr) *stab_section
+-      = FindSectionByName(".stab", sections, section_names,
+-                          elf_header->e_shnum);
++      = FindSectionByName(".stab", debug_sections, debug_section_names,
++                          debug_header->e_shnum);
+   if (stab_section) {
+-    const ElfW(Shdr) *stabstr_section = stab_section->sh_link + sections;
++    const ElfW(Shdr) *stabstr_section = stab_section->sh_link + debug_sections;
+     if (stabstr_section) {
+       found_debug_info_section = true;
+-      if (!LoadStabs(elf_header, stab_section, stabstr_section, module))
++      if (!LoadStabs(debug_header, stab_section, stabstr_section, module))
+         fprintf(stderr, "%s: \".stab\" section found, but failed to load STABS"
+-                " debugging information\n", obj_file.c_str());
++                " debugging information\n", debug_file.c_str());
+     }
+   }
+ 
+   // Look for DWARF debugging information, and load it if present.
+   const ElfW(Shdr) *dwarf_section
+-      = FindSectionByName(".debug_info", sections, section_names,
+-                          elf_header->e_shnum);
++      = FindSectionByName(".debug_info", debug_sections, debug_section_names,
++                          debug_header->e_shnum);
+   if (dwarf_section) {
+     found_debug_info_section = true;
+-    if (!LoadDwarf(obj_file, elf_header, module))
++    if (!LoadDwarf(debug_file, debug_header, module))
+       fprintf(stderr, "%s: \".debug_info\" section found, but failed to load "
+-              "DWARF debugging information\n", obj_file.c_str());
++              "DWARF debugging information\n", debug_file.c_str());
+   }
+ 
+   // Dwarf Call Frame Information (CFI) is actually independent from
+   // the other DWARF debugging information, and can be used alone.
+   const ElfW(Shdr) *dwarf_cfi_section =
+-      FindSectionByName(".debug_frame", sections, section_names,
+-                          elf_header->e_shnum);
++      FindSectionByName(".debug_frame", debug_sections, debug_section_names,
++                          debug_header->e_shnum);
+   if (dwarf_cfi_section) {
+     // Ignore the return value of this function; even without call frame
+     // information, the other debugging information could be perfectly
+     // useful.
+-    LoadDwarfCFI(obj_file, elf_header, ".debug_frame",
++    LoadDwarfCFI(debug_file, debug_header, ".debug_frame",
+                  dwarf_cfi_section, false, 0, 0, module);
+   }
+ 
+   // Linux C++ exception handling information can also provide
+   // unwinding data.
++  const ElfW(Shdr) *text_sections =
++      reinterpret_cast<ElfW(Shdr) *>(text_header->e_shoff);
++  const ElfW(Shdr) *text_section_names = text_sections +
++      text_header->e_shstrndx;
+   const ElfW(Shdr) *eh_frame_section =
+-      FindSectionByName(".eh_frame", sections, section_names,
+-                        elf_header->e_shnum);
++      FindSectionByName(".eh_frame", text_sections, text_section_names,
++                        text_header->e_shnum);
+   if (eh_frame_section) {
+     // Pointers in .eh_frame data may be relative to the base addresses of
+     // certain sections. Provide those sections if present.
+     const ElfW(Shdr) *got_section =
+-      FindSectionByName(".got", sections, section_names, elf_header->e_shnum);
++      FindSectionByName(".got", text_sections,
++                        text_section_names, text_header->e_shnum);
+     const ElfW(Shdr) *text_section =
+-      FindSectionByName(".text", sections, section_names,
+-                        elf_header->e_shnum);
++      FindSectionByName(".text", text_sections, text_section_names,
++                        text_header->e_shnum);
+     // As above, ignore the return value of this function.
+-    LoadDwarfCFI(obj_file, elf_header, ".eh_frame",
++    LoadDwarfCFI(text_file, text_header, ".eh_frame",
+                  eh_frame_section, true, got_section, text_section, module);
+   }
+ 
+   if (!found_debug_info_section) {
+     fprintf(stderr, "%s: file contains no debugging information"
+             " (no \".stab\" or \".debug_info\" sections)\n",
+-            obj_file.c_str());
++            debug_file.c_str());
+     return false;
+   }
+   return true;
+@@ -502,11 +512,9 @@
+   return base;
+ }
+ 
+-}  // namespace
+-
+-namespace google_breakpad {
+-
+-bool WriteSymbolFile(const std::string &obj_file, FILE *sym_file) {
++bool MapElf(const std::string &obj_file,
++            void **base,
++            off_t *size) {
+   int obj_fd = open(obj_file.c_str(), O_RDONLY);
+   if (obj_fd < 0) {
+     fprintf(stderr, "Failed to open ELF file '%s': %s\n",
+@@ -533,29 +541,58 @@
+     fprintf(stderr, "Not a valid ELF file: %s\n", obj_file.c_str());
+     return false;
+   }
++  map_wrapper.release();
++  *base = obj_base;
++  *size = st.st_size;
++  return true;
++}
+ 
++}  // namespace
++
++namespace google_breakpad {
++
++bool WriteSymbolFile(const std::string &debug_file,
++                     const std::string &text_file,
++                     FILE *sym_file) {
++  void *text_base;
++  off_t text_size;
++  if (!MapElf(text_file, &text_base, &text_size)) {
++    return false;
++  }
++  MmapWrapper map_wrapper(text_base, text_size);
++  ElfW(Ehdr) *text_header = reinterpret_cast<ElfW(Ehdr) *>(text_base);
++
+   unsigned char identifier[16];
+-  google_breakpad::FileID file_id(obj_file.c_str());
++  google_breakpad::FileID file_id(text_file.c_str());
+   if (!file_id.ElfFileIdentifier(identifier)) {
+     fprintf(stderr, "%s: unable to generate file identifier\n",
+-            obj_file.c_str());
++            text_file.c_str());
+     return false;
+   }
+ 
+-  const char *architecture = ElfArchitecture(elf_header);
++  const char *architecture = ElfArchitecture(text_header);
+   if (!architecture) {
+     fprintf(stderr, "%s: unrecognized ELF machine architecture: %d\n",
+-            obj_file.c_str(), elf_header->e_machine);
++            text_file.c_str(), text_header->e_machine);
+     return false;
+   }
+ 
+-  std::string name = BaseFileName(obj_file);
++  std::string name = BaseFileName(text_file);
+   std::string os = "Linux";
+   std::string id = FormatIdentifier(identifier);
+ 
+   Module module(name, os, architecture, id);
+-  if (!LoadSymbols(obj_file, elf_header, &module))
++
++  off_t debug_size;
++  void *debug_base;
++  if (!MapElf(debug_file, &debug_base, &debug_size)) {
+     return false;
++  }
++  MmapWrapper debug_map_wrapper(debug_base, debug_size);
++  ElfW(Ehdr) *debug_header = reinterpret_cast<ElfW(Ehdr) *>(debug_base);
++
++  if (!LoadSymbols(debug_file, debug_header, text_file, text_header, &module))
++    return false;
+   if (!module.Write(sym_file))
+     return false;
+ 
+Index: src/common/linux/dump_symbols.h
+===================================================================
+--- src/common/linux/dump_symbols.h	(revision 598)
++++ src/common/linux/dump_symbols.h	(working copy)
+@@ -40,10 +40,15 @@
+ 
+ namespace google_breakpad {
+ 
+-// Find all the debugging information in OBJ_FILE, an ELF executable
+-// or shared library, and write it to SYM_FILE in the Breakpad symbol
+-// file format.
+-bool WriteSymbolFile(const std::string &obj_file, FILE *sym_file);
++// Find all the debugging information in DEBUG_FILE, an ELF file
++// and consult TEXT_FILE, an ELF executable or shared library with target
++// resident code/data, and write it to SYM_FILE in the Breakpad symbol
++// file format.  DEBUG_FILE and TEXT_FILE should be set to the same
++// path if a single file has both debug information and target resident
++// code/data.
++bool WriteSymbolFile(const std::string &debug_file,
++                     const std::string &text_file,
++                     FILE *sym_file);
+ 
+ }  // namespace google_breakpad
+ 

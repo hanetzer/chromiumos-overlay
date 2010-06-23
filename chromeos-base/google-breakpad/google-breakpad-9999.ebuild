@@ -32,6 +32,9 @@ src_prepare() {
         pushd "${S}"/src/tools/linux/dump_syms
         epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
         popd
+        pushd "${S}"
+        epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
+        popd
 }
 
 src_compile() {
