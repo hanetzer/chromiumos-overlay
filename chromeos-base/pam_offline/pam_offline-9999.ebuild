@@ -47,7 +47,7 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		"${S}/pam_offline/pam_offline_unittests" ${GTEST_ARGS} || die "$test failed"
+		"${S}/pam_offline_unittests" ${GTEST_ARGS} || die "$test failed"
 	fi
 }
 
