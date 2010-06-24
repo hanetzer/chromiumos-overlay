@@ -3,6 +3,20 @@
 
 EAPI=2
 
+unset CHROMEOS_ROOT
+
+# stable commit ID
+CROS_WORKON_COMMIT="f1c5103586460e1a4747b121b4c12e58b68bf51a"
+
+if [[ -n "${ST1Q_SOURCES_QUALCOMM}" ]] ; then
+	CROS_WORKON_REPO="git://git-1.quicinc.com"
+	CROS_WORKON_PROJECT="graphics/xf86-video-msm"
+	CROS_WORKON_LOCALNAME="qcom/opensource/graphics/xf86-video-msm"
+	EGIT_BRANCH=chromium
+else
+	EGIT_BRANCH=master
+fi
+
 inherit cros-workon toolchain-funcs autotools
 
 DESCRIPTION="X.Org driver for MSM SOC"
@@ -20,25 +34,12 @@ DEPEND="${RDEPEND}
 	x11-proto/xproto
 	"
 
-if [[ -n "${ST1Q_SOURCES_QUALCOMM}" ]] ; then
-	CROS_WORKON_LOCALNAME="qcom/opensource/xf86-video-msm"
-fi
-
-src_unpack() {
-	cros-workon_src_unpack
-	ln -s "${S}" "${S}/${PN}"
-}
-
 src_prepare() {
 	eautoreconf || die
 }
 
 src_configure() {
 	econf --enable-maintainer-mode || die
-}
-
-src_compile() {
-	emake || die
 }
 
 src_install() {
