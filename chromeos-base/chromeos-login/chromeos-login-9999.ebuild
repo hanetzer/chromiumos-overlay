@@ -3,9 +3,9 @@
 
 EAPI=2
 
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~arm ~amd64 ~x86"
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://src.chromium.org"
@@ -23,20 +23,14 @@ DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 
-src_unpack() {
-	local platform="${CHROMEOS_ROOT}/src/platform"
-
-	elog "Using platform: $platform"
-	cp -a "${platform}/login_manager" "${S}" || die
-	ln -sf "${S}" "${S}/../login_manager"
-}
+CROS_WORKON_PROJECT="login_manager"
+CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	export CXXFLAGS="${CXXFLAGS} -gstabs"
 	emake -j1 session_manager || die "chromeos-login compile failed."
-	${CHROMEOS_ROOT}/src/platform/crash/dump_syms.i386 session_manager > \
-	        session_manager.sym 2>/dev/null || \
+	dump_syms.i386 session_manager > session_manager.sym 2>/dev/null || \
 		die "symbol extraction failed"
 }
 
