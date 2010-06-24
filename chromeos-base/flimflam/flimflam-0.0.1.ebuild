@@ -1,46 +1,50 @@
+
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
 
-inherit toolchain-funcs
+inherit autotools cros-workon toolchain-funcs
 
 DESCRIPTION="Provides a daemon for managing internet connections"
 HOMEPAGE="http://connman.net"
-SRC_URI="mirror://kernel/linux/network/${PN}/${PN}-0.43.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~arm ~amd64 ~x86"
-IUSE="3G bluetooth debug +dhclient dnsproxy doc +ethernet modemmanager ofono policykit ppp resolvconf threads tools +udev +wifi"
-# ospm wimax
+KEYWORDS="amd64 arm x86"
+IUSE="bluetooth +crosmetrics +debug +dhcpcd +dhclient +diagnostics dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
 
-RDEPEND=">=dev-libs/glib-2.16
+RDEPEND="chromeos-base/crash-dumper
+	>=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
+	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )
+	crosmetrics? ( chromeos-base/metrics )
 	dhclient? ( net-misc/dhcp )
+	dhcpcd? ( net-misc/dhcpcd )
+	diagnostics? ( sys-apps/net-tools )
+	modemmanager? ( net-misc/mobile-broadband-provider-info )
 	modemmanager? ( net-misc/modemmanager )
 	ofono? ( net-misc/ofono )
 	policykit? ( >=sys-auth/policykit-0.7 )
 	ppp? ( net-dialup/ppp )
 	resolvconf? ( net-dns/openresolv )
+	testing? (
+		dev-lang/python
+		dev-python/dbus-python
+		dev-python/pygobject
+	)
 	udev? ( >=sys-fs/udev-141 )
 	wifi? ( net-wireless/wpa_supplicant[dbus] )"
 
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )"
 
-src_unpack() {
-	if [ -n "$CHROMEOS_ROOT" ] ; then
-		local third_party="${CHROMEOS_ROOT}/src/third_party"
-		local connman="${third_party}/connman/connman-0.42"
-		elog "Using connman dir: $connman"
-		mkdir -p "${S}"
-		cp -a "${connman}"/* "${S}" || die
-	else
-		unpack ${A}
-	fi
+CROS_WORKON_LOCALNAME="../third_party/flimflam"
+
+src_prepare() {
+	eautoreconf
 }
 
 src_configure() {
@@ -53,17 +57,17 @@ src_configure() {
 		fi
 	fi
 
-	autoreconf
+	tc-export CC
+	export CFLAGS="${CFLAGS} -gstabs"
+
 	econf \
 		--localstatedir=/var \
 		--enable-loopback=builtin \
-		$(use_enable 3G novatel) \
-		$(use_enable 3G huawei) \
-		$(use_enable 3G hso) \
-		$(use_enable 3G mbm) \
 		$(use_enable bluetooth) \
+		$(use_enable crosmetrics) \
 		$(use_enable debug) \
-		$(use_enable dhclient dhclient builtin) \
+		$(use_enable dhclient) \
+		$(use_enable dhcpcd) \
 		$(use_enable dnsproxy dnsproxy builtin) \
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
@@ -72,6 +76,7 @@ src_configure() {
 		$(use_enable policykit polkit) \
 		$(use_enable ppp) \
 		$(use_enable resolvconf) \
+		$(use_enable resolvfiles resolvfiles builtin) \
 		$(use_enable threads) \
 		$(use_enable tools) \
 		$(use_enable udev) \
@@ -81,14 +86,39 @@ src_configure() {
 		--disable-iospm
 }
 
+src_compile() {
+	emake clean-generic || die "emake clean failed"
+	emake || die "emake failed"
+	dump_syms.i386 src/flimflamd > \
+		flimflamd.sym 2>/dev/null || die "symbol extraction failed"
+}
+
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 	keepdir /var/lib/${PN} || die
-	newinitd "${FILESDIR}"/${PN}.initd ${PN} || die
 
-	if use dnsproxy ; then
+	if use resolvfiles ; then
+		mkdir -p "${D}"/etc/
+		ln -s /var/run/flimflam/resolv.conf "${D}"/etc/resolv.conf
+	elif use resolvconf; then
+		:
+	elif use dnsproxy ; then
 		mkdir -p "${D}"/etc/
 		echo "nameserver 127.0.0.1" > "${D}"/etc/resolv.conf
 		chmod 0644 "${D}"/etc/resolv.conf
 	fi
+
+	if use ppp; then
+		local ppp_dir="${D}"/etc/ppp/ip-up.d/
+		mkdir -p ${ppp_dir}
+		cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
+	fi
+
+	if use testing; then
+		exeinto /usr/lib/flimflam/test
+		doexe test/* || die
+	fi
+
+	insinto /usr/lib/debug
+	doins flimflamd.sym
 }

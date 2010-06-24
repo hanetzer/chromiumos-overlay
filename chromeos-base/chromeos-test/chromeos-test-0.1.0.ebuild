@@ -28,7 +28,6 @@ RDEPEND="${RDEPEND}
 	app-crypt/nss
 	chromeos-base/autox
 	chromeos-base/client-id-uploader
-	chromeos-base/flimflam-testscripts
 	chromeos-base/minifakedns
 	x86? ( dev-java/icedtea )
 	dev-lang/python
