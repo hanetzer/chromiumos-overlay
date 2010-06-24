@@ -75,6 +75,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-xkb-layouts
 	app-shells/dash
 	chromeos-base/board-devices
+	chromeos-base/cashew
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-init
