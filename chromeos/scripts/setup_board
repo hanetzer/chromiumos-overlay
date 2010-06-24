@@ -51,9 +51,20 @@ then
   HARDENED=1
 fi
 
+CROSSTOOL=0
+if emerge --info |grep crosstool > /dev/null
+then
+  CROSSTOOL=1
+fi
+
 # Hardened requires gcc 4.4.3 to get the proper specs files, etc. applied.
 if [ "$HARDENED" -eq "1" ] ; then
    FLAGS_gcc_version="4.4.3-r4"
+fi
+
+if [ "$CROSSTOOL" -eq "1" ] ; then
+  FLAGS_gcc_version="4.4.3"
+  FLAGS_usepkg=$FLAGS_FALSE
 fi
 
 # Only now can we die on error.  shflags functions leak non-zero error codes,
