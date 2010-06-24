@@ -271,7 +271,12 @@ src_compile() {
   cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
   
   if use build_tests; then
-    TEST_TARGETS="browser_tests pyautolib reliability_tests startup_tests ui_tests"
+    TEST_TARGETS="browser_tests
+      page_cycler_tests
+      pyautolib
+      reliability_tests
+      startup_tests
+      ui_tests"
     echo Building test targets: ${TEST_TARGETS}
   fi
 
@@ -317,6 +322,7 @@ install_chrome_test_resources() {
   sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
   sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
   sudo cp "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
+  sudo cp "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
 
   sudo mkdir -p "${TEST_DIR}"/base
   sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
