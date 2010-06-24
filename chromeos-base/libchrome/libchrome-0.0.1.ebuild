@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit toolchain-funcs subversion
 
 DESCRIPTION="Chrome base library"
 HOMEPAGE="http://src.chromium.org"
@@ -16,11 +16,19 @@ KEYWORDS="amd64 x86 arm"
 DEPEND=""
 RDEPEND="${DEPEND}"
 
+CHROME_SVN_REVISION=36775
+
+# NOTE: this needs to stick around to keep subversion eclass happy, for other functions than src_unpack
+# It doesn't matter which subdir this is, it's only used for logging purposes
+ESVN_REPO_URI="http://src.chromium.org/svn/trunk/src/base@${CHROME_SVN_REVISION}"
+
 src_unpack() {
-	local third_party="${CHROMEOS_ROOT}/src/third_party/"
-	elog "Using third_party: $third_party"
-	mkdir -p "${S}"
-	cp -a "${third_party}"/chrome/* "${S}" || die
+	# we have two parts of the actual chrome repo being checked out, base and build
+	subversion_fetch "http://src.chromium.org/svn/trunk/src/base@${CHROME_SVN_REVISION}" files/base
+	subversion_fetch "http://src.chromium.org/svn/trunk/src/build@${CHROME_SVN_REVISION}" files/build
+}
+
+src_prepare() {
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 }
 
