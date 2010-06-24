@@ -3,14 +3,14 @@
 
 EAPI=2
 
-inherit autotools cros-workon
+inherit cros-workon autotools
 
 DESCRIPTION="Chromium OS network usage tracking daemon"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND="dev-cpp/gflags
