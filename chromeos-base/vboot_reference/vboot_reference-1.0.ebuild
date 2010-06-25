@@ -22,10 +22,13 @@ src_compile() {
 
 src_install() {
 	if use minimal ; then
-        	emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C cgpt \
+		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C cgpt \
 		      install || die "${PN} install failed."
+		# utility/ is all or nothing, just pick out what we want.
+		into "/usr"
+		dobin "${S}"/build/utility/dump_kernel_config
 	else
-        	emake DESTDIR="${D}/usr/bin" install || \
-	        	die "${PN} install failed."
+		emake DESTDIR="${D}/usr/bin" install || \
+			die "${PN} install failed."
 	fi
 }
