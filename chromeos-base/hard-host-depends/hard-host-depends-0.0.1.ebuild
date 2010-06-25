@@ -111,6 +111,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies that are needed to sign images
 RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
+	chromeos-base/verity
 	"
 
 # Host dependency needed to dump symbols from binaries.
