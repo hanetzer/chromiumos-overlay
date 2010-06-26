@@ -63,8 +63,6 @@ src_compile() {
 }
 
 src_install() {
-	local third_party="${CHROMEOS_ROOT}/src/third_party"
-
 	emake DESTDIR="${D}" install || die
 	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
