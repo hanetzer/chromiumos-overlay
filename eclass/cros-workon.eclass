@@ -8,7 +8,7 @@
 
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
-# Directory where git repositories of packages are checked out
+# Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
 : ${CROS_WORKON_SRCROOT:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
@@ -39,6 +39,30 @@
 inherit git
 
 cros-workon_src_unpack() {
+	local fetch_method # local|git
+	local srcroot
+
+	case ${PV} in
+	(9999)
+		fetch_method=local
+		if [[ -n "${CROS_WORKON_SRCROOT}" ]]; then
+			srcroot="${CROS_WORKON_SRCROOT}"
+		elif [[ -n "${CHROMEOS_ROOT}" ]]; then
+			srcroot="${CHROMEOS_ROOT}"
+		else
+			srcroot="/home/${SUDO_USER}/trunk/"
+			# HACK: figure out the missing legacy path for now
+			# this only happens in amd64 chroot with sudo emerge
+		fi;;
+	(*)
+		if [[ -n "${CHROMEOS_ROOT}" && -z "${CROS_WORKON_SRCROOT}" ]]; then
+			fetch_method=local
+			srcroot="${CHROMEOS_ROOT}"
+		else
+			fetch_method=git
+		fi;;
+	esac
+
 	# Hack
 	# TODO(msb): remove once we've resolved the include path issue
 	# http://groups.google.com/a/chromium.org/group/chromium-os-dev/browse_thread/thread/5e85f28f551eeda/3ae57db97ae327ae
@@ -47,7 +71,7 @@ cros-workon_src_unpack() {
 	local repo=${CROS_WORKON_REPO}
 	local project=${CROS_WORKON_PROJECT}
 
-	if [[ -z "${CHROMEOS_ROOT}" && "${PV}" != "9999" ]] ; then
+	if [[ "${fetch_method}" == "git" ]] ; then
 		EGIT_REPO_URI="${repo}/${project}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
 		# clones to /var, copies src tree to the /build/<board>/tmp
@@ -57,16 +81,10 @@ cros-workon_src_unpack() {
 
 	# Use an existing source tree if CHROMEOS_ROOT is set or
 	# clone and checkout into the existing directory layout
-	local srcroot
-
-	if [ -z "${CROS_WORKON_SRCROOT}" ] ; then
-		if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
-			srcroot="${CHROMEOS_ROOT}"/src/platform
-		else
-			srcroot="${CHROMEOS_ROOT}"/src/third_party
-		fi
+	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
+		srcroot+="/src/platform"
 	else
-		srcroot="${CROS_WORKON_SRCROOT}"
+		srcroot+="/src/third_party"
 	fi
 
 
