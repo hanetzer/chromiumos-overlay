@@ -9,23 +9,17 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-autotest"
+IUSE=""
 
 # TODO(sosa@chromium.org) - Given that we can add packages to the test image
 # now, we should just install these packages to the image and remove from deps.
-
-# Packages for getting autotest onto image.
-RDEPEND="${RDEPEND}
-	autotest? (
-		chromeos-base/autotest[autox,buildcheck,xset]
-	)
-	"
 
 # Packages required for testing.
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
 	app-crypt/nss
+	chromeos-base/autotest
 	chromeos-base/autox
 	chromeos-base/client-id-uploader
 	chromeos-base/minifakedns
@@ -54,3 +48,4 @@ RDEPEND="${RDEPEND}
 	x11-apps/xmodmap
 	x11-apps/xset
 	"
+

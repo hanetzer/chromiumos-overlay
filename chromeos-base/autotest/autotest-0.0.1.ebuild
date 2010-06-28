@@ -108,11 +108,11 @@ src_configure() {
 src_compile() {
 	setup_cross_toolchain
 
-        if use opengles ; then
-          graphics_backend=OPENGLES
-        else
-          graphics_backend=OPENGL
-        fi
+	if use opengles ; then
+		graphics_backend=OPENGLES
+	else
+		graphics_backend=OPENGL
+	fi
 
 	# Do not use sudo, it'll unset all your environment
 	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
@@ -120,11 +120,17 @@ src_compile() {
 		|| ! use buildcheck || die "Tests failed to build."
 	# Cleanup some temp files after compiling
 	find . -name '*.[ado]' -delete
+
 }
 
 src_install() {
-	insinto "/usr/local/autotest"
+	insinto /usr/local/autotest
 	doins -r "${S}"/*
+	mkdir -p ${T}/autotest-pkgs
+	utils/packager.py --all -r ${T}/autotest-pkgs upload || \
+	    die "Fail to package autotest."
+ 	insinto /usr/local/autotest-pkgs
+	doins -r "${T}"/autotest-pkgs/*
 }
 
 pkg_postinst() {
