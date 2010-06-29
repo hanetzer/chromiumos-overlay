@@ -19,6 +19,7 @@ RDEPEND=">=app-i18n/ibus-1.2
 	>=dev-libs/m17n-lib-1.6.1
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
+	chromeos-base/libcros
 	=dev-db/m17n-contrib-1.1.10
 	>=dev-db/m17n-db-1.6.1
 	dev-util/pkgconfig
@@ -34,6 +35,12 @@ CROS_WORKON_SUBDIR="files"
 
 src_prepare() {
 	NOCONFIGURE=1 ./autogen.sh
+	# Build ibus-engine-m17n for the host platform.
+	(CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' ./configure && make) || die
+	# Obtain the XML output by running the binary.
+	src/ibus-engine-m17n --xml > output.xml || die
+	# Clean up.
+	make distclean || die
 }
 
 src_configure() {
@@ -42,6 +49,11 @@ src_configure() {
 
 src_compile() {
 	emake || die
+	# Rewrite xkb-layouts.xml using the XML output.
+	LIST="${SYSROOT}"/usr/include/cros/chromeos_input_method_whitelist.h
+	python "${FILESDIR}"/filter.py < output.xml \
+	   --whitelist="${LIST}" \
+	   --rewrite=src/m17n.xml || die
 }
 
 src_install() {
