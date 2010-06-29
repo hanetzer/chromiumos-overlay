@@ -16,13 +16,18 @@ RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
         chromeos-base/libcros
         dev-util/pkgconfig
-        >=sys-devel/gettext-0.16.1
-        x11-misc/xkeyboard-config"
+        >=sys-devel/gettext-0.16.1"
 
 CROS_WORKON_SUBDIR="files"
 
 src_prepare() {
         NOCONFIGURE=1 ./autogen.sh
+        # Build ibus-engine-xkb-layouts for the host platform.
+        (CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' ./configure && make) || die
+        # Obtain the XML output by running the binary.
+        src/ibus-engine-xkb-layouts --xml > output.xml || die
+        # Clean up.
+        make distclean || die
 }
 
 src_configure() {
@@ -31,13 +36,12 @@ src_configure() {
 }
 
 src_compile() {
-        LIST="${SYSROOT}"/usr/include/cros/chromeos_input_method_whitelist.h
-        XML="${SYSROOT}"/usr/share/X11/xkb/rules/xorg.xml
         emake || die
-        python "${FILESDIR}"/genxml.py \
-        --xkbrules="${XML}" \
-        --whitelist="${LIST}" \
-        --rewrite=src/xkb-layouts.xml || die
+        # Rewrite xkb-layouts.xml using the XML output.
+        LIST="${SYSROOT}"/usr/include/cros/chromeos_input_method_whitelist.h
+        python "${FILESDIR}"/filter.py < output.xml \
+           --whitelist="${LIST}" \
+           --rewrite=src/xkb-layouts.xml || die
 }
 
 src_install() {
