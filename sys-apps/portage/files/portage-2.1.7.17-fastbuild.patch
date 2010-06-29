@@ -1,0 +1,51 @@
+diff --git a/pym/portage/locks.py b/pym/portage/locks.py
+index 3685d80..3cf5563 100644
+--- a/pym/portage/locks.py
++++ b/pym/portage/locks.py
+@@ -22,6 +22,7 @@ if sys.hexversion >= 0x3000000:
+ 	basestring = str
+ 
+ HARDLINK_FD = -2
++NOLOCK_ID = -3
+ 
+ # Used by emerge in order to disable the "waiting for lock" message
+ # so that it doesn't interfere with the status display.
+@@ -40,6 +41,16 @@ def lockfile(mypath, wantnewlockfile=0, unlinkfile=0,
+ 	"""
+ 	import fcntl
+ 
++	# If we are locking the binpkg directory, or the portage db,
++	# skip this if "PORTAGE_LOCKS" environment variable is set to
++	# false. This indicates we are running multiple emerges in parallel.
++	if (os.environ.get("PORTAGE_LOCKS") == "false" and
++	    isinstance(mypath, basestring) and
++	    (mypath.find("/var/db") != -1 or
++	     mypath.endswith(".Packages.portage_lockfile"))):
++		return (mypath, NOLOCK_ID, None, None)
++	start = time.time()
++
+ 	if not mypath:
+ 		raise InvalidData(_("Empty path given"))
+ 
+@@ -160,6 +171,10 @@ def lockfile(mypath, wantnewlockfile=0, unlinkfile=0,
+ 			waiting_msg=waiting_msg, flags=flags)
+ 
+ 	writemsg(str((lockfilename,myfd,unlinkfile))+"\n",1)
++	end = time.time()
++	elapsed = (end - start)
++	if elapsed > 1.0:
++		print "Seconds waited = %f (%s)" % (elapsed, lockfilename)
+ 	return (lockfilename,myfd,unlinkfile,locking_method)
+ 
+ def _fstat_nlink(fd):
+@@ -190,6 +205,10 @@ def unlockfile(mytuple):
+ 	else:
+ 		raise InvalidData
+ 
++	# If we provided a fake lock previously, don't actually unlock it.
++	if os.environ.get("PORTAGE_LOCKS") == "false" and myfd == NOLOCK_ID:
++		return True
++
+ 	if(myfd == HARDLINK_FD):
+ 		unhardlink_lockfile(lockfilename)
+ 		return True
