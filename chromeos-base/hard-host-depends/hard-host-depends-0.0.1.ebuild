@@ -32,6 +32,7 @@ RDEPEND="${RDEPEND}
 	app-arch/sharutils
 	app-arch/unzip
 	>=app-emulation/qemu-user-0.12.2
+	app-i18n/ibus
 	app-text/texi2html
 	dev-lang/python
 	dev-lang/swig
