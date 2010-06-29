@@ -35,6 +35,8 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus
 	app-text/texi2html
 	dev-lang/python
+	dev-db/m17n-contrib
+	dev-db/m17n-db
 	dev-lang/swig
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
@@ -42,6 +44,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/eggdbus
 	dev-libs/libgcrypt
 	dev-libs/libxslt
+	dev-libs/m17n-lib
 	dev-libs/nss[utils]
 	dev-libs/protobuf
 	dev-python/dbus-python
