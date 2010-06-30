@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="debug"
 
-RDEPEND="chromeos-base/libchrome
+RDEPEND="chromeos-base/crash-dumper
+	chromeos-base/libchrome
 	dev-cpp/gflags
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.0
@@ -44,17 +45,17 @@ src_test() {
 }
 
 src_install() {
-	dobin "${S}/generate_logs"
-	dobin "${S}/hardware_class"
-	dobin "${S}/metrics_client"
-	dobin "${S}/metrics_daemon"
-	dobin "${S}/syslog_parser.sh"
-	dolib.a "${S}/libmetrics.a"
-	dolib.so "${S}/libmetrics.so"
-	dosbin "${S}/omaha_tracker.sh"
+	dobin generate_logs || die
+	dobin hardware_class || die
+	dobin metrics_client || die
+	dobin metrics_daemon || die
+	dobin syslog_parser.sh || die
+	dolib.a libmetrics.a || die
+	dolib.so libmetrics.so || die
+	dosbin omaha_tracker.sh || die
 
-	insinto "/usr/include/metrics"
-	doins "${S}/c_metrics_library.h"
-	doins "${S}/metrics_library.h"
-	doins "${S}/metrics_library_mock.h"
+	insinto /usr/include/metrics
+	doins c_metrics_library.h || die
+	doins metrics_library.h || die
+	doins metrics_library_mock.h || die
 }
