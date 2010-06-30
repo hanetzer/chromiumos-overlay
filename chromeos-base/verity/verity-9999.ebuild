@@ -14,8 +14,8 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test valgrind splitdebug"
 
-RDEPEND="chromeos-base/libchrome
-	 chromeos-base/libchromeos
+RDEPEND="test? ( chromeos-base/libchrome )
+	 test? ( chromeos-base/libchromeos )
 	 dev-libs/openssl"
 
 # qemu use isn't reflected as it is copied into the target
@@ -33,6 +33,7 @@ src_compile() {
 	tc-export OBJCOPY
 	tc-export STRIP
 	emake OUT=${S}/build \
+		WITH_CHROME=$(use test && echo 1 || echo 0) \
 		SPLITDEBUG=$(use splitdebug && echo 1) verity || \
 		die "failed to make verity"
 }
@@ -48,6 +49,7 @@ src_test() {
 		VALGRIND=$(use valgrind && echo 1) \
 		MODE=opt \
 		SPLITDEBUG=0 \
+		WITH_CHROME=1 \
 		tests || die "unit tests (with ${GTEST_ARGS}) failed!"
 }
 
