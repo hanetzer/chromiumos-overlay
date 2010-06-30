@@ -4,7 +4,7 @@ media-libs/gd           png
 dev-libs/protobuf 	-python
 dev-perl/GD             png
 dev-util/git		cvs subversion webdav curl
-dev-util/subversion	-dso
+dev-util/subversion	-dso webdav-serf
 media-libs/gd           png
 x11-libs/cairo		X
 # Build emulation statically so that we can execute it within a chroot and
