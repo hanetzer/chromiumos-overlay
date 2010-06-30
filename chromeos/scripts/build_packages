@@ -113,6 +113,12 @@ else
   eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos
 fi
 
+# Always build cros-workon packages
+CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon list)
+if [[ -n "${CROS_WORKON_PKGS}" ]]; then
+  $EMERGE_BOARD_CMD --oneshot ${CROS_WORKON_PKGS}
+fi
+
 if [[ $FLAGS_withtest -eq $FLAGS_TRUE ]]; then
   echo "Building Test Package"
   eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
