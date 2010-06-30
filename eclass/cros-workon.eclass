@@ -38,29 +38,49 @@
 
 inherit git
 
+# Calculate path where code should be checked out.
+get_path() {
+	local path
+
+	if [[ -n "${CROS_WORKON_SRCROOT}" ]]; then
+		path="${CROS_WORKON_SRCROOT}"
+	elif [[ -n "${CHROMEOS_ROOT}" ]]; then
+		path="${CHROMEOS_ROOT}"
+	else
+		# HACK: figure out the missing legacy path for now
+		# this only happens in amd64 chroot with sudo emerge
+		path="/home/${SUDO_USER}/trunk"
+	fi
+
+	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
+		path+=/src/platform
+	else
+		path+=/src/third_party
+	fi
+
+	if [[ -n "${CROS_WORKON_LOCALNAME}" ]]; then
+		path+="/${CROS_WORKON_LOCALNAME}"
+	fi
+	if [[ -n "${CROS_WORKON_SUBDIR}" ]]; then
+		path+="/${CROS_WORKON_SUBDIR}"
+	fi
+	echo ${path}
+}
+
 cros-workon_src_unpack() {
 	local fetch_method # local|git
-	local srcroot
 
 	case ${PV} in
 	(9999)
 		fetch_method=local
-		if [[ -n "${CROS_WORKON_SRCROOT}" ]]; then
-			srcroot="${CROS_WORKON_SRCROOT}"
-		elif [[ -n "${CHROMEOS_ROOT}" ]]; then
-			srcroot="${CHROMEOS_ROOT}"
-		else
-			srcroot="/home/${SUDO_USER}/trunk/"
-			# HACK: figure out the missing legacy path for now
-			# this only happens in amd64 chroot with sudo emerge
-		fi;;
+		;;
 	(*)
 		if [[ -n "${CHROMEOS_ROOT}" && -z "${CROS_WORKON_SRCROOT}" ]]; then
 			fetch_method=local
-			srcroot="${CHROMEOS_ROOT}"
 		else
 			fetch_method=git
-		fi;;
+		fi
+		;;
 	esac
 
 	# Hack
@@ -79,31 +99,15 @@ cros-workon_src_unpack() {
 		return
 	fi
 
-	# Use an existing source tree if CHROMEOS_ROOT is set or
-	# clone and checkout into the existing directory layout
-	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
-		srcroot+="/src/platform"
-	else
-		srcroot+="/src/third_party"
-	fi
+	local path=$(get_path)
 
-
-	local path="${srcroot}"
-	if [ -n "${CROS_WORKON_LOCALNAME}" ]; then
-		path+="/${CROS_WORKON_LOCALNAME}"
-	fi
-	if [ -n "${CROS_WORKON_SUBDIR}" ]; then
-		path+="/${CROS_WORKON_SUBDIR}"
-	fi
 	einfo "Using local source dir: $path"
 
 	# Clone from the git host + repository path specified by
 	# CROS_WORKON_REPO + CROS_WORKON_PROJECT. Checkout source from
-	# the branch specified by CROS_WORKON_COMMIT into the # the 
-	# CROS_WORKON_SRCROOT + CROS_WORKON_LOCALNAME + CROS_WORKON_SUBDIR
-	# workspace path.
+	# the branch specified by CROS_WORKON_COMMIT into the workspace path.
 	# If the repository exists just punt and let it be copied off for build.
-	if [[ "${PV}" == "9999" && ! -d ${path} ]] ; then
+	if [[ "${fetch_method}" == "local" && ! -d ${path} ]] ; then
 
 		addwrite / 
 		local old_umask="`umask`"
@@ -132,4 +136,12 @@ cros-workon_src_unpack() {
 	cp -a "${path}"/* "${S}" || die "cp -a ${path}/* ${S}"
 }
 
-EXPORT_FUNCTIONS src_unpack
+cros-workon_pkg_info() {
+	local CROS_WORKON_SRCDIR=$(get_path)
+
+	for var in CROS_WORKON_SRCDIR ; do
+		echo ${var}=\"${!var}\"
+	done
+}
+
+EXPORT_FUNCTIONS src_unpack pkg_info
