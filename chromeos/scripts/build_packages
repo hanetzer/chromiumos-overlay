@@ -114,7 +114,7 @@ else
 fi
 
 # Always build cros-workon packages
-CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon list)
+CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
 if [[ -n "${CROS_WORKON_PKGS}" ]]; then
   $EMERGE_BOARD_CMD --oneshot ${CROS_WORKON_PKGS}
 fi
