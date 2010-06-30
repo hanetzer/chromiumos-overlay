@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 IUSE="test"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 
 RDEPEND="chromeos-base/libcros
 	chromeos-base/metrics
