@@ -49,7 +49,7 @@ pkg_setup() {
 
 src_unpack() {
 	local third_party="${CHROMEOS_ROOT}/src/third_party"
-	local hostap="${third_party}/wpa_supplicant/hostap.git/"
+	local hostap="${third_party}/wpa_supplicant/"
 	elog "Using hostap: $hostap"
 	mkdir -p "${S}"
 	cp -a "${hostap}"/* "${S}/.." || die
