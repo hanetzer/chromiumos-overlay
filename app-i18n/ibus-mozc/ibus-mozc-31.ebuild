@@ -41,8 +41,8 @@ src_compile() {
 
 src_install() {
   exeinto /usr/libexec || die
-  newexe "out/${BUILDTYPE}/ibus_mozc" ibus-engine-mozc || die
+  newexe "out_linux/${BUILDTYPE}/ibus_mozc" ibus-engine-mozc || die
 
   insinto /usr/share/ibus/component || die
-  doins unix/ibus/mozc.xml || die
+  doins out_linux/${BUILDTYPE}/obj/gen/unix/ibus/mozc.xml || die
 }
