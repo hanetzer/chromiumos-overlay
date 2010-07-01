@@ -17,12 +17,13 @@ RDEPEND="chromeos-base/crash-dumper
          chromeos-base/libchrome
          chromeos-base/metrics
          dev-cpp/gflags
+	 net-misc/curl
          test? ( dev-cpp/gtest )"
 DEPEND="${RDEPEND}"
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
-	emake crash_reporter || die "crash_reporter compile failed."
+	emake || die "crash_reporter compile failed."
 }
 
 src_test() {

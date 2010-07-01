@@ -16,7 +16,7 @@ USE="${USE} threads hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp"
-CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/"
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/ -gstabs"
 CXXFLAGS="${CFLAGS}"
 LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
 
