@@ -15,7 +15,6 @@ KEYWORDS="~amd64 ~arm ~x86"
 RDEPEND="app-arch/bzip2
 	chromeos-base/libchrome
 	dev-cpp/gflags
-	dev-cpp/glog
 	dev-libs/glib
 	dev-libs/libpcre
 	dev-libs/libxml2
@@ -23,10 +22,9 @@ RDEPEND="app-arch/bzip2
 	dev-util/bsdiff
 	net-misc/curl
 	sys-libs/zlib"
-DEPEND="dev-cpp/gtest
+DEPEND="chromeos-base/libchromeos
+	dev-cpp/gtest
 	dev-libs/dbus-glib
-	net-misc/wget
-	sys-apps/fakeroot
 	${RDEPEND}"
 
 src_compile() {
