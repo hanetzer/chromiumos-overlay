@@ -46,6 +46,7 @@ RDEPEND="${RDEPEND}
 	x86? (
 		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
+		chromeos-base/chrontel
 		chromeos-base/firmware-utils
 		chromeos-base/speech_synthesis
 		media-plugins/o3d
