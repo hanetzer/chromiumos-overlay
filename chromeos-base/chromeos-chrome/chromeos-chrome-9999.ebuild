@@ -413,4 +413,8 @@ src_install() {
   dosym nspr/libplds4.so /usr/lib/libplds4.so.0d
   dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
+
+  # Use Flash from www-plugins/adobe-flash package.
+  dosym /opt/netscape/plugins/libflashplayer.so \
+      "${CHROME_DIR}"/plugins/libflashplayer.so
 }
