@@ -210,7 +210,13 @@ subversion_fetch() {
 
 	if [[ ! -d ${ESVN_STORE_DIR} ]]; then
 		debug-print "${FUNCNAME}: initial checkout. creating subversion directory"
+		# make sure the svn-src directory gives write permission
+		# to the group (portage) so all users (aka regular users
+		# and root) can update the directory.
+		local pushed_umask=$(umask)
+		umask g+w
 		mkdir -p "${ESVN_STORE_DIR}" || die "${ESVN}: can't mkdir ${ESVN_STORE_DIR}."
+		umask ${pushed_umask}
 	fi
 
 	cd "${ESVN_STORE_DIR}" || die "${ESVN}: can't chdir to ${ESVN_STORE_DIR}"
@@ -243,6 +249,11 @@ subversion_fetch() {
 
 		debug-print "${FUNCNAME}: ${ESVN_FETCH_CMD} ${options} ${repo_uri}"
 
+		# make sure the svn-src directory gives write permission
+		# to the group (portage) so all users (aka regular users
+		# and root) can update the repository.
+		local pushed_umask=$(umask)
+		umask g+w
 		mkdir -p "${ESVN_PROJECT}" || die "${ESVN}: can't mkdir ${ESVN_PROJECT}."
 		cd "${ESVN_PROJECT}" || die "${ESVN}: can't chdir to ${ESVN_PROJECT}"
 		if [[ -n "${ESVN_USER}" ]]; then
@@ -250,6 +261,7 @@ subversion_fetch() {
 		else
 			${ESVN_FETCH_CMD} ${options} "${repo_uri}" || die "${ESVN}: can't fetch to ${wc_path} from ${repo_uri}."
 		fi
+		umask ${pushed_umask}
 
 	elif [[ -n ${ESVN_OFFLINE} ]]; then
 		svn upgrade "${wc_path}" &>/dev/null
