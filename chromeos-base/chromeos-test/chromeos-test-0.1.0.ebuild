@@ -19,7 +19,6 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
 	app-crypt/nss
-	chromeos-base/autotest
 	chromeos-base/autox
 	chromeos-base/client-id-uploader
 	chromeos-base/minifakedns
