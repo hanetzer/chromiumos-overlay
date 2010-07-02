@@ -9,14 +9,12 @@ DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="~x86 ~arm"
 IUSE="-compat_wireless"
 
 DEPEND="sys-apps/debianutils"
 RDEPEND=""
 
-kernel=${CHROMEOS_KERNEL:-"kernel/files"}
-files="${CHROMEOS_ROOT}/src/third_party/${kernel}"
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
 # Use a single or split kernel config as specified in the board or variant
@@ -26,7 +24,7 @@ vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 # to the root of the kernel source tree.
 
 if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
-	config="${files}/${CHROMEOS_KERNEL_CONFIG}"
+	config="${S}/${CHROMEOS_KERNEL_CONFIG}"
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
@@ -35,6 +33,19 @@ else
 	fi
 fi
 
+if [ "${CHROMEOS_KERNEL}" = "kernel-nvidia" ]; then
+	CROS_WORKON_LOCALNAME="../third_party/kernel-nvidia"
+	EGIT_BRANCH="nvidia-2.6.31.12"
+elif [ "${CHROMEOS_KERNEL}" = "kernel-qualcomm" ]; then
+	CROS_WORKON_LOCALNAME="../third_party/kernel-qualcomm"
+	EGIT_BRANCH=qualcomm-2.6.32.9
+else
+	# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+	CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+fi
+
+# This must be inherited *after* EGIT/CROS_WORKON variables defined
+inherit cros-workon
 
 # Allow override of kernel arch.
 kernel_arch=${CHROMEOS_KERNEL_ARCH:-"$(tc-arch-kernel)"}
@@ -44,13 +55,6 @@ cross=${CHOST}-
 if [ "${ARCH}" = "x86" -a "${kernel_arch}" = "x86_64" ]; then
     cross=${CBUILD}-
 fi
-
-src_unpack() {
-	elog "Using kernel files: ${files}"
-
-	mkdir -p "${S}"
-	cp -ar "${files}"/* "${S}" || die
- }
 
 src_configure() {
 	elog "Using kernel config: ${config}"
