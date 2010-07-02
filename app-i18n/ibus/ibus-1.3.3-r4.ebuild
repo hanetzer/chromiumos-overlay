@@ -67,6 +67,7 @@ src_install() {
 	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
 	fi
+	rm "${D}/ibus.schemas" || die
 	cp "${S}/candidate_window.xml" "${D}/usr/share/ibus/component/" || die
 	chmod 644 "${D}/usr/share/ibus/component/candidate_window.xml" || die
 	dodoc AUTHORS ChangeLog NEWS README
