@@ -54,6 +54,7 @@ RDEPEND="${RDEPEND}
 		>=net-wireless/iwl5000-ucode-8.24.2.12
 		net-wireless/iwl6000-ucode
 		sys-apps/flashrom
+		sys-apps/mosys
 	)
 	"
 
