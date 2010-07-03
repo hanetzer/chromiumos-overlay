@@ -35,6 +35,7 @@ DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
 DEFINE_integer jobs -1 "How many packages to build in parallel at maximum."
+DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
 DEFINE_string stage3_date "2010.03.09" \
   "Use the stage3 with the given date."
 
@@ -64,9 +65,9 @@ fi
 
 # Support faster build if necessary.
 EMERGE_CMD="emerge"
-if [ -e "$(dirname $0)/.emerge" ]; then
-  TOP_SCRIPTS_DIR="/home/${USER}/trunk/src/scripts"
-  .  "$(dirname $0)/.emerge"
+if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
+  CHROOT_SCRIPTS_DIR="/home/${USER}/trunk/src/scripts"
+  EMERGE_CMD="${CHROOT_SCRIPTS_DIR}/parallel_emerge"
 fi
 
 function in_chroot {

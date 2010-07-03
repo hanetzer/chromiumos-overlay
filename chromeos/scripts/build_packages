@@ -45,6 +45,7 @@ DEFINE_boolean withtest $FLAGS_TRUE \
   "Build packages required for testing"
 DEFINE_boolean withfactory $FLAGS_TRUE \
   "Build factory installer"
+DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -60,7 +61,7 @@ set -e
 if [ -z "$FLAGS_board" ] ; then
   echo "Error: --board is required."
   exit 1
-  fi
+fi
 
 CROSSTOOL=0
 if emerge --info |grep crosstool > /dev/null
@@ -76,10 +77,9 @@ EMERGE_FLAGS=""
 
 EMERGE_CMD="emerge"
 EMERGE_BOARD_CMD="emerge-${FLAGS_board}"
-TOP_SCRIPTS_DIR=$(dirname "$0")
-if [ -e "${TOP_SCRIPTS_DIR}/.emerge" ]; then
-  echo "Using alternate emerge"
-  .  "${TOP_SCRIPTS_DIR}/.emerge"
+if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
+  EMERGE_BOARD_CMD="${SCRIPTS_DIR}/parallel_emerge --board=${FLAGS_board}"
+  EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
 fi
 
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
