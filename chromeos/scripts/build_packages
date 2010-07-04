@@ -104,24 +104,23 @@ sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 eretry sudo $EMERGE_CMD -uDNv --getbinpkg chromeos-base/hard-host-depends world
 
-if [[ $FLAGS_withdev -eq $FLAGS_TRUE ]]; then
-  echo "Building Chrome OS, dev"
-  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS \
-    chromeos-base/chromeos chromeos-base/chromeos-dev
-else
-  echo "Building Chrome OS"
-  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos
+PACKAGES="chromeos-base/chromeos"
+if [ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]; then
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-dev"
 fi
+if [ "${FLAGS_withfactory}" -eq "$FLAGS_TRUE" ]; then
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-factoryinstall"
+fi
+if [ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]; then
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
+fi
+echo Building ${PACKAGES}
+eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 
 # Always build cros-workon packages
 CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
 if [[ -n "${CROS_WORKON_PKGS}" ]]; then
   $EMERGE_BOARD_CMD --oneshot ${CROS_WORKON_PKGS}
-fi
-
-if [[ $FLAGS_withtest -eq $FLAGS_TRUE ]]; then
-  echo "Building Test Package"
-  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS chromeos-base/chromeos-test
 fi
 
 #We are building chrome from source if chromefromsource is 'TRUE'
@@ -148,12 +147,6 @@ elif [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
   eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
 else
   echo "no valid specifications for chrome browser"
-fi
-
-if [ "$FLAGS_withfactory" -eq "$FLAGS_TRUE" ]; then
-  echo "Building Factory Install"
-  eretry $EMERGE_BOARD_CMD -uDNv $EMERGE_FLAGS \
-    chromeos-base/chromeos-factoryinstall
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
