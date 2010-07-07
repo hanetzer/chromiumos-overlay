@@ -11,7 +11,7 @@ HOMEPAGE="http://roy.marples.name/projects/dhcpcd/"
 LICENSE="BSD-2"
 
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 RDEPEND=">=sys-apps/dbus-1.2
