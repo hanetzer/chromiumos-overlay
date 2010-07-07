@@ -126,11 +126,6 @@ src_compile() {
 src_install() {
 	insinto /usr/local/autotest
 	doins -r "${S}"/*
-	mkdir -p ${T}/autotest-pkgs
-	utils/packager.py --all -r ${T}/autotest-pkgs upload || \
-	    die "Fail to package autotest."
- 	insinto /usr/local/autotest-pkgs
-	doins -r "${T}"/autotest-pkgs/*
 }
 
 pkg_postinst() {
