@@ -1,0 +1,14 @@
+diff -uNr xkeyboard-config-1.7.orig/symbols/jp xkeyboard-config-1.7/symbols/jp
+--- xkeyboard-config-1.7.orig/symbols/jp	2008-11-30 00:57:56.000000000 +0900
++++ xkeyboard-config-1.7/symbols/jp	2010-07-07 09:45:14.583153379 +0900
+@@ -79,6 +79,10 @@
+ 
+     key <NFER> { [ Muhenkan		] };
+ 
++    key <I01> {
++	type[Group1]="PC_ALT_LEVEL2",
++	symbols[Group1]= [ Henkan, Mode_switch ]
++    };
+     key <XFER> {
+ 	type[Group1]="PC_ALT_LEVEL2",
+ 	symbols[Group1]= [ Henkan, Mode_switch ]
