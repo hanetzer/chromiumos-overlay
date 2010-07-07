@@ -415,6 +415,8 @@ src_install() {
   dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
 
   # Use Flash from www-plugins/adobe-flash package.
-  dosym /opt/netscape/plugins/libflashplayer.so \
-      "${CHROME_DIR}"/plugins/libflashplayer.so
+  if use x86; then
+    dosym /opt/netscape/plugins/libflashplayer.so \
+        "${CHROME_DIR}"/plugins/libflashplayer.so
+  fi
 }
