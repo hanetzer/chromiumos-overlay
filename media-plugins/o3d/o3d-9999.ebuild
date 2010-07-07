@@ -33,6 +33,8 @@ src_compile() {
 	elog "http://code.google.com/p/o3d/wiki/HowToBuild"
 
         export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
+        # Prevents gclient from updating self.
+        export DEPOT_TOOLS_UPDATE=0
 
         # Use customized gclient config file
         mkdir -p O3D || die "Cannot create O3D folder"
