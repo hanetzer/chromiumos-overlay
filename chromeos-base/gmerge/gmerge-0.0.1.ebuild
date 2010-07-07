@@ -10,7 +10,7 @@ HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 CROS_WORKON_PROJECT="dev-util"
