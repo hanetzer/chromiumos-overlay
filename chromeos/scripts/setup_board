@@ -64,7 +64,6 @@ fi
 
 if [ "$CROSSTOOL" -eq "1" ] ; then
   FLAGS_gcc_version="4.4.3"
-  FLAGS_usepkg=$FLAGS_FALSE
 fi
 
 # Only now can we die on error.  shflags functions leak non-zero error codes,

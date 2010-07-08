@@ -69,10 +69,6 @@ then
   CROSSTOOL=1
 fi
 
-if [ "$CROSSTOOL" -eq "1" ] ; then
-  FLAGS_usepkg=$FLAGS_FALSE
-fi
-
 EMERGE_FLAGS=""
 
 EMERGE_CMD="emerge"
