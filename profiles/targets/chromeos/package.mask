@@ -66,4 +66,4 @@
 >dev-libs/libgcrypt-1.4.4
 
 # Masked all upstream ebuilds, unupstreamable work in local copy
->net-misc/dhcpcd-5.1.4
+>=net-misc/dhcpcd-5.1.5
