@@ -10,7 +10,8 @@ KEYWORDS="amd64 arm x86"
 IUSE="minimal"
 EAPI="2"
 
-DEPEND="dev-libs/openssl
+DEPEND="chromeos-base/tpm_lite
+        dev-libs/openssl
         sys-apps/util-linux"
 
 src_compile() {
@@ -23,6 +24,8 @@ src_compile() {
 src_install() {
 	if use minimal ; then
 		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C cgpt \
+		      install || die "${PN} install failed."
+        	emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
 		      install || die "${PN} install failed."
 		# utility/ is all or nothing, just pick out what we want.
 		into "/usr"
