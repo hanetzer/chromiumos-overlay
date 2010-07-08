@@ -29,5 +29,6 @@ src_compile() {
 src_install() {
   pushd src
   dobin testsuite/tpmtest_*
+  dolib tlcl/libtlcl.a
   popd
 }
