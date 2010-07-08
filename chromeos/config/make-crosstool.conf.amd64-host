@@ -20,6 +20,6 @@ PKGDIR="/var/lib/portage/pkgs"
 
 PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
 
-USE="${USE} -cups pic pie"
+USE="${USE} -cups pic pie hardened"
 
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
