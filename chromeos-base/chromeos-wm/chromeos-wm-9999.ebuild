@@ -54,11 +54,10 @@ src_compile() {
 
 	scons BACKEND="$backend" -j$(print_num_jobs) wm screenshot || \
 		die "window_manager compile failed"
-	# dump_syms is provided by the dump-syms package, installed via
-	# hard-host-depends.  The exec name in dump_syms's output must match the
+	# The exec name in dump_syms's output must match the
 	# installed name.
 	ln -s wm chromeos-wm
-	dump_syms.i386 chromeos-wm >chromeos-wm.sym 2>/dev/null || \
+	dump_syms chromeos-wm >chromeos-wm.sym 2>/dev/null || \
 		die "symbol extraction failed"
 	rm chromeos-wm
 }

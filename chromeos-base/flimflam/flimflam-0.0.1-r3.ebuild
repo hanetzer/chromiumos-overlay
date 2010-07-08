@@ -89,7 +89,7 @@ src_configure() {
 src_compile() {
 	emake clean-generic || die "emake clean failed"
 	emake || die "emake failed"
-	dump_syms.i386 src/flimflamd > \
+	dump_syms src/flimflamd > \
 		flimflamd.sym 2>/dev/null || die "symbol extraction failed"
 }
 

@@ -33,6 +33,7 @@ RDEPEND="${RDEPEND}
 	>=app-emulation/qemu-user-0.12.2
 	app-i18n/ibus
 	app-text/texi2html
+	chromeos-base/google-breakpad
 	dev-lang/python
 	dev-db/m17n-contrib
 	dev-db/m17n-db
@@ -116,11 +117,3 @@ RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 	chromeos-base/verity
 	"
-
-# Host dependency needed to dump symbols from binaries.
-# See http://crosbug.com/3437.
-RDEPEND="${RDEPEND}
-	chromeos-base/dump-syms
-	"
-
-DEPEND=""

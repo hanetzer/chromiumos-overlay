@@ -188,7 +188,7 @@ src_compile() {
 		emake || die "Qt3 wpa_gui compilation failed"
 	fi
 
-	dump_syms.i386 wpa_supplicant > wpa_supplicant.sym 2>/dev/null || \
+	dump_syms wpa_supplicant > wpa_supplicant.sym 2>/dev/null || \
 		die "symbol extraction failed ${S}"
 }
 

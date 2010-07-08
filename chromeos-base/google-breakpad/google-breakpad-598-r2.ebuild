@@ -23,9 +23,13 @@ src_prepare() {
 	epatch "${FILESDIR}"/sym_upload_mk.diff || die "Unable to patch"
 	epatch "${FILESDIR}"/minidump_upload.diff || die "Unable to patch"
         popd
-        pushd "${S}"/src/tools/linux/dump_syms
-        epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
-        popd
+	if tc-is-cross-compiler; then
+            pushd "${S}"/src/tools/linux/dump_syms
+            epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
+            popd
+	else
+	    elog "Using host compiler and leaving -m32 to build dump_syms"
+	fi
         pushd "${S}"
         epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
         popd
@@ -33,10 +37,11 @@ src_prepare() {
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
-	emake || die "emake failed"
         pushd src/tools/linux/dump_syms
 	emake || die "dumpsyms emake failed"
 	popd
+	emake clean || die "make clean failed"
+	emake || die "emake failed"
         pushd src/tools/linux/symupload
 	emake || die "symupload emake failed"
 	popd

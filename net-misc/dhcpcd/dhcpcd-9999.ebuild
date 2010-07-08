@@ -14,12 +14,11 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND=">=sys-apps/dbus-1.2
-	chromeos-base/crash-dumper"
+RDEPEND=">=sys-apps/dbus-1.2"
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	econf --with-ccopts=-gstabs --prefix= \
+	econf --prefix= \
 		--libexecdir=/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
 		--localstatedir=/var
@@ -27,14 +26,8 @@ src_configure() {
 
 src_compile() {
 	emake || die
-
-	dump_syms.i386 dhcpcd > dhcpcd.sym \
-		2>/dev/null || die "symbol extraction failed"
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die
-
-	insinto /usr/lib/debug
-	doins dhcpcd.sym
 }
