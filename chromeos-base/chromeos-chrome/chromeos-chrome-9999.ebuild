@@ -107,6 +107,28 @@ wget_retry() {
 	return 1
 }
 
+set_build_defines() {
+	# Set proper BUILD_DEFINES for the arch
+	if [ "$ARCH" = "x86" ]; then
+		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
+	elif [ "$ARCH" = "arm" ]; then
+		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
+	else
+		die Unsupported architecture: "${ARCH}"
+	fi
+
+	# This saves time and bytes.
+	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
+		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
+	fi
+
+	export GYP_GENERATORS="${BUILD_TOOL}"
+	export GYP_DEFINES="${BUILD_DEFINES}"
+	export builddir_name="${BUILD_OUT}"
+	# Prevents gclient from updating self.
+	export DEPOT_TOOLS_UPDATE=0
+}
+
 src_unpack() {
 	# These are set here because $(whoami) returns the proper user here,
 	# but 'root' at the root level of the file
@@ -124,11 +146,12 @@ src_unpack() {
 		;;
 	esac
 
-	if [ "$CHROME_ORIGIN" = "SERVER_SOURCE" ]; then
+	case "$CHROME_ORIGIN" in
+	(SERVER_SOURCE)
 		# We are going to fetch source and build chrome
 
-	# initial clone, we have to create chrome-src storage directory and play
-	# nicely with sandbox
+		# initial clone, we have to create chrome-src storage directory and play
+		# nicely with sandbox
 		if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
 			debug-print "${FUNCNAME}: Creating chrome-src directory"
 			addwrite /
@@ -162,12 +185,11 @@ src_unpack() {
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
-		export CHROME_ORIGIN=LOCAL_SOURCE
 		export CHROME_ROOT=${ECHROME_STORE_DIR}
-	fi
-
-	if [ "$CHROME_ORIGIN" = "SERVER_BINARY" ]; then
-	# Using build server.
+		set_build_defines
+		;;
+	(SERVER_BINARY)
+		# Using build server.
 
 		if [ -z "${CHROME_BUILD}" ]; then
 			elog "Finding latest Chrome build"
@@ -194,34 +216,15 @@ src_unpack() {
 			wget_retry "$TEST_URL/$f"
 			done
 		fi
-		else
-		# Using local source
-		if [ "$CHROME_ORIGIN" = "LOCAL_SOURCE" ]; then
-			# Set proper BUILD_DEFINES for the arch
-			if [ "$ARCH" = "x86" ]; then
-				BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
-			elif [ "$ARCH" = "arm" ]; then
-			BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
-			else
-				die Unsupported architecture: "${ARCH}"
-		fi
-
-		# This saves time and bytes.
-		if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
-			BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
-		fi
-
-		export GYP_GENERATORS="${BUILD_TOOL}"
-		export GYP_DEFINES="${BUILD_DEFINES}"
-		export builddir_name="${BUILD_OUT}"
-		# Prevents gclient from updating self.
-		export DEPOT_TOOLS_UPDATE=0
-		fi
-	fi
+		;;
+	(LOCAL_SOURCE)
+		set_build_defines
+		;;
+	esac
 }
 
 src_prepare() {
-	if [ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]; then
+	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -272,7 +275,7 @@ check_cros_version() {
 }
 
 src_compile() {
-	if [ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]; then
+	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -310,7 +313,7 @@ src_compile() {
 
 
 install_chrome_test_resources() {
-	if [ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]; then
+	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -425,9 +428,9 @@ src_install() {
 	dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
 	dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
 
-	# use flash from www-plugins/adobe-flash package.
+	# Use Flash from www-plugins/adobe-flash package.
 	if use x86; then
 		dosym /opt/netscape/plugins/libflashplayer.so \
-			"${chrome_dir}"/plugins/libflashplayer.so
+			"${CHROME_DIR}"/plugins/libflashplayer.so
 	fi
 }
