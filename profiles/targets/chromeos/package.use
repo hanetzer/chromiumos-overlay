@@ -24,6 +24,7 @@ media-gfx/imagemagick   png
 media-sound/alsa-utils	-nls
 media-sound/pulseaudio	bluetooth dbus -esd
 net-libs/libsoup	-ssl
+net-misc/dhcpcd crash
 net-misc/ntp            caps
 net-misc/openssh	-X
 net-nds/openldap	minimal

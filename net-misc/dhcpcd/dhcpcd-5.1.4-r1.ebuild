@@ -12,22 +12,37 @@ LICENSE="BSD-2"
 
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="crash"
 
-RDEPEND=">=sys-apps/dbus-1.2"
+RDEPEND=">=sys-apps/dbus-1.2
+	crash? ( chromeos-base/crash-dumper )"
 DEPEND="${RDEPEND}"
+
+if ! use crash; then
+	export LIBCRASH=""
+fi
 
 src_configure() {
 	econf --prefix= \
 		--libexecdir=/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
-		--localstatedir=/var
+		--localstatedir=/var --
 }
 
 src_compile() {
 	emake || die
+
+	if use crash; then
+  		dump_syms.i386 dhcpcd > dhcpcd.sym \
+	  		2>/dev/null || die "symbol extraction failed"
+	fi
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die
+
+	if use crash; then
+		insinto /usr/lib/debug
+		doins dhcpcd.sym
+	fi
 }

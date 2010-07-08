@@ -10,3 +10,4 @@ x11-libs/cairo		X
 # Build emulation statically so that we can execute it within a chroot and
 # still find the shared libraries.
 app-emulation/qemu-user static
+net-misc/dhcpcd -crash
