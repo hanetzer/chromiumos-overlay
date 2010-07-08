@@ -8,7 +8,7 @@ inherit subversion toolchain-funcs
 DESCRIPTION="V8 JavaScript engine."
 HOMEPAGE="http://code.google.com/p/v8/"
 SRC_URI=""
-ESVN_REPO_URI="http://v8.googlecode.com/svn/trunk@4565"
+ESVN_REPO_URI="http://v8.googlecode.com/svn/trunk@5019"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
