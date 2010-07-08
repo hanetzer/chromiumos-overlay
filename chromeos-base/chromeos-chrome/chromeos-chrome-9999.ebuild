@@ -328,11 +328,13 @@ install_chrome_test_resources() {
 	sudo mkdir -p "${TEST_DIR}"
 	sudo mkdir -p "${TEST_DIR}/out/Release"
 
-	sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
-		"${TEST_DIR}/out/Release"
+  # Collect PyAuto binaries.
+  local pyauto_dir="/usr/local/chrome-pyauto"
+  einfo "Copying PyAuto binaries to ${pyauto_dir}"
+  insinto "${pyauto_dir}/out/Release"
+  doins "${FROM}"/pyautolib.py
+  doins "${FROM_LIB}"/_pyautolib.so
 
-	sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
-	sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
