@@ -19,20 +19,24 @@ DEPEND="${RDEPEND}
         >=sys-devel/gettext-0.16.1"
 
 CROS_WORKON_SUBDIR="files"
+CONFIGURE_OPTIONS="--with-xkb-rules-xml=/usr/share/X11/xkb/rules/xorg.xml"
 
 src_prepare() {
-        NOCONFIGURE=1 ./autogen.sh
+        NOCONFIGURE=1 ./autogen.sh || die
         # Build ibus-engine-xkb-layouts for the host platform.
-        (CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' ./configure && make) || die
+        (CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' \
+         ./configure $CONFIGURE_OPTIONS && make) || die
         # Obtain the XML output by running the binary.
         src/ibus-engine-xkb-layouts --xml > output.xml || die
+        # Make sure that at least one engine is present.
+        grep -q '<engine>' output.xml || die
         # Clean up.
         make distclean || die
 }
 
 src_configure() {
         # Since X for Chrome OS does not use evdev, we use xorg.xml.
-        econf --with-xkb-rules-xml=/usr/share/X11/xkb/rules/xorg.xml || die
+        econf $CONFIGURE_OPTIONS || die
 }
 
 src_compile() {
