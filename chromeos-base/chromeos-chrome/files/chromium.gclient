@@ -4,6 +4,6 @@ solutions = [
     "custom_deps" : {
      	        "src/third_party/WebKit/LayoutTests": None,
     },
-    "safesync_url": ""
+    "safesync_url": "http://chromium-status.appspot.com/lkgr"
   },
 ]
