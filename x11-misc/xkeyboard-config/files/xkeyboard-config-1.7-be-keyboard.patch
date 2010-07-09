@@ -1,0 +1,22 @@
+diff -uNr xkeyboard-config-1.7.orig/rules/base.xml.in xkeyboard-config-1.7/rules/base.xml.in
+--- xkeyboard-config-1.7.orig/rules/base.xml.in	2009-09-22 06:23:32.000000000 +0900
++++ xkeyboard-config-1.7/rules/base.xml.in	2010-07-09 18:00:00.970143990 +0900
+@@ -1515,6 +1515,7 @@
+         <_shortDescription>Bel</_shortDescription>
+         <_description>Belgium</_description>
+         <languageList><iso639Id>ger</iso639Id>
++                      <iso639Id>nld</iso639Id>
+                       <iso639Id>fra</iso639Id></languageList>
+       </configItem>
+       <variantList>
+diff -uNr xkeyboard-config-1.7.orig/rules/evdev.xml.in xkeyboard-config-1.7/rules/evdev.xml.in
+--- xkeyboard-config-1.7.orig/rules/evdev.xml.in	2009-09-22 06:23:37.000000000 +0900
++++ xkeyboard-config-1.7/rules/evdev.xml.in	2010-07-09 18:00:22.400143219 +0900
+@@ -1515,6 +1515,7 @@
+         <_shortDescription>Bel</_shortDescription>
+         <_description>Belgium</_description>
+         <languageList><iso639Id>ger</iso639Id>
++                      <iso639Id>nld</iso639Id>
+                       <iso639Id>fra</iso639Id></languageList>
+       </configItem>
+       <variantList>

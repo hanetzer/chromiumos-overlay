@@ -33,6 +33,7 @@ src_prepare() {
 		eautoreconf
 	else
 		epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
+		epatch "${FILESDIR}/${P}-be-keyboard.patch"
 	fi
 }
 
