@@ -119,13 +119,13 @@ if [[ -n "${CROS_WORKON_PKGS}" ]]; then
   $EMERGE_BOARD_CMD --oneshot ${CROS_WORKON_PKGS}
 fi
 
-# We are building chrome from source if chromefromsource is 'TRUE'
+#We are building chrome from source if chromefromsource is 'TRUE'
 if [[ $FLAGS_chromefromsource -eq $FLAGS_TRUE ]]; then
   echo "Building Chrome Browser from source"
-  echo "Running CHROME_ORIGIN=SERVER_SOURCE USE=build_tests \
-        eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome"
-  CHROME_ORIGIN=SERVER_SOURCE USE=build_tests \
-      eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
+  echo "Running CHROME_ORIGIN=SERVER_SOURCE eretry $EMERGE_BOARD_CMD \
+  			chromeos-base/chromeos-chrome "
+  CHROME_ORIGIN=SERVER_SOURCE eretry $EMERGE_BOARD_CMD \
+  			chromeos-base/chromeos-chrome
 
 # Pull a different version of chrome if requested and force a non-update
 # emerge build of chrome with those values.
