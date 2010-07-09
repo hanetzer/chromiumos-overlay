@@ -20,7 +20,6 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	app-crypt/nss
 	chromeos-base/autox
-	chromeos-base/client-id-uploader
 	chromeos-base/minifakedns
 	x86? ( dev-java/icedtea )
 	dev-lang/python

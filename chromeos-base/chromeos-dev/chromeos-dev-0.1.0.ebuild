@@ -42,7 +42,6 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-shells/bash
 	chromeos-base/autox
-	chromeos-base/client-id-uploader
 	chromeos-base/gmerge
 	chromeos-base/minifakedns
 	dev-lang/python
