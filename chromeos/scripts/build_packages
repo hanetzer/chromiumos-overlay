@@ -71,11 +71,6 @@ fi
 
 EMERGE_FLAGS=""
 
-if [[ ${FLAGS_jobs} -ne -1 ]]; then
-  EMERGE_FLAGS="${EMERGE_FLAGS} --jobs=${FLAGS_jobs}"
-  FLAGS_fast=${FLAGS_TRUE}
-fi
-
 EMERGE_CMD="emerge"
 EMERGE_BOARD_CMD="emerge-${FLAGS_board}"
 if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
@@ -88,6 +83,15 @@ if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   # so as to avoid unnecessary differences between source
   # and binary builds.
   EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg --with-bdeps y"
+fi
+
+if [[ $FLAGS_jobs -ne -1 ]]; then
+  EMERGE_JOBS="--jobs=$FLAGS_jobs"
+  if [[ $FLAGS_retries -eq -1 ]]; then
+    # The jobs flag can be flaky. Retry once by default,
+    # without the jobs flag.
+    FLAGS_retries=1
+  fi
 fi
 
 # Hacks to avoid forcing users to create a new chroot
