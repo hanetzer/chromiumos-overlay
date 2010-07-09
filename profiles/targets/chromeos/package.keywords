@@ -8,7 +8,9 @@
 =dev-cpp/glog-0.3.0		x86 arm
 =dev-db/m17n-contrib-1.1.10	x86 arm
 =dev-db/m17n-db-1.6.1		x86 arm
+=dev-db/sqlite-3.6.22-r2	x86 arm
 =dev-java/icedtea-6.1.7.1	x86
+=dev-libs/atk-1.28.0		x86 arm
 =dev-libs/boost-1.42.0		x86 arm
 =dev-libs/dbus-c++-0.0.1	x86 arm
 =dev-libs/dbus-glib-0.82	x86 arm
@@ -30,13 +32,14 @@
 =media-fonts/ja-ipafonts-003.02 x86 arm
 =media-gfx/perceptualdiff-1.1.1 x86 arm
 =media-libs/clutter-1.0.6	x86 arm
-=media-libs/freeimage-3.13.1    x86 arm
 =media-libs/freeglut-2.4.0-r2   x86 arm
+=media-libs/freeimage-3.13.1    x86 arm
 =media-libs/jpeg-6b-r9          x86 arm
 =net-libs/gnutls-2.9.5		x86 arm
 =net-libs/gssdp-0.7.1           x86 arm
 =net-libs/gupnp-0.13.2          x86 arm
 =net-libs/gupnp-av-0.5.2	x86 arm
+=net-libs/libsoup-2.28.2	x86 arm
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/mobile-broadband-provider-info-20100122 x86 arm
 =net-misc/modemmanager-0.2_p20090925 x86 arm
@@ -50,6 +53,7 @@
 =sys-apps/flashrom-0.9.1	x86
 =sys-apps/keyutils-1.1  x86 arm
 =sys-apps/mawk-1.3.3_p20090820	x86 arm
+=sys-apps/net-tools-1.60_p20090728014017-r1   x86 arm
 =sys-apps/openrc-0.4.3-r4	x86 arm
 =sys-apps/parted-1.9.0		x86 arm
 =sys-apps/rescan-scsi-bus-1.29  x86 arm
@@ -57,14 +61,14 @@
 =sys-apps/sysvinit-2.86-r12	x86 arm
 =sys-apps/usbutils-0.86-r1	x86 arm
 =sys-apps/util-linux-2.16.1	x86 arm
-=sys-auth/polkit-0.94           x86 arm
 =sys-auth/consolekit-0.3.0-r3	x86 arm
+=sys-auth/polkit-0.94           x86 arm
 =sys-fs/e2fsprogs-1.41.9	x86 arm
 =sys-fs/ecryptfs-utils-82       x86 arm
-=sys-fs/lvm2-2.02.51-r3		x86 arm
 =sys-fs/fuse-2.7.4		x86 arm
-=sys-fs/udev-146-r3		x86 arm
+=sys-fs/lvm2-2.02.51-r3		x86 arm
 =sys-fs/sshfs-fuse-2.2		x86 arm
+=sys-fs/udev-146-r3		x86 arm
 =sys-kernel/linux-headers-2.6.30-r1	x86 arm
 =sys-libs/e2fsprogs-libs-1.41.9	x86 arm
 =sys-libs/libhx-3.1		x86 arm
@@ -72,10 +76,10 @@
 =x11-libs/libdrm-2.4.14-r1  x86 arm
 =x11-libs/libxklavier-5.0       x86 arm
 =x11-libs/pixman-0.17.2		x86 arm
+=x11-misc/shared-mime-info-0.70	x86 arm
 =x11-misc/slim-1.3.1-r5		x86 arm
 =x11-misc/xkeyboard-config-1.7	x86 arm
 =x11-terms/aterm-1.0.1-r1	x86 arm
-=dev-db/sqlite-3.6.19		x86 arm
 
 # Needed for xorg server >=1.7.x
 # TODO: We temporarily explicitly do not add 'arm' here until we can get
