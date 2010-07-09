@@ -7,25 +7,29 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="minimal"
+IUSE="minimal rbtest"
 EAPI="2"
 
-DEPEND="chromeos-base/tpm_lite
-        dev-libs/openssl
+DEPEND="dev-libs/openssl
         sys-apps/util-linux"
+
+if use rbtest; then
+        DEPEND="$DEPEND chromeos-base/tpm_lite"
+fi
 
 src_compile() {
 	tc-export CC AR CXX
 	err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
 	emake || die "${err_msg}"
+        if use rbtest; then
+                emake rbtest || die "${err_msg}"
+        fi
 }
 
 src_install() {
 	if use minimal ; then
 		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C cgpt \
-		      install || die "${PN} install failed."
-        	emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
 		      install || die "${PN} install failed."
 		# utility/ is all or nothing, just pick out what we want.
 		into "/usr"
@@ -34,4 +38,8 @@ src_install() {
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
 	fi
+        if use rbtest; then
+                emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
+                      install-rbtest || die "${PN} install failed."
+        fi
 }
