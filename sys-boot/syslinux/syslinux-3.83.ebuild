@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-boot/syslinux/syslinux-3.83.ebuild,v 1.3 2010/02/26 12:10:54 fauli Exp $
 
-inherit eutils flag-o-matic
+inherit eutils flag-o-matic toolchain-funcs
 
 DESCRIPTION="SysLinux, IsoLinux and PXELinux bootloader"
 HOMEPAGE="http://syslinux.zytor.com/"
@@ -35,6 +35,9 @@ src_unpack() {
 	# Disable the blinking cursor as early as possible.
 	epatch "${FILESDIR}/"${P}-disable_cursor.patch
 
+	# Don't compile w/ PIC
+	epatch "${FILESDIR}/"${P}-nopic.patch
+
 	rm -f gethostip #bug 137081
 }
 
@@ -48,7 +51,14 @@ src_compile() {
 	# The syslinux build can't tolerate "-Wl,-O*"
 	filter-ldflags -Wl,-O1 -Wl,-O2 -Wl,-Os
 
-	emake || die "make failed"
+	if [ "${ROOT}" != "/" ]; then
+		tc-export CC CXX AR RANLIB LD NM
+		emake CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LD="$LD" \
+			NM="$NM" || die "make failed"
+	else
+		emake || die "make failed"
+	fi
+
 }
 
 src_install() {
