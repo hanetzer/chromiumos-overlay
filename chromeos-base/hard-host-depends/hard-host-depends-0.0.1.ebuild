@@ -38,6 +38,7 @@ RDEPEND="${RDEPEND}
 	dev-lang/python
 	dev-db/m17n-contrib
 	dev-db/m17n-db
+	dev-lang/nasm
 	dev-lang/swig
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
