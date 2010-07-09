@@ -11,7 +11,7 @@ HOMEPAGE="http://www.svox.com"
 SRC_URI=""
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~x86"
+KEYWORDS="~x86 ~arm"
 IUSE=""
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos

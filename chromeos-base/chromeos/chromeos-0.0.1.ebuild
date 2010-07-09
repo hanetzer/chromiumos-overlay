@@ -48,7 +48,6 @@ RDEPEND="${RDEPEND}
 		chromeos-base/chromeos-acpi
 		chromeos-base/chrontel
 		chromeos-base/firmware-utils
-		chromeos-base/speech_synthesis
 		media-plugins/o3d
 		net-wireless/iwl1000-ucode
 		>=net-wireless/iwl5000-ucode-8.24.2.12
@@ -96,6 +95,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/monitor_reconfig
 	chromeos-base/pam_google
 	chromeos-base/power_manager
+	chromeos-base/speech_synthesis
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
