@@ -65,6 +65,11 @@ if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   USEPKG="--getbinpkg --usepkg --with-bdeps y"
 fi
 
+if [ ${FLAGS_jobs} -ne -1 ]; then
+  EMERGE_JOBS="--jobs=${FLAGS_jobs}"
+  FLAGS_fast=${FLAGS_TRUE}
+fi
+
 # Support faster build if necessary.
 EMERGE_CMD="emerge"
 if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
@@ -180,10 +185,6 @@ function init_setup () {
    # Create directories referred to by our conf files.
    sudo mkdir -p "${FLAGS_chroot}/var/lib/portage/distfiles"
    sudo mkdir -p "${FLAGS_chroot}/var/lib/portage/pkgs"
-
-   if [[ $FLAGS_jobs -ne -1 ]]; then
-     EMERGE_JOBS="--jobs=$FLAGS_jobs"
-   fi
 
    # Configure basic stuff needed
    in_chroot env-update
