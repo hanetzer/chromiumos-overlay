@@ -44,7 +44,6 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	x86? (
-		app-laptop/laptop-mode-tools
 		chromeos-base/chromeos-acpi
 		chromeos-base/chrontel
 		chromeos-base/firmware-utils
@@ -75,6 +74,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-mozc
 	app-i18n/ibus-pinyin
 	app-i18n/ibus-xkb-layouts
+	app-laptop/laptop-mode-tools
 	app-shells/dash
 	chromeos-base/board-devices
 	chromeos-base/cashew
