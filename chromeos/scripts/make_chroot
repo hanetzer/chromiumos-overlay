@@ -285,6 +285,11 @@ sudo sh -c "echo STAGE3=$STAGE3 > $CHROOT_STATE"
 echo "$PROG: Running emerge portage"
 bash_chroot emerge -uNv $USEPKG portage $EMERGE_JOBS
 
+# dhcpcd is included in 'world' by the stage3 that we pull in for some reason.
+# We have no need to install it in our host environment, so pull it out here.
+echo "$PROG: Unmerging dhcpcd"
+bash_chroot $EMERGE_CMD --unmerge dhcpcd
+
 echo "$PROG: Running emerge world ccache crossdev etc ..."
 bash_chroot $EMERGE_CMD -uDNv $USEPKG world \
     ccache crossdev crossdev-wrappers sudo $EMERGE_JOBS
