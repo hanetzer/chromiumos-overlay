@@ -17,8 +17,23 @@ RDEPEND="chromeos-base/google-breakpad"
 DEPEND="${RDEPEND}"
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX
 	emake libcrash.so || die "compile failed."
+}
+
+src_test() {
+	tc-export CXX
+	emake tests || die "could not build tests"
+	if ! use x86; then
+	        echo Skipping unit tests on non-x86 platform
+	else
+	        for test in ./*_test; do
+		        # Prefer libcrash in our directory over the
+		        # one installed in /usr/lib.
+		        LD_LIBRARY_PATH=$(pwd):${LD_LIBRARY_PATH} \
+			    "${test}" ${GTEST_ARGS} || die "${test} failed"
+		done
+	fi
 }
 
 src_install() {
