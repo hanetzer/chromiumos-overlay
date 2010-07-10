@@ -119,3 +119,9 @@ RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 	chromeos-base/verity
 	"
+
+# Host dependencies to run unit tests within the chroot
+RDEPEND="${RDEPEND}
+	dev-cpp/gflags
+	dev-python/pymox
+	"
