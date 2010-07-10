@@ -37,6 +37,9 @@ src_install() {
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
+		dodir /usr/share/vboot/devkeys
+		insinto /usr/share/vboot/devkeys
+		doins tests/devkeys/*
 	fi
         if use rbtest; then
                 emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
