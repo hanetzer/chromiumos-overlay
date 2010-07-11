@@ -55,6 +55,9 @@ src_configure() {
 		if use dhclient ; then
 			export ac_cv_path_DHCLIENT=/sbin/dhclient
 		fi
+		if use dhcpcd ; then
+			export ac_cv_path_DHCPCD=/sbin/dhcpcd
+		fi
 	fi
 
 	tc-export CC
