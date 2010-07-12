@@ -71,13 +71,14 @@ RDEPEND="${RDEPEND}
 	>=media-libs/freetype-2.2.1
 	media-libs/mesa
 	sys-apps/module-init-tools
+	!sys-apps/nih-dbus-tool
+	sys-fs/sshfs-fuse
+	sys-libs/libnih
 	x11-apps/mkfontdir
 	x11-apps/xcursorgen
 	x11-apps/xkbcomp
-	>=x11-misc/util-macros-1.2
 	x11-libs/gtk+
-	sys-apps/nih-dbus-tool
-	sys-fs/sshfs-fuse
+	>=x11-misc/util-macros-1.2
 	"
 
 # Host dependencies that create usernames/groups we need to pull over to target.

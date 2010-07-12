@@ -12,16 +12,16 @@ SRC_URI="http://launchpad.net/${PN}/$(get_version_component_range 1-2)/${PV}/+do
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
-IUSE="dbus static-libs test +threads"
+KEYWORDS="x86 amd64 arm"
+IUSE="+dbus static-libs test +threads"
 
 RDEPEND="dbus? ( dev-libs/expat
 	>=sys-apps/dbus-1.2.16 )"
 
 DEPEND="${RDEPEND}
-	sys-devel/gettext
 	dev-util/pkgconfig
-	test? ( dev-util/valgrind )"
+	test? ( dev-util/valgrind )
+	sys-devel/gettext"
 
 src_prepare() {
 	epatch "${FILESDIR}/optional-dbus.patch"
@@ -31,6 +31,7 @@ src_prepare() {
 src_configure() {
 	econf \
 		$(use_with dbus) \
+		$(use_enable nls) \
 		$(use_enable static-libs static) \
 		$(use_enable threads) \
 		$(use_enable threads threading)
