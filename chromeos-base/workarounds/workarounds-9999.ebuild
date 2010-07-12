@@ -14,7 +14,7 @@ SLOT="0"
 IUSE=""
 
 src_install() {
-	dobin crosh-workarounds || die
-	dobin mkcrosusb || die
-	dosym /usr/bin/mkcrosusb /usr/bin/channel_change || die
+        dobin channel_change
+        dobin crosh-workarounds
+        dobin mkcrosusb
 }
