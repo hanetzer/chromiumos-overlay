@@ -130,13 +130,14 @@ else
   # Populate the BOARD_OVERLAY_LIST with the primary board overlay and any
   # additional overlays.
   #
-  EXTRA_BOARD_OVERLAY_LIST=$(find \
-    "${SRC_ROOT}/private-overlays" \
-    -maxdepth 1 \
-    -type d \
-    -name "overlay-${BOARD}-*" | sort -r)
-
-  BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
+  if [ -d "${SRC_ROOT}/private-overlays" ] ; then
+    EXTRA_BOARD_OVERLAY_LIST=$(find \
+      "${SRC_ROOT}/private-overlays" \
+      -maxdepth 1 \
+      -type d \
+      -name "overlay-${BOARD}-*" | sort -r)
+    BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
+  fi
 
   if [ -n "$VARIANT" ] ; then
     VARIANT_OVERLAY="${SRC_ROOT}/overlays/overlay-variant-${BOARD}-${VARIANT}"
