@@ -19,7 +19,7 @@ DEPEND="media-libs/glew
         x11-libs/libsvg-cairo
         x11-libs/gtk+"
 RDEPEND="${DEPEND}"
-O3D_REVISION=48537
+O3D_REVISION=52099
 
 # Print the number of jobs from $MAKEOPTS.
 print_num_jobs() {
@@ -55,11 +55,8 @@ src_compile() {
         # Make O3D plugin
         export GYP_GENERATORS=make
         # TODO zhurunz: support ARM and x64 later.
-        export GYP_DEFINES="target_arch=ia32";
+        export GYP_DEFINES="target_arch=ia32 chromeos=1";
         ${EGCLIENT} sync --revision o3d@${O3D_REVISION} --force
-
-        # added crosstoolv14 patch for constructor fix
-        epatch "${FILESDIR}"/crosstoolv14.patch
 
         make BUILDTYPE=Release npo3dautoplugin -k -j $(print_num_jobs)
 
