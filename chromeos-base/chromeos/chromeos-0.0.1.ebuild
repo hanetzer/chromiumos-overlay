@@ -127,6 +127,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/sed
 	sys-apps/shadow
 	sys-apps/upstart
+	sys-apps/ureadahead
 	sys-apps/util-linux
 	sys-auth/consolekit
 	sys-fs/e2fsprogs
