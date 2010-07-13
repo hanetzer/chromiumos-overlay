@@ -15,7 +15,7 @@ IUSE="debug"
 RDEPEND="app-i18n/ibus
 	chromeos-base/flimflam
 	dev-libs/dbus-glib
-	 dev-libs/glib
+	dev-libs/glib
 	dev-libs/libpcre
 	net-libs/gupnp
 	net-libs/gupnp-av
@@ -27,6 +27,7 @@ RDEPEND="app-i18n/ibus
 # TODO(suzhe): Remove x11-apps/setxkbmap when issue 2536 is fixed.
 
 DEPEND="${RDEPEND}
+	chromeos-base/chromeos-assets
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	chromeos-base/update_engine
