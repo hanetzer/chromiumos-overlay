@@ -45,7 +45,6 @@ src_test() {
 }
 
 src_install() {
-	dobin generate_logs || die
 	dobin hardware_class || die
 	dobin metrics_client || die
 	dobin metrics_daemon || die
