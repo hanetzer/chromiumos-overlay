@@ -14,6 +14,7 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-arch/bzip2
 	chromeos-base/libchrome
+	chromeos-base/verity
 	dev-cpp/gflags
 	dev-libs/glib
 	dev-libs/libpcre
