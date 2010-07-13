@@ -19,7 +19,7 @@ RDEPEND=">=app-i18n/ibus-1.2
 	>=dev-libs/m17n-lib-1.6.1
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
-	chromeos-base/libcros
+	chromeos-base/chromeos-assets
 	=dev-db/m17n-contrib-1.1.10
 	>=dev-db/m17n-db-1.6.1
 	dev-util/pkgconfig
@@ -50,7 +50,7 @@ src_configure() {
 src_compile() {
 	emake || die
 	# Rewrite xkb-layouts.xml using the XML output.
-	LIST="${SYSROOT}"/usr/include/cros/chromeos_input_method_whitelist.h
+	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/whitelist.txt
 	python "${FILESDIR}"/filter.py < output.xml \
 	   --whitelist="${LIST}" \
 	   --rewrite=src/m17n.xml || die

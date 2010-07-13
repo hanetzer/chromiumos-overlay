@@ -14,7 +14,7 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
-        chromeos-base/libcros
+        chromeos-base/chromeos-assets
         dev-util/pkgconfig
         >=sys-devel/gettext-0.16.1"
 
@@ -42,7 +42,7 @@ src_configure() {
 src_compile() {
         emake || die
         # Rewrite xkb-layouts.xml using the XML output.
-        LIST="${SYSROOT}"/usr/include/cros/chromeos_input_method_whitelist.h
+        LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/whitelist.txt
         python "${FILESDIR}"/filter.py < output.xml \
            --whitelist="${LIST}" \
            --rewrite=src/xkb-layouts.xml || die

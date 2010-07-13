@@ -5,6 +5,10 @@
 #
 # Pre-generate IBus Component XML files based on our whitelist.
 #
+# TODO(satorux): The same script is present in two places:
+# ibus-xkb-layouts/files and ibus-m17n/files. Move this to an appropriate
+# place and share.
+#
 # By default, ibus-engine-xkb-layouts and ibus-m17n generates the XML data
 # at runtime in their component xml files like:
 #
@@ -53,9 +57,10 @@ def ExtractWhitelist(file_name):
   """Extracts the whitelist from the given C header file."""
   whitelist = set()
   for line in fileinput.input(file_name):
-    match = re.search(r'^\s+"(.*?)",', line)
-    if match:
-      whitelist.add(match.group(1))
+    line = re.sub(r'#.*', '', line)  # Remove comments.
+    line = line.strip()  # Remove surrounding spaces.
+    if line:
+      whitelist.add(line)
   return whitelist
 
 
