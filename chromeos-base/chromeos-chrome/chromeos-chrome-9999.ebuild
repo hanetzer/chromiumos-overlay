@@ -286,10 +286,12 @@ src_compile() {
 	if use build_tests; then
 		TEST_TARGETS="browser_tests
 			page_cycler_tests
-			pyautolib
 			reliability_tests
 			startup_tests
 			ui_tests"
+    if [ "$ARCH" = "x86" ]; then  # Build PyAuto on x86 only.
+      TEST_TARGETS="${TEST_TARGETS} pyautolib"
+    fi
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
@@ -328,11 +330,13 @@ install_chrome_test_resources() {
 	sudo mkdir -p "${TEST_DIR}"
 	sudo mkdir -p "${TEST_DIR}/out/Release"
 
-	sudo cp "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
-		"${TEST_DIR}/out/Release"
+  # Collect PyAuto binaries.
+  local pyauto_dir="/usr/local/chrome-pyauto"
+  einfo "Copying PyAuto binaries to ${pyauto_dir}"
+  insinto "${pyauto_dir}/out/Release"
+  doins "${FROM}"/pyautolib.py
+  doins "${FROM_LIB}"/_pyautolib.so
 
-	sudo cp "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
-	sudo cp "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
