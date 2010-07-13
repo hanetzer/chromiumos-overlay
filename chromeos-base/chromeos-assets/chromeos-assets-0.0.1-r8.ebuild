@@ -45,6 +45,9 @@ src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins "${S}"/images/*
 
+	insinto /usr/share/chromeos-assets/input_methods
+	doins "${S}"/input_methods/*
+
 	insinto /usr/share/fonts/truetype/ttf-droid-thai
 	doins "${S}"/fonts/DroidThai*
 
