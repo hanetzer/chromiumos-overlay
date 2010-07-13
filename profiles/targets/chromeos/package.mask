@@ -67,3 +67,6 @@
 
 # Masked all upstream ebuilds, unupstreamable work in local copy
 >=net-misc/dhcpcd-5.1.5
+
+# libpng security vulnerability fix
+<media-libs/libpng-1.2.44
