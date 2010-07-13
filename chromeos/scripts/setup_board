@@ -45,27 +45,6 @@ DEFINE_boolean default $FLAGS_FALSE \
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 
-HARDENED=0
-if emerge --info |grep hardened > /dev/null
-then
-  HARDENED=1
-fi
-
-CROSSTOOL=0
-if emerge --info |grep crosstool > /dev/null
-then
-  CROSSTOOL=1
-fi
-
-# Hardened requires gcc 4.4.3 to get the proper specs files, etc. applied.
-if [ "$HARDENED" -eq "1" ] ; then
-   FLAGS_gcc_version="4.4.3-r4"
-fi
-
-if [ "$CROSSTOOL" -eq "1" ] ; then
-  FLAGS_gcc_version="4.4.3"
-fi
-
 # Only now can we die on error.  shflags functions leak non-zero error codes,
 # so will die prematurely if 'set -e' is specified before now.
 set -e
@@ -202,6 +181,30 @@ case "$TC_ARCH" in
     error "Unable to determine ARCH from toolchain: $FLAGS_toolcahin"
     exit 1
 esac
+
+HARDENED=0
+if emerge --info |grep hardened > /dev/null
+then
+  HARDENED=1
+fi
+
+CROSSTOOL=0
+if emerge --info |grep crosstool > /dev/null
+then
+  # TODO: Remove this when crosstool work on for all target archs
+  if [ "$ARCH" == "x86" ]; then
+    CROSSTOOL=1
+  fi
+fi
+
+# Hardened requires gcc 4.4.3 to get the proper specs files, etc. applied.
+if [ "$HARDENED" -eq "1" ] ; then
+   FLAGS_gcc_version="4.4.3-r4"
+fi
+
+if [ "$CROSSTOOL" -eq "1" ] ; then
+  FLAGS_gcc_version="4.4.3"
+fi
 
 # If the toolchain does not exist, then build it!
 TOOLCHAIN_ROOT="/usr/${FLAGS_toolchain}"

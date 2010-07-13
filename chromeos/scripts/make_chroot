@@ -126,11 +126,10 @@ function init_setup () {
    if [[ $FLAGS_crosstool -eq $FLAGS_TRUE ]]; then
       sudo ln -sf "${CHROOT_TRUNK}/src/third_party/crosstool-overlay" \
         "${FLAGS_chroot}"/"${CHROOT_CROSSTOOL_OVERLAY}"
-   else
-     if [[ $FLAGS_hardened -eq $FLAGS_TRUE ]]; then
-       sudo ln -sf "${CHROOT_TRUNK}/src/third_party/hardened-dev" \
-       "${FLAGS_chroot}"/"${CHROOT_HARDENED_OVERLAY}"
-     fi
+   fi
+   if [[ $FLAGS_hardened -eq $FLAGS_TRUE ]]; then
+     sudo ln -sf "${CHROOT_TRUNK}/src/third_party/hardened-dev" \
+     "${FLAGS_chroot}"/"${CHROOT_HARDENED_OVERLAY}"
    fi
    sudo ln -sf "${CHROOT_TRUNK}/src/third_party/chromiumos-overlay" \
      "${FLAGS_chroot}"/"${CHROOT_OVERLAY}"
