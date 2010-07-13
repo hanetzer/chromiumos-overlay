@@ -29,7 +29,7 @@ assert_outside_chroot
 
 DEFINE_string chroot "$DEFAULT_CHROOT_DIR" \
   "Destination dir for the chroot environment."
-DEFINE_boolean crosstool $FLAGS_FALSE "Use crosstool toolchain."
+DEFINE_boolean crosstool $FLAGS_TRUE "Use crosstool toolchain."
 DEFINE_boolean hardened $FLAGS_TRUE "Setup for a hardened toolchain."
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
 DEFINE_boolean useworkon $FLAGS_FALSE \
