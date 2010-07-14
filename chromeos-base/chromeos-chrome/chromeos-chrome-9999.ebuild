@@ -283,7 +283,7 @@ src_compile() {
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
-	if use build_tests; then
+	if use build_tests && use x86; then
 		TEST_TARGETS="browser_tests
 			page_cycler_tests
 			reliability_tests
@@ -416,7 +416,8 @@ src_install() {
 
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
-	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
+	if use build_tests && use x86 && \
+		([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
 		install_chrome_test_resources
 	fi
