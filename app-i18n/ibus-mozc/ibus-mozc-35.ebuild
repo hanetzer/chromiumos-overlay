@@ -25,10 +25,6 @@ src_configure() {
   export GYP_DEFINES="chromeos=1"
   export BUILD_COMMAND="emake"
 
-  # Temporary hack for r31. PLEASE REMOVE THE LINE when you create a new ebuild
-  # for ibus-mozc.
-  sed -ie 's/platform=Linux/platform=ChromeOS/' unix/ibus/ibus.gyp
-
   $(PYTHON) build_mozc.py gyp --gypdir="${SYSROOT}/usr/bin" \
       --branding="${BRANDING}" || die
 }
