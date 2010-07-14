@@ -150,7 +150,7 @@ eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 
 if [ "${FLAGS_fast}" -eq "${FLAGS_FALSE}" ] && \
    [ -n "${CROS_WORKON_PKGS}" ]; then
-  sudo -E ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
+  ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
