@@ -70,3 +70,6 @@
 
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44
+
+# Masked all upstream ebuilds
+>=net-wireless/wpa_supplicant-0.7.3
