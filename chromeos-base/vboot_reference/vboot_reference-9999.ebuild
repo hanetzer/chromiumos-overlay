@@ -7,10 +7,11 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="minimal"
+IUSE="minimal rbtest"
 EAPI="2"
 
-DEPEND="dev-libs/openssl
+DEPEND="app-crypt/trousers
+	dev-libs/openssl
         sys-apps/util-linux"
 
 src_compile() {
@@ -18,6 +19,9 @@ src_compile() {
 	err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
 	emake || die "${err_msg}"
+        if use rbtest; then
+                emake rbtest || die "${err_msg}"
+        fi
 }
 
 src_install() {
@@ -30,5 +34,12 @@ src_install() {
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
+		dodir /usr/share/vboot/devkeys
+		insinto /usr/share/vboot/devkeys
+		doins tests/devkeys/*
 	fi
+        if use rbtest; then
+                emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
+                      install-rbtest || die "${PN} install failed."
+        fi
 }

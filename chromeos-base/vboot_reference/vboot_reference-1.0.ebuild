@@ -10,12 +10,9 @@ KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest"
 EAPI="2"
 
-DEPEND="dev-libs/openssl
+DEPEND="app-crypt/trousers
+	dev-libs/openssl
         sys-apps/util-linux"
-
-if use rbtest; then
-        DEPEND="$DEPEND chromeos-base/tpm_lite"
-fi
 
 src_compile() {
 	tc-export CC AR CXX
