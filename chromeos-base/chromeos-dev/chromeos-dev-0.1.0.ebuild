@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X opengl"
+IUSE="X opengl hardened"
 
 # X11 apps
 RDEPEND="${RDEPEND}
@@ -66,7 +66,8 @@ RDEPEND="${RDEPEND}
 	x86? ( sys-apps/pciutils )
 	sys-apps/usbutils
 	sys-apps/which
-	sys-devel/gdb
+	hardened? ( >=sys-devel/gdb-7.1 )
+	!hardened? ( sys-devel/gdb )
 	sys-fs/fuse[-kernel_linux]
 	sys-fs/sshfs-fuse
 	sys-power/powertop

@@ -184,7 +184,7 @@ case "$TC_ARCH" in
 esac
 
 HARDENED=0
-if emerge --info |grep hardened > /dev/null
+if portageq envvar USE |grep -q hardened
 then
   HARDENED=1
 fi
