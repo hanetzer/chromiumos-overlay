@@ -77,6 +77,9 @@ cros-workon_src_unpack() {
 	(*)
 		if [[ -n "${CHROMEOS_ROOT}" && -z "${CROS_WORKON_SRCROOT}" ]]; then
 			fetch_method=local
+			# HACK: this needs to go away with the transition to new workflow
+			# and also the same thing below
+			DONTFETCH=1
 		else
 			fetch_method=git
 		fi
@@ -108,6 +111,11 @@ cros-workon_src_unpack() {
 	# the branch specified by CROS_WORKON_COMMIT into the workspace path.
 	# If the repository exists just punt and let it be copied off for build.
 	if [[ "${fetch_method}" == "local" && ! -d ${path} ]] ; then
+		# HACK: this needs to go away with the transition to new workflow
+		if [[ "${DONTFETCH}" == "1" ]]; then
+			ewarn "Sources are missing in ${path}"
+			die "Are you using the new layout without CROS_WORKON_SRCROOT?"
+		fi
 
 		addwrite / 
 		local old_umask="`umask`"
