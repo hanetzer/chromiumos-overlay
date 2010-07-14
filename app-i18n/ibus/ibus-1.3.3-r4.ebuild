@@ -23,7 +23,7 @@ RDEPEND="app-text/iso-codes
 	>=x11-libs/gtk+-2
 	x11-libs/libX11"
 DEPEND="${RDEPEND}
-	doc? ( >=dev-util/gtk-doc-1.9 )
+	>=dev-util/gtk-doc-1.9
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 RDEPEND="${RDEPEND}

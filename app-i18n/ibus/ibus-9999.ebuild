@@ -23,7 +23,7 @@ RDEPEND="app-text/iso-codes
 	>=x11-libs/gtk+-2
 	x11-libs/libX11"
 DEPEND="${RDEPEND}
-	doc? ( >=dev-util/gtk-doc-1.9 )
+	>=dev-util/gtk-doc-1.9
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 RDEPEND="${RDEPEND}
@@ -67,6 +67,7 @@ src_install() {
 	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
 	fi
+	rm "${D}/ibus.schemas" || die
 	cp "${S}/candidate_window.xml" "${D}/usr/share/ibus/component/" || die
 	chmod 644 "${D}/usr/share/ibus/component/candidate_window.xml" || die
 	dodoc AUTHORS ChangeLog NEWS README
