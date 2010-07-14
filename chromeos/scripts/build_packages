@@ -46,6 +46,8 @@ DEFINE_boolean withtest $FLAGS_TRUE \
 DEFINE_boolean withfactory $FLAGS_TRUE \
   "Build factory installer"
 DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
+DEFINE_boolean noworkondeps ${FLAGS_FALSE} \
+  "Don't automatically rebuild packages that depend on workon packages."
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -100,6 +102,29 @@ sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 eretry sudo $EMERGE_CMD -uDNv --getbinpkg chromeos-base/hard-host-depends world
 
+# Always build cros-workon packages
+CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
+
+# We are building chrome from source if chromefromsource is 'TRUE'.
+if [ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]; then
+  export CHROME_ORIGIN=SERVER_SOURCE
+  CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+elif [ -n "${FLAGS_chromebuild}" ] || [ -n "${FLAGS_chromebase}" ]; then
+  # Pull a different version of chrome if requested and force a non-update
+  # emerge build of chrome with those values.
+  echo "$PROG: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
+  echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
+
+  # If chromebase contains an internal identifier, change CHROME_FILENAME.
+  [ "${FLAGS_chromebase}" =~ \.jail ] && \
+    export CHROME_FILENAME=chrome-chromeos.zip
+
+  export CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild}
+  CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+else
+  echo "no valid specifications for chrome browser"
+fi
+
 PACKAGES="chromeos-base/chromeos"
 if [ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-dev"
@@ -110,44 +135,27 @@ fi
 if [ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
 fi
-echo Building ${PACKAGES}
-eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-
-# Always build cros-workon packages
-CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
-if [[ -n "${CROS_WORKON_PKGS}" ]]; then
-  $EMERGE_BOARD_CMD --oneshot ${CROS_WORKON_PKGS}
+if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
+  # These flags are specific to parallel_emerge
+  for pkg in ${CROS_WORKON_PKGS}; do
+    EMERGE_FLAGS="${EMERGE_FLAGS} --workon=${pkg}"
+  done
+  if [[ $FLAGS_noworkondeps -eq $FLAGS_TRUE ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --no-workon-deps"
+  fi
 fi
 
-# We are building chrome from source if chromefromsource is 'TRUE'
-if [[ $FLAGS_chromefromsource -eq $FLAGS_TRUE ]]; then
-  echo "Building Chrome Browser from source"
-  echo "Running CHROME_ORIGIN=SERVER_SOURCE \
-        eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome"
-  CHROME_ORIGIN=SERVER_SOURCE \
-      eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
+echo "Building ${PACKAGES} (working on ${CROS_WORKON_PKGS})"
+eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 
-# Pull a different version of chrome if requested and force a non-update
-# emerge build of chrome with those values.
-# If $FLAGS_chromebuild is unset the ebuild takes care of getting "LATEST"
-elif [ -n "$FLAGS_chromebuild" -o -n "$FLAGS_chromebase" ]; then
-  echo "Building Chrome"
-  echo "$PROG: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
-  echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
-
-  # if chromebase contains an internal identifier, change CHROME_FILENAME
-  [[ "$FLAGS_chromebase" =~ \.jail ]] && CHROME_FILENAME=chrome-chromeos.zip
-
-  CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild} \
-  CHROME_FILENAME=$CHROME_FILENAME \
-  eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
-else
-  echo "no valid specifications for chrome browser"
+if [ "${FLAGS_fast}" -eq "${FLAGS_FALSE}" ] && \
+   [ -n "${CROS_WORKON_PKGS}" ]; then
+  sudo -E ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
   echo "Building Autotest"
-  ./autotest --build=all --noprompt --board=${FLAGS_board} ${EMERGE_JOBS}
+  ./autotest --build=all --noprompt --board=${FLAGS_board}
 fi
 
 echo "Builds complete"
