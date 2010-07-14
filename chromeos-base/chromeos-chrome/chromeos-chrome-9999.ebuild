@@ -30,7 +30,7 @@ EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-build_tests hardened x86"
+IUSE="+build_tests hardened x86"
 
 # chrome sources store directory
 [[ -z ${ECHROME_STORE_DIR} ]] &&
@@ -289,9 +289,9 @@ src_compile() {
 			reliability_tests
 			startup_tests
 			ui_tests"
-    if [ "$ARCH" = "x86" ]; then  # Build PyAuto on x86 only.
-      TEST_TARGETS="${TEST_TARGETS} pyautolib"
-    fi
+		if [ "${ARCH}" = "x86" ]; then  # Build PyAuto on x86 only.
+			TEST_TARGETS="${TEST_TARGETS} pyautolib"
+		fi
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
@@ -330,12 +330,12 @@ install_chrome_test_resources() {
 	sudo mkdir -p "${TEST_DIR}"
 	sudo mkdir -p "${TEST_DIR}/out/Release"
 
-  # Collect PyAuto binaries.
-  local pyauto_dir="/usr/local/chrome-pyauto"
-  einfo "Copying PyAuto binaries to ${pyauto_dir}"
-  insinto "${pyauto_dir}/out/Release"
-  doins "${FROM}"/pyautolib.py
-  doins "${FROM_LIB}"/_pyautolib.so
+	# Collect PyAuto binaries.
+	local pyauto_dir="/usr/local/chrome-pyauto"
+	einfo "Copying PyAuto binaries to ${pyauto_dir}"
+	insinto "${pyauto_dir}/out/Release"
+	doins "${FROM}"/pyautolib.py
+	doins "${FROM_LIB}"/_pyautolib.so
 
 	sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
@@ -415,7 +415,9 @@ src_install() {
 	doins "${FROM}"/*.png
 
 	# Chrome test resources
-	if use build_tests; then
+	# Test binaries are only available when building chrome from source
+	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
+		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
 		install_chrome_test_resources
 	fi
 

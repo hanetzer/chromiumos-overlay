@@ -122,9 +122,9 @@ fi
 # We are building chrome from source if chromefromsource is 'TRUE'
 if [[ $FLAGS_chromefromsource -eq $FLAGS_TRUE ]]; then
   echo "Building Chrome Browser from source"
-  echo "Running CHROME_ORIGIN=SERVER_SOURCE USE=build_tests \
+  echo "Running CHROME_ORIGIN=SERVER_SOURCE \
         eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome"
-  CHROME_ORIGIN=SERVER_SOURCE USE=build_tests \
+  CHROME_ORIGIN=SERVER_SOURCE \
       eretry $EMERGE_BOARD_CMD chromeos-base/chromeos-chrome
 
 # Pull a different version of chrome if requested and force a non-update
