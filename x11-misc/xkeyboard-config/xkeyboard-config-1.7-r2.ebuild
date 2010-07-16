@@ -3,15 +3,9 @@
 # $Header: /var/cvsroot/gentoo-x86/x11-misc/xkeyboard-config/xkeyboard-config-1.7.ebuild,v 1.11 2010/01/19 20:28:30 armin76 Exp $
 
 EAPI="2"
+SRC_URI="http://xlibs.freedesktop.org/xkbdesc/${P}.tar.bz2"
 
-if [[ ${PV} = 9999* ]]; then
-	GIT_ECLASS="git"
-	EGIT_REPO_URI="git://anongit.freedesktop.org/git/xkeyboard-config"
-else
-	SRC_URI="http://xlibs.freedesktop.org/xkbdesc/${P}.tar.bz2"
-fi
-
-inherit ${GIT_ECLASS} autotools eutils
+inherit autotools eutils
 
 DESCRIPTION="X keyboard configuration database"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/XKeyboardConfig"
@@ -28,13 +22,8 @@ DEPEND="${RDEPEND}
 	dev-perl/XML-Parser"
 
 src_prepare() {
-	if [[ ${PV} = 9999* ]]; then
-		intltoolize
-		eautoreconf
-	else
-		epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
-		epatch "${FILESDIR}/${P}-be-keyboard.patch"
-	fi
+	epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
+	epatch "${FILESDIR}/${P}-be-keyboard.patch"
 }
 
 src_configure() {
