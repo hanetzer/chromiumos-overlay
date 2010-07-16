@@ -40,7 +40,19 @@ fi
 # @ECLASS-VARIABLE: ESVN_STORE_DIR
 # @DESCRIPTION:
 # subversion sources store directory. Users may override this in /etc/make.conf
-[[ -z ${ESVN_STORE_DIR} ]] && ESVN_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/svn-src"
+if [[ -z ${ESVN_STORE_DIR} ]]; then
+	ESVN_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/svn-src"
+	# Pick a directory with the same permissions now and in the future.  Note
+	# that we cannot just use USERNAME because the eventual effective user when
+	# doing the svn commands may change - PORTAGE_USERNAME has not taken effect
+	# yet.  Further complicating things, if features userpriv is not set,
+	# PORTAGE_USERNAME is going to be ignored.  We assume that if we enable
+	# userpriv in the future, we will also set PORTAGE_USERNAME to something
+	# other than "portage".
+	# TODO: remove this once we are using consistent users and userpriv settings
+	# for emerge and emerge-${BOARD}.
+	ESVN_STORE_DIR="${ESVN_STORE_DIR}/${PORTAGE_USERNAME:-portage}"
+fi
 
 # @ECLASS-VARIABLE: ESVN_FETCH_CMD
 # @DESCRIPTION:
@@ -207,16 +219,13 @@ subversion_fetch() {
 
 	addread "/etc/subversion"
 	addwrite "${ESVN_STORE_DIR}"
+	# Also make the /var/lib/portage/distfiles/svn-src directory writeable in sandbox
+	# so we can create it if necessary.
+	addwrite "$(dirname ${ESVN_STORE_DIR})"
 
 	if [[ ! -d ${ESVN_STORE_DIR} ]]; then
 		debug-print "${FUNCNAME}: initial checkout. creating subversion directory"
-		# make sure the svn-src directory gives write permission
-		# to the group (portage) so all users (aka regular users
-		# and root) can update the directory.
-		local pushed_umask=$(umask)
-		umask g+w
 		mkdir -p "${ESVN_STORE_DIR}" || die "${ESVN}: can't mkdir ${ESVN_STORE_DIR}."
-		umask ${pushed_umask}
 	fi
 
 	cd "${ESVN_STORE_DIR}" || die "${ESVN}: can't chdir to ${ESVN_STORE_DIR}"
@@ -249,11 +258,6 @@ subversion_fetch() {
 
 		debug-print "${FUNCNAME}: ${ESVN_FETCH_CMD} ${options} ${repo_uri}"
 
-		# make sure the svn-src directory gives write permission
-		# to the group (portage) so all users (aka regular users
-		# and root) can update the repository.
-		local pushed_umask=$(umask)
-		umask g+w
 		mkdir -p "${ESVN_PROJECT}" || die "${ESVN}: can't mkdir ${ESVN_PROJECT}."
 		cd "${ESVN_PROJECT}" || die "${ESVN}: can't chdir to ${ESVN_PROJECT}"
 		if [[ -n "${ESVN_USER}" ]]; then
@@ -261,7 +265,6 @@ subversion_fetch() {
 		else
 			${ESVN_FETCH_CMD} ${options} "${repo_uri}" || die "${ESVN}: can't fetch to ${wc_path} from ${repo_uri}."
 		fi
-		umask ${pushed_umask}
 
 	elif [[ -n ${ESVN_OFFLINE} ]]; then
 		svn upgrade "${wc_path}" &>/dev/null
