@@ -211,7 +211,7 @@ fi
 TOOLCHAIN_ROOT="/usr/${FLAGS_toolchain}"
 if [ ! -d "$TOOLCHAIN_ROOT" ] ; then
   BINHOST=$(portageq envvar PORTAGE_BINHOST)
-  CROSS_BINHOST="${BINHOST}/cross/$FLAGS_toolchain/"
+  CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
   CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
   CROSS_GCC="--gcc $FLAGS_gcc_version"
   CROSS_KERNEL="--kernel $FLAGS_kernel_version"
