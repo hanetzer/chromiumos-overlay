@@ -30,7 +30,7 @@ EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-build_tests hardened x86"
+IUSE="+build_tests hardened x86"
 
 # chrome sources store directory
 [[ -z ${ECHROME_STORE_DIR} ]] &&
@@ -289,7 +289,7 @@ src_compile() {
 			reliability_tests
 			startup_tests
 			ui_tests"
-		if [ "${ARCH}" = "x86" ]; then  # Build PyAuto on x86 only.
+		if use x86; then  # Build PyAuto on x86 only.
 			TEST_TARGETS="${TEST_TARGETS} pyautolib"
 		fi
 		echo Building test targets: ${TEST_TARGETS}
