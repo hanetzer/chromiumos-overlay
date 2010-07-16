@@ -6,7 +6,7 @@ EAPI=2
 unset CHROMEOS_ROOT
 
 # stable commit ID
-CROS_WORKON_COMMIT="f1c5103586460e1a4747b121b4c12e58b68bf51a"
+CROS_WORKON_COMMIT="82cdcd04fa44a6cbbad9325dc3ec2b1a9a30154d"
 
 if [[ -n "${ST1Q_SOURCES_QUALCOMM}" ]] ; then
 	CROS_WORKON_REPO="git://git-1.quicinc.com"
