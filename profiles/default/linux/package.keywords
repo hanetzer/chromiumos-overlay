@@ -13,6 +13,7 @@
 =dev-libs/protobuf-2.2.0	amd64 x86
 =dev-python/webpy-0.32          amd64 x86
 =dev-util/boost-build-1.42.0	amd64 x86
+=dev-util/git-1.7.0	amd64 x86
 =dev-util/lcov-1.7              amd64 x86
 =media-libs/mesa-7.8.1-r1	amd64 x86
 =sys-apps/dbus-1.2.20		amd64 x86

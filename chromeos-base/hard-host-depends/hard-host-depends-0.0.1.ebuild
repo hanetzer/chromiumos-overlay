@@ -55,7 +55,7 @@ RDEPEND="${RDEPEND}
 	dev-python/webpy
 	=dev-util/boost-build-1.42.0
 	dev-util/cmake
-	dev-util/git[cvs,subversion,webdav,curl]
+	>=dev-util/git-1.7.0[cvs,subversion,webdav,curl]
 	dev-util/gob
 	dev-util/gperf
 	dev-util/gtk-doc
