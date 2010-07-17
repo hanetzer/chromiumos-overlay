@@ -40,6 +40,7 @@ DEFINE_string kernel_version "2.6.30-r1" \
   "Version of kernel headers to use."
 DEFINE_boolean default $FLAGS_FALSE \
   "Set board to the default board in your chroot"
+DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
 
 # Parse command line flags
 FLAGS "$@" || exit 1
@@ -371,6 +372,15 @@ cat <<EOF | sudo dd of="$PORTAGEQ_WRAPPER" \
 export ROOT="$BOARD_ROOT"
 exec sudo -E portageq "\$@"
 EOF
+
+#
+# Before we can emerge the kernel, we need to emerge hard-host-depends.
+#
+EMERGE_CMD="emerge"
+if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
+  EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
+fi
+sudo ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 
 #
 # Emerge the kernel headers into the board build root.
