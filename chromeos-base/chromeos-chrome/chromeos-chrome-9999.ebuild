@@ -342,6 +342,9 @@ install_chrome_test_resources() {
 	sudo cp "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
 	sudo cp "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
 
+	sudo mkdir -p "${TEST_DIR}"/out/Release/pyproto
+	sudo cp -r "${FROM_TESTS}"/pyproto/* "${TEST_DIR}"/out/Release/pyproto
+
 	sudo mkdir -p "${TEST_DIR}"/base
 	sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
 
