@@ -103,6 +103,10 @@ src_install() {
 	doins "${S}/files/base/time.h"
 	doins "${S}/files/base/utf_string_conversion_utils.h"
 	doins "${S}/files/base/utf_string_conversions.h"
+	doins "${S}/files/base/values.h"
+
+	insinto "/usr/include/base/json"
+	doins "${S}/files/base/json/json_reader.h"
 
 	insinto "/usr/include/build"
 	doins "${S}/files/build/build_config.h"

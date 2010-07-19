@@ -14,12 +14,12 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="test"
 
 RDEPEND="
+	app-crypt/trousers
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/openssl
 	sys-apps/keyutils
-	sys-fs/ecryptfs-utils
-	"
+	sys-fs/ecryptfs-utils"
 
 DEPEND="
 	test? ( dev-cpp/gtest )
