@@ -14,6 +14,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="app-arch/bzip2
 	chromeos-base/libchrome
+	chromeos-base/metrics
 	chromeos-base/verity
 	dev-cpp/gflags
 	dev-libs/glib
@@ -75,7 +76,7 @@ src_install() {
 	dodir /etc/dbus-1/system.d
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
-	
+
 	dodir /usr/include/chromeos/update_engine
 	insinto /usr/include/chromeos/update_engine
 	doins update_engine.dbusserver.h
