@@ -100,7 +100,7 @@ fi
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
-eretry sudo $EMERGE_CMD -uDNv --getbinpkg chromeos-base/hard-host-depends world
+eretry sudo $EMERGE_CMD -uDNv $EMERGE_FLAGS world
 
 # Always build cros-workon packages
 CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
