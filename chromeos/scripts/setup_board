@@ -219,10 +219,7 @@ if [ ! -d "$TOOLCHAIN_ROOT" ] ; then
   CROSS_LIBC="--libc $FLAGS_libc_version"
   CROSS_USEPKG=""
   if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-    # TODO(fes): Once there are pre-built packages for hardened, replace the
-    # --usepkgonly flag
-    #CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
-    CROSS_USEPKG="--portage --getbinpkg --portage"
+    CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
   fi
   sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
     --target "$FLAGS_toolchain" \
