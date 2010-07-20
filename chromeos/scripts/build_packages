@@ -143,14 +143,13 @@ if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
   if [[ $FLAGS_noworkondeps -eq $FLAGS_TRUE ]]; then
     EMERGE_FLAGS="${EMERGE_FLAGS} --no-workon-deps"
   fi
-fi
-
-echo "Building ${PACKAGES} (working on ${CROS_WORKON_PKGS})"
-eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-
-if [ "${FLAGS_fast}" -eq "${FLAGS_FALSE}" ] && \
-   [ -n "${CROS_WORKON_PKGS}" ]; then
-  ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
+  eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
+else
+  echo "Building ${PACKAGES} (working on ${CROS_WORKON_PKGS})"
+  eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
+  if [ -n "${CROS_WORKON_PKGS}" ]; then
+    ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
+  fi
 fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then

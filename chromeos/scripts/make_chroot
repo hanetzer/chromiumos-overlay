@@ -85,7 +85,7 @@ function bash_chroot {
 function cleanup {
   # Clean up mounts
   mount | grep "on $(readlink -f "$FLAGS_chroot")" | awk '{print $3}' \
-    | xargs -r -L1 sudo umount
+    | xargs -r -L1 sudo umount -l
 }
 
 function delete_existing {
@@ -199,6 +199,7 @@ function init_setup () {
    fi
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
+   echo "export PORTAGE_USERNAME=$USER" >> "$FLAGS_chroot/home/$USER/.bashrc"
    chmod a+x "$FLAGS_chroot/home/$USER/.bashrc"
    # Automatically change to scripts directory
    echo "cd trunk/src/scripts" >> "$FLAGS_chroot/home/$USER/.bash_profile"
@@ -265,6 +266,7 @@ echo "$PROG: Setting up mounts..."
 # Set up necessary mounts and make sure we clean them up on exit
 trap cleanup EXIT
 sudo mkdir -p "${FLAGS_chroot}/${CHROOT_TRUNK}"
+sudo mount --bind /dev "${FLAGS_chroot}/dev"
 sudo mount --bind "${GCLIENT_ROOT}" "${FLAGS_chroot}/${CHROOT_TRUNK}"
 sudo mount none -t proc "$FLAGS_chroot/proc"
 sudo mount none -t devpts "$FLAGS_chroot/dev/pts"
