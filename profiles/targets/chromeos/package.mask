@@ -73,3 +73,6 @@
 
 # Masked all upstream ebuilds
 >=net-wireless/wpa_supplicant-0.7.3
+
+# Masked all upstream ebuilds
+<www-plugins/adobe-flash-10.1.53.64
