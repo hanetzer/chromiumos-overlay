@@ -15,7 +15,7 @@ IUSE="debug"
 RDEPEND="app-i18n/ibus
 	chromeos-base/flimflam
 	dev-libs/dbus-glib
-	 dev-libs/glib
+	dev-libs/glib
 	dev-libs/libpcre
 	net-libs/gupnp
 	net-libs/gupnp-av
@@ -27,6 +27,13 @@ RDEPEND="app-i18n/ibus
 # TODO(suzhe): Remove x11-apps/setxkbmap when issue 2536 is fixed.
 
 DEPEND="${RDEPEND}
+	app-i18n/ibus-chewing
+	app-i18n/ibus-hangul
+	app-i18n/ibus-m17n
+	app-i18n/ibus-mozc
+	app-i18n/ibus-pinyin
+	app-i18n/ibus-xkb-layouts
+	chromeos-base/chromeos-assets
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	chromeos-base/update_engine
@@ -49,6 +56,10 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
+	# Add the DEPEND list to the environment.  This will be searched for
+	# ibus engines in order to parse their component definition at build
+	# time.
+	export DEPEND="$DEPEND"
 	scons -f SConstruct.chromiumos || die "cros compile failed."
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
@@ -68,6 +79,10 @@ src_test() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
+	# Add the DEPEND list to the environment.  This will be searched for
+	# ibus engines in order to parse their component definition at build
+	# time.
+	export DEPEND="$DEPEND"
 	scons -f SConstruct.chromiumos test || die "cros tests compile failed."
 }
 
