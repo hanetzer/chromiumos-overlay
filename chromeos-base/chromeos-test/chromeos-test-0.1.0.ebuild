@@ -38,6 +38,7 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
+	x86? ( x11-misc/read-edid )
 	"
 
 # Used to disable Caps Lock and keyboard autorepeat, which can have bad
