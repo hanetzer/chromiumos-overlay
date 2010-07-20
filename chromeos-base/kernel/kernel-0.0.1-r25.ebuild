@@ -10,10 +10,11 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless"
+IUSE="-compat_wireless +perf"
 
 DEPEND="sys-apps/debianutils"
-RDEPEND="chromeos-base/kernel-headers" # Temporary hack
+RDEPEND="chromeos-base/kernel-headers
+	 x86? ( dev-util/perf )" # Temporary hacks
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -73,6 +74,18 @@ src_configure() {
 	fi
 }
 
+perf_compile() {
+	pushd tools/perf
+
+	emake \
+		CC="$(tc-getCC)" AR="$(tc-getAR)" \
+		prefix="/usr" bindir_relative="sbin" \
+		CFLAGS="${CFLAGS}" \
+		LDFLAGS="${LDFLAGS}" || die
+
+	popd
+}
+
 src_compile() {
 	emake \
 		ARCH=${kernel_arch} \
@@ -84,6 +97,8 @@ src_compile() {
 			ARCH=${kernel_arch} \
 			CROSS_COMPILE="${cross}" || die
 	fi
+
+	use perf && perf_compile
 }
 
 headers_install() {
@@ -109,6 +124,15 @@ headers_install() {
 		insinto /usr/include/drm
 		doins "${S}"/include/drm/kgsl_drm.h
 	fi
+}
+
+perf_install() {
+	pushd tools/perf
+
+	# Don't use make install or it'll be re-building the stuff :(
+	dosbin perf || die
+
+	popd
 }
 
 src_install() {
@@ -144,6 +168,8 @@ src_install() {
 		firmware_install || die
 
 	headers_install
+
+	use perf && perf_install
 
 	if [ "${ARCH}" = "arm" ]; then
 		version=$(ls "${D}"/lib/modules)
