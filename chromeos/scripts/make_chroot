@@ -84,6 +84,10 @@ function bash_chroot {
 
 function cleanup {
   # Clean up mounts
+  #
+  # HACK ALERT: Instead of tracking our nested mounts, we assume they will
+  # HACK ALERT: be shown in mount order. So we just reverse the list and
+  # HACK ALERT: umount them.
   mount | grep "on $(readlink -f "$FLAGS_chroot")" | awk '{print $3}' \
     | sort -r | xargs -r -L1 sudo umount -l
 }
@@ -195,7 +199,7 @@ function init_setup () {
    # Warn less when apt-get installing packqages
    if [[ $FLAGS_useworkon -eq $FLAGS_TRUE ]]; then
        echo "export CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\"" >> \
-	   "$FLAGS_chroot/home/$USER/.bashrc"
+         "$FLAGS_chroot/home/$USER/.bashrc"
    fi
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
