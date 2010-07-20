@@ -85,7 +85,7 @@ function bash_chroot {
 function cleanup {
   # Clean up mounts
   mount | grep "on $(readlink -f "$FLAGS_chroot")" | awk '{print $3}' \
-    | xargs -r -L1 sudo umount -l
+    | sort -r | xargs -r -L1 sudo umount -l
 }
 
 function delete_existing {
