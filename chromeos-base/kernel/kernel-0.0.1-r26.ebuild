@@ -13,8 +13,10 @@ KEYWORDS="x86 arm"
 IUSE="-compat_wireless +perf"
 
 DEPEND="sys-apps/debianutils"
+# TODO(msb): remove kernel-headers and perf hacks
 RDEPEND="chromeos-base/kernel-headers
-	 x86? ( dev-util/perf )" # Temporary hacks
+	 perf? ( dev-libs/elfutils )
+	 x86? ( dev-util/perf )"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
