@@ -46,8 +46,8 @@ DEFINE_boolean withtest $FLAGS_TRUE \
 DEFINE_boolean withfactory $FLAGS_TRUE \
   "Build factory installer"
 DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
-DEFINE_boolean noworkondeps ${FLAGS_FALSE} \
-  "Don't automatically rebuild packages that depend on workon packages."
+DEFINE_boolean norebuild ${FLAGS_FALSE} \
+  "Don't automatically rebuild dependencies."
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -140,8 +140,8 @@ if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
   for pkg in ${CROS_WORKON_PKGS}; do
     EMERGE_FLAGS="${EMERGE_FLAGS} --workon=${pkg}"
   done
-  if [[ $FLAGS_noworkondeps -eq $FLAGS_TRUE ]]; then
-    EMERGE_FLAGS="${EMERGE_FLAGS} --no-workon-deps"
+  if [[ ${FLAGS_norebuild} -eq ${FLAGS_FALSE} ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --rebuild"
   fi
   eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 else
