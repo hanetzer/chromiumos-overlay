@@ -21,4 +21,6 @@ src_install() {
         dobin crosh-workarounds
 	dobin generate_logs
         dobin mkcrosusb
+        dobin wlan_11n
+        dobin wlan_tx_ampdu
 }
