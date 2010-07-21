@@ -56,10 +56,6 @@ src_compile() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
-	# Add the DEPEND list to the environment.  This will be searched for
-	# ibus engines in order to parse their component definition at build
-	# time.
-	export DEPEND="$DEPEND"
 	scons -f SConstruct.chromiumos || die "cros compile failed."
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
@@ -79,10 +75,6 @@ src_test() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
-	# Add the DEPEND list to the environment.  This will be searched for
-	# ibus engines in order to parse their component definition at build
-	# time.
-	export DEPEND="$DEPEND"
 	scons -f SConstruct.chromiumos test || die "cros tests compile failed."
 }
 
