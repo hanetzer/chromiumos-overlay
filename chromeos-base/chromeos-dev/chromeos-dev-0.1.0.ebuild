@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
+	x86? ( dev-util/perf )
 	dev-util/strace
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
