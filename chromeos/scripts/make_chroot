@@ -181,8 +181,8 @@ function init_setup () {
    sudo touch "${FLAGS_chroot}"/etc/make.conf.user
 
    # Create directories referred to by our conf files.
-   sudo mkdir -p "${FLAGS_chroot}/var/lib/portage/distfiles"
-   sudo mkdir -p "${FLAGS_chroot}/var/lib/portage/pkgs"
+   sudo mkdir -p -m 775 "${FLAGS_chroot}/var/lib/portage/distfiles"
+   sudo mkdir -p -m 775 "${FLAGS_chroot}/var/lib/portage/pkgs"
 
    if [[ $FLAGS_jobs -ne -1 ]]; then
      EMERGE_JOBS="--jobs=$FLAGS_jobs"
