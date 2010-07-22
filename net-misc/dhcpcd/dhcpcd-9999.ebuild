@@ -31,18 +31,8 @@ src_configure() {
 
 src_compile() {
 	emake || die
-
-	if use crash; then
-  		dump_syms dhcpcd > dhcpcd.sym \
-	  		2>/dev/null || die "symbol extraction failed"
-	fi
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die
-
-	if use crash; then
-		insinto /usr/lib/debug
-		doins dhcpcd.sym
-	fi
 }
