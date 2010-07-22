@@ -13,7 +13,7 @@
 # If building from either LOCAL_SOURCE or LOCAL_BINARY, specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
-# If getting it from the build server, setting CHROME_BUILD to the build
+# If getting it from the build server, setting CHROME_VERSION to the build
 # revision will pull that version, otherwise latest will be pulled.
 
 # gclient is expected to be in ~/depot_tools if EGCLIENT is not set
@@ -192,15 +192,15 @@ src_unpack() {
 	(SERVER_BINARY)
 		# Using build server.
 
-		if [ -z "${CHROME_BUILD}" ]; then
+		if [ -z "${CHROME_VERSION}" ]; then
 			elog "Finding latest Chrome build"
-			CHROME_BUILD=$(wget_retry -q -O - "${CHROME_BASE}"/LATEST)
+			CHROME_VERSION=$(wget_retry -q -O - "${CHROME_BASE}"/LATEST)
 		fi
 
-		test -n "${CHROME_BUILD}" || die CHROME_BUILD not set
-		elog "Fetching Chrome build $CHROME_BUILD"
+		test -n "${CHROME_VERSION}" || die CHROME_VERSION not set
+		elog "Fetching Chrome build $CHROME_VERSION"
 		CHROME_FILENAME=${CHROME_FILENAME:-"chrome-linux.zip"}
-		URL="${CHROME_BASE}/${CHROME_BUILD}/${CHROME_FILENAME}"
+		URL="${CHROME_BASE}/${CHROME_VERSION}/${CHROME_FILENAME}"
 
 		mkdir -p "${S}"
 		cd "${S}"
@@ -211,7 +211,7 @@ src_unpack() {
 
 		if use build_tests; then
 			cd "${CHROME_FILENAME/.zip/}"
-			TEST_URL="${CHROME_BASE}/${CHROME_BUILD}/chrome-linux.test"
+			TEST_URL="${CHROME_BASE}/${CHROME_VERSION}/chrome-linux.test"
 
 			for f in ${TEST_FILES}; do
 			wget_retry "$TEST_URL/$f"

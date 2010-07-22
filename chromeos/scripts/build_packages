@@ -108,6 +108,9 @@ CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
 # We are building chrome from source if chromefromsource is 'TRUE'.
 if [ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]; then
   export CHROME_ORIGIN=SERVER_SOURCE
+  if [ -n "${FLAGS_chromebuild}" ]; then
+    export CHROME_VERSION=$FLAGS_chromebuild
+  fi
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
 elif [ -n "${FLAGS_chromebuild}" ] || [ -n "${FLAGS_chromebase}" ]; then
   # Pull a different version of chrome if requested and force a non-update
@@ -119,10 +122,8 @@ elif [ -n "${FLAGS_chromebuild}" ] || [ -n "${FLAGS_chromebase}" ]; then
   [ "${FLAGS_chromebase}" =~ \.jail ] && \
     export CHROME_FILENAME=chrome-chromeos.zip
 
-  export CHROME_BASE=${FLAGS_chromebase} CHROME_BUILD=${FLAGS_chromebuild}
+  export CHROME_BASE=${FLAGS_chromebase} CHROME_VERSION=${FLAGS_chromebuild}
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
-else
-  echo "no valid specifications for chrome browser"
 fi
 
 PACKAGES="chromeos-base/chromeos"
