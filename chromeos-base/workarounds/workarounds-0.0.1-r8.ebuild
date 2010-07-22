@@ -14,6 +14,7 @@ SLOT="0"
 IUSE=""
 
 #TODO(sosa) - Remove once file collisions have passed.
+RDEPEND="chromeos-base/metrics"
 
 src_install() {
         dobin channel_change

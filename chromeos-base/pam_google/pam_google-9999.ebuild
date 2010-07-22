@@ -51,10 +51,10 @@ src_test() {
 
 src_install() {
 	mkdir -p "${D}/lib/security/" "${D}/etc/"
-	cp -a "${S}/pam_google/libpam_google.so" \
-	  "${D}/lib/security/pam_google.so"
-	cp -a "${S}/pam_google/verisign_class3.pem" \
-          "${D}/etc/login_trust_root.pem"
+	cp -a "${S}/libpam_google.so" \
+	  "${D}/lib/security/pam_google.so" || die
+	cp -a "${S}/verisign_class3.pem" \
+          "${D}/etc/login_trust_root.pem" || die
 	chown root:root "${D}/etc/login_trust_root.pem"
 	chmod 0644 "${D}/etc/login_trust_root.pem"
 }

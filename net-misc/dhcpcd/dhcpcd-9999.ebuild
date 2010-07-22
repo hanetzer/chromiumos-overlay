@@ -33,7 +33,7 @@ src_compile() {
 	emake || die
 
 	if use crash; then
-  		dump_syms.i386 dhcpcd > dhcpcd.sym \
+  		dump_syms dhcpcd > dhcpcd.sym \
 	  		2>/dev/null || die "symbol extraction failed"
 	fi
 }
