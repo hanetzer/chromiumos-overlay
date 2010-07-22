@@ -75,12 +75,12 @@ cros-workon_src_unpack() {
 		fetch_method=local
 		;;
 	(*)
-		if [[ -n "${CHROMEOS_ROOT}" && -z "${CROS_WORKON_SRCROOT}" ]]; then
+		if [[ -z "${CROS_WORKON_SRCROOT}" ]]; then # old workflow
 			fetch_method=local
 			# HACK: this needs to go away with the transition to new workflow
 			# and also the same thing below
 			DONTFETCH=1
-		else
+		else # new workflow
 			fetch_method=git
 		fi
 		;;
