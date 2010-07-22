@@ -48,6 +48,7 @@ CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 BUILD_TOOL=make
 BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
+BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
 
 # For pulling from build bot
