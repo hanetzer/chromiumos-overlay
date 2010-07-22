@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="b3625686ad7aed175135d4277bf8104b9b298dc8"inherit eutils multilib python cros-workon
+CROS_WORKON_COMMIT="b3625686ad7aed175135d4277bf8104b9b298dc8"
+inherit eutils multilib python cros-workon
 
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
