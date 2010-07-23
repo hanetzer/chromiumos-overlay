@@ -182,6 +182,7 @@ function init_setup () {
 
    # Create directories referred to by our conf files.
    sudo mkdir -p -m 775 "${FLAGS_chroot}/var/lib/portage/distfiles"
+   sudo mkdir -p -m 775 "${FLAGS_chroot}/var/lib/portage/distfiles-target"
    sudo mkdir -p -m 775 "${FLAGS_chroot}/var/lib/portage/pkgs"
 
    if [[ $FLAGS_jobs -ne -1 ]]; then
