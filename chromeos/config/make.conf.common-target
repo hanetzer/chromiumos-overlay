@@ -29,7 +29,7 @@ PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
 
 # Since our portage comes from version control, we redirect distfiles.
-DISTDIR="/var/lib/portage/distfiles"
+DISTDIR="/var/lib/portage/distfiles-target"
 
 # Our chromium mirror should be more stable since we won't discard packages.
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
