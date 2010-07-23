@@ -37,7 +37,6 @@ RDEPEND="${DEPEND}"
 
 MY_S="${WORKDIR}/${P}/wpa_supplicant"
 
-CROS_WORKON_SUBDIR="hostap.git"
 CROS_WORKON_PROJECT="hostap"
 
 pkg_setup() {
