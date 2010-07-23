@@ -100,7 +100,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
-	chromeos-base/xscreensaver
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
 	media-sound/alsa-utils
