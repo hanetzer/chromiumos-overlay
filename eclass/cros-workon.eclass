@@ -114,7 +114,7 @@ cros-workon_src_unpack() {
 		# HACK: this needs to go away with the transition to new workflow
 		if [[ "${DONTFETCH}" == "1" ]]; then
 			ewarn "Sources are missing in ${path}"
-			die "Are you using the new layout without CROS_WORKON_SRCROOT?"
+			ewarn "Are you using the new layout without CROS_WORKON_SRCROOT? You are a bad boy, and this will become an error soon"
 		fi
 
 		addwrite / 
