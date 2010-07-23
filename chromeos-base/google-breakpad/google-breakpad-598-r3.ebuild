@@ -33,33 +33,32 @@ src_prepare() {
         pushd "${S}"
         epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
         popd
+	cp -Rv "${FILESDIR}"/core2md/* "${S}/src" || \
+	    die "Unable to overlay files"
 }
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
-        pushd src/tools/linux/dump_syms
-	emake || die "dumpsyms emake failed"
-	popd
+	emake -C src/tools/linux/core2md || die "core2md emake failed"
+        emake -C src/tools/linux/dump_syms || die "dumpsyms emake failed"
 	emake clean || die "make clean failed"
 	emake || die "emake failed"
-        pushd src/tools/linux/symupload
-	emake || die "symupload emake failed"
-	popd
+        emake -C src/tools/linux/symupload || die "symupload emake failed"
 }
 
 src_install() {
 	tc-export CXX PKG_CONFIG
 	emake DESTDIR="${D}" install || die "emake install failed"
 	insinto /usr/include/google-breakpad/client/linux/handler
-	doins "${S}"/src/client/linux/handler/*.h || die
+	doins src/client/linux/handler/*.h || die
 	insinto /usr/include/google-breakpad/client/linux/crash_generation
-	doins "${S}"/src/client/linux/crash_generation/*.h || die
+	doins src/client/linux/crash_generation/*.h || die
 	insinto /usr/include/google-breakpad/common/linux
-	doins "${S}"/src/common/linux/*.h || die
+	doins src/common/linux/*.h || die
 	insinto /usr/include/google-breakpad/processor
-	doins "${S}"/src/processor/*.h || die
-	into /usr
-	dobin "${S}"/src/tools/linux/dump_syms/dump_syms \
-	      "${S}"/src/tools/linux/symupload/sym_upload \
-	      "${S}"/src/tools/linux/symupload/minidump_upload || die
+	doins src/processor/*.h || die
+	dobin src/tools/linux/core2md/core_dumper \
+	      src/tools/linux/dump_syms/dump_syms \
+	      src/tools/linux/symupload/sym_upload \
+	      src/tools/linux/symupload/minidump_upload || die
 }
