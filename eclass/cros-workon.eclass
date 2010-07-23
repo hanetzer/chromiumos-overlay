@@ -36,6 +36,11 @@
 # Git commit to checkout to
 : ${CROS_WORKON_COMMIT:=master}
 
+# @ECLASS-VARIABLE: CROS_WORKON_LOCALGIT
+# @DESCRIPTION:
+# Use git to perform local copy
+: ${CROS_WORKON_LOCALGIT:=}
+
 inherit git
 
 # Calculate path where code should be checked out.
@@ -65,6 +70,46 @@ get_path() {
 		path+="/${CROS_WORKON_SUBDIR}"
 	fi
 	echo ${path}
+}
+
+local_copy_git() {
+	CLONE_OPTS="--no-hardlinks --shared"
+	PATCHFILE="${WORKDIR}/${P}"/local_changes.patch
+
+	einfo "Using experimental git copy! Beware!"
+
+	# this produces a local clean copy of ${1} at the same branch
+	git clone ${CLONE_OPTS} "${1}" "${WORKDIR}/${P}" || \
+		die "Cannot clone local copy"
+
+	# collect local changes
+	git --binary --git-dir="${1}" --work-dir="${1}/.git" diff HEAD > "${PATCHFILE}" || \
+		die "Cannot create local changes patch"
+
+	# apply local changes
+	# note: wc prints file name after byte count
+	if [ "$(wc -c ${PATCHFILE})" != "0 ${PATCHFILE}" ]; then
+		git --git-dir="${WORKDIR}/${P}" --work-dir="${WORKDIR}/${P}/.git" apply ${PATCHFILE} || \
+			die "Cannot apply local changes"
+	fi
+}
+
+local_copy_cp() {
+	einfo "Copying sources"
+
+	mkdir -p "${S}"
+	cp -a "${1}"/* "${S}" || die "cp -a ${1}/* ${S}"
+}
+
+local_copy() {
+	local srcpath=$1
+
+	# If we want to use git, and the source actually is a git repo
+	if [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
+		local_copy_git ${srcpath}
+	else
+		local_copy_cp ${srcpath}
+	fi
 }
 
 cros-workon_src_unpack() {
@@ -140,8 +185,8 @@ cros-workon_src_unpack() {
 	fi
 
 	# Copy source tree to /build/<board>/tmp for building
-	mkdir -p "${S}"
-	cp -a "${path}"/* "${S}" || die "cp -a ${path}/* ${S}"
+	local_copy "${path}" || \
+		die "Cannot create a local copy"
 }
 
 cros-workon_pkg_info() {
