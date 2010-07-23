@@ -31,4 +31,9 @@ src_install() {
   doins "${S}/iwlwifi-6000-4.ucode"
 
   dodoc README* || die "dodoc failed"
+
+  # TODO(pstew): This is a workaround to fix 802.11n problems!  Fix it for
+  # real!
+  insinto /etc/modprobe.d
+  doins "${FILESDIR}/iwlagn.conf"
 }
