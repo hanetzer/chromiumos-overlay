@@ -18,21 +18,21 @@ RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-        pushd "${S}"/src/tools/linux/symupload
-        epatch "${FILESDIR}"/sym_upload.diff || die "Unable to patch"
+	pushd "${S}"/src/tools/linux/symupload
+	epatch "${FILESDIR}"/sym_upload.diff || die "Unable to patch"
 	epatch "${FILESDIR}"/sym_upload_mk.diff || die "Unable to patch"
 	epatch "${FILESDIR}"/minidump_upload.diff || die "Unable to patch"
-        popd
+	popd
 	if tc-is-cross-compiler; then
-            pushd "${S}"/src/tools/linux/dump_syms
-            epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
-            popd
+		pushd "${S}"/src/tools/linux/dump_syms
+		epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
+		popd
 	else
 	    elog "Using host compiler and leaving -m32 to build dump_syms"
 	fi
-        pushd "${S}"
-        epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
-        popd
+	pushd "${S}"
+	epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
+	popd
 	cp -Rv "${FILESDIR}"/core2md/* "${S}/src" || \
 	    die "Unable to overlay files"
 }
@@ -40,10 +40,11 @@ src_prepare() {
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
 	emake -C src/tools/linux/core2md || die "core2md emake failed"
-        emake -C src/tools/linux/dump_syms || die "dumpsyms emake failed"
+	rm src/common/linux/file_id.o
+	emake -C src/tools/linux/dump_syms || die "dumpsyms emake failed"
 	emake clean || die "make clean failed"
 	emake || die "emake failed"
-        emake -C src/tools/linux/symupload || die "symupload emake failed"
+	emake -C src/tools/linux/symupload || die "symupload emake failed"
 }
 
 src_install() {
@@ -58,6 +59,7 @@ src_install() {
 	insinto /usr/include/google-breakpad/processor
 	doins src/processor/*.h || die
 	dobin src/tools/linux/core2md/core_dumper \
+	      src/tools/linux/core2md/core2md \
 	      src/tools/linux/dump_syms/dump_syms \
 	      src/tools/linux/symupload/sym_upload \
 	      src/tools/linux/symupload/minidump_upload || die
