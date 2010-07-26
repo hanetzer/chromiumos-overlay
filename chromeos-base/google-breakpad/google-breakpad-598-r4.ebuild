@@ -3,12 +3,11 @@
 
 EAPI=2
 
-inherit eutils subversion toolchain-funcs
+inherit eutils toolchain-funcs
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
-SRC_URI=""
-ESVN_REPO_URI="http://google-breakpad.googlecode.com/svn/trunk@${PV}"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
