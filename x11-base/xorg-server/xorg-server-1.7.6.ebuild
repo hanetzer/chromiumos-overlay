@@ -145,6 +145,7 @@ PATCHES=(
 	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
 	"${FILESDIR}/1.7.6-skip-vendor-and-device-names.patch"
 	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
+	"${FILESDIR}/1.7.6-composite-redirect-events.patch"
 	)
 
 pkg_setup() {

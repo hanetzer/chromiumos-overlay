@@ -1,0 +1,23 @@
+diff --git a/dix/window.c b/dix/window.c
+index 2676a54..ee30704 100644
+--- a/dix/window.c
++++ b/dix/window.c
+@@ -2658,7 +2658,8 @@ MapWindow(WindowPtr pWin, ClientPtr client)
+ 	if (anyMarked && pScreen->PostValidateTree)
+ 	    (*pScreen->PostValidateTree)(pLayerWin->parent, pLayerWin, VTMap);
+ 	}
+-	WindowsRestructured ();
++        if (MapUnmapEventsEnabled(pWin))
++            WindowsRestructured ();
+     }
+     else
+     {
+@@ -2864,7 +2865,7 @@ UnmapWindow(WindowPtr pWin, Bool fromConfigure)
+ 	if (!fromConfigure && pScreen->PostValidateTree)
+ 	    (*pScreen->PostValidateTree)(pLayerWin->parent, pWin, VTUnmap);
+     }
+-    if (wasRealized && !fromConfigure)
++    if (wasRealized && !fromConfigure && MapUnmapEventsEnabled(pWin))
+ 	WindowsRestructured ();
+     return(Success);
+ }
