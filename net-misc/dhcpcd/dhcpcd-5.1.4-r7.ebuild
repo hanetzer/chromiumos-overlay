@@ -3,7 +3,6 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/dhcpcd/dhcpcd-5.2.1.ebuild,v 1.1 2010/03/02 18:14:07 williamh Exp $
 
 EAPI=2
-CROS_WORKON_COMMIT="1ff69cae591ce375e17a06b55ef4cd48c367893d"
 inherit cros-workon
 
 DESCRIPTION="A fully featured, yet light weight RFC2131 compliant DHCP client"
