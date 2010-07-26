@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ac3f5e3205f350991ee5421a8669fe3abacf74b6"
+CROS_WORKON_COMMIT="a082f4ee9e1bc0b6d20bbe35b98d0e1c87e21912"
 inherit cros-workon
 
 DESCRIPTION="Chrome OS Installer"

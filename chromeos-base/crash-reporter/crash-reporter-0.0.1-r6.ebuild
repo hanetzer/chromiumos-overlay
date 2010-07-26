@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5d65f14993573768b6859f5b97a5035a30ee483d"
+CROS_WORKON_COMMIT="7ce99491b88d6ce7aa5e4d50f50176de0ba9a8dd"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Build chromeos crash handler"

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="439183e214ec2be5c088e09ac0961511bf8e7aa0"
+CROS_WORKON_COMMIT="31834995dd5a4665605c73103f756da41dd49d1c"
 inherit flag-o-matic toolchain-funcs cros-workon
 
 DESCRIPTION="Bridge library for Chromium OS"
@@ -84,9 +84,6 @@ src_test() {
 	# time.
 	export DEPEND="$DEPEND"
 	scons -f SConstruct.chromiumos test || die "cros tests compile failed."
-
-	scons -f SConstruct.chromiumos unittest || die
-	./libcros_unittests || die
 }
 
 src_install() {

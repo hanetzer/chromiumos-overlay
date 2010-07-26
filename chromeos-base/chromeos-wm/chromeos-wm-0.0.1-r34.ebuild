@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e11d3a581bb24f8b41d6e9bd75eb0bc37a18ec47"
+CROS_WORKON_COMMIT="e57e7458e47ae66508bc359a60bf2ff3ca527053"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS window manager"
