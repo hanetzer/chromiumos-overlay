@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-inherit python subversion toolchain-funcs
+inherit python toolchain-funcs
 
 DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
-ESVN_REPO_URI="http://mozc.googlecode.com/svn/trunk/src@${PV}"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.2
          dev-libs/protobuf
@@ -17,6 +17,11 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
+
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+}
 
 src_configure() {
   # Generate make files
