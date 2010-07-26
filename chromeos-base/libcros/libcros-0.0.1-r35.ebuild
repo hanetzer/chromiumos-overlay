@@ -84,6 +84,9 @@ src_test() {
 	# time.
 	export DEPEND="$DEPEND"
 	scons -f SConstruct.chromiumos test || die "cros tests compile failed."
+
+	scons -f SConstruct.chromiumos unittest || die
+	./libcros_unittests || die
 }
 
 src_install() {
