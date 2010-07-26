@@ -69,7 +69,8 @@ src_install() {
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
 	fi
 	rm "${D}/ibus.schemas" || die
-	cp "${S}/candidate_window.xml" "${D}/usr/share/ibus/component/" || die
+	cp "${FILESDIR}/candidate_window.xml" \
+	   "${D}/usr/share/ibus/component/" || die
 	chmod 644 "${D}/usr/share/ibus/component/candidate_window.xml" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
@@ -93,7 +94,8 @@ pkg_postinst() {
 	elog "   export QT_IM_MODULE=\"xim\""
 	elog "   ibus-daemon -d -x"
 
-        # TODO(yusukes): Add support for a "--root=" option to gtk-query-immodules-2.0 and try to get it upstream.
+	# TODO(yusukes): Add support for a "--root=" option to
+	# gtk-query-immodules-2.0 and try to get it upstream.
 	( echo '/usr/lib/gtk-2.0/2.10.0/immodules/im-ibus.so';
 	  echo '"ibus" "IBus (Intelligent Input Bus)" "ibus" "" "ja:ko:zh:*"' ) > "${ROOT}/${GTK2_CONFDIR}/gtk.immodules"
 

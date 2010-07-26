@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component>
+	<name>org.freedesktop.IBus.Panel</name>
+	<description>Candidate Window Component</description>
+	<exec>/opt/google/chrome/candidate_window</exec>
+	<version>1.0</version>
+	<author>The Chromium OS Authors.</author>
+	<license>BSD</license>
+	<homepage>http://www.chromium.org/chromium-os</homepage>
+	<textdomain>ibus</textdomain>
+</component>
