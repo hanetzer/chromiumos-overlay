@@ -98,6 +98,7 @@ src_install() {
 	doins "${S}/files/base/stl_util-inl.h"
 	doins "${S}/files/base/string16.h"
 	doins "${S}/files/base/string_piece.h"
+	doins "${S}/files/base/string_tokenizer.h"
 	doins "${S}/files/base/string_util.h"
 	doins "${S}/files/base/string_util_posix.h"
 	doins "${S}/files/base/time.h"
