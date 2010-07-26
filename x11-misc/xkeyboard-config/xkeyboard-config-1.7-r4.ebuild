@@ -32,8 +32,8 @@ src_prepare() {
 	pushd symbols/
 	xkbcomp -lfhlpR '*' > symbols.dir || die
 	popd
-	# Regenerate symbols/Makefile.
-        NOCONFIGURE=1 ./autogen.sh || die
+	# Regenerate symbols/Makefile.in from the patched symbols/Makefile.am.
+	autoreconf -v --install || die
 }
 
 src_configure() {
