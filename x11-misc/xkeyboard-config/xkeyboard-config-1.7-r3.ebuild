@@ -24,6 +24,16 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
 	epatch "${FILESDIR}/${P}-be-keyboard.patch"
+	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
+
+	# Generate symbols/chromeos.
+        python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
+	# Regenerate symbols/symbols.dir.
+	pushd symbols/
+	xkbcomp -lfhlpR '*' > symbols.dir || die
+	popd
+	# Regenerate symbols/Makefile.
+        NOCONFIGURE=1 ./autogen.sh || die
 }
 
 src_configure() {

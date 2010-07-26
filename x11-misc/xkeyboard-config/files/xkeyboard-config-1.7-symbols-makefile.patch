@@ -1,0 +1,12 @@
+diff -uNr xkeyboard-config-1.7.orig/symbols/Makefile.am xkeyboard-config-1.7.chromeos/symbols/Makefile.am
+--- xkeyboard-config-1.7.orig/symbols/Makefile.am	2009-08-15 23:31:43.000000000 +0900
++++ xkeyboard-config-1.7.chromeos/symbols/Makefile.am	2010-07-22 13:11:14.297457542 +0900
+@@ -31,7 +31,7 @@
+ ua us uz vn \
+ za \
+ altwin capslock compose ctrl eurosign group inet \
+-keypad kpdl level3 level5 nbsp olpc shift srvr_ctrl typo
++keypad kpdl level3 level5 nbsp olpc shift srvr_ctrl typo chromeos
+ 
+ dir_data = $(dist_symbols_DATA)
+ 
