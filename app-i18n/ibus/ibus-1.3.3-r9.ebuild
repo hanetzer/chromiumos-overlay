@@ -56,7 +56,9 @@ src_configure() {
 		--disable-key-snooper \
 		$(use_enable doc gtk-doc) \
 		$(use_enable nls) \
-		$(use_enable python) || die
+		$(use_enable python) \
+		CPPFLAGS='-DOS_CHROMEOS=1' \
+		|| die
 }
 
 src_compile() {
