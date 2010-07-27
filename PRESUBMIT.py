@@ -10,13 +10,18 @@ for more details about the presubmit API built into gcl and git cl.
 
 import difflib
 import os
+import re
 
 _EBUILD_FILES = (
     r".*\.ebuild",
 )
 
 def _IsCrosWorkonEbuild(ebuild_contents):
-  return ebuild_contents.count('inherit cros-workon') > 0
+  pattern = re.compile('^ *inherit[-\._a-z0-9 ]*cros-workon')
+  for line in ebuild_contents:
+    if pattern.match(line):
+      return True
+  return False
 
 def Check9999Updated(input_api, output_api, source_file_filter=None):
   """Checks that the 9999 ebuild was also modified."""
