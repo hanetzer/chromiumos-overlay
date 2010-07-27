@@ -95,8 +95,8 @@ def OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
 
 
 def main():
-    key_strings = ['search', 'leftcontrol', 'leftalt', 'disabled']
-    for use_search_key_as in (key_strings + ['capslock']):
+    key_strings = ['search', 'leftcontrol', 'leftalt', 'capslock', 'disabled']
+    for use_search_key_as in key_strings:
         for use_leftcontrol_key_as in key_strings:
             for use_leftalt_key_as in key_strings:
                 OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
