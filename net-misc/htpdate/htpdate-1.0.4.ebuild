@@ -21,6 +21,7 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 	epatch "${FILESDIR}/${P}-waitforvalidhttpresp.patch"
+	epatch "${FILESDIR}/${P}-errorcheckhttpresp.patch"
 	gunzip htpdate.8.gz || die
 }
 
