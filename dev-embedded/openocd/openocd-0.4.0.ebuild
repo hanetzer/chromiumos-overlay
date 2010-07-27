@@ -9,7 +9,7 @@ if [[ ${PV} == "9999" ]] ; then
 	#KEYWORDS=""
 	SRC_URI=""
 else
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="amd64 x86"
 	SRC_URI="mirror://berlios/${PN}/${P}.tar.gz"
 fi
 
@@ -18,7 +18,7 @@ HOMEPAGE="http://openocd.berlios.de/web/"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="ftd2xx ftdi parport presto usb"
+IUSE="ftd2xx +ftdi parport presto +usb"
 RESTRICT="strip" # includes non-native binaries
 
 # libftd2xx is the default because it is reported to work better.
