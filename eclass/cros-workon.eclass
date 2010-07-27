@@ -192,7 +192,7 @@ cros-workon_src_unpack() {
 cros-workon_pkg_info() {
 	local CROS_WORKON_SRCDIR=$(get_path)
 
-	for var in CROS_WORKON_SRCDIR ; do
+	for var in CROS_WORKON_SRCDIR CROS_WORKON_PROJECT ; do
 		echo ${var}=\"${!var}\"
 	done
 }
