@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c53371fa8b23feadd62bf3278694b08c0de823ac"
+CROS_WORKON_COMMIT="c31ff494de84ab5bde0ff07b0ce0e001daf4c1d8"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Upstart init scripts for Chromium OS"
