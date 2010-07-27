@@ -6,11 +6,18 @@ inherit eutils multilib python cros-workon
 
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
-# SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
+
+# TODO(satorux): Adding -r1 is a temporary workaround. Without this,
+# ibus-1.3.3.tar.gz cached elsewhere (likely
+# http://build.chromium.org/mirror/chromiumos/mirror/distfiles), was
+# chosen instead. We'll be soon switching to a new naming scheme for
+# chromium os.
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-${PV}-r1.tar.gz"
+S="${S}-r1"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="doc nls python"
 
 RDEPEND="app-text/iso-codes
@@ -40,13 +47,8 @@ pkg_setup() {
 }
 
 src_unpack() {
-	cros-workon_src_unpack
+	unpack ${A}
 	cd "${S}"
-	ln -s "$(type -P true)" py-compile || die
-}
-
-src_prepare() {
-	NOCONFIGURE=1 ./autogen.sh
 }
 
 src_configure() {
@@ -69,7 +71,6 @@ src_install() {
 	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
 	fi
-	rm "${D}/ibus.schemas" || die
 	cp "${FILESDIR}/candidate_window.xml" \
 	   "${D}/usr/share/ibus/component/" || die
 	chmod 644 "${D}/usr/share/ibus/component/candidate_window.xml" || die
