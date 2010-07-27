@@ -327,53 +327,50 @@ install_chrome_test_resources() {
 	FROM_TESTS="${FROM}"
 
 	echo Copying Chrome tests into "${TEST_DIR}"
-	sudo rm -rf "${TEST_DIR}"
 	sudo mkdir -p "${TEST_DIR}"
 	sudo mkdir -p "${TEST_DIR}/out/Release"
 
-	# Collect PyAuto binaries.
-	local pyauto_dir="/usr/local/chrome-pyauto"
-	einfo "Copying PyAuto binaries to ${pyauto_dir}"
-	insinto "${pyauto_dir}/out/Release"
-	doins "${FROM}"/pyautolib.py
-	doins "${FROM_LIB}"/_pyautolib.so
+	sudo rsync -v "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
+		"${TEST_DIR}/out/Release"
 
-	sudo cp "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
-	sudo cp "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
-	sudo cp "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
-	sudo cp "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
+	sudo rsync -v "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+	sudo rsync -v "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
+	sudo rsync -v "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
+	sudo rsync -v "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
+	sudo rsync -v "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
+	sudo rsync -v "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
 
 	sudo mkdir -p "${TEST_DIR}"/out/Release/pyproto
-	sudo cp -r "${FROM_TESTS}"/pyproto/* "${TEST_DIR}"/out/Release/pyproto
+	sudo rsync -rlv "${FROM_TESTS}"/pyproto/* "${TEST_DIR}"/out/Release/pyproto
 
 	sudo mkdir -p "${TEST_DIR}"/base
-	sudo cp "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+	sudo rsync -v "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
 
 	sudo mkdir -p "${TEST_DIR}"/chrome/test/data
-	sudo cp -r "${CHROME_ROOT}"/src/chrome/test/data/* \
-		"${TEST_DIR}"/chrome/test/data
+	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded \
+		"${CHROME_ROOT}"/src/chrome/test/data/* "${TEST_DIR}"/chrome/test/data
 
 	sudo mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
-	sudo cp -r "${CHROME_ROOT}"/src/net/data/ssl/certificates/* \
+	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/data/ssl/certificates/* \
 		"${TEST_DIR}"/net/data/ssl/certificates
 
 	sudo mkdir -p "${TEST_DIR}"/net/tools/testserver
-	sudo cp -r "${CHROME_ROOT}"/src/net/tools/testserver/* \
+	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/tools/testserver/* \
 		"${TEST_DIR}"/net/tools/testserver
 
 	sudo mkdir -p "${TEST_DIR}"/third_party/tlslite
-	sudo cp -r "${CHROME_ROOT}"/src/third_party/tlslite/* \
+	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/tlslite/* \
 		"${TEST_DIR}"/third_party/tlslite
 
 	sudo mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
-	sudo cp -r "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
+	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
 		"${TEST_DIR}"/third_party/pyftpdlib
 
 	for f in ${TEST_FILES}; do
-		sudo cp "${FROM}/${f}" "${TEST_DIR}"
+		sudo rsync -rv "${FROM}/${f}" "${TEST_DIR}"
 	done
 
-	sudo cp "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
+	sudo rsync -v "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
 		"${TEST_DIR}"/out/Release
 
 	sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
