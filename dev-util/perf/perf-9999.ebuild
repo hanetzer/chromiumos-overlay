@@ -4,14 +4,14 @@
 
 EAPI=2
 
-inherit eutils toolchain-funcs linux-info
+inherit cros-workon eutils toolchain-funcs linux-info
 
 DESCRIPTION="Userland tools for Linux Performance Counters"
 HOMEPAGE="http://perf.wiki.kernel.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 amd64"
+KEYWORDS="~amd64 ~x86"
 IUSE="+demangle +doc"
 
 RDEPEND="demangle? ( sys-devel/binutils )
@@ -19,15 +19,8 @@ RDEPEND="demangle? ( sys-devel/binutils )
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
-kernel=${CHROMEOS_KERNEL:-"kernel/files"}
-files="${CHROMEOS_ROOT}/src/third_party/${kernel}/"
-
-src_unpack() {
-	elog "Using kernel files: ${files}"
-
-	mkdir -p "${S}"
-	cp -ar "${files}"/* "${S}" || die
-}
+CROS_WORKON_PROJECT="kernel"
+CROS_WORKON_LOCALNAME="kernel/files"
 
 src_compile() {
 	local makeargs=
