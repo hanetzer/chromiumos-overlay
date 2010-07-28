@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-inherit eutils multilib python cros-workon
+inherit eutils multilib python
 
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
@@ -38,17 +38,10 @@ RDEPEND="${RDEPEND}
 	python? ( dev-python/pygtk )
 	python? ( dev-python/pyxdg )"
 
-CROS_WORKON_SUBDIR="files"
-
 pkg_setup() {
 	# An arch specific config directory is used on multilib systems
 	has_multilib_profile && GTK2_CONFDIR="/etc/gtk-2.0/${CHOST}"
 	GTK2_CONFDIR=${GTK2_CONFDIR:=/etc/gtk-2.0/}
-}
-
-src_unpack() {
-	unpack ${A}
-	cd "${S}"
 }
 
 src_configure() {
@@ -60,10 +53,6 @@ src_configure() {
 		$(use_enable python) \
 		CPPFLAGS='-DOS_CHROMEOS=1' \
 		|| die
-}
-
-src_compile() {
-	emake || die
 }
 
 src_install() {
