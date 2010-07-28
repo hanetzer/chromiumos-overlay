@@ -26,7 +26,7 @@ def _IsCrosWorkonEbuild(ebuild_contents):
 def Check9999Updated(input_api, output_api, source_file_filter=None):
   """Checks that the 9999 ebuild was also modified."""
   output = []
-  inconsistent = []
+  inconsistent = set()
   missing_9999 = set()
   for f in input_api.AffectedSourceFiles(source_file_filter):
     ebuild_contents = f.NewContents()
@@ -50,7 +50,7 @@ def Check9999Updated(input_api, output_api, source_file_filter=None):
             continue
           if not (line[2:].startswith('KEYWORDS=') or
                   line[2:].startswith('CROS_WORKON_COMMIT=')):
-            inconsistent.append(f.LocalPath())
+            inconsistent.add(f.LocalPath())
 
   if missing_9999:
     output.append(output_api.PresubmitPromptWarning(
