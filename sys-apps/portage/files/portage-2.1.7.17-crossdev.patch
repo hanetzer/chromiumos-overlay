@@ -1,0 +1,33 @@
+diff --git a/pym/portage/__init__.py-old b/pym/portage/__init__.py
+index 0a4678d..873bc80 100644
+--- a/pym/portage/__init__.py-old
++++ b/pym/portage/__init__.py
+@@ -1186,6 +1186,28 @@ def env_update(makelinks=1, target_root=None, prev_mtimes=None, contents=None,
+ 			os.system(("cd / ; %s -elf -i " + \
+ 				"-f '%svar/run/ld-elf.so.hints' '%setc/ld.so.conf'") % \
+ 				(ldconfig, target_root, target_root))
++		if target_root != "/":
++			re_root = target_root.rstrip("/").replace(":", r"\:")
++			la_files = []
++			pc_files = []
++			for path in contents:
++				if path.endswith(".la"):
++					if os.path.exists(path): la_files.append(path)
++				elif path.endswith(".pc"):
++					if os.path.exists(path): pc_files.append(path)
++			# Fix *.la files to point to libs in target_root, if they
++			# don't do so already
++			if la_files:
++				expr1 = r"/^libdir='\/usr\//s:=':='%s:" % re_root
++				expr2 = "/^dependency_libs=/s: /usr/: %s/usr/:g" % re_root
++				la_files_str = " ".join(la_files)
++				cmd = 'sed -i -e "%s" -e "%s" %s' % (expr1, expr2, la_files_str)
++				os.system(cmd)
++			# Fix *.pc files to point to libs in target_root, if they
++			# don't do so already
++			if pc_files:
++				expr = "s:=/usr:=%s/usr:" % re_root
++				os.system('sed -i -e "%s" %s' % (expr, " ".join(pc_files)))
+ 
+ 	del specials["LDPATH"]
+ 
