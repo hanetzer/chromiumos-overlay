@@ -30,7 +30,151 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}"
 
-export PORTAGE_QUIET=1
+AUTOTEST_TEST_LIST="compilebench
+	dbench
+	disktest
+	fsx
+	hackbench
+	iperf
+	ltp
+	netperf2
+	netpipe
+	unixbench
+	audiovideo_FFMPEG
+	audiovideo_PlaybackRecordSemiAuto
+	audiovideo_V4L2
+	build_RootFilesystemSize
+	desktopui_BrowserTest
+	desktopui_ChromeFirstRender
+	desktopui_ChromeSemiAuto
+	desktopui_FlashSanityCheck
+	desktopui_IBusTest
+	desktopui_KillRestart
+	desktopui_PageCyclerTests
+	desktopui_ScreenSaverUnlock
+	desktopui_SpeechSynthesisSemiAuto
+	desktopui_SunSpiderBench
+	desktopui_UITest
+	desktopui_UrlFetch
+	desktopui_V8Bench
+	desktopui_WindowManagerFocusNewWindows
+	desktopui_WindowManagerHotkeys
+	example_UnitTest
+	factory_Camera
+	factory_DeveloperRecovery
+	factory_Display
+	factory_Dummy
+	factory_ExternalStorage
+	factory_Fail
+	factory_Keyboard
+	factory_Leds
+	factory_RebootStub
+	factory_Review
+	factory_ScriptWrapper
+	factory_ShowTestResults
+	factory_Touchpad
+	factory_Wipe
+	firmware_RomSize
+	firmware_VbootCrypto
+	graphics_GLAPICheck
+	graphics_GLBench
+	graphics_O3DSelenium
+	graphics_SanAngeles
+	graphics_TearTest
+	graphics_WebGLConformance
+	graphics_WindowManagerGraphicsCapture
+	hardware_Backlight
+	hardware_BluetoothSemiAuto
+	hardware_Components
+	hardware_DeveloperRecovery
+	hardware_DiskSize
+	hardware_EepromWriteProtect
+	hardware_GPIOSwitches
+	hardware_GPS
+	hardware_MemoryThroughput
+	hardware_MemoryTotalSize
+	hardware_Resolution
+	hardware_SAT
+	hardware_SsdDetection
+	hardware_StorageFio
+	hardware_TPM
+	hardware_TPMFirmware
+	hardware_UsbPlugIn
+	hardware_VideoOutSemiAuto
+	hardware_bma150
+	hardware_tsl2563
+	logging_KernelCrash
+	logging_LogVolume
+	logging_UserCrash
+	login_Backdoor
+	login_BadAuthentication
+	login_ChromeProfileSanitary
+	login_CryptohomeIncognitoMounted
+	login_CryptohomeMounted
+	login_CryptohomeUnmounted
+	login_LoginSuccess
+	login_LogoutProcessCleanup
+	login_RemoteLogin
+	network_3GSmokeTest
+	network_ConnmanIncludeExcludeMultiple
+	network_DhclientLeaseTestCase
+	network_DisableInterface
+	network_NegotiatedLANSpeed
+	network_Ping
+	network_UdevRename
+	network_WiFiCaps
+	network_WiFiSmokeTest
+	network_WifiAuthenticationTests
+	network_WlanHasIP
+	network_netperf2
+	platform_AccurateTime
+	platform_AesThroughput
+	platform_BootPerf
+	platform_CheckErrorsInLog
+	platform_CleanShutdown
+	platform_CryptohomeChangePassword
+	platform_CryptohomeMount
+	platform_CryptohomeTestAuth
+	platform_DMVerityCorruption
+	platform_DaemonsRespawn
+	platform_DiskIterate
+	platform_FileNum
+	platform_FilePerms
+	platform_FileSize
+	platform_KernelVersion
+	platform_MemCheck
+	platform_MiniJailCmdLine
+	platform_MiniJailPidNamespace
+	platform_MiniJailPtraceDisabled
+	platform_MiniJailReadOnlyFS
+	platform_MiniJailRootCapabilities
+	platform_MiniJailUidGid
+	platform_MiniJailVfsNamespace
+	platform_NetParms
+	platform_OSLimits
+	platform_PartitionCheck
+	platform_ProcessPrivileges
+	platform_Shutdown
+	platform_StackProtector
+	platform_TempFS
+	power_Backlight
+	power_BatteryCharge
+	power_CPUFreq
+	power_CPUIdle
+	power_Draw
+	power_Idle
+	power_LoadTest
+	power_Resume
+	power_StatsCPUFreq
+	power_StatsCPUIdle
+	power_StatsUSB
+	power_Status
+	power_x86Settings
+	realtimecomm_GTalkAudioBench
+	realtimecomm_GTalkAudioPlayground
+	realtimecomm_GTalkPlayground
+	realtimecomm_GTalkunittest
+	security_RendererSandbox"
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE=/usr/share/config.site
@@ -50,25 +194,9 @@ function touch_init_py() {
 	done
 }
 
-function setup_ssh() {
-	eval $(ssh-agent) > /dev/null
-	ssh-add \
-		${CHROMEOS_ROOT}/src/scripts/mod_for_test_scripts/ssh_keys/testing_rsa
-}
-
-function teardown_ssh() {
-	ssh-agent -k > /dev/null
-}
-
 function setup_cross_toolchain() {
 	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		tc-getSTRIP
+		tc-export CC CXX AR RANLIB LD NM STRIP
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
@@ -86,20 +214,21 @@ function setup_cross_toolchain() {
 	fi
 }
 
-function copy_src() {
-	local dst=$1
+src_unpack() {
+	local dst="${WORKDIR}/${P}"
+
 	mkdir -p "${dst}"
 	cp -fpru "${AUTOTEST_SRC}"/{client,conmux,server,tko,utils} "${dst}" || die
 	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${dst}" || die
 }
 
 src_configure() {
-	copy_src "${S}"
 	sed "/^enable_server_prebuild/d" "${AUTOTEST_SRC}/global_config.ini" > \
 		"${S}/global_config.ini"
-	cd "${S}"
+
 	touch_init_py client/tests client/site_tests
 	touch __init__.py
+
 	# Cleanup checked-in binaries that don't support the target architecture
 	[[ ${E_MACHINE} == "" ]] && return 0;
 	rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
@@ -114,21 +243,21 @@ src_compile() {
 		graphics_backend=OPENGL
 	fi
 
+	einfo "Tests enabled: ${AUTOTEST_TEST_LIST}"
+
+	# pythonify test list
+	TESTS=$(for test in ${AUTOTEST_TEST_LIST}; do echo -n "${test},"; done)
+
 	# Do not use sudo, it'll unset all your environment
 	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
-		client/bin/autotest_client --quiet --client_test_setup=${TEST_LIST} \
+		client/bin/autotest_client --quiet --client_test_setup=${TESTS} \
 		|| ! use buildcheck || die "Tests failed to build."
+
 	# Cleanup some temp files after compiling
 	find . -name '*.[ado]' -delete
-
 }
 
 src_install() {
 	insinto /usr/local/autotest
 	doins -r "${S}"/*
-}
-
-pkg_postinst() {
-	chown -R ${SUDO_UID}:${SUDO_GID} "${SYSROOT}/usr/local/autotest"
-	chmod -R 755 "${SYSROOT}/usr/local/autotest"
 }
