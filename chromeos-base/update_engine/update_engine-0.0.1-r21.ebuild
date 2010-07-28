@@ -25,6 +25,7 @@ RDEPEND="app-arch/bzip2
 	net-misc/curl
 	sys-libs/zlib"
 DEPEND="chromeos-base/libchromeos
+	dev-cpp/gmock
 	dev-cpp/gtest
 	dev-libs/dbus-glib
 	${RDEPEND}"
@@ -61,23 +62,15 @@ src_test() {
 }
 
 src_install() {
-	dodir /usr/sbin
-	exeinto /usr/sbin
-	doexe update_engine
+	dosbin update_engine
+	dobin update_engine_client
 
-	dodir /usr/bin
-	exeinto /usr/bin
-	doexe update_engine_client
-
-	dodir /usr/share/dbus-1/services
 	insinto /usr/share/dbus-1/services
 	doins org.chromium.UpdateEngine.service
 
-	dodir /etc/dbus-1/system.d
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
 
-	dodir /usr/include/chromeos/update_engine
 	insinto /usr/include/chromeos/update_engine
 	doins update_engine.dbusserver.h
 	doins update_engine.dbusclient.h
