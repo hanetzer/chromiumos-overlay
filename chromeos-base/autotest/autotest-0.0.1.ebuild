@@ -89,7 +89,8 @@ function setup_cross_toolchain() {
 function copy_src() {
 	local dst=$1
 	mkdir -p "${dst}"
-	cp -fpru "${AUTOTEST_SRC}"/{client,conmux,server,tko,utils} "${dst}" || die
+	rsync -rplv --exclude='.svn' --delete --delete-excluded \
+	  "${AUTOTEST_SRC}"/{client,conmux,server,tko,utils} "${dst}" || die
 	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${dst}" || die
 }
 
@@ -125,7 +126,6 @@ src_compile() {
 		|| ! use buildcheck || die "Tests failed to build."
 	# Cleanup some temp files after compiling
 	find . -name '*.[ado]' -delete
-
 }
 
 src_install() {
