@@ -15,8 +15,9 @@ IUSE=""
 
 CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
-RDEPEND="x11-libs/libXrandr
-	x11-libs/libX11"
+RDEPEND="x11-libs/libX11
+	x11-libs/libXdmcp
+	x11-libs/libXrandr"
 
 DEPEND="${RDEPEND}"
 
