@@ -3,12 +3,11 @@
 
 EAPI=2
 
-inherit python subversion
+inherit python
 
 DESCRIPTION="GYP, a tool to generates native build files."
 HOMEPAGE="http://code.google.com/p/gyp/"
-SRC_URI=""
-ESVN_REPO_URI="http://gyp.googlecode.com/svn/trunk@${PV}"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
