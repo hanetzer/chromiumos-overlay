@@ -100,9 +100,14 @@ src_configure() {
 	cd "${S}"
 	touch_init_py client/tests client/site_tests
 	touch __init__.py
-	# Cleanup checked-in binaries that don't support the target architecture
+	# Cleanup checked-in binaries that don't support the target architecture.
+	echo E_MACHINE: $E_MACHINE
 	[[ ${E_MACHINE} == "" ]] && return 0;
-	rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+	date
+	echo Removing elf files for unsupported architectures...
+	rm -fv $( scanelf -RmyBF%a ./client/site_tests | grep -v -e ^${E_MACHINE} )
+	echo Removal done.
+	date
 }
 
 src_compile() {
