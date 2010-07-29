@@ -3,12 +3,11 @@
 
 EAPI=2
 
-inherit subversion toolchain-funcs
+inherit toolchain-funcs
 
 DESCRIPTION="V8 JavaScript engine."
 HOMEPAGE="http://code.google.com/p/v8/"
-SRC_URI=""
-ESVN_REPO_URI="http://v8.googlecode.com/svn/trunk@5019"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
