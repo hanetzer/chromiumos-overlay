@@ -37,7 +37,7 @@ DEFINE_boolean useworkon $FLAGS_FALSE \
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
 DEFINE_integer jobs -1 "How many packages to build in parallel at maximum."
-DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
+DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel (unstable)"
 DEFINE_string stage3_date "2010.03.09" \
   "Use the stage3 with the given date."
 

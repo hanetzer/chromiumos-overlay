@@ -45,7 +45,7 @@ DEFINE_boolean withtest $FLAGS_TRUE \
   "Build packages required for testing"
 DEFINE_boolean withfactory $FLAGS_TRUE \
   "Build factory installer"
-DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
+DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
 DEFINE_boolean norebuild ${FLAGS_FALSE} \
   "Don't automatically rebuild dependencies."
 

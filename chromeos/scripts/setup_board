@@ -40,7 +40,7 @@ DEFINE_string kernel_version "2.6.30-r1" \
   "Version of kernel headers to use."
 DEFINE_boolean default $FLAGS_FALSE \
   "Set board to the default board in your chroot"
-DEFINE_boolean fast ${FLAGS_FALSE} "Call many emerges in parallel"
+DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
 
 # Parse command line flags
 FLAGS "$@" || exit 1
