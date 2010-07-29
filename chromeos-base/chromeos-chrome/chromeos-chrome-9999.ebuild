@@ -373,6 +373,14 @@ install_chrome_test_resources() {
 	sudo rsync -v "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
 		"${TEST_DIR}"/out/Release
 
+	# Remove test binaries from other platforms
+	if [ -z "${E_MACHINE}" ]; then
+		echo E_MACHINE not defined!
+	else
+		cd "${TEST_DIR}"/chrome/test
+		sudo rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+	fi
+
 	sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
 	sudo chmod -R 755 "${TEST_DIR}"
 }
