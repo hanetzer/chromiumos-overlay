@@ -12,7 +12,7 @@
     },
   },
   'WATCHLISTS': {
-    'all': ['adlr@chromium.org', 'ajwong@chromium.org',
+    'all': ['adlr@chromium.org',
             'msb@chromium.org',
             'tedbo@chromium.org',
 	    'anush@chromium.org'],
