@@ -208,9 +208,16 @@ if [ "$CROSSTOOL" -eq "1" ] ; then
   FLAGS_gcc_version="4.4.3"
 fi
 
-# If the toolchain does not exist, then build it!
-TOOLCHAIN_ROOT="/usr/${FLAGS_toolchain}"
-if [ ! -d "$TOOLCHAIN_ROOT" ] ; then
+# If all 4 toolchain packages are not installed, then install them!
+set +e
+TC_INSTALL=false
+for i in glibc gcc binutils linux-headers; do
+  if ! equery l "cross-${FLAGS_toolchain}/$i*"; then
+    TC_INSTALL=true
+  fi
+done
+set -e
+if $TC_INSTALL; then
   BINHOST=$(portageq envvar PORTAGE_BINHOST)
   CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
   CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
