@@ -174,15 +174,6 @@ src_unpack() {
 		${EGCLIENT} sync  --nohooks || \
 			die "${EGCLIENT} sync failed"
 
-		elog "Setting up cros directory structure"
-		rm -rf src/third_party/cros/ || \
-			die "cannot cleanup cros source directory in chrome build"
-
-		elog mkdir -p  src/third_party/cros/
-		elog cp -rfp ${CHROMEOS_ROOT}/src/platform/cros
-		cp -rfp ${CHROMEOS_ROOT}/src/platform/cros \
-		src/third_party/  || die "Failed to copy \
-		cros sources to  ${ECHROME_STORE_DIR}"
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"

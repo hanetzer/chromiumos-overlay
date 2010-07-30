@@ -6,4 +6,8 @@ solutions = [
     },
     "safesync_url": "http://chromium-status.appspot.com/lkgr"
   },
+  { "name" : "cros_deps",
+    "url" : "http://src.chromium.org/svn/trunk/cros_deps",
+    "safesync_url": "http://chromium-status.appspot.com/lkgr"
+  }
 ]
