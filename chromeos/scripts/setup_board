@@ -391,7 +391,11 @@ sudo ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 #
 # Emerge the kernel headers into the board build root.
 #
-sudo "${EMERGE_WRAPPER}" --quiet kernel
+EMERGE_FLAGS=""
+if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+  EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg"
+fi
+sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS --quiet kernel
 
 # We need to install libstdc++ manually from the cross toolchain.
 # TODO: Figure out a better way of doing this?
