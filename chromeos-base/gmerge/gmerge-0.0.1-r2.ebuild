@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="d35ee247e0a940631639b8b3ce21d208f4de17f2"
+CROS_WORKON_COMMIT="2b2ff4b84224f8d7001e174cfcfe7506ad49e3b7"
+
 inherit cros-workon
 
 DESCRIPTION="A util for installing packages using the CrOS dev server"

@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d0cae20c14c38330981c4aa2898f47e7b6b95e01"
+CROS_WORKON_COMMIT="ce7ac79284e550cea8fafff1f9f0c22e5afe1d86"
+
 inherit cros-workon autotools
 
 DESCRIPTION="Chromium OS network usage tracking daemon"

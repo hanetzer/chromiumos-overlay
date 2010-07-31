@@ -3,7 +3,8 @@
 # $Header: $
 
 EAPI="2"
-CROS_WORKON_COMMIT="c2b3160a33e4c0b8931c11cf81d11a4ac411d912"
+CROS_WORKON_COMMIT="e254cb5980966a88bbeae1528f8da6357e908bdd"
+
 inherit cros-workon eutils
 
 DESCRIPTION="This is the text-to-speech (TTS) synthesis library."

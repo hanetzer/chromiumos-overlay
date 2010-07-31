@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="00422f530741cb52750b76d7c2b3682cbd8644c5"
+CROS_WORKON_COMMIT="ff2aa5802d64a3e11181f8eab2d31ecf6f1a0984"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Audio configuration files."

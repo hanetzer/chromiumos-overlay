@@ -4,7 +4,8 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="7116e3d56d6700eb2de5a59e01857adf8c17226a"
+CROS_WORKON_COMMIT="f6b1fac22f212d658e18aed47d9c426903e57ea6"
+
 inherit autotools cros-workon toolchain-funcs
 
 DESCRIPTION="Provides a daemon for managing internet connections"

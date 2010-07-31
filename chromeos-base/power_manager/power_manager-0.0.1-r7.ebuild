@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b3c035f09e07329de04a4e0b99053530320a02fb"
+CROS_WORKON_COMMIT="aacedccd7b37b5f1a206a2426a688991068ba60e"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Power Manager for Chromium OS"

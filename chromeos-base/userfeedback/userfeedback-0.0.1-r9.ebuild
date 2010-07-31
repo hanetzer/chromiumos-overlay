@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="289320721eba250e1497bbdc30de7d6307f79163"
+CROS_WORKON_COMMIT="e0f2bcd4e81db07dcba01cb3ea85ebe2f4ae5758"
+
 inherit cros-workon
 
 DESCRIPTION="Log scripts used by userfeedback to report cros system information"

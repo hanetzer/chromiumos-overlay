@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e4e01a5f2a7039f3b0a40b7c5c81d1eadc2cb042"
+CROS_WORKON_COMMIT="4fa78987090b8b1023da50842462b464759fe7b4"
+
 inherit cros-workon
 
 DESCRIPTION="Chrontel CH7036 User Space Driver"

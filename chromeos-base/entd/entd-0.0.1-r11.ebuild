@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5e21815f55dd73e983bec559c5358333a161d8a1"
+CROS_WORKON_COMMIT="45fd1edf2cd3e23e572e1c5a29bdf6921da2f26d"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Enterprise policy management daemon."
