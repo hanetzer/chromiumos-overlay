@@ -23,10 +23,6 @@ src_prepare() {
 	eautoreconf
 }
 
-src_configure() {
-	econf
-}
-
 src_compile() {
 	emake clean-generic || die "emake clean failed"
 	emake || die "emake failed"
@@ -46,7 +42,4 @@ src_install() {
 	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
 		"${S}"/src/cashew.conf "${D}"/etc/init/
-
-	#create log directory
-	dodir /var/log/cashew/
 }
