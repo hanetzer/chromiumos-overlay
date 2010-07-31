@@ -65,6 +65,7 @@ TEST_FILES="ffmpeg_tests
 # TODO(cmasone): Remove pam dependency when "session" target is removed
 RDEPEND="app-arch/bzip2
          chromeos-base/chromeos-theme
+         chromeos-base/libcros
          dev-libs/atk
          dev-libs/glib
          dev-libs/nspr
@@ -250,12 +251,12 @@ check_cros_version() {
 
 	# Get the min version of libcros in the chromium os tree.
 	MIN_VERSION=$(extract_cros_version kCrosAPIMinVersion \
-		"$CHROMEOS_ROOT/src/platform/cros/chromeos_cros_api.h")
+		"${SYSROOT}/usr/include/cros/chromeos_cros_api.h")
 	elog "Libcros min version in chromium os tree: $MIN_VERSION"
 
 	# Get the max version of libcros in the chromium os tree.
 	MAX_VERSION=$(extract_cros_version kCrosAPIVersion \
-		"$CHROMEOS_ROOT/src/platform/cros/chromeos_cros_api.h")
+		"${SYSROOT}/usr/include/cros/chromeos_cros_api.h")
 	elog "Libcros max version in chromium os tree: $MAX_VERSION"
 
 	if [ "$MIN_VERSION" -gt "$VERSION" ]; then
