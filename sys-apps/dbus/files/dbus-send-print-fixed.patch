@@ -1,8 +1,8 @@
 diff --git a/tools/dbus-print-message.c b/tools/dbus-print-message.c
-index 75d00ac..4553b90 100644
+index 75d00ac..abb45ee 100644
 --- a/tools/dbus-print-message.c
 +++ b/tools/dbus-print-message.c
-@@ -142,6 +142,277 @@ print_ay (DBusMessageIter *iter, int depth)
+@@ -142,6 +142,281 @@ print_ay (DBusMessageIter *iter, int depth)
    free (bytes);
  }
  
@@ -97,7 +97,7 @@ index 75d00ac..4553b90 100644
 +  }
 +}
 +
-+static void print_fixed_iter(DBusMessageIter *iter, const char *pfx);
++static void print_fixed_iter(DBusMessageIter *iter, const char *pfx, int all);
 +
 +static void pf_string(DBusMessageIter *iter, const char *pfx)
 +{
@@ -190,7 +190,7 @@ index 75d00ac..4553b90 100644
 +  while (type != DBUS_TYPE_INVALID)
 +    {
 +      snprintf(npfx, sizeof(npfx), "%s/%d", pfx, i);
-+      print_fixed_iter(&subiter, npfx);
++      print_fixed_iter(&subiter, npfx, 0);
 +      dbus_message_iter_next(&subiter);
 +      type = dbus_message_iter_get_arg_type(&subiter);
 +      i++;
@@ -201,7 +201,7 @@ index 75d00ac..4553b90 100644
 +{
 +  DBusMessageIter subiter;
 +  dbus_message_iter_recurse(iter, &subiter);
-+  print_fixed_iter(&subiter, pfx);
++  print_fixed_iter(&subiter, pfx, 0);
 +}
 +
 +static void pf_dict(DBusMessageIter *iter, const char *pfx)
@@ -220,10 +220,10 @@ index 75d00ac..4553b90 100644
 +      snprintf(npfx, MAXPFX, "%s/[complex-key]", pfx);
 +    }
 +  dbus_message_iter_next(&subiter);
-+  print_fixed_iter(&subiter, npfx);
++  print_fixed_iter(&subiter, npfx, 0);
 +}
 +
-+static void print_fixed_iter(DBusMessageIter *iter, const char *pfx)
++static void print_fixed_iter(DBusMessageIter *iter, const char *pfx, int all)
 +{
 +  static struct {
 +    int type;
@@ -250,21 +250,25 @@ index 75d00ac..4553b90 100644
 +  int type;
 +  int i;
 +
-+  type = dbus_message_iter_get_arg_type(iter);
-+  if (type == DBUS_TYPE_INVALID)
-+    return;
-+  for (i = 0; printers[i].func; i++)
++  do
 +    {
-+      if (printers[i].type == type)
++      type = dbus_message_iter_get_arg_type(iter);
++      if (type == DBUS_TYPE_INVALID)
++        return;
++      for (i = 0; printers[i].func; i++)
 +        {
-+          printers[i].func(iter, pfx);
-+          break;
++          if (printers[i].type == type)
++            {
++              printers[i].func(iter, pfx);
++              break;
++            }
++        }
++      if (!printers[i].func)
++        {
++          printf("print-fixed-iter: no idea what %d is\n", type);
 +        }
 +    }
-+  if (!printers[i].func)
-+    {
-+      printf("print-fixed-iter: no idea what %d is\n", type);
-+    }
++  while (all && dbus_message_iter_next(iter));
 +}
 +
 +void print_message_fixed(DBusMessage *msg)
@@ -274,7 +278,7 @@ index 75d00ac..4553b90 100644
 +
 +  type = dbus_message_get_type(msg);
 +  dbus_message_iter_init(msg, &iter);
-+  print_fixed_iter(&iter, "");
++  print_fixed_iter(&iter, "", 1);
 +}
 +
  static void
