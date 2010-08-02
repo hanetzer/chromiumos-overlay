@@ -48,8 +48,11 @@ src_install() {
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
 
-	insinto /usr/share/fonts/truetype/ttf-droid-thai
-	doins "${S}"/fonts/DroidThai*
+	insinto /usr/share/fonts/droid-thai
+	doins "${S}"/fonts/DroidThai*.ttf
+
+	insinto /usr/share/fonts/chrome-droid
+	doins "${S}"/fonts/ChromeDroid*.ttf
 
 	local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 
