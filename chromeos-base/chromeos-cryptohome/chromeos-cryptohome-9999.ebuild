@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-
+CROS_WORKON_COMMIT="7f293ac212b1ca78b0c6e51c5efe147fbcde99b5"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
@@ -15,6 +15,7 @@ IUSE="test"
 
 RDEPEND="
 	app-crypt/trousers
+	chromeos-base/libscrypt
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/openssl
@@ -24,6 +25,7 @@ RDEPEND="
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchromeos
+	chromeos-base/tpm_init
 	${RDEPEND}"
 
 CROS_WORKON_PROJECT="cryptohome"
@@ -76,7 +78,8 @@ src_test() {
 	if use x86 ; then
 		# Create data for unittests
 		./init_cryptohome_data.sh test_image_dir
-		./cryptohome_testrunner ${GTEST_ARGS} || \
+                LD_LIBRARY_PATH=.:${ROOT}/lib:${ROOT}/usr/lib \
+		    ./cryptohome_testrunner ${GTEST_ARGS} || \
 		    die "unit tests (with ${GTEST_ARGS}) failed!"
 	fi
 	popd
