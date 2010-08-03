@@ -36,4 +36,8 @@ src_install() {
 
 	insinto /etc/init
 	doins chrontel.conf
+
+	dodir /usr/share/userfeedback/etc
+	insinto /usr/share/userfeedback/etc
+	doins sys_mon_hdmi.lst
 }
