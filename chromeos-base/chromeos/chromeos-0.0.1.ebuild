@@ -33,6 +33,7 @@ RDEPEND="${RDEPEND}
 		chromeos-base/flash-war
 		chromeos-base/internal
 		chromeos-base/xorg-conf
+		media-fonts/croscorefonts
 		media-fonts/dejavu
 		media-fonts/droid
 		media-fonts/ja-ipafonts
