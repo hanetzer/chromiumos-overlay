@@ -20,12 +20,43 @@ IUSE="+autox buildcheck +xset +tpmtools opengles hardened"
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
   chromeos-base/crash-dumper
+  chromeos-base/flimflam
   dev-cpp/gtest
   dev-lang/python
   autox? ( chromeos-base/autox )
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
   "
+
+# Needed for audiovideo_PlaybackRecordSemiAuto
+RDEPEND="${RDEPEND}
+  media-sound/pulseaudio
+"
+
+# Needed for deps/chrome_test (used in desktopui_BrowserTest and
+# desktopUI_UITest)
+RDEPEND="${RDEPEND}
+  chromeos-base/chromeos-chrome
+"
+
+# Needed for deps/ibusclient (used in desktopui_IBusTest)
+RDEPEND="${RDEPEND}
+  app-i18n/ibus
+  dev-libs/glib
+  sys-apps/dbus
+"
+
+# Needed for deps/glbench (used in graphics_GLBench, graphics_TearTest, and
+# graphics_WindowManagerGraphicsCapture)
+RDEPEND="${RDEPEND}
+  virtual/opengl
+  opengles? ( virtual/opengles )
+"
+
+# Needed for platform_MiniJailRootCapabilities
+RDEPEND="${RDEPEND}
+  sys-libs/libcap
+"
 
 DEPEND="
 	${RDEPEND}"
