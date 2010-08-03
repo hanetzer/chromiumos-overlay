@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="29d646b1920926fd5227c665e6e65ad850870e01"
+CROS_WORKON_COMMIT="fd27896cbdd893ef3ccee7c19ed3d0d0511aa6e7"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS assets (images, sounds, etc.)"
