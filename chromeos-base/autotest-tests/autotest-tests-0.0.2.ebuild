@@ -5,7 +5,7 @@ EAPI=2
 
 inherit toolchain-funcs flag-o-matic
 
-DESCRIPTION="Autotest scripts and tools"
+DESCRIPTION="Autotest tests"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -19,6 +19,7 @@ IUSE="+autox buildcheck +xset +tpmtools opengles hardened"
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
+  chromeos-base/autotest
   chromeos-base/crash-dumper
   dev-cpp/gtest
   dev-lang/python
@@ -30,7 +31,8 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}"
 
-AUTOTEST_TEST_LIST="compilebench
+AUTOTEST_TEST_LIST="
+	compilebench
 	dbench
 	disktest
 	fsx
@@ -59,7 +61,7 @@ AUTOTEST_TEST_LIST="compilebench
 	desktopui_V8Bench
 	desktopui_WindowManagerFocusNewWindows
 	desktopui_WindowManagerHotkeys
-	example_UnitTest
+	#example_UnitTest
 	factory_Camera
 	factory_DeveloperRecovery
 	factory_Display
@@ -75,13 +77,13 @@ AUTOTEST_TEST_LIST="compilebench
 	factory_Touchpad
 	factory_Wipe
 	firmware_RomSize
-	firmware_VbootCrypto
-	graphics_GLAPICheck
+	#firmware_VbootCrypto
+	#graphics_GLAPICheck
 	graphics_GLBench
-	graphics_O3DSelenium
-	graphics_SanAngeles
+	#graphics_O3DSelenium
+	#graphics_SanAngeles
 	graphics_TearTest
-	graphics_WebGLConformance
+	#graphics_WebGLConformance
 	graphics_WindowManagerGraphicsCapture
 	hardware_Backlight
 	hardware_BluetoothSemiAuto
@@ -97,8 +99,8 @@ AUTOTEST_TEST_LIST="compilebench
 	hardware_SAT
 	hardware_SsdDetection
 	hardware_StorageFio
-	hardware_TPM
-	hardware_TPMFirmware
+	#hardware_TPM
+	#hardware_TPMFirmware
 	hardware_UsbPlugIn
 	hardware_VideoOutSemiAuto
 	hardware_bma150
@@ -174,11 +176,23 @@ AUTOTEST_TEST_LIST="compilebench
 	realtimecomm_GTalkAudioPlayground
 	realtimecomm_GTalkPlayground
 	realtimecomm_GTalkunittest
-	security_RendererSandbox"
+	security_RendererSandbox
+"
+
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE=/usr/share/config.site
 export AUTOTEST_SRC="${CHROMEOS_ROOT}/src/third_party/autotest/files"
+
+# Pythonify the list of packages
+function pythonify_test_list() {
+	local result
+
+	# NOTE: shell-like commenting of individual tests using grep
+	result=$(for test in ${AUTOTEST_TEST_LIST}; do echo "${test},"|grep -v "^#"; done)
+
+	echo ${result}|sed  -e 's/ //g'
+}
 
 # Create python package init files for top level test case dirs.
 function touch_init_py() {
@@ -217,9 +231,35 @@ function setup_cross_toolchain() {
 src_unpack() {
 	local dst="${WORKDIR}/${P}"
 
-	mkdir -p "${dst}"
-	cp -fpru "${AUTOTEST_SRC}"/{client,conmux,server,tko,utils} "${dst}" || die
-	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${dst}" || die
+	# pull in all the tests from this package
+	mkdir -p "${S}"/client
+	mkdir -p "${S}"/server
+
+	cp -fpru "${AUTOTEST_SRC}"/client/{tests,site_tests,deps,profilers,config} "${S}"/client/ || die
+	cp -fpru "${AUTOTEST_SRC}"/server/{tests,site_tests} "${S}"/server/ || die
+	cp -fpru "${AUTOTEST_SRC}/global_config.ini" "${S}" || die
+	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${S}" || die
+
+	# create a working enviroment for pre-building
+	ln -sf "${SYSROOT}"/usr/local/autotest/{conmux,tko,utils} "${S}"/
+	# NOTE: in order to make autotest not notice it's running from /usr/local/, we need
+	# to make sure the binaries are real, because they do the path magic
+	local root_path base_path
+	for base_path in client client/bin; do
+		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
+		mkdir -p "${S}/${base_path}"
+
+		# skip bin, because it is processed separately, and test-provided dirs
+		for entry in $(ls "${root_path}" |grep -v "\(bin\|tests\|site_tests\|deps\|profilers\|config\)$"); do
+			ln -sf "${root_path}/${entry}" "${S}/${base_path}/"
+		done
+	done
+	# replace the important binaries with real copies
+	for base_path in autotest autotest_client; do
+		root_path="${SYSROOT}/usr/local/autotest/client/bin/${base_path}"
+		rm "${S}/client/bin/${base_path}"
+		cp -f ${root_path} "${S}/client/bin/${base_path}"
+	done
 }
 
 src_configure() {
@@ -243,10 +283,8 @@ src_compile() {
 		graphics_backend=OPENGL
 	fi
 
-	einfo "Tests enabled: ${AUTOTEST_TEST_LIST}"
-
-	# pythonify test list
-	TESTS=$(for test in ${AUTOTEST_TEST_LIST}; do echo -n "${test},"; done)
+	TESTS=$(pythonify_test_list)
+	einfo "Tests enabled: ${TESTS}"
 
 	# Do not use sudo, it'll unset all your environment
 	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
@@ -258,6 +296,8 @@ src_compile() {
 }
 
 src_install() {
-	insinto /usr/local/autotest
-	doins -r "${S}"/*
+	insinto /usr/local/autotest/client/
+	doins -r "${S}"/client/{tests,site_tests,deps,profilers,config}
+	insinto /usr/local/autotest/server/
+	doins -r "${S}"/server/{tests,site_tests}
 }

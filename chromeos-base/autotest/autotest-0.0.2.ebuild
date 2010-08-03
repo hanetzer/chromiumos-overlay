@@ -36,4 +36,10 @@ src_prepare() {
 src_install() {
 	insinto /usr/local/autotest
 	doins -r "${WORKDIR}/${P}"/*
+	chmod -R a+x "${D}"/usr/local/autotest
+
+	dosym "../../../var/run/autotest/packages/" "/usr/local/autotest"
+
+	mkdir -p "${D}"/var/run/autotest/packages
+	chmod a+wx "${D}"/var/run/autotest/packages
 }
