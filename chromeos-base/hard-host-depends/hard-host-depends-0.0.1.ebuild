@@ -15,6 +15,7 @@ IUSE=""
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	dev-embedded/u-boot-tools
+	dev-util/crosutils
 	sys-boot/bootstub
 	sys-boot/grub
 	sys-boot/syslinux
