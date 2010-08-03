@@ -1,33 +1,63 @@
-diff --git a/pym/portage/__init__.py-old b/pym/portage/__init__.py
-index 0a4678d..873bc80 100644
---- a/pym/portage/__init__.py-old
+diff --git a/pym/portage/__init__.py.old b/pym/portage/__init__.py
+index 0a4678d..d1e602a 100644
+--- a/pym/portage/__init__.py.old
 +++ b/pym/portage/__init__.py
-@@ -1186,6 +1186,28 @@ def env_update(makelinks=1, target_root=None, prev_mtimes=None, contents=None,
+@@ -45,6 +45,7 @@ try:
+ 	from time import sleep
+ 	from random import shuffle
+ 	from itertools import chain
++	import fileinput
+ 	import platform
+ 	import warnings
+ 
+@@ -1186,6 +1187,18 @@ def env_update(makelinks=1, target_root=None, prev_mtimes=None, contents=None,
  			os.system(("cd / ; %s -elf -i " + \
  				"-f '%svar/run/ld-elf.so.hints' '%setc/ld.so.conf'") % \
  				(ldconfig, target_root, target_root))
-+	if target_root != "/":
-+		re_root = target_root.rstrip("/").replace(":", r"\:")
-+		la_files = []
-+		pc_files = []
++	re_root = target_root.strip("/")
++	if re_root:
++		fix_files = []
 +		for path in contents:
-+			if path.endswith(".la"):
-+				if os.path.exists(path): la_files.append(path)
-+			elif path.endswith(".pc"):
-+				if os.path.exists(path): pc_files.append(path)
-+		# Fix *.la files to point to libs in target_root, if they
-+		# don't do so already
-+		if la_files:
-+			expr1 = r"/^libdir='\/usr\//s:=':='%s:" % re_root
-+			expr2 = "/^dependency_libs=/s: /usr/: %s/usr/:g" % re_root
-+			la_files_str = " ".join(la_files)
-+			cmd = 'sed -i -e "%s" -e "%s" %s' % (expr1, expr2, la_files_str)
-+			os.system(cmd)
-+		# Fix *.pc files to point to libs in target_root, if they
-+		# don't do so already
-+		if pc_files:
-+			expr = "s:=/usr:=%s/usr:" % re_root
-+			os.system('sed -i -e "%s" %s' % (expr, " ".join(pc_files)))
++			if path.endswith(".la") or path.endswith(".pc"):
++				if os.path.exists(path): fix_files.append(path)
++		# Fix *.{la,pc} files to point to libs in target_root, if they
++		# don't do so already.
++		if fix_files:
++			pat = re.compile(r"([' =](?:-[IL])?/)(usr|lib|opt)")
++			for line in fileinput.input(fix_files, inplace=1):
++				sys.stdout.write(pat.sub(r"\1%s/\2" % re_root, line))
  
  	del specials["LDPATH"]
  
+@@ -5886,6 +5899,7 @@ def _post_src_install_uid_fix(mysettings, out=None):
+ 
+ 	destdir = mysettings["D"]
+ 	unicode_errors = []
++	fix_files = []
+ 
+ 	while True:
+ 
+@@ -5936,6 +5950,8 @@ def _post_src_install_uid_fix(mysettings, out=None):
+ 					mystat.st_ino not in counted_inodes:
+ 					counted_inodes.add(mystat.st_ino)
+ 					size += mystat.st_size
++					if fname.endswith(".la") or fname.endswith(".pc"):
++						fix_files.append(fpath)
+ 				if mystat.st_uid != portage_uid and \
+ 					mystat.st_gid != portage_gid:
+ 					continue
+@@ -5965,6 +5981,14 @@ def _post_src_install_uid_fix(mysettings, out=None):
+ 	open(_unicode_encode(os.path.join(mysettings['PORTAGE_BUILDDIR'],
+ 		'build-info', 'SIZE')), 'w').write(str(size) + '\n')
+ 
++	re_root = mysettings["ROOT"].strip("/")
++	if fix_files and re_root:
++		# Replace references to our sysroot with references to "/" in binpkg.
++		# Sysroot will be re-appended when the package is installed.
++		pat = re.compile(r"([' =](-[IL])?/)%s/" % re.escape(re_root))
++		for line in fileinput.input(fix_files, inplace=1):
++			sys.stdout.write(pat.sub(r"\1", line))
++
+ 	if bsd_chflags:
+ 		# Restore all of the flags saved above.
+ 		os.system("mtree -e -p %s -U -k flags < %s > /dev/null" % \
