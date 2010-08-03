@@ -224,7 +224,7 @@ function init_setup () {
      cp -r ~/.ssh "$FLAGS_chroot/home/$USER/"
    fi
 
-   if [ -f $HOME/.gitconfig ] then
+   if [[ -f $HOME/.gitconfig ]]; then
      # Copy .gitconfig into chroot so repo and git can be used from inside
      # This is required for repo to work since it validates the email address
      echo "Copying ~/.gitconfig into chroot"
