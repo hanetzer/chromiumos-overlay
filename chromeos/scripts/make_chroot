@@ -200,11 +200,11 @@ function init_setup () {
    # Warn less when apt-get installing packqages
    if [[ $FLAGS_useworkon -eq $FLAGS_TRUE ]]; then
        echo "export CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\"" >> \
-         "$FLAGS_chroot/home/$USER/.bashrc"
+         "$FLAGS_chroot/home/$USER/.bash_profile"
    fi
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
-   echo "export PORTAGE_USERNAME=$USER" >> "$FLAGS_chroot/home/$USER/.bashrc"
+   echo "export PORTAGE_USERNAME=$USER" >> "$FLAGS_chroot/home/$USER/.bash_profile"
    chmod a+x "$FLAGS_chroot/home/$USER/.bashrc"
    # Automatically change to scripts directory
    echo "cd trunk/src/scripts" >> "$FLAGS_chroot/home/$USER/.bash_profile"
