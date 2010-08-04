@@ -92,6 +92,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
 	copy_or_add_daemon_user "pkcs11" 208      # For opencryptoki
 	copy_or_add_daemon_user "qdlservice" 209  # for QDLService
+	copy_or_add_daemon_user "cromo" 210	  # For cromo (modem manager)
 
 	# The system_user needs to be part of the audio and video groups.
 	test $(grep -e "^audio\:" "${ROOT}/etc/group" | \
