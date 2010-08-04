@@ -1,0 +1,406 @@
+From 0b3a1c34da4c6eac6062cccb4f0bfbf7b939e8a9 Mon Sep 17 00:00:00 2001
+From: Zach Kuznia <zork@chromium.org>
+Date: Thu, 1 Jul 2010 14:08:00 +0900
+Subject: [PATCH] Add api to ibus for retreiving unused config values. This will be used by our autotest scripts to generate an error when input method config values change.
+
+BUG=chromium-os:3672
+TEST=none
+
+Review URL: http://codereview.chromium.org/2860022
+---
+ gconf/config.c          |   15 +++++++++++++
+ ibus/config.py          |   12 ++++++++++
+ memconf/config.cc       |   54 ++++++++++++++++++++++++++++++++++++++++++++++-
+ memconf/config.h        |    3 ++
+ src/ibusconfig.c        |   45 +++++++++++++++++++++++++++++++++++++++
+ src/ibusconfig.h        |   16 +++++++++++++-
+ src/ibusconfigservice.c |   40 ++++++++++++++++++++++++++++++++++
+ src/ibusconfigservice.h |    5 +++-
+ 8 files changed, 187 insertions(+), 3 deletions(-)
+
+diff --git a/gconf/config.c b/gconf/config.c
+index 6ee039b..90163d5 100644
+--- a/gconf/config.c
++++ b/gconf/config.c
+@@ -25,6 +25,10 @@ static gboolean     ibus_config_gconf_unset     (IBusConfigService      *config,
+                                                  const gchar            *section,
+                                                  const gchar            *name,
+                                                  IBusError             **error);
++static gboolean     ibus_config_gconf_get_unused    (IBusConfigService      *config,
++                                                     GValue                 *unread,
++                                                     GValue                 *unwritten,
++                                                     IBusError             **error);
+ 
+ static GConfValue   *_to_gconf_value                (const GValue           *value);
+ static void          _from_gconf_value              (GValue                 *value,
+@@ -70,6 +74,7 @@ ibus_config_gconf_class_init (IBusConfigGConfClass *klass)
+     IBUS_CONFIG_SERVICE_CLASS (object_class)->set_value = ibus_config_gconf_set_value;
+     IBUS_CONFIG_SERVICE_CLASS (object_class)->get_value = ibus_config_gconf_get_value;
+     IBUS_CONFIG_SERVICE_CLASS (object_class)->unset = ibus_config_gconf_unset;
++    IBUS_CONFIG_SERVICE_CLASS (object_class)->get_unused = ibus_config_gconf_get_unused;
+ }
+ 
+ static void
+@@ -336,6 +341,16 @@ ibus_config_gconf_unset (IBusConfigService      *config,
+     return TRUE;
+ }
+ 
++static gboolean
++ibus_config_gconf_get_unused (IBusConfigService      *config,
++                              GValue                 *unread,
++                              GValue                 *unwritten,
++                              IBusError             **error) {
++  *error = ibus_error_new_from_printf(
++      DBUS_ERROR_FAILED, "get_unused: Not implemented.");
++  return FALSE;
++}
++
+ IBusConfigGConf *
+ ibus_config_gconf_new (IBusConnection *connection)
+ {
+diff --git a/ibus/config.py b/ibus/config.py
+index 2e913d9..e00d623 100644
+--- a/ibus/config.py
++++ b/ibus/config.py
+@@ -49,6 +49,9 @@ class ConfigBase(object.Object):
+     def unset(self, section, name):
+         pass
+ 
++    def get_unused(self, unread, unwritten):
++        pass
++
+     def value_changed(self, section, name, value):
+         self.__proxy.ValueChanged(section, name, value)
+ 
+@@ -68,6 +71,9 @@ class ConfigProxy(interface.IConfig):
+     def Unset(self, section, name):
+         return self.__config.unset(section, name)
+ 
++    def GetUnused(self, unread, unwritten):
++        return self.__config.get_unused(unread, unwritten)
++
+     def Destroy(self):
+         self.__config.destroy()
+ 
+@@ -145,6 +151,12 @@ class Config(object.Object):
+         except:
+             return
+ 
++    def get_unused(self, unread, unwritten):
++        try:
++            return self.__config.GetUnused(unread, unwritten)
++        except:
++            return
++
+     def set_list(self, section, name, value, signature):
+         return self.set_value(section, name, dbus.Array(value, signature=signature))
+ 
+diff --git a/memconf/config.cc b/memconf/config.cc
+index 5ed1f66..5094f9f 100644
+--- a/memconf/config.cc
++++ b/memconf/config.cc
+@@ -42,6 +42,10 @@ static gboolean ibus_config_memconf_unset(IBusConfigService* config,
+                                           const gchar* section,
+                                           const gchar* name,
+                                           IBusError** error);
++static gboolean ibus_config_memconf_get_unused(IBusConfigService* config,
++                                               GValue* unread,
++                                               GValue* unwritten,
++                                               IBusError** error);
+ 
+ // Copied from gconf/config.c.
+ static IBusConfigServiceClass* parent_class = NULL;
+@@ -86,10 +90,14 @@ static void ibus_config_memconf_class_init(IBusConfigMemConfClass* klass) {
+   IBUS_CONFIG_SERVICE_CLASS(object_class)->get_value
+       = ibus_config_memconf_get_value;
+   IBUS_CONFIG_SERVICE_CLASS(object_class)->unset = ibus_config_memconf_unset;
++  IBUS_CONFIG_SERVICE_CLASS(object_class)->get_unused
++      = ibus_config_memconf_get_unused;
+ }
+ 
+ static void ibus_config_memconf_init(IBusConfigMemConf* config) {
+   config->entries = new std::map<std::string, GValue*>;
++  config->unread = new std::set<std::string>;
++  config->unwritten = new std::set<std::string>;
+ }
+ 
+ static void ibus_config_memconf_destroy(IBusConfigMemConf* config) {
+@@ -102,6 +110,8 @@ static void ibus_config_memconf_destroy(IBusConfigMemConf* config) {
+       g_free(iter->second);
+     }
+     delete config->entries;
++    delete config->unread;
++    delete config->unwritten;
+   }
+   IBUS_OBJECT_CLASS(parent_class)->destroy(
+       reinterpret_cast<IBusObject*>(config));
+@@ -139,7 +149,10 @@ static gboolean ibus_config_memconf_set_value(IBusConfigService* config,
+   g_value_init(new_entry, G_VALUE_TYPE(value));
+   g_value_copy(value, new_entry);
+ 
+-  do_unset(memconf, key);  // remove an existing entry (if any) first.
++  // remove an existing entry (if any) first.
++  if (!do_unset(memconf, key)) {
++    memconf->unread->insert(key);
++  }
+   bool result = memconf->entries->insert(std::make_pair(key, new_entry)).second;
+   if (!result) {
+     g_value_unset(new_entry);
+@@ -175,9 +188,11 @@ static gboolean ibus_config_memconf_get_value(IBusConfigService* config,
+   if (iter == memconf->entries->end()) {
+     *error = ibus_error_new_from_printf(
+         "org.freedesktop.DBus.Error.Failed", "Can not get value [%s->%s]", section, name);
++    memconf->unwritten->insert(key);
+     return FALSE;
+   }
+ 
++  memconf->unread->erase(key);
+   const GValue* entry = iter->second;
+   g_value_init(value, G_VALUE_TYPE(entry));
+   g_value_copy(entry, value);
+@@ -205,6 +220,7 @@ static gboolean ibus_config_memconf_unset(IBusConfigService* config,
+         "org.freedesktop.DBus.Error.Failed", "Can not unset value [%s->%s]", section, name);
+     return FALSE;
+   }
++  memconf->unread->erase(key);
+ 
+   // Note: It is not allowed to call ibus_config_service_value_changed function
+   // with zero-cleared GValue, so we don't call the function here.
+@@ -212,6 +228,42 @@ static gboolean ibus_config_memconf_unset(IBusConfigService* config,
+   return TRUE;
+ }
+ 
++static gboolean ibus_config_memconf_get_unused(IBusConfigService* config,
++                                               GValue* unread,
++                                               GValue* unwritten,
++                                               IBusError** error) {
++  IBusConfigMemConf* memconf = reinterpret_cast<IBusConfigMemConf*>(config);
++
++  {
++    g_value_init(unread, G_TYPE_VALUE_ARRAY);
++    GValueArray* array = g_value_array_new(memconf->unread->size());
++    for (std::set<std::string>::const_iterator current =
++         memconf->unread->begin();
++         current != memconf->unread->end(); ++current) {
++      GValue array_element = {0};
++      g_value_init(&array_element, G_TYPE_STRING);
++      g_value_set_string(&array_element, current->c_str());
++      g_value_array_append(array, &array_element);
++    }
++    g_value_take_boxed(unread, array);
++  }
++
++  {
++    g_value_init(unwritten, G_TYPE_VALUE_ARRAY);
++    GValueArray* array = g_value_array_new(memconf->unwritten->size());
++    for (std::set<std::string>::const_iterator current =
++         memconf->unwritten->begin();
++         current != memconf->unwritten->end(); ++current) {
++      GValue array_element = {0};
++      g_value_init(&array_element, G_TYPE_STRING);
++      g_value_set_string(&array_element, current->c_str());
++      g_value_array_append(array, &array_element);
++    }
++    g_value_take_boxed(unwritten, array);
++  }
++  return TRUE;
++}
++
+ // Copied from gconf/config.c.
+ IBusConfigMemConf* ibus_config_memconf_new(IBusConnection* connection) {
+   IBusConfigMemConf* config = reinterpret_cast<IBusConfigMemConf*>(
+diff --git a/memconf/config.h b/memconf/config.h
+index f4253f1..33624a7 100644
+--- a/memconf/config.h
++++ b/memconf/config.h
+@@ -21,6 +21,7 @@
+ #define MEMCONF_CONFIG_H_
+ 
+ #include <map>
++#include <set>
+ #include <string>
+ 
+ #include <ibus.h>
+@@ -30,6 +31,8 @@ struct IBusConfigMemConf {
+   // We have to use pointer type here for |entries| since g_object_new() uses
+   // malloc rather than new to create IBusConfigMemConf object.
+   std::map<std::string, GValue*>* entries;
++  std::set<std::string>* unread;
++  std::set<std::string>* unwritten;
+ };
+ 
+ IBusConfigMemConf* ibus_config_memconf_new(IBusConnection* connection);
+diff --git a/src/ibusconfig.c b/src/ibusconfig.c
+index 2400d9e..c9639f3 100644
+--- a/src/ibusconfig.c
++++ b/src/ibusconfig.c
+@@ -303,3 +303,48 @@ ibus_config_unset (IBusConfig   *config,
+     g_assert (retval);
+     return TRUE;
+ }
++
++gboolean
++ibus_config_get_unused (IBusConfig  *config,
++                        GValue      *unread,
++                        GValue      *unwritten)
++{
++    g_assert (IBUS_IS_CONFIG (config));
++    g_assert (unread != NULL);
++    g_assert (unwritten != NULL);
++
++    IBusMessage *reply;
++    IBusError *error;
++    gboolean retval;
++
++    reply = ibus_proxy_call_with_reply_and_block ((IBusProxy *) config,
++                                                  "GetUnused",
++                                                  -1,
++                                                  &error,
++                                                  G_TYPE_INVALID);
++    if (reply == NULL) {
++        g_warning ("%s: %s", error->name, error->message);
++        ibus_error_free (error);
++        return FALSE;
++    }
++
++    if ((error = ibus_error_new_from_message (reply)) != NULL) {
++        g_warning ("%s: %s", error->name, error->message);
++        ibus_error_free (error);
++        ibus_message_unref (reply);
++        return FALSE;
++    }
++
++    retval = ibus_message_get_args (reply,
++                                    &error,
++                                    G_TYPE_VALUE, unread,
++                                    G_TYPE_VALUE, unwritten,
++                                    G_TYPE_INVALID);
++    ibus_message_unref (reply);
++    if (!retval) {
++        g_warning ("%s: %s", error->name, error->message);
++        return FALSE;
++    }
++
++    return TRUE;
++}
+diff --git a/src/ibusconfig.h b/src/ibusconfig.h
+index fd256c1..8d96796 100644
+--- a/src/ibusconfig.h
++++ b/src/ibusconfig.h
+@@ -135,6 +135,20 @@ gboolean         ibus_config_set_value      (IBusConfig         *config,
+ gboolean         ibus_config_unset      (IBusConfig         *config,
+                                          const gchar        *section,
+                                          const gchar        *name);
++
++/**
++ * ibus_config_get_unused:
++ * @config: An IBusConfig
++ * @unread: GValue that holds a list of values that have been written but not
++ * read.
++ * @unwritten: GValue that holds a list of values that have been read but not
++ * written.
++ * @returns: TRUE if succeed; FALSE otherwise.
++ *
++ * Get the list of values that haven't been used properly.
++ */
++gboolean         ibus_config_get_unused     (IBusConfig         *config,
++                                             GValue             *unread,
++                                             GValue             *unwritten);
+ G_END_DECLS
+ #endif
+-
+diff --git a/src/ibusconfigservice.c b/src/ibusconfigservice.c
+index 4a27119..34f047c 100644
+--- a/src/ibusconfigservice.c
++++ b/src/ibusconfigservice.c
+@@ -62,6 +62,10 @@ static gboolean ibus_config_service_unset           (IBusConfigService      *con
+                                                      const gchar            *section,
+                                                      const gchar            *name,
+                                                      IBusError             **error);
++static gboolean ibus_config_service_get_unused      (IBusConfigService      *config,
++                                                     GValue                 *unread,
++                                                     GValue                 *unwritten,
++                                                     IBusError             **error);
+ 
+ static IBusServiceClass  *parent_class = NULL;
+ 
+@@ -123,6 +127,7 @@ ibus_config_service_class_init (IBusConfigServiceClass *klass)
+     klass->set_value = ibus_config_service_set_value;
+     klass->get_value = ibus_config_service_get_value;
+     klass->unset = ibus_config_service_unset;
++    klass->get_unused = ibus_config_service_get_unused;
+ 
+     /* install properties */
+     /**
+@@ -294,6 +299,28 @@ ibus_config_service_ibus_message (IBusConfigService     *config,
+             reply = ibus_message_new_method_return (message);
+         }
+     }
++    else if (ibus_message_is_method_call (message, IBUS_INTERFACE_CONFIG, "GetUnused")) {
++        GValue unread = { 0 };
++        GValue unwritten = { 0 };
++        IBusError *error = NULL;
++        gboolean retval;
++
++        if (!IBUS_CONFIG_SERVICE_GET_CLASS (config)->get_unused (config, &unread, &unwritten, &error)) {
++            reply = ibus_message_new_error (message,
++                                            error->name,
++                                            error->message);
++            ibus_error_free (error);
++        }
++        else {
++            reply = ibus_message_new_method_return (message);
++            ibus_message_append_args (reply,
++                                      G_TYPE_VALUE, &unread,
++                                      G_TYPE_VALUE, &unwritten,
++                                      G_TYPE_INVALID);
++            g_value_unset (&unread);
++            g_value_unset (&unwritten);
++        }
++    }
+ 
+     if (reply) {
+         ibus_connection_send (connection, reply);
+@@ -348,6 +375,19 @@ ibus_config_service_unset (IBusConfigService *config,
+     return FALSE;
+ }
+ 
++static gboolean
++ibus_config_service_get_unused (IBusConfigService *config,
++                                GValue            *unread,
++                                GValue            *unwritten,
++                                IBusError        **error)
++{
++    if (error) {
++        *error = ibus_error_new_from_printf (DBUS_ERROR_FAILED,
++                                             "Can not get unused values");
++    }
++    return FALSE;
++}
++
+ void
+ ibus_config_service_value_changed (IBusConfigService  *config,
+                                    const gchar        *section,
+diff --git a/src/ibusconfigservice.h b/src/ibusconfigservice.h
+index cc446ec..48618ee 100644
+--- a/src/ibusconfigservice.h
++++ b/src/ibusconfigservice.h
+@@ -182,6 +182,10 @@ struct _IBusConfigServiceClass {
+                                const gchar          *section,
+                                const gchar          *name,
+                                IBusError           **error);
++    gboolean    (* get_unused)(IBusConfigService    *config,
++                               GValue               *unread,
++                               GValue               *unwritten,
++                               IBusError           **error);
+ 
+     /*< private >*/
+     /* padding */
+@@ -217,4 +221,3 @@ void                 ibus_config_service_value_changed
+ 
+ G_END_DECLS
+ #endif
+-
+-- 
+1.7.1
+
