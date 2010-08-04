@@ -31,6 +31,7 @@ src_install() {
 		# utility/ is all or nothing, just pick out what we want.
 		into "/usr"
 		dobin "${S}"/build/utility/dump_kernel_config
+		dobin "${S}"/build/utility/tpm_init_temp_fix
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
