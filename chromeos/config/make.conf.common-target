@@ -24,6 +24,10 @@ PORTAGE_WORKDIR_MODE="0755"
 PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"
 ELIBC="glibc"
 
+# List of overlays: /usr/local/portage should come first so that crossdev
+# puts the cross toolchain there, instead of inside an overlay subdirectory.
+# /usr/local/portage is empty of valid portage atoms until crossdev adds the
+# toolchain packages.
 PORTDIR_OVERLAY="/usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"

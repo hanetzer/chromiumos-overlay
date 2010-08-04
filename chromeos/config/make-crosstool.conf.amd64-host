@@ -8,12 +8,13 @@ FEATURES="buildpkg digest"
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
 
-# We modify the portage tree directly but use an empty overlay to
-# satisfy crossdev.
-PORTDIR_OVERLAY=""
+# List of overlays: /usr/local/portage should come first so that crossdev
+# puts the cross toolchain there, instead of inside an overlay subdirectory.
+# /usr/local/portage is empty of valid portage atoms until crossdev adds the
+# toolchain packages.
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/crosstool-overlay"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/hardened-dev"
-PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 
 # Where to store built packages.
