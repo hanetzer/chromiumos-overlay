@@ -12,8 +12,7 @@ HOMEPAGE="http://code.google.com/p/ibus/"
 # http://build.chromium.org/mirror/chromiumos/mirror/distfiles), was
 # chosen instead. We'll be soon switching to a new naming scheme for
 # chromium os.
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-${PV}-r1.tar.gz"
-S="${S}-r1"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-${PV}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -44,10 +43,17 @@ pkg_setup() {
 	GTK2_CONFDIR=${GTK2_CONFDIR:=/etc/gtk-2.0/}
 }
 
+src_prepare() {
+  epatch "${FILESDIR}/ibus-chromiumos.patch"
+}
+
 src_configure() {
 	econf \
 		--disable-gconf \
 		--disable-key-snooper \
+		--enable-memconf \
+		--disable-vala \
+		--enable-introspection=no \
 		$(use_enable doc gtk-doc) \
 		$(use_enable nls) \
 		$(use_enable python) \
@@ -60,8 +66,9 @@ src_install() {
 	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
 	fi
-	cp "${FILESDIR}/candidate_window.xml" \
-	   "${D}/usr/share/ibus/component/" || die
+	install -c -D -m 644 \
+		"${FILESDIR}/candidate_window.xml" \
+		"${D}/usr/share/ibus/component/candidate_window.xml" || die
 	chmod 644 "${D}/usr/share/ibus/component/candidate_window.xml" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
