@@ -48,7 +48,6 @@ RDEPEND="${RDEPEND}
 		chromeos-base/chromeos-acpi
 		chromeos-base/chrontel
 		chromeos-base/firmware-utils
-		media-plugins/o3d
 		net-wireless/iwl1000-ucode
 		>=net-wireless/iwl5000-ucode-8.24.2.12
 		net-wireless/iwl6000-ucode
@@ -103,6 +102,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
+	media-plugins/o3d
 	media-sound/alsa-utils
 	media-sound/pulseaudio
 	net-firewall/iptables
