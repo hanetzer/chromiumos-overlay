@@ -10,25 +10,6 @@ index 0a4678d..d1e602a 100644
  	import platform
  	import warnings
  
-@@ -1186,6 +1187,18 @@ def env_update(makelinks=1, target_root=None, prev_mtimes=None, contents=None,
- 			os.system(("cd / ; %s -elf -i " + \
- 				"-f '%svar/run/ld-elf.so.hints' '%setc/ld.so.conf'") % \
- 				(ldconfig, target_root, target_root))
-+	re_root = target_root.strip("/")
-+	if re_root:
-+		fix_files = []
-+		for path in contents:
-+			if path.endswith(".la") or path.endswith(".pc"):
-+				if os.path.exists(path): fix_files.append(path)
-+		# Fix *.{la,pc} files to point to libs in target_root, if they
-+		# don't do so already.
-+		if fix_files:
-+			pat = re.compile(r"([' =](?:-[IL])?/)(usr|lib|opt)")
-+			for line in fileinput.input(fix_files, inplace=1):
-+				sys.stdout.write(pat.sub(r"\1%s/\2" % re_root, line))
- 
- 	del specials["LDPATH"]
- 
 @@ -5886,6 +5899,7 @@ def _post_src_install_uid_fix(mysettings, out=None):
  
  	destdir = mysettings["D"]
@@ -61,3 +42,80 @@ index 0a4678d..d1e602a 100644
  	if bsd_chflags:
  		# Restore all of the flags saved above.
  		os.system("mtree -e -p %s -U -k flags < %s > /dev/null" % \
+diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py.new
+index 35e3a76..a38698e 100644
+--- a/pym/portage/dbapi/vartree.py
++++ b/pym/portage/dbapi/vartree.py.new
+@@ -48,7 +48,7 @@ from portage.cache.mappings import slot_dict_class
+ 
+ import codecs
+ from collections import deque
+-import re, shutil, stat, errno, copy, subprocess
++import fileinput, re, shutil, stat, errno, copy, subprocess
+ import logging
+ import os as _os
+ import stat
+@@ -1370,7 +1370,7 @@ class dblink(object):
+ 		Unmerges a given package (CPV)
+ 		calls postrm
+ 		calls cleanrm
+-		calls env_update
++		calls env_update if no-env-update is not in our set of features
+ 		
+ 		@param pkgfiles: files to unmerge (generally self.getcontents() )
+ 		@type pkgfiles: Dictionary
+@@ -1601,9 +1601,10 @@ class dblink(object):
+ 		else:
+ 			self.settings.pop("PORTAGE_LOG_FILE", None)
+ 
+-		env_update(target_root=self.myroot, prev_mtimes=ldpath_mtimes,
+-			contents=contents, env=self.settings.environ(),
+-			writemsg_level=self._display_merge)
++		if 'no-env-update' not in self.settings.features:
++			env_update(target_root=self.myroot, prev_mtimes=ldpath_mtimes,
++				contents=contents, env=self.settings.environ(),
++				writemsg_level=self._display_merge)
+ 		return os.EX_OK
+ 
+ 	def _display_merge(self, msg, level=0, noiselevel=0):
+@@ -2854,16 +2856,30 @@ class dblink(object):
+ 			showMessage(_("!!! FAILED postinst: ")+str(a)+"\n",
+ 				level=logging.ERROR, noiselevel=-1)
+ 
+-		downgrade = False
+-		for v in otherversions:
+-			if pkgcmp(catpkgsplit(self.pkg)[1:], catpkgsplit(v)[1:]) < 0:
+-				downgrade = True
+-
+-		#update environment settings, library paths. DO NOT change symlinks.
+-		env_update(makelinks=(not downgrade),
+-			target_root=self.settings["ROOT"], prev_mtimes=prev_mtimes,
+-			contents=contents, env=self.settings.environ(),
+-			writemsg_level=self._display_merge)
++		if 'no-env-update' not in self.settings.features:
++			downgrade = False
++			for v in otherversions:
++				if pkgcmp(catpkgsplit(self.pkg)[1:], catpkgsplit(v)[1:]) < 0:
++					downgrade = True
++
++			# Update environment settings, library paths.
++			env_update(makelinks=(not downgrade),
++				target_root=self.settings["ROOT"], prev_mtimes=prev_mtimes,
++				contents=contents, env=self.settings.environ(),
++				writemsg_level=self._display_merge)
++
++		# Fix *.{la,pc} files to point to libs in target_root, if they
++		# don't do so already.
++		re_root = self.settings["ROOT"].strip("/")
++		if re_root:
++			fix_files = []
++			for path in contents:
++				if path.endswith(".la") or path.endswith(".pc"):
++					if os.path.exists(path): fix_files.append(path)
++			if fix_files:
++				pat = re.compile(r"([' =](?:-[IL])?/)(usr|lib|opt)")
++				for line in fileinput.input(fix_files, inplace=1):
++					sys.stdout.write(pat.sub(r"\1%s/\2" % re_root, line))
+ 
+ 		return os.EX_OK
+ 
