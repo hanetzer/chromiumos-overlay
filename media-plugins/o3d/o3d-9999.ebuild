@@ -10,36 +10,65 @@ DESCRIPTION="O3D Plugin"
 HOMEPAGE="http://code.google.com/p/o3d/"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86"
-IUSE=""
-DEPEND="media-libs/glew
+KEYWORDS="x86 arm"
+IUSE="opengl opengles"
+DEPEND="opengl? ( media-libs/glew )
+        opengles? ( virtual/opengles )
         media-libs/fontconfig
         net-misc/curl
         dev-libs/nss
-        x11-libs/libsvg-cairo
+        x11-libs/cairo
         x11-libs/gtk+"
 RDEPEND="${DEPEND}"
 O3D_REVISION=53574
 
-# Print the number of jobs from $MAKEOPTS.
-print_num_jobs() {
-	local JOBS=$(echo $MAKEOPTS | sed -nre 's/.*-j\s*([0-9]+).*/\1/p')
-	echo ${JOBS:-1}
-}
-
-
-src_compile() {
-        # How to build O3D
-	elog "http://code.google.com/p/o3d/wiki/HowToBuild"
-
-        export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
+set_build_defines() {
         # Prevents gclient from updating self.
         export DEPOT_TOOLS_UPDATE=0
+        export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
+}
 
-        # Use customized gclient config file
+src_unpack() {
+        set_build_defines
+
         mkdir -p O3D || die "Cannot create O3D folder"
         cd O3D
+        # Use customized gclient config file
         cp -f "${FILESDIR}/plugin-only.gclient" .gclient
+
+        ${EGCLIENT} sync --revision o3d@${O3D_REVISION} --force --nohooks
+}
+
+src_prepare() {
+        set_build_defines
+
+        cd O3D
+        # Patch sent upstream - http://codereview.chromium.org/2943013/show
+        # TODO(piman): Remove when committed.
+        pushd native_client
+        epatch "${FILESDIR}"/nacl_arm.patch
+        popd
+
+        export GYP_GENERATORS=make
+        # TODO zhurunz: support x64 later.
+        if use x86; then
+                # TODO(piman): switch to GL backend
+                GYP_DEFINES="target_arch=ia32";
+        else
+                GYP_DEFINES="target_arch=arm renderer=gles2"
+                if use opengles; then
+                        GYP_DEFINES="$GYP_DEFINES gles2_backend=native_gles2"
+                else
+                        GYP_DEFINES="$GYP_DEFINES gles2_backend=desktop_gl"
+                fi
+        fi
+        export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
+
+        ${EGCLIENT} runhooks
+}
+
+src_compile() {
+        cd O3D
 
         # Config
         if tc-is-cross-compiler ; then
@@ -52,24 +81,20 @@ src_compile() {
                 export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
         fi
 
-        # Make O3D plugin
-        export GYP_GENERATORS=make
-        # TODO zhurunz: support ARM and x64 later.
-        export GYP_DEFINES="target_arch=ia32 chromeos=1";
-        ${EGCLIENT} sync --revision o3d@${O3D_REVISION} --force
-
-        make BUILDTYPE=Release npo3dautoplugin -k -j $(print_num_jobs)
+        emake BUILDTYPE=Release npo3dautoplugin -k
 
         mkdir -p "${WORKDIR}/opt/google/o3d" \
           || die "Cannot create ${WORKDIR}/opt/google/o3d"
-        mkdir -p "${WORKDIR}/opt/google/o3d/lib" \
-          || die "Cannot create ${WORKDIR}/opt/google/o3d/lib"
-        cp -f out/Release/libCg.so \
-          "${WORKDIR}/opt/google/o3d/lib/libCg.so" \
-          || die "Cannot install file: $!"
-        cp -f out/Release/libCgGL.so \
-          "${WORKDIR}/opt/google/o3d/lib/libCgGL.so" \
-          || die "Cannot install file: $!"
+        if use x86; then
+                mkdir -p "${WORKDIR}/opt/google/o3d/lib" \
+                  || die "Cannot create ${WORKDIR}/opt/google/o3d/lib"
+                cp -f out/Release/libCg.so \
+                  "${WORKDIR}/opt/google/o3d/lib/libCg.so" \
+                  || die "Cannot install file: $!"
+                cp -f out/Release/libCgGL.so \
+                  "${WORKDIR}/opt/google/o3d/lib/libCgGL.so" \
+                  || die "Cannot install file: $!"
+        fi
         cp -f out/Release/libnpo3dautoplugin.so \
           "${WORKDIR}/opt/google/o3d/libnpo3dautoplugin.so" \
           || die "Cannot install file: $!"
@@ -84,8 +109,9 @@ src_install() {
 	doexe opt/google/o3d/libnpo3dautoplugin.so || die "Cannot not copy file: $!";
 	dodir $chromepluginsdir
 	dosym /opt/google/o3d/libnpo3dautoplugin.so $chromepluginsdir/ || die "Cannot symlink file: $!"
-	exeinto $destdir/lib
-	doexe opt/google/o3d/lib/libCgGL.so
-	doexe opt/google/o3d/lib/libCg.so
-
+	if use x86; then
+		exeinto $destdir/lib
+		doexe opt/google/o3d/lib/libCgGL.so
+		doexe opt/google/o3d/lib/libCg.so
+	fi
 }
