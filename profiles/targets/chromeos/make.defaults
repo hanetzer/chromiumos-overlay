@@ -6,3 +6,5 @@ USE="acpi cairo opengl usb X"
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -cups -poppler-data"
 USE="${USE} pulseaudio"
+
+USE_EXPAND="TESTS"

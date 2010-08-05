@@ -17,12 +17,13 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 
 # Pythonify the list of packages
 function pythonify_test_list() {
+	AUTOTEST_TESTS="${IUSE_TESTS//[+-]tests_/}"
+	AUTOTEST_TESTS="${AUTOTEST_TESTS//tests_/}"
+
 	local result
-
 	# NOTE: shell-like commenting of individual tests using grep
-	result=$(for test in ${AUTOTEST_TEST_LIST}; do echo "${test},"|grep -v "^#"; done)
-
-	echo ${result}|sed  -e 's/ //g'
+	result=$(for test in ${AUTOTEST_TESTS}; do use tests_${test} && echo -n "${test},"; done)
+	echo ${result}
 }
 
 # Create python package init files for top level test case dirs.
@@ -102,8 +103,20 @@ function autotest_src_prepare() {
 	mkdir -p "${AUTOTEST_WORKDIR}"/client
 	mkdir -p "${AUTOTEST_WORKDIR}"/server
 
-	cp -fpru "${WORKDIR}/${P}"/client/{config,deps,profilers,site_tests,tests} "${AUTOTEST_WORKDIR}"/client/ || die
-	cp -fpru "${WORKDIR}/${P}"/server/{site_tests,tests} "${AUTOTEST_WORKDIR}"/server/ || die
+	cp -fpru "${WORKDIR}/${P}"/client/{config,deps,profilers} "${AUTOTEST_WORKDIR}"/client/ || die
+
+	for l1 in client server; do
+	for l2 in site_tests tests; do
+		mkdir -p "${AUTOTEST_WORKDIR}/${l1}/${l2}"
+		pushd "${WORKDIR}/${P}/${l1}/${l2}" 1> /dev/null
+		for test in *; do
+			if use tests_${test} &> /dev/null; then
+				cp -fpru "${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
+			fi
+		done
+		popd 1> /dev/null
+	done
+	done
 
 	create_autotest_workdir "${AUTOTEST_WORKDIR}"
 }
@@ -118,8 +131,7 @@ function autotest_src_configure() {
 }
 
 function autotest_src_compile() {
-	cd "${AUTOTEST_WORKDIR}"
-	einfo "${AUTOTEST_WORKDIR}"
+	pushd "${AUTOTEST_WORKDIR}" 1> /dev/null
 
 	setup_cross_toolchain
 
@@ -139,6 +151,8 @@ function autotest_src_compile() {
 
 	# Cleanup some temp files after compiling
 	find . -name '*.[ado]' -delete
+
+	popd 1> /dev/null
 }
 
 function autotest_src_install() {
