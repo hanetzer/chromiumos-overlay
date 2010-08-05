@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="7d389ec6679ea2b7d76c06e5436bb466a7d5a61e"
+CROS_WORKON_COMMIT="fa23413af338c79c559545ff637661ace8fa8db3"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chromium OS modem manager"
@@ -19,7 +20,7 @@ RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
 	dev-cpp/gflags
-	dev-cpp/glog"
+   dev-cpp/glog"
 DEPEND="${RDEPEND}
 	net-misc/modemmanager"
 
