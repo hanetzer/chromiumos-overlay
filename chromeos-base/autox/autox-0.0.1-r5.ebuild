@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c0c738b9c790acddbe5a834accec01e8cc0297b7"
+CROS_WORKON_COMMIT="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"
+
 inherit cros-workon
 
 DESCRIPTION="AutoX library for interacting with X apps"

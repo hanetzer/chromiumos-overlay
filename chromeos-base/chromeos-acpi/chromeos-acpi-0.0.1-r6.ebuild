@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e31a6e9592486e4ea635b8c4beb28553267e6607"
+CROS_WORKON_COMMIT="c5f214a66a742c49dfb5128876fa0bf82a82e00d"
+
 inherit cros-workon
 
 DESCRIPTION="Chrome OS ACPI Scripts"
