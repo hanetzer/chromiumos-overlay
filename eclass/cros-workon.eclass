@@ -156,32 +156,10 @@ cros-workon_src_unpack() {
 	# the branch specified by CROS_WORKON_COMMIT into the workspace path.
 	# If the repository exists just punt and let it be copied off for build.
 	if [[ "${fetch_method}" == "local" && ! -d ${path} ]] ; then
-		# HACK: this needs to go away with the transition to new workflow
-		if [[ "${DONTFETCH}" == "1" ]]; then
-			ewarn "Sources are missing in ${path}"
-			ewarn "Are you using the new layout without CROS_WORKON_SRCROOT? You are a bad boy, and this will become an error soon"
-		fi
-
-		addwrite / 
-		local old_umask="`umask`"
-
-		einfo "Cloning ${repo}/${project}"
-		einfo "   to path: ${path}"
-		einfo "   branch: ${CROS_WORKON_COMMIT}"
-
-		git clone -n "${repo}/${project}" "${path}"
-		pushd "${path}" &> /dev/null
-		local ref="`git symbolic-ref HEAD 2> /dev/null`"
-		if [[ "${ref#refs/heads/}" != "${CROS_WORKON_COMMIT}" ]] ; then
-			# switch to CROS_WORKON_COMMIT if it is not already the current HEAD
-			git checkout -b ${CROS_WORKON_COMMIT} origin/${CROS_WORKON_COMMIT}
-		else
-			git checkout ${CROS_WORKON_COMMIT}
-		fi
-		popd &> /dev/null
-
-		umask ${old_umask}
-		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+		ewarn "Sources are missing in ${path}"
+		ewarn "You need to cros_workon and repo sync your project. For example if you are working on the flimflam ebuild and repository:"
+		ewarn "cros_workon start --board=x86-generic flimflam"
+		ewarn "repo sync flimflam"
 	fi
 
 	# Copy source tree to /build/<board>/tmp for building
