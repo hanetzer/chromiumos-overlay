@@ -12,7 +12,8 @@ DEPEND="${RDEPEND}"
 IUSE="buildcheck"
 
 # Ensure the configures run by autotest pick up the right config.site
-export CONFIG_SITE=/usr/share/config.site
+export CONFIG_SITE="/usr/share/config.site"
+export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 
 # Pythonify the list of packages
 function pythonify_test_list() {
@@ -62,7 +63,8 @@ function create_autotest_workdir() {
 	local dst=${1}
 
 	# create a working enviroment for pre-building
-	ln -sf "${SYSROOT}"/usr/local/autotest/{conmux,tko,utils} "${dst}"/
+	ln -sf "${SYSROOT}"/usr/local/autotest/{conmux,tko,utils,global_config.ini,shadow_config.ini} "${dst}"/
+
 	# NOTE: in order to make autotest not notice it's running from /usr/local/, we need
 	# to make sure the binaries are real, because they do the path magic
 	local root_path base_path
@@ -81,7 +83,6 @@ function create_autotest_workdir() {
 		rm "${dst}/client/bin/${base_path}"
 		cp -f ${root_path} "${dst}/client/bin/${base_path}"
 	done
-	
 }
 
 function print_test_dirs() {
@@ -96,10 +97,18 @@ function print_test_dirs() {
 	popd 1> /dev/null
 }
 
-function autotest_src_configure() {
-	sed "/^enable_server_prebuild/d" "${AUTOTEST_SRC}/global_config.ini" > \
-		"${S}/global_config.ini"
+function autotest_src_prepare() {
+	# pull in all the tests from this package
+	mkdir -p "${AUTOTEST_WORKDIR}"/client
+	mkdir -p "${AUTOTEST_WORKDIR}"/server
 
+	cp -fpru "${WORKDIR}/${P}"/client/{config,deps,profilers,site_tests,tests} "${AUTOTEST_WORKDIR}"/client/ || die
+	cp -fpru "${WORKDIR}/${P}"/server/{site_tests,tests} "${AUTOTEST_WORKDIR}"/server/ || die
+
+	create_autotest_workdir "${AUTOTEST_WORKDIR}"
+}
+
+function autotest_src_configure() {
 	touch_init_py client/tests client/site_tests
 	touch __init__.py
 
@@ -109,6 +118,9 @@ function autotest_src_configure() {
 }
 
 function autotest_src_compile() {
+	cd "${AUTOTEST_WORKDIR}"
+	einfo "${AUTOTEST_WORKDIR}"
+
 	setup_cross_toolchain
 
 	if use opengles ; then
@@ -131,9 +143,9 @@ function autotest_src_compile() {
 
 function autotest_src_install() {
 	insinto /usr/local/autotest/client/
-	doins -r "${S}"/client/{tests,site_tests,deps,profilers,config}
+	doins -r "${AUTOTEST_WORKDIR}"/client/{tests,site_tests,deps,profilers,config}
 	insinto /usr/local/autotest/server/
-	doins -r "${S}"/server/{tests,site_tests}
+	doins -r "${AUTOTEST_WORKDIR}"/server/{tests,site_tests}
 }
 
-EXPORT_FUNCTIONS src_configure src_compile src_install
+EXPORT_FUNCTIONS src_configure src_compile src_prepare src_install

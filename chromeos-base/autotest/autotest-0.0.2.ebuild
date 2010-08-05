@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs flag-o-matic
+inherit toolchain-funcs flag-o-matic cros-workon
 
 DESCRIPTION="Autotest scripts and tools"
 HOMEPAGE="http://src.chromium.org"
@@ -14,28 +14,30 @@ KEYWORDS="~x86 ~arm ~amd64"
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE=/usr/share/config.site
-export AUTOTEST_SRC="${CHROMEOS_ROOT}/src/third_party/autotest/files"
 
-src_unpack() {
-	local dst="${WORKDIR}/${P}"
-	mkdir -p "${dst}/client"
-	mkdir -p "${dst}/server"
-	cp -fpu "${AUTOTEST_SRC}"/client/* "${dst}/client" &>/dev/null
-	cp -fpru "${AUTOTEST_SRC}"/client/{bin,common_lib,tools} "${dst}/client"
-	cp -fpu "${AUTOTEST_SRC}"/server/* "${dst}/server" &>/dev/null
-	cp -fpru "${AUTOTEST_SRC}"/server/{bin,control_segments,hosts} "${dst}/server"
-	cp -fpru "${AUTOTEST_SRC}"/{conmux,tko,utils} "${dst}"
-	cp -fpru "${AUTOTEST_SRC}"/shadow_config.ini "${dst}"
-}
+CROS_WORKON_PROJECT=autotest
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
+
+AUTOTEST_WORK="${WORKDIR}/autotest-work"
 
 src_prepare() {
-	sed "/^enable_server_prebuild/d" "${AUTOTEST_SRC}/global_config.ini" > \
-		"${S}/global_config.ini"
+	mkdir -p "${AUTOTEST_WORK}/client"
+	mkdir -p "${AUTOTEST_WORK}/server"
+	cp -fpu "${S}"/client/* "${AUTOTEST_WORK}/client" &>/dev/null
+	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
+	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
+	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
+	cp -fpru "${S}"/{conmux,tko,utils} "${AUTOTEST_WORK}"
+	cp -fpru "${S}"/shadow_config.ini "${AUTOTEST_WORK}"
+
+	sed "/^enable_server_prebuild/d" "${S}/global_config.ini" > \
+		"${AUTOTEST_WORK}/global_config.ini"
 }
 
 src_install() {
 	insinto /usr/local/autotest
-	doins -r "${WORKDIR}/${P}"/*
+	doins -r "${AUTOTEST_WORK}"/*
 	chmod -R a+x "${D}"/usr/local/autotest
 
 	dosym "../../../var/run/autotest/packages/" "/usr/local/autotest"

@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs flag-o-matic autotest
+inherit toolchain-funcs flag-o-matic cros-workon autotest
 
 DESCRIPTION="Autotest tests"
 HOMEPAGE="http://src.chromium.org"
@@ -178,18 +178,7 @@ AUTOTEST_TEST_LIST="
 	security_RendererSandbox
 "
 
-export AUTOTEST_SRC="${CHROMEOS_ROOT}/src/third_party/autotest/files"
-
-src_unpack() {
-	# pull in all the tests from this package
-	mkdir -p "${S}"/client
-	mkdir -p "${S}"/server
-
-	cp -fpru "${AUTOTEST_SRC}"/client/{tests,site_tests,deps,profilers,config} "${S}"/client/ || die
-	cp -fpru "${AUTOTEST_SRC}"/server/{tests,site_tests} "${S}"/server/ || die
-	cp -fpru "${AUTOTEST_SRC}/global_config.ini" "${S}" || die
-	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${S}" || die
-
-	create_autotest_workdir "${S}"
-}
+CROS_WORKON_PROJECT=autotest
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
 
