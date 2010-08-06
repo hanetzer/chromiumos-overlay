@@ -38,6 +38,7 @@ src_compile() {
 src_install() {
 	dodir "/usr/lib"
 	dodir "/usr/include/base"
+	dodir "/usr/include/base/crypto"
 	dodir "/usr/include/base/third_party/icu"
 	dodir "/usr/include/base/third_party/nspr"
 	dodir "/usr/include/base/third_party/valgrind"
@@ -93,6 +94,11 @@ src_install() {
 	doins "${S}/files/base/utf_string_conversion_utils.h"
 	doins "${S}/files/base/utf_string_conversions.h"
 	doins "${S}/files/base/values.h"
+
+	insinto "/usr/include/base/crypto"
+	doins "${S}/files/base/crypto/rsa_private_key.h"
+	doins "${S}/files/base/crypto/signature_creator.h"
+	doins "${S}/files/base/crypto/signature_verifier.h"
 
 	insinto "/usr/include/base/json"
 	doins "${S}/files/base/json/json_reader.h"
