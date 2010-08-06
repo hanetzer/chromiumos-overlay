@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5842e984299b5d1290598797f749336be9fac0ff"
+CROS_WORKON_COMMIT="d26925c51b72d81c47bba5c0d9b042782254b6e3"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="PAM module for offline login."

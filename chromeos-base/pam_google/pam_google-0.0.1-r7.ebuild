@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="1afb67e0d6f2833a757883abe1cf0a475b94a576"
+CROS_WORKON_COMMIT="f058d4fc2c86ba4dbebdad2acf7cfba012a5314b"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="PAM module for Google login."
@@ -32,6 +33,7 @@ src_compile() {
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
+
 	scons || die "pam_google compile failed."
 }
 

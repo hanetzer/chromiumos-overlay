@@ -3,7 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-pinyin/ibus-pinyin-1.2.0.20090915.ebuild,v 1.1 2009/09/15 15:11:20 matsuu Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="397ceeb1f64eed0dfdb69c618c9984833bc52e71"
+CROS_WORKON_COMMIT="ad351362e077c5932f37f6688c2a32ed58bf740b"
+
 inherit cros-workon eutils flag-o-matic
 
 #PYDB_TAR="pinyin-database-0.1.10.6.tar.bz2"

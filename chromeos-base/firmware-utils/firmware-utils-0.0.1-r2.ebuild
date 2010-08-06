@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="8aac2d931e99861b48345cb74cdee28e0a746fac"
+CROS_WORKON_COMMIT="bcd97e0add7adc2b95493298c4bc1b38afeb6eca"
+
 inherit cros-workon
 
 DESCRIPTION="ChromeOS firmware utilities installer"

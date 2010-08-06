@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a6f6eac232d820b03b8f2482a4e8c51eec0b60fe"
+CROS_WORKON_COMMIT="108ebbfac4d13d11e1940216434c368384ee0c0b"
+
 inherit cros-workon
 
 DESCRIPTION="Python script to read/write u-boot environment"

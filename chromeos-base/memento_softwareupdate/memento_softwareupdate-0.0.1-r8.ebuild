@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="86e68f061f0a8d5603550a900d6bab64786fe3f0"
+CROS_WORKON_COMMIT="b122094279fc45ee9a79f983687c95d121f08e40"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Memento Updater"

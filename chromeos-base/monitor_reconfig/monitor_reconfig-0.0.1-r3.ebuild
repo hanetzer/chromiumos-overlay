@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="156b88ae3ea3d78b07c9836f5d7ec6a0b04f22de"
+CROS_WORKON_COMMIT="b256c025e6d5fc1abf38ca610a57b5f5fa868171"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Monitor Reconfig"

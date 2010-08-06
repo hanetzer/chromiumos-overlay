@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="13603c9a980cfdb76637d8fea4d3ee2cae650b75"
+CROS_WORKON_COMMIT="a4299491f7377a951736da9f26af4650d321a6b4"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS helper binary for restricting privs of services."

@@ -3,7 +3,8 @@
 # $Header$
 
 EAPI="2"
-CROS_WORKON_COMMIT="7149ddb77c449784007ec5dd91b1ae629650657b"
+CROS_WORKON_COMMIT="066c7f963b3ef733716251b666e0af0afd03b4fe"
+
 inherit cros-workon autotools
 inherit cros-workon base
 inherit cros-workon eutils

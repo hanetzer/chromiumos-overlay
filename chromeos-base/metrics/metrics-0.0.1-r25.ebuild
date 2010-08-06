@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ddaeaa34cfa5516f114d6894e166fddd5c63c641"
+CROS_WORKON_COMMIT="1ba07a1a6452325f40988fe24e34619ae444b48d"
+
 inherit cros-workon flag-o-matic
 
 DESCRIPTION="Chrome OS Metrics Collection Utilities"
