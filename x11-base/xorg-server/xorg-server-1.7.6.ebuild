@@ -146,6 +146,7 @@ PATCHES=(
 	"${FILESDIR}/1.7.6-skip-vendor-and-device-names.patch"
 	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
 	"${FILESDIR}/1.7.6-composite-redirect-events.patch"
+	"${FILESDIR}/1.7.6-no-exposure-for-redirect.patch"
 	)
 
 pkg_setup() {

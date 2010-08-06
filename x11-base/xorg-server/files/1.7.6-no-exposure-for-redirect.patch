@@ -1,0 +1,23 @@
+diff -ur /build/backup/xserver/dix/window.c ./xorg-server-1.7.6/dix/window.c
+--- /build/backup/xserver/dix/window.c	2010-08-04 15:11:29.000000000 -0700
++++ ./xorg-server-1.7.6/dix/window.c	2010-08-04 15:16:08.000000000 -0700
+@@ -2647,7 +2647,8 @@
+ 	    if (anyMarked)
+ 	    {
+ 		(*pScreen->ValidateTree)(pLayerWin->parent, pLayerWin, VTMap);
+-		(*pScreen->HandleExposures)(pLayerWin->parent);
++		if (MapUnmapEventsEnabled(pWin))
++		    (*pScreen->HandleExposures)(pLayerWin->parent);
+ 	    }
+ 	if (anyMarked && pScreen->PostValidateTree)
+ 	    (*pScreen->PostValidateTree)(pLayerWin->parent, pLayerWin, VTMap);
+@@ -2854,7 +2855,8 @@
+ 	if (!fromConfigure)
+ 	{
+ 	    (*pScreen->ValidateTree)(pLayerWin->parent, pWin, VTUnmap);
+-	    (*pScreen->HandleExposures)(pLayerWin->parent);
++	    if (MapUnmapEventsEnabled(pWin))
++	        (*pScreen->HandleExposures)(pLayerWin->parent);
+ 	}
+ 	if (!fromConfigure && pScreen->PostValidateTree)
+ 	    (*pScreen->PostValidateTree)(pLayerWin->parent, pWin, VTUnmap);
