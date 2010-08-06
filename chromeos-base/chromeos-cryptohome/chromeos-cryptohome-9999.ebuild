@@ -78,8 +78,7 @@ src_test() {
 	if use x86 ; then
 		# Create data for unittests
 		./init_cryptohome_data.sh test_image_dir
-                LD_LIBRARY_PATH=.:${ROOT}/lib:${ROOT}/usr/lib \
-		    ./cryptohome_testrunner ${GTEST_ARGS} || \
+		./cryptohome_testrunner ${GTEST_ARGS} || \
 		    die "unit tests (with ${GTEST_ARGS}) failed!"
 	fi
 	popd
