@@ -73,8 +73,9 @@ function create_autotest_workdir() {
 		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
 		mkdir -p "${dst}/${base_path}"
 
-		# skip bin, because it is processed separately, and test-provided dirs
-		for entry in $(ls "${root_path}" |grep -v "\(bin\|tests\|site_tests\|deps\|profilers\|config\)$"); do
+		# Skip bin, because it is processed separately, and test-provided dirs
+		# Also don't symlink to packages, because that kills the build
+		for entry in $(ls "${root_path}" |grep -v "\(bin\|tests\|site_tests\|deps\|profilers\|config\|packages\)$"); do
 			ln -sf "${root_path}/${entry}" "${dst}/${base_path}/"
 		done
 	done
