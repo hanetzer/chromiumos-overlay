@@ -1,0 +1,381 @@
+#!/bin/bash
+
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# `bash -x cros_chroot $ACTION(s)` recommended for debugging.
+set -eu
+
+#
+# SUPPORTING FUNCTIONS FOR THE ACTIONS
+#
+
+# Create archive directory heirarchy.
+# Takes stage date as optional argument.
+function ar_dirs {
+  mkdir -p "${STAGEAR}/${1}" || die "create stage archive directory"
+  mkdir -p "${AR}/snapshots" || die "create snapshot archive directory"
+}
+
+# Run action if specified, sourcing the RC file and relaying errors.
+# Takes action to check and run, followed by string to check as arguments.
+function check_and_run {
+  local ACTION="${1}"
+  shift
+  if [ $(expr "${*}" : ".*${ACTION}.*") -ne 0 ]; then
+    if [ -f "${HOME}/.cros_chrootrc" ]; then
+      export CROS_CHROOT_ACTION="${ACTION}"
+      . "${HOME}/.cros_chrootrc"
+    fi
+    "${ACTION}"
+  fi
+}
+
+# Run specified command in the chroot.
+function chroot_cmd {
+  sudo chroot chroot bash -l -c "$@"
+}
+
+# Print error and return nonzero status.
+function die {
+  echo "Could not ${1}."
+  umount_list
+  return 30
+}
+
+# Conditionally mount everything in our array of mounts.
+function mount_list {
+  for i in $(seq 0 $((${#MPATH[@]}-1))); do
+    if ! mount | grep -q "$(pwd -P)/chroot/${MPATH[$i]}"; then
+      sudo mount ${MOPT[$i]} "chroot/${MPATH[$i]}" ||
+      die "mount ${MPATH[$i]}"
+    fi
+  done
+}
+
+# Unmount all mounted paths lazily
+function umount_all_lazily {
+  local ERROR
+  # XXX: This assumes there are no pipe characters in the paths
+  for m in $(mount | sed -nr "s|.* on ($(pwd -P)/.*) type .*|\1|p"); do
+    if mount | grep -q "${m}"; then
+      sudo umount -dl "${m}" || ERROR=40
+    fi
+  done
+  return ${ERROR}
+}
+
+# Unmount listed mount paths in reverse order.
+function umount_list {
+  local ERROR
+  for i in $(seq $((${#MPATH[@]}-1)) -1 0); do
+    local MY_MPATH="$(pwd -P)/chroot/${MPATH[$i]}"
+    if mount | grep -q "${MY_MPATH}"; then
+      sudo umount -d "${MY_MPATH}" || ERROR=40
+    fi
+  done
+  return ${ERROR}
+}
+
+#
+# ACTIONS
+#
+
+# Make sure there are no mounts and clean the chroot.
+function clean {
+  echo "Removing ./chroot"
+  if [ -d chroot ]; then
+    umount_all_lazily
+    sudo rm -fr chroot || die "remove old chroot"
+  fi
+}
+
+# Download bootstrapping essentials.
+function fetch {
+  echo "Downloading tarballs"
+  ar_dirs ""
+  # TODO(cov): Search mirror paths, rather than needing it specified.
+  wget -NP "${STAGEAR}/$(dirname ${STAGE})" "${HOST}/${STAGEPATH}/${STAGE}" ||
+    die "download stage3 tarball"
+  if [ "${PORT}" != "none" ]; then
+    wget -NP "${PORTAR}" "${HOST}/${PORTPATH}/${PORT}" ||
+      die "download Portage snapshot"
+  fi
+  # TODO(cov): check hashes
+}
+
+# Unpack the downloaded archives.
+function unpack {
+  echo "Unpacking tarballs"
+  [ ! -d chroot ] || die "unpack to \`./chroot'. Directory already exists. \
+Include the clean action to delete the existing chroot"
+  mkdir chroot || die "create chroot directory"
+  sudo tar -ax --checkpoint=10000 --exclude "/dev" --exclude "/home/*" \
+    --exclude "/proc" --exclude "/sys" -C chroot \
+    -f "${STAGEAR}/${STAGE}" || die "unpack stage3 tarball"
+  if [ -d "chroot/usr/portage" ]; then
+    echo "/usr/portage exists in chroot. Not unpacking Portage tarball."
+  else
+    # XXX: We could save time if the tarballs shipped with proper permissions
+    sudo tar -ax --checkpoint=10000 -C chroot/usr \
+      -f "${PORTAR}/${PORT}" || die "unpack Portage snapshot"
+    sudo find chroot/usr/portage -type f -exec chmod 744 {} \; &&
+    sudo find chroot/usr/portage -type d -exec chmod 755 {} \; ||
+      die "fix Portage permissions"
+  fi
+}
+
+# Setup the user, source directory, and Portage configuration and packages.
+function configure {
+  echo "Configuring chroot"
+
+  # Necessary files from the native system and configuration folder
+  local FILES="/etc/hosts /etc/localtime /etc/resolv.conf"
+  sudo install -m644 ${FILES} chroot/etc ||
+    die "install name resolution and timezone configuration"
+  sudo install -m644  "${CF}/.bashrc" "${CF}/.bash_profile" chroot/etc/skel ||
+    die "install default configuration files"
+  sudo install -groot -m440 -oroot  "${CF}/sudoers" chroot/etc ||
+    die "install sudo configuration"
+  # XXX: Scripts should look for (cros-chroot) in $PS1 instead
+  sudo touch chroot/etc/debian_chroot || die "set script chroot marker"
+
+  # Add user, but don't die if she already exists
+  chroot_cmd "useradd -m -G portage,users,wheel -u $(id -u) ${USER}" ||
+    [ $? -eq 9 ] || die "add user ${USER}"
+
+  # Necessary Portage directories
+  local DIRS="chroot/home/${USER}/trunk chroot/usr/local/portage
+    chroot/var/lib/portage/distfiles chroot/var/lib/portage/distfiles-target
+     chroot/var/lib/portage/pkgs"
+  sudo install -dm775 ${DIRS} || die "install Portage directories"
+
+  # Create configuration file links
+  local OL="usr/local/portage/chromiumos"
+  local LINKS=(etc/make.conf
+    etc/make.profile
+    proc/mounts
+    "${OL}"
+    usr/local/portage/crosstool-overlay
+    usr/local/portage/hardened-dev)
+  local TARGETS=("../${OL}/chromeos/config/make-crosstool.conf.amd64-host"
+    "../${OL}/profiles/default/linux/amd64/10.0"
+    ../etc/mtab
+    "../../../home/${USER}/trunk/src/third_party/chromiumos-overlay"
+    "../../../home/${USER}/trunk/src/third_party/crosstool-overlay"
+    "../../../home/${USER}/trunk/src/third_party/hardened-dev")
+
+  for i in $(seq 0 $((${#LINKS[@]}-1))); do
+    local LINKDIR="chroot/$(dirname ${LINKS[$i]})"
+    local RELTARGET="$(basename ${LINKS[$i]})"
+    pushd "${LINKDIR}" 1>/dev/null &&
+      sudo ln -fns "${TARGETS[$i]}" "${RELTARGET}" &&
+      popd 1>/dev/null || die "create link for ${TARGETS[$i]}"
+  done
+}
+
+# Install all chroot packages.
+function hostpkg {
+  echo "Updating chroot packages"
+  mount_list
+  chroot_cmd "emerge -C dhcpcd" || die "remove dhcpcd"
+  chroot_cmd "emerge -${EFLAGS}DNu hard-host-depends world" ||
+    die "install and update packages"
+  umount_list
+}
+
+# Create an updated stage3 tarball of the chroot.
+function archive {
+  echo "Archiving chroot"
+  umount_all_lazily
+  local DATE="$(date +%Y%m%d)"
+  ar_dirs "${DATE}"
+  local ARCHIVE="${STAGEAR}/${DATE}/stage3-amd64-${DATE}.tar.bz2"
+  [ -f "${ARCHIVE}" ] &&
+  die "archive to ${ARCHIVE}.
+Delete or move the existing file and re-run ./cros_chroot archive to continue"
+  local EXCLUDES
+  for e in "./dev" "/home/*" "./proc" "./sys" "./tmp/*"; do
+    EXCLUDES="${EXCLUDES} --exclude \"${e}\""
+  done
+  pushd chroot 1>/dev/null || die "enter chroot directory"
+  sudo tar -ac --checkpoint=10000 ${EXCLUDES} . -f "${ARCHIVE}" &&
+    popd 1>/dev/null || die "make archive"
+}
+
+function enter {
+  echo "Entering chroot"
+  sudo install -dm1777 "chroot/var/lock" || die "install /var/lock"
+  local LOCKFILE="chroot/var/lock/cros_chroot-enter"
+  (
+    flock 200
+    echo $$ >> "${LOCKFILE}"
+    mount_list
+  ) 200>> "${LOCKFILE}" || die "setup environment"
+  sudo chroot chroot sudo -i -u "${USER}" LANG=C -- "$@"
+  # Only teardown if we're the last enter_chroot to die
+  (
+    flock 200
+
+    # check each pid in $LOCKFILE to see if it's died unexpectedly
+    local TMP_LOCKFILE="${LOCKFILE}.tmp"
+
+    echo -n > "${TMP_LOCKFILE}"  # Erase/reset temp file
+    for pid in $(cat "${LOCKFILE}"); do
+      [ "${pid}" != $$ ] && [ -n $(ps --pid "${pid}" -o comm=) ] &&
+        echo "${pid}" >> "${TMP_LOCKFILE}"
+    done
+    # Remove any dups from lock file while installing new one
+    sort -n "${TMP_LOCKFILE}" | uniq > "${LOCKFILE}"
+
+    if [ -s "${LOCKFILE}" ]; then
+      echo "At least one other pid is running in the chroot, so not"
+      echo "tearing down environment."
+    else
+      umount_list
+    fi
+  ) 200>> "${LOCKFILE}" || die "teardown environment"
+}
+
+#
+# PROCESS COMMANDLINE ARGUMENTS AND SET GLOBAL VARIABLES
+#
+
+# Print help
+set +u; [ -z "${*}" ] ||
+[ $(($(expr "${*}" : ".*-h.*")+$(expr "${*}" : ".*--help.*"))) -ne 0 ] &&
+  echo 'cros_chroot - A chroot fetch, creation, and archival script.
+Usage: ./cros_choot [target(s)] [option(s)]
+
+All operations will be performed on a directory "chroot" in the current
+directory. To work with multiple chroots, launch the script from different
+directories. By default, the latest stable tarball versions will be used.
+
+Actions:
+  clean
+    Remove the chroot directory
+  fetch
+    Download a stage tarball and Portage snapshot. Versions and paths can be
+    controlled via options. The host can be controlled with an environment
+    variable. By default, the latest stable versions are fetched.
+  unpack
+    Decompress the stage tarball to the chroot directory. If the stage
+    tarball did not contain a portage snapshot, decompress the Portage
+    snapshot as well.
+  configure
+    Configure the chroot with DNS, sudo, timezone, user, and other
+    settings.
+  hostpkg
+    Install and update packages necessary to build Chromium OS.
+  archive
+    Compress and store the chroot to ${CROS_CHROOT_ARCHIVE}.
+  enter
+    Enter the chroot as your current user.
+Virtual targets:
+  make (fetch, unpack, configure, essentialpkg, hostpkg)
+  all (fetch, unpack, configure, essentialpkg, hostpkg, archive, enter)
+
+Options:
+  No arguments, -h, --help
+    Print this help.
+  --mirrorpath DIRECTORY
+    Directory on the mirror to use. Currently, "localmirror" (stable) and
+    "gentoo" (upstream) are available.
+  --portage VERSION
+    Version of the Portage tarball to use, or "none" to not fetch a Portage
+    snapshot.
+  --stage VERSION
+    Version of the stage3 or prebuilt chroot to use.
+  --usepkg
+    Fetch and use binary packages where possible, rather than building from
+    source.
+
+Environment variables:
+  ${CROS_CHROOT_ARCHIVE}
+    Location to store archived chroots in. Defaults to
+    "${SCRIPTDIR}/../archive", where ${SCRIPTDIR} is the directory in which
+    cros_chroot resides.
+  ${CROS_CHROOT_HOST}
+    Host from which to fetch stage and portage tarballs. Defaults to
+    "http://build.chromium.org/mirror/chromiumos".
+
+Remote control file:
+  cros_chroot sources "${HOME}/.cros_chrootrc", if that file exists,
+  exporting the variable ${CROS_CHROOT_ACTION} set to the name of the current
+  action being executed. Use this file for site-specific customization like
+  disabling GNOME automounting.
+
+Examples:
+  ./cros_chroot clean all
+  ./cros_chroot make --stage 20100617 --portage 20100617 --mirrorpath gentoo' &&
+  exit 0; set -u
+
+# Current directory, script directory, and storage directories
+SCRIPTDIR="$(dirname ${0})"
+[ -L "${0}" ] && SCRIPTDIR="${SCRIPTDIR}/$(dirname $(readlink ${0}))"
+SCRIPTDIR="$(cd ${SCRIPTDIR}; pwd -P)"
+AR="${CROS_CHROOT_ARCHIVE:=${SCRIPTDIR/%scripts/archive}}"
+CF="${SCRIPTDIR/%scripts/config}"
+SRCDIR="${SCRIPTDIR/%src\/third_party\/chromiumos-overlay\/chromeos\/scripts/}"
+SCRIPTDIR="${SCRIPTDIR/#.\//}"
+
+# Base stage3 and Portage mirror URL
+HOST="${CROS_CHROOT_HOST:=http://build.chromium.org/mirror/chromiumos}"
+PORT="$(sed -nr 's/portage[ \t](.*)/\1/p' ${CF}/stable_versions)"
+PORTAR="${AR}/snapshots"
+STAGE="$(sed -nr 's/stage[ \t](.*)/\1/p' ${CF}/stable_versions)"
+STAGEAR="${AR}/releases/amd64/autobuilds"
+
+# Mount paths and options
+MPATH=(dev          dev/pts            proc           sys
+  "home/${USER}/trunk")
+MOPT=("--bind /dev" "devpts -t devpts" "proc -t proc" "sysfs -t sysfs"
+  "--bind ${SRCDIR}")
+
+# Set fetch locations
+MIRRORPATH=$(echo "${*}" | sed -nr "s/.*--mirrorpath[ =]*([0-9A-Za-z]+).*/\1/p")
+MIRRORPATH="${MIRRORPATH:=localmirror}"
+
+STAGEPATH="releases/amd64/autobuilds"
+STAGEARG=$(echo "${*}" | sed -nr \
+  "s/.*--stage[ =]*([0-9]{8}).*/\1\/stage3-amd64-\1.tar.bz2/p")
+STAGE="${STAGEARG:=${STAGE}}"
+[ -n "${STAGE}" ] || die "determine stage tarball version"
+STAGEPATH="${MIRRORPATH}/${STAGEPATH}"
+
+PORTPATH="snapshots"
+PORTARG=$(echo "${*}" | sed -nr \
+  "s/.*--portage[ =]*(none).*/\1/p")
+[ -z "${PORTARG}" ] && PORTARG=$(echo "${*}" | sed -nr \
+  "s/.*--portage[ =]*([0-9]{8}).*/portage-\1.tar.bz2/p")
+PORT="${PORTARG:=${PORT}}"
+[ -n "${PORT}" ] || die "determine Portage version"
+PORTPATH="${MIRRORPATH}/${PORTPATH}"
+
+# Set emerge options
+EFLAGS=$(echo "${*}" | sed -nr "s/.*--usepkg.*/g/p")
+
+# Expand virtual targets
+VIRT=
+[ $(expr "${*}" : ".*make.*") -ne 0 ] &&
+  VIRT="fetch unpack configure hostpkg"
+[ $(expr "${*}" : ".*all.*") -ne 0 ] &&
+  VIRT="fetch unpack configure hostpkg archive enter"
+
+#
+# EXECUTE ACTIONS
+#
+
+# Inital source of the RC file
+if [ -f "${HOME}/.cros_chrootrc" ]; then
+  export CROS_CHROOT_ACTION=
+  . "${HOME}/.cros_chrootrc"
+fi
+
+# Execute actions in proper order
+# XXX: Don't add any actions with names that are substrings
+for a in clean fetch unpack configure hostpkg archive enter
+do
+  check_and_run "${a}" "${*} ${VIRT}"
+done
