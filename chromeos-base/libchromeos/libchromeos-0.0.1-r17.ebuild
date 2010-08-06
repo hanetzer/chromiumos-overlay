@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="185a3b75ad9de141ee639275bdc7c2370532104a"
+CROS_WORKON_COMMIT="ddbd8164696ac40075d3628a948fcd4ef9722879"
+
 inherit toolchain-funcs cros-workon
 
 DESCRIPTION="Chrome OS base library."
