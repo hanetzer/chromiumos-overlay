@@ -144,6 +144,7 @@ function init_setup () {
    # Set up sudoers.  Inside the chroot, the user can sudo without a password.
    # (Safe enough, since the only way into the chroot is to 'sudo chroot', so
    # the user's already typed in one sudo password...)
+   bash_chroot "echo Defaults env_keep += CROS_WORKON_SRCROOT >> /etc/sudoers"
    bash_chroot "echo %adm ALL=\(ALL\) ALL >> /etc/sudoers"
    bash_chroot "echo $USER ALL=NOPASSWD: ALL >> /etc/sudoers"
    bash_chroot chmod 0440 /etc/sudoers
