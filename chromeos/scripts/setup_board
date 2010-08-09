@@ -81,34 +81,36 @@ fi
 #
 # Construct board overlay list.
 #
-BOARD_OVERLAY_LIST=""
+BOARD_OVERLAY_LIST=$($SCRIPTS_DIR/bin/cros_overlay_list \
+  --board "$BOARD" \
+  --board_overlay "$FLAGS_board_overlay" \
+  --variant "$VARIANT")
 
 #
-# Check for chromeos-overlay and add it to the BOARD_OVERLAY_LIST.
+# Populate the BOARD_MAKE_CONF_LIST with any make.conf files found in the
+# overlays.
 #
-CHROMEOS_OVERLAY="${SRC_ROOT}/private-overlays/chromeos-overlay"
+BOARD_MAKE_CONF_LIST=""
 
-if [ -d "${CHROMEOS_OVERLAY}" ]; then
-  BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${CHROMEOS_OVERLAY}"
-fi
+for overlay in ${BOARD_OVERLAY_LIST} ; do
+  if [ -f "${overlay}/make.conf" ]; then
+    BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
+  fi
+done
 
 #
 # Check if there are any board overlays.  There should be at least a top
 # level board specific overlay.
 #
 PRIMARY_BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${BOARD}"
-BOARD_MAKE_CONF_LIST=""
 
 if [ ! -d "${PRIMARY_BOARD_OVERLAY}" ]; then
   warn "No board overlay found. [${PRIMARY_BOARD_OVERLAY}]"
 else
-  BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${PRIMARY_BOARD_OVERLAY}"
-
   #
   # Link make.conf.board to the board overlay's make.conf.  It must exist.
   #
   BOARD_MAKE_CONF="${PRIMARY_BOARD_OVERLAY}/make.conf"
-  BOARD_MAKE_CONF_LIST="${PRIMARY_BOARD_MAKE_CONF}"
 
   if [ ! -f "${BOARD_MAKE_CONF}" ]; then
     error "No board make.conf found. [${BOARD_MAKE_CONF}]"
@@ -126,43 +128,7 @@ else
   fi
 
   FLAGS_toolchain=${FLAGS_toolchain:-$(cat ${BOARD_TOOL_CHAIN})}
-
-  #
-  # Populate the BOARD_OVERLAY_LIST with the primary board overlay and any
-  # additional overlays.
-  #
-  if [ -d "${SRC_ROOT}/private-overlays" ] ; then
-    EXTRA_BOARD_OVERLAY_LIST=$(find \
-      "${SRC_ROOT}/private-overlays" \
-      -maxdepth 1 \
-      -type d \
-      -name "overlay-${BOARD}-*" | sort -r)
-    BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${EXTRA_BOARD_OVERLAY_LIST}"
-  fi
-
-  if [ -n "$VARIANT" ] ; then
-    VARIANT_OVERLAY="${SRC_ROOT}/overlays/overlay-variant-${BOARD}-${VARIANT}"
-    if [ ! -d "$VARIANT_OVERLAY" ] ; then
-      error "Can't find variant overlay directory $VARIANT_OVERLAY"
-      exit 1
-    fi
-    BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${VARIANT_OVERLAY}"
-  fi
 fi
-
-#
-# Finally, add in any user requested board overlays.
-#
-BOARD_OVERLAY_LIST="${BOARD_OVERLAY_LIST} ${FLAGS_board_overlay}"
-
-#
-# Populate the BOARD_MAKE_CONF_LIST with any additional make.conf files.
-#
-for overlay in ${BOARD_OVERLAY_LIST} ; do
-  if [ -f "${overlay}/make.conf" ]; then
-    BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
-  fi
-done
 
 # Figure out ARCH from the given toolchain
 # TODO: Move to common.sh as a function after scripts are switched over.
