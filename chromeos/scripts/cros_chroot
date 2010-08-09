@@ -18,23 +18,17 @@ function ar_dirs {
   mkdir -p "${AR}/snapshots" || die "create snapshot archive directory"
 }
 
-# Run action if specified, sourcing the RC file and relaying errors.
-# Takes action to check and run, followed by string to check as arguments.
-function check_and_run {
-  local ACTION="${1}"
-  shift
-  if [ $(expr "${*}" : ".*${ACTION}.*") -ne 0 ]; then
-    if [ -f "${HOME}/.cros_chrootrc" ]; then
-      export CROS_CHROOT_ACTION="${ACTION}"
-      . "${HOME}/.cros_chrootrc"
-    fi
-    "${ACTION}"
-  fi
-}
-
-# Run specified command in the chroot.
+# Run specified command in the chroot. ~/.bash_profile sourced manually because
+# cov couldn't figure out how else to switch users before sudo is emerged.
 function chroot_cmd {
-  sudo chroot chroot bash -l -c "$@"
+  if [ "${1}" = root ]; then
+    shift
+    sudo chroot chroot su -l -c ". /home/${USER}/.bash_profile; ${*}"
+  elif [ -z "${*}" ]; then
+    sudo chroot chroot su -l "${USER}"
+  else
+    sudo chroot chroot su -l -c ". /home/${USER}/.bash_profile; ${*}" "${USER}"
+  fi
 }
 
 # Print error and return nonzero status.
@@ -56,7 +50,7 @@ function mount_list {
 
 # Unmount all mounted paths lazily
 function umount_all_lazily {
-  local ERROR
+  local ERROR=0
   # XXX: This assumes there are no pipe characters in the paths
   for m in $(mount | sed -nr "s|.* on ($(pwd -P)/.*) type .*|\1|p"); do
     if mount | grep -q "${m}"; then
@@ -68,7 +62,7 @@ function umount_all_lazily {
 
 # Unmount listed mount paths in reverse order.
 function umount_list {
-  local ERROR
+  local ERROR=0
   for i in $(seq $((${#MPATH[@]}-1)) -1 0); do
     local MY_MPATH="$(pwd -P)/chroot/${MPATH[$i]}"
     if mount | grep -q "${MY_MPATH}"; then
@@ -117,9 +111,9 @@ Include the clean action to delete the existing chroot"
   if [ -d "chroot/usr/portage" ]; then
     echo "/usr/portage exists in chroot. Not unpacking Portage tarball."
   else
-    # XXX: We could save time if the tarballs shipped with proper permissions
     sudo tar -ax --checkpoint=10000 -C chroot/usr \
       -f "${PORTAR}/${PORT}" || die "unpack Portage snapshot"
+    # XXX: We could save time if the tarballs shipped with proper permissions
     sudo find chroot/usr/portage -type f -exec chmod 744 {} \; &&
     sudo find chroot/usr/portage -type d -exec chmod 755 {} \; ||
       die "fix Portage permissions"
@@ -142,7 +136,7 @@ function configure {
   sudo touch chroot/etc/debian_chroot || die "set script chroot marker"
 
   # Add user, but don't die if she already exists
-  chroot_cmd "useradd -m -G portage,users,wheel -u $(id -u) ${USER}" ||
+  chroot_cmd root "useradd -m -G portage,users,wheel -u $(id -u) ${USER}" ||
     [ $? -eq 9 ] || die "add user ${USER}"
 
   # Necessary Portage directories
@@ -179,8 +173,8 @@ function configure {
 function hostpkg {
   echo "Updating chroot packages"
   mount_list
-  chroot_cmd "emerge -C dhcpcd" || die "remove dhcpcd"
-  chroot_cmd "emerge -${EFLAGS}DNu hard-host-depends world" ||
+  chroot_cmd root "emerge -C dhcpcd" || die "remove dhcpcd"
+  chroot_cmd root "emerge ${EFLAGS} -DNu hard-host-depends world" ||
     die "install and update packages"
   umount_list
 }
@@ -213,7 +207,7 @@ function enter {
     echo $$ >> "${LOCKFILE}"
     mount_list
   ) 200>> "${LOCKFILE}" || die "setup environment"
-  sudo chroot chroot sudo -i -u "${USER}" LANG=C -- "$@"
+  chroot_cmd "${CMDS}"
   # Only teardown if we're the last enter_chroot to die
   (
     flock 200
@@ -242,9 +236,15 @@ function enter {
 # PROCESS COMMANDLINE ARGUMENTS AND SET GLOBAL VARIABLES
 #
 
+# Split commandline arguments at '--' and pad them
+set +u; STAR="${*}"; set -u
+ARGS=" ${STAR% -- *} "
+CMDS=${STAR#* -- }
+[ "${CMDS}" = "${STAR}" ] && CMDS=
+
 # Print help
-set +u; [ -z "${*}" ] ||
-[ $(($(expr "${*}" : ".*-h.*")+$(expr "${*}" : ".*--help.*"))) -ne 0 ] &&
+[ "${ARGS}" = "  " ] || [ $(expr "${ARGS}" : ".* -h .*") -ne 0 ] ||
+  [ $(expr "${ARGS}" : ".* --help .*") -ne 0 ] &&
   echo 'cros_chroot - A chroot fetch, creation, and archival script.
 Usage: ./cros_choot [target(s)] [option(s)]
 
@@ -271,7 +271,8 @@ Actions:
   archive
     Compress and store the chroot to ${CROS_CHROOT_ARCHIVE}.
   enter
-    Enter the chroot as your current user.
+    Enter the chroot as your current user, either running commands specified
+    after "--" in the commandline arguments, or providing an interactive shell.
 Virtual targets:
   make (fetch, unpack, configure, essentialpkg, hostpkg)
   all (fetch, unpack, configure, essentialpkg, hostpkg, archive, enter)
@@ -308,8 +309,8 @@ Remote control file:
 
 Examples:
   ./cros_chroot clean all
-  ./cros_chroot make --stage 20100617 --portage 20100617 --mirrorpath gentoo' &&
-  exit 0; set -u
+  ./cros_chroot make --stage 20100617 --portage 20100617 --mirrorpath gentoo
+  ./cros_chroot enter -- "echo -n \"Hello, \"; whoami"' && exit 0
 
 # Current directory, script directory, and storage directories
 SCRIPTDIR="$(dirname ${0})"
@@ -327,41 +328,41 @@ PORTAR="${AR}/snapshots"
 STAGE="$(sed -nr 's/stage[ \t](.*)/\1/p' ${CF}/stable_versions)"
 STAGEAR="${AR}/releases/amd64/autobuilds"
 
-# Mount paths and options
+# Mount path and option lists
 MPATH=(dev          dev/pts            proc           sys
   "home/${USER}/trunk")
 MOPT=("--bind /dev" "devpts -t devpts" "proc -t proc" "sysfs -t sysfs"
   "--bind ${SRCDIR}")
 
 # Set fetch locations
-MIRRORPATH=$(echo "${*}" | sed -nr "s/.*--mirrorpath[ =]*([0-9A-Za-z]+).*/\1/p")
+MIRRORPATH=$(echo "${ARGS}" | sed -nr \
+  "s/.* --mirrorpath[ =]*([0-9A-Za-z]+) .*/\1/p")
 MIRRORPATH="${MIRRORPATH:=localmirror}"
 
 STAGEPATH="releases/amd64/autobuilds"
-STAGEARG=$(echo "${*}" | sed -nr \
-  "s/.*--stage[ =]*([0-9]{8}).*/\1\/stage3-amd64-\1.tar.bz2/p")
+STAGEARG=$(echo "${ARGS}" | sed -nr \
+  "s/.* --stage[ =]*([0-9]{8}) .*/\1\/stage3-amd64-\1.tar.bz2/p")
 STAGE="${STAGEARG:=${STAGE}}"
 [ -n "${STAGE}" ] || die "determine stage tarball version"
 STAGEPATH="${MIRRORPATH}/${STAGEPATH}"
 
 PORTPATH="snapshots"
-PORTARG=$(echo "${*}" | sed -nr \
-  "s/.*--portage[ =]*(none).*/\1/p")
-[ -z "${PORTARG}" ] && PORTARG=$(echo "${*}" | sed -nr \
-  "s/.*--portage[ =]*([0-9]{8}).*/portage-\1.tar.bz2/p")
+PORTARG=$(echo "${ARGS}" | sed -nr \
+  "s/.* --portage[ =]*(none) .*/\1/p")
+[ -z "${PORTARG}" ] && PORTARG=$(echo "${ARGS}" | sed -nr \
+  "s/.* --portage[ =]*([0-9]{8}) .*/portage-\1.tar.bz2/p")
 PORT="${PORTARG:=${PORT}}"
 [ -n "${PORT}" ] || die "determine Portage version"
 PORTPATH="${MIRRORPATH}/${PORTPATH}"
 
 # Set emerge options
-EFLAGS=$(echo "${*}" | sed -nr "s/.*--usepkg.*/g/p")
+EFLAGS=$(echo "${ARGS}" | sed -nr "s/.* --usepkg .*/-g/p")
 
 # Expand virtual targets
-VIRT=
-[ $(expr "${*}" : ".*make.*") -ne 0 ] &&
-  VIRT="fetch unpack configure hostpkg"
-[ $(expr "${*}" : ".*all.*") -ne 0 ] &&
-  VIRT="fetch unpack configure hostpkg archive enter"
+[ $(expr "${ARGS}" : ".* make .*") -ne 0 ] &&
+  ARGS="${ARGS}fetch unpack configure hostpkg "
+[ $(expr "${ARGS}" : ".* all .*") -ne 0 ] &&
+  ARGS="${ARGS}fetch unpack configure hostpkg archive enter "
 
 #
 # EXECUTE ACTIONS
@@ -373,9 +374,16 @@ if [ -f "${HOME}/.cros_chrootrc" ]; then
   . "${HOME}/.cros_chrootrc"
 fi
 
-# Execute actions in proper order
-# XXX: Don't add any actions with names that are substrings
+# Execute actions in proper order, sourcing RC file
 for a in clean fetch unpack configure hostpkg archive enter
 do
-  check_and_run "${a}" "${*} ${VIRT}"
+  if [ $(expr "${ARGS}" : ".* ${a} .*") -ne 0 ]; then
+    if [ -f "${HOME}/.cros_chrootrc" ]; then
+      export CROS_CHROOT_ACTION="${a}"
+      . "${HOME}/.cros_chrootrc"
+    fi
+    ${a}
+  fi
 done
+
+unset CROS_CHROOT_ACTION
