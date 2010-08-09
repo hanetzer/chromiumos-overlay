@@ -77,6 +77,7 @@ RDEPEND="${RDEPEND}
 	app-laptop/laptop-mode-tools
 	app-shells/dash
 	chromeos-base/board-devices
+	chromeos-base/bootstat
 	chromeos-base/cashew
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-audioconfig
