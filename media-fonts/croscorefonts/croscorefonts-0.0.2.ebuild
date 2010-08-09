@@ -5,7 +5,7 @@
 inherit font
 
 DESCRIPTION="Arimo, Tinos and Cousine in 4 weights developed by Ascender for Chrom*OS"
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="OFL-1.1"
 SLOT="0"
