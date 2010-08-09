@@ -1,20 +1,5 @@
-From f8c00fab208cb07e46bc3cb7f651cead857adf07 Mon Sep 17 00:00:00 2001
-From: Andrew de los Reyes <adlr@chromium.org>
-Date: Mon, 19 Apr 2010 15:05:56 -0700
-Subject: [PATCH] bspatch: support input/output positioning
-
-For autoupdate, we need bspatch to read specific blocks from the
-filesystem devic and write back to specific blocks of the device.
-
-Review URL: http://codereview.chromium.org/1595025
----
- files/bspatch.c |  270 ++++++++++++++++++++++++++++++++++++++++++++++++++++---
- 1 files changed, 259 insertions(+), 11 deletions(-)
-
-diff --git a/files/bspatch.c b/files/bspatch.c
-index f4b821c..48ac79a 100644
---- a/files/bspatch.c
-+++ b/files/bspatch.c
+--- work/bsdiff-4.3/bspatch.c	2005-08-16 15:14:00.000000000 -0700
++++ work/bsdiff-4.3-new/bspatch.c	2010-08-04 10:07:05.000000000 -0700
 @@ -3,7 +3,7 @@
   * All rights reserved
   *
@@ -24,7 +9,7 @@ index f4b821c..48ac79a 100644
   * are met:
   * 1. Redistributions of source code must retain the above copyright
   *    notice, this list of conditions and the following disclaimer.
-@@ -29,6 +29,9 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:
+@@ -29,6 +29,9 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/b
  #endif
  
  #include <bzlib.h>
@@ -34,7 +19,7 @@ index f4b821c..48ac79a 100644
  #include <stdlib.h>
  #include <stdio.h>
  #include <string.h>
-@@ -36,6 +39,235 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bspatch/bspatch.c,v 1.1 2005/08/06 01:59:
+@@ -36,6 +39,244 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/b
  #include <unistd.h>
  #include <fcntl.h>
  
@@ -44,6 +29,7 @@ index f4b821c..48ac79a 100644
 +	typedef char JOIN(message, JOIN(_, __LINE__)) [(expr) ? 1 : -1]
 +
 +COMPILE_ASSERT(sizeof(int64_t) == 8, int64_t_64_bit);
++COMPILE_ASSERT(sizeof(off_t) == 8, off_t_64_bit);
 +
 +#define MIN(a, b) \
 +	((a) < (b) ? (a) : (b))
@@ -79,7 +65,7 @@ index f4b821c..48ac79a 100644
 +// str is assumed to point to an optional negative sign followed by numbers,
 +// optionally followed by non-numeric characters, followed by '\0'.
 +int IsValidInt64(const char* str) {
-+	const char* end_ptr;
++	const char* end_ptr = 0;
 +	errno = 0;
 +	intmax_t result = strtoimax(str, &end_ptr, /* base: */ 10);
 +	return errno == 0;
@@ -148,6 +134,8 @@ index f4b821c..48ac79a 100644
 +	}
 +}
 +
++static const int64_t kMaxLength = sizeof(size_t) > 4 ? INT64_MAX : SIZE_MAX;
++
 +// Reads into a buffer a series of byte ranges from filename.
 +// Each range is a pair of comma-separated ints from positions.
 +// -1 as an offset means a sparse-hole.
@@ -215,7 +203,10 @@ index f4b821c..48ac79a 100644
 +			errx(1, "length can't be negative "
 +			     "(should never happen)\n");
 +		}
-+		ssize_t rc = pread(fd, buf_tail, read_length, offset);
++		if (read_length > kMaxLength) {
++			errx(1, "read length too large\n");
++		}
++		ssize_t rc = pread(fd, buf_tail, (size_t)read_length, (off_t)offset);
 +		if (rc != read_length) {
 +			errx(1, "read failed\n");
 +		}
@@ -249,11 +240,14 @@ index f4b821c..48ac79a 100644
 +		if (length < 0) {
 +			errx(1, "length can't be negative for write\n");
 +		}
++		if (length > kMaxLength) {
++			errx(1, "write length too large\n");
++		}
 +
 +		if (offset < 0) {
 +			// Sparse hole. Skip.
 +		} else {
-+			ssize_t rc = pwrite(fd, buf, length, offset);
++			ssize_t rc = pwrite(fd, buf, (size_t)length, (off_t)offset);
 +			if (rc != length) {
 +				errx(1, "write failed\n");
 +			}
@@ -270,7 +264,7 @@ index f4b821c..48ac79a 100644
  static off_t offtin(u_char *buf)
  {
  	off_t y;
-@@ -69,7 +301,13 @@ int main(int argc,char * argv[])
+@@ -69,7 +310,13 @@ int main(int argc,char * argv[])
  	off_t lenread;
  	off_t i;
  
@@ -285,7 +279,7 @@ index f4b821c..48ac79a 100644
  
  	/* Open patch file */
  	if ((f = fopen(argv[3], "r")) == NULL)
-@@ -132,12 +370,18 @@ int main(int argc,char * argv[])
+@@ -132,12 +379,18 @@ int main(int argc,char * argv[])
  	if ((epfbz2 = BZ2_bzReadOpen(&ebz2err, epf, 0, 0, NULL, 0)) == NULL)
  		errx(1, "BZ2_bzReadOpen, bz2err = %d", ebz2err);
  
@@ -310,7 +304,7 @@ index f4b821c..48ac79a 100644
  	if((new=malloc(newsize+1))==NULL) err(1,NULL);
  
  	oldpos=0;newpos=0;
-@@ -193,9 +437,13 @@ int main(int argc,char * argv[])
+@@ -193,9 +446,13 @@ int main(int argc,char * argv[])
  		err(1, "fclose(%s)", argv[3]);
  
  	/* Write the new file */
@@ -327,6 +321,3 @@ index f4b821c..48ac79a 100644
  
  	free(new);
  	free(old);
--- 
-1.6.4.4
-

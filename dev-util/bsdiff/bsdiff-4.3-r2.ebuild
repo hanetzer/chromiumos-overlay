@@ -24,8 +24,8 @@ src_prepare() {
 
 src_compile() {
 	append-lfs-flags
-	$(tc-getCC) ${CFLAGS} ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 || die "failed compiling bsdiff"
-	$(tc-getCC) ${CFLAGS} ${LDFLAGS} -o bspatch bspatch.c -lbz2 || die "failed compiling bspatch"
+	$(tc-getCC) ${CFLAGS} -D_FILE_OFFSET_BITS=64 ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 || die "failed compiling bsdiff"
+	$(tc-getCC) ${CFLAGS} -D_FILE_OFFSET_BITS=64 ${LDFLAGS} -o bspatch bspatch.c -lbz2 || die "failed compiling bspatch"
 }
 
 src_install() {
