@@ -48,6 +48,8 @@ DEFINE_boolean withfactory $FLAGS_TRUE \
 DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
 DEFINE_boolean norebuild ${FLAGS_FALSE} \
   "Don't automatically rebuild dependencies."
+DEFINE_boolean showoutput ${FLAGS_FALSE} \
+  "Show all output from parallel_emerge."
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -144,6 +146,9 @@ if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
   done
   if [[ ${FLAGS_norebuild} -eq ${FLAGS_FALSE} ]]; then
     EMERGE_FLAGS="${EMERGE_FLAGS} --rebuild"
+  fi
+  if [[ ${FLAGS_showoutput} -eq ${FLAGS_TRUE} ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --show-output"
   fi
   eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 else
