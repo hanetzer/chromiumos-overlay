@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="fe9f50c207a9827c2fd5ab3f3f20a3d5a1033078"
 inherit cros-workon
 
 DESCRIPTION="Chrome OS Boot Time Statistics Utilities"
