@@ -33,6 +33,7 @@ src_install() {
 		into "/usr"
 		dobin "${S}"/build/utility/dump_kernel_config
 		dobin "${S}"/build/utility/tpm_init_temp_fix
+		dobin "${S}"/build/utility/tpmc
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
