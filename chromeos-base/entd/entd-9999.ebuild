@@ -42,6 +42,13 @@ src_install() {
 	insinto /etc
 	doins nsswitch.conf
 
+	# Symlink the "Chrome Enterprise" browser policy locations into the
+	# stateful partition.
+	dodir /etc/chromium/
+	dosym $SHARED_USER_HOME/var/browser-policies /etc/chromium/policies
+	dodir /etc/opt/chrome/
+	dosym $SHARED_USER_HOME/var/browser-policies /etc/opt/chrome/policies
+
 	# Install the temporary tpm init helper
 	# TODO(wad) remove when integrated into login/cryptohome
 	dosbin tpm_helpers/chromeos_tpm_init

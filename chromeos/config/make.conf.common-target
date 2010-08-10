@@ -40,6 +40,10 @@ GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 # We want emerge to overwrite fontconfig files automatically.
 CONFIG_PROTECT_MASK="$CONFIG_PROTECT_MASK /etc/fonts/conf.avail /etc/fonts/conf.d"
 
+# Username and home directory of the shared user.
+SHARED_USER_NAME="chronos"
+SHARED_USER_HOME="/home/chronos/user"
+
 # Packages that use python will run a small python script to find the
 # pythondir. Unfortunately, if the build chroot is 64-bit then that
 # will output /usr/lib64/python2.6 rather than /usr/lib/python2.6.
