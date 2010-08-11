@@ -16,7 +16,7 @@ DEPEND="app-crypt/trousers
 
 src_compile() {
 	tc-export CC AR CXX
-	err_msg="${PN} compile failed. "
+	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
 	emake || die "${err_msg}"
         if use rbtest; then
@@ -26,13 +26,19 @@ src_compile() {
 
 src_install() {
 	if use minimal ; then
-		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C cgpt \
-		      install || die "${PN} install failed."
-		# utility/ is all or nothing, just pick out what we want.
+		# Installing on the target. Cherry pick programs generated
+		# by src_compile in the source tree build/ subdirectory
+		local progs='utility/dump_kernel_config'
+		progs+=' utility/tpm_init_temp_fix'
+		progs+=' utility/tpmc'
+		progs+=' utility/vbutil_kernel'
+		progs+=' utility/vbutil_firmware'
+		progs+=' cgpt/cgpt'
+
 		into "/usr"
-		dobin "${S}"/build/utility/dump_kernel_config
-		dobin "${S}"/build/utility/tpm_init_temp_fix
-		dobin "${S}"/build/utility/tpmc
+		for prog in ${progs}; do
+			dobin "${S}"/build/"${prog}"
+		done
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
