@@ -314,55 +314,55 @@ install_chrome_test_resources() {
 
 	# For test binaries, we are bypassing the image on purpose. These bits will
 	# be picked up later by autotest build.
-	TEST_DIR="${SYSROOT}"/usr/local/autotest-chrome/
+	TEST_DIR="${D}"/usr/local/autotest-chrome/
 	FROM_LIB="${FROM}/lib.target"
 	FROM_TESTS="${FROM}"
 
 	echo Copying Chrome tests into "${TEST_DIR}"
-	sudo mkdir -p "${TEST_DIR}"
-	sudo mkdir -p "${TEST_DIR}/out/Release"
+	mkdir -p "${TEST_DIR}"
+	mkdir -p "${TEST_DIR}/out/Release"
 
-	sudo rsync -v "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
+	rsync -v "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
 		"${TEST_DIR}/out/Release"
 
-	sudo rsync -v "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
-	sudo rsync -v "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
-	sudo rsync -v "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
-	sudo rsync -v "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
-	sudo rsync -v "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
-	sudo rsync -v "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
+	rsync -v "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
 
-	sudo mkdir -p "${TEST_DIR}"/out/Release/pyproto
-	sudo rsync -rlv "${FROM_TESTS}"/pyproto/* "${TEST_DIR}"/out/Release/pyproto
+	mkdir -p "${TEST_DIR}"/out/Release/pyproto
+	rsync -rlv "${FROM_TESTS}"/pyproto/* "${TEST_DIR}"/out/Release/pyproto
 
-	sudo mkdir -p "${TEST_DIR}"/base
-	sudo rsync -v "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+	mkdir -p "${TEST_DIR}"/base
+	rsync -v "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
 
-	sudo mkdir -p "${TEST_DIR}"/chrome/test/data
-	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded \
+	mkdir -p "${TEST_DIR}"/chrome/test/data
+	rsync -rlv --exclude='.svn' --delete --delete-excluded \
 		"${CHROME_ROOT}"/src/chrome/test/data/* "${TEST_DIR}"/chrome/test/data
 
-	sudo mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
-	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/data/ssl/certificates/* \
+	mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
+	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/data/ssl/certificates/* \
 		"${TEST_DIR}"/net/data/ssl/certificates
 
-	sudo mkdir -p "${TEST_DIR}"/net/tools/testserver
-	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/tools/testserver/* \
+	mkdir -p "${TEST_DIR}"/net/tools/testserver
+	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/tools/testserver/* \
 		"${TEST_DIR}"/net/tools/testserver
 
-	sudo mkdir -p "${TEST_DIR}"/third_party/tlslite
-	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/tlslite/* \
+	mkdir -p "${TEST_DIR}"/third_party/tlslite
+	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/tlslite/* \
 		"${TEST_DIR}"/third_party/tlslite
 
-	sudo mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
-	sudo rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
+	mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
+	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
 		"${TEST_DIR}"/third_party/pyftpdlib
 
 	for f in ${TEST_FILES}; do
-		sudo rsync -rv "${FROM}/${f}" "${TEST_DIR}"
+		rsync -rv "${FROM}/${f}" "${TEST_DIR}"
 	done
 
-	sudo rsync -v "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
+	rsync -v "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
 		"${TEST_DIR}"/out/Release
 
 	# Remove test binaries from other platforms
@@ -370,11 +370,11 @@ install_chrome_test_resources() {
 		echo E_MACHINE not defined!
 	else
 		cd "${TEST_DIR}"/chrome/test
-		sudo rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
 
-	sudo chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
-	sudo chmod -R 755 "${TEST_DIR}"
+	chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
+	chmod -R 755 "${TEST_DIR}"
 }
 
 src_install() {
