@@ -16,7 +16,8 @@ RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
 	dev-util/pkgconfig
-	>=sys-devel/gettext-0.16.1"
+	>=sys-devel/gettext-0.16.1
+	x11-misc/xkeyboard-config"
 
 CROS_WORKON_SUBDIR="files"
 
