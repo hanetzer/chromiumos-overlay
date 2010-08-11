@@ -12,7 +12,7 @@ ARCH=x86
 source make.conf.common
 
 # Recommended x86-specific USE flags.
-USE="${USE} mmx sse sse2 dri"
+USE="${USE} mmx sse sse2 dri hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=core2 -mtune=generic -mfpmath=sse"

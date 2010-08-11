@@ -12,7 +12,7 @@ ARCH=arm
 source make.conf.common
 
 # Recommended arm-specific USE flags.
-USE="${USE} threads hardened"
+USE="${USE} threads"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp"

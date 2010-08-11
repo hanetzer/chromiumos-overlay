@@ -67,6 +67,12 @@ if [ -z "$FLAGS_board" ] ; then
   exit 1
 fi
 
+CROSSTOOL=0
+if emerge --info |grep crosstool > /dev/null
+then
+  CROSSTOOL=1
+fi
+
 EMERGE_FLAGS=""
 
 EMERGE_CMD="emerge"
