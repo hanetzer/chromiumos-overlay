@@ -10,7 +10,7 @@ DISTDIR="/var/lib/portage/distfiles"
 
 # We modify the portage tree directly but use an empty overlay to
 # satisfy crossdev.
-PORTDIR_OVERLAY="/usr/local/portage"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 
 # Where to store built packages.
@@ -18,6 +18,6 @@ PKGDIR="/var/lib/portage/pkgs"
 
 PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
 
-USE="${USE} -cups"
+USE="${USE} -cups hardened pic pie"
 
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"

@@ -150,28 +150,10 @@ case "$TC_ARCH" in
     exit 1
 esac
 
-HARDENED=0
-if portageq envvar USE |grep -q hardened
-then
-  HARDENED=1
-fi
-
-CROSSTOOL=0
-if emerge --info |grep crosstool > /dev/null
-then
-  # TODO: Remove this when crosstool work on for all target archs
-  if [ "$ARCH" == "x86" ]; then
-    CROSSTOOL=1
-  fi
-fi
-
-# Hardened requires gcc 4.4.3 to get the proper specs files, etc. applied.
-if [ "$HARDENED" -eq "1" ] ; then
+if [ "$ARCH" == "x86" ]; then
+  FLAGS_gcc_version="4.4.3-r5"
+else
    FLAGS_gcc_version="4.4.3-r4"
-fi
-
-if [ "$CROSSTOOL" -eq "1" ] ; then
-  FLAGS_gcc_version="4.4.3"
 fi
 
 # If all 4 toolchain packages are not installed, then install them!
@@ -193,6 +175,9 @@ if $TC_INSTALL; then
   CROSS_USEPKG=""
   if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
     CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
+  else
+    CROSS_USEPKG="--portage --getbinpkg --portage --usepkg --portage \
+      --binpkg-respect-use=y"
   fi
   sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
     --target "$FLAGS_toolchain" \
@@ -267,13 +252,8 @@ sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
 #    make.conf.board_setup <- Declares CHOST, ROOT, etc.
 #    make.conf.common      <- Common settings across all targets
 #    make.conf.board       <- Optional board-supplied make.conf
-if [ "$HARDENED" -eq "1" ] ; then
-  sudo ln -sf "${CHROMIUMOS_CONFIG}/make-hardened.conf.${ARCH}-target" \
-    "${BOARD_ETC}/make.conf"
-else
-  sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
-    "${BOARD_ETC}/make.conf"
-fi
+sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
+  "${BOARD_ETC}/make.conf"
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
   "${BOARD_ETC}/make.conf.common"
 cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"
