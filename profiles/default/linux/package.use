@@ -11,3 +11,7 @@ x11-libs/cairo		X
 # still find the shared libraries.
 app-emulation/qemu-user static
 net-misc/dhcpcd -crash
+# build kvm with X and sdl so we have an option of running it with local
+# display without VNC
+app-emulation/qemu-kvm	X sdl
+media-libs/libsdl	X

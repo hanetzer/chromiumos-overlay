@@ -126,3 +126,9 @@ RDEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-python/pymox
 	"
+
+# Host dependencies to run BVT within the chroot
+RDEPEND="${RDEPEND}
+	>=app-emulation/qemu-kvm-0.12.5
+	media-libs/libsdl
+	"
