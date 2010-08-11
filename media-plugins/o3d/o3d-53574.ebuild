@@ -8,6 +8,7 @@ inherit toolchain-funcs eutils
 
 DESCRIPTION="O3D Plugin"
 HOMEPAGE="http://code.google.com/p/o3d/"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
@@ -28,21 +29,9 @@ set_build_defines() {
 	export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
 }
 
-src_unpack() {
-	set_build_defines
-
-	mkdir -p O3D || die "Cannot create O3D folder"
-	cd O3D
-	# Use customized gclient config file
-	cp -f "${FILESDIR}/plugin-only.gclient" .gclient
-
-	${EGCLIENT} sync --revision o3d@${O3D_REVISION} --force --nohooks
-}
-
 src_prepare() {
 	set_build_defines
 
-	cd O3D
 	# Patch sent upstream - http://codereview.chromium.org/2943013/show
 	# TODO(piman): Remove when committed.
 	pushd native_client
@@ -68,8 +57,6 @@ src_prepare() {
 }
 
 src_compile() {
-	cd O3D
-
 	# Config
 	if tc-is-cross-compiler ; then
 		tc-export AR AS LD NM RANLIB CC CXX
@@ -83,20 +70,20 @@ src_compile() {
 
 	emake BUILDTYPE=Release npo3dautoplugin -k
 
-	mkdir -p "${WORKDIR}/opt/google/o3d" \
-		|| die "Cannot create ${WORKDIR}/opt/google/o3d"
+	mkdir -p "${S}/opt/google/o3d" \
+		|| die "Cannot create ${S}/opt/google/o3d"
 	if use x86; then
-		mkdir -p "${WORKDIR}/opt/google/o3d/lib" \
-			|| die "Cannot create ${WORKDIR}/opt/google/o3d/lib"
+		mkdir -p "${S}/opt/google/o3d/lib" \
+			|| die "Cannot create ${S}/opt/google/o3d/lib"
 		cp -f out/Release/libCg.so \
-			"${WORKDIR}/opt/google/o3d/lib/libCg.so" \
+			"${S}/opt/google/o3d/lib/libCg.so" \
 			|| die "Cannot install file: $!"
 		cp -f out/Release/libCgGL.so \
-			"${WORKDIR}/opt/google/o3d/lib/libCgGL.so" \
+			"${S}/opt/google/o3d/lib/libCgGL.so" \
 			|| die "Cannot install file: $!"
 	fi
 	cp -f out/Release/libnpo3dautoplugin.so \
-		"${WORKDIR}/opt/google/o3d/libnpo3dautoplugin.so" \
+		"${S}/opt/google/o3d/libnpo3dautoplugin.so" \
 		|| die "Cannot install file: $!"
 }
 
