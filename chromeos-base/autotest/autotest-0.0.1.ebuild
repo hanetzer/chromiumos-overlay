@@ -120,7 +120,7 @@ function setup_cross_toolchain() {
 function copy_src() {
 	local dst=$1
 	mkdir -p "${dst}"
-	rsync -rplv --exclude='.svn' --delete --delete-excluded \
+	rsync -qrplv --exclude='.svn' --delete --delete-excluded \
 	  "${AUTOTEST_SRC}"/{client,conmux,server,tko,utils} "${dst}" || die
 	cp -fpru "${AUTOTEST_SRC}/shadow_config.ini" "${dst}" || die
 }
