@@ -1,6 +1,8 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+inherit cros-workon
+
 EAPI=2
 
 DESCRIPTION="Chrome OS Firmware"
@@ -8,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~x86 ~arm"
+KEYWORDS="~arm ~x86"
 IUSE=""
 
 DEPEND=""
@@ -43,6 +45,9 @@ FW_EXTRA_DIST=""
 
 # ---------------------------------------------------------------------------
 
+CROS_WORKON_LOCALNAME="firmware"
+CROS_WORKON_PROJECT="firmware"
+INSTALL_DIR="/usr/sbin/${CROS_WORKON_LOCALNAME}"
 UPDATE_SCRIPT="chromeos-firmwareupdate"
 
 src_compile() {
@@ -73,7 +78,7 @@ src_compile() {
   else
     # create a new script
     einfo "building firmware with images: $image_cmd $ext_cmd"
-    ${CHROMEOS_ROOT}/src/platform/firmware/pack_firmware.sh \
+    "${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
       -o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
       --board $(basename ${ROOT})
   fi
@@ -83,4 +88,11 @@ src_compile() {
 
 src_install() {
   dosbin $UPDATE_SCRIPT
+  for subdir in saft x86-generic
+  do
+    dstdir="${INSTALL_DIR}/${subdir}"
+    dodir "${dstdir}"
+    exeinto "${dstdir}"
+    doexe "${WORKDIR}/${CROS_WORKON_LOCALNAME}/${subdir}"/*.{py,sh}
+  done
 }
