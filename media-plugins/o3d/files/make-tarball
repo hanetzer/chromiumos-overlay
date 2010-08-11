@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+usage() {
+	echo "Usage: $0 <svn-revision> [gclient-file]"
+}
+
+if [[ $# -lt 1 ]]; then
+	usage
+	exit 0
+fi
+
+FILESDIR=`dirname $0`
+SVNREV=$1
+GCLIENT=${2-"${FILESDIR}/plugin-only.gclient"}
+
+if [[ ! -f "${GCLIENT}" ]]; then
+	echo "Can't read ${GCLIENT}"
+	exit 1
+fi
+
+mkdir o3d-${SVNREV} || die "Can't create work directory"
+cd o3d-${SVNREV}
+cp "${GCLIENT}" .gclient
+gclient sync --revision o3d@${SVNREV} --force --nohooks
+find . -name .svn -type d | xargs rm -rf
+cd ..
+tar -cvzf o3d-svn-${SVNREV}.tar.gz o3d-${SVNREV}
+
+echo -n "Update local mirror? [yn] "
+read n
+if [[ "$n" == "y" ]]; then
+	cp "o3d-svn-${SVNREV}.tar.gz" ~chrome-eng/chromeos/localmirror/distfiles
+fi
