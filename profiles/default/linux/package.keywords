@@ -10,7 +10,6 @@
 =dev-libs/dbus-glib-0.82	amd64 x86
 =dev-libs/eggdbus-0.5		amd64 x86
 =dev-libs/protobuf-2.2.0	amd64 x86
-=dev-python/webpy-0.32          amd64 x86
 =dev-util/boost-build-1.42.0	amd64 x86
 =dev-util/git-1.7.0	amd64 x86
 =dev-util/lcov-1.7              amd64 x86
