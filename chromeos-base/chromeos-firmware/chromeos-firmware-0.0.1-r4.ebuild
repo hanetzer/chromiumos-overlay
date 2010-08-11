@@ -4,6 +4,7 @@
 inherit cros-workon
 
 EAPI=2
+CROS_WORKON_COMMIT="f314d83fb7aae10fba60c08d455bca71b9ae16b9"
 
 DESCRIPTION="Chrome OS Firmware"
 HOMEPAGE="http://src.chromium.org"
