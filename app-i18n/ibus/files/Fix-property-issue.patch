@@ -1,0 +1,35 @@
+From eda794a43538e284550def68d188ccebcb43a944 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Thu, 12 Aug 2010 15:22:00 +0800
+Subject: [PATCH] Fix property issue.
+
+---
+ bus/inputcontext.c |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+diff --git a/bus/inputcontext.c b/bus/inputcontext.c
+index f0c5590..d610515 100644
+--- a/bus/inputcontext.c
++++ b/bus/inputcontext.c
+@@ -935,6 +935,18 @@ _ic_property_activate (BusInputContext  *context,
+     if (context->enabled && context->engine) {
+         bus_engine_proxy_property_activate (context->engine, prop_name, prop_state);
+     }
++#ifdef OS_CHROMEOS
++    /* Global engine is always enabled in chromeos,
++     * so pass PropertyActivate signal to the focused context.
++     */
++    else {
++        if (context->fake &&
++            BUS_DEFAULT_IBUS->focused_context &&
++            BUS_DEFAULT_IBUS->focused_context->engine) {
++            bus_engine_proxy_property_activate (BUS_DEFAULT_IBUS->focused_context->engine, prop_name, prop_state);
++        }
++    }
++#endif
+ 
+     reply = ibus_message_new_method_return (message);
+     return reply;
+-- 
+1.7.1
+

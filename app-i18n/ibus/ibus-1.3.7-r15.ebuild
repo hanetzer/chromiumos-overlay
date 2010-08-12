@@ -46,6 +46,7 @@ pkg_setup() {
 src_prepare() {
   epatch "${FILESDIR}/ibus-chromiumos.patch"
   epatch "${FILESDIR}/Add-api-to-ibus-for-retreiving-unused-config-values.patch"
+  epatch "${FILESDIR}/Fix-property-issue.patch"
 }
 
 src_configure() {
