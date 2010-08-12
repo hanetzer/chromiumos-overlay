@@ -44,7 +44,7 @@ CROS_WORKON_PROJECT="assets"
 
 src_install() {
 	insinto /usr/share/chromeos-assets/images
-	doins "${S}"/images/*
+	doins -r "${S}"/images/*
 
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
