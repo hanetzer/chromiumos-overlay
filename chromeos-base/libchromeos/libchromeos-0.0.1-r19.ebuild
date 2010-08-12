@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="01232f33da877142cc02311faca28187a859f720"
+CROS_WORKON_COMMIT="de5a248ffb078be2e7f3429b600351d93b91192d"
 
 inherit toolchain-funcs cros-workon
 
@@ -54,7 +54,6 @@ src_install() {
 	insinto "/usr/include/chromeos"
 	doins "${S}/chromeos/callback.h"
 	doins "${S}/chromeos/exception.h"
-	doins "${S}/chromeos/obsolete_logging.h"
 	doins "${S}/chromeos/string.h"
 	doins "${S}/chromeos/utility.h"
 

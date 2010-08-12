@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="678a63001bd80a6fae9192c4628a0b8de5aa27c8"
+CROS_WORKON_COMMIT="935b2aa3bc3f4d1873058c3a9aa2799ef3545ebc"
 
 KEYWORDS="arm amd64 x86"
 
@@ -13,11 +13,10 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="pam_google test"
+IUSE="test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	 chromeos-base/chromeos-minijail
-         pam_google? ( chromeos-base/pam_google )
          chromeos-base/crash-dumper"
 
 DEPEND="${RDEPEND}
