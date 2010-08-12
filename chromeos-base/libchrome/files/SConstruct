@@ -8,32 +8,39 @@ import os
 
 env = Environment()
 
-# Keep debian/install up to date with appropriate headers, or else figure
+# Keep ebuild up to date with appropriate headers, or else figure
 # out how to get scons to handle header installation as well.
 sources = env.Split("""
                     files/base/third_party/dmg_fp/dtoa.cc
                     files/base/third_party/dmg_fp/g_fmt.cc
                     files/base/third_party/icu/icu_utf.cc
                     files/base/third_party/nspr/prtime.cc
+                    files/base/third_party/dynamic_annotations/dynamic_annotations.c
                     files/base/at_exit.cc
                     files/base/atomicops_internals_x86_gcc.cc
                     files/base/base_switches.cc
                     files/base/command_line.cc
+                    files/base/crypto/rsa_private_key.cc
+                    files/base/crypto/rsa_private_key_nss.cc
+                    files/base/crypto/signature_creator_nss.cc
+                    files/base/crypto/signature_verifier_nss.cc
                     files/base/debug_util.cc
                     files/base/debug_util_posix.cc
-                    files/base/dynamic_annotations.cc
                     files/base/file_path.cc
                     files/base/file_util.cc
-                    files/base/file_util_linux.cc
                     files/base/file_util_posix.cc
                     files/base/json/json_reader.cc
+                    files/base/json/json_writer.cc
+                    files/base/lock.cc
                     files/base/lock_impl_posix.cc
                     files/base/logging.cc
+                    files/base/pickle.cc
                     files/base/platform_file_posix.cc
                     files/base/platform_thread_posix.cc
                     files/base/safe_strerror_posix.cc
                     files/base/setproctitle_linux.c
                     files/base/string16.cc
+                    files/base/string_number_conversions.cc
                     files/base/string_piece.cc
                     files/base/string_util.cc
                     files/base/sys_string_conversions_linux.cc
@@ -52,12 +59,19 @@ for key in Split('CC CXX AR RANLIB LD NM CFLAGS CCFLAGS'):
   value = os.environ.get(key)
   if value:
     env[key] = Split(value)
-    
-env['CCFLAGS'] += ['-fPIC', '-fno-exceptions', '-Wall', '-Werror']
+
+env['CCFLAGS'] += ['-fPIC',
+                   '-fno-exceptions',
+                   '-Wall',
+                   '-Werror',
+                   '-DOS_CHROMEOS']
 
 # Fix issue with scons not passing some vars through the environment.
-for key in Split('PKG_CONFIG_LIBDIR PKG_CONFIG_PATH SYSROOT'):
+for key in Split('PKG_CONFIG SYSROOT'):
   if os.environ.has_key(key):
     env['ENV'][key] = os.environ[key]
+
+# nss environment
+env.ParseConfig('%s --cflags --libs glib-2.0 nss' % env['ENV']['PKG_CONFIG'])
 
 env.StaticLibrary('base', sources)

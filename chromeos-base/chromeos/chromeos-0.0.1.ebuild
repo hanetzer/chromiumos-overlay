@@ -95,7 +95,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/memento_softwareupdate
 	chromeos-base/metrics
 	chromeos-base/monitor_reconfig
-	chromeos-base/pam_google
 	chromeos-base/power_manager
 	chromeos-base/speech_synthesis
 	chromeos-base/update_engine

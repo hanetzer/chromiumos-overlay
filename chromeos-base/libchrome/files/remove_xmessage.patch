@@ -1,0 +1,12 @@
+diff -Naur libchrome-55729-orig/files/base/logging.cc libchrome-55729-xmessage/files/base/logging.cc
+--- libchrome-55729-orig/files/base/logging.cc	2010-08-11 13:51:24.000000000 -0700
++++ libchrome-55729-xmessage/files/base/logging.cc	2010-08-11 15:50:35.000000000 -0700
+@@ -362,7 +362,7 @@
+     MessageBoxW(NULL, &cmdline[0], L"Fatal error",
+                 MB_OK | MB_ICONHAND | MB_TOPMOST);
+   }
+-#elif defined(USE_X11)
++#elif defined(USE_X11) && !defined(OS_CHROMEOS)
+   // Shell out to xmessage, which behaves like debug_message.exe, but is
+   // way more retro.  We could use zenity/kdialog but then we're starting
+   // to get into needing to check the desktop env and this dialog should

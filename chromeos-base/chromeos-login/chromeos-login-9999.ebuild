@@ -12,11 +12,10 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="pam_google test"
+IUSE="test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	 chromeos-base/chromeos-minijail
-         pam_google? ( chromeos-base/pam_google )
          chromeos-base/crash-dumper"
 
 DEPEND="${RDEPEND}

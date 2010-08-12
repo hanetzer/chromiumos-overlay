@@ -24,7 +24,7 @@ CROS_WORKON_PROJECT="minijail"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 src_compile() {
-	tc-export CC CXX AR RANLIB LD NM
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tool
@@ -39,6 +39,11 @@ src_test() {
 	# TODO(wad) eclass-ify this.
 	scons minijail_unittests ||
 		die "minijail_unittests compile failed."
+
+	if use x86 ; then
+		./minijail_unittests ${GTEST_ARGS} || \
+		    die "unit tests (with ${GTEST_ARGS}) failed!"
+	fi
 }
 
 src_install() {
