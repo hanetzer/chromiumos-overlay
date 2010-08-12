@@ -13,7 +13,7 @@ SLOT="0"
 KEYWORDS="~arm ~x86"
 IUSE=""
 
-DEPEND=""
+DEPEND="sys-apps/flashrom sys-apps/iotools"
 RDEPEND=""
 
 # ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ src_compile() {
     einfo "building firmware with images: $image_cmd $ext_cmd"
     "${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
       -o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
-      --board $(basename ${ROOT})
+      --tool_base="$ROOT/usr/sbin"
   fi
 
   chmod +x ${UPDATE_SCRIPT}
@@ -88,6 +88,8 @@ src_compile() {
 
 src_install() {
   dosbin $UPDATE_SCRIPT
+
+  # following files are for SAFT
   for subdir in saft x86-generic
   do
     dstdir="${INSTALL_DIR}/${subdir}"
