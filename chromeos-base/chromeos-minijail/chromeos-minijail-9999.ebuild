@@ -32,7 +32,7 @@ src_compile() {
 }
 
 src_test() {
-	tc-export CC CXX AR RANLIB LD NM
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tests
