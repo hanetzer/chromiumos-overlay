@@ -14,7 +14,10 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
-DEPEND="sys-apps/flashrom sys-apps/iotools"
+# Temporary hack. We really depend on superiotool and flashrom, but flashrom
+# doesn't build on arm for some nontrivial reason. When flashrom is ported ot
+# replaced, we need to re-add those deps.
+DEPEND=""
 RDEPEND=""
 
 # ---------------------------------------------------------------------------
