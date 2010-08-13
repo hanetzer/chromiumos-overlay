@@ -5,33 +5,44 @@
 # found in the LICENSE file.
 
 usage() {
-	echo "Usage: $0 <svn-revision> [gclient-file]"
+  echo "Usage: $0 <svn-revision> [gclient-file]"
 }
 
 if [[ $# -lt 1 ]]; then
-	usage
-	exit 0
+  usage
+  exit 0
 fi
 
-FILESDIR=`dirname $0`
-SVNREV=$1
-GCLIENT=${2-"${FILESDIR}/plugin-only.gclient"}
+function update_mirror() {
+  LOCALMIRROR=$1
+  [ -z "${LOCALMIRROR}" ] && return 0
 
-if [[ ! -f "${GCLIENT}" ]]; then
-	echo "Can't read ${GCLIENT}"
-	exit 1
-fi
+  echo -n "Update local mirror? [yn] "
+  read n
+  if [[ "$n" == "y" ]]; then
+    cp "o3d-svn-${SVNREV}.tar.gz" ${LOCALMIRROR}
+  fi
+}
 
-mkdir o3d-${SVNREV} || die "Can't create work directory"
-cd o3d-${SVNREV}
-cp "${GCLIENT}" .gclient
-gclient sync --revision o3d@${SVNREV} --force --nohooks
-find . -name .svn -type d | xargs rm -rf
-cd ..
-tar -cvzf o3d-svn-${SVNREV}.tar.gz o3d-${SVNREV}
+function download_stuff() {
+  FILESDIR=`dirname $0`
+  SVNREV=$1
+  GCLIENT=${2-"${FILESDIR}/plugin-only.gclient"}
 
-echo -n "Update local mirror? [yn] "
-read n
-if [[ "$n" == "y" ]]; then
-	cp "o3d-svn-${SVNREV}.tar.gz" ~chrome-eng/chromeos/localmirror/distfiles
-fi
+  if [[ ! -f "${GCLIENT}" ]]; then
+    echo "Can't read ${GCLIENT}"
+    exit 1
+  fi
+
+  mkdir o3d-${SVNREV} || die "Can't create work directory"
+  cd o3d-${SVNREV}
+  cp "${GCLIENT}" .gclient
+  gclient sync --revision o3d@${SVNREV} --force --nohooks
+  find . -name .svn -type d | xargs rm -rf
+  cd ..
+  tar -cvzf o3d-svn-${SVNREV}.tar.gz o3d-${SVNREV}
+}
+
+download_stuff "$@"
+update_mirror
+
