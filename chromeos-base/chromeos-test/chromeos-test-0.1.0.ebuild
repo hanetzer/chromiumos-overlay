@@ -34,6 +34,7 @@ RDEPEND="${RDEPEND}
 	net-misc/openssh
 	net-misc/rsync
 	sys-apps/findutils
+	x86? ( sys-apps/superiotool )
 	sys-power/powertop
 	sys-process/procps
 	sys-process/psmisc
