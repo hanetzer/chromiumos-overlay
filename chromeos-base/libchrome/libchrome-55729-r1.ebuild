@@ -106,6 +106,7 @@ src_install() {
 	insinto "/usr/include/base/json"
 	doins "${S}/files/base/json/json_reader.h"
 	doins "${S}/files/base/json/json_writer.h"
+	doins "${S}/files/base/json/string_escape.h"
 
 	insinto "/usr/include/build"
 	doins "${S}/files/build/build_config.h"

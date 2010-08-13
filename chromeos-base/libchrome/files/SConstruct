@@ -31,6 +31,7 @@ sources = env.Split("""
                     files/base/file_util_posix.cc
                     files/base/json/json_reader.cc
                     files/base/json/json_writer.cc
+                    files/base/json/string_escape.cc
                     files/base/lock.cc
                     files/base/lock_impl_posix.cc
                     files/base/logging.cc
