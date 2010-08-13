@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 #IUSE=""
 
-DEPEND="dev-libs/nss"
+DEPEND="dev-cpp/gtest
+	dev-libs/nss"
 RDEPEND="${DEPEND}"
 
 src_prepare() {
