@@ -13,10 +13,9 @@ S=${PN}
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86"
-IUSE=""
 
-DEPEND="extras? ( sys-apps/pciutils )"
-RDEPEND="extras? ( sys-apps/pciutils )"
+RDEPEND="sys-apps/pciutils"
+DEPEND="${RDEPEND}"
 
 src_compile() {
 	cd ${S}
