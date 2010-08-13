@@ -39,6 +39,7 @@ sources = env.Split("""
                     files/base/platform_file_posix.cc
                     files/base/platform_thread_posix.cc
                     files/base/safe_strerror_posix.cc
+                    files/base/scoped_temp_dir.cc
                     files/base/setproctitle_linux.c
                     files/base/string16.cc
                     files/base/string_number_conversions.cc

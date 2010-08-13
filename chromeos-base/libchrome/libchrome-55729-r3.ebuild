@@ -13,9 +13,10 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 #IUSE=""
 
-DEPEND="dev-cpp/gtest
+RDEPEND="dev-libs/glib
 	dev-libs/nss"
-RDEPEND="${DEPEND}"
+DEPEND="${RDEPEND}
+	dev-cpp/gtest"
 
 src_prepare() {
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
@@ -84,6 +85,7 @@ src_install() {
 	doins "${S}/files/base/port.h"
 	doins "${S}/files/base/safe_strerror_posix.h"
 	doins "${S}/files/base/scoped_ptr.h"
+	doins "${S}/files/base/scoped_temp_dir.h"
 	doins "${S}/files/base/scoped_vector.h"
 	doins "${S}/files/base/setproctitle_linux.h"
 	doins "${S}/files/base/singleton.h"
