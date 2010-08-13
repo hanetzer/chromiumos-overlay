@@ -36,7 +36,7 @@ IUSE_TESTS="
 	+tests_fsx
 	+tests_hackbench
 	+tests_iperf
-	+tests_ltp
+	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
 	+tests_unixbench
