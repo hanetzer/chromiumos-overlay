@@ -102,6 +102,8 @@ src_configure() {
 
 	if use dbus ; then
 		echo "CONFIG_CTRL_IFACE_DBUS=y" >> ${CFGFILE}
+		echo "CONFIG_CTRL_IFACE_DBUS_NEW=y" >> ${CFGFILE}
+		echo "CONFIG_CTRL_IFACE_DBUS_INTRO=y" >> ${CFGFILE}
 	fi
 
 	if use debug ; then
@@ -228,6 +230,7 @@ src_install() {
 		newins dbus/dbus-wpa_supplicant.conf wpa_supplicant.conf || die
 		insinto /usr/share/dbus-1/system-services
 		newins dbus/fi.epitest.hostap.WPASupplicant.service 'fi.epitest.hostap.WPASupplicant.service' || die
+		newins dbus/fi.w1.wpa_supplicant1.service 'fi.w1.wpa_supplicant1.service' || die
 		keepdir /var/run/wpa_supplicant
 	fi
 
