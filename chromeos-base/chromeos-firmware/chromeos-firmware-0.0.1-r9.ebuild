@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
-DEPEND="sys-apps/flashrom sys-apps/iotools"
+DEPEND="x86? ( sys-apps/flashrom sys-apps/iotools )"
 RDEPEND=""
 
 # ---------------------------------------------------------------------------
