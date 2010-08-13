@@ -4,7 +4,7 @@
 inherit cros-workon
 
 EAPI=2
-CROS_WORKON_COMMIT="57823232ad918af22c171f3984afb2898f33ca13"
+CROS_WORKON_COMMIT="5d1beb74350f3a11a7ea86ef444efee470067eb6"
 
 DESCRIPTION="Chrome OS Firmware"
 HOMEPAGE="http://src.chromium.org"
@@ -14,10 +14,7 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
-# Temporary hack. We really depend on superiotool and flashrom, but flashrom
-# doesn't build on arm for some nontrivial reason. When flashrom is ported ot
-# replaced, we need to re-add those deps.
-DEPEND=""
+DEPEND="sys-apps/flashrom sys-apps/iotools"
 RDEPEND=""
 
 # ---------------------------------------------------------------------------
