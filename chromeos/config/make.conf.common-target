@@ -37,8 +37,8 @@ DISTDIR="/var/lib/portage/distfiles-target"
 # Our chromium mirror should be more stable since we won't discard packages.
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 
-# We want emerge to overwrite fontconfig files automatically.
-CONFIG_PROTECT_MASK="$CONFIG_PROTECT_MASK /etc/fonts/conf.avail /etc/fonts/conf.d"
+# We want emerge to overwrite all config files automatically.
+CONFIG_PROTECT="-*"
 
 # Username and home directory of the shared user.
 SHARED_USER_NAME="chronos"
