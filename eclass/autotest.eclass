@@ -102,12 +102,21 @@ function print_test_dirs() {
 function autotest_src_prepare() {
 	# pull in all the tests from this package
 	mkdir -p "${AUTOTEST_WORKDIR}"/client
+	mkdir -p "${AUTOTEST_WORKDIR}"/client/tests
+	mkdir -p "${AUTOTEST_WORKDIR}"/client/site_tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server
+	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
+	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
 
-	cp -fpru "${WORKDIR}/${P}"/client/{config,deps,profilers} "${AUTOTEST_WORKDIR}"/client/ || die
+	for dir in "${WORKDIR}/${P}"/client/{config,deps,profilers}; do
+		if [ -d "${dir}" ]; then
+			cp -fpru "${dir}" "${AUTOTEST_WORKDIR}"/client/ || die
+		fi
+	done
 
 	for l1 in client server; do
 	for l2 in site_tests tests; do
+	if [ -d "${WORKDIR}/${P}/${l1}/${l2}" ]; then # test does have this directory
 		mkdir -p "${AUTOTEST_WORKDIR}/${l1}/${l2}"
 		pushd "${WORKDIR}/${P}/${l1}/${l2}" 1> /dev/null
 		for test in *; do
@@ -116,6 +125,7 @@ function autotest_src_prepare() {
 			fi
 		done
 		popd 1> /dev/null
+	fi
 	done
 	done
 
@@ -123,6 +133,7 @@ function autotest_src_prepare() {
 }
 
 function autotest_src_configure() {
+	cd "${AUTOTEST_WORKDIR}"
 	touch_init_py client/tests client/site_tests
 	touch __init__.py
 
