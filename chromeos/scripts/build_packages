@@ -92,7 +92,8 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   fi
 fi
 
-TC_ARCH=$(echo "$FLAGS_board" | awk -F'-' '{ print $1 }')
+BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${FLAGS_board}"
+TC_ARCH=$(awk -F'-' '{ print $1 }' < ${BOARD_OVERLAY}/toolchain.conf)
 case "$TC_ARCH" in
   arm*)
     ARCH="arm"
