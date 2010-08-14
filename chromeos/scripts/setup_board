@@ -150,20 +150,30 @@ case "$TC_ARCH" in
     exit 1
 esac
 
-# gcc-4.4.3-r4 is upstream r4. gcc-4.4.3-r5 is crosstoolv14.
-if [ "$ARCH" == "x86" ]; then
-  FLAGS_gcc_version="4.4.3-r5"
-else
+HARDENED=0
+if portageq envvar USE |grep -q hardened
+then
+  HARDENED=1
+fi
+
+CROSSTOOL=0
+if emerge --info |grep crosstool > /dev/null
+then
+  # TODO: Remove this when crosstool work on for all target archs
+  if [ "$ARCH" == "x86" ]; then
+    CROSSTOOL=1
+  fi
+fi
+
+# Hardened requires gcc 4.4.3 to get the proper specs files, etc. applied.
+if [ "$HARDENED" -eq "1" ] ; then
    FLAGS_gcc_version="4.4.3-r4"
 fi
 
-# Update symlinks to point at latest version of make.conf. In older versions of
-# the chroot, it pointed at different files. TODO(asharif): This is only needed
-# for backwards compatibility, so we should remove this eventually.
-CHROOT_TRUNK="${CHROOT_TRUNK_DIR}"
-CHROOT_CONFIG="${CHROOT_TRUNK}/src/third_party/chromiumos-overlay/chromeos/config"
-sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
-  "${FLAGS_chroot}/etc/make.conf"
+if [ "$CROSSTOOL" -eq "1" ] ; then
+  FLAGS_gcc_version="4.4.3"
+fi
+
 # If all 4 toolchain packages are not installed, then install them!
 set +e
 TC_INSTALL=false
@@ -173,32 +183,25 @@ for i in glibc gcc binutils linux-headers; do
   fi
 done
 set -e
-BINHOST=$(portageq envvar PORTAGE_BINHOST)
-CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
-CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
-CROSS_GCC="--gcc $FLAGS_gcc_version"
-CROSS_KERNEL="--kernel $FLAGS_kernel_version"
-CROSS_LIBC="--libc $FLAGS_libc_version"
-CROSS_USEPKG=""
 if $TC_INSTALL; then
+  BINHOST=$(portageq envvar PORTAGE_BINHOST)
+  CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
+  CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
+  CROSS_GCC="--gcc $FLAGS_gcc_version"
+  CROSS_KERNEL="--kernel $FLAGS_kernel_version"
+  CROSS_LIBC="--libc $FLAGS_libc_version"
+  CROSS_USEPKG=""
   if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-    CROSS_USEPKG="--portage --getbinpkg --portage --usepkg --portage \
-      --binpkg-respect-use=y"
+    CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly"
   fi
-else
-  # See if newer binary packages are available.
-  if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-    CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly --portage \
-      --binpkg-respect-use=y --portage -uDNv"
-  fi
+  sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
+    --target "$FLAGS_toolchain" \
+    $CROSS_BINUTILS \
+    $CROSS_GCC      \
+    $CROSS_KERNEL   \
+    $CROSS_LIBC     \
+    $CROSS_USEPKG
 fi
-sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
-  --target "$FLAGS_toolchain" \
-  $CROSS_BINUTILS \
-  $CROSS_GCC      \
-  $CROSS_KERNEL   \
-  $CROSS_LIBC     \
-  $CROSS_USEPKG
 
 sudo mkdir -p "$BOARD_ROOT"
 
@@ -264,8 +267,13 @@ sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
 #    make.conf.board_setup <- Declares CHOST, ROOT, etc.
 #    make.conf.common      <- Common settings across all targets
 #    make.conf.board       <- Optional board-supplied make.conf
-sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
-  "${BOARD_ETC}/make.conf"
+if [ "$HARDENED" -eq "1" ] ; then
+  sudo ln -sf "${CHROMIUMOS_CONFIG}/make-hardened.conf.${ARCH}-target" \
+    "${BOARD_ETC}/make.conf"
+else
+  sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
+    "${BOARD_ETC}/make.conf"
+fi
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
   "${BOARD_ETC}/make.conf.common"
 cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"
