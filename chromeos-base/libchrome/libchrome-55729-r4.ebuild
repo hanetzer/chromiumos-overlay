@@ -79,6 +79,8 @@ src_install() {
 	doins "${S}/files/base/lock.h"
 	doins "${S}/files/base/lock_impl.h"
 	doins "${S}/files/base/logging.h"
+	doins "${S}/files/base/nss_util.h"
+	doins "${S}/files/base/nss_util_internal.h"
 	doins "${S}/files/base/pickle.h"
 	doins "${S}/files/base/platform_file.h"
 	doins "${S}/files/base/platform_thread.h"

@@ -1,7 +1,21 @@
-diff -Naur libchrome-55729-orig/files/base/logging.cc libchrome-55729-xmessage/files/base/logging.cc
---- libchrome-55729-orig/files/base/logging.cc	2010-08-11 13:51:24.000000000 -0700
-+++ libchrome-55729-xmessage/files/base/logging.cc	2010-08-11 15:50:35.000000000 -0700
-@@ -362,7 +362,7 @@
+diff --git a/base/logging.cc b/base/logging.cc
+index 7622fbe..a6d9cfc 100644
+--- a/files/base/logging.cc
++++ b/files/base/logging.cc
+@@ -326,6 +326,12 @@ void DisplayDebugMessageInDialog(const std::string& str) {
+   if (str.empty())
+     return;
+ 
++  // CommandLine::ForCurrentProcess() can DCHECK, which will call this function
++  // again so we need to protect against looping forever.
++  static bool already_processing_message = false;
++  if (already_processing_message)
++    return;
++  already_processing_message = true;
+   if (CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoErrorDialogs))
+     return;
+ 
+@@ -362,7 +368,7 @@ void DisplayDebugMessageInDialog(const std::string& str) {
      MessageBoxW(NULL, &cmdline[0], L"Fatal error",
                  MB_OK | MB_ICONHAND | MB_TOPMOST);
    }
