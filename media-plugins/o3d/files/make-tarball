@@ -8,13 +8,17 @@ usage() {
   echo "Usage: $0 <svn-revision> [gclient-file]"
 }
 
+die() {
+  echo "dying: $*"
+  exit 1
+}
+
 if [[ $# -lt 1 ]]; then
   usage
   exit 0
 fi
 
 function update_mirror() {
-  LOCALMIRROR=$1
   [ -z "${LOCALMIRROR}" ] && return 0
 
   echo -n "Update local mirror? [yn] "
