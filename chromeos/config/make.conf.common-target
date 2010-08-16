@@ -38,7 +38,7 @@ DISTDIR="/var/lib/portage/distfiles-target"
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
 
 # We want emerge to overwrite all config files automatically.
-CONFIG_PROTECT="-*"
+CONFIG_PROTECT="-* /etc/make.globals"
 
 # Username and home directory of the shared user.
 SHARED_USER_NAME="chronos"
