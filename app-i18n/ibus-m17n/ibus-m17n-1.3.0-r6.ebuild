@@ -3,7 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-m17n/ibus-m17n-1.2.0.20090617.ebuild,v 1.1 2009/06/18 15:40:00 matsuu Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="51eee3a33f44ca5c150946a79a98d43a4eabeda2"
+CROS_WORKON_COMMIT="e840a7a1502282e536c56309059c54d3e268a6fe"
+
 inherit cros-workon
 
 DESCRIPTION="The M17N engine IMEngine for IBus Framework"
