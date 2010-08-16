@@ -4,15 +4,14 @@
 
 EAPI="2"
 
-inherit cros-workon
-
 DESCRIPTION="The M17N engine IMEngine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/ibus/"
 #SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="nls"
 
 RDEPEND=">=app-i18n/ibus-1.2
@@ -25,16 +24,11 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
 
-# Chromium OS change:
-# - Removed dev-db/m17n-contrib from DEPEND for now since we're still not sure
-#   if we really need this package.
-# - src_unpack() is inherited from cros-workon
-# - Added ./autogen.sh call to src_compile().
-
-CROS_WORKON_SUBDIR="files"
+src_unpack() {
+	unpack ${A}
+}
 
 src_prepare() {
-	NOCONFIGURE=1 ./autogen.sh
 	# Build ibus-engine-m17n for the host platform.
 	(CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' ./configure && make) || die
 	# Obtain the XML output by running the binary.
