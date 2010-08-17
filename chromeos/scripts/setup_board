@@ -303,6 +303,7 @@ sudo ln -sf \
 # Create emerge wrapper
 EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD_VARIANT}"
 EBUILD_WRAPPER="/usr/local/bin/ebuild-${BOARD_VARIANT}"
+ECLEAN_WRAPPER="/usr/local/bin/eclean-${BOARD_VARIANT}"
 EQUERY_WRAPPER="/usr/local/bin/equery-${BOARD_VARIANT}"
 PORTAGEQ_WRAPPER="/usr/local/bin/portageq-${BOARD_VARIANT}"
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" > /dev/null 2>&1
@@ -319,6 +320,7 @@ EOF
 
 sudo chmod +x "$EMERGE_WRAPPER"
 sudo cp "$EMERGE_WRAPPER" "$EBUILD_WRAPPER"
+sudo cp "$EMERGE_WRAPPER" "$ECLEAN_WRAPPER"
 sudo cp "$EMERGE_WRAPPER" "$EQUERY_WRAPPER"
 sudo cp "$EMERGE_WRAPPER" "$PORTAGEQ_WRAPPER"
 
@@ -331,6 +333,12 @@ cat <<EOF | sudo dd of="$EBUILD_WRAPPER" \
         oflag=append conv=notrunc > /dev/null 2>&1
 export ROOT="$BOARD_ROOT"
 exec sudo -E ebuild "\$@"
+EOF
+
+cat <<EOF | sudo dd of="$ECLEAN_WRAPPER" \
+        oflag=append conv=notrunc > /dev/null 2>&1
+export ROOT="$BOARD_ROOT"
+exec sudo -E eclean "\$@"
 EOF
 
 cat <<EOF | sudo dd of="$EQUERY_WRAPPER" \
