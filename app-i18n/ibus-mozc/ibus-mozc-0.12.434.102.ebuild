@@ -6,35 +6,29 @@ inherit python toolchain-funcs
 
 DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2"
 LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.2
          dev-libs/protobuf
          net-misc/curl"
-DEPEND="${RDEPEND}
-        dev-python/gyp"
+DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
-src_unpack() {
-	unpack ${A}
-	cd "${S}"
-}
-
 src_configure() {
+  cd "mozc-${PV}" || die
   # Generate make files
-  local python_dir="/usr/$(get_libdir)/python$(python_get_version)"
-  export PYTHONPATH="${SYSROOT}${python_dir}/site-packages"
   export GYP_DEFINES="chromeos=1"
   export BUILD_COMMAND="emake"
 
-  $(PYTHON) build_mozc.py gyp --gypdir="${SYSROOT}/usr/bin" \
+  $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
       --branding="${BRANDING}" || die
 }
 
 src_compile() {
+  cd "mozc-${PV}" || die
   # Create build tools for the host platform.
   CFLAGS="" CXXFLAGS="" $(PYTHON) build_mozc.py build_tools -c ${BUILDTYPE} \
       || die
@@ -46,6 +40,7 @@ src_compile() {
 }
 
 src_install() {
+  cd "mozc-${PV}" || die
   exeinto /usr/libexec || die
   newexe "out_linux/${BUILDTYPE}/ibus_mozc" ibus-engine-mozc || die
 

@@ -76,3 +76,6 @@
 
 # Masked all upstream ebuilds
 <www-plugins/adobe-flash-10.1.53.64
+
+# Masked old packages that had old ${PV} numbering scheme
+>=app-i18n/ibus-mozc-29
