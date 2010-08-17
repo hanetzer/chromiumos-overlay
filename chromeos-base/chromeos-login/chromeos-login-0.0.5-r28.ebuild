@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="3cf178128a04670257c4c1317e46bfd9c807e085"
+CROS_WORKON_COMMIT="c2bd9ff29264b6c4c3edb003665f783b76308f1b"
 
 KEYWORDS="arm amd64 x86"
 
@@ -30,7 +30,7 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	export CXXFLAGS="${CXXFLAGS} -gstabs"
-	emake -j1 session_manager || die "chromeos-login compile failed."
+	emake session_manager || die "chromeos-login compile failed."
 	dump_syms session_manager > session_manager.sym 2>/dev/null || \
 		die "symbol extraction failed"
 }
@@ -38,7 +38,7 @@ src_compile() {
 src_test() {
 	tc-export CXX PKG_CONFIG
 
-	emake -j1 session_manager_unittest signaller || \
+	emake session_manager_unittest || \
 		die "chromeos-login compile tests failed."
 
 	if use x86 ; then
