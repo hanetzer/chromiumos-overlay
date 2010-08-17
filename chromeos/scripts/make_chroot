@@ -82,6 +82,11 @@ function bash_chroot {
   sudo chroot "$FLAGS_chroot" bash -l -c "$*"
 }
 
+function sudo_chroot {
+  # Does the equivalent of an enter_chroot
+  sudo chroot "$FLAGS_chroot" sudo -i -u $USER -- "$@"
+}
+
 function cleanup {
   # Clean up mounts
   #
@@ -308,7 +313,8 @@ bash_chroot $EMERGE_CMD -uDNv $USEPKG world \
     ccache crossdev crossdev-wrappers sudo $EMERGE_JOBS
 
 echo "$PROG: Running emerge hard-host-depends"
-bash_chroot $EMERGE_CMD -uDNv $USEPKG hard-host-depends $EMERGE_JOBS
+# Need to sudo_chroot here so that ~/.bash_profile gets used
+sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends $EMERGE_JOBS
 
 echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
   "${FLAGS_chroot}/home/$USER/.bashrc"
