@@ -24,10 +24,6 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
 
-src_unpack() {
-	unpack ${A}
-}
-
 src_prepare() {
 	# Build ibus-engine-m17n for the host platform.
 	(CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' ./configure && make) || die
