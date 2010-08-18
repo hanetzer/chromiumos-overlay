@@ -76,10 +76,10 @@ IUSE_TESTS="
 	+tests_factory_Wipe
 	+tests_firmware_RomSize
 	tests_firmware_VbootCrypto
-	tests_graphics_GLAPICheck
+	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
-	tests_graphics_O3DSelenium
-	tests_graphics_SanAngeles
+	+tests_graphics_O3DSelenium
+	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest
 	tests_graphics_WebGLConformance
 	+tests_graphics_WindowManagerGraphicsCapture
