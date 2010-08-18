@@ -161,7 +161,7 @@ fi
 
 if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
   echo "Building Autotest"
-  ./autotest --build=all --noprompt --board=${FLAGS_board}
+  ./build_autotest.sh --board=${FLAGS_board}
 fi
 
 echo "Builds complete"
