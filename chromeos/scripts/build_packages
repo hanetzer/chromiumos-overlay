@@ -67,12 +67,6 @@ if [ -z "$FLAGS_board" ] ; then
   exit 1
 fi
 
-CROSSTOOL=0
-if emerge --info |grep crosstool > /dev/null
-then
-  CROSSTOOL=1
-fi
-
 EMERGE_FLAGS=""
 
 EMERGE_CMD="emerge"
@@ -98,6 +92,29 @@ if [[ $FLAGS_jobs -ne -1 ]]; then
   fi
 fi
 
+BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${FLAGS_board}"
+TC_ARCH=$(awk -F'-' '{ print $1 }' < ${BOARD_OVERLAY}/toolchain.conf)
+case "$TC_ARCH" in
+  arm*)
+    ARCH="arm"
+    ;;
+  *86)
+    ARCH="x86"
+    ;;
+  *)
+    error "Unable to determine ARCH from toolchain: $FLAGS_board"
+    exit 1
+esac
+
+# Update symlinks to point at latest version of make.conf. In older versions of
+# the chroot, it pointed at different files. TODO(asharif): This is only needed
+# for backwards compatibility, so we should remove this eventually.
+CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos/"
+CHROMIUMOS_CONFIG="${CHROMIUMOS_OVERLAY}/chromeos/config"
+sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.amd64-host" \
+  "${FLAGS_chroot}/etc/make.conf"
+sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
+  "/build/${FLAGS_board}/etc/make.conf"
 # Hacks to avoid forcing users to create a new chroot
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
