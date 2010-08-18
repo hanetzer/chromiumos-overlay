@@ -106,6 +106,7 @@ IUSE_TESTS="
 	+tests_logging_KernelCrash
 	+tests_logging_LogVolume
 	+tests_logging_UserCrash
+	+tests_logging_UncleanShutdownServer
 	+tests_login_Backdoor
 	+tests_login_BadAuthentication
 	+tests_login_ChromeProfileSanitary
@@ -115,6 +116,7 @@ IUSE_TESTS="
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
 	+tests_login_RemoteLogin
+	+tests_network_3GLoadFirmware
 	+tests_network_3GSmokeTest
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_DhclientLeaseTestCase
@@ -123,6 +125,8 @@ IUSE_TESTS="
 	+tests_network_Ping
 	+tests_network_UdevRename
 	+tests_network_WiFiCaps
+	+tests_network_WiFiMatFunc
+	+tests_network_WiFiSecMat
 	+tests_network_WiFiSmokeTest
 	+tests_network_WifiAuthenticationTests
 	+tests_network_WlanHasIP
@@ -130,17 +134,20 @@ IUSE_TESTS="
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
 	+tests_platform_BootPerf
+	+tests_platform_BootPerfServer
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CleanShutdown
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeMount
 	+tests_platform_CryptohomeTestAuth
+	+tests_platform_CryptohomeTPMReOwnServer
 	+tests_platform_DMVerityCorruption
 	+tests_platform_DaemonsRespawn
 	+tests_platform_DiskIterate
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
+	+tests_platform_KernelErrorPaths
 	+tests_platform_KernelVersion
 	+tests_platform_MemCheck
 	+tests_platform_MiniJailCmdLine
@@ -163,6 +170,7 @@ IUSE_TESTS="
 	+tests_power_CPUIdle
 	+tests_power_Draw
 	+tests_power_Idle
+	+tests_power_IdleServer
 	+tests_power_LoadTest
 	+tests_power_Resume
 	+tests_power_StatsCPUFreq
@@ -175,6 +183,14 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_RendererSandbox
+	+tests_suite_BuildVerify
+	+tests_suite_BuildVerify
+	+tests_suite_Network3G
+	+tests_suite_NetworkWiFi
+	+tests_suite_Nightly
+	+tests_suite_NightlyPower
+	+tests_suite_PerfAlerts
+	+tests_suite_SecurityFunctional
 "
 
 IUSE="+autox +xset +tpmtools opengles hardened ${IUSE_TESTS}"
