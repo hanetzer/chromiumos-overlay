@@ -14,12 +14,14 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="test"
 
+# crash_sender uses sys-apps/findutils (for /usr/bin/find).
 RDEPEND="chromeos-base/crash-dumper
          chromeos-base/libchrome
          chromeos-base/metrics
          dev-cpp/gflags
-	 net-misc/curl
-         test? ( dev-cpp/gtest )"
+         test? ( dev-cpp/gtest )
+         net-misc/curl
+         sys-apps/findutils"
 DEPEND="${RDEPEND}"
 
 src_compile() {

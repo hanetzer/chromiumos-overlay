@@ -60,7 +60,6 @@ RDEPEND="${RDEPEND}
 	net-wireless/wireless-tools
 	sys-apps/diffutils
 	x86? ( sys-apps/dmidecode )
-	sys-apps/findutils
 	x86? ( sys-apps/iotools )
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
