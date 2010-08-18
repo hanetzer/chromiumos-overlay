@@ -280,6 +280,7 @@ src_compile() {
 		TEST_TARGETS="browser_tests
 			page_cycler_tests
 			reliability_tests
+			sync_integration_tests
 			startup_tests
 			ui_tests"
 		if use x86; then  # Build PyAuto on x86 only.
@@ -330,6 +331,7 @@ install_chrome_test_resources() {
 	rsync -v "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_TESTS}"/sync_integration_tests "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
 
 	mkdir -p "${TEST_DIR}"/out/Release/pyproto
