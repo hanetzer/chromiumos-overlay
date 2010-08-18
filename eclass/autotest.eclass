@@ -134,8 +134,11 @@ function autotest_src_prepare() {
 
 function autotest_src_configure() {
 	cd "${AUTOTEST_WORKDIR}"
-	touch_init_py client/tests client/site_tests
-	touch __init__.py
+	for dir in client/tests/* client/site_tests/*; do
+		[ -d "${dir}" ] || continue
+
+		touch_init_py ${dir}
+	done
 
 	# Cleanup checked-in binaries that don't support the target architecture
 	[[ ${E_MACHINE} == "" ]] && return 0;
@@ -168,10 +171,25 @@ function autotest_src_compile() {
 }
 
 function autotest_src_install() {
-	insinto /usr/local/autotest/client/
-	doins -r "${AUTOTEST_WORKDIR}"/client/{tests,site_tests,deps,profilers,config}
-	insinto /usr/local/autotest/server/
-	doins -r "${AUTOTEST_WORKDIR}"/server/{tests,site_tests}
+	local instdirs="
+		client/tests
+		client/site_tests
+		client/deps
+		client/profilers
+		client/config
+		server/tests
+		server/site_tests"
+
+	for dir in ${instdirs}; do
+		[ -d "${dir}" ] || continue
+
+		insinto /usr/local/autotest/$(dirname ${dir})
+		doins -r "${AUTOTEST_WORKDIR}/${dir}"
+	done
+
+	# TODO: Not all needs to be executable, but it's hard to pick selectively.
+	# The source repo should already contain stuff with the right permissions.
+	chmod -R a+x "${D}"/usr/local/autotest/*
 }
 
 EXPORT_FUNCTIONS src_configure src_compile src_prepare src_install

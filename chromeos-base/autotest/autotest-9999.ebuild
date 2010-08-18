@@ -38,6 +38,22 @@ src_prepare() {
 src_install() {
 	insinto /usr/local/autotest
 	doins -r "${AUTOTEST_WORK}"/*
+
+	# base __init__.py
+	touch "${D}"/usr/local/autotest/__init__.py
+
+	TESTDIRS="
+		client/tests client/site_tests
+		client/config client/profilers client/deps
+		server/tests server/site_tests"
+
+	# also pre-create the test dirs
+	for dir in ${TESTDIRS}; do
+		mkdir "${D}/usr/local/autotest/${dir}"
+		touch "${D}/usr/local/autotest/${dir}"/.keep
+	done
+
+	# TODO: This should be more selective
 	chmod -R a+x "${D}"/usr/local/autotest
 
 	# setup stuff needed for read/write operation
