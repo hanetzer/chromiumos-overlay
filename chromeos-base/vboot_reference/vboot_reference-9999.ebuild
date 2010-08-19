@@ -29,6 +29,7 @@ src_install() {
 		# Installing on the target. Cherry pick programs generated
 		# by src_compile in the source tree build/ subdirectory
 		local progs='utility/dump_kernel_config'
+		progs+=' utility/dev_sign_file'
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
 		progs+=' utility/vbutil_kernel'
