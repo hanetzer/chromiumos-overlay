@@ -3,13 +3,12 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-hangul/ibus-hangul-1.2.0.20090617.ebuild,v 1.1 2009/06/18 15:40:05 matsuu Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="907f93dc3583ea0a21a5207712c39f931af1a77f"
-
-inherit cros-workon
+inherit eutils
 
 DESCRIPTION="The Hangul engine for IBus input platform"
 HOMEPAGE="http://code.google.com/p/ibus/"
 #SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -23,16 +22,18 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
-CROS_WORKON_SUBDIR="files"
-
 src_unpack() {
-	cros-workon_src_unpack
-	cd "${S}"
-	ln -s "$(type -P true)" py-compile || die
-}
+	unpack ${A}
+	cd "${P}"
 
-src_prepare() {
-	NOCONFIGURE=1 ./autogen.sh
+	# This upstream change is not included in
+	# ibus-hangul-1.3.0.20100329.tar.gz yet.
+	epatch "${FILESDIR}/ibus-hangul-candidate-window-click-8135d88b75bce61f54d0049e62916420200b38d6.patch"
+
+	# This change will be upstreamed
+	# (http://code.google.com/p/ibus/issues/detail?id=1036). For now, we
+	# apply it locally to fix http://crosbug.com/4319.
+	epatch "${FILESDIR}/ibus-hangul-dont-consume-modifier-keys.patch"
 }
 
 src_configure() {

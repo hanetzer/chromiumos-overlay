@@ -1,0 +1,30 @@
+Index: src/engine.c
+diff --git a/src/engine.c b/src/engine.c
+index 2fd41d48a34f1f1036fd20ac273f4710afdb14e2..48095342febc2203f552e5237d9158bcbb31c8c6 100644
+--- a/src/engine.c
++++ b/src/engine.c
+@@ -657,8 +657,23 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
+     // Let's think about these examples:
+     //   dlTek (2 set)
+     //   qhRdmaqkq (2 set)
+-    if (keyval == IBUS_Shift_L || keyval == IBUS_Shift_R)
++    // Hack for chromeos: Ignore all modifiers to prevent them from flushing the
++    // preedit string. So that we can use ctrl+alt+9 as Hanja key.
++    switch (keyval) {
++      case IBUS_Shift_L:
++      case IBUS_Shift_R:
++      case IBUS_Control_L:
++      case IBUS_Control_R:
++      case IBUS_Meta_L:
++      case IBUS_Meta_R:
++      case IBUS_Alt_L:
++      case IBUS_Alt_R:
++      case IBUS_Super_L:
++      case IBUS_Super_R:
++      case IBUS_Hyper_L:
++      case IBUS_Hyper_R:
+         return FALSE;
++    }
+ 
+     if (key_event_list_match(hanja_keys, keyval, modifiers)) {
+         if (hangul->hanja_list == NULL) {
