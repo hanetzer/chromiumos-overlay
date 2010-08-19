@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-hangul/ibus-hangul-1.2.0.20090617.ebuild,v 1.1 2009/06/18 15:40:05 matsuu Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="463bafba44f234202ef7dd49c6f8c11feda82683"
+CROS_WORKON_COMMIT="907f93dc3583ea0a21a5207712c39f931af1a77f"
 
 inherit cros-workon
 
