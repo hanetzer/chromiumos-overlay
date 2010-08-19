@@ -30,7 +30,7 @@ assert_outside_chroot
 DEFINE_string chroot "$DEFAULT_CHROOT_DIR" \
   "Destination dir for the chroot environment."
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
-DEFINE_boolean useworkon $FLAGS_FALSE \
+DEFINE_boolean useworkon $FLAGS_TRUE \
   "Enable use of the new cros_workon tool (http://goo.gl/SBtp)."
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
