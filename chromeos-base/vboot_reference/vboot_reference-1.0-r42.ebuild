@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest"
 EAPI="2"
-CROS_WORKON_COMMIT="0697e3f0cfbcd5e68bd62e3390779dc6c34d4fa1"
+CROS_WORKON_COMMIT="4be36c49744aea04844d70d2bc1e405f747a981c"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
@@ -30,6 +30,7 @@ src_install() {
 		# Installing on the target. Cherry pick programs generated
 		# by src_compile in the source tree build/ subdirectory
 		local progs='utility/dump_kernel_config'
+		progs+=' utility/dev_sign_file'
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
 		progs+=' utility/vbutil_kernel'
