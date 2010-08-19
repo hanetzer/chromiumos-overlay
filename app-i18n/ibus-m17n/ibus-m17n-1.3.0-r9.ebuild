@@ -6,8 +6,7 @@ EAPI="2"
 
 DESCRIPTION="The M17N engine IMEngine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/ibus/"
-#SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
