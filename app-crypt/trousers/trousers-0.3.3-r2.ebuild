@@ -4,7 +4,8 @@
 # $Header$
 
 EAPI="2"
-CROS_WORKON_COMMIT="da604767940f503231bd79def9cf96a89883a136"
+CROS_WORKON_COMMIT="52a3abc4c7dba06bd5417ead77897a26d10f1235"
+
 inherit autotools base cros-workon eutils linux-info
 
 DESCRIPTION="An open-source TCG Software Stack (TSS) v1.1 implementation"
