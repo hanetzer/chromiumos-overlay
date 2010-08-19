@@ -88,6 +88,7 @@ IUSE_TESTS="
 	+tests_graphics_TearTest
 	tests_graphics_WebGLConformance
 	+tests_graphics_WindowManagerGraphicsCapture
+	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_BluetoothSemiAuto
 	+tests_hardware_Components
