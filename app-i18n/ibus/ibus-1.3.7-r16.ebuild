@@ -7,12 +7,7 @@ inherit eutils multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-# TODO(satorux): Adding -r1 is a temporary workaround. Without this,
-# ibus-1.3.3.tar.gz cached elsewhere (likely
-# http://build.chromium.org/mirror/chromiumos/mirror/distfiles), was
-# chosen instead. We'll be soon switching to a new naming scheme for
-# chromium os.
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-${PV}.tar.gz"
+SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
