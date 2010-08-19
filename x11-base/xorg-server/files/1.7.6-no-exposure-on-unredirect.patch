@@ -1,0 +1,80 @@
+diff -ur /build/backup/xorg-server-1.7.6/dix/window.c /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xorg-server-1.7.6/dix/window.c
+--- /build/backup/xorg-server-1.7.6/dix/window.c	2010-08-17 10:29:17.000000000 -0700
++++ /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xorg-server-1.7.6/dix/window.c	2010-08-17 10:31:29.000000000 -0700
+@@ -2583,6 +2583,30 @@
+     return pWin != windowDisableMapUnmapEvents;
+ }
+ 
++static WindowPtr windowDisableExposureEvents;
++
++void
++DisableExposureEvents(WindowPtr pWin)
++{
++    assert (windowDisableExposureEvents == NULL);
++    
++    windowDisableExposureEvents = pWin;
++}
++
++void
++EnableExposureEvents(WindowPtr pWin)
++{
++    assert (windowDisableExposureEvents != NULL);
++
++    windowDisableExposureEvents = NULL;
++}
++
++static Bool
++ExposureEventsEnabled(WindowPtr pWin)
++{
++    return pWin != windowDisableExposureEvents;
++}
++
+ /*****
+  * MapWindow
+  *    If some other client has selected SubStructureReDirect on the parent
+@@ -2647,7 +2671,8 @@
+ 	    if (anyMarked)
+ 	    {
+ 		(*pScreen->ValidateTree)(pLayerWin->parent, pLayerWin, VTMap);
+-		(*pScreen->HandleExposures)(pLayerWin->parent);
++		if (ExposureEventsEnabled(pWin))
++		    (*pScreen->HandleExposures)(pLayerWin->parent);
+ 	    }
+ 	if (anyMarked && pScreen->PostValidateTree)
+ 	    (*pScreen->PostValidateTree)(pLayerWin->parent, pLayerWin, VTMap);
+@@ -2854,7 +2879,8 @@
+ 	if (!fromConfigure)
+ 	{
+ 	    (*pScreen->ValidateTree)(pLayerWin->parent, pWin, VTUnmap);
+-	    (*pScreen->HandleExposures)(pLayerWin->parent);
++	    if (ExposureEventsEnabled(pWin))
++	        (*pScreen->HandleExposures)(pLayerWin->parent);
+ 	}
+ 	if (!fromConfigure && pScreen->PostValidateTree)
+ 	    (*pScreen->PostValidateTree)(pLayerWin->parent, pWin, VTUnmap);
+diff -ur /build/backup/xorg-server-1.7.6/include/window.h /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xorg-server-1.7.6/include/window.h
+--- /build/backup/xorg-server-1.7.6/include/window.h	2010-08-16 16:29:28.000000000 -0700
++++ /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xorg-server-1.7.6/include/window.h	2010-08-16 16:37:58.000000000 -0700
+@@ -266,4 +266,9 @@
+ extern _X_EXPORT void EnableMapUnmapEvents(
+     WindowPtr /* pWin */ );
+ 
++extern _X_EXPORT void DisableExposureEvents(
++    WindowPtr /* pWin */ );
++extern _X_EXPORT void EnableExposureEvents(
++    WindowPtr /* pWin */ );
++
+ #endif /* WINDOW_H */
+diff -ur /build/backup/xorg-server-1.7.6/composite/compalloc.c /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xorg-server-1.7.6/composite/compalloc.c
+--- /build/backup/xorg-server-1.7.6/composite/compalloc.c	2010-08-16 17:36:09.000000000 -0700
++++ /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xorg-server-1.7.6/composite/compalloc.c	2010-08-16 17:38:02.000000000 -0700
+@@ -266,7 +266,9 @@
+     for (ccw = cw->clients; ccw; ccw = ccw->next)
+ 	if (ccw->update == update && CLIENT_ID(ccw->id) == pClient->index)
+ 	{
++	    DisableExposureEvents (pWin);
+ 	    FreeResource (ccw->id, RT_NONE);
++	    EnableExposureEvents (pWin);
+ 	    return Success;
+ 	}
+     return BadValue;

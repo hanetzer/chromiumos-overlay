@@ -1,0 +1,14 @@
+diff -ur /build/backup/xserver/dix/window.c /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xserver/dix/window.c
+--- /build/backup/xserver/dix/window.c	2010-08-13 17:22:40.000000000 -0700
++++ /build/x86-generic/tmp/portage/x11-base/xorg-server-1.7.6/work/xserver/dix/window.c	2010-08-16 13:05:47.000000000 -0700
+@@ -3046,8 +3046,8 @@
+ #ifndef NO_XINERAMA_PORT
+     unsigned int visibility = pWin->visibility;
+ #endif
+-    if (!MapUnmapEventsEnabled(pWin))
+-        return;
++    //if (!MapUnmapEventsEnabled(pWin))
++    //    return;
+ #ifdef PANORAMIX
+     /* This is not quite correct yet, but it's close */
+     if(!noPanoramiXExtension) {

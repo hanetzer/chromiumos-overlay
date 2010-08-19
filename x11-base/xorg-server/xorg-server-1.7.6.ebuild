@@ -147,6 +147,7 @@ PATCHES=(
 	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
 	"${FILESDIR}/1.7.6-composite-redirect-events.patch"
 	"${FILESDIR}/1.7.6-no-exposure-for-redirect.patch"
+	"${FILESDIR}/1.7.6-always-send-visibility.patch"
 	)
 
 pkg_setup() {
