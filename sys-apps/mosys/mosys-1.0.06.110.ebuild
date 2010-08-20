@@ -15,6 +15,10 @@ SLOT="0"
 KEYWORDS="amd64 x86"
 RDEPEND="sys-apps/util-linux"	# for libuuid
 
+src_prepare() {
+	epatch ${FILESDIR}/unused-gcrypt.diff
+}
+
 src_compile() {
 	# Generate a default .config for our target architecture. This will
 	# likely become more sophisticated as we broaden board support.
@@ -25,7 +29,7 @@ src_compile() {
                 tc-export AR AS CC CXX LD NM STRIP OBJCOPY
         fi
 
-	emake
+	emake || die
 }
 
 src_install() {
