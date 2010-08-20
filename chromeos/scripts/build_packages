@@ -50,6 +50,8 @@ DEFINE_boolean norebuild ${FLAGS_FALSE} \
   "Don't automatically rebuild dependencies."
 DEFINE_boolean showoutput ${FLAGS_FALSE} \
   "Show all output from parallel_emerge."
+DEFINE_boolean noworkon ${FLAGS_FALSE} \
+  "Don't force-build workon packages."
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -123,8 +125,10 @@ sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 $EMERGE_CMD --info
 eretry sudo $EMERGE_CMD -uDNv $EMERGE_FLAGS world
 
-# Always build cros-workon packages
-CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
+if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
+  # Always build cros-workon packages
+  CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
+fi
 
 # We are building chrome from source if chromefromsource is 'TRUE'.
 if [ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]; then
