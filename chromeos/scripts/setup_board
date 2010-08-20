@@ -180,17 +180,14 @@ CROSS_GCC="--gcc $FLAGS_gcc_version"
 CROSS_KERNEL="--kernel $FLAGS_kernel_version"
 CROSS_LIBC="--libc $FLAGS_libc_version"
 CROSS_USEPKG=""
-if $TC_INSTALL; then
-  if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-    CROSS_USEPKG="--portage --getbinpkg --portage --usepkg --portage \
-      --binpkg-respect-use=y"
-  fi
-else
-  # See if newer binary packages are available.
-  if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-    CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly --portage \
-      --binpkg-respect-use=y --portage -uDNv"
-  fi
+
+# HACK ALERT: Because our compiler currently doesn't compile, we need to set
+# HACK ALERT: --binpkg-respect-use=n and --usepkgonly, always. This ensures
+# HACK ALERT: that we never try to build the compiler when the --usepkg flag
+# HACK ALERT: is set. See bug 5931.
+if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+  CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly --portage \
+    --binpkg-respect-use=n --portage -uDv"
 fi
 sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
   --target "$FLAGS_toolchain" \
