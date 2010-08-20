@@ -83,7 +83,7 @@ function create_autotest_workdir() {
 
 		# Skip bin, because it is processed separately, and test-provided dirs
 		# Also don't symlink to packages, because that kills the build
-		for entry in $(ls "${root_path}" |grep -v "\(bin\|tests\|site_tests\|deps\|profilers\|config\|packages\)$"); do
+		for entry in $(ls "${root_path}" |grep -v "\(bin\|tests\|site_tests\|packages\)$"); do
 			ln -sf "${root_path}/${entry}" "${dst}/${base_path}/"
 		done
 	done
@@ -113,12 +113,6 @@ function autotest_src_prepare() {
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/site_tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
-
-	for dir in "${WORKDIR}/${P}"/client/{config,deps,profilers}; do
-		if [ -d "${dir}" ]; then
-			cp -fpru "${dir}" "${AUTOTEST_WORKDIR}"/client/ || die
-		fi
-	done
 
 	for l1 in client server; do
 	for l2 in site_tests tests; do
@@ -183,9 +177,6 @@ function autotest_src_install() {
 	local instdirs="
 		client/tests
 		client/site_tests
-		client/deps
-		client/profilers
-		client/config
 		server/tests
 		server/site_tests"
 
