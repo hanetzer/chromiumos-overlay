@@ -34,6 +34,7 @@ src_install() {
 		progs+=' utility/tpmc'
 		progs+=' utility/vbutil_kernel'
 		progs+=' utility/vbutil_firmware'
+		progs+=' utility/gbb_utility'
 		progs+=' cgpt/cgpt'
 
 		into "/usr"
