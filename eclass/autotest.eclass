@@ -15,6 +15,14 @@ IUSE="buildcheck"
 export CONFIG_SITE="/usr/share/config.site"
 export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 
+# @ECLASS-VARIABLE: AUTOTEST_CLIENT_*
+# @DESCRIPTION:
+# Location of the appropriate test directory inside ${S}
+: ${AUTOTEST_CLIENT_TESTS:=client/tests}
+: ${AUTOTEST_CLIENT_SITE_TESTS:=client/site_tests}
+: ${AUTOTEST_SERVER_TESTS:=server/tests}
+: ${AUTOTEST_SERVER_SITE_TESTS:=server/site_tests}
+
 # Pythonify the list of packages
 function pythonify_test_list() {
 	AUTOTEST_TESTS="${IUSE_TESTS//[+-]tests_/}"
@@ -101,10 +109,8 @@ function print_test_dirs() {
 
 function autotest_src_prepare() {
 	# pull in all the tests from this package
-	mkdir -p "${AUTOTEST_WORKDIR}"/client
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/site_tests
-	mkdir -p "${AUTOTEST_WORKDIR}"/server
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
 
@@ -116,16 +122,19 @@ function autotest_src_prepare() {
 
 	for l1 in client server; do
 	for l2 in site_tests tests; do
-	if [ -d "${WORKDIR}/${P}/${l1}/${l2}" ]; then # test does have this directory
-		mkdir -p "${AUTOTEST_WORKDIR}/${l1}/${l2}"
-		pushd "${WORKDIR}/${P}/${l1}/${l2}" 1> /dev/null
-		for test in *; do
-			if use tests_${test} &> /dev/null; then
-				cp -fpru "${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
-			fi
-		done
-		popd 1> /dev/null
-	fi
+		# pick up the indicated location of test sources
+		eval srcdir=${WORKDIR}/${P}/\${AUTOTEST_${l1^^*}_${l2^^*}}
+
+		if [ -d "${srcdir}" ]; then # test does have this directory
+			mkdir -p "${AUTOTEST_WORKDIR}/${l1}/${l2}"
+			pushd "${srcdir}" 1> /dev/null
+			for test in *; do
+				if use tests_${test} &> /dev/null; then
+					cp -fpru "${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
+				fi
+			done
+			popd 1> /dev/null
+		fi
 	done
 	done
 
@@ -181,7 +190,7 @@ function autotest_src_install() {
 		server/site_tests"
 
 	for dir in ${instdirs}; do
-		[ -d "${dir}" ] || continue
+		[ -d "${AUTOTEST_WORKDIR}/${dir}" ] || continue
 
 		insinto /usr/local/autotest/$(dirname ${dir})
 		doins -r "${AUTOTEST_WORKDIR}/${dir}"
