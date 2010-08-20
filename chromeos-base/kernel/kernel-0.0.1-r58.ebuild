@@ -37,9 +37,13 @@ fi
 if [ "${CHROMEOS_KERNEL}" = "kernel-nvidia" ]; then
 	CROS_WORKON_LOCALNAME="../third_party/kernel-nvidia"
 	EGIT_BRANCH="nvidia-2.6.31.12"
+	#TODO(msb): fix this once we get ARM pfbb going
+	CROS_WORKON_COMMIT=${EGIT_BRANCH}
 elif [ "${CHROMEOS_KERNEL}" = "kernel-qualcomm" ]; then
 	CROS_WORKON_LOCALNAME="../third_party/kernel-qualcomm"
 	EGIT_BRANCH=qualcomm-2.6.32.9
+	#TODO(msb): fix this once we get ARM pfbb going
+	CROS_WORKON_COMMIT=${EGIT_BRANCH}
 else
 	# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
 	CROS_WORKON_LOCALNAME="../third_party/kernel/files"
