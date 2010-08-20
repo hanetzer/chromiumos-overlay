@@ -25,7 +25,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# Build ibus-engine-m17n for the host platform.
-	(CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' ./configure && make) || die
+	(env -i ./configure && env -i make) || die
 	# Obtain the XML output by running the binary.
 	src/ibus-engine-m17n --xml > output.xml || die
 	# Clean up.

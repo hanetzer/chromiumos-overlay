@@ -24,8 +24,7 @@ CROS_WORKON_SUBDIR="files"
 src_prepare() {
 	NOCONFIGURE=1 ./autogen.sh
 	# Build ibus-engine-xkb-layouts for the host platform.
-	(CFLAGS='' LDFLAGS='' PKG_CONFIG_PATH='' \
-	./configure $CONFIGURE_OPTIONS && make) || die
+	(env -i ./configure $CONFIGURE_OPTIONS && env -i make) || die
 	# Obtain the XML output by running the binary.
 	src/ibus-engine-xkb-layouts --xml > output.xml || die
 	# Make sure that at least one engine is present.
