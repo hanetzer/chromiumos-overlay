@@ -22,7 +22,7 @@ src_configure() {
 }
 
 src_install() {
-	insinto /usr/share/crosutils
+	insinto /usr/lib/crosutils
 	doins * || die "Could not install shared files."
 	dolib lib/* || die "Could not install library files"
 	dobin bin/* || die "Could not install executable scripts."
