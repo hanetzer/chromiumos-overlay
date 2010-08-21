@@ -359,6 +359,10 @@ install_chrome_test_resources() {
 	mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
 	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
 		"${TEST_DIR}"/third_party/pyftpdlib
+		
+	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
+	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts/* \
+		"${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
 
 	for f in ${TEST_FILES}; do
 		rsync -rv "${FROM}/${f}" "${TEST_DIR}"
