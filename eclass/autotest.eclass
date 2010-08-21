@@ -149,15 +149,11 @@ function autotest_src_prepare() {
 	done
 	done
 
+	# FIXME: We'd like if this were not necessary, and autotest supported out-of-tree build
 	create_autotest_workdir "${AUTOTEST_WORKDIR}"
-}
-
-function autotest_src_configure() {
-	are_we_used || return 0
-	einfo "Configuring tests"
 
 	cd "${AUTOTEST_WORKDIR}"
-	for dir in client/tests/* client/site_tests/*; do
+	for dir in client/tests/* client/site_tests/* server/tests/* server/site_tests/*; do
 		[ -d "${dir}" ] || continue
 
 		touch_init_py ${dir}
@@ -218,4 +214,4 @@ function autotest_src_install() {
 	chmod -R a+x "${D}"/usr/local/autotest/*
 }
 
-EXPORT_FUNCTIONS src_configure src_compile src_prepare src_install
+EXPORT_FUNCTIONS src_compile src_prepare src_install
