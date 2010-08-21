@@ -107,8 +107,25 @@ function print_test_dirs() {
 	popd 1> /dev/null
 }
 
+# checks IUSE_TESTS and sees if at least one of these is enabled
+function are_we_used() {
+	for test in ${IUSE_TESTS}; do
+		# careful, tests may be prefixed with a +
+		if use ${test/+/}; then
+			return 0
+		fi
+	done
+
+	# unused
+	return 1
+}
+
 function autotest_src_prepare() {
-	# pull in all the tests from this package
+	are_we_used || return 0
+	einfo "Preparing tests"
+
+	# FIXME: These directories are needed, autotest quietly dies if
+	# they don't even exist. They may, however, stay empty.
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/site_tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
@@ -136,6 +153,9 @@ function autotest_src_prepare() {
 }
 
 function autotest_src_configure() {
+	are_we_used || return 0
+	einfo "Configuring tests"
+
 	cd "${AUTOTEST_WORKDIR}"
 	for dir in client/tests/* client/site_tests/*; do
 		[ -d "${dir}" ] || continue
@@ -149,6 +169,9 @@ function autotest_src_configure() {
 }
 
 function autotest_src_compile() {
+	are_we_used || return 0
+	einfo "Compiling tests"
+
 	pushd "${AUTOTEST_WORKDIR}" 1> /dev/null
 
 	setup_cross_toolchain
@@ -174,6 +197,9 @@ function autotest_src_compile() {
 }
 
 function autotest_src_install() {
+	are_we_used || return 0
+	einfo "Installing tests"
+
 	local instdirs="
 		client/tests
 		client/site_tests
