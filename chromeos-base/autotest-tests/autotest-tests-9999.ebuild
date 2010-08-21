@@ -51,9 +51,11 @@ IUSE_TESTS="
 	+tests_desktopui_IBusTest
 	+tests_desktopui_KillRestart
 	+tests_desktopui_PageCyclerTests
+	+tests_desktopui_ScreenLocker
 	+tests_desktopui_ScreenSaverUnlock
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	+tests_desktopui_SunSpiderBench
+	+tests_desktopui_SyncIntegrationTests
 	+tests_desktopui_UITest
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
@@ -91,25 +93,32 @@ IUSE_TESTS="
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_BluetoothSemiAuto
+	+tests_hardware_ch7036
 	+tests_hardware_Components
 	+tests_hardware_DeveloperRecovery
 	+tests_hardware_DiskSize
 	+tests_hardware_EepromWriteProtect
+	+tests_hardware_ExternalDrives
+	+tests_hardware_GobiGPS
 	+tests_hardware_GPIOSwitches
 	+tests_hardware_GPS
+	+tests_hardware_Keyboard
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_Resolution
 	+tests_hardware_SAT
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
+	+tests_hardware_USB20
 	tests_hardware_TPM
 	tests_hardware_TPMFirmware
 	+tests_hardware_UsbPlugIn
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
 	+tests_hardware_tsl2563
+	+tests_logging_CrashSender
 	+tests_logging_KernelCrash
+	+tests_logging_KernelCrashServer
 	+tests_logging_LogVolume
 	+tests_logging_UserCrash
 	+tests_logging_UncleanShutdownServer
@@ -117,12 +126,15 @@ IUSE_TESTS="
 	+tests_login_BadAuthentication
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognitoMounted
+	+tests_login_CryptohomeIncognitoUnmounted
 	+tests_login_CryptohomeMounted
 	+tests_login_CryptohomeUnmounted
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
 	+tests_login_RemoteLogin
+	+tests_login_SecondFactor
 	+tests_network_3GLoadFirmware
+	+tests_network_3GModemPresent
 	+tests_network_3GSmokeTest
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_DhclientLeaseTestCase
@@ -167,6 +179,7 @@ IUSE_TESTS="
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
 	+tests_platform_ProcessPrivileges
+	+tests_platform_Rootdev
 	+tests_platform_Shutdown
 	+tests_platform_StackProtector
 	+tests_platform_TempFS
@@ -178,11 +191,13 @@ IUSE_TESTS="
 	+tests_power_Idle
 	+tests_power_IdleServer
 	+tests_power_LoadTest
+	+tests_power_ProbeDriver
 	+tests_power_Resume
 	+tests_power_StatsCPUFreq
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
 	+tests_power_Status
+	+tests_power_SuspendResume
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
 	+tests_realtimecomm_GTalkAudioPlayground
@@ -191,6 +206,8 @@ IUSE_TESTS="
 	+tests_security_RendererSandbox
 	+tests_suite_BuildVerify
 	+tests_suite_Factory
+	+tests_suite_HWConfig
+	+tests_suite_HWQual
 	+tests_suite_Network3G
 	+tests_suite_NetworkWiFi
 	+tests_suite_Nightly
