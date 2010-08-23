@@ -25,7 +25,7 @@ src_prepare() {
 	mkdir -p "${AUTOTEST_WORK}/client"
 	mkdir -p "${AUTOTEST_WORK}/server"
 	cp -fpu "${S}"/client/* "${AUTOTEST_WORK}/client" &>/dev/null
-	cp -fpru "${S}"/client/{bin,common_lib,tools,config,deps,profilers} "${AUTOTEST_WORK}/client"
+	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
 	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
 	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
 	cp -fpru "${S}"/{conmux,tko,utils} "${AUTOTEST_WORK}"
@@ -44,6 +44,7 @@ src_install() {
 
 	TESTDIRS="
 		client/tests client/site_tests
+		client/config client/deps client/profilers
 		server/tests server/site_tests"
 
 	# also pre-create the test dirs

@@ -22,6 +22,16 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 : ${AUTOTEST_CLIENT_SITE_TESTS:=client/site_tests}
 : ${AUTOTEST_SERVER_TESTS:=server/tests}
 : ${AUTOTEST_SERVER_SITE_TESTS:=server/site_tests}
+: ${AUTOTEST_CONFIG:=client/config}
+: ${AUTOTEST_DEPS:=client/deps}
+: ${AUTOTEST_PROFILERS:=client/profilers}
+
+# @ECLASS-VARIABLE: AUTOTEST_*_LIST
+# @DESCRIPTION:
+# The list of deps/configs/profilers provided with this package
+: ${AUTOTEST_CONFIG_LIST:=*}
+: ${AUTOTEST_DEPS_LIST:=*}
+: ${AUTOTEST_PROFILERS_LIST:=*}
 
 # Pythonify the list of packages
 function pythonify_test_list() {
@@ -83,7 +93,8 @@ function create_autotest_workdir() {
 
 		# Skip bin, because it is processed separately, and test-provided dirs
 		# Also don't symlink to packages, because that kills the build
-		for entry in $(ls "${root_path}" |grep -v "\(bin\|tests\|site_tests\|packages\)$"); do
+		for entry in $(ls "${root_path}" | \
+			grep -v "\(bin\|tests\|site_tests\|config\|deps\|profilers\|packages\)$"); do
 			ln -sf "${root_path}/${entry}" "${dst}/${base_path}/"
 		done
 	done
@@ -128,6 +139,9 @@ function autotest_src_prepare() {
 	# they don't even exist. They may, however, stay empty.
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/site_tests
+	mkdir -p "${AUTOTEST_WORKDIR}"/client/config
+	mkdir -p "${AUTOTEST_WORKDIR}"/client/deps
+	mkdir -p "${AUTOTEST_WORKDIR}"/client/profilers
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
 
@@ -137,7 +151,6 @@ function autotest_src_prepare() {
 		eval srcdir=${WORKDIR}/${P}/\${AUTOTEST_${l1^^*}_${l2^^*}}
 
 		if [ -d "${srcdir}" ]; then # test does have this directory
-			mkdir -p "${AUTOTEST_WORKDIR}/${l1}/${l2}"
 			pushd "${srcdir}" 1> /dev/null
 			for test in *; do
 				if use tests_${test} &> /dev/null; then
@@ -147,6 +160,28 @@ function autotest_src_prepare() {
 			popd 1> /dev/null
 		fi
 	done
+	done
+
+	# pull in the deps selectively
+	for l2 in config deps profilers; do
+		# pick up the indicated location of test sources
+		eval srcdir=${WORKDIR}/${P}/\${AUTOTEST_${l2^^*}}
+
+		if [ -d "${srcdir}" ]; then # test does have this directory
+			pushd "${srcdir}" 1> /dev/null
+			eval deplist=\${AUTOTEST_${l2^^*}_LIST}
+
+			if [ "${deplist}" = "*" ]; then
+				cp -fpru * "${AUTOTEST_WORKDIR}/client/${l2}"
+			else
+				for dir in ${deplist}; do
+					if expr use tests_${test} &> /dev/null; then
+						cp -fpru "${test}" "${AUTOTEST_WORKDIR}/client/${l2}"/ || die
+					fi
+				done
+			fi
+			popd 1> /dev/null
+		fi
 	done
 
 	# FIXME: We'd like if this were not necessary, and autotest supported out-of-tree build
@@ -199,6 +234,9 @@ function autotest_src_install() {
 	local instdirs="
 		client/tests
 		client/site_tests
+		client/config
+		client/deps
+		client/profilers
 		server/tests
 		server/site_tests"
 
