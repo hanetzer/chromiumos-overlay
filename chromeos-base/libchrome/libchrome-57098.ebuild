@@ -22,7 +22,6 @@ src_prepare() {
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 	epatch "${FILESDIR}/gtest_include_path_fixup.patch" || die "libchrome prepare failed."
 	epatch "${FILESDIR}/memory_annotation.patch" || die "libchrome prepare failed."
-	epatch "${FILESDIR}/remove_xmessage.patch" || die "libchrome prepare failed."
 }
 
 src_compile() {
@@ -65,6 +64,7 @@ src_install() {
 	doins "${S}/files/base/atomicops_internals_arm_gcc.h"
 	doins "${S}/files/base/atomicops_internals_x86_gcc.h"
 	doins "${S}/files/base/base_switches.h"
+	doins "${S}/files/base/base64.h"
 	doins "${S}/files/base/basictypes.h"
 	doins "${S}/files/base/command_line.h"
 	doins "${S}/files/base/compiler_specific.h"
@@ -93,6 +93,7 @@ src_install() {
 	doins "${S}/files/base/singleton.h"
 	doins "${S}/files/base/stl_util-inl.h"
 	doins "${S}/files/base/string16.h"
+	doins "${S}/files/base/stringprintf.h"
 	doins "${S}/files/base/string_piece.h"
 	doins "${S}/files/base/string_tokenizer.h"
 	doins "${S}/files/base/string_number_conversions.h"

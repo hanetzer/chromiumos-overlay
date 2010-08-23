@@ -19,6 +19,7 @@ sources = env.Split("""
                     files/base/at_exit.cc
                     files/base/atomicops_internals_x86_gcc.cc
                     files/base/base_switches.cc
+                    files/base/base64.cc
                     files/base/command_line.cc
                     files/base/crypto/rsa_private_key.cc
                     files/base/crypto/rsa_private_key_nss.cc
@@ -44,6 +45,7 @@ sources = env.Split("""
                     files/base/scoped_temp_dir.cc
                     files/base/setproctitle_linux.c
                     files/base/string16.cc
+                    files/base/stringprintf.cc
                     files/base/string_number_conversions.cc
                     files/base/string_piece.cc
                     files/base/string_util.cc
@@ -53,6 +55,7 @@ sources = env.Split("""
                     files/base/utf_string_conversion_utils.cc
                     files/base/utf_string_conversions.cc
                     files/base/values.cc
+                    files/third_party/modp_b64/modp_b64.cc
                     """)
 
 env.Append(
