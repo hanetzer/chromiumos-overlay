@@ -23,6 +23,7 @@ RDEPEND="app-crypt/tpm-tools
 
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
+	chromeos-base/libcros
 	${RDEPEND}"
 
 src_compile() {
@@ -52,4 +53,6 @@ src_install() {
 	# Install the temporary tpm init helper
 	# TODO(wad) remove when integrated into login/cryptohome
 	dosbin tpm_helpers/chromeos_tpm_init
+
+	dosbin bin/fix_pkcs11_token.sh
 }
