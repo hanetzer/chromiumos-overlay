@@ -104,6 +104,17 @@ function create_autotest_workdir() {
 		rm "${dst}/client/bin/${base_path}"
 		cp -f ${root_path} "${dst}/client/bin/${base_path}"
 	done
+
+	# Selectively pull in deps that are not provided by the current test package
+	for base_path in config deps profilers; do
+		for dir in "${SYSROOT}/usr/local/autotest/client/${base_path}"/*; do
+			if [ -d "${dir}" ] && \
+				! [ -d "${AUTOTEST_WORKDIR}/client/${base_path}/$(basename ${dir})" ]; then
+				# directory does not exist, create a symlink
+				ln -sf "${dir}" "${AUTOTEST_WORKDIR}/client/${base_path}/$(basename ${dir})"
+			fi
+		done
+	done
 }
 
 function print_test_dirs() {
@@ -145,6 +156,7 @@ function autotest_src_prepare() {
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
 
+	# Pull in the individual test cases.
 	for l1 in client server; do
 	for l2 in site_tests tests; do
 		# pick up the indicated location of test sources
@@ -162,7 +174,7 @@ function autotest_src_prepare() {
 	done
 	done
 
-	# pull in the deps selectively
+	# Pull in all the deps provided by this package, selectively.
 	for l2 in config deps profilers; do
 		# pick up the indicated location of test sources
 		eval srcdir=${WORKDIR}/${P}/\${AUTOTEST_${l2^^*}}
@@ -175,9 +187,7 @@ function autotest_src_prepare() {
 				cp -fpru * "${AUTOTEST_WORKDIR}/client/${l2}"
 			else
 				for dir in ${deplist}; do
-					if expr use tests_${test} &> /dev/null; then
-						cp -fpru "${test}" "${AUTOTEST_WORKDIR}/client/${l2}"/ || die
-					fi
+					cp -fpru "${dir}" "${AUTOTEST_WORKDIR}/client/${l2}"/ || die
 				done
 			fi
 			popd 1> /dev/null
@@ -216,7 +226,7 @@ function autotest_src_compile() {
 	TESTS=$(pythonify_test_list)
 	einfo "Tests enabled: ${TESTS}"
 
-	# Do not use sudo, it'll unset all your environment
+	# Call autotest to prebuild all test cases.
 	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
 		client/bin/autotest_client --quiet --client_test_setup=${TESTS} \
 		|| ! use buildcheck || die "Tests failed to build."
@@ -231,12 +241,12 @@ function autotest_src_install() {
 	are_we_used || return 0
 	einfo "Installing tests"
 
+	# Install all test cases, after setup has been called on them.
+	# We install everything, because nothing else is copied into the
+	# testcase directories besides what this package provides.
 	local instdirs="
 		client/tests
 		client/site_tests
-		client/config
-		client/deps
-		client/profilers
 		server/tests
 		server/site_tests"
 
@@ -245,6 +255,35 @@ function autotest_src_install() {
 
 		insinto /usr/local/autotest/$(dirname ${dir})
 		doins -r "${AUTOTEST_WORKDIR}/${dir}"
+	done
+
+	# Install the deps, configs, profilers.
+	# Difference from above is, we don't install the whole thing, just
+	# the stuff provided by this package, by looking at AUTOTEST_*_LIST.
+	instdirs="
+		config
+		deps
+		profilers"
+
+	for dir in ${instdirs}; do
+		[ -d "${AUTOTEST_WORKDIR}/client/${dir}" ] || continue
+
+		insinto /usr/local/autotest/client/${dir}
+
+		eval provided=\${AUTOTEST_${dir^^*}_LIST}
+		# * means provided all, figure out the list from ${S}
+		if [ "${provided}" = "*" ]; then
+			if eval pushd "${WORKDIR}/${P}/\${AUTOTEST_${dir^^*}}" &> /dev/null; then
+				provided=$(ls)
+				popd 1> /dev/null
+			else
+				provided=""
+			fi
+		fi
+
+		for item in ${provided}; do
+			doins -r "${AUTOTEST_WORKDIR}/client/${dir}/${item}"
+		done
 	done
 
 	# TODO: Not all needs to be executable, but it's hard to pick selectively.

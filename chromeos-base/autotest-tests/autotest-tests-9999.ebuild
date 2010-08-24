@@ -18,6 +18,7 @@ KEYWORDS="~x86 ~arm ~amd64"
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
+  chromeos-base/autotest-deps
   chromeos-base/crash-dumper
   dev-cpp/gtest
   dev-lang/python
@@ -223,3 +224,6 @@ CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
+AUTOTEST_DEPS_LIST=""
+AUTOTEST_CONFIG_LIST=""
+AUTOTEST_PROFILERS_LIST=""
