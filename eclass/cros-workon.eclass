@@ -19,7 +19,7 @@
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
 # Git URL which is prefixed to CROS_WORKON_PROJECT
-: ${CROS_WORKON_REPO:=http://src.chromium.org/git}
+: ${CROS_WORKON_REPO:=http://git.chromium.org/git}
 
 # @ECLASS-VARIABLE: CROS_WORKON_PROJECT
 # @DESCRIPTION:
