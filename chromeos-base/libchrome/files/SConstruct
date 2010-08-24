@@ -50,6 +50,8 @@ sources = env.Split("""
                     files/base/pickle.cc
                     files/base/platform_file_posix.cc
                     files/base/platform_thread_posix.cc
+                    files/base/rand_util.cc
+                    files/base/rand_util_posix.cc
                     files/base/ref_counted.cc
                     files/base/safe_strerror_posix.cc
                     files/base/scoped_temp_dir.cc
