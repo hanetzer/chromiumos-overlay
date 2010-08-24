@@ -15,7 +15,8 @@ KEYWORDS="amd64 x86 arm"
 
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
-	dev-libs/nss"
+	dev-libs/nss
+	x11-libs/gtk+"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
