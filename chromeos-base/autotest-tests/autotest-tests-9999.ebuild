@@ -39,6 +39,7 @@ IUSE_TESTS="
 	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
+	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_FFMPEG
 	+tests_audiovideo_PlaybackRecordSemiAuto
