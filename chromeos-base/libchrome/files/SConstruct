@@ -21,6 +21,7 @@ sources = env.Split("""
                     files/base/base_switches.cc
                     files/base/base64.cc
                     files/base/command_line.cc
+                    files/base/condition_variable_posix.cc
                     files/base/crypto/rsa_private_key.cc
                     files/base/crypto/rsa_private_key_nss.cc
                     files/base/crypto/signature_creator_nss.cc
@@ -31,16 +32,25 @@ sources = env.Split("""
                     files/base/file_path.cc
                     files/base/file_util.cc
                     files/base/file_util_posix.cc
+                    files/base/histogram.cc
                     files/base/json/json_reader.cc
                     files/base/json/json_writer.cc
                     files/base/json/string_escape.cc
+                    files/base/lazy_instance.cc
                     files/base/lock.cc
                     files/base/lock_impl_posix.cc
                     files/base/logging.cc
+                    files/base/message_loop.cc
+                    files/base/message_loop_proxy_impl.cc
+                    files/base/message_pump_default.cc
+                    files/base/message_pump_glib.cc
+                    files/base/message_pump_libevent.cc
+                    files/base/non_thread_safe.cc
                     files/base/nss_util.cc
                     files/base/pickle.cc
                     files/base/platform_file_posix.cc
                     files/base/platform_thread_posix.cc
+                    files/base/ref_counted.cc
                     files/base/safe_strerror_posix.cc
                     files/base/scoped_temp_dir.cc
                     files/base/setproctitle_linux.c
@@ -50,11 +60,19 @@ sources = env.Split("""
                     files/base/string_piece.cc
                     files/base/string_util.cc
                     files/base/sys_string_conversions_linux.cc
+                    files/base/task.cc
+                    files/base/thread.cc
+                    files/base/thread_collision_warner.cc
+                    files/base/thread_local_posix.cc
+                    files/base/thread_local_storage_posix.cc
                     files/base/time.cc
                     files/base/time_posix.cc
+                    files/base/tracked.cc
+                    files/base/tracked_objects.cc
                     files/base/utf_string_conversion_utils.cc
                     files/base/utf_string_conversions.cc
                     files/base/values.cc
+                    files/base/waitable_event_posix.cc
                     files/third_party/modp_b64/modp_b64.cc
                     """)
 
@@ -71,14 +89,16 @@ env['CCFLAGS'] += ['-fPIC',
                    '-fno-exceptions',
                    '-Wall',
                    '-Werror',
-                   '-DOS_CHROMEOS']
+                   '-DOS_CHROMEOS',
+                   '-DUSE_SYSTEM_LIBEVENT']
 
 # Fix issue with scons not passing some vars through the environment.
 for key in Split('PKG_CONFIG SYSROOT'):
   if os.environ.has_key(key):
     env['ENV'][key] = os.environ[key]
 
-# nss environment
-env.ParseConfig('%s --cflags --libs glib-2.0 nss' % env['ENV']['PKG_CONFIG'])
+# glib, nss environment
+env.ParseConfig('%s --cflags --libs glib-2.0 gtk+-2.0 nss'
+                % env['ENV']['PKG_CONFIG'])
 
 env.StaticLibrary('base', sources)
