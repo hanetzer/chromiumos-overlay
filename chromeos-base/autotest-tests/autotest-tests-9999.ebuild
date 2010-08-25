@@ -108,7 +108,7 @@ IUSE_TESTS="
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_Resolution
-	+tests_hardware_SAT
+	tests_hardware_SAT
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
 	+tests_hardware_USB20

@@ -20,9 +20,9 @@ CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-# following deps don't compile: mysql, pgpool, pgsql, systemtap
+# following deps don't compile: boottool, mysql, pgpool, pgsql, systemtap, # dejagnu, libcap, libnet
 # following deps are not deps: factory
-AUTOTEST_DEPS_LIST="boottool chrome_test dejagnu glbench gtest hdparm ibusclient iotools iwcap libaio libcap libnet realtimecomm_playground sysstat"
+AUTOTEST_DEPS_LIST="chrome_test glbench gtest hdparm ibusclient iotools iwcap libaio realtimecomm_playground sysstat"
 
 src_prepare() {
 	autotest_src_prepare
