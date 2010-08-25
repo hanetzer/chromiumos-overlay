@@ -17,6 +17,7 @@ dev-libs/opencryptoki	tpmtok
 dev-util/dialog		-unicode minimal
 dev-util/perf		-doc -demangle
 chromeos-base/chromeos	X
+chromeos-base/chromeos-installer	minimal
 chromeos-base/chromeos-login   pam_google
 chromeos-base/flimflam	debug resolvfiles
 chromeos-base/vboot_reference minimal

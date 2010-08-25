@@ -35,6 +35,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus
 	app-text/texi2html
 	chromeos-base/google-breakpad
+	chromeos-base/chromeos-installer
 	dev-lang/python
 	dev-db/m17n-contrib
 	dev-db/m17n-db

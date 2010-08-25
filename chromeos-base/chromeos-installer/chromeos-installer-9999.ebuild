@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="-minimal"
 
 DEPEND=""
 
@@ -25,8 +25,23 @@ CROS_WORKON_LOCALNAME="installer"
 CROS_WORKON_PROJECT="installer"
 
 src_install() {
-  dodir /usr/sbin
-
-  install -m 0755 -o root -g root "${S}"/chromeos-* "${D}"/usr/sbin
+  exeinto /usr/sbin
+  doexe "${S}"/chromeos-*
   dosym usr/sbin/chromeos-postinst /postinst
+
+  if ! use minimal ; then
+    # Copy bin/* scripts to /usr/sbin/ on host.
+    exeinto /usr/sbin
+    doexe "${S}"/bin/*
+
+    # Copy mod_for_test_scripts/* scripts to
+    # /usr/share/chromeos-installer/mod_for_test_scripts on host.
+    exeinto /usr/share/chromeos-installer/mod_for_test_scripts
+    doexe "${S}"/mod_for_test_scripts/*
+
+    # Copy mod_for_factory_scripts/* scripts to
+    # /usr/share/chromeos-installer/mod_for_factory_scripts on host.
+    exeinto /usr/share/chromeos-installer/mod_for_factory_scripts
+    doexe "${S}"/mod_for_factory_scripts/*
+  fi
 }
