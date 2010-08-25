@@ -163,32 +163,28 @@ fi
 CHROOT_CONFIG="${HOME}/trunk/src/third_party/chromiumos-overlay/chromeos/config"
 sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
   "${FLAGS_chroot}/etc/make.conf"
-# If all 4 toolchain packages are not installed, then install them!
-set +e
-TC_INSTALL=false
-for i in glibc gcc binutils linux-headers; do
-  if ! equery l "cross-${FLAGS_toolchain}/$i*"; then
-    TC_INSTALL=true
-  fi
-done
-set -e
+
 BINHOST=$(portageq envvar PORTAGE_BINHOST)
 CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
+CROSS_USEPKG=""
+if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
+  # Grab the latest packages from the prebuilt server.
+  #  -N: Update packages if the use flags changed.
+  #  -G: Use packages from the prebuilt server. Don't build from source.
+  #  --binpkg-respect-use=n: Don't discard binary packages due to use flags.
+  #  --usepkg=n: Don't use local binary packages.
+  #  --without-headers: Don't build headers-only versions of packages for
+  #                     bootstrapping. Because we use binary packages, this
+  #                     isn't necessary.
+  CROSS_USEPKG="--portage -NG --portage --binpkg-respect-use=n"
+  CROSS_USEPKG="${CROSS_USEPKG} --portage --usepkg=n --without-headers"
+fi
+
 CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
 CROSS_GCC="--gcc $FLAGS_gcc_version"
 CROSS_KERNEL="--kernel $FLAGS_kernel_version"
 CROSS_LIBC="--libc $FLAGS_libc_version"
-CROSS_USEPKG=""
-
-# HACK ALERT: Because our compiler currently doesn't compile, we need to set
-# HACK ALERT: --binpkg-respect-use=n and --usepkgonly, always. This ensures
-# HACK ALERT: that we never try to build the compiler when the --usepkg flag
-# HACK ALERT: is set. See bug 5931.
-if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
-  CROSS_USEPKG="--portage --getbinpkg --portage --usepkgonly --portage \
-    --binpkg-respect-use=n --portage -uDv"
-fi
-sudo PORTAGE_BINHOST="$CROSS_BINHOST" crossdev \
+sudo PORTAGE_BINHOST="${CROSS_BINHOST}" crossdev -v \
   --target "$FLAGS_toolchain" \
   $CROSS_BINUTILS \
   $CROSS_GCC      \
@@ -357,7 +353,7 @@ EMERGE_FLAGS=""
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg"
 fi
-sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS --quiet kernel
+sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS kernel
 
 # We need to install libstdc++ manually from the cross toolchain.
 # TODO: Figure out a better way of doing this?
