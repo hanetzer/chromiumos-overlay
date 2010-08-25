@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c827b66cc199529471ae47824fba743fa4dfca34"
+CROS_WORKON_COMMIT="52d01d419881805409bbb35b2fe2e323279c23b2"
 
 inherit cros-workon toolchain-funcs
 
@@ -14,8 +14,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="app-crypt/tpm-tools
-	 chromeos-base/libcros
+RDEPEND="chromeos-base/libcros
 	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent
@@ -50,10 +49,4 @@ src_install() {
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/chromium/policies
 	dodir /etc/opt/chrome/
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/opt/chrome/policies
-
-	# Install the temporary tpm init helper
-	# TODO(wad) remove when integrated into login/cryptohome
-	dosbin tpm_helpers/chromeos_tpm_init
-
-	dosbin bin/fix_pkcs11_token.sh
 }
