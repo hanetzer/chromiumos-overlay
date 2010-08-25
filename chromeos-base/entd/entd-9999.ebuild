@@ -13,8 +13,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="app-crypt/tpm-tools
-	 chromeos-base/libcros
+RDEPEND="chromeos-base/libcros
 	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent
@@ -49,10 +48,4 @@ src_install() {
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/chromium/policies
 	dodir /etc/opt/chrome/
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/opt/chrome/policies
-
-	# Install the temporary tpm init helper
-	# TODO(wad) remove when integrated into login/cryptohome
-	dosbin tpm_helpers/chromeos_tpm_init
-
-	dosbin bin/fix_pkcs11_token.sh
 }
