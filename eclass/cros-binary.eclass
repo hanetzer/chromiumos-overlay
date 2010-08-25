@@ -26,6 +26,11 @@
 # Optional SHA-1 sum of the file to be fetched
 : ${CROS_BINARY_SUM:=}
 
+# @ECLASS-VARIABLE: CROS_BINARY_INSTALL_FLAGS
+# @DESCRIPTION:
+# Optional Flags to use while installing the binary
+: ${CROS_BINARY_INSTALL_FLAGS:=}
+
 DEPEND="net-misc/openssh
 	net-misc/wget"
 
@@ -109,7 +114,7 @@ cros-binary_src_install() {
 	esac
 
 	cd "${D}" || die
-	tar "${flags}xpf" "${target}" || die "Failed to unpack"
+	tar "${flags}xpf" "${target}" ${CROS_BINARY_INSTALL_FLAGS} || die "Failed to unpack"
 }
 
 EXPORT_FUNCTIONS src_unpack src_install
