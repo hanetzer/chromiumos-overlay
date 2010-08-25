@@ -90,7 +90,7 @@ IUSE_TESTS="
 	+tests_graphics_O3DSelenium
 	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest
-	tests_graphics_WebGLConformance
+	+tests_graphics_WebGLConformance
 	+tests_graphics_WindowManagerGraphicsCapture
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
@@ -108,7 +108,7 @@ IUSE_TESTS="
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_Resolution
-	tests_hardware_SAT
+	+tests_hardware_SAT
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
 	+tests_hardware_USB20

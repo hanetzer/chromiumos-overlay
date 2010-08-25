@@ -40,7 +40,7 @@ class myfaketest(test.test):
   def setup(self):
 ENDL
 
-	for item in $(ls ${AUTOTEST_WORKDIR}/client/deps); do
+	for item in ${AUTOTEST_DEPS_LIST}; do
 	echo "${item}"
 echo "    self.job.setup_dep(['${item}'])" >> myfaketest.py
 	done

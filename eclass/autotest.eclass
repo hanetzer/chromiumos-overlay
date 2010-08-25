@@ -232,7 +232,7 @@ function autotest_src_compile() {
 		|| ! use buildcheck || die "Tests failed to build."
 
 	# Cleanup some temp files after compiling
-	find . -name '*.[ado]' -delete
+	find . -name '*.[do]' -delete
 
 	popd 1> /dev/null
 }
