@@ -1,0 +1,22 @@
+diff --git a/pulseaudio-0.9.21/src/pulsecore/resampler.c b/pulseaudio-0.9.21/src/pulsecore/resampler.c
+index bed5a20..e9f76ce 100644
+--- a/pulseaudio-0.9.21/src/pulsecore/resampler.c
++++ b/pulseaudio-0.9.21/src/pulsecore/resampler.c
+@@ -656,7 +656,7 @@ static void calc_map_table(pa_resampler *r) {
+              *
+              * 2) Mono Handling:
+              *    S:Mono: Copy into all D:channels
+-             *    D:Mono: Copy in all S:channels
++             *    D:Mono: Avg all S:channels
+              *
+              * 3) Mix D:Left, D:Right:
+              *    D:Left: If not connected, avg all S:Left
+@@ -700,7 +700,7 @@ static void calc_map_table(pa_resampler *r) {
+              */
+ 
+             if (a == b || a == PA_CHANNEL_POSITION_MONO || b == PA_CHANNEL_POSITION_MONO) {
+-                m->map_table_f[oc][ic] = 1.0;
++                m->map_table_f[oc][ic] = 1.0 / n_ic;
+ 
+                 oc_connected = TRUE;
+                 ic_connected[ic] = TRUE;
