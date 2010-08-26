@@ -27,7 +27,7 @@ SSP_STABLE="amd64 x86 amd64 ppc ppc64 arm"
 SSP_UCLIBC_STABLE=""
 #end Hardened stuff
 
-inherit toolchain
+inherit toolchain_crosstool
 
 DESCRIPTION="The GNU Compiler Collection.  Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14."
 
