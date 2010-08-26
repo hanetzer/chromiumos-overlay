@@ -28,6 +28,7 @@ CROS_WORKON_SUBDIR="${u_boot#u-boot/}"
 src_configure() {
 	elog "Using U-Boot config: ${config}"
 
+	emake distclean
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \
