@@ -3,7 +3,7 @@
 ACCEPT_KEYWORDS="amd64"
 CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"
-FEATURES="buildpkg digest"
+FEATURES="buildpkg -strict"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"

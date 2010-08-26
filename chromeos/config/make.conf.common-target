@@ -17,7 +17,7 @@ USE="${ARCH} zlib bindist make-symlinks"
 PKGDIR=${ROOT}packages/
 PORTAGE_TMPDIR=${ROOT}tmp/
 
-FEATURES="buildpkg collision-protect digest nodoc noinfo noman sandbox \
+FEATURES="buildpkg collision-protect nodoc noinfo noman sandbox \
           -strict userfetch userpriv usersandbox splitdebug"
 
 PORTAGE_WORKDIR_MODE="0755"
