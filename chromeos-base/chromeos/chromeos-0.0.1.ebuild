@@ -82,6 +82,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-firmware
+	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-login
