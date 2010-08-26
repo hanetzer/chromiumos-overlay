@@ -169,14 +169,13 @@ CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
 CROSS_USEPKG=""
 if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
   # Grab the latest packages from the prebuilt server.
-  #  -N: Update packages if the use flags changed.
   #  -G: Use packages from the prebuilt server. Don't build from source.
   #  --binpkg-respect-use=n: Don't discard binary packages due to use flags.
   #  --usepkg=n: Don't use local binary packages.
   #  --without-headers: Don't build headers-only versions of packages for
   #                     bootstrapping. Because we use binary packages, this
   #                     isn't necessary.
-  CROSS_USEPKG="--portage -NG --portage --binpkg-respect-use=n"
+  CROSS_USEPKG="--portage -G --portage --binpkg-respect-use=n"
   CROSS_USEPKG="${CROSS_USEPKG} --portage --usepkg=n --without-headers"
 fi
 
