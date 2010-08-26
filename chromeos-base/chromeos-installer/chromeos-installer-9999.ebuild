@@ -39,6 +39,12 @@ src_install() {
     exeinto /usr/share/chromeos-installer/mod_for_test_scripts
     doexe "${S}"/mod_for_test_scripts/*
 
+    # Copy mod_for_test_scripts/ssh_keys/* to
+    # /usr/share/chromeos-installer/mod_for_test_scripts/ssh_keys on host.
+    # Unfortunately, doexe does not support a recursive flag :-(
+    exeinto /usr/share/chromeos-installer/mod_for_test_scripts/ssh_keys
+    doexe "${S}"/mod_for_test_scripts/ssh_keys/*
+
     # Copy mod_for_factory_scripts/* scripts to
     # /usr/share/chromeos-installer/mod_for_factory_scripts on host.
     exeinto /usr/share/chromeos-installer/mod_for_factory_scripts
