@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5ddfb0a9e5a9da683be412812106aacebc84cc9e"
+CROS_WORKON_COMMIT="2dbbfd34fbaa85b9450441b35d56aca92e788b8a"
 
 inherit cros-workon
 
@@ -39,6 +39,12 @@ src_install() {
     # /usr/share/chromeos-installer/mod_for_test_scripts on host.
     exeinto /usr/share/chromeos-installer/mod_for_test_scripts
     doexe "${S}"/mod_for_test_scripts/*
+
+    # Copy mod_for_test_scripts/ssh_keys/* to
+    # /usr/share/chromeos-installer/mod_for_test_scripts/ssh_keys on host.
+    # Unfortunately, doexe does not support a recursive flag :-(
+    exeinto /usr/share/chromeos-installer/mod_for_test_scripts/ssh_keys
+    doexe "${S}"/mod_for_test_scripts/ssh_keys/*
 
     # Copy mod_for_factory_scripts/* scripts to
     # /usr/share/chromeos-installer/mod_for_factory_scripts on host.
