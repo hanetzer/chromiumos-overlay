@@ -57,15 +57,12 @@ src_install() {
 	chmod -R a+x "${D}"/usr/local/autotest
 
 	# setup stuff needed for read/write operation
-	dosym "../../../var/run/autotest/packages/" "/usr/local/autotest"
-	mkdir -p "${D}"/var/run/autotest/packages
-	chmod a+wx "${D}"/var/run/autotest/packages
+	dodir "/usr/local/autotest/packages"
+	chmod a+wx "${D}/usr/local/autotest/packages"
 
-	dosym "../../../../var/run/autotest/client/packages/" "/usr/local/autotest/client"
-	mkdir -p "${D}"/var/run/autotest/client/packages
-	chmod a+wx "${D}"/var/run/autotest/client/packages
+	dodir "/usr/local/autotest/client/packages"
+	chmod a+wx "${D}/usr/local/autotest/client/packages"
 
-	dosym "../../../../var/run/autotest/server/tmp" "/usr/local/autotest/server"
-	mkdir -p "${D}"/var/run/autotest/server/tmp
-	chmod a+wx "${D}"/var/run/autotest/server/tmp
+	dodir "/usr/local/autotest/server/tmp"
+	chmod a+wx "${D}/usr/local/autotest/server/tmp"
 }
