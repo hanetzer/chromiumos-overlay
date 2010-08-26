@@ -6,10 +6,14 @@
 # Purpose: Eclass for handling autotest test packages
 #
 
-RDEPEND=">=chromeos-base/autotest-0.0.2"
+RDEPEND="( autotest? ( >=chromeos-base/autotest-0.0.2 ) )"
+# HACK: all packages should get autotest-deps for now
+if ! [ "${PN}" = "autotest-deps" ]; then
+	RDEPEND="${RDEPEND} ( autotest? ( chromeos-base/autotest-deps ) )"
+fi
 DEPEND="${RDEPEND}"
 
-IUSE="buildcheck"
+IUSE="buildcheck autotest"
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE="/usr/share/config.site"
@@ -131,6 +135,11 @@ function print_test_dirs() {
 
 # checks IUSE_TESTS and sees if at least one of these is enabled
 function are_we_used() {
+	if ! use autotest; then
+		# unused
+		return 1
+	fi
+
 	for test in ${IUSE_TESTS}; do
 		# careful, tests may be prefixed with a +
 		if use ${test/+/}; then

@@ -12,13 +12,16 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm ~amd64"
 
+IUSE="+autox +xset +tpmtools opengles hardened"
+# Enable autotest by default.
+IUSE="${IUSE} +autotest"
+
 # TODO(snanda): Remove xset dependence once power_LoadTest is switched over
 # to use power manager
 # TODO(semenzato): tpm-tools is included for hardware_TpmFirmware (and at this
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
-  chromeos-base/autotest-deps
   chromeos-base/crash-dumper
   dev-cpp/gtest
   dev-lang/python
@@ -221,7 +224,7 @@ IUSE_TESTS="
 	+tests_suite_SecurityFunctional
 "
 
-IUSE="+autox +xset +tpmtools opengles hardened ${IUSE_TESTS}"
+IUSE="${IUSE} ${IUSE_TESTS}"
 
 CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest

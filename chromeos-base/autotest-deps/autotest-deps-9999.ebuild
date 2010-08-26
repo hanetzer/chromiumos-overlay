@@ -14,7 +14,8 @@ KEYWORDS="~x86 ~arm ~amd64"
 
 IUSE_TESTS="+tests_myfaketest"
 
-IUSE="${IUSE_TESTS}"
+# Autotest enabled by default.
+IUSE="+autotest ${IUSE_TESTS}"
 
 CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
