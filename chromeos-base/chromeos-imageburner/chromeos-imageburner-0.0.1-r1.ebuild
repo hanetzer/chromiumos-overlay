@@ -3,7 +3,7 @@
 
 EAPI=2
 
-KEYWORDS="~arm ~amd64 x86"
+KEYWORDS="arm ~amd64 x86"
 
 inherit cros-workon
 
