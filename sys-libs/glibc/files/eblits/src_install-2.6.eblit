@@ -33,7 +33,7 @@ toolchain-glibc_src_install() {
 	if is_crosscompile ; then
 		# punt all the junk not needed by a cross-compiler
 		cd "${D}"/usr/${CTARGET} || die
-		rm -rf ./{,usr/}{bin,etc,sbin,share} ./{,usr/}*/{gconv,misc}
+		rm -rf ./{,usr/}{bin,etc,sbin,share} ./{,usr/}*/misc
 	fi
 
 	if want_linuxthreads && want_nptl ; then
