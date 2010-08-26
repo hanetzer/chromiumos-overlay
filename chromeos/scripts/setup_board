@@ -41,6 +41,8 @@ DEFINE_string kernel_version "2.6.30-r1" \
 DEFINE_boolean default $FLAGS_FALSE \
   "Set board to the default board in your chroot"
 DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
+DEFINE_string profile "" \
+  "The portage configuration profile to use. Profile must be located in overlay-board/profiles"
 
 # Parse command line flags
 FLAGS "$@" || exit 1
@@ -279,9 +281,37 @@ sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
 sudo ln -sf /etc/make.conf.user "${BOARD_ROOT}/etc/make.conf.user"
 sudo rm "${BOARD_ROOT}/etc/make.profile"
-sudo ln -sf \
-  "${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/" \
-  "${BOARD_ROOT}/etc/make.profile"
+# The profile directory comes from four possible locations:
+#  * relative profile name from --profile in overlay-board/profiles/<name>
+#  * absolute profile path from --profile
+#  * overlay-board/profiles/base
+#  * ${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos
+# If --profile is non-null and does not exist the script will error
+# If none of the directories exist the script will error as well
+PORTAGE_PROFILES_DIR=""
+if [ ! -z "${FLAGS_profile}" ]; then  # profile specified. must exist or we fail
+    if [ -d "${PRIMARY_BOARD_OVERLAY}/profiles/${FLAGS_profile}" ]; then
+	PORTAGE_PROFILES_DIR="${PRIMARY_BOARD_OVERLAY}/profiles/${FLAGS_profile}"
+    elif [ -d "${FLAGS_profile}" ]; then
+	PORTAGE_PROFILES_DIR="${FLAGS_profile}"
+    fi
+    if [ -z "${PORTAGE_PROFILES_DIR}" ]; then
+	error "Profile argument passed as '${FLAGS_profile}' but it does not exist"
+	exit 1
+    fi
+elif [ -d "${PRIMARY_BOARD_OVERLAY}/profiles/base" ]; then 
+    PORTAGE_PROFILES_DIR="${PRIMARY_BOARD_OVERLAY}/profiles/base/"
+else
+    PORTAGE_PROFILES_DIR="${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/"
+fi
+if [ -z "${PORTAGE_PROFILES_DIR}" ]; then
+    error "Profiles directory not found"
+    exit 1
+fi
+sudo ln -sf "${PORTAGE_PROFILES_DIR}" "${BOARD_ROOT}/etc/make.profile"
+if [ ! -f "${PORTAGE_PROFILES_DIR}/parent" ]; then
+    warn "Portage profile directory '${PORTAGE_PROFILES_DIR}' has no file 'parent'.  This likely means your profile directory is invalid and build_packages will fail"
+fi
 
 # Create emerge wrapper
 EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD_VARIANT}"
