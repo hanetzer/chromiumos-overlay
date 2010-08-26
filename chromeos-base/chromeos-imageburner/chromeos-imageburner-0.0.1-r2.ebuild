@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="84cbb072ab6c618c786e42825bd73429342997fd"
 
-KEYWORDS="arm ~amd64 x86"
+KEYWORDS="arm amd64 x86"
 
 inherit cros-workon
 
