@@ -315,7 +315,8 @@ install_chrome_test_resources() {
 
 	# For test binaries, we are bypassing the image on purpose. These bits will
 	# be picked up later by autotest build.
-	TEST_DIR="${D}"/usr/local/autotest-chrome/
+	TEST_DIR="${D}"/usr/local/autotest/client/deps/chrome_test/test_src
+	AUTOTEST_DIR="${D}"/usr/local/autotest
 	FROM_LIB="${FROM}/lib.target"
 	FROM_TESTS="${FROM}"
 
@@ -328,6 +329,7 @@ install_chrome_test_resources() {
 
 	rsync -v "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
+	rsync -v "${FROM_TESTS}"/libppapi_tests.so "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
 	rsync -v "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
@@ -364,11 +366,14 @@ install_chrome_test_resources() {
 	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts/* \
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
 
+	rsync -rlv "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/* \
+		"${AUTOTEST_DIR}"/client
+
 	for f in ${TEST_FILES}; do
 		rsync -rv "${FROM}/${f}" "${TEST_DIR}"
 	done
 
-	rsync -v "${CHROMEOS_ROOT}/src/third_party/autotest/files/client/deps/chrome_test/setup_test_links.sh" \
+	rsync -v "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/deps/chrome_test/setup_test_links.sh \
 		"${TEST_DIR}"/out/Release
 
 	# Remove test binaries from other platforms
