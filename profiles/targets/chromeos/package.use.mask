@@ -4,3 +4,8 @@
 # Chris Sosa <sosa@chromium.org> (17 February 2010)
 # For Chromium OS to allow fuse to build without building kernel module
 sys-fs/fuse kernel_linux
+
+# Brian Stell <bstell@chromium.org> (27 August 2010)
+# For Chromium OS enable FreeType sub-pixel anti-aliasing and bytecode 
+# interpreter
+media-libs/freetype bindist
