@@ -41,6 +41,9 @@ src_test() {
 		echo Skipping unit tests on non-x86 platform
 	else
 		for test in ./*_test; do
+			# Always test the shared object we just built by
+			# adding . to the library path.
+			LD_LIBRARY_PATH=.:${LD_LIBRARY_PATH} \
 			"${test}" ${GTEST_ARGS} || die "${test} failed"
 		done
 	fi
