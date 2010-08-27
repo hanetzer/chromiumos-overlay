@@ -36,6 +36,16 @@ src_prepare() {
 	    die "Unable to overlay files"
 }
 
+src_configure() {
+	tc-export CC CXX LD PKG_CONFIG
+	# We purposefully disable optimizations due to optimizations causing
+	# src/processor code to crash (minidump_stackwalk) as well as tests
+	# to fail.  See
+	# http://code.google.com/p/google-breakpad/issues/detail?id=400.
+	CFLAGS="${CFLAGS} -O0" CXXFLAGS="${CXXFLAGS} -O0" econf || \
+		die "configure failed"
+}
+
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
 	emake -C src/tools/linux/core2md || die "core2md emake failed"
@@ -44,6 +54,10 @@ src_compile() {
 	emake clean || die "make clean failed"
 	emake || die "emake failed"
 	emake -C src/tools/linux/symupload || die "symupload emake failed"
+}
+
+src_test() {
+	emake check || die "Tests failed"
 }
 
 src_install() {
