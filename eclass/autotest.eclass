@@ -6,7 +6,7 @@
 # Purpose: Eclass for handling autotest test packages
 #
 
-RDEPEND="( autotest? ( >=chromeos-base/autotest-0.0.2 ) )"
+RDEPEND="( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )"
 # HACK: all packages should get autotest-deps for now
 if ! [ "${PN}" = "autotest-deps" ]; then
 	RDEPEND="${RDEPEND} ( autotest? ( chromeos-base/autotest-deps ) )"
