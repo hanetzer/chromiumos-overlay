@@ -24,15 +24,18 @@ IUSE="${IUSE} +autotest"
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
   chromeos-base/crash-dumper
-  dev-cpp/gtest
-  dev-lang/python
+  chromeos-base/flimflam
   autox? ( chromeos-base/autox )
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
-  "
+"
 
-DEPEND="
-	${RDEPEND}"
+RDEPEND="${RDEPEND}
+  tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/pulseaudio )
+  tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
+"
+
+DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_compilebench

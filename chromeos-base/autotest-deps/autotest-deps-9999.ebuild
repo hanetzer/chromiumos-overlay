@@ -26,6 +26,38 @@ CROS_WORKON_SUBDIR=files
 # following tests are going to be moved: chrome_test
 AUTOTEST_DEPS_LIST="glbench gtest hdparm ibusclient iotools iwcap libaio realtimecomm_playground sysstat"
 
+# deps/gtest
+RDEPEND="
+  dev-cpp/gtest
+"
+
+# deps/chrome_test
+#RDEPEND="${RDEPEND}
+#  chromeos-base/chromeos-chrome
+#"
+
+# deps/ibusclient
+RDEPEND="${RDEPEND}
+  app-i18n/ibus
+  dev-libs/glib
+  sys-apps/dbus
+"
+
+# deps/iwcap
+RDEPEND="${RDEPEND}
+  dev-libs/libnl
+"
+
+# deps/glbench
+RDEPEND="${RDEPEND}
+  dev-cpp/gflags
+  chromeos-base/libchrome
+  virtual/opengl
+  opengles? ( virtual/opengles )
+"
+
+DEPEND="${RDEPEND}"
+
 src_prepare() {
 	autotest_src_prepare
 

@@ -13,6 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm amd64"
 
+RDEPEND="dev-lang/python"
+DEPEND="${RDEPEND}"
+
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE=/usr/share/config.site
 
