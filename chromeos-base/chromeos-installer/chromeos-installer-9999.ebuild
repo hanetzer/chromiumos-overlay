@@ -25,13 +25,18 @@ CROS_WORKON_LOCALNAME="installer"
 CROS_WORKON_PROJECT="installer"
 
 src_install() {
-  exeinto /usr/sbin
-  doexe "${S}"/chromeos-*
-  dosym usr/sbin/chromeos-postinst /postinst
-
-  if ! use minimal ; then
-    # Copy bin/* scripts to /usr/sbin/ on host.
+  if use minimal ; then
     exeinto /usr/sbin
+    doexe "${S}"/chromeos-*
+    dosym usr/sbin/chromeos-postinst /postinst
+  else
+    # Copy chromeos-* scripts to /usr/lib/installer/ on host.
+    exeinto /usr/lib/installer
+    doexe "${S}"/chromeos-*
+    dosym usr/lib/installer/chromeos-postinst /postinst
+
+    # Copy bin/* scripts to /usr/bin/ on host.
+    exeinto /usr/bin
     doexe "${S}"/bin/*
 
     # Copy mod_for_test_scripts/* scripts to
