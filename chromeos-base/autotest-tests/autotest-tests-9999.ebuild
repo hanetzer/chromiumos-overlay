@@ -58,7 +58,7 @@ IUSE_TESTS="
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
 	+tests_desktopui_KillRestart
-	+tests_desktopui_PageCyclerTests
+	tests_desktopui_PageCyclerTests
 	+tests_desktopui_ScreenLocker
 	+tests_desktopui_ScreenSaverUnlock
 	+tests_desktopui_SpeechSynthesisSemiAuto
