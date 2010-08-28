@@ -49,4 +49,6 @@ src_install() {
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/chromium/policies
 	dodir /etc/opt/chrome/
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/opt/chrome/policies
+
+        dosbin bin/fix_pkcs11_token.sh
 }
