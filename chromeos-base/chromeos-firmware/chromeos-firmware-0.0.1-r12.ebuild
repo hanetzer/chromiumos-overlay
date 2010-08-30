@@ -81,14 +81,14 @@ src_compile() {
     einfo "building firmware with images: $image_cmd $ext_cmd"
     "${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
       -o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
-      --tool_base="$ROOT/usr/sbin"
+      --tool_base="$ROOT/usr/sbin" || die "cannot pack firmware"
   fi
 
   chmod +x ${UPDATE_SCRIPT}
 }
 
 src_install() {
-  dosbin $UPDATE_SCRIPT
+  dosbin $UPDATE_SCRIPT || die "failed to install update script"
 
   # following files are for SAFT
   for subdir in saft x86-generic
