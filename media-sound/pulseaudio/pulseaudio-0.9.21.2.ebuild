@@ -50,7 +50,6 @@ RDEPEND="X? ( x11-libs/libX11 x11-libs/libSM x11-libs/libICE x11-libs/libXtst )
 	)
 	asyncns? ( net-libs/libasyncns )
 	udev? ( >=sys-fs/udev-143[extras] )
-	>=media-libs/audiofile-0.2.6-r1
 	>=media-libs/speex-1.2_beta
 	>=media-libs/libsndfile-1.0.20
 	>=dev-libs/liboil-0.3.6
