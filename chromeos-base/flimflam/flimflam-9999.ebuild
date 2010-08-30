@@ -13,13 +13,14 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="bluetooth +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
 
 RDEPEND="chromeos-base/crash-dumper
 	>=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
 	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )
+	bootstat? ( chromeos-base/bootstat )
 	crosmetrics? ( chromeos-base/metrics )
 	dhclient? ( net-misc/dhcp )
 	dhcpcd? ( net-misc/dhcpcd )
@@ -67,6 +68,7 @@ src_configure() {
 		--localstatedir=/var \
 		--enable-loopback=builtin \
 		$(use_enable bluetooth) \
+		$(use_enable bootstat) \
 		$(use_enable crosmetrics) \
 		$(use_enable debug) \
 		$(use_enable dhclient) \
