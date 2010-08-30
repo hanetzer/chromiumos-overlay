@@ -22,6 +22,7 @@ RDEPEND="app-arch/bzip2
 	dev-libs/protobuf
 	dev-util/bsdiff
 	net-misc/curl
+	sys-apps/rootdev
 	sys-libs/zlib"
 DEPEND="chromeos-base/libchromeos
 	dev-cpp/gmock

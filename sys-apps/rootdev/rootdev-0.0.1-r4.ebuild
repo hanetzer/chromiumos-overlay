@@ -6,10 +6,10 @@ CROS_WORKON_COMMIT="80fbc6c5d03ba9c192f0e406ee0b6ec60711d603"
 
 inherit toolchain-funcs cros-workon
 
-DESCRIPTION="display rootfs device"
+DESCRIPTION="Chrome OS root block device tool/library"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
-LICENSE="GPLv2"
+LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
@@ -23,4 +23,11 @@ src_install() {
 	dodir /usr/bin
 	exeinto /usr/bin
 	doexe ${S}/rootdev
+
+	dodir /usr/lib
+	dolib.so librootdev.so*
+
+	dodir /usr/include/rootdev
+	insinto /usr/include/rootdev
+	doins rootdev.h
 }
