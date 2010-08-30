@@ -11,14 +11,12 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
-# TODO(sosa@chromium.org) - Given that we can add packages to the test image
-# now, we should just install these packages to the image and remove from deps.
-
 # Packages required for testing.
 RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
 	app-crypt/nss
+        app-crypt/tpm-tools
 	chromeos-base/autox
 	chromeos-base/minifakedns
 	x86? ( dev-java/icedtea )
