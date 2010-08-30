@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f0a364aace39732bfc7310ad069f6cc8c7b24523"
+CROS_WORKON_COMMIT="9209097b7518c0c3620494319f036833242a89f4"
 
 inherit cros-workon toolchain-funcs
 
@@ -54,6 +54,9 @@ src_install() {
 
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf
+	
+	insinto /usr/share/chromeos-assets/screensavers
+	doins "${S}"/screensavers/*
 
 	local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 
