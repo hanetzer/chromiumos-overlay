@@ -96,6 +96,10 @@ DEPEND="${RDEPEND}
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
+QA_TEXTRELS="*"
+QA_EXECSTACK="*"
+QA_PRESTRIPPED="*"
+
 # Must write our own. wget --tries ignores 'connection refused' or 'not found's
 wget_retry() {
 	local i=
