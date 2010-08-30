@@ -302,7 +302,7 @@ src_compile() {
 		AS=$(tc-getAS) \
 		RANLIB=$(tc-getRANLIB) \
 		LD=$(tc-getLD) \
-		chrome candidate_window chrome_sandbox \
+                chrome candidate_window chrome_sandbox default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 }
@@ -426,6 +426,7 @@ src_install() {
 	doins "${FROM}"/chrome.pak
 	doins -r "${FROM}"/locales
 	doins -r "${FROM}"/resources
+        doins -r "${FROM}"/extensions
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
