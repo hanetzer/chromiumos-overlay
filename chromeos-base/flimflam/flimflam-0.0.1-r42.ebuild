@@ -14,7 +14,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +crosmetrics +debug +dhcpcd +dhclient +diagnostics dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
+IUSE="bluetooth +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
 
 RDEPEND="chromeos-base/crash-dumper
 	>=dev-libs/glib-2.16
@@ -71,7 +71,7 @@ src_configure() {
 		$(use_enable crosmetrics) \
 		$(use_enable debug) \
 		$(use_enable dhclient) \
-		$(use_enable dhcpcd) \
+		$(use_enable dhcpcd dhcpcd builtin) \
 		$(use_enable dnsproxy dnsproxy builtin) \
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
