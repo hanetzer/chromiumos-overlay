@@ -3,6 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-m17n/ibus-m17n-1.2.0.20090617.ebuild,v 1.1 2009/06/18 15:40:00 matsuu Exp $
 
 EAPI="2"
+inherit eutils
 
 DESCRIPTION="The M17N engine IMEngine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/ibus/"
@@ -24,6 +25,11 @@ DEPEND="${RDEPEND}
 	>=sys-devel/gettext-0.16.1"
 
 src_prepare() {
+	# Apply a patch that fixes crosbug.com/4859. The patch is already
+	# included in the ibus-m17n upstream repo, but not in the 1.3.0 tarball.
+	# https://code.google.com/p/ibus/issues/detail?id=625
+	epatch "${FILESDIR}"/0001-Fix-Mtext-gunichar-conversion.patch
+
 	# Build ibus-engine-m17n for the host platform.
 	(env -i ./configure && env -i make) || die
 	# Obtain the XML output by running the binary.
