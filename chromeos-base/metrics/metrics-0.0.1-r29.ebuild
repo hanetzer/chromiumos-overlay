@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="06e5d2963dc1088e98a00f1e73f8d1a6e776b7c6"
+CROS_WORKON_COMMIT="f78e870d8e719b5ff0cd1523fffabaa2330da25b"
 
 inherit cros-workon flag-o-matic
 
@@ -42,6 +42,9 @@ src_test() {
 		echo Skipping unit tests on non-x86 platform
 	else
 		for test in ./*_test; do
+			# Always test the shared object we just built by
+			# adding . to the library path.
+			LD_LIBRARY_PATH=.:${LD_LIBRARY_PATH} \
 			"${test}" ${GTEST_ARGS} || die "${test} failed"
 		done
 	fi
