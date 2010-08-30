@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="afb2fb552003fe76fd084916166dfa64d7ee9ed6"
+CROS_WORKON_COMMIT="80fbc6c5d03ba9c192f0e406ee0b6ec60711d603"
+
 inherit toolchain-funcs cros-workon
 
 DESCRIPTION="display rootfs device"
