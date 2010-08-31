@@ -19,7 +19,8 @@ DEPEND="dev-libs/nss
 	net-misc/curl
 	opengles? ( virtual/opengles )
 	x11-libs/cairo
-	x11-libs/gtk+"
+	x11-libs/gtk+
+	gnome-base/gconf"
 RDEPEND="${DEPEND}"
 O3D_REVISION=53574
 
