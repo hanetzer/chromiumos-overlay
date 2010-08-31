@@ -27,9 +27,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pyopenssl
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
-	net-analyzer/netperf
 	net-misc/dhcp
-	net-misc/iperf
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
