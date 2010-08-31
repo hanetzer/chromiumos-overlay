@@ -22,8 +22,11 @@ src_configure() {
 }
 
 src_install() {
+	local exclude_files="-e cros_make_image_bootable \
+-e cros_sign_to_ssd -e cros_resign_image"
+	local bin_files=$(ls bin/* | grep -v ${exclude_files})
 	insinto /usr/lib/crosutils
 	doins * || die "Could not install shared files."
 	dolib lib/* || die "Could not install library files"
-	dobin bin/* || die "Could not install executable scripts."
+	dobin ${bin_files} || die "Could not install executable scripts."
 }
