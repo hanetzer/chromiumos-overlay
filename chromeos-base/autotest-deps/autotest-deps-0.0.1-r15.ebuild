@@ -76,7 +76,6 @@ class myfaketest(test.test):
 ENDL
 
 	for item in ${AUTOTEST_DEPS_LIST}; do
-	echo "${item}"
 echo "    self.job.setup_dep(['${item}'])" >> myfaketest.py
 	done
 
