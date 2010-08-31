@@ -61,7 +61,7 @@ DEPEND="${RDEPEND}"
 src_prepare() {
 	autotest_src_prepare
 
-	pushd "${AUTOTEST_WORKDIR}/client/site_tests/" 1> /dev/null
+	pushd "${AUTOTEST_WORKDIR}/client/site_tests/" 1> /dev/null || die
 	mkdir myfaketest
 	cd myfaketest
 
@@ -86,6 +86,6 @@ echo "    self.job.setup_dep(['${item}'])" >> myfaketest.py
 src_install() {
 	autotest_src_install
 
-	rm -rf ${D}/client/site_tests/myfaketest
+	rm -rf ${D}/usr/local/autotest/client/site_tests/myfaketest || die
 }
 
