@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="00e643432791c6c7128626ac9146aa4d48191287"
+CROS_WORKON_COMMIT="a9c3202133786bb25a0d5356c16ae334a5f2e691"
 
 inherit toolchain-funcs
 
@@ -34,7 +34,6 @@ fi
 
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
 CROS_WORKON_LOCALNAME="../third_party/kernel/files"
-CROS_WORKON_PROJECT="kernel"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
