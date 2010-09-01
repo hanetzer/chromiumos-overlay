@@ -6,7 +6,7 @@ diff -uNr xkeyboard-config-1.7.orig/symbols/Makefile.am xkeyboard-config-1.7.chr
  za \
  altwin capslock compose ctrl eurosign group inet \
 -keypad kpdl level3 level5 nbsp olpc shift srvr_ctrl typo
-+keypad kpdl level3 level5 nbsp olpc shift srvr_ctrl typo chromeos
++keypad kpdl level3 level5 nbsp olpc shift srvr_ctrl typo chromeos version
  
  dir_data = $(dist_symbols_DATA)
  

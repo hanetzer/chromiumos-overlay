@@ -25,7 +25,6 @@ RDEPEND="app-i18n/ibus
 	sys-fs/udev
 	x11-apps/setxkbmap
 	x11-libs/libxklavier"
-# TODO(suzhe): Remove x11-apps/setxkbmap when issue 2536 is fixed.
 
 DEPEND="${RDEPEND}
 	app-i18n/ibus-chewing
@@ -38,7 +37,8 @@ DEPEND="${RDEPEND}
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	chromeos-base/update_engine
-	dev-cpp/gtest"
+	dev-cpp/gtest
+	x11-misc/xkeyboard-config"
 
 CROS_WORKON_PROJECT="cros"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}

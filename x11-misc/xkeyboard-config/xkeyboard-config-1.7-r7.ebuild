@@ -32,6 +32,14 @@ src_prepare() {
 
 	# Generate symbols/chromeos.
         python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
+
+	# Generate symbols/version.
+	# TODO(yusukes,jrbarnette): Once the XKB cache issue in the MeeGo patch
+	# for X is fixed, we should remove this workaround here. See
+	# http://crosbug.com/6261 for details.
+	python "${FILESDIR}"/gen_version_files.py --version="${PVR}" \
+	       --format="xkb" > symbols/version || die
+
 	# Regenerate symbols/symbols.dir.
 	pushd symbols/
 	xkbcomp -lfhlpR '*' > symbols.dir || die
@@ -53,4 +61,14 @@ src_install() {
 	emake DESTDIR="${D}" install || die "install failed"
 	echo "CONFIG_PROTECT=\"/usr/share/X11/xkb\"" > "${T}"/10xkeyboard-config
 	doenvd "${T}"/10xkeyboard-config
+
+	# Generate xkeyboard_config_version.h to let libcros know the version
+	# of the xkeyboard-config package. libcros uses the information to
+	# generate a keyboard layout name (e.g. "us+chromeos(..)+version(..)".)
+	# TODO(yusukes,jrbarnette): We should also remove this header file when
+	# the MeeGo patch is fixed.
+	python "${FILESDIR}"/gen_version_files.py --version="${PVR}" \
+	       --format="cpp" > "${T}/xkeyboard_config_version.h" || die
+	insinto /usr/include
+	doins "${T}/xkeyboard_config_version.h"
 }
