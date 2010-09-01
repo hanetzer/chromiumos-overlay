@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5a206ac272154656920e44d796cbedf144a93a01"
+CROS_WORKON_COMMIT="ddea8bd3891ca0356005e0d4a38de76b0003d9e9"
 
 inherit cros-workon toolchain-funcs
 
@@ -66,6 +66,7 @@ src_test() {
 src_install() {
 	dobin "${S}/backlight-tool"
 	dobin "${S}/powerd"
+	dobin "${S}/powerm"
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
