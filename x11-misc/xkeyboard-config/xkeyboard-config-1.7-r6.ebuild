@@ -22,6 +22,10 @@ DEPEND="${RDEPEND}
 	dev-perl/XML-Parser"
 
 src_prepare() {
+	# We should not assign modifier keys (Alt_L, Meta_L, and <LWIN>) in
+	# symbols/{pc,altwin} since they are assigned in symbols/chromeos.
+	epatch "${FILESDIR}/${P}-modifier-keys.patch"
+
 	epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
 	epatch "${FILESDIR}/${P}-be-keyboard.patch"
 	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
