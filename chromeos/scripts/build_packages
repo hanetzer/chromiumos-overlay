@@ -23,34 +23,35 @@ restart_in_chroot_if_needed $*
 get_default_board
 
 # Flags
-DEFINE_string board "$DEFAULT_BOARD" \
+DEFINE_string board "${DEFAULT_BOARD}" \
   "The board to build packages for."
-DEFINE_boolean chromefromsource $FLAGS_FALSE \
+DEFINE_boolean chromefromsource "${FLAGS_FALSE}" \
   "Build chrome browser from source. Default: False"
 DEFINE_string chromebuild "" \
   "The optional version or revision of chrome to pull."
 DEFINE_string chromebase "" \
   "The optional base URL to pull chrome from."
-DEFINE_boolean usepkg $FLAGS_TRUE \
+DEFINE_boolean usepkg "${FLAGS_TRUE}" \
   "Use binary packages to bootstrap when possible."
-DEFINE_boolean withdev $FLAGS_TRUE \
+DEFINE_boolean withdev "${FLAGS_TRUE}" \
   "Build useful developer friendly utilities."
-DEFINE_boolean withautotest $FLAGS_TRUE \
+DEFINE_boolean withautotest "${FLAGS_TRUE}" \
   "Build autotest client code."
 DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
 DEFINE_integer retries -1 \
   "On build failure, the number of times to retry"
-DEFINE_boolean withtest $FLAGS_TRUE \
+DEFINE_boolean withtest "${FLAGS_TRUE}" \
   "Build packages required for testing"
-DEFINE_boolean withfactory $FLAGS_TRUE \
+DEFINE_boolean withfactory "${FLAGS_TRUE}" \
   "Build factory installer"
-DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
-DEFINE_boolean norebuild ${FLAGS_FALSE} \
+DEFINE_boolean fast "${DEFAULT_FAST}" \
+  "Call many emerges in parallel"
+DEFINE_boolean norebuild "${FLAGS_FALSE}" \
   "Don't automatically rebuild dependencies."
-DEFINE_boolean showoutput ${FLAGS_FALSE} \
+DEFINE_boolean showoutput "${FLAGS_FALSE}" \
   "Show all output from parallel_emerge."
-DEFINE_boolean noworkon ${FLAGS_FALSE} \
+DEFINE_boolean noworkon "${FLAGS_FALSE}" \
   "Don't force-build workon packages."
 
 # Parse command line
@@ -64,7 +65,7 @@ set -e
 
 . "${SCRIPTS_DIR}/chromeos_version.sh"
 
-if [ -z "$FLAGS_board" ] ; then
+if [[ -z "${FLAGS_board}" ]]; then
   echo "Error: --board is required."
   exit 1
 fi
@@ -73,21 +74,21 @@ EMERGE_FLAGS=""
 
 EMERGE_CMD="emerge"
 EMERGE_BOARD_CMD="emerge-${FLAGS_board}"
-if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
+if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   EMERGE_BOARD_CMD="${SCRIPTS_DIR}/parallel_emerge --board=${FLAGS_board}"
   EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
 fi
 
-if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+if [[ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]]; then
   # Use binary packages. Include all build-time dependencies,
   # so as to avoid unnecessary differences between source
   # and binary builds.
   EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg --with-bdeps y"
 fi
 
-if [[ $FLAGS_jobs -ne -1 ]]; then
-  EMERGE_JOBS="--jobs=$FLAGS_jobs"
-  if [[ $FLAGS_retries -eq -1 ]]; then
+if [[ "${FLAGS_jobs}" -ne -1 ]]; then
+  EMERGE_JOBS="--jobs=${FLAGS_jobs}"
+  if [[ "${FLAGS_retries}" -eq -1 ]]; then
     # The jobs flag can be flaky. Retry once by default,
     # without the jobs flag.
     FLAGS_retries=1
@@ -96,8 +97,8 @@ fi
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)
 BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${BOARD}"
-TC_ARCH=$(awk -F'-' '{ print $1 }' < ${BOARD_OVERLAY}/toolchain.conf)
-case "$TC_ARCH" in
+TC_ARCH=$(awk -F'-' '{ print $1 }' < "${BOARD_OVERLAY}/toolchain.conf")
+case "${TC_ARCH}" in
   arm*)
     ARCH="arm"
     ;;
@@ -105,7 +106,7 @@ case "$TC_ARCH" in
     ARCH="x86"
     ;;
   *)
-    error "Unable to determine ARCH from toolchain: $FLAGS_board"
+    error "Unable to determine ARCH from toolchain: ${FLAGS_board}"
     exit 1
 esac
 
@@ -122,26 +123,26 @@ sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
 # TODO(msb): Remove these hacks at some point
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
-$EMERGE_CMD --info
-eretry sudo $EMERGE_CMD -uDNv $EMERGE_FLAGS world
+${EMERGE_CMD} --info
+eretry sudo ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
-if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
+if [[ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]]; then
   # Always build cros-workon packages
-  CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board=${FLAGS_board} list)
+  CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board="${FLAGS_board}" list)
 fi
 
 # We are building chrome from source if chromefromsource is 'TRUE'.
-if [ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]; then
+if [[ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]]; then
   export CHROME_ORIGIN=SERVER_SOURCE
-  if [ -n "${FLAGS_chromebuild}" ]; then
-    export CHROME_VERSION=$FLAGS_chromebuild
+  if [[ -n "${FLAGS_chromebuild}" ]]; then
+    export CHROME_VERSION="${FLAGS_chromebuild}"
   fi
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
-elif [ -n "${FLAGS_chromebuild}" ] || [ -n "${FLAGS_chromebase}" ]; then
+elif [[ -n "${FLAGS_chromebuild}" ]] || [[ -n "${FLAGS_chromebase}" ]]; then
   # Pull a different version of chrome if requested and force a non-update
   # emerge build of chrome with those values.
-  echo "$PROG: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
-  echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
+  echo "${PROG}: Pulling ${FLAGS_chromebuild:-LATEST} chrome from "
+  echo "${PROG}: ${FLAGS_chromebase:-"the default location."}"
 
   # If chromebase contains an internal identifier, change CHROME_FILENAME.
   # NOTE: We need [[ here because we are using =~ which is a bash extension.
@@ -154,34 +155,34 @@ elif [ -n "${FLAGS_chromebuild}" ] || [ -n "${FLAGS_chromebase}" ]; then
 fi
 
 PACKAGES="chromeos-base/chromeos"
-if [ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]; then
+if [[ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-dev"
 fi
-if [ "${FLAGS_withfactory}" -eq "$FLAGS_TRUE" ]; then
+if [[ "${FLAGS_withfactory}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-factoryinstall"
 fi
-if [ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]; then
+if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
 fi
-if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
+if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/autotest-all"
 fi
-if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
+if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   # These flags are specific to parallel_emerge
   for pkg in ${CROS_WORKON_PKGS}; do
     EMERGE_FLAGS="${EMERGE_FLAGS} --workon=${pkg}"
   done
-  if [[ ${FLAGS_norebuild} -eq ${FLAGS_FALSE} ]]; then
+  if [[ "${FLAGS_norebuild}" -eq "${FLAGS_FALSE}" ]]; then
     EMERGE_FLAGS="${EMERGE_FLAGS} --rebuild"
   fi
-  if [[ ${FLAGS_showoutput} -eq ${FLAGS_TRUE} ]]; then
+  if [[ "${FLAGS_showoutput}" -eq "${FLAGS_TRUE}" ]]; then
     EMERGE_FLAGS="${EMERGE_FLAGS} --show-output"
   fi
   eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 else
   echo "Building ${PACKAGES} (working on ${CROS_WORKON_PKGS})"
   eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-  if [ -n "${CROS_WORKON_PKGS}" ]; then
+  if [[ -n "${CROS_WORKON_PKGS}" ]]; then
     ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
   fi
 fi
