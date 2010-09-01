@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="217a4ee51a8f8f454a9f238bb601c8631c43def4"
 
 inherit cros-workon
 
@@ -10,7 +11,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="-minimal"
 
 DEPEND="!!<=dev-util/crosutils-0.0.1-r1"

@@ -15,6 +15,8 @@ IUSE=""
 DEPEND=""
 RDEPEND="dev-libs/shflags"
 
+CROS_WORKON_LOCALNAME="../scripts/"
+
 src_configure() {
 	find . -type l -exec rm {} \; &&
 	rm -fr WATCHLISTS inherit-review-settings-ok lib/shflags ||
