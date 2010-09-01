@@ -1,0 +1,174 @@
+#!/bin/sh -x
+
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# /init script for use in factory install shim.  Requires busybox in
+# /bin/busybox, and a symlink from /bin/sh -> busybox.
+
+# USB card partition and mount point.
+USB_DEVS="sdb3 sdc3 mmcblk1p3"
+USB_MNT=/usb
+# Size of the root ramdisk.
+TMPFS_SIZE=300M
+
+on_error() {
+  # Exit, thus causing a kernel panic. We don't want to do anything else (like
+  # start a shell) because it would be trivially easy to get here (just unplug
+  # the USB drive after the kernel starts but before the USB drives are probed
+  # by the kernel) and starting a shell here would be a BIG security hole.
+  exit 1
+}
+
+initial_mounts() {
+  mkdir -p /var/lock
+  mount -t proc -o nodev,noexec,nosuid none /proc
+  mount -t sysfs -o nodev,noexec,nosuid none /sys
+  if ! mount -t devtmpfs -o mode=0755 none /dev; then
+    mount -t tmpfs -o mode=0755 none /dev
+    mknod -m 0600 /dev/console c 5 1
+    mknod /dev/null c 1 3
+  fi
+  mkdir /dev/pts
+  mount -t devpts -o noexec,nosuid none /dev/pts || true
+
+  # Send any output to where we can see it.
+  exec &> /dev/console
+  echo "Starting initramfs"
+}
+
+# Look for any USB device.
+wait_for_root() {
+  echo -n "Waiting for $USB_DEVS to appear"
+  for try in $(seq 20); do
+    echo -n "."
+    for dev in $USB_DEVS; do
+      if [ -b "/dev/${dev}" ]; then
+        USB_DEV="/dev/${dev}"
+        echo "Found $USB_DEV"
+        return 0
+      fi
+    done
+    sleep 1
+  done
+  echo "Failed waiting for root!"
+  return 1
+}
+
+# Look for a device with our GPT ID.
+wait_for_gpt_root() {
+  echo -n "Looking for rootfs..."
+  for try in $(seq 20); do
+    echo -n "."
+    newroot=$(/usr/sbin/chromeos-findrootfs)
+    if [ -n "$newroot" ]; then
+      USB_DEV="$newroot"
+      echo "Found $USB_DEV"
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Failed waiting for kern_guid"
+  return 1
+}
+
+mount_usb() {
+  echo -n "Mounting usb"
+  for try in $(seq 20); do
+    echo -n "."
+    if mount -n -o ro "$USB_DEV" "$USB_MNT"; then
+      echo "ok"
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Failed to mount usb!"
+  return 1
+}
+
+check_if_factory_install() {
+  if [ -e "${USB_MNT}/root/.factory_installer" ]; then
+    echo "Detected factory install."
+    return 0
+  fi
+  return 1
+}
+
+mount_tmpfs() {
+  echo "Mounting tmpfs..."
+  mount -n -t tmpfs tmpfs "$NEWROOT_MNT" -o "size=$TMPFS_SIZE"
+  return $?
+}
+
+copy_contents() {
+  echo "Copying usb->tmpfs..."
+  (cd "${USB_MNT}" ; tar cf - . | (cd "${NEWROOT_MNT}" && tar xf  -))
+  RES=$?
+  echo "Copy returned with result $RES"
+  return $RES
+}
+
+move_mounts() {
+  echo "Moving sys. proc, dev to $NEWROOT_MNT"
+  mount -n -o move /sys "$NEWROOT_MNT/sys"
+  mount -n -o move /proc "$NEWROOT_MNT/proc"
+  mount -n -o move /dev "$NEWROOT_MNT/dev"
+  echo "Done."
+  return 0
+}
+
+unmount_usb() {
+  echo "Unmounting $USB_MNT"
+  umount "$USB_MNT"
+  echo
+  echo "$USB_DEV can now be safely removed"
+  echo
+  return 0
+}
+
+main() {
+  # Set up basic mounts, console.
+  initial_mounts
+
+  # Has the BIOS told us the partition ID?
+  # TODO(nsanders, wad): Support signed rootfs.
+  if check_for_gptid; then
+    wait_for_gpt_root || on_error
+  else
+    # Just wait for any rootfs.
+    # TODO(nsanders): add kern_guid into legacy cmdline?
+    wait_for_root || on_error
+  fi
+
+  mount_usb || on_error
+
+  # Check if we want to run from RAM, in the factory.
+  if check_if_factory_install; then
+    # Copy rootfs contents to tmpfs, then unmount USB device.
+    NEWROOT_MNT=/newroot
+    mount_tmpfs || on_error
+    copy_contents || on_error
+    # USB device is unmounted, we can remove it now.
+    unmount_usb || on_error
+  else
+    NEWROOT_MNT="$USB_MNT"
+  fi
+
+  move_mounts || on_error
+  # Chroot into newroot, erase the contents of the old /, and exec real init.
+  echo "About to switch root"
+  exec switch_root -c /dev/console "$NEWROOT_MNT" /sbin/init
+
+  # This should not really happen.
+  echo "Failed to switch root"
+
+  # Fail here.
+  on_error
+}
+
+
+main
+
+# Should never reach here.
+exit 1
