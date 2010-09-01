@@ -144,8 +144,10 @@ elif [ -n "${FLAGS_chromebuild}" ] || [ -n "${FLAGS_chromebase}" ]; then
   echo "$PROG: ${FLAGS_chromebase:-"the default location."}"
 
   # If chromebase contains an internal identifier, change CHROME_FILENAME.
-  [ "${FLAGS_chromebase}" =~ \.jail ] && \
+  # NOTE: We need [[ here because we are using =~ which is a bash extension.
+  if [[ "${FLAGS_chromebase}" =~ \.jail ]]; then
     export CHROME_FILENAME=chrome-chromeos.zip
+  fi
 
   export CHROME_BASE=${FLAGS_chromebase} CHROME_VERSION=${FLAGS_chromebuild}
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
