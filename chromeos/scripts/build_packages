@@ -35,7 +35,7 @@ DEFINE_boolean usepkg $FLAGS_TRUE \
   "Use binary packages to bootstrap when possible."
 DEFINE_boolean withdev $FLAGS_TRUE \
   "Build useful developer friendly utilities."
-DEFINE_boolean withautotest $FLAGS_FALSE \
+DEFINE_boolean withautotest $FLAGS_TRUE \
   "Build autotest client code."
 DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
@@ -163,6 +163,9 @@ fi
 if [ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
 fi
+if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
+  PACKAGES="${PACKAGES} chromeos-base/autotest-all"
+fi
 if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
   # These flags are specific to parallel_emerge
   for pkg in ${CROS_WORKON_PKGS}; do
@@ -183,10 +186,6 @@ else
   fi
 fi
 
-if [[ $FLAGS_withautotest -eq $FLAGS_TRUE ]]; then
-  echo "Building Autotest"
-  ./build_autotest.sh --board=${FLAGS_board}
-fi
 
 echo "Builds complete"
 print_time_elapsed
