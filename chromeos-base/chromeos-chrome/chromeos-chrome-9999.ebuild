@@ -176,7 +176,7 @@ src_unpack() {
 			die "Cannot chdir to ${ECHROME_STORE_DIR}"
 
 		elog "Syncing google chrome sources using ${EGCLIENT}"
-		${EGCLIENT} sync  --nohooks || \
+		${EGCLIENT} sync  --nohooks --delete_unversioned_trees || \
 			die "${EGCLIENT} sync failed"
 
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
