@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="215d2daccc531e4391e486f4de51ed9200f752ca"
+CROS_WORKON_COMMIT="ccff7ee25dcafa4b6e9eb1fd4bdc63d2934b4088"
+
 inherit toolchain-funcs cros-workon
 
 DESCRIPTION="Utility that dumps a png image to the frame buffer."
