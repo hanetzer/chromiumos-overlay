@@ -56,3 +56,6 @@ NETBEANS="apisupport cnd groovy gsf harness ide identity j2ee java mobility nb p
 # http://archives.gentoo.org/gentoo-dev/msg_dc705dc2c1a45e18a85aa62e8fb17009.xml
 # Build kernel modules from linux-mod by default:
 USE="${USE} modules"
+
+# ChromeOS-specific: TESTS USE_EXPAND for autotest
+USE_EXPAND="${USE_EXPAND} TESTS"
