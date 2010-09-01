@@ -68,4 +68,7 @@ src_install() {
 
 	insinto /usr/lib/debug
 	doins session_manager.sym
+
+	insinto /usr/share/misc
+	doins "${S}/recovery_ui.html"
 }
