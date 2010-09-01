@@ -65,6 +65,7 @@ src_test() {
 src_install() {
 	dobin "${S}/backlight-tool"
 	dobin "${S}/powerd"
+	dobin "${S}/powerm"
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
