@@ -30,9 +30,9 @@ DEFINE_boolean usepkg $FLAGS_TRUE \
   "Use binary packages to bootstrap."
 DEFINE_boolean force $FLAGS_FALSE \
   "Force re-creating board root."
-DEFINE_string binutils_version "2.19.1-r1" \
+DEFINE_string binutils_version "" \
   "Version of binutils to use."
-DEFINE_string gcc_version "4.4.1" \
+DEFINE_string gcc_version "" \
   "Version of gcc to use."
 DEFINE_string libc_version "2.10.1-r1" \
   "Version of libc to use."
@@ -152,11 +152,23 @@ case "$TC_ARCH" in
     exit 1
 esac
 
+# Toolchain defaults
+# binutils-2.19.1-r1 is upstream r1, binutils-2.20.1-r1 is crosstool
+if [ -z $FLAGS_binutils_version ]; then
+  if [ "$ARCH" == "x86" ]; then
+    FLAGS_binutils_version="2.20.1-r1"
+  else
+    FLAGS_binutils_version="2.19.1-r1"
+  fi
+fi
+
 # gcc-4.4.3-r4 is upstream r4. gcc-4.4.3-r5 is crosstoolv14.
-if [ "$ARCH" == "x86" ]; then
-  FLAGS_gcc_version="4.4.3-r5"
-else
-   FLAGS_gcc_version="4.4.3-r4"
+if [ -z $FLAGS_gcc_version ]; then
+  if [ "$ARCH" == "x86" ]; then
+    FLAGS_gcc_version="4.4.3-r5"
+  else
+    FLAGS_gcc_version="4.4.3-r4"
+  fi
 fi
 
 # Update symlinks to point at latest version of make.conf. In older versions of
