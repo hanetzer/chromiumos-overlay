@@ -1,0 +1,233 @@
+From 50daef1ab961c42a3352281e915da5a89297e3a9 Mon Sep 17 00:00:00 2001
+From: Zac Medico <zmedico@gentoo.org>
+Date: Mon, 30 Aug 2010 20:55:11 -0700
+Subject: [PATCH] Bug #335340 - Add support for PORTAGE_BZIP2_COMMAND and
+ PORTAGE_BUNZIP2_COMMAND settings in make.conf. This only adds support
+ for binary packages, since that's where pbzip2 can provide the most
+ benefit in common cases.
+
+---
+ bin/isolated-functions.sh                          |    1 +
+ bin/misc-functions.sh                              |    2 +-
+ cnf/make.globals                                   |    2 +
+ man/make.conf.5                                    |   10 +++++
+ pym/_emerge/Binpkg.py                              |    1 +
+ pym/_emerge/BinpkgEnvExtractor.py                  |    2 +-
+ pym/_emerge/BinpkgExtractorAsync.py                |    3 +-
+ .../package/ebuild/_config/env_var_validation.py   |   23 ++++++++++++
+ .../package/ebuild/_config/special_env_vars.py     |   14 +++++---
+ pym/portage/package/ebuild/config.py               |   39 +++++++++++++++++++-
+ 10 files changed, 87 insertions(+), 10 deletions(-)
+ create mode 100644 pym/portage/package/ebuild/_config/env_var_validation.py
+
+From 26e57cd28c43074b4eca54fb11ee1ab3497a1530 Mon Sep 17 00:00:00 2001
+From: Zac Medico <zmedico@gentoo.org>
+Date: Mon, 30 Aug 2010 21:14:31 -0700
+Subject: [PATCH] Bug #335340 - Use PORTAGE_BUNZIP2_COMMAND and PORTAGE_BZIP2_COMMAND in
+ ebuild.sh where appropriate:
+ * unpack()
+ * environment.bz2 compression
+
+---
+ bin/ebuild.sh |   18 +++++++++---------
+ 1 files changed, 9 insertions(+), 9 deletions(-)
+
+
+diff --git a/bin/isolated-functions.sh b/bin/isolated-functions.sh
+index cd1039b..46685f8 100644
+--- a/bin/isolated-functions.sh
++++ b/bin/isolated-functions.sh
+@@ -596,6 +596,7 @@ save_ebuild_env() {
+ 			PORTAGE_ACTUAL_DISTDIR PORTAGE_ARCHLIST \
+ 			PORTAGE_BASHRC PM_EBUILD_HOOK_DIR PORTAGE_BASHRCS_SOURCED \
+ 			PORTAGE_BINPKG_TAR_OPTS PORTAGE_BINPKG_TMPFILE PORTAGE_BUILDDIR \
++			PORTAGE_BUNZIP2_COMMAND PORTAGE_BZIP2_COMMAND \
+ 			PORTAGE_COLORMAP PORTAGE_CONFIGROOT PORTAGE_DEBUG \
+ 			PORTAGE_DEPCACHEDIR PORTAGE_EBUILD_EXIT_FILE PORTAGE_GID \
+ 			PORTAGE_GRPNAME PORTAGE_INST_GID \
+diff --git a/bin/misc-functions.sh b/bin/misc-functions.sh
+index d7e0f56..32d3bfc 100755
+--- a/bin/misc-functions.sh
++++ b/bin/misc-functions.sh
+@@ -855,7 +855,7 @@ dyn_package() {
+ 		PORTAGE_BINPKG_TMPFILE="${PKGDIR}/${CATEGORY}/${PF}.tbz2"
+ 	mkdir -p "${PORTAGE_BINPKG_TMPFILE%/*}" || die "mkdir failed"
+ 	tar $tar_options -cf - $PORTAGE_BINPKG_TAR_OPTS -C "${D}" . | \
+-		bzip2 -cf > "$PORTAGE_BINPKG_TMPFILE"
++		$PORTAGE_BZIP2_COMMAND -c > "$PORTAGE_BINPKG_TMPFILE"
+ 	assert "failed to pack binary package: '$PORTAGE_BINPKG_TMPFILE'"
+ 	PYTHONPATH=${PORTAGE_PYM_PATH}${PYTHONPATH:+:}${PYTHONPATH} \
+ 		"${PORTAGE_PYTHON:-/usr/bin/python}" "$PORTAGE_BIN_PATH"/xpak-helper.py recompose \
+diff --git a/cnf/make.globals b/cnf/make.globals
+index c16102a..6679918 100644
+--- a/cnf/make.globals
++++ b/cnf/make.globals
+@@ -70,6 +70,8 @@ EMERGE_WARNING_DELAY="10"
+ # This option will be removed and forced to yes.
+ AUTOCLEAN="yes"
+ 
++PORTAGE_BZIP2_COMMAND="bzip2"
++
+ # Don't compress files with these suffixes.
+ PORTAGE_COMPRESS_EXCLUDE_SUFFIXES="css gif htm[l]? jp[e]?g js pdf png"
+ 
+diff --git a/man/make.conf.5 b/man/make.conf.5
+index fb7ee85..71e9581 100644
+--- a/man/make.conf.5
++++ b/man/make.conf.5
+@@ -594,6 +594,16 @@ setting as the base URI.
+ This variable contains options to be passed to the tar command for creation
+ of binary packages.
+ .TP
++\fBPORTAGE_BUNZIP2_COMMAND\fR = \fI[bunzip2 command string]\fR
++This variable should contain a command that is suitable for portage to call
++for bunzip2 extraction operations.
++.TP
++\fBPORTAGE_BZIP2_COMMAND\fR = \fI[bzip2 command string]\fR
++This variable should contain a command that is suitable for portage to call
++for bzip2 compression operations. \fBPORTAGE_BZIP2_COMMAND\fR will also be
++called for extraction operation, with -d appended, unless the
++\fBPORTAGE_BUNZIP2_COMMAND\fR variable is set.
++.TP
+ \fBPORTAGE_COMPRESS\fR = \fI"bzip2"\fR
+ This variable contains the command used to compress documentation during the
+ install phase.
+diff --git a/pym/_emerge/Binpkg.py b/pym/_emerge/Binpkg.py
+index cfb32ad..ac9a68a 100644
+--- a/pym/_emerge/Binpkg.py
++++ b/pym/_emerge/Binpkg.py
+@@ -274,6 +274,7 @@ class Binpkg(CompositeTask):
+ 			return
+ 
+ 		extractor = BinpkgExtractorAsync(background=self.background,
++			env=self.settings.environ(),
+ 			image_dir=self._image_dir,
+ 			pkg=self.pkg, pkg_path=self._pkg_path,
+ 			logfile=self.settings.get("PORTAGE_LOG_FILE"),
+diff --git a/pym/_emerge/BinpkgExtractorAsync.py b/pym/_emerge/BinpkgExtractorAsync.py
+index a2bbe7a..004544e 100644
+--- a/pym/_emerge/BinpkgExtractorAsync.py
++++ b/pym/_emerge/BinpkgExtractorAsync.py
+@@ -16,10 +16,9 @@ class BinpkgExtractorAsync(SpawnProcess):
+
+	def _start(self):
+		self.args = [self._shell_binary, "-c",
+-			"bzip2 -dqc -- %s | tar -xp -C %s -f -" % \
++			("${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- %s | tar -xp -C %s -f -" % \
+			(portage._shell_quote(self.pkg_path),
+-			portage._shell_quote(self.image_dir))]
++			portage._shell_quote(self.image_dir)))]
+ 
+-		self.env = self.pkg.root_config.settings.environ()
+ 		SpawnProcess._start(self)
+ 
+diff --git a/pym/portage/__init__.py b/pym/portage/__init__.py
+index 2a515dd..4a29b14 100644
+--- a/pym/portage/__init__.py
++++ b/pym/portage/__init__.py
+@@ -43,7 +43,8 @@ environ_whitelist += [
+ 		"PORTAGE_BINPKG_FILE", "PORTAGE_BINPKG_TAR_OPTS",
+ 		"PORTAGE_BINPKG_TMPFILE",
+ 		"PORTAGE_BIN_PATH",
+-		"PORTAGE_BUILDDIR", "PORTAGE_COLORMAP",
++		"PORTAGE_BUILDDIR", "PORTAGE_BUNZIP2_COMMAND", "PORTAGE_BZIP2_COMMAND",
++		"PORTAGE_COLORMAP",
+ 		"PORTAGE_CONFIGROOT", "PORTAGE_DEBUG", "PORTAGE_DEPCACHEDIR",
+ 		"PORTAGE_EBUILD_EXIT_FILE", "PORTAGE_FEATURES",
+ 		"PORTAGE_GID", "PORTAGE_GRPNAME",
+@@ -8896,7 +8896,7 @@ pkgmerge(mytbz2, myroot, mysettings, mydbapi=None,
+ 
+ 		writemsg_stdout(_(">>> Extracting %s\n") % mypkg)
+ 		retval = portage.process.spawn_bash(
+-			"bzip2 -dqc -- '%s' | tar -xp -C '%s' -f -" % (mytbz2, pkgloc),
++			"${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- %s | tar -xp -C %s -f -" % (mytbz2, pkgloc),
+ 			env=mysettings.environ())
+ 		if retval != os.EX_OK:
+ 			writemsg(_("!!! Error Extracting '%s'\n") % mytbz2, noiselevel=-1)
+diff --git a/cnf/make.globals b/cnf/make.globals
+index 2a515dd..4a29b14 100644
+--- a/cnf/make.globals
++++ b/cnf/make.globals
+@@ -52,6 +53,7 @@ environ_filter += [
+ 
+ ACCEPT_LICENSE="* -@EULA"
+ ACCEPT_PROPERTIES="*"
++PORTAGE_BZIP2_COMMAND="bzip2"
+ 
+ # Repository Paths
+ PORTDIR=/usr/portage
+diff --git a/bin/ebuild.sh b/bin/ebuild.sh
+index feef318..7400ca2 100755
+--- a/bin/ebuild.sh
++++ b/bin/ebuild.sh
+@@ -349,10 +349,10 @@ unpack() {
+ 
+ 		_unpack_tar() {
+ 			if [ "${y}" == "tar" ]; then
+-				$1 -dc "$srcdir$x" | tar xof -
++				$1 -c -- "$srcdir$x" | tar xof -
+ 				assert "$myfail"
+ 			else
+-				$1 -dc "${srcdir}${x}" > ${x%.*} || die "$myfail"
++				$1 -c -- "${srcdir}${x}" > ${x%.*} || die "$myfail"
+ 			fi
+ 		}
+ 
+@@ -365,17 +365,17 @@ unpack() {
+ 				tar xozf "$srcdir$x" || die "$myfail"
+ 				;;
+ 			tbz|tbz2)
+-				bzip2 -dc "$srcdir$x" | tar xof -
++				${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- "$srcdir$x" | tar xof -
+ 				assert "$myfail"
+ 				;;
+ 			ZIP|zip|jar)
+ 				unzip -qo "${srcdir}${x}" || die "$myfail"
+ 				;;
+ 			gz|Z|z)
+-				_unpack_tar gzip
++				_unpack_tar "gzip -d"
+ 				;;
+ 			bz2|bz)
+-				_unpack_tar bzip2
++				_unpack_tar "${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d}"
+ 				;;
+ 			7Z|7z)
+ 				local my_output
+@@ -422,13 +422,13 @@ unpack() {
+ 				fi
+ 				;;
+ 			lzma)
+-				_unpack_tar lzma
++				_unpack_tar "lzma -d"
+ 				;;
+ 			xz)
+ 				if hasq $eapi 0 1 2 ; then
+ 					vecho "unpack ${x}: file format not recognized. Ignoring."
+ 				else
+-					_unpack_tar xz
++					_unpack_tar "xz -d"
+ 				fi
+ 				;;
+ 			*)
+@@ -1156,7 +1156,7 @@ dyn_install() {
+ 		--filter-path --filter-sandbox --allow-extra-vars > environment
+ 	assert "save_ebuild_env failed"
+ 
+-	bzip2 -f9 environment
++	${PORTAGE_BZIP2_COMMAND} -f9 environment
+ 
+ 	cp "${EBUILD}" "${PF}.ebuild"
+ 	[ -n "${PORTAGE_REPO_NAME}" ]  && echo "${PORTAGE_REPO_NAME}" > repository
+@@ -2125,7 +2125,7 @@ ebuild_main() {
+ 			save_ebuild_env --exclude-init-phases | \
+ 				filter_readonly_variables --filter-path \
+ 				--filter-sandbox --allow-extra-vars \
+-				| bzip2 -c -f9 > "$PORTAGE_UPDATE_ENV"
++				| ${PORTAGE_BZIP2_COMMAND} -c -f9 > "$PORTAGE_UPDATE_ENV"
+ 		fi
+ 		;;
+	unpack|prepare|configure|compile|test|clean|install)
+-- 
+1.7.1
+

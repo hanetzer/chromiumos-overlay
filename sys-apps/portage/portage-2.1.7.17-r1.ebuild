@@ -113,6 +113,10 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-atomic-symlink".patch
 	epatch "${FILESDIR}/${P}-crossdev".patch
 	epatch "${FILESDIR}/${P}-atomic-mkdir".patch
+
+	# -r13: bzip2 support
+	epatch "${FILESDIR}/portage-bzip2.patch"
+
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -i "s/^VERSION=.*/VERSION=\"${PVR}\"/" pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"
