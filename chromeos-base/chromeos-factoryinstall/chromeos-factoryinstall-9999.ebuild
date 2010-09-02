@@ -58,6 +58,9 @@ EOF
 		"${ROOT}/etc/init/ui.conf"
 	# Set network to start up another way
 	sed -i 's/login-prompt-ready/stopping startup/' \
-		"${ROOT}/etc/init/dump-boot-stats.conf"
+		"${ROOT}/etc/init/boot-complete.conf"
+	# No autoupdate!
+	sed -i 's/start on stopped boot-complete/start on never/' \
+		"${ROOT}/etc/init/software-update.conf"
 }
 
