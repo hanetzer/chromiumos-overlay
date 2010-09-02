@@ -12,10 +12,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm ~amd64"
 
-IUSE_TESTS="+tests_myfaketest"
-
 # Autotest enabled by default.
-IUSE="+autotest ${IUSE_TESTS}"
+IUSE="+autotest"
 
 CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
@@ -25,6 +23,8 @@ CROS_WORKON_SUBDIR=files
 # following deps are not deps: factory
 # following tests are going to be moved: chrome_test
 AUTOTEST_DEPS_LIST="glbench gtest hdparm ibusclient iotools iwcap libaio realtimecomm_playground sysstat"
+
+AUTOTEST_FORCE_TEST_LIST="myfaketest"
 
 # deps/gtest
 RDEPEND="

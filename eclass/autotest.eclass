@@ -37,14 +37,31 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 : ${AUTOTEST_DEPS_LIST:=*}
 : ${AUTOTEST_PROFILERS_LIST:=*}
 
+# @ECLASS-VARIABLE: AUTOTEST_FORCE_LIST
+# @DESCRIPTION:
+# Sometimes we just want to forget about useflags and build what's inside
+: ${AUTOTEST_FORCE_TEST_LIST:=}
+
+function get_test_list() {
+	if [ -n "${AUTOTEST_FORCE_TEST_LIST}" ]; then
+		# list forced
+		echo "${AUTOTEST_FORCE_TEST_LIST}"
+		return
+	fi
+
+	# we cache the result of this operation in AUTOTEST_TESTS,
+	# because it's expensive and does not change over the course of one ebuild run
+	local result="${IUSE_TESTS//[+-]tests_/}"
+	result="${result//tests_/}"
+
+	result=$(for test in ${result}; do use tests_${test} && echo -n "${test} "; done)
+	echo "${result}"
+}
+
 # Pythonify the list of packages
 function pythonify_test_list() {
-	AUTOTEST_TESTS="${IUSE_TESTS//[+-]tests_/}"
-	AUTOTEST_TESTS="${AUTOTEST_TESTS//tests_/}"
-
 	local result
-	# NOTE: shell-like commenting of individual tests using grep
-	result=$(for test in ${AUTOTEST_TESTS}; do use tests_${test} && echo -n "${test},"; done)
+	result=$(for test in $*; do echo -n "${test},"; done)
 	echo ${result}
 }
 
@@ -140,12 +157,7 @@ function are_we_used() {
 		return 1
 	fi
 
-	for test in ${IUSE_TESTS}; do
-		# careful, tests may be prefixed with a +
-		if use ${test/+/}; then
-			return 0
-		fi
-	done
+	[ -n "$(get_test_list)" ] && return 0
 
 	# unused
 	return 1
@@ -165,21 +177,20 @@ function autotest_src_prepare() {
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
 	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
 
+	TEST_LIST=$(get_test_list)
+
 	# Pull in the individual test cases.
 	for l1 in client server; do
 	for l2 in site_tests tests; do
 		# pick up the indicated location of test sources
 		eval srcdir=${WORKDIR}/${P}/\${AUTOTEST_${l1^^*}_${l2^^*}}
 
-		if [ -d "${srcdir}" ]; then # test does have this directory
-			pushd "${srcdir}" 1> /dev/null
-			for test in *; do
-				if use tests_${test} &> /dev/null; then
-					cp -fpru "${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
-				fi
-			done
-			popd 1> /dev/null
-		fi
+		# test does have this directory
+		for test in ${TEST_LIST}; do
+			if [ -d "${srcdir}/${test}" ]; then
+				cp -fpr "${srcdir}/${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
+			fi
+		done
 	done
 	done
 
@@ -232,12 +243,13 @@ function autotest_src_compile() {
 		graphics_backend=OPENGL
 	fi
 
-	TESTS=$(pythonify_test_list)
-	einfo "Tests enabled: ${TESTS}"
+	TESTS=$(get_test_list)
+	einfo "Tests enabled ($(echo ${TESTS}|wc -w)): ${TESTS}"
 
 	# Call autotest to prebuild all test cases.
 	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
-		client/bin/autotest_client --quiet --client_test_setup=${TESTS} \
+		client/bin/autotest_client --quiet \
+		--client_test_setup=$(pythonify_test_list ${TESTS}) \
 		|| ! use buildcheck || die "Tests failed to build."
 
 	# Cleanup some temp files after compiling
