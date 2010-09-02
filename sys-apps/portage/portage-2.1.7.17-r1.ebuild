@@ -114,8 +114,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-crossdev".patch
 	epatch "${FILESDIR}/${P}-atomic-mkdir".patch
 
-	# -r13: bzip2 support
-	epatch "${FILESDIR}/portage-bzip2.patch"
+	# -r13: bzip2 support (removed in -r14 because it broke the build)
+	#epatch "${FILESDIR}/portage-bzip2.patch"
 
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -i "s/^VERSION=.*/VERSION=\"${PVR}\"/" pym/portage/__init__.py || \
