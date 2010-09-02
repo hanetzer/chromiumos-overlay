@@ -11,7 +11,7 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 
 LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~sparc ~x86"
+KEYWORDS="~amd64 ~ppc ~sparc x86"
 IUSE="+caps cisco curl debug dhcp farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root +openssl smartcard sqlite"
 
 COMMON_DEPEND="!net-misc/openswan
@@ -21,15 +21,14 @@ COMMON_DEPEND="!net-misc/openswan
 	curl? ( net-misc/curl )
 	ldap? ( net-nds/openldap )
 	smartcard? ( dev-libs/opensc )
-	openssl? ( >=dev-libs/openssl-0.9.8[-bindist] )
+	openssl? ( >=dev-libs/openssl-0.9.8 )
 	mysql? ( virtual/mysql )
 	sqlite? ( >=dev-db/sqlite-3.3.1 )"
 DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger
-	sys-apps/iproute2"
+	virtual/logger"
 
 UGID="ipsec"
 
@@ -90,6 +89,12 @@ pkg_setup() {
 		enewgroup ${UGID}
 		enewuser ${UGID} -1 -1 -1 ${UGID}
 	fi
+}
+
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+	epatch "${FILESDIR}/${P}-disable-ec.patch"
 }
 
 src_configure() {

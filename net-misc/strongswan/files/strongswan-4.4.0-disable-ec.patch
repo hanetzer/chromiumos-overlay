@@ -1,0 +1,138 @@
+diff -ur strongswan/src/libstrongswan/plugins/openssl/Makefile.am strongswan-google/src/libstrongswan/plugins/openssl/Makefile.am
+--- strongswan/src/libstrongswan/plugins/openssl/Makefile.am	2010-03-15 13:52:51.000000000 -0700
++++ strongswan-google/src/libstrongswan/plugins/openssl/Makefile.am	2010-07-22 12:25:04.000000000 -0700
+@@ -18,9 +18,11 @@
+ 	openssl_diffie_hellman.c openssl_diffie_hellman.h \
+ 	openssl_rsa_private_key.c openssl_rsa_private_key.h \
+ 	openssl_rsa_public_key.c openssl_rsa_public_key.h \
+-	openssl_ec_diffie_hellman.c openssl_ec_diffie_hellman.h \
+-	openssl_ec_private_key.c openssl_ec_private_key.h \
+-	openssl_ec_public_key.c openssl_ec_public_key.h
++
++#libstrongswan_openssl_la_ec_SOURCES = \
++	#openssl_ec_diffie_hellman.c openssl_ec_diffie_hellman.h \
++	#openssl_ec_private_key.c openssl_ec_private_key.h \
++	#openssl_ec_public_key.c openssl_ec_public_key.h
+ 
+ libstrongswan_openssl_la_LDFLAGS = -module -avoid-version
+ libstrongswan_openssl_la_LIBADD  = -lcrypto
+diff -ur strongswan/src/libstrongswan/plugins/openssl/Makefile.in strongswan-google/src/libstrongswan/plugins/openssl/Makefile.in
+--- strongswan/src/libstrongswan/plugins/openssl/Makefile.in	2010-05-02 00:58:18.000000000 -0700
++++ strongswan-google/src/libstrongswan/plugins/openssl/Makefile.in	2010-07-22 13:49:34.000000000 -0700
+@@ -77,9 +77,9 @@
+ am_libstrongswan_openssl_la_OBJECTS = openssl_plugin.lo \
+ 	openssl_util.lo openssl_crypter.lo openssl_hasher.lo \
+ 	openssl_sha1_prf.lo openssl_diffie_hellman.lo \
+-	openssl_rsa_private_key.lo openssl_rsa_public_key.lo \
+-	openssl_ec_diffie_hellman.lo openssl_ec_private_key.lo \
+-	openssl_ec_public_key.lo
++	openssl_rsa_private_key.lo openssl_rsa_public_key.lo
++	#openssl_ec_diffie_hellman.lo openssl_ec_private_key.lo \
++	#openssl_ec_public_key.lo
+ libstrongswan_openssl_la_OBJECTS =  \
+ 	$(am_libstrongswan_openssl_la_OBJECTS)
+ libstrongswan_openssl_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+@@ -273,10 +273,10 @@
+ 	openssl_sha1_prf.c openssl_sha1_prf.h \
+ 	openssl_diffie_hellman.c openssl_diffie_hellman.h \
+ 	openssl_rsa_private_key.c openssl_rsa_private_key.h \
+-	openssl_rsa_public_key.c openssl_rsa_public_key.h \
+-	openssl_ec_diffie_hellman.c openssl_ec_diffie_hellman.h \
+-	openssl_ec_private_key.c openssl_ec_private_key.h \
+-	openssl_ec_public_key.c openssl_ec_public_key.h
++	openssl_rsa_public_key.c openssl_rsa_public_key.h
++	#openssl_ec_diffie_hellman.c openssl_ec_diffie_hellman.h \
++	#openssl_ec_private_key.c openssl_ec_private_key.h \
++	#openssl_ec_public_key.c openssl_ec_public_key.h
+ 
+ libstrongswan_openssl_la_LDFLAGS = -module -avoid-version
+ libstrongswan_openssl_la_LIBADD = -lcrypto
+@@ -365,9 +365,9 @@
+ 
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_crypter.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_diffie_hellman.Plo@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_ec_diffie_hellman.Plo@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_ec_private_key.Plo@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_ec_public_key.Plo@am__quote@
++#@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_ec_diffie_hellman.Plo@am__quote@
++#@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_ec_private_key.Plo@am__quote@
++#@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_ec_public_key.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_hasher.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_plugin.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/openssl_rsa_private_key.Plo@am__quote@
+diff -ur strongswan/src/libstrongswan/plugins/openssl/openssl_plugin.c strongswan-google/src/libstrongswan/plugins/openssl/openssl_plugin.c
+--- strongswan/src/libstrongswan/plugins/openssl/openssl_plugin.c	2010-04-20 14:13:20.000000000 -0700
++++ strongswan-google/src/libstrongswan/plugins/openssl/openssl_plugin.c	2010-07-22 12:24:41.000000000 -0700
+@@ -29,11 +29,13 @@
+ #include "openssl_hasher.h"
+ #include "openssl_sha1_prf.h"
+ #include "openssl_diffie_hellman.h"
+-#include "openssl_ec_diffie_hellman.h"
+ #include "openssl_rsa_private_key.h"
+ #include "openssl_rsa_public_key.h"
++#if 0
++#include "openssl_ec_diffie_hellman.h"
+ #include "openssl_ec_private_key.h"
+ #include "openssl_ec_public_key.h"
++#endif
+ 
+ typedef struct private_openssl_plugin_t private_openssl_plugin_t;
+ 
+@@ -175,8 +177,6 @@
+ 					(prf_constructor_t)openssl_sha1_prf_create);
+ 	lib->crypto->remove_dh(lib->crypto,
+ 					(dh_constructor_t)openssl_diffie_hellman_create);
+-	lib->crypto->remove_dh(lib->crypto,
+-					(dh_constructor_t)openssl_ec_diffie_hellman_create);
+ 	lib->creds->remove_builder(lib->creds,
+ 					(builder_function_t)openssl_rsa_private_key_load);
+ 	lib->creds->remove_builder(lib->creds,
+@@ -185,12 +185,16 @@
+ 					(builder_function_t)openssl_rsa_private_key_connect);
+ 	lib->creds->remove_builder(lib->creds,
+ 					(builder_function_t)openssl_rsa_public_key_load);
++#if 0
++	lib->crypto->remove_dh(lib->crypto,
++					(dh_constructor_t)openssl_ec_diffie_hellman_create);
+ 	lib->creds->remove_builder(lib->creds,
+ 					(builder_function_t)openssl_ec_private_key_load);
+ 	lib->creds->remove_builder(lib->creds,
+ 					(builder_function_t)openssl_ec_private_key_gen);
+ 	lib->creds->remove_builder(lib->creds,
+ 					(builder_function_t)openssl_ec_public_key_load);
++#endif
+ 
+ 	ENGINE_cleanup();
+ 	EVP_cleanup();
+@@ -272,6 +276,7 @@
+ 						(dh_constructor_t)openssl_diffie_hellman_create);
+ 	lib->crypto->add_dh(lib->crypto, MODP_1536_BIT,
+ 						(dh_constructor_t)openssl_diffie_hellman_create);
++#if 0
+ 	lib->crypto->add_dh(lib->crypto, ECP_256_BIT,
+ 						(dh_constructor_t)openssl_ec_diffie_hellman_create);
+ 	lib->crypto->add_dh(lib->crypto, ECP_384_BIT,
+@@ -282,6 +287,7 @@
+ 						(dh_constructor_t)openssl_ec_diffie_hellman_create);
+ 	lib->crypto->add_dh(lib->crypto, ECP_192_BIT,
+ 						(dh_constructor_t)openssl_ec_diffie_hellman_create);
++#endif
+ 	lib->crypto->add_dh(lib->crypto, MODP_3072_BIT,
+ 						(dh_constructor_t)openssl_diffie_hellman_create);
+ 	lib->crypto->add_dh(lib->crypto, MODP_4096_BIT,
+@@ -308,13 +314,14 @@
+ 					(builder_function_t)openssl_rsa_public_key_load);
+ 
+ 	/* ec */
++#if 0
+ 	lib->creds->add_builder(lib->creds, CRED_PRIVATE_KEY, KEY_ECDSA,
+ 					(builder_function_t)openssl_ec_private_key_load);
+ 	lib->creds->add_builder(lib->creds, CRED_PRIVATE_KEY, KEY_ECDSA,
+ 					(builder_function_t)openssl_ec_private_key_gen);
+ 	lib->creds->add_builder(lib->creds, CRED_PUBLIC_KEY, KEY_ECDSA,
+ 					(builder_function_t)openssl_ec_public_key_load);
++#endif
+ 
+ 	return &this->public.plugin;
+ }
+-
