@@ -134,7 +134,7 @@ cros-workon_src_unpack() {
 	# Hack
 	# TODO(msb): remove once we've resolved the include path issue
 	# http://groups.google.com/a/chromium.org/group/chromium-os-dev/browse_thread/thread/5e85f28f551eeda/3ae57db97ae327ae
-	ln -s "${S}" "${WORKDIR}/${CROS_WORKON_LOCALNAME}"
+	ln -s "${S}" "${WORKDIR}/${CROS_WORKON_LOCALNAME}" &> /dev/null
 
 	local repo=${CROS_WORKON_REPO}
 	local project=${CROS_WORKON_PROJECT}
