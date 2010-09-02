@@ -29,6 +29,8 @@ Subject: [PATCH] Bug #335340 - Use PORTAGE_BUNZIP2_COMMAND and PORTAGE_BZIP2_COM
  * environment.bz2 compression
 
 ---
+Porting to 2.1.7.17 by zbehan@chromium.org
+---
  bin/ebuild.sh |   18 +++++++++---------
  1 files changed, 9 insertions(+), 9 deletions(-)
 
@@ -54,7 +56,7 @@ index d7e0f56..32d3bfc 100755
  	mkdir -p "${PORTAGE_BINPKG_TMPFILE%/*}" || die "mkdir failed"
  	tar $tar_options -cf - $PORTAGE_BINPKG_TAR_OPTS -C "${D}" . | \
 -		bzip2 -cf > "$PORTAGE_BINPKG_TMPFILE"
-+		$PORTAGE_BZIP2_COMMAND -c > "$PORTAGE_BINPKG_TMPFILE"
++		${PORTAGE_BZIP2_COMMAND:-bzip2} -c > "$PORTAGE_BINPKG_TMPFILE"
  	assert "failed to pack binary package: '$PORTAGE_BINPKG_TMPFILE'"
  	PYTHONPATH=${PORTAGE_PYM_PATH}${PYTHONPATH:+:}${PYTHONPATH} \
  		"${PORTAGE_PYTHON:-/usr/bin/python}" "$PORTAGE_BIN_PATH"/xpak-helper.py recompose \
@@ -113,7 +115,7 @@ index a2bbe7a..004544e 100644
 	def _start(self):
 		self.args = [self._shell_binary, "-c",
 -			"bzip2 -dqc -- %s | tar -xp -C %s -f -" % \
-+			("${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- %s | tar -xp -C %s -f -" % \
++			("${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND:-bzip2} -d} -c -- %s | tar -xp -C %s -f -" % \
 			(portage._shell_quote(self.pkg_path),
 -			portage._shell_quote(self.image_dir))]
 +			portage._shell_quote(self.image_dir)))]
@@ -140,7 +142,7 @@ index 2a515dd..4a29b14 100644
  		writemsg_stdout(_(">>> Extracting %s\n") % mypkg)
  		retval = portage.process.spawn_bash(
 -			"bzip2 -dqc -- '%s' | tar -xp -C '%s' -f -" % (mytbz2, pkgloc),
-+			"${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- %s | tar -xp -C %s -f -" % (mytbz2, pkgloc),
++			"${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND:-bzip2} -d} -c -- %s | tar -xp -C %s -f -" % (mytbz2, pkgloc),
  			env=mysettings.environ())
  		if retval != os.EX_OK:
  			writemsg(_("!!! Error Extracting '%s'\n") % mytbz2, noiselevel=-1)
@@ -178,7 +180,7 @@ index feef318..7400ca2 100755
  				;;
  			tbz|tbz2)
 -				bzip2 -dc "$srcdir$x" | tar xof -
-+				${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- "$srcdir$x" | tar xof -
++				${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND:-bzip2} -d} -c -- "$srcdir$x" | tar xof -
  				assert "$myfail"
  				;;
  			ZIP|zip|jar)
@@ -190,7 +192,7 @@ index feef318..7400ca2 100755
  				;;
  			bz2|bz)
 -				_unpack_tar bzip2
-+				_unpack_tar "${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d}"
++				_unpack_tar "${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND:-bzip2} -d}"
  				;;
  			7Z|7z)
  				local my_output
@@ -215,7 +217,7 @@ index feef318..7400ca2 100755
  	assert "save_ebuild_env failed"
  
 -	bzip2 -f9 environment
-+	${PORTAGE_BZIP2_COMMAND} -f9 environment
++	${PORTAGE_BZIP2_COMMAND:-bzip2} -f9 environment
  
  	cp "${EBUILD}" "${PF}.ebuild"
  	[ -n "${PORTAGE_REPO_NAME}" ]  && echo "${PORTAGE_REPO_NAME}" > repository
@@ -224,7 +226,7 @@ index feef318..7400ca2 100755
  				filter_readonly_variables --filter-path \
  				--filter-sandbox --allow-extra-vars \
 -				| bzip2 -c -f9 > "$PORTAGE_UPDATE_ENV"
-+				| ${PORTAGE_BZIP2_COMMAND} -c -f9 > "$PORTAGE_UPDATE_ENV"
++				| ${PORTAGE_BZIP2_COMMAND:-bzip2} -c -f9 > "$PORTAGE_UPDATE_ENV"
  		fi
  		;;
 	unpack|prepare|configure|compile|test|clean|install)
