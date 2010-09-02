@@ -22,5 +22,6 @@ src_install() {
 	dobin generate_logs
         dobin mkcrosusb
         dobin wlan_11n
+        dobin wlan_plugin
         dobin wlan_tx_ampdu
 }
