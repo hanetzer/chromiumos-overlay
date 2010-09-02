@@ -14,24 +14,40 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
-DEPEND=""
+DEPEND="x86? ( sys-boot/syslinux )"
 
 RDEPEND="chromeos-base/chromeos-installer
          chromeos-base/chromeos-init
          chromeos-base/memento_softwareupdate"
 
-FACTORY_SERVER="${FACTORY_SERVER:-meatball.mtv.corp.google.com}"
-
 CROS_WORKON_LOCALNAME="factory_installer"
 CROS_WORKON_PROJECT="factory_installer"
+
+FACTORY_SERVER="${FACTORY_SERVER:-meatball.mtv.corp.google.com}"
 
 src_install() {
 	insinto /etc/init
 	doins factory_install.conf
 	doins factory_ui.conf
-	
+
 	exeinto /usr/sbin
 	doexe factory_install.sh
+
+	insinto /root
+        newins $FILESDIR/dot.factory_installer .factory_installer
+        newins $FILESDIR/dot.gpt_layout .gpt_layout
+	# install PMBR code
+	case "$(tc-arch)" in
+		"x86")
+		einfo "using x86 PMBR code from syslinux"
+		PMBR_SOURCE="${ROOT}/usr/share/syslinux/gptmbr.bin"
+		;;
+		*)
+		einfo "using default PMBR code"
+		PMBR_SOURCE=$FILESDIR/dot.pmbr_code
+		;;
+	esac
+	newins $PMBR_SOURCE .pmbr_code
 }
 
 pkg_postinst() {
@@ -49,9 +65,6 @@ EOF
 
 	# No devserver.
 	sed -i '/CHROMEOS_DEVSERVER=/d' "${ROOT}/etc/lsb-release"
-
-	# Mark this image as being a factory install shim.
-	touch "${ROOT}/root/.factory_installer"
 
 	# Remove ui.conf startup script, which will make sure chrome doesn't
 	# run, since it tries to update on startup
