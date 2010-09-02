@@ -1,0 +1,16 @@
+Only in pbzip2-1.1.1-new: pbzip2
+diff -ur pbzip2-1.1.1/pbzip2.cpp pbzip2-1.1.1-new/pbzip2.cpp
+--- pbzip2-1.1.1/pbzip2.cpp	2010-04-17 11:37:39.000000000 -0700
++++ pbzip2-1.1.1-new/pbzip2.cpp	2010-09-01 20:19:27.000000000 -0700
+@@ -1160,10 +1160,7 @@
+ 
+ 		if (strm.avail_in != 0)
+ 		{
+-			handle_error(EF_EXIT, -1, "pbzip2: *ERROR unconsumed in after BZ2_bzDecompress loop:"
+-						"ret=%d; block=%d; seq=%d; avail_in=%d\n",
+-						 bzret, fileData->blockNumber, outSequenceNumber, strm.avail_in);
+-			return (NULL);
++			fprintf(stderr, "pbzip2: trailing garbage after EOF\n");
+ 		}
+ 
+ 		if (bzret == BZ_STREAM_END)

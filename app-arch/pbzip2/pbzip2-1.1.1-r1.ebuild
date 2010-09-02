@@ -19,7 +19,7 @@ RDEPEND="${DEPEND}"
 src_unpack() {
 	unpack ${A}
 	sed -e 's:^CFLAGS = .*$:#&:g' -e 's:g++:$(CXX):g' -i ${P}/Makefile || die
-	epatch "${FILESDIR}"/pbzip2-1.0.5-ldflags.patch
+	epatch "${FILESDIR}"/pbzip-trailing-garbage.patch
 }
 
 src_compile() {

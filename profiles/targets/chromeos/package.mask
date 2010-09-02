@@ -79,3 +79,6 @@
 
 # Masked old packages that had old ${PV} numbering scheme
 >=app-i18n/ibus-mozc-29
+
+# Masked all upstream ebuilds
+>app-arch/pbzip2-1.1.1-r1
