@@ -29,9 +29,10 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
 	epatch "${FILESDIR}/${P}-be-keyboard.patch"
 	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
+	epatch "${FILESDIR}/${P}-nav-keys.patch"
 
 	# Generate symbols/chromeos.
-        python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
+	python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
 
 	# Generate symbols/version.
 	# TODO(yusukes,jrbarnette): Once the XKB cache issue in the MeeGo patch

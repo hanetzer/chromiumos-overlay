@@ -1,0 +1,19 @@
+This patch, by David Ge, fixes an uninitialized valuators.mask in
+_XkbFilterRedirectKey(), which makes XKB RedirectKey actions do nothing but
+log "Valuators reported for non-valuator device." errors.  It was
+upstreamed on 2010-08-19.
+
+http://www.mail-archive.com/xorg-devel@lists.x.org/msg11701.html
+
+diff --git a/xkb/xkbActions.c b/xkb/xkbActions.c
+index b0ab427..4c366ba 100644
+--- a/xkb/xkbActions.c
++++ b/xkb/xkbActions.c
+@@ -790,6 +790,7 @@ ProcessInputProc backupproc;
+     /* never actually used uninitialised, but gcc isn't smart enough
+      * to work that out. */
+     memset(&old, 0, sizeof(old));
++    memset(&ev, 0, sizeof(ev));
+ 
+     if ((filter->keycode!=0)&&(filter->keycode!=keycode))
+ 	return 1;

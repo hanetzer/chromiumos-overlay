@@ -1,0 +1,65 @@
+diff --git a/symbols/pc b/symbols/pc
+index 9f3da66..fa2e251 100644
+--- a/symbols/pc
++++ b/symbols/pc
+@@ -141,9 +141,27 @@ xkb_symbols "editing" {
+     key  <END> {	[  End			]	};
+     key <PGDN> {	[  Next			]	};
+ 
+-    key   <UP> {	[  Up			]	};
++    key <UP> {
++        type="ARROW",
++        repeat=yes,
++        [ Up, Up, Prior ],
++        actions[Group1] = [
++            NoAction(),
++            NoAction(),
++            RedirectKey(key=<PGUP>, clearmods=Alt)
++        ]
++    };
++    key <DOWN> {
++        type="ARROW",
++        repeat=yes,
++        [ Down, Down, Next ],
++        actions[Group1] = [
++            NoAction(),
++            NoAction(),
++            RedirectKey(key=<PGDN>, clearmods=Alt)
++        ]
++    };
++
+     key <LEFT> {	[  Left			]	};
+-    key <DOWN> {	[  Down			]	};
+     key <RGHT> {	[  Right		]	};
+ };
+-
+diff --git a/types/basic b/types/basic
+index cf1ee64..90c2e5b 100644
+--- a/types/basic
++++ b/types/basic
+@@ -5,6 +5,7 @@ default xkb_types "basic" {
+     // Fairly standard definitions for
+     // the four required key types
+ 
++    virtual_modifiers Alt;
+     virtual_modifiers NumLock;
+ 
+     type "ONE_LEVEL" {
+@@ -28,4 +29,17 @@ default xkb_types "basic" {
+         level_name[Level2] = "Caps";
+     };
+ 
++    // Extra type for up and down arrow keys, which we modify to send
++    // Page Up and Page Down.
++    type "ARROW" {
++        modifiers              = Shift+Lock+Alt;
++        map[Shift]             = Level2;
++        map[Lock]              = Level2;
++        map[Alt]               = Level3;
++        map[Alt+Shift]         = Level3;
++        map[Alt+Lock]          = Level3;
++        level_name[Level1]     = "Base";
++        level_name[Level2]     = "Caps";
++        level_name[Level3]     = "Alt";
++    };
+ };
