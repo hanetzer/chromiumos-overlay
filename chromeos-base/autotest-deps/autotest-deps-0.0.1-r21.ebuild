@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b4df97a79b96eefd3d6943e0ebc91e02f0b55e00"
+CROS_WORKON_COMMIT="11a9e13ac8ca02d10fd8d14269e744a341ffa015"
 
 inherit cros-workon autotest
 
@@ -13,10 +13,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm amd64"
 
-IUSE_TESTS="+tests_myfaketest"
-
 # Autotest enabled by default.
-IUSE="+autotest ${IUSE_TESTS}"
+IUSE="+autotest"
 
 CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
@@ -26,6 +24,8 @@ CROS_WORKON_SUBDIR=files
 # following deps are not deps: factory
 # following tests are going to be moved: chrome_test
 AUTOTEST_DEPS_LIST="glbench gtest hdparm ibusclient iotools iwcap libaio realtimecomm_playground sysstat"
+
+AUTOTEST_FORCE_TEST_LIST="myfaketest"
 
 # deps/gtest
 RDEPEND="
