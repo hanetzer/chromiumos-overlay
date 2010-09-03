@@ -50,6 +50,11 @@ src_install() {
 	use doc && dodoc doc/*
 	newinitd "${FILESDIR}/tcsd.initd" tcsd
 	newconfd "${FILESDIR}/tcsd.confd" tcsd
+
+	# Install the empty system.data files
+	dodir /etc/trousers
+	insinto /etc/trousers
+	doins "${S}"/dist/system.data.*
 }
 
 pkg_postinst() {
