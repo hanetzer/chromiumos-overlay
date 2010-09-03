@@ -16,7 +16,8 @@ IUSE=""
 
 DEPEND="x86? ( sys-boot/syslinux )"
 
-RDEPEND="chromeos-base/chromeos-installer
+RDEPEND="chromeos-base/chromeos-initramfs
+         chromeos-base/chromeos-installer
          chromeos-base/chromeos-init
          chromeos-base/memento_softwareupdate"
 
