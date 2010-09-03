@@ -11,7 +11,6 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE="debug"
 
 RDEPEND="app-i18n/ibus
 	chromeos-base/flimflam
@@ -44,7 +43,6 @@ CROS_WORKON_PROJECT="cros"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 src_compile() {
-	use debug || append-flags -DNDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX
