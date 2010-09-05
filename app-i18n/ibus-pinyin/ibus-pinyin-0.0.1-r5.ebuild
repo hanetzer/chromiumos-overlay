@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-pinyin/ibus-pinyin-1.2.0.20090915.ebuild,v 1.1 2009/09/15 15:11:20 matsuu Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="87662ccbed93a3a179efeecf5b7df23adbc8420b"
+CROS_WORKON_COMMIT="46cc1b3434a3f4df00c45b4f14d122078878ed90"
 
 inherit cros-workon eutils flag-o-matic
 
