@@ -28,6 +28,12 @@ PORTDIR_OVERLAY="/usr/local/portage"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
 
+# Use parallel bzip2 for portage if available
+PORTAGE_BZIP2_COMMAND="bzip-wrapper"
+# TODO: Stabilize pbunzip and use wrapper
+#PORTAGE_BUNZIP2_COMMAND="bunzip-wrapper"
+PORTAGE_BUNZIP2_COMMAND="bunzip2"
+
 # Print a checkpoint message every 10MB while archiving.
 PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"
 

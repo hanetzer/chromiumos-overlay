@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies for building cross-compiled packages.
 RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
+	app-arch/bzip-wrapper
 	app-arch/cabextract
 	app-arch/rpm2targz
 	app-arch/sharutils

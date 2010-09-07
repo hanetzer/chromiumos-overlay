@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+DEFAULT_OPTS=""
+ME=$(basename ${0})
+
+# We can be a symlink. Figure out how are we called, what are we,
+# and what the purpose of our life is.
+case "${ME}" in
+  (bunzip*) DEFAULT_OPTS="${DEFAULT_OPTS} -d";;
+  (bzip*) ;;
+  (*) echo "${ME}: Invalid invocation of bzip-wrapper!"; exit 1;;
+esac
+
+# If pbzip2 exists, let's pick it up, otherwise use bzip2.
+BASE=bzip2
+if which pbzip2 &> /dev/null; then
+  BASE=pbzip2
+fi
+
+# Main invocation
+${BASE} ${DEFAULT_OPTS} $*
