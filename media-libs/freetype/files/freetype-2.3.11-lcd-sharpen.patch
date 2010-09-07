@@ -1,0 +1,85 @@
+--- freetype-2.3.11/builds/unix/configure.orig  2010-08-25 13:37:30.000000000 -0700
++++ freetype-2.3.11/builds/unix/configure 2010-08-25 14:23:35.000000000 -0700
+@@ -6043,7 +6043,7 @@
+ fi
+ if test x$with_zlib != xno && test -n "$LIBZ"; then
+   CFLAGS="$CFLAGS -DFT_CONFIG_OPTION_SYSTEM_ZLIB"
+-  LDFLAGS="$LDFLAGS $LIBZ"
++  LDFLAGS="$LDFLAGS $LIBZ -lm"
+   SYSTEM_ZLIB=yes
+ fi
+ 
+   /*************************************************************************/
+diff --git a/src/smooth/ftsmooth.c b/src/smooth/ftsmooth.c
+index 7d16b94..57de912 100644
+--- a/src/smooth/ftsmooth.c
++++ b/src/smooth/ftsmooth.c
+@@ -25,6 +25,7 @@
+ #include "ftspic.h"
+ 
+ #include "ftsmerrs.h"
++#include <math.h>
+ 
+ 
+   /* initialize renderer -- init its raster */
+@@ -94,6 +95,47 @@
+   }
+ 
+ 
++  /* soften the sub-pixel anti-aliasing and sharpen */
++  static void
++  _ft_subpixel_sharpen( FT_Bitmap*      bitmap,
++                        FT_Render_Mode  mode,
++                        FT_Byte         cutoff,
++                        double          gamma_value )
++  {
++    static FT_Bool initialized_gamma = FALSE;
++    static unsigned short gamma_ramp[256];
++    FT_UInt   width   = (FT_UInt)bitmap->width;
++    FT_UInt   height  = (FT_UInt)bitmap->rows;
++    int    ii;
++    if (!initialized_gamma)
++    {
++      initialized_gamma = TRUE;
++      /* linear to voltage */
++      for ( ii = 0; ii < 256; ii++ )
++      {
++        gamma_ramp[ii] = (unsigned char)
++                         ( pow( (double)ii/255.0, gamma_value ) * 255.0f );
++        if (gamma_ramp[ii] < cutoff) {
++          gamma_ramp[ii] = 0;
++        }
++      }
++    }
++
++    /* horizontal in-place sub-pixel sharpening filter */
++    if ( mode == FT_RENDER_MODE_LCD)
++    {
++      FT_Byte*  line = bitmap->buffer;
++      for ( ; height > 0; height--, line += bitmap->pitch )
++      {
++        FT_UInt  xx;
++        for ( xx = 0; xx < width; xx++ )
++        {
++          line[xx] = gamma_ramp[line[xx]];
++        }
++      }
++    }
++  }
++
+   /* convert a slot's glyph image into a bitmap */
+   static FT_Error
+   ft_smooth_render_generic( FT_Renderer       render,
+@@ -265,6 +307,12 @@
+           vec->y /= 3;
+     }
+ 
++    /* These should be controllable */
++    FT_Byte cutoff = (FT_Byte)(0.25 * 255.0);
++    double gamma_value = 1.2;
++    /* sharpen the glyphs */
++    _ft_subpixel_sharpen( bitmap, mode, cutoff, gamma_value );
++
+     if ( slot->library->lcd_filter_func )
+       slot->library->lcd_filter_func( bitmap, mode, slot->library );
+ 
