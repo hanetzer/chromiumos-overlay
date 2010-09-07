@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="62391e4682611cca7b92c55b767df285b626d4a6"
 
 inherit flag-o-matic toolchain-funcs cros-workon
 
@@ -96,4 +97,8 @@ src_install() {
 	insinto /opt/google/chrome/chromeos
 	insopts -m0755
 	doins "${S}/libcros.so"
+	
+	insinto /opt/google/touchpad
+	doins ${FILESDIR}/tpcontrol_synclient
+	doins ${FILESDIR}/tpcontrol
 }

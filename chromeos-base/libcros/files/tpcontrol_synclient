@@ -1,0 +1,69 @@
+#!/bin/sh
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+SYNCLIENT=/usr/bin/synclient
+
+COMMAND=$1
+VALUE=$2
+
+echo_setting() {
+  echo $1: `$SYNCLIENT $1`
+}
+
+usage() {
+  echo "Usage: $0 {status|taptoclick [on|off]|sensitivity [1-5]}"
+}
+
+VALID=0
+
+if [ $COMMAND = "status" ] ; then
+  $SYNCLIENT -l
+  VALID=1
+elif [ $COMMAND = "taptoclick" ] ; then
+  if [ $VALUE = "on" ] ; then
+    $SYNCLIENT "MaxTapTime=180"
+    VALID=1
+  elif [ $VALUE = "off" ] ; then
+    $SYNCLIENT "MaxTapTime=0"
+    VALID=1
+  fi
+elif [ $COMMAND = "sensitivity" ] ; then
+  case $VALUE in
+  1)
+    $SYNCLIENT "MinSpeed=.2"
+    $SYNCLIENT "MaxSpeed=.6"
+    $SYNCLIENT "VertScrollDelta=36"
+    VALID=1
+    ;;
+  2)
+    $SYNCLIENT "MinSpeed=.3"
+    $SYNCLIENT "MaxSpeed=.8"
+    $SYNCLIENT "VertScrollDelta=27"
+    VALID=1
+    ;;
+  3)
+    $SYNCLIENT "MinSpeed=.4"
+    $SYNCLIENT "MaxSpeed=1.0"
+    $SYNCLIENT "VertScrollDelta=18"
+    VALID=1
+    ;;
+  4)
+    $SYNCLIENT "MinSpeed=.5"
+    $SYNCLIENT "MaxSpeed=1.0"
+    $SYNCLIENT "VertScrollDelta=9"
+    VALID=1
+    ;;
+  5)
+    $SYNCLIENT "MinSpeed=.6"
+    $SYNCLIENT "MaxSpeed=1.0"
+    $SYNCLIENT "VertScrollDelta=4"
+    VALID=1
+    ;;
+  esac
+fi
+
+if [ $VALID = 0 ] ; then
+  usage
+fi
