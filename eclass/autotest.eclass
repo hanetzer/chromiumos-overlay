@@ -243,8 +243,18 @@ function autotest_src_compile() {
 		graphics_backend=OPENGL
 	fi
 
-	TESTS=$(get_test_list)
-	einfo "Tests enabled ($(echo ${TESTS}|wc -w)): ${TESTS}"
+	# This only prints the tests that have the associated .py
+	# (and therefore a setup function)
+	local prebuild_test_dirs="
+		client/tests client/site_tests
+		server/tests server/site_tests"
+	TESTS=$(\
+		for dir in ${prebuild_test_dirs}; do
+			print_test_dirs "${AUTOTEST_WORKDIR}/${dir}"
+		done | sort | uniq
+		)
+	einfo "Building tests ($(echo ${TESTS}|wc -w)):"
+	einfo "${TESTS}"
 
 	# Call autotest to prebuild all test cases.
 	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
