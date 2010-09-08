@@ -10,8 +10,8 @@
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
 if [[ $- != *i* ]] ; then
-        # Shell is non-interactive.  Be done now!
-        return
+  # Shell is non-interactive.  Be done now!
+  return
 fi
 
 
@@ -22,4 +22,5 @@ fi
 # outside the chroot.
 
 export PS1="(cros-chroot) ${PS1}"
-. /usr/share/crosutils/bash_completion
+[[ -f /usr/share/crosutils/bash_completion ]] &&
+  . /usr/share/crosutils/bash_completion
