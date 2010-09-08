@@ -1,6 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+=app-arch/pigz-2.1.6            amd64 x86
 # Need a later qemu-user so it will build statically.
 =app-emulation/qemu-softmmu-0.10.1 amd64 x86
 =dev-cpp/gflags-1.2             amd64 x86
