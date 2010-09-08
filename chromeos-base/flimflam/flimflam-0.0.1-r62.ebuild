@@ -14,7 +14,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
 
 RDEPEND="chromeos-base/crash-dumper
 	>=dev-libs/glib-2.16
@@ -38,7 +38,8 @@ RDEPEND="chromeos-base/crash-dumper
 		dev-python/pygobject
 	)
 	udev? ( >=sys-fs/udev-141 )
-	wifi? ( net-wireless/wpa_supplicant[dbus] )"
+	wifi? ( net-wireless/wpa_supplicant[dbus] )
+	newwifi? ( net-wireless/wpa_supplicant[dbus] )"
 
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )"
@@ -86,7 +87,8 @@ src_configure() {
 		$(use_enable threads) \
 		$(use_enable tools) \
 		$(use_enable udev) \
-		$(use_enable wifi wifi builtin) \
+		$(use_enable wifi wifi) \
+		$(use_enable newwifi newwifi) \
 		--disable-udhcp \
 		--disable-iwmx \
 		--disable-iospm
