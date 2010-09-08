@@ -138,16 +138,34 @@ cros-workon_src_unpack() {
 
 	local repo=${CROS_WORKON_REPO}
 	local project=${CROS_WORKON_PROJECT}
+	local path=$(get_path)
 
 	if [[ "${fetch_method}" == "git" ]] ; then
-		EGIT_REPO_URI="${repo}/${project}"
-		EGIT_COMMIT=${CROS_WORKON_COMMIT}
-		# clones to /var, copies src tree to the /build/<board>/tmp
-		git_src_unpack
+		if [[ -d ${path}/.git ]] ; then
+			# Looks like we already have a local copy of the git repository.
+			# Let's use that repository and checkout ${CROS_WORKON_COMMIT}.
+			#  -s: For speed, share objects between ${path} and ${S}.
+			#  -n: Don't checkout any files from the repository yet. We'll
+			#      checkout the source separately.
+			#
+			# We don't use git clone to checkout the source because the -b
+			# option for clone defaults to HEAD if it can't find the revision
+			# you requested. On the other hand, git checkout fails if it can't
+			# find the revision you requested, so we use that instead.
+			git clone -sn "${path}" ${S} || die "Can't clone ${path}."
+			if ! ( cd ${S} && git checkout ${CROS_WORKON_COMMIT} ) ; then
+				ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
+				ewarn "Is ${path} up to date? Try running repo sync."
+				die "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
+			fi
+		else
+			# clones to /var, copies src tree to the /build/<board>/tmp
+			EGIT_REPO_URI="${repo}/${project}"
+			EGIT_COMMIT=${CROS_WORKON_COMMIT}
+			git_src_unpack
+		fi
 		return
 	fi
-
-	local path=$(get_path)
 
 	einfo "Using local source dir: $path"
 
