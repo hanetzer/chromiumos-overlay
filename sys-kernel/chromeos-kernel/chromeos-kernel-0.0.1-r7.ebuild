@@ -2,19 +2,19 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="35f9e7c42ea335a2cb279653e8a39ec1049aceda"
+CROS_WORKON_COMMIT="c7f084083f35106a80ce3767b7020318f60e4bb1"
 
 inherit toolchain-funcs
 
-
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless"
+IUSE="-compat_wireless -initramfs"
 
-DEPEND="sys-apps/debianutils"
+DEPEND="sys-apps/debianutils
+    initramfs? ( chromeos-base/chromeos-initramfs )"
 RDEPEND="chromeos-base/kernel-headers" # Temporary hack
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
@@ -30,13 +30,11 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
-	elif [ "${ARCH}" = "arm" ]; then
-		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
 	fi
 fi
 
-CROS_WORKON_PROJECT="kernel-next"
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -68,13 +66,20 @@ src_configure() {
 }
 
 src_compile() {
+	if use initramfs; then
+		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+	else
+		INITRAMFS=""
+	fi
 	emake \
+		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		CROSS_COMPILE="${cross}" || die
 
 	if use compat_wireless; then
 		# compat-wireless support must be done after
 		emake M=chromeos/compat-wireless \
+			$INITRAMFS \
 			ARCH=${kernel_arch} \
 			CROSS_COMPILE="${cross}" || die
 	fi
@@ -161,13 +166,13 @@ src_install() {
 		dodir /boot
 
 		/usr/bin/mkimage -A "${ARCH}" \
-							-O linux \
-							-T kernel \
-							-C none \
-							-a ${vmlinux_text_base} \
-							-e ${vmlinux_text_base} \
-							-n kernel \
-							-d "${D}"/boot/vmlinuz \
-							"${D}"/boot/vmlinux.uimg || die
+			-O linux \
+			-T kernel \
+			-C none \
+			-a ${vmlinux_text_base} \
+			-e ${vmlinux_text_base} \
+			-n kernel \
+			-d "${D}"/boot/vmlinuz \
+			"${D}"/boot/vmlinux.uimg || die
 	fi
 }
