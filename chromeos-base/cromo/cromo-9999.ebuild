@@ -23,10 +23,6 @@ RDEPEND="chromeos-base/libchrome
 DEPEND="${RDEPEND}
 	net-misc/modemmanager"
 
-# Don't strip, since plugins need to resolve symbols
-# in the cromo executable
-RESTRICT="strip"
-
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	emake PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
