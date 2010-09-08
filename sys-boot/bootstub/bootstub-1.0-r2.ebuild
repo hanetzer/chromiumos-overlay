@@ -9,6 +9,7 @@ SLOT="0"
 KEYWORDS="amd64"
 IUSE=""
 EAPI="2"
+CROS_WORKON_COMMIT="0c78638ff21a3a4c459b6deaf67453458aa4f223"
 
 DEPEND="sys-boot/gnu-efi"
 

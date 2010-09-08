@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="048115977d7f0cb7e4d37ded47324f8175c71177"
 
 inherit cros-workon toolchain-funcs
 
@@ -28,6 +29,7 @@ CROS_WORKON_SUBDIR="${u_boot#u-boot/}"
 src_configure() {
 	elog "Using U-Boot config: ${config}"
 
+	emake distclean
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \

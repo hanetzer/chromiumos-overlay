@@ -10,6 +10,7 @@ SLOT="0"
 KEYWORDS="amd64"
 IUSE=""
 EAPI="2"
+CROS_WORKON_COMMIT="d1661b9e74f84b349242998462209e204acc9239"
 
 RDEPEND=">=sys-libs/ncurses-5.2-r5
 	dev-libs/lzo

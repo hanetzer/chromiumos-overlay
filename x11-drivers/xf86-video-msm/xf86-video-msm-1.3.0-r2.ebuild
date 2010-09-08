@@ -2,17 +2,17 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-
-# stable commit ID
 CROS_WORKON_COMMIT="910def6e2b8b0afde49d9852de4ca1efd5ef6e64"
 
 if [[ -n "${ST1Q_SOURCES_QUALCOMM}" ]] ; then
 	CROS_WORKON_REPO="git://git-1.quicinc.com"
 	CROS_WORKON_PROJECT="graphics/xf86-video-msm"
 	CROS_WORKON_LOCALNAME="qcom/opensource/graphics/xf86-video-msm"
-	EGIT_BRANCH=chromium
-else
-	EGIT_BRANCH=master
+
+	# mainline development branch
+	CROS_WORKON_COMMIT="chromium"
+	# EGIT_BRANCH must be set prior to 'inherit git' being used by cros-workon
+	EGIT_BRANCH=${EGIT_BRANCH:="${CROS_WORKON_COMMIT}"}
 fi
 
 inherit cros-workon toolchain-funcs autotools
