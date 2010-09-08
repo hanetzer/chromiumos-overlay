@@ -26,6 +26,10 @@ src_unpack() {
 	unpack ${A}
 	cd "${P}"
 
+	# Use kr(kr104) XKB layout to use right Alt and right Ctrl keys as
+	# Hangul and Hanja keys respectively.
+	epatch "${FILESDIR}/ibus-hangul-1.3.0.20100329-use-korean-101-104-compat-layout.patch"
+
 	# This upstream change is not included in
 	# ibus-hangul-1.3.0.20100329.tar.gz yet.
 	epatch "${FILESDIR}/ibus-hangul-candidate-window-click-8135d88b75bce61f54d0049e62916420200b38d6.patch"

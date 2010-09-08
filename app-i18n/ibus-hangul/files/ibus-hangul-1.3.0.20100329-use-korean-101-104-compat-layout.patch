@@ -1,0 +1,12 @@
+diff -uNr ibus-hangul-1.3.0.20100329.orig/src/hangul.xml.in.in ibus-hangul-1.3.0.20100329/src/hangul.xml.in.in
+--- ibus-hangul-1.3.0.20100329.orig/src/hangul.xml.in.in	2010-03-29 00:04:19.000000000 +0900
++++ ibus-hangul-1.3.0.20100329/src/hangul.xml.in.in	2010-09-07 15:36:55.490051000 +0900
+@@ -17,7 +17,7 @@
+ 			<license>GPL</license>
+ 			<author>Peng Huang &lt;shawn.p.huang@gmail.com&gt;</author>
+ 			<icon>${pkgdatadir}/icons/ibus-hangul.png</icon>
+-			<layout>us</layout>
++			<layout>kr(kr104)</layout>
+ 			<longname>Korean</longname>
+ 			<description>Korean Input Method</description>
+ 			<rank>99</rank>
