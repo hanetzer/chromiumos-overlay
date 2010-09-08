@@ -27,6 +27,7 @@ RDEPEND="hal? ( sys-apps/hal )
 	>=x11-libs/libXdmcp-1.0.2
 	>=x11-libs/libpciaccess-0.10.3
 	>=x11-libs/pixman-0.15.20
+	>=media-fonts/font-util-1.1
 	media-libs/freetype
 	>=x11-misc/xbitmaps-1.0.1
 	>=x11-misc/xkeyboard-config-1.4
@@ -146,6 +147,9 @@ pkg_setup() {
 		conf_opts="${conf_opts} --disable-xsdl"
 	fi
 
+	# Need to make sure aclocal includes target includes
+	AT_M4DIR="${AT_M4DIR} -I ${ROOT}usr/share/aclocal"
+
 	# localstatedir is used for the log location; we need to override the default
 	# from ebuild.sh
 	# sysconfdir is used for the xorg.conf location; same applies
@@ -173,6 +177,7 @@ pkg_setup() {
 		--with-fontdir=/usr/share/fonts
 		--with-xkb-output=/var/lib/xkb
 		--without-dtrace
+		--with-sha1=libcrypto
 		${conf_opts}"
 
 	# (#121394) Causes window corruption
