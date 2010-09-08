@@ -1,0 +1,60 @@
+diff --git a/README.chromium b/README.chromium
+new file mode 100644
+index 0000000..ae9c701
+--- /dev/null
++++ b/README.chromium
+@@ -0,0 +1,11 @@
++Local Modification:
++
++- src/pinyin.xml.in.in
++
++Change the cache directory from g_get_user_cache_dir() + "/ibus/pinyin", which is usually ~/.cache/ibus/pinyin, to /home/chronos/user/.cache/ibus/pinyin since the g_get_user_cache_dir is shared among all Chrome OS users.
++Remove ibus-bopomofo IME
++
++- Main.cc
++
++Do not read configure values for bopomofo IME
++
+diff --git a/src/PYMain.cc b/src/PYMain.cc
+index 463ec2f..0626f0d 100644
+--- a/src/PYMain.cc
++++ b/src/PYMain.cc
+@@ -82,7 +82,9 @@ start_component (void)
+ 
+     Database::init ();
+     PinyinConfig::init (bus);
++#if 0
+     BopomofoConfig::init (bus);
++#endif
+ 
+     g_signal_connect ((IBusBus *)bus, "disconnected", G_CALLBACK (ibus_disconnected_cb), NULL);
+ 
+diff --git a/src/pinyin.xml.in.in b/src/pinyin.xml.in.in
+index cd260f9..8d2aef5 100644
+--- a/src/pinyin.xml.in.in
++++ b/src/pinyin.xml.in.in
+@@ -3,7 +3,7 @@
+ <component>
+ 	<name>org.freedesktop.IBus.Pinyin</name>
+ 	<description>Pinyin Component</description>
+-	<exec>${libexecdir}/ibus-engine-pinyin --ibus</exec>
++	<exec>/bin/env XDG_CACHE_HOME=/home/chronos/user/.cache ${libexecdir}/ibus-engine-pinyin --ibus</exec>
+ 	<version>@VERSION@</version>
+ 	<author>Peng Huang &lt;shawn.p.huang@gmail.com&gt;</author>
+ 	<license>GPL</license>
+@@ -23,6 +23,7 @@ BYVoid &lt;byvoid1@gmail.com&gt;</author>
+ 			<description>Pinyin input method</description>
+ 			<rank>99</rank>
+ 		</engine>
++		<!--
+ 		<engine>
+ 			<name>bopomofo</name>
+ 			<language>zh</language>
+@@ -35,6 +36,7 @@ Peng Huang &lt;shawn.p.huang@gmail.com&gt;</author>
+ 			<description>Bopomofo input method</description>
+ 			<rank>98</rank>
+ 		</engine>
++		-->
+ 	</engines>
+ 
+ </component>
