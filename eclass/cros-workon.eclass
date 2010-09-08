@@ -152,16 +152,43 @@ cros-workon_src_unpack() {
 			# option for clone defaults to HEAD if it can't find the revision
 			# you requested. On the other hand, git checkout fails if it can't
 			# find the revision you requested, so we use that instead.
-			git clone -sn "${path}" ${S} || die "Can't clone ${path}."
-			if ! ( cd ${S} && git checkout ${CROS_WORKON_COMMIT} ) ; then
-				ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
-				ewarn "Is ${path} up to date? Try running repo sync."
-				die "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
+			if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
+				# Since we don't have a CROS_WORKON_COMMIT revision specified,
+				# we don't know what revision the ebuild wants. Let's take the
+				# version of the code that the user has checked out.
+				#
+				# This almost replicates the pre-cros-workon behavior, where
+				# the code you had in your source tree was used to build
+				# things. One difference here, however, is that only committed
+				# changes are included.
+				#
+				# TODO(davidjames): We should fix the preflight buildbot to
+				# specify CROS_WORKON_COMMIT for all ebuilds, and update this
+				# code path to fail and explain the problem.
+				git clone -s "${path}" ${S} || die "Can't clone ${path}."
+			else
+				git clone -sn "${path}" ${S} || die "Can't clone ${path}."
+				if ! ( cd ${S} && git checkout ${CROS_WORKON_COMMIT} ) ; then
+					ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
+					ewarn "Is ${path} up to date? Try running repo sync."
+					die "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
+				fi
 			fi
 		else
-			# clones to /var, copies src tree to the /build/<board>/tmp
 			EGIT_REPO_URI="${repo}/${project}"
 			EGIT_COMMIT=${CROS_WORKON_COMMIT}
+			if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
+				# TODO(davidjames): This code should really error out if
+				# ${CROS_WORKON_COMMIT} is master, because it's going to be doing
+				# the wrong thing for branches.
+				ewarn "=== START HACK ALERT ==="
+				ewarn "We don't have a CROS_WORKON_COMMIT for ${project},"
+				ewarn "and we can't find what code to use, so we are using"
+				ewarn "the latest version. This may break your build or"
+				ewarn "produce wrong output. See http://crosbug.com/6506"
+				ewarn "=== END HACK ALERT ==="
+			fi
+			# clones to /var, copies src tree to the /build/<board>/tmp
 			git_src_unpack
 		fi
 		return
