@@ -35,8 +35,8 @@ src_install() {
 	doexe factory_install.sh
 
 	insinto /root
-        newins $FILESDIR/dot.factory_installer .factory_installer
-        newins $FILESDIR/dot.gpt_layout .gpt_layout
+	newins $FILESDIR/dot.factory_installer .factory_installer
+	newins $FILESDIR/dot.gpt_layout .gpt_layout
 	# install PMBR code
 	case "$(tc-arch)" in
 		"x86")
@@ -52,21 +52,21 @@ src_install() {
 }
 
 pkg_postinst() {
-	sed -i \
-		"s/CHROMEOS_AUSERVER=.*$/CHROMEOS_AUSERVER=\
-http:\/\/${FACTORY_SERVER}:8080\/update/" \
-	${ROOT}/etc/lsb-release
+	STATEFUL="${ROOT}/usr/local"
+	STATEFUL_LSB="${STATEFUL}/etc/lsb-factory"
+
+	mkdir -p "${STATEFUL}/etc"
 
 	# sudo friendly append.
-	cat <<EOF | sudo dd of="${ROOT}/etc/lsb-release" \
+	cat <<EOF | sudo dd of="${STATEFUL_LSB}" \
                 oflag=append conv=notrunc
+CHROMEOS_AUSERVER=http://${FACTORY_SERVER}:8080/update
+CHROMEOS_DEVSERVER=http://${FACTORY_SERVER}:8080/update
 FACTORY_INSTALL=1
 HTTP_SERVER_OVERRIDE=true
 EOF
 
-	# No devserver.
-	sed -i '/CHROMEOS_DEVSERVER=/d' "${ROOT}/etc/lsb-release"
-
+	# TODO(nsanders): Add runtime switches in init.git
 	# Remove ui.conf startup script, which will make sure chrome doesn't
 	# run, since it tries to update on startup
 	sed -i 's/start on stopping startup/start on never/' \

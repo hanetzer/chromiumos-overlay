@@ -10,6 +10,7 @@
 # USB card partition and mount point.
 USB_DEVS="sdb3 sdc3 mmcblk1p3"
 USB_MNT=/usb
+STATEFUL_MNT=/stateful
 # Size of the root ramdisk.
 TMPFS_SIZE=300M
 
@@ -28,13 +29,14 @@ initial_mounts() {
   if ! mount -t devtmpfs -o mode=0755 none /dev; then
     mount -t tmpfs -o mode=0755 none /dev
     mknod -m 0600 /dev/console c 5 1
+    mknod -m 0600 /dev/tty1 c 4 1
     mknod /dev/null c 1 3
   fi
   mkdir /dev/pts
   mount -t devpts -o noexec,nosuid none /dev/pts || true
 
   # Send any output to where we can see it.
-  exec &> /dev/console
+  exec &> /dev/tty1
   echo "Starting initramfs"
 }
 
@@ -109,6 +111,22 @@ copy_contents() {
   return $RES
 }
 
+copy_lsb() {
+  # Fetch our writeable lsb-release from the stateful
+  # partition if available.
+  STATE_DEV=${USB_DEV%[0-9]*}1
+  STATEFUL_LSB="dev_image/etc/lsb-factory"
+  mkdir -p "${NEWROOT_MNT}/mnt/stateful_partition/dev_image/etc"
+  mount -n -o ro -t ext3 "$STATE_DEV" "$STATEFUL_MNT"
+  if [ -f "${STATEFUL_MNT}/${STATEFUL_LSB}" ]; then
+    echo "Found ${STATEFUL_MNT}/${STATEFUL_LSB}"
+    cp -a "${STATEFUL_MNT}/${STATEFUL_LSB}" \
+        "${NEWROOT_MNT}/mnt/stateful_partition/${STATEFUL_LSB}"
+  fi
+  umount "$STATEFUL_MNT"
+  rmdir "$STATEFUL_MNT"
+}
+
 move_mounts() {
   echo "Moving sys. proc, dev to $NEWROOT_MNT"
   mount -n -o move /sys "$NEWROOT_MNT/sys"
@@ -149,6 +167,7 @@ main() {
     NEWROOT_MNT=/newroot
     mount_tmpfs || on_error
     copy_contents || on_error
+    copy_lsb || on_error
     # USB device is unmounted, we can remove it now.
     unmount_usb || on_error
   else
