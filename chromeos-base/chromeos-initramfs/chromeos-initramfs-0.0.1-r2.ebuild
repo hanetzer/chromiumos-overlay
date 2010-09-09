@@ -33,6 +33,7 @@ build_initramfs_file() {
 	mkdir -p ${INITRAMFS_TMP_S}/root ${INITRAMFS_TMP_S}/proc
 	mkdir -p ${INITRAMFS_TMP_S}/sys ${INITRAMFS_TMP_S}/usb
 	mkdir -p ${INITRAMFS_TMP_S}/newroot ${INITRAMFS_TMP_S}/lib
+	mkdir -p ${INITRAMFS_TMP_S}/stateful
 
 	# Insure cgpt is statically linked
 	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
