@@ -16,9 +16,10 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/tar
 	app-crypt/nss
-        app-crypt/tpm-tools
+	app-crypt/tpm-tools
 	chromeos-base/autox
 	chromeos-base/minifakedns
+	x86? ( chromeos-base/usb-server )
 	x86? ( dev-java/icedtea )
 	dev-lang/python
 	dev-python/dbus-python
