@@ -32,9 +32,12 @@ src_install() {
 		progs+=' utility/dev_sign_file'
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
+		progs+=' utility/vbutil_key'
 		progs+=' utility/vbutil_kernel'
 		progs+=' utility/vbutil_firmware'
 		progs+=' utility/gbb_utility'
+		progs+=' utility/dump_fmap'
+		progs+=' utility/dev_debug_vboot'
 		progs+=' cgpt/cgpt'
 
 		into "/usr"
