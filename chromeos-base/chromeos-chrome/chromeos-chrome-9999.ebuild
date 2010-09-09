@@ -50,6 +50,11 @@ BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
+# WARNING: We are using a symlink now for the build directory to work around 
+# command line length limits. This will cause problems if you are doing 
+# parallel builds of different boards/variants.
+# Unsetting BUILD_OUT_SYM will revert this behavior
+BUILD_OUT_SYM="c"
 
 # For pulling from build bot
 if [ "$ARCH" = "x86" ]; then
@@ -227,6 +232,20 @@ src_prepare() {
 
 	elog "${CHROME_ROOT} should be set here properly"
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
+
+	# We do symlink creation here if appropriate
+	if [ ! -z "${BUILD_OUT_SYM}" ]; then
+		if [ -h "${BUILD_OUT_SYM}" ]; then  # remove if an existing symlink
+			rm "${BUILD_OUT_SYM}"
+		fi
+		if [ ! -e "${BUILD_OUT_SYM}" ]; then
+			if [ ! -d "${BUILD_OUT}" ]; then # Make sure the directory exists
+				mkdir "${BUILD_OUT}"
+			fi
+			ln -s "${BUILD_OUT}" "${BUILD_OUT_SYM}"
+			export builddir_name="${BUILD_OUT_SYM}"
+		fi
+	fi
 
 	test -n "${EGCLIENT}" || die EGCLIENT unset
 
