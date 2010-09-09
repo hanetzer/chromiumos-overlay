@@ -507,14 +507,22 @@ set_use() {
 	echo "cross-${CTARGET}/${pkg} ${use}" >> ${output}
 }
 set_links() {
-	local cat=$1 pkg=$2
+	local cat=$1 pkg=$2 ver=$3
 	local s srcdir=${PORTDIR}
 	rm -f "${PORTDIR_OVERLAY}"/cross-${CTARGET}/${pkg}
 	for s in ${PORTDIR_OVERLAYS} ; do
-		if [[ -d ${s}/${cat}/${pkg} ]] ; then
-			einfo "Using ${cat}/${pkg} from ${s} instead of ${PORTDIR}"
-			srcdir=${s}
-			break
+		if [[ -n ${ver} ]] ; then
+			if [[ -f ${s}/${cat}/${pkg}/${pkg}-${ver}.ebuild ]] ; then
+				einfo "Using ${cat}/${pkg} from ${s} instead of ${PORTDIR}"
+				srcdir=${s}
+				break
+			fi
+		else
+			if [[ -d ${s}/${cat}/${pkg} ]] ; then
+				einfo "Using ${cat}/${pkg} from ${s} instead of ${PORTDIR}"
+				srcdir=${s}
+				break
+			fi
 		fi
 	done
 	ln -s "${srcdir}"/${cat}/${pkg} "${PORTDIR_OVERLAY}"/cross-${CTARGET}/${pkg}
@@ -528,7 +536,7 @@ set_portage() {
 
 	set_keywords ${pkg} ${ver}
 	set_use ${pkg} ${use}
-	set_links ${cat} ${pkg}
+	set_links ${cat} ${pkg} ${ver}
 }
 
 mkdir -p /etc/portage
