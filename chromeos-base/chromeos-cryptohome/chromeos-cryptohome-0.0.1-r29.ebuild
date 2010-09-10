@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5d78b33f647c8d5a95ee0a68d856ab5f06ac9955"
+CROS_WORKON_COMMIT="060d38018442d684022289bcd8a134f20a7bd304"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
