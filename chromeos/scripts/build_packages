@@ -130,6 +130,7 @@ eretry sudo ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 # the kernel-headers ebuild.
 # TODO(msb): Remove this hack.
 eretry sudo -E ${EMERGE_BOARD_CMD} --oneshot -uDNv $EMERGE_FLAGS virtual/kernel
+eretry sudo -E ${EMERGE_BOARD_CMD} --oneshot -uDNv $EMERGE_FLAGS chromeos-base/kernel-headers
 
 if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   # Always build cros-workon packages
