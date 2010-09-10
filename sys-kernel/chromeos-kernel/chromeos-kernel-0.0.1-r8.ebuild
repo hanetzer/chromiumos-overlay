@@ -3,6 +3,7 @@
 
 EAPI=2
 CROS_WORKON_COMMIT="c7f084083f35106a80ce3767b7020318f60e4bb1"
+
 inherit toolchain-funcs
 
 DESCRIPTION="Chrome OS Kernel"
@@ -15,7 +16,7 @@ PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )"
-RDEPEND="chromeos-base/kernel-headers" # Temporary hack
+RDEPEND=""
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -30,25 +31,11 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
-	elif [ "${ARCH}" = "arm" ]; then
-		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
 	fi
 fi
 
-if [ "${CHROMEOS_KERNEL}" = "kernel-nvidia" ]; then
-	CROS_WORKON_LOCALNAME="../third_party/kernel-nvidia"
-	EGIT_BRANCH="nvidia-2.6.31.12"
-	#TODO(msb): fix this once we get ARM pfbb going
-	CROS_WORKON_COMMIT=${EGIT_BRANCH}
-elif [ "${CHROMEOS_KERNEL}" = "kernel-qualcomm" ]; then
-	CROS_WORKON_LOCALNAME="../third_party/kernel-qualcomm"
-	EGIT_BRANCH=qualcomm-2.6.32.9
-	#TODO(msb): fix this once we get ARM pfbb going
-	CROS_WORKON_COMMIT=${EGIT_BRANCH}
-else
-	# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
-	CROS_WORKON_LOCALNAME="../third_party/kernel/files"
-fi
+# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -99,31 +86,6 @@ src_compile() {
 	fi
 }
 
-headers_install() {
-	emake \
-	  ARCH=${kernel_arch} \
-	  CROSS_COMPILE="${cross}" \
-	  INSTALL_HDR_PATH="${D}"/usr \
-	  headers_install || die
-
-	#
-	# These subdirectories are installed by various ebuilds and we don't
-	# want to conflict with them.
-	#
-	rm -rf "${D}"/usr/include/sound
-	rm -rf "${D}"/usr/include/scsi
-	rm -rf "${D}"/usr/include/drm
-
-	#
-	# Double hack, install the Qualcomm drm header anyway, its not included in
-	# libdrm, and is required to build xf86-video-msm.
-	#
-	if [ -r "${S}"/include/drm/kgsl_drm.h ]; then
-		insinto /usr/include/drm
-		doins "${S}"/include/drm/kgsl_drm.h
-	fi
-}
-
 src_install() {
 	dodir boot
 
@@ -155,8 +117,6 @@ src_install() {
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		firmware_install || die
-
-	headers_install
 
 	if [ "${ARCH}" = "arm" ]; then
 		version=$(ls "${D}"/lib/modules)

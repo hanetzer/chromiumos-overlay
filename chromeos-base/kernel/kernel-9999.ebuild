@@ -15,7 +15,7 @@ PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )"
-RDEPEND="chromeos-base/kernel-headers" # Temporary hack
+RDEPEND=""
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -99,31 +99,6 @@ src_compile() {
 	fi
 }
 
-headers_install() {
-	emake \
-	  ARCH=${kernel_arch} \
-	  CROSS_COMPILE="${cross}" \
-	  INSTALL_HDR_PATH="${D}"/usr \
-	  headers_install || die
-
-	#
-	# These subdirectories are installed by various ebuilds and we don't
-	# want to conflict with them.
-	#
-	rm -rf "${D}"/usr/include/sound
-	rm -rf "${D}"/usr/include/scsi
-	rm -rf "${D}"/usr/include/drm
-
-	#
-	# Double hack, install the Qualcomm drm header anyway, its not included in
-	# libdrm, and is required to build xf86-video-msm.
-	#
-	if [ -r "${S}"/include/drm/kgsl_drm.h ]; then
-		insinto /usr/include/drm
-		doins "${S}"/include/drm/kgsl_drm.h
-	fi
-}
-
 src_install() {
 	dodir boot
 
@@ -155,8 +130,6 @@ src_install() {
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		firmware_install || die
-
-	headers_install
 
 	if [ "${ARCH}" = "arm" ]; then
 		version=$(ls "${D}"/lib/modules)

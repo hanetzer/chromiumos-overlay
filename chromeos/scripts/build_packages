@@ -126,7 +126,12 @@ sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 ${EMERGE_CMD} --info
 eretry sudo ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
-if [[ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]]; then
+# Temporary hack needed so that we can move headers install back into
+# the kernel-headers ebuild.
+# TODO(msb): Remove this hack.
+eretry sudo -E ${EMERGE_BOARD_CMD} --oneshot -uDNv $EMERGE_FLAGS virtual/kernel
+
+if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   # Always build cros-workon packages
   CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board="${FLAGS_board}" list)
 fi
