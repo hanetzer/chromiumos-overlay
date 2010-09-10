@@ -24,7 +24,7 @@ src_configure() {
   export BUILD_COMMAND="emake"
 
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
-      --branding="${BRANDING}" || die
+      --branding="${BRANDING}" --channel_dev=0 || die
 }
 
 src_compile() {
