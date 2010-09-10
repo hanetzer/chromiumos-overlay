@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Until we either remove consolekit or fix pid resolution in a pid namespace
+# we will mock info collection failures.
+if ! /usr/libexec/ck-collect-session-info.real "$@" 2>/dev/null; then
+  cat <<EOF
+unix-user = 1000
+display-device = /dev/tty1
+is-local = true
+is-mocked = true
+EOF
+fi

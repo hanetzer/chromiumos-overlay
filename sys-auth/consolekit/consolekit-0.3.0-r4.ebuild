@@ -95,6 +95,12 @@ src_install() {
 	# getent should be provided by glibc, but it isn't on our system.
 	exeinto /usr/bin/
 	doexe "${FILESDIR}/getent" || die "doexe failed"
+
+	# Replace ck-collect-session-info with our stub
+	mv ${D}/usr/libexec/ck-collect-session-info \
+		${D}/usr/libexec/ck-collect-session-info.real
+	exeinto /usr/libexec
+	doexe "${FILESDIR}/ck-collect-session-info" || die "doexe failed"
 }
 
 pkg_postinst() {
