@@ -14,7 +14,10 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
-DEPEND="x86? ( sys-apps/flashrom sys-apps/iotools )"
+DEPEND="x86? (
+    chromeos-base/vboot_reference
+    sys-apps/flashrom
+    sys-apps/iotools )"
 RDEPEND=""
 
 # ---------------------------------------------------------------------------
@@ -90,12 +93,9 @@ src_compile() {
 src_install() {
   dosbin $UPDATE_SCRIPT || die "failed to install update script"
 
-  # following files are for SAFT
-  for subdir in saft x86-generic
-  do
-    dstdir="${INSTALL_DIR}/${subdir}"
-    dodir "${dstdir}"
-    exeinto "${dstdir}"
-    doexe "${WORKDIR}/${CROS_WORKON_LOCALNAME}/${subdir}"/*.{py,sh}
-  done
+  # Install saft code
+  dstdir="${INSTALL_DIR}/saft"
+  dodir "${dstdir}"
+  exeinto "${dstdir}"
+  doexe saft/*.{py,sh}
 }
