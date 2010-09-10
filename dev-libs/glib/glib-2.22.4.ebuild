@@ -26,6 +26,10 @@ DEPEND="${RDEPEND}
 		~app-text/docbook-xml-dtd-4.1.2 )"
 
 src_prepare() {
+	# GFileMonitor has a bug that causes the notification delivery to
+	# delay for a second. See comments in the patch for details.
+	epatch "${FILESDIR}/${PN}-inotify.patch"
+
 	if use ppc64 && use hardened ; then
 		replace-flags -O[2-3] -O1
 		epatch "${FILESDIR}/glib-2.6.3-testglib-ssp.patch"
