@@ -312,12 +312,6 @@ src_compile() {
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
-	if use x86 ; then
-		if use hardened ; then
-			append-flags -nopie
-		fi
-	fi
-
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
 		CXX=$(tc-getCXX) \
 		CC=$(tc-getCC) \
