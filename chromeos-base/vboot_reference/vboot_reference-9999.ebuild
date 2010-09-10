@@ -44,6 +44,10 @@ src_install() {
 		for prog in ${progs}; do
 			dobin "${S}"/build/"${prog}"
 		done
+		dst_dir='/usr/sbin/firmware/saft'
+		dodir "${dst_dir}"
+		insinto "${dst_dir}"
+		doins tests/devkeys/recovery_kernel_data_key.vbprivk
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
