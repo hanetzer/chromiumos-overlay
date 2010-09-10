@@ -6,16 +6,16 @@ CROS_WORKON_COMMIT="35f9e7c42ea335a2cb279653e8a39ec1049aceda"
 
 inherit toolchain-funcs
 
-
 DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless"
+IUSE="-compat_wireless -initramfs"
 PROVIDE="virtual/kernel"
 
-DEPEND="sys-apps/debianutils"
+DEPEND="sys-apps/debianutils
+    initramfs? ( chromeos-base/chromeos-initramfs )"
 RDEPEND="chromeos-base/kernel-headers" # Temporary hack
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
@@ -69,13 +69,20 @@ src_configure() {
 }
 
 src_compile() {
+	if use initramfs; then
+		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+	else
+		INITRAMFS=""
+	fi
 	emake \
+		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		CROSS_COMPILE="${cross}" || die
 
 	if use compat_wireless; then
 		# compat-wireless support must be done after
 		emake M=chromeos/compat-wireless \
+			$INITRAMFS \
 			ARCH=${kernel_arch} \
 			CROSS_COMPILE="${cross}" || die
 	fi
@@ -162,13 +169,13 @@ src_install() {
 		dodir /boot
 
 		/usr/bin/mkimage -A "${ARCH}" \
-							-O linux \
-							-T kernel \
-							-C none \
-							-a ${vmlinux_text_base} \
-							-e ${vmlinux_text_base} \
-							-n kernel \
-							-d "${D}"/boot/vmlinuz \
-							"${D}"/boot/vmlinux.uimg || die
+			-O linux \
+			-T kernel \
+			-C none \
+			-a ${vmlinux_text_base} \
+			-e ${vmlinux_text_base} \
+			-n kernel \
+			-d "${D}"/boot/vmlinuz \
+			"${D}"/boot/vmlinux.uimg || die
 	fi
 }
