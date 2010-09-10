@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="877ca8d6e4252e79138341575c7800e59bed1bd3"
+CROS_WORKON_COMMIT="71e8e5cbc15202f6bb99d25365ff004ee8b63b92"
 inherit toolchain-funcs cros-workon
 
 DESCRIPTION="Chrome OS Update Engine."
