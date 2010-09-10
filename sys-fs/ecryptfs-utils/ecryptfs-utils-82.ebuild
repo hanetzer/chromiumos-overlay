@@ -43,6 +43,7 @@ src_prepare() {
 	sed -e "/SUBDIRS =/s/ libecryptfs-swig//" -i src/Makefile.{am,in} || die "sed failed"
 
 	epatch ${FILESDIR}/pkgconfig.diff
+	epatch ${FILESDIR}/include-libnss-directory.patch
 }
 
 src_configure() {
