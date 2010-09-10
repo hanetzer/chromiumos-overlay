@@ -1,0 +1,2 @@
+#Add virtual packages for this profile
+virtual/kernel		chromeos-base/kernel

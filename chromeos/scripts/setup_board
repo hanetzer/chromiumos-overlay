@@ -394,7 +394,7 @@ EMERGE_FLAGS=""
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
   EMERGE_FLAGS="${EMERGE_FLAGS} --getbinpkg --usepkg"
 fi
-sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS kernel
+sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS virtual/kernel
 
 # We need to install libstdc++ manually from the cross toolchain.
 # TODO: Figure out a better way of doing this?

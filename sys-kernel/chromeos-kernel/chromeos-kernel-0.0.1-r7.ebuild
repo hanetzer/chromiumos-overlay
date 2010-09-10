@@ -12,6 +12,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="-compat_wireless -initramfs"
+PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )"

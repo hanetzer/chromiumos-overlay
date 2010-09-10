@@ -91,7 +91,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/entd
 	chromeos-base/flimflam
 	chromeos-base/internal
-	chromeos-base/kernel
+	virtual/kernel
 	chromeos-base/libcros
 	chromeos-base/memento_softwareupdate
 	chromeos-base/metrics

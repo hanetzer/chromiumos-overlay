@@ -2,16 +2,16 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="35f9e7c42ea335a2cb279653e8a39ec1049aceda"
-
+CROS_WORKON_COMMIT="c7f084083f35106a80ce3767b7020318f60e4bb1"
 inherit toolchain-funcs
 
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="-compat_wireless -initramfs"
+PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )"
@@ -35,8 +35,20 @@ else
 	fi
 fi
 
-CROS_WORKON_PROJECT="kernel-next"
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+if [ "${CHROMEOS_KERNEL}" = "kernel-nvidia" ]; then
+	CROS_WORKON_LOCALNAME="../third_party/kernel-nvidia"
+	EGIT_BRANCH="nvidia-2.6.31.12"
+	#TODO(msb): fix this once we get ARM pfbb going
+	CROS_WORKON_COMMIT=${EGIT_BRANCH}
+elif [ "${CHROMEOS_KERNEL}" = "kernel-qualcomm" ]; then
+	CROS_WORKON_LOCALNAME="../third_party/kernel-qualcomm"
+	EGIT_BRANCH=qualcomm-2.6.32.9
+	#TODO(msb): fix this once we get ARM pfbb going
+	CROS_WORKON_COMMIT=${EGIT_BRANCH}
+else
+	# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+	CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+fi
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
