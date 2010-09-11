@@ -10,7 +10,9 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm"
-IUSE="-compat_wireless -initramfs"
+IUSE="-initramfs"
+# disable compat_wireless with kernel-next
+USE="${USE} -compat_wireless"
 PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
