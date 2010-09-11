@@ -118,6 +118,18 @@ case "${TC_ARCH}" in
     exit 1
 esac
 
+set +e
+if [[ "$ARCH" == "x86" ]]; then
+  echo "int main(){return 0;}" | i686-pc-linux-gnu-gcc -mtune=atom -o /dev/null -xc -
+  if [[ $? -ne 0 ]]; then
+    echo "You seem to have an older version of the toolchain compiler."
+    echo "Please re-run setup_board to upgrade your toolchain compiler."
+    echo "If that doesn't help, try re-running make_chroot/setup_board."
+    exit 1
+  fi
+fi
+set -e
+
 # Update symlinks to point at latest version of make.conf. In older versions of
 # the chroot, it pointed at different files. TODO(asharif): This is only needed
 # for backwards compatibility, so we should remove this eventually.
