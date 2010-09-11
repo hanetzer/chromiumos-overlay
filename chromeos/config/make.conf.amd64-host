@@ -21,3 +21,5 @@ PORTAGE_BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/host/"
 USE="${USE} -cups hardened pic pie"
 
 GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
+
+source make.conf.host_setup

@@ -159,6 +159,10 @@ function init_setup () {
    sudo mv "${FLAGS_chroot}"/etc/make.conf{,.orig}
    sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
      "${FLAGS_chroot}/etc/make.conf"
+   cat <<EOF | sudo dd of="${FLAGS_chroot}/etc/make.conf.host_setup"
+# Created by make_chroot
+MAKEOPTS="-j${NUM_JOBS}"
+EOF
    sudo mv "${FLAGS_chroot}"/etc/make.profile{,.orig}
    sudo ln -sf "${CHROOT_OVERLAY}/profiles/default/linux/amd64/10.0" \
      "${FLAGS_chroot}/etc/make.profile"
