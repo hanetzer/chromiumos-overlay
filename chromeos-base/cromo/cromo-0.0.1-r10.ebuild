@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="44a097e500938d8f4bafe5b4734d76c6ef778f25"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chromium OS modem manager"
 HOMEPAGE="http://src.chromium.org"
@@ -26,6 +26,7 @@ DEPEND="${RDEPEND}
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	emake PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
 }
 

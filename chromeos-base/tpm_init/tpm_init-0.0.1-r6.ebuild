@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="55109aa8f86c32a9ca41090b0644fe8710cf63bc"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="TPM initialization functions"
 HOMEPAGE="http://src.chromium.org"
@@ -21,6 +21,7 @@ RDEPEND="
 
 DEPEND="
 	test? ( dev-cpp/gtest )
+	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	${RDEPEND}"
 
@@ -36,6 +37,7 @@ src_unpack() {
 }
 
 src_compile() {
+	cros-debug-add-NDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX
@@ -53,6 +55,7 @@ src_compile() {
 }
 
 src_test() {
+	cros-debug-add-NDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX

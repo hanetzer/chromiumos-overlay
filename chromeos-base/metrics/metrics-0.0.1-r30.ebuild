@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="f78e870d8e719b5ff0cd1523fffabaa2330da25b"
 
-inherit cros-workon flag-o-matic
+inherit cros-debug cros-workon flag-o-matic
 
 DESCRIPTION="Chrome OS Metrics Collection Utilities"
 HOMEPAGE="http://src.chromium.org"
@@ -32,11 +32,13 @@ src_compile() {
 	use crash || lcrash=LCRASH=
 	use debug || append-flags -DNDEBUG
 	tc-export CXX AR PKG_CONFIG
+	cros-debug-add-NDEBUG
 	emake $lcrash || die "metrics compile failed."
 }
 
 src_test() {
 	tc-export CXX AR PKG_CONFIG
+	cros-debug-add-NDEBUG
 	emake tests || die "could not build tests"
 	if ! use x86; then
 		echo Skipping unit tests on non-x86 platform

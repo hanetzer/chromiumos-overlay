@@ -6,7 +6,7 @@ CROS_WORKON_COMMIT="b9166196bedd977cb38217b8d36fb3ef34d79f57"
 
 KEYWORDS="arm amd64 x86"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://src.chromium.org"
@@ -29,6 +29,7 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	export CXXFLAGS="${CXXFLAGS} -gstabs"
 	emake session_manager || die "chromeos-login compile failed."
 	dump_syms session_manager > session_manager.sym 2>/dev/null || \
@@ -37,6 +38,7 @@ src_compile() {
 
 src_test() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 
 	emake session_manager_unittest || \
 		die "chromeos-login compile tests failed."

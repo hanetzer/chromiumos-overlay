@@ -3,7 +3,7 @@
 
 EAPI=2
 CROS_WORKON_COMMIT="71e8e5cbc15202f6bb99d25365ff004ee8b63b92"
-inherit toolchain-funcs cros-workon
+inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Chrome OS Update Engine."
 HOMEPAGE="http://src.chromium.org"
@@ -33,6 +33,7 @@ DEPEND="chromeos-base/libchromeos
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons ${MAKEOPTS} || die "update_engine compile failed"
@@ -40,6 +41,7 @@ src_compile() {
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons debug=1 \

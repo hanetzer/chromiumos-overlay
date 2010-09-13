@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="7db4dda219781577dd1b2f0551ba193f6d39d541"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
@@ -31,6 +31,7 @@ DEPEND="${RDEPEND}
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	cros-debug-add-NDEBUG
 
 	# TODO(davidjames): parallel builds
 	scons || die "power_manager compile failed."
@@ -38,6 +39,7 @@ src_compile() {
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	cros-debug-add-NDEBUG
 
 	# Build tests
 	scons tests || die "tests compile failed."

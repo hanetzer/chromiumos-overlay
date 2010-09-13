@@ -3,9 +3,10 @@
 
 EAPI=2
 CROS_WORKON_COMMIT="634c29b2a045e2291b5434dcefcf871e77cfcc23"
+
 KEYWORDS="amd64 x86 arm"
 
-inherit toolchain-funcs cros-workon
+inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="File system integrity image generator for Chromium OS."
 HOMEPAGE="http://src.chromium.org"
@@ -32,6 +33,7 @@ src_compile() {
 	tc-export CC
 	tc-export OBJCOPY
 	tc-export STRIP
+	cros-debug-add-NDEBUG
 	emake OUT=${S}/build \
 		WITH_CHROME=$(use test && echo 1 || echo 0) \
 		SPLITDEBUG=$(use splitdebug && echo 1) verity || \
@@ -43,6 +45,7 @@ src_test() {
 	tc-export CC
 	tc-export OBJCOPY
 	tc-export STRIP
+	cros-debug-add-NDEBUG
 	# TODO(wad) add a verbose use flag to change the MODE=
 	emake \
 		OUT=${S}/build \

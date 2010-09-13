@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="7b634ba80dca053466841ebd83daca637384ffe6"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS helper binary for restricting privs of services."
 HOMEPAGE="http://src.chromium.org"
@@ -26,6 +26,7 @@ CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tool
@@ -34,6 +35,7 @@ src_compile() {
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tests

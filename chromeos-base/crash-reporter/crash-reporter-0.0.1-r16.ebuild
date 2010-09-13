@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="201758b0954a2bd6af51de14042b6ef2d87c2853"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Build chromeos crash handler"
 HOMEPAGE="http://src.chromium.org"
@@ -26,11 +26,13 @@ DEPEND="${RDEPEND}"
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	emake || die "crash_reporter compile failed."
 }
 
 src_test() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	emake tests || die "could not build tests"
 	if ! use x86; then
 	        echo Skipping unit tests on non-x86 platform
