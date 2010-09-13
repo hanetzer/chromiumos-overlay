@@ -13,6 +13,9 @@ DISTDIR="/var/lib/portage/distfiles"
 # glibc ebuilds.
 PORTDIR_OVERLAY="/usr/local/portage/chromiumos"
 
+PORTAGE_BZIP2_COMMAND='eval function fbzip() { if which pbzip2 &> /dev/null; then pbzip2 \$*; else bzip2 \$*; fi; }; fbzip'
+PORTAGE_BUNZIP2_COMMAND="bunzip2"
+
 # Where to store built packages.
 PKGDIR="/var/lib/portage/pkgs"
 
