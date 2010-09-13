@@ -30,6 +30,7 @@ RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
 	app-arch/bzip-wrapper
 	app-arch/cabextract
+	>=app-arch/pbzip2-1.1.1-r1
 	app-arch/rpm2targz
 	app-arch/sharutils
 	app-arch/unzip
