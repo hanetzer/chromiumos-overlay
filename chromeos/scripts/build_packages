@@ -26,9 +26,9 @@ get_default_board
 DEFINE_string board "${DEFAULT_BOARD}" \
   "The board to build packages for."
 DEFINE_boolean chromefromsource "${FLAGS_FALSE}" \
-  "Build chrome browser from source. Default: False"
+  "Build Chrome browser from source."
 DEFINE_string chromebuild "" \
-  "The optional version or revision of chrome to pull."
+  "The optional version or revision of Chrome to pull."
 DEFINE_string chromebase "" \
   "The optional base URL to pull chrome from."
 DEFINE_boolean usepkg "${FLAGS_TRUE}" \
@@ -40,19 +40,21 @@ DEFINE_boolean withautotest "${FLAGS_TRUE}" \
 DEFINE_integer jobs -1 \
   "How many packages to build in parallel at maximum."
 DEFINE_integer retries -1 \
-  "On build failure, the number of times to retry"
+  "On build failure, the number of times to retry."
 DEFINE_boolean withtest "${FLAGS_TRUE}" \
-  "Build packages required for testing"
+  "Build packages required for testing."
 DEFINE_boolean withfactory "${FLAGS_TRUE}" \
-  "Build factory installer"
+  "Build factory installer."
 DEFINE_boolean fast "${DEFAULT_FAST}" \
-  "Call many emerges in parallel"
+  "Call many emerges in parallel."
 DEFINE_boolean norebuild "${FLAGS_FALSE}" \
   "Don't automatically rebuild dependencies."
 DEFINE_boolean showoutput "${FLAGS_FALSE}" \
   "Show all output from parallel_emerge."
 DEFINE_boolean noworkon "${FLAGS_FALSE}" \
   "Don't force-build workon packages."
+DEFINE_boolean withdebug "${FLAGS_TRUE}" \
+  "Build debug versions of Chromium-OS-specific packages."
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -101,6 +103,10 @@ if [[ "${FLAGS_jobs}" -ne -1 ]]; then
     # without the jobs flag.
     FLAGS_retries=1
   fi
+fi
+
+if [[ "${FLAGS_withdebug}" -eq "${FLAGS_FALSE}" ]]; then
+  export USE="${USE} -cros-debug"
 fi
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)

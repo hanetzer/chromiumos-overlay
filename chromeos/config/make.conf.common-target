@@ -11,7 +11,7 @@ CBUILD=x86_64-pc-linux-gnu
 HOSTCC=x86_64-pc-linux-gnu-gcc
 
 ACCEPT_KEYWORDS="${ARCH}"
-USE="${ARCH} zlib bindist make-symlinks"
+USE="${ARCH} zlib bindist make-symlinks cros-debug"
 
 # Be sure we don't overwrite pkgs from another sysroot.
 PKGDIR=${ROOT}packages/

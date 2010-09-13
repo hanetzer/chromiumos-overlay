@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Enterprise policy management daemon."
 HOMEPAGE="http://src.chromium.org"
@@ -27,7 +27,8 @@ DEPEND="chromeos-base/libchrome
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
-	export BUILD_DIR=out
+	cros-debug-add-NDEBUG
+	export BUILD_DIR=out CCFLAGS="$CFLAGS"
 	scons SYSROOT=$SYSROOT || die "end compile failed."
 }
 
@@ -49,5 +50,5 @@ src_install() {
 	dodir /etc/opt/chrome/
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/opt/chrome/policies
 
-        dosbin bin/fix_pkcs11_token.sh
+	dosbin bin/fix_pkcs11_token.sh
 }

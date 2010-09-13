@@ -5,7 +5,7 @@ EAPI=2
 
 KEYWORDS="~arm ~amd64 ~x86"
 
-inherit cros-workon
+inherit cros-debug cros-workon
 
 DESCRIPTION="Image-burning service for Chromium OS."
 HOMEPAGE="http://src.chromium.org"
@@ -26,6 +26,7 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	export CXXFLAGS="${CXXFLAGS} -gstabs"
 	emake image_burner || die "chromeos-imageburner compile failed."
 	emake image_burner_tester || \

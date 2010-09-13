@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS window manager"
 HOMEPAGE="http://src.chromium.org"
@@ -42,6 +42,7 @@ CROS_WORKON_PROJECT="window_manager"
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	CFLAGS="${CFLAGS} -gstabs"
 	export CCFLAGS="$CFLAGS"
 
@@ -64,6 +65,7 @@ src_compile() {
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons -j$(print_num_jobs) tests || die "failed to build tests"

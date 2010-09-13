@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit cros-workon eutils
+inherit cros-debug cros-workon eutils
 
 DESCRIPTION="This is the text-to-speech (TTS) synthesis library."
 HOMEPAGE="http://www.svox.com"
@@ -26,6 +26,7 @@ RDEPEND="${DEPEND}"
 
 src_compile() {
 	tc-getCXX
+	cros-debug-add-NDEBUG
 	emake -j1 || die "emake failed"
 }
 

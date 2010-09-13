@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="PAM module for offline login."
 HOMEPAGE="http://src.chromium.org"
@@ -24,6 +24,7 @@ DEPEND="chromeos-base/libchrome
 	${RDEPEND}"
 
 src_compile() {
+	cros-debug-add-NDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX
@@ -40,6 +41,7 @@ src_compile() {
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons pam_offline_unittests || die "Failed to build tests"

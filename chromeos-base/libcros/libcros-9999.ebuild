@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="62391e4682611cca7b92c55b767df285b626d4a6"
 
-inherit flag-o-matic toolchain-funcs cros-workon
+inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Bridge library for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
@@ -43,6 +43,7 @@ CROS_WORKON_PROJECT="cros"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 src_compile() {
+	cros-debug-add-NDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX

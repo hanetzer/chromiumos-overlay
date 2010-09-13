@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chromium OS modem manager"
 HOMEPAGE="http://src.chromium.org"
@@ -25,6 +25,7 @@ DEPEND="${RDEPEND}
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	emake PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
 }
 

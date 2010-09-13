@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
@@ -40,6 +40,7 @@ src_unpack() {
 }
 
 src_compile() {
+	cros-debug-add-NDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX
@@ -58,6 +59,7 @@ src_compile() {
 }
 
 src_test() {
+	cros-debug-add-NDEBUG
 	if tc-is-cross-compiler ; then
 		tc-getCC
 		tc-getCXX

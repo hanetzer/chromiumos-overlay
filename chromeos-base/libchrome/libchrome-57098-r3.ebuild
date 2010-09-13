@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit eutils toolchain-funcs
+inherit cros-debug eutils toolchain-funcs
 
 DESCRIPTION="Chrome base library"
 HOMEPAGE="http://src.chromium.org"
@@ -28,6 +28,7 @@ src_prepare() {
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons || die "third_party/chrome compile failed."

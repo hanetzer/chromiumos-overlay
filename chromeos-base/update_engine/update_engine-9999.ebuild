@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-inherit toolchain-funcs cros-workon
+inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Chrome OS Update Engine."
 HOMEPAGE="http://src.chromium.org"
@@ -32,6 +32,7 @@ DEPEND="chromeos-base/libchromeos
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons ${MAKEOPTS} || die "update_engine compile failed"
@@ -39,6 +40,7 @@ src_compile() {
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
 	scons debug=1 \

@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Monitor Reconfig"
 HOMEPAGE="http://src.chromium.org"
@@ -28,6 +28,7 @@ src_unpack() {
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	pushd monitor_reconfig
 	emake monitor_reconfigure || die "monitor_reconfigure compile failed."
 	popd
@@ -38,6 +39,7 @@ src_test() {
 		echo Skipping tests on non-x86 platform...
 	else
 		tc-export CXX PKG_CONFIG
+		cros-debug-add-NDEBUG
 		pushd monitor_reconfig
 		emake test || die "failed to build tests"
 		for test in ./*_test; do
