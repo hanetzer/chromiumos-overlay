@@ -37,6 +37,7 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
+		tc-export CXX PKG_CONFIG
 		pushd monitor_reconfig
 		emake test || die "failed to build tests"
 		for test in ./*_test; do
