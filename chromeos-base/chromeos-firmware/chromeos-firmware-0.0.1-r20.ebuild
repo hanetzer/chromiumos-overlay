@@ -17,8 +17,12 @@ IUSE=""
 DEPEND="x86? (
     chromeos-base/vboot_reference
     sys-apps/flashrom
-    sys-apps/iotools )"
+    sys-apps/iotools
+    sys-apps/mosys )"
 RDEPEND=""
+
+CROS_WORKON_LOCALNAME="firmware"
+CROS_WORKON_PROJECT="firmware"
 
 # ---------------------------------------------------------------------------
 # CUSTOMIZATION SECTION
@@ -37,6 +41,10 @@ BIOS_IMAGE=""
 # Example: EC_IMAGE="$FILESDIR/EC_0012.fd"
 EC_IMAGE=""
 
+# Change this to 1 if you REALLY want to update firmware whenever system invokes
+# chromeos-postinst (for installation, recovery, and auto updates).
+IS_FORCE_UPDATE=0
+
 # If you need a special version of flashrom tool, put file name here.
 # Example: FLASHROM_BINARY="$FILESDIR/flashrom.private"
 FLASHROM_BINARY=""
@@ -49,9 +57,6 @@ FW_EXTRA_DIST=""
 
 # ---------------------------------------------------------------------------
 
-CROS_WORKON_LOCALNAME="firmware"
-CROS_WORKON_PROJECT="firmware"
-INSTALL_DIR="/usr/sbin/${CROS_WORKON_LOCALNAME}"
 UPDATE_SCRIPT="chromeos-firmwareupdate"
 
 src_compile() {
@@ -77,11 +82,11 @@ src_compile() {
   if [ -z "$image_cmd" ]; then
     # create an empty update script for the x86-generic case
     # (no need to update)
-    einfo "building empty firmware update script"
+    einfo "Building empty firmware update script"
     echo -n > ${UPDATE_SCRIPT}
   else
     # create a new script
-    einfo "building firmware with images: $image_cmd $ext_cmd"
+    einfo "Building firmware with images: $image_cmd $ext_cmd"
     "${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
       -o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
       --tool_base="$ROOT/usr/sbin" || die "cannot pack firmware"
@@ -91,10 +96,20 @@ src_compile() {
 }
 
 src_install() {
+  # install the main updater program
   dosbin $UPDATE_SCRIPT || die "failed to install update script"
 
+  # install the "force firmware update" tag
+  if [ "$IS_FORCE_UPDATE" -eq "1" ]; then
+    einfo " *** ENABLED A FORCED FIRMWARE UPDATE *** "
+    test -s "$UPDATE_SCRIPT" || einfo " WARNING: USING EMPTY FIRMWARE UPDATE."
+    insinto /root
+    newins $FILESDIR/dot.force_update_firmware .force_update_firmware \
+      || die "cannot create tag for forced firmware update"
+  fi
+
   # Install saft code
-  dstdir="${INSTALL_DIR}/saft"
+  dstdir="/usr/sbin/${CROS_WORKON_LOCALNAME}/saft"
   dodir "${dstdir}"
   exeinto "${dstdir}"
   doexe saft/*.{py,sh}
