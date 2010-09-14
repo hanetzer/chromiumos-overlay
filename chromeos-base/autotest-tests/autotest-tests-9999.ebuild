@@ -52,19 +52,14 @@ IUSE_TESTS="
 	+tests_audiovideo_PlaybackRecordSemiAuto
 	+tests_audiovideo_V4L2
 	+tests_build_RootFilesystemSize
-	tests_desktopui_BrowserTest
 	+tests_desktopui_ChromeFirstRender
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
 	+tests_desktopui_KillRestart
-	tests_desktopui_PageCyclerTests
 	+tests_desktopui_ScreenLocker
-	+tests_desktopui_ScreenSaverUnlock
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	+tests_desktopui_SunSpiderBench
-	tests_desktopui_SyncIntegrationTests
-	tests_desktopui_UITest
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
 	+tests_desktopui_WindowManagerFocusNewWindows
