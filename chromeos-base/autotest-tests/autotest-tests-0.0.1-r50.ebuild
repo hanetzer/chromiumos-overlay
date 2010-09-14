@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="3e627110f30b543950d46157ac3cfed1be7c5d91"
+CROS_WORKON_COMMIT="93f250eeb0fc11d16d9156cc84fb4999b92a8939"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -53,19 +53,14 @@ IUSE_TESTS="
 	+tests_audiovideo_PlaybackRecordSemiAuto
 	+tests_audiovideo_V4L2
 	+tests_build_RootFilesystemSize
-	tests_desktopui_BrowserTest
 	+tests_desktopui_ChromeFirstRender
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
 	+tests_desktopui_KillRestart
-	tests_desktopui_PageCyclerTests
 	+tests_desktopui_ScreenLocker
-	+tests_desktopui_ScreenSaverUnlock
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	+tests_desktopui_SunSpiderBench
-	tests_desktopui_SyncIntegrationTests
-	tests_desktopui_UITest
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
 	+tests_desktopui_WindowManagerFocusNewWindows

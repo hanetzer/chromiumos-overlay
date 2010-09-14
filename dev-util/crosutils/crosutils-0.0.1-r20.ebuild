@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="03b6ebf7d40e840b6595432d7c848841bacaa9b6"
+CROS_WORKON_COMMIT="d0a2e12511f7592831ba68a285b5fa98990770f0"
 
 inherit cros-workon
 
@@ -25,11 +25,24 @@ src_configure() {
 }
 
 src_install() {
-	local exclude_files="-e cros_make_image_bootable \
--e cros_sign_to_ssd -e cros_resign_image"
-	local bin_files=$(ls bin/* | grep -v ${exclude_files})
+	# Install package files
 	insinto /usr/lib/crosutils
 	doins * || die "Could not install shared files."
+
+	# Install python libraries into site-packages
+	local python_version=$(/usr/bin/env python -c \
+	      "import sys; print sys.version[:3]")
+	insinto /usr/lib/python"${python_version}"/site-packages
+	doins lib/*.py || die "Could not install python files."
+	rm -f lib/*.py
+
+	# Install libraries
 	dolib lib/* || die "Could not install library files"
+
+	# Install binaries
+	local exclude_files="-e cros_make_image_bootable \
+		-e cros_sign_to_ssd -e cros_resign_image"
+	local bin_files=$(ls bin/* | grep -v ${exclude_files})
 	dobin ${bin_files} || die "Could not install executable scripts."
+	dosym loman.py /usr/bin/loman
 }
