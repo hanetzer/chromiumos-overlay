@@ -1,0 +1,46 @@
+diff configs/amd64_defconfig configs/amd64_defconfig
+--- configs/amd64_defconfig	1970-01-01 08:00:00.000000000 +0800
++++ configs/amd64_defconfig	2010-09-14 10:18:09.000000000 +0800
+@@ -0,0 +1,42 @@
++#
++# Automatically generated make config: don't edit
++# Mosys version: KERNELVERSION
++# Thu Jul  1 17:03:20 2010
++#
++
++#
++# General setup
++#
++CONFIG_ADVANCED_OPTIONS=y
++CONFIG_LOGLEVEL=4
++
++#
++# Platforms
++#
++# CONFIG_PLATFORM_ARCH_ARMEL is not set
++CONFIG_PLATFORM_ARCH_X86=y
++
++#
++# Default Platform Support
++#
++CONFIG_PLATFORM_DEFAULT=y
++CONFIG_DEFAULT_X86=y
++
++#
++# HP Platform Support
++#
++CONFIG_PLATFORM_HP=y
++CONFIG_HP_Z600=y
++
++#
++# Experimental Platform Support
++#
++CONFIG_PLATFORM_EXPERIMENTAL=y
++CONFIG_EXPERIMENTAL_AGZ=y
++CONFIG_EXPERIMENTAL_MARIO=y
++
++#
++# Tools
++#
++# CONFIG_ADD_TOOL_LIBRARIES is not set
++# CONFIG_BUILD_VPD is not set
