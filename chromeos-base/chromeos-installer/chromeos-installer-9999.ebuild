@@ -19,6 +19,7 @@ DEPEND="!!<=dev-util/crosutils-0.0.1-r1"
 RDEPEND="dev-libs/shflags
          sys-apps/coreutils
          sys-apps/util-linux
+         sys-fs/dosfstools
          sys-fs/e2fsprogs"
 
 CROS_WORKON_LOCALNAME="installer"
