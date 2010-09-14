@@ -188,7 +188,7 @@ function autotest_src_prepare() {
 		# test does have this directory
 		for test in ${TEST_LIST}; do
 			if [ -d "${srcdir}/${test}" ]; then
-				cp -fpr "${srcdir}/${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
+				cp -fprl "${srcdir}/${test}" "${AUTOTEST_WORKDIR}/${l1}/${l2}"/ || die
 			fi
 		done
 	done
@@ -204,10 +204,10 @@ function autotest_src_prepare() {
 			eval deplist=\${AUTOTEST_${l2^^*}_LIST}
 
 			if [ "${deplist}" = "*" ]; then
-				cp -fpru * "${AUTOTEST_WORKDIR}/client/${l2}"
+				cp -fprl * "${AUTOTEST_WORKDIR}/client/${l2}"
 			else
 				for dir in ${deplist}; do
-					cp -fpru "${dir}" "${AUTOTEST_WORKDIR}/client/${l2}"/ || die
+					cp -fprl "${dir}" "${AUTOTEST_WORKDIR}/client/${l2}"/ || die
 				done
 			fi
 			popd 1> /dev/null
