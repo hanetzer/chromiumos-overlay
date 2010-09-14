@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="4113f4ec15d6498a106d4da544b146275f8be05a"
+CROS_WORKON_COMMIT="111fa9274794f5a815b9e25f01d1f140f95fdb29"
 
 inherit cros-workon
 
@@ -20,6 +20,7 @@ DEPEND="!!<=dev-util/crosutils-0.0.1-r1"
 RDEPEND="dev-libs/shflags
          sys-apps/coreutils
          sys-apps/util-linux
+         sys-fs/dosfstools
          sys-fs/e2fsprogs"
 
 CROS_WORKON_LOCALNAME="installer"
