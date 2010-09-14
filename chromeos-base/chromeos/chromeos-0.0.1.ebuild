@@ -35,8 +35,9 @@ RDEPEND="${RDEPEND}
 		chromeos-base/xorg-conf
 		media-fonts/croscorefonts
 		media-fonts/dejavu
-		media-fonts/droid
+		media-fonts/droidfonts-cros
 		media-fonts/ja-ipafonts
+		media-fonts/lohitfonts-cros
 		media-fonts/sil-abyssinica
 		x11-apps/xinit
 		>=x11-base/xorg-server-1.6.3
