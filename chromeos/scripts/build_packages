@@ -212,10 +212,26 @@ if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   fi
   eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 else
-  echo "Building ${PACKAGES} (working on ${CROS_WORKON_PKGS})"
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-  if [[ -n "${CROS_WORKON_PKGS}" ]]; then
-    ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
+  echo "Building ${PACKAGES} ${CROS_WORKON_PKGS}"
+  if [[ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]]; then
+    # Merge all packages, including binary versions of packages.
+    eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
+    if [[ -n "${CROS_WORKON_PKGS}" ]]; then
+      # Re-merge cros-workon packages, this time from source. This is
+      # inefficient, but regular emerge doesn't support any way of specifying
+      # that you want specific packages to be merged from source only.
+      eretry ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
+    fi
+  else
+    # Re-merge cros_workon packages, updating dependencies if necessary.
+    #   --selective=n: Always re-merge cros_workon packages.
+    #   -1: Don't add cros_workon packages to world file.
+    if [[ -n "${CROS_WORKON_PKGS}" ]]; then
+      eretry ${EMERGE_BOARD_CMD} -uDNv1 --selective=n ${CROS_WORKON_PKGS}
+    fi
+
+    # Update the remainder of the packages.
+    eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
   fi
 fi
 
