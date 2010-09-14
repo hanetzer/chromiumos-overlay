@@ -404,6 +404,13 @@ if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
 fi
 sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS chromeos-base/kernel-headers
 
+# Temporary hack needed so that we can move headers install back into
+# the kernel-headers ebuild.
+# TODO(msb): Remove this hack.
+sudo chown -R ${USER} ~/trunk/.config
+mkdir -p ~/trunk/.config/headers-fix
+touch ~/trunk/.config/headers-fix/"${FLAGS_board}"
+
 # We need to install libstdc++ manually from the cross toolchain.
 # TODO: Figure out a better way of doing this?
 sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/lib"
