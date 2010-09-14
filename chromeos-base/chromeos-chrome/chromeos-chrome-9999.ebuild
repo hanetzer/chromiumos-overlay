@@ -324,6 +324,9 @@ src_compile() {
 		|| die "compilation failed"
 }
 
+install_excluding_svn() {
+	rsync -av --exclude='.svn' --link-dest="$1" "$1" "$2"
+}
 
 install_chrome_test_resources() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
@@ -334,63 +337,59 @@ install_chrome_test_resources() {
 	# be picked up later by autotest build.
 	TEST_DIR="${D}"/usr/local/autotest/client/deps/chrome_test/test_src
 	AUTOTEST_DIR="${D}"/usr/local/autotest
-	FROM_LIB="${FROM}/lib.target"
-	FROM_TESTS="${FROM}"
 
 	echo Copying Chrome tests into "${TEST_DIR}"
-	mkdir -p "${TEST_DIR}"
 	mkdir -p "${TEST_DIR}/out/Release"
 
-	rsync -v "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
+	cp -alv "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
 		"${TEST_DIR}/out/Release"
+	cp -alv "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+	cp -alv "${FROM}"/pyproto "${TEST_DIR}"/out/Release
 
-	rsync -v "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_LIB}"/_pyautolib.so "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_TESTS}"/libppapi_tests.so "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_TESTS}"/browser_tests "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_TESTS}"/reliability_tests "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_TESTS}"/ui_tests "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_TESTS}"/sync_integration_tests "${TEST_DIR}"/out/Release
-	rsync -v "${FROM_TESTS}"/page_cycler_tests "${TEST_DIR}"/out/Release
-
-	mkdir -p "${TEST_DIR}"/out/Release/pyproto
-	rsync -rlv "${FROM_TESTS}"/pyproto/* "${TEST_DIR}"/out/Release/pyproto
-
-	mkdir -p "${TEST_DIR}"/base
-	rsync -v "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
-
-	mkdir -p "${TEST_DIR}"/chrome/test/data
-	rsync -rlv --exclude='.svn' --delete --delete-excluded \
-		"${CHROME_ROOT}"/src/chrome/test/data/* "${TEST_DIR}"/chrome/test/data
-
-	mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
-	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/data/ssl/certificates/* \
-		"${TEST_DIR}"/net/data/ssl/certificates
-
-	mkdir -p "${TEST_DIR}"/net/tools/testserver
-	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/net/tools/testserver/* \
-		"${TEST_DIR}"/net/tools/testserver
-
-	mkdir -p "${TEST_DIR}"/third_party/tlslite
-	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/tlslite/* \
-		"${TEST_DIR}"/third_party/tlslite
-
-	mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
-	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/pyftpdlib/* \
-		"${TEST_DIR}"/third_party/pyftpdlib
-		
-	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
-	rsync -rlv --exclude='.svn' --delete --delete-excluded "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts/* \
-		"${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
-
-	rsync -rlv "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/* \
-		"${AUTOTEST_DIR}"/client
-
-	for f in ${TEST_FILES}; do
-		rsync -rv "${FROM}/${f}" "${TEST_DIR}"
+	for f in lib.target/_pyautolib.so libppapi_tests.so browser_tests \
+	         reliability_tests ui_tests sync_integration_tests \
+	         page_cycler_tests; do
+		cp -alv "${FROM}"/${f} "${TEST_DIR}"/out/Release
 	done
 
-	rsync -v "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/deps/chrome_test/setup_test_links.sh \
+	mkdir -p "${TEST_DIR}"/base
+	cp -alv "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+
+	mkdir -p "${TEST_DIR}"/chrome/test/data
+	install_excluding_svn "${CHROME_ROOT}"/src/chrome/test/data/ \
+	  "${TEST_DIR}"/chrome/test/data/
+
+	mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
+	install_excluding_svn "${CHROME_ROOT}"/src/net/data/ssl/certificates/ \
+		"${TEST_DIR}"/net/data/ssl/certificates/
+
+	mkdir -p "${TEST_DIR}"/net/tools/testserver
+	install_excluding_svn "${CHROME_ROOT}"/src/net/tools/testserver/ \
+		"${TEST_DIR}"/net/tools/testserver/
+
+	mkdir -p "${TEST_DIR}"/third_party/tlslite
+	install_excluding_svn "${CHROME_ROOT}"/src/third_party/tlslite/ \
+		"${TEST_DIR}"/third_party/tlslite/
+
+	mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
+	install_excluding_svn "${CHROME_ROOT}"/src/third_party/pyftpdlib/ \
+		"${TEST_DIR}"/third_party/pyftpdlib/
+		
+	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
+	install_excluding_svn \
+		"${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts/ \
+		"${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts/
+
+	mkdir -p "${AUTOTEST_DIR}"/client
+	install_excluding_svn \
+		"${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/ \
+		"${AUTOTEST_DIR}"/client/
+
+	for f in ${TEST_FILES}; do
+		cp -alv "${FROM}/${f}" "${TEST_DIR}"
+	done
+
+	cp -alv "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/deps/chrome_test/setup_test_links.sh \
 		"${TEST_DIR}"/out/Release
 
 	# Remove test binaries from other platforms
