@@ -256,11 +256,18 @@ function autotest_src_compile() {
 	einfo "Building tests ($(echo ${TESTS}|wc -w)):"
 	einfo "${TESTS}"
 
+	NORMAL=$(echo -e "\e[0m")
+	GREEN=$(echo -e "\e[1;32m")
+	RED=$(echo -e "\e[1;31m")
+
 	# Call autotest to prebuild all test cases.
-	GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
+	# Parse output through a colorifying sed script
+	( GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
 		client/bin/autotest_client --quiet \
 		--client_test_setup=$(pythonify_test_list ${TESTS}) \
 		|| ! use buildcheck || die "Tests failed to build."
+	) | sed -e "s/\(INFO:root:setup\)/${GREEN}* \1${NORMAL}/" \
+		-e "s/\(ERROR:root:\[.*\]\)/${RED}\1${NORMAL}/"
 
 	# Cleanup some temp files after compiling
 	find . -name '*.[do]' -delete
