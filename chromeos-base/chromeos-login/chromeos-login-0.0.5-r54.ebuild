@@ -16,8 +16,7 @@ SLOT="0"
 IUSE="test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
-	chromeos-base/chromeos-minijail
-	chromeos-base/crash-dumper"
+	chromeos-base/chromeos-minijail"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libcros

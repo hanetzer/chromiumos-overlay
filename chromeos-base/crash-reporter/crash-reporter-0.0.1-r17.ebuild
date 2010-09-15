@@ -15,8 +15,7 @@ KEYWORDS="x86 arm"
 IUSE="test"
 
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).
-RDEPEND="chromeos-base/crash-dumper
-         chromeos-base/libchrome
+RDEPEND="chromeos-base/libchrome
          chromeos-base/metrics
          dev-cpp/gflags
          test? ( dev-cpp/gtest )
