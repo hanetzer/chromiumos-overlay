@@ -15,8 +15,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
 
-RDEPEND="chromeos-base/crash-dumper
-	>=dev-libs/glib-2.16
+RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
 	dev-libs/dbus-glib
 	bluetooth? ( net-wireless/bluez )
@@ -96,8 +95,6 @@ src_configure() {
 src_compile() {
 	emake clean-generic || die "emake clean failed"
 	emake || die "emake failed"
-	dump_syms src/flimflamd > \
-		flimflamd.sym 2>/dev/null || die "symbol extraction failed"
 }
 
 src_install() {
@@ -125,7 +122,4 @@ src_install() {
 		exeinto /usr/lib/flimflam/test
 		doexe test/* || die
 	fi
-
-	insinto /usr/lib/debug
-	doins flimflamd.sym
 }

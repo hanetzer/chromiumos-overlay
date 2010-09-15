@@ -11,10 +11,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
-IUSE="+crash debug"
+IUSE="debug"
 
-RDEPEND="crash? ( chromeos-base/crash-dumper )
-	chromeos-base/libchrome
+RDEPEND="chromeos-base/libchrome
 	dev-cpp/gflags
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.0
@@ -27,12 +26,10 @@ DEPEND="${RDEPEND}
 	"
 
 src_compile() {
-	local lcrash=
-	use crash || lcrash=LCRASH=
 	use debug || append-flags -DNDEBUG
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake $lcrash || die "metrics compile failed."
+	emake || die "metrics compile failed."
 }
 
 src_test() {

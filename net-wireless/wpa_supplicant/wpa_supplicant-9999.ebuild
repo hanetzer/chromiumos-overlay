@@ -15,8 +15,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline ssl wps kernel_linux kernel_FreeBSD"
 
-DEPEND="chromeos-base/crash-dumper
-	dev-libs/libnl
+DEPEND="dev-libs/libnl
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
 		eap-sim? ( sys-apps/pcsc-lite )
@@ -76,9 +75,8 @@ src_configure() {
 	# Toolchain setup
 	echo "CC = $(tc-getCC)" > ${CFGFILE}
 
-	# Build w/ debug symbols and enable crash reporting
+	# Build w/ debug symbols
 	echo "CFLAGS += -ggdb" >> ${CFGFILE}
-	echo "LIBS += -lcrash" >> ${CFGFILE}
 
 	# Basic setup
 	echo "CONFIG_CTRL_IFACE=y" >> ${CFGFILE}
@@ -185,10 +183,6 @@ src_compile() {
 		eqmake3 wpa_gui.pro
 		emake || die "Qt3 wpa_gui compilation failed"
 	fi
-
-	cd "${MY_S}"
-	dump_syms wpa_supplicant > wpa_supplicant.sym 2>/dev/null || \
-		die "symbol extraction failed ${MY_S}"
 }
 
 src_install() {
@@ -233,9 +227,6 @@ src_install() {
 		newins dbus/fi.w1.wpa_supplicant1.service 'fi.w1.wpa_supplicant1.service' || die
 		keepdir /var/run/wpa_supplicant
 	fi
-
-	insinto /usr/lib/debug
-	doins wpa_supplicant.sym
 }
 
 pkg_postinst() {

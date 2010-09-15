@@ -13,8 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
  
-RDEPEND="chromeos-base/crash-dumper
-         chromeos-base/libchromeos
+RDEPEND="chromeos-base/libchromeos
          chromeos-base/libcros
          dev-libs/dbus-glib
          dev-libs/glib"

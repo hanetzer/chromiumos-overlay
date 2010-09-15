@@ -22,7 +22,6 @@ IUSE="${IUSE} +autotest"
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
-  chromeos-base/crash-dumper
   chromeos-base/flimflam
   autox? ( chromeos-base/autox )
   xset? ( x11-apps/xset )

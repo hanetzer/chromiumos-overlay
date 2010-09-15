@@ -13,8 +13,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="opengles"
 
-RDEPEND="chromeos-base/crash-dumper
-	dev-cpp/gflags
+RDEPEND="dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/libpcre
 	dev-libs/protobuf
@@ -55,12 +54,6 @@ src_compile() {
 
 	scons BACKEND="$backend" -j$(print_num_jobs) wm screenshot || \
 		die "window_manager compile failed"
-	# The exec name in dump_syms's output must match the
-	# installed name.
-	ln -s wm chromeos-wm
-	dump_syms chromeos-wm >chromeos-wm.sym 2>/dev/null || \
-		die "symbol extraction failed"
-	rm chromeos-wm
 }
 
 src_test() {
@@ -89,7 +82,4 @@ src_install() {
 
 	into /
 	dosbin bin/window-manager-session.sh
-
-	insinto /usr/lib/debug
-	doins chromeos-wm.sym
 }
