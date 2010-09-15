@@ -324,10 +324,6 @@ src_compile() {
 		|| die "compilation failed"
 }
 
-install_excluding_svn() {
-	rsync -av --exclude='.svn' --link-dest="$1" "$1" "$2"
-}
-
 install_chrome_test_resources() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
@@ -359,35 +355,31 @@ install_chrome_test_resources() {
 	mkdir -p "${TEST_DIR}"/base
 	cp -alv "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
 
-	mkdir -p "${TEST_DIR}"/chrome/test/data
-	install_excluding_svn "${CHROME_ROOT}"/src/chrome/test/data/ \
-	  "${TEST_DIR}"/chrome/test/data/
+	mkdir -p "${TEST_DIR}"/chrome/test
+	cp -alv "${CHROME_ROOT}"/src/chrome/test/data \
+		"${TEST_DIR}"/chrome/test
 
-	mkdir -p "${TEST_DIR}"/net/data/ssl/certificates
-	install_excluding_svn "${CHROME_ROOT}"/src/net/data/ssl/certificates/ \
-		"${TEST_DIR}"/net/data/ssl/certificates/
+	mkdir -p "${TEST_DIR}"/net/data/ssl
+	cp -alv "${CHROME_ROOT}"/src/net/data/ssl/certificates \
+		"${TEST_DIR}"/net/data/ssl
 
-	mkdir -p "${TEST_DIR}"/net/tools/testserver
-	install_excluding_svn "${CHROME_ROOT}"/src/net/tools/testserver/ \
-		"${TEST_DIR}"/net/tools/testserver/
+	mkdir -p "${TEST_DIR}"/net/tools
+	cp -alv "${CHROME_ROOT}"/src/net/tools/testserver \
+		"${TEST_DIR}"/net/tools
 
-	mkdir -p "${TEST_DIR}"/third_party/tlslite
-	install_excluding_svn "${CHROME_ROOT}"/src/third_party/tlslite/ \
-		"${TEST_DIR}"/third_party/tlslite/
-
-	mkdir -p "${TEST_DIR}"/third_party/pyftpdlib
-	install_excluding_svn "${CHROME_ROOT}"/src/third_party/pyftpdlib/ \
-		"${TEST_DIR}"/third_party/pyftpdlib/
+	mkdir -p "${TEST_DIR}"/third_party
+	cp -alv "${CHROME_ROOT}"/src/third_party/tlslite \
+		"${TEST_DIR}"/third_party
+	cp -alv "${CHROME_ROOT}"/src/third_party/pyftpdlib \
+		"${TEST_DIR}"/third_party
 		
-	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts
-	install_excluding_svn \
-		"${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts/ \
-		"${TEST_DIR}"/third_party/WebKit/WebKitTools/Scripts/
+	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
+	cp -alv "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
+		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
-	mkdir -p "${AUTOTEST_DIR}"/client
-	install_excluding_svn \
-		"${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/ \
-		"${AUTOTEST_DIR}"/client/
+	mkdir -p "${AUTOTEST_DIR}"
+	cp -alv "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client \
+		"${AUTOTEST_DIR}"
 
 	for f in ${TEST_FILES}; do
 		cp -alv "${FROM}/${f}" "${TEST_DIR}"
@@ -395,6 +387,9 @@ install_chrome_test_resources() {
 
 	cp -alv "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/deps/chrome_test/setup_test_links.sh \
 		"${TEST_DIR}"/out/Release
+
+	# Remove .svn dirs
+	esvn_clean "${AUTOTEST_DIR}"
 
 	# Remove test binaries from other platforms
 	if [ -z "${E_MACHINE}" ]; then
