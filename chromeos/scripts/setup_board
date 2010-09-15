@@ -407,7 +407,7 @@ sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS chromeos-base/kernel-headers
 # Temporary hack needed so that we can move headers install back into
 # the kernel-headers ebuild.
 # TODO(msb): Remove this hack.
-sudo chown -R ${USER} ~/trunk/.config
+sudo chown -Rf ${USER} ~/trunk/.config || true
 mkdir -p ~/trunk/.config/headers-fix
 touch ~/trunk/.config/headers-fix/"${FLAGS_board}"
 
