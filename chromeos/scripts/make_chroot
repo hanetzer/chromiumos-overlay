@@ -303,12 +303,12 @@ echo "$PROG: Unmerging dhcpcd"
 bash_chroot $EMERGE_CMD --unmerge dhcpcd
 
 echo "$PROG: Running emerge world ccache crossdev etc ..."
-bash_chroot $EMERGE_CMD -uDNv $USEPKG world \
+bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
     ccache crossdev crossdev-wrappers sudo $EMERGE_JOBS
 
 echo "$PROG: Running emerge hard-host-depends"
 # Need to sudo_chroot here so that ~/.bash_profile gets used
-sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends $EMERGE_JOBS
+sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends world $EMERGE_JOBS
 
 echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
   "${FLAGS_chroot}/home/$USER/.bashrc"
