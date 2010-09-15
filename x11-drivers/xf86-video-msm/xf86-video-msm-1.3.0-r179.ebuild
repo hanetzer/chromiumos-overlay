@@ -9,10 +9,8 @@ if [[ -n "${ST1Q_SOURCES_QUALCOMM}" ]] ; then
 	CROS_WORKON_PROJECT="graphics/xf86-video-msm"
 	CROS_WORKON_LOCALNAME="qcom/opensource/graphics/xf86-video-msm"
 
-	# mainline development branch
-	CROS_WORKON_COMMIT="chromium"
 	# EGIT_BRANCH must be set prior to 'inherit git' being used by cros-workon
-	EGIT_BRANCH=${EGIT_BRANCH:="${CROS_WORKON_COMMIT}"}
+	EGIT_BRANCH=${EGIT_BRANCH:="chromium"}
 fi
 
 inherit cros-workon toolchain-funcs autotools
