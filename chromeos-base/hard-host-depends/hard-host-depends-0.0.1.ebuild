@@ -122,6 +122,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 	chromeos-base/verity
+	sys-apps/mosys
 	"
 
 # Host dependencies to run unit tests within the chroot
