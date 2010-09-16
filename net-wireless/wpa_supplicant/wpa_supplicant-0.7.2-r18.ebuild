@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/wpa_supplicant/wpa_supplicant-0.7.0.ebuild,v 1.7 2009/07/24 16:42:43 josejx Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="3d4bc7f99e9d253c00dcd71aef909edbc1ae05ae"
+CROS_WORKON_COMMIT="ead97c9fbb76eb5eb99aedc7d65a4449d5015a00"
 
 inherit eutils toolchain-funcs qt3 qt4 cros-workon
 
@@ -16,8 +16,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline ssl wps kernel_linux kernel_FreeBSD"
 
-DEPEND="chromeos-base/crash-dumper
-	dev-libs/libnl
+DEPEND="dev-libs/libnl
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
 		eap-sim? ( sys-apps/pcsc-lite )
@@ -77,9 +76,8 @@ src_configure() {
 	# Toolchain setup
 	echo "CC = $(tc-getCC)" > ${CFGFILE}
 
-	# Build w/ debug symbols and enable crash reporting
+	# Build w/ debug symbols
 	echo "CFLAGS += -ggdb" >> ${CFGFILE}
-	echo "LIBS += -lcrash" >> ${CFGFILE}
 
 	# Basic setup
 	echo "CONFIG_CTRL_IFACE=y" >> ${CFGFILE}
@@ -186,10 +184,6 @@ src_compile() {
 		eqmake3 wpa_gui.pro
 		emake || die "Qt3 wpa_gui compilation failed"
 	fi
-
-	cd "${MY_S}"
-	dump_syms wpa_supplicant > wpa_supplicant.sym 2>/dev/null || \
-		die "symbol extraction failed ${MY_S}"
 }
 
 src_install() {
@@ -234,9 +228,6 @@ src_install() {
 		newins dbus/fi.w1.wpa_supplicant1.service 'fi.w1.wpa_supplicant1.service' || die
 		keepdir /var/run/wpa_supplicant
 	fi
-
-	insinto /usr/lib/debug
-	doins wpa_supplicant.sym
 }
 
 pkg_postinst() {
