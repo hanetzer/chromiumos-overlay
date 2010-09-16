@@ -1,5 +1,5 @@
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 51acd12..b703dae 100644
+index 51acd12..ac032b2 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -82,6 +82,11 @@ static void     bus_ibus_impl_set_use_global_engine
@@ -286,8 +286,12 @@ index 51acd12..b703dae 100644
 -
 -    if (ibus->global_engine) {
 -        old_engine_name = bus_engine_proxy_get_desc (ibus->global_engine)->name;
--    }
--
++    if (!new_engine_name || !new_engine_name[0] ||
++        !_find_engine_desc_by_name (ibus, new_engine_name)) {
++        return ibus_message_new_error (message, DBUS_ERROR_FAILED,
++                                       "Invalid engine name.");
+     }
+ 
 -    if (g_strcmp0 (new_engine_name, old_engine_name) == 0) {
 -        /* If the user requested the same global engine, then we just enable the
 -         * original one. */
@@ -299,18 +303,15 @@ index 51acd12..b703dae 100644
 -        }
 -        return reply;
 -    }
--
++    bus_ibus_impl_set_global_engine_by_name (ibus, new_engine_name);
+ 
 -    /* If there is a focused input context, then we just change the engine of
 -     * the focused context, which will then change the global engine
 -     * automatically. Otherwise, we need to change the global engine directly.
 -     */
 -    if (ibus->focused_context) {
 -        _context_request_engine_cb (ibus->focused_context, new_engine_name, ibus);
-+    if (!new_engine_name || !new_engine_name[0] ||
-+        !_find_engine_desc_by_name (ibus, new_engine_name)) {
-+        return ibus_message_new_error (message, DBUS_ERROR_FAILED,
-+                                       "Invalid engine name.");
-     }
+-    }
 -    else {
 -        IBusEngineDesc *engine_desc = _find_engine_desc_by_name (ibus, new_engine_name);
 -        if (engine_desc != NULL) {
@@ -319,14 +320,13 @@ index 51acd12..b703dae 100644
 -                /* Enable the global engine by default, because the user
 -                 * selected it explicitly. */
 -                bus_engine_proxy_enable (new_engine);
- 
+-
 -                /* Assume the ownership of the new global engine. Normally it's
 -                 * done by the input context. But as we need to change the global
 -                 * engine directly, so we need to do it here. */
 -                g_object_ref_sink (new_engine);
 -                bus_ibus_impl_set_global_engine (ibus, new_engine);
-+    bus_ibus_impl_set_global_engine_by_name (ibus, new_engine_name);
- 
+-
 -                /* The global engine should already be referenced. */
 -                g_object_unref (new_engine);
 -            }
@@ -338,6 +338,30 @@ index 51acd12..b703dae 100644
  }
  
  static IBusMessage *
+@@ -1934,6 +2009,11 @@ bus_ibus_impl_load_global_engine_name_from_config (BusIBusImpl *ibus)
+     GValue value = { 0 };
+     gchar *global_engine_name = NULL;
+ 
++    if (ibus == NULL || ibus->config == NULL) {
++        g_warning ("ibus->config is not ready. returning NULL");
++        return NULL;
++    }
++
+     g_assert (IBUS_IS_CONFIG (ibus->config));
+ 
+     if (ibus_config_get_value (ibus->config, "general", "global_engine", &value) &&
+@@ -1966,6 +2046,11 @@ bus_ibus_impl_load_global_previous_engine_name_from_config (BusIBusImpl *ibus)
+     GValue value = { 0 };
+     gchar *global_previous_engine_name = NULL;
+ 
++    if (ibus == NULL || ibus->config == NULL) {
++        g_warning ("ibus->config is not ready. returning NULL");
++        return NULL;
++    }
++
+     g_assert (IBUS_IS_CONFIG (ibus->config));
+ 
+     if (ibus_config_get_value (ibus->config, "general", "global_previous_engine", &value) &&
 diff --git a/gconf/config.c b/gconf/config.c
 index 6ee039b..90163d5 100644
 --- a/gconf/config.c
