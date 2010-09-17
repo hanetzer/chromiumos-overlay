@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="14434869eee0ab604f229e58b6a20aa0685519c4"
+CROS_WORKON_COMMIT="ec1e5ef27bc7ee1fd77d351a57d3563d6fc28a12"
 
 inherit cros-workon autotools
 
@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="dev-cpp/gflags
+RDEPEND="chromeos-base/libchrome
+	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/dbus-c++"
 
@@ -42,5 +43,12 @@ src_install() {
 	# install upstart config file.
 	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
-		"${S}"/src/cashew.conf "${D}"/etc/init/
+		"${S}"/cashew.conf "${D}"/etc/init
+
+	# install D-Bus config file.
+	dodir /etc/dbus-1/system.d
+	install --owner=root --group=root --mode=0644 \
+		"${S}"/org.chromium.Cashew.conf "${D}"/etc/dbus-1/system.d
+
+	# TODO(vlaviano): install introspection xml files somewhere?
 }
