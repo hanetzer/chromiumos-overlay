@@ -337,9 +337,17 @@ install_chrome_test_resources() {
 	echo Copying Chrome tests into "${TEST_DIR}"
 	mkdir -p "${TEST_DIR}/out/Release"
 
-	cp -alv "${CHROME_ROOT}"/src/chrome/test/pyautolib/pyauto.py \
-		"${TEST_DIR}/out/Release"
+	# Copy PyAuto scripts and suppport libs.
+	mkdir -p "${TEST_DIR}"/chrome/test
+	cp -alv "${CHROME_ROOT}"/src/chrome/test/pyautolib \
+		"${TEST_DIR}"/chrome/test/pyautolib
+	cp -alv "${CHROME_ROOT}"/src/chrome/test/functional \
+		"${TEST_DIR}"/chrome/test/functional
+	mkdir -p "${TEST_DIR}"/third_party
+	cp -alv "${CHROME_ROOT}"/src/third_party/simplejson \
+		"${TEST_DIR}"/third_party/simplejson
 	cp -alv "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+
 	cp -alv "${FROM}"/pyproto "${TEST_DIR}"/out/Release
 
 	# When the splitdebug USE flag is used, debug info is generated for all
