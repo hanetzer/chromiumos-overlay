@@ -31,6 +31,8 @@ src_prepare() {
 	fi
 	pushd "${S}"
 	epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
+	epatch "${FILESDIR}"/linux_dumper_unittest_flaky.diff || \
+	    die "unable to patch"
 	popd
 	cp -Rv "${FILESDIR}"/core2md/* "${S}/src" || \
 	    die "Unable to overlay files"

@@ -1,0 +1,21 @@
+--- src/client/linux/minidump_writer/linux_dumper_unittest.cc.orig	2010-09-16 17:40:48.000000000 -0700
++++ src/client/linux/minidump_writer/linux_dumper_unittest.cc	2010-09-16 17:47:41.000000000 -0700
+@@ -80,6 +80,10 @@
+   }
+ }
+ 
++// Comment out this test due to crosbug.com/6712.  Only seems to
++// fail on heavily loaded buildbots and is written with timing
++// assumptions.
++#if 0
+ TEST(LinuxDumperTest, VerifyStackReadWithMultipleThreads) {
+   static const int kNumberOfThreadsInHelperProgram = 5;
+   char kNumberOfThreadsArgument[2];
+@@ -128,6 +132,7 @@
+   }
+   kill(child_pid, SIGKILL);
+ }
++#endif
+ 
+ TEST(LinuxDumperTest, BuildProcPath) {
+   const pid_t pid = getpid();
