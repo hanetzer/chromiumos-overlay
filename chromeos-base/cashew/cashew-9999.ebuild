@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="dev-cpp/gflags
+RDEPEND="chromeos-base/libchrome
+	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/dbus-c++"
 
@@ -41,5 +42,12 @@ src_install() {
 	# install upstart config file.
 	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
-		"${S}"/src/cashew.conf "${D}"/etc/init/
+		"${S}"/cashew.conf "${D}"/etc/init
+
+	# install D-Bus config file.
+	dodir /etc/dbus-1/system.d
+	install --owner=root --group=root --mode=0644 \
+		"${S}"/org.chromium.Cashew.conf "${D}"/etc/dbus-1/system.d
+
+	# TODO(vlaviano): install introspection xml files somewhere?
 }
