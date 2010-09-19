@@ -18,3 +18,7 @@ sys-libs/glibc hardened
 # If building dpkg with nls it pulls in a bunch of packages, including po4a
 # which will hang if output is redirected. This was stalling our buildbots.
 app-arch/dpkg nls
+
+# We don't need integration with cvs, perl, or subversion in git, so we can
+# disable these for faster builds.
+dev-util/git cvs perl subversion

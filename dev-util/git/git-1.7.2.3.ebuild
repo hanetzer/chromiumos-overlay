@@ -19,7 +19,7 @@ if [ "$PV" != "9999" ]; then
 	SRC_URI="mirror://kernel/software/scm/git/${MY_P}.tar.bz2
 			mirror://kernel/software/scm/git/${PN}-manpages-${DOC_VER}.tar.bz2
 			doc? ( mirror://kernel/software/scm/git/${PN}-htmldocs-${DOC_VER}.tar.bz2 )"
-	KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~ppc-aix ~sparc-fbsd ~x86-fbsd ~x86-freebsd ~ia64-hpux ~x86-interix ~amd64-linux ~ia64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~ppc-aix ~sparc-fbsd ~x86-fbsd ~x86-freebsd ~ia64-hpux ~x86-interix ~amd64-linux ~ia64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 else
 	SRC_URI=""
 	EGIT_BRANCH="master"
@@ -49,8 +49,8 @@ RDEPEND="${CDEPEND}
 			dev-perl/Net-SMTP-SSL
 			dev-perl/Authen-SASL
 			cgi? ( virtual/perl-CGI )
-			cvs? ( >=dev-vcs/cvsps-2.1 dev-perl/DBI dev-perl/DBD-SQLite )
-			subversion? ( dev-vcs/subversion[-dso,perl] dev-perl/libwww-perl dev-perl/TermReadKey )
+			cvs? ( >=dev-util/cvsps-2.1 dev-perl/DBI dev-perl/DBD-SQLite )
+			subversion? ( dev-util/subversion[-dso,perl] dev-perl/libwww-perl dev-perl/TermReadKey )
 			)
 	gtk?
 	(
@@ -90,7 +90,7 @@ pkg_setup() {
 	if use webdav && ! use curl ; then
 		ewarn "USE=webdav needs USE=curl. Ignoring"
 	fi
-	if use subversion && has_version dev-vcs/subversion && built_with_use --missing false dev-vcs/subversion dso ; then
+	if use subversion && has_version dev-util/subversion && built_with_use --missing false dev-util/subversion dso ; then
 		ewarn "Per Gentoo bugs #223747, #238586, when subversion is built"
 		ewarn "with USE=dso, there may be weird crashes in git-svn. You"
 		ewarn "have been warned."
@@ -406,13 +406,13 @@ src_test() {
 		disabled="${disabled} ${tests_nonroot}"
 	else
 		[[ $cvs -gt 0 ]] && \
-			has_version dev-vcs/cvs && \
+			has_version dev-util/cvs && \
 			let cvs=$cvs+1
 		[[ $cvs -gt 1 ]] && \
-			built_with_use dev-vcs/cvs server && \
+			built_with_use dev-util/cvs server && \
 			let cvs=$cvs+1
 		if [[ $cvs -lt 3 ]]; then
-			einfo "Disabling CVS tests (needs dev-vcs/cvs[USE=server])"
+			einfo "Disabling CVS tests (needs dev-util/cvs[USE=server])"
 			disabled="${disabled} ${tests_cvs}"
 		fi
 	fi
@@ -446,8 +446,8 @@ showpkgdeps() {
 
 pkg_postinst() {
 	use emacs && elisp-site-regen
-	if use subversion && has_version dev-vcs/subversion && ! built_with_use --missing false dev-vcs/subversion perl ; then
-		ewarn "You must build dev-vcs/subversion with USE=perl"
+	if use subversion && has_version dev-util/subversion && ! built_with_use --missing false dev-util/subversion perl ; then
+		ewarn "You must build dev-util/subversion with USE=perl"
 		ewarn "to get the full functionality of git-svn!"
 	fi
 	elog "These additional scripts need some dependencies:"
