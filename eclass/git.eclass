@@ -181,7 +181,8 @@ git_branch() {
 		src=${EGIT_COMMIT}
 	fi
 	debug-print "git checkout -b ${branchname} ${src}"
-	git checkout -b ${branchname} ${src} &> /dev/null
+	git checkout -b ${branchname} ${src} || \
+		die "${EGIT}: Could not run git checkout -b ${branchname} ${src}"
 
 	unset branchname src
 }
