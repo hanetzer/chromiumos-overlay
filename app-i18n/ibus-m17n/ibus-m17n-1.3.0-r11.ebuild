@@ -29,6 +29,7 @@ src_prepare() {
 	# included in the ibus-m17n upstream repo, but not in the 1.3.0 tarball.
 	# https://code.google.com/p/ibus/issues/detail?id=625
 	epatch "${FILESDIR}"/0001-Fix-Mtext-gunichar-conversion.patch
+	epatch "${FILESDIR}"/0001-Fix-bug-in-ibus_m17n_engine_reset.patch
 
 	# Build ibus-engine-m17n for the host platform.
 	(env -i ./configure && env -i make) || die
