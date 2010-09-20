@@ -67,7 +67,6 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/${DEFAU
 TEST_FILES="ffmpeg_tests
             omx_test"
 
-# TODO(cmasone): Remove pam dependency when "session" target is removed
 RDEPEND="app-arch/bzip2
          chromeos-base/chromeos-theme
          chromeos-base/libcros
@@ -89,7 +88,6 @@ RDEPEND="app-arch/bzip2
          media-libs/libpng
          media-libs/mesa
          media-sound/pulseaudio
-         sys-libs/pam
          sys-libs/zlib
          x86? ( www-plugins/adobe-flash )
          >=x11-libs/gtk+-2.14.7
