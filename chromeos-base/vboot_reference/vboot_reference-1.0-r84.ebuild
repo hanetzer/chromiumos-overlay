@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="e19da8b8183edbbc41cbc651277b07c2362c6236"
+CROS_WORKON_COMMIT="a8cba996b793547b2dab92c9808cf97b98e2a555"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
@@ -64,5 +64,6 @@ src_install() {
                 into "/usr"
                 # copy files starting with tpmtest, but skip .d files.
                 dobin ${S}/build/tests/tpm_lite/tpmtest*[^.]?
+                dobin ${S}/build/utility/tpm_set_readsrkpub
         fi
 }
