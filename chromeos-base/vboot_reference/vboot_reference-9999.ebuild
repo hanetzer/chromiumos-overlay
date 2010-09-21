@@ -7,7 +7,7 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="minimal rbtest"
+IUSE="minimal rbtest tpmtests"
 EAPI="2"
 
 DEPEND="app-crypt/trousers
@@ -58,5 +58,11 @@ src_install() {
         if use rbtest; then
                 emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
                       install-rbtest || die "${PN} install failed."
+        fi
+        if use tpmtests; then
+                into "/usr"
+                # copy files starting with tpmtest, but skip .d files.
+                dobin ${S}/build/tests/tpm_lite/tpmtest*[^.]?
+                dobin ${S}/build/utility/tpm_set_readsrkpub
         fi
 }
