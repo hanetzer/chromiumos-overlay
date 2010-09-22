@@ -42,6 +42,11 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 # Sometimes we just want to forget about useflags and build what's inside
 : ${AUTOTEST_FORCE_TEST_LIST:=}
 
+# @ECLASS-VARIABLE: AUTOTEST_FILE_MASK
+# @DESCRIPTION:
+# The list of 'find' expressions to find in the resulting image and delete
+: ${AUTOTEST_FILE_MASK:=}
+
 function get_test_list() {
 	if [ -n "${AUTOTEST_FORCE_TEST_LIST}" ]; then
 		# list forced
@@ -277,7 +282,10 @@ function autotest_src_compile() {
 		-e "s/\(ERROR:root:\[.*\]\)/${RED}\1${NORMAL}/"
 
 	# Cleanup some temp files after compiling
-	find . -name '*.[do]' -delete
+	for mask in '*.[do]' ${AUTOTEST_FILE_MASK}; do
+		einfo "Purging ${mask}"
+		find . -name "${mask}" -delete
+	done
 
 	popd 1> /dev/null
 }
