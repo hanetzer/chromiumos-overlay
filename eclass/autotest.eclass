@@ -233,7 +233,7 @@ function autotest_src_prepare() {
 
 	# Cleanup checked-in binaries that don't support the target architecture
 	[[ ${E_MACHINE} == "" ]] && return 0;
-	rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+	rm -fv $( scanelf -RmyBF%a "${AUTOTEST_WORKDIR}" | grep -v -e ^${E_MACHINE} )
 }
 
 function autotest_src_compile() {
