@@ -148,9 +148,14 @@ PATCHES=(
 	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
 	"${FILESDIR}/1.7.6-skip-vendor-and-device-names.patch"
 	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
-	"${FILESDIR}/1.7.6-composite-redirect-events.patch"
-	"${FILESDIR}/1.7.6-no-exposure-for-redirect.patch"
-	"${FILESDIR}/1.7.6-always-send-visibility.patch"
+	# These patches were used by the window manager's
+	# --unredirect_fullscreen_window flag, which enables an optimization where
+	# we stop compositing when there's a single window covering the whole
+	# screen.  That flag is currently disabled, since it can cause tough-to-fix
+	# problems where the screen flickers or redraws (even with these patches).
+	#"${FILESDIR}/1.7.6-composite-redirect-events.patch"
+	#"${FILESDIR}/1.7.6-no-exposure-for-redirect.patch"
+	#"${FILESDIR}/1.7.6-always-send-visibility.patch"
 	"${FILESDIR}/1.7.6-fix-xkb-autorepeat.patch"
 	)
 
