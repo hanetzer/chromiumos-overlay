@@ -342,12 +342,12 @@ install_chrome_test_resources() {
 	# Copy PyAuto scripts and suppport libs.
 	mkdir -p "${TEST_DIR}"/chrome/test
 	fast_cp -av "${CHROME_ROOT}"/src/chrome/test/pyautolib \
-		"${TEST_DIR}"/chrome/test/pyautolib
+		"${TEST_DIR}"/chrome/test/
 	fast_cp -av "${CHROME_ROOT}"/src/chrome/test/functional \
-		"${TEST_DIR}"/chrome/test/functional
+		"${TEST_DIR}"/chrome/test/
 	mkdir -p "${TEST_DIR}"/third_party
 	fast_cp -av "${CHROME_ROOT}"/src/third_party/simplejson \
-		"${TEST_DIR}"/third_party/simplejson
+		"${TEST_DIR}"/third_party/
 	fast_cp -av "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
 
 	fast_cp -av "${FROM}"/pyproto "${TEST_DIR}"/out/Release
