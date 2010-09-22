@@ -219,17 +219,17 @@ function autotest_src_prepare() {
 
 	# Each test directory needs to be visited and have an __init__.py created.
 	# However, that only applies to the directories which have a main .py file.
-	pushd "${AUTOTEST_WORKDIR}" 1> /dev/null
+	pushd "${AUTOTEST_WORKDIR}" > /dev/null || die "AUTOTEST_WORKDIR does not exist?!"
 	for dir in client/tests client/site_tests server/tests server/site_tests; do
-		pushd "${dir}" 1> /dev/null
+		pushd "${dir}" > /dev/null || continue
 		for sub in *; do
 			[ -f "${sub}/${sub}.py" ] || continue
 
 			touch_init_py ${sub}
 		done
-		popd 1> /dev/null
+		popd > /dev/null
 	done
-	popd 1> /dev/null
+	popd > /dev/null
 
 	# Cleanup checked-in binaries that don't support the target architecture
 	[[ ${E_MACHINE} == "" ]] && return 0;
