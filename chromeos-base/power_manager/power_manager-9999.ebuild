@@ -71,9 +71,12 @@ src_install() {
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
+        dobin "${S}/suspend_delay_sample"
 	dobin "${S}/xidle-example"
 	insinto "/usr/share/power_manager"
 	for item in ${S}/config/*; do
 		doins ${item}
 	done
+        insinto "/etc/dbus-1/system.d"
+        doins "${S}/org.chromium.PowerManager.conf"
 }
