@@ -30,7 +30,7 @@ EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+build_tests x86"
+IUSE="+build_tests x86 gold"
 
 # chrome sources store directory
 [[ -z ${ECHROME_STORE_DIR} ]] &&
@@ -310,14 +310,31 @@ src_compile() {
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
+	tc-export CXX CC AR AS RANLIB LD
+	# HACK(zbehan): On x86, we have the option of using gold. This has to be
+	# done in a manner specific for this ebuild until gold is stabilized for
+	# the whole world. Current way is to pass a -B option to CC, CXX and LD,
+	# which makes them use a different linker. This was suggested by raymes.
+	if use x86 && use gold; then
+		# List all gold binutils and pick the latest
+		GOLDLOC=$(
+	echo /usr/x86_64-pc-linux-gnu/i686-pc-linux-gnu/binutils-bin/*-gold | \
+	tail -n 1)
+
+		# GOLDLOC will either be the latest gold version or string with *
+		if [ -d "${GOLDLOC}" ]; then
+			einfo "Using gold in: ${GOLDLOC}"
+
+			export CC="${CC} -B${GOLDLOC}"
+			export CXX="${CXX} -B${GOLDLOC}"
+			export LD="${GOLDLOC}/ld"
+		else
+			ewarn "Couldn't find gold, USE flag ignored."
+		fi
+	fi
+
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-		CXX=$(tc-getCXX) \
-		CC=$(tc-getCC) \
-		AR=$(tc-getAR) \
-		AS=$(tc-getAS) \
-		RANLIB=$(tc-getRANLIB) \
-		LD=$(tc-getLD) \
-                chrome candidate_window chrome_sandbox default_extensions \
+		chrome candidate_window chrome_sandbox default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 }
