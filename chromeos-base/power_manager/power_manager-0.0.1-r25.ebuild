@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="72ef8006eae5e1a2832b9655d175871d6d69c66d"
+CROS_WORKON_COMMIT="b2ba5bc2edab702ab36d1bd72b8d8c8be190120d"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -72,9 +72,12 @@ src_install() {
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
+        dobin "${S}/suspend_delay_sample"
 	dobin "${S}/xidle-example"
 	insinto "/usr/share/power_manager"
 	for item in ${S}/config/*; do
 		doins ${item}
 	done
+        insinto "/etc/dbus-1/system.d"
+        doins "${S}/org.chromium.PowerManager.conf"
 }
