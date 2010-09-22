@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="539fdb1f7f3fbc71988a5c72bd1732339483973f"
+CROS_WORKON_COMMIT="17ab3e7a0998849b6246b2fb70cd55fe418e0eee"
 inherit toolchain-funcs
 
 DESCRIPTION="Chrome OS Kernel"
