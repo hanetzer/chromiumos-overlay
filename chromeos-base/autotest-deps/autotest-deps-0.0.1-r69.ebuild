@@ -27,6 +27,9 @@ AUTOTEST_DEPS_LIST="glbench gtest hdparm ibusclient iotools iwcap libaio realtim
 
 AUTOTEST_FORCE_TEST_LIST="myfaketest"
 
+# NOTE: For deps, we need to keep *.a
+AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
 # deps/gtest
 RDEPEND="
   dev-cpp/gtest
