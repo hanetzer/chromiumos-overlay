@@ -20,7 +20,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit eutils multilib toolchain-funcs flag-o-matic
+inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
@@ -96,6 +96,18 @@ RDEPEND="app-arch/bzip2
 DEPEND="${RDEPEND}
         >=dev-util/gperf-3.0.3
         >=dev-util/pkgconfig-0.23"
+
+AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
+AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
+AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
+AUTOTEST_DEPS_LIST="chrome_test"
+
+IUSE_TESTS="
+	+tests_desktopui_BrowserTest
+	+tests_desktopui_SyncIntegrationTests
+	+tests_desktopui_UITest
+	"
+IUSE="${IUSE} +autotest ${IUSE_TESTS}"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
@@ -221,6 +233,11 @@ src_unpack() {
 		set_build_defines
 		;;
 	esac
+
+	# FIXME: This is the normal path where ebuild stores its working data.
+	# Chrome builds inside distfiles because of speed, so we at least make
+	# a symlink here to add compatibility with autotest eclass which uses this.
+	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 }
 
 src_prepare() {
@@ -337,6 +354,23 @@ src_compile() {
 		chrome candidate_window chrome_sandbox default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
+
+	if use build_tests; then
+		install_chrome_test_resources "${WORKDIR}/test_src"
+		# NOTE: Since chrome is built inside distfiles, we have to get
+		# rid of the previous instance first.
+		rm -rf "${WORKDIR}/${P}/${AUTOTEST_DEPS}/chrome_test/test_src"
+		mv "${WORKDIR}/test_src" "${WORKDIR}/${P}/${AUTOTEST_DEPS}/chrome_test/"
+
+		# HACK: It would make more sense to call autotest_src_prepare in
+		# src_prepare, but we need to call install_chrome_test_resources first.
+		autotest_src_prepare
+
+		# Remove .svn dirs
+		esvn_clean "${AUTOTEST_WORKDIR}"
+
+		autotest_src_compile
+	fi
 }
 
 fast_cp() {
@@ -344,14 +378,10 @@ fast_cp() {
 }
 
 install_chrome_test_resources() {
-	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
-		return
-	fi
+	# NOTE: This is a duplicate from src_install, because it's required here.
+	FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
 
-	# For test binaries, we are bypassing the image on purpose. These bits will
-	# be picked up later by autotest build.
-	TEST_DIR="${D}"/usr/local/autotest/client/deps/chrome_test/test_src
-	AUTOTEST_DIR="${D}"/usr/local/autotest
+	TEST_DIR="${1}"
 
 	echo Copying Chrome tests into "${TEST_DIR}"
 	mkdir -p "${TEST_DIR}/out/Release"
@@ -404,20 +434,12 @@ install_chrome_test_resources() {
 	fast_cp -av "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
-	mkdir -p "${AUTOTEST_DIR}"
-	fast_cp -av \
-		"${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client \
-		"${AUTOTEST_DIR}"
-
 	for f in ${TEST_FILES}; do
 		fast_cp -av "${FROM}/${f}" "${TEST_DIR}"
 	done
 
-	fast_cp -av "${CHROME_ROOT}"/src/chrome/test/chromeos/autotest/files/client/deps/chrome_test/setup_test_links.sh \
+	fast_cp -av "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
 		"${TEST_DIR}"/out/Release
-
-	# Remove .svn dirs
-	esvn_clean "${AUTOTEST_DIR}"
 
 	# Remove test binaries from other platforms
 	if [ -z "${E_MACHINE}" ]; then
@@ -426,9 +448,6 @@ install_chrome_test_resources() {
 		cd "${TEST_DIR}"/chrome/test
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
-
-	chown -R ${SUDO_UID}:${SUDO_GID} "${TEST_DIR}"
-	chmod -R 755 "${TEST_DIR}"
 }
 
 src_install() {
@@ -478,7 +497,7 @@ src_install() {
 	# Test binaries are only available when building chrome from source
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
-		install_chrome_test_resources
+		autotest_src_install
 	fi
 
 	# Fix some perms
