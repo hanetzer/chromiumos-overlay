@@ -75,7 +75,7 @@
 >=net-wireless/wpa_supplicant-0.7.3
 
 # Masked all upstream ebuilds
-<www-plugins/adobe-flash-10.1.53.64
+<www-plugins/adobe-flash-10.1.85.3
 
 # Masked old packages that had old ${PV} numbering scheme
 >=app-i18n/ibus-mozc-29
