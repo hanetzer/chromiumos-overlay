@@ -55,6 +55,7 @@ IUSE_TESTS="
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
+	+tests_desktopui_ImeTest
 	+tests_desktopui_KillRestart
 	+tests_desktopui_ScreenLocker
 	+tests_desktopui_SpeechSynthesisSemiAuto
