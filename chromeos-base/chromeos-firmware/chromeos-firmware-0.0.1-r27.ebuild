@@ -15,7 +15,6 @@ KEYWORDS="arm x86"
 IUSE=""
 
 DEPEND="x86? (
-    chromeos-base/vboot_reference
     sys-apps/flashrom
     sys-apps/iotools
     sys-apps/mosys )"
@@ -107,10 +106,4 @@ src_install() {
     newins $FILESDIR/dot.force_update_firmware .force_update_firmware \
       || die "cannot create tag for forced firmware update"
   fi
-
-  # Install saft code
-  dstdir="/usr/sbin/${CROS_WORKON_LOCALNAME}/saft"
-  dodir "${dstdir}"
-  exeinto "${dstdir}"
-  doexe saft/*.{py,sh}
 }
