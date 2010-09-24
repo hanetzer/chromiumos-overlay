@@ -45,10 +45,18 @@ src_install() {
 		for prog in ${progs}; do
 			dobin "${S}"/build/"${prog}"
 		done
+
+		local keys_to_install='recovery_kernel_data_key.vbprivk'
+		keys_to_install+=' firmware.keyblock '
+		keys_to_install+=' firmware_data_key.vbprivk'
+		keys_to_install+=' kernel_subkey.vbpubk'
+
 		dst_dir='/usr/sbin/firmware/saft'
 		dodir "${dst_dir}"
 		insinto "${dst_dir}"
-		doins tests/devkeys/recovery_kernel_data_key.vbprivk
+		for key in ${keys_to_install}; do
+		    doins "tests/devkeys/${key}"
+		done
 	else
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
