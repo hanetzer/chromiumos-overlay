@@ -1,0 +1,102 @@
+# Copyright 1999-2010 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
+
+# (Crosstool-based) ChromeOS toolchain related variables.
+COST_VERSION="v1"
+COST_CL="41723"
+COST_SUFFIX="cos_gg_${COST_VERSION}_${COST_CL}"
+COST_PKG_VERSION="gcc-4.4.3_${COST_SUFFIX}"
+EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
+ --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
+
+PATCH_VER="1.2"
+UCLIBC_VER="1.0"
+
+ETYPE="gcc-compiler"
+GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
+
+# Hardened gcc 4 stuff
+PIE_VER="0.4.5"
+SPECS_VER="0.2.0"
+# arch/libc configurations known to be stable with {PIE,SSP}-by-default
+PIE_GLIBC_STABLE="x86 amd64 ppc ppc64 arm ia64"
+PIE_UCLIBC_STABLE="x86 amd64 arm ppc ppc64"
+SSP_STABLE="amd64 x86 amd64 ppc ppc64 arm"
+# uclibc need tls and nptl support for SSP support
+SSP_UCLIBC_STABLE=""
+#end Hardened stuff
+
+inherit toolchain_crosstool
+
+DESCRIPTION="The GNU Compiler Collection.  Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14."
+
+LICENSE="GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2"
+
+RDEPEND=">=sys-libs/zlib-1.1.4
+	>=sys-devel/gcc-config-1.4
+	virtual/libiconv
+	>=dev-libs/gmp-4.2.1
+	>=dev-libs/mpfr-2.3.2
+	graphite? (
+		>=dev-libs/ppl-0.10
+		>=dev-libs/cloog-ppl-0.15.4
+	)
+	!build? (
+		gcj? (
+			gtk? (
+				x11-libs/libXt
+				x11-libs/libX11
+				x11-libs/libXtst
+				x11-proto/xproto
+				x11-proto/xextproto
+				>=x11-libs/gtk+-2.2
+				x11-libs/pango
+			)
+			>=media-libs/libart_lgpl-2.1
+			app-arch/zip
+			app-arch/unzip
+		)
+		>=sys-libs/ncurses-5.2-r2
+		nls? ( sys-devel/gettext )
+	)"
+DEPEND="${RDEPEND}
+	test? ( >=dev-util/dejagnu-1.4.4 >=sys-devel/autogen-5.5.4 )
+	>=sys-apps/texinfo-4.8
+	>=sys-devel/bison-1.875
+	elibc_glibc? ( >=sys-libs/glibc-2.8 )
+	amd64? ( multilib? ( gcj? ( app-emulation/emul-linux-x86-xlibs ) ) )
+	ppc? ( >=${CATEGORY}/binutils-2.17 )
+	ppc64? ( >=${CATEGORY}/binutils-2.17 )
+	>=${CATEGORY}/binutils-2.15.94"
+PDEPEND=">=sys-devel/gcc-config-1.4"
+if [[ ${CATEGORY} != cross-* ]] ; then
+	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
+fi
+
+src_unpack() {
+	mv ${DISTDIR}/${COST_PKG_VERSION}.tar.bz2 ${DISTDIR}/${P}.tar.bz2
+	gcc_src_unpack
+
+	use vanilla && return 0
+
+        # TODO (asharif): Move to patches tarball.
+        if [[ ${CTARGET} == *86* ]] ; then
+          epatch "${FILESDIR}"/10_all_ix86.patch
+        fi
+
+	sed -i 's/use_fixproto=yes/:/' gcc/config.gcc #PR33200
+
+	[[ ${CHOST} == ${CTARGET} ]] && epatch "${FILESDIR}"/gcc-spec-env.patch
+
+	[[ ${CTARGET} == *-softfloat-* ]] && epatch "${FILESDIR}"/4.4.0/gcc-4.4.0-softfloat.patch
+}
+
+pkg_setup() {
+	gcc_pkg_setup
+
+	if use graphite ; then
+		ewarn "Graphite support is still experimental and unstable."
+		ewarn "Any bugs resulting from the use of Graphite will not be fixed."
+	fi
+}
