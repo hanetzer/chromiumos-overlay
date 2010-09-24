@@ -106,6 +106,7 @@ IUSE_TESTS="
 	+tests_desktopui_BrowserTest
 	+tests_desktopui_SyncIntegrationTests
 	+tests_desktopui_UITest
+	+tests_desktopui_PyAutoFunctionalTests
 	"
 IUSE="${IUSE} +autotest ${IUSE_TESTS}"
 
