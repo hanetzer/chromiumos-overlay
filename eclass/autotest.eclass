@@ -242,7 +242,12 @@ function autotest_src_prepare() {
 }
 
 function autotest_src_compile() {
-	are_we_used || return 0
+	if ! are_we_used; then
+		ewarn "***************************************************************"
+		ewarn "* Not building any tests, because the requested list is empty *"
+		ewarn "***************************************************************"
+		return 0
+	fi
 	einfo "Compiling tests"
 
 	pushd "${AUTOTEST_WORKDIR}" 1> /dev/null
