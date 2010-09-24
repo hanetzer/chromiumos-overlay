@@ -255,6 +255,12 @@ function autotest_src_compile() {
 		graphics_backend=OPENGL
 	fi
 
+	# HACK: Some of the autotests depend on SYSROOT being defined, and die
+	# a gruesome death if it isn't. But SYSROOT does not need to exist, for
+	# example on the host, it doesn't. Let's define a compatible variable
+	# here in case we have none.
+	export SYSROOT=${SYSROOT:-"/"}
+
 	# This only prints the tests that have the associated .py
 	# (and therefore a setup function)
 	local prebuild_test_dirs="
