@@ -97,6 +97,7 @@ src_configure() {
 	echo "CONFIG_PKCS12=y" >> ${CFGFILE}
 	echo "CONFIG_PEERKEY=y" >> ${CFGFILE}
 	echo "CONFIG_BGSCAN_SIMPLE=y" >> ${CFGFILE}
+	echo "CONFIG_BGSCAN_LEARN=y" >> ${CFGFILE}
 
 	if use dbus ; then
 		echo "CONFIG_CTRL_IFACE_DBUS=y" >> ${CFGFILE}
