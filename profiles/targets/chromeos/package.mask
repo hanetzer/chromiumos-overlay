@@ -44,6 +44,9 @@
 # TODO: The dbus-python-0.83.1 ebuild puts stuff in /usr/lib64.
 >dev-python/dbus-python-0.83.0-r1
 
+# libpng security vulnerability fix
+<media-libs/libpng-1.2.44
+
 # The following are here because we override the ebuilds from the
 # portage tree for a reason other than adding an ebuild from upstream
 # that wasn't yet in our portage tree. We want to keep using our
@@ -68,14 +71,14 @@
 # Masked all upstream ebuilds, unupstreamable work in local copy
 >=net-misc/dhcpcd-5.1.5
 
-# libpng security vulnerability fix
-<media-libs/libpng-1.2.44
-
 # Masked all upstream ebuilds
 >=net-wireless/wpa_supplicant-0.7.3
 
-# Masked all upstream ebuilds
+# Avoid using old known-vulnerable versions.  Upstream also installs the
+# plugin to a different place than where the chromeos-chrome ebuild expects
+# to find it, so ensure that we don't start using newer upstream versions.
 <www-plugins/adobe-flash-10.1.85.3
+>www-plugins/adobe-flash-10.1.85.3
 
 # Masked old packages that had old ${PV} numbering scheme
 >=app-i18n/ibus-mozc-29
