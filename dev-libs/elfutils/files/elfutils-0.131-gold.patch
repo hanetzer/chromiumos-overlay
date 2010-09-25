@@ -1,0 +1,22 @@
+--- libelf/Makefile.am
++++ libelf/Makefile.am
+@@ -109,7 +109,7 @@
+ libelf.so: libelf_pic.a libelf.map
+ 	$(LINK) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
+ 		-Wl,--version-script,$(srcdir)/libelf.map,--no-undefined \
+-		-Wl,--soname,$@.$(VERSION),-z,-defs,-z,relro
++		-Wl,--soname,$@.$(VERSION),-z,defs,-z,relro
+ 	if readelf -d $@ | fgrep -q TEXTREL; then exit 1; fi
+ 	ln -fs $@ $@.$(VERSION)
+ 
+--- libelf/Makefile.in
++++ libelf/Makefile.in
+@@ -753,7 +753,7 @@
+ @MUDFLAP_FALSE@libelf.so: libelf_pic.a libelf.map
+ @MUDFLAP_FALSE@	$(LINK) -shared -o $@ -Wl,--whole-archive,$<,--no-whole-archive \
+ @MUDFLAP_FALSE@		-Wl,--version-script,$(srcdir)/libelf.map,--no-undefined \
+-@MUDFLAP_FALSE@		-Wl,--soname,$@.$(VERSION),-z,-defs,-z,relro
++@MUDFLAP_FALSE@		-Wl,--soname,$@.$(VERSION),-z,defs,-z,relro
+ @MUDFLAP_FALSE@	if readelf -d $@ | fgrep -q TEXTREL; then exit 1; fi
+ @MUDFLAP_FALSE@	ln -fs $@ $@.$(VERSION)
+ 

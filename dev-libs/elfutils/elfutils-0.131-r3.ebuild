@@ -30,6 +30,7 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-gnu-inline.patch #204610
 	epatch "${FILESDIR}"/${PN}-0.118-PaX-support.patch
+	epatch "${FILESDIR}"/${P}-gold.patch
 	find . -name Makefile.in -print0 | xargs -0 sed -i -e 's:-W\(error\|extra\)::g'
 	sed -i 's:\<off64_t\>:__off64_t:g' libelf/libelf.h || die #204502
 }
