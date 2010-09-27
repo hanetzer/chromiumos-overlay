@@ -1,0 +1,26 @@
+diff --git a/sandbox-1.6/configure b/sandbox-1.6.patched/configure
+index 3859971..784b03d 100755
+--- a/sandbox-1.6/configure
++++ b/sandbox-1.6.patched/configure
+@@ -15883,7 +15883,7 @@ try_link() {
+ }
+ LIBC_PATH=$(
+ if try_link -Wl,--verbose ; then
+-	$AWK '/attempt to open/ { if (($4 ~ /\/libc\.so/) && ($5 == "succeeded")) LIBC = $4; }; END {print LIBC}' libctest.log
++	$AWK '/ttempt to open/ { if (($(NF-1) ~ /\/libc\.so/) && ($NF == "succeeded")) LIBC = $(NF-1); }; END {print LIBC}' libctest.log
+ elif try_link -Wl,-m ; then
+ 	set -- `$EGREP -o '/[^ ]*/libc.so' libctest.log`
+ 	echo $1
+diff --git a/sandbox-1.6/configure.ac b/sandbox-1.6.patched/configure.ac
+index 8597dff..45e0e5e 100644
+--- a/sandbox-1.6/configure.ac
++++ b/sandbox-1.6.patched/configure.ac
+@@ -258,7 +258,7 @@ try_link() {
+ }
+ LIBC_PATH=$(
+ if try_link -Wl,--verbose ; then
+-	$AWK '/attempt to open/ { if (($4 ~ /\/libc\.so/) && ($5 == "succeeded")) LIBC = $4; }; END {print LIBC}' libctest.log
++	$AWK '/ttempt to open/ { if (($(NF-1) ~ /\/libc\.so/) && ($NF == "succeeded")) LIBC = $(NF-1); }; END {print LIBC}' libctest.log
+ elif try_link -Wl,-m ; then
+ 	set -- `$EGREP -o '/[[^ ]]*/libc.so' libctest.log`
+ 	echo $1
