@@ -28,17 +28,20 @@ RDEPEND=">=app-i18n/ibus-1.1.0
 	nls? ( virtual/libintl )"
 
 DEPEND="${RDEPEND}
-	=dev-libs/boost-1.42.0
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
 src_prepare() {
+  epatch "${FILESDIR}"/0001-Add-option-disable-boost-to-support-build-without-bo.patch
 	epatch "${FILESDIR}"/ibus-pinyin-cros.patch
-	append-flags "-I${SYSROOT}/usr/include/boost-1_42"
+ 
+  # The no-boost patch updates configure.in, needs execute autoreconf to generate
+  # configure again.
+  autoreconf
 }
 
 src_configure() {
-	econf $(use_enable nls) || die
+	econf $(use_enable nls) --disable-boost || die
 }
 
 src_compile() {

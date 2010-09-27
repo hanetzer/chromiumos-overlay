@@ -1,0 +1,594 @@
+From a0b31c7a250cfa7af1b52056a1d1ada81b22a455 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Mon, 27 Sep 2010 14:09:07 +0800
+Subject: [PATCH] Add option --disable-boost to support build without boost
+
+When build without boost, ibus-pinyin will use smart pointer
+from c++0x and use the signal templates embedded instead of
+boost::signals2.
+
+BUG=chromium-os:5055
+TEST=manual
+
+Review URL: http://codereview.appspot.com/2205044
+---
+ configure.ac               |   34 ++++++++---------
+ src/Makefile.am            |   24 ++++++------
+ src/PYBopomofoEngine.cc    |   24 ++++++------
+ src/PYConfig.cc            |    4 +-
+ src/PYConfig.h             |    6 +-
+ src/PYDatabase.cc          |    2 +-
+ src/PYDatabase.h           |    7 +--
+ src/PYEditor.h             |    3 +-
+ src/PYEngine.cc            |    1 +
+ src/PYExtEditor.cc         |    2 +-
+ src/PYPhraseEditor.h       |    4 +-
+ src/PYPinyinEngine.cc      |   24 ++++++------
+ src/PYPunctEditor.cc       |    1 +
+ src/PYPunctEditor.h        |    2 +
+ src/PYSignal.h             |   90 +++++++++++++++++++++++++++++++++++--------
+ src/PYSpecialPhraseTable.h |    4 +-
+ src/PYUtil.h               |   17 ++++++++
+ 17 files changed, 161 insertions(+), 88 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 3140953..ccb0ef4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -88,24 +88,6 @@ AC_CHECK_FUNCS([uuid_create], [], [
+ 
+ AM_CONDITIONAL(HAVE_LIBUUID, test x"$HAVE_LIBUUID" = x"yes")
+ 
+-# check boost
+-BOOST_REQUIRE([1.39])
+-BOOST_FIND_HEADER([boost/signals2.hpp])
+-# BOOST_FIND_HEADER([boost/signals2.hpp], [
+-#     HAVE_BOOST_SIGNALS2=no
+-#     BOOST_SIGNALS([s])
+-# ], [
+-#     AC_DEFINE(HAVE_BOOST_SIGNALS2_HPP, 1, [Define if found boost.signals2])
+-#     HAVE_BOOST_SGINALS2=yes
+-# ])
+-# 
+-# AM_CONDITIONAL(HAVE_BOOST_SIGNALS2, test x"$HAVE_BOOST_SIGNALS2" = x"yes")
+-# 
+-# check sigc
+-# PKG_CHECK_MODULES(SIGC, [
+-#     sigc++-2.0
+-# ])
+-
+ # check env
+ AC_PATH_PROG(ENV, env)
+ AC_SUBST(ENV)
+@@ -113,6 +95,21 @@ AC_SUBST(ENV)
+ # check python
+ AM_PATH_PYTHON([2.5])
+ 
++# --disble-boost
++AC_ARG_ENABLE(boost,
++    AC_HELP_STRING([--disable-boost],
++        [Do not use boost and use stdc++0x to replace boost.]),
++        [enable_boost=$enableval],
++        [enable_boost=yes]
++)
++if test x"$enable_boost" = x"yes"; then
++    # check boost
++    BOOST_REQUIRE([1.39])
++    BOOST_FIND_HEADER([boost/bind.hpp])
++    BOOST_FIND_HEADER([boost/signals2.hpp])
++fi
++AM_CONDITIONAL(HAVE_BOOST, test x"$enable_boost" = x"yes")
++
+ # --enable-opencc
+ AC_ARG_ENABLE(opencc,
+     AC_HELP_STRING([--enable-opencc],
+@@ -203,6 +200,7 @@ AC_MSG_RESULT([
+ Build options:
+     Version                     $VERSION
+     Install prefix              $prefix
++    Use boost                   $enable_boost
+     Use opencc                  $enable_opencc
+     Build database android      $enable_db_android
+     Build database open-phrase  $enable_db_open_phrase
+diff --git a/src/Makefile.am b/src/Makefile.am
+index c18aa07..b215c78 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -117,16 +117,27 @@ ibus_engine_pinyin_SOURCES = \
+ 	$(ibus_engine_pinyin_built_c_sources) \
+ 	$(ibus_engine_pinyin_built_h_sources) \
+ 	$(NULL)
++
++
+ ibus_engine_pinyin_CXXFLAGS = \
+ 	@IBUS_CFLAGS@ \
+ 	@SQLITE_CFLAGS@ \
+-	@BOOST_CPPFLAGS@ \
+ 	@OPENCC_CFLAGS@ \
+ 	-DGETTEXT_PACKAGE=\"@GETTEXT_PACKAGE@\" \
+ 	-DPKGDATADIR=\"$(pkgdatadir)\" \
+ 	-DLIBEXECDIR=\"$(libexecdir)\" \
+ 	$(NULL)
+ 
++if HAVE_BOOST
++ibus_engine_pinyin_CXXFLAGS += \
++	@BOOST_CPPFLAGS@ \
++	$(NULL)
++else
++ibus_engine_pinyin_CXXFLAGS += \
++	-std=c++0x \
++	$(NULL)
++endif
++
+ ibus_engine_pinyin_LDADD = \
+ 	@IBUS_LIBS@ \
+ 	@SQLITE_LIBS@ \
+@@ -154,17 +165,6 @@ if IBUS_BUILD_LUA_EXTENSION
+ 	$(NULL)
+ endif
+ 
+-
+-# if HAVE_BOOST_SIGNALS2
+-# # do nothing
+-# else
+-# ibus_engine_pinyin_CXXFLAGS += $(LIBUUID_CFLAGS)
+-# ibus_engine_pinyin_LDADD += \
+-# 	$(BOOST_SIGNALS_LDFLAGS) \
+-# 	$(BOOST_SIGNALS_LIBS) \
+-# 	$(NULL)
+-# endif
+-
+ BUILT_SOURCES = \
+ 	$(ibus_engine_built_c_sources) \
+ 	$(ibus_engine_built_h_sources) \
+diff --git a/src/PYBopomofoEngine.cc b/src/PYBopomofoEngine.cc
+index 2e7411e..a46f229 100644
+--- a/src/PYBopomofoEngine.cc
++++ b/src/PYBopomofoEngine.cc
+@@ -53,7 +53,7 @@ BopomofoEngine::BopomofoEngine (IBusEngine *engine)
+     m_editors[MODE_EXTENSION].reset (new Editor (m_props, BopomofoConfig::instance ()));
+ #endif
+ 
+-    m_props.signalUpdateProperty ().connect (bind (&BopomofoEngine::updateProperty, this, _1));
++    m_props.signalUpdateProperty ().connect (std::bind (&BopomofoEngine::updateProperty, this, _1));
+ 
+     for (i = MODE_INIT; i < MODE_LAST; i++) {
+         connectEditorSignals (m_editors[i]);
+@@ -220,30 +220,30 @@ void
+ BopomofoEngine::connectEditorSignals (EditorPtr editor)
+ {
+     editor->signalCommitText ().connect (
+-        bind (&BopomofoEngine::commitText, this, _1));
++        std::bind (&BopomofoEngine::commitText, this, _1));
+ 
+     editor->signalUpdatePreeditText ().connect (
+-        bind (&BopomofoEngine::updatePreeditText, this, _1, _2, _3));
++        std::bind (&BopomofoEngine::updatePreeditText, this, _1, _2, _3));
+     editor->signalShowPreeditText ().connect (
+-        bind (&BopomofoEngine::showPreeditText, this));
++        std::bind (&BopomofoEngine::showPreeditText, this));
+     editor->signalHidePreeditText ().connect (
+-        bind (&BopomofoEngine::hidePreeditText, this));
++        std::bind (&BopomofoEngine::hidePreeditText, this));
+ 
+     editor->signalUpdateAuxiliaryText ().connect (
+-        bind (&BopomofoEngine::updateAuxiliaryText, this, _1, _2));
++        std::bind (&BopomofoEngine::updateAuxiliaryText, this, _1, _2));
+     editor->signalShowAuxiliaryText ().connect (
+-        bind (&BopomofoEngine::showAuxiliaryText, this));
++        std::bind (&BopomofoEngine::showAuxiliaryText, this));
+     editor->signalHideAuxiliaryText ().connect (
+-        bind (&BopomofoEngine::hideAuxiliaryText, this));
++        std::bind (&BopomofoEngine::hideAuxiliaryText, this));
+ 
+     editor->signalUpdateLookupTable ().connect (
+-        bind (&BopomofoEngine::updateLookupTable, this, _1, _2));
++        std::bind (&BopomofoEngine::updateLookupTable, this, _1, _2));
+     editor->signalUpdateLookupTableFast ().connect (
+-        bind (&BopomofoEngine::updateLookupTableFast, this, _1, _2));
++        std::bind (&BopomofoEngine::updateLookupTableFast, this, _1, _2));
+     editor->signalShowLookupTable ().connect (
+-        bind (&BopomofoEngine::showLookupTable, this));
++        std::bind (&BopomofoEngine::showLookupTable, this));
+     editor->signalHideLookupTable ().connect (
+-        bind (&BopomofoEngine::hideLookupTable, this));
++        std::bind (&BopomofoEngine::hideLookupTable, this));
+ }
+ 
+ };
+diff --git a/src/PYConfig.cc b/src/PYConfig.cc
+index 09bb44f..77d619d 100644
+--- a/src/PYConfig.cc
++++ b/src/PYConfig.cc
+@@ -48,8 +48,8 @@ const gchar * const CONFIG_GUIDE_KEY                 = "GuideKey";
+ const gchar * const CONFIG_AUXILIARY_SELECT_KEY_F    = "AuxiliarySelectKey_F";
+ const gchar * const CONFIG_AUXILIARY_SELECT_KEY_KP   = "AuxiliarySelectKey_KP";
+ 
+-boost::scoped_ptr<PinyinConfig> PinyinConfig::m_instance;
+-boost::scoped_ptr<BopomofoConfig> BopomofoConfig::m_instance;
++std::unique_ptr<PinyinConfig> PinyinConfig::m_instance;
++std::unique_ptr<BopomofoConfig> BopomofoConfig::m_instance;
+ 
+ Config::Config (Bus & bus, const std::string & name)
+     : Object (ibus_bus_get_config (bus)),
+diff --git a/src/PYConfig.h b/src/PYConfig.h
+index 9bbb503..6db9c83 100644
+--- a/src/PYConfig.h
++++ b/src/PYConfig.h
+@@ -22,8 +22,8 @@
+ #define __PY_CONFIG_H_
+ 
+ #include <string>
+-#include <boost/scoped_ptr.hpp>
+ #include <ibus.h>
++#include "PYUtil.h"
+ #include "PYObject.h"
+ 
+ namespace PY {
+@@ -118,7 +118,7 @@ protected:
+                                    const GValue  *value);
+ 
+ private:
+-    static boost::scoped_ptr<PinyinConfig> m_instance;
++    static std::unique_ptr<PinyinConfig> m_instance;
+ };
+ 
+ /* Bopomof Config */
+@@ -136,7 +136,7 @@ protected:
+                                    const GValue  *value);
+ 
+ private:
+-    static boost::scoped_ptr<BopomofoConfig> m_instance;
++    static std::unique_ptr<BopomofoConfig> m_instance;
+ };
+ 
+ };
+diff --git a/src/PYDatabase.cc b/src/PYDatabase.cc
+index 1fd3b86..f15e4c1 100644
+--- a/src/PYDatabase.cc
++++ b/src/PYDatabase.cc
+@@ -35,7 +35,7 @@ namespace PY {
+ 
+ #define DB_PREFETCH_LEN     (6)
+ 
+-boost::scoped_ptr<Database> Database::m_instance;
++std::unique_ptr<Database> Database::m_instance;
+ 
+ class Conditions : public std::vector<std::string> {
+ public:
+diff --git a/src/PYDatabase.h b/src/PYDatabase.h
+index ab90fcf..9d3ac8f 100644
+--- a/src/PYDatabase.h
++++ b/src/PYDatabase.h
+@@ -21,8 +21,7 @@
+ #ifndef __PY_DATABASE_H_
+ #define __PY_DATABASE_H_
+ 
+-#include <boost/shared_ptr.hpp>
+-#include <boost/scoped_ptr.hpp>
++#include "PYUtil.h"
+ #include "PYString.h"
+ #include "PYTypes.h"
+ #include "PYPhraseArray.h"
+@@ -35,7 +34,7 @@ class PinyinArray;
+ struct Phrase;
+ 
+ class SQLStmt;
+-typedef boost::shared_ptr<SQLStmt> SQLStmtPtr;
++typedef std::shared_ptr<SQLStmt> SQLStmtPtr;
+ 
+ class Database;
+ 
+@@ -92,7 +91,7 @@ private:
+     String m_buffer;     /* temp buffer */
+ 
+ private:
+-    static boost::scoped_ptr<Database> m_instance;
++    static std::unique_ptr<Database> m_instance;
+ };
+ 
+ 
+diff --git a/src/PYEditor.h b/src/PYEditor.h
+index e520d51..cee29fa 100644
+--- a/src/PYEditor.h
++++ b/src/PYEditor.h
+@@ -22,7 +22,6 @@
+ #define __PY_EDITOR_H_
+ 
+ #include <glib.h>
+-#include <boost/shared_ptr.hpp>
+ #include "PYSignal.h"
+ #include "PYString.h"
+ #include "PYUtil.h"
+@@ -35,7 +34,7 @@ class PinyinProperties;
+ class Config;
+ 
+ class Editor;
+-typedef boost::shared_ptr<Editor> EditorPtr;
++typedef std::shared_ptr<Editor> EditorPtr;
+ 
+ class Editor {
+ public:
+diff --git a/src/PYEngine.cc b/src/PYEngine.cc
+index 1797e24..7987146 100644
+--- a/src/PYEngine.cc
++++ b/src/PYEngine.cc
+@@ -19,6 +19,7 @@
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
++#include <cstring>
+ #include "PYEngine.h"
+ #include "PYPinyinEngine.h"
+ #include "PYBopomofoEngine.h"
+diff --git a/src/PYExtEditor.cc b/src/PYExtEditor.cc
+index d81d9b8..03a903a 100644
+--- a/src/PYExtEditor.cc
++++ b/src/PYExtEditor.cc
+@@ -18,7 +18,7 @@
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+-
++#include <cstring>
+ #include <string>
+ 
+ extern "C" {
+diff --git a/src/PYPhraseEditor.h b/src/PYPhraseEditor.h
+index 87758c0..2cf0513 100644
+--- a/src/PYPhraseEditor.h
++++ b/src/PYPhraseEditor.h
+@@ -21,7 +21,7 @@
+ #ifndef __PY_PHRASE_EDITOR_H_
+ #define __PY_PHRASE_EDITOR_H_
+ 
+-#include <boost/shared_ptr.hpp>
++#include "PYUtil.h"
+ #include "PYString.h"
+ #include "PYPhraseArray.h"
+ #include "PYPinyinArray.h"
+@@ -125,7 +125,7 @@ private:
+     PinyinArray m_pinyin;
+     guint m_cursor;
+     PinyinProperties & m_props;
+-    boost::shared_ptr<Query> m_query;
++    std::shared_ptr<Query> m_query;
+     Config    & m_config;
+ };
+ 
+diff --git a/src/PYPinyinEngine.cc b/src/PYPinyinEngine.cc
+index 1625bc5..9f7c167 100644
+--- a/src/PYPinyinEngine.cc
++++ b/src/PYPinyinEngine.cc
+@@ -55,7 +55,7 @@ PinyinEngine::PinyinEngine (IBusEngine *engine)
+     m_editors[MODE_EXTENSION].reset (new Editor (m_props, PinyinConfig::instance ()));
+ #endif
+ 
+-    m_props.signalUpdateProperty ().connect (bind (&PinyinEngine::updateProperty, this, _1));
++    m_props.signalUpdateProperty ().connect (std::bind (&PinyinEngine::updateProperty, this, _1));
+ 
+     for (i = MODE_INIT; i < MODE_LAST; i++) {
+         connectEditorSignals (m_editors[i]);
+@@ -264,30 +264,30 @@ void
+ PinyinEngine::connectEditorSignals (EditorPtr editor)
+ {
+     editor->signalCommitText ().connect (
+-        bind (&PinyinEngine::commitText, this, _1));
++        std::bind (&PinyinEngine::commitText, this, _1));
+ 
+     editor->signalUpdatePreeditText ().connect (
+-        bind (&PinyinEngine::updatePreeditText, this, _1, _2, _3));
++        std::bind (&PinyinEngine::updatePreeditText, this, _1, _2, _3));
+     editor->signalShowPreeditText ().connect (
+-        bind (&PinyinEngine::showPreeditText, this));
++        std::bind (&PinyinEngine::showPreeditText, this));
+     editor->signalHidePreeditText ().connect (
+-        bind (&PinyinEngine::hidePreeditText, this));
++        std::bind (&PinyinEngine::hidePreeditText, this));
+ 
+     editor->signalUpdateAuxiliaryText ().connect (
+-        bind (&PinyinEngine::updateAuxiliaryText, this, _1, _2));
++        std::bind (&PinyinEngine::updateAuxiliaryText, this, _1, _2));
+     editor->signalShowAuxiliaryText ().connect (
+-        bind (&PinyinEngine::showAuxiliaryText, this));
++        std::bind (&PinyinEngine::showAuxiliaryText, this));
+     editor->signalHideAuxiliaryText ().connect (
+-        bind (&PinyinEngine::hideAuxiliaryText, this));
++        std::bind (&PinyinEngine::hideAuxiliaryText, this));
+ 
+     editor->signalUpdateLookupTable ().connect (
+-        bind (&PinyinEngine::updateLookupTable, this, _1, _2));
++        std::bind (&PinyinEngine::updateLookupTable, this, _1, _2));
+     editor->signalUpdateLookupTableFast ().connect (
+-        bind (&PinyinEngine::updateLookupTableFast, this, _1, _2));
++        std::bind (&PinyinEngine::updateLookupTableFast, this, _1, _2));
+     editor->signalShowLookupTable ().connect (
+-        bind (&PinyinEngine::showLookupTable, this));
++        std::bind (&PinyinEngine::showLookupTable, this));
+     editor->signalHideLookupTable ().connect (
+-        bind (&PinyinEngine::hideLookupTable, this));
++        std::bind (&PinyinEngine::hideLookupTable, this));
+ }
+ 
+ };
+diff --git a/src/PYPunctEditor.cc b/src/PYPunctEditor.cc
+index 091d639..302c6e4 100644
+--- a/src/PYPunctEditor.cc
++++ b/src/PYPunctEditor.cc
+@@ -19,6 +19,7 @@
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
++#include <algorithm>
+ #include "PYConfig.h"
+ #include "PYPunctEditor.h"
+ 
+diff --git a/src/PYPunctEditor.h b/src/PYPunctEditor.h
+index 0035813..98c81cd 100644
+--- a/src/PYPunctEditor.h
++++ b/src/PYPunctEditor.h
+@@ -22,6 +22,8 @@
+ #ifndef __PY_PUNCT_EDITOR_
+ #define __PY_PUNCT_EDITOR_
+ 
++#include <vector>
++
+ #include "PYLookupTable.h"
+ #include "PYEditor.h"
+ 
+diff --git a/src/PYSignal.h b/src/PYSignal.h
+index 6721493..574af98 100644
+--- a/src/PYSignal.h
++++ b/src/PYSignal.h
+@@ -26,28 +26,84 @@
+ #  include <config.h>
+ #endif
+ 
+-#ifdef HAVE_BOOST_SIGNALS2_HPP
+-#  include <boost/signals2.hpp>
+-#elif HAVE_BOOST_SIGNALS_HPP
+-#  include <boost/signals.hpp>
+-#else
+-#  error "Can not find boost.signals2 or boost.signal"
+-#endif
++#ifdef __GXX_EXPERIMENTAL_CXX0X__
+ 
+-#include <boost/bind.hpp>
++#  include <functional>
+ 
+ namespace PY {
+ 
+-using boost::bind;
++using namespace std::placeholders;
+ 
+-#if HAVE_BOOST_SIGNALS2_HPP
+-namespace bs2 = boost::signals2;
+-template <typename Signature>
+-struct signal : public bs2::signal_type <Signature, bs2::keywords::mutex_type<bs2::dummy_mutex> >::type { };
+-#elif HAVE_BOOST_SIGNALS_HPP
+-using boost::signal;
+-#endif
++// implement signal templates
++template<typename R  = void,
++         typename T1 = void,
++         typename T2 = void,
++         typename T3 = void>
++struct signal
++{
++};
+ 
++template<typename R, typename T1, typename T2, typename T3>
++struct signal< R(), T1, T2, T3>
++{
++    typedef std::function<R()> func_type;
++    void connect (func_type f) { m_func = f; }
++    R operator ()() const { m_func (); }
++private:
++    func_type m_func;
+ };
+ 
+-#endif
++template<typename R, typename T1, typename T2, typename T3>
++struct signal< R(T1), T2, T3>
++{
++    typedef std::function<R(T1)> func_type;
++    void connect (func_type f) { m_func = f; }
++    R operator ()(T1 a1) const { return m_func (a1); }
++private:
++    func_type m_func;
++};
++
++template<typename R, typename T1, typename T2, typename T3>
++struct signal< R(T1, T2), T3>
++{
++    typedef std::function<R(T1, T2)> func_type;
++    void connect (func_type f) { m_func = f; }
++    R operator ()(T1 a1, T2 a2) const { return m_func (a1, a2); }
++private:
++    func_type m_func;
++};
++
++template<typename R, typename T1, typename T2, typename T3>
++struct signal< R(T1, T2, T3)>
++{
++    typedef std::function<R(T1, T2, T3)> func_type;
++    void connect (func_type f) {m_func = f; }
++    R operator ()(T1 a1, T2 a2, T3 a3) const { return m_func (a1, a2, a3); }
++private:
++    func_type m_func;
++};
++
++};
++
++#else // __GXX_EXPERIMENTAL_CXX0X__
++
++#  include <boost/signals2.hpp>
++#  include <boost/bind.hpp>
++
++namespace std {
++    // import boost::bind into std namespace
++    using boost::bind;
++};
++
++namespace PY {
++    // use boost::signal2
++    namespace bs2 = boost::signals2;
++    template <typename Signature>
++    struct signal : public bs2::signal_type
++        <Signature, bs2::keywords::mutex_type<bs2::dummy_mutex> >::type { };
++
++};
++
++#endif // __GXX_EXPERIMENTAL_CXX0X__
++#endif // __PY_SIGNAL_H_
++
+diff --git a/src/PYSpecialPhraseTable.h b/src/PYSpecialPhraseTable.h
+index ff920b7..a246152 100644
+--- a/src/PYSpecialPhraseTable.h
++++ b/src/PYSpecialPhraseTable.h
+@@ -25,12 +25,12 @@
+ #include <string>
+ #include <vector>
+ #include <glib.h>
+-#include <boost/shared_ptr.hpp>
++#include "PYUtil.h"
+ 
+ namespace PY {
+ 
+ class SpecialPhrase;
+-typedef boost::shared_ptr<SpecialPhrase> SpecialPhrasePtr;
++typedef std::shared_ptr<SpecialPhrase> SpecialPhrasePtr;
+ 
+ class SpecialPhraseTable {
+ private:
+diff --git a/src/PYUtil.h b/src/PYUtil.h
+index 1e22089..cb5f51b 100644
+--- a/src/PYUtil.h
++++ b/src/PYUtil.h
+@@ -35,6 +35,23 @@
+ #include <cstdlib>
+ #include <string>
+ 
++#ifdef __GXX_EXPERIMENTAL_CXX0X__
++#  include <memory>
++#else
++#  include <boost/shared_ptr.hpp>
++#  include <boost/scoped_ptr.hpp>
++
++namespace std {
++    // import boost::shared_ptr to std namespace
++    using boost::shared_ptr;
++    // import boost::scoped_ptr to std namespace, and rename to unique_ptr
++    // XXX: the unique_ptr can transfer the pointer ownership,
++    //      but scoped_ptr cannot.
++    template<typename T> class unique_ptr : public boost::scoped_ptr<T> {};
++};
++
++#endif
++
+ #include <ibus.h>
+ 
+ namespace PY {
+-- 
+1.7.1
+
