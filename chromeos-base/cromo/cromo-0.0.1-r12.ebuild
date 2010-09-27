@@ -8,6 +8,7 @@ inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chromium OS modem manager"
 HOMEPAGE="http://src.chromium.org"
+IUSE="install_tests"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
@@ -20,16 +21,20 @@ RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
 	dev-cpp/gflags
-   dev-cpp/glog"
+	dev-cpp/glog
+	install_tests? ( dev-cpp/gtest )"
+
 DEPEND="${RDEPEND}
 	net-misc/modemmanager"
+
+use install_tests && MAKE_FLAGS="INSTALL_TESTS=1"
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
+	emake ${MAKE_FLAGS} PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
 }
 
 src_install() {
-	emake DESTDIR=${D} install || die "Install failed"
+	emake ${MAKE_FLAGS} DESTDIR=${D} install || die "Install failed"
 }
