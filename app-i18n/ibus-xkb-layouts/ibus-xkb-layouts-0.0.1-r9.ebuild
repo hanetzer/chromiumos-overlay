@@ -3,6 +3,7 @@
 
 EAPI="2"
 CROS_WORKON_COMMIT="cfcbfc5f4c21ccd99ee51002281f9386b0764f62"
+
 inherit cros-workon
 
 DESCRIPTION="The xkb-layouts engine IMEngine for IBus Framework"
@@ -21,10 +22,16 @@ DEPEND="${RDEPEND}
 
 CROS_WORKON_SUBDIR="files"
 
+XKB_RULES="/usr/share/X11/xkb/rules/xorg.xml"
+
 src_prepare() {
 	NOCONFIGURE=1 ./autogen.sh
 	# Build ibus-engine-xkb-layouts for the host platform.
-	(env -i ./configure $CONFIGURE_OPTIONS && env -i make) || die
+	# Use xorg.xml in SYSROOT/usr rather than /usr here for code
+	# generation (i.e. one in /usr can be different from the one in
+	# SYSROOT/usr). See also comments in src_configure.
+	(env -i ./configure $CONFIGURE_OPTIONS \
+	 --with-xkb-rules-xml="${SYSROOT}/${XKB_RULES}" && env -i make) || die
 	# Obtain the XML output by running the binary.
 	src/ibus-engine-xkb-layouts --xml > output.xml || die
 	# Make sure that at least one engine is present.
@@ -35,7 +42,9 @@ src_prepare() {
 
 src_configure() {
 	# Since X for Chrome OS does not use evdev, we use xorg.xml.
-	econf --with-xkb-rules-xml=/usr/share/X11/xkb/rules/xorg.xml || die
+	# Use xorg.xml in /usr as the path will be embedded into
+	# ibus-xkb-layouts production binary.
+	econf --with-xkb-rules-xml="${XKB_RULES}" || die
 }
 
 src_compile() {
