@@ -39,7 +39,7 @@
 >sys-power/powertop-1.9-r1
 
 # TODO: Fails with message about not knowing what kernel to use.
->sys-fs/fuse-2.7.4-r2
+>sys-fs/fuse-2.7.4
 
 # TODO: The dbus-python-0.83.1 ebuild puts stuff in /usr/lib64.
 >dev-python/dbus-python-0.83.0-r1
