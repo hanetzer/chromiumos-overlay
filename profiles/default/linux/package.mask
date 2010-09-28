@@ -21,3 +21,7 @@
 
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44
+
+# Custom patch submitted upstream: 
+# http://sourceforge.net/mailarchive/message.php?msg_name=AANLkTi%3DKjY0nZvnb4ncc-BdhUGV8WmQ%3Dc2h-foUXSzRi%40mail.gmail.com
+>sys-fs/fuse-2.7.4-r2

@@ -41,6 +41,7 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 	epatch "${FILESDIR}"/fuse-fix-lazy-binding.patch
+	epatch "${FILESDIR}"/${P}-gold.patch
 	elibtoolize
 }
 
