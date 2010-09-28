@@ -1,0 +1,32 @@
+Use "nob" (Bokmal) and "nno" (Nynorsk) instead of "nor" (Norwegian).
+
+Per wikipedia, there are two official forms of written Norwegian:
+Bokmal ('a' with an accent) and Nynorsk. In Chrome OS, we distinguish
+these.
+
+diff -uNr xkeyboard-config-1.7.orig/rules/base.xml.in xkeyboard-config-1.7/rules/base.xml.in
+--- xkeyboard-config-1.7.orig/rules/base.xml.in	2010-09-27 18:20:59.692769980 +0900
++++ xkeyboard-config-1.7/rules/base.xml.in	2010-09-27 18:35:13.665257536 +0900
+@@ -3162,7 +3162,8 @@
+         <name>no</name>
+         <_shortDescription>Nor</_shortDescription>
+         <_description>Norway</_description>
+-        <languageList><iso639Id>nor</iso639Id></languageList>
++        <languageList><iso639Id>nob</iso639Id>
++                      <iso639Id>nno</iso639Id></languageList>
+       </configItem>
+       <variantList>
+         <variant>
+diff -uNr xkeyboard-config-1.7.orig/rules/evdev.xml.in xkeyboard-config-1.7/rules/evdev.xml.in
+--- xkeyboard-config-1.7.orig/rules/evdev.xml.in	2010-09-27 18:20:59.692769980 +0900
++++ xkeyboard-config-1.7/rules/evdev.xml.in	2010-09-27 18:32:03.134928644 +0900
+@@ -3162,7 +3162,8 @@
+         <name>no</name>
+         <_shortDescription>Nor</_shortDescription>
+         <_description>Norway</_description>
+-        <languageList><iso639Id>nor</iso639Id></languageList>
++        <languageList><iso639Id>nob</iso639Id>
++                      <iso639Id>nno</iso639Id></languageList>
+       </configItem>
+       <variantList>
+         <variant>

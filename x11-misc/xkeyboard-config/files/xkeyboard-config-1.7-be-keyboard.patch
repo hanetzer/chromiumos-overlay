@@ -1,3 +1,8 @@
+The Belgian keyboard is used also for Dutch.
+
+The patch has been upstreamed:
+http://cgit.freedesktop.org/xkeyboard-config/commit/?id=d6276cd44bd7bc428e9ffd18926d5c0a68c55e4d
+
 diff -uNr xkeyboard-config-1.7.orig/rules/base.xml.in xkeyboard-config-1.7/rules/base.xml.in
 --- xkeyboard-config-1.7.orig/rules/base.xml.in	2009-09-22 06:23:32.000000000 +0900
 +++ xkeyboard-config-1.7/rules/base.xml.in	2010-07-09 18:00:00.970143990 +0900

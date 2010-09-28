@@ -28,6 +28,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
 	epatch "${FILESDIR}/${P}-be-keyboard.patch"
+	epatch "${FILESDIR}/${P}-no-keyboard.patch"
 	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
 	epatch "${FILESDIR}/${P}-nav-keys.patch"
 	epatch "${FILESDIR}/${P}-backspace.patch"
