@@ -14,7 +14,7 @@
 # available in portage:
 
 # Custom patches
->sys-boot/syslinux-3.83-r1
+>sys-boot/syslinux-3.83-r2
 
 # Custom patches
 >sys-devel/crossdev-wrappers-20090922-r200
