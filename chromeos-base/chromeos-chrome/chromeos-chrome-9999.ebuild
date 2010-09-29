@@ -46,7 +46,15 @@ CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
+
+if [ "$ARCH" = "x86" ]; then
+	BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 ${EXTRA_BUILD_ARGS}"
+elif [ "$ARCH" = "arm" ]; then
+	BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
+else
+	die Unsupported architecture: "${ARCH}"
+fi
+
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
@@ -475,9 +483,11 @@ src_install() {
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
 
-	exeopts -m4755	# setuid the sandbox
-	newexe "${FROM}/chrome_sandbox" chrome-sandbox
-	exeopts -m0755
+	if [ "$ARCH" = "arm" ]; then
+		exeopts -m4755	# setuid the sandbox
+		newexe "${FROM}/chrome_sandbox" chrome-sandbox
+		exeopts -m0755
+	fi
 
 	# enable the chromeos local account, if the environment dictates
 	if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
