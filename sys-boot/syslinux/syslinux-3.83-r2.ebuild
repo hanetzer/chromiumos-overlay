@@ -53,7 +53,7 @@ src_compile() {
 
 	if [ "${ROOT}" != "/" ]; then
 		tc-export CC CXX AR RANLIB LD NM
-		emake CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LD="$LD.bfd" \
+		emake CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LD="$LD" \
 			NM="$NM" || die "make failed"
 	else
 		emake || die "make failed"
