@@ -24,6 +24,7 @@ RDEPEND="chromeos-base/libcros
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
+        chromeos-base/libchromeos
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 	test? ( x11-libs/libXtst )
