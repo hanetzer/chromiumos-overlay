@@ -1,14 +1,33 @@
 diff --git a/symbols/pc b/symbols/pc
-index 9f3da66..4bb6c02 100644
+index 9f3da66..bc2ae23 100644
 --- a/symbols/pc
 +++ b/symbols/pc
-@@ -141,9 +141,29 @@ xkb_symbols "editing" {
+@@ -19,7 +19,17 @@ xkb_symbols "pc105" {
+     include "pc(editing)"
+     include "keypad(x11)"
+ 
+-    key <BKSP> {	[ BackSpace	]	};
++    key <BKSP> {
++        type="CONTROL_ALT",
++        repeat=yes,
++        [ BackSpace, BackSpace, Delete, Delete ],
++        actions[Group1] = [
++            NoAction(),
++            NoAction(),
++            RedirectKey(key=<DELE>, clearmods=Alt),
++            RedirectKey(key=<DELE>, clearmods=Control+Alt)
++        ]
++    };
+ 
+     key  <TAB> {	[ Tab,	ISO_Left_Tab	]	};
+     key <RTRN> {	[ Return	]	};
+@@ -141,9 +151,29 @@ xkb_symbols "editing" {
      key  <END> {	[  End			]	};
      key <PGDN> {	[  Next			]	};
  
 -    key   <UP> {	[  Up			]	};
 +    key <UP> {
-+        type="ARROW",
++        type="CONTROL_ALT",
 +        repeat=yes,
 +        [ Up, Up, Prior, Home ],
 +        actions[Group1] = [
@@ -19,7 +38,7 @@ index 9f3da66..4bb6c02 100644
 +        ]
 +    };
 +    key <DOWN> {
-+        type="ARROW",
++        type="CONTROL_ALT",
 +        repeat=yes,
 +        [ Down, Down, Next, End ],
 +        actions[Group1] = [
@@ -36,7 +55,7 @@ index 9f3da66..4bb6c02 100644
  };
 -
 diff --git a/types/basic b/types/basic
-index cf1ee64..a48e26c 100644
+index cf1ee64..536532a 100644
 --- a/types/basic
 +++ b/types/basic
 @@ -5,6 +5,7 @@ default xkb_types "basic" {
@@ -47,13 +66,14 @@ index cf1ee64..a48e26c 100644
      virtual_modifiers NumLock;
  
      type "ONE_LEVEL" {
-@@ -28,4 +29,21 @@ default xkb_types "basic" {
+@@ -28,4 +29,22 @@ default xkb_types "basic" {
          level_name[Level2] = "Caps";
      };
  
-+    // Extra type for up and down arrow keys, which we modify to send
-+    // Page Up and Page Down.
-+    type "ARROW" {
++    // Extra type for keys that we want to simulate other keys when Alt or
++    // Control+Alt are down.  Level 1 is the key by itself, 2 is shifted, 3
++    // is Alt, and 4 is Ctrl+Alt.
++    type "CONTROL_ALT" {
 +        modifiers              = Shift+Lock+Alt+Control;
 +        map[Shift]             = Level2;
 +        map[Lock]              = Level2;

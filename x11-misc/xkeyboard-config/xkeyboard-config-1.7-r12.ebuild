@@ -31,8 +31,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-be-keyboard.patch"
 	epatch "${FILESDIR}/${P}-no-keyboard.patch"
 	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
-	epatch "${FILESDIR}/${P}-nav-keys.patch"
-	epatch "${FILESDIR}/${P}-backspace.patch"
+	epatch "${FILESDIR}/${P}-backspace-and-arrow-keys.patch"
 
 	# Generate symbols/chromeos.
 	python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
