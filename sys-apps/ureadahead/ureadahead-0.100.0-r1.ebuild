@@ -23,6 +23,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-5.patch   # Downloaded from upstream
+	epatch "${FILESDIR}"/${P}-gold.patch
 }
 
 src_configure() {
