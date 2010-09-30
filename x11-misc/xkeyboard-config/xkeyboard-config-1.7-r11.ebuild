@@ -19,6 +19,7 @@ SLOT="0"
 RDEPEND="x11-apps/xkbcomp"
 DEPEND="${RDEPEND}
 	>=dev-util/intltool-0.30
+	dev-libs/glib
 	dev-perl/XML-Parser"
 
 src_prepare() {
