@@ -55,7 +55,6 @@ src_install() {
 	dobin syslog_parser.sh || die
 	dolib.a libmetrics.a || die
 	dolib.so libmetrics.so || die
-	dosbin omaha_tracker.sh || die
 
 	insinto /usr/include/metrics
 	doins c_metrics_library.h || die
