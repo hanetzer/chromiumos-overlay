@@ -104,6 +104,16 @@ src_prepare() {
 	[[ ${CHOST} == *-freebsd6.* ]] && \
 		sed -i -e "s/-DHAVE_POSIX_MEMALIGN//" configure.ac
 
+       # in order for mesa to complete it's build process we need to
+       # use a tool that it compiles. When we cross compile this
+       # clearly does not work
+       # so we require on the host build system. Bug #
+
+       if tc-is-cross-compiler; then
+               sed -i -e "s#^GLSL_CL = .*\$#GLSL_CL = glsl-compile#g" \
+                       "${S}"/src/mesa/shader/slang/library/Makefile
+       fi
+
 	eautoreconf
 }
 
@@ -178,6 +188,12 @@ src_configure() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die "Installation failed"
+
+       if ! tc-is-cross-compiler; then
+               dodir /usr/bin/
+               cp "${S}"/src/glsl/apps/compile "${D}"/usr/bin/glsl-compile \
+                       || die "failed to copy the glsl compiler."
+       fi
 
 	# Remove redundant headers
 	# GLUT thing
