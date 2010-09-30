@@ -22,7 +22,8 @@ RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-c++
 	dev-cpp/gflags
 	dev-cpp/glog
-	install_tests? ( dev-cpp/gtest )"
+	install_tests? ( dev-cpp/gtest )
+	chromeos-base/libchromeos"
 
 DEPEND="${RDEPEND}
 	net-misc/modemmanager"
