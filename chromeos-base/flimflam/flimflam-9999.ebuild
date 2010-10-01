@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev +wifi"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev wifi"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -86,7 +86,7 @@ src_configure() {
 		$(use_enable tools) \
 		$(use_enable udev) \
 		$(use_enable wifi wifi) \
-		$(use_enable newwifi newwifi) \
+		$(use_enable newwifi newwifi builtin) \
 		--disable-udhcp \
 		--disable-iwmx \
 		--disable-iospm
