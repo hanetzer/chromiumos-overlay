@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9cde5dc4243f2738e7801dee0a3072ea466d6b05"
+CROS_WORKON_COMMIT="bfc3424f1dbaec1f4573a07fbcf412bb80d0d957"
 
 inherit cros-debug cros-workon flag-o-matic
 
@@ -56,7 +56,6 @@ src_install() {
 	dobin syslog_parser.sh || die
 	dolib.a libmetrics.a || die
 	dolib.so libmetrics.so || die
-	dosbin omaha_tracker.sh || die
 
 	insinto /usr/include/metrics
 	doins c_metrics_library.h || die
