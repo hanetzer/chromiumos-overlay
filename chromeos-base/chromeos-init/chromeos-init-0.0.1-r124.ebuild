@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="8661c8fac54d1215f40448bd451075d579b53b7f"
+CROS_WORKON_COMMIT="84001d998c8fce83e771b7b2a4ef544b7f69f6f7"
 
 inherit cros-workon toolchain-funcs
 
@@ -34,12 +34,12 @@ make_partition_devices() {
 }
 
 src_install() {
-	into /  # We want /sbin, not /usr/sbin, etc.
+	into /	# We want /sbin, not /usr/sbin, etc.
 
 	# Install Upstart configuration files.
 	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
-	  "${S}"/*.conf "${D}/etc/init/"
+		"${S}"/*.conf "${D}/etc/init/"
 
 	if ! use pulseaudio; then
 		rm "${D}/etc/init/pulseaudio.conf"
@@ -52,11 +52,17 @@ src_install() {
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
 	dosbin "${S}/clobber-state"
 
-        # Install log cleaning script and run it daily.
-        into /usr
-        dosbin "${S}/chromeos-cleanup-logs"
-        exeinto /etc/cron.daily
-        doexe "${S}/cleanup-logs.daily"
+	# Install disk cleanup script and run it hourly.
+	into /usr
+	dosbin "${S}/chromeos-cleanup-disk"
+	exeinto /etc/cron.hourly
+	doexe "${S}/cleanup-disk.hourly"
+
+	# Install log cleaning script and run it daily.
+	into /usr
+	dosbin "${S}/chromeos-cleanup-logs"
+	exeinto /etc/cron.daily
+	doexe "${S}/cleanup-logs.daily"
 
 	# Preseed /lib/chromiumos/devices which is by chromeos_startup to
 	# populate /dev with enough devices to be able to do early init and
