@@ -1,0 +1,116 @@
+--- src/processor/minidump_dump.cc.orig	2010-10-01 14:10:00.000000000 -0700
++++ src/processor/minidump_dump.cc	2010-10-01 13:28:11.000000000 -0700
+@@ -33,9 +33,11 @@
+ // Author: Mark Mentovai
+ 
+ #include <cstdio>
++#include <cstring>
+ 
+ #include "google_breakpad/processor/minidump.h"
+ #include "processor/logging.h"
++#include "processor/scoped_ptr.h"
+ 
+ namespace {
+ 
+@@ -49,6 +51,73 @@
+ using google_breakpad::MinidumpMiscInfo;
+ using google_breakpad::MinidumpBreakpadInfo;
+ 
++// These are additional minidump stream values which are specific to the linux
++// breakpad implementation.
++enum {
++  MD_LINUX_CPU_INFO              = 0x47670003,    /* /proc/cpuinfo    */
++  MD_LINUX_PROC_STATUS           = 0x47670004,    /* /proc/$x/status  */
++  MD_LINUX_LSB_RELEASE           = 0x47670005,    /* /etc/lsb-release */
++  MD_LINUX_CMD_LINE              = 0x47670006,    /* /proc/$x/cmdline */
++  MD_LINUX_ENVIRON               = 0x47670007,    /* /proc/$x/environ */
++  MD_LINUX_AUXV                  = 0x47670008     /* /proc/$x/auxv    */
++};
++
++bool LoadStreamContents(Minidump *minidump,
++                        u_int32_t stream_type,
++                        u_int32_t *length,
++                        char **contents,
++                        int *errors) {
++  if (!minidump->SeekToStreamType(stream_type, length) || *length == 0) {
++    return false;
++  }
++  google_breakpad::scoped_array<char> buffer(new char[*length + 1]);
++  if (!minidump->ReadBytes(&buffer[0], *length)) {
++    ++errors;
++    BPLOG(ERROR) << "minidump.ReadBytes failed";
++    return false;
++  }
++  buffer[*length] = '\0';
++
++  *contents = buffer.release();
++  return true;
++}
++
++static void DumpStringArray(Minidump *minidump,
++                            u_int32_t stream_type,
++                            const char *stream_name,
++                            int *errors) {
++  u_int32_t length = 0;
++  char *contents;
++  if (!LoadStreamContents(minidump, stream_type, &length, &contents, errors))
++    return;
++  google_breakpad::scoped_array<char> buffer(contents);
++  printf("String array stream %s:\n", stream_name);
++  const char *current_string = &buffer[0];
++  int string_number = 0;
++  // Loop through strings.  Note that the buffer is always NULL
++  // terminated, so we will eventually land on the NULL character,
++  // exiting the loop.
++  while (current_string - &buffer[0] < length) {
++    printf("%2d: %s\n", string_number, current_string);
++    ++string_number;
++    current_string += strlen(current_string) + 1;
++  }
++  printf("\n");
++}
++
++static void DumpRawStream(Minidump *minidump,
++                          u_int32_t stream_type,
++                          const char *stream_name,
++                          int *errors) {
++  u_int32_t length = 0;
++  char *contents;
++  if (!LoadStreamContents(minidump, stream_type, &length, &contents, errors))
++    return;
++
++  google_breakpad::scoped_array<char> buffer(contents);
++  printf("Raw stream %s:\n%s\n", stream_name, &buffer[0]);
++}
++
+ static bool PrintMinidumpDump(const char *minidump_file) {
+   Minidump minidump(minidump_file);
+   if (!minidump.Read()) {
+@@ -121,6 +190,27 @@
+     breakpad_info->Print();
+   }
+ 
++  DumpStringArray(&minidump,
++                  MD_LINUX_CMD_LINE,
++                  "MD_LINUX_CMD_LINE",
++                  &errors);
++  DumpStringArray(&minidump,
++                  MD_LINUX_ENVIRON,
++                  "MD_LINUX_ENVIRON",
++                  &errors);
++  DumpRawStream(&minidump,
++                MD_LINUX_LSB_RELEASE,
++                "MD_LINUX_LSB_RELEASE",
++                &errors);
++  DumpRawStream(&minidump,
++                MD_LINUX_PROC_STATUS,
++                "MD_LINUX_PROC_STATUS",
++                &errors);
++  DumpRawStream(&minidump,
++                MD_LINUX_CPU_INFO,
++                "MD_LINUX_CPU_INFO",
++                &errors);
++
+   return errors == 0;
+ }
+ 
