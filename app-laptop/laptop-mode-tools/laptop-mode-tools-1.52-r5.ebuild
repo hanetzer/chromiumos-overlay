@@ -3,7 +3,8 @@
 # $Header: /var/www/viewcvs.gentoo.org/raw_cvs/gentoo-x86/app-laptop/laptop-mode-tools/laptop-mode-tools-1.52.ebuild,v 1.1 2009/10/16 18:42:23 bangert Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="c021f14afa501463ea48abb0996ee3014e39d936"
+CROS_WORKON_COMMIT="8d11ab2c4f1457348706c85e63b649325c1bcf24"
+
 inherit cros-workon
 
 DESCRIPTION="Linux kernel laptop_mode user-space utilities"
