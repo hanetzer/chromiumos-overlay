@@ -1,8 +1,8 @@
 diff --git a/symbols/pc b/symbols/pc
-index 9f3da66..bc2ae23 100644
+index 9f3da66..fb93e7b 100644
 --- a/symbols/pc
 +++ b/symbols/pc
-@@ -19,7 +19,17 @@ xkb_symbols "pc105" {
+@@ -19,7 +19,16 @@ xkb_symbols "pc105" {
      include "pc(editing)"
      include "keypad(x11)"
  
@@ -10,9 +10,8 @@ index 9f3da66..bc2ae23 100644
 +    key <BKSP> {
 +        type="CONTROL_ALT",
 +        repeat=yes,
-+        [ BackSpace, BackSpace, Delete, Delete ],
++        symbols[Group1] = [ BackSpace, Delete, Delete ],
 +        actions[Group1] = [
-+            NoAction(),
 +            NoAction(),
 +            RedirectKey(key=<DELE>, clearmods=Alt),
 +            RedirectKey(key=<DELE>, clearmods=Control+Alt)
@@ -21,7 +20,7 @@ index 9f3da66..bc2ae23 100644
  
      key  <TAB> {	[ Tab,	ISO_Left_Tab	]	};
      key <RTRN> {	[ Return	]	};
-@@ -141,9 +151,29 @@ xkb_symbols "editing" {
+@@ -141,9 +150,27 @@ xkb_symbols "editing" {
      key  <END> {	[  End			]	};
      key <PGDN> {	[  Next			]	};
  
@@ -29,9 +28,8 @@ index 9f3da66..bc2ae23 100644
 +    key <UP> {
 +        type="CONTROL_ALT",
 +        repeat=yes,
-+        [ Up, Up, Prior, Home ],
++        symbols[Group1] = [ Up, Prior, Home ],
 +        actions[Group1] = [
-+            NoAction(),
 +            NoAction(),
 +            RedirectKey(key=<PGUP>, clearmods=Alt),
 +            RedirectKey(key=<HOME>, clearmods=Control+Alt)
@@ -40,9 +38,8 @@ index 9f3da66..bc2ae23 100644
 +    key <DOWN> {
 +        type="CONTROL_ALT",
 +        repeat=yes,
-+        [ Down, Down, Next, End ],
++        symbols[Group1] = [ Down, Next, End ],
 +        actions[Group1] = [
-+            NoAction(),
 +            NoAction(),
 +            RedirectKey(key=<PGDN>, clearmods=Alt),
 +            RedirectKey(key=<END>, clearmods=Control+Alt)
@@ -55,7 +52,7 @@ index 9f3da66..bc2ae23 100644
  };
 -
 diff --git a/types/basic b/types/basic
-index cf1ee64..536532a 100644
+index cf1ee64..bcb122c 100644
 --- a/types/basic
 +++ b/types/basic
 @@ -5,6 +5,7 @@ default xkb_types "basic" {
@@ -66,26 +63,20 @@ index cf1ee64..536532a 100644
      virtual_modifiers NumLock;
  
      type "ONE_LEVEL" {
-@@ -28,4 +29,22 @@ default xkb_types "basic" {
+@@ -28,4 +29,16 @@ default xkb_types "basic" {
          level_name[Level2] = "Caps";
      };
  
 +    // Extra type for keys that we want to simulate other keys when Alt or
-+    // Control+Alt are down.  Level 1 is the key by itself, 2 is shifted, 3
-+    // is Alt, and 4 is Ctrl+Alt.
++    // Control+Alt are down.  Level 1 is the key by itself, 2 is Alt, and 3
++    // is Ctrl+Alt.
 +    type "CONTROL_ALT" {
-+        modifiers              = Shift+Lock+Alt+Control;
-+        map[Shift]             = Level2;
-+        map[Lock]              = Level2;
-+        map[Alt]               = Level3;
-+        map[Alt+Shift]         = Level3;
-+        map[Alt+Lock]          = Level3;
-+        map[Control+Alt]       = Level4;
-+        map[Control+Alt+Shift] = Level4;
-+        map[Control+Alt+Lock]  = Level4;
++        modifiers              = Alt+Control;
++        map[None]              = Level1;
++        map[Alt]               = Level2;
++        map[Control+Alt]       = Level3;
 +        level_name[Level1]     = "Base";
-+        level_name[Level2]     = "Caps";
-+        level_name[Level3]     = "Alt";
-+        level_name[Level4]     = "ControlAlt";
++        level_name[Level2]     = "Alt";
++        level_name[Level3]     = "ControlAlt";
 +    };
  };
