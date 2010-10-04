@@ -50,6 +50,9 @@ src_unpack() {
 
 	# Respect LDFLAGS (bug #152197)
 	sed -i -e 's:$(CC) -o:$(CC) @LDFLAGS@ -o:' Makefile.in
+
+	# Patch to work with the gold linker
+	epatch "${FILESDIR}"/${P}-gold.patch
 }
 
 src_compile() {
