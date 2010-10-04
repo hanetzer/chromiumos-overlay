@@ -85,3 +85,6 @@
 
 # Masked all upstream ebuilds
 >app-arch/pbzip2-1.1.1-r1
+
+# Custom patches
+>sys-boot/syslinux-3.83-r3

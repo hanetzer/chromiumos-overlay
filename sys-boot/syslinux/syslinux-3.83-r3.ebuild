@@ -53,6 +53,10 @@ src_compile() {
 
 	if [ "${ROOT}" != "/" ]; then
 		tc-export CC CXX AR RANLIB LD NM
+		# Force GNU ld if gold is installed
+		if ${LD}.bfd --version > /dev/null 2>&1; then
+			LD=${LD}.bfd
+		fi
 		emake CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LD="$LD" \
 			NM="$NM" || die "make failed"
 	else
