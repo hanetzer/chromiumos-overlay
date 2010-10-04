@@ -128,6 +128,7 @@ IUSE_TESTS="
 	+tests_logging_KernelCrashServer
 	+tests_logging_LogVolume
 	+tests_logging_UserCrash
+	+tests_logging_UncleanShutdown
 	+tests_logging_UncleanShutdownServer
 	+tests_login_Backdoor
 	+tests_login_BadAuthentication
@@ -211,16 +212,10 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_RendererSandbox
-	+tests_suite_BuildVerify
+	+tests_suites
 	+tests_suite_Factory
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
-	+tests_suite_Network3G
-	+tests_suite_NetworkWiFi
-	+tests_suite_Nightly
-	+tests_suite_NightlyPower
-	+tests_suite_PerfAlerts
-	+tests_suite_SecurityFunctional
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"

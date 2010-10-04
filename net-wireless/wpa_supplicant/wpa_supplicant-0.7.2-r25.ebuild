@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/wpa_supplicant/wpa_supplicant-0.7.0.ebuild,v 1.7 2009/07/24 16:42:43 josejx Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="727ded2632c3ea5aea31c605ba6939bc91fb58ad"
+CROS_WORKON_COMMIT="6c0ba19eec7cfa85d35194e9029e72d393f2c79e"
 
 inherit eutils toolchain-funcs qt3 qt4 cros-workon
 
@@ -101,7 +101,6 @@ src_configure() {
 	echo "CONFIG_BGSCAN_LEARN=y" >> ${CFGFILE}
 
 	if use dbus ; then
-		echo "CONFIG_CTRL_IFACE_DBUS=y" >> ${CFGFILE}
 		echo "CONFIG_CTRL_IFACE_DBUS_NEW=y" >> ${CFGFILE}
 		echo "CONFIG_CTRL_IFACE_DBUS_INTRO=y" >> ${CFGFILE}
 	fi
@@ -225,7 +224,6 @@ src_install() {
 		insinto /etc/dbus-1/system.d
 		newins dbus/dbus-wpa_supplicant.conf wpa_supplicant.conf || die
 		insinto /usr/share/dbus-1/system-services
-		newins dbus/fi.epitest.hostap.WPASupplicant.service 'fi.epitest.hostap.WPASupplicant.service' || die
 		newins dbus/fi.w1.wpa_supplicant1.service 'fi.w1.wpa_supplicant1.service' || die
 		keepdir /var/run/wpa_supplicant
 	fi
