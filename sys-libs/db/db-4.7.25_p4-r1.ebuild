@@ -99,6 +99,13 @@ src_compile() {
 	# mumbo jumbo.
 	if use userland_GNU ; then
 		append-ldflags -Wl,--default-symver
+		# gold doesn't support --default-symver so force GNU ld
+		tc-export CC CXX LD
+		if ${LD}.bfd --version > /dev/null 2>&1; then
+			LD=${LD}.bfd
+			CC="${CC} -fuse-ld=bfd"
+			CXX="${CXX} -fuse-ld=bfd"
+		fi
 	fi
 
 	# Bug #270851: test needs TCL support
