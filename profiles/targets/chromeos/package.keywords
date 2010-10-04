@@ -36,7 +36,7 @@
 =media-libs/jpeg-6b-r9          x86 arm
 =net-analyzer/netperf-2.4.4	x86 arm
 =net-libs/gnutls-2.9.5		x86 arm
-=net-libs/gssdp-0.7.1           x86 arm
+=net-libs/gssdp-0.7.1-r1        x86 arm
 =net-libs/gupnp-0.13.2          x86 arm
 =net-libs/gupnp-av-0.5.2	x86 arm
 =net-libs/libsoup-2.28.2	x86 arm

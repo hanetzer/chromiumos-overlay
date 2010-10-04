@@ -1,0 +1,33 @@
+--- gssdp-0.7.1/tests/Makefile.am	2009-01-06 06:44:15.000000000 
+-0800
++++ gssdp-0.7.1/tests/Makefile.am	2010-09-17 
+17:43:56.000000000 -0700
+@@ -3,10 +3,10 @@
+ noinst_PROGRAMS = test-browser test-publish
+ 
+ test_browser_SOURCES = test-browser.c
+-test_browser_LDADD   = $(top_builddir)/libgssdp/libgssdp-1.0.la
++test_browser_LDADD   = $(top_builddir)/libgssdp/libgssdp-1.0.la $(LIBGSSDP_LIBS)
+ 
+ test_publish_SOURCES = test-publish.c
+-test_publish_LDADD   = $(top_builddir)/libgssdp/libgssdp-1.0.la
++test_publish_LDADD   = $(top_builddir)/libgssdp/libgssdp-1.0.la $(LIBGSSDP_LIBS)
+ 
+ CLEANFILES = $(BUILT_SOURCES)
+ DISTCLEANFILES = $(BUILT_SOURCES)
+--- gssdp-0.7.1/tests/Makefile.in	2009-12-04 07:02:06.000000000 
+-0800
++++ gssdp-0.7.1/tests/Makefile.in	2010-09-17 
+17:43:56.000000000 -0700
+@@ -193,9 +193,9 @@
+ top_srcdir = @top_srcdir@
+ AM_CFLAGS = $(LIBGSSDP_CFLAGS) -I$(top_srcdir)
+ test_browser_SOURCES = test-browser.c
+-test_browser_LDADD = $(top_builddir)/libgssdp/libgssdp-1.0.la
++test_browser_LDADD = $(top_builddir)/libgssdp/libgssdp-1.0.la $(LIBGSSDP_LIBS)
+ test_publish_SOURCES = test-publish.c
+-test_publish_LDADD = $(top_builddir)/libgssdp/libgssdp-1.0.la
++test_publish_LDADD = $(top_builddir)/libgssdp/libgssdp-1.0.la $(LIBGSSDP_LIBS)
+ CLEANFILES = $(BUILT_SOURCES)
+ DISTCLEANFILES = $(BUILT_SOURCES)
+ MAINTAINERCLEANFILES = Makefile.in $(BUILT_SOURCES)

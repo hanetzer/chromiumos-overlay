@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-libs/gssdp/gssdp-0.7.1.ebuild,v 1.3 2010/02/19 18:20:17 armin76 Exp $
 
+inherit eutils
+
 EAPI=2
 
 DESCRIPTION="A GObject-based API for handling resource discovery and announcement over SSDP."
@@ -19,6 +21,12 @@ RDEPEND=">=dev-libs/glib-2.18:2
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	sys-devel/gettext"
+
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+	epatch "${FILESDIR}"/${P}-gold.patch
+}
 
 src_configure() {
 	econf \
