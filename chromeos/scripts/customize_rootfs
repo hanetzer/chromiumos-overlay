@@ -66,11 +66,9 @@ if [ -f $CRYPTED_PASSWD_FILE ]; then
   echo "Using password from $CRYPTED_PASSWD_FILE"
   CRYPTED_PASSWD=$(cat $CRYPTED_PASSWD_FILE)
 else
-  # Use a random password.  unix_md5_crypt will generate a random salt.
-  echo "Using random password."
-  PASSWORD="$(base64 /dev/urandom | head -1)"
-  CRYPTED_PASSWD="$(echo "$PASSWORD" | openssl passwd -1 -stdin)"
-  PASSWORD="gone now"
+  # Use an invalid password so ensure pam_unix failure.
+  echo "Using invalid password."
+  CRYPTED_PASSWD='*'
 fi
 # Replace the DEV_USER passwd entry with one that sets the proper shell and
 # specifies that the passwd should come from /etc/shadow.
@@ -81,10 +79,35 @@ echo "${DEV_USER}:${CRYPTED_PASSWD}:14500:0:99999::::" \
 sudo mkdir -p "${ROOT_FS_DIR}/home/${DEV_USER}"
 sudo chown "${DEV_UID}.${DEV_UID}" "${ROOT_FS_DIR}/home/${DEV_USER}"
 cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/sudoers" conv=notrunc oflag=append
-%adm ALL=(ALL) ALL
-$DEV_USER ALL=NOPASSWD: ALL
+$DEV_USER ALL=(ALL) ALL
 EOF
 sudo chmod 0440 "${ROOT_FS_DIR}/etc/sudoers"
+
+# Allow sudo and vt2 in devmode or if the image has a password since
+# auth will fall through to the default.  Note, unsupported platforms
+# will not appear to be in developer mode.  But this can be overriden
+# with the kernel commandline flag cros_debug.
+# TODO(wad) move into ebuilds.
+sudo mv "$ROOT_FS_DIR/etc/pam.d/sudo" "$ROOT_FS_DIR/etc/pam.d/sudo.orig"
+cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/pam.d/sudo
+auth		[success=1 default=ignore] pam_exec.so quiet \\
+			/usr/bin/test -O /mnt/stateful_partition/etc/nosudo
+auth		sufficient pam_exec.so quiet \\
+			/bin/cros_boot_mode -s -m developer
+EOF
+cat "$ROOT_FS_DIR/etc/pam.d/sudo.orig" |
+   sudo dd of="$ROOT_FS_DIR/etc/pam.d/sudo" oflag=append conv=notrunc
+
+sudo mv "$ROOT_FS_DIR/etc/pam.d/login" "$ROOT_FS_DIR/etc/pam.d/login.orig"
+cat <<EOF | sudo dd of="$ROOT_FS_DIR/etc/pam.d/login"
+auth		[success=1 default=ignore] pam_exec.so quiet \\
+			/usr/bin/test -O /mnt/stateful_partition/etc/nologin
+auth		sufficient pam_exec.so quiet \\
+			/bin/cros_boot_mode -s -m developer
+EOF
+cat "$ROOT_FS_DIR/etc/pam.d/login.orig" |
+   sudo dd of="$ROOT_FS_DIR/etc/pam.d/login" oflag=append conv=notrunc
+sudo rm "$ROOT_FS_DIR/etc/pam.d/sudo.orig" "$ROOT_FS_DIR/etc/pam.d/login.orig"
 
 echo "# Allow chronos user to renice processes so that chrome will adjust tab priorities" | \
   sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
