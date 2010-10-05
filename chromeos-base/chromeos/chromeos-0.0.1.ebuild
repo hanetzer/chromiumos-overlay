@@ -91,6 +91,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-login
 	chromeos-base/crash-reporter
 	chromeos-base/cromo
+	chromeos-base/cros_boot_mode
 	chromeos-base/entd
 	chromeos-base/flimflam
 	chromeos-base/internal
