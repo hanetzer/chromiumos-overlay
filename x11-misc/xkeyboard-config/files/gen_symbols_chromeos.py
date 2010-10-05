@@ -86,7 +86,14 @@ def OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
     print '  key <CAPS> { [ %s ] };' % KEY_STRING_TO_KEYSYM[use_search_key_as]
     print '  key <LCTL> { [ %s ] };' % (
         KEY_STRING_TO_KEYSYM[use_leftcontrol_key_as])
-    print '  key <LALT> { [ %s ] };' % KEY_STRING_TO_KEYSYM[use_leftalt_key_as]
+
+    lalt = KEY_STRING_TO_KEYSYM[use_leftalt_key_as]
+    # We have to overwrite both level-1 (default: Alt_L) and level-2
+    # (default: Meta_L) mappings.
+    if lalt.find(',') == -1:
+      print '  key <LALT> { [ %s, %s ] };' % (lalt, lalt)
+    else:
+      print '  key <LALT> { [ %s ] };' % lalt
     for key in modifier_keys.keys():
         if key != 'disabled' and len(modifier_keys[key]) > 0:
             print '  modifier_map %s { %s };' % (
