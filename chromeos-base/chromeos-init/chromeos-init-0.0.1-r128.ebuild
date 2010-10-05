@@ -64,6 +64,10 @@ src_install() {
 	exeinto /etc/cron.daily
 	doexe "${S}/cleanup-logs.daily"
 
+	# Install lightup_screen
+	into /usr
+	dosbin "${S}/lightup_screen"
+
 	# Preseed /lib/chromiumos/devices which is by chromeos_startup to
 	# populate /dev with enough devices to be able to do early init and
 	# start the X server.
