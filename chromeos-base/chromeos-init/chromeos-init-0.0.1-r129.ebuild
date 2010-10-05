@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="7f05efb83552b490ad949985b1378d622039c6df"
+CROS_WORKON_COMMIT="30eeb765f8747de7e41c0d2f6d04f7b0ce8acbec"
 
 inherit cros-workon toolchain-funcs
 
@@ -40,6 +40,10 @@ src_install() {
 	dodir /etc/init
 	install --owner=root --group=root --mode=0644 \
 		"${S}"/*.conf "${D}/etc/init/"
+
+	dodir /etc
+	install --owner=root --group=root --mode=0644 \
+	  "${S}/issue" "${D}/etc/"
 
 	if ! use pulseaudio; then
 		rm "${D}/etc/init/pulseaudio.conf"
