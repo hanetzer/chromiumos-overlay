@@ -60,6 +60,7 @@ src_install() {
 	# Install log cleaning script and run it daily.
 	into /usr
 	dosbin "${S}/chromeos-cleanup-logs"
+	dosbin "${S}/lightup_screen"
 	exeinto /etc/cron.daily
 	doexe "${S}/cleanup-logs.daily"
 
