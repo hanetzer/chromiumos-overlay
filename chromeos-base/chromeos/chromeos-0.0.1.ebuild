@@ -61,7 +61,7 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	arm? (
-		sys-boot/u-boot
+		virtual/u-boot
 	)
 	"
 
