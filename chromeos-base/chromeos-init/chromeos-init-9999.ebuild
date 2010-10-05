@@ -40,6 +40,10 @@ src_install() {
 	install --owner=root --group=root --mode=0644 \
 		"${S}"/*.conf "${D}/etc/init/"
 
+	dodir /etc
+	install --owner=root --group=root --mode=0644 \
+	  "${S}/issue" "${D}/etc/"
+
 	if ! use pulseaudio; then
 		rm "${D}/etc/init/pulseaudio.conf"
 	fi
