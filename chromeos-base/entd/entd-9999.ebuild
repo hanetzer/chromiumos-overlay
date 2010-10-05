@@ -51,4 +51,5 @@ src_install() {
 	dosym $SHARED_USER_HOME/var/browser-policies /etc/opt/chrome/policies
 
 	dosbin bin/fix_pkcs11_token.sh
+	dosbin bin/entdwife.sh
 }
