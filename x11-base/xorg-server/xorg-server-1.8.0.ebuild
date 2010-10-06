@@ -174,6 +174,7 @@ pkg_setup() {
 		--sysconfdir=/etc/X11
 		--localstatedir=/var
 		--enable-install-setuid
+		--enable-null-root-cursor
 		--with-fontdir=/usr/share/fonts
 		--with-xkb-output=/var/lib/xkb
 		--without-dtrace
