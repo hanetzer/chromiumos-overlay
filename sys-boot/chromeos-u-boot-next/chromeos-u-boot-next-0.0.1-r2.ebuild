@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ae14db3472863076e6f2b89ca6e60dec2dd2a8e8"
+CROS_WORKON_COMMIT="8e53699b07d59edda14a9f23d0544f01da189fce"
 
 inherit toolchain-funcs
 
@@ -14,11 +14,11 @@ KEYWORDS="arm"
 IUSE=""
 PROVIDE="virtual/u-boot"
 
-DEPEND=""
-RDEPEND="${DEPEND}"
+RDEPEND=""
+DEPEND="chromeos-base/vboot_reference"
 
-CROS_WORKON_PROJECT="u-boot"
-CROS_WORKON_LOCALNAME="u-boot"
+CROS_WORKON_PROJECT="u-boot-next"
+CROS_WORKON_LOCALNAME="u-boot-next"
 CROS_WORKON_SUBDIR="files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
@@ -47,6 +47,7 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=${STRIP} \
+              VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
 

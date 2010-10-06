@@ -3,7 +3,7 @@
 # Based on gentoo's modemmanager ebuild
 
 EAPI=2
-CROS_WORKON_COMMIT="3a50b8c28d155060ce035a1c6d5eadf3d91297a5"
+CROS_WORKON_COMMIT="f447c8e1a0062500e1171e031cf4c8fef76ffd59"
 
 inherit eutils autotools cros-workon
 
