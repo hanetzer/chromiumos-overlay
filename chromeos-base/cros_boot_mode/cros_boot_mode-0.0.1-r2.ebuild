@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="afd802255db87e08145eccab0ef439db817a81d2"
+CROS_WORKON_COMMIT="f2cafd44f6f8e1ff30d0054d2842fdc419b53418"
 
 KEYWORDS="amd64 arm x86"
 
@@ -16,7 +16,6 @@ SLOT="0"
 IUSE="test valgrind splitdebug"
 
 RDEPEND="test? ( chromeos-base/libchrome )"
-
 
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.
