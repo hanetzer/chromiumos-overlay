@@ -101,6 +101,7 @@ RDEPEND="${RDEPEND}
 	app-editors/qemacs
 	app-editors/vim
 	sys-apps/ack
+	sys-apps/pv
 	"
 
 # Host dependencies that are needed for unit tests
