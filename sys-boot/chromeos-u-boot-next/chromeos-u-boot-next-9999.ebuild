@@ -14,7 +14,8 @@ IUSE=""
 PROVIDE="virtual/u-boot"
 
 RDEPEND=""
-DEPEND="chromeos-base/vboot_reference"
+DEPEND="chromeos-base/vboot_reference
+	!sys-boot/u-boot"
 
 CROS_WORKON_PROJECT="u-boot-next"
 CROS_WORKON_LOCALNAME="u-boot-next"
