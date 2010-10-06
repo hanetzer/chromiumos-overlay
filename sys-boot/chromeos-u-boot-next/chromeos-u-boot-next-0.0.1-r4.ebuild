@@ -40,14 +40,13 @@ src_configure() {
 
 src_compile() {
 	tc-getCC
-	tc-getSTRIP
 
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
-	      HOSTSTRIP=${STRIP} \
+	      HOSTSTRIP=true \
               VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
