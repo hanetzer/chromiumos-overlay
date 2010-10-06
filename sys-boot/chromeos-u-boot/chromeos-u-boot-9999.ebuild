@@ -13,8 +13,8 @@ KEYWORDS="~arm"
 IUSE=""
 PROVIDE="virtual/u-boot"
 
-DEPEND=""
-RDEPEND="${DEPEND}"
+RDEPEND=""
+DEPEND="chromeos-base/vboot_reference"
 
 CROS_WORKON_PROJECT="u-boot"
 CROS_WORKON_LOCALNAME="u-boot"
@@ -46,6 +46,7 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=${STRIP} \
+	      VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
 
