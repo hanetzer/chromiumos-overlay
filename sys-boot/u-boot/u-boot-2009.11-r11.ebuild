@@ -1,10 +1,10 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ae14db3472863076e6f2b89ca6e60dec2dd2a8e8"
+CROS_WORKON_COMMIT="ee475c8c82465360804c700e4816140d1b12a833"
 
-inherit toolchain-funcs
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
@@ -12,21 +12,21 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="arm"
 IUSE=""
-PROVIDE="virtual/u-boot"
 
-RDEPEND=""
-DEPEND="chromeos-base/vboot_reference"
+DEPEND=""
+RDEPEND="${DEPEND}"
 
-CROS_WORKON_PROJECT="u-boot"
-CROS_WORKON_LOCALNAME="u-boot"
-CROS_WORKON_SUBDIR="files"
+u_boot=${CHROMEOS_U_BOOT:-"files"}
+config=${CHROMEOS_U_BOOT_CONFIG:-"versatile_config"}
 
-# This must be inherited *after* EGIT/CROS_WORKON variables defined
-inherit cros-workon
+#
+# Strip the ebuild directory to construct a valid CROS_WORKON_SUBDIR.  This can
+# be removed once all of the overlay make.confs specify CHROMEOS_U_BOOT without
+# the u-boot directory prefixed.
+#
+CROS_WORKON_SUBDIR="${u_boot#u-boot/}"
 
 src_configure() {
-	local config=${CHROMEOS_U_BOOT_CONFIG}
-
 	elog "Using U-Boot config: ${config}"
 
 	emake distclean
@@ -47,7 +47,6 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=${STRIP} \
-	      VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
 
