@@ -8,7 +8,7 @@ inherit toolchain-funcs git
 
 DESCRIPTION="Utility for reading, writing, erasing and verifying flash ROM chips"
 HOMEPAGE="http://flashrom.org"
-EGIT_REPO_URI="http://src.chromium.org/git/flashrom.git"
+EGIT_REPO_URI="http://git.chromium.org/git/flashrom.git"
 
 LICENSE="GPL-2"
 SLOT="0"

@@ -3,7 +3,7 @@
 
 EAPI=2
 
-EGIT_REPO_URI="http://src.chromium.org/git/kernel.git"
+EGIT_REPO_URI="http://git.chromium.org/git/kernel.git"
 if [ "${CHROMEOS_KERNEL}" = "kernel-qualcomm" ]; then
 	# Current HEAD of kernel.git qualcomm-2.6.32 branch.
 	EGIT_COMMIT="b7acb2fedc1fa8a5836de1c60377d5aee5111102"
