@@ -135,6 +135,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/ureadahead
 	sys-apps/util-linux
 	sys-auth/consolekit
+	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	sys-libs/timezone-data

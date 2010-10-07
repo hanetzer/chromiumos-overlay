@@ -83,31 +83,53 @@ $DEV_USER ALL=(ALL) ALL
 EOF
 sudo chmod 0440 "${ROOT_FS_DIR}/etc/sudoers"
 
-# Allow sudo and vt2 in devmode or if the image has a password since
-# auth will fall through to the default.  Note, unsupported platforms
-# will not appear to be in developer mode.  But this can be overriden
-# with the kernel commandline flag cros_debug.
+# sudo and vt2 are important for system debugging both in developer mode
+# and during development.  These two stanzas allow sudo and login auth
+# as user chronos under the following conditions:
+#
+# 1. password-less access:
+# - system in developer mode
+# - there is no passwd.devmode file
+# - there is no system-wide password set above.
+# 2. System-wide (/etc/shadow) password access set above:
+# - image has a baked in password above
+# 3. Developer mode password access
+# - user creates a passwd.devmode file with "chronos:CRYPTED_PASSWORD"
+# 4. System-wide (/etc/shadow) password access set by modifying /etc/shadow:
+# - Cases #1 and #2 will apply but failure will fall through to the
+#   inserted password.
+#
 # TODO(wad) move into ebuilds.
-sudo mv "$ROOT_FS_DIR/etc/pam.d/sudo" "$ROOT_FS_DIR/etc/pam.d/sudo.orig"
-cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/pam.d/sudo
-auth		[success=1 default=ignore] pam_exec.so quiet \\
-			/usr/bin/test -O /mnt/stateful_partition/etc/nosudo
+if [ "${CRYPTED_PASSWD}" = '*' ]; then
+  # Create a shared auth prefix for the devmode auth case.
+  PAM_PREFIX=$(mktemp)
+  cat <<EOF > ${PAM_PREFIX}
+# If we're not in dev-mode, skip to the system password stack.
+auth		[success=ignore default=3] pam_exec.so quiet \\
+			/bin/cros_boot_mode -s -m developer
+# Check if a custom devmode password file exists and prefer it.
+auth		[success=ignore default=1] pam_exec.so quiet \\
+			/usr/bin/test -f \\
+			  /mnt/stateful_partition/etc/devmode.passwd
+# If we get to pwdfile, use it or bypass the password-less login.
+auth		[success=done default=1] pam_pwdfile.so \\
+			pwdfile /mnt/stateful_partition/etc/devmode.passwd
+# If we get here, allow password-less access
 auth		sufficient pam_exec.so quiet \\
 			/bin/cros_boot_mode -s -m developer
+# Fallback to a system password if one was stamped in after initial build.
 EOF
-cat "$ROOT_FS_DIR/etc/pam.d/sudo.orig" |
-   sudo dd of="$ROOT_FS_DIR/etc/pam.d/sudo" oflag=append conv=notrunc
-
-sudo mv "$ROOT_FS_DIR/etc/pam.d/login" "$ROOT_FS_DIR/etc/pam.d/login.orig"
-cat <<EOF | sudo dd of="$ROOT_FS_DIR/etc/pam.d/login"
-auth		[success=1 default=ignore] pam_exec.so quiet \\
-			/usr/bin/test -O /mnt/stateful_partition/etc/nologin
-auth		sufficient pam_exec.so quiet \\
-			/bin/cros_boot_mode -s -m developer
-EOF
-cat "$ROOT_FS_DIR/etc/pam.d/login.orig" |
-   sudo dd of="$ROOT_FS_DIR/etc/pam.d/login" oflag=append conv=notrunc
-sudo rm "$ROOT_FS_DIR/etc/pam.d/sudo.orig" "$ROOT_FS_DIR/etc/pam.d/login.orig"
+  # Prepend the shared code to the sudo and login pam files.
+  sudo mv "$ROOT_FS_DIR/etc/pam.d/sudo" "$ROOT_FS_DIR/etc/pam.d/sudo.orig"
+  sudo mv "$ROOT_FS_DIR/etc/pam.d/login" "$ROOT_FS_DIR/etc/pam.d/login.orig"
+  cat ${PAM_PREFIX} "$ROOT_FS_DIR/etc/pam.d/sudo.orig" |
+    sudo dd of="$ROOT_FS_DIR/etc/pam.d/sudo" oflag=append conv=notrunc
+  cat ${PAM_PREFIX} "$ROOT_FS_DIR/etc/pam.d/login.orig" |
+    sudo dd of="$ROOT_FS_DIR/etc/pam.d/login" oflag=append conv=notrunc
+  sudo rm "$ROOT_FS_DIR/etc/pam.d/sudo.orig" \
+          "$ROOT_FS_DIR/etc/pam.d/login.orig" \
+          ${PAM_PREFIX}
+fi
 
 echo "# Allow chronos user to renice processes so that chrome will adjust tab priorities" | \
   sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
