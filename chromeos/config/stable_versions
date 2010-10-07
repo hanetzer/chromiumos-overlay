@@ -2,3 +2,4 @@ stage 20100309/stage3-amd64-20100309.tar.bz2
 portage portage-20100310.tar.bz2
 x86-dogfood 05.09.10.115737
 amd64 30.09.10.081633
+x86-generic 07.10.10.042554
