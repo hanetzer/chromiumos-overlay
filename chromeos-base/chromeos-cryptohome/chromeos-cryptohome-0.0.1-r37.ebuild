@@ -43,15 +43,8 @@ src_unpack() {
 
 src_compile() {
 	cros-debug-add-NDEBUG
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	export CCFLAGS="$CFLAGS"
 
 	pushd cryptohome
 	# Build the daemon and command line client
@@ -62,15 +55,8 @@ src_compile() {
 
 src_test() {
 	cros-debug-add-NDEBUG
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	export CCFLAGS="$CFLAGS"
 
 	pushd cryptohome
 	# Only build the tests
