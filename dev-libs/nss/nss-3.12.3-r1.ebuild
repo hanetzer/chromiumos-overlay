@@ -46,6 +46,7 @@ src_unpack() {
 	epatch "${FILESDIR}"/${PN}-mips64-2.patch
 	epatch "${FILESDIR}"/${P}-executable-stacks.patch
 	epatch "${FILESDIR}"/${P}-shlibsign.patch
+	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
 }
 
 src_compile() {
