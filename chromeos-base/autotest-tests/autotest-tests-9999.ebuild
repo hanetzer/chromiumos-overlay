@@ -82,6 +82,8 @@ IUSE_TESTS="
 	+tests_factory_ScriptWrapper
 	+tests_factory_ShowTestResults
 	+tests_factory_Touchpad
+	+tests_factory_UploadLogs
+	+tests_factory_Verify
 	+tests_factory_Wipe
 	+tests_factory_WriteGBB
 	+tests_firmware_RomSize
