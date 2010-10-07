@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="67e78b9e744b63e26abdada9b12b7fc02d7df063"
+CROS_WORKON_COMMIT="61d5d56dd7546c88a4860f9a0136e609ad5b2f91"
 
 inherit toolchain-funcs
 
