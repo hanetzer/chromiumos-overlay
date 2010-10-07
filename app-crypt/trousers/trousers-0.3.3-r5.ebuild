@@ -4,7 +4,7 @@
 # $Header$
 
 EAPI="2"
-CROS_WORKON_COMMIT="128797b6d5151747a814e3b9c3454670762e365a"
+CROS_WORKON_COMMIT="03271594c78cfcc675fec1f82a1ed51d522b076b"
 
 inherit autotools base cros-workon eutils linux-info
 
