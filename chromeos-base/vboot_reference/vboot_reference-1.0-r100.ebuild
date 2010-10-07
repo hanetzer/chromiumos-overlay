@@ -74,4 +74,13 @@ src_install() {
                 dobin ${S}/build/tests/tpm_lite/tpmtest*[^.]?
                 dobin ${S}/build/utility/tpm_set_readsrkpub
         fi
+
+	# Install firmware/include to /build/${BOARD}/usr/include/vboot
+	dodir /usr/include/vboot
+	insinto /usr/include/vboot
+	doins -r firmware/include/*
+
+	# Install vboot_fw.a to /build/${BOARD}/usr/lib
+	insinto /usr
+	dolib.a "${S}"/build/vboot_fw.a
 }

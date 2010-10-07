@@ -13,8 +13,10 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE=""
 
-DEPEND=""
-RDEPEND="${DEPEND}"
+# U-Boot should have no runtime dependencies; everything it depends on must be
+# statically linked.
+RDEPEND=""
+DEPEND="chromeos-base/vboot_reference"
 
 u_boot=${CHROMEOS_U_BOOT:-"files"}
 config=${CHROMEOS_U_BOOT_CONFIG:-"versatile_config"}
@@ -47,6 +49,7 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=${STRIP} \
+	      VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
 
