@@ -96,6 +96,7 @@ pkg_setup() {
 src_prepare() {
 	epatch "${FILESDIR}/${P}-default-volume.patch"
 	epatch "${FILESDIR}/${P}-stereo-to-mono.patch"
+	epatch "${FILESDIR}/${P}-mic.patch"
 	elibtoolize
 }
 

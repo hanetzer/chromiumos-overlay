@@ -1,0 +1,140 @@
+diff --git a/pulseaudio-0.9.21/src/modules/module-device-restore.c b/src/modules/module-device-restore.c
+index 9c0f56a..ce0b63b 100644
+--- a/pulseaudio-0.9.21/src/modules/module-device-restore.c
++++ b/pulseaudio-0.9.21/src/modules/module-device-restore.c
+@@ -342,9 +342,11 @@ static pa_hook_result_t sink_fixate_hook_callback(pa_core *c, pa_sink_new_data *
+ 
+     name = pa_sprintf_malloc("sink:%s", new_data->name);
+ 
+-    if ((e = read_entry(u, name))) {
++    e = read_entry(u, name);
++
++    if (e && e->volume_valid) {
+ 
+-        if (u->restore_volume && e->volume_valid) {
++        if (u->restore_volume) {
+ 
+             if (!new_data->volume_is_set) {
+                 pa_cvolume v;
+@@ -359,18 +361,6 @@ static pa_hook_result_t sink_fixate_hook_callback(pa_core *c, pa_sink_new_data *
+             } else
+                 pa_log_debug("Not restoring volume for sink %s, because already set.", new_data->name);
+         }
+-
+-        if (u->restore_muted && e->muted_valid) {
+-
+-            if (!new_data->muted_is_set) {
+-                pa_log_info("Restoring mute state for sink %s.", new_data->name);
+-                pa_sink_new_data_set_muted(new_data, e->muted);
+-                new_data->save_muted = TRUE;
+-            } else
+-                pa_log_debug("Not restoring mute state for sink %s, because already set.", new_data->name);
+-        }
+-
+-        pa_xfree(e);
+     } else {
+ 
+       if (u->default_sink_volume != PA_VOLUME_INVALID) {
+@@ -384,9 +374,26 @@ static pa_hook_result_t sink_fixate_hook_callback(pa_core *c, pa_sink_new_data *
+           pa_log_warn("Invalid default sink volume: %s for %s.", buf, new_data->name);
+         }
+       }
++    }
++
++    if (e && e->muted_valid) {
++
++        if (u->restore_muted) {
++
++            if (!new_data->muted_is_set) {
++                pa_log_info("Restoring mute state for sink %s.", new_data->name);
++                pa_sink_new_data_set_muted(new_data, e->muted);
++                new_data->save_muted = TRUE;
++            } else
++                pa_log_debug("Not restoring mute state for sink %s, because already set.", new_data->name);
++        }
++    } else {
+       pa_sink_new_data_set_muted(new_data, u->default_sink_muted);
+     }
+ 
++    if (e)
++      pa_xfree(e);
++
+     pa_xfree(name);
+ 
+     return PA_HOOK_OK;
+@@ -433,35 +440,25 @@ static pa_hook_result_t source_fixate_hook_callback(pa_core *c, pa_source_new_da
+ 
+     name = pa_sprintf_malloc("source:%s", new_data->name);
+ 
+-    if ((e = read_entry(u, name))) {
+-
+-        if (u->restore_volume && e->volume_valid) {
+-
+-            if (!new_data->volume_is_set) {
+-                pa_cvolume v;
++    e = read_entry(u, name);
+ 
+-                pa_log_info("Restoring volume for source %s.", new_data->name);
++    if (e && e->volume_valid) {
+ 
+-                v = e->volume;
+-                pa_cvolume_remap(&v, &e->channel_map, &new_data->channel_map);
+-                pa_source_new_data_set_volume(new_data, &v);
++      if (u->restore_volume) {
+ 
+-                new_data->save_volume = TRUE;
+-            } else
+-                pa_log_debug("Not restoring volume for source %s, because already set.", new_data->name);
+-        }
++        if (!new_data->volume_is_set) {
++            pa_cvolume v;
+ 
+-        if (u->restore_muted && e->muted_valid) {
++            pa_log_info("Restoring volume for source %s.", new_data->name);
+ 
+-            if (!new_data->muted_is_set) {
+-                pa_log_info("Restoring mute state for source %s.", new_data->name);
+-                pa_source_new_data_set_muted(new_data, e->muted);
+-                new_data->save_muted = TRUE;
+-            } else
+-                pa_log_debug("Not restoring mute state for source %s, because already set.", new_data->name);
+-        }
++            v = e->volume;
++            pa_cvolume_remap(&v, &e->channel_map, &new_data->channel_map);
++            pa_source_new_data_set_volume(new_data, &v);
+ 
+-        pa_xfree(e);
++            new_data->save_volume = TRUE;
++        } else
++            pa_log_debug("Not restoring volume for source %s, because already set.", new_data->name);
++      }
+     } else {
+ 
+       if (u->default_source_volume != PA_VOLUME_INVALID) {
+@@ -475,9 +472,26 @@ static pa_hook_result_t source_fixate_hook_callback(pa_core *c, pa_source_new_da
+           pa_log_warn("Invalid default source volume: %s for %s.", buf, new_data->name);
+         }
+       }
++    }
++
++    if (e && e->muted_valid) {
++
++      if (u->restore_muted) {
++
++        if (!new_data->muted_is_set) {
++            pa_log_info("Restoring mute state for source %s.", new_data->name);
++            pa_source_new_data_set_muted(new_data, e->muted);
++            new_data->save_muted = TRUE;
++        } else
++            pa_log_debug("Not restoring mute state for source %s, because already set.", new_data->name);
++      }
++    } else {
+       pa_source_new_data_set_muted(new_data, u->default_source_muted);
+     }
+ 
++    if (e)
++      pa_xfree(e);
++
+     pa_xfree(name);
+ 
+     return PA_HOOK_OK;
