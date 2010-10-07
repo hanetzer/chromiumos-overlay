@@ -17,6 +17,7 @@ RDEPEND="
 	chromeos-base/libscrypt
 	dev-libs/dbus-glib
 	dev-libs/glib
+	dev-libs/nss
 	dev-libs/openssl
 	dev-libs/protobuf
 	sys-apps/keyutils
