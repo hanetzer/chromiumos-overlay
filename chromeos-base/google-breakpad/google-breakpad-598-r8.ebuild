@@ -34,6 +34,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/linux_dumper_unittest_flaky.diff || \
 	    die "unable to patch"
 	epatch "${FILESDIR}"/minidump_dump.diff || die "unable to patch"
+	epatch "${FILESDIR}"/sym_upload_errors.diff || die "unable to patch"
 	popd
 	cp -Rv "${FILESDIR}"/core2md/* "${S}/src" || \
 	    die "Unable to overlay files"
