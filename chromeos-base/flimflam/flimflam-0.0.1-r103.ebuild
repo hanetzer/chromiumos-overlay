@@ -14,7 +14,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +ppp resolvconf resolvfiles +testing threads tools +udev wifi"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +portalcheck +ppp resolvconf resolvfiles +testing threads tools +udev wifi"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -29,6 +29,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	modemmanager? ( net-misc/modemmanager )
 	ofono? ( net-misc/ofono )
 	policykit? ( >=sys-auth/policykit-0.7 )
+	portalcheck? ( net-misc/curl )
 	ppp? ( net-dialup/ppp )
 	resolvconf? ( net-dns/openresolv )
 	testing? (
@@ -80,6 +81,7 @@ src_configure() {
 		$(use_enable modemmanager modemmgr) \
 		$(use_enable ofono) \
 		$(use_enable policykit polkit) \
+		$(use_enable portalcheck portal_check builtin) \
 		$(use_enable ppp) \
 		$(use_enable resolvconf) \
 		$(use_enable resolvfiles resolvfiles builtin) \
