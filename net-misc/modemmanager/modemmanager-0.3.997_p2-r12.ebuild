@@ -3,7 +3,7 @@
 # Based on gentoo's modemmanager ebuild
 
 EAPI=2
-CROS_WORKON_COMMIT="f447c8e1a0062500e1171e031cf4c8fef76ffd59"
+CROS_WORKON_COMMIT="32660a3f8e5de13b25e4c8b649b63f4a79ff0ee0"
 
 inherit eutils autotools cros-workon
 
@@ -43,4 +43,6 @@ src_configure() {
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 	dodoc AUTHORS ChangeLog NEWS README
+	insinto /etc/init
+	doins "${FILESDIR}/modemmanager.conf"
 }

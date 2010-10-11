@@ -26,7 +26,6 @@ RDEPEND=">=dev-libs/glib-2.16
 	dhcpcd? ( net-misc/dhcpcd )
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( net-misc/mobile-broadband-provider-info )
-	modemmanager? ( net-misc/modemmanager )
 	ofono? ( net-misc/ofono )
 	policykit? ( >=sys-auth/policykit-0.7 )
 	portalcheck? ( net-misc/curl )
@@ -42,6 +41,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	newwifi? ( net-wireless/wpa_supplicant[dbus] )"
 
 DEPEND="${RDEPEND}
+	modemmanager? ( net-misc/modemmanager )
 	doc? ( dev-util/gtk-doc )"
 
 CROS_WORKON_LOCALNAME="../third_party/flimflam"
