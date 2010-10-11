@@ -84,6 +84,7 @@ src_prepare() {
 		epatch "${FILESDIR}/python-2.5-cross-printf.patch"
 		epatch "${FILESDIR}/python-2.6-chflags-cross.patch"
 		epatch "${FILESDIR}/python-2.6-test-cross.patch"
+		epatch "${FILESDIR}/python-2.6-cross-getaddrinfo.patch"
 	else
 		rm "${WORKDIR}/${PV}"/*_all_crosscompile.patch
 	fi
