@@ -43,6 +43,7 @@
 =net-libs/libsoup-2.28.2	x86 arm
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/iperf-2.0.4		x86 arm
+=net-misc/iputils-20100418-r1   x86 arm
 =net-misc/mobile-broadband-provider-info-20100122 x86 arm
 =net-misc/modemmanager-0.2_p20090925 x86 arm
 =net-misc/wget-1.12-r2		x86 arm
