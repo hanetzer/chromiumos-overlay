@@ -45,6 +45,7 @@
 =net-misc/iperf-2.0.4		x86 arm
 =net-misc/mobile-broadband-provider-info-20100122 x86 arm
 =net-misc/modemmanager-0.2_p20090925 x86 arm
+=net-misc/wget-1.12-r2		x86 arm
 =sci-geosciences/gpsd-2.38  x86 arm
 =sys-auth/pam_pwdfile-0.99-r1	x86 arm
 =sys-apps/baselayout-2.0.1	x86 arm
