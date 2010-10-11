@@ -50,5 +50,9 @@ src_test() {
 }
 
 src_install() {
+	# TODO(derat): Remove the copy in /usr/sbin after updating the window
+	# manager to run the copy in /usr/bin.
 	dosbin monitor_reconfig/monitor_reconfigure
+	dobin monitor_reconfig/monitor_reconfigure \
+		monitor_reconfig/run_monitor_reconfigure
 }
