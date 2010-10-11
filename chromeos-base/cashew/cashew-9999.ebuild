@@ -16,7 +16,9 @@ IUSE=""
 RDEPEND="chromeos-base/libchrome
 	dev-cpp/gflags
 	dev-cpp/glog
-	dev-libs/dbus-c++"
+	dev-libs/dbus-c++
+        dev-libs/glib
+	net-misc/curl"
 
 DEPEND="${RDEPEND}"
 
