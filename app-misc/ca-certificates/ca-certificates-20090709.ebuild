@@ -20,13 +20,18 @@ RDEPEND="${DEPEND}
 
 S=${WORKDIR}
 
+PATCHLIST=(
+    "${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-root.patch
+    "${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-relpath.patch
+)
+
 src_unpack() {
 	unpack ${A}
 	unpack ./data.tar.gz
 	rm -f control.tar.gz data.tar.gz debian-binary
-	epatch \
-	  "${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-root.patch \
-	  || die
+	for patch in "${PATCHLIST[@]}" ; do
+		epatch $patch
+	done
 }
 
 pkg_setup() {
@@ -52,11 +57,11 @@ src_install() {
 
 	echo 'CONFIG_PROTECT_MASK="/etc/ca-certificates.conf"' > 98ca-certificates
 	doenvd 98ca-certificates
+
+	${D}/usr/sbin/update-ca-certificates --root "${D}"
 }
 
 pkg_postinst() {
-	update-ca-certificates --root "${ROOT}"
-
 	local badcerts=0
 	for c in $(find -L "${ROOT}"etc/ssl/certs/ -type l) ; do
 		ewarn "Broken symlink for a certificate at $c"
