@@ -29,7 +29,10 @@ src_configure() {
 
 	elog "Using U-Boot config: ${config}"
 
-	emake distclean
+	emake \
+	      ARCH=$(tc-arch-kernel) \
+	      CROSS_COMPILE="${CHOST}-" \
+	      distclean
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \
