@@ -42,4 +42,6 @@ src_configure() {
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 	dodoc AUTHORS ChangeLog NEWS README
+	insinto /etc/init
+	doins "${FILESDIR}/modemmanager.conf"
 }
