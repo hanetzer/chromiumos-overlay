@@ -9,7 +9,7 @@ DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="test"
+IUSE="-new_power_button test"
 KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/libcros
@@ -33,8 +33,15 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
+	local power_button
+	if use new_power_button; then
+		power_button=NEW
+	else
+		power_button=LEGACY
+	fi
 	# TODO(davidjames): parallel builds
-	scons || die "power_manager compile failed."
+	scons POWER_BUTTON="$power_button" || \
+		die "power_manager compile failed."
 }
 
 src_test() {
