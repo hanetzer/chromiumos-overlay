@@ -21,8 +21,8 @@ RDEPEND="${DEPEND}
 S=${WORKDIR}
 
 PATCHLIST=(
-    "${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-root.patch
-    "${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-relpath.patch
+	"${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-root.patch
+	"${FILESDIR}"/ca-certificates-20090709-update-ca-certificates-relpath.patch
 )
 
 src_unpack() {
@@ -32,6 +32,15 @@ src_unpack() {
 	for patch in "${PATCHLIST[@]}" ; do
 		epatch $patch
 	done
+
+	# The list of trusted certificates in this package isn't the
+	# list we want to ship with; we remove those files and
+	# replace them with a Google-generated list.
+	#
+	# TODO(jrbarnette) Really, this is just gross.  But this isn't
+	# quite enough to justify a git repository (yet...)
+	rm -rf usr/share/ca-certificates/*
+	tar xf ${FILESDIR}/certificates.tgz
 }
 
 pkg_setup() {
