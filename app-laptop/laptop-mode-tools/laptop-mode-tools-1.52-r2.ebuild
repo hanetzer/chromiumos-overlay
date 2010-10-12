@@ -1,1 +1,0 @@
-laptop-mode-tools-1.52.ebuild
