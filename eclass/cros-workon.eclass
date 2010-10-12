@@ -41,6 +41,11 @@
 # Use git to perform local copy
 : ${CROS_WORKON_LOCALGIT:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_INPLACE
+# @DESCRIPTION:
+# Build the sources in place. Don't copy them to a temp dir.
+: ${CROS_WORKON_INPLACE:=}
+
 inherit git
 
 # Calculate path where code should be checked out.
@@ -101,11 +106,26 @@ local_copy_cp() {
 	cp -a "${1}"/* "${S}" || die "cp -a ${1}/* ${S}"
 }
 
+symlink_in_place() {
+	einfo "Using experimental inplace build! Beware!"
+
+	SBOX_TMP=":${SANDBOX_WRITE}:"
+
+	if [ "${SBOX_TMP/:$CROS_WORKON_SRCROOT://}" == "${SBOX_TMP}" ]; then
+		ewarn "For inplace build you need to modify the sandbox"
+		ewarn "Set SANDBOX_WRITE=${CROS_WORKON_SRCROOT} in your env."
+	fi
+
+	ln -sf ${1} ${S}
+}
+
 local_copy() {
 	local srcpath=$1
 
 	# If we want to use git, and the source actually is a git repo
-	if [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
+	if [ "${CROS_WORKON_INPLACE}" == "1" ]; then
+		symlink_in_place ${srcpath}
+	elif [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
 		local_copy_git ${srcpath}
 	else
 		local_copy_cp ${srcpath}
