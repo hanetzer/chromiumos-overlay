@@ -1,5 +1,5 @@
---- work/bsdiff-4.3/bspatch.c	2005-08-16 15:14:00.000000000 -0700
-+++ work/bsdiff-4.3-new/bspatch.c	2010-08-04 10:07:05.000000000 -0700
+--- bsdiff-4.3/bspatch.c	2005-08-16 15:14:00.000000000 -0700
++++ bsdiff-4.3-new/bspatch.c	2010-10-12 13:57:08.000000000 -0700
 @@ -3,7 +3,7 @@
   * All rights reserved
   *
@@ -9,7 +9,7 @@
   * are met:
   * 1. Redistributions of source code must retain the above copyright
   *    notice, this list of conditions and the following disclaimer.
-@@ -29,6 +29,9 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/b
+@@ -29,6 +29,9 @@
  #endif
  
  #include <bzlib.h>
@@ -19,7 +19,7 @@
  #include <stdlib.h>
  #include <stdio.h>
  #include <string.h>
-@@ -36,6 +39,244 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/b
+@@ -36,6 +39,264 @@
  #include <unistd.h>
  #include <fcntl.h>
  
@@ -33,6 +33,8 @@
 +
 +#define MIN(a, b) \
 +	((a) < (b) ? (a) : (b))
++
++static const char kFdFilePrefix[] = "/dev/fd/";
 +
 +// Reads next int from *ints. The int should be terminated with a comma
 +// or NULL char. *ints will be updated to the space right after the comma
@@ -65,7 +67,7 @@
 +// str is assumed to point to an optional negative sign followed by numbers,
 +// optionally followed by non-numeric characters, followed by '\0'.
 +int IsValidInt64(const char* str) {
-+	const char* end_ptr = 0;
++	char* end_ptr = 0;
 +	errno = 0;
 +	intmax_t result = strtoimax(str, &end_ptr, /* base: */ 10);
 +	return errno == 0;
@@ -180,7 +182,15 @@
 +	}
 +	char* buf_tail = buf;
 +
-+	int fd = open(filename, O_RDONLY);
++	int fd = -1;
++	int should_close = 1;
++	if (strlen(filename) > strlen(kFdFilePrefix) &&
++		!strncmp(filename, kFdFilePrefix, strlen(kFdFilePrefix))) {
++		sscanf(filename + strlen(kFdFilePrefix), "%d", &fd);
++		should_close = 0;
++	} else {
++		fd = open(filename, O_RDONLY);
++	}
 +	if (fd < 0) {
 +		errx(1, "open failed for read\n");
 +	}
@@ -212,7 +222,8 @@
 +		}
 +		buf_tail += rc;
 +	}
-+	close(fd);
++	if (should_close)
++		close(fd);
 +	*old_size = length;
 +	return buf;
 +}
@@ -224,7 +235,15 @@
 +	if (!PositionsStringIsValid(positions)) {
 +		errx(1, "invalid positions string for write\n");
 +	}
-+	int fd = open(filename, O_WRONLY | O_CREAT, 0666);
++	int fd = -1;
++	int should_close = 1;
++	if (strlen(filename) > strlen(kFdFilePrefix) &&
++		!strncmp(filename, kFdFilePrefix, strlen(kFdFilePrefix))) {
++		sscanf(filename + strlen(kFdFilePrefix), "%d", &fd);
++		should_close = 0;
++	} else {
++		fd = open(filename, O_WRONLY | O_CREAT, 0666);
++	}
 +	if (fd < 0) {
 +		errx(1, "open failed for write\n");
 +	}
@@ -258,13 +277,14 @@
 +	if (new_size != 0) {
 +		errx(1, "output position length doesn't match new size\n");
 +	}
-+	close(fd);
++	if (should_close)
++		close(fd);
 +}
 +
  static off_t offtin(u_char *buf)
  {
  	off_t y;
-@@ -69,7 +310,13 @@ int main(int argc,char * argv[])
+@@ -69,7 +330,13 @@
  	off_t lenread;
  	off_t i;
  
@@ -279,7 +299,7 @@
  
  	/* Open patch file */
  	if ((f = fopen(argv[3], "r")) == NULL)
-@@ -132,12 +379,18 @@ int main(int argc,char * argv[])
+@@ -132,12 +399,18 @@
  	if ((epfbz2 = BZ2_bzReadOpen(&ebz2err, epf, 0, 0, NULL, 0)) == NULL)
  		errx(1, "BZ2_bzReadOpen, bz2err = %d", ebz2err);
  
@@ -304,7 +324,7 @@
  	if((new=malloc(newsize+1))==NULL) err(1,NULL);
  
  	oldpos=0;newpos=0;
-@@ -193,9 +446,13 @@ int main(int argc,char * argv[])
+@@ -193,9 +466,13 @@
  		err(1, "fclose(%s)", argv[3]);
  
  	/* Write the new file */
