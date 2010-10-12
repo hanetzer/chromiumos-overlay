@@ -13,15 +13,9 @@ LICENSE="BSD-2"
 
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="crash"
 
-RDEPEND=">=sys-apps/dbus-1.2
-	crash? ( chromeos-base/crash-dumper )"
+RDEPEND=">=sys-apps/dbus-1.2"
 DEPEND="${RDEPEND}"
-
-if ! use crash; then
-	export LIBCRASH=""
-fi
 
 src_configure() {
 	econf --prefix= \
