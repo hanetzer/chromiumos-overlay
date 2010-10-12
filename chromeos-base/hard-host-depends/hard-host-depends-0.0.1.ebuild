@@ -52,11 +52,11 @@ RDEPEND="${RDEPEND}
 	dev-libs/m17n-lib
 	dev-libs/nss[utils]
 	dev-libs/protobuf
+	dev-python/cherrypy
 	dev-python/dbus-python
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
-	dev-python/webpy
 	=dev-util/boost-build-1.42.0
 	dev-util/cmake
 	>=dev-util/git-1.7.2
