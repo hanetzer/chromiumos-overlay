@@ -157,24 +157,6 @@ if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board="${FLAGS_board}" list)
 fi
 
-# Temporary hack needed so that we can move headers install back into
-# the kernel-headers ebuild.
-# TODO(msb): Remove this hack.
-if [ ! -f ~/trunk/.config/headers-fix/"${FLAGS_board}" ]; then
-  echo "Merging kernel in order to uninstall headers"
-  if echo ${CROS_WORKON_PKGS} | grep "/kernel$"; then
-    eretry sudo -E ${EMERGE_BOARD_CMD} --oneshot virtual/kernel
-  else
-    eretry sudo -E ${EMERGE_BOARD_CMD} --oneshot -uDNv \
-      $EMERGE_FLAGS virtual/kernel
-  fi
-  eretry sudo -E ${EMERGE_BOARD_CMD} --oneshot -uDNv \
-    $EMERGE_FLAGS chromeos-base/kernel-headers
-  sudo chown -R ${USER} ~/trunk/.config
-  mkdir -p ~/trunk/.config/headers-fix
-  touch ~/trunk/.config/headers-fix/"${FLAGS_board}"
-fi
-
 # We are building chrome from source if chromefromsource is 'TRUE'.
 if [[ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]]; then
   export CHROME_ORIGIN=SERVER_SOURCE
