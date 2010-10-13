@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="51b136c5cf449a209a2cdb6e707fcbedabb4045f"
+CROS_WORKON_COMMIT="01a4a8c350a0681f5f6f956004ea4e8308d4a5f1"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -80,6 +80,7 @@ src_install() {
 	dobin bin/crosh
 	dobin bin/crosh-dev
 	dobin bin/crosh-usb
+	dobin bin/inputrc.crosh
 
 	into /
 	dosbin bin/window-manager-session.sh
