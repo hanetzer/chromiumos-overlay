@@ -79,6 +79,7 @@ src_install() {
 	dobin bin/crosh
 	dobin bin/crosh-dev
 	dobin bin/crosh-usb
+	dobin bin/inputrc.crosh
 
 	into /
 	dosbin bin/window-manager-session.sh
