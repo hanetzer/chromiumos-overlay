@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="910def6e2b8b0afde49d9852de4ca1efd5ef6e64"
+CROS_WORKON_COMMIT="2789222ac8cb577f0d0535b764c744cdf858a9a1"
 
 if [[ -n "${PRIVATE_REPO}" ]] ; then
 	CROS_WORKON_REPO="${PRIVATE_REPO}"
