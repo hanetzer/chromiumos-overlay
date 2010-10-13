@@ -397,16 +397,16 @@ install_chrome_test_resources() {
 
 	# Copy PyAuto scripts and suppport libs.
 	mkdir -p "${TEST_DIR}"/chrome/test
-	fast_cp -av "${CHROME_ROOT}"/src/chrome/test/pyautolib \
+	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
 		"${TEST_DIR}"/chrome/test/
-	fast_cp -av "${CHROME_ROOT}"/src/chrome/test/functional \
+	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/functional \
 		"${TEST_DIR}"/chrome/test/
 	mkdir -p "${TEST_DIR}"/third_party
-	fast_cp -av "${CHROME_ROOT}"/src/third_party/simplejson \
+	fast_cp -a "${CHROME_ROOT}"/src/third_party/simplejson \
 		"${TEST_DIR}"/third_party/
-	fast_cp -av "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
 
-	fast_cp -av "${FROM}"/pyproto "${TEST_DIR}"/out/Release
+	fast_cp -a "${FROM}"/pyproto "${TEST_DIR}"/out/Release
 
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip these
@@ -414,40 +414,40 @@ install_chrome_test_resources() {
 	for f in lib.target/_pyautolib.so libppapi_tests.so browser_tests \
 	         reliability_tests ui_tests sync_integration_tests \
 	         page_cycler_tests; do
-		fast_cp -av "${FROM}"/${f} "${TEST_DIR}"/out/Release
+		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
 	done
 
 	mkdir -p "${TEST_DIR}"/base
-	fast_cp -av "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+	fast_cp -a "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
 
 	mkdir -p "${TEST_DIR}"/chrome/test
-	fast_cp -av "${CHROME_ROOT}"/src/chrome/test/data \
+	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/data \
 		"${TEST_DIR}"/chrome/test
 
 	mkdir -p "${TEST_DIR}"/net/data/ssl
-	fast_cp -av "${CHROME_ROOT}"/src/net/data/ssl/certificates \
+	fast_cp -a "${CHROME_ROOT}"/src/net/data/ssl/certificates \
 		"${TEST_DIR}"/net/data/ssl
 
 	mkdir -p "${TEST_DIR}"/net/tools
-	fast_cp -av "${CHROME_ROOT}"/src/net/tools/testserver \
+	fast_cp -a "${CHROME_ROOT}"/src/net/tools/testserver \
 		"${TEST_DIR}"/net/tools
 
 	mkdir -p "${TEST_DIR}"/third_party
-	fast_cp -av "${CHROME_ROOT}"/src/third_party/tlslite \
+	fast_cp -a "${CHROME_ROOT}"/src/third_party/tlslite \
 		"${TEST_DIR}"/third_party
-	fast_cp -av "${CHROME_ROOT}"/src/third_party/pyftpdlib \
+	fast_cp -a "${CHROME_ROOT}"/src/third_party/pyftpdlib \
 		"${TEST_DIR}"/third_party
 		
 	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
-	fast_cp -av "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
+	fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
 	for f in ${TEST_FILES}; do
-		fast_cp -av "${FROM}/${f}" "${TEST_DIR}"
+		fast_cp -a "${FROM}/${f}" "${TEST_DIR}"
 	done
 
-	fast_cp -av "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
+	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
 		"${TEST_DIR}"/out/Release
 
 	# Remove test binaries from other platforms
