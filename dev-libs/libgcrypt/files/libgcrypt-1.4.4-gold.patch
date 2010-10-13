@@ -1,0 +1,12 @@
+diff -ru libgcrypt-1.4.4.orig/tests/Makefile.in libgcrypt-1.4.4/tests/Makefile.in
+--- libgcrypt-1.4.4.orig/tests/Makefile.in	2010-10-05 14:23:38.000000000 -0700
++++ libgcrypt-1.4.4/tests/Makefile.in	2010-10-05 14:24:41.000000000 -0700
+@@ -332,7 +332,7 @@
+ # a built header.
+ AM_CPPFLAGS = -I../src -I$(top_srcdir)/src
+ AM_CFLAGS = $(GPG_ERROR_CFLAGS)
+-LDADD = ../src/libgcrypt.la $(DL_LIBS)
++LDADD = ../src/libgcrypt.la $(DL_LIBS) ${GPG_ERROR_LIBS}
+ EXTRA_DIST = README rsa-16k.key cavs_tests.sh cavs_driver.pl
+ all: all-am
+ 

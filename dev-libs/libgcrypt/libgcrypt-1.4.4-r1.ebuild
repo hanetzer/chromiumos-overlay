@@ -17,6 +17,12 @@ IUSE=""
 RDEPEND=">=dev-libs/libgpg-error-1.5"
 DEPEND="${RDEPEND}"
 
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+	epatch "${FILESDIR}"/${P}-gold.patch
+}
+
 pkg_setup() {
 	[[ $(tc-arch) == x86 && $(gcc-version) == 4.1 ]] && replace-flags -O3 -O2
 }
