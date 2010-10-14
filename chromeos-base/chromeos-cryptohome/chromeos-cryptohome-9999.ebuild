@@ -26,7 +26,6 @@ RDEPEND="
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchromeos
-	chromeos-base/tpm_init
 	${RDEPEND}"
 
 CROS_WORKON_PROJECT="cryptohome"
