@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="797a48faad739762cbd30d235e82d163fd214873"
+CROS_WORKON_COMMIT="717fc994358f54be58d2a9604324bc885b6a6869"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -23,7 +23,9 @@ RDEPEND="chromeos-base/libchrome
 	dev-cpp/gflags
 	dev-cpp/glog
 	install_tests? ( dev-cpp/gtest )
-	chromeos-base/libchromeos"
+	chromeos-base/libchromeos
+	chromeos-base/metrics
+"
 
 DEPEND="${RDEPEND}
 	net-misc/modemmanager"
