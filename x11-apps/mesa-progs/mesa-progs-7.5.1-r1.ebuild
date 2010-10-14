@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-apps/mesa-progs/mesa-progs-7.5.1.ebuild,v 1.8 2009/12/16 18:02:52 scarabeus Exp $
 
-inherit toolchain-funcs
+inherit eutils toolchain-funcs
 
 MY_PN="${PN/m/M}"
 MY_PN="${MY_PN/-progs}"
@@ -64,6 +64,8 @@ src_unpack() {
 
 	# Just executables here, no need to compile with -fPIC
 	echo "PIC_FLAGS =" >> ${HOSTCONF}
+
+	epatch "${FILESDIR}"/${P}-gold.patch
 }
 
 src_compile() {
