@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a23da1088ed7dff22a07f057306d7ef61a672810"
+CROS_WORKON_COMMIT="382edee94eebd60bb62b93ae6fc30bd91b8c4302"
 inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
@@ -27,7 +27,6 @@ RDEPEND="
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchromeos
-	chromeos-base/tpm_init
 	${RDEPEND}"
 
 CROS_WORKON_PROJECT="cryptohome"
