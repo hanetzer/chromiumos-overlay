@@ -118,6 +118,7 @@ RDEPEND="${RDEPEND}
 	net-wireless/marvell_sd8787
 	sci-geosciences/gpsd
 	>=sys-apps/baselayout-2.0.0
+	sys-apps/busybox
 	sys-apps/coreutils
 	sys-apps/dbus
 	sys-apps/devicekit-disks
