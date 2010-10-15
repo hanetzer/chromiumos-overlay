@@ -104,17 +104,11 @@ CROS_WORKON_LOCALNAME="assets"
 CROS_WORKON_PROJECT="assets"
 
 src_install() {
-	insinto /usr/share/chromeos-assets/help
-	doins -r "${S}"/help/*
-
 	insinto /usr/share/chromeos-assets/images
 	doins -r "${S}"/images/*
 
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
-
-	insinto /usr/share/fonts/droid-thai
-	doins "${S}"/fonts/DroidThai*.ttf
 
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf
