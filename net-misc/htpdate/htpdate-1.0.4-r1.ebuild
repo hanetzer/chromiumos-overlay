@@ -22,11 +22,17 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}/${P}-waitforvalidhttpresp.patch"
 	epatch "${FILESDIR}/${P}-errorcheckhttpresp.patch"
+	epatch "${FILESDIR}/${P}-checkagainstbuildtime.patch"
 	gunzip htpdate.8.gz || die
 }
 
 src_compile() {
-	emake CFLAGS="-Wall ${CFLAGS} ${LDFLAGS}" CC="$(tc-getCC)" || die
+	# Provide timestamp of when this was built, in number of seconds since
+	# 01 Jan 1970 in UTC time.
+	DATE=`date -u +%s`
+	# Set it back one day to avoid dealing with time zones.
+	DATE_OPT="-DBUILD_TIME_UTC=`expr $DATE - 86400`"
+	emake CFLAGS="-Wall $DATE_OPT ${CFLAGS} ${LDFLAGS}" CC="$(tc-getCC)" || die
 }
 
 src_install() {
