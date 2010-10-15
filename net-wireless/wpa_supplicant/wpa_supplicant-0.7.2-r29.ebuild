@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/wpa_supplicant/wpa_supplicant-0.7.0.ebuild,v 1.7 2009/07/24 16:42:43 josejx Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="d448c50c4ac2b6d54068188099e048035ef645f5"
+CROS_WORKON_COMMIT="f373190b2de17919114b679b178bee5fce0ec01a"
 
 inherit eutils toolchain-funcs qt3 qt4 cros-workon
 
