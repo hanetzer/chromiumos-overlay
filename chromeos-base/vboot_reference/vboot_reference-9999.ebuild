@@ -12,22 +12,25 @@ EAPI="2"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
-        sys-apps/util-linux"
+	sys-apps/util-linux"
 
 src_compile() {
 	tc-export CC AR CXX
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
 	emake || die "${err_msg}"
-        if use rbtest; then
-                emake rbtest || die "${err_msg}"
-        fi
+	if use rbtest; then
+		emake rbtest || die "${err_msg}"
+	fi
 }
 
 src_install() {
+	local dst_dir
+
 	if use minimal ; then
 		# Installing on the target. Cherry pick programs generated
 		# by src_compile in the source tree build/ subdirectory
+		einfo "Installing target programs"
 		local progs='utility/dump_kernel_config'
 		progs+=' utility/dev_sign_file'
 		progs+=' utility/tpm_init_temp_fix'
@@ -40,11 +43,25 @@ src_install() {
 		progs+=' utility/dev_debug_vboot'
 		progs+=' cgpt/cgpt'
 
-		into "/usr"
+		into /usr
 		for prog in ${progs}; do
 			dobin "${S}"/build/"${prog}"
 		done
 
+		einfo "Installing dev tools"
+		dst_dir='/usr/share/vboot/bin'
+		local src_dir='scripts/image_signing'
+		dodir "${dst_dir}"
+		exeinto "${dst_dir}"
+		doexe "${src_dir}/common.sh"
+		doexe "${src_dir}/resign_firmwarefd.sh"
+		doexe "${src_dir}/make_dev_firmware.sh"
+		doexe "${src_dir}/make_dev_ssd.sh"
+
+		# TODO(hungte) Since we now install all keyset into
+		# /usr/share/vboot/devkeys, maybe SAFT does not need to install
+		# its own keys anymore.
+		einfo "Installing keys for SAFT"
 		local keys_to_install='recovery_kernel_data_key.vbprivk'
 		keys_to_install+=' firmware.keyblock '
 		keys_to_install+=' firmware_data_key.vbprivk'
@@ -54,29 +71,38 @@ src_install() {
 		dodir "${dst_dir}"
 		insinto "${dst_dir}"
 		for key in ${keys_to_install}; do
-		    doins "tests/devkeys/${key}"
+			doins "tests/devkeys/${key}"
 		done
+
 	else
+		# Installing on host.
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
-		dodir /usr/share/vboot/devkeys
-		insinto /usr/share/vboot/devkeys
-		doins tests/devkeys/*
 	fi
-        if use rbtest; then
-                emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
-                      install-rbtest || die "${PN} install failed."
-        fi
-        if use tpmtests; then
-                into "/usr"
-                # copy files starting with tpmtest, but skip .d files.
-                dobin ${S}/build/tests/tpm_lite/tpmtest*[^.]?
-                dobin ${S}/build/utility/tpm_set_readsrkpub
-        fi
+	if use rbtest; then
+		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
+		      install-rbtest || die "${PN} install failed."
+	fi
+	if use tpmtests; then
+		into /usr
+		# copy files starting with tpmtest, but skip .d files.
+		dobin "${S}"/build/tests/tpm_lite/tpmtest*[^.]?
+		dobin "${S}"/build/utility/tpm_set_readsrkpub
+	fi
+
+	# Install devkeys to /usr/share/vboot/devkeys
+	# (shared by host and target)
+	einfo "Installing devkeys"
+	dst_dir='/usr/share/vboot/devkeys'
+	dodir "${dst_dir}"
+	insinto "${dst_dir}"
+	doins tests/devkeys/*
 
 	# Install firmware/include to /build/${BOARD}/usr/include/vboot
-	dodir /usr/include/vboot
-	insinto /usr/include/vboot
+	einfo "Installing header files and libraries"
+	dst_dir='/usr/include/vboot'
+	dodir "${dst_dir}"
+	insinto "${dst_dir}"
 	doins -r firmware/include/*
 
 	# Install vboot_fw.a to /build/${BOARD}/usr/lib
