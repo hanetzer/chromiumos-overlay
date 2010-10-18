@@ -9,17 +9,17 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X +localssh"
+IUSE="X +localssh +python"
 
 DEPEND="chromeos-base/internal
-       sys-apps/baselayout"
+	   sys-apps/baselayout"
 
 # Enable ssh locally for chromium-os device.
 RDEPEND="${RDEPEND}
 	localssh? (
 		app-admin/sudo
 		app-arch/tar
-                chromeos-base/workarounds
+		chromeos-base/workarounds
 		net-misc/openssh
 		x11-terms/aterm
 	)
@@ -69,7 +69,7 @@ RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
 	app-crypt/tpm-emulator
-        app-crypt/trousers
+	app-crypt/trousers
 	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
@@ -128,7 +128,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/mawk
 	sys-apps/module-init-tools
 	sys-apps/net-tools
-        sys-apps/rootdev
+	sys-apps/rootdev
 	sys-apps/sed
 	sys-apps/shadow
 	sys-apps/upstart
@@ -143,3 +143,11 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/vixie-cron
 	"
+
+# TODO(petkov): Remove once base image with no Python is tested.
+RDEPEND="${RDEPEND}
+	python? (
+		dev-lang/python
+		dev-python/dbus-python
+		dev-python/pygobject
+	)"
