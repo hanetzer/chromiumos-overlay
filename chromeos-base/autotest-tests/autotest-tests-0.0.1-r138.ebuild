@@ -220,6 +220,7 @@ IUSE_TESTS="
 	+tests_suite_Factory
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
+	+tests_suite_Smoke
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
