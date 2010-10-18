@@ -34,7 +34,9 @@ use install_tests && MAKE_FLAGS="INSTALL_TESTS=1"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake ${MAKE_FLAGS} PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
+	REV=${CROS_WORKON_COMMIT-unknown}
+	if [ "${REV}" = "master" ]; then REV=unknown; fi
+	emake ${MAKE_FLAGS} PLUGINDIR="${PLUGINDIR}" VCSID="${REV}" || die "Failed to compile"
 }
 
 src_install() {
