@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sci-geosciences/gpsd/gpsd-2.38.ebuild,v 1.4 2010/01/19 00:50:35 jer Exp $
 
+PYTHON_DEPEND="python? *"
 inherit autotools eutils distutils flag-o-matic
 
 DESCRIPTION="GPS daemon and library to support USB/serial GPS devices and various GPS/mapping clients."
@@ -48,15 +49,15 @@ src_unpack() {
 	cd "${S}"
 	# add -lm to setup.py again (see bug #250757)
 	sed -i \
-	    -e "s:, gpspacket_sources:, gpspacket_sources, libraries=['m']:g" \
-	    -e "s:geoid.c\"]:geoid.c\"], libraries=['m']:g" \
-	    setup.py || die "sed 1 failed"
+		-e "s:, gpspacket_sources:, gpspacket_sources, libraries=['m']:g" \
+		-e "s:geoid.c\"]:geoid.c\"], libraries=['m']:g" \
+		setup.py || die "sed 1 failed"
 	# fix Garmin text struct
 	sed -i -e "s:RTCM2_PACKET;:RTCM2_PACKET,:g" \
-	    drivers.c || die "sed 2 failed"
+		drivers.c || die "sed 2 failed"
 	# add missing include file (see bug #162361)
 	sed -i -e "s:gps.h libgpsmm.h:gps.h libgpsmm.h gpsd_config.h:g" \
-	    Makefile.am || die "sed 3 failed"
+		Makefile.am || die "sed 3 failed"
 
 	eautoreconf
 }
@@ -107,7 +108,7 @@ src_install() {
 	make DESTDIR="${D}" install || die "make install failed"
 
 	if ! test -x "${D}"usr/sbin/gpsd; then
-	    ewarn "gpsd link error detected; please re-emerge gpsd."
+		ewarn "gpsd link error detected; please re-emerge gpsd."
 	fi
 
 	if use usb ; then
