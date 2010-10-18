@@ -66,6 +66,7 @@ src_install() {
 		keys_to_install+=' firmware.keyblock '
 		keys_to_install+=' firmware_data_key.vbprivk'
 		keys_to_install+=' kernel_subkey.vbpubk'
+		keys_to_install+=' kernel_data_key.vbprivk'
 
 		dst_dir='/usr/sbin/firmware/saft'
 		dodir "${dst_dir}"
