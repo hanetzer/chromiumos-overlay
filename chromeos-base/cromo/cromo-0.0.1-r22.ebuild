@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="717fc994358f54be58d2a9604324bc885b6a6869"
+CROS_WORKON_COMMIT="029ca93d6f794b3f11a4f703c9717ecb3afd7082"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -35,7 +35,9 @@ use install_tests && MAKE_FLAGS="INSTALL_TESTS=1"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake ${MAKE_FLAGS} PLUGINDIR="${PLUGINDIR}" || die "Failed to compile"
+	REV=${CROS_WORKON_COMMIT-unknown}
+	if [ "${REV}" = "master" ]; then REV=unknown; fi
+	emake ${MAKE_FLAGS} PLUGINDIR="${PLUGINDIR}" VCSID="${REV}" || die "Failed to compile"
 }
 
 src_install() {
