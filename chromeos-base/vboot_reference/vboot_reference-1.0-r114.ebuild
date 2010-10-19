@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="6078ca3398f5e72360fb16b1f66049b2aa7ea73c"
+CROS_WORKON_COMMIT="3e2c742be423681d8318f416d2b23ef193c26528"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
@@ -67,6 +67,7 @@ src_install() {
 		keys_to_install+=' firmware.keyblock '
 		keys_to_install+=' firmware_data_key.vbprivk'
 		keys_to_install+=' kernel_subkey.vbpubk'
+		keys_to_install+=' kernel_data_key.vbprivk'
 
 		dst_dir='/usr/sbin/firmware/saft'
 		dodir "${dst_dir}"
