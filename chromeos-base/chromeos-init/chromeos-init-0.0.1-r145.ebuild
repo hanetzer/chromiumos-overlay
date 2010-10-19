@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e79ed67ea1df2f68b1ebd1cceb400cdb10483cbd"
+CROS_WORKON_COMMIT="ebc746523d1ee82303427e7167c06c21860acb37"
 
 inherit cros-workon toolchain-funcs
 
@@ -54,6 +54,7 @@ src_install() {
 
 	# Install startup/shutdown scripts.
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
+	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
 
 	# Install disk cleanup script and run it hourly.
