@@ -10,12 +10,16 @@
     'bluez': {
       'filepath': 'bluez',
     },
+    'chromeos-image' : {
+      'filepath': 'chromeos-base/chromeos(/|-dev|-test)',
+    }
   },
   'WATCHLISTS': {
     'all': ['adlr@chromium.org',
             'msb@chromium.org',
             'tedbo@chromium.org',
 	    'anush@chromium.org'],
-    'bluez': ['petkov@chromium.org']
+    'bluez': ['petkov@chromium.org'],
+    'chromeos-image' : ['sosa@chromium.org'],
   },
 }
