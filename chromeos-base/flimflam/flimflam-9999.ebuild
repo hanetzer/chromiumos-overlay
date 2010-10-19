@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +portalcheck +ppp resolvconf resolvfiles +testing threads tools +udev wifi"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev wifi"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -30,11 +30,6 @@ RDEPEND=">=dev-libs/glib-2.16
 	portalcheck? ( net-misc/curl )
 	ppp? ( net-dialup/ppp )
 	resolvconf? ( net-dns/openresolv )
-	testing? (
-		dev-lang/python
-		dev-python/dbus-python
-		dev-python/pygobject
-	)
 	udev? ( >=sys-fs/udev-141 )
 	wifi? ( net-wireless/wpa_supplicant[dbus] )
 	newwifi? ( net-wireless/wpa_supplicant[dbus] )"
@@ -118,10 +113,5 @@ src_install() {
 		local ppp_dir="${D}"/etc/ppp/ip-up.d/
 		mkdir -p ${ppp_dir}
 		cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
-	fi
-
-	if use testing; then
-		exeinto /usr/lib/flimflam/test
-		doexe test/* || die
 	fi
 }

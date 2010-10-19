@@ -18,6 +18,7 @@ RDEPEND="${RDEPEND}
 	app-crypt/nss
 	app-crypt/tpm-tools
 	chromeos-base/autox
+	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
 	x86? ( chromeos-base/tpm )
 	x86? ( chromeos-base/usb-server )
