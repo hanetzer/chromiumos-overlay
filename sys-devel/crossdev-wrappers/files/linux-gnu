@@ -65,3 +65,7 @@ lf_cv_sane_realloc=yes
 
 # netperf2 autotest
 ac_cv_func_setpgrp_void=yes
+
+# net-analyzer/tcpdump-4.1.1
+ac_cv_linux_vers=${ac_cv_linux_vers=2}
+td_cv_buggygetaddrinfo=${td_cv_buggygetaddrinfo=no}
