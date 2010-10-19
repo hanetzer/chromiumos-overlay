@@ -12,7 +12,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm ~amd64"
 
-RDEPEND="dev-lang/python"
+# We don't want Python on the base image, however, there're several base
+# chromeos dependent ebuilds that depend on this ebuild.
 DEPEND="${RDEPEND}"
 
 # Ensure the configures run by autotest pick up the right config.site
