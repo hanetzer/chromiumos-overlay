@@ -286,6 +286,10 @@ if [ -f $CHROOT_STATE ];then
 MAKEOPTS="-j${NUM_JOBS}"
 EOF
   sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
+
+  # Apply any hacks needed to update the chroot.
+  # TODO: Should the above hacks be moved into this function?
+  chroot_hacks_from_outside "${FLAGS_chroot}"
 else
   # run all the init stuff to setup the env
   init_setup
