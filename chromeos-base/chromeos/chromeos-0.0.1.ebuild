@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X +localssh +python"
+IUSE="X +localssh +basepython"
 
 DEPEND="chromeos-base/internal
 	   sys-apps/baselayout"
@@ -146,7 +146,7 @@ RDEPEND="${RDEPEND}
 
 # TODO(petkov): Remove once base image with no Python is tested.
 RDEPEND="${RDEPEND}
-	python? (
+	basepython? (
 		dev-lang/python
 		dev-python/dbus-python
 		dev-python/pygobject
