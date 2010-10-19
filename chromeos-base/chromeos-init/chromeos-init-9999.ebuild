@@ -53,6 +53,7 @@ src_install() {
 
 	# Install startup/shutdown scripts.
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
+	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
 
 	# Install disk cleanup script and run it hourly.
