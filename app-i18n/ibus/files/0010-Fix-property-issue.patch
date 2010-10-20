@@ -1,14 +1,14 @@
-From eda794a43538e284550def68d188ccebcb43a944 Mon Sep 17 00:00:00 2001
+From 106e708a02351e5a96dccb0f76830e91c7cb9f80 Mon Sep 17 00:00:00 2001
 From: Peng Huang <shawn.p.huang@gmail.com>
 Date: Thu, 12 Aug 2010 15:22:00 +0800
-Subject: [PATCH] Fix property issue.
+Subject: [PATCH 10/10] Fix property issue.
 
 ---
  bus/inputcontext.c |   12 ++++++++++++
  1 files changed, 12 insertions(+), 0 deletions(-)
 
 diff --git a/bus/inputcontext.c b/bus/inputcontext.c
-index f0c5590..d610515 100644
+index 41f5c4e..f8af72c 100644
 --- a/bus/inputcontext.c
 +++ b/bus/inputcontext.c
 @@ -935,6 +935,18 @@ _ic_property_activate (BusInputContext  *context,

@@ -1,0 +1,74 @@
+From 6ae80939f28c4d8f365c1dd66c5d81cc79869eda Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Wed, 15 Sep 2010 12:25:17 +0900
+Subject: [PATCH 06/10] Fix issues of the "previous_engine" hotkey.
+
+Check global_previous_engine_name when the previous engine is requested and rewrite it if necessary.
+This change ensures that the "previous_engine" hotkey (Ctrl+space on Chrome OS) always works
+whenever two or more engines are preloaded.
+
+Currently, Ctrl+space could become NOP by the following scenarios (http://crosbug.com/6609):
+
+(1)
+1. preload engines A, B, C.
+2. switch to A.
+3. switch to B.
+4. at this point, ctrl+space works fine. It selectes A and B alternately.
+5. switch to A.
+6. remove B from the preloaded engline list.
+7. at this point, ctrl+space suddenly becomes NOP although C is still preloaded.
+This is because the callback function of ctrl+space detects
+global_previous_engine_name (i.e. B) is removed and automatically selects A (not
+C) as a global_previous_engine_name.
+
+(2)
+1. preload engines A, B.
+2. switch to A.
+3. switch to B.
+4. at this point, ctrl+space works fine. It selectes A and B alternately.
+5. switch to A.
+6. remove B from the preloaded engline list.
+7. press ctrl+space several times, confirm that nothing happens (this is
+expected since only one engine, A, is preloaded).
+8. preload additional engine, C.
+9. at this point, ctrl+space is still NOP although two engines, A and C, are
+preloaded.
+---
+ bus/ibusimpl.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index 32aef54..b703dae 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -983,6 +983,8 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
+                                                BusInputContext *context)
+ {
+     gchar *engine_name = NULL;
++    const gchar *current_engine_name = NULL;
++
+     if (!ibus->use_global_engine) {
+         engine_name = (gchar *) g_object_get_data (G_OBJECT (context), "previous-engine-name");
+     }
+@@ -991,6 +993,18 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
+             ibus->global_previous_engine_name = bus_ibus_impl_load_global_previous_engine_name_from_config (ibus);
+         }
+         engine_name = ibus->global_previous_engine_name;
++        if (engine_name != NULL) {
++            current_engine_name = ibus->global_engine ?
++                bus_engine_proxy_get_desc (ibus->global_engine)->name : NULL;
++            /* If the previous engine is removed from the engine list or the
++               current engine and the previous engine are the same one, force
++               to pick a new one. */
++            if (!_find_engine_desc_by_name (ibus, engine_name) ||
++                g_strcmp0 (current_engine_name, engine_name) == 0) {
++                g_free (engine_name);
++                ibus->global_previous_engine_name = engine_name = NULL;
++            }
++        }
+     }
+ 
+     /*
+-- 
+1.7.1
+

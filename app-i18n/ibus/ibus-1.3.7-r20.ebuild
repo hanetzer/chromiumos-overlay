@@ -39,8 +39,16 @@ pkg_setup() {
 }
 
 src_prepare() {
-  epatch "${FILESDIR}/ibus-chromiumos.patch"
-  epatch "${FILESDIR}/Fix-property-issue.patch"
+	epatch "${FILESDIR}/0001-Merge-xkb-related-changes.patch"
+	epatch "${FILESDIR}/0002-Support-changing-the-global-input-method-engine-with.patch"
+	epatch "${FILESDIR}/0003-Change-default-values-of-some-config.patch"
+	epatch "${FILESDIR}/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch"
+	epatch "${FILESDIR}/0005-Add-api-to-ibus-for-retreiving-unused-config-values..patch"
+	epatch "${FILESDIR}/0006-Fix-issues-of-the-previous_engine-hotkey.patch"
+	epatch "${FILESDIR}/0007-Fix-g_assertion-failure-in-bus_ibus_impl_-load-save-.patch"
+	epatch "${FILESDIR}/0008-Remove-bus_input_context_register_properties-props_e.patch"
+	epatch "${FILESDIR}/0009-Fix-race-condition-in-bus_ibus_impl_create_engine.patch"
+	epatch "${FILESDIR}/0010-Fix-property-issue.patch"
 }
 
 src_configure() {
