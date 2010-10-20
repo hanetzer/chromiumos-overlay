@@ -6,17 +6,28 @@ DESCRIPTION="Pipe Viewer: a tool for monitoring the progress of data through a p
 HOMEPAGE="http://www.ivarch.com/programs/pv.shtml"
 SRC_URI="mirror://sourceforge/pipeviewer/${P}.tar.gz"
 
+EAPI="2"
+inherit eutils toolchain-funcs
+
+
 LICENSE="Artistic-2"
 SLOT="0"
 KEYWORDS="alpha amd64 ~arm hppa ppc ppc64 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x86-macos ~sparc64-solaris ~x86-solaris"
 IUSE="debug nls"
 
-src_compile() {
+src_prepare() {
+	epatch "${FILESDIR}/${P}-remove-LD.patch"
+}
+
+src_configure() {
 	econf \
 		$(use_enable debug debugging) \
 		$(use_enable nls) \
 		|| die
+}
 
+src_compile() {
+	tc-export CC LD
 	emake || die
 }
 
