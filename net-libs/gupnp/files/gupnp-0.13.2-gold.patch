@@ -1,0 +1,67 @@
+diff -ru gupnp-0.13.2/examples/Makefile.am gupnp-0.13.2.patched/examples/Makefile.am
+--- gupnp-0.13.2/examples/Makefile.am	2009-02-02 04:44:50.000000000 -0800
++++ gupnp-0.13.2.patched/examples/Makefile.am	2010-10-06 09:50:36.000000000 -0700
+@@ -1,5 +1,5 @@
+ AM_CFLAGS = $(LIBGUPNP_CFLAGS) -I$(top_srcdir) $(GTHREAD_CFLAGS)
+-LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la
++LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la -lgobject-2.0 -lgssdp-1.0
+ 
+ noinst_PROGRAMS = light-server light-client
+ 
+diff -ru gupnp-0.13.2/examples/Makefile.in gupnp-0.13.2.patched/examples/Makefile.in
+--- gupnp-0.13.2/examples/Makefile.in	2009-12-04 07:26:49.000000000 -0800
++++ gupnp-0.13.2.patched/examples/Makefile.in	2010-10-06 09:50:36.000000000 -0700
+@@ -221,7 +221,7 @@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ AM_CFLAGS = $(LIBGUPNP_CFLAGS) -I$(top_srcdir) $(GTHREAD_CFLAGS)
+-LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la
++LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la -lgobject-2.0 -lgssdp-1.0
+ light_server_SOURCES = light-server.c
+ light_server_LDFLAGS = -export-dynamic $(GTHREAD_LIBS)
+ light_client_SOURCES = light-client.c
+diff -ru gupnp-0.13.2/tests/Makefile.am gupnp-0.13.2.patched/tests/Makefile.am
+--- gupnp-0.13.2/tests/Makefile.am	2009-01-06 06:32:22.000000000 -0800
++++ gupnp-0.13.2.patched/tests/Makefile.am	2010-10-06 09:50:36.000000000 -0700
+@@ -6,16 +6,16 @@
+ 		  test-introspection
+ 
+ test_browsing_SOURCES = test-browsing.c
+-test_browsing_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_browsing_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ 
+ test_proxy_SOURCES = test-proxy.c
+-test_proxy_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_proxy_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ 
+ test_introspection_SOURCES = test-introspection.c
+-test_introspection_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_introspection_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ 
+ test_server_SOURCES = test-server.c
+-test_server_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_server_LDADD   = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ test_server_LDFLAGS = -export-dynamic
+ 
+ CLEANFILES = $(BUILT_SOURCES)
+diff -ru gupnp-0.13.2/tests/Makefile.in gupnp-0.13.2.patched/tests/Makefile.in
+--- gupnp-0.13.2/tests/Makefile.in	2009-12-04 07:26:49.000000000 -0800
++++ gupnp-0.13.2.patched/tests/Makefile.in	2010-10-06 09:50:36.000000000 -0700
+@@ -231,13 +231,13 @@
+ top_srcdir = @top_srcdir@
+ AM_CFLAGS = $(LIBGUPNP_CFLAGS) $(GTHREAD_CFLAGS) -I$(top_srcdir)
+ test_browsing_SOURCES = test-browsing.c
+-test_browsing_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_browsing_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ test_proxy_SOURCES = test-proxy.c
+-test_proxy_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_proxy_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ test_introspection_SOURCES = test-introspection.c
+-test_introspection_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_introspection_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ test_server_SOURCES = test-server.c
+-test_server_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS)
++test_server_LDADD = $(top_builddir)/libgupnp/libgupnp-1.0.la $(GTHREAD_LIBS) -lgssdp-1.0  -lgobject-2.0
+ test_server_LDFLAGS = -export-dynamic
+ CLEANFILES = $(BUILT_SOURCES)
+ DISTCLEANFILES = $(BUILT_SOURCES)

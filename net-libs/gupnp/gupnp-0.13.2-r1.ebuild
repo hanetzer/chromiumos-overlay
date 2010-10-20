@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-libs/gupnp/gupnp-0.13.2.ebuild,v 1.3 2010/02/19 18:21:30 armin76 Exp $
 
+inherit eutils
+
 EAPI=2
 
 DESCRIPTION="an object-oriented framework for creating UPnP devs and control points."
@@ -22,6 +24,12 @@ RDEPEND=">=net-libs/gssdp-0.7
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	sys-devel/gettext"
+
+src_unpack() {
+	unpack ${A}
+	cd "${S}"			
+	epatch "${FILESDIR}"/${P}-gold.patch
+}						
 
 src_configure() {
 	local backend=unix
