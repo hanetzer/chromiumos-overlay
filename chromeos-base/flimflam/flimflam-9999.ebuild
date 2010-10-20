@@ -114,4 +114,7 @@ src_install() {
 		mkdir -p ${ppp_dir}
 		cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
 	fi
+
+	exeinto /usr/share/userfeedback/scripts
+	doexe test/mm.sh test/mm-status || die "Can't copy user feedback scripts"
 }
