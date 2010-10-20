@@ -14,6 +14,8 @@ KEYWORDS="~x86 ~arm"
 IUSE=""
 DEPEND="app-arch/cpio
 	sys-apps/busybox
+	sys-apps/rootdev
+	sys-fs/lvm2
 	chromeos-base/vboot_reference
 	chromeos-base/chromeos-installer"
 RDEPEND=""
@@ -37,21 +39,26 @@ build_initramfs_file() {
 	# Insure cgpt is statically linked
 	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
 
-	# Load libraries for busybox.
+	# Load libraries for busybox and dmsetup
 	# TODO: how can ebuilds support static busybox?
 	LIBS="
 		ld-linux.so.2
 		libm.so.6
 		libc.so.6
+		libdevmapper.so.1.02
 		libdl.so.2
 		libpam.so.0
 		libpam_misc.so.0
+		libpthread.so.0
+		librt.so.1
 	"
-	for lib in $LIBS; do 
+	for lib in $LIBS; do
 		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib/ || die
 	done
 
 	cp ${ROOT}/bin/busybox ${INITRAMFS_TMP_S}/bin || die
+	cp ${ROOT}/sbin/dmsetup ${INITRAMFS_TMP_S}/bin || die
+	cp ${ROOT}/usr/bin/rootdev ${INITRAMFS_TMP_S}/bin || die
 
 	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
 	cp ${ROOT}/usr/sbin/chromeos-common.sh ${INITRAMFS_TMP_S}/usr/sbin || die
@@ -71,6 +78,8 @@ build_initramfs_file() {
 src_compile() {
 	einfo "Creating ${INITRAMFS_FILE}"
 	build_initramfs_file
+	INITRAMFS_FILE_SIZE=$(stat --printf="%s" "${WORKDIR}/${INITRAMFS_FILE}")
+	einfo "${INITRAMFS_FILE}: ${INITRAMFS_FILE_SIZE} bytes"
 }
 
 src_install() {

@@ -10,7 +10,11 @@
 # USB card partition and mount point.
 USB_DEVS="sdb3 sdc3 mmcblk1p3"
 USB_MNT=/usb
+REAL_USB_DEV=
+
 STATEFUL_MNT=/stateful
+STATE_DEV=
+
 # Size of the root ramdisk.
 TMPFS_SIZE=300M
 
@@ -34,10 +38,6 @@ initial_mounts() {
   fi
   mkdir /dev/pts
   mount -t devpts -o noexec,nosuid none /dev/pts || true
-
-  # Send any output to where we can see it.
-  exec &> /dev/tty1
-  echo "Starting initramfs"
 }
 
 # Look for any USB device.
@@ -56,6 +56,41 @@ wait_for_root() {
   done
   echo "Failed waiting for root!"
   return 1
+}
+
+# Wait for dm-0 to come up.
+wait_for_dm_control() {
+  MAPPER_CONTROL=/dev/mapper/control
+  echo -n "Waiting for $MAPPER_CONTROL to appear"
+  for try in $(seq 20); do
+    echo -n "."
+    if [ -c "$MAPPER_CONTROL" ]; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Failed waiting for $MAPPER_CONTROL!"
+  return 1
+}
+
+setup_dm_root() {
+  echo -n "Extracting the device mapper configuration..."
+  DMARG=$(cat /proc/cmdline | sed -e 's/.*dm="\([^"\]*\)".*/\1/g')
+  DM_NAME=$(echo "$DMARG" | cut -f1 -d' ')
+  # We override the reboot-to-recovery error behavior so that we can fail
+  # gracefully on invalid rootfs.
+  DM_TABLE="$(echo "$DMARG" | cut -f2 -d,) eio"
+  if ! dmsetup create -r "$DM_NAME" --major 254 --minor 0 --table "$DM_TABLE"
+  then
+    echo "Failed to configure device mapper root"
+    return 1
+  fi
+  USB_DEV="/dev/dm-0"
+  if [ ! -b "$USB_DEV" ]; then
+    mknod -m 0600 /dev/dm-0 b 254 0
+  fi
+  echo "Created device mapper root $DM_NAME."
+  return 0
 }
 
 # Look for a device with our GPT ID.
@@ -89,12 +124,28 @@ mount_usb() {
   return 1
 }
 
+check_if_dm_root() {
+  grep -q "root=/dev/dm-0" /proc/cmdline
+}
+
 check_if_factory_install() {
   if [ -e "${USB_MNT}/root/.factory_installer" ]; then
     echo "Detected factory install."
     return 0
   fi
   return 1
+}
+
+get_stateful_dev() {
+  # Determine the STATE_DEV using rootdev on the target
+  # to work seamlessly with dm-verity or normal devices.
+  REAL_USB_DEV=$(rootdev -s "$USB_MNT")
+  STATE_DEV=${REAL_USB_DEV%[0-9]*}1
+  if [ ! -b "$STATE_DEV" ]; then
+    echo "Failed to determine stateful device"
+    return 1
+  fi
+  return 0
 }
 
 mount_tmpfs() {
@@ -112,9 +163,6 @@ copy_contents() {
 }
 
 copy_lsb() {
-  # Fetch our writeable lsb-release from the stateful
-  # partition if available.
-  STATE_DEV=${USB_DEV%[0-9]*}1
   STATEFUL_LSB="dev_image/etc/lsb-factory"
   mkdir -p "${NEWROOT_MNT}/mnt/stateful_partition/dev_image/etc"
   mount -n -o ro -t ext3 "$STATE_DEV" "$STATEFUL_MNT"
@@ -149,9 +197,17 @@ main() {
   # Set up basic mounts, console.
   initial_mounts
 
+  # Send any output to where we can see it.
+  exec &> /dev/tty1
+  echo "Starting initramfs"
+
+  # If we were booted with a dm-verity rootfs, then
+  # we can just wait for it to come up.
+  if check_if_dm_root; then
+    wait_for_dm_control || on_error
+    setup_dm_root || on_error
   # Has the BIOS told us the partition ID?
-  # TODO(nsanders, wad): Support signed rootfs.
-  if check_for_gptid; then
+  elif check_for_gptid; then
     wait_for_gpt_root || on_error
   else
     # Just wait for any rootfs.
@@ -160,6 +216,7 @@ main() {
   fi
 
   mount_usb || on_error
+  get_stateful_dev || on_error
 
   # Check if we want to run from RAM, in the factory.
   if check_if_factory_install; then
