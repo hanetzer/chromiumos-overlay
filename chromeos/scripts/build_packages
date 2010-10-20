@@ -159,6 +159,14 @@ fi
 
 # We are building chrome from source if chromefromsource is 'TRUE'.
 if [[ "${FLAGS_chromefromsource}" -eq "${FLAGS_TRUE}" ]]; then
+  if [ -n "${CHROME_ORIGIN}" ] &&
+    [ "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]
+  then
+    warn "--chromefromsource is set and CHROME_ORIGIN=\"${CHROME_ORIGIN}\""
+    warn "--chromefromsource will force CHROME_ORIGIN=SERVER_SOURCE"
+    warn "Please run build_packages again without --chromefromsource"
+    warn "if this was not your intent"
+  fi
   export CHROME_ORIGIN=SERVER_SOURCE
   if [[ -n "${FLAGS_chromebuild}" ]]; then
     export CHROME_VERSION="${FLAGS_chromebuild}"
@@ -177,6 +185,11 @@ elif [[ -n "${FLAGS_chromebuild}" ]] || [[ -n "${FLAGS_chromebase}" ]]; then
   fi
 
   export CHROME_BASE=${FLAGS_chromebase} CHROME_VERSION=${FLAGS_chromebuild}
+  CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+elif [[ -n "${CHROME_ORIGIN}" ]]; then
+  # If CHROME_ORIGIN was set prior to calling build_packages then we should
+  # assume the user wants to build Chrome locally based on that flag.
+  # Add chromeos-chrome to cros_workon list to force using the local ebuild.
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
 fi
 
