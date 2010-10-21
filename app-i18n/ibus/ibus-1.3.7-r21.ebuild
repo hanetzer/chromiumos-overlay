@@ -49,6 +49,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0008-Remove-bus_input_context_register_properties-props_e.patch"
 	epatch "${FILESDIR}/0009-Fix-race-condition-in-bus_ibus_impl_create_engine.patch"
 	epatch "${FILESDIR}/0010-Fix-property-issue.patch"
+	epatch "${FILESDIR}/0011-Always-consume-the-hotkey-even-if-the-hotkey-associa.patch"
 }
 
 src_configure() {

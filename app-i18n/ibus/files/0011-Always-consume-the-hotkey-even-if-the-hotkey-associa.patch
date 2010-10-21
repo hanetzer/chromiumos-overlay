@@ -1,0 +1,31 @@
+From 1975a77d9392791fdd14528ffa6809c96fa65eb9 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Wed, 20 Oct 2010 20:53:36 +0900
+Subject: [PATCH 11/11] Always consume the hotkey, even if the hotkey associated engine already activated.
+
+BUG=6376
+TEST=manual
+
+Review URL: http://codereview.appspot.com/2596042
+---
+ bus/ibusimpl.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index d84ba49..d6ea270 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -2002,8 +2002,9 @@ bus_ibus_impl_filter_keyboard_shortcuts (BusIBusImpl     *ibus,
+ 
+         if (current_engine_desc != new_engine_desc) {
+             bus_ibus_impl_set_context_engine_from_desc (ibus, context, new_engine_desc);
+-            return TRUE;
+         }
++
++        return TRUE;
+     }
+ 
+     return FALSE;
+-- 
+1.7.1
+
