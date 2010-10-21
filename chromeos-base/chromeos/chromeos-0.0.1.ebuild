@@ -55,6 +55,7 @@ RDEPEND="${RDEPEND}
 		net-wireless/iwl6000-ucode
 		sys-apps/flashrom
 		sys-apps/mosys
+		sys-apps/pv
 		sys-boot/syslinux
 	)
 	"
