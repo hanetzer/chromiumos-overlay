@@ -6,7 +6,7 @@
 
 HOMEPAGE="http://gcc.gnu.org/"
 LICENSE="GPL-2 LGPL-2.1"
-RESTRICT="strip" # cross-compilers need controlled stripping
+RESTRICT="mirror strip" # cross-compilers need controlled stripping
 
 #---->> eclass stuff <<----
 inherit eutils versionator libtool toolchain-funcs flag-o-matic gnuconfig multilib fixheadtails
@@ -289,11 +289,9 @@ gcc_get_s_dir() {
 #			which is useful for individual library targets.
 #
 gentoo_urls() {
-	local devspace="HTTP~lv/GCC/URI HTTP~eradicator/gcc/URI HTTP~vapier/dist/URI
-	HTTP~halcy0n/patches/URI HTTP~zorry/patches/gcc/URI HTTP~dirtyepic/dist/URI"
-	devspace=${devspace//HTTP/http:\/\/dev.gentoo.org\/}
-	echo mirror://gentoo/$1 ${devspace//URI/$1}
+  echo http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/$1
 }
+
 get_gcc_src_uri() {
 	export PATCH_GCC_VER=${PATCH_GCC_VER:-${GCC_RELEASE_VER}}
 	export UCLIBC_GCC_VER=${UCLIBC_GCC_VER:-${PATCH_GCC_VER}}
