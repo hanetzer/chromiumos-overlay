@@ -12,14 +12,17 @@
     },
     'chromeos-image' : {
       'filepath': 'chromeos-base/chromeos(/|-dev|-test)',
-    }
+    },
+    'xorg' : {
+      'filepath': 'chromeos-base/xorg-conf|x11-(base|drivers|libs|misc)',
+    },
   },
   'WATCHLISTS': {
     'all': ['adlr@chromium.org',
             'msb@chromium.org',
-            'tedbo@chromium.org',
-	    'anush@chromium.org'],
+            'anush@chromium.org'],
     'bluez': ['petkov@chromium.org'],
     'chromeos-image' : ['sosa@chromium.org'],
+    'xorg' : ['derat@chromium.org'],
   },
 }
