@@ -1,0 +1,47 @@
+From a4cec11f165aeaeb8ec3b2fb81f12f384663e3a3 Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Thu, 21 Oct 2010 18:30:54 +0900
+Subject: [PATCH 12/12] Temporary fix for a race condition between ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
+
+---
+ bus/ibusimpl.c |   22 ++++++++++++++++++++--
+ 1 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index d6ea270..d75b029 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -1731,10 +1731,28 @@ _ibus_set_global_engine (BusIBusImpl     *ibus,
+         return reply;
+     }
+ 
++    // Chrome for Chrome OS sometimes calls set_global_engine API right after
++    // updating preload_engines. In this case, if _ibus_set_global_engine
++    // function is called before _config_value_changed_cb is called,
++    // _ibus_set_global_engine would fail with the "Invalid engine name" error
++    // below.
++    // To resolve the issue, force to update ibus->engine_list here by fetching
++    // the latest config from the config daemon. Note that this is NOT a perfect
++    // solution. e.g. Other functions that calls _find_engine_desc_by_name might
++    // still fail. We might also have to do the same for other config keys like
++    // "use_global_engine". So, for now, we use this hack only on Chrome OS.
++    GValue value = { 0 };
++    if (ibus->config != NULL &&
++        ibus_config_get_value (ibus->config, "general", "preload_engines", &value)) {
++        bus_ibus_impl_set_preload_engines (ibus, &value);
++        g_value_unset (&value);
++    }
++
+     if (!new_engine_name || !new_engine_name[0] ||
+         !_find_engine_desc_by_name (ibus, new_engine_name)) {
+-        return ibus_message_new_error (message, DBUS_ERROR_FAILED,
+-                                       "Invalid engine name.");
++        return ibus_message_new_error_printf (message, DBUS_ERROR_FAILED,
++                                              "Invalid engine name: %s",
++                                              new_engine_name ? new_engine_name : "NULL");
+     }
+ 
+     bus_ibus_impl_set_global_engine_by_name (ibus, new_engine_name);
+-- 
+1.7.1
+

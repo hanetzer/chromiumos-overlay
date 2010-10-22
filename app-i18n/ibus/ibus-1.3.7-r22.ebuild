@@ -50,6 +50,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0009-Fix-race-condition-in-bus_ibus_impl_create_engine.patch"
 	epatch "${FILESDIR}/0010-Fix-property-issue.patch"
 	epatch "${FILESDIR}/0011-Always-consume-the-hotkey-even-if-the-hotkey-associa.patch"
+	epatch "${FILESDIR}/0012-Temporary-fix-for-a-race-condition-between-ibus_conf.patch"
 }
 
 src_configure() {
