@@ -216,6 +216,7 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_RendererSandbox
 	+tests_security_RestartJob
+	+tests_security_SuidBinaries
 	+tests_suites
 	+tests_suite_Factory
 	+tests_suite_HWConfig
