@@ -48,6 +48,7 @@ IUSE_TESTS="
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_FFMPEG
+	+tests_audiovideo_Microphone
 	+tests_audiovideo_PlaybackRecordSemiAuto
 	+tests_audiovideo_V4L2
 	+tests_build_RootFilesystemSize
