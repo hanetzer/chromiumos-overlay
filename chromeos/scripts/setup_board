@@ -187,7 +187,7 @@ sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
   "${FLAGS_chroot}/etc/make.conf"
 
 BINHOST=$(portageq envvar PORTAGE_BINHOST)
-CROSS_BINHOST="${BINHOST}../cross/$FLAGS_toolchain/"
+CROSS_BINHOST="${BINHOST}cross/$FLAGS_toolchain/"
 CROSS_USEPKG=""
 if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
   # Grab the latest packages from the prebuilt server.
