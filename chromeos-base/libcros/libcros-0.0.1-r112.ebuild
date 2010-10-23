@@ -60,6 +60,11 @@ src_compile() {
 	# ibus engines in order to parse their component definition at build
 	# time.
 	export DEPEND="$DEPEND"
+
+	# Sanity check for load.cc. Detect missing INIT_FUNC() calls.
+	python "${FILESDIR}"/check_load_cc.py < load.cc || \
+	       die "INIT_FUNC(s) are missing from load.cc."
+
 	scons -f SConstruct.chromiumos || die "cros compile failed."
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
