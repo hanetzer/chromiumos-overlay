@@ -98,7 +98,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/internal
 	virtual/kernel
 	chromeos-base/libcros
-	chromeos-base/memento_softwareupdate
 	chromeos-base/metrics
 	chromeos-base/monitor_reconfig
 	chromeos-base/power_manager
