@@ -1,7 +1,7 @@
-From 6ae80939f28c4d8f365c1dd66c5d81cc79869eda Mon Sep 17 00:00:00 2001
+From 697ab873abdfa4e9f6ffdea68f037c2f175e0726 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 15 Sep 2010 12:25:17 +0900
-Subject: [PATCH 06/10] Fix issues of the "previous_engine" hotkey.
+Subject: [PATCH 6/8] Fix issues of the "previous_engine" hotkey.
 
 Check global_previous_engine_name when the previous engine is requested and rewrite it if necessary.
 This change ensures that the "previous_engine" hotkey (Ctrl+space on Chrome OS) always works
@@ -38,10 +38,10 @@ preloaded.
  1 files changed, 14 insertions(+), 0 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 32aef54..b703dae 100644
+index c14e07e..179f164 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
-@@ -983,6 +983,8 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
+@@ -989,6 +989,8 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
                                                 BusInputContext *context)
  {
      gchar *engine_name = NULL;
@@ -50,7 +50,7 @@ index 32aef54..b703dae 100644
      if (!ibus->use_global_engine) {
          engine_name = (gchar *) g_object_get_data (G_OBJECT (context), "previous-engine-name");
      }
-@@ -991,6 +993,18 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
+@@ -997,6 +999,18 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
              ibus->global_previous_engine_name = bus_ibus_impl_load_global_previous_engine_name_from_config (ibus);
          }
          engine_name = ibus->global_previous_engine_name;

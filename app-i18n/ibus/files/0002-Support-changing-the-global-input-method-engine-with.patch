@@ -1,7 +1,7 @@
-From 2089fd1c220e093576802a7c7ef7c23ed244a119 Mon Sep 17 00:00:00 2001
+From ccd613507f315da9d1d1db521d96549efb65117f Mon Sep 17 00:00:00 2001
 From: James Su <suzhe@chromium.org>
 Date: Thu, 29 Apr 2010 13:12:27 -0700
-Subject: [PATCH 02/10] Support changing the global input method engine without focus.
+Subject: [PATCH 2/8] Support changing the global input method engine without focus.
 
 This CL is the fix for ibus. I'll do the fix for ChromiumOS later.
 
@@ -104,10 +104,10 @@ index fba7ad4..ba30231 100644
 +    @signal(signature="")
 +    def GlobalEngineChanged(self): pass
 diff --git a/ui/gtk/panel.py b/ui/gtk/panel.py
-index 64d1e21..519279a 100644
+index 566a261..217ba12 100644
 --- a/ui/gtk/panel.py
 +++ b/ui/gtk/panel.py
-@@ -61,6 +61,8 @@ class Panel(ibus.PanelBase):
+@@ -62,6 +62,8 @@ class Panel(ibus.PanelBase):
      def __init__(self, bus):
          super(Panel, self).__init__(bus)
          self.__bus = bus
@@ -115,8 +115,8 @@ index 64d1e21..519279a 100644
 +                           self.__global_engine_changed_cb)
          self.__config = self.__bus.get_config()
          self.__focus_ic = None
-         self.__setup_pid = 0
-@@ -204,63 +206,19 @@ class Panel(ibus.PanelBase):
+         self.__setup_pid = None
+@@ -202,63 +204,19 @@ class Panel(ibus.PanelBase):
      def focus_in(self, ic):
          self.reset()
          self.__focus_ic = ibus.InputContext(self.__bus, ic)
@@ -183,7 +183,7 @@ index 64d1e21..519279a 100644
  
      def reset(self):
          self.__candidate_panel.reset()
-@@ -414,6 +372,7 @@ class Panel(ibus.PanelBase):
+@@ -412,6 +370,7 @@ class Panel(ibus.PanelBase):
          engines = self.__bus.list_active_engines()
          current_engine = \
              (self.__focus_ic != None and self.__focus_ic.get_engine()) or \
@@ -191,7 +191,7 @@ index 64d1e21..519279a 100644
              (engines and engines[0]) or \
              None
  
-@@ -470,7 +429,7 @@ class Panel(ibus.PanelBase):
+@@ -468,7 +427,7 @@ class Panel(ibus.PanelBase):
                  self.__status_icon)
  
      def __status_icon_activate_cb(self, status_icon):
@@ -200,7 +200,7 @@ index 64d1e21..519279a 100644
              menu = gtk.Menu()
              item = gtk.ImageMenuItem(_("No input window"))
              size = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
-@@ -487,12 +446,13 @@ class Panel(ibus.PanelBase):
+@@ -485,12 +444,13 @@ class Panel(ibus.PanelBase):
                  self.__status_icon)
  
      def __im_menu_item_activate_cb(self, item, engine):
@@ -220,7 +220,7 @@ index 64d1e21..519279a 100644
  
      def __sys_menu_item_activate_cb(self, item, command):
          if command == gtk.STOCK_PREFERENCES:
-@@ -544,7 +504,7 @@ class Panel(ibus.PanelBase):
+@@ -546,7 +506,7 @@ class Panel(ibus.PanelBase):
              layout = layout + ",us"
  
          if self.__current_xkb_layout == layout:
@@ -229,7 +229,7 @@ index 64d1e21..519279a 100644
  
          self.__current_xkb_layout = layout
  
-@@ -555,3 +515,33 @@ class Panel(ibus.PanelBase):
+@@ -557,3 +517,33 @@ class Panel(ibus.PanelBase):
                        [ "setxkbmap", "-layout", layout ] )
          except:
              print >> sys.stderr, "Failed to run %s" % self.__setxkbmap_cmd

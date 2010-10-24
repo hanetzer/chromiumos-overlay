@@ -45,12 +45,8 @@ src_prepare() {
 	epatch "${FILESDIR}/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch"
 	epatch "${FILESDIR}/0005-Add-api-to-ibus-for-retreiving-unused-config-values..patch"
 	epatch "${FILESDIR}/0006-Fix-issues-of-the-previous_engine-hotkey.patch"
-	epatch "${FILESDIR}/0007-Fix-g_assertion-failure-in-bus_ibus_impl_-load-save-.patch"
-	epatch "${FILESDIR}/0008-Remove-bus_input_context_register_properties-props_e.patch"
-	epatch "${FILESDIR}/0009-Fix-race-condition-in-bus_ibus_impl_create_engine.patch"
-	epatch "${FILESDIR}/0010-Fix-property-issue.patch"
-	epatch "${FILESDIR}/0011-Always-consume-the-hotkey-even-if-the-hotkey-associa.patch"
-	epatch "${FILESDIR}/0012-Temporary-fix-for-a-race-condition-between-ibus_conf.patch"
+	epatch "${FILESDIR}/0007-Remove-bus_input_context_register_properties-props_e.patch"
+	epatch "${FILESDIR}/0008-Temporary-fix-for-a-race-condition-between-ibus_conf.patch"
 }
 
 src_configure() {

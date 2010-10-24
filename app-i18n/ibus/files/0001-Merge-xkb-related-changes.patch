@@ -1,7 +1,7 @@
-From 4824eb42920d16f548f4f86b997a09d7f9ba3795 Mon Sep 17 00:00:00 2001
+From 32de053ac3f812e7c7e2bed13a46dc23249e7557 Mon Sep 17 00:00:00 2001
 From: James Su <suzhe@chromium.org>
 Date: Tue, 27 Apr 2010 16:43:41 -0700
-Subject: [PATCH 01/10] Merge xkb related changes.
+Subject: [PATCH 1/8] Merge xkb related changes.
 
 Add back "next_engine" and "prev_engine" config for backward compatibility.
 
@@ -18,8 +18,8 @@ Review URL: http://codereview.chromium.org/1784007
  ibus/bus.py             |    3 +++
  ibus/interface/iibus.py |    4 +++-
  setup/setup.ui          |    3 ---
- ui/gtk/panel.py         |   39 ++++++++++++++++++++++++++++++++++++++-
- 4 files changed, 44 insertions(+), 5 deletions(-)
+ ui/gtk/panel.py         |   40 +++++++++++++++++++++++++++++++++++++++-
+ 4 files changed, 45 insertions(+), 5 deletions(-)
 
 diff --git a/ibus/bus.py b/ibus/bus.py
 index 15a8fd3..74b6820 100644
@@ -78,10 +78,10 @@ index 0e31a78..135fc10 100644
                                          <property name="receives_default">False</property>
                                          <property name="use_underline">True</property>
 diff --git a/ui/gtk/panel.py b/ui/gtk/panel.py
-index 0efc85b..64d1e21 100644
+index 2c6a505..566a261 100644
 --- a/ui/gtk/panel.py
 +++ b/ui/gtk/panel.py
-@@ -68,6 +68,11 @@ class Panel(ibus.PanelBase):
+@@ -69,6 +69,11 @@ class Panel(ibus.PanelBase):
          self.__data_dir = path.join(self.__prefix, "share", "ibus")
          # self.__icons_dir = path.join(self.__data_dir, "icons")
          self.__setup_cmd = path.join(self.__prefix, "bin", "ibus-setup")
@@ -91,9 +91,9 @@ index 0efc85b..64d1e21 100644
 +        if bus.get_use_sys_layout():
 +            self.__set_xkb_layout(self.__default_xkb_layout)
  
-         # hanlder signal
-         signal.signal(signal.SIGCHLD, self.__sigchld_cb)
-@@ -205,14 +210,20 @@ class Panel(ibus.PanelBase):
+         # connect bus signal
+         self.__config.connect("value-changed", self.__config_value_changed_cb)
+@@ -203,14 +208,20 @@ class Panel(ibus.PanelBase):
          if not enabled:
              self.__set_im_icon(ICON_KEYBOARD)
              self.__set_im_name(None)
@@ -114,7 +114,7 @@ index 0efc85b..64d1e21 100644
          self.__language_bar.focus_in()
  
      def focus_out(self, ic):
-@@ -222,6 +233,8 @@ class Panel(ibus.PanelBase):
+@@ -220,6 +231,8 @@ class Panel(ibus.PanelBase):
          self.__language_bar.focus_out()
          self.__set_im_icon(ICON_KEYBOARD)
          self.__set_im_name(None)
@@ -123,7 +123,7 @@ index 0efc85b..64d1e21 100644
  
      def state_changed(self):
          if not self.__focus_ic:
-@@ -234,15 +247,20 @@ class Panel(ibus.PanelBase):
+@@ -232,15 +245,20 @@ class Panel(ibus.PanelBase):
              self.reset()
              self.__set_im_icon(ICON_KEYBOARD)
              self.__set_im_name(None)
@@ -145,10 +145,11 @@ index 0efc85b..64d1e21 100644
  
      def reset(self):
          self.__candidate_panel.reset()
-@@ -518,3 +536,22 @@ class Panel(ibus.PanelBase):
-             self.__setup_pid = 0
-         self.__setup_pid = os.spawnl(os.P_NOWAIT, self.__setup_cmd, "ibus-setup")
- 
+@@ -519,3 +537,23 @@ class Panel(ibus.PanelBase):
+                                flags=glib.SPAWN_DO_NOT_REAP_CHILD)[0]
+         self.__setup_pid = pid
+         glib.child_watch_add(self.__setup_pid, self.__child_watch_cb)
++
 +    def __set_xkb_layout(self, layout):
 +        # if it's not a us keyboard layout, then we need to load us layout
 +        # into the second group. Otherwise applications' key bindings may

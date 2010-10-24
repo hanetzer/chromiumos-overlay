@@ -1,14 +1,14 @@
-From a4cec11f165aeaeb8ec3b2fb81f12f384663e3a3 Mon Sep 17 00:00:00 2001
+From 0f8cc67a33d4c0e1257a016de659f7e7a603bd62 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Thu, 21 Oct 2010 18:30:54 +0900
-Subject: [PATCH 12/12] Temporary fix for a race condition between ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
+Subject: [PATCH 8/8] Temporary fix for a race condition between ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
 
 ---
  bus/ibusimpl.c |   22 ++++++++++++++++++++--
  1 files changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index d6ea270..d75b029 100644
+index 179f164..6be0a22 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -1731,10 +1731,28 @@ _ibus_set_global_engine (BusIBusImpl     *ibus,
