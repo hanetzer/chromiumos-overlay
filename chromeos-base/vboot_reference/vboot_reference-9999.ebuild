@@ -36,6 +36,7 @@ src_install() {
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
 		progs+=' utility/vbutil_key'
+		progs+=' utility/vbutil_keyblock'
 		progs+=' utility/vbutil_kernel'
 		progs+=' utility/vbutil_firmware'
 		progs+=' utility/gbb_utility'
