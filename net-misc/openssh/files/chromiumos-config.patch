@@ -17,3 +17,15 @@ diff -Naur openssh-5.2p1/sshd_config openssh-5.2p1-chromiumos/sshd_config
  
  # Lifetime and size of ephemeral version 1 server key
  #KeyRegenerationInterval 1h
+--- openssh-5.2p1/ssh_config	2010-10-24 15:54:40.000000000 -0700
++++ openssh-5.2p1-chromiumos/ssh_config	2010-10-24 14:24:40.000000000 -0700
+@@ -17,6 +17,9 @@
+ # list of available options, their meanings and defaults, please see the
+ # ssh_config(5) man page.
+ 
++Host *
++  UserKnownHostsFile /home/chronos/user/.ssh/known_hosts
++
+ # Host *
+ #   ForwardAgent no
+ #   ForwardX11 no
