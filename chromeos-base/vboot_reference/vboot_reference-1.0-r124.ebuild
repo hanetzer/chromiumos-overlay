@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="3e3704f23d23c7245e8f66b39785976c597a36c2"
+CROS_WORKON_COMMIT="6f9a99b538b8a800f414c02e57cdd1dc9e30501c"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
@@ -37,6 +37,7 @@ src_install() {
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
 		progs+=' utility/vbutil_key'
+		progs+=' utility/vbutil_keyblock'
 		progs+=' utility/vbutil_kernel'
 		progs+=' utility/vbutil_firmware'
 		progs+=' utility/gbb_utility'

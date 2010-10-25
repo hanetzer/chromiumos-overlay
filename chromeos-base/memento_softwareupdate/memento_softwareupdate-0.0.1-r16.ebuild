@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="377b6821b2f67f0088949131a5857db91b399dff"
+CROS_WORKON_COMMIT="a827a6b568ec0ca392fe315ca1956036621c524d"
 
 inherit cros-workon toolchain-funcs
 
@@ -48,10 +48,7 @@ src_install() {
     memento_updater_logging.sh \
     ping_omaha.sh \
     software_update.sh \
-    split_write \
-    suid_exec; do
+    split_write; do
     doexe "${i}"
   done
-  
-  chmod 4711 "${D}"/opt/google/memento_updater/suid_exec || die suid failed
 }
