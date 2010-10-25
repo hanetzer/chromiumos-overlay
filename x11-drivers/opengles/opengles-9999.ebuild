@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="~x86 ~arm"
 IUSE=""
 
-RDEPEND="x11-libs/libX11"
+RDEPEND="x11-libs/libX11
+	x11-drivers/opengles-headers"
 DEPEND="${RDEPEND}"
 
 CROS_WORKON_PROJECT="khronos"
@@ -35,18 +36,6 @@ src_compile() {
 }
 
 src_install() {
-	# headers
-	insinto /usr/include/EGL
-	doins "${S}/include/EGL/egl.h"
-	doins "${S}/include/EGL/eglplatform.h"
-	doins "${S}/include/EGL/eglext.h"
-	insinto /usr/include/KHR
-	doins "${S}/include/KHR/khrplatform.h"
-	insinto /usr/include/GLES2
-	doins "${S}/include/GLES2/gl2.h"
-	doins "${S}/include/GLES2/gl2ext.h"
-	doins "${S}/include/GLES2/gl2platform.h"
-
 	# libraries
 	dolib "${S}/libEGL.so"
 	dolib "${S}/libGLESv2.so"
