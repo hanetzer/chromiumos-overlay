@@ -14,6 +14,7 @@ IUSE=""
 # Packages required for testing.
 RDEPEND="${RDEPEND}
 	app-admin/sudo
+	app-arch/gzip
 	app-arch/tar
 	app-crypt/nss
 	app-crypt/tpm-tools
