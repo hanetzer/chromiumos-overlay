@@ -13,17 +13,19 @@ SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}
 
 LICENSE="|| ( MPL-1.1 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
-IUSE="utils"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc x86 ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 
 DEPEND="dev-util/pkgconfig"
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
-	>=dev-db/sqlite-3.5"
+	>=dev-db/sqlite-3.5
+	sys-libs/zlib"
 
 src_prepare() {
 	# Custom changes for gentoo
 	epatch "${FILESDIR}/${PN}-3.12.5-gentoo-fixups.diff"
 	epatch "${FILESDIR}/${PN}-3.12.6-gentoo-fixup-warnings.patch"
+	epatch "${FILESDIR}"/${P}-shlibsign.patch
+	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
 
 	cd "${S}"/mozilla/security/coreconf
 	# hack nspr paths
@@ -64,8 +66,8 @@ src_compile() {
 	*) die "Failed to detect whether your arch is 64bits or 32bits, disable distcc if you're using it, please";;
 	esac
 
-	export NSPR_INCLUDE_DIR=`nspr-config --includedir`
-	export NSPR_LIB_DIR=`nspr-config --libdir`
+	export NSPR_INCLUDE_DIR="${ROOT}"/usr/include/nspr
+	export NSPR_LIB_DIR="${ROOT}"/usr/lib
 	export BUILD_OPT=1
 	export NSS_USE_SYSTEM_SQLITE=1
 	export NSDISTMODE=copy
@@ -73,12 +75,18 @@ src_compile() {
 	export XCFLAGS="${CFLAGS}"
 	export FREEBL_NO_DEPEND=1
 
-	cd "${S}"/mozilla/security/coreconf
-	emake -j1 CC="$(tc-getCC)" || die "coreconf make failed"
+	# Cross-compile Love
+	( filter-flags -m* ;
+	  cd "${S}"/mozilla/security/coreconf &&
+	  emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" LDFLAGS= CC="$(tc-getBUILD_CC)" || die "coreconf make failed" )
 	cd "${S}"/mozilla/security/dbm
-	emake -j1 CC="$(tc-getCC)" || die "dbm make failed"
+	NSINSTALL=$(readlink -f $(find "${S}"/mozilla/security/coreconf -type f -name nsinstall))
+	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} || die "dbm make failed"
 	cd "${S}"/mozilla/security/nss
-	emake -j1 CC="$(tc-getCC)" || die "nss make failed"
+	if tc-is-cross-compiler; then
+		SHLIBSIGN_ARG="SHLIBSIGN=/usr/bin/nssshlibsign"
+	fi
+	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} ${SHLIBSIGN_ARG} || die "nss make failed"
 }
 
 # Altering these 3 libraries breaks the CHK verification.
@@ -157,21 +165,14 @@ src_install () {
 	done
 
 	local nssutils
-	# Always enabled because we need it for chk generation.
-	nssutils="shlibsign"
-	if use utils; then
-		# The tests we do not need to install.
-		#nssutils_test="bltest crmftest dbtest dertimetest
-		#fipstest remtest sdrtest"
-		nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
-		cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
-		nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
-		pk12util pp rsaperf selfserv shlibsign signtool signver ssltap strsclnt
-		symkeyutil tstclnt vfychain vfyserv"
+	if [ ! tc-is-cross-compiler ]; then
+		# Unless cross-compiling, enabled because we need it for chk generation.
+		nssutils="shlibsign"
 	fi
 	cd "${S}"/mozilla/security/dist/*/bin/
 	for f in $nssutils; do
-		dobin ${f}
+		# TODO(cmasone): switch to normal nss tool names
+		newbin ${f} nss${f}
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run
@@ -193,8 +194,12 @@ pkg_postinst() {
 	elog "not run please re-emerge package to ensure it properly"
 	elog " links after upgrade."
 	elog
+	local tool_root
 	# We must re-sign the libraries AFTER they are stripped.
-	generate_chk "${EROOT}"/usr/bin/shlibsign "${EROOT}"/usr/$(get_libdir)
+	if [ ! tc-is-cross-compiler ]; then
+		tool_root = "${EROOT}"
+	fi
+	generate_chk "${tool_root}"/usr/bin/nssshlibsign "${EROOT}"/usr/$(get_libdir)
 }
 
 pkg_postrm() {

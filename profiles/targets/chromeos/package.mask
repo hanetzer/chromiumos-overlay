@@ -7,9 +7,6 @@
 # TODO: Fix cross compile autoconf failure.
 >sys-apps/kbd-1.13-r1
 
-# TODO: Update our overlay to work with nss-3.12.5
->dev-libs/nss-3.12.3-r3
-
 # TODO: Update our overlay to work with udev-149
 >sys-fs/udev-146-r3
 

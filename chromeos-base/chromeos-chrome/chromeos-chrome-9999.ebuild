@@ -516,13 +516,13 @@ src_install() {
 	find "${D}" -perm /111 -print0 | xargs -0 chmod a+x
 
 	# The following symlinks are needed in order to run chrome.
-	dosym nss/libnss3.so /usr/lib/libnss3.so.1d
-	dosym nss/libnssutil3.so.12 /usr/lib/libnssutil3.so.1d
-	dosym nss/libsmime3.so.12 /usr/lib/libsmime3.so.1d
-	dosym nss/libssl3.so.12 /usr/lib/libssl3.so.1d
-	dosym nspr/libplds4.so /usr/lib/libplds4.so.0d
-	dosym nspr/libplc4.so /usr/lib/libplc4.so.0d
-	dosym nspr/libnspr4.so /usr/lib/libnspr4.so.0d
+	dosym libnss3.so /usr/lib/libnss3.so.1d
+	dosym libnssutil3.so.12 /usr/lib/libnssutil3.so.1d
+	dosym libsmime3.so.12 /usr/lib/libsmime3.so.1d
+	dosym libssl3.so.12 /usr/lib/libssl3.so.1d
+	dosym libplds4.so /usr/lib/libplds4.so.0d
+	dosym libplc4.so /usr/lib/libplc4.so.0d
+	dosym libnspr4.so /usr/lib/libnspr4.so.0d
 
 	# Use Flash from www-plugins/adobe-flash package.
 	if use x86; then

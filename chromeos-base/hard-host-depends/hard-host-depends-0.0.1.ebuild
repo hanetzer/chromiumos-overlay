@@ -33,6 +33,7 @@ RDEPEND="${RDEPEND}
 	app-arch/rpm2targz
 	app-arch/sharutils
 	app-arch/unzip
+	app-crypt/nss
 	>=app-emulation/qemu-user-0.12.2
 	app-i18n/ibus
 	app-text/texi2html
@@ -50,7 +51,6 @@ RDEPEND="${RDEPEND}
 	dev-libs/libgcrypt
 	dev-libs/libxslt
 	dev-libs/m17n-lib
-	dev-libs/nss[utils]
 	dev-libs/protobuf
 	dev-python/cherrypy
 	dev-python/dbus-python

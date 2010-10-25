@@ -14,7 +14,7 @@ SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${PV}/src/${P}.tar
 
 LICENSE="|| ( MPL-1.1 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86 ~ppc-aix ~x86-fbsd ~amd64-linux ~x86-linux ~x64-macos ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc x86 ~ppc-aix ~x86-fbsd ~amd64-linux ~x86-linux ~x64-macos ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 IUSE="debug"
 
 src_prepare() {
@@ -23,6 +23,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-4.6.1-config-1.patch
 	epatch "${FILESDIR}"/${PN}-4.6.1-lang.patch
 	epatch "${FILESDIR}"/${PN}-4.7.0-prtime.patch
+	epatch "${FILESDIR}"/${PN}-4.8.6-r1-cross.patch
 	epatch "${FILESDIR}"/${PN}-4.8-pkgconfig-gentoo-3.patch
 	epatch "${FILESDIR}"/${PN}-4.7.1-solaris.patch
 	epatch "${FILESDIR}"/${PN}-4.7.4-solaris.patch
@@ -49,9 +50,18 @@ src_configure() {
 		*) die "Failed to detect whether your arch is 64bits or 32bits, disable distcc if you're using it, please";;
 	esac
 
+	if tc-is-cross-compiler; then
+		myconf="--with-arch=${ARCH}"
+	fi
+
 	myconf="${myconf} --libdir=${EPREFIX}/usr/$(get_libdir)"
 
-	ECONF_SOURCE="../mozilla/nsprpub" econf \
+	export HOST_CC="${HOSTCC}"
+	export HOST_CFLAGS="-g"
+	export HOST_LDFLAGS="-g"
+	HOST_CC="$HOST_CC" HOST_CFLAGS="$HOST_CFLAGS" \
+		HOST_LDFLAGS="$HOST_LDFLAGS" ECONF_SOURCE="../mozilla/nsprpub" \
+		econf \
 		$(use_enable debug) \
 		$(use_enable !debug optimize) \
 		${myconf} || die "econf failed"
@@ -59,7 +69,11 @@ src_configure() {
 
 src_compile() {
 	cd "${S}"/build
-	emake CC="$(tc-getCC)" CXX="$(tc-getCXX)" || die "failed to build"
+	# Removed some cmdline args that forced CC and CXX, as our config
+	# changes above make them get set correctly, and forcing them here
+	# means that we compile a host tool (nsinstall) with the target
+	# compiler.
+	emake || die "failed to build"
 }
 
 src_install () {
