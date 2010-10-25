@@ -47,10 +47,7 @@ src_install() {
     memento_updater_logging.sh \
     ping_omaha.sh \
     software_update.sh \
-    split_write \
-    suid_exec; do
+    split_write; do
     doexe "${i}"
   done
-  
-  chmod 4711 "${D}"/opt/google/memento_updater/suid_exec || die suid failed
 }
