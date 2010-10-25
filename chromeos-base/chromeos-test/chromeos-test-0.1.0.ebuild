@@ -20,8 +20,8 @@ RDEPEND="${RDEPEND}
 	chromeos-base/autox
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
+	x86? ( chromeos-base/modem-diagnostics )
 	x86? ( chromeos-base/tpm )
-	x86? ( chromeos-base/usb-server )
 	x86? ( dev-java/icedtea )
 	dev-lang/python
 	dev-python/dbus-python
