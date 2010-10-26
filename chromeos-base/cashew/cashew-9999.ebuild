@@ -11,16 +11,18 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="test"
 
-RDEPEND="chromeos-base/libchrome
+RDEPEND="chromeos-base/flimflam
+	chromeos-base/libchrome
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/dbus-c++
-        dev-libs/glib
+	dev-libs/glib
 	net-misc/curl"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	test? ( dev-cpp/gtest )"
 
 src_prepare() {
 	eautoreconf
@@ -32,8 +34,18 @@ src_compile() {
 }
 
 src_test() {
-	# TODO(vlaviano): build and run unit tests
-	true
+	# build and run unit tests
+	emake check || die "emake check failed"
+	if use x86 ; then
+		src/cashew_unittest ${GTEST_ARGS} ||
+			die "unit tests (with GTEST_ARGS = ${GTEST_ARGS}) failed!"
+	else
+		# don't try to run cross-compiled non-x86 unit test binaries in our x86
+		# host environment
+		echo =====================================
+		echo Skipping tests on non-x86 platform...
+		echo =====================================
+	fi
 }
 
 src_install() {
