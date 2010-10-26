@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="6f9a99b538b8a800f414c02e57cdd1dc9e30501c"
+CROS_WORKON_COMMIT="9342f88e42ade178ca6bcae878a12f2780f326c0"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
