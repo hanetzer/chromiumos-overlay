@@ -47,6 +47,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0006-Fix-issues-of-the-previous_engine-hotkey.patch"
 	epatch "${FILESDIR}/0007-Remove-bus_input_context_register_properties-props_e.patch"
 	epatch "${FILESDIR}/0008-Temporary-fix-for-a-race-condition-between-ibus_conf.patch"
+	epatch "${FILESDIR}/0009-Fix-potential-race-condition-between-ibus_config_set.patch"
 }
 
 src_configure() {

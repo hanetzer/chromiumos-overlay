@@ -1,7 +1,7 @@
 From 0f8cc67a33d4c0e1257a016de659f7e7a603bd62 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Thu, 21 Oct 2010 18:30:54 +0900
-Subject: [PATCH 8/8] Temporary fix for a race condition between ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
+Subject: [PATCH 8/9] Temporary fix for a race condition between ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
 
 ---
  bus/ibusimpl.c |   22 ++++++++++++++++++++--

@@ -1,7 +1,7 @@
 From 17e370d7b7010d62366a818dd52df781f67cb1e1 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Tue, 19 Oct 2010 20:23:03 +0900
-Subject: [PATCH 7/8] Remove bus_input_context_register_properties(props_empty) call from the focus out handler
+Subject: [PATCH 7/9] Remove bus_input_context_register_properties(props_empty) call from the focus out handler
 
 - On Chrome OS, the call is unnecessary since an ibus engine is always active on
 the OS. i.e. We use the xkb:us::eng engine even for ASCII input.

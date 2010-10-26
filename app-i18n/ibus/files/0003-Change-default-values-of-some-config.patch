@@ -1,7 +1,7 @@
 From beb06a7883ef57a65aa7f9a7df7b5de07d07c911 Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 12 May 2010 15:38:42 -0700
-Subject: [PATCH 3/8] Change default values of some config.
+Subject: [PATCH 3/9] Change default values of some config.
 
 This CL changes the default value of use_global_engine, enable_by_default and use_sys_layout to TRUE. And also removes the default trigger key.
 

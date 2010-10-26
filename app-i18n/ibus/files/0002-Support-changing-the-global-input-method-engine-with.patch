@@ -1,7 +1,7 @@
 From ccd613507f315da9d1d1db521d96549efb65117f Mon Sep 17 00:00:00 2001
 From: James Su <suzhe@chromium.org>
 Date: Thu, 29 Apr 2010 13:12:27 -0700
-Subject: [PATCH 2/8] Support changing the global input method engine without focus.
+Subject: [PATCH 2/9] Support changing the global input method engine without focus.
 
 This CL is the fix for ibus. I'll do the fix for ChromiumOS later.
 
