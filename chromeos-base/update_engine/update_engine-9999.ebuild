@@ -9,6 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
+IUSE="-delta_generator"
 KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="app-arch/bzip2
@@ -43,10 +44,11 @@ src_test() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	scons debug=1 \
-		update_engine_unittests \
-		test_http_server \
-		|| die "failed to build tests"
+	TARGETS="update_engine_unittests test_http_server"
+	if use delta_generator; then
+	  TARGETS="$TARGETS delta_generator"
+	fi
+	scons debug=1 $TARGETS || die "failed to build tests"
 
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
@@ -66,6 +68,10 @@ src_test() {
 src_install() {
 	dosbin update_engine
 	dobin update_engine_client
+
+	if use delta_generator; then
+	  dobin delta_generator
+	fi
 
 	insinto /usr/share/dbus-1/services
 	doins org.chromium.UpdateEngine.service

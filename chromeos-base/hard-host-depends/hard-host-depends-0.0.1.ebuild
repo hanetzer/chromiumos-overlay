@@ -126,6 +126,11 @@ RDEPEND="${RDEPEND}
 	sys-apps/mosys
 	"
 
+# Host dependencies that are needed for delta_generator.
+RDEPEND="${RDEPEND}
+	chromeos-base/update_engine
+	"
+
 # Host dependencies to run unit tests within the chroot
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
