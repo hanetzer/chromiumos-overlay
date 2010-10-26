@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="fee4293d2cf473d04c4a4e16861a3e467d5477b9"
+CROS_WORKON_COMMIT="f326db8970ee112ab9a0dba582063dd99895f3bc"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -19,6 +19,7 @@ RDEPEND="chromeos-base/google-breakpad
          chromeos-base/libchrome
          chromeos-base/metrics
          dev-cpp/gflags
+	 dev-libs/libpcre
          test? ( dev-cpp/gtest )
          net-misc/curl
          sys-apps/findutils"
