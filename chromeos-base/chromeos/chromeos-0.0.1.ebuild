@@ -144,6 +144,21 @@ RDEPEND="${RDEPEND}
 	sys-process/vixie-cron
 	"
 
+# TODO(dianders):
+# In gentoo, the 'which' command is part of 'system'.  That means that packages
+# assume that it's there and don't list it as an explicit dependency.  At the
+# moment, we don't emerge 'system', but we really should at least emerge the
+# embedded profile system.  Until then, we'll list it as a dependency here.
+#
+# Note that even gentoo's 'embedded' profile effectively has 'which' in its
+# implicit dependencies, since it depepends on busybox and the default busybox
+# config from gentoo provides which.
+#
+# See http://crosbug.com/8144
+RDEPEND="${RDEPEND}
+	sys-apps/which
+	"
+
 # TODO(petkov): Remove once base image with no Python is tested.
 RDEPEND="${RDEPEND}
 	basepython? (
