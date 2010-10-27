@@ -14,7 +14,7 @@ SRC_URI="mirror://alsaproject/utils/${MY_P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0.9"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 sh sparc x86"
-IUSE="doc nls minimal"
+IUSE="doc nls minimal mario"
 
 DEPEND=">=sys-libs/ncurses-5.1
 	dev-util/dialog
@@ -65,7 +65,11 @@ src_install() {
 	newinitd "${FILESDIR}/alsasound.initd-r4" alsasound
 	newconfd "${FILESDIR}/alsasound.confd-r3" alsasound
 	insinto /etc/modprobe.d
-	newins "${FILESDIR}/alsa-modules.conf-rc" alsa.conf
+	if use mario; then
+		newins "${FILESDIR}/alsa-modules-mario.conf-rc" alsa.conf
+	else	      		
+		newins "${FILESDIR}/alsa-modules.conf-rc" alsa.conf
+	fi	
 
 	keepdir /var/lib/alsa
 }
