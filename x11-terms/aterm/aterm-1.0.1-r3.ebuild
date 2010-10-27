@@ -55,7 +55,6 @@ src_compile() {
 		--enable-background-image \
 		--enable-menubar \
 		--enable-graphics \
-		--enable-utmp \
 		--enable-wtmp \
 		--with-x \
 		${myconf} || die "econf failed"
@@ -66,8 +65,7 @@ src_compile() {
 src_install() {
 	make DESTDIR="${D}" install || die "make install failed"
 
-	fowners root:utmp /usr/bin/aterm
-	fperms g+s /usr/bin/aterm
+	fowners root:root /usr/bin/aterm
 
 	doman doc/aterm.1
 	dodoc ChangeLog doc/FAQ doc/README.*
