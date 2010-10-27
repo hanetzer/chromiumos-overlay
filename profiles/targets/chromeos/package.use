@@ -25,6 +25,8 @@ media-gfx/imagemagick   png
 media-sound/alsa-utils	-nls
 media-sound/pulseaudio	bluetooth dbus -esd
 net-libs/libsoup	-ssl
+# for curl-7.19.6 turning on ipv6 use flag will turn off ares
+net-misc/curl		ares
 net-misc/dhcpcd crash
 net-misc/ntp            caps
 net-misc/openssh	-X
