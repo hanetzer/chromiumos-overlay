@@ -129,6 +129,7 @@ IUSE_TESTS="
 	+tests_hardware_bma150
 	+tests_hardware_tsl2563
 	+tests_logging_CrashSender
+	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
 	+tests_logging_KernelCrashServer
 	+tests_logging_LogVolume
