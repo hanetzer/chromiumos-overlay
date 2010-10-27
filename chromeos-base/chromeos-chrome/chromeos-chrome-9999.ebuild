@@ -96,6 +96,7 @@ RDEPEND="app-arch/bzip2
          media-libs/libpng
          media-libs/mesa
          media-sound/pulseaudio
+         net-misc/wget
          sys-libs/zlib
          x86? ( www-plugins/adobe-flash )
          >=x11-libs/gtk+-2.14.7
