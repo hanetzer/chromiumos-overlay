@@ -469,10 +469,10 @@ src_install() {
 
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
-        if [ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]; then
+	if [ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]; then
 		export PORTAGE_STRIP_FLAGS="--strip-unneeded"
 	else
-		export PORTAGE_STRIP_FLAGS="--strip-unneeded -w --keep-symbol=\"*\""
+		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
 	fi
 
 	# First, things from the chrome build output directory
