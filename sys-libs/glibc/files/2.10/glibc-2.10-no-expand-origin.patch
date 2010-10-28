@@ -1,0 +1,131 @@
+From libc-hacker-return-9648-listarch-libc-hacker=sources dot redhat dot com at sourceware dot org Mon Oct 18 13:12:19 2010
+Return-Path: <libc-hacker-return-9648-listarch-libc-hacker=sources dot redhat dot com at sourceware dot org>
+Delivered-To: listarch-libc-hacker at sources dot redhat dot com
+Received: (qmail 1531 invoked by alias); 18 Oct 2010 13:12:18 -0000
+Received: (qmail 1264 invoked by uid 22791); 18 Oct 2010 13:12:17 -0000
+X-SWARE-Spam-Status: No, hits=-6.1 required=5.0
+	tests=AWL,BAYES_00,RCVD_IN_DNSWL_HI,SPF_HELO_PASS,T_RP_MATCHES_RCVD
+X-Spam-Check-By: sourceware.org
+Received: from mx1.redhat.com (HELO mx1.redhat.com) (209.132.183.28)
+    by sourceware dot org (qpsmtpd/0 dot 43rc1) with ESMTP; Mon, 18 Oct 2010 13:12:12 +0000
+Received: from int-mx09.intmail.prod.int.phx2.redhat.com (int-mx09.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+	by mx1 dot redhat dot com (8 dot 13 dot 8/8 dot 13 dot 8) with ESMTP id o9IDCBix011355
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=OK)
+	for <libc-hacker at sourceware dot org>; Mon, 18 Oct 2010 09:12:11 -0400
+Received: from hase.home (ovpn01.gateway.prod.ext.phx2.redhat.com [10.5.9.1])
+	by int-mx09 dot intmail dot prod dot int dot phx2 dot redhat dot com (8 dot 14 dot 4/8 dot 14 dot 4) with ESMTP id o9IDC9rW021654
+	for <libc-hacker at sourceware dot org>; Mon, 18 Oct 2010 09:12:10 -0400
+From: Andreas Schwab <schwab at redhat dot com>
+To: libc-hacker at sourceware dot org
+Subject: [PATCH] Never expand $ORIGIN in privileged programs
+X-Yow: Why is everything made of Lycra Spandex?
+Date: Mon, 18 Oct 2010 15:12:09 +0200
+Message-ID: <m3bp6ry79y.fsf@hase.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/23.2 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Mailing-List: contact libc-hacker-help at sourceware dot org; run by ezmlm
+Precedence: bulk
+List-Id: <libc-hacker.sourceware.org>
+List-Subscribe: <mailto:libc-hacker-subscribe at sourceware dot org>
+List-Archive: <http://sourceware.org/ml/libc-hacker/>
+List-Post: <mailto:libc-hacker at sourceware dot org>
+List-Help: <mailto:libc-hacker-help at sourceware dot org>, <http://sourceware dot org/ml/#faqs>
+Sender: libc-hacker-owner at sourceware dot org
+Delivered-To: mailing list libc-hacker at sourceware dot org
+
+Path elements containing $ORIGIN should always be ignored in privileged
+programs.
+
+Andreas.
+
+2010-10-18  Andreas Schwab  <schwab@redhat.com>
+
+	* elf/dl-load.c (is_dst): Remove last parameter.
+	(_dl_dst_count): Ignore $ORIGIN in privileged programs.
+	(_dl_dst_substitute): Likewise.
+---
+ elf/dl-load.c |   30 +++++++++++++-----------------
+ 1 files changed, 13 insertions(+), 17 deletions(-)
+
+diff --git a/elf/dl-load.c b/elf/dl-load.c
+index a7162eb..776f7e4 100644
+--- a/elf/dl-load.c
++++ b/elf/dl-load.c
+@@ -169,8 +169,7 @@ local_strdup (const char *s)
+ 
+ 
+ static size_t
+-is_dst (const char *start, const char *name, const char *str,
+-	int is_path, int secure)
++is_dst (const char *start, const char *name, const char *str, int is_path)
+ {
+   size_t len;
+   bool is_curly = false;
+@@ -199,11 +198,6 @@ is_dst (const char *start, const char *name, const char *str,
+ 	   && (!is_path || name[len] != ':'))
+     return 0;
+ 
+-  if (__builtin_expect (secure, 0)
+-      && ((name[len] != '\0' && (!is_path || name[len] != ':'))
+-	  || (name != start + 1 && (!is_path || name[-2] != ':'))))
+-    return 0;
+-
+   return len;
+ }
+ 
+@@ -218,13 +212,12 @@ _dl_dst_count (const char *name, int is_path)
+     {
+       size_t len;
+ 
+-      /* $ORIGIN is not expanded for SUID/GUID programs (except if it
+-	 is $ORIGIN alone) and it must always appear first in path.  */
++      /* $ORIGIN is not expanded for SUID/GUID programs.  */
+       ++name;
+-      if ((len = is_dst (start, name, "ORIGIN", is_path,
+-			 INTUSE(__libc_enable_secure))) != 0
+-	  || (len = is_dst (start, name, "PLATFORM", is_path, 0)) != 0
+-	  || (len = is_dst (start, name, "LIB", is_path, 0)) != 0)
++      if (((len = is_dst (start, name, "ORIGIN", is_path)) != 0
++	   && !INTUSE(__libc_enable_secure))
++	  || (len = is_dst (start, name, "PLATFORM", is_path)) != 0
++	  || (len = is_dst (start, name, "LIB", is_path)) != 0)
+ 	++cnt;
+ 
+       name = strchr (name + len, '$');
+@@ -256,9 +249,12 @@ _dl_dst_substitute (struct link_map *l, const char *name, char *result,
+ 	  size_t len;
+ 
+ 	  ++name;
+-	  if ((len = is_dst (start, name, "ORIGIN", is_path,
+-			     INTUSE(__libc_enable_secure))) != 0)
++	  if ((len = is_dst (start, name, "ORIGIN", is_path)) != 0)
+ 	    {
++	      /* Ignore this path element in SUID/SGID programs.  */
++	      if (INTUSE(__libc_enable_secure))
++		repl = (const char *) -1;
++	      else
+ #ifndef SHARED
+ 	      if (l == NULL)
+ 		repl = _dl_get_origin ();
+@@ -266,9 +262,9 @@ _dl_dst_substitute (struct link_map *l, const char *name, char *result,
+ #endif
+ 		repl = l->l_origin;
+ 	    }
+-	  else if ((len = is_dst (start, name, "PLATFORM", is_path, 0)) != 0)
++	  else if ((len = is_dst (start, name, "PLATFORM", is_path)) != 0)
+ 	    repl = GLRO(dl_platform);
+-	  else if ((len = is_dst (start, name, "LIB", is_path, 0)) != 0)
++	  else if ((len = is_dst (start, name, "LIB", is_path)) != 0)
+ 	    repl = DL_DST_LIB;
+ 
+ 	  if (repl != NULL && repl != (const char *) -1)
+-- 
+1.7.2.3
+
+
+-- 
+Andreas Schwab, schwab@redhat.com
+GPG Key fingerprint = D4E8 DBE3 3813 BB5D FA84  5EC7 45C6 250E 6F00 984E
+"And now for something completely different."
+
