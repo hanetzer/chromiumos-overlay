@@ -339,6 +339,7 @@ EBUILD_WRAPPER="/usr/local/bin/ebuild-${BOARD_VARIANT}"
 ECLEAN_WRAPPER="/usr/local/bin/eclean-${BOARD_VARIANT}"
 EQUERY_WRAPPER="/usr/local/bin/equery-${BOARD_VARIANT}"
 PORTAGEQ_WRAPPER="/usr/local/bin/portageq-${BOARD_VARIANT}"
+CROS_WORKON_WRAPPER="/usr/local/bin/cros_workon-${BOARD_VARIANT}"
 cat <<EOF | sudo dd of="$EMERGE_WRAPPER" > /dev/null 2>&1
 #!/bin/bash
 
@@ -386,6 +387,13 @@ export ROOT="$BOARD_ROOT"
 exec sudo -E portageq "\$@"
 EOF
 
+cat <<EOF | sudo dd of="$CROS_WORKON_WRAPPER" > /dev/null 2>&1
+#!/bin/bash
+exec ${SCRIPTS_DIR}/cros_workon --board ${BOARD_VARIANT} "\$@"
+EOF
+
+sudo chmod +x "$CROS_WORKON_WRAPPER"
+
 #
 # Before we can emerge the kernel, we need to emerge hard-host-depends.
 #
@@ -427,4 +435,5 @@ echo "  ${EMERGE_WRAPPER}"
 echo "  ${EBUILD_WRAPPER}"
 echo "  ${EQUERY_WRAPPER}"
 echo "  ${PORTAGEQ_WRAPPER}"
+echo "  ${CROS_WORKON_WRAPPER}"
 echo "The SYSROOT is: ${BOARD_ROOT}"
