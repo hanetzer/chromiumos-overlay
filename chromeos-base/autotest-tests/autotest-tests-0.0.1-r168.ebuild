@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="104d56374350d4c86032cc419ddc9bd0174e0922"
+CROS_WORKON_COMMIT="83847641181abba207cae5bede51a2905eceeae4"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -218,6 +218,7 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_RendererSandbox
+	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
 	+tests_security_RootfsOwners
 	+tests_security_SuidBinaries
