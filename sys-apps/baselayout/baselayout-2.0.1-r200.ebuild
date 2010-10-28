@@ -41,7 +41,7 @@ src_install() {
 	# We use our own sysctl.conf, which we'll probably hack on a lot
 	# so just copy it inplace instead of using patches to avoid the
 	# overhead of creating patches all the time.
-	cp "{FILESDIR}"/sysctl.conf "${D}"/etc/sysctl.conf
+	cp "${FILESDIR}"/sysctl.conf "${D}"/etc/sysctl.conf
 
 	# Remove files that don't make sense for Chromium OS
 	for x in issue issue.logo ; do
