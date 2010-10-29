@@ -12,10 +12,10 @@ SRC_URI="http://www.skbuff.net/iputils/iputils-s${PV}.tar.bz2
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~ppc-aix ~amd64-linux ~x86-linux"
-IUSE="doc idn ipv6 SECURITY_HAZARD ssl static"
+IUSE="doc extras idn ipv6 SECURITY_HAZARD ssl static"
 
 # sysfsutils is needed for libsysfs which is used by arping only
-RDEPEND="!net-misc/rarpd
+RDEPEND="extras? !net-misc/rarpd
 	ssl? ( dev-libs/openssl )
 	idn? ( net-dns/libidn )
 	sys-fs/sysfsutils"
@@ -58,7 +58,8 @@ src_install() {
 	into /usr
 	dosbin tracepath || die "tracepath"
 	use ipv6 && dosbin trace{path,route}6
-	dosbin clockdiff rarpd rdisc ipg tftpd || die "misc sbin"
+	use extras && \
+		{ dosbin clockdiff rarpd rdisc ipg tftpd || die "misc sbin"; }
 
 	fperms 4711 /bin/ping
 	use ipv6 && fperms 4711 /bin/ping6 /usr/sbin/traceroute6

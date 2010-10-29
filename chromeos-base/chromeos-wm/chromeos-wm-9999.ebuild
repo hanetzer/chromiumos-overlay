@@ -18,6 +18,8 @@ RDEPEND="dev-cpp/gflags
 	dev-libs/libpcre
 	dev-libs/protobuf
 	media-libs/libpng
+	net-misc/iputils
+	sys-apps/net-tools
 	x11-libs/cairo
 	x11-libs/libxcb
 	x11-libs/libX11
