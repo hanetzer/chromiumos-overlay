@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -39,30 +39,43 @@ Section "InputDevice"
     Option     "FingerHigh" "43"
     Option     "EmulateTwoFingerMinZ" "32"
     Option     "VertTwoFingerScroll" "1"
-# Horizontal scrolling is disabled for now as it interferes w/ vertical.
+    # Horizontal scrolling is disabled for now as it interferes w/ vertical.
     Option     "HorizTwoFingerScroll" "0"
-# The resolutions were balanced for the Dell Lattitudes
+    # The resolutions were balanced for the Dell Latitudes
     Option     "HorizResolution" "75"
     Option     "VertResolution" "108"
 EndSection
 
-# Everything after this point was added to include support for USB as a
-# secondary mouse device.
+# Include support for USB as a secondary mouse device.
 Section "InputDevice"
-  Identifier "USBMouse"
-  Driver "mouse"
-  Option "Device" "/dev/input/mice" # multiplexed HID mouse input device
-  Option "Protocol" "IMPS/2"
-  Option "ZAxisMapping" "8 9" # support a wheel as buttons 8 and 9 
-  Option "Emulate3Buttons" "true"  # just in case it is a 2 button
+    Identifier "USBMouse"
+    Driver     "mouse"
+    Option     "Device" "/dev/input/mice" # multiplexed HID mouse input device
+    Option     "Protocol" "IMPS/2"
+    Option     "ZAxisMapping" "8 9" # support a wheel as buttons 8 and 9
+    Option     "Emulate3Buttons" "true"  # just in case it is a 2 button
 EndSection
 
-# Defines a non-default server layout which pulls in the USB Mouse as a
-# secondary input device.
+Section "Monitor"
+    Identifier "DefaultMonitor"
+    Gamma      1.22 1.21 1.1
+EndSection
+
+Section "Device"
+    Identifier "DefaultDevice"
+    Option     "monitor-LVDS1" "DefaultMonitor"
+EndSection
+
+Section "Screen"
+    Identifier "DefaultScreen"
+    Monitor    "DefaultMonitor"
+    Device     "DefaultDevice"
+EndSection
+
 Section "ServerLayout"
-  Identifier "DefaultLayout"
-  # Screen "DefaultScreen"
-  InputDevice "Mouse1" "CorePointer"
-  InputDevice "USBMouse" "AlwaysCore"
-  InputDevice "Keyboard1" "CoreKeyboard"
+    Identifier  "DefaultLayout"
+    Screen      "DefaultScreen"
+    InputDevice "Mouse1" "CorePointer"
+    InputDevice "USBMouse" "AlwaysCore"
+    InputDevice "Keyboard1" "CoreKeyboard"
 EndSection
