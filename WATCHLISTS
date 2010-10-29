@@ -19,7 +19,7 @@
   },
   'WATCHLISTS': {
     'all': ['adlr@chromium.org',
-            'msb@chromium.org',
+            'msb+crosoverlay@chromium.org',
             'anush@chromium.org'],
     'bluez': ['petkov@chromium.org'],
     'chromeos-image' : ['sosa@chromium.org'],
