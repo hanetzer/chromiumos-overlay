@@ -4,7 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="66631b08f1d5b601f82d9851380d328e1a36eea2"
+CROS_WORKON_COMMIT="762fb75a2d98c8802ca7a06ab65c4b5d696857d0"
 
 inherit autotools cros-workon toolchain-funcs
 
