@@ -21,5 +21,4 @@ src_install() {
         dobin channel_change
         dobin crosh-workarounds
 	dobin generate_logs
-        dobin mkcrosusb
 }
