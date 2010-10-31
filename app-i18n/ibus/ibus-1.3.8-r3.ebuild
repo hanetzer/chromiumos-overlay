@@ -48,6 +48,9 @@ src_prepare() {
 	epatch "${FILESDIR}/0007-Remove-bus_input_context_register_properties-props_e.patch"
 	epatch "${FILESDIR}/0008-Temporary-fix-for-a-race-condition-between-ibus_conf.patch"
 	epatch "${FILESDIR}/0009-Fix-potential-race-condition-between-ibus_config_set.patch"
+	epatch "${FILESDIR}/0010-Do-not-block-the-connection-between-ibus-daemon-and-.patch"
+	epatch "${FILESDIR}/0011-Use-block-mode-of-g_main_context_iteration-to-avoid-.patch"
+	epatch "${FILESDIR}/0012-Fix-compile-error.patch"
 }
 
 src_configure() {

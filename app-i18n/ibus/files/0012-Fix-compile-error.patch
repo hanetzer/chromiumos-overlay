@@ -1,0 +1,25 @@
+From 7663155ecd7f8b178f632123c573954212ae05c8 Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Sun, 31 Oct 2010 00:40:25 +0900
+Subject: [PATCH 12/12] Fix compile error.
+
+---
+ bus/ibusimpl.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index 5a7098b..ed4394f 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -515,7 +515,7 @@ _config_value_changed_cb (IBusConfig  *config,
+             /* Avoid blocking the connection with config process,
+              * we will use idle callback to delay the set function call.
+              */
+-            g_idle_add ((GSourceFunc)_set_value_in_idle, data);
++            g_idle_add ((GSourceFunc)_set_value_in_idle_cb, data);
+             break;
+         }
+     }
+-- 
+1.7.3.1
+
