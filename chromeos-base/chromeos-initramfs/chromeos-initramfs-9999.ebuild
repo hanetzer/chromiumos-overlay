@@ -14,7 +14,6 @@ KEYWORDS="~x86 ~arm"
 IUSE=""
 DEPEND="app-arch/cpio
 	sys-apps/busybox
-	sys-apps/rootdev
 	sys-fs/lvm2
 	chromeos-base/vboot_reference
 	chromeos-base/chromeos-installer"
@@ -34,7 +33,8 @@ build_initramfs_file() {
 	mkdir -p ${INITRAMFS_TMP_S}/root ${INITRAMFS_TMP_S}/proc
 	mkdir -p ${INITRAMFS_TMP_S}/sys ${INITRAMFS_TMP_S}/usb
 	mkdir -p ${INITRAMFS_TMP_S}/newroot ${INITRAMFS_TMP_S}/lib
-	mkdir -p ${INITRAMFS_TMP_S}/stateful
+	mkdir -p ${INITRAMFS_TMP_S}/stateful ${INITRAMFS_TMP_S}/tmp
+	mkdir -p ${INITRAMFS_TMP_S}/log
 
 	# Insure cgpt is statically linked
 	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
@@ -45,20 +45,28 @@ build_initramfs_file() {
 		ld-linux.so.2
 		libm.so.6
 		libc.so.6
+		../usr/lib/libcrypto.so.0.9.8
 		libdevmapper.so.1.02
 		libdl.so.2
 		libpam.so.0
 		libpam_misc.so.0
 		libpthread.so.0
 		librt.so.1
+		libz.so.1
 	"
 	for lib in $LIBS; do
 		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib/ || die
 	done
 
 	cp ${ROOT}/bin/busybox ${INITRAMFS_TMP_S}/bin || die
+
+	# For verified rootfs
 	cp ${ROOT}/sbin/dmsetup ${INITRAMFS_TMP_S}/bin || die
-	cp ${ROOT}/usr/bin/rootdev ${INITRAMFS_TMP_S}/bin || die
+
+	# For recovery behavior
+	cp ${ROOT}/usr/bin/tpmc ${INITRAMFS_TMP_S}/bin || die
+	cp ${ROOT}/usr/bin/dev_sign_file ${INITRAMFS_TMP_S}/bin || die
+	cp ${ROOT}/usr/bin/vbutil_kernel ${INITRAMFS_TMP_S}/bin || die
 
 	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
 	cp ${ROOT}/usr/sbin/chromeos-common.sh ${INITRAMFS_TMP_S}/usr/sbin || die

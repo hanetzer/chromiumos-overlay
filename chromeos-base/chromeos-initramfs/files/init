@@ -9,11 +9,37 @@
 
 # USB card partition and mount point.
 USB_DEVS="sdb3 sdc3 mmcblk1p3"
+USB_SHIM_DEVS="sdb1 sdc1 mmcblk1p1"
 USB_MNT=/usb
 REAL_USB_DEV=
 
+DST=
+
 STATEFUL_MNT=/stateful
 STATE_DEV=
+
+LOG_DEV=
+LOG_FILE="/log/recovery.log"
+
+TPM_B_LOCKED=
+TPM_PP_LOCKED=
+
+# Developer script to run
+SHIM_SCRIPT="$STATEFUL_MNT/userdir/runme"
+SHIM_VBLOCK="$STATEFUL_MNT/userdir/runme.vblock"
+
+KERN_B_VBLOCK="$STATEFUL_MNT/vmlinuz_hd.vblock"
+REAL_KERN_B_HASH=
+
+MOVE_MOUNTS="/sys /proc /dev"
+
+# To be updated to keep logging after move_mounts.
+TTY_PATH="/dev/tty"
+TAIL_PID=
+
+# Used to ensure the factory check only occurs with
+# a properly matched root and kernel.
+UNOFFICIAL_ROOT=0
 
 # Size of the root ramdisk.
 TMPFS_SIZE=300M
@@ -23,6 +49,13 @@ on_error() {
   # start a shell) because it would be trivially easy to get here (just unplug
   # the USB drive after the kernel starts but before the USB drives are probed
   # by the kernel) and starting a shell here would be a BIG security hole.
+  log
+  log
+  log "An unrecoverable error occurred during recovery!"
+  log
+  log "Please try again or try a newer recovery image."
+  save_log_file
+  sleep 1d
   exit 1
 }
 
@@ -33,141 +66,248 @@ initial_mounts() {
   if ! mount -t devtmpfs -o mode=0755 none /dev; then
     mount -t tmpfs -o mode=0755 none /dev
     mknod -m 0600 /dev/console c 5 1
-    mknod -m 0600 /dev/tty1 c 4 1
+    mknod -m 0601 /dev/tty1 c 4 1
+    mknod -m 0601 /dev/tty2 c 4 2
+    mknod -m 0601 /dev/tty3 c 4 3
+    mknod -m 0600 /dev/tpm0 c 10 224
     mknod /dev/null c 1 3
   fi
-  mkdir /dev/pts
+  mkdir -p /dev/pts
   mount -t devpts -o noexec,nosuid none /dev/pts || true
+}
+
+# Look for a device with our GPT ID.
+wait_for_gpt_root() {
+  [ -z "$KERN_ARG_KERN_GUID" ] && return 1
+  dlog -n "Looking for rootfs using kern_guid..."
+  for try in $(seq 20); do
+    plog " ."
+    kern=$(cgpt find -1 -u $KERN_ARG_KERN_GUID)
+    # We always try ROOT-A in recovery.
+    newroot="${kern%[0-9]*}3"
+    if [ -b "$newroot" ]; then
+      USB_DEV="$newroot"
+      dlog "Found $USB_DEV"
+      return 0
+    fi
+    sleep 1
+  done
+  dlog "Failed waiting for kern_guid"
+  return 1
 }
 
 # Look for any USB device.
 wait_for_root() {
-  echo -n "Waiting for $USB_DEVS to appear"
+  dlog -n "Waiting for $USB_DEVS to appear"
   for try in $(seq 20); do
-    echo -n "."
+    plog " ."
     for dev in $USB_DEVS; do
       if [ -b "/dev/${dev}" ]; then
         USB_DEV="/dev/${dev}"
-        echo "Found $USB_DEV"
+        dlog "Found $USB_DEV"
         return 0
       fi
     done
     sleep 1
   done
-  echo "Failed waiting for root!"
+  dlog "Failed waiting for root!"
   return 1
 }
 
 # Wait for dm-0 to come up.
 wait_for_dm_control() {
   MAPPER_CONTROL=/dev/mapper/control
-  echo -n "Waiting for $MAPPER_CONTROL to appear"
+  dlog -n "Waiting for $MAPPER_CONTROL to appear"
   for try in $(seq 20); do
-    echo -n "."
+    plog " ."
     if [ -c "$MAPPER_CONTROL" ]; then
       return 0
     fi
     sleep 1
   done
-  echo "Failed waiting for $MAPPER_CONTROL!"
+  dlog "Failed waiting for $MAPPER_CONTROL!"
   return 1
 }
 
+check_if_dm_root() {
+  [ "$KERN_ARG_ROOT" = "/dev/dm-0" ]
+}
+
+# Attempt to find the root defined in the signed recovery
+# kernel we're booted into to. Exports REAL_USB_DEV if there
+# is a root partition that may be used - on succes or failure.
+find_official_root() {
+  plog "Checking for an official recovery image . . ."
+
+  # Check for a kernel selected root device or one in a well known location.
+  wait_for_gpt_root || wait_for_root || return 1
+
+  # Now see if it has a Chrome OS rootfs partition.
+  cgpt find -t rootfs "$(strip_partition "$USB_DEV")" || return 1
+  REAL_USB_DEV="$USB_DEV"
+
+  LOG_DEV="$(strip_partition "$USB_DEV")"1  # Default to stateful.
+
+  # Now see if the root should be integrity checked.
+  if check_if_dm_root; then
+    setup_dm_root || return 1
+  fi
+
+  mount_usb || return 1
+  return 0
+}
+
+find_developer_root() {
+  is_developer_mode || return 1
+  # Lock the TPM prior to using an untrusted root.
+  lock_tpm || return 1
+  plog "\nSearching for developer root . . ."
+  # If an official root could not be mounted, free up the underlying device
+  # if it is claimed by verity.
+  dmsetup remove "$DM_NAME"
+
+  # If we found a valid rootfs earlier, then we're done.
+  USB_DEV="$REAL_USB_DEV"
+  [ -z "$USB_DEV" ] && return 1
+  set_unofficial_root || return 1
+  mount_usb || return 1
+  return 0
+}
+
+# If this kernel image has been placed on a drive with only a
+# stateful partition, root detection will rightly fail.  However,
+# we can still run a developer supplied script so we will pretend
+# stateful is the root (USB_DEV).
+find_shim_root() {
+  # Lock the TPM prior to using an untrusted root.
+  lock_tpm || return 1
+  plog "\nSearching for an alternate recovery image . . ."
+  dlog -n "Waiting for $USB_SHIM_DEVS to appear"
+  for try in $(seq 20); do
+    plog " ."
+    for dev in $USB_SHIM_DEVS; do
+      if [ -b "/dev/${dev}" ]; then
+        USB_DEV="/dev/${dev}"
+        REAL_USB_DEV="$USB_DEV"
+        dlog "Found $USB_DEV"
+        set_unofficial_root || on_error
+        mount_usb || return 1
+        return 0
+      fi
+    done
+    sleep 1
+  done
+  return 1
+}
+
+# If we have a verified recovery root, ensure all blocks are valid before
+# handing it off to the installer.
+validate_recovery_root() {
+  # Allow test recovery roots that are unverified.
+  [ "$USB_DEV" = "/dev/dm-0" ] || return 0
+  is_unofficial_root && return 0
+
+  plog "Validating official recovery image . . . "
+  # Ensure the verified rootfs is fully intact or fail with no USB_DEV.
+  # REAL_USB_DEV is left intact.
+  # Correctness wins over speed for this.
+  if ! dd if="$USB_DEV" of=/dev/null bs=$((16 * 1024 * 1024)); then
+    dlog "Included root filesystem could not be verified."
+    log " failed!"
+    dmsetup remove "$DM_NAME"  # Free up the real root for use.
+    USB_DEV=
+    return 1
+  fi
+  log " completed."
+  return 0
+}
+
 setup_dm_root() {
-  echo -n "Extracting the device mapper configuration..."
+  dlog -n "Extracting the device mapper configuration..."
+  # export_args can't handle dm="..." at present.
   DMARG=$(cat /proc/cmdline | sed -e 's/.*dm="\([^"\]*\)".*/\1/g')
   DM_NAME=$(echo "$DMARG" | cut -f1 -d' ')
   # We override the reboot-to-recovery error behavior so that we can fail
   # gracefully on invalid rootfs.
   DM_TABLE="$(echo "$DMARG" | cut -f2 -d,) eio"
+
+  # Don't attempt to call dmsetup if the root device isn't one that was
+  # discovered as the creation process will hang.
+  # TODO(wad) once we pass the UUID this will be easier to robustly check.
+  if [ -n "${USB_DEV}" ]; then
+    [ "${DM_TABLE%$USB_DEV*}" = "${DM_TABLE}" ] && return 1
+  fi
+
   if ! dmsetup create -r "$DM_NAME" --major 254 --minor 0 --table "$DM_TABLE"
   then
-    echo "Failed to configure device mapper root"
+    dlog "Failed to configure device mapper root"
     return 1
   fi
   USB_DEV="/dev/dm-0"
   if [ ! -b "$USB_DEV" ]; then
-    mknod -m 0600 /dev/dm-0 b 254 0
+    mknod -m 0600 "$USB_DEV" b 254 0
   fi
-  echo "Created device mapper root $DM_NAME."
+  dlog "Created device mapper root $DM_NAME."
   return 0
 }
 
-# Look for a device with our GPT ID.
-wait_for_gpt_root() {
-  echo -n "Looking for rootfs..."
-  for try in $(seq 20); do
-    echo -n "."
-    newroot=$(/usr/sbin/chromeos-findrootfs)
-    if [ -n "$newroot" ]; then
-      USB_DEV="$newroot"
-      echo "Found $USB_DEV"
-      return 0
-    fi
-    sleep 1
-  done
-  echo "Failed waiting for kern_guid"
-  return 1
-}
-
 mount_usb() {
-  echo -n "Mounting usb"
+  dlog -n "Mounting usb"
   for try in $(seq 20); do
-    echo -n "."
+    plog " ."
     if mount -n -o ro "$USB_DEV" "$USB_MNT"; then
-      echo "ok"
+      dlog "ok"
       return 0
     fi
     sleep 1
   done
-  echo "Failed to mount usb!"
+  dlog "Failed to mount usb!"
   return 1
-}
-
-check_if_dm_root() {
-  grep -q "root=/dev/dm-0" /proc/cmdline
 }
 
 check_if_factory_install() {
+  if is_unofficial_root; then
+    dlog "Skipping factory install check."
+    return 1
+  fi
+
   if [ -e "${USB_MNT}/root/.factory_installer" ]; then
-    echo "Detected factory install."
+    log "Detected factory install."
     return 0
   fi
   return 1
 }
 
 get_stateful_dev() {
-  # Determine the STATE_DEV using rootdev on the target
-  # to work seamlessly with dm-verity or normal devices.
-  REAL_USB_DEV=$(rootdev -s "$USB_MNT")
   STATE_DEV=${REAL_USB_DEV%[0-9]*}1
   if [ ! -b "$STATE_DEV" ]; then
-    echo "Failed to determine stateful device"
+    dlog "Failed to determine stateful device"
     return 1
   fi
   return 0
 }
 
 mount_tmpfs() {
-  echo "Mounting tmpfs..."
+  dlog "Mounting tmpfs..."
   mount -n -t tmpfs tmpfs "$NEWROOT_MNT" -o "size=$TMPFS_SIZE"
   return $?
 }
 
 copy_contents() {
-  echo "Copying usb->tmpfs..."
+  log "Copying usb->tmpfs..."
   (cd "${USB_MNT}" ; tar cf - . | (cd "${NEWROOT_MNT}" && tar xf  -))
   RES=$?
-  echo "Copy returned with result $RES"
+  log "Copy returned with result $RES"
   return $RES
 }
 
 copy_lsb() {
   STATEFUL_LSB="dev_image/etc/lsb-factory"
   mkdir -p "${NEWROOT_MNT}/mnt/stateful_partition/dev_image/etc"
-  mount -n -o ro -t ext3 "$STATE_DEV" "$STATEFUL_MNT"
+  # Mounting ext3 as ext2 since the journal is unneeded in ro.
+  mount -n -o ro -t ext2 "$STATE_DEV" "$STATEFUL_MNT"
   if [ -f "${STATEFUL_MNT}/${STATEFUL_LSB}" ]; then
-    echo "Found ${STATEFUL_MNT}/${STATEFUL_LSB}"
+    log "Found ${STATEFUL_MNT}/${STATEFUL_LSB}"
     cp -a "${STATEFUL_MNT}/${STATEFUL_LSB}" \
         "${NEWROOT_MNT}/mnt/stateful_partition/${STATEFUL_LSB}"
   fi
@@ -176,50 +316,434 @@ copy_lsb() {
 }
 
 move_mounts() {
-  echo "Moving sys. proc, dev to $NEWROOT_MNT"
-  mount -n -o move /sys "$NEWROOT_MNT/sys"
-  mount -n -o move /proc "$NEWROOT_MNT/proc"
-  mount -n -o move /dev "$NEWROOT_MNT/dev"
-  echo "Done."
+  dlog "Moving sys. proc, dev to $NEWROOT_MNT"
+  for mnt in $MOVE_MOUNTS; do
+    mkdir -p "$NEWROOT_MNT$mnt"
+    mount -n -o move "$mnt" "$NEWROOT_MNT$mnt"
+  done
+  TTY_PATH="$NEWROOT_MNT/dev/tty"
+  dlog "Done."
+  return 0
+}
+
+unmove_mounts() {
+  dlog "Moving sys. proc, dev to $NEWROOT_MNT"
+  for mnt in $MOVE_MOUNTS; do
+    mount -n -o move "$NEWROOT_MNT$mnt" "$mnt"
+  done
+  TTY_PATH="/dev/tty"
+  dlog "Done."
   return 0
 }
 
 unmount_usb() {
-  echo "Unmounting $USB_MNT"
+  dlog "Unmounting $USB_MNT"
   umount "$USB_MNT"
-  echo
-  echo "$USB_DEV can now be safely removed"
-  echo
+  dlog
+  dlog "$USB_DEV can now be safely removed"
+  dlog
   return 0
 }
 
+strip_partition() {
+  local dev="${1%[0-9]*}"
+  # handle mmcblk0p case as well
+  echo "${dev%p*}"
+}
+
+# Accomodate sd* or mmcblk* devices
+get_dst() {
+  DST=$(echo ${REAL_USB_DEV%[0-9]*} | \
+        tr -s '[0-9]' '0' | \
+        sed -e 's/sd[b-z]/sda/g')
+}
+
+dev_wait_or_error() {
+  is_developer_mode || on_error  # terminal if we get here in regular mode.
+  log ""
+  log "A developer key change is required to proceed."
+  plog "Please wait 300 seconds . . ."
+  # TODO(wad) Divvy the total up into a few different prompts.
+  make_user_wait 300
+  log ""
+}
+
+recovery_wait() {
+  log ""
+  log "Preparing to recover your system image."
+  plog "If you do not wish to proceed, please reboot in the next 10 seconds ."
+  make_user_wait 10
+  log ""
+  log "System recovery is beginning."
+  log "Please do not disconnect from a power source or power down."
+  log ""
+}
+
+make_user_wait() {
+  local delay_in_sec="${1-300}"
+  while [ $delay_in_sec -gt 0 ]; do
+    plog " ."
+    sleep 1
+    delay_in_sec=$((delay_in_sec - 1))
+  done
+  log ""
+}
+
+check_key_or_wait() {
+  plog "Searching the system disk for a matching kernel key . . ."
+  if ! cgpt find -t kernel -M "$1" "$DST"; then
+    log " failed."
+    dev_wait_or_error
+    return 0
+  fi
+  log " found."
+
+  plog "Validating matching signature(s) . . ."
+  # If we found a keyblock, at the right offset, make sure it actually signed
+  # the subsequent payload.
+  local kdev=
+  for kdev in $(cgpt find -t kernel -M "$1" "$DST"); do
+    plog " ."
+    verify_kernel_signature "$kdev" "/tmp/kern.keyblock" || continue
+    log " done."
+    return 0
+  done
+
+  log " failed."
+  dev_wait_or_error
+  return 0
+}
+
+# Never returns on success.
+attempt_shim_script() {
+  # TODO(wad) Add static root of trust validation then remove the next line.
+  #           http://crosbug/8390
+  is_developer_mode || return 1
+
+  # Now we will either install a colocated Chromium OS image by
+  # checking the keys on KERN-B against any on disk (KERN-[ABC])
+  # or by checking a signed script on stateful.
+  dlog "Checking for a shim script . . ."
+  [ -x "$SHIM_SCRIPT" ] || return 1
+  [ -f "$SHIM_VBLOCK" ] || return 1
+  log "Shim script and signing file found!"
+
+  plog "Verifying the signature on the script . . ."
+  # Extract pubkey and check signature
+  if ! dev_sign_file --verify "$SHIM_SCRIPT" \
+                     --vblock "$SHIM_VBLOCK" \
+                     --keyblock /tmp/shim.keyblock; then
+    log " failed."
+  fi
+  log " done."
+
+  # If we're not in developer mode, this will be terminal on failure.
+  check_key_or_wait /tmp/shim.keyblock
+
+  # Run the user supplied script. It is done in the current environment
+  # to avoid needing anything other than the script/program on the partition.
+  log "Executing shim script . . ."
+
+  dlog "calling $SHIM_SCRIPT with exec"
+  # Fix up the input/output
+  stop_log_file
+  set +x
+  exec &> "$TTY_PATH"1
+  exec < "$TTY_PATH"1
+  # Call the script!
+  exec "$SHIM_SCRIPT"
+
+  # Never reached.
+  save_log_file
+  return 0
+}
+
+get_kern_b_device() {
+  # TODO(wad) By changing boot priority, could we end up
+  # checking the recovery image or the recovery image could not
+  # be in slot A. In that case, it should fail in normal mode.
+  KERN_B_DEV=${REAL_USB_DEV%[0-9]*}4
+  if [ ! -b "${KERN_B_DEV}" ]; then
+    return 1
+  fi
+  return 0
+}
+
+get_real_kern_b_hash() {
+  REAL_KERN_B_HASH=$(dd if="${KERN_B_DEV}" | \
+                     sha1sum | \
+                     cut -f1 -d' ')
+  [ -n "$REAL_KERN_B_HASH" ]
+}
+
+verify_kernel_signature() {
+  local kern_dev="$1"
+  local keyblock="$2"
+
+  if ! dd if="$kern_dev" of="/tmp/kern.bin"; then
+    return 1
+  fi
+
+  # Validates the signature and outputs a keyblock.
+  if ! vbutil_kernel --verify "/tmp/kern.bin" \
+                     --keyblock "$keyblock"; then
+    return 1
+  fi
+  return 0
+}
+
+verify_install_kernel() {
+  get_kern_b_device || return 1
+  get_real_kern_b_hash || return 1
+
+  # TODO(wad) check signatures from stateful on kern b using the
+  #           root of trust instead of using a baked in cmdline.
+  if [ "$REAL_KERN_B_HASH" != "$KERN_ARG_KERN_B_HASH" ]; then
+    if ! is_developer_mode; then
+      log "The recovery image cannot be verified."
+      return 1
+    fi
+
+    # Extract the kernel so that vbutil_kernel will happily consume it.
+    log "Checking the install kernel for a valid developer signature . . ."
+    verify_kernel_signature "$KERN_B_DEV" "/tmp/kern_b.keyblock" || return 1
+    check_key_or_wait /tmp/kern_b.keyblock
+  fi
+  return 0
+}
+
+touch_developer_mode_file() {
+  is_developer_mode || return 1
+  mount -n -o rw -t ext3 "$DST"1 "$STATEFUL_MNT" || return 1
+  touch "$STATEFUL_MNT/.developer_mode" || return 1
+  umount "$STATEFUL_MNT" || return 1
+  return 0
+}
+
+call_image_recovery_script() {
+  mount -t tmpfs -o mode=1777 none "$USB_MNT/tmp" || return 1
+  move_mounts || return 1
+
+  # Start the copy.
+  log ""
+  log "Beginning system image copy. This will take some time . . ."
+  log ""
+  # Until images are built with the installer keyblock in KERN-B by
+  # default, we keep copying over the installer vblock from the
+  # stateful partition.
+  # TODO(wad) http://crosbug/8378
+  export IS_RECOVERY_INSTALL=1
+  chroot "$USB_MNT" \
+    /usr/sbin/chromeos-install --run_as_root --yes \
+                               --payload_image="$1" \
+                               --use_payload_kern_b
+  if [  $? -eq 0 ]; then
+    log "System copy completed."
+  else
+    log "Error performing system recovery!"
+  fi
+
+  # Clean up doesn't need to be successful.
+  umount "$USB_MNT/tmp"
+  unmove_mounts
+
+  # If we're in developer mode, touch the .developer_mode file on stateful
+  # to avoid a bonus wait period on reboot.
+  # Failure here is non-terminal and it may not succeed just because the
+  # partition table of the destination has not been synchronized.
+  dlog "Prepping destination stateful to avoid a secondary delay."
+  touch_developer_mode_file && log "Prepped image for developer use."
+
+  return 0
+}
+
+clear_tpm() {
+  plog "Resetting security device . . ."
+  # TODO(wad) should we fail on this?
+  tpmc ppon || dlog "tpmc ppon error: $?"
+  tpmc clear || dlog "tpmc clear error: $?"
+  tpmc enable || dlog "tpmc enable error: $?"
+  tpmc activate || dlog "tpmc activate error: $?"
+  tpmc pplock || dlog "tpmc pplock error: $?"
+  log " done."
+  return 0
+}
+
+save_log_file() {
+  local log_dev="${1:-$LOG_DEV}"
+  [ -z "$log_dev" ] && return 0
+  # The recovery stateful is usually too small for ext3.
+  # TODO(wad) We could also just write the data raw if needed.
+  #           Should this also try to save
+  dlog "Attempting to save log file: $LOG_FILE -> $log_dev"
+  mount -n -o sync,rw -t ext2 "$log_dev" /tmp
+  cp "$LOG_FILE" /tmp
+  umount -n /tmp
+}
+
+stop_log_file() {
+  # Drop logging
+  exec &> "$TTY_PATH"3
+  [ -n "$TAIL_PID" ] && kill $TAIL_PID
+}
+
+is_unofficial_root() {
+  [ $UNOFFICIAL_ROOT -eq 1 ]
+}
+
+set_unofficial_root() {
+  UNOFFICIAL_ROOT=1
+  return 0
+}
+
+recover_system() {
+  local source=$(strip_partition "$REAL_USB_DEV")
+  dlog "Beginning system recovery from $source"
+
+  recovery_wait
+
+  if is_unofficial_root; then
+    dlog "Attempting to use shim  . . ."
+    # Mounting read only so a journal is not needed.
+    # If it fails, we can still proceed on a normal recovery path.
+    mount -n -o ro -t ext2 "$STATE_DEV" "$STATEFUL_MNT"
+    attempt_shim_script  # never returns on success.
+    umount "$STATEFUL_MNT"
+  fi
+
+  # If we're not running a developer script then we're either
+  # installing a developer image or an official one. If we're
+  # in normal recovery mode, then we require that the KERN-B
+  # on the recovery image matches the hash on the command line.
+  # In developer mode, we will just check the keys.
+  verify_install_kernel || return 1
+
+  # Only clear on full installs. Shim scripts can call tpmc if they
+  # like.  Only bGlobalLock will be in place in advance.
+  clear_tpm || return 1
+
+  call_image_recovery_script "$source" || return 1
+
+  return 0
+}
+
+use_new_root() {
+  move_mounts || on_error
+
+  # Chroot into newroot, erase the contents of the old /, and exec real init.
+  log "About to switch root"
+  stop_log_file
+  exec switch_root -c /dev/console "$NEWROOT_MNT" /sbin/init
+
+  # This should not really happen.
+  log "Failed to switch root."
+  save_log_file
+  return 1
+}
+
+is_developer_mode() {
+  # See Firmware High-Level Spec for details on CHSW values
+  CHSW=$(cat /sys/devices/platform/chromeos_acpi/CHSW)
+  # If the switch is unsupported, treat as developer mode.
+  [ -z "$CHSW" ] && return 0
+  if [ $CHSW -gt 0 -a $((CHSW & 32)) -eq 32 ]; then
+    return 0
+  fi
+  return 1
+}
+
+lock_tpm() {
+  if [ -z "$TPM_B_LOCKED" ]; then
+    # Depending on the system, the tpm may need to be started.
+    # Don't fail if it doesn't work though.
+    tpmc startup
+    tpmc ctest
+    if ! tpmc block; then
+      log "An unrecoverable error occurred with your security device"
+      log "Please power down and try again."
+      dlog "Failed to lock bGlobalLock."
+      on_error
+      return 1  # Never reached.
+    fi
+    TPM_B_LOCKED=y
+  fi
+  if [ -z "$TPM_PP_LOCKED" ]; then
+    # TODO: tpmc pplock if appropriate
+    TPM_PP_LOCKED=y
+  fi
+  return 0
+}
+
+# Extract and export kernel arguments
+export_args() {
+  # We trust out kernel command line explicitly.
+  local arg=
+  local key=
+  local val=
+  local acceptable_set='[A-Za-z0-9]_'
+  for arg in "$@"; do
+    key=$(echo "${arg%=*}" | tr 'a-z' 'A-Z' | \
+                   tr -dc "$acceptable_set" '_')
+    val="${arg#*=}"
+    export "KERN_ARG_$key"="$val"
+    dlog "Exporting kernel argument $key as KERN_ARG_$key"
+  done
+}
+
+dlog() {
+  echo "$@" | tee -a "$TTY_PATH"2 "$TTY_PATH"3
+}
+
+# User visible
+log() {
+  echo "$@" | tee -a "$TTY_PATH"1 "$TTY_PATH"2
+}
+
+plog() {
+  # plog doesn't go to /dev/tty3 or log file.
+  printf "$@" | tee "$TTY_PATH"1 "$TTY_PATH"2
+}
+
 main() {
+  exec &> "$LOG_FILE"
+
   # Set up basic mounts, console.
   initial_mounts
 
-  # Send any output to where we can see it.
-  exec &> /dev/tty1
-  echo "Starting initramfs"
+  # Send all verbose output to tty3
+  (tail -f "$LOG_FILE" > "$TTY_PATH"3) &
+  TAIL_PID=$!
 
-  # If we were booted with a dm-verity rootfs, then
-  # we can just wait for it to come up.
-  if check_if_dm_root; then
-    wait_for_dm_control || on_error
-    setup_dm_root || on_error
-  # Has the BIOS told us the partition ID?
-  elif check_for_gptid; then
-    wait_for_gpt_root || on_error
-  else
-    # Just wait for any rootfs.
-    # TODO(nsanders): add kern_guid into legacy cmdline?
-    wait_for_root || on_error
+  log "Recovery image booting . . ."
+  log ""
+  log "Press Ctrl + Alt + F1 - F3 for more detailed information."
+  log ""
+
+  # Export the kernel command line as a parsed blob prepending KERN_ARG_ to each
+  # argument.
+  export_args $(cat /proc/cmdline | sed -e 's/"[^"]*"/DROPPED/g')
+
+  if is_developer_mode; then
+    log "! Your computer's developer mode switch is in the ENABLED position."
+    log "!"
+    log "! If this is unintentional, you should power off and toggle it back "
+    log "! after recovery is completed."
+    log ""
   fi
 
-  mount_usb || on_error
+  if find_official_root || find_developer_root || find_shim_root; then
+    log " found."
+  else
+    log " not found."
+    on_error
+  fi
+
+  # Extract the real boot source which may be masked by dm-verity.
   get_stateful_dev || on_error
 
   # Check if we want to run from RAM, in the factory.
   if check_if_factory_install; then
+    is_developer_mode || on_error  # factory install requires it.
     # Copy rootfs contents to tmpfs, then unmount USB device.
     NEWROOT_MNT=/newroot
     mount_tmpfs || on_error
@@ -227,24 +751,56 @@ main() {
     copy_lsb || on_error
     # USB device is unmounted, we can remove it now.
     unmount_usb || on_error
-  else
-    NEWROOT_MNT="$USB_MNT"
+    # Switch to the new root
+    use_new_root || on_error
+    on_error # !! Never reached. !!
   fi
 
-  move_mounts || on_error
-  # Chroot into newroot, erase the contents of the old /, and exec real init.
-  echo "About to switch root"
-  exec switch_root -c /dev/console "$NEWROOT_MNT" /sbin/init
+  # If not, we must be a recovery kernel.
+  NEWROOT_MNT="$USB_MNT"
 
-  # This should not really happen.
-  echo "Failed to switch root"
+  # Always lock the TPM.  If a NVRAM reset is ever needed, we can change it.
+  lock_tpm || on_error
 
-  # Fail here.
-  on_error
+  # Perform a full device mapper root validation to avoid any unexpected
+  # failures during postinst.  It also allows us to detect if the root is
+  # intentionally mismatched - such as during Chromium OS recovery with a
+  # Chrome OS recovery kernel.
+  if ! validate_recovery_root; then
+    is_developer_mode || on_error
+    find_developer_root || find_shim_root || on_error
+    log " found."
+    # This logic is duplicated to avoid double validating factory media.  It
+    # will only be hit if a verified root can be mounted but is actually not
+    # intact.
+    get_stateful_dev || on_error
+  fi
+
+  get_dst || on_error
+
+  recover_system || on_error
+
+  log "System recovery is complete!"
+  log "Please remove the recovery device and reboot."
+
+  stop_log_file
+  # Save the recovery log to the target on success and the USB.
+  save_log_file "$DST"1
+  save_log_file
+
+  unmount_usb
+
+  log ""
+  log ""
+  plog "The system will automatically reboot in 2 minutes"
+  make_user_wait 120
+  exit 0
 }
 
+# Make this source-able for testing.
+if [ "$0" = "/init" ]; then
+  main "$@"
+  # Should never reach here.
+  exit 1
+fi
 
-main
-
-# Should never reach here.
-exit 1
