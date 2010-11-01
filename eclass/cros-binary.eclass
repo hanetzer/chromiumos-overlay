@@ -56,8 +56,15 @@ cros-binary_fetch() {
 	local scheme="${CROS_BINARY_URI%%://*}"
 	local non_scheme=${CROS_BINARY_URI##*//}
 	local netloc=${non_scheme%%/*}
+	local server=${netloc%%:*}
+	local port=${netloc##*:}
 	local path=${non_scheme#*/}
 
+	if [[ -z "${port}" ]]; then
+		port="22"
+	fi
+
+	local scp_args="-qo BatchMode=yes -P ${port}"
 	local target="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
 
 	addwrite "${CROS_BINARY_STORE_DIR}"
@@ -75,7 +82,7 @@ cros-binary_fetch() {
 				;;
 
 			ssh)
-				scp -qo BatchMode=yes "${netloc}:${path}" "${target}" ||
+				scp ${scp_args} "${server}:/${path}" "${target}" ||
 					rm -f "${target}"
 				;;
 
