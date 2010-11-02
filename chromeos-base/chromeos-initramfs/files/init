@@ -794,6 +794,7 @@ main() {
   log ""
   plog "The system will automatically reboot in 2 minutes"
   make_user_wait 120
+  reboot -f
   exit 0
 }
 
