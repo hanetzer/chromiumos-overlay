@@ -3,6 +3,7 @@
 # $Header:
 
 EAPI="2"
+CROS_WORKON_COMMIT="96222b1700d9c989c046c0db4cdf7a872a2cbf62"
 
 inherit cros-workon toolchain-funcs
 
@@ -11,7 +12,7 @@ HOMEPAGE="http://flashrom.org"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="ftdi serprog"
 
 CROS_WORKON_LOCALNAME="flashrom"
