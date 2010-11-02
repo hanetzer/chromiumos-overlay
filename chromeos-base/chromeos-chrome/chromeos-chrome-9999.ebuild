@@ -2,15 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
-# If CHROME_ORIGIN is set to one of {SERVER_SOURCE SERVER_BINARY,LOCAL_SOURCE, \
-# LOCAL_BINARY},
+# If CHROME_ORIGIN is set to one of {SERVER_SOURCE, LOCAL_SOURCE},
 # The build comes from the chromimum source repository (gclient sync), \
 # build server, locally provided source, or
-# precompiled locally provided source, respectively.
 # If you are using SERVER_SOURCE, a gclient tempalte file that is in the files
 # directory, which will be copied automatically during the build and used as
 # the .gclient for 'gclient sync'
-# If building from either LOCAL_SOURCE or LOCAL_BINARY, specifying BUILDTYPE
+# If building from LOCAL_SOURCE specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
 # If getting it from the build server, setting CHROME_VERSION to the build
@@ -42,7 +40,7 @@ CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 
 # By default, pull from server
-CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_BINARY}"
+CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_SOURCE}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
@@ -168,12 +166,11 @@ src_unpack() {
 	export DEPOT_TOOLS_UPDATE=0
 
 	case "${CHROME_ORIGIN}" in
-	SERVER_BINARY|LOCAL_SOURCE|LOCAL_BINARY |SERVER_SOURCE)
+	LOCAL_SOURCE|SERVER_SOURCE)
 		elog "CHROME_ORIGIN VALUE is ${CHROME_ORIGIN}"
 		;;
 	*)
-	die "CHROME_ORIGIN not one of SERVER_BINARY, LOCAL_SOURCE, LOCAL_BINARY \
-		or SERVER_SOURCE"
+	die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE"
 		;;
 	esac
 
@@ -209,35 +206,6 @@ src_unpack() {
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
 		export CHROME_ROOT=${ECHROME_STORE_DIR}
 		set_build_defines
-		;;
-	(SERVER_BINARY)
-		# Using build server.
-
-		if [ -z "${CHROME_VERSION}" ]; then
-			elog "Finding latest Chrome build"
-			CHROME_VERSION=$(wget_retry -q -O - "${CHROME_BASE}"/LATEST)
-		fi
-
-		test -n "${CHROME_VERSION}" || die CHROME_VERSION not set
-		elog "Fetching Chrome build $CHROME_VERSION"
-		CHROME_FILENAME=${CHROME_FILENAME:-"chrome-linux.zip"}
-		URL="${CHROME_BASE}/${CHROME_VERSION}/${CHROME_FILENAME}"
-
-		mkdir -p "${S}"
-		cd "${S}"
-		wget_retry "${URL}" || die Download "${URL}" failed
-		unzip "${CHROME_FILENAME}" || die unzip failed
-
-		rm "${CHROME_FILENAME}"
-
-		if use build_tests; then
-			cd "${CHROME_FILENAME/.zip/}"
-			TEST_URL="${CHROME_BASE}/${CHROME_VERSION}/chrome-linux.test"
-
-			for f in ${TEST_FILES}; do
-			wget_retry "$TEST_URL/$f"
-			done
-		fi
 		;;
 	(LOCAL_SOURCE)
 		set_build_defines
@@ -461,11 +429,7 @@ install_chrome_test_resources() {
 }
 
 src_install() {
-	if [ "${CHROME_ORIGIN}" = "SERVER_BINARY" ]; then
-		FROM="${S}"/${CHROME_FILENAME/.zip/}
-	else
-		FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
-	fi
+    FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
 
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
