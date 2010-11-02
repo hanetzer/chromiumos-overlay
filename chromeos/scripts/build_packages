@@ -25,12 +25,13 @@ get_default_board
 # Flags
 DEFINE_string board "${DEFAULT_BOARD}" \
   "The board to build packages for."
+# Deprecate chrome* options below once we have cbuild not passing these options
 DEFINE_boolean chromefromsource "${FLAGS_FALSE}" \
-  "Build Chrome browser from source."
+  "Deprecated"
 DEFINE_string chromebuild "" \
-  "The optional version or revision of Chrome to pull."
+  "Deprecated"
 DEFINE_string chromebase "" \
-  "The optional base URL to pull chrome from."
+  "Deprecated"
 DEFINE_boolean usepkg "${FLAGS_TRUE}" \
   "Use binary packages to bootstrap when possible."
 DEFINE_boolean withdev "${FLAGS_TRUE}" \
@@ -157,7 +158,10 @@ if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board="${FLAGS_board}" list)
 fi
 
-CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+# TODO(anush): Make chrome a fake cros-workon package. 
+if [[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]]; then
+  CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+fi
 
 PACKAGES="chromeos-base/chromeos"
 if [[ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]]; then
