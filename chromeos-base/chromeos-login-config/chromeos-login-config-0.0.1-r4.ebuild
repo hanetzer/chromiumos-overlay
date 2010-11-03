@@ -15,8 +15,8 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test"
 
-RDEPEND=""
-DEPEND=""
+RDEPEND=">chromeos-base/chromeos-login-0.0.1-r75"
+DEPEND="${RDEPEND}"
 
 CROS_WORKON_PROJECT="login_manager"
 CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
