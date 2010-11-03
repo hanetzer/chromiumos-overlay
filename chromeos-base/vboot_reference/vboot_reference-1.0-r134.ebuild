@@ -50,6 +50,11 @@ src_install() {
 			dobin "${S}"/build/"${prog}"
 		done
 
+                einfo "Installing TPM tools"
+                exeinto /usr/sbin
+                doexe "utility/tpm-nvsize"
+                doexe "utility/chromeos-tpm-recovery"
+
 		einfo "Installing dev tools"
 		dst_dir='/usr/share/vboot/bin'
 		local src_dir='scripts/image_signing'
