@@ -29,6 +29,7 @@ RDEPEND="
 "
 
 RDEPEND="${RDEPEND}
+  tests_hardware_Components? ( chromeos-base/autotest-approved-components )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/pulseaudio )
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
 "
@@ -239,3 +240,13 @@ AUTOTEST_CONFIG_LIST=""
 AUTOTEST_PROFILERS_LIST=""
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+src_prepare() {
+	are_we_used || return 0
+	autotest_src_prepare
+
+	# Install it in chromeos-base/autotest-approved-components
+	comptest="${AUTOTEST_WORKDIR}"/client/site_tests/hardware_Components
+	complist="${comptest}"/approved_components
+	[ -e "${complist}" ] && rm "${complist}"
+}
