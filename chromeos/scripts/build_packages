@@ -159,7 +159,7 @@ if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
 fi
 
 # TODO(anush): Make chrome a fake cros-workon package. 
-if [[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]]; then
+if [[ -n "${CHROME_ORIGIN}" ]]; then
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
 fi
 

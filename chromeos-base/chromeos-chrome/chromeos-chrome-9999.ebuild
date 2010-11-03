@@ -4,11 +4,11 @@
 # Usage: by default, downloads chromium browser from the build server.
 # If CHROME_ORIGIN is set to one of {SERVER_SOURCE, LOCAL_SOURCE},
 # The build comes from the chromimum source repository (gclient sync), \
-# build server, locally provided source, or
+# build server, locally provided source, or locally provided binary
 # If you are using SERVER_SOURCE, a gclient tempalte file that is in the files
 # directory, which will be copied automatically during the build and used as
 # the .gclient for 'gclient sync'
-# If building from LOCAL_SOURCE specifying BUILDTYPE
+# If building from LOCAL_SOURCE or LOCCAL_BINARY specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
 # If getting it from the build server, setting CHROME_VERSION to the build
@@ -166,11 +166,11 @@ src_unpack() {
 	export DEPOT_TOOLS_UPDATE=0
 
 	case "${CHROME_ORIGIN}" in
-	LOCAL_SOURCE|SERVER_SOURCE)
+	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY)
 		elog "CHROME_ORIGIN VALUE is ${CHROME_ORIGIN}"
 		;;
 	*)
-	die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE"
+	die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE, LOCAL_BINARY"
 		;;
 	esac
 
