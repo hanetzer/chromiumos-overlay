@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="1aee8cc0bb9c089521c43e3198cd40214c7a4de6"
+CROS_WORKON_COMMIT="2f3b34b10fc6e981359f5c4bf660eee609e23a63"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -30,6 +30,7 @@ RDEPEND="
 "
 
 RDEPEND="${RDEPEND}
+  tests_hardware_Components? ( chromeos-base/autotest-approved-components )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/pulseaudio )
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
 "
@@ -240,3 +241,13 @@ AUTOTEST_CONFIG_LIST=""
 AUTOTEST_PROFILERS_LIST=""
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+src_prepare() {
+	are_we_used || return 0
+	autotest_src_prepare
+
+	# Install it in chromeos-base/autotest-approved-components
+	comptest="${AUTOTEST_WORKDIR}"/client/site_tests/hardware_Components
+	complist="${comptest}"/approved_components
+	[ -e "${complist}" ] && rm "${complist}"
+}

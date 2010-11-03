@@ -42,8 +42,18 @@ build_initramfs_file() {
 
 	# Load libraries for busybox and dmsetup
 	# TODO: how can ebuilds support static busybox?
-	LIBS="
-		ld-linux.so.2
+	if use x86 ; then
+		LIBS="
+			ld-linux.so.2
+		"
+	else
+		# TODO ARM: why does arm use a different dynamic linker here?
+		LIBS="
+			ld-linux.so.3
+		"
+	fi
+
+	LIBS="${LIBS}
 		libm.so.6
 		libc.so.6
 		../usr/lib/libcrypto.so.0.9.8

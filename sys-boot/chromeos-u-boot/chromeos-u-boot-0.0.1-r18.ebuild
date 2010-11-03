@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ceec95c9630a47aaa1a56cc972050e2e3ba5f3ba"
+CROS_WORKON_COMMIT="a734c03d7ae09bf3fd71719c0e82b8ea996af6c9"
 
 inherit toolchain-funcs
 
@@ -18,8 +18,8 @@ RDEPEND=""
 DEPEND="chromeos-base/vboot_reference
 	!sys-boot/u-boot"
 
-CROS_WORKON_PROJECT="u-boot-next"
-CROS_WORKON_LOCALNAME="u-boot-next"
+CROS_WORKON_PROJECT="u-boot"
+CROS_WORKON_LOCALNAME="u-boot"
 CROS_WORKON_SUBDIR="files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
@@ -30,10 +30,7 @@ src_configure() {
 
 	elog "Using U-Boot config: ${config}"
 
-	emake \
-	      ARCH=$(tc-arch-kernel) \
-	      CROSS_COMPILE="${CHOST}-" \
-	      distclean
+	emake distclean
 	emake \
 	      ARCH=$(tc-arch-kernel) \
 	      CROSS_COMPILE="${CHOST}-" \
@@ -50,7 +47,7 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=true \
-              VBOOT="${ROOT}/usr" \
+	      VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
 

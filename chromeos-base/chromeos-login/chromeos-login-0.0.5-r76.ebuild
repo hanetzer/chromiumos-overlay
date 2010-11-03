@@ -16,6 +16,7 @@ SLOT="0"
 IUSE="test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
+	chromeos-base/chromeos-login-config
 	chromeos-base/chromeos-minijail"
 
 DEPEND="${RDEPEND}
@@ -51,10 +52,6 @@ src_test() {
 src_install() {
 	dodir /etc/X11
 	install --mode=0755 "${S}/chromeos-xsession" "${D}/etc/X11"
-
-        dodir /etc
-        insinto /etc
-        doins default_proxy
 
 	into /
 	dosbin "${S}/session_manager_setup.sh"
