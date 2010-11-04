@@ -28,7 +28,7 @@ EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+build_tests x86 gold -chrome_remoting"
+IUSE="+build_tests x86 gold chrome_remoting"
 
 # chrome sources store directory
 [[ -z ${ECHROME_STORE_DIR} ]] &&
