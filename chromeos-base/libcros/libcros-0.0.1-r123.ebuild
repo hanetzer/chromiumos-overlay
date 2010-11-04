@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ced16000c66c9ed81f2694784b5ff15ccca916e4"
+CROS_WORKON_COMMIT="d4465704b3bcd0b120fd30a57b07c4fc88d43cee"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
