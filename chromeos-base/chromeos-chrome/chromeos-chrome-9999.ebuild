@@ -28,7 +28,7 @@ EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="+build_tests x86 gold"
+IUSE="+build_tests x86 gold -chrome_remoting"
 
 # chrome sources store directory
 [[ -z ${ECHROME_STORE_DIR} ]] &&
@@ -76,6 +76,7 @@ TEST_FILES="ffmpeg_tests
 RDEPEND="app-arch/bzip2
          chromeos-base/chromeos-theme
          chromeos-base/libcros
+         chrome_remoting? ( x11-libs/libXtst )
          dev-libs/atk
          dev-libs/glib
          dev-libs/nspr
@@ -146,6 +147,13 @@ set_build_defines() {
 		die Unsupported architecture: "${ARCH}"
 	fi
 
+	# Control inclusion of optional chrome features.
+	if use chrome_remoting; then
+		BUILD_DEFINES="remoting=1 $BUILD_DEFINES"
+	else
+		BUILD_DEFINES="remoting=0 $BUILD_DEFINES"
+	fi
+
 	# This saves time and bytes.
 	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
 		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
@@ -154,6 +162,7 @@ set_build_defines() {
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES}"
 	export builddir_name="${BUILD_OUT}"
+
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
 }
