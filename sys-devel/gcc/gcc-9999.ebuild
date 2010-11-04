@@ -75,14 +75,14 @@ if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
 
-SRC_URI=""
-RESTRICT="fetch mirror strip"
+SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/gcc-4.4.3-specs-0.2.0.tar.bz2"
+RESTRICT="mirror strip"
 
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
 
 src_unpack() {
-  if [[ $(whoami) == root ]]
+  if [[ ${USER} == root ]]
   then
     MY_USER=${SUDO_USER}
   else
@@ -99,9 +99,6 @@ src_unpack() {
   # TODO(asharif): remove this and get the specs from the sources, if possible.
 	if want_pie ; then
 		[[ -n ${SPECS_VER} ]] && \
-      cd ${DISTDIR}
-      wget http://build.chromium.org/mirror/chromiumos/mirror/distfiles/gcc-4.4.3-specs-0.2.0.tar.bz2
-      cd -
 			unpack ${MY_P}-specs-${SPECS_VER}.tar.bz2
 	fi
 
