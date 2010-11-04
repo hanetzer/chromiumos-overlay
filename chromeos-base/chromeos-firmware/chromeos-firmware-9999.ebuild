@@ -13,11 +13,22 @@ SLOT="0"
 KEYWORDS="~arm ~x86"
 IUSE=""
 
+# Some tools (flashrom, iotools, mosys, ...) were bundled in the updater so we
+# don't write RDEPEND=$DEPEND. RDEPEND should have an explicit list of what it
+# needs to extract and execute the updater.
 DEPEND="x86? (
     sys-apps/flashrom
     sys-apps/iotools
     sys-apps/mosys )"
-RDEPEND=""
+
+# TODO(hungte) remove gzip/tar if we have busybox
+# gzip, tar: for extracting updater itself
+# sharutils: for uudecode
+RDEPEND="
+    app-arch/gzip
+    app-arch/sharutils
+    app-arch/tar
+    "
 
 CROS_WORKON_LOCALNAME="firmware"
 CROS_WORKON_PROJECT="firmware"

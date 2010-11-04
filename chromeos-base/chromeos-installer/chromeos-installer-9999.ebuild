@@ -16,7 +16,9 @@ IUSE="-minimal"
 DEPEND="!!<=dev-util/crosutils-0.0.1-r1"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
+# TODO(hungte): gzip is primarily for chromeos-firmware.
 RDEPEND="app-arch/gzip
+         chromeos-base/chromeos-firmware
          dev-libs/shflags
          sys-apps/coreutils
          sys-apps/util-linux
