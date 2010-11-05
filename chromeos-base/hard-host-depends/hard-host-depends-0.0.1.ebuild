@@ -136,3 +136,8 @@ RDEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-python/pymox
 	"
+
+# Host dependencies to scp binaries from the binary component server
+RDEPEND="${RDEPEND}
+	chromeos-base/ssh-known-hosts
+	"
