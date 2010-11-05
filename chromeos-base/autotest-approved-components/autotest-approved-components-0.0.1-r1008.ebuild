@@ -17,8 +17,8 @@ IUSE="+autox +xset +tpmtools opengles hardened"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
-RDEPEND=""
-DEPEND=""
+RDEPEND=">chromeos-base/autotest-tests-0.0.1-r187"
+DEPEND="${RDEPEND}"
 
 IUSE_TESTS="+tests_hardware_Components"
 

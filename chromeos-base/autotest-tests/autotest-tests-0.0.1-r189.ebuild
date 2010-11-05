@@ -30,12 +30,15 @@ RDEPEND="
 "
 
 RDEPEND="${RDEPEND}
-  tests_hardware_Components? ( chromeos-base/autotest-approved-components )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/pulseaudio )
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
 "
 
 DEPEND="${RDEPEND}"
+
+PDEPEND="
+  tests_hardware_Components? ( chromeos-base/autotest-approved-components )
+"
 
 IUSE_TESTS="
 	+tests_compilebench
