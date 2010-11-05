@@ -56,6 +56,9 @@ DEFINE_boolean noworkon "${FLAGS_FALSE}" \
   "Don't force-build workon packages."
 DEFINE_boolean withdebug "${FLAGS_TRUE}" \
   "Build debug versions of Chromium-OS-specific packages."
+DEFINE_boolean oldchromebinary "${FLAGS_FALSE}" \
+  "Use the last prebuilt binary for Chrome produced by the buildbot."
+
 
 # Parse command line
 FLAGS_HELP="usage: $0 [flags]"
@@ -186,6 +189,10 @@ if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   fi
   if [[ "${FLAGS_showoutput}" -eq "${FLAGS_TRUE}" ]]; then
     EMERGE_FLAGS="${EMERGE_FLAGS} --show-output"
+  fi
+  if [[ "${FLAGS_oldchromebinary}" -eq "${FLAGS_TRUE}" ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --force-remote-binary=chromeos-chrome"
+    EMERGE_FLAGS="${EMERGE_FLAGS} --force-remote-binary=libcros"
   fi
   eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 else
