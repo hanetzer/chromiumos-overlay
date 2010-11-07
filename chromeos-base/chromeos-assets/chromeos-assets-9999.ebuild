@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="mario"
 
 DEPEND="x11-apps/xcursorgen"
 RDEPEND=""
@@ -114,6 +114,11 @@ src_install() {
 
 	insinto /usr/share/chromeos-assets/screensavers
 	doins "${S}"/screensavers/*
+
+	insinto /usr/share/color/icc
+	if use mario; then
+		newins "${S}"/color_profiles/mario.icm internal_display.icm
+	fi
 
 	local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 

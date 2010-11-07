@@ -41,6 +41,9 @@ RDEPEND="${RDEPEND}
 		media-fonts/sil-abyssinica
 		x11-apps/xinit
 		>=x11-base/xorg-server-1.6.3
+		x86? (
+			x11-misc/xcalib
+		)
 	)
 	"
 
