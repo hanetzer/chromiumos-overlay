@@ -52,14 +52,6 @@ eval set -- "${FLAGS_ARGV}"
 # so will die prematurely if 'set -e' is specified before now.
 set -e
 
-# TODO(asharif): Remove this hack later on.
-if [[ ! -f ${FLAGS_chroot}/etc/make.conf.host_setup ]]; then
-  cat <<EOF | sudo dd of="${FLAGS_chroot}/etc/make.conf.host_setup"
-# Created by make_chroot
-MAKEOPTS="-j${NUM_JOBS}"
-EOF
-fi
-
 if [ -z "$FLAGS_board" ] ; then
   error "--board required."
   exit 1
