@@ -47,7 +47,7 @@ PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"
 DISTDIR="/var/lib/portage/distfiles-target"
 
 # Our chromium mirror should be more stable since we won't discard packages.
-GENTOO_MIRRORS="http://build.chromium.org/mirror/chromiumos/mirror"
+GENTOO_MIRRORS="http://gsdview.appspot.com/chromeos-mirror/gentoo http://build.chromium.org/mirror/chromiumos/mirror"
 
 # We want emerge to overwrite all config files automatically.
 CONFIG_PROTECT="-* /etc/make.globals"
