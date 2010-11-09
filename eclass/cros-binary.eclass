@@ -64,7 +64,7 @@ cros-binary_fetch() {
 		port="22"
 	fi
 
-	local scp_args="-qo BatchMode=yes -P ${port}"
+	local scp_args="-qo BatchMode=yes -oCheckHostIP=no -P ${port}"
 	local target="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
 
 	addwrite "${CROS_BINARY_STORE_DIR}"
