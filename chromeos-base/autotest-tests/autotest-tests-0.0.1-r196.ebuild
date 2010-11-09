@@ -222,6 +222,7 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_DbusOwners
+	+tests_security_NetworkListeners
 	+tests_security_RendererSandbox
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
