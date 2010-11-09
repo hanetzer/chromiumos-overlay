@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d01920c7b014f0e89c14a17a8e8bae509dc32069"
+CROS_WORKON_COMMIT="bd45cf1b777e0ca73340f1b7a64d785679939e07"
 
 inherit cros-debug cros-workon toolchain-funcs
 
