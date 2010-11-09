@@ -76,8 +76,8 @@
 # Avoid using old known-vulnerable versions.  Upstream also installs the
 # plugin to a different place than where the chromeos-chrome ebuild expects
 # to find it, so ensure that we don't start using newer upstream versions.
-<www-plugins/adobe-flash-10.1.85.3
->www-plugins/adobe-flash-10.1.85.3
+<www-plugins/adobe-flash-10.1.102.64
+>www-plugins/adobe-flash-10.1.102.64
 
 # Masked old packages that had old ${PV} numbering scheme
 >=app-i18n/ibus-mozc-29
