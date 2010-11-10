@@ -31,7 +31,6 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	export CXXFLAGS="${CXXFLAGS} -gstabs"
 	emake session_manager || die "chromeos-login compile failed."
 	dump_syms session_manager > session_manager.sym 2>/dev/null || \
 		die "symbol extraction failed"

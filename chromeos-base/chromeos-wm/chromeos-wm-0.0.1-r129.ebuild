@@ -45,7 +45,6 @@ CROS_WORKON_PROJECT="window_manager"
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
 	cros-debug-add-NDEBUG
-	CFLAGS="${CFLAGS} -gstabs"
 	export CCFLAGS="$CFLAGS"
 
 	local backend

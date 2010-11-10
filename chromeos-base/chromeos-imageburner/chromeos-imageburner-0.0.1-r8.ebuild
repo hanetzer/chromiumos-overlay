@@ -27,7 +27,6 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	export CXXFLAGS="${CXXFLAGS} -gstabs"
 	emake image_burner || die "chromeos-imageburner compile failed."
 	emake image_burner_tester || \
 		die "chromeos-imageburner_tester compile failed."
