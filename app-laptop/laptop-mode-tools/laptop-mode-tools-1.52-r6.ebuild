@@ -3,7 +3,7 @@
 # $Header: /var/www/viewcvs.gentoo.org/raw_cvs/gentoo-x86/app-laptop/laptop-mode-tools/laptop-mode-tools-1.52.ebuild,v 1.1 2009/10/16 18:42:23 bangert Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="8d11ab2c4f1457348706c85e63b649325c1bcf24"
+CROS_WORKON_COMMIT="c486fbc472ed24ed41211418d91eefda77e8ddbe"
 
 inherit cros-workon
 
@@ -28,7 +28,7 @@ RDEPEND="sys-apps/ethtool
 			)
 		)
 		hal? ( sys-apps/hal )
-		net-wireless/wireless-tools
+		net-wireless/iw
 		scsi? ( sys-apps/sdparm )
 		sys-apps/hdparm"
 
