@@ -80,19 +80,20 @@ RESTRICT="mirror strip"
 
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
+if [[ ${USER} == root ]]
+then
+  MY_USER=${PORTAGE_USERNAME}
+else
+  MY_USER=${USER}
+fi
 
 src_unpack() {
-  if [[ ${USER} == root ]]
-  then
-    MY_USER=${SUDO_USER}
-  else
-    MY_USER=${USER}
-  fi
+  echo ${MY_USER}
   local GCCDIR=/home/${MY_USER}/toolchain_root/gcc/${MY_P}
   if [[ ! -d ${GCCDIR} ]] ; then
-    die "gcc dir not mounted at: ${GCCDIR}"
+    die "gcc dir not mounted/present at: ${GCCDIR}"
   fi
-	ln -s ${GCCDIR} ${S}
+	ln -sf ${GCCDIR} ${S}
 ###  cp -r ${GCCDIR} ${S}
 ###  chmod -R +w ${S}
 
@@ -127,6 +128,11 @@ pkg_setup() {
 # TODO(asharif): Move this into a separate file and source it.
 src_configure()
 {
+  local GCCBUILDDIR="/home/${MY_USER}/toolchain_root/build-gcc"
+  if [[ ! -d ${GCCBUILDDIR} ]] ; then
+    die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
+  fi
+
   local confgcc
 	# Set configuration based on path variables
 	confgcc="${confgcc} \
@@ -140,12 +146,7 @@ src_configure()
 	confgcc="${confgcc} --host=${CHOST}"
   confgcc="${confgcc} --target=${CTARGET}"
   confgcc="${confgcc} --build=${CBUILD}"
-  # TODO(asharif): Build without these options.
-  confgcc="${confgcc} --disable-libmudflap"
-  confgcc="${confgcc} --disable-libssp"
-  confgcc="${confgcc} --disable-libgomp"
-  # Hardened option.
-  confgcc="${confgcc} --enable-esp"
+
   # Language options for stage1/stage2.
   if use nocxx
   then
@@ -166,29 +167,9 @@ src_configure()
     fi
   fi
 
-	case $(tc-arch) in
-		arm)	#264534
-			local arm_arch="${CTARGET%%-*}"
-			# Only do this if arm_arch is armv*
-			if [[ ${arm_arch} == armv* ]] ; then
-				# Convert armv7{a,r,m} to armv7-{a,r,m}
-				[[ ${arm_arch} == armv7? ]] && arm_arch=${arm_arch/7/7-}
-				# Remove endian ('l' / 'eb')
-				[[ ${arm_arch} == *l  ]] && arm_arch=${arm_arch%l}
-				[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
-				confgcc="${confgcc} --with-arch=${arm_arch}"
-			fi
+  source ${GCCBUILDDIR}/opts.sh
+  confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
 
-			# Enable hardvfp
-			if [[ ${CTARGET##*-} == *eabi ]] && [[ $(tc-is-hardfloat) == yes ]] && \
-			    tc_version_is_at_least "4.5" ; then
-			        confgcc="${confgcc} --with-float=hard"
-			fi
-			;;
-		x86)
-			confgcc="${confgcc} --with-arch=atom"
-			;;
-	esac
   confgcc="${confgcc} ${EXTRA_ECONF}"
 
   	# Build in a separate build tree
