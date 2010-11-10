@@ -44,6 +44,67 @@ DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
 DEFINE_string profile "" \
   "The portage configuration profile to use. Profile must be located in overlay-board/profiles"
 
+
+# Build the toolchain with crossdev.
+build_toolchain() {
+  BINHOST=$(portageq envvar PORTAGE_BINHOST)
+  CROSS_BINHOST="${BINHOST}cross/$FLAGS_toolchain/"
+  CROSS_USEPKG=""
+  if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
+    # Grab the latest packages from the prebuilt server.
+    #  -G: Use packages from the prebuilt server. Don't build from source.
+    #  --binpkg-respect-use=n: Don't discard binary packages due to use flags.
+    #  --usepkg=n: Don't use local binary packages.
+    #  --without-headers: Don't build headers-only versions of packages for
+    #                     bootstrapping. Because we use binary packages, this
+    #                     isn't necessary.
+    CROSS_USEPKG="--portage -G --portage --binpkg-respect-use=n"
+    CROSS_USEPKG="${CROSS_USEPKG} --portage --usepkg=n --without-headers"
+  fi
+
+  CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
+  CROSS_GCC="--gcc $FLAGS_gcc_version"
+  CROSS_KERNEL="--kernel $FLAGS_kernel_version"
+  CROSS_LIBC="--libc $FLAGS_libc_version"
+  sudo PORTAGE_BINHOST="${CROSS_BINHOST}" crossdev -v \
+      --target "$FLAGS_toolchain" \
+      $CROSS_BINUTILS \
+      $CROSS_GCC      \
+      $CROSS_KERNEL   \
+      $CROSS_LIBC     \
+      $CROSS_USEPKG
+}
+
+# Install all of the stuff that depends on the toolchain versions
+# into the board root.
+install_toolchain_in_board() {
+  #
+  # Untar glibc to get most of the headers required to build.
+  #
+  PKGDIR=$(portageq envvar PKGDIR)
+  sudo tar jxpf \
+  "${PKGDIR}/cross/${FLAGS_toolchain}/cross-${FLAGS_toolchain}"/glibc-${FLAGS_libc_version}.tbz2 \
+      -C "${BOARD_ROOT}" --strip-components=3
+
+  # Symlink for libstdc++.la issues. It appears that when packages get merged
+  # the .la files will be updated, and for libstdc++ it will use the wrong
+  # location. This works around that issue.
+  sudo ln -sf /usr/lib64/gcc "${BOARD_ROOT}/usr/lib/gcc"
+
+  # We need to install libstdc++ manually from the cross toolchain.
+  # TODO: Figure out a better way of doing this?
+  sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/lib"
+  sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* \
+      "${BOARD_ROOT}/usr/lib"
+
+  # Tell portage that toolchain packages are already installed in the sysroot.
+  PROVIDED="${BOARD_PROFILE}/package.provided"
+  sudo sh -c \
+      "echo \"sys-devel/binutils-${FLAGS_binutils_version}\" >> \"${PROVIDED}\""
+  sudo sh -c "echo \"sys-devel/gcc-${FLAGS_gcc_version}\" >> \"${PROVIDED}\""
+  sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
+}
+
 # Parse command line flags
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
@@ -178,32 +239,7 @@ CHROOT_CONFIG="${HOME}/trunk/src/third_party/chromiumos-overlay/chromeos/config"
 sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
   "${FLAGS_chroot}/etc/make.conf"
 
-BINHOST=$(portageq envvar PORTAGE_BINHOST)
-CROSS_BINHOST="${BINHOST}cross/$FLAGS_toolchain/"
-CROSS_USEPKG=""
-if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
-  # Grab the latest packages from the prebuilt server.
-  #  -G: Use packages from the prebuilt server. Don't build from source.
-  #  --binpkg-respect-use=n: Don't discard binary packages due to use flags.
-  #  --usepkg=n: Don't use local binary packages.
-  #  --without-headers: Don't build headers-only versions of packages for
-  #                     bootstrapping. Because we use binary packages, this
-  #                     isn't necessary.
-  CROSS_USEPKG="--portage -G --portage --binpkg-respect-use=n"
-  CROSS_USEPKG="${CROSS_USEPKG} --portage --usepkg=n --without-headers"
-fi
-
-CROSS_BINUTILS="--binutils $FLAGS_binutils_version"
-CROSS_GCC="--gcc $FLAGS_gcc_version"
-CROSS_KERNEL="--kernel $FLAGS_kernel_version"
-CROSS_LIBC="--libc $FLAGS_libc_version"
-sudo PORTAGE_BINHOST="${CROSS_BINHOST}" crossdev -v \
-  --target "$FLAGS_toolchain" \
-  $CROSS_BINUTILS \
-  $CROSS_GCC      \
-  $CROSS_KERNEL   \
-  $CROSS_LIBC     \
-  $CROSS_USEPKG
+build_toolchain
 
 sudo mkdir -p "$BOARD_ROOT"
 
@@ -228,19 +264,6 @@ done
 # generic wrapper script created by crossdev-wrapper
 sudo ln -sf "/usr/bin/cross-pkg-config" "/usr/bin/${FLAGS_toolchain}-pkg-config"
 
-#
-# Untar glibc to get most of the headers required to build.
-#
-PKGDIR=$(portageq envvar PKGDIR)
-sudo tar jxpf \
-  "${PKGDIR}/cross/${FLAGS_toolchain}/cross-${FLAGS_toolchain}"/glibc-${FLAGS_libc_version}.tbz2 \
-  -C "${BOARD_ROOT}" --strip-components=3
-
-# Symlink for libstdc++.la issues. It appears that when packages get merged
-# the .la files will be updated, and for libstdc++ it will use the wrong
-# location. This works around that issue.
-sudo ln -sf /usr/lib64/gcc "${BOARD_ROOT}/usr/lib/gcc"
-
 # Setup make.conf and make.profile as symlinks to ones in revision control
 CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos/"
 CHROMIUMOS_CONFIG="${CHROMIUMOS_OVERLAY}/chromeos/config"
@@ -256,13 +279,6 @@ sudo mkdir -p "${BOARD_ETC}" "${BOARD_PROFILE}"
 sudo cp -a /usr/share/crossdev/etc/* "${BOARD_ETC}"
 sudo sed -i 's/${CHOST}/${SYSROOT}/g' "${BOARD_ETC}/portage/bashrc"
 sudo sed -i 's/CROSS_ROOT=""/CROSS_ROOT="$1"/g' /usr/bin/cross-fix-root
-
-# Tell portage that toolchain packages are already installed in the sysroot.
-PROVIDED="${BOARD_PROFILE}/package.provided"
-sudo sh -c \
-  "echo \"sys-devel/binutils-${FLAGS_binutils_version}\" >> \"${PROVIDED}\""
-sudo sh -c "echo \"sys-devel/gcc-${FLAGS_gcc_version}\" >> \"${PROVIDED}\""
-sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
 
 # Setup the make.confs. We use the following:
 #    make.conf             <- Overall target make.conf [arm, x86, etc. version]
@@ -281,6 +297,10 @@ BOARD_OVERLAY="${BOARD_OVERLAY_LIST}"
 MAKEOPTS="-j${NUM_JOBS}"
 LIBC_VERSION="$FLAGS_libc_version"
 EOF
+
+# We install the toolchain related bits after the BOARD_ROOT, BOARD_PROFILE
+# and BOARD_ETC directories have been created.
+install_toolchain_in_board
 
 sudo touch "${BOARD_ETC}/make.conf.board"
 
@@ -410,12 +430,6 @@ sudo "${EMERGE_WRAPPER}" $EMERGE_FLAGS chromeos-base/kernel-headers
 sudo chown -Rf ${USER} ~/trunk/.config || true
 mkdir -p ~/trunk/.config/headers-fix
 touch ~/trunk/.config/headers-fix/"${FLAGS_board}"
-
-# We need to install libstdc++ manually from the cross toolchain.
-# TODO: Figure out a better way of doing this?
-sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/lib"
-sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* \
-  "${BOARD_ROOT}/usr/lib"
 
 if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
   echo $BOARD_VARIANT > "$GCLIENT_ROOT/src/scripts/.default_board"
