@@ -20,6 +20,7 @@ RDEPEND="dev-cpp/gflags
 	dev-libs/protobuf
 	media-libs/libpng
 	net-misc/iputils
+	net-wireless/iw
 	sys-apps/net-tools
 	x11-libs/cairo
 	x11-libs/libxcb
@@ -82,6 +83,7 @@ src_install() {
 	dobin bin/crosh-dev
 	dobin bin/crosh-usb
 	dobin bin/inputrc.crosh
+	dobin bin/network_diagnostics
 
 	into /
 	dosbin bin/window-manager-session.sh
