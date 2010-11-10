@@ -27,7 +27,7 @@ RDEPEND="sys-apps/ethtool
 			)
 		)
 		hal? ( sys-apps/hal )
-		net-wireless/wireless-tools
+		net-wireless/iw
 		scsi? ( sys-apps/sdparm )
 		sys-apps/hdparm"
 
