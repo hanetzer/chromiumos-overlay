@@ -57,9 +57,6 @@ src_configure() {
 		fi
 	fi
 
-	tc-export CC
-	export CFLAGS="${CFLAGS} -gstabs"
-
 	econf \
 		--localstatedir=/var \
 		--enable-loopback=builtin \
