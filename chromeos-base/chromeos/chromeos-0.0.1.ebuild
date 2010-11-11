@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X +localssh basepython"
+IUSE="basepython bluetooth +localssh X"
 
 DEPEND="chromeos-base/internal
 	   sys-apps/baselayout"
@@ -117,8 +117,10 @@ RDEPEND="${RDEPEND}
 	net-misc/htpdate
 	net-wireless/ath3k
 	net-wireless/ath6k
-	net-wireless/bluez
 	net-wireless/marvell_sd8787
+	bluetooth? (
+		net-wireless/bluez
+	)
 	sci-geosciences/gpsd
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/coreutils
