@@ -46,7 +46,7 @@
 # Build the sources in place. Don't copy them to a temp dir.
 : ${CROS_WORKON_INPLACE:=}
 
-inherit git
+inherit git flag-o-matic
 
 # Calculate path where code should be checked out.
 get_path() {
@@ -230,6 +230,8 @@ cros-workon_src_unpack() {
 	# Copy source tree to /build/<board>/tmp for building
 	local_copy "${path}" || \
 		die "Cannot create a local copy"
+	VCSID=$(GIT_DIR="${path}/.git" git rev-parse HEAD)
+	append-flags -DVCSID=\\\"${VCSID}\\\"
 }
 
 cros-workon_pkg_info() {
