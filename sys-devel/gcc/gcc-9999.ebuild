@@ -6,7 +6,7 @@
 COST_VERSION="v1"
 COST_CL="41723"
 COST_SUFFIX="cos_gg_${COST_VERSION}_${COST_CL}"
-COST_PKG_VERSION="gcc-4.4.3_${COST_SUFFIX}-EXPERIMENTAL-9999"
+COST_PKG_VERSION="gcc-9999_${COST_SUFFIX}-EXPERIMENTAL-9999"
 EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
  --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 
@@ -80,22 +80,25 @@ RESTRICT="mirror strip"
 
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
-if [[ ${USER} == root ]]
-then
-  MY_USER=${PORTAGE_USERNAME}
-else
-  MY_USER=${USER}
-fi
 
 src_unpack() {
-  echo ${MY_USER}
+  if [[ ${USER} == root ]]
+  then
+    if [[ -z ${PORTAGE_USERNAME} ]]
+    then
+      export MY_USER=${SUDO_USER}
+    else
+      export MY_USER=${PORTAGE_USERNAME}
+    fi
+  else
+    export MY_USER=${USER}
+  fi
+
   local GCCDIR=/home/${MY_USER}/toolchain_root/gcc/${MY_P}
   if [[ ! -d ${GCCDIR} ]] ; then
     die "gcc dir not mounted/present at: ${GCCDIR}"
   fi
 	ln -sf ${GCCDIR} ${S}
-###  cp -r ${GCCDIR} ${S}
-###  chmod -R +w ${S}
 
   # TODO(asharif): remove this and get the specs from the sources, if possible.
 	if want_pie ; then
@@ -114,6 +117,14 @@ src_compile()
   pushd ${WORKDIR}/build
   make -j4 LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=/usr/lib/gcc/${CTARGET}/${GCC_CONFIG_VER} BOOT_CFLAGS=-O2 all 
   popd
+}
+
+src_install()
+{
+	${ETYPE}_src_install
+  if [[ ${PV} != "4.4.3" ]] ; then
+    cp -r ${D}/usr/lib/gcc/${CTARGET}/${PV}/* ${D}/usr/lib/gcc/${CTARGET}/${MY_PV}/
+  fi
 }
 
 pkg_setup() {
