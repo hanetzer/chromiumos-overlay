@@ -194,6 +194,8 @@ cros-workon_src_unpack() {
 					die "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
 				fi
 			fi
+			VCSID=$(GIT_DIR="${path}/.git" git rev-parse HEAD)
+			append-flags -DVCSID=\\\"${VCSID}\\\"
 		else
 			EGIT_REPO_URI="${repo}/${project}"
 			EGIT_COMMIT=${CROS_WORKON_COMMIT}
@@ -210,6 +212,7 @@ cros-workon_src_unpack() {
 			fi
 			# clones to /var, copies src tree to the /build/<board>/tmp
 			git_src_unpack
+			append-flags -DVCSID=\\\"${CROS_WORKON_COMMIT}\\\"
 		fi
 		return
 	fi
