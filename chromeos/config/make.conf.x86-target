@@ -16,7 +16,7 @@ USE="${USE} mmx sse sse2 dri hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=atom -mtune=atom -mfpmath=sse"
-CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/ -gstabs"
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -I${ROOT}usr/include/ -I${ROOT}include/ -ggdb"
 CXXFLAGS="${CFLAGS}"
 LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
 

@@ -15,7 +15,7 @@ source make.conf.common
 USE="${USE} threads hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
-CFLAGS="-O2 -pipe -I${ROOT}usr/include/ -I${ROOT}include/ -gstabs"
+CFLAGS="-O2 -pipe -I${ROOT}usr/include/ -I${ROOT}include/ -ggdb"
 CXXFLAGS="${CFLAGS}"
 LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
 
