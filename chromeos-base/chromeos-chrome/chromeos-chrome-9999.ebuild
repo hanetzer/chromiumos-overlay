@@ -25,14 +25,26 @@ HOMEPAGE="http://chromium.org/"
 SRC_URI=""
 EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 
+if [ "$PV" = "9999" ]; then
+	KEYWORDS="~x86 ~arm"
+else
+	KEYWORDS="x86 arm"
+fi
+
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86 arm"
-IUSE="+build_tests x86 gold +chrome_remoting"
+IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf"
 
+CHROME_SRC="chrome-src"
+BUILDSPEC_PATH="chrome/releases"
+if use internal; then
+	CHROME_SRC="${CHROME_SRC}-internal"
+	BUILDSPEC_PATH="chrome-internal/trunk/tools/buildspec/releases"
+fi
 # chrome sources store directory
-[[ -z ${ECHROME_STORE_DIR} ]] &&
-ECHROME_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/chrome-src"
+if [[ -z ${ECHROME_STORE_DIR} ]] ; then
+	ECHROME_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/${CHROME_SRC}"
+fi
 addwrite "${ECHROME_STORE_DIR}"
 
 # chrome destination directory
@@ -44,15 +56,7 @@ CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_SOURCE}"
 
 # For compilation/local chrome
 BUILD_TOOL=make
-
-if [ "$ARCH" = "x86" ]; then
-	BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 ${EXTRA_BUILD_ARGS}"
-elif [ "$ARCH" = "arm" ]; then
-	BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
-else
-	die Unsupported architecture: "${ARCH}"
-fi
-
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
@@ -124,25 +128,16 @@ QA_TEXTRELS="*"
 QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
-# Must write our own. wget --tries ignores 'connection refused' or 'not found's
-wget_retry() {
-	local i=
-
-	# Retry 3 times
-	for i in $(seq 3); do
-		# Buildbot will timeout and kill -9 @ 1200 seconds.  Get these retries done
-		# before that happens in case wget read hangs.
-		wget --timeout=30 $* && return 0
-	done
-	return 1
-}
-
 set_build_defines() {
 	# Set proper BUILD_DEFINES for the arch
 	if [ "$ARCH" = "x86" ]; then
 		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
 		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
+		if use internal; then
+			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
+			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
+		fi
 	else
 		die Unsupported architecture: "${ARCH}"
 	fi
@@ -159,12 +154,47 @@ set_build_defines() {
 		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
 	fi
 
+	if use internal; then
+		#Adding chrome branding specific variables and GYP_DEFINES
+		BUILD_DEFINES="branding=Chrome buildtype=Official $BUILD_DEFINES"
+		export CHROMIUM_BUILD='_google_Chrome'
+		export OFFICIAL_BUILD='1'
+		export CHROME_BUILD_TYPE='_official'
+	fi
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES}"
 	export builddir_name="${BUILD_OUT}"
 
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
+}
+
+get_latest_version() {
+	local buildspec_path=${1}
+	svn ls "svn://svn.chromium.org/${buildspec_path}" | sort -V | \
+		grep -E '^[[:digit:]]\..*' | tail -1
+}
+
+create_gclient_file() {
+	local echrome_store_dir=${1}
+	local chrome_version=${2}
+	local buildspec_path=${3}
+	local pdf1=${4}
+	local pdf2=${5}
+
+	cat >${echrome_store_dir}/.gclient <<EOF
+solutions = [
+  { "name"        : "CHROME_DEPS",
+    "url"         : "svn://svn.chromium.org/${buildspec_path}/${chrome_version}",
+    "custom_deps" : {
+      "src/third_party/WebKit/LayoutTests": None,
+      $pdf1
+      $pdf2
+    },
+    "safesync_url": "",
+   },
+]
+EOF
 }
 
 src_unpack() {
@@ -186,9 +216,49 @@ src_unpack() {
 	case "$CHROME_ORIGIN" in
 	(SERVER_SOURCE)
 		# We are going to fetch source and build chrome
+		SUBVERSION_CONFIG_DIR=/home/$(whoami)/.subversion
+		SSH_CONFIG_DIR=/home/$(whoami)/.ssh
 
-		# initial clone, we have to create chrome-src storage directory and play
-		# nicely with sandbox
+		elog "Copying subversion credentials from \
+			${SUBVERSION_CONFIG_DIR} into  ${HOME} if exists"
+
+		if [ -d ${SUBVERSION_CONFIG_DIR} ]; then
+			# TODO(anush): investigate this creating of $HOME
+			mkdir -p ${HOME}
+			elog  "Copying ${SUBVERSION_CONFIG_DIR} ${HOME}"
+			cp -rfp ${SUBVERSION_CONFIG_DIR} ${HOME} \
+			|| die "failed to copy svn credentials into ${HOME}"
+			cp -rfp ${SSH_CONFIG_DIR} ${HOME} \
+			|| die "failed to copy ssh credentials into ${HOME}"
+		fi
+
+		# If version isn't specified...
+		if [ -z "${CHROME_VERSION}" ]; then
+			# default to version of package, unless we're unstable.
+			CHROME_VERSION="${PV}"
+			if [ "${PV}" = "9999" ]; then
+				# If unstable, default to latest version.
+				elog "Defaulting to latest stable CHROME_VERSION from svn"
+				CHROME_VERSION=$(get_latest_version ${BUILDSPEC_PATH})
+			fi
+			export CHROME_VERSION
+		fi
+		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
+		#See if the CHROME_VERSION we used previously was different
+		CHROME_VERSION_FILE=${ECHROME_STORE_DIR}/chrome_version
+		if [ -f ${CHROME_VERSION_FILE} ]; then
+			OLD_CHROME_VERSION=$(cat ${CHROME_VERSION_FILE})
+		fi
+		if [ $OLD_CHROME_VERSION != $CHROME_VERSION ]; then
+			elog "Need to clean up ${ECHROME_STORE_DIR}"
+			elog "OLD CHROME = ${OLD_CHROME_VERSION}"
+			elog "NEW CHROME = ${CHROME_VERSION}"
+			elog "rm -rf ${ECHROME_STORE_DIR}"
+			rm -rf ${ECHROME_STORE_DIR}
+		fi
+
+		# initial clone, we have to create chrome-src storage
+		# directory and play nicely with sandbox
 		if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
 			debug-print "${FUNCNAME}: Creating chrome-src directory"
 			addwrite /
@@ -197,23 +267,46 @@ src_unpack() {
 			export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
 		fi
 
-		elog "Copying chromium.gclient  ${ECHROME_STORE_DIR}/.gclient"
-		rm -f ${ECHROME_STORE_DIR}/.gclient
+		elog "Storing CHROME_VERSION=${CHROME_VERSION} in \
+			${CHROME_VERSION_FILE} file"
+		echo ${CHROME_VERSION} > ${CHROME_VERSION_FILE}
 
-		cp -fp ${FILESDIR}/chromium.gclient ${ECHROME_STORE_DIR}/.gclient || \
-			die "cannot copy chromium.gclient to ${ECHROME_STORE_DIR}/.gclient:$!"
+		elog "Creating ${ECHROME_STORE_DIR}/.gclient"
+		#until we make the pdf compile on arm.
+		#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
+		if use chrome_pdf && use x86; then
+			elog "Official Build enabling PDF sources"
+			create_gclient_file ${ECHROME_STORE_DIR} \
+				${CHROME_VERSION} \
+				${BUILDSPEC_PATH} \
+				"" \
+				"" \
+				|| die "Can't write .gclient file"
+		else
+			create_gclient_file ${ECHROME_STORE_DIR} \
+				${CHROME_VERSION} \
+				${BUILDSPEC_PATH} \
+				"\"src/pdf\": None," \
+				"\"src-pdf\": None," \
+				|| die "Can't write .gclient file"
+			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
+		fi
+
+		elog "Using .gclient ..."
+		elog $(cat ${ECHROME_STORE_DIR}/.gclient)
 
 		pushd "${ECHROME_STORE_DIR}" || \
 			die "Cannot chdir to ${ECHROME_STORE_DIR}"
 
 		elog "Syncing google chrome sources using ${EGCLIENT}"
-		${EGCLIENT} sync  --nohooks --delete_unversioned_trees || \
-			die "${EGCLIENT} sync failed"
+		${EGCLIENT} sync --nohooks --delete_unversioned_trees \
+			|| die "${EGCLIENT} sync failed"
 
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
 		export CHROME_ROOT=${ECHROME_STORE_DIR}
+
 		set_build_defines
 		;;
 	(LOCAL_SOURCE)
@@ -272,17 +365,17 @@ check_cros_version() {
 	# Get the version of libcros in the chromium tree.
 	VERSION=$(extract_cros_version kCrosAPIVersion \
 	"$CHROME_ROOT/src/third_party/cros/chromeos_cros_api.h")
-	elog "Libcros version in chromium tree: $VERSION"
+	elog "Chromium is compatible with libcros API version $VERSION"
 
 	# Get the min version of libcros in the chromium os tree.
 	MIN_VERSION=$(extract_cros_version kCrosAPIMinVersion \
 		"${SYSROOT}/usr/include/cros/chromeos_cros_api.h")
-	elog "Libcros min version in chromium os tree: $MIN_VERSION"
+	elog "Libcros provides at least API version $MIN_VERSION"
 
 	# Get the max version of libcros in the chromium os tree.
 	MAX_VERSION=$(extract_cros_version kCrosAPIVersion \
 		"${SYSROOT}/usr/include/cros/chromeos_cros_api.h")
-	elog "Libcros max version in chromium os tree: $MAX_VERSION"
+	elog "Libcros provides at most API version $MAX_VERSION"
 
 	if [ "$MIN_VERSION" -gt "$VERSION" ]; then
 		die "Libcros version check failed. Forgot to sync the chromium tree?"
@@ -456,12 +549,12 @@ src_install() {
 	doexe "${FROM}"/candidate_window
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
-
-	if [ "$ARCH" = "arm" ]; then
-		exeopts -m4755	# setuid the sandbox
-		newexe "${FROM}/chrome_sandbox" chrome-sandbox
-		exeopts -m0755
+	if use internal && use chrome_pdf; then
+		doexe "${FROM}"/libpdf.so
 	fi
+	exeopts -m4755	# setuid the sandbox
+	newexe "${FROM}/chrome_sandbox" chrome-sandbox
+	exeopts -m0755
 
 	# enable the chromeos local account, if the environment dictates
 	if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
@@ -498,9 +591,24 @@ src_install() {
 	dosym libplc4.so /usr/lib/libplc4.so.0d
 	dosym libnspr4.so /usr/lib/libnspr4.so.0d
 
-	# Use Flash from www-plugins/adobe-flash package.
 	if use x86; then
-		dosym /opt/netscape/plugins/libflashplayer.so \
-			"${CHROME_DIR}"/plugins/libflashplayer.so
+		# Install Flash plugin.
+		if use internal && [ -f "${FROM}/libgcflashplayer.so" ]; then
+			# Install Flash from the binary drop.
+			exeinto "${CHROME_DIR}"/plugins
+			doexe "${FROM}/libgcflashplayer.so"
+			doexe "${FROM}/plugin.vch"
+		else
+			if use internal && [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
+				# Install Flash from the local source repository.
+				exeinto "${CHROME_DIR}"/plugins
+				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/libgcflashplayer.so
+				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/plugin.vch
+			else
+				# Use Flash from www-plugins/adobe-flash package.
+				dosym /opt/netscape/plugins/libflashplayer.so \
+					"${CHROME_DIR}"/plugins/libflashplayer.so
+			fi
+		fi
 	fi
 }
