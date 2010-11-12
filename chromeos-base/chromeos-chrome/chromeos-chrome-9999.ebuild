@@ -36,10 +36,10 @@ SLOT="0"
 IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf"
 
 CHROME_SRC="chrome-src"
-BUILDSPEC_PATH="chrome/releases"
+BUILDSPEC_URL="http://src.chromium.org/svn/releases"
 if use internal; then
 	CHROME_SRC="${CHROME_SRC}-internal"
-	BUILDSPEC_PATH="chrome-internal/trunk/tools/buildspec/releases"
+	BUILDSPEC_URL="svn://svn.chromium.org/chrome-internal/trunk/tools/buildspec/releases"
 fi
 # chrome sources store directory
 if [[ -z ${ECHROME_STORE_DIR} ]] ; then
@@ -170,28 +170,27 @@ set_build_defines() {
 }
 
 get_latest_version() {
-	local buildspec_path=${1}
-	svn ls "svn://svn.chromium.org/${buildspec_path}" | sort -V | \
+	local buildspec_url=${1}
+	svn ls "${buildspec_url}" | sort -V | \
 		grep -E '^[[:digit:]]\..*' | tail -1
 }
 
 create_gclient_file() {
 	local echrome_store_dir=${1}
 	local chrome_version=${2}
-	local buildspec_path=${3}
+	local buildspec_url=${3}
 	local pdf1=${4}
 	local pdf2=${5}
 
 	cat >${echrome_store_dir}/.gclient <<EOF
 solutions = [
   { "name"        : "CHROME_DEPS",
-    "url"         : "svn://svn.chromium.org/${buildspec_path}/${chrome_version}",
+    "url"         : "${buildspec_url}/${chrome_version}",
     "custom_deps" : {
       "src/third_party/WebKit/LayoutTests": None,
       $pdf1
       $pdf2
     },
-    "safesync_url": "",
    },
 ]
 EOF
@@ -239,7 +238,7 @@ src_unpack() {
 			if [ "${PV}" = "9999" ]; then
 				# If unstable, default to latest version.
 				elog "Defaulting to latest stable CHROME_VERSION from svn"
-				CHROME_VERSION=$(get_latest_version ${BUILDSPEC_PATH})
+				CHROME_VERSION=$(get_latest_version ${BUILDSPEC_URL})
 			fi
 			export CHROME_VERSION
 		fi
@@ -278,14 +277,14 @@ src_unpack() {
 			elog "Official Build enabling PDF sources"
 			create_gclient_file ${ECHROME_STORE_DIR} \
 				${CHROME_VERSION} \
-				${BUILDSPEC_PATH} \
+				${BUILDSPEC_URL} \
 				"" \
 				"" \
 				|| die "Can't write .gclient file"
 		else
 			create_gclient_file ${ECHROME_STORE_DIR} \
 				${CHROME_VERSION} \
-				${BUILDSPEC_PATH} \
+				${BUILDSPEC_URL} \
 				"\"src/pdf\": None," \
 				"\"src-pdf\": None," \
 				|| die "Can't write .gclient file"
