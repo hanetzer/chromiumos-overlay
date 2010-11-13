@@ -3,7 +3,7 @@
 # $Header: /var/www/viewcvs.gentoo.org/raw_cvs/gentoo-x86/app-laptop/laptop-mode-tools/laptop-mode-tools-1.52.ebuild,v 1.1 2009/10/16 18:42:23 bangert Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="9b7ebd6e1e87b33390293e101d9c31bb5e7a2a77"
+CROS_WORKON_COMMIT="8783183793166dfb7d1f36aeaf9f638f2ee3305f"
 
 inherit cros-workon
 
