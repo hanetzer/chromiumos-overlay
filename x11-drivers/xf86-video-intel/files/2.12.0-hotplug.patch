@@ -1,0 +1,278 @@
+From 593e9d6235ff3ad6905e0b29a55c06723e50ae7f Mon Sep 17 00:00:00 2001
+From: Jie Sun <jiesun@chromium.org>
+Date: Thu, 11 Nov 2010 09:42:24 -0800
+Subject: [PATCH] intel: Listen for hotplug uevents (V3)
+
+This connects the kernel uevent indicating monitor hotplugging to the
+RandR notification events so that X applications can be notified
+automatically when monitors are connected or disconnected.
+
+This also adds a configuration option to disable hotplug events.
+
+V2: missed a #ifdef HAVE_UDEV around some udev-specific declarations
+
+V3: document Hotplug option in man page
+
+Signed-off-by: Keith Packard <keithp@keithp.com>
+
+Conflicts:
+
+	configure.ac
+	src/Makefile.am
+	src/i830.h
+
+patch
+---
+ configure.ac      |    5 ++
+ man/intel.man     |    6 +++
+ src/Makefile.am   |    4 +-
+ src/i830.h        |   12 ++++++
+ src/i830_driver.c |  114 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 139 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index a5d0617..77adf92 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -49,6 +49,11 @@ AM_PROG_CC_C_O
+ PKG_CHECK_MODULES(GEN4ASM, [intel-gen4asm >= 1.0], [gen4asm=yes], [gen4asm=no])
+ AM_CONDITIONAL(HAVE_GEN4ASM, test x$gen4asm = xyes)
+ 
++PKG_CHECK_MODULES(UDEV, [libudev], [udev=yes], [udev=no])
++if test x"$udev" = xyes; then
++  AC_DEFINE(HAVE_UDEV,1,[Enable udev-based monitor hotplug detection])
++fi
++
+ AC_HEADER_STDC
+ AC_CHECK_HEADERS(sys/mman.h)
+ AC_CHECK_FUNCS(mprotect)
+diff --git a/man/intel.man b/man/intel.man
+index c2447be..5f1b888 100644
+--- a/man/intel.man
++++ b/man/intel.man
+@@ -178,6 +178,12 @@ Enable XvMC driver. Current support MPEG2 MC on 915/945 and G33 series.
+ User should provide absolute path to libIntelXvMC.so in XvMCConfig file.
+ .IP
+ Default: Disabled.
++.TP
++.BI "Option \*qHotPlug\*q \*q" boolean \*q
++This option controls whether the driver automatically notifies
++applications when monitors are connected or disconnected.
++.IP
++Default: enabled.
+ 
+ .SH OUTPUT CONFIGURATION
+ On 830M and better chipsets, the driver supports runtime configuration of
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 864660e..88b9df9 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -26,13 +26,13 @@ SUBDIRS = xvmc render_program
+ # _ladir passes a dummy rpath to libtool so the thing will actually link
+ # TODO: -nostdlib/-Bstatic/-lgcc platform magic, not installing the .a, etc.
+ 
+-AM_CFLAGS = @CWARNFLAGS@ @XORG_CFLAGS@ @DRM_CFLAGS@ @DRI_CFLAGS@ \
++AM_CFLAGS = @CWARNFLAGS@ @XORG_CFLAGS@ @UDEV_CFLAGS@ @DRM_CFLAGS@ @DRI_CFLAGS@ \
+ 	@PCIACCESS_CFLAGS@ -I$(top_srcdir)/uxa -I$(top_srcdir)/src/render_program
+ 
+ intel_drv_la_LTLIBRARIES = intel_drv.la
+ intel_drv_la_LDFLAGS = -module -avoid-version
+ intel_drv_ladir = @moduledir@/drivers
+-intel_drv_la_LIBADD = -lm @DRM_LIBS@ -ldrm_intel ../uxa/libuxa.la
++intel_drv_la_LIBADD = @UDEV_LIBS@ -lm @DRM_LIBS@ -ldrm_intel ../uxa/libuxa.la
+ intel_drv_la_LIBADD += @PCIACCESS_LIBS@
+ 
+ INTEL_DRI_SRCS = \
+diff --git a/src/i830.h b/src/i830.h
+index 64acda3..904aa94 100644
+--- a/src/i830.h
++++ b/src/i830.h
+@@ -34,6 +34,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  *
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ #if 0
+ #define I830DEBUG
+ #endif
+@@ -70,6 +74,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ #include "intel_bufmgr.h"
+ #include "i915_drm.h"
+ 
++#if HAVE_UDEV
++#include <libudev.h>
++#endif
++
+ #include "uxa.h"
+ Bool i830_uxa_init(ScreenPtr pScreen);
+ void i830_uxa_create_screen_resources(ScreenPtr pScreen);
+@@ -432,6 +440,10 @@ typedef struct intel_screen_private {
+ 	 */
+ 	Bool fallback_debug;
+ 	unsigned debug_flush;
++#if HAVE_UDEV
++	struct udev_monitor *uevent_monitor;
++	InputHandlerProc uevent_handler;
++#endif
+ } intel_screen_private;
+ 
+ enum {
+diff --git a/src/i830_driver.c b/src/i830_driver.c
+index b8e0c0b..22cd298 100644
+--- a/src/i830_driver.c
++++ b/src/i830_driver.c
+@@ -172,6 +172,7 @@ typedef enum {
+    OPTION_DEBUG_FLUSH_BATCHES,
+    OPTION_DEBUG_FLUSH_CACHES,
+    OPTION_DEBUG_WAIT,
++   OPTION_HOTPLUG,
+ } I830Opts;
+ 
+ static OptionInfoRec I830Options[] = {
+@@ -188,6 +189,7 @@ static OptionInfoRec I830Options[] = {
+    {OPTION_DEBUG_FLUSH_BATCHES, "DebugFlushBatches", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_DEBUG_FLUSH_CACHES, "DebugFlushCaches", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_DEBUG_WAIT, "DebugWait", OPTV_BOOLEAN, {0}, FALSE},
++   {OPTION_HOTPLUG,	"HotPlug",	OPTV_BOOLEAN,	{0},	TRUE},
+    {-1,			NULL,		OPTV_NONE,	{0},	FALSE}
+ };
+ /* *INDENT-ON* */
+@@ -996,6 +998,110 @@ int i830_crtc_to_pipe(xf86CrtcPtr crtc)
+ 	return drmmode_get_pipe_from_crtc_id(intel->bufmgr, crtc);
+ }
+ 
++#if HAVE_UDEV
++static void
++I830HandleUEvents(int fd, void *closure)
++{
++    ScrnInfoPtr scrn = closure;
++	intel_screen_private *intel = intel_get_screen_private(scrn);
++    struct udev_device *dev;
++    const char *hotplug;
++    struct stat s;
++    dev_t udev_devnum;
++
++    dev = udev_monitor_receive_device(intel->uevent_monitor);
++    if (!dev)
++	return;
++
++    udev_devnum = udev_device_get_devnum(dev);
++    fstat(intel->drmSubFD, &s);
++    /*
++     * Check to make sure this event is directed at our
++     * device (by comparing dev_t values), then make
++     * sure it's a hotplug event (HOTPLUG=1)
++     */
++
++    hotplug = udev_device_get_property_value(dev, "HOTPLUG");
++
++    if (memcmp(&s.st_rdev, &udev_devnum, sizeof (dev_t)) == 0 &&
++	hotplug && atoi(hotplug) == 1)
++	RRGetInfo(screenInfo.screens[scrn->scrnIndex], TRUE);
++
++    udev_device_unref(dev);
++}
++
++static void
++I830UeventInit(ScrnInfoPtr scrn)
++{
++    intel_screen_private *intel = intel_get_screen_private(scrn);
++    struct udev *u;
++    struct udev_monitor *mon;
++    Bool hotplug;
++    MessageType from = X_CONFIG;
++
++    if (!xf86GetOptValBool(intel->Options, OPTION_HOTPLUG, &hotplug)) {
++	from = X_DEFAULT;
++	hotplug = TRUE;
++    }
++
++    xf86DrvMsg(scrn->scrnIndex, from, "hotplug detection: \"%s\"\n",
++	       hotplug ? "enabled" : "disabled");
++    if (!hotplug)
++	return;
++
++    u = udev_new();
++    if (!u)
++	return;
++
++    mon = udev_monitor_new_from_netlink(u, "udev");
++
++    if (!mon) {
++	udev_unref(u);
++	return;
++    }
++
++    if (udev_monitor_filter_add_match_subsystem_devtype(mon,
++							"drm",
++							"drm_minor") < 0 ||
++	udev_monitor_enable_receiving(mon) < 0)
++    {
++	udev_monitor_unref(mon);
++	udev_unref(u);
++	return;
++    }
++
++    intel->uevent_handler =
++	xf86AddGeneralHandler(udev_monitor_get_fd(mon),
++			      I830HandleUEvents,
++			      scrn);
++    if (!intel->uevent_handler) {
++	udev_monitor_unref(mon);
++	udev_unref(u);
++	return;
++    }
++
++    intel->uevent_monitor = mon;
++}
++
++static void
++I830UeventFini(ScrnInfoPtr scrn)
++{
++    intel_screen_private *intel = intel_get_screen_private(scrn);
++
++    if (intel->uevent_handler)
++    {
++	struct udev *u = udev_monitor_get_udev(intel->uevent_monitor);
++
++	xf86RemoveGeneralHandler(intel->uevent_handler);
++
++	udev_monitor_unref(intel->uevent_monitor);
++	udev_unref(u);
++	intel->uevent_handler = NULL;
++	intel->uevent_monitor = NULL;
++    }
++}
++#endif /* HAVE_UDEV */
++
+ static Bool
+ I830ScreenInit(int scrnIndex, ScreenPtr screen, int argc, char **argv)
+ {
+@@ -1233,6 +1339,10 @@ I830ScreenInit(int scrnIndex, ScreenPtr screen, int argc, char **argv)
+ 
+ 	intel->suspended = FALSE;
+ 
++#if HAVE_UDEV
++	I830UeventInit(scrn);
++#endif
++
+ 	return uxa_resources_init(screen);
+ }
+ 
+@@ -1307,6 +1417,10 @@ static Bool I830CloseScreen(int scrnIndex, ScreenPtr screen)
+ 	ScrnInfoPtr scrn = xf86Screens[scrnIndex];
+ 	intel_screen_private *intel = intel_get_screen_private(scrn);
+ 
++#if HAVE_UDEV
++	I830UeventFini(scrn);
++#endif
++
+ 	if (scrn->vtSema == TRUE) {
+ 		I830LeaveVT(scrnIndex, 0);
+ 	}
+-- 
+1.7.3.1
+
