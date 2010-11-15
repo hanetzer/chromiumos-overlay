@@ -25,6 +25,7 @@ RDEPEND="
 
 DEPEND="
 	test? ( dev-cpp/gtest )
+	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	${RDEPEND}"
 
