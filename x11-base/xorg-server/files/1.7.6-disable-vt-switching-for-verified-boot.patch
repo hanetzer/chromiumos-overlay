@@ -1,0 +1,54 @@
+This patch disables the Ctrl-Alt-Fx shortcut for switching between virtual
+terminals when we're in verified boot mode.
+
+diff --git a/hw/xfree86/common/xf86Events.c b/hw/xfree86/common/xf86Events.c
+index 8e6a15b..38cdb78 100644
+--- a/hw/xfree86/common/xf86Events.c
++++ b/hw/xfree86/common/xf86Events.c
+@@ -176,7 +176,19 @@ ProcessInputEvents (void)
+ void
+ xf86ProcessActionEvent(ActionEvent action, void *arg)
+ {
++    /* This file gets written by the vt-switching.conf upstart job. */
++    const char kCrosAllowVtSwitchingFile[] =
++        "/var/run/state/allow-vt-switching";
++    int crosAllowVTSwitching = 0;
++
+     DebugF("ProcessActionEvent(%d,%x)\n", (int) action, arg);
++
++    if (action == ACTION_SWITCHSCREEN ||
++        action == ACTION_SWITCHSCREEN_NEXT ||
++        action == ACTION_SWITCHSCREEN_PREV) {
++      crosAllowVTSwitching = (access(kCrosAllowVtSwitchingFile, F_OK) == 0);
++    }
++
+     switch (action) {
+     case ACTION_TERMINATE:
+ 	if (!xf86Info.dontZap) {
+@@ -197,6 +209,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
+ #if defined(VT_ACTIVATE)
+     case ACTION_SWITCHSCREEN:
+ 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && arg) {
++            if (!crosAllowVTSwitching)
++                break;
+ 	    int vtno = *((int *) arg);
+ #if defined(__SCO__) || defined(__UNIXWARE__)
+ 	    vtno--;
+@@ -223,6 +237,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
+ 	break;
+     case ACTION_SWITCHSCREEN_NEXT:
+ 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch) {
++            if (!crosAllowVTSwitching)
++                break;
+ #if defined(__SCO__) || defined(__UNIXWARE__)
+ 	    if (ioctl(xf86Info.consoleFd, VT_ACTIVATE, xf86Info.vtno) < 0)
+ #else
+@@ -238,6 +254,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
+ 	break;
+     case ACTION_SWITCHSCREEN_PREV:
+ 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && xf86Info.vtno > 0) {
++            if (!crosAllowVTSwitching)
++                break;
+ 	    if (ioctl(xf86Info.consoleFd, VT_ACTIVATE, xf86Info.vtno - 1) < 0)
+ 		ErrorF("Failed to switch consoles (%s)\n", strerror(errno));
+ 	}
