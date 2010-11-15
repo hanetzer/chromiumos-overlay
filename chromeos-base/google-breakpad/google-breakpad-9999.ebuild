@@ -3,41 +3,27 @@
 
 EAPI=2
 
-inherit eutils toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
+SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE=""
 
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-	pushd "${S}"/src/tools/linux/symupload
-	epatch "${FILESDIR}"/sym_upload.diff || die "Unable to patch"
-	epatch "${FILESDIR}"/sym_upload_mk.diff || die "Unable to patch"
-	epatch "${FILESDIR}"/minidump_upload.diff || die "Unable to patch"
-	popd
 	if tc-is-cross-compiler; then
 		pushd "${S}"/src/tools/linux/dump_syms
 		epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
 		popd
 	else
-	    elog "Using host compiler and leaving -m32 to build dump_syms"
+		elog "Using host compiler and leaving -m32 to build dump_syms"
 	fi
-	pushd "${S}"
-	epatch "${FILESDIR}"/splitdebug.diff || die "Unable to patch splitdebug"
-	epatch "${FILESDIR}"/linux_dumper_unittest_flaky.diff || \
-	    die "unable to patch"
-	epatch "${FILESDIR}"/minidump_dump.diff || die "unable to patch"
-	epatch "${FILESDIR}"/sym_upload_errors.diff || die "unable to patch"
-	popd
-	cp -Rv "${FILESDIR}"/core2md/* "${S}/src" || \
-	    die "Unable to overlay files"
 }
 
 src_configure() {
