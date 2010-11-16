@@ -23,7 +23,6 @@ inherit eutils multilib toolchain-funcs flag-o-matic autotest
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
 SRC_URI=""
-EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 
 if [ "$PV" = "9999" ]; then
 	KEYWORDS="~x86 ~arm"
@@ -300,7 +299,9 @@ src_unpack() {
 			die "Cannot chdir to ${ECHROME_STORE_DIR}"
 
 		elog "Syncing google chrome sources using ${EGCLIENT}"
-		${EGCLIENT} sync --nohooks --delete_unversioned_trees \
+		# We use --force to work around a race condition with
+		# checking out cros.git in parallel with the main chrome tree.
+		${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force \
 			|| die "${EGCLIENT} sync failed"
 
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
