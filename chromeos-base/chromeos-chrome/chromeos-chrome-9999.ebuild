@@ -77,7 +77,8 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/${DEFAU
 TEST_FILES="ffmpeg_tests
             omx_test"
 
-RDEPEND="app-arch/bzip2
+RDEPEND="${RDEPEND}
+	 app-arch/bzip2
          chromeos-base/chromeos-theme
          chromeos-base/libcros
          chrome_remoting? ( x11-libs/libXtst )
@@ -105,7 +106,8 @@ RDEPEND="app-arch/bzip2
          >=x11-libs/gtk+-2.14.7
          x11-libs/libXScrnSaver"
 
-DEPEND="${RDEPEND}
+DEPEND="${DEPEND}
+	${RDEPEND}
         >=dev-util/gperf-3.0.3
         >=dev-util/pkgconfig-0.23"
 
@@ -489,7 +491,7 @@ install_chrome_test_resources() {
 	done
 
 	mkdir -p "${TEST_DIR}"/base
-	fast_cp -a "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+	fast_cp -a "${CHROME_ROOT}"/src/base/base_paths_linux.cc "${TEST_DIR}"/base
 
 	mkdir -p "${TEST_DIR}"/chrome/test
 	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/data \
@@ -575,6 +577,7 @@ src_install() {
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
 		autotest_src_install
+		autotest_prepackage "chrome_test"
 	fi
 
 	# Fix some perms
