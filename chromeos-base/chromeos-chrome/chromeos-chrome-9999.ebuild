@@ -23,7 +23,6 @@ inherit eutils multilib toolchain-funcs flag-o-matic autotest
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
 SRC_URI=""
-EGCLIENT_REPO_URI="WE USE A GCLIENT TEMPLATE FILE IN THIS DIRECTORY"
 
 if [ "$PV" = "9999" ]; then
 	KEYWORDS="~x86 ~arm"
@@ -77,7 +76,8 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/${DEFAU
 TEST_FILES="ffmpeg_tests
             omx_test"
 
-RDEPEND="app-arch/bzip2
+RDEPEND="${RDEPEND}
+	 app-arch/bzip2
          chromeos-base/chromeos-theme
          chromeos-base/libcros
          chrome_remoting? ( x11-libs/libXtst )
@@ -105,7 +105,8 @@ RDEPEND="app-arch/bzip2
          >=x11-libs/gtk+-2.14.7
          x11-libs/libXScrnSaver"
 
-DEPEND="${RDEPEND}
+DEPEND="${DEPEND}
+	${RDEPEND}
         >=dev-util/gperf-3.0.3
         >=dev-util/pkgconfig-0.23"
 
@@ -298,7 +299,9 @@ src_unpack() {
 			die "Cannot chdir to ${ECHROME_STORE_DIR}"
 
 		elog "Syncing google chrome sources using ${EGCLIENT}"
-		${EGCLIENT} sync --nohooks --delete_unversioned_trees \
+		# We use --force to work around a race condition with
+		# checking out cros.git in parallel with the main chrome tree.
+		${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force \
 			|| die "${EGCLIENT} sync failed"
 
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
@@ -489,7 +492,7 @@ install_chrome_test_resources() {
 	done
 
 	mkdir -p "${TEST_DIR}"/base
-	fast_cp -a "${CHROME_ROOT}"/src/base/base_paths_posix.cc "${TEST_DIR}"/base
+	fast_cp -a "${CHROME_ROOT}"/src/base/base_paths_linux.cc "${TEST_DIR}"/base
 
 	mkdir -p "${TEST_DIR}"/chrome/test
 	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/data \
@@ -575,6 +578,7 @@ src_install() {
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
 		autotest_src_install
+		autotest_prepackage "chrome_test"
 	fi
 
 	# Fix some perms

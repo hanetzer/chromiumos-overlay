@@ -112,11 +112,22 @@ function create_autotest_workdir() {
 	local dst=${1}
 
 	# create a working enviroment for pre-building
-	ln -sf "${SYSROOT}"/usr/local/autotest/{conmux,tko,utils,global_config.ini,shadow_config.ini} "${dst}"/
+	ln -sf "${SYSROOT}"/usr/local/autotest/{conmux,tko,global_config.ini,shadow_config.ini} "${dst}"/
 
 	# NOTE: in order to make autotest not notice it's running from /usr/local/, we need
 	# to make sure the binaries are real, because they do the path magic
 	local root_path base_path
+	for base_path in utils server; do
+		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
+		mkdir -p "${dst}/${base_path}"
+		for entry in $(ls "${root_path}"); do
+			if [ -d ${entry} ]; then
+				ln -sf "${root_path}/${entry}" "${dst}/${base_path}/"
+			else
+				cp -f ${root_path}/${entry} ${dst}/${base_path}/
+			fi
+		done
+	done
 	for base_path in client client/bin; do
 		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
 		mkdir -p "${dst}/${base_path}"
@@ -357,6 +368,17 @@ function autotest_src_install() {
 	# TODO: Not all needs to be executable, but it's hard to pick selectively.
 	# The source repo should already contain stuff with the right permissions.
 	chmod -R a+x "${D}"/usr/local/autotest/*
+}
+
+function autotest_prepackage() {
+	are_we_used || return 0
+	TEST_DEP="${1}"
+	einfo "Pre-packaging test dep ${TEST_DEP}"
+
+	dodir /usr/local/autotest-pkgs
+	"${AUTOTEST_WORKDIR}"/utils/packager.py -d "${TEST_DEP}" \
+		-r "${D}"/usr/local/autotest-pkgs upload \
+		|| die "Can't preinstall ${1}"
 }
 
 EXPORT_FUNCTIONS src_compile src_prepare src_install

@@ -157,6 +157,7 @@ PATCHES=(
 	#"${FILESDIR}/1.7.6-no-exposure-for-redirect.patch"
 	#"${FILESDIR}/1.7.6-always-send-visibility.patch"
 	"${FILESDIR}/1.7.6-fix-xkb-autorepeat.patch"
+	"${FILESDIR}/1.7.6-disable-vt-switching-for-verified-boot.patch"
 	)
 
 pkg_setup() {

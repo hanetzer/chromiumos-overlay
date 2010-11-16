@@ -3,7 +3,7 @@
 # $Header: /var/www/viewcvs.gentoo.org/raw_cvs/gentoo-x86/app-laptop/laptop-mode-tools/laptop-mode-tools-1.52.ebuild,v 1.1 2009/10/16 18:42:23 bangert Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="9b7ebd6e1e87b33390293e101d9c31bb5e7a2a77"
+CROS_WORKON_COMMIT="02f8ebfc4915d6c5817818a61a49b98334fe3ec4"
 
 inherit cros-workon
 
@@ -48,6 +48,9 @@ src_install() {
 
 	exeinto /etc/pm/power.d
 	newexe "${FILESDIR}"/laptop_mode_tools.pmutils laptop_mode_tools
+
+	insinto /etc/udev/rules.d
+	doins etc/rules/99-laptop-mode.rules 
 }
 
 pkg_postinst() {
