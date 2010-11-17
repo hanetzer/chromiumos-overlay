@@ -32,7 +32,7 @@ fi
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf"
+IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf +chrome_debug"
 
 CHROME_SRC="chrome-src"
 BUILDSPEC_URL="http://src.chromium.org/svn/releases"
@@ -387,6 +387,10 @@ check_cros_version() {
 	fi
 }
 
+strip_chrome_debug() {
+	echo ${1} | sed -e "s/\s\(-gstabs\|-ggdb\|-gdwarf\S*\)/ /"
+}
+
 src_compile() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
@@ -430,6 +434,13 @@ src_compile() {
 		else
 			ewarn "Couldn't find gold, USE flag ignored."
 		fi
+	fi
+
+	if ! use chrome_debug; then
+		# Override debug options for Chrome build.
+		CXXFLAGS="$(strip_chrome_debug "${CXXFLAGS}")"
+		CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
+		einfo "Stripped debug flags for Chrome build"
 	fi
 
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
