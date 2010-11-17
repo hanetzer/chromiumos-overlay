@@ -78,27 +78,29 @@ fi
 SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/gcc-4.4.3-specs-0.2.0.tar.bz2"
 RESTRICT="mirror strip"
 
+IUSE="mounted_sources"
+
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
+GITDIR=${WORKDIR}/gitdir
+GITHASH=717a8906a9b85e79f584824f693a338012905730
 
 src_unpack() {
-  if [[ ${USER} == root ]]
-  then
-    if [[ -z ${PORTAGE_USERNAME} ]]
-    then
-      export MY_USER=${SUDO_USER}
-    else
-      export MY_USER=${PORTAGE_USERNAME}
+  local GCCDIR
+  if use mounted_sources ; then
+    GCCDIR=/usr/local/toolchain_root/gcc/${MY_P}
+    if [[ ! -d ${GCCDIR} ]] ; then
+      die "gcc dir not mounted/present at: ${GCCDIR}"
     fi
   else
-    export MY_USER=${USER}
+    mkdir ${GITDIR}
+    cd ${GITDIR} || die "Could not enter ${GITDIR}"
+    git clone http://git.chromium.org/git/gcc.git . || die "Could not clone repo."
+    git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
+    cd -
+    GCCDIR=${GITDIR}/gcc/${MY_P}
   fi
-
-  local GCCDIR=/home/${MY_USER}/toolchain_root/gcc/${MY_P}
-  if [[ ! -d ${GCCDIR} ]] ; then
-    die "gcc dir not mounted/present at: ${GCCDIR}"
-  fi
-	ln -sf ${GCCDIR} ${S}
+ 	ln -sf ${GCCDIR} ${S}
 
   # TODO(asharif): remove this and get the specs from the sources, if possible.
 	if want_pie ; then
@@ -139,9 +141,13 @@ pkg_setup() {
 # TODO(asharif): Move this into a separate file and source it.
 src_configure()
 {
-  local GCCBUILDDIR="/home/${MY_USER}/toolchain_root/build-gcc"
-  if [[ ! -d ${GCCBUILDDIR} ]] ; then
-    die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
+  if use mounted_sources ; then
+    local GCCBUILDDIR="/usr/local/toolchain_root/build-gcc"
+    if [[ ! -d ${GCCBUILDDIR} ]] ; then
+      die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
+    fi
+  else
+    local GCCBUILDDIR="${GITDIR}/build-gcc"
   fi
 
   local confgcc
