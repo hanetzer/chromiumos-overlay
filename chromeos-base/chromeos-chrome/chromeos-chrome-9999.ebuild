@@ -24,7 +24,7 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
 SRC_URI=""
 
-if [ "$PV" = "9999" ]; then
+if [ "${PV}" = "9999" ]; then
 	KEYWORDS="~x86 ~arm"
 else
 	KEYWORDS="x86 arm"
@@ -34,12 +34,48 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf +chrome_debug"
 
+# If version isn't specified...
+# TODO(anush): EOL CHROME_VERSION
+if [ -z "${CHROME_VERSION}" ]; then
+	CHROME_VERSION="${PV}"
+	export CHROME_VERSION
+fi
+
+EXTERNAL_URL="http://src.chromium.org/svn"
+INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
+[[ ( "${PV}" = "9999" ) || ( -n "${CROS_SVN_COMMIT}" ) ]]
+USE_TRUNK=$?
+
+REVISION="/${CHROME_VERSION}"
+if [ ${USE_TRUNK} = 0 ]; then
+	REVISION=
+	if [ -n "${CROS_SVN_COMMIT}" ]; then
+		REVISION="@${CROS_SVN_COMMIT}"
+	fi
+fi
+
+if use internal; then
+	if [ ${USE_TRUNK} = 0 ]; then
+		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
+		AUXILIARY_URL="${INTERNAL_URL}/trunk/src-internal"
+	else
+		PRIMARY_URL="${INTERNAL_URL}/trunk/tools/buildspec/releases"
+		AUXILIARY_URL=
+	fi
+else
+	if [ ${USE_TRUNK} = 0 ]; then
+		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
+	else
+		PRIMARY_URL="${EXTERNAL_URL}/releases"
+	fi
+	AUXILIARY_URL=
+fi
+
 CHROME_SRC="chrome-src"
-BUILDSPEC_URL="http://src.chromium.org/svn/releases"
 if use internal; then
 	CHROME_SRC="${CHROME_SRC}-internal"
-	BUILDSPEC_URL="svn://svn.chromium.org/chrome-internal/trunk/tools/buildspec/releases"
 fi
+
 # chrome sources store directory
 if [[ -z ${ECHROME_STORE_DIR} ]] ; then
 	ECHROME_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/${CHROME_SRC}"
@@ -170,31 +206,51 @@ set_build_defines() {
 	export DEPOT_TOOLS_UPDATE=0
 }
 
-get_latest_version() {
-	local buildspec_url=${1}
-	svn ls "${buildspec_url}" | sort -V | \
-		grep -E '^[[:digit:]]\..*' | tail -1
-}
-
 create_gclient_file() {
 	local echrome_store_dir=${1}
-	local chrome_version=${2}
-	local buildspec_url=${3}
-	local pdf1=${4}
-	local pdf2=${5}
+	local primary_url=${2}
+	local auxiliary_url=${3}
+	local revision=${4}
+	local use_pdf=${5}
+	local use_trunk=${6}
 
-	cat >${echrome_store_dir}/.gclient <<EOF
-solutions = [
-  { "name"        : "CHROME_DEPS",
-    "url"         : "${buildspec_url}/${chrome_version}",
+	local pdf1="\"src/pdf\": None,"
+	local pdf2="\"src-pdf\": None,"
+	local checkout_point="CHROME_DEPS"
+
+	if [ ${use_pdf} = 0 ]; then
+		pdf1=
+		pdf2=
+	fi
+	if [ ${use_trunk} = 0 ]; then
+		checkout_point="src"
+	fi
+	echo "solutions = [" >${echrome_store_dir}/.gclient
+	cat >>${echrome_store_dir}/.gclient <<EOF
+  { "name"        : "${checkout_point}",
+    "url"         : "${primary_url}${revision}",
     "custom_deps" : {
       "src/third_party/WebKit/LayoutTests": None,
       $pdf1
       $pdf2
     },
-   },
-]
+  },
 EOF
+	if [ -n "${auxiliary_url}" ]; then
+		cat >>${echrome_store_dir}/.gclient <<EOF
+  { "name"        : "aux_src",
+    "url"         : "${auxiliary_url}${revision}",
+  },
+EOF
+	fi
+	if [ ${use_trunk} = 0 ]; then
+		cat >>${echrome_store_dir}/.gclient <<EOF
+  { "name"        : "cros",
+    "url"         : "${primary_url}/tools/cros.DEPS${revision}",
+  },
+EOF
+	fi
+	echo "]" >>${echrome_store_dir}/.gclient
 }
 
 src_unpack() {
@@ -232,17 +288,6 @@ src_unpack() {
 			|| die "failed to copy ssh credentials into ${HOME}"
 		fi
 
-		# If version isn't specified...
-		if [ -z "${CHROME_VERSION}" ]; then
-			# default to version of package, unless we're unstable.
-			CHROME_VERSION="${PV}"
-			if [ "${PV}" = "9999" ]; then
-				# If unstable, default to latest version.
-				elog "Defaulting to latest stable CHROME_VERSION from svn"
-				CHROME_VERSION=$(get_latest_version ${BUILDSPEC_URL})
-			fi
-			export CHROME_VERSION
-		fi
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
 		#See if the CHROME_VERSION we used previously was different
 		CHROME_VERSION_FILE=${ECHROME_STORE_DIR}/chrome_version
@@ -276,18 +321,20 @@ src_unpack() {
 		#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
 		if use chrome_pdf && use x86; then
 			elog "Official Build enabling PDF sources"
-			create_gclient_file ${ECHROME_STORE_DIR} \
-				${CHROME_VERSION} \
-				${BUILDSPEC_URL} \
-				"" \
-				"" \
+			create_gclient_file "${ECHROME_STORE_DIR}" \
+				"${PRIMARY_URL}" \
+				"${AUXILIARY_URL}" \
+				"${REVISION}" \
+				0 \
+				${USE_TRUNK} \
 				|| die "Can't write .gclient file"
 		else
-			create_gclient_file ${ECHROME_STORE_DIR} \
-				${CHROME_VERSION} \
-				${BUILDSPEC_URL} \
-				"\"src/pdf\": None," \
-				"\"src-pdf\": None," \
+			create_gclient_file "${ECHROME_STORE_DIR}" \
+				"${PRIMARY_URL}" \
+				"${AUXILIARY_URL}" \
+				"${REVISION}" \
+				1 \
+				${USE_TRUNK} \
 				|| die "Can't write .gclient file"
 			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
 		fi
