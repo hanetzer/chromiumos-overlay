@@ -77,5 +77,8 @@ EOF
 	# No autoupdate!
 	sed -i 's/start on stopped boot-complete/start on never/' \
 		"${ROOT}/etc/init/software-update.conf"
+	# No TPM locking.
+	sed -i 's/start tcsd//' \
+		"${ROOT}/etc/init/tpm-probe.conf"
 }
 
