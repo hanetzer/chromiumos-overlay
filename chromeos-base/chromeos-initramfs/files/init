@@ -12,6 +12,7 @@ USB_DEVS="sdb3 sdc3 mmcblk1p3"
 USB_SHIM_DEVS="sdb1 sdc1 mmcblk1p1"
 USB_MNT=/usb
 REAL_USB_DEV=
+DM_NAME=
 
 DST=
 
@@ -339,8 +340,13 @@ unmove_mounts() {
 unmount_usb() {
   dlog "Unmounting $USB_MNT"
   umount "$USB_MNT"
+  # Make sure we clean up a device-mapper root.
+  if [ "$USB_DEV" = "/dev/dm-0" ]; then
+    dlog "Removing dm-verity target"
+    dmsetup remove "$DM_NAME"
+  fi
   dlog
-  dlog "$USB_DEV can now be safely removed"
+  dlog "$REAL_USB_DEV can now be safely removed"
   dlog
   return 0
 }

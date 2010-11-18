@@ -1,6 +1,10 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# WARNING: cros_workon cannot detect changes to files/, please ensure
+# that you manually bump or make some change to the 9999 ebuild until
+# this is fixed.
+
 EAPI=2
 
 inherit cros-workon
