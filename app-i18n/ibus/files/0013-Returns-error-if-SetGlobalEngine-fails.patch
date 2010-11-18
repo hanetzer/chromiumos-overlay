@@ -1,0 +1,83 @@
+From f08033a76dd9f80e512f497e7c1032786b19b287 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Tue, 2 Nov 2010 13:22:27 +0900
+Subject: [PATCH 13/14] Returns error, if SetGlobalEngine fails.
+
+BUG=chromium-os:8453
+TEST=manual
+
+Review URL: http://codereview.appspot.com/2735046
+---
+ bus/ibusimpl.c |   22 +++++++++++++++-------
+ 1 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index ed4394f..3cf3b1e 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -83,7 +83,7 @@ static void     bus_ibus_impl_set_use_global_engine
+                                                  GValue             *value);
+ static void     bus_ibus_impl_set_global_engine (BusIBusImpl        *ibus,
+                                                  BusEngineProxy     *engine);
+-static void     bus_ibus_impl_set_global_engine_by_name
++static gboolean bus_ibus_impl_set_global_engine_by_name
+                                                 (BusIBusImpl        *ibus,
+                                                  const gchar        *name);
+ static void     bus_ibus_impl_engines_maybe_removed
+@@ -1113,14 +1113,14 @@ bus_ibus_impl_set_global_engine (BusIBusImpl    *ibus,
+     bus_ibus_impl_global_engine_changed (ibus);
+ }
+ 
+-static void
++static gboolean
+ bus_ibus_impl_set_global_engine_by_name (BusIBusImpl *ibus,
+                                          const gchar *name)
+ {
+     gchar *old_engine_name = NULL;
+ 
+     if (!ibus->use_global_engine)
+-        return;
++        return FALSE;
+ 
+     if (ibus->global_engine) {
+         old_engine_name = bus_engine_proxy_get_desc (ibus->global_engine)->name;
+@@ -1135,7 +1135,7 @@ bus_ibus_impl_set_global_engine_by_name (BusIBusImpl *ibus,
+         else if (ibus->global_engine) {
+             bus_engine_proxy_enable (ibus->global_engine);
+         }
+-        return;
++        return TRUE;
+     }
+ 
+     /* If there is a focused input context, then we just change the engine of
+@@ -1165,6 +1165,10 @@ bus_ibus_impl_set_global_engine_by_name (BusIBusImpl *ibus,
+             }
+         }
+     }
++
++    return ibus->global_engine != NULL &&
++           g_strcmp0 (name,
++                bus_engine_proxy_get_desc (ibus->global_engine)->name) == 0;
+ }
+ 
+ static void
+@@ -1806,9 +1810,13 @@ _ibus_set_global_engine (BusIBusImpl     *ibus,
+                                               new_engine_name ? new_engine_name : "NULL");
+     }
+ 
+-    bus_ibus_impl_set_global_engine_by_name (ibus, new_engine_name);
+-
+-    return ibus_message_new_method_return (message);
++    if (bus_ibus_impl_set_global_engine_by_name (ibus, new_engine_name)) {
++        return ibus_message_new_method_return (message);
++    }
++    else {
++        return ibus_message_new_error_printf (message, DBUS_ERROR_FAILED,
++                        "Set global engine to %s failed.", new_engine_name);
++    }
+ }
+ 
+ static IBusMessage *
+-- 
+1.7.3.1
+

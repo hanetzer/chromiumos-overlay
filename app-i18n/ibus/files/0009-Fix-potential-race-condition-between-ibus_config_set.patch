@@ -1,7 +1,7 @@
 From c7b03330bdb297c9601c83c3ac041661e04fecd3 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Tue, 26 Oct 2010 15:10:19 +0900
-Subject: [PATCH 9/9] Fix potential race condition between ibus_config_set_value("preload_engines") and ibus_bus_list_active_engines()
+Subject: [PATCH 09/14] Fix potential race condition between ibus_config_set_value("preload_engines") and ibus_bus_list_active_engines()
 
 in addition to ibus_bus_set_global_engine() since Chrome for Chrome OS might call ibus_bus_list_active_engines() right after calling ibus_config_set_value("preload_engines").
 
@@ -82,5 +82,5 @@ index 6be0a22..2e1da4d 100644
          !_find_engine_desc_by_name (ibus, new_engine_name)) {
          return ibus_message_new_error_printf (message, DBUS_ERROR_FAILED,
 -- 
-1.7.1
+1.7.3.1
 

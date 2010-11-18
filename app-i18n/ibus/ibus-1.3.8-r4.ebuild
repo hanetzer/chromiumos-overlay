@@ -51,6 +51,8 @@ src_prepare() {
 	epatch "${FILESDIR}/0010-Do-not-block-the-connection-between-ibus-daemon-and-.patch"
 	epatch "${FILESDIR}/0011-Use-block-mode-of-g_main_context_iteration-to-avoid-.patch"
 	epatch "${FILESDIR}/0012-Fix-compile-error.patch"
+	epatch "${FILESDIR}/0013-Returns-error-if-SetGlobalEngine-fails.patch"
+	epatch "${FILESDIR}/0014-Enable-input-context-when-set-global-engine-successf.patch"
 }
 
 src_configure() {

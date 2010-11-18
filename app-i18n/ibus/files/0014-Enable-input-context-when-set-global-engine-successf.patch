@@ -1,0 +1,48 @@
+From 983c76c6f5d107c9ead1e76e3be3953878382f7d Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Thu, 18 Nov 2010 09:16:54 +0900
+Subject: [PATCH 14/14] Enable input context when set global engine successfully.
+
+BUG=chromium-os:6809
+TEST=manual
+
+Review URL: http://codereview.appspot.com/3166041
+---
+ bus/ibusimpl.c |   14 ++++++++++----
+ 1 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index 3cf3b1e..c8484b5 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -1166,9 +1166,14 @@ bus_ibus_impl_set_global_engine_by_name (BusIBusImpl *ibus,
+         }
+     }
+ 
+-    return ibus->global_engine != NULL &&
+-           g_strcmp0 (name,
+-                bus_engine_proxy_get_desc (ibus->global_engine)->name) == 0;
++    gboolean retval = ibus->global_engine != NULL &&
++                      g_strcmp0 (name,
++                                 bus_engine_proxy_get_desc (ibus->global_engine)->name) == 0;
++
++    if (retval && ibus->focused_context)
++        bus_input_context_enable (ibus->focused_context);
++
++    return retval;
+ }
+ 
+ static void
+@@ -1327,7 +1332,8 @@ _context_focus_in_cb (BusInputContext *context,
+         }
+         else {
+             bus_ibus_impl_set_context_engine (ibus, context, ibus->global_engine);
+-            if (ibus->global_engine && bus_engine_proxy_is_enabled (ibus->global_engine)) {
++            if (ibus->global_engine &&
++                bus_engine_proxy_is_enabled (ibus->global_engine)) {
+                 bus_input_context_enable (context);
+             }
+         }
+-- 
+1.7.3.1
+
