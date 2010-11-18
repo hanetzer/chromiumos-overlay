@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="dc24da70a65e23177660631015c2f21ea960c911"
+CROS_WORKON_COMMIT="b8444be6de6e1a766b3f8890f8a9649ec91a6dfd"
 
 inherit cros-workon
 
@@ -78,5 +78,8 @@ EOF
 	# No autoupdate!
 	sed -i 's/start on stopped boot-complete/start on never/' \
 		"${ROOT}/etc/init/software-update.conf"
+	# No TPM locking.
+	sed -i 's/start tcsd//' \
+		"${ROOT}/etc/init/tpm-probe.conf"
 }
 
