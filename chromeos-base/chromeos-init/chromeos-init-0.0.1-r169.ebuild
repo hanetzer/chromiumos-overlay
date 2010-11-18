@@ -49,13 +49,6 @@ src_install() {
 		rm "${D}/etc/init/pulseaudio.conf"
 	fi
 
-	# The platform specific light sensor tuning value is specified
-	# in the overlay's make.conf.
-	if [ -n "$LIGHT_SENSOR_TUNEVAL" ]; then
-		sed -i -e "/TUNEVAL=/s/=.*/=$LIGHT_SENSOR_TUNEVAL/" \
-			"${D}/etc/init/light-sensor.conf"
-	fi
-
 	# Install process killing util functions.
 	dosbin "${S}/killers"
 

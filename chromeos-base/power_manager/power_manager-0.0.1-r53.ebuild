@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9c0509b8dea45ce7b59b59bbbd1aec9df4aebf74"
+CROS_WORKON_COMMIT="6bbcc7a140ee1fc7e8d73eceb53a85280f5b328a"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -86,12 +86,28 @@ src_install() {
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
-        dobin "${S}/suspend_delay_sample"
+	dobin "${S}/suspend_delay_sample"
 	dobin "${S}/xidle-example"
 	insinto "/usr/share/power_manager"
 	for item in ${S}/config/*; do
 		doins ${item}
 	done
-        insinto "/etc/dbus-1/system.d"
-        doins "${S}/org.chromium.PowerManager.conf"
+	insinto "/etc/dbus-1/system.d"
+	doins "${S}/org.chromium.PowerManager.conf"
+
+	# Install scripts for setting up light sensor
+	exeinto "/lib/udev"
+	doexe "${S}/tsl2563-install.sh"
+	doexe "${S}/light-sensor-set-multiplier.sh"
+
+	# The platform specific light sensor tuning value is specified
+	# in the overlay's make.conf.
+	if [ -n "$LIGHT_SENSOR_TUNEVAL" ]; then
+	sed -i -e "/TUNEVAL=/s/=.*/=$LIGHT_SENSOR_TUNEVAL/" \
+		"${D}/lib/udev/light-sensor-set-multiplier.sh"
+	fi
+
+	# Install light sensor udev rules
+	insinto "/etc/udev/rules.d"
+	doins "${S}/99-light-sensor.rules"
 }
