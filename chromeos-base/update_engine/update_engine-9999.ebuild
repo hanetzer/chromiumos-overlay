@@ -13,6 +13,7 @@ IUSE="-delta_generator"
 KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="app-arch/bzip2
+	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome
 	chromeos-base/metrics
 	chromeos-base/verity
@@ -82,22 +83,4 @@ src_install() {
 	insinto /usr/include/chromeos/update_engine
 	doins update_engine.dbusserver.h
 	doins update_engine.dbusclient.h
-
-	# c_rehash (OpenSSL 0.9.8l 5 Nov 2009) is processing just .pem files so
-	# rename the certificates from .crt to .pem. An alternative is to use
-	# openssl directly to create the hash symlinks:
-	#
-	#   ln -s $cert.crt $(openssl x509 -noout -hash < $cert.crt).0
-	#
-	# However, c_rehash has smarts about incrementing the .0 extension if
-	# necessary.
-	CA_CERT_DIR=/usr/share/update_engine/ca-certificates
-	insinto "${CA_CERT_DIR}"
-	for cert in \
-	  Equifax_Secure_Certificate_Authority \
-	  GeoTrustGlobalCA_crosssigned \
-	  GoogleInternetAuthority; do
-	  newins certs/$cert.crt $cert.pem
-	done
-	c_rehash "${D}/${CA_CERT_DIR}"
 }

@@ -17,6 +17,7 @@ IUSE="test"
 RDEPEND="chromeos-base/google-breakpad
          chromeos-base/libchrome
          chromeos-base/metrics
+	 chromeos-base/chromeos-ca-certificates
          dev-cpp/gflags
 	 dev-libs/libpcre
          test? ( dev-cpp/gtest )
