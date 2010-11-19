@@ -46,23 +46,16 @@ src_test() {
 	export CCFLAGS="$CFLAGS"
 
 	TARGETS="update_engine_unittests test_http_server"
-	if use delta_generator; then
-	  TARGETS="$TARGETS delta_generator"
-	fi
-	scons debug=1 $TARGETS || die "failed to build tests"
+	scons ${MAKEOPTS} ${TARGETS} || die "failed to build tests"
 
 	if ! use x86 ; then
-		echo Skipping tests on non-x86 platform...
+	  echo Skipping tests on non-x86 platform...
 	else
-		LIB_PATH="${SYSROOT}/usr/lib:${SYSROOT}/lib"
-		LIBC_PATH="${SYSROOT}/usr/lib/gcc/${CHOST}/"$(gcc-fullversion)
-		X11_PATH="${SYSROOT}/usr/lib/opengl/xorg-x11/lib"
-		for test in *_unittests; do
-			LD_LIBRARY_PATH="$LIB_PATH:$LIBC_PATH:$X11_PATH" \
-				"${SYSROOT}/lib/ld-linux.so.2" "$test" \
-				--gtest_filter='-*.RunAsRoot*:*.Fakeroot*' \
-				|| die "$test failed"
-		done
+	  for test in ./*_unittests; do
+		"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' || die "$test failed"
+		sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
+		  "$test" --gtest_filter='*.RunAsRoot*' || die "$test failed"
+	  done
 	fi
 }
 
