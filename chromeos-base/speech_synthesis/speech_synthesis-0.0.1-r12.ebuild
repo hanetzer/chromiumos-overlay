@@ -41,5 +41,9 @@ src_install() {
 	insinto /usr/share/dbus-1/system-services
 	doins "${S}/org.chromium.SpeechSynthesizer.service"
 
+	insinto /usr/share/chromeos-assets/accessibility/earcons
+	doins "${S}/earcons/"*
+
 	dolib "${S}/libtts.so"
 }
+

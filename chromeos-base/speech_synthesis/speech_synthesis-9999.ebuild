@@ -3,6 +3,7 @@
 # $Header: $
 
 EAPI="2"
+CROS_WORKON_COMMIT="b04eb17116eeec7ae184760c2055e9534362eb1b"
 
 inherit cros-debug cros-workon eutils
 
@@ -40,5 +41,9 @@ src_install() {
 	insinto /usr/share/dbus-1/system-services
 	doins "${S}/org.chromium.SpeechSynthesizer.service"
 
+	insinto /usr/share/chromeos-assets/accessibility/earcons
+	doins "${S}/earcons/"*
+
 	dolib "${S}/libtts.so"
 }
+
