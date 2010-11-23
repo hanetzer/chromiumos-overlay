@@ -10,11 +10,14 @@
     'bluez': {
       'filepath': 'bluez',
     },
+    'fonts': {
+      'filepath': 'media-fonts/|media-libs/(fontconfig|freetype)/',
+    },
     'chromeos-image' : {
       'filepath': 'chromeos-base/chromeos(/|-dev|-test)',
     },
     'xorg' : {
-      'filepath': 'chromeos-base/xorg-conf|x11-(base|drivers|libs|misc)',
+      'filepath': 'chromeos-base/xorg-conf/|x11-(base|drivers|libs|misc)/',
     },
   },
   'WATCHLISTS': {
@@ -23,6 +26,7 @@
             'anush@chromium.org'],
     'bluez': ['petkov@chromium.org'],
     'chromeos-image' : ['sosa@chromium.org'],
+    'fonts' : ['derat@chromium.org'],
     'xorg' : ['derat@chromium.org'],
   },
 }
