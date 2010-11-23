@@ -146,6 +146,7 @@ IUSE_TESTS="
 	+tests_login_CryptohomeIncognitoUnmounted
 	+tests_login_CryptohomeMounted
 	+tests_login_CryptohomeUnmounted
+	+tests_login_DBusCalls
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
 	+tests_login_RemoteLogin
