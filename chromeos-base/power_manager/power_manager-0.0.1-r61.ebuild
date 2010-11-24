@@ -66,7 +66,7 @@ src_test() {
 		trap 'kill %1 && wait' exit
 		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
 		sleep 2
-		for ut in powerd xidle; do
+		for ut in file_tagger powerd xidle; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
 		done
