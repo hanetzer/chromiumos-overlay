@@ -1,0 +1,38 @@
+# ChangeLog for net-nds/rpcbind
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: /var/cvsroot/gentoo-x86/net-nds/rpcbind/ChangeLog,v 1.7 2009/11/22 17:50:34 vapier Exp $
+
+  22 Nov 2009; Mike Frysinger <vapier@gentoo.org> rpcbind-0.2.0.ebuild,
+  rpcbind-9999.ebuild:
+  Update LICENSE field #271921 by Chí-Thanh Christopher Nguyễn.
+
+  30 May 2009; Mike Frysinger <vapier@gentoo.org> rpcbind-0.2.0.ebuild,
+  rpcbind-9999.ebuild:
+  Add keywords for all.
+
+*rpcbind-0.2.0 (30 May 2009)
+
+  30 May 2009; Mike Frysinger <vapier@gentoo.org> +rpcbind-0.2.0.ebuild:
+  Version bump.
+
+*rpcbind-9999 (17 Jan 2009)
+
+  17 Jan 2009; Mike Frysinger <vapier@gentoo.org> +rpcbind-9999.ebuild:
+  Add live git ebuild #255201 by Chi-Thanh Christopher Nguyen.
+
+*rpcbind-0.1.7 (17 Jan 2009)
+
+  17 Jan 2009; Mike Frysinger <vapier@gentoo.org> +rpcbind-0.1.7.ebuild:
+  Version bump #255199 by Chi-Thanh Christopher Nguyen.
+
+*rpcbind-0.1.5.1 (06 Dec 2008)
+
+  06 Dec 2008; <ssuominen@gentoo.org> +rpcbind-0.1.5.1.ebuild:
+  Version bump for bug 249811, thanks to Chi-Thanh Christopher Nguyen.
+
+*rpcbind-0.1.4 (29 Dec 2007)
+
+  29 Dec 2007; Mike Frysinger <vapier@gentoo.org> +files/rpcbind.confd,
+  +files/rpcbind.initd, +metadata.xml, +rpcbind-0.1.4.ebuild:
+  Initial ebuild by me.
+
