@@ -1,7 +1,7 @@
 From d54597de7c338136993caede2e3da9b599f79eee Mon Sep 17 00:00:00 2001
 From: Peng Huang <shawn.p.huang@gmail.com>
 Date: Fri, 29 Oct 2010 18:46:07 +0900
-Subject: [PATCH 11/14] Use block mode of g_main_context_iteration to avoid consuming too much cpu time.
+Subject: [PATCH 11/15] Use block mode of g_main_context_iteration to avoid consuming too much cpu time.
 
 BUG=none
 TEST=manual

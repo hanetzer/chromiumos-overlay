@@ -1,7 +1,7 @@
 From 8df70865024aeab9950ecfcb5a34d45ec012878b Mon Sep 17 00:00:00 2001
 From: Peng Huang <shawn.p.huang@gmail.com>
 Date: Fri, 29 Oct 2010 17:51:03 +0900
-Subject: [PATCH 10/14] Do not block the connection between ibus-daemon and ibus-memconf.
+Subject: [PATCH 10/15] Do not block the connection between ibus-daemon and ibus-memconf.
 
 When ibus-daemon gets the ValueChanged message for preload_engines from
 ibus-memconf, it will try to launch the IME process in the message

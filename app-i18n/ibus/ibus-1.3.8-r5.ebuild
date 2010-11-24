@@ -53,6 +53,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0012-Fix-compile-error.patch"
 	epatch "${FILESDIR}/0013-Returns-error-if-SetGlobalEngine-fails.patch"
 	epatch "${FILESDIR}/0014-Enable-input-context-when-set-global-engine-successf.patch"
+	epatch "${FILESDIR}/0015-Focus-out-in-fake-input-context-if-the-input-window-.patch"
 }
 
 src_configure() {

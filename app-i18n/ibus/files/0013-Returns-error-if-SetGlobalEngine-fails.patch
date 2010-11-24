@@ -1,7 +1,7 @@
 From f08033a76dd9f80e512f497e7c1032786b19b287 Mon Sep 17 00:00:00 2001
 From: Peng Huang <shawn.p.huang@gmail.com>
 Date: Tue, 2 Nov 2010 13:22:27 +0900
-Subject: [PATCH 13/14] Returns error, if SetGlobalEngine fails.
+Subject: [PATCH 13/15] Returns error, if SetGlobalEngine fails.
 
 BUG=chromium-os:8453
 TEST=manual
