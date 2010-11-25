@@ -33,10 +33,14 @@ RDEPEND="${RDEPEND}
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
 "
 
-DEPEND="${RDEPEND}"
-
-PDEPEND="
-  tests_hardware_Components? ( chromeos-base/autotest-approved-components )
+# TODO(hungte) To remove the dependency of autotest-approved-components without
+# breaking build system, we temporary make it an empty package in 0.1.0. Please
+# remove the dependency when everyone has switched over to use new
+# hareware_Components.
+DEPEND="
+  ${RDEPEND}
+  tests_hardware_Components?
+	( >=chromeos-base/autotest-approved-components-0.1.0 )
 "
 
 IUSE_TESTS="
@@ -246,13 +250,3 @@ AUTOTEST_CONFIG_LIST=""
 AUTOTEST_PROFILERS_LIST=""
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
-
-src_prepare() {
-	are_we_used || return 0
-	autotest_src_prepare
-
-	# Install it in chromeos-base/autotest-approved-components
-	comptest="${AUTOTEST_WORKDIR}"/client/site_tests/hardware_Components
-	complist="${comptest}"/approved_components
-	[ -e "${complist}" ] && rm "${complist}"
-}
