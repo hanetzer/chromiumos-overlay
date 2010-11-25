@@ -37,11 +37,12 @@ RDEPEND="${RDEPEND}
 # breaking build system, we temporary make it an empty package in 0.1.0. Please
 # remove the dependency when everyone has switched over to use new
 # hareware_Components.
-DEPEND="
-  ${RDEPEND}
+RDEPEND="${RDEPEND}
   tests_hardware_Components?
 	( >=chromeos-base/autotest-approved-components-0.1.0 )
 "
+
+DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_compilebench
