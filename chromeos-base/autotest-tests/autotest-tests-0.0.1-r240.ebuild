@@ -75,6 +75,8 @@ IUSE_TESTS="
 	+tests_desktopui_V8Bench
 	+tests_desktopui_WindowManagerFocusNewWindows
 	+tests_desktopui_WindowManagerHotkeys
+	+tests_dummy_Fail
+	+tests_dummy_Pass
 	tests_example_UnitTest
 	+tests_factory_Audio
 	+tests_factory_Camera
