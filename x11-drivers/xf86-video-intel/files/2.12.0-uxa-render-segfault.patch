@@ -1,0 +1,24 @@
+From 81d355a8dcdfe3d0924bb843bcc0e6546f695391 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Tue, 09 Nov 2010 09:28:54 +0000
+Subject: uxa: Fix crash after allocation failure
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=31487
+Reported-by: Thomas Fjellstrom <tfjellstrom@shaw.ca>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+---
+diff --git a/uxa/uxa-render.c b/uxa/uxa-render.c
+index fd8eb93..a6b539d 100644
+--- a/uxa/uxa-render.c
++++ b/uxa/uxa-render.c
+@@ -806,6 +806,8 @@ uxa_acquire_drawable(ScreenPtr pScreen,
+ 		pDst = uxa_render_picture(pScreen, pSrc,
+ 					  pSrc->format | (BitsPerPixel(pSrc->pDrawable->depth) << 24),
+ 					  x, y, width, height);
++		if (!pDst)
++			return 0;
+ 
+ 		goto done;
+ 	} else {
+--
+cgit v0.8.3-6-g21f6

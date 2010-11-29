@@ -35,6 +35,14 @@ PATCHES=(
 	"${FILESDIR}/${PV}-copy-fb.patch"
 	# Support hot-plug for monitor via udev event.
 	"${FILESDIR}/${PV}-hotplug.patch"
+	# Assorted bugfixes
+	"${FILESDIR}/${PV}-uxa-apply-src-clip.patch"
+	"${FILESDIR}/${PV}-uxa-fallback-a1.patch"
+	"${FILESDIR}/${PV}-uxa-render-segfault.patch"
+	"${FILESDIR}/${PV}-uxa-skip-pixmap-lookup.patch"
+	"${FILESDIR}/${PV}-retry-alloc-tiled.patch"
+	"${FILESDIR}/${PV}-wait-pending-rendering-on-mode-switches.patch"
+	"${FILESDIR}/${PV}-no-null-bo-flush.patch"
 )
 
 pkg_setup() {

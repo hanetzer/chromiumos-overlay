@@ -1,0 +1,41 @@
+Backport of 40c9d180bf43af84ae05d88e993deedf76e263e6 to xf86-video-intel 2.12.0
+
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 26 23:09:04 2010 +0100
+
+Retry framebuffer allocation if first attempt fails.
+
+If we are tiled, we may fail the allocation due to an EIO and so not
+being able to set tiling. Try again with an untiled request in this
+case.
+--- xf86-video-intel-2.12.0/src/i830_memory.c	2010-06-24 13:29:49.000000000 -0700
++++ xf86-video-intel-2.12.0.new/src/i830_memory.c	2010-11-17 17:33:56.567808699 -0800
+@@ -193,10 +193,16 @@
+ 
+ 	width = i830_pad_drawable_width(width);
+ 
++retry:
+ 	front_buffer = drm_intel_bo_alloc_tiled(intel->bufmgr, "front buffer",
+ 						width, height, intel->cpp,
+ 						&tiling_mode, &pitch, 0);
+ 	if (front_buffer == NULL) {
++		if (tiling_mode != I915_TILING_NONE) {
++			tiling_mode = I915_TILING_NONE;
++			goto retry;
++		}
++
+ 		xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+ 			   "Failed to allocate framebuffer.\n");
+ 		return NULL;
+@@ -208,6 +214,11 @@
+ 			   "Front buffer stride %ld kB "
+ 			   "exceeds display limit\n", pitch / 1024);
+ 		drm_intel_bo_unreference(front_buffer);
++		if (tiling_mode != I915_TILING_NONE) {
++			tiling_mode = I915_TILING_NONE;
++			goto retry;
++		}
++
+ 		return NULL;
+ 	}
+ 

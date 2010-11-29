@@ -1,0 +1,13 @@
+--- xf86-video-intel-2.12.0.orig/src/drmmode_display.c	2010-06-24 14:07:15.000000000 -0700
++++ xf86-video-intel-2.12.0.work/src/drmmode_display.c	2010-11-24 17:02:44.623058000 -0800
+@@ -321,6 +321,10 @@
+ 	drmModeModeInfo kmode;
+ 	unsigned int pitch = scrn->displayWidth * intel->cpp;
+ 
++	/* drain any pending waits on the current framebuffer */
++	intel_batch_submit(scrn, TRUE);
++	intel_batch_wait_last(scrn);
++
+ 	if (drmmode->fb_id == 0) {
+ 		ret = drmModeAddFB(drmmode->fd,
+ 				   scrn->virtualX, scrn->virtualY,

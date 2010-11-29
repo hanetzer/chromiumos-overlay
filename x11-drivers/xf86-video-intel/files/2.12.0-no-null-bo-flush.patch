@@ -1,0 +1,12 @@
+--- xf86-video-intel-2.12.0.new/src/i830_batchbuffer.c	2010-06-24 13:29:49.000000000 -0700
++++ xf86-video-intel-2.12.0/src/i830_batchbuffer.c	2010-11-17 17:37:57.377752615 -0800
+@@ -260,6 +260,9 @@
+ {
+ 	intel_screen_private *intel = intel_get_screen_private(scrn);
+ 
++	if (intel->last_batch_bo == NULL)
++		return;
++
+ 	/* Map it CPU write, which guarantees it's done.  This is a completely
+ 	 * non performance path, so we don't need anything better.
+ 	 */

@@ -1,0 +1,27 @@
+From 23ee926bcd8ddd7a2785786efdf119e4fae75bfd Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Wed, 06 Oct 2010 09:20:49 +0000
+Subject: uxa: Skip a pixmap lookup if there is no driver finish access function
+
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+---
+diff --git a/uxa/uxa.c b/uxa/uxa.c
+index 3c81a85..856a0ce 100644
+--- a/uxa/uxa.c
++++ b/uxa/uxa.c
+@@ -164,11 +164,12 @@ void uxa_finish_access(DrawablePtr pDrawable)
+ {
+ 	ScreenPtr pScreen = pDrawable->pScreen;
+ 	uxa_screen_t *uxa_screen = uxa_get_screen(pScreen);
+-	PixmapPtr pPixmap = uxa_get_drawable_pixmap(pDrawable);
++	PixmapPtr pPixmap;
+ 
+ 	if (uxa_screen->info->finish_access == NULL)
+ 		return;
+ 
++	pPixmap = uxa_get_drawable_pixmap(pDrawable);
+ 	if (!uxa_pixmap_is_offscreen(pPixmap))
+ 		return;
+ 
+--
+cgit v0.8.3-6-g21f6
