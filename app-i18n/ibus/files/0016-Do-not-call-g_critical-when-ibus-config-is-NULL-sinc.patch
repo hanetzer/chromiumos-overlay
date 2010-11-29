@@ -1,0 +1,67 @@
+From a255c0872e88a7af928446af2db5b3deaf218c7c Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Mon, 29 Nov 2010 10:23:31 +0900
+Subject: [PATCH 16/16] Do not call g_critical when ibus->config is NULL since it's not an error.
+
+This change is for chromeos branch of ibus, and is rework of
+https://github.com/ibus/ibus/commit/a0694521739f91666f663e5538f06462e49eef3f .
+
+BUG=chromium-os:9098
+TEST=manually
+
+Review URL: http://codereview.appspot.com/3304043/
+---
+ bus/ibusimpl.c |   16 ++++++++++++----
+ 1 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index c8484b5..590e659 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -2100,7 +2100,9 @@ bus_ibus_impl_load_global_engine_name_from_config (BusIBusImpl *ibus)
+     gchar *global_engine_name = NULL;
+ 
+     g_assert (BUS_IS_IBUS_IMPL (ibus));
+-    g_return_val_if_fail (IBUS_IS_CONFIG (ibus->config), NULL);
++    if (ibus->config == NULL)
++        return NULL;
++    g_assert (IBUS_IS_CONFIG (ibus->config));
+ 
+     if (ibus_config_get_value (ibus->config, "general", "global_engine", &value) &&
+         G_VALUE_TYPE (&value) == G_TYPE_STRING) {
+@@ -2115,7 +2117,9 @@ static void
+ bus_ibus_impl_save_global_engine_name_to_config (BusIBusImpl *ibus)
+ {
+     g_assert (BUS_IS_IBUS_IMPL (ibus));
+-    g_return_if_fail (IBUS_IS_CONFIG (ibus->config));
++    if (ibus->config == NULL)
++        return;
++    g_assert (IBUS_IS_CONFIG (ibus->config));
+ 
+     if (ibus->use_global_engine && ibus->global_engine) {
+         GValue value = { 0 };
+@@ -2134,7 +2138,9 @@ bus_ibus_impl_load_global_previous_engine_name_from_config (BusIBusImpl *ibus)
+     gchar *global_previous_engine_name = NULL;
+ 
+     g_assert (BUS_IS_IBUS_IMPL (ibus));
+-    g_return_val_if_fail (IBUS_IS_CONFIG (ibus->config), NULL);
++    if (ibus->config == NULL)
++        return NULL;
++    g_assert (IBUS_IS_CONFIG (ibus->config));
+ 
+     if (ibus_config_get_value (ibus->config, "general", "global_previous_engine", &value) &&
+         G_VALUE_TYPE (&value) == G_TYPE_STRING) {
+@@ -2149,7 +2155,9 @@ static void
+ bus_ibus_impl_save_global_previous_engine_name_to_config (BusIBusImpl *ibus)
+ {
+     g_assert (BUS_IS_IBUS_IMPL (ibus));
+-    g_return_if_fail (IBUS_IS_CONFIG (ibus->config));
++    if (ibus->config == NULL)
++        return;
++    g_assert (IBUS_IS_CONFIG (ibus->config));
+ 
+     if (ibus->use_global_engine && ibus->global_previous_engine_name) {
+         GValue value = { 0 };
+-- 
+1.7.3.1
+
