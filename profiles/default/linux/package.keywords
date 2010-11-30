@@ -39,7 +39,3 @@
 =x11-proto/xineramaproto-1.2    amd64 x86
 =x11-proto/xf86dgaproto-2.1     amd64 x86
 =x11-proto/xf86vidmodeproto-2.3 amd64 x86
-
-# Needed for glib >=2.26.0
-=dev-util/gtk-doc-1.13-r3	amd64 x86
-=dev-util/gtk-doc-am-1.13-r1	amd64 x86
