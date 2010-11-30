@@ -255,6 +255,7 @@ if [ -f "$POLICY_CONFIG" ]; then
 
 ' > "$POLICY_TMP"
   sudo mv "$POLICY_TMP" "$POLICY_CONFIG"
+  sudo chown root:root "$POLICY_CONFIG"
 fi
 
 # If dash is installed then we want to use that as our default /bin/sh
