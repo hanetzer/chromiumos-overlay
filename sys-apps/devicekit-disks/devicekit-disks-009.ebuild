@@ -57,6 +57,9 @@ src_prepare() {
 src_install() {
 	gnome2_src_install
 
+	insinto /etc/udev/rules.d
+	doins "${FILESDIR}/96-devkit-disks-chromeos.rules"
+
 	if use bash-completion; then
 		dobashcompletion "${S}/tools/devkit-disks-bash-completion.sh"
 	fi

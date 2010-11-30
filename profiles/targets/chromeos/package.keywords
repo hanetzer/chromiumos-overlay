@@ -54,7 +54,7 @@
 =sys-apps/busybox-1.15.3	x86 arm
 =sys-apps/dbus-1.2.20-r2	x86 arm
 =sys-apps/devicekit-003		x86 arm
-=sys-apps/devicekit-disks-009   x86 arm
+=sys-apps/devicekit-disks-009-r1 x86 arm
 =sys-apps/devicekit-power-009	x86 arm
 =sys-apps/fakeroot-1.12.4        x86 arm
 =sys-apps/flashrom-0.9.1	x86
