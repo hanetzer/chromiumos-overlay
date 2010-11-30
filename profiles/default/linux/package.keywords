@@ -42,4 +42,4 @@
 
 # Needed for glib >=2.26.0
 =dev-util/gtk-doc-1.13-r3	amd64 x86
-=dev-util/gtk-doc-am-1.13-r1	amd64 x86
+=dev-util/gtk-doc-am-1.13-r2	amd64 x86

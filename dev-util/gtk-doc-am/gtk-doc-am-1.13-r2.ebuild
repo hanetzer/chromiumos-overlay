@@ -37,10 +37,8 @@ src_compile() {
 }
 
 src_install() {
-# TODO(yusukes): temporarily exclude gtkdoc-rebase to avoid conflict with
-# gtk-doc-1.11. I'll add it back in gtk-doc-am-1.13-r2.
-#	exeinto /usr/bin/
-#	doexe gtkdoc-rebase || die "doexe failed"
+	exeinto /usr/bin/
+	doexe gtkdoc-rebase || die "doexe failed"
 
 	insinto /usr/share/aclocal
 	doins gtk-doc.m4 || die "doins failed"
