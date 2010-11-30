@@ -1,0 +1,10 @@
+--- a/pulseaudio-0.9.21/src/Makefile.in
++++ b/pulseaudio-0.9.21/src/Makefile.in
+@@ -7916,7 +7916,6 @@
+ 
+ install-exec-hook:
+ 	-chown root $(DESTDIR)$(pulselibexecdir)/proximity-helper
+-	-chmod u+s $(DESTDIR)$(pulselibexecdir)/proximity-helper
+ 	ln -sf pacat $(DESTDIR)$(bindir)/parec
+ 	ln -sf pacat $(DESTDIR)$(bindir)/pamon
+ 	ln -sf pacat $(DESTDIR)$(bindir)/paplay
