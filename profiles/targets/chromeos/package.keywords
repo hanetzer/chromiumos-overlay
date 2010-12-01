@@ -26,6 +26,7 @@
 =dev-libs/m17n-lib-1.6.1	x86 arm
 =dev-libs/protobuf-2.2.0	x86 arm
 =dev-python/numpy-1.4.0		x86 arm
+=dev-python/pygobject-2.20.0	x86 arm
 =dev-python/python-xlib-0.14    x86 arm
 =dev-python/pyxdg-0.17-r1	x86 arm
 =dev-util/xxd-1.10      x86 arm
