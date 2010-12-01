@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-inherit python toolchain-funcs
+inherit eutils flag-o-matic python toolchain-funcs
 
 DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
@@ -16,6 +16,16 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
+
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TODO(yusukes): Remove the patches once we push the new mozc which supports
+  # ibus-1.4 to the external repository.
+  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-1.patch
+  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-2.patch
+  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-3.patch
+  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-4.patch
+}
 
 src_configure() {
   cd "mozc-${PV}" || die
