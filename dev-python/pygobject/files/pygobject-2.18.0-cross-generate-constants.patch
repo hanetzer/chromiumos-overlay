@@ -30,7 +30,7 @@
 +
 +generate-constants$(EXEEXT): generate-constants.c
 +	$(CC) $(generate_constants_CFLAGS) -E -o generate-constants.pre.c generate-constants.c
-+	$(CC_FOR_BUILD) -o $@ generate-constants.pre.c
++	$(CC_FOR_BUILD) -m32 -o $@ generate-constants.pre.c
 +	rm -f generate-constants.pre.c
 +
 
