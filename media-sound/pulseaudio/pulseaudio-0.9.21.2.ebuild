@@ -147,8 +147,58 @@ src_test() {
 	emake -C src check || die
 }
 
+minimize_install() {
+	rm_mod_list="\
+		module-alsa-sink.so \
+		module-alsa-source.so \
+		module-cli-protocol-tcp.so \
+		module-cli.so \
+		module-combine.so \
+		module-detect.so \
+		module-device-manager.so \
+		module-esound-compat-spawnfd.so \
+		module-esound-compat-spawnpid.so \
+		module-esound-protocol-tcp.so \
+		module-esound-protocol-unix.so \
+		module-esound-sink.so \
+		module-hal-detect.so \
+		module-http-protocol-tcp.so \
+		module-http-protocol-unix.so \
+		module-ladspa-sink.so \
+		module-loopback.so \
+		module-match.so \
+		module-mmkbd-evdev.so \
+		module-native-protocol-tcp.so \
+		module-pipe-sink.so \
+		module-pipe-source.so \
+		module-raop-sink.so \
+		module-remap-sink.so \
+		module-rtp-recv.so \
+		module-rtp-send.so \
+		module-rygel-media-server.so \
+		module-simple-protocol-tcp.so \
+		module-simple-protocol-unix.so \
+		module-sine-source.so \
+		module-sine.so \
+		module-tunnel-sink.so \
+		module-tunnel-source.so \
+		module-volume-restore.so \
+		module-x11-bell.so \
+		module-x11-cork-request.so \
+		module-x11-publish.so \
+		module-x11-xsmp.so"
+	mod_dir="${D}usr/lib/pulse-0.9.21/modules"
+	for fn in $rm_mod_list; do
+		if [ -e "${mod_dir}/${fn}" ]; then
+			rm ${mod_dir}/${fn} || \
+				die "couldn't rm ${mod_dir}/${fn}"
+		fi
+	done
+}
+
 src_install() {
 	emake -j1 DESTDIR="${D}" install || die "make install failed"
+	minimize_install
 
 	# Drop the script entirely if X is disabled
 	use X || rm "${D}"/usr/bin/start-pulseaudio-x11
