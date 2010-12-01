@@ -165,33 +165,15 @@ done
 # Check if there are any board overlays.  There should be at least a top
 # level board specific overlay.
 #
-PRIMARY_BOARD_OVERLAY="${SRC_ROOT}/overlays/overlay-${BOARD}"
+PRIMARY_BOARD_OVERLAY=$($SCRIPTS_DIR/bin/cros_overlay_list \
+  --board "$BOARD" \
+  --primary_only)
 
-if [ ! -d "${PRIMARY_BOARD_OVERLAY}" ]; then
-  warn "No board overlay found. [${PRIMARY_BOARD_OVERLAY}]"
-else
-  #
-  # Link make.conf.board to the board overlay's make.conf.  It must exist.
-  #
-  BOARD_MAKE_CONF="${PRIMARY_BOARD_OVERLAY}/make.conf"
-
-  if [ ! -f "${BOARD_MAKE_CONF}" ]; then
-    error "No board make.conf found. [${BOARD_MAKE_CONF}]"
-    exit 1
-  fi
-
-  #
-  # Fetch the toolchain from the board overlay.
-  #
-  BOARD_TOOL_CHAIN="${PRIMARY_BOARD_OVERLAY}/toolchain.conf"
-
-  if [ ! -f "${BOARD_TOOL_CHAIN}" ]; then
-    error "No board toolchain.conf found. [${BOARD_TOOL_CHAIN}]"
-    exit 1
-  fi
-
-  FLAGS_toolchain=${FLAGS_toolchain:-$(cat ${BOARD_TOOL_CHAIN})}
-fi
+#
+# Fetch the toolchain from the board overlay.
+#
+BOARD_TOOL_CHAIN="${PRIMARY_BOARD_OVERLAY}/toolchain.conf"
+FLAGS_toolchain=${FLAGS_toolchain:-$(cat ${BOARD_TOOL_CHAIN})}
 
 # Figure out ARCH from the given toolchain
 # TODO: Move to common.sh as a function after scripts are switched over.
