@@ -2,16 +2,18 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="da2fa80999df5fb5eda82243cb44340e742ad51c"
+CROS_WORKON_COMMIT="2d857e3fae418638cef844f9349571a78b59b560"
 
 inherit toolchain-funcs
 
-DESCRIPTION="Chrome OS Kernel"
+DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless -initramfs"
+IUSE="-initramfs"
+# disable compat_wireless with kernel-next
+USE="${USE} -compat_wireless"
 PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
@@ -31,11 +33,13 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
+	elif [ "${ARCH}" = "arm" ]; then
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
 	fi
 fi
 
-# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
-CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+CROS_WORKON_PROJECT="kernel-next"
+CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
