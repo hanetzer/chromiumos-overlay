@@ -21,6 +21,20 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
+src_unpack() {
+	path="${CROS_WORKON_SRCROOT}/src/third_party/kernel/files"
+	if [ -d "${path}/.git" ]; then
+		git clone -sn "${path}" "${S}" || die "Can't clone ${path}."
+		if ! ( cd "${S}" && git checkout ${EGIT_COMMIT} ) ; then
+			ewarn "Cannot run git checkout ${EGIT_COMMIT} in ${S}."
+			ewarn "Is ${path} up to date? Try running repo sync."
+			die "Cannot run git checkout ${EGIT_COMMIT} in ${S}."
+		fi
+	else
+		git_src_unpack
+	fi
+}
+
 src_compile() {
 	elog " Nothing to compile"
 }
