@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd dhclient +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi ofono policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev wifi"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -21,17 +21,14 @@ RDEPEND=">=dev-libs/glib-2.16
 	bluetooth? ( net-wireless/bluez )
 	bootstat? ( chromeos-base/bootstat )
 	crosmetrics? ( chromeos-base/metrics )
-	dhclient? ( net-misc/dhcp )
 	dhcpcd? ( net-misc/dhcpcd )
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( net-misc/mobile-broadband-provider-info )
-	ofono? ( net-misc/ofono )
 	policykit? ( >=sys-auth/policykit-0.7 )
 	portalcheck? ( net-misc/curl )
 	ppp? ( net-dialup/ppp )
 	resolvconf? ( net-dns/openresolv )
 	udev? ( >=sys-fs/udev-141 )
-	wifi? ( net-wireless/wpa_supplicant[dbus] )
 	newwifi? ( net-wireless/wpa_supplicant[dbus] )"
 
 DEPEND="${RDEPEND}
@@ -46,11 +43,8 @@ src_prepare() {
 
 src_configure() {
 	if tc-is-cross-compiler ; then
-		if use wifi ; then
+		if use newwifi ; then
 			export ac_cv_path_WPASUPPLICANT=/sbin/wpa_supplicant
-		fi
-		if use dhclient ; then
-			export ac_cv_path_DHCLIENT=/sbin/dhclient
 		fi
 		if use dhcpcd ; then
 			export ac_cv_path_DHCPCD=/sbin/dhcpcd
@@ -64,13 +58,11 @@ src_configure() {
 		$(use_enable bootstat) \
 		$(use_enable crosmetrics) \
 		$(use_enable debug) \
-		$(use_enable dhclient) \
 		$(use_enable dhcpcd dhcpcd builtin) \
 		$(use_enable dnsproxy dnsproxy builtin) \
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
 		$(use_enable modemmanager modemmgr) \
-		$(use_enable ofono) \
 		$(use_enable policykit polkit) \
 		$(use_enable portalcheck portal_check builtin) \
 		$(use_enable ppp) \
@@ -79,11 +71,8 @@ src_configure() {
 		$(use_enable threads) \
 		$(use_enable tools) \
 		$(use_enable udev) \
-		$(use_enable wifi wifi) \
 		$(use_enable newwifi newwifi builtin) \
-		--disable-udhcp \
-		--disable-iwmx \
-		--disable-iospm
+		--disable-iwmx
 }
 
 src_compile() {
@@ -114,6 +103,6 @@ src_install() {
 
 	exeinto /usr/share/userfeedback/scripts
 	doexe test/mm.sh test/mm-status || die "Can't copy user feedback scripts"
-  dobin bin/ff_debug
-  dobin bin/wpa_debug
+	dobin bin/ff_debug
+	dobin bin/wpa_debug
 }
