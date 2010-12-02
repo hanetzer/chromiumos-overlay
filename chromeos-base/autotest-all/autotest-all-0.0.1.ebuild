@@ -13,6 +13,7 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/autotest-tests
+	chromeos-base/autotest-private
 "
 
 DEPEND="${RDEPEND}"
