@@ -1,7 +1,7 @@
 From 983c76c6f5d107c9ead1e76e3be3953878382f7d Mon Sep 17 00:00:00 2001
 From: Peng Huang <shawn.p.huang@gmail.com>
 Date: Thu, 18 Nov 2010 09:16:54 +0900
-Subject: [PATCH 14/16] Enable input context when set global engine successfully.
+Subject: [PATCH 14/17] Enable input context when set global engine successfully.
 
 BUG=chromium-os:6809
 TEST=manual

@@ -1,0 +1,38 @@
+From 551ce203e098de793d20601b7858008ff74bcb6a Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Thu, 2 Dec 2010 13:12:53 +0800
+Subject: [PATCH 17/17] Fix crash in im-ibus.so
+
+BUG=chromium-os:9868
+TEST=manual
+
+Review URL: http://codereview.appspot.com/3401041
+---
+ client/gtk2/ibusimcontext.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/client/gtk2/ibusimcontext.c b/client/gtk2/ibusimcontext.c
+index 7ed01e4..a4453cf 100644
+--- a/client/gtk2/ibusimcontext.c
++++ b/client/gtk2/ibusimcontext.c
+@@ -212,7 +212,7 @@ _focus_in_cb (GtkWidget     *widget,
+               GdkEventFocus *event,
+               gpointer       user_data)
+ {
+-    if (_focus_im_context == NULL)
++    if (_focus_im_context == NULL && _fake_context != NULL)
+         ibus_input_context_focus_in (_fake_context);
+     return FALSE;
+ }
+@@ -222,7 +222,7 @@ _focus_out_cb (GtkWidget     *widget,
+                GdkEventFocus *event,
+                gpointer       user_data)
+ {
+-    if (_focus_im_context == NULL)
++    if (_focus_im_context == NULL && _fake_context != NULL)
+         ibus_input_context_focus_out (_fake_context);
+     return FALSE;
+ }
+-- 
+1.7.3.1
+

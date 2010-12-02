@@ -1,7 +1,7 @@
 From a255c0872e88a7af928446af2db5b3deaf218c7c Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Mon, 29 Nov 2010 10:23:31 +0900
-Subject: [PATCH 16/16] Do not call g_critical when ibus->config is NULL since it's not an error.
+Subject: [PATCH 16/17] Do not call g_critical when ibus->config is NULL since it's not an error.
 
 This change is for chromeos branch of ibus, and is rework of
 https://github.com/ibus/ibus/commit/a0694521739f91666f663e5538f06462e49eef3f .

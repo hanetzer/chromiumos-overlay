@@ -55,6 +55,7 @@ src_prepare() {
 	epatch "${FILESDIR}/0014-Enable-input-context-when-set-global-engine-successf.patch"
 	epatch "${FILESDIR}/0015-Focus-out-in-fake-input-context-if-the-input-window-.patch"
 	epatch "${FILESDIR}/0016-Do-not-call-g_critical-when-ibus-config-is-NULL-sinc.patch"
+	epatch "${FILESDIR}/0017-Fix-crash-in-im-ibus.so.patch"
 }
 
 src_configure() {

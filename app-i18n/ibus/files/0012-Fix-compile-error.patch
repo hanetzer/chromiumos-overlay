@@ -1,7 +1,7 @@
 From 1cecf565234a7e54b1101255281ff857c350aa5e Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Sun, 31 Oct 2010 00:40:25 +0900
-Subject: [PATCH 12/16] Fix compile error.
+Subject: [PATCH 12/17] Fix compile error.
 
 Review URL: http://codereview.appspot.com/2719043
 ---

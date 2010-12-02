@@ -1,7 +1,7 @@
 From 697ab873abdfa4e9f6ffdea68f037c2f175e0726 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 15 Sep 2010 12:25:17 +0900
-Subject: [PATCH 06/16] Fix issues of the "previous_engine" hotkey.
+Subject: [PATCH 06/17] Fix issues of the "previous_engine" hotkey.
 
 Check global_previous_engine_name when the previous engine is requested and rewrite it if necessary.
 This change ensures that the "previous_engine" hotkey (Ctrl+space on Chrome OS) always works
