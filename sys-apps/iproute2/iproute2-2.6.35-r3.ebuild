@@ -19,7 +19,7 @@ else
 	fi
 	MY_P="${PN}-${MY_PV}"
 	SRC_URI="http://developer.osdl.org/dev/iproute2/download/${MY_P}.tar.bz2"
-	KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+	KEYWORDS="~alpha ~amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86"
 	S=${WORKDIR}/${MY_P}
 fi
 
@@ -54,6 +54,7 @@ src_prepare() {
 	use ipv6 || epatch "${FILESDIR}"/${PN}-2.6.35-no-ipv6.patch #326849
 	epatch "${FILESDIR}"/${PN}-2.6.35-xtables.patch
 	epatch "${FILESDIR}"/${PN}-2.6.35-no-iptables.patch
+	epatch "${FILESDIR}"/${PN}-2.6.35-split_ldflags.patch
 
 	epatch_user
 
