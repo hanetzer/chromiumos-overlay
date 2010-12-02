@@ -46,7 +46,7 @@ RDEPEND="${RDEPEND}
 	dev-lang/swig
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
-	dev-libs/glib
+	>=dev-libs/glib-2.26.1
 	dev-libs/eggdbus
 	dev-libs/libgcrypt
 	dev-libs/libxslt
@@ -65,7 +65,7 @@ RDEPEND="${RDEPEND}
 	dev-util/gtk-doc
 	dev-util/quilt
 	dev-util/subversion[-dso]
-	>=dev-util/gtk-doc-am-1.10
+	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.30
 	dev-util/scons
 	gnome-base/gconf

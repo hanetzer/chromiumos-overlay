@@ -11,8 +11,8 @@ HOMEPAGE="http://www.gtk.org/"
 
 LICENSE="LGPL-2"
 SLOT="2"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="debug doc fam +introspection selinux +static-libs test xattr"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
+IUSE="debug doc fam selinux +static-libs test xattr"
 
 RDEPEND="virtual/libiconv
 	sys-libs/zlib
@@ -27,7 +27,9 @@ DEPEND="${RDEPEND}
 		>=dev-util/gtk-doc-1.13
 		~app-text/docbook-xml-dtd-4.1.2 )
 	test? ( >=sys-apps/dbus-1.2.14 )"
-PDEPEND="introspection? ( dev-libs/gobject-introspection )"
+
+# We don't use gobject-introspection.
+# PDEPEND="introspection? ( dev-libs/gobject-introspection )"
 
 # eautoreconf needs gtk-doc-am
 # XXX: Consider adding test? ( sys-devel/gdb ); assert-msg-test tries to use it
@@ -67,14 +69,9 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-2.26.0-disable-locale-sensitive-test.patch"
 	epatch "${FILESDIR}/${PN}-2.26.0-disable-volumemonitor-broken-test.patch"
 
-	# Don't unref data->message if it is NULL, fixes evince-2.32 crash
-	epatch "${FILESDIR}/${P}-unref-null.patch"
-
-	# Don't call close() on -1 in testglib.c
-	epatch "${FILESDIR}/${P}-not-close.patch"
-
-	# Prevent error pileup
-	epatch "${FILESDIR}/${P}-error-pileup.patch"
+	# GFileMonitor has a bug that causes the notification delivery to
+	# delay for a second. See comments in the patch for details.
+	epatch "${FILESDIR}/${PN}-2.26.1-inotify.patch"
 
 	# Needed for the punt-python-check patch.
 	# Also needed to prevent croscompile failures, see bug #267603
@@ -140,17 +137,4 @@ src_test() {
 	fi
 
 	emake check || die "tests failed"
-}
-
-pkg_preinst() {
-	# Only give the introspection message if:
-	# * The user has it enabled
-	# * Has glib already installed
-	# * Previous version was different from new version
-	if use introspection && has_version "${CATEGORY}/${PN}"; then
-		if ! has_version "=${CATEGORY}/${PF}"; then
-			ewarn "You must rebuild gobject-introspection so that the installed"
-			ewarn "typelibs and girs are regenerated for the new APIs in glib"
-		fi
-	fi
 }

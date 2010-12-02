@@ -12,6 +12,7 @@ dev-cpp/glog		gflags
 dev-java/icedtea	-nss
 dev-lang/python		-berkdb -gdbm
 dev-libs/dbus-glib	tools
+dev-libs/glib		-doc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
 dev-util/dialog		-unicode minimal
