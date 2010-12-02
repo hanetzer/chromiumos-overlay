@@ -112,9 +112,6 @@ src_install() {
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf
 
-	insinto /usr/share/chromeos-assets/screensavers
-	doins "${S}"/screensavers/*
-
 	insinto /usr/share/color/icc
 	if use mario; then
 		newins "${S}"/color_profiles/mario.icm internal_display.icm
