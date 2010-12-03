@@ -14,6 +14,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
+PDEPEND=">chromeos-base/chromeos-assets-0.0.1-r47"
 DEPEND=""
 RDEPEND=""
 
@@ -23,4 +24,7 @@ CROS_WORKON_PROJECT="chromiumos-assets"
 src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins "${S}"/images/boot_splash.png
+
+  insinto /usr/share/chromeos-assets/screensavers
+  doins -r "${S}"/screensavers/*
 }

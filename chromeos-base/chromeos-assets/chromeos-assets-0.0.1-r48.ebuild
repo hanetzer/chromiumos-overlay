@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="6a3bd4013448293e7d5e52b30a8b32b69351cc90"
+CROS_WORKON_COMMIT="bac1ba65da3afb14fe366db920825b6f57c6b3ef"
 
 inherit cros-workon toolchain-funcs
 
@@ -112,9 +112,6 @@ src_install() {
 
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf
-
-	insinto /usr/share/chromeos-assets/screensavers
-	doins "${S}"/screensavers/*
 
 	insinto /usr/share/color/icc
 	if use mario; then
