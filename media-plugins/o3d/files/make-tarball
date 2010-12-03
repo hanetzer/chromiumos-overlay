@@ -25,6 +25,7 @@ function update_mirror() {
   read n
   if [[ "$n" == "y" ]]; then
     cp "o3d-svn-${SVNREV}.tar.gz" ${LOCALMIRROR}
+    chmod a+r "${LOCALMIRROR}/o3d-svn-${SVNREV}.tar.gz"
   fi
 }
 
