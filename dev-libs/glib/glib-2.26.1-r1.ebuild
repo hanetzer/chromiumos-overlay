@@ -13,6 +13,7 @@ LICENSE="LGPL-2"
 SLOT="2"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="debug doc fam selinux +static-libs test xattr"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 RDEPEND="virtual/libiconv
 	sys-libs/zlib
