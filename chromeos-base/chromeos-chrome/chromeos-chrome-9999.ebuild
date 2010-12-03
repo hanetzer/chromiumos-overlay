@@ -24,11 +24,7 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://chromium.org/"
 SRC_URI=""
 
-if [ "${PV}" = "9999" ]; then
-	KEYWORDS="~x86 ~arm"
-else
-	KEYWORDS="x86 arm"
-fi
+KEYWORDS="~x86 ~arm"
 
 LICENSE="BSD"
 SLOT="0"
