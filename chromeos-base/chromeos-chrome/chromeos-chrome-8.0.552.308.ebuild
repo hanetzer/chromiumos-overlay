@@ -90,9 +90,9 @@ BUILD_TOOL=make
 BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=0 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
-BUILD_OUT="${BUILD_OUT:-${BOARD}_out}"
-# WARNING: We are using a symlink now for the build directory to work around 
-# command line length limits. This will cause problems if you are doing 
+BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
+# WARNING: We are using a symlink now for the build directory to work around
+# command line length limits. This will cause problems if you are doing
 # parallel builds of different boards/variants.
 # Unsetting BUILD_OUT_SYM will revert this behavior
 BUILD_OUT_SYM="c"
@@ -372,6 +372,15 @@ src_prepare() {
 
 	elog "${CHROME_ROOT} should be set here properly"
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
+
+	# If there's already a build directory in the old location, rename it to the
+	# new location.
+	# TODO(derat): Remove this in January 2011.
+	OLD_BUILD_OUT="${BOARD}_out"
+	if [[ -d "${OLD_BUILD_OUT}" && ! -e "${BUILD_OUT}" ]]; then
+		elog "Renaming output directory ${OLD_BUILD_OUT} to ${BUILD_OUT}"
+		mv "${OLD_BUILD_OUT}" "${BUILD_OUT}"
+	fi
 
 	# We do symlink creation here if appropriate
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
