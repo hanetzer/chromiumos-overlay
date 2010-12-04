@@ -448,7 +448,6 @@ src_compile() {
 		TEST_TARGETS="browser_tests
 			page_cycler_tests
 			reliability_tests
-			sync_integration_tests
 			startup_tests
 			ui_tests"
 		if use x86; then  # Build PyAuto on x86 only.
