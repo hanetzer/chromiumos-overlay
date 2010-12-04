@@ -19,11 +19,11 @@ RESTRICT="strip mirror"
 
 S="${WORKDIR}"
 
+# Remove >glibc-2.4 dependency since we use 2.10 from package.provided
 NATIVE_DEPS="x11-libs/gtk+:2
 	media-libs/fontconfig
 	dev-libs/nss
-	net-misc/curl
-	>=sys-libs/glibc-2.4"
+	net-misc/curl"
 
 EMUL_DEPS=">=app-emulation/emul-linux-x86-gtklibs-20100409-r1
 	app-emulation/emul-linux-x86-soundlibs"
