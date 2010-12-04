@@ -11,9 +11,6 @@
 # If building from LOCAL_SOURCE or LOCCAL_BINARY specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
-# If getting it from the build server, setting CHROME_VERSION to the build
-# revision will pull that version, otherwise latest will be pulled.
-
 # gclient is expected to be in ~/depot_tools if EGCLIENT is not set
 # to gclient path.
 
@@ -30,12 +27,7 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf +chrome_debug"
 
-# If version isn't specified...
-# TODO(anush): EOL CHROME_VERSION
-if [ -z "${CHROME_VERSION}" ]; then
-	CHROME_VERSION="${PV}"
-	export CHROME_VERSION
-fi
+CHROME_VERSION="${PV}"
 
 EXTERNAL_URL="http://src.chromium.org/svn"
 INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
