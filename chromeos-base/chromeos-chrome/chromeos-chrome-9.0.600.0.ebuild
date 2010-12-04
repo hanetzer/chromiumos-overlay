@@ -446,7 +446,6 @@ src_compile() {
 
 	if use build_tests; then
 		TEST_TARGETS="browser_tests
-			page_cycler_tests
 			reliability_tests
 			startup_tests
 			ui_tests"
@@ -539,8 +538,7 @@ install_chrome_test_resources() {
 	# executables. We don't want debug info for tests, so we pre-strip these
 	# executables.
 	for f in lib.target/_pyautolib.so libppapi_tests.so browser_tests \
-	         reliability_tests ui_tests sync_integration_tests \
-	         page_cycler_tests; do
+	         reliability_tests ui_tests; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
 	done
