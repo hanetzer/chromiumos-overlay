@@ -13,7 +13,7 @@ if ! [ "${PN}" = "autotest-deps" ]; then
 fi
 DEPEND="${RDEPEND}"
 
-IUSE="buildcheck autotest"
+IUSE="buildcheck autotest opengles"
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE="/usr/share/config.site"

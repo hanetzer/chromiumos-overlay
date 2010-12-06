@@ -12,7 +12,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm ~amd64"
 
-IUSE="+autox +xset +tpmtools opengles hardened"
+IUSE="+autox +xset +tpmtools hardened"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
