@@ -35,6 +35,10 @@ src_prepare() {
 	cp -fpru "${S}"/{conmux,tko,utils} "${AUTOTEST_WORK}"
 	cp -fpru "${S}"/shadow_config.ini "${AUTOTEST_WORK}"
 
+	# cros directory is not from autotest upstream but cros project specific.
+	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
+	cp -fpru "${S}"/server/cros "${AUTOTEST_WORK}/server"
+
 	sed "/^enable_server_prebuild/d" "${S}/global_config.ini" > \
 		"${AUTOTEST_WORK}/global_config.ini"
 }
