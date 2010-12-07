@@ -1,0 +1,110 @@
+diff -ur ibus-hangul-1.3.0.20100329.orig/src/engine.c ibus-hangul-1.3.0.20100329/src/engine.c
+--- ibus-hangul-1.3.0.20100329.orig/src/engine.c	2010-03-28 23:47:06.000000000 +0900
++++ ibus-hangul-1.3.0.20100329/src/engine.c	2010-12-07 07:32:32.021298882 +0900
+@@ -98,7 +98,11 @@
+ static void ibus_config_value_changed       (IBusConfig             *config,
+                                              const gchar            *section,
+                                              const gchar            *name,
++#if IBUS_CHECK_VERSION(1,3,99)
++                                             GVariant               *value,
++#else
+                                              GValue                 *value,
++#endif
+                                              gpointer                user_data);
+ 
+ static void        lookup_table_set_visible (IBusLookupTable        *table,
+@@ -150,8 +154,12 @@
+ void
+ ibus_hangul_init (IBusBus *bus)
+ {
++#if IBUS_CHECK_VERSION(1,3,99)
++    GVariant *value = NULL;
++#else
+     gboolean res;
+     GValue value = { 0, };
++#endif
+ 
+     hanja_table = hanja_table_load (NULL);
+ 
+@@ -162,6 +170,13 @@
+         g_object_ref_sink (config);
+ 
+     hangul_keyboard = g_string_new_len ("2", 8);
++#if IBUS_CHECK_VERSION(1,3,99)
++    value = ibus_config_get_value (config, "engine/Hangul", "HangulKeyboard");
++    if (value) {
++        const gchar* str = g_variant_get_string (value, NULL);
++        g_string_assign (hangul_keyboard, str);
++    }
++#else
+     res = ibus_config_get_value (config, "engine/Hangul",
+                                          "HangulKeyboard", &value);
+     if (res) {
+@@ -169,15 +184,25 @@
+         g_string_assign (hangul_keyboard, str);
+         g_value_unset(&value);
+     }
++#endif
+ 
+     hanja_keys = g_array_sized_new(FALSE, TRUE, sizeof(struct KeyEvent), 4);
++#if IBUS_CHECK_VERSION(1,3,99)
++    value = ibus_config_get_value (config, "engine/Hangul", "HanjaKeys");
++    if (value) {
++        const gchar* str = g_variant_get_string (value, NULL);
++        key_event_list_set(hanja_keys, str);
++    }
++#else
+     res = ibus_config_get_value (config, "engine/Hangul",
+                                          "HanjaKeys", &value);
+     if (res) {
+         const gchar* str = g_value_get_string (&value);
+         key_event_list_set(hanja_keys, str);
+         g_value_unset(&value);
+-    } else {
++    }
++#endif
++    else {
+         struct KeyEvent ev;
+ 
+         ev.keyval = IBUS_Hangul_Hanja;
+@@ -891,23 +916,39 @@
+ ibus_config_value_changed (IBusConfig   *config,
+                            const gchar  *section,
+                            const gchar  *name,
++#if IBUS_CHECK_VERSION(1,3,99)
++                           GVariant     *value,
++#else
+                            GValue       *value,
++#endif
+                            gpointer      user_data)
+ {
+     IBusHangulEngine *hangul = (IBusHangulEngine *) user_data;
+ 
+     if (strcmp(section, "engine/Hangul") == 0) {
+         if (strcmp(name, "HangulKeyboard") == 0) {
++#if IBUS_CHECK_VERSION(1,3,99)
++            const gchar *str = g_variant_get_string (value, NULL);
++#else
+             const gchar *str = g_value_get_string (value);
++#endif
+             g_string_assign (hangul_keyboard, str);
+             hangul_ic_select_keyboard (hangul->context, hangul_keyboard->str);
+         } else if (strcmp(name, "HanjaKeys") == 0) {
+-            const gchar* str = g_value_get_string (value);
++#if IBUS_CHECK_VERSION(1,3,99)
++            const gchar *str = g_variant_get_string (value, NULL);
++#else
++            const gchar *str = g_value_get_string (value);
++#endif
+             key_event_list_set(hanja_keys, str);
+         }
+     } else if (strcmp(section, "panel") == 0) {
+         if (strcmp(name, "lookup_table_orientation") == 0) {
++#if IBUS_CHECK_VERSION(1,3,99)
++            lookup_table_orientation = g_variant_get_int32 (value);
++#else
+             lookup_table_orientation = g_value_get_int (value);
++#endif
+         }
+     }
+ }

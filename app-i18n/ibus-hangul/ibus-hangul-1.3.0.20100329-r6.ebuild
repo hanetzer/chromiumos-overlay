@@ -38,6 +38,10 @@ src_unpack() {
 	# (http://code.google.com/p/ibus/issues/detail?id=1036). For now, we
 	# apply it locally to fix http://crosbug.com/4319.
 	epatch "${FILESDIR}/ibus-hangul-dont-consume-modifier-keys.patch"
+
+	# Support IBus-1.4 API. This patch is a backport of Fedora's patch at
+	# http://pkgs.fedoraproject.org/gitweb/?p=ibus-hangul.git;a=tree;h=refs/heads/master;hb=refs/heads/master
+	epatch "${FILESDIR}/ibus-hangul-gvariant.patch"
 }
 
 src_configure() {
