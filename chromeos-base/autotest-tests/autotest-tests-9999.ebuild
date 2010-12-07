@@ -89,6 +89,7 @@ IUSE_TESTS="
 	+tests_factory_Keyboard
 	+tests_factory_Leds
 	+tests_factory_LightSensor
+	+tests_factory_PreFinalCheck
 	+tests_factory_RebootStub
 	+tests_factory_Review
 	+tests_factory_ScriptWrapper
