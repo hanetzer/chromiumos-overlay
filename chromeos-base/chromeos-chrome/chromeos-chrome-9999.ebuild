@@ -27,7 +27,13 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf +chrome_debug"
 
-CHROME_VERSION="${PV}"
+# Returns portage version without optional portage suffix.
+# $1 - Version with optional suffix.
+strip_portage_suffix() {
+  echo "$1" | cut -f 1 -d "_"
+}
+
+CHROME_VERSION="$(strip_portage_suffix "${PV}")"
 
 EXTERNAL_URL="http://src.chromium.org/svn"
 INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
