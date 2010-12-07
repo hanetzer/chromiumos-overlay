@@ -37,6 +37,7 @@ src_test() {
 src_install() {
 	into /
 	dosbin bootstat || die
+	dosbin bootstat_get_last || die
 
 	into /usr
 	dolib.a libbootstat.a || die
