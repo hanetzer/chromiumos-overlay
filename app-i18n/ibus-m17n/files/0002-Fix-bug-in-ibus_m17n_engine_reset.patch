@@ -1,26 +1,33 @@
-From 0be8cdbaac652d89d50a2b7a389dabbbf953ff75 Mon Sep 17 00:00:00 2001
+From ce391a28fa8851a373c666b320e0add700a7355a Mon Sep 17 00:00:00 2001
 From: Peng Huang <shawn.p.huang@gmail.com>
-Date: Sun, 19 Sep 2010 16:13:49 +0800
-Subject: [PATCH] Fix bug in ibus_m17n_engine_reset.
+Date: Mon, 20 Sep 2010 15:30:07 +0800
+Subject: [PATCH 02/11] Fix bug in ibus_m17n_engine_reset.
 
+Reset MInputContext of m17n-lib in ibus_m17n_engine_reset to fix
+crosbug.com/6825 and crosbug.com/6826
+
+BUG=chromium-os:6825,chromium-os:6826
+TEST=manual
+
+Review URL: http://codereview.appspot.com/2226043
 ---
  src/engine.c |   32 +++++++++++++++++---------------
  1 files changed, 17 insertions(+), 15 deletions(-)
 
 diff --git a/src/engine.c b/src/engine.c
-index dcfbe48..53e9672 100644
+index 260a806..0da0ae6 100644
 --- a/src/engine.c
 +++ b/src/engine.c
-@@ -73,6 +73,8 @@ static void ibus_m17n_engine_callback       (MInputContext          *context,
+@@ -78,6 +78,8 @@ static void ibus_m17n_engine_update_lookup_table
  
  static IBusEngineClass *parent_class = NULL;
  static GHashTable      *im_table = NULL;
 +/* The hash table associates MInputContext with IBusM17nEngine. */
 +static GHashTable      *m17n_inputcontexts = NULL;
  
- GType
- ibus_m17n_engine_get_type (void)
-@@ -129,6 +131,8 @@ ibus_m17n_engine_class_init (IBusM17NEngineClass *klass)
+ static IBusConfig      *config = NULL;
+ static guint            preedit_foreground = INVALID_COLOR;
+@@ -149,6 +151,8 @@ ibus_m17n_engine_class_init (IBusM17NEngineClass *klass)
      engine_class->cursor_down = ibus_m17n_engine_cursor_down;
  
      engine_class->property_activate = ibus_m17n_engine_property_activate;
@@ -29,7 +36,7 @@ index dcfbe48..53e9672 100644
  }
  
  static void
-@@ -204,7 +208,10 @@ ibus_m17n_engine_constructor (GType                   type,
+@@ -279,7 +283,10 @@ ibus_m17n_engine_constructor (GType                   type,
              mplist_put (im->driver.callback_list, Minput_candidates_done, ibus_m17n_engine_callback);
              mplist_put (im->driver.callback_list, Minput_set_spot, ibus_m17n_engine_callback);
              mplist_put (im->driver.callback_list, Minput_toggle, ibus_m17n_engine_callback);
@@ -41,16 +48,16 @@ index dcfbe48..53e9672 100644
              mplist_put (im->driver.callback_list, Minput_get_surrounding_text, ibus_m17n_engine_callback);
              mplist_put (im->driver.callback_list, Minput_delete_surrounding_text, ibus_m17n_engine_callback);
  
-@@ -221,7 +228,7 @@ ibus_m17n_engine_constructor (GType                   type,
+@@ -295,7 +302,7 @@ ibus_m17n_engine_constructor (GType                   type,
      }
  
      m17n->context = minput_create_ic (im, NULL);
 -    mplist_add (m17n->context->plist, msymbol ("IBusEngine"), m17n);
 +    g_hash_table_insert (m17n_inputcontexts, m17n->context, m17n);
  
-     return (GObject *) m17n;
- }
-@@ -246,6 +253,7 @@ ibus_m17n_engine_destroy (IBusM17NEngine *m17n)
+     m17n->config_section = g_strdup_printf ("engine/M17N/%s/%s",
+                                             lang, name);
+@@ -375,6 +382,7 @@ ibus_m17n_engine_destroy (IBusM17NEngine *m17n)
      }
  
      if (m17n->context) {
@@ -58,7 +65,7 @@ index dcfbe48..53e9672 100644
          minput_destroy_ic (m17n->context);
          m17n->context = NULL;
      }
-@@ -386,7 +394,7 @@ ibus_m17n_engine_focus_in (IBusEngine *engine)
+@@ -572,7 +580,7 @@ ibus_m17n_engine_focus_in (IBusEngine *engine)
      IBusM17NEngine *m17n = (IBusM17NEngine *) engine;
  
      ibus_engine_register_properties (engine, m17n->prop_list);
@@ -67,7 +74,7 @@ index dcfbe48..53e9672 100644
  
      parent_class->focus_in (engine);
  }
-@@ -396,7 +404,7 @@ ibus_m17n_engine_focus_out (IBusEngine *engine)
+@@ -582,7 +590,7 @@ ibus_m17n_engine_focus_out (IBusEngine *engine)
  {
      IBusM17NEngine *m17n = (IBusM17NEngine *) engine;
  
@@ -76,7 +83,7 @@ index dcfbe48..53e9672 100644
  
      parent_class->focus_out (engine);
  }
-@@ -407,7 +415,8 @@ ibus_m17n_engine_reset (IBusEngine *engine)
+@@ -593,7 +601,8 @@ ibus_m17n_engine_reset (IBusEngine *engine)
      IBusM17NEngine *m17n = (IBusM17NEngine *) engine;
  
      parent_class->reset (engine);
@@ -86,7 +93,7 @@ index dcfbe48..53e9672 100644
  }
  
  static void
-@@ -477,7 +486,7 @@ ibus_m17n_engine_property_activate (IBusEngine  *engine,
+@@ -676,7 +685,7 @@ ibus_m17n_engine_property_activate (IBusEngine  *engine,
  static void
  ibus_m17n_engine_update_lookup_table (IBusM17NEngine *m17n)
  {
@@ -95,7 +102,7 @@ index dcfbe48..53e9672 100644
  
      if (m17n->context->candidate_list && m17n->context->candidate_show) {
          IBusText *text;
-@@ -550,16 +559,9 @@ ibus_m17n_engine_callback (MInputContext *context,
+@@ -752,16 +761,9 @@ ibus_m17n_engine_callback (MInputContext *context,
                             MSymbol        command)
  {
      IBusM17NEngine *m17n = NULL;
@@ -115,5 +122,5 @@ index dcfbe48..53e9672 100644
      if (command == Minput_preedit_start) {
          ibus_engine_hide_preedit_text ((IBusEngine *)m17n);
 -- 
-1.7.1
+1.7.3.1
 

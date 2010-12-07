@@ -1,0 +1,58 @@
+From edf2d3a50edc3a64d354a632934b23acf4b7fbf8 Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@unixuser.org>
+Date: Wed, 27 Oct 2010 16:03:09 +0900
+Subject: [PATCH 07/11] Clear errno to 0 before calling strtol/strtoul.
+
+To handle errors of strtol/strtoul correctly, errno should be cleared
+beforehand.
+
+BUG=none
+TEST=manual
+
+Review URL: http://codereview.appspot.com/2338043
+---
+ src/m17nutil.c |   15 ++++++++++-----
+ src/setup.c    |    1 +
+ 2 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/src/m17nutil.c b/src/m17nutil.c
+index 084d3ca..22b9fe1 100644
+--- a/src/m17nutil.c
++++ b/src/m17nutil.c
+@@ -124,11 +124,16 @@ guint
+ ibus_m17n_parse_color (const gchar *hex)
+ {
+     guint color;
+-    if (hex && *hex == '#' &&
+-        ((color = strtoul (&hex[1], NULL, 16)) != ULONG_MAX ||
+-         errno != ERANGE))
+-        return color;
+-    return (guint)-1;
++
++    if (!hex || *hex != '#')
++        return (guint)-1;
++
++    errno = 0;
++    color = strtoul (&hex[1], NULL, 16);
++    if ((errno == ERANGE && color == ULONG_MAX)
++        || (errno != 0 && color == 0))
++        return (guint)-1;
++    return color;
+ }
+ 
+ static IBusEngineDesc *
+diff --git a/src/setup.c b/src/setup.c
+index 7442159..0fe6e1b 100644
+--- a/src/setup.c
++++ b/src/setup.c
+@@ -83,6 +83,7 @@ parse_value (MPlist *plist, gchar *text)
+     if (mplist_key (plist) == Minteger) {
+         long val;
+ 
++        errno = 0;
+         val = strtol (text, NULL, 10);
+         if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN))
+             || (errno != 0 && val == 0))
+-- 
+1.7.3.1
+

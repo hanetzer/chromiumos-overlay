@@ -1,0 +1,33 @@
+From 78642b1b311f918de8816c96dc791b0541dab9d2 Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@unixuser.org>
+Date: Tue, 21 Sep 2010 13:40:05 +0900
+Subject: [PATCH 03/11] Don't init IBusBus in print_engines_xml().
+
+Bus initialization in print_engines_xml is not necessary, as Peng suggested in:
+http://github.com/ibus/ibus-m17n/commit/f52ba533eb86baa427df9107dd01670a85d17ab1#L6R78
+
+BUG=none
+TEST=Manual
+
+Review URL: http://codereview.appspot.com/2235043
+---
+ src/main.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/src/main.c b/src/main.c
+index b8d7c72..514d971 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -74,8 +74,7 @@ print_engines_xml (void)
+ 
+     ibus_init ();
+ 
+-    bus = ibus_bus_new ();
+-    ibus_m17n_init (bus);
++    ibus_m17n_init_common ();
+ 
+     component = ibus_m17n_get_component ();
+     output = g_string_new ("");
+-- 
+1.7.3.1
+

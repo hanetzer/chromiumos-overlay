@@ -1,0 +1,64 @@
+From 107c0641769a1aa2ee9e28b3186d54844c146a5b Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@unixuser.org>
+Date: Mon, 6 Dec 2010 16:08:19 +0900
+Subject: [PATCH 10/11] Don't compile m17nutil.c twice for engine and setup.
+
+BUG=none
+TEST=manual
+
+Review URL: http://codereview.appspot.com/3434042
+---
+ src/Makefile.am |   14 +++++++++++---
+ 1 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 07e4432..b8f59f4 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -50,9 +50,17 @@ test_m17n_LDADD = \
+ 
+ libexec_PROGRAMS = ibus-engine-m17n ibus-setup-m17n
+ 
+-ibus_engine_m17n_SOURCES = \
++noinst_LIBRARIES = libm17ncommon.a
++
++libm17ncommon_a_SOURCES = \
+ 	m17nutil.c \
+ 	m17nutil.h \
++	$(NULL)
++libm17ncommon_a_CFLAGS = \
++	@IBUS_CFLAGS@ \
++	@M17N_CFLAGS@ \
++	$(NULL)
++ibus_engine_m17n_SOURCES = \
+ 	main.c \
+ 	engine.c \
+ 	engine.h \
+@@ -64,6 +72,7 @@ ibus_engine_m17n_CFLAGS = \
+ 	-DLIBEXECDIR=\"$(libexecdir)\" \
+ 	$(NULL)
+ ibus_engine_m17n_LDADD = \
++	libm17ncommon.a \
+ 	@IBUS_LIBS@ \
+ 	@M17N_LIBS@ \
+ 	$(NULL)
+@@ -74,8 +83,6 @@ setup_DATA = \
+ setupdir = $(pkgdatadir)/setup
+ 
+ ibus_setup_m17n_SOURCES = \
+-	m17nutil.c \
+-	m17nutil.h \
+ 	setup.c \
+ 	$(NULL)
+ ibus_setup_m17n_CFLAGS = \
+@@ -85,6 +92,7 @@ ibus_setup_m17n_CFLAGS = \
+ 	-DSETUPDIR=\"$(setupdir)\" \
+ 	$(NULL)
+ ibus_setup_m17n_LDADD = \
++	libm17ncommon.a \
+ 	@IBUS_LIBS@ \
+ 	@M17N_LIBS@ \
+ 	@GTK2_LIBS@ \
+-- 
+1.7.3.1
+

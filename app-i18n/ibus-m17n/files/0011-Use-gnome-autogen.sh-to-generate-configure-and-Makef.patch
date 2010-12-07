@@ -1,0 +1,58 @@
+From 58535f994c36ca96832414b6c076ffc02074c376 Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@unixuser.org>
+Date: Mon, 6 Dec 2010 17:01:27 +0900
+Subject: [PATCH 11/11] Use gnome-autogen.sh to generate configure and Makefiles.
+
+BUG=none
+TEST=manual
+
+Review URL: http://codereview.appspot.com/3475041
+---
+ autogen.sh |   34 ++++++++++++++++++++++++----------
+ 1 files changed, 24 insertions(+), 10 deletions(-)
+
+diff --git a/autogen.sh b/autogen.sh
+index 14db0b1..99be006 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -1,13 +1,27 @@
+ #!/bin/sh
+-set -e
+-set -x
+-
+-autopoint
+-libtoolize --automake --copy
+-aclocal -I m4
+-autoheader
+-automake --add-missing --copy
+-autoconf
++# Run this to generate all the initial makefiles, etc.
++
++srcdir=`dirname $0`
++test -z "$srcdir" && srcdir=.
++
++PKG_NAME="ibus-m17n"
++
++(test -f $srcdir/configure.ac \
++  && test -f $srcdir/README ) || {
++    echo -n "**Error**: Directory "\`$srcdir\'" does not look like the"
++    echo " top-level $PKG_NAME directory"
++    exit 1
++}
++
++which gnome-autogen.sh || {
++    echo "You need to install gnome-common from the GNOME CVS"
++    exit 1
++}
++
+ export CFLAGS="-g -O0"
+ export CXXFLAGS="$CFLAGS"
+-./configure --enable-maintainer-mode $*
++
++ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I m4"
++REQUIRED_AUTOMAKE_VERSION=1.10
++
++. gnome-autogen.sh
+-- 
+1.7.3.1
+

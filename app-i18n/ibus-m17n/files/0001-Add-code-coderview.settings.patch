@@ -1,0 +1,41 @@
+From 873c971eeff6a4050fbdaad4dce9424154858cd0 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Sun, 19 Sep 2010 14:19:28 +0800
+Subject: [PATCH 01/11] Add code coderview.settings.
+
+This is for us to use codereview.appspot.com for code reviews.
+
+Instructions to use codereview.appspot.com:
+
+1. Get depot_tools and add PATH to the directory
+http://dev.chromium.org/developers/how-tos/depottools
+
+2. In your local IBus git repository,
+
+% git checkout master
+% git checkout -b somefix
+make changes
+% git cl upload
+do code reviews at codereview.appspot.com
+once it's done, run "git cl push" if you can commit.
+otherwise, ask committers to commit on behalf.
+
+BUG=none
+
+Review URL: http://codereview.appspot.com/2209043
+---
+ codereview.settings |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+ create mode 100644 codereview.settings
+
+diff --git a/codereview.settings b/codereview.settings
+new file mode 100644
+index 0000000..71ecbee
+--- /dev/null
++++ b/codereview.settings
+@@ -0,0 +1,2 @@
++# This file is used by "git cl" to get code review information.
++CODE_REVIEW_SERVER: codereview.appspot.com
+-- 
+1.7.3.1
+

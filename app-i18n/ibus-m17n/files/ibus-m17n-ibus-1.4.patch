@@ -1,0 +1,544 @@
+From 7905a25d3ebd3e310b5609feff48a5c109bf80f3 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Tue, 2 Nov 2010 10:39:57 +0900
+Subject: [PATCH] Fix problem with ibus-1.4
+
+---
+ src/engine.c   |  203 +++++++++++++++++++++++++++++++++-----------------------
+ src/m17nutil.c |   26 ++++----
+ src/main.c     |    4 +-
+ src/setup.c    |   65 +++++++++---------
+ 4 files changed, 170 insertions(+), 128 deletions(-)
+
+diff --git a/src/engine.c b/src/engine.c
+index 1dbcf34..5ef9c67 100644
+--- a/src/engine.c
++++ b/src/engine.c
+@@ -25,6 +25,16 @@ struct _IBusM17NEngineClass {
+     IBusEngineClass parent;
+ };
+ 
++/* configuration shared among engines which belong to the same MInputMethod */
++struct _IBusM17NConfig {
++    gboolean loaded;
++    guint preedit_foreground;
++    guint preedit_background;
++    gint preedit_underline;
++    gint lookup_table_orientation;
++};
++typedef struct _IBusM17NConfig IBusM17NConfig;
++
+ /* functions prototype */
+ static void ibus_m17n_engine_class_init     (IBusM17NEngineClass    *klass);
+ static void ibus_m17n_engine_init           (IBusM17NEngine         *m17n);
+@@ -80,10 +90,6 @@ static IBusEngineClass *parent_class = NULL;
+ static GHashTable      *im_table = NULL;
+ 
+ static IBusConfig      *config = NULL;
+-static guint            preedit_foreground = INVALID_COLOR;
+-static guint            preedit_background = INVALID_COLOR;
+-static gint             preedit_underline = IBUS_ATTR_UNDERLINE_NONE;
+-static gint             lookup_table_orientation = IBUS_ORIENTATION_SYSTEM;
+ 
+ void
+ ibus_m17n_init (IBusBus *bus)
+@@ -152,37 +158,92 @@ ibus_m17n_engine_class_init (IBusM17NEngineClass *klass)
+ 
+ }
+ 
++static IBusM17NConfig *
++ibus_m17n_engine_get_config (IBusM17NEngine *m17n)
++{
++    const gchar *engine_name;
++    gboolean preedit_highlight;
++    GVariant *value = NULL;
++    IBusM17NConfig *im_config;
++
++    im_config = m17n->context->im->arg;
++    g_assert (im_config);
++
++    engine_name = ibus_engine_get_name ((IBusEngine *) m17n);
++
++    if (im_config->loaded)
++        return im_config;
++
++    preedit_highlight = ibus_m17n_preedit_highlight (engine_name);
++    if (value = ibus_config_get_value (config,
++                                       m17n->config_section,
++                                       "preedit_foreground")) {
++        const gchar *hex = g_variant_get_string (value, NULL);
++
++        im_config->preedit_foreground = ibus_m17n_parse_color (hex);
++        g_variant_unref (value);
++    } else if (preedit_highlight)
++        im_config->preedit_foreground = PREEDIT_FOREGROUND;
++
++    if (value = ibus_config_get_value (config,
++                                       m17n->config_section,
++                                       "preedit_background")) {
++        const gchar *hex = g_variant_get_string (value, NULL);
++
++        im_config->preedit_background = ibus_m17n_parse_color (hex);
++        g_variant_unref (value);
++    } else if (preedit_highlight)
++        im_config->preedit_background = PREEDIT_BACKGROUND;
++
++    if (value = ibus_config_get_value (config,
++                                       m17n->config_section,
++                                       "preedit_underline")) {
++        im_config->preedit_underline = g_variant_get_int32 (value);
++        g_variant_unref (value);
++    } else
++        im_config->preedit_underline = IBUS_ATTR_UNDERLINE_NONE;
++
++    if (value = ibus_config_get_value (config,
++                                       m17n->config_section,
++                                       "lookup_table_orientation")) {
++        im_config->lookup_table_orientation = g_variant_get_int32 (value);
++        g_variant_unref (value);
++    } else
++        im_config->lookup_table_orientation = IBUS_ORIENTATION_SYSTEM;
++
++    im_config->loaded = TRUE;
++
++    return im_config;
++}
++
+ static void
+ ibus_config_value_changed (IBusConfig   *config,
+                            const gchar  *section,
+                            const gchar  *name,
+-                           GValue       *value,
++                           GVariant     *value,
+                            gpointer      user_data)
+ {
+     IBusM17NEngine *m17n = (IBusM17NEngine *) user_data;
+ 
+     if (g_strcmp0 (section, m17n->config_section) == 0) {
++        IBusM17NConfig *im_config;
++
++        im_config = ibus_m17n_engine_get_config (m17n);
+         if (g_strcmp0 (name, "preedit_foreground") == 0) {
+-            const gchar *hex = g_value_get_string (value);
+-            guint color;
+-            color = ibus_m17n_parse_color (hex);
+-            if (color != INVALID_COLOR) {
+-                preedit_foreground = color;
+-                ibus_m17n_engine_update_preedit (m17n);
+-            }
++            const gchar *hex = g_variant_get_string (value, NULL);
++
++            im_config->preedit_foreground = ibus_m17n_parse_color (hex);
++            ibus_m17n_engine_update_preedit (m17n);
+         } else if (g_strcmp0 (name, "preedit_background") == 0) {
+-            const gchar *hex = g_value_get_string (value);
+-            guint color;
+-            color = ibus_m17n_parse_color (hex);
+-            if (color != INVALID_COLOR) {
+-                preedit_background = color;
+-                ibus_m17n_engine_update_preedit (m17n);
+-            }
++            const gchar *hex = g_variant_get_string (value, NULL);
++
++            im_config->preedit_background = ibus_m17n_parse_color (hex);
++            ibus_m17n_engine_update_preedit (m17n);
+         } else if (g_strcmp0 (name, "preedit_underline") == 0) {
+-            preedit_underline = g_value_get_int (value);
++            im_config->preedit_underline = g_variant_get_int32 (value);
+             ibus_m17n_engine_update_preedit (m17n);
+         } else if (g_strcmp0 (name, "lookup_table_orientation") == 0) {
+-            lookup_table_orientation = g_value_get_int (value);
++            im_config->lookup_table_orientation = g_variant_get_int32 (value);
+             ibus_m17n_engine_update_lookup_table (m17n);
+         }
+     }
+@@ -229,6 +290,14 @@ ibus_m17n_engine_init (IBusM17NEngine *m17n)
+     m17n->context = NULL;
+ }
+ 
++static void
++ibus_m17n_engine_close_im (gpointer user_data)
++{
++    MInputMethod *im = user_data;
++    g_slice_free (IBusM17NConfig, im->arg);
++    minput_close_im (im);
++}
++
+ static GObject*
+ ibus_m17n_engine_constructor (GType                   type,
+                               guint                   n_construct_params,
+@@ -240,8 +309,7 @@ ibus_m17n_engine_constructor (GType                   type,
+     gchar *lang;
+     gchar *name;
+     gchar **strv;
+-    GValue value = { 0 };
+-    gboolean preedit_highlight;
++    GVariant *value = NULL;
+ 
+     m17n = (IBusM17NEngine *) G_OBJECT_CLASS (parent_class)->constructor (type,
+                                                        n_construct_params,
+@@ -262,12 +330,21 @@ ibus_m17n_engine_constructor (GType                   type,
+         im_table = g_hash_table_new_full (g_str_hash,
+                                           g_str_equal,
+                                           g_free,
+-                                          (GDestroyNotify) minput_close_im);
++                                          (GDestroyNotify) ibus_m17n_engine_close_im);
+     }
+ 
+     im = (MInputMethod *) g_hash_table_lookup (im_table, engine_name);
+     if (im == NULL) {
+-        im = minput_open_im (msymbol (lang), msymbol (name), NULL);
++        IBusM17NConfig *im_config;
++
++        im_config = g_slice_new0 (IBusM17NConfig);
++        im_config->loaded = FALSE;
++        im_config->preedit_foreground = INVALID_COLOR;
++        im_config->preedit_background = INVALID_COLOR;
++        im_config->preedit_underline = IBUS_ATTR_UNDERLINE_NONE;
++        im_config->lookup_table_orientation = IBUS_ORIENTATION_SYSTEM;
++
++        im = minput_open_im (msymbol (lang), msymbol (name), im_config);
+         if (im != NULL) {
+             mplist_put (im->driver.callback_list, Minput_preedit_start, ibus_m17n_engine_callback);
+             mplist_put (im->driver.callback_list, Minput_preedit_draw, ibus_m17n_engine_callback);
+@@ -288,68 +365,23 @@ ibus_m17n_engine_constructor (GType                   type,
+             mplist_put (im->driver.callback_list, Minput_delete_surrounding_text, ibus_m17n_engine_callback);
+ 
+             g_hash_table_insert (im_table, g_strdup (engine_name), im);
++
++            g_signal_connect (config, "value-changed",
++                              G_CALLBACK(ibus_config_value_changed), m17n);
++            m17n->config_section = g_strdup_printf ("engine/M17N/%s/%s",
++                                                    lang, name);
+         }
+     }
++    g_strfreev (strv);
+ 
+     if (im == NULL) {
+         g_warning ("Can not find m17n keymap %s", engine_name);
+-        g_strfreev (strv);
+         g_object_unref (m17n);
+         return NULL;
+     }
+ 
+     m17n->context = minput_create_ic (im, m17n);
+ 
+-    m17n->config_section = g_strdup_printf ("engine/M17N/%s/%s",
+-                                            lang, name);
+-    g_strfreev (strv);
+-
+-    preedit_highlight = ibus_m17n_preedit_highlight (engine_name);
+-    if (ibus_config_get_value (config,
+-                               m17n->config_section,
+-                               "preedit_foreground",
+-                               &value)) {
+-        const gchar *hex = g_value_get_string (&value);
+-        guint color = ibus_m17n_parse_color (hex);
+-        if (color != (guint)-1)
+-            preedit_foreground = color;
+-        g_value_unset (&value);
+-    } else if (preedit_highlight)
+-        preedit_foreground = PREEDIT_FOREGROUND;
+-
+-    if (ibus_config_get_value (config,
+-                               m17n->config_section,
+-                               "preedit_background",
+-                               &value)) {
+-        const gchar *hex = g_value_get_string (&value);
+-        guint color = ibus_m17n_parse_color (hex);
+-        if (color != (guint)-1)
+-            preedit_background = color;
+-        g_value_unset (&value);
+-    } else if (preedit_highlight)
+-        preedit_background = PREEDIT_BACKGROUND;
+-
+-    if (ibus_config_get_value (config,
+-                               m17n->config_section,
+-                               "preedit_underline",
+-                               &value)) {
+-        preedit_underline = g_value_get_int (&value);
+-        g_value_unset (&value);
+-    } else
+-        preedit_underline = IBUS_ATTR_UNDERLINE_NONE;
+-
+-    if (ibus_config_get_value (config,
+-                               m17n->config_section,
+-                               "lookup_table_orientation",
+-                               &value)) {
+-        lookup_table_orientation = g_value_get_int (&value);
+-        g_value_unset (&value);
+-    } else
+-        lookup_table_orientation = IBUS_ORIENTATION_SYSTEM;
+-
+-    g_signal_connect (config, "value-changed",
+-                      G_CALLBACK(ibus_config_value_changed), m17n);
+-
+     return (GObject *) m17n;
+ }
+ 
+@@ -395,18 +427,22 @@ ibus_m17n_engine_update_preedit (IBusM17NEngine *m17n)
+ {
+     IBusText *text;
+     gchar *buf;
++    IBusM17NConfig *im_config;
+ 
++    im_config = ibus_m17n_engine_get_config (m17n);
+     buf = ibus_m17n_mtext_to_utf8 (m17n->context->preedit);
+     if (buf) {
+         text = ibus_text_new_from_static_string (buf);
+-        if (preedit_foreground != INVALID_COLOR)
++        if (im_config->preedit_foreground != INVALID_COLOR)
+             ibus_text_append_attribute (text, IBUS_ATTR_TYPE_FOREGROUND,
+-                                        preedit_foreground, 0, -1);
+-        if (preedit_background != INVALID_COLOR)
++                                        im_config->preedit_foreground,
++                                        0, -1);
++        if (im_config->preedit_background != INVALID_COLOR)
+             ibus_text_append_attribute (text, IBUS_ATTR_TYPE_BACKGROUND,
+-                                        preedit_background, 0, -1);
++                                        im_config->preedit_background,
++                                        0, -1);
+         ibus_text_append_attribute (text, IBUS_ATTR_TYPE_UNDERLINE,
+-                                    preedit_underline, 0, -1);
++                                    im_config->preedit_underline, 0, -1);
+         ibus_engine_update_preedit_text ((IBusEngine *) m17n,
+                                          text,
+                                          m17n->context->cursor_pos,
+@@ -694,6 +730,7 @@ ibus_m17n_engine_update_lookup_table (IBusM17NEngine *m17n)
+         group = m17n->context->candidate_list;
+         gint i = 0;
+         gint page = 1;
++        IBusM17NConfig *im_config;
+ 
+         while (1) {
+             gint len;
+@@ -744,7 +781,9 @@ ibus_m17n_engine_update_lookup_table (IBusM17NEngine *m17n)
+         }
+ 
+         ibus_lookup_table_set_cursor_pos (m17n->table, m17n->context->candidate_index - i);
+-        ibus_lookup_table_set_orientation (m17n->table, lookup_table_orientation);
++
++        im_config = ibus_m17n_engine_get_config (m17n);
++        ibus_lookup_table_set_orientation (m17n->table, im_config->lookup_table_orientation);
+ 
+         text = ibus_text_new_from_printf ("( %d / %d )", page, mplist_length (m17n->context->candidate_list));
+ 
+diff --git a/src/m17nutil.c b/src/m17nutil.c
+index 22b9fe1..8491d40 100644
+--- a/src/m17nutil.c
++++ b/src/m17nutil.c
+@@ -157,26 +157,26 @@ ibus_m17n_engine_new (MSymbol  lang,
+     engine_title = ibus_m17n_mtext_to_utf8 (title);
+     engine_icon = ibus_m17n_mtext_to_utf8 (icon);
+     engine_desc = ibus_m17n_mtext_to_utf8 (desc);
+-
+-    engine = ibus_engine_desc_new (engine_name,
+-                                   engine_longname,
+-                                   engine_desc ? engine_desc : "",
+-                                   msymbol_name (lang),
+-                                   "GPL",
+-                                   "",
+-                                   engine_icon ? engine_icon : "",
+-                                   "us");
+-    /* set default rank to 0 */
+-    engine->rank = 0;
+-
++   
++    guint rank = 0; 
+     for (i = 0; i < G_N_ELEMENTS(engine_config); i++) {
+         if (g_pattern_match_simple (engine_config[i].name, engine_name)) {
+             /* set rank of default keymap to 1 */
+-            engine->rank = engine_config[i].rank;
++            rank = engine_config[i].rank;
+             break;
+         }
+     }
+ 
++    engine = ibus_engine_desc_new_varargs ("name",        engine_name,
++                                           "longname",    engine_longname,
++                                           "description", engine_desc ? engine_desc : "",
++                                           "language",    msymbol_name (lang),
++                                           "license",     "GPL",
++                                           "icon",        engine_icon ? engine_icon : "",
++                                           "layout",      "us",
++                                           "rank",        rank,
++                                           NULL);
++
+     g_free (engine_name);
+     g_free (engine_longname);
+     g_free (engine_title);
+diff --git a/src/main.c b/src/main.c
+index 514d971..3bdafdb 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -51,7 +51,9 @@ start_component (void)
+     engines = ibus_component_get_engines (component);
+     for (p = engines; p != NULL; p = p->next) {
+         IBusEngineDesc *engine = (IBusEngineDesc *)p->data;
+-        ibus_factory_add_engine (factory, engine->name, IBUS_TYPE_M17N_ENGINE);
++        ibus_factory_add_engine (factory,
++                                 ibus_engine_desc_get_name (engine),
++                                 IBUS_TYPE_M17N_ENGINE);
+     }
+ 
+     if (ibus) {
+diff --git a/src/setup.c b/src/setup.c
+index 0fe6e1b..178190e 100644
+--- a/src/setup.c
++++ b/src/setup.c
+@@ -210,10 +210,8 @@ color_to_gdk (guint color, GdkColor *color_gdk)
+ static void
+ set_color (ConfigContext *context, const gchar *name, GdkColor *color)
+ {
+-    GValue value = { 0 };
+     gchar buf[8];
+ 
+-    g_value_init (&value, G_TYPE_STRING);
+     if (color)
+         sprintf (buf, "#%02X%02X%02X",
+                  (color->red & 0xFF00) >> 8,
+@@ -221,8 +219,10 @@ set_color (ConfigContext *context, const gchar *name, GdkColor *color)
+                  (color->blue & 0xFF00) >> 8);
+     else
+         strcpy (buf, "none");
+-    g_value_set_string (&value, buf);
+-    ibus_config_set_value (config, context->section, name, &value);
++    ibus_config_set_value (config,
++                           context->section,
++                           name,
++                           g_variant_new_string (buf));
+ }
+ 
+ static void
+@@ -254,17 +254,16 @@ on_underline_changed (GtkComboBox *combo,
+     ConfigContext *context = user_data;
+     GtkTreeModel *model;
+     GtkTreeIter iter;
+-    GValue value = { 0 };
+     gint active;
+ 
+     model = gtk_combo_box_get_model (combo);
+     gtk_combo_box_get_active_iter (combo, &iter);
+     gtk_tree_model_get (model, &iter, COLUMN_VALUE, &active, -1);
+ 
+-    g_value_init (&value, G_TYPE_INT);
+-    g_value_set_int (&value, active);
+-    ibus_config_set_value (config, context->section, "preedit_underline",
+-                           &value);
++    ibus_config_set_value (config,
++                           context->section,
++                           "preedit_underline",
++                           g_variant_new_int32 (active));
+ }
+ 
+ static void
+@@ -274,17 +273,16 @@ on_orientation_changed (GtkComboBox *combo,
+     ConfigContext *context = user_data;
+     GtkTreeModel *model;
+     GtkTreeIter iter;
+-    GValue value = { 0 };
+     gint active;
+ 
+     model = gtk_combo_box_get_model (combo);
+     gtk_combo_box_get_active_iter (combo, &iter);
+     gtk_tree_model_get (model, &iter, COLUMN_VALUE, &active, -1);
+ 
+-    g_value_init (&value, G_TYPE_INT);
+-    g_value_set_int (&value, active);
+-    ibus_config_set_value (config, context->section, "lookup_table_orientation",
+-                           &value);
++    ibus_config_set_value (config,
++                           context->section,
++                           "lookup_table_orientation",
++                           g_variant_new_int32 (active));
+ }
+ 
+ static void
+@@ -367,7 +365,7 @@ start (const gchar *engine_name)
+     GError *error = NULL;
+     GtkCellRenderer *renderer;
+     ConfigContext context;
+-    GValue value = { 0 };
++    GVariant *value = NULL;
+     gboolean is_foreground_set, is_background_set;
+     GdkColor foreground, background;
+     gint underline;
+@@ -417,15 +415,16 @@ start (const gchar *engine_name)
+     /* foreground color of pre-edit buffer */
+     is_foreground_set = FALSE;
+     color_to_gdk (PREEDIT_FOREGROUND, &foreground);
+-    if (ibus_config_get_value (config, context.section, "preedit_foreground",
+-                               &value)) {
++    if (value = ibus_config_get_value (config,
++                                       context.section,
++                                       "preedit_foreground")) {
+         const gchar *color;
+ 
+-        color = g_value_get_string (&value);
++        color = g_variant_get_string (value, NULL);
+         if (g_strcmp0 (color, "none") != 0 &&
+             gdk_color_parse (color, &foreground))
+             is_foreground_set = TRUE;
+-        g_value_unset (&value);
++        g_variant_unref (value);
+     }
+ 
+     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbutton_foreground),
+@@ -445,16 +444,17 @@ start (const gchar *engine_name)
+     /* background color of pre-edit buffer */
+     is_background_set = FALSE;
+     color_to_gdk (PREEDIT_BACKGROUND, &background);
+-    if (ibus_config_get_value (config, context.section, "preedit_background",
+-                               &value)) {
++    if (value = ibus_config_get_value (config,
++                                       context.section,
++                                       "preedit_background")) {
+         const gchar *color;
+ 
+-        color = g_value_get_string (&value);
++        color = g_variant_get_string (value, NULL);
+         if (g_strcmp0 (color, "none") != 0 &&
+             gdk_color_parse (color, &background))
+             is_background_set = TRUE;
+         g_debug ("preedit_background %d", is_background_set);
+-        g_value_unset (&value);
++        g_variant_unref (value);
+     }
+     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbutton_background),
+                                   is_background_set);
+@@ -476,10 +476,11 @@ start (const gchar *engine_name)
+     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT(combobox_underline),
+                                     renderer, "text", 0, NULL);
+     underline = IBUS_ATTR_UNDERLINE_NONE;
+-    if (ibus_config_get_value (config, context.section, "preedit_underline",
+-                               &value)) {
+-        underline = g_value_get_int (&value);
+-        g_value_unset (&value);
++    if (value = ibus_config_get_value (config,
++                                       context.section,
++                                       "preedit_underline")) {
++        underline = g_variant_get_int32 (value);
++        g_variant_unref (value);
+     }
+ 
+     index = get_combo_box_index_by_value (GTK_COMBO_BOX(combobox_underline),
+@@ -495,11 +496,11 @@ start (const gchar *engine_name)
+     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT(combobox_orientation),
+                                     renderer, "text", 0, NULL);
+     orientation = IBUS_ORIENTATION_SYSTEM;
+-    if (ibus_config_get_value (config, context.section,
+-                               "lookup_table_orientation",
+-                               &value)) {
+-        orientation = g_value_get_int (&value);
+-        g_value_unset (&value);
++    if (value = ibus_config_get_value (config,
++                                       context.section,
++                                       "lookup_table_orientation")) {
++        orientation = g_variant_get_int32 (value);
++        g_variant_unref (value);
+     }
+ 
+     index = get_combo_box_index_by_value (GTK_COMBO_BOX(combobox_orientation),
+-- 
+1.7.3.2
+
