@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ac0783a44ecf914689a2967149ef20422341b1e5"
+CROS_WORKON_COMMIT="9da65c483ef9368379f8918c17fd4ede63b887cf"
 
 inherit toolchain-funcs flag-o-matic cros-workon
 
@@ -35,6 +35,10 @@ src_prepare() {
 	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
 	cp -fpru "${S}"/{conmux,tko,utils} "${AUTOTEST_WORK}"
 	cp -fpru "${S}"/shadow_config.ini "${AUTOTEST_WORK}"
+
+	# cros directory is not from autotest upstream but cros project specific.
+	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
+	cp -fpru "${S}"/server/cros "${AUTOTEST_WORK}/server"
 
 	sed "/^enable_server_prebuild/d" "${S}/global_config.ini" > \
 		"${AUTOTEST_WORK}/global_config.ini"
