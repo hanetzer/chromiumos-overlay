@@ -65,7 +65,7 @@
 >x11-libs/libxcb-1.5
 
 # Cross compile fix in the ebuild (Icedtea -> cups -> libgcrypt).
->dev-libs/libgcrypt-1.4.4-r1
+>dev-libs/libgcrypt-1.4.6
 
 # Masked all upstream ebuilds, unupstreamable work in local copy
 >=net-misc/dhcpcd-5.1.5
