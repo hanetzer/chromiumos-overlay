@@ -1,0 +1,120 @@
+--- xorg-server-1.7.6.orig/hw/xfree86/modes/xf86Crtc.c	2010-03-16 17:50:41.000000000 -0700
++++ xorg-server-1.7.6.work/hw/xfree86/modes/xf86Crtc.c	2010-12-07 09:51:17.735714000 -0800
+@@ -2199,6 +2199,108 @@ xf86TargetUserpref(ScrnInfoPtr scrn, xf8
+     return FALSE;
+ }
+ 
++static const int max_projector_pixels = 1280 * 720;
++
++static Bool findNearestResolutions(xf86OutputPtr larger_output, xf86OutputPtr smaller_output, 
++		DisplayModePtr* larger_resolution, DisplayModePtr* smaller_resolution, 
++		DisplayModePtr* screen_resolution)
++{
++    DisplayModePtr current;
++    Rotation r = larger_output->initial_rotation;
++
++    *smaller_resolution = smaller_output->probed_modes;
++    *screen_resolution = smaller_output->probed_modes;
++
++    for (current = larger_output->probed_modes; current->next; current = current->next);
++    
++    for (; current; current = current->prev)
++    {
++	if (xf86ModeWidth(current, r) >= xf86ModeWidth(*smaller_resolution, r) && 
++	    xf86ModeHeight(current, r) >= xf86ModeHeight(*smaller_resolution, r) ) {
++	    *larger_resolution = current;
++	    return TRUE;
++	}
++    }
++
++    return FALSE;
++}
++
++static int xf86ModeSize(DisplayModePtr mode, xf86OutputPtr output)
++{
++    Rotation r = output->initial_rotation;
++    return xf86ModeWidth(mode, r) * xf86ModeHeight(mode, r);
++}
++
++static Bool
++xf86TargetChromeOS(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
++		   DisplayModePtr *modes, Bool *enabled,
++		   int width, int height)
++{
++    int o, p;
++    DisplayModePtr preferred_internal, preferred_external, external_mode, internal_mode, screen_mode;
++    xf86OutputPtr external = NULL, internal = NULL;
++    Bool found = FALSE;
++
++    /* Find the internal output */
++    for (o = -1; nextEnabledOutput(config, enabled, &o); )
++	if (!strcmp(config->output[o]->name, "LVDS1"))
++	{
++	    internal = config->output[o];
++	    break;
++	}
++
++    if (!internal)
++	return FALSE;
++
++    if (!(preferred_internal = xf86OutputHasPreferredMode(internal,
++				    width, height)))
++	return FALSE;
++
++    /* Find the external output */
++    for (p = -1; nextEnabledOutput(config, enabled, &p); )
++	if (config->output[p] != internal)
++	{
++	    external = config->output[p];
++	    break;
++	}
++
++    if (!external)
++	return FALSE;
++
++    if (!(preferred_external = xf86OutputHasPreferredMode(external,
++				    width, height)))
++	return FALSE;
++
++    /* Choose the modes we want */
++    if (xf86ModeSize(preferred_internal, internal) > xf86ModeSize(preferred_external, external))
++    {
++	found = findNearestResolutions(internal, external, external_mode, internal_mode, screen_mode);
++    } else {
++	if (xf86ModeSize(preferred_external, external) > max_projector_pixels) {
++	    external_mode = preferred_external;
++	    internal_mode = NULL;
++	    found = TRUE;
++	}
++	else
++	    found = findNearestResolutions(internal, external, external_mode, internal_mode, screen_mode);
++    }
++
++    if (found) {
++	/* Actually do the modesetting */
++	if (internal_mode)
++	    modes[o] = internal_mode;
++	else
++	    (*internal->funcs->dpms)(internal, DPMSModeOff);
++
++	if (external_mode)
++	    modes[p] = external_mode;
++	else
++	    (*external->funcs->dpms)(external, DPMSModeOff);
++    }
++
++    return found;
++}
++
+ static Bool
+ xf86CrtcSetInitialGamma(xf86CrtcPtr crtc, float gamma_red, float gamma_green,
+         float gamma_blue)
+@@ -2346,6 +2448,8 @@ xf86InitialConfiguration (ScrnInfoPtr sc
+ 
+     if (xf86TargetUserpref(scrn, config, modes, enabled, width, height))
+ 	xf86DrvMsg(i, X_INFO, "Using user preference for initial modes\n");
++    else if (xf86TargetChromeOS(scrn, config, modes, enabled, width, height))
++	xf86DrvMsg(i, X_INFO, "Using ChromeOS mode for initial modes\n");
+     else if (xf86TargetPreferred(scrn, config, modes, enabled, width, height))
+ 	xf86DrvMsg(i, X_INFO, "Using exact sizes for initial modes\n");
+     else if (xf86TargetAspect(scrn, config, modes, enabled, width, height))
