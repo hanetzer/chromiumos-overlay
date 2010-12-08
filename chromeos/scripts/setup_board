@@ -271,7 +271,7 @@ sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
   "${BOARD_ETC}/make.conf"
 sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.common-target" \
   "${BOARD_ETC}/make.conf.common"
-cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup"
+cat <<EOF | sudo dd of="${BOARD_ETC}/make.conf.board_setup" > /dev/null 2>&1
 # Created by setup_board
 CHOST="${FLAGS_toolchain}"
 ROOT="${BOARD_ROOT}/"
