@@ -49,8 +49,9 @@ src_install() {
 		rm "${D}/etc/init/pulseaudio.conf"
 	fi
 
-	# Install process killing util functions.
+	# Install various utility files
 	dosbin "${S}/killers"
+	dosbin "${S}/send_boot_metrics"
 
 	# Install startup/shutdown scripts.
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
