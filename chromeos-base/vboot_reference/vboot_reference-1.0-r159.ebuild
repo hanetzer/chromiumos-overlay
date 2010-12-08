@@ -105,15 +105,4 @@ src_install() {
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
 	doins tests/devkeys/*
-
-	# Install firmware/include to /build/${BOARD}/usr/include/vboot
-	einfo "Installing header files and libraries"
-	dst_dir='/usr/include/vboot'
-	dodir "${dst_dir}"
-	insinto "${dst_dir}"
-	doins -r firmware/include/*
-
-	# Install vboot_fw.a to /build/${BOARD}/usr/lib
-	insinto /usr
-	dolib.a "${S}"/build/vboot_fw.a
 }
