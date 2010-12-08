@@ -14,8 +14,6 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test"
 
-PDEPEND="chromeos-base/chromeos-login-config"
-
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail"
 
