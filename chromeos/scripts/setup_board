@@ -214,13 +214,6 @@ if [ -z $FLAGS_gcc_version ]; then
   fi
 fi
 
-# Update symlinks to point at latest version of make.conf. In older versions of
-# the chroot, it pointed at different files. TODO(asharif): This is only needed
-# for backwards compatibility, so we should remove this eventually.
-CHROOT_CONFIG="${HOME}/trunk/src/third_party/chromiumos-overlay/chromeos/config"
-sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
-  "${FLAGS_chroot}/etc/make.conf"
-
 build_toolchain
 
 sudo mkdir -p "$BOARD_ROOT"
