@@ -65,13 +65,8 @@ fi
 
 src_unpack() {
 	if [[ ${PV} == "9999" ]] ; then
-		if [[ $(whoami) == root ]] ; then
-			MY_USER=${SUDO_USER}
-		else
-			MY_USER=${USER}
-		fi
-		P4_BINUTILS="/home/${MY_USER}/toolchain_root/binutils/${BINUTILS_VERSION}"
-		P4_GOLD="/home/${MY_USER}/toolchain_root/binutils/${GOLD_VERSION}"  
+		P4_BINUTILS="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
+		P4_GOLD="/usr/local/toolchain_root/binutils/${GOLD_VERSION}"  
 		if [[ ! -d ${P4_BINUTILS} ]] || [[ ! -d ${P4_GOLD} ]] ; then
 			die "binutils dirs not mounted at: ${P4_BINUTILS} and ${P4_GOLD}"
 		fi
