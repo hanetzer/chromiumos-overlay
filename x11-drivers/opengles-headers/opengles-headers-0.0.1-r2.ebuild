@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="cd6b43dcf18bec8c58583fb30d0d103bd88a51d7"
+CROS_WORKON_COMMIT="bc3c1486800a25189f9ca4f7420de9bd10b1ea34"
+
 inherit cros-workon
 
 DESCRIPTION="OpenGL|ES headers."
