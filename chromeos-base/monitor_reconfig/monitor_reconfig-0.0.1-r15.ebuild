@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e6cd2a5be00dab7d20eecb2a23899dfb0f642758"
+CROS_WORKON_COMMIT="ed4948c781bed219b3eae02fd4c93eb8d8638d88"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -51,6 +51,13 @@ src_test() {
 }
 
 src_install() {
-	dobin monitor_reconfig/monitor_reconfigure \
-		monitor_reconfig/run_monitor_reconfigure
+	dobin monitor_reconfig/monitor_reconfigure
+
+	# Install the hotplug display configure script.
+	exeinto "/lib/udev"
+	doexe "${S}/display-configure.sh"
+
+	# Install the hotplug udev rule.
+	insinto "/etc/udev/rules.d"
+	doins "${S}/99-monitor-hotplug.rules"
 }
