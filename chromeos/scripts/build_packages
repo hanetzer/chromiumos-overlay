@@ -84,6 +84,9 @@ if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   EMERGE_BOARD_CMD="${SCRIPTS_DIR}/parallel_emerge --board=${FLAGS_board}"
   EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
 fi
+if [[ -n "${EXTRA_BOARD_FLAGS}" ]]; then
+  EMERGE_BOARD_CMD="${EMERGE_BOARD_CMD} ${EXTRA_BOARD_FLAGS}"
+fi
 
 if [[ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]]; then
   # Use binary packages. Include all build-time dependencies,
