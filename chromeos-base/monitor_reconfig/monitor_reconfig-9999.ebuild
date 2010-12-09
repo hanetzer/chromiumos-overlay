@@ -50,6 +50,13 @@ src_test() {
 }
 
 src_install() {
-	dobin monitor_reconfig/monitor_reconfigure \
-		monitor_reconfig/run_monitor_reconfigure
+	dobin monitor_reconfig/monitor_reconfigure
+
+	# Install the hotplug display configure script.
+	exeinto "/lib/udev"
+	doexe "${S}/display-configure.sh"
+
+	# Install the hotplug udev rule.
+	insinto "/etc/udev/rules.d"
+	doins "${S}/99-monitor-hotplug.rules"
 }
