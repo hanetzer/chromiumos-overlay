@@ -445,8 +445,7 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		TEST_TARGETS="browser_tests 
-			reliability_tests
+		TEST_TARGETS="reliability_tests
 			startup_tests
 			ui_tests"
 		if use x86; then  # Build PyAuto on x86 only.
@@ -537,7 +536,7 @@ install_chrome_test_resources() {
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip these
 	# executables.
-	for f in lib.target/_pyautolib.so libppapi_tests.so browser_tests \
+	for f in lib.target/_pyautolib.so libppapi_tests.so \
 	         reliability_tests ui_tests; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
