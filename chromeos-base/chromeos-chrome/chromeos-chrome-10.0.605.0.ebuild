@@ -25,7 +25,7 @@ KEYWORDS="x86 arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 gold +chrome_remoting internal chrome_pdf +chrome_debug"
+IUSE="+build_tests x86 +gold +chrome_remoting internal chrome_pdf +chrome_debug"
 
 CHROME_VERSION="${PV}"
 
@@ -455,25 +455,19 @@ src_compile() {
 	fi
 
 	tc-export CXX CC AR AS RANLIB LD
-	# HACK(zbehan): On x86, we have the option of using gold. This has to be
-	# done in a manner specific for this ebuild until gold is stabilized for
-	# the whole world. Current way is to pass a -B option to CC, CXX and LD,
-	# which makes them use a different linker. This was suggested by raymes.
-	if use x86 && use gold; then
-		# List all gold binutils and pick the latest
-		GOLDLOC=$(
-	echo /usr/x86_64-pc-linux-gnu/i686-pc-linux-gnu/binutils-bin/*-gold | \
-	tail -n 1)
-
-		# GOLDLOC will either be the latest gold version or string with *
-		if [ -d "${GOLDLOC}" ]; then
-			einfo "Using gold in: ${GOLDLOC}"
-
-			export CC="${CC} -B${GOLDLOC}"
-			export CXX="${CXX} -B${GOLDLOC}"
-			export LD="${GOLDLOC}/ld"
+	# HACK(raymes): If gold is present and is recent enough, we will use it.
+	# In the (hopefully near) future, gold will be rolled as the default
+	# system-wide linker and this logic can be removed.
+	if use x86 && use gold ; then
+		GOLD_CL=`$LD.gold --version | head -1 | sed \
+			"s/.*cos_gg_v1_\([0-9]*\).*$/\1/g"`
+		if [ $GOLD_CL -ge 44729 ] 2>/dev/null ; then
+			einfo "Using gold from the following location: `which $LD.gold`"
+			export CC="${CC} -fuse-ld=gold"
+			export CXX="${CXX} -fuse-ld=gold"
+			export LD="$LD.gold"
 		else
-			ewarn "Couldn't find gold, USE flag ignored."
+			ewarn "gold was not found or is too old. Using GNU ld."
 		fi
 	fi
 
