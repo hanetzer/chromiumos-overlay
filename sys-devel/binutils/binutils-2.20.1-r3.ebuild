@@ -17,7 +17,7 @@ BVER=${PV}
 
 # Version names
 COST_VERSION="v1"
-BINUTILS_CL="44027"
+BINUTILS_CL="44027a"
 BINUTILS_VERSION="binutils-2.20.1-mobile"
 BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg_${COST_VERSION}_${BINUTILS_CL}"
 
@@ -36,8 +36,9 @@ ${EXTRA_ECONF}"
 
 # Due to gold development moving faster than regular binutils, there is a
 # separate binutils tarball which just has an up-to-date gold
-SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/${BINUTILS_PKG_VERSION}.tar.gz \
-http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${GOLD_PKG_VERSION}.tar.gz"
+DISTFILES="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles"
+SRC_URI="${DISTFILES}/${BINUTILS_PKG_VERSION}.tar.gz \
+${DISTFILES}/${GOLD_PKG_VERSION}.tar.gz"
 
 S_BINUTILS="${WORKDIR}/${BINUTILS_VERSION}"
 S_GOLD="${WORKDIR}/${GOLD_VERSION}"
