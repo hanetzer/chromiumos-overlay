@@ -42,4 +42,5 @@ sys-auth/pambase	consolekit
 sys-fs/lvm2		-lvm1 -readline -static
 sys-fs/udev		-devfs-compat extras
 sys-libs/ncurses	minimal
+sys-libs/pam		-berkdb
 x11-apps/xinit          minimal
