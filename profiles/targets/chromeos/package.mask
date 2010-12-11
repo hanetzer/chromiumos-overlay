@@ -27,6 +27,9 @@
 # TODO: Fix cross compile on ARM of gdbm-1.8.3-r4
 >sys-libs/gdbm-1.8.3-r3
 
+# TODO: Fix cross compile on ARM of sys-libs/pam-1.1.0
+>sys-libs/pam-1.0.4
+
 # TODO: Fix cross compile on ARM of sys-power/powertop-1.9-r1
 #  NOTE: A simple USE="-unicode" will allow for compile but make
 #        sure that we are not modifying powertop in our overlay.
