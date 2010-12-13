@@ -2,14 +2,21 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-process/acct/acct-6.5.4.ebuild,v 1.1 2010/02/15 22:11:04 jer Exp $
 
+EAPI="2"
+inherit eutils autotools
+
 DESCRIPTION="GNU system accounting utilities"
 HOMEPAGE="https://savannah.gnu.org/projects/acct/"
 SRC_URI="mirror://gnu/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~hppa ~ppc ~x86"
+KEYWORDS="x86 arm ~alpha ~amd64 ~hppa ~ppc"
 IUSE=""
+
+src_prepare() {
+        epatch "${FILESDIR}"/${PN}-${PV}.patch
+}
 
 src_compile() {
 	econf --enable-linux-multiformat
