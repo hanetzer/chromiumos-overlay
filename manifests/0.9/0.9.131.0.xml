@@ -30,12 +30,12 @@
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
   <project name="autotest" path="src/third_party/autotest/files" revision="13065f4e326d0097e242ed37509cbd86c0291bdb"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="e8c96fcdd67c30560f5a396a893a88bfc5a03359"/>
+  <project name="board-overlays" path="src/overlays" revision="908d31b7e230eefdf878637a277fca51cb283d7c"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="0f4972dfc6fd83120e77467f5fd15f1cac3612fb"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="b4708af23862a5b8ebb268b3d53ac71e414a8761">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="ed20cd82ce8fc9b421238f31e34d4be76aa68a36">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -50,7 +50,7 @@
   <project name="crosutils" path="src/scripts" revision="171321f8ff88e1edeec50820c42d6bec40992c28"/>
   <project name="cryptohome" path="src/platform/cryptohome" revision="644890916f690059a992b63e0c20de22534bee71"/>
   <project name="dbus-cplusplus" path="src/third_party/dbus-c++" revision="89cc134e324824d02bd66c0a18f45d7127550f8e"/>
-  <project name="dev-util" path="src/platform/dev" revision="0ad0937652b9545e2b6ec3b82eda017a16e62e85"/>
+  <project name="dev-util" path="src/platform/dev" revision="4a1e819f0e914de0a54a6be92b489941410413ab"/>
   <project name="dhcpcd" path="src/third_party/dhcpcd" revision="1e1cecd29c261351e94c881758024c24f58462c1"/>
   <project name="dm-verity" path="src/platform/verity" revision="2356793c8aa6b3a1c6dcfaa9f354e4c556dc57a2"/>
   <project name="dump-syms" path="src/platform/dump-syms" revision="872bf84313e83f60c50160ea7fd37bf25da4848b"/>
@@ -58,7 +58,7 @@
   <project name="factory_installer" path="src/platform/factory_installer" revision="b8444be6de6e1a766b3f8890f8a9649ec91a6dfd"/>
   <project name="firmware" path="src/platform/firmware" revision="75eba6b75d9df71562151bc229ca57400b677343"/>
   <project name="firmware-utils" path="src/platform/firmware-utils" revision="bcd97e0add7adc2b95493298c4bc1b38afeb6eca"/>
-  <project name="flashrom" path="src/third_party/flashrom" revision="c801adb8f9b459e3872bbbeb76674411468cc951"/>
+  <project name="flashrom" path="src/third_party/flashrom" revision="6fd90eee20ca010c0c131923c19b127829fd7493"/>
   <project name="flimflam" path="src/third_party/flimflam" revision="2d3795c7ea24530e9a82b2c3f3116786e97a9e89"/>
   <project name="google-breakpad" path="src/platform/google-breakpad" revision="480a20a3d015744787a07023a17ef94d1305357c"/>
   <project name="gpt" path="src/third_party/gpt" revision="4253b546f47d0a4ce45b863c8f58e077015486cf"/>
