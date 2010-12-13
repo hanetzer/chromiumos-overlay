@@ -40,6 +40,9 @@ PORTAGE_BZIP2_COMMAND='eval function fbzip() { if which pbzip2 &> /dev/null; the
 # pbunzip2 not used yet
 PORTAGE_BUNZIP2_COMMAND="bunzip2"
 
+FETCHCOMMAND='curl --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
+RESUMECOMMAND='curl -C - --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
+
 # Print a checkpoint message every 10MB while archiving.
 PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"
 
