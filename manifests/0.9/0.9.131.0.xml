@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <notice>
+                ..77IIIIII7,.
+               .$IOOOOOOOOOOZ$:.
+            .IO8?OOOOOOZOOOOOOOO.
+            ?=?~?ZO+D8888=+OZOOOOI.
+          .7$+I+++888$IIO$8+=OZZZOI.
+         .ZZ$$I?~I8$7?++?I7Z88888IZ:
+         ~IZ$$7I~8OII?=~+I$Z8:++=ZD$
+         IZZZ$$7~8ZZ$I??I$7D8:+++??I.
+         I$ZZZ$$?=DOOZ$$ZOD8:=+++??I.
+         77OZZZ$$+=8DDDDDDO:=+++???I
+         .OOOOZZZ$$==7D,:::++++???I?
+         .$$OOOOZZZ$8~===+++++???I?.
+           7$OOOO$8=====+++++??II?..
+            ?$ZO8:===+++++++?I???.
+             .77$D8+++++++=?+??..
+                ,7$8Z===+++??
+                   ........
+    Your sources have been sync'd successfully.
+  </notice>
+  <remote fetch="http://git.chromium.org/git" name="cros" review="codereview.chromium.org"/>
+  
+  <default remote="cros" revision="refs/heads/master"/>
+  
+  <project name="acpi" path="src/platform/acpi" revision="f0689d9936f1f4900a8a1ea1f9373b28f3f21835"/>
+  <project name="assets" path="src/platform/assets" revision="bac1ba65da3afb14fe366db920825b6f57c6b3ef"/>
+  <project name="atheros" path="src/third_party/atheros" revision="ea68c1251fddeb2fade3859e55ac426af31be2d2"/>
+  <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
+  <project name="autotest" path="src/third_party/autotest/files" revision="13065f4e326d0097e242ed37509cbd86c0291bdb"/>
+  <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
+  <project name="board-overlays" path="src/overlays" revision="f6c640bf95a368312b752dcc327413c99a0a3460"/>
+  <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
+  <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
+  <project name="cashew" path="src/platform/cashew" revision="0f4972dfc6fd83120e77467f5fd15f1cac3612fb"/>
+  <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="27f48ee996f2e61dea03c69d0d07845c6fbf52a7">
+    <copyfile dest="codereview.settings" src="codereview.settings"/>
+    <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
+  </project>
+  <project name="chrontel" path="src/third_party/chrontel" revision="52027a0599f0b784892ab3b4eae6786f533708a6"/>
+  <project name="common" path="src/common" revision="6eeba3e0164ef3cdc37e9bc58f36a1043498de18"/>
+  <project name="crash" path="src/platform/crash" revision="d5c6822ca8f2a4b26fd0461731677992ab3aad30"/>
+  <project name="crash-dumper" path="src/platform/crash-dumper" revision="278c866b6039379a548730b7be57f843266c87e6"/>
+  <project name="crash-reporter" path="src/platform/crash-reporter" revision="2d2f2bb9fc714e8dca9c78f64cd349abb6745602"/>
+  <project name="cromo" path="src/platform/cromo" revision="8129e5fadea67f5da429004fc4f7660183332c1b"/>
+  <project name="cros" path="src/platform/cros" revision="7537f1e8866ac28580179d1903e6455a0ff53597"/>
+  <project name="cros_boot_mode" path="src/platform/cros_boot_mode" revision="f2cafd44f6f8e1ff30d0054d2842fdc419b53418"/>
+  <project name="crosutils" path="src/scripts" revision="c663f209f730646e1e05cb5ec980deeab7ff9fd2"/>
+  <project name="cryptohome" path="src/platform/cryptohome" revision="644890916f690059a992b63e0c20de22534bee71"/>
+  <project name="dbus-cplusplus" path="src/third_party/dbus-c++" revision="89cc134e324824d02bd66c0a18f45d7127550f8e"/>
+  <project name="dev-util" path="src/platform/dev" revision="0ad0937652b9545e2b6ec3b82eda017a16e62e85"/>
+  <project name="dhcpcd" path="src/third_party/dhcpcd" revision="1e1cecd29c261351e94c881758024c24f58462c1"/>
+  <project name="dm-verity" path="src/platform/verity" revision="2356793c8aa6b3a1c6dcfaa9f354e4c556dc57a2"/>
+  <project name="dump-syms" path="src/platform/dump-syms" revision="872bf84313e83f60c50160ea7fd37bf25da4848b"/>
+  <project name="entd" path="src/platform/entd" revision="cedcca89aac292c8e3f9a4cb82788e18ee727e93"/>
+  <project name="factory_installer" path="src/platform/factory_installer" revision="b8444be6de6e1a766b3f8890f8a9649ec91a6dfd"/>
+  <project name="firmware" path="src/platform/firmware" revision="75eba6b75d9df71562151bc229ca57400b677343"/>
+  <project name="firmware-utils" path="src/platform/firmware-utils" revision="bcd97e0add7adc2b95493298c4bc1b38afeb6eca"/>
+  <project name="flashrom" path="src/third_party/flashrom" revision="c801adb8f9b459e3872bbbeb76674411468cc951"/>
+  <project name="flimflam" path="src/third_party/flimflam" revision="2d3795c7ea24530e9a82b2c3f3116786e97a9e89"/>
+  <project name="google-breakpad" path="src/platform/google-breakpad" revision="480a20a3d015744787a07023a17ef94d1305357c"/>
+  <project name="gpt" path="src/third_party/gpt" revision="4253b546f47d0a4ce45b863c8f58e077015486cf"/>
+  <project name="grub2" path="src/third_party/grub2" revision="d1661b9e74f84b349242998462209e204acc9239"/>
+  <project name="hostap" path="src/third_party/wpa_supplicant" revision="491ec98a5c082f1b845d73306c2988075e874231"/>
+  <project name="ibus-chewing" path="src/third_party/ibus-chewing/files" revision="7a30fc7588370ac546076e9d0245a941fabe53f4"/>
+  <project name="ibus-pinyin" path="src/third_party/ibus-pinyin/files" revision="46cc1b3434a3f4df00c45b4f14d122078878ed90"/>
+  <project name="ibus-xkb-layouts" path="src/third_party/ibus-xkb-layouts/files" revision="f90b12f6c6243458b24f4960759efa816e03216e"/>
+  <project name="image-burner" path="src/platform/image-burner" revision="4719bdd56057a0928412c9c7b0d8ec43d1d39c76"/>
+  <project name="init" path="src/platform/init" revision="89a63016aed3174951103b2336ee8e7a6c2ec557"/>
+  <project name="initramfs" path="src/platform/initramfs" revision="eb584db7cb1fd9b2e123dd0bd07cd4c4a2c651db"/>
+  <project name="installer" path="src/platform/installer" revision="93778b09ce8151a37a922cac902b6d62eb3f4238"/>
+  <project name="kernel" path="src/third_party/kernel/files" revision="040494d7290a2ff16236ad29b39451c5fb302e3b"/>
+  <project name="kernel-next" path="src/third_party/kernel-next" revision="6d14707d8d580caca45667324b72a57b6745a0cd"/>
+  <project name="khronos" path="src/third_party/khronos" revision="bc3c1486800a25189f9ca4f7420de9bd10b1ea34"/>
+  <project name="laptop-mode-tools" path="src/third_party/laptop-mode-tools" revision="02f8ebfc4915d6c5817818a61a49b98334fe3ec4"/>
+  <project name="libresample" path="src/third_party/libresample" revision="004812c103c969c92fc6379384e231742485da9d"/>
+  <project name="libscrypt" path="src/third_party/libscrypt" revision="a5d8376cbae6da1130144305cfcfe8b22e9fa444"/>
+  <project name="login_manager" path="src/platform/login_manager" revision="743c1208d6b175899ef8e4b74c33dcb8fcbe85f2"/>
+  <project name="marvell" path="src/third_party/marvell" revision="b63dc7deb90befeb43f82641d8b8be9ad51c7e25"/>
+  <project name="memento_softwareupdate" path="src/platform/memento_softwareupdate" revision="b29f439c85dddaa1d4f3ccc9ab35825105a1c638"/>
+  <project name="metrics" path="src/platform/metrics" revision="471ac588dce5f74e2b545571601f9763708b73ca"/>
+  <project name="microbenchmark" path="src/platform/microbenchmark" revision="d5ea30febe406c5b486325dfae926564f3a46efd"/>
+  <project name="minifakedns" path="src/third_party/miniFakeDns" revision="421940b7407669a531d5f45243bd79114684c39f"/>
+  <project name="minijail" path="src/platform/minijail" revision="7b634ba80dca053466841ebd83daca637384ffe6"/>
+  <project name="modemmanager" path="src/third_party/modemmanager" revision="c0054e880ab21442935a79732de2790c5d253c64"/>
+  <project name="monitor_reconfig" path="src/platform/monitor_reconfig" revision="ed4948c781bed219b3eae02fd4c93eb8d8638d88"/>
+  <project name="pam-dev" path="src/third_party/pam-dev" revision="254cdb6e30eeb337375d26c49b26bad65247b343"/>
+  <project name="pam_google" path="src/platform/pam_google" revision="f058d4fc2c86ba4dbebdad2acf7cfba012a5314b"/>
+  <project name="pam_offline" path="src/platform/pam_offline" revision="d26925c51b72d81c47bba5c0d9b042782254b6e3"/>
+  <project name="ply-image" path="src/third_party/ply-image" revision="6ab2fe4aaffcf6d28ea529b6a3e797d082edb2d3"/>
+  <project name="portage" path="src/third_party/portage" revision="ab18f9094414f5bf7fc36b95eb0835facecd8920"/>
+  <project name="power_manager" path="src/platform/power_manager" revision="45529cd4253763425b220e5637ecfef7e38193be"/>
+  <project name="recovery_installer" path="src/platform/recovery_installer" revision="81f65f6d1222a0acef104a895f200b48ddd9d015"/>
+  <project name="rootdev" path="src/third_party/rootdev" revision="80fbc6c5d03ba9c192f0e406ee0b6ec60711d603"/>
+  <project name="saft" path="src/platform/saft" revision="9a7ca5dece1588e154851c3295c8d11a495544d2"/>
+  <project name="speech_synthesis" path="src/platform/speech_synthesis" revision="b3917be8eed5eac48907e4b4ab1d6fba29cc98d9"/>
+  <project name="theme" path="src/platform/theme" revision="1147ee5cf161a58e25b4aac686e1978bed94c831"/>
+  <project name="tpm" path="src/third_party/tpm" revision="1814ad708d10f34ad8f03d3a067d72bc32782e3c"/>
+  <project name="tpm-emulator" path="src/third_party/tpm-emulator" revision="080c7951165acb7cdfc9b372ad76d0772fa4f53d"/>
+  <project name="tpm_init" path="src/platform/tpm_init" revision="3b30cc76fdfbd0c4b84e66dc8b7b8d0cffb4ddc8"/>
+  <project name="tpm_lite" path="src/platform/tpm_lite" revision="066c7f963b3ef733716251b666e0af0afd03b4fe"/>
+  <project name="trousers" path="src/third_party/trousers" revision="987b8de9b604aadc9f30b9c6e4c9f05785bc4d96"/>
+  <project name="u-boot" path="src/third_party/u-boot/files" revision="a734c03d7ae09bf3fd71719c0e82b8ea996af6c9"/>
+  <project name="u-boot-next" path="src/third_party/u-boot-next/files" revision="6470b91e614b35a4907a5c17fb62d44ec35a7534"/>
+  <project name="uboot-env" path="src/platform/uboot-env" revision="108ebbfac4d13d11e1940216434c368384ee0c0b"/>
+  <project name="update_engine" path="src/platform/update_engine" revision="3aefa8634c9e9f31b9fdae5a57444c70c2f03928"/>
+  <project name="upstart" path="src/third_party/upstart/files" revision="6a29aaf505091d8afac6c909e551329dafa787b5"/>
+  <project name="userfeedback" path="src/platform/userfeedback" revision="df3a466a5111cca8b98df88a523ef96d79e128dc"/>
+  <project name="vboot_reference" path="src/platform/vboot_reference" revision="51b9b8362259f44667117473c2d78f8c9e202286"/>
+  <project name="window_manager" path="src/platform/window_manager" revision="67b0680ee05eae638c407a6479c138b4880013a5"/>
+  <project name="workarounds" path="src/platform/workarounds" revision="6060013fd2975a5269171daad3fc407dbb7b6df6"/>
+  <project name="xf86-video-msm" path="src/third_party/xf86-video-msm" revision="2789222ac8cb577f0d0535b764c744cdf858a9a1"/>
+</manifest>
