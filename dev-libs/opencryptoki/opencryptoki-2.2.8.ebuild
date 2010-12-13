@@ -35,6 +35,7 @@ src_prepare() {
 	epatch "${FILESDIR}/opencryptoki-2.2.8-steal_shmem.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.8-remove_openlog.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.8-remove_recursive_chmod.patch"
+	epatch "${FILESDIR}/opencryptoki-2.2.8-tpm_pubexp.patch"
 	eautoreconf
 }
 

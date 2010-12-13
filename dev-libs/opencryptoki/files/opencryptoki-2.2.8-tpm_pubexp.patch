@@ -1,0 +1,56 @@
+diff -ru opencryptoki-2.2.8.ORG/work/opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/new_host.c opencryptoki-2.2.8/work/opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/new_host.c
+--- opencryptoki-2.2.8.ORG/work/opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/new_host.c	2010-12-07 16:38:55.000000000 -0800
++++ opencryptoki-2.2.8/work/opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/new_host.c	2010-12-07 17:05:17.000000000 -0800
+@@ -28,6 +28,9 @@
+        4/25/03    Kapil Sood (kapil@corrent.com)
+                   Added DH key pair generation and DH shared key derivation
+                   functions.
++      11/16/10    Nelson Araujo (nelsona@chromium.org)
++                  Return default public exponent if not stored and/or returned
++                  by the TPM token device
+ ****************************************************************************/
+ 
+ 
+@@ -120,6 +123,7 @@
+ 
+ CK_C_INITIALIZE_ARGS cinit_args = { NULL, NULL, NULL, NULL, 0, NULL };
+ 
++CK_BYTE pub_exp[] = { 0x1, 0x0, 0x1 }; // 65537
+ 
+ extern void stlogterm();
+ extern void stloginit();
+@@ -1926,11 +1930,34 @@
+       goto done;
+    }
+ 
++   for (i=0; i<ulCount; i++) {
++      if (pTemplate[i].type == CKA_PUBLIC_EXPONENT) {
++         // 'object_mgr_get_attribute_values' requires the buffer to be
++         // of the right size, otherwise it will fail with a too generic
++         // error code. if buffer is too small, return to the caller
++         // failure with more appropriate (specific) error code.
++         if (pTemplate[i].ulValueLen < sizeof(pub_exp)) {
++            rc = CKR_BUFFER_TOO_SMALL;
++            goto done;
++         }
++      }
++   }
++
+    rc = object_mgr_get_attribute_values( sess, hObject, pTemplate, ulCount );
+    if (rc != CKR_OK){
+       st_err_log(159, __FILE__, __LINE__);
+    }
+ 
++   for (i=0; i<ulCount; i++) {
++      if (pTemplate[i].type == CKA_PUBLIC_EXPONENT) {
++         if (rc || pTemplate[i].ulValueLen == 0) {
++            // Use well-known exponent if value not stored by the device.
++            memcpy( pTemplate[i].pValue, pub_exp, sizeof(pub_exp) );
++            pTemplate[i].ulValueLen = sizeof(pub_exp);
++           rc = 0;
++         }
++      }
++   }
+ 
+ done:
+    LLOCK;
