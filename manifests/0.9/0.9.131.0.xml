@@ -30,12 +30,12 @@
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
   <project name="autotest" path="src/third_party/autotest/files" revision="a259e44f4f395dfbfe8bdb81ac24e348efdf66c8"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="6d336b3d529c05aa0a611934afb2e9d485323f40"/>
+  <project name="board-overlays" path="src/overlays" revision="d9ecb470b061ffd2f7bc5b493e0ce827d34eff69"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="0f4972dfc6fd83120e77467f5fd15f1cac3612fb"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="ab0bd0b4a37d3a5dd3e54f5006c3ac7ce99a2380">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="8138a7b1a54828c3fd5005044c12c363e36ed7cb">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -47,7 +47,7 @@
   <project name="cromo" path="src/platform/cromo" revision="8129e5fadea67f5da429004fc4f7660183332c1b"/>
   <project name="cros" path="src/platform/cros" revision="7537f1e8866ac28580179d1903e6455a0ff53597"/>
   <project name="cros_boot_mode" path="src/platform/cros_boot_mode" revision="f2cafd44f6f8e1ff30d0054d2842fdc419b53418"/>
-  <project name="crosutils" path="src/scripts" revision="97432e7e9e9a1f5aeaf5ea86bf4084379b2531c6"/>
+  <project name="crosutils" path="src/scripts" revision="fdefe8664b06d86eccd02bfd89f42154bce54f09"/>
   <project name="cryptohome" path="src/platform/cryptohome" revision="644890916f690059a992b63e0c20de22534bee71"/>
   <project name="dbus-cplusplus" path="src/third_party/dbus-c++" revision="89cc134e324824d02bd66c0a18f45d7127550f8e"/>
   <project name="dev-util" path="src/platform/dev" revision="4c9b2f93eb5fdaa6ec5e0a00331f0f8bb36bd0c5"/>
@@ -71,7 +71,7 @@
   <project name="init" path="src/platform/init" revision="89a63016aed3174951103b2336ee8e7a6c2ec557"/>
   <project name="initramfs" path="src/platform/initramfs" revision="eb584db7cb1fd9b2e123dd0bd07cd4c4a2c651db"/>
   <project name="installer" path="src/platform/installer" revision="93778b09ce8151a37a922cac902b6d62eb3f4238"/>
-  <project name="kernel" path="src/third_party/kernel/files" revision="5dbfc57c1a63f8a7b26fa80e2d54c0688f9842c7"/>
+  <project name="kernel" path="src/third_party/kernel/files" revision="54bb7840cd33964b20c4548bb0ffdc3986eef487"/>
   <project name="kernel-next" path="src/third_party/kernel-next" revision="142f8f047872ad7927786653111ef3d471f0500f"/>
   <project name="khronos" path="src/third_party/khronos" revision="bc3c1486800a25189f9ca4f7420de9bd10b1ea34"/>
   <project name="laptop-mode-tools" path="src/third_party/laptop-mode-tools" revision="02f8ebfc4915d6c5817818a61a49b98334fe3ec4"/>
@@ -109,7 +109,7 @@
   <project name="upstart" path="src/third_party/upstart/files" revision="6a29aaf505091d8afac6c909e551329dafa787b5"/>
   <project name="userfeedback" path="src/platform/userfeedback" revision="df3a466a5111cca8b98df88a523ef96d79e128dc"/>
   <project name="vboot_reference" path="src/platform/vboot_reference" revision="50a75da5a1c360e162280dd95276e0fa2a1bd187"/>
-  <project name="window_manager" path="src/platform/window_manager" revision="357bd4482f71f3ee5b4a39ef093c11c133d00b16"/>
+  <project name="window_manager" path="src/platform/window_manager" revision="170aeb62e5c25e1cea142cbf8480e65be13c7b1d"/>
   <project name="workarounds" path="src/platform/workarounds" revision="6060013fd2975a5269171daad3fc407dbb7b6df6"/>
   <project name="xf86-video-msm" path="src/third_party/xf86-video-msm" revision="2789222ac8cb577f0d0535b764c744cdf858a9a1"/>
 </manifest>
