@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon autotools
+inherit cros-debug cros-workon autotools
 
 DESCRIPTION="Chromium OS network usage tracking daemon"
 HOMEPAGE="http://src.chromium.org"
@@ -16,7 +16,7 @@ IUSE="test"
 RDEPEND="chromeos-base/flimflam
 	chromeos-base/libchrome
 	dev-cpp/gflags
-	dev-cpp/glog
+	>=dev-cpp/glog-0.3.1
 	dev-libs/dbus-c++
 	dev-libs/glib
 	net-misc/curl"
@@ -25,7 +25,13 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_prepare() {
-	eautoreconf
+	eautoreconf || die "eautoreconf failed"
+}
+
+src_configure() {
+	# set NDEBUG (or not) based on value of cros-debug USE flag
+	cros-debug-add-NDEBUG
+	econf || die "econf failed"
 }
 
 src_compile() {
