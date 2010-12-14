@@ -30,12 +30,12 @@
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
   <project name="autotest" path="src/third_party/autotest/files" revision="6ec0645e0d15bdc72e07a772b71d2f5ecb0e37c1"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="8dd481f0b47147e802a6036367571e1e2090bb79"/>
+  <project name="board-overlays" path="src/overlays" revision="563fce538d80a67fdf0022b3a8ce279f9ca75700"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="0f4972dfc6fd83120e77467f5fd15f1cac3612fb"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="75172316352db1735b1aca7f5e6be5c477aa458a">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="2f6e4db03057ce056a1aebc68ab1ba427740ea7b">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -91,7 +91,7 @@
   <project name="pam_offline" path="src/platform/pam_offline" revision="d26925c51b72d81c47bba5c0d9b042782254b6e3"/>
   <project name="ply-image" path="src/third_party/ply-image" revision="6ab2fe4aaffcf6d28ea529b6a3e797d082edb2d3"/>
   <project name="portage" path="src/third_party/portage" revision="ab18f9094414f5bf7fc36b95eb0835facecd8920"/>
-  <project name="power_manager" path="src/platform/power_manager" revision="45529cd4253763425b220e5637ecfef7e38193be"/>
+  <project name="power_manager" path="src/platform/power_manager" revision="45e4a75a5a3f52a002de41bba53c093e90500cfd"/>
   <project name="recovery_installer" path="src/platform/recovery_installer" revision="81f65f6d1222a0acef104a895f200b48ddd9d015"/>
   <project name="rootdev" path="src/third_party/rootdev" revision="80fbc6c5d03ba9c192f0e406ee0b6ec60711d603"/>
   <project name="saft" path="src/platform/saft" revision="9a7ca5dece1588e154851c3295c8d11a495544d2"/>
