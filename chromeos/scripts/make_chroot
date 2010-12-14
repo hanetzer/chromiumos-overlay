@@ -161,6 +161,11 @@ function init_setup () {
    sudo mv "${FLAGS_chroot}"/etc/make.conf{,.orig}
    sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
      "${FLAGS_chroot}/etc/make.conf"
+   cat <<EOF | sudo dd of="${FLAGS_chroot}/etc/make.conf.host_setup"
+# Created by make_chroot
+MAKEOPTS="-j${NUM_JOBS}"
+EOF
+   sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
    sudo mv "${FLAGS_chroot}"/etc/make.profile{,.orig}
    sudo ln -sf "${CHROOT_OVERLAY}/profiles/default/linux/amd64/10.0" \
      "${FLAGS_chroot}/etc/make.profile"
@@ -269,11 +274,6 @@ sudo mount --bind /dev "${FLAGS_chroot}/dev"
 sudo mount --bind "${GCLIENT_ROOT}" "${FLAGS_chroot}/${CHROOT_TRUNK}"
 sudo mount none -t proc "$FLAGS_chroot/proc"
 sudo mount none -t devpts "$FLAGS_chroot/dev/pts"
-bash_chroot 'cat > /etc/make.conf.host_setup' <<EOF
-# Created by make_chroot
-MAKEOPTS="-j${NUM_JOBS}"
-EOF
-sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
 if [ -f $CHROOT_STATE ];then
   echo "$PROG: chroot already initialized.  Skipping..."
@@ -282,6 +282,11 @@ if [ -f $CHROOT_STATE ];then
   # needed for backwards compatibility, so we should remove this eventually.
   sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
     "${FLAGS_chroot}/etc/make.conf"
+  cat <<EOF | sudo dd of="${FLAGS_chroot}/etc/make.conf.host_setup"
+# Created by make_chroot
+MAKEOPTS="-j${NUM_JOBS}"
+EOF
+  sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
   # Apply any hacks needed to update the chroot.
   # TODO: Should the above hacks be moved into this function?
@@ -305,14 +310,7 @@ bash_chroot $EMERGE_CMD --unmerge dhcpcd
 
 echo "$PROG: Running emerge world ccache crossdev etc ..."
 bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
-    ccache crossdev crossdev-wrappers net-misc/curl sudo $EMERGE_JOBS
-
-# Curl is now installed, so we can depend on it now.
-bash_chroot 'cat >> /etc/make.conf.host_setup' <<'EOF'
-FETCHCOMMAND='curl --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
-RESUMECOMMAND='curl -C - --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
-EOF
-sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
+    ccache crossdev crossdev-wrappers sudo $EMERGE_JOBS
 
 echo "$PROG: Running emerge hard-host-depends"
 # Need to sudo_chroot here so that ~/.bash_profile gets used
