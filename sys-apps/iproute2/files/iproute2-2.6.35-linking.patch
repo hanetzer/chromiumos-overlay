@@ -1,0 +1,41 @@
+From ba874fd125b2e4d34ad56417080985d975c8ed33 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Diego=20Elio=20Petten=C3=B2?= <flameeyes@gmail.com>
+Date: Fri, 10 Dec 2010 01:30:13 +0100
+Subject: [iproute2 PATCH] Link directly to the archive files rather than using search paths.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+While the previous code was supposed to work nonetheless, it could be
+messed up if further -L were used in LDFLAGS to list the path where glibc's
+libutil was to be found.
+
+References: https://bugs.gentoo.org/347489
+
+CC: Daniel Kurtz <djkurtz@google.com>
+CC: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: Diego Elio Pettenò <flameeyes@gmail.com>
+---
+ Makefile |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index c03d74c..d1ace1f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -33,11 +33,10 @@ CCOPTS = -D_GNU_SOURCE -O2 -Wstrict-prototypes -Wall
+ CFLAGS = $(CCOPTS) -I../include $(DEFINES)
+ YACCFLAGS = -d -t -v
+ 
+-LDLIBS += -L../lib -lnetlink -lutil
+-
+ SUBDIRS=lib ip tc misc netem genl
+ 
+ LIBNETLINK=../lib/libnetlink.a ../lib/libutil.a
++LDLIBS += $(LIBNETLINK)
+ 
+ all: Config
+ 	@set -e; \
+-- 
+1.7.3.3
+

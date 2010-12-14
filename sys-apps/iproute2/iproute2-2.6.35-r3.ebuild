@@ -54,7 +54,7 @@ src_prepare() {
 	use ipv6 || epatch "${FILESDIR}"/${PN}-2.6.35-no-ipv6.patch #326849
 	epatch "${FILESDIR}"/${PN}-2.6.35-xtables.patch
 	epatch "${FILESDIR}"/${PN}-2.6.35-no-iptables.patch
-	epatch "${FILESDIR}"/${PN}-2.6.35-split_ldflags.patch
+	epatch "${FILESDIR}"/${PN}-2.6.35-linking.patch
 
 	epatch_user
 
