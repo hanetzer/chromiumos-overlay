@@ -30,12 +30,12 @@
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
   <project name="autotest" path="src/third_party/autotest/files" revision="f7b52dd2507061fc796eb6f4d902fc9d0ffab09e"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="d5bf0a703569d5b3026ab43982766e01d0ed0f50"/>
+  <project name="board-overlays" path="src/overlays" revision="92cef3525bdbe218714d1bcc2c7cc485964f0a71"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="2976dae28779c16e4f931d6f33595e9e1684aed0"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="a26b79499cc02cf67b49acee03c71c481ab91eef">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="8e56b8832d4f60848b7a523219690ee423857907">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -89,7 +89,7 @@
   <project name="pam-dev" path="src/third_party/pam-dev" revision="254cdb6e30eeb337375d26c49b26bad65247b343"/>
   <project name="pam_google" path="src/platform/pam_google" revision="f058d4fc2c86ba4dbebdad2acf7cfba012a5314b"/>
   <project name="pam_offline" path="src/platform/pam_offline" revision="d26925c51b72d81c47bba5c0d9b042782254b6e3"/>
-  <project name="ply-image" path="src/third_party/ply-image" revision="6ab2fe4aaffcf6d28ea529b6a3e797d082edb2d3"/>
+  <project name="ply-image" path="src/third_party/ply-image" revision="1a56e2801ea581c2ed16ef9f0fb9be5fbd519e10"/>
   <project name="portage" path="src/third_party/portage" revision="ab18f9094414f5bf7fc36b95eb0835facecd8920"/>
   <project name="power_manager" path="src/platform/power_manager" revision="45e4a75a5a3f52a002de41bba53c093e90500cfd"/>
   <project name="recovery_installer" path="src/platform/recovery_installer" revision="81f65f6d1222a0acef104a895f200b48ddd9d015"/>
@@ -108,7 +108,7 @@
   <project name="update_engine" path="src/platform/update_engine" revision="3aefa8634c9e9f31b9fdae5a57444c70c2f03928"/>
   <project name="upstart" path="src/third_party/upstart/files" revision="6a29aaf505091d8afac6c909e551329dafa787b5"/>
   <project name="userfeedback" path="src/platform/userfeedback" revision="df3a466a5111cca8b98df88a523ef96d79e128dc"/>
-  <project name="vboot_reference" path="src/platform/vboot_reference" revision="50a75da5a1c360e162280dd95276e0fa2a1bd187"/>
+  <project name="vboot_reference" path="src/platform/vboot_reference" revision="9880ca5a03b72019c667b4492214830f9d355778"/>
   <project name="window_manager" path="src/platform/window_manager" revision="de0f4dab7569d48348fdbb7aec81e6648ff7b354"/>
   <project name="workarounds" path="src/platform/workarounds" revision="6060013fd2975a5269171daad3fc407dbb7b6df6"/>
   <project name="xf86-video-msm" path="src/third_party/xf86-video-msm" revision="2789222ac8cb577f0d0535b764c744cdf858a9a1"/>
