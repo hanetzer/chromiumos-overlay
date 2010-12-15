@@ -34,7 +34,7 @@ eval set -- "${FLAGS_ARGV}"
 # Die on any errors.
 set -e
 
-. "${SCRIPTS_DIR}/chromeos_version.sh"
+. ${SRC_ROOT}/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh
 
 ROOT_FS_DIR="$FLAGS_root"
 if [[ -z "$ROOT_FS_DIR" ]]; then
