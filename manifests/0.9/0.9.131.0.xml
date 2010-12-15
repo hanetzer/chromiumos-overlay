@@ -33,9 +33,9 @@
   <project name="board-overlays" path="src/overlays" revision="26bf0ea7c2a79d12140de6c23b3acba96eff07af"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
-  <project name="cashew" path="src/platform/cashew" revision="2976dae28779c16e4f931d6f33595e9e1684aed0"/>
+  <project name="cashew" path="src/platform/cashew" revision="8034893fad255e8a2b59735e00bf9e8c64f99425"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="2531e16458790e259007e8db78997e275e9b3a94">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="c46b5f9870ad4013b795ffe491ca76d83795fc9e">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -59,7 +59,7 @@
   <project name="firmware" path="src/platform/firmware" revision="75eba6b75d9df71562151bc229ca57400b677343"/>
   <project name="firmware-utils" path="src/platform/firmware-utils" revision="bcd97e0add7adc2b95493298c4bc1b38afeb6eca"/>
   <project name="flashrom" path="src/third_party/flashrom" revision="ade2d83e7d955cc3638b49135f4131119200f6db"/>
-  <project name="flimflam" path="src/third_party/flimflam" revision="2d3795c7ea24530e9a82b2c3f3116786e97a9e89"/>
+  <project name="flimflam" path="src/third_party/flimflam" revision="6d122a6cc10c7e02d31b4c6487f97c7a08fea4cb"/>
   <project name="google-breakpad" path="src/platform/google-breakpad" revision="480a20a3d015744787a07023a17ef94d1305357c"/>
   <project name="gpt" path="src/third_party/gpt" revision="4253b546f47d0a4ce45b863c8f58e077015486cf"/>
   <project name="grub2" path="src/third_party/grub2" revision="d1661b9e74f84b349242998462209e204acc9239"/>
