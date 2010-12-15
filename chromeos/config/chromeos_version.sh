@@ -57,10 +57,10 @@ then
   # person is debugging the system.
   export CHROMEOS_VERSION_CODENAME="$USER"
 
-  export CHROMEOS_VERSION_NAME="Chromium OS"
-  export CHROMEOS_VERSION_TRACK="buildbot-build"
-  export CHROMEOS_VERSION_AUSERVER="http://$HOSTNAME:8080/update"
-  export CHROMEOS_VERSION_DEVSERVER="http://$HOSTNAME:8080"
+  export CHROMEOS_VERSION_NAME=${CHROMEOS_VERSION_NAME:-"Chromium OS"}
+  export CHROMEOS_VERSION_TRACK=${CHROMEOS_VERSION_TRACK:-"buildbot-build"}
+  export CHROMEOS_VERSION_AUSERVER=${CHROMEOS_VERSION_AUSERVER:-"http://$HOSTNAME:8080/update"}
+  export CHROMEOS_VERSION_DEVSERVER=${CHROMEOS_VERSION_DEVSERVER:-"http://$HOSTNAME:8080"}
 else
   # Developer hand-builds
   # Sets the codename to the user who built the image. This
@@ -68,10 +68,10 @@ else
   # person is debugging the system.
   export CHROMEOS_VERSION_CODENAME="$USER"
 
-  export CHROMEOS_VERSION_NAME="Chromium OS"
-  export CHROMEOS_VERSION_TRACK="developer-build"
-  export CHROMEOS_VERSION_AUSERVER="http://$HOSTNAME:8080/update"
-  export CHROMEOS_VERSION_DEVSERVER="http://$HOSTNAME:8080"
+  export CHROMEOS_VERSION_NAME=${CHROMEOS_VERSION_NAME:-"Chromium OS"}
+  export CHROMEOS_VERSION_TRACK=${CHROMEOS_VERSION_TRACK:-"developer-build"}
+  export CHROMEOS_VERSION_AUSERVER=${CHROMEOS_VERSION_AUSERVER:-"http://$HOSTNAME:8080/update"}
+  export CHROMEOS_VERSION_DEVSERVER=${CHROMEOS_VERSION_DEVSERVER:-"http://$HOSTNAME:8080"}
   # Overwrite CHROMEOS_VERSION_PATCH with a date string for use by auto-updater
   export CHROMEOS_VERSION_PATCH=$(date +%Y_%m_%d_%H%M)
 fi
