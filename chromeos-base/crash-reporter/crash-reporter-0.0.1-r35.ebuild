@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="2d2f2bb9fc714e8dca9c78f64cd349abb6745602"
+CROS_WORKON_COMMIT="50ae33b4565a0597387565e9ef5cff47f7b3b369"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -46,9 +46,11 @@ src_test() {
 }
 
 src_install() {
-	into /
+	into / || die
 	dosbin "crash_reporter" || die
 	dosbin "crash_sender" || die
 	exeinto /etc/cron.hourly || die
 	doexe "crash_sender.hourly" || die
+	insinto /etc || die
+	doins "crash_reporter_logs.conf" || die
 }
