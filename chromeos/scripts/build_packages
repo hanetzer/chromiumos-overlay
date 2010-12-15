@@ -69,7 +69,8 @@ check_flags_only_and_allow_null_arg "$@" && set --
 # Die on any errors.
 set -e
 
-. "${SCRIPTS_DIR}/chromeos_version.sh"
+# Right now build_packages has to be run from scripts/
+. ${SRC_ROOT}/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh
 
 if [[ -z "${FLAGS_board}" ]]; then
   echo "Error: --board is required."
@@ -149,7 +150,7 @@ if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board="${FLAGS_board}" list)
 fi
 
-# TODO(anush): Make chrome a fake cros-workon package. 
+# TODO(anush): Make chrome a fake cros-workon package.
 if [[ -n "${CHROME_ORIGIN}" ]]; then
   CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
 fi
