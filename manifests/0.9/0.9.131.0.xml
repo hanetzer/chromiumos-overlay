@@ -11,14 +11,14 @@
   <project name="assets" path="src/platform/assets" revision="bac1ba65da3afb14fe366db920825b6f57c6b3ef"/>
   <project name="atheros" path="src/third_party/atheros" revision="ea68c1251fddeb2fade3859e55ac426af31be2d2"/>
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
-  <project name="autotest" path="src/third_party/autotest/files" revision="dee4e299130cb714b4bc4200302c7a3ddce2f081"/>
+  <project name="autotest" path="src/third_party/autotest/files" revision="f346bb7879a052dad11b408255d58675c0783dbb"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="027d117dd5675dd72ba907b6e8c29f073fbd5038"/>
+  <project name="board-overlays" path="src/overlays" revision="536df9fe5ac15e59ed56040bc36f94007edb5da7"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="8034893fad255e8a2b59735e00bf9e8c64f99425"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="7a7ed94c123a1461aec34d6fa9f495d6a4a69832">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="7cb3a9e5ea35ac99adf8835c644ed548d6598529">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
