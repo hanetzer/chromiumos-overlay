@@ -11,14 +11,14 @@
   <project name="assets" path="src/platform/assets" revision="bac1ba65da3afb14fe366db920825b6f57c6b3ef"/>
   <project name="atheros" path="src/third_party/atheros" revision="ea68c1251fddeb2fade3859e55ac426af31be2d2"/>
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
-  <project name="autotest" path="src/third_party/autotest/files" revision="f346bb7879a052dad11b408255d58675c0783dbb"/>
+  <project name="autotest" path="src/third_party/autotest/files" revision="428b1782ae2a99ecfd3c667f05278417d6dadef7"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
   <project name="board-overlays" path="src/overlays" revision="536df9fe5ac15e59ed56040bc36f94007edb5da7"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="8034893fad255e8a2b59735e00bf9e8c64f99425"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="7cb3a9e5ea35ac99adf8835c644ed548d6598529">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="ba7bf1fe3cb78b2270a05a48a9e318ca2cfaf8c2">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -42,7 +42,7 @@
   <project name="firmware" path="src/platform/firmware" revision="75eba6b75d9df71562151bc229ca57400b677343"/>
   <project name="firmware-utils" path="src/platform/firmware-utils" revision="bcd97e0add7adc2b95493298c4bc1b38afeb6eca"/>
   <project name="flashrom" path="src/third_party/flashrom" revision="ade2d83e7d955cc3638b49135f4131119200f6db"/>
-  <project name="flimflam" path="src/third_party/flimflam" revision="6d122a6cc10c7e02d31b4c6487f97c7a08fea4cb"/>
+  <project name="flimflam" path="src/third_party/flimflam" revision="7118bfc85b937dc4d374f2ea441502eadd85b622"/>
   <project name="google-breakpad" path="src/platform/google-breakpad" revision="480a20a3d015744787a07023a17ef94d1305357c"/>
   <project name="gpt" path="src/third_party/gpt" revision="4253b546f47d0a4ce45b863c8f58e077015486cf"/>
   <project name="grub2" path="src/third_party/grub2" revision="d1661b9e74f84b349242998462209e204acc9239"/>
