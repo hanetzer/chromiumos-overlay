@@ -13,12 +13,12 @@
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
   <project name="autotest" path="src/third_party/autotest/files" revision="dee4e299130cb714b4bc4200302c7a3ddce2f081"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="5866a9699bffa52ff09eede1ce2bc8318c42fef6"/>
+  <project name="board-overlays" path="src/overlays" revision="027d117dd5675dd72ba907b6e8c29f073fbd5038"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="8034893fad255e8a2b59735e00bf9e8c64f99425"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="9b0bca98e3ee9cd39a5955d5261175290ddb7266">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="7c482f73bad451bfdad281a3eed1a6bbbcf45e7c">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -30,7 +30,7 @@
   <project name="cromo" path="src/platform/cromo" revision="8129e5fadea67f5da429004fc4f7660183332c1b"/>
   <project name="cros" path="src/platform/cros" revision="7537f1e8866ac28580179d1903e6455a0ff53597"/>
   <project name="cros_boot_mode" path="src/platform/cros_boot_mode" revision="f2cafd44f6f8e1ff30d0054d2842fdc419b53418"/>
-  <project name="crosutils" path="src/scripts" revision="b38b3c81bcd609f6ae51637e0dceb09d352d2077"/>
+  <project name="crosutils" path="src/scripts" revision="72d0b08d922d4184c67176f76fcf5ed85325c8ef"/>
   <project name="cryptohome" path="src/platform/cryptohome" revision="644890916f690059a992b63e0c20de22534bee71"/>
   <project name="dbus-cplusplus" path="src/third_party/dbus-c++" revision="89cc134e324824d02bd66c0a18f45d7127550f8e"/>
   <project name="dev-util" path="src/platform/dev" revision="4c9b2f93eb5fdaa6ec5e0a00331f0f8bb36bd0c5"/>
