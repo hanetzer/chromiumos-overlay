@@ -28,14 +28,14 @@
   <project name="assets" path="src/platform/assets" revision="bac1ba65da3afb14fe366db920825b6f57c6b3ef"/>
   <project name="atheros" path="src/third_party/atheros" revision="ea68c1251fddeb2fade3859e55ac426af31be2d2"/>
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
-  <project name="autotest" path="src/third_party/autotest/files" revision="f7b52dd2507061fc796eb6f4d902fc9d0ffab09e"/>
+  <project name="autotest" path="src/third_party/autotest/files" revision="c80574251a42e4541e115fbb2e94b03534fc0b03"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
   <project name="board-overlays" path="src/overlays" revision="298ca5553075aaeeb8719a0bccf728a147ae64af"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="2976dae28779c16e4f931d6f33595e9e1684aed0"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="0df79bc95bdacbcc1b871b1b39d8bac343aba6aa">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="f8a98d39367895644b1f814a7ef1b50d94594c68">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -103,7 +103,7 @@
   <project name="tpm_lite" path="src/platform/tpm_lite" revision="066c7f963b3ef733716251b666e0af0afd03b4fe"/>
   <project name="trousers" path="src/third_party/trousers" revision="987b8de9b604aadc9f30b9c6e4c9f05785bc4d96"/>
   <project name="u-boot" path="src/third_party/u-boot/files" revision="a734c03d7ae09bf3fd71719c0e82b8ea996af6c9"/>
-  <project name="u-boot-next" path="src/third_party/u-boot-next/files" revision="6470b91e614b35a4907a5c17fb62d44ec35a7534"/>
+  <project name="u-boot-next" path="src/third_party/u-boot-next/files" revision="004ea9559ed9e2fc99db9c407daf993a1aa5e52a"/>
   <project name="uboot-env" path="src/platform/uboot-env" revision="108ebbfac4d13d11e1940216434c368384ee0c0b"/>
   <project name="update_engine" path="src/platform/update_engine" revision="3aefa8634c9e9f31b9fdae5a57444c70c2f03928"/>
   <project name="upstart" path="src/third_party/upstart/files" revision="6a29aaf505091d8afac6c909e551329dafa787b5"/>
