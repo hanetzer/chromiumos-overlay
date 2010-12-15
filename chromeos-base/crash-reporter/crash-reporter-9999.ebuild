@@ -45,9 +45,11 @@ src_test() {
 }
 
 src_install() {
-	into /
+	into / || die
 	dosbin "crash_reporter" || die
 	dosbin "crash_sender" || die
 	exeinto /etc/cron.hourly || die
 	doexe "crash_sender.hourly" || die
+	insinto /etc || die
+	doins "crash_reporter_logs.conf" || die
 }
