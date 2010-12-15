@@ -17,7 +17,7 @@ COST_PKG_VERSION="binutils-2.20.1.20100303_${COST_SUFFIX}"
 
 BINUTILS_TYPE="crosstool"
 BVER=${PV}
-SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/binutils-2.20.1.20100303_cos_gg_v1_43408.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/binutils-2.20.1.20100303_cos_gg_v1_43408.tar.gz"
 EXTRA_ECONF="${EXTRA_ECONF} --disable-checking --enable-gold=both/ld \
 --with-bugurl=http://code.google.com/p/chromium-os/issues/entry \
 --with-pkgversion=${COST_PKG_VERSION}"

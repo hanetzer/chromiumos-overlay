@@ -36,8 +36,8 @@ ${EXTRA_ECONF}"
 
 # Due to gold development moving faster than regular binutils, there is a
 # separate binutils tarball which just has an up-to-date gold
-SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/${BINUTILS_PKG_VERSION}.tar.gz \
-http://build.chromium.org/mirror/chromiumos/mirror/distfiles/${GOLD_PKG_VERSION}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${BINUTILS_PKG_VERSION}.tar.gz \
+http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${GOLD_PKG_VERSION}.tar.gz"
 
 S_BINUTILS="${WORKDIR}/${BINUTILS_VERSION}"
 S_GOLD="${WORKDIR}/${GOLD_VERSION}"

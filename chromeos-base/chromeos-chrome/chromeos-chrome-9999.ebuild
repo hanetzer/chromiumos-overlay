@@ -101,7 +101,7 @@ if [ "$ARCH" = "x86" ]; then
 elif [ "$ARCH" = "arm" ]; then
 	DEFAULT_CHROME_DIR=chromium-rel-arm
 fi
-CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/buildbot/snapshots/${DEFAULT_CHROME_DIR}"}
+CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES="ffmpeg_tests
             omx_test"

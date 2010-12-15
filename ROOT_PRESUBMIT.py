@@ -103,7 +103,7 @@ def CheckBuildbotPendingBuilds(input_api, output_api, source_file_filter=None):
   return input_api.canned_checks.CheckBuildbotPendingBuilds(
       input_api,
       output_api,
-      'http://build.chromium.org/buildbot/chromiumos/json/builders?filter=1',
+      'http://build.chromium.org/p/chromiumos/json/builders?filter=1',
       6,
       [])
 

@@ -47,8 +47,8 @@ S_GOLD="${WORKDIR}/${GOLD_VERSION}"
 if [[ ${PV} == "9999" ]] ; then
 	RESTRICT="fetch strip"
 else
-	SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/${BINUTILS_PKG_VERSION}.tar.gz \
-http://build.chromium.org/mirror/chromiumos/mirror/distfiles/${GOLD_PKG_VERSION}.tar.gz"
+	SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${BINUTILS_PKG_VERSION}.tar.gz \
+http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${GOLD_PKG_VERSION}.tar.gz"
 fi
 
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"

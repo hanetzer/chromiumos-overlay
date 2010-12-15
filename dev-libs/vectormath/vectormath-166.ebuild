@@ -5,7 +5,7 @@ EAPI=2
 
 DESCRIPTION="Sony vector math library."
 HOMEPAGE="http://www.bulletphysics.com/Bullet/phpBB2/viewforum.php?f=18"
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"

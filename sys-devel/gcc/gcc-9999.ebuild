@@ -75,7 +75,7 @@ if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
 
-SRC_URI="http://build.chromium.org/mirror/chromiumos/mirror/distfiles/gcc-4.4.3-specs-0.2.0.tar.bz2"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/gcc-4.4.3-specs-0.2.0.tar.bz2"
 RESTRICT="mirror strip"
 
 IUSE="mounted_sources"

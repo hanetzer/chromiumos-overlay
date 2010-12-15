@@ -7,7 +7,7 @@ inherit toolchain-funcs
 
 DESCRIPTION="V8 JavaScript engine."
 HOMEPAGE="http://code.google.com/p/v8/"
-SRC_URI="http://build.chromium.org/mirror/chromiumos/localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
