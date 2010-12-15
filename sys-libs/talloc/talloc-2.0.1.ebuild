@@ -12,7 +12,7 @@ SRC_URI="http://samba.org/ftp/talloc/${P}.tar.gz"
 LICENSE="GPL-3"
 IUSE="compat doc"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc x86"
 
 DEPEND="!<net-fs/samba-3.3
 	doc? ( app-text/docbook-xml-dtd:4.2 )
