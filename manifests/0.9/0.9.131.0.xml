@@ -30,12 +30,12 @@
   <project name="audioconfig" path="src/platform/audioconfig" revision="59678c9bb714b26db70d8acc2b2fa8f1c62a231f"/>
   <project name="autotest" path="src/third_party/autotest/files" revision="dee4e299130cb714b4bc4200302c7a3ddce2f081"/>
   <project name="autox" path="src/platform/autox" revision="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"/>
-  <project name="board-overlays" path="src/overlays" revision="f2b1cf5d7550e05cf1f1710e5292945e75206d20"/>
+  <project name="board-overlays" path="src/overlays" revision="26bf0ea7c2a79d12140de6c23b3acba96eff07af"/>
   <project name="bootstat" path="src/platform/bootstat" revision="bc198e5cc387ae0571a1f898f7d70c56c5c5c3b1"/>
   <project name="bootstub" path="src/third_party/bootstub" revision="0c78638ff21a3a4c459b6deaf67453458aa4f223"/>
   <project name="cashew" path="src/platform/cashew" revision="2976dae28779c16e4f931d6f33595e9e1684aed0"/>
   <project name="chromiumos-assets" path="src/platform/chromiumos-assets" revision="044d4685bd89879eb5caa64d968dcaa8def522f3"/>
-  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="1d0b4b35cebf4a7ccc9496c624138be27d4e13d1">
+  <project name="chromiumos-overlay" path="src/third_party/chromiumos-overlay" revision="07121f7aea5c08f9405fc254f7df7bbca10ec5b1">
     <copyfile dest="codereview.settings" src="codereview.settings"/>
     <copyfile dest="PRESUBMIT.py" src="ROOT_PRESUBMIT.py"/>
   </project>
@@ -47,7 +47,7 @@
   <project name="cromo" path="src/platform/cromo" revision="8129e5fadea67f5da429004fc4f7660183332c1b"/>
   <project name="cros" path="src/platform/cros" revision="7537f1e8866ac28580179d1903e6455a0ff53597"/>
   <project name="cros_boot_mode" path="src/platform/cros_boot_mode" revision="f2cafd44f6f8e1ff30d0054d2842fdc419b53418"/>
-  <project name="crosutils" path="src/scripts" revision="27c473d6c7c33ef4a8f22d063fdf58bc29c4c25e"/>
+  <project name="crosutils" path="src/scripts" revision="b38b3c81bcd609f6ae51637e0dceb09d352d2077"/>
   <project name="cryptohome" path="src/platform/cryptohome" revision="644890916f690059a992b63e0c20de22534bee71"/>
   <project name="dbus-cplusplus" path="src/third_party/dbus-c++" revision="89cc134e324824d02bd66c0a18f45d7127550f8e"/>
   <project name="dev-util" path="src/platform/dev" revision="4c9b2f93eb5fdaa6ec5e0a00331f0f8bb36bd0c5"/>
@@ -103,7 +103,7 @@
   <project name="tpm_lite" path="src/platform/tpm_lite" revision="066c7f963b3ef733716251b666e0af0afd03b4fe"/>
   <project name="trousers" path="src/third_party/trousers" revision="987b8de9b604aadc9f30b9c6e4c9f05785bc4d96"/>
   <project name="u-boot" path="src/third_party/u-boot/files" revision="a734c03d7ae09bf3fd71719c0e82b8ea996af6c9"/>
-  <project name="u-boot-next" path="src/third_party/u-boot-next/files" revision="004ea9559ed9e2fc99db9c407daf993a1aa5e52a"/>
+  <project name="u-boot-next" path="src/third_party/u-boot-next/files" revision="6abf00bf90729754ba36af00aef7dc4a1aed505b"/>
   <project name="uboot-env" path="src/platform/uboot-env" revision="108ebbfac4d13d11e1940216434c368384ee0c0b"/>
   <project name="update_engine" path="src/platform/update_engine" revision="3aefa8634c9e9f31b9fdae5a57444c70c2f03928"/>
   <project name="upstart" path="src/third_party/upstart/files" revision="6a29aaf505091d8afac6c909e551329dafa787b5"/>
