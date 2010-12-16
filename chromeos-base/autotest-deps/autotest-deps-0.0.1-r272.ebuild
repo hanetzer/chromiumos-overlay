@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="96600b150b3eef033eec4655a687c2953fa7fbba"
+CROS_WORKON_COMMIT="733f06e1706102f6b71cffbf3d336684bfec9961"
 
 inherit cros-workon autotest
 
