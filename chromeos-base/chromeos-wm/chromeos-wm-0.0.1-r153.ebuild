@@ -31,6 +31,7 @@ RDEPEND="dev-cpp/gflags
 	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )"
 DEPEND="chromeos-base/libchrome
+	chromeos-base/libchromeos
 	chromeos-base/libcros
 	dev-libs/vectormath
 	${RDEPEND}"
