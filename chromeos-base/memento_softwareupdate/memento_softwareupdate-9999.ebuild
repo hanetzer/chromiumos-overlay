@@ -43,6 +43,7 @@ src_install() {
   exeinto /opt/google/memento_updater
 
   for i in \
+    find_omaha.sh \
     memento_updater.sh \
     memento_updater_logging.sh \
     ping_omaha.sh \
