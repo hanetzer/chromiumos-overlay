@@ -22,7 +22,7 @@ CROS_WORKON_PROJECT="chromiumos-assets"
 
 src_install() {
 	insinto /usr/share/chromeos-assets/images
-	doins "${S}"/images/boot_splash.png
+	doins "${S}"/images/*
 
   insinto /usr/share/chromeos-assets/screensavers
   doins -r "${S}"/screensavers/*
