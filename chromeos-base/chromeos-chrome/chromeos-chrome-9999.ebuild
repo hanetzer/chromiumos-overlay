@@ -247,6 +247,56 @@ EOF
 	echo "]" >>${echrome_store_dir}/.gclient
 }
 
+unpack_chrome() {
+	# initial clone, we have to create chrome-src storage
+	# directory and play nicely with sandbox
+	if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
+		debug-print "${FUNCNAME}: Creating chrome-src directory"
+		addwrite /
+		mkdir -p "${ECHROME_STORE_DIR}" \
+			|| die "can't mkdir ${ECHROME_STORE_DIR}."
+		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+	fi
+
+	elog "Storing CHROME_VERSION=${CHROME_VERSION} in \
+		${CHROME_VERSION_FILE} file"
+	echo ${CHROME_VERSION} > ${CHROME_VERSION_FILE}
+
+	elog "Creating ${ECHROME_STORE_DIR}/.gclient"
+	#until we make the pdf compile on arm.
+	#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
+	if use chrome_pdf && use x86; then
+		elog "Official Build enabling PDF sources"
+		create_gclient_file "${ECHROME_STORE_DIR}" \
+			"${PRIMARY_URL}" \
+			"${AUXILIARY_URL}" \
+			"${REVISION}" \
+			0 \
+			${USE_TRUNK} \
+			|| die "Can't write .gclient file"
+	else
+		create_gclient_file "${ECHROME_STORE_DIR}" \
+			"${PRIMARY_URL}" \
+			"${AUXILIARY_URL}" \
+			"${REVISION}" \
+			1 \
+			${USE_TRUNK} \
+			|| die "Can't write .gclient file"
+		BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
+	fi
+
+	elog "Using .gclient ..."
+	elog $(cat ${ECHROME_STORE_DIR}/.gclient)
+
+	pushd "${ECHROME_STORE_DIR}" || \
+		die "Cannot chdir to ${ECHROME_STORE_DIR}"
+
+	elog "Syncing google chrome sources using ${EGCLIENT}"
+	# We use --force to work around a race condition with
+	# checking out cros.git in parallel with the main chrome tree.
+	${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force
+}
+
 src_unpack() {
 	# These are set here because $(whoami) returns the proper user here,
 	# but 'root' at the root level of the file
@@ -288,62 +338,22 @@ src_unpack() {
 		if [ -f ${CHROME_VERSION_FILE} ]; then
 			OLD_CHROME_VERSION=$(cat ${CHROME_VERSION_FILE})
 		fi
-		if [ $OLD_CHROME_VERSION != $CHROME_VERSION ]; then
-			elog "Need to clean up ${ECHROME_STORE_DIR}"
-			elog "OLD CHROME = ${OLD_CHROME_VERSION}"
-			elog "NEW CHROME = ${CHROME_VERSION}"
-			elog "rm -rf ${ECHROME_STORE_DIR}"
-			rm -rf ${ECHROME_STORE_DIR}
+
+		if ! unpack_chrome; then
+			if [ $OLD_CHROME_VERSION != $CHROME_VERSION ]; then
+				popd
+				elog "${EGCLIENT} sync failed and detected version change"
+				elog "Attempting to clean up ${ECHROME_STORE_DIR} and retry"
+				elog "OLD CHROME = ${OLD_CHROME_VERSION}"
+				elog "NEW CHROME = ${CHROME_VERSION}"
+				elog "rm -rf ${ECHROME_STORE_DIR}"
+				rm -rf "${ECHROME_STORE_DIR}"
+				sync
+				unpack_chrome || die "${EGCLIENT} sync failed from fresh checkout"
+			else
+				die "${EGCLIENT} sync failed"
+			fi
 		fi
-
-		# initial clone, we have to create chrome-src storage
-		# directory and play nicely with sandbox
-		if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
-			debug-print "${FUNCNAME}: Creating chrome-src directory"
-			addwrite /
-			mkdir -p "${ECHROME_STORE_DIR}" \
-				|| die "can't mkdir ${ECHROME_STORE_DIR}."
-			export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
-		fi
-
-		elog "Storing CHROME_VERSION=${CHROME_VERSION} in \
-			${CHROME_VERSION_FILE} file"
-		echo ${CHROME_VERSION} > ${CHROME_VERSION_FILE}
-
-		elog "Creating ${ECHROME_STORE_DIR}/.gclient"
-		#until we make the pdf compile on arm.
-		#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
-		if use chrome_pdf && use x86; then
-			elog "Official Build enabling PDF sources"
-			create_gclient_file "${ECHROME_STORE_DIR}" \
-				"${PRIMARY_URL}" \
-				"${AUXILIARY_URL}" \
-				"${REVISION}" \
-				0 \
-				${USE_TRUNK} \
-				|| die "Can't write .gclient file"
-		else
-			create_gclient_file "${ECHROME_STORE_DIR}" \
-				"${PRIMARY_URL}" \
-				"${AUXILIARY_URL}" \
-				"${REVISION}" \
-				1 \
-				${USE_TRUNK} \
-				|| die "Can't write .gclient file"
-			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
-		fi
-
-		elog "Using .gclient ..."
-		elog $(cat ${ECHROME_STORE_DIR}/.gclient)
-
-		pushd "${ECHROME_STORE_DIR}" || \
-			die "Cannot chdir to ${ECHROME_STORE_DIR}"
-
-		elog "Syncing google chrome sources using ${EGCLIENT}"
-		# We use --force to work around a race condition with
-		# checking out cros.git in parallel with the main chrome tree.
-		${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force \
-			|| die "${EGCLIENT} sync failed"
 
 		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
 		elog "From this point onwards there is no difference between \
