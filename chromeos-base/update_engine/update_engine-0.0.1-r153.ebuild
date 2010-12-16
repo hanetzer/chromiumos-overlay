@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="47851f443fa56c7af75155e15bcd35e6c916ea9d"
+CROS_WORKON_COMMIT="5c7d97590b51ae9e85dde1e37a3fd91d06f7991d"
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Chrome OS Update Engine."
@@ -26,6 +26,8 @@ RDEPEND="app-arch/bzip2
 	dev-util/bsdiff
 	net-misc/curl
 	sys-apps/rootdev
+	sys-fs/e2fsprogs
+	sys-libs/e2fsprogs-libs
 	sys-libs/zlib"
 DEPEND="chromeos-base/libchromeos
 	dev-cpp/gmock
