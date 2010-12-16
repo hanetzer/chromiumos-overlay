@@ -21,6 +21,7 @@ RDEPEND="dev-cpp/gflags
 	media-libs/libpng
 	net-misc/iputils
 	net-wireless/iw
+	sys-apps/dbus
 	sys-apps/net-tools
 	x11-libs/cairo
 	x11-libs/libxcb
