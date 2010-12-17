@@ -1,0 +1,25 @@
+From 6e2e136428b97d2424ebe626a30d7237015f7ea3 Mon Sep 17 00:00:00 2001
+From: Brian Paul <brianp@vmware.com>
+Date: Tue, 09 Nov 2010 19:24:49 +0000
+Subject: mesa: no-op glBufferSubData() on size==0
+
+Fixes http://bugs.freedesktop.org/show_bug.cgi?id=31439
+
+NOTE: this is a candidate for the 7.9 branch
+---
+diff --git a/src/mesa/main/bufferobj.c b/src/mesa/main/bufferobj.c
+index 0a68008..76f8259 100644
+--- a/src/mesa/main/bufferobj.c
++++ b/src/mesa/main/bufferobj.c
+@@ -1189,6 +1189,9 @@ _mesa_BufferSubDataARB(GLenum target, GLintptrARB offset,
+       return;
+    }
+ 
++   if (size == 0)
++      return;
++
+    bufObj->Written = GL_TRUE;
+ 
+    ASSERT(ctx->Driver.BufferSubData);
+--
+cgit v0.8.3-6-g21f6

@@ -35,7 +35,7 @@ fi
 
 LICENSE="LGPL-2 kilgard"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
+KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86 ~x86-fbsd"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="radeon"
@@ -56,10 +56,9 @@ RDEPEND="
 	>=app-admin/eselect-mesa-0.0.3
 	>=app-admin/eselect-opengl-1.1.1-r2
 	dev-libs/expat
-	dev-libs/libxml2[python]
 	sys-libs/talloc
 	x11-libs/libICE
-	>=x11-libs/libX11-1.3.99.901
+	>=x11-libs/libX11-1.3.3
 	x11-libs/libXdamage
 	x11-libs/libXext
 	x11-libs/libXi
@@ -74,22 +73,12 @@ RDEPEND="
 			sys-devel/llvm
 		)
 	)
-	${LIBDRM_DEPSTRING}[video_cards_nouveau?,video_cards_vmware?]
+	${LIBDRM_DEPSTRING}
 "
-for card in ${INTEL_CARDS}; do
-	RDEPEND="${RDEPEND}
-		video_cards_${card}? ( ${LIBDRM_DEPSTRING}[video_cards_intel] )
-	"
-done
-
-for card in ${RADEON_CARDS}; do
-	RDEPEND="${RDEPEND}
-		video_cards_${card}? ( ${LIBDRM_DEPSTRING}[video_cards_radeon] )
-	"
-done
 
 DEPEND="${RDEPEND}
 	=dev-lang/python-2*
+	dev-libs/libxml2
 	dev-util/pkgconfig
 	x11-misc/makedepend
 	>=x11-proto/dri2proto-2.2
@@ -117,9 +106,6 @@ pkg_setup() {
 
 	# recommended by upstream
 	append-flags -ffast-math
-
-	python_set_active_version 2
-	python_pkg_setup
 }
 
 src_unpack() {
@@ -141,16 +127,20 @@ src_prepare() {
 			configure.ac || die
 	fi
 
-	# In order for mesa to complete it's build process we need to use a tool
-	# that it compiles. When we cross compile this clearly does not work
-	# so we require mesa to be built on the host system first. -solar
-	if tc-is-cross-compiler; then
-		sed -i -e "s#^GLSL_CL = .*\$#GLSL_CL = glsl_compiler#g" \
-			"${S}"/src/mesa/shader/slang/library/Makefile || die
-	fi
-
 	[[ $PV = 9999* ]] && git_src_prepare
 	base_src_prepare
+
+	epatch "${FILESDIR}"/${PV}-get-maxsamples.patch
+	epatch "${FILESDIR}"/${PV}-add-discard.patch
+	epatch "${FILESDIR}"/${PV}-add-lower-pass-discards.patch
+	epatch "${FILESDIR}"/${PV}-conditional-discards.patch
+	epatch "${FILESDIR}"/${PV}-glbufferdata-0size.patch
+	epatch "${FILESDIR}"/${PV}-can_inline.patch
+	epatch "${FILESDIR}"/${PV}-glsl-vector-compare.patch
+	epatch "${FILESDIR}"/${PV}-gldeletebuffers.patch
+	epatch "${FILESDIR}"/${PV}-glisbuffer.patch
+	epatch "${FILESDIR}"/${PV}-optimize-discards.patch
+	epatch "${FILESDIR}"/${PV}-remove-discard-from-lower_jumps.patch
 
 	eautoreconf
 }
@@ -299,7 +289,6 @@ src_install() {
 
 pkg_postinst() {
 	# Switch to the xorg implementation.
-	echo
 	eselect opengl set --use-old ${OPENGL_DIR}
 	# Select classic/gallium drivers
 	eselect mesa set --auto
