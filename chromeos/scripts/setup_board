@@ -50,7 +50,7 @@ build_toolchain() {
   # TODO(davidjames): Fix uploading of cross prebuilts so that we don't have
   #                   to use the old location to get the cross prebuilts.
   #BINHOST=$(portageq envvar PORTAGE_BINHOST)
-  BINHOST="http://build.chromium.org/mirror/chromiumos/prebuilt/"
+  BINHOST="http://gsdview.appspot.com/chromeos-prebuilt/host/amd64/15.12.10.153419/packages/"
   CROSS_BINHOST="${BINHOST}cross/$FLAGS_toolchain/"
   CROSS_USEPKG=""
   if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
@@ -199,10 +199,10 @@ case "$TC_ARCH" in
 esac
 
 # Toolchain defaults
-# binutils-2.19.1-r1 is upstream r1, binutils-2.20.1-r1 is crosstool
+# binutils-2.19.1-r1 is upstream r1, binutils-2.20.1-r3 is crosstool
 if [ -z $FLAGS_binutils_version ]; then
   if [ "$ARCH" == "x86" ]; then
-    FLAGS_binutils_version="2.20.1-r1"
+    FLAGS_binutils_version="2.20.1-r3"
   else
     FLAGS_binutils_version="2.19.1-r1"
   fi
