@@ -1,0 +1,20 @@
+--- old/drivers/staging/brcm80211/sys/wlc_bmac.c	2010-12-15 10:01:08.607985647 -0500
++++ new/drivers/staging/brcm80211/sys/wlc_bmac.c	2010-12-15 11:18:40.432070780 -0500
+@@ -2237,7 +2237,16 @@
+ 		wlc_mctrl_reset(wlc_hw);
+ 	}
+ 
+-	v = ((R_REG(wlc_hw->osh, &wlc_hw->regs->phydebug) & PDBG_RFD) != 0);
++        /*
++         * Disabling this register read. If the read returns true
++         * (i.e. radio off), the driver will lock up the kernel and hose 
++         * the system. Broadcom has this on a TODO list.
++         *
++         * See the following linux-wireless thread for more details:
++         *   http://thread.gmane.org/gmane.linux.kernel.wireless.general/61383 
++         */
++        //v = ((R_REG(wlc_hw->osh, &wlc_hw->regs->phydebug) & PDBG_RFD) != 0);
++        v = false;
+ 
+ 	/* put core back into reset */
+ 	if (!clk)

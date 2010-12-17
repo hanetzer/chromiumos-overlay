@@ -53,6 +53,11 @@ if [ "${ARCH}" = "x86" -a "${kernel_arch}" = "x86_64" ]; then
     cross=${CBUILD}-
 fi
 
+src_prepare() {
+        # Patch to disable radio_disabled check in the brcm80211_pci driver
+        epatch "${FILESDIR}"/brcm80211_pci_radio_hack.patch || die
+}
+
 src_configure() {
 	elog "Using kernel config: ${config}"
 
