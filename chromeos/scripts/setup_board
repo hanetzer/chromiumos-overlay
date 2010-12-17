@@ -100,6 +100,13 @@ install_toolchain_in_board() {
   sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* \
       "${BOARD_ROOT}/usr/lib"
 
+  # Some header files are needed also for rpcbind (NFS support)
+  # TODO: Figure out a better way of doing this too?
+  sudo cp -a /usr/include/rpcsvc/mount.h "${BOARD_ROOT}/usr/include/rpcsvc"
+  sudo cp -a /usr/include/rpcsvc/rquota.h "${BOARD_ROOT}/usr/include/rpcsvc"
+  sudo cp -a /usr/include/rpcsvc/nfs_prot.h "${BOARD_ROOT}/usr/include/rpcsvc"
+  sudo cp -a /usr/include/rpcsvc/yppasswd.h "${BOARD_ROOT}/usr/include/rpcsvc"
+
   # Tell portage that toolchain packages are already installed in the sysroot.
   PROVIDED="${BOARD_PROFILE}/package.provided"
   sudo sh -c \
@@ -309,7 +316,7 @@ if [ ! -z "${FLAGS_profile}" ]; then  # profile specified. must exist or we fail
 	error "Profile argument passed as '${FLAGS_profile}' but it does not exist"
 	exit 1
     fi
-elif [ -d "${PRIMARY_BOARD_OVERLAY}/profiles/base" ]; then 
+elif [ -d "${PRIMARY_BOARD_OVERLAY}/profiles/base" ]; then
     PORTAGE_PROFILES_DIR="${PRIMARY_BOARD_OVERLAY}/profiles/base/"
 else
     PORTAGE_PROFILES_DIR="${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/"
