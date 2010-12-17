@@ -21,7 +21,7 @@
     },
   },
   'WATCHLISTS': {
-    'all': ['adlr@chromium.org',
+    'all': ['adlr+crosoverlay@chromium.org',
             'msb+crosoverlay@chromium.org',
             'anush@chromium.org'],
     'bluez': ['petkov@chromium.org'],
