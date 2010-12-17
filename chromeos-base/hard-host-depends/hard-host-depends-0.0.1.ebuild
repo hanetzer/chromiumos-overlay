@@ -28,7 +28,6 @@ RDEPEND="${RDEPEND}
 # Host dependencies for building cross-compiled packages.
 RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
-	app-admin/eselect-mesa
 	app-arch/cabextract
 	>=app-arch/pbzip2-1.1.1-r1
 	app-arch/rpm2targz

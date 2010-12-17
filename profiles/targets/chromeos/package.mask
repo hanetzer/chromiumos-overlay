@@ -52,6 +52,9 @@
 # version of these packages even if a newer stable version becomes
 # available in portage:
 
+# Changed to disable gallium intel since it is unstable.
+>media-libs/mesa-7.8.1
+
 # Required patch; pending work to upstream.
 >net-dialup/ppp-2.4.4-r23
 

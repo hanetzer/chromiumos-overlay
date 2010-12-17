@@ -13,7 +13,7 @@
 =dev-libs/protobuf-2.2.0	amd64 x86
 =dev-util/boost-build-1.42.0	amd64 x86
 =dev-util/lcov-1.7              amd64 x86
-=media-libs/mesa-7.9-r1		amd64 x86
+=media-libs/mesa-7.8.1-r1	amd64 x86
 =sys-apps/dbus-1.2.20		amd64 x86
 =sys-boot/gnu-efi-3.0i          amd64
 =sys-devel/automake-1.11.1      amd64 x86
