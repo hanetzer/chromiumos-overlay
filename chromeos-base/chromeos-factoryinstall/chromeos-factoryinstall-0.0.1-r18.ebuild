@@ -73,7 +73,7 @@ EOF
 	sed -i 's/start on stopping startup/start on never/' \
 		"${ROOT}/etc/init/ui.conf"
 	# Set network to start up another way
-	sed -i 's/login-prompt-ready/started udev/' \
+	sed -i 's/login-prompt-visible/started udev/' \
 		"${ROOT}/etc/init/boot-complete.conf"
 	# No autoupdate!
 	sed -i 's/start on stopped boot-complete/start on never/' \
