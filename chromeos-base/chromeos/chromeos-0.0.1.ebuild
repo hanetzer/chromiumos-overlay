@@ -15,6 +15,7 @@ DEPEND="chromeos-base/internal
 	   sys-apps/baselayout"
 
 # Enable ssh locally for chromium-os device.
+# TODO(hungte) remove aterm once cros-term and factory changed to rxvt-unicode
 RDEPEND="${RDEPEND}
 	localssh? (
 		app-admin/sudo
@@ -22,6 +23,7 @@ RDEPEND="${RDEPEND}
 		chromeos-base/workarounds
 		net-misc/openssh
 		x11-terms/aterm
+		x11-terms/rxvt-unicode
 	)
 	"
 

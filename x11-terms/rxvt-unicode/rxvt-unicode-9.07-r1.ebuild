@@ -12,8 +12,8 @@ SRC_URI="http://dist.schmorp.de/rxvt-unicode/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-fbsd"
-IUSE="truetype perl iso14755 afterimage xterm-color wcwidth +vanilla"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~ppc ~ppc64 ~sparc x86 ~x86-fbsd"
+IUSE="minimal +truetype perl iso14755 afterimage xterm-color wcwidth +vanilla"
 
 # see bug #115992 for modular x deps
 RDEPEND="x11-libs/libX11
@@ -92,11 +92,21 @@ src_configure() {
 	use iso14755 || myconf='--disable-iso14755'
 	use xterm-color && myconf="$myconf --enable-xterm-colors=256"
 
-	econf --enable-everything \
+	econf \
 		$(use_enable truetype xft) \
 		$(use_enable afterimage) \
 		$(use_enable perl) \
 		--disable-text-blink \
+		--enable-font-styles \
+		--disable-pixbuf \
+		--disable-transparency \
+		--disable-fading \
+		--disable-utmp \
+		--disable-wtmp \
+		--disable-next-scroll \
+		--disable-xterm-scroll \
+		--disable-smart-resize \
+		--with-x \
 		${myconf}
 }
 
@@ -109,6 +119,12 @@ src_compile() {
 }
 
 src_install() {
+	if use minimal; then
+		# Default installation has urxvtc/urxvtd which are rarely used
+		newbin src/rxvt urxvt || die
+		return
+	fi
+
 	make DESTDIR="${D}" install || die
 
 	dodoc README.FAQ Changes

@@ -11,8 +11,8 @@ SRC_URI="ftp://invisible-island.net/${PN}/${P}.tgz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~x86-fbsd"
-IUSE="toolbar truetype unicode Xaw3d"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~x86-fbsd"
+IUSE="-toolbar +truetype +unicode -Xaw3d"
 
 COMMON_DEPEND="x11-libs/libX11
 	x11-libs/libXrender
@@ -24,9 +24,8 @@ COMMON_DEPEND="x11-libs/libX11
 	x11-apps/xmessage
 	unicode? ( x11-apps/luit )
 	Xaw3d? ( x11-libs/Xaw3d )
-	sys-libs/libutempter"
-RDEPEND="${COMMON_DEPEND}
-	media-fonts/font-misc-misc"
+        "
+RDEPEND="${COMMON_DEPEND}"
 DEPEND="${COMMON_DEPEND}
 	x11-proto/xproto"
 
@@ -42,7 +41,7 @@ src_configure() {
 		--with-app-defaults=${DEFAULTS_DIR} \
 		--disable-setuid \
 		--disable-setgid \
-		--with-utempter \
+		--without-utempter \
 		--with-x \
 		$(use_with Xaw3d) \
 		--disable-imake \
@@ -52,12 +51,17 @@ src_configure() {
 		$(use_enable truetype freetype) \
 		--enable-i18n \
 		--enable-load-vt-fonts \
-		--enable-logging \
+		--disable-logging \
 		$(use_enable toolbar) \
 		$(use_enable unicode mini-luit) \
 		$(use_enable unicode luit) \
 		--enable-wide-chars \
 		--enable-dabbrev \
+		--disable-desktop \
+		--without-neXtaw \
+		--without-XawPlus \
+		--enable-88-color \
+		--disable-rightbar \
 		--enable-warnings
 }
 
