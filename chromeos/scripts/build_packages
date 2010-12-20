@@ -77,7 +77,7 @@ if [[ -z "${FLAGS_board}" ]]; then
   exit 1
 fi
 
-EMERGE_FLAGS=""
+EMERGE_FLAGS="--backtrack=30"
 
 EMERGE_CMD="emerge"
 EMERGE_BOARD_CMD="emerge-${FLAGS_board}"
