@@ -25,6 +25,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xprop
 	x11-apps/xrdb
 	x11-apps/xset
+	x11-apps/xtrace
 	x11-apps/xwininfo
 	x11-terms/aterm
 	"

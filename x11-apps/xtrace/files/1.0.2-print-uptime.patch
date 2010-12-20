@@ -1,0 +1,113 @@
+diff --git a/Makefile.am b/Makefile.am
+index ba359c2..2a2046d 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -4,7 +4,7 @@ CFLAGS ?= -g -O2
+ AM_CPPFLAGS = @CPPFLAGS@ -Wall -DPKGDATADIR='"$(pkgdatadir)"'
+ 
+ xtrace_SOURCES = main.c x11common.c x11client.c x11server.c parse.c copyauth.c atoms.c translate.c stringlist.c
+-xtrace_LDFLAGS = -Wl,-z,defs
++xtrace_LDFLAGS = -Wl,-z,defs,-lrt
+ 
+ noinst_HEADERS = xtrace.h parse.h stringlist.h translate.h
+ 
+diff --git a/Makefile.in b/Makefile.in
+index 6f41217..9daf454 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -200,7 +200,7 @@ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ AM_CPPFLAGS = @CPPFLAGS@ -Wall -DPKGDATADIR='"$(pkgdatadir)"'
+ xtrace_SOURCES = main.c x11common.c x11client.c x11server.c parse.c copyauth.c atoms.c translate.c stringlist.c
+-xtrace_LDFLAGS = -Wl,-z,defs
++xtrace_LDFLAGS = -Wl,-z,defs,-lrt
+ noinst_HEADERS = xtrace.h parse.h stringlist.h translate.h
+ dist_man_MANS = xtrace.1
+ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in $(srcdir)/configure $(srcdir)/stamp-h.in $(srcdir)/aclocal.m4 $(srcdir)/config.h.in
+diff --git a/main.c b/main.c
+index b6b27a6..a8e1725 100644
+--- a/main.c
++++ b/main.c
+@@ -45,6 +45,7 @@ bool denyallextensions = false;
+ bool interactive = false;
+ bool print_timestamps = false;
+ bool print_reltimestamps = false;
++bool print_uptime = false;
+ static bool buffered = false;
+ size_t maxshownlistlen = SIZE_MAX;
+ 
+@@ -390,7 +391,7 @@ char *strndup(const char *str,size_t n) {
+ }
+ #endif
+ 
+-enum {LO_DEFAULT=0, LO_TIMESTAMPS, LO_RELTIMESTAMPS, LO_VERSION, LO_HELP};
++enum {LO_DEFAULT=0, LO_TIMESTAMPS, LO_RELTIMESTAMPS, LO_UPTIME, LO_VERSION, LO_HELP};
+ static int long_only_option = 0;
+ static const struct option longoptions[] = {
+ 	{"display",	required_argument,	NULL,	'd'},
+@@ -412,6 +413,7 @@ static const struct option longoptions[] = {
+ 	{"version",		no_argument, &long_only_option,	LO_VERSION},
+ 	{"timestamps",		no_argument, &long_only_option,	LO_TIMESTAMPS},
+ 	{"relative-timestamps",	no_argument, &long_only_option,	LO_RELTIMESTAMPS},
++	{"uptime",		no_argument, &long_only_option,	LO_UPTIME},
+ 	{NULL,		0,			NULL,	0}
+ };
+ 
+@@ -526,6 +528,9 @@ argv[0]);
+ 				 case LO_RELTIMESTAMPS:
+ 					 print_reltimestamps = true;
+ 					 break;
++				 case LO_UPTIME:
++					 print_uptime = true;
++					 break;
+ 			 }
+ 			 break;
+ 		 case ':':
+diff --git a/parse.c b/parse.c
+index 8bdd363..b808766 100644
+--- a/parse.c
++++ b/parse.c
+@@ -27,6 +27,7 @@
+ #include <string.h>
+ #include <stdlib.h>
+ #include <sys/select.h>
++#include <time.h>
+ #include <unistd.h>
+ 
+ #include "xtrace.h"
+@@ -46,6 +47,7 @@ static inline unsigned int padded(unsigned int s) {
+ static void startline(struct connection *c, enum package_direction d, const char *format, ...) {
+ 	va_list ap;
+ 	struct timeval tv;
++	struct timespec ts;
+ 
+ 	if( (print_timestamps || print_reltimestamps)
+ 			&& gettimeofday(&tv, NULL) == 0 ) {
+@@ -60,6 +62,10 @@ static void startline(struct connection *c, enum package_direction d, const char
+ 				(unsigned int)((tt - c->starttime)%1000));
+ 		}
+ 	}
++	if( print_uptime && clock_gettime(CLOCK_MONOTONIC, &ts ) == 0 ) {
++		fprintf(out, "%lu.%03u ", (unsigned long)ts.tv_sec,
++			(unsigned int)(ts.tv_nsec/1000000));
++	}
+ 	va_start(ap, format);
+ 	fprintf(out, "%03d:%c:", c->id, (d == TO_SERVER)?'<':'>');
+ 	vfprintf(out, format, ap);
+@@ -1749,4 +1755,3 @@ const struct extension *find_extension(const uint8_t *name,size_t len) {
+ 
+ 	return NULL;
+ }
+-
+diff --git a/xtrace.h b/xtrace.h
+index 95a725a..1c9bd4a 100644
+--- a/xtrace.h
++++ b/xtrace.h
+@@ -46,6 +46,7 @@ extern bool denyallextensions;
+ extern size_t maxshownlistlen;
+ extern bool print_timestamps;
+ extern bool print_reltimestamps;
++extern bool print_uptime;
+ 
+ #ifdef __GNUC__
+ #define UNUSED __attribute__ ((unused))
