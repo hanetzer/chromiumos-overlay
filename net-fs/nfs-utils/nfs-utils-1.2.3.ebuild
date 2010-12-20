@@ -12,7 +12,7 @@ SRC_URI="mirror://sourceforge/nfs/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~alpha ~amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="caps ipv6 kerberos +nfsv3 +nfsv4 tcpd elibc_glibc"
 RESTRICT="test" #315573
 
@@ -41,8 +41,7 @@ DEPEND="${DEPEND_COMMON}
 	>=sys-apps/util-linux-2.12r-r7"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-1.1.4-mtab-sym.patch
-	epatch "${FILESDIR}"/${PN}-1.1.4-no-exec.patch
+        epatch "${FILESDIR}"/${PN}-1.2.3-cross-compile.patch
 }
 
 src_configure() {
@@ -55,6 +54,14 @@ src_configure() {
 		$(use_enable ipv6) \
 		$(use_enable caps) \
 		$(use nfsv4 && use_enable kerberos gss || echo "--disable-gss")
+}
+
+src_compile() {
+        if tc-is-cross-compiler; then
+                emake CC=$(tc-getCC) || die "Failed to compile"
+        else
+                emake || die "Failed to compile"
+        fi
 }
 
 src_install() {
