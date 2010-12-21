@@ -1,0 +1,30 @@
+From e8a24c65bc06a2a098c05728df0da1e5ed61b1de Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Thu, 25 Nov 2010 08:09:43 +0000
+Subject: glsl: Don't inline function prototypes.
+
+Currently, the standalone compiler tries to do function inlining before
+linking shaders (including linking against the built-in functions).
+This resulted in the built-in function _prototypes_ being inlined rather
+than the actual function definition.
+
+This is only known to fix a bug in the standalone compiler; most
+programs should be unaffected.  Still, it seems like a good idea.
+
+NOTE: This is a candidate for the 7.9 branch.
+---
+diff --git a/src/glsl/ir_function_can_inline.cpp b/src/glsl/ir_function_can_inline.cpp
+index f29f277..c367c30 100644
+--- a/src/glsl/ir_function_can_inline.cpp
++++ b/src/glsl/ir_function_can_inline.cpp
+@@ -60,6 +60,8 @@ can_inline(ir_call *call)
+ {
+    ir_function_can_inline_visitor v;
+    const ir_function_signature *callee = call->get_callee();
++   if (!callee->is_defined)
++      return false;
+ 
+    v.run((exec_list *) &callee->body);
+ 
+--
+cgit v0.8.3-6-g21f6
