@@ -17,16 +17,6 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # TODO(yusukes): Remove the patches once we push the new mozc which supports
-  # ibus-1.4 to the external repository.
-  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-1.patch
-  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-2.patch
-  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-3.patch
-  epatch "${FILESDIR}"/ibus-mozc-ibus-1.4-support-4.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
