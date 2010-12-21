@@ -461,14 +461,13 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		TEST_TARGETS="browser_tests
-			page_cycler_tests
+		TEST_TARGETS="page_cycler_tests
 			reliability_tests
 			sync_integration_tests
 			startup_tests
 			ui_tests"
 		if use x86; then  # Build PyAuto on x86 only.
-			TEST_TARGETS="${TEST_TARGETS} pyautolib"
+			TEST_TARGETS="${TEST_TARGETS} pyautolib browser_tests"
 		fi
 		echo Building test targets: ${TEST_TARGETS}
 	fi
