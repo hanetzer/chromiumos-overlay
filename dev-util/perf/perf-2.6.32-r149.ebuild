@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
 EAPI=2
-CROS_WORKON_COMMIT="e7491c289b76b4f68e3fbb9b166ed9ff2e09c589"
+CROS_WORKON_COMMIT="f8e4dea54e6bbe9fc4a5a4fcbb0c846635ecbee7"
 
 inherit cros-workon eutils toolchain-funcs linux-info
 
