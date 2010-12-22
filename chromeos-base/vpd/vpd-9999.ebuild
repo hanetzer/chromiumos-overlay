@@ -19,7 +19,7 @@ TARGETS='vpd'
 
 src_compile() {
     tc-export CXX PKG_CONFIG
-    emake all || die "compilation failed."
+    emake CC="$(tc-getCC)" all || die "compilation failed."
 }
 
 src_install() {
