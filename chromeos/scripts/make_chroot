@@ -45,6 +45,9 @@ FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 check_flags_only_and_allow_null_arg "$@" && set --
 
+assert_not_root_user
+
+
 # Only now can we die on error.  shflags functions leak non-zero error codes,
 # so will die prematurely if 'set -e' is specified before now.
 # TODO: replace shflags with something less error-prone, or contribute a fix.
