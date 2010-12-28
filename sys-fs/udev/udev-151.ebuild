@@ -4,7 +4,7 @@
 
 EAPI="1"
 
-inherit eutils flag-o-matic multilib toolchain-funcs linux-info
+inherit autotools eutils flag-o-matic multilib toolchain-funcs linux-info
 
 #PATCHSET=${P}-gentoo-patchset-v1
 
@@ -156,6 +156,9 @@ src_unpack() {
 	# Bug 301667
 	epatch "${FILESDIR}"/udev-150-fix-missing-firmware-timeout.diff
 
+	# pkgconfig fix for when ROOT != /
+	epatch "${FILESDIR}"/udev-146-pkgconfig.patch
+
 	if ! use devfs-compat; then
 		# see Bug #269359
 		epatch "${FILESDIR}"/udev-141-remove-devfs-names.diff
@@ -192,22 +195,22 @@ src_unpack() {
 
 	if [[ ${PV} == 9999 ]]; then
 		gtkdocize --copy
-		eautoreconf
 	fi
+	epatch "${FILESDIR}"/udev-146-cross-pci-ids.patch
+	epatch "${FILESDIR}"/udev-151-add-huawei-devices.patch
+	epatch "${FILESDIR}"/udev-146-tmp-rules.diff
+	eautoreconf
 }
 
 src_compile() {
 	filter-flags -fprefetch-loop-arrays
 
 	econf \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--sbindir=/sbin \
-		--libdir=/usr/$(get_libdir) \
-		--with-rootlibdir=/$(get_libdir) \
-		--libexecdir="${udev_libexec_dir}" \
+		--exec-prefix= \
+		--libdir='${prefix}'/$(get_libdir) \
+		--libexecdir='${exec_prefix}'"${udev_libexec_dir}" \
 		--enable-logging \
-		--enable-static \
+		--with-pci-ids-path='${exec_prefix}'/usr/share/misc/pci.ids \
 		$(use_with selinux) \
 		$(use_enable extras) \
 		--disable-introspection
@@ -228,6 +231,9 @@ src_install() {
 		|| die "move_tmp_persistent_rules.sh not installed properly"
 	newexe "${FILESDIR}"/write_root_link_rule-125 write_root_link_rule \
 		|| die "write_root_link_rule not installed properly"
+
+	doexe "${FILESDIR}"/compat_firmware.sh \
+		|| die "compat_firmware.sh not installed properly"
 
 	doexe "${scriptdir}"/shell-compat-KV.sh \
 		|| die "shell-compat.sh not installed properly"
@@ -255,6 +261,10 @@ src_install() {
 	# Our rules files
 	doins gentoo/??-*.rules
 	doins packages/40-isdn.rules
+
+	# compat-wireless firmware loading (needs compat_firmware.sh above)
+	doins "${FILESDIR}"/50-compat_firmware.rules \
+		|| die "compat_firmware.rules not installed properly"
 
 	# Adding arch specific rules
 	if [[ -f packages/40-${ARCH}.rules ]]
