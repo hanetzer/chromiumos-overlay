@@ -12,6 +12,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
+RDEPEND="sys-apps/util-linux"   # for libuuid
 
 # This target list should be architecture specific
 # (no ACPI stuff on ARM for instance)
