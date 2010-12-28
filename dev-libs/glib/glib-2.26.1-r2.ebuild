@@ -74,6 +74,9 @@ src_prepare() {
 	# delay for a second. See comments in the patch for details.
 	epatch "${FILESDIR}/${PN}-2.26.1-inotify.patch"
 
+	# Remove false warning and fix possible NULL pointer deref.
+	epatch "${FILESDIR}/${PN}-2.26.1-gdbus-remove-false-warnings.patch"
+
 	# Needed for the punt-python-check patch.
 	# Also needed to prevent croscompile failures, see bug #267603
 	eautoreconf
