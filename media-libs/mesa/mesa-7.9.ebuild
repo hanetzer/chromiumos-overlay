@@ -182,7 +182,7 @@ src_configure() {
 		elog "    Svga: VMWare Virtual GPU driver."
 		echo
 		myconf="${myconf}
-			--with-state-trackers=glx,dri,egl,vega
+			--with-state-trackers=glx,dri,vega
 			$(use_enable llvm gallium-llvm)
 			$(use_enable gles gles1)
 			$(use_enable gles gles2)
@@ -199,6 +199,9 @@ src_configure() {
 			elog "Enable gallium useflag if you want to use them."
 		fi
 	fi
+
+	# Deactivate EGL
+	myconf="${myconf} --disable-egl"
 
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
 	econf \

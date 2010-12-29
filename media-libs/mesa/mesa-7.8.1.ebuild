@@ -145,10 +145,6 @@ src_configure() {
 		echo
 		statetrackers="--with-state-trackers=glx,dri"
 
-		if ! use video_cards_msm ; then
-			statetrackers="${statetrackers},egl"
-		fi
-
 		myconf="${myconf}
 			--disable-gallium-intel
 			${statetrackers}
@@ -166,9 +162,8 @@ src_configure() {
 		fi
 	fi
 
-	if use video_cards_msm ; then
-		myconf="${myconf} --disable-egl"
-	fi
+	# Deactivate EGL
+	myconf="${myconf} --disable-egl"
 
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
 	econf \
