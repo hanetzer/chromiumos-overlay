@@ -1,0 +1,21 @@
+This is a probably-wrong fix for an issue where autorepeat
+is disabled for keys assigned by XKB.  As far as I can tell,
+XKB has the correct autorepeat settings for the keys before
+a completely-empty autorepeat array from X is copied over
+it; then the XKB array is copied back to X.  This makes us
+skip the first copy.
+
+diff -aurp xorg-server-1.9.3.orig/xkb/xkbUtils.c xorg-server-1.9.3.work/xkb/xkbUtils.c
+--- xorg-server-1.9.3.orig/xkb/xkbUtils.c	2010-12-22 18:59:01.482040000 -0800
++++ xorg-server-1.9.3.work/xkb/xkbUtils.c	2010-12-22 20:01:48.537624000 -0800
+@@ -342,9 +342,6 @@ CARD8 *			repeat;
+     xkb= xkbi->desc;
+     repeat= xkb->ctrls->per_key_repeat;
+ 
+-    if (pXDev->kbdfeed)
+-	memcpy(repeat,pXDev->kbdfeed->ctrl.autoRepeats,XkbPerKeyBitArraySize);
+-
+     XkbUpdateDescActions(xkb,first,num,changes);
+ 
+     if ((pXDev->kbdfeed)&&
+

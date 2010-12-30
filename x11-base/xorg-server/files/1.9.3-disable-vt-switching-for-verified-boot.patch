@@ -1,0 +1,58 @@
+This patch disables the Ctrl-Alt-Fx shortcut for switching between virtual
+terminals when we're in verified boot mode.
+
+diff -aurp xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c xorg-server-1.9.3.work/hw/xfree86/common/xf86Events.c
+--- xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c	2010-12-22 18:58:57.313355000 -0800
++++ xorg-server-1.9.3.work/hw/xfree86/common/xf86Events.c	2010-12-22 20:05:46.377368000 -0800
+@@ -176,7 +176,19 @@ ProcessInputEvents (void)
+ void
+ xf86ProcessActionEvent(ActionEvent action, void *arg)
+ {
++    /* This file gets written by the vt-switching.conf upstart job. */
++    const char kCrosAllowVtSwitchingFile[] =
++        "/var/run/state/allow-vt-switching";
++    int crosAllowVTSwitching = 0;
++
+     DebugF("ProcessActionEvent(%d,%x)\n", (int) action, arg);
++
++    if (action == ACTION_SWITCHSCREEN ||
++        action == ACTION_SWITCHSCREEN_NEXT ||
++        action == ACTION_SWITCHSCREEN_PREV) {
++      crosAllowVTSwitching = (access(kCrosAllowVtSwitchingFile, F_OK) == 0);
++    }
++
+     switch (action) {
+     case ACTION_TERMINATE:
+ 	if (!xf86Info.dontZap) {
+@@ -196,6 +208,8 @@ xf86ProcessActionEvent(ActionEvent actio
+ 	break;
+     case ACTION_SWITCHSCREEN:
+ 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && arg) {
++            if (!crosAllowVTSwitching)
++                break;
+ 	    int vtno = *((int *) arg);
+ 
+ 	    if (vtno != xf86Info.vtno) {
+@@ -208,6 +222,8 @@ xf86ProcessActionEvent(ActionEvent actio
+ 	break;
+     case ACTION_SWITCHSCREEN_NEXT:
+ 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch) {
++            if (!crosAllowVTSwitching)
++                break;
+ 	    if (!xf86VTActivate(xf86Info.vtno + 1)) {
+ 		/* If first try failed, assume this is the last VT and
+ 		 * try wrapping around to the first vt.
+@@ -221,6 +237,8 @@ xf86ProcessActionEvent(ActionEvent actio
+ 	break;
+     case ACTION_SWITCHSCREEN_PREV:
+ 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && xf86Info.vtno > 0) {
++            if (!crosAllowVTSwitching)
++                break;
+ 	    if (!xf86VTActivate(xf86Info.vtno - 1)) {
+ 		/* Don't know what the maximum VT is, so can't wrap around */
+ 		ErrorF("Failed to switch from vt%02d to previous vt: %s\n",
+Only in xorg-server-1.9.3.work/hw/xfree86/common: xf86Events.c.orig
+Only in xorg-server-1.9.3.work/hw/xfree86/common: xf86Events.c.rej
+Only in xorg-server-1.9.3.work/hw/xfree86/common: xf86Events.c~
+Only in xorg-server-1.9.3.work/xkb: xkbUtils.c.rej
+Only in xorg-server-1.9.3.work/xkb: xkbUtils.c~
