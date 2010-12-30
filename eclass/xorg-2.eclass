@@ -183,6 +183,9 @@ has dri ${IUSE//+} && DEPEND+=" dri? ( >=x11-base/xorg-server-1.6.3.901-r2[-mini
 # Setup prefix compat
 xorg-2_pkg_setup() {
 	[[ ${FONT} == yes ]] && font_pkg_setup
+
+	# Need to make sure aclocal includes target includes
+	AT_M4DIR="${AT_M4DIR} -I ${ROOT}usr/share/aclocal"
 }
 
 # @FUNCTION: xorg-2_src_unpack
