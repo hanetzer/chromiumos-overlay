@@ -642,7 +642,6 @@ src_install() {
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
 		autotest_src_install
-		autotest_prepackage "chrome_test"
 	fi
 
 	# Fix some perms
