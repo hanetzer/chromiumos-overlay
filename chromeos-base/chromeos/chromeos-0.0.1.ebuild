@@ -60,6 +60,7 @@ RDEPEND="${RDEPEND}
 		net-wireless/iwl6000-ucode
 		sys-apps/flashrom
 		sys-apps/mosys
+		sys-apps/pv
 		sys-boot/syslinux
 	)
 	"
@@ -134,7 +135,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/mawk
 	sys-apps/module-init-tools
 	sys-apps/net-tools
-	sys-apps/pv
 	sys-apps/rootdev
 	sys-apps/sed
 	sys-apps/shadow
