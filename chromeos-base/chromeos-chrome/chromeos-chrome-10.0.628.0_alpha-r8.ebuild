@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="70435"
+CROS_SVN_COMMIT="70451"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -643,7 +643,6 @@ src_install() {
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
 		autotest_src_install
-		autotest_prepackage "chrome_test"
 	fi
 
 	# Fix some perms
