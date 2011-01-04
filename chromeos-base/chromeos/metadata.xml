@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<herd>chromium</herd>
+<maintainer>
+	<email>chromium-os-dev@chromium.org</email>
+	<description>Maintained by The Chromium OS Authors.</description>
+</maintainer>
+<longdescription>The Chromium OS base package pulls in dependencies to build a Chromium OS system.</longdescription>
+<use>
+	<flag name='localssh'>Enables ssh locally for chromium-os device.</flag>
+</use>
+</pkgmetadata>
