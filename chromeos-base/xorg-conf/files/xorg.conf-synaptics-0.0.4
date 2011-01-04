@@ -1,0 +1,60 @@
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Setting up things manually here lets us avoid HAL overhead.
+# TODO: Per-device xorg.conf rather than this one generic version.
+Section "ServerFlags"
+    Option "AutoAddDevices" "false"
+    Option "DontZap" "false"
+EndSection
+
+Section "InputDevice"
+    Identifier "Keyboard1"
+    Driver     "kbd"
+    Option     "AutoRepeat" "250 30"
+    Option     "XkbRules"   "xorg"
+    Option     "XkbModel"   "pc105"  # supports volume keys; pc104 doesn't
+    Option     "CoreKeyboard"
+EndSection
+
+# Input device using the Synaptics driver.
+Section "InputDevice"
+    Identifier "Mouse1"
+    Driver     "syntp"
+    Option     "Device" "/dev/input/mice"
+    Option     "SendCoreEvents" "true"
+EndSection
+
+# Include support for USB as a secondary mouse device.
+Section "InputDevice"
+    Identifier "USBMouse"
+    Driver     "mouse"
+    Option     "Device" "/dev/input/mice" # multiplexed HID mouse input device
+    Option     "Protocol" "IMPS/2"
+    Option     "ZAxisMapping" "8 9" # support a wheel as buttons 8 and 9
+    Option     "Emulate3Buttons" "true"  # just in case it is a 2 button
+EndSection
+
+Section "Monitor"
+    Identifier "DefaultMonitor"
+EndSection
+
+Section "Device"
+    Identifier "DefaultDevice"
+    Option     "monitor-LVDS1" "DefaultMonitor"
+EndSection
+
+Section "Screen"
+    Identifier "DefaultScreen"
+    Monitor    "DefaultMonitor"
+    Device     "DefaultDevice"
+EndSection
+
+Section "ServerLayout"
+    Identifier  "DefaultLayout"
+    Screen      "DefaultScreen"
+    InputDevice "Mouse1"
+    InputDevice "USBMouse" "AlwaysCore"
+    InputDevice "Keyboard1" "CoreKeyboard"
+EndSection

@@ -11,11 +11,15 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE=""
+IUSE="synaptics"
 
 RDEPEND=""
 
 src_install() {
 	insinto /etc/X11
-	newins "${FILESDIR}/xorg.conf-${PV}" xorg.conf
+	if use synaptics ; then
+		newins "${FILESDIR}/xorg.conf-synaptics-${PV}" xorg.conf
+	else
+		newins "${FILESDIR}/xorg.conf-${PV}" xorg.conf
+	fi
 }
