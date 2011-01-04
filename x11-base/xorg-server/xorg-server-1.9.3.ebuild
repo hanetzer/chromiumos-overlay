@@ -146,9 +146,6 @@ pkg_setup() {
 
 	use minimal || ensure_a_server_is_building
 
-	# Need to make sure aclocal includes target includes
-	AT_M4DIR="${AT_M4DIR} -I ${ROOT}usr/share/aclocal"
-
 	# localstatedir is used for the log location; we need to override the default
 	#	from ebuild.sh
 	# sysconfdir is used for the xorg.conf location; same applies
