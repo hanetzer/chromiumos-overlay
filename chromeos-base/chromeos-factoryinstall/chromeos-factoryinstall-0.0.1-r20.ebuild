@@ -34,6 +34,7 @@ src_install() {
 
 	exeinto /usr/sbin
 	doexe factory_install.sh
+	doexe factory_reset.sh
 
 	insinto /root
 	newins $FILESDIR/dot.factory_installer .factory_installer
