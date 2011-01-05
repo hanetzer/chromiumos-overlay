@@ -1,0 +1,45 @@
+From 19247aac5a348185a0e180f254ab3858c5f85703 Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Mon, 27 Dec 2010 07:57:09 +0900
+Subject: [PATCH 1/4] Create an instance of GDBusProxy with G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES flag.
+
+Without the flag, on_name_owner_changed() in glib-2.26.x/gio/gdbusproxy.c might invoke a remote method named GetAll in org.freedesktop.DBus.Properties interface, but the method is not implemented in ibus-daemon. Since ibus-daemon ignores the method call, the caller, which is UI thread of Chrome on Chromium OS, will block for 25 seconds (i.e. the default timeout of GDBus) waiting for a reply.
+
+BUG=none
+TEST=manually
+
+Review URL: http://codereview.appspot.com/3836042
+---
+ src/ibusconfig.c       |    2 +-
+ src/ibusinputcontext.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/ibusconfig.c b/src/ibusconfig.c
+index 5f44afa..f6fbe37 100644
+--- a/src/ibusconfig.c
++++ b/src/ibusconfig.c
+@@ -142,7 +142,7 @@ ibus_config_new (GDBusConnection  *connection,
+                                cancellable,
+                                error,
+                                "g-connection",      connection,
+-                               "g-flags",           G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
++                               "g-flags",           G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START | G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+                                "g-name",            IBUS_SERVICE_CONFIG,
+                                "g-interface-name",  IBUS_INTERFACE_CONFIG,
+                                "g-object-path",     IBUS_PATH_CONFIG,
+diff --git a/src/ibusinputcontext.c b/src/ibusinputcontext.c
+index 6567934..88afc22 100644
+--- a/src/ibusinputcontext.c
++++ b/src/ibusinputcontext.c
+@@ -656,7 +656,7 @@ ibus_input_context_new (const gchar     *path,
+                                error,
+                                "g-connection",      connection,
+                                "g-name",            "org.freedesktop.IBus",
+-                               "g-flags",           G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
++                               "g-flags",           G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START | G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+                                "g-interface-name",  IBUS_INTERFACE_INPUT_CONTEXT,
+                                "g-object-path",     path,
+                                NULL);
+-- 
+1.7.1
+

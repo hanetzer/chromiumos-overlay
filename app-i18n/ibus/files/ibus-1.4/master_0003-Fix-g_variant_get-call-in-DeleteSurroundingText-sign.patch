@@ -1,0 +1,38 @@
+From 017077ceb9ec2f26a8c524f3794a832164f21768 Mon Sep 17 00:00:00 2001
+From: Daiki Ueno <ueno@unixuser.org>
+Date: Tue, 28 Dec 2010 12:46:25 +0900
+Subject: [PATCH 3/4] Fix g_variant_get() call in DeleteSurroundingText signal handler.
+
+BUG=none
+TEST=manual
+
+Review URL: http://codereview.appspot.com/3820042
+---
+ src/ibusinputcontext.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/ibusinputcontext.c b/src/ibusinputcontext.c
+index 88afc22..7bbf8a2 100644
+--- a/src/ibusinputcontext.c
++++ b/src/ibusinputcontext.c
+@@ -578,7 +578,7 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
+         guint32 keycode;
+         guint32 state;
+ 
+-        g_variant_get (parameters, 0, "(uuu)", &keyval, &keycode, &state);
++        g_variant_get (parameters, "(uuu)", &keyval, &keycode, &state);
+ 
+         /* Forward key event back with IBUS_FORWARD_MASK. And process_key_event will
+          * not process key event with IBUS_FORWARD_MASK again. */
+@@ -595,7 +595,7 @@ ibus_input_context_g_signal (GDBusProxy  *proxy,
+         gint offset_from_cursor;
+         guint nchars;
+ 
+-        g_variant_get (parameters, 0, "(iu)", &offset_from_cursor, &nchars);
++        g_variant_get (parameters, "(iu)", &offset_from_cursor, &nchars);
+ 
+         g_signal_emit (context,
+                        context_signals[DELETE_SURROUNDING_TEXT],
+-- 
+1.7.1
+

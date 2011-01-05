@@ -7,7 +7,7 @@ inherit eutils multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -34,6 +34,23 @@ pkg_setup() {
 	# An arch specific config directory is used on multilib systems
 	has_multilib_profile && GTK2_CONFDIR="/etc/gtk-2.0/${CHOST}"
 	GTK2_CONFDIR=${GTK2_CONFDIR:=/etc/gtk-2.0/}
+}
+
+src_prepare() {
+	epatch "${FILESDIR}"/ibus-1.4/0001-Merge-xkb-related-changes.patch
+	epatch "${FILESDIR}"/ibus-1.4/0002-Support-changing-the-global-input-method-engine-with.patch
+	epatch "${FILESDIR}"/ibus-1.4/0003-Change-default-values-of-some-config.patch
+	epatch "${FILESDIR}"/ibus-1.4/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch
+	epatch "${FILESDIR}"/ibus-1.4/0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
+	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
+	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
+
+	# Apply commits for the master branch that are not included in the tarball yet.
+	epatch "${FILESDIR}"/ibus-1.4/master_0001-Create-an-instance-of-GDBusProxy-with-G_DBUS_PROXY_F.patch
+	epatch "${FILESDIR}"/ibus-1.4/master_0002-Fix-API-compatibility-issue-in-ibus_config_new.patch
+	epatch "${FILESDIR}"/ibus-1.4/master_0003-Fix-g_variant_get-call-in-DeleteSurroundingText-sign.patch
+	epatch "${FILESDIR}"/ibus-1.4/master_0004-Reply-an-error-message-to-sender-if-ibus-daemon-can-.patch
+	# TODO(yusukes): remove these lines when a new tarball is released.
 }
 
 src_configure() {

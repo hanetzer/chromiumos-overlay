@@ -1,0 +1,268 @@
+From dfb9eabb0379310fce2b4791f19c547867e7c95d Mon Sep 17 00:00:00 2001
+From: James Su <suzhe@chromium.org>
+Date: Thu, 29 Apr 2010 13:12:27 -0700
+Subject: [PATCH 2/7] Support changing the global input method engine without focus.
+
+This CL is the fix for ibus. I'll do the fix for ChromiumOS later.
+
+BUG=http://crosbug.com/2627
+TEST=none
+
+If use_global_engine is enabled, then the global engine can be changed from panel im menu even without focused input context.
+
+Review URL: http://codereview.chromium.org/1735020
+---
+ ibus/bus.py             |   29 +++++++++++++-
+ ibus/interface/iibus.py |   15 +++++++
+ ui/gtk/panel.py         |  100 +++++++++++++++++++++--------------------------
+ 3 files changed, 88 insertions(+), 56 deletions(-)
+
+diff --git a/ibus/bus.py b/ibus/bus.py
+index 74b6820..3843299 100644
+--- a/ibus/bus.py
++++ b/ibus/bus.py
+@@ -54,6 +54,11 @@ class Bus(object.Object):
+             gobject.TYPE_NONE,
+             ()
+         ),
++        "global-engine-changed" : (
++            gobject.SIGNAL_RUN_LAST,
++            gobject.TYPE_NONE,
++            ()
++        ),
+     }
+ 
+     def __init__(self):
+@@ -68,6 +73,8 @@ class Bus(object.Object):
+                                            common.IBUS_PATH_IBUS)
+         self.__ibus = dbus.Interface (_ibus, dbus_interface='org.freedesktop.IBus')
+         self.__ibus.connect_to_signal("RegistryChanged", self.__registry_changed_cb)
++        self.__ibus.connect_to_signal("GlobalEngineChanged",
++                                      self.__global_engine_changed_cb)
+ 
+         self.__dbusconn.call_on_disconnection(self.__dbusconn_disconnected_cb)
+         # self.__dbusconn.add_message_filter(self.__filter_cb)
+@@ -87,6 +94,9 @@ class Bus(object.Object):
+     def __registry_changed_cb(self):
+         self.emit("registry-changed")
+ 
++    def __global_engine_changed_cb(self):
++        self.emit("global-engine-changed")
++
+     def get_name(self):
+         return self.__unique_name
+ 
+@@ -155,7 +165,24 @@ class Bus(object.Object):
+         return data
+ 
+     def get_use_sys_layout(self):
+-        return self.__ibus.GetUseSysLayout();
++        return self.__ibus.GetUseSysLayout()
++
++    def get_use_global_engine(self):
++        return self.__ibus.GetUseGlobalEngine()
++
++    def get_global_engine(self):
++        try:
++            engine = self.__ibus.GetGlobalEngine()
++            engine = serializable.deserialize_object(engine)
++            return engine
++        except:
++            return None
++
++    def set_global_engine(self, engine):
++        return self.__ibus.SetGlobalEngine(engine.name)
++
++    def is_global_engine_enabled(self):
++        return self.__ibus.IsGlobalEngineEnabled()
+ 
+     def introspect_ibus(self):
+         return self.__ibus.Introspect()
+diff --git a/ibus/interface/iibus.py b/ibus/interface/iibus.py
+index fba7ad4..ba30231 100644
+--- a/ibus/interface/iibus.py
++++ b/ibus/interface/iibus.py
+@@ -75,5 +75,20 @@ class IIBus(dbus.service.Object):
+     @method(out_signature="b")
+     def GetUseSysLayout(self, dbusconn): pass
+ 
++    @method(out_signature="b")
++    def GetUseGlobalEngine(self, dbusconn): pass
++
++    @method(out_signature="v")
++    def GetGlobalEngine(self, dbusconn): pass
++
++    @method(in_signature="s")
++    def SetGlobalEngine(self, engine_name, dbusconn): pass
++
++    @method(out_signature="b")
++    def IsGlobalEngineEnabled(self, dbusconn): pass
++
+     @signal(signature="")
+     def RegistryChanged(self): pass
++
++    @signal(signature="")
++    def GlobalEngineChanged(self): pass
+diff --git a/ui/gtk/panel.py b/ui/gtk/panel.py
+index 5f919e2..a3bf86a 100644
+--- a/ui/gtk/panel.py
++++ b/ui/gtk/panel.py
+@@ -60,6 +60,8 @@ class Panel(ibus.PanelBase):
+     def __init__(self, bus):
+         super(Panel, self).__init__(bus)
+         self.__bus = bus
++        self.__bus.connect("global-engine-changed",
++                           self.__global_engine_changed_cb)
+         self.__config = self.__bus.get_config()
+         self.__focus_ic = None
+         self.__setup_pid = None
+@@ -200,63 +202,19 @@ class Panel(ibus.PanelBase):
+     def focus_in(self, ic):
+         self.reset()
+         self.__focus_ic = ibus.InputContext(self.__bus, ic)
+-        enabled = self.__focus_ic.is_enabled()
+-        self.__language_bar.set_enabled(enabled)
+-
+-        if not enabled:
+-            self.__set_im_icon(ICON_KEYBOARD)
+-            self.__set_im_name(None)
+-            if self.__bus.get_use_sys_layout():
+-                self.__set_xkb_layout(self.__default_xkb_layout)
+-        else:
+-            engine = self.__focus_ic.get_engine()
+-            if engine:
+-                self.__set_im_icon(engine.icon)
+-                self.__set_im_name(engine.longname)
+-                if self.__bus.get_use_sys_layout():
+-                    self.__set_xkb_layout(engine.layout)
+-            else:
+-                self.__set_im_icon(ICON_KEYBOARD)
+-                self.__set_im_name(None)
+-                if self.__bus.get_use_sys_layout():
+-                    self.__set_xkb_layout(self.__default_xkb_layout)
++        self.__update_ui_and_xkb_layout()
+         self.__language_bar.focus_in()
+ 
+     def focus_out(self, ic):
+         self.reset()
+         self.__focus_ic = None
+-        self.__language_bar.set_enabled(False)
++        self.__update_ui_and_xkb_layout()
+         self.__language_bar.focus_out()
+-        self.__set_im_icon(ICON_KEYBOARD)
+-        self.__set_im_name(None)
+-        if self.__bus.get_use_sys_layout():
+-            self.__set_xkb_layout(self.__default_xkb_layout)
+ 
+     def state_changed(self):
+         if not self.__focus_ic:
+             return
+-
+-        enabled = self.__focus_ic.is_enabled()
+-        self.__language_bar.set_enabled(enabled)
+-
+-        if enabled == False:
+-            self.reset()
+-            self.__set_im_icon(ICON_KEYBOARD)
+-            self.__set_im_name(None)
+-            if self.__bus.get_use_sys_layout():
+-                self.__set_xkb_layout(self.__default_xkb_layout)
+-        else:
+-            engine = self.__focus_ic.get_engine()
+-            if engine:
+-                self.__set_im_icon(engine.icon)
+-                self.__set_im_name(engine.longname)
+-                if self.__bus.get_use_sys_layout():
+-                    self.__set_xkb_layout(engine.layout)
+-            else:
+-                self.__set_im_icon(ICON_KEYBOARD)
+-                self.__set_im_name(None)
+-                if self.__bus.get_use_sys_layout():
+-                    self.__set_xkb_layout(self.__default_xkb_layout)
++        self.__update_ui_and_xkb_layout()
+ 
+     def reset(self):
+         self.__candidate_panel.reset()
+@@ -410,6 +368,7 @@ class Panel(ibus.PanelBase):
+         engines = self.__bus.list_active_engines()
+         current_engine = \
+             (self.__focus_ic != None and self.__focus_ic.get_engine()) or \
++            self.__bus.get_global_engine() or \
+             (engines and engines[0]) or \
+             None
+ 
+@@ -466,7 +425,7 @@ class Panel(ibus.PanelBase):
+                 self.__status_icon)
+ 
+     def __status_icon_activate_cb(self, status_icon):
+-        if not self.__focus_ic:
++        if not (self.__focus_ic or self.__bus.get_use_global_engine()):
+             menu = gtk.Menu()
+             item = gtk.ImageMenuItem(_("No input window"))
+             size = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
+@@ -483,12 +442,13 @@ class Panel(ibus.PanelBase):
+                 self.__status_icon)
+ 
+     def __im_menu_item_activate_cb(self, item, engine):
+-        if not self.__focus_ic:
+-            return
+-        if engine:
+-            self.__focus_ic.set_engine(engine)
+-        else:
+-            self.__focus_ic.disable()
++        if self.__focus_ic:
++            if engine:
++                self.__focus_ic.set_engine(engine)
++            else:
++                self.__focus_ic.disable()
++        elif self.__bus.get_use_global_engine() and engine:
++            self.__bus.set_global_engine(engine)
+ 
+     def __sys_menu_item_activate_cb(self, item, command):
+         if command == gtk.STOCK_PREFERENCES:
+@@ -544,7 +504,7 @@ class Panel(ibus.PanelBase):
+             layout = layout + ",us"
+ 
+         if self.__current_xkb_layout == layout:
+-            return;
++            return
+ 
+         self.__current_xkb_layout = layout
+ 
+@@ -555,3 +515,33 @@ class Panel(ibus.PanelBase):
+                       [ "setxkbmap", "-layout", layout ] )
+         except:
+             print >> sys.stderr, "Failed to run %s" % self.__setxkbmap_cmd
++
++    def __update_ui_and_xkb_layout(self):
++        engine = None
++        enabled = False
++        language_bar_enabled = False
++
++        if self.__focus_ic:
++            engine = self.__focus_ic.get_engine()
++            enabled = self.__focus_ic.is_enabled()
++            language_bar_enabled = enabled
++        elif self.__bus.get_use_global_engine():
++            engine = self.__bus.get_global_engine()
++            enabled = self.__bus.is_global_engine_enabled()
++
++        self.__language_bar.set_enabled(language_bar_enabled)
++
++        if engine and enabled:
++            self.__set_im_icon(engine.icon)
++            self.__set_im_name(engine.longname)
++            if self.__bus.get_use_sys_layout():
++                self.__set_xkb_layout(engine.layout)
++        else:
++            self.__set_im_icon(ICON_KEYBOARD)
++            self.__set_im_name(None)
++            if self.__bus.get_use_sys_layout():
++                self.__set_xkb_layout(self.__default_xkb_layout)
++
++    def __global_engine_changed_cb(self, bus):
++        if not self.__focus_ic:
++            self.__update_ui_and_xkb_layout()
+-- 
+1.7.1
+

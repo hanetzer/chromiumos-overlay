@@ -1,0 +1,45 @@
+From 61f0894c3555478117e9d5f286d0085bd5afdad3 Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Mon, 27 Dec 2010 07:58:29 +0900
+Subject: [PATCH 2/4] Fix API compatibility issue in ibus_config_new.
+
+On ibus-1.3, ibus_config_new returns NULL when ibus-gconf is not started yet, but on 1.4 it returns a valid, non-NULL IBusConfig object. This patch fixes the discrepancy by changing the behavior of ibus_config_new of 1.4.
+
+If we don't return NULL when ibus-gconf does not exist, successive calls e.g. ibus_config_set_value will fail with a cryptic error message like 'IBUS-WARNING **: org.freedesktop.IBus.Config.SetValue: Cannot invoke method; proxy is for a well-known name without an owner and proxy was constructed with the G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START flag'. I believe returning NULL makes it easier to use the ibusconfig.h APIs.
+
+Please note that this patch is particularly important for Chromium OS. Since ibus_config_new is called shortly after ibus-daemon starts on the OS, ibus_config_new is sometimes called before ibus-memconf starts actually. This change helps the glue between chrome and ibus-daemon to remain clean.
+
+BUG=none
+TEST=manually on Chromium OS
+
+Review URL: http://codereview.appspot.com/3784043
+---
+ src/ibusconfig.c |   12 +++++++++---
+ 1 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/src/ibusconfig.c b/src/ibusconfig.c
+index f6fbe37..6b21380 100644
+--- a/src/ibusconfig.c
++++ b/src/ibusconfig.c
+@@ -147,9 +147,15 @@ ibus_config_new (GDBusConnection  *connection,
+                                "g-interface-name",  IBUS_INTERFACE_CONFIG,
+                                "g-object-path",     IBUS_PATH_CONFIG,
+                                NULL);
+-    if (initable != NULL)
+-        return IBUS_CONFIG (initable);
+-    return NULL;
++    if (initable == NULL)
++        return NULL;
++
++    if (g_dbus_proxy_get_name_owner (G_DBUS_PROXY (initable)) == NULL) {
++        /* The configuration daemon, which is usually ibus-gconf, is not started yet. */
++        g_object_unref (initable);
++        return NULL;
++    }
++    return IBUS_CONFIG (initable);
+ }
+ 
+ GVariant *
+-- 
+1.7.1
+

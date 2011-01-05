@@ -1,0 +1,38 @@
+From b3236cfda41986636d21d662f4fa8fe5dd14ae1b Mon Sep 17 00:00:00 2001
+From: Yusuke Sato <yusukes@chromium.org>
+Date: Tue, 19 Oct 2010 20:23:03 +0900
+Subject: [PATCH 7/7] Remove bus_input_context_register_properties(props_empty) call from the focus out handler
+
+- On Chrome OS, the call is unnecessary since an ibus engine is always active on
+the OS. i.e. We use the xkb:us::eng engine even for ASCII input.
+- Unlike the standard Gtk+ language bar, the UI for Chrome OS _does_ grab
+keyboard focus. This means when the UI is used, focus-out signal is sent to
+ibus-daemon. Clearing a properties inside focus out handler sometimes confuses
+the UI (see http://crosbug.com/7702).
+
+BUG=chromium-os:7702
+TEST=see the bug.
+
+Review URL: http://codereview.appspot.com/2494043/
+---
+ bus/inputcontext.c |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+diff --git a/bus/inputcontext.c b/bus/inputcontext.c
+index e30ff6c..ddfb580 100644
+--- a/bus/inputcontext.c
++++ b/bus/inputcontext.c
+@@ -1109,7 +1109,9 @@ bus_input_context_focus_out (BusInputContext *context)
+     bus_input_context_clear_preedit_text (context);
+     bus_input_context_update_auxiliary_text (context, text_empty, FALSE);
+     bus_input_context_update_lookup_table (context, lookup_table_empty, FALSE);
+-    bus_input_context_register_properties (context, props_empty);
++
++    // Workaround for http://crosbug.com/7702
++    // bus_input_context_register_properties (context, props_empty);
+ 
+     if (context->engine && context->enabled) {
+         bus_engine_proxy_focus_out (context->engine);
+-- 
+1.7.1
+

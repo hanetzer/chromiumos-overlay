@@ -1,0 +1,142 @@
+From 6bb34eca8b6470058d99fee6b6d5a8c0c923698a Mon Sep 17 00:00:00 2001
+From: James Su <james.su@gmail.com>
+Date: Wed, 26 May 2010 22:31:06 -0700
+Subject: [PATCH 4/7] If the current engine is removed, then switch to another engine automatically.
+
+BUG=http://crosbug.com/3577
+TEST=manual test.
+
+Review URL: http://codereview.chromium.org/2259004
+---
+ bus/ibusimpl.c |   94 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 94 insertions(+), 0 deletions(-)
+
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index 041db7e..a54abc2 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -156,6 +156,13 @@ static void     bus_ibus_impl_set_enable_by_default
+ static void     bus_ibus_impl_set_use_global_engine
+                                                 (BusIBusImpl        *ibus,
+                                                  GVariant           *value);
++static void     bus_ibus_impl_set_global_engine (BusIBusImpl        *ibus,
++                                                 BusEngineProxy     *engine);
++static void     bus_ibus_impl_set_global_engine_by_name
++                                                (BusIBusImpl        *ibus,
++                                                 const gchar        *name);
++static void     bus_ibus_impl_engines_maybe_removed
++                                                (BusIBusImpl        *ibus);
+ static void     bus_ibus_impl_registry_changed  (BusIBusImpl        *ibus);
+ static void     bus_ibus_impl_global_engine_changed
+                                                 (BusIBusImpl        *ibus);
+@@ -383,6 +390,7 @@ bus_ibus_impl_set_preload_engines (BusIBusImpl *ibus,
+         }
+     }
+ 
++    bus_ibus_impl_engines_maybe_removed (ibus);
+     bus_ibus_impl_update_engines_hotkey_profile (ibus);
+ }
+ 
+@@ -1102,6 +1110,91 @@ bus_ibus_impl_set_focused_context (BusIBusImpl     *ibus,
+     }
+ }
+ 
++static void
++bus_ibus_impl_set_global_engine (BusIBusImpl    *ibus,
++                                 BusEngineProxy *engine)
++{
++    BusInputContext *context = NULL;
++
++    if (!ibus->use_global_engine)
++        return;
++
++    if (ibus->focused_context) {
++        bus_input_context_set_engine (ibus->focused_context, engine);
++    } else if (ibus->fake_context) {
++        bus_input_context_set_engine (ibus->fake_context, engine);
++    }
++}
++
++static void
++bus_ibus_impl_set_global_engine_by_name (BusIBusImpl *ibus,
++                                         const gchar *name)
++{
++    gchar *old_engine_name = NULL;
++
++    if (!ibus->use_global_engine)
++        return;
++
++    if (g_strcmp0 (name, ibus->global_engine_name) == 0) {
++        /* If the user requested the same global engine, then we just enable the
++         * original one. */
++        if (ibus->focused_context) {
++            bus_input_context_enable (ibus->focused_context);
++        }
++        else if (ibus->fake_context) {
++            bus_input_context_enable (ibus->fake_context);
++        }
++        return;
++    }
++
++    /* If there is a focused input context, then we just change the engine of
++     * the focused context, which will then change the global engine
++     * automatically. Otherwise, we need to change the global engine directly.
++     */
++    if (ibus->focused_context) {
++        _context_request_engine_cb (ibus->focused_context, name, ibus);
++    }
++    else if (ibus->fake_context) {
++        _context_request_engine_cb (ibus->fake_context, name, ibus);
++    }
++}
++
++static void
++bus_ibus_impl_engines_maybe_removed (BusIBusImpl *ibus)
++{
++    const gchar *old_engine_name = NULL;
++    GList *engine_list = NULL;
++
++    if (!ibus->use_global_engine || ibus->global_engine_name == NULL)
++        return;
++
++    /* The current global engine is not removed, so do nothing. */
++    if (_find_engine_desc_by_name (ibus, ibus->global_engine_name))
++        return;
++
++    /* If the previous engine is available, then just switch to it. */
++    if (ibus->global_previous_engine_name &&
++        _find_engine_desc_by_name (ibus, ibus->global_previous_engine_name)) {
++        bus_ibus_impl_set_global_engine_by_name (
++            ibus, ibus->global_previous_engine_name);
++        return;
++    }
++
++    /* Just choose one in the list. */
++    engine_list = ibus->register_engine_list;
++    if (!engine_list)
++        engine_list = ibus->engine_list;
++
++    if (engine_list) {
++        IBusEngineDesc *engine_desc = (IBusEngineDesc *)engine_list->data;
++        bus_ibus_impl_set_global_engine_by_name (ibus,
++                        ibus_engine_desc_get_name (engine_desc));
++        return;
++    }
++
++    /* No engine available? Just disable global engine. */
++    bus_ibus_impl_set_global_engine (ibus, NULL);
++}
+ 
+ /**
+  * _context_engine_changed_cb:
+@@ -1359,6 +1452,7 @@ _component_destroy_cb (BusComponent *component,
+ 
+     g_object_unref (component);
+ 
++    bus_ibus_impl_engines_maybe_removed (ibus);
+     bus_ibus_impl_update_engines_hotkey_profile (ibus);
+ }
+ 
+-- 
+1.7.1
+
