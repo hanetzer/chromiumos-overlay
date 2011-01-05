@@ -19,7 +19,7 @@ PORTAGE_BUNZIP2_COMMAND="bunzip2"
 # Where to store built packages.
 PKGDIR="/var/lib/portage/pkgs"
 
-PORTAGE_BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/master-05.01.11.052403/packages/"
+PORTAGE_BINHOST="http://chromeos-prebuilt/host/amd64/master-05.01.11.094728/packages/"
 
 USE="${USE} -cups hardened pic pie"
 
