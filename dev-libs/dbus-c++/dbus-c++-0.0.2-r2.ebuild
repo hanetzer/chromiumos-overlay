@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="89cc134e324824d02bd66c0a18f45d7127550f8e"
+CROS_WORKON_COMMIT="d1d60ebc9ca301fe5c72fd4d3b7e70bec6eba278"
+
 inherit toolchain-funcs cros-workon
 
 DESCRIPTION="C++ D-Bus bindings"
