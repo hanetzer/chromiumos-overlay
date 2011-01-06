@@ -20,7 +20,6 @@ dev-util/perf		-doc -demangle
 chromeos-base/chromeos	X
 chromeos-base/chromeos-chrome   build_tests
 chromeos-base/chromeos-installer	minimal
-chromeos-base/chromeos-login   pam_google
 chromeos-base/flimflam	debug resolvfiles
 chromeos-base/vboot_reference minimal
 media-gfx/imagemagick   png
