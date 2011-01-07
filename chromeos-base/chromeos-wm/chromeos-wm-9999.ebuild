@@ -13,7 +13,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="opengles"
 
-RDEPEND="dev-cpp/gflags
+RDEPEND="chromeos-base/metrics
+	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/libpcre
 	dev-libs/protobuf
@@ -23,10 +24,10 @@ RDEPEND="dev-cpp/gflags
 	sys-apps/dbus
 	sys-apps/net-tools
 	x11-libs/cairo
-	x11-libs/libxcb
 	x11-libs/libX11
 	x11-libs/libXdamage
 	x11-libs/libXext
+	x11-libs/libxcb
 	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )"
 DEPEND="chromeos-base/libchrome
