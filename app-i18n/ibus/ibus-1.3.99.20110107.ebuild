@@ -7,7 +7,7 @@ inherit eutils multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}_unofficial.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -44,13 +44,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/ibus-1.4/0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
 	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
-
-	# Apply commits for the master branch that are not included in the tarball yet.
-	epatch "${FILESDIR}"/ibus-1.4/master_0001-Create-an-instance-of-GDBusProxy-with-G_DBUS_PROXY_F.patch
-	epatch "${FILESDIR}"/ibus-1.4/master_0002-Fix-API-compatibility-issue-in-ibus_config_new.patch
-	epatch "${FILESDIR}"/ibus-1.4/master_0003-Fix-g_variant_get-call-in-DeleteSurroundingText-sign.patch
-	epatch "${FILESDIR}"/ibus-1.4/master_0004-Reply-an-error-message-to-sender-if-ibus-daemon-can-.patch
-	# TODO(yusukes): remove these lines when a new tarball is released.
 }
 
 src_configure() {
