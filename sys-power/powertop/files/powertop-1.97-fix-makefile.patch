@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 166a16f..96b70c5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -63,7 +63,7 @@ clean:
+ 	rm -f *.o *~ powertop DEADJOE core.* */*.o */*~ csstoh css.h
+ 	
+ powertop: $(OBJS) $(HEADERS)
+-	g++ $(OBJS) $(LIBS) -o powertop
++	$(CXX) $(OBJS) $(LIBS) -o powertop
+ 	@(cd po/ && $(MAKE))
+ 	
+ install: powertop
