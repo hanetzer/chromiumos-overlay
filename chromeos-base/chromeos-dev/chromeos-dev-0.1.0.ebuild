@@ -50,7 +50,6 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
-	x86? ( dev-util/perf )
 	dev-util/strace
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
@@ -73,6 +72,7 @@ RDEPEND="${RDEPEND}
 	sys-power/powertop
 	sys-process/procps
 	sys-process/time
+	virtual/perf
 	opengl? ( x11-apps/mesa-progs )
 	x86? ( x11-apps/intel-gpu-tools )
 	x86? ( x11-misc/read-edid )
