@@ -7,11 +7,6 @@
 #
 
 RDEPEND="( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )"
-# HACK: all packages should get autotest-deps for now
-if ! [ "${PN}" = "autotest-deps" ]; then
-	RDEPEND="${RDEPEND} ( autotest? ( chromeos-base/autotest-deps ) )"
-fi
-DEPEND="${RDEPEND}"
 
 IUSE="buildcheck autotest opengles"
 
