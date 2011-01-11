@@ -122,7 +122,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies that are needed to sign images
 RDEPEND="${RDEPEND}
-	chromeos-base/vboot_reference
+	>=chromeos-base/vboot_reference-1.0-r174
 	chromeos-base/verity
 	sys-apps/mosys
 	"
