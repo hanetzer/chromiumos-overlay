@@ -58,9 +58,9 @@ def ExtractWhitelist(file_name):
   whitelist = set()
   for line in fileinput.input(file_name):
     line = re.sub(r'#.*', '', line)  # Remove comments.
-    line = line.split()
+    line = line.strip()  # Remove surrounding spaces.
     if line:
-      whitelist.add(line[0])
+      whitelist.add(line)
   return whitelist
 
 
