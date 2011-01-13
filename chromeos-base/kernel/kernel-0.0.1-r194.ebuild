@@ -2,18 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="3df2c1ce27c75dd05d32867c8e73e42fbfda90e5"
-
+CROS_WORKON_COMMIT="6f408fde6a3022f94631f74acfb270a7687ee990"
 inherit toolchain-funcs
 
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-initramfs"
-# disable compat_wireless with kernel-next
-USE="${USE} -compat_wireless"
+IUSE="-compat_wireless -initramfs"
 PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
@@ -38,8 +35,20 @@ else
 	fi
 fi
 
-CROS_WORKON_PROJECT="kernel-next"
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+if [ "${CHROMEOS_KERNEL}" = "kernel-nvidia" ]; then
+	CROS_WORKON_LOCALNAME="../third_party/kernel-nvidia"
+	EGIT_BRANCH="nvidia-2.6.31.12"
+	#TODO(msb): fix this once we get ARM pfbb going
+	CROS_WORKON_COMMIT=${EGIT_BRANCH}
+elif [ "${CHROMEOS_KERNEL}" = "kernel-qualcomm" ]; then
+	CROS_WORKON_LOCALNAME="../third_party/kernel-qualcomm"
+	EGIT_BRANCH=qualcomm-2.6.32.9
+	#TODO(msb): fix this once we get ARM pfbb going
+	CROS_WORKON_COMMIT=${EGIT_BRANCH}
+else
+	# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+	CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+fi
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -73,6 +82,16 @@ src_configure() {
 src_compile() {
 	if use initramfs; then
 		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+		# We want avoid copying modules into the initramfs so we need to enable
+		# the functionality required for the initramfs here.
+
+		# TPM support to ensure proper locking.
+		INITRAMFS="$INITRAMFS CONFIG_TCG_TPM=y CONFIG_TCG_TIS=y"
+
+		# VFAT FS support for EFI System Partition updates.
+		INITRAMFS="$INITRAMFS CONFIG_NLS_CODEPAGE_437=y"
+		INITRAMFS="$INITRAMFS CONFIG_NLS_ISO8859_1=y"
+		INITRAMFS="$INITRAMFS CONFIG_FAT_FS=y CONFIG_VFAT_FS=y"
 	else
 		INITRAMFS=""
 	fi
