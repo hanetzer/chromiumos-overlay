@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-inherit eutils multilib python
+inherit eutils flag-o-matic multilib python
 
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
@@ -47,6 +47,8 @@ src_prepare() {
 }
 
 src_configure() {
+	# TODO(yusukes): Fix ibus and remove -Wno-unused-variable.
+	append-cflags -Wall -Wno-unused-variable -Werror
 	econf \
 		--disable-gconf \
 		--disable-key-snooper \
