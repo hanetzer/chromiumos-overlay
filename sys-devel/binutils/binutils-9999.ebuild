@@ -246,12 +246,13 @@ src_install() {
 	# Trim all empty dirs
 	find "${D}" -type d | xargs rmdir >& /dev/null
 
+	# Call GNU ld ld.bfd and gold ld.gold
+	mv "${D}/${BINPATH}/ld" "${D}/${BINPATH}/ld.bfd"
+
 	# Install gold
 	cd "${MYBUILDDIR_GOLD}"
 	emake DESTDIR="${D}" tooldir="${LIBPATH}" install-gold || die
 
-	# Call GNU ld ld.bfd and gold ld.gold
-	mv "${D}/${BINPATH}/ld" "${D}/${BINPATH}/ld.bfd"
 	mv "${D}/${BINPATH}/${CTARGET}-ld" "${D}/${BINPATH}/ld.gold"
 
 	# Set default to be ld.bfd in regular installation
