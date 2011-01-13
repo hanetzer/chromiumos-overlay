@@ -1,4 +1,4 @@
-From 99daa270fc25892cec3d48c43d181e4c81803da7 Mon Sep 17 00:00:00 2001
+From 838ccc277b3509b502e0c5e80ef0ee040e6b416e Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 12 May 2010 15:38:42 -0700
 Subject: [PATCH 3/7] Change default values of some config.
@@ -14,7 +14,7 @@ Review URL: http://codereview.chromium.org/2008016
  1 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index d985652..041db7e 100644
+index 8a1f799..022f396 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -304,10 +304,13 @@ bus_ibus_impl_set_trigger (BusIBusImpl *ibus,
@@ -31,8 +31,8 @@ index d985652..041db7e 100644
 -#ifndef OS_CHROMEOS
      else {
          /* set default trigger */
-         ibus_hotkey_profile_add_hotkey (ibus->hotkey_profile,
-@@ -755,10 +758,10 @@ bus_ibus_impl_init (BusIBusImpl *ibus)
+         ibus_hotkey_profile_remove_hotkey_by_event (ibus->hotkey_profile, hotkey);
+@@ -768,10 +771,10 @@ bus_ibus_impl_init (BusIBusImpl *ibus)
      ibus->hotkey_profile = ibus_hotkey_profile_new ();
      ibus->keymap = ibus_keymap_get ("us");
  
@@ -47,5 +47,5 @@ index d985652..041db7e 100644
      ibus->global_previous_engine_name = NULL;
  
 -- 
-1.7.1
+1.7.3.1
 

@@ -1,4 +1,4 @@
-From dfb9eabb0379310fce2b4791f19c547867e7c95d Mon Sep 17 00:00:00 2001
+From a924b69430ceed526b926ed6ebed9e7eb4e8057c Mon Sep 17 00:00:00 2001
 From: James Su <suzhe@chromium.org>
 Date: Thu, 29 Apr 2010 13:12:27 -0700
 Subject: [PATCH 2/7] Support changing the global input method engine without focus.
@@ -264,5 +264,5 @@ index 5f919e2..a3bf86a 100644
 +        if not self.__focus_ic:
 +            self.__update_ui_and_xkb_layout()
 -- 
-1.7.1
+1.7.3.1
 

@@ -1,4 +1,4 @@
-From 9063673bd0546b4abb9d73d45e5eab4296f719ee Mon Sep 17 00:00:00 2001
+From 705313dfbbd03bf5bbadce255e01148465522be2 Mon Sep 17 00:00:00 2001
 From: Zach Kuznia <zork@chromium.org>
 Date: Thu, 1 Jul 2010 14:08:00 +0900
 Subject: [PATCH 5/7] Add api to ibus for retreiving unused config values.
@@ -15,9 +15,9 @@ Review URL: http://codereview.chromium.org/2860022
  memconf/config.c        |   71 +++++++++++++++++++++++++++++++++++++++++++++-
  src/ibusconfig.c        |   34 ++++++++++++++++++++++
  src/ibusconfig.h        |   16 ++++++++++-
- src/ibusconfigservice.c |   38 +++++++++++++++++++++++++
+ src/ibusconfigservice.c |   39 +++++++++++++++++++++++++
  src/ibusconfigservice.h |    7 +++-
- 7 files changed, 189 insertions(+), 5 deletions(-)
+ 7 files changed, 190 insertions(+), 5 deletions(-)
 
 diff --git a/gconf/config.c b/gconf/config.c
 index df1976c..15325ff 100644
@@ -229,10 +229,10 @@ index a5aa190..34d8f7c 100644
  ibus_config_memconf_new (GDBusConnection *connection)
  {
 diff --git a/src/ibusconfig.c b/src/ibusconfig.c
-index 5f44afa..cf112d4 100644
+index 1178ad7..62c434e 100644
 --- a/src/ibusconfig.c
 +++ b/src/ibusconfig.c
-@@ -289,3 +289,37 @@ ibus_config_unset (IBusConfig   *config,
+@@ -296,3 +296,37 @@ ibus_config_unset (IBusConfig   *config,
      g_variant_unref (result);
      return TRUE;
  }
@@ -244,7 +244,7 @@ index 5f44afa..cf112d4 100644
 +{
 +    g_assert (IBUS_IS_CONFIG (config));
 +    g_assert (unread != NULL && *unread == NULL);
-+    g_assert (unwritten != NULL && unwritten == NULL);
++    g_assert (unwritten != NULL && *unwritten == NULL);
 +
 +    GError *error = NULL;
 +    GVariant *result;
@@ -297,7 +297,7 @@ index c3a0bde..196aae9 100644
  #endif
 -
 diff --git a/src/ibusconfigservice.c b/src/ibusconfigservice.c
-index 5374a76..ab047b7 100644
+index 5374a76..412cc8b 100644
 --- a/src/ibusconfigservice.c
 +++ b/src/ibusconfigservice.c
 @@ -83,6 +83,10 @@ static gboolean  ibus_config_service_unset_value     (IBusConfigService      *co
@@ -316,7 +316,7 @@ index 5374a76..ab047b7 100644
      "      <arg direction='in'  type='s' name='name' />"
      "    </method>"
 +    "    <method name='GetUnused'>"
-+    "      <arg direction='out'  type='(asas)' />"
++    "      <arg direction='out'  type='(asas)' name='value_arrays' />"
 +    "    </method>"
      "  </interface>"
      "</node>";
@@ -329,7 +329,7 @@ index 5374a76..ab047b7 100644
  }
  
  static void
-@@ -248,6 +256,23 @@ ibus_config_service_service_method_call (IBusService           *service,
+@@ -248,6 +256,24 @@ ibus_config_service_service_method_call (IBusService           *service,
          }
          return;
      }
@@ -349,11 +349,12 @@ index 5374a76..ab047b7 100644
 +            g_dbus_method_invocation_return_gerror (invocation, error);
 +            g_error_free (error);
 +        }
++        return;
 +    }
  
      /* should not be reached */
      g_return_if_reached ();
-@@ -347,6 +372,19 @@ ibus_config_service_new (GDBusConnection *connection)
+@@ -347,6 +373,19 @@ ibus_config_service_new (GDBusConnection *connection)
      return IBUS_CONFIG_SERVICE (object);
  }
  
@@ -399,5 +400,5 @@ index 1aab32f..c6c62ae 100644
  #endif
 -
 -- 
-1.7.1
+1.7.3.1
 

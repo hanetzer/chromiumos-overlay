@@ -1,4 +1,4 @@
-From 6bb34eca8b6470058d99fee6b6d5a8c0c923698a Mon Sep 17 00:00:00 2001
+From 4ee2d09b9dc7f92753404cca1f938dff135cebf0 Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 26 May 2010 22:31:06 -0700
 Subject: [PATCH 4/7] If the current engine is removed, then switch to another engine automatically.
@@ -12,7 +12,7 @@ Review URL: http://codereview.chromium.org/2259004
  1 files changed, 94 insertions(+), 0 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 041db7e..a54abc2 100644
+index 022f396..547b5a0 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -156,6 +156,13 @@ static void     bus_ibus_impl_set_enable_by_default
@@ -29,7 +29,7 @@ index 041db7e..a54abc2 100644
  static void     bus_ibus_impl_registry_changed  (BusIBusImpl        *ibus);
  static void     bus_ibus_impl_global_engine_changed
                                                  (BusIBusImpl        *ibus);
-@@ -383,6 +390,7 @@ bus_ibus_impl_set_preload_engines (BusIBusImpl *ibus,
+@@ -384,6 +391,7 @@ bus_ibus_impl_set_preload_engines (BusIBusImpl *ibus,
          }
      }
  
@@ -37,7 +37,7 @@ index 041db7e..a54abc2 100644
      bus_ibus_impl_update_engines_hotkey_profile (ibus);
  }
  
-@@ -1102,6 +1110,91 @@ bus_ibus_impl_set_focused_context (BusIBusImpl     *ibus,
+@@ -1122,6 +1130,91 @@ bus_ibus_impl_set_focused_context (BusIBusImpl     *ibus,
      }
  }
  
@@ -129,7 +129,7 @@ index 041db7e..a54abc2 100644
  
  /**
   * _context_engine_changed_cb:
-@@ -1359,6 +1452,7 @@ _component_destroy_cb (BusComponent *component,
+@@ -1379,6 +1472,7 @@ _component_destroy_cb (BusComponent *component,
  
      g_object_unref (component);
  
@@ -138,5 +138,5 @@ index 041db7e..a54abc2 100644
  }
  
 -- 
-1.7.1
+1.7.3.1
 
