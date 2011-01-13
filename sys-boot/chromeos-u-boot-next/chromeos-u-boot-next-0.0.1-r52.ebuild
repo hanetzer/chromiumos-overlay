@@ -15,7 +15,7 @@ IUSE=""
 PROVIDE="virtual/u-boot"
 
 RDEPEND=""
-DEPEND="arm? ( chromeos-base/vboot_reference-firmware )
+DEPEND="arm? ( >=chromeos-base/vboot_reference-firmware-0.0.1-r19 )
 	!sys-boot/u-boot"
 
 CROS_WORKON_PROJECT="u-boot-next"
