@@ -22,7 +22,9 @@ CROS_WORKON_SUBDIR=files
 # following deps don't compile: boottool, mysql, pgpool, pgsql, systemtap, # dejagnu, libcap, libnet
 # following deps are not deps: factory
 # following tests are going to be moved: chrome_test
-AUTOTEST_DEPS_LIST="glbench gtest hdparm ibusclient iotools iwcap libaio realtimecomm_playground sysstat"
+AUTOTEST_DEPS_LIST="gtest hdparm ibusclient iwcap realtimecomm_playground sysstat"
+AUTOTEST_CONFIG_LIST=*
+AUTOTEST_PROFILERS_LIST=*
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
@@ -47,14 +49,6 @@ RDEPEND="${RDEPEND}
 # deps/iwcap
 RDEPEND="${RDEPEND}
   dev-libs/libnl
-"
-
-# deps/glbench
-RDEPEND="${RDEPEND}
-  dev-cpp/gflags
-  chromeos-base/libchrome
-  virtual/opengl
-  opengles? ( virtual/opengles )
 "
 
 DEPEND="${RDEPEND}"

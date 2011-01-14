@@ -10,6 +10,11 @@ EAPI=2
 
 inherit autotest
 
+
+AUTOTEST_CONFIG_LIST=""
+AUTOTEST_DEPS_LIST=""
+AUTOTEST_PROFILERS_LIST=""
+
 #
 # In order to build only deps (call their setup function), we need to have
 # a test that calls their setup() in its own setup(). This is done by

@@ -23,6 +23,9 @@ IUSE="${IUSE} +autotest"
 # image, a better way would be to add tpm-tools to the image.
 RDEPEND="
   chromeos-base/autotest-deps
+  chromeos-base/autotest-deps-iotools
+  chromeos-base/autotest-deps-libaio
+  chromeos-base/autotest-deps-glbench
   chromeos-base/flimflam
   autox? ( chromeos-base/autox )
   xset? ( x11-apps/xset )

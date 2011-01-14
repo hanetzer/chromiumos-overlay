@@ -128,7 +128,8 @@ esac
 
 set +e
 if [[ "$ARCH" == "x86" ]]; then
-  echo "int main(){return 0;}" | i686-pc-linux-gnu-gcc -mtune=atom -o /dev/null -xc -
+  echo "int main(){return 0;}" | \
+      i686-pc-linux-gnu-gcc -mtune=atom -o /dev/null -xc -
   if [[ $? -ne 0 ]]; then
     echo "You seem to have an older version of the toolchain compiler."
     echo "Please re-run setup_board to upgrade your toolchain compiler."
@@ -167,6 +168,13 @@ if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
 fi
 if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/autotest-all"
+
+  # HACK ALERT
+  # Remove autotest deps r321 and earlier as some files have been moved.
+  # We must force uninstall the old packages or the stale packages will
+  # conflict with the new ebuilds.
+  # http://codereview.chromium.org/6220003/
+  sudo -E ${EMERGE_BOARD_CMD} -C "<=chromeos-base/autotest-deps-0.0.1-r321"
 fi
 if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   # These flags are specific to parallel_emerge
