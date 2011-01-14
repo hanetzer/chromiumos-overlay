@@ -49,7 +49,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	TARGETS="update_engine_unittests test_http_server"
+	TARGETS="update_engine_unittests test_http_server delta_generator"
 	scons ${MAKEOPTS} ${TARGETS} || die "failed to build tests"
 
 	if ! use x86 ; then
