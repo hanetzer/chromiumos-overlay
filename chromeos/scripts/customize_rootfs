@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -135,22 +135,6 @@ echo "# Allow chronos user to renice processes so that chrome will adjust tab pr
   sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
 echo "chronos hard nice 0" | \
   sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
-
-# TODO: Since the stateful partition may not have a chronos home directory
-# on it, we create one here if necessary.
-cat <<EOF | sudo dd of="$ROOT_FS_DIR"/etc/init/homedir.conf
-start on stopped startup
-
-task
-script
-
-if [ ! -d "/home/$DEV_USER" ]; then
-  mkdir "/home/$DEV_USER"
-  chown $DEV_USER.$DEV_USER "/home/$DEV_USER"
-fi
-
-end script
-EOF
 
 # Clobber stock rsyslog.conf with our own
 RSYSLOG_CONF="$ROOT_FS_DIR"/etc/rsyslog.conf
