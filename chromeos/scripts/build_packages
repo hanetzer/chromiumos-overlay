@@ -175,6 +175,7 @@ if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   # conflict with the new ebuilds.
   # http://codereview.chromium.org/6220003/
   sudo -E ${EMERGE_BOARD_CMD} -C "<=chromeos-base/autotest-deps-0.0.1-r321"
+  sudo -E ${EMERGE_BOARD_CMD} -C "<=chromeos-base/autotest-tests-0.0.1-r335"
 fi
 if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   # These flags are specific to parallel_emerge

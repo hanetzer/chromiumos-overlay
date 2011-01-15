@@ -37,15 +37,6 @@ RDEPEND="${RDEPEND}
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
 "
 
-# TODO(hungte) To remove the dependency of autotest-approved-components without
-# breaking build system, we temporary make it an empty package in 0.1.0. Please
-# remove the dependency when everyone has switched over to use new
-# hareware_Components.
-RDEPEND="${RDEPEND}
-  tests_hardware_Components?
-	( >=chromeos-base/autotest-approved-components-0.1.0 )
-"
-
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
@@ -79,32 +70,7 @@ IUSE_TESTS="
 	+tests_desktopui_V8Bench
 	+tests_desktopui_WindowManagerFocusNewWindows
 	+tests_desktopui_WindowManagerHotkeys
-	+tests_dummy_Fail
-	+tests_dummy_Pass
 	tests_example_UnitTest
-	+tests_factory_Audio
-	+tests_factory_Camera
-	+tests_factory_DeveloperRecovery
-	+tests_factory_Display
-	+tests_factory_Dummy
-	+tests_factory_EnableWriteProtect
-	+tests_factory_ExtDisplay
-	+tests_factory_ExternalStorage
-	+tests_factory_Fail
-	+tests_factory_Keyboard
-	+tests_factory_Leds
-	+tests_factory_LightSensor
-	+tests_factory_PreFinalCheck
-	+tests_factory_RebootStub
-	+tests_factory_Review
-	+tests_factory_ScriptWrapper
-	+tests_factory_ShowTestResults
-	+tests_factory_Touchpad
-	+tests_factory_UploadLogs
-	+tests_factory_LogVpd
-	+tests_factory_Verify
-	+tests_factory_Wipe
-	+tests_factory_WriteGBB
 	+tests_firmware_RomSize
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLAPICheck
@@ -244,7 +210,6 @@ IUSE_TESTS="
 	+tests_security_RootfsOwners
 	+tests_security_SuidBinaries
 	+tests_suites
-	+tests_suite_Factory
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
 	+tests_suite_Smoke
