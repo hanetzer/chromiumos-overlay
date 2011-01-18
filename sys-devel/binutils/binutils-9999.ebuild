@@ -256,19 +256,22 @@ src_install() {
 	mv "${D}/${BINPATH}/${CTARGET}-ld" "${D}/${BINPATH}/ld.gold"
 
 	# Set default to be ld.bfd in regular installation
-	ln -sf "${D}/${BINPATH}/ld.bfd" "${D}/${BINPATH}/ld"
+	ln -sf -T ld.bfd "${D}/${BINPATH}/ld"
 
 	# Make a fake installation for gold with gold as the default linker
 	# so we can turn gold on/off with binutils-config
-	ln -sf "${D}/${LIBPATH}" "${D}/${LIBPATH}-gold"
-	ln -sf "${D}/${DATAPATH}" "${D}/${DATAPATH}-gold"
+	LASTDIR=${LIBPATH##/*/}
+	ln -sf -T "${LASTDIR}" "${D}/${LIBPATH}-gold"
+	LASTDIR=${DATAPATH##/*/}
+	ln -sf -T "${LASTDIR}" "${D}/${DATAPATH}-gold"
 
 	mkdir "${D}/${BINPATH}-gold"
 	cd "${D}"/${BINPATH}
+	LASTDIR=${BINPATH##/*/}
 	for x in * ; do
-		ln -sf "${D}/${BINPATH}/${x}" "${D}/${BINPATH}-gold/${x}"
+		ln -sf -T "../${LASTDIR}/${x}" "${D}/${BINPATH}-gold/${x}"
 	done
-	ln -sf "${D}/${BINPATH}-gold/ld.gold" "${D}/${BINPATH}-gold/ld"
+	ln -sf -T ld.gold "${D}/${BINPATH}-gold/ld"
 
 	# Install gold binutils-config configuration file
 	cd ${MYBUILDDIR_GOLD}
