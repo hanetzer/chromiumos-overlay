@@ -6,11 +6,11 @@ BVER=${PV}
 
 # Version names
 COST_VERSION="v1"
-BINUTILS_CL="44027"
+BINUTILS_CL="experimental-9999"
 BINUTILS_VERSION="binutils-2.20.1-mobile"
 BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg_${COST_VERSION}_${BINUTILS_CL}"
 
-GOLD_CL="44029"
+GOLD_CL="experimental-9999"
 GOLD_VERSION="binutils-20100303"
 GOLD_PKG_VERSION="${GOLD_VERSION}_cos_gg_${COST_VERSION}_${GOLD_CL}"
 
@@ -81,16 +81,6 @@ src_unpack() {
 
 
 src_compile() {
-	# prevent makeinfo from running in releases.  it may not always be
-	# installed, and older binutils may fail with newer texinfo.
-	# besides, we never patch the doc files anyways, so regenerating
-	# in the first place is useless. #193364
-	find . '(' -name '*.info' -o -name '*.texi' ')' -print0 | xargs -0 touch -r .
-
-	# make sure we filter $LINGUAS so that only ones that
-	# actually work make it through #42033
-	strip-linguas -u */po
-
 	# keep things sane
 	strip-flags
 
@@ -141,7 +131,7 @@ src_compile() {
 
 	# Build gold
 	cd "${MYBUILDDIR_GOLD}"
-	gold_conf="${myconf} --with-pkgversion=${GOLD_PKG_VERSION}"
+	gold_conf="${myconf} --with-pkgversion=${GOLD_PKG_VERSION} --enable-gold"
 	echo ./configure ${gold_conf}
 	"${S_GOLD}"/configure ${gold_conf} || die "configure gold failed"
 
