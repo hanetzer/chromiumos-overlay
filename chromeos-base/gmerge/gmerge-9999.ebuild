@@ -18,11 +18,13 @@ CROS_WORKON_LOCALNAME="dev"
 
 RDEPEND="app-shells/bash
          app-portage/gentoolkit
-         net-misc/wget"
+         dev-lang/python
+         dev-libs/shflags
+         "
 DEPEND="${RDEPEND}"
 
 src_install() {
-  exeinto /usr/bin  
+  exeinto /usr/bin
   doexe gmerge
   doexe stateful_update
 }
