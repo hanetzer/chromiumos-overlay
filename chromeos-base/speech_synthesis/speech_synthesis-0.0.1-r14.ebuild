@@ -18,6 +18,7 @@ DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
 	dev-libs/dbus-glib
 	dev-libs/glib
+	dev-libs/libxml2
 	media-libs/alsa-lib
 	media-libs/libresample
 	media-libs/pico
