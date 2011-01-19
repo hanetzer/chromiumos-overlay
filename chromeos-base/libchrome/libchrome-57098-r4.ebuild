@@ -73,6 +73,7 @@ src_install() {
 	doins "${S}/files/base/basictypes.h"
 	doins "${S}/files/base/command_line.h"
 	doins "${S}/files/base/compiler_specific.h"
+	doins "${S}/files/base/condition_variable.h"
 	doins "${S}/files/base/debug_util.h"
 	doins "${S}/files/base/eintr_wrapper.h"
 	doins "${S}/files/base/file_descriptor_posix.h"
