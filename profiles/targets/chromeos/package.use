@@ -2,11 +2,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
 app-editors/qemacs	-X
-app-i18n/ibus		-nls
-app-i18n/ibus-chewing	-nls
-app-i18n/ibus-hangul	-nls
-app-i18n/ibus-m17n	-nls
-app-i18n/ibus-pinyin	-nls
 app-shells/bash		-net
 dev-cpp/glog		gflags
 dev-java/icedtea	-nss
@@ -24,7 +19,6 @@ chromeos-base/chromeos-installer	minimal
 chromeos-base/flimflam	debug resolvfiles
 chromeos-base/vboot_reference minimal
 media-gfx/imagemagick   png
-media-sound/alsa-utils	-nls
 media-sound/pulseaudio	bluetooth dbus -esd
 net-libs/libsoup	-ssl
 # for curl-7.19.6 turning on ipv6 use flag will turn off ares
