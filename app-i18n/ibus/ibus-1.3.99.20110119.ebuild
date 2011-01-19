@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="doc nls python"
 
-RDEPEND="python? ( >=dev-lang/python-2.5 )
+RDEPEND="app-text/iso-codes
+	python? ( >=dev-lang/python-2.5 )
 	>=dev-libs/glib-2.26
 	python? ( >=dev-python/pygobject-2.14 )
 	nls? ( virtual/libintl )
