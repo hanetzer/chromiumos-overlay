@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="64268a7ac6214e506be899b0575283050052bcec"
+CROS_WORKON_COMMIT="575309b26a596e7c5fc1fb7518d4ed10c9b3088d"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
@@ -22,8 +22,7 @@ RDEPEND="app-i18n/ibus
 	sys-apps/dbus
 	sys-auth/consolekit
 	sys-fs/udev
-	x11-apps/setxkbmap
-	x11-libs/libxklavier"
+	x11-apps/setxkbmap"
 
 DEPEND="${RDEPEND}
 	app-i18n/ibus-chewing
