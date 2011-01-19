@@ -1,4 +1,4 @@
-From 4ee2d09b9dc7f92753404cca1f938dff135cebf0 Mon Sep 17 00:00:00 2001
+From aff4f9ee286afc32e0375ed202d6f74fb998ebda Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 26 May 2010 22:31:06 -0700
 Subject: [PATCH 4/7] If the current engine is removed, then switch to another engine automatically.

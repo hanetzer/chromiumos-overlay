@@ -1,4 +1,4 @@
-From e47a607cd99e74426834b5d79f4ac6cbd121931a Mon Sep 17 00:00:00 2001
+From a4ff270d30b64f379f6e2231017658eb87e57c78 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 15 Sep 2010 12:25:17 +0900
 Subject: [PATCH 6/7] Fix issues of the "previous_engine" hotkey.

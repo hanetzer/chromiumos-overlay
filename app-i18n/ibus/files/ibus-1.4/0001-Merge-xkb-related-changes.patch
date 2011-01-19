@@ -1,4 +1,4 @@
-From d83ea3f419c2fb5cb0212afb33f9670eef57dbda Mon Sep 17 00:00:00 2001
+From 54cc82d1b796bed99ee0e56ff0f23419ebec87ce Mon Sep 17 00:00:00 2001
 From: James Su <suzhe@chromium.org>
 Date: Tue, 27 Apr 2010 16:43:41 -0700
 Subject: [PATCH 1/7] Merge xkb related changes.

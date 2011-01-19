@@ -42,11 +42,11 @@ src_prepare() {
 	epatch "${FILESDIR}"/ibus-1.4/0003-Change-default-values-of-some-config.patch
 	epatch "${FILESDIR}"/ibus-1.4/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch
 	epatch "${FILESDIR}"/ibus-1.4/0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
-	# TODO(yusukes): Remove *fix_0005 patches when Peng merges them into his tree
-	epatch "${FILESDIR}"/ibus-1.4/fix_0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
-	epatch "${FILESDIR}"/ibus-1.4/2nd_fix_0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
 	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
+
+	# TODO(yusukes): Remove the patch next time when the ebuild is updated.
+	epatch "${FILESDIR}"/ibus-1.4/fix_issue_1186.patch
 }
 
 src_configure() {

@@ -1,4 +1,4 @@
-From a924b69430ceed526b926ed6ebed9e7eb4e8057c Mon Sep 17 00:00:00 2001
+From 3e60925ad10c890ea3dc48bfda0501c83ede7d23 Mon Sep 17 00:00:00 2001
 From: James Su <suzhe@chromium.org>
 Date: Thu, 29 Apr 2010 13:12:27 -0700
 Subject: [PATCH 2/7] Support changing the global input method engine without focus.

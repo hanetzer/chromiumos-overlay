@@ -1,4 +1,4 @@
-From 838ccc277b3509b502e0c5e80ef0ee040e6b416e Mon Sep 17 00:00:00 2001
+From 2cd4879e7f0ef49ecb5a0197843a1642b872c83e Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 12 May 2010 15:38:42 -0700
 Subject: [PATCH 3/7] Change default values of some config.
