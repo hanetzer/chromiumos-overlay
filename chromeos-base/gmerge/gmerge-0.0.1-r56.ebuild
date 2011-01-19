@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="845f117c1c290664e6e7344eefd8535ba9abbd56"
+CROS_WORKON_COMMIT="7c79a818c2a807ba6d9331bc757162dbbc7b68ac"
 
 inherit cros-workon
 
@@ -19,11 +19,13 @@ CROS_WORKON_LOCALNAME="dev"
 
 RDEPEND="app-shells/bash
          app-portage/gentoolkit
-         net-misc/wget"
+         dev-lang/python
+         dev-libs/shflags
+         "
 DEPEND="${RDEPEND}"
 
 src_install() {
-  exeinto /usr/bin  
+  exeinto /usr/bin
   doexe gmerge
   doexe stateful_update
 }
