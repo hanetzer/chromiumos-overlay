@@ -188,7 +188,7 @@ cros-workon_src_unpack() {
 				git clone -s "${path}" ${S} || die "Can't clone ${path}."
 			else
 				git clone -sn "${path}" ${S} || die "Can't clone ${path}."
-				if ! ( cd ${S} && git checkout ${CROS_WORKON_COMMIT} ) ; then
+				if ! ( cd ${S} && git checkout -q ${CROS_WORKON_COMMIT} ) ; then
 					ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
 					ewarn "Is ${path} up to date? Try running repo sync."
 					die "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
