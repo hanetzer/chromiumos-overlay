@@ -22,7 +22,8 @@ RDEPEND="app-i18n/ibus
 	sys-apps/dbus
 	sys-auth/consolekit
 	sys-fs/udev
-	x11-apps/setxkbmap"
+	x11-apps/setxkbmap
+	x11-libs/libxklavier"
 
 DEPEND="${RDEPEND}
 	app-i18n/ibus-chewing
