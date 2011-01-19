@@ -1,7 +1,7 @@
-From 2cd4879e7f0ef49ecb5a0197843a1642b872c83e Mon Sep 17 00:00:00 2001
+From 2a77f80c53f6fb812a7dc25c427929269ed23dcc Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 12 May 2010 15:38:42 -0700
-Subject: [PATCH 3/7] Change default values of some config.
+Subject: [PATCH 3/8] Change default values of some config.
 
 This CL changes the default value of use_global_engine, enable_by_default and use_sys_layout to TRUE. And also removes the default trigger key.
 
@@ -14,7 +14,7 @@ Review URL: http://codereview.chromium.org/2008016
  1 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 8a1f799..022f396 100644
+index f96fbf2..71042b7 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -304,10 +304,13 @@ bus_ibus_impl_set_trigger (BusIBusImpl *ibus,

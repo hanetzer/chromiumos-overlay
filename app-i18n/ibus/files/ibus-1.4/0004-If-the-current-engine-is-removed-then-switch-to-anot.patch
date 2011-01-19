@@ -1,7 +1,7 @@
-From aff4f9ee286afc32e0375ed202d6f74fb998ebda Mon Sep 17 00:00:00 2001
+From dd46908e774d51be5a8efd0f5c6966f3977daa7e Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 26 May 2010 22:31:06 -0700
-Subject: [PATCH 4/7] If the current engine is removed, then switch to another engine automatically.
+Subject: [PATCH 4/8] If the current engine is removed, then switch to another engine automatically.
 
 BUG=http://crosbug.com/3577
 TEST=manual test.
@@ -12,7 +12,7 @@ Review URL: http://codereview.chromium.org/2259004
  1 files changed, 94 insertions(+), 0 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 022f396..547b5a0 100644
+index 71042b7..3db0a7d 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -156,6 +156,13 @@ static void     bus_ibus_impl_set_enable_by_default

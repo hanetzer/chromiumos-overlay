@@ -1,7 +1,7 @@
-From 5163edd1dd648bcec979fa424b3127db9468686d Mon Sep 17 00:00:00 2001
+From 21a387294cc9fda2e1bae6b782ebce2be9dbaabb Mon Sep 17 00:00:00 2001
 From: Zach Kuznia <zork@chromium.org>
 Date: Thu, 1 Jul 2010 14:08:00 +0900
-Subject: [PATCH 5/7] Add api to ibus for retreiving unused config values.
+Subject: [PATCH 5/8] Add api to ibus for retreiving unused config values.
 
 This will be used by our autotest scripts to generate an error when input method config values change.
 

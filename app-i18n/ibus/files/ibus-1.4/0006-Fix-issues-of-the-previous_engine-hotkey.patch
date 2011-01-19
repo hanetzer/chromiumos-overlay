@@ -1,7 +1,7 @@
-From a4ff270d30b64f379f6e2231017658eb87e57c78 Mon Sep 17 00:00:00 2001
+From c849839e3648aaff517ba062fb6ae5d0ef47c120 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 15 Sep 2010 12:25:17 +0900
-Subject: [PATCH 6/7] Fix issues of the "previous_engine" hotkey.
+Subject: [PATCH 6/8] Fix issues of the "previous_engine" hotkey.
 
 Check global_previous_engine_name when the previous engine is requested and rewrite it if necessary.
 This change ensures that the "previous_engine" hotkey (Ctrl+space on Chrome OS) always works
@@ -38,7 +38,7 @@ preloaded.
  1 files changed, 11 insertions(+), 0 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 547b5a0..046b795 100644
+index 3db0a7d..c171aaf 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
 @@ -1040,6 +1040,7 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,

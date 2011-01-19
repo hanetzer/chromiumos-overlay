@@ -44,9 +44,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/ibus-1.4/0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
 	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
-
-	# TODO(yusukes): Remove the patch next time when the ebuild is updated.
-	epatch "${FILESDIR}"/ibus-1.4/fix_issue_1186.patch
+	epatch "${FILESDIR}"/ibus-1.4/0008-Port-the-following-ibus-1.3-patches-to-1.4.patch
 }
 
 src_configure() {
