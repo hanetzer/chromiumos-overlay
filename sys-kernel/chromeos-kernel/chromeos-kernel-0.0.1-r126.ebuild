@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="2da86c54ccb9af7ecacaa3fca48cd068d7dd0325"
 
 inherit toolchain-funcs
 
@@ -9,7 +10,7 @@ DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm"
+KEYWORDS="x86 arm"
 IUSE="-compat_wireless -initramfs"
 PROVIDE="virtual/kernel"
 
