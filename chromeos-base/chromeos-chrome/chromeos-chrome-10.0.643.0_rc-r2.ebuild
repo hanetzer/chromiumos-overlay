@@ -25,7 +25,7 @@ KEYWORDS="x86 arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting internal chrome_pdf +chrome_debug"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -48,7 +48,7 @@ if [ ${USE_TRUNK} = 0 ]; then
 	fi
 fi
 
-if use internal; then
+if use chrome_internal; then
 	if [ ${USE_TRUNK} = 0 ]; then
 		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
 		AUXILIARY_URL="${INTERNAL_URL}/trunk/src-internal"
@@ -66,7 +66,7 @@ else
 fi
 
 CHROME_SRC="chrome-src"
-if use internal; then
+if use chrome_internal; then
 	CHROME_SRC="${CHROME_SRC}-internal"
 fi
 
@@ -165,7 +165,7 @@ set_build_defines() {
 		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
 		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
-		if use internal; then
+		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
 			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
 		fi
@@ -185,7 +185,7 @@ set_build_defines() {
 		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
 	fi
 
-	if use internal; then
+	if use chrome_internal; then
 		#Adding chrome branding specific variables and GYP_DEFINES
 		BUILD_DEFINES="branding=Chrome buildtype=Official $BUILD_DEFINES"
 		export CHROMIUM_BUILD='_google_Chrome'
@@ -615,7 +615,7 @@ src_install() {
 	doexe "${FROM}"/candidate_window
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
-	if use internal && use chrome_pdf; then
+	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
 	exeopts -m4755	# setuid the sandbox
@@ -659,13 +659,14 @@ src_install() {
 
 	if use x86; then
 		# Install Flash plugin.
-		if use internal && [ -f "${FROM}/libgcflashplayer.so" ]; then
+		if use chrome_internal && [ -f "${FROM}/libgcflashplayer.so" ]; then
 			# Install Flash from the binary drop.
 			exeinto "${CHROME_DIR}"/plugins
 			doexe "${FROM}/libgcflashplayer.so"
 			doexe "${FROM}/plugin.vch"
 		else
-			if use internal && [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
+			if use chrome_internal && \
+                [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
 				# Install Flash from the local source repository.
 				exeinto "${CHROME_DIR}"/plugins
 				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/libgcflashplayer.so
