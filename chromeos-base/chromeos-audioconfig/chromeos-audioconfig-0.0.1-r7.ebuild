@@ -21,9 +21,11 @@ CROS_WORKON_PROJECT="audioconfig"
 CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_install() {
-	dodir /etc
-	insinto /etc
-	doins "${S}"/asound.conf
+	if use pulseaudio; then
+		dodir /etc
+		insinto /etc
+		doins "${S}"/asound.conf
+	fi
 
 	dodir /etc/pulse
 	insinto /etc/pulse
