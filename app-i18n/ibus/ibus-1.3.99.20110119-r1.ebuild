@@ -14,8 +14,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="doc nls python"
 
-RDEPEND="app-text/iso-codes
-	python? ( >=dev-lang/python-2.5 )
+RDEPEND="python? ( >=dev-lang/python-2.5 )
 	>=dev-libs/glib-2.26
 	python? ( >=dev-python/pygobject-2.14 )
 	nls? ( virtual/libintl )
@@ -50,6 +49,9 @@ src_prepare() {
 src_configure() {
 	# TODO(yusukes): Fix ibus and remove -Wno-unused-variable.
 	append-cflags -Wall -Wno-unused-variable -Werror
+	# TODO(petkov): Ideally, configure should support --disable-isocodes but it
+	# seems that the current version doesn't, so use the environment variables
+	# instead to remove the dependence on iso-codes.
 	econf \
 		--disable-gconf \
 		--disable-key-snooper \
@@ -60,6 +62,7 @@ src_configure() {
 		$(use_enable nls) \
 		$(use_enable python) \
 		CPPFLAGS='-DOS_CHROMEOS=1' \
+		ISOCODES_CFLAGS=' ' ISOCODES_LIBS=' ' \
 		|| die
 }
 
