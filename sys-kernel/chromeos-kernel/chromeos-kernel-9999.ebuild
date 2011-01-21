@@ -68,6 +68,16 @@ src_configure() {
 src_compile() {
 	if use initramfs; then
 		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+		# We want avoid copying modules into the initramfs so we need to enable
+		# the functionality required for the initramfs here.
+
+		# TPM support to ensure proper locking.
+		INITRAMFS="$INITRAMFS CONFIG_TCG_TPM=y CONFIG_TCG_TIS=y"
+
+		# VFAT FS support for EFI System Partition updates.
+		INITRAMFS="$INITRAMFS CONFIG_NLS_CODEPAGE_437=y"
+		INITRAMFS="$INITRAMFS CONFIG_NLS_ISO8859_1=y"
+		INITRAMFS="$INITRAMFS CONFIG_FAT_FS=y CONFIG_VFAT_FS=y"
 	else
 		INITRAMFS=""
 	fi
