@@ -51,7 +51,17 @@ src_compile() {
 	local max_devices="2"
 	local my_conf="--enable-shared --with-pic --enable-static"
 
+	# For now leave out all GPS device protocols but the most basic
+	local disabled_protocols="aivdm ashtech earthmate evermore fv18 garmin \
+		garmintxt gpsclock itrax mtk3301 navcom ntrip oceanserver \
+		oncore rtcm104v2 rtcm104v3 sirf superstar2 tnt tripmate tsip \
+		ubx"
+
 	use python && distutils_python_version
+
+	for protocol in ${disabled_protocols}; do
+		my_conf+=" --disable-${protocol}"
+	done
 
 	if use ntp; then
 		my_conf="${my_conf} --enable-ntpshm --enable-pps"
@@ -59,13 +69,12 @@ src_compile() {
 		my_conf="${my_conf} --disable-ntpshm --disable-pps"
 	fi
 
-	my_conf+=" --enable-max-devices=${max_devices}\
-		   --enable-max-clients=${max_clients}"
+	my_conf+=" --enable-max-devices=${max_devices}"
+	my_conf+=" --enable-max-clients=${max_clients}"
+	my_conf+=" --disable-ipv6"
 
 	WITH_XSLTPROC=no WITH_XMLTO=no econf ${my_conf} \
-		$(use_enable dbus) $(use_enable ocean oceanserver) \
-		$(use_enable tntc tnt) \
-		$(use_enable garmin garmintxt) || die "econf failed"
+		$(use_enable dbus) || die "econf failed"
 
 	emake -j1 || die "emake failed"
 }
