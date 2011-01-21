@@ -117,7 +117,6 @@ RDEPEND="${RDEPEND}
          >=dev-libs/nss-3.12.2
          dev-libs/libxml2
          dev-libs/dbus-glib
-         >=gnome-base/gconf-2.24.0
          x11-libs/cairo
          x11-libs/libXScrnSaver
          x11-libs/gtk+

@@ -14,7 +14,6 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="opengl opengles"
 DEPEND="dev-libs/nss
-	gnome-base/gconf
 	media-libs/fontconfig
 	opengl? ( media-libs/glew )
 	net-misc/curl
