@@ -14,7 +14,7 @@
 =dev-libs/atk-1.28.0		x86 arm
 =dev-libs/boost-1.42.0		x86 arm
 =dev-libs/dbus-c++-0.0.1	x86 arm
-=dev-libs/dbus-glib-0.82	x86 arm
+=dev-libs/dbus-glib-0.92	x86 arm
 =dev-libs/eggdbus-0.5		x86 arm
 =dev-libs/engine_pkcs11-0.1.8	x86 arm
 =dev-libs/glib-2.26.1		x86 arm
