@@ -1,0 +1,11 @@
+--- configure.orig	2011-01-20 13:33:38.000000000 -0800
++++ configure	2011-01-20 13:33:53.000000000 -0800
+@@ -20970,7 +20970,7 @@
+ fi
+ 
+ # i18n stuff
+-ALL_LINGUAS="`grep -v '^#' "$srcdir/po/LINGUAS" | tr '\n' ' '`"
++ALL_LINGUAS=
+ 
+ 
+ for ac_header in locale.h
