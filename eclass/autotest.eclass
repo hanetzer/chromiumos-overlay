@@ -286,21 +286,26 @@ function autotest_src_compile() {
 			print_test_dirs "${AUTOTEST_WORKDIR}/${dir}"
 		done | sort | uniq
 		)
-	einfo "Building tests ($(echo ${TESTS}|wc -w)):"
-	einfo "${TESTS}"
+	NR_TESTS=$(echo ${TESTS}|wc -w)
+	if ! [ "${NR_TESTS}" = "0" ]; then
+		einfo "Building tests (${NR_TESTS}):"
+		einfo "${TESTS}"
 
-	NORMAL=$(echo -e "\e[0m")
-	GREEN=$(echo -e "\e[1;32m")
-	RED=$(echo -e "\e[1;31m")
+		NORMAL=$(echo -e "\e[0m")
+		GREEN=$(echo -e "\e[1;32m")
+		RED=$(echo -e "\e[1;31m")
 
-	# Call autotest to prebuild all test cases.
-	# Parse output through a colorifying sed script
-	( GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
-		client/bin/autotest_client --quiet \
-		--client_test_setup=$(pythonify_test_list ${TESTS}) \
-		|| ! use buildcheck || die "Tests failed to build."
-	) | sed -e "s/\(INFO:root:setup\)/${GREEN}* \1${NORMAL}/" \
-		-e "s/\(ERROR:root:\[.*\]\)/${RED}\1${NORMAL}/"
+		# Call autotest to prebuild all test cases.
+		# Parse output through a colorifying sed script
+		( GRAPHICS_BACKEND="$graphics_backend" LOGNAME=${SUDO_USER} \
+				client/bin/autotest_client --quiet \
+			--client_test_setup=$(pythonify_test_list ${TESTS}) \
+			|| ! use buildcheck || die "Tests failed to build."
+		) | sed -e "s/\(INFO:root:setup\)/${GREEN}* \1${NORMAL}/" \
+			-e "s/\(ERROR:root:\[.*\]\)/${RED}\1${NORMAL}/"
+	else
+		einfo "No tests to prebuild, skipping"
+	fi
 
 	# Cleanup some temp files after compiling
 	for mask in '*.[do]' ${AUTOTEST_FILE_MASK}; do
