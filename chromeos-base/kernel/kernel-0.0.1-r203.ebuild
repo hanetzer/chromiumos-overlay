@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e6249b05e035cb8a4eb406204b82468f85332a91"
+CROS_WORKON_COMMIT="70502b26aa612f48ad50625e725b2aac37665760"
 
 inherit toolchain-funcs
 
@@ -69,6 +69,16 @@ src_configure() {
 src_compile() {
 	if use initramfs; then
 		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+		# We want avoid copying modules into the initramfs so we need to enable
+		# the functionality required for the initramfs here.
+
+		# TPM support to ensure proper locking.
+		INITRAMFS="$INITRAMFS CONFIG_TCG_TPM=y CONFIG_TCG_TIS=y"
+
+		# VFAT FS support for EFI System Partition updates.
+		INITRAMFS="$INITRAMFS CONFIG_NLS_CODEPAGE_437=y"
+		INITRAMFS="$INITRAMFS CONFIG_NLS_ISO8859_1=y"
+		INITRAMFS="$INITRAMFS CONFIG_FAT_FS=y CONFIG_VFAT_FS=y"
 	else
 		INITRAMFS=""
 	fi
