@@ -8,7 +8,7 @@
 
 RDEPEND="( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )"
 
-IUSE="buildcheck autotest opengles"
+IUSE="+buildcheck autotest opengles"
 
 # Ensure the configures run by autotest pick up the right config.site
 export CONFIG_SITE="/usr/share/config.site"
