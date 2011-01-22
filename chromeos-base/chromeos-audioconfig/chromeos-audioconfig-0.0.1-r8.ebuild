@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="-pulseaudio"
 
 RDEPEND=""
 DEPEND="${RDEPEND}"
@@ -25,9 +25,9 @@ src_install() {
 		dodir /etc
 		insinto /etc
 		doins "${S}"/asound.conf
-	fi
 
-	dodir /etc/pulse
-	insinto /etc/pulse
-	doins "${S}"/pulse/*
+		dodir /etc/pulse
+		insinto /etc/pulse
+		doins "${S}"/pulse/*
+	fi
 }
