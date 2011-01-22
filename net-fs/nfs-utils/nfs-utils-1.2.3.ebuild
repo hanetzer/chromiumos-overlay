@@ -47,6 +47,7 @@ src_prepare() {
 src_configure() {
 	econf \
 		--with-statedir=/var/lib/nfs \
+		--with-tirpcinclude=${ROOT}/usr/include/tirpc \
 		--enable-tirpc \
 		$(use_with tcpd tcp-wrappers) \
 		$(use_enable nfsv3) \
