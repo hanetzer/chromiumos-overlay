@@ -60,7 +60,7 @@ src_install() {
 		local src_dir='scripts/image_signing'
 		dodir "${dst_dir}"
 		exeinto "${dst_dir}"
-		doexe "${src_dir}/common.sh"
+		doexe "${src_dir}/common_minimal.sh"
 		doexe "${src_dir}/resign_firmwarefd.sh"
 		doexe "${src_dir}/make_dev_firmware.sh"
 		doexe "${src_dir}/make_dev_ssd.sh"

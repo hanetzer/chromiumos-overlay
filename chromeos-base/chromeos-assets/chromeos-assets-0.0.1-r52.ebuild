@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="8f42129b840ffd0396b587c6b777262cf67759a5"
+CROS_WORKON_COMMIT="1f8a2676d2b1300758f03d6300acf54fe5f0772e"
 
 inherit cros-workon toolchain-funcs
 
@@ -109,6 +109,10 @@ src_install() {
 
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
+
+	unzip "${S}"/accessibility/extensions/access_chromevox.zip
+	insinto /usr/share/chromeos-assets/accessibility/extensions/access_chromevox
+	doins -r "${S}"/chromevox_deploy/*
 
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf

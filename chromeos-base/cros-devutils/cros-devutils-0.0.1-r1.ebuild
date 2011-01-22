@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_COMMIT="08d55a2cf1bbe905f568fe617175d1906828bb51"
 
 inherit cros-workon
 
@@ -15,6 +16,7 @@ IUSE="minimal"
 
 CROS_WORKON_PROJECT="dev-util"
 CROS_WORKON_LOCALNAME="dev"
+
 
 RDEPEND="app-shells/bash
          app-portage/gentoolkit
