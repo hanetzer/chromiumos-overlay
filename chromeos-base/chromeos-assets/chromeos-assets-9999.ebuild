@@ -109,6 +109,10 @@ src_install() {
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
 
+	unzip "${S}"/accessibility/extensions/access_chromevox.zip
+	insinto /usr/share/chromeos-assets/accessibility/extensions/access_chromevox
+	doins -r "${S}"/chromevox_deploy/*
+
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf
 
