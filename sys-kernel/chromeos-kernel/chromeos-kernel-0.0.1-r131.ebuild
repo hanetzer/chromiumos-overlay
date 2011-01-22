@@ -34,6 +34,7 @@ else
 	fi
 fi
 
+CROS_WORKON_PROJECT="kernel"
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
 CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
