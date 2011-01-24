@@ -1,0 +1,70 @@
+Downloaded from
+http://cgit.freedesktop.org/xcb/libxcb/patch/?id=f0565e8f06aadf760a9065a97b8cf5ab9cbd18de
+Change the indentation so the patch is applicable to libxcb-1.5.
+
+From f0565e8f06aadf760a9065a97b8cf5ab9cbd18de Mon Sep 17 00:00:00 2001
+From: Jamey Sharp <jamey@minilop.net>
+Date: Sat, 04 Sep 2010 17:17:21 +0000
+Subject: _xcb_conn_wait: Shut down the connection on unexpected poll() events.
+
+If a client calls close(2) on the connection's file descriptor and then
+flushes writes, libxcb causes a hang in the client.
+
+Any flush eventually calls _xcb_out_send() with has the following loop:
+   while(ret && *count)
+       ret = _xcb_conn_wait(c, &c->out.cond, vector, count);
+
+_xcb_conn_wait(), if built with USE_POLL, gets the POLLNVAL error. It only
+checks for POLLIN and POLLOUT though, ignoring the error. Return value is 1,
+count is unmodified, leaving us with an endless loop and a client hang.
+
+XTS testcase Xlib3/XConnectionNumber triggers this bug. It creates a display
+connection, closes its file descriptor, tries to send a no-op, and then expects
+an error.
+http://cgit.freedesktop.org/xorg/test/xts/tree/xts5/Xlib3/XConnectionNumber.m
+
+If poll returned POLLHUP or POLLERR, we might see the same result.
+
+If poll returns any event we didn't ask for, this patch causes
+_xcb_conn_shutdown() to be invoked and an error returned. This matches the
+behaviour if select(2) is used instead of poll(2): select(2) returns -1 and
+EBADF for an already closed file descriptor.
+
+I believe this fix both is safe and will handle any similar error. POSIX says
+that the only bits poll is permitted to set in revents are those bits that were
+set in events, plus POLLHUP, POLLERR, and POLLNVAL. So if we see any flags we
+didn't ask for then something has gone wrong.
+
+Patch inspired by earlier proposals from Peter Hutterer and Aaron
+Plattner--thanks!
+
+Reported-by: Peter Hutterer <peter.hutterer@who-t.net>
+Reported-by: Aaron Plattner <aplattner@nvidia.com>
+Signed-off-by: Jamey Sharp <jamey@minilop.net>
+Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Tested-by: Aaron Plattner <aplattner@nvidia.com>
+Cc: Peter Hutterer <peter.hutterer@who-t.net>
+Cc: Dan Nicholson <dbn.lists@gmail.com>
+Signed-off-by: Peter Harris <pharris@opentext.com>
+---
+diff --git a/src/xcb_conn.c b/src/xcb_conn.c
+index ebaa6e2..f2a2636 100644
+--- a/src/xcb_conn.c
++++ b/src/xcb_conn.c
+@@ -364,6 +364,13 @@ int _xcb_conn_wait(xcb_connection_t *c, pthread_cond_t *cond, struct iovec **vec
+     do {
+ #if USE_POLL
+     ret = poll(&fd, 1, -1);
++    /* If poll() returns an event we didn't expect, such as POLLNVAL, treat
++     * it as if it failed. */
++    if(ret >= 0 && (fd.revents & ~fd.events))
++    {
++        ret = -1;
++        break;
++    }
+ #else
+         ret = select(c->fd + 1, &rfds, &wfds, 0, 0);
+ #endif
+--
+cgit v0.8.3-6-g21f6

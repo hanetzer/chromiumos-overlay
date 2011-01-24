@@ -30,6 +30,10 @@ pkg_setup() {
 		--enable-xinput"
 }
 
+src_prepare() {
+	epatch "${FILESDIR}"/_xcb_conn_wait.patch
+}
+
 src_compile() {
 	if [ -f Makefile ] || [ -f GNUmakefile ] || [ -f makefile ] ; then
 		emake XCBPROTO_XCBINCLUDEDIR="${ROOT}/usr/share/xcb" || die "emake failed"

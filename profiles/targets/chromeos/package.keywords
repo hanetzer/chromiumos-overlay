@@ -94,7 +94,7 @@
 # packages using an overlay package.mask file.
 =x11-base/xorg-drivers-1.7	x86
 =x11-libs/libX11-1.3.3		x86
-=x11-libs/libxcb-1.5		x86
+=x11-libs/libxcb-1.5-r1		x86
 =x11-libs/libXext-1.1.1		x86
 =x11-libs/libXi-1.3		x86
 =x11-libs/libXinerama-1.1	x86
