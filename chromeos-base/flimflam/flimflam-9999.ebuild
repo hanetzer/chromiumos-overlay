@@ -54,6 +54,7 @@ src_configure() {
 	econf \
 		--localstatedir=/var \
 		--enable-loopback=builtin \
+		--with-sslroots=/etc/ssl/certs \
 		$(use_enable bluetooth) \
 		$(use_enable bootstat) \
 		$(use_enable crosmetrics) \
