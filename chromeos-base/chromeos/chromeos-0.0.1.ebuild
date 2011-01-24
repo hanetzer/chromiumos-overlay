@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="bluetooth +localssh X"
+IUSE="bluetooth +localssh modemmanager X"
 
 DEPEND="chromeos-base/internal
 	   sys-apps/baselayout"
@@ -116,6 +116,9 @@ RDEPEND="${RDEPEND}
 	media-sound/pulseaudio
 	net-firewall/iptables
 	net-misc/htpdate
+	modemmanager? (
+		net-misc/modemmanager
+	)
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/marvell_sd8787
