@@ -27,6 +27,10 @@ RESTRICT="test" # see bug #236845
 RDEPEND="dev-libs/libpthread-stubs"
 DEPEND="${RDEPEND}"
 
+PATCHES=(
+	"${FILESDIR}"/libdrm-2.4.23-boexec.patch
+	)
+
 pkg_setup() {
 	CONFIGURE_OPTIONS="--enable-udev
 			$(use_enable video_cards_intel intel)
