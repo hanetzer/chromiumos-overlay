@@ -74,6 +74,7 @@ RDEPEND="${RDEPEND}
 	=gnome-base/orbit-2.14.17
 	>=media-libs/freetype-2.2.1
 	media-libs/mesa
+	sys-apps/gsutil
 	sys-apps/module-init-tools
 	!sys-apps/nih-dbus-tool
 	sys-fs/sshfs-fuse
