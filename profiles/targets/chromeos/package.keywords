@@ -41,6 +41,7 @@
 =net-libs/gupnp-0.13.2-r1       x86 arm
 =net-libs/gupnp-av-0.5.2	x86 arm
 =net-libs/libsoup-2.28.2	x86 arm
+=net-libs/libtirpc-0.2.0        x86 arm
 =net-misc/dhcpcd-5.1.1		x86 arm
 =net-misc/iperf-2.0.4		x86 arm
 =net-misc/iputils-20100418-r1   x86 arm
