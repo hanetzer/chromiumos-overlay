@@ -114,7 +114,6 @@ IUSE_TESTS="
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
 	+tests_logging_KernelCrashServer
-	+tests_logging_LogVolume
 	+tests_logging_UserCrash
 	+tests_logging_UncleanShutdown
 	+tests_logging_UncleanShutdownServer
