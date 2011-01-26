@@ -7,9 +7,6 @@
     'all': {
       'filepath': '.',
     },
-    'bluez': {
-      'filepath': 'bluez',
-    },
     'fonts': {
       'filepath': 'media-fonts/|media-libs/(fontconfig|freetype)/',
     },
@@ -24,8 +21,7 @@
     'all': ['adlr+crosoverlay@chromium.org',
             'msb+crosoverlay@chromium.org',
             'anush@chromium.org'],
-    'bluez': ['petkov@chromium.org'],
-    'chromeos-image' : ['sosa@chromium.org'],
+    'chromeos-image' : ['petkov@chromium.org', 'sosa@chromium.org'],
     'fonts' : ['derat@chromium.org'],
     'xorg' : ['derat@chromium.org'],
   },
