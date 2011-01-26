@@ -201,6 +201,20 @@ EOF
    fi
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
+
+   # Add chromite/bin into the user's path; note that the chromite wrapper
+   # itself might also be found in depot_tools.
+   echo "PATH=\$PATH:/home/$USER/trunk/chromite/bin" >> \
+     "${FLAGS_chroot}/home/$USER/.bashrc"
+
+   # Add chromite as a local site-package.
+   mkdir -p "${FLAGS_chroot}/home/$USER/.local/lib/python2.6/site-packages"
+   ln -s ../../../../trunk/chromite \
+     "${FLAGS_chroot}/home/$USER/.local/lib/python2.6/site-packages/"
+
+   echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
+     "${FLAGS_chroot}/home/$USER/.bashrc"
+
    echo "export PORTAGE_USERNAME=$USER" >> "$FLAGS_chroot/home/$USER/.bash_profile"
    chmod a+x "$FLAGS_chroot/home/$USER/.bashrc"
    # Automatically change to scripts directory
@@ -318,9 +332,6 @@ bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
 echo "$PROG: Running emerge hard-host-depends"
 # Need to sudo_chroot here so that ~/.bash_profile gets used
 sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends world $EMERGE_JOBS
-
-echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
-  "${FLAGS_chroot}/home/$USER/.bashrc"
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
