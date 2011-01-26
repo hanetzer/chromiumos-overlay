@@ -3,7 +3,7 @@
 # Based on gentoo's modemmanager ebuild
 
 EAPI=2
-CROS_WORKON_COMMIT="c0054e880ab21442935a79732de2790c5d253c64"
+CROS_WORKON_COMMIT="00b6cce4df7d4acbf3e580a03c2f044e18589d2c"
 
 inherit eutils autotools cros-workon
 
@@ -31,12 +31,7 @@ DEPEND=">=sys-fs/udev-145[extras]
         "
 
 src_configure() {
-#	eautoreconf || die "autoreconf failed"
-	autoreconf --install --symlink &&\
-	intltoolize --force &&\
-	autoreconf &&\
-	./configure --enable-maintainer-mode $@
-
+	eautoreconf || die "autoreconf failed"
 	econf || die "econf failed"
 }
 
