@@ -144,7 +144,7 @@ set -e
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.conf.user /build/"${FLAGS_board}"/etc/make.conf.user
 ${EMERGE_CMD} --info
-eretry sudo ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
+eretry sudo -E ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
 if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   # Always build cros-workon packages
