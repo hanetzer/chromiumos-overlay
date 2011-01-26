@@ -30,12 +30,7 @@ DEPEND=">=sys-fs/udev-145[extras]
         "
 
 src_configure() {
-#	eautoreconf || die "autoreconf failed"
-	autoreconf --install --symlink &&\
-	intltoolize --force &&\
-	autoreconf &&\
-	./configure --enable-maintainer-mode $@
-
+	eautoreconf || die "autoreconf failed"
 	econf || die "econf failed"
 }
 
