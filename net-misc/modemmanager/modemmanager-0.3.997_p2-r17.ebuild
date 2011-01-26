@@ -32,6 +32,7 @@ DEPEND=">=sys-fs/udev-145[extras]
 
 src_configure() {
 	eautoreconf || die "autoreconf failed"
+	intltoolize --force
 	econf || die "econf failed"
 }
 
