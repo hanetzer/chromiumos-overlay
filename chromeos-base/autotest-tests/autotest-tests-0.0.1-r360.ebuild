@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="efb7f5434cce580c0849fc9127e8035249449eac"
+CROS_WORKON_COMMIT="65c8428a9ceb84d795dcbaee11e614649da7c6c4"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -115,7 +115,6 @@ IUSE_TESTS="
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
 	+tests_logging_KernelCrashServer
-	+tests_logging_LogVolume
 	+tests_logging_UserCrash
 	+tests_logging_UncleanShutdown
 	+tests_logging_UncleanShutdownServer
