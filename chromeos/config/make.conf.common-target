@@ -62,5 +62,8 @@ SHARED_USER_HOME="/home/chronos/user"
 # TODO(tedbo): Find a better place or fix for this "hack". 
 am_cv_python_pythondir="\${prefix}/lib/python2.6/site-packages"
 
+# Native language support is handled inside Chrome itself.
+LINGUAS="en"
+
 # Allow the user to override or define additional settings.
 source make.conf.user
