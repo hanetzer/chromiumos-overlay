@@ -9,7 +9,7 @@ inherit linux-info xorg-2 cros-workon
 DESCRIPTION="Driver for Synaptics touchpads"
 HOMEPAGE="http://cgit.freedesktop.org/xorg/driver/xf86-input-synaptics/"
 
-KEYWORDS="~amd64 ~ppc ~ppc64"
+KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
 IUSE=""
 CROS_WORKON_LOCALNAME="../third_party/xf86-input-synaptics"
 
