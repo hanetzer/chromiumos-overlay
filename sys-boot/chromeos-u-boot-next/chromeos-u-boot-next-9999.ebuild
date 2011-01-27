@@ -49,7 +49,7 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=true \
-              VBOOT="${ROOT}/usr" \
+	      VBOOT="${ROOT}/usr" \
 	      all || die "U-Boot compile failed"
 }
 
@@ -58,6 +58,7 @@ src_install() {
 
 	insinto /u-boot
 	doins u-boot.bin || die
+	doins image.bin || die
 
 	dobin "${S}"/tools/mkimage || die
 }
