@@ -51,6 +51,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/eggdbus
 	dev-libs/libgcrypt
 	dev-libs/libxslt
+	dev-libs/libyaml
 	dev-libs/m17n-lib
 	dev-libs/protobuf
 	dev-python/cherrypy
