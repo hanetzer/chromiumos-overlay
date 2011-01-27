@@ -36,8 +36,11 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/ibus-1.4/0001-Merge-xkb-related-changes.patch
-	epatch "${FILESDIR}"/ibus-1.4/0002-Support-changing-the-global-input-method-engine-with.patch
+	# Since these two patches are for Python files, we don't have to apply
+	# them.
+	#epatch "${FILESDIR}"/ibus-1.4/0001-Merge-xkb-related-changes.patch
+	#epatch "${FILESDIR}"/ibus-1.4/0002-Support-changing-the-global-input-method-engine-with.patch
+
 	epatch "${FILESDIR}"/ibus-1.4/0003-Change-default-values-of-some-config.patch
 	epatch "${FILESDIR}"/ibus-1.4/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch
 	epatch "${FILESDIR}"/ibus-1.4/0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
