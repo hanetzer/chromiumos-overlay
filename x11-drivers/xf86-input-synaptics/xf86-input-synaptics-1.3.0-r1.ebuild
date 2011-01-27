@@ -3,13 +3,13 @@
 # $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-synaptics/xf86-input-synaptics-1.3.0.ebuild,v 1.2 2010/09/10 13:27:03 chithanh Exp $
 
 EAPI=3
-CROS_WORKON_COMMIT="0b9644cf0478ffb6d09646b885e1dc4ac0cd9bf7"
-inherit linux-info xorg-2 cros-workon
+#CROS_WORKON_COMMIT="ca0f87eb2a7491048d49e6449b688c4fea245310"
+inherit linux-info xorg-2 
 
 DESCRIPTION="Driver for Synaptics touchpads"
 HOMEPAGE="http://cgit.freedesktop.org/xorg/driver/xf86-input-synaptics/"
 
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
+KEYWORDS="~amd64 ~ppc ~ppc64"
 IUSE=""
 CROS_WORKON_LOCALNAME="../third_party/xf86-input-synaptics"
 
