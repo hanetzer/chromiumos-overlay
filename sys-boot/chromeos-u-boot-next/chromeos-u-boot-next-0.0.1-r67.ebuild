@@ -1,15 +1,12 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f1bebd34b5cd17f35b3fa2c95da7ce41a0da56f3"
+CROS_WORKON_COMMIT="b274f4f1f447959a965a67addc30980ac6185fd5"
 
 inherit toolchain-funcs
 
-# Export build environment/variables for build libraries
-# that will be linked with u-boot
-
-DESCRIPTION="Export U-Boot build environment"
+DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
@@ -18,7 +15,8 @@ IUSE=""
 PROVIDE="virtual/u-boot"
 
 RDEPEND=""
-DEPEND=""
+DEPEND="arm? ( >=chromeos-base/vboot_reference-firmware-0.0.1-r19 )
+	!sys-boot/u-boot"
 
 CROS_WORKON_PROJECT="u-boot-next"
 CROS_WORKON_LOCALNAME="u-boot-next"
@@ -52,13 +50,16 @@ src_compile() {
 	      USE_PRIVATE_LIBGCC=yes \
 	      HOSTCC=${CC} \
 	      HOSTSTRIP=true \
-              VBOOT="${ROOT}/usr" \
-	      u-boot-cflags.mk || die "U-Boot generate config failed"
+	      VBOOT="${ROOT}/usr" \
+	      all || die "U-Boot compile failed"
 }
 
 src_install() {
 	dodir /u-boot
 
 	insinto /u-boot
-	doins u-boot-cflags.mk || die
+	doins u-boot.bin || die
+	doins image.bin || die
+
+	dobin "${S}"/tools/mkimage || die
 }
