@@ -59,6 +59,7 @@ src_install() {
 	insinto /u-boot
 	doins u-boot.bin || die
 	doins image.bin || die
+	doins firmware_layout.cfg || die
 
 	dobin "${S}"/tools/mkimage || die
 }
