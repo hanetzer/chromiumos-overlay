@@ -15,7 +15,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~spar
 IUSE="doc extras idn ipv6 SECURITY_HAZARD ssl static"
 
 # sysfsutils is needed for libsysfs which is used by arping only
-RDEPEND="extras? !net-misc/rarpd
+RDEPEND="extras? ( !net-misc/rarpd )
 	ssl? ( dev-libs/openssl )
 	idn? ( net-dns/libidn )
 	sys-fs/sysfsutils"
