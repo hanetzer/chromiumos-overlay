@@ -16,7 +16,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm x86"
 
-IUSE="dbus ntp usb"
+IUSE="dbus ntp python usb"
 
 RDEPEND="dbus? ( >=sys-apps/dbus-0.94
 		>=dev-libs/glib-2.6
