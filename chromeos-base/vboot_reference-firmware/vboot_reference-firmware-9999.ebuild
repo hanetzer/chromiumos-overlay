@@ -10,13 +10,17 @@ KEYWORDS="~arm"
 IUSE="debug"
 EAPI="2"
 
-DEPEND=""
+DEPEND="sys-boot/chromeos-u-boot-next-build-env"
 
 CROS_WORKON_PROJECT=vboot_reference
 CROS_WORKON_LOCALNAME=vboot_reference
 
 src_compile() {
 	tc-export CC AR CXX
+
+	# find u-boot-cflags.mk
+	local cflags_path="${SYSROOT}/u-boot/u-boot-cflags.mk"
+	[ -f "${cflags_path}" ] || die "File ${cflags_path} does not exist"
 
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
@@ -26,7 +30,8 @@ src_compile() {
 		DEBUG=1
 	fi
 
-	emake FIRMWARE_ARCH="arm" DEBUG="${DEBUG}" || die "${err_msg}"
+	emake FIRMWARE_ARCH="arm" FIRMWARE_CONFIG_PATH="${cflags_path}" \
+		DEBUG="${DEBUG}" || die "${err_msg}"
 }
 
 src_install() {
