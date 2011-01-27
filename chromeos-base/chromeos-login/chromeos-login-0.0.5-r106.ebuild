@@ -48,9 +48,6 @@ src_test() {
 }
 
 src_install() {
-	dodir /etc/X11
-	install --mode=0755 "${S}/chromeos-xsession" "${D}/etc/X11"
-
 	into /
 	dosbin "${S}/session_manager_setup.sh"
 	dosbin "${S}/session_manager"

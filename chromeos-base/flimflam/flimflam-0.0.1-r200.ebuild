@@ -14,7 +14,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi +openvpn policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -25,6 +25,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	dhcpcd? ( net-misc/dhcpcd )
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( net-misc/mobile-broadband-provider-info )
+	openvpn? ( net-misc/openvpn )
 	policykit? ( >=sys-auth/policykit-0.7 )
 	portalcheck? ( net-misc/curl )
 	ppp? ( net-dialup/ppp )
@@ -44,11 +45,14 @@ src_prepare() {
 
 src_configure() {
 	if tc-is-cross-compiler ; then
+		if use dhcpcd ; then
+			export ac_cv_path_DHCPCD=/sbin/dhcpcd
+		fi
 		if use newwifi ; then
 			export ac_cv_path_WPASUPPLICANT=/sbin/wpa_supplicant
 		fi
-		if use dhcpcd ; then
-			export ac_cv_path_DHCPCD=/sbin/dhcpcd
+		if use openvpn ; then
+			export ac_cv_path_OPENVPN=/usr/sbin/openvpn
 		fi
 	fi
 
@@ -65,6 +69,7 @@ src_configure() {
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
 		$(use_enable modemmanager modemmgr) \
+		$(use_enable openvpn openvpn builtin) \
 		$(use_enable policykit polkit) \
 		$(use_enable portalcheck portal_check builtin) \
 		$(use_enable ppp) \
