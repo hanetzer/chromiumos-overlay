@@ -31,7 +31,7 @@ export CHROMEOS_VERSION_BRANCH=157
 # Patch number.
 # Increment by 1 each release on a branch.
 # Reset to 0 when increasing branch number.
-export CHROMEOS_VERSION_PATCH=9
+export CHROMEOS_VERSION_PATCH=10
 
 # Codename of this version.
 export CHROMEOS_VERSION_CODENAME=""
