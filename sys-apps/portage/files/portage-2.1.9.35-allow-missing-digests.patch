@@ -1,0 +1,33 @@
+commit 588df54230043c9a0238a488d812666a614d2bfa
+Author: David James <davidjames@google.com>
+Date:   Wed Jan 26 15:13:25 2011 -0800
+
+    Update Portage to allow missing digests by default.
+    
+    This fixes the below error.
+    
+    >>> Emerging (1 of 1) sys-apps/portage-2.1.9.35-r1 from chromiumos
+    !!! Fetched file: portage-2.1.9.35.tar.bz2 VERIFY FAILED!
+    !!! Reason: Insufficient data for checksum verification
+    !!! Got:
+    !!! Expected: MD5 RMD160 SHA1 SHA256
+     * Fetch failed for 'sys-apps/portage-2.1.9.35-r1', Log file:
+     *  '/var/tmp/portage/sys-apps/portage-2.1.9.35-r1/temp/build.log
+    
+    This error started occurring some time between Portage 2.1.9.25 and 2.1.9.35.
+    
+    Change-Id: Ie78668d07d4b1dd462b9bd50ef1f54984b1e6ad3
+
+diff --git a/pym/_emerge/EbuildFetcher.py b/pym/_emerge/EbuildFetcher.py
+index d193078..51d35a7 100644
+--- a/pym/_emerge/EbuildFetcher.py
++++ b/pym/_emerge/EbuildFetcher.py
+@@ -104,7 +104,7 @@ class EbuildFetcher(SpawnProcess):
+ 		try:
+ 			if fetch(self._uri_map, self._settings, fetchonly=self.fetchonly,
+ 				digests=copy.deepcopy(self._digests),
+-				allow_missing_digests=False):
++				allow_missing_digests=True):
+ 				rval = os.EX_OK
+ 		except SystemExit:
+ 			raise

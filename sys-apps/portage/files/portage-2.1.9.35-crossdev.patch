@@ -1,0 +1,150 @@
+commit d4069833ab3304499a8b4b9f10e63d0c2887756b
+Author: David James <davidjames@google.com>
+Date:   Tue Jan 25 17:12:43 2011 -0800
+
+    Update Portage to support fixing *.la and *.pc files.
+    
+    *.la and *.pc files need to be fixed up in order to ensure packages link
+    against the right library when we try to build / install to different ROOTs.
+    
+    BUG=chromium-os:11316
+    TEST=Compile with build_packages --nousepkg
+    
+    Review URL: http://codereview.chromium.org/6370011
+    
+    Change-Id: I99db793c3c0dc3fab7646a7fbb258fdc40b086a9
+
+diff --git a/pym/portage/const.py b/pym/portage/const.py
+index f798202..b2d2f77 100644
+--- a/pym/portage/const.py
++++ b/pym/portage/const.py
+@@ -93,7 +93,7 @@ SUPPORTED_FEATURES       = frozenset([
+                            "installsources", "keeptemp", "keepwork", "fixlafiles", "lmirror",
+                            "metadata-transfer", "mirror", "multilib-strict", "news",
+                            "noauto", "noclean", "nodoc", "noinfo", "noman", "nostrip",
+-                           "notitles", "parallel-fetch", "parse-eapi-ebuild-head",
++                           "notitles", "no-env-update", "parallel-fetch", "parse-eapi-ebuild-head",
+                            "prelink-checksums", "preserve-libs",
+                            "protect-owned", "python-trace", "sandbox",
+                            "selinux", "sesandbox", "severe", "sfperms",
+diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
+index ccf239f..965f154 100644
+--- a/pym/portage/dbapi/vartree.py
++++ b/pym/portage/dbapi/vartree.py
+@@ -58,6 +58,7 @@ from _emerge.PollScheduler import PollScheduler
+ from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
+ 
+ import codecs
++import fileinput
+ import gc
+ import re, shutil, stat, errno, subprocess
+ import logging
+@@ -1701,10 +1702,11 @@ class dblink(object):
+ 		else:
+ 			self.settings.pop("PORTAGE_LOG_FILE", None)
+ 
+-		env_update(target_root=self.settings['ROOT'],
+-			prev_mtimes=ldpath_mtimes,
+-			contents=contents, env=self.settings.environ(),
+-			writemsg_level=self._display_merge)
++		if 'no-env-update' not in self.settings.features:
++			env_update(target_root=self.settings['ROOT'],
++				prev_mtimes=ldpath_mtimes,
++				contents=contents, env=self.settings.environ(),
++				writemsg_level=self._display_merge)
+ 		return os.EX_OK
+ 
+ 	def _display_merge(self, msg, level=0, noiselevel=0):
+@@ -3377,16 +3379,30 @@ class dblink(object):
+ 			showMessage(_("!!! FAILED postinst: ")+str(a)+"\n",
+ 				level=logging.ERROR, noiselevel=-1)
+ 
+-		downgrade = False
+-		for v in otherversions:
+-			if pkgcmp(catpkgsplit(self.pkg)[1:], catpkgsplit(v)[1:]) < 0:
+-				downgrade = True
+-
+-		#update environment settings, library paths. DO NOT change symlinks.
+-		env_update(makelinks=(not downgrade),
+-			target_root=self.settings['ROOT'], prev_mtimes=prev_mtimes,
+-			contents=contents, env=self.settings.environ(),
+-			writemsg_level=self._display_merge)
++		if 'no-env-update' not in self.settings.features:
++			downgrade = False
++			for v in otherversions:
++				if pkgcmp(catpkgsplit(self.pkg)[1:], catpkgsplit(v)[1:]) < 0:
++					downgrade = True
++
++			#update environment settings, library paths. DO NOT change symlinks.
++			env_update(makelinks=(not downgrade),
++				target_root=self.settings['ROOT'], prev_mtimes=prev_mtimes,
++				contents=contents, env=self.settings.environ(),
++				writemsg_level=self._display_merge)
++
++		# Fix *.{la,pc} files to point to libs in target_root, if they
++		# don't do so already.
++		re_root = self.settings["ROOT"].strip("/")
++		if re_root:
++			fix_files = []
++			for path in contents:
++				if path.endswith(".la") or path.endswith(".pc"):
++					if os.path.exists(path): fix_files.append(path)
++			if fix_files:
++				pat = re.compile(r"([' =](?:-[IL])?/)(usr|lib|opt)")
++				for line in fileinput.input(fix_files, inplace=1):
++					sys.stdout.write(pat.sub(r"\1%s/\2" % re_root, line))
+ 
+ 		# For gcc upgrades, preserved libs have to be removed after the
+ 		# the library path has been updated.
+diff --git a/pym/portage/package/ebuild/doebuild.py b/pym/portage/package/ebuild/doebuild.py
+index 6fc7489..19ca140 100644
+--- a/pym/portage/package/ebuild/doebuild.py
++++ b/pym/portage/package/ebuild/doebuild.py
+@@ -4,6 +4,7 @@
+ __all__ = ['doebuild', 'doebuild_environment', 'spawn', 'spawnebuild']
+ 
+ import codecs
++import fileinput
+ import gzip
+ from itertools import chain
+ import logging
+@@ -1384,6 +1385,7 @@ def _post_src_install_uid_fix(mysettings, out):
+ 
+ 	destdir = mysettings["D"]
+ 	unicode_errors = []
++	fix_files = []
+ 
+ 	while True:
+ 
+@@ -1472,10 +1474,12 @@ def _post_src_install_uid_fix(mysettings, out):
+ 							new_contents, mode='wb')
+ 
+ 				mystat = os.lstat(fpath)
+-				if stat.S_ISREG(mystat.st_mode) and \
+-					mystat.st_ino not in counted_inodes:
+-					counted_inodes.add(mystat.st_ino)
+-					size += mystat.st_size
++				if stat.S_ISREG(mystat.st_mode):
++					if fname.endswith(".pc") or fname.endswith(".la"):
++						fix_files.append(fpath)
++					if mystat.st_ino not in counted_inodes:
++						counted_inodes.add(mystat.st_ino)
++						size += mystat.st_size
+ 				if mystat.st_uid != portage_uid and \
+ 					mystat.st_gid != portage_gid:
+ 					continue
+@@ -1543,6 +1547,14 @@ def _post_src_install_uid_fix(mysettings, out):
+ 			mode='w', encoding=_encodings['repo.content'],
+ 			errors='strict').write(v + '\n')
+ 
++	re_root = mysettings["ROOT"].strip("/")
++	if fix_files and re_root:
++		# Replace references to our sysroot with references to "/" in binpkg.
++		# Sysroot will be re-appended when the package is installed.
++		pat = re.compile(r"([' =](-[IL])?/)%s/" % re.escape(re_root))
++		for line in fileinput.input(fix_files, inplace=1):
++			sys.stdout.write(pat.sub(r"\1", line))
++
+ 	if bsd_chflags:
+ 		# Restore all of the flags saved above.
+ 		os.system("mtree -e -p %s -U -k flags < %s > /dev/null" % \

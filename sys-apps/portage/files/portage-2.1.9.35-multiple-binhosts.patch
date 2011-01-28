@@ -1,0 +1,178 @@
+commit f00a7b080a88a7501f9f69360505d45f3e02507f
+Author: David James <davidjames@google.com>
+Date:   Thu Jan 27 12:59:59 2011 -0800
+
+    Squashed commit of the following:
+    
+    commit f8e326893cc78cba91fca9e38aa4b818022bb565
+    Author: Zac Medico <zmedico@gentoo.org>
+    Date:   Wed Jan 26 18:48:47 2011 -0800
+    
+        binarytree: fix BASE_URI for old-style binhost
+        (cherry picked from commit 12fda364c7d7fc6ce36f2a10bdcfc38adab27110)
+    
+    commit fe98f14224c1af8f59cd0390be73f2145e31851b
+    Author: Zac Medico <zmedico@gentoo.org>
+    Date:   Wed Jan 26 18:32:18 2011 -0800
+    
+        binarytree: fix broken BASE_URI initialization
+        (cherry picked from commit 92c25530595135e400d47128bc3b37e5e1806dc5)
+    
+    commit 3b37aafb3e08ccc01cc4bfd6e1ab485fc23de460
+    Author: Zac Medico <zmedico@gentoo.org>
+    Date:   Wed Jan 26 18:04:07 2011 -0800
+    
+        make.conf.5: doc multi PORTAGE_BINHOST support
+        (cherry picked from commit 8c587a20613ff90ebc5ec2a00feaa32c46ff9228)
+    
+    commit f2514560dc76bd932c4b4babfe0e3f2a1b792c65
+    Author: David James <davidjames@google.com>
+    Date:   Wed Jan 26 14:45:43 2011 -0800
+    
+        Update Portage to support multiple binhosts.
+    
+        BUG=chromium-os:11295
+        TEST=Build x86-mario with multiple binhosts (board binhost, preflight binhost)
+             and verify that binaries are picked up from both binhosts. Also verify
+             that if one of the binhosts fails, the other binhost is used correctly.
+    
+        Review URL: http://codereview.chromium.org/6329022
+    
+        Change-Id: I095f28c82e3effbc25105af6ac89e42c335e6381
+    
+    Change-Id: I003a2a2037f05b8733a7c09a85443bafa52757b9
+
+diff --git a/man/make.conf.5 b/man/make.conf.5
+index 3fbd72e..024dce6 100644
+--- a/man/make.conf.5
++++ b/man/make.conf.5
+@@ -583,10 +583,10 @@ direcory does not exist, it will be created automatically and group permissions
+ will be applied to it.  If the directory already exists, portage will not
+ modify it's permissions.
+ .TP
+-\fBPORTAGE_BINHOST\fR = \fI"ftp://login:pass@grp.mirror.site/pub/grp/i686/athlon\-xp/"\fR
+-This is the host from which portage will grab prebuilt\-binary packages.  
+-The list is a single entry specifying the full address of the directory 
+-serving the tbz2's for your system.  This is only used when running with 
++\fBPORTAGE_BINHOST\fR = \fI[space delimited URI list]\fR
++This is a list of hosts from which portage will grab prebuilt\-binary packages.
++Each entry in the list must specify the full address of a directory
++serving tbz2's for your system. This is only used when running with
+ the get binary pkg options are given to \fBemerge\fR.  Review \fBemerge\fR(1) 
+ for more information.  For versions of portage less that 2.1.6, this variable
+ should point to the 'All' directory on the host that creates the binary
+diff --git a/pym/_emerge/BinpkgFetcher.py b/pym/_emerge/BinpkgFetcher.py
+index 942bcdf..221d9a7 100644
+--- a/pym/_emerge/BinpkgFetcher.py
++++ b/pym/_emerge/BinpkgFetcher.py
+@@ -57,8 +57,8 @@ class BinpkgFetcher(SpawnProcess):
+ 			rel_uri = bintree._remotepkgs[pkg.cpv].get("PATH")
+ 			if not rel_uri:
+ 				rel_uri = pkg.cpv + ".tbz2"
+-			uri = bintree._remote_base_uri.rstrip("/") + \
+-				"/" + rel_uri.lstrip("/")
++			remote_base_uri = bintree._remotepkgs[pkg.cpv]["BASE_URI"]
++			uri = remote_base_uri.rstrip("/") + "/" + rel_uri.lstrip("/")
+ 		else:
+ 			uri = settings["PORTAGE_BINHOST"].rstrip("/") + \
+ 				"/" + pkg.pf + ".tbz2"
+diff --git a/pym/portage/dbapi/bintree.py b/pym/portage/dbapi/bintree.py
+index f674803..8c2ba8d 100644
+--- a/pym/portage/dbapi/bintree.py
++++ b/pym/portage/dbapi/bintree.py
+@@ -224,7 +224,6 @@ class binarytree(object):
+ 			self.populated = 0
+ 			self.tree = {}
+ 			self._remote_has_index = False
+-			self._remote_base_uri = None
+ 			self._remotepkgs = None # remote metadata indexed by cpv
+ 			self.__remotepkgs = {}  # indexed by tbz2 name (deprecated)
+ 			self.invalids = []
+@@ -242,7 +241,7 @@ class binarytree(object):
+ 				["BUILD_TIME", "CHOST", "DEPEND", "DESCRIPTION", "EAPI",
+ 				"IUSE", "KEYWORDS", "LICENSE", "PDEPEND", "PROPERTIES",
+ 				"PROVIDE", "RDEPEND", "repository", "SLOT", "USE", "DEFINED_PHASES",
+-				"REQUIRED_USE"]
++				"REQUIRED_USE", "BASE_URI"]
+ 			self._pkgindex_aux_keys = list(self._pkgindex_aux_keys)
+ 			self._pkgindex_use_evaluated_keys = \
+ 				("LICENSE", "RDEPEND", "DEPEND",
+@@ -728,8 +727,12 @@ class binarytree(object):
+ 			writemsg(_("!!! PORTAGE_BINHOST unset, but use is requested.\n"),
+ 				noiselevel=-1)
+ 
+-		if getbinpkgs and 'PORTAGE_BINHOST' in self.settings:
+-			base_url = self.settings["PORTAGE_BINHOST"]
++		if not getbinpkgs or 'PORTAGE_BINHOST' not in self.settings:
++			self.populated=1
++			return
++		self._remotepkgs = {}
++		self.__remotepkgs = {}
++		for base_url in self.settings["PORTAGE_BINHOST"].split():
+ 			parsed_url = urlparse(base_url)
+ 			host = parsed_url.netloc
+ 			port = parsed_url.port
+@@ -857,13 +860,14 @@ class binarytree(object):
+ 					# file, but that's alright.
+ 			if pkgindex:
+ 				# Organize remote package list as a cpv -> metadata map.
+-				self._remotepkgs = _pkgindex_cpv_map_latest_build(pkgindex)
++				remotepkgs = _pkgindex_cpv_map_latest_build(pkgindex)
++				remote_base_uri = pkgindex.header.get("URI", base_url)
++				for remote_metadata in remotepkgs.values():
++					remote_metadata["BASE_URI"] = remote_base_uri
++				self._remotepkgs.update(remotepkgs)
+ 				self._remote_has_index = True
+-				self._remote_base_uri = pkgindex.header.get("URI", base_url)
+-				self.__remotepkgs = {}
+-				for cpv in self._remotepkgs:
++				for cpv in remotepkgs:
+ 					self.dbapi.cpv_inject(cpv)
+-				self.populated = 1
+ 				if True:
+ 					# Remote package instances override local package
+ 					# if they are not identical.
+@@ -893,8 +897,7 @@ class binarytree(object):
+ 					# Local package instances override remote instances.
+ 					for cpv in metadata:
+ 						self._remotepkgs.pop(cpv, None)
+-				return
+-			self._remotepkgs = {}
++				continue
+ 			try:
+ 				chunk_size = long(self.settings["PORTAGE_BINHOST_CHUNKSIZE"])
+ 				if chunk_size < 8:
+@@ -905,11 +908,12 @@ class binarytree(object):
+ 			writemsg_stdout(
+ 				colorize("GOOD", _("Fetching bininfo from ")) + \
+ 				re.sub(r'//(.+):.+@(.+)/', r'//\1:*password*@\2/', base_url) + "\n")
+-			self.__remotepkgs = portage.getbinpkg.dir_get_metadata(
+-				self.settings["PORTAGE_BINHOST"], chunk_size=chunk_size)
++			remotepkgs = portage.getbinpkg.dir_get_metadata(
++				base_url, chunk_size=chunk_size)
++			self.__remotepkgs.update(remotepkgs)
+ 			#writemsg(green("  -- DONE!\n\n"))
+ 
+-			for mypkg in list(self.__remotepkgs):
++			for mypkg in list(remotepkgs):
+ 				if "CATEGORY" not in self.__remotepkgs[mypkg]:
+ 					#old-style or corrupt package
+ 					writemsg(_("!!! Invalid remote binary package: %s\n") % mypkg,
+@@ -941,6 +945,7 @@ class binarytree(object):
+ 					remote_metadata = self.__remotepkgs[mypkg]
+ 					for k, v in remote_metadata.items():
+ 						remote_metadata[k] = v.strip()
++					remote_metadata["BASE_URI"] = base_url
+ 
+ 					# Eliminate metadata values with names that digestCheck
+ 					# uses, since they are not valid when using the old
+@@ -1233,7 +1238,8 @@ class binarytree(object):
+ 			rel_url = self._remotepkgs[pkgname].get("PATH")
+ 			if not rel_url:
+ 				rel_url = pkgname+".tbz2"
+-			url = self._remote_base_uri.rstrip("/") + "/" + rel_url.lstrip("/")
++			remote_base_uri = self._remotepkgs[pkgname]["BASE_URI"]
++			url = remote_base_uri.rstrip("/") + "/" + rel_url.lstrip("/")
+ 		else:
+ 			url = self.settings["PORTAGE_BINHOST"].rstrip("/") + "/" + tbz2name
+ 		protocol = urlparse(url)[0]
