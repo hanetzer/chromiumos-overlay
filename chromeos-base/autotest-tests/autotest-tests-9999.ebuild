@@ -154,7 +154,9 @@ IUSE_TESTS="
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CleanShutdown
 	+tests_platform_CryptohomeChangePassword
+        +tests_platform_CryptohomeFio
 	+tests_platform_CryptohomeMount
+        +tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
 	+tests_platform_CryptohomeTPMReOwnServer
 	+tests_platform_DMVerityCorruption
@@ -181,6 +183,7 @@ IUSE_TESTS="
 	+tests_platform_Rootdev
 	+tests_platform_Shutdown
 	+tests_platform_StackProtector
+	+tests_platform_SuspendStress
 	+tests_platform_TempFS
 	+tests_power_Backlight
 	+tests_power_BatteryCharge
