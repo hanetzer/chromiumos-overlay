@@ -86,6 +86,18 @@ src_install() {
 		# Installing on host.
 		emake DESTDIR="${D}/usr/bin" install || \
 			die "${PN} install failed."
+
+		# Install bitmap-generating scripts to /usr/share/vboot/bitmaps
+		einfo "Installing bitmap-generating scripts"
+		dst_dir='/usr/share/vboot/bitmaps'
+		dodir "${dst_dir}"
+		exeinto "${dst_dir}"
+		doexe scripts/bitmaps/*.sh
+		dst_dir='/usr/share/vboot/bitmaps/originals'
+		dodir "${dst_dir}"
+		insinto "${dst_dir}"
+		doins scripts/bitmaps/originals/*
+
 	fi
 	if use rbtest; then
 		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
