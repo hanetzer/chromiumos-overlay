@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="bd94ae560d7a973eb9cfbcaf6e8c4dd44d6664d9"
+CROS_WORKON_COMMIT="cb803e836d04aed4b8b371f2d7d54654b3a0a79e"
 
 inherit cros-debug cros-workon autotools
 
@@ -23,7 +23,10 @@ RDEPEND="chromeos-base/flimflam
 	net-misc/curl"
 
 DEPEND="${RDEPEND}
-	test? ( dev-cpp/gtest )"
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)"
 
 src_prepare() {
 	eautoreconf || die "eautoreconf failed"
