@@ -33,7 +33,7 @@ src_install() {
 		doexe gmerge
 		doexe stateful_update
 	else
-		:
+		doexe host/write_tegra_bios
 	fi
 }
 
