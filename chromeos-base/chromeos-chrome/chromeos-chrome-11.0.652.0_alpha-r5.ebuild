@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="72911"
+CROS_SVN_COMMIT="72928"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -615,6 +615,7 @@ src_install() {
 	doexe "${FROM}"/candidate_window
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
+	doexe "${FROM}"/libosmesa.so
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
