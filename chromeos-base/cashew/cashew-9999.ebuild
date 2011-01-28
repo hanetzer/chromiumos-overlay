@@ -22,7 +22,10 @@ RDEPEND="chromeos-base/flimflam
 	net-misc/curl"
 
 DEPEND="${RDEPEND}
-	test? ( dev-cpp/gtest )"
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)"
 
 src_prepare() {
 	eautoreconf || die "eautoreconf failed"
