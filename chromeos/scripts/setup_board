@@ -163,6 +163,15 @@ if [ -z "$FLAGS_board" ] ; then
   exit 1
 fi
 
+#
+# Before we can run any tools, we need to emerge hard-host-depends.
+#
+EMERGE_CMD="emerge"
+if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
+  EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
+fi
+sudo ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
+
 get_board_and_variant $FLAGS_board $FLAGS_variant
 
 #
@@ -419,15 +428,6 @@ exec ${SCRIPTS_DIR}/cros_workon --board ${BOARD_VARIANT} "\$@"
 EOF
 
 sudo chmod +x "$CROS_WORKON_WRAPPER"
-
-#
-# Before we can emerge the kernel, we need to emerge hard-host-depends.
-#
-EMERGE_CMD="emerge"
-if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
-  EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
-fi
-sudo ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 
 #
 # Emerge the kernel headers into the board build root.
