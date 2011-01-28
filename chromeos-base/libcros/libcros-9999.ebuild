@@ -2,12 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="62391e4682611cca7b92c55b767df285b626d4a6"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Bridge library for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
+IUSE="install_tests"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
@@ -68,6 +68,8 @@ src_compile() {
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
 	scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
+	scons -f SConstruct.chromiumos libcros_service_test || \
+            die "libcros_service_test compile failed."
 }
 
 src_test() {
@@ -102,8 +104,17 @@ src_install() {
 	insinto /opt/google/chrome/chromeos
 	insopts -m0755
 	doins "${S}/libcros.so"
+        if use install_tests; then
+	  doins "${S}/libcros_service_tester"
+        fi
 	
 	insinto /opt/google/touchpad
 	doins ${FILESDIR}/tpcontrol_synclient
 	doins ${FILESDIR}/tpcontrol
+
+        insinto /etc/dbus-1/system.d
+	doins "${S}/LibCrosService.conf"
+
+        insinto /usr/share/dbus-1/services
+	doins "${S}/org.chromium.LibCrosService"
 }
