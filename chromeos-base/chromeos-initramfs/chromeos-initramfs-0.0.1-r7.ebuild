@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="eb584db7cb1fd9b2e123dd0bd07cd4c4a2c651db"
+CROS_WORKON_COMMIT="f11aca6bc8b0e67e1eecb888545da7912f59d49a"
 
 inherit cros-workon
 
