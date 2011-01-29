@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="73022"
+CROS_SVN_COMMIT="73062"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -105,40 +105,40 @@ fi
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES="ffmpeg_tests
-            omx_test"
+	omx_test"
 
 RDEPEND="${RDEPEND}
-	 app-arch/bzip2
-         chromeos-base/chromeos-theme
-         chromeos-base/libcros
-         chrome_remoting? ( x11-libs/libXtst )
-         dev-libs/atk
-         dev-libs/glib
-         dev-libs/nspr
-         >=dev-libs/nss-3.12.2
-         dev-libs/libxml2
-         dev-libs/dbus-glib
-         x11-libs/cairo
-         x11-libs/libXScrnSaver
-         x11-libs/gtk+
-         x11-libs/pango
-         >=media-libs/alsa-lib-1.0.19
-         media-libs/fontconfig
-         media-libs/freetype
-         media-libs/jpeg
-         media-libs/libpng
-         media-libs/mesa
-         media-sound/pulseaudio
-         net-misc/wget
-         sys-libs/zlib
-         x86? ( www-plugins/adobe-flash )
-         >=x11-libs/gtk+-2.14.7
-         x11-libs/libXScrnSaver"
+	app-arch/bzip2
+	chromeos-base/chromeos-theme
+	chromeos-base/libcros
+	chrome_remoting? ( x11-libs/libXtst )
+	dev-libs/atk
+	dev-libs/glib
+	dev-libs/nspr
+	>=dev-libs/nss-3.12.2
+	dev-libs/libxml2
+	dev-libs/dbus-glib
+	x11-libs/cairo
+	x11-libs/libXScrnSaver
+	x11-libs/gtk+
+	x11-libs/pango
+	>=media-libs/alsa-lib-1.0.19
+	media-libs/fontconfig
+	media-libs/freetype
+	media-libs/jpeg
+	media-libs/libpng
+	media-libs/mesa
+	media-sound/pulseaudio
+	net-misc/wget
+	sys-libs/zlib
+	x86? ( !chrome_internal? ( www-plugins/adobe-flash ) )
+	>=x11-libs/gtk+-2.14.7
+	x11-libs/libXScrnSaver"
 
 DEPEND="${DEPEND}
 	${RDEPEND}
-        >=dev-util/gperf-3.0.3
-        >=dev-util/pkgconfig-0.23"
+	>=dev-util/gperf-3.0.3
+	>=dev-util/pkgconfig-0.23"
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
@@ -222,25 +222,25 @@ create_gclient_file() {
 	echo "solutions = [" >${echrome_store_dir}/.gclient
 	cat >>${echrome_store_dir}/.gclient <<EOF
   { "name"        : "${checkout_point}",
-    "url"         : "${primary_url}${revision}",
-    "custom_deps" : {
-      "src/third_party/WebKit/LayoutTests": None,
-      $pdf1
-      $pdf2
-    },
+	"url"         : "${primary_url}${revision}",
+	"custom_deps" : {
+	  "src/third_party/WebKit/LayoutTests": None,
+	  $pdf1
+	  $pdf2
+	},
   },
 EOF
 	if [ -n "${auxiliary_url}" ]; then
 		cat >>${echrome_store_dir}/.gclient <<EOF
   { "name"        : "aux_src",
-    "url"         : "${auxiliary_url}${revision}",
+	"url"         : "${auxiliary_url}${revision}",
   },
 EOF
 	fi
 	if [ ${use_trunk} = 0 ]; then
 		cat >>${echrome_store_dir}/.gclient <<EOF
   { "name"        : "cros",
-    "url"         : "${primary_url}/tools/cros.DEPS${revision}",
+	"url"         : "${primary_url}/tools/cros.DEPS${revision}",
   },
 EOF
 	fi
@@ -549,8 +549,8 @@ install_chrome_test_resources() {
 	# executables. We don't want debug info for tests, so we pre-strip these
 	# executables.
 	for f in lib.target/_pyautolib.so libppapi_tests.so browser_tests \
-	         reliability_tests ui_tests sync_integration_tests \
-	         page_cycler_tests; do
+			 reliability_tests ui_tests sync_integration_tests \
+			 page_cycler_tests; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
 	done
@@ -575,7 +575,7 @@ install_chrome_test_resources() {
 		"${TEST_DIR}"/third_party
 	fast_cp -a "${CHROME_ROOT}"/src/third_party/pyftpdlib \
 		"${TEST_DIR}"/third_party
-		
+
 	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
 	fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools
@@ -597,7 +597,7 @@ install_chrome_test_resources() {
 }
 
 src_install() {
-    FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
+	FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
 
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
@@ -633,7 +633,7 @@ src_install() {
 	doins "${FROM}"/chrome.pak
 	doins -r "${FROM}"/locales
 	doins -r "${FROM}"/resources
-        doins -r "${FROM}"/extensions
+	doins -r "${FROM}"/extensions
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
@@ -660,23 +660,24 @@ src_install() {
 
 	if use x86; then
 		# Install Flash plugin.
-		if use chrome_internal && [ -f "${FROM}/libgcflashplayer.so" ]; then
-			# Install Flash from the binary drop.
-			exeinto "${CHROME_DIR}"/plugins
-			doexe "${FROM}/libgcflashplayer.so"
-			doexe "${FROM}/plugin.vch"
-		else
-			if use chrome_internal && \
-                [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
+		if use chrome_internal; then
+			if [ -f "${FROM}/libgcflashplayer.so" ]; then
+				# Install Flash from the binary drop.
+				exeinto "${CHROME_DIR}"/plugins
+				doexe "${FROM}/libgcflashplayer.so"
+				doexe "${FROM}/plugin.vch"
+			elif [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
 				# Install Flash from the local source repository.
 				exeinto "${CHROME_DIR}"/plugins
 				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/libgcflashplayer.so
 				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/plugin.vch
 			else
-				# Use Flash from www-plugins/adobe-flash package.
-				dosym /opt/netscape/plugins/libflashplayer.so \
-					"${CHROME_DIR}"/plugins/libflashplayer.so
+				die No internal Flash plugin.
 			fi
+		else
+			# Use Flash from www-plugins/adobe-flash package.
+			dosym /opt/netscape/plugins/libflashplayer.so \
+				"${CHROME_DIR}"/plugins/libflashplayer.so
 		fi
 	fi
 }
