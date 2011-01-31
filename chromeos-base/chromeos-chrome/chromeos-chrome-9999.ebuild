@@ -496,7 +496,7 @@ src_compile() {
 	fi
 
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-		chrome candidate_window chrome_sandbox default_extensions \
+		chrome chrome_sandbox default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 
@@ -611,7 +611,6 @@ src_install() {
 	dodir "${CHROME_DIR}"/plugins
 
 	exeinto "${CHROME_DIR}"
-	doexe "${FROM}"/candidate_window
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
