@@ -170,7 +170,7 @@ EMERGE_CMD="emerge"
 if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
   EMERGE_CMD="${SCRIPTS_DIR}/parallel_emerge"
 fi
-sudo ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
+sudo -E ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 
 get_board_and_variant $FLAGS_board $FLAGS_variant
 
