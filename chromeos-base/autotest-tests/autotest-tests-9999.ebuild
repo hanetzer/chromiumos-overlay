@@ -142,6 +142,8 @@ IUSE_TESTS="
 	+tests_network_UdevRename
 	+tests_network_WiFiCaps
 	+tests_network_WiFiMatFunc
+	+tests_network_WiFiPerf
+	+tests_network_WiFiRoaming
 	+tests_network_WiFiSecMat
 	+tests_network_WiFiSmokeTest
 	+tests_network_WifiAuthenticationTests
