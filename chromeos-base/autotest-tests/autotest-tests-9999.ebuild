@@ -183,6 +183,7 @@ IUSE_TESTS="
 	+tests_platform_PartitionCheck
 	+tests_platform_ProcessPrivileges
 	+tests_platform_Rootdev
+	+tests_platform_SessionManagerTerm
 	+tests_platform_Shutdown
 	+tests_platform_StackProtector
 	+tests_platform_SuspendStress
