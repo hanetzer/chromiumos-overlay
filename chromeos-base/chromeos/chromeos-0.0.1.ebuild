@@ -73,7 +73,6 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
-	app-crypt/tpm-emulator
 	app-crypt/trousers
 	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
