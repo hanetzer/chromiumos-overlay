@@ -18,13 +18,15 @@ CROS_WORKON_LOCALNAME="dev"
 
 
 RDEPEND="app-shells/bash
-         app-portage/gentoolkit
-         dev-lang/python
-         dev-libs/shflags
-         minimal? ( !chromeos-base/gmerge )
-         "
+	app-portage/gentoolkit
+	dev-lang/python
+	dev-libs/shflags
+	minimal? ( !chromeos-base/gmerge )
+	"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	dev-util/crosutils
+	"
 
 src_install() {
 	exeinto /usr/bin
@@ -33,6 +35,6 @@ src_install() {
 		doexe stateful_update
 	else
 		doexe host/write_tegra_bios
+		doexe host/cros_overlay_list
 	fi
 }
-

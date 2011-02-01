@@ -39,8 +39,13 @@ src_install() {
 	dolib lib/* || die "Could not install library files"
 
 	# Install binaries
-	local exclude_files="-e cros_make_image_bootable \
-		-e cros_sign_to_ssd -e cros_resign_image"
+	local exclude_files="\
+		-e cros_make_image_bootable \
+		-e cros_sign_to_ssd \
+		-e cros_resign_image \
+		-e cros_overlay_list
+		"
+
 	local bin_files=$(ls bin/* | grep -v ${exclude_files})
 	dobin ${bin_files} || die "Could not install executable scripts."
 	dosym loman.py /usr/bin/loman
