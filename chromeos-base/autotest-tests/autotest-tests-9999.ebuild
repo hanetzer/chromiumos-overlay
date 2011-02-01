@@ -26,7 +26,7 @@ RDEPEND="
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
   chromeos-base/autotest-deps-glbench
-  chromeos-base/flimflam
+  chromeos-base/flimflam-test
   autox? ( chromeos-base/autox )
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
