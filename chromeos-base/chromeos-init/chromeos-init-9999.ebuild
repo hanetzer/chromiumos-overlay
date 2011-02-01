@@ -73,6 +73,10 @@ src_install() {
 	into /usr
 	dosbin "${S}/lightup_screen"
 
+	# Install rsyslogd's configuration file.
+	insinto /etc
+	doins rsyslog.chromeos || die
+
 	# Preseed /lib/chromiumos/devices which is by chromeos_startup to
 	# populate /dev with enough devices to be able to do early init and
 	# start the X server.
