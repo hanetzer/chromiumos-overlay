@@ -117,7 +117,7 @@ ${EMERGE_CMD} --info
 eretry sudo -E ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)
-BOARD_OVERLAY=$($SCRIPTS_DIR/bin/cros_overlay_list \
+BOARD_OVERLAY=$(cros_overlay_list \
   --board "$BOARD" \
   --primary_only)
 TC_ARCH=$(awk -F'-' '{ print $1 }' < "${BOARD_OVERLAY}/toolchain.conf")

@@ -177,7 +177,7 @@ get_board_and_variant $FLAGS_board $FLAGS_variant
 #
 # Construct board overlay list.
 #
-BOARD_OVERLAY_LIST=$($SCRIPTS_DIR/bin/cros_overlay_list \
+BOARD_OVERLAY_LIST=$(cros_overlay_list \
   --board "$BOARD" \
   --board_overlay "$FLAGS_board_overlay" \
   --variant "$VARIANT")
@@ -198,9 +198,7 @@ done
 # Check if there are any board overlays.  There should be at least a top
 # level board specific overlay.
 #
-PRIMARY_BOARD_OVERLAY=$($SCRIPTS_DIR/bin/cros_overlay_list \
-  --board "$BOARD" \
-  --primary_only)
+PRIMARY_BOARD_OVERLAY=$(cros_overlay_list --board "$BOARD" --primary_only)
 
 #
 # Fetch the toolchain from the board overlay.
