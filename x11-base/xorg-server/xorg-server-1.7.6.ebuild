@@ -229,6 +229,8 @@ src_install() {
 		doins hw/xfree86/xorg.conf.example \
 			|| die "couldn't install xorg.conf.example"
 	fi
+	# crosbug.com/11553
+	dosym /usr/bin/Xorg /usr/bin/X11/X || die
 }
 
 pkg_postinst() {
