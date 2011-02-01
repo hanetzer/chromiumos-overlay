@@ -94,8 +94,7 @@ def CheckTreeIsOpen(input_api, output_api, source_file_filter=None):
   return input_api.canned_checks.CheckTreeIsOpen(
       input_api,
       output_api,
-      'http://chromiumos-status.appspot.com/current?format=raw',
-      '.*closed.*')
+      json_url='http://chromiumos-status.appspot.com/current?format=json')
 
 
 def CheckBuildbotPendingBuilds(input_api, output_api, source_file_filter=None):
