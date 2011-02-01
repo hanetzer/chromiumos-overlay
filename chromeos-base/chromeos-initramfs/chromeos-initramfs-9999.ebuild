@@ -87,7 +87,7 @@ build_initramfs_file() {
 	cp ${ROOT}/usr/sbin/chromeos-findrootfs ${INITRAMFS_TMP_S}/usr/sbin || die
 
 	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
-	cp "${FILESDIR}/init" "${INITRAMFS_TMP_S}/init" || die
+	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 
 	# The kernel emake expects the file in cpio format.
