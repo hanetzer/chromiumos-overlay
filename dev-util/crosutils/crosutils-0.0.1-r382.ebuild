@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="24da49e6ee7c056c851d733c5b7c6b0c5adaf217"
+CROS_WORKON_COMMIT="c24465670dbd39715714b614b57be5593d64ce2e"
 
 inherit cros-workon
 
@@ -37,7 +37,8 @@ src_install() {
 	rm -f lib/*.py
 
 	# Install libraries
-	dolib lib/* || die "Could not install library files"
+	insinto /usr/lib/crosutils/lib
+	doins lib/* || die "Could not install library files"
 
 	# Install binaries
 	local exclude_files="\
