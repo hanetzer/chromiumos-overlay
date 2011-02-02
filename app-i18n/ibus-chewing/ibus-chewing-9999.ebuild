@@ -38,5 +38,8 @@ CROS_WORKON_SUBDIR="files"
 
 src_configure() {
 	tc-export CC CXX LD AR RANLIB NM
+	mycmakeargs=(
+		$(cmake-utils_use_enable nls)
+	)
 	cmake-utils_src_configure
 }
