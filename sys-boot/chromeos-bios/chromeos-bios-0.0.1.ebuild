@@ -19,9 +19,9 @@ DEPEND="virtual/u-boot
 
 keys="${ROOT}/usr/share/vboot/devkeys"
 autoconf="${ROOT}/u-boot/autoconf.mk"
-stub_image="${ROOT}/u-boot/u-boot.bin"
-recovery_image="${ROOT}/u-boot/u-boot.bin"
-normal_image="${ROOT}/u-boot/u-boot.bin"
+stub_image="${ROOT}/u-boot/u-boot-recovery.bin"
+recovery_image="${ROOT}/u-boot/u-boot-recovery.bin"
+normal_image="${ROOT}/u-boot/u-boot-recovery.bin"
 
 get_hwid() {
 	grep -m1 CONFIG_CHROMEOS_HWID ${autoconf} | tr -d "\"" | cut -d = -f 2
