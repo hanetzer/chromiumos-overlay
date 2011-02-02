@@ -9,15 +9,31 @@
 # setup for development. Once created, the password is set to PASSWORD (below).
 # One can enter the chrooted environment for work by running enter_chroot.sh.
 
-# Load common constants.  This should be the first executable line.
-# The path to common.sh should be relative to your script's location.
-PROG=$(basename $0)
-. "$(dirname "$0")/common.sh"
+# --- BEGIN COMMON.SH BOILERPLATE ---
+# Load common CrOS utilities.  Inside the chroot this file is installed in
+# /usr/lib/crosutils.  Outside the chroot we find it relative to the script's
+# location.
+find_common_sh() {
+  local common_paths=(/usr/lib/crosutils $(dirname "$0"))
+  local path
+
+  SCRIPT_ROOT=
+  for path in "${common_paths[@]}"; do
+    if [ -r "${path}/common.sh" ]; then
+      SCRIPT_ROOT=${path}
+      break
+    fi
+  done
+}
+
+find_common_sh
+. "${SCRIPT_ROOT}/common.sh" || (echo "Unable to load common.sh" && exit 1)
+# --- END COMMON.SH BOILERPLATE ---
 
 # Check if the host machine architecture is supported.
 ARCHITECTURE="$(uname -m)"
 if [[ "$ARCHITECTURE" != "x86_64" ]]; then
-  echo "$PROG: $ARCHITECTURE is not supported as a host machine architecture."
+  echo "$SCRIPT_NAME: $ARCHITECTURE is not supported as a host machine architecture."
   exit 1
 fi
 
@@ -40,7 +56,7 @@ DEFINE_string stage3_date "2010.03.09" \
   "Use the stage3 with the given date."
 
 # Parse command line flags
-FLAGS_HELP="usage: $0 [flags]"
+FLAGS_HELP="usage: $SCRIPT_NAME [flags]"
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
 check_flags_only_and_allow_null_arg "$@" && set --
@@ -101,16 +117,16 @@ function cleanup {
 function delete_existing {
   # Delete old chroot dir
   if [[ -e "$FLAGS_chroot" ]]; then
-    echo "$PROG: Cleaning up old mount points..."
+    echo "$SCRIPT_NAME: Cleaning up old mount points..."
     cleanup
-    echo "$PROG: Deleting $FLAGS_chroot..."
+    echo "$SCRIPT_NAME: Deleting $FLAGS_chroot..."
     sudo rm -rf "$FLAGS_chroot"
-    echo "$PROG: Done."
+    echo "$SCRIPT_NAME: Done."
   fi
 }
 
 function init_users () {
-   echo "$PROG: Set timezone..."
+   echo "$SCRIPT_NAME: Set timezone..."
    # date +%Z has trouble with daylight time, so use host's info
    if [ -f /etc/localtime ] ; then
       sudo cp /etc/localtime "${FLAGS_chroot}/etc"
@@ -119,7 +135,7 @@ function init_users () {
      in_chroot rm -f /etc/localtime
      in_chroot ln -sf /usr/share/zoneinfo/PST8PDT /etc/localtime
    fi
-   echo "$PROG: Adding user/group..."
+   echo "$SCRIPT_NAME: Adding user/group..."
    # Add ourselves as a user inside the chroot
    in_chroot groupadd -g 5000 eng
    in_chroot useradd -G ${DEFGROUPS} -g eng -u `id -u` -s \
@@ -127,7 +143,7 @@ function init_users () {
 }
 
 function init_setup () {
-   echo "$PROG: Running init_setup()..."
+   echo "$SCRIPT_NAME: Running init_setup()..."
    sudo mkdir -p "${FLAGS_chroot}/usr"
    sudo ln -sf "${CHROOT_TRUNK}/src/third_party/portage" \
      "${FLAGS_chroot}/usr/portage"
@@ -150,7 +166,7 @@ function init_setup () {
    bash_chroot chmod 0440 /etc/sudoers
    bash_chroot chown root:root /etc/sudoers # Fix bad group on some systems
 
-   echo "$PROG: Setting up hosts/resolv..."
+   echo "$SCRIPT_NAME: Setting up hosts/resolv..."
    # Copy config from outside chroot into chroot
    sudo cp /etc/hosts "$FLAGS_chroot/etc/hosts"
    sudo chmod 0644 "$FLAGS_chroot/etc/hosts"
@@ -160,7 +176,7 @@ function init_setup () {
    # Setup host make.conf. This includes any overlay that we may be using
    # and a pointer to pre-built packages.
    # TODO: This should really be part of a profile in the portage
-   echo "$PROG: Setting up /etc/make.*..."
+   echo "$SCRIPT_NAME: Setting up /etc/make.*..."
    sudo mv "${FLAGS_chroot}"/etc/make.conf{,.orig}
    sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
      "${FLAGS_chroot}/etc/make.conf"
@@ -263,7 +279,7 @@ STAGE3="${OVERLAY}/chromeos/stage3/stage3-amd64-${FLAGS_stage3_date}.tar.bz2"
 if [ -f $CHROOT_STATE ] && \
   ! sudo egrep -q "^STAGE3=$STAGE3" $CHROOT_STATE >/dev/null 2>&1
 then
-  echo "$PROG: STAGE3 version has changed."
+  echo "$SCRIPT_NAME: STAGE3 version has changed."
   delete_existing
 fi
 
@@ -273,9 +289,9 @@ mkdir -p "$FLAGS_chroot"
 echo
 if [ -f $CHROOT_STATE ]
 then
-  echo "$PROG: STAGE3 already set up.  Skipping..."
+  echo "$SCRIPT_NAME: STAGE3 already set up.  Skipping..."
 else
-  echo "$PROG: Unpacking STAGE3..."
+  echo "$SCRIPT_NAME: Unpacking STAGE3..."
   sudo tar xjp -C "$FLAGS_chroot" -f "$STAGE3"
 fi
 
@@ -283,7 +299,7 @@ fi
 [ -f $CHROOT_STATE ] || init_users
 
 echo
-echo "$PROG: Setting up mounts..."
+echo "$SCRIPT_NAME: Setting up mounts..."
 # Set up necessary mounts and make sure we clean them up on exit
 trap cleanup EXIT
 sudo mkdir -p "${FLAGS_chroot}/${CHROOT_TRUNK}"
@@ -293,7 +309,7 @@ sudo mount none -t proc "$FLAGS_chroot/proc"
 sudo mount none -t devpts "$FLAGS_chroot/dev/pts"
 
 if [ -f $CHROOT_STATE ];then
-  echo "$PROG: chroot already initialized.  Skipping..."
+  echo "$SCRIPT_NAME: chroot already initialized.  Skipping..."
   # Update symlinks to point at latest version of make.conf. In older versions
   # of the chroot, it pointed at different files. TODO(asharif): This is only
   # needed for backwards compatibility, so we should remove this eventually.
@@ -317,19 +333,19 @@ fi
 # Add version of $STAGE3 for update checks
 sudo sh -c "echo STAGE3=$STAGE3 > $CHROOT_STATE"
 
-echo "$PROG: Running emerge portage"
+echo "$SCRIPT_NAME: Running emerge portage"
 bash_chroot emerge -uNv $USEPKG portage $EMERGE_JOBS
 
 # dhcpcd is included in 'world' by the stage3 that we pull in for some reason.
 # We have no need to install it in our host environment, so pull it out here.
-echo "$PROG: Unmerging dhcpcd"
+echo "$SCRIPT_NAME: Unmerging dhcpcd"
 bash_chroot $EMERGE_CMD --unmerge dhcpcd
 
-echo "$PROG: Running emerge world ccache crossdev etc ..."
+echo "$SCRIPT_NAME: Running emerge world ccache crossdev etc ..."
 bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
     ccache crossdev crossdev-wrappers sudo $EMERGE_JOBS
 
-echo "$PROG: Running emerge hard-host-depends"
+echo "$SCRIPT_NAME: Running emerge hard-host-depends"
 # Need to sudo_chroot here so that ~/.bash_profile gets used
 sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends world $EMERGE_JOBS
 
@@ -349,8 +365,8 @@ fi
 print_time_elapsed
 
 echo
-echo "$PROG: All set up.  To enter the chroot, run:"
-echo "$PROG: $ $SCRIPTS_DIR/enter_chroot.sh $CHROOT_EXAMPLE_OPT"
+echo "$SCRIPT_NAME: All set up.  To enter the chroot, run:"
+echo "$SCRIPT_NAME: $ $SCRIPTS_DIR/enter_chroot.sh $CHROOT_EXAMPLE_OPT"
 echo ""
 echo "CAUTION: Do *NOT* rm -rf the chroot directory; if there are stale bind"
 echo "mounts you may end up deleting your source tree too.  To unmount and"

@@ -36,7 +36,8 @@ src_install() {
 	rm -f lib/*.py
 
 	# Install libraries
-	dolib lib/* || die "Could not install library files"
+	insinto /usr/lib/crosutils/lib
+	doins lib/* || die "Could not install library files"
 
 	# Install binaries
 	local exclude_files="\
