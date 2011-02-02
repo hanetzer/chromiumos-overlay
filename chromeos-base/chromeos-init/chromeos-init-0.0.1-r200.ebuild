@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="0605b148a3ab5cda4bfd1375aeb1571840a6506a"
+CROS_WORKON_COMMIT="2c49a4dceb441f0eab230d251d0f5ff1c1cd4b71"
 
 inherit cros-workon toolchain-funcs
 
@@ -73,6 +73,10 @@ src_install() {
 	# Install lightup_screen
 	into /usr
 	dosbin "${S}/lightup_screen"
+
+	# Install rsyslogd's configuration file.
+	insinto /etc
+	doins rsyslog.chromeos || die
 
 	# Preseed /lib/chromiumos/devices which is by chromeos_startup to
 	# populate /dev with enough devices to be able to do early init and

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="9e7c741bfa588498baac020cffd23e9b44c1523f"
+CROS_WORKON_COMMIT="f75ed1898d8bcac649008b8d5c9cf99f8ca30230"
 
 inherit cros-workon
 
@@ -19,13 +19,15 @@ CROS_WORKON_LOCALNAME="dev"
 
 
 RDEPEND="app-shells/bash
-         app-portage/gentoolkit
-         dev-lang/python
-         dev-libs/shflags
-         minimal? ( !chromeos-base/gmerge )
-         "
+	app-portage/gentoolkit
+	dev-lang/python
+	dev-libs/shflags
+	minimal? ( !chromeos-base/gmerge )
+	"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	dev-util/crosutils
+	"
 
 src_install() {
 	exeinto /usr/bin
@@ -34,6 +36,6 @@ src_install() {
 		doexe stateful_update
 	else
 		doexe host/write_tegra_bios
+		doexe host/cros_overlay_list
 	fi
 }
-

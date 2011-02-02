@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="19ef17732c2c3b6944b12cc3cf888237ccfeb8a1"
+CROS_WORKON_COMMIT="4c5396d872199e081ba83f5cbe48a8ac7cc4ca39"
 
 inherit cros-workon
 
@@ -40,8 +40,13 @@ src_install() {
 	dolib lib/* || die "Could not install library files"
 
 	# Install binaries
-	local exclude_files="-e cros_make_image_bootable \
-		-e cros_sign_to_ssd -e cros_resign_image"
+	local exclude_files="\
+		-e cros_make_image_bootable \
+		-e cros_sign_to_ssd \
+		-e cros_resign_image \
+		-e cros_overlay_list
+		"
+
 	local bin_files=$(ls bin/* | grep -v ${exclude_files})
 	dobin ${bin_files} || die "Could not install executable scripts."
 	dosym loman.py /usr/bin/loman
