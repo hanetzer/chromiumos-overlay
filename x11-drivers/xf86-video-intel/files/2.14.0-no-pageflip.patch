@@ -1,0 +1,13 @@
+--- xf86-video-intel-2.14.0.orig/src/intel_display.c	2011-01-10 15:02:16.534513000 -0800
++++ xf86-video-intel-2.14.0.work/src/intel_display.c	2011-02-01 13:53:53.002750000 -0800
+@@ -1603,6 +1603,10 @@ Bool intel_mode_pre_init(ScrnInfoPtr scr
+ 	gp.value = &has_flipping;
+ 	(void)drmCommandWriteRead(intel->drmSubFD, DRM_I915_GETPARAM, &gp,
+ 				  sizeof(gp));
++	// flipping makes second head crash because of vblank race conditions
++	// we need to investigate that, but for now disable page flipping
++	has_flipping = 0;
++
+ 	if (has_flipping) {
+ 		xf86DrvMsg(scrn->scrnIndex, X_INFO,
+ 			   "Kernel page flipping support detected, enabling\n");
