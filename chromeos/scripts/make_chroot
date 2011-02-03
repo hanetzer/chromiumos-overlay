@@ -85,8 +85,8 @@ fi
 # Support faster build if necessary.
 EMERGE_CMD="emerge"
 if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
-  CHROOT_SCRIPTS_DIR="/home/${USER}/trunk/src/scripts"
-  EMERGE_CMD="${CHROOT_SCRIPTS_DIR}/parallel_emerge"
+  CHROOT_CHROMITE_DIR="/home/${USER}/trunk/chromite"
+  EMERGE_CMD="${CHROOT_CHROMITE_DIR}/bin/parallel_emerge"
 fi
 
 function in_chroot {
