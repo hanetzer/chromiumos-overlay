@@ -438,7 +438,7 @@ EOF
 
 cat <<EOF | sudo dd of="$CROS_WORKON_WRAPPER" > /dev/null 2>&1
 #!/bin/bash
-exec ${SCRIPTS_DIR}/cros_workon --board ${BOARD_VARIANT} "\$@"
+exec cros_workon --board ${BOARD_VARIANT} "\$@"
 EOF
 
 sudo chmod +x "$CROS_WORKON_WRAPPER"
