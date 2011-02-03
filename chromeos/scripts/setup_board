@@ -6,7 +6,6 @@
 
 # This script sets up a the sysroot for a particular target board.
 
-# --- BEGIN COMMON.SH BOILERPLATE ---
 # Load common CrOS utilities.  Inside the chroot this file is installed in
 # /usr/lib/crosutils.  Outside the chroot we find it relative to the script's
 # location.
@@ -16,7 +15,8 @@ find_common_sh() {
 
   SCRIPT_ROOT=
   for path in "${common_paths[@]}"; do
-    if [ -r "${path}/common.sh" ]; then
+    local common="${path}/common.sh"
+    if ([ -r "${common}" ] && . "${common}" && [ -d "${SCRIPTS_DIR}" ]); then
       SCRIPT_ROOT=${path}
       break
     fi
@@ -24,8 +24,7 @@ find_common_sh() {
 }
 
 find_common_sh
-. "${SCRIPT_ROOT}/common.sh" || (echo "Unable to load common.sh" && exit 1)
-# --- END COMMON.SH BOILERPLATE ---
+. "${SCRIPT_ROOT}/common.sh" || ! echo "Unable to load common.sh" || exit 1
 
 # Script must run inside the chroot
 restart_in_chroot_if_needed "$@"
