@@ -155,10 +155,6 @@ sudo ln -s /proc/mounts "${ROOT_FS_DIR}/etc/mtab"
 sudo ln -s /usr/bin/dbus-uuidgen "${ROOT_FS_DIR}/bin/dbus-uuidgen"
 sudo ln -s /usr/bin/dbus-daemon "${ROOT_FS_DIR}/bin/dbus-daemon"
 
-# TODO: Remove this after we are building our own wpa_supplicant. Also, on
-# the ARM build for some reason this symlink is already there?
-! sudo ln -s /usr/sbin/wpa_supplicant "${ROOT_FS_DIR}/sbin/wpa_supplicant"
-
 # The gtk++ library has the wrong path when it dlopens some modules
 sudo ln -s /usr/lib "${ROOT_FS_DIR}/usr/lib64"
 
