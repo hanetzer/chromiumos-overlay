@@ -147,11 +147,6 @@ EOF
           ${PAM_PREFIX}
 fi
 
-echo "# Allow chronos user to renice processes so that chrome will adjust tab priorities" | \
-  sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
-echo "chronos hard nice 0" | \
-  sudo dd of="${ROOT_FS_DIR}/etc/security/limits.conf" conv=notrunc oflag=append
-
 # Add mtab
 sudo ln -s /proc/mounts "${ROOT_FS_DIR}/etc/mtab"
 
