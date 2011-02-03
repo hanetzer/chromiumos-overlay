@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="73638"
+CROS_SVN_COMMIT="73653"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -497,7 +497,7 @@ src_compile() {
 	fi
 
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-		chrome chrome_sandbox default_extensions \
+		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 
@@ -593,6 +593,12 @@ install_chrome_test_resources() {
 	else
 		cd "${TEST_DIR}"/chrome/test
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
+	fi
+
+	# Add pdf test data
+	if use chrome_pdf && use x86; then
+		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
+			"${TEST_DIR}"/pdf/test/
 	fi
 }
 
