@@ -170,12 +170,6 @@ sudo ln -s /usr/lib "${ROOT_FS_DIR}/usr/lib64"
 # TODO: Until libGL.so is fixed, create symlink libGL.so.1 -> libGL.so
 sudo ln -s libGL.so "${ROOT_FS_DIR}/usr/lib/libGL.so.1"
 
-# TODO: If slim is not installed, we fake it out so that our init script
-# will return a success result.
-if [[ ! -f "${ROOT_FS_DIR}/usr/bin/slim" ]]; then
-  sudo ln -s /bin/true "${ROOT_FS_DIR}/usr/bin/slim"
-fi
-
 # Symlink /etc/localtime to something on the stateful partition, which we can
 # then change around at runtime.
 sudo ln -sf /var/lib/timezone/localtime "${ROOT_FS_DIR}/etc/localtime"
