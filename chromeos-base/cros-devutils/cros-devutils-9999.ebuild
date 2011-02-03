@@ -36,5 +36,6 @@ src_install() {
 	else
 		doexe host/write_tegra_bios
 		doexe host/cros_overlay_list
+		doexe host/cros_workon
 	fi
 }
