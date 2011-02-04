@@ -11,6 +11,12 @@
 =dev-libs/dbus-glib-0.82	amd64 x86
 =dev-libs/eggdbus-0.5		amd64 x86
 =dev-libs/protobuf-2.2.0	amd64 x86
+
+# Get a newer version of pylint
+=dev-python/astng-0.21.1           amd64
+=dev-python/logilab-common-0.53.0  amd64
+=dev-python/pylint-0.23.0          amd64
+
 =dev-util/boost-build-1.42.0	amd64 x86
 =dev-util/lcov-1.7              amd64 x86
 =media-libs/mesa-7.9-r1		amd64 x86
