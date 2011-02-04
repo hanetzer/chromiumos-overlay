@@ -12,13 +12,14 @@ EAPI="2"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
-	sys-apps/util-linux"
+	sys-apps/util-linux
+        !minimal? ( dev-libs/libyaml )"
 
 src_compile() {
 	tc-export CC AR CXX
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
-	emake || die "${err_msg}"
+	emake MINIMAL=$(usev minimal) || die "${err_msg}"
 	if use rbtest; then
 		emake rbtest || die "${err_msg}"
 	fi
