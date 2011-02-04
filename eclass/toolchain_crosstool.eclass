@@ -882,19 +882,6 @@ gcc-compiler_pkg_postinst() {
 			fi
 		done
 	fi
-
-	for x in c++ cpp g++ gcc gfortran ; do
-		if [[ -f "${BINPATH}/${CTARGET}-${x}" ]]; then
-			mv "${BINPATH}/${CTARGET}-${x}" "${BINPATH}/${CTARGET}-${x}.real"
-			cp "${FILESDIR}/sysroot_wrapper" "${BINPATH}/${CTARGET}-${x}"
-			chmod a+rx "${BINPATH}/${CTARGET}-${x}"
-		fi
-		CCACHE_BIN=$(which ccache || true)
-		mkdir -p "${ROOT}/usr/lib/ccache/bin"
-		if [ -f "${CCACHE_BIN}" ]; then
-			ln -sf "${CCACHE_BIN}" "${ROOT}/usr/lib/ccache/bin/${CTARGET}-${x}"
-		fi
-	done
 }
 
 gcc-compiler_pkg_prerm() {
@@ -1174,7 +1161,7 @@ gcc-compiler-configure() {
 		#    Specifies where to install the Python modules used for aot-compile. DIR
 		#  should not include the prefix used in installation. For example, if the
 		#  Python modules are to be installed in /usr/lib/python2.5/site-packages,
-		#  then with-python-dir=/lib/python2.5/site-packages should be passed.
+		#  then â€“with-python-dir=/lib/python2.5/site-packages should be passed.
 		#
 		# This should translate into "/share/gcc-data/${CTARGET}/${GCC_CONFIG_VER}/python"
 		if tc_version_is_at_least "4.4" ; then
