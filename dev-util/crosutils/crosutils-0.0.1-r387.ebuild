@@ -26,8 +26,8 @@ src_configure() {
 
 src_install() {
 	# Install package files
-	insinto /usr/lib/crosutils
-	doins * || die "Could not install shared files."
+	exeinto /usr/lib/crosutils
+	doexe * || die "Could not install shared files."
 
 	# Install python libraries into site-packages
 	local python_version=$(/usr/bin/env python -c \
