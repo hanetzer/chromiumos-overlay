@@ -165,42 +165,6 @@ sudo ln -s libGL.so "${ROOT_FS_DIR}/usr/lib/libGL.so.1"
 # then change around at runtime.
 sudo ln -sf /var/lib/timezone/localtime "${ROOT_FS_DIR}/etc/localtime"
 
-POLICY_CONFIG="${ROOT_FS_DIR}/usr/share/polkit-1/actions/org.freedesktop.devicekit.disks.policy"
-if [ -f "$POLICY_CONFIG" ]; then
-  POLICY_TMP="$(mktemp)"
-  cat "$POLICY_CONFIG" | awk '
-{ PRINTED = 0 }
-
-/<action id="/ {
-  IN_STANZA = 0;
-  PRINTED = 1;
-  print $0;
-}
-
-/<action id="org\.freedesktop.devicekit.disks.filesystem-mount">/ {
-  IN_STANZA = 1;
-  if (PRINTED == 0) {
-    PRINTED = 1;
-    print $0;
-  }
-}
-
-/<allow_any>no/ {
-  PRINTED = 1;
-  if (IN_STANZA) {
-    print "      <allow_any>yes</allow_any>";
-  } else {
-    print $0;
-  }
-}
-
-{ if (PRINTED == 0) print $0 }
-
-' > "$POLICY_TMP"
-  sudo mv "$POLICY_TMP" "$POLICY_CONFIG"
-  sudo chown root:root "$POLICY_CONFIG"
-fi
-
 # If dash is installed then we want to use that as our default /bin/sh
 if [[ -x "${ROOT_FS_DIR}/bin/dash" ]] ; then
   sudo ln -sf dash "${ROOT_FS_DIR}/bin/sh"
