@@ -19,7 +19,7 @@ HOSTNAME=$(hostname)
 # Major/minor versions.
 # Primarily for product marketing.
 export CHROMEOS_VERSION_MAJOR=0
-export CHROMEOS_VERSION_MINOR=10
+export CHROMEOS_VERSION_MINOR=11
 
 # Branch number.
 # Increment by 1 in a new release branch.
@@ -31,7 +31,7 @@ export CHROMEOS_VERSION_BRANCH=157
 # Patch number.
 # Increment by 1 each release on a branch.
 # Reset to 0 when increasing branch number.
-export CHROMEOS_VERSION_PATCH=33
+export CHROMEOS_VERSION_PATCH=0
 
 # Codename of this version.
 export CHROMEOS_VERSION_CODENAME=""
