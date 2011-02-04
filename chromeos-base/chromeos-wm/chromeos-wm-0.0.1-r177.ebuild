@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f149298ff5f9bc8f2317fb4bae6a6a126ae511d3"
+CROS_WORKON_COMMIT="f86b5e9bcb38ba653ad9883f048e14f046c7026c"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -72,7 +72,7 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		for test in ./*_test; do
+		for test in $(find -name '*_test' | sort); do
 			"$test" ${GTEST_ARGS} || die "$test failed"
 		done
 	fi

@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="41e0fccfe2311b077ee6ed0126d50c6fe38ba5f7"
+CROS_WORKON_COMMIT="793f912fe362a37125c4ef719debe35666c61987"
 
 inherit cros-workon autotest-deponly
 
-DESCRIPTION="Autotest iotools dep"
+DESCRIPTION="Autotest glbench dep"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -20,10 +20,18 @@ CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-AUTOTEST_DEPS_LIST="iotools"
+AUTOTEST_DEPS_LIST="glbench"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+# deps/glbench
+RDEPEND="${RDEPEND}
+  dev-cpp/gflags
+  chromeos-base/libchrome
+  virtual/opengl
+  opengles? ( virtual/opengles )
+"
 
 DEPEND="${RDEPEND}"
 

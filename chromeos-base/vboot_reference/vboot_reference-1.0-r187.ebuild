@@ -9,17 +9,18 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="6b2b81c13081fc22865e1f5ae2ce5789c91b3ce0"
+CROS_WORKON_COMMIT="d55085da49da8b7981494ea53ad23a6038fbb5c9"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
-	sys-apps/util-linux"
+	sys-apps/util-linux
+        !minimal? ( dev-libs/libyaml )"
 
 src_compile() {
 	tc-export CC AR CXX
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
-	emake || die "${err_msg}"
+	emake MINIMAL=$(usev minimal) || die "${err_msg}"
 	if use rbtest; then
 		emake rbtest || die "${err_msg}"
 	fi
