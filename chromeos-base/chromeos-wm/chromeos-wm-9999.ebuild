@@ -71,7 +71,7 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		for test in ./*_test; do
+		for test in $(find -name '*_test' | sort); do
 			"$test" ${GTEST_ARGS} || die "$test failed"
 		done
 	fi
