@@ -78,9 +78,6 @@ src_install() {
 	insinto /etc
 	doins rsyslog.chromeos || die
 
-	# Some daemons and utilities access the mounts through /etc/mtab.
-	dosym /proc/mounts /etc/mtab || die
-
 	# Preseed /lib/chromiumos/devices which is by chromeos_startup to
 	# populate /dev with enough devices to be able to do early init and
 	# start the X server.
