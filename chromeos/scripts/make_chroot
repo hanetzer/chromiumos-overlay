@@ -46,8 +46,6 @@ assert_outside_chroot
 DEFINE_string chroot "$DEFAULT_CHROOT_DIR" \
   "Destination dir for the chroot environment."
 DEFINE_boolean usepkg $FLAGS_TRUE "Use binary packages to bootstrap."
-DEFINE_boolean useworkon $FLAGS_TRUE \
-  "Enable use of the new cros_workon tool (http://goo.gl/SBtp)."
 DEFINE_boolean delete $FLAGS_FALSE "Delete an existing chroot."
 DEFINE_boolean replace $FLAGS_FALSE "Overwrite existing chroot, if any."
 DEFINE_integer jobs -1 "How many packages to build in parallel at maximum."
@@ -211,10 +209,8 @@ EOF
    # Niceties for interactive logins ('enter_chroot.sh'); these are ignored
    # when specifying a command to enter_chroot.sh.
    # Warn less when apt-get installing packqages
-   if [[ $FLAGS_useworkon -eq $FLAGS_TRUE ]]; then
-       echo "export CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\"" >> \
-         "$FLAGS_chroot/home/$USER/.bash_profile"
-   fi
+   echo "export CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\"" >> \
+     "$FLAGS_chroot/home/$USER/.bash_profile"
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
 
