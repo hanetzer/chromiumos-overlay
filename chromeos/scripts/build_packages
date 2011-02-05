@@ -162,7 +162,7 @@ set -e
 
 if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   # Always build cros-workon packages
-  CROS_WORKON_PKGS=$("${SCRIPTS_DIR}"/cros_workon --board="${FLAGS_board}" list)
+  CROS_WORKON_PKGS=$(cros_workon --board="${FLAGS_board}" list)
 fi
 
 # TODO(anush): Make chrome a fake cros-workon package.
