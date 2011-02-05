@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit bash-completion eutils gnome2
+inherit bash-completion gnome2
 
 MY_PN="DeviceKit-disks"
 
@@ -52,9 +52,6 @@ src_prepare() {
 
 	# Fix intltoolize broken file, see upstream #577133
 	sed "s:'\^\$\$lang\$\$':\^\$\$lang\$\$:g" -i po/Makefile.in.in || die "sed failed"
-
-	# crosbug.com/11622
-	epatch "${FILESDIR}/${PN}-009-chromeos-policy.patch" || die
 }
 
 src_install() {
