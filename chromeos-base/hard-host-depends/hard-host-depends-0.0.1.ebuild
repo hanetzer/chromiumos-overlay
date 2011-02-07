@@ -141,6 +141,11 @@ RDEPEND="${RDEPEND}
 	dev-python/pymox
 	"
 
+# Host dependencies for running pylint within the chroot
+RDEPEND="${RDEPEND}
+	dev-python/pylint
+	"
+
 # Host dependencies to scp binaries from the binary component server
 RDEPEND="${RDEPEND}
 	chromeos-base/ssh-known-hosts
