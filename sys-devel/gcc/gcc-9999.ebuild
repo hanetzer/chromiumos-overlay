@@ -127,6 +127,18 @@ src_install()
   if [[ ${PV} != "4.4.3" ]] ; then
     cp -r ${D}/usr/lib/gcc/${CTARGET}/${PV}/* ${D}/usr/lib/gcc/${CTARGET}/${MY_PV}/
   fi
+	cd ${D}${BINPATH}
+	for x in c++ cpp g++ gcc gfortran ; do
+		if [[ -f "${CTARGET}-${x}" ]]; then
+			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
+			cp --preserve=all "${FILESDIR}/sysroot_wrapper" "${CTARGET}-${x}"
+		fi
+		CCACHE_BIN=$(which ccache || true)
+		mkdir -p "${D}/usr/lib/ccache/bin"
+		if [ -f "${CCACHE_BIN}" ]; then
+			ln -sf "${CCACHE_BIN}" "${D}/usr/lib/ccache/bin/${CTARGET}-${x}"
+		fi
+	done
 }
 
 pkg_setup() {
