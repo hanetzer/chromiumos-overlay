@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="8ae7b0e41a1252f98e6662a298efb97624431c44"
+CROS_WORKON_COMMIT="542186618a43fb0786ff161a4ecc226f2f0c59e9"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl
@@ -34,6 +34,7 @@ src_install() {
 		# by src_compile in the source tree build/ subdirectory
 		einfo "Installing target programs"
 		local progs='utility/dump_kernel_config'
+		progs+=' utility/crossystem'
 		progs+=' utility/dev_sign_file'
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
