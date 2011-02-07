@@ -32,32 +32,12 @@ CROS_WORKON_PROJECT="installer"
 src_install() {
 	if use minimal ; then
 		exeinto /usr/sbin
-		doexe "${S}"/chromeos-*
 		dosym usr/sbin/chromeos-postinst /postinst
 	else
 	# Copy chromeos-* scripts to /usr/lib/installer/ on host.
 		exeinto /usr/lib/installer
-		doexe "${S}"/chromeos-*
 		dosym usr/lib/installer/chromeos-postinst /postinst
-
-		# Copy bin/* scripts to /usr/bin/ on host.
-		exeinto /usr/bin
-		doexe "${S}"/bin/*
-
-		# Copy mod_for_test_scripts/* scripts to
-		# /usr/share/chromeos-installer/mod_for_test_scripts on host.
-		exeinto /usr/share/chromeos-installer/mod_for_test_scripts
-		doexe "${S}"/mod_for_test_scripts/*
-
-		# Copy mod_for_test_scripts/ssh_keys/* to
-		# /usr/share/chromeos-installer/mod_for_test_scripts/ssh_keys on host.
-		# Unfortunately, doexe does not support a recursive flag :-(
-		exeinto /usr/share/chromeos-installer/mod_for_test_scripts/ssh_keys
-		doexe "${S}"/mod_for_test_scripts/ssh_keys/*
-
-		# Copy mod_for_factory_scripts/* scripts to
-		# /usr/share/chromeos-installer/mod_for_factory_scripts on host.
-		exeinto /usr/share/chromeos-installer/mod_for_factory_scripts
-		doexe "${S}"/mod_for_factory_scripts/*
 	fi
+
+	doexe "${S}"/chromeos-*
 }
