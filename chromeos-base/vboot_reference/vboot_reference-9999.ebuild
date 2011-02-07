@@ -33,6 +33,7 @@ src_install() {
 		# by src_compile in the source tree build/ subdirectory
 		einfo "Installing target programs"
 		local progs='utility/dump_kernel_config'
+		progs+=' utility/crossystem'
 		progs+=' utility/dev_sign_file'
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
