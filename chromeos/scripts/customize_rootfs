@@ -147,9 +147,6 @@ EOF
           ${PAM_PREFIX}
 fi
 
-# Add mtab
-sudo ln -s /proc/mounts "${ROOT_FS_DIR}/etc/mtab"
-
 # The above initscripts expect some binaries to be in a different location
 # TODO: Remove after this is fixed in the initscripts.
 sudo ln -s /usr/bin/dbus-uuidgen "${ROOT_FS_DIR}/bin/dbus-uuidgen"
