@@ -83,9 +83,18 @@ D_CHROME_DIR="${D}/${CHROME_DIR}"
 # By default, pull from server
 CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_SOURCE}"
 
+if [ "$ARCH" = "x86" ]; then
+  DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
+  USE_TCMALLOC="linux_use_tcmalloc=1"
+elif [ "$ARCH" = "arm" ]; then
+  DEFAULT_CHROME_DIR=chromium-rel-arm
+  # tcmalloc isn't supported on arm
+  USE_TCMALLOC="linux_use_tcmalloc=0"
+fi
+
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS linux_use_tcmalloc=1 chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -95,12 +104,6 @@ BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
 # Unsetting BUILD_OUT_SYM will revert this behavior
 BUILD_OUT_SYM="c"
 
-# For pulling from build bot
-if [ "$ARCH" = "x86" ]; then
-	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
-elif [ "$ARCH" = "arm" ]; then
-	DEFAULT_CHROME_DIR=chromium-rel-arm
-fi
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES="ffmpeg_tests
