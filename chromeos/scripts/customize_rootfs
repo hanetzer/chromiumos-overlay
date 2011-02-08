@@ -144,6 +144,11 @@ EOF
           ${PAM_PREFIX}
 fi
 
+# The above initscripts expect some binaries to be in a different location
+# TODO: Remove after this is fixed in the initscripts.
+sudo ln -s /usr/bin/dbus-uuidgen "${ROOT_FS_DIR}/bin/dbus-uuidgen"
+sudo ln -s /usr/bin/dbus-daemon "${ROOT_FS_DIR}/bin/dbus-daemon"
+
 # The gtk++ library has the wrong path when it dlopens some modules
 sudo ln -s /usr/lib "${ROOT_FS_DIR}/usr/lib64"
 
