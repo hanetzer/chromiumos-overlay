@@ -198,6 +198,7 @@ cros-workon_src_unpack() {
 			append-flags -DVCSID=\\\"${VCSID}\\\"
 		else
 			EGIT_REPO_URI="${repo}/${project}"
+			EGIT_PROJECT="${project}"
 			EGIT_COMMIT=${CROS_WORKON_COMMIT}
 			if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
 				# TODO(davidjames): This code should really error out if
