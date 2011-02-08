@@ -40,6 +40,9 @@ PORTAGE_BZIP2_COMMAND='eval function fbzip() { if which pbzip2 &> /dev/null; the
 # pbunzip2 not used yet
 PORTAGE_BUNZIP2_COMMAND="bunzip2"
 
+FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
+RESUMECOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
+
 # Print a checkpoint message every 10MB while archiving.
 PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"
 
