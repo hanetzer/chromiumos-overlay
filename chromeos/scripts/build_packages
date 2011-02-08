@@ -196,6 +196,7 @@ fi
 # Remove chromeos-base/kernel: http://crosbug.com/11124
 # TODO(msb) remove this hack after 02/20/2011
 sudo -E ${EMERGE_BOARD_CMD} -C "chromeos-base/kernel"
+sudo -E ${EMERGE_BOARD_CMD} -C "=sys-libs/pam-1.0.4"
 if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   # These flags are specific to parallel_emerge
   for pkg in ${CROS_WORKON_PKGS}; do
