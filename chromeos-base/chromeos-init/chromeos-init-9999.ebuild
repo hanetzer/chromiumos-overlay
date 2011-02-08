@@ -138,4 +138,9 @@ src_install() {
 	chown root.video "${D}/${DEVICES_DIR}"/fb0
 	chown root.video "${D}/${DEVICES_DIR}"/dri/card0
 	chown root.tss "${D}/${DEVICES_DIR}/tpm"
+
+	# Preseed the devices in /dev. This seems to be currently required by some
+	# downstream rootfs modification scripts such as 710enableAuthTesting.
+	dodir /dev
+	cp -a "${D}/${DEVICES_DIR}/"* "${D}/dev" || die
 }

@@ -66,7 +66,7 @@ fi
 sudo chmod 0755 "${ROOT_FS_DIR}/."
 
 # TODO: Temporarily pre-seed the devices in /dev for debugging purposes.
-sudo cp -a "${ROOT_FS_DIR}/lib/chromiumos/devices/"* "${ROOT_FS_DIR}/dev"
+sudo cp -af "${ROOT_FS_DIR}/lib/chromiumos/devices/"* "${ROOT_FS_DIR}/dev"
 
 # Set up a default dev user, update the password entry, and add to sudo.
 # TODO: Make the default user conditional on building a dev image.
