@@ -47,6 +47,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
 	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/ibus-1.4/0008-Port-the-following-ibus-1.3-patches-to-1.4.patch
+
+	# TODO(yusukes): Upstream the patch as usual, and remove this line.
+	epatch "${FILESDIR}"/ibus-1.4/fix_issue_11379.patch
 }
 
 src_configure() {
