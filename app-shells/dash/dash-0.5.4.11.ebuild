@@ -17,7 +17,7 @@ SRC_URI="http://gondor.apana.org.au/~herbert/dash/files/${PN}-${DEB_PV}.tar.gz
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 s390 sh sparc x86"
-IUSE="libedit static"
+IUSE="binsh libedit static"
 
 DEPEND="libedit? ( dev-libs/libedit )"
 
@@ -54,5 +54,6 @@ src_compile() {
 
 src_install() {
 	emake install DESTDIR="${D}" || die
+	use binsh && dosym bash /bin/sh
 	dodoc ChangeLog debian/changelog
 }
