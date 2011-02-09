@@ -54,6 +54,6 @@ src_compile() {
 
 src_install() {
 	emake install DESTDIR="${D}" || die
-	use binsh && dosym bash /bin/sh
+	use binsh && dosym dash /bin/sh || die
 	dodoc ChangeLog debian/changelog
 }
