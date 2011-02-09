@@ -60,6 +60,7 @@ src_configure() {
 	# instead to remove the dependence on iso-codes.
 	econf \
 		--disable-gconf \
+		--disable-xim \
 		--disable-key-snooper \
 		--enable-memconf \
 		--disable-vala \
