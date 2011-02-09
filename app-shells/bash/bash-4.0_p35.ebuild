@@ -37,7 +37,7 @@ SRC_URI="mirror://gnu/bash/${MY_P}.tar.gz $(patches)
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="afs bashlogger examples mem-scramble +net nls plugins vanilla"
+IUSE="afs bashlogger +binsh examples mem-scramble +net nls plugins vanilla"
 
 DEPEND=">=sys-libs/ncurses-5.2-r2
 	nls? ( virtual/libintl )"
@@ -184,7 +184,7 @@ pkg_preinst() {
 
 pkg_postinst() {
 	# If /bin/sh does not exist, provide it
-	if [[ ! -e ${ROOT}/bin/sh ]]; then
+	if use binsh && [[ ! -e ${ROOT}/bin/sh ]]; then
 		ln -sf bash "${ROOT}"/bin/sh
 	fi
 }
