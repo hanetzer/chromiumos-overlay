@@ -134,6 +134,8 @@ src_install() {
 	mv "${D}"/usr/bin/bash "${D}"/bin/ || die
 	dosym bash /bin/rbash
 
+	use binsh && (dosym bash /bin/sh || die)
+
 	insinto /etc/bash
 	doins "${FILESDIR}"/{bashrc,bash_logout}
 	insinto /etc/skel
@@ -179,12 +181,5 @@ pkg_preinst() {
 		# missing even temporarily causes a fatal error with paludis.
 		local target=$(readlink "${ROOT}"/bin/sh)
 		ln -sf "${target}" "${ROOT}"/bin/sh
-	fi
-}
-
-pkg_postinst() {
-	# If /bin/sh does not exist, provide it
-	if use binsh && [[ ! -e ${ROOT}/bin/sh ]]; then
-		ln -sf bash "${ROOT}"/bin/sh
 	fi
 }
