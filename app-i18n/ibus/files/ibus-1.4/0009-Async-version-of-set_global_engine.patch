@@ -1,0 +1,88 @@
+diff --git a/src/ibusbus.c b/src/ibusbus.c
+index 994d623..0895596 100644
+--- a/src/ibusbus.c
++++ b/src/ibusbus.c
+@@ -79,6 +79,13 @@ static GVariant *ibus_bus_call                  (IBusBus                *bus,
+                                                  const gchar            *member,
+                                                  GVariant               *parameters,
+                                                  const GVariantType     *reply_type);
++static void ibus_bus_call_async                  (IBusBus                *bus,
++                                                 const gchar            *service,
++                                                 const gchar            *path,
++                                                 const gchar            *interface,
++                                                 const gchar            *member,
++                                                 GVariant               *parameters,
++                                                 const GVariantType     *reply_type);
+ 
+ G_DEFINE_TYPE (IBusBus, ibus_bus, IBUS_TYPE_OBJECT)
+ 
+@@ -938,6 +945,20 @@ ibus_bus_set_global_engine (IBusBus     *bus,
+     return FALSE;
+ }
+ 
++void
++ibus_bus_set_global_engine_async (IBusBus     *bus,
++                            const gchar *global_engine)
++{
++    ibus_bus_call_async (bus,
++                            IBUS_SERVICE_IBUS,
++                            IBUS_PATH_IBUS,
++                            IBUS_INTERFACE_IBUS,
++                            "SetGlobalEngine",
++                            g_variant_new ("(s)", global_engine),
++                            NULL);
++
++}
++
+ static GVariant *
+ ibus_bus_call (IBusBus            *bus,
+                const gchar        *bus_name,
+@@ -973,3 +994,27 @@ ibus_bus_call (IBusBus            *bus,
+ 
+     return result;
+ }
++
++static void
++ibus_bus_call_async (IBusBus            *bus,
++                     const gchar        *bus_name,
++                     const gchar        *path,
++                     const gchar        *interface,
++                     const gchar        *member,
++                     GVariant           *parameters,
++                     const GVariantType *reply_type)
++{
++    g_dbus_connection_call (bus->priv->connection,
++                            bus_name,
++                            path,
++                            interface,
++                            member,
++                            parameters,
++                            reply_type,
++                            G_DBUS_CALL_FLAGS_NO_AUTO_START,
++                            ibus_get_timeout (),
++                            NULL,
++                            NULL,
++                            NULL);
++
++}
+diff --git a/src/ibusbus.h b/src/ibusbus.h
+index a2cd1db..396c457 100644
+--- a/src/ibusbus.h
++++ b/src/ibusbus.h
+@@ -316,6 +316,16 @@ gboolean     ibus_bus_set_global_engine (IBusBus        *bus,
+                                          const gchar    *global_engine);
+ 
+ /**
++ * ibus_bus_set_global_engine_async:
++ * @bus: An IBusBus.
++ * @global_engine: A new engine name.
++ *
++ * Set current global engine asynchronously.
++ */
++void ibus_bus_set_global_engine_async (IBusBus        *bus,
++                                       const gchar    *global_engine);
++
++/**
+  * ibus_bus_set_watch_ibus_signal:
+  * @bus: An IBusBus.
+  * @watch: TRUE if you want ibusbus to emit "global-engine-changed" signal when
