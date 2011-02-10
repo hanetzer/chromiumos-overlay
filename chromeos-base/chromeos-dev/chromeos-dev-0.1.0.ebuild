@@ -11,9 +11,62 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE="X opengl hardened"
 
-# X11 apps
+# The dependencies here are meant to capture "all the packages
+# developers want to use for development, test, or debug".  This
+# category is meant to include all developer use cases, including
+# software test and debug, performance tuning, hardware validation,
+# and debugging failures running autotest.
+#
+# To protect developer images from changes in other ebuilds you
+# should include any package with a user constituency, regardless of
+# whether that package is included in the base Chromium OS image or
+# any other ebuild.
+#
+# Don't include packages that are indirect dependencies: only
+# include a package if a file *in that package* is expected to be
+# useful.
 RDEPEND="${RDEPEND}
-	x11-apps/setxkbmap
+	app-admin/sudo
+	app-arch/gzip
+	app-arch/tar
+	app-crypt/nss
+	app-crypt/tpm-tools
+	x86? ( app-editors/qemacs )
+	app-editors/vim
+	app-shells/bash
+	chromeos-base/flimflam-test
+	chromeos-base/gmerge
+	dev-lang/python
+	dev-python/dbus-python
+	dev-util/strace
+	net-analyzer/netperf
+	net-misc/dhcp
+	net-misc/iperf
+	net-misc/iputils
+	net-misc/openssh
+	net-misc/rsync
+	net-wireless/iw
+	net-wireless/wireless-tools
+	sys-apps/coreutils
+	sys-apps/diffutils
+	sys-apps/findutils
+	x86? ( sys-apps/i2c-tools )
+	x86? ( sys-apps/iotools )
+	sys-apps/less
+	x86? ( sys-apps/pciutils )
+	sys-apps/usbutils
+	sys-apps/which
+	hardened? ( >=sys-devel/gdb-7.1 )
+	!hardened? ( sys-devel/gdb )
+	sys-fs/fuse[-kernel_linux]
+	sys-fs/sshfs-fuse
+	sys-power/powertop
+	sys-process/procps
+	sys-process/psmisc
+	sys-process/time
+	virtual/perf
+	x86? ( x11-apps/intel-gpu-tools )
+	opengl? ( x11-apps/mesa-progs )
 	x11-apps/xauth
 	x11-apps/xdpyinfo
 	x11-apps/xdriinfo
@@ -27,56 +80,4 @@ RDEPEND="${RDEPEND}
 	x11-apps/xset
 	x11-apps/xtrace
 	x11-apps/xwininfo
-	x11-terms/aterm
 	"
-
-# Useful utilities
-# TODO(sosa): Remove packages from dev build once we switch to using
-# the test build for the test image:
-# - python packages: (dbus-python, pygobject, pygtk...)
-# - media-gfx/imagemagick
-RDEPEND="${RDEPEND}
-	app-admin/sudo
-	app-arch/tar
-	app-crypt/nss
-	x86? ( app-editors/qemacs )
-	app-editors/vim
-	app-shells/bash
-	chromeos-base/autox
-	chromeos-base/gmerge
-	chromeos-base/minifakedns
-	dev-lang/python
-	dev-python/dbus-python
-	dev-python/pygobject
-	dev-python/pygtk
-	dev-python/pyopenssl
-	dev-util/strace
-	media-gfx/imagemagick[png]
-	media-gfx/perceptualdiff
-	net-misc/dhcp
-	net-misc/iputils
-	net-misc/openssh
-	net-wireless/iw
-	net-wireless/wireless-tools
-	sys-apps/diffutils
-	x86? ( sys-apps/dmidecode )
-	x86? ( sys-apps/iotools )
-	sys-apps/less
-	x86? ( sys-apps/pciutils )
-	sys-apps/usbutils
-	sys-apps/which
-	hardened? ( >=sys-devel/gdb-7.1 )
-	!hardened? ( sys-devel/gdb )
-	sys-fs/fuse[-kernel_linux]
-	sys-fs/sshfs-fuse
-	sys-power/powertop
-	sys-process/procps
-	sys-process/time
-	virtual/perf
-	opengl? ( x11-apps/mesa-progs )
-	x86? ( x11-apps/intel-gpu-tools )
-	x86? ( x11-misc/read-edid )
-	x86? ( sys-apps/i2c-tools )
-	"
-
-# TODO: Re-add strace once we can compile it again dev-util/strace
