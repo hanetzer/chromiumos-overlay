@@ -21,7 +21,7 @@ PKGDIR="/var/lib/portage/pkgs"
 
 PORTAGE_BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/master-09.02.11.174443/packages/"
 
-USE="${USE} -cups hardened pic pie"
+USE="${USE} -cups hardened cros_host pic pie"
 
 GENTOO_MIRRORS="http://gsdview.appspot.com/chromeos-mirror/gentoo"
 

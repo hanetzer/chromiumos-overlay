@@ -40,6 +40,7 @@ RDEPEND="${RDEPEND}
 	app-text/texi2html
 	chromeos-base/google-breakpad
 	chromeos-base/chromeos-installer
+	chromeos-base/cros-devutils[cros_host]
 	dev-lang/python
 	dev-db/m17n-contrib
 	dev-db/m17n-db
@@ -85,7 +86,6 @@ RDEPEND="${RDEPEND}
 	x11-apps/xkbcomp
 	x11-libs/gtk+
 	>=x11-misc/util-macros-1.2
-	chromeos-base/cros-devutils[-minimal]
 	"
 
 # Host dependencies that create usernames/groups we need to pull over to target.

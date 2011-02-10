@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-minimal"
+IUSE="cros_host"
 
 DEPEND="!!<=dev-util/crosutils-0.0.1-r1"
 
@@ -30,7 +30,7 @@ CROS_WORKON_LOCALNAME="installer"
 CROS_WORKON_PROJECT="installer"
 
 src_install() {
-	if use minimal ; then
+	if ! use cros_host; then
 		exeinto /usr/sbin
 		dosym usr/sbin/chromeos-postinst /postinst
 	else

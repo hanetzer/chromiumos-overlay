@@ -20,7 +20,7 @@ CROS_WORKON_LOCALNAME="factory-utils"
 # dev-utils contains the devserver
 RDEPEND="app-shells/bash
 	dev-util/crosutils
-	chromeos-base/cros-devutils
+	chromeos-base/cros-devutils[cros_host]
 	"
 
 DEPEND="${RDEPEND}"

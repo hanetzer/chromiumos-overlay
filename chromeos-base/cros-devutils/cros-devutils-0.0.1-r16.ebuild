@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="minimal"
+IUSE="cros_host"
 
 CROS_WORKON_PROJECT="dev-util"
 CROS_WORKON_LOCALNAME="dev"
@@ -22,18 +22,18 @@ RDEPEND="app-shells/bash
 	app-portage/gentoolkit
 	dev-lang/python
 	dev-libs/shflags
-	minimal? ( !chromeos-base/gmerge )
+	!cros_host? ( !chromeos-base/gmerge )
 	"
 
 DEPEND="${RDEPEND}
-	dev-util/crosutils
+	cros_host? ( dev-util/crosutils )
 	"
 
 src_install() {
 	exeinto /usr/bin
 	insinto /usr/bin
 
-	if use minimal; then
+	if ! use cros_host; then
 		doexe gmerge
 		doexe stateful_update
 	else
@@ -64,7 +64,7 @@ src_test() {
 	cd ${S} # Let's just run unit tests from ${S} rather than install and run.
 
 	local TESTS=""
-	if use minimal; then
+	if ! use cros_host; then
 		TESTS+="gmerge_test.py "
 		# FIXME(zbehan): import gmerge in gmerge_test.py won't work if we won't
 		# have the .py.
