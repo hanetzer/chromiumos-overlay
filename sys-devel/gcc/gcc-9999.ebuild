@@ -3,10 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 # (Crosstool-based) ChromeOS toolchain related variables.
-COST_VERSION="v1"
-COST_CL="41723"
-COST_SUFFIX="cos_gg_${COST_VERSION}_${COST_CL}"
-COST_PKG_VERSION="gcc-9999_${COST_SUFFIX}-EXPERIMENTAL-9999"
+COST_PKG_VERSION="${P}_cos_gg"
 EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
  --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 
@@ -83,7 +80,7 @@ IUSE="mounted_sources"
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
 GITDIR=${WORKDIR}/gitdir
-GITHASH=717a8906a9b85e79f584824f693a338012905730
+GITHASH=be31e6879e21eedf7175e29a7634258143407171
 
 src_unpack() {
   local GCCDIR

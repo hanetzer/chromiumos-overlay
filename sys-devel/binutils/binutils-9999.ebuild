@@ -5,14 +5,11 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86
 BVER=${PV}
 
 # Version names
-COST_VERSION="v1"
-BINUTILS_CL="experimental-9999"
 BINUTILS_VERSION="binutils-2.20.1-mobile"
-BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg_${COST_VERSION}_${BINUTILS_CL}"
+BINUTILS_PKG_VERSION="${P}_${BINUTILS_VERSION}_cos_gg"
 
-GOLD_CL="experimental-9999"
 GOLD_VERSION="binutils-20100303"
-GOLD_PKG_VERSION="${GOLD_VERSION}_cos_gg_${COST_VERSION}_${GOLD_CL}"
+GOLD_PKG_VERSION="${P}_${GOLD_VERSION}_cos_gg"
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
@@ -26,7 +23,7 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="http://sources.redhat.com/binutils/"
 LICENSE="|| ( GPL-3 LGPL-3 )"
-IUSE="nls multitarget multislot test vanilla"
+IUSE="nls multitarget multislot test vanilla mounted_sources"
 if use multislot ; then
 	SLOT="${CTARGET}-${BVER}"
 elif is_cross ; then
@@ -54,6 +51,9 @@ fi
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
 MYBUILDDIR_GOLD="${WORKDIR}/build-gold"
 
+GITDIR=${WORKDIR}/gitdir
+GITHASH=86e9e8636be893fc65679aeafb9b8623540fe3b6
+
 LIBPATH=/usr/$(get_libdir)/binutils/${CTARGET}/${BVER}
 INCPATH=${LIBPATH}/include
 DATAPATH=/usr/share/binutils-data/${CTARGET}/${BVER}
@@ -64,17 +64,25 @@ else
 fi
 
 src_unpack() {
-	if [[ ${PV} == "9999" ]] ; then
-		P4_BINUTILS="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
-		P4_GOLD="/usr/local/toolchain_root/binutils/${GOLD_VERSION}"  
-		if [[ ! -d ${P4_BINUTILS} ]] || [[ ! -d ${P4_GOLD} ]] ; then
-			die "binutils dirs not mounted at: ${P4_BINUTILS} and ${P4_GOLD}"
-		fi
-		ln -s ${P4_BINUTILS} ${S_BINUTILS}
-		ln -s ${P4_GOLD} ${S_GOLD}
-	else
-		unpack ${A}
-	fi
+  if use mounted_sources ; then
+ 		BINUTILS_DIR="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
+		GOLD_DIR="/usr/local/toolchain_root/binutils/${GOLD_VERSION}"  
+    if [[ ! -d ${BINUTILS_DIR} ]] || [[ ! -d ${GOLD_DIR} ]] ; then
+			die "binutils dirs not mounted at: ${BINUTILS_DIR} and ${GOLD_DIR}"
+    fi
+  else
+    mkdir ${GITDIR}
+    cd ${GITDIR} || die "Could not enter ${GITDIR}"
+    git clone http://git.chromium.org/git/binutils.git . || die "Could not clone repo."
+    git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
+    cd -
+    GCCDIR=${GITDIR}/gcc/${MY_P}
+ 		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
+		GOLD_DIR="${GITDIR}/binutils/${GOLD_VERSION}"  
+  fi
+  ln -s ${BINUTILS_DIR} ${S_BINUTILS}
+	ln -s ${GOLD_DIR} ${S_GOLD}
+
 	mkdir -p "${MY_BUILDDIR_BINUTILS}"
 	mkdir -p "${MYBUILDDIR_GOLD}"
 }
