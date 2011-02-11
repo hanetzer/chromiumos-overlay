@@ -6,7 +6,7 @@ inherit toolchain-funcs
 
 DESCRIPTION="nl80211-based configuration utility for wireless devices using the mac80211 kernel stack"
 HOMEPAGE="http://wireless.kernel.org/en/users/Documentation/iw"
-SRC_URI="http://wireless.kernel.org/download/${PN}/iw-0.9.20.tar.bz2"
+SRC_URI="http://wireless.kernel.org/download/${PN}/iw-0.9.22.tar.bz2"
 
 LICENSE="as-is"
 SLOT="0"
