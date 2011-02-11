@@ -8,7 +8,7 @@ HOMEPAGE="http://www.gnu.org/software/grub/"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE=""
+IUSE="truetype"
 EAPI="2"
 CROS_WORKON_COMMIT="d1661b9e74f84b349242998462209e204acc9239"
 

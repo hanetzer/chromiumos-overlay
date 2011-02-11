@@ -8,7 +8,7 @@ HOMEPAGE="http://www.gnu.org/software/grub/"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE=""
+IUSE="truetype"
 EAPI="2"
 
 RDEPEND=">=sys-libs/ncurses-5.2-r5
