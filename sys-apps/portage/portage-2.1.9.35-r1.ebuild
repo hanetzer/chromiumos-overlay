@@ -116,6 +116,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-crossdev".patch
 	epatch "${FILESDIR}/${P}-multiple-binhosts".patch
 	epatch "${FILESDIR}/${P}-allow-missing-digests".patch
+	epatch "${FILESDIR}/${P}-gsutil".patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION=.*/VERSION=\"${PVR}\"/" -i pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"
