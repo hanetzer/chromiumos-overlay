@@ -123,10 +123,11 @@ RDEPEND="${RDEPEND}
 	x11-libs/libXtst
 	"
 
-# Host dependencies that are needed to sign images
+# Host dependencies that are needed to create and sign images
 RDEPEND="${RDEPEND}
 	>=chromeos-base/vboot_reference-1.0-r174
 	chromeos-base/verity
+	media-gfx/imagemagick[gs,truetype]
 	sys-apps/mosys
 	"
 
