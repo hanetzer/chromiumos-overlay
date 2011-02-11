@@ -263,7 +263,7 @@ fi
 
 # Locations we will need
 BOARD_ROOT="${FLAGS_build_root}/${BOARD_VARIANT}"
-CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos/"
+CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos"
 CHROMIUMOS_CONFIG="${CHROMIUMOS_OVERLAY}/chromeos/config"
 CHROMIUMOS_PROFILES="${CHROMIUMOS_OVERLAY}/profiles"
 BOARD_ETC="${BOARD_ROOT}/etc"
@@ -350,36 +350,59 @@ sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
 sudo ln -sf /etc/make.conf.user "${BOARD_ROOT}/etc/make.conf.user"
 sudo rm "${BOARD_ROOT}/etc/make.profile"
-# The profile directory comes from four possible locations:
-#  * relative profile name from --profile in overlay-board/profiles/<name>
+# The profile directory comes from many possible locations:
+#  * relative profile name from --profile in <overlay>/profiles/<name>
 #  * absolute profile path from --profile
-#  * overlay-board/profiles/base
+#  * <overlay>/profiles/base
 #  * ${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos
 # If --profile is non-null and does not exist the script will error
 # If none of the directories exist the script will error as well
-PORTAGE_PROFILES_DIR=""
+PROFILES_LIST=""
+PROFILES_DIR=""
+PROFILE_NAME="base"
+
 if [ ! -z "${FLAGS_profile}" ]; then  # profile specified. must exist or we fail
-    if [ -d "${PRIMARY_BOARD_OVERLAY}/profiles/${FLAGS_profile}" ]; then
-	PORTAGE_PROFILES_DIR="${PRIMARY_BOARD_OVERLAY}/profiles/${FLAGS_profile}"
-    elif [ -d "${FLAGS_profile}" ]; then
-	PORTAGE_PROFILES_DIR="${FLAGS_profile}"
-    fi
-    if [ -z "${PORTAGE_PROFILES_DIR}" ]; then
-	error "Profile argument passed as '${FLAGS_profile}' but it does not exist"
-	exit 1
-    fi
-elif [ -d "${PRIMARY_BOARD_OVERLAY}/profiles/base" ]; then
-    PORTAGE_PROFILES_DIR="${PRIMARY_BOARD_OVERLAY}/profiles/base/"
-else
-    PORTAGE_PROFILES_DIR="${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/"
+  if [ -d "${FLAGS_profile}" ]; then
+    PROFILES_DIR="${FLAGS_profile}"
+  else
+    PROFILE_NAME="${FLAGS_profile}"
+  fi
 fi
-if [ -z "${PORTAGE_PROFILES_DIR}" ]; then
-    error "Profiles directory not found"
-    exit 1
+
+if [ -z "${PROFILES_DIR}" ]; then
+  # Add the overlays in reverse order so that the most specific overlay is
+  # searched first.
+  for overlay in ${BOARD_OVERLAY_LIST}; do
+    PROFILES_LIST="${overlay}/profiles/${PROFILE_NAME} ${PROFILES_LIST}"
+  done
+
+  # Then, if we are looking for the default profile, we look in the
+  # chromiumos-overlay as well.
+  CHROMEOS_PROFILE="${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/"
+
+  if [ "${PROFILE_NAME}" == "base" ]; then
+    PROFILES_LIST="${PROFILES_LIST} ${CHROMEOS_PROFILE}"
+  fi
+
+  # Search for the most specific profile.  Stop looking once we've found the
+  # first one.
+  for profile in ${PROFILES_LIST}; do
+    if [ -d "${profile}" ]; then
+      PROFILES_DIR="${profile}"
+      break
+    fi
+  done
 fi
-sudo ln -sf "${PORTAGE_PROFILES_DIR}" "${BOARD_ROOT}/etc/make.profile"
-if [ ! -f "${PORTAGE_PROFILES_DIR}/parent" ]; then
-    warn "Portage profile directory '${PORTAGE_PROFILES_DIR}' has no file 'parent'.  This likely means your profile directory is invalid and build_packages will fail"
+
+if [ -z "${PROFILES_DIR}" ]; then
+  error "Profiles directory not found, searched in (${PROFILES_LIST})"
+  exit 1
+fi
+
+sudo ln -sf "${PROFILES_DIR}" "${BOARD_ROOT}/etc/make.profile"
+
+if [ ! -f "${PROFILES_DIR}/parent" ]; then
+  warn "Portage profile directory '${PROFILES_DIR}' has no file 'parent'.  This likely means your profile directory is invalid and build_packages will fail"
 fi
 
 # Create emerge wrapper
