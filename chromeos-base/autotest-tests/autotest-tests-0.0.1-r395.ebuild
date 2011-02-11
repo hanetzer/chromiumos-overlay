@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="dcfe34c6532a793bea793447e174a4652d065d9f"
+CROS_WORKON_COMMIT="12d6406fb915c8bf5f7ba7a861910e585f6fed99"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -132,13 +132,14 @@ IUSE_TESTS="
 	+tests_login_OwnershipNotRetaken
 	+tests_login_RemoteLogin
 	+tests_login_SecondFactor
-	+tests_network_3GLoadFirmware
-	+tests_network_3GModemPresent
-	+tests_network_3GSmokeTest
-	+tests_network_3GSafetyDance
 	+tests_network_3GDormancyDance
 	+tests_network_3GFailedConnect
+	+tests_network_3GLoadFirmware
+	+tests_network_3GModemPresent
+	+tests_network_3GSafetyDance
+	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
+	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_DhclientLeaseTestCase
 	+tests_network_DisableInterface
