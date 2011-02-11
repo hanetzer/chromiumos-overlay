@@ -66,10 +66,10 @@ def CheckChangeHasMandatoryBugField(input_api,
   """Check that the commit contains a valid BUG= field."""
   msg = ('Changelist must reference a bug number using BUG=\n'
          'For example, BUG=chromium-os:8205\n'
-         'BUG=none is not allowed.')
+         'BUG=none is allowed.')
 
   if (not input_api.AffectedSourceFiles(source_file_filter) or
-      (input_api.change.BUG and re.search(r"\d", input_api.change.BUG))):
+      input_api.change.BUG):
     return []
   else:
     return [output_api.PresubmitError(msg)]
@@ -186,7 +186,7 @@ def MakeUploadChecklist(input_api):
 
 
 def MakeCommitChecklist(input_api):
-  return [(CheckChangeHasMandatoryBugField, _EXCLUDED_PATHS + _NEXT_PATHS),
+  return [(CheckChangeHasMandatoryBugField, _EXCLUDED_PATHS),
           (CheckTreeIsOpen, _EXCLUDED_PATHS),
           (CheckBuildbotPendingBuilds, _EXCLUDED_PATHS)]
 
