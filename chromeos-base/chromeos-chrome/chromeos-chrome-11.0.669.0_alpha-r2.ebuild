@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="74589"
+CROS_SVN_COMMIT="74610"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -26,7 +26,7 @@ KEYWORDS="~x86 ~arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -touchui"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -195,10 +195,14 @@ set_build_defines() {
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
 	fi
+
+	if use touchui; then
+		BUILD_DEFINES="touchui=1 $BUILD_DEFINES"
+	fi
+
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES}"
 	export builddir_name="${BUILD_OUT}"
-
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
 }
