@@ -3,7 +3,8 @@
 
 # TODO(msb): move this ebuild to net-dns/minifakedns
 EAPI=2
-CROS_WORKON_COMMIT="421940b7407669a531d5f45243bd79114684c39f"
+CROS_WORKON_COMMIT="e57c96f2162477d710d9cdc6e657f57813255636"
+
 inherit cros-workon
 
 DESCRIPTION="Minimal python dns server"
