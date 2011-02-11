@@ -29,14 +29,7 @@ PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
 
 # Use parallel bzip2 for portage if available
-# NOTE: Why so long and ugly, you ask? This injects a function directly into
-# portage, providing a graceful fallback based solely on the existence of
-# pbzip2. If we're using old portage, this does nothing. If we're using new
-# portage, this only works if pbzip2 exists in the first place. This avoids a
-# wide variety of chicken-and-egg problems, which arise with upgrade of portage
-# or this file. Newer versions of portage do this automatically, and with
-# upgrade, this should be replaced with simply "pbzip2".
-PORTAGE_BZIP2_COMMAND='eval function fbzip() { if which pbzip2 &> /dev/null; then pbzip2 \$*; else bzip2 \$*; fi; }; fbzip'
+PORTAGE_BZIP2_COMMAND="pbzip2"
 # pbunzip2 not used yet
 PORTAGE_BUNZIP2_COMMAND="bunzip2"
 
