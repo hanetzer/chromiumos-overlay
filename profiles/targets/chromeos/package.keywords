@@ -52,7 +52,7 @@
 =sys-auth/pam_pwdfile-0.99-r1	x86 arm
 =sys-apps/baselayout-2.0.1	x86 arm
 =sys-apps/busybox-1.15.3	x86 arm
-=sys-apps/dbus-1.2.20-r2	x86 arm
+=sys-apps/dbus-1.2.20-r3	x86 arm
 =sys-apps/devicekit-003		x86 arm
 =sys-apps/devicekit-disks-009-r2 x86 arm
 =sys-apps/devicekit-power-009	x86 arm

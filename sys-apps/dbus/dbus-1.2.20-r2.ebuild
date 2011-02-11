@@ -96,6 +96,10 @@ src_install() {
 	keepdir /etc/dbus-1/system.d/
 	keepdir /etc/dbus-1/session.d/
 
+	# TODO(petkov): See crosbug.com/p/2264 -- remove when fixed.
+	dosym /usr/bin/dbus-uuidgen /bin/dbus-uuidgen
+	dosym /usr/bin/dbus-daemon /bin/dbus-daemon
+
 	dodoc AUTHORS ChangeLog HACKING NEWS README doc/TODO
 	if use doc; then
 		dohtml doc/*html
@@ -103,8 +107,8 @@ src_install() {
 }
 
 pkg_preinst() {
-        enewgroup messagebus
-        enewuser messagebus -1 "-1" -1 messagebus
+	enewgroup messagebus
+	enewuser messagebus -1 "-1" -1 messagebus
 }
 
 pkg_postinst() {
