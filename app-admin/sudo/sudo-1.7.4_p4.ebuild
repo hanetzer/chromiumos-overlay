@@ -206,6 +206,10 @@ EOF
 
 	insinto /etc
 	doins "${S}"/sudoers
+	# See crosbug.com/11991.
+	if [ -n "${SHARED_USER_NAME}" ]; then
+		echo "${SHARED_USER_NAME} ALL=(ALL) ALL" >> "${D}"/etc/sudoers || die
+	fi
 	fperms 0440 /etc/sudoers
 
 	keepdir /var/db/sudo

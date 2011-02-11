@@ -88,10 +88,6 @@ sudo sed -i "{ s|${DEV_USER}:\*:\(.*\):.*|${DEV_USER}:x:\1:${SHELL}| }" \
   "${ROOT_FS_DIR}/etc/passwd"
 echo "${DEV_USER}:${CRYPTED_PASSWD}:14500:0:99999::::" \
   | sudo dd of="${ROOT_FS_DIR}/etc/shadow" conv=notrunc oflag=append
-cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/sudoers" conv=notrunc oflag=append
-$DEV_USER ALL=(ALL) ALL
-EOF
-sudo chmod 0440 "${ROOT_FS_DIR}/etc/sudoers"
 
 # sudo and vt2 are important for system debugging both in developer mode
 # and during development.  These two stanzas allow sudo and login auth
