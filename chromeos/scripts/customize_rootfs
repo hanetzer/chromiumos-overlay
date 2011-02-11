@@ -141,9 +141,6 @@ EOF
           ${PAM_PREFIX}
 fi
 
-# TODO: Until libGL.so is fixed, create symlink libGL.so.1 -> libGL.so
-sudo ln -s libGL.so "${ROOT_FS_DIR}/usr/lib/libGL.so.1"
-
 # Symlink /etc/localtime to something on the stateful partition, which we can
 # then change around at runtime.
 sudo ln -sf /var/lib/timezone/localtime "${ROOT_FS_DIR}/etc/localtime"

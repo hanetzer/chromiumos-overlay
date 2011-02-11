@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit multilib
+inherit eutils multilib
 
 DESCRIPTION="Utility to change the OpenGL interface being used"
 HOMEPAGE="http://www.gentoo.org/"
@@ -31,6 +31,9 @@ RDEPEND=">=app-admin/eselect-1.2.4"
 src_prepare() {
 	# fix la FAIL
 	sed -i -e 's/{la}/la/' opengl.eselect || die
+
+	# See crosbug.com/11963.
+	epatch "${FILESDIR}/${PN}-1.1.1-so-all-symlink.patch" || die
 }
 
 pkg_postinst() {
