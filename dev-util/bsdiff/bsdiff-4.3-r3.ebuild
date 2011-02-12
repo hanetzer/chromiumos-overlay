@@ -1,10 +1,11 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r1.ebuild,v 1.12 2010/01/15 21:21:10 fauli Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r2.ebuild,v 1.1 2010/12/13 00:35:03 flameeyes Exp $
+
+EAPI=2
 
 inherit eutils toolchain-funcs flag-o-matic
 
-EAPI=2
 IUSE=""
 
 DESCRIPTION="bsdiff: Binary Differencer using a suffix alg"
@@ -22,13 +23,18 @@ src_prepare() {
 	epatch ${FILESDIR}/4.3_bspatch-support-input-output-positioning.patch
 }
 
+doecho() {
+	echo "$@"
+	"$@"
+}
+
 src_compile() {
 	append-lfs-flags
-	$(tc-getCC) ${CFLAGS} -D_FILE_OFFSET_BITS=64 ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 || die "failed compiling bsdiff"
-	$(tc-getCC) ${CFLAGS} -D_FILE_OFFSET_BITS=64 ${LDFLAGS} -o bspatch bspatch.c -lbz2 || die "failed compiling bspatch"
+	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 || die "failed compiling bsdiff"
+	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bspatch bspatch.c -lbz2 || die "failed compiling bspatch"
 }
 
 src_install() {
-	dobin bs{diff,patch}
-	doman bs{diff,patch}.1
+	dobin bs{diff,patch} || die
+	doman bs{diff,patch}.1 || die
 }
