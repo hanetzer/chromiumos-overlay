@@ -25,7 +25,7 @@ CROS_WORKON_SUBDIR="files"
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
 
-BUILD_ROOT="${WORKDIR}/builds"
+BUILD_ROOT="${WORKDIR}/${P}/builds"
 
 
 # The following will take the three first words, each with trailing underscore
@@ -66,6 +66,7 @@ REQUIRED_UBOOT_CONFIGS="$(get_required_configs)"
 
 src_configure() {
 	local config
+
 	for config in ${REQUIRED_UBOOT_CONFIGS}; do
 		local build_root="${BUILD_ROOT}/${config}"
 		elog "Using U-Boot config: ${config}"
