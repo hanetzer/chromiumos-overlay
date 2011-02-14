@@ -25,12 +25,13 @@ src_install() {
 		dodir /etc
 		insinto /etc
 		doins "${S}"/asound.conf
-	fi
 
-	# TODO(davej): Put this inside as well once scripts/customize_rootfs
-	# is updated with a check for existence of this flag or file before
-	# renaming it.
-	dodir /etc/pulse
-	insinto /etc/pulse
-	doins "${S}"/pulse/*
+		# The pulseaudio configuration files must be patched by the pulseaudio
+		# ebuild which installs them. Given that we're not using pulseaudio
+		# right now and we'll be removing it from the image, just die.
+		die "pulseaudio is not supported"
+		dodir /etc/pulse
+		insinto /etc/pulse
+		doins "${S}"/pulse/*
+	fi
 }
