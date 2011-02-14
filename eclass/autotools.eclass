@@ -172,7 +172,7 @@ eaclocal() {
 	fi
 
 	[[ ! -f aclocal.m4 || -n $(grep -e 'generated.*by aclocal' aclocal.m4) ]] && \
-		autotools_run_tool aclocal "$@" ${aclocal_opts}
+		autotools_run_tool aclocal "$@" ${aclocal_opts} -I"${ROOT}"/usr/share/aclocal
 }
 
 # @FUNCTION: _elibtoolize
