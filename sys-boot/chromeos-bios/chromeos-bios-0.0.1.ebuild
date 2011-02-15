@@ -13,18 +13,27 @@ KEYWORDS="arm"
 IUSE=""
 
 RDEPEND=""
-DEPEND="virtual/u-boot
+DEPEND="virtual/tegra-bct
+	virtual/u-boot
 	chromeos-base/vboot_reference
 	"
 
-keys="${ROOT}/usr/share/vboot/devkeys"
-autoconf="${ROOT}/u-boot/autoconf.mk"
-stub_image="${ROOT}/u-boot/u-boot-recovery.bin"
-recovery_image="${ROOT}/u-boot/u-boot-recovery.bin"
-normal_image="${ROOT}/u-boot/u-boot-recovery.bin"
+keys="${ROOT%/}/usr/share/vboot/devkeys"
+system_map="${ROOT%/}/u-boot/System.map"
+autoconf="${ROOT%/}/u-boot/autoconf.mk"
+stub_image="${ROOT%/}/u-boot/u-boot-stub.bin"
+recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
+normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
+bct_file="${ROOT%/}/u-boot/board.bct"
 
 get_hwid() {
 	grep -m1 CONFIG_CHROMEOS_HWID ${autoconf} | tr -d "\"" | cut -d = -f 2
+	assert
+}
+
+get_text_base() {
+	# Parse the TEXT_BASE value from the U-Boot System.map file.
+	grep -m1 -E "^[0-9a-fA-F]{8} T _start$" ${system_map} | cut -d " " -f 1
 	assert
 }
 
@@ -42,8 +51,36 @@ construct_layout() {
 		die "Failed to cat firmware_layout_config."
 }
 
+construct_config() {
+	local text_base="0x$1"
+
+	#
+	# The cbootimage config file format is not yet documented.  Below is
+	# a minimal config file that merges a BCT file and bootloader; in
+	# this case our stub U-Boot image.  We do not use the Version, but it
+	# needs to be set.
+	#
+	# Currently a bug in cbootimage prevents us from setting Redundancy to
+	# 0.  Redundancy controls how many instances of the BCT should be
+	# written to the signed image.  A value of 1 causes two instances to
+	# be written.
+	#
+	# The BootLoader parameter specifies the bootloader image to use.  It
+	# also specifies the load address for the bootloader in RAM and the
+	# entry point of the resulting image.  For U-Boot these are the same
+	# value (TEXT_BASE).
+	#
+	echo "Bctfile=${bct_file};"
+	echo "Version=1;"
+	echo "Redundancy=1;"
+	echo "BootLoader=${stub_image},${text_base},${text_base},Complete;"
+}
+
 src_compile() {
 	construct_layout > layout.py
+
+        construct_config $(get_text_base) > boot.cfg ||
+		die "Failed to create boot stub signing configuration file."
 
 	gbb_utility -c 0x100,0x1000,0x03de80,0x1000 gbb.bin ||
 		die "Failed to create the GBB."
@@ -55,9 +92,17 @@ src_compile() {
 		gbb.bin ||
 		die "Failed to write keys and HWID to the GBB."
 
+	#
+	# Sign the bootstub.  This is a combination of the board specific
+	# BCT and the stub U-Boot image.  The cbootimage tool takes a config
+	# file and an output filename to write to.
+	#
+	cbootimage boot.cfg bootstub.bin ||
+		die "Failed to sign boot stub image."
+
 	pack_firmware_image layout.py \
 		KEYDIR=${keys}/ \
-		BOOTSTUB_IMAGE=${stub_image} \
+		BOOTSTUB_IMAGE=bootstub.bin \
 		RECOVERY_IMAGE=${recovery_image} \
 		GBB_IMAGE=gbb.bin \
 		FIRMWARE_A_IMAGE=${normal_image} \
@@ -68,5 +113,8 @@ src_compile() {
 
 src_install() {
 	insinto /u-boot
+	doins boot.cfg || die
+	doins layout.py || die
 	doins image.bin || die
+	doins bootstub.bin || die
 }

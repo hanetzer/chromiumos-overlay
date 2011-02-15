@@ -117,6 +117,7 @@ src_install() {
 		newins "${build_root}/u-boot.bin" ${dest_file_name} || die
 
 		if [ "${common_files_installed}" == 'n' ]; then
+			doins "${build_root}/System.map" || die
 			doins "${build_root}/include/autoconf.mk" || die
 			dobin "${build_root}/tools/mkimage" || die
 			common_files_installed='y'
