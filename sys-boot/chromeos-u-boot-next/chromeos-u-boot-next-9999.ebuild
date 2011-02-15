@@ -35,7 +35,7 @@ BUILD_ROOT="${WORKDIR}/${P}/builds"
 CONFIG_PREFIX="$(expr \
     "${CHROMEOS_U_BOOT_CONFIG}" : '\(\([a-z0-9]\+_\)\{3\}\)')"
 
-ALL_UBOOT_FLAVORS='developer normal recovery stub'
+ALL_UBOOT_FLAVORS='developer flasher normal recovery stub'
 IUSE="${ALL_UBOOT_FLAVORS}"
 
 get_required_configs() {
