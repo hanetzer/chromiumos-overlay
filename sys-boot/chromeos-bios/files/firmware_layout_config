@@ -1,4 +1,4 @@
-#
+# -*- mode: python -*-
 # Copyright 2011, Google Inc.
 # All rights reserved.
 #
@@ -36,11 +36,6 @@
 # Required fields for pack_firmware_image
 SIZE = int(CONFIG_FIRMWARE_SIZE, 0)
 ENTRIES = [
-  EntryBlob(name='Board Configuration Data',
-        offset=int(CONFIG_OFFSET_BOARD_CONFIG_DATA, 0),
-        length=int(CONFIG_LENGTH_BOARD_CONFIG_DATA, 0),
-        flags=FMAP_AREA_STATIC,
-        path='/dev/zero'),
   EntryBlob(name='Boot Stub',
         offset=int(CONFIG_OFFSET_BOOTSTUB, 0),
         length=int(CONFIG_LENGTH_BOOTSTUB, 0),
