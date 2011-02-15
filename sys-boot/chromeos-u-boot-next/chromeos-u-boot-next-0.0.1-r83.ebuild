@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="153f2ae0a786074f4fa46fc52d988f78e4ff7c2d"
+CROS_WORKON_COMMIT="7f205856d1e73296ce2907e6870ab74f1ad80518"
 
 inherit toolchain-funcs
 
@@ -36,7 +36,7 @@ BUILD_ROOT="${WORKDIR}/${P}/builds"
 CONFIG_PREFIX="$(expr \
     "${CHROMEOS_U_BOOT_CONFIG}" : '\(\([a-z0-9]\+_\)\{3\}\)')"
 
-ALL_UBOOT_FLAVORS='developer normal recovery stub'
+ALL_UBOOT_FLAVORS='developer flasher normal recovery stub'
 IUSE="${ALL_UBOOT_FLAVORS}"
 
 get_required_configs() {
@@ -118,6 +118,7 @@ src_install() {
 		newins "${build_root}/u-boot.bin" ${dest_file_name} || die
 
 		if [ "${common_files_installed}" == 'n' ]; then
+			doins "${build_root}/System.map" || die
 			doins "${build_root}/include/autoconf.mk" || die
 			dobin "${build_root}/tools/mkimage" || die
 			common_files_installed='y'
