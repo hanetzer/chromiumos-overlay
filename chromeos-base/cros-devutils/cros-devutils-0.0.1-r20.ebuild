@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="178c8d1b12f506a75da5bb09ebc2eddb1b1870d2"
+CROS_WORKON_COMMIT="0f1ec846a0ccbb1ee26343622d0be3bec55c2a41"
 
 inherit cros-workon
 
@@ -40,6 +40,7 @@ src_install() {
 		doexe host/write_tegra_bios
 		doexe host/cros_overlay_list
 		doexe host/cros_workon
+		doexe host/cros_choose_profile
                 doexe host/willis
 
 		# Devserver and friends:
