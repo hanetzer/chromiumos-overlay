@@ -9,9 +9,14 @@
 #   mv <tool> <tool>.real
 #   ln -s <path_to_sysroot_wrapper> <tool>
 
+SYSROOT_WRAPPER_LOG=/tmp/sysroot_wrapper.error
 if [ -n "$SYSROOT" ] ; then
   exec "${0}.real" --sysroot="$SYSROOT" "$@"
 else
-  echo "Invocation with missing SYSROOT: ${0} $@" >> /tmp/sysroot_wrapper.error
+  if [[ ! -f $SYSROOT_WRAPPER_LOG ]]; then
+    touch $SYSROOT_WRAPPER_LOG
+    chmod a+w $SYSROOT_WRAPPER_LOG
+  fi
+  echo "Invocation with missing SYSROOT: ${0} $@" >> $SYSROOT_WRAPPER_LOG
   exec "${0}.real" "$@"
 fi
