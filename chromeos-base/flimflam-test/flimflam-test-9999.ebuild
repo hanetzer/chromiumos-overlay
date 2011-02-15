@@ -18,7 +18,9 @@ IUSE=""
 RDEPEND="chromeos-base/flimflam
 	dev-lang/python
 	dev-python/dbus-python
-	dev-python/pygobject"
+	dev-python/pygobject
+	net-misc/dhcp
+	sys-apps/iproute2"
 
 DEPEND="${RDEPEND}"
 
