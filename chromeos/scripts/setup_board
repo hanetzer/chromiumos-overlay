@@ -118,7 +118,7 @@ build_toolchain() {
   CCACHE_BIN=$(which ccache || true)
   for i in c++ cpp g++ gcc gfortran ; do
     GCC_BINARY="${GCC_BIN_PATH}/$FLAGS_toolchain-${i}"
-    if [ ! -L "${GCC_BINARY}" ] ; then
+    if [ -n "$(file -hb ${GCC_BINARY} 2>&1 | grep ^ELF)" ] ; then
       sudo mv "${GCC_BINARY}" "${GCC_BINARY}.real"
       sudo ln -s "${SCRIPTS_DIR}/sysroot_wrapper" "${GCC_BINARY}"
     fi
