@@ -39,6 +39,7 @@ src_install() {
 		doexe host/write_tegra_bios
 		doexe host/cros_overlay_list
 		doexe host/cros_workon
+		doexe host/cros_choose_profile
                 doexe host/willis
 
 		# Devserver and friends:
