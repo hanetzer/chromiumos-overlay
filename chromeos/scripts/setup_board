@@ -191,26 +191,6 @@ sudo -E ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 get_board_and_variant $FLAGS_board $FLAGS_variant
 
 #
-# Construct board overlay list.
-#
-BOARD_OVERLAY_LIST=$(cros_overlay_list \
-  --board "$BOARD" \
-  --board_overlay "$FLAGS_board_overlay" \
-  --variant "$VARIANT")
-
-#
-# Populate the BOARD_MAKE_CONF_LIST with any make.conf files found in the
-# overlays.
-#
-BOARD_MAKE_CONF_LIST=""
-
-for overlay in ${BOARD_OVERLAY_LIST} ; do
-  if [ -f "${overlay}/make.conf" ]; then
-    BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
-  fi
-done
-
-#
 # Check if there are any board overlays.  There should be at least a top
 # level board specific overlay.
 #
@@ -268,6 +248,31 @@ CHROMIUMOS_CONFIG="${CHROMIUMOS_OVERLAY}/chromeos/config"
 CHROMIUMOS_PROFILES="${CHROMIUMOS_OVERLAY}/profiles"
 BOARD_ETC="${BOARD_ROOT}/etc"
 BOARD_PROFILE="${BOARD_ETC}/portage/profile"
+
+#
+# Construct board overlay list.
+#
+BOARD_OVERLAY_LIST=$(cros_overlay_list \
+  --board "$BOARD" \
+  --board_overlay "$FLAGS_board_overlay" \
+  --variant "$VARIANT")
+
+#
+# Populate the BOARD_MAKE_CONF_LIST with any make.conf files found in the
+# overlays.
+#
+BOARD_MAKE_CONF_LIST=""
+
+for overlay in ${BOARD_OVERLAY_LIST} ; do
+  if [ -f "${overlay}/make.conf" ]; then
+    BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
+  fi
+done
+
+BINHOST_CONF="${CHROMIUMOS_OVERLAY}/chromeos/binhost/target/${ARCH}.conf"
+if [ -f "${BINHOST_CONF}" ]; then
+  BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${BINHOST_CONF}"
+fi
 
 # Version of GCC we will be installing, without the ebuild revision number.
 GCC_VERSION=`echo ${FLAGS_gcc_version} | sed -e 's/\-r[0-9]*$//g'`
