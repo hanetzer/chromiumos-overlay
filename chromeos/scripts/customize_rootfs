@@ -68,9 +68,6 @@ sudo chmod 0755 "${ROOT_FS_DIR}/."
 # Set up a default dev user, update the password entry, and add to sudo.
 # TODO: Make the default user conditional on building a dev image.
 DEV_USER="chronos"
-SHELL="/bin/sh"
-[[ -x "${ROOT_FS_DIR}/usr/local/bin/bash" ]] && SHELL="/usr/local/bin/bash"
-[[ -x "${ROOT_FS_DIR}/bin/bash" ]] && SHELL="/bin/bash"
 
 # Determine what password to use for the default user.
 CRYPTED_PASSWD_FILE="${SCRIPTS_DIR}/shared_user_passwd.txt"
@@ -84,7 +81,7 @@ else
 fi
 # Replace the DEV_USER passwd entry with one that sets the proper shell and
 # specifies that the passwd should come from /etc/shadow.
-sudo sed -i "{ s|${DEV_USER}:\*:\(.*\):.*|${DEV_USER}:x:\1:${SHELL}| }" \
+sudo sed -i "{ s|${DEV_USER}:\*:\(.*\):.*|${DEV_USER}:x:\1:/bin/sh| }" \
   "${ROOT_FS_DIR}/etc/passwd"
 echo "${DEV_USER}:${CRYPTED_PASSWD}:14500:0:99999::::" \
   | sudo dd of="${ROOT_FS_DIR}/etc/shadow" conv=notrunc oflag=append
