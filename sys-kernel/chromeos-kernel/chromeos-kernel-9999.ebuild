@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm"
-IUSE="-compat_wireless -initramfs"
+IUSE="-compat_wireless -initramfs -nfs"
 PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
@@ -56,6 +56,11 @@ src_configure() {
 		cp -f "${config}" "${S}"/.config || die
 	else
 		chromeos/scripts/prepareconfig ${config} || die
+	fi
+
+	if use nfs; then
+		elog "   - adding NFS config"
+		cat "${FILESDIR}"/nfs.config >> "${S}"/.config
 	fi
 
 	# Use default for any options not explitly set in splitconfig
