@@ -11,7 +11,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-initramfs"
+IUSE="-initramfs -nfs"
 # disable compat_wireless with kernel-next
 USE="${USE} -compat_wireless"
 PROVIDE="virtual/kernel"
@@ -60,6 +60,11 @@ src_configure() {
 		cp -f "${config}" "${S}"/.config || die
 	else
 		chromeos/scripts/prepareconfig ${config} || die
+	fi
+
+	if use nfs; then
+		elog "   - adding NFS config"
+		cat "${FILESDIR}"/nfs.config >> "${S}"/.config
 	fi
 
 	# Use default for any options not explitly set in splitconfig
