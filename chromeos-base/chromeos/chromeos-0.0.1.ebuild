@@ -87,7 +87,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cashew
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
-	chromeos-base/chromeos-audioconfig
 	chromeos-base/chromeos-firmware
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
