@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f9ad1104d2a341bb7cc7394fddc581fe803348a2"
+CROS_WORKON_COMMIT="7a652278b5fce196e48e98c9190682d44b2cdcb9"
 
 inherit cros-workon toolchain-funcs
 
@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-pulseaudio_cros"
+IUSE=""
 
 DEPEND=""
 RDEPEND="sys-apps/upstart"
@@ -44,10 +44,6 @@ src_install() {
 	dodir /etc
 	install --owner=root --group=root --mode=0644 \
 		"${S}/issue" "${D}/etc/"
-
-	if ! use pulseaudio_cros; then
-		rm "${D}/etc/init/pulseaudio.conf"
-	fi
 
 	# Install various utility files
 	dosbin "${S}/killers"
