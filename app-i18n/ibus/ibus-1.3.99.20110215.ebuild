@@ -7,7 +7,7 @@ inherit eutils flag-o-matic multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}_unofficial2.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}_unofficial.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -47,9 +47,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
 	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/ibus-1.4/0008-Port-the-following-ibus-1.3-patches-to-1.4.patch
-	epatch "${FILESDIR}"/ibus-1.4/0009-Async-version-of-set_global_engine.patch
 
 	# TODO(yusukes): Upstream the patch.
+	epatch "${FILESDIR}"/ibus-1.4/0009-Async-version-of-set_global_engine.patch
 	epatch "${FILESDIR}"/ibus-1.4/fix_issue_11903.patch
 }
 
