@@ -60,6 +60,9 @@ src_install() {
 	rm -rf "${D}"/usr/share/zoneinfo-leaps
 	dodoc README Theory
 	dohtml *.htm *.jpg
+	# Symlink /etc/localtime to something on the stateful partition, which we
+	# can then change around at runtime.
+	dosym /var/lib/timezone/localtime /etc/localtime
 }
 
 pkg_config() {
