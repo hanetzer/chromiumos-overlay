@@ -55,6 +55,16 @@ src_prepare() {
 	fi
 }
 
+src_install() {
+	gnome2_src_install
+
+	# TODO(msb): Ugly Hack fix for pango-querymodules pango-querymodules needs
+	# to be run on the target so we ran it on the target and stored the result
+	# which we copy here
+	insinto /etc/pango
+	doins "${FILESDIR}"/pango.modules || die
+}
+
 pkg_postinst() {
 	if [ "${ROOT}" = "/" ] ; then
 		einfo "Generating modules listing..."

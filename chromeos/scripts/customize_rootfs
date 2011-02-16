@@ -152,14 +152,6 @@ if [[ -x "${ROOT_FS_DIR}/usr/bin/mawk" ]] ; then
   sudo ln -sf mawk "${ROOT_FS_DIR}/usr/bin/awk"
 fi
 
-# TODO(msb): Ugly Hack fix for pango-querymodules
-# pango-querymodules needs to be run on the target so we ran it on the target
-# and stored the result which we copy here
-CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos"
-sudo cp "${CHROMIUMOS_OVERLAY}/chromeos/files/pango.modules" \
-  "${ROOT_FS_DIR}"/etc/pango/
-sudo chmod 0644 "${ROOT_FS_DIR}"/etc/pango/pango.modules
-
 # Write stock lsb-release file
 # Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)
 # Was removed from chromeos_version.sh which can also be run outside of chroot
