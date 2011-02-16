@@ -319,6 +319,7 @@ sudo mkdir -p "${BOARD_ETC}" "${BOARD_PROFILE}"
 # wrapper wants to assume that SYSROOT is /usr/${CHOST}. We should fix this
 # in the crossdev code and try to upstream.
 sudo cp -a /usr/share/crossdev/etc/* "${BOARD_ETC}"
+sudo rm -f "${BOARD_ETC}/make.profile"
 sudo sed -i 's/${CHOST}/${SYSROOT}/g' "${BOARD_ETC}/portage/bashrc"
 sudo sed -i 's/CROSS_ROOT=""/CROSS_ROOT="$1"/g' /usr/bin/cross-fix-root
 
@@ -354,61 +355,16 @@ done
 sudo touch /etc/make.conf.user
 sudo ln -sf /etc/make.globals "${BOARD_ROOT}/etc/make.globals"
 sudo ln -sf /etc/make.conf.user "${BOARD_ROOT}/etc/make.conf.user"
-sudo rm "${BOARD_ROOT}/etc/make.profile"
-# The profile directory comes from many possible locations:
-#  * relative profile name from --profile in <overlay>/profiles/<name>
-#  * absolute profile path from --profile
-#  * <overlay>/profiles/base
-#  * ${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos
-# If --profile is non-null and does not exist the script will error
-# If none of the directories exist the script will error as well
-PROFILES_LIST=""
-PROFILES_DIR=""
-PROFILE_NAME="base"
 
-if [ ! -z "${FLAGS_profile}" ]; then  # profile specified. must exist or we fail
-  if [ -d "${FLAGS_profile}" ]; then
-    PROFILES_DIR="${FLAGS_profile}"
-  else
-    PROFILE_NAME="${FLAGS_profile}"
-  fi
-fi
-
-if [ -z "${PROFILES_DIR}" ]; then
-  # Add the overlays in reverse order so that the most specific overlay is
-  # searched first.
-  for overlay in ${BOARD_OVERLAY_LIST}; do
-    PROFILES_LIST="${overlay}/profiles/${PROFILE_NAME} ${PROFILES_LIST}"
-  done
-
-  # Then, if we are looking for the default profile, we look in the
-  # chromiumos-overlay as well.
-  CHROMEOS_PROFILE="${CHROMIUMOS_PROFILES}/default/linux/${ARCH}/10.0/chromeos/"
-
-  if [ "${PROFILE_NAME}" == "base" ]; then
-    PROFILES_LIST="${PROFILES_LIST} ${CHROMEOS_PROFILE}"
-  fi
-
-  # Search for the most specific profile.  Stop looking once we've found the
-  # first one.
-  for profile in ${PROFILES_LIST}; do
-    if [ -d "${profile}" ]; then
-      PROFILES_DIR="${profile}"
-      break
-    fi
-  done
-fi
-
-if [ -z "${PROFILES_DIR}" ]; then
-  error "Profiles directory not found, searched in (${PROFILES_LIST})"
-  exit 1
-fi
-
-sudo ln -sf "${PROFILES_DIR}" "${BOARD_ROOT}/etc/make.profile"
-
-if [ ! -f "${PROFILES_DIR}/parent" ]; then
-  warn "Portage profile directory '${PROFILES_DIR}' has no file 'parent'.  This likely means your profile directory is invalid and build_packages will fail"
-fi
+# Select the profile to build based on the board and profile passed to
+# setup_board.  The developer can later change profiles by running
+# cros_choose_profile manually.
+cros_choose_profile \
+  --board "${FLAGS_board}" \
+  --build_root "${FLAGS_build_root}" \
+  --board_overlay "${FLAGS_board_overlay}" \
+  --variant "${FLAGS_variant}" \
+  --profile "${FLAGS_profile}"
 
 # Create emerge wrapper
 EMERGE_WRAPPER="/usr/local/bin/emerge-${BOARD_VARIANT}"
