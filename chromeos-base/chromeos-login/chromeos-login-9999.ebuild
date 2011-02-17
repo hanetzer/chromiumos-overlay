@@ -28,9 +28,7 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake session_manager || die "chromeos-login compile failed."
-	dump_syms session_manager > session_manager.sym 2>/dev/null || \
-		die "symbol extraction failed"
+	emake keygen session_manager || die "chromeos-login compile failed."
 }
 
 src_test() {
@@ -48,6 +46,7 @@ src_test() {
 
 src_install() {
 	into /
+	dosbin "${S}/keygen"
 	dosbin "${S}/session_manager_setup.sh"
 	dosbin "${S}/session_manager"
 	dosbin "${S}/xstart.sh"
