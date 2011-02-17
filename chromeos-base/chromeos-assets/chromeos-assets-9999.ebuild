@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="mario"
+IUSE="mario tegra2-ldk"
 
 DEPEND="x11-apps/xcursorgen"
 RDEPEND=""
@@ -121,16 +121,23 @@ src_install() {
 		newins "${S}"/color_profiles/mario.icm internal_display.icm
 	fi
 
-	local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
+	# Don't install cursors when building for Tegra, since the
+	# current ARGB cursor implementation is performing badly,
+	# and the fallback to 2-bit hardware cursor works better.
+	# TODO: Remove this when the display driver has been fixed to
+	# remove the performance bottlenecks.
+	if ! use tegra2-ldk; then
+		local CURSOR_DIR="${D}"/usr/share/cursors/xorg-x11/chromeos/cursors
 
-	mkdir -p "${CURSOR_DIR}"
-	for i in ${REAL_CURSOR_NAMES}; do
-		xcursorgen -p "${S}"/cursors "${S}"/cursors/$i.cfg >"${CURSOR_DIR}/$i"
-	done
+		mkdir -p "${CURSOR_DIR}"
+		for i in ${REAL_CURSOR_NAMES}; do
+			xcursorgen -p "${S}"/cursors "${S}"/cursors/$i.cfg >"${CURSOR_DIR}/$i"
+		done
 
-	for i in ${LINK_CURSORS}; do
-		ln -s ${i#*:} "${CURSOR_DIR}/${i%:*}"
-	done
+		for i in ${LINK_CURSORS}; do
+			ln -s ${i#*:} "${CURSOR_DIR}/${i%:*}"
+		done
+	fi
 
 	mkdir -p "${D}"/usr/share/cursors/xorg-x11/default
 	echo Inherits=chromeos \
