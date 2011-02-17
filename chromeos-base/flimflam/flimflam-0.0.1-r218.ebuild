@@ -111,5 +111,6 @@ src_install() {
 	exeinto /usr/share/userfeedback/scripts
 	doexe test/mm.sh test/mm-status || die "Can't copy user feedback scripts"
 	dobin bin/ff_debug
+	dobin bin/set_apn
 	dobin bin/wpa_debug
 }
