@@ -139,6 +139,8 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
 	# Match the behaviour of monitor_reconfigure at X.Org startup time.
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
+	# For Gallium drivers
+	"${FILESDIR}/1.9.3-public-_glapi_get_proc_address.patch"
 	)
 
 pkg_setup() {
