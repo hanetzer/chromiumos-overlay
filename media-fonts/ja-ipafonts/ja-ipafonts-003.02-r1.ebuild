@@ -29,6 +29,10 @@ DOCS="Readme*.txt"
 RESTRICT="strip binchecks"
 
 src_install() {
+	# The fixed-width Mincho font is rarely used. To save 8MB of disk space,
+	# we remove it.
+	rm "${S}/ipam.ttf"
+
         # call src_install() in font.eclass.
 	font_src_install
 
