@@ -48,12 +48,26 @@ add_user() {
 	echo "${1}:${2}:${3}:${4}:${5}:${6}:${7}" >> "${ROOT}/etc/passwd"
 }
 
+# Remove entry from /etc/passwd
+#
+# $1 - Username
+remove_user() {
+	[ -e "${ROOT}/etc/passwd" ] && sed -i -e /^${1}:.\*$/d "${ROOT}/etc/passwd"
+}
+
 # Add entry to /etc/shadow
 #
 # $1 - Username
 # $2 - Crypted password
 add_shadow() {
 	echo "${1}:${2}:14500:0:99999::::" >> "${ROOT}/etc/shadow"
+}
+
+# Remove entry from /etc/shadow
+#
+# $1 - Username
+remove_shadow() {
+	[ -e "${ROOT}/etc/shadow" ] && sed -i -e /^${1}:.\*$/d "${ROOT}/etc/shadow"
 }
 
 # Add entry to /etc/group

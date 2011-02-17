@@ -85,8 +85,16 @@ pkg_postinst() {
 	# build roots we copy over the user entries if they already exist.
 	local system_user="chronos"
 	local system_id="1000"
-	copy_or_add_user "${system_user}" "*" "${system_id}" "${system_id}" \
-	        "system_user" "/home/${system_user}" /bin/sh
+
+	local crypted_password='*'
+	[ -r "${SHARED_USER_PASSWD_FILE}" ] &&
+		crypted_password=$(cat "${SHARED_USER_PASSWD_FILE}")
+	remove_user "${system_user}"
+	add_user "${system_user}" "x" "${system_id}" \
+		"${system_id}" "system_user" "/home/${system_user}" /bin/sh
+	remove_shadow "${system_user}"
+	add_shadow "${system_user}" "${crypted_password}"
+
 	copy_or_add_group "${system_user}" "${system_id}"
 	copy_or_add_daemon_user "messagebus" 201  # For dbus
 	copy_or_add_daemon_user "syslog" 202      # For rsyslog
@@ -110,15 +118,15 @@ pkg_postinst() {
 		sed -i "{ s/video::27:\(.*\)/video::27:\1,${system_user}/ }" \
 			"${ROOT}/etc/group"
 
-        # The root and ${system_user} users must be in the pkcs11 group, which
-        # must have the group id 208.
-        sed -i "{ s/pkcs11:x:.*/pkcs11:x:208:root,${system_user}/ }" \
-          "${ROOT}/etc/group"
+	# The root and ${system_user} users must be in the pkcs11 group, which
+	# must have the group id 208.
+	sed -i "{ s/pkcs11:x:.*/pkcs11:x:208:root,${system_user}/ }" \
+		"${ROOT}/etc/group"
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
 	for x in /dev /home /media /mnt/partner_partition \
-                /mnt/stateful_partition /proc /root /sys /var/lock; do
+		/mnt/stateful_partition /proc /root /sys /var/lock; do
 		[ -d "${ROOT}/$x" ] && continue
 		install -d --mode=0755 --owner=root --group=root "${ROOT}/$x"
 	done
