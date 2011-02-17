@@ -1,67 +1,211 @@
-diff -ruN libatasmart-0.17/Makefile.am libatasmart-0.17.new/Makefile.am
---- libatasmart-0.17/Makefile.am	2009-10-26 19:26:55.000000000 -0700
-+++ libatasmart-0.17.new/Makefile.am	2010-05-02 19:56:01.000000000 -0700
-@@ -89,8 +89,8 @@
+diff --git a/Makefile.am b/Makefile.am
+index b5f9476..1c70db1 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -44,7 +44,8 @@ EXTRA_DIST = \
+ 	blob-examples/WDC_WD5000AAKS--00TMA0-12.01C01 \
+ 	vala/atasmart.vapi
+ 
+-SUBDIRS =
++# build the strpool tool first
++SUBDIRS = strpool .
+ 
+ CLEANFILES = atasmart.strpool.c
+ 
+@@ -64,9 +65,6 @@ sbin_PROGRAMS = \
+ 	skdump \
+ 	sktest
+ 
+-noinst_PROGRAMS = \
+-	strpool
+-
+ lib_LTLIBRARIES = \
+ 	libatasmart.la
+ 
+@@ -90,13 +88,13 @@ libatasmart_la_LIBADD = \
  libatasmart_la_CFLAGS = \
  	$(LIBUDEV_CFLAGS)
  
 -strpool_SOURCES = \
 -	strpool.c
-+strpool: strpool.c
-+	$(CC_FOR_BUILD) strpool.c -o $(top_builddir)/strpool
- 
+-
  BUILT_SOURCES = \
  	atasmart.strpool.c
-diff -ruN libatasmart-0.17/bootstrap.sh libatasmart-0.17.new/bootstrap.sh
---- libatasmart-0.17/bootstrap.sh	2009-08-06 12:27:15.000000000 -0700
-+++ libatasmart-0.17.new/bootstrap.sh	2010-05-02 19:55:21.000000000 -0700
-@@ -18,7 +18,7 @@
- # License along with libatasmart. If not, If not, see
- # <http://www.gnu.org/licenses/>.
  
--VERSION=1.11
-+VERSION=1.10
+-atasmart.strpool.c: atasmart.c strpool
+-	$(top_builddir)/strpool $< $@
++strpool/strpool:
++	$(MAKE) -C strpool strpool
++
++atasmart.strpool.c: atasmart.c strpool/strpool
++	$(top_builddir)/strpool/strpool $< $@
  
- run_versioned() {
-     local P
-diff -ruN libatasmart-0.17/configure.ac libatasmart-0.17.new/configure.ac
---- libatasmart-0.17/configure.ac	2009-10-26 19:12:03.000000000 -0700
-+++ libatasmart-0.17.new/configure.ac	2010-05-02 19:55:21.000000000 -0700
-@@ -26,7 +26,7 @@
- AC_CONFIG_HEADERS([config.h])
- AC_CONFIG_MACRO_DIR(m4)
+ ACLOCAL_AMFLAGS = -I m4
+diff --git a/configure.ac b/configure.ac
+index 3573326..1cc5d6b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -48,6 +48,7 @@ fi
+ AC_PROG_CC
+ AM_PROG_CC_C_O
+ AC_PROG_GCC_TRADITIONAL
++AX_CC_FOR_BUILD
+ AC_USE_SYSTEM_EXTENSIONS
  
--AM_INIT_AUTOMAKE([foreign 1.11 -Wall -Wno-portability silent-rules tar-pax])
-+AM_INIT_AUTOMAKE([foreign 1.10 -Wall -Wno-portability tar-pax])
+ # C++
+@@ -123,6 +124,7 @@ PKG_CHECK_MODULES([LIBUDEV], [libudev >= 143])
  
- AC_SUBST(PACKAGE_URL, [http://git.0pointer.de/?p=libatasmart.git])
- 
-@@ -34,7 +34,7 @@
- 
- AC_CANONICAL_HOST
- 
--AM_SILENT_RULES([yes])
-+#AM_SILENT_RULES([yes])
- 
- if type -p stow > /dev/null && test -d /usr/local/stow ; then
-    AC_MSG_NOTICE([*** Found /usr/local/stow: default install prefix set to /usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION} ***])
-@@ -55,6 +55,19 @@
- AC_PROG_CXX
- 
- # GCC flags
-+dnl Get the host compiler if cross-compiling
-+dnl
-+AM_CONDITIONAL(CROSS_COMPILING, [ test $cross_compiling = yes ])
-+AC_MSG_CHECKING([for CC_FOR_BUILD])
-+if test "x${CC_FOR_BUILD+set}" != "xset" ; then
-+  if test "x$cross_compiling" = "xyes" ; then
-+    CC_FOR_BUILD=${CC_FOR_BUILD-gcc}
-+  else
-+    CC_FOR_BUILD=${CC}
+ AC_CONFIG_FILES([
+ Makefile
++strpool/Makefile
+ libatasmart.pc
+ ])
+ AC_OUTPUT
+diff --git a/m4/ax_cc_for_build.m4 b/m4/ax_cc_for_build.m4
+new file mode 100644
+index 0000000..822d422
+--- /dev/null
++++ b/m4/ax_cc_for_build.m4
+@@ -0,0 +1,105 @@
++# ===========================================================================
++#      http://www.gnu.org/software/autoconf-archive/ax_cc_for_build.html
++# ===========================================================================
++#
++# SYNOPSIS
++#
++#   AX_CC_FOR_BUILD
++#
++# DESCRIPTION
++#
++#   Find a build-time compiler. Sets CC_FOR_BUILD and EXEEXT_FOR_BUILD.
++#
++# LICENSE
++#
++#   Copyright (c) 2010 Diego Elio Pettenò <flameeyes@gmail.com>
++#   Copyright (c) 2010 Reuben Thomas <rrt@sc3d.org>
++#   Copyright (c) 1999 Richard Henderson <rth@redhat.com>
++#
++#   This program is free software: you can redistribute it and/or modify it
++#   under the terms of the GNU General Public License as published by the
++#   Free Software Foundation, either version 3 of the License, or (at your
++#   option) any later version.
++#
++#   This program is distributed in the hope that it will be useful, but
++#   WITHOUT ANY WARRANTY; without even the implied warranty of
++#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
++#   Public License for more details.
++#
++#   You should have received a copy of the GNU General Public License along
++#   with this program. If not, see <http://www.gnu.org/licenses/>.
++#
++#   As a special exception, the respective Autoconf Macro's copyright owner
++#   gives unlimited permission to copy, distribute and modify the configure
++#   scripts that are the output of Autoconf when processing the Macro. You
++#   need not follow the terms of the GNU General Public License when using
++#   or distributing such scripts, even though portions of the text of the
++#   Macro appear in them. The GNU General Public License (GPL) does govern
++#   all other use of the material that constitutes the Autoconf Macro.
++#
++#   This special exception to the GPL applies to versions of the Autoconf
++#   Macro released by the Autoconf Archive. When you make and distribute a
++#   modified version of the Autoconf Macro, you may extend this special
++#   exception to the GPL to apply to your modified version as well.
++
++#serial 2
++
++dnl Get a default for CC_FOR_BUILD to put into Makefile.
++AC_DEFUN([AX_CC_FOR_BUILD], [
++  AC_REQUIRE([AC_PROG_CC])
++
++  dnl Declare the new variables
++  AC_ARG_VAR([CC_FOR_BUILD],
++     [Host's C compiler command for cross-compilation @<:@default=$(CC)@:>@])
++  AC_ARG_VAR([BUILD_CFLAGS],
++     [Host's C compiler flags @<:@default=$(CFLAGS)@:>@])
++  AC_ARG_VAR([BUILD_LDFLAGS],
++     [Host's linker flags @<:@default=$(LDFLAGS)@:>@])
++
++  dnl Put a plausible default for CC_FOR_BUILD in Makefile.
++  if test -z "$CC_FOR_BUILD"; then
++    if test "x$cross_compiling" = "xno"; then
++      CC_FOR_BUILD=${CC}
++    else
++      AC_CHECK_PROGS(CC_FOR_BUILD, [gcc cc])
++    fi
 +  fi
-+fi
-+AC_MSG_RESULT([$CC_FOR_BUILD])
-+AC_SUBST(CC_FOR_BUILD)
- 
- test_gcc_flag() {
-     AC_LANG_CONFTEST([int main(int argc, char*argv[]) {}])
++
++  if test "x${BUILD_CFLAGS+set}" != "xset" ; then
++    if test "x$cross_compiling" = "xyes" ; then
++      BUILD_CFLAGS=
++    else
++      BUILD_CFLAGS=${CFLAGS}
++    fi
++  fi
++
++  if test "x${BUILD_LDFLAGS+set}" != "xset" ; then
++    if test "x$cross_compiling" = "xyes" ; then
++      BUILD_LDFLAGS=
++    else
++      BUILD_LDFLAGS=${LDFLAGS}
++    fi
++  fi
++
++  dnl Also set EXEEXT_FOR_BUILD.
++  if test "x$cross_compiling" = "xno"; then
++    EXEEXT_FOR_BUILD='$(EXEEXT)'
++  else
++    AC_CACHE_CHECK([for build system executable suffix], bfd_cv_build_exeext,
++      [rm -f conftest*
++       echo 'int main () { return 0; }' > conftest.c
++       bfd_cv_build_exeext=
++       ${CC_FOR_BUILD} ${LDFLAGS} ${CFLAGS} -o conftest conftest.c 1>&5 2>&5
++       for file in conftest.*; do
++         case $file in
++         *.c | *.o | *.obj | *.ilk | *.pdb) ;;
++         *) bfd_cv_build_exeext=`echo $file | sed -e s/conftest//` ;;
++         esac
++       done
++       rm -f conftest*
++       test x"${bfd_cv_build_exeext}" = x && bfd_cv_build_exeext=no])
++    EXEEXT_FOR_BUILD=""
++    test x"${bfd_cv_build_exeext}" != xno && EXEEXT_FOR_BUILD=${bfd_cv_build_exeext}
++  fi
++  AC_SUBST(EXEEXT_FOR_BUILD)
++])dnl
+diff --git a/strpool/Makefile.am b/strpool/Makefile.am
+new file mode 100644
+index 0000000..6170754
+--- /dev/null
++++ b/strpool/Makefile.am
+@@ -0,0 +1,28 @@
++# This file is part of libatasmart.
++#
++# Copyright 2008 Lennart Poettering
++#
++# libatasmart is free software; you can redistribute it and/or modify
++# it under the terms of the GNU Lesser General Public License as
++# published by the Free Software Foundation, either version 2.1 of the
++# License, or (at your option) any later version.
++#
++# libatasmart is distributed in the hope that it will be useful, but
++# WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++# Lesser General Public License for more details.
++#
++# You should have received a copy of the GNU Lesser General Public
++# License along with libatasmart. If not, If not, see
++# <http://www.gnu.org/licenses/>.
++
++CC = @CC_FOR_BUILD@
++CFLAGS = @BUILD_CFLAGS@
++LDFLAGS = @BUILD_LDFLAGS@
++
++noinst_PROGRAMS = \
++	strpool
++
++strpool_SOURCES = \
++	../strpool.c
++
+-- 
+1.7.3.4
+

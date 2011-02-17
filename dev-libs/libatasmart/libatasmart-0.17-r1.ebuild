@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit eutils
+inherit eutils autotools toolchain-funcs
 
 DESCRIPTION="Lean and small library for ATA S.M.A.R.T. hard disks"
 HOMEPAGE="http://0pointer.de/blog/projects/being-smart.html"
@@ -12,19 +12,27 @@ SRC_URI="http://0pointer.de/public/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sh sparc x86"
 IUSE=""
 
 RDEPEND="sys-fs/udev"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	dev-util/pkgconfig"
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-cross-compile.patch"
-	${S}/bootstrap.sh
+	eautoreconf
+}
+
+src_configure() {
+	econf \
+		--disable-dependency-tracking \
+		--enable-fast-install \
+		--docdir=/usr/share/doc/${PF} \
+		CC_FOR_BUILD="$(tc-getBUILD_CC)" \
+		|| die "econf failed"
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
-	dodoc README || die "dodoc failed"
-	rm -rf "${D}"/usr/share/doc/${PN} || die "rm failed"
 }
