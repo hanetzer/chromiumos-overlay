@@ -105,8 +105,6 @@ src_compile() {
         construct_config $(get_text_base) > boot.cfg ||
 		die "Failed to create boot stub signing configuration file."
 
-	gbb_utility -c 0x100,0x1000,0x03de80,0x1000 gbb.bin ||
-
 	/usr/share/vboot/bitmaps/make_bmp_images.sh \
 		"${hwid}" \
 		"$(get_screen_geometry)" \
