@@ -40,7 +40,7 @@ src_install() {
 		doexe host/cros_overlay_list
 		doexe host/cros_workon
 		doexe host/cros_choose_profile
-                doexe host/willis
+		doexe host/willis
 
 		# Devserver and friends:
 		doexe host/start_devserver
@@ -49,6 +49,9 @@ src_install() {
 		doins builder.py
 		doins autoupdate.py
 		doins buildutil.py
+		# Related to devserver
+		dobin host/cros_generate_update_payload
+		dobin host/cros_generate_stateful_update_payload
 		# FIXME(zbehan): This all should live in /var/, probably? Needs a
 		# modification of devserver.
 		dodir /usr/bin/static
