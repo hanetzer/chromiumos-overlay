@@ -7,24 +7,9 @@ COST_PKG_VERSION="${P}_cos_gg"
 EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
  --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 
-PATCH_VER="1.2"
-UCLIBC_VER="1.0"
+inherit eutils
 
-ETYPE="gcc-compiler"
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
-
-# Hardened gcc 4 stuff
-PIE_VER="0.4.5"
-SPECS_VER="0.2.0"
-# arch/libc configurations known to be stable with {PIE,SSP}-by-default
-PIE_GLIBC_STABLE="x86 amd64 ppc ppc64 arm ia64"
-PIE_UCLIBC_STABLE="x86 amd64 arm ppc ppc64"
-SSP_STABLE="amd64 x86 amd64 ppc ppc64 arm"
-# uclibc need tls and nptl support for SSP support
-SSP_UCLIBC_STABLE=""
-#end Hardened stuff
-
-inherit toolchain_crosstool
 
 DESCRIPTION="The GNU Compiler Collection.  Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14."
 
@@ -72,15 +57,41 @@ if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
 
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/gcc-4.4.3-specs-0.2.0.tar.bz2"
 RESTRICT="mirror strip"
 
-IUSE="mounted_sources"
+IUSE="gcj graphite gtk mounted_sources multislot nls nocxx vanilla"
 
+GCC_CONFIG_VER=${PV}
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
 GITDIR=${WORKDIR}/gitdir
 GITHASH=be31e6879e21eedf7175e29a7634258143407171
+
+is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
+
+export CTARGET=${CTARGET:-${CHOST}}
+if [[ ${CTARGET} = ${CHOST} ]] ; then
+	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
+		export CTARGET=${CATEGORY/cross-}
+	fi
+fi
+
+if use multislot ; then
+  SLOT="${CTARGET}-${GCC_CONFIG_VER}"
+else
+  SLOT="${CTARGET}"
+fi
+
+PREFIX=/usr
+INCLUDEPATH=${PREFIX}/lib/gcc/${CTARGET}/${GCC_CONFIG_VER}/include
+DATAPATH=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_CONFIG_VER}
+if is_crosscompile ; then
+	BINPATH=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
+else
+	BINPATH=${PREFIX}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
+fi
+STDCXX_INCDIR=${PREFIX}/include/g++-v${GCC_CONFIG_VER}
+LIBPATH=${PREFIX}/lib/gcc/${CTARGET}/${GCC_CONFIG_VER}
 
 src_unpack() {
   local GCCDIR
@@ -99,31 +110,46 @@ src_unpack() {
   fi
  	ln -sf ${GCCDIR} ${S}
 
-  # TODO(asharif): remove this and get the specs from the sources, if possible.
-	if want_pie ; then
-		[[ -n ${SPECS_VER} ]] && \
-			unpack ${MY_P}-specs-${SPECS_VER}.tar.bz2
-	fi
-
 	use vanilla && return 0
 }
 
-# TODO(asharif) Move the make command parameters to a different file.
-# TODO(asharif) Try this with an arm board.
 src_compile()
 {
   src_configure
   pushd ${WORKDIR}/build
-  make -j4 LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=/usr/lib/gcc/${CTARGET}/${GCC_CONFIG_VER} BOOT_CFLAGS=-O2 all 
+  emake -j4 LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=${LIBPATH} BOOT_CFLAGS=-O2 all 
   popd
 }
 
 src_install()
 {
-	${ETYPE}_src_install
-  if [[ ${PV} != "4.4.3" ]] ; then
-    cp -r ${D}/usr/lib/gcc/${CTARGET}/${PV}/* ${D}/usr/lib/gcc/${CTARGET}/${MY_PV}/
+  cd ${WORKDIR}/build
+  emake DESTDIR="${D}" install || die "Could not install gcc"
+
+  TODIR="${D}/${PREFIX}/lib/gcc/${CTARGET}/${PV}"
+  FROMDIR="${D}/${PREFIX}/${CTARGET}/lib"
+
+  # setup_board expects libgcc_s.so, etc. to be in ${TODIR}
+  rsync -a "${FROMDIR}/" "${TODIR}/"
+
+  # gcc itself expects libgcc_s.so to be in the ${MY_PV} dir.
+  if [[ "${PV}" != "${MY_PV}" ]] ; then
+    rsync -r "${FROMDIR}/" "${D}/${PREFIX}/lib/gcc/${CTARGET}/${MY_PV}/"
   fi
+
+  dodir /etc/env.d/gcc
+  insinto /etc/env.d/gcc
+  cat <<-EOF > env.d
+LDPATH="${LIBPATH}"
+MANPATH="${DATAPATH}/man"
+INFOPATH="${DATAPATH}/info"
+STDCXX_INCDIR="${STDCXX_INCDIR}"
+CTARGET=${CTARGET}
+GCC_PATH="${BINPATH}"
+EOF
+  newins env.d ${CTARGET}-${GCC_CONFIG_VER}
+  cd -
+
 	cd ${D}${BINPATH}
 	for x in c++ cpp g++ gcc gfortran ; do
 		if [[ -f "${CTARGET}-${x}" ]]; then
@@ -138,12 +164,20 @@ src_install()
 	done
 }
 
-pkg_setup() {
-	gcc_pkg_setup
+pkg_postinst()
+{
+  gcc-config ${CTARGET}-${GCC_CONFIG_VER}
+}
 
-	if use graphite ; then
-		ewarn "Graphite support is still experimental and unstable."
-		ewarn "Any bugs resulting from the use of Graphite will not be fixed."
+pkg_postrm()
+{
+	if is_crosscompile ; then
+		if [[ -z $(ls "${ROOT}"/etc/env.d/gcc/${CTARGET}* 2>/dev/null) ]] ; then
+			rm -f "${ROOT}"/etc/env.d/gcc/config-${CTARGET}
+			rm -f "${ROOT}"/etc/env.d/??gcc-${CTARGET}
+			rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
+		fi
+		return 0
 	fi
 }
 
