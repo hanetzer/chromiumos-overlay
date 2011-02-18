@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="1c0b2fc9744622fcf1553689a8cb5a9b6c968304"
+CROS_WORKON_COMMIT="c6113839224a6b8cbb5915e038206918fd968f36"
 
 KEYWORDS="arm amd64 x86"
 
@@ -29,16 +29,14 @@ CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake session_manager || die "chromeos-login compile failed."
-	dump_syms session_manager > session_manager.sym 2>/dev/null || \
-		die "symbol extraction failed"
+	emake keygen session_manager || die "chromeos-login compile failed."
 }
 
 src_test() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	emake session_manager_unittest || \
+	emake keygen session_manager_unittest || \
 		die "chromeos-login compile tests failed."
 
 	if use x86 ; then
@@ -49,6 +47,7 @@ src_test() {
 
 src_install() {
 	into /
+	dosbin "${S}/keygen"
 	dosbin "${S}/session_manager_setup.sh"
 	dosbin "${S}/session_manager"
 	dosbin "${S}/xstart.sh"
