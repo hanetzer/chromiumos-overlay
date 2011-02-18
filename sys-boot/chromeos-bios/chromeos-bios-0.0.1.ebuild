@@ -37,6 +37,27 @@ get_text_base() {
 	assert
 }
 
+get_screen_col() {
+	grep -m1 CONFIG_LCD_vl_col ${autoconf} | tr -d "\"" | cut -d = -f 2
+	assert
+}
+
+get_screen_row() {
+	grep -m1 CONFIG_LCD_vl_row ${autoconf} | tr -d "\"" | cut -d = -f 2
+	assert
+}
+
+get_screen_geometry() {
+	col=$(get_screen_col)
+	row=$(get_screen_row)
+	echo "${col}x${row}!"
+}
+
+get_gbb_size() {
+	grep -m1 CONFIG_LENGTH_GBB ${autoconf} | tr -d "\"" | cut -d = -f 2
+	assert
+}
+
 construct_layout() {
 	grep -E 'CONFIG_FIRMWARE_SIZE' ${autoconf} ||
 		die "Failed to extract firmware size."
@@ -77,18 +98,37 @@ construct_config() {
 }
 
 src_compile() {
+	hwid=$(get_hwid)
+
 	construct_layout > layout.py
 
         construct_config $(get_text_base) > boot.cfg ||
 		die "Failed to create boot stub signing configuration file."
 
 	gbb_utility -c 0x100,0x1000,0x03de80,0x1000 gbb.bin ||
+
+	/usr/share/vboot/bitmaps/make_bmp_images.sh \
+		"${hwid}" \
+		"$(get_screen_geometry)" \
+		"arm"
+
+	bmp_dir="out_${hwid// /_}"
+	pushd "${bmp_dir}"
+	bmpblk_utility -z 2 \
+		-c ${FILESDIR}/firmware_screen_config.yaml \
+		bmpblk.bin
+	popd
+
+	gbb_utility -c \
+		"0x100,0x1000,$(($(get_gbb_size)-0x2180)),0x1000" \
+		gbb.bin ||
 		die "Failed to create the GBB."
 
 	gbb_utility -s \
-		--hwid="$(get_hwid)" \
+		--hwid="${hwid}" \
 		--rootkey=${keys}/root_key.vbpubk \
 		--recoverykey=${keys}/recovery_key.vbpubk \
+		--bmpfv="${bmp_dir}/bmpblk.bin" \
 		gbb.bin ||
 		die "Failed to write keys and HWID to the GBB."
 

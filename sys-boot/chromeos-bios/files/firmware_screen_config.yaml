@@ -1,0 +1,20 @@
+bmpblock: 1.0
+
+images:
+    devmode:    DeveloperBmp/DeveloperBmp.bmp
+    recovery:   RecoveryBmp/RecoveryBmp.bmp
+    rec_insert: RecoveryMissingOSBmp/RecoveryMissingOSBmp.bmp
+    rec_yuck:   RecoveryNoOSBmp/RecoveryNoOSBmp.bmp
+
+screens:
+  dev_en:
+    - [0, 0, devmode]
+  rec_en:
+    - [0, 0, recovery]
+  ins_en:
+    - [0, 0, rec_insert]
+  yuck_en:
+    - [0, 0, rec_yuck]
+
+localizations:
+  - [ dev_en, rec_en, ins_en, yuck_en ]
