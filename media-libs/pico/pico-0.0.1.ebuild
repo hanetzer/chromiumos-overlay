@@ -4,25 +4,22 @@
 
 EAPI="2"
 
-inherit eutils git
+inherit eutils
 
 DESCRIPTION="This is the SVox Pico speech synthesis library."
 HOMEPAGE="http://www.svox.com"
-SRC_URI=""
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-${PV}.tar.bz2"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
-EGIT_REPO_URI="http://android.git.kernel.org/platform/external/svox.git"
-EGIT_TREE="196be3b6348f4a6c975d25dbee135fc3952e0ac7"
 
-src_unpack() {
-	git_src_unpack
+post_src_unpack() {
 	mkdir -p "${S}/data"
 
 	cp -a "${FILESDIR}"/Makefile "${S}" || die "Cannot copy Makefile"
-	cp -rf "${S}"/pico/lib/* "${S}"/
-	cp -rf "${S}"/pico/lang/*.bin "${S}"/data/
+	cp -rf "${S}"/pico/lib/* "${S}"/ || die "Cannot copy lib"
+	cp -rf "${S}"/pico/lang/*.bin "${S}"/data/ || die "Cannot copy lang"
 
 	rm -rf "${S}"/pico
 	rm -rf "${S}"/picolanginstaller
