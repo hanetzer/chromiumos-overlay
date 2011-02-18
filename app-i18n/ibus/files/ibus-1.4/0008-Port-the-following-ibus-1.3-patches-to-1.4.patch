@@ -1,4 +1,4 @@
-From 44155f9608749a0800da214967d6a87317f4b897 Mon Sep 17 00:00:00 2001
+From c40f68b21d99a963887bdcabbeddad55e9feba30 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 19 Jan 2011 09:55:46 +0900
 Subject: [PATCH 8/8] Port the following ibus-1.3 patches to 1.4.
@@ -25,10 +25,10 @@ Review URL: http://codereview.appspot.com/4027042/
  1 files changed, 55 insertions(+), 1 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index c171aaf..a301d1f 100644
+index bcf646d..9869420 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
-@@ -583,6 +583,23 @@ bus_ibus_impl_reload_config (BusIBusImpl *ibus)
+@@ -623,6 +623,23 @@ bus_ibus_impl_reload_config (BusIBusImpl *ibus)
      }
  }
  
@@ -52,7 +52,7 @@ index c171aaf..a301d1f 100644
  /**
   * _config_value_changed_cb:
   *
-@@ -605,7 +622,16 @@ _config_value_changed_cb (IBusConfig  *config,
+@@ -645,7 +662,16 @@ _config_value_changed_cb (IBusConfig  *config,
      for (i = 0; i < G_N_ELEMENTS (bus_ibus_impl_config_items); i++) {
          if (g_strcmp0 (bus_ibus_impl_config_items[i].section, section) == 0 &&
              g_strcmp0 (bus_ibus_impl_config_items[i].key, key) == 0) {
@@ -70,7 +70,7 @@ index c171aaf..a301d1f 100644
              break;
          }
      }
-@@ -1561,6 +1587,32 @@ _ibus_list_engines (BusIBusImpl           *ibus,
+@@ -1601,6 +1627,32 @@ _ibus_list_engines (BusIBusImpl           *ibus,
      g_dbus_method_invocation_return_value (invocation, g_variant_new ("(av)", &builder));
  }
  
@@ -103,7 +103,7 @@ index c171aaf..a301d1f 100644
  /**
   * _ibus_list_active_engines:
   *
-@@ -1573,6 +1625,7 @@ _ibus_list_active_engines (BusIBusImpl           *ibus,
+@@ -1613,6 +1665,7 @@ _ibus_list_active_engines (BusIBusImpl           *ibus,
  {
      GVariantBuilder builder;
      g_variant_builder_init (&builder, G_VARIANT_TYPE ("av"));
@@ -111,7 +111,7 @@ index c171aaf..a301d1f 100644
  
      GList *p;
      for (p = ibus->engine_list; p != NULL; p = p->next) {
-@@ -1776,6 +1829,7 @@ _ibus_set_global_engine (BusIBusImpl           *ibus,
+@@ -1843,6 +1896,7 @@ _ibus_set_global_engine (BusIBusImpl           *ibus,
          return;
      }
  
@@ -120,5 +120,5 @@ index c171aaf..a301d1f 100644
      if (desc == NULL) {
          g_dbus_method_invocation_return_error (invocation,
 -- 
-1.7.3.1
+1.7.1
 
