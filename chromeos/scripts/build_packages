@@ -160,7 +160,7 @@ if [[ "$ARCH" == "x86" ]]; then
 fi
 set -e
 
-CHROMIUMOS_OVERLAY="${SRC_ROOT}/third_party/chromiumos-overlay"
+CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos"
 BINHOST_CONF="${CHROMIUMOS_OVERLAY}/chromeos/binhost/target/${ARCH}.conf"
 BOARD_CONF="/build/${FLAGS_board}/etc/make.conf.board"
 if [ -f "${BINHOST_CONF}" ] && ! grep -q ${BINHOST_CONF} ${BOARD_CONF}; then
