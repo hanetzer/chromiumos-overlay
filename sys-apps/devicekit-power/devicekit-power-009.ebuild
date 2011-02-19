@@ -61,6 +61,9 @@ src_prepare() {
 	# Fix crazy cflags and moved them to maintainer-mode, bug #267139
 	epatch "${FILESDIR}/${PN}-007-maintainer-cflags.patch"
 
+	# Patch to support power_now property for batteries
+	epatch "${FILESDIR}/${P}-power-now.patch"
+
 	intltoolize --force --copy --automake || die "intltoolize failed"
 	eautoreconf
 }
