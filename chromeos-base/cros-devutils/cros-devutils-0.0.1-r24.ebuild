@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="20666871389de255d0d626e9a04424e7e81174eb"
+CROS_WORKON_COMMIT="e87fd9a5af62ef832319f944f0174530d99b8a87"
 
 inherit cros-workon
 
@@ -41,7 +41,7 @@ src_install() {
 		doexe host/cros_overlay_list
 		doexe host/cros_workon
 		doexe host/cros_choose_profile
-                doexe host/willis
+		doexe host/willis
 
 		# Devserver and friends:
 		doexe host/start_devserver
@@ -50,6 +50,9 @@ src_install() {
 		doins builder.py
 		doins autoupdate.py
 		doins buildutil.py
+		# Related to devserver
+		dobin host/cros_generate_update_payload
+		dobin host/cros_generate_stateful_update_payload
 		# FIXME(zbehan): This all should live in /var/, probably? Needs a
 		# modification of devserver.
 		dodir /usr/bin/static
