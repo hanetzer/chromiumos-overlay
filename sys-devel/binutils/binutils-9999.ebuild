@@ -41,12 +41,7 @@ DEPEND="${RDEPEND}
 S_BINUTILS="${WORKDIR}/${BINUTILS_VERSION}"
 S_GOLD="${WORKDIR}/${GOLD_VERSION}"
 
-if [[ ${PV} == "9999" ]] ; then
-	RESTRICT="fetch strip"
-else
-	SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${BINUTILS_PKG_VERSION}.tar.gz \
-http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${GOLD_PKG_VERSION}.tar.gz"
-fi
+RESTRICT="fetch strip"
 
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
 MYBUILDDIR_GOLD="${WORKDIR}/build-gold"
@@ -76,9 +71,16 @@ src_unpack() {
     git clone http://git.chromium.org/git/binutils.git . || die "Could not clone repo."
     git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
     cd -
-    GCCDIR=${GITDIR}/gcc/${MY_P}
  		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
 		GOLD_DIR="${GITDIR}/binutils/${GOLD_VERSION}"  
+
+    cd ${BINUTILS_DIR}
+    CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
+    cd -
+  fi
+  if [[ ! -z ${CL} ]] ; then
+    BINUTILS_PKG_VERSION="${BINUTILS_PKG_VERSION}_${CL}"
+    GOLD_PKG_VERSION="${GOLD_PKG_VERSION}_${CL}"
   fi
   ln -s ${BINUTILS_DIR} ${S_BINUTILS}
 	ln -s ${GOLD_DIR} ${S_GOLD}
@@ -121,10 +123,10 @@ src_compile() {
 		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry \
 		${myconf} ${EXTRA_ECONF}"
 
-	binutils_conf="${myconf} --disable-checking --with-pkgversion=${BINUTILS_PKG_VERSION}"
+	binutils_conf="${myconf} --with-pkgversion=${BINUTILS_PKG_VERSION}"
 
-	echo ./configure ${myconf}
-	"${S_BINUTILS}"/configure ${myconf} || die "configure failed"
+	echo ./configure ${binutils_conf}
+	"${S_BINUTILS}"/configure ${binutils_conf} || die "configure failed"
 
 	emake all || die "emake failed"
 

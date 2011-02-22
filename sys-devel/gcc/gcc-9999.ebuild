@@ -4,8 +4,6 @@
 
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
-EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
- --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 
 inherit eutils
 
@@ -83,15 +81,15 @@ else
 fi
 
 PREFIX=/usr
-INCLUDEPATH=${PREFIX}/lib/gcc/${CTARGET}/${GCC_CONFIG_VER}/include
-DATAPATH=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_CONFIG_VER}
+LIBPATH=${PREFIX}/lib/gcc/${CTARGET}/${GCC_CONFIG_VER}
+INCLUDEPATH=${LIBPATH}/include
 if is_crosscompile ; then
 	BINPATH=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
 else
 	BINPATH=${PREFIX}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
 fi
-STDCXX_INCDIR=${PREFIX}/include/g++-v${GCC_CONFIG_VER}
-LIBPATH=${PREFIX}/lib/gcc/${CTARGET}/${GCC_CONFIG_VER}
+DATAPATH=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_CONFIG_VER}
+STDCXX_INCDIR=${LIBPATH}/include/g++-v${GCC_CONFIG_VER}
 
 src_unpack() {
   local GCCDIR
@@ -107,6 +105,12 @@ src_unpack() {
     git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
     cd -
     GCCDIR=${GITDIR}/gcc/${MY_P}
+    cd ${GCCDIR}
+    CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
+    cd -
+  fi
+  if [[ ! -z ${CL} ]] ; then
+    COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
   fi
  	ln -sf ${GCCDIR} ${S}
 
@@ -125,6 +129,8 @@ src_install()
 {
   cd ${WORKDIR}/build
   emake DESTDIR="${D}" install || die "Could not install gcc"
+
+  find "${D}" -name libiberty.a -exec rm -f "{}" \;
 
   TODIR="${D}/${PREFIX}/lib/gcc/${CTARGET}/${PV}"
   FROMDIR="${D}/${PREFIX}/${CTARGET}/lib"
@@ -230,6 +236,8 @@ src_configure()
   source ${GCCBUILDDIR}/opts.sh
   confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
 
+  EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
+ --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
   confgcc="${confgcc} ${EXTRA_ECONF}"
 
   	# Build in a separate build tree
