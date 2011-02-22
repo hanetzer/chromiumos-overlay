@@ -202,6 +202,7 @@ EOF
 		fperms 0440 /etc/ldap.conf.sudo
 	fi
 
+	newpamd "${FILESDIR}"/include-chromeos-auth sudo
 	pamd_mimic system-auth sudo auth account session
 
 	insinto /etc
