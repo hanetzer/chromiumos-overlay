@@ -124,11 +124,6 @@ RDEPEND="${RDEPEND}
 	"
 
 RDEPEND="${RDEPEND}
-	virtual/chromeos-bsp
-        "
-
-#TODO(micahc): Remove board-devices from RDEPEND in lieu of virtual/chromeos-bsp
-RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
 	app-crypt/trousers
