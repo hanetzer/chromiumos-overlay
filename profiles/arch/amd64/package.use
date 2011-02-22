@@ -1,1 +1,2 @@
 chromeos-base/update_engine delta_generator
+net-misc/openssh kerberos
