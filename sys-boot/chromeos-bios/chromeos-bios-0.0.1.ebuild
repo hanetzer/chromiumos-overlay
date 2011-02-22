@@ -26,8 +26,8 @@ recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
 normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
 bct_file="${ROOT%/}/u-boot/board.bct"
 
-get_hwid() {
-	grep -m1 CONFIG_CHROMEOS_HWID ${autoconf} | tr -d "\"" | cut -d = -f 2
+get_autoconf() {
+	grep -m1 $1 ${autoconf} | tr -d "\"" | cut -d = -f 2
 	assert
 }
 
@@ -37,25 +37,10 @@ get_text_base() {
 	assert
 }
 
-get_screen_col() {
-	grep -m1 CONFIG_LCD_vl_col ${autoconf} | tr -d "\"" | cut -d = -f 2
-	assert
-}
-
-get_screen_row() {
-	grep -m1 CONFIG_LCD_vl_row ${autoconf} | tr -d "\"" | cut -d = -f 2
-	assert
-}
-
 get_screen_geometry() {
-	col=$(get_screen_col)
-	row=$(get_screen_row)
+	col=$(get_autoconf CONFIG_LCD_vl_col)
+	row=$(get_autoconf CONFIG_LCD_vl_row)
 	echo "${col}x${row}!"
-}
-
-get_gbb_size() {
-	grep -m1 CONFIG_LENGTH_GBB ${autoconf} | tr -d "\"" | cut -d = -f 2
-	assert
 }
 
 construct_layout() {
@@ -98,7 +83,8 @@ construct_config() {
 }
 
 src_compile() {
-	hwid=$(get_hwid)
+	hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
+        gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
 
 	construct_layout > layout.py
 
@@ -117,9 +103,7 @@ src_compile() {
 		bmpblk.bin
 	popd
 
-	gbb_utility -c \
-		"0x100,0x1000,$(($(get_gbb_size)-0x2180)),0x1000" \
-		gbb.bin ||
+	gbb_utility -c "0x100,0x1000,$((${gbb_size}-0x2180)),0x1000" gbb.bin ||
 		die "Failed to create the GBB."
 
 	gbb_utility -s \
