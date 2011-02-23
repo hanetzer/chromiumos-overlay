@@ -12,7 +12,7 @@ ARCH=arm
 source make.conf.common
 
 # Recommended arm-specific USE flags.
-USE="${USE} threads hardened"
+USE="${USE} hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 CFLAGS="-O2 -pipe -I${ROOT}usr/include/ -I${ROOT}include/ -ggdb"
