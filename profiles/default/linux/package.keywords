@@ -49,3 +49,7 @@
 # Needed for glib >=2.26.0
 =dev-util/gtk-doc-1.13-r3	amd64 x86
 =dev-util/gtk-doc-am-1.13-r2	amd64 x86
+
+# Needed for curl >= 7.2.1.4
+=net-misc/curl-7.21.4		amd64 x86
+=net-dns/c-ares-1.7.4		amd64 x86
