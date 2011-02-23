@@ -14,7 +14,7 @@ SRC_URI="ftp://invisible-island.net/mawk/${MY_P}.tgz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~hppa ~ia64 ~ppc ~sparc ~x86 ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos"
-IUSE=""
+IUSE="usrbinawk"
 
 S=${WORKDIR}/${MY_P}
 
@@ -29,5 +29,6 @@ src_configure() {
 
 src_install() {
 	emake install DESTDIR="${D}" || die
+	use usrbinawk && (dosym mawk /usr/bin/awk || die)
 	dodoc ACKNOWLEDGMENT CHANGES INSTALL README
 }

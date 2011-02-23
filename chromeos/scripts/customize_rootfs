@@ -70,12 +70,6 @@ if [[ -x "${ROOT_FS_DIR}/bin/dash" ]] ; then
   sudo ln -sf dash "${ROOT_FS_DIR}/bin/sh"
 fi
 
-# If mawk is installed, awk should symlink to that.
-# TODO: Maybe fix this by using a virtual/awk?
-if [[ -x "${ROOT_FS_DIR}/usr/bin/mawk" ]] ; then
-  sudo ln -sf mawk "${ROOT_FS_DIR}/usr/bin/awk"
-fi
-
 # Write stock lsb-release file
 # Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)
 # Was removed from chromeos_version.sh which can also be run outside of chroot
