@@ -24,6 +24,7 @@ RDEPEND="
   chromeos-base/autotest-deps-glbench
   chromeos-base/autotest-private-board
   chromeos-base/flimflam
+  >=chromeos-base/vpd-0.0.1-r11
   xset? ( x11-apps/xset )
 "
 

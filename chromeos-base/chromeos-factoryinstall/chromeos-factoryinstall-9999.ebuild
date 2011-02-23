@@ -19,7 +19,8 @@ DEPEND="x86? ( sys-boot/syslinux )"
 RDEPEND="x86? ( chromeos-base/chromeos-initramfs )
          chromeos-base/chromeos-installer
          chromeos-base/chromeos-init
-         chromeos-base/memento_softwareupdate"
+         chromeos-base/memento_softwareupdate
+         >=chromeos-base/vpd-0.0.1-r11"
 
 CROS_WORKON_LOCALNAME="factory_installer"
 CROS_WORKON_PROJECT="factory_installer"
