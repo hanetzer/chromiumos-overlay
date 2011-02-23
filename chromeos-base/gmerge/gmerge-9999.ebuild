@@ -17,10 +17,9 @@ CROS_WORKON_PROJECT="dev-util"
 CROS_WORKON_LOCALNAME="dev"
 
 RDEPEND="app-shells/bash
-         app-portage/gentoolkit
-         dev-lang/python
-         dev-libs/shflags
-         "
+	dev-lang/python
+	dev-libs/shflags
+	sys-apps/portage"
 DEPEND="${RDEPEND}"
 
 src_install() {
