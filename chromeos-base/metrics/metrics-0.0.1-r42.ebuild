@@ -19,6 +19,7 @@ RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.0
 	sys-apps/dbus
+	sys-apps/rootdev
 	"
 
 DEPEND="${RDEPEND}
