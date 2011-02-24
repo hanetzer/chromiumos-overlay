@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="00837d21f85ccdf442a936f6a9f4b8442667746b"
+CROS_WORKON_COMMIT="3175767f6dfd0af2ad49ecf9712f36ae6ab51c55"
 
 inherit cros-workon toolchain-funcs
 
@@ -15,7 +15,8 @@ KEYWORDS="amd64 arm x86"
 IUSE=""
 
 DEPEND=""
-RDEPEND="sys-apps/upstart"
+RDEPEND="sys-apps/upstart
+         chromeos-base/vpd"  # for vpd-log.conf of upstart
 
 CROS_WORKON_LOCALNAME="init"
 CROS_WORKON_PROJECT="init"
