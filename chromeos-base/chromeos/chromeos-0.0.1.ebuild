@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -68,14 +68,12 @@ DEPEND="chromeos-base/internal
 	   sys-apps/baselayout"
 
 # Enable ssh locally for chromium-os device.
-# TODO(hungte) remove aterm once cros-term and factory changed to rxvt-unicode
 RDEPEND="${RDEPEND}
 	localssh? (
 		app-admin/sudo
 		app-arch/tar
 		chromeos-base/workarounds
 		net-misc/openssh
-		x11-terms/aterm
 		x11-terms/rxvt-unicode
 	)
 	"

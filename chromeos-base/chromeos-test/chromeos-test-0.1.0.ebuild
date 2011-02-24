@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -62,5 +62,5 @@ RDEPEND="${RDEPEND}
 	x11-apps/xauth
 	x11-apps/xset
 	x86? ( x11-misc/read-edid )
-	x11-terms/aterm
+	x11-terms/rxvt-unicode
 	"
