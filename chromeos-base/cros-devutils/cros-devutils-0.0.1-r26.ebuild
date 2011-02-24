@@ -46,6 +46,9 @@ src_install() {
 		# Devserver and friends:
 		doexe host/start_devserver
 		doexe devserver.py
+		# TODO(zbehan): Used by image_to_live.sh, find out why, since the
+		# target already has a copy.
+		doexe stateful_update
 		# These need to live with devserver, but not +x.
 		doins builder.py
 		doins autoupdate.py
