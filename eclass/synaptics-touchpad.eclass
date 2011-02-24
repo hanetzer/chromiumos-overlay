@@ -8,7 +8,7 @@ inherit eutils cros-binary
 # Synaptics touchpad generic eclass.
 IUSE="is_touchpad ps_touchpad"
 
-RDEPEND=">=gnome-base/gconf-2.24.0"
+RDEPEND=""
 DEPEND="${RDEPEND}"
 
 CROS_BINARY_INSTALL_FLAGS="--strip-components=1"
@@ -40,12 +40,8 @@ function synaptics-touchpad_src_install() {
 	# into the synaptics tarball.
 	export_uri
 	cros-binary_src_install
-	install --mode=0755 "${FILESDIR}/tpcontrol_syncontrol" "${D}/opt/Synaptics/bin"
 
-	# Change when the syntpenh Upstart job is started.
-	patch --force \
-		"${D}/etc/init/syntpenh.conf" "${FILESDIR}/syntpenh.conf.patch" || \
-		die "Unable to patch ${D}/etc/init/syntpenh.conf"
+	install --mode=0755 "${FILESDIR}/tpcontrol_syncontrol" "${D}/opt/Synaptics/bin"
 
 	# link the appropriate config files for the type of trackpad
 	if use is_touchpad && use ps_touchpad; then
