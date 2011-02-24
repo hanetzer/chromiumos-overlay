@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE="debug"
 EAPI="2"
-CROS_WORKON_COMMIT="efa40aa21da738b8f48e8b013e9c04b7724ccb45"
+CROS_WORKON_COMMIT="2b59a07c543e3a759f66d37090bd2f1906704ef7"
 
 DEPEND="sys-boot/chromeos-u-boot-next-build-env"
 
