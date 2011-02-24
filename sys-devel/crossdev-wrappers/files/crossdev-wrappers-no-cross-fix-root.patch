@@ -1,0 +1,13 @@
+diff --git a/etc/portage/bashrc.orig b/etc/portage/bashrc
+index 8c1f5ff..4781fc3 100644
+--- a/etc/portage/bashrc.orig
++++ b/etc/portage/bashrc
+@@ -10,8 +10,3 @@ post_src_install() {
+ 	output="$( cd ${D} && scanelf -RmyBF%a . | grep -v ${cmdline} )"
+ 	[[ $output != "" ]] && { echo; echo "* Wrong EM_TYPE. Expected ${E_MACHINE}"; echo -e "${output}"; echo; exit 1; }
+ }
+-
+-# We dont functionize this to avoid sandboxing.
+-if [[ $EBUILD_PHASE == "postinst" ]]; then
+-	[[ $EMERGE_FROM != binary ]] && cross-fix-root ${CHOST}
+-fi

@@ -16,5 +16,8 @@
 # Custom patches
 >sys-boot/syslinux-3.83-r3
 
+# Custom patches
+>sys-devel/crossdev-wrappers-20090922-r200
+
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44

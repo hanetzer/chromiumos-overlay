@@ -1,0 +1,11 @@
+--- a/site/linux-gnueabi	2009-10-16 18:21:20.000000000 -0700
++++ b/site/linux-gnueabi	2009-10-16 18:21:49.000000000 -0700
+@@ -11,7 +11,7 @@
+ ac_cv_func_setgrent_void=yes
+ ac_cv_func_setpgrp_void=yes
+ ac_cv_func_strnlen_working=yes
+-ac_cv_have_abstract_sockets=no
++ac_cv_have_abstract_sockets=yes
+ ac_cv_header_pwd_h=yes
+ ac_cv_printf_zd_format=yes
+ enable_malloc0returnsnull=yes
