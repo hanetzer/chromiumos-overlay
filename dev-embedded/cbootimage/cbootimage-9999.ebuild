@@ -25,4 +25,5 @@ src_install() {
         exeinto /usr/bin
 
         doexe cbootimage
+        doexe bct_dump
 }
