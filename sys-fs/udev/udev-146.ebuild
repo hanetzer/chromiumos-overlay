@@ -250,6 +250,9 @@ src_install() {
 	doins packages/40-alsa.rules
 	doins packages/40-isdn.rules
 
+	# workaround for chromium-os:12387
+	doins "${FILESDIR}"/01-workaround-net-device-db.rules
+
 	# compat-wireless firmware loading (needs compat_firmware.sh above)
 	doins "${FILESDIR}"/50-compat_firmware.rules \
 		|| die "compat_firmware.rules not installed properly"
