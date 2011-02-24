@@ -89,6 +89,9 @@ src_prepare() {
 	# Fix chromium crash, bug 308985
 	epatch "${FILESDIR}/${PN}-2.18.7-destroy-crash.patch"
 
+	# Fix version script not used when gold linker turned on
+	epatch "${FILESDIR}/${PN}-2.18.7-gold.patch"
+
 	# -O3 and company cause random crashes in applications. Bug #133469
 	replace-flags -O3 -O2
 	strip-flags
