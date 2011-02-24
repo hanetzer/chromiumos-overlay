@@ -332,9 +332,14 @@ bash_chroot emerge -uNv $USEPKG portage $EMERGE_JOBS
 echo "$SCRIPT_NAME: Unmerging dhcpcd"
 bash_chroot $EMERGE_CMD --unmerge dhcpcd
 
+# TODO(raymes): This unmerges crossdev-wrappers which is deprecated.
+# Remove this once everyone has upgraded their chroots.
+echo "$SCRIPT_NAME: Unmerging crossdev-wrappers"
+bash_chroot ${EMERGE_CMD} --unmerge crossdev-wrappers
+
 echo "$SCRIPT_NAME: Running emerge world ccache crossdev etc ..."
 bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
-    ccache crossdev crossdev-wrappers net-misc/curl sudo $EMERGE_JOBS
+    ccache crossdev net-misc/curl sudo $EMERGE_JOBS
 
 # Curl is now installed, so we can depend on it now.
 bash_chroot 'cat >> /etc/make.conf.host_setup' <<'EOF'
