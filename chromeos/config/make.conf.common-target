@@ -36,6 +36,9 @@ PORTAGE_BUNZIP2_COMMAND="bunzip2"
 FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 RESUMECOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 
+FETCHCOMMAND='curl -f --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
+RESUMECOMMAND='curl -f -C - --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
+
 # Print a checkpoint message every 10MB while archiving.
 PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"
 
