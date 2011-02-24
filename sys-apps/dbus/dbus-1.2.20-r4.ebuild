@@ -36,6 +36,8 @@ src_compile() {
 	# so we can get backtraces from apps
 	append-flags -rdynamic
 
+	epatch "${FILESDIR}"/${PN}-gold.patch
+
 	epatch "${FILESDIR}"/dbus-send-print-fixed.patch
 
 	# libaudit is *only* used in DBus wrt SELinux support, so disable it, if
