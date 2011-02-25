@@ -125,6 +125,3 @@
 
 # TODO: Remove when we have a proper chrome package.
 =www-client/chromium-bin-4.0.222.4_p28661	x86 arm
-
-# Temporary: Mask off ARM-unbuildable version of chrome
-=chromeos-base/chromeos-chrome-11.0.683.0_rc-r1 -x86 -arm
