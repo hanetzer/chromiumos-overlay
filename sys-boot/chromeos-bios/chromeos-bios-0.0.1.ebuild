@@ -25,6 +25,7 @@ stub_image="${ROOT%/}/u-boot/u-boot-stub.bin"
 recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
 normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
 bct_file="${ROOT%/}/u-boot/board.bct"
+cfg_file="${ROOT%/}/u-boot/flash.cfg"
 
 get_autoconf() {
 	grep -m1 $1 ${autoconf} | tr -d "\"" | cut -d = -f 2
@@ -88,9 +89,6 @@ src_compile() {
 
 	construct_layout > layout.py
 
-        construct_config $(get_text_base) > boot.cfg ||
-		die "Failed to create boot stub signing configuration file."
-
 	/usr/share/vboot/bitmaps/make_bmp_images.sh \
 		"${hwid}" \
 		"$(get_screen_geometry)" \
@@ -119,6 +117,12 @@ src_compile() {
 	# BCT and the stub U-Boot image.  The cbootimage tool takes a config
 	# file and an output filename to write to.
 	#
+	cat ${cfg_file} > boot.cfg ||
+		die "Failed to cat flash configuration file."
+
+	construct_config $(get_text_base) >> boot.cfg ||
+		die "Failed to create boot stub signing configuration file."
+
 	cbootimage boot.cfg bootstub.bin ||
 		die "Failed to sign boot stub image."
 
