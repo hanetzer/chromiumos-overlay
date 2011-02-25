@@ -12,7 +12,7 @@ KEYWORDS="amd64 x86"
 IUSE=""
 
 DEPEND=""
-RDEPEND=""
+RDEPEND="net-misc/openssh"
 
 src_install() {
   insinto /etc/ssh

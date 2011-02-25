@@ -254,7 +254,3 @@ pkg_postinst() {
 		einfo "your syslog application also listens at /var/empty/dev/log."
 	fi
 }
-
-pkg_postrm() {
-	rm -rf ${ROOT}/etc/ssh
-}
