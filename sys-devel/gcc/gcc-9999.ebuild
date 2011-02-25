@@ -57,7 +57,7 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj graphite gtk mounted_sources multislot nls nocxx vanilla"
+IUSE="gcj graphite gtk hardfp mounted_sources multislot nls nocxx vanilla"
 
 GCC_CONFIG_VER=${PV}
 MY_PV=4.4.3
@@ -221,6 +221,11 @@ src_configure()
     GCC_LANG="c,c++,fortran"
   fi
   confgcc="${confgcc} --enable-languages=${GCC_LANG}"
+
+  if use hardfp && [[ ${CTARGET} == arm* ]] ;
+  then
+    confgcc="${confgcc} --with-float=hard"
+  fi
 
   local needed_libc="glibc"
   if [[ -n ${needed_libc} ]] ; then
