@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/app-i18n/ibus-chewing/ibus-chewing-1.2.0.20090917.ebuild,v 1.1 2009/09/17 16:17:22 matsuu Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="e43279d8c874b58adfeef42d3335b0c04374e470"
+CROS_WORKON_COMMIT="7a9514a0844eb5eb90ab96f62484a6af9e4a0d6d"
 
 inherit cmake-utils cros-workon
 
