@@ -1,0 +1,102 @@
+# ChangeLog for net-wireless/wireless-regdb
+# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# $Header: /var/cvsroot/gentoo-x86/net-wireless/wireless-regdb/ChangeLog,v 1.18 2009/11/26 11:46:13 chainsaw Exp $
+
+*wireless-regdb-20091125 (26 Nov 2009)
+
+  26 Nov 2009; <chainsaw@gentoo.org> +wireless-regdb-20091125.ebuild:
+  Version bump, contains new country codes and regulatory updates by Vivek
+  Natarajan of Atheros.
+
+  17 Nov 2009; <chainsaw@gentoo.org> -wireless-regdb-20090130.ebuild,
+  -wireless-regdb-20090417.ebuild, -wireless-regdb-20090805.ebuild,
+  -wireless-regdb-20090908.ebuild:
+  Remove old ebuilds, the November release will be pushed for stable soon.
+  The September release broke CRDA rebuilds as pointed out by Adrian Bassett
+  in bug #285282.
+
+*wireless-regdb-20091104 (04 Nov 2009)
+
+  04 Nov 2009; <chainsaw@gentoo.org> +wireless-regdb-20091104.ebuild:
+  Version bump.
+
+*wireless-regdb-20090908 (09 Sep 2009)
+
+  09 Sep 2009; <chainsaw@gentoo.org> +wireless-regdb-20090908.ebuild:
+  Version bump. Ebuild improvements by Colin Macdonald, further refined by
+  MATSUU Takuto <matsuu@gentoo.org>, closes bug #280622.
+
+*wireless-regdb-20090805 (06 Aug 2009)
+
+  06 Aug 2009; <chainsaw@gentoo.org> +wireless-regdb-20090805.ebuild:
+  Version bump. db2bin.py now uses new hashlib for SHA1.
+
+*wireless-regdb-20090417 (18 Apr 2009)
+
+  18 Apr 2009; <chainsaw@gentoo.org> -wireless-regdb-20090309.ebuild,
+  +wireless-regdb-20090417.ebuild:
+  Version bump, delete old ebuilds with non-stable keywords.
+
+  20 Mar 2009; <chainsaw@gentoo.org> -wireless-regdb-20081117.ebuild,
+  wireless-regdb-20090115.ebuild, wireless-regdb-20090130.ebuild,
+  wireless-regdb-20090309.ebuild:
+  Clear out RDEPEND, there are no actual runtime dependencies as pointed out
+  by Wolfram Schlich <wschlich@gentoo.org> in bug #263125. Cleared out old
+  ebuild.
+
+*wireless-regdb-20090309 (16 Mar 2009)
+
+  16 Mar 2009; <chainsaw@gentoo.org> +wireless-regdb-20090309.ebuild:
+  Version bump. Enables passive scanning on a wider spectrum in the world
+  domain.
+
+  15 Mar 2009; Brent Baude <ranger@gentoo.org>
+  wireless-regdb-20090115.ebuild:
+  Marking wireless-regdb-20090115 ppc64 for bug 256245
+
+  22 Feb 2009; Raúl Porcel <armin76@gentoo.org>
+  wireless-regdb-20090115.ebuild:
+  x86 stable wrt #256245
+
+  14 Feb 2009; nixnut <nixnut@gentoo.org> wireless-regdb-20090115.ebuild:
+  ppc stable #256245
+
+*wireless-regdb-20090130 (02 Feb 2009)
+
+  02 Feb 2009; <chainsaw@gentoo.org> wireless-regdb-20081117.ebuild,
+  wireless-regdb-20090115.ebuild, +wireless-regdb-20090130.ebuild:
+  Version bump to Jan 30 version (which was delayed because of a cron job
+  failure). Reworked SRC_URI for dots instead of dashes as per new upstream
+  naming.
+
+  29 Jan 2009; Thomas Anderson <gentoofan23@gentoo.org>
+  wireless-regdb-20090115.ebuild:
+  stable amd64. bug 256245
+
+*wireless-regdb-20090115 (15 Jan 2009)
+
+  15 Jan 2009; <chainsaw@gentoo.org> metadata.xml,
+  wireless-regdb-20081117.ebuild, +wireless-regdb-20090115.ebuild:
+  Fix MY_P logic as it had an off-by-one error. Removed -master part from
+  SRC_URI in response to upstream tarball renaming. Bump to 15-01-2009
+  release.
+
+  02 Dec 2008; Brent Baude <ranger@gentoo.org>
+  wireless-regdb-20081117.ebuild:
+  Marking wireless-regdb-20081117 ~ppc64 for bug 249606
+
+  02 Dec 2008; <chainsaw@gentoo.org> wireless-regdb-20081117.ebuild:
+  Add ~ppc keyword based on PowerBook6,7 testing by Christian "papillon81"
+  Schmitt <chrschmitt@gmail.com>. Dependency for net-wireless/crda, bug
+  #249606.
+
+  02 Dec 2008; Raúl Porcel <armin76@gentoo.org>
+  wireless-regdb-20081117.ebuild:
+  Add ~x86 wrt #249606
+
+*wireless-regdb-20081117 (27 Nov 2008)
+
+  27 Nov 2008; <chainsaw@gentoo.org> +metadata.xml,
+  +wireless-regdb-20081117.ebuild:
+  Initial commit, ebuild by me.
+
