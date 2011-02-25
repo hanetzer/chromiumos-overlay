@@ -1,0 +1,93 @@
+# ChangeLog for net-wireless/crda
+# Copyright 1999-2010 Gentoo Foundation; Distributed under the GPL v2
+# $Header: /var/cvsroot/gentoo-x86/net-wireless/crda/ChangeLog,v 1.19 2010/01/26 17:02:57 chainsaw Exp $
+
+*crda-1.1.1 (26 Jan 2010)
+
+  26 Jan 2010; <chainsaw@gentoo.org> +crda-1.1.1.ebuild:
+  New upstream release, adds runtime loading of RSA public keys and contains
+  cross-compilation fixes.
+
+*crda-1.1.0 (13 May 2009)
+
+  13 May 2009; <chainsaw@gentoo.org> +crda-1.1.0.ebuild:
+  Version bump, the application is now 64-bit safe for SSL keys.
+
+*crda-1.0.2 (18 Apr 2009)
+
+  18 Apr 2009; <chainsaw@gentoo.org> +crda-1.0.2.ebuild:
+  Version bump, mostly bugfixes.
+
+  15 Apr 2009; <chainsaw@gentoo.org> crda-1.0.1-r1.ebuild:
+  libgcrypt is a runtime dependency, not just build-time. As pointed out by
+  Wolfram Schlich <wschlich@gentoo.org> in (reopened) bug #262914.
+
+  18 Mar 2009; <chainsaw@gentoo.org> -crda-0.9.5.ebuild, -crda-1.0.1.ebuild,
+  crda-1.0.1-r1.ebuild:
+  Correctly separate out DEPEND/RDEPEND based on wireless.kernel.org
+  dependency listings. Closes bug #262914 filed by Wolfram Schlich
+  <wschlich@gentoo.org>. Delete obsolete ebuilds.
+
+  15 Mar 2009; Brent Baude <ranger@gentoo.org> crda-1.0.1-r1.ebuild:
+  Marking crda-1.0.1-r1 ppc64 for bug 256245
+
+  22 Feb 2009; Raúl Porcel <armin76@gentoo.org> crda-1.0.1-r1.ebuild:
+  x86 stable wrt #256245
+
+  14 Feb 2009; nixnut <nixnut@gentoo.org> crda-1.0.1-r1.ebuild:
+  ppc stable #256245
+
+  29 Jan 2009; Thomas Anderson <gentoofan23@gentoo.org> crda-1.0.1-r1.ebuild:
+  stable amd64, bug 256245
+
+*crda-1.0.1-r1 (29 Jan 2009)
+
+  29 Jan 2009; Thomas Anderson <gentoofan23@gentoo.org> +crda-1.0.1-r1.ebuild:
+  Revision bump to fix an issue with udev files being installed in /lib
+  instead of /lib64 on amd64
+
+  24 Jan 2009; <chainsaw@gentoo.org> metadata.xml:
+  Fix up longdescription in metadata.
+
+*crda-1.0.1 (24 Jan 2009)
+
+  24 Jan 2009; <chainsaw@gentoo.org> +crda-1.0.1.ebuild:
+  Version bump to stable 1.0.1; with thanks to Diego E. Flameeyes Petteno
+  for --as-needed compatibility and to Luis R. Rodriguez for being
+  responsive to patching and packaging comments. Will push this for stable
+  keywords.
+
+  02 Dec 2008; Brent Baude <ranger@gentoo.org> crda-0.9.5.ebuild:
+  Marking crda-0.9.5 ~ppc64 for bug 249606
+
+  02 Dec 2008; <chainsaw@gentoo.org> crda-0.9.5.ebuild:
+  Add ~ppc keyword based on PowerBook6,7 testing by Christian "papillon81"
+  Schmitt <chrschmitt@gmail.com>. For bug #249606.
+
+  02 Dec 2008; Raúl Porcel <armin76@gentoo.org> crda-0.9.5.ebuild:
+  Add ~x86 wrt #249606
+
+*crda-0.9.5 (02 Dec 2008)
+
+  02 Dec 2008; <chainsaw@gentoo.org> -files/0.9.4-as-needed.patch,
+  -crda-0.9.4.ebuild, +crda-0.9.5.ebuild:
+  New upstream release, incorporating build & coding style fixes by Diego E.
+  "Flameeyes" Pettenò <flameeyes@gentoo.org>. Removed old ebuild.
+
+  01 Dec 2008; Diego E. Pettenò <flameeyes@gentoo.org>
+  files/0.9.4-as-needed.patch:
+  Replace --as-needed patch with one that solves the problem, the same as
+  sent upstream.
+
+  01 Dec 2008; <chainsaw@gentoo.org> crda-0.9.4.ebuild:
+  Force -j1 as the current Makefile is not safe for parallel building,
+  closes bug #249181 by Emil Karlson <jkarlson@cc.hut.fi>. Fixes have been
+  sent upstream to linux-wireless by Diego E. "Flameeyes" Pettenò
+  <flameeyes@gentoo.org>.
+
+*crda-0.9.4 (27 Nov 2008)
+
+  27 Nov 2008; <chainsaw@gentoo.org> +files/0.9.4-as-needed.patch,
+  +metadata.xml, +crda-0.9.4.ebuild:
+  Initial commit, ebuild & patch by me. Will send upstream.
+
