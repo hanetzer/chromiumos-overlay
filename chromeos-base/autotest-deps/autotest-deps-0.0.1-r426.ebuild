@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="411cef7d5b518c20d5005f6ad8fed50d0aa5a84f"
+CROS_WORKON_COMMIT="e3742e79879dbbd38f205cc85898876b1dae0526"
 
 inherit cros-workon autotest-deponly
 
