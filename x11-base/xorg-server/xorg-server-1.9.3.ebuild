@@ -13,10 +13,11 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 OPENGL_DIR="xorg-x11"
 
 DESCRIPTION="X.Org X servers"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
+KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc x86 ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xorg"
 IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev"
+# note: we have udev 143 here as that's the real dependency X.Org needs. The upstream ebuild uses 150
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
 	media-libs/freetype
@@ -102,22 +103,16 @@ EPATCH_SUFFIX="patch"
 
 # These have been sent upstream
 UPSTREAMED_PATCHES=(
-#	"${WORKDIR}/patches/"
-
-	# http://lists.x.org/archives/xorg-devel/2010-October/014150.html
-	#"${FILESDIR}"/"${PN}"-1.9-xinerama-crash-fix.patch
-	)
+	"${FILESDIR}/1.9.3-fix-grabs.patch"
+)
 
 PATCHES=(
 	"${UPSTREAMED_PATCHES[@]}"
 	"${FILESDIR}"/${PN}-disable-acpi.patch
 	"${FILESDIR}"/${PN}-1.9-nouveau-default.patch
 
-	# Fixes for bug #318609
-	#"${FILESDIR}"/0001-Fix-tslib-check-fallback-to-set-TSLIB_LIBS.patch
-	#"${FILESDIR}"/0002-Fix-linking-with-tslib-with-Wl-as-needed.patch
-	
-	# WIP
+
+	# Allow usage of monotonic clock while cross-compiling
 	"${FILESDIR}/monotonic-clock-fix.patch"
 	# Make the root window get created without a background so we can get
 	# seamless transitions when X starts.  This looks like it may be upstreamed
@@ -141,6 +136,8 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
 	# For Gallium drivers
 	"${FILESDIR}/1.9.3-public-_glapi_get_proc_address.patch"
+	# For glx double free
+	"${FILESDIR}/1.9.3-glx-doublefree.patch"
 	)
 
 pkg_setup() {
@@ -179,7 +176,6 @@ pkg_setup() {
 		--sysconfdir=/etc/X11
 		--localstatedir=/var
 		--enable-install-setuid
-		--enable-null-root-cursor
 		--with-fontrootdir=/usr/share/fonts
 		--with-xkb-output=/var/lib/xkb
 		--disable-config-hal

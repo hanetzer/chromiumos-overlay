@@ -1,3 +1,4 @@
+We need this for gallium 3D drivers.
 --- xorg-server-1.9.3.orig/glx/glapi.c	2010-12-22 18:58:56.004461000 -0800
 +++ xorg-server-1.9.3.work/glx/glapi.c	2011-02-09 13:44:37.054739000 -0800
 @@ -892,7 +892,7 @@ _glapi_get_proc_offset(const char *funcN
