@@ -47,6 +47,8 @@ IUSE_TESTS="
 	+tests_fsx
 	+tests_hackbench
 	+tests_iperf
+	+tests_bonnie
+	+tests_iozone
 	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
