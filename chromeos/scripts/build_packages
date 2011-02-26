@@ -128,6 +128,9 @@ if [ -d "/build/${FLAGS_board}/etc" ]; then
   sudo ln -sf /etc/make.conf.user "/build/${FLAGS_board}/etc/make.conf.user"
 fi
 ${EMERGE_CMD} --info
+# TODO(raymes): This unmerges crossdev-wrappers which is deprecated.
+# Remove this once everyone has upgraded their chroots.
+sudo -E ${EMERGE_CMD} --unmerge crossdev-wrappers
 eretry sudo -E ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)

@@ -85,8 +85,7 @@ build_toolchain() {
   # TODO(davidjames): Fix uploading of cross prebuilts so that we don't have
   #                   to use the old location to get the cross prebuilts.
   #BINHOST=$(portageq envvar PORTAGE_BINHOST)
-  BINHOST="http://gsdview.appspot.com/chromeos-prebuilt/host/amd64/15.12.10.153419/packages/"
-  CROSS_BINHOST="${BINHOST}cross/$FLAGS_toolchain/"
+  BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/23.02.11.140738/packages"
   CROSS_USEPKG=""
   if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
     # Grab the latest packages from the prebuilt server.
@@ -104,7 +103,7 @@ build_toolchain() {
   CROSS_GCC="--gcc $FLAGS_gcc_version"
   CROSS_KERNEL="--kernel $FLAGS_kernel_version"
   CROSS_LIBC="--libc $FLAGS_libc_version"
-  sudo PORTAGE_BINHOST="${CROSS_BINHOST}" crossdev -v \
+  sudo PORTAGE_BINHOST="${BINHOST}" crossdev -v \
       --target "$FLAGS_toolchain" \
       $CROSS_BINUTILS \
       $CROSS_GCC      \
@@ -135,10 +134,20 @@ install_toolchain_in_board() {
   #
   # Untar glibc to get most of the headers required to build.
   #
+  # TODO(raymes): Remove this check after some time which ensures
+  # backward compatibility with the crossdev location change
   PKGDIR=$(portageq envvar PKGDIR)
-  sudo tar jxpf \
-  "${PKGDIR}/cross/${FLAGS_toolchain}/cross-${FLAGS_toolchain}"/glibc-${FLAGS_libc_version}.tbz2 \
-      -C "${BOARD_ROOT}" --strip-components=3
+  LIBC_TAR="glibc-${FLAGS_libc_version}.tbz2"
+  NEW_LIBC_PATH="${PKGDIR}/cross-${FLAGS_toolchain}/${LIBC_TAR}"
+  OLD_LIBC_PATH="${PKGDIR}/cross/${FLAGS_toolchain}/cross-${FLAGS_toolchain}/\
+${LIBC_TAR}"
+  if [ -e "${NEW_LIBC_PATH}" ] ; then
+    LIBC_PATH="${NEW_LIBC_PATH}"
+  else
+    LIBC_PATH="${OLD_LIBC_PATH}"
+  fi
+
+  sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}" --strip-components=3
 
   # Symlink for libstdc++.la issues. It appears that when packages get merged
   # the .la files will be updated, and for libstdc++ it will use the wrong
@@ -186,6 +195,9 @@ EMERGE_CMD="emerge"
 if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
   EMERGE_CMD="${GCLIENT_ROOT}/chromite/bin/parallel_emerge"
 fi
+# TODO(raymes): This unmerges crossdev-wrappers which is deprecated.
+# Remove this once everyone has upgraded their chroots.
+sudo -E ${EMERGE_CMD} --unmerge crossdev-wrappers
 sudo -E ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 
 get_board_and_variant $FLAGS_board $FLAGS_variant

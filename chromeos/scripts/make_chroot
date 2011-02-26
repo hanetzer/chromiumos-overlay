@@ -315,6 +315,11 @@ if [ -f $CHROOT_STATE ];then
   # Apply any hacks needed to update the chroot.
   # TODO: Should the above hacks be moved into this function?
   chroot_hacks_from_outside "${FLAGS_chroot}"
+
+  # TODO(raymes): This unmerges crossdev-wrappers which is deprecated.
+  # Remove this once everyone has upgraded their chroots.
+  echo "$SCRIPT_NAME: Unmerging crossdev-wrappers"
+  bash_chroot ${EMERGE_CMD} --unmerge crossdev-wrappers
 else
   # run all the init stuff to setup the env
   init_setup
@@ -334,7 +339,7 @@ bash_chroot $EMERGE_CMD --unmerge dhcpcd
 
 echo "$SCRIPT_NAME: Running emerge world ccache crossdev etc ..."
 bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
-    ccache crossdev crossdev-wrappers net-misc/curl sudo $EMERGE_JOBS
+    ccache crossdev net-misc/curl sudo $EMERGE_JOBS
 
 # Curl is now installed, so we can depend on it now.
 bash_chroot 'cat >> /etc/make.conf.host_setup' <<'EOF'

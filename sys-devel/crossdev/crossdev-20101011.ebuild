@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/crossdev/crossdev-20101011.ebuild,v 1.1 2010/10/11 09:00:42 vapier Exp $
 
+inherit eutils
+
 EAPI="3"
 
 if [[ ${PV} == "99999999" ]] ; then
@@ -12,7 +14,7 @@ if [[ ${PV} == "99999999" ]] ; then
 else
 	SRC_URI="mirror://gentoo/${P}.tar.xz
 		http://dev.gentoo.org/~vapier/dist/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~x86-fbsd"
+	KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~x86-fbsd"
 fi
 
 DESCRIPTION="Gentoo Cross-toolchain generator"
@@ -26,6 +28,15 @@ RDEPEND=">=sys-apps/portage-2.1
 	app-shells/bash
 	!sys-devel/crossdev-wrappers"
 DEPEND="app-arch/xz-utils"
+
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+	install --mode=0644 "${FILESDIR}"/linux-gnu "${S}"/wrappers/site
+	epatch "${FILESDIR}"/${PN}-cross-pkg-config-sysroot.patch
+	epatch "${FILESDIR}"/${PN}-no-cross-fix-root.patch
+	epatch "${FILESDIR}"/${PN}-arm-dbus-fix.patch
+}
 
 src_install() {
 	emake install DESTDIR="${D}" || die
