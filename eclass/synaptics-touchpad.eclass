@@ -8,7 +8,7 @@ inherit eutils cros-binary
 # Synaptics touchpad generic eclass.
 IUSE="is_touchpad ps_touchpad"
 
-RDEPEND=""
+RDEPEND="x11-base/xorg-server"
 DEPEND="${RDEPEND}"
 
 CROS_BINARY_INSTALL_FLAGS="--strip-components=1"
