@@ -103,7 +103,7 @@ build_toolchain() {
   CROSS_GCC="--gcc $FLAGS_gcc_version"
   CROSS_KERNEL="--kernel $FLAGS_kernel_version"
   CROSS_LIBC="--libc $FLAGS_libc_version"
-  sudo PORTAGE_BINHOST="${BINHOST}" crossdev -v \
+  sudo -E PORTAGE_BINHOST="${BINHOST}" crossdev -v \
       --target "$FLAGS_toolchain" \
       $CROSS_BINUTILS \
       $CROSS_GCC      \
