@@ -57,7 +57,7 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj graphite gtk mounted_sources multislot nls nocxx vanilla"
+IUSE="gcj graphite gtk hardfp mounted_sources multislot nls nocxx vanilla"
 
 GCC_CONFIG_VER=${PV}
 MY_PV=4.4.3
@@ -69,9 +69,9 @@ is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} = ${CHOST} ]] ; then
-	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
-		export CTARGET=${CATEGORY/cross-}
-	fi
+  if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
+    export CTARGET=${CATEGORY/cross-}
+  fi
 fi
 
 if use multislot ; then
@@ -84,9 +84,9 @@ PREFIX=/usr
 LIBPATH=${PREFIX}/lib/gcc/${CTARGET}/${GCC_CONFIG_VER}
 INCLUDEPATH=${LIBPATH}/include
 if is_crosscompile ; then
-	BINPATH=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
+  BINPATH=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
 else
-	BINPATH=${PREFIX}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
+  BINPATH=${PREFIX}/${CTARGET}/gcc-bin/${GCC_CONFIG_VER}
 fi
 DATAPATH=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_CONFIG_VER}
 STDCXX_INCDIR=${LIBPATH}/include/g++-v${GCC_CONFIG_VER}
@@ -112,16 +112,18 @@ src_unpack() {
   if [[ ! -z ${CL} ]] ; then
     COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
   fi
- 	ln -sf ${GCCDIR} ${S}
+  ln -sf ${GCCDIR} ${S}
 
-	use vanilla && return 0
+  use vanilla && return 0
 }
 
 src_compile()
 {
   src_configure
   pushd ${WORKDIR}/build
-  emake -j4 LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=${LIBPATH} BOOT_CFLAGS=-O2 all 
+  ORIG_CFLAGS=$(portageq envvar CFLAGS)
+  HARD_CFLAGS='-DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW'
+  emake -j4 CFLAGS="${HARD_CFLAGS} ${ORIG_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=${LIBPATH} BOOT_CFLAGS=-O2 all 
   popd
 }
 
@@ -140,7 +142,7 @@ src_install()
 
   # gcc itself expects libgcc_s.so to be in the ${MY_PV} dir.
   if [[ "${PV}" != "${MY_PV}" ]] ; then
-    rsync -r "${FROMDIR}/" "${D}/${PREFIX}/lib/gcc/${CTARGET}/${MY_PV}/"
+    rsync -a "${FROMDIR}/" "${D}/${PREFIX}/lib/gcc/${CTARGET}/${MY_PV}/"
   fi
 
   dodir /etc/env.d/gcc
@@ -156,18 +158,19 @@ EOF
   newins env.d ${CTARGET}-${GCC_CONFIG_VER}
   cd -
 
-	cd ${D}${BINPATH}
-	for x in c++ cpp g++ gcc gfortran ; do
-		if [[ -f "${CTARGET}-${x}" ]]; then
-			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-			cp --preserve=all "${FILESDIR}/sysroot_wrapper" "${CTARGET}-${x}"
-		fi
-		CCACHE_BIN=$(which ccache || true)
-		mkdir -p "${D}/usr/lib/ccache/bin"
-		if [ -f "${CCACHE_BIN}" ]; then
-			ln -sf "${CCACHE_BIN}" "${D}/usr/lib/ccache/bin/${CTARGET}-${x}"
-		fi
-	done
+  cd ${D}${BINPATH}
+  cp --preserve=all "${FILESDIR}/sysroot_wrapper" .
+  for x in c++ cpp g++ gcc gfortran ; do
+    if [[ -f "${CTARGET}-${x}" ]]; then
+      mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
+      ln -sf -T sysroot_wrapper "${CTARGET}-${x}"
+    fi
+    CCACHE_BIN=$(which ccache || true)
+    mkdir -p "${D}/usr/lib/ccache/bin"
+    if [ -f "${CCACHE_BIN}" ]; then
+      ln -sf "${CCACHE_BIN}" "${D}/usr/lib/ccache/bin/${CTARGET}-${x}"
+    fi
+  done
 }
 
 pkg_postinst()
@@ -177,14 +180,14 @@ pkg_postinst()
 
 pkg_postrm()
 {
-	if is_crosscompile ; then
-		if [[ -z $(ls "${ROOT}"/etc/env.d/gcc/${CTARGET}* 2>/dev/null) ]] ; then
-			rm -f "${ROOT}"/etc/env.d/gcc/config-${CTARGET}
-			rm -f "${ROOT}"/etc/env.d/??gcc-${CTARGET}
-			rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
-		fi
-		return 0
-	fi
+  if is_crosscompile ; then
+    if [[ -z $(ls "${ROOT}"/etc/env.d/gcc/${CTARGET}* 2>/dev/null) ]] ; then
+      rm -f "${ROOT}"/etc/env.d/gcc/config-${CTARGET}
+      rm -f "${ROOT}"/etc/env.d/??gcc-${CTARGET}
+      rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
+    fi
+    return 0
+  fi
 }
 
 # TODO(asharif): Move this into a separate file and source it.
@@ -200,16 +203,16 @@ src_configure()
   fi
 
   local confgcc
-	# Set configuration based on path variables
-	confgcc="${confgcc} \
-		--prefix=${PREFIX} \
-		--bindir=${BINPATH} \
-		--includedir=${INCLUDEPATH} \
-		--datadir=${DATAPATH} \
-		--mandir=${DATAPATH}/man \
-		--infodir=${DATAPATH}/info \
-		--with-gxx-include-dir=${STDCXX_INCDIR}"
-	confgcc="${confgcc} --host=${CHOST}"
+  # Set configuration based on path variables
+  confgcc="${confgcc} \
+    --prefix=${PREFIX} \
+    --bindir=${BINPATH} \
+    --includedir=${INCLUDEPATH} \
+    --datadir=${DATAPATH} \
+    --mandir=${DATAPATH}/man \
+    --infodir=${DATAPATH}/info \
+    --with-gxx-include-dir=${STDCXX_INCDIR}"
+  confgcc="${confgcc} --host=${CHOST}"
   confgcc="${confgcc} --target=${CTARGET}"
   confgcc="${confgcc} --build=${CBUILD}"
 
@@ -221,6 +224,11 @@ src_configure()
     GCC_LANG="c,c++,fortran"
   fi
   confgcc="${confgcc} --enable-languages=${GCC_LANG}"
+
+  if use hardfp && [[ ${CTARGET} == arm* ]] ;
+  then
+    confgcc="${confgcc} --with-float=hard"
+  fi
 
   local needed_libc="glibc"
   if [[ -n ${needed_libc} ]] ; then
@@ -240,15 +248,15 @@ src_configure()
  --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
   confgcc="${confgcc} ${EXTRA_ECONF}"
 
-  	# Build in a separate build tree
-	mkdir -p "${WORKDIR}"/build
-	pushd "${WORKDIR}"/build > /dev/null
+  # Build in a separate build tree
+  mkdir -p "${WORKDIR}"/build
+  pushd "${WORKDIR}"/build > /dev/null
 
-	# and now to do the actual configuration
-	addwrite /dev/zero
+  # and now to do the actual configuration
+  addwrite /dev/zero
   echo "Running this:"
   echo "configure ${confgcc}"
-	echo "${S}"/configure "$@"
-	"${S}"/configure ${confgcc} || die "failed to run configure"
+  echo "${S}"/configure "$@"
+  "${S}"/configure ${confgcc} || die "failed to run configure"
   popd > /dev/null
 }
