@@ -54,12 +54,6 @@ src_install() {
 	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
 
-	# Install disk cleanup script and run it hourly.
-	into /usr
-	dosbin "${S}/chromeos-cleanup-disk"
-	exeinto /etc/cron.hourly
-	doexe "${S}/cleanup-disk.hourly"
-
 	# Install log cleaning script and run it daily.
 	into /usr
 	dosbin "${S}/chromeos-cleanup-logs"
