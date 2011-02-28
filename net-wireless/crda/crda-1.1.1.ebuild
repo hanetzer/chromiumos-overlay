@@ -10,7 +10,7 @@ SRC_URI="http://wireless.kernel.org/download/crda/${P}.tar.bz2"
 LICENSE="as-is"
 SLOT="0"
 
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 arm ppc x86 ~amd64-linux ~x86-linux"
 IUSE=""
 RDEPEND="dev-libs/libgcrypt
 	dev-libs/libnl
@@ -22,12 +22,20 @@ src_unpack() {
 	unpack ${A}
 
 	##Make sure we install the rules where udev rules go...
-	sed -i -e "/^UDEV_RULE_DIR/s:lib:$(get_libdir):" "${S}"/Makefile || die \
-	"Makefile sed failed"
+	sed -i -e "/^UDEV_RULE_DIR/s:lib:$(get_libdir):" "${S}"/Makefile || \
+	    die "Makefile sed failed"
+
+	# install version that also handles "add" events
+	cp -f "${FILESDIR}"/regulatory.rules "${S}"/udev || \
+	    die "Failed to install new regulatory.rules"
 }
 
 src_compile() {
-	emake CC="$(tc-getCC)" || die "Compilation failed"
+	#
+	# NB: crda assumes regdbdump built for the target can run on
+	#     the build host which doesn't work; use all_noverify as
+	#     a WAR
+	emake CC="$(tc-getCC)" all_noverify || die "Compilation failed"
 }
 
 src_install() {

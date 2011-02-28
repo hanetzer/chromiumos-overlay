@@ -175,6 +175,7 @@ RDEPEND="${RDEPEND}
 	)
 	net-wireless/ath3k
 	net-wireless/ath6k
+	net-wireless/crda
 	net-wireless/marvell_sd8787
 	bluetooth? (
 		net-wireless/bluez

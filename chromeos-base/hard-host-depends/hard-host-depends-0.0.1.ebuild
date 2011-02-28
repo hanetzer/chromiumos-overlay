@@ -56,6 +56,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/protobuf
 	dev-python/cherrypy
 	dev-python/dbus-python
+	dev-python/m2crypto
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl

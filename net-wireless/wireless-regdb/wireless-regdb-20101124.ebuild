@@ -11,7 +11,7 @@ SRC_URI="http://wireless.kernel.org/download/wireless-regdb/${MY_P}.tar.bz2"
 LICENSE="as-is"
 SLOT="0"
 
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 arm ppc x86 ~amd64-linux ~x86-linux"
 IUSE=""
 
 S="${WORKDIR}/${MY_P}"
