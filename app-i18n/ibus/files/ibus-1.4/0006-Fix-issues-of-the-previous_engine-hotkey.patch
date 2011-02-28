@@ -1,4 +1,4 @@
-From 1cd6cb86e83c304de0b2641b94a0fb3077e7ee69 Mon Sep 17 00:00:00 2001
+From 745a8b10acda964cb48251f13d450e7a84a0e890 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 15 Sep 2010 12:25:17 +0900
 Subject: [PATCH 6/8] Fix issues of the "previous_engine" hotkey.
@@ -38,10 +38,10 @@ preloaded.
  1 files changed, 11 insertions(+), 0 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 7e2c212..bcf646d 100644
+index 1520bd7..90cb780 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
-@@ -1080,6 +1080,7 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
+@@ -1086,6 +1086,7 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
                                                 BusInputContext *context)
  {
      gchar *engine_name = NULL;
@@ -49,7 +49,7 @@ index 7e2c212..bcf646d 100644
      if (!ibus->use_global_engine) {
          engine_name = (gchar *) g_object_get_data (G_OBJECT (context), "previous-engine-name");
      }
-@@ -1088,6 +1089,16 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
+@@ -1094,6 +1095,16 @@ bus_ibus_impl_context_request_previous_engine (BusIBusImpl     *ibus,
              ibus->global_previous_engine_name = bus_ibus_impl_load_global_previous_engine_name_from_config (ibus);
          }
          engine_name = ibus->global_previous_engine_name;
@@ -67,5 +67,5 @@ index 7e2c212..bcf646d 100644
  
      /*
 -- 
-1.7.1
+1.7.3.1
 

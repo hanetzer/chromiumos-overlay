@@ -1,4 +1,4 @@
-From c40f68b21d99a963887bdcabbeddad55e9feba30 Mon Sep 17 00:00:00 2001
+From 3985c4e460b1cdc500f952e798132471b24c5507 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 19 Jan 2011 09:55:46 +0900
 Subject: [PATCH 8/8] Port the following ibus-1.3 patches to 1.4.
@@ -25,10 +25,10 @@ Review URL: http://codereview.appspot.com/4027042/
  1 files changed, 55 insertions(+), 1 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index bcf646d..9869420 100644
+index 90cb780..24f2e36 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
-@@ -623,6 +623,23 @@ bus_ibus_impl_reload_config (BusIBusImpl *ibus)
+@@ -626,6 +626,23 @@ bus_ibus_impl_reload_config (BusIBusImpl *ibus)
      }
  }
  
@@ -52,7 +52,7 @@ index bcf646d..9869420 100644
  /**
   * _config_value_changed_cb:
   *
-@@ -645,7 +662,16 @@ _config_value_changed_cb (IBusConfig  *config,
+@@ -648,7 +665,16 @@ _config_value_changed_cb (IBusConfig  *config,
      for (i = 0; i < G_N_ELEMENTS (bus_ibus_impl_config_items); i++) {
          if (g_strcmp0 (bus_ibus_impl_config_items[i].section, section) == 0 &&
              g_strcmp0 (bus_ibus_impl_config_items[i].key, key) == 0) {
@@ -70,7 +70,7 @@ index bcf646d..9869420 100644
              break;
          }
      }
-@@ -1601,6 +1627,32 @@ _ibus_list_engines (BusIBusImpl           *ibus,
+@@ -1607,6 +1633,32 @@ _ibus_list_engines (BusIBusImpl           *ibus,
      g_dbus_method_invocation_return_value (invocation, g_variant_new ("(av)", &builder));
  }
  
@@ -103,7 +103,7 @@ index bcf646d..9869420 100644
  /**
   * _ibus_list_active_engines:
   *
-@@ -1613,6 +1665,7 @@ _ibus_list_active_engines (BusIBusImpl           *ibus,
+@@ -1619,6 +1671,7 @@ _ibus_list_active_engines (BusIBusImpl           *ibus,
  {
      GVariantBuilder builder;
      g_variant_builder_init (&builder, G_VARIANT_TYPE ("av"));
@@ -111,14 +111,14 @@ index bcf646d..9869420 100644
  
      GList *p;
      for (p = ibus->engine_list; p != NULL; p = p->next) {
-@@ -1843,6 +1896,7 @@ _ibus_set_global_engine (BusIBusImpl           *ibus,
-         return;
-     }
+@@ -1834,6 +1887,7 @@ _ibus_set_global_engine (BusIBusImpl           *ibus,
+     const gchar *engine_name = NULL;
+     g_variant_get (parameters, "(&s)", &engine_name);
  
 +    _reload_preload_engines (ibus);
-     IBusEngineDesc *desc = _find_engine_desc_by_name (ibus, new_engine_name);
+     IBusEngineDesc *desc = _find_engine_desc_by_name (ibus, engine_name);
      if (desc == NULL) {
          g_dbus_method_invocation_return_error (invocation,
 -- 
-1.7.1
+1.7.3.1
 

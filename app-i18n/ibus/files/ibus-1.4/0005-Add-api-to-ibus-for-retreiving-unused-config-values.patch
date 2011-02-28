@@ -1,4 +1,4 @@
-From f1a4a3f6179308aa059d023e35ec0c219e7e6fb2 Mon Sep 17 00:00:00 2001
+From af23adb38c4758f1d33b313a1968acaa3fccf798 Mon Sep 17 00:00:00 2001
 From: Zach Kuznia <zork@chromium.org>
 Date: Thu, 1 Jul 2010 14:08:00 +0900
 Subject: [PATCH 5/8] Add api to ibus for retreiving unused config values.
@@ -436,5 +436,5 @@ index 1aab32f..c6c62ae 100644
  #endif
 -
 -- 
-1.7.1
+1.7.3.1
 

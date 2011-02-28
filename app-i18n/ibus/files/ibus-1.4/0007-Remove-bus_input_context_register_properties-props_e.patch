@@ -1,4 +1,4 @@
-From 5bca3ea5cc92198c7f874f4b52e93916f8f0b2a8 Mon Sep 17 00:00:00 2001
+From 195f822b51fe3f762df7c3261810a2c97652b38b Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Tue, 19 Oct 2010 20:23:03 +0900
 Subject: [PATCH 7/8] Remove bus_input_context_register_properties(props_empty) call from the focus out handler
@@ -34,5 +34,5 @@ index c226a20..88aca54 100644
      if (context->engine && context->enabled) {
          bus_engine_proxy_focus_out (context->engine);
 -- 
-1.7.1
+1.7.3.1
 
