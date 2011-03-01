@@ -26,6 +26,8 @@ RDEPEND="
   chromeos-base/flimflam
   >=chromeos-base/vpd-0.0.1-r11
   xset? ( x11-apps/xset )
+  || ( >chromeos-base/autotest-tests-0.0.1-r335
+       !<=chromeos-base/autotest-tests-0.0.1-r335 )
 "
 
 DEPEND="${RDEPEND}"
