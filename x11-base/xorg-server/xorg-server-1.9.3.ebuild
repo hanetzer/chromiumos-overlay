@@ -171,7 +171,6 @@ pkg_setup() {
 		$(use_enable tslib xcalibrate)
 		$(use_enable !minimal xvfb)
 		$(use_enable !minimal xnest)
-		$(use_enable !minimal record)
 		$(use_enable !minimal xfree86-utils)
 		$(use_enable !minimal install-libxf86config)
 		$(use_enable !minimal dri)
@@ -191,6 +190,11 @@ pkg_setup() {
 		--without-dtrace
 		--without-fop
 		--with-sha1=libcrypto
+		--disable-dbe
+		--disable-xvmc
+		--disable-record
+		--disable-xdmcp
+		--disable-dga
 		${conf_opts}"
 
 	# Xorg-server requires includes from OS mesa which are not visible for
