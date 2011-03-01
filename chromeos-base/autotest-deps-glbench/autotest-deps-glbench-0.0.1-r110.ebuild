@@ -31,6 +31,8 @@ RDEPEND="${RDEPEND}
   chromeos-base/libchrome
   virtual/opengl
   opengles? ( virtual/opengles )
+  || ( >chromeos-base/autotest-deps-0.0.1-r321
+       !<=chromeos-base/autotest-deps-0.0.1-r321 )
 "
 
 DEPEND="${RDEPEND}"
