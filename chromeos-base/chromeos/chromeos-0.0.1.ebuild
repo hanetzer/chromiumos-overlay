@@ -64,9 +64,6 @@ IUSE="bluetooth +localssh modemmanager X"
 ################################################################################
 
 
-DEPEND="chromeos-base/internal
-	   sys-apps/baselayout"
-
 # Enable ssh locally for chromium-os device.
 RDEPEND="${RDEPEND}
 	localssh? (
@@ -123,7 +120,7 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
-        "
+	"
 
 #TODO(micahc): Remove board-devices from RDEPEND in lieu of virtual/chromeos-bsp
 RDEPEND="${RDEPEND}
@@ -223,3 +220,32 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	sys-apps/which
 	"
+
+
+DEPEND="${RDEPEND}"
+
+
+generate_font_cache() {
+	# Run the emulator to generate the font cache. It needs to be copied
+	# temporarily into the sysroot because we chroot to it. fc-cache needs the
+	# font files to be located in their final resting place.
+	local qemu
+	case "${ARCH}" in
+		arm)
+			qemu="qemu-arm"
+			;;
+		x86)
+			qemu="qemu-i386"
+			;;
+		*)
+			die "Unable to determine QEMU from ARCH."
+	esac
+	cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
+	mkdir -p "${ROOT}/usr/share/fontconfig" || die
+	chroot "${ROOT}" "/tmp/${qemu}" /usr/bin/fc-cache -f || die
+	rm "${ROOT}/tmp/${qemu}" || die
+}
+
+pkg_postinst() {
+	generate_font_cache
+}
