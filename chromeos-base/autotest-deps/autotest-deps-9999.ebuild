@@ -32,6 +32,9 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 # deps/gtest
 RDEPEND="
   dev-cpp/gtest
+"
+
+PDEPEND="${PDEPEND}
   chromeos-base/autotest-deps-libaio
 "
 
