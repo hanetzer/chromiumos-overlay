@@ -33,9 +33,6 @@ export CHROMEOS_VERSION_BRANCH=215
 # Reset to 0 when increasing branch number.
 export CHROMEOS_VERSION_PATCH=0
 
-# Codename of this version.
-export CHROMEOS_VERSION_CODENAME=""
-
 #############################################################################
 # SET VERSION STRINGS
 #############################################################################
@@ -52,22 +49,12 @@ then
 elif [ "$USER" = "chrome-bot" ]
 then
   # Continuous builder
-  # Sets the codename to the user who built the image. This
-  # will help us figure out who did the build if a different
-  # person is debugging the system.
-  export CHROMEOS_VERSION_CODENAME="$USER"
-
   export CHROMEOS_VERSION_NAME=${CHROMEOS_VERSION_NAME:-"Chromium OS"}
   export CHROMEOS_VERSION_TRACK=${CHROMEOS_VERSION_TRACK:-"buildbot-build"}
   export CHROMEOS_VERSION_AUSERVER=${CHROMEOS_VERSION_AUSERVER:-"http://$HOSTNAME:8080/update"}
   export CHROMEOS_VERSION_DEVSERVER=${CHROMEOS_VERSION_DEVSERVER:-"http://$HOSTNAME:8080"}
 else
   # Developer hand-builds
-  # Sets the codename to the user who built the image. This
-  # will help us figure out who did the build if a different
-  # person is debugging the system.
-  export CHROMEOS_VERSION_CODENAME="$USER"
-
   export CHROMEOS_VERSION_NAME=${CHROMEOS_VERSION_NAME:-"Chromium OS"}
   export CHROMEOS_VERSION_TRACK=${CHROMEOS_VERSION_TRACK:-"developer-build"}
   export CHROMEOS_VERSION_AUSERVER=${CHROMEOS_VERSION_AUSERVER:-"http://$HOSTNAME:8080/update"}

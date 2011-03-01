@@ -78,7 +78,6 @@ fi
 
 # Set google-specific version numbers:
 # CHROMEOS_RELEASE_BOARD is the target board identifier.
-# CHROMEOS_RELEASE_CODENAME is the codename of the release.
 # CHROMEOS_RELEASE_DESCRIPTION is the version displayed by Chrome; see
 #   chrome/browser/chromeos/chromeos_version_loader.cc.
 # CHROMEOS_RELEASE_NAME is a human readable name for the build.
@@ -89,7 +88,6 @@ fi
 cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/lsb-release"
 CHROMEOS_RELEASE_APPID=$CHROMEOS_RELEASE_APPID
 CHROMEOS_RELEASE_BOARD=$FLAGS_board
-CHROMEOS_RELEASE_CODENAME=$CHROMEOS_VERSION_CODENAME
 CHROMEOS_RELEASE_DESCRIPTION=$CHROMEOS_VERSION_DESCRIPTION
 CHROMEOS_RELEASE_NAME=$CHROMEOS_VERSION_NAME
 CHROMEOS_RELEASE_TRACK=$CHROMEOS_VERSION_TRACK
