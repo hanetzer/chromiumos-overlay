@@ -130,6 +130,7 @@ IUSE_TESTS="
 	+tests_login_DBusCalls
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
+	+tests_login_OwnershipApi
 	+tests_login_OwnershipTaken
 	+tests_login_OwnershipNotRetaken
 	+tests_login_RemoteLogin
