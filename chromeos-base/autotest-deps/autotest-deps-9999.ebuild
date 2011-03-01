@@ -34,7 +34,7 @@ RDEPEND="
   dev-cpp/gtest
 "
 
-PDEPEND="${PDEPEND}
+RDEPEND="${PDEPEND}
   chromeos-base/autotest-deps-libaio
 "
 
