@@ -57,7 +57,7 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj graphite gtk hardfp mounted_sources multislot nls nocxx vanilla"
+IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx vanilla"
 
 GCC_CONFIG_VER=${PV}
 MY_PV=4.4.3
@@ -122,8 +122,12 @@ src_compile()
   src_configure
   pushd ${WORKDIR}/build
   ORIG_CFLAGS=$(portageq envvar CFLAGS)
-  HARD_CFLAGS='-DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW'
-  emake -j4 CFLAGS="${HARD_CFLAGS} ${ORIG_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=${LIBPATH} BOOT_CFLAGS=-O2 all 
+  HARD_CFLAGS=''
+  if use hardened && [[ ${CTARGET} != arm* ]] ;
+  then
+    HARD_CFLAGS='-DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW'
+  fi
+  emake CFLAGS="${HARD_CFLAGS} ${ORIG_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' LIBPATH=${LIBPATH} BOOT_CFLAGS=-O2 all 
   popd
 }
 
