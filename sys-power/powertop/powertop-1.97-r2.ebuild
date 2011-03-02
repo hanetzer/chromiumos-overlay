@@ -24,6 +24,7 @@ src_unpack() {
 	sed -i '/${CFLAGS}/s:$: ${LDFLAGS}:' Makefile
 	sed -i 's:-lncursesw:-lncurses:' Makefile
 	epatch "${FILESDIR}/${P}-fix-makefile.patch"
+	epatch "${FILESDIR}/${P}-arm-cpu-detection.patch"
 }
 
 src_compile() {
