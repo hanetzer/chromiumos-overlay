@@ -26,18 +26,20 @@ CROS_WORKON_PROJECT="common"
 CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 
 src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
-
+	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	scons || die "third_party/chrome compile failed."
+}
+
+src_test() {
+	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
+	scons || die
+	if ! use x86; then
+	        echo Skipping unit tests on non-x86 platform
+	else
+	        ./unittests || die "unittests failed"
+	fi
 }
 
 src_install() {
@@ -53,7 +55,11 @@ src_install() {
 	insinto "/usr/include/chromeos"
 	doins "${S}/chromeos/callback.h"
 	doins "${S}/chromeos/exception.h"
+	doins "${S}/chromeos/process.h"
+	doins "${S}/chromeos/process_mock.h"
 	doins "${S}/chromeos/string.h"
+	doins "${S}/chromeos/syslog_logging.h"
+	doins "${S}/chromeos/test_helpers.h"
 	doins "${S}/chromeos/utility.h"
 
 	insinto "/usr/include/chromeos/dbus"
