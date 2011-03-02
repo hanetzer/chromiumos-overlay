@@ -3,7 +3,8 @@
 
 EAPI=2
 
-inherit cros-workon autotest-deponly
+CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
+inherit cros-workon autotest-deponly conflict
 
 DESCRIPTION="Autotest iotools dep"
 HOMEPAGE="http://src.chromium.org"
@@ -24,9 +25,5 @@ AUTOTEST_DEPS_LIST="iotools"
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
-RDEPEND="${RDEPEND}
-  || ( >chromeos-base/autotest-deps-0.0.1-r321
-       !<=chromeos-base/autotest-deps-0.0.1-r321 )
-"
 DEPEND="${RDEPEND}"
 

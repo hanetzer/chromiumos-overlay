@@ -3,7 +3,8 @@
 
 EAPI=2
 
-inherit cros-workon autotest-deponly
+CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
+inherit cros-workon autotest-deponly conflict
 
 DESCRIPTION="Autotest glbench dep"
 HOMEPAGE="http://src.chromium.org"
@@ -30,8 +31,6 @@ RDEPEND="${RDEPEND}
   chromeos-base/libchrome
   virtual/opengl
   opengles? ( virtual/opengles )
-  || ( >chromeos-base/autotest-deps-0.0.1-r321
-       !<=chromeos-base/autotest-deps-0.0.1-r321 )
 "
 
 DEPEND="${RDEPEND}"

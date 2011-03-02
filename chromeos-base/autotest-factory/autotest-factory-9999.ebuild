@@ -3,7 +3,8 @@
 
 EAPI=2
 
-inherit toolchain-funcs flag-o-matic cros-workon autotest
+CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r335"
+inherit toolchain-funcs flag-o-matic cros-workon autotest conflict
 
 DESCRIPTION="Autotest Factory tests"
 HOMEPAGE="http://src.chromium.org"
@@ -26,8 +27,6 @@ RDEPEND="
   chromeos-base/flimflam
   >=chromeos-base/vpd-0.0.1-r11
   xset? ( x11-apps/xset )
-  || ( >chromeos-base/autotest-tests-0.0.1-r335
-       !<=chromeos-base/autotest-tests-0.0.1-r335 )
 "
 
 DEPEND="${RDEPEND}"
