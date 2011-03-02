@@ -191,7 +191,18 @@ pkg_setup() {
 		--without-dtrace
 		--without-fop
 		--with-sha1=libcrypto
+		--disable-xvmc
+		--disable-xdmcp
+		--disable-screensaver
+		--disable-xdm-auth-1
+		--disable-dbe
+		--disable-xinerama
 		${conf_opts}"
+
+	# Things we may want to remove later: 
+	#	--disable-xaa (requires dropping all xaa drivers)
+	#	--disable-xv (requires fixing the xserver and the drivers)
+	#	--disable-dga (requires DGA removal from the vesa driver)
 
 	# Xorg-server requires includes from OS mesa which are not visible for
 	# users of binary drivers.
