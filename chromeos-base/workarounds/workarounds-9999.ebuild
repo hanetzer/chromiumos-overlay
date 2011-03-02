@@ -13,11 +13,9 @@ KEYWORDS="~x86 ~arm"
 SLOT="0"
 IUSE=""
 
-#TODO(sosa) - Remove once file collisions have passed.
-RDEPEND="chromeos-base/metrics"
+RDEPEND=""
 
 src_install() {
-        dobin channel_change
-        dobin crosh-workarounds
+	dobin crosh-workarounds
 	dobin generate_logs
 }
