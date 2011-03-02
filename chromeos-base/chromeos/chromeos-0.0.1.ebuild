@@ -225,10 +225,9 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 
-generate_font_cache() {
-	# Run the emulator to generate the font cache. It needs to be copied
-	# temporarily into the sysroot because we chroot to it. fc-cache needs the
-	# font files to be located in their final resting place.
+qemu_run() {
+	# Run the emulator to execute command. It needs to be copied
+	# temporarily into the sysroot because we chroot to it.
 	local qemu
 	case "${ARCH}" in
 		arm)
@@ -241,11 +240,32 @@ generate_font_cache() {
 			die "Unable to determine QEMU from ARCH."
 	esac
 	cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
-	mkdir -p "${ROOT}/usr/share/fontconfig" || die
-	chroot "${ROOT}" "/tmp/${qemu}" /usr/bin/fc-cache -f || die
+	chroot "${ROOT}" "/tmp/${qemu}" $* || die
 	rm "${ROOT}/tmp/${qemu}" || die
+}
+
+generate_font_cache() {
+	mkdir -p "${ROOT}/usr/share/fontconfig" || die
+	# fc-cache needs the font files to be located in their final resting place.
+	qemu_run "/usr/bin/fc-cache -f"
+}
+
+generate_gtk_config() {
+	local gtk2_confdir="/etc/gtk-2.0"
+
+	mkdir -p "${ROOT}/${gtk2_confdir}" || die
+
+	# Generate gtk+ config file via qemu inside chroot.
+	# See http:/crosbug.com/12284
+	qemu_run "/usr/bin/gtk-query-immodules-2.0" \
+		> "${ROOT}/${gtk2_confdir}/gtk.immodules"
+	qemu_run "/usr/bin/gdk-pixbuf-query-loaders" \
+		> "${ROOT}/${gtk2_confdir}/gdk-pixbuf.loaders"
 }
 
 pkg_postinst() {
 	generate_font_cache
+
+	# This can be moved to gtk+ ebuild if necessary.
+	generate_gtk_config
 }
