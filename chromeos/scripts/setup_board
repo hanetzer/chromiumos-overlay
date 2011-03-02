@@ -76,7 +76,7 @@ uninstall_toolchain() {
   echo "Uninstalling the toolchain."
   # Even if the uninstall fails, keep going. It's likely
   # that it didn't exist in the first place.
-  sudo crossdev -v -C $FLAGS_toolchain || true
+  yes | sudo crossdev -v -C $FLAGS_toolchain || true
 }
 
 # Build the toolchain with crossdev.
