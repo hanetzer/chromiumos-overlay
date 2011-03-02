@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs cros-workon
+inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Chrome OS base library."
 HOMEPAGE="http://src.chromium.org"
