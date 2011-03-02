@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Script to set /etc/lsb-release on the root file system.
+
+# --- BEGIN COMMON.SH BOILERPLATE ---
+# Load common CrOS utilities.  Inside the chroot this file is installed in
+# /usr/lib/crosutils.  Outside the chroot we find it relative to the script's
+# location.
+find_common_sh() {
+  local common_paths=(/usr/lib/crosutils $(dirname "$0"))
+  local path
+
+  SCRIPT_ROOT=
+  for path in "${common_paths[@]}"; do
+    if [ -r "${path}/common.sh" ]; then
+      SCRIPT_ROOT=${path}
+      break
+    fi
+  done
+}
+
+find_common_sh
+. "${SCRIPT_ROOT}/common.sh" || (echo "Unable to load common.sh" && exit 1)
+# --- END COMMON.SH BOILERPLATE ---
+
+# Script must be run inside the chroot
+restart_in_chroot_if_needed "$@"
+
+# Flags
+DEFINE_string target "x86" \
+  "The target architecture to build for. One of { x86, arm }."
+DEFINE_string board ""      \
+  "The board to build an image for."
+DEFINE_string root ""      \
+  "The root file system to customize."
+
+# Parse command line
+FLAGS "$@" || exit 1
+eval set -- "${FLAGS_ARGV}"
+
+# Die on any errors.
+set -e
+
+. ${SRC_ROOT}/third_party/chromiumos-overlay/chromeos/config/chromeos_version.sh
+
+ROOT_FS_DIR="$FLAGS_root"
+if [[ -z "$ROOT_FS_DIR" ]]; then
+  echo "Error: --root is required."
+  exit 1
+fi
+if [[ ! -d "$ROOT_FS_DIR" ]]; then
+  echo "Error: Root FS does not exist? ($ROOT_FS_DIR)"
+  exit 1
+fi
+
+# TODO: Is this still necessary?
+sudo chmod 0755 "${ROOT_FS_DIR}/."
+
+# Write stock lsb-release file
+# Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)
+# Was removed from chromeos_version.sh which can also be run outside of chroot
+if [ ${CHROMEOS_OFFICIAL:-0} = 1 ]; then
+  export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Official Build) ${CHROMEOS_VERSION_TRACK%-*} $FLAGS_board test"
+elif [ "$USER" = "chrome-bot" ]; then
+  export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Continuous Build - Builder: ${BUILDBOT_BUILD:-"N/A"}) $FLAGS_board"
+else
+  export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Developer Build - $(date) - $USER) ${CHROMEOS_VERSION_TRACK%-*} $FLAGS_board"
+fi
+
+# Set google-specific version numbers:
+# CHROMEOS_RELEASE_BOARD is the target board identifier.
+# CHROMEOS_RELEASE_DESCRIPTION is the version displayed by Chrome; see
+#   chrome/browser/chromeos/chromeos_version_loader.cc.
+# CHROMEOS_RELEASE_NAME is a human readable name for the build.
+# CHROMEOS_RELEASE_TRACK and CHROMEOS_RELEASE_VERSION are used by the software
+#   update service.
+# TODO(skrul):  Remove GOOGLE_RELEASE once Chromium is updated to look at
+#   CHROMEOS_RELEASE_VERSION for UserAgent data.
+cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/lsb-release"
+CHROMEOS_RELEASE_APPID=$CHROMEOS_RELEASE_APPID
+CHROMEOS_RELEASE_BOARD=$FLAGS_board
+CHROMEOS_RELEASE_DESCRIPTION=$CHROMEOS_VERSION_DESCRIPTION
+CHROMEOS_RELEASE_NAME=$CHROMEOS_VERSION_NAME
+CHROMEOS_RELEASE_TRACK=$CHROMEOS_VERSION_TRACK
+CHROMEOS_RELEASE_VERSION=$CHROMEOS_VERSION_STRING
+GOOGLE_RELEASE=$CHROMEOS_VERSION_STRING
+CHROMEOS_AUSERVER=$CHROMEOS_VERSION_AUSERVER
+CHROMEOS_DEVSERVER=$CHROMEOS_VERSION_DEVSERVER
+EOF
