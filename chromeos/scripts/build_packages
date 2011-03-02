@@ -198,9 +198,10 @@ if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   # We must force uninstall the old packages or the stale packages will
   # conflict with the new ebuilds.
   # http://codereview.chromium.org/6220003/
-  sudo -E ${EMERGE_BOARD_CMD} -C "<=chromeos-base/autotest-deps-0.0.1-r321"
-  sudo -E ${EMERGE_BOARD_CMD} -C "<=chromeos-base/autotest-tests-0.0.1-r335"
-  sudo -E ${EMERGE_BOARD_CMD} -C "<=chromeos-base/autotest-private-0.2.0-r23"
+  sudo -E ${EMERGE_BOARD_CMD} -C  \
+      "<=chromeos-base/autotest-deps-0.0.1-r321" \
+      "<=chromeos-base/autotest-tests-0.0.1-r335" \
+      "<=chromeos-base/autotest-private-0.2.0-r27"
 fi
 # HACK ALERT
 # Remove chromeos-base/kernel: http://crosbug.com/11124
