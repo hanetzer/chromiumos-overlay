@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="61e719072d7afa18ecd4b29278ed19ea36b12737"
+CROS_WORKON_COMMIT="f15efc6bc63aab6590b2b303785d0ab810ee5470"
 
 inherit toolchain-funcs cros-debug cros-workon
 
@@ -30,18 +30,18 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	scons || die "third_party/chrome compile failed."
+	scons libchromeos.a || die "libchromeos.a compile failed."
 }
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	scons || die
+	scons unittests || die
 	if ! use x86; then
 	        echo Skipping unit tests on non-x86 platform
 	else
-	        ./unittests || die "unittests failed"
+	        ./unittests || die "libchromeos unittests failed."
 	fi
 }
 
