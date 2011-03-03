@@ -56,14 +56,15 @@ src_install() {
 		# Related to devserver
 		dobin host/cros_generate_update_payload
 		dobin host/cros_generate_stateful_update_payload
-		# FIXME(zbehan): This all should live in /var/, probably? Needs a
-		# modification of devserver.
-		dodir /usr/bin/static
-		dosym /build /usr/bin/static/pkgroot
+		# Data directory
 		diropts -m0777 # Install cache as a+w.
-		dodir /var/devserver-cache
-		dosym /var/devserver-cache /usr/bin/static/cache
+		dodir /var/lib/devserver
+		dodir /var/lib/devserver/static
+		dodir /var/lib/devserver/static/cache
 		diropts -m0755
+		dosym /build /var/lib/devserver/static/pkgroot
+		# FIXME(zbehan): Remove compatibility symlink. Eventually.
+		dosym /var/lib/devserver/static /usr/bin/static
 	fi
 }
 
@@ -87,4 +88,21 @@ src_test() {
 		einfo "Running ${test}"
 		./${test} || die "Failed in ${test}"
 	done
+}
+
+pkg_preinst() {
+	# Handle pre-existing possibly problematic configurations of static
+	if use cros_host; then
+		if ! [ -L "/usr/bin/static" ]; then
+			einfo "/usr/bin/static detected, and is not a symlink, performing cleanup"
+			# Well, I don't know what else should be done about it. Moving the
+			# files has several issues: handling of all kinds of links, special
+			# files, permissions, etc. Autoremval is not a good idea, what if
+			# this ended up with accidental destruction of the system?
+			local newname="static-old-${RANDOM}" # In case this happens more than once.
+			mv /usr/bin/static /usr/bin/${newname}
+			ewarn "/usr/bin/${newname} has the previous contents of static."
+			ewarn "It can be safely deleted (or kept around forever)."
+		fi
+	fi
 }
