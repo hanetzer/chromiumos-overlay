@@ -29,18 +29,18 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	scons || die "third_party/chrome compile failed."
+	scons libchromeos.a || die "libchromeos.a compile failed."
 }
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	scons || die
+	scons unittests || die
 	if ! use x86; then
 	        echo Skipping unit tests on non-x86 platform
 	else
-	        ./unittests || die "unittests failed"
+	        ./unittests || die "libchromeos unittests failed."
 	fi
 }
 
