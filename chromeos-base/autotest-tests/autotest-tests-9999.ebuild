@@ -62,6 +62,7 @@ IUSE_TESTS="
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_FontCache
+	+tests_desktopui_GTK2Config
 	+tests_desktopui_IBusTest
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_ImeTest
