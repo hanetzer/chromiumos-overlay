@@ -58,31 +58,6 @@ construct_layout() {
 		die "Failed to cat firmware_layout_config."
 }
 
-construct_config() {
-	local text_base="0x$1"
-
-	#
-	# The cbootimage config file format is not yet documented.  Below is
-	# a minimal config file that merges a BCT file and bootloader; in
-	# this case our stub U-Boot image.  We do not use the Version, but it
-	# needs to be set.
-	#
-	# Currently a bug in cbootimage prevents us from setting Redundancy to
-	# 0.  Redundancy controls how many instances of the BCT should be
-	# written to the signed image.  A value of 1 causes two instances to
-	# be written.
-	#
-	# The BootLoader parameter specifies the bootloader image to use.  It
-	# also specifies the load address for the bootloader in RAM and the
-	# entry point of the resulting image.  For U-Boot these are the same
-	# value (TEXT_BASE).
-	#
-	echo "Bctfile=${bct_file};"
-	echo "Version=1;"
-	echo "Redundancy=1;"
-	echo "BootLoader=${stub_image},${text_base},${text_base},Complete;"
-}
-
 src_compile() {
 	hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
         gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
@@ -114,16 +89,14 @@ src_compile() {
 
 	#
 	# Sign the bootstub.  This is a combination of the board specific
-	# BCT and the stub U-Boot image.  The cbootimage tool takes a config
-	# file and an output filename to write to.
+	# BCT and the stub U-Boot image.
 	#
-	cat ${cfg_file} > boot.cfg ||
-		die "Failed to cat flash configuration file."
-
-	construct_config $(get_text_base) >> boot.cfg ||
-		die "Failed to create boot stub signing configuration file."
-
-	cbootimage boot.cfg bootstub.bin ||
+	cros_sign_bootstub \
+		--bct "${bct_file}" \
+		--flash "${cfg_file}" \
+		--bootstub "${stub_image}" \
+		--output bootstub.bin \
+		--text_base "0x$(get_text_base)" ||
 		die "Failed to sign boot stub image."
 
 	pack_firmware_image layout.py \
@@ -139,7 +112,6 @@ src_compile() {
 
 src_install() {
 	insinto /u-boot
-	doins boot.cfg || die
 	doins layout.py || die
 	doins image.bin || die
 	doins bootstub.bin || die

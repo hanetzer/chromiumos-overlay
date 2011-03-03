@@ -40,6 +40,7 @@ src_install() {
 		doexe host/cros_overlay_list
 		doexe host/cros_workon
 		doexe host/cros_choose_profile
+		doexe host/cros_sign_bootstub
 		doexe host/willis
 
 		# Devserver and friends:
