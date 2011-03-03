@@ -225,7 +225,7 @@ src_configure()
   then
     GCC_LANG="c"
   else
-    GCC_LANG="c,c++,fortran"
+    GCC_LANG="c,c++"
   fi
   confgcc="${confgcc} --enable-languages=${GCC_LANG}"
 
