@@ -102,6 +102,10 @@ src_unpack() {
     mkdir ${GITDIR}
     cd ${GITDIR} || die "Could not enter ${GITDIR}"
     git clone http://git.chromium.org/git/gcc.git . || die "Could not clone repo."
+    if [[ "${PV}" != "${MY_PV}" ]] ; then
+      GITHASH=$(git rev-list --max-count=1 --all)
+      echo "Getting latest hash: ${GITHASH}..."
+    fi
     git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
     cd -
     GCCDIR=${GITDIR}/gcc/${MY_P}
