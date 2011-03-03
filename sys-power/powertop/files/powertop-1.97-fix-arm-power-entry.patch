@@ -1,0 +1,13 @@
+diff --git a/cpu/cpu.cpp b/cpu/cpu.cpp
+index cab2061..4e7d989 100644
+--- a/cpu/cpu.cpp
++++ b/cpu/cpu.cpp
+@@ -745,7 +745,7 @@ void w_display_cpu_pstates(void)
+ 
+ 
+ struct power_entry {
+-#ifdef __x86_64__
++#ifndef __i386__
+ 	int dummy;
+ #endif
+ 	int64_t	type;

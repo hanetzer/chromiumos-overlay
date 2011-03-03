@@ -25,6 +25,7 @@ src_unpack() {
 	sed -i 's:-lncursesw:-lncurses:' Makefile
 	epatch "${FILESDIR}/${P}-fix-makefile.patch"
 	epatch "${FILESDIR}/${P}-arm-cpu-detection.patch"
+	epatch "${FILESDIR}/${P}-fix-arm-power-entry.patch"
 }
 
 src_compile() {
