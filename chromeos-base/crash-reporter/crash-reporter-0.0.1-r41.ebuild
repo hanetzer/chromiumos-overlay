@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="932e9358932b1c6c9db014d60f716b2adf23648e"
+CROS_WORKON_COMMIT="ef853af5a336c986548b62003b88cf3d60804476"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -17,6 +17,7 @@ IUSE="test"
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).
 RDEPEND="chromeos-base/google-breakpad
          chromeos-base/libchrome
+         chromeos-base/libchromeos
          chromeos-base/metrics
 	 chromeos-base/chromeos-ca-certificates
          dev-cpp/gflags
