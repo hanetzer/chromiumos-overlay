@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="efba42eb1025c5537b0423a9c7bad1e5755e9648"
+CROS_WORKON_COMMIT="5566eb1f7b84c262511820f560f55e5a5c08a1a2"
 
 inherit cros-workon
 
@@ -48,7 +48,7 @@ src_install() {
 		-e cros_overlay_list
 		"
 
-	local bin_files=$(ls bin/* | grep -v ${exclude_files})
+	local bin_files=$(find bin -maxdepth 1 -type f | grep -v ${exclude_files})
 	dobin ${bin_files} || die "Could not install executable scripts."
 	dosym loman.py /usr/bin/loman
 }
