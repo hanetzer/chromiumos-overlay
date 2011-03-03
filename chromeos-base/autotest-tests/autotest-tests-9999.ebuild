@@ -218,7 +218,6 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
-	+tests_security_BundledCRXs
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
 	+tests_security_NetworkListeners
