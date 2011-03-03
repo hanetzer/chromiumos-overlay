@@ -23,6 +23,6 @@
             'anush@chromium.org'],
     'chromeos-image' : ['petkov@chromium.org', 'sosa@chromium.org'],
     'fonts' : ['derat@chromium.org'],
-    'xorg' : ['derat@chromium.org'],
+    'xorg' : ['derat@chromium.org', 'marcheu@chromium.org'],
   },
 }
