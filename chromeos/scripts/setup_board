@@ -235,10 +235,10 @@ case "$TC_ARCH" in
 esac
 
 # Toolchain defaults
-# binutils-2.19.1-r1 is upstream r1, binutils-2.20.1-r5 is crosstool
+# binutils-2.19.1-r1 is upstream r1, binutils-2.20.1-r6 is crosstool
 if [ -z $FLAGS_binutils_version ]; then
   if [ "$ARCH" == "x86" ]; then
-    FLAGS_binutils_version="2.20.1-r5"
+    FLAGS_binutils_version="2.20.1-r6"
   else
     FLAGS_binutils_version="2.19.1-r1"
   fi
