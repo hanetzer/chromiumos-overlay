@@ -12,10 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
-
-DEPEND="dev-cpp/gtest
-	dev-libs/dbus-glib"
+IUSE="test"
 
 # TODO: Ideally this is only a build depend, but there is an ordering
 # issue where we need to make sure that libchrome is built first.
@@ -23,18 +20,23 @@ RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-glib
 	dev-libs/libpcre"
 
+DEPEND="${RDEPEND}
+	test? ( dev-cpp/gtest )"
+
 CROS_WORKON_PROJECT="common"
 CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export CCFLAGS="$CFLAGS"
 	scons || die "third_party/chrome compile failed."
 }
 
 src_test() {
-	tc-export CXX PKG_CONFIG
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export CCFLAGS="$CFLAGS"
 	scons || die
 	if ! use x86; then
 	        echo Skipping unit tests on non-x86 platform

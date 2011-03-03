@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="6060013fd2975a5269171daad3fc407dbb7b6df6"
+CROS_WORKON_COMMIT="53f00728ed27995b77ddb679d8ec94e59c26c259"
 
 inherit cros-workon
 
@@ -14,11 +14,9 @@ KEYWORDS="x86 arm"
 SLOT="0"
 IUSE=""
 
-#TODO(sosa) - Remove once file collisions have passed.
-RDEPEND="chromeos-base/metrics"
+RDEPEND=""
 
 src_install() {
-        dobin channel_change
-        dobin crosh-workarounds
+	dobin crosh-workarounds
 	dobin generate_logs
 }
