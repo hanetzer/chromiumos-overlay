@@ -164,7 +164,7 @@ EOF
 
   cd ${D}${BINPATH}
   cp --preserve=all "${FILESDIR}/sysroot_wrapper" .
-  for x in c++ cpp g++ gcc gfortran ; do
+  for x in c++ cpp g++ gcc; do
     if [[ -f "${CTARGET}-${x}" ]]; then
       mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
       ln -sf -T sysroot_wrapper "${CTARGET}-${x}"
