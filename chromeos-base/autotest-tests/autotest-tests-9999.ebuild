@@ -33,7 +33,6 @@ RDEPEND="
 "
 
 RDEPEND="${RDEPEND}
-  tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/pulseaudio )
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
 "
 
