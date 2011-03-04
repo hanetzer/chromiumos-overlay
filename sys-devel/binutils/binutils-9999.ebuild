@@ -69,6 +69,10 @@ src_unpack() {
     mkdir ${GITDIR}
     cd ${GITDIR} || die "Could not enter ${GITDIR}"
     git clone http://git.chromium.org/git/binutils.git . || die "Could not clone repo."
+    if [[ ${PV} == "9999" ]] ; then
+      GITHASH=$(git rev-list --max-count=1 --all)
+      echo "Getting latest hash: ${GITHASH}..."
+    fi
     git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
     cd -
  		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
@@ -84,14 +88,6 @@ src_unpack() {
   fi
   ln -s ${BINUTILS_DIR} ${S_BINUTILS}
 	ln -s ${GOLD_DIR} ${S_GOLD}
-
-	# Applying patches.
-	PATCH_DIR="${FILESDIR}"/binutils-2.20.1
-	for dir in "${S_BINUTILS}" "${S_GOLD}"; do
-		cd $dir
-		epatch "${PATCH_DIR}"/binutils-2.20.1-gnu-hash.patch
-		cd -
-	done
 
 	mkdir -p "${MY_BUILDDIR_BINUTILS}"
 	mkdir -p "${MYBUILDDIR_GOLD}"
