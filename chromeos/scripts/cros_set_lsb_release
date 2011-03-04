@@ -4,8 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Script to set /etc/lsb-release on the root file system. This script is sourced
-# by build_image inside chroot.
+# Script to set /etc/lsb-release on the root file system. This script is run by
+# build_image inside chroot.
 
 readonly COMMON_SH=/usr/lib/crosutils/common.sh
 if [ ! -r "${COMMON_SH}" ]; then
@@ -30,15 +30,29 @@ ROOT_FS_DIR="$FLAGS_root"
 [ -d "$ROOT_FS_DIR" ] || die "Root FS does not exist? ($ROOT_FS_DIR)"
 [ -n "${CHROMEOS_VERSION_STRING}" ] || die "chromeos_version.sh isn't sourced."
 
-# Write stock lsb-release file
-# Set CHROMEOS_VERSION_DESCRIPTION here (uses vars set in chromeos_version.sh)
-# Was removed from chromeos_version.sh which can also be run outside of chroot
+CHROMEOS_VERSION_NAME="Chromium OS"
+CHROMEOS_VERSION_AUSERVER="http://$(hostname):8080/update"
+CHROMEOS_VERSION_DEVSERVER="http://$(hostname):8080"
+
+# Official builds must set CHROMEOS_OFFICIAL=1.
 if [ ${CHROMEOS_OFFICIAL:-0} = 1 ]; then
-  export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Official Build) ${CHROMEOS_VERSION_TRACK%-*} $FLAGS_board test"
+  # Official builds (i.e., buildbot)
+  CHROMEOS_VERSION_TRACK="dev-channel"
+  CHROMEOS_VERSION_NAME="Chrome OS"
+  CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Official Build) \
+${CHROMEOS_VERSION_TRACK} $FLAGS_board test"
+  CHROMEOS_VERSION_AUSERVER="https://tools.google.com/service/update2"
+  CHROMEOS_VERSION_DEVSERVER=""
 elif [ "$USER" = "chrome-bot" ]; then
-  export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Continuous Build - Builder: ${BUILDBOT_BUILD:-"N/A"}) $FLAGS_board"
+  # Continuous builder
+  CHROMEOS_VERSION_TRACK="buildbot-build"
+  CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Continuous Build \
+- Builder: ${BUILDBOT_BUILD:-"N/A"}) $FLAGS_board"
 else
-  export CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Developer Build - $(date) - $USER) ${CHROMEOS_VERSION_TRACK%-*} $FLAGS_board"
+  # Developer hand-builds
+  CHROMEOS_VERSION_TRACK="developer-build"
+  CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Developer Build \
+- $USER) ${CHROMEOS_VERSION_TRACK} $FLAGS_board"
 fi
 
 # Set google-specific version numbers:
