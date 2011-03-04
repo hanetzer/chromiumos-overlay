@@ -259,6 +259,9 @@ src_install() {
 	# install the @x11-module-rebuild set for Portage
 	insinto /usr/share/portage/config/sets
 	newins "${FILESDIR}"/xorg-sets.conf xorg.conf || die
+
+	# crosbug.com/11553
+	dosym /usr/bin/Xorg /usr/bin/X11/X || die
 }
 
 pkg_postinst() {
