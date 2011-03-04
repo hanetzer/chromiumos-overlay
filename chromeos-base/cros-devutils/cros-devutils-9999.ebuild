@@ -62,9 +62,9 @@ src_install() {
 		dodir /var/lib/devserver/static
 		dodir /var/lib/devserver/static/cache
 		diropts -m0755
-		dosym /build /var/lib/devserver/static/pkgroot
+		dosym ../../../../build /var/lib/devserver/static/pkgroot
 		# FIXME(zbehan): Remove compatibility symlink. Eventually.
-		dosym /var/lib/devserver/static /usr/bin/static
+		dosym ../../var/lib/devserver/static /usr/bin/static
 	fi
 }
 
@@ -93,7 +93,7 @@ src_test() {
 pkg_preinst() {
 	# Handle pre-existing possibly problematic configurations of static
 	if use cros_host; then
-		if ! [ -L "/usr/bin/static" ]; then
+		if [ -e "/usr/bin/static" ] && ! [ -L "/usr/bin/static" ]; then
 			einfo "/usr/bin/static detected, and is not a symlink, performing cleanup"
 			# Well, I don't know what else should be done about it. Moving the
 			# files has several issues: handling of all kinds of links, special
