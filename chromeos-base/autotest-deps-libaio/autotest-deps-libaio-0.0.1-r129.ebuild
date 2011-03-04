@@ -2,12 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c2b3de883e51613c5c0965f82633299b4601a0cc"
+CROS_WORKON_COMMIT="5d49ebf23d86ee775c6a03b80ded17741b81203c"
 
 CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
 inherit cros-workon autotest-deponly conflict
 
-DESCRIPTION="Autotest iotools dep"
+DESCRIPTION="Autotest libaio dep"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -21,10 +21,9 @@ CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-AUTOTEST_DEPS_LIST="iotools"
+AUTOTEST_DEPS_LIST="libaio"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 DEPEND="${RDEPEND}"
-
