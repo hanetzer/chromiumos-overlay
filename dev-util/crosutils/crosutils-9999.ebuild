@@ -47,7 +47,8 @@ src_install() {
 		-e cros_overlay_list
 		"
 
-	local bin_files=$(find bin -maxdepth 1 -type f | grep -v ${exclude_files})
+	local bin_files=$(find bin -maxdepth 1 -type f -o -type l |
+	  grep -v ${exclude_files})
 	dobin ${bin_files} || die "Could not install executable scripts."
 	dosym loman.py /usr/bin/loman
 }
