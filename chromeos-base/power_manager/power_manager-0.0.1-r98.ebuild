@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="50cae8980a636add862b5cb3865b15d99fbe6b98"
+CROS_WORKON_COMMIT="7d48bf51cb884378d38d1aee4205f294d5e37a35"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -97,7 +97,6 @@ src_install() {
 
 	# Install scripts for setting up light sensor
 	exeinto "/lib/udev"
-	doexe "${S}/tsl2563-install.sh"
 	doexe "${S}/light-sensor-set-multiplier.sh"
 
 	# The platform specific light sensor tuning value is specified
@@ -105,6 +104,19 @@ src_install() {
 	if [ -n "$LIGHT_SENSOR_TUNEVAL" ]; then
 	sed -i -e "/TUNEVAL=/s/=.*/=$LIGHT_SENSOR_TUNEVAL/" \
 		"${D}/lib/udev/light-sensor-set-multiplier.sh"
+	fi
+
+	# Safely change this name by supporting backward compatibility.
+	if [ -f "${S}/tsl2563-install.sh" ]; then
+		doexe "${S}/tsl2563-install.sh"
+	else
+		doexe "${S}/light-sensor-install.sh"
+
+		# And of course the new file supports overlay-specific values.
+		sed -i -e "/NAME=/s/=.*/=${LIGHT_SENSOR_NAME:-tsl2563}/" \
+			-e "/BUS=/s/=.*/=${LIGHT_SENSOR_BUS:-2}/" \
+			-e "/ADDRESS=/s/=.*/=${LIGHT_SENSOR_ADDRESS:-0x29}/" \
+			"${D}/lib/udev/light-sensor-install.sh"
 	fi
 
 	# Install light sensor udev rules
