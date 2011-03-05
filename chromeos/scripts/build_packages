@@ -128,9 +128,9 @@ if [ -d "/build/${FLAGS_board}/etc" ]; then
   sudo ln -sf /etc/make.conf.user "/build/${FLAGS_board}/etc/make.conf.user"
 fi
 ${EMERGE_CMD} --info
-# TODO(raymes): This unmerges crossdev-wrappers which is deprecated.
+# TODO(raymes): This deselects crossdev-wrappers which is deprecated.
 # Remove this once everyone has upgraded their chroots.
-sudo -E ${EMERGE_CMD} --unmerge crossdev-wrappers
+sudo -E ${EMERGE_CMD} --deselect crossdev-wrappers
 eretry sudo -E ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)
@@ -192,16 +192,6 @@ if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
 fi
 if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/autotest-all"
-
-  # HACK ALERT
-  # Remove autotest deps r321 and earlier as some files have been moved.
-  # We must force uninstall the old packages or the stale packages will
-  # conflict with the new ebuilds.
-  # http://codereview.chromium.org/6220003/
-  sudo -E ${EMERGE_BOARD_CMD} -C  \
-      "<=chromeos-base/autotest-deps-0.0.1-r321" \
-      "<=chromeos-base/autotest-tests-0.0.1-r335" \
-      "<=chromeos-base/autotest-private-0.2.0-r27"
 fi
 # HACK ALERT
 # Remove chromeos-base/kernel: http://crosbug.com/11124

@@ -152,3 +152,8 @@ RDEPEND="${RDEPEND}
 	chromeos-base/ssh-known-hosts
 	chromeos-base/ssh-root-dot-dir
 	"
+
+# Uninstall these packages.
+RDEPEND="${RDEPEND}
+	!net-misc/dhcpcd
+	"
