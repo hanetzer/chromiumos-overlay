@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="dff51c91ff75ed77cf5d4e5fa7fa3295b6967d89"
+CROS_WORKON_COMMIT="06565e37329e292ad2a22e01d736a8d4a14070d5"
 
 inherit cros-workon
 
@@ -42,6 +42,7 @@ src_install() {
 		doexe host/cros_workon
 		doexe host/cros_choose_profile
 		doexe host/cros_sign_bootstub
+		doexe host/cros_write_firmware
 		doexe host/willis
 
 		# Devserver and friends:
@@ -66,6 +67,13 @@ src_install() {
 		dosym ../../../../build /var/lib/devserver/static/pkgroot
 		# FIXME(zbehan): Remove compatibility symlink. Eventually.
 		dosym ../../var/lib/devserver/static /usr/bin/static
+
+		# Install configuration files for cros_write_firmware.
+		dodir /usr/share/cros_write_firmware
+		insinto /usr/share/cros_write_firmware
+
+		doins host/share/cros_write_firmware/spi.script
+		doins host/share/cros_write_firmware/nvflash-spi.cfg
 	fi
 }
 
