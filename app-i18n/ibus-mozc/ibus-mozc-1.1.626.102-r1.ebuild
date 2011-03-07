@@ -24,6 +24,7 @@ src_configure() {
   export BUILD_COMMAND="emake"
 
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
+      --target_platform="ChromeOS" \
       --branding="${BRANDING}" --channel_dev=0 || die
 }
 
