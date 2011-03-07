@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_COMMIT="5aa87e2ef4f415ace37fc8599d940129ba49cea5"
 
 inherit toolchain-funcs
@@ -11,7 +11,9 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-initramfs -nfs"
+IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
+IUSE="-initramfs -nfs ${IUSE_KCONFIG}"
+REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 # disable compat_wireless with kernel-next
 USE="${USE} -compat_wireless"
 PROVIDE="virtual/kernel"

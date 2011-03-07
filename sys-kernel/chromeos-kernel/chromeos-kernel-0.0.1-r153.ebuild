@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_COMMIT="9c7b171050a1c7e81a649c941e0de382affbf27d"
 
 inherit toolchain-funcs
@@ -11,7 +11,9 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-compat_wireless -initramfs -nfs"
+IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64"
+IUSE="-compat_wireless -initramfs -nfs ${IUSE_KCONFIG}"
+REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
