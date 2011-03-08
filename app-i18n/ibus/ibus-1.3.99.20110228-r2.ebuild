@@ -43,6 +43,7 @@ src_prepare() {
 
         # TODO(yusukes): remove this patch later.
 	epatch "${FILESDIR}"/ibus-1.4/0001-Optimize-focus_in-to-avoid-call-some-UI-blocking-fun.patch
+	epatch "${FILESDIR}"/ibus-1.4/0002-Move-gtk_key_snooper_remove-from-function-object_fin.patch
 
         epatch "${FILESDIR}"/ibus-1.4/0003-Change-default-values-of-some-config.patch
 	epatch "${FILESDIR}"/ibus-1.4/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch
