@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="77230"
+CROS_SVN_COMMIT="77248"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -467,13 +467,15 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
+		# TODO(raymes): Re-enable sync_integration_tests and
+		# browser_tests for ARM after toolchain upgrade.
+		# See issues 12800,10018
 		TEST_TARGETS="page_cycler_tests
 			reliability_tests
-			sync_integration_tests
 			startup_tests
 			ui_tests"
 		if use x86; then  # Build PyAuto on x86 only.
-			TEST_TARGETS="${TEST_TARGETS} pyautolib browser_tests"
+			TEST_TARGETS="${TEST_TARGETS} pyautolib browser_tests sync_integration_tests"
 		fi
 		echo Building test targets: ${TEST_TARGETS}
 	fi
