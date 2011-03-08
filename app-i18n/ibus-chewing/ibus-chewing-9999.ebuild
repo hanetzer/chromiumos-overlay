@@ -19,7 +19,6 @@ IUSE="nls"
 RDEPEND=">=app-i18n/ibus-1.1
 	>=dev-libs/libchewing-0.3.2
 	dev-util/gob:2
-	x11-libs/gtk+:2
 	x11-libs/libXtst"
 DEPEND="${RDEPEND}
 	dev-util/cmake
