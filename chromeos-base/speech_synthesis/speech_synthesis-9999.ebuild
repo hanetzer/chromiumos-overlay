@@ -21,8 +21,7 @@ DEPEND="chromeos-base/libchrome
 	dev-libs/libxml2
 	media-libs/alsa-lib
 	media-libs/libresample
-	media-libs/pico
-	media-sound/pulseaudio"
+	media-libs/pico"
 
 RDEPEND="${DEPEND}"
 
