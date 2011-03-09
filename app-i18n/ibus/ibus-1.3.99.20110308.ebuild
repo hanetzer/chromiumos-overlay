@@ -7,7 +7,7 @@ inherit eutils flag-o-matic multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}_unofficial2.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -41,16 +41,14 @@ src_prepare() {
 	#epatch "${FILESDIR}"/ibus-1.4/0001-Merge-xkb-related-changes.patch
 	#epatch "${FILESDIR}"/ibus-1.4/0002-Support-changing-the-global-input-method-engine-with.patch
 
-        # TODO(yusukes): remove this patch later.
-	epatch "${FILESDIR}"/ibus-1.4/0001-Optimize-focus_in-to-avoid-call-some-UI-blocking-fun.patch
-	epatch "${FILESDIR}"/ibus-1.4/0002-Move-gtk_key_snooper_remove-from-function-object_fin.patch
-
         epatch "${FILESDIR}"/ibus-1.4/0003-Change-default-values-of-some-config.patch
 	epatch "${FILESDIR}"/ibus-1.4/0004-If-the-current-engine-is-removed-then-switch-to-anot.patch
 	epatch "${FILESDIR}"/ibus-1.4/0005-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/ibus-1.4/0006-Fix-issues-of-the-previous_engine-hotkey.patch
 	epatch "${FILESDIR}"/ibus-1.4/0007-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/ibus-1.4/0008-Port-the-following-ibus-1.3-patches-to-1.4.patch
+
+	# TODO(zork,yusukes): Upstream the patch and remove this line.
 	epatch "${FILESDIR}"/ibus-1.4/0009-Remove-services-from-hash-table-before-cleanup.patch
 }
 
