@@ -19,7 +19,8 @@ SLOT="0"
 KEYWORDS="alpha amd64 hppa ia64 ppc ppc64 sparc x86"
 IUSE="doc"
 
-RDEPEND="dev-libs/openssl"
+RDEPEND="dev-libs/openssl
+	sys-devel/libtool"  # libltdl.so is used.
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	doc? ( app-doc/doxygen )"
