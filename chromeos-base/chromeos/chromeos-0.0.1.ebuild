@@ -135,6 +135,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-xkb-layouts
 	app-laptop/laptop-mode-tools
 	app-shells/dash
+	chromeos-base/audioconfig
 	chromeos-base/board-devices
 	chromeos-base/bootstat
 	chromeos-base/cashew
