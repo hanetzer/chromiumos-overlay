@@ -164,7 +164,6 @@ RDEPEND="${RDEPEND}
 	media-plugins/alsa-plugins
 	media-plugins/o3d
 	media-sound/alsa-utils
-	media-sound/pulseaudio
 	net-firewall/iptables
 	net-misc/htpdate
 	modemmanager? (
