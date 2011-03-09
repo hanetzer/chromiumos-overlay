@@ -10,7 +10,9 @@ KEYWORDS="~arm"
 IUSE="debug"
 EAPI="2"
 
-DEPEND="sys-boot/chromeos-u-boot-next-build-env"
+DEPEND="
+    sys-boot/chromeos-u-boot-next-build-env
+    chromeos-base/vboot_reference"
 
 CROS_WORKON_PROJECT=vboot_reference
 CROS_WORKON_LOCALNAME=vboot_reference
