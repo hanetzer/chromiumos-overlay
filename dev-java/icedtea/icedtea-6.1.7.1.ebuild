@@ -74,10 +74,7 @@ RDEPEND=">=net-print/cups-1.2.12
 #   ca-certificates, perl and openssl are used for the cacerts keystore generation
 #   xext headers have two variants depending on version - bug #288855
 DEPEND="${RDEPEND}
-	|| (
-		dev-java/icedtea6-bin
-		dev-java/icedtea:${SLOT}
-	)
+	dev-java/icedtea6-bin
 	>=virtual/jdk-1.5
 	app-arch/zip
 	>=dev-java/xalan-2.7.0:0
@@ -125,12 +122,12 @@ pkg_setup_compile_time_only() {
 	# to limit supported VM's for building and their preferred order
 	if [[ -n "${JAVA_PKG_FORCE_VM}" ]]; then
 		einfo "Honoring user-set JAVA_PKG_FORCE_VM"
+	elif has_version dev-java/icedtea6-bin; then
+		JAVA_PKG_FORCE_VM="icedtea6-bin"
 	elif has_version "dev-java/icedtea:${SLOT}"; then
 		JAVA_PKG_FORCE_VM="icedtea6"
 	elif has_version dev-java/icedtea6; then
 		JAVA_PKG_FORCE_VM="icedtea6"
-	elif has_version dev-java/icedtea6-bin; then
-		JAVA_PKG_FORCE_VM="icedtea6-bin"
 	elif has_version dev-java/gcj-jdk; then
 		JAVA_PKG_FORCE_VM="gcj-jdk"
 	elif has_version dev-java/cacao; then
@@ -153,7 +150,7 @@ pkg_setup_compile_time_only() {
 }
 
 src_unpack() {
-        pkg_setup_compile_time_only
+	pkg_setup_compile_time_only
 
 	if [[ -n ${DIE_IF_NOT_BINPKG} ]]; then
 		die "Unable to find a supported VM for building"
