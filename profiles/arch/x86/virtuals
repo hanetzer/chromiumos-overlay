@@ -7,3 +7,4 @@
 # mappings
 
 virtual/bootloader		sys-boot/grub
+virtual/perf			dev-util/perf
