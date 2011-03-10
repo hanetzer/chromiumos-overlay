@@ -48,7 +48,7 @@ pkg_setup() {
 		eval export ${ac_include_prefix}_xorg_dristruct_h=yes
 	fi
 
-	CONFIGURE_OPTIONS="$(use_enable dri)"
+	CONFIGURE_OPTIONS="$(use_enable dri) --disable-xvmc --enable-kms-only"
 }
 
 pkg_postinst() {
