@@ -197,12 +197,18 @@ pkg_setup() {
 		--disable-xdm-auth-1
 		--disable-dbe
 		--disable-xinerama
+		--disable-dga
+		--disable-xace
+		--disable-config-dbus
+		--disable-config-hal
 		${conf_opts}"
 
 	# Things we may want to remove later: 
 	#	--disable-xaa (requires dropping all xaa drivers)
 	#	--disable-xv (requires fixing the xserver and the drivers)
-	#	--disable-dga (requires DGA removal from the vesa driver)
+	#	--disable-tcp-transport
+	#	--disable-ipv6
+	#	--disable-secure-rpc
 
 	# Xorg-server requires includes from OS mesa which are not visible for
 	# users of binary drivers.
