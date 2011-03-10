@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="bluetooth +localssh modemmanager X"
+IUSE="+bluetooth +localssh modemmanager X"
 
 
 ################################################################################
