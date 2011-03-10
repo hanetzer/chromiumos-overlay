@@ -12,7 +12,7 @@ CROS_WORKON_LOCALNAME="multitouch"
 LICENSE="GPL"
 SLOT="0"
 IUSE=""
-KEYWORDS="~arm ~x86"
+KEYWORDS="arm x86"
 
 RDEPEND="x11-base/xorg-server
 	 x11-libs/mtdev
