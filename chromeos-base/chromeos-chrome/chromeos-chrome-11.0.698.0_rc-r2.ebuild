@@ -130,7 +130,6 @@ RDEPEND="${RDEPEND}
 	media-libs/jpeg
 	media-libs/libpng
 	media-libs/mesa
-	media-sound/pulseaudio
 	net-misc/wget
 	sys-libs/zlib
 	x86? ( !chrome_internal? ( www-plugins/adobe-flash ) )
