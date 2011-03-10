@@ -9,6 +9,7 @@ inherit cros-workon eutils toolchain-funcs linux-info
 
 DESCRIPTION="Userland tools for Linux Performance Counters"
 HOMEPAGE="http://perf.wiki.kernel.org/"
+PROVIDE="virtual/perf"
 
 LICENSE="GPL-2"
 SLOT="0"
