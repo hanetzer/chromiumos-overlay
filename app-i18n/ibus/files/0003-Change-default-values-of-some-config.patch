@@ -1,7 +1,7 @@
-From 6c19d43b5718a9b3a012de5e39c1933c79b537a1 Mon Sep 17 00:00:00 2001
+From 3c1d83c02a4c78e386524f6e1d0b0dd6fea4c762 Mon Sep 17 00:00:00 2001
 From: James Su <james.su@gmail.com>
 Date: Wed, 12 May 2010 15:38:42 -0700
-Subject: [PATCH 3/8] Change default values of some config.
+Subject: [PATCH 3/6] Change default values of some config.
 
 This CL changes the default value of use_global_engine, enable_by_default and use_sys_layout to TRUE. And also removes the default trigger key.
 
@@ -14,10 +14,10 @@ Review URL: http://codereview.chromium.org/2008016
  1 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index f1f82bf..046fb76 100644
+index 8d4ec36..90cb780 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
-@@ -305,10 +305,13 @@ bus_ibus_impl_set_trigger (BusIBusImpl *ibus,
+@@ -312,10 +312,13 @@ bus_ibus_impl_set_trigger (BusIBusImpl *ibus,
                             GVariant    *value)
  {
      GQuark hotkey = g_quark_from_static_string ("trigger");
@@ -32,7 +32,7 @@ index f1f82bf..046fb76 100644
      else {
          /* set default trigger */
          ibus_hotkey_profile_remove_hotkey_by_event (ibus->hotkey_profile, hotkey);
-@@ -814,10 +817,10 @@ bus_ibus_impl_init (BusIBusImpl *ibus)
+@@ -822,10 +825,10 @@ bus_ibus_impl_init (BusIBusImpl *ibus)
      ibus->hotkey_profile = ibus_hotkey_profile_new ();
      ibus->keymap = ibus_keymap_get ("us");
  
@@ -47,5 +47,5 @@ index f1f82bf..046fb76 100644
      ibus->global_previous_engine_name = NULL;
  
 -- 
-1.7.3.1
+1.7.1
 

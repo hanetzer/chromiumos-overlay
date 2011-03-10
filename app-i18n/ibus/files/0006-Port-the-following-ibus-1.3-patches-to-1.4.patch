@@ -1,7 +1,7 @@
-From 3985c4e460b1cdc500f952e798132471b24c5507 Mon Sep 17 00:00:00 2001
+From d8b5da2a6cadacc84d985808c50503d383ee5668 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 19 Jan 2011 09:55:46 +0900
-Subject: [PATCH 8/8] Port the following ibus-1.3 patches to 1.4.
+Subject: [PATCH 6/6] Port the following ibus-1.3 patches to 1.4.
 
 o Temporary fix for a race condition between
 ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
@@ -120,5 +120,5 @@ index 90cb780..24f2e36 100644
      if (desc == NULL) {
          g_dbus_method_invocation_return_error (invocation,
 -- 
-1.7.3.1
+1.7.1
 
