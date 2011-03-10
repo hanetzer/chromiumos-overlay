@@ -1,12 +1,12 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="23bd0d595e89b9760c2b49bbc32d72251493d51b"
+CROS_WORKON_COMMIT="0b056069300072c35f9c6795a9a48e27bcafe82d"
 
 inherit cros-workon
 
-DESCRIPTION="Atheros AR300x firmware"
+DESCRIPTION="Atheros AR600x firmware"
 HOMEPAGE="http://www.atheros.com/"
 LICENSE="Atheros"
 
@@ -21,7 +21,7 @@ DEPEND=""
 RDEPEND=""
 
 src_install() {
-    src_dir="${S}"/ath3k/files/firmware
+    src_dir="${S}"/ath6k/files/firmware
     dodir /lib/firmware || die
     insinto /lib/firmware
     doins -r ${src_dir}/* || die \

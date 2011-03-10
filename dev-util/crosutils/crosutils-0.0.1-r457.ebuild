@@ -45,7 +45,8 @@ src_install() {
 		-e cros_make_image_bootable \
 		-e cros_sign_to_ssd \
 		-e cros_resign_image \
-		-e cros_overlay_list
+		-e cros_overlay_list \
+		-e cros_image_to_target.py
 		"
 
 	local bin_files=$(find bin -maxdepth 1 -type f -o -type l |
