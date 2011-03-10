@@ -19,6 +19,10 @@ RDEPEND=">=dev-db/m17n-db-${PV}
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
 
+src_prepare() {
+	epatch "${FILESDIR}"/Fix-candidates-list-update-problem.path
+}
+
 src_configure() {
 	append-flags -fPIC
 
