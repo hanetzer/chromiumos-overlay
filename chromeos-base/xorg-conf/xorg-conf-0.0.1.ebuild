@@ -11,13 +11,15 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE="synaptics"
+IUSE="synaptics multitouch"
 
 RDEPEND=""
 
 src_install() {
 	insinto /etc/X11
-	if use synaptics ; then
+	if use multitouch ; then
+		newins "${FILESDIR}/xorg.conf-multitouch-${PV}" xorg.conf
+	elif use synaptics ; then
 		newins "${FILESDIR}/xorg.conf-synaptics-${PV}" xorg.conf
 	else
 		newins "${FILESDIR}/xorg.conf-${PV}" xorg.conf
