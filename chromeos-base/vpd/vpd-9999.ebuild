@@ -21,7 +21,7 @@ RDEPEND="x86? ( sys-apps/flashrom )"
 
 # This target list should be architecture specific
 # (no ACPI stuff on ARM for instance)
-TARGETS='vpd'
+TARGETS='vpd util/dump_vpd_log'
 
 src_compile() {
     tc-export CXX PKG_CONFIG
