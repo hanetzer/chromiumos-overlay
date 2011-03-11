@@ -63,7 +63,7 @@ GCC_CONFIG_VER=${PV}
 MY_PV=4.4.3
 MY_P=${PN}-${MY_PV}
 GITDIR=${WORKDIR}/gitdir
-GITHASH=420029ca77d14a02b52ecf1212b4daf9ecf5d867
+GITHASH=504a43ace5ea4e85a84bf7cddd3860d288d7ea01
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
