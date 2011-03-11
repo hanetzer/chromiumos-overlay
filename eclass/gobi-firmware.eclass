@@ -200,21 +200,26 @@ gobi-firmware_install_firmware_files() {
       die "Must specify GOBI_FIRMWARE_ZIP_FILE"
     [ ! -r "${GOBI_FIRMWARE_ZIP_FILE}" ] && \
       die "${GOBI_FIRMWARE_ZIP_FILE} is unreadable"
-    mkdir -p ${T}/${oem}
-    unzip ${GOBI_FIRMWARE_ZIP_FILE} -d ${T}/${oem}
+    mkdir -p "${T}/${oem}"
+    unzip ${GOBI_FIRMWARE_ZIP_FILE} -d "${T}/${oem}"
 
-    rpmfile=$(find ${T}/${oem} -name \*.rpm -print)
-    [ -z $rpmfile ] &&
-      die "Could not find an RPM file in ${GOBI_FIRMWARE_ZIP_FILE}"
+    if [ -d "${T}/${oem}/Images2k/${oem}" ] ; then
+      local base_firmware="${T}/${oem}/Images2k/${oem}"
+      install_qdl=no
+    else
+      rpmfile=$(find "${T}/${oem}" -name \*.rpm -print)
+      [ -z $rpmfile ] &&
+      	die "Could not find an RPM file in ${GOBI_FIRMWARE_ZIP_FILE}"
 
-    # extract the rpm
-    if [ -d ${oem}_rpm ] ; then
-      rm -rf ${oem}_rpm
+      # extract the rpm
+      if [ -d ${oem}_rpm ] ; then
+      	rm -rf ${oem}_rpm
+      fi
+      mkdir -p ${oem}_rpm
+      rpm2tar -O $rpmfile | tar -C ${oem}_rpm -xvf -
+
+      local base_firmware=${oem}_rpm/opt/Qualcomm/Images2k/${oem}
     fi
-    mkdir -p ${oem}_rpm
-    rpm2tar -O $rpmfile | tar -C ${oem}_rpm -xvf -
-
-    local base_firmware=${oem}_rpm/opt/Qualcomm/Images2k/${oem}
   fi
 
   # make directories
