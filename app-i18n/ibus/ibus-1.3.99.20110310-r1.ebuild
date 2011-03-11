@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-inherit eutils flag-o-matic multilib python
+inherit eutils flag-o-matic toolchain-funcs multilib python
 
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
@@ -48,6 +48,8 @@ src_prepare() {
 
 	# TODO(zork,yusukes): Upstream the patch and remove this line.
 	epatch "${FILESDIR}"/0009-Remove-services-from-hash-table-before-cleanup.patch
+	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
+	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
 }
 
 src_configure() {
@@ -69,6 +71,49 @@ src_configure() {
 		CPPFLAGS='-DOS_CHROMEOS=1' \
 		ISOCODES_CFLAGS=' ' ISOCODES_LIBS=' ' \
 		|| die
+}
+
+test_fail() {
+	kill $IBUS_DAEMON_PID
+	rm -rf /tmp/ibus
+	die
+}
+
+# You can run the tests by:
+#   (chroot)$ sudo env FEATURES="test" emerge -a ibus
+src_test() {
+	# Do not execute the test when cross-compiled.
+	if tc-is-cross-compiler ; then
+	   return
+	fi
+
+	# The chroot environment usually does not have /var/lib/dbus/machine-id.
+	# We can safely use "machine-id" in this case.
+	DBUS_MACHINE_ID="machine-id"
+	if [ -f /var/lib/dbus/machine-id ] ; then
+	   DBUS_MACHINE_ID=`cat /var/lib/dbus/machine-id`
+	fi
+
+	# Start ibus-daemon background. XDG_CONFIG_HOME variable is necessary
+	# to make g_get_user_config_dir() Glib function happy.
+	env XDG_CONFIG_HOME=/tmp ./bus/ibus-daemon --replace --panel=disable &
+	IBUS_DAEMON_PID=$!
+
+	# Wait for the daemon to start.
+	if [ ! -f /tmp/ibus/bus/${DBUS_MACHINE_ID}-unix-0 ] ; then
+	   sleep .5
+	fi
+
+	# Run tests.
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-bus || test_fail
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-configservice || test_fail
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-factory || test_fail
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-keynames || test_fail
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-serializable || test_fail
+
+	# Cleanup.
+	kill $IBUS_DAEMON_PID
+	rm -rf /tmp/ibus
 }
 
 src_install() {

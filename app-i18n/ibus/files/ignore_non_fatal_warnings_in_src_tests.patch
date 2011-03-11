@@ -1,0 +1,108 @@
+diff --git a/src/tests/fatal_handler.h b/src/tests/fatal_handler.h
+new file mode 100644
+index 0000000..52f95cb
+--- /dev/null
++++ b/src/tests/fatal_handler.h
+@@ -0,0 +1,25 @@
++
++/* A callback function for g_test_log_set_fatal_handler().
++ * See ignore_machine_id_warning() below for details. */
++static gboolean
++fatal_handler(const gchar *log_domain,
++              GLogLevelFlags log_level,
++              const gchar *message,
++              gpointer user_data)
++{
++    if (g_str_has_prefix (message, "Unable to load /var/lib/dbus/machine-id"))
++        return FALSE; /* do not call abort. */
++    return TRUE;
++}
++
++/* Ignore the "Unable to load /var/lib/dbus/machine-id" g_warning(). The chroot
++ * environment does not have the file, but we can execute the tests without a
++ * problem. Notice: (1) This function should be called before the first
++ * ibus_get_local_machine_id() call. (2) g_test_log_set_fatal_handler will be
++ * reset every time when you enter a glib test function.
++ */
++static void
++ignore_machine_id_warning (void)
++{
++    g_test_log_set_fatal_handler (fatal_handler, NULL);
++}
+diff --git a/src/tests/ibus-bus.c b/src/tests/ibus-bus.c
+index 989fd71..edcecdb 100644
+--- a/src/tests/ibus-bus.c
++++ b/src/tests/ibus-bus.c
+@@ -2,6 +2,7 @@
+ 
+ #include <string.h>
+ #include "ibus.h"
++#include "tests/fatal_handler.h"
+ 
+ static IBusBus *bus;
+ 
+@@ -551,6 +552,8 @@ main (gint    argc,
+     g_type_init ();
+     g_test_init (&argc, &argv, NULL);
+     ibus_init ();
++
++    ignore_machine_id_warning();
+     bus = ibus_bus_new ();
+ 
+     g_test_add_func ("/ibus/list-engines", test_list_engines);
+diff --git a/src/tests/ibus-configservice.c b/src/tests/ibus-configservice.c
+index 38d500f..932d486 100644
+--- a/src/tests/ibus-configservice.c
++++ b/src/tests/ibus-configservice.c
+@@ -1,4 +1,5 @@
+ #include <ibus.h>
++#include "tests/fatal_handler.h"
+ 
+ static gboolean
+ timeout_cb (gpointer data)
+@@ -19,6 +20,8 @@ run_loop_with_timeout (gint interval)
+ static void
+ test_configservice (void)
+ {
++    ignore_machine_id_warning();
++
+     IBusBus *bus = ibus_bus_new ();
+     IBusConfigService *config = ibus_config_service_new (ibus_bus_get_connection (bus));
+     ibus_bus_request_name (bus, "test.config", 0);
+diff --git a/src/tests/ibus-factory.c b/src/tests/ibus-factory.c
+index e3fa405..f21196e 100644
+--- a/src/tests/ibus-factory.c
++++ b/src/tests/ibus-factory.c
+@@ -1,4 +1,5 @@
+ #include <ibus.h>
++#include "tests/fatal_handler.h"
+ 
+ static gboolean
+ timeout_cb (gpointer data)
+@@ -19,6 +20,8 @@ run_loop_with_timeout (gint interval)
+ static void
+ test_factory (void)
+ {
++    ignore_machine_id_warning();
++
+     IBusBus *bus = ibus_bus_new ();
+     IBusFactory *factory = ibus_factory_new (ibus_bus_get_connection (bus));
+     ibus_bus_request_name (bus, "test.factory", 0);
+diff --git a/src/tests/ibus-serializable.c b/src/tests/ibus-serializable.c
+index c2a7529..b200758 100644
+--- a/src/tests/ibus-serializable.c
++++ b/src/tests/ibus-serializable.c
+@@ -1,4 +1,5 @@
+ #include "ibus.h"
++#include "tests/fatal_handler.h"
+ 
+ void g_variant_type_info_assert_no_infos (void);
+ 
+@@ -29,6 +30,7 @@ void test_serializable (IBusSerializable *object)
+ static void
+ test_varianttypeinfo (void)
+ {
++    ignore_machine_id_warning();
+     g_variant_type_info_assert_no_infos ();
+ }
+ 
