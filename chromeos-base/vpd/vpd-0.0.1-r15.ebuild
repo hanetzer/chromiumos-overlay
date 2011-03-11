@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="1de3ef287a62c8348d48a6a8914cd8e5381b43e9"
+CROS_WORKON_COMMIT="c2452fce2a7a6246ca2980dc2f29916392165748"
 
 inherit cros-workon
 
@@ -22,7 +22,7 @@ RDEPEND="x86? ( sys-apps/flashrom )"
 
 # This target list should be architecture specific
 # (no ACPI stuff on ARM for instance)
-TARGETS='vpd'
+TARGETS='vpd util/dump_vpd_log'
 
 src_compile() {
     tc-export CXX PKG_CONFIG
