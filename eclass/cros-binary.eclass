@@ -42,6 +42,7 @@ esac
 
 cros-binary_check_file() {
 	local target="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
+	elog "Checking for cached $target"
 	if [[ -z "${CROS_BINARY_SUM}" ]]; then
 		[[ -r "${target}" ]]
 		return
@@ -82,6 +83,7 @@ cros-binary_fetch() {
 				;;
 
 			ssh)
+				elog "Running: scp ${scp_args} ${server}:/${path} ${target}"
 				scp ${scp_args} "${server}:/${path}" "${target}" ||
 					rm -f "${target}"
 				;;
@@ -99,6 +101,8 @@ cros-binary_fetch() {
 				die "Protocol for '${CROS_BINARY_URI}' is unsupported."
 				;;
 		esac
+	else
+		elog "Not downloading, cached copy available in ${target}"
 	fi
 
 	cros-binary_check_file || die "Failed to fetch ${CROS_BINARY_URI}."
