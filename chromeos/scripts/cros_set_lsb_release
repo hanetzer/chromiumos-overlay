@@ -31,8 +31,10 @@ ROOT_FS_DIR="$FLAGS_root"
 [ -n "${CHROMEOS_VERSION_STRING}" ] || die "chromeos_version.sh isn't sourced."
 
 CHROMEOS_VERSION_NAME="Chromium OS"
-CHROMEOS_VERSION_AUSERVER="http://$(hostname):8080/update"
-CHROMEOS_VERSION_DEVSERVER="http://$(hostname):8080"
+CHROMEOS_VERSION_AUSERVER=\
+${CHROMEOS_VERSION_AUSERVER:-"http://$(hostname):8080/update"}
+CHROMEOS_VERSION_DEVSERVER=\
+${CHROMEOS_VERSION_DEVSERVER:-"http://$(hostname):8080"}
 
 # Official builds must set CHROMEOS_OFFICIAL=1.
 if [ ${CHROMEOS_OFFICIAL:-0} = 1 ]; then
@@ -50,7 +52,7 @@ elif [ "$USER" = "chrome-bot" ]; then
 - Builder: ${BUILDBOT_BUILD:-"N/A"}) $FLAGS_board"
 else
   # Developer hand-builds
-  CHROMEOS_VERSION_TRACK="developer-build"
+  CHROMEOS_VERSION_TRACK=${CHROMEOS_VERSION_TRACK:-"developer-build"}
   CHROMEOS_VERSION_DESCRIPTION="${CHROMEOS_VERSION_STRING} (Developer Build \
 - $USER) ${CHROMEOS_VERSION_TRACK} $FLAGS_board"
 fi
