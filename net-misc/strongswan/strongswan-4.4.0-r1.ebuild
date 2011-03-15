@@ -151,6 +151,10 @@ src_install() {
 		dir_ugid="root"
 	fi
 
+	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets
+	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
+	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
+
 	diropts -m 0750 -o ${dir_ugid} -g ${dir_ugid}
 	dodir /etc/ipsec.d \
 		/etc/ipsec.d/aacerts \
