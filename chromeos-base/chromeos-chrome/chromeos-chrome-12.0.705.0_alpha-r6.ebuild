@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="78206"
+CROS_SVN_COMMIT="78215"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -26,7 +26,7 @@ KEYWORDS="~x86 ~arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -touchui"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -touchui -local_gclient"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -34,12 +34,16 @@ strip_portage_suffix() {
   echo "$1" | cut -f 1 -d "_"
 }
 
-CHROME_VERSION="$(strip_portage_suffix "${PV}")"
-
-EXTERNAL_URL="http://src.chromium.org/svn"
-INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
-[[ ( "${PV}" = "9999" ) || ( -n "${CROS_SVN_COMMIT}" ) ]]
-USE_TRUNK=$?
+if use local_gclient; then
+	CHROME_VERSION="custom"
+	USE_TRUNK=0
+else
+	CHROME_VERSION="$(strip_portage_suffix "${PV}")"
+	EXTERNAL_URL="http://src.chromium.org/svn"
+	INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
+	[[ ( "${PV}" = "9999" ) || ( -n "${CROS_SVN_COMMIT}" ) ]]
+	USE_TRUNK=$?
+fi
 
 REVISION="/${CHROME_VERSION}"
 if [ ${USE_TRUNK} = 0 ]; then
@@ -69,6 +73,9 @@ fi
 CHROME_SRC="chrome-src"
 if use chrome_internal; then
 	CHROME_SRC="${CHROME_SRC}-internal"
+fi
+if use local_gclient; then
+	CHROME_SRC="${CHROME_SRC}-custom"
 fi
 
 # chrome sources store directory
@@ -253,6 +260,21 @@ EOF
 	echo "]" >>${echrome_store_dir}/.gclient
 }
 
+find_local_gclient_file() {
+	if [ -z ${CHROME_GCLIENT} ]; then
+		die "Gclient file is not set in CHROME_GCLIENT"
+	fi
+	local gclient_file=""
+	# BOARD_OVERLAY is a list of the overlays from least to most specific
+	# Don't break out early in case a more specific version exists
+	for overlay in ${BOARD_OVERLAY}; do
+		if [ -f "${overlay}/${CHROME_GCLIENT}" ] ; then
+			gclient_file="${overlay}/${CHROME_GCLIENT}"
+		fi
+	done
+	echo $gclient_file
+}
+
 unpack_chrome() {
 	# initial clone, we have to create chrome-src storage
 	# directory and play nicely with sandbox
@@ -271,7 +293,24 @@ unpack_chrome() {
 	elog "Creating ${ECHROME_STORE_DIR}/.gclient"
 	#until we make the pdf compile on arm.
 	#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
-	if use chrome_pdf && use x86; then
+	if use local_gclient; then
+		# local_gclient is used for one-off or experimental overlays
+		# that rely on special repos or branches
+		local gclient_file=$(find_local_gclient_file)
+		if [ -z ${gclient_file} ]; then
+			die "Could not find ${CHROME_GCLIENT} in overlay path"
+		fi
+		if ! diff -q "${gclient_file}" "${ECHROME_STORE_DIR}/.gclient" \
+			> /dev/null 2>&1 ; then
+			elog "Custom gclient differs.  Cleaning source tree"
+			elog "rm -rf ${ECHROME_STORE_DIR}"
+			rm -rf "${ECHROME_STORE_DIR}"
+			mkdir -p "${ECHROME_STORE_DIR}" \
+				|| die "can't mkdir ${ECHROME_STORE_DIR}."
+		fi
+		cp "${gclient_file}" "${ECHROME_STORE_DIR}/.gclient" \
+			|| die "Could not copy $gclient_file"
+	elif use chrome_pdf && use x86; then
 		elog "Official Build enabling PDF sources"
 		create_gclient_file "${ECHROME_STORE_DIR}" \
 			"${PRIMARY_URL}" \
