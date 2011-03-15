@@ -472,9 +472,10 @@ src_compile() {
 		TEST_TARGETS="page_cycler_tests
 			reliability_tests
 			startup_tests
-			ui_tests"
-		if use x86; then  # Build PyAuto on x86 only.
-			TEST_TARGETS="${TEST_TARGETS} pyautolib browser_tests sync_integration_tests"
+			ui_tests
+			pyautolib"
+		if use x86; then  # Build these tests on x86 only.
+			TEST_TARGETS="${TEST_TARGETS} browser_tests sync_integration_tests"
 		fi
 		echo Building test targets: ${TEST_TARGETS}
 	fi
