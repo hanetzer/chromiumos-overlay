@@ -220,6 +220,7 @@ IUSE_TESTS="
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
 	+tests_realtimecomm_GTalkAudioPlayground
+	+tests_realtimecomm_GTalkLmiCamera
 	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_DbusMap
