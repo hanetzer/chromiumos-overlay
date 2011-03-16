@@ -332,6 +332,12 @@ if [ "$(tc_pkg_needs_update "binutils")" = "$FLAGS_TRUE" ] ||
   fi
 fi
 
+if [ "${ARCH}" == "x86" ] ; then
+  echo "Switching off gold as the default linker."
+  BINUTILS_VERSION=$(echo ${FLAGS_binutils_version} | sed 's/-r[0-9]\+//g')
+  sudo binutils-config "${FLAGS_toolchain}-${BINUTILS_VERSION}"
+fi
+
 if [ -d "$BOARD_ROOT" ] ; then
   if [[ $FLAGS_force -eq $FLAGS_TRUE ]]; then
     echo "--force set.  Re-creating $BOARD_ROOT..."
