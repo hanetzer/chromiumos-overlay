@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-# NOTE: This ebuild should be overrriden in an overlay to provide a
+# NOTE: This ebuild could be overridden in an overlay to provide a
 # board-specific xorg.conf as necessary.
 
 EAPI=2
@@ -18,10 +18,10 @@ RDEPEND=""
 src_install() {
 	insinto /etc/X11
 	if use multitouch ; then
-		newins "${FILESDIR}/xorg.conf-multitouch-${PV}" xorg.conf
+		newins "${FILESDIR}/xorg.conf-multitouch" xorg.conf
 	elif use synaptics ; then
-		newins "${FILESDIR}/xorg.conf-synaptics-${PV}" xorg.conf
+		newins "${FILESDIR}/xorg.conf-synaptics" xorg.conf
 	else
-		newins "${FILESDIR}/xorg.conf-${PV}" xorg.conf
+		newins "${FILESDIR}/xorg.conf" xorg.conf
 	fi
 }
