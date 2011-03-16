@@ -4,7 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="27c06786c1e863e33e3dd6ea71a50344a5703cfb"
+CROS_WORKON_COMMIT="073e34999456465ecff4b82cce69151b869134dd"
 
 inherit autotools cros-workon toolchain-funcs
 
@@ -14,7 +14,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +modemmanager +newwifi +openvpn policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +l2tpipsec +modemmanager +newwifi +openvpn policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -31,6 +31,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	ppp? ( net-dialup/ppp )
 	resolvconf? ( net-dns/openresolv )
 	udev? ( >=sys-fs/udev-141 )
+	l2tpipsec? ( chromeos-base/vpn-manager )
 	newwifi? ( net-wireless/wpa_supplicant[dbus] )"
 
 DEPEND="${RDEPEND}
@@ -47,6 +48,9 @@ src_configure() {
 	if tc-is-cross-compiler ; then
 		if use dhcpcd ; then
 			export ac_cv_path_DHCPCD=/sbin/dhcpcd
+		fi
+		if use l2tpipsec ; then
+			export ac_cv_path_L2TPIPSEC=/usr/sbin/l2tpipsec_vpn
 		fi
 		if use newwifi ; then
 			export ac_cv_path_WPASUPPLICANT=/sbin/wpa_supplicant
@@ -68,6 +72,7 @@ src_configure() {
 		$(use_enable dnsproxy dnsproxy builtin) \
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
+		$(use_enable l2tpipsec l2tpipsec builtin) \
 		$(use_enable modemmanager modemmgr) \
 		$(use_enable openvpn openvpn builtin) \
 		$(use_enable policykit polkit) \
@@ -116,7 +121,10 @@ src_install() {
 	if use ppp; then
 		local ppp_dir="${D}"/etc/ppp/ip-up.d/
 		mkdir -p ${ppp_dir}
-		cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
+		# pppd-script assumes pppd plugin is being used and crashes
+		# trying to create a method call on its bus (which does not
+		# exist).
+		#cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
 	fi
 
 	exeinto /usr/share/userfeedback/scripts
