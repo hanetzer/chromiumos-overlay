@@ -15,6 +15,7 @@ IUSE=""
 RDEPEND="${RDEPEND}
 	app-arch/pigz
 	app-admin/sudo
+	dev-embedded/cbootimage
 	dev-embedded/u-boot-tools
 	dev-util/crosutils
 	sys-boot/bootstub
