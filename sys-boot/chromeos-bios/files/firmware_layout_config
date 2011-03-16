@@ -1,101 +1,111 @@
 # -*- mode: python -*-
-# Copyright 2011, Google Inc.
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-# * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-# * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-# * Neither the name of Google Inc. nor the names of its
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# Alternatively, this software may be distributed under the terms of the
-# GNU General Public License ("GPL") version 2 as published by the Free
-# Software Foundation.
-#
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
 
 # Required fields for pack_firmware_image
 SIZE = int(CONFIG_FIRMWARE_SIZE, 0)
 ENTRIES = [
-  EntryBlob(name='Boot Stub',
-        offset=int(CONFIG_OFFSET_BOOTSTUB, 0),
-        length=int(CONFIG_LENGTH_BOOTSTUB, 0),
+# -- Region: Read-only ---------------------------------------------------------
+# ---- Section: Read-only firmware ---------------------------------------------
+  EntryFmapArea(name='RO_SECTION',
+        offset=int(CONFIG_OFFSET_RO_SECTION, 0),
+        length=int(CONFIG_LENGTH_RO_SECTION, 0),
+        flags=FMAP_AREA_STATIC),
+  EntryBlob(name='BOOT_STUB',
+        offset=int(CONFIG_OFFSET_BOOT_STUB, 0),
+        length=int(CONFIG_LENGTH_BOOT_STUB, 0),
         flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
         path=BOOTSTUB_IMAGE),
-  EntryBlob(name='Recovery Firmware',
+  EntryBlob(name='RECOVERY',
         offset=int(CONFIG_OFFSET_RECOVERY, 0),
         length=int(CONFIG_LENGTH_RECOVERY, 0),
         flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
         path=RECOVERY_IMAGE),
-  EntryBlob(name='GBB Area',
-        offset=int(CONFIG_OFFSET_GBB, 0),
-        length=int(CONFIG_LENGTH_GBB, 0),
-        flags=FMAP_AREA_STATIC,
-        path=GBB_IMAGE),
-  EntryBlob(name='RO VPD',
-        offset=int(CONFIG_OFFSET_ROVPD, 0),
-        length=int(CONFIG_LENGTH_ROVPD, 0),
-        flags=FMAP_AREA_STATIC,
-        path='/dev/zero'),
+  EntryFmapArea(name='RO_DATA',
+        offset=int(CONFIG_OFFSET_RO_DATA, 0),
+        length=int(CONFIG_LENGTH_RO_DATA, 0),
+        flags=FMAP_AREA_STATIC),
   EntryFmap(name='FMAP',
         offset=int(CONFIG_OFFSET_FMAP, 0),
         length=int(CONFIG_LENGTH_FMAP, 0),
         ver_major=1, ver_minor=0, base=0x00000000, size=SIZE),
-  EntryBlob(name='Log Volume',
-        offset=int(CONFIG_OFFSET_LOGVOL, 0),
-        length=int(CONFIG_LENGTH_LOGVOL, 0),
+  EntryBlob(name='GBB',
+        offset=int(CONFIG_OFFSET_GBB, 0),
+        length=int(CONFIG_LENGTH_GBB, 0),
+        flags=FMAP_AREA_STATIC,
+        path=GBB_IMAGE),
+# ---- Section: Vital-product data (VPD) ---------------------------------------
+  EntryBlob(name='RO_VPD',
+        offset=int(CONFIG_OFFSET_RO_VPD, 0),
+        length=int(CONFIG_LENGTH_RO_VPD, 0),
         flags=FMAP_AREA_STATIC,
         path='/dev/zero'),
-  EntryBlob(name='RW VPD',
-        offset=int(CONFIG_OFFSET_RWVPD, 0),
-        length=int(CONFIG_LENGTH_RWVPD, 0),
-        flags=FMAP_AREA_STATIC,
-        path='/dev/zero'),
-  EntryKeyBlock(name='Firmware A Key',
-        offset=int(CONFIG_OFFSET_FW_A_KEY, 0),
-        length=int(CONFIG_LENGTH_FW_A_KEY, 0),
+# -- Region: Writable ----------------------------------------------------------
+# ---- Section: Rewritable slot A ----------------------------------------------
+  EntryFmapArea(name='RW_SECTION_A',
+        offset=int(CONFIG_OFFSET_RW_SECTION_A, 0),
+        length=int(CONFIG_LENGTH_RW_SECTION_A, 0),
+        flags=FMAP_AREA_STATIC),
+  EntryKeyBlock(name='VBLOCK_A',
+        offset=int(CONFIG_OFFSET_VBLOCK_A, 0),
+        length=int(CONFIG_LENGTH_VBLOCK_A, 0),
         flags=FMAP_AREA_STATIC,
         keyblock=KEYDIR + 'firmware.keyblock',
         signprivate=KEYDIR + 'firmware_data_key.vbprivk',
         version=1,
         fv=FIRMWARE_A_IMAGE,
         kernelkey=KEYDIR + 'kernel_subkey.vbpubk'),
-  EntryBlob(name='Firmware A Data',
-        offset=int(CONFIG_OFFSET_FW_A_DATA, 0),
-        length=int(CONFIG_LENGTH_FW_A_DATA, 0),
+  EntryBlob(name='FW_MAIN_A',
+        offset=int(CONFIG_OFFSET_FW_MAIN_A, 0),
+        length=int(CONFIG_LENGTH_FW_MAIN_A, 0),
         flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
         path=FIRMWARE_A_IMAGE),
-  EntryKeyBlock(name='Firmware B Key',
-        offset=int(CONFIG_OFFSET_FW_B_KEY, 0),
-        length=int(CONFIG_LENGTH_FW_B_KEY, 0),
+  EntryFmapArea(name='DATA_A',
+        offset=int(CONFIG_OFFSET_DATA_A, 0),
+        length=int(CONFIG_LENGTH_DATA_A, 0),
+        flags=FMAP_AREA_STATIC),
+# ---- Section: Rewritable slot B ----------------------------------------------
+  EntryFmapArea(name='RW_SECTION_B',
+        offset=int(CONFIG_OFFSET_RW_SECTION_B, 0),
+        length=int(CONFIG_LENGTH_RW_SECTION_B, 0),
+        flags=FMAP_AREA_STATIC),
+  EntryKeyBlock(name='VBLOCK_B',
+        offset=int(CONFIG_OFFSET_VBLOCK_B, 0),
+        length=int(CONFIG_LENGTH_VBLOCK_B, 0),
         flags=FMAP_AREA_STATIC,
         keyblock=KEYDIR + 'firmware.keyblock',
         signprivate=KEYDIR + 'firmware_data_key.vbprivk',
         version=1,
         fv=FIRMWARE_B_IMAGE,
         kernelkey=KEYDIR + 'kernel_subkey.vbpubk'),
-  EntryBlob(name='Firmware B Data',
-        offset=int(CONFIG_OFFSET_FW_B_DATA, 0),
-        length=int(CONFIG_LENGTH_FW_B_DATA, 0),
+  EntryBlob(name='FW_MAIN_B',
+        offset=int(CONFIG_OFFSET_FW_MAIN_B, 0),
+        length=int(CONFIG_LENGTH_FW_MAIN_B, 0),
         flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
         path=FIRMWARE_B_IMAGE),
+  EntryFmapArea(name='DATA_B',
+        offset=int(CONFIG_OFFSET_DATA_B, 0),
+        length=int(CONFIG_LENGTH_DATA_B, 0),
+        flags=FMAP_AREA_STATIC),
+# ---- Section: Rewritable shared ----------------------------------------------
+  EntryBlob(name='RW_VPD',
+        offset=int(CONFIG_OFFSET_RW_VPD, 0),
+        length=int(CONFIG_LENGTH_RW_VPD, 0),
+        flags=FMAP_AREA_STATIC,
+        path='/dev/zero'),
+# ---- Section: Rewritable shared ----------------------------------------------
+  EntryFmapArea(name='RW_SHARED',
+        offset=int(CONFIG_OFFSET_RW_SHARED, 0),
+        length=int(CONFIG_LENGTH_RW_SHARED, 0),
+        flags=FMAP_AREA_STATIC),
+  EntryBlob(name='DEV_CFG',
+        offset=int(CONFIG_OFFSET_DEV_CFG, 0),
+        length=int(CONFIG_LENGTH_DEV_CFG, 0),
+        flags=FMAP_AREA_STATIC,
+        path='/dev/zero'),
+  EntryBlob(name='SHARED_DATA',
+        offset=int(CONFIG_OFFSET_SHARED_DATA, 0),
+        length=int(CONFIG_LENGTH_SHARED_DATA, 0),
+        flags=FMAP_AREA_STATIC,
+        path='/dev/zero'),
 ]
