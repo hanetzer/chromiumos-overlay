@@ -227,6 +227,7 @@ IUSE_TESTS="
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
 	+tests_security_NetworkListeners
+	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
