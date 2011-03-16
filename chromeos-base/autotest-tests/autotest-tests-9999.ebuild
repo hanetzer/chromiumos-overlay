@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010, 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -43,6 +43,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_compilebench
+        +tests_crashme
 	+tests_dbench
 	+tests_disktest
 	+tests_fsx
@@ -53,6 +54,7 @@ IUSE_TESTS="
 	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
+        +tests_scrashme
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_FFMPEG
