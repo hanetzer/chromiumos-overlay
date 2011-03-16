@@ -34,6 +34,7 @@ PATCHES=(
 	# seamless transitions.
 	"${FILESDIR}/${PV}-copy-fb.patch"
 	"${FILESDIR}/${PV}-no-pageflip.patch"
+	"${FILESDIR}/${PV}-dri-drawable.patch"
 )
 
 pkg_setup() {
