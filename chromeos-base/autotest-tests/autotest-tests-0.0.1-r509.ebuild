@@ -1,8 +1,8 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010, 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b7edff18c59e1caedc32f972551ec68b3620eea5"
+CROS_WORKON_COMMIT="975fcf610a568ff5061c9498e998ba135e44cabb"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -44,6 +44,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_compilebench
+        +tests_crashme
 	+tests_dbench
 	+tests_disktest
 	+tests_fsx
@@ -54,6 +55,7 @@ IUSE_TESTS="
 	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
+        +tests_scrashme
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_FFMPEG
