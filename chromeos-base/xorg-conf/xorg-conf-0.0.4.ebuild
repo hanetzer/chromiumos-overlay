@@ -17,11 +17,15 @@ RDEPEND=""
 
 src_install() {
 	insinto /etc/X11
+	newins "${FILESDIR}/xorg.conf" xorg.conf
+
+	dodir /etc/X11/xorg.conf.d
+	insinto /etc/X11/xorg.conf.d
 	if use multitouch ; then
-		newins "${FILESDIR}/xorg.conf-multitouch" xorg.conf
+		newins "${FILESDIR}/touchpad.conf-multitouch" touchpad.conf
 	elif use synaptics ; then
-		newins "${FILESDIR}/xorg.conf-synaptics" xorg.conf
+		newins "${FILESDIR}/touchpad.conf-synaptics" touchpad.conf
 	else
-		newins "${FILESDIR}/xorg.conf" xorg.conf
+		newins "${FILESDIR}/touchpad.conf" touchpad.conf
 	fi
 }

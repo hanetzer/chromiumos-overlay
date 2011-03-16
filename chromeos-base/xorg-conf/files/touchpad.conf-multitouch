@@ -1,0 +1,7 @@
+# Input device using the multitouch X11 driver.
+Section "InputDevice"
+    Identifier "Mouse1"
+    Driver     "multitouch"
+    Option     "Device" "/tmp/syntp_mt0"
+    Option     "SendCoreEvents" "true"
+EndSection
