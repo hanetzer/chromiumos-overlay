@@ -3,7 +3,7 @@
 # $Header:
 
 EAPI="2"
-CROS_WORKON_COMMIT="d2129f1cc036394fcf3c5232647a6e11eb1674fd"
+CROS_WORKON_COMMIT="f5f5df6468aea13df6af348bf501944da9214d24"
 
 inherit cros-workon toolchain-funcs
 
