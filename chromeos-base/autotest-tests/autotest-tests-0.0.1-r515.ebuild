@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9a635299c500f59f06bd9e4faf586d75d085b892"
+CROS_WORKON_COMMIT="9d9e13a90d93be0ffcb143be565722c328c9df50"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -100,6 +100,7 @@ IUSE_TESTS="
 	+tests_hardware_GPIOSwitches
 	+tests_hardware_GPS
 	+tests_hardware_Keyboard
+	+tests_hardware_LightSensor
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_MultiReader
@@ -116,7 +117,6 @@ IUSE_TESTS="
 	+tests_hardware_UsbPlugIn
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
-	+tests_hardware_tsl2563
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
@@ -204,6 +204,7 @@ IUSE_TESTS="
 	+tests_platform_StackProtector
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
+	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BatteryCharge
 	+tests_power_CPUFreq
