@@ -99,6 +99,7 @@ IUSE_TESTS="
 	+tests_hardware_GPIOSwitches
 	+tests_hardware_GPS
 	+tests_hardware_Keyboard
+	+tests_hardware_LightSensor
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_MultiReader
@@ -115,7 +116,6 @@ IUSE_TESTS="
 	+tests_hardware_UsbPlugIn
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
-	+tests_hardware_tsl2563
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
@@ -203,6 +203,7 @@ IUSE_TESTS="
 	+tests_platform_StackProtector
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
+	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BatteryCharge
 	+tests_power_CPUFreq
