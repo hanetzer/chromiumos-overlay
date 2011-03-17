@@ -195,7 +195,7 @@ pkg_setup() {
 		--disable-config-hal
 		${conf_opts}"
 
-	# Things we may want to remove later: 
+	# Things we may want to remove later:
 	#	--disable-xaa (requires dropping all xaa drivers)
 	#	--disable-xv (requires fixing the xserver and the drivers)
 	#	--disable-tcp-transport
@@ -246,7 +246,7 @@ src_install() {
 
 	if ! use minimal &&	use xorg; then
 		# Install xorg.conf.example into docs
-		dodoc hw/xfree86/xorg.conf.example \
+		dodoc "${AUTOTOOLS_BUILD_DIR}"/hw/xfree86/xorg.conf.example \
 			|| die "couldn't install xorg.conf.example"
 	fi
 
