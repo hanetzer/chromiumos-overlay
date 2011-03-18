@@ -51,6 +51,7 @@ IUSE_TESTS="
 	+tests_factory_RebootStub
 	+tests_factory_Review
 	+tests_factory_ScriptWrapper
+	+tests_factory_SelectKeyboard
 	+tests_factory_ShowTestResults
 	+tests_factory_Touchpad
 	+tests_factory_UploadLogs
