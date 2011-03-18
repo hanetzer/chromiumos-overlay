@@ -193,6 +193,7 @@ pkg_setup() {
 		--disable-xace
 		--disable-config-dbus
 		--disable-config-hal
+		--disable-clientids
 		${conf_opts}"
 
 	# Things we may want to remove later:
