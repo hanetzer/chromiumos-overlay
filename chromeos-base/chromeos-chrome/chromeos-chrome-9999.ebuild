@@ -690,6 +690,9 @@ src_install() {
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
 
+	insinto /usr/include/proto
+	doins "${CHROME_ROOT}/src/chrome/browser/policy/proto/"*.proto
+
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \

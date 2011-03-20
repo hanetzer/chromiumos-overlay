@@ -18,6 +18,7 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail"
 
 DEPEND="${RDEPEND}
+	chromeos-base/chromeos-chrome
 	chromeos-base/libcros
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
