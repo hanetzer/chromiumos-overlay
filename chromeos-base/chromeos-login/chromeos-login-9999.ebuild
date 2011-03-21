@@ -14,7 +14,8 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test"
 
-RDEPEND="chromeos-base/chromeos-cryptohome
+RDEPEND="dev-libs/protobuf
+	chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail"
 
 DEPEND="${RDEPEND}
@@ -57,9 +58,6 @@ src_install() {
 
 	insinto /usr/share/dbus-1/services
 	doins "${S}/org.chromium.SessionManager.service"
-
-	insinto /usr/lib/debug
-	doins session_manager.sym
 
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
