@@ -44,6 +44,7 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS="
 	+tests_compilebench
 	+tests_dbench
+	+tests_ddtest
 	+tests_disktest
 	+tests_fsx
 	+tests_hackbench
