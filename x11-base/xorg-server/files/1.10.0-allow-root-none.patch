@@ -1,0 +1,18 @@
+diff -paur xorg-server-1.10.0.orig/dix/window.c xorg-server-1.10.0.work/dix/window.c
+--- xorg-server-1.10.0.orig/dix/window.c	2011-03-18 14:29:26.626498000 -0700
++++ xorg-server-1.10.0.work/dix/window.c	2011-03-18 15:09:38.606112000 -0700
+@@ -1028,12 +1028,8 @@ ChangeWindowAttributes(WindowPtr pWin, M
+ 	    {
+ 		if (pWin->backgroundState == BackgroundPixmap)
+ 		    (*pScreen->DestroyPixmap)(pWin->background.pixmap);
+-		if (!pWin->parent)
+-		    SetRootWindowBackground(pWin, pScreen, &index2);
+-		else {
+-		    pWin->backgroundState = XaceBackgroundNoneState(pWin);
+-		    pWin->background.pixel = pScreen->whitePixel;
+-		}
++		pWin->backgroundState = XaceBackgroundNoneState(pWin);
++		pWin->background.pixel = pScreen->whitePixel;
+ 	    }
+ 	    else if (pixID == ParentRelative)
+ 	    {

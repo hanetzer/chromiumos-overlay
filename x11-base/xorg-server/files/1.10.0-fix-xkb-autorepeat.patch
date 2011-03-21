@@ -1,0 +1,14 @@
+diff -paur xorg-server-1.10.0.orig/xkb/xkbUtils.c xorg-server-1.10.0.work/xkb/xkbUtils.c
+--- xorg-server-1.10.0.orig/xkb/xkbUtils.c	2011-03-18 14:29:33.990875000 -0700
++++ xorg-server-1.10.0.work/xkb/xkbUtils.c	2011-03-18 15:04:55.158051000 -0700
+@@ -342,10 +342,6 @@ CARD8 *			repeat;
+     xkb= xkbi->desc;
+     repeat= xkb->ctrls->per_key_repeat;
+ 
+-    /* before letting XKB do any changes, copy the current core values */
+-    if (pXDev->kbdfeed)
+-	memcpy(repeat,pXDev->kbdfeed->ctrl.autoRepeats,XkbPerKeyBitArraySize);
+-
+     XkbUpdateDescActions(xkb,first,num,changes);
+ 
+     if ((pXDev->kbdfeed)&&

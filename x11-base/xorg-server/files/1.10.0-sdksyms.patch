@@ -1,0 +1,23 @@
+diff -paur xorg-server-1.10.0.orig/hw/xfree86/loader/sdksyms.sh xorg-server-1.10.0.work/hw/xfree86/loader/sdksyms.sh
+--- xorg-server-1.10.0.orig/hw/xfree86/loader/sdksyms.sh	2011-03-18 14:29:29.652252000 -0700
++++ xorg-server-1.10.0.work/hw/xfree86/loader/sdksyms.sh	2011-03-18 18:39:07.432563000 -0700
+@@ -359,7 +359,7 @@ BEGIN {
+ 	    # skip modifiers, if any
+ 	    $n ~ /^\*?(unsigned|const|volatile|struct)$/ ||
+ 	    # skip pointer
+-	    $n ~ /^[a-zA-Z0-9_]*\*$/)
++	    $n ~ /\*$/)
+ 	    n++;
+ 
+ 	# type specifier may not be set, as in
+@@ -367,10 +367,6 @@ BEGIN {
+ 	if ($n !~ /[^a-zA-Z0-9_]/)
+ 	    n++;
+ 
+-	# go back if we are at the parameter list already
+-	if ($n ~ /^[(]([^*].*)?$/)
+-	    n--;
+-
+ 	# match
+ 	#    extern _X_EXPORT type (* name[])(...)
+ 	if ($n ~ /^[^a-zA-Z0-9_]+$/)
