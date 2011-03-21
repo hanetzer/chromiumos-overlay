@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -186,6 +186,7 @@ if [[ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]]; then
 fi
 if [[ "${FLAGS_withfactory}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-factoryinstall"
+  PACKAGES="${PACKAGES} chromeos-base/factorytest-init"
 fi
 if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
