@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="518502acf1261c9b6ad2a84ee5d429077847ec18"
+CROS_WORKON_COMMIT="44d98d9e964a7be0f440ed8104bbcb8d1b23a4bb"
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Chrome OS Update Engine."
@@ -15,9 +15,9 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/cros_boot_mode
 	chromeos-base/libchrome
 	chromeos-base/metrics
+	chromeos-base/vboot_reference
 	chromeos-base/verity
 	dev-cpp/gflags
 	dev-libs/glib
