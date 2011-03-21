@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="78855"
+CROS_SVN_COMMIT="78857"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -690,6 +690,9 @@ src_install() {
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
+
+	insinto /usr/include/proto
+	doins "${CHROME_ROOT}/src/chrome/browser/policy/proto/"*.proto
 
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
