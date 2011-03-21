@@ -520,20 +520,13 @@ src_compile() {
 	fi
 
 	tc-export CXX CC AR AS RANLIB LD
-	# HACK(raymes): If gold is present and is recent enough, we will use it.
-	# In the (hopefully near) future, gold will be rolled as the default
-	# system-wide linker and this logic can be removed.
 	if use x86 && use gold ; then
-		GOLD_CL=`$LD.gold --version | head -1 | sed \
-			"s/.*cos_gg_v1_\([0-9]*\).*$/\1/g"`
-		if [ $GOLD_CL -ge 44729 ] 2>/dev/null ; then
-			einfo "Using gold from the following location: `which $LD.gold`"
-			export CC="${CC} -fuse-ld=gold"
-			export CXX="${CXX} -fuse-ld=gold"
-			export LD="$LD.gold"
-		else
-			ewarn "gold was not found or is too old. Using GNU ld."
-		fi
+		einfo "Using gold from the following location: $(which ${LD}.gold)"
+		export CC="${CC} -fuse-ld=gold"
+		export CXX="${CXX} -fuse-ld=gold"
+		export LD="${LD}.gold"
+	else
+		ewarn "gold disabled. Using GNU ld."
 	fi
 
 	if ! use chrome_debug; then
