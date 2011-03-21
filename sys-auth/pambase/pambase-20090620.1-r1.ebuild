@@ -17,6 +17,7 @@ IUSE="debug cracklib passwdqc consolekit gnome-keyring selinux mktemp ssh +sha51
 RESTRICT="binchecks"
 
 RDEPEND="
+	chromeos-base/vboot_reference
 	|| (
 		>=sys-libs/pam-0.99.9.0-r1
 		( sys-auth/openpam

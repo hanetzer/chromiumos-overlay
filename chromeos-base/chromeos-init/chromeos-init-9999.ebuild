@@ -14,8 +14,11 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 DEPEND=""
-RDEPEND="sys-apps/upstart
-         chromeos-base/vpd"  # for vpd-log.conf of upstart
+# vpd for vpd-log.conf of upstart
+# vboot_reference for crossystem
+RDEPEND="chromeos-base/vboot_reference
+	chromeos-base/vpd
+	sys-apps/upstart"
 
 CROS_WORKON_LOCALNAME="init"
 CROS_WORKON_PROJECT="init"

@@ -14,6 +14,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="opengles"
 
 RDEPEND="chromeos-base/metrics
+	chromeos-base/vboot_reference
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/libpcre
