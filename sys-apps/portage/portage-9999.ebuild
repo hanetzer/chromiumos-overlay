@@ -46,31 +46,8 @@ PDEPEND="
 # coreutils-6.4 rdep is for date format in emerge-webrsync #164532
 # rsync-2.6.4 rdep is for the --filter option #167668
 
-SRC_ARCHIVES="http://dev.gentoo.org/~zmedico/portage/archives"
-
-prefix_src_archives() {
-	local x y
-	for x in ${@}; do
-		for y in ${SRC_ARCHIVES}; do
-			echo ${y}/${x}
-		done
-	done
-}
-
 PV_PL="2.1.2"
-PATCHVER_PL=""
 TARBALL_PV=$PV
-SRC_URI="mirror://gentoo/${PN}-${TARBALL_PV}.tar.bz2
-	$(prefix_src_archives ${PN}-${TARBALL_PV}.tar.bz2)
-	linguas_pl? ( mirror://gentoo/${PN}-man-pl-${PV_PL}.tar.bz2
-		$(prefix_src_archives ${PN}-man-pl-${PV_PL}.tar.bz2) )"
-
-PATCHVER=
-[[ $TARBALL_PV = $PV ]] || PATCHVER=$PV
-if [ -n "${PATCHVER}" ]; then
-	SRC_URI="${SRC_URI} mirror://gentoo/${PN}-${PATCHVER}.patch.bz2
-	$(prefix_src_archives ${PN}-${PATCHVER}.patch.bz2)"
-fi
 
 S="${WORKDIR}"/${PN}-${TARBALL_PV}
 S_PL="${WORKDIR}"/${PN}-${PV_PL}
@@ -111,13 +88,21 @@ pkg_setup() {
 	fi
 }
 
+src_unpack() {
+	SRCDIR="${CROS_WORKON_SRCROOT}/src/third_party/portage_tool"
+	if [ ! -d "${SRCDIR}" ]; then
+		die "Missing ${SRCDIR}. Please add it manually to your local manifest."
+	fi
+	mkdir -p ${S}
+	cp -a ${SRCDIR}/* "${S}" || die "cp -a ${SRCDIR}/* ${S}"
+}
+
 src_prepare() {
 	if [ -n "${PATCHVER}" ] ; then
 		if [[ -L $S/bin/ebuild-helpers/portageq ]] ; then
 			rm "$S/bin/ebuild-helpers/portageq" \
 				|| die "failed to remove portageq helper symlink"
 		fi
-		epatch "${WORKDIR}/${PN}-${PATCHVER}.patch"
 	fi
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION=.*/VERSION=\"${PVR}\"/" -i pym/portage/__init__.py || \
