@@ -46,19 +46,26 @@ src_prepare() {
 	epatch "${FILESDIR}"/0005-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/0006-Port-the-following-ibus-1.3-patches-to-1.4.patch
 
-	# TODO(zork,yusukes): Upstream the patch and remove this line.
-	epatch "${FILESDIR}"/0009-Remove-services-from-hash-table-before-cleanup.patch
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
 }
 
 src_configure() {
+	# When cross-compiled, we build the gtk im module. Otherwise we don't
+	# since the module is not necessary for host environment.
+	if tc-is-cross-compiler ; then
+	       GTK2_IM_MODULE_FLAG=--enable-gtk2
+	else
+	       GTK2_IM_MODULE_FLAG=--disable-gtk2
+	fi
+
 	# TODO(yusukes): Fix ibus and remove -Wno-unused-variable.
 	append-cflags -Wall -Wno-unused-variable -Werror
 	# TODO(petkov): Ideally, configure should support --disable-isocodes but it
 	# seems that the current version doesn't, so use the environment variables
 	# instead to remove the dependence on iso-codes.
 	econf \
+		${GTK2_IM_MODULE_FLAG} \
 		--disable-gconf \
 		--disable-xim \
 		--disable-key-snooper \
@@ -106,6 +113,8 @@ src_test() {
 
 	# Run tests.
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-bus || test_fail
+	# TODO(yusukes): Patch the test and then enable it.
+	#env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-inputcontext || test_fail
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-configservice || test_fail
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-factory || test_fail
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-keynames || test_fail
