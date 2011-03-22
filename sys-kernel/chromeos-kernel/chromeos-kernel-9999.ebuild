@@ -4,7 +4,6 @@
 EAPI=4
 
 inherit toolchain-funcs
-inherit binutils-funcs
 
 DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
@@ -49,15 +48,8 @@ kernel_arch=${CHROMEOS_KERNEL_ARCH:-"$(tc-arch-kernel)"}
 cross=${CHOST}-
 # Hack for using 64-bit kernel with 32-bit user-space
 if [ "${ARCH}" = "x86" -a "${kernel_arch}" = "x86_64" ]; then
-	cross=${CBUILD}-
+    cross=${CBUILD}-
 fi
-
-# TODO(raymes): Force GNU ld over gold. There are still some
-# gold issues to iron out. See: 13209.
-tc-export LD CC CXX
-COMPILER_OPTS="LD=\"$(get_binutils_path_ld)/ld\""
-COMPILER_OPTS+=" CC=\"${CC} -B$(get_binutils_path_ld)\""
-COMPILER_OPTS+=" CXX=\"${CXX} -B$(get_binutils_path_ld)\""
 
 src_configure() {
 	elog "Using kernel config: ${config}"
@@ -74,7 +66,7 @@ src_configure() {
 	fi
 
 	# Use default for any options not explitly set in splitconfig
-	yes "" | eval emake ${COMPILER_OPTS} ARCH=${kernel_arch} oldconfig || die
+	yes "" | emake ARCH=${kernel_arch} oldconfig || die
 
 	if use compat_wireless; then
 		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
@@ -97,14 +89,14 @@ src_compile() {
 	else
 		INITRAMFS=""
 	fi
-	eval emake ${COMPILER_OPTS} \
+	emake \
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		CROSS_COMPILE="${cross}" || die
 
 	if use compat_wireless; then
 		# compat-wireless support must be done after
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
+		emake M=chromeos/compat-wireless \
 			$INITRAMFS \
 			ARCH=${kernel_arch} \
 			CROSS_COMPILE="${cross}" || die
@@ -114,13 +106,13 @@ src_compile() {
 src_install() {
 	dodir boot
 
-	eval emake ${COMPILER_OPTS} \
+	emake \
 		ARCH=${kernel_arch}\
 		CROSS_COMPILE="${cross}" \
 		INSTALL_PATH="${D}/boot" \
 		install || die
 
-	eval emake ${COMPILER_OPTS} \
+	emake \
 		ARCH=${kernel_arch}\
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
@@ -129,7 +121,7 @@ src_install() {
 	if use compat_wireless; then
 		# compat-wireless modules are built+installed separately
 		# NB: the updates dir is handled specially by depmod
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
+		emake M=chromeos/compat-wireless \
 			ARCH=${kernel_arch}\
 			CROSS_COMPILE="${cross}" \
 			INSTALL_MOD_DIR=updates \
@@ -137,7 +129,7 @@ src_install() {
 			modules_install || die
 	fi
 
-	eval emake ${COMPILER_OPTS} \
+	emake \
 		ARCH=${kernel_arch}\
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
