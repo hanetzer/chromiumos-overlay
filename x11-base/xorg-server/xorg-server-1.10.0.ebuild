@@ -137,6 +137,8 @@ PATCHES=(
 	# flicker when showing and hiding the composite overlay window
 	"${FILESDIR}/1.10.0-allow-root-none.patch"
 	"${FILESDIR}/1.10.0-sdksyms.patch"
+	# Get the right path for the DRI drivers
+	"${FILESDIR}/1.10.0-xcompile-dri-driver.patch"
 	)
 
 pkg_setup() {
