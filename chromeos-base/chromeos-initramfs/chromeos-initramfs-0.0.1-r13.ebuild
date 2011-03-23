@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="3b6e4812ec7f59309f5467593ac86665738dd17f"
+CROS_WORKON_COMMIT="28966b0a8e746fd882fdd781d6a201d688dcde3d"
 
 inherit cros-workon
 
@@ -82,6 +82,7 @@ build_initramfs_file() {
 	cp ${ROOT}/usr/bin/tpmc ${INITRAMFS_TMP_S}/bin || die
 	cp ${ROOT}/usr/bin/dev_sign_file ${INITRAMFS_TMP_S}/bin || die
 	cp ${ROOT}/usr/bin/vbutil_kernel ${INITRAMFS_TMP_S}/bin || die
+	cp ${ROOT}/usr/bin/crossystem ${INITRAMFS_TMP_S}/bin || die
 
 	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
 	cp ${ROOT}/usr/sbin/chromeos-common.sh ${INITRAMFS_TMP_S}/usr/sbin || die
