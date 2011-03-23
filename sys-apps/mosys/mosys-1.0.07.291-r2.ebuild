@@ -7,7 +7,7 @@ inherit flag-o-matic toolchain-funcs
 
 DESCRIPTION="Utility for obtaining various bits of low-level system info"
 HOMEPAGE="http://mosys.googlecode.com/"
-SRC_URI="http://mosys.googlecode.com/files/${PN}-${PV}.tar.bz2"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-${PV}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
