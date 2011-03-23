@@ -1,21 +1,22 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/protobuf/protobuf-2.2.0.ebuild,v 1.1 2009/08/21 17:41:18 nelchael Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/protobuf/protobuf-2.3.0-r1.ebuild,v 1.5 2011/03/16 18:00:10 xarthisius Exp $
 
-EAPI="2"
+EAPI="3"
 
 JAVA_PKG_IUSE="source"
+PYTHON_DEPEND="python? 2"
 
-inherit eutils python java-pkg-opt-2 elisp-common
+inherit autotools eutils distutils python java-pkg-opt-2 elisp-common
 
 DESCRIPTION="Google's Protocol Buffers -- an efficient method of encoding structured data"
 HOMEPAGE="http://code.google.com/p/protobuf/"
-SRC_URI="http://protobuf.googlecode.com/files/${PF}.tar.bz2"
+SRC_URI="http://protobuf.googlecode.com/files/${P}.tar.bz2"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
-IUSE="emacs examples java python vim-syntax"
+KEYWORDS="amd64 ppc ppc64 x86 ~x64-macos"
+IUSE="emacs examples java python static-libs vim-syntax"
 
 DEPEND="${DEPEND} java? ( >=virtual/jdk-1.5 )
 	python? ( dev-python/setuptools )
@@ -23,28 +24,43 @@ DEPEND="${DEPEND} java? ( >=virtual/jdk-1.5 )
 RDEPEND="${RDEPEND} java? ( >=virtual/jre-1.5 )
 	emacs? ( virtual/emacs )"
 
+PYTHON_MODNAME="google/protobuf"
+DISTUTILS_SRC_TEST="setup.py"
+
+pkg_setup() {
+	if use python; then
+		python_set_active_version 2
+		python_pkg_setup
+	fi
+}
+
 src_prepare() {
-	epatch "${FILESDIR}/${P}-decoder_test_64bit_fix.patch"
-	epatch "${FILESDIR}/${P}-fix-emacs-byte-compile.patch"
+	epatch "${FILESDIR}"/${P}-asneeded-2.patch
+	eautoreconf
+
+	if use python; then
+		python_convert_shebangs -r 2 .
+		distutils_src_prepare
+	fi
 }
 
 src_configure() {
-	local protoc=""
-	if tc-is-cross-compiler; then
-		protoc="--with-protoc=$(which protoc)" ||
-			die "need native protoc tool to cross compile"
-	fi
-	econf ${protoc} || die "died running econf"
+	econf \
+		$(use_enable static-libs static)
 }
 
 src_compile() {
-	emake || die
+	emake || die "emake failed"
 
 	if use python; then
-		cd python; distutils_src_compile; cd ..
+		einfo "Compiling Python library ..."
+		pushd python
+		distutils_src_compile
+		popd
 	fi
 
 	if use java; then
+		einfo "Compiling Java library ..."
 		src/protoc --java_out=java/src/main/java --proto_path=src src/google/protobuf/descriptor.proto
 		mkdir java/build
 		pushd java/src/main/java
@@ -58,12 +74,31 @@ src_compile() {
 	fi
 }
 
-src_install() {
-	emake DESTDIR="${D}" install
-	dodoc CHANGES.txt CONTRIBUTORS.txt README.txt
+src_test() {
+	emake check || die "emake check failed"
 
 	if use python; then
-		cd python; distutils_src_install; cd ..
+		 pushd python
+		 distutils_src_test
+		 popd
+	fi
+}
+
+src_install() {
+	emake DESTDIR="${D}" install || die "emake install failed"
+	dodoc CHANGES.txt CONTRIBUTORS.txt README.txt
+
+	use static-libs || rm -rf "${D}"/usr/lib*/*.la
+
+	if use python; then
+		pushd python
+		distutils_src_install
+		popd
+	fi
+
+	if use java; then
+		java-pkg_dojar ${PN}.jar
+		use source && java-pkg_dosrc java/src/main/java/*
 	fi
 
 	if use vim-syntax; then
@@ -80,26 +115,14 @@ src_install() {
 		insinto /usr/share/doc/${PF}/examples
 		doins -r examples/* || die "doins examples failed"
 	fi
-
-	if use java; then
-		java-pkg_dojar ${PN}.jar
-		use source && java-pkg_dosrc java/src/main/java/*
-	fi
-}
-
-src_test() {
-	emake check
-
-	if use python; then
-		 cd python; ${python} setup.py test || die "python test failed"
-		 cd ..
-	fi
 }
 
 pkg_postinst() {
 	use emacs && elisp-site-regen
+	use python && distutils_pkg_postinst
 }
 
 pkg_postrm() {
 	use emacs && elisp-site-regen
+	use python && distutils_pkg_postrm
 }
