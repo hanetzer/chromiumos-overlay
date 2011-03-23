@@ -81,6 +81,7 @@ build_initramfs_file() {
 	cp ${ROOT}/usr/bin/tpmc ${INITRAMFS_TMP_S}/bin || die
 	cp ${ROOT}/usr/bin/dev_sign_file ${INITRAMFS_TMP_S}/bin || die
 	cp ${ROOT}/usr/bin/vbutil_kernel ${INITRAMFS_TMP_S}/bin || die
+	cp ${ROOT}/usr/bin/crossystem ${INITRAMFS_TMP_S}/bin || die
 
 	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
 	cp ${ROOT}/usr/sbin/chromeos-common.sh ${INITRAMFS_TMP_S}/usr/sbin || die
