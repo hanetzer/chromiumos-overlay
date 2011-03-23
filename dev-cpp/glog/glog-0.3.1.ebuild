@@ -7,7 +7,7 @@ inherit libtool
 
 DESCRIPTION="Google's C++ logging library."
 HOMEPAGE="http://code.google.com/p/google-glog/"
-SRC_URI="http://google-glog.googlecode.com/files/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 x86 arm"
