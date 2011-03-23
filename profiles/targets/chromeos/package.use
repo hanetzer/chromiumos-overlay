@@ -29,6 +29,7 @@ net-misc/curl		ares
 net-misc/dhcpcd crash
 net-misc/ntp            caps
 net-misc/openssh	-X
+net-misc/strongswan	cisco nat-transport
 net-nds/openldap	minimal
 net-wireless/wpa_supplicant	dbus debug -readline ssl
 sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb
