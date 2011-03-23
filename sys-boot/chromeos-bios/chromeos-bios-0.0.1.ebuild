@@ -24,8 +24,7 @@ autoconf="${ROOT%/}/u-boot/autoconf.mk"
 stub_image="${ROOT%/}/u-boot/u-boot-stub.bin"
 recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
 normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
-bct_file="${ROOT%/}/u-boot/board.bct"
-cfg_file="${ROOT%/}/u-boot/flash.cfg"
+bct_file="${ROOT%/}/u-boot/bct/board.bct"
 
 get_autoconf() {
 	grep -m1 $1 ${autoconf} | tr -d "\"" | cut -d = -f 2
@@ -93,7 +92,6 @@ src_compile() {
 	#
 	cros_sign_bootstub \
 		--bct "${bct_file}" \
-		--flash "${cfg_file}" \
 		--bootstub "${stub_image}" \
 		--output bootstub.bin \
 		--text_base "0x$(get_text_base)" ||
