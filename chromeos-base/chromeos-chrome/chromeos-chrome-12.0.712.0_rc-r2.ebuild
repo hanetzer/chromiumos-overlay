@@ -505,17 +505,13 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		# TODO(raymes): Re-enable sync_integration_tests and
-		# browser_tests for ARM after toolchain upgrade.
-		# See issues 12800,10018
 		TEST_TARGETS="page_cycler_tests
 			reliability_tests
 			startup_tests
 			ui_tests
-			pyautolib"
-		if use x86; then  # Build these tests on x86 only.
-			TEST_TARGETS="${TEST_TARGETS} browser_tests sync_integration_tests"
-		fi
+			pyautolib
+			browser_tests
+			sync_integration_tests"
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
