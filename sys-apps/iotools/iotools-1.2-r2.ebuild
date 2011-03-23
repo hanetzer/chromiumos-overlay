@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="x86 amd64"
 IUSE="hardened"
 
-SRC_URI="http://iotools.googlecode.com/files/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 src_compile() {
 	# If we are on hardened/x86, turn off PIE because the code uses %ebx
