@@ -1,6 +1,5 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/www/viewcvs.gentoo.org/raw_cvs/gentoo-x86/app-laptop/laptop-mode-tools/laptop-mode-tools-1.52.ebuild,v 1.1 2009/10/16 18:42:23 bangert Exp $
 
 EAPI="2"
 CROS_WORKON_COMMIT="02f8ebfc4915d6c5817818a61a49b98334fe3ec4"
@@ -9,10 +8,11 @@ inherit cros-workon
 
 DESCRIPTION="Linux kernel laptop_mode user-space utilities"
 HOMEPAGE="http://www.samwel.tk/laptop_mode/"
+SRC_URI="http://samwel.tk/laptop_mode/tools/downloads/laptop-mode-tools_1.57.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 x86 arm"
 
 IUSE="-acpi -apm bluetooth -hal -scsi"
 
@@ -32,9 +32,25 @@ RDEPEND="sys-apps/ethtool
 		scsi? ( sys-apps/sdparm )
 		sys-apps/hdparm"
 
+PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
+          "0002-Add-config-knob-to-control-syslog-facility.patch" \
+          "0003-Add-WiFi-power-management-support.patch" \
+          "0005-switch-wifi-support-to-nl80211.patch" \
+          "0006-Lower-hard-drive-idle-timeout-to-5-seconds.patch" \
+          "0007-Find-ARM-file-system.patch" \
+          "0008-Export-PATH-to-which.patch" \
+          "0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" )
+
+src_unpack() {
+	unpack ${A}
+      for PATCH in "${PATCHES[@]}"; do
+        epatch "${FILESDIR}/$PATCH"
+      done
+}
+
 src_install() {
 	dodir /etc/pm/sleep.d
-	cd laptop-mode-tools_1.52
+	cd laptop-mode-tools_1.57
 	DESTDIR="${D}" \
 		MAN_D="/usr/share/man" \
 		INIT_D="none" \
