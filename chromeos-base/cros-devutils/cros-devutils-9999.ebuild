@@ -81,10 +81,7 @@ src_install() {
 		dodir /usr/share/cros_write_firmware
 		insinto /usr/share/cros_write_firmware
 
-		doins host/share/cros_write_firmware/spi.script ||
-			die "Could not find file to install."
-		doins host/share/cros_write_firmware/nvflash-spi.cfg ||
-			die "Could not find file to install."
+		doins host/share/cros_write_firmware/spi.script
 	fi
 }
 
