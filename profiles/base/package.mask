@@ -1,2 +1,0 @@
-# TODO: Ensure that protobuf build runs host protoc
->dev-libs/protobuf-2.2.0

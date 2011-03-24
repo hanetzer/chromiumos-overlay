@@ -7,16 +7,20 @@ EAPI="3"
 JAVA_PKG_IUSE="source"
 PYTHON_DEPEND="python? 2"
 
-inherit autotools eutils distutils python java-pkg-opt-2 elisp-common
+inherit autotools eutils distutils python java-pkg-opt-2 elisp-common toolchain-funcs
 
 DESCRIPTION="Google's Protocol Buffers -- an efficient method of encoding structured data"
 HOMEPAGE="http://code.google.com/p/protobuf/"
-SRC_URI="http://protobuf.googlecode.com/files/${P}.tar.bz2"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 ppc ppc64 x86 ~x64-macos"
-IUSE="emacs examples java python static-libs vim-syntax"
+KEYWORDS="amd64 arm ppc ppc64 x86 ~x64-macos"
+
+# TODO(cmasone): Take out build-python hack when http://crosbug.com/13429
+# the build-python USE flag indicates that we want to build the python bindings for
+# protobuffers, but not force runtime support to exist.
+IUSE="+build-python emacs examples java python static-libs vim-syntax"
 
 DEPEND="${DEPEND} java? ( >=virtual/jdk-1.5 )
 	python? ( dev-python/setuptools )
@@ -28,7 +32,7 @@ PYTHON_MODNAME="google/protobuf"
 DISTUTILS_SRC_TEST="setup.py"
 
 pkg_setup() {
-	if use python; then
+	if use python || use build-python; then
 		python_set_active_version 2
 		python_pkg_setup
 	fi
@@ -36,23 +40,32 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-asneeded-2.patch
+	epatch "${FILESDIR}"/${P}-crosscompile.patch
 	eautoreconf
 
-	if use python; then
+	if use python || use build-python; then
 		python_convert_shebangs -r 2 .
 		distutils_src_prepare
 	fi
 }
 
 src_configure() {
-	econf \
+	PROTOC_ARG=
+	if tc-is-cross-compiler ; then
+		host_protoc=$(which protoc)
+		[[ -n ${host_protoc} ]] || die "Please install ${P} in your host environment."
+		PROTOC_ARG="--with-protoc=${host_protoc}"
+		export PROTOC=${host_protoc}
+	fi
+
+	econf $PROTOC_ARG \
 		$(use_enable static-libs static)
 }
 
 src_compile() {
 	emake || die "emake failed"
 
-	if use python; then
+	if use python || use build-python; then
 		einfo "Compiling Python library ..."
 		pushd python
 		distutils_src_compile
@@ -77,7 +90,7 @@ src_compile() {
 src_test() {
 	emake check || die "emake check failed"
 
-	if use python; then
+	if use python || use build-python; then
 		 pushd python
 		 distutils_src_test
 		 popd
@@ -90,7 +103,7 @@ src_install() {
 
 	use static-libs || rm -rf "${D}"/usr/lib*/*.la
 
-	if use python; then
+	if use python || use build-python; then
 		pushd python
 		distutils_src_install
 		popd
@@ -119,10 +132,10 @@ src_install() {
 
 pkg_postinst() {
 	use emacs && elisp-site-regen
-	use python && distutils_pkg_postinst
+	( use python || use build-python ) && distutils_pkg_postinst
 }
 
 pkg_postrm() {
 	use emacs && elisp-site-regen
-	use python && distutils_pkg_postrm
+	( use python || use build-python ) && distutils_pkg_postrm
 }
