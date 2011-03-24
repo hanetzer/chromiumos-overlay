@@ -10,7 +10,7 @@ SRC_URI="ftp://ftp.xelerance.com/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 ~ppc x86"
+KEYWORDS="amd64 arm ~ppc x86"
 IUSE=""
 
 DEPEND="net-libs/libpcap"
@@ -24,6 +24,7 @@ src_unpack() {
 }
 
 src_compile() {
+	tc-export CC PKG_CONFIG
 	append-flags -DTRUST_PPPD_TO_DIE
 	emake || die "emake failed"
 }
