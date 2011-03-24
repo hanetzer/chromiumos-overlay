@@ -17,51 +17,61 @@ CROS_WORKON_PROJECT="dev-util"
 CROS_WORKON_LOCALNAME="dev"
 
 
-RDEPEND="app-shells/bash
+RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 	app-portage/gentoolkit
+	cros_host? ( app-shells/bash )
+	!cros_host? ( !chromeos-base/gmerge )
 	dev-lang/python
 	dev-libs/shflags
-	!cros_host? ( !chromeos-base/gmerge )
-	"
-
-DEPEND="${RDEPEND}
 	cros_host? ( dev-util/crosutils )
 	"
+
+# These are all either bash / python scripts.  No actual builds DEPS.
+DEPEND=""
 
 src_install() {
 	exeinto /usr/bin
 	insinto /usr/bin
 
 	if ! use cros_host; then
-		doexe gmerge
-		doexe stateful_update
+		doexe gmerge || die "Could not find file to install."
+		doexe stateful_update || die "Could not find file to install."
 	else
-		doexe host/write_tegra_bios
-		doexe host/cros_overlay_list
-		doexe host/cros_workon
-		doexe host/cros_choose_profile
-		doexe host/cros_sign_bootstub
-		doexe host/cros_write_firmware
-		doexe host/willis
+		doexe host/write_tegra_bios || die "Could not find file to install."
+		doexe host/cros_overlay_list || die "Could not find file to install."
+		doexe host/cros_workon || die "Could not find file to install."
+		doexe host/cros_choose_profile || die "Could not find file to install."
+		doexe host/cros_sign_bootstub || die "Could not find file to install."
+		doexe host/cros_write_firmware || die "Could not find file to install."
+		doexe host/willis || die "Could not find file to install."
+
+                doexe host/cros_start_vm || die "Could not find file to install."
+                doexe host/cros_stop_vm || die "Could not find file to install."
+
+                doexe host/image_to_live.sh || die "Could not find file to install."
+                doexe host/gmergefs || die "Could not find file to install."
 
 		# Devserver and friends:
-		doexe host/start_devserver
-		doexe devserver.py
+		doexe host/start_devserver || die "Could not find file to install."
+		doexe devserver.py || die "Could not find file to install."
 		# TODO(zbehan): Used by image_to_live.sh, find out why, since the
 		# target already has a copy.
-		doexe stateful_update
+		doexe stateful_update || die "Could not find file to install."
 		# These need to live with devserver, but not +x.
-		doins builder.py
-		doins autoupdate.py
-		doins buildutil.py
+		doins builder.py || die "Could not find file to install."
+		doins autoupdate.py || die "Could not find file to install."
+		doins buildutil.py || die "Could not find file to install."
 		# Related to devserver
-		dobin host/cros_generate_update_payload
-		dobin host/cros_generate_stateful_update_payload
+		dobin host/cros_generate_update_payload ||
+			die "Could not find file to install."
+		dobin host/cros_generate_stateful_update_payload ||
+			die "Could not find file to install."
 		# Data directory
 		diropts -m0777 # Install cache as a+w.
 		dodir /var/lib/devserver
 		dodir /var/lib/devserver/static
-		dodir /var/lib/devserver/static/cache
+		dodir /var/lib/devserver/static/cache ||
+			die "Could not create cache directory."
 		diropts -m0755
 		dosym ../../../../build /var/lib/devserver/static/pkgroot
 		# FIXME(zbehan): Remove compatibility symlink. Eventually.
@@ -71,8 +81,10 @@ src_install() {
 		dodir /usr/share/cros_write_firmware
 		insinto /usr/share/cros_write_firmware
 
-		doins host/share/cros_write_firmware/spi.script
-		doins host/share/cros_write_firmware/nvflash-spi.cfg
+		doins host/share/cros_write_firmware/spi.script ||
+			die "Could not find file to install."
+		doins host/share/cros_write_firmware/nvflash-spi.cfg ||
+			die "Could not find file to install."
 	fi
 }
 
