@@ -43,7 +43,10 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
+	+site_tests_kernel_TPMPing
+	+site_tests_kernel_HdParm
 	+tests_compilebench
+	+tests_crashme
 	+tests_dbench
 	+tests_ddtest
 	+tests_disktest
@@ -55,6 +58,7 @@ IUSE_TESTS="
 	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
+	+tests_scrashme
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_FFMPEG
