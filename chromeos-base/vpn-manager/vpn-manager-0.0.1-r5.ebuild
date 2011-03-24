@@ -17,6 +17,7 @@ IUSE=""
 RDEPEND="chromeos-base/libchrome
 	 chromeos-base/libchromeos
 	 dev-cpp/gflags
+	 net-dialup/xl2tpd
 	 net-misc/strongswan[cisco,nat-transport]"
 DEPEND="${RDEPEND}
 	 dev-cpp/gtest"
