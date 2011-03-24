@@ -164,6 +164,13 @@ src_install() {
 	# postinst
 	rm "${D%/}${EPREFIX}/etc/gtk-2.0/gtk.immodules"
 
+	# ChromeOS specific: Remove all gtk im modules except im-ibus.* since
+	# we don't use them. (crosbus.com/11580)
+	for immodule in "${D%/}${EPREFIX}/usr/lib/gtk-2.0/2.*/immodules/*"
+	do
+	    grep ibus $immodule || rm $immodule
+	done
+
 	# add -framework Carbon to the .pc files
 	use aqua && for i in gtk+-2.0.pc gtk+-quartz-2.0.pc gtk+-unix-print-2.0.pc; do
 		sed -i -e "s:Libs\: :Libs\: -framework Carbon :" "${D%/}${EPREFIX}"/usr/lib/pkgconfig/$i || die "sed failed"
