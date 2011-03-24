@@ -7,9 +7,6 @@
 # TODO: Fix cross compile autoconf failure.
 >sys-apps/kbd-1.13-r1
 
-# TODO: Update our overlay to work with udev-149
->sys-fs/udev-146-r4
-
 # TODO: Update our overlay to work with python-2.6.4-r1
 >dev-lang/python-2.6.4
 
