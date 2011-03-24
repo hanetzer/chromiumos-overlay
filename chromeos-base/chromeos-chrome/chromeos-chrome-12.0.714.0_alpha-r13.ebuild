@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="79314"
+CROS_SVN_COMMIT="79326"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -455,6 +455,19 @@ src_prepare() {
 
 	${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 }
+
+src_configure() {
+	tc-export CXX CC AR AS RANLIB LD
+	if use x86 && use gold ; then
+		einfo "Using gold from the following location: $(which ${LD}.gold)"
+		export CC="${CC} -fuse-ld=gold"
+		export CXX="${CXX} -fuse-ld=gold"
+		export LD="${LD}.gold"
+	else
+		ewarn "gold disabled. Using GNU ld."
+	fi
+}
+
 # Extract the version number from lines like:
 # kCrosAPIMinVersion = 29,
 # kCrosAPIVersion = 30
@@ -514,16 +527,6 @@ src_compile() {
 			browser_tests
 			sync_integration_tests"
 		echo Building test targets: ${TEST_TARGETS}
-	fi
-
-	tc-export CXX CC AR AS RANLIB LD
-	if use x86 && use gold ; then
-		einfo "Using gold from the following location: $(which ${LD}.gold)"
-		export CC="${CC} -fuse-ld=gold"
-		export CXX="${CXX} -fuse-ld=gold"
-		export LD="${LD}.gold"
-	else
-		ewarn "gold disabled. Using GNU ld."
 	fi
 
 	if ! use chrome_debug; then
