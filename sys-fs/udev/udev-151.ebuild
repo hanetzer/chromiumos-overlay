@@ -262,6 +262,9 @@ src_install() {
 	doins gentoo/??-*.rules
 	doins packages/40-isdn.rules
 
+	# workaround for chromium-os:12387, must be removed for >udev-152
+	doins "${FILESDIR}"/01-workaround-net-device-db.rules
+
 	# compat-wireless firmware loading (needs compat_firmware.sh above)
 	doins "${FILESDIR}"/50-compat_firmware.rules \
 		|| die "compat_firmware.rules not installed properly"
