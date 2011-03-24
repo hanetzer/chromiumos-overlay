@@ -39,10 +39,10 @@ IUSE_TESTS="
 	+tests_factory_DeveloperRecovery
 	+tests_factory_Display
 	+tests_factory_Dummy
-	+tests_factory_EnableWriteProtect
 	+tests_factory_ExtDisplay
 	+tests_factory_ExternalStorage
 	+tests_factory_Fail
+	+tests_factory_Finalize
 	+tests_factory_Keyboard
 	+tests_factory_Leds
 	+tests_factory_LightSensor
@@ -53,10 +53,6 @@ IUSE_TESTS="
 	+tests_factory_SelectKeyboard
 	+tests_factory_ShowTestResults
 	+tests_factory_Touchpad
-	+tests_factory_UploadLogs
-	+tests_factory_LogVpd
-	+tests_factory_Verify
-	+tests_factory_Wipe
 	+tests_factory_WriteGBB
 	+tests_suite_Factory
 "
