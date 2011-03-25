@@ -11,7 +11,8 @@ DISTDIR="/var/lib/portage/distfiles"
 # We initialize PORTDIR_OVERLAY here to clobber any redefinitions elsewhere.
 # This has to be the first overlay so crossdev finds the correct gcc and 
 # glibc ebuilds.
-PORTDIR_OVERLAY="/usr/local/portage/chromiumos"
+PORTDIR_OVERLAY="/usr/local/portage/stable"
+PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 
 PORTAGE_BZIP2_COMMAND="bzip2"
 PORTAGE_BUNZIP2_COMMAND="bunzip2"

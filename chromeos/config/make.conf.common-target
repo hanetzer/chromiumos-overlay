@@ -24,7 +24,7 @@ PORTAGE_WORKDIR_MODE="0755"
 PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"
 ELIBC="glibc"
 
-PORTDIR_OVERLAY="/usr/local/portage"
+PORTDIR_OVERLAY="/usr/local/portage/stable"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
 
