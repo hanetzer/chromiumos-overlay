@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="2"
+EAPI="4"
 
 inherit cros-workon
 
@@ -27,4 +27,4 @@ RDEPEND="app-emulation/qemu-kvm
 # These are all either bash / python scripts.  No actual builds DEPS.
 DEPEND=""
 
-# Use default make, make_install from Makefile in repository.
+# Use default src_compile and src_install which use Makefile.
