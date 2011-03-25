@@ -40,6 +40,7 @@ src_install() {
 		doexe host/write_tegra_bios || die "Could not find file to install."
 		doexe host/cros_overlay_list || die "Could not find file to install."
 		doexe host/cros_workon || die "Could not find file to install."
+		doexe host/cros_workon_make || die "Could not find file to install."
 		doexe host/cros_choose_profile || die "Could not find file to install."
 		doexe host/cros_sign_bootstub || die "Could not find file to install."
 		doexe host/cros_write_firmware || die "Could not find file to install."
