@@ -1,0 +1,16 @@
+setenv _crc    'crc32 ${address} ${firmware_size}'
+setenv _init   'echo Initing NAND; nand device           0'
+setenv _erase  'echo Erasing NAND; nand erase            0 ${length}'
+setenv _write  'echo Writing NAND; nand write ${address} 0 ${length}'
+setenv _clear  'echo Clearing RAM; mw.b       ${address} 0 ${length}'
+setenv _read   'echo Reading NAND; nand read  ${address} 0 ${length}'
+
+run _crc
+run _init
+run _erase
+run _write
+run _clear
+run _read
+run _crc
+
+echo If the 2 CRCs above are equal, flash was successful
