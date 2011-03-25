@@ -194,6 +194,11 @@ pkg_setup() {
 		--disable-config-dbus
 		--disable-config-hal
 		--disable-clientids
+		--disable-xf86vidmode
+		--disable-registry
+		--disable-xfake
+		--disable-dmx
+		--disable-xvfb
 		${conf_opts}"
 
 	# Things we may want to remove later:
