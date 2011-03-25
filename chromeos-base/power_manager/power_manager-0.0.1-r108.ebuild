@@ -10,7 +10,7 @@ DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-new_power_button test -lockvt"
+IUSE="-new_power_button test -lockvt -touchui"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="chromeos-base/libcros
@@ -122,4 +122,11 @@ src_install() {
 	# Install light sensor udev rules
 	insinto "/etc/udev/rules.d"
 	doins "${S}/99-light-sensor.rules"
+
+	if use touchui; then
+		if [ ! -e "${D}/usr/share/power_manager/use_lid" ]; then
+			die "use_lid config file missing"
+		fi
+		echo "0" > "${D}/usr/share/power_manager/use_lid"
+	fi
 }
