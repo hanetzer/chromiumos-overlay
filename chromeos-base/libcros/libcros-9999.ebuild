@@ -70,6 +70,10 @@ src_compile() {
 	scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
 	scons -f SConstruct.chromiumos libcros_service_test || \
             die "libcros_service_test compile failed."
+        if use install_tests; then
+	  scons -f SConstruct.chromiumos test || \
+            die "cros tests compile failed."
+        fi
 }
 
 src_test() {
@@ -89,7 +93,6 @@ src_test() {
 	# ibus engines in order to parse their component definition at build
 	# time.
 	export DEPEND="$DEPEND"
-	scons -f SConstruct.chromiumos test || die "cros tests compile failed."
 
 	scons -f SConstruct.chromiumos unittest || die
 	./libcros_unittests || die
@@ -106,6 +109,13 @@ src_install() {
 	doins "${S}/libcros.so"
         if use install_tests; then
 	  doins "${S}/libcros_service_tester"
+	  doins "${S}/monitor_power"
+	  doins "${S}/monitor_network"
+	  doins "${S}/monitor_sms"
+	  doins "${S}/monitor_mount"
+	  doins "${S}/login_drive"
+	  doins "${S}/monitor_update_engine"
+	  doins "${S}/cryptohome_drive"
         fi
 	
 	insinto /opt/google/touchpad
