@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e505b8dd2c617d8fac4bbe51996ddb7822c73d61"
+CROS_WORKON_COMMIT="26edcdf0e0d4f87b5fbd982fbafa17612d869f8a"
 
 DESCRIPTION="Software to communicate with servo/miniservo debug boards"
 HOMEPAGE=""

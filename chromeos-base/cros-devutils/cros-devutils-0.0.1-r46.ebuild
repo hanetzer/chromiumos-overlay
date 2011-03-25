@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="55eac1ffe13a08398ec57eb4e13e0b8442e32e32"
+CROS_WORKON_COMMIT="113bc768180af7a62d6184647a9a6f43dd26876e"
 
 inherit cros-workon
 
@@ -77,12 +77,6 @@ src_install() {
 		dosym ../../../../build /var/lib/devserver/static/pkgroot
 		# FIXME(zbehan): Remove compatibility symlink. Eventually.
 		dosym ../../var/lib/devserver/static /usr/bin/static
-
-		# Install configuration files for cros_write_firmware.
-		dodir /usr/share/cros_write_firmware
-		insinto /usr/share/cros_write_firmware
-
-		doins host/share/cros_write_firmware/spi.script
 	fi
 }
 
