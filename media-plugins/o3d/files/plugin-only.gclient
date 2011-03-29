@@ -10,7 +10,7 @@
 
 solutions = [
   { "name"        : "o3d",
-    "url"         : "http://src.chromium.org/svn/trunk/src/o3d",
+    "url"         : "http://src.chromium.org/svn/trunk/o3d",
     "custom_deps" : {
       # To use the trunk of a component instead of what's in DEPS:
       #"component": "https://svnserver/component/trunk/",
