@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE=""
+IUSE="+bluetooth"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -51,6 +51,7 @@ RDEPEND="${RDEPEND}
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
+	bluetooth? ( net-wireless/bluez )
 	sys-apps/coreutils
 	sys-apps/findutils
 	x86? ( sys-apps/pciutils )
