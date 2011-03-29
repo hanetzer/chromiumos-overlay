@@ -407,6 +407,7 @@ src_unpack() {
 		set_build_defines
 		;;
 	(LOCAL_SOURCE)
+		addwrite "${CHROME_ROOT}"
 		set_build_defines
 		;;
 	esac
