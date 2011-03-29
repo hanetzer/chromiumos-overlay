@@ -1,9 +1,9 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
 
-inherit cros-debug cros-workon flag-o-matic toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS window manager"
 HOMEPAGE="http://src.chromium.org"
@@ -11,7 +11,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="opengles -touchui"
+IUSE="opengles"
 
 RDEPEND="chromeos-base/metrics
 	chromeos-base/vboot_reference
@@ -49,7 +49,6 @@ CROS_WORKON_PROJECT="window_manager"
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
 	cros-debug-add-NDEBUG
-	use touchui && append-flags -DTOUCH_UI
 	export CCFLAGS="$CFLAGS"
 
 	local backend
@@ -64,6 +63,10 @@ src_compile() {
 }
 
 src_test() {
+	tc-export CC CXX AR RANLIB LD NM
+	cros-debug-add-NDEBUG
+	export CCFLAGS="$CFLAGS"
+
 	scons -j$(print_num_jobs) tests || die "failed to build tests"
 
 	if ! use x86 ; then
