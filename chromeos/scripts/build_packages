@@ -127,9 +127,13 @@ if [ -d "/build/${FLAGS_board}/etc" ]; then
   sudo touch /etc/make.conf.user
   sudo ln -sf /etc/make.conf.user "/build/${FLAGS_board}/etc/make.conf.user"
 fi
-# TODO(petkov): Added 3/23/2011 (crosbug.com/13387), remove in 2 weeks.
+# TODO(petkov): Added 3/29/2011 (crosbug.com/13387), remove in 2 weeks.
 PORTAGE_STABLE_OVERLAY="/usr/local/portage/stable"
-sudo ln -sf "${SRC_ROOT}/third_party/portage-stable" "${PORTAGE_STABLE_OVERLAY}"
+sudo rm -f "${PORTAGE_STABLE_OVERLAY}"/portage-stable
+if [ ! -e "${PORTAGE_STABLE_OVERLAY}" ]; then
+  sudo ln -sf "${SRC_ROOT}/third_party/portage-stable" \
+    "${PORTAGE_STABLE_OVERLAY}"
+fi
 ${EMERGE_CMD} --info
 # TODO(raymes): This deselects crossdev-wrappers which is deprecated.
 # Remove this once everyone has upgraded their chroots.
