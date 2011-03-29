@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="b4e959a63d739ab92a71618353eba6918150a0ee"
+CROS_WORKON_COMMIT="5985e9d970ec2381d5d7ea74312e5c9d8696ce6c"
 
 inherit toolchain-funcs
 inherit binutils-funcs
@@ -34,6 +34,8 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
+	else
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
 	fi
 fi
 

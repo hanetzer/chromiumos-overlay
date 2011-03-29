@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="57921491996c842bd7bdd014c6aad5ebf82377f9"
+CROS_WORKON_COMMIT="4b2db5fc4b75599144674b191c480cfc92d123e8"
 
 inherit toolchain-funcs
 inherit binutils-funcs
@@ -38,6 +38,8 @@ else
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
 	elif [ "${ARCH}" = "arm" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
+	else
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
 	fi
 fi
 
