@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="e7c5ea1432bfa6b3bb381b4e338128f8d1dadbd5"
+CROS_WORKON_COMMIT="49fd306e4726428256027c22fbbe7ef65a5ad57e"
 
 inherit cros-workon
 
@@ -41,6 +41,7 @@ src_install() {
 		doexe host/write_tegra_bios || die "Could not find file to install."
 		doexe host/cros_overlay_list || die "Could not find file to install."
 		doexe host/cros_workon || die "Could not find file to install."
+		doexe host/cros_chrome_make || die "Could not find file to install."
 		doexe host/cros_workon_make || die "Could not find file to install."
 		doexe host/cros_choose_profile || die "Could not find file to install."
 		doexe host/cros_sign_bootstub || die "Could not find file to install."
