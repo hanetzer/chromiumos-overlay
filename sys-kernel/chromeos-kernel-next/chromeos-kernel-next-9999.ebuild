@@ -37,6 +37,8 @@ else
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
 	elif [ "${ARCH}" = "arm" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
+	else
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
 	fi
 fi
 

@@ -33,6 +33,8 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
+	else
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
 	fi
 fi
 
