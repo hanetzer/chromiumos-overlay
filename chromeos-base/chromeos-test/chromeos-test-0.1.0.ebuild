@@ -38,7 +38,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
 	x86? ( chromeos-base/modem-diagnostics )
-	x86? ( dev-java/icedtea )
+	x86? ( dev-java/icedtea6-bin )
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
