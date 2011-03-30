@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="df8cdb52f39c41d65bb1f108241ae2940a73a643"
+CROS_WORKON_COMMIT="fc460b510b836a17d8a5dae1cdff0f58dc86d6d8"
 
 inherit cros-workon toolchain-funcs
 
@@ -57,6 +57,7 @@ src_install() {
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
 	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
+	dosbin "${S}/clobber-log"
 
 	# Install log cleaning script and run it daily.
 	into /usr
