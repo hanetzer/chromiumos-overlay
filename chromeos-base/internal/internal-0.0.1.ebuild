@@ -4,8 +4,6 @@
 
 EAPI="2"
 
-inherit autotools base eutils linux-info
-
 DESCRIPTION="This package is for hooking up your internal overlays"
 LICENSE="BSD"
 HOMEPAGE="http://src.chromium.org"
@@ -14,15 +12,3 @@ KEYWORDS="x86 amd64 arm"
 
 DEPEND=""
 RDEPEND=""
-
-src_unpack() {
-    elog "Meta Package: Nothing to unpack."
-}
-
-src_compile() {
-    elog "Meta Package: Nothing to compile."
-}
-
-src_install() {
-    elog "Meta Package: Nothing to install."
-}
