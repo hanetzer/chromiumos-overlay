@@ -458,7 +458,7 @@ src_prepare() {
 
 src_configure() {
 	tc-export CXX CC AR AS RANLIB LD
-	if use x86 && use gold ; then
+	if use gold ; then
 		einfo "Using gold from the following location: $(which ${LD}.gold)"
 		export CC="${CC} -fuse-ld=gold"
 		export CXX="${CXX} -fuse-ld=gold"
