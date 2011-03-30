@@ -42,8 +42,6 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+site_tests_kernel_TPMPing
-	+site_tests_kernel_HdParm
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench
@@ -121,6 +119,8 @@ IUSE_TESTS="
 	+tests_hardware_UsbPlugIn
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
+	+tests_kernel_TPMPing
+	+tests_kernel_HdParm
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
