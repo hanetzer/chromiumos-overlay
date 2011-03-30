@@ -26,4 +26,9 @@ Section "InputDevice"
     # The resolutions were balanced for the Dell Latitudes
     Option     "HorizResolution" "75"
     Option     "VertResolution" "108"
+    # Disable non-linear motion region at trackpad edges
+    Option     "AreaLeftEdge" "1375"
+    Option     "AreaRightEdge" "5550"
+    Option     "AreaTopEdge" "1250"
+    Option     "AreaBottomEdge" "4600"
 EndSection
