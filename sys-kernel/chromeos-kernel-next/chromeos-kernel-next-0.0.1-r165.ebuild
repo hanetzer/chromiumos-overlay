@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="7fd56c27189d3012ca4db3dac180c86b85e6dd1c"
+CROS_WORKON_COMMIT="c7dd4fa7bc213085a306376c5ef3130568997986"
 
 inherit toolchain-funcs
 inherit binutils-funcs
