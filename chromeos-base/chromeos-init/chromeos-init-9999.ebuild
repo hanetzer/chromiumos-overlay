@@ -56,6 +56,7 @@ src_install() {
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
 	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
+	dosbin "${S}/clobber-log"
 
 	# Install log cleaning script and run it daily.
 	into /usr
