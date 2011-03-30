@@ -11,7 +11,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE="synaptics multitouch"
+IUSE="synaptics multitouch mario"
 
 RDEPEND=""
 
@@ -25,6 +25,10 @@ src_install() {
 		newins "${FILESDIR}/touchpad.conf-multitouch" touchpad.conf
 	elif use synaptics ; then
 		newins "${FILESDIR}/touchpad.conf-synaptics" touchpad.conf
+	elif use synaptics ; then
+		newins "${FILESDIR}/touchpad.conf-synaptics" touchpad.conf
+	elif use mario ; then
+		newins "${FILESDIR}/touchpad.conf-mario" touchpad.conf
 	else
 		newins "${FILESDIR}/touchpad.conf" touchpad.conf
 	fi
