@@ -135,6 +135,9 @@ static_use_with() {
 }
 
 src_compile() {
+	export CFLAGS
+	CFLAGS+=" -fno-strict-aliasing"
+
 	addwrite /dev/ptmx
 	addpredict /etc/skey/skeykeys #skey configure code triggers this
 
