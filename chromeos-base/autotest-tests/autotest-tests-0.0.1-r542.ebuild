@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="838545a27cd874c6c5882374ec12ab6b9dc9771b"
+CROS_WORKON_COMMIT="5eb15fd930071ff4bdc83a2a1a1e406e8c9c8db1"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -43,8 +43,6 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+site_tests_kernel_TPMPing
-	+site_tests_kernel_HdParm
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench
@@ -122,6 +120,8 @@ IUSE_TESTS="
 	+tests_hardware_UsbPlugIn
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
+	+tests_kernel_TPMPing
+	+tests_kernel_HdParm
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash

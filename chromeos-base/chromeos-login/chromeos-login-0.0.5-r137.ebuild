@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="2f135072a4a273c700e9b34a1575d01561f76c79"
+CROS_WORKON_COMMIT="74346959845f54002b2e7ede2c016f084f11ac14"
 
 KEYWORDS="arm amd64 x86"
 
