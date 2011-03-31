@@ -323,9 +323,13 @@ git_fetch() {
 			done
 			${EGIT_UPDATE_CMD} ${EGIT_OPTIONS} \
 				|| die "${EGIT}: can't update from ${EGIT_REPO_URI}."
-		else
+		elif [[ "${EGIT_COMMIT}" = "${EGIT_BRANCH}" ]]; then
 			debug-print "${EGIT_UPDATE_CMD} ${EGIT_OPTIONS} origin ${EGIT_BRANCH}:${EGIT_BRANCH}"
 			${EGIT_UPDATE_CMD} ${EGIT_OPTIONS} origin ${EGIT_BRANCH}:${EGIT_BRANCH} \
+				|| die "${EGIT}: can't update from ${EGIT_REPO_URI}."
+		else
+			debug-print "${EGIT_UPDATE_CMD} ${EGIT_OPTIONS} origin"
+			${EGIT_UPDATE_CMD} ${EGIT_OPTIONS} origin \
 				|| die "${EGIT}: can't update from ${EGIT_REPO_URI}."
 		fi
 
