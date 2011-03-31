@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="986173810921d08851e8cdc326e5c235a1e211fa"
+CROS_WORKON_COMMIT="ada955c12870d18722d8417b266a6444198a8aff"
 
 inherit cros-debug cros-workon flag-o-matic toolchain-funcs
 
@@ -27,6 +27,7 @@ RDEPEND="chromeos-base/metrics
 	sys-apps/net-tools
 	x11-libs/cairo
 	x11-libs/libX11
+	x11-libs/libXcomposite
 	x11-libs/libXdamage
 	x11-libs/libXext
 	x11-libs/libxcb
