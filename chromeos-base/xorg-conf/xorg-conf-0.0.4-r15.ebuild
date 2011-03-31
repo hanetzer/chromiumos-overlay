@@ -25,8 +25,6 @@ src_install() {
 		newins "${FILESDIR}/touchpad.conf-multitouch" touchpad.conf
 	elif use synaptics ; then
 		newins "${FILESDIR}/touchpad.conf-synaptics" touchpad.conf
-	elif use synaptics ; then
-		newins "${FILESDIR}/touchpad.conf-synaptics" touchpad.conf
 	elif use mario ; then
 		newins "${FILESDIR}/touchpad.conf-mario" touchpad.conf
 	else
