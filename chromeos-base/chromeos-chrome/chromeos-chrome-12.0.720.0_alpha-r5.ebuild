@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="79877"
+CROS_SVN_COMMIT="79953"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -459,11 +459,14 @@ src_prepare() {
 
 src_configure() {
 	tc-export CXX CC AR AS RANLIB LD
-	if use x86 && use gold ; then
-		einfo "Using gold from the following location: $(which ${LD}.gold)"
-		export CC="${CC} -fuse-ld=gold"
-		export CXX="${CXX} -fuse-ld=gold"
-		export LD="${LD}.gold"
+	if use gold ; then
+		if [ "${GOLD_SET}" != "yes" ]; then
+			export GOLD_SET="yes"
+			einfo "Using gold from the following location: $(which ${LD}.gold)"
+			export CC="${CC} -fuse-ld=gold"
+			export CXX="${CXX} -fuse-ld=gold"
+			export LD="${LD}.gold"
+		fi
 	else
 		ewarn "gold disabled. Using GNU ld."
 	fi
