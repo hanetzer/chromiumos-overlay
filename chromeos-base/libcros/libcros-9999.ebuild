@@ -35,8 +35,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	chromeos-base/update_engine
-	dev-cpp/gtest
-	x11-misc/xkeyboard-config"
+	dev-cpp/gtest"
 
 CROS_WORKON_PROJECT="cros"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
