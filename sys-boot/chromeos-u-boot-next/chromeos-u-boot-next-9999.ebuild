@@ -14,7 +14,8 @@ IUSE=""
 PROVIDE="virtual/u-boot"
 
 RDEPEND=""
-DEPEND="arm? ( >=chromeos-base/vboot_reference-firmware-0.0.1-r100 )
+DEPEND="chromeos-base/vboot_reference-firmware
+	chromeos-base/u-boot-config
 	!sys-boot/u-boot"
 
 CROS_WORKON_PROJECT="u-boot-next"
@@ -96,7 +97,8 @@ src_compile() {
 	    USE_PRIVATE_LIBGCC=yes \
 	    HOSTCC=${CC} \
 	    HOSTSTRIP=true \
-	    VBOOT="${ROOT}/usr" \
+	    VBOOT="${ROOT%/}/usr" \
+	    CROS_CONFIG_PATH="${ROOT%/}/u-boot" \
 	    all || die "U-Boot compile ${config} failed"
 	done
 }
