@@ -4,23 +4,22 @@
 
 EAPI="3"
 
-PYTHON_DEPEND="python-runtime? 2"
 JAVA_PKG_IUSE="source"
+PYTHON_DEPEND="python? 2"
 
-inherit autotools eutils distutils python java-pkg-opt-2 elisp-common toolchain-funcs
+inherit autotools eutils distutils python java-pkg-opt-2 elisp-common
 
 DESCRIPTION="Google's Protocol Buffers -- an efficient method of encoding structured data"
 HOMEPAGE="http://code.google.com/p/protobuf/"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
+SRC_URI="http://protobuf.googlecode.com/files/${P}.tar.bz2"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 arm ppc ppc64 x86 ~x64-macos"
-
-IUSE="emacs examples java python python-runtime static-libs vim-syntax"
+KEYWORDS="amd64 ppc ppc64 x86 ~x64-macos"
+IUSE="emacs examples java python static-libs vim-syntax"
 
 DEPEND="${DEPEND} java? ( >=virtual/jdk-1.5 )
-	python? ( dev-lang/python dev-python/setuptools )
+	python? ( dev-python/setuptools )
 	emacs? ( virtual/emacs )"
 RDEPEND="${RDEPEND} java? ( >=virtual/jre-1.5 )
 	emacs? ( virtual/emacs )"
@@ -28,29 +27,25 @@ RDEPEND="${RDEPEND} java? ( >=virtual/jre-1.5 )
 PYTHON_MODNAME="google/protobuf"
 DISTUTILS_SRC_TEST="setup.py"
 
+pkg_setup() {
+	if use python; then
+		python_set_active_version 2
+		python_pkg_setup
+	fi
+}
+
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-asneeded-2.patch
-	epatch "${FILESDIR}"/${P}-crosscompile.patch
 	eautoreconf
 
 	if use python; then
-		python_set_active_version 2
 		python_convert_shebangs -r 2 .
 		distutils_src_prepare
 	fi
 }
 
 src_configure() {
-	PROTOC_ARG=
-	if tc-is-cross-compiler ; then
-		host_protoc=$(which protoc)
-		[[ -n ${host_protoc} ]] || die "Please install ${P} in your host environment."
-		PROTOC_ARG="--with-protoc=${host_protoc}"
-		export PROTOC=${host_protoc}
-	fi
-
-	export LDFLAGS="-L./.libs ${LDFLAGS}"
-	econf $PROTOC_ARG \
+	econf \
 		$(use_enable static-libs static)
 }
 
@@ -97,9 +92,7 @@ src_install() {
 
 	if use python; then
 		pushd python
-		# distutils.eclass doesn't allow us to install into /usr/local, so we
-		# have to do this manually.
-		"${EPYTHON}" setup.py install --root="${D}" --prefix=/usr/local
+		distutils_src_install
 		popd
 	fi
 
@@ -126,9 +119,10 @@ src_install() {
 
 pkg_postinst() {
 	use emacs && elisp-site-regen
+	use python && distutils_pkg_postinst
 }
 
 pkg_postrm() {
 	use emacs && elisp-site-regen
+	use python && distutils_pkg_postrm
 }
-
