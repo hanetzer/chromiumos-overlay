@@ -21,6 +21,8 @@ DEPEND="${COMMON_DEPEND}
 
 src_unpack() {
 	unpack ${A}
+	epatch "${FILESDIR}"/${P}-gold.patch
+
 	cd "${S}"
 
 	sed -e "s/-Werror //" -i configure.in
