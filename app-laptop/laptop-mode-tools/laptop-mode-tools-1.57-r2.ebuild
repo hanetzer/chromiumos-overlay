@@ -66,7 +66,7 @@ src_install() {
 	newexe "${FILESDIR}"/laptop_mode_tools.pmutils laptop_mode_tools
 
 	insinto /etc/udev/rules.d
-	doins etc/rules/99-laptop-mode.rules 
+	doins etc/rules/99-laptop-mode.rules
 }
 
 pkg_postinst() {
