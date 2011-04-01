@@ -1,5 +1,5 @@
 
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
@@ -24,7 +24,8 @@ RDEPEND=">=dev-libs/glib-2.16
 	crosmetrics? ( chromeos-base/metrics )
 	dhcpcd? ( net-misc/dhcpcd )
 	diagnostics? ( sys-apps/net-tools )
-	modemmanager? ( net-misc/mobile-broadband-provider-info )
+	modemmanager? ( chromeos-base/modem-utilities
+		        net-misc/mobile-broadband-provider-info )
 	openvpn? ( net-misc/openvpn )
 	policykit? ( >=sys-auth/policykit-0.7 )
 	portalcheck? ( net-misc/curl )
