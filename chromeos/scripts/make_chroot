@@ -355,12 +355,6 @@ echo "$SCRIPT_NAME: Running emerge hard-host-depends"
 # Need to sudo_chroot here so that ~/.bash_profile gets used
 sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends world $EMERGE_JOBS
 
-if [[ "$FLAGS_usepkg" -eq "$FLAGS_TRUE" ]]; then
-  # Rebuild packages as necessary.
-  echo "$SCRIPT_NAME: Running revdep-rebuild"
-  sudo_chroot sudo -E revdep-rebuild
-fi
-
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
 
