@@ -38,6 +38,7 @@ src_install() {
 
 	insinto /root
 	newins $FILESDIR/dot.factory_installer .factory_installer
+	newins $FILESDIR/dot.leave_firmware_alone .leave_firmware_alone
 	newins $FILESDIR/dot.gpt_layout .gpt_layout
 	# install PMBR code
 	case "$(tc-arch)" in
