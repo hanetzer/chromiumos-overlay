@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="80205"
+CROS_SVN_COMMIT="80224"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -426,15 +426,6 @@ src_prepare() {
 
 	elog "${CHROME_ROOT} should be set here properly"
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
-
-	# If there's already a build directory in the old location, rename it to the
-	# new location.
-	# TODO(derat): Remove this in January 2011.
-	OLD_BUILD_OUT="${BOARD}_out"
-	if [[ -d "${OLD_BUILD_OUT}" && ! -e "${BUILD_OUT}" ]]; then
-		elog "Renaming output directory ${OLD_BUILD_OUT} to ${BUILD_OUT}"
-		mv "${OLD_BUILD_OUT}" "${BUILD_OUT}"
-	fi
 
 	# We do symlink creation here if appropriate
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
