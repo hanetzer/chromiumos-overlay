@@ -10,14 +10,10 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 DEPEND="sys-apps/util-linux"  # util-linux is for libuuid.
-RDEPEND="x86? ( sys-apps/flashrom )"
-         # TODO(yjlou): Currently, the flashrom is not verified on ARM platform.
-         #              Hence, vpd only rdepends it on x86. vpd still works
-         #              on ARM if flashrom is not installed.
-         #              Will remove "x86? (...)" once flashrom is verified.
+RDEPEND="sys-apps/flashrom"
 
 # This target list should be architecture specific
 # (no ACPI stuff on ARM for instance)
