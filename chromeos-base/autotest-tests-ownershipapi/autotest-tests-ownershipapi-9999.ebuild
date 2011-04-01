@@ -26,6 +26,7 @@ RDEPEND="
 RDEPEND="${RDEPEND}
   chromeos-base/flimflam-test
   dev-libs/protobuf
+  dev-python/pygobject
   autox? ( chromeos-base/autox )
 "
 

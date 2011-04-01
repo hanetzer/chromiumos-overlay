@@ -21,6 +21,22 @@ IUSE="${IUSE} +autotest"
 # TODO(semenzato): tpm-tools is included for hardware_TpmFirmware (and at this
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
+#
+# pygtk is used only in the following:
+#   desktopui_ImeTest
+#   desktopui_ImeLogin
+# pygobject is used only in the following:
+#   desktopui_ScreenLocker
+#   hardware_BluetoothSemiAuto
+#   network_3GActivate
+#   network_3GDormancyDance
+#   network_3GFailedConnect
+#   network_3GRecoverFromGobiDesync
+#   network_3GSafetyDance
+#   network_3GSmokeTest
+#   network_3GStressEnable
+#   network_WiFiSmokeTest
+#   network_WifiAuthenticationTests
 CONFLICT="chromeos-base/autotest-private-0.2.0"
 PDEPEND="|| ( >$CONFLICT-r29 !!~$CONFLICT )"
 RDEPEND="
@@ -30,6 +46,8 @@ RDEPEND="
   chromeos-base/autotest-deps-glbench
   chromeos-base/flimflam-test
   autox? ( chromeos-base/autox )
+  dev-python/pygobject
+  dev-python/pygtk
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
   !!~$CONFLICT

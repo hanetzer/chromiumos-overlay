@@ -26,6 +26,8 @@ RDEPEND="
   chromeos-base/autotest-private-board
   chromeos-base/flimflam
   >=chromeos-base/vpd-0.0.1-r11
+  dev-python/pygobject
+  dev-python/pygtk
   xset? ( x11-apps/xset )
 "
 
