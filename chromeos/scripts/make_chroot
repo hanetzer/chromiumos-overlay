@@ -151,6 +151,7 @@ function init_setup () {
      "${FLAGS_chroot}"/"${CHROOT_OVERLAY}"
    sudo ln -sf "${CHROOT_TRUNK}/src/third_party/portage-stable" \
      "${FLAGS_chroot}"/"${PORTAGE_STABLE_OVERLAY}"
+   sudo mkdir -p "${FLAGS_chroot}"/"${CROSSDEV_OVERLAY}"
 
    # Some operations need an mtab
    in_chroot ln -s /proc/mounts /etc/mtab
@@ -265,6 +266,7 @@ OVERLAY="${SRC_ROOT}/third_party/chromiumos-overlay"
 CONFIG_DIR="${OVERLAY}/chromeos/config"
 CHROOT_CONFIG="${CHROOT_TRUNK}/src/third_party/chromiumos-overlay/chromeos/config"
 PORTAGE_STABLE_OVERLAY="/usr/local/portage/stable"
+CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
 
