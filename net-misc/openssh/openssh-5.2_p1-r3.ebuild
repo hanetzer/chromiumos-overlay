@@ -26,7 +26,7 @@ SRC_URI="mirror://openbsd/OpenSSH/portable/${PARCH}.tar.gz
 LICENSE="as-is"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="hpn kerberos ldap libedit pam pkcs11 selinux skey smartcard static tcpd X X509"
+IUSE="hpn kerberos ldap libedit pam pkcs11 selinux skey smartcard static tcpd X X509 cros_host"
 
 RDEPEND="pam? ( virtual/pam )
 	kerberos? ( virtual/krb5 )
@@ -102,7 +102,10 @@ src_unpack() {
 	[[ -n ${HPN_PATCH} ]] && use hpn && epatch "${DISTDIR}"/${HPN_PATCH}
 	epatch "${FILESDIR}"/${PN}-4.7p1-selinux.diff #191665
 	epatch "${FILESDIR}"/${P}-autoconf.patch
-	epatch "${FILESDIR}"/chromiumos-config.patch
+	# We don't want to mess up config files on the host
+	if ! use cros_host; then
+		epatch "${FILESDIR}"/chromiumos-config.patch
+	fi
 
 	# in 5.2p1, the AES-CTR multithreaded variant is temporarily broken, and
 	# causes random hangs when combined with the -f switch of ssh.
