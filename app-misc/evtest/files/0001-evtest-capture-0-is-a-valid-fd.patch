@@ -1,0 +1,42 @@
+From b071228996005d26e4e6546e14bfd3f93b907ca6 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 22 Apr 2010 15:31:51 +1000
+Subject: [PATCH 01/18] evtest-capture: 0 is a valid fd.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ evtest-capture.c |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/evtest-capture.c b/evtest-capture.c
+index 0f68494..854139d 100644
+--- a/evtest-capture.c
++++ b/evtest-capture.c
+@@ -852,7 +852,7 @@ static void usage(void)
+ 
+ int main(int argc, char **argv)
+ {
+-	int fd = 0;
++	int fd = -1;
+ 	int rc;
+ 	char *outfile = "evtest-capture.xml";
+ 	char infile[64];
+@@ -896,9 +896,12 @@ int main(int argc, char **argv)
+ 	return 0;
+ 
+ error:
+-	if (writer)
+-		xmlTextWriterEndDocument(writer);
+-	xmlCleanupParser();
++	if (fd >= 0)
++	{
++		if (writer)
++			xmlTextWriterEndDocument(writer);
++		xmlCleanupParser();
++	}
+ 	perror("Failed with error");
+ 	return 1;
+ }
+-- 
+1.7.3.1
+

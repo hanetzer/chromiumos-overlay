@@ -1,0 +1,26 @@
+From 0b3c15b6896422ec0d8ac937a1f88da179c61607 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 5 Jan 2011 09:53:20 +1000
+Subject: [PATCH 07/18] Print bytes received and expected on read error.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ evtest.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/evtest.c b/evtest.c
+index 588d895..63225e4 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -433,7 +433,7 @@ int main (int argc, char **argv)
+ 		rd = read(fd, ev, sizeof(struct input_event) * 64);
+ 
+ 		if (rd < (int) sizeof(struct input_event)) {
+-			printf("yyy\n");
++			printf("expected %d bytes, got %d\n", (int) sizeof(struct input_event), rd);
+ 			perror("\nevtest: error reading");
+ 			return 1;
+ 		}
+-- 
+1.7.3.1
+

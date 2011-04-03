@@ -1,0 +1,32 @@
+From db76cb09750f18567b28b7c7121de381c316b8a4 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 5 Jan 2011 10:05:09 +1000
+Subject: [PATCH 06/18] Add autogen.sh for one less buildstep.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ autogen.sh |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+ create mode 100755 autogen.sh
+
+diff --git a/autogen.sh b/autogen.sh
+new file mode 100755
+index 0000000..354f254
+--- /dev/null
++++ b/autogen.sh
+@@ -0,0 +1,12 @@
++#! /bin/sh
++
++srcdir=`dirname $0`
++test -z "$srcdir" && srcdir=.
++
++ORIGDIR=`pwd`
++cd $srcdir
++
++autoreconf -v --install || exit 1
++cd $ORIGDIR || exit $?
++
++$srcdir/configure "$@"
+-- 
+1.7.3.1
+

@@ -1,0 +1,29 @@
+From 882c6260f381ded85aa169132e07dbf85bcfca3e Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 5 Jan 2011 10:19:01 +1000
+Subject: [PATCH 14/18] Add KEY_WPS_BUTTON to keys database
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ evtest.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/evtest.c b/evtest.c
+index 632e5af..3ebfe39 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -282,7 +282,10 @@ char *keys[KEY_MAX + 1] = {
+ 	[KEY_VIDEO_PREV] = "Video Prev",	[KEY_WIMAX] = "WIMAX",
+ 	[KEY_WLAN] = "WLAN",
+ #ifdef KEY_RFKILL
+-	[KEY_RFKILL] = "RF kill"
++	[KEY_RFKILL] = "RF kill",
++#endif
++#ifdef KEY_WPS_BUTTON
++	[KEY_WPS_BUTTON] = "WPS Button"
+ #endif
+ 
+ };
+-- 
+1.7.3.1
+

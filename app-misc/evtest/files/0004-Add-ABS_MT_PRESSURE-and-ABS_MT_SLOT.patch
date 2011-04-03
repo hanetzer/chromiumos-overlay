@@ -1,0 +1,30 @@
+From 334beb86c0e7d13772b314bacabc56028ab116b8 Mon Sep 17 00:00:00 2001
+From: Chris Bagwell <chris@cnpbagwell.com>
+Date: Mon, 15 Nov 2010 07:36:50 +1000
+Subject: [PATCH 04/18] Add ABS_MT_PRESSURE and ABS_MT_SLOT.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ evtest.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/evtest.c b/evtest.c
+index ac53edc..8460641 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -318,6 +318,12 @@ char *absolutes[ABS_MAX + 1] = {
+ 	[ABS_MT_BLOB_ID] = "Blob ID",
+ 	[ABS_MT_TRACKING_ID] = "Tracking ID",
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
++	[ABS_MT_PRESSURE] = "Pressure",
++#endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)
++	[ABS_MT_SLOT] = "Slot",
++#endif
+ 
+ };
+ 
+-- 
+1.7.3.1
+

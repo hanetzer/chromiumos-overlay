@@ -1,0 +1,41 @@
+From 9e91acb83ac28cc81ddfacbcd85751dfec48dee0 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Thu, 22 Apr 2010 15:38:43 +1000
+Subject: [PATCH 02/18] evtest-capture: on EINTR, just continue.
+
+We could break directlly, but maybe the signal handler needs to do funkier
+things in the future, so just rely on it to set the stop variable
+accordingly.
+
+This patch fixes the crashes experienced on grabbed event devices.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ evtest-capture.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/evtest-capture.c b/evtest-capture.c
+index 854139d..3196930 100644
+--- a/evtest-capture.c
++++ b/evtest-capture.c
+@@ -29,6 +29,7 @@
+ #include <stdio.h>
+ #include <signal.h>
+ #include <dirent.h>
++#include <errno.h>
+ 
+ #include <libxml/encoding.h>
+ #include <libxml/xmlwriter.h>
+@@ -768,6 +769,9 @@ static int print_events(int fd, xmlTextWriterPtr writer)
+ 	while(!stop)
+ 	{
+ 		rc = read(fd, &ev, sizeof(struct input_event));
++		if (rc == -1 && errno == EINTR)
++			continue;
++
+ 		if (rc < sizeof(ev))
+ 			goto error;
+ 
+-- 
+1.7.3.1
+
