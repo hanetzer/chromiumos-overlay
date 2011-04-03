@@ -1,0 +1,69 @@
+From 18f14e8bc891ae92926964faf047983aeb28508e Mon Sep 17 00:00:00 2001
+From: Daniel <djkurtz@google.com>
+Date: Fri, 1 Apr 2011 16:36:32 +0800
+Subject: [PATCH 18/18] Add support for EV_SW
+
+EV_SW is the event type for switches.
+The EV_SW event codes (SW_*) are defined in the linux kernel in linux/input.h.
+
+However, leave the definition of switches in ifdef blocks according to
+when they were committed to the linux kernel.
+
+Signed-off-by: Daniel Kurtz <djkurtz@google.com>
+---
+ evtest.c |   26 +++++++++++++++++++++++++-
+ 1 files changed, 25 insertions(+), 1 deletions(-)
+
+diff --git a/evtest.c b/evtest.c
+index 0a5b060..6f6d5ef 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -52,7 +52,7 @@ char *events[EV_MAX + 1] = {
+ 	[EV_MSC] = "Misc",			[EV_LED] = "LED",
+ 	[EV_SND] = "Sound",			[EV_REP] = "Repeat",
+ 	[EV_FF] = "ForceFeedback",		[EV_PWR] = "Power",
+-	[EV_FF_STATUS] = "ForceFeedbackStatus",
++	[EV_FF_STATUS] = "ForceFeedbackStatus",	[EV_SW] = "Switch",
+ };
+ 
+ char *keys[KEY_MAX + 1] = {
+@@ -403,12 +403,36 @@ char *syns[3] = {
+ #endif
+ };
+ 
++char *switches[SW_MAX + 1] = {
++	[0 ... SW_MAX] = NULL,
++	[SW_LID] = "Lid",
++	[SW_TABLET_MODE] = "Tablet Mode",
++	[SW_HEADPHONE_INSERT] = "Headphone Insert",
++	[SW_RFKILL_ALL] = "RFKILL",
++	[SW_MICROPHONE_INSERT] = "Microphone Insert",
++	[SW_DOCK] = "Dock",
++	[SW_LINEOUT_INSERT] = "Lineout Insert",
++	[SW_JACK_PHYSICAL_INSERT] = "Jack Physical Insert",
++#ifdef SW_VIDEOOUT_INSERT
++	[SW_VIDEOOUT_INSERT] = "Video Out Insert",
++#endif
++#ifdef SW_CAMERA_LENS_COVER
++	[SW_CAMERA_LENS_COVER] = "Camera Lens Cover",
++	[SW_KEYPAD_SLIDE] = "Keypad Slide",
++	[SW_FRONT_PROXIMITY] = "Front Proximity Sensor",
++#endif
++#ifdef SW_ROTATE_LOCK
++	[SW_ROTATE_LOCK] = "Rotate Lock",
++#endif
++};
++
+ char **names[EV_MAX + 1] = {
+ 	[0 ... EV_MAX] = NULL,
+ 	[EV_SYN] = events,			[EV_KEY] = keys,
+ 	[EV_REL] = relatives,			[EV_ABS] = absolutes,
+ 	[EV_MSC] = misc,			[EV_LED] = leds,
+ 	[EV_SND] = sounds,			[EV_REP] = repeats,
++	[EV_SW] = switches,
+ };
+ 
+ #define BITS_PER_LONG (sizeof(long) * 8)
+-- 
+1.7.3.1
+

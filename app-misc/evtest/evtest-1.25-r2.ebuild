@@ -41,6 +41,7 @@ UPSTREAMED_PATCHES=(
 
 PATCHES=(
 	"${UPSTREAMED_PATCHES[@]}"
+	"${FILESDIR}/0018-Add-support-for-EV_SW.patch"
 )
 
 src_prepare() {
