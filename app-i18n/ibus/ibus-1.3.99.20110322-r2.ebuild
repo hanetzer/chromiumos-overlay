@@ -48,6 +48,9 @@ src_prepare() {
 
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
+
+	# TODO(penghuang,yusukes): Fix the issue and remove this patch.
+	epatch "${FILESDIR}"/fix_13629.patch
 }
 
 src_configure() {
