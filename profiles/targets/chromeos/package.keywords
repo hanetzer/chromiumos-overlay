@@ -82,6 +82,7 @@
 =sys-libs/e2fsprogs-libs-1.41.9	x86 arm
 =sys-libs/libhx-3.1		x86 arm
 =sys-libs/zlib-1.2.5-r2		x86 arm
+=x11-apps/xinput_calibrator-0.7.5	arm
 =x11-libs/gtk+-2.18.7-r3	x86 arm
 =x11-libs/pixman-0.17.2		x86 arm
 =x11-misc/shared-mime-info-0.70	x86 arm
