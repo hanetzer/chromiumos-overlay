@@ -2,6 +2,6 @@
 Section "InputDevice"
     Identifier "Mouse1"
     Driver     "multitouch"
-    Option     "Device" "/tmp/syntp_mt0"
+    Option     "Device" "/dev/input/event6"
     Option     "SendCoreEvents" "true"
 EndSection
