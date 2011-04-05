@@ -13,6 +13,10 @@ DEPEND="${RDEPEND}"
 
 CROS_BINARY_INSTALL_FLAGS="--strip-components=1"
 
+# @ECLASS-VARIABLE: SYNAPTICS_TOUCHPAD_PN
+# @DESCRIPTION: The packagename used as part of the binary tarball filename.
+: ${SYNAPTICS_TOUCHPAD_PN:=${PN}}
+
 export_uri() {
 	local XORG_VERSION_STRING
 	local XORG_VERSION
@@ -26,7 +30,7 @@ export_uri() {
 	else
 		X_VERSION=1.7
 	fi
-	CROS_BINARY_URI="ssh://synaptics-private@git.chromium.org:6222/home/synaptics-private/${CATEGORY}/${PN}/${PN}-xorg-${X_VERSION}-${PV}-${PR}.tar.gz"
+	CROS_BINARY_URI="ssh://synaptics-private@git.chromium.org:6222/home/synaptics-private/${CATEGORY}/${SYNAPTICS_TOUCHPAD_PN}/${SYNAPTICS_TOUCHPAD_PN}-xorg-${X_VERSION}-${PV}-${PR}.tar.gz"
 }
 
 function synaptics-touchpad_src_unpack() {
