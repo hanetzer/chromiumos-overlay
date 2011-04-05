@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # NOTE: This ebuild could be overridden in an overlay to provide a
@@ -30,4 +30,5 @@ src_install() {
 	else
 		newins "${FILESDIR}/touchpad.conf" touchpad.conf
 	fi
+	newins "${FILESDIR}/20-mouse.conf" 20-mouse.conf
 }
