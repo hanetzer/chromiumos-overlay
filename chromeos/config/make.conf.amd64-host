@@ -26,5 +26,6 @@ PORTAGE_BINHOST="$FULL_BINHOST"
 USE="${USE} -cups hardened cros_host pic pie"
 
 GENTOO_MIRRORS="http://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
+GENTOO_MIRRORS="$GENTOO_MIRRORS http://commondatastorage.googleapis.com/chromeos-localmirror"
 
 source make.conf.host_setup

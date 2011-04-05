@@ -47,6 +47,7 @@ DISTDIR="/var/lib/portage/distfiles-target"
 
 # Our chromium mirror should be more stable since we won't discard packages.
 GENTOO_MIRRORS="http://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
+GENTOO_MIRRORS="$GENTOO_MIRRORS http://commondatastorage.googleapis.com/chromeos-localmirror"
 
 # We want emerge to overwrite all config files automatically.
 CONFIG_PROTECT="-* /etc/make.globals"
