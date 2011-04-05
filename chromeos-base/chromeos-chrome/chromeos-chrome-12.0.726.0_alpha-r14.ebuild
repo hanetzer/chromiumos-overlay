@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="80418"
+CROS_SVN_COMMIT="80423"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -142,7 +142,8 @@ RDEPEND="${RDEPEND}
 	sys-libs/zlib
 	x86? ( !chrome_internal? ( www-plugins/adobe-flash ) )
 	>=x11-libs/gtk+-2.14.7
-	x11-libs/libXScrnSaver"
+	x11-libs/libXScrnSaver
+	x11-apps/setxkbmap"
 
 DEPEND="${DEPEND}
 	${RDEPEND}
