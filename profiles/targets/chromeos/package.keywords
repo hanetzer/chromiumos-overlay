@@ -8,8 +8,8 @@
 =app-i18n/libhangul-0.0.10	x86 arm
 =app-i18n/zinnia-0.06		x86 arm
 =dev-cpp/gflags-1.2		x86 arm
-=dev-db/m17n-contrib-1.1.12	x86 arm
-=dev-db/m17n-db-1.6.2		x86 arm
+=dev-db/m17n-contrib-1.1.10	x86 arm
+=dev-db/m17n-db-1.6.1-r1	x86 arm
 =dev-db/sqlite-3.6.22-r2	x86 arm
 =dev-java/icedtea-6.1.7.1-r1	x86
 =dev-libs/atk-1.28.0		x86 arm
@@ -23,7 +23,7 @@
 =dev-libs/libchewing-0.3.2-r1	x86 arm
 =dev-libs/libffi-3.0.9          x86 arm
 =dev-libs/libp11-0.2.7-r1       x86 arm
-=dev-libs/m17n-lib-1.6.2	x86 arm
+=dev-libs/m17n-lib-1.6.1-r1	x86 arm
 =dev-libs/protobuf-2.2.0	x86 arm
 =dev-python/numpy-1.4.0		x86 arm
 =dev-python/python-xlib-0.14    x86 arm
