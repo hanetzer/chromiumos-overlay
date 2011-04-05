@@ -301,6 +301,12 @@ fi
 # Version of GCC we will be installing, without the ebuild revision number.
 GCC_VERSION=`echo ${FLAGS_gcc_version} | sed -e 's/\-r[0-9]*$//g'`
 
+# Create the crossdev overlay in case it hasn't been created.
+# TODO(raymes): Remove this when everyone has run make_chroot.
+CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
+sudo mkdir -p ${CROSSDEV_OVERLAY}
+sudo chmod 755 ${CROSSDEV_OVERLAY}
+
 if [ "$(tc_pkg_needs_update "binutils")" = "$FLAGS_TRUE" ] ||
   [ "$(tc_pkg_needs_update "gcc")" = "$FLAGS_TRUE" ] ||
   [ "$(tc_pkg_needs_update "libc")" = "$FLAGS_TRUE" ]; then
