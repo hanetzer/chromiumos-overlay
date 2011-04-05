@@ -226,9 +226,6 @@ EMERGE_CMD="emerge"
 if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
   EMERGE_CMD="${GCLIENT_ROOT}/chromite/bin/parallel_emerge"
 fi
-# TODO(raymes): This deselects crossdev-wrappers which is deprecated.
-# Remove this once everyone has upgraded their chroots.
-sudo -E ${EMERGE_CMD} --deselect crossdev-wrappers
 sudo -E ${EMERGE_CMD} -uDNvg chromeos-base/hard-host-depends world
 
 get_board_and_variant $FLAGS_board $FLAGS_variant

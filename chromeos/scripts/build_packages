@@ -135,9 +135,13 @@ if [ ! -e "${PORTAGE_STABLE_OVERLAY}" ]; then
     "${PORTAGE_STABLE_OVERLAY}"
 fi
 ${EMERGE_CMD} --info
-# TODO(raymes): This deselects crossdev-wrappers which is deprecated.
-# Remove this once everyone has upgraded their chroots.
-sudo -E ${EMERGE_CMD} --deselect crossdev-wrappers
+
+# Create the crossdev overlay in case it hasn't been created.
+# TODO(raymes): Remove this when everyone has run make_chroot.
+CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
+sudo mkdir -p ${CROSSDEV_OVERLAY}
+sudo chmod 755 ${CROSSDEV_OVERLAY}
+
 eretry sudo -E ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)

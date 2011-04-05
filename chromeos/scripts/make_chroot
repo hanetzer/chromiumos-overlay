@@ -321,11 +321,6 @@ if [ -f $CHROOT_STATE ];then
   # Apply any hacks needed to update the chroot.
   # TODO: Should the above hacks be moved into this function?
   chroot_hacks_from_outside "${FLAGS_chroot}"
-
-  # TODO(raymes): This unmerges crossdev-wrappers which is deprecated.
-  # Remove this once everyone has upgraded their chroots.
-  echo "$SCRIPT_NAME: Deselecting crossdev-wrappers"
-  bash_chroot ${EMERGE_CMD} --deselect crossdev-wrappers
 else
   # run all the init stuff to setup the env
   init_setup
