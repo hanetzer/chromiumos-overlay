@@ -9,7 +9,7 @@ DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-new_power_button test -lockvt -touchui"
+IUSE="-new_power_button test -lockvt -touchui -nocrit"
 KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/libcros
@@ -121,6 +121,15 @@ src_install() {
 	# Install light sensor udev rules
 	insinto "/etc/udev/rules.d"
 	doins "${S}/99-light-sensor.rules"
+
+	# Nocrit disables low battery suspend percent by setting it to 0
+	if use nocrit; then
+		crit="usr/share/power_manager/low_battery_suspend_percent"
+		if [ ! -e "${D}/${crit}" ]; then
+			die "low_battery_suspend_percent config file missing"
+		fi
+		echo "0" > "${D}/${crit}"
+	fi
 
 	if use touchui; then
 		if [ ! -e "${D}/usr/share/power_manager/use_lid" ]; then
