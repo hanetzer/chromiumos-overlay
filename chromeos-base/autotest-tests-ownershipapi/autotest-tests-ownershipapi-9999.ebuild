@@ -34,6 +34,7 @@ DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
 	+tests_login_OwnershipApi
+	+tests_login_RemoteOwnership
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
