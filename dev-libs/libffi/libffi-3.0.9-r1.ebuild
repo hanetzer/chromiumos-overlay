@@ -3,6 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/libffi/libffi-3.0.9.ebuild,v 1.4 2010/01/13 14:21:00 ranger Exp $
 
 inherit libtool
+inherit toolchain-funcs
 
 DESCRIPTION="a portable, high level programming interface to various calling conventions."
 HOMEPAGE="http://sourceware.org/libffi/"
@@ -23,6 +24,10 @@ src_unpack() {
 }
 
 src_compile() {
+	tc-export CC LD CXX
+	CC="${CC} -fuse-ld=bfd"
+	CXX="${CXX} -fuse-ld=bfd"
+	LD="${LD}.bfd"
 	econf \
 		--disable-dependency-tracking \
 		$(use_enable static-libs static) \
