@@ -17,6 +17,12 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TODO(mazda): Remove the patch once it is upstreamed.
+  epatch "${FILESDIR}"/fix_config.patch
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
@@ -47,4 +53,9 @@ src_install() {
 
   insinto /usr/share/ibus/component || die
   doins out_linux/${BUILDTYPE}/obj/gen/unix/ibus/mozc.xml || die
+}
+
+pkg_postinst() {
+  ewarn "Don't forget to update the ebuild file for the official build if you"
+  ewarn "update this ebuild file."
 }
