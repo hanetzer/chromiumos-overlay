@@ -1,6 +1,7 @@
-# Input device using the proprietary Synaptics driver.
+# Configure Synaptics X input driver (SynTPEnh)
 Section "InputDevice"
-    Identifier "Mouse1"
+    Identifier "touchpad"
     Driver     "syntp"
     Option     "Device" "/dev/input/mice"
+    Option     "AutoServerLayout" "on"
 EndSection

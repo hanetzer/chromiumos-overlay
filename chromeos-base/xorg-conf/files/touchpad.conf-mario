@@ -1,6 +1,8 @@
-# Input device using the open-source synaptics X11 driver.
-Section "InputDevice"
-    Identifier "Mouse1"
+# Configure touchpads to use xf86-input-synaptics X input driver
+Section "InputClass"
+    Identifier "touchpad"
+    MatchIsTouchpad "on"
+    MatchDevicePath "/dev/input/event*"
     Driver     "synaptics"
     Option     "MinSpeed" "1.0"
     Option     "MaxSpeed" "2.0"
