@@ -11,7 +11,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 arm x86"
 RDEPEND="sys-apps/util-linux"	# for libuuid
 
 src_compile() {
@@ -19,12 +19,9 @@ src_compile() {
 	# likely become more sophisticated as we broaden board support.
 	einfo "using default configuration for $(tc-arch)"
 	ARCH=$(tc-arch) make defconfig || die
-	if tc-is-cross-compiler ; then
-		tc-export AR AS CC CXX LD NM STRIP OBJCOPY
-	else
-		# workaround that LDFLAGS=-Wl,-O1 would fail
-		LDFLAGS=-O2
-	fi
+
+	tc-export AR AS CC CXX LD NM STRIP OBJCOPY
+	export LDFLAGS=$(raw-ldflags)
 	emake || die
 }
 
