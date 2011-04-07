@@ -124,6 +124,7 @@ src_install() {
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event7" c 13 71
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event8" c 13 72
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/fb0" c 29 0
+	mknod --mode=0660 "${D}/${DEVICES_DIR}/fb1" c 29 1
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/dri/card0" c 226 0
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/tpm" c 10 224
 	mknod --mode=0640 "${D}/${DEVICES_DIR}/nvram" c 10 144
