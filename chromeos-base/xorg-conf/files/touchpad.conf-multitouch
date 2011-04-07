@@ -3,5 +3,4 @@ Section "InputDevice"
     Identifier "Mouse1"
     Driver     "multitouch"
     Option     "Device" "/dev/input/event6"
-    Option     "SendCoreEvents" "true"
 EndSection

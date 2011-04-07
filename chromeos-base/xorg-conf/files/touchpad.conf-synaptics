@@ -3,5 +3,4 @@ Section "InputDevice"
     Identifier "Mouse1"
     Driver     "syntp"
     Option     "Device" "/dev/input/mice"
-    Option     "SendCoreEvents" "true"
 EndSection
