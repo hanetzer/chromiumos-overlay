@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="affe5a234df04584eeb81092ebda86db611cb017"
+CROS_WORKON_COMMIT="606180ea7d7d973f00ef7c140e264a77bafdacb8"
 
 inherit cros-debug cros-workon flag-o-matic toolchain-funcs
 
@@ -66,12 +66,6 @@ src_compile() {
 }
 
 src_test() {
-	# TODO(derat): Remove this once http://crosbug.com/13634 is fixed.
-	tc-export CC CXX AR RANLIB LD NM
-	cros-debug-add-NDEBUG
-	use touchui && append-flags -DTOUCH_UI
-	export CCFLAGS="$CFLAGS"
-
 	scons -j$(print_num_jobs) tests || die "failed to build tests"
 
 	if ! use x86 ; then
