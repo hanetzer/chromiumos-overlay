@@ -65,12 +65,6 @@ src_compile() {
 }
 
 src_test() {
-	# TODO(derat): Remove this once http://crosbug.com/13634 is fixed.
-	tc-export CC CXX AR RANLIB LD NM
-	cros-debug-add-NDEBUG
-	use touchui && append-flags -DTOUCH_UI
-	export CCFLAGS="$CFLAGS"
-
 	scons -j$(print_num_jobs) tests || die "failed to build tests"
 
 	if ! use x86 ; then
