@@ -19,9 +19,9 @@ src_compile() {
 	tc-export CC AR CXX
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
-	emake MINIMAL=$(usev minimal) || die "${err_msg}"
+	emake ARCH=$(tc-arch) MINIMAL=$(usev minimal) || die "${err_msg}"
 	if use rbtest; then
-		emake rbtest || die "${err_msg}"
+		emake ARCH=$(tc-arch) rbtest || die "${err_msg}"
 	fi
 }
 
