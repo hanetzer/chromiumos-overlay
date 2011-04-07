@@ -139,6 +139,8 @@ PATCHES=(
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window
 	"${FILESDIR}/1.9.3-allow-root-none.patch"
+	# Dont load a default X cursor
+	"${FILESDIR}/1.9.3-no-default-cursor.patch"
 	)
 
 pkg_setup() {
@@ -199,6 +201,7 @@ pkg_setup() {
 		--disable-xfake
 		--disable-dmx
 		--disable-xvfb
+		--enable-null-root-cursor
 		${conf_opts}"
 
 	# Things we may want to remove later:

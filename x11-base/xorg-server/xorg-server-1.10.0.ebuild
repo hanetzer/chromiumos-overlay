@@ -139,6 +139,8 @@ PATCHES=(
 	"${FILESDIR}/1.10.0-sdksyms.patch"
 	# Get the right path for the DRI drivers
 	"${FILESDIR}/1.10.0-xcompile-dri-driver.patch"
+	# Dont load a default X cursor
+	"${FILESDIR}/1.9.3-no-default-cursor.patch"
 	)
 
 pkg_setup() {
@@ -199,6 +201,7 @@ pkg_setup() {
 		--disable-xfake
 		--disable-dmx
 		--disable-xvfb
+		--enable-null-root-cursor
 		${conf_opts}"
 
 	# Things we may want to remove later:
