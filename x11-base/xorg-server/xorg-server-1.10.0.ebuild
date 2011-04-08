@@ -196,7 +196,7 @@ pkg_setup() {
 		--disable-config-dbus
 		--disable-config-hal
 		--disable-clientids
-		--disable-xf86vidmode
+		--enable-xf86vidmode
 		--disable-registry
 		--disable-xfake
 		--disable-dmx
@@ -210,6 +210,7 @@ pkg_setup() {
 	#	--disable-tcp-transport
 	#	--disable-ipv6
 	#	--disable-secure-rpc
+	#	--enable-xf86vidmode (requires fixing xcalib)
 
 	# Xorg-server requires includes from OS mesa which are not visible for
 	# users of binary drivers.
