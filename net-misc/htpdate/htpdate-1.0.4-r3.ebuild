@@ -24,6 +24,7 @@ src_unpack() {
 	epatch "${FILESDIR}/${P}-errorcheckhttpresp.patch"
 	epatch "${FILESDIR}/${P}-checkagainstbuildtime.patch"
 	epatch "${FILESDIR}/${P}-oob_date_read.patch"
+	epatch "${FILESDIR}/${P}-errorsarentsuccess.patch"
 	gunzip htpdate.8.gz || die
 }
 
