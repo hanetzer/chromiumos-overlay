@@ -11,7 +11,6 @@ dev-java/icedtea	-nss
 dev-lang/python		-berkdb -gdbm
 dev-libs/dbus-glib	tools
 dev-libs/glib		-doc
-dev-libs/m17n-lib       -X
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
 dev-libs/opensc		ssl
