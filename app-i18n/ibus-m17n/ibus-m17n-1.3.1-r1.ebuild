@@ -19,10 +19,11 @@ RDEPEND=">=app-i18n/ibus-1.2
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
-	=dev-db/m17n-contrib-1.1.10
-	>=dev-db/m17n-db-1.6.1
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
+RDEPEND="${RDEPEND}
+	>=dev-db/m17n-contrib-1.1.10
+	>=dev-db/m17n-db-1.6.1"
 
 src_prepare() {
 	# Apply patches that are not in the 1.3.1 tarball.
@@ -36,7 +37,7 @@ src_prepare() {
 
 	# ibus-m17n-ibus-1.4.patch is taken from Fedora's repository at
 	# http://pkgs.fedoraproject.org/gitweb/?p=ibus-m17n.git;a=tree;h=refs/heads/master;hb=refs/heads/master
-	if ibus-daemon --version | egrep -e '(1\.4\.|1\.3\.99)' > /dev/null ; then
+	if has_version '>=app-i18n/ibus-1.3.99'; then
 		epatch "${FILESDIR}"/ibus-m17n-ibus-1.4.patch
 	fi
 
