@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/iwl6000-ucode/iwl6000-ucode-9.221.4.1.ebuild,v 1.2 2010/07/20 22:05:39 flameeyes Exp $
 
-MY_PN="iwlwifi-6000-ucode"
+RESTRICT="mirror"
+
+MY_PN="iwlwifi-6000g2b-ucode"
 
 DESCRIPTION="Intel (R) Wireless WiFi Advanced N 6000 ucode"
 HOMEPAGE="http://intellinuxwireless.org/?p=iwlwifi"
@@ -22,7 +24,7 @@ src_compile() { :; }
 
 src_install() {
 	insinto /lib/firmware
-	doins "${S}/iwlwifi-6000-4.ucode" || die
+	doins "${S}/iwlwifi-6000g2b-5.ucode" || die
 
 	dodoc README* || die "dodoc failed"
 }
