@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="136bbe09befb71b2c5e10d706908f6bdb8989987"
+CROS_WORKON_COMMIT="07eeeaae6197c5f7dd2e8094079b0e52e9d220ed"
 
 CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
 inherit cros-workon autotest-deponly conflict
