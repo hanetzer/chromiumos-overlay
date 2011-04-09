@@ -101,7 +101,6 @@ src_install() {
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/tty2" c 4 2
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/tty8" c 4 8
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/tty"  c 5 0
-	mknod --mode=0660 "${D}/${DEVICES_DIR}/ttyMSM2" c 252 2
 	mknod --mode=0600 "${D}/${DEVICES_DIR}/console" c 5 1
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/ptmx" c 5 2
 	mknod --mode=0666 "${D}/${DEVICES_DIR}/loop0" b 7 0
