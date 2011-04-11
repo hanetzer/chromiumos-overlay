@@ -106,7 +106,6 @@ RDEPEND="${RDEPEND}
 		net-wireless/iwl1000-ucode
 		>=net-wireless/iwl5000-ucode-8.24.2.12
 		net-wireless/iwl6000-ucode
-		sys-apps/flashrom
 		sys-apps/mosys
 		sys-boot/syslinux
 	)
@@ -184,6 +183,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/devicekit-disks
 	sys-apps/devicekit-power
 	sys-apps/eject
+	sys-apps/flashrom
 	sys-apps/grep
 	sys-apps/kbd
 	sys-apps/mawk
