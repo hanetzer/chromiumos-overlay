@@ -21,8 +21,7 @@ RDEPEND="app-i18n/ibus
 	net-libs/gupnp-av
 	sys-apps/dbus
 	sys-auth/consolekit
-	sys-fs/udev
-	x11-apps/setxkbmap"
+	sys-fs/udev"
 
 DEPEND="${RDEPEND}
 	app-i18n/ibus-chewing
