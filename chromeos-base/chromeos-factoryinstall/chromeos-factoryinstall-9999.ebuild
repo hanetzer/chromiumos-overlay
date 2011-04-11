@@ -25,7 +25,7 @@ RDEPEND="x86? ( chromeos-base/chromeos-initramfs )
 CROS_WORKON_LOCALNAME="factory_installer"
 CROS_WORKON_PROJECT="factory_installer"
 
-FACTORY_SERVER="${FACTORY_SERVER:-meatball.mtv.corp.google.com}"
+FACTORY_SERVER="${FACTORY_SERVER:-$(hostname -f)}"
 
 src_install() {
 	insinto /etc/init
