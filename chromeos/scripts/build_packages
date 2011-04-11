@@ -205,15 +205,6 @@ fi
 if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/autotest-all"
 fi
-# HACK ALERT
-# Remove chromeos-base/kernel: http://crosbug.com/11124
-# TODO(msb): remove this hack after 02/20/2011
-# TODO(anush): sys-libs/pam added with commit b3d6e745
-# TODO(petkov): remove sys-apps/gawk by 03/08/2011 (crosbug.com/12420).
-sudo -E ${EMERGE_BOARD_CMD} -C \
-  chromeos-base/kernel \
-  sys-apps/gawk \
-  =sys-libs/pam-1.0.4
 if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   # These flags are specific to parallel_emerge
   for pkg in ${CROS_WORKON_PKGS}; do
