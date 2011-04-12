@@ -13,7 +13,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +l2tpipsec +modemmanager +newwifi +openvpn policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +l2tpipsec +modemmanager +newwifi +nss +openvpn policykit +portalcheck +ppp resolvconf resolvfiles threads tools +udev"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -25,6 +25,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( chromeos-base/modem-utilities
 		        net-misc/mobile-broadband-provider-info )
+	nss? ( dev-libs/nss )
 	openvpn? ( net-misc/openvpn )
 	policykit? ( >=sys-auth/policykit-0.7 )
 	portalcheck? ( net-misc/curl )
@@ -74,6 +75,7 @@ src_configure() {
 		$(use_enable ethernet ethernet builtin) \
 		$(use_enable l2tpipsec l2tpipsec builtin) \
 		$(use_enable modemmanager modemmgr) \
+        	$(use_enable nss nss builtin) \
 		$(use_enable openvpn openvpn builtin) \
 		$(use_enable policykit polkit) \
 		$(use_enable portalcheck portal_check builtin) \
