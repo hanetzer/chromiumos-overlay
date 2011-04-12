@@ -72,4 +72,4 @@
 >sys-boot/syslinux-3.83-r3
 
 # Mask until chromiumos specific patches are added to newer upstream ebuilds
->x11-drivers/xf86-input-mouse-1.6.0-r1
+>x11-drivers/xf86-input-mouse-1.7.0-r1
