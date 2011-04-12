@@ -44,6 +44,7 @@ RDEPEND="
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
   chromeos-base/autotest-deps-glbench
+  chromeos-base/autotest-deps-piglit
   chromeos-base/flimflam-test
   autox? ( chromeos-base/autox )
   dev-python/pygobject
@@ -103,6 +104,7 @@ IUSE_TESTS="
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
 	+tests_graphics_O3DSelenium
+	+tests_graphics_Piglit
 	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest
 	+tests_graphics_WebGLConformance

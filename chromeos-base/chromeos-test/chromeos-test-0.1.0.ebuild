@@ -25,6 +25,10 @@ IUSE="+bluetooth"
 # whether the package is present on the target device; those
 # packages aren't listed here.
 #
+# Developers should be aware that packages installed by this ebuild
+# are rooted in /usr/local.  This means that libraries are installed
+# in /usr/local/lib, executables in /usr/local/bin, etc.
+#
 # TODO(jrbarnette):  It's not known definitively that the list
 # below contains no unneeded dependencies.  More work is needed to
 # determine for sure that every package listed is actually used.
@@ -45,6 +49,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygtk
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
+	media-libs/tiff
 	net-analyzer/netperf
 	net-misc/dhcp
 	net-misc/iperf
@@ -60,6 +65,7 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
+	virtual/glut
 	x11-apps/setxkbmap
 	x11-apps/xauth
 	x11-apps/xset
