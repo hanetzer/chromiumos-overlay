@@ -21,7 +21,7 @@ CXXFLAGS="${CFLAGS}"
 LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
 
 VIDEO_CARDS="intel vmware vesa"
-INPUT_DEVICES="evdev keyboard mouse synaptics"
+INPUT_DEVICES="evdev synaptics"
 
 # Allow a board to override or define additional settings.
 source make.conf.board
