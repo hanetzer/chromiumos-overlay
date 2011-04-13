@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon
 
 DESCRIPTION="Upstart init scripts for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
