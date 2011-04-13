@@ -1,0 +1,12 @@
+diff -ur chewing.orig/unix/ibus/mozc-chewing.xml chewing/unix/ibus/mozc-chewing.xml
+--- chewing.orig/unix/ibus/mozc-chewing.xml	2011-04-13 16:17:26.703213000 +0900
++++ chewing/unix/ibus/mozc-chewing.xml	2011-04-13 16:24:54.365674787 +0900
+@@ -2,7 +2,7 @@
+   <version>0.0.0.0</version>
+   <name>com.google.IBus.Chewing</name>
+   <license>New BSD</license>
+-  <exec>/usr/libexec/ibus-engine-mozc-chewing --ibus</exec>
++  <exec>/usr/libexec/ibus-engine-mozc-chewing --ibus --datapath=/usr/share/chewing</exec>
+   <textdomain>ibus-mozc-chewing</textdomain>
+   <author>Google Inc.</author>
+   <homepage>http://code.google.com/p/mozc/</homepage>

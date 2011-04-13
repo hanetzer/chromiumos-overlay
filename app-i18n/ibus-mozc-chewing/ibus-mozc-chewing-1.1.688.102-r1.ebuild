@@ -18,6 +18,12 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 #RESTRICT="mirror"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TODO(yusukes): Upstream the change.
+  epatch "${FILESDIR}"/mozc_chewing_fix_datapath.patch
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
