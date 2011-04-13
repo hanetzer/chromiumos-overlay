@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="d150ea195468dae5b279d5cbf21543a06b041565"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon
 
 DESCRIPTION="Upstart init scripts for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
