@@ -15,7 +15,9 @@ inherit cros-workon distutils
 RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-libs/libusb"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	app-text/htmltidy 
+	"
 
 src_compile() {
 	tc-export CC PKG_CONFIG 
