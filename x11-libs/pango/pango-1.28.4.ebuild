@@ -12,8 +12,9 @@ HOMEPAGE="http://www.pango.org/"
 
 LICENSE="LGPL-2 FTL"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~x86-fbsd ~x86-freebsd ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
-IUSE="X doc +introspection test"
+# TODO(zbehan): stabilize in the chroot, and remove the previous ebuild
+KEYWORDS="arm x86"
+IUSE="X doc introspection test"
 
 RDEPEND=">=dev-libs/glib-2.24:2
 	>=media-libs/fontconfig-2.5.0:1.0
@@ -68,6 +69,11 @@ src_prepare() {
 src_install() {
 	gnome2_src_install
 	find "${ED}/usr/$(get_libdir)/pango/1.6.0/modules" -name "*.la" -delete || die
+	# TODO(msb): Ugly Hack fix for pango-querymodules pango-querymodules needs
+	# to be run on the target so we ran it on the target and stored the result
+	# which we copy here
+	insinto /etc/pango
+	doins "${FILESDIR}"/pango.modules || die
 }
 
 pkg_postinst() {
