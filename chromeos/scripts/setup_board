@@ -48,7 +48,7 @@ DEFINE_boolean force $FLAGS_FALSE \
   "Force re-creating board root."
 DEFINE_string binutils_version "2.20.1-r7" \
   "Version of binutils to use."
-DEFINE_string gcc_version "4.4.3-r6" \
+DEFINE_string gcc_version "4.4.3-r7" \
   "Version of gcc to use."
 DEFINE_string libc_version "2.10.1-r2" \
   "Version of libc to use."
@@ -116,7 +116,7 @@ build_toolchain() {
   # TODO(davidjames): Fix uploading of cross prebuilts so that we don't have
   #                   to use the old location to get the cross prebuilts.
   #BINHOST=$(portageq envvar PORTAGE_BINHOST)
-  BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/15.03.11.145424/packages"
+  BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/13.04.11.101441/packages"
   CROSS_USEPKG=""
   if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
     # Grab the latest packages from the prebuilt server.
