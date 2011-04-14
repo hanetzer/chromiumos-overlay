@@ -12,7 +12,7 @@ SRC_URI="http://dbus.freedesktop.org/releases/dbus/${P}.tar.gz"
 
 LICENSE="|| ( GPL-2 AFL-2.1 )"
 SLOT="0"
-KEYWORDS="alpha ~amd64 ~arm hppa ia64 ~mips ppc ppc64 s390 sh sparc ~x86 ~x86-fbsd"
+KEYWORDS="amd64 x86"
 IUSE="debug doc selinux static-libs test X"
 
 CDEPEND="
@@ -67,6 +67,8 @@ src_prepare() {
 		-e '/"dispatch"/d' -i "${S}/bus/test-main.c" || die
 
 	epatch "${FILESDIR}"/${PN}-1.4.0-asneeded.patch
+
+	epatch "${FILESDIR}"/dbus-send-print-fixed.patch
 
 	# required for asneeded patch but also for bug 263909, cross-compile so
 	# don't remove eautoreconf
@@ -164,6 +166,10 @@ src_install() {
 	keepdir /usr/share/dbus-1/services
 	keepdir /etc/dbus-1/system.d/
 	keepdir /etc/dbus-1/session.d/
+
+	# TODO(petkov): See crosbug.com/p/2264 -- remove when fixed.
+	dosym /usr/bin/dbus-uuidgen /bin/dbus-uuidgen
+	dosym /usr/bin/dbus-daemon /bin/dbus-daemon
 
 	dodoc AUTHORS ChangeLog HACKING NEWS README doc/TODO || die "dodoc failed"
 
