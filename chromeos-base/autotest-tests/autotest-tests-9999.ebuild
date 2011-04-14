@@ -56,6 +56,7 @@ RDEPEND="
 
 RDEPEND="${RDEPEND}
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
+  tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
 
 DEPEND="${RDEPEND}"
