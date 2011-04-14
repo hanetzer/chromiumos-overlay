@@ -71,11 +71,6 @@ def OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
         'capslock': [],
         'disabled': [],
     }
-    modifier_keys[use_search_key_as] += ['<LWIN>', '<CAPS>']
-    modifier_keys[use_leftcontrol_key_as] += ['<LCTL>', '<RCTL>']
-    modifier_keys[use_leftalt_key_as] += ['<LALT>']
-    if not keep_right_alt:
-      modifier_keys[use_leftalt_key_as] += ['<RALT>']
 
     print ''
     print '// Search (Win-L) and CapsLock keys are mapped to %s.' % (
@@ -98,12 +93,25 @@ def OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
     else:
       print 'xkb_symbols "%s_%s_%s" {' % (
           use_search_key_as, use_leftcontrol_key_as, use_leftalt_key_as)
-    print '  key <LWIN> { [ %s ] };' % KEY_STRING_TO_KEYSYM[use_search_key_as]
-    print '  key <CAPS> { [ %s ] };' % KEY_STRING_TO_KEYSYM[use_search_key_as]
-    print '  key <LCTL> { [ %s ] };' % (
-        KEY_STRING_TO_KEYSYM[use_leftcontrol_key_as])
-    print '  key <RCTL> { [ %s ] };' % (
-        re.sub(r'_L', r'_R', KEY_STRING_TO_KEYSYM[use_leftcontrol_key_as]))
+
+    # Remap search if needed.
+    if use_search_key_as != 'search':
+      modifier_keys[use_search_key_as] += ['<LWIN>', '<CAPS>']
+      print '  key <LWIN> { [ %s ] };' % KEY_STRING_TO_KEYSYM[use_search_key_as]
+      print '  key <CAPS> { [ %s ] };' % KEY_STRING_TO_KEYSYM[use_search_key_as]
+
+    # Remap control if needed
+    if use_leftcontrol_key_as != 'leftcontrol':
+      modifier_keys[use_leftcontrol_key_as] += ['<LCTL>', '<RCTL>']
+      print '  key <LCTL> { [ %s ] };' % (
+          KEY_STRING_TO_KEYSYM[use_leftcontrol_key_as])
+      print '  key <RCTL> { [ %s ] };' % (
+          re.sub(r'_L', r'_R', KEY_STRING_TO_KEYSYM[use_leftcontrol_key_as]))
+
+    # Remap alt
+    modifier_keys[use_leftalt_key_as] += ['<LALT>']
+    if not keep_right_alt:
+      modifier_keys[use_leftalt_key_as] += ['<RALT>']
 
     lalt = KEY_STRING_TO_KEYSYM[use_leftalt_key_as]
     ralt = re.sub(r'_L', r'_R', KEY_STRING_TO_KEYSYM[use_leftalt_key_as])
@@ -117,6 +125,7 @@ def OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
       print '  key <LALT> { [ %s ] };' % lalt
       if not keep_right_alt:
         print '  key <RALT> { [ %s ] };' % ralt
+
     for key in modifier_keys.keys():
         if key != 'disabled' and len(modifier_keys[key]) > 0:
             print '  modifier_map %s { %s };' % (
