@@ -4,6 +4,7 @@
 
 EAPI="2"
 CROS_WORKON_COMMIT="004812c103c969c92fc6379384e231742485da9d"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="This is the resampling library. See README.txt for details."

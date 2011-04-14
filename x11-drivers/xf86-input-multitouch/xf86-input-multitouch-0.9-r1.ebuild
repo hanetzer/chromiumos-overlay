@@ -3,6 +3,7 @@
 
 EAPI=3
 CROS_WORKON_COMMIT="13d11a7589fe07df0de7b0ab191682599147335a"
+
 XORG_EAUTORECONF="yes"
 BASE_INDIVIDUAL_URI=""
 inherit linux-info xorg-2 cros-workon

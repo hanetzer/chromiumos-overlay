@@ -6,6 +6,7 @@
 
 EAPI=2
 CROS_WORKON_COMMIT="872bf84313e83f60c50160ea7fd37bf25da4848b"
+
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Breakpad symbol dumper"

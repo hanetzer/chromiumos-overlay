@@ -3,6 +3,7 @@
 
 EAPI="2"
 CROS_WORKON_COMMIT="b63dc7deb90befeb43f82641d8b8be9ad51c7e25"
+
 inherit eutils cros-workon
 
 DESCRIPTION="Marvell SD8787 firmware image"
