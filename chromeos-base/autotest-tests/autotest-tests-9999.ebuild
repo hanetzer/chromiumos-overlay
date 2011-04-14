@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -159,8 +159,6 @@ IUSE_TESTS="
 	+tests_login_DBusCalls
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
-	+tests_login_OwnershipTaken
-	+tests_login_OwnershipNotRetaken
 	+tests_login_RemoteLogin
 	+tests_login_SecondFactor
 	+tests_network_3GActivate
