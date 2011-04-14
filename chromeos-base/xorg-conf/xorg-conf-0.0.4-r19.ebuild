@@ -31,4 +31,5 @@ src_install() {
 		newins "${FILESDIR}/touchpad.conf" touchpad.conf
 	fi
 	newins "${FILESDIR}/20-mouse.conf" 20-mouse.conf
+	newins "${FILESDIR}/30-keyboard.conf" 30-keyboard.conf
 }
