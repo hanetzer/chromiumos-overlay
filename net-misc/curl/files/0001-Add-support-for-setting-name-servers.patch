@@ -1,0 +1,52 @@
+From 184c835608645cbd3dcf0e74185d8bf902989f92 Mon Sep 17 00:00:00 2001
+From: Jason Glasgow <jglasgow@chromium.org>
+Date: Tue, 12 Apr 2011 11:34:28 -0400
+Subject: [PATCH] Add support for setting name servers
+
+---
+ include/curl/curl.h |    5 ++++-
+ lib/url.c           |    5 +++++
+ 2 files changed, 9 insertions(+), 1 deletions(-)
+
+diff --git a/include/curl/curl.h b/include/curl/curl.h
+index 4744f48..84726e6 100644
+--- a/include/curl/curl.h
++++ b/include/curl/curl.h
+@@ -7,7 +7,7 @@
+  *                            | (__| |_| |  _ <| |___
+  *                             \___|\___/|_| \_\_____|
+  *
+- * Copyright (C) 1998 - 2010, Daniel Stenberg, <daniel@haxx.se>, et al.
++ * Copyright (C) 2011, Daniel Stenberg, <daniel@haxx.se>, et al.
+  *
+  * This software is licensed as described in the file COPYING, which
+  * you should have received as part of this distribution. The terms
+@@ -1451,6 +1451,9 @@ typedef enum {
+   /* Set authentication type for authenticated TLS */
+   CINIT(TLSAUTH_TYPE, OBJECTPOINT, 206),
+ 
++  /* Set the name servers for c-ares */
++  CINIT(ARES_SERVERS_CSV, OBJECTPOINT, 207),
++
+   CURLOPT_LASTENTRY /* the last unused */
+ } CURLoption;
+ 
+diff --git a/lib/url.c b/lib/url.c
+index c075541..248f474 100644
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -2549,6 +2549,11 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
+       data->set.ssl.authtype = CURL_TLSAUTH_NONE;
+     break;
+ #endif
++#ifdef USE_ARES
++  case CURLOPT_ARES_SERVERS_CSV:
++    ares_set_servers_csv(data->state.areschannel, va_arg(param, void *));
++    break;
++#endif
+   default:
+     /* unknown tag and its companion, just ignore: */
+     result = CURLE_FAILED_INIT; /* correct this */
+-- 
+1.7.3.1
+
