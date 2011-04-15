@@ -19,27 +19,22 @@ CROS_WORKON_PROJECT="firmware"
 # ---------------------------------------------------------------------------
 # CUSTOMIZATION SECTION
 
-# Each OEM will have their own ebuild to overlay this file such that
-# they can specify their own shellball generation instruction.
+# Name of user account on the Binary Component Server.
+CROS_FIRMWARE_BCS_USER_NAME=""
 
-# It is suggested to put your firmware image files in "files/" folder
-# and use "$FILESDIR" prefix to following path.
+# BIOS firmware image archive.
+# This archive should contain just the BIOS image file at its root.
+CROS_FIRMWARE_BIOS_ARCHIVE=""
 
-# Your BIOS firmware image file name.
-# Example: CROS_FIRMWARE_BIOS_IMAGE="$FILESDIR/BIOS_0008.fd"
-CROS_FIRMWARE_BIOS_IMAGE=""
+# BIOS firmware version identifier.
+CROS_FIRMWARE_BIOS_VERSION=""
 
-# Your EC (embedded controller) firmware image file name.
-# Example: CROS_FIRMWARE_EC_IMAGE="$FILESDIR/EC_0012.fd"
-CROS_FIRMWARE_EC_IMAGE=""
+# EC (embedded controller) firmware archive.
+# This archive should contain just the EC image file at its root.
+CROS_FIRMWARE_EC_ARCHIVE=""
 
-# Change this to 1 if you REALLY want to update firmware whenever system
-# invokes chromeos-postinst (for installation, recovery, and auto updates).
-CROS_FIRMWARE_IS_FORCE_UPDATE=0
-
-# If you need a special version of flashrom tool, put file name here.
-# Example: CROS_FIRMWARE_FLASHROM_BINARY="$FILESDIR/flashrom.private"
-CROS_FIRMWARE_FLASHROM_BINARY=""
+# EC (embedded controller) firmware image version identifier.
+EC_VERSION=""
 
 # If you need any additional resources in firmware update (ex,
 # a customization script like "install_firmware_custom.sh"),
@@ -47,5 +42,3 @@ CROS_FIRMWARE_FLASHROM_BINARY=""
 # values.
 # Example: CROS_FIRMWARE_EXTRA_LIST="$FILESDIR/a_directory:$FILESDIR/a_file"
 CROS_FIRMWARE_EXTRA_LIST=""
-
-# ---------------------------------------------------------------------------
