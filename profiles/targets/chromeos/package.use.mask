@@ -17,6 +17,7 @@ media-fonts/croscorefonts X
 media-fonts/lohitfonts-cros X
 media-fonts/droidfonts-cros X
 media-fonts/ja-ipafonts X
+media-fonts/ko-nanumfonts X
 
 # David James <davidjames@chromium.org> (09 Sep 2010)
 # Please don't overwrite the binaries in our build environment with symlinks.

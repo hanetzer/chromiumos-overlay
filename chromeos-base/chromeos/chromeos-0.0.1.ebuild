@@ -89,6 +89,7 @@ RDEPEND="${RDEPEND}
 		media-fonts/ja-ipafonts
 		media-fonts/lohitfonts-cros
 		media-fonts/sil-abyssinica
+		media-fonts/ko-nanumfonts
 		x11-apps/xinit
 		>=x11-base/xorg-server-1.6.3
 		x86? (
