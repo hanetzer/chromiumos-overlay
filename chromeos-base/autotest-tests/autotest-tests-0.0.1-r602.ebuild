@@ -195,6 +195,7 @@ IUSE_TESTS="
 	+tests_platform_BootPerfServer
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CleanShutdown
+	+tests_platform_CrosDisksDBus
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeFio
 	+tests_platform_CryptohomeMount
