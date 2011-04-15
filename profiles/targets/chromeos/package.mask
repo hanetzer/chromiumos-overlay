@@ -73,3 +73,6 @@
 
 # Mask until chromiumos specific patches are added to newer upstream ebuilds
 >x11-drivers/xf86-input-mouse-1.7.0-r1
+
+# Mask until chromiumos specific patches are added
+>=sys-libs/timezone-data-2011d
