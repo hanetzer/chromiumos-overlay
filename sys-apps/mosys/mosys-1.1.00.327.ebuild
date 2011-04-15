@@ -11,7 +11,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 arm x86"
 RDEPEND="sys-apps/util-linux"	# for libuuid
 
 src_compile() {
