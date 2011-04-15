@@ -172,6 +172,7 @@ cros-workon_src_unpack() {
 			# option for clone defaults to HEAD if it can't find the revision
 			# you requested. On the other hand, git checkout fails if it can't
 			# find the revision you requested, so we use that instead.
+			local fetched=false
 			if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
 				# Since we don't have a CROS_WORKON_COMMIT revision specified,
 				# we don't know what revision the ebuild wants. Let's take the
@@ -186,35 +187,42 @@ cros-workon_src_unpack() {
 				# specify CROS_WORKON_COMMIT for all ebuilds, and update this
 				# code path to fail and explain the problem.
 				git clone -s "${path}" ${S} || die "Can't clone ${path}."
+				fetched=true
 			else
 				git clone -sn "${path}" ${S} || die "Can't clone ${path}."
 				if ! ( cd ${S} && git checkout -q ${CROS_WORKON_COMMIT} ) ; then
 					ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
 					ewarn "Is ${path} up to date? Try running repo sync."
-					die "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
+					ewarn "Falling back to git.eclass..."
+					rm -rf ${S}/.git
+				else
+					fetched=true
 				fi
 			fi
-			VCSID=$(GIT_DIR="${path}/.git" git rev-parse HEAD)
-			append-flags -DVCSID=\\\"${VCSID}\\\"
-		else
-			EGIT_REPO_URI="${repo}/${project}"
-			EGIT_PROJECT="${project}"
-			EGIT_COMMIT=${CROS_WORKON_COMMIT}
-			if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
-				# TODO(davidjames): This code should really error out if
-				# ${CROS_WORKON_COMMIT} is master, because it's going to be doing
-				# the wrong thing for branches.
-				ewarn "=== START HACK ALERT ==="
-				ewarn "We don't have a CROS_WORKON_COMMIT for ${project},"
-				ewarn "and we can't find what code to use, so we are using"
-				ewarn "the latest version. This may break your build or"
-				ewarn "produce wrong output. See http://crosbug.com/6506"
-				ewarn "=== END HACK ALERT ==="
+			if $fetched; then
+				VCSID=$(GIT_DIR="${path}/.git" git rev-parse HEAD)
+				append-flags -DVCSID=\\\"${VCSID}\\\"
+				return
 			fi
-			# clones to /var, copies src tree to the /build/<board>/tmp
-			git_src_unpack
-			append-flags -DVCSID=\\\"${CROS_WORKON_COMMIT}\\\"
 		fi
+
+		EGIT_REPO_URI="${repo}/${project}"
+		EGIT_PROJECT="${project}"
+		EGIT_COMMIT=${CROS_WORKON_COMMIT}
+		if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
+			# TODO(davidjames): This code should really error out if
+			# ${CROS_WORKON_COMMIT} is master, because it's going to be doing
+			# the wrong thing for branches.
+			ewarn "=== START HACK ALERT ==="
+			ewarn "We don't have a CROS_WORKON_COMMIT for ${project},"
+			ewarn "and we can't find what code to use, so we are using"
+			ewarn "the latest version. This may break your build or"
+			ewarn "produce wrong output. See http://crosbug.com/6506"
+			ewarn "=== END HACK ALERT ==="
+		fi
+		# clones to /var, copies src tree to the /build/<board>/tmp
+		git_src_unpack
+		append-flags -DVCSID=\\\"${CROS_WORKON_COMMIT}\\\"
 		return
 	fi
 
