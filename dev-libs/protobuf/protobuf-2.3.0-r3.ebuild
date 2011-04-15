@@ -101,6 +101,13 @@ src_install() {
 		# have to do this manually.
 		"${EPYTHON}" setup.py install --root="${D}" --prefix=/usr/local
 		popd
+		# HACK ALERT: upstream setup.py forgets to install google/__init__.py,
+		# hack now, fix properly later.
+		pushd "${D}"
+		local whereto="$(find . -name 'site-packages')"
+		popd
+		insinto "${whereto/./}"/google/
+		doins "${S}"/python/google/__init__.py
 	fi
 
 	if use java; then
