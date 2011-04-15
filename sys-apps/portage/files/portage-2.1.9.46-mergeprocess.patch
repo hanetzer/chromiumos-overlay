@@ -1,4 +1,4 @@
-commit 0f5b0e1b77208771dfedc43646636597f74abe49
+commit adc30bd03cd6424b11827ea82e4276ec21922c2f
 Author: David James <davidjames@google.com>
 Date:   Thu Mar 24 19:36:33 2011 -0700
 
@@ -96,6 +96,8 @@ Date:   Thu Mar 24 19:36:33 2011 -0700
     dblink: rename 'buffer' var in _elog_process
     
     Avoid name collision with built-in 'buffer' function.
+    
+    Change-Id: Ic06b5c684ad41ff7a0aba08cd24b2548fd8e247e
 
 diff --git a/pym/_emerge/AbstractEbuildProcess.py b/pym/_emerge/AbstractEbuildProcess.py
 index d7f31be..39c613b 100644
@@ -348,7 +350,7 @@ index e3270c8..a24608b 100644
 +				log_path = self.settings.get("PORTAGE_LOG_FILE")
 +			self.scheduler.output(msg, log_path=log_path)
 diff --git a/pym/_emerge/MergeListItem.py b/pym/_emerge/MergeListItem.py
-index 3563f13..98a402e 100644
+index 3563f13..144398d 100644
 --- a/pym/_emerge/MergeListItem.py
 +++ b/pym/_emerge/MergeListItem.py
 @@ -4,6 +4,7 @@
@@ -359,12 +361,11 @@ index 3563f13..98a402e 100644
  from _emerge.Binpkg import Binpkg
  from _emerge.CompositeTask import CompositeTask
  from _emerge.EbuildBuild import EbuildBuild
-@@ -103,15 +104,12 @@ class MergeListItem(CompositeTask):
+@@ -103,15 +104,11 @@ class MergeListItem(CompositeTask):
  			self._start_task(binpkg, self._default_final_exit)
  			return
  
 -	def merge(self):
-+
 +	def create_install_task(self):
  
  		pkg = self.pkg
@@ -377,7 +378,7 @@ index 3563f13..98a402e 100644
  		scheduler = self.scheduler
  		settings = self.settings
  		world_atom = self.world_atom
-@@ -121,21 +119,18 @@ class MergeListItem(CompositeTask):
+@@ -121,21 +118,18 @@ class MergeListItem(CompositeTask):
  			if not (build_opts.buildpkgonly or \
  				build_opts.fetchonly or build_opts.pretend):
  
@@ -1293,7 +1294,7 @@ index 7856c85..9ceaf4c 100644
  def unmerge(cat, pkg, myroot=None, settings=None,
  	mytrimworld=None, vartree=None,
 diff --git a/pym/portage/package/ebuild/_config/special_env_vars.py b/pym/portage/package/ebuild/_config/special_env_vars.py
-index b807146..28f6612 100644
+index 67d4614..0214c86 100644
 --- a/pym/portage/package/ebuild/_config/special_env_vars.py
 +++ b/pym/portage/package/ebuild/_config/special_env_vars.py
 @@ -141,7 +141,7 @@ environ_filter += [

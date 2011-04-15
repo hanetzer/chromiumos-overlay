@@ -1,4 +1,4 @@
-commit c273d6c6666bafe4a199ebd360d8ab64efa0c0f4
+commit d0fb8a3a7c07328ba7e1d2427f10fd0a7b664220
 Author: David James <davidjames@google.com>
 Date:   Wed Mar 16 10:39:45 2011 -0700
 
@@ -233,10 +233,10 @@ index 91ec759..a3eae01 100644
  				if portage.dep.cpvequal(pkg.cpv, bestmatch)]
  
 diff --git a/pym/_emerge/main.py b/pym/_emerge/main.py
-index cc46e6d..f609f80 100644
+index e89e8bb..e76f67e 100644
 --- a/pym/_emerge/main.py
 +++ b/pym/_emerge/main.py
-@@ -542,6 +542,23 @@ def insert_optional_args(args):
+@@ -544,6 +544,23 @@ def insert_optional_args(args):
  
  	return new_args
  
@@ -260,7 +260,7 @@ index cc46e6d..f609f80 100644
  def parse_opts(tmpcmdline, silent=False):
  	myaction=None
  	myopts = {}
-@@ -678,6 +695,14 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -680,6 +697,14 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices":["changed-use"]
  		},
  
@@ -275,7 +275,7 @@ index cc46e6d..f609f80 100644
  		"--binpkg-respect-use": {
  			"help"    : "discard binary packages if their use flags \
  				don't match the current configuration",
-@@ -699,6 +724,13 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -701,6 +726,13 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices"  : true_y_or_n
  		},
  
@@ -289,7 +289,7 @@ index cc46e6d..f609f80 100644
  		"--package-moves": {
  			"help"     : "perform package moves when necessary",
  			"type"     : "choice",
-@@ -762,6 +794,13 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -764,6 +796,13 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices"  : true_y_or_n
  		},
  
@@ -303,7 +303,7 @@ index cc46e6d..f609f80 100644
  		"--usepkg": {
  			"shortopt" : "-k",
  			"help"     : "use binary packages",
-@@ -850,32 +889,28 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -852,32 +891,28 @@ def parse_opts(tmpcmdline, silent=False):
  			myoptions.depclean_lib_check = True
  
  	if myoptions.exclude:
