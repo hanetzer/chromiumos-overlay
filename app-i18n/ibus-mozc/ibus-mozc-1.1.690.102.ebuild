@@ -17,12 +17,6 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # TODO(mazda): Remove the patch once it is upstreamed.
-  epatch "${FILESDIR}"/fix_config.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
