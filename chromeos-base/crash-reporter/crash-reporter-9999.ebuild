@@ -49,6 +49,8 @@ src_install() {
 	into / || die
 	dosbin "crash_reporter" || die
 	dosbin "crash_sender" || die
+	into /usr || die
+	dobin "list_proxies" || die
 	exeinto /etc/cron.hourly || die
 	doexe "crash_sender.hourly" || die
 	insinto /etc || die
