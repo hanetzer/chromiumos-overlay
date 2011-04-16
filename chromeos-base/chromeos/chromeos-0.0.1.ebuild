@@ -123,6 +123,7 @@ RDEPEND="${RDEPEND}
 	"
 
 #TODO(micahc): Remove board-devices from RDEPEND in lieu of virtual/chromeos-bsp
+#TODO(yusukes): Remove ibus-chewing from RDEPEND.
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
@@ -131,6 +132,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
+	app-i18n/ibus-mozc-chewing
 	app-i18n/ibus-pinyin
 	app-i18n/ibus-xkb-layouts
 	app-laptop/laptop-mode-tools
