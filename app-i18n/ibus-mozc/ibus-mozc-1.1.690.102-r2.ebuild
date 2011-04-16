@@ -17,15 +17,10 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  epatch "${FILESDIR}"/no_zinnia.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
-  export GYP_DEFINES="chromeos=1"
+  export GYP_DEFINES="chromeos=1 use_libzinnia=0"
   export BUILD_COMMAND="emake"
 
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
