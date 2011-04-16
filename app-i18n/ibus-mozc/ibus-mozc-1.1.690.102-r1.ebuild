@@ -17,6 +17,11 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  epatch "${FILESDIR}"/no_zinnia.patch
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
