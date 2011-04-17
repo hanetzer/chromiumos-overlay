@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/dhcpcd/dhcpcd-5.2.1.ebuild,v 1.1 2010/03/02 18:14:07 williamh Exp $
 
 EAPI=2
-CROS_WORKON_COMMIT="6e658ef1bf8a00dbd253723b48d6b21108ef9cce"
+CROS_WORKON_COMMIT="cd306c512b07d0ec1eaef9ff6c98b04ae27e75f0"
 
 inherit cros-workon
 
