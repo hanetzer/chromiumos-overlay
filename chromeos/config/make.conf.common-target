@@ -30,8 +30,7 @@ PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
 
 # Use parallel bzip2 for portage if available
 PORTAGE_BZIP2_COMMAND="pbzip2"
-# pbunzip2 not used yet
-PORTAGE_BUNZIP2_COMMAND="bunzip2"
+PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 
 FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 RESUMECOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"

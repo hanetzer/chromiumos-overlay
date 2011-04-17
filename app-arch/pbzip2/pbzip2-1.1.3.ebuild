@@ -18,8 +18,9 @@ RDEPEND="${DEPEND}"
 
 src_unpack() {
 	unpack ${A}
-	sed -e 's:^CFLAGS = .*$:#&:g' -e 's:g++:$(CXX):g' -i ${P}/Makefile || die
-	epatch "${FILESDIR}"/pbzip-trailing-garbage.patch
+	cd ${S}
+	epatch "${FILESDIR}"/pbzip2-hang.patch || die
+	sed -e 's:^CFLAGS = .*$:#&:g' -e 's:g++:$(CXX):g' -i Makefile || die
 }
 
 src_compile() {
