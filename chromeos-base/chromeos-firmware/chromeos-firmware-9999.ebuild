@@ -34,7 +34,7 @@ CROS_FIRMWARE_BIOS_VERSION=""
 CROS_FIRMWARE_EC_ARCHIVE=""
 
 # EC (embedded controller) firmware image version identifier.
-EC_VERSION=""
+CROS_FIRMWARE_EC_VERSION=""
 
 # If you need any additional resources in firmware update (ex,
 # a customization script like "install_firmware_custom.sh"),

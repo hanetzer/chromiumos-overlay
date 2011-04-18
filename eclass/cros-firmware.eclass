@@ -125,7 +125,7 @@ cros-firmware_src_compile() {
 	else
 		# create a new script
 		einfo "Building ${BOARD} firmware updater: $image_cmd $ext_cmd"
-			"${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
+		"${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
 			--bios_version "${CROS_FIRMWARE_BIOS_VERSION}" \
 			--ec_version "${CROS_FIRMWARE_EC_VERSION}" \
 			-o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
