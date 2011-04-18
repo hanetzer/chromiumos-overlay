@@ -17,7 +17,8 @@ IUSE=""
 DEPEND=""
 # vpd for vpd-log.conf of upstart
 # vboot_reference for crossystem
-RDEPEND="chromeos-base/vboot_reference
+RDEPEND="chromeos-base/audioconfig-board
+	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	sys-apps/upstart"
 
