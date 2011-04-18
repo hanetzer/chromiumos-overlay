@@ -122,6 +122,13 @@ RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
 	"
 
+# Specifically include the editor we want to appear in chromeos images, so that
+# it is deterministic which editor is chosen by 'virtual/editor' dependencies
+# (such as in the 'sudo' package).  See crosbug.com/5777.
+RDEPEND="${RDEPEND}
+	app-editors/vim
+	"
+
 #TODO(micahc): Remove board-devices from RDEPEND in lieu of virtual/chromeos-bsp
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
