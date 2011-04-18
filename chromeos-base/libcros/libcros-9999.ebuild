@@ -23,9 +23,7 @@ RDEPEND="app-i18n/ibus
 	sys-auth/consolekit
 	sys-fs/udev"
 
-#TODO(yusukes): Remove ibus-chewing.
 DEPEND="${RDEPEND}
-	app-i18n/ibus-chewing
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
