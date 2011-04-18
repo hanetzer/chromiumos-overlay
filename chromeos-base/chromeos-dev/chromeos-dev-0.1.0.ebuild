@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="X opengl hardened"
+IUSE="X opengl hardened -touchui"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -73,6 +73,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xev
 	x11-apps/xhost
 	x11-apps/xinput
+	touchui? ( x11-apps/xinput_calibrator )
 	x11-apps/xlsatoms
 	x11-apps/xlsclients
 	x11-apps/xmodmap
