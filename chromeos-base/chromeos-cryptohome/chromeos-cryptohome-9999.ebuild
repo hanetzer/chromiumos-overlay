@@ -18,6 +18,7 @@ RDEPEND="
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
+	dev-libs/opencryptoki
 	dev-libs/openssl
 	dev-libs/protobuf
 	sys-apps/keyutils
