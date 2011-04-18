@@ -18,6 +18,12 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 #RESTRICT="mirror"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # Remove the epatch line when mozc is upgraded.
+  epatch "${FILESDIR}"/mode_switch.patch
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
