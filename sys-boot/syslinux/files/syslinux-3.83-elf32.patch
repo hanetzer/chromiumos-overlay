@@ -1,0 +1,24 @@
+diff -urN syslinux-3.83.original/memdisk/Makefile syslinux-3.83/memdisk/Makefile
+--- syslinux-3.83.original/memdisk/Makefile	2009-10-05 15:06:06.000000000 -0700
++++ syslinux-3.83/memdisk/Makefile	2011-04-07 14:50:14.000000000 -0700
+@@ -72,7 +72,7 @@
+ 	$(NASM) -f bin $(NASMOPT) $(NFLAGS) $(NINCLUDE) -o $@ -l $*.lst $<
+ 
+ memdisk_%.o: memdisk_%.bin
+-	$(LD) -r -b binary -o $@ $<
++	$(LD) -melf_i386 -r -b binary -o $@ $<
+ 
+ memdisk16.elf: $(OBJS16)
+ 	$(LD) -Ttext 0 -o $@ $^
+diff -urN syslinux-3.83.original/sample/Makefile syslinux-3.83/sample/Makefile
+--- syslinux-3.83.original/sample/Makefile	2009-10-05 15:06:06.000000000 -0700
++++ syslinux-3.83/sample/Makefile	2011-04-07 14:58:09.000000000 -0700
+@@ -36,7 +36,7 @@
+ 
+ .PRECIOUS: %.elf
+ %.elf: c32entry.o %.o $(LIB)
+-	$(LD) -Ttext 0x101000 -e _start -o $@ $^
++	$(LD) -melf_i386 -Ttext 0x101000 -e _start -o $@ $^
+ 
+ %.c32: %.elf
+ 	$(OBJCOPY) -O binary $< $@
