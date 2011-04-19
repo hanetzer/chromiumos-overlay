@@ -129,7 +129,8 @@ cros-firmware_src_compile() {
 			--bios_version "${CROS_FIRMWARE_BIOS_VERSION}" \
 			--ec_version "${CROS_FIRMWARE_EC_VERSION}" \
 			-o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
-			--tool_base="$ROOT/usr/sbin" || die "cannot pack firmware"
+			--tool_base="$ROOT/usr/sbin:$ROOT/usr/bin" ||
+		die "cannot pack firmware"
 	fi
 	chmod +x ${UPDATE_SCRIPT}
 }
