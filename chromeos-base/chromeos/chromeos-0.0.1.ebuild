@@ -162,7 +162,6 @@ RDEPEND="${RDEPEND}
 	virtual/kernel
 	chromeos-base/libcros
 	chromeos-base/metrics
-	chromeos-base/monitor_reconfig
 	chromeos-base/power_manager
 	chromeos-base/speech_synthesis
 	chromeos-base/update_engine
