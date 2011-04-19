@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="1539233e7b9e2ddfd2b2d7e89e5ef5ed9159788d"
+CROS_WORKON_COMMIT="98eacc9cb64a97f5a5f66f86fb9363d51e35616e"
 
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -72,7 +72,7 @@ src_test() {
 		done
 		kill %1 && wait
 		trap - exit
-		for ut in idle_dimmer plug_dimmer; do
+		for ut in idle_dimmer plug_dimmer resolution_selector; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
 		done
