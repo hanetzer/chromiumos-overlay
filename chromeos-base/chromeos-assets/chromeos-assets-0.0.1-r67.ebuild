@@ -117,9 +117,11 @@ src_install() {
 	insinto /usr/share/fonts/chrome-droid
 	doins "${S}"/fonts/ChromeDroid*.ttf
 
-	insinto /usr/share/color/icc
+	insinto /usr/share/color/bin
 	if use mario; then
-		newins "${S}"/color_profiles/mario.icm internal_display.icm
+		newins "${S}"/color_profiles/mario.bin internal_display.bin
+	elif use alex; then
+		newins "${S}"/color_profiles/alex.bin internal_display.bin
 	fi
 
 	# Don't install cursors when building for Tegra, since the
