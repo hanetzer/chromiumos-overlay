@@ -35,6 +35,7 @@ PATCHES=(
 	"${FILESDIR}/${PV}-copy-fb.patch"
 	"${FILESDIR}/${PV}-no-pageflip.patch"
 	"${FILESDIR}/${PV}-dri-drawable.patch"
+	"${FILESDIR}/${PV}-no-gamma.patch"
 )
 
 pkg_setup() {
