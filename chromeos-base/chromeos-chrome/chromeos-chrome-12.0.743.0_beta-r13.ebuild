@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="79277"
+CROS_SVN_COMMIT="82360"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -142,7 +142,8 @@ RDEPEND="${RDEPEND}
 	sys-libs/zlib
 	x86? ( !chrome_internal? ( www-plugins/adobe-flash ) )
 	>=x11-libs/gtk+-2.14.7
-	x11-libs/libXScrnSaver"
+	x11-libs/libXScrnSaver
+	x11-apps/setxkbmap"
 
 DEPEND="${DEPEND}
 	${RDEPEND}
@@ -152,7 +153,7 @@ DEPEND="${DEPEND}
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
-AUTOTEST_DEPS_LIST="chrome_test"
+AUTOTEST_DEPS_LIST="chrome_test pyauto_dep"
 
 IUSE_TESTS="
 	+tests_desktopui_BrowserTest
@@ -408,6 +409,7 @@ src_unpack() {
 		set_build_defines
 		;;
 	(LOCAL_SOURCE)
+		addwrite "${CHROME_ROOT}"
 		set_build_defines
 		;;
 	esac
@@ -425,15 +427,6 @@ src_prepare() {
 
 	elog "${CHROME_ROOT} should be set here properly"
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
-
-	# If there's already a build directory in the old location, rename it to the
-	# new location.
-	# TODO(derat): Remove this in January 2011.
-	OLD_BUILD_OUT="${BOARD}_out"
-	if [[ -d "${OLD_BUILD_OUT}" && ! -e "${BUILD_OUT}" ]]; then
-		elog "Renaming output directory ${OLD_BUILD_OUT} to ${BUILD_OUT}"
-		mv "${OLD_BUILD_OUT}" "${BUILD_OUT}"
-	fi
 
 	# We do symlink creation here if appropriate
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
@@ -455,6 +448,22 @@ src_prepare() {
 
 	${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 }
+
+src_configure() {
+	tc-export CXX CC AR AS RANLIB LD
+	if use gold ; then
+		if [ "${GOLD_SET}" != "yes" ]; then
+			export GOLD_SET="yes"
+			einfo "Using gold from the following location: $(which ${LD}.gold)"
+			export CC="${CC} -fuse-ld=gold"
+			export CXX="${CXX} -fuse-ld=gold"
+			export LD="${LD}.gold"
+		fi
+	else
+		ewarn "gold disabled. Using GNU ld."
+	fi
+}
+
 # Extract the version number from lines like:
 # kCrosAPIMinVersion = 29,
 # kCrosAPIVersion = 30
@@ -516,16 +525,6 @@ src_compile() {
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
-	tc-export CXX CC AR AS RANLIB LD
-	if use x86 && use gold ; then
-		einfo "Using gold from the following location: $(which ${LD}.gold)"
-		export CC="${CC} -fuse-ld=gold"
-		export CXX="${CXX} -fuse-ld=gold"
-		export LD="${LD}.gold"
-	else
-		ewarn "gold disabled. Using GNU ld."
-	fi
-
 	if ! use chrome_debug; then
 		# Override debug options for Chrome build.
 		CXXFLAGS="$(strip_chrome_debug "${CXXFLAGS}")"
@@ -540,10 +539,19 @@ src_compile() {
 
 	if use build_tests; then
 		install_chrome_test_resources "${WORKDIR}/test_src"
+		install_pyauto_dep_resources "${WORKDIR}/pyauto_src"
+
 		# NOTE: Since chrome is built inside distfiles, we have to get
 		# rid of the previous instance first.
-		rm -rf "${WORKDIR}/${P}/${AUTOTEST_DEPS}/chrome_test/test_src"
-		mv "${WORKDIR}/test_src" "${WORKDIR}/${P}/${AUTOTEST_DEPS}/chrome_test/"
+		# We remove only what we will overwrite with the mv below.
+		local deps="${WORKDIR}/${P}/${AUTOTEST_DEPS}"
+		local pyauto="${deps}/pyauto_dep"
+		rm -rf "${pyauto}"/bin "${pyauto}"/pyautolib \
+			"${pyauto}"/third_party
+		mv "${WORKDIR}"/pyauto_src/* "${pyauto}"
+
+		rm -rf "${deps}/chrome_test/test_src"
+		mv "${WORKDIR}/test_src" "${deps}/chrome_test/"
 
 		# HACK: It would make more sense to call autotest_src_prepare in
 		# src_prepare, but we need to call install_chrome_test_resources first.
@@ -576,8 +584,6 @@ install_chrome_test_resources() {
 	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/functional \
 		"${TEST_DIR}"/chrome/test/
 	mkdir -p "${TEST_DIR}"/third_party
-	fast_cp -a "${CHROME_ROOT}"/src/third_party/simplejson \
-		"${TEST_DIR}"/third_party/
 	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
 
 	fast_cp -a "${FROM}"/pyproto "${TEST_DIR}"/out/Release
@@ -607,15 +613,11 @@ install_chrome_test_resources() {
 	fast_cp -a "${CHROME_ROOT}"/src/net/tools/testserver \
 		"${TEST_DIR}"/net/tools
 
-	mkdir -p "${TEST_DIR}"/third_party
-	fast_cp -a "${CHROME_ROOT}"/src/third_party/tlslite \
-		"${TEST_DIR}"/third_party
-	fast_cp -a "${CHROME_ROOT}"/src/third_party/pyftpdlib \
-		"${TEST_DIR}"/third_party
-
-	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
-	fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
-		"${TEST_DIR}"/third_party/WebKit/WebKitTools
+	# Copy the third_party things we need, as well as WebKitTools
+	install_third_party_resources "${TEST_DIR}"
+        mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
+        fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
+                "${TEST_DIR}"/third_party/WebKit/WebKitTools
 
 	for f in ${TEST_FILES}; do
 		fast_cp -a "${FROM}/${f}" "${TEST_DIR}"
@@ -637,6 +639,46 @@ install_chrome_test_resources() {
 		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
 			"${TEST_DIR}"/pdf/test/
 	fi
+}
+
+# Set up the PyAuto files also by copying out the files needed for that.
+# We create a separate dependency because the chrome_test one is about 350MB
+# and PyAuto is a svelte 30MB.
+install_pyauto_dep_resources() {
+	# NOTE: This is a duplicate from src_install, because it's required here.
+	FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
+
+	TEST_DIR="${1}"
+
+	echo "Copying PyAuto framework into ${TEST_DIR}"
+
+	mkdir -p ${TEST_DIR}/bin
+
+	# When the splitdebug USE flag is used, debug info is generated for all
+	# executables. We don't want debug info for tests, so we pre-strip
+	# these executables.
+	for f in lib.target/_pyautolib.so; do
+		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/bin
+		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/bin/$(basename ${f})
+	done
+
+	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/bin
+	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
+		"${TEST_DIR}"/bin
+
+	install_third_party_resources "${TEST_DIR}"
+}
+
+# Copy over things needed from the third_party directory. This function is
+# used by both chrome_test and pyauto_dep dependencies.
+install_third_party_resources(){
+	DEST="${1}/third_party"
+	SRC=""${CHROME_ROOT}"/src/third_party"
+
+        mkdir -p "${DEST}"
+        fast_cp -a ${SRC}/tlslite ${DEST}
+        fast_cp -a ${SRC}/pyftpdlib ${DEST}
+        fast_cp -a ${SRC}/simplejson ${DEST}
 }
 
 src_install() {
