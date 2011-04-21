@@ -25,7 +25,7 @@ KEYWORDS="x86 arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -touchui -local_gclient"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -200,6 +200,9 @@ set_build_defines() {
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
+	elif use chrome_media; then
+    echo "Building Chromium with additional media codecs and containers."
+		BUILD_DEFINES="ffmpeg_branding=Chrome proprietary_codecs=1 $BUILD_DEFINES"
 	fi
 
 	if use touchui; then
