@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="mario tegra2-ldk"
+IUSE="alex mario tegra2-ldk"
 
 DEPEND="x11-apps/xcursorgen"
 RDEPEND=""
