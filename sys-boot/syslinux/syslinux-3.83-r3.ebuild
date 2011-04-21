@@ -37,6 +37,8 @@ src_unpack() {
 
 	# Don't compile w/ PIC
 	epatch "${FILESDIR}/"${P}-nopic.patch
+	# Compile nasm to output 32-bit format
+	epatch "${FILESDIR}/"${P}-elf32.patch
 
 	rm -f gethostip #bug 137081
 }
