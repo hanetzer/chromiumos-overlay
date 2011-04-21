@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE=""
 
-DEPEND="media-libs/libpng"
+DEPEND="media-libs/libpng
+	x11-libs/libdrm"
 RDEPEND="${DEPEND}"
 
 src_compile() {
