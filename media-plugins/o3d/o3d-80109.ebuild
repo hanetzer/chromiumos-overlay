@@ -94,4 +94,11 @@ src_install() {
 		doexe opt/google/o3d/lib/libCgGL.so
 		doexe opt/google/o3d/lib/libCg.so
 	fi
+
+	# Only O2D currently works on ARM, so we include an envvars file
+	# that forces O2D mode.
+	if use arm; then
+		insinto $destdir
+		newins ${FILESDIR}/envvars.arm envvars
+	fi
 }
