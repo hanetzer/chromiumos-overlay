@@ -52,5 +52,4 @@ export CHROME_VERSION="$CHROME_VERSION"
 
 # Print (and remember) version info.
 echo "ChromeOS version information:"
-logvers="/tmp/version_${CHROMEOS_VERSION_STRING}"
-env | egrep '^CHROMEOS_VERSION|CHROME_' | tee $logvers | sed 's/^/    /'
+env | egrep '^CHROMEOS_VERSION|CHROME_' | sed 's/^/    /'
