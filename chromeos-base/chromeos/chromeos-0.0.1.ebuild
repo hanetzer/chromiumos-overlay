@@ -113,12 +113,6 @@ RDEPEND="${RDEPEND}
 	"
 
 RDEPEND="${RDEPEND}
-	arm? (
-		sys-boot/chromeos-bios
-	)
-	"
-
-RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
 	"
 
