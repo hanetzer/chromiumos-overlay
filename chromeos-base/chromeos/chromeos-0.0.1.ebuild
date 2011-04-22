@@ -114,7 +114,7 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	arm? (
-		virtual/u-boot
+		sys-boot/chromeos-bios
 	)
 	"
 
