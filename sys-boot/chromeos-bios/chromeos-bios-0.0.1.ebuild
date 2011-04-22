@@ -10,7 +10,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="arm"
-IUSE=""
+IUSE="-developer_firmware"
 
 RDEPEND=""
 DEPEND="virtual/tegra-bct
@@ -24,6 +24,7 @@ autoconf="${ROOT%/}/u-boot/autoconf.mk"
 stub_image="${ROOT%/}/u-boot/u-boot-stub.bin"
 recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
 normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
+developer_image="${ROOT%/}/u-boot/u-boot-developer.bin"
 bct_file="${ROOT%/}/u-boot/bct/board.bct"
 
 get_autoconf() {
@@ -86,13 +87,18 @@ src_compile() {
 		gbb.bin ||
 		die "Failed to write keys and HWID to the GBB."
 
+	bootstub="${stub_image}"
+	if use developer_firmware; then
+		bootstub="${developer_image}"
+	fi
+
 	#
 	# Sign the bootstub.  This is a combination of the board specific
 	# BCT and the stub U-Boot image.
 	#
 	cros_sign_bootstub \
 		--bct "${bct_file}" \
-		--bootstub "${stub_image}" \
+		--bootstub "${bootstub}" \
 		--output bootstub.bin \
 		--text_base "0x$(get_text_base)" ||
 		die "Failed to sign boot stub image."
