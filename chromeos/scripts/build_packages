@@ -156,9 +156,6 @@ case "${TC_ARCH}" in
   *86)
     ARCH="x86"
     ;;
-  x86_64)
-    ARCH="amd64"
-    ;;
   *)
     error "Unable to determine ARCH from toolchain: ${FLAGS_board}"
     exit 1
@@ -184,83 +181,68 @@ if [ -f "${BINHOST_CONF}" ] && ! grep -q ${BINHOST_CONF} ${BOARD_CONF}; then
   echo "source ${BINHOST_CONF}" | sudo_append ${BOARD_CONF}
 fi
 
-if [ "${FLAGS_board}" != "amd64-host" ] ; then
+if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
+  # Always build cros-workon packages
+  CROS_WORKON_PKGS=$(cros_workon --board="${FLAGS_board}" list)
+fi
 
-  if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
-    # Always build cros-workon packages
-    CROS_WORKON_PKGS=$(cros_workon --board="${FLAGS_board}" list)
-  fi
+# TODO(anush): Make chrome a fake cros-workon package.
+if [[ -n "${CHROME_ORIGIN}" ]]; then
+  CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+fi
 
-  # TODO(anush): Make chrome a fake cros-workon package.
-  if [[ -n "${CHROME_ORIGIN}" ]]; then
-    CROS_WORKON_PKGS="${CROS_WORKON_PKGS} chromeos-base/chromeos-chrome"
+PACKAGES="chromeos-base/chromeos"
+if [[ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]]; then
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-dev"
+fi
+if [[ "${FLAGS_withfactory}" -eq "${FLAGS_TRUE}" ]]; then
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-factoryinstall"
+  PACKAGES="${PACKAGES} chromeos-base/factorytest-init"
+fi
+if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
+fi
+if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
+  PACKAGES="${PACKAGES} chromeos-base/autotest-all"
+fi
+if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
+  # These flags are specific to parallel_emerge
+  for pkg in ${CROS_WORKON_PKGS}; do
+    EMERGE_FLAGS="${EMERGE_FLAGS} --workon=${pkg}"
+  done
+  if [[ "${FLAGS_norebuild}" -eq "${FLAGS_FALSE}" ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --rebuild"
   fi
-
-  PACKAGES="chromeos-base/chromeos"
-  if [[ "${FLAGS_withdev}" -eq "${FLAGS_TRUE}" ]]; then
-    PACKAGES="${PACKAGES} chromeos-base/chromeos-dev"
+  if [[ "${FLAGS_showoutput}" -eq "${FLAGS_TRUE}" ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --show-output"
   fi
-  if [[ "${FLAGS_withfactory}" -eq "${FLAGS_TRUE}" ]]; then
-    PACKAGES="${PACKAGES} chromeos-base/chromeos-factoryinstall"
-    PACKAGES="${PACKAGES} chromeos-base/factorytest-init"
+  if [[ "${FLAGS_oldchromebinary}" -eq "${FLAGS_TRUE}" ]]; then
+    EMERGE_FLAGS="${EMERGE_FLAGS} --force-remote-binary=chromeos-chrome"
+    EMERGE_FLAGS="${EMERGE_FLAGS} --force-remote-binary=libcros"
   fi
-  if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
-    PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
-  fi
-  if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
-    PACKAGES="${PACKAGES} chromeos-base/autotest-all"
-  fi
-  if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
-    # These flags are specific to parallel_emerge
-    for pkg in ${CROS_WORKON_PKGS}; do
-      EMERGE_FLAGS="${EMERGE_FLAGS} --workon=${pkg}"
-    done
-    if [[ "${FLAGS_norebuild}" -eq "${FLAGS_FALSE}" ]]; then
-      EMERGE_FLAGS="${EMERGE_FLAGS} --rebuild"
-    fi
-    if [[ "${FLAGS_showoutput}" -eq "${FLAGS_TRUE}" ]]; then
-      EMERGE_FLAGS="${EMERGE_FLAGS} --show-output"
-    fi
-    if [[ "${FLAGS_oldchromebinary}" -eq "${FLAGS_TRUE}" ]]; then
-      EMERGE_FLAGS="${EMERGE_FLAGS} --force-remote-binary=chromeos-chrome"
-      EMERGE_FLAGS="${EMERGE_FLAGS} --force-remote-binary=libcros"
-    fi
-    eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-  else
-    echo "Building ${PACKAGES} ${CROS_WORKON_PKGS}"
-    if [[ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]]; then
-      # Merge all packages, including binary versions of packages.
-      eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-      if [[ -n "${CROS_WORKON_PKGS}" ]]; then
-        # Re-merge cros-workon packages, this time from source. This is
-        # inefficient, but regular emerge doesn't support any way of specifying
-        # that you want specific packages to be merged from source only.
-        eretry ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
-      fi
-    else
-      # Re-merge cros_workon packages, updating dependencies if necessary.
-      #   --selective=n: Always re-merge cros_workon packages.
-      #   -1: Don't add cros_workon packages to world file.
-      if [[ -n "${CROS_WORKON_PKGS}" ]]; then
-        eretry ${EMERGE_BOARD_CMD} -uDNv1 --selective=n ${CROS_WORKON_PKGS}
-      fi
-
-      # Update the remainder of the packages.
-      eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
-    fi
-  fi
+  eretry sudo -E ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
 else
-  BOOT_STRAP_FLAGS=" --oneshot --nodeps"
+  echo "Building ${PACKAGES} ${CROS_WORKON_PKGS}"
+  if [[ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]]; then
+    # Merge all packages, including binary versions of packages.
+    eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
+    if [[ -n "${CROS_WORKON_PKGS}" ]]; then
+      # Re-merge cros-workon packages, this time from source. This is
+      # inefficient, but regular emerge doesn't support any way of specifying
+      # that you want specific packages to be merged from source only.
+      eretry ${EMERGE_BOARD_CMD} --oneshot ${CROS_WORKON_PKGS}
+    fi
+  else
+    # Re-merge cros_workon packages, updating dependencies if necessary.
+    #   --selective=n: Always re-merge cros_workon packages.
+    #   -1: Don't add cros_workon packages to world file.
+    if [[ -n "${CROS_WORKON_PKGS}" ]]; then
+      eretry ${EMERGE_BOARD_CMD} -uDNv1 --selective=n ${CROS_WORKON_PKGS}
+    fi
 
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${BOOT_STRAP_FLAGS} glibc
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${BOOT_STRAP_FLAGS} gcc
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${BOOT_STRAP_FLAGS} file
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${BOOT_STRAP_FLAGS} automake
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${BOOT_STRAP_FLAGS} autoconf
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${BOOT_STRAP_FLAGS} help2man
-
-  PACKAGES="system hard-host-depends world"
-  eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
+    # Update the remainder of the packages.
+    eretry ${EMERGE_BOARD_CMD} -uDNv ${EMERGE_FLAGS} ${PACKAGES}
+  fi
 fi
 
 

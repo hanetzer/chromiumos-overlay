@@ -127,8 +127,7 @@ function init_users () {
    echo "$SCRIPT_NAME: Set timezone..."
    # date +%Z has trouble with daylight time, so use host's info
    if [ -f /etc/localtime ] ; then
-      in_chroot rm -f /etc/localtime
-      sudo cp -f /etc/localtime "${FLAGS_chroot}/etc"
+      sudo cp /etc/localtime "${FLAGS_chroot}/etc"
    else
    in_chroot [ -f /usr/share/zoneinfo/$TZ ] || TZ=PST8PDT
      in_chroot rm -f /etc/localtime
@@ -305,7 +304,6 @@ sudo mount --bind /dev "${FLAGS_chroot}/dev"
 sudo mount --bind "${GCLIENT_ROOT}" "${FLAGS_chroot}/${CHROOT_TRUNK}"
 sudo mount none -t proc "$FLAGS_chroot/proc"
 sudo mount none -t devpts "$FLAGS_chroot/dev/pts"
-bash_chroot "rm -f  /etc/make.conf.host_setup"
 bash_chroot 'cat > /etc/make.conf.host_setup' <<EOF
 # Created by make_chroot
 MAKEOPTS="-j${NUM_JOBS}"
@@ -341,8 +339,8 @@ echo "$SCRIPT_NAME: Deselecting dhcpcd"
 bash_chroot $EMERGE_CMD --deselect dhcpcd
 
 echo "$SCRIPT_NAME: Running emerge world ccache crossdev etc ..."
-bash_chroot $EMERGE_CMD -uDNv $USEPKG system ccache crossdev net-misc/curl \
-    sudo $EMERGE_JOBS
+bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
+    ccache crossdev net-misc/curl sudo $EMERGE_JOBS
 
 # Curl is now installed, so we can depend on it now.
 bash_chroot 'cat >> /etc/make.conf.host_setup' <<'EOF'
