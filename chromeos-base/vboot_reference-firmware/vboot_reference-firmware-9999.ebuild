@@ -32,7 +32,16 @@ src_compile() {
 		DEBUG=1
 	fi
 
-	emake FIRMWARE_ARCH="arm" FIRMWARE_CONFIG_PATH="${cflags_path}" \
+	# Disable TPM entirely on boards that TPM chip bricks
+	local BOARD="${BOARD:-${SYSROOT##/build/}}"
+	local MOCK_TPM=""
+	if [ ${BOARD} = "tegra2_seaboard" ] ; then
+		MOCK_TPM=1
+	fi
+
+	emake	FIRMWARE_ARCH="arm" \
+		FIRMWARE_CONFIG_PATH="${cflags_path}" \
+		MOCK_TPM="${MOCK_TPM}" \
 		DEBUG="${DEBUG}" || die "${err_msg}"
 }
 
