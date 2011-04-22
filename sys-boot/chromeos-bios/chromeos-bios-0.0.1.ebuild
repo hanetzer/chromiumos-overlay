@@ -10,9 +10,9 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="arm"
-IUSE="-developer_firmware"
+IUSE="-developer_firmware -recovery_firmware"
 
-RDEPEND=""
+RDEPEND="sys-apps/flashrom"
 DEPEND="virtual/tegra-bct
 	virtual/u-boot
 	chromeos-base/vboot_reference
@@ -88,8 +88,11 @@ src_compile() {
 		die "Failed to write keys and HWID to the GBB."
 
 	bootstub="${stub_image}"
+
 	if use developer_firmware; then
 		bootstub="${developer_image}"
+	elif use recovery_firmware; then
+		bootstub="${recovery_image}"
 	fi
 
 	#
@@ -119,4 +122,7 @@ src_install() {
 	doins layout.py || die
 	doins image.bin || die
 	doins bootstub.bin || die
+
+	exeinto /u-boot
+	doexe ${FILESDIR}/clobber_firmware || die
 }
