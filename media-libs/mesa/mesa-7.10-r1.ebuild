@@ -53,7 +53,7 @@ LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.21"
 RDEPEND="
 	!<x11-base/xorg-server-1.7
 	!<=x11-proto/xf86driproto-2.0.3
-	>=app-admin/eselect-mesa-0.0.3
+	>=app-admin/eselect-mesa-0.0.8
 	>=app-admin/eselect-opengl-1.1.1-r2
 	dev-libs/expat
 	sys-libs/talloc
@@ -129,6 +129,8 @@ src_prepare() {
 
 	[[ $PV = 9999* ]] && git_src_prepare
 	base_src_prepare
+
+        epatch "${FILESDIR}"/${PV}-glxmakecurrent.patch
 
 	eautoreconf
 }
