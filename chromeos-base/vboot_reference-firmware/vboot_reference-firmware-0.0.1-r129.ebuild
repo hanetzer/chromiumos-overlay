@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE="debug"
 EAPI="2"
-CROS_WORKON_COMMIT="d5de032ad661c42caca915db810604f9ff3648b7"
+CROS_WORKON_COMMIT="8511f7891b5eca7ae93a147964201a4b57210ff6"
 
 DEPEND="
     sys-boot/chromeos-u-boot-next-build-env
@@ -33,7 +33,16 @@ src_compile() {
 		DEBUG=1
 	fi
 
-	emake FIRMWARE_ARCH="arm" FIRMWARE_CONFIG_PATH="${cflags_path}" \
+	# Disable TPM entirely on boards that TPM chip bricks
+	local BOARD="${BOARD:-${SYSROOT##/build/}}"
+	local MOCK_TPM=""
+	if [ ${BOARD} = "tegra2_seaboard" ] ; then
+		MOCK_TPM=1
+	fi
+
+	emake	FIRMWARE_ARCH="arm" \
+		FIRMWARE_CONFIG_PATH="${cflags_path}" \
+		MOCK_TPM="${MOCK_TPM}" \
 		DEBUG="${DEBUG}" || die "${err_msg}"
 }
 
