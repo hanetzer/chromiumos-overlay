@@ -20,8 +20,9 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 
 src_prepare() {
   cd "mozc-${PV}" || die
-  # Remove the epatch line when mozc is upgraded.
+  # Remove the epatch lines when mozc is upgraded.
   epatch "${FILESDIR}"/mode_switch.patch
+  epatch "${FILESDIR}"/fix_14335.patch
 }
 
 src_configure() {
