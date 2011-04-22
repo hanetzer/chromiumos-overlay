@@ -179,7 +179,6 @@ pkg_setup() {
 		--sysconfdir=/etc/X11
 		--localstatedir=/var
 		--enable-install-setuid
-		--with-fontrootdir=/usr/share/fonts
 		--with-xkb-output=/var/lib/xkb
 		--disable-config-hal
 		--without-dtrace
@@ -203,6 +202,7 @@ pkg_setup() {
 		--disable-xvfb
 		--disable-xnest
 		--enable-null-root-cursor
+		--with-default-font-path=built-ins
 		${conf_opts}"
 
 	# Things we may want to remove later:
