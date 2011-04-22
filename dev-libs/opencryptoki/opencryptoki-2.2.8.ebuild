@@ -36,6 +36,15 @@ src_prepare() {
 	epatch "${FILESDIR}/opencryptoki-2.2.8-remove_openlog.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.8-remove_recursive_chmod.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.8-tpm_pubexp.patch"
+	# Patch in 482bedef4720415d78b5bad741ae626302357272 which fixes
+	# in opencryptoki, a problem that is arguably in nss, where NSS
+	# passes in a const struct to C_Initialize(void*), and the compiler
+	# has put the const struct into a read-only section.  The
+	# opencryptoki had no reason to poke into the struct, but NSS
+	# had no reason to define it const.
+	# TODO(crosbug.com/14440): Uprev opencryptoki to remove this
+	# patch.
+	epatch "${FILESDIR}/opencryptoki-2.2.8-nssconstfix.patch"
 	eautoreconf
 }
 
