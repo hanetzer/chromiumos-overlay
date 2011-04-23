@@ -81,6 +81,7 @@
 =sys-fs/sshfs-fuse-2.2		x86 arm
 =sys-kernel/linux-headers-2.6.30-r1	x86 arm
 =sys-libs/e2fsprogs-libs-1.41.9	x86 arm
+=x11-libs/libdrm-2.4.24         x86 arm
 =sys-libs/libhx-3.1		x86 arm
 =sys-libs/zlib-1.2.5-r2		x86 arm
 =x11-apps/xinput_calibrator-0.7.5	arm
