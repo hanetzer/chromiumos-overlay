@@ -1,6 +1,9 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+# How to run the test:
+#   (chroot)$ sudo env FEATURES="test" emerge -a ibus
+
 EAPI="2"
 inherit eutils flag-o-matic toolchain-funcs multilib python
 
@@ -13,6 +16,7 @@ LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="doc nls python"
+#RESTRICT="mirror"
 
 RDEPEND="python? ( >=dev-lang/python-2.5 )
 	>=dev-libs/glib-2.26
@@ -49,8 +53,9 @@ src_prepare() {
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
 
-	# TODO(penghuang,yusukes): Fix the issue and remove this patch.
-	epatch "${FILESDIR}"/fix_13629.patch
+	# Fix SIGSEGV in im-ibus.so
+	# TODO(yusukes): Upstream the patch.
+	epatch "${FILESDIR}"/fix_request_surrounding_text.patch
 }
 
 src_configure() {
@@ -98,8 +103,8 @@ src_test() {
 	fi
 
 	# The chroot environment usually does not have /var/lib/dbus/machine-id.
-	# We can safely use "machine-id" in this case.
-	DBUS_MACHINE_ID="machine-id"
+	# We can safely use "dummy-machine-id" in this case.
+	DBUS_MACHINE_ID="dummy-machine-id"
 	if [ -f /var/lib/dbus/machine-id ] ; then
 	   DBUS_MACHINE_ID=`cat /var/lib/dbus/machine-id`
 	fi
