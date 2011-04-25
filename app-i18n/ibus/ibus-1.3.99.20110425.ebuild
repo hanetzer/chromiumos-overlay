@@ -52,10 +52,6 @@ src_prepare() {
 
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
-
-	# Fix SIGSEGV in im-ibus.so
-	# TODO(yusukes): Upstream the patch.
-	epatch "${FILESDIR}"/fix_request_surrounding_text.patch
 }
 
 src_configure() {
@@ -94,8 +90,6 @@ test_fail() {
 	die
 }
 
-# You can run the tests by:
-#   (chroot)$ sudo env FEATURES="test" emerge -a ibus
 src_test() {
 	# Do not execute the test when cross-compiled.
 	if tc-is-cross-compiler ; then
@@ -121,8 +115,9 @@ src_test() {
 
 	# Run tests.
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-bus || test_fail
-	# TODO(yusukes): Patch the test and then enable it.
-	#env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-inputcontext || test_fail
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-inputcontext || test_fail
+	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-inputcontext-create \
+	    || test_fail
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-configservice || test_fail
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-factory || test_fail
 	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-keynames || test_fail
