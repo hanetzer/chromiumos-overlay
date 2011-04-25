@@ -10,7 +10,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="arm"
-IUSE="-developer_firmware -recovery_firmware"
+IUSE=""
 
 RDEPEND="sys-apps/flashrom"
 DEPEND="virtual/tegra-bct
@@ -58,6 +58,32 @@ construct_layout() {
 		die "Failed to cat firmware_layout_config."
 }
 
+create_image() {
+	prefix=$1
+	stub=$2
+
+	#
+	# Sign the bootstub.  This is a combination of the board specific
+	# BCT and the stub U-Boot image.
+	#
+	cros_sign_bootstub \
+		--bct "${bct_file}" \
+		--bootstub "${stub}" \
+		--output "${prefix}bootstub.bin" \
+		--text_base "0x$(get_text_base)" ||
+		die "Failed to sign boot stub image (${prefix}bootstub.bin)."
+
+	pack_firmware_image layout.py \
+		KEYDIR=${keys}/ \
+		BOOTSTUB_IMAGE="${prefix}bootstub.bin" \
+		RECOVERY_IMAGE=${recovery_image} \
+		GBB_IMAGE=gbb.bin \
+		FIRMWARE_A_IMAGE=${normal_image} \
+		FIRMWARE_B_IMAGE=${normal_image} \
+		OUTPUT="${prefix}image.bin" ||
+		die "Failed to pack the firmware image (${prefix}image.bin)."
+}
+
 src_compile() {
 	hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
         gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
@@ -87,41 +113,19 @@ src_compile() {
 		gbb.bin ||
 		die "Failed to write keys and HWID to the GBB."
 
-	bootstub="${stub_image}"
-
-	if use developer_firmware; then
-		bootstub="${developer_image}"
-	elif use recovery_firmware; then
-		bootstub="${recovery_image}"
-	fi
-
-	#
-	# Sign the bootstub.  This is a combination of the board specific
-	# BCT and the stub U-Boot image.
-	#
-	cros_sign_bootstub \
-		--bct "${bct_file}" \
-		--bootstub "${bootstub}" \
-		--output bootstub.bin \
-		--text_base "0x$(get_text_base)" ||
-		die "Failed to sign boot stub image."
-
-	pack_firmware_image layout.py \
-		KEYDIR=${keys}/ \
-		BOOTSTUB_IMAGE=bootstub.bin \
-		RECOVERY_IMAGE=${recovery_image} \
-		GBB_IMAGE=gbb.bin \
-		FIRMWARE_A_IMAGE=${normal_image} \
-		FIRMWARE_B_IMAGE=${normal_image} \
-		OUTPUT=image.bin ||
-		die "Failed to pack the firmware image."
+	create_image "" ${stub_image}
+	create_image "developer_" ${developer_image}
+	create_image "recovery_" ${recovery_image}
 }
 
 src_install() {
 	insinto /u-boot
 	doins layout.py || die
-	doins image.bin || die
-	doins bootstub.bin || die
+
+        for prefix in "" "developer_" "recovery_"; do
+		doins "${prefix}image.bin" || die
+		doins "${prefix}bootstub.bin" || die
+	done
 
 	exeinto /u-boot
 	doexe ${FILESDIR}/clobber_firmware || die
