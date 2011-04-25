@@ -61,9 +61,7 @@ pkg_postinst() {
 
 	mkdir -p "${STATEFUL}/etc"
 
-	# sudo friendly append.
-	cat <<EOF | sudo dd of="${STATEFUL_LSB}" \
-                oflag=append conv=notrunc
+	sudo dd of="${STATEFUL_LSB}" <<EOF
 CHROMEOS_AUSERVER=http://${FACTORY_SERVER}:8080/update
 CHROMEOS_DEVSERVER=http://${FACTORY_SERVER}:8080/update
 FACTORY_INSTALL=1
