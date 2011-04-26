@@ -1,7 +1,7 @@
-From 18f14e8bc891ae92926964faf047983aeb28508e Mon Sep 17 00:00:00 2001
-From: Daniel <djkurtz@google.com>
-Date: Fri, 1 Apr 2011 16:36:32 +0800
-Subject: [PATCH 18/18] Add support for EV_SW
+From 6198725ff5626b47c8689030058e2e339f50ba62 Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@google.com>
+Date: Fri, 01 Apr 2011 08:51:08 +0000
+Subject: Add support for EV_SW
 
 EV_SW is the event type for switches.
 The EV_SW event codes (SW_*) are defined in the linux kernel in linux/input.h.
@@ -10,15 +10,13 @@ However, leave the definition of switches in ifdef blocks according to
 when they were committed to the linux kernel.
 
 Signed-off-by: Daniel Kurtz <djkurtz@google.com>
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 ---
- evtest.c |   26 +++++++++++++++++++++++++-
- 1 files changed, 25 insertions(+), 1 deletions(-)
-
 diff --git a/evtest.c b/evtest.c
-index 0a5b060..6f6d5ef 100644
+index 4b3890b..62a26fa 100644
 --- a/evtest.c
 +++ b/evtest.c
-@@ -52,7 +52,7 @@ char *events[EV_MAX + 1] = {
+@@ -74,7 +74,7 @@ char *events[EV_MAX + 1] = {
  	[EV_MSC] = "Misc",			[EV_LED] = "LED",
  	[EV_SND] = "Sound",			[EV_REP] = "Repeat",
  	[EV_FF] = "ForceFeedback",		[EV_PWR] = "Power",
@@ -27,7 +25,7 @@ index 0a5b060..6f6d5ef 100644
  };
  
  char *keys[KEY_MAX + 1] = {
-@@ -403,12 +403,36 @@ char *syns[3] = {
+@@ -425,12 +425,36 @@ char *syns[3] = {
  #endif
  };
  
@@ -63,7 +61,6 @@ index 0a5b060..6f6d5ef 100644
 +	[EV_SW] = switches,
  };
  
- #define BITS_PER_LONG (sizeof(long) * 8)
--- 
-1.7.3.1
-
+ /**
+--
+cgit v0.8.3-6-g21f6
