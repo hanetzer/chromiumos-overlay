@@ -35,6 +35,13 @@ src_compile() {
 	emake disks || die "failed to make cros-disks"
 }
 
+src_test() {
+	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
+	cros-debug-add-NDEBUG
+	emake tests || die "failed to make cros-disks tests"
+	"${S}/build-opt/disks_testrunner" || die "cros-disks tests failed"
+}
+
 src_install() {
 	exeinto /opt/google/cros-disks
 	doexe "${S}/build-opt/disks" || die
