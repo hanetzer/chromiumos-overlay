@@ -12,7 +12,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64"
-IUSE="-compat_wireless -initramfs -nfs ${IUSE_KCONFIG}"
+IUSE="-compat_wireless -fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 PROVIDE="virtual/kernel"
 
@@ -69,6 +69,11 @@ src_configure() {
 		cp -f "${config}" "${S}"/.config || die
 	else
 		chromeos/scripts/prepareconfig ${config} || die
+	fi
+
+	if use fbconsole; then
+		elog "   - adding framebuffer console config"
+		cat "${FILESDIR}"/fbconsole.config >> "${S}"/.config
 	fi
 
 	if use nfs; then
