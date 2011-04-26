@@ -182,7 +182,6 @@ RDEPEND="${RDEPEND}
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/coreutils
 	sys-apps/dbus
-	sys-apps/devicekit-disks
 	sys-apps/devicekit-power
 	sys-apps/eject
 	sys-apps/flashrom
