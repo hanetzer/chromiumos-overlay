@@ -130,7 +130,7 @@ src_prepare() {
 	[[ $PV = 9999* ]] && git_src_prepare
 	base_src_prepare
 
-        epatch "${FILESDIR}"/${PV}-glxmakecurrent.patch
+        epatch "${FILESDIR}"/7.10-glxmakecurrent.patch
 
 	eautoreconf
 }
