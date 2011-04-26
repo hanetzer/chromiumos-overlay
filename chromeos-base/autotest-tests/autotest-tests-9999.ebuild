@@ -229,6 +229,7 @@ IUSE_TESTS="
 	+tests_platform_StackProtector
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
+	+tests_platform_ToolchainOptions
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BatteryCharge
