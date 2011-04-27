@@ -163,6 +163,7 @@ IUSE_TESTS="
 	+tests_login_RemoteLogin
 	+tests_login_SecondFactor
 	+tests_network_3GActivate
+	+tests_network_3GDisableWhileConnecting
 	+tests_network_3GDormancyDance
 	+tests_network_3GFailedConnect
 	+tests_network_3GLoadFirmware
@@ -171,6 +172,7 @@ IUSE_TESTS="
 	+tests_network_3GSafetyDance
 	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
+	+tests_network_3GSuspendResume
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_DhclientLeaseTestCase
