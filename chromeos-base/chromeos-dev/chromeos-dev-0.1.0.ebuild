@@ -61,6 +61,7 @@ RDEPEND="${RDEPEND}
 	sys-fs/fuse[-kernel_linux]
 	sys-fs/sshfs-fuse
 	sys-power/powertop
+	sys-process/ktop
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
