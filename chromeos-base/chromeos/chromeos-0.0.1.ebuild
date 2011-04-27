@@ -102,7 +102,6 @@ RDEPEND="${RDEPEND}
 	x86? (
 		chromeos-base/chromeos-acpi
 		chromeos-base/chrontel
-		chromeos-base/firmware-utils
 		chromeos-base/saft
 		net-wireless/iwl1000-ucode
 		>=net-wireless/iwl5000-ucode-8.24.2.12
