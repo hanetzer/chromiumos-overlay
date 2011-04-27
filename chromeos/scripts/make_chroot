@@ -127,6 +127,7 @@ function init_users () {
    echo "$SCRIPT_NAME: Set timezone..."
    # date +%Z has trouble with daylight time, so use host's info
    if [ -f /etc/localtime ] ; then
+      in_chroot rm -f /etc/localtime
       sudo cp /etc/localtime "${FLAGS_chroot}/etc"
    else
    in_chroot [ -f /usr/share/zoneinfo/$TZ ] || TZ=PST8PDT
@@ -290,6 +291,8 @@ then
 else
   echo "$SCRIPT_NAME: Unpacking STAGE3..."
   sudo tar xjp -C "$FLAGS_chroot" -f "$STAGE3"
+  sudo rm -f $FLAGS_chroot/etc/make.globals
+  sudo rm -f $FLAGS_chroot/etc/make.conf.user
 fi
 
 # Set up users, if needed, before mkdir/mounts below
@@ -304,6 +307,7 @@ sudo mount --bind /dev "${FLAGS_chroot}/dev"
 sudo mount --bind "${GCLIENT_ROOT}" "${FLAGS_chroot}/${CHROOT_TRUNK}"
 sudo mount none -t proc "$FLAGS_chroot/proc"
 sudo mount none -t devpts "$FLAGS_chroot/dev/pts"
+bash_chroot "rm -f /etc/make.conf.host_setup"
 bash_chroot 'cat > /etc/make.conf.host_setup' <<EOF
 # Created by make_chroot
 MAKEOPTS="-j${NUM_JOBS}"
