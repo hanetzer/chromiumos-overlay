@@ -204,7 +204,6 @@ IUSE_TESTS="
 	+tests_platform_CryptohomeTPMReOwnServer
 	+tests_platform_DMVerityCorruption
 	+tests_platform_DaemonsRespawn
-	+tests_platform_DiskIterate
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
