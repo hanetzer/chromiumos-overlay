@@ -20,6 +20,11 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
 
+src_prepare() {
+    # TODO(yusukes): upstream this patch
+    epatch "${FILESDIR}"/engine_id.patch
+}
+
 src_configure() {
     append-cflags -Wall -Werror
     econf || die

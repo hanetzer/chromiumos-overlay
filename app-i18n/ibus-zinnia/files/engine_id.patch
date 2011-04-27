@@ -1,0 +1,15 @@
+diff -ur yusukes-ibus-zinnia-db43cb3.orig/src/zinnia_component.c yusukes-ibus-zinnia-db43cb3/src/zinnia_component.c
+--- yusukes-ibus-zinnia-db43cb3.orig/src/zinnia_component.c	2011-04-22 04:10:04.000000000 +0900
++++ yusukes-ibus-zinnia-db43cb3/src/zinnia_component.c	2011-04-27 10:11:35.779753000 +0900
+@@ -6,8 +6,8 @@
+ ibus_zinnia_engine_new (void)
+ {
+     IBusEngineDesc *engine = NULL;
+-    engine = ibus_engine_desc_new_varargs ("name", "ibus-zinnia-japanese-debug",
+-                                           "longname", "Japanese hand-writing engine (Debug)",
++    engine = ibus_engine_desc_new_varargs ("name", "ibus-zinnia-japanese",
++                                           "longname", "Japanese hand-writing engine",
+                                            "description", "Japanese hand-writing engine",
+                                            "language", "ja",
+                                            "license", "Apache",
+Only in yusukes-ibus-zinnia-db43cb3/src: zinnia_component.c~
