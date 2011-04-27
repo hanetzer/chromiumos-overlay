@@ -15,6 +15,8 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
+DEPEND="sys-libs/ncurses"
+
 src_compile() {
 	tc-export CC
 	emake || die
