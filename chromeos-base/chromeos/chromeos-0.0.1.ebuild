@@ -113,12 +113,6 @@ RDEPEND="${RDEPEND}
 	"
 
 RDEPEND="${RDEPEND}
-	arm? (
-		virtual/u-boot
-	)
-	"
-
-RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
 	"
 
@@ -155,6 +149,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-login
 	chromeos-base/crash-reporter
 	chromeos-base/cromo
+	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
 	chromeos-base/entd
 	chromeos-base/flimflam
@@ -187,7 +182,6 @@ RDEPEND="${RDEPEND}
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/coreutils
 	sys-apps/dbus
-	sys-apps/devicekit-disks
 	sys-apps/devicekit-power
 	sys-apps/eject
 	sys-apps/flashrom

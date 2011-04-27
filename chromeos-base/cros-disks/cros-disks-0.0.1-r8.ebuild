@@ -3,8 +3,9 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
+CROS_WORKON_COMMIT="0c00de2e1fe561743d792c3db5ff0332d4279db4"
 
-KEYWORDS="~arm ~amd64 ~x86"
+KEYWORDS="arm amd64 x86"
 
 inherit toolchain-funcs cros-debug cros-workon
 

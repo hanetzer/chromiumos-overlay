@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="d64d3abd5511cbf2bd4e2cf9624bd2d72fc08cdc"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -10,7 +11,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm ~amd64"
+KEYWORDS="x86 arm amd64"
 
 IUSE="+autox +xset +tpmtools hardened"
 # Enable autotest by default.

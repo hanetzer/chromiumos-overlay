@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script writes a new U-Boot based firmware image to the SPI flash device
+# on a Tegra based machine.
+
+/usr/sbin/flashrom --ignore-fmap -w /u-boot/recovery_image.bin

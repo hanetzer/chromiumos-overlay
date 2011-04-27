@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="493dd77a4be1dcba57239f93848a8eaedd9328fe"
 
 inherit cros-workon
 
@@ -10,7 +11,7 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~x86 ~arm"
+KEYWORDS="x86 arm"
 IUSE=""
 
 DEPEND="x86? ( sys-boot/syslinux )"

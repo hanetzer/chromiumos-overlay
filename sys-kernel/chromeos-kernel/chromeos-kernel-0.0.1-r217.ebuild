@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
+CROS_WORKON_COMMIT="fbb9d09a170e1b5cb89e687efbcea0fa7b66267b"
 
 inherit toolchain-funcs
 inherit binutils-funcs
@@ -10,7 +11,7 @@ DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm"
+KEYWORDS="x86 arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64"
 IUSE="-compat_wireless -fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"

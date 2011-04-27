@@ -13,10 +13,10 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 OPENGL_DIR="xorg-x11"
 
 DESCRIPTION="X.Org X servers"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc x86 ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xorg"
-IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev"
+IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev opengl"
 # note: we have udev 143 here as that's the real dependency X.Org needs. The upstream ebuild uses 150
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -76,7 +76,7 @@ DEPEND="${RDEPEND}
 	>=x11-proto/trapproto-3.4.3
 	>=x11-proto/videoproto-2.2.2
 	>=x11-proto/xcmiscproto-1.2.0
-	>=x11-proto/xextproto-7.2.0
+	>=x11-proto/xextproto-7.0.99.3
 	>=x11-proto/xf86dgaproto-2.0.99.1
 	>=x11-proto/xf86rushproto-1.1.2
 	>=x11-proto/xf86vidmodeproto-2.2.99.1
@@ -103,6 +103,9 @@ EPATCH_SUFFIX="patch"
 
 # These have been sent upstream
 UPSTREAMED_PATCHES=(
+	# Bug with grabs that don't go away.
+	"${FILESDIR}/1.9.3-fix-grabs.patch"
+
 	# Avoid flickering when unredirecting and redirecting windows.
 	"${FILESDIR}/1.9.3-0001-ChangeGC-changes-the-GC-so-ValidateGC-should-be-call.patch"
 	"${FILESDIR}/1.9.3-0002-ValidateTree-needs-a-valid-borderClip-so-initialize-.patch"
@@ -115,31 +118,27 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-disable-acpi.patch
 	"${FILESDIR}"/${PN}-1.9-nouveau-default.patch
 
-	# Allow usage of monotonic clock while cross-compiling
+	# Allow usage of monotonic clock while cross-compiling.
 	"${FILESDIR}/monotonic-clock-fix.patch"
 	# Make the root window get created without a background so we can get
 	# seamless transitions when X starts.  This looks like it may be upstreamed
 	# soon (as a -nr flag; we just enable it by default so we can use the same
 	# command line for older X servers):
 	# http://www.mail-archive.com/xorg-devel@lists.x.org/msg09360.html
-	"${FILESDIR}/1.10.0-cache-xkbcomp-for-fast-start-up.patch"
-	"${FILESDIR}/1.10.0-xserver-bg-none-root.patch"
+	"${FILESDIR}/1.9.3-cache-xkbcomp-for-fast-start-up.patch"
+	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
 	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
-	"${FILESDIR}/1.10.0-fix-xkb-autorepeat.patch"
+	"${FILESDIR}/1.9.3-fix-xkb-autorepeat.patch"
 	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
 	# Match the behaviour of monitor_reconfigure at X.Org startup time.
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
-	# For Gallium drivers
+	# For Gallium drivers.
 	"${FILESDIR}/1.9.3-public-_glapi_get_proc_address.patch"
-	# For glx double free
+	# For glx double free.
 	"${FILESDIR}/1.9.3-glx-doublefree.patch"
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window.
-	"${FILESDIR}/1.10.0-allow-root-none.patch"
-	# Unbreaks compile with all our modules that are disabled.
-	"${FILESDIR}/1.10.0-sdksyms.patch"
-	# Get the right path for the DRI drivers.
-	"${FILESDIR}/1.10.0-xcompile-dri-driver.patch"
+	"${FILESDIR}/1.9.3-allow-root-none.patch"
 	# Dont load a default X cursor.
 	"${FILESDIR}/1.9.3-no-default-cursor.patch"
 	)

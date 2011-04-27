@@ -1,0 +1,12 @@
+diff -paur mesa-7.10.orig/src/glx/glxcurrent.c mesa-7.10.work/src/glx/glxcurrent.c
+--- mesa-7.10.orig/src/glx/glxcurrent.c	2011-01-07 14:09:03.000000000 -0800
++++ mesa-7.10.work/src/glx/glxcurrent.c	2011-04-21 15:46:17.205382000 -0700
+@@ -198,7 +198,7 @@ __glXGenerateError(Display * dpy, struct
+    error.resourceID = resource;
+    error.sequenceNumber = dpy->request;
+    error.type = X_Error;
+-   error.majorCode = gc->majorOpcode;
++   error.majorCode = gc ? gc->majorOpcode : __glXSetupForCommand(dpy);
+    error.minorCode = minorCode;
+    _XError(dpy, &error);
+ }

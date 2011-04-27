@@ -1,0 +1,112 @@
+==== chewing/session.cc#12 - chewing/session.cc ====
+--- chewing/session.cc#12	2011-04-19 15:35:36.000000000 +0900
++++ chewing/session.cc	2011-04-22 14:08:46.351348000 +0900
+@@ -180,6 +180,7 @@ bool SessionFactory::IsAvailable() const
+ namespace chewing {
+ Session::Session()
+     : context_(::chewing_new()),
++      state_(PRECOMPOSITION),
+       create_session_time_(Util::GetTime()),
+       last_command_time_(0),
+       last_config_updated_(0) {
+@@ -268,12 +269,17 @@ void Session::FillCandidates(commands::C
+   candidates->set_direction(commands::Candidates::HORIZONTAL);
+ }
+ 
+-void Session::FillOutput(commands::Command *command, bool consumed) {
++void Session::FillOutput(commands::Command *command) {
+   DLOG(INFO) << ::chewing_get_KBString(context_);
+   commands::Output *output = command->mutable_output();
+   output->mutable_key()->CopyFrom(command->input().key());
+ 
+-  output->set_consumed(consumed && !::chewing_keystroke_CheckIgnore(context_));
++  if (!output->consumed() && state_ == PRECOMPOSITION) {
++    // Do not fill the result if the key is not consumed and current
++    // status is PRECOMPOSITION (means not during the input).  In such
++    // case it will fill the output of the previous status.
++    return;
++  }
+ 
+   // Fill the result
+   if (::chewing_commit_Check(context_)) {
+@@ -356,6 +362,12 @@ void Session::FillOutput(commands::Comma
+     }
+   }
+ 
++  if (output->preedit().segment_size() == 0) {
++    state_ = PRECOMPOSITION;
++  } else {
++    state_ = IN_CONVERSION;
++  }
++
+   // Fill the candidates
+   // TODO(mukai): Fill the all_candidates too.
+   if (!::chewing_cand_CheckDone(context_)) {
+@@ -496,14 +508,17 @@ bool Session::SendKey(commands::Command 
+     }
+   }
+ 
+-  FillOutput(command, status_updated);
++  command->mutable_output()->set_consumed(
++      status_updated && !::chewing_keystroke_CheckIgnore(context_));
++  FillOutput(command);
+   return true;
+ }
+ 
+ bool Session::TestSendKey(commands::Command *command) {
+   // TODO(mukai): implement this.
+   last_command_time_ = Util::GetTime();
+-  FillOutput(command, true);
++  command->mutable_output()->set_consumed(true);
++  FillOutput(command);
+   return true;
+ }
+ 
+@@ -574,7 +589,8 @@ bool Session::SendCommand(commands::Comm
+       break;
+   }
+ 
+-  FillOutput(command, consumed);
++  command->mutable_output()->set_consumed(consumed);
++  FillOutput(command);
+   return true;
+ }
+ 
+==== chewing/session.h#4 - chewing/session.h ====
+--- chewing/session.h#4	2011-04-19 13:52:58.000000000 +0900
++++ chewing/session.h	2011-04-22 14:22:26.213695000 +0900
+@@ -20,6 +20,11 @@ class Session: public mozc::session::Ses
+   Session();
+   ~Session();
+ 
++  enum State {
++    PRECOMPOSITION = 0,
++    IN_CONVERSION = 1,
++  };
++
+   virtual bool SendKey(commands::Command *command);
+ 
+   // Check if the input key event will be consumed by the session.
+@@ -55,10 +60,10 @@ class Session: public mozc::session::Ses
+   // Fill the candidates with the current context.
+   void FillCandidates(commands::Candidates *candidates);
+ 
+-  // Fill the output with the current context.  Set true for the
+-  // consumed if this FillOutput is expected to set |consumed| field
+-  // in the output.
+-  void FillOutput(commands::Command *command, bool consumed);
++  // Fill the output with the current context.  This does not update
++  // 'consumed' field.  The caller has the responsibility to fill it
++  // before calling this method.
++  void FillOutput(commands::Command *command);
+ 
+   // Set configurations.
+   void ResetConfig();
+@@ -68,6 +73,7 @@ class Session: public mozc::session::Ses
+   void RenewContext();
+ 
+   ChewingContext *context_;
++  State state_;
+   commands::ApplicationInfo application_info_;
+   uint64 create_session_time_;
+   uint64 last_command_time_;

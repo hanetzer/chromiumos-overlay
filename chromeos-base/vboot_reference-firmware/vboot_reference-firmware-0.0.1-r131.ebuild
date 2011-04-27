@@ -6,9 +6,10 @@ inherit cros-workon
 DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~arm"
+KEYWORDS="arm"
 IUSE="debug"
 EAPI="2"
+CROS_WORKON_COMMIT="c1d8dc8aa7f2e666324e476b10c7e5cfe9c58c04"
 
 DEPEND="
     sys-boot/chromeos-u-boot-next-build-env

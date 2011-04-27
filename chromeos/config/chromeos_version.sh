@@ -18,14 +18,14 @@
 # Major/minor versions.
 # Primarily for product marketing.
 export CHROMEOS_VERSION_MAJOR=0
-export CHROMEOS_VERSION_MINOR=12
+export CHROMEOS_VERSION_MINOR=13
 
 # Branch number.
 # Increment by 1 in a new release branch.
 # Increment by 2 in trunk after making a release branch.
 # Does not reset on a major/minor change (always increases).
 # (Trunk is always odd; branches are always even).
-export CHROMEOS_VERSION_BRANCH=433
+export CHROMEOS_VERSION_BRANCH=455
 
 # Patch number.
 # Increment by 1 each release on a branch.
