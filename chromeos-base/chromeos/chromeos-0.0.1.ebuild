@@ -65,10 +65,14 @@ IUSE="bluetooth +localssh modemmanager X"
 
 
 # Enable ssh locally for chromium-os device.
+# TODO(derat): Remove the "localssh" USE flag.  It's expanded in scope beyond
+# SSH to the point where it should really be called "crosh", but building
+# without it is also unsupported and likely to break a bunch of stuff.
 RDEPEND="${RDEPEND}
 	localssh? (
 		app-admin/sudo
 		app-arch/tar
+		chromeos-base/crosh
 		chromeos-base/workarounds
 		net-misc/openssh
 		x11-terms/rxvt-unicode

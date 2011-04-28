@@ -15,16 +15,12 @@ KEYWORDS="amd64 arm x86"
 IUSE="opengles -touchui"
 
 RDEPEND="chromeos-base/metrics
-	chromeos-base/vboot_reference
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/libpcre
 	dev-libs/protobuf
 	media-libs/libpng
-	net-misc/iputils
-	net-wireless/iw
 	sys-apps/dbus
-	sys-apps/net-tools
 	x11-libs/cairo
 	x11-libs/libX11
 	x11-libs/libXcomposite
@@ -38,6 +34,10 @@ DEPEND="chromeos-base/libchrome
 	chromeos-base/libcros
 	dev-libs/vectormath
 	${RDEPEND}"
+# This is a temporary measure -- files are being moved from this package to the
+# crosh package for http://crosbug.com/7741, so we want to merge crosh after
+# chromeos-wm to ensure that there's no conflict.
+PDEPEND="chromeos-base/crosh"
 
 # Print the number of jobs from $MAKEOPTS.
 print_num_jobs() {
@@ -80,12 +80,6 @@ src_test() {
 src_install() {
 	newbin wm chromeos-wm
 	dobin screenshot
-	dobin bin/cros-term
-	dobin bin/crosh
-	dobin bin/crosh-dev
-	dobin bin/crosh-usb
-	dobin bin/inputrc.crosh
-	dobin bin/network_diagnostics
 
 	into /
 	dosbin bin/window-manager-session.sh
