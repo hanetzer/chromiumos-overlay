@@ -19,7 +19,6 @@ DEPEND=""
 RDEPEND="chromeos-base/audioconfig-board
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
-	sys-apps/smartmontools
 	sys-apps/upstart"
 
 CROS_WORKON_LOCALNAME="init"
