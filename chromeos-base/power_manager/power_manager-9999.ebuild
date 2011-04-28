@@ -16,6 +16,7 @@ RDEPEND="chromeos-base/libcros
 	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
+	sys-fs/udev
 	x11-base/xorg-server
 	x11-libs/gtk+
 	x11-libs/libX11
