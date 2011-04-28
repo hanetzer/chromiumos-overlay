@@ -28,6 +28,10 @@ src_prepare() {
 }
 
 src_configure() {
+	#TODO(raymes): Uprev breakpad so this isn't necessary. See
+	# (crosbug.com/14275).
+	[ "$ARCH" = "arm" ] && append-cflags "-marm" && append-cxxflags "-marm"
+
 	tc-export CC CXX LD PKG_CONFIG
 	# We purposefully disable optimizations due to optimizations causing
 	# src/processor code to crash (minidump_stackwalk) as well as tests
