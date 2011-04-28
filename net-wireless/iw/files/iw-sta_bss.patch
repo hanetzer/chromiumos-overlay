@@ -1,0 +1,179 @@
+--- nl80211.h.orig	2011-04-27 18:50:12.960130066 -0700
++++ nl80211.h	2011-04-27 18:50:12.960130066 -0700
+@@ -148,6 +148,10 @@
+  * @NL80211_CMD_SET_MPATH:  Set mesh path attributes for mesh path to
+  * 	destination %NL80211_ATTR_MAC on the interface identified by
+  * 	%NL80211_ATTR_IFINDEX.
++ * @NL80211_CMD_NEW_MPATH: Create a new mesh path for the destination given by
++ *	%NL80211_ATTR_MAC via %NL80211_ATTR_MPATH_NEXT_HOP.
++ * @NL80211_CMD_DEL_MPATH: Delete a mesh path to the destination given by
++ *	%NL80211_ATTR_MAC.
+  * @NL80211_CMD_NEW_PATH: Add a mesh path with given attributes to the
+  *	the interface identified by %NL80211_ATTR_IFINDEX.
+  * @NL80211_CMD_DEL_PATH: Remove a mesh path identified by %NL80211_ATTR_MAC
+@@ -612,7 +616,7 @@
+  *	consisting of a nested array.
+  *
+  * @NL80211_ATTR_MESH_ID: mesh id (1-32 bytes).
+- * @NL80211_ATTR_PLINK_ACTION: action to perform on the mesh peer link.
++ * @NL80211_ATTR_STA_PLINK_ACTION: action to perform on the mesh peer link.
+  * @NL80211_ATTR_MPATH_NEXT_HOP: MAC address of the next hop for a mesh path.
+  * @NL80211_ATTR_MPATH_INFO: information about a mesh_path, part of mesh path
+  * 	info given for %NL80211_CMD_GET_MPATH, nested attribute described at
+@@ -879,7 +883,9 @@
+  *	See &enum nl80211_key_default_types.
+  *
+  * @NL80211_ATTR_MESH_SETUP: Optional mesh setup parameters.  These cannot be
+- * changed once the mesh is active.
++ *	changed once the mesh is active.
++ * @NL80211_ATTR_MESH_CONFIG: Mesh configuration parameters, a nested attribute
++ *	containing attributes from &enum nl80211_meshconf_params.
+  *
+  * @NL80211_ATTR_MAX: highest attribute number currently defined
+  * @__NL80211_ATTR_AFTER_LAST: internal use
+@@ -1216,6 +1222,36 @@
+ };
+ 
+ /**
++ * enum nl80211_sta_bss_param - BSS information collected by STA
++ *
++ * These attribute types are used with %NL80211_STA_INFO_BSS_PARAM
++ * when getting information about the bitrate of a station.
++ *
++ * @__NL80211_STA_BSS_PARAM_INVALID: attribute number 0 is reserved
++ * @NL80211_STA_BSS_PARAM_CTS_PROT: whether CTS protection is enabled (flag)
++ * @NL80211_STA_BSS_PARAM_SHORT_PREAMBLE:  whether short preamble is enabled
++ *	(flag)
++ * @NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME:  whether short slot time is enabled
++ *	(flag)
++ * @NL80211_STA_BSS_PARAM_DTIM_PERIOD: DTIM period for beaconing (u8)
++ * @NL80211_STA_BSS_PARAM_BEACON_INTERVAL: Beacon interval (u16)
++ * @NL80211_STA_BSS_PARAM_MAX: highest sta_bss_param number currently defined
++ * @__NL80211_STA_BSS_PARAM_AFTER_LAST: internal use
++ */
++enum nl80211_sta_bss_param {
++	__NL80211_STA_BSS_PARAM_INVALID,
++	NL80211_STA_BSS_PARAM_CTS_PROT,
++	NL80211_STA_BSS_PARAM_SHORT_PREAMBLE,
++	NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME,
++	NL80211_STA_BSS_PARAM_DTIM_PERIOD,
++	NL80211_STA_BSS_PARAM_BEACON_INTERVAL,
++
++	/* keep last */
++	__NL80211_STA_BSS_PARAM_AFTER_LAST,
++	NL80211_STA_BSS_PARAM_MAX = __NL80211_STA_BSS_PARAM_AFTER_LAST - 1
++};
++
++/**
+  * enum nl80211_sta_info - station information
+  *
+  * These attribute types are used with %NL80211_ATTR_STA_INFO
+@@ -1225,17 +1261,22 @@
+  * @NL80211_STA_INFO_INACTIVE_TIME: time since last activity (u32, msecs)
+  * @NL80211_STA_INFO_RX_BYTES: total received bytes (u32, from this station)
+  * @NL80211_STA_INFO_TX_BYTES: total transmitted bytes (u32, to this station)
+- * @__NL80211_STA_INFO_AFTER_LAST: internal
+- * @NL80211_STA_INFO_MAX: highest possible station info attribute
+  * @NL80211_STA_INFO_SIGNAL: signal strength of last received PPDU (u8, dBm)
+  * @NL80211_STA_INFO_TX_BITRATE: current unicast tx rate, nested attribute
+- * 	containing info as possible, see &enum nl80211_sta_info_txrate.
++ * 	containing info as possible, see &enum nl80211_rate_info
+  * @NL80211_STA_INFO_RX_PACKETS: total received packet (u32, from this station)
+  * @NL80211_STA_INFO_TX_PACKETS: total transmitted packets (u32, to this
+  *	station)
+  * @NL80211_STA_INFO_TX_RETRIES: total retries (u32, to this station)
+  * @NL80211_STA_INFO_TX_FAILED: total failed packets (u32, to this station)
+  * @NL80211_STA_INFO_SIGNAL_AVG: signal strength average (u8, dBm)
++ * @NL80211_STA_INFO_LLID: the station's mesh LLID
++ * @NL80211_STA_INFO_PLID: the station's mesh PLID
++ * @NL80211_STA_INFO_PLINK_STATE: peer link state for the station
++ * @NL80211_STA_INFO_BSS_PARAM: current station's view of BSS, nested attribute
++ * 	containing info as possible, see &enum nl80211_sta_bss_param
++ * @__NL80211_STA_INFO_AFTER_LAST: internal
++ * @NL80211_STA_INFO_MAX: highest possible station info attribute
+  */
+ enum nl80211_sta_info {
+ 	__NL80211_STA_INFO_INVALID,
+@@ -1252,6 +1293,8 @@
+ 	NL80211_STA_INFO_TX_RETRIES,
+ 	NL80211_STA_INFO_TX_FAILED,
+ 	NL80211_STA_INFO_SIGNAL_AVG,
++	NL80211_STA_INFO_RX_BITRATE,
++	NL80211_STA_INFO_BSS_PARAM,
+ 
+ 	/* keep last */
+ 	__NL80211_STA_INFO_AFTER_LAST,
+@@ -1626,7 +1669,7 @@
+  * @NL80211_MESHCONF_HWMP_NET_DIAM_TRVS_TIME: The interval of time (in TUs)
+  * that it takes for an HWMP information element to propagate across the mesh
+  *
+- * @NL80211_MESHCONF_ROOTMODE: whether root mode is enabled or not
++ * @NL80211_MESHCONF_HWMP_ROOTMODE: whether root mode is enabled or not
+  *
+  * @NL80211_MESHCONF_ELEMENT_TTL: specifies the value of TTL field set at a
+  * source mesh point for path selection elements.
+@@ -1678,6 +1721,7 @@
+  * element that vendors will use to identify the path selection methods and
+  * metrics in use.
+  *
++ * @NL80211_MESH_SETUP_ATTR_MAX: highest possible mesh setup attribute number
+  * @__NL80211_MESH_SETUP_ATTR_AFTER_LAST: Internal use
+  */
+ enum nl80211_mesh_setup_params {
+--- link.c.orig	2011-04-27 18:50:12.960130066 -0700
++++ link.c	2011-04-27 19:22:34.522338618 -0700
+@@ -115,6 +115,7 @@
+ 	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+ 	struct nlattr *sinfo[NL80211_STA_INFO_MAX + 1];
+ 	struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
++	struct nlattr *binfo[NL80211_STA_BSS_PARAM_MAX + 1];
+ 	static struct nla_policy stats_policy[NL80211_STA_INFO_MAX + 1] = {
+ 		[NL80211_STA_INFO_INACTIVE_TIME] = { .type = NLA_U32 },
+ 		[NL80211_STA_INFO_RX_BYTES] = { .type = NLA_U32 },
+@@ -134,6 +135,13 @@
+ 		[NL80211_RATE_INFO_40_MHZ_WIDTH] = { .type = NLA_FLAG },
+ 		[NL80211_RATE_INFO_SHORT_GI] = { .type = NLA_FLAG },
+ 	};
++	static struct nla_policy bss_policy[NL80211_STA_BSS_PARAM_MAX + 1] = {
++		[NL80211_STA_BSS_PARAM_CTS_PROT] = { .type = NLA_FLAG },
++		[NL80211_STA_BSS_PARAM_SHORT_PREAMBLE] = { .type = NLA_FLAG },
++		[NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME] = { .type = NLA_FLAG },
++		[NL80211_STA_BSS_PARAM_DTIM_PERIOD] = { .type = NLA_U8 },
++		[NL80211_STA_BSS_PARAM_BEACON_INTERVAL] = { .type = NLA_U16 },
++	};
+ 
+ 	nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
+ 		  genlmsg_attrlen(gnlh, 0), NULL);
+@@ -182,6 +190,32 @@
+ 		}
+ 	}
+ 
++	if (sinfo[NL80211_STA_INFO_BSS_PARAM]) {
++		if (nla_parse_nested(binfo, NL80211_STA_BSS_PARAM_MAX,
++				     sinfo[NL80211_STA_INFO_BSS_PARAM],
++				     bss_policy)) {
++			fprintf(stderr, "failed to parse nested bss parameters!\n");
++		} else {
++			char *delim = "";
++			printf("\n\tbss flags:\t");
++			if (binfo[NL80211_STA_BSS_PARAM_CTS_PROT]) {
++				printf("CTS-protection");
++				delim = " ";
++			}
++			if (binfo[NL80211_STA_BSS_PARAM_SHORT_PREAMBLE]) {
++				printf("%sshort-preamble", delim);
++				delim = " ";
++			}
++			if (binfo[NL80211_STA_BSS_PARAM_SHORT_SLOT_TIME])
++				printf("%sshort-slot-time", delim);
++			printf("\n\tdtim period:\t%d",
++			       nla_get_u8(binfo[NL80211_STA_BSS_PARAM_DTIM_PERIOD]));
++			printf("\n\tbeacon int:\t%d",
++			       nla_get_u16(binfo[NL80211_STA_BSS_PARAM_BEACON_INTERVAL]));
++			printf("\n");
++		}
++	}
++
+ 	return NL_SKIP;
+ }
+ 
