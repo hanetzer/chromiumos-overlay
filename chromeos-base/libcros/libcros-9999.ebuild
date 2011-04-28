@@ -6,7 +6,7 @@ EAPI=2
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Bridge library for Chromium OS"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 IUSE="install_tests"
 LICENSE="BSD"
 SLOT="0"

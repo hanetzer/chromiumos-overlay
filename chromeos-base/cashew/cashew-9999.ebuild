@@ -6,7 +6,7 @@ EAPI=2
 inherit cros-debug cros-workon autotools
 
 DESCRIPTION="Chromium OS network usage tracking daemon"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"

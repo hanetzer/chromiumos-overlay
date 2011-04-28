@@ -8,7 +8,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Chrome OS platform boot mode utility"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"

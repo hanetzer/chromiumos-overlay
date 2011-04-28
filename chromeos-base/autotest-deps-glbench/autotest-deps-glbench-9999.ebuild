@@ -7,7 +7,7 @@ CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
 inherit cros-workon autotest-deponly conflict
 
 DESCRIPTION="Autotest glbench dep"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"

@@ -8,7 +8,7 @@ KEYWORDS="~amd64 ~x86 ~arm"
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="File system integrity image generator for Chromium OS."
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"

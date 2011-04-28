@@ -6,7 +6,7 @@ EAPI=2
 inherit cros-workon
 
 DESCRIPTION="Chrome OS workarounds utilities."
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 KEYWORDS="~x86 ~arm"

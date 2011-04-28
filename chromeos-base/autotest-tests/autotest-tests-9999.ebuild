@@ -6,7 +6,7 @@ EAPI=2
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
 DESCRIPTION="Autotest tests"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"

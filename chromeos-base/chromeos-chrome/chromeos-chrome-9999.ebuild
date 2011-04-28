@@ -18,7 +18,7 @@ EAPI="2"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
-HOMEPAGE="http://chromium.org/"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
 KEYWORDS="~x86 ~arm"

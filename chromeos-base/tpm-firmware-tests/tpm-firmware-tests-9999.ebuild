@@ -6,7 +6,7 @@ EAPI=2
 inherit cros-workon autotest
 
 DESCRIPTION="TPM firmware tests"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"

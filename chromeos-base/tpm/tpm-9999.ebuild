@@ -11,7 +11,7 @@ inherit cros-workon linux-info
 
 DESCRIPTION="Various TPM tools"
 LICENSE="BSD"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 

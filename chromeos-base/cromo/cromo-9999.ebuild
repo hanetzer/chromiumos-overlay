@@ -6,7 +6,7 @@ EAPI=2
 inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chromium OS modem manager"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 IUSE="install_tests"
 SRC_URI=""
 LICENSE="BSD"

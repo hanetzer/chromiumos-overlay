@@ -6,7 +6,7 @@ EAPI=2
 inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Power Manager for Chromium OS"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit"

@@ -8,7 +8,7 @@ KEYWORDS="~arm ~amd64 ~x86"
 inherit cros-debug cros-workon
 
 DESCRIPTION="Image-burning service for Chromium OS."
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"

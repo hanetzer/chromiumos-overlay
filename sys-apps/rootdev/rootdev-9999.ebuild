@@ -6,7 +6,7 @@ EAPI=2
 inherit toolchain-funcs cros-workon
 
 DESCRIPTION="Chrome OS root block device tool/library"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"

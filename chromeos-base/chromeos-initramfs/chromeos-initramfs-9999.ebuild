@@ -10,7 +10,7 @@ EAPI=2
 inherit cros-workon
 
 DESCRIPTION="Create Chrome OS initramfs"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="GPL-2"
 SLOT="0"

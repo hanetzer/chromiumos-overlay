@@ -7,7 +7,7 @@ inherit cros-workon multilib
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS GTK+ Theme."
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"

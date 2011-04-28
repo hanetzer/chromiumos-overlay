@@ -7,7 +7,7 @@ inherit toolchain-funcs
 inherit binutils-funcs
 
 DESCRIPTION="Chrome OS Kernel-next"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm"
