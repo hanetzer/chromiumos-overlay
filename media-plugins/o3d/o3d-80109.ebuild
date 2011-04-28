@@ -4,7 +4,7 @@
 EAPI=2
 
 # added eutils to patch
-inherit toolchain-funcs eutils
+inherit toolchain-funcs eutils flag-o-matic
 
 DESCRIPTION="O3D Plugin"
 HOMEPAGE="http://code.google.com/p/o3d/"
@@ -49,6 +49,11 @@ src_prepare() {
 }
 
 src_compile() {
+	if use arm; then
+		append-cflags "-Wa,-mimplicit-it=always"
+		append-cxxflags "-Wa,-mimplicit-it=always"
+	fi
+
 	# Config
 	if tc-is-cross-compiler ; then
 		tc-export AR AS LD NM RANLIB CC CXX
