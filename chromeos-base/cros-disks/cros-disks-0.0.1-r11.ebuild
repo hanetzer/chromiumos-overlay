@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="db9ad49bdcca14cce7e494c4b11c8c8d4c6425c3"
+CROS_WORKON_COMMIT="42404d1d0499fed939b8446cf36e4af88d08c4d5"
 
 KEYWORDS="arm amd64 x86"
 
