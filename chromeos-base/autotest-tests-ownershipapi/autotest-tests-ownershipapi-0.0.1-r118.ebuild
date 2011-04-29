@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="105706efb7ebc97575dafd7a92bb815f79d8bb47"
+CROS_WORKON_COMMIT="9147d29b2349204172fdb37b3b34f032ae9aee9f"
 
 CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r596"
 
@@ -36,6 +36,7 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS="
 	+tests_login_OwnershipApi
 	+tests_login_OwnershipNotRetaken
+	+tests_login_OwnershipRetaken
 	+tests_login_OwnershipTaken
 	+tests_login_RemoteOwnership
 "
