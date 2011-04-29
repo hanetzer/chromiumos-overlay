@@ -15,11 +15,11 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="83196"
+CROS_SVN_COMMIT="83490"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
-HOMEPAGE="http://chromium.org/"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
 KEYWORDS="~x86 ~arm"
@@ -618,9 +618,26 @@ install_chrome_test_resources() {
 
 	# Copy the third_party things we need, as well as WebKitTools
 	install_third_party_resources "${TEST_DIR}"
-        mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
-        fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
-                "${TEST_DIR}"/third_party/WebKit/WebKitTools
+	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
+	fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
+		"${TEST_DIR}"/third_party/WebKit/WebKitTools
+
+	# Add pdf test data
+	if use chrome_pdf && use x86; then
+		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
+			"${TEST_DIR}"/pdf/test/
+	fi
+
+	# Add the bidichecker script
+	mkdir -p "${TEST_DIR}"/third_party/bidichecker
+	fast_cp -a \
+	    "${CHROME_ROOT}"/src/third_party/bidichecker/bidichecker_packaged.js \
+	    "${TEST_DIR}"/third_party/bidichecker
+
+	# Copy over npapi test plugin
+	mkdir -p "${TEST_DIR}"/out/Release/plugins
+	fast_cp -a "${FROM}"/plugins/libnpapi_test_plugin.so \
+		"${TEST_DIR}"/out/Release/plugins
 
 	for f in ${TEST_FILES}; do
 		fast_cp -a "${FROM}/${f}" "${TEST_DIR}"
@@ -635,12 +652,6 @@ install_chrome_test_resources() {
 	else
 		cd "${TEST_DIR}"/chrome/test
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
-	fi
-
-	# Add pdf test data
-	if use chrome_pdf && use x86; then
-		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
-			"${TEST_DIR}"/pdf/test/
 	fi
 }
 
