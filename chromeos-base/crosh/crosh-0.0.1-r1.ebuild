@@ -7,7 +7,7 @@ CROS_WORKON_COMMIT="93fce842d78cb86a70bc9121f094e53b0d277419"
 # Files from chromeos-wm are being moved to this package; ensure that we don't
 # get conflicts by installing this and an old version of chromeos-wm at the
 # same time.
-CONFLICT_LIST="chromeos-base/chromeos-wm-0.0.1-r229"
+CONFLICT_LIST="chromeos-base/chromeos-wm-0.0.1-r230"
 inherit cros-workon toolchain-funcs conflict
 
 DESCRIPTION="Chrome OS command-line shell"
