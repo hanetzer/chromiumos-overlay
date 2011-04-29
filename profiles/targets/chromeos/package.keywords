@@ -68,6 +68,7 @@
 =sys-apps/parted-1.9.0		x86 arm
 =sys-apps/rescan-scsi-bus-1.29  x86 arm
 =sys-apps/sg3_utils-1.27.20090411	x86 arm
+=sys-apps/smartmontools-5.38    x86 arm
 =sys-apps/sysvinit-2.86-r12	x86 arm
 =sys-apps/usbutils-0.86-r1	x86 arm
 =sys-apps/util-linux-2.16.1	x86 arm
