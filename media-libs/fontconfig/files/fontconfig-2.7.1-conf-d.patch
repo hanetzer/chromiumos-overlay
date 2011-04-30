@@ -1,6 +1,6 @@
 diff -urN fontconfig-2.7.1-orig/conf.d/10-antialias.conf fontconfig-2.7.1/conf.d/10-antialias.conf
 --- fontconfig-2.7.1-orig/conf.d/10-antialias.conf	1969-12-31 16:00:00.000000000 -0800
-+++ fontconfig-2.7.1/conf.d/10-antialias.conf	2010-06-14 17:25:10.000000000 -0700
++++ fontconfig-2.7.1/conf.d/10-antialias.conf	2011-04-29 12:49:40.000000000 -0700
 @@ -0,0 +1,8 @@
 +<?xml version="1.0"?>
 +<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -12,7 +12,7 @@ diff -urN fontconfig-2.7.1-orig/conf.d/10-antialias.conf fontconfig-2.7.1/conf.d
 +</fontconfig>
 diff -urN fontconfig-2.7.1-orig/conf.d/10-hinting.conf fontconfig-2.7.1/conf.d/10-hinting.conf
 --- fontconfig-2.7.1-orig/conf.d/10-hinting.conf	1969-12-31 16:00:00.000000000 -0800
-+++ fontconfig-2.7.1/conf.d/10-hinting.conf	2010-06-14 17:25:10.000000000 -0700
++++ fontconfig-2.7.1/conf.d/10-hinting.conf	2011-04-29 12:49:40.000000000 -0700
 @@ -0,0 +1,8 @@
 +<?xml version="1.0"?>
 +<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -24,7 +24,7 @@ diff -urN fontconfig-2.7.1-orig/conf.d/10-hinting.conf fontconfig-2.7.1/conf.d/1
 +</fontconfig>
 diff -urN fontconfig-2.7.1-orig/conf.d/10-hinting-full.conf fontconfig-2.7.1/conf.d/10-hinting-full.conf
 --- fontconfig-2.7.1-orig/conf.d/10-hinting-full.conf	1969-12-31 16:00:00.000000000 -0800
-+++ fontconfig-2.7.1/conf.d/10-hinting-full.conf	2010-06-14 17:25:10.000000000 -0700
++++ fontconfig-2.7.1/conf.d/10-hinting-full.conf	2011-04-29 12:49:40.000000000 -0700
 @@ -0,0 +1,8 @@
 +<?xml version="1.0"?>
 +<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -36,7 +36,7 @@ diff -urN fontconfig-2.7.1-orig/conf.d/10-hinting-full.conf fontconfig-2.7.1/con
 +</fontconfig>
 diff -urN fontconfig-2.7.1-orig/conf.d/10-hinting-slight.conf fontconfig-2.7.1/conf.d/10-hinting-slight.conf
 --- fontconfig-2.7.1-orig/conf.d/10-hinting-slight.conf	1969-12-31 16:00:00.000000000 -0800
-+++ fontconfig-2.7.1/conf.d/10-hinting-slight.conf	2010-06-14 17:25:10.000000000 -0700
++++ fontconfig-2.7.1/conf.d/10-hinting-slight.conf	2011-04-29 12:49:40.000000000 -0700
 @@ -0,0 +1,8 @@
 +<?xml version="1.0"?>
 +<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -48,7 +48,7 @@ diff -urN fontconfig-2.7.1-orig/conf.d/10-hinting-slight.conf fontconfig-2.7.1/c
 +</fontconfig>
 diff -urN fontconfig-2.7.1-orig/conf.d/Makefile.am fontconfig-2.7.1/conf.d/Makefile.am
 --- fontconfig-2.7.1-orig/conf.d/Makefile.am	2009-03-18 14:02:20.000000000 -0700
-+++ fontconfig-2.7.1/conf.d/Makefile.am	2010-07-14 10:32:51.000000000 -0700
++++ fontconfig-2.7.1/conf.d/Makefile.am	2011-04-29 13:09:05.000000000 -0700
 @@ -25,7 +25,11 @@
  	README
  
@@ -61,19 +61,30 @@ diff -urN fontconfig-2.7.1-orig/conf.d/Makefile.am fontconfig-2.7.1/conf.d/Makef
  	10-no-sub-pixel.conf \
  	10-sub-pixel-bgr.conf \
  	10-sub-pixel-rgb.conf \
-@@ -53,6 +57,9 @@
+@@ -53,6 +57,10 @@
  	90-synthetic.conf
  
  CONF_LINKS = \
 +	10-autohint.conf \
++	10-hinting.conf \
 +	10-hinting-slight.conf \
 +	10-sub-pixel-rgb.conf \
  	20-fix-globaladvance.conf \
  	20-unhint-small-vera.conf \
  	30-urw-aliases.conf \
+@@ -62,9 +70,6 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
+-	60-latin.conf \
+-	65-fonts-persian.conf \
+-	65-nonlatin.conf \
+ 	69-unifont.conf \
+ 	80-delicious.conf \
+ 	90-synthetic.conf
 diff -urN fontconfig-2.7.1-orig/conf.d/Makefile.in fontconfig-2.7.1/conf.d/Makefile.in
 --- fontconfig-2.7.1-orig/conf.d/Makefile.in	2009-07-27 14:56:45.000000000 -0700
-+++ fontconfig-2.7.1/conf.d/Makefile.in	2010-07-14 10:33:12.000000000 -0700
++++ fontconfig-2.7.1/conf.d/Makefile.in	2011-04-29 13:09:20.000000000 -0700
 @@ -246,7 +246,11 @@
  	README
  
@@ -86,13 +97,128 @@ diff -urN fontconfig-2.7.1-orig/conf.d/Makefile.in fontconfig-2.7.1/conf.d/Makef
  	10-no-sub-pixel.conf \
  	10-sub-pixel-bgr.conf \
  	10-sub-pixel-rgb.conf \
-@@ -274,6 +278,9 @@
+@@ -274,6 +278,10 @@
  	90-synthetic.conf
  
  CONF_LINKS = \
 +	10-autohint.conf \
++	10-hinting.conf \
 +	10-hinting-slight.conf \
 +	10-sub-pixel-rgb.conf \
  	20-fix-globaladvance.conf \
  	20-unhint-small-vera.conf \
  	30-urw-aliases.conf \
+@@ -283,9 +291,6 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
+-	60-latin.conf \
+-	65-fonts-persian.conf \
+-	65-nonlatin.conf \
+ 	69-unifont.conf \
+ 	80-delicious.conf \
+ 	90-synthetic.conf
+diff -urN fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-antialias.conf fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-antialias.conf
+--- fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-antialias.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-antialias.conf	2011-04-29 12:49:31.000000000 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use the Antialiasing --> 
++  <match target="font">
++    <edit name="antialias" mode="assign"><bool>true</bool></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-hinting.conf fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-hinting.conf
+--- fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-hinting.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-hinting.conf	2011-04-29 12:49:31.000000000 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use Hinting --> 
++  <match target="font">
++    <edit name="hinting" mode="assign"><bool>true</bool></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-hinting-full.conf fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-hinting-full.conf
+--- fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-hinting-full.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-hinting-full.conf	2011-04-29 12:49:31.000000000 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use Full Hinting --> 
++  <match target="font">
++    <edit name="hintstyle" mode="assign"><const>hintfull</const></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-hinting-slight.conf fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-hinting-slight.conf
+--- fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/10-hinting-slight.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.7.1/fontconfig-2.7.1/conf.d/10-hinting-slight.conf	2011-04-29 12:49:31.000000000 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use Slight Hinting --> 
++  <match target="font">
++    <edit name="hintstyle" mode="assign"><const>hintslight</const></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/Makefile.am.rej fontconfig-2.7.1/fontconfig-2.7.1/conf.d/Makefile.am.rej
+--- fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/Makefile.am.rej	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.7.1/fontconfig-2.7.1/conf.d/Makefile.am.rej	2011-04-29 12:49:31.000000000 -0700
+@@ -0,0 +1,24 @@
++--- fontconfig-2.7.1-orig/conf.d/Makefile.am	2009-03-18 14:02:20.000000000 -0700
+++++ fontconfig-2.7.1/conf.d/Makefile.am	2010-07-14 10:32:51.000000000 -0700
++@@ -25,7 +25,11 @@
++ 	README
++ 
++ CONF_FILES = \
+++	10-antialias.conf \
++ 	10-autohint.conf \
+++	10-hinting.conf \
+++	10-hinting-slight.conf \
+++	10-hinting-full.conf \
++ 	10-no-sub-pixel.conf \
++ 	10-sub-pixel-bgr.conf \
++ 	10-sub-pixel-rgb.conf \
++@@ -53,6 +57,9 @@
++ 	90-synthetic.conf
++ 
++ CONF_LINKS = \
+++	10-autohint.conf \
+++	10-hinting-slight.conf \
+++	10-sub-pixel-rgb.conf \
++ 	20-fix-globaladvance.conf \
++ 	20-unhint-small-vera.conf \
++ 	30-urw-aliases.conf \
+diff -urN fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/Makefile.in.rej fontconfig-2.7.1/fontconfig-2.7.1/conf.d/Makefile.in.rej
+--- fontconfig-2.7.1-orig/fontconfig-2.7.1/conf.d/Makefile.in.rej	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.7.1/fontconfig-2.7.1/conf.d/Makefile.in.rej	2011-04-29 12:49:31.000000000 -0700
+@@ -0,0 +1,24 @@
++--- fontconfig-2.7.1-orig/conf.d/Makefile.in	2009-07-27 14:56:45.000000000 -0700
+++++ fontconfig-2.7.1/conf.d/Makefile.in	2010-07-14 10:33:12.000000000 -0700
++@@ -246,7 +246,11 @@
++ 	README
++ 
++ CONF_FILES = \
+++	10-antialias.conf \
++ 	10-autohint.conf \
+++	10-hinting.conf \
+++	10-hinting-slight.conf \
+++	10-hinting-full.conf \
++ 	10-no-sub-pixel.conf \
++ 	10-sub-pixel-bgr.conf \
++ 	10-sub-pixel-rgb.conf \
++@@ -274,6 +278,9 @@
++ 	90-synthetic.conf
++ 
++ CONF_LINKS = \
+++	10-autohint.conf \
+++	10-hinting-slight.conf \
+++	10-sub-pixel-rgb.conf \
++ 	20-fix-globaladvance.conf \
++ 	20-unhint-small-vera.conf \
++ 	30-urw-aliases.conf \
