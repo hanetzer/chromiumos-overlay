@@ -205,6 +205,7 @@ IUSE_TESTS="
 	+tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
 	+tests_platform_CryptohomeTPMReOwnServer
+	+tests_platform_DMVerityBitCorruption
 	+tests_platform_DMVerityCorruption
 	+tests_platform_DaemonsRespawn
 	+tests_platform_FileNum
