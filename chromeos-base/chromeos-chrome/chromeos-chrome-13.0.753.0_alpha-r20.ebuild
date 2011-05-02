@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="83710"
+CROS_SVN_COMMIT="83711"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
