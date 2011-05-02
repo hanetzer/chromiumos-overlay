@@ -23,7 +23,7 @@ PKGDIR="/var/lib/portage/pkgs"
 FULL_BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/full-02.05.11.130442/packages/"
 PORTAGE_BINHOST="$FULL_BINHOST"
 
-USE="${USE} -cups hardened cros_host multilib pic pie"
+USE="${USE} -cups hardened cros_host multilib pic pie -introspection"
 
 GENTOO_MIRRORS="http://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
 GENTOO_MIRRORS="$GENTOO_MIRRORS http://commondatastorage.googleapis.com/chromeos-localmirror"
