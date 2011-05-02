@@ -55,7 +55,7 @@ if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
 
-RESTRICT="mirror strip"
+RESTRICT="mirror"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx vanilla"
 

@@ -134,7 +134,7 @@ build_toolchain() {
   CROSS_GCC="--gcc $FLAGS_gcc_version"
   CROSS_KERNEL="--kernel $FLAGS_kernel_version"
   CROSS_LIBC="--libc $FLAGS_libc_version"
-  sudo -E PORTAGE_BINHOST="${BINHOST}" crossdev -v -P --oneshot  \
+  sudo -E FEATURES=splitdebug PORTAGE_BINHOST="${BINHOST}" crossdev -v -P --oneshot  \
       --target "$FLAGS_toolchain" \
       $CROSS_BINUTILS \
       $CROSS_GCC      \
@@ -178,7 +178,11 @@ ${LIBC_TAR}"
     LIBC_PATH="${OLD_LIBC_PATH}"
   fi
 
-  sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}" --strip-components=3
+  LIBC_TMP=$(mktemp -d)
+  tar jxpf "${LIBC_PATH}" -C "${LIBC_TMP}"
+  sudo mv ${LIBC_TMP}/usr/${FLAGS_toolchain}/* ${BOARD_ROOT}
+  sudo mkdir -p ${BOARD_ROOT}/usr/lib/debug
+  sudo mv ${LIBC_TMP}/usr/lib/debug/usr/${FLAGS_toolchain}/*  ${BOARD_ROOT}/usr/lib/debug || warn "libc debug info not copied."
 
   # Symlink for libstdc++.la issues. It appears that when packages get merged
   # the .la files will be updated, and for libstdc++ it will use the wrong
@@ -188,8 +192,11 @@ ${LIBC_TAR}"
   # We need to install libstdc++ manually from the cross toolchain.
   # TODO: Figure out a better way of doing this?
   sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/lib"
+  sudo cp -a /usr/lib/debug/usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/usr/lib/debug/lib" || warn "libgcc debug info not copied."
   sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* \
       "${BOARD_ROOT}/usr/lib"
+  sudo cp -a /usr/lib/debug/usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* "${BOARD_ROOT}/usr/lib/debug/usr/lib" || warn "libstdc++ debug info not copied."
+
 
   # Some header files are needed also for rpcbind (NFS support)
   # TODO: Figure out a better way of doing this too?
