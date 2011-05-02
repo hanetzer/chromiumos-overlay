@@ -14,3 +14,7 @@ DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-2.6
 	x11-proto/inputproto
 	x11-proto/xproto"
+
+PATCHES=(
+	"${FILESDIR}/2.6.0-mt-tracking-proto-b.patch"
+	)
