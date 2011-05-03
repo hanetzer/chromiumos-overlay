@@ -11,13 +11,15 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 IUSE="test"
-KEYWORDS="~amd64 ~arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="dev-cpp/gflags
-	dev-cpp/glog"
+	dev-cpp/glog
+	dev-libs/glib"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
+	chromeos-base/libchromeos
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 
@@ -25,8 +27,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	# TODO(davidjames): parallel builds
-	scons || die "shill compile failed."
+	emake shill || die "shill compile failed."
 }
 
 src_test() {
@@ -34,7 +35,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 
 	# Build tests
-	scons tests || die "tests compile failed."
+	emake shill_unittest || die "tests compile failed."
 
 	# Run tests if we're on x86
 	if ! use x86 ; then
