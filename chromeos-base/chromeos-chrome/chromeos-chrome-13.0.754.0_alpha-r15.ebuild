@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="83816"
+CROS_SVN_COMMIT="83849"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -679,6 +679,8 @@ install_pyauto_dep_resources() {
 	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/bin
 	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
 		"${TEST_DIR}"/bin
+	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
+		"${TEST_DIR}"
 
 	install_third_party_resources "${TEST_DIR}"
 }
