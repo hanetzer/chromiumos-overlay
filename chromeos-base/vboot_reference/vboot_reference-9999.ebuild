@@ -9,6 +9,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="app-crypt/trousers
 	dev-libs/openssl

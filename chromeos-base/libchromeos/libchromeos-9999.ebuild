@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 
 inherit toolchain-funcs cros-debug cros-workon
 
@@ -22,7 +23,6 @@ RDEPEND="chromeos-base/libchrome
 DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
-CROS_WORKON_PROJECT="common"
 CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 
 src_compile() {

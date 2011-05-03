@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/cros"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
@@ -34,7 +35,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/update_engine
 	dev-cpp/gtest"
 
-CROS_WORKON_PROJECT="cros"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 src_compile() {

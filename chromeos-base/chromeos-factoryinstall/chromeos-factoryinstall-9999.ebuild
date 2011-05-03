@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon
 
@@ -23,7 +24,6 @@ RDEPEND="x86? ( chromeos-base/chromeos-initramfs )
          >=chromeos-base/vpd-0.0.1-r11"
 
 CROS_WORKON_LOCALNAME="factory_installer"
-CROS_WORKON_PROJECT="factory_installer"
 
 FACTORY_SERVER="${FACTORY_SERVER:-$(hostname -f)}"
 

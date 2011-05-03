@@ -3,6 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="~arm ~amd64 ~x86"
 
@@ -26,7 +27,6 @@ DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 
-CROS_WORKON_PROJECT="cros-disks"
 CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_compile() {

@@ -19,7 +19,7 @@
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
 # Git URL which is prefixed to CROS_WORKON_PROJECT
-: ${CROS_WORKON_REPO:=http://git.chromium.org/git}
+: ${CROS_WORKON_REPO:=http://git.chromium.org}
 
 # @ECLASS-VARIABLE: CROS_WORKON_PROJECT
 # @DESCRIPTION:
@@ -206,7 +206,7 @@ cros-workon_src_unpack() {
 			fi
 		fi
 
-		EGIT_REPO_URI="${repo}/${project}"
+		EGIT_REPO_URI="${repo}/${project}.git"
 		EGIT_PROJECT="${project}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
 		if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then

@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/installer"
 
 inherit cros-workon
 
@@ -26,7 +27,6 @@ RDEPEND="app-arch/gzip
          sys-fs/e2fsprogs"
 
 CROS_WORKON_LOCALNAME="installer"
-CROS_WORKON_PROJECT="installer"
 
 src_install() {
 	if ! use cros_host; then

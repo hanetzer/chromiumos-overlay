@@ -3,6 +3,7 @@
 # $Header$
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/platform/tpm"
 
 inherit cros-workon autotools
 inherit cros-workon base

@@ -3,6 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-synaptics/xf86-input-synaptics-1.3.0.ebuild,v 1.2 2010/09/10 13:27:03 chithanh Exp $
 
 EAPI=3
+CROS_WORKON_PROJECT="chromiumos/third_party/xf86-input-synaptics"
 XORG_EAUTORECONF="yes"
 inherit linux-info xorg-2 cros-workon
 

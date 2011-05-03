@@ -5,6 +5,7 @@
 # installed before http://crosbug.com/3437 was fixed.
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/dump-syms"
 
 inherit cros-workon toolchain-funcs
 

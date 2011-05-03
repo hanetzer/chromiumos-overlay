@@ -3,6 +3,7 @@
 # $Header: $
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/libresample"
 
 inherit cros-workon toolchain-funcs
 

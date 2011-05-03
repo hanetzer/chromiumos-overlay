@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/firmware"
 
 inherit cros-workon cros-firmware
 
@@ -14,7 +15,6 @@ KEYWORDS="~arm ~x86"
 IUSE=""
 
 CROS_WORKON_LOCALNAME="firmware"
-CROS_WORKON_PROJECT="firmware"
 
 # ---------------------------------------------------------------------------
 # CUSTOMIZATION SECTION

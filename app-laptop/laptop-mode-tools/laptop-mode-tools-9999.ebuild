@@ -3,6 +3,7 @@
 # $Header: /var/www/viewcvs.gentoo.org/raw_cvs/gentoo-x86/app-laptop/laptop-mode-tools/laptop-mode-tools-1.52.ebuild,v 1.1 2009/10/16 18:42:23 bangert Exp $
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/laptop-mode-tools"
 
 inherit cros-workon
 

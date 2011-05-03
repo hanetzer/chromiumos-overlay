@@ -9,12 +9,12 @@ SLOT="0"
 KEYWORDS="~arm"
 IUSE="debug"
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="
     sys-boot/chromeos-u-boot-next-build-env
     chromeos-base/vboot_reference"
 
-CROS_WORKON_PROJECT=vboot_reference
 CROS_WORKON_LOCALNAME=vboot_reference
 
 src_compile() {

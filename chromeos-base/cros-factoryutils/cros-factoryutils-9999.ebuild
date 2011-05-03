@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/platform/factory-utils"
 
 inherit cros-workon
 
@@ -13,7 +14,6 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-CROS_WORKON_PROJECT="factory-utils"
 CROS_WORKON_LOCALNAME="factory-utils"
 
 # dev-utils contains the devserver

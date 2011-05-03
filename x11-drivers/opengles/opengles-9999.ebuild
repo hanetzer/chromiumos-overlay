@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
 
 inherit toolchain-funcs cros-workon
 
@@ -17,7 +18,6 @@ RDEPEND="x11-libs/libX11
 	x11-drivers/opengles-headers"
 DEPEND="${RDEPEND}"
 
-CROS_WORKON_PROJECT="khronos"
 CROS_WORKON_LOCALNAME="khronos"
 
 src_compile() {

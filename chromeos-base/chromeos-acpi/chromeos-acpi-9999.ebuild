@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/acpi"
 
 inherit cros-workon
 
@@ -18,7 +19,6 @@ DEPEND=""
 RDEPEND="sys-power/acpid"
 
 CROS_WORKON_LOCALNAME="acpi"
-CROS_WORKON_PROJECT="acpi"
 
 src_install() {
   dodir /etc/acpi/events

@@ -3,6 +3,7 @@
 # $Header:
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/flashrom"
 
 inherit cros-workon toolchain-funcs
 
@@ -15,7 +16,6 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="ftdi serprog"
 
 CROS_WORKON_LOCALNAME="flashrom"
-CROS_WORKON_PROJECT="flashrom"
 
 RDEPEND="sys-apps/pciutils
 	ftdi? ( dev-embedded/libftdi )"

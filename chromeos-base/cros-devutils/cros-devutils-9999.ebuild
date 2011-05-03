@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon
 
@@ -13,7 +14,6 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="cros_host"
 
-CROS_WORKON_PROJECT="dev-util"
 CROS_WORKON_LOCALNAME="dev"
 
 

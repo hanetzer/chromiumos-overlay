@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/factory_test_tools"
 
 inherit cros-workon
 
@@ -18,7 +19,6 @@ RDEPEND="dev-lang/python
          >=chromeos-base/vpd-0.0.1-r11"
 
 CROS_WORKON_LOCALNAME="factory_test_tools"
-CROS_WORKON_PROJECT="factory_test_tools"
 
 src_install() {
 	dodir /usr/gooftool

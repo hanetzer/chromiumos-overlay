@@ -4,6 +4,7 @@
 # $Header$
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
 
 inherit autotools base cros-workon eutils linux-info
 

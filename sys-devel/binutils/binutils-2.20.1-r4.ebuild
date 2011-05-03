@@ -68,7 +68,7 @@ src_unpack() {
   else
     mkdir ${GITDIR}
     cd ${GITDIR} || die "Could not enter ${GITDIR}"
-    git clone http://git.chromium.org/git/binutils.git . || die "Could not clone repo."
+    git clone http://git.chromium.org/chromiumos/third_party/binutils.git . || die "Could not clone repo."
     git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
     cd -
  		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"

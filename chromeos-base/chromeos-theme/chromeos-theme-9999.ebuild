@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/theme"
 
 inherit cros-workon multilib
 inherit cros-workon toolchain-funcs
@@ -20,7 +21,6 @@ DEPEND="dev-libs/glib
 RDEPEND="${DEPEND}"
 
 CROS_WORKON_LOCALNAME="theme"
-CROS_WORKON_PROJECT="theme"
 
 src_compile() {
 	if tc-is-cross-compiler ; then

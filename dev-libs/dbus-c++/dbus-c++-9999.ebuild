@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/third_party/dbus-cplusplus"
 
 inherit toolchain-funcs cros-workon
 
@@ -13,7 +14,6 @@ SLOT="1"
 IUSE="debug doc +glib"
 KEYWORDS="~amd64 ~x86 ~arm"
 
-CROS_WORKON_PROJECT=dbus-cplusplus
 CROS_WORKON_COMMIT="master"
 
 RDEPEND="

@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 inherit cros-workon autotest
 
@@ -21,7 +22,6 @@ IUSE_TESTS="
 
 IUSE="${IUSE} ${IUSE_TESTS}"
 
-CROS_WORKON_PROJECT=vboot_reference
 CROS_WORKON_LOCALNAME=vboot_reference
 
 # path from root of repo

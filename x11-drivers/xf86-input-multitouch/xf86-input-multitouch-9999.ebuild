@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=3
+CROS_WORKON_PROJECT="chromiumos/third_party/multitouch"
 
 XORG_EAUTORECONF="yes"
 BASE_INDIVIDUAL_URI=""
@@ -10,7 +11,6 @@ inherit linux-info xorg-2 cros-workon
 DESCRIPTION="Multitouch Xorg Xinput driver."
 HOMEPAGE="http://bitmath.org/code/multitouch/"
 CROS_WORKON_LOCALNAME="multitouch"
-CROS_WORKON_PROJECT="multitouch"
 
 KEYWORDS="~arm ~x86"
 LICENSE="GPL"

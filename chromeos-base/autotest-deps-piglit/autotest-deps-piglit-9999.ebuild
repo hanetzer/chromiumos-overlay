@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 
 inherit cros-workon autotest-deponly
@@ -16,7 +17,6 @@ KEYWORDS="~amd64 ~arm ~x86"
 # Autotest enabled by default.
 IUSE="+autotest"
 
-CROS_WORKON_PROJECT=autotest
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 

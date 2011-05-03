@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="~arm ~amd64 ~x86"
 
@@ -24,7 +25,6 @@ DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 
-CROS_WORKON_PROJECT="login_manager"
 CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_compile() {

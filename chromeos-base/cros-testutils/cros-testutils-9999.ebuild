@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
+CROS_WORKON_PROJECT="chromiumos/platform/crostestutils"
 
 inherit cros-workon
 
@@ -12,7 +13,6 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 
-CROS_WORKON_PROJECT="crostestutils"
 CROS_WORKON_LOCALNAME="crostestutils"
 
 

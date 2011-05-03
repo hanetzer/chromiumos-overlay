@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-assets"
 
 inherit cros-workon toolchain-funcs
 
@@ -18,7 +19,6 @@ DEPEND=""
 RDEPEND=""
 
 CROS_WORKON_LOCALNAME="chromiumos-assets"
-CROS_WORKON_PROJECT="chromiumos-assets"
 
 src_install() {
 	insinto /usr/share/chromeos-assets/images

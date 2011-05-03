@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
 
 KEYWORDS="~amd64 ~x86 ~arm"
 
@@ -25,7 +26,6 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	valgrind? ( dev-util/valgrind )"
 
-CROS_WORKON_PROJECT="dm-verity"
 
 src_compile() {
 	tc-export CXX

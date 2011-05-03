@@ -101,7 +101,7 @@ src_unpack() {
   else
     mkdir ${GITDIR}
     cd ${GITDIR} || die "Could not enter ${GITDIR}"
-    git clone http://git.chromium.org/git/gcc.git . || die "Could not clone repo."
+    git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
     if [[ "${PV}" != "${MY_PV}" ]] ; then
       GITHASH=$(git rev-list --max-count=1 --all)
       echo "Getting latest hash: ${GITHASH}..."

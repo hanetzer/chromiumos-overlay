@@ -6,6 +6,7 @@
 # this is fixed.
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
 
@@ -24,7 +25,6 @@ DEPEND="app-arch/cpio
 RDEPEND=""
 
 CROS_WORKON_LOCALNAME="../platform/initramfs"
-CROS_WORKON_PROJECT="initramfs"
 
 INITRAMFS_TMP_S=${WORKDIR}/initramfs_tmp
 # Suffixed with cpio or not recognize filetype.

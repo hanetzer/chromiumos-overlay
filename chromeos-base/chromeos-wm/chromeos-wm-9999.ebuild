@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/window_manager"
 
 inherit cros-debug cros-workon flag-o-matic toolchain-funcs
 
@@ -45,7 +46,6 @@ print_num_jobs() {
 }
 
 CROS_WORKON_LOCALNAME="window_manager"
-CROS_WORKON_PROJECT="window_manager"
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM

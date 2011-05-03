@@ -3,7 +3,7 @@
 
 EAPI=2
 
-EGIT_REPO_URI="http://git.chromium.org/git/kernel.git"
+EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/kernel.git"
 EGIT_COMMIT="d4e4d17a56d83874d66b4ca3efeaaa4c0d97c338"
 
 inherit git

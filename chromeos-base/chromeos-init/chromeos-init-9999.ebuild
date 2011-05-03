@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/init"
 
 inherit cros-workon
 
@@ -23,7 +24,6 @@ RDEPEND="chromeos-base/audioconfig-board
 	sys-apps/upstart"
 
 CROS_WORKON_LOCALNAME="init"
-CROS_WORKON_PROJECT="init"
 
 make_partition_devices() {
 	block=$1

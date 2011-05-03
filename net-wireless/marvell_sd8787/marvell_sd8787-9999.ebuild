@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/marvell"
 
 inherit eutils cros-workon
 
@@ -19,7 +20,6 @@ DEPEND=""
 RDEPEND=""
 
 CROS_WORKON_LOCALNAME="marvell"
-CROS_WORKON_PROJECT="marvell"
 
 src_install() {
     dodir /lib/firmware/mrvl || die

@@ -10,6 +10,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE="truetype"
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/grub2"
 
 RDEPEND=">=sys-libs/ncurses-5.2-r5
 	dev-libs/lzo
@@ -20,7 +21,6 @@ PROVIDE="virtual/bootloader"
 
 export STRIP_MASK="*/grub/*/*.mod"
 
-CROS_WORKON_PROJECT="grub2"
 CROS_WORKON_LOCALNAME="grub2"
 
 src_configure() {

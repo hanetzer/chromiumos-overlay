@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
@@ -30,7 +31,6 @@ DEPEND="
 	chromeos-base/libchromeos
 	${RDEPEND}"
 
-CROS_WORKON_PROJECT="cryptohome"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
 
 # TODO(msb): fix this ugly hackery

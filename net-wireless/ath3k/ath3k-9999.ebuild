@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/atheros"
 
 inherit cros-workon
 
@@ -15,7 +16,6 @@ IUSE=""
 
 RESTRICT="binchecks strip test"
 CROS_WORKON_LOCALNAME="atheros"
-CROS_WORKON_PROJECT="${CROS_WORKON_LOCALNAME}"
 DEPEND=""
 RDEPEND=""
 

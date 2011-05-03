@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
 inherit binutils-funcs
@@ -38,7 +39,6 @@ else
 	fi
 fi
 
-CROS_WORKON_PROJECT="kernel"
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
 CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 

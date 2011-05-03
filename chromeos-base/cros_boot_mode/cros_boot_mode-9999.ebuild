@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/cros_boot_mode"
 
 KEYWORDS="~amd64 ~arm ~x86"
 
@@ -23,7 +24,6 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	valgrind? ( dev-util/valgrind )"
 
-CROS_WORKON_PROJECT="cros_boot_mode"
 
 src_compile() {
 	tc-export CXX

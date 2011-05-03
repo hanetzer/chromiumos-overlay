@@ -9,6 +9,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/bootstub"
 
 DEPEND="sys-boot/gnu-efi"
 

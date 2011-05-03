@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/image-burner"
 
 KEYWORDS="~arm ~amd64 ~x86"
 
@@ -20,7 +21,6 @@ RDEPEND="chromeos-base/libchromeos
 
 DEPEND="${RDEPEND}"
 
-CROS_WORKON_PROJECT="image-burner"
 CROS_WORKON_LOCALNAME="${CROS_WORKON_PROJECT}"
 
 src_compile() {
