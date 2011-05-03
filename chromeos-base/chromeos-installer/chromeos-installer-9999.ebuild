@@ -17,14 +17,18 @@ IUSE="cros_host"
 DEPEND="!!<=dev-util/crosutils-0.0.1-r1"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
-# TODO(hungte): gzip is primarily for chromeos-firmware (also here for safety).
-#               chromeos-installer may depend on chromeos-firmware in future.
-RDEPEND="app-arch/gzip
-         dev-libs/shflags
-         sys-apps/coreutils
-         sys-apps/util-linux
-         sys-fs/dosfstools
-         sys-fs/e2fsprogs"
+RDEPEND="app-admin/sudo
+	chromeos-base/vboot_reference
+	chromeos-base/vpd
+	dev-libs/shflags
+	sys-apps/coreutils
+	sys-apps/flashrom
+	sys-apps/hdparm
+	sys-apps/rootdev
+	sys-apps/util-linux
+	sys-apps/which
+	sys-fs/dosfstools
+	sys-fs/e2fsprogs"
 
 CROS_WORKON_LOCALNAME="installer"
 

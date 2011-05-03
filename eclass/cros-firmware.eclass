@@ -42,16 +42,29 @@ CROS_WORKON_PROJECT="firmware"
 # don't write RDEPEND=$DEPEND. RDEPEND should have an explicit list of what it
 # needs to extract and execute the updater.
 DEPEND="
-	>=sys-apps/flashrom-0.9.3-r36
 	>=chromeos-base/vboot_reference-1.0-r230
+	dev-libs/shflags
+	>=sys-apps/flashrom-0.9.3-r36
 	x86? ( sys-apps/mosys )
 	"
 
+# Maintenance note:  The factory install shim downloads and executes
+# the firmware updater.  Consequently, runtime dependencies for the
+# updater are also runtime dependencies for the install shim.
+#
+# The contents of RDEPEND below must also be present in the
+# chromeos-base/chromeos-factoryinstall ebuild in PROVIDED_DEPEND.
+# If you make any change to the list below, you may need to make a
+# matching change in the factory install ebuild.
+#
 # TODO(hungte) remove gzip/tar if we have busybox
 RDEPEND="
 	app-arch/gzip
 	app-arch/sharutils
-	app-arch/tar "
+	app-arch/tar
+	chromeos-base/vboot_reference
+	sys-apps/mosys
+	sys-apps/util-linux"
 
 # Check for EAPI 2 or 3
 case "${EAPI:-0}" in
