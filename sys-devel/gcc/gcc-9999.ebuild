@@ -57,7 +57,7 @@ fi
 
 RESTRICT="mirror"
 
-IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx vanilla"
+IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx thumb vanilla"
 
 GCC_CONFIG_VER=${PV}
 MY_PV=4.4.3
@@ -236,6 +236,11 @@ src_configure()
   if use hardfp && [[ ${CTARGET} == arm* ]] ;
   then
     confgcc="${confgcc} --with-float=hard"
+  fi
+
+  if use thumb && [[ ${CTARGET} == arm* ]] ;
+  then
+    confgcc="${confgcc} --with-mode=thumb"
   fi
 
   local needed_libc="glibc"
