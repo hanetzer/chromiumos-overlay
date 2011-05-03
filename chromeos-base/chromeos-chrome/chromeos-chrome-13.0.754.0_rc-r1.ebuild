@@ -678,6 +678,8 @@ install_pyauto_dep_resources() {
 	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/bin
 	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
 		"${TEST_DIR}"/bin
+	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
+		"${TEST_DIR}"
 
 	install_third_party_resources "${TEST_DIR}"
 }
