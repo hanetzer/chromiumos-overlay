@@ -16,7 +16,8 @@ HOMEPAGE="http://cairographics.org/"
 LICENSE="|| ( LGPL-2.1 MPL-1.1 )"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~x86-fbsd ~x86-freebsd ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="X aqua debug directfb doc drm gallium opengl openvg qt4 static-libs +svg xcb"
+IUSE="X aqua debug directfb doc drm gallium opengl openvg qt4 static-libs +svg
+	xcb cairo-perf-trace"
 
 # Test causes a circular depend on gtk+... since gtk+ needs cairo but test needs gtk+ so we need to block it
 RESTRICT="test"
@@ -144,8 +145,21 @@ src_configure() {
 		${myopts}
 }
 
+src_compile() {
+	emake || die "Build failed"
+
+	if use cairo-perf-trace; then
+		emake -C "${S}/perf" cairo-perf-trace || \
+		    die "cairo-perf-trace build failed"
+	fi
+}
+
 src_install() {
 	# parallel make install fails
 	emake -j1 DESTDIR="${D}" install || die "Installation failed"
 	dodoc AUTHORS ChangeLog NEWS README || die
+
+	if use cairo-perf-trace; then
+		dobin "${S}/perf/.libs/cairo-perf-trace" || die
+	fi
 }
