@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="86ba93b524719c1913044570fa6c62c6da571706"
+CROS_WORKON_COMMIT="0a8453f5d2a7ef9f8d8921857fad30d92637c8a7"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -15,10 +15,12 @@ IUSE="test"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="dev-cpp/gflags
-	dev-cpp/glog"
+	dev-cpp/glog
+	dev-libs/glib"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
+	chromeos-base/libchromeos
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 
@@ -26,8 +28,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	# TODO(davidjames): parallel builds
-	scons || die "shill compile failed."
+	emake shill || die "shill compile failed."
 }
 
 src_test() {
@@ -35,7 +36,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 
 	# Build tests
-	scons tests || die "tests compile failed."
+	emake shill_unittest || die "tests compile failed."
 
 	# Run tests if we're on x86
 	if ! use x86 ; then
