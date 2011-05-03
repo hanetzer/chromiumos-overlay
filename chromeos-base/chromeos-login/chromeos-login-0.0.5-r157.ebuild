@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ff8544769fb3c7d28e0dae242e0fab206ca2009a"
+CROS_WORKON_COMMIT="094060f7c35db5206d4bfa6acdf390bf3c86f924"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -16,9 +16,13 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test"
 
-RDEPEND="dev-libs/protobuf
-	chromeos-base/chromeos-cryptohome
-	chromeos-base/chromeos-minijail"
+RDEPEND="chromeos-base/chromeos-cryptohome
+	chromeos-base/chromeos-minijail
+	dev-libs/dbus-glib
+	dev-libs/glib
+	dev-libs/nss
+	dev-libs/protobuf
+	x11-libs/gtk+"
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-chrome
