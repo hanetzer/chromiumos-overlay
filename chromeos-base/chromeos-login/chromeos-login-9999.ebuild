@@ -15,9 +15,13 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test"
 
-RDEPEND="dev-libs/protobuf
-	chromeos-base/chromeos-cryptohome
-	chromeos-base/chromeos-minijail"
+RDEPEND="chromeos-base/chromeos-cryptohome
+	chromeos-base/chromeos-minijail
+	dev-libs/dbus-glib
+	dev-libs/glib
+	dev-libs/nss
+	dev-libs/protobuf
+	x11-libs/gtk+"
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-chrome
