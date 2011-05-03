@@ -31,14 +31,14 @@ DEPEND="
 	chromeos-base/libchromeos
 	${RDEPEND}"
 
-CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
+CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
 # TODO(msb): fix this ugly hackery
 src_unpack() {
 	cros-workon_src_unpack
 	pushd "${S}"
-	mkdir "${CROS_WORKON_PROJECT}"
-	mv * "${CROS_WORKON_PROJECT}"
+	mkdir "${CROS_WORKON_LOCALNAME}"
+	mv * "${CROS_WORKON_LOCALNAME}"
 	popd
 }
 

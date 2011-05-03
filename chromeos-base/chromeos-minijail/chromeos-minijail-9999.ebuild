@@ -21,7 +21,7 @@ DEPEND="test? ( dev-cpp/gtest )
 	chromeos-base/libchromeos
 	${RDEPEND}"
 
-CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT}
+CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
