@@ -128,6 +128,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-allow-missing-digests".patch
 	epatch "${FILESDIR}/${P}-atoms".patch
 	epatch "${FILESDIR}/${P}-mergeprocess".patch
+	epatch "${FILESDIR}/${P}-rebuild".patch
+	epatch "${FILESDIR}/${P}-rpath".patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION=.*/VERSION=\"${PVR}\"/" -i pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"

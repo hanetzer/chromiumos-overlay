@@ -1,21 +1,33 @@
-commit d0fb8a3a7c07328ba7e1d2427f10fd0a7b664220
+commit d4816963e2e8e2006825e3057648eca90ccd5d86
 Author: David James <davidjames@google.com>
-Date:   Wed Mar 16 10:39:45 2011 -0700
+Date:   Wed Apr 27 15:07:12 2011 -0700
 
-    Add --nousepkg-atoms, --useoldpkg-atoms, and --reinstall-atoms flag to Portage
+    emerge: add 3 new options similar to --exclude
     
-    reinstall-atoms accepts a space separated list of package names or slot atoms. Emerge will treat matching packages as if they are not installed, and reinstall them if necessary.
+    Add --nousepkg-atoms, --useoldpkg-atoms, and --reinstall-atoms flag
+    to Portage
     
-    useoldpkg-atoms accepts a space separated list of package names or slot atoms. Emerge will prefer matching binary packages over newer unbuilt packages. This is useful in case you want to request that a particular package won't be rebuilt from source.
+    reinstall-atoms accepts a space separated list of package names or
+    slot atoms. Emerge will treat matching packages as if they are not
+    installed, and reinstall them if necessary.
     
-    nousepkg-atoms accepts a space separated list of package names or slot atoms. Emerge will ignore matching binary packages.
+    useoldpkg-atoms accepts a space separated list of package names or
+    slot atoms. Emerge will prefer matching binary packages over newer
+    unbuilt packages. This is useful in case you want to request that a
+    particular package won't be rebuilt from source.
+    
+    nousepkg-atoms accepts a space separated list of package names or
+    slot atoms. Emerge will ignore matching binary packages.
     
     Change-Id: I0d73039c6a4cd63695b28ffc80215628e0e05c95
     
-    BUG=chromium-os:12507
-    TEST=Try out the flag
+    BUG=chromium-os:12507 TEST=Try out the flag
     
     Review URL: http://codereview.chromium.org/6577024
+    (cherry picked from commit 80b72a3e8a1d0e04f430db3a7f5924f123362d7c)
+    
+    emerge: add --help for 3 new options
+    (cherry picked from commit 16cca624a56e9f5032c83b88e9b58349ac87319f)
 
 diff --git a/man/emerge.1 b/man/emerge.1
 index 0be6e29..ae65c70 100644
@@ -232,8 +244,53 @@ index 91ec759..a3eae01 100644
  			matched_packages = [pkg for pkg in matched_packages \
  				if portage.dep.cpvequal(pkg.cpv, bestmatch)]
  
+diff --git a/pym/_emerge/help.py b/pym/_emerge/help.py
+index a120f54..ffc81e9 100644
+--- a/pym/_emerge/help.py
++++ b/pym/_emerge/help.py
+@@ -550,6 +550,12 @@ def help(myopts, havecolor=1):
+ 		print("       "+green("--nospinner"))
+ 		print("              Disables the spinner regardless of terminal type.")
+ 		print()
++		print("       " + green("--nousepkg-atoms") + " " + turquoise("ATOMS"))
++		desc = "A space separated list of package names or slot atoms." + \
++			" Emerge will ignore matching binary packages."
++		for line in wrap(desc, desc_width):
++			print(desc_indent + line)
++		print()
+ 		print("       "+green("--oneshot")+" ("+green("-1")+" short option)")
+ 		print("              Emerge as normal, but don't add packages to the world profile.")
+ 		print("              This package will only be updated if it is depended upon by")
+@@ -627,6 +633,13 @@ def help(myopts, havecolor=1):
+ 		print("              not trigger reinstallation when flags that the user has not")
+ 		print("              enabled are added or removed.")
+ 		print()
++		print("       " + green("--reinstall-atoms") + " " + turquoise("ATOMS"))
++		desc = "A space separated list of package names or slot atoms. " + \
++			"Emerge will treat matching packages as if they are not " + \
++			"installed, and reinstall them if necessary."
++		for line in wrap(desc, desc_width):
++			print(desc_indent + line)
++		print()
+ 		print("       "+green("--root=DIR"))
+ 		desc = "Set the ROOT environment variable " + \
+ 			"which is documented in the emerge(1) man page."
+@@ -709,6 +722,13 @@ def help(myopts, havecolor=1):
+ 		for line in wrap(desc, desc_width):
+ 			print(desc_indent + line)
+ 		print()
++		print("       " + green("--useoldpkg-atoms") + " " + turquoise("ATOMS"))
++		desc = "A space separated list of package names or slot atoms." + \
++			" Emerge will prefer matching binary packages over newer" + \
++			" unbuilt packages."
++		for line in wrap(desc, desc_width):
++			print(desc_indent + line)
++		print()
+ 		print("       " + green("--usepkg") + \
+ 			" [ %s | %s ] (%s short option)" % \
+ 			(turquoise("y"), turquoise("n"), green("-k")))
 diff --git a/pym/_emerge/main.py b/pym/_emerge/main.py
-index e89e8bb..e76f67e 100644
+index e89e8bb..86824cb 100644
 --- a/pym/_emerge/main.py
 +++ b/pym/_emerge/main.py
 @@ -544,6 +544,23 @@ def insert_optional_args(args):
@@ -303,7 +360,7 @@ index e89e8bb..e76f67e 100644
  		"--usepkg": {
  			"shortopt" : "-k",
  			"help"     : "use binary packages",
-@@ -852,32 +891,28 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -852,30 +891,29 @@ def parse_opts(tmpcmdline, silent=False):
  			myoptions.depclean_lib_check = True
  
  	if myoptions.exclude:
@@ -332,8 +389,6 @@ index e89e8bb..e76f67e 100644
  			parser.error("Invalid Atom(s) in --exclude parameter: '%s' (only package names and slot atoms (with wildcards) allowed)\n" % \
  				(",".join(bad_atoms),))
  
--	if myoptions.fail_clean in true_y:
--		myoptions.fail_clean = True
 +	if myoptions.reinstall_atoms:
 +		bad_atoms = _find_bad_atoms(myoptions.reinstall_atoms)
 +		if bad_atoms and not silent:
@@ -351,6 +406,7 @@ index e89e8bb..e76f67e 100644
 +		if bad_atoms and not silent:
 +			parser.error("Invalid Atom(s) in --useoldpkg-atoms parameter: '%s' (only package names and slot atoms (with wildcards) allowed)\n" % \
 +				(",".join(bad_atoms),))
++
+ 	if myoptions.fail_clean in true_y:
+ 		myoptions.fail_clean = True
  
- 	if myoptions.getbinpkg in true_y:
- 		myoptions.getbinpkg = True
