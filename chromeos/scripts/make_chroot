@@ -94,12 +94,7 @@ function in_chroot {
 function bash_chroot {
   # Use $* not $@ since 'bash -c' needs a single arg
   # Use -l to force source of /etc/profile (login shell)
-  sudo chroot "$FLAGS_chroot" bash -l -c "$*"
-}
-
-function sudo_chroot {
-  # Does the equivalent of an enter_chroot
-  sudo chroot "$FLAGS_chroot" sudo -i -u $USER -- "$@"
+  sudo chroot "$FLAGS_chroot" env ${CHROOT_PASSTHRU} bash -l -c "$*"
 }
 
 function cleanup {
@@ -163,6 +158,9 @@ function init_setup () {
    # the user's already typed in one sudo password...)
    bash_chroot "echo Defaults env_keep += CROS_WORKON_SRCROOT >> /etc/sudoers"
    bash_chroot "echo Defaults env_keep += CHROMEOS_OFFICIAL >> /etc/sudoers"
+   bash_chroot "echo Defaults env_keep += http_proxy >> /etc/sudoers"
+   bash_chroot "echo Defaults env_keep += ftp_proxy >> /etc/sudoers"
+   bash_chroot "echo Defaults env_keep += all_proxy >> /etc/sudoers"
    bash_chroot "echo %adm ALL=\(ALL\) ALL >> /etc/sudoers"
    bash_chroot "echo root ALL=\(ALL\) ALL >> /etc/sudoers"
    bash_chroot "echo $USER ALL=NOPASSWD: ALL >> /etc/sudoers"
@@ -271,6 +269,15 @@ PORTAGE_STABLE_OVERLAY="/usr/local/portage/stable"
 CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
+CHROOT_PASSTHRU="CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\" PORTAGE_USERNAME=\"$USER\""
+
+# Pass proxy variables into the environment.
+for type in http ftp all; do
+   value=$(env | grep ${type}_proxy || true)
+   if [ -n "${value}" ]; then
+      CHROOT_PASSTHRU="${CHROOT_PASSTHRU} ${value}"
+   fi
+done
 
 # Create the base Gentoo stage3 based on last version put in chroot
 STAGE3="${OVERLAY}/chromeos/stage3/stage3-amd64-${FLAGS_stage3_date}.tar.bz2"
@@ -354,8 +361,7 @@ EOF
 sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
 echo "$SCRIPT_NAME: Running emerge hard-host-depends"
-# Need to sudo_chroot here so that ~/.bash_profile gets used
-sudo_chroot sudo $EMERGE_CMD -uDNv $USEPKG hard-host-depends world $EMERGE_JOBS
+bash_chroot $EMERGE_CMD -uDNv $USEPKG hard-host-depends world $EMERGE_JOBS
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
