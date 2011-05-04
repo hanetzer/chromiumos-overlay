@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5646f353a0e000d9ef8cc5cad1eed92f611d03e1"
+CROS_WORKON_COMMIT="1ee1ebf09148c65d66f3070c64f89bd270d7c3f5"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
 
 inherit toolchain-funcs
