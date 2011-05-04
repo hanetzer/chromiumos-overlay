@@ -1,0 +1,19 @@
+
+
+*esp_cc1_ssp:
+%{!fno-stack-protector: %{!fno-stack-protector-all: -fstack-protector-all}}
+
+*esp_cc1_pie:
+%{!nopie: %{!D__KERNEL__: %{!static: %{!fno-PIC: %{!fno-pic: %{!shared: %{!nostdlib: %{!nostartfiles: %{!fno-PIE: %{!fno-pie: %{!nopie: %{!fPIC: %{!fpic:-fPIE} } } } } } } } } } } } }
+
+*esp_link:
+%(esp_link_now) %(esp_link_pie) %(esp_link_relro)
+
+*esp_link_now:
+-z now
+
+*esp_link_relro:
+-z relro
+
+*esp_link_pie:
+%{!nopie: %{!static: %{!A: %{!shared: %{!nostdlib: %{!nostartfiles: %{!fno-PIE: %{!fno-pie: -pie} } } } } } } } %{pie: -pie}

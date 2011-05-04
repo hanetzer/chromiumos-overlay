@@ -50,7 +50,7 @@ DEFINE_string binutils_version "2.20.1-r7" \
   "Version of binutils to use."
 DEFINE_string gcc_version "4.4.3-r7" \
   "Version of gcc to use."
-DEFINE_string libc_version "2.10.1-r2" \
+DEFINE_string libc_version "2.10.1-r3" \
   "Version of libc to use."
 DEFINE_string kernel_version "2.6.30-r1" \
   "Version of kernel headers to use."
@@ -90,17 +90,6 @@ EOF
   sudo chown root:root ${target}
   eval ${command^^}_WRAPPER="${target}" # ${foo^^} returns toupper($foo)
   echo created wrapper ${target}
-}
-
-tc_pkg_needs_update() {
-  CURRENT_VERSION=$(equery l cross-${FLAGS_toolchain}/* | grep $1 | \
-    cut -d '/' -f 2 | cut -d '-' -f 2-)
-  eval NEW_VERSION="\${FLAGS_${1}_version}"
-  if [ "${CURRENT_VERSION}" == "${NEW_VERSION}" ]; then
-    echo ${FLAGS_FALSE}
-  else
-    echo ${FLAGS_TRUE}
-  fi
 }
 
 uninstall_toolchain() {
@@ -176,12 +165,34 @@ ${LIBC_TAR}"
 
   # We need to install libstdc++ manually from the cross toolchain.
   # TODO: Figure out a better way of doing this?
-  sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/lib"
-  sudo cp -a /usr/lib/debug/usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libgcc_s.so* "${BOARD_ROOT}/usr/lib/debug/lib" || warn "libgcc debug info not copied."
-  sudo cp -a /usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* \
-      "${BOARD_ROOT}/usr/lib"
-  sudo cp -a /usr/lib/debug/usr/lib/gcc/"${FLAGS_toolchain}"/"${GCC_VERSION}"/libstdc++.so* "${BOARD_ROOT}/usr/lib/debug/usr/lib" || warn "libstdc++ debug info not copied."
 
+  GCC_FILES=$(equery f cross-${FLAGS_toolchain}/gcc-${GCC_VERSION})
+  LIBGCC_FILE=$(echo "${GCC_FILES}" | grep libgcc_s.so$ | head -n1)
+  LIBGCC_DEBUG_FILE=$(echo "${GCC_FILES}" | grep libgcc_s.*debug$ | head -n1)
+  LIBSTDCXX_FILE=$(echo "${GCC_FILES}" | grep libstdc++.so$ | head -n1)
+  LIBSTDCXX_DEBUG_FILE=$(echo "${GCC_FILES}" | grep libstdc++.so.*debug$ | head -n1)
+
+  if [[ -z $LIBGCC_FILE || -z $LIBSTDCXX_FILE ]]
+  then
+    error "Could not find libgcc_s.so/libstdc++_s.so. Is
+           =cross-${FLAGS_toolchain}/gcc-${GCC_VERSION}
+           emerged properly?"
+    exit 1
+  else
+    sudo cp -a ${LIBGCC_FILE}* "${BOARD_ROOT}/lib"
+    sudo cp -a ${LIBSTDCXX_FILE}* \
+      "${BOARD_ROOT}/usr/lib"
+  fi
+
+  if [[ -z $LIBGCC_DEBUG_FILE || -z $LIBSTDCXX_DEBUG_FILE ]]
+  then
+    warn "libgcc/libstdc++ debug info not found."
+  else
+    sudo cp -a ${LIBGCC_DEBUG_FILE}* "${BOARD_ROOT}/usr/lib/debug/lib" \
+      || warn "libgcc debug info not copied."
+    sudo cp -a ${LIBSTDCXX_DEBUG_FILE}* "${BOARD_ROOT}/usr/lib/debug/usr/lib" \
+      || warn "libstdc++ debug info not copied."
+  fi
 
   # Some header files are needed also for rpcbind (NFS support)
   # TODO: Figure out a better way of doing this too?
@@ -307,9 +318,11 @@ if ! ${HOST_BOARD} ; then
   sudo mkdir -p ${CROSSDEV_OVERLAY}
   sudo chmod 755 ${CROSSDEV_OVERLAY}
 
-  if [ "$(tc_pkg_needs_update "binutils")" = "$FLAGS_TRUE" ] ||
-    [ "$(tc_pkg_needs_update "gcc")" = "$FLAGS_TRUE" ] ||
-    [ "$(tc_pkg_needs_update "libc")" = "$FLAGS_TRUE" ]; then
+
+  if ! (equery l cross-${FLAGS_toolchain}/gcc-${FLAGS_gcc_version} &&
+    equery l cross-${FLAGS_toolchain}/binutils-${FLAGS_binutils_version} &&
+    equery l cross-${FLAGS_toolchain}/glibc-${FLAGS_libc_version} )
+  then
     warn "Toolchain needs to be updated! Updating toolchain..."
     uninstall_toolchain
     build_toolchain
