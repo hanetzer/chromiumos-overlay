@@ -19,12 +19,13 @@ RESTRICT="strip mirror"
 
 S="${WORKDIR}"
 
+# >glibc-2.4 dependency is removed to workaround bug in gmerge.
+# See http://crosbug.com/9991
 NATIVE_DEPS="x11-libs/gtk+:2
 	media-libs/fontconfig
 	dev-libs/nss
 	net-misc/curl
-	vdpau? ( x11-libs/libvdpau )
-	>=sys-libs/glibc-2.4"
+	vdpau? ( x11-libs/libvdpau )"
 
 EMUL_DEPS="vdpau? ( >=app-emulation/emul-linux-x86-xlibs-20110129 )
 	>=app-emulation/emul-linux-x86-gtklibs-20100409-r1
@@ -36,8 +37,8 @@ RDEPEND="x86? ( $NATIVE_DEPS )
 	|| ( media-fonts/liberation-fonts media-fonts/corefonts )
 	${DEPEND}"
 
-# Where should this all go? (Bug #328639)
-INSTALL_BASE="opt/Adobe/flash-player"
+# Chromium expects that flash is installed to /opt/netscape/plugins.
+INSTALL_BASE="opt/netscape/plugins"
 
 # Ignore QA warnings in these binary closed-source libraries, since we can't fix
 # them:
