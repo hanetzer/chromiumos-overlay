@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # WARNING: cros_workon cannot detect changes to files/, please ensure
@@ -40,8 +40,12 @@ build_initramfs_file() {
 	mkdir -p ${INITRAMFS_TMP_S}/stateful ${INITRAMFS_TMP_S}/tmp
 	mkdir -p ${INITRAMFS_TMP_S}/log
 
-	# Insure cgpt is statically linked
-	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
+	# Copy source files not merged from our dependencies.
+	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
+	chmod +x "${INITRAMFS_TMP_S}/init"
+	for shlib in {recovery,factory}_init.sh; do
+	  cp "${S}"/${shlib} ${INITRAMFS_TMP_S}/lib/ || die
+	done
 
 	# Load libraries for busybox and dmsetup
 	# TODO: how can ebuilds support static busybox?
@@ -73,6 +77,7 @@ build_initramfs_file() {
 	done
 
 	cp ${ROOT}/bin/busybox ${INITRAMFS_TMP_S}/bin || die
+	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
 
 	# For verified rootfs
 	cp ${ROOT}/sbin/dmsetup ${INITRAMFS_TMP_S}/bin || die
@@ -83,19 +88,18 @@ build_initramfs_file() {
 	cp ${ROOT}/usr/bin/vbutil_kernel ${INITRAMFS_TMP_S}/bin || die
 	cp ${ROOT}/usr/bin/crossystem ${INITRAMFS_TMP_S}/bin || die
 
+	# Insure cgpt is statically linked
+	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
 	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
+
 	cp ${ROOT}/usr/sbin/chromeos-common.sh ${INITRAMFS_TMP_S}/usr/sbin || die
 	cp ${ROOT}/usr/sbin/chromeos-findrootfs ${INITRAMFS_TMP_S}/usr/sbin || die
 
-	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
-	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
-	chmod +x "${INITRAMFS_TMP_S}/init"
-
 	# The kernel emake expects the file in cpio format.
-	pushd "${INITRAMFS_TMP_S}"; find . | cpio -o -H newc | gzip -9 \
-		> "${WORKDIR}/${INITRAMFS_FILE}" \
-		|| die "cannot package initramfs"
-	popd
+	( cd "${INITRAMFS_TMP_S}"
+	  find . | cpio -o -H newc |
+		gzip -9 > "${WORKDIR}/${INITRAMFS_FILE}" ) ||
+		die "cannot package initramfs"
 }
 
 src_compile() {
