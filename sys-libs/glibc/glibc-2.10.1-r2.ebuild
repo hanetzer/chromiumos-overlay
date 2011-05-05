@@ -203,6 +203,9 @@ eblit-src_unpack-post() {
 		cp -f "${FILESDIR}"/2.10/glibc-2.10-gentoo-chk_fail.c \
 			debug/chk_fail.c || die
 
+		einfo "Adding -fno-asynchronous-unwind-tables to initfini.s for i386"
+		epatch "${FILESDIR}"/2.10/glibc-2.10-unwind-tables.patch
+
 		if use debug ; then
 			# When using Hardened Gentoo stack handler, have smashes dump core for
 			# analysis - debug only, as core could be an information leak

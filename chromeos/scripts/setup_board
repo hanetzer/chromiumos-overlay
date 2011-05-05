@@ -50,7 +50,7 @@ DEFINE_string binutils_version "2.20.1-r7" \
   "Version of binutils to use."
 DEFINE_string gcc_version "4.4.3-r7" \
   "Version of gcc to use."
-DEFINE_string libc_version "2.10.1-r3" \
+DEFINE_string libc_version "2.10.1-r2" \
   "Version of libc to use."
 DEFINE_string kernel_version "2.6.30-r1" \
   "Version of kernel headers to use."
