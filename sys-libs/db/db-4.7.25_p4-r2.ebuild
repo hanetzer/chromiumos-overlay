@@ -79,6 +79,11 @@ src_unpack() {
 }
 
 src_compile() {
+	if use arm ; then
+		append-cflags "-marm"
+		appennd-cxxflags "-marm"
+	fi
+
 	local myconf=''
 
 	# compilation with -O0 fails on amd64, see bug #171231
