@@ -152,11 +152,10 @@ ${LIBC_TAR}"
     LIBC_PATH="${OLD_LIBC_PATH}"
   fi
 
-  LIBC_TMP=$(mktemp -d)
-  tar jxpf "${LIBC_PATH}" -C "${LIBC_TMP}"
-  sudo mv ${LIBC_TMP}/usr/${FLAGS_toolchain}/* ${BOARD_ROOT}
+  # Install libc libraries.
+  sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}" ./usr/${FLAGS_toolchain} --strip-components=3
   sudo mkdir -p ${BOARD_ROOT}/usr/lib/debug
-  sudo mv ${LIBC_TMP}/usr/lib/debug/usr/${FLAGS_toolchain}/*  ${BOARD_ROOT}/usr/lib/debug || warn "libc debug info not copied."
+  sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}/usr/lib/debug" ./usr/lib/debug/usr/${FLAGS_toolchain} --strip-components=6 || warn "libc debug info not copied."
 
   # Symlink for libstdc++.la issues. It appears that when packages get merged
   # the .la files will be updated, and for libstdc++ it will use the wrong
@@ -165,12 +164,9 @@ ${LIBC_TAR}"
 
   # We need to install libstdc++ manually from the cross toolchain.
   # TODO: Figure out a better way of doing this?
-
   GCC_FILES=$(equery f cross-${FLAGS_toolchain}/gcc-${FLAGS_gcc_version})
   LIBGCC_FILE=$(echo "${GCC_FILES}" | grep libgcc_s.so$ | head -n1)
-  LIBGCC_DEBUG_FILE=$(echo "${GCC_FILES}" | grep libgcc_s.*debug$ | head -n1)
   LIBSTDCXX_FILE=$(echo "${GCC_FILES}" | grep libstdc++.so$ | head -n1)
-  LIBSTDCXX_DEBUG_FILE=$(echo "${GCC_FILES}" | grep libstdc++.so.*debug$ | head -n1)
 
   if [[ -z $LIBGCC_FILE || -z $LIBSTDCXX_FILE ]]
   then
@@ -182,16 +178,6 @@ ${LIBC_TAR}"
     sudo cp -a ${LIBGCC_FILE}* "${BOARD_ROOT}/lib"
     sudo cp -a ${LIBSTDCXX_FILE}* \
       "${BOARD_ROOT}/usr/lib"
-  fi
-
-  if [[ -z $LIBGCC_DEBUG_FILE || -z $LIBSTDCXX_DEBUG_FILE ]]
-  then
-    warn "libgcc/libstdc++ debug info not found."
-  else
-    sudo cp -a ${LIBGCC_DEBUG_FILE}* "${BOARD_ROOT}/usr/lib/debug/lib" \
-      || warn "libgcc debug info not copied."
-    sudo cp -a ${LIBSTDCXX_DEBUG_FILE}* "${BOARD_ROOT}/usr/lib/debug/usr/lib" \
-      || warn "libstdc++ debug info not copied."
   fi
 
   # Some header files are needed also for rpcbind (NFS support)
