@@ -12,7 +12,9 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
 SLOT="0"
 KEYWORDS="~amd64 arm ~ppc ~sparc x86"
-IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root +openssl smartcard sqlite"
+# TODO(simonjam): Figure out why +openssl broke certificate support. Until then,
+# openssl is disabled unlike upstream.
+IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root openssl +smartcard sqlite"
 
 COMMON_DEPEND="!net-misc/openswan
 	>=dev-libs/gmp-4.1.5
@@ -157,10 +159,6 @@ src_install() {
 		dir_ugid="root"
 	fi
 
-	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets
-	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
-	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
-
 	diropts -m 0750 -o ${dir_ugid} -g ${dir_ugid}
 	dodir /etc/ipsec.d \
 		/etc/ipsec.d/aacerts \
@@ -171,6 +169,11 @@ src_install() {
 		/etc/ipsec.d/ocspcerts \
 		/etc/ipsec.d/private \
 		/etc/ipsec.d/reqs
+
+	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets "{$D}"/etc/ipsec.d/cacerts/cacert.der 
+	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
+	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
+	dosym /mnt/stateful_partition/etc/cacert.der /etc/ipsec.d/cacerts/cacert.der || die
 
 	dodoc CREDITS NEWS README TODO || die
 
