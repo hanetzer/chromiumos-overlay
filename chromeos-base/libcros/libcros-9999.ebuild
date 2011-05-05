@@ -19,7 +19,6 @@ RDEPEND="app-i18n/ibus
 	dev-libs/glib
 	dev-libs/libpcre
 	sys-apps/dbus
-	sys-auth/consolekit
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}

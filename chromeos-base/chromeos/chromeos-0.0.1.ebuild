@@ -200,7 +200,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/upstart
 	sys-apps/ureadahead
 	sys-apps/util-linux
-	sys-auth/consolekit
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
