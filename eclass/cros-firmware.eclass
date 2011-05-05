@@ -7,9 +7,6 @@
 
 inherit cros-workon cros-binary
 
-CROS_WORKON_LOCALNAME="firmware"
-CROS_WORKON_PROJECT="firmware"
-
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_USER_NAME
 # @DESCRIPTION: (Optional) Name of user on BCS server
 : ${CROS_FIRMWARE_BCS_USER_NAME:=}
