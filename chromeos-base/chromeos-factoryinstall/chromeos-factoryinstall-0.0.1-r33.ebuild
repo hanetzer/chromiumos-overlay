@@ -15,14 +15,51 @@ SLOT="0"
 KEYWORDS="x86 arm"
 IUSE=""
 
-DEPEND="x86? ( sys-boot/syslinux )"
+# Factory install images operate by downloading content from a
+# server.  In some cases, the downloaded content contains programs
+# to be executed.  The downloaded programs may not be complete;
+# they could have dependencies on shared libraries or commands
+# that must be present in the factory install image.
+#
+# PROVIDED_DEPEND captures a minimal set of packages promised to be
+# provided for use by any downloaded program.  The list must contain
+# any package depended on by any downloaded program.
+#
+# Currently, the only downloaded program is the firmware installer;
+# the dependencies below are gleaned from eclass/cros-firmware.eclass.
+# Changes in that eclass must be reflected here.
+PROVIDED_DEPEND="
+	app-arch/gzip
+	app-arch/sharutils
+	app-arch/tar
+	chromeos-base/vboot_reference
+	sys-apps/mosys
+	sys-apps/util-linux"
 
-# TODO(nsanders): chromeos-initramfs doesn't compile on arm
-RDEPEND="x86? ( chromeos-base/chromeos-initramfs )
-         chromeos-base/chromeos-installer
-         chromeos-base/chromeos-init
-         chromeos-base/memento_softwareupdate
-         >=chromeos-base/vpd-0.0.1-r11"
+# COMMON_DEPEND tracks dependencies common to both DEPEND and
+# RDEPEND.
+#
+# For chromeos-init there's a runtime dependency because the factory
+# jobs depend on upstart jobs in that package.  There's a build-time
+# dependency because pkg_postinst in this ebuild edits specifc jobs
+# in that package.
+COMMON_DEPEND="chromeos-base/chromeos-init"
+
+DEPEND="$COMMON_DEPEND
+	x86? ( sys-boot/syslinux )"
+
+RDEPEND="$COMMON_DEPEND
+	$PROVIDED_DEPEND
+	x86? ( chromeos-base/chromeos-initramfs )
+	chromeos-base/chromeos-installer
+	chromeos-base/memento_softwareupdate
+	net-misc/htpdate
+	net-wireless/iw
+	sys-apps/flashrom
+	sys-apps/net-tools
+	sys-apps/parted
+	sys-apps/upstart
+	sys-fs/e2fsprogs"
 
 CROS_WORKON_LOCALNAME="factory_installer"
 
@@ -76,11 +113,7 @@ EOF
 	# Set network to start up another way
 	sed -i 's/login-prompt-visible/started udev/' \
 		"${ROOT}/etc/init/boot-complete.conf"
-	# No autoupdate!
-	sed -i 's/start on stopped boot-complete/start on never/' \
-		"${ROOT}/etc/init/software-update.conf"
 	# No TPM locking.
 	sed -i 's/start tcsd//' \
 		"${ROOT}/etc/init/tpm-probe.conf"
 }
-
