@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="76ef6382186215ef47f60318174fef1767fceaf2"
+CROS_WORKON_COMMIT="f63e430af0b4e2ec36ae7ad0d0da0716707b2c73"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
 inherit toolchain-funcs
