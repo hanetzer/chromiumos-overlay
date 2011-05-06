@@ -17,13 +17,15 @@ SLOT="0"
 IUSE="splitdebug test"
 
 RDEPEND="
+	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-libs/dbus-c++
 	dev-libs/glib
+	sys-apps/rootdev
+	sys-fs/udev
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-chrome
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 
