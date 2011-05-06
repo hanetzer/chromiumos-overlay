@@ -93,6 +93,12 @@ src_configure() {
 		--localstatedir=/var
 }
 
+src_compile() {
+	# TODO: Re-enable parallel-make when dependency issue with generated headers
+	# is fixed. See http://crosbug.com/15028
+	emake -j1 || die "emake failed"
+}
+
 src_install() {
 	emake DESTDIR="${D}" install || die "make install failed"
 
