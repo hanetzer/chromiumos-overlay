@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="84479"
+CROS_SVN_COMMIT="84514"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -508,6 +508,10 @@ strip_chrome_debug() {
 	echo ${1} | sed -e "s/\s\(-gstabs\|-ggdb\|-gdwarf\S*\)/ /"
 }
 
+strip_optimization_flags() {
+	echo ${1} | sed -e "s/\(\s\|^\)-O\S*/ /"
+}
+
 src_compile() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
@@ -534,6 +538,12 @@ src_compile() {
 		CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
 		einfo "Stripped debug flags for Chrome build"
 	fi
+
+	# The chrome makefiles specify -O flags already so removing
+	# portage flags
+	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
+	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
+	einfo "Stripped optimization flags for Chrome build"
 
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
 		chrome chrome_sandbox libosmesa.so default_extensions \
