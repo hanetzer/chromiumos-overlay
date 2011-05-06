@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="6d970c33f96e4bc269ad7b48a9ca186f1bcfb01f"
+CROS_WORKON_COMMIT="c67d4086d58b294897dc55fb673c4797aeeff4a0"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
@@ -14,7 +14,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64"
-IUSE="-compat_wireless -fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
+IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 PROVIDE="virtual/kernel"
 
@@ -84,10 +84,6 @@ src_configure() {
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | eval emake ${COMPILER_OPTS} ARCH=${kernel_arch} oldconfig || die
-
-	if use compat_wireless; then
-		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
-	fi
 }
 
 src_compile() {
@@ -110,14 +106,6 @@ src_compile() {
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		CROSS_COMPILE="${cross}" || die
-
-	if use compat_wireless; then
-		# compat-wireless support must be done after
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			$INITRAMFS \
-			ARCH=${kernel_arch} \
-			CROSS_COMPILE="${cross}" || die
-	fi
 }
 
 src_install() {
@@ -134,17 +122,6 @@ src_install() {
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		modules_install || die
-
-	if use compat_wireless; then
-		# compat-wireless modules are built+installed separately
-		# NB: the updates dir is handled specially by depmod
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			ARCH=${kernel_arch}\
-			CROSS_COMPILE="${cross}" \
-			INSTALL_MOD_DIR=updates \
-			INSTALL_MOD_PATH="${D}" \
-			modules_install || die
-	fi
 
 	eval emake ${COMPILER_OPTS} \
 		ARCH=${kernel_arch}\
