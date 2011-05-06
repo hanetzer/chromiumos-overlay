@@ -111,6 +111,9 @@ UPSTREAMED_PATCHES=(
 	"${FILESDIR}/1.9.3-0002-ValidateTree-needs-a-valid-borderClip-so-initialize-.patch"
 	"${FILESDIR}/1.9.3-0003-Eliminate-the-internal-MapWindow-UnmapWindow-cycle-a.patch"
 	"${FILESDIR}/1.9.3-0004-Since-extra-expose-events-are-no-longer-generated-du.patch"
+
+	# Fix the urxvt cursor with compositing.
+	"${FILESDIR}/1.9.3-no-damage-report.patch"
 	)
 
 PATCHES=(
@@ -141,7 +144,7 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-allow-root-none.patch"
 	# Dont load a default X cursor.
 	"${FILESDIR}/1.9.3-no-default-cursor.patch"
-	# Add a label for MT
+	# Add a label for MT.
 	"${FILESDIR}/1.9.3-mt-slot-label.patch"
 	)
 
