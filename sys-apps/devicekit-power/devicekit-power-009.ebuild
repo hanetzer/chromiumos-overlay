@@ -64,6 +64,9 @@ src_prepare() {
 	# Patch to fix systems with both current and energy
 	epatch "${FILESDIR}/${P}-power-now-current-and-energy.patch"
 
+	# Temporary patch to keep polling even if the battery is full
+	epatch "${FILESDIR}/${P}-fully-charged-polling-fix.patch"
+
 	intltoolize --force --copy --automake || die "intltoolize failed"
 	eautoreconf
 }

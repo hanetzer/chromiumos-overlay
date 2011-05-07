@@ -58,7 +58,7 @@
 =sys-apps/dbus-1.2.20-r4	x86 arm
 =sys-apps/devicekit-003		x86 arm
 =sys-apps/devicekit-disks-009-r2 x86 arm
-=sys-apps/devicekit-power-009-r2 x86 arm
+=sys-apps/devicekit-power-009-r3 x86 arm
 =sys-apps/fakeroot-1.12.4        x86 arm
 =sys-apps/flashrom-0.9.1	x86
 =sys-apps/keyutils-1.1  x86 arm
