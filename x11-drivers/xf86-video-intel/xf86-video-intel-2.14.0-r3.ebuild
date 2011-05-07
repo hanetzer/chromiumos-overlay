@@ -33,7 +33,6 @@ PATCHES=(
 	# Copy the initial framebuffer contents when starting X so we can get
 	# seamless transitions.
 	"${FILESDIR}/${PV}-copy-fb.patch"
-	"${FILESDIR}/${PV}-no-pageflip.patch"
 	"${FILESDIR}/${PV}-dri-drawable.patch"
 	"${FILESDIR}/${PV}-no-gamma.patch"
 )
