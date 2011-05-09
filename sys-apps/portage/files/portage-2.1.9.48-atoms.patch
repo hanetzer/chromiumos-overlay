@@ -1,4 +1,4 @@
-commit d4816963e2e8e2006825e3057648eca90ccd5d86
+commit 8bb9be21ebea068d999d8101a2190e4175e05003
 Author: David James <davidjames@google.com>
 Date:   Wed Apr 27 15:07:12 2011 -0700
 
@@ -30,10 +30,10 @@ Date:   Wed Apr 27 15:07:12 2011 -0700
     (cherry picked from commit 16cca624a56e9f5032c83b88e9b58349ac87319f)
 
 diff --git a/man/emerge.1 b/man/emerge.1
-index 0be6e29..ae65c70 100644
+index ce4deac..38c5058 100644
 --- a/man/emerge.1
 +++ b/man/emerge.1
-@@ -469,6 +469,10 @@ may have changed.
+@@ -475,6 +475,10 @@ may have changed.
  Disables the spinner for the session.  The spinner is active when the
  terminal device is determined to be a TTY.  This flag disables it regardless.
  .TP
@@ -44,7 +44,7 @@ index 0be6e29..ae65c70 100644
  .BR "\-\-oneshot " (\fB\-1\fR)
  Emerge as normal, but do not add the packages to the world file
  for later updating.
-@@ -539,6 +543,11 @@ changed since installation.  Unlike \fB\-\-newuse\fR, this option does
+@@ -545,6 +549,11 @@ changed since installation.  Unlike \fB\-\-newuse\fR, this option does
  not trigger reinstallation when flags that the user has not
  enabled are added or removed.
  .TP
@@ -56,7 +56,7 @@ index 0be6e29..ae65c70 100644
  .BR \-\-root=DIR
  Set the \fBROOT\fR environment variable.
  .TP
-@@ -596,6 +605,10 @@ atoms may match multiple versions of slotted packages.
+@@ -602,6 +611,10 @@ atoms may match multiple versions of slotted packages.
  Use unbuilt ebuild metadata for visibility
  checks on built packages.
  .TP
@@ -68,7 +68,7 @@ index 0be6e29..ae65c70 100644
  Tells emerge to use binary packages (from $PKGDIR) if they are available, thus 
  possibly avoiding some time\-consuming compiles.  This option is useful for CD 
 diff --git a/pym/_emerge/depgraph.py b/pym/_emerge/depgraph.py
-index 91ec759..a3eae01 100644
+index 0c36e3a..36aaaef 100644
 --- a/pym/_emerge/depgraph.py
 +++ b/pym/_emerge/depgraph.py
 @@ -69,6 +69,16 @@ class _scheduler_graph_config(object):
@@ -110,7 +110,7 @@ index 91ec759..a3eae01 100644
  
  class _depgraph_sets(object):
  	def __init__(self):
-@@ -1256,6 +1267,7 @@ class depgraph(object):
+@@ -1270,6 +1281,7 @@ class depgraph(object):
  		vardb = root_config.trees["vartree"].dbapi
  		traversed_virt_pkgs = set()
  
@@ -118,7 +118,7 @@ index 91ec759..a3eae01 100644
  		for atom, child in self._minimize_children(
  			pkg, dep_priority, root_config, selected_atoms[pkg]):
  
-@@ -1273,7 +1285,9 @@ class depgraph(object):
+@@ -1287,7 +1299,9 @@ class depgraph(object):
  
  			mypriority = dep_priority.copy()
  			if not atom.blocker:
@@ -129,7 +129,7 @@ index 91ec759..a3eae01 100644
  				if inst_pkgs:
  					for inst_pkg in inst_pkgs:
  						if self._pkg_visibility_check(inst_pkg):
-@@ -1363,7 +1377,9 @@ class depgraph(object):
+@@ -1377,7 +1391,9 @@ class depgraph(object):
  				# This is a GLEP 37 virtual, so its deps are all runtime.
  				mypriority = self._priority(runtime=True)
  				if not atom.blocker:
@@ -140,7 +140,7 @@ index 91ec759..a3eae01 100644
  					if inst_pkgs:
  						for inst_pkg in inst_pkgs:
  							if self._pkg_visibility_check(inst_pkg):
-@@ -3128,6 +3144,10 @@ class depgraph(object):
+@@ -3188,6 +3204,10 @@ class depgraph(object):
  		dont_miss_updates = "--update" in self._frozen_config.myopts
  		use_ebuild_visibility = self._frozen_config.myopts.get(
  			'--use-ebuild-visibility', 'n') != 'n'
@@ -151,7 +151,7 @@ index 91ec759..a3eae01 100644
  		# Behavior of the "selective" parameter depends on
  		# whether or not a package matches an argument atom.
  		# If an installed package provides an old-style
-@@ -3167,7 +3187,14 @@ class depgraph(object):
+@@ -3227,7 +3247,14 @@ class depgraph(object):
  							modified_use=self._pkg_use_enabled(pkg)):
  						continue
  
@@ -167,7 +167,7 @@ index 91ec759..a3eae01 100644
  						(not pkg.installed or dont_miss_updates):
  						# Check if a higher version was rejected due to user
  						# USE configuration. The packages_with_invalid_use_config
-@@ -3239,7 +3266,7 @@ class depgraph(object):
+@@ -3299,7 +3326,7 @@ class depgraph(object):
  								# instances (installed or binary).
  								# If --usepkgonly is enabled, assume that
  								# the ebuild status should be ignored.
@@ -176,7 +176,7 @@ index 91ec759..a3eae01 100644
  									if pkg.installed and pkg.masks:
  										continue
  								else:
-@@ -3367,7 +3394,7 @@ class depgraph(object):
+@@ -3427,7 +3454,7 @@ class depgraph(object):
  						break
  					# Compare built package to current config and
  					# reject the built package if necessary.
@@ -185,7 +185,7 @@ index 91ec759..a3eae01 100644
  						("--newuse" in self._frozen_config.myopts or \
  						"--reinstall" in self._frozen_config.myopts or \
  						"--binpkg-respect-use" in self._frozen_config.myopts):
-@@ -3382,7 +3409,7 @@ class depgraph(object):
+@@ -3442,7 +3469,7 @@ class depgraph(object):
  						forced_flags.update(pkgsettings.useforce)
  						forced_flags.update(pkgsettings.usemask)
  						cur_iuse = iuses
@@ -194,7 +194,7 @@ index 91ec759..a3eae01 100644
  							cur_iuse = myeb.iuse.all
  						if self._reinstall_for_flags(forced_flags,
  							old_use, iuses,
-@@ -3390,7 +3417,7 @@ class depgraph(object):
+@@ -3450,7 +3477,7 @@ class depgraph(object):
  							break
  					# Compare current config to installed package
  					# and do not reinstall if possible.
@@ -203,7 +203,7 @@ index 91ec759..a3eae01 100644
  						("--newuse" in self._frozen_config.myopts or \
  						"--reinstall" in self._frozen_config.myopts) and \
  						cpv in vardb.match(atom):
-@@ -3408,8 +3435,13 @@ class depgraph(object):
+@@ -3468,8 +3495,13 @@ class depgraph(object):
  							cur_use, cur_iuse)
  						if reinstall_for_flags:
  							reinstall = True
@@ -217,7 +217,7 @@ index 91ec759..a3eae01 100644
  					matched_packages.append(pkg)
  					if reinstall_for_flags:
  						self._dynamic_config._reinstall_nodes[pkg] = \
-@@ -3493,14 +3525,20 @@ class depgraph(object):
+@@ -3553,14 +3585,20 @@ class depgraph(object):
  						allow_license_changes=allow_license_changes):
  						return pkg, existing_node
  
@@ -245,10 +245,10 @@ index 91ec759..a3eae01 100644
  				if portage.dep.cpvequal(pkg.cpv, bestmatch)]
  
 diff --git a/pym/_emerge/help.py b/pym/_emerge/help.py
-index a120f54..ffc81e9 100644
+index 9ba7892..fb1e129 100644
 --- a/pym/_emerge/help.py
 +++ b/pym/_emerge/help.py
-@@ -550,6 +550,12 @@ def help(myopts, havecolor=1):
+@@ -559,6 +559,12 @@ def help(myopts, havecolor=1):
  		print("       "+green("--nospinner"))
  		print("              Disables the spinner regardless of terminal type.")
  		print()
@@ -261,7 +261,7 @@ index a120f54..ffc81e9 100644
  		print("       "+green("--oneshot")+" ("+green("-1")+" short option)")
  		print("              Emerge as normal, but don't add packages to the world profile.")
  		print("              This package will only be updated if it is depended upon by")
-@@ -627,6 +633,13 @@ def help(myopts, havecolor=1):
+@@ -636,6 +642,13 @@ def help(myopts, havecolor=1):
  		print("              not trigger reinstallation when flags that the user has not")
  		print("              enabled are added or removed.")
  		print()
@@ -275,7 +275,7 @@ index a120f54..ffc81e9 100644
  		print("       "+green("--root=DIR"))
  		desc = "Set the ROOT environment variable " + \
  			"which is documented in the emerge(1) man page."
-@@ -709,6 +722,13 @@ def help(myopts, havecolor=1):
+@@ -718,6 +731,13 @@ def help(myopts, havecolor=1):
  		for line in wrap(desc, desc_width):
  			print(desc_indent + line)
  		print()
@@ -290,10 +290,10 @@ index a120f54..ffc81e9 100644
  			" [ %s | %s ] (%s short option)" % \
  			(turquoise("y"), turquoise("n"), green("-k")))
 diff --git a/pym/_emerge/main.py b/pym/_emerge/main.py
-index e89e8bb..86824cb 100644
+index 5e6c312..4de61d4 100644
 --- a/pym/_emerge/main.py
 +++ b/pym/_emerge/main.py
-@@ -544,6 +544,23 @@ def insert_optional_args(args):
+@@ -545,6 +545,23 @@ def insert_optional_args(args):
  
  	return new_args
  
@@ -317,7 +317,7 @@ index e89e8bb..86824cb 100644
  def parse_opts(tmpcmdline, silent=False):
  	myaction=None
  	myopts = {}
-@@ -680,6 +697,14 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -687,6 +704,14 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices":["changed-use"]
  		},
  
@@ -332,7 +332,7 @@ index e89e8bb..86824cb 100644
  		"--binpkg-respect-use": {
  			"help"    : "discard binary packages if their use flags \
  				don't match the current configuration",
-@@ -701,6 +726,13 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -708,6 +733,13 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices"  : true_y_or_n
  		},
  
@@ -346,7 +346,7 @@ index e89e8bb..86824cb 100644
  		"--package-moves": {
  			"help"     : "perform package moves when necessary",
  			"type"     : "choice",
-@@ -764,6 +796,13 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -771,6 +803,13 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices"  : true_y_or_n
  		},
  
@@ -360,7 +360,7 @@ index e89e8bb..86824cb 100644
  		"--usepkg": {
  			"shortopt" : "-k",
  			"help"     : "use binary packages",
-@@ -852,30 +891,29 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -859,30 +898,29 @@ def parse_opts(tmpcmdline, silent=False):
  			myoptions.depclean_lib_check = True
  
  	if myoptions.exclude:

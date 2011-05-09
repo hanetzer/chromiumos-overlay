@@ -1,4 +1,4 @@
-commit a710e15d39d43a5662d44d98eabaff76236cf518
+commit fdd20461530b86e47a9689ee4e4fccc6670960fe
 Author: David James <davidjames@chromium.org>
 Date:   Tue May 3 11:14:24 2011 -0700
 
@@ -113,12 +113,24 @@ Date:   Tue May 3 11:14:24 2011 -0700
     
     test_rebuild: test --rebuild-if-new-rev more
     (cherry picked from commit 9b697efa947ef88effc15ee86f766af68ec6097a)
+    
+    add_pkg_dep_string: respect traverse_ignored_deps
+    
+    I don't think this makes any difference now, but it clarifies how
+    traverse_ignored_deps should behave.
+    (cherry picked from commit af430c8b439cf67079b54fa3b18312e0a6afce8d)
+    
+    add_pkg_deps: use dep priority to ignore blockers
+    (cherry picked from commit dbb89fde73049da97fdbfa157618977317440db5)
+    
+    add_pkg_deps: removal action discard DEPEND early
+    (cherry picked from commit 021da7d19f9da25329880096fccf1cc556a011e2)
 
 diff --git a/man/emerge.1 b/man/emerge.1
-index ae65c70..0450d7a 100644
+index 38c5058..fda7f99 100644
 --- a/man/emerge.1
 +++ b/man/emerge.1
-@@ -469,10 +469,18 @@ may have changed.
+@@ -475,10 +475,18 @@ may have changed.
  Disables the spinner for the session.  The spinner is active when the
  terminal device is determined to be a TTY.  This flag disables it regardless.
  .TP
@@ -138,7 +150,7 @@ index ae65c70..0450d7a 100644
  .BR "\-\-oneshot " (\fB\-1\fR)
  Emerge as normal, but do not add the packages to the world file
  for later updating.
-@@ -522,6 +530,20 @@ Disable the warning message that's shown prior to
+@@ -528,6 +536,20 @@ Disable the warning message that's shown prior to
  to be set in the \fBmake.conf\fR(5)
  \fBEMERGE_DEFAULT_OPTS\fR variable.
  .TP
@@ -289,7 +301,7 @@ index d60259e..44dceda 100644
  	if "--emptytree" in myopts:
  		myparams["empty"] = True
 diff --git a/pym/_emerge/depgraph.py b/pym/_emerge/depgraph.py
-index a3eae01..9811e14 100644
+index 36aaaef..1bda5a9 100644
 --- a/pym/_emerge/depgraph.py
 +++ b/pym/_emerge/depgraph.py
 @@ -9,6 +9,7 @@ import logging
@@ -606,7 +618,7 @@ index a3eae01..9811e14 100644
  				# Pull in build time deps as requested, but marked them as
  				# "optional" since they are not strictly required. This allows
  				# more freedom in the merge order calculation for solving
-@@ -1140,11 +1353,10 @@ class depgraph(object):
+@@ -1140,11 +1353,13 @@ class depgraph(object):
  				# failing.
  				pass
  			else:
@@ -615,13 +627,15 @@ index a3eae01..9811e14 100644
 +				ignore_build_time_deps = True
  
 -		if removal_action and self._frozen_config.myopts.get("--with-bdeps", "y") == "n":
--			edepend["DEPEND"] = ""
 +		if removal_action and self._dynamic_config.myparams.get("bdeps", "y") == "n":
++			# Removal actions never traverse ignored buildtime
++			# dependencies, so it's safe to discard them early.
+ 			edepend["DEPEND"] = ""
 +			ignore_build_time_deps = True
  
  		if removal_action:
  			depend_root = myroot
-@@ -1155,13 +1367,14 @@ class depgraph(object):
+@@ -1155,25 +1370,23 @@ class depgraph(object):
  				if root_deps is True:
  					depend_root = myroot
  				elif root_deps == "rdeps":
@@ -635,33 +649,69 @@ index a3eae01..9811e14 100644
 -				pkg.built),
 +				self._priority(buildtime=True,
 +				optional=(pkg.built or ignore_build_time_deps),
-+				ignored=ignore_build_time_deps),
-+				pkg.built or ignore_build_time_deps),
++				ignored=ignore_build_time_deps)),
  			(myroot, edepend["RDEPEND"],
- 				self._priority(runtime=True),
- 				False),
-@@ -1232,6 +1445,20 @@ class depgraph(object):
+-				self._priority(runtime=True),
+-				False),
++				self._priority(runtime=True)),
+ 			(myroot, edepend["PDEPEND"],
+-				self._priority(runtime_post=True),
+-				False)
++				self._priority(runtime_post=True))
+ 		)
+ 
+ 		debug = "--debug" in self._frozen_config.myopts
+ 		strict = mytype != "installed"
+ 
+-		for dep_root, dep_string, dep_priority, ignore_blockers in deps:
++		for dep_root, dep_string, dep_priority in deps:
+ 				if not dep_string:
+ 					continue
+ 				if debug:
+@@ -1224,28 +1437,28 @@ class depgraph(object):
+ 
+ 				if not self._add_pkg_dep_string(
+ 					pkg, dep_root, dep_priority, dep_string,
+-					allow_unsatisfied, ignore_blockers=ignore_blockers):
++					allow_unsatisfied):
+ 					return 0
+ 
+ 		self._dynamic_config._traversed_pkg_deps.add(pkg)
+ 		return 1
  
  	def _add_pkg_dep_string(self, pkg, dep_root, dep_priority, dep_string,
- 		allow_unsatisfied, ignore_blockers=False):
-+		_autounmask_backup = self._dynamic_config._autounmask
+-		allow_unsatisfied, ignore_blockers=False):
++		allow_unsatisfied):
+ 		_autounmask_backup = self._dynamic_config._autounmask
+-		if dep_priority.optional:
 +		if dep_priority.optional or dep_priority.ignored:
-+			# Temporarily disable autounmask for deps that
-+			# don't necessarily need to be satisfied.
-+			self._dynamic_config._autounmask = False
-+		try:
-+			return self._wrapped_add_pkg_dep_string(
-+				pkg, dep_root, dep_priority, dep_string,
-+				allow_unsatisfied, ignore_blockers=ignore_blockers)
-+		finally:
-+			self._dynamic_config._autounmask = _autounmask_backup
-+
-+	def _wrapped_add_pkg_dep_string(self, pkg, dep_root, dep_priority,
-+		dep_string, allow_unsatisfied, ignore_blockers=False):
+ 			# Temporarily disable autounmask for deps that
+ 			# don't necessarily need to be satisfied.
+ 			self._dynamic_config._autounmask = False
+ 		try:
+ 			return self._wrapped_add_pkg_dep_string(
+ 				pkg, dep_root, dep_priority, dep_string,
+-				allow_unsatisfied, ignore_blockers=ignore_blockers)
++				allow_unsatisfied)
+ 		finally:
+ 			self._dynamic_config._autounmask = _autounmask_backup
+ 
+ 	def _wrapped_add_pkg_dep_string(self, pkg, dep_root, dep_priority,
+-		dep_string, allow_unsatisfied, ignore_blockers=False):
++		dep_string, allow_unsatisfied):
  		depth = pkg.depth + 1
  		deep = self._dynamic_config.myparams.get("deep", 0)
  		recurse_satisfied = deep is True or depth <= deep
-@@ -1285,6 +1512,7 @@ class depgraph(object):
+@@ -1292,13 +1505,15 @@ class depgraph(object):
+ 			is_virt = hasattr(atom, '_orig_atom')
+ 			atom = getattr(atom, '_orig_atom', atom)
+ 
+-			if ignore_blockers and atom.blocker:
++			if atom.blocker and \
++				(dep_priority.optional or dep_priority.ignored):
+ 				# For --with-bdeps, ignore build-time only blockers
+ 				# that originate from built packages.
+ 				continue
  
  			mypriority = dep_priority.copy()
  			if not atom.blocker:
@@ -669,7 +719,7 @@ index a3eae01..9811e14 100644
  				inst_pkgs = [inst_pkg for inst_pkg in vardb.match_pkgs(atom)
  					if not reinstall_atoms.findAtomForPackage(inst_pkg,
  							modified_use=self._pkg_use_enabled(inst_pkg))]
-@@ -1337,11 +1565,17 @@ class depgraph(object):
+@@ -1351,11 +1566,18 @@ class depgraph(object):
  					self._dynamic_config._ignored_deps.append(dep)
  
  			if not ignored:
@@ -678,7 +728,8 @@ index a3eae01..9811e14 100644
 -					return 0
 -				if is_virt and dep.child is not None:
 -					traversed_virt_pkgs.add(dep.child)
-+				if dep_priority.ignored:
++				if dep_priority.ignored and \
++					not self._dynamic_config._traverse_ignored_deps:
 +					if is_virt and dep.child is not None:
 +						traversed_virt_pkgs.add(dep.child)
 +					dep.child = None
@@ -692,19 +743,20 @@ index a3eae01..9811e14 100644
  
  		selected_atoms.pop(pkg)
  
-@@ -1361,8 +1595,9 @@ class depgraph(object):
+@@ -1375,8 +1597,10 @@ class depgraph(object):
  					(virt_pkg.cpv, [str(x) for x in atoms]),
  					noiselevel=-1, level=logging.DEBUG)
  
 -			if not self._add_pkg(virt_pkg, virt_dep):
 -				return 0
-+			if not dep_priority.ignored:
++			if not dep_priority.ignored or \
++				self._dynamic_config._traverse_ignored_deps:
 +				if not self._add_pkg(virt_pkg, virt_dep):
 +					return 0
  
  			for atom, child in self._minimize_children(
  				pkg, self._priority(runtime=True), root_config, atoms):
-@@ -1394,7 +1629,8 @@ class depgraph(object):
+@@ -1408,7 +1632,8 @@ class depgraph(object):
  				# same depth as the virtual itself.
  				dep = Dependency(atom=atom,
  					blocker=atom.blocker, child=child, depth=virt_dep.depth,
@@ -714,7 +766,7 @@ index a3eae01..9811e14 100644
  
  				ignored = False
  				if not atom.blocker and \
-@@ -1421,11 +1657,17 @@ class depgraph(object):
+@@ -1435,11 +1660,18 @@ class depgraph(object):
  						self._dynamic_config._ignored_deps.append(dep)
  
  				if not ignored:
@@ -723,7 +775,8 @@ index a3eae01..9811e14 100644
 -						return 0
 -					if is_virt and dep.child is not None:
 -						traversed_virt_pkgs.add(dep.child)
-+					if dep_priority.ignored:
++					if dep_priority.ignored and \
++						not self._dynamic_config._traverse_ignored_deps:
 +						if is_virt and dep.child is not None:
 +							traversed_virt_pkgs.add(dep.child)
 +						dep.child = None
@@ -737,7 +790,7 @@ index a3eae01..9811e14 100644
  
  		if debug:
  			writemsg_level("Exiting... %s\n" % (pkg,),
-@@ -1946,9 +2188,12 @@ class depgraph(object):
+@@ -1960,9 +2192,12 @@ class depgraph(object):
  		pkgsettings = self._frozen_config.pkgsettings[myroot]
  		pprovideddict = pkgsettings.pprovideddict
  		virtuals = pkgsettings.getvirtuals()
@@ -753,7 +806,7 @@ index a3eae01..9811e14 100644
  			for atom in arg.pset.getAtoms():
  				self._spinner_update()
  				dep = Dependency(atom=atom, onlydeps=onlydeps,
-@@ -2063,6 +2308,10 @@ class depgraph(object):
+@@ -2077,6 +2312,10 @@ class depgraph(object):
  			#We failed if the user needs to change the configuration
  			return False, myfavorites
  
@@ -764,7 +817,7 @@ index a3eae01..9811e14 100644
  		# We're true here unless we are missing binaries.
  		return (True, myfavorites)
  
-@@ -2543,7 +2792,12 @@ class depgraph(object):
+@@ -2590,7 +2829,12 @@ class depgraph(object):
  							pkg.iuse.is_valid_flag):
  							required_use_unsatisfied.append(pkg)
  							continue
@@ -778,7 +831,7 @@ index a3eae01..9811e14 100644
  						mreasons = ["use flag configuration mismatch"]
  				masked_packages.append(
  					(root_config, pkgsettings, cpv, metadata, mreasons))
-@@ -3145,7 +3399,7 @@ class depgraph(object):
+@@ -3205,7 +3449,7 @@ class depgraph(object):
  		use_ebuild_visibility = self._frozen_config.myopts.get(
  			'--use-ebuild-visibility', 'n') != 'n'
  		reinstall_atoms = self._frozen_config.reinstall_atoms
@@ -787,7 +840,7 @@ index a3eae01..9811e14 100644
  		useoldpkg_atoms = self._frozen_config.useoldpkg_atoms
  		matched_oldpkg = []
  		# Behavior of the "selective" parameter depends on
-@@ -3181,13 +3435,19 @@ class depgraph(object):
+@@ -3241,13 +3485,19 @@ class depgraph(object):
  					if pkg in self._dynamic_config._runtime_pkg_mask:
  						# The package has been masked by the backtracking logic
  						continue
@@ -808,7 +861,7 @@ index a3eae01..9811e14 100644
  						modified_use=self._pkg_use_enabled(pkg)):
  						break
  
-@@ -3641,6 +3901,10 @@ class depgraph(object):
+@@ -3701,6 +3951,10 @@ class depgraph(object):
  			self._select_package = self._select_pkg_from_installed
  		else:
  			self._select_package = self._select_pkg_from_graph
@@ -819,7 +872,7 @@ index a3eae01..9811e14 100644
  		already_deep = self._dynamic_config.myparams.get("deep") is True
  		if not already_deep:
  			self._dynamic_config.myparams["deep"] = True
-@@ -5576,6 +5840,10 @@ class depgraph(object):
+@@ -5684,6 +5938,10 @@ class depgraph(object):
  				self._dynamic_config._needed_unstable_keywords.copy(), \
  			"runtime_pkg_mask":
  				self._dynamic_config._runtime_pkg_mask.copy(),
@@ -831,10 +884,10 @@ index a3eae01..9811e14 100644
  				self._dynamic_config._needed_use_config_changes.copy(),
  			"needed_license_changes":
 diff --git a/pym/_emerge/help.py b/pym/_emerge/help.py
-index ffc81e9..afce96e 100644
+index fb1e129..de50b75 100644
 --- a/pym/_emerge/help.py
 +++ b/pym/_emerge/help.py
-@@ -550,12 +550,25 @@ def help(myopts, havecolor=1):
+@@ -559,12 +559,25 @@ def help(myopts, havecolor=1):
  		print("       "+green("--nospinner"))
  		print("              Disables the spinner regardless of terminal type.")
  		print()
@@ -861,7 +914,7 @@ index ffc81e9..afce96e 100644
  		print("       "+green("--oneshot")+" ("+green("-1")+" short option)")
  		print("              Emerge as normal, but don't add packages to the world profile.")
  		print("              This package will only be updated if it is depended upon by")
-@@ -607,6 +620,31 @@ def help(myopts, havecolor=1):
+@@ -616,6 +629,31 @@ def help(myopts, havecolor=1):
  		for line in wrap(desc, desc_width):
  			print(desc_indent + line)
  		print()
@@ -894,10 +947,10 @@ index ffc81e9..afce96e 100644
  			(turquoise("y"), turquoise("n")))
  		desc = "Replace installed packages with binary packages that have " + \
 diff --git a/pym/_emerge/main.py b/pym/_emerge/main.py
-index 86824cb..37c4995 100644
+index 4de61d4..29cac4b 100644
 --- a/pym/_emerge/main.py
 +++ b/pym/_emerge/main.py
-@@ -438,6 +438,9 @@ def insert_optional_args(args):
+@@ -439,6 +439,9 @@ def insert_optional_args(args):
  		'--package-moves'        : y_or_n,
  		'--quiet'                : y_or_n,
  		'--quiet-build'          : y_or_n,
@@ -907,7 +960,7 @@ index 86824cb..37c4995 100644
  		'--rebuilt-binaries'     : y_or_n,
  		'--root-deps'  : ('rdeps',),
  		'--select'               : y_or_n,
-@@ -726,13 +729,29 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -733,13 +736,29 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices"  : true_y_or_n
  		},
  
@@ -938,7 +991,7 @@ index 86824cb..37c4995 100644
  		"--package-moves": {
  			"help"     : "perform package moves when necessary",
  			"type"     : "choice",
-@@ -752,6 +771,31 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -759,6 +778,31 @@ def parse_opts(tmpcmdline, silent=False):
  			"choices"  : true_y_or_n
  		},
  
@@ -970,7 +1023,7 @@ index 86824cb..37c4995 100644
  		"--rebuilt-binaries": {
  			"help"     : "replace installed packages with binary " + \
  			             "packages that have been rebuilt",
-@@ -902,10 +946,22 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -909,10 +953,22 @@ def parse_opts(tmpcmdline, silent=False):
  			parser.error("Invalid Atom(s) in --reinstall-atoms parameter: '%s' (only package names and slot atoms (with wildcards) allowed)\n" % \
  				(",".join(bad_atoms),))
  
@@ -996,7 +1049,7 @@ index 86824cb..37c4995 100644
  				(",".join(bad_atoms),))
  
  	if myoptions.useoldpkg_atoms:
-@@ -945,6 +1001,24 @@ def parse_opts(tmpcmdline, silent=False):
+@@ -952,6 +1008,24 @@ def parse_opts(tmpcmdline, silent=False):
  	else:
  		myoptions.quiet_build = None
  

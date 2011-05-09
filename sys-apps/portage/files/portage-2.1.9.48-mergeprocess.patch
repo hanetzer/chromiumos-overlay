@@ -1,4 +1,4 @@
-commit 251cfccff03df8f908c9675073aaafae54c5b63e
+commit 73b4f86e135eb142d3d2e6d0e537a88ac999d194
 Author: David James <davidjames@google.com>
 Date:   Thu Mar 24 19:36:33 2011 -0700
 
@@ -98,6 +98,16 @@ Date:   Thu Mar 24 19:36:33 2011 -0700
     Avoid name collision with built-in 'buffer' function.
     
     Change-Id: Ic06b5c684ad41ff7a0aba08cd24b2548fd8e247e
+    
+    vardbapi: disable subprocess vdb cache updates
+    
+    Since commit 7535cabdf2fab76fc55df83643157613dfd66be9,
+    vardbapi.flush_cache() is often called within subprocesses spawned
+    from MergeProcess. The _aux_cache_threshold doesn't work as designed
+    if the cache is flushed from a subprocess like this, can lead to the
+    vdb cache being flushed for every single merge. This is a waste of
+    disk IO, so disable vdb cache updates in subprocesses.
+    (cherry picked from commit a983fc1c83402dbfe0a423bf729c72eeb795388c)
 
 diff --git a/pym/_emerge/AbstractEbuildProcess.py b/pym/_emerge/AbstractEbuildProcess.py
 index d7f31be..39c613b 100644
@@ -277,10 +287,10 @@ index d73a262..6a58692 100644
  		pkg_path = self.pkg_path
  		logger = self.logger
 diff --git a/pym/_emerge/EbuildPhase.py b/pym/_emerge/EbuildPhase.py
-index e3270c8..a24608b 100644
+index 5849e77..07fb69c 100644
 --- a/pym/_emerge/EbuildPhase.py
 +++ b/pym/_emerge/EbuildPhase.py
-@@ -121,9 +121,10 @@ class EbuildPhase(CompositeTask):
+@@ -122,9 +122,10 @@ class EbuildPhase(CompositeTask):
  		# Don't open the log file during the clean phase since the
  		# open file can result in an nfs lock on $T/build.log which
  		# prevents the clean phase from removing $T.
@@ -294,7 +304,7 @@ index e3270c8..a24608b 100644
  
  		fd_pipes = None
  		if not self.background and self.phase == 'nofetch':
-@@ -151,13 +152,16 @@ class EbuildPhase(CompositeTask):
+@@ -152,13 +153,16 @@ class EbuildPhase(CompositeTask):
  		if not fail:
  			self.returncode = None
  
@@ -313,13 +323,17 @@ index e3270c8..a24608b 100644
  
  		if fail:
  			self._die_hooks()
-@@ -173,12 +177,10 @@ class EbuildPhase(CompositeTask):
+@@ -174,8 +178,7 @@ class EbuildPhase(CompositeTask):
  			msg = _unicode_decode(out.getvalue(),
  				encoding=_encodings['content'], errors='replace')
  			if msg:
 -				self.scheduler.output(msg,
 -					log_path=self.settings.get("PORTAGE_LOG_FILE"))
 +				self.scheduler.output(msg, log_path=logfile)
+ 		elif self.phase == "preinst":
+ 			_preinst_bsdflags(settings)
+ 		elif self.phase == "postinst":
+@@ -183,7 +186,6 @@ class EbuildPhase(CompositeTask):
  
  		post_phase_cmds = _post_phase_cmds.get(self.phase)
  		if post_phase_cmds is not None:
@@ -327,7 +341,7 @@ index e3270c8..a24608b 100644
  			if logfile is not None and self.phase in ("install",):
  				# Log to a temporary file, since the code we are running
  				# reads PORTAGE_LOG_FILE for QA checks, and we want to
-@@ -204,7 +206,10 @@ class EbuildPhase(CompositeTask):
+@@ -209,7 +211,10 @@ class EbuildPhase(CompositeTask):
  
  		self._assert_current(post_phase)
  
@@ -339,7 +353,7 @@ index e3270c8..a24608b 100644
  		if post_phase.logfile is not None and \
  			post_phase.logfile != log_path:
  			# We were logging to a temp file (see above), so append
-@@ -293,5 +298,7 @@ class EbuildPhase(CompositeTask):
+@@ -298,5 +303,7 @@ class EbuildPhase(CompositeTask):
  		msg = _unicode_decode(out.getvalue(),
  			encoding=_encodings['content'], errors='replace')
  		if msg:
@@ -458,7 +472,7 @@ index 4aecf8a..8ce06b1 100644
 +		task = self.merge.create_install_task()
 +		self._start_task(task, self._default_final_exit)
 diff --git a/pym/portage/dbapi/_MergeProcess.py b/pym/portage/dbapi/_MergeProcess.py
-index f717d12..afb2e08 100644
+index f717d12..12a0baf 100644
 --- a/pym/portage/dbapi/_MergeProcess.py
 +++ b/pym/portage/dbapi/_MergeProcess.py
 @@ -1,33 +1,166 @@
@@ -635,7 +649,7 @@ index f717d12..afb2e08 100644
  		portage.process._setup_pipes(fd_pipes)
  
  		# Use default signal handlers since the ones inherited
-@@ -35,18 +168,32 @@ class MergeProcess(SpawnProcess):
+@@ -35,18 +168,35 @@ class MergeProcess(SpawnProcess):
  		signal.signal(signal.SIGINT, signal.SIG_DFL)
  		signal.signal(signal.SIGTERM, signal.SIG_DFL)
  
@@ -650,6 +664,9 @@ index f717d12..afb2e08 100644
 -		self.dblink._scheduler = None
 +		# is triggered when mylink._scheduler is None.
 +		mylink._scheduler = None
++
++		# Avoid wastful updates of the vdb cache.
++		self.vartree.dbapi._flush_cache_enabled = False
 +
 +		# In this subprocess we don't want PORTAGE_BACKGROUND to
 +		# suppress stdout/stderr output since they are pipes. We
@@ -674,7 +691,7 @@ index f717d12..afb2e08 100644
  		except SystemExit:
  			raise
  		except:
-@@ -55,3 +202,21 @@ class MergeProcess(SpawnProcess):
+@@ -55,3 +205,21 @@ class MergeProcess(SpawnProcess):
  			# Call os._exit() from finally block, in order to suppress any
  			# finally blocks from earlier in the call stack. See bug #345289.
  			os._exit(rval)
@@ -697,7 +714,7 @@ index f717d12..afb2e08 100644
 +
 +		super(MergeProcess, self)._unregister()
 diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
-index 7856c85..9ceaf4c 100644
+index 1b13e13..9ce5ebf 100644
 --- a/pym/portage/dbapi/vartree.py
 +++ b/pym/portage/dbapi/vartree.py
 @@ -13,7 +13,8 @@ portage.proxy.lazyimport.lazyimport(globals(),
@@ -718,7 +735,29 @@ index 7856c85..9ceaf4c 100644
  from _emerge.PollScheduler import PollScheduler
  from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
  
-@@ -876,7 +878,7 @@ class vardbapi(dbapi):
+@@ -105,6 +107,11 @@ class vardbapi(dbapi):
+ 		# have been added or removed.
+ 		self._pkgs_changed = False
+ 
++		# The _aux_cache_threshold doesn't work as designed
++		# if the cache is flushed from a subprocess, so we
++		# use this to avoid waste vdb cache updates.
++		self._flush_cache_enabled = True
++
+ 		#cache for category directory mtimes
+ 		self.mtdircache = {}
+ 
+@@ -464,7 +471,8 @@ class vardbapi(dbapi):
+ 		superuser privileges (since that's required to obtain a lock), but all
+ 		users have read access and benefit from faster metadata lookups (as
+ 		long as at least part of the cache is still valid)."""
+-		if self._aux_cache is not None and \
++		if self._flush_cache_enabled and \
++			self._aux_cache is not None and \
+ 			len(self._aux_cache["modified"]) >= self._aux_cache_threshold and \
+ 			secpass >= 2:
+ 			self._owners.populate() # index any unindexed contents
+@@ -907,7 +915,7 @@ class vardbapi(dbapi):
  		def populate(self):
  			self._populate()
  
@@ -727,7 +766,7 @@ index 7856c85..9ceaf4c 100644
  			owners_cache = vardbapi._owners_cache(self._vardb)
  			cached_hashes = set()
  			base_names = self._vardb._aux_cache["owners"]["base_names"]
-@@ -900,10 +902,6 @@ class vardbapi(dbapi):
+@@ -931,10 +939,6 @@ class vardbapi(dbapi):
  
  			# Cache any missing packages.
  			for cpv in uncached_pkgs:
@@ -738,7 +777,7 @@ index 7856c85..9ceaf4c 100644
  				owners_cache.add(cpv)
  
  			# Delete any stale cache.
-@@ -917,12 +915,12 @@ class vardbapi(dbapi):
+@@ -948,12 +952,12 @@ class vardbapi(dbapi):
  
  			return owners_cache
  
@@ -753,7 +792,7 @@ index 7856c85..9ceaf4c 100644
  				owned_files = owners.get(owner)
  				if owned_files is None:
  					owned_files = set()
-@@ -942,7 +940,7 @@ class vardbapi(dbapi):
+@@ -973,7 +977,7 @@ class vardbapi(dbapi):
  					owner_set.add(pkg_dblink)
  			return file_owners
  
@@ -762,7 +801,7 @@ index 7856c85..9ceaf4c 100644
  			"""
  			Iterate over tuples of (dblink, path). In order to avoid
  			consuming too many resources for too much time, resources
-@@ -954,7 +952,7 @@ class vardbapi(dbapi):
+@@ -985,7 +989,7 @@ class vardbapi(dbapi):
  
  			if not isinstance(path_iter, list):
  				path_iter = list(path_iter)
@@ -771,7 +810,7 @@ index 7856c85..9ceaf4c 100644
  			vardb = self._vardb
  			root = vardb._eroot
  			hash_pkg = owners_cache._hash_pkg
-@@ -1013,23 +1011,19 @@ class vardbapi(dbapi):
+@@ -1044,23 +1048,19 @@ class vardbapi(dbapi):
  								if dblink(cpv).isowner(path):
  									owners.append((cpv, path))
  
@@ -797,7 +836,7 @@ index 7856c85..9ceaf4c 100644
  			"""
  			This implemention will make a short-lived dblink instance (and
  			parse CONTENTS) for every single installed package. This is
-@@ -1051,10 +1045,6 @@ class vardbapi(dbapi):
+@@ -1082,10 +1082,6 @@ class vardbapi(dbapi):
  
  			root = self._vardb._eroot
  			for cpv in self._vardb.cpv_all():
@@ -808,7 +847,7 @@ index 7856c85..9ceaf4c 100644
  				dblnk =  self._vardb._dblink(cpv)
  
  				for path, name, is_basename in path_info_list:
-@@ -1195,12 +1185,8 @@ class dblink(object):
+@@ -1226,12 +1222,8 @@ class dblink(object):
  		r')$'
  	)
  
@@ -822,7 +861,7 @@ index 7856c85..9ceaf4c 100644
  		"""
  		Creates a DBlink object for a given CPV.
  		The given CPV may not be present in the database already.
-@@ -1259,6 +1245,7 @@ class dblink(object):
+@@ -1287,6 +1279,7 @@ class dblink(object):
  		self._md5_merge_map = {}
  		self._hash_key = (self.myroot, self.mycpv)
  		self._protect_obj = None
@@ -830,7 +869,7 @@ index 7856c85..9ceaf4c 100644
  
  	def __hash__(self):
  		return hash(self._hash_key)
-@@ -1486,6 +1473,21 @@ class dblink(object):
+@@ -1540,6 +1533,21 @@ class dblink(object):
  				" method is now unused.",
  				DeprecationWarning, stacklevel=2)
  
@@ -852,7 +891,7 @@ index 7856c85..9ceaf4c 100644
  		self.vartree.dbapi._bump_mtime(self.mycpv)
  		showMessage = self._display_merge
  		if self.vartree.dbapi._categories is not None:
-@@ -1503,7 +1505,7 @@ class dblink(object):
+@@ -1557,7 +1565,7 @@ class dblink(object):
  					continue
  				others_in_slot.append(dblink(self.cat, catsplit(cur_cpv)[1],
  					settings=self.settings, vartree=self.vartree,
@@ -861,7 +900,7 @@ index 7856c85..9ceaf4c 100644
  
  			retval = self._security_check([self] + others_in_slot)
  			if retval:
-@@ -1546,20 +1548,18 @@ class dblink(object):
+@@ -1600,20 +1608,18 @@ class dblink(object):
  		scheduler = self._scheduler
  		retval = os.EX_OK
  		try:
@@ -892,7 +931,7 @@ index 7856c85..9ceaf4c 100644
  
  				# XXX: Decide how to handle failures here.
  				if retval != os.EX_OK:
-@@ -1581,11 +1581,11 @@ class dblink(object):
+@@ -1626,11 +1632,11 @@ class dblink(object):
  
  			if myebuildpath:
  				ebuild_phase = "postrm"
@@ -909,7 +948,7 @@ index 7856c85..9ceaf4c 100644
  
  				# XXX: Decide how to handle failures here.
  				if retval != os.EX_OK:
-@@ -1667,9 +1667,7 @@ class dblink(object):
+@@ -1683,9 +1689,7 @@ class dblink(object):
  
  							self._eerror(ebuild_phase, msg_lines)
  
@@ -920,7 +959,7 @@ index 7856c85..9ceaf4c 100644
  
  					if retval == os.EX_OK and builddir_lock is not None:
  						# myebuildpath might be None, so ensure
-@@ -1679,12 +1677,11 @@ class dblink(object):
+@@ -1695,12 +1699,11 @@ class dblink(object):
  							self.pkg + ".ebuild")
  						doebuild_environment(myebuildpath, "cleanrm",
  							settings=self.settings, db=self.vartree.dbapi)
@@ -938,7 +977,7 @@ index 7856c85..9ceaf4c 100644
  				finally:
  					if builddir_lock is not None:
  						builddir_lock.unlock()
-@@ -1728,11 +1725,18 @@ class dblink(object):
+@@ -1743,11 +1746,18 @@ class dblink(object):
  	def _display_merge(self, msg, level=0, noiselevel=0):
  		if not self._verbose and noiselevel >= 0 and level < logging.WARN:
  			return
@@ -962,7 +1001,7 @@ index 7856c85..9ceaf4c 100644
  
  	def _unmerge_pkgfiles(self, pkgfiles, others_in_slot):
  		"""
-@@ -1750,7 +1754,6 @@ class dblink(object):
+@@ -1765,7 +1775,6 @@ class dblink(object):
  		os = _os_merge
  		perf_md5 = perform_md5
  		showMessage = self._display_merge
@@ -970,7 +1009,7 @@ index 7856c85..9ceaf4c 100644
  
  		if not pkgfiles:
  			showMessage(_("No package files given... Grabbing a set.\n"))
-@@ -1766,7 +1769,7 @@ class dblink(object):
+@@ -1781,7 +1790,7 @@ class dblink(object):
  					continue
  				others_in_slot.append(dblink(self.cat, catsplit(cur_cpv)[1],
  					settings=self.settings,
@@ -979,7 +1018,7 @@ index 7856c85..9ceaf4c 100644
  
  		dest_root = self._eroot
  		dest_root_len = len(dest_root) - 1
-@@ -1851,10 +1854,6 @@ class dblink(object):
+@@ -1866,10 +1875,6 @@ class dblink(object):
  
  			for i, objkey in enumerate(mykeys):
  
@@ -990,7 +1029,7 @@ index 7856c85..9ceaf4c 100644
  				obj = normalize_path(objkey)
  				if os is _os_merge:
  					try:
-@@ -2575,7 +2574,6 @@ class dblink(object):
+@@ -2590,7 +2595,6 @@ class dblink(object):
  			plib_collisions = {}
  
  			showMessage = self._display_merge
@@ -998,7 +1037,7 @@ index 7856c85..9ceaf4c 100644
  			stopmerge = False
  			collisions = []
  			destroot = self.settings['ROOT']
-@@ -2585,10 +2583,6 @@ class dblink(object):
+@@ -2600,10 +2604,6 @@ class dblink(object):
  				if i % 1000 == 0 and i != 0:
  					showMessage(_("%d files checked ...\n") % i)
  
@@ -1009,7 +1048,7 @@ index 7856c85..9ceaf4c 100644
  				dest_path = normalize_path(
  					os.path.join(destroot, f.lstrip(os.path.sep)))
  				try:
-@@ -2697,7 +2691,6 @@ class dblink(object):
+@@ -2712,7 +2712,6 @@ class dblink(object):
  		os = _os_merge
  
  		showMessage = self._display_merge
@@ -1017,7 +1056,7 @@ index 7856c85..9ceaf4c 100644
  
  		file_paths = set()
  		for dblnk in installed_instances:
-@@ -2706,10 +2699,6 @@ class dblink(object):
+@@ -2721,10 +2720,6 @@ class dblink(object):
  		real_paths = set()
  		for i, path in enumerate(file_paths):
  
@@ -1028,7 +1067,7 @@ index 7856c85..9ceaf4c 100644
  			if os is _os_merge:
  				try:
  					_unicode_encode(path,
-@@ -2769,36 +2758,56 @@ class dblink(object):
+@@ -2784,36 +2779,56 @@ class dblink(object):
  		return 1
  
  	def _eqawarn(self, phase, lines):
@@ -1110,7 +1149,7 @@ index 7856c85..9ceaf4c 100644
  
  	def treewalk(self, srcroot, destroot, inforoot, myebuild, cleanup=0,
  		mydbapi=None, prev_mtimes=None):
-@@ -2813,7 +2822,6 @@ class dblink(object):
+@@ -2828,7 +2843,6 @@ class dblink(object):
  		unmerges old version (if required)
  		calls doebuild(mydo=pkg_postinst)
  		calls env_update
@@ -1118,7 +1157,7 @@ index 7856c85..9ceaf4c 100644
  		
  		@param srcroot: Typically this is ${D}
  		@type srcroot: String (Path)
-@@ -2923,7 +2931,7 @@ class dblink(object):
+@@ -2938,7 +2952,7 @@ class dblink(object):
  			others_in_slot.append(dblink(self.cat, catsplit(cur_cpv)[1],
  				settings=config(clone=self.settings),
  				vartree=self.vartree, treetype="vartree",
@@ -1127,7 +1166,7 @@ index 7856c85..9ceaf4c 100644
  
  		retval = self._security_check(others_in_slot)
  		if retval:
-@@ -3069,11 +3077,7 @@ class dblink(object):
+@@ -3084,11 +3098,7 @@ class dblink(object):
  				return 1
  
  		# check for package collisions
@@ -1140,7 +1179,7 @@ index 7856c85..9ceaf4c 100644
  		if blockers is None:
  			blockers = []
  		collisions, plib_collisions = \
-@@ -3148,8 +3152,7 @@ class dblink(object):
+@@ -3163,8 +3173,7 @@ class dblink(object):
  					# get_owners is slow for large numbers of files, so
  					# don't look them all up.
  					collisions = collisions[:20]
@@ -1150,7 +1189,7 @@ index 7856c85..9ceaf4c 100644
  				self.vartree.dbapi.flush_cache()
  
  				for pkg, owned_files in owners.items():
-@@ -3244,16 +3247,8 @@ class dblink(object):
+@@ -3259,16 +3268,8 @@ class dblink(object):
  				cfgfiledict["IGNORE"] = 1
  				break
  
@@ -1169,7 +1208,7 @@ index 7856c85..9ceaf4c 100644
  		if rval != os.EX_OK:
  			return rval
  
-@@ -3454,7 +3449,7 @@ class dblink(object):
+@@ -3460,7 +3461,7 @@ class dblink(object):
  
  		return backup_p
  
@@ -1178,7 +1217,7 @@ index 7856c85..9ceaf4c 100644
  
  		cfgfiledict_orig = cfgfiledict.copy()
  
-@@ -3683,7 +3678,7 @@ class dblink(object):
+@@ -3689,7 +3690,7 @@ class dblink(object):
  						msg.append(_("This file will be renamed to a different name:"))
  						msg.append("  '%s'" % backup_dest)
  						msg.append("")
@@ -1187,7 +1226,7 @@ index 7856c85..9ceaf4c 100644
  						if movefile(mydest, backup_dest,
  							mysettings=self.settings,
  							encoding=_encodings['merge']) is None:
-@@ -3761,7 +3756,7 @@ class dblink(object):
+@@ -3767,7 +3768,7 @@ class dblink(object):
  						msg.append(_("This file will be merged with a different name:"))
  						msg.append("  '%s'" % newdest)
  						msg.append("")
@@ -1196,7 +1235,7 @@ index 7856c85..9ceaf4c 100644
  						mydest = newdest
  
  					elif stat.S_ISREG(mydmode) or (stat.S_ISLNK(mydmode) and os.path.exists(mydest) and stat.S_ISREG(os.stat(mydest)[stat.ST_MODE])):
-@@ -3845,65 +3840,6 @@ class dblink(object):
+@@ -3851,65 +3852,6 @@ class dblink(object):
  	def merge(self, mergeroot, inforoot, myroot=None, myebuild=None, cleanup=0,
  		mydbapi=None, prev_mtimes=None):
  		"""
@@ -1262,7 +1301,7 @@ index 7856c85..9ceaf4c 100644
  		@param myroot: ignored, self._eroot is used instead
  		"""
  		myroot = None
-@@ -3945,7 +3881,7 @@ class dblink(object):
+@@ -3943,7 +3885,7 @@ class dblink(object):
  					self._scheduler.dblinkEbuildPhase(
  						self, mydbapi, myebuild, phase)
  
@@ -1271,7 +1310,7 @@ index 7856c85..9ceaf4c 100644
  
  				if 'noclean' not in self.settings.features and \
  					(retval == os.EX_OK or \
-@@ -4045,10 +3981,17 @@ def merge(mycat, mypkg, pkgloc, infloc,
+@@ -4043,10 +3985,17 @@ def merge(mycat, mypkg, pkgloc, infloc,
  		writemsg(_("Permission denied: access('%s', W_OK)\n") % settings['EROOT'],
  			noiselevel=-1)
  		return errno.EACCES

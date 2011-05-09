@@ -1,0 +1,201 @@
+commit 61f340582dfcf71fc5fe72398453fb2098e5826c
+Author: David James <davidjames@chromium.org>
+Date:   Mon May 9 21:11:47 2011 -0700
+
+    Cache counter values, avoiding I/O when it doesn't change.
+    
+    This improves merge times by up to 25%, since looping over the vardb for
+    each package install is slow.
+    
+    TEST=Emerge a bunch of packages, notice 25% speed improvement.
+    BUG=chromium-os:15112
+    
+    Change-Id: I51dd617219cd1820ceeb702291bd790990995be4
+    (cherry picked from commit 928bc527a8c3eab3784df54226df2f2d83c6c85c)
+    
+    get_counter_tick_core: use cpv_all
+    
+    It's more efficient to use cpv_all since cp_all calls cpv_all anyway,
+    and calls to cp_list induce additional stat calls.
+    (cherry picked from commit e5a51b2b7952eabc56bed8e2e04b2596e7495e16)
+    
+    depgraph: don't clear vardbapi cache in _load_vdb
+    
+    Most of the memory is probably held on the heap by the installed
+    package instances anyway, and the cache is useful for being inherited
+    by subprocess in MergeProcess.
+    (cherry picked from commit d124a775634706eb954fa70116de8367f165d1d5)
+
+diff --git a/pym/_emerge/depgraph.py b/pym/_emerge/depgraph.py
+index 1bda5a9..9a532cc 100644
+--- a/pym/_emerge/depgraph.py
++++ b/pym/_emerge/depgraph.py
+@@ -574,14 +574,6 @@ class depgraph(object):
+ 					vardb.aux_get(pkg.cpv, [])
+ 					fakedb.cpv_inject(pkg)
+ 
+-				# Now that the vardb state is cached in our FakeVartree,
+-				# we won't be needing the real vartree cache for awhile.
+-				# To make some room on the heap, clear the vardbapi
+-				# caches.
+-				self._frozen_config._trees_orig[myroot
+-					]["vartree"].dbapi._clear_cache()
+-				gc.collect()
+-
+ 		self._dynamic_config._vdb_loaded = True
+ 
+ 	def _spinner_update(self):
+diff --git a/pym/portage/dbapi/_MergeProcess.py b/pym/portage/dbapi/_MergeProcess.py
+index 12a0baf..05f45d5 100644
+--- a/pym/portage/dbapi/_MergeProcess.py
++++ b/pym/portage/dbapi/_MergeProcess.py
+@@ -143,6 +143,7 @@ class MergeProcess(SpawnProcess):
+ 		fd_pipes[elog_writer_fd] = elog_writer_fd
+ 		self._elog_reg_id = self.scheduler.register(elog_reader_fd,
+ 			self._registered_events, self._elog_output_handler)
++		counter = self.vartree.dbapi.counter_tick()
+ 
+ 		pid = os.fork()
+ 		if pid != 0:
+@@ -196,7 +197,7 @@ class MergeProcess(SpawnProcess):
+ 		try:
+ 			rval = mylink.merge(self.pkgloc, self.infloc,
+ 				myebuild=self.myebuild, mydbapi=self.mydbapi,
+-				prev_mtimes=self.prev_mtimes)
++				prev_mtimes=self.prev_mtimes, counter=counter)
+ 		except SystemExit:
+ 			raise
+ 		except:
+diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
+index bcf841c..2d20a80 100644
+--- a/pym/portage/dbapi/vartree.py
++++ b/pym/portage/dbapi/vartree.py
+@@ -166,6 +166,8 @@ class vardbapi(dbapi):
+ 			self._linkmap = LinkageMap(self)
+ 		self._owners = self._owners_db(self)
+ 
++		self._cached_counter = None
++
+ 	def getpath(self, mykey, filename=None):
+ 		# This is an optimized hotspot, so don't use unicode-wrapped
+ 		# os module and don't use os.path.join().
+@@ -724,17 +726,6 @@ class vardbapi(dbapi):
+ 		@param myroot: ignored, self._eroot is used instead
+ 		"""
+ 		myroot = None
+-		cp_list = self.cp_list
+-		max_counter = 0
+-		for cp in self.cp_all():
+-			for cpv in cp_list(cp):
+-				try:
+-					counter = int(self.aux_get(cpv, ["COUNTER"])[0])
+-				except (KeyError, OverflowError, ValueError):
+-					continue
+-				if counter > max_counter:
+-					max_counter = counter
+-
+ 		new_vdb = False
+ 		counter = -1
+ 		try:
+@@ -762,16 +753,25 @@ class vardbapi(dbapi):
+ 				writemsg("!!! %s\n" % str(e), noiselevel=-1)
+ 				del e
+ 
+-		# We must ensure that we return a counter
+-		# value that is at least as large as the
+-		# highest one from the installed packages,
+-		# since having a corrupt value that is too low
+-		# can trigger incorrect AUTOCLEAN behavior due
+-		# to newly installed packages having lower
+-		# COUNTERs than the previous version in the
+-		# same slot.
+-		if counter > max_counter:
++		if self._cached_counter == counter:
+ 			max_counter = counter
++		else:
++			# We must ensure that we return a counter
++			# value that is at least as large as the
++			# highest one from the installed packages,
++			# since having a corrupt value that is too low
++			# can trigger incorrect AUTOCLEAN behavior due
++			# to newly installed packages having lower
++			# COUNTERs than the previous version in the
++			# same slot.
++			max_counter = counter
++			for cpv in self.cpv_all():
++				try:
++					pkg_counter = int(self.aux_get(cpv, ["COUNTER"])[0])
++				except (KeyError, OverflowError, ValueError):
++					continue
++				if pkg_counter > max_counter:
++					max_counter = pkg_counter
+ 
+ 		if counter < 0 and not new_vdb:
+ 			writemsg(_("!!! Initializing COUNTER to " \
+@@ -789,18 +789,19 @@ class vardbapi(dbapi):
+ 		"""
+ 		myroot = None
+ 		mycpv = None
+-
+ 		self.lock()
+ 		try:
+ 			counter = self.get_counter_tick_core() - 1
+-			if incrementing:
+-				#increment counter
+-				counter += 1
+-				# use same permissions as config._init_dirs()
+-				ensure_dirs(os.path.dirname(self._counter_path),
+-					gid=portage_gid, mode=0o2750, mask=0o2)
+-				# update new global counter file
+-				write_atomic(self._counter_path, str(counter))
++			if self._cached_counter != counter:
++				if incrementing:
++					#increment counter
++					counter += 1
++					# use same permissions as config._init_dirs()
++					ensure_dirs(os.path.dirname(self._counter_path),
++						gid=portage_gid, mode=0o2750, mask=0o2)
++					# update new global counter file
++					write_atomic(self._counter_path, str(counter))
++				self._cached_counter = counter
+ 		finally:
+ 			self.unlock()
+ 
+@@ -2854,7 +2855,7 @@ class dblink(object):
+ 				os.write(self._pipe, _unicode_encode(''.join(str_buffer)))
+ 
+ 	def treewalk(self, srcroot, destroot, inforoot, myebuild, cleanup=0,
+-		mydbapi=None, prev_mtimes=None):
++		mydbapi=None, prev_mtimes=None, counter=None):
+ 		"""
+ 		
+ 		This function does the following:
+@@ -3270,7 +3271,8 @@ class dblink(object):
+ 			self.copyfile(inforoot+"/"+x)
+ 
+ 		# write local package counter for recording
+-		counter = self.vartree.dbapi.counter_tick(mycpv=self.mycpv)
++		if counter is not None:
++			counter = self.vartree.dbapi.counter_tick(mycpv=self.mycpv)
+ 		codecs.open(_unicode_encode(os.path.join(self.dbtmpdir, 'COUNTER'),
+ 			encoding=_encodings['fs'], errors='strict'),
+ 			'w', encoding=_encodings['repo.content'], errors='backslashreplace'
+@@ -3914,7 +3916,7 @@ class dblink(object):
+ 				showMessage(zing + " " + mydest + "\n")
+ 
+ 	def merge(self, mergeroot, inforoot, myroot=None, myebuild=None, cleanup=0,
+-		mydbapi=None, prev_mtimes=None):
++		mydbapi=None, prev_mtimes=None, counter=None):
+ 		"""
+ 		@param myroot: ignored, self._eroot is used instead
+ 		"""
+@@ -3926,7 +3928,8 @@ class dblink(object):
+ 		self.vartree.dbapi._bump_mtime(self.mycpv)
+ 		try:
+ 			retval = self.treewalk(mergeroot, myroot, inforoot, myebuild,
+-				cleanup=cleanup, mydbapi=mydbapi, prev_mtimes=prev_mtimes)
++				cleanup=cleanup, mydbapi=mydbapi, prev_mtimes=prev_mtimes,
++				counter=counter)
+ 
+ 			# If PORTAGE_BUILDDIR doesn't exist, then it probably means
+ 			# fail-clean is enabled, and the success/die hooks have

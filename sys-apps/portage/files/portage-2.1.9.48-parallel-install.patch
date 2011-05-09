@@ -1,0 +1,583 @@
+commit 209ec681e73bacea98f740cbc95c41ca59244260
+Author: David James <davidjames@chromium.org>
+Date:   Fri May 6 21:53:31 2011 -0700
+
+    Use finer grained locks for install.
+    
+    Narrow scope of merge locks to improve performance.
+    
+    Instead of locking the DB for the entire package merge, just lock it
+    when we actually need to do so. Also add locks around conf_mem_file
+    updating and pkg_* phases.
+    
+    Locking in pkg_* phases can be turned off with
+    FEATURES="no-ebuild-locks" if you use ebuilds that are careful not
+    to mess with each other during theses phases. The default is to leave
+    this locking enabled.
+    
+    Given this new locking, I've improved the scheduler to run merge jobs
+    in parallel.
+    
+    Time required for merging 348 packages with --usepkgonly:
+      - Before patch:          29m50s
+      - After patch:           10m2s
+      - After patch w/o locks: 7m9s
+    
+    Change-Id: I63588c4cc59fa6fe2f8327ea1e4a9e71b241d4fe
+    
+    Review URL: http://gerrit.chromium.org/gerrit/498
+    
+    Rename FEATURES=no-ebuild-locks to ebuild-locks.
+    (cherry picked from commit e414b8571fed1e0da1a03e0a9719b580e21f7558)
+    
+    vardbapi: acquire lock during counter_tick_core
+    (cherry picked from commit bc5d73fa3db0569c55d48c2e738f12742579536c)
+    
+    Add FEATURES=parallel-install for finer locks.
+    
+    Change-Id: Id2f82aee4bd1a3abec5eadcc837634f6f11d92e7
+    
+    Scheduler: add queue for ebuild-locks
+    
+    Use a separate queue for ebuild-locks when the merge
+    queue allows more than 1 job (due to parallel-install),
+    since the portage.locks module does not behave as desired
+    if we try to lock the same file multiple times
+    concurrently from the same process.
+    (cherry picked from commit a81460175a441897282b0540cefff8060f2b92dc)
+    
+    Use EROOT with VDB_PATH in recent changes.
+    (cherry picked from commit 36ad74b36d6d70a21d24ef7cb180ab09a6a327f0)
+    
+    linkmap: check for access before locking vardbapi
+    (cherry picked from commit 6d916753c07ccad4fcc596b155d776f297aeeb68)
+    
+    Fix typos in unmerge function.
+    
+    BUG=none
+    TEST=Try unmerging some packages.
+    
+    Change-Id: Ib643ec95b8da14b49a6b519e445fe57f8995c52c
+    (cherry picked from commit 05b16b9d1c4eacc3442b78152f46f5d07943de97)
+    
+    LinkageMapELF: remove unused imports
+    (cherry picked from commit 125430a3f2879e4bc497be212a91d9dd7194d261)
+
+diff --git a/cnf/make.globals b/cnf/make.globals
+index 65056d1..7c5fbb8 100644
+--- a/cnf/make.globals
++++ b/cnf/make.globals
+@@ -51,7 +51,7 @@ RESUMECOMMAND_SSH=${FETCHCOMMAND_SSH}
+ FETCHCOMMAND_SFTP="bash -c \"x=\\\${2#sftp://} ; host=\\\${x%%/*} ; port=\\\${host##*:} ; host=\\\${host%:*} ; [[ \\\${host} = \\\${port} ]] && port=22 ; exec sftp -P \\\${port} \\\"\\\${host}:/\\\${x#*/}\\\" \\\"\\\$1\\\"\" sftp \"\${DISTDIR}/\${FILE}\" \"\${URI}\""
+ 
+ # Default user options
+-FEATURES="assume-digests binpkg-logs distlocks fixpackages
++FEATURES="assume-digests binpkg-logs distlocks ebuild-locks fixpackages
+           fixlafiles news parallel-fetch protect-owned
+           sandbox sfperms strict unknown-features-warn unmerge-logs
+           unmerge-orphans userfetch"
+diff --git a/man/make.conf.5 b/man/make.conf.5
+index 53b2c29..305ba26 100644
+--- a/man/make.conf.5
++++ b/man/make.conf.5
+@@ -1,4 +1,4 @@
+-.TH "MAKE.CONF" "5" "Apr 2011" "Portage VERSION" "Portage"
++.TH "MAKE.CONF" "5" "May 2011" "Portage VERSION" "Portage"
+ .SH "NAME"
+ make.conf \- custom settings for Portage
+ .SH "SYNOPSIS"
+@@ -265,6 +265,10 @@ strangely configured Samba server (oplocks off, NFS re\-export). A tool
+ /usr/lib/portage/bin/clean_locks exists to help handle lock issues
+ when a problem arises (normally due to a crash or disconnect).
+ .TP
++.B ebuild\-locks
++Use locks to ensure that unsandboxed ebuild phases never execute
++concurrently. Also see \fIparallel\-install\fR.
++.TP
+ .B fakeroot
+ Enable fakeroot for the install and package phases when a non-root user runs
+ the \fBebuild\fR(1) command.
+@@ -369,6 +373,11 @@ Fetch in the background while compiling. Run
+ `tail \-f /var/log/emerge\-fetch.log` in a
+ terminal to view parallel-fetch progress.
+ .TP
++.B parallel\-install
++Use finer\-grained locks when installing packages, allowing for greater
++parallelization. For additional parallelization, disable
++\fIebuild\-locks\fR.
++.TP
+ .B parse\-eapi\-ebuild\-head
+ Parse \fBEAPI\fR from the head of the ebuild (first 30 lines). This feature
+ is only intended for experimental purposes and should not be enabled under
+diff --git a/pym/_emerge/EbuildPhase.py b/pym/_emerge/EbuildPhase.py
+index 07fb69c..21d7f47 100644
+--- a/pym/_emerge/EbuildPhase.py
++++ b/pym/_emerge/EbuildPhase.py
+@@ -10,6 +10,8 @@ from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
+ from _emerge.EbuildProcess import EbuildProcess
+ from _emerge.CompositeTask import CompositeTask
+ from portage.util import writemsg
++from portage.locks import lockdir
++from portage.locks import unlockdir
+ from portage.xml.metadata import MetaDataXML
+ import portage
+ portage.proxy.lazyimport.lazyimport(globals(),
+@@ -28,7 +30,8 @@ from portage import _unicode_encode
+ 
+ class EbuildPhase(CompositeTask):
+ 
+-	__slots__ = ("actionmap", "phase", "settings")
++	__slots__ = ("actionmap", "phase", "settings") + \
++		("_ebuild_lock",)
+ 
+ 	# FEATURES displayed prior to setup phase
+ 	_features_display = ("ccache", "distcc", "fakeroot",
+@@ -37,6 +40,9 @@ class EbuildPhase(CompositeTask):
+ 		"splitdebug", "suidctl", "test", "userpriv",
+ 		"usersandbox")
+ 
++	# Locked phases
++	_locked_phases = ("setup", "preinst", "postinst", "prerm", "postrm")
++
+ 	def _start(self):
+ 
+ 		need_builddir = self.phase not in EbuildProcess._phases_without_builddir
+@@ -138,10 +144,20 @@ class EbuildPhase(CompositeTask):
+ 			phase=self.phase, scheduler=self.scheduler,
+ 			settings=self.settings)
+ 
++		if (self.phase in self._locked_phases and
++			"ebuild-locks" in self.settings.features):
++			eroot = self.settings["EROOT"]
++			lock_path = os.path.join(eroot, portage.VDB_PATH + "-ebuild")
++			if os.access(os.path.dirname(lock_path), os.W_OK):
++				self._ebuild_lock = lockdir(lock_path)
+ 		self._start_task(ebuild_process, self._ebuild_exit)
+ 
+ 	def _ebuild_exit(self, ebuild_process):
+ 
++		if self._ebuild_lock is not None:
++			unlockdir(self._ebuild_lock)
++			self._ebuild_lock = None
++
+ 		fail = False
+ 		if self._default_exit(ebuild_process) != os.EX_OK:
+ 			if self.phase == "test" and \
+diff --git a/pym/_emerge/Scheduler.py b/pym/_emerge/Scheduler.py
+index 14b89a8..ee53d0d 100644
+--- a/pym/_emerge/Scheduler.py
++++ b/pym/_emerge/Scheduler.py
+@@ -96,7 +96,7 @@ class Scheduler(PollScheduler):
+ 		__slots__ = ("log_file", "schedule")
+ 
+ 	_task_queues_class = slot_dict_class(
+-		("merge", "jobs", "fetch", "unpack"), prefix="")
++		("merge", "jobs", "ebuild_locks", "fetch", "unpack"), prefix="")
+ 
+ 	class _build_opts_class(SlotObject):
+ 		__slots__ = ("buildpkg", "buildpkgonly",
+@@ -389,6 +389,8 @@ class Scheduler(PollScheduler):
+ 	def _set_max_jobs(self, max_jobs):
+ 		self._max_jobs = max_jobs
+ 		self._task_queues.jobs.max_jobs = max_jobs
++		if "parallel-install" in self.settings.features:
++			self._task_queues.merge.max_jobs = max_jobs
+ 
+ 	def _background_mode(self):
+ 		"""
+@@ -565,7 +567,16 @@ class Scheduler(PollScheduler):
+ 		Schedule a setup phase on the merge queue, in order to
+ 		serialize unsandboxed access to the live filesystem.
+ 		"""
+-		self._task_queues.merge.add(setup_phase)
++		if self._task_queues.merge.max_jobs > 1 and \
++			"ebuild-locks" in self.settings.features:
++			# Use a separate queue for ebuild-locks when the merge
++			# queue allows more than 1 job (due to parallel-install),
++			# since the portage.locks module does not behave as desired
++			# if we try to lock the same file multiple times
++			# concurrently from the same process.
++			self._task_queues.ebuild_locks.add(setup_phase)
++		else:
++			self._task_queues.merge.add(setup_phase)
+ 		self._schedule()
+ 
+ 	def _schedule_unpack(self, unpack_phase):
+diff --git a/pym/portage/const.py b/pym/portage/const.py
+index 6b7b05b..ed8a460 100644
+--- a/pym/portage/const.py
++++ b/pym/portage/const.py
+@@ -88,12 +88,13 @@ EBUILD_PHASES            = ("pretend", "setup", "unpack", "prepare", "configure"
+ SUPPORTED_FEATURES       = frozenset([
+                            "assume-digests", "binpkg-logs", "buildpkg", "buildsyspkg", "candy",
+                            "ccache", "chflags", "collision-protect", "compress-build-logs",
+-                           "digest", "distcc", "distlocks", "fakeroot",
++                           "digest", "distcc", "distlocks", "ebuild-locks", "fakeroot",
+                            "fail-clean", "fixpackages", "force-mirror", "getbinpkg",
+                            "installsources", "keeptemp", "keepwork", "fixlafiles", "lmirror",
+                            "metadata-transfer", "mirror", "multilib-strict", "news",
+-                           "noauto", "noclean", "nodoc", "noinfo", "noman", "nostrip",
+-                           "notitles", "parallel-fetch", "parse-eapi-ebuild-head",
++                           "noauto", "noclean", "nodoc", "noinfo", "noman",
++                           "nostrip", "notitles", "parallel-fetch", "parallel-install",
++                           "parse-eapi-ebuild-head",
+                            "prelink-checksums", "preserve-libs",
+                            "protect-owned", "python-trace", "sandbox",
+                            "selinux", "sesandbox", "severe", "sfperms",
+diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
+index 9ce5ebf..5b1bb51 100644
+--- a/pym/portage/dbapi/vartree.py
++++ b/pym/portage/dbapi/vartree.py
+@@ -15,7 +15,7 @@ portage.proxy.lazyimport.lazyimport(globals(),
+ 	 	'use_reduce,_slot_re',
+ 	'portage.elog:collect_ebuild_messages,collect_messages,' + \
+ 		'elog_process,_merge_logentries',
+-	'portage.locks:lockdir,unlockdir',
++	'portage.locks:lockdir,unlockdir,lockfile,unlockfile',
+ 	'portage.output:bold,colorize',
+ 	'portage.package.ebuild.doebuild:doebuild_environment,' + \
+ 		'_spawn_phase',
+@@ -784,17 +784,25 @@ class vardbapi(dbapi):
+ 		to the global file.  Returns new counter value.
+ 
+ 		@param myroot: ignored, self._eroot is used instead
++		@param mycpv: ignored
+ 		"""
+ 		myroot = None
+-		counter = self.get_counter_tick_core(mycpv=mycpv) - 1
+-		if incrementing:
+-			#increment counter
+-			counter += 1
+-			# use same permissions as config._init_dirs()
+-			ensure_dirs(os.path.dirname(self._counter_path),
+-				gid=portage_gid, mode=0o2750, mask=0o2)
+-			# update new global counter file
+-			write_atomic(self._counter_path, str(counter))
++		mycpv = None
++
++		self.lock()
++		try:
++			counter = self.get_counter_tick_core() - 1
++			if incrementing:
++				#increment counter
++				counter += 1
++				# use same permissions as config._init_dirs()
++				ensure_dirs(os.path.dirname(self._counter_path),
++					gid=portage_gid, mode=0o2750, mask=0o2)
++				# update new global counter file
++				write_atomic(self._counter_path, str(counter))
++		finally:
++			self.unlock()
++
+ 		return counter
+ 
+ 	def _dblink(self, cpv):
+@@ -1267,6 +1275,7 @@ class dblink(object):
+ 		self.dbpkgdir = self.dbcatdir+"/"+pkg
+ 		self.dbtmpdir = self.dbcatdir+"/-MERGING-"+pkg
+ 		self.dbdir = self.dbpkgdir
++
+ 		self.settings = mysettings
+ 		self._verbose = self.settings.get("PORTAGE_VERBOSE") == "1"
+ 
+@@ -1344,8 +1353,12 @@ class dblink(object):
+ 		"""
+ 		For a given db entry (self), erase the CONTENTS values.
+ 		"""
+-		if os.path.exists(self.dbdir+"/CONTENTS"):
+-			os.unlink(self.dbdir+"/CONTENTS")
++		self.lockdb()
++		try:
++			if os.path.exists(self.dbdir+"/CONTENTS"):
++				os.unlink(self.dbdir+"/CONTENTS")
++		finally:
++			self.unlockdb()
+ 
+ 	def _clear_contents_cache(self):
+ 		self.contentscache = None
+@@ -1521,10 +1534,6 @@ class dblink(object):
+ 		@returns:
+ 		1. os.EX_OK if everything went well.
+ 		2. return code of the failed phase (for prerm, postrm, cleanrm)
+-		
+-		Notes:
+-		The caller must ensure that lockdb() and unlockdb() are called
+-		before and after this method.
+ 		"""
+ 
+ 		if trimworld is not None:
+@@ -1627,7 +1636,12 @@ class dblink(object):
+ 					showMessage(_("!!! FAILED prerm: %s\n") % retval,
+ 						level=logging.ERROR, noiselevel=-1)
+ 
+-			self._unmerge_pkgfiles(pkgfiles, others_in_slot)
++			conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
++			conf_mem_lock = lockfile(conf_mem_file)
++			try:
++				self._unmerge_pkgfiles(pkgfiles, others_in_slot, conf_mem_file)
++			finally:
++				unlockfile(conf_mem_lock)
+ 			self._clear_contents_cache()
+ 
+ 			if myebuildpath:
+@@ -1737,10 +1751,18 @@ class dblink(object):
+ 		else:
+ 			self.settings.pop("PORTAGE_LOG_FILE", None)
+ 
+-		env_update(target_root=self.settings['ROOT'],
+-			prev_mtimes=ldpath_mtimes,
+-			contents=contents, env=self.settings.environ(),
+-			writemsg_level=self._display_merge)
++		# Lock the config memory file to prevent symlink creation
++		# in merge_contents from overlapping with env-update.
++		conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
++		conf_mem_lock = lockfile(conf_mem_file)
++		try:
++			env_update(target_root=self.settings['ROOT'],
++				prev_mtimes=ldpath_mtimes,
++				contents=contents, env=self.settings.environ(),
++				writemsg_level=self._display_merge)
++		finally:
++			unlockfile(conf_mem_lock)
++
+ 		return os.EX_OK
+ 
+ 	def _display_merge(self, msg, level=0, noiselevel=0):
+@@ -1759,7 +1781,7 @@ class dblink(object):
+ 				self._scheduler.output(msg,
+ 					background=background, log_path=log_path)
+ 
+-	def _unmerge_pkgfiles(self, pkgfiles, others_in_slot):
++	def _unmerge_pkgfiles(self, pkgfiles, others_in_slot, conf_mem_file):
+ 		"""
+ 		
+ 		Unmerges the contents of a package from the liveFS
+@@ -1795,7 +1817,6 @@ class dblink(object):
+ 		dest_root = self._eroot
+ 		dest_root_len = len(dest_root) - 1
+ 
+-		conf_mem_file = os.path.join(dest_root, CONFIG_MEMORY_FILE)
+ 		cfgfiledict = grabdict(conf_mem_file)
+ 		stale_confmem = []
+ 
+@@ -3173,8 +3194,12 @@ class dblink(object):
+ 					# get_owners is slow for large numbers of files, so
+ 					# don't look them all up.
+ 					collisions = collisions[:20]
+-				owners = self.vartree.dbapi._owners.get_owners(collisions)
+-				self.vartree.dbapi.flush_cache()
++				self.lockdb()
++				try:
++					owners = self.vartree.dbapi._owners.get_owners(collisions)
++					self.vartree.dbapi.flush_cache()
++				finally:
++					self.unlockdb()
+ 
+ 				for pkg, owned_files in owners.items():
+ 					cpv = pkg.mycpv
+@@ -3253,25 +3278,29 @@ class dblink(object):
+ 
+ 		#if we have a file containing previously-merged config file md5sums, grab it.
+ 		conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
+-		cfgfiledict = grabdict(conf_mem_file)
+-		if "NOCONFMEM" in self.settings:
+-			cfgfiledict["IGNORE"]=1
+-		else:
+-			cfgfiledict["IGNORE"]=0
+-
+-		# Always behave like --noconfmem is enabled for downgrades
+-		# so that people who don't know about this option are less
+-		# likely to get confused when doing upgrade/downgrade cycles.
+-		pv_split = catpkgsplit(self.mycpv)[1:]
+-		for other in others_in_slot:
+-			if pkgcmp(pv_split, catpkgsplit(other.mycpv)[1:]) < 0:
+-				cfgfiledict["IGNORE"] = 1
+-				break
++		conf_mem_lock = lockfile(conf_mem_file)
++		try:
++			cfgfiledict = grabdict(conf_mem_file)
++			if "NOCONFMEM" in self.settings:
++				cfgfiledict["IGNORE"]=1
++			else:
++				cfgfiledict["IGNORE"]=0
++
++			# Always behave like --noconfmem is enabled for downgrades
++			# so that people who don't know about this option are less
++			# likely to get confused when doing upgrade/downgrade cycles.
++			pv_split = catpkgsplit(self.mycpv)[1:]
++			for other in others_in_slot:
++				if pkgcmp(pv_split, catpkgsplit(other.mycpv)[1:]) < 0:
++					cfgfiledict["IGNORE"] = 1
++					break
+ 
+-		rval = self._merge_contents(srcroot, destroot, cfgfiledict,
+-			conf_mem_file)
+-		if rval != os.EX_OK:
+-			return rval
++			rval = self._merge_contents(srcroot, destroot, cfgfiledict,
++				conf_mem_file)
++			if rval != os.EX_OK:
++				return rval
++		finally:
++			unlockfile(conf_mem_lock)
+ 
+ 		# These caches are populated during collision-protect and the data
+ 		# they contain is now invalid. It's very important to invalidate
+@@ -3343,8 +3372,12 @@ class dblink(object):
+ 			else:
+ 				emerge_log(_(" !!! unmerge FAILURE: %s") % (dblnk.mycpv,))
+ 
+-			# TODO: Check status and abort if necessary.
+-			dblnk.delete()
++			self.lockdb()
++			try:
++				# TODO: Check status and abort if necessary.
++				dblnk.delete()
++			finally:
++				self.unlockdb()
+ 			showMessage(_(">>> Original instance of package unmerged safely.\n"))
+ 
+ 		if len(others_in_slot) > 1:
+@@ -3355,8 +3388,12 @@ class dblink(object):
+ 
+ 		# We hold both directory locks.
+ 		self.dbdir = self.dbpkgdir
+-		self.delete()
+-		_movefile(self.dbtmpdir, self.dbpkgdir, mysettings=self.settings)
++		self.lockdb()
++		try:
++			self.delete()
++			_movefile(self.dbtmpdir, self.dbpkgdir, mysettings=self.settings)
++		finally:
++			self.unlockdb()
+ 
+ 		# Check for file collisions with blocking packages
+ 		# and remove any colliding files from their CONTENTS
+@@ -3364,9 +3401,13 @@ class dblink(object):
+ 		self._clear_contents_cache()
+ 		contents = self.getcontents()
+ 		destroot_len = len(destroot) - 1
+-		for blocker in blockers:
+-			self.vartree.dbapi.removeFromContents(blocker, iter(contents),
+-				relative_paths=False)
++		self.lockdb()
++		try:
++			for blocker in blockers:
++				self.vartree.dbapi.removeFromContents(blocker, iter(contents),
++					relative_paths=False)
++		finally:
++			self.lockdb()
+ 
+ 		plib_registry = self.vartree.dbapi._plib_registry
+ 		if plib_registry:
+@@ -3429,11 +3470,18 @@ class dblink(object):
+ 			if pkgcmp(catpkgsplit(self.pkg)[1:], catpkgsplit(v)[1:]) < 0:
+ 				downgrade = True
+ 
+-		#update environment settings, library paths. DO NOT change symlinks.
+-		env_update(makelinks=(not downgrade),
+-			target_root=self.settings['ROOT'], prev_mtimes=prev_mtimes,
+-			contents=contents, env=self.settings.environ(),
+-			writemsg_level=self._display_merge)
++		# Lock the config memory file to prevent symlink creation
++		# in merge_contents from overlapping with env-update.
++		conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
++		conf_mem_lock = lockfile(conf_mem_file)
++		try:
++			#update environment settings, library paths. DO NOT change symlinks.
++			env_update(makelinks=(not downgrade),
++				target_root=self.settings['ROOT'], prev_mtimes=prev_mtimes,
++				contents=contents, env=self.settings.environ(),
++				writemsg_level=self._display_merge)
++		finally:
++			unlockfile(conf_mem_lock)
+ 
+ 		# For gcc upgrades, preserved libs have to be removed after the
+ 		# the library path has been updated.
+@@ -3856,7 +3904,9 @@ class dblink(object):
+ 		"""
+ 		myroot = None
+ 		retval = -1
+-		self.lockdb()
++		parallel_install = "parallel-install" in self.settings.features
++		if not parallel_install:
++			self.lockdb()
+ 		self.vartree.dbapi._bump_mtime(self.mycpv)
+ 		try:
+ 			retval = self.treewalk(mergeroot, myroot, inforoot, myebuild,
+@@ -3908,8 +3958,9 @@ class dblink(object):
+ 				pass
+ 			else:
+ 				self.vartree.dbapi._linkmap._clear_cache()
+-			self.unlockdb()
+ 			self.vartree.dbapi._bump_mtime(self.mycpv)
++			if not parallel_install:
++				self.unlockdb()
+ 		return retval
+ 
+ 	def getstring(self,name):
+@@ -4010,12 +4061,18 @@ def unmerge(cat, pkg, myroot=None, settings=None,
+ 	mylink = dblink(cat, pkg, settings=settings, treetype="vartree",
+ 		vartree=vartree, scheduler=scheduler)
+ 	vartree = mylink.vartree
+-	mylink.lockdb()
++	parallel_install = "parallel-install" in settings.features
++	if not parallel_install:
++		mylink.lockdb()
+ 	try:
+ 		if mylink.exists():
+ 			retval = mylink.unmerge(ldpath_mtimes=ldpath_mtimes)
+ 			if retval == os.EX_OK:
+-				mylink.delete()
++				mylink.lockdb()
++				try:
++					mylink.delete()
++				finally:
++					mylink.unlockdb()
+ 			return retval
+ 		return os.EX_OK
+ 	finally:
+@@ -4024,7 +4081,8 @@ def unmerge(cat, pkg, myroot=None, settings=None,
+ 			pass
+ 		else:
+ 			vartree.dbapi._linkmap._clear_cache()
+-		mylink.unlockdb()
++		if not parallel_install:
++			mylink.unlockdb()
+ 
+ def write_contents(contents, root, f):
+ 	"""
+diff --git a/pym/portage/util/_dyn_libs/LinkageMapELF.py b/pym/portage/util/_dyn_libs/LinkageMapELF.py
+index 3305aca..fe86a7a 100644
+--- a/pym/portage/util/_dyn_libs/LinkageMapELF.py
++++ b/pym/portage/util/_dyn_libs/LinkageMapELF.py
+@@ -181,15 +181,20 @@ class LinkageMapELF(object):
+ 				lines.append((include_file, line))
+ 
+ 		aux_keys = [self._needed_aux_key]
+-		for cpv in self._dbapi.cpv_all():
+-			if exclude_pkgs is not None and cpv in exclude_pkgs:
+-				continue
+-			needed_file = self._dbapi.getpath(cpv,
+-				filename=self._needed_aux_key)
+-			for line in self._dbapi.aux_get(cpv, aux_keys)[0].splitlines():
+-				lines.append((needed_file, line))
+-		# Cache NEEDED.* files avoid doing excessive IO for every rebuild.
+-		self._dbapi.flush_cache()
++		can_lock = os.access(os.path.dirname(self._dbapi._dbroot), os.W_OK)
++		if can_lock:
++			self._dbapi.lock()
++		try:
++			for cpv in self._dbapi.cpv_all():
++				if exclude_pkgs is not None and cpv in exclude_pkgs:
++					continue
++				needed_file = self._dbapi.getpath(cpv,
++					filename=self._needed_aux_key)
++				for line in self._dbapi.aux_get(cpv, aux_keys)[0].splitlines():
++					lines.append((needed_file, line))
++		finally:
++			if can_lock:
++				self._dbapi.unlock()
+ 
+ 		# have to call scanelf for preserved libs here as they aren't 
+ 		# registered in NEEDED.ELF.2 files
