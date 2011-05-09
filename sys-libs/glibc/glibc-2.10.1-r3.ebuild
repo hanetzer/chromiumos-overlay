@@ -183,6 +183,13 @@ for x in setup {pre,post}inst ; do
 done
 
 eblit-src_unpack-post() {
+	cd "${S}"
+	einfo "Applying fix for building PIE binaries in thumb mode."
+	epatch "${FILESDIR}"/2.10/glibc-2.10-arm-thumb-got.patch
+
+	einfo "Adding -fno-asynchronous-unwind-tables to initfini.s for i386"
+	epatch "${FILESDIR}"/2.10/glibc-2.10-unwind-tables.patch
+
 	if use hardened ; then
 		cd "${S}"
 		einfo "Patching to get working PIE binaries on PIE (hardened) platforms"
@@ -202,9 +209,6 @@ eblit-src_unpack-post() {
 			debug/stack_chk_fail.c || die
 		cp -f "${FILESDIR}"/2.10/glibc-2.10-gentoo-chk_fail.c \
 			debug/chk_fail.c || die
-
-		einfo "Adding -fno-asynchronous-unwind-tables to initfini.s for i386"
-		epatch "${FILESDIR}"/2.10/glibc-2.10-unwind-tables.patch
 
 		if use debug ; then
 			# When using Hardened Gentoo stack handler, have smashes dump core for
