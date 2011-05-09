@@ -23,6 +23,8 @@ src_prepare() {
   # Remove the epatch lines when mozc is upgraded.
   epatch "${FILESDIR}"/mode_switch.patch
   epatch "${FILESDIR}"/fix_14335.patch
+  epatch "${FILESDIR}"/memory_config.patch
+  epatch "${FILESDIR}"/load_config_from_memconf.patch
 }
 
 src_configure() {

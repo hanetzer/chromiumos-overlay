@@ -1,0 +1,218 @@
+diff -Nur -x .svn mozc.orig/src/base/config_file_stream.cc mozc/src/base/config_file_stream.cc
+--- mozc.orig/src/base/config_file_stream.cc	2011-04-27 19:33:08.385435863 +0900
++++ mozc/src/base/config_file_stream.cc	2011-04-27 19:24:52.295435250 +0900
+@@ -29,11 +29,13 @@
+ 
+ #include "base/config_file_stream.h"
+ 
++#include <map>
+ #include <string.h>
+ #include <fstream>
+ #include <sstream>
+ #include "base/base.h"
+ #include "base/file_stream.h"
++#include "base/singleton.h"
+ 
+ namespace mozc {
+ 
+@@ -42,6 +44,7 @@
+ static const char kSystemPrefix[] = "system://";
+ static const char kUserPrefix[]   = "user://";
+ static const char kFilePrefix[]   = "file://";
++static const char kMemoryPrefix[] = "memory://";
+ 
+ struct FileData {
+   const char *name;
+@@ -57,13 +60,31 @@
+   return filename.substr(size, filename.size() - size);
+ }
+ 
++class OnMemoryFileMap {
++ public:
++  string get(const string &key) const {
++    map<string, string>::const_iterator it = map_.find(key);
++    if (it != map_.end()) {
++      return it->second;
++    }
++    return string("");
++  }
++
++  void set(const string &key, const string &value) {
++    map_[key] = value;
++  }
++
++ private:
++  map<string, string> map_;
++};
++
+ #include "base/config_file_stream_data.h"
+ }  // namespace
+ 
+ istream *ConfigFileStream::Open(const string &filename,
+                                 ios_base::openmode mode) {
+   // system://foo.bar.txt
+-  if (filename.find(kSystemPrefix) == 0) {
++  if (Util::StartsWith(filename, kSystemPrefix)) {
+     const string new_filename = RemovePrefix(kSystemPrefix, filename);
+     for (size_t i = 0; i < arraysize(kFileData); ++i) {
+       if (new_filename == kFileData[i].name) {
+@@ -78,7 +99,7 @@
+       }
+     }
+   // user://foo.bar.txt
+-  } else if (filename.find(kUserPrefix) == 0) {
++  } else if (Util::StartsWith(filename, kUserPrefix)) {
+     const string new_filename =
+         Util::JoinPath(Util::GetUserProfileDirectory(),
+                        RemovePrefix(kUserPrefix, filename));
+@@ -90,7 +111,7 @@
+     delete ifs;
+     return NULL;
+   // file:///foo.map
+-  } else if (filename.find(kFilePrefix) == 0) {
++  } else if (Util::StartsWith(filename, kFilePrefix)) {
+     const string new_filename = RemovePrefix(kFilePrefix, filename);
+     InputFileStream *ifs = new InputFileStream(new_filename.c_str(), mode);
+     CHECK(ifs);
+@@ -99,6 +120,15 @@
+     }
+     delete ifs;
+     return NULL;
++  } else if (Util::StartsWith(filename, kMemoryPrefix)) {
++    istringstream *ifs = new istringstream(
++        Singleton<OnMemoryFileMap>::get()->get(filename), mode);
++    CHECK(ifs);
++    if (*ifs) {
++      return ifs;
++    }
++    delete ifs;
++    return NULL;
+   } else {
+     LOG(WARNING) << filename << " has no prefix. open from localfile";
+     InputFileStream *ifs = new InputFileStream(filename.c_str(), mode);
+@@ -113,13 +143,49 @@
+   return NULL;
+ }
+ 
++bool ConfigFileStream::AtomicUpdate(const string &filename,
++                                    const string &new_contents) {
++  if (Util::StartsWith(filename, kMemoryPrefix)) {
++    Singleton<OnMemoryFileMap>::get()->set(filename, new_contents);
++    return true;
++  } else if (Util::StartsWith(filename, kSystemPrefix)) {
++    LOG(ERROR) << "Cannot update system:// files.";
++    return false;
++  }
++
++  // We should save the new config first,
++  // as we may rewrite the original config according to platform.
++  // The original config should be platform independent.
++  const string real_filename = GetFileName(filename);
++  if (real_filename.empty()) {
++    return false;
++  }
++
++  const string tmp_filename = real_filename + ".tmp";
++  {
++    OutputFileStream ofs(tmp_filename.c_str(), ios::out | ios::binary);
++    if (!ofs) {
++      LOG(ERROR) << "cannot open " << tmp_filename;
++      return false;
++    }
++    ofs << new_contents;
++  }
++
++  if (!Util::AtomicRename(tmp_filename, filename)) {
++    LOG(ERROR) << "Util::AtomicRename failed";
++    return false;
++  }
++  return true;
++}
++
+ string ConfigFileStream::GetFileName(const string &filename) {
+-  if (filename.find(kSystemPrefix) == 0) {
++  if (Util::StartsWith(filename, kSystemPrefix) ||
++      Util::StartsWith(filename, kMemoryPrefix)) {
+     return "";
+-  } else if (filename.find(kUserPrefix) == 0) {
++  } else if (Util::StartsWith(filename, kUserPrefix)) {
+     return Util::JoinPath(Util::GetUserProfileDirectory(),
+                           RemovePrefix(kUserPrefix, filename));
+-  } else if (filename.find(kFilePrefix) == 0) {
++  } else if (Util::StartsWith(filename, kFilePrefix)) {
+     return RemovePrefix(kUserPrefix, filename);
+   } else {
+     LOG(WARNING) << filename << " has no prefix. open from localfile";
+diff -Nur -x .svn mozc.orig/src/base/config_file_stream.h mozc/src/base/config_file_stream.h
+--- mozc.orig/src/base/config_file_stream.h	2011-04-27 19:33:08.385435863 +0900
++++ mozc/src/base/config_file_stream.h	2011-04-27 19:24:52.295435250 +0900
+@@ -52,6 +52,10 @@
+ // C) file -- should only be enabled in debug build
+ //   file:///foo/bar/foo.tsv
+ //
++// D) on-memory -- for debug.  Does not store to the disk at all.
++//   memory://foo.tsv
++//   memory://foo.bar
++//
+ class ConfigFileStream {
+  public:
+   static istream *Open(const string &filename) {
+@@ -61,7 +65,13 @@
+   static istream *Open(const string &filename,
+                        ios_base::openmode mode);
+ 
+-  // if prefix is system:// return "";
++  // Update the specified config filename (formatted as above) with
++  // the |new_contents| atomically.  Returns true if the update
++  // succeeds.
++  static bool AtomicUpdate(const string &filename,
++                           const string &new_contents);
++
++  // if prefix is system:// or memory:// return "";
+   static string GetFileName(const string &filename);
+ };
+ }  // namespace mozc
+diff -Nur -x .svn mozc.orig/src/session/config_handler.cc mozc/src/session/config_handler.cc
+--- mozc.orig/src/session/config_handler.cc	2011-04-27 19:32:27.135437415 +0900
++++ mozc/src/session/config_handler.cc	2011-04-27 19:24:52.295435250 +0900
+@@ -128,34 +128,14 @@
+   ConfigHandler::SetMetaData(&output_config);
+ 
+   VLOG(1) << "Setting new config: " << filename_;
+-  // We should save the new config first,
+-  // as we may rewrite the original config according to platform.
+-  // The original config should be platform independent.
+-  const string filename = ConfigFileStream::GetFileName(filename_);
+-  const string tmp_filename = filename + ".tmp";
+-  {
+-    OutputFileStream ofs(tmp_filename.c_str(), ios::out | ios::binary);
+-    if (!ofs) {
+-      LOG(ERROR) << "cannot open " << tmp_filename;
+-      return false;
+-    }
+-    output_config.SerializeToOstream(&ofs);
+-  }
+-
+-  if (!Util::AtomicRename(tmp_filename, filename)) {
+-    LOG(ERROR) << "Util::AtomicRename failed";
+-  }
++  ConfigFileStream::AtomicUpdate(filename_, output_config.SerializeAsString());
+ 
+ #ifndef NO_LOGGING
+-  {
+-    const string filename = ConfigFileStream::GetFileName(filename_ + ".txt");
+-    OutputFileStream ofs(filename.c_str());
+-    if (ofs) {
+-      ofs << "# This is a text-based config file for debugging." << endl;
+-      ofs << "# Nothing happens when you edit this file manually." << endl;
+-      ofs << output_config.DebugString();
+-    }
+-  }
++  string debug_content(
++      "# This is a text-based config file for debugging.\n"
++      "# Nothing happens when you edit this file manually.\n");
++  debug_content += output_config.DebugString();
++  ConfigFileStream::AtomicUpdate(filename_ + ".txt", debug_content);
+ #endif
+ 
+   return SetConfigInternal(output_config);
