@@ -34,6 +34,7 @@ net-misc/ntp            caps
 net-misc/openssh	-X
 net-misc/strongswan	cisco nat-transport
 net-nds/openldap	minimal
+net-wireless/bluez	-consolekit
 net-wireless/wpa_supplicant	dbus debug -readline ssl
 sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb
 sys-apps/dbus		-X
