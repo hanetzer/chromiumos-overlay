@@ -81,6 +81,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/gsutil
 	sys-apps/module-init-tools
 	!sys-apps/nih-dbus-tool
+	sys-devel/clang
 	sys-fs/sshfs-fuse
 	sys-libs/libnih
 	x11-apps/mkfontdir

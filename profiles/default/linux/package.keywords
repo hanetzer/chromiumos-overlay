@@ -53,3 +53,7 @@
 # Needed for curl >= 7.2.1.4
 =net-misc/curl-7.21.4		amd64 x86
 =net-dns/c-ares-1.7.4		amd64 x86
+
+# Clang's static analysis may warn us about some bugs that we'd miss otherwise
+=sys-devel/clang-2.6-r1         amd64
+=sys-devel/llvm-2.6             amd64
