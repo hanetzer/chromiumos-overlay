@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="84615"
+CROS_SVN_COMMIT="84640"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -174,7 +174,7 @@ set_build_defines() {
 	if [ "$ARCH" = "x86" ]; then
 		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
-		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1";
+		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true v8_can_use_vfp_instructions=true";
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
 			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
