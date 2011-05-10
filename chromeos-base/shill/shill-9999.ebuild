@@ -13,9 +13,7 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="~amd64 ~arm ~x86"
 
-RDEPEND="dev-cpp/gflags
-	dev-cpp/glog
-        dev-libs/dbus-c++
+RDEPEND="dev-libs/dbus-c++
 	dev-libs/glib"
 
 DEPEND="${RDEPEND}
