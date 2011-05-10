@@ -22,16 +22,19 @@ CROS_WORKON_LOCALNAME="firmware"
 # Name of user account on the Binary Component Server.
 CROS_FIRMWARE_BCS_USER_NAME=""
 
-# BIOS firmware image archive.
-# This archive should contain just the BIOS image file at its root.
-CROS_FIRMWARE_BIOS_ARCHIVE=""
+# System firmware image.
+# Examples:
+#  CROS_FIRMWARE_MAIN_IMAGE="bcs://filename.tbz2" - Fetch from Binary Component Server.
+#  CROS_FIRMWARE_MAIN_IMAGE="file://filename.fd"  - Fetch from "files" directory.
+#  CROS_FIRMWARE_MAIN_IMAGE="${ROOT}/lib/firmware/filename.fd" - Absolute file path.
+CROS_FIRMWARE_MAIN_IMAGE=""
 
-# BIOS firmware version identifier.
-CROS_FIRMWARE_BIOS_VERSION=""
-
-# EC (embedded controller) firmware archive.
-# This archive should contain just the EC image file at its root.
-CROS_FIRMWARE_EC_ARCHIVE=""
+# EC (embedded controller) firmware.
+# Examples:
+#  CROS_FIRMWARE_EC_IMAGE="bcs://filename.tbz2" - Fetch from Binary Component Server.
+#  CROS_FIRMWARE_EC_IMAGE="file://filename.bin" - Fetch from "files" directory.
+#  CROS_FIRMWARE_EC_IMAGE="${ROOT}/lib/firmware/filename.bin" - Absolute file path.
+CROS_FIRMWARE_EC_IMAGE=""
 
 # EC (embedded controller) firmware image version identifier.
 CROS_FIRMWARE_EC_VERSION=""
