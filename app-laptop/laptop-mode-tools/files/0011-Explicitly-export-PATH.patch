@@ -1,0 +1,12 @@
+--- laptop-mode-tools_1.57/usr/sbin/laptop_mode
++++ laptop-mode-tools_1.57/usr/sbin/laptop_mode
+@@ -131,6 +131,9 @@
+ DEBUG=0
+ ENABLE_LAPTOP_MODE_TOOLS=1
+ 
++# Explicitly export the path, in case something somewhere doesn't have the path.
++export PATH="${PATH}":/bin:/sbin:/usr/bin:/usr/sbin
++
+ LMT_REQ_LOCK="/var/lock/lmt-req.lock"
+ LMT_INVOC_LOCK="/var/lock/lmt-invoc.lock"
+ FLOCK=`PATH=$PATH which flock`
