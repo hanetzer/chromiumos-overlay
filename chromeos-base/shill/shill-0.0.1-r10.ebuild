@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="de21bba06fee1b7b4083b9a85e5506dca87faa80"
+CROS_WORKON_COMMIT="ee929b7ab2a89bbf2d1aecf85bbd49e53fbea059"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -14,9 +14,7 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="amd64 arm x86"
 
-RDEPEND="dev-cpp/gflags
-	dev-cpp/glog
-        dev-libs/dbus-c++
+RDEPEND="dev-libs/dbus-c++
 	dev-libs/glib"
 
 DEPEND="${RDEPEND}
