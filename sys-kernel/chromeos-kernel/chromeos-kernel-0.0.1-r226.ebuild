@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="bca92e682653bac231f7cbbb2675abab891ecdac"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_COMMIT="d0fcb4edc3577e30fb42f85c689b0822915bdbb7"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
 inherit binutils-funcs
 
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
@@ -16,8 +16,6 @@ KEYWORDS="x86 arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
-# disable compat_wireless with kernel-next
-USE="${USE} -compat_wireless"
 PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
@@ -37,14 +35,13 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
-	elif [ "${ARCH}" = "arm" ]; then
-		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
 	else
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
 	fi
 fi
 
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -87,15 +84,21 @@ src_configure() {
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | eval emake ${COMPILER_OPTS} ARCH=${kernel_arch} oldconfig || die
-
-	if use compat_wireless; then
-		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
-	fi
 }
 
 src_compile() {
 	if use initramfs; then
 		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+		# We want avoid copying modules into the initramfs so we need to enable
+		# the functionality required for the initramfs here.
+
+		# TPM support to ensure proper locking.
+		INITRAMFS="$INITRAMFS CONFIG_TCG_TPM=y CONFIG_TCG_TIS=y"
+
+		# VFAT FS support for EFI System Partition updates.
+		INITRAMFS="$INITRAMFS CONFIG_NLS_CODEPAGE_437=y"
+		INITRAMFS="$INITRAMFS CONFIG_NLS_ISO8859_1=y"
+		INITRAMFS="$INITRAMFS CONFIG_FAT_FS=y CONFIG_VFAT_FS=y"
 	else
 		INITRAMFS=""
 	fi
@@ -103,14 +106,6 @@ src_compile() {
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		CROSS_COMPILE="${cross}" || die
-
-	if use compat_wireless; then
-		# compat-wireless support must be done after
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			$INITRAMFS \
-			ARCH=${kernel_arch} \
-			CROSS_COMPILE="${cross}" || die
-	fi
 }
 
 src_install() {
@@ -127,17 +122,6 @@ src_install() {
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		modules_install || die
-
-	if use compat_wireless; then
-		# compat-wireless modules are built+installed separately
-		# NB: the updates dir is handled specially by depmod
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			ARCH=${kernel_arch}\
-			CROSS_COMPILE="${cross}" \
-			INSTALL_MOD_DIR=updates \
-			INSTALL_MOD_PATH="${D}" \
-			modules_install || die
-	fi
 
 	eval emake ${COMPILER_OPTS} \
 		ARCH=${kernel_arch}\
