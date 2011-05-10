@@ -51,6 +51,7 @@ RDEPEND="${RDEPEND}
 	media-gfx/perceptualdiff
 	media-libs/tiff
 	net-analyzer/netperf
+	net-dialup/minicom
 	net-misc/dhcp
 	net-misc/iperf
 	net-misc/iputils
