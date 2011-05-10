@@ -25,7 +25,7 @@ KEYWORDS="x86 arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient player_x11"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -174,6 +174,9 @@ set_build_defines() {
 		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
 		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true v8_can_use_vfp_instructions=true";
+		if use player_x11; then
+			BUILD_DEFINES="$BUILD_DEFINES player_x11_renderer=gles"
+		fi
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
 			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
@@ -544,8 +547,12 @@ src_compile() {
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 	einfo "Stripped optimization flags for Chrome build"
 
+	TARGETS="chrome chrome_sandbox libosmesa.so default_extensions"
+	if use player_x11; then
+		TARGETS="${TARGETS} player_x11"
+	fi
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-		chrome chrome_sandbox libosmesa.so default_extensions \
+		${TARGETS} \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 
@@ -723,6 +730,9 @@ src_install() {
 
 	exeinto "${CHROME_DIR}"
 	doexe "${FROM}"/chrome
+	if use player_x11; then
+		doexe "${FROM}"/player_x11
+	fi
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
 	if use chrome_internal && use chrome_pdf; then
