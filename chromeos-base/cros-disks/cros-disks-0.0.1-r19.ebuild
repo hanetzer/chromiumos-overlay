@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="9f94d5fd829ea347d7a2be3c6c0c6691623f574b"
+CROS_WORKON_COMMIT="656e49502017f2f3a3a44530bad4ec466361c224"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="arm amd64 x86"
@@ -18,13 +18,15 @@ SLOT="0"
 IUSE="splitdebug test"
 
 RDEPEND="
+	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-libs/dbus-c++
 	dev-libs/glib
+	sys-apps/rootdev
+	sys-fs/udev
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-chrome
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 
