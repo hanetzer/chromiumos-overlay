@@ -71,6 +71,7 @@ src_install() {
 	doins "${S}/files/base/base_switches.h"
 	doins "${S}/files/base/base64.h"
 	doins "${S}/files/base/basictypes.h"
+	doins "${S}/files/base/callback.h"
 	doins "${S}/files/base/command_line.h"
 	doins "${S}/files/base/compiler_specific.h"
 	doins "${S}/files/base/condition_variable.h"
