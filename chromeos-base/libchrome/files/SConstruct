@@ -75,6 +75,7 @@ sources = env.Split("""
                     files/base/utf_string_conversions.cc
                     files/base/values.cc
                     files/base/waitable_event_posix.cc
+                    files/base/weak_ptr.cc
                     files/third_party/modp_b64/modp_b64.cc
                     """)
 
