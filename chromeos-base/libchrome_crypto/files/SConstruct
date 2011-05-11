@@ -11,11 +11,11 @@ env = Environment()
 # Keep ebuild up to date with appropriate headers, or else figure
 # out how to get scons to handle header installation as well.
 sources = env.Split("""
-                    files/crypto/nss_util.cc
-                    files/crypto/rsa_private_key.cc
-                    files/crypto/rsa_private_key_nss.cc
-                    files/crypto/signature_creator_nss.cc
-                    files/crypto/signature_verifier_nss.cc
+                    nss_util.cc
+                    rsa_private_key.cc
+                    rsa_private_key_nss.cc
+                    signature_creator_nss.cc
+                    signature_verifier_nss.cc
                     """)
 
 env.Append(
@@ -32,7 +32,8 @@ env['CCFLAGS'] += ['-fPIC',
                    '-Wall',
                    '-Werror',
                    '-DOS_CHROMEOS',
-                   '-DUSE_SYSTEM_LIBEVENT']
+                   '-DUSE_SYSTEM_LIBEVENT',
+                   '-I..']
 
 # Fix issue with scons not passing some vars through the environment.
 for key in Split('PKG_CONFIG SYSROOT'):

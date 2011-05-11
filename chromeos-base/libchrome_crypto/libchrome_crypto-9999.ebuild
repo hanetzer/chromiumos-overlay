@@ -2,17 +2,19 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_PROJECT="chromiumos/platform/libchrome_crypto"
 
-inherit cros-debug eutils toolchain-funcs
+KEYWORDS="~amd64 ~arm ~x86"
+
+inherit cros-workon cros-debug toolchain-funcs
 
 DESCRIPTION="Chrome crypto/ library extracted for use on Chrome OS"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
+SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
 
-RDEPEND=">=chromeos-base/libchrome-85268
+RDEPEND=">=chromeos-base/libchrome-87480
 	dev-libs/glib
 	dev-libs/libevent
 	dev-libs/nss
@@ -21,6 +23,7 @@ DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
 src_prepare() {
+	ln -s "${S}" "${WORKDIR}/crypto" &> /dev/null
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 	epatch "${FILESDIR}/memory_annotation.patch" || die "libchrome prepare failed."
 }
@@ -36,7 +39,6 @@ src_compile() {
 
 src_install() {
 	dodir "/usr/lib"
-	dodir "/usr/include/base/third_party/nspr"
 	dodir "/usr/include/crypto"
 
 	insopts -m0644
@@ -44,9 +46,9 @@ src_install() {
 	doins "${S}/libchrome_crypto.a"
 
 	insinto "/usr/include/crypto"
-	doins "${S}/files/crypto/nss_util.h"
-	doins "${S}/files/crypto/nss_util_internal.h"
-	doins "${S}/files/crypto/rsa_private_key.h"
-	doins "${S}/files/crypto/signature_creator.h"
-	doins "${S}/files/crypto/signature_verifier.h"
+	doins "${S}/nss_util.h"
+	doins "${S}/nss_util_internal.h"
+	doins "${S}/rsa_private_key.h"
+	doins "${S}/signature_creator.h"
+	doins "${S}/signature_verifier.h"
 }
