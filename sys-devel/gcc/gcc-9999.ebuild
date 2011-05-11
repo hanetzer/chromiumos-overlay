@@ -89,11 +89,20 @@ else
   SLOT="${CTARGET}"
 fi
 
-PREFIX=/${P}
-BINPATH=${PREFIX}/gcc-bin
+PREFIX=/usr
+LIBDIR=${PREFIX}/lib
+INCLUDEDIR=${LIBDIR}/include/gcc-v${PV}
+if is_crosscompile ; then
+  BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${PV}
+else
+  BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${PV}
+fi
+DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${PV}
+STDCXX_INCDIR=${LIBDIR}/include/g++-v${PV}
+
 
 src_unpack() {
-  GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
+  GCC_CONFIG_FILE=${CTARGET}-${PV}
 
   local GCCDIR
   if use mounted_sources ; then
@@ -124,6 +133,7 @@ src_unpack() {
   fi
 
   GCC_BASE_VER=$(cat ${GCCDIR}/gcc/BASE-VER)
+  SLIBDIR=${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}
 
   if [[ ! -z ${CL} ]] ; then
     COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
@@ -159,41 +169,43 @@ src_install()
 
   find "${D}" -name libiberty.a -exec rm -f "{}" \;
 
-  TODIR="${D}/${PREFIX}/lib/gcc/${CTARGET}/${PV}"
-  FROMDIR="${D}/${PREFIX}/${CTARGET}/lib"
-
   # Copy hardened specs over.
-  original_specs=$(${D}/${BINPATH}/${CTARGET}-gcc -dumpspecs)
-  hardened_specs="${original_specs}"
-	hardened_specs+="$(cat ${FILESDIR}/hardened.specs)"
 
-	# Add pie and ssp options to cc1 rule.
-	hardened_specs=$(echo "${hardened_specs}" | sed -e '/cc1:/,+1 {/cc1:/b; s/$/ %(esp_cc1_pie) %(esp_cc1_ssp)/}')
-	# Add -z now and -z relro to default linker command line.
-  hardened_specs=$(echo "${hardened_specs}" | sed -e 's/%(linker)/\0 %(esp_link)/g')
-	# Add -D_FORTIFY_SOURCE=2 to default compiles.
-  hardened_specs=$(echo "${hardened_specs}" | sed -e '/cpp_unique_options:/,+1 {/cpp_unique_options:/b; s:^:-D_FORTIFY_SOURCE=2 :}')
+  if use hardened && [[ ${CTARGET} != arm* ]] ;
+  then
+    original_specs=$(${D}/${BINDIR}/${CTARGET}-gcc -dumpspecs)
+    hardened_specs="${original_specs}"
+    hardened_specs+="$(cat ${FILESDIR}/hardened.specs)"
+
+    # Add pie and ssp options to cc1 rule.
+    hardened_specs=$(echo "${hardened_specs}" | sed -e '/cc1:/,+1 {/cc1:/b; s/$/ %(esp_cc1_pie) %(esp_cc1_ssp)/}')
+    # Add -z now and -z relro to default linker command line.
+    hardened_specs=$(echo "${hardened_specs}" | sed -e 's/%(linker)/\0 %(esp_link)/g')
+    # Add -D_FORTIFY_SOURCE=2 to default compiles.
+    hardened_specs=$(echo "${hardened_specs}" | sed -e '/cpp_unique_options:/,+1 {/cpp_unique_options:/b; s:^:-D_FORTIFY_SOURCE=2 :}')
 
 
-  specs_dir="${D}/${PREFIX}/lib/gcc/${CTARGET}/${GCC_BASE_VER}"
-
-  echo "$hardened_specs" > "${specs_dir}/specs"
+    echo "${hardened_specs}" > hardened.specs
+    insinto "${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}"
+    newins hardened.specs specs
+  fi
 
   dodir /etc/env.d/gcc
   insinto /etc/env.d/gcc
   cat <<-EOF > env.d
-LDPATH="${PREFIX}/lib/gcc/${CTARGET}/${GCC_PV}"
-MANPATH="${PREFIX}/share/man"
-INFOPATH="${PREFIX}/share/info"
-GCC_PATH="${BINPATH}"
+LDPATH="${LIBDIR}"
+MANPATH="${DATADIR}/man"
+INFOPATH="${DATADIR}/info"
+STDCXX_INCDIR="${STDCXX_INCDIR}"
 CTARGET=${CTARGET}
+GCC_PATH="${BINDIR}"
 EOF
   newins env.d $GCC_CONFIG_FILE
   cd -
 
   SYSROOT_WRAPPER_FILE=sysroot_wrapper
 
-  cd ${D}${BINPATH}
+  cd ${D}${BINDIR}
   cp --preserve=all "${FILESDIR}/$SYSROOT_WRAPPER_FILE" .
   for x in c++ cpp g++ gcc; do
     if [[ -f "${CTARGET}-${x}" ]]; then
@@ -247,10 +259,16 @@ src_configure()
   local confgcc
   # Set configuration based on path variables
   confgcc="${confgcc} \
-    --prefix=${PREFIX}
-    --bindir=${BINPATH}
-    --with-as=$(which ${CTARGET}-as)
-    --with-ld=$(which ${CTARGET}-ld)"
+    --prefix=${PREFIX} \
+    --with-slibdir=${SLIBDIR} \
+    --libdir=${LIBDIR} \
+    --bindir=${BINDIR} \
+    --includedir=${INCLUDEDIR} \
+    --datadir=${DATADIR} \
+    --mandir=${DATADIR}/man \
+    --infodir=${DATADIR}/info \
+    --enable-version-specific-runtime-libs
+    --with-gxx-include-dir=${STDCXX_INCDIR}"
   confgcc="${confgcc} --host=${CHOST}"
   confgcc="${confgcc} --target=${CTARGET}"
   confgcc="${confgcc} --build=${CBUILD}"
