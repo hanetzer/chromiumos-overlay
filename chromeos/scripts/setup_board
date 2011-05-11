@@ -446,7 +446,8 @@ if ${HOST_BOARD}; then
   # Bootstrap packages are installed without --root-deps. This means that
   # they expect their build-time dependencies to be installed on the host
   # system rather than on the target.
-  BOOTSTRAP_PACKAGES="glibc gcc file automake autoconf help2man"
+  BOOTSTRAP_PACKAGES="sys-libs/glibc sys-devel/gcc file automake autoconf
+      help2man"
   HOST_EMERGE_FLAGS="${EMERGE_FLAGS} -uDNv"
   sudo -E emerge --root=${BOARD_ROOT} $HOST_EMERGE_FLAGS ${BOOTSTRAP_PACKAGES}
   sudo -E emerge --root=${BOARD_ROOT} --root-deps --with-bdeps=y \
