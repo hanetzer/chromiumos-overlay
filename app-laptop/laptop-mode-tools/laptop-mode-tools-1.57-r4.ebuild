@@ -40,7 +40,8 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0008-Export-PATH-to-which.patch" \
           "0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" \
           "0010-Do-not-run-usb-autosuspend-for-user-input-devices.patch" \
-          "0011-Explicitly-export-PATH.patch" )
+          "0011-Explicitly-export-PATH.patch" \
+          "0012-Skip-failed-globs-when-finding-module-scripts.patch" )
 
 src_unpack() {
 	unpack ${A}
