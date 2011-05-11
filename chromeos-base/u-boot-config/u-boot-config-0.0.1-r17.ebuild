@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="cd89cc05bbafbaa10d4d39428505a8d11bd6d2b0"
+CROS_WORKON_COMMIT="0fcbe656c3778f4304a969f96d557eb8441b2560"
 CROS_WORKON_PROJECT="chromiumos/platform/u-boot-config"
 
 DESCRIPTION="ChromeOS specific U-Boot configurations"
