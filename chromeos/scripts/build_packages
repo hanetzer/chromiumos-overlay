@@ -142,7 +142,19 @@ CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
 sudo mkdir -p ${CROSSDEV_OVERLAY}
 sudo chmod 755 ${CROSSDEV_OVERLAY}
 
-eretry sudo -E ${EMERGE_CMD} -uDNv ${EMERGE_FLAGS} world
+# Before we can run any tools, we need to update chroot
+UPDATE_ARGS=""
+if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
+  UPDATE_ARGS+=" --fast"
+else
+  UPDATE_ARGS+=" --nofast"
+fi
+if [ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]; then
+  UPDATE_ARGS+=" --usepkg"
+else
+  UPDATE_ARGS+=" --nousepkg"
+fi
+"${SRC_ROOT}/scripts"/update_chroot ${UPDATE_ARGS} --retries=${FLAGS_retries}
 
 BOARD=$(echo "${FLAGS_board}" |cut -d '_' -f 1)
 BOARD_OVERLAY=$(cros_overlay_list \
