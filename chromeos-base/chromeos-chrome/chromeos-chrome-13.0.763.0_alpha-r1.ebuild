@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="84640"
+CROS_SVN_COMMIT="85096"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -26,7 +26,7 @@ KEYWORDS="~x86 ~arm"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient player_x11"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -120,7 +120,6 @@ TEST_FILES="ffmpeg_tests
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	chromeos-base/chromeos-theme
-	chromeos-base/libcros
 	chrome_remoting? ( x11-libs/libXtst )
 	dev-libs/atk
 	dev-libs/glib
@@ -175,6 +174,9 @@ set_build_defines() {
 		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
 		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true v8_can_use_vfp_instructions=true";
+		if use player_x11; then
+			BUILD_DEFINES="$BUILD_DEFINES player_x11_renderer=gles"
+		fi
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
 			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
@@ -467,43 +469,6 @@ src_configure() {
 	fi
 }
 
-# Extract the version number from lines like:
-# kCrosAPIMinVersion = 29,
-# kCrosAPIVersion = 30
-extract_cros_version() {
-	NAME="$1"
-	FILE="$2"
-	VERSION=$(perl -ne "print \$1 if /^\\s*${NAME}\\s*=\\s*(\\d+)/" "$FILE")
-	test -z "$VERSION" && die "Failed to get $NAME from $FILE"
-	echo $VERSION
-}
-
-# Check the libcros version compatibility, like we do in libcros at run time.
-# See also platform/cros/version_check.cc and load.cc.
-check_cros_version() {
-	# Get the version of libcros in the chromium tree.
-	VERSION=$(extract_cros_version kCrosAPIVersion \
-	"$CHROME_ROOT/src/third_party/cros/chromeos_cros_api.h")
-	elog "Chromium is compatible with libcros API version $VERSION"
-
-	# Get the min version of libcros in the chromium os tree.
-	MIN_VERSION=$(extract_cros_version kCrosAPIMinVersion \
-		"${SYSROOT}/usr/include/cros/chromeos_cros_api.h")
-	elog "Libcros provides at least API version $MIN_VERSION"
-
-	# Get the max version of libcros in the chromium os tree.
-	MAX_VERSION=$(extract_cros_version kCrosAPIVersion \
-		"${SYSROOT}/usr/include/cros/chromeos_cros_api.h")
-	elog "Libcros provides at most API version $MAX_VERSION"
-
-	if [ "$MIN_VERSION" -gt "$VERSION" ]; then
-		die "Libcros version check failed. Forgot to sync the chromium tree?"
-	fi
-	if [ "$VERSION" -gt "$MAX_VERSION" ]; then
-		die "Libcros version check failed. Forgot to sync the chromium os tree?"
-	fi
-}
-
 strip_chrome_debug() {
 	echo ${1} | sed -e "s/\s\(-gstabs\|-ggdb\|-gdwarf\S*\)/ /"
 }
@@ -516,8 +481,6 @@ src_compile() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
 		return
 	fi
-
-	check_cros_version
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
@@ -545,8 +508,12 @@ src_compile() {
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 	einfo "Stripped optimization flags for Chrome build"
 
+	TARGETS="chrome chrome_sandbox libosmesa.so default_extensions"
+	if use player_x11; then
+		TARGETS="${TARGETS} player_x11"
+	fi
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-		chrome chrome_sandbox libosmesa.so default_extensions \
+		${TARGETS} \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 
@@ -724,6 +691,9 @@ src_install() {
 
 	exeinto "${CHROME_DIR}"
 	doexe "${FROM}"/chrome
+	if use player_x11; then
+		doexe "${FROM}"/player_x11
+	fi
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
 	if use chrome_internal && use chrome_pdf; then
@@ -747,6 +717,11 @@ src_install() {
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
+
+	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
+	# libcros compatibility.
+	insinto "${CHROME_DIR}"/include
+	doins "${CHROME_ROOT}/src/third_party/cros/chromeos_cros_api.h"
 
 	insinto /usr/include/proto
 	doins "${CHROME_ROOT}/src/chrome/browser/policy/proto/"*.proto
