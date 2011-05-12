@@ -94,7 +94,7 @@ function in_chroot {
 function bash_chroot {
   # Use $* not $@ since 'bash -c' needs a single arg
   # Use -l to force source of /etc/profile (login shell)
-  sudo chroot "$FLAGS_chroot" env ${CHROOT_PASSTHRU} bash -l -c "$*"
+  sudo "${CHROOT_PASSTHRU[@]}" chroot "$FLAGS_chroot" bash -l -c "$*"
 }
 
 function cleanup {
@@ -270,14 +270,13 @@ PORTAGE_STABLE_OVERLAY="/usr/local/portage/stable"
 CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
-CHROOT_PASSTHRU="\"CROS_WORKON_SRCROOT=${CHROOT_TRUNK}\""
-CHROOT_PASSTHRU="${CHROOT_PASSTHRU} \"PORTAGE_USERNAME=$USER\""
+CHROOT_PASSTHRU=(CROS_WORKON_SRCROOT="$CHROOT_TRUNK" PORTAGE_USERNAME="$USER")
 
 # Pass proxy variables into the environment.
 for type in http ftp all; do
    value=$(env | grep ${type}_proxy || true)
    if [ -n "${value}" ]; then
-      CHROOT_PASSTHRU="${CHROOT_PASSTHRU} ${value}"
+      CHROOT_PASSTHRU=("${CHROOT_PASSTHRU[@]}" "$value")
    fi
 done
 
