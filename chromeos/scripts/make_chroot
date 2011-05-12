@@ -362,7 +362,18 @@ EOF
 sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
 # Update chroot
-bash_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot"
+UPDATE_ARGS=""
+if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+  UPDATE_ARGS+=" --usepkg"
+else
+  UPDATE_ARGS+=" --nousepkg"
+fi
+if [[ ${FLAGS_fast} -eq ${FLAGS_TRUE} ]]; then
+  UPDATE_ARGS+=" --fast"
+else
+  UPDATE_ARGS+=" --nofast"
+fi
+bash_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
