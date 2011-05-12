@@ -1,10 +1,10 @@
 
 
 *esp_cc1_ssp:
-%{!fno-stack-protector: %{!fno-stack-protector-all: -fstack-protector-all}}
+%{!D__KERNEL__: %{!fno-stack-protector: %{!fstack-protector-all: %{!fstack-protector: %{!nodefaultlibs: %{!nostdlib: -fstack-protector-all}}}}}}
 
 *esp_cc1_pie:
-%{!nopie: %{!D__KERNEL__: %{!static: %{!fno-PIC: %{!fno-pic: %{!shared: %{!nostdlib: %{!nostartfiles: %{!fno-PIE: %{!fno-pie: %{!nopie: %{!fPIC: %{!fpic:-fPIE} } } } } } } } } } } } }
+%{!D__KERNEL__: %{!fPIC: %{!fPIE: %{!fno-PIC: %{!fno-PIE: %{!fno-pic: %{!fno-pie: %{!fpic: %{!fpie: %{!nostartfiles: %{!nostdlib: %{!pie: %{!static: -fPIE}}}}}}}}}}}}}
 
 *esp_link:
 %(esp_link_now) %(esp_link_pie) %(esp_link_relro)
@@ -16,4 +16,4 @@
 -z relro
 
 *esp_link_pie:
-%{!nopie: %{!static: %{!A: %{!shared: %{!nostdlib: %{!nostartfiles: %{!fno-PIE: %{!fno-pie: -pie} } } } } } } } %{pie: -pie}
+%{!A: %{!fno-PIC: %{!fno-PIE: %{!fno-pic: %{!fno-pie: %{!nostartfiles: %{!nostdlib: %{!pie: %{!r: %{!shared: -pie}}}}}}}}}}

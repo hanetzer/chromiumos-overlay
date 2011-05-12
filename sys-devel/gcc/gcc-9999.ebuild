@@ -171,7 +171,7 @@ src_install()
 
   # Copy hardened specs over.
 
-  if use hardened && [[ ${CTARGET} != arm* ]] ;
+  if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" != "4.4.3" ]] ;
   then
     original_specs=$(${D}/${BINDIR}/${CTARGET}-gcc -dumpspecs)
     hardened_specs="${original_specs}"
