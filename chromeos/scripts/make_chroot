@@ -60,7 +60,8 @@ eval set -- "${FLAGS_ARGV}"
 check_flags_only_and_allow_null_arg "$@" && set --
 
 assert_not_root_user
-
+# Set the right umask for chroot creation.
+umask 022
 
 # Only now can we die on error.  shflags functions leak non-zero error codes,
 # so will die prematurely if 'set -e' is specified before now.
@@ -95,6 +96,11 @@ function bash_chroot {
   # Use $* not $@ since 'bash -c' needs a single arg
   # Use -l to force source of /etc/profile (login shell)
   sudo "${CHROOT_PASSTHRU[@]}" chroot "$FLAGS_chroot" bash -l -c "$*"
+}
+
+function sudo_chroot {
+  # The same as bash_chroot, except ran as the normal user.
+  sudo chroot "$FLAGS_chroot" sudo -i -u ${USER} "${CHROOT_PASSTHRU[@]}" -- "$@"
 }
 
 function cleanup {
@@ -373,7 +379,7 @@ if [[ ${FLAGS_fast} -eq ${FLAGS_TRUE} ]]; then
 else
   UPDATE_ARGS+=" --nofast"
 fi
-bash_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
+sudo_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
