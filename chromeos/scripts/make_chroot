@@ -158,6 +158,7 @@ function init_setup () {
    # the user's already typed in one sudo password...)
    bash_chroot "echo Defaults env_keep += CROS_WORKON_SRCROOT >> /etc/sudoers"
    bash_chroot "echo Defaults env_keep += CHROMEOS_OFFICIAL >> /etc/sudoers"
+   bash_chroot "echo Defaults env_keep += PORTAGE_USERNAME >> /etc/sudoers"
    bash_chroot "echo Defaults env_keep += http_proxy >> /etc/sudoers"
    bash_chroot "echo Defaults env_keep += ftp_proxy >> /etc/sudoers"
    bash_chroot "echo Defaults env_keep += all_proxy >> /etc/sudoers"
@@ -269,7 +270,8 @@ PORTAGE_STABLE_OVERLAY="/usr/local/portage/stable"
 CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
-CHROOT_PASSTHRU="CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\" PORTAGE_USERNAME=\"$USER\""
+CHROOT_PASSTHRU="\"CROS_WORKON_SRCROOT=${CHROOT_TRUNK}\""
+CHROOT_PASSTHRU="${CHROOT_PASSTHRU} \"PORTAGE_USERNAME=$USER\""
 
 # Pass proxy variables into the environment.
 for type in http ftp all; do
