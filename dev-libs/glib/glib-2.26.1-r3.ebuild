@@ -77,6 +77,9 @@ src_prepare() {
 	# Remove false warning and fix possible NULL pointer deref.
 	epatch "${FILESDIR}/${PN}-2.26.1-gdbus-remove-false-warnings.patch"
 
+	# Fix crosbug.com/15242
+	epatch "${FILESDIR}/${PN}-2.26-gdbus-bad-assertion.patch"
+
 	# Needed for the punt-python-check patch.
 	# Also needed to prevent croscompile failures, see bug #267603
 	eautoreconf
