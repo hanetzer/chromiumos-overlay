@@ -21,7 +21,7 @@ DEPEND=""
 RDEPEND="chromeos-base/audioconfig-board
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
-        sys-apps/smartmontools
+	sys-apps/smartmontools
 	sys-apps/upstart"
 
 CROS_WORKON_LOCALNAME="init"
@@ -114,17 +114,6 @@ src_install() {
 	make_partition_devices "sde" "sde" 8 64
 	make_partition_devices "mmcblk0" "mmcblk0p" 179 0
 	make_partition_devices "mmcblk1" "mmcblk1p" 179 16
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mouse0" c 13 32
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/mice"   c 13 63
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event0" c 13 64
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event1" c 13 65
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event2" c 13 66
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event3" c 13 67
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event4" c 13 68
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event5" c 13 69
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event6" c 13 70
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event7" c 13 71
-	mknod --mode=0640 "${D}/${DEVICES_DIR}/input/event8" c 13 72
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/fb0" c 29 0
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/fb1" c 29 1
 	mknod --mode=0660 "${D}/${DEVICES_DIR}/dri/card0" c 226 0
