@@ -76,7 +76,6 @@ src_install() {
 
 	insinto /root
 	newins $FILESDIR/dot.factory_installer .factory_installer
-	newins $FILESDIR/dot.leave_firmware_alone .leave_firmware_alone
 	newins $FILESDIR/dot.gpt_layout .gpt_layout
 	# install PMBR code
 	case "$(tc-arch)" in
@@ -97,7 +96,6 @@ pkg_postinst() {
 	STATEFUL_LSB="${STATEFUL}/etc/lsb-factory"
 
 	mkdir -p "${STATEFUL}/etc"
-
 	sudo dd of="${STATEFUL_LSB}" <<EOF
 CHROMEOS_AUSERVER=http://${FACTORY_SERVER}:8080/update
 CHROMEOS_DEVSERVER=http://${FACTORY_SERVER}:8080/update
@@ -105,15 +103,25 @@ FACTORY_INSTALL=1
 HTTP_SERVER_OVERRIDE=true
 EOF
 
+	# never execute the updater on install shim, because firmware are
+	# downloaded and installed from mini-omaha server
+	touch "${ROOT}"/root/.leave_firmware_alone ||
+		die "Cannot disable firmware updating"
+
 	# TODO(nsanders): Add runtime switches in init.git
 	# Remove ui.conf startup script, which will make sure chrome doesn't
 	# run, since it tries to update on startup
 	sed -i 's/start on stopping startup/start on never/' \
-		"${ROOT}/etc/init/ui.conf"
+		"${ROOT}/etc/init/ui.conf" ||
+		die "Failed to disable UI"
+
 	# Set network to start up another way
 	sed -i 's/login-prompt-visible/started udev/' \
-		"${ROOT}/etc/init/boot-complete.conf"
+		"${ROOT}/etc/init/boot-complete.conf" ||
+		die "Failed to setup network"
+
 	# No TPM locking.
 	sed -i 's/start tcsd//' \
-		"${ROOT}/etc/init/tpm-probe.conf"
+		"${ROOT}/etc/init/tpm-probe.conf" ||
+		die "Failed to disable TPM locking"
 }
