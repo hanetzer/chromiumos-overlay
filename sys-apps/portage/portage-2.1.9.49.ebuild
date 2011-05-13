@@ -123,14 +123,13 @@ src_prepare() {
 		fi
 		epatch "${WORKDIR}/${PN}-${PATCHVER}.patch"
 	fi
-	epatch "${FILESDIR}/${P}-allow-missing-digests".patch
-	epatch "${FILESDIR}/${P}-atoms".patch
+	epatch "${FILESDIR}/${PN}-2.1.9.48-allow-missing-digests".patch
+	epatch "${FILESDIR}/${PN}-2.1.9.48-atoms".patch
 	epatch "${FILESDIR}/${P}-mergeprocess".patch
-	epatch "${FILESDIR}/${P}-rebuild".patch
+	epatch "${FILESDIR}/${PN}-2.1.9.48-rebuild".patch
 	epatch "${FILESDIR}/${P}-parallel-install".patch
 	epatch "${FILESDIR}/${P}-crossdev".patch
-	epatch "${FILESDIR}/${P}-fastbuild".patch
-	epatch "${FILESDIR}/${P}-counter-tick".patch
+	epatch "${FILESDIR}/${PN}-2.1.9.48-fastbuild".patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION=.*/VERSION=\"${PVR}\"/" -i pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"

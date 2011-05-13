@@ -1,4 +1,4 @@
-commit 1580457f32d1bf0b51ab58a94575e1b0742f470e
+commit 013be266ab55e6eda4e32834ed830773bf8deade
 Author: David James <davidjames@chromium.org>
 Date:   Mon May 9 13:00:11 2011 -0700
 
@@ -36,7 +36,7 @@ index ed8a460..9cd0daf 100644
                             "protect-owned", "python-trace", "sandbox",
                             "selinux", "sesandbox", "severe", "sfperms",
 diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
-index 5b1bb51..ac2a0ce 100644
+index f1dcb45..6ecd3e0 100644
 --- a/pym/portage/dbapi/vartree.py
 +++ b/pym/portage/dbapi/vartree.py
 @@ -60,6 +60,7 @@ from _emerge.PollScheduler import PollScheduler
@@ -47,37 +47,35 @@ index 5b1bb51..ac2a0ce 100644
  import gc
  import re, shutil, stat, errno, subprocess
  import logging
-@@ -1751,17 +1752,18 @@ class dblink(object):
+@@ -1778,16 +1779,17 @@ class dblink(object):
  		else:
  			self.settings.pop("PORTAGE_LOG_FILE", None)
  
 -		# Lock the config memory file to prevent symlink creation
 -		# in merge_contents from overlapping with env-update.
--		conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
--		conf_mem_lock = lockfile(conf_mem_file)
+-		self.vartree.dbapi._fs_lock()
 -		try:
 -			env_update(target_root=self.settings['ROOT'],
 -				prev_mtimes=ldpath_mtimes,
 -				contents=contents, env=self.settings.environ(),
 -				writemsg_level=self._display_merge)
 -		finally:
--			unlockfile(conf_mem_lock)
+-			self.vartree.dbapi._fs_unlock()
 +		if 'no-env-update' not in self.settings.features:
 +			# Lock the config memory file to prevent symlink creation
 +			# in merge_contents from overlapping with env-update.
-+			conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
-+			conf_mem_lock = lockfile(conf_mem_file)
++			self.vartree.dbapi._fs_lock()
 +			try:
 +				env_update(target_root=self.settings['ROOT'],
 +					prev_mtimes=ldpath_mtimes,
 +					contents=contents, env=self.settings.environ(),
 +					writemsg_level=self._display_merge)
 +			finally:
-+				unlockfile(conf_mem_lock)
++				self.vartree.dbapi._fs_unlock()
  
  		return os.EX_OK
  
-@@ -3465,23 +3467,37 @@ class dblink(object):
+@@ -3494,22 +3496,37 @@ class dblink(object):
  			showMessage(_("!!! FAILED postinst: ")+str(a)+"\n",
  				level=logging.ERROR, noiselevel=-1)
  
@@ -93,8 +91,7 @@ index 5b1bb51..ac2a0ce 100644
  
 -		# Lock the config memory file to prevent symlink creation
 -		# in merge_contents from overlapping with env-update.
--		conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
--		conf_mem_lock = lockfile(conf_mem_file)
+-		self.vartree.dbapi._fs_lock()
 -		try:
 -			#update environment settings, library paths. DO NOT change symlinks.
 -			env_update(makelinks=(not downgrade),
@@ -102,11 +99,11 @@ index 5b1bb51..ac2a0ce 100644
 -				contents=contents, env=self.settings.environ(),
 -				writemsg_level=self._display_merge)
 -		finally:
--			unlockfile(conf_mem_lock)
+-			self.vartree.dbapi._fs_unlock()
++		if 'no-env-update' not in self.settings.features:
 +			# Lock the config memory file to prevent symlink creation
 +			# in merge_contents from overlapping with env-update.
-+			conf_mem_file = os.path.join(self._eroot, CONFIG_MEMORY_FILE)
-+			conf_mem_lock = lockfile(conf_mem_file)
++			self.vartree.dbapi._fs_lock()
 +			try:
 +				#update environment settings, library paths. DO NOT change symlinks.
 +				env_update(makelinks=(not downgrade),
@@ -114,7 +111,7 @@ index 5b1bb51..ac2a0ce 100644
 +					contents=contents, env=self.settings.environ(),
 +					writemsg_level=self._display_merge)
 +			finally:
-+				unlockfile(conf_mem_lock)
++				self.vartree.dbapi._fs_unlock()
 +
 +		# Fix *.{la,pc} files to point to libs in target_root, if they
 +		# don't do so already.
