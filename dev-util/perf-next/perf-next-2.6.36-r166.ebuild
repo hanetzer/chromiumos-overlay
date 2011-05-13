@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
 EAPI=2
-CROS_WORKON_COMMIT="4ad698b5be2c416d67a63dde12d47dfa71c86177"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
+CROS_WORKON_COMMIT="85f2eaac9472bb765a115a45f67c88e8c505f9bb"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
 inherit cros-workon eutils toolchain-funcs linux-info
 
@@ -14,7 +14,7 @@ PROVIDE="virtual/perf"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 x86 arm"
 IUSE="+demangle +doc"
 
 RDEPEND="demangle? ( sys-devel/binutils )
@@ -22,7 +22,7 @@ RDEPEND="demangle? ( sys-devel/binutils )
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
-CROS_WORKON_LOCALNAME="kernel/files"
+CROS_WORKON_LOCALNAME="kernel-next"
 
 src_compile() {
 	local makeargs=
@@ -30,6 +30,10 @@ src_compile() {
 	pushd tools/perf
 
 	use demangle || makeargs="${makeargs} NO_DEMANGLE= "
+
+	if use arm; then
+		export ARM_SHA=1
+	fi
 
 	emake ${makeargs} \
 		CC="$(tc-getCC)" AR="$(tc-getAR)" \
