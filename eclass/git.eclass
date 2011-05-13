@@ -273,7 +273,10 @@ git_fetch() {
 		upstream_branch=origin/${EGIT_BRANCH}
 	else
 		upstream_branch=${EGIT_BRANCH}
-		extra_clone_opts=--bare
+		# Note: Normally clones are created using --bare, which does not fetch
+		# remote refs and only updates master. This is not okay. --mirror
+		# changes that.
+		extra_clone_opts=--mirror
 	fi
 
 	if [[ ! -d ${GIT_DIR} ]] ; then
