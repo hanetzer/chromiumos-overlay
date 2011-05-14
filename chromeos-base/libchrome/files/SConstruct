@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,54 +19,60 @@ sources = env.Split("""
                     files/base/at_exit.cc
                     files/base/atomicops_internals_x86_gcc.cc
                     files/base/base_switches.cc
-                    files/base/base64.cc
+                    files/base/callback_internal.cc
                     files/base/command_line.cc
-                    files/base/condition_variable_posix.cc
-                    files/base/crypto/rsa_private_key.cc
-                    files/base/crypto/rsa_private_key_nss.cc
-                    files/base/crypto/signature_creator_nss.cc
-                    files/base/crypto/signature_verifier_nss.cc
-                    files/base/debug_util.cc
-                    files/base/debug_util_posix.cc
+                    files/base/debug/debugger.cc
+                    files/base/debug/debugger_posix.cc
+                    files/base/debug/stack_trace.cc
+                    files/base/debug/stack_trace_posix.cc
+                    files/base/debug/trace_event.cc
                     files/base/environment.cc
                     files/base/file_path.cc
                     files/base/file_util.cc
                     files/base/file_util_posix.cc
-                    files/base/histogram.cc
+                    files/base/metrics/histogram.cc
                     files/base/json/json_reader.cc
                     files/base/json/json_writer.cc
                     files/base/json/string_escape.cc
                     files/base/lazy_instance.cc
-                    files/base/lock.cc
-                    files/base/lock_impl_posix.cc
                     files/base/logging.cc
+                    files/base/memory/ref_counted.cc
+                    files/base/memory/scoped_temp_dir.cc
+                    files/base/memory/weak_ptr.cc
                     files/base/message_loop.cc
+                    files/base/message_loop_proxy.cc
                     files/base/message_loop_proxy_impl.cc
+                    files/base/message_pump.cc
                     files/base/message_pump_default.cc
                     files/base/message_pump_glib.cc
                     files/base/message_pump_libevent.cc
-                    files/base/non_thread_safe.cc
-                    files/base/nss_util.cc
+                    files/base/native_library_linux.cc
                     files/base/pickle.cc
+                    files/base/platform_file.cc
                     files/base/platform_file_posix.cc
-                    files/base/platform_thread_posix.cc
                     files/base/rand_util.cc
                     files/base/rand_util_posix.cc
-                    files/base/ref_counted.cc
                     files/base/safe_strerror_posix.cc
-                    files/base/scoped_temp_dir.cc
-                    files/base/setproctitle_linux.c
                     files/base/string16.cc
                     files/base/stringprintf.cc
                     files/base/string_number_conversions.cc
                     files/base/string_piece.cc
+                    files/base/string_split.cc
                     files/base/string_util.cc
+                    files/base/synchronization/condition_variable_posix.cc
+                    files/base/synchronization/lock.cc
+                    files/base/synchronization/lock_impl_posix.cc
+                    files/base/synchronization/waitable_event_posix.cc
                     files/base/sys_string_conversions_linux.cc
                     files/base/task.cc
-                    files/base/thread.cc
-                    files/base/thread_collision_warner.cc
-                    files/base/thread_local_posix.cc
-                    files/base/thread_local_storage_posix.cc
+                    files/base/threading/non_thread_safe_impl.cc
+                    files/base/threading/platform_thread_posix.cc
+                    files/base/threading/thread.cc
+                    files/base/threading/thread_checker_impl.cc
+                    files/base/threading/thread_collision_warner.cc
+                    files/base/threading/thread_restrictions.cc
+                    files/base/threading/thread_local_posix.cc
+                    files/base/threading/thread_local_storage_posix.cc
                     files/base/time.cc
                     files/base/time_posix.cc
                     files/base/tracked.cc
@@ -74,9 +80,7 @@ sources = env.Split("""
                     files/base/utf_string_conversion_utils.cc
                     files/base/utf_string_conversions.cc
                     files/base/values.cc
-                    files/base/waitable_event_posix.cc
-                    files/base/weak_ptr.cc
-                    files/third_party/modp_b64/modp_b64.cc
+                    files/base/vlog.cc
                     """)
 
 env.Append(

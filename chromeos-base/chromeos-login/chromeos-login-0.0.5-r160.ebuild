@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="755516e12fa225dc10289c20f0a480ba801a8596"
+CROS_WORKON_COMMIT="b1920fa502f2a6f1836343d84e54b5a75fc8b331"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -26,6 +26,8 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-chrome
+	>=chromeos-base/libchrome-85268
+	chromeos-base/libchrome_crypto
 	chromeos-base/libcros
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
@@ -33,13 +35,13 @@ DEPEND="${RDEPEND}
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake keygen session_manager || die "chromeos-login compile failed."
 }
 
 src_test() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 
 	emake keygen session_manager_unittest || \

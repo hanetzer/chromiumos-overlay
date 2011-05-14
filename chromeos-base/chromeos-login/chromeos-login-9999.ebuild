@@ -25,6 +25,8 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-chrome
+	>=chromeos-base/libchrome-85268
+	chromeos-base/libchrome_crypto
 	chromeos-base/libcros
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
@@ -32,13 +34,13 @@ DEPEND="${RDEPEND}
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake keygen session_manager || die "chromeos-login compile failed."
 }
 
 src_test() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 
 	emake keygen session_manager_unittest || \
