@@ -390,7 +390,7 @@ if [[ ${FLAGS_fast} -eq ${FLAGS_TRUE} ]]; then
 else
   UPDATE_ARGS+=" --nofast"
 fi
-sudo_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot"
+sudo_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
