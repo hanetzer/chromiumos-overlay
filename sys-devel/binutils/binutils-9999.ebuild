@@ -189,13 +189,13 @@ src_install() {
 	if is_cross ; then
 		cd "${D}"/${BINPATH}
 		for x in * ; do
-		  mv ${x} ${x/${CTARGET}-}
+			mv ${x} ${x/${CTARGET}-}
 		done
 
 		if [[ -d ${D}/usr/${CHOST}/${CTARGET} ]] ; then
-		  mv "${D}"/usr/${CHOST}/${CTARGET}/include "${D}"/${INCPATH}
-		  mv "${D}"/usr/${CHOST}/${CTARGET}/lib/* "${D}"/${LIBPATH}/
-		  rm -r "${D}"/usr/${CHOST}/{include,lib}
+			mv "${D}"/usr/${CHOST}/${CTARGET}/include "${D}"/${INCPATH}
+			mv "${D}"/usr/${CHOST}/${CTARGET}/lib/* "${D}"/${LIBPATH}/
+			rm -r "${D}"/usr/${CHOST}/{include,lib}
 		fi
 	fi
 	insinto ${INCPATH}
@@ -319,9 +319,9 @@ pkg_postrm() {
 		choice=${choice//$'\n'/ }
 		choice=${choice/* }
 		if [[ -z ${choice} ]] ; then
-		  env -i binutils-config -u ${CTARGET}
+			env -i binutils-config -u ${CTARGET}
 		else
-		  binutils-config ${choice}
+			binutils-config ${choice}
 		fi
 	elif [[ $(CHOST=${CTARGET} binutils-config -c) == ${CTARGET}-${BVER} ]] ; then
 		binutils-config ${CTARGET}-${BVER}

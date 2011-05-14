@@ -59,7 +59,7 @@ fi
 RESTRICT="mirror"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-      thumb upstream_gcc vanilla"
+			thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -78,121 +78,121 @@ is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} = ${CHOST} ]] ; then
-  if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
-    export CTARGET=${CATEGORY/cross-}
-  fi
+	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
+		export CTARGET=${CATEGORY/cross-}
+	fi
 fi
 
 if use multislot ; then
-  SLOT="${CTARGET}-${PV}"
+	SLOT="${CTARGET}-${PV}"
 else
-  SLOT="${CTARGET}"
+	SLOT="${CTARGET}"
 fi
 
 PREFIX=/usr
 LIBDIR=${PREFIX}/lib
 INCLUDEDIR=${LIBDIR}/include/gcc-v${PV}
 if is_crosscompile ; then
-  BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${PV}
+	BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${PV}
 else
-  BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${PV}
+	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${PV}
 fi
 DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${PV}
 STDCXX_INCDIR=${LIBDIR}/include/g++-v${PV}
 
 
 src_unpack() {
-  GCC_CONFIG_FILE=${CTARGET}-${PV}
+	GCC_CONFIG_FILE=${CTARGET}-${PV}
 
-  local GCCDIR
-  if use mounted_sources ; then
-    GCCDIR=/usr/local/toolchain_root/gcc/${MY_P}
-    if [[ ! -d ${GCCDIR} ]] ; then
-      die "gcc dir not mounted/present at: ${GCCDIR}"
-    fi
-  else
-    mkdir ${GITDIR}
-    cd ${GITDIR} || die "Could not enter ${GITDIR}"
-    git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
-    if [[ "${PV}" != "${GCC_PV}" ]] ; then
-      GITHASH=$(git rev-list --max-count=1 --all)
-      echo "Getting latest hash: ${GITHASH}..."
-    fi
-    git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
-    cd -
-    GCCDIR=${GITDIR}/gcc/${MY_P}
-    CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
-  fi
+	local GCCDIR
+	if use mounted_sources ; then
+		GCCDIR=/usr/local/toolchain_root/gcc/${MY_P}
+		if [[ ! -d ${GCCDIR} ]] ; then
+			die "gcc dir not mounted/present at: ${GCCDIR}"
+		fi
+	else
+		mkdir ${GITDIR}
+		cd ${GITDIR} || die "Could not enter ${GITDIR}"
+		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
+		if [[ "${PV}" != "${GCC_PV}" ]] ; then
+			GITHASH=$(git rev-list --max-count=1 --all)
+			echo "Getting latest hash: ${GITHASH}..."
+		fi
+		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
+		cd -
+		GCCDIR=${GITDIR}/gcc/${MY_P}
+		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
+	fi
 
-  if use upstream_gcc ; then
-    GCC_MIRROR=ftp://mirrors.kernel.org/gnu/gcc
-    GCC_TARBALL=${GCC_MIRROR}/${MY_P}/${MY_P}.tar.bz2
-    wget $GCC_TARBALL
-    tar xf ${GCC_TARBALL##*/}
-    GCCDIR=${MY_P}
-  fi
+	if use upstream_gcc ; then
+		GCC_MIRROR=ftp://mirrors.kernel.org/gnu/gcc
+		GCC_TARBALL=${GCC_MIRROR}/${MY_P}/${MY_P}.tar.bz2
+		wget $GCC_TARBALL
+		tar xf ${GCC_TARBALL##*/}
+		GCCDIR=${MY_P}
+	fi
 
-  GCC_BASE_VER=$(cat ${GCCDIR}/gcc/BASE-VER)
-  SLIBDIR=${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}
+	GCC_BASE_VER=$(cat ${GCCDIR}/gcc/BASE-VER)
+	SLIBDIR=${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}
 
-  if [[ ! -z ${CL} ]] ; then
-    COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
-  fi
+	if [[ ! -z ${CL} ]] ; then
+		COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
+	fi
 
-  if [[ $(readlink -f ${GCCDIR}) != $(readlink -f ${S}) ]]
-  then
-    ln -sf ${GCCDIR} ${S}
-  fi
+	if [[ $(readlink -f ${GCCDIR}) != $(readlink -f ${S}) ]]
+	then
+		ln -sf ${GCCDIR} ${S}
+	fi
 
-  use vanilla && return 0
+	use vanilla && return 0
 }
 
 src_compile()
 {
-  src_configure
-  pushd ${WORKDIR}/build
-  ORIG_CFLAGS=$(portageq envvar CFLAGS)
-  HARD_CFLAGS=''
-  if use hardened && [[ ${CTARGET} != arm* ]] ;
-  then
-    HARD_CFLAGS='-DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE'
-  fi
-  emake CFLAGS="${HARD_CFLAGS} ${ORIG_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' BOOT_CFLAGS=-O2 all
-  popd
-  return $?
+	src_configure
+	pushd ${WORKDIR}/build
+	ORIG_CFLAGS=$(portageq envvar CFLAGS)
+	HARD_CFLAGS=''
+	if use hardened && [[ ${CTARGET} != arm* ]] ;
+	then
+		HARD_CFLAGS='-DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE'
+	fi
+	emake CFLAGS="${HARD_CFLAGS} ${ORIG_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' BOOT_CFLAGS=-O2 all
+	popd
+	return $?
 }
 
 src_install()
 {
-  cd ${WORKDIR}/build
-  emake DESTDIR="${D}" install || die "Could not install gcc"
+	cd ${WORKDIR}/build
+	emake DESTDIR="${D}" install || die "Could not install gcc"
 
-  find "${D}" -name libiberty.a -exec rm -f "{}" \;
+	find "${D}" -name libiberty.a -exec rm -f "{}" \;
 
-  # Copy hardened specs over.
+	# Copy hardened specs over.
 
-  if use hardened && [[ ${CTARGET} != arm* ]] ;
-  then
-    original_specs=$(${D}/${BINDIR}/${CTARGET}-gcc -dumpspecs)
-    hardened_specs="${original_specs}"
-    hardened_specs+="$(cat ${FILESDIR}/hardened.specs)"
+	if use hardened && [[ ${CTARGET} != arm* ]] ;
+	then
+		original_specs=$(${D}/${BINDIR}/${CTARGET}-gcc -dumpspecs)
+		hardened_specs="${original_specs}"
+		hardened_specs+="$(cat ${FILESDIR}/hardened.specs)"
 
-    # Add pie and ssp options to cc1 rule.
-    hardened_specs=$(echo "${hardened_specs}" | sed -e '/cc1:/,+1 {/cc1:/b; s/$/ %(esp_cc1_pie) %(esp_cc1_ssp)/}')
-    # Add -z now and -z relro to default linker command line.
-    hardened_specs=$(echo "${hardened_specs}" | sed -e 's/%(linker)/\0 %(esp_link)/g')
-    # Add -D_FORTIFY_SOURCE=2 to default compiles.
-    hardened_specs=$(echo "${hardened_specs}" | sed -e '/cpp_unique_options:/,+1 {/cpp_unique_options:/b; s:^:-D_FORTIFY_SOURCE=2 :}')
+		# Add pie and ssp options to cc1 rule.
+		hardened_specs=$(echo "${hardened_specs}" | sed -e '/cc1:/,+1 {/cc1:/b; s/$/ %(esp_cc1_pie) %(esp_cc1_ssp)/}')
+		# Add -z now and -z relro to default linker command line.
+		hardened_specs=$(echo "${hardened_specs}" | sed -e 's/%(linker)/\0 %(esp_link)/g')
+		# Add -D_FORTIFY_SOURCE=2 to default compiles.
+		hardened_specs=$(echo "${hardened_specs}" | sed -e '/cpp_unique_options:/,+1 {/cpp_unique_options:/b; s:^:-D_FORTIFY_SOURCE=2 :}')
 
 
-    echo "${hardened_specs}" > hardened.specs
-    insinto "${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}"
-    newins hardened.specs specs
-  fi
+		echo "${hardened_specs}" > hardened.specs
+		insinto "${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}"
+		newins hardened.specs specs
+	fi
 
-  dodir /etc/env.d/gcc
-  insinto /etc/env.d/gcc
-  cat <<-EOF > env.d
+	dodir /etc/env.d/gcc
+	insinto /etc/env.d/gcc
+	cat <<-EOF > env.d
 LDPATH="${LIBDIR}"
 MANPATH="${DATADIR}/man"
 INFOPATH="${DATADIR}/info"
@@ -200,24 +200,24 @@ STDCXX_INCDIR="${STDCXX_INCDIR}"
 CTARGET=${CTARGET}
 GCC_PATH="${BINDIR}"
 EOF
-  newins env.d $GCC_CONFIG_FILE
-  cd -
+	newins env.d $GCC_CONFIG_FILE
+	cd -
 
-  SYSROOT_WRAPPER_FILE=sysroot_wrapper
+	SYSROOT_WRAPPER_FILE=sysroot_wrapper
 
-  cd ${D}${BINDIR}
-  cp --preserve=all "${FILESDIR}/$SYSROOT_WRAPPER_FILE" .
-  for x in c++ cpp g++ gcc; do
-    if [[ -f "${CTARGET}-${x}" ]]; then
-      mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-      ln -sf -T $SYSROOT_WRAPPER_FILE "${CTARGET}-${x}"
-    fi
-  done
+	cd ${D}${BINDIR}
+	cp --preserve=all "${FILESDIR}/$SYSROOT_WRAPPER_FILE" .
+	for x in c++ cpp g++ gcc; do
+		if [[ -f "${CTARGET}-${x}" ]]; then
+			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
+			ln -sf -T $SYSROOT_WRAPPER_FILE "${CTARGET}-${x}"
+		fi
+	done
 }
 
 pkg_postinst()
 {
-  gcc-config $GCC_CONFIG_FILE
+	gcc-config $GCC_CONFIG_FILE
 	CCACHE_BIN=$(which ccache || true)
 	if [ -f "${CCACHE_BIN}" ]; then
 		mkdir -p "/usr/lib/ccache/bin"
@@ -229,13 +229,13 @@ pkg_postinst()
 
 pkg_postrm()
 {
-  if is_crosscompile ; then
-    if [[ -z $(ls "${ROOT}"/etc/env.d/gcc/${CTARGET}* 2>/dev/null) ]] ; then
-      rm -f "${ROOT}"/etc/env.d/gcc/config-${CTARGET}
-      rm -f "${ROOT}"/etc/env.d/??gcc-${CTARGET}
-      rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
-    fi
-  fi
+	if is_crosscompile ; then
+		if [[ -z $(ls "${ROOT}"/etc/env.d/gcc/${CTARGET}* 2>/dev/null) ]] ; then
+			rm -f "${ROOT}"/etc/env.d/gcc/config-${CTARGET}
+			rm -f "${ROOT}"/etc/env.d/??gcc-${CTARGET}
+			rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
+		fi
+	fi
 	if [[ $(equery l gcc | grep i686-pc-linux-gnu | wc -l) -eq 1 ]]
 	then
 		for x in c++ cpp g++ gcc; do
@@ -247,78 +247,78 @@ pkg_postrm()
 # TODO(asharif): Move this into a separate file and source it.
 src_configure()
 {
-  if use mounted_sources ; then
-    local GCCBUILDDIR="/usr/local/toolchain_root/build-gcc"
-    if [[ ! -d ${GCCBUILDDIR} ]] ; then
-      die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
-    fi
-  else
-    local GCCBUILDDIR="${GITDIR}/build-gcc"
-  fi
+	if use mounted_sources ; then
+		local GCCBUILDDIR="/usr/local/toolchain_root/build-gcc"
+		if [[ ! -d ${GCCBUILDDIR} ]] ; then
+			die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
+		fi
+	else
+		local GCCBUILDDIR="${GITDIR}/build-gcc"
+	fi
 
-  local confgcc
-  # Set configuration based on path variables
-  confgcc="${confgcc} \
-    --prefix=${PREFIX} \
-    --with-slibdir=${SLIBDIR} \
-    --libdir=${LIBDIR} \
-    --bindir=${BINDIR} \
-    --includedir=${INCLUDEDIR} \
-    --datadir=${DATADIR} \
-    --mandir=${DATADIR}/man \
-    --infodir=${DATADIR}/info \
-    --enable-version-specific-runtime-libs
-    --with-gxx-include-dir=${STDCXX_INCDIR}"
-  confgcc="${confgcc} --host=${CHOST}"
-  confgcc="${confgcc} --target=${CTARGET}"
-  confgcc="${confgcc} --build=${CBUILD}"
+	local confgcc
+	# Set configuration based on path variables
+	confgcc="${confgcc} \
+		--prefix=${PREFIX} \
+		--with-slibdir=${SLIBDIR} \
+		--libdir=${LIBDIR} \
+		--bindir=${BINDIR} \
+		--includedir=${INCLUDEDIR} \
+		--datadir=${DATADIR} \
+		--mandir=${DATADIR}/man \
+		--infodir=${DATADIR}/info \
+		--enable-version-specific-runtime-libs
+		--with-gxx-include-dir=${STDCXX_INCDIR}"
+	confgcc="${confgcc} --host=${CHOST}"
+	confgcc="${confgcc} --target=${CTARGET}"
+	confgcc="${confgcc} --build=${CBUILD}"
 
-  # Language options for stage1/stage2.
-  if use nocxx
-  then
-    GCC_LANG="c"
-  else
-    GCC_LANG="c,c++"
-  fi
-  confgcc="${confgcc} --enable-languages=${GCC_LANG}"
+	# Language options for stage1/stage2.
+	if use nocxx
+	then
+		GCC_LANG="c"
+	else
+		GCC_LANG="c,c++"
+	fi
+	confgcc="${confgcc} --enable-languages=${GCC_LANG}"
 
-  if use hardfp && [[ ${CTARGET} == arm* ]] ;
-  then
-    confgcc="${confgcc} --with-float=hard"
-  fi
+	if use hardfp && [[ ${CTARGET} == arm* ]] ;
+	then
+		confgcc="${confgcc} --with-float=hard"
+	fi
 
-  if use thumb && [[ ${CTARGET} == arm* ]] ;
-  then
-    confgcc="${confgcc} --with-mode=thumb"
-  fi
+	if use thumb && [[ ${CTARGET} == arm* ]] ;
+	then
+		confgcc="${confgcc} --with-mode=thumb"
+	fi
 
-  local needed_libc="glibc"
-  if [[ -n ${needed_libc} ]] ; then
-    if ! has_version ${CATEGORY}/${needed_libc} ; then
-      confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
-    elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
-      confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
-    else
-      confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
-    fi
-  fi
+	local needed_libc="glibc"
+	if [[ -n ${needed_libc} ]] ; then
+		if ! has_version ${CATEGORY}/${needed_libc} ; then
+			confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
+		elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
+			confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
+		else
+			confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
+		fi
+	fi
 
-  source ${GCCBUILDDIR}/opts.sh
-  confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
+	source ${GCCBUILDDIR}/opts.sh
+	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
 
-  EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
+	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
  --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
-  confgcc="${confgcc} ${EXTRA_ECONF}"
+	confgcc="${confgcc} ${EXTRA_ECONF}"
 
-  # Build in a separate build tree
-  mkdir -p "${WORKDIR}"/build
-  pushd "${WORKDIR}"/build > /dev/null
+	# Build in a separate build tree
+	mkdir -p "${WORKDIR}"/build
+	pushd "${WORKDIR}"/build > /dev/null
 
-  # and now to do the actual configuration
-  addwrite /dev/zero
-  echo "Running this:"
-  echo "configure ${confgcc}"
-  echo "${S}"/configure "$@"
-  "${S}"/configure ${confgcc} || die "failed to run configure"
-  popd > /dev/null
+	# and now to do the actual configuration
+	addwrite /dev/zero
+	echo "Running this:"
+	echo "configure ${confgcc}"
+	echo "${S}"/configure "$@"
+	"${S}"/configure ${confgcc} || die "failed to run configure"
+	popd > /dev/null
 }

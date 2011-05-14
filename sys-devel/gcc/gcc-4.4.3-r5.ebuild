@@ -81,10 +81,10 @@ src_unpack() {
 
 	use vanilla && return 0
 
-        # TODO (asharif): Move to patches tarball.
-        if [[ ${CTARGET} == *86* ]] ; then
-          epatch "${FILESDIR}"/10_all_ix86.patch
-        fi
+				# TODO (asharif): Move to patches tarball.
+				if [[ ${CTARGET} == *86* ]] ; then
+					epatch "${FILESDIR}"/10_all_ix86.patch
+				fi
 
 	sed -i 's/use_fixproto=yes/:/' gcc/config.gcc #PR33200
 

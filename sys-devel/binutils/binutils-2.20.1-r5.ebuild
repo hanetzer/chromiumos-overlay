@@ -59,30 +59,30 @@ else
 fi
 
 src_unpack() {
-  if use mounted_sources ; then
+	if use mounted_sources ; then
  		BINUTILS_DIR="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
 		GOLD_DIR="/usr/local/toolchain_root/binutils/${GOLD_VERSION}"  
-    if [[ ! -d ${BINUTILS_DIR} ]] || [[ ! -d ${GOLD_DIR} ]] ; then
+		if [[ ! -d ${BINUTILS_DIR} ]] || [[ ! -d ${GOLD_DIR} ]] ; then
 			die "binutils dirs not mounted at: ${BINUTILS_DIR} and ${GOLD_DIR}"
-    fi
-  else
-    mkdir ${GITDIR}
-    cd ${GITDIR} || die "Could not enter ${GITDIR}"
-    git clone http://git.chromium.org/chromiumos/third_party/binutils.git . || die "Could not clone repo."
-    git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
-    cd -
+		fi
+	else
+		mkdir ${GITDIR}
+		cd ${GITDIR} || die "Could not enter ${GITDIR}"
+		git clone http://git.chromium.org/chromiumos/third_party/binutils.git . || die "Could not clone repo."
+		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
+		cd -
  		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
 		GOLD_DIR="${GITDIR}/binutils/${GOLD_VERSION}"  
 
-    cd ${BINUTILS_DIR}
-    CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
-    cd -
-  fi
-  if [[ ! -z ${CL} ]] ; then
-    BINUTILS_PKG_VERSION="${BINUTILS_PKG_VERSION}_${CL}"
-    GOLD_PKG_VERSION="${GOLD_PKG_VERSION}_${CL}"
-  fi
-  ln -s ${BINUTILS_DIR} ${S_BINUTILS}
+		cd ${BINUTILS_DIR}
+		CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
+		cd -
+	fi
+	if [[ ! -z ${CL} ]] ; then
+		BINUTILS_PKG_VERSION="${BINUTILS_PKG_VERSION}_${CL}"
+		GOLD_PKG_VERSION="${GOLD_PKG_VERSION}_${CL}"
+	fi
+	ln -s ${BINUTILS_DIR} ${S_BINUTILS}
 	ln -s ${GOLD_DIR} ${S_GOLD}
 
 	# Applying patches.
@@ -184,13 +184,13 @@ src_install() {
 	if is_cross ; then
 		cd "${D}"/${BINPATH}
 		for x in * ; do
-		  mv ${x} ${x/${CTARGET}-}
+			mv ${x} ${x/${CTARGET}-}
 		done
 
 		if [[ -d ${D}/usr/${CHOST}/${CTARGET} ]] ; then
-		  mv "${D}"/usr/${CHOST}/${CTARGET}/include "${D}"/${INCPATH}
-		  mv "${D}"/usr/${CHOST}/${CTARGET}/lib/* "${D}"/${LIBPATH}/
-		  rm -r "${D}"/usr/${CHOST}/{include,lib}
+			mv "${D}"/usr/${CHOST}/${CTARGET}/include "${D}"/${INCPATH}
+			mv "${D}"/usr/${CHOST}/${CTARGET}/lib/* "${D}"/${LIBPATH}/
+			rm -r "${D}"/usr/${CHOST}/{include,lib}
 		fi
 	fi
 	insinto ${INCPATH}
@@ -314,9 +314,9 @@ pkg_postrm() {
 		choice=${choice//$'\n'/ }
 		choice=${choice/* }
 		if [[ -z ${choice} ]] ; then
-		  env -i binutils-config -u ${CTARGET}
+			env -i binutils-config -u ${CTARGET}
 		else
-		  binutils-config ${choice}
+			binutils-config ${choice}
 		fi
 	elif [[ $(CHOST=${CTARGET} binutils-config -c) == ${CTARGET}-${BVER} ]] ; then
 		binutils-config ${CTARGET}-${BVER}
