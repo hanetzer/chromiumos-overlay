@@ -1,0 +1,32 @@
+diff --git a/tools/evemu-record.c b/tools/evemu-record.c
+index f75c0bb..00d92ee 100644
+--- a/tools/evemu-record.c
++++ b/tools/evemu-record.c
+@@ -60,10 +60,16 @@ void close_file()
+ 
+ int main(int argc, char *argv[])
+ {
++        int timeout;
++        char *endp;
++
+         signal(SIGINT, close_file);
+         signal(SIGTERM, close_file);
+-	if (argc < 2) {
+-		fprintf(stderr, "Usage: %s <device>\n", argv[0]);
++
++        timeout = argc == 3 ? strtol(argv[2], &endp, 10) : WAIT_MS;
++	if (argc < 2 || *endp != '\0') {
++		fprintf(stderr, "Usage: %s <device> [timeout_in_ms]\n",
++                        argv[0]);
+ 		return -1;
+ 	}
+ 	fd = open(argv[1], O_RDONLY | O_NONBLOCK);
+@@ -71,7 +77,7 @@ int main(int argc, char *argv[])
+ 		fprintf(stderr, "error: could not open device\n");
+ 		return -1;
+ 	}
+-	if (evemu_record(stdout, fd, WAIT_MS)) {
++	if (evemu_record(stdout, fd, timeout)) {
+ 		fprintf(stderr, "error: could not describe device\n");
+ 	}
+ 	close(fd);
