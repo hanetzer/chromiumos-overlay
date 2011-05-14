@@ -97,11 +97,6 @@ function bash_chroot {
   sudo "${CHROOT_PASSTHRU[@]}" chroot "$FLAGS_chroot" bash -l -c "$*"
 }
 
-function sudo_chroot {
-  # The same as bash_chroot, except ran as the normal user.
-  sudo "${CHROOT_PASSTHRU[@]}" chroot "$FLAGS_chroot" sudo -u ${USER} -- "$@"
-}
-
 function cleanup {
   # Clean up mounts
   #
@@ -327,12 +322,7 @@ MAKEOPTS="-j${NUM_JOBS}"
 EOF
 sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
-if ! [ -f "$CHROOT_STATE" ];then
-  INITIALIZE_CHROOT=1
-fi
-
-
-if [ -z "${INITIALIZE_CHROOT}" ];then
+if [ -f $CHROOT_STATE ];then
   echo "$SCRIPT_NAME: chroot already initialized.  Skipping..."
   # Update symlinks to point at latest version of make.conf. In older versions
   # of the chroot, it pointed at different files. TODO(asharif): This is only
@@ -371,13 +361,6 @@ RESUMECOMMAND='curl -f -C - --retry 5 -L --output \${DISTDIR}/\${FILE} \${URI}'
 EOF
 sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
-if [ -n "${INITIALIZE_CHROOT}" ]; then
-  # If we're creating a new chroot, we also want to set it to the latest
-  # version.
-  sudo_chroot \
-      "${CHROOT_TRUNK}/src/scripts/run_chroot_version_hooks" --force_latest
-fi
-
 # Update chroot
 UPDATE_ARGS=""
 if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
@@ -390,7 +373,7 @@ if [[ ${FLAGS_fast} -eq ${FLAGS_TRUE} ]]; then
 else
   UPDATE_ARGS+=" --nofast"
 fi
-sudo_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
+bash_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
