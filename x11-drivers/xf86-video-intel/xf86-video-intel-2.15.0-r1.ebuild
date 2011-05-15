@@ -4,6 +4,8 @@
 
 EAPI=3
 
+XORG_EAUTORECONF="yes"
+
 inherit linux-info xorg-2
 
 DESCRIPTION="X.Org driver for Intel cards"
@@ -27,7 +29,7 @@ DEPEND="${RDEPEND}
 	x11-proto/xextproto
 	x11-proto/xproto
 	dri? ( x11-proto/xf86driproto
-	       x11-proto/glproto )"
+		   x11-proto/glproto )"
 
 PATCHES=(
 	# Copy the initial framebuffer contents when starting X so we can get
@@ -37,20 +39,11 @@ PATCHES=(
 	"${FILESDIR}/2.14.0-no-gamma.patch"
 	# Fix pageflipping.
 	"${FILESDIR}/2.15.0-flips.patch"
+	"${FILESDIR}/0001-build-do-not-use-AC_CHECK_FILE-to-find-the-header-fi.patch"
 )
 
 pkg_setup() {
-	# Stuff required to cross compile the package
-	if tc-is-cross-compiler ; then
-		AT_M4DIR="${SYSROOT}/usr/share/aclocal"
-		local temp="${SYSROOT//\//_}"
-		local ac_sysroot="${temp//-/_}"
-		local ac_include_prefix="ac_cv_file_${ac_sysroot}_usr_include"
-		eval export ${ac_include_prefix}_xorg_dri_h=yes
-		eval export ${ac_include_prefix}_xorg_sarea_h=yes
-		eval export ${ac_include_prefix}_xorg_dristruct_h=yes
-	fi
-
+	xorg-2_pkg_setup
 	CONFIGURE_OPTIONS="$(use_enable dri) --disable-xvmc --enable-kms-only"
 }
 
