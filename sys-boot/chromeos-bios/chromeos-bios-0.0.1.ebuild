@@ -78,7 +78,7 @@ create_image() {
 		BOOTSTUB_IMAGE="${prefix}bootstub.bin" \
 		RECOVERY_IMAGE=${recovery_image} \
 		GBB_IMAGE=gbb.bin \
-		FIRMWARE_A_IMAGE=${normal_image} \
+		FIRMWARE_A_IMAGE=${developer_image} \
 		FIRMWARE_B_IMAGE=${normal_image} \
 		OUTPUT="${prefix}image.bin" ||
 		die "Failed to pack the firmware image (${prefix}image.bin)."
