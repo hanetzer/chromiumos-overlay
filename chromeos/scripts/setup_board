@@ -341,7 +341,7 @@ if [ -d "$BOARD_ROOT" ] ; then
     warn "Board output directory '$BOARD_ROOT' already exists."
     warn "Not setting up board root. "
     warn "Use --force to clobber the board root and start again."
-    exit 1
+    exit 0
   fi
 fi
 
