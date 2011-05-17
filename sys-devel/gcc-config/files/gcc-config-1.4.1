@@ -386,6 +386,45 @@ switch_profile() {
 		fi
 	fi
 
+	# Update chromeos build dirs
+    # TODO(asharif): Find a better way of find the overlay dirs?
+	OVERLAYS_DIR=/home/${SUDO_USER}/trunk/src/overlays/
+	for BOARD_ROOT in $(ls -d /build/*)
+	do
+		BOARD=$(basename ${BOARD_ROOT})
+		BOARD_TC=$(cat ${OVERLAYS_DIR}/overlay*${BOARD}/toolchain.conf)
+		if [[ "${BOARD_TC}" == "${CTARGET}" ]]
+		then
+			PACKAGE=cross-${CTARGET}/gcc-${CC_COMP_VERSION}
+			PACKAGE=$(equery l gcc | grep ${PACKAGE} | head -n1)
+			GCC_FILES=$(equery f ${PACKAGE})
+			GCC_FILES=$(equery f ${PACKAGE})
+			LIBGCC_FILE=$(echo "${GCC_FILES}" | grep libgcc_s.so$ | head -n1)
+			LIBSTDCXX_FILE=$(echo "${GCC_FILES}" | grep libstdc++.so$ | head -n1)
+
+			LIBGCC_DEBUG_FILE=$(echo "${GCC_FILES}" | grep libgcc_s.*debug$ | head -n1)
+			LIBSTDCXX_DEBUG_FILE=$(echo "${GCC_FILES}" | grep libstdc++.so.*debug$ | head -n1)
+
+			if [[ -z ${LIBGCC_FILE} || -z ${LIBSTDCXX_FILE} ]]
+			then
+				eerror "Couldn't find libgcc/libstdc++ for ${PACKAGE}"
+			else
+				sudo cp -a ${LIBGCC_FILE}* "${BOARD_ROOT}/lib"
+				sudo cp -a ${LIBSTDCXX_FILE}* "${BOARD_ROOT}/usr/lib"
+			fi
+
+			if [[ -z ${LIBGCC_DEBUG_FILE} || -z ${LIBSTDCXX_DEBUG_FILE} ]]
+			then
+				ewarn "Couldn't find optional libgcc/libstdc++ debug files for ${PACKAGE}"
+			else
+				sudo cp -a ${LIBGCC_DEBUG_FILE}* "${BOARD_ROOT}/usr/lib/debug/lib" \
+				|| warn "libgcc debug info not copied."
+				sudo cp -a ${LIBSTDCXX_DEBUG_FILE}* "${BOARD_ROOT}/usr/lib/debug/usr/lib" \
+				|| warn "libstdc++ debug info not copied."
+			fi
+		fi
+	done
+
 	eend 0
 
 	if [[ ${ROOT} == "/" ]] && [[ ${OLD_CC_COMP} != ${CC_COMP} ]] ; then
