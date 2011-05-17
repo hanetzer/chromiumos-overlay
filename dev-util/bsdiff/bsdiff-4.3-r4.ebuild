@@ -16,11 +16,13 @@ SLOT="0"
 LICENSE="BSD-2"
 KEYWORDS="alpha amd64 arm hppa ia64 mips ppc sparc x86 ~x86-fbsd ~x86-freebsd ~amd64-linux ~x86-linux ~ppc-macos"
 
-DEPEND="app-arch/bzip2"
-RDEPEND="${DEPEND}"
+RDEPEND="app-arch/bzip2
+	dev-libs/libdivsufsort"
+DEPEND="${RDEPEND}"
 
 src_prepare() {
-	epatch ${FILESDIR}/4.3_bspatch-support-input-output-positioning.patch
+	epatch ${FILESDIR}/4.3_bspatch-support-input-output-positioning.patch || die
+	epatch ${FILESDIR}/4.3_bsdiff-divsufsort.patch || die
 }
 
 doecho() {
@@ -30,7 +32,7 @@ doecho() {
 
 src_compile() {
 	append-lfs-flags
-	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 || die "failed compiling bsdiff"
+	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 -ldivsufsort64 || die "failed compiling bsdiff"
 	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bspatch bspatch.c -lbz2 || die "failed compiling bspatch"
 }
 
