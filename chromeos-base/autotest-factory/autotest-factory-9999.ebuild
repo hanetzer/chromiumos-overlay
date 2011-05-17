@@ -35,6 +35,8 @@ RDEPEND="
 
 DEPEND="${RDEPEND}"
 
+# TODO(hungte) remove deprecated factory_SelectKeyboard in R14, when every test
+# list has been updated.
 IUSE_TESTS="
 	+tests_dummy_Fail
 	+tests_dummy_Pass
@@ -55,6 +57,7 @@ IUSE_TESTS="
 	+tests_factory_Review
 	+tests_factory_ScriptWrapper
 	+tests_factory_SelectKeyboard
+	+tests_factory_SelectRegion
 	+tests_factory_ShowTestResults
 	+tests_factory_Touchpad
 	+tests_factory_WriteGBB
