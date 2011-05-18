@@ -262,6 +262,7 @@ IUSE_TESTS="
 	+tests_security_RendererSandbox
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
+	+tests_security_RootCA
 	+tests_security_RootfsOwners
 	+tests_security_RootfsStatefulSymlinks
 	+tests_security_SuidBinaries
