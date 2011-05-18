@@ -85,7 +85,6 @@ src_install() {
 	DEVICES_DIR="/lib/chromiumos/devices"
 	dodir "$DEVICES_DIR"
 	dodir "${DEVICES_DIR}/dri"
-	dodir "${DEVICES_DIR}/input"
 	keepdir "${DEVICES_DIR}/pts"
 	keepdir "${DEVICES_DIR}/shm"
 	dosym /proc/self/fd "${DEVICES_DIR}/fd"
