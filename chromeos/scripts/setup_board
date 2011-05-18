@@ -464,6 +464,12 @@ if ${HOST_BOARD}; then
   ( cd ${BOARD_ROOT} && ( sudo find . -type f \
       '(' -name '*.pc' -o -name '*.la' ')' | xargs sudo perl -i -pe \
       's{\Q$ENV{BOARD_ROOT}\E/}{/}g') )
+
+  # TODO(zbehan): This should not be needed.
+  # For prebuilt amd64-host chroots, the user already exists and
+  # is called 'chronos'. The ebuild should only install that for
+  # the target.
+  sudo chroot "${BOARD_ROOT}" userdel chronos || true
 else
   sudo -E "${EMERGE_WRAPPER}" ${EMERGE_FLAGS} chromeos-base/kernel-headers
 fi
