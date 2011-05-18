@@ -1,0 +1,36 @@
+From 84813ebe8d4210104cb0154817227e0520f8b0ed Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Wed, 18 May 2011 15:47:33 +0800
+Subject: [PATCH] config/udev: add monitor filter for input subsystem
+
+libudev allows adding an efficient in-kernel filter on udev events.
+Since we manually filter for "ID_INPUT" anyway, it seems reasonable
+to ask the kernel to send only events for the input subsystem.
+---
+ config/udev.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/config/udev.c b/config/udev.c
+index b7717c9..6ac1ade 100644
+--- a/config/udev.c
++++ b/config/udev.c
+@@ -273,6 +273,8 @@ config_udev_init(void)
+     if (!udev_monitor)
+         return 0;
+ 
++    udev_monitor_filter_add_match_subsystem_devtype(udev_monitor, "input", NULL);
++
+     if (udev_monitor_enable_receiving(udev_monitor)) {
+         ErrorF("config/udev: failed to bind the udev monitor\n");
+         return 0;
+@@ -281,6 +283,7 @@ config_udev_init(void)
+     enumerate = udev_enumerate_new(udev);
+     if (!enumerate)
+         return 0;
++    udev_enumerate_add_match_subsystem(enumerate, "input");
+     udev_enumerate_scan_devices(enumerate);
+     devices = udev_enumerate_get_list_entry(enumerate);
+     udev_list_entry_foreach(device, devices) {
+-- 
+1.7.3.1
+
