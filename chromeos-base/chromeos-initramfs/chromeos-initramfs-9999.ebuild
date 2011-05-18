@@ -43,7 +43,7 @@ build_initramfs_file() {
 	# Copy source files not merged from our dependencies.
 	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
-	for shlib in {recovery,factory}_init.sh; do
+	for shlib in *.sh; do
 	  cp "${S}"/${shlib} ${INITRAMFS_TMP_S}/lib/ || die
 	done
 
