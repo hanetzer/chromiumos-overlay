@@ -52,6 +52,8 @@ DEFINE_integer jobs -1 "How many packages to build in parallel at maximum."
 DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
 DEFINE_string stage3_date "2010.03.09" \
   "Use the stage3 with the given date."
+DEFINE_string stage3_path "" \
+  "Use the stage3 located on this path."
 
 # Parse command line flags
 FLAGS_HELP="usage: $SCRIPT_NAME [flags]"
@@ -295,6 +297,15 @@ if [ -f $CHROOT_STATE ] && \
 then
   echo "$SCRIPT_NAME: STAGE3 version has changed."
   delete_existing
+fi
+
+if [ -n "${FLAGS_stage3_path}" ]; then
+  if [ -f "${FLAGS_stage3_path}" ]; then
+    STAGE3="${FLAGS_stage3_path}"
+  else
+    error "Invalid stage3!"
+    exit 1;
+  fi
 fi
 
 # Create the destination directory
