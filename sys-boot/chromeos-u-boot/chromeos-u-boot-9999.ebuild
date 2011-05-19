@@ -14,9 +14,10 @@ KEYWORDS="~arm"
 IUSE=""
 PROVIDE="virtual/u-boot"
 
-RDEPEND=""
 DEPEND="arm? ( chromeos-base/vboot_reference-firmware )
 	!sys-boot/u-boot"
+RDEPEND="${DEPEND}
+	"
 
 CROS_WORKON_LOCALNAME="u-boot"
 CROS_WORKON_SUBDIR="files"

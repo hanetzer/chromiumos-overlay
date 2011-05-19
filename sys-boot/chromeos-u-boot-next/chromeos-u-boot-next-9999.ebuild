@@ -14,10 +14,12 @@ KEYWORDS="~arm ~x86"
 IUSE=""
 PROVIDE="virtual/u-boot"
 
-RDEPEND=""
 DEPEND="chromeos-base/vboot_reference-firmware
 	chromeos-base/u-boot-config
 	!sys-boot/u-boot"
+
+RDEPEND="${DEPEND}
+	"
 
 CROS_WORKON_LOCALNAME="u-boot-next"
 CROS_WORKON_SUBDIR="files"

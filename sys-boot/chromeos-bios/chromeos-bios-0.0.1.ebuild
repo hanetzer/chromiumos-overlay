@@ -12,11 +12,12 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE=""
 
-RDEPEND="sys-apps/flashrom"
 DEPEND="virtual/tegra-bct
 	virtual/u-boot
 	chromeos-base/vboot_reference
 	"
+RDEPEND="${DEPEND}
+	sys-apps/flashrom"
 
 keys="${ROOT%/}/usr/share/vboot/devkeys"
 system_map="${ROOT%/}/u-boot/System.map"
