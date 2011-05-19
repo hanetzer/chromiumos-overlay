@@ -23,6 +23,10 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Version name of EC firmware
 : ${CROS_FIRMWARE_EC_VERSION:="IGNORE"}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
+# @DESCRIPTION: (Optional) Platform name of firmware
+: ${CROS_FIRMWARE_PLATFORM:=}
+
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BINARY
 # @DESCRIPTION: (Optional) location of custom flashrom tool
 : ${CROS_FIRMWARE_FLASHROM_BINARY:=}
@@ -205,6 +209,7 @@ cros-firmware_src_compile() {
 		einfo "Building ${BOARD} firmware updater: $image_cmd $ext_cmd"
 		"${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
 			--ec_version "${CROS_FIRMWARE_EC_VERSION}" \
+                        --platform "${CROS_FIRMWARE_PLATFORM}" \
 			-o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
 			--tool_base="$ROOT/usr/sbin:$ROOT/usr/bin" ||
 		die "Cannot pack firmware."
