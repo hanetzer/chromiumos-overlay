@@ -23,7 +23,7 @@ LDFLAGS="-L${ROOT}lib -L${ROOT}usr/lib"
 UCLIBC_CPU_DEFAULT="GENERIC_ARM"
 
 VIDEO_CARDS="fbdev"
-INPUT_DEVICES="evdev keyboard mouse synaptics"
+INPUT_DEVICES="evdev"
 
 # Allow a board to override or define additional settings.
 source make.conf.board
