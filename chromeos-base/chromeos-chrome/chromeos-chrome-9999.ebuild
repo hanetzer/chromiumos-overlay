@@ -173,7 +173,10 @@ set_build_defines() {
 	if [ "$ARCH" = "x86" ]; then
 		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
-		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true v8_can_use_vfp_instructions=true";
+		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true";
+		if [ "$(expr match "$ARM_FPU" "vfpv3")" -ne 0 ]; then
+			BUILD_DEFINES="$BUILD_DEFINES v8_can_use_vfp_instructions=true";
+		fi
 		if use player_x11; then
 			BUILD_DEFINES="$BUILD_DEFINES player_x11_renderer=gles"
 		fi
