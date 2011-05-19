@@ -23,8 +23,10 @@ RDEPEND="app-shells/bash
 DEPEND="${RDEPEND}"
 
 src_install() {
-  exeinto /usr/bin
-  doexe gmerge
-  doexe stateful_update
+	exeinto /usr/bin
+	doexe gmerge
+	doexe stateful_update
+	insinto /etc/make.profile
+	doins /usr/local/portage/chromiumos/profiles/targets/chromeos/*
 }
 
