@@ -25,6 +25,7 @@ stub_image="${ROOT%/}/u-boot/u-boot-stub.bin"
 recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
 normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
 developer_image="${ROOT%/}/u-boot/u-boot-developer.bin"
+legacy_image="${ROOT%/}/u-boot/u-boot-legacy.bin"
 bct_file="${ROOT%/}/u-boot/bct/board.bct"
 
 get_autoconf() {
@@ -113,8 +114,9 @@ src_compile() {
 		gbb.bin ||
 		die "Failed to write keys and HWID to the GBB."
 
+	# TODO(clchiou): obsolete recovery_image.bin
 	create_image "" ${stub_image}
-	create_image "developer_" ${developer_image}
+	create_image "legacy_" ${legacy_image}
 	create_image "recovery_" ${recovery_image}
 }
 
@@ -122,7 +124,8 @@ src_install() {
 	insinto /u-boot
 	doins layout.py || die
 
-        for prefix in "" "developer_" "recovery_"; do
+	# TODO(clchiou): obsolete recovery_image.bin
+        for prefix in "" "legacy_" "recovery_"; do
 		doins "${prefix}image.bin" || die
 		doins "${prefix}bootstub.bin" || die
 	done
