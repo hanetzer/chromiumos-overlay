@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c17a3fb0eeedde9334744486be1f0b26e9ac2030"
+CROS_WORKON_COMMIT="6cd0d956bd9bc3f63da81e82ec1823dfe016fb8b"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
 
 inherit toolchain-funcs
@@ -37,7 +37,7 @@ BUILD_ROOT="${WORKDIR}/${P}/builds"
 CONFIG_PREFIX="$(expr \
     "${CHROMEOS_U_BOOT_CONFIG}" : '\(\([a-z0-9]\+_\)\{3\}\)')"
 
-ALL_UBOOT_FLAVORS='developer flasher normal recovery stub'
+ALL_UBOOT_FLAVORS='developer flasher legacy normal recovery stub'
 IUSE="${ALL_UBOOT_FLAVORS}"
 
 get_required_configs() {
