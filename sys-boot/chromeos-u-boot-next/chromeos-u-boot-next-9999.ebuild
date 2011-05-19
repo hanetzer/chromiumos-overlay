@@ -10,7 +10,7 @@ DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~arm"
+KEYWORDS="~arm ~x86"
 IUSE=""
 PROVIDE="virtual/u-boot"
 
