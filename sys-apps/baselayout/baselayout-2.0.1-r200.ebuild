@@ -120,9 +120,9 @@ pkg_postinst() {
 		sed -i "{ s/video::27:\(.*\)/video::27:\1,${system_user}/ }" \
 			"${ROOT}/etc/group"
 
-	# The root and ${system_user} users must be in the pkcs11 group, which
-	# must have the group id 208.
-	sed -i "{ s/pkcs11:x:.*/pkcs11:x:208:root,${system_user}/ }" \
+	# The root, ipsec and ${system_user} users must be in the pkcs11 group,
+	# which must have the group id 208.
+	sed -i "{ s/pkcs11:x:.*/pkcs11:x:208:root,ipsec,${system_user}/ }" \
 		"${ROOT}/etc/group"
 
 	# Some default directories. These are created here rather than at
