@@ -6,7 +6,8 @@ EAPI="1"
 
 inherit eutils flag-o-matic multilib toolchain-funcs linux-info autotools
 
-PATCHSET=${P}-gentoo-patchset-v1
+# I jumped ahead of Gentoo
+#PATCHSET=${P}-gentoo-patchset-v1
 scriptversion=v3
 scriptname=udev-gentoo-scripts-${scriptversion}
 
@@ -27,7 +28,7 @@ HOMEPAGE="http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="selinux extras test"
 
 COMMON_DEPEND="selinux? ( sys-libs/libselinux )
@@ -63,6 +64,9 @@ if [[ ${PV} == "9999" ]]; then
 		app-text/docbook-xml-dtd
 		dev-util/gtk-doc"
 fi
+
+# our portage tree needs this
+PROVIDE="virtual/dev-manager"
 
 # required kernel options
 CONFIG_CHECK="~INOTIFY_USER ~SIGNALFD ~!SYSFS_DEPRECATED ~!SYSFS_DEPRECATED_V2
@@ -142,6 +146,10 @@ src_unpack() {
 	cd "${S}"
 
 	# patches go here...
+	# run-not-writable taken from the 168 gentoo patchset
+	epatch "${FILESDIR}"/udev-170-run-not-writable.patch
+	# usb.ids location can't come from pkgconfig (chromiumos:15595)
+	epatch "${FILESDIR}"/udev-170-usb-ids-location.patch
 
 	# backport some patches
 	if [[ -n "${PATCHSET}" ]]; then
@@ -170,8 +178,8 @@ src_unpack() {
 
 	if [[ ${PV} == 9999 ]]; then
 		gtkdocize --copy || die "gtkdocize failed"
-		eautoreconf
 	fi
+	eautoreconf
 }
 
 src_compile() {
@@ -184,13 +192,19 @@ src_compile() {
 		--libdir=/usr/$(get_libdir) \
 		--with-rootlibdir=/$(get_libdir) \
 		--libexecdir=/lib/udev \
+		--with-pci-ids-path=/usr/share/misc/pci.ids \
+		--with-usb-ids-path=/usr/share/misc/usb.ids \
 		--enable-logging \
 		--enable-static \
 		$(use_with selinux) \
 		$(use_enable extras) \
 		--disable-introspection \
-		--without-systemdsystemunitdir
+		--without-systemdsystemunitdir \
+		--disable-rule_generator
 	# we don't have gobject-introspection in portage tree
+	# pci.ids and usb.ids hardcoded to avoid getting /build/blah
+	# on the front.
+	# rule generator disabled (chromiumos:3562)
 
 	emake || die "compiling udev failed"
 }
