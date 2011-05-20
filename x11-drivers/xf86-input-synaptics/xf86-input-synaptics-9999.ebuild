@@ -20,7 +20,8 @@ RDEPEND="
 	>=x11-libs/libXtst-1.1.0"
 DEPEND="${RDEPEND}
 	x11-proto/inputproto
-	>=x11-proto/recordproto-1.14"
+	>=x11-proto/recordproto-1.14
+	>=x11-misc/util-macros-1.13"
 
 src_prepare() {
 	xorg-2_src_prepare
