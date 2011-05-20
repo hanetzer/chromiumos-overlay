@@ -66,8 +66,7 @@ fi
 #   update service.
 # TODO(skrul):  Remove GOOGLE_RELEASE once Chromium is updated to look at
 #   CHROMEOS_RELEASE_VERSION for UserAgent data.
-cat <<EOF | sudo dd of="${ROOT_FS_DIR}/etc/lsb-release"
-CHROMEOS_RELEASE_APPID=$CHROMEOS_RELEASE_APPID
+sudo_append "${ROOT_FS_DIR}/etc/lsb-release" <<EOF
 CHROMEOS_RELEASE_BOARD=$FLAGS_board
 CHROMEOS_RELEASE_DESCRIPTION=$CHROMEOS_VERSION_DESCRIPTION
 CHROMEOS_RELEASE_NAME=$CHROMEOS_VERSION_NAME
