@@ -24,8 +24,8 @@ RDEPEND="app-shells/bash
 DEPEND="${RDEPEND}"
 
 src_install() {
-	exeinto /usr/bin
-	doexe gmerge
-	doexe stateful_update
+  exeinto /usr/bin
+  doexe gmerge
+  doexe stateful_update
 }
 
