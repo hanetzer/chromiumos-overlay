@@ -19,7 +19,7 @@
 +#include <syslog.h>
 +#define LogError(fmt, ...) syslog(LOG_ERR, "libpkcs11_tpm: " fmt, ##__VA_ARGS__)
 +#define LogError1(data) \
-+  syslog(LOG_ERR, "libpkcs11_tpm: LogError1 %s:%d: %s", __FILE__, __LINE__, data)
++  syslog(LOG_ERR, "libpkcs11_tpm: %s:%d: %s", __FILE__, __LINE__, data)
 +#define st_err_log(...) \
 +  syslog(LOG_ERR, "libpkcs11_tpm: st_err_log at %s:%d", __FILE__, __LINE__)
 +#endif
