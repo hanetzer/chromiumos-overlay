@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -52,7 +52,6 @@ src_test() {
 }
 
 src_install() {
-	dobin hardware_class || die
 	dobin metrics_client || die
 	dobin metrics_daemon || die
 	dobin syslog_parser.sh || die
