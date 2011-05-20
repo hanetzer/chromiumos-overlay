@@ -20,7 +20,8 @@ S=${WORKDIR}/${MY_P}
 
 src_prepare() {
 	sed -i -e "s:CFLAGS =:CFLAGS +=:" \
-		   -e "s:CPPFLAGS =:CPPFLAGS +=:" Makefile || die
+		-e "s:CPPFLAGS =:CPPFLAGS +=:" \
+		-e "s:-Werror::" Makefile || die
 }
 
 src_compile() {
