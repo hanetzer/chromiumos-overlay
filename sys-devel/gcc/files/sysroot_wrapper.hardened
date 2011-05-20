@@ -1,0 +1,129 @@
+#!/bin/bash
+
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script ensures that "--sysroot" is passed to whatever it is wrapping.
+#
+# It also adds hardened flags to gcc invocation. The hardened flags are:
+# 1. -fstack-protector-all
+# 2. -fPIE
+# 3. -pie
+# 4. -D_FORTIFY_SOURCE=2
+#
+# It can disable -fPIE -pie by checking if -nopie is passed to gcc. In this
+# case it removes -nopie as it is a non-standard flag.
+#
+# There is a similar hardening wrapper that wraps ld and adds -z now -z relro
+# to the link command line (see ldwrapper).
+#
+# To use:
+#   mv <tool> <tool>.real
+#   ln -s <path_to_sysroot_wrapper> <tool>
+
+non_fstack_flags=(-D__KERNEL__ -fno-stack-protector -fstack-protector-all\
+  -fstack-protector -nodefaultlibs -nostdlib)
+non_fPIE_flags=(-D__KERNEL__ -fPIC -fPIE -fno-PIC -fno-PIE -fno-pic -fno-pie\
+  -fpic -fpie -nopie -nostartfiles -nostdlib -pie -static)
+non_pie_flags=(-D__KERNEL__ -A -fno-PIC -fno-PIE -fno-pic -fno-pie\
+  -nopie -nostartfiles -nostdlib -pie -r -shared -static)
+
+non_standard_flags=(-nopie)
+
+fstack_status=1
+fPIE_status=1
+pie_status=1
+now_status=1
+
+# Arguments: array, value
+# Returns 0 if value is in the array
+# Returns 1 otherwise
+function value_in_array
+{
+  local array=($(echo "$1"))
+  local value=$2
+  for array_value in ${array[@]}
+  do
+    if [[ $array_value == $value ]]
+    then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Arguments: flag
+# Checks if flag is in the array non_${flag}_flags.
+# If so, sets ${flag}_status to 0.
+function set_status_for_flag
+{
+  local flag="$1"
+  local status_var_name="${flag}_status"
+  local flags_var_name="non_${flag}_flags"
+  local array=$(eval echo "\${$flags_var_name[@]}")
+
+  local args="$2"
+
+  for var in ${args[@]}
+  do
+    if [[ ${!status_var_name} -eq 1 ]]
+    then
+      value_in_array "$(echo ${array[@]})" "$var"
+      if [[ $? -eq 0 ]]
+      then
+        eval $status_var_name=0
+        break
+      fi
+    fi
+  done
+}
+
+
+set_status_for_flag "fstack" "$(echo $@)"
+set_status_for_flag "fPIE" "$(echo $@)"
+set_status_for_flag "pie" "$(echo $@)"
+set_status_for_flag "now" "$(echo $@)"
+
+SYSROOT_WRAPPER_LOG=/tmp/sysroot_wrapper.error
+HARDENED_FLAGS=""
+
+if [[ $fstack_status -eq 1 ]]
+then
+  HARDENED_FLAGS+=" -fstack-protector-all"
+fi
+if [[ $fPIE_status -eq 1 ]]
+then
+  HARDENED_FLAGS+=" -fPIE"
+fi
+if [[ $pie_status -eq 1 ]]
+then
+  HARDENED_FLAGS+=" -pie"
+fi
+
+HARDENED_FLAGS+=" -D_FORTIFY_SOURCE=2"
+
+for arg in "$@"
+do
+  for non_standard_flag in ${non_standard_flags[@]}
+  do
+    if [[ "$arg" != "$non_standard_flag" ]]
+    then
+      new_args=("${new_args[@]}" "$arg")
+    fi
+  done
+done
+
+new_args=(${HARDENED_FLAGS} "${new_args[@]}")
+
+if [ -n "$SYSROOT" ] ; then
+  exec "${0}.real" --sysroot="$SYSROOT" "${new_args[@]}"
+else
+  if [[ ! -f $SYSROOT_WRAPPER_LOG ]]; then
+    touch $SYSROOT_WRAPPER_LOG
+    chmod a+w $SYSROOT_WRAPPER_LOG
+  fi
+  echo "Invocation with missing SYSROOT: ${0} ${new_args[@]}" >> $SYSROOT_WRAPPER_LOG
+  exec "${0}.real" "${new_args[@]}"
+fi
+

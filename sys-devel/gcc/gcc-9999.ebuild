@@ -59,7 +59,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-			thumb upstream_gcc vanilla"
+			svn_sources thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -72,7 +72,7 @@ else
 fi
 MY_P=${PN}-${GCC_PV}
 GITDIR=${WORKDIR}/gitdir
-GITHASH=c8736fc09c714d2fb408e920d12ec5d77c820b38
+GITHASH=1b70b8f872d862dfed84e7d99d1369855c063ca9
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -102,7 +102,7 @@ STDCXX_INCDIR=${LIBDIR}/include/g++-v${PV}
 
 
 src_unpack() {
-	GCC_CONFIG_FILE=${CTARGET}-${PV}
+	GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
 
 	local GCCDIR
 	if use mounted_sources ; then
@@ -110,6 +110,13 @@ src_unpack() {
 		if [[ ! -d ${GCCDIR} ]] ; then
 			die "gcc dir not mounted/present at: ${GCCDIR}"
 		fi
+	elif use svn_sources ; then
+		SVNDIR=svn
+		GCCDIR=${SVNDIR}/gcc/${MY_P}
+		MAJOR_VERSION=$(echo ${GCC_PV} | sed 's/\./ /g' | awk '{print $1}')
+		MINOR_VERSION=$(echo ${GCC_PV} | sed 's/\./ /g' | awk '{print $2}')
+		svn co svn://gcc.gnu.org/svn/gcc/branches/google/gcc-${MAJOR_VERSION}_${MINOR_VERSION} ${GCCDIR}
+		CL=$(cd ${GCCDIR}; svnversion)
 	else
 		mkdir ${GITDIR}
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
@@ -151,13 +158,12 @@ src_compile()
 {
 	src_configure
 	pushd ${WORKDIR}/build
-	ORIG_CFLAGS=$(portageq envvar CFLAGS)
-	HARD_CFLAGS=''
-	if use hardened && [[ ${CTARGET} != arm* ]] ;
+	GCC_CFLAGS="$(portageq envvar CFLAGS)"
+	if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" == "4.4.3" ]]
 	then
-		HARD_CFLAGS='-DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE -DEFAULT_RELRO'
+		GCC_CFLAGS+=" -DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE -DEFAULT_RELRO"
 	fi
-	emake CFLAGS="${HARD_CFLAGS} ${ORIG_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' BOOT_CFLAGS=-O2 all
+	emake CFLAGS="${GCC_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' BOOT_CFLAGS=-O2 all
 	popd
 	return $?
 }
@@ -169,31 +175,10 @@ src_install()
 
 	find "${D}" -name libiberty.a -exec rm -f "{}" \;
 
-	# Copy hardened specs over.
-
-	if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" != "4.4.3" ]] ;
-	then
-		original_specs=$(${D}/${BINDIR}/${CTARGET}-gcc -dumpspecs)
-		hardened_specs="${original_specs}"
-		hardened_specs+="$(cat ${FILESDIR}/hardened.specs)"
-
-		# Add pie and ssp options to cc1 rule.
-		hardened_specs=$(echo "${hardened_specs}" | sed -e '/cc1:/,+1 {/cc1:/b; s/$/ %(esp_cc1_pie) %(esp_cc1_ssp)/}')
-		# Add -z now and -z relro to default linker command line.
-		hardened_specs=$(echo "${hardened_specs}" | sed -e 's/%(linker)/\0 %(esp_link)/g')
-		# Add -D_FORTIFY_SOURCE=2 to default compiles.
-		hardened_specs=$(echo "${hardened_specs}" | sed -e '/cpp_unique_options:/,+1 {/cpp_unique_options:/b; s:^:-D_FORTIFY_SOURCE=2 :}')
-
-
-		echo "${hardened_specs}" > hardened.specs
-		insinto "${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}"
-		newins hardened.specs specs
-	fi
-
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 	cat <<-EOF > env.d
-LDPATH="${LIBDIR}"
+LDPATH="${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}"
 MANPATH="${DATADIR}/man"
 INFOPATH="${DATADIR}/info"
 STDCXX_INCDIR="${STDCXX_INCDIR}"
@@ -203,14 +188,20 @@ EOF
 	newins env.d $GCC_CONFIG_FILE
 	cd -
 
-	SYSROOT_WRAPPER_FILE=sysroot_wrapper
+	if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" != "4.4.3" ]]
+	then
+		SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
+	else
+		SYSROOT_WRAPPER_FILE=sysroot_wrapper
+	fi
 
 	cd ${D}${BINDIR}
-	cp --preserve=all "${FILESDIR}/$SYSROOT_WRAPPER_FILE" .
+	exeinto "${BINDIR}"
+	doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
 	for x in c++ cpp g++ gcc; do
 		if [[ -f "${CTARGET}-${x}" ]]; then
 			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-			ln -sf -T $SYSROOT_WRAPPER_FILE "${CTARGET}-${x}"
+			dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
 		fi
 	done
 }
@@ -219,10 +210,10 @@ pkg_postinst()
 {
 	gcc-config $GCC_CONFIG_FILE
 	CCACHE_BIN=$(which ccache || true)
-	if [ -f "${CCACHE_BIN}" ]; then
+	if is_crosscompile && [[ -f "${CCACHE_BIN}" ]] ; then
 		mkdir -p "/usr/lib/ccache/bin"
 		for x in c++ cpp g++ gcc; do
-			ln -sf "${CCACHE_BIN}" "/usr/lib/ccache/bin/${CTARGET}-${x}"
+			dosym "${CCACHE_BIN}" "/usr/lib/ccache/bin/${CTARGET}-${x}" || die
 		done
 	fi
 }
@@ -236,15 +227,14 @@ pkg_postrm()
 			rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
 		fi
 	fi
-	if [[ $(equery l gcc | grep i686-pc-linux-gnu | wc -l) -eq 1 ]]
-	then
+	if is_crosscompile &&
+		[[ $(equery l gcc | grep i686-pc-linux-gnu | wc -l) -eq 1 ]] ; then
 		for x in c++ cpp g++ gcc; do
 			rm -rf "/usr/lib/ccache/bin/${CTARGET}-${x}"
 		done
 	fi
 }
 
-# TODO(asharif): Move this into a separate file and source it.
 src_configure()
 {
 	if use mounted_sources ; then
@@ -303,11 +293,10 @@ src_configure()
 		fi
 	fi
 
-	source ${GCCBUILDDIR}/opts.sh
 	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
 
 	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
- --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
+    --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 	confgcc="${confgcc} ${EXTRA_ECONF}"
 
 	# Build in a separate build tree
@@ -322,3 +311,44 @@ src_configure()
 	"${S}"/configure ${confgcc} || die "failed to run configure"
 	popd > /dev/null
 }
+
+get_gcc_configure_options()
+{
+	local CTARGET=$1; shift
+	local confgcc=$(get_gcc_common_options)
+	case ${CTARGET} in
+		arm*)	#264534
+			local arm_arch="${CTARGET%%-*}"
+			# Only do this if arm_arch is armv*
+			if [[ ${arm_arch} == armv* ]] ; then
+				# Convert armv7{a,r,m} to armv7-{a,r,m}
+				[[ ${arm_arch} == armv7? ]] && arm_arch=${arm_arch/7/7-}
+				# Remove endian ('l' / 'eb')
+				[[ ${arm_arch} == *l  ]] && arm_arch=${arm_arch%l}
+				[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
+				confgcc="${confgcc} --with-arch=${arm_arch}"
+				confgcc="${confgcc} --disable-esp"
+			fi
+			;;
+		i?86*)
+			# Hardened is enabled for x86, but disabled for ARM.
+			confgcc="${confgcc} --enable-esp"
+			confgcc="${confgcc} --with-arch=atom"
+			confgcc="${confgcc} --with-tune=atom"
+			;;
+	esac
+	echo ${confgcc}
+}
+
+get_gcc_common_options()
+{
+	local confgcc
+	confgcc="${confgcc} --disable-libmudflap"
+	confgcc="${confgcc} --disable-libssp"
+	confgcc="${confgcc} --disable-libgomp"
+	confgcc="${confgcc} --enable-__cxa_atexit"
+	confgcc="${confgcc} --enable-checking=release"
+	confgcc="${confgcc} --disable-libquadmath"
+	echo ${confgcc}
+}
+
