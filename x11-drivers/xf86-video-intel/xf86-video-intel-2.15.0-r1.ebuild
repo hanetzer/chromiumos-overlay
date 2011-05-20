@@ -8,7 +8,7 @@ inherit linux-info xorg-2
 
 DESCRIPTION="X.Org driver for Intel cards"
 
-KEYWORDS="~amd64 ~ia64 x86 ~x86-fbsd"
+KEYWORDS="amd64 ~ia64 x86 ~x86-fbsd"
 IUSE="dri"
 
 RDEPEND=">=x11-base/xorg-server-1.6
@@ -32,9 +32,11 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	# Copy the initial framebuffer contents when starting X so we can get
 	# seamless transitions.
-	"${FILESDIR}/${PV}-copy-fb.patch"
-	"${FILESDIR}/${PV}-dri-drawable.patch"
-	"${FILESDIR}/${PV}-no-gamma.patch"
+	"${FILESDIR}/2.15.0-copy-fb.patch"
+	# Prevent X from touching boot-time gamma settings.
+	"${FILESDIR}/2.14.0-no-gamma.patch"
+	# Fix pageflipping.
+	"${FILESDIR}/2.15.0-flips.patch"
 )
 
 pkg_setup() {
