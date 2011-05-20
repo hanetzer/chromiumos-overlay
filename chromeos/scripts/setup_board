@@ -299,7 +299,7 @@ if [ -f "${BINHOST_CONF}" ]; then
   BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${BINHOST_CONF}"
 fi
 
-if ! ${HOST_BOARD} ; then
+if [ "${ARCH}" != "amd64" ] ; then
   # Version of GCC we will be installing, without the ebuild revision number.
   GCC_VERSION=`echo ${FLAGS_gcc_version} | sed -e 's/\-r[0-9]*$//g'`
 
@@ -347,7 +347,7 @@ fi
 
 sudo mkdir -p "$BOARD_ROOT" "${BOARD_ETC}" "${BOARD_PROFILE}"
 
-if ! ${HOST_BOARD} ; then
+if [ "${ARCH}" != "amd64" ] ; then
   # TODO(cmasone): Do this more cleanly, if we figure out what "cleanly" means.
   # Set up wrapper for pkg-config.  Point a board-specific wrapper at the
   # generic wrapper script created by crossdev-wrapper
@@ -403,9 +403,11 @@ if ! ${HOST_BOARD}; then
   sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
     "${BOARD_ETC}/make.conf"
 
-  # We install the toolchain related bits after the BOARD_ROOT, BOARD_PROFILE
-  # and BOARD_ETC directories have been created.
-  install_toolchain_in_board
+  if [ "${ARCH}" != "amd64" ] ; then
+    # We install the toolchain related bits after the BOARD_ROOT, BOARD_PROFILE
+    # and BOARD_ETC directories have been created.
+    install_toolchain_in_board
+  fi
 
   sudo touch "${BOARD_ETC}/make.conf.board"
 
@@ -473,13 +475,6 @@ if ${HOST_BOARD}; then
 else
   sudo -E "${EMERGE_WRAPPER}" ${EMERGE_FLAGS} chromeos-base/kernel-headers
 fi
-
-# Temporary hack needed so that we can move headers install back into
-# the kernel-headers ebuild.
-# TODO(msb): Remove this hack.
-sudo chown -Rf ${USER} ~/trunk/.config || true
-mkdir -p ~/trunk/.config/headers-fix
-touch ~/trunk/.config/headers-fix/"${FLAGS_board}"
 
 if [ $FLAGS_default -eq $FLAGS_TRUE ] ; then
   echo $BOARD_VARIANT > "$GCLIENT_ROOT/src/scripts/.default_board"
