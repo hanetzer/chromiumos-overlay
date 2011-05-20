@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="e9740b11eef4014ef0e9a4b55f6d7f23e3229cf1"
+CROS_WORKON_COMMIT="fab75fe618e1cc2f42c0bf6688e4eb2e047292b8"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -44,7 +44,7 @@ build_initramfs_file() {
 	# Copy source files not merged from our dependencies.
 	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
-	for shlib in {recovery,factory}_init.sh; do
+	for shlib in *.sh; do
 	  cp "${S}"/${shlib} ${INITRAMFS_TMP_S}/lib/ || die
 	done
 
