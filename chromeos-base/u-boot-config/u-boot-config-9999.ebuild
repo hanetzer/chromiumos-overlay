@@ -8,7 +8,7 @@ DESCRIPTION="ChromeOS specific U-Boot configurations"
 HOMEPAGE="http://chromium.org"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~arm"
+KEYWORDS="~arm ~x86"
 IUSE=""
 
 RDEPEND=""
