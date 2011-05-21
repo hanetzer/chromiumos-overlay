@@ -12,7 +12,7 @@ DESCRIPTION="Chrome OS Kernel Headers"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 src_unpack() {
