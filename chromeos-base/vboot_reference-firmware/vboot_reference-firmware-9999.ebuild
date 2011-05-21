@@ -1,12 +1,12 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-inherit cros-workon
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~arm"
+KEYWORDS="~arm ~x86"
 IUSE="debug"
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
@@ -39,7 +39,7 @@ src_compile() {
 		MOCK_TPM=1
 	fi
 
-	emake	FIRMWARE_ARCH="arm" \
+	emake	FIRMWARE_ARCH="$(tc-arch-kernel)" \
 		FIRMWARE_CONFIG_PATH="${cflags_path}" \
 		MOCK_TPM="${MOCK_TPM}" \
 		DEBUG="${DEBUG}" || die "${err_msg}"
