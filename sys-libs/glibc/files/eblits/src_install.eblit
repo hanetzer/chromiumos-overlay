@@ -26,7 +26,12 @@ toolchain-glibc_src_install() {
 	if is_crosscompile ; then
 		# punt all the junk not needed by a cross-compiler
 		cd "${D}"/usr/${CTARGET} || die
-		rm -rf ./{,usr/}{bin,etc,sbin,share} ./{,usr/}*/misc
+		rm -rf ./{,usr/}{etc,share} ./{,usr/}*/misc
+
+		# Remove all executables except getent, ldd, and ldconfig.
+		# See http://crosbug.com/1570
+		find ./usr/bin -name getent -o -name ldd -o -type f -exec rm {} ';'
+		find ./sbin -name ldconfig -o -type f -exec rm {} ';'
 	fi
 
 	if want_linuxthreads && want_nptl ; then
