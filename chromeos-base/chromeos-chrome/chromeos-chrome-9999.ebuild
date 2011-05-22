@@ -544,7 +544,11 @@ src_compile() {
 }
 
 fast_cp() {
-	cp -l $* || cp $*
+	if [ "${CHROME_ROOT}" = "${ECHROME_STORE_DIR}" ]; then
+		cp -l $* || cp $*
+	else
+		cp $*
+	fi
 }
 
 install_chrome_test_resources() {
