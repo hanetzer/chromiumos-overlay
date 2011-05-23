@@ -43,6 +43,8 @@ src_unpack() {
 	# Drop extensions requiring Python.
 	sed -i -e 's:^\s\+Extension("gps\.\(packet\|clienthelpers\)",.*$:#:' \
 		setup.py || die "sed failed"
+
+	epatch "${FILESDIR}"/2.96-pkgconfig.patch
 	eautoreconf
 }
 
