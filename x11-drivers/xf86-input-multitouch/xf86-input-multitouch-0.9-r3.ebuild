@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=3
-CROS_WORKON_COMMIT="13d11a7589fe07df0de7b0ab191682599147335a"
+CROS_WORKON_COMMIT="d08caf99441bc4fa88662a82eb7238c21277dca0"
 CROS_WORKON_PROJECT="chromiumos/third_party/multitouch"
 
 XORG_EAUTORECONF="yes"
