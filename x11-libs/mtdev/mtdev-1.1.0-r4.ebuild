@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="81159f92576053ad96c3992f0c087d98fa3f39de"
+CROS_WORKON_COMMIT="3aa3de4c19b80caaf93812fafff20acd5f5a4d12"
 CROS_WORKON_PROJECT="chromiumos/third_party/mtdev"
 
 inherit autotools cros-workon
