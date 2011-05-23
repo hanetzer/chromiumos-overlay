@@ -7,4 +7,18 @@
 # This script writes a new U-Boot based firmware image to the SPI flash device
 # on a Tegra based machine.
 
-/usr/sbin/flashrom --ignore-fmap -w /u-boot/recovery_image.bin
+usage() {
+  echo "Usage: $0 --chromeos_firmware|--legacy_firmware"
+}
+
+if [ $# -eq 1 ]; then
+  if [ $1 = '--chromeos_firmware' ]; then
+    /usr/sbin/flashrom --ignore-fmap -w /u-boot/image.bin
+  elif [ $1 = '--legacy_firmware' ]; then
+    /usr/sbin/flashrom --ignore-fmap -w /u-boot/legacy_image.bin
+  else
+    usage $@
+  fi
+else
+  usage $@
+fi
