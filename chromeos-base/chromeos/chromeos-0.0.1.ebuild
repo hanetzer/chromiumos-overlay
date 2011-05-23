@@ -239,9 +239,16 @@ qemu_run() {
 		*)
 			die "Unable to determine QEMU from ARCH."
 	esac
-	cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
-	chroot "${ROOT}" "/tmp/${qemu}" $* || die
-	rm "${ROOT}/tmp/${qemu}" || die
+
+	# If we're running directly on the target (e.g. gmerge), we don't need to
+	# chroot or use qemu.
+	if [ "${ROOT:-/}" == "/" ]; then
+		$* || die
+	else
+		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
+		chroot "${ROOT}" "/tmp/${qemu}" $* || die
+		rm "${ROOT}/tmp/${qemu}" || die
+	fi
 }
 
 generate_font_cache() {
