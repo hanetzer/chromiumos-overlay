@@ -11,7 +11,7 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 
 LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
 SLOT="0"
-KEYWORDS="~amd64 arm ~ppc ~sparc x86"
+KEYWORDS="amd64 arm ~ppc ~sparc x86"
 # TODO(simonjam): Figure out why +openssl broke certificate support. Until then,
 # openssl is disabled unlike upstream.
 IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root openssl +smartcard sqlite"

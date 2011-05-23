@@ -22,7 +22,7 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-KEYWORDS="~x86 ~arm"
+KEYWORDS="~amd64 ~arm ~x86"
 
 LICENSE="BSD"
 SLOT="0"

@@ -13,7 +13,7 @@ drivers which are not suitable for inclusion in a generic board overlay."
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 PROVIDE="virtual/chromeos-bsp"
 

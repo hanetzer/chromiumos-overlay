@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE="test"
 
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).

@@ -11,7 +11,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~arm ~x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 CROS_WORKON_LOCALNAME="firmware"

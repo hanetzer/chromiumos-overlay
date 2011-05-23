@@ -13,7 +13,7 @@ HOMEPAGE=""
 SRC_URI=""
 LICENSE="LGPL"
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 src_compile() {

@@ -8,7 +8,7 @@ HOMEPAGE="http://src.chromium.org"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE="X opengl hardened -touchui"
 
 # The dependencies here are meant to capture "all the packages

@@ -12,7 +12,7 @@ SRC_URI="mirror://sourceforge/opencryptoki/${P}.tar.bz2
 		 mirror://gentoo/opencryptoki-tpm_stdll-sw_fallback-June012006.patch.bz2"
 LICENSE="CPL-0.5"
 SLOT="0"
-KEYWORDS="~amd64 arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE="tpmtok"
 
 RDEPEND="tpmtok? ( app-crypt/trousers )

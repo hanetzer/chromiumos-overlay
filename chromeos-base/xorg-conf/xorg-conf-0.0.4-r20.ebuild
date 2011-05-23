@@ -10,7 +10,7 @@ DESCRIPTION="Board specific xorg configuration file."
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE="synaptics multitouch mario"
 
 RDEPEND=""

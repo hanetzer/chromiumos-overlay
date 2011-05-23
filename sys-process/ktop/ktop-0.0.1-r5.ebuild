@@ -15,7 +15,7 @@ SRC_URI=""
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 DEPEND="sys-libs/ncurses"

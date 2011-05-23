@@ -10,7 +10,7 @@ HOMEPAGE="http://code.google.com/p/google-glog/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE="gflags"
 
 DEPEND="gflags? ( dev-cpp/gflags )"

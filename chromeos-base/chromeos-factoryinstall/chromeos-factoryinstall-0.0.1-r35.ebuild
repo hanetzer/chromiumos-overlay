@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 # Factory install images operate by downloading content from a

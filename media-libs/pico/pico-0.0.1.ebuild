@@ -11,7 +11,7 @@ HOMEPAGE="http://www.svox.com"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-${PV}.tar.bz2"
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 post_src_unpack() {
