@@ -14,7 +14,7 @@ DESCRIPTION="Export U-Boot build environment"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="arm"
+KEYWORDS="arm x86"
 IUSE=""
 
 RDEPEND=""
