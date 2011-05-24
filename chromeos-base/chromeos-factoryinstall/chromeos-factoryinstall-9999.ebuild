@@ -100,6 +100,8 @@ CHROMEOS_AUSERVER=http://${FACTORY_SERVER}:8080/update
 CHROMEOS_DEVSERVER=http://${FACTORY_SERVER}:8080/update
 FACTORY_INSTALL=1
 HTTP_SERVER_OVERRIDE=true
+# Change the below value to true to enable board prompt
+USER_SELECT=false
 EOF
 
 	# never execute the updater on install shim, because firmware are
