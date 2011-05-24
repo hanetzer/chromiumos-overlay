@@ -167,16 +167,17 @@ EOF
 	cd -
 
 	cd ${D}${BINPATH}
-	cp --preserve=all "${FILESDIR}/sysroot_wrapper" .
+	exeinto "${BINPATH}"
+	doexe "${FILESDIR}/sysroot_wrapper" || die
+	dodir /usr/lib/ccache/bin || die
+	CCACHE_BIN=$(which ccache || true)
 	for x in c++ cpp g++ gcc; do
 		if [[ -f "${CTARGET}-${x}" ]]; then
-			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-			ln -sf -T sysroot_wrapper "${CTARGET}-${x}"
+			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real" || die
+			dosym sysroot_wrapper "${BINPATH}/${CTARGET}-${x}" || die
 		fi
-		CCACHE_BIN=$(which ccache || true)
-		mkdir -p "${D}/usr/lib/ccache/bin"
 		if [ -f "${CCACHE_BIN}" ]; then
-			ln -sf "${CCACHE_BIN}" "${D}/usr/lib/ccache/bin/${CTARGET}-${x}"
+			dosym "${CCACHE_BIN}" "/usr/lib/ccache/bin/${CTARGET}-${x}" || die
 		fi
 	done
 }
