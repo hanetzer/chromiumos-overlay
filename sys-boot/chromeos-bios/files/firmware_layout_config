@@ -28,6 +28,7 @@ ENTRIES = [
   EntryFmap(name='FMAP',
         offset=int(CONFIG_OFFSET_FMAP, 0),
         length=int(CONFIG_LENGTH_FMAP, 0),
+        flags=FMAP_AREA_STATIC,
         ver_major=1, ver_minor=0, base=0x00000000, size=SIZE),
   EntryBlob(name='GBB',
         offset=int(CONFIG_OFFSET_GBB, 0),
