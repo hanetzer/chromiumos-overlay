@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="86467"
+CROS_SVN_COMMIT="86475"
 inherit eutils multilib toolchain-funcs flag-o-matic autotest
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -545,7 +545,11 @@ src_compile() {
 }
 
 fast_cp() {
-	cp -l $* || cp $*
+	if [ "${CHROME_ROOT}" = "${ECHROME_STORE_DIR}" ]; then
+		cp -l $* || cp $*
+	else
+		cp $*
+	fi
 }
 
 install_chrome_test_resources() {
