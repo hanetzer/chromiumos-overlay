@@ -16,16 +16,6 @@ DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
-#RESTRICT="mirror"
-
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # Remove the epatch lines when mozc is upgraded.
-  epatch "${FILESDIR}"/mode_switch.patch
-  epatch "${FILESDIR}"/fix_14335.patch
-  epatch "${FILESDIR}"/memory_config.patch
-  epatch "${FILESDIR}"/load_config_from_memconf.patch
-}
 
 src_configure() {
   cd "mozc-${PV}" || die
