@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="3dc5af543073a3573eb85016def76babb305cade"
+CROS_WORKON_COMMIT="497e74000795045ebef9165e77da6e212858cdfe"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon
@@ -101,6 +101,8 @@ CHROMEOS_AUSERVER=http://${FACTORY_SERVER}:8080/update
 CHROMEOS_DEVSERVER=http://${FACTORY_SERVER}:8080/update
 FACTORY_INSTALL=1
 HTTP_SERVER_OVERRIDE=true
+# Change the below value to true to enable board prompt
+USER_SELECT=false
 EOF
 
 	# never execute the updater on install shim, because firmware are
