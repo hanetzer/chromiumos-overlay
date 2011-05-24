@@ -15,11 +15,12 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
-PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
-    initramfs? ( chromeos-base/chromeos-initramfs )"
-RDEPEND=""
+    initramfs? ( chromeos-base/chromeos-initramfs )
+    !sys-kernel/chromeos-kernel-next
+"
+RDEPEND="!sys-kernel/chromeos-kernel-next"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
