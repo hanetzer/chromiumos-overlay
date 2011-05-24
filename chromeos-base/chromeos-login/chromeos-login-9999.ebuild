@@ -17,6 +17,7 @@ IUSE="test"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
+	chromeos-base/metrics
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
