@@ -28,7 +28,7 @@ src_compile() {
 }
 
 src_install() {
-	dodir /u-boot
-	insinto /u-boot
+	dodir /coreboot
+	insinto /coreboot
 	doins out/bios.bin.elf || die
 }
