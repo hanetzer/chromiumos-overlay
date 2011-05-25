@@ -35,6 +35,7 @@ src_unpack() {
 	epatch "${FILESDIR}"/${PN}-1.38-tests-locale.patch #99766
 	epatch "${FILESDIR}"/${PN}-1.41.8-makefile.patch
 	epatch "${FILESDIR}"/${PN}-1.40-fbsd.patch
+	epatch "${FILESDIR}"/${PN}-1.41-includes.patch
 	# use symlinks rather than hardlinks
 	sed -i \
 		-e 's:$(LN) -f $(DESTDIR).*/:$(LN_S) -f :' \
