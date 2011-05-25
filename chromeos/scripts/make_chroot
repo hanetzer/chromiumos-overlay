@@ -217,7 +217,10 @@ function init_setup () {
    echo "export CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\"" >> \
      "$FLAGS_chroot/home/$USER/.bash_profile"
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
-   echo "export PS1=\"(cros-chroot) \$PS1\"" >> "$FLAGS_chroot/home/$USER/.bashrc"
+   echo "export PS1='\$(__git_branch_ps1 \"(%s) \")'\"\${PS1}\"" >> \
+     "$FLAGS_chroot/home/$USER/.bashrc"
+   echo "export PS1=\"(cr) \${PS1}\"" >> \
+     "$FLAGS_chroot/home/$USER/.bashrc"
 
    # Add chromite/bin into the user's path; note that the chromite wrapper
    # itself might also be found in depot_tools.
