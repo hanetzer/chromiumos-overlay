@@ -132,6 +132,15 @@ build_toolchain() {
       $CROSS_USEPKG
 }
 
+install_toolchain_in_provided() {
+  # Tell portage that toolchain packages are already installed in the sysroot.
+  PROVIDED="${BOARD_PROFILE}/package.provided"
+  sudo sh -c \
+      "echo \"sys-devel/binutils-${FLAGS_binutils_version}\" >> \"${PROVIDED}\""
+  sudo sh -c "echo \"sys-devel/gcc-${FLAGS_gcc_version}\" >> \"${PROVIDED}\""
+  sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
+}
+
 # Install all of the stuff that depends on the toolchain versions
 # into the board root.
 install_toolchain_in_board() {
@@ -187,12 +196,7 @@ ${LIBC_TAR}"
   sudo cp -a /usr/include/rpcsvc/nfs_prot.h "${BOARD_ROOT}/usr/include/rpcsvc"
   sudo cp -a /usr/include/rpcsvc/yppasswd.h "${BOARD_ROOT}/usr/include/rpcsvc"
 
-  # Tell portage that toolchain packages are already installed in the sysroot.
-  PROVIDED="${BOARD_PROFILE}/package.provided"
-  sudo sh -c \
-      "echo \"sys-devel/binutils-${FLAGS_binutils_version}\" >> \"${PROVIDED}\""
-  sudo sh -c "echo \"sys-devel/gcc-${FLAGS_gcc_version}\" >> \"${PROVIDED}\""
-  sudo sh -c "echo \"sys-libs/glibc-${FLAGS_libc_version}\" >> \"${PROVIDED}\""
+  install_toolchain_in_provided
 }
 
 # Parse command line flags
@@ -407,6 +411,8 @@ if ! ${HOST_BOARD}; then
     # We install the toolchain related bits after the BOARD_ROOT, BOARD_PROFILE
     # and BOARD_ETC directories have been created.
     install_toolchain_in_board
+  else
+    install_toolchain_in_provided
   fi
 
   sudo touch "${BOARD_ETC}/make.conf.board"
