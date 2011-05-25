@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="77f58340859521a502b61c040668c590e3e4a26f"
+CROS_WORKON_COMMIT="ac67d197d88ab4a0a84c43f3f07f8ad9082b4064"
 CROS_WORKON_PROJECT="chromiumos/platform/theme"
 
 inherit cros-workon multilib
