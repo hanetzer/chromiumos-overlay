@@ -15,17 +15,22 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="LGPL-2"
 SLOT="0"
-KEYWORDS="~x86"
+KEYWORDS="x86 amd64"
 IUSE=""
 
-DEPEND="=dev-embedded/libftdi-0.19_rc1
+DEPEND=">=dev-embedded/libftdi-0.19
 	dev-libs/confuse"
 
 src_prepare() {
+	epatch ${FILESDIR}/getopts.patch || die "patching getopts.patch"
 	eautoreconf      
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die
+	insinto "/usr/share/ftdi_eeprom"
+	for item in ${FILESDIR}/confs/*.conf; do
+		doins ${item}
+	done
 	dodoc AUTHORS ChangeLog README src/example.conf
 }
