@@ -128,6 +128,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-mergeprocess".patch
 	epatch "${FILESDIR}/${PN}-2.1.9.48-rebuild".patch
 	epatch "${FILESDIR}/${P}-parallel-install".patch
+	epatch "${FILESDIR}/${P}-rebuilt-binaries".patch
 	epatch "${FILESDIR}/${P}-crossdev".patch
 	epatch "${FILESDIR}/${PN}-2.1.9.48-fastbuild".patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
