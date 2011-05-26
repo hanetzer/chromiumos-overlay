@@ -84,6 +84,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/clang
 	sys-fs/sshfs-fuse
 	sys-libs/libnih
+	sys-power/iasl
 	x11-apps/mkfontdir
 	x11-apps/xcursorgen
 	x11-apps/xkbcomp
