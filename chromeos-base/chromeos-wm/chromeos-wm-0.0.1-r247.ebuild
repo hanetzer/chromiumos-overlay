@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="7d4401a12182704c6a21b10a91bf71bf213cfe7f"
+CROS_WORKON_COMMIT="e12ac2787cb3f25f5a65ae40927629968015637b"
 CROS_WORKON_PROJECT="chromiumos/platform/window_manager"
 
 inherit cros-debug cros-workon flag-o-matic toolchain-funcs
