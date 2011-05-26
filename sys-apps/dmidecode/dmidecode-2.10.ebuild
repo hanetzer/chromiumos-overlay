@@ -19,6 +19,8 @@ RDEPEND=""
 src_unpack() {
 	unpack ${A}
 	cd "${S}"
+	epatch "${FILESDIR}"/${PN}-2.10-smbios_base.patch
+
 	sed -i \
 		-e '/^prefix/s:/usr/local:/usr:' \
 		-e "/^docdir/s:dmidecode:${PF}:" \
