@@ -131,6 +131,7 @@ src_prepare() {
 	base_src_prepare
 
         epatch "${FILESDIR}"/7.10-glxmakecurrent.patch
+        epatch "${FILESDIR}"/7.10.2-i915-perspective-interp.patch
 
 	eautoreconf
 }
