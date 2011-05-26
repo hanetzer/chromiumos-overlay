@@ -18,11 +18,12 @@ IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 # disable compat_wireless with kernel-next
 USE="${USE} -compat_wireless"
-PROVIDE="virtual/kernel"
 
 DEPEND="sys-apps/debianutils
-    initramfs? ( chromeos-base/chromeos-initramfs )"
-RDEPEND=""
+    initramfs? ( chromeos-base/chromeos-initramfs )
+    !sys-kernel/chromeos-kernel
+"
+RDEPEND="!sys-kernel/chromeos-kernel"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
