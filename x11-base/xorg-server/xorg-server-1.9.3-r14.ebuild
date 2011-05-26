@@ -113,6 +113,9 @@ UPSTREAMED_PATCHES=(
 
 	# Fix the urxvt cursor with compositing.
 	"${FILESDIR}/1.9.3-no-damage-report.patch"
+
+	# Handle udev change events.
+	"${FILESDIR}/1.9.3-config-handle-device-change-event-properly.patch"
 	)
 
 PATCHES=(
