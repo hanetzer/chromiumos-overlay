@@ -575,7 +575,7 @@ install_chrome_test_resources() {
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip these
 	# executables.
-	for f in lib.target/_pyautolib.so libppapi_tests.so browser_tests \
+	for f in _pyautolib.so libppapi_tests.so browser_tests \
 			 reliability_tests ui_tests sync_integration_tests \
 			 page_cycler_tests; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
@@ -652,7 +652,7 @@ install_pyauto_dep_resources() {
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip
 	# these executables.
-	for f in lib.target/_pyautolib.so; do
+	for f in _pyautolib.so; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/bin
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/bin/$(basename ${f})
 	done
