@@ -21,6 +21,12 @@ RDEPEND=">=sys-apps/dbus-1.2.16
 	>=sys-libs/libnih-1.0.2"
 
 
+src_unpack() {
+	unpack ${A}
+	cd "${S}"
+	epatch "${FILESDIR}"/upstart-0.6.6-introspection.patch
+}
+
 src_compile() {
 	econf --prefix=/ --includedir='${prefix}/usr/include' \
 		$(use_enable nls) || die "econf failed"
