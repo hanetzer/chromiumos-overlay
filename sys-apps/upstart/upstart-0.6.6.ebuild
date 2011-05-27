@@ -10,7 +10,7 @@ SRC_URI="http://upstart.ubuntu.com/download/0.6/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE="examples nls"
+IUSE="examples nls upstartdebug"
 
 DEPEND=">=dev-libs/expat-2.0.0
 	>=sys-apps/dbus-1.2.16
@@ -24,6 +24,9 @@ RDEPEND=">=sys-apps/dbus-1.2.16
 src_unpack() {
 	unpack ${A}
 	cd "${S}"
+	if use upstartdebug; then
+		epatch "${FILESDIR}"/upstart-0.6-logger_kmsg.patch
+	fi
 	epatch "${FILESDIR}"/upstart-0.6.6-introspection.patch
 }
 
