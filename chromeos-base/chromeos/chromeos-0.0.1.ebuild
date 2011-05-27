@@ -182,7 +182,6 @@ RDEPEND="${RDEPEND}
 	>=sys-apps/baselayout-2.0.0
 	sys-apps/coreutils
 	sys-apps/dbus
-	sys-apps/devicekit-power
 	sys-apps/eject
 	sys-apps/flashrom
 	sys-apps/grep
@@ -201,6 +200,7 @@ RDEPEND="${RDEPEND}
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	sys-libs/timezone-data
+	sys-power/upower
 	sys-process/lsof
 	sys-process/procps
 	sys-process/vixie-cron
