@@ -55,6 +55,7 @@ RDEPEND="${RDEPEND}
 	x86? ( sys-apps/iotools )
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
+	sys-apps/smartmontools
 	sys-apps/usbutils
 	sys-apps/which
 	hardened? ( >=sys-devel/gdb-7.1 )
