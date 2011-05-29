@@ -46,13 +46,13 @@ DEFINE_boolean usepkg $FLAGS_TRUE \
   "Use binary packages to bootstrap."
 DEFINE_boolean force $FLAGS_FALSE \
   "Force re-creating board root."
-DEFINE_string binutils_version "2.20.1-r7" \
+DEFINE_string binutils_version "2.20.1-r8" \
   "Version of binutils to use."
-DEFINE_string gcc_version "4.4.3-r7" \
+DEFINE_string gcc_version "4.4.3-r8" \
   "Version of gcc to use."
-DEFINE_string libc_version "2.10.1-r2" \
+DEFINE_string libc_version "2.10.1-r4" \
   "Version of libc to use."
-DEFINE_string kernel_version "2.6.30-r1" \
+DEFINE_string kernel_version "2.6.38" \
   "Version of kernel headers to use."
 DEFINE_boolean default $FLAGS_FALSE \
   "Set board to the default board in your chroot"
