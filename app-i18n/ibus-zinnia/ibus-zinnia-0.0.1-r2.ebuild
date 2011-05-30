@@ -21,8 +21,9 @@ DEPEND="${RDEPEND}
 	>=sys-devel/gettext-0.16.1"
 
 src_prepare() {
-    # TODO(yusukes): upstream this patch
+    # TODO(yusukes): upstream these patches
     epatch "${FILESDIR}"/engine_id.patch
+    epatch "${FILESDIR}"/add_virtual_keyboard_name.patch
 }
 
 src_configure() {

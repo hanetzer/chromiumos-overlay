@@ -1,0 +1,12 @@
+diff -uNr ibus-zinnia-0.0.1.orig/src/zinnia.xml.in.in ibus-zinnia-0.0.1/src/zinnia.xml.in.in
+--- ibus-zinnia-0.0.1.orig/src/zinnia.xml.in.in	2011-04-21 15:53:13.000000000 +0900
++++ ibus-zinnia-0.0.1/src/zinnia.xml.in.in	2011-05-30 15:42:05.621426000 +0900
+@@ -17,7 +17,7 @@
+             <license>Apache</license>
+             <author>The Chromium OS authors</author>
+             <icon></icon>
+-            <layout>us</layout>
++            <layout>handwriting-vk,us</layout>
+             <hotkeys></hotkeys>
+             <rank>0</rank>
+           </engine>
