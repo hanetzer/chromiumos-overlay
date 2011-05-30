@@ -4,7 +4,7 @@
 
 inherit font
 
-MY_P="IPAMGTTC00303"
+MY_P="IPAMGTTC00303_r1"
 DESCRIPTION="Japanese TrueType fonts developed by IPA (Information-technology Promotion Agency, Japan)"
 HOMEPAGE="http://ossipedia.ipa.go.jp/ipafont/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${MY_P}.tar.gz"
@@ -26,8 +26,4 @@ RESTRICT="strip binchecks"
 src_install() {
         # call src_install() in font.eclass.
 	font_src_install
-
-	mkdir -p "${D}/usr/share/ja-ipafonts/"
-	cp "${S}/IPA_Font_License_Agreement_v1.0.txt" "${D}/usr/share/ja-ipafonts/"
-	chmod 444 "${D}/usr/share/ja-ipafonts/IPA_Font_License_Agreement_v1.0.txt"
 }
