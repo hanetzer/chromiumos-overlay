@@ -33,6 +33,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
 	epatch "${FILESDIR}/${P}-backspace-and-arrow-keys.patch"
 	epatch "${FILESDIR}/${P}-gb-dvorak-deadkey.patch"
+	epatch "${FILESDIR}/${P}-colemack-neo-capslock-remap.patch"
 
 	# Generate symbols/chromeos.
 	python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
