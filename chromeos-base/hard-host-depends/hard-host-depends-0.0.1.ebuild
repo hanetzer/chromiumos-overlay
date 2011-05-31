@@ -18,6 +18,7 @@ RDEPEND="${RDEPEND}
 	dev-embedded/cbootimage
 	dev-embedded/u-boot-tools
 	dev-util/crosutils
+	sys-apps/dtc
 	sys-boot/bootstub
 	sys-boot/grub
 	sys-boot/syslinux
