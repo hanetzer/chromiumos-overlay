@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-libs/db/db-4.7.25_p4.ebuild,v 1.13 2010/01/24 18:29:31 armin76 Exp $
 
-inherit eutils db flag-o-matic java-pkg-opt-2 autotools libtool
+inherit eutils db flag-o-matic java-pkg-opt-2 autotools libtool binutils-funcs
 
 #Number of official patches
 #PATCHNO=`echo ${PV}|sed -e "s,\(.*_p\)\([0-9]*\),\2,"`
@@ -106,11 +106,9 @@ src_compile() {
 		append-ldflags -Wl,--default-symver
 		# gold doesn't support --default-symver so force GNU ld
 		tc-export CC CXX LD
-		if ${LD}.bfd --version > /dev/null 2>&1; then
-			LD=${LD}.bfd
-			CC="${CC} -fuse-ld=bfd"
-			CXX="${CXX} -fuse-ld=bfd"
-		fi
+		LD="$(get_binutils_path_ld)/ld"
+		CC="${CC} -B$(get_binutils_path_ld)"
+		CXX="${CXX} -B$(get_binutils_path_ld)"
 	fi
 
 	# Bug #270851: test needs TCL support
