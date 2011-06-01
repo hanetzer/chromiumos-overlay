@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="f59007b15aeaf8d0d334ab864c999d0587f21bbb"
+CROS_WORKON_COMMIT="c2045ff0fd0760c77dd2d3c50a10273fe1ff41df"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon
@@ -79,6 +79,12 @@ src_install() {
 		dosym ../../../../build /var/lib/devserver/static/pkgroot
 		# FIXME(zbehan): Remove compatibility symlink. Eventually.
 		dosym ../../var/lib/devserver/static /usr/bin/static
+
+		# Repo and git bash completion.
+		insinto /usr/share/bash-completion
+		newins host/repo_bash_completion repo || die "Could not find file to install."
+		dosym /usr/share/bash-completion/git /etc/bash_completion.d/git
+		dosym /usr/share/bash-completion/repo /etc/bash_completion.d/repo
 	fi
 }
 
