@@ -46,11 +46,29 @@ get_screen_geometry() {
 	echo "${col}x${row}!"
 }
 
+get_chromeos_version() {
+	# Try to find the version script, src/third_party/chromiumos-overlay
+	# /chromeos/config/chromeos_version.sh and execute it.
+	local version_script="chromeos/config/chromeos_version.sh"
+	for overlay in ${PORTDIR_OVERLAY}; do
+		if [ -f "${overlay}/${version_script}" ] ; then
+			source "${overlay}/${version_script}" > /dev/null
+		fi
+	done
+
+	if [ -z "${CHROMEOS_VERSION_STRING}" ] ; then
+		die "Failed to find CHROMEOS_VERSION_STRING."
+	fi
+	echo "${CHROMEOS_VERSION_STRING}"
+}
+
 construct_layout() {
-	grep -E 'CONFIG_FIRMWARE_SIZE' ${autoconf} ||
+	echo "FWID_STRING=\"$(get_chromeos_version)\""
+
+	grep -m1 'CONFIG_FIRMWARE_SIZE' ${autoconf} ||
 		die "Failed to extract firmware size."
 
-	grep -E 'CONFIG_CHROMEOS_HWID' ${autoconf} ||
+	grep -m1 'CONFIG_CHROMEOS_HWID' ${autoconf} ||
 		die "Failed to extract HWID."
 
 	grep -E 'CONFIG_(OFFSET|LENGTH)_\w+' ${autoconf} ||
@@ -88,7 +106,7 @@ create_image() {
 
 src_compile() {
 	hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
-        gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
+	gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
 
 	construct_layout > layout.py
 
@@ -126,7 +144,7 @@ src_install() {
 	doins layout.py || die
 
 	# TODO(clchiou): obsolete recovery_image.bin
-        for prefix in "" "legacy_" "recovery_"; do
+	for prefix in "" "legacy_" "recovery_"; do
 		doins "${prefix}image.bin" || die
 		doins "${prefix}bootstub.bin" || die
 	done
