@@ -15,8 +15,6 @@ KEYWORDS="~x86 ~arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
-# disable compat_wireless with kernel-next
-USE="${USE} -compat_wireless"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )
@@ -87,10 +85,6 @@ src_configure() {
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | eval emake ${COMPILER_OPTS} ARCH=${kernel_arch} oldconfig || die
-
-	if use compat_wireless; then
-		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
-	fi
 }
 
 src_compile() {
@@ -103,14 +97,6 @@ src_compile() {
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		CROSS_COMPILE="${cross}" || die
-
-	if use compat_wireless; then
-		# compat-wireless support must be done after
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			$INITRAMFS \
-			ARCH=${kernel_arch} \
-			CROSS_COMPILE="${cross}" || die
-	fi
 }
 
 src_install() {
@@ -127,17 +113,6 @@ src_install() {
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
 		modules_install || die
-
-	if use compat_wireless; then
-		# compat-wireless modules are built+installed separately
-		# NB: the updates dir is handled specially by depmod
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			ARCH=${kernel_arch}\
-			CROSS_COMPILE="${cross}" \
-			INSTALL_MOD_DIR=updates \
-			INSTALL_MOD_PATH="${D}" \
-			modules_install || die
-	fi
 
 	eval emake ${COMPILER_OPTS} \
 		ARCH=${kernel_arch}\
