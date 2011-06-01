@@ -2,28 +2,26 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="e2056e2ef9fa08a1fc46b29bc9f03a5fbaba78a5"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_COMMIT="c9e8d0c59652857f4cd6251ddd9d1867cd104f83"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
 inherit binutils-funcs
 
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
-# disable compat_wireless with kernel-next
-USE="${USE} -compat_wireless"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel
+    !sys-kernel/chromeos-kernel-next
 "
-RDEPEND="!sys-kernel/chromeos-kernel"
+RDEPEND="!sys-kernel/chromeos-kernel-next"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -38,14 +36,13 @@ if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 else
 	if [ "${ARCH}" = "x86" ]; then
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
-	elif [ "${ARCH}" = "arm" ]; then
-		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"qsd8650-st1"}
 	else
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
 	fi
 fi
 
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -67,51 +64,60 @@ else
 	COMPILER_OPTS+=" CXX=\"${CXX} -B$(get_binutils_path_ld)\""
 fi
 
+build_dir="${S}/build/$(basename ${ROOT})"
+build_cfg="${build_dir}/.config"
+
 src_configure() {
+	mkdir -p "${build_dir}"
+
 	elog "Using kernel config: ${config}"
 
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
-		cp -f "${config}" "${S}"/.config || die
+		cp -f "${config}" "${build_cfg}" || die
 	else
 		chromeos/scripts/prepareconfig ${config} || die
+		mv .config "${build_cfg}"
 	fi
 
 	if use fbconsole; then
 		elog "   - adding framebuffer console config"
-		cat "${FILESDIR}"/fbconsole.config >> "${S}"/.config
+		cat "${FILESDIR}"/fbconsole.config >> "${build_cfg}"
 	fi
 
 	if use nfs; then
 		elog "   - adding NFS config"
-		cat "${FILESDIR}"/nfs.config >> "${S}"/.config
+		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
 	fi
 
 	# Use default for any options not explitly set in splitconfig
-	yes "" | eval emake ${COMPILER_OPTS} ARCH=${kernel_arch} oldconfig || die
-
-	if use compat_wireless; then
-		"${S}"/chromeos/scripts/compat_wireless_config "${S}"
-	fi
+	yes "" | eval emake \
+		${COMPILER_OPTS} \
+		ARCH=${kernel_arch} \
+		O="${build_dir}" \
+		oldconfig || die
 }
 
 src_compile() {
 	if use initramfs; then
 		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+		# We want avoid copying modules into the initramfs so we need to enable
+		# the functionality required for the initramfs here.
+
+		# TPM support to ensure proper locking.
+		INITRAMFS="$INITRAMFS CONFIG_TCG_TPM=y CONFIG_TCG_TIS=y"
+
+		# VFAT FS support for EFI System Partition updates.
+		INITRAMFS="$INITRAMFS CONFIG_NLS_CODEPAGE_437=y"
+		INITRAMFS="$INITRAMFS CONFIG_NLS_ISO8859_1=y"
+		INITRAMFS="$INITRAMFS CONFIG_FAT_FS=y CONFIG_VFAT_FS=y"
 	else
 		INITRAMFS=""
 	fi
 	eval emake ${COMPILER_OPTS} \
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
+		O="${build_dir}" \
 		CROSS_COMPILE="${cross}" || die
-
-	if use compat_wireless; then
-		# compat-wireless support must be done after
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			$INITRAMFS \
-			ARCH=${kernel_arch} \
-			CROSS_COMPILE="${cross}" || die
-	fi
 }
 
 src_install() {
@@ -121,44 +127,36 @@ src_install() {
 		ARCH=${kernel_arch}\
 		CROSS_COMPILE="${cross}" \
 		INSTALL_PATH="${D}/boot" \
+		O="${build_dir}" \
 		install || die
 
 	eval emake ${COMPILER_OPTS} \
 		ARCH=${kernel_arch}\
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
+		O="${build_dir}" \
 		modules_install || die
-
-	if use compat_wireless; then
-		# compat-wireless modules are built+installed separately
-		# NB: the updates dir is handled specially by depmod
-		eval emake ${COMPILER_OPTS} M=chromeos/compat-wireless \
-			ARCH=${kernel_arch}\
-			CROSS_COMPILE="${cross}" \
-			INSTALL_MOD_DIR=updates \
-			INSTALL_MOD_PATH="${D}" \
-			modules_install || die
-	fi
 
 	eval emake ${COMPILER_OPTS} \
 		ARCH=${kernel_arch}\
 		CROSS_COMPILE="${cross}" \
 		INSTALL_MOD_PATH="${D}" \
+		O="${build_dir}" \
 		firmware_install || die
 
 	if [ "${ARCH}" = "arm" ]; then
 		version=$(ls "${D}"/lib/modules)
 
 		cp -a \
-			"${S}"/arch/"${ARCH}"/boot/zImage \
+			"${build_dir}"/arch/"${ARCH}"/boot/zImage \
 			"${D}/boot/vmlinuz-${version}" || die
 
 		cp -a \
-			"${S}"/System.map \
+			"${build_dir}"/System.map \
 			"${D}/boot/System.map-${version}" || die
 
 		cp -a \
-			"${S}"/.config \
+			"${build_dir}"/.config \
 			"${D}/boot/config-${version}" || die
 
 		ln -sf "vmlinuz-${version}"    "${D}"/boot/vmlinuz    || die
