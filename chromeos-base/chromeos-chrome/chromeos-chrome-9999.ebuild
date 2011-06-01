@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit eutils multilib toolchain-funcs flag-o-matic autotest
+inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -460,9 +460,9 @@ src_configure() {
 		if [ "${GOLD_SET}" != "yes" ]; then
 			export GOLD_SET="yes"
 			einfo "Using gold from the following location: $(which ${LD}.gold)"
-			export CC="${CC} -fuse-ld=gold"
-			export CXX="${CXX} -fuse-ld=gold"
-			export LD="${LD}.gold"
+			export CC="${CC} -B$(get_binutils_path_gold)"
+			export CXX="${CXX} -B$(get_binutils_path_gold)"
+			export LD="$(get_binutils_path_gold)/ld"
 		fi
 	else
 		ewarn "gold disabled. Using GNU ld."
