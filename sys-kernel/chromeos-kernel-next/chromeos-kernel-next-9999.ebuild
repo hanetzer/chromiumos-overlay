@@ -15,6 +15,7 @@ KEYWORDS="~amd64 ~x86 ~arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
+STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )
@@ -173,4 +174,9 @@ src_install() {
 			-d "${D}"/boot/vmlinuz \
 			"${D}"/boot/vmlinux.uimg || die
 	fi
+
+	# Install uncompressed kernel for debugging purposes.
+	dodir /usr/lib/debug/boot
+	insinto /usr/lib/debug/boot
+	doins "${build_dir}/vmlinux"
 }
