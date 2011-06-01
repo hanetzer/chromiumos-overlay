@@ -27,6 +27,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0001-Vodafone-Update-with-data-from-mbb-apn-settings-2011.patch
 	epatch "${FILESDIR}"/0001-Mark-providers-as-primary-to-disambiguate-providers-.patch
 	epatch "${FILESDIR}"/0001-KPN-remove-old-APNs.patch
+	epatch "${FILESDIR}"/0001-KPN-Rename-KPN-Mobile-to-KPN-NL.patch
 }
 
 src_compile() {
