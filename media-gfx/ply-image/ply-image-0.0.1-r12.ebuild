@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b76c1cc10a0b2297c9e77816e4c4ef4e16fcdb92"
+CROS_WORKON_COMMIT="03d87085ee1d1400a2f07bbccacadeb50a75396f"
 CROS_WORKON_PROJECT="chromiumos/third_party/ply-image"
 
 inherit toolchain-funcs cros-workon
