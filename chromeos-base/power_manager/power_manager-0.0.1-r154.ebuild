@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="3622d6792f3840ebd00d37c3770cdeb52aa7e764"
+CROS_WORKON_COMMIT="c36a0660f16350e04e044534713efbd6e71507b2"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -83,6 +83,7 @@ src_test() {
 
 src_install() {
 	dobin "${S}/backlight-tool"
+	dobin "${S}/debug_sleep_quickly"
 	dobin "${S}/powerd"
 	dobin "${S}/powerm"
 	dobin "${S}/powerd_lock_screen"
