@@ -24,6 +24,7 @@ inherit cros-workon
 
 src_compile() {
 	tc-getCC
+	emake defconfig || die "${P}: configuration failed"
 	emake || die "${P}: compilation failed"
 }
 
