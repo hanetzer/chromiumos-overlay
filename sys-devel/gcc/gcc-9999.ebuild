@@ -59,7 +59,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-			svn_sources thumb upstream_gcc vanilla"
+			svn_sources +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
