@@ -8,6 +8,7 @@ dev-util/subversion	-dso webdav-serf
 media-gfx/imagemagick   gs truetype
 media-libs/gd           png
 net-misc/curl		ares static-libs
+net-wireless/bluez	-consolekit
 x11-libs/cairo		X
 # Build emulation statically so that we can execute it within a chroot and
 # still find the shared libraries.
