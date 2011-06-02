@@ -66,7 +66,7 @@
 >=app-i18n/ibus-mozc-29
 
 # Custom patches
->sys-boot/syslinux-3.83-r3
+>sys-boot/syslinux-3.83-r4
 
 # Mask until chromiumos specific patches are added to newer upstream ebuilds
 >x11-drivers/xf86-input-mouse-1.7.0-r1

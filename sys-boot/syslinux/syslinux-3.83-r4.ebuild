@@ -38,6 +38,9 @@ src_unpack() {
 	# Don't compile w/ PIC
 	epatch "${FILESDIR}/"${P}-nopic.patch
 
+	# Make it work when the compiler is 64 bit by default.
+	epatch "${FILESDIR}/"${P}-x86_64.patch
+
 	rm -f gethostip #bug 137081
 }
 
