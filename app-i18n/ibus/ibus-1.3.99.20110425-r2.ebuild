@@ -55,6 +55,10 @@ src_prepare() {
 
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
+
+        # TODO(penghuang) Remove this two patches with a new tarball
+        epatch "${FILESDIR}"/0001-Fix-build-warnings-with-gcc-4.6.patch
+        epatch "${FILESDIR}"/0002-Fix-build-warnings-with-gcc-4.6.patch
 }
 
 src_configure() {
