@@ -15,12 +15,13 @@ PROVIDE="virtual/perf"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE="+demangle +doc"
+IUSE="+demangle +doc tui"
 
 RDEPEND="demangle? ( sys-devel/binutils )
 	dev-libs/elfutils"
 DEPEND="${RDEPEND}
-	doc? ( app-text/asciidoc app-text/xmlto )"
+	doc? ( app-text/asciidoc app-text/xmlto )
+	tui? ( dev-libs/newt )"
 
 CROS_WORKON_LOCALNAME="kernel/files"
 
