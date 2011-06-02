@@ -279,7 +279,7 @@ src_install() {
 		exeinto "${BINPATH}"
 		newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
 	else
-		mv "${D}/${BINPATH}/ld" "${D}/${BINPATH}/ld.gold" || die
+		mv "${D}/${BINPATH}/${CTARGET}-ld" "${D}/${BINPATH}/ld.gold" || die
 	fi
 
 	# Set default to be ld.bfd in regular installation
