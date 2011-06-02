@@ -396,6 +396,9 @@ switch_profile() {
 			--primary_only)
 		BOARD_TC=$(cat "${BOARD_OVERLAY}/toolchain.conf")
 		if [[ "${BOARD_TC}" == "${CTARGET}" ]] ; then
+			if ! is_cross_compiler ; then
+				continue
+			fi
 			PACKAGE=cross-${CTARGET}/gcc-${CC_COMP_VERSION}
 			PACKAGE=$(equery l gcc | grep ${PACKAGE} | head -n1)
 			GCC_FILES=$(equery f ${PACKAGE})
