@@ -14,7 +14,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
+IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -78,6 +78,11 @@ src_configure() {
 	else
 		chromeos/scripts/prepareconfig ${config} || die
 		mv .config "${build_cfg}"
+	fi
+
+	if use blkdevram; then
+		elog "   - adding ram block device config"
+		cat "${FILESDIR}"/blkdevram.config >> "${build_cfg}"
 	fi
 
 	if use fbconsole; then
