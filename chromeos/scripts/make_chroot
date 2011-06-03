@@ -205,6 +205,16 @@ function init_setup () {
      EMERGE_JOBS="--jobs=$FLAGS_jobs"
    fi
 
+   # Add chromite/bin and depot_tools into the path globally; note that the
+   # chromite wrapper itself might also be found in depot_tools.
+   # We rely on 'env-update' getting called below.
+   target="${FLAGS_chroot}/etc/env.d/99chromiumos"
+   sudo_clobber "${target}" <<EOF
+PATH=/home/$USER/trunk/chromite/bin:/home/$USER/depot_tools
+CROS_WORKON_SRCROOT="${CHROOT_TRUNK}"
+PORTAGE_USERNAME=$USER
+EOF
+
    # Configure basic stuff needed
    in_chroot env-update
    bash_chroot ls -l /etc/make.conf
@@ -214,28 +224,17 @@ function init_setup () {
    # Niceties for interactive logins ('enter_chroot.sh'); these are ignored
    # when specifying a command to enter_chroot.sh.
    # Warn less when apt-get installing packqages
-   echo "export CROS_WORKON_SRCROOT=\"${CHROOT_TRUNK}\"" >> \
-     "$FLAGS_chroot/home/$USER/.bash_profile"
    echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1='\$(__git_branch_ps1 \"(%s) \")'\"\${PS1}\"" >> \
      "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cr) \${PS1}\"" >> \
      "$FLAGS_chroot/home/$USER/.bashrc"
 
-   # Add chromite/bin into the user's path; note that the chromite wrapper
-   # itself might also be found in depot_tools.
-   echo "PATH=\$PATH:/home/$USER/trunk/chromite/bin" >> \
-     "${FLAGS_chroot}/home/$USER/.bashrc"
-
    # Add chromite as a local site-package.
    mkdir -p "${FLAGS_chroot}/home/$USER/.local/lib/python2.6/site-packages"
    ln -s ../../../../trunk/chromite \
      "${FLAGS_chroot}/home/$USER/.local/lib/python2.6/site-packages/"
 
-   echo "PATH=\$PATH:/home/$USER/depot_tools" >> \
-     "${FLAGS_chroot}/home/$USER/.bashrc"
-
-   echo "export PORTAGE_USERNAME=$USER" >> "$FLAGS_chroot/home/$USER/.bash_profile"
    chmod a+x "$FLAGS_chroot/home/$USER/.bashrc"
    # Automatically change to scripts directory
    echo "cd trunk/src/scripts" >> "$FLAGS_chroot/home/$USER/.bash_profile"
