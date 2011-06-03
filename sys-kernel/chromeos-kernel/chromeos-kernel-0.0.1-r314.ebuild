@@ -2,27 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="dd84264ee44fe6b729ccff8b9ebca2f0e63496ba"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_COMMIT="672d3489196c79fc9f523d832ef3067a574db3a5"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
 inherit binutils-funcs
 
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG}"
+IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG}"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel
+    !sys-kernel/chromeos-kernel-next
 "
-RDEPEND="!sys-kernel/chromeos-kernel"
+RDEPEND="!sys-kernel/chromeos-kernel-next"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -42,7 +42,8 @@ else
 	fi
 fi
 
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -77,6 +78,11 @@ src_configure() {
 	else
 		chromeos/scripts/prepareconfig ${config} || die
 		mv .config "${build_cfg}"
+	fi
+
+	if use blkdevram; then
+		elog "   - adding ram block device config"
+		cat "${FILESDIR}"/blkdevram.config >> "${build_cfg}"
 	fi
 
 	if use fbconsole; then
