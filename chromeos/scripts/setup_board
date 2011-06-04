@@ -145,21 +145,10 @@ install_toolchain_in_provided() {
 # into the board root.
 install_toolchain_in_board() {
   echo "Installing the toolchain into the board root."
-  #
   # Untar glibc to get most of the headers required to build.
-  #
-  # TODO(raymes): Remove this check after some time which ensures
-  # backward compatibility with the crossdev location change
   PKGDIR=$(portageq envvar PKGDIR)
   LIBC_TAR="glibc-${FLAGS_libc_version}.tbz2"
-  NEW_LIBC_PATH="${PKGDIR}/cross-${FLAGS_toolchain}/${LIBC_TAR}"
-  OLD_LIBC_PATH="${PKGDIR}/cross/${FLAGS_toolchain}/cross-${FLAGS_toolchain}/\
-${LIBC_TAR}"
-  if [ -e "${NEW_LIBC_PATH}" ] ; then
-    LIBC_PATH="${NEW_LIBC_PATH}"
-  else
-    LIBC_PATH="${OLD_LIBC_PATH}"
-  fi
+  LIBC_PATH="${PKGDIR}/cross-${FLAGS_toolchain}/${LIBC_TAR}"
 
   # Install libc libraries.
   sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}" ./usr/${FLAGS_toolchain} --strip-components=3
@@ -306,13 +295,6 @@ fi
 if [ "${ARCH}" != "amd64" ] ; then
   # Version of GCC we will be installing, without the ebuild revision number.
   GCC_VERSION=`echo ${FLAGS_gcc_version} | sed -e 's/\-r[0-9]*$//g'`
-
-  # Create the crossdev overlay in case it hasn't been created.
-  # TODO(raymes): Remove this when everyone has run make_chroot.
-  CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
-  sudo mkdir -p ${CROSSDEV_OVERLAY}
-  sudo chmod 755 ${CROSSDEV_OVERLAY}
-
 
   if ! (equery l cross-${FLAGS_toolchain}/gcc-${FLAGS_gcc_version} &&
     equery l cross-${FLAGS_toolchain}/binutils-${FLAGS_binutils_version} &&

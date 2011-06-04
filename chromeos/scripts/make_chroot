@@ -337,15 +337,6 @@ fi
 
 if [ -z "${INITIALIZE_CHROOT}" ];then
   echo "$SCRIPT_NAME: chroot already initialized.  Skipping..."
-  # Update symlinks to point at latest version of make.conf. In older versions
-  # of the chroot, it pointed at different files. TODO(asharif): This is only
-  # needed for backwards compatibility, so we should remove this eventually.
-  sudo ln -sf "${CHROOT_CONFIG}/make.conf.amd64-host" \
-    "${FLAGS_chroot}/etc/make.conf"
-
-  # Apply any hacks needed to update the chroot.
-  # TODO: Should the above hacks be moved into this function?
-  chroot_hacks_from_outside "${FLAGS_chroot}"
 else
   # run all the init stuff to setup the env
   init_setup
