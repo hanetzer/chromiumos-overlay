@@ -363,8 +363,8 @@ bash_chroot emerge -uNv $USEPKG portage $EMERGE_JOBS
 echo "$SCRIPT_NAME: Deselecting dhcpcd"
 bash_chroot $EMERGE_CMD --deselect dhcpcd
 
-echo "$SCRIPT_NAME: Running emerge world ccache crossdev etc ..."
-bash_chroot $EMERGE_CMD -uDNv $USEPKG system \
+echo "$SCRIPT_NAME: Running emerge ccache crossdev curl sudo ..."
+bash_chroot $EMERGE_CMD -uNv $USEPKG \
     ccache crossdev net-misc/curl sudo $EMERGE_JOBS
 
 # Curl is now installed, so we can depend on it now.
