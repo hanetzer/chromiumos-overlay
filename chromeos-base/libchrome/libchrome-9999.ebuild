@@ -13,13 +13,15 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
+IUSE="cros_host"
 
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
 	dev-libs/nss
 	x11-libs/gtk+"
 DEPEND="${RDEPEND}
-	dev-cpp/gtest"
+	dev-cpp/gtest
+	cros_host? ( dev-util/subversion )"
 
 src_prepare() {
 	ln -s "${S}" "${WORKDIR}/base" &> /dev/null
