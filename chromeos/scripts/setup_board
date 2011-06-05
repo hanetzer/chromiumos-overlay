@@ -340,16 +340,9 @@ if [ "${ARCH}" != "amd64" ] ; then
   sudo ln -sf "/usr/bin/cross-pkg-config" \
       "/usr/bin/${FLAGS_toolchain}-pkg-config"
 
-  # Setup make.conf and make.profile as symlinks to ones in revision control
-
   # Start with the crossdev etc
-  # TODO(tedbo): The sed lines are hacks to fix an issue where the crossdev
-  # wrapper wants to assume that SYSROOT is /usr/${CHOST}. We should fix this
-  # in the crossdev code and try to upstream.
   sudo cp -a /usr/share/crossdev/etc/* "${BOARD_ETC}"
   sudo rm -f "${BOARD_ETC}/make.profile"
-  sudo sed -i 's/${CHOST}/${SYSROOT}/g' "${BOARD_ETC}/portage/bashrc"
-  sudo sed -i 's/CROSS_ROOT=""/CROSS_ROOT="$1"/g' /usr/bin/cross-fix-root
 fi
 
 # Setup the make.confs. We use the following:
