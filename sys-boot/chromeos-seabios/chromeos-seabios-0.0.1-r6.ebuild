@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d6335110cdd99c6d6062402a86803d741d7599a5"
+CROS_WORKON_COMMIT="e705a25503fc8a86b519ed2d543f4cf5ba7717f0"
 CROS_WORKON_PROJECT="chromiumos/third_party/seabios"
 
 inherit toolchain-funcs
