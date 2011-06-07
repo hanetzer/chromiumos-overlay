@@ -17,7 +17,7 @@ KEYWORDS="~arm ~x86"
 IUSE=""
 
 RDEPEND=""
-DEPEND=""
+DEPEND="!sys-boot/chromeos-u-boot-build-env"
 
 CROS_WORKON_LOCALNAME="u-boot-next"
 CROS_WORKON_SUBDIR="files"

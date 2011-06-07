@@ -12,11 +12,10 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~x86"
 IUSE="no_vboot_debug"
-PROVIDE="virtual/u-boot"
 
 DEPEND="chromeos-base/vboot_reference-firmware
 	chromeos-base/u-boot-config
-	!sys-boot/u-boot"
+	!sys-boot/chromeos-u-boot-next"
 
 RDEPEND="${DEPEND}
 	"
