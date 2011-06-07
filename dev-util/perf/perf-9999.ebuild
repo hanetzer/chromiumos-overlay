@@ -17,10 +17,10 @@ KEYWORDS="~amd64 ~x86"
 IUSE="+demangle +doc tui"
 
 RDEPEND="demangle? ( sys-devel/binutils )
-	dev-libs/elfutils"
-DEPEND="${RDEPEND}
-	doc? ( app-text/asciidoc app-text/xmlto )
+	dev-libs/elfutils
 	tui? ( dev-libs/newt )"
+DEPEND="${RDEPEND}
+	doc? ( app-text/asciidoc app-text/xmlto )"
 
 CROS_WORKON_LOCALNAME="kernel/files"
 
