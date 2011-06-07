@@ -32,6 +32,7 @@ src_unpack() {
 	epatch "${FILESDIR}"/${PN}-0.9.8m-binutils.patch #289130
 	epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8r-local-blacklist.patch
+	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
 
 	# disable fips in the build
 	# make sure the man pages are suffixed #302165
