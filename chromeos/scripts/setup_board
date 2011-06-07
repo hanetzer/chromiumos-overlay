@@ -92,6 +92,24 @@ EOF
   echo created wrapper ${target}
 }
 
+generate_pkgconfig_wrapper() {
+  local target="/usr/local/bin/pkg-config-${BOARD_VARIANT}"
+  sudo_clobber "${target}" <<EOF
+#!/bin/bash
+
+PKG_CONFIG_LIBDIR="${BOARD_ROOT}/usr/lib/pkgconfig"
+PKG_CONFIG_LIBDIR="\${PKG_CONFIG_LIBDIR}:${BOARD_ROOT}/usr/share/pkgconfig"
+export PKG_CONFIG_LIBDIR
+
+export PKG_CONFIG_SYSROOT_DIR="${BOARD_ROOT}"
+
+exec pkg-config "\$@"
+EOF
+  sudo chmod a+rx ${target}
+  sudo chown root:root ${target}
+  echo created wrapper pkg-config
+}
+
 uninstall_toolchain() {
   echo "Uninstalling the toolchain."
   # Even if the uninstall fails, keep going. It's likely
@@ -377,6 +395,7 @@ ROOT="${BOARD_ROOT}/"
 BOARD_OVERLAY="${BOARD_OVERLAY_LIST}"
 MAKEOPTS="-j${NUM_JOBS}"
 LIBC_VERSION="$FLAGS_libc_version"
+PKG_CONFIG="pkg-config-${BOARD_VARIANT}"
 EOF
 if ! ${HOST_BOARD}; then
   sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
@@ -414,6 +433,8 @@ cros_choose_profile \
 for wrapper in 'emerge --root-deps' ebuild eclean equery portageq; do
   generate_wrapper $wrapper
 done
+
+generate_pkgconfig_wrapper
 
 CROS_WORKON_WRAPPER="/usr/local/bin/cros_workon-${BOARD_VARIANT}"
 cat <<EOF | sudo dd of="$CROS_WORKON_WRAPPER" > /dev/null 2>&1

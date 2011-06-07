@@ -2,9 +2,9 @@ commit 013be266ab55e6eda4e32834ed830773bf8deade
 Author: David James <davidjames@chromium.org>
 Date:   Mon May 9 13:00:11 2011 -0700
 
-    Update Portage to support fixing *.la and *.pc files.
+    Update Portage to support fixing *.la files.
     
-    *.la and *.pc files need to be fixed up in order to ensure packages link
+    *.la files need to be fixed up in order to ensure packages link
     against the right library when we try to build / install to different ROOTs.
     
     BUG=chromium-os:11316
@@ -113,13 +113,13 @@ index f1dcb45..6ecd3e0 100644
 +			finally:
 +				self.vartree.dbapi._fs_unlock()
 +
-+		# Fix *.{la,pc} files to point to libs in target_root, if they
++		# Fix *.la files to point to libs in target_root, if they
 +		# don't do so already.
 +		re_root = self.settings["ROOT"].strip("/")
 +		if re_root:
 +			fix_files = []
 +			for path in contents:
-+				if path.endswith(".la") or path.endswith(".pc"):
++				if path.endswith(".la"):
 +					if os.path.exists(path): fix_files.append(path)
 +			if fix_files:
 +				pat = re.compile(r"([' =](?:-[IL])?/)(usr|lib|opt)")
@@ -157,7 +157,7 @@ index f83a1e3..0b5bc5f 100644
 -					counted_inodes.add(mystat.st_ino)
 -					size += mystat.st_size
 +				if stat.S_ISREG(mystat.st_mode):
-+					if fname.endswith(".pc") or fname.endswith(".la"):
++					if fname.endswith(".la"):
 +						fix_files.append(fpath)
 +					if mystat.st_ino not in counted_inodes:
 +						counted_inodes.add(mystat.st_ino)

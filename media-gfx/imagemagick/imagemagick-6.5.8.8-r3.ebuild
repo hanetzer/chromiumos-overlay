@@ -1,1 +1,0 @@
-imagemagick-6.5.8.8.ebuild

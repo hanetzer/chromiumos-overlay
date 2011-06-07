@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit eutils multilib perl-app toolchain-funcs versionator
+inherit eutils multilib perl-app toolchain-funcs versionator flag-o-matic
 
 MY_PN=ImageMagick
 MY_P=${MY_PN}-${PV%.*}
@@ -88,6 +88,8 @@ src_prepare() {
 }
 
 src_configure() {
+	append-flags -L"${ROOT}"/usr/$(get_libdir)
+
 	local myconf
 	if use q32 ; then
 		myconf="${myconf} --with-quantum-depth=32"
@@ -170,7 +172,7 @@ src_test() {
 src_install() {
 	emake DESTDIR="${D}" install || die "Installation of files into image failed"
 
-	elog "Preserving .la files needed at runtime by placing in tar file." 
+	elog "Preserving .la files needed at runtime by placing in tar file."
 	elog "  Avoids removal due to *.la in INSTALL_MASK"
 	pushd "${D}"/usr/local/$(get_libdir) || die
 	tar zcf "${S}"/la_files.tar.gz $(find -name '*.la' -type f) || die
