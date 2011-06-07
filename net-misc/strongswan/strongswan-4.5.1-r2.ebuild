@@ -88,9 +88,14 @@ pkg_setup() {
 	fi
 
 	if use non-root; then
-		enewgroup ${UGID}
-		enewuser ${UGID} -1 -1 -1 ${UGID}
+		true
+		#enewgroup ${UGID}
+		#enewuser ${UGID} -1 -1 -1 ${UGID}
 	fi
+}
+
+src_prepare() {
+	epatch "${FILESDIR}/strongswan-4.5.1-initgroups.patch"
 }
 
 src_configure() {
