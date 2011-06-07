@@ -43,9 +43,12 @@ src_prepare() {
 			GYP_DEFINES="$GYP_DEFINES gles2_backend=desktop_gl"
 		fi
 	fi
+	if [[ -n "${ROOT}" && "${ROOT}" != "/" ]]; then
+		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
+	fi
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
-
-	${EGCLIENT} runhooks
+	epatch ${FILESDIR}/${P}-pkgconfig.patch || die
+	${EGCLIENT} runhooks || die
 }
 
 src_compile() {
@@ -62,7 +65,6 @@ src_compile() {
 		export CPPPATH="${ROOT}/usr/include/"
 		export LIBPATH="${ROOT}/usr/lib/"
 		export RPATH="${ROOT}/usr/lib/"
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 	fi
 
 	emake BUILDTYPE=Release npo3dautoplugin
