@@ -159,6 +159,11 @@ RDEPEND="${RDEPEND}
 	chromeos-base/ssh-root-dot-dir
 	"
 
+# Host dependencies that are needed for chromite/bin/upload_package_status
+RDEPEND="${RDEPEND}
+	dev-python/gdata
+	"
+
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
