@@ -1,0 +1,14 @@
+--- ../../distdir/llvm-2.8/Makefile	2010-08-15 00:07:12.000000000 -0700
++++ Makefile	2011-05-31 19:09:43.581689360 -0700
+@@ -108,6 +108,11 @@
+ 	  cd BuildTools ; \
+ 	  unset CFLAGS ; \
+ 	  unset CXXFLAGS ; \
++	  AR=$(HOST_AR) ;\
++	  AS=$(HOST_AS) ;\
++	  LD=$(HOST_LD) ;\
++	  CC=$(HOST_CC) ;\
++	  CXX=$(HOST_CXX) ;\
+ 	  $(PROJ_SRC_DIR)/configure --build=$(BUILD_TRIPLE) \
+ 		--host=$(BUILD_TRIPLE) --target=$(BUILD_TRIPLE); \
+ 	  cd .. ; \

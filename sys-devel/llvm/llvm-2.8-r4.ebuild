@@ -13,8 +13,8 @@ SRC_URI="http://llvm.org/releases/${PV}/${P}.tgz -> ${P}-r1.tgz"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86 ~amd64-linux ~x86-linux ~ppc-macos"
-IUSE="alltargets debug +libffi llvm-gcc ocaml test udis86 vim-syntax"
+KEYWORDS="~amd64 ~ppc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+IUSE="alltargets debug -libffi -llvm-gcc -ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl
 	>=sys-devel/make-3.79
@@ -77,7 +77,7 @@ src_prepare() {
 		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \
 		-e 's,^PROJ_libdir.*,PROJ_libdir := $(PROJ_prefix)/'$(get_libdir)/${PN}, \
 		-i Makefile.config.in || die "Makefile.config sed failed"
-	sed -e 's,$ABS_RUN_DIR/lib,'"${EPREFIX}"/usr/$(get_libdir)/${PN}, \
+	sed -e 's,$ABS_RUN_DIR/lib,'"${ROOT%/}${EPREFIX}"/usr/$(get_libdir)/${PN}, \
 		-i tools/llvm-config/llvm-config.in.in || die "llvm-config sed failed"
 
 	einfo "Fixing rpath"
@@ -89,6 +89,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.8-darwin8.patch
 	# Upstream backport, r117774
 	epatch "${FILESDIR}"/${P}-alignof.patch
+	epatch "${FILESDIR}"/xconfigure.patch
+	epatch "${FILESDIR}"/xmakefile.patch
 }
 
 src_configure() {

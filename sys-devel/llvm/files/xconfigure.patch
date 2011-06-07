@@ -1,0 +1,32 @@
+--- ../../distdir/llvm-2.8/configure	2010-10-06 16:26:40.000000000 -0700
++++ configure	2011-05-31 19:25:13.951836419 -0700
+@@ -1943,13 +1943,13 @@
+ 
+ 
+ 
+-if test ${srcdir} != "." ; then
+-  if test -f ${srcdir}/include/llvm/Config/config.h ; then
+-    { { echo "$as_me:$LINENO: error: Already configured in ${srcdir}" >&5
+-echo "$as_me: error: Already configured in ${srcdir}" >&2;}
+-   { (exit 1); exit 1; }; }
+-  fi
+-fi
++#if test ${srcdir} != "." ; then
++#  if test -f ${srcdir}/include/llvm/Config/config.h ; then
++#    { { echo "$as_me:$LINENO: error: Already configured in ${srcdir}" >&5
++#echo "$as_me: error: Already configured in ${srcdir}" >&2;}
++#   { (exit 1); exit 1; }; }
++#  fi
++#fi
+ 
+ 
+ 
+@@ -4515,7 +4515,7 @@
+   test -z "$BUILD_CC" && { { echo "$as_me:$LINENO: error: no acceptable cc found in \$PATH" >&5
+ echo "$as_me: error: no acceptable cc found in \$PATH" >&2;}
+    { (exit 1); exit 1; }; }
+-  ac_build_link='${BUILD_CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
++  ac_build_link='${BUILD_CC-cc} -o conftest $HOST_CFLAGS $HOST_CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+   rm -f conftest*
+   echo 'int main () { return 0; }' > conftest.$ac_ext
+   ac_cv_build_exeext=
