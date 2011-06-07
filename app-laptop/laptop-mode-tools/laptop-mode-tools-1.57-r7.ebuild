@@ -44,6 +44,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0012-Skip-failed-globs-when-finding-module-scripts.patch" \
           "0013-wireless-power-can-not-find-iwconfig-but-tries-to-po.patch" \
           "0014-Disable-ethernet-control.patch" \
+          "0015-Disable-file-system-remount.patch" \
         )
 
 src_unpack() {
