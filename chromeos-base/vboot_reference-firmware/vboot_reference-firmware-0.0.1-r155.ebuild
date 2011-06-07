@@ -7,13 +7,14 @@ DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE="debug"
+IUSE="debug u_boot_next"
 EAPI="2"
 CROS_WORKON_COMMIT="ad3e3ac8a3e80c33d3db542f71bde11880b426d6"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="
-    sys-boot/chromeos-u-boot-next-build-env
+    u_boot_next? ( sys-boot/chromeos-u-boot-next-build-env )
+    !u_boot_next? ( sys-boot/chromeos-u-boot-build-env )
     chromeos-base/vboot_reference"
 
 CROS_WORKON_LOCALNAME=vboot_reference
