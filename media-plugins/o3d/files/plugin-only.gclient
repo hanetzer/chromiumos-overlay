@@ -23,6 +23,7 @@ solutions = [
       "third_party/jsdoctoolkit": None,
       "third_party/pdiff": None,
       "third_party/selenium_rc": None,
+      "third_party/sqlite": None,
       "tools/data_pack": None,
       "tools/grit": None,
     },
