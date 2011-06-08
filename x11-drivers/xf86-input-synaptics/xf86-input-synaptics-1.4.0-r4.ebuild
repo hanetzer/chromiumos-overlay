@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-synaptics/xf86-input-synaptics-1.3.0.ebuild,v 1.2 2010/09/10 13:27:03 chithanh Exp $
 
 EAPI=3
-CROS_WORKON_COMMIT="43c3720cc218c0c4c36482f01bbb8aa2c42480aa"
+CROS_WORKON_COMMIT="dfee7c3f99c1ac5aeba7feed96f30b6b96739c73"
 CROS_WORKON_PROJECT="chromiumos/third_party/xf86-input-synaptics"
 XORG_EAUTORECONF="yes"
 inherit linux-info xorg-2 cros-workon
@@ -21,7 +21,8 @@ RDEPEND="
 	>=x11-libs/libXtst-1.1.0"
 DEPEND="${RDEPEND}
 	x11-proto/inputproto
-	>=x11-proto/recordproto-1.14"
+	>=x11-proto/recordproto-1.14
+	>=x11-misc/util-macros-1.13"
 
 src_prepare() {
 	xorg-2_src_prepare
