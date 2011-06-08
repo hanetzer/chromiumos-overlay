@@ -13,7 +13,7 @@ SRC_URI="http://llvm.org/releases/${PV}/${P}.tgz -> ${P}-r1.tgz"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="amd64 ~ppc x86 ~amd64-linux ~x86-linux ~ppc-macos"
 IUSE="alltargets debug -libffi -llvm-gcc -ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl
@@ -99,10 +99,16 @@ src_configure() {
 		$(use_enable debug assertions)
 		$(use_enable debug expensive-checks)"
 
-	if use alltargets; then
-		CONF_FLAGS="${CONF_FLAGS} --enable-targets=all"
-	else
-		CONF_FLAGS="${CONF_FLAGS} --enable-targets=host-only"
+	if use arm; then
+		CONF_FLAGS="${CONF_FLAGS} --enable-targets=arm"
+	fi
+
+	if use x86; then
+		CONF_FLAGS="${CONF_FLAGS} --enable-targets=x86"
+	fi
+
+	if use amd64; then
+		CONF_FLAGS="${CONF_FLAGS} --enable-targets=x86_64"
 	fi
 
 	if use amd64; then
