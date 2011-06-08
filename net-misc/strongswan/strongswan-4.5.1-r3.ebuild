@@ -95,7 +95,8 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/strongswan-4.5.1-initgroups.patch"
+	epatch "${FILESDIR}/strongswan-4.5.1-initgroups.patch" || die
+	epatch "${FILESDIR}/strongswan-4.5.1-usepeercert.patch" || die
 }
 
 src_configure() {
