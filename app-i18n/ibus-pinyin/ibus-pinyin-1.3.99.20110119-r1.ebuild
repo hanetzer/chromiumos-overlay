@@ -9,7 +9,6 @@ inherit eutils flag-o-matic
 #PYDB_TAR="pinyin-database-0.1.10.6.tar.bz2"
 DESCRIPTION="Chinese PinYin IMEngine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/ibus/"
-# SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="GPL-2"
@@ -28,7 +27,7 @@ DEPEND="${RDEPEND}
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
 src_prepare() {
-	# completely disable the bopomofo engine and change the cache directory.
+	# disable bopomofo, enable pinyin-dv, and change the cache directory.
 	epatch "${FILESDIR}"/ibus-pinyin-cros.patch
 }
 
