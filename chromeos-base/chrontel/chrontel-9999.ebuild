@@ -40,5 +40,5 @@ src_install() {
 
 	dodir /usr/share/userfeedback/etc
 	insinto /usr/share/userfeedback/etc
-	doins sys_mon_hdmi.lst
+	doins sys_mon_hdmi.sysinfo.lst
 }
