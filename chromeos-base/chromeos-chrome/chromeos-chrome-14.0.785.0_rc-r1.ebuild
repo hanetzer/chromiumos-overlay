@@ -703,7 +703,6 @@ src_install() {
 	fi
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
-	doexe "${FROM}"/libcharacter_composer.so
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
