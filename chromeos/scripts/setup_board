@@ -61,6 +61,8 @@ DEFINE_string profile "" \
   "The portage configuration profile to use. Profile must be located in overlay-board/profiles"
 DEFINE_boolean quiet $FLAGS_FALSE \
   "Don't print warnings when board already exists."
+DEFINE_boolean skip_toolchain_update $FLAGS_FALSE \
+  "Don't update toolchain automatically."
 
 # builds wrappers like equery-arm-generic.
 # args:
@@ -117,6 +119,11 @@ toolchain_needs_update() {
   # If toolchain symlinks weren't created yet, we definitely need to update.
   if [ ! -d /usr/local/portage/crossdev/cross-$FLAGS_toolchain ]; then
     return 0
+  fi
+
+  # Skip toolchain updates if requested.
+  if [ $FLAGS_skip_toolchain_update -eq $FLAGS_TRUE ]; then
+    return 1
   fi
 
   local flags="--pretend --quiet --update"

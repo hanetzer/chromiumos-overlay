@@ -70,6 +70,8 @@ DEFINE_boolean withdebug "${FLAGS_TRUE}" \
   "Build debug versions of Chromium-OS-specific packages."
 DEFINE_boolean oldchromebinary "${FLAGS_FALSE}" \
   "Use the last prebuilt binary for Chrome produced by the buildbot."
+DEFINE_boolean skip_toolchain_update "${FLAGS_FALSE}" \
+  "Don't update toolchain automatically."
 
 
 # Parse command line
@@ -123,7 +125,7 @@ fi
 
 ${EMERGE_CMD} --info
 
-# Before we can run any tools, we need to update chroot
+# Before we can run any tools, we need to update chroot or setup_board.
 UPDATE_ARGS=""
 if [ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]; then
   UPDATE_ARGS+=" --fast"
@@ -135,7 +137,10 @@ if [ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]; then
 else
   UPDATE_ARGS+=" --nousepkg"
 fi
-"${SRC_ROOT}/scripts"/update_chroot ${UPDATE_ARGS} --retries=${FLAGS_retries}
+if [ "${FLAGS_skip_toolchain_update}" -eq "${FLAGS_TRUE}" ]; then
+  UPDATE_ARGS+=" --skip_toolchain_update"
+fi
+${SCRIPTS_DIR}/setup_board --quiet --board=${FLAGS_board} ${UPDATE_ARGS}
 
 ARCH=$(portageq-${FLAGS_board} envvar ARCH)
 
