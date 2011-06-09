@@ -85,13 +85,14 @@ pkg_postinst() {
 	# build roots we copy over the user entries if they already exist.
 	local system_user="chronos"
 	local system_id="1000"
+	local system_home="/home/${system_user}/user"
 
 	local crypted_password='*'
 	[ -r "${SHARED_USER_PASSWD_FILE}" ] &&
 		crypted_password=$(cat "${SHARED_USER_PASSWD_FILE}")
 	remove_user "${system_user}"
 	add_user "${system_user}" "x" "${system_id}" \
-		"${system_id}" "system_user" "/home/${system_user}" /bin/sh
+		"${system_id}" "system_user" "${system_home}" /bin/sh
 	remove_shadow "${system_user}"
 	add_shadow "${system_user}" "${crypted_password}"
 
