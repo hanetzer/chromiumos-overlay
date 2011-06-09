@@ -176,7 +176,7 @@ install_toolchain_in_provided() {
   (
     echo sys-devel/binutils-$(cross_get_version binutils)
     echo sys-devel/gcc-$(cross_get_version gcc)
-    echo sys-devel/glibc-$(cross_get_version glibc)
+    echo sys-libs/glibc-$(cross_get_version glibc)
   ) | sudo_clobber "$BOARD_PROFILE/package.provided"
 }
 
