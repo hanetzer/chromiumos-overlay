@@ -23,10 +23,6 @@ src_unpack() {
 }
 
 src_compile() {
-	tc-export CC LD CXX
-	CC="${CC} -B$(get_binutils_path_ld)"
-	CXX="${CXX} -B$(get_binutils_path_ld)"
-	LD="$(get_binutils_path_ld)/ld"
 	econf \
 		--disable-dependency-tracking \
 		$(use_enable static-libs static) \
