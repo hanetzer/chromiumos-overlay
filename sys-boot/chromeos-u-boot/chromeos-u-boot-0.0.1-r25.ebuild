@@ -1,9 +1,9 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="80f6c13474964511d4365ab98f1c993dcb7e52ef"
-CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
+CROS_WORKON_COMMIT="be925d9db63a4d89c7c37716a11c6362bf1454b0"
+CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit toolchain-funcs
 
@@ -16,12 +16,12 @@ IUSE="no_vboot_debug"
 
 DEPEND="chromeos-base/vboot_reference-firmware
 	chromeos-base/u-boot-config
-	!sys-boot/chromeos-u-boot"
+	!sys-boot/chromeos-u-boot-next"
 
 RDEPEND="${DEPEND}
 	"
 
-CROS_WORKON_LOCALNAME="u-boot-next"
+CROS_WORKON_LOCALNAME="u-boot"
 CROS_WORKON_SUBDIR="files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
