@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c2f91f5fe897a3e34e595f52c36bc2de036ca0d4"
+CROS_WORKON_COMMIT="1d6cc635f72a7df7081b098bd1590beda2912d76"
 CROS_WORKON_PROJECT="chromiumos/third_party/chrontel"
 
 inherit cros-workon
