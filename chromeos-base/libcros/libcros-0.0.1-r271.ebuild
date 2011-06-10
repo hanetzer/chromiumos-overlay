@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="eea1fea1a9f8909b8376e806a6d7fefe0169c6e2"
+CROS_WORKON_COMMIT="efc4d92f58710a4197ef64b86e288d8f1732f39f"
 CROS_WORKON_PROJECT="chromiumos/platform/cros"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
@@ -19,8 +19,7 @@ RDEPEND="app-i18n/ibus
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libpcre
-	sys-apps/dbus
-	sys-fs/udev"
+	sys-apps/dbus"
 
 DEPEND="${RDEPEND}
 	app-i18n/ibus-hangul
