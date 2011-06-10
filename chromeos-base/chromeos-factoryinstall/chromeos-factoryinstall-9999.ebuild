@@ -117,7 +117,7 @@ EOF
 		die "Failed to disable UI"
 
 	# Set network to start up another way
-	sed -i 's/login-prompt-visible/started udev/' \
+	sed -i 's/login-prompt-visible/started boot-services/' \
 		"${ROOT}/etc/init/boot-complete.conf" ||
 		die "Failed to setup network"
 
