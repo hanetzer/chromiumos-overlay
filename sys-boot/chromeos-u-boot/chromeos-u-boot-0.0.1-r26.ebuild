@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="be925d9db63a4d89c7c37716a11c6362bf1454b0"
+CROS_WORKON_COMMIT="2ec63565e4347430d814c4a2931e2ccef2a4ab94"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit toolchain-funcs
