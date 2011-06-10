@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="test"
+IUSE="test -touchui -webui_login"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -38,7 +38,7 @@ CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 src_compile() {
 	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake keygen session_manager || die "chromeos-login compile failed."
+	emake login_manager || die "chromeos-login compile failed."
 }
 
 src_test() {
@@ -69,4 +69,9 @@ src_install() {
 
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
+
+	if use webui_login || use touchui ; then
+		insinto /root
+		newins "${S}/use_webui_login" .use_webui_login
+	fi
 }
