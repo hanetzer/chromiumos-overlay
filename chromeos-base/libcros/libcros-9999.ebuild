@@ -18,8 +18,7 @@ RDEPEND="app-i18n/ibus
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libpcre
-	sys-apps/dbus
-	sys-fs/udev"
+	sys-apps/dbus"
 
 DEPEND="${RDEPEND}
 	app-i18n/ibus-hangul
