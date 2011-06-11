@@ -92,15 +92,15 @@ else
 fi
 
 PREFIX=/usr
-LIBDIR=${PREFIX}/lib
-INCLUDEDIR=${LIBDIR}/include/gcc-v${PV}
+LIBDIR=${PREFIX}/lib/gcc/${CTARGET}/${GCC_PV}
+INCLUDEDIR=${LIBDIR}/include
 if is_crosscompile ; then
-	BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${PV}
+	BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_PV}
 else
-	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${PV}
+	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${GCC_PV}
 fi
-DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${PV}
-STDCXX_INCDIR=${LIBDIR}/include/g++-v${PV}
+DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_PV}
+STDCXX_INCDIR=${LIBDIR}/include/g++-v${GCC_PV}
 
 
 src_unpack() {

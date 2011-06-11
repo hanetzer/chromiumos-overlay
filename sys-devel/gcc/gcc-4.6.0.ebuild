@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
+EAPI=1
+
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
 
@@ -59,7 +61,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-			svn_sources thumb upstream_gcc vanilla"
+			svn_sources +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -90,15 +92,15 @@ else
 fi
 
 PREFIX=/usr
-LIBDIR=${PREFIX}/lib
-INCLUDEDIR=${LIBDIR}/include/gcc-v${PV}
+LIBDIR=${PREFIX}/lib/gcc/${CTARGET}/${GCC_PV}
+INCLUDEDIR=${LIBDIR}/include
 if is_crosscompile ; then
-	BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${PV}
+	BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_PV}
 else
-	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${PV}
+	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${GCC_PV}
 fi
-DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${PV}
-STDCXX_INCDIR=${LIBDIR}/include/g++-v${PV}
+DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_PV}
+STDCXX_INCDIR=${LIBDIR}/include/g++-v${GCC_PV}
 
 
 src_unpack() {
