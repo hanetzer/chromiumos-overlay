@@ -16,7 +16,7 @@ DESCRIPTION="X.Org X servers"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xorg"
-IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev"
+IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl opengl tslib +udev"
 # note: we have udev 143 here as that's the real dependency X.Org needs. The upstream ebuild uses 150
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -131,10 +131,8 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
 	# Match the behaviour of monitor_reconfigure at X.Org startup time.
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
-	# For Gallium drivers
-	"${FILESDIR}/1.9.3-public-_glapi_get_proc_address.patch"
 	# For glx double free
-	"${FILESDIR}/1.9.3-glx-doublefree.patch"
+	#"${FILESDIR}/1.9.3-glx-doublefree.patch"
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window.
 	"${FILESDIR}/1.10.0-allow-root-none.patch"
@@ -200,7 +198,6 @@ pkg_setup() {
 		--disable-xace
 		--disable-config-dbus
 		--disable-config-hal
-		--disable-clientids
 		--disable-xf86vidmode
 		--disable-registry
 		--disable-xfake
