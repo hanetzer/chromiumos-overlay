@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="88766"
+CROS_SVN_COMMIT="88769"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient player_x11"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient player_x11 +chrome_thumb"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -517,6 +517,14 @@ src_compile() {
 	if use player_x11; then
 		TARGETS="${TARGETS} player_x11"
 	fi
+
+	# TODO(raymes): Remove this when arm-generic can be built in thumb mode.
+	# See #16430.
+	if [ "$ARCH" = "arm" ] && ! use chrome_thumb; then
+		CFLAGS="${CFLAGS} -marm"
+		CXXFLAGS="${CXXFLAGS} -marm"
+	fi
+
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
 		${TARGETS} \
 		${TEST_TARGETS} \
