@@ -1,7 +1,7 @@
 # Configure Synaptics X input driver (SynTPEnh)
-Section "InputDevice"
+Section "InputClass"
     Identifier "touchpad"
     Driver     "syntp"
-    Option     "Device" "/dev/input/mice"
-    Option     "AutoServerLayout" "on"
+    MatchDevicePath "/dev/serio_raw*"
+    MatchIsTouchpad "on"
 EndSection
