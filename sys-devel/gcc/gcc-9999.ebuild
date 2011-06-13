@@ -124,9 +124,9 @@ src_unpack() {
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
 		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
 		if [[ "${PV}" != "${GCC_PV}" ]] ; then
-			GITHASH=$(git rev-list --max-count=1 --all)
-			echo "Getting latest hash: ${GITHASH}..."
+			GITHASH="master"
 		fi
+		einfo "Checking out ${GITHASH}."
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
 		cd -
 		GCCDIR=${GITDIR}/gcc/${MY_P}

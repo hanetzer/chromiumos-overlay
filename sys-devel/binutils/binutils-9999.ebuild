@@ -70,9 +70,9 @@ src_unpack() {
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
 		git clone http://git.chromium.org/chromiumos/third_party/binutils.git . || die "Could not clone repo."
 		if [[ ${PV} == "9999" ]] ; then
-			GITHASH=$(git rev-list --max-count=1 --all)
-			echo "Getting latest hash: ${GITHASH}..."
+			GITHASH="master"
 		fi
+		einfo "Checking out ${GITHASH}."
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
 		cd -
 		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
