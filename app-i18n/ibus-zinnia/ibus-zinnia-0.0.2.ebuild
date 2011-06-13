@@ -20,18 +20,21 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
 
-src_prepare() {
-    # TODO(yusukes): upstream these patches
-    epatch "${FILESDIR}"/engine_id.patch
-    epatch "${FILESDIR}"/add_virtual_keyboard_name.patch
-}
+# Tarballs in github.com use a special directory naming rule:
+#   "<github_user_name>-<project_name>-<last_commit_in_the_tarball>"
+SRC_DIR="yusukes-ibus-zinnia-f509467"
 
 src_configure() {
+    cd "${SRC_DIR}" || die
+
     append-cflags -Wall -Werror
+    NOCONFIGURE=1 ./autogen.sh || die
     econf || die
 }
 
 src_install() {
+    cd "${SRC_DIR}" || die
+
     emake DESTDIR="${D}" install || die
     dodoc AUTHORS ChangeLog NEWS README
 }
