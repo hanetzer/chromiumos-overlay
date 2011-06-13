@@ -482,7 +482,7 @@ fi
 
 if ${HOST_BOARD}; then
   EMERGE_CMD="emerge"
-  if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+  if [[ $FLAGS_fast -eq $FLAGS_TRUE ]]; then
     EMERGE_CMD="${GCLIENT_ROOT}/chromite/bin/parallel_emerge"
   fi
   PACKAGES="system hard-host-depends world"
