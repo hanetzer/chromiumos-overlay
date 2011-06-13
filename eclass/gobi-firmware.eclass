@@ -155,6 +155,10 @@ script
     endtime=\$(date +%s%N)
     logger -t qdlservice "attempt \$attempt: \$ret"
     attempt=\$((\$attempt + 1))
+    if [ $ret -ne 0 ]; then
+      logger -t qdlservice "resetting..."
+      /opt/Qualcomm/bin/powercycle-all-gobis
+    fi
   done
   download_time=\$(((\$endtime - \$starttime) / 1000000))
   METRICROOT=Network.3G.Gobi.FirmwareDownload
