@@ -11,9 +11,10 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~x86"
-IUSE="no_vboot_debug"
+IUSE="+vboot_debug"
 
-DEPEND="!sys-boot/chromeos-u-boot"
+DEPEND="chromeos-base/vboot_reference-firmware
+	!sys-boot/chromeos-u-boot"
 
 RDEPEND="${DEPEND}
 	"
@@ -31,9 +32,9 @@ BUILD_ROOT="${WORKDIR}/${P}/builds"
 ALL_UBOOT_FLAVORS=''
 IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 UB_ARCH="$(tc-arch-kernel)"
-COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
+COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}- VBOOT=${ROOT%/}/usr"
 
-if ! use no_vboot_debug; then
+if use vboot_debug; then
 	COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 fi
 
@@ -43,7 +44,7 @@ fi
 
 get_required_configs() {
 	case "${UB_ARCH}" in
-		(arm) echo 'seaboard_config';;
+		(arm) echo 'seaboard_config chromeos_seaboard_onestop_config';;
 		(i386) echo 'coreboot-x86_config';;
 		(*) die "can not build for unknown architecture ${UB_ARCH}";;
 	esac
@@ -76,7 +77,6 @@ src_compile() {
 	    O="${BUILD_ROOT}/${config}" \
 	    HOSTCC=${CC} \
 	    HOSTSTRIP=true \
-	    CROS_CONFIG_PATH="${ROOT%/}/u-boot" \
 	    all || die "U-Boot compile ${config} failed"
 	done
 }
