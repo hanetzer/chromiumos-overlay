@@ -44,6 +44,7 @@ src_install() {
 	# Remove all Python related files
 	rm "${D}/usr/libexec/ibus-setup-pinyin" || die
 	rm -rf "${D}/usr/share/ibus-pinyin/setup" || die
+	rm -rf "${D}/usr/share/ibus-pinyin/icons" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
 
