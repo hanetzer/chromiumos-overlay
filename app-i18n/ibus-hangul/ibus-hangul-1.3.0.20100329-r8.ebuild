@@ -54,9 +54,10 @@ src_compile() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die
-	# Remove all Python related files
+	# Remove unnecessary files
 	rm "${D}/usr/libexec/ibus-setup-hangul" || die
 	rm -rf "${D}/usr/share/ibus-hangul/setup" || die
+	rm -rf "${D}/usr/share/ibus-hangul/icons" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
 
