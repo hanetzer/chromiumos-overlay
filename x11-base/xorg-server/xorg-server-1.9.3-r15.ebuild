@@ -116,6 +116,9 @@ UPSTREAMED_PATCHES=(
 
 	# Handle udev change events.
 	"${FILESDIR}/1.9.3-config-handle-device-change-event-properly.patch"
+
+	# Fix X server crash on removing input devices
+	"${FILESDIR}/1.9.3-deleted-block-handlers.patch"
 	)
 
 PATCHES=(
