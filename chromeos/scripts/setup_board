@@ -54,6 +54,9 @@ DEFINE_string libc_version "2.10.1-r5" \
   "Version of libc to use."
 DEFINE_string kernel_version "2.6.38" \
   "Version of kernel headers to use."
+DEFINE_boolean latest_toolchain $FLAGS_FALSE \
+  "Use the latest ebuild for all toolchain packages (gcc, binutils, libc, \
+kernel). This overrides the other toolchain version options."
 DEFINE_boolean default $FLAGS_FALSE \
   "Set board to the default board in your chroot"
 DEFINE_boolean fast ${DEFAULT_FAST} "Call many emerges in parallel"
@@ -134,6 +137,9 @@ toolchain_needs_update() {
   local pkgs
   if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
     flags+=" --getbinpkg --usepkgonly"
+  fi
+
+  if [ $FLAGS_usepkg -eq $FLAGS_TRUE ] || [ $FLAGS_latest_toolchain -eq $FLAGS_TRUE ]; then
     pkgs="cross-$FLAGS_toolchain/gcc"
     pkgs+=" cross-$FLAGS_toolchain/binutils"
     pkgs+=" cross-$FLAGS_toolchain/glibc"
@@ -168,11 +174,13 @@ build_toolchain() {
     #                     isn't necessary.
     CROSS_ARGS+=" -P --getbinpkg -P --usepkgonly --without-headers"
   fi
-  CROSS_ARGS+=" --binutils $FLAGS_binutils_version"
-  CROSS_ARGS+=" --gcc $FLAGS_gcc_version"
-  CROSS_ARGS+=" --kernel $FLAGS_kernel_version"
-  CROSS_ARGS+=" --libc $FLAGS_libc_version"
-  sudo -E FEATURES=splitdebug crossdev $CROSS_ARGS
+  if [ $FLAGS_latest_toolchain -ne $FLAGS_TRUE ]; then
+    CROSS_ARGS+=" --binutils $FLAGS_binutils_version"
+    CROSS_ARGS+=" --gcc $FLAGS_gcc_version"
+    CROSS_ARGS+=" --kernel $FLAGS_kernel_version"
+    CROSS_ARGS+=" --libc $FLAGS_libc_version"
+  fi
+  sudo -E FEATURES="splitdebug" crossdev $CROSS_ARGS
 }
 
 # Get the version number of a toolchain package.
