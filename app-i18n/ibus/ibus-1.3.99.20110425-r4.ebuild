@@ -141,6 +141,11 @@ src_install() {
 	if [ -f "${D}/usr/share/ibus/component/gtkpanel.xml" ] ; then
 		rm "${D}/usr/share/ibus/component/gtkpanel.xml" || die
 	fi
+
+	# Remove unnecessary files
+	rm -rf "${D}/usr/share/icons" || die
+	rm "${D}/usr/share/applications/ibus.desktop" || die
+
 	dodoc AUTHORS ChangeLog NEWS README
 }
 
