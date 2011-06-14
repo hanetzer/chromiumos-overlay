@@ -71,7 +71,9 @@ src_compile() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die
-
+	rm -rf "${D}/usr/libexec/ibus-setup-m17n" || die
+	rm -rf "${D}/usr/share/ibus-m17n/setup" || die
+	rm -rf "${D}/usr/share/ibus-m17n/icons" || die
 	dodoc AUTHORS ChangeLog NEWS README
 }
 
