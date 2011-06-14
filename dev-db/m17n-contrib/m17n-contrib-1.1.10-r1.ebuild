@@ -26,6 +26,6 @@ src_configure() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die
-
+	rm -rf "${D}/usr/share/m17n/icons" || die
 	dodoc AUTHORS ChangeLog NEWS README || die
 }
