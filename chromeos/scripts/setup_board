@@ -126,6 +126,10 @@ toolchain_needs_update() {
     return 1
   fi
 
+  # Unmask any ebuilds previously masked by crossdev. crossdev will re-setup
+  # its masks appropriately the next time we run it.
+  rm -f /etc/portage/package.mask/cross-$FLAGS_toolchain
+
   local flags="--pretend --quiet --update"
   local pkgs
   if [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
