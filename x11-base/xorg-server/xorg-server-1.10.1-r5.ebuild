@@ -107,6 +107,9 @@ UPSTREAMED_PATCHES=(
 	"${FILESDIR}/1.9.3-0002-ValidateTree-needs-a-valid-borderClip-so-initialize-.patch"
 	"${FILESDIR}/1.9.3-0003-Eliminate-the-internal-MapWindow-UnmapWindow-cycle-a.patch"
 	"${FILESDIR}/1.9.3-0004-Since-extra-expose-events-are-no-longer-generated-du.patch"
+
+	# Fix X server crash on removing input devices
+	"${FILESDIR}/1.9.3-deleted-block-handlers.patch"
 	)
 
 PATCHES=(
