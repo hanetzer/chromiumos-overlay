@@ -118,7 +118,7 @@
 # TODO: Remove when we have a proper chrome package.
 =www-client/chromium-bin-4.0.222.4_p28661	amd64 arm x86
 
-# Newer versions of chrome are causing flaky failures, so remove the stable
-# keywords for them (this is effectively pinning chrome to the version below).
-# TODO(dianders): Comment this out once the bug is fixed.
->chromeos-base/chromeos-chrome-14.0.789.0_rc-r1	-amd64 -arm -x86
+# If a newer version of chrome causes flaky failure, you can add 
+# something like below, which assumes 14.0.789.0_rc-r1 was the
+# last non-flaky version.
+#>chromeos-base/chromeos-chrome-14.0.789.0_rc-r1	-amd64 -arm -x86
