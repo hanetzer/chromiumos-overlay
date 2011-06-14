@@ -155,7 +155,7 @@ script
     endtime=\$(date +%s%N)
     logger -t qdlservice "attempt \$attempt: \$ret"
     attempt=\$((\$attempt + 1))
-    if [ $ret -ne 0 ]; then
+    if [ \$ret -ne 0 ]; then
       logger -t qdlservice "resetting..."
       /opt/Qualcomm/bin/powercycle-all-gobis
     fi
