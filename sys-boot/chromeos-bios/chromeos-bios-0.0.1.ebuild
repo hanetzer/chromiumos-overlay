@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit cros-arm-firmware-image
 
 DESCRIPTION="ChromeOS BIOS builder"
 HOMEPAGE="http://www.chromium.org"
@@ -14,134 +14,26 @@ IUSE=""
 
 DEPEND="virtual/tegra-bct
 	virtual/u-boot
-	chromeos-base/vboot_reference
-	"
+	chromeos-base/vboot_reference"
+
 RDEPEND="${DEPEND}
 	sys-apps/flashrom"
 
-keys="${ROOT%/}/usr/share/vboot/devkeys"
-system_map="${ROOT%/}/u-boot/System.map"
-autoconf="${ROOT%/}/u-boot/autoconf.mk"
-stub_image="${ROOT%/}/u-boot/u-boot-stub.bin"
-recovery_image="${ROOT%/}/u-boot/u-boot-recovery.bin"
-normal_image="${ROOT%/}/u-boot/u-boot-normal.bin"
-developer_image="${ROOT%/}/u-boot/u-boot-developer.bin"
-legacy_image="${ROOT%/}/u-boot/u-boot-legacy.bin"
-bct_file="${ROOT%/}/u-boot/bct/board.bct"
-
-get_autoconf() {
-	grep -m1 $1 ${autoconf} | tr -d "\"" | cut -d = -f 2
-	assert
-}
-
-get_text_base() {
-	# Parse the TEXT_BASE value from the U-Boot System.map file.
-	grep -m1 -E "^[0-9a-fA-F]{8} T _start$" ${system_map} | cut -d " " -f 1
-	assert
-}
-
-get_screen_geometry() {
-	col=$(get_autoconf CONFIG_LCD_vl_col)
-	row=$(get_autoconf CONFIG_LCD_vl_row)
-	echo "${col}x${row}!"
-}
-
-get_chromeos_version() {
-	# Try to find the version script, src/third_party/chromiumos-overlay
-	# /chromeos/config/chromeos_version.sh and execute it.
-	local version_script="chromeos/config/chromeos_version.sh"
-	for overlay in ${PORTDIR_OVERLAY}; do
-		if [ -f "${overlay}/${version_script}" ] ; then
-			source "${overlay}/${version_script}" > /dev/null
-		fi
-	done
-
-	if [ -z "${CHROMEOS_VERSION_STRING}" ] ; then
-		die "Failed to find CHROMEOS_VERSION_STRING."
-	fi
-	echo "${CHROMEOS_VERSION_STRING}"
-}
-
-construct_layout() {
-	echo "FWID_STRING=\"$(get_chromeos_version)\""
-
-	grep -m1 'CONFIG_FIRMWARE_SIZE' ${autoconf} ||
-		die "Failed to extract firmware size."
-
-	grep -m1 'CONFIG_CHROMEOS_HWID' ${autoconf} ||
-		die "Failed to extract HWID."
-
-	grep -E 'CONFIG_(OFFSET|LENGTH)_\w+' ${autoconf} ||
-		die "Failed to extract offsets and lengths."
-
-	cat ${FILESDIR}/firmware_layout_config ||
-		die "Failed to cat firmware_layout_config."
-}
-
-create_image() {
-	prefix=$1
-	stub=$2
-
-	#
-	# Sign the bootstub.  This is a combination of the board specific
-	# BCT and the stub U-Boot image.
-	#
-	cros_sign_bootstub \
-		--bct "${bct_file}" \
-		--bootstub "${stub}" \
-		--output "${prefix}bootstub.bin" \
-		--text_base "0x$(get_text_base)" ||
-		die "Failed to sign boot stub image (${prefix}bootstub.bin)."
-
-	pack_firmware_image layout.py \
-		KEYDIR=${keys}/ \
-		BOOTSTUB_IMAGE="${prefix}bootstub.bin" \
-		RECOVERY_IMAGE=${recovery_image} \
-		GBB_IMAGE=gbb.bin \
-		FIRMWARE_A_IMAGE=${developer_image} \
-		FIRMWARE_B_IMAGE=${normal_image} \
-		OUTPUT="${prefix}image.bin" ||
-		die "Failed to pack the firmware image (${prefix}image.bin)."
-}
-
 src_compile() {
-	hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
-	gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
-
-	construct_layout > layout.py
-
-	/usr/share/vboot/bitmaps/make_bmp_images.sh \
-		"${hwid}" \
-		"$(get_screen_geometry)" \
-		"arm"
-
-	bmp_dir="out_${hwid// /_}"
-	pushd "${bmp_dir}"
-	bmpblk_utility -z 2 \
-		-c ${FILESDIR}/firmware_screen_config.yaml \
-		bmpblk.bin
-	popd
-
-	gbb_utility -c "0x100,0x1000,$((${gbb_size}-0x2180)),0x1000" gbb.bin ||
-		die "Failed to create the GBB."
-
-	gbb_utility -s \
-		--hwid="${hwid}" \
-		--rootkey=${keys}/root_key.vbpubk \
-		--recoverykey=${keys}/recovery_key.vbpubk \
-		--bmpfv="${bmp_dir}/bmpblk.bin" \
-		gbb.bin ||
-		die "Failed to write keys and HWID to the GBB."
+	construct_layout
+	create_gbb
 
 	# TODO(clchiou): obsolete recovery_image.bin
-	create_image "" ${stub_image}
-	create_image "legacy_" ${legacy_image}
-	create_image "recovery_" ${recovery_image}
+	create_image
+	create_image "legacy_" ${CROS_ARM_FIRMWARE_IMAGE_LEGACY_IMAGE}
+	create_image "recovery_" ${CROS_ARM_FIRMWARE_IMAGE_RECOVERY_IMAGE}
 }
 
 src_install() {
+	local prefix
+
 	insinto /u-boot
-	doins layout.py || die
+	doins ${CROS_ARM_FIRMWARE_IMAGE_LAYOUT} || die
 
 	# TODO(clchiou): obsolete recovery_image.bin
 	for prefix in "" "legacy_" "recovery_"; do
