@@ -103,4 +103,11 @@ src_install() {
 			mkimage_installed='y'
 		fi
 	done
+
+	if use x86; then
+		elog "Building on x86, installing coreboot payload."
+		dodir /coreboot
+		insinto /coreboot
+		newins "${build_root}/u-boot" u-boot.elf || die
+	fi
 }
