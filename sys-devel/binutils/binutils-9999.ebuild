@@ -6,10 +6,10 @@ BVER=${PV}
 
 # Version names
 BINUTILS_VERSION="binutils-2.20.1-mobile"
-BINUTILS_PKG_VERSION="${P}_${BINUTILS_VERSION}_cos_gg"
+BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg"
 
 GOLD_VERSION="binutils-20100303"
-GOLD_PKG_VERSION="${P}_${GOLD_VERSION}_cos_gg"
+GOLD_PKG_VERSION="${GOLD_VERSION}_cos_gg"
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
