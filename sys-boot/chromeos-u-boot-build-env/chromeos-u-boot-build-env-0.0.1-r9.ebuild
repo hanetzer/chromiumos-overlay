@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="20de993bd58de4bf4cf44577c70bad4aa6bd0069"
-CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
+CROS_WORKON_COMMIT="7977c94f1ddd44b04e7e8428f5be6151001c0ad2"
+CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit toolchain-funcs
 
@@ -18,9 +18,9 @@ KEYWORDS="arm x86"
 IUSE=""
 
 RDEPEND=""
-DEPEND="!sys-boot/chromeos-u-boot-build-env"
+DEPEND="!sys-boot/chromeos-u-boot-next-build-env"
 
-CROS_WORKON_LOCALNAME="u-boot-next"
+CROS_WORKON_LOCALNAME="u-boot"
 CROS_WORKON_SUBDIR="files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
