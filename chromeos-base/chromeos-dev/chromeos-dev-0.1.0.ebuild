@@ -51,7 +51,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/diffutils
 	x86? ( sys-apps/dmidecode )
 	sys-apps/findutils
-	x86? ( sys-apps/i2c-tools )
+	sys-apps/i2c-tools
 	x86? ( sys-apps/iotools )
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
