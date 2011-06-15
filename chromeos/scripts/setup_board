@@ -183,11 +183,8 @@ cross_get_version() {
   if [ "$pkg" = "gcc" ]; then
     # Users can install multiple versions of gcc at once, so we need to call
     # gcc-config to find out which installed version is selected.
-    local executable="$(CTARGET=$FLAGS_toolchain gcc-config -c || true)"
-    local ver_norev="${executable/$FLAGS_toolchain-}"
-    if [ -n "$ver_norev" ]; then
-      atom="~cross-$FLAGS_toolchain/$pkg-$ver_norev"
-    fi
+    local gcc_path="$(CTARGET=$FLAGS_toolchain gcc-config -B || true)"
+    atom="$(equery b ${gcc_path}/* | head -1 || true)"
   fi
   local cpv="$(portageq match / $atom)"
   count="$(echo $cpv | grep "^$cp-" | wc -w)"
