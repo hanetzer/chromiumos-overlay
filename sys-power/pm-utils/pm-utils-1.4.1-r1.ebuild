@@ -34,6 +34,9 @@ src_prepare() {
 	use networkmanager || ignore+=" 55NetworkManager"
 	use ntp || ignore+=" 90clock"
 
+	# this kills our usb ethernet devices
+	ignore+=" disable_wol"
+
 	use debug && echo 'PM_DEBUG="true"' > "${T}"/gentoo
 	echo "HOOK_BLACKLIST=\"${ignore}\"" >> "${T}"/gentoo
 }
