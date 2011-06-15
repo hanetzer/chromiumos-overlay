@@ -13,13 +13,18 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
- 
-RDEPEND="chromeos-base/libchromeos
-         chromeos-base/libcros
-         dev-libs/dbus-glib
-         dev-libs/glib"
+IUSE="test"
 
-DEPEND="${RDEPEND}"
+RDEPEND="
+	chromeos-base/libchromeos
+	dev-libs/dbus-glib
+	dev-libs/glib
+	sys-apps/rootdev
+"
+
+DEPEND="${RDEPEND}
+	test? ( dev-cpp/gmock )
+	test? ( dev-cpp/gtest )"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
@@ -27,8 +32,14 @@ src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake image_burner || die "chromeos-imageburner compile failed."
-	emake image_burner_tester || \
-		die "chromeos-imageburner_tester compile failed."
+	emake image_burner_tester || die "chromeos-imageburner compile failed."
+}
+
+src_test() {
+	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
+	emake unittest_runner || \
+		die "chromeos-imageburner unittest compile failed."
+	"${S}/unittest_runner" || die "imageburner unittests failed."
 }
 
 src_install() {
