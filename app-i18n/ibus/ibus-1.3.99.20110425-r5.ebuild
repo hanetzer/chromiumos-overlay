@@ -54,6 +54,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/fix_13374.patch
 	epatch "${FILESDIR}"/fix_16387.patch
 
+	# TODO(yusukes): Upstream the patch
+	epatch "${FILESDIR}"/fix_16501.patch
+
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
 
