@@ -17,11 +17,11 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~arm"
 IUSE=""
-DEPEND="app-arch/cpio
-	sys-apps/busybox
-	sys-fs/lvm2
+DEPEND="chromeos-base/chromeos-installer
 	chromeos-base/vboot_reference
-	chromeos-base/chromeos-installer"
+	media-gfx/ply-image
+	sys-apps/busybox
+	sys-fs/lvm2"
 RDEPEND=""
 
 CROS_WORKON_LOCALNAME="../platform/initramfs"
@@ -36,7 +36,8 @@ build_initramfs_file() {
 	mkdir -p ${INITRAMFS_TMP_S}/etc ${INITRAMFS_TMP_S}/dev
 	mkdir -p ${INITRAMFS_TMP_S}/root ${INITRAMFS_TMP_S}/proc
 	mkdir -p ${INITRAMFS_TMP_S}/sys ${INITRAMFS_TMP_S}/usb
-	mkdir -p ${INITRAMFS_TMP_S}/newroot ${INITRAMFS_TMP_S}/lib
+	mkdir -p ${INITRAMFS_TMP_S}/newroot
+	mkdir -p ${INITRAMFS_TMP_S}/lib ${INITRAMFS_TMP_S}/usr/lib
 	mkdir -p ${INITRAMFS_TMP_S}/stateful ${INITRAMFS_TMP_S}/tmp
 	mkdir -p ${INITRAMFS_TMP_S}/log
 
@@ -44,8 +45,9 @@ build_initramfs_file() {
 	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 	for shlib in *.sh; do
-	  cp "${S}"/${shlib} ${INITRAMFS_TMP_S}/lib/ || die
+		cp "${S}"/${shlib} ${INITRAMFS_TMP_S}/lib || die
 	done
+	cp -r ${S}/screens ${INITRAMFS_TMP_S}/etc || die
 
 	# Load libraries for busybox and dmsetup
 	# TODO: how can ebuilds support static busybox?
@@ -64,6 +66,9 @@ build_initramfs_file() {
 		libm.so.6
 		libc.so.6
 		../usr/lib/libcrypto.so.0.9.8
+		../usr/lib/libpng12.so.0.44.0
+		../usr/lib/libdrm.so.2.4.0
+		../usr/lib/libdrm_intel.so.1.0.0
 		libdevmapper.so.1.02
 		libdl.so.2
 		libpam.so.0
@@ -73,14 +78,23 @@ build_initramfs_file() {
 		libz.so.1
 	"
 	for lib in $LIBS; do
-		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib/ || die
+		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib || die
 	done
+	ln -s libpng12.so.0.44.0 ${INITRAMFS_TMP_S}/lib/libpng12.so.0
+	ln -s libpng12.so.0.44.0 ${INITRAMFS_TMP_S}/lib/libpng12.so
+	ln -s libdrm.so.2.4.0 ${INITRAMFS_TMP_S}/lib/libdrm.so
+	ln -s libdrm.so.2.4.0 ${INITRAMFS_TMP_S}/lib/libdrm.so.2
+	ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so
+	ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so.1
 
 	cp ${ROOT}/bin/busybox ${INITRAMFS_TMP_S}/bin || die
 	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
 
 	# For verified rootfs
 	cp ${ROOT}/sbin/dmsetup ${INITRAMFS_TMP_S}/bin || die
+
+	# For message screen display
+	cp ${ROOT}/usr/bin/ply-image ${INITRAMFS_TMP_S}/bin || die
 
 	# For recovery behavior
 	cp ${ROOT}/usr/bin/tpmc ${INITRAMFS_TMP_S}/bin || die
