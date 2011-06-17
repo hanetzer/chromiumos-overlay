@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="89092"
+CROS_SVN_COMMIT="89481"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -161,6 +161,7 @@ IUSE_TESTS="
 	+tests_desktopui_UITest
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoLoginTests
+	+tests_desktopui_PyAutoNetworkTests
 	"
 IUSE="${IUSE} +autotest ${IUSE_TESTS}"
 
@@ -713,7 +714,6 @@ src_install() {
 	fi
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
-	doexe "${FROM}"/libcharacter_composer.so
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
