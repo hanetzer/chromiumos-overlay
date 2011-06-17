@@ -160,6 +160,7 @@ IUSE_TESTS="
 	+tests_desktopui_UITest
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoLoginTests
+	+tests_desktopui_PyAutoNetworkTests
 	"
 IUSE="${IUSE} +autotest ${IUSE_TESTS}"
 
