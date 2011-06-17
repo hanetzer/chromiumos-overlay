@@ -38,7 +38,7 @@ PATCHES=(
 	# Prevent X from touching boot-time gamma settings.
 	"${FILESDIR}/2.14.0-no-gamma.patch"
 	# Fix pageflipping.
-	"${FILESDIR}/2.15.0-flips.patch"
+	"${FILESDIR}/2.15.0-noflips.patch"
 	"${FILESDIR}/0001-build-do-not-use-AC_CHECK_FILE-to-find-the-header-fi.patch"
 )
 
