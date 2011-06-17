@@ -1,27 +1,16 @@
 diff --git a/src/ibusshare.c b/src/ibusshare.c
-index 1b8ae2a..ac4018b 100644
+index 1b8ae2a..e0a894d 100644
 --- a/src/ibusshare.c
 +++ b/src/ibusshare.c
-@@ -145,6 +145,7 @@ ibus_get_socket_path (void)
-         gchar *displaynumber = "0";
+@@ -146,6 +146,11 @@ ibus_get_socket_path (void)
          /* gchar *screennumber = "0"; */
          gchar *p;
-+        const gchar *config_home;
  
-         if (_display == NULL) {
-             display = g_strdup (g_getenv ("DISPLAY"));
-@@ -184,7 +185,13 @@ ibus_get_socket_path (void)
-                              ibus_get_local_machine_id (),
-                              hostname,
-                              displaynumber);
--        path = g_build_filename (g_get_user_config_dir (),
-+
-+        config_home = g_getenv ("IBUS_CONFIG_HOME");
-+        if (config_home == NULL) {
-+            config_home = g_get_user_config_dir ();
++        path = g_strdup (g_getenv ("IBUS_ADDRESS_FILE"));
++        if (path != NULL) {
++            return path;
 +        }
 +
-+        path = g_build_filename (config_home,
-                                  "ibus",
-                                  "bus",
-                                  p,
+         if (_display == NULL) {
+             display = g_strdup (g_getenv ("DISPLAY"));
+         }
