@@ -133,6 +133,7 @@ src_prepare() {
         epatch "${FILESDIR}"/7.10-glxmakecurrent.patch
         epatch "${FILESDIR}"/7.10.2-i915-perspective-interp.patch
         epatch "${FILESDIR}"/7.10-Fix-glXGetFBConfigFromVisualSGIX.patch
+	epatch "${FILESDIR}"/7.10.3-glx-implement-drawable-refcounting.patch
 
 	eautoreconf
 }
