@@ -160,6 +160,7 @@ IUSE_TESTS="
 	+tests_desktopui_UITest
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoLoginTests
+	+tests_desktopui_PyAutoNetworkTests
 	"
 IUSE="${IUSE} +autotest ${IUSE_TESTS}"
 
@@ -712,7 +713,6 @@ src_install() {
 	fi
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
-	doexe "${FROM}"/libcharacter_composer.so
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
