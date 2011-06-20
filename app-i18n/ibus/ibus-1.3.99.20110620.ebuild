@@ -50,22 +50,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/0005-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/0006-Port-the-following-ibus-1.3-patches-to-1.4.patch
 
-	# TODO(yusukes): Update tarball and remove the lines
-	epatch "${FILESDIR}"/fix_13374.patch
-	epatch "${FILESDIR}"/fix_16387.patch
-
-	# TODO(yusukes): Upstream the patch
-	epatch "${FILESDIR}"/fix_16501.patch
-
 	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
 	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
-
-        # TODO(penghuang) Remove this two patches with a new tarball
-        epatch "${FILESDIR}"/0001-Fix-build-warnings-with-gcc-4.6.patch
-        epatch "${FILESDIR}"/0002-Fix-build-warnings-with-gcc-4.6.patch
-
-        # TODO(kinaba): Remove this patch with a new tarball
-        epatch "${FILESDIR}"/fix_16500.patch
 }
 
 src_configure() {
