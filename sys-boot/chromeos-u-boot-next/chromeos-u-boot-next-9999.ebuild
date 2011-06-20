@@ -53,10 +53,27 @@ get_required_config() {
 	esac
 }
 
+get_fdt_name() {
+	local name=${PKG_CONFIG#pkg-config-}
+
+	if use arm; then
+		echo "${name}" | tr _ '-'
+	fi
+}
+
+# We will supply an fdt at run time
+COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1 DEV_TREE_SRC=$(get_fdt_name)"
+
 src_configure() {
 	local config
 	config=$(get_required_config)
 	elog "Using U-Boot config: ${config}"
+	dtb=$(get_fdt_name)
+	if [ -n "${dtb}" ]; then
+		elog "Using fdt: ${dtb}"
+	else
+		elog "Not building fdt"
+	fi
 
 	emake \
 		${COMMON_MAKE_FLAGS} \
@@ -86,6 +103,10 @@ src_install() {
 
 	config=$(get_required_config)
 	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
+
+	if [ -n "$(get_fdt_name)" ]; then
+		files_to_copy+=" u-boot.dtb"
+	fi
 
 	for file in ${files_to_copy}; do
 		doins "${file}" || die
