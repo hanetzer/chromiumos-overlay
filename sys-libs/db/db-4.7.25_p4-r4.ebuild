@@ -20,9 +20,6 @@ S="${WORKDIR}/${MY_P}/build_unix"
 DESCRIPTION="Oracle Berkeley DB"
 HOMEPAGE="http://www.oracle.com/technology/software/products/berkeley-db/index.html"
 SRC_URI="http://download.oracle.com/berkeley-db/${MY_P}.tar.gz"
-for (( i=1 ; i<=${PATCHNO} ; i++ )) ; do
-	export SRC_URI="${SRC_URI} http://www.oracle.com/technology/products/berkeley-db/db/update/${MY_PV}/patch.${MY_PV}.${i}"
-done
 
 LICENSE="OracleDB"
 SLOT="4.7"
@@ -42,7 +39,7 @@ src_unpack() {
 	cd "${WORKDIR}"/"${MY_P}"
 	for (( i=1 ; i<=${PATCHNO} ; i++ ))
 	do
-		epatch "${DISTDIR}"/patch."${MY_PV}"."${i}"
+		epatch "${FILESDIR}"/patch."${MY_PV}"."${i}"
 	done
 	epatch "${FILESDIR}"/"${PN}"-4.6-libtool.patch
 
