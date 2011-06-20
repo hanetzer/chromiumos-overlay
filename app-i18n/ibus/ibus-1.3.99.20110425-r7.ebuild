@@ -63,6 +63,9 @@ src_prepare() {
         # TODO(penghuang) Remove this two patches with a new tarball
         epatch "${FILESDIR}"/0001-Fix-build-warnings-with-gcc-4.6.patch
         epatch "${FILESDIR}"/0002-Fix-build-warnings-with-gcc-4.6.patch
+
+        # TODO(kinaba): Remove this patch with a new tarball
+        epatch "${FILESDIR}"/fix_16500.patch
 }
 
 src_configure() {

@@ -1,0 +1,112 @@
+diff -rc original/client/gtk2/ibusimcontext.c patched/client/gtk2/ibusimcontext.c
+*** original/client/gtk2/ibusimcontext.c	Mon Jun 20 13:12:33 2011
+--- patched/client/gtk2/ibusimcontext.c	Mon Jun 20 13:40:54 2011
+***************
+*** 125,131 ****
+  /* static methods*/
+  static void     _create_input_context       (IBusIMContext      *context);
+  static gboolean _set_cursor_location_internal
+!                                             (GtkIMContext       *context);
+
+  static void     _bus_connected_cb           (IBusBus            *bus,
+                                               IBusIMContext      *context);
+--- 125,131 ----
+  /* static methods*/
+  static void     _create_input_context       (IBusIMContext      *context);
+  static gboolean _set_cursor_location_internal
+!                                             (IBusIMContext      *context);
+
+  static void     _bus_connected_cb           (IBusBus            *bus,
+                                               IBusIMContext      *context);
+***************
+*** 757,763 ****
+       * it blocks UI. So delay it to idle callback. */
+      g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+                       (GSourceFunc) _set_cursor_location_internal,
+!                      g_object_ref (context),
+                       (GDestroyNotify) g_object_unref);
+
+      /* retrieve the initial surrounding-text (regardless of whether
+--- 757,763 ----
+       * it blocks UI. So delay it to idle callback. */
+      g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+                       (GSourceFunc) _set_cursor_location_internal,
+!                      g_object_ref (ibusimcontext),
+                       (GDestroyNotify) g_object_unref);
+
+      /* retrieve the initial surrounding-text (regardless of whether
+***************
+*** 876,884 ****
+  }
+
+  static gboolean
+! _set_cursor_location_internal (GtkIMContext *context)
+  {
+-     IBusIMContext *ibusimcontext = IBUS_IM_CONTEXT (context);
+      GdkRectangle area;
+
+      if(ibusimcontext->client_window == NULL ||
+--- 876,883 ----
+  }
+
+  static gboolean
+! _set_cursor_location_internal (IBusIMContext *ibusimcontext)
+  {
+      GdkRectangle area;
+
+      if(ibusimcontext->client_window == NULL ||
+***************
+*** 924,930 ****
+          return;
+      }
+      ibusimcontext->cursor_area = *area;
+!     _set_cursor_location_internal (context);
+      gtk_im_context_set_cursor_location (ibusimcontext->slave, area);
+  }
+
+--- 923,929 ----
+          return;
+      }
+      ibusimcontext->cursor_area = *area;
+!     _set_cursor_location_internal (ibusimcontext);
+      gtk_im_context_set_cursor_location (ibusimcontext->slave, area);
+  }
+
+***************
+*** 935,947 ****
+
+      IBusIMContext *ibusimcontext = IBUS_IM_CONTEXT (context);
+
+      if(ibusimcontext->ibuscontext) {
+-         if (use_preedit) {
+-             ibusimcontext->caps |= IBUS_CAP_PREEDIT_TEXT;
+-         }
+-         else {
+-             ibusimcontext->caps &= ~IBUS_CAP_PREEDIT_TEXT;
+-         }
+          ibus_input_context_set_capabilities (ibusimcontext->ibuscontext,
+                                               ibusimcontext->caps);
+      }
+--- 934,946 ----
+
+      IBusIMContext *ibusimcontext = IBUS_IM_CONTEXT (context);
+
++     if (use_preedit) {
++         ibusimcontext->caps |= IBUS_CAP_PREEDIT_TEXT;
++     }
++     else {
++         ibusimcontext->caps &= ~IBUS_CAP_PREEDIT_TEXT;
++     }
+      if(ibusimcontext->ibuscontext) {
+          ibus_input_context_set_capabilities (ibusimcontext->ibuscontext,
+                                               ibusimcontext->caps);
+      }
+***************
+*** 1428,1433 ****
+--- 1427,1433 ----
+
+          if (ibusimcontext->has_focus) {
+              ibus_input_context_focus_in (ibusimcontext->ibuscontext);
++             _set_cursor_location_internal (ibusimcontext);
+          }
+      }
