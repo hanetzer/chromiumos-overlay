@@ -12,7 +12,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE="no_vboot_debug"
+IUSE="+vboot_debug"
 
 DEPEND="chromeos-base/vboot_reference-firmware
 	chromeos-base/u-boot-config
@@ -41,6 +41,12 @@ CONFIG_PREFIX="$(expr \
 ALL_UBOOT_FLAVORS='developer flasher legacy normal recovery stub'
 IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 
+if use vboot_debug; then
+	VBOOT_DEBUG="VBOOT_DEBUG=1"
+else
+	VBOOT_DEBUG=
+fi
+
 get_required_configs() {
 	local flavor
 	local all_configs=''
@@ -67,13 +73,7 @@ get_required_configs() {
 REQUIRED_UBOOT_CONFIGS="$(get_required_configs)"
 
 src_configure() {
-	local config VBOOT_DEBUG
-
-	if use no_vboot_debug; then
-		VBOOT_DEBUG=""
-	else
-		VBOOT_DEBUG="1"
-	fi
+	local config
 
 	for config in ${REQUIRED_UBOOT_CONFIGS}; do
 		local build_root="${BUILD_ROOT}/${config}"
@@ -83,27 +83,21 @@ src_configure() {
 		  O="${build_root}" \
 		  ARCH=$(tc-arch-kernel) \
 		  CROSS_COMPILE="${CHOST}-" \
-		  VBOOT_DEBUG="${VBOOT_DEBUG}" \
+		  ${VBOOT_DEBUG} \
 		  distclean
 		emake \
 		  O="${build_root}" \
 		  ARCH=$(tc-arch-kernel) \
 		  CROSS_COMPILE="${CHOST}-" \
 		  USE_PRIVATE_LIBGCC=yes \
-		  VBOOT_DEBUG="${VBOOT_DEBUG}" \
+		  ${VBOOT_DEBUG} \
 		  ${config} || die "U-Boot configuration ${config} failed"
 	done
 }
 
 src_compile() {
-	local config VBOOT_DEBUG
+	local config
 	tc-getCC
-
-	if use no_vboot_debug; then
-		VBOOT_DEBUG=""
-	else
-		VBOOT_DEBUG="1"
-	fi
 
 	for config in ${REQUIRED_UBOOT_CONFIGS}; do
 	  emake \
@@ -115,7 +109,7 @@ src_compile() {
 	    HOSTSTRIP=true \
 	    VBOOT="${ROOT%/}/usr" \
 	    CROS_CONFIG_PATH="${ROOT%/}/u-boot" \
-	    VBOOT_DEBUG="${VBOOT_DEBUG}" \
+	    ${VBOOT_DEBUG} \
 	    all || die "U-Boot compile ${config} failed"
 	done
 }
