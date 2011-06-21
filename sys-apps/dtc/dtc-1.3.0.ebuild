@@ -4,6 +4,7 @@
 
 EAPI=4
 inherit toolchain-funcs
+inherit eutils
 
 MY_P="${PN}-v${PV}"
 
@@ -28,6 +29,9 @@ src_prepare() {
 		   -e "s:-Werror::" \
 		   -e "s:-g -Os::" \
 		Makefile || die
+        for f in ${FILESDIR}/*.patch; do
+                epatch $f
+	done
 }
 
 src_compile() {
