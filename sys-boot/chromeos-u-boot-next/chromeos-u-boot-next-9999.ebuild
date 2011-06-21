@@ -45,9 +45,9 @@ if [ "${UB_ARCH}" != "i386" ]; then
 	COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
 fi
 
-get_required_configs() {
+get_required_config() {
 	case "${UB_ARCH}" in
-		(arm) echo 'seaboard_config chromeos_seaboard_onestop_config';;
+		(arm) echo 'chromeos_seaboard_onestop_config';;
 		(i386) echo 'coreboot-x86_config';;
 		(*) die "can not build for unknown architecture ${UB_ARCH}";;
 	esac
@@ -55,61 +55,46 @@ get_required_configs() {
 
 src_configure() {
 	local config
-	for config in $(get_required_configs); do
-		local build_root="${BUILD_ROOT}/${config}"
-		elog "Using U-Boot config: ${config}"
+	config=$(get_required_config)
+	elog "Using U-Boot config: ${config}"
 
-		emake \
-		  ${COMMON_MAKE_FLAGS} \
-		  O="${build_root}" \
-		  distclean
-		emake \
-		  ${COMMON_MAKE_FLAGS} \
-		  O="${build_root}" \
-		  ${config} || die "U-Boot configuration ${config} failed"
-	done
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		distclean
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		${config} || die "U-Boot configuration ${config} failed"
 }
 
 src_compile() {
 	local config
 	tc-getCC
 
-	for config in $(get_required_configs); do
-	  emake \
-	    ${COMMON_MAKE_FLAGS} \
-	    O="${BUILD_ROOT}/${config}" \
-	    HOSTCC=${CC} \
-	    HOSTSTRIP=true \
-	    all || die "U-Boot compile ${config} failed"
-	done
+	config=$(get_required_config)
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		HOSTCC=${CC} \
+		HOSTSTRIP=true \
+		all || die "U-Boot compile ${config} failed"
 }
 
 src_install() {
 	local config
-	local build_root
-	local mkimage_installed='n'
 
 	dodir /u-boot
 	insinto /u-boot
 
-	for config in $(get_required_configs); do
-		local build_root="${BUILD_ROOT}/${config}"
-		local files_to_copy='System.map include/autoconf.mk u-boot.bin'
+	config=$(get_required_config)
+	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
 
-		for file in ${files_to_copy}; do
-			local dest_file="${config%_config}.$(basename $file)"
-			newins "${build_root}/${file}" ${dest_file} || die
-		done
-		if [ "${mkimage_installed}" == 'n' ]; then
-			dobin "${build_root}/tools/mkimage" || die
-			mkimage_installed='y'
-		fi
+	for file in ${files_to_copy}; do
+		doins "${file}" || die
 	done
 
 	if use x86; then
 		elog "Building on x86, installing coreboot payload."
 		dodir /coreboot
 		insinto /coreboot
-		newins "${build_root}/u-boot" u-boot.elf || die
+		newins "u-boot" u-boot.elf || die
 	fi
 }
