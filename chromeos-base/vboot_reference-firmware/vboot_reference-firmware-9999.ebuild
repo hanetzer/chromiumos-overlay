@@ -7,23 +7,16 @@ DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~arm ~x86"
-IUSE="debug u_boot_next"
+IUSE="debug"
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
-DEPEND="
-    u_boot_next? ( sys-boot/chromeos-u-boot-next-build-env )
-    !u_boot_next? ( sys-boot/chromeos-u-boot-build-env )
-    chromeos-base/vboot_reference"
+DEPEND="chromeos-base/vboot_reference"
 
 CROS_WORKON_LOCALNAME=vboot_reference
 
 src_compile() {
 	tc-export CC AR CXX
-
-	# find u-boot-cflags.mk
-	local cflags_path="${SYSROOT}/u-boot/u-boot-cflags.mk"
-	[ -f "${cflags_path}" ] || die "File ${cflags_path} does not exist"
 
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
@@ -41,7 +34,6 @@ src_compile() {
 	fi
 
 	emake	FIRMWARE_ARCH="$(tc-arch-kernel)" \
-		FIRMWARE_CONFIG_PATH="${cflags_path}" \
 		MOCK_TPM="${MOCK_TPM}" \
 		DEBUG="${DEBUG}" || die "${err_msg}"
 }
