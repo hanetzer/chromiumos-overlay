@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="97041118f9fb99ece23688dc1f7905d08999def0"
+CROS_WORKON_COMMIT="5ab639efcbe82d00b6dc40bef26a53e4d6dd6535"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
 
 KEYWORDS="amd64 x86 arm"
