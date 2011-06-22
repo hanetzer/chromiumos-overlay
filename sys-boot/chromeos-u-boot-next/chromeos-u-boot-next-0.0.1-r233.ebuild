@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE="+vboot_debug"
 
-DEPEND="chromeos-base/vboot_reference-firmware
+# TODO(clchiou): coreboot couldn't care less about vboot for now
+DEPEND="arm? ( chromeos-base/vboot_reference-firmware )
 	!sys-boot/chromeos-u-boot"
 
 RDEPEND="${DEPEND}
@@ -33,10 +34,12 @@ BUILD_ROOT="${WORKDIR}/${P}/builds"
 ALL_UBOOT_FLAVORS=''
 IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 UB_ARCH="$(tc-arch-kernel)"
-COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}- VBOOT=${ROOT%/}/usr"
+COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
 
+# TODO(clchiou): coreboot couldn't care less about vboot for now
+use arm && COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 if use vboot_debug; then
-	COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
+	use arm && COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 fi
 
 if [ "${UB_ARCH}" != "i386" ]; then
