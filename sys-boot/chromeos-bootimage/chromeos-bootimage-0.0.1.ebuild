@@ -24,10 +24,10 @@ DEPEND="virtual/tegra-bct
 RDEPEND="${DEPEND}
 	sys-apps/flashrom"
 
-CROS_ARM_FIRMWARE_IMAGE_SYSTEM_MAP="${ROOT%/}/u-boot/chromeos_seaboard_onestop.System.map"
-CROS_ARM_FIRMWARE_IMAGE_AUTOCONF="${ROOT%/}/u-boot/chromeos_seaboard_onestop.autoconf.mk"
+CROS_ARM_FIRMWARE_IMAGE_SYSTEM_MAP="${ROOT%/}/u-boot/System.map"
+CROS_ARM_FIRMWARE_IMAGE_AUTOCONF="${ROOT%/}/u-boot/autoconf.mk"
 
-CROS_ARM_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/chromeos_seaboard_onestop.u-boot.bin"
+CROS_ARM_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/u-boot.bin"
 CROS_ARM_FIRMWARE_IMAGE_RECOVERY_IMAGE=zero.bin
 CROS_ARM_FIRMWARE_IMAGE_DEVELOPER_IMAGE=zero.bin
 CROS_ARM_FIRMWARE_IMAGE_NORMAL_IMAGE=zero.bin
