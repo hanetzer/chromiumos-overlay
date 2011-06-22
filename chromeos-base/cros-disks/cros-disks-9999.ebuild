@@ -42,7 +42,11 @@ src_test() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
 	emake tests || die "failed to make cros-disks tests"
-	"${S}/build-opt/disks_testrunner" || die "cros-disks tests failed"
+	"${S}/build-opt/disks_testrunner" --gtest_filter='-*.RunAsRoot*' ||
+		die "cros-disks tests failed"
+	sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
+		"${S}/build-opt/disks_testrunner" --gtest_filter='*.RunAsRoot*' ||
+			die "cros-disks tests failed"
 }
 
 src_install() {
