@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -16,7 +16,8 @@ IUSE=""
 
 DEPEND=""
 
-RDEPEND="sys-power/acpid"
+RDEPEND="sys-power/acpid
+         chromeos-base/chromeos-init"
 
 CROS_WORKON_LOCALNAME="acpi"
 
@@ -26,4 +27,9 @@ src_install() {
 
   install -m 0755 -o root -g root "${S}"/event_* "${D}"/etc/acpi/events
   install -m 0755 -o root -g root "${S}"/action_* "${D}"/etc/acpi
+
+  dodir /etc/init
+  install --owner=root --group=root --mode=0644 "${S}"/acpid.conf \
+                                                "${D}/etc/init/"
+
 }
