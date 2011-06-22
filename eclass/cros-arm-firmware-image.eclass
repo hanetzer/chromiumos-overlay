@@ -50,6 +50,11 @@
 : ${CROS_ARM_FIRMWARE_IMAGE_NORMAL_IMAGE=${ROOT%/}/u-boot/u-boot-normal.bin}
 : ${CROS_ARM_FIRMWARE_IMAGE_LEGACY_IMAGE=${ROOT%/}/u-boot/u-boot-legacy.bin}
 
+# @ECLASS-VARIABLE: CROS_ARM_FIRMWARE_DTB
+# @DESCRIPTION
+# Location of the u-boot flat device tree binary blob (FDT)
+: ${CROS_ARM_FIRMWARE_DTB=}
+
 function get_autoconf() {
 	# TODO(sjg) grab config from fdt
 	grep -m1 $1 ${CROS_ARM_FIRMWARE_IMAGE_AUTOCONF} | tr -d "\"" | cut -d = -f 2
@@ -134,6 +139,15 @@ function create_gbb() {
 function create_image() {
 	local prefix=$1
 	local stub=${2:-$CROS_ARM_FIRMWARE_IMAGE_STUB_IMAGE}
+
+	if [ -n "${CROS_ARM_FIRMWARE_DTB}" ]; then
+		# Append the device tree to U-Boot
+		elog "FDT: $(ftdump "${CROS_ARM_FIRMWARE_DTB}" | grep model)"
+
+		TMPFILE="u-boot.bin.dtb"
+		cat "${stub}" "${CROS_ARM_FIRMWARE_DTB}" >${TMPFILE}
+		stub="${TMPFILE}"
+	fi
 
 	# sign the bootstub; this is a combination of the board specific
 	# bct and the stub u-boot image.
