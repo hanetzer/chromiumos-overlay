@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +localssh modemmanager X touchui"
+IUSE="bluetooth +localssh modemmanager X bootchart touchui"
 
 
 ################################################################################
@@ -127,6 +127,9 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
+	bootchart? (
+		app-benchmarks/bootchart
+	)
 	app-crypt/trousers
 	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
