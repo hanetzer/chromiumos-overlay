@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-arm-firmware-image
+inherit cros-firmware-image
 
 DESCRIPTION="ChromeOS arm firmware image builder"
 HOMEPAGE="http://www.chromium.org"
