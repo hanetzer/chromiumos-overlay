@@ -6,10 +6,15 @@
 # Purpose: Library for generating ARM firmware image
 #
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_IMAGE_DIR
+# @DESCRIPTION
+# Directory where the generated files are looked for and placed.
+: ${CROS_FIRMWARE_IMAGE_DIR:=${ROOT%/}/u-boot}
+
 # @ECLASS-VARIABLE: CROS_ARM_FIRMWARE_IMAGE_BCT
 # @DESCRIPTION
 # Location of the board-specific bct file
-: ${CROS_FIRMWARE_IMAGE_BCT:=${ROOT%/}/u-boot/bct/board.bct}
+: ${CROS_FIRMWARE_IMAGE_BCT:=${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_IMAGE_DEVKEYS
 # @DESCRIPTION
@@ -19,12 +24,12 @@
 # @ECLASS-VARIABLE: CROS_FIRMWARE_IMAGE_SYSTEM_MAP
 # @DESCRIPTION
 # Location of the u-boot symbol table
-: ${CROS_FIRMWARE_IMAGE_SYSTEM_MAP=${ROOT%/}/u-boot/System.map}
+: ${CROS_FIRMWARE_IMAGE_SYSTEM_MAP=${CROS_FIRMWARE_IMAGE_DIR}/System.map}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_IMAGE_AUTOCONF
 # @DESCRIPTION
 # Location of the u-boot configuration file
-: ${CROS_FIRMWARE_IMAGE_AUTOCONF=${ROOT%/}/u-boot/autoconf.mk}
+: ${CROS_FIRMWARE_IMAGE_AUTOCONF=${CROS_FIRMWARE_IMAGE_DIR}/autoconf.mk}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_IMAGE_LAYOUT_CONFIG
 # @DESCRIPTION
@@ -44,11 +49,11 @@
 # @ECLASS-VARIABLE: CROS_FIRMWARE_IMAGE_*_IMAGE
 # @DESCRIPTION
 # Location of the u-boot variants
-: ${CROS_FIRMWARE_IMAGE_STUB_IMAGE=${ROOT%/}/u-boot/u-boot-stub.bin}
-: ${CROS_FIRMWARE_IMAGE_RECOVERY_IMAGE=${ROOT%/}/u-boot/u-boot-recovery.bin}
-: ${CROS_FIRMWARE_IMAGE_DEVELOPER_IMAGE=${ROOT%/}/u-boot/u-boot-developer.bin}
-: ${CROS_FIRMWARE_IMAGE_NORMAL_IMAGE=${ROOT%/}/u-boot/u-boot-normal.bin}
-: ${CROS_FIRMWARE_IMAGE_LEGACY_IMAGE=${ROOT%/}/u-boot/u-boot-legacy.bin}
+: ${CROS_FIRMWARE_IMAGE_STUB_IMAGE=${CROS_FIRMWARE_IMAGE_DIR}/u-boot-stub.bin}
+: ${CROS_FIRMWARE_IMAGE_RECOVERY_IMAGE=${CROS_FIRMWARE_IMAGE_DIR}/u-boot-recovery.bin}
+: ${CROS_FIRMWARE_IMAGE_DEVELOPER_IMAGE=${CROS_FIRMWARE_IMAGE_DIR}/u-boot-developer.bin}
+: ${CROS_FIRMWARE_IMAGE_NORMAL_IMAGE=${CROS_FIRMWARE_IMAGE_DIR}/u-boot-normal.bin}
+: ${CROS_FIRMWARE_IMAGE_LEGACY_IMAGE=${CROS_FIRMWARE_IMAGE_DIR}/u-boot-legacy.bin}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_DTB
 # @DESCRIPTION
@@ -150,15 +155,16 @@ function create_image() {
 		stub="${TMPFILE}"
 	fi
 
-	# sign the bootstub; this is a combination of the board specific
-	# bct and the stub u-boot image.
-	cros_sign_bootstub \
-		--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
-		--bootstub "${stub}" \
-		--output "${prefix}bootstub.bin" \
-		--text_base "0x$(get_text_base)" ||
-		die "fail to sign boot stub image (${prefix}bootstub.bin)."
-
+	if use arm; then
+		# sign the bootstub; this is a combination of the board specific
+		# bct and the stub u-boot image.
+		cros_sign_bootstub \
+		  --bct "${CROS_FIRMWARE_IMAGE_BCT}" \
+		  --bootstub "${stub}" \
+		  --output "${prefix}bootstub.bin" \
+		  --text_base "0x$(get_text_base)" ||
+		die "failed to sign boot stub image (${prefix}bootstub.bin)."
+	fi
 	pack_firmware_image ${CROS_FIRMWARE_IMAGE_LAYOUT} \
 		KEYDIR=${CROS_FIRMWARE_IMAGE_DEVKEYS}/ \
 		BOOTSTUB_IMAGE="${prefix}bootstub.bin" \

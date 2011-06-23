@@ -9,7 +9,7 @@ DESCRIPTION="ChromeOS arm firmware image builder"
 HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
-KEYWORDS="arm"
+KEYWORDS="arm x86"
 IUSE=""
 
 # TODO(clchiou): pack and install legacy_image.bin when chromeos-u-boot-next
@@ -17,14 +17,25 @@ IUSE=""
 
 # TODO(clchiou): this is specifically depended on u-boot-next for now, which
 # implements onestop firmware; this will depend on virtual/u-boot in the future
-DEPEND="virtual/tegra-bct
-	sys-boot/chromeos-u-boot-next
+DEPEND="arm? ( virtual/tegra-bct
+	sys-boot/chromeos-u-boot-next )
+	x86? ( sys-boot/chromeos-coreboot )
 	chromeos-base/vboot_reference"
 
 RDEPEND="${DEPEND}
 	sys-apps/flashrom"
 
-CROS_FIRMWARE_DTB="${ROOT%/}/u-boot/u-boot.dtb"
+if use x86; then
+	DST_DIR='/coreboot'
+	CROS_FIRMWARE_IMAGE_DIR="${ROOT}${DST_DIR}"
+	CROS_FIRMWARE_IMAGE_AUTOCONF="${CROS_FIRMWARE_IMAGE_DIR}/bootconf.mk"
+	CROS_FIRMWARE_IMAGE_LAYOUT_CONFIG="${FILESDIR}/"
+	CROS_FIRMWARE_IMAGE_LAYOUT_CONFIG+="cb_firmware_layout_config"
+	CROS_FIRMWARE_DTB=''
+else
+	DST_DIR='/u-boot'
+	CROS_FIRMWARE_DTB="${CROS_FIRMWARE_IMAGE_DIR}/u-boot.dtb"
+fi
 
 # We only have a single U-Boot, and it is called u-boot.bin
 # TODO(sjg): simplify the eclass when we deprecate the old U-Boot
@@ -42,6 +53,6 @@ src_compile() {
 }
 
 src_install() {
-	insinto /u-boot
+	insinto "${DST_DIR}"
 	doins image.bin || die
 }
