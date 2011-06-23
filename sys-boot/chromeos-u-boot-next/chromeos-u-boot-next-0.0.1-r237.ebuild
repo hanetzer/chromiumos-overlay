@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="088f944e2921e2cc1551563f74aa6c5c1f8e80ec"
+CROS_WORKON_COMMIT="c2e494a1ad51e613a5e5089f0fc83ba050d1ea72"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
 
 inherit toolchain-funcs
@@ -46,71 +46,77 @@ if [ "${UB_ARCH}" != "i386" ]; then
 	COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
 fi
 
-get_required_configs() {
+get_required_config() {
 	case "${UB_ARCH}" in
-		(arm) echo 'seaboard_config chromeos_seaboard_onestop_config';;
+		(arm) echo 'chromeos_seaboard_onestop_config';;
 		(i386) echo 'coreboot-x86_config';;
 		(*) die "can not build for unknown architecture ${UB_ARCH}";;
 	esac
 }
 
+get_fdt_name() {
+	local name=${PKG_CONFIG#pkg-config-}
+
+	if use arm; then
+		echo "${name}" | tr _ '-'
+	fi
+}
+
+# We will supply an fdt at run time
+COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1 DEV_TREE_SRC=$(get_fdt_name)"
+
 src_configure() {
 	local config
-	for config in $(get_required_configs); do
-		local build_root="${BUILD_ROOT}/${config}"
-		elog "Using U-Boot config: ${config}"
+	config=$(get_required_config)
+	elog "Using U-Boot config: ${config}"
+	dtb=$(get_fdt_name)
+	if [ -n "${dtb}" ]; then
+		elog "Using fdt: ${dtb}"
+	else
+		elog "Not building fdt"
+	fi
 
-		emake \
-		  ${COMMON_MAKE_FLAGS} \
-		  O="${build_root}" \
-		  distclean
-		emake \
-		  ${COMMON_MAKE_FLAGS} \
-		  O="${build_root}" \
-		  ${config} || die "U-Boot configuration ${config} failed"
-	done
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		distclean
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		${config} || die "U-Boot configuration ${config} failed"
 }
 
 src_compile() {
 	local config
 	tc-getCC
 
-	for config in $(get_required_configs); do
-	  emake \
-	    ${COMMON_MAKE_FLAGS} \
-	    O="${BUILD_ROOT}/${config}" \
-	    HOSTCC=${CC} \
-	    HOSTSTRIP=true \
-	    all || die "U-Boot compile ${config} failed"
-	done
+	config=$(get_required_config)
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		HOSTCC=${CC} \
+		HOSTSTRIP=true \
+		all || die "U-Boot compile ${config} failed"
 }
 
 src_install() {
 	local config
-	local build_root
-	local mkimage_installed='n'
 
 	dodir /u-boot
 	insinto /u-boot
 
-	for config in $(get_required_configs); do
-		local build_root="${BUILD_ROOT}/${config}"
-		local files_to_copy='System.map include/autoconf.mk u-boot.bin'
+	config=$(get_required_config)
+	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
 
-		for file in ${files_to_copy}; do
-			local dest_file="${config%_config}.$(basename $file)"
-			newins "${build_root}/${file}" ${dest_file} || die
-		done
-		if [ "${mkimage_installed}" == 'n' ]; then
-			dobin "${build_root}/tools/mkimage" || die
-			mkimage_installed='y'
-		fi
+	if [ -n "$(get_fdt_name)" ]; then
+		files_to_copy+=" u-boot.dtb"
+	fi
+
+	for file in ${files_to_copy}; do
+		doins "${file}" || die
 	done
 
 	if use x86; then
 		elog "Building on x86, installing coreboot payload."
 		dodir /coreboot
 		insinto /coreboot
-		newins "${build_root}/u-boot" u-boot.elf || die
+		newins "u-boot" u-boot.elf || die
 	fi
 }
