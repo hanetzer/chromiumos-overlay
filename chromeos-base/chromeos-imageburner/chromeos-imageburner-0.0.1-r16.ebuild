@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ef221a86a5ccdfb599792a7a64581486dd8c07a5"
+CROS_WORKON_COMMIT="aac1e4df871c087636685e7b130a928b912863f1"
 CROS_WORKON_PROJECT="chromiumos/platform/image-burner"
 
 KEYWORDS="arm amd64 x86"
