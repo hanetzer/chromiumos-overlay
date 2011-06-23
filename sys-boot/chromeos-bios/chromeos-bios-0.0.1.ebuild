@@ -25,15 +25,15 @@ src_compile() {
 
 	# TODO(clchiou): obsolete recovery_image.bin
 	create_image
-	create_image "legacy_" ${CROS_ARM_FIRMWARE_IMAGE_LEGACY_IMAGE}
-	create_image "recovery_" ${CROS_ARM_FIRMWARE_IMAGE_RECOVERY_IMAGE}
+	create_image "legacy_" ${CROS_FIRMWARE_IMAGE_LEGACY_IMAGE}
+	create_image "recovery_" ${CROS_FIRMWARE_IMAGE_RECOVERY_IMAGE}
 }
 
 src_install() {
 	local prefix
 
 	insinto /u-boot
-	doins ${CROS_ARM_FIRMWARE_IMAGE_LAYOUT} || die
+	doins ${CROS_FIRMWARE_IMAGE_LAYOUT} || die
 
 	# TODO(clchiou): obsolete recovery_image.bin
 	for prefix in "" "legacy_" "recovery_"; do
