@@ -188,7 +188,7 @@ src_install() {
 		# after the build scripts have been modified to use the base
 		# image name.
 		cd $(dirname "${kernel_bin}")
-		ln -sf $(basename "${kernel_bin}") vmlinuz.uimg || die
+		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
 	fi
 
 	# Install uncompressed kernel for debugging purposes.
