@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="5ea32394ee5f8731529c9543960f811bcf8409ee"
+CROS_WORKON_COMMIT="c58e3f760e7de4f74a4ae8eafbad43403510c28f"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="arm amd64 x86"
@@ -43,7 +43,11 @@ src_test() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
 	emake tests || die "failed to make cros-disks tests"
-	"${S}/build-opt/disks_testrunner" || die "cros-disks tests failed"
+	"${S}/build-opt/disks_testrunner" --gtest_filter='-*.RunAsRoot*' ||
+		die "cros-disks tests failed"
+	sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
+		"${S}/build-opt/disks_testrunner" --gtest_filter='*.RunAsRoot*' ||
+			die "cros-disks tests failed"
 }
 
 src_install() {
