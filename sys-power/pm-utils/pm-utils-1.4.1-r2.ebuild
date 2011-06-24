@@ -37,6 +37,9 @@ src_prepare() {
 	# this kills our usb ethernet devices
 	ignore+=" disable_wol"
 
+	# don't touch vm settings
+	ignore+=" laptop-mode"
+
 	use debug && echo 'PM_DEBUG="true"' > "${T}"/gentoo
 	echo "HOOK_BLACKLIST=\"${ignore}\"" >> "${T}"/gentoo
 }
