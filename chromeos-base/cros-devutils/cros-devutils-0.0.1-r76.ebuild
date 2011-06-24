@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="525b61fdaee9cfe9153273387359923995b6ab2d"
+CROS_WORKON_COMMIT="0e95bbfeccf7dee51d09ed0c17e3bcb3c9cb8882"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon
@@ -37,6 +37,7 @@ src_install() {
 	if ! use cros_host; then
 		doexe gmerge || die "Could not find file to install."
 		doexe stateful_update || die "Could not find file to install."
+		doexe chromeos-setdevpasswd || die "Could not find file to install."
 	else
 		doexe host/write_tegra_bios || die "Could not find file to install."
 		doexe host/cros_overlay_list || die "Could not find file to install."
