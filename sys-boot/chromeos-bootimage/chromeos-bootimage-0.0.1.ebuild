@@ -26,6 +26,10 @@ RDEPEND="${DEPEND}
 
 CROS_FIRMWARE_DTB="${ROOT%/}/u-boot/u-boot.dtb"
 
+# We only have a single U-Boot, and it is called u-boot.bin
+# TODO(sjg): simplify the eclass when we deprecate the old U-Boot
+CROS_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/u-boot.bin"
+
 CROS_FIRMWARE_IMAGE_RECOVERY_IMAGE=zero.bin
 CROS_FIRMWARE_IMAGE_DEVELOPER_IMAGE=zero.bin
 CROS_FIRMWARE_IMAGE_NORMAL_IMAGE=zero.bin

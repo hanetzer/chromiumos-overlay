@@ -145,7 +145,8 @@ function create_image() {
 		elog "FDT: $(ftdump "${CROS_FIRMWARE_DTB}" | grep model)"
 
 		TMPFILE="u-boot.bin.dtb"
-		cat "${stub}" "${CROS_FIRMWARE_DTB}" >${TMPFILE}
+		cat "${stub}" "${CROS_FIRMWARE_DTB}" >${TMPFILE} ||
+			die "fail to find fdt binary ${CROS_FIRMWARE_DTB}"
 		stub="${TMPFILE}"
 	fi
 
