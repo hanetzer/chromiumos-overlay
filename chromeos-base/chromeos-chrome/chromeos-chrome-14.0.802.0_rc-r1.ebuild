@@ -120,7 +120,6 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	app-i18n/ibus
 	chromeos-base/chromeos-theme
-	chrome_remoting? ( x11-libs/libXtst )
 	dev-libs/atk
 	dev-libs/glib
 	dev-libs/nspr
@@ -142,10 +141,13 @@ RDEPEND="${RDEPEND}
 	x86? ( !chrome_internal? ( www-plugins/adobe-flash ) )
 	>=x11-libs/gtk+-2.14.7
 	x11-libs/libXScrnSaver
+	chrome_remoting? ( x11-libs/libXtst )
 	x11-apps/setxkbmap"
 
 DEPEND="${DEPEND}
 	${RDEPEND}
+	build_tests? ( chromeos-base/flimflam-test )
+	build_tests? ( dev-lang/python )
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23"
 
