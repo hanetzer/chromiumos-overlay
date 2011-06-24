@@ -73,7 +73,8 @@ src_test() {
 		done
 		kill %1 && wait
 		trap - exit
-		for ut in idle_dimmer plug_dimmer resolution_selector; do
+		TESTS="backlight idle_dimmer plug_dimmer resolution_selector"
+		for ut in ${TESTS}; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
 		done
