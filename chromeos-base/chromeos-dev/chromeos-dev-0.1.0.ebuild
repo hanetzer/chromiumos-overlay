@@ -82,6 +82,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xlsclients
 	x11-apps/xmodmap
 	x11-apps/xprop
+	x11-apps/xrandr
 	x11-apps/xrdb
 	x11-apps/xset
 	x11-apps/xtrace
