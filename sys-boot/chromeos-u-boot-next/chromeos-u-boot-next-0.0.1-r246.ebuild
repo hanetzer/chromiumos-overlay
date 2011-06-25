@@ -42,10 +42,6 @@ if use vboot_debug; then
 	use arm && COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 fi
 
-if [ "${UB_ARCH}" != "i386" ]; then
-	COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
-fi
-
 get_required_config() {
 	case "${UB_ARCH}" in
 		(arm) echo 'chromeos_seaboard_onestop_config';;
@@ -62,8 +58,12 @@ get_fdt_name() {
 	fi
 }
 
-# We will supply an fdt at run time
-COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1 DEV_TREE_SRC=$(get_fdt_name)"
+if use arm; then
+	COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
+	# We will supply an fdt at run time
+	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1 DEV_TREE_SRC=$(get_fdt_name)"
+fi
+
 
 src_configure() {
 	local config
@@ -98,9 +98,16 @@ src_compile() {
 
 src_install() {
 	local config
+	local inst_dir
 
-	dodir /u-boot
-	insinto /u-boot
+	if use x86; then
+		inst_dir='/coreboot'
+	else
+		inst_dir='/u-boot'
+	fi
+
+	dodir "${inst_dir}"
+	insinto "${inst_dir}"
 
 	config=$(get_required_config)
 	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
@@ -114,9 +121,6 @@ src_install() {
 	done
 
 	if use x86; then
-		elog "Building on x86, installing coreboot payload."
-		dodir /coreboot
-		insinto /coreboot
 		newins "u-boot" u-boot.elf || die
 	fi
 }
