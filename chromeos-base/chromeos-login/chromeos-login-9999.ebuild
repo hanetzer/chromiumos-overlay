@@ -69,8 +69,13 @@ src_install() {
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
 
-	if use webui_login || use touchui ; then
+	if use webui_login ; then
 		insinto /root
 		newins "${S}/use_webui_login" .use_webui_login
+	fi
+
+	if use touchui ; then
+		insinto /root
+		newins "${S}/use_touchui" .use_touchui
 	fi
 }
