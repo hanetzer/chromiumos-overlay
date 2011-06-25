@@ -1,0 +1,23 @@
+From 4e3cd5d3a8d40b2399e98859c78a088ec0816066 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Sat, 25 Jun 2011 10:50:25 -0700
+Subject: [PATCH 8/8] Add dtput to .gitignore
+
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ .gitignore |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index cde4fa5..a026069 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -11,3 +11,4 @@ lex.yy.c
+ /convert-dtsv0
+ /version_gen.h
+ /dtget
++/dtput
+-- 
+1.7.3.1
+

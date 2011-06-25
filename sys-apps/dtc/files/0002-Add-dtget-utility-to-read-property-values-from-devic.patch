@@ -1,7 +1,7 @@
-From 473aa29a5cd2a62e65da26af96497e344643b20d Mon Sep 17 00:00:00 2001
+From baeac8926ca1f7aad6c64bcea6f771f856811c06 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Mon, 20 Jun 2011 13:12:32 -0700
-Subject: [PATCH 2/4] Add dtget utility to read property values from device tree
+Subject: [PATCH 2/8] Add dtget utility to read property values from device tree
 
 This simply utility makes it easy for scripts to read values from the device
 tree.
@@ -11,8 +11,8 @@ Signed-off-by: Simon Glass <sjg@chromium.org>
  .gitignore     |    1 +
  Makefile       |    7 ++
  Makefile.dtget |   13 +++
- dtget.c        |  226 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 247 insertions(+), 0 deletions(-)
+ dtget.c        |  231 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 252 insertions(+), 0 deletions(-)
  create mode 100644 Makefile.dtget
  create mode 100644 dtget.c
 
@@ -82,10 +82,10 @@ index 0000000..edda499
 +DTGET_OBJS = $(DTGET_SRCS:%.c=%.o) $(DTGET_GEN_SRCS:%.c=%.o)
 diff --git a/dtget.c b/dtget.c
 new file mode 100644
-index 0000000..dedc2ad
+index 0000000..023e141
 --- /dev/null
 +++ b/dtget.c
-@@ -0,0 +1,226 @@
+@@ -0,0 +1,231 @@
 +/*
 + * Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 + * Distributed under the terms of the GNU General Public License v2
@@ -175,7 +175,7 @@ index 0000000..dedc2ad
 +			     char *key)
 +{
 +	char *ptr, *prop;
-+	int node, guess_node;
++	int node, guess_node = 0;
 +	const void *value;
 +	int len;
 +
@@ -217,7 +217,8 @@ index 0000000..dedc2ad
 +{
 +	FILE *fp;
 +	char *buf;
-+	int size, i, ret;
++	size_t size;
++	int i, ret;
 +
 +	if (strcmp(filename, "-") == 0) {
 +		fp = stdin;
@@ -237,9 +238,13 @@ index 0000000..dedc2ad
 +	}
 +
 +	size = fread(buf, 1, FTDUMP_BUF_SIZE, fp);
-+	if (size == FTDUMP_BUF_SIZE) {
++	if (!feof(fp)) {
 +		fprintf(stderr, "file too large (maximum is %d bytes)\n",
 +			FTDUMP_BUF_SIZE);
++		return 10;
++	}
++	if (ferror(fp)) {
++		fprintf(stderr, "file read error\n");
 +		return 10;
 +	}
 +	for (i = 0; i < key_count; i++) {

@@ -1,7 +1,7 @@
-From 0803a3b013729c337951e532f4bf89f10cc6eadb Mon Sep 17 00:00:00 2001
+From b9be4a2d7f6c4a4bc8b5dbeb56a4a136ab874b23 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Mon, 20 Jun 2011 16:21:44 -0700
-Subject: [PATCH 4/4] Add missing tests to .gitignore
+Subject: [PATCH 4/8] Add missing tests to .gitignore
 
 
 Signed-off-by: Simon Glass <sjg@chromium.org>
