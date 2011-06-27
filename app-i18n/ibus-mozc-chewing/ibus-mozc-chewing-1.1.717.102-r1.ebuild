@@ -53,6 +53,7 @@ src_install() {
   newexe "out_linux/${BUILDTYPE}/ibus_mozc_chewing" ibus-engine-mozc-chewing \
       || die
 
+  # TODO(yusukes): Remove XML comments in the file. crosbug.com/4161
   insinto /usr/share/ibus/component || die
   doins chewing/unix/ibus/mozc-chewing.xml || die
 }

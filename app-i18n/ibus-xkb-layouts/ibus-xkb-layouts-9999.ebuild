@@ -16,6 +16,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
+	dev-libs/libxml2
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1
 	x11-misc/xkeyboard-config"
@@ -54,6 +55,10 @@ src_compile() {
 	python "${FILESDIR}"/filter.py < output.xml \
 	  --whitelist="${LIST}" \
 	  --rewrite=src/xkb-layouts.xml || die
+	# Remove spaces from the XML to reduce file size from ~17k to ~10k.
+	# You can make it readable by 'xmllint --format' (on a target machine).
+	mv src/xkb-layouts.xml /tmp || die
+	xmllint --noblanks /tmp/xkb-layouts.xml > src/xkb-layouts.xml || die
 }
 
 src_install() {

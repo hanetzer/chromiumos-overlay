@@ -21,6 +21,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
 	>=dev-db/m17n-contrib-1.1.10
 	>=dev-db/m17n-db-1.6.1
+	dev-libs/libxml2
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
 
@@ -67,6 +68,10 @@ src_compile() {
 	python "${FILESDIR}"/filter.py < output.xml \
 	--whitelist="${LIST}" \
 	--rewrite=src/m17n.xml || die
+	# Remove spaces from the XML to reduce file size from ~4k to ~3k.
+	# You can make it readable by 'xmllint --format' (on a target machine).
+	mv src/m17n.xml /tmp || die
+	xmllint --noblanks /tmp/m17n.xml > src/m17n.xml || die
 }
 
 src_install() {
