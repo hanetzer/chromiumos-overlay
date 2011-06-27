@@ -45,7 +45,7 @@ src_configure() {
 	# when using any other CFLAGS than -O0, qemacs will segfault on startup,
 	# see bug 92011
 	replace-flags -O? -O0
-	econf --cc="$(tc-getCC)" \
+	econf --cross-prefix="${CHOST}-" \
 		$(use_enable X x11) \
 		$(use_enable png) \
 		$(use_enable xv)
