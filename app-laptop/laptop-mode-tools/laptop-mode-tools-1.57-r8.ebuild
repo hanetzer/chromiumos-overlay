@@ -55,8 +55,15 @@ src_unpack() {
 }
 
 src_install() {
+	local ignore="laptop-mode"
+
 	dodir /etc/pm/sleep.d
 	cd laptop-mode-tools_1.57
+
+	for module in ${ignore}; do
+		rm usr/share/laptop-mode-tools/modules/${module}
+	done
+
 	DESTDIR="${D}" \
 		MAN_D="/usr/share/man" \
 		INIT_D="none" \
