@@ -19,19 +19,33 @@ index 1f55d5c..e4ce667 100644
  
  /**
   * evemu_create() - create a kernel device from the evemu configuration
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 8468f02..6378196 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -70,7 +70,7 @@ am__base_list = \
+ am__installdirs = "$(DESTDIR)$(libdir)" \
+ 	"$(DESTDIR)$(libutouch_evemuincludedir)"
+ LTLIBRARIES = $(lib_LTLIBRARIES)
+-libutouch_evemu_la_LIBADD =
++libutouch_evemu_la_LIBADD = -lrt
+ am_libutouch_evemu_la_OBJECTS = evemu.lo
+ libutouch_evemu_la_OBJECTS = $(am_libutouch_evemu_la_OBJECTS)
+ libutouch_evemu_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 diff --git a/src/evemu.c b/src/evemu.c
-index df6b250..6f86faf 100644
+index df6b250..02377f1 100644
 --- a/src/evemu.c
 +++ b/src/evemu.c
-@@ -49,6 +49,7 @@
+@@ -49,6 +49,8 @@
  #include <poll.h>
  #include <ctype.h>
  #include <unistd.h>
 +#include <sys/time.h>
++#include <time.h>
  
  #ifndef UI_SET_PROPBIT
  #define UI_SET_PROPBIT		_IOW(UINPUT_IOCTL_BASE, 110, int)
-@@ -376,15 +377,26 @@ int evemu_read_event_realtime(FILE *fp, struct input_event *ev,
+@@ -376,15 +378,25 @@ int evemu_read_event_realtime(FILE *fp, struct input_event *ev,
  	return ret;
  }
  
@@ -40,20 +54,19 @@ index df6b250..6f86faf 100644
  {
  	struct input_event ev;
  	struct timeval evtime;
-+	struct timeval curr_tv;
++	struct timespec curr_tp;
  	int ret;
-+	char *time_format = "E: %lu.%06u %04x %04x %-4d -- playback %lu.%06u\n";
++	char *time_format = "E: %lu.%06u %04x %04x %-4d -- playback %lu.%09u\n";
  
  	memset(&evtime, 0, sizeof(evtime));
 -	while (evemu_read_event_realtime(fp, &ev, &evtime) > 0)
 +	while (evemu_read_event_realtime(fp, &ev, &evtime) > 0) {
 +		if (fp_time != NULL) {
-+			gettimeofday(&curr_tv, NULL);
++			clock_gettime(CLOCK_MONOTONIC, &curr_tp);
 +			fprintf(fp_time, time_format,
 +				ev.time.tv_sec, ev.time.tv_usec,
 +				ev.type, ev.code, ev.value,
-+				curr_tv.tv_sec, curr_tv.tv_usec);
-+			ev.time = curr_tv;
++				curr_tp.tv_sec, curr_tp.tv_nsec);
 +		}
  		SYSCALL(ret = write(fd, &ev, sizeof(ev)));
 +	}
