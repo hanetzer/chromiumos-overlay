@@ -4,14 +4,14 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
 
-inherit toolchain-funcs
+inherit cros-debug toolchain-funcs
 
 DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~x86"
-IUSE="+vboot_debug"
+IUSE=""
 
 # TODO(clchiou): coreboot couldn't care less about vboot for now
 DEPEND="arm? ( chromeos-base/vboot_reference-firmware )
@@ -37,7 +37,7 @@ COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
 
 # TODO(clchiou): coreboot couldn't care less about vboot for now
 use arm && COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
-if use vboot_debug; then
+if use cros-debug; then
 	use arm && COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 fi
 
