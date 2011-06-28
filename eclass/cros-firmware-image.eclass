@@ -66,6 +66,27 @@ function get_autoconf() {
 	assert
 }
 
+function get_config() {
+	# TODO We temporarily fall back to get_autoconf for supporting
+	# chromeos-bios (which does not use fdt and will be obsolete)
+	if [ -z "${CROS_FIRMWARE_DTB}" ]; then
+		local config_name
+		case $2 in
+		/config/hwid)	config_name=CONFIG_CHROMEOS_HWID;;
+		/lcd/width)	config_name=CONFIG_LCD_vl_col;;
+		/lcd/height)	config_name=CONFIG_LCD_vl_row;;
+		*)		die "Unknown mapping of key: $2"
+		esac
+		get_autoconf ${config_name}
+		return
+	fi
+
+	local type=$1
+	local key=$2
+	dtget -t ${type} ${CROS_FIRMWARE_DTB} ${key}
+	assert
+}
+
 function get_text_base() {
 	# Parse the TEXT_BASE value from the U-Boot System.map file.
 	grep -m1 -E "^[0-9a-fA-F]{8} T _start$" ${CROS_FIRMWARE_IMAGE_SYSTEM_MAP} |
@@ -74,8 +95,8 @@ function get_text_base() {
 }
 
 function get_screen_geometry() {
-	local col=$(get_autoconf CONFIG_LCD_vl_col)
-	local row=$(get_autoconf CONFIG_LCD_vl_row)
+	local col=$(get_config i /lcd/width)
+	local row=$(get_config i /lcd/height)
 	echo "${col}x${row}!"
 }
 
@@ -103,8 +124,7 @@ function construct_layout_helper() {
 	grep -m1 'CONFIG_FIRMWARE_SIZE' ${CROS_FIRMWARE_IMAGE_AUTOCONF} ||
 		die "fail to extract firmware size"
 
-	grep -m1 'CONFIG_CHROMEOS_HWID' ${CROS_FIRMWARE_IMAGE_AUTOCONF} ||
-		die "fail to extract HWID"
+	echo "CONFIG_CHROMEOS_HWID=\"$(get_config s /config/hwid)\""
 
 	grep -E 'CONFIG_(OFFSET|LENGTH)_\w+' ${CROS_FIRMWARE_IMAGE_AUTOCONF} ||
 		die "fail to extract offsets and lengths"
@@ -140,7 +160,7 @@ function dtb_set_config_string() {
 }
 
 function create_gbb() {
-	local hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
+	local hwid=$(get_config s /config/hwid)
 	local gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
 	local bmp_dir="out_${hwid// /_}"
 	local make_bmp_image="/usr/share/vboot/bitmaps/make_bmp_images.sh"
