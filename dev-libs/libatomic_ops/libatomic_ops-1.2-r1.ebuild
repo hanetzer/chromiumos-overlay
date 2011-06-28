@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/libatomic_ops/libatomic_ops-1.2-r1.ebuild,v 1.11 2010/01/26 18:27:02 grobian Exp $
 
-inherit eutils
+inherit eutils flag-o-matic
 
 DESCRIPTION="Implementation for atomic memory update operations"
 HOMEPAGE="http://www.hpl.hp.com/research/linux/atomic_ops/"
@@ -21,6 +21,11 @@ src_unpack(){
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-ppc64-load_acquire.patch
 	epatch "${FILESDIR}"/${P}-ppc-asm.patch
+
+	if use arm; then
+		append-cflags "-marm"
+		append-cxxflags "-marm"
+	fi
 }
 
 src_install() {
