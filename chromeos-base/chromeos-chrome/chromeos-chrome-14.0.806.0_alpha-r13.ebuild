@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="90827"
+CROS_SVN_COMMIT="90842"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -163,7 +163,7 @@ IUSE_TESTS="
 	+tests_desktopui_UITest
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoLoginTests
-	+tests_desktopui_PyAutoNetworkTests
+	+tests_network_PyAutoConnectivityTests
 	"
 IUSE="${IUSE} +autotest ${IUSE_TESTS}"
 
