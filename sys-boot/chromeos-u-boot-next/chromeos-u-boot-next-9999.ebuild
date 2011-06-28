@@ -84,6 +84,7 @@ src_configure() {
 }
 
 src_compile() {
+	local bootcmd
 	local config
 	tc-getCC
 
@@ -93,6 +94,25 @@ src_compile() {
 		HOSTCC=${CC} \
 		HOSTSTRIP=true \
 		all || die "U-Boot compile ${config} failed"
+
+	# write bootcmd to dtb file
+	if [ -n "$(get_fdt_name)" ]; then
+		#
+		# FIXME "%[^^]" (matching anything except '^' character) is a
+		# hack of putting a bootcmd string that:
+		#   * contains whitespace character
+		#   * but does not contain '^' character (so the choice of '^'
+		#     is somewhat arbitrarily)
+		# input the dtb file with a '\0' termination.
+		#
+		# We cannot use "%s", which stops at whitespace, and we cannot
+		# use "%${#bootcmd}c", which does not add '\0' to the scanned
+		# string. So our only option left is "%[^^]", which does not
+		# stop at whitespace and adds '\0' to the end.
+		#
+		bootcmd="run regen_all; cros_onestop_firmware"
+		dtput -t s -f "%[^^]" u-boot.dtb /config/bootcmd "${bootcmd}"
+	fi
 }
 
 src_install() {
