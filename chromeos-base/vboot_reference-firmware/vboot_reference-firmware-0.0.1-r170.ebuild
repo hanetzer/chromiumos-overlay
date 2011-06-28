@@ -1,13 +1,13 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE="debug"
+IUSE=""
 EAPI="2"
 CROS_WORKON_COMMIT="a7b9481f343fb4a19b5a5ed44c2fda2c59547e84"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
@@ -23,7 +23,7 @@ src_compile() {
 	err_msg+="Try running 'make clean' in the package root directory"
 
 	local DEBUG=""
-	if use debug ; then
+	if use cros-debug ; then
 		DEBUG=1
 	fi
 
