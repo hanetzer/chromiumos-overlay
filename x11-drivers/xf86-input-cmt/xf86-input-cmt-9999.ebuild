@@ -16,10 +16,10 @@ LICENSE="BSD"
 SLOT="0"
 IUSE=""
 
-RDEPEND="x11-base/xorg-server
+RDEPEND="chromeos-base/gestures
+	 x11-base/xorg-server
 	 x11-libs/mtdev"
 DEPEND="${RDEPEND}
-	chromeos-base/gestures
 	x11-proto/inputproto"
 
 DOCS="README"
