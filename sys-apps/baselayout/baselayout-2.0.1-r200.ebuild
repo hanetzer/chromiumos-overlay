@@ -42,6 +42,8 @@ src_install() {
 	# so just copy it inplace instead of using patches to avoid the
 	# overhead of creating patches all the time.
 	cp "${FILESDIR}"/sysctl.conf "${D}"/etc/sysctl.conf
+	install -d "${D}"/etc/profile.d
+	install -m 644 "${FILESDIR}"/xauthority.sh "${D}"/etc/profile.d/xauthority.sh
 
 	# Remove files that don't make sense for Chromium OS
 	for x in issue issue.logo ; do
