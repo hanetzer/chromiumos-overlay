@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE=""
+IUSE="-bogus_screen_resizes"
 
 CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
@@ -25,6 +25,8 @@ DEPEND="${RDEPEND}"
 
 src_compile() {
 	tc-export CC PKG_CONFIG
+        use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
+        export CCFLAGS="$CFLAGS"
 	emake || die "end compile failed."
 }
 
