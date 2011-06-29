@@ -117,6 +117,28 @@ function construct_layout() {
 	construct_layout_helper > ${CROS_FIRMWARE_IMAGE_LAYOUT}
 }
 
+# XXX Caller must be sure that string does not have '^'; see FIXME below
+function dtb_set_config_string() {
+	local dtb="$1"
+	local property="$2"
+	local string="$3"
+
+	#
+	# FIXME "%[^^]" (matching anything except '^' character) is a
+	# hack of putting a string that:
+	#   * contains whitespace character
+	#   * but does not contain '^' character (so the choice of '^'
+	#     is somewhat arbitrarily)
+	# input the dtb file with a '\0' termination.
+	#
+	# We cannot use "%s", which stops at whitespace, and we cannot
+	# use "%${#bootcmd}c", which does not add '\0' to the scanned
+	# string. So our only option left is "%[^^]", which does not
+	# stop at whitespace and adds '\0' to the end.
+	#
+	dtput -t s -f "%[^^]" "${dtb}" "/config/${property}" "${string}"
+}
+
 function create_gbb() {
 	local hwid=$(get_autoconf CONFIG_CHROMEOS_HWID)
 	local gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)

@@ -34,7 +34,7 @@ if use x86; then
 	CROS_FIRMWARE_DTB=''
 else
 	DST_DIR='/u-boot'
-	CROS_FIRMWARE_DTB="${CROS_FIRMWARE_IMAGE_DIR}/u-boot.dtb"
+	CROS_FIRMWARE_DTB="u-boot.dtb"
 fi
 
 # We only have a single U-Boot, and it is called u-boot.bin
@@ -45,14 +45,52 @@ CROS_FIRMWARE_IMAGE_RECOVERY_IMAGE=zero.bin
 CROS_FIRMWARE_IMAGE_DEVELOPER_IMAGE=zero.bin
 CROS_FIRMWARE_IMAGE_NORMAL_IMAGE=zero.bin
 
+ORIGINAL_DTB="${CROS_FIRMWARE_IMAGE_DIR}/u-boot.dtb"
+
+# add extra "echo" concatenates every line into single line
+LEGACY_BOOTCMD="$(echo $(cat <<-'EOF'
+	usb start;
+	if test ${ethact} != ""; then
+		run dhcp_boot;
+	fi;
+	run usb_boot;
+	run mmc_boot;
+EOF
+))"
+
+
 src_compile() {
+	if [ -n "${CROS_FIRMWARE_DTB}" ]; then
+		# we are going to modify dtb, and so make a copy first
+		cp "${ORIGINAL_DTB}" "${CROS_FIRMWARE_DTB}"
+		dtb_set_config_string "${CROS_FIRMWARE_DTB}" bootcmd \
+			"run regen_all; cros_onestop_firmware"
+	fi
+
 	dd if=/dev/zero of=zero.bin count=1
 	construct_layout
 	create_gbb
 	create_image
+
+	# make legacy image
+	if use arm && [ -n "${CROS_FIRMWARE_DTB}" ]; then
+		cp "${ORIGINAL_DTB}" u-boot-legacy.dtb
+		dtb_set_config_string u-boot-legacy.dtb bootcmd "${LEGACY_BOOTCMD}"
+		cat "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" u-boot-legacy.dtb > \
+			u-boot-legacy.bin
+		cros_sign_bootstub \
+			--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
+			--bootstub u-boot-legacy.bin \
+			--output legacy_image.bin \
+			--text_base "0x$(get_text_base)" ||
+		die "failed to sign legacy image."
+	fi
 }
 
 src_install() {
 	insinto "${DST_DIR}"
 	doins image.bin || die
+	if use arm && [ -n "${CROS_FIRMWARE_DTB}" ]; then
+		doins legacy_image.bin || die
+	fi
 }
