@@ -58,6 +58,8 @@ RDEPEND="
 
 RDEPEND="${RDEPEND}
   tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
+  tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
+  tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
 
@@ -229,6 +231,7 @@ IUSE_TESTS="
 	+tests_platform_PartitionCheck
 	+tests_platform_ProcessPrivileges
 	+tests_platform_Rootdev
+	+tests_platform_RootPartitionsNotMounted
 	+tests_platform_SessionManagerTerm
 	+tests_platform_Shutdown
 	+tests_platform_StackProtector
