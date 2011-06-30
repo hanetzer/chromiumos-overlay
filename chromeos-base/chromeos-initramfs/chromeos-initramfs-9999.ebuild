@@ -54,6 +54,7 @@ build_initramfs_file() {
 	if use x86 ; then
 		LIBS="
 			ld-linux.so.2
+			../usr/lib/libdrm_intel.so.1.0.0
 		"
 	else
 		# TODO ARM: why does arm use a different dynamic linker here?
@@ -68,7 +69,6 @@ build_initramfs_file() {
 		../usr/lib/libcrypto.so.0.9.8
 		../usr/lib/libpng12.so.0.44.0
 		../usr/lib/libdrm.so.2.4.0
-		../usr/lib/libdrm_intel.so.1.0.0
 		libdevmapper.so.1.02
 		libdl.so.2
 		libpam.so.0
@@ -84,8 +84,10 @@ build_initramfs_file() {
 	ln -s libpng12.so.0.44.0 ${INITRAMFS_TMP_S}/lib/libpng12.so
 	ln -s libdrm.so.2.4.0 ${INITRAMFS_TMP_S}/lib/libdrm.so
 	ln -s libdrm.so.2.4.0 ${INITRAMFS_TMP_S}/lib/libdrm.so.2
-	ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so
-	ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so.1
+	if use x86 ; then
+		ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so
+		ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so.1
+	fi
 
 	cp ${ROOT}/bin/busybox ${INITRAMFS_TMP_S}/bin || die
 	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
