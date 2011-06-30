@@ -1,6 +1,6 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-base/xorg-drivers/xorg-drivers-1.7.ebuild,v 1.6 2009/12/13 23:42:41 remi Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-base/xorg-drivers/xorg-drivers-1.9.ebuild,v 1.3 2010/12/19 13:08:30 ssuominen Exp $
 
 DESCRIPTION="Meta package containing deps on all xorg drivers"
 HOMEPAGE="http://www.gentoo.org/"
@@ -8,21 +8,26 @@ SRC_URI=""
 
 LICENSE="as-is"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc x86 ~x86-fbsd"
 
 IUSE_INPUT_DEVICES="
 	input_devices_acecad
 	input_devices_aiptek
+	input_devices_cmt
+	input_devices_elographics
 	input_devices_evdev
+	input_devices_fpit
 	input_devices_joystick
 	input_devices_keyboard
 	input_devices_mouse
+	input_devices_penmount
 	input_devices_tslib
 	input_devices_virtualbox
 	input_devices_vmmouse
 	input_devices_void
 	input_devices_synaptics
 	input_devices_wacom
+	input_devices_multitouch
 "
 IUSE_VIDEO_CARDS="
 	video_cards_apm
@@ -41,14 +46,12 @@ IUSE_VIDEO_CARDS="
 	video_cards_impact
 	video_cards_mach64
 	video_cards_mga
-	video_cards_msm
 	video_cards_neomagic
 	video_cards_newport
+	video_cards_nouveau
 	video_cards_nv
-	video_cards_omapfb
 	video_cards_r128
 	video_cards_radeon
-	video_cards_radeonhd
 	video_cards_rendition
 	video_cards_s3
 	video_cards_s3virge
@@ -83,16 +86,21 @@ IUSE="${IUSE_VIDEO_CARDS} ${IUSE_INPUT_DEVICES}"
 PDEPEND="
 	input_devices_acecad?      ( x11-drivers/xf86-input-acecad )
 	input_devices_aiptek?      ( x11-drivers/xf86-input-aiptek )
+	input_devices_cmt?         ( x11-drivers/xf86-input-cmt )
+	input_devices_elographics? ( x11-drivers/xf86-input-elographics )
 	input_devices_evdev?       ( x11-drivers/xf86-input-evdev )
+	input_devices_fpit?        ( x11-drivers/xf86-input-fpit )
 	input_devices_joystick?    ( x11-drivers/xf86-input-joystick )
 	input_devices_keyboard?    ( x11-drivers/xf86-input-keyboard )
 	input_devices_mouse?       ( x11-drivers/xf86-input-mouse )
+	input_devices_penmount?    ( x11-drivers/xf86-input-penmount )
 	input_devices_tslib?       ( x11-drivers/xf86-input-tslib )
 	input_devices_virtualbox?  ( x11-drivers/xf86-input-virtualbox )
 	input_devices_vmmouse?     ( x11-drivers/xf86-input-vmmouse )
 	input_devices_void?        ( x11-drivers/xf86-input-void )
 	input_devices_synaptics?   ( x11-drivers/xf86-input-synaptics )
 	input_devices_wacom?       ( x11-drivers/xf86-input-wacom )
+	input_devices_multitouch?  ( x11-drivers/xf86-input-multitouch )
 
 	video_cards_apm?           ( x11-drivers/xf86-video-apm )
 	video_cards_ark?           ( x11-drivers/xf86-video-ark )
@@ -108,16 +116,14 @@ PDEPEND="
 	video_cards_intel?         ( x11-drivers/xf86-video-intel )
 	video_cards_mach64?        ( x11-drivers/xf86-video-mach64 )
 	video_cards_mga?           ( x11-drivers/xf86-video-mga )
-	video_cards_msm?           ( x11-drivers/xf86-video-msm )
 	video_cards_neomagic?      ( x11-drivers/xf86-video-neomagic )
 	video_cards_newport?       ( x11-drivers/xf86-video-newport )
+	video_cards_nouveau?       ( x11-drivers/xf86-video-nouveau )
 	video_cards_nv?            ( x11-drivers/xf86-video-nv )
 	video_cards_nvidia?        ( x11-drivers/nvidia-drivers )
-	video_cards_omapfb?        ( x11-drivers/xf86-video-omapfb )
 	video_cards_fglrx?         ( x11-drivers/ati-drivers )
 	video_cards_r128?          ( x11-drivers/xf86-video-r128 )
 	video_cards_radeon?        ( x11-drivers/xf86-video-ati )
-	video_cards_radeonhd?      ( x11-drivers/xf86-video-radeonhd )
 	video_cards_rendition?     ( x11-drivers/xf86-video-rendition )
 	video_cards_s3?            ( x11-drivers/xf86-video-s3 )
 	video_cards_s3virge?       ( x11-drivers/xf86-video-s3virge )
@@ -140,11 +146,8 @@ PDEPEND="
 	video_cards_xgi?           ( x11-drivers/xf86-video-xgi )
 
 	!x11-drivers/xf86-input-citron
-	!x11-drivers/xf86-input-elographics
-	!x11-drivers/xf86-input-fpit
 	!x11-drivers/xf86-input-hyperpen
 	!x11-drivers/xf86-input-mutouch
-	!x11-drivers/xf86-input-penmount
 	!x11-drivers/xf86-video-cyrix
 	!x11-drivers/xf86-video-impact
 	!x11-drivers/xf86-video-nsc
