@@ -1,0 +1,33 @@
+diff --git a/configure.ac b/configure.ac
+index b55473f..45528ed 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -404,15 +404,6 @@ MESA_ASM_SOURCES=""
+ GLAPI_ASM_SOURCES=""
+ AC_MSG_CHECKING([whether to enable assembly])
+ test "x$enable_asm" = xno && AC_MSG_RESULT([no])
+-# disable if cross compiling on x86/x86_64 since we must run gen_matypes
+-if test "x$enable_asm" = xyes && test "x$cross_compiling" = xyes; then
+-    case "$host_cpu" in
+-    i?86 | x86_64)
+-        enable_asm=no
+-        AC_MSG_RESULT([no, cross compiling])
+-        ;;
+-    esac
+-fi
+ # check for supported arches
+ if test "x$enable_asm" = xyes; then
+     case "$host_cpu" in
+diff --git a/src/mesa/x86/Makefile b/src/mesa/x86/Makefile
+index 9716dc2..8107176 100644
+--- a/src/mesa/x86/Makefile
++++ b/src/mesa/x86/Makefile
+@@ -21,7 +21,7 @@ clean:
+ 
+ 
+ gen_matypes: gen_matypes.c
+-	$(HOST_CC) $(ARCH_FLAGS) $(INCLUDE_DIRS) $(HOST_CFLAGS) gen_matypes.c -o gen_matypes
++	$(CC) $(ARCH_FLAGS) $(INCLUDE_DIRS) $(CFLAGS) gen_matypes.c -o gen_matypes
+ 
+ # need some special rules here, unfortunately
+ matypes.h: ../main/mtypes.h ../tnl/t_context.h gen_matypes
