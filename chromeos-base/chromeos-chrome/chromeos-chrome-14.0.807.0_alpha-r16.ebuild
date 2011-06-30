@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="91058"
+CROS_SVN_COMMIT="91070"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -541,13 +541,12 @@ src_compile() {
 		# rid of the previous instance first.
 		# We remove only what we will overwrite with the mv below.
 		local deps="${WORKDIR}/${P}/${AUTOTEST_DEPS}"
-		local pyauto="${deps}/pyauto_dep"
-		rm -rf "${pyauto}"/bin "${pyauto}"/pyautolib \
-			"${pyauto}"/third_party
-		mv "${WORKDIR}"/pyauto_src/* "${pyauto}"
 
 		rm -rf "${deps}/chrome_test/test_src"
 		mv "${WORKDIR}/test_src" "${deps}/chrome_test/"
+
+		rm -rf "${deps}/pyauto_dep/test_src"
+		mv "${WORKDIR}/pyauto_src" "${deps}/pyauto_dep/test_src"
 
 		# HACK: It would make more sense to call autotest_src_prepare in
 		# src_prepare, but we need to call install_chrome_test_resources first.
@@ -663,23 +662,30 @@ install_pyauto_dep_resources() {
 
 	echo "Copying PyAuto framework into ${TEST_DIR}"
 
-	mkdir -p ${TEST_DIR}/bin
+	mkdir -p "${TEST_DIR}/out/Release"
+
+	# Copy PyAuto scripts and suppport libs.
+	mkdir -p "${TEST_DIR}"/chrome/test
+	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
+		"${TEST_DIR}"/chrome/test/
+	mkdir -p "${TEST_DIR}"/third_party
+	fast_cp -a "${FROM}"/pyproto "${TEST_DIR}"/out/Release
+	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
 
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip
 	# these executables.
-	for f in _pyautolib.so; do
-		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/bin
-		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/bin/$(basename ${f})
-	done
-
-	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/bin
-	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
-		"${TEST_DIR}"/bin
-	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
-		"${TEST_DIR}"
+	fast_cp -a "${FROM}"/_pyautolib.so "${TEST_DIR}"/out/Release/
+	$(tc-getSTRIP) --strip-unneeded "${TEST_DIR}"/out/Release/_pyautolib.so
 
 	install_third_party_resources "${TEST_DIR}"
+
+	mkdir -p "${TEST_DIR}"/net/tools
+	fast_cp -a "${CHROME_ROOT}"/src/net/tools/testserver \
+		"${TEST_DIR}"/net/tools
+
+	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
+		"${TEST_DIR}"/out/Release
 }
 
 # Copy over things needed from the third_party directory. This function is
