@@ -13,6 +13,7 @@ KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc x86 ~x86-fbsd
 IUSE_INPUT_DEVICES="
 	input_devices_acecad
 	input_devices_aiptek
+	input_devices_cmt
 	input_devices_elographics
 	input_devices_evdev
 	input_devices_fpit
@@ -85,6 +86,7 @@ IUSE="${IUSE_VIDEO_CARDS} ${IUSE_INPUT_DEVICES}"
 PDEPEND="
 	input_devices_acecad?      ( x11-drivers/xf86-input-acecad )
 	input_devices_aiptek?      ( x11-drivers/xf86-input-aiptek )
+	input_devices_cmt?         ( x11-drivers/xf86-input-cmt )
 	input_devices_elographics? ( x11-drivers/xf86-input-elographics )
 	input_devices_evdev?       ( x11-drivers/xf86-input-evdev )
 	input_devices_fpit?        ( x11-drivers/xf86-input-fpit )
