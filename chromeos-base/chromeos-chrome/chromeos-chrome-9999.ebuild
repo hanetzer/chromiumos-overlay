@@ -737,6 +737,12 @@ src_install() {
 	insinto /usr/include/proto
 	doins "${CHROME_ROOT}/src/chrome/browser/policy/proto/"*.proto
 
+	# Copy ibus_input_methods.txt so that ibus-m17n and ibus-xkb-layouts
+	# can exclude unnnecessary input methods based on the file.
+	insinto /usr/share/chromeos-assets/input_methods
+	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
+	doins "${INPUT_METHOD}"/ibus_input_methods.txt
+
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
