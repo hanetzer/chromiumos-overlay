@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="19931dcfa0e7e127582f351dd3d0fd6e8669f0ab"
+CROS_WORKON_COMMIT="6422c81f9a3ce84e11604079b2a61c5fe27e89c5"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot-next"
 
 inherit cros-debug toolchain-funcs
