@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="91151"
+CROS_SVN_COMMIT="91164"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -26,7 +26,8 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 LICENSE="BSD"
 SLOT="0"
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient player_x11 +chrome_thumb"
+
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient +chrome_thumb"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -181,9 +182,6 @@ set_build_defines() {
 		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true";
 		if [ "$(expr match "$ARM_FPU" "vfpv3")" -ne 0 ]; then
 			BUILD_DEFINES="$BUILD_DEFINES v8_can_use_vfp_instructions=true";
-		fi
-		if use player_x11; then
-			BUILD_DEFINES="$BUILD_DEFINES player_x11_renderer=gles"
 		fi
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
@@ -516,11 +514,6 @@ src_compile() {
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 	einfo "Stripped optimization flags for Chrome build"
 
-	TARGETS="chrome chrome_sandbox libosmesa.so default_extensions"
-	if use player_x11; then
-		TARGETS="${TARGETS} player_x11"
-	fi
-
 	# TODO(raymes): Remove this when arm-generic can be built in thumb mode.
 	# See #16430.
 	if [ "$ARCH" = "arm" ] && ! use chrome_thumb; then
@@ -529,7 +522,7 @@ src_compile() {
 	fi
 
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-		${TARGETS} \
+		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
 
@@ -717,9 +710,6 @@ src_install() {
 
 	exeinto "${CHROME_DIR}"
 	doexe "${FROM}"/chrome
-	if use player_x11; then
-		doexe "${FROM}"/player_x11
-	fi
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
 	if use chrome_internal && use chrome_pdf; then
