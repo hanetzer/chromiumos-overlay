@@ -18,7 +18,7 @@ RDEPEND=">=app-i18n/ibus-1.2
 	>=dev-libs/m17n-lib-1.6.1
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-assets
+	chromeos-base/chromeos-chrome
 	>=dev-db/m17n-contrib-1.1.10
 	>=dev-db/m17n-db-1.6.1
 	dev-libs/libxml2
@@ -64,7 +64,8 @@ src_configure() {
 src_compile() {
 	emake || die
 	# Rewrite m17n.xml using the XML output.
-	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/whitelist.txt
+	# ibus_input_methods.txt comes from chromeos-chrome.
+	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/ibus_input_methods.txt
 	python "${FILESDIR}"/filter.py < output.xml \
 	--whitelist="${LIST}" \
 	--rewrite=src/m17n.xml || die

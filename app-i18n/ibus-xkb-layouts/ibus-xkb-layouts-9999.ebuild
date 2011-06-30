@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-assets
+	chromeos-base/chromeos-chrome
 	dev-libs/libxml2
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1
@@ -51,7 +51,8 @@ src_configure() {
 src_compile() {
 	emake || die
 	# Rewrite xkb-layouts.xml using the XML output.
-	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/whitelist.txt
+	# ibus_input_methods.txt comes from chromeos-chrome.
+	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/ibus_input_methods.txt
 	python "${FILESDIR}"/filter.py < output.xml \
 	  --whitelist="${LIST}" \
 	  --rewrite=src/xkb-layouts.xml || die
