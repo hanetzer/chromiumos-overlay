@@ -13,20 +13,13 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 
-RDEPEND="app-i18n/ibus
-	chromeos-base/flimflam
+RDEPEND="chromeos-base/flimflam
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libpcre
 	sys-apps/dbus"
 
 DEPEND="${RDEPEND}
-	app-i18n/ibus-hangul
-	app-i18n/ibus-m17n
-	app-i18n/ibus-mozc
-	app-i18n/ibus-mozc-chewing
-	app-i18n/ibus-pinyin
-	app-i18n/ibus-xkb-layouts
 	chromeos-base/chromeos-assets
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
@@ -48,11 +41,6 @@ src_compile() {
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
-
-	# Add the DEPEND list to the environment.  This will be searched for
-	# ibus engines in order to parse their component definition at build
-	# time.
-	export DEPEND="$DEPEND"
 
 	# Sanity check for load.cc. Detect missing INIT_FUNC() calls.
 	python "${FILESDIR}"/check_load_cc.py < load.cc || \
@@ -82,11 +70,6 @@ src_test() {
 		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
 		export CCFLAGS="$CFLAGS"
 	fi
-
-	# Add the DEPEND list to the environment.  This will be searched for
-	# ibus engines in order to parse their component definition at build
-	# time.
-	export DEPEND="$DEPEND"
 
 	scons -f SConstruct.chromiumos unittest || die
 	./libcros_unittests || die
