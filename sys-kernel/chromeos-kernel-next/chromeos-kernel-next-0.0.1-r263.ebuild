@@ -2,27 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="91ace95c553201fb3d125146c6cc1ef9a58f7f9f"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
+CROS_WORKON_COMMIT="ba1b00520c4278ab20721616f0f2075d41added6"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
 inherit toolchain-funcs
 inherit binutils-funcs
 
-DESCRIPTION="Chrome OS Kernel"
+DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="amd64 x86 arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
+IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG} -device_tree"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
     initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel-next
+    !sys-kernel/chromeos-kernel
 "
-RDEPEND="!sys-kernel/chromeos-kernel-next"
+RDEPEND="!sys-kernel/chromeos-kernel"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -47,8 +47,7 @@ else
 	fi
 fi
 
-# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
-CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -84,11 +83,6 @@ src_configure() {
 	else
 		chromeos/scripts/prepareconfig ${config} || die
 		mv .config "${build_cfg}"
-	fi
-
-	if use blkdevram; then
-		elog "   - adding ram block device config"
-		cat "${FILESDIR}"/blkdevram.config >> "${build_cfg}"
 	fi
 
 	if use fbconsole; then
@@ -173,7 +167,7 @@ src_install() {
 		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
-		local load_addr=0x0080000
+		local load_addr=0x01000000
 		if use device_tree; then
 			local its_script="${build_dir}/its_script"
 			sed "s|%BUILD_ROOT%|${boot_dir}|;\
