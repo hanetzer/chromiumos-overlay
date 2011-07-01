@@ -67,7 +67,7 @@ src_test() {
 		trap 'kill %1 && wait' exit
 		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
 		sleep 2
-		for ut in file_tagger power_supply powerd; do
+		for ut in file_tagger powerd; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
 		done
@@ -84,7 +84,6 @@ src_test() {
 src_install() {
 	dobin "${S}/backlight-tool"
 	dobin "${S}/debug_sleep_quickly"
-	dobin "${S}/power_supply_changed"
 	dobin "${S}/powerd"
 	dobin "${S}/powerm"
 	dobin "${S}/powerd_lock_screen"
@@ -123,10 +122,9 @@ src_install() {
 			"${D}/lib/udev/light-sensor-install.sh"
 	fi
 
-	# Install udev rules
+	# Install light sensor udev rules
 	insinto "/etc/udev/rules.d"
 	doins "${S}/99-light-sensor.rules"
-	doins "${S}/99-power-supply.rules"
 
 	# Nocrit disables low battery suspend percent by setting it to 0
 	if use nocrit; then
