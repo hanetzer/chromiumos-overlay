@@ -119,6 +119,7 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
+	virtual/chromeos-firmware
 	"
 
 # Specifically include the editor we want to appear in chromeos images, so that
@@ -151,7 +152,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cashew
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
-	chromeos-base/chromeos-firmware
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer

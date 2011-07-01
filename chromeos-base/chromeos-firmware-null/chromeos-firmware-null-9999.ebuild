@@ -2,17 +2,25 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="dc3552640e6cf4b05226fefc51ee027d8602f44a"
 CROS_WORKON_PROJECT="chromiumos/platform/firmware"
 
-inherit cros-workon cros-firmware
+# THIS IS A TEMPLATE EBUILD FILE.
+# UNCOMMENT THE 'inherit' LINE TO ACTIVATE AND START YOUR MODIFICATION.
 
-DESCRIPTION="Chrome OS Firmware"
+# inherit cros-workon cros-firmware
+
+DESCRIPTION="Chrome OS Firmware (null template)"
+# Empty (null) ebuild which satisifies virtual/chromeos-firmware.
+# This is a direct dependency of chromeos-base/chromeos, but is expected to
+# be overridden in an overlay for each specialized board.  A typical non-null
+# implementation will install any board-specific configuration files and
+# drivers which are not suitable for inclusion in a generic board overlay.
+
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 CROS_WORKON_LOCALNAME="firmware"

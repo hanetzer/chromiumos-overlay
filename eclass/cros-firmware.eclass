@@ -63,6 +63,9 @@ RDEPEND="
 	sys-apps/mosys
 	sys-apps/util-linux"
 
+# TODO(hungte) remove chromeos-firmware after R14 branch
+RDEPEND="${RDEPEND} =chromeos-base/chromeos-firmware-9998"
+
 # Check for EAPI 2 or 3
 case "${EAPI:-0}" in
 	3|2) ;;
