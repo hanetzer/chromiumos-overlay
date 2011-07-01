@@ -25,7 +25,7 @@ RDEPEND="python? ( >=dev-lang/python-2.5 )
 	>=x11-libs/gtk+-2
 	x11-libs/libX11"
 DEPEND="${RDEPEND}
-	>=dev-util/gtk-doc-1.9
+	doc? ( >=dev-util/gtk-doc-1.9 )
 	dev-util/pkgconfig
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 RDEPEND="${RDEPEND}
