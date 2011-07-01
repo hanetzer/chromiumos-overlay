@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="91230"
+CROS_SVN_COMMIT="91248"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -177,7 +177,7 @@ QA_PRESTRIPPED="*"
 set_build_defines() {
 	# Set proper BUILD_DEFINES for the arch
 	if [ "$ARCH" = "x86" ]; then
-		BUILD_DEFINES="target_arch=ia32 $BUILD_DEFINES";
+		BUILD_DEFINES="target_arch=ia32 enable_smooth_scrolling=1 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
 		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true";
 		if [ "$(expr match "$ARM_FPU" "vfpv3")" -ne 0 ]; then
