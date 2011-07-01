@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b2b1db2608d3abbd9b4e77f180ac0fffe9a5aa9f"
+CROS_WORKON_COMMIT="6c885a38fe0315b50559272e1422ed1a6b746fc5"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -70,8 +70,13 @@ src_install() {
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
 
-	if use webui_login || use touchui ; then
+	if use webui_login ; then
 		insinto /root
 		newins "${S}/use_webui_login" .use_webui_login
+	fi
+
+	if use touchui ; then
+		insinto /root
+		newins "${S}/use_touchui" .use_touchui
 	fi
 }
