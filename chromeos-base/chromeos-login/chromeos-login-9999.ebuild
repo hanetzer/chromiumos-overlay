@@ -60,6 +60,9 @@ src_install() {
 	dosbin "${S}/session_manager"
 	dosbin "${S}/xstart.sh"
 
+	insinto /usr/share/dbus-1/interfaces
+	doins "${S}/session_manager.xml"
+
 	insinto /etc/dbus-1/system.d
 	doins "${S}/SessionManager.conf"
 
