@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9afb5683a79bc4ef6af600fc391cc2b570ede778"
+CROS_WORKON_COMMIT="2df11d2b27357a50719cf3cf07208e3a79aec2ac"
 CROS_WORKON_PROJECT="chromiumos/platform/crosh"
 
 # Files from chromeos-wm are being moved to this package; ensure that we don't
