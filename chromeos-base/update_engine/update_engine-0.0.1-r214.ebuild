@@ -11,7 +11,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="-delta_generator"
+IUSE="cros_host -delta_generator"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-arch/bzip2
@@ -35,6 +35,7 @@ DEPEND="chromeos-base/libchromeos
 	dev-cpp/gmock
 	dev-cpp/gtest
 	dev-libs/dbus-glib
+	cros_host? ( dev-util/scons )
 	${RDEPEND}"
 
 src_compile() {
