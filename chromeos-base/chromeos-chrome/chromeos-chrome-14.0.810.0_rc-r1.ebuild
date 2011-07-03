@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient +chrome_thumb"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -102,7 +102,7 @@ fi
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 use_libchromeos=1 ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -185,6 +185,9 @@ set_build_defines() {
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
 			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
+		fi
+		if use hardfp; then
+			BUILD_DEFINES="$BUILD_DEFINES v8_use_arm_eabi_hardfloat=true"
 		fi
 	else
 		die Unsupported architecture: "${ARCH}"
@@ -513,13 +516,6 @@ src_compile() {
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 	einfo "Stripped optimization flags for Chrome build"
 
-	# TODO(raymes): Remove this when arm-generic can be built in thumb mode.
-	# See #16430.
-	if [ "$ARCH" = "arm" ] && ! use chrome_thumb; then
-		CFLAGS="${CFLAGS} -marm"
-		CXXFLAGS="${CXXFLAGS} -marm"
-	fi
-
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
 		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
@@ -740,6 +736,12 @@ src_install() {
 
 	insinto /usr/include/proto
 	doins "${CHROME_ROOT}/src/chrome/browser/policy/proto/"*.proto
+
+	# Copy ibus_input_methods.txt so that ibus-m17n and ibus-xkb-layouts
+	# can exclude unnnecessary input methods based on the file.
+	insinto /usr/share/chromeos-assets/input_methods
+	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
+	doins "${INPUT_METHOD}"/ibus_input_methods.txt
 
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
