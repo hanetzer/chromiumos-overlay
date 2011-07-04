@@ -17,12 +17,6 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # TODO: Remove the epatch lines when mozc is upgraded.
-  epatch "${FILESDIR}"/fix_14988.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
