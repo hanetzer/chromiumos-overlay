@@ -1,7 +1,7 @@
 From baeac8926ca1f7aad6c64bcea6f771f856811c06 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Mon, 20 Jun 2011 13:12:32 -0700
-Subject: [PATCH 2/8] Add dtget utility to read property values from device tree
+Subject: [PATCH 2/9] Add dtget utility to read property values from device tree
 
 This simply utility makes it easy for scripts to read values from the device
 tree.

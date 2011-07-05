@@ -1,7 +1,7 @@
 From e11bd53441657062b902b5f59873d466b29cbe76 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Sat, 25 Jun 2011 10:48:17 -0700
-Subject: [PATCH 6/8] Add new dtput utility to write values to fdt
+Subject: [PATCH 6/9] Add new dtput utility to write values to fdt
 
 This simple utility allows writing of values into a device tree from the
 command line.

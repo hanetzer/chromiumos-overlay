@@ -1,7 +1,7 @@
 From d46a8fa011ac52f9ed17df3855d97cd838e955c9 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Sat, 25 Jun 2011 10:46:10 -0700
-Subject: [PATCH 5/8] Add utilfdt for common functions, adjust dtget
+Subject: [PATCH 5/9] Add utilfdt for common functions, adjust dtget
 
 This adds a new utility library for performing libfdt operations, and
 modifies dtget to use it.
