@@ -39,11 +39,15 @@ def FilterIBusComponentXml(input_xml, whitelist, output):
   for engine in dom.getElementsByTagName('engine'):
     names = engine.getElementsByTagName('name')
     name = names[0].childNodes[0].data if names else ''
-    # Remove descriptions that are unnecessary for Chrome OS.
-    descriptions = engine.getElementsByTagName('description')
-    if (descriptions and descriptions.length > 0 and
-        descriptions[0].childNodes.length > 0):
-      descriptions[0].childNodes[0].data = ''
+    # Remove elements that are unnecessary for Chrome OS.
+    # Note that we don't remove <license> inside <components>.
+    for element in ['description', 'icon', 'license']:
+      # longname, language, and layout are also unnecessary but we'll keep them
+      # for now in order to make debugging easy.
+      target = engine.getElementsByTagName(element)
+      if (target and target.length > 0 and
+          target[0].childNodes.length > 0):
+        target[0].childNodes[0].data = ''
     # Remove it if it's not in the white list.
     if whitelist and not name in whitelist:
       engine.parentNode.removeChild(engine)
