@@ -1,8 +1,10 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-# How to run the test:
-#   (chroot)$ sudo env FEATURES="test" emerge -a ibus
+# How to run the test manually:
+#   (chroot)$ ./cros_run_unit_tests --packages ibus
+# or
+#   (chroot)$ env FEATURES="test" emerge-x86-generic -a ibus
 
 EAPI="2"
 inherit eutils flag-o-matic toolchain-funcs multilib python
@@ -49,9 +51,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/0004-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/0005-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/0006-Port-the-following-ibus-1.3-patches-to-1.4.patch
-
-	# TODO(yusukes): Submit this to https://github.com/ibus/ibus-cros
-	epatch "${FILESDIR}"/ignore_non_fatal_warnings_in_src_tests.patch
 }
 
 src_configure() {
@@ -63,8 +62,7 @@ src_configure() {
 	       GTK2_IM_MODULE_FLAG=--disable-gtk2
 	fi
 
-	# TODO(yusukes): Fix ibus and remove -Wno-unused-variable.
-	append-cflags -Wall -Wno-unused-variable -Werror
+	append-cflags -Wall -Werror
 	# TODO(petkov): Ideally, configure should support --disable-isocodes but it
 	# seems that the current version doesn't, so use the environment variables
 	# instead to remove the dependence on iso-codes.
@@ -86,46 +84,34 @@ src_configure() {
 
 test_fail() {
 	kill $IBUS_DAEMON_PID
-	rm -rf /tmp/ibus
+	rm -rf /tmp/.ibus-test-socket-*
 	die
 }
 
 src_test() {
-	# Do not execute the test when cross-compiled.
-	if tc-is-cross-compiler ; then
-	   return
-	fi
-
-	# The chroot environment usually does not have /var/lib/dbus/machine-id.
-	# We can safely use "dummy-machine-id" in this case.
-	DBUS_MACHINE_ID="dummy-machine-id"
-	if [ -f /var/lib/dbus/machine-id ] ; then
-	   DBUS_MACHINE_ID=`cat /var/lib/dbus/machine-id`
-	fi
-
 	# Start ibus-daemon background. XDG_CONFIG_HOME variable is necessary
 	# to make g_get_user_config_dir() Glib function happy.
-	env XDG_CONFIG_HOME=/tmp ./bus/ibus-daemon --replace --panel=disable &
+	export IBUS_ADDRESS_FILE="`mktemp -d /tmp/.ibus-test-socket-XXXXXXXXXX`/ibus-socket-file"
+	./bus/ibus-daemon --replace --panel=disable &
 	IBUS_DAEMON_PID=$!
 
 	# Wait for the daemon to start.
-	if [ ! -f /tmp/ibus/bus/${DBUS_MACHINE_ID}-unix-0 ] ; then
+	if [ ! -f ${IBUS_ADDRESS_FILE} ] ; then
 	   sleep .5
 	fi
 
 	# Run tests.
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-bus || test_fail
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-inputcontext || test_fail
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-inputcontext-create \
-	    || test_fail
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-configservice || test_fail
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-factory || test_fail
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-keynames || test_fail
-	env XDG_CONFIG_HOME=/tmp ./src/tests/ibus-serializable || test_fail
+	./src/tests/ibus-bus || test_fail
+	./src/tests/ibus-inputcontext || test_fail
+	./src/tests/ibus-inputcontext-create || test_fail
+	./src/tests/ibus-configservice || test_fail
+	./src/tests/ibus-factory || test_fail
+	./src/tests/ibus-keynames || test_fail
+	./src/tests/ibus-serializable || test_fail
 
 	# Cleanup.
 	kill $IBUS_DAEMON_PID
-	rm -rf /tmp/ibus
+	rm -rf /tmp/.ibus-test-socket-*
 }
 
 src_install() {
@@ -142,7 +128,6 @@ src_install() {
 }
 
 pkg_postinst() {
-
 	elog "To use ibus, you should:"
 	elog "1. Get input engines from sunrise overlay."
 	elog "   Run \"emerge -s ibus-\" in your favorite terminal"
