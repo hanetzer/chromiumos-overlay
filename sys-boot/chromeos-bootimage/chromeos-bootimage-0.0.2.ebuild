@@ -17,10 +17,15 @@ IUSE=""
 
 # TODO(clchiou): this is specifically depended on u-boot-next for now, which
 # implements onestop firmware; this will depend on virtual/u-boot in the future
-DEPEND="arm? ( virtual/tegra-bct
-	sys-boot/chromeos-u-boot-next )
+DEPEND="
+	arm? (
+			!sys-boot/chromeos-bios
+			sys-boot/chromeos-u-boot-next
+			virtual/tegra-bct
+	     )
 	x86? ( sys-boot/chromeos-coreboot )
-	chromeos-base/vboot_reference"
+	chromeos-base/vboot_reference
+	"
 
 RDEPEND="${DEPEND}
 	sys-apps/flashrom"

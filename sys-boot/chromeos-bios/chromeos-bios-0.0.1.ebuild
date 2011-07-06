@@ -12,7 +12,8 @@ SLOT="0"
 KEYWORDS="arm"
 IUSE=""
 
-DEPEND="virtual/tegra-bct
+DEPEND="!sys-boot/chromeos-bootimage
+	virtual/tegra-bct
 	virtual/u-boot
 	chromeos-base/vboot_reference"
 
