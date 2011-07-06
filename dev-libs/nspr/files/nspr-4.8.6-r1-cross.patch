@@ -1,6 +1,6 @@
 diff -Naur nspr-4.8.6_orig/mozilla/nsprpub/configure nspr-4.8.6/mozilla/nsprpub/configure
---- nspr-4.8.6_orig/mozilla/nsprpub/configure	2010-10-20 13:56:11.000000000 -0700
-+++ nspr-4.8.6/mozilla/nsprpub/configure	2010-10-20 13:58:12.000000000 -0700
+--- nspr-4.8.6_orig/mozilla/nsprpub/configure	2011-07-06 16:06:57.000000000 -0700
++++ nspr-4.8.6/mozilla/nsprpub/configure	2011-07-06 16:15:57.000000000 -0700
 @@ -1241,16 +1241,16 @@
  fi
  
@@ -42,3 +42,13 @@ diff -Naur nspr-4.8.6_orig/mozilla/nsprpub/configure nspr-4.8.6/mozilla/nsprpub/
  fi
  rm -f conftest*
  
+@@ -2703,6 +2703,9 @@
+     i?86-apple-darwin*:powerpc-apple-darwin*)
+                                 cross_compiling=yes
+         ;;
++    x86_64-*:i686-*)
++                                cross_compiling=yes
++        ;;
+ esac
+ 
+ if test "$cross_compiling"  = "yes"; then
