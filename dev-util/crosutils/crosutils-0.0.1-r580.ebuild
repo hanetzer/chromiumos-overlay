@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="93b6effb0bf977d74d391ae2b9a9d2c217ea4ee3"
+CROS_WORKON_COMMIT="0737a550b93e29a905e8eb59fb6c7560dab5bfe4"
 CROS_WORKON_PROJECT="chromiumos/platform/crosutils"
 
 inherit cros-workon
