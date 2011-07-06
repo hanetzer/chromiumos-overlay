@@ -22,12 +22,7 @@ DEPEND="${RDEPEND}
 
 # Tarballs in github.com use a special directory naming rule:
 #   "<github_user_name>-<project_name>-<last_commit_in_the_tarball>"
-SRC_DIR="yusukes-ibus-zinnia-f509467"
-
-src_prepare() {
-    cd "${SRC_DIR}" || die
-    epatch "${FILESDIR}"/memory_leak.patch
-}
+SRC_DIR="yusukes-ibus-zinnia-910d66d"
 
 src_configure() {
     cd "${SRC_DIR}" || die
