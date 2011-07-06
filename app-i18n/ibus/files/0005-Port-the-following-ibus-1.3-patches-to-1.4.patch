@@ -1,7 +1,7 @@
-From d8b5da2a6cadacc84d985808c50503d383ee5668 Mon Sep 17 00:00:00 2001
+From bc0827de55225cacbcfe594f6a618948515a5e19 Mon Sep 17 00:00:00 2001
 From: Yusuke Sato <yusukes@chromium.org>
 Date: Wed, 19 Jan 2011 09:55:46 +0900
-Subject: [PATCH 6/6] Port the following ibus-1.3 patches to 1.4.
+Subject: [PATCH 5/7] Port the following ibus-1.3 patches to 1.4.
 
 o Temporary fix for a race condition between
 ibus_config_set_value("preload_engines") and ibus_bus_set_global_engine()
@@ -25,10 +25,10 @@ Review URL: http://codereview.appspot.com/4027042/
  1 files changed, 55 insertions(+), 1 deletions(-)
 
 diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
-index 90cb780..24f2e36 100644
+index b356b2c..ed8e40f 100644
 --- a/bus/ibusimpl.c
 +++ b/bus/ibusimpl.c
-@@ -626,6 +626,23 @@ bus_ibus_impl_reload_config (BusIBusImpl *ibus)
+@@ -627,6 +627,23 @@ bus_ibus_impl_reload_config (BusIBusImpl *ibus)
      }
  }
  
@@ -52,7 +52,7 @@ index 90cb780..24f2e36 100644
  /**
   * _config_value_changed_cb:
   *
-@@ -648,7 +665,16 @@ _config_value_changed_cb (IBusConfig  *config,
+@@ -649,7 +666,16 @@ _config_value_changed_cb (IBusConfig  *config,
      for (i = 0; i < G_N_ELEMENTS (bus_ibus_impl_config_items); i++) {
          if (g_strcmp0 (bus_ibus_impl_config_items[i].section, section) == 0 &&
              g_strcmp0 (bus_ibus_impl_config_items[i].key, key) == 0) {
@@ -70,7 +70,7 @@ index 90cb780..24f2e36 100644
              break;
          }
      }
-@@ -1607,6 +1633,32 @@ _ibus_list_engines (BusIBusImpl           *ibus,
+@@ -1637,6 +1663,32 @@ _ibus_list_engines (BusIBusImpl           *ibus,
      g_dbus_method_invocation_return_value (invocation, g_variant_new ("(av)", &builder));
  }
  
@@ -103,7 +103,7 @@ index 90cb780..24f2e36 100644
  /**
   * _ibus_list_active_engines:
   *
-@@ -1619,6 +1671,7 @@ _ibus_list_active_engines (BusIBusImpl           *ibus,
+@@ -1649,6 +1701,7 @@ _ibus_list_active_engines (BusIBusImpl           *ibus,
  {
      GVariantBuilder builder;
      g_variant_builder_init (&builder, G_VARIANT_TYPE ("av"));
@@ -111,7 +111,7 @@ index 90cb780..24f2e36 100644
  
      GList *p;
      for (p = ibus->engine_list; p != NULL; p = p->next) {
-@@ -1834,6 +1887,7 @@ _ibus_set_global_engine (BusIBusImpl           *ibus,
+@@ -1829,6 +1882,7 @@ _ibus_set_global_engine (BusIBusImpl           *ibus,
      const gchar *engine_name = NULL;
      g_variant_get (parameters, "(&s)", &engine_name);
  

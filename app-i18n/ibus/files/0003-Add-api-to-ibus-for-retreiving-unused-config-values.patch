@@ -1,7 +1,7 @@
-From 70ad5afa19e9eba91cbfe0902cf738f87ee1df16 Mon Sep 17 00:00:00 2001
+From bc8a5a88c0bf9f876e165d420ad4a8a896a6f972 Mon Sep 17 00:00:00 2001
 From: Zach Kuznia <zork@chromium.org>
 Date: Thu, 1 Jul 2010 14:08:00 +0900
-Subject: [PATCH 4/6] Add api to ibus for retreiving unused config values.
+Subject: [PATCH 3/7] Add api to ibus for retreiving unused config values.
 
 This will be used by our autotest scripts to generate an error when input method config values change.
 
@@ -12,20 +12,20 @@ Review URL: http://codereview.chromium.org/2860022
 
 Ported this change to ibus-1.4 by Peng Huang & Yusuke Sato
 ---
- gconf/config.c          |   16 ++++++++
- ibus/config.py          |   12 ++++++
- memconf/config.c        |   88 ++++++++++++++++++++++++++++++++++++++++------
- src/ibusconfig.c        |   34 ++++++++++++++++++
- src/ibusconfig.h        |   15 +++++++-
- src/ibusconfigservice.c |   41 ++++++++++++++++++++++
+ gconf/config.c          |   16 ++++++++++
+ ibus/config.py          |   12 +++++++
+ memconf/config.c        |   77 +++++++++++++++++++++++++++++++++++++++++-----
+ src/ibusconfig.c        |   34 ++++++++++++++++++++
+ src/ibusconfig.h        |   15 ++++++++-
+ src/ibusconfigservice.c |   41 +++++++++++++++++++++++++
  src/ibusconfigservice.h |    7 +++-
- 7 files changed, 198 insertions(+), 15 deletions(-)
+ 7 files changed, 190 insertions(+), 12 deletions(-)
 
 diff --git a/gconf/config.c b/gconf/config.c
-index df1976c..15325ff 100644
+index 64f1c47..1cf2f8d 100644
 --- a/gconf/config.c
 +++ b/gconf/config.c
-@@ -34,6 +34,10 @@ static gboolean     ibus_config_gconf_unset_value   (IBusConfigService      *con
+@@ -37,6 +37,10 @@ static gboolean     ibus_config_gconf_unset_value   (IBusConfigService      *con
                                                       const gchar            *section,
                                                       const gchar            *name,
                                                       GError                **error);
@@ -36,15 +36,15 @@ index df1976c..15325ff 100644
  static GConfValue   *_to_gconf_value                (GVariant               *value);
  static GVariant     *_from_gconf_value              (const GConfValue       *gvalue);
  
-@@ -48,6 +52,7 @@ ibus_config_gconf_class_init (IBusConfigGConfClass *class)
-     IBUS_CONFIG_SERVICE_CLASS (object_class)->set_value   = ibus_config_gconf_set_value;
+@@ -52,6 +56,7 @@ ibus_config_gconf_class_init (IBusConfigGConfClass *class)
      IBUS_CONFIG_SERVICE_CLASS (object_class)->get_value   = ibus_config_gconf_get_value;
+     IBUS_CONFIG_SERVICE_CLASS (object_class)->get_values  = ibus_config_gconf_get_values;
      IBUS_CONFIG_SERVICE_CLASS (object_class)->unset_value = ibus_config_gconf_unset_value;
 +    IBUS_CONFIG_SERVICE_CLASS (object_class)->get_unused = ibus_config_gconf_get_unused;
  }
  
  static void
-@@ -300,6 +305,17 @@ ibus_config_gconf_unset_value (IBusConfigService      *config,
+@@ -334,6 +339,17 @@ ibus_config_gconf_unset_value (IBusConfigService      *config,
      return TRUE;
  }
  
@@ -63,10 +63,10 @@ index df1976c..15325ff 100644
  ibus_config_gconf_new (GDBusConnection *connection)
  {
 diff --git a/ibus/config.py b/ibus/config.py
-index 0f6e80f..49649bd 100644
+index 7a0557f..82466b8 100644
 --- a/ibus/config.py
 +++ b/ibus/config.py
-@@ -49,6 +49,9 @@ class ConfigBase(object.Object):
+@@ -52,6 +52,9 @@ class ConfigBase(object.Object):
      def unset_value(self, section, name):
          pass
  
@@ -76,7 +76,7 @@ index 0f6e80f..49649bd 100644
      def value_changed(self, section, name, value):
          self.__proxy.ValueChanged(section, name, value)
  
-@@ -68,6 +71,9 @@ class ConfigProxy(interface.IConfig):
+@@ -74,6 +77,9 @@ class ConfigProxy(interface.IConfig):
      def UnsetValue(self, section, name):
          return self.__config.unset_value(section, name)
  
@@ -86,7 +86,7 @@ index 0f6e80f..49649bd 100644
      def Destroy(self):
          self.__config.destroy()
  
-@@ -145,6 +151,12 @@ class Config(object.Object):
+@@ -157,6 +163,12 @@ class Config(object.Object):
          except:
              return
  
@@ -100,7 +100,7 @@ index 0f6e80f..49649bd 100644
          return self.set_value(section, name, dbus.Array(value, signature=signature))
  
 diff --git a/memconf/config.c b/memconf/config.c
-index a5aa190..ba738c4 100644
+index dd18f2e..750887c 100644
 --- a/memconf/config.c
 +++ b/memconf/config.c
 @@ -29,6 +29,8 @@ typedef struct _IBusConfigMemconfClass IBusConfigMemconfClass;
@@ -112,7 +112,7 @@ index a5aa190..ba738c4 100644
  };
  
  struct _IBusConfigMemconfClass {
-@@ -52,6 +54,10 @@ static gboolean     ibus_config_memconf_unset_value (IBusConfigService      *con
+@@ -55,6 +57,10 @@ static gboolean     ibus_config_memconf_unset_value (IBusConfigService      *con
                                                       const gchar            *section,
                                                       const gchar            *name,
                                                       GError                **error);
@@ -123,15 +123,15 @@ index a5aa190..ba738c4 100644
  
  G_DEFINE_TYPE (IBusConfigMemconf, ibus_config_memconf, IBUS_TYPE_CONFIG_SERVICE)
  
-@@ -64,6 +70,7 @@ ibus_config_memconf_class_init (IBusConfigMemconfClass *class)
-     IBUS_CONFIG_SERVICE_CLASS (object_class)->set_value   = ibus_config_memconf_set_value;
+@@ -68,6 +74,7 @@ ibus_config_memconf_class_init (IBusConfigMemconfClass *class)
      IBUS_CONFIG_SERVICE_CLASS (object_class)->get_value   = ibus_config_memconf_get_value;
+     IBUS_CONFIG_SERVICE_CLASS (object_class)->get_values  = ibus_config_memconf_get_values;
      IBUS_CONFIG_SERVICE_CLASS (object_class)->unset_value = ibus_config_memconf_unset_value;
 +    IBUS_CONFIG_SERVICE_CLASS (object_class)->get_unused  = ibus_config_memconf_get_unused;
  }
  
  static void
-@@ -71,14 +78,25 @@ ibus_config_memconf_init (IBusConfigMemconf *config)
+@@ -75,14 +82,25 @@ ibus_config_memconf_init (IBusConfigMemconf *config)
  {
      config->values = g_hash_table_new_full (g_str_hash,
                                              g_str_equal,
@@ -159,28 +159,23 @@ index a5aa190..ba738c4 100644
      IBUS_OBJECT_CLASS (ibus_config_memconf_parent_class)->destroy ((IBusObject *)config);
  }
  
-@@ -95,7 +113,14 @@ ibus_config_memconf_set_value (IBusConfigService *config,
-     g_assert (value);
-     g_assert (error == NULL || *error == NULL);
+@@ -101,6 +119,12 @@ ibus_config_memconf_set_value (IBusConfigService *config,
  
--    gchar *key = g_strdup_printf ("%s:%s", section, name);
-+    gchar *key = g_strdup_printf ("%s%s", section, name);
-+
-+
+     gchar *key = g_strdup_printf ("%s:%s", section, name);
+ 
 +    if (g_hash_table_lookup (
 +            IBUS_CONFIG_MEMCONF (config)->values, key) == NULL) {
 +        g_hash_table_insert (IBUS_CONFIG_MEMCONF (config)->unread,
 +                             g_strdup (key), NULL);
 +    }
- 
++
      g_hash_table_insert (IBUS_CONFIG_MEMCONF (config)->values,
                           key, g_variant_ref_sink (value));
-@@ -116,17 +141,22 @@ ibus_config_memconf_get_value (IBusConfigService *config,
-     g_assert (name);
+ 
+@@ -121,16 +145,21 @@ ibus_config_memconf_get_value (IBusConfigService *config,
      g_assert (error == NULL || *error == NULL);
  
--    gchar *key = g_strdup_printf ("%s:%s", section, name);
-+    gchar *key = g_strdup_printf ("%s%s", section, name);
+     gchar *key = g_strdup_printf ("%s:%s", section, name);
 +
      GVariant *value = (GVariant *)g_hash_table_lookup (IBUS_CONFIG_MEMCONF (config)->values, key);
 -    g_free (key);
@@ -205,21 +200,22 @@ index a5aa190..ba738c4 100644
      return value;
  }
  
-@@ -141,11 +171,11 @@ ibus_config_memconf_unset_value (IBusConfigService *config,
-     g_assert (name);
-     g_assert (error == NULL || *error == NULL);
+@@ -173,13 +202,13 @@ ibus_config_memconf_unset_value (IBusConfigService *config,
  
--    gchar *key = g_strdup_printf ("%s:%s", section, name);
-+    gchar *key = g_strdup_printf ("%s%s", section, name);
+     gchar *key = g_strdup_printf ("%s:%s", section, name);
      gboolean retval = g_hash_table_remove (IBUS_CONFIG_MEMCONF (config)->values, key);
 -    g_free (key);
  
      if (retval) {
+         ibus_config_service_value_changed (config,
+                                            section,
+                                            name,
+                                            g_variant_new_tuple (NULL, 0));
 +        g_hash_table_remove (IBUS_CONFIG_MEMCONF (config)->unread, key);
      }
      else {
          if (error && *error) {
-@@ -153,9 +183,43 @@ ibus_config_memconf_unset_value (IBusConfigService *config,
+@@ -187,9 +216,39 @@ ibus_config_memconf_unset_value (IBusConfigService *config,
                                    "Config value [%s:%s] does not exist.", section, name);
          }
      }
@@ -233,22 +229,18 @@ index a5aa190..ba738c4 100644
 +                                GVariant              **unwritten,
 +                                GError                **error)
 +{
-+    GList *keys;
-+    GList *p;
 +    GVariantBuilder builder;
-+
++    GList *keys, *p;
++    
 +    g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
-+
 +    keys = g_hash_table_get_keys (IBUS_CONFIG_MEMCONF (config)->unread);
 +    for (p = keys; p != NULL; p = p->next) {
 +        g_variant_builder_add (&builder, "s", (const gchar *)p->data);
 +    }
 +    g_list_free (keys);
-+
 +    *unread = g_variant_builder_end (&builder);
 +
 +    g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
-+
 +    keys = g_hash_table_get_keys (IBUS_CONFIG_MEMCONF (config)->unwritten);
 +    for (p = keys; p != NULL; p = p->next) {
 +        g_variant_builder_add (&builder, "s", (const gchar *)p->data);
@@ -264,10 +256,10 @@ index a5aa190..ba738c4 100644
  ibus_config_memconf_new (GDBusConnection *connection)
  {
 diff --git a/src/ibusconfig.c b/src/ibusconfig.c
-index 6a98c46..e6fd258 100644
+index 36ef44b..31251bc 100644
 --- a/src/ibusconfig.c
 +++ b/src/ibusconfig.c
-@@ -347,3 +347,37 @@ ibus_config_unset (IBusConfig   *config,
+@@ -486,3 +486,37 @@ ibus_config_unset (IBusConfig   *config,
      g_variant_unref (result);
      return TRUE;
  }
@@ -306,10 +298,10 @@ index 6a98c46..e6fd258 100644
 +    return TRUE;
 +}
 diff --git a/src/ibusconfig.h b/src/ibusconfig.h
-index 292d4ba..4e4846d 100644
+index 07f5ce8..ac24f46 100644
 --- a/src/ibusconfig.h
 +++ b/src/ibusconfig.h
-@@ -224,6 +224,19 @@ gboolean         ibus_config_unset      (IBusConfig         *config,
+@@ -302,6 +302,19 @@ gboolean         ibus_config_unset      (IBusConfig         *config,
  
  /* FIXME add an asynchronous version of unset */
  
@@ -331,10 +323,10 @@ index 292d4ba..4e4846d 100644
  #endif
 -
 diff --git a/src/ibusconfigservice.c b/src/ibusconfigservice.c
-index 6420730..b36c201 100644
+index 937dfdd..124bea2 100644
 --- a/src/ibusconfigservice.c
 +++ b/src/ibusconfigservice.c
-@@ -83,6 +83,10 @@ static gboolean  ibus_config_service_unset_value     (IBusConfigService      *co
+@@ -86,6 +86,10 @@ static gboolean  ibus_config_service_unset_value     (IBusConfigService      *co
                                                        const gchar            *section,
                                                        const gchar            *name,
                                                        GError                **error);
@@ -345,7 +337,7 @@ index 6420730..b36c201 100644
  
  G_DEFINE_TYPE (IBusConfigService, ibus_config_service, IBUS_TYPE_SERVICE)
  
-@@ -108,6 +112,10 @@ static const gchar introspection_xml[] =
+@@ -115,6 +119,10 @@ static const gchar introspection_xml[] =
      "      <arg type='s' name='name' />"
      "      <arg type='v' name='value' />"
      "    </signal>"
@@ -356,15 +348,15 @@ index 6420730..b36c201 100644
      "  </interface>"
      "</node>";
  
-@@ -130,6 +138,7 @@ ibus_config_service_class_init (IBusConfigServiceClass *class)
-     class->set_value   = ibus_config_service_set_value;
+@@ -138,6 +146,7 @@ ibus_config_service_class_init (IBusConfigServiceClass *class)
      class->get_value   = ibus_config_service_get_value;
+     class->get_values  = ibus_config_service_get_values;
      class->unset_value = ibus_config_service_unset_value;
 +    class->get_unused  = ibus_config_service_get_unused;
  }
  
  static void
-@@ -254,6 +263,25 @@ ibus_config_service_service_method_call (IBusService           *service,
+@@ -283,6 +292,25 @@ ibus_config_service_service_method_call (IBusService           *service,
          return;
      }
  
@@ -390,7 +382,7 @@ index 6420730..b36c201 100644
      /* should not be reached */
      g_return_if_reached ();
  }
-@@ -352,6 +380,19 @@ ibus_config_service_new (GDBusConnection *connection)
+@@ -393,6 +421,19 @@ ibus_config_service_new (GDBusConnection *connection)
      return IBUS_CONFIG_SERVICE (object);
  }
  
@@ -411,12 +403,12 @@ index 6420730..b36c201 100644
  ibus_config_service_value_changed (IBusConfigService  *config,
                                     const gchar        *section,
 diff --git a/src/ibusconfigservice.h b/src/ibusconfigservice.h
-index 1aab32f..c6c62ae 100644
+index 23dcfc6..84ac0ae 100644
 --- a/src/ibusconfigservice.h
 +++ b/src/ibusconfigservice.h
-@@ -200,10 +200,14 @@ struct _IBusConfigServiceClass {
+@@ -203,10 +203,14 @@ struct _IBusConfigServiceClass {
+     GVariant *  (* get_values)  (IBusConfigService    *config,
                                   const gchar          *section,
-                                  const gchar          *name,
                                   GError              **error);
 +    gboolean    (* get_unused)  (IBusConfigService    *config,
 +                                 GVariant            **unread,
@@ -425,12 +417,12 @@ index 1aab32f..c6c62ae 100644
  
      /*< private >*/
      /* padding */
--    gpointer pdummy[13];
-+    gpointer pdummy[12];
+-    gpointer pdummy[12];
++    gpointer pdummy[11];
  };
  
  GType                ibus_config_service_get_type   (void);
-@@ -235,4 +239,3 @@ void                 ibus_config_service_value_changed
+@@ -238,4 +242,3 @@ void                 ibus_config_service_value_changed
  
  G_END_DECLS
  #endif

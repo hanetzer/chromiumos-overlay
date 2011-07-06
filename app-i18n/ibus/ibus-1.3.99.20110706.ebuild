@@ -47,10 +47,10 @@ src_prepare() {
 	#epatch "${FILESDIR}"/0001-Merge-xkb-related-changes.patch
 	#epatch "${FILESDIR}"/0002-Support-changing-the-global-input-method-engine-with.patch
 
-	epatch "${FILESDIR}"/0003-Change-default-values-of-some-config.patch
-	epatch "${FILESDIR}"/0004-Add-api-to-ibus-for-retreiving-unused-config-values.patch
-	epatch "${FILESDIR}"/0005-Remove-bus_input_context_register_properties-props_e.patch
-	epatch "${FILESDIR}"/0006-Port-the-following-ibus-1.3-patches-to-1.4.patch
+        epatch "${FILESDIR}"/0003-Add-api-to-ibus-for-retreiving-unused-config-values.patch
+	epatch "${FILESDIR}"/0004-Remove-bus_input_context_register_properties-props_e.patch
+	epatch "${FILESDIR}"/0005-Port-the-following-ibus-1.3-patches-to-1.4.patch
+        epatch "${FILESDIR}"/0007-Change-default-values-of-some-config.patch
 }
 
 src_configure() {
