@@ -91,14 +91,6 @@ src_install() {
 	insinto /usr/share/dbus-1/services/
 	doins "${S}/share/org.chromium.Cryptohome.service"
 
-	dodir /usr/lib/chromeos-cryptohome
-	insinto /usr/lib/chromeos-cryptohome
-	doins "${S}"/lib/*
-
-	dodir /usr/lib/chromeos-cryptohome/utils
-	insinto /usr/lib/chromeos-cryptohome/utils
-	doins "${S}"/lib/utils/*
-
 	# For opencryptoki.
 	dodir /etc/skel/.tpm
 }
