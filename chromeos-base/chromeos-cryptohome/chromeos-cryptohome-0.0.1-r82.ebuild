@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c598fd88a6741bf00f9c5be679b532ae5eba0d7c"
+CROS_WORKON_COMMIT="2b4d65155c0a4c7339725cc714a1587bcdbaf919"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -91,14 +91,6 @@ src_install() {
 	dodir /usr/share/dbus-1/services/
 	insinto /usr/share/dbus-1/services/
 	doins "${S}/share/org.chromium.Cryptohome.service"
-
-	dodir /usr/lib/chromeos-cryptohome
-	insinto /usr/lib/chromeos-cryptohome
-	doins "${S}"/lib/*
-
-	dodir /usr/lib/chromeos-cryptohome/utils
-	insinto /usr/lib/chromeos-cryptohome/utils
-	doins "${S}"/lib/utils/*
 
 	# For opencryptoki.
 	dodir /etc/skel/.tpm
