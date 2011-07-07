@@ -50,11 +50,21 @@ get_required_config() {
 	esac
 }
 
+# TODO: remove this once cros_bundle_firmware is complete
 get_fdt_name() {
 	local name=${PKG_CONFIG#pkg-config-}
 
 	if use arm; then
 		echo "${name}" | tr _ '-'
+	fi
+}
+
+# Returns the directory containing the dts files
+get_fdt_dir() {
+	local name=${PKG_CONFIG#pkg-config-}
+
+	if use arm; then
+		echo "board/nvidia/seaboard"
 	fi
 }
 
@@ -119,6 +129,15 @@ src_install() {
 	for file in ${files_to_copy}; do
 		doins "${file}" || die
 	done
+
+	# Install device tree source files
+	if [ -n "$(get_fdt_dir)" ]; then
+		dodir "${inst_dir}/dts"
+		insinto "${inst_dir}/dts"
+		for file in "$(get_fdt_dir)"/*.dts "$(get_fdt_dir)"/*.dtsi; do
+			doins "${file}" || die
+		done
+	fi
 
 	if use x86; then
 		newins "u-boot" u-boot.elf || die
