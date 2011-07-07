@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="91660"
+CROS_SVN_COMMIT="91661"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -214,7 +214,7 @@ set_build_defines() {
 		export CHROME_BUILD_TYPE='_official'
 	elif use chrome_media; then
     echo "Building Chromium with additional media codecs and containers."
-		BUILD_DEFINES="ffmpeg_branding=Chrome proprietary_codecs=1 $BUILD_DEFINES"
+		BUILD_DEFINES="ffmpeg_branding=ChromeOS proprietary_codecs=1 $BUILD_DEFINES"
 	fi
 
 	if use touchui; then
