@@ -130,6 +130,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-i915g-lie.patch
 	epatch "${FILESDIR}"/7.11-pkgconfig.patch
 	epatch "${FILESDIR}"/7.11-i915g-disable-aapoint-aaline.patch
+	epatch "${FILESDIR}"/7.11-Revert-i915-Eliminate-redundant-CONSTANTS-updates.patch
 
 	eautoreconf
 }
