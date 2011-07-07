@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -13,8 +13,8 @@ SLOT="0"
 KEYWORDS="~arm ~x86"
 IUSE=""
 
-DEPEND="chromeos-base/vboot_reference-firmware
-	chromeos-base/u-boot-config
+# TODO(clchiou): coreboot couldn't care less about vboot for now
+DEPEND="arm? ( chromeos-base/vboot_reference-firmware )
 	!sys-boot/chromeos-u-boot-next"
 
 RDEPEND="${DEPEND}
@@ -28,117 +28,117 @@ inherit cros-workon
 
 BUILD_ROOT="${WORKDIR}/${P}/builds"
 
-
-# The following will take the three first words, each with trailing underscore
-# out of CHROMEOS_U_BOOT_CONFIG and use it as the u-boot configuration prefix.
-# TODO(vbendeb): clean up overlay make.conf files to straighten use of
-# CHROMEOS_U_BOOT_CONFIG, then CONFIG_PREFIX could be set equal
-# CHROMEOS_U_BOOT_CONFIG
-CONFIG_PREFIX="$(expr \
-    "${CHROMEOS_U_BOOT_CONFIG}" : '\(\([a-z0-9]\+_\)\{3\}\)')"
-
-ALL_UBOOT_FLAVORS='developer flasher legacy normal recovery stub'
+# TODO(vbendeb): this will have to be populated when it becomes necessary to
+# build different config flavors.
+ALL_UBOOT_FLAVORS=''
 IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
+UB_ARCH="$(tc-arch-kernel)"
+COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
 
+# TODO(clchiou): coreboot couldn't care less about vboot for now
+use arm && COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 if use cros-debug; then
-	VBOOT_DEBUG="VBOOT_DEBUG=1"
-else
-	VBOOT_DEBUG=
+	use arm && COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 fi
 
-get_required_configs() {
-	local flavor
-	local all_configs=''
-	local required_configs=''
+get_required_config() {
+	case "${UB_ARCH}" in
+		(arm) echo 'chromeos_seaboard_onestop_config';;
+		(i386) echo 'coreboot-x86_config';;
+		(*) die "can not build for unknown architecture ${UB_ARCH}";;
+	esac
+}
 
-	for flavor in ${ALL_UBOOT_FLAVORS}; do
-		local config
-		config=" ${CONFIG_PREFIX}${flavor}_config"
-		if use "${flavor}"; then
-			required_configs+="${config}"
-		fi
-		all_configs+="${config}"
-	done
+# TODO: remove this once cros_bundle_firmware is complete
+get_fdt_name() {
+	local name=${PKG_CONFIG#pkg-config-}
 
-	# If no particular config(s) is(are) requested through USE flags,
-	# build all of them.
-	if [ -z "${required_configs}" ]; then
-		echo -n "${all_configs}"
-	else
-		echo -n "${required_configs}"
+	if use arm; then
+		echo "${name}" | tr _ '-'
 	fi
 }
 
-REQUIRED_UBOOT_CONFIGS="$(get_required_configs)"
+# Returns the directory containing the dts files
+get_fdt_dir() {
+	local name=${PKG_CONFIG#pkg-config-}
+
+	if use arm; then
+		echo "board/nvidia/seaboard"
+	fi
+}
+
+if use arm; then
+	COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
+	# We will supply an fdt at run time
+	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1 DEV_TREE_SRC=$(get_fdt_name)"
+fi
+
 
 src_configure() {
 	local config
+	config=$(get_required_config)
+	elog "Using U-Boot config: ${config}"
+	dtb=$(get_fdt_name)
+	if [ -n "${dtb}" ]; then
+		elog "Using fdt: ${dtb}"
+	else
+		elog "Not building fdt"
+	fi
 
-	for config in ${REQUIRED_UBOOT_CONFIGS}; do
-		local build_root="${BUILD_ROOT}/${config}"
-		elog "Using U-Boot config: ${config}"
-
-		emake \
-		  O="${build_root}" \
-		  ARCH=$(tc-arch-kernel) \
-		  CROSS_COMPILE="${CHOST}-" \
-		  ${VBOOT_DEBUG} \
-		  distclean
-		emake \
-		  O="${build_root}" \
-		  ARCH=$(tc-arch-kernel) \
-		  CROSS_COMPILE="${CHOST}-" \
-		  USE_PRIVATE_LIBGCC=yes \
-		  ${VBOOT_DEBUG} \
-		  ${config} || die "U-Boot configuration ${config} failed"
-	done
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		distclean
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		${config} || die "U-Boot configuration ${config} failed"
 }
 
 src_compile() {
 	local config
 	tc-getCC
 
-	for config in ${REQUIRED_UBOOT_CONFIGS}; do
-	  emake \
-	    O="${BUILD_ROOT}/${config}" \
-	    ARCH=$(tc-arch-kernel) \
-	    CROSS_COMPILE="${CHOST}-" \
-	    USE_PRIVATE_LIBGCC=yes \
-	    HOSTCC=${CC} \
-	    HOSTSTRIP=true \
-	    VBOOT="${ROOT%/}/usr" \
-	    CROS_CONFIG_PATH="${ROOT%/}/u-boot" \
-	    ${VBOOT_DEBUG} \
-	    all || die "U-Boot compile ${config} failed"
-	done
+	config=$(get_required_config)
+	emake \
+		${COMMON_MAKE_FLAGS} \
+		HOSTCC=${CC} \
+		HOSTSTRIP=true \
+		all || die "U-Boot compile ${config} failed"
 }
 
 src_install() {
 	local config
-	local build_root
-	local common_files_installed='n'
+	local inst_dir
 
-	dodir /u-boot
-	insinto /u-boot
+	if use x86; then
+		inst_dir='/coreboot'
+	else
+		inst_dir='/u-boot'
+	fi
 
-	for config in ${REQUIRED_UBOOT_CONFIGS}; do
-		local build_root="${BUILD_ROOT}/${config}"
-		local dest_file_name="u-boot-${config#${CONFIG_PREFIX}}"
+	dodir "${inst_dir}"
+	insinto "${inst_dir}"
 
-		dest_file_name="${dest_file_name%_config}.bin"
-		newins "${build_root}/u-boot.bin" ${dest_file_name} || die
+	config=$(get_required_config)
+	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
 
-		if [ "${common_files_installed}" == 'n' ]; then
-			doins "${build_root}/System.map" || die
-			doins "${build_root}/include/autoconf.mk" || die
-			dobin "${build_root}/tools/mkimage" || die
-			common_files_installed='y'
-		fi
+	if [ -n "$(get_fdt_name)" ]; then
+		files_to_copy+=" u-boot.dtb"
+	fi
 
-		# TODO(vbendeb): remove this after transition to generation of
-		# aggregate u-boot.bin is finished.
-		if [ "${dest_file_name}" == "u-boot-recovery.bin" ]; then
-			doins "${build_root}/u-boot.bin" || die
-		fi
+	for file in ${files_to_copy}; do
+		doins "${file}" || die
 	done
+
+	# Install device tree source files
+	if [ -n "$(get_fdt_dir)" ]; then
+		dodir "${inst_dir}/dts"
+		insinto "${inst_dir}/dts"
+		for file in "$(get_fdt_dir)"/*.dts "$(get_fdt_dir)"/*.dtsi; do
+			doins "${file}" || die
+		done
+	fi
+
+	if use x86; then
+		newins "u-boot" u-boot.elf || die
+	fi
 }

@@ -9,7 +9,7 @@ DESCRIPTION="ChromeOS BIOS builder"
 HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
-KEYWORDS="arm"
+KEYWORDS="~arm"
 IUSE=""
 
 DEPEND="!sys-boot/chromeos-bootimage

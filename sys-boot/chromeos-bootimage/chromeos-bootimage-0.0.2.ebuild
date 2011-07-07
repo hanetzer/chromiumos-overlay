@@ -12,16 +12,11 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
-# TODO(clchiou): pack and install legacy_image.bin when chromeos-u-boot-next
-# generates a legacy u-boot image.
-
-# TODO(clchiou): this is specifically depended on u-boot-next for now, which
-# implements onestop firmware; this will depend on virtual/u-boot in the future
 DEPEND="
 	arm? (
 			!sys-boot/chromeos-bios
-			sys-boot/chromeos-u-boot-next
 			virtual/tegra-bct
+			virtual/u-boot
 	     )
 	x86? ( sys-boot/chromeos-coreboot )
 	chromeos-base/vboot_reference
