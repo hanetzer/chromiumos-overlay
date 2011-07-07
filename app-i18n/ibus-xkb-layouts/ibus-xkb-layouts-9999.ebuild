@@ -23,12 +23,12 @@ DEPEND="${RDEPEND}
 
 CROS_WORKON_SUBDIR="files"
 
-XKB_RULES="/usr/share/X11/xkb/rules/xorg.xml"
+XKB_RULES="/usr/share/X11/xkb/rules/evdev.xml"
 
 src_prepare() {
 	NOCONFIGURE=1 ./autogen.sh
 	# Build ibus-engine-xkb-layouts for the host platform.
-	# Use xorg.xml in SYSROOT/usr rather than /usr here for code
+	# Use evdev.xml in SYSROOT/usr rather than /usr here for code
 	# generation (i.e. one in /usr can be different from the one in
 	# SYSROOT/usr). See also comments in src_configure.
 	(env -i ./configure $CONFIGURE_OPTIONS \
@@ -42,8 +42,7 @@ src_prepare() {
 }
 
 src_configure() {
-	# Since X for Chrome OS does not use evdev, we use xorg.xml.
-	# Use xorg.xml in /usr as the path will be embedded into
+	# Use evdev.xml in /usr as the path will be embedded into
 	# ibus-xkb-layouts production binary.
 	econf --with-xkb-rules-xml="${XKB_RULES}" || die
 }
