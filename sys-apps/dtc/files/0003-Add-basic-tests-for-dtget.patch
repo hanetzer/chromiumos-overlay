@@ -1,7 +1,7 @@
-From 97fdf67bbe5f666cef2f0484d603c20a0755a8d3 Mon Sep 17 00:00:00 2001
+From a8a7df45d4171a19f7b9ad946fd463c26a3cd8ec Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Mon, 20 Jun 2011 16:15:51 -0700
-Subject: [PATCH 3/9] Add basic tests for dtget
+Subject: [PATCH 03/10] Add basic tests for dtget
 
 
 Signed-off-by: Simon Glass <sjg@chromium.org>

@@ -1,7 +1,7 @@
-From 81adb63a571f793d55e893fac8ced0c025e67610 Mon Sep 17 00:00:00 2001
+From 1066899da06e300fd5e0f6c441e026bd92159294 Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Tue, 5 Jul 2011 11:13:26 -0700
-Subject: [PATCH 9/9] dtput: Support adding strings with spaces
+Subject: [PATCH 09/10] dtput: Support adding strings with spaces
 
 Previously dtput would use sscanf() to read the string from the command line,
 even if no format string was provided. Thus it would split up words at

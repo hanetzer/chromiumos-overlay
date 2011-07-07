@@ -1,7 +1,7 @@
-From baeac8926ca1f7aad6c64bcea6f771f856811c06 Mon Sep 17 00:00:00 2001
+From 4284b3f15e4b06d0003495cf3c74e04d9190390c Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Mon, 20 Jun 2011 13:12:32 -0700
-Subject: [PATCH 2/9] Add dtget utility to read property values from device tree
+Subject: [PATCH 02/10] Add dtget utility to read property values from device tree
 
 This simply utility makes it easy for scripts to read values from the device
 tree.
@@ -10,9 +10,9 @@ Signed-off-by: Simon Glass <sjg@chromium.org>
 ---
  .gitignore     |    1 +
  Makefile       |    7 ++
- Makefile.dtget |   13 +++
- dtget.c        |  231 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 252 insertions(+), 0 deletions(-)
+ Makefile.dtget |   13 ++++
+ dtget.c        |  207 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 228 insertions(+), 0 deletions(-)
  create mode 100644 Makefile.dtget
  create mode 100644 dtget.c
 
@@ -82,10 +82,10 @@ index 0000000..edda499
 +DTGET_OBJS = $(DTGET_SRCS:%.c=%.o) $(DTGET_GEN_SRCS:%.c=%.o)
 diff --git a/dtget.c b/dtget.c
 new file mode 100644
-index 0000000..023e141
+index 0000000..0ee577c
 --- /dev/null
 +++ b/dtget.c
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,207 @@
 +/*
 + * Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 + * Distributed under the terms of the GNU General Public License v2
@@ -106,33 +106,9 @@ index 0000000..023e141
 +
 +#define FTDUMP_BUF_SIZE	65536
 +
-+/* Names for each of FDT_ERR_... */
-+static const char *errors[FDT_ERR_MAX + 1] = {
-+	"",
-+	"Node or property not found",
-+	"Node or property already exists",
-+	"No space",
-+	"Bad offset",
-+	"Bad path or node name",
-+
-+	"Bad phandle",
-+	"Bad state",
-+	"Device tree is truncated",
-+	"Device tree has bad magic number",
-+	"Device tree has bad version",
-+
-+	"Devuce tree has corrupt structure",
-+	"Device tree has bad layout",
-+	"Internal libfdt error",
-+};
-+
 +static void report_error(const char *where, int err)
 +{
-+	err = -err;
-+	if (err <= 0 || err > FDT_ERR_MAX)
-+		fprintf(stderr, "Unknown error at '%s': %d\n", where, err);
-+	else
-+		fprintf(stderr, "Error at '%s': %s\n", where, errors[err]);
++	fprintf(stderr, "Error at '%s': %s\n", where, fdt_strerror(err));
 +}
 +
 +static void show_data(const char *format, int type, const char *data, int len)

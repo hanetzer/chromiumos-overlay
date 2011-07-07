@@ -1,7 +1,7 @@
-From d46a8fa011ac52f9ed17df3855d97cd838e955c9 Mon Sep 17 00:00:00 2001
+From 67933ecf9c2c06efbd9fe2079e71a484c99ca7ee Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Sat, 25 Jun 2011 10:46:10 -0700
-Subject: [PATCH 5/9] Add utilfdt for common functions, adjust dtget
+Subject: [PATCH 05/10] Add utilfdt for common functions, adjust dtget
 
 This adds a new utility library for performing libfdt operations, and
 modifies dtget to use it.
@@ -9,10 +9,10 @@ modifies dtget to use it.
 Signed-off-by: Simon Glass <sjg@chromium.org>
 ---
  Makefile.dtget |    3 +-
- dtget.c        |   81 ++++------------------------------------
+ dtget.c        |   55 +++------------------------
  utilfdt.c      |  113 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  utilfdt.h      |   58 ++++++++++++++++++++++++++++
- 4 files changed, 181 insertions(+), 74 deletions(-)
+ 4 files changed, 180 insertions(+), 49 deletions(-)
  create mode 100644 utilfdt.c
  create mode 100644 utilfdt.h
 
@@ -31,49 +31,20 @@ index edda499..fd01055 100644
  DTGET_GEN_SRCS =
  
 diff --git a/dtget.c b/dtget.c
-index 023e141..cbcd4d2 100644
+index 0ee577c..cbcd4d2 100644
 --- a/dtget.c
 +++ b/dtget.c
-@@ -15,36 +15,11 @@
+@@ -15,8 +15,7 @@
  #include <libfdt.h>
  
  #include "util.h"
 -
 -#define FTDUMP_BUF_SIZE	65536
--
--/* Names for each of FDT_ERR_... */
--static const char *errors[FDT_ERR_MAX + 1] = {
--	"",
--	"Node or property not found",
--	"Node or property already exists",
--	"No space",
--	"Bad offset",
--	"Bad path or node name",
--
--	"Bad phandle",
--	"Bad state",
--	"Device tree is truncated",
--	"Device tree has bad magic number",
--	"Device tree has bad version",
--
--	"Devuce tree has corrupt structure",
--	"Device tree has bad layout",
--	"Internal libfdt error",
--};
 +#include "utilfdt.h"
  
  static void report_error(const char *where, int err)
  {
--	err = -err;
--	if (err <= 0 || err > FDT_ERR_MAX)
--		fprintf(stderr, "Unknown error at '%s': %d\n", where, err);
--	else
--		fprintf(stderr, "Error at '%s': %s\n", where, errors[err]);
-+	fprintf(stderr, "Error at '%s': %s\n", where, fdt_strerror(err));
- }
- 
- static void show_data(const char *format, int type, const char *data, int len)
-@@ -86,31 +61,16 @@ static void show_data(const char *format, int type, const char *data, int len)
+@@ -62,31 +61,16 @@ static void show_data(const char *format, int type, const char *data, int len)
  static int show_data_for_key(const void *blob, const char *format, int type,
  			     char *key)
  {
@@ -107,7 +78,7 @@ index 023e141..cbcd4d2 100644
  	value = fdt_getprop(blob, node, prop, &len);
  	if (!value) {
  		report_error(prop, len);
-@@ -127,40 +87,15 @@ static int show_data_for_key(const void *blob, const char *format, int type,
+@@ -103,40 +87,15 @@ static int show_data_for_key(const void *blob, const char *format, int type,
  static int do_dtget(const char *filename, const char *format, int type,
  		    char **key, int key_count)
  {
