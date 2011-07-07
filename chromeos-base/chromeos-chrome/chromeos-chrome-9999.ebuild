@@ -213,7 +213,7 @@ set_build_defines() {
 		export CHROME_BUILD_TYPE='_official'
 	elif use chrome_media; then
     echo "Building Chromium with additional media codecs and containers."
-		BUILD_DEFINES="ffmpeg_branding=Chrome proprietary_codecs=1 $BUILD_DEFINES"
+		BUILD_DEFINES="ffmpeg_branding=ChromeOS proprietary_codecs=1 $BUILD_DEFINES"
 	fi
 
 	if use touchui; then
