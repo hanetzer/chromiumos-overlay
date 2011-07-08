@@ -1,7 +1,7 @@
 From a6167d6c8dd3afc8554e3dd0cbcff4f4f71ee82f Mon Sep 17 00:00:00 2001
 From: Simon Glass <sjg@chromium.org>
 Date: Wed, 6 Jul 2011 21:13:22 -0700
-Subject: [PATCH 10/10] Add --list and --properties to list children and properties
+Subject: [PATCH 10/11] Add --list and --properties to list children and properties
 
 
 Signed-off-by: Simon Glass <sjg@chromium.org>
