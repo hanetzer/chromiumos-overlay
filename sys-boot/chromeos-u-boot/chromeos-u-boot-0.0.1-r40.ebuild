@@ -10,7 +10,7 @@ DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~arm ~x86"
+KEYWORDS="arm x86"
 IUSE=""
 
 # TODO(clchiou): coreboot couldn't care less about vboot for now
