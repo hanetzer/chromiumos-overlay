@@ -17,7 +17,6 @@ IUSE="debug cracklib passwdqc consolekit gnome-keyring selinux mktemp ssh +sha51
 RESTRICT="binchecks"
 
 RDEPEND="
-	chromeos-base/vboot_reference
 	|| (
 		>=sys-libs/pam-0.99.9.0-r1
 		( sys-auth/openpam
@@ -79,50 +78,4 @@ src_compile() {
 
 src_install() {
 	emake GIT=true DESTDIR="${D}" install || die "emake install failed"
-
-	# Chrome OS: sudo and vt2 are important for system debugging both in
-	# developer mode and during development.  These two stanzas allow sudo and
-	# login auth as user chronos under the following conditions:
-	#
-	# 1. password-less access:
-	# - system in developer mode
-	# - there is no passwd.devmode file
-	# - there is no system-wide password set above.
-	# 2. System-wide (/etc/shadow) password access:
-	# - image has a baked in password above
-	# 3. Developer mode password access
-	# - user creates a passwd.devmode file with "chronos:CRYPTED_PASSWORD"
-	# 4. System-wide (/etc/shadow) password access set by modifying /etc/shadow:
-	# - Cases #1 and #2 will apply but failure will fall through to the
-	#   inserted password.
-	insinto /etc/pam.d
-	doins "${FILESDIR}/chromeos-auth" || die
-}
-
-pkg_postinst() {
-	# If there's a shared user password or if the build target is the host,
-	# reset chromeos-auth to an empty file. We don't transition from empty to
-	# populated because binary packages lose FILESDIR.
-	local crypted_password='*'
-	if [ "${ROOT}" = "/" ]; then
-		crypted_password='host'
-	else
-		[ -r "${SHARED_USER_PASSWD_FILE}" ] &&
-			crypted_password=$(cat "${SHARED_USER_PASSWD_FILE}")
-	fi
-	if [ "${crypted_password}" != '*' ]; then
-		echo -n '' > "${ROOT}/etc/pam.d/chromeos-auth" || die
-	fi
-
-	if use sha512; then
-		elog "Starting from version 20080801, pambase optionally enables"
-		elog "SHA512-hashed passwords. For this to work, you need sys-libs/pam-1.0.1"
-		elog "built against sys-libs/glibc-2.7 or later."
-		elog "If you don't have support for this, it will automatically fallback"
-		elog "to MD5-hashed passwords, just like before."
-		elog
-		elog "Please note that the change only affects the newly-changed passwords"
-		elog "and that SHA512-hashed passwords will not work on earlier versions"
-		elog "of glibc or Linux-PAM."
-	fi
 }
