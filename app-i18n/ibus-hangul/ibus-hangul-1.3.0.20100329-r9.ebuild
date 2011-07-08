@@ -7,7 +7,6 @@ inherit eutils
 
 DESCRIPTION="The Hangul engine for IBus input platform"
 HOMEPAGE="http://code.google.com/p/ibus/"
-#SRC_URI="http://ibus.googlecode.com/files/${P}.tar.gz"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="GPL-2"
@@ -29,6 +28,9 @@ src_unpack() {
 	# Use kr(kr104) XKB layout to use right Alt and right Ctrl keys as
 	# Hangul and Hanja keys respectively.
 	epatch "${FILESDIR}/ibus-hangul-1.3.0.20100329-use-korean-101-104-compat-layout.patch"
+
+	# Use Shift+space to toggle IMEs.
+	epatch "${FILESDIR}/hangul-hotkey.patch"
 
 	# This upstream change is not included in
 	# ibus-hangul-1.3.0.20100329.tar.gz yet.
