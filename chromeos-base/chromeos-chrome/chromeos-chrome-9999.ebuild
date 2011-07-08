@@ -115,7 +115,8 @@ BUILD_OUT_SYM="c"
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES="ffmpeg_tests
-	omx_test"
+	omx_test
+	omx_video_decode_accelerator_unittest"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
@@ -493,7 +494,8 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		TEST_TARGETS="page_cycler_tests
+		TEST_TARGETS="omx_video_decode_accelerator_unittest
+			page_cycler_tests
 			reliability_tests
 			startup_tests
 			ui_tests
