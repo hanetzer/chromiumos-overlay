@@ -14,7 +14,7 @@ KEYWORDS="~arm ~x86"
 IUSE=""
 
 # TODO(clchiou): coreboot couldn't care less about vboot for now
-DEPEND="arm? ( chromeos-base/vboot_reference-firmware )
+DEPEND="arm? ( >=chromeos-base/vboot_reference-firmware-0.0.1-r175 )
 	!sys-boot/chromeos-u-boot-next"
 
 RDEPEND="${DEPEND}
