@@ -15,6 +15,5 @@ RDEPEND=">=x11-libs/libXrender-0.8.2
 	x11-libs/libXext
 	media-libs/freetype
 	media-libs/fontconfig
-	x11-proto/xproto
-	virtual/ttf-fonts"
+	x11-proto/xproto"
 DEPEND="${RDEPEND}"
