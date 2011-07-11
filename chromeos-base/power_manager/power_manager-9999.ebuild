@@ -98,34 +98,6 @@ src_install() {
 	insinto "/etc/dbus-1/system.d"
 	doins "${S}/org.chromium.PowerManager.conf"
 
-	# Install scripts for setting up light sensor
-	exeinto "/lib/udev"
-	doexe "${S}/light-sensor-set-multiplier.sh"
-
-	# The platform specific light sensor tuning value is specified
-	# in the overlay's make.conf.
-	if [ -n "$LIGHT_SENSOR_TUNEVAL" ]; then
-	sed -i -e "/TUNEVAL=/s/=.*/=$LIGHT_SENSOR_TUNEVAL/" \
-		"${D}/lib/udev/light-sensor-set-multiplier.sh"
-	fi
-
-	# Safely change this name by supporting backward compatibility.
-	if [ -f "${S}/tsl2563-install.sh" ]; then
-		doexe "${S}/tsl2563-install.sh"
-	else
-		doexe "${S}/light-sensor-install.sh"
-
-		# And of course the new file supports overlay-specific values.
-		sed -i -e "/NAME=/s/=.*/=${LIGHT_SENSOR_NAME:-tsl2563}/" \
-			-e "/BUS=/s/=.*/=${LIGHT_SENSOR_BUS:-2}/" \
-			-e "/ADDRESS=/s/=.*/=${LIGHT_SENSOR_ADDRESS:-0x29}/" \
-			"${D}/lib/udev/light-sensor-install.sh"
-	fi
-
-	# Install light sensor udev rules
-	insinto "/etc/udev/rules.d"
-	doins "${S}/99-light-sensor.rules"
-
 	# Nocrit disables low battery suspend percent by setting it to 0
 	if use nocrit; then
 		crit="usr/share/power_manager/low_battery_suspend_percent"
