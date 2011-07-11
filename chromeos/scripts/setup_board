@@ -186,22 +186,28 @@ build_toolchain() {
 # Get the version number of a toolchain package.
 cross_get_version() {
   local pkg="$1"
-  local cp=cross-$FLAGS_toolchain/$pkg
-  local atom=$cp
+  local cpv=""
   if [ "$pkg" = "gcc" ]; then
     # Users can install multiple versions of gcc at once, so we need to call
     # gcc-config to find out which installed version is selected.
-    local gcc_path="$(CTARGET=$FLAGS_toolchain gcc-config -B || true)"
-    atom="$(equery b ${gcc_path}/* | head -1 || true)"
+    local path=$(CTARGET=$FLAGS_toolchain gcc-config -B || true)
+    cpv=$(portageq owners / $path | sed -e '/^\t/d')
+  elif [[ "$ARCH" = amd64 && "$pkg" = binutils ]] ; then
+    cpv=$(portageq match / sys-devel/binutils || true)
+  elif [[ "$ARCH" = amd64 && "$pkg" = glibc ]] ; then
+    cpv=$(portageq match / sys-libs/glibc || true)
+  else
+    cpv=$(portageq match / cross-$FLAGS_toolchain/$pkg || true)
   fi
-  local cpv="$(portageq match / $atom)"
-  count="$(echo $cpv | grep "^$cp-" | wc -w)"
+  local cp="${cpv%-[^-]*-[^-]*}"
+  local result="${cpv#$cp-}"
+  local count="$(echo $result | wc -w)"
   if [ "$count" -gt "1" ]; then
-    die "Multiple versions of $atom installed"
+    die "Multiple versions of $pkg installed"
   elif [ "$count" -lt "1" ]; then
-    die "Cannot find $atom"
+    die "Cannot find $pkg"
   fi
-  echo ${cpv/$cp-}
+  echo $result
 }
 
 install_toolchain_in_provided() {
@@ -468,7 +474,13 @@ if ! ${HOST_BOARD}; then
     # and BOARD_ETC directories have been created.
     install_toolchain_in_board
   else
-    install_toolchain_in_provided
+    binutils_ver=$(cross_get_version binutils)
+    gcc_ver=$(cross_get_version gcc)
+    libc_ver=$(cross_get_version glibc)
+    if [[ -z "$binutils_ver" || -z "$gcc_ver" || -z "$libc_ver" ]]; then
+      die "Cannot find toolchain to install into package.provided"
+    fi
+    install_toolchain_in_provided "$binutils_ver" "$gcc_ver" "$libc_ver"
   fi
 
   sudo touch "${BOARD_ETC}/make.conf.board"
