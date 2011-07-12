@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND=""
+RDEPEND="!net-misc/mobile-broadband-provider-info"
 DEPEND=""
 
 CROS_WORKON_LOCALNAME="../third_party/mobile-broadband-provider-info"
