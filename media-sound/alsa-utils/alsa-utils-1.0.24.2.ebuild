@@ -47,6 +47,7 @@ src_configure() {
 	local myconf=""
 	use doc || myconf="--disable-xmlto"
 
+	export ncurses5_config=${ROOT}usr/bin/ncurses5-config
 	econf ${myconf} \
 		$(use_enable nls)
 }
