@@ -21,7 +21,10 @@ RDEPEND="sys-apps/pciutils
 	ftdi? ( dev-embedded/libftdi )"
 
 src_compile() {
-	emake CC="$(tc-getCC)" STRIP="" || die "emake failed"
+	emake CC="$(tc-getCC)" STRIP="" \
+	CONFIG_OGP_SPI=no CONFIG_NICINTEL_SPI=no CONFIG_RAYER_SPI=no \
+	CONFIG_NIC3COM=no CONFIG_NICREALTEK=no CONFIG_SATAMV=no ||
+	die "emake failed"
 }
 
 src_install() {
