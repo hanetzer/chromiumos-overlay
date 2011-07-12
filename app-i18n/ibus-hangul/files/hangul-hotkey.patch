@@ -5,7 +5,7 @@ diff -ur ibus-hangul-1.3.0.20100329.orig/src/hangul.xml.in.in ibus-hangul-1.3.0.
  			<longname>Korean</longname>
  			<description>Korean Input Method</description>
  			<rank>99</rank>
-+			<hotkeys>Shift+space</hotkeys>
++			<hotkeys>Shift+space,Hangul</hotkeys>
  		</engine>
  	</engines>
  
