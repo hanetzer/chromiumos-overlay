@@ -26,7 +26,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	dhcpcd? ( net-misc/dhcpcd )
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( chromeos-base/modem-utilities
-		        net-misc/mobile-broadband-provider-info )
+		        chromeos-base/mobile-providers )
 	nss? ( dev-libs/nss )
 	openvpn? ( net-misc/openvpn )
 	policykit? ( >=sys-auth/policykit-0.7 )

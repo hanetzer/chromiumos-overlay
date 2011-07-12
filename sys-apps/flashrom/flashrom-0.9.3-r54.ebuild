@@ -3,7 +3,7 @@
 # $Header:
 
 EAPI="2"
-CROS_WORKON_COMMIT="8fc0740356ca15d02fb1c65ab43b10844f148c3b"
+CROS_WORKON_COMMIT="910408319f803a731879c76754806a960f769fb2"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashrom"
 
 inherit cros-workon toolchain-funcs
@@ -22,7 +22,14 @@ RDEPEND="sys-apps/pciutils
 	ftdi? ( dev-embedded/libftdi )"
 
 src_compile() {
-	emake CC="$(tc-getCC)" STRIP="" || die "emake failed"
+	if use arm; then
+		emake CC="$(tc-getCC)" STRIP="" \
+			CONFIG_OGP_SPI=no CONFIG_NICINTEL_SPI=no CONFIG_RAYER_SPI=no \
+			CONFIG_NIC3COM=no CONFIG_NICREALTEK=no CONFIG_SATAMV=no ||
+			die "emake failed"
+	else
+		emake CC="$(tc-getCC)" STRIP="" || die "emake failed"
+	fi
 }
 
 src_install() {
