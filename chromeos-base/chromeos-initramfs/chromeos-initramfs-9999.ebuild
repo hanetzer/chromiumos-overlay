@@ -71,8 +71,6 @@ build_initramfs_file() {
 		../usr/lib/libdrm.so.2.4.0
 		libdevmapper.so.1.02
 		libdl.so.2
-		libpam.so.0
-		libpam_misc.so.0
 		libpthread.so.0
 		librt.so.1
 		libz.so.1
