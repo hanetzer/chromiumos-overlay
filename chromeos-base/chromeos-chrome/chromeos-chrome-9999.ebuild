@@ -494,7 +494,10 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		TEST_TARGETS="omx_video_decode_accelerator_unittest
+		if [ "$ARCH" = "arm" ]; then
+			TEST_TARGETS="omx_video_decode_accelerator_unittest"
+		fi
+		TEST_TARGETS="${TEST_TARGETS}
 			page_cycler_tests
 			reliability_tests
 			startup_tests
