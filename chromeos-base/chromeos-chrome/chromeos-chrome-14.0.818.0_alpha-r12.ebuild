@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="92040"
+CROS_SVN_COMMIT="92108"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -116,7 +116,8 @@ BUILD_OUT_SYM="c"
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES="ffmpeg_tests
-	omx_test"
+	omx_test
+	omx_video_decode_accelerator_unittest"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
@@ -494,7 +495,11 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		TEST_TARGETS="page_cycler_tests
+		if [ "$ARCH" = "arm" ]; then
+			TEST_TARGETS="omx_video_decode_accelerator_unittest"
+		fi
+		TEST_TARGETS="${TEST_TARGETS}
+			page_cycler_tests
 			reliability_tests
 			startup_tests
 			ui_tests
