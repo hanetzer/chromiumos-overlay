@@ -1,0 +1,12 @@
+diff -ur mozc-1.1.717.102.orig/unix/ibus/gen_mozc_xml.py mozc-1.1.717.102/unix/ibus/gen_mozc_xml.py
+--- mozc-1.1.717.102.orig/unix/ibus/gen_mozc_xml.py	2011-05-20 17:17:05.000000000 +0900
++++ mozc-1.1.717.102/unix/ibus/gen_mozc_xml.py	2011-07-12 14:41:42.054569517 +0900
+@@ -85,7 +85,7 @@
+         'layout': ['jp', 'us', 'us(dvorak)'],
+         # hotkeys property is Chrome/Chromium OS specific. Upstream ibus-daemon
+         # doesn't support this.
+-        'hotkeys': ['Henkan', '', ''],
++        'hotkeys': ['Henkan,Zenkaku_Hankaku', '', ''],
+     },
+ }
+ 
