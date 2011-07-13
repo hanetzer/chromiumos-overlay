@@ -234,7 +234,6 @@ IUSE_TESTS="
 	+tests_platform_RootPartitionsNotMounted
 	+tests_platform_SessionManagerTerm
 	+tests_platform_Shutdown
-	+tests_platform_StackProtector
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
 	+tests_platform_ToolchainOptions
