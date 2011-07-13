@@ -623,6 +623,12 @@ install_chrome_test_resources() {
 	    "${CHROME_ROOT}"/src/third_party/bidichecker/bidichecker_packaged.js \
 	    "${TEST_DIR}"/third_party/bidichecker
 
+	# Add the mock4js script
+	mkdir -p "${TEST_DIR}"/chrome/third_party/mock4js
+	fast_cp -a \
+	    "${CHROME_ROOT}"/src/chrome/third_party/mock4js/mock4js.js \
+	    "${TEST_DIR}"/chrome/third_party/mock4js
+
 	# Copy over npapi test plugin
 	mkdir -p "${TEST_DIR}"/out/Release/plugins
 	fast_cp -a "${FROM}"/plugins/libnpapi_test_plugin.so \
