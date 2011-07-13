@@ -147,6 +147,14 @@ function dtb_set_config_string() {
 	dtput -t s -f "%[^^]" "${dtb}" "/config/${property}" "${string}"
 }
 
+function dtb_set_config_int() {
+	local dtb="$1"
+	local property="$2"
+	local int="$3"
+
+	dtput -t i "${dtb}" "/config/${property}" "${int}"
+}
+
 function create_gbb() {
 	local hwid=$(get_config s /config/hwid)
 	local gbb_size=$(get_config_length /flash/gbb)
