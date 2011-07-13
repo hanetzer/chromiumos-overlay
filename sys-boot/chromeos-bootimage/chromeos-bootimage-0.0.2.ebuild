@@ -54,8 +54,24 @@ LEGACY_BOOTCMD="$(echo $(cat <<-'EOF'
 EOF
 ))"
 
+construct_layout() {
+	local layout
+	local section
+	local nodepath
+	for section in $@; do
+		nodepath=${section//_/-}
+		nodepath=${nodepath,,}
+		layout="${layout} ${section}_OFFSET=$(get_config_offset /flash/${nodepath})"
+		layout="${layout} ${section}_LENGTH=$(get_config_length /flash/${nodepath})"
+	done
+	echo ${layout}
+}
+
 construct_onestop_blob() {
+	local layout
+	layout="$(construct_layout FIRMWARE_IMAGE VERIFICATION_BLOCK FIRMWARE_ID)"
 	pack_firmware_image "${FILESDIR}/onestop_layout_config" \
+		${layout} \
 		SIZE=$(get_config_length /flash/onestop-layout) \
 		FWID_STRING="'$(get_chromeos_version)'" \
 		KEYDIR=${CROS_FIRMWARE_IMAGE_DEVKEYS}/ \
@@ -67,7 +83,10 @@ construct_onestop_blob() {
 }
 
 pack_image() {
+	local layout
+	layout="$(construct_layout BCT GBB FMAP RO_ONESTOP RW_A_ONESTOP RW_B_ONESTOP)"
 	pack_firmware_image "${FILESDIR}/twostop_layout_config" \
+		${layout} \
 		SIZE=$(get_config_length /flash) \
 		BCT_IMAGE=$1 \
 		GBB_IMAGE=$2 \
@@ -83,7 +102,7 @@ src_compile() {
 		# we are going to modify dtb, and so make a copy first
 		cp "${ORIGINAL_DTB}" "${CROS_FIRMWARE_DTB}"
 		dtb_set_config_string "${CROS_FIRMWARE_DTB}" bootcmd \
-			"run regen_all; cros_onestop_firmware"
+			"run regen_all; vboot_twostop"
 	fi
 
 	# TODO(clchiou) fix x86 build later

@@ -43,7 +43,7 @@ fi
 
 get_required_config() {
 	case "${UB_ARCH}" in
-		(arm) echo 'chromeos_seaboard_onestop_config';;
+		(arm) echo 'chromeos_tegra2_twostop_config';;
 		(i386) echo 'coreboot-x86_config';;
 		(*) die "can not build for unknown architecture ${UB_ARCH}";;
 	esac
