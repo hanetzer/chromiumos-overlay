@@ -50,6 +50,9 @@ LEGACY_BOOTCMD="$(echo $(cat <<-'EOF'
 		run dhcp_boot;
 	fi;
 	run usb_boot;
+	setenv mmcdev 1;
+	run mmc_boot;
+	setenv mmcdev 0;
 	run mmc_boot;
 EOF
 ))"
