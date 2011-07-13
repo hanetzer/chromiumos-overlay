@@ -116,7 +116,7 @@ src_compile() {
 
 	create_gbb
 
-	# TODO: These codes will be replaced by cros_bundle_firmware
+	# TODO: Codes below will be replaced by cros_bundle_firmware
 
 	cat "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" "${CROS_FIRMWARE_DTB}" > \
 		u-boot.dtb.bin
@@ -128,9 +128,17 @@ src_compile() {
 	die "failed to sign image."
 
 	# XXX u-boot.bin (tail of signed u-boot.dtb.bin) is bigger than
-	# u-boot.dtb.bin. Is the signed image is padded?
+	# u-boot.dtb.bin. Is the signed image padded?
 	dd if=signed_u-boot.dtb.bin of=bct.bin bs=512 count=128
 	dd if=signed_u-boot.dtb.bin of=u-boot.bin bs=512 skip=128
+
+	# TODO(crosbug/17555): tegra2_dev-board generates a BCT that is larger
+	# than 64KB, and cause pack_firmware_image fail. We do not support
+	# verified boot on dev-board for now.
+	local BOARD="${BOARD:-${SYSROOT##/build/}}"
+	if [ ${BOARD} = "tegra2_dev-board" ] ; then
+		dd if=u-boot.dtb.bin of=u-boot.bin
+	fi
 
 	construct_onestop_blob u-boot.bin \
 		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware.keyblock" \
