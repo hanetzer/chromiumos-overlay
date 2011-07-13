@@ -13,8 +13,7 @@ SLOT="0"
 KEYWORDS="~arm ~x86"
 IUSE=""
 
-# TODO(clchiou): coreboot couldn't care less about vboot for now
-DEPEND="arm? ( >=chromeos-base/vboot_reference-firmware-0.0.1-r175 )
+DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/chromeos-u-boot-next"
 
 RDEPEND="${DEPEND}
@@ -35,10 +34,9 @@ IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 UB_ARCH="$(tc-arch-kernel)"
 COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
 
-# TODO(clchiou): coreboot couldn't care less about vboot for now
-use arm && COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
+COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 if use cros-debug; then
-	use arm && COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
+	COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 fi
 
 get_required_config() {
