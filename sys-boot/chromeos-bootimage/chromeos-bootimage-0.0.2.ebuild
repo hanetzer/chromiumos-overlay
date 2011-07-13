@@ -41,10 +41,6 @@ fi
 # TODO(sjg): simplify the eclass when we deprecate the old U-Boot
 CROS_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/u-boot.bin"
 
-CROS_FIRMWARE_IMAGE_RECOVERY_IMAGE=zero.bin
-CROS_FIRMWARE_IMAGE_DEVELOPER_IMAGE=zero.bin
-CROS_FIRMWARE_IMAGE_NORMAL_IMAGE=zero.bin
-
 ORIGINAL_DTB="${CROS_FIRMWARE_IMAGE_DIR}/u-boot.dtb"
 
 # add extra "echo" concatenates every line into single line
@@ -58,6 +54,29 @@ LEGACY_BOOTCMD="$(echo $(cat <<-'EOF'
 EOF
 ))"
 
+construct_onestop_blob() {
+	pack_firmware_image "${FILESDIR}/onestop_layout_config" \
+		SIZE=$(get_config_length /flash/onestop-layout) \
+		FWID_STRING="'$(get_chromeos_version)'" \
+		KEYDIR=${CROS_FIRMWARE_IMAGE_DEVKEYS}/ \
+		KEYBLOCK=$2 \
+		SIGNPRIVATE=$3 \
+		U_BOOT_IMAGE=$1 \
+		OUTPUT=$4 || \
+	die "fail to pack the $4"
+}
+
+pack_image() {
+	pack_firmware_image "${FILESDIR}/twostop_layout_config" \
+		SIZE=$(get_config_length /flash) \
+		BCT_IMAGE=$1 \
+		GBB_IMAGE=$2 \
+		RO_ONESTOP_IMAGE=$3 \
+		RW_A_ONESTOP_IMAGE=$4 \
+		RW_B_ONESTOP_IMAGE=$5 \
+		OUTPUT=$6 || \
+	die "fail to pack the $6"
+}
 
 src_compile() {
 	if [ -n "${CROS_FIRMWARE_DTB}" ]; then
@@ -67,10 +86,46 @@ src_compile() {
 			"run regen_all; cros_onestop_firmware"
 	fi
 
-	dd if=/dev/zero of=zero.bin count=1
-	construct_layout
+	# TODO(clchiou) fix x86 build later
+	if use x86; then
+		touch image.bin
+		return
+	fi
+
 	create_gbb
-	create_image
+
+	# TODO: These codes will be replaced by cros_bundle_firmware
+
+	cat "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" "${CROS_FIRMWARE_DTB}" > \
+		u-boot.dtb.bin
+	cros_sign_bootstub \
+		--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
+		--bootstub u-boot.dtb.bin \
+		--output signed_u-boot.dtb.bin \
+		--text_base "0x$(get_text_base)" ||
+	die "failed to sign image."
+
+	# XXX u-boot.bin (tail of signed u-boot.dtb.bin) is bigger than
+	# u-boot.dtb.bin. Is the signed image is padded?
+	dd if=signed_u-boot.dtb.bin of=bct.bin bs=512 count=128
+	dd if=signed_u-boot.dtb.bin of=u-boot.bin bs=512 skip=128
+
+	construct_onestop_blob u-boot.bin \
+		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware.keyblock" \
+		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware_data_key.vbprivk" \
+		dev_onestop.bin
+
+	construct_onestop_blob u-boot.bin \
+		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/firmware.keyblock" \
+		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/firmware_data_key.vbprivk" \
+		normal_onestop.bin
+
+	pack_image bct.bin \
+		gbb.bin \
+		normal_onestop.bin \
+		normal_onestop.bin \
+		dev_onestop.bin \
+		image.bin
 
 	# make legacy image
 	if use arm && [ -n "${CROS_FIRMWARE_DTB}" ]; then

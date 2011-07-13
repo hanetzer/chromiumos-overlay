@@ -1,0 +1,42 @@
+# -*- mode: python -*-
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+# TODO(clchiou) This is just a minimally buildable layout; offsets and
+# lengths are hard-coded (they should be acquired from fdt)
+
+# Required fields for pack_firmware_image
+ENTRIES = [
+  EntryBlob(name='BCT',
+        offset=0x00000000,
+        length=0x00010000,
+        flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
+        path=BCT_IMAGE),
+  EntryBlob(name='RO_ONESTOP',
+        offset=0x00010000,
+        length=0x00080000,
+        flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
+        path=RO_ONESTOP_IMAGE),
+  EntryBlob(name='GBB',
+        offset=0x00090000,
+        length=0x00020000,
+        flags=FMAP_AREA_STATIC,
+        path=GBB_IMAGE),
+  EntryFmap(name='FMAP',
+        offset=0x000d0000,
+        length=0x00000400,
+        flags=FMAP_AREA_STATIC,
+        ver_major=1, ver_minor=0, base=0x00000000, size=SIZE),
+
+  EntryBlob(name='RW_A_ONESTOP',
+        offset=0x00100000,
+        length=0x00080000,
+        flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
+        path=RW_A_ONESTOP_IMAGE),
+
+  EntryBlob(name='RW_B_ONESTOP',
+        offset=0x00180000,
+        length=0x00080000,
+        flags=FMAP_AREA_STATIC | FMAP_AREA_COMPRESSED,
+        path=RW_B_ONESTOP_IMAGE),
+]

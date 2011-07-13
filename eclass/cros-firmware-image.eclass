@@ -60,31 +60,19 @@
 # Location of the u-boot flat device tree binary blob (FDT)
 : ${CROS_FIRMWARE_DTB=}
 
-function get_autoconf() {
-	# TODO(sjg) grab config from fdt
-	grep -m1 $1 ${CROS_FIRMWARE_IMAGE_AUTOCONF} | tr -d "\"" | cut -d = -f 2
-	assert
-}
-
 function get_config() {
-	# TODO We temporarily fall back to get_autoconf for supporting
-	# chromeos-bios (which does not use fdt and will be obsolete)
-	if [ -z "${CROS_FIRMWARE_DTB}" ]; then
-		local config_name
-		case $2 in
-		/config/hwid)	config_name=CONFIG_CHROMEOS_HWID;;
-		/lcd/width)	config_name=CONFIG_LCD_vl_col;;
-		/lcd/height)	config_name=CONFIG_LCD_vl_row;;
-		*)		die "Unknown mapping of key: $2"
-		esac
-		get_autoconf ${config_name}
-		return
-	fi
-
 	local type=$1
 	local key=$2
 	dtget -t ${type} ${CROS_FIRMWARE_DTB} ${key}
 	assert
+}
+
+function get_config_offset() {
+	get_config i $1/reg | cut -d' ' -f1
+}
+
+function get_config_length() {
+	get_config i $1/reg | cut -d' ' -f2
 }
 
 function get_text_base() {
@@ -161,7 +149,7 @@ function dtb_set_config_string() {
 
 function create_gbb() {
 	local hwid=$(get_config s /config/hwid)
-	local gbb_size=$(get_autoconf CONFIG_LENGTH_GBB)
+	local gbb_size=$(get_config_length /flash/gbb)
 	local bmp_dir="out_${hwid// /_}"
 	local make_bmp_image="/usr/share/vboot/bitmaps/make_bmp_images.sh"
 
