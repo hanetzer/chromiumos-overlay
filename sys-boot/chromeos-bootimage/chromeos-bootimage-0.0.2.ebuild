@@ -161,6 +161,7 @@ src_compile() {
 	if use arm && [ -n "${CROS_FIRMWARE_DTB}" ]; then
 		cp "${ORIGINAL_DTB}" u-boot-legacy.dtb
 		dtb_set_config_string u-boot-legacy.dtb bootcmd "${LEGACY_BOOTCMD}"
+		dtb_set_config_int u-boot-legacy.dtb load_env 1
 		cat "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" u-boot-legacy.dtb > \
 			u-boot-legacy.bin
 		cros_sign_bootstub \
