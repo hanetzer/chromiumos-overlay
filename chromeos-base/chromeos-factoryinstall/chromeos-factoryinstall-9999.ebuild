@@ -125,4 +125,14 @@ EOF
 	sed -i 's/start tcsd//' \
 		"${ROOT}/etc/init/tpm-probe.conf" ||
 		die "Failed to disable TPM locking"
+
+	# Stop any power management and updater daemons
+	for conf in power powerd powerm update-engine; do
+		sed -i 's/^start on .*/start on never/' \
+			"${ROOT}/etc/init/$conf.conf" ||
+			die "Failed to disable $conf"
+	done
+
+	# The "laptop_mode" may be triggered from udev
+	rm -f "${ROOT}/etc/udev/rules.d/99-laptop-mode.rules"
 }
