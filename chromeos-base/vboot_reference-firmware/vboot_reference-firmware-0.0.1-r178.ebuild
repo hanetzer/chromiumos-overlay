@@ -30,12 +30,16 @@ src_compile() {
 	# Disable TPM entirely on boards that TPM chip bricks
 	local BOARD="${BOARD:-${SYSROOT##/build/}}"
 
-	# TODO(rongchang) Remove mock TPM after u-boot TPM driver is fixed
+	# TODO(clchiou) Find a new way to enable MOCK_TPM on all dev boards
 	#local MOCK_TPM=""
 	#if [ ${BOARD} = "tegra2_seaboard" ] ; then
 	#	MOCK_TPM=1
 	#fi
 	local MOCK_TPM="1"
+	case "${BOARD}" in
+		tegra2_kaen|tegra2_aebl)
+		MOCK_TPM=""
+	esac
 
 	emake	FIRMWARE_ARCH="$(tc-arch-kernel)" \
 		MOCK_TPM="${MOCK_TPM}" \

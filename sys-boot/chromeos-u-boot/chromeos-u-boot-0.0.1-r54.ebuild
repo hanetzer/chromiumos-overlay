@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f23ffb1598622e6dcfc99482dd5c9727e7fb3c84"
+CROS_WORKON_COMMIT="d70f2cb41a6c235a8395527b01cdfbac8592b78c"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs
@@ -44,7 +44,7 @@ fi
 
 get_required_config() {
 	case "${UB_ARCH}" in
-		(arm) echo 'chromeos_seaboard_onestop_config';;
+		(arm) echo 'chromeos_tegra2_twostop_config';;
 		(i386) echo 'coreboot-x86_config';;
 		(*) die "can not build for unknown architecture ${UB_ARCH}";;
 	esac

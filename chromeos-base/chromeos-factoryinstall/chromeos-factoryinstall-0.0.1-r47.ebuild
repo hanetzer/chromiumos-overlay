@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9b4d437ee3c6f696e337ab5c14c9cbbcceb75502"
+CROS_WORKON_COMMIT="f5160b11371ddb1f8fddf98d2b8bcbd93b32edd9"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon
@@ -126,4 +126,14 @@ EOF
 	sed -i 's/start tcsd//' \
 		"${ROOT}/etc/init/tpm-probe.conf" ||
 		die "Failed to disable TPM locking"
+
+	# Stop any power management and updater daemons
+	for conf in power powerd powerm update-engine; do
+		sed -i 's/^start on .*/start on never/' \
+			"${ROOT}/etc/init/$conf.conf" ||
+			die "Failed to disable $conf"
+	done
+
+	# The "laptop_mode" may be triggered from udev
+	rm -f "${ROOT}/etc/udev/rules.d/99-laptop-mode.rules"
 }
