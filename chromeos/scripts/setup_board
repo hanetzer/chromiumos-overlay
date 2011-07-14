@@ -292,6 +292,73 @@ install_toolchain_in_board() {
   echo "LIBC_VERSION=\"$libc_ver\"" | sudo_append $BOARD_SETUP
 }
 
+# Print contents of $BOARD_ETC/make.conf.board. This file sources make.conf
+# from each overlay, and then calculates the prebuilt URLs based on the
+# various binhost configuration files.
+print_board_make_conf() {
+  local binhost_dir="$CHROMIUMOS_OVERLAY/chromeos/binhost/target"
+  local preflight_binhost="$binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
+  local chrome_binhost="$binhost_dir/$BOARD-LATEST_RELEASE_CHROME_BINHOST.conf"
+  if [[ $ARCH = x86 && ! -f "$preflight_binhost" ]]; then
+    preflight_binhost="$binhost_dir/x86-generic-PREFLIGHT_BINHOST.conf"
+  fi
+  if [[ $ARCH = x86 && ! -f "$chrome_binhost" ]]; then
+    chrome_binhost="$binhost_dir/x86-generic-LATEST_RELEASE_CHROME_BINHOST.conf"
+  fi
+  local chromeos_overlay="$SRC_ROOT/private-overlays/chromeos-overlay"
+  local internal_binhost_dir="$chromeos_overlay/chromeos/binhost/target"
+  local internal_binhost="$internal_binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
+  if [[ $ARCH = x86 && ! -f "$internal_binhost" ]]; then
+    internal_binhost="$internal_binhost_dir/x86-mario-PREFLIGHT_BINHOST.conf"
+  fi
+
+  echo "# AUTO-GENERATED FILE. DO NOT EDIT."
+  echo
+  echo "# Source make.conf from each overlay."
+  for overlay in $BOARD_OVERLAY_LIST; do
+    if [[ -f "$overlay/make.conf" ]]; then
+      echo source "$overlay/make.conf"
+    fi
+  done
+  echo
+
+  if [[ -f "$preflight_binhost" ]]; then
+    cat <<'EOF'
+# PREFLIGHT_BINHOST is populated by the preflight builders. It is listed first
+# because it is the lowest priority binhost.
+EOF
+    echo source "$preflight_binhost"
+    echo 'PORTAGE_BINHOST="$PREFLIGHT_BINHOST"'
+    echo
+  fi
+
+  if [[ -f "$internal_binhost" ]]; then
+    cat <<'EOF'
+# The internal PREFLIGHT_BINHOST is populated by the internal preflight
+# builders. It takes priority over the public preflight binhost.
+EOF
+    echo source "$internal_binhost"
+    echo 'PORTAGE_BINHOST="$PORTAGE_BINHOST $PREFLIGHT_BINHOST"'
+    echo
+  fi
+
+  cat <<'EOF'
+# FULL_BINHOST is populated by the full builders. If the same package is
+# provided by both the preflight and full binhosts, the package is downloaded
+# from the full binhost.
+PORTAGE_BINHOST="$PORTAGE_BINHOST $FULL_BINHOST"
+
+EOF
+
+  if [[ -f "$chrome_binhost" ]]; then
+    cat <<'EOF'
+# LATEST_RELEASE_CHROME_BINHOST provides prebuilts for chromeos-chrome only.
+EOF
+    echo source "$chrome_binhost"
+    echo 'PORTAGE_BINHOST="$PORTAGE_BINHOST $LATEST_RELEASE_CHROME_BINHOST"'
+  fi
+}
+
 # Parse command line flags
 FLAGS "$@" || exit 1
 eval set -- "${FLAGS_ARGV}"
@@ -380,23 +447,6 @@ BOARD_OVERLAY_LIST=$(cros_overlay_list \
   --board_overlay "$FLAGS_board_overlay" \
   --variant "$VARIANT")
 
-#
-# Populate the BOARD_MAKE_CONF_LIST with any make.conf files found in the
-# overlays.
-#
-BOARD_MAKE_CONF_LIST=""
-
-for overlay in ${BOARD_OVERLAY_LIST} ; do
-  if [ -f "${overlay}/make.conf" ]; then
-    BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${overlay}/make.conf"
-  fi
-done
-
-BINHOST_CONF="${CHROMIUMOS_OVERLAY}/chromeos/binhost/target/${ARCH}.conf"
-if [ -f "${BINHOST_CONF}" ]; then
-  BOARD_MAKE_CONF_LIST="${BOARD_MAKE_CONF_LIST} ${BINHOST_CONF}"
-fi
-
 if [ "${ARCH}" != "amd64" ] ; then
   if toolchain_needs_update; then
     warn "Toolchain needs to be updated! Updating toolchain..."
@@ -422,6 +472,9 @@ if [ -d "$BOARD_ROOT" ] ; then
     sudo mv $BOARD_ROOT $TEMP_DIR
     sudo rm -rf $TEMP_DIR &
   else
+    if ! $HOST_BOARD; then
+      print_board_make_conf | sudo_clobber $BOARD_ETC/make.conf.board
+    fi
     if [[ $FLAGS_quiet -eq $FLAGS_FALSE ]]; then
       warn "Board output directory '$BOARD_ROOT' already exists."
       warn "Not setting up board root. "
@@ -481,16 +534,11 @@ EOF
 if ! ${HOST_BOARD}; then
   sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
     "${BOARD_ETC}/make.conf"
+  print_board_make_conf | sudo_clobber $BOARD_ETC/make.conf.board
 
   # We install the toolchain related bits after the BOARD_ROOT, BOARD_PROFILE
   # and BOARD_ETC directories have been created.
   install_toolchain_in_board
-
-  sudo touch "${BOARD_ETC}/make.conf.board"
-
-  for make_conf in ${BOARD_MAKE_CONF_LIST} ; do
-    sudo bash -c "echo source ${make_conf} >> ${BOARD_ETC}/make.conf.board"
-  done
 fi
 # Setup make.globals and the profile.
 sudo touch /etc/make.conf.user

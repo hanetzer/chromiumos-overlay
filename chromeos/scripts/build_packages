@@ -142,15 +142,6 @@ if [ "${FLAGS_skip_toolchain_update}" -eq "${FLAGS_TRUE}" ]; then
 fi
 ${SCRIPTS_DIR}/setup_board --quiet --board=${FLAGS_board} ${UPDATE_ARGS}
 
-ARCH=$(portageq-${FLAGS_board} envvar ARCH)
-
-CHROMIUMOS_OVERLAY="/usr/local/portage/chromiumos"
-BINHOST_CONF="${CHROMIUMOS_OVERLAY}/chromeos/binhost/target/${ARCH}.conf"
-BOARD_CONF="/build/${FLAGS_board}/etc/make.conf.board"
-if [ -f "${BINHOST_CONF}" ] && ! grep -q ${BINHOST_CONF} ${BOARD_CONF}; then
-  echo "source ${BINHOST_CONF}" | sudo_append ${BOARD_CONF}
-fi
-
 if [ "${FLAGS_noworkon}" -eq "${FLAGS_FALSE}" ]; then
   # Always build cros-workon packages
   CROS_WORKON_PKGS=$(cros_workon --board="${FLAGS_board}" list)
