@@ -18,8 +18,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
-DEPEND="chromeos-base/chromeos-installer
-	chromeos-base/vboot_reference
+DEPEND="chromeos-base/vboot_reference
 	media-gfx/ply-image
 	sys-apps/busybox
 	sys-fs/lvm2"
@@ -106,9 +105,6 @@ build_initramfs_file() {
 	# Insure cgpt is statically linked
 	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
 	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
-
-	cp ${ROOT}/usr/sbin/chromeos-common.sh ${INITRAMFS_TMP_S}/usr/sbin || die
-	cp ${ROOT}/usr/sbin/chromeos-findrootfs ${INITRAMFS_TMP_S}/usr/sbin || die
 
 	# The kernel emake expects the file in cpio format.
 	( cd "${INITRAMFS_TMP_S}"

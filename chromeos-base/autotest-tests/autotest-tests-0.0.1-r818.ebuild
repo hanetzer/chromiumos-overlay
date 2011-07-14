@@ -199,10 +199,12 @@ IUSE_TESTS="
 	+tests_network_netperf2
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
+	+tests_platform_BootDevice
 	+tests_platform_BootPerf
 	+tests_platform_BootPerfServer
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CleanShutdown
+	+tests_platform_CloseOpenLid
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeFio
@@ -219,6 +221,7 @@ IUSE_TESTS="
 	+tests_platform_HighResTimers
 	+tests_platform_KernelErrorPaths
 	+tests_platform_KernelVersion
+	+tests_platform_LongPressPower
 	+tests_platform_MemCheck
 	+tests_platform_MiniJailCmdLine
 	+tests_platform_MiniJailPidNamespace
