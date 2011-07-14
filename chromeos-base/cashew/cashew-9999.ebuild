@@ -16,6 +16,7 @@ IUSE="test"
 
 RDEPEND="chromeos-base/flimflam
 	chromeos-base/libchrome
+	chromeos-base/metrics
 	dev-cpp/gflags
 	>=dev-cpp/glog-0.3.1
 	dev-libs/dbus-c++
