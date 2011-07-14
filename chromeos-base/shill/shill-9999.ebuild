@@ -20,7 +20,8 @@ DEPEND="${RDEPEND}
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )"
+	test? ( dev-cpp/gtest )
+	net-misc/modemmanager"
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
