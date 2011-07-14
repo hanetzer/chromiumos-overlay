@@ -87,17 +87,17 @@ construct_onestop_blob() {
 
 pack_image() {
 	local layout
-	layout="$(construct_layout BCT GBB FMAP RO_ONESTOP RW_A_ONESTOP RW_B_ONESTOP)"
+	layout="$(construct_layout RO_FIRMWARE_IMAGE RO_FIRMWARE_ID GBB FMAP RW_A_ONESTOP RW_B_ONESTOP)"
 	pack_firmware_image "${FILESDIR}/twostop_layout_config" \
 		${layout} \
 		SIZE=$(get_config_length /flash) \
-		BCT_IMAGE=$1 \
+		RO_FIRMWARE_IMAGE=$1 \
 		GBB_IMAGE=$2 \
-		RO_ONESTOP_IMAGE=$3 \
-		RW_A_ONESTOP_IMAGE=$4 \
-		RW_B_ONESTOP_IMAGE=$5 \
-		OUTPUT=$6 || \
-	die "fail to pack the $6"
+		RW_A_ONESTOP_IMAGE=$3 \
+		RW_B_ONESTOP_IMAGE=$4 \
+		FWID_STRING="'$(get_chromeos_version)'" \
+		OUTPUT=$5 || \
+	die "fail to pack the $5"
 }
 
 src_compile() {
@@ -127,34 +127,20 @@ src_compile() {
 		--text_base "0x$(get_text_base)" ||
 	die "failed to sign image."
 
-	# XXX u-boot.bin (tail of signed u-boot.dtb.bin) is bigger than
-	# u-boot.dtb.bin. Is the signed image padded?
-	dd if=signed_u-boot.dtb.bin of=bct.bin bs=512 count=128
-	dd if=signed_u-boot.dtb.bin of=u-boot.bin bs=512 skip=128
-
-	# TODO(crosbug/17555): tegra2_dev-board generates a BCT that is larger
-	# than 64KB, and cause pack_firmware_image fail. We do not support
-	# verified boot on dev-board for now.
-	local BOARD="${BOARD:-${SYSROOT##/build/}}"
-	if [ ${BOARD} = "tegra2_dev-board" ] ; then
-		dd if=u-boot.dtb.bin of=u-boot.bin
-	fi
-
-	construct_onestop_blob u-boot.bin \
+	construct_onestop_blob u-boot.dtb.bin \
 		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware.keyblock" \
 		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware_data_key.vbprivk" \
 		dev_onestop.bin
 
-	construct_onestop_blob u-boot.bin \
+	construct_onestop_blob u-boot.dtb.bin \
 		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/firmware.keyblock" \
 		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/firmware_data_key.vbprivk" \
 		normal_onestop.bin
 
-	pack_image bct.bin \
+	pack_image signed_u-boot.dtb.bin \
 		gbb.bin \
-		normal_onestop.bin \
-		normal_onestop.bin \
 		dev_onestop.bin \
+		normal_onestop.bin \
 		image.bin
 
 	# make legacy image
