@@ -16,9 +16,7 @@ KEYWORDS="amd64 arm x86"
 SLOT="0"
 IUSE="doc"
 
-RDEPEND=">=dev-libs/glib-2
-	>=x11-libs/gtk+-2
-	>=dev-libs/openssl-0.9.7"
+RDEPEND=">=dev-libs/openssl-0.9.7"
 
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
