@@ -199,7 +199,7 @@ cross_get_version() {
   else
     cpv=$(portageq match / cross-$FLAGS_toolchain/$pkg || true)
   fi
-  local cp="${cpv%-[^-]*-[^-]*}"
+  local cp=$(echo $cpv | sed -e 's/-r[0-9]*$//; s/-[^-]*$//')
   local result="${cpv#$cp-}"
   local count="$(echo $result | wc -w)"
   if [ "$count" -gt "1" ]; then
