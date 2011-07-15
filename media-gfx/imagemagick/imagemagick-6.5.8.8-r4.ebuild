@@ -19,7 +19,7 @@ SRC_URI="mirror://imagemagick/${MY_P2}.tar.bz2
 RESTRICT="perl? ( userpriv )"
 LICENSE="imagemagick"
 SLOT="0"
-KEYWORDS="alpha ~amd64 arm ~hppa ia64 ppc ppc64 s390 sh sparc x86"
+KEYWORDS="alpha amd64 arm ~hppa ia64 ppc ppc64 s390 sh sparc x86"
 IUSE="autotrace bzip2 +corefonts djvu doc fftw fontconfig fpx graphviz gs hdri
 	jbig jpeg jpeg2k lcms lqr nocxx openexr openmp perl png q8 q32 raw svg tiff
 	truetype X wmf xml zlib"
