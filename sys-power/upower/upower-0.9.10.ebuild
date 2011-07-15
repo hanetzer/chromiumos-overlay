@@ -50,6 +50,9 @@ src_prepare() {
 
 	# Temporary patch to keep polling even if the battery is full
 	epatch "${FILESDIR}/${P}-fully-charged-polling-fix.patch"
+
+	# Patch to read energy_full_design values every time.
+	epatch "${FILESDIR}/${P}-never-skip-design-energy.patch"
 }
 
 src_configure() {
