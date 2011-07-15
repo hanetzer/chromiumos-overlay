@@ -65,7 +65,6 @@
 *sys-libs/ncurses
 *sys-libs/readline
 *sys-libs/zlib
-*virtual/dev-manager
 *virtual/editor
 *virtual/gzip
 *virtual/libc
