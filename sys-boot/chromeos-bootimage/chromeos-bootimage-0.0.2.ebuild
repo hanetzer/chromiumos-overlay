@@ -38,15 +38,16 @@ if use x86; then
 	CROS_FIRMWARE_IMAGE_LAYOUT_CONFIG+="cb_firmware_layout_config"
 	CROS_FIRMWARE_DTB=''
 else
+	# TODO(dianders): remove looking at PKG_CONFIG once
+	# virtual/chromeos-bootimage is complete.
 	DST_DIR='/u-boot'
-	CROS_FIRMWARE_DTB="u-boot.dtb"
+	CROS_FIRMWARE_DTB=$(echo "${PKG_CONFIG#pkg-config-}.dtb" | tr _ '-')
+	CROS_FIRMWARE_DTB="${CROS_FIRMWARE_IMAGE_DIR}/dtb/${CROS_FIRMWARE_DTB}"
 fi
 
 # We only have a single U-Boot, and it is called u-boot.bin
 # TODO(sjg): simplify the eclass when we deprecate the old U-Boot
 CROS_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/u-boot.bin"
-
-ORIGINAL_DTB="${CROS_FIRMWARE_IMAGE_DIR}/u-boot.dtb"
 
 # add extra "echo" concatenates every line into single line
 LEGACY_BOOTCMD="$(echo $(cat <<-'EOF'
@@ -115,7 +116,7 @@ src_compile() {
 	cros_bundle_firmware \
 		--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
 		--uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
-		--dt "${ORIGINAL_DTB}" \
+		--dt "${CROS_FIRMWARE_DTB}" \
 		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
 		--bootcmd "run regen_all; vboot_twostop" \
 		--outdir normal \
@@ -127,7 +128,7 @@ src_compile() {
 		cros_bundle_firmware \
 			--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
                         --uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
-			--dt "${ORIGINAL_DTB}" \
+			--dt "${CROS_FIRMWARE_DTB}" \
 			--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
 			--bootcmd "${LEGACY_BOOTCMD}" \
 			--add-config-int load_env 1 \
