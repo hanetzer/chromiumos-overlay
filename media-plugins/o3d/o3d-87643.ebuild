@@ -19,8 +19,7 @@ DEPEND="dev-libs/nss
 	net-misc/curl
 	opengles? ( virtual/opengles )
 	x11-libs/cairo
-	x11-libs/gtk+
-	x11-libs/libXt"
+	x11-libs/gtk+"
 RDEPEND="${DEPEND}"
 
 set_build_defines() {
@@ -48,7 +47,7 @@ src_prepare() {
 		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
 	fi
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
-
+	epatch ${FILESDIR}/${P}-pkgconfig.patch || die
 	${EGCLIENT} runhooks || die
 }
 
