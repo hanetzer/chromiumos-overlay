@@ -12,14 +12,16 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
-# TODO(sjg): remove sys-boot/tegra2-fdt in favor of virtual/chromeos-fdt
-# whem it is ready
+# TODO(dianders) Eventually we'll have virtual/chromeos-bootimage.
+# When that happens the various implementations (like
+# sys-boot/chromeos-bootimage-seaboard) will do the depending on
+# sys-boot/tegra2-public-firmware-fdts.  For now we'll hardcode it.
 DEPEND="
 	arm? (
 			!sys-boot/chromeos-bios
 			virtual/tegra-bct
 			virtual/u-boot
-			sys-boot/tegra2-fdt
+			sys-boot/tegra2-public-firmware-fdts
 	     )
 	x86? ( sys-boot/chromeos-coreboot )
 	chromeos-base/vboot_reference
