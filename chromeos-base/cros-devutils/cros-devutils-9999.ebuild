@@ -4,7 +4,7 @@
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
-inherit cros-workon
+inherit cros-workon multilib python
 
 DESCRIPTION="Development utilities for ChromiumOS"
 HOMEPAGE="http://www.chromium.org/"
@@ -45,6 +45,7 @@ src_install() {
 		doexe host/cros_workon_make || die "Could not find file to install."
 		doexe host/cros_choose_profile || die "Could not find file to install."
 		doexe host/cros_sign_bootstub || die "Could not find file to install."
+		doexe host/cros_bundle_firmware || die "Could not find file to install."
 		doexe host/cros_write_firmware || die "Could not find file to install."
 		doexe host/willis || die "Could not find file to install."
 
@@ -85,6 +86,10 @@ src_install() {
 		newins host/repo_bash_completion repo || die "Could not find file to install."
 		dosym /usr/share/bash-completion/git /etc/bash_completion.d/git
 		dosym /usr/share/bash-completion/repo /etc/bash_completion.d/repo
+
+		local python_lib="/usr/$(get_libdir)/python$(python_get_version)/site-packages"
+		insinto "${python_lib}"
+		doins host/lib/*.py || die "Could not install python files."
 	fi
 }
 
