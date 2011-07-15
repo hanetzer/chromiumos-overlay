@@ -12,11 +12,14 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE=""
 
+# TODO(sjg): remove sys-boot/tegra2-fdt in favor of virtual/chromeos-fdt
+# whem it is ready
 DEPEND="
 	arm? (
 			!sys-boot/chromeos-bios
 			virtual/tegra-bct
 			virtual/u-boot
+			sys-boot/tegra2-fdt
 	     )
 	x86? ( sys-boot/chromeos-coreboot )
 	chromeos-base/vboot_reference
@@ -101,61 +104,34 @@ pack_image() {
 }
 
 src_compile() {
-	if [ -n "${CROS_FIRMWARE_DTB}" ]; then
-		# we are going to modify dtb, and so make a copy first
-		cp "${ORIGINAL_DTB}" "${CROS_FIRMWARE_DTB}"
-		dtb_set_config_string "${CROS_FIRMWARE_DTB}" bootcmd \
-			"run regen_all; vboot_twostop"
-	fi
-
 	# TODO(clchiou) fix x86 build later
 	if use x86; then
 		touch image.bin
 		return
 	fi
 
-	create_gbb
-
-	# TODO: Codes below will be replaced by cros_bundle_firmware
-
-	cat "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" "${CROS_FIRMWARE_DTB}" > \
-		u-boot.dtb.bin
-	cros_sign_bootstub \
+	cros_bundle_firmware \
 		--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
-		--bootstub u-boot.dtb.bin \
-		--output signed_u-boot.dtb.bin \
-		--text_base "0x$(get_text_base)" ||
-	die "failed to sign image."
-
-	construct_onestop_blob u-boot.dtb.bin \
-		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware.keyblock" \
-		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/dev_firmware_data_key.vbprivk" \
-		dev_onestop.bin
-
-	construct_onestop_blob u-boot.dtb.bin \
-		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/firmware.keyblock" \
-		"${CROS_FIRMWARE_IMAGE_DEVKEYS}/firmware_data_key.vbprivk" \
-		normal_onestop.bin
-
-	pack_image signed_u-boot.dtb.bin \
-		gbb.bin \
-		dev_onestop.bin \
-		normal_onestop.bin \
-		image.bin
+		--uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
+		--dt "${ORIGINAL_DTB}" \
+		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
+		--bootcmd "run regen_all; vboot_twostop" \
+		--outdir normal \
+		--output image.bin ||
+	die "failed to build image."
 
 	# make legacy image
 	if use arm && [ -n "${CROS_FIRMWARE_DTB}" ]; then
-		cp "${ORIGINAL_DTB}" u-boot-legacy.dtb
-		dtb_set_config_string u-boot-legacy.dtb bootcmd "${LEGACY_BOOTCMD}"
-		dtb_set_config_int u-boot-legacy.dtb load_env 1
-		cat "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" u-boot-legacy.dtb > \
-			u-boot-legacy.bin
-		cros_sign_bootstub \
+		cros_bundle_firmware \
 			--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
-			--bootstub u-boot-legacy.bin \
-			--output legacy_image.bin \
-			--text_base "0x$(get_text_base)" ||
-		die "failed to sign legacy image."
+                        --uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
+			--dt "${ORIGINAL_DTB}" \
+			--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
+			--bootcmd "${LEGACY_BOOTCMD}" \
+			--add-config-int load_env 1 \
+			--outdir legacy \
+			--output legacy_image.bin ||
+		die "failed to build legacy image."
 	fi
 }
 
