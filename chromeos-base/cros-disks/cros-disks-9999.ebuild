@@ -24,6 +24,7 @@ RDEPEND="
 	dev-libs/glib
 	sys-apps/rootdev
 	sys-apps/util-linux
+	sys-fs/ntfs3g
 	sys-fs/udev
 "
 
