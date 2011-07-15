@@ -308,9 +308,6 @@ print_board_make_conf() {
   local chromeos_overlay="$SRC_ROOT/private-overlays/chromeos-overlay"
   local internal_binhost_dir="$chromeos_overlay/chromeos/binhost/target"
   local internal_binhost="$internal_binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
-  if [[ $ARCH = x86 && ! -f "$internal_binhost" ]]; then
-    internal_binhost="$internal_binhost_dir/x86-mario-PREFLIGHT_BINHOST.conf"
-  fi
 
   echo "# AUTO-GENERATED FILE. DO NOT EDIT."
   echo
