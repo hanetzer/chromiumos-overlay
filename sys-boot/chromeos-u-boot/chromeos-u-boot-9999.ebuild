@@ -121,22 +121,9 @@ src_install() {
 	config=$(get_required_config)
 	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
 
-	if [ -n "$(get_fdt_name)" ]; then
-		files_to_copy+=" u-boot.dtb"
-	fi
-
 	for file in ${files_to_copy}; do
 		doins "${file}" || die
 	done
-
-	# Install device tree source files
-	if [ -n "$(get_fdt_dir)" ]; then
-		dodir "${inst_dir}/dts"
-		insinto "${inst_dir}/dts"
-		for file in "$(get_fdt_dir)"/*.dts "$(get_fdt_dir)"/*.dtsi; do
-			doins "${file}" || die
-		done
-	fi
 
 	if use x86; then
 		newins "u-boot" u-boot.elf || die
