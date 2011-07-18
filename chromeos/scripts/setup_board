@@ -139,11 +139,16 @@ toolchain_needs_update() {
     flags+=" --getbinpkg --usepkgonly"
   fi
 
-  if [ $FLAGS_usepkg -eq $FLAGS_TRUE ] || [ $FLAGS_latest_toolchain -eq $FLAGS_TRUE ]; then
+  if [ $FLAGS_latest_toolchain -eq $FLAGS_TRUE ]; then
     pkgs="cross-$FLAGS_toolchain/gcc"
     pkgs+=" cross-$FLAGS_toolchain/binutils"
     pkgs+=" cross-$FLAGS_toolchain/glibc"
     pkgs+=" cross-$FLAGS_toolchain/linux-headers"
+  elif [ $FLAGS_usepkg -eq $FLAGS_TRUE ]; then
+    pkgs="<=cross-$FLAGS_toolchain/gcc-$FLAGS_gcc_version"
+    pkgs+=" <=cross-$FLAGS_toolchain/glibc-$FLAGS_libc_version"
+    pkgs+=" <=cross-$FLAGS_toolchain/binutils-$FLAGS_binutils_version"
+    pkgs+=" <=cross-$FLAGS_toolchain/linux-headers-$FLAGS_kernel_version"
   else
     pkgs="=cross-$FLAGS_toolchain/gcc-$FLAGS_gcc_version"
     pkgs+=" =cross-$FLAGS_toolchain/glibc-$FLAGS_libc_version"
