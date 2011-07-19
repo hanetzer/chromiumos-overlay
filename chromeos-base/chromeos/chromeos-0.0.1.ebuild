@@ -141,6 +141,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
 	app-i18n/ibus-mozc-chewing
+	app-i18n/ibus-mozc-hangul
 	app-i18n/ibus-pinyin
 	app-i18n/ibus-xkb-layouts
 	touchui? ( app-i18n/ibus-zinnia )
