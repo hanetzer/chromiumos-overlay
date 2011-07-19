@@ -180,7 +180,8 @@ build_toolchain() {
     CROSS_ARGS+=" --kernel $FLAGS_kernel_version"
     CROSS_ARGS+=" --libc $FLAGS_libc_version"
   fi
-  sudo -E FEATURES="splitdebug" crossdev $CROSS_ARGS
+
+  sudo -E FEATURES="splitdebug ${FEATURES}" crossdev $CROSS_ARGS
 }
 
 # Get the version number of a toolchain package.

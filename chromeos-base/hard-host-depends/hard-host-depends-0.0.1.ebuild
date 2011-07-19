@@ -118,6 +118,11 @@ RDEPEND="${RDEPEND}
 	x11-misc/xkeyboard-config
 	"
 
+# Host dependencies that are needed for autotests.
+RDEPEND="${RDEPEND}
+	dev-util/dejagnu
+	"
+
 # Host dependencies that are needed to build Icedtea
 RDEPEND="${RDEPEND}
 	app-arch/zip
