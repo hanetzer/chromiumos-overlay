@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="3554c26b62445f6de001c7bf8a2d2ae63f86caf1"
+CROS_WORKON_COMMIT="a78e23ab69649e98c47dd46c6799e8fcb06336d7"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs
@@ -122,22 +122,9 @@ src_install() {
 	config=$(get_required_config)
 	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
 
-	if [ -n "$(get_fdt_name)" ]; then
-		files_to_copy+=" u-boot.dtb"
-	fi
-
 	for file in ${files_to_copy}; do
 		doins "${file}" || die
 	done
-
-	# Install device tree source files
-	if [ -n "$(get_fdt_dir)" ]; then
-		dodir "${inst_dir}/dts"
-		insinto "${inst_dir}/dts"
-		for file in "$(get_fdt_dir)"/*.dts "$(get_fdt_dir)"/*.dtsi; do
-			doins "${file}" || die
-		done
-	fi
 
 	if use x86; then
 		newins "u-boot" u-boot.elf || die
