@@ -6,18 +6,20 @@ EAPI=3
 
 PYTHON_DEPEND="python? 2"
 
-inherit eutils libtool python multilib
+CROS_WORKON_PROJECT="chromiumos/third_party/alsa-lib"
+CROS_WORKON_LOCALNAME="../third_party/alsa-lib"
+
+inherit eutils libtool python multilib cros-workon autotools
 
 MY_P=${P/_rc/rc}
 S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="Advanced Linux Sound Architecture Library"
 HOMEPAGE="http://www.alsa-project.org/"
-SRC_URI="mirror://alsaproject/lib/${MY_P}.tar.bz2"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="doc debug alisp python static-libs"
 
 DEPEND=">=media-sound/alsa-headers-1.0.24
@@ -46,8 +48,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	elibtoolize
-	epunt_cxx
+	eautoreconf || die "eautoreconf failed"
 }
 
 src_configure() {
@@ -96,3 +97,4 @@ pkg_postinst() {
 	elog "However, if you notice no sound output or instability, please try to "
 	elog "upgrade your kernel to a newer version first."
 }
+
