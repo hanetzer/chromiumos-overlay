@@ -111,7 +111,8 @@ pkg_postinst() {
 	copy_or_add_daemon_user "cromo" 210	  # For cromo (modem manager)
 	copy_or_add_daemon_user "cashew" 211      # For cashew (network usage)
 	copy_or_add_daemon_user "ipsec" 212       # For strongswan/ipsec VPN
-	copy_or_add_daemon_user "cros-disks" 213  # For cros-disks 
+	copy_or_add_daemon_user "cros-disks" 213  # For cros-disks
+	copy_or_add_daemon_user "tor" 214         # For tor (anonymity service)
 
 	# The system_user needs to be part of the audio and video groups.
 	test $(grep -e "^audio\:" "${ROOT}/etc/group" | \
