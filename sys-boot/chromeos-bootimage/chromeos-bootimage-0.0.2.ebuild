@@ -49,20 +49,6 @@ fi
 # TODO(sjg): simplify the eclass when we deprecate the old U-Boot
 CROS_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/u-boot.bin"
 
-# add extra "echo" concatenates every line into single line
-LEGACY_BOOTCMD="$(echo $(cat <<-'EOF'
-	usb start;
-	if test ${ethact} != ""; then
-		run dhcp_boot;
-	fi;
-	run usb_boot;
-	setenv mmcdev 1;
-	run mmc_boot;
-	setenv mmcdev 0;
-	run mmc_boot;
-EOF
-))"
-
 construct_layout() {
 	local layout
 	local section
@@ -118,7 +104,7 @@ src_compile() {
 		--uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
 		--dt "${CROS_FIRMWARE_DTB}" \
 		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
-		--bootcmd "run regen_all; vboot_twostop" \
+		--bootcmd "run secure_boot" \
 		--outdir normal \
 		--output image.bin ||
 	die "failed to build image."
@@ -130,7 +116,6 @@ src_compile() {
                         --uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
 			--dt "${CROS_FIRMWARE_DTB}" \
 			--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
-			--bootcmd "${LEGACY_BOOTCMD}" \
 			--add-config-int load_env 1 \
 			--outdir legacy \
 			--output legacy_image.bin ||
