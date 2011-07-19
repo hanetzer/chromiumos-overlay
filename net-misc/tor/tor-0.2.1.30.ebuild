@@ -23,11 +23,6 @@ DEPEND="dev-libs/openssl
 RDEPEND="${DEPEND}
 	net-proxy/tsocks[tordns]"
 
-pkg_setup() {
-	enewgroup tor
-	enewuser tor -1 -1 /var/lib/tor tor
-}
-
 src_prepare() {
 	epatch "${FILESDIR}"/torrc.sample-0.1.2.6.patch
 	epatch "${FILESDIR}"/${PN}-0.2.1.19-logrotate.patch
@@ -50,7 +45,6 @@ src_configure() {
 }
 
 src_install() {
-	newinitd "${FILESDIR}"/tor.initd-r4 tor
 	emake DESTDIR="${D}" install || die
 	keepdir /var/{lib,log,run}/tor
 
@@ -70,6 +64,8 @@ src_install() {
 	# allow the tor user more open files to avoid errors, see bug 251171
 	insinto /etc/security/limits.d/
 	doins "${FILESDIR}"/tor.conf
+
+	install -D -m 644 "${FILESDIR}"/tor-upstart.conf ${D}/etc/init/tor.conf
 }
 
 pkg_postinst() {
