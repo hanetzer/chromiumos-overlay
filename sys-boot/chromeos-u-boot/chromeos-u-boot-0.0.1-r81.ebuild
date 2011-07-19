@@ -50,28 +50,10 @@ get_required_config() {
 	esac
 }
 
-# TODO: remove this once cros_bundle_firmware is complete
-get_fdt_name() {
-	local name=${PKG_CONFIG#pkg-config-}
-
-	if use arm; then
-		echo "${name}" | tr _ '-'
-	fi
-}
-
-# Returns the directory containing the dts files
-get_fdt_dir() {
-	local name=${PKG_CONFIG#pkg-config-}
-
-	if use arm; then
-		echo "board/nvidia/seaboard"
-	fi
-}
-
 if use arm; then
 	COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
 	# We will supply an fdt at run time
-	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1 DEV_TREE_SRC=$(get_fdt_name)"
+	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1"
 fi
 
 
@@ -79,12 +61,6 @@ src_configure() {
 	local config
 	config=$(get_required_config)
 	elog "Using U-Boot config: ${config}"
-	dtb=$(get_fdt_name)
-	if [ -n "${dtb}" ]; then
-		elog "Using fdt: ${dtb}"
-	else
-		elog "Not building fdt"
-	fi
 
 	emake \
 		${COMMON_MAKE_FLAGS} \
