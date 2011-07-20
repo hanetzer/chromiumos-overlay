@@ -77,7 +77,7 @@ src_prepare() {
 		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \
 		-e 's,^PROJ_libdir.*,PROJ_libdir := $(PROJ_prefix)/'$(get_libdir)/${PN}, \
 		-i Makefile.config.in || die "Makefile.config sed failed"
-	sed -e 's,$ABS_RUN_DIR/lib,'"${ROOT%/}${EPREFIX}"/usr/$(get_libdir)/${PN}, \
+	sed -e 's,$ABS_RUN_DIR/lib,$ABS_RUN_DIR/'"$(get_libdir)/${PN}," \
 		-i tools/llvm-config/llvm-config.in.in || die "llvm-config sed failed"
 
 	einfo "Fixing rpath"
