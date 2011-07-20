@@ -15,6 +15,7 @@ KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="debug"
 
 RDEPEND="chromeos-base/libchrome
+	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.0
