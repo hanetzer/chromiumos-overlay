@@ -51,7 +51,6 @@ src_install() {
   exeinto /usr/libexec || die
   newexe "out_linux/${BUILDTYPE}/ibus_mozc" ibus-engine-mozc || die
 
-  # TODO(yusukes): Remove XML comments in the file. crosbug.com/4161
   insinto /usr/share/ibus/component || die
   doins out_linux/${BUILDTYPE}/obj/gen/unix/ibus/mozc.xml || die
 }
