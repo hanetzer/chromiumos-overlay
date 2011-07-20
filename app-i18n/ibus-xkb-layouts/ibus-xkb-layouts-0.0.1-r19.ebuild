@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="7c13e115d43c17e68c358dea350f93abb0fb0e87"
+CROS_WORKON_COMMIT="b9ada4a0df002f23dc37eae458ef1dfb443de32b"
 CROS_WORKON_PROJECT="chromiumos/third_party/ibus-xkb-layouts"
 
 inherit cros-workon
