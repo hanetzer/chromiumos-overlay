@@ -20,7 +20,7 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 src_prepare() {
   cd "mozc-${PV}" || die
   # TODO: Remove the epatch lines when mozc is upgraded.
-  epatch "${FILESDIR}"/fix_14988.patch
+  epatch "${FILESDIR}"/pkg_config.patch
 }
 
 src_configure() {
@@ -53,7 +53,6 @@ src_install() {
   newexe "out_linux/${BUILDTYPE}/ibus_mozc_chewing" ibus-engine-mozc-chewing \
       || die
 
-  # TODO(yusukes): Remove XML comments in the file. crosbug.com/4161
   insinto /usr/share/ibus/component || die
   doins chewing/unix/ibus/mozc-chewing.xml || die
 }
