@@ -19,7 +19,7 @@ BRANDING="${BRANDING:-Mozc}"
 
 src_prepare() {
   cd "mozc-${PV}" || die
-  epatch "${FILESDIR}"/hotkey.patch || die
+  epatch "${FILESDIR}"/version_number.patch || die
 }
 
 src_configure() {
