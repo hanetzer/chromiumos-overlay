@@ -28,7 +28,6 @@ src_install() {
 	exeinto /usr/bin
 
 	doexe mk_memento_images_factory.sh
-	doexe make_factory_package.sh
 	doexe serve_factory_packages.py
-	doexe cros_sign_to_ssd
+	doexe update_firmware_vars.py
 }
