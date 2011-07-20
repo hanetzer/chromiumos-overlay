@@ -72,4 +72,5 @@ RDEPEND="${RDEPEND}
 	x11-apps/xset
 	x86? ( x11-misc/read-edid )
 	x11-terms/rxvt-unicode
+	app-misc/utouch-evemu
 	"
