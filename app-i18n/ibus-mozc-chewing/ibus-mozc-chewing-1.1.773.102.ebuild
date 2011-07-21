@@ -20,7 +20,8 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 src_prepare() {
   cd "mozc-${PV}" || die
   # TODO: Remove the epatch lines when mozc is upgraded.
-  epatch "${FILESDIR}"/fix_14988.patch
+  epatch "${FILESDIR}"/pkg_config.patch
+  epatch "${FILESDIR}"/chewing_dependency.patch
 }
 
 src_configure() {
