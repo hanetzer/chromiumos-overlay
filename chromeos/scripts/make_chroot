@@ -217,6 +217,16 @@ CROS_WORKON_SRCROOT="${CHROOT_TRUNK}"
 PORTAGE_USERNAME=$USER
 EOF
 
+   # TODO(zbehan): Configure stuff that is usually configured in postinst's,
+   # but wasn't. Fix the postinst's. crosbug.com/18036
+   echo "Running post-inst configuration hacks"
+   in_chroot env-update
+   if [ -f ${FLAGS_chroot}/usr/bin/build-docbook-catalog ]; then
+     # For too ancient chroots that didn't have build-docbook-catalog, this
+     # is not relevant, and will get installed during update.
+     in_chroot build-docbook-catalog
+   fi
+
    # Configure basic stuff needed
    in_chroot env-update
    bash_chroot ls -l /etc/make.conf
