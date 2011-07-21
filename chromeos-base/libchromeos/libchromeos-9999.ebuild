@@ -18,8 +18,7 @@ IUSE="cros_host test"
 # issue where we need to make sure that libchrome is built first.
 RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-glib
-	dev-libs/libpcre
-	dev-libs/protobuf"
+	dev-libs/libpcre"
 
 DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
@@ -32,7 +31,6 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 	scons libchromeos.a || die "libchromeos.a compile failed."
-	scons libpolicy.a libpolicy.so || die "libpolicy compile failed."
 }
 
 src_test() {
@@ -40,12 +38,10 @@ src_test() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 	scons unittests || die
-	scons libpolicy_unittest || die
 	if ! use x86; then
 	        echo Skipping unit tests on non-x86 platform
 	else
 	        ./unittests || die "libchromeos unittests failed."
-	        ./libpolicy_unittest || die "libpolicy_unittest unittests failed."
 	fi
 }
 
@@ -58,8 +54,6 @@ src_install() {
 	insopts -m0644
 	insinto "/usr/lib"
 	doins "${S}/libchromeos.a"
-	doins "${S}/libpolicy.a"
-	doins "${S}/libpolicy.so"
 
 	insinto "/usr/include/chromeos"
 	doins "${S}/chromeos/callback.h"
@@ -78,9 +72,4 @@ src_install() {
 
 	insinto "/usr/include/chromeos/glib"
 	doins "${S}/chromeos/glib/object.h"
-
-	insinto "/usr/include/policy"
-	doins "${S}/chromeos/policy/libpolicy.h"
-	doins "${S}/chromeos/policy/device_policy.h"
-	doins "${S}/chromeos/policy/mock_device_policy.h"
 }
