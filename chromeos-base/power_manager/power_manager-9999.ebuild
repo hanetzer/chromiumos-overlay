@@ -67,7 +67,7 @@ src_test() {
 		trap 'kill %1 && wait' exit
 		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
 		sleep 2
-		for ut in file_tagger powerd; do
+		for ut in file_tagger power_supply powerd; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
 		done
