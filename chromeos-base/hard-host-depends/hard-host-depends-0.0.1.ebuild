@@ -69,6 +69,7 @@ RDEPEND="${RDEPEND}
 	>=dev-util/git-1.7.2
 	dev-util/gob
 	dev-util/gperf
+	dev-util/hdctools
 	dev-util/quilt
 	dev-util/subversion[-dso]
 	>=dev-util/gtk-doc-am-1.13
