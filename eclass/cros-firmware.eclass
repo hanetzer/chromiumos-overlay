@@ -27,6 +27,14 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Platform name of firmware
 : ${CROS_FIRMWARE_PLATFORM:=}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_SCRIPT
+# @DESCRIPTION: (Optional) Entry script file name of updater
+: ${CROS_FIRMWARE_SCRIPT:=}
+
+# @ECLASS-VARIABLE: CROS_FIRMWARE_UNSTABLE
+# @DESCRIPTION: (Optional) Mark firmrware as unstable (always RO+RW update)
+: ${CROS_FIRMWARE_UNSTABLE:=}
+
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BINARY
 # @DESCRIPTION: (Optional) location of custom flashrom tool
 : ${CROS_FIRMWARE_FLASHROM_BINARY:=}
@@ -62,9 +70,6 @@ RDEPEND="
 	chromeos-base/vboot_reference
 	sys-apps/mosys
 	sys-apps/util-linux"
-
-# TODO(hungte) remove chromeos-firmware after R14 branch
-RDEPEND="${RDEPEND} =chromeos-base/chromeos-firmware-9998"
 
 # Check for EAPI 2 or 3
 case "${EAPI:-0}" in
@@ -194,6 +199,12 @@ cros-firmware_src_compile() {
 	fi
 
 	# Prepare extra commands
+	if [ -n "$CROS_FIRMWARE_UNSTABLE" ]; then
+		ext_cmd="$ext_cmd --unstable"
+	fi
+	if [ -n "$CROS_FIRMWARE_SCRIPT" ]; then
+		ext_cmd="$ext_cmd --script $CROS_FIRMWARE_SCRIPT"
+	fi
 	if [ -n "$CROS_FIRMWARE_FLASHROM_BINARY" ]; then
 		ext_cmd="$ext_cmd --flashrom $CROS_FIRMWARE_FLASHROM_BINARY"
 	fi
