@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c4c1f464322444d1148e5da82c71e0b88533d97b"
+CROS_WORKON_COMMIT="01b961e751d7dfd232584ca8538c60391e75a601"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
 
 inherit cros-debug cros-workon flag-o-matic
@@ -16,6 +16,7 @@ KEYWORDS="amd64 x86 arm"
 IUSE="debug"
 
 RDEPEND="chromeos-base/libchrome
+	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.0

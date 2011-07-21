@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f235ef7e57cbfe000c7141cb203ae716bde8d359"
+CROS_WORKON_COMMIT="8fc2f2a37a9d751070240cea4cf3c8ac86e6b65f"
 CROS_WORKON_PROJECT="chromiumos/platform/cashew"
 
 inherit cros-debug cros-workon autotools
@@ -17,6 +17,7 @@ IUSE="test"
 
 RDEPEND="chromeos-base/flimflam
 	chromeos-base/libchrome
+	chromeos-base/metrics
 	dev-cpp/gflags
 	>=dev-cpp/glog-0.3.1
 	dev-libs/dbus-c++
