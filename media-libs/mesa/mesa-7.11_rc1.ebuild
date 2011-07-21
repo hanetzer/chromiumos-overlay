@@ -130,6 +130,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-i915g-lie.patch
 	epatch "${FILESDIR}"/7.11-pkgconfig.patch
 	epatch "${FILESDIR}"/7.11-i915g-disable-aapoint-aaline.patch
+	epatch "${FILESDIR}"/7.11-Revert-i915-Eliminate-redundant-CONSTANTS-updates.patch
 
 	eautoreconf
 }
@@ -206,7 +207,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/dri/"
 	insopts -m0755
 	# install the gallium drivers we use
-	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so swrast_dri.so )
+	local gallium_drivers_files=( nouveau_dri.so r300_dri.so r600_dri.so swrast_dri.so )
 	for x in ${gallium_drivers_files[@]}; do
 		if [ -f "${S}/$(get_libdir)/gallium/${x}" ]; then
 			doins "${S}/$(get_libdir)/gallium/${x}"
@@ -214,7 +215,7 @@ src_install() {
 	done
 
 	# install classic drivers we use
-	local classic_drivers_files=( i810_dri.so i965_dri.so nouveau_vieux_dri.so radeon_dri.so r200_dri.so )
+	local classic_drivers_files=( i810_dri.so i915_dri.so i965_dri.so nouveau_vieux_dri.so radeon_dri.so r200_dri.so )
 	for x in ${classic_drivers_files[@]}; do
 		if [ -f "${S}/$(get_libdir)/${x}" ]; then
 			doins "${S}/$(get_libdir)/${x}"
