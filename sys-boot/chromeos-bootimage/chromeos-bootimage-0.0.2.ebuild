@@ -104,7 +104,7 @@ src_compile() {
 		--uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
 		--dt "${CROS_FIRMWARE_DTB}" \
 		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
-		--bootcmd "run secure_boot" \
+		--bootcmd "vboot_twostop" \
 		--outdir normal \
 		--output image.bin ||
 	die "failed to build image."
