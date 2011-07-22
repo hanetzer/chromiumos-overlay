@@ -23,6 +23,7 @@ DEPEND="chromeos-base/vboot_reference
 	sys-apps/busybox
 	sys-apps/flashrom
 	sys-apps/pciutils
+	sys-apps/pv
 	sys-fs/lvm2"
 RDEPEND=""
 
@@ -147,8 +148,9 @@ build_initramfs_file() {
 	# For verified rootfs
 	idobin /sbin/dmsetup
 
-	# For message screen display
+	# For message screen display and progress bars
 	idobin /usr/bin/ply-image
+	idobin /usr/bin/pv
 
 	# For recovery behavior
 	idobin /usr/bin/tpmc
