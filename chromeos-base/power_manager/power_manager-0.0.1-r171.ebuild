@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="6556a0ec1b61d4089e65f83c3e11b57dad4d2cda"
+CROS_WORKON_COMMIT="07d72cd0a08a76ec6878cfc2cdf485a9ed197db1"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -68,7 +68,7 @@ src_test() {
 		trap 'kill %1 && wait' exit
 		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
 		sleep 2
-		for ut in file_tagger powerd; do
+		for ut in file_tagger power_supply powerd; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
 		done
