@@ -17,6 +17,12 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # Remove the epatch lines when mozc is upgraded.
+  epatch "${FILESDIR}"/no_japanese_data.patch || die
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
