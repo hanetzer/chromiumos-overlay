@@ -19,9 +19,9 @@ RDEPEND="chromeos-base/google-breakpad
          chromeos-base/libchrome
          chromeos-base/libchromeos
          chromeos-base/metrics
-	 chromeos-base/chromeos-ca-certificates
+         chromeos-base/chromeos-ca-certificates
          dev-cpp/gflags
-	 dev-libs/libpcre
+         dev-libs/libpcre
          test? ( dev-cpp/gtest )
          net-misc/curl
          sys-apps/findutils"
