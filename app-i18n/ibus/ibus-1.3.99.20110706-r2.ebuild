@@ -52,6 +52,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/0005-Port-the-following-ibus-1.3-patches-to-1.4.patch
         epatch "${FILESDIR}"/0007-Change-default-values-of-some-config.patch
         epatch "${FILESDIR}"/0001-Fix-several-GVariant-related-issues.-And-remove-a-wr.patch
+
+        # TODO remove this patch with a new upstream tarball
+        epatch "${FILESDIR}"/0001-Always-enable-the-new-focused-BusInputContext.patch
 }
 
 src_configure() {
