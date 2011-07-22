@@ -64,8 +64,16 @@ cros-fdt_src_compile() {
 }
 
 cros-fdt_src_install() {
-	dodir /u-boot/dtb
-	insinto /u-boot/dtb
+	local inst_dir
+
+	if use x86; then
+		inst_dir='/coreboot'
+	else
+		inst_dir='/u-boot'
+	fi
+
+	dodir "${inst_dir}/dtb"
+	insinto "${inst_dir}/dtb"
 
 	for file in $(get_source_files); do
 		local dtb=$(get_dtb "${file}")
