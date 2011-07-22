@@ -29,6 +29,7 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/gzip
 	app-arch/tar
+        app-benchmarks/punybench
 	app-crypt/nss
 	app-crypt/tpm-tools
 	x86? ( app-editors/qemacs )
