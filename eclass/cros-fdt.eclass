@@ -58,7 +58,8 @@ cros-fdt_src_compile() {
 	for file in $(get_source_files); do
 		local dtb=$(get_dtb "${file}")
 		einfo "Compiling ${file}"
-		dtc -R 4 -p 0x1000 -O dtb -o "${dtb}" "${file}"
+		dtc -R 4 -p 0x1000 -O dtb -o "${dtb}" "${file}" ||
+			die "Error compiling ${file}"
 	done
 }
 
