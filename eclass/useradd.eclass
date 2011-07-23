@@ -16,6 +16,12 @@
 
 HOMEPAGE="http://www.chromium.org/"
 
+# Before we manipulate users at all, we want to make sure that
+# passwd/group/shadow is initialized in the first place. That's
+# what baselayout does.
+DEPEND="sys-apps/baselayout"
+RDEPEND="sys-apps/baselayout"
+
 # Tests if the user already exists in the passwd file.
 #
 # $1 - Username (e.g. "messagebus")
