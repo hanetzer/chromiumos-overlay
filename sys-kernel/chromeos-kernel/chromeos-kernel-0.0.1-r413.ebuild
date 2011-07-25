@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="485be11d6b6831eb67f0b95db4b27384bc7e90ce"
+CROS_WORKON_COMMIT="6046aaa6f924add416451be09bb9eeef03bfb78d"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
