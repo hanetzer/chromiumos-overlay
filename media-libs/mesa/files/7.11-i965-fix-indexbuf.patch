@@ -1,0 +1,12 @@
+diff --git a/src/mesa/drivers/dri/i965/brw_vtbl.c b/src/mesa/drivers/dri/i965/brw_vtbl.c
+index 2b288e7..ca3c221 100644
+--- a/src/mesa/drivers/dri/i965/brw_vtbl.c
++++ b/src/mesa/drivers/dri/i965/brw_vtbl.c
+@@ -211,6 +211,7 @@ static void brw_new_batch( struct intel_context *intel )
+    intel->batch.need_workaround_flush = true;
+ 
+    brw->vb.nr_current_buffers = 0;
++   brw->ib.type = -1;
+ 
+    /* Mark that the current program cache BO has been used by the GPU.
+     * It will be reallocated if we need to put new programs in for the
