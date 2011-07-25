@@ -26,6 +26,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-3.12.6-gentoo-fixup-warnings.patch"
 	epatch "${FILESDIR}"/${P}-shlibsign.patch
 	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
+	epatch "${FILESDIR}"/${P}-remove-fortezza.patch
 
 	cd "${S}"/mozilla/security/coreconf
 	# hack nspr paths
