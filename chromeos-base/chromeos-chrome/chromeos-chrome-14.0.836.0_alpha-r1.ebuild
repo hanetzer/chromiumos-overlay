@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="93933"
+CROS_SVN_COMMIT="94089"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -326,7 +326,7 @@ unpack_chrome() {
 		fi
 		cp "${gclient_file}" "${ECHROME_STORE_DIR}/.gclient" \
 			|| die "Could not copy $gclient_file"
-	elif use chrome_pdf && use x86; then
+	elif use chrome_pdf && (use x86 || use arm); then
 		elog "Official Build enabling PDF sources"
 		create_gclient_file "${ECHROME_STORE_DIR}" \
 			"${PRIMARY_URL}" \
@@ -613,7 +613,7 @@ install_chrome_test_resources() {
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
 	# Add pdf test data
-	if use chrome_pdf && use x86; then
+	if use chrome_pdf && (use x86 || use arm); then
 		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
 			"${TEST_DIR}"/pdf/test/
 	fi
