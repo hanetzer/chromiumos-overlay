@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="07178cd8ff6b64fdde2048edab72896395cde33c"
+CROS_WORKON_COMMIT="4f278c77a92508e02664103e4c17cffc86f6621d"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs
@@ -12,7 +12,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="arm x86"
-IUSE=""
+IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/chromeos-u-boot-next"
@@ -38,6 +38,9 @@ COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
 COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 if use cros-debug; then
 	COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
+fi
+if use profiling; then
+	COMMON_MAKE_FLAGS+=" VBOOT_PERFORMANCE=1"
 fi
 
 get_required_config() {
