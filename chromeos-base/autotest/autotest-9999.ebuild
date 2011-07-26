@@ -73,4 +73,8 @@ src_install() {
 
 	dodir "/usr/local/autotest/server/tmp"
 	chmod a+wx "${D}/usr/local/autotest/server/tmp"
+
+	# Set up symlinks so that debug info works for autotests.
+	dodir /usr/lib/debug/usr/local/autotest/
+	dosym client/site_tests /usr/lib/debug/usr/local/autotest/tests
 }
