@@ -11,7 +11,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~arm ~x86"
-IUSE=""
+IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/chromeos-u-boot-next"
@@ -37,6 +37,9 @@ COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
 COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 if use cros-debug; then
 	COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
+fi
+if use profiling; then
+	COMMON_MAKE_FLAGS+=" VBOOT_PERFORMANCE=1"
 fi
 
 get_required_config() {
