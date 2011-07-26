@@ -58,4 +58,14 @@ src_install() {
 
   insinto /usr/share/ibus/component || die
   doins hangul/unix/ibus/mozc-hangul.xml || die
+
+  cp "out_linux/${BUILDTYPE}/ibus_mozc_hangul" /tmp || die
+  $(tc-getSTRIP) --strip-unneeded /tmp/ibus_mozc_hangul || die
+
+  # Check the binary size to detect binary size bloat (which happend once due
+  # typos in .gyp files). Current size of the stripped ibus-mozc-hangul binary
+  # is about 900k (x86) and 700k (arm).
+  test `stat -c %s /tmp/ibus_mozc_hangul` -lt 1500000 \
+      || die 'The binary size of mozc hangul is too big (more than ~1.5MB)'
+  rm -f /tmp/ibus_mozc_hangul
 }
