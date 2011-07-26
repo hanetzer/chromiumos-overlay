@@ -54,7 +54,16 @@ src_install() {
   newexe "out_linux/${BUILDTYPE}/ibus_mozc_chewing" ibus-engine-mozc-chewing \
       || die
 
-  # TODO(yusukes): Remove XML comments in the file. crosbug.com/4161
   insinto /usr/share/ibus/component || die
   doins chewing/unix/ibus/mozc-chewing.xml || die
+
+  cp "out_linux/${BUILDTYPE}/ibus_mozc_chewing" /tmp || die
+  $(tc-getSTRIP) --strip-unneeded /tmp/ibus_mozc_chewing || die
+
+  # Check the binary size to detect binary size bloat (which happend once due
+  # typos in .gyp files). Current size of the stripped ibus-mozc-chewing binary
+  # is about 900k (x86) and 700k (arm).
+  test `stat -c %s /tmp/ibus_mozc_chewing` -lt 1500000 \
+      || die 'The binary size of mozc chewing is too big (more than ~1.5MB)'
+  rm -f /tmp/ibus_mozc_chewing
 }
