@@ -80,7 +80,7 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/modes/xf86Crtc.c xorg-server-1.9.3.
 +    /* Choose the modes we want */
 +    if (xf86ModeSize(preferred_internal, internal) > xf86ModeSize(preferred_external, external))
 +    {
-+	found = findNearestResolutions(internal, external, external_mode, internal_mode, screen_mode);
++	found = findNearestResolutions(internal, external, &external_mode, &internal_mode, &screen_mode);
 +    } else {
 +	if (xf86ModeSize(preferred_external, external) > max_projector_pixels) {
 +	    external_mode = preferred_external;
@@ -88,7 +88,7 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/modes/xf86Crtc.c xorg-server-1.9.3.
 +	    found = TRUE;
 +	}
 +	else
-+	    found = findNearestResolutions(internal, external, external_mode, internal_mode, screen_mode);
++	    found = findNearestResolutions(internal, external, &external_mode, &internal_mode, &screen_mode);
 +    }
 +
 +    if (found) {
