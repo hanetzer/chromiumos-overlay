@@ -21,6 +21,8 @@ src_prepare() {
   cd "mozc-${PV}" || die
   # Remove the epatch lines when mozc is upgraded.
   epatch "${FILESDIR}"/no_japanese_data.patch || die
+  epatch "${FILESDIR}"/hanja_key_bind.patch || die
+  epatch "${FILESDIR}"/comment.patch || die
 }
 
 src_configure() {
