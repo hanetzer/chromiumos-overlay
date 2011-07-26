@@ -49,7 +49,7 @@ build_initramfs_file() {
 	done
 	cp -r ${S}/screens ${INITRAMFS_TMP_S}/etc || die
 
-	# Load libraries for busybox and dmsetup
+	# Load libraries for busybox, dmsetup, & vbutil_kernel
 	# TODO: how can ebuilds support static busybox?
 	if use x86 ; then
 		LIBS="
@@ -60,6 +60,7 @@ build_initramfs_file() {
 		# TODO ARM: why does arm use a different dynamic linker here?
 		LIBS="
 			ld-linux.so.3
+			libgcc_s.so.1
 		"
 	fi
 
