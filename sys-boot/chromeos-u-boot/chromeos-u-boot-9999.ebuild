@@ -25,14 +25,14 @@ CROS_WORKON_SUBDIR="files"
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
 
-BUILD_ROOT="${WORKDIR}/${P}/builds"
+UB_BUILD_DIR="${WORKDIR}/${ROOT}"
 
 # TODO(vbendeb): this will have to be populated when it becomes necessary to
 # build different config flavors.
 ALL_UBOOT_FLAVORS=''
 IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 UB_ARCH="$(tc-arch-kernel)"
-COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}-"
+COMMON_MAKE_FLAGS="ARCH=${UB_ARCH} CROSS_COMPILE=${CHOST}- O=${UB_BUILD_DIR}"
 
 COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 if use cros-debug; then
@@ -95,14 +95,13 @@ src_install() {
 	dodir "${inst_dir}"
 	insinto "${inst_dir}"
 
-	config=$(get_required_config)
 	local files_to_copy='System.map include/autoconf.mk u-boot.bin'
 
 	for file in ${files_to_copy}; do
-		doins "${file}" || die
+		doins "${UB_BUILD_DIR}/${file}" || die
 	done
 
 	if use x86; then
-		newins "u-boot" u-boot.elf || die
+		newins "${UB_BUILD_DIR}/u-boot" u-boot.elf || die
 	fi
 }
