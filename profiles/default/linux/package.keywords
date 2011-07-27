@@ -55,3 +55,6 @@
 =net-misc/curl-7.21.4		amd64 x86
 =net-dns/c-ares-1.7.4		amd64 x86
 
+# Mark fuse-2.8.5 unstable until it can be patched
+=sys-fs/fuse-2.8.5 -arm -x86 -amd64 ~arm ~x86 ~amd64
+
