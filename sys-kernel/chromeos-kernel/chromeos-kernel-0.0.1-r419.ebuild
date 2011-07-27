@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="0948df47582f1f6014fa683ec99b9be0e06c48bb"
+CROS_WORKON_COMMIT="30d6bf871c96ab05eda5517552e863ca21d7f0fd"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
@@ -15,6 +15,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
+IUSE="${IUSE} -pcserial"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -99,6 +100,11 @@ src_configure() {
 	if use nfs; then
 		elog "   - adding NFS config"
 		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
+	fi
+
+	if use pcserial; then
+		elog "   - adding PC serial config"
+		cat "${FILESDIR}"/pcserial.config >> "${build_cfg}"
 	fi
 
 	# Use default for any options not explitly set in splitconfig
