@@ -105,6 +105,7 @@ src_compile() {
 		--dt "${CROS_FIRMWARE_DTB}" \
 		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
 		--bootcmd "vboot_twostop" \
+		--bootsecure \
 		--outdir normal \
 		--output image.bin ||
 	die "failed to build image."
