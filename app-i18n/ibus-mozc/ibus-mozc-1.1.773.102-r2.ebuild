@@ -53,6 +53,15 @@ src_install() {
 
   insinto /usr/share/ibus/component || die
   doins out_linux/${BUILDTYPE}/obj/gen/unix/ibus/mozc.xml || die
+
+  cp "out_linux/${BUILDTYPE}/ibus_mozc" /tmp || die
+  $(tc-getSTRIP) --strip-unneeded /tmp/ibus_mozc || die
+
+  # Check the binary size to detect binary size bloat (which happend once due
+  # typos in .gyp files).
+  test `stat -c %s /tmp/ibus_mozc` -lt 20000000 \
+      || die 'The binary size of mozc for Japanese is too big (more than ~20MB)'
+  rm -f /tmp/ibus_mozc
 }
 
 pkg_postinst() {
