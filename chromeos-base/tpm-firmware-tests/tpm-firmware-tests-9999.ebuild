@@ -34,5 +34,6 @@ AUTOTEST_SERVER_SITE_TESTS=autotest/server
 function src_compile {
 	# for Makefile
 	export VBOOT_DIR=${WORKDIR}/${P}
+        export MINIMAL=1  # Makefile requires this for cross-compiling
 	autotest_src_compile
 }
