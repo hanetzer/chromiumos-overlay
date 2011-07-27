@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64"
 IUSE=""
 EAPI="2"
-CROS_WORKON_COMMIT="0c78638ff21a3a4c459b6deaf67453458aa4f223"
+CROS_WORKON_COMMIT="5ac54e8d3d305c2c6c7297e8e54d3cf7e4629b29"
 CROS_WORKON_PROJECT="chromiumos/third_party/bootstub"
 
 DEPEND="sys-boot/gnu-efi"
