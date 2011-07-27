@@ -1,0 +1,114 @@
+From f85c86da6cda3060e65c64b078d40ec1f4a8b78f Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Wed, 27 Jul 2011 10:53:31 +0800
+Subject: [PATCH 5/7] os/log: Add LogVHdrMessageVerb and friends
+
+LogVHdrMessageVerb allows a custom header to be inserted in a log message,
+between the Log system's MessageType string, and a formatted variable
+message body. The custom header can itself be a formatted variable string.
+
+These functions can be used, for example, by driver abstraction layers to
+format specific driver messages in a standard format, but do it in a way
+that is efficient, obeys the log-layers verbosity settings, and is safe
+to use in signal handlers (because they don't call malloc), even for
+types besides X_NONE.
+
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+---
+ include/os.h |   13 +++++++++++++
+ os/log.c     |   55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+), 0 deletions(-)
+
+diff --git a/include/os.h b/include/os.h
+index ba8fd9f..b2707fa 100644
+--- a/include/os.h
++++ b/include/os.h
+@@ -536,6 +536,19 @@ extern _X_EXPORT void LogMessageVerb(MessageType type, int verb, const char *for
+ 			   ...) _X_ATTRIBUTE_PRINTF(3,4);
+ extern _X_EXPORT void LogMessage(MessageType type, const char *format, ...)
+ 			_X_ATTRIBUTE_PRINTF(2,3);
++
++extern _X_EXPORT void LogVHdrMessageVerb(MessageType type, int verb,
++			    const char *msg_format, va_list msg_args,
++			    const char *hdr_format, va_list hdr_args)
++			_X_ATTRIBUTE_PRINTF(3,0) _X_ATTRIBUTE_PRINTF(5,0);
++extern _X_EXPORT void LogHdrMessageVerb(MessageType type, int verb,
++			    const char *msg_format, va_list msg_args,
++			    const char *hdr_format, ...)
++			_X_ATTRIBUTE_PRINTF(3,0) _X_ATTRIBUTE_PRINTF(5,6);
++extern _X_EXPORT void LogHdrMessage(MessageType type, const char *msg_format,
++			    va_list msg_args, const char *hdr_format, ...)
++			_X_ATTRIBUTE_PRINTF(2,0) _X_ATTRIBUTE_PRINTF(4,5);
++
+ extern _X_EXPORT void FreeAuditTimer(void);
+ extern _X_EXPORT void AuditF(const char *f, ...) _X_ATTRIBUTE_PRINTF(1,2);
+ extern _X_EXPORT void VAuditF(const char *f, va_list args) _X_ATTRIBUTE_PRINTF(1,0);
+diff --git a/os/log.c b/os/log.c
+index 5d924cf..2eb06cc 100644
+--- a/os/log.c
++++ b/os/log.c
+@@ -422,6 +422,61 @@ LogMessage(MessageType type, const char *format, ...)
+     va_end(ap);
+ }
+ 
++
++void
++LogVHdrMessageVerb(MessageType type, int verb, const char *msg_format,
++		   va_list msg_args, const char *hdr_format, va_list hdr_args)
++{
++    const char *type_str;
++    char tmpFormat[1024];
++    char *tmpFormat_end = &tmpFormat[sizeof(tmpFormat)];
++    char *p = tmpFormat;
++    int left;
++
++    type_str = LogMessageTypeVerbString(type, verb);
++    if (!type_str)
++	return;
++
++    /* if type_str is not "", prepend it, and ' ', to hdr_format */
++    left = tmpFormat_end - p;
++    if (strlen(type_str))
++	p += snprintf(p, left, "%s ", type_str);
++
++    /* append header string to tmpBuf */
++    left = tmpFormat_end - p;
++    if (left > 1)
++	p += vsnprintf(p, left, hdr_format, hdr_args);
++
++    /* if still room in tmpBuf copy as much of msg_format as will fit */
++    left = tmpFormat_end - p;
++    if (left > 1)
++	snprintf(p, left, "%s", msg_format);
++
++    LogVWrite(verb, tmpFormat, msg_args);
++}
++
++void
++LogHdrMessageVerb(MessageType type, int verb, const char *msg_format,
++		  va_list msg_args, const char *hdr_format, ...)
++{
++    va_list hdr_args;
++
++    va_start(hdr_args, hdr_format);
++    LogVHdrMessageVerb(type, verb, msg_format, msg_args, hdr_format, hdr_args);
++    va_end(hdr_args);
++}
++
++void
++LogHdrMessage(MessageType type, const char *msg_format, va_list msg_args,
++	      const char *hdr_format, ...)
++{
++    va_list hdr_args;
++
++    va_start(hdr_args, hdr_format);
++    LogVHdrMessageVerb(type, 1, msg_format, msg_args, hdr_format, hdr_args);
++    va_end(hdr_args);
++}
++
+ void
+ AbortServer(void) _X_NORETURN;
+ 
+-- 
+1.7.3.1
+
