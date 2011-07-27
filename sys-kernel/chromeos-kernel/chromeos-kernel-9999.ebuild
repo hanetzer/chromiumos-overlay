@@ -14,6 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
+IUSE="${IUSE} -pcserial"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -98,6 +99,11 @@ src_configure() {
 	if use nfs; then
 		elog "   - adding NFS config"
 		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
+	fi
+
+	if use pcserial; then
+		elog "   - adding PC serial config"
+		cat "${FILESDIR}"/pcserial.config >> "${build_cfg}"
 	fi
 
 	# Use default for any options not explitly set in splitconfig
