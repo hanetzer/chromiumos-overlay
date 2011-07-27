@@ -84,6 +84,7 @@ src_test() {
 src_install() {
 	dobin "${S}/backlight-tool"
 	dobin "${S}/debug_sleep_quickly"
+	dobin "${S}/power-supply-info"
 	dobin "${S}/powerd"
 	dobin "${S}/powerm"
 	dobin "${S}/powerd_lock_screen"
