@@ -61,7 +61,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/which
 	hardened? ( >=sys-devel/gdb-7.1 )
 	!hardened? ( sys-devel/gdb )
-	sys-fs/fuse[-kernel_linux]
+	sys-fs/fuse
 	sys-fs/lvm2
 	sys-fs/sshfs-fuse
 	sys-power/powertop

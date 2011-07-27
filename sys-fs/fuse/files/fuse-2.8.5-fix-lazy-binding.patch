@@ -6,6 +6,6 @@ diff -pur fuse-1.4.orig/util/Makefile.in fuse-1.4/util/Makefile.in
  POST_UNINSTALL = :
  ACLOCAL = @ACLOCAL@
 +AM_CFLAGS=-Wl,-z,now
- AMDEP_FALSE = @AMDEP_FALSE@
- AMDEP_TRUE = @AMDEP_TRUE@
  AMTAR = @AMTAR@
+ AR = @AR@
+ AUTOCONF = @AUTOCONF@
