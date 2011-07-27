@@ -15,7 +15,9 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND=">=app-i18n/ibus-1.3.99
 	 app-i18n/zinnia
-	 app-i18n/tegaki-zinnia-japanese-light"
+	 app-i18n/tegaki-zinnia-japanese-light
+	 app-i18n/tegaki-zinnia-simplified-chinese-light
+	 app-i18n/tegaki-zinnia-traditional-chinese-light"
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
