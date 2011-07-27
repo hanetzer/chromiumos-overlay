@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f9a890d23da468f9270384185b5d74f450ca7c05"
+CROS_WORKON_COMMIT="4113c32aef42c7f31ea71c5a1e74a0488c33e0a6"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon
@@ -74,4 +74,8 @@ src_install() {
 
 	dodir "/usr/local/autotest/server/tmp"
 	chmod a+wx "${D}/usr/local/autotest/server/tmp"
+
+	# Set up symlinks so that debug info works for autotests.
+	dodir /usr/lib/debug/usr/local/autotest/
+	dosym client/site_tests /usr/lib/debug/usr/local/autotest/tests
 }
