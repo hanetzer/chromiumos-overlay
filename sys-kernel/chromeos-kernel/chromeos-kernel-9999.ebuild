@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources"
+IUSE="${IUSE} -pcserial -kernel_sources -systemtap"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -100,6 +100,10 @@ src_configure() {
 	if use nfs; then
 		elog "   - adding NFS config"
 		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
+	fi
+	if use systemtap; then
+		elog "	- adding configs to support systemtap"
+		cat "${FILESDIR}"/systemtap.config >> "${build_cfg}"
 	fi
 
 	if use pcserial; then
