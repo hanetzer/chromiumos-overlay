@@ -25,6 +25,10 @@ src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins "${S}"/images/*
 
+  insinto /usr/share/chromeos-assets/gaia_auth
+  doins "${S}"/gaia_auth/main.html
+  doins "${S}"/gaia_auth/success.html
+
   insinto /usr/share/chromeos-assets/screensavers
   doins -r "${S}"/screensavers/*
 }
