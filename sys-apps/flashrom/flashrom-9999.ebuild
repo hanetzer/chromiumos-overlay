@@ -21,14 +21,19 @@ RDEPEND="sys-apps/pciutils
 	ftdi? ( dev-embedded/libftdi )"
 
 src_compile() {
+	local make_flags="CC=\"$(tc-getCC)\" strip=''"
 	if use arm; then
-		emake CC="$(tc-getCC)" STRIP="" \
-			CONFIG_OGP_SPI=no CONFIG_NICINTEL_SPI=no CONFIG_RAYER_SPI=no \
-			CONFIG_NIC3COM=no CONFIG_NICREALTEK=no CONFIG_SATAMV=no ||
-			die "emake failed"
-	else
-		emake CC="$(tc-getCC)" STRIP="" || die "emake failed"
+		make_flags+=" CONFIG_OGP_SPI=no CONFIG_NICINTEL_SPI=no"
+		make_flags+=" CONFIG_RAYER_SPI=no CONFIG_NIC3COM=no"
+		make_flags+=" CONFIG_NICREALTEK=no CONFIG_SATAMV=no"
 	fi
+
+	if use amd64; then
+		# Enable dediprog programming when building for the host.
+		make_flags+=" CONFIG_DEDIPROG=yes"
+	fi
+
+	emake ${make_flags} || die
 }
 
 src_install() {
