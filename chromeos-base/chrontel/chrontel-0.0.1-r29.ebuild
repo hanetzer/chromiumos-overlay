@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d14d8f535a73e048dc3a7e08eeec50d47b082a0e"
+CROS_WORKON_COMMIT="9d496962bdd55dd578caa20d797cded8ae811ec0"
 CROS_WORKON_PROJECT="chromiumos/third_party/chrontel"
 
 inherit cros-workon
@@ -13,19 +13,21 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
-IUSE="-bogus_screen_resizes"
+IUSE="-bogus_screen_resizes -use_alsa_control"
 
 CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
 RDEPEND="x11-libs/libX11
 	x11-libs/libXdmcp
-	x11-libs/libXrandr"
+	x11-libs/libXrandr
+	media-libs/alsa-lib"
 
 DEPEND="${RDEPEND}"
 
 src_compile() {
 	tc-export CC PKG_CONFIG
         use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
+        use use_alsa_control && append-flags -DUSE_ALSA_CONTROL
         export CCFLAGS="$CFLAGS"
 	emake || die "end compile failed."
 }
