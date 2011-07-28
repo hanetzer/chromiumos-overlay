@@ -57,6 +57,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${PN}-2.3.2-enable-valid.patch
 	epatch "${FILESDIR}"/${PN}-2.3.11-lcd-sharpen.patch
+	epatch "${FILESDIR}"/${PN}-2.4.4-CVE-2011-0226.patch
 
 	if use utils; then
 		cd "${WORKDIR}/ft2demos-${PV}"
