@@ -42,37 +42,53 @@ src_unpack() {
 	local BOARD="${BOARD:-${SYSROOT##/build/}}"
 	emerge-${BOARD} --pretend --emptytree --root-deps=rdeps chromeos \
 		| grep -Eo " [[:alnum:]-]+/[^[:space:]/]+\b" \
-		| tr -d " " > "${S}/package.provided"
+		| tr -d " " > "${S}/chromeos.packages"
+	# No virtual packages in package.provided.
+	grep -v "virtual/" "${S}/chromeos.packages" > "${S}/package.provided"
+
+	# Get the list of the packages needed to bootstrap emerge.
+	emerge-${BOARD} --pretend --emptytree --root-deps=rdeps portage \
+                | grep -Eo " [[:alnum:]-]+/[^[:space:]/]+\b" \
+                | tr -d " " > "${S}/portage.packages"
+	# Filter out all the packages that are already in chromeos.
+	while read line; do
+		grep "$line" "${S}/chromeos.packages"
+		if [ $? -ne 0 ]; then
+			echo "${line}" >> "${S}/bootstrap.packages"
+			# After bootstrapping the package will be assumed to be
+			# installed by emerge.
+			echo "${line}" | grep -v "virtual/" >> \
+				"${S}/package.provided"
+		fi
+	done < "${S}/portage.packages"
 
 	# Add the board specific binhost repository.
 	sed -e "s|BOARD|${BOARD}|g" "${SRCDIR}/repository.conf" > "${S}/repository.conf"
 
-	# /etc/make.conf contains architecture specific information. Right now
-	# we just grab make.globals from emerging portage.
-	# TODO(arkaitzr): we may want to ignore complex emerge configurations
-	# and only allow binary packages to be installed, at least for a start.
-	local portage_file="${S}/../../../../../../packages/sys-apps/portage*.tbz2"
-	tar -C "${S}" -xjvf "${portage_file}" --wildcards \
-		"./usr/share/portage/config/make.globals"
 }
 
 src_install() {
 	pushd "${SRCDIR}"
-
 	exeinto /usr/bin
 	doexe dev_install
 
-	insinto /etc
-	doins make.defaults
-
 	dodir /etc/portage
 	insinto /etc/portage
-	newins "${S}/usr/share/portage/config/make.globals make.globals.user"
         doins "${S}/repository.conf"
+        doins "${S}/bootstrap.packages"
 
 	dodir /etc/portage/make.profile
 	insinto /etc/portage/make.profile
 	doins "${S}/package.provided"
+	doins make.defaults
+	doins make.conf
 
+	dodir /etc/env.d
+	insinto /etc/env.d
+	doins 99devinstall
+
+	# Python will be installed in /usr/local after running dev_install.
+	dosym "/usr/local/bin/python2.6" "/usr/bin/python"
 	popd
 }
+
