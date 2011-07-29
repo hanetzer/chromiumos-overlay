@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-firmware-image
+inherit cros-debug cros-firmware-image
 
 DESCRIPTION="ChromeOS arm firmware image builder"
 HOMEPAGE="http://www.chromium.org"
@@ -99,6 +99,11 @@ src_compile() {
 		return
 	fi
 
+	BUNDLE_FLAGS=''
+	if ! use cros-debug; then
+		BUNDLE_FLAGS+=' --add-config-int silent_console 1'
+	fi
+
 	cros_bundle_firmware \
 		--bct "${CROS_FIRMWARE_IMAGE_BCT}" \
 		--uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
@@ -106,6 +111,7 @@ src_compile() {
 		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
+		${BUNDLE_FLAGS} \
 		--outdir normal \
 		--output image.bin ||
 	die "failed to build image."
