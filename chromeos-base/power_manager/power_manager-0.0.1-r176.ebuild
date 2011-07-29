@@ -14,8 +14,7 @@ SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit"
 KEYWORDS="amd64 arm x86"
 
-RDEPEND="chromeos-base/libcros
-	chromeos-base/metrics
+RDEPEND="chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
 	sys-fs/udev
