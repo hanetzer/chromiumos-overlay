@@ -211,7 +211,6 @@ RDEPEND="${RDEPEND}
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	sys-libs/timezone-data
-	sys-power/upower
 	sys-process/lsof
 	sys-process/procps
 	sys-process/vixie-cron
