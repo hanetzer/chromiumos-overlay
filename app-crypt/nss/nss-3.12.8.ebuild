@@ -29,6 +29,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
 
 	cd "${S}"/mozilla/security/coreconf
+
+	# Explain that linux 3.0 is just the same as 2.6.
+	ln -sf Linux2.6.mk Linux3.0.mk
+
 	# hack nspr paths
 	echo 'INCLUDES += -I'"${EPREFIX}"'/usr/include/nspr -I$(DIST)/include/dbm' \
 		>> headers.mk || die "failed to append include"
