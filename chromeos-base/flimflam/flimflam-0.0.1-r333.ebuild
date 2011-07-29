@@ -136,4 +136,5 @@ src_install() {
 	dobin bin/mm_debug
 	dobin bin/set_apn
 	dobin bin/wpa_debug
+	dobin bin/set_arpgw
 }
