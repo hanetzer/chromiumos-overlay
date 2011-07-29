@@ -23,6 +23,10 @@ src_prepare() {
   epatch "${FILESDIR}"/no_japanese_data.patch || die
   epatch "${FILESDIR}"/hanja_key_bind.patch || die
   epatch "${FILESDIR}"/comment.patch || die
+  epatch "${FILESDIR}"/crosbug18387.patch || die
+  epatch "${FILESDIR}"/crosbug18419.patch || die
+  epatch "${FILESDIR}"/crosbug18454.patch || die
+  epatch "${FILESDIR}"/crosbug18507.patch || die
 }
 
 src_configure() {
