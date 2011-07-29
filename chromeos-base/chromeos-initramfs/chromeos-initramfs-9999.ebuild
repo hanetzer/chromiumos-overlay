@@ -57,9 +57,17 @@ build_initramfs_file() {
 		"
 	else
 		# TODO ARM: why does arm use a different dynamic linker here?
+		# libgcc_s.so.1 pathname might be
+		#   ../usr/lib/gcc/${TOOLCHAIN}/${TOOLVER}/gcc/${TOOLVER}/libgcc_s.so.1
+		# or
+		#   /lib/libgcc_s.so.1
+		GCCLIBS="..$(grep -m 1 ${CHOST} ${ROOT}/etc/ld.so.conf)/libgcc_s.so.1"
+		if [ ! -e "${ROOT}/lib/${GCCLIBS}" ]; then
+			GCCLIBS="libgcc_s.so.1"
+		fi
 		LIBS="
 			ld-linux.so.3
-			libgcc_s.so.1
+			${GCCLIBS}
 		"
 	fi
 
