@@ -1,12 +1,13 @@
-From 40c75eb2af94179a18e3e247359a010f88807a7e Mon Sep 17 00:00:00 2001
+From fe179780961e46206ad73cb7139887f26984ef21 Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
-Date: Wed, 27 Jul 2011 20:22:00 +0800
+Date: Fri, 29 Jul 2011 12:21:11 +0800
 Subject: [PATCH 4/5] xf86Helper: use LogHdrMessageVerb in xf86VIDrvMsgVerb
 
 LogHdrMessageVerb allows passing a parameterized header to insert in a log
 message between MessageType and the formatted message body string.
 
 Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
 ---
  hw/xfree86/common/xf86Helper.c |   25 ++++++++++++++-----------
  1 files changed, 14 insertions(+), 11 deletions(-)

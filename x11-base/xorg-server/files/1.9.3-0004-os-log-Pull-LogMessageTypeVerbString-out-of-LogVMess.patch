@@ -1,4 +1,4 @@
-From 5e1f9a2d0c83988bb0787c004973f40b547234e6 Mon Sep 17 00:00:00 2001
+From 4da646963b3a30f4dbef920bc9a986518b037086 Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
 Date: Wed, 27 Jul 2011 20:14:04 +0800
 Subject: [PATCH 4/7] os/log: Pull LogMessageTypeVerbString out of LogVMessageVerb
@@ -11,7 +11,7 @@ Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
  1 files changed, 62 insertions(+), 49 deletions(-)
 
 diff --git a/os/log.c b/os/log.c
-index 053033a..5d924cf 100644
+index 053033a..a7ce13b 100644
 --- a/os/log.c
 +++ b/os/log.c
 @@ -161,6 +161,9 @@ asm (".desc ___crashreporter_info__, 0x10");
@@ -32,7 +32,7 @@ index 053033a..5d924cf 100644
 -LogVMessageVerb(MessageType type, int verb, const char *format, va_list args)
 +/* Returns the Message Type string to prepend to a logging message, or NULL
 + * if the message will be dropped due to insufficient verbosity. */
-+const char*
++static const char*
 +LogMessageTypeVerbString(MessageType type, int verb)
  {
 -    const char *s  = X_UNKNOWN_STRING;

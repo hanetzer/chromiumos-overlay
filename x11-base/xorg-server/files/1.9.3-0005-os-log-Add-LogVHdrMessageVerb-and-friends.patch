@@ -1,4 +1,4 @@
-From f85c86da6cda3060e65c64b078d40ec1f4a8b78f Mon Sep 17 00:00:00 2001
+From 96a2d610c3b6718384764b8fd784c9f7b50d5728 Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
 Date: Wed, 27 Jul 2011 10:53:31 +0800
 Subject: [PATCH 5/7] os/log: Add LogVHdrMessageVerb and friends
@@ -14,6 +14,7 @@ to use in signal handlers (because they don't call malloc), even for
 types besides X_NONE.
 
 Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
 ---
  include/os.h |   13 +++++++++++++
  os/log.c     |   55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -44,7 +45,7 @@ index ba8fd9f..b2707fa 100644
  extern _X_EXPORT void AuditF(const char *f, ...) _X_ATTRIBUTE_PRINTF(1,2);
  extern _X_EXPORT void VAuditF(const char *f, va_list args) _X_ATTRIBUTE_PRINTF(1,0);
 diff --git a/os/log.c b/os/log.c
-index 5d924cf..2eb06cc 100644
+index a7ce13b..7d3ebd0 100644
 --- a/os/log.c
 +++ b/os/log.c
 @@ -422,6 +422,61 @@ LogMessage(MessageType type, const char *format, ...)
