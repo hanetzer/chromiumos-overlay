@@ -159,6 +159,7 @@ fi
 if [[ "${FLAGS_withfactory}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-factoryinstall"
   PACKAGES="${PACKAGES} chromeos-base/factorytest-init"
+  PACKAGES="${PACKAGES} chromeos-base/chromeos-hwid"
 fi
 if [[ "${FLAGS_withtest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/chromeos-test"
