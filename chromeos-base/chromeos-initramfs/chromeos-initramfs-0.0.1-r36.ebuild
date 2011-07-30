@@ -30,16 +30,63 @@ INITRAMFS_TMP_S=${WORKDIR}/initramfs_tmp
 # Suffixed with cpio or not recognize filetype.
 INITRAMFS_FILE="initramfs.cpio.gz"
 
+solve_lib_symlinks() {
+	local lib="$(basename "$1")"
+	if ! echo "${lib}" | grep -q '\.so\.[0-9\.]*$'; then
+		return
+	fi
+	# so_name: libpng12.so.0.44.0 -> libpng12.so
+	local so_name="$(echo "${lib}" | sed 's/[0-9\.]*$//')"
+	# so_rev_name: libpng12.so.0.44.0 -> libpng12.so.0
+	local so_rev_name="$(echo "${lib}" |
+	                     sed -r 's/(\.so\.[0-9]+)\.[0-9\.]*$/\1/')"
+
+	ln -s "${lib}" "${INITRAMFS_TMP_S}/lib/${so_name}" || die
+	if [ "${so_rev_name}" != "${lib}" ]; then
+		ln -s "${lib}" "${INITRAMFS_TMP_S}/lib/${so_rev_name}" || die
+	fi
+}
+
+# dobin for initramfs
+idobin() {
+	local src dest
+	for src in "$@"; do
+		if [ "${src#/}" != "${src}" ]; then
+			src="${ROOT}${src}"
+		else
+			src="${S}/${src}"
+		fi
+		dest="${INITRAMFS_TMP_S}/bin/$(basename "${src}")"
+		cp -p "${src}" "${dest}" && chmod a+rx "${dest}" ||
+			die "Cannot install: $src"
+		elog "Copied: $src"
+	done
+}
+
 build_initramfs_file() {
-	mkdir -p ${INITRAMFS_TMP_S}/bin ${INITRAMFS_TMP_S}/sbin
-	mkdir -p ${INITRAMFS_TMP_S}/usr/bin ${INITRAMFS_TMP_S}/usr/sbin
-	mkdir -p ${INITRAMFS_TMP_S}/etc ${INITRAMFS_TMP_S}/dev
-	mkdir -p ${INITRAMFS_TMP_S}/root ${INITRAMFS_TMP_S}/proc
-	mkdir -p ${INITRAMFS_TMP_S}/sys ${INITRAMFS_TMP_S}/usb
-	mkdir -p ${INITRAMFS_TMP_S}/newroot
-	mkdir -p ${INITRAMFS_TMP_S}/lib ${INITRAMFS_TMP_S}/usr/lib
-	mkdir -p ${INITRAMFS_TMP_S}/stateful ${INITRAMFS_TMP_S}/tmp
-	mkdir -p ${INITRAMFS_TMP_S}/log
+	local dir shlib lib
+
+	local subdirs="
+		bin
+		sbin
+		usr/bin
+		usr/sbin
+		etc
+		dev
+		root
+		proc
+		sys
+		usb
+		newroot
+		lib
+		usr/lib
+		stateful
+		tmp
+		log
+	"
+	for dir in $subdirs; do
+		mkdir -p "${INITRAMFS_TMP_S}/$dir" || die
+	done
 
 	# Copy source files not merged from our dependencies.
 	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
@@ -51,69 +98,63 @@ build_initramfs_file() {
 
 	# Load libraries for busybox, dmsetup, & vbutil_kernel
 	# TODO: how can ebuilds support static busybox?
-	if use x86 ; then
-		LIBS="
-			ld-linux.so.2
-			../usr/lib/libdrm_intel.so.1.0.0
-		"
-	else
-		# TODO ARM: why does arm use a different dynamic linker here?
-		# libgcc_s.so.1 pathname might be
-		#   ../usr/lib/gcc/${TOOLCHAIN}/${TOOLVER}/gcc/${TOOLVER}/libgcc_s.so.1
-		# or
-		#   /lib/libgcc_s.so.1
-		GCCLIBS="..$(grep -m 1 ${CHOST} ${ROOT}/etc/ld.so.conf)/libgcc_s.so.1"
-		if [ ! -e "${ROOT}/lib/${GCCLIBS}" ]; then
-			GCCLIBS="libgcc_s.so.1"
-		fi
-		LIBS="
-			ld-linux.so.3
-			${GCCLIBS}
-		"
-	fi
-
-	LIBS="${LIBS}
+	libs="
 		libm.so.6
 		libc.so.6
-		../usr/lib/libcrypto.so.0.9.8
-		../usr/lib/libpng12.so.0.44.0
-		../usr/lib/libdrm.so.2.4.0
 		libdevmapper.so.1.02
 		libdl.so.2
 		libpthread.so.0
 		librt.so.1
 		libz.so.1
 	"
-	for lib in $LIBS; do
-		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib || die
-	done
-	ln -s libpng12.so.0.44.0 ${INITRAMFS_TMP_S}/lib/libpng12.so.0
-	ln -s libpng12.so.0.44.0 ${INITRAMFS_TMP_S}/lib/libpng12.so
-	ln -s libdrm.so.2.4.0 ${INITRAMFS_TMP_S}/lib/libdrm.so
-	ln -s libdrm.so.2.4.0 ${INITRAMFS_TMP_S}/lib/libdrm.so.2
-	if use x86 ; then
-		ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so
-		ln -s libdrm_intel.so.1.0.0 ${INITRAMFS_TMP_S}/lib/libdrm_intel.so.1
+	usr_libs="
+		libcrypto.so.0.9.8
+		libpng12.so.0.44.0
+		libdrm.so.2.4.0
+	"
+	gcc_libs=""
+	if use x86; then
+		libs="${libs} ld-linux.so.2"
+		usr_libs="${usr_libs} libdrm_intel.so.1.0.0"
+	elif use arm; then
+		libs="${libs} ld-linux.so.3"
+		gcc_libs="${gcc_libs} libgcc_s.so.1"
 	fi
 
-	cp ${ROOT}/bin/busybox ${INITRAMFS_TMP_S}/bin || die
+
+	for lib in ${libs}; do
+		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib || die
+		solve_lib_symlinks "$lib"
+	done
+	for lib in ${usr_libs}; do
+		cp ${ROOT}/usr/lib/${lib} ${INITRAMFS_TMP_S}/lib || die
+		solve_lib_symlinks "$lib"
+	done
+	for lib in ${gcc_libs}; do
+		lib="$(${CHOST}-gcc -print-file-name="${lib}")" || die
+		cp "${lib}" ${INITRAMFS_TMP_S}/lib || die
+		solve_lib_symlinks "$lib"
+	done
+
+	# For busybox and sh
+	idobin /bin/busybox
 	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
 
 	# For verified rootfs
-	cp ${ROOT}/sbin/dmsetup ${INITRAMFS_TMP_S}/bin || die
+	idobin /sbin/dmsetup
 
 	# For message screen display
-	cp ${ROOT}/usr/bin/ply-image ${INITRAMFS_TMP_S}/bin || die
+	idobin /usr/bin/ply-image
 
 	# For recovery behavior
-	cp ${ROOT}/usr/bin/tpmc ${INITRAMFS_TMP_S}/bin || die
-	cp ${ROOT}/usr/bin/dev_sign_file ${INITRAMFS_TMP_S}/bin || die
-	cp ${ROOT}/usr/bin/vbutil_kernel ${INITRAMFS_TMP_S}/bin || die
-	cp ${ROOT}/usr/bin/crossystem ${INITRAMFS_TMP_S}/bin || die
+	idobin /usr/bin/tpmc
+	idobin /usr/bin/dev_sign_file
+	idobin /usr/bin/vbutil_kernel
+	idobin /usr/bin/crossystem
+	idobin /usr/bin/cgpt
 
 	# Insure cgpt is statically linked
 	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
-	cp ${ROOT}/usr/bin/cgpt ${INITRAMFS_TMP_S}/usr/bin || die
 
 	# The kernel emake expects the file in cpio format.
 	( cd "${INITRAMFS_TMP_S}"
