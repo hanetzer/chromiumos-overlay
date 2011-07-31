@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="81bc0d5986194f67c4eea32529c9db501e96fa4a"
+CROS_WORKON_COMMIT="e08a045983ce4eb8906555d4acf24ce92a74536f"
 CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-assets"
 
 inherit cros-workon toolchain-funcs
@@ -24,10 +24,6 @@ CROS_WORKON_LOCALNAME="chromiumos-assets"
 src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins "${S}"/images/*
-
-  insinto /usr/share/chromeos-assets/gaia_auth
-  doins "${S}"/gaia_auth/main.html
-  doins "${S}"/gaia_auth/success.html
 
   insinto /usr/share/chromeos-assets/screensavers
   doins -r "${S}"/screensavers/*
