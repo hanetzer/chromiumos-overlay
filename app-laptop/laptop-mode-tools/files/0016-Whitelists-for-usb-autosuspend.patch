@@ -1,0 +1,138 @@
+--- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf        2011-08-01 16:06:22.000000000 -0700
++++ laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf.new    2011-08-01 16:08:35.000000000 -0700
+@@ -26,6 +26,12 @@
+ # Set to 0 to disable
+ CONTROL_USB_AUTOSUSPEND=1
+
++# Set this to use opt-in/whitelist instead of opt-out/blacklist for deciding
++# which USB devices should be autosuspended.
++# AUTOSUSPEND_USE_WHITELIST=0 means AUTOSUSPEND_*_BLACKLIST will be used.
++# AUTOSUSPEND_USE_WHITELIST=1 means AUTOSUSPEND_*_WHITELIST will be used.
++AUTOSUSPEND_USE_WHITELIST=0
++
+ # The list of USB IDs that should not use autosuspend. Use lsusb to find out the
+ # IDs of your USB devices.
+ # Example: AUTOSUSPEND_USBID_BLACKLIST="046d:c025 0123:abcd"
+@@ -36,6 +42,16 @@
+ # Example: AUTOSUSPEND_USBID_BLACKLIST="usbhid usb-storage"
+ AUTOSUSPEND_USBTYPE_BLACKLIST="usbhid"
+
++# The list of USB IDs that should use autosuspend. Use lsusb to find out the
++# IDs of your USB devices.
++# Example: AUTOSUSPEND_USBID_WHITELIST="046d:c025 0123:abcd"
++AUTOSUSPEND_USBID_WHITELIST=""
++
++# The list of USB driver types that should use autosuspend.  The driver
++# type is given by "DRIVER=..." in a USB device's uevent file.
++# Example: AUTOSUSPEND_USBTYPE_WHITELIST="usbhid usb-storage"
++AUTOSUSPEND_USBTYPE_WHITELIST=""
++
+ # Trigger auto-suspension of the USB deivce under conditional circumstances
+ BATT_SUSPEND_USB=1
+ LM_AC_SUSPEND_USB=0
+--- laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/usb-autosuspend	2011-08-01 16:06:22.000000000 -0700
++++ laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/usb-autosuspend.new	2011-08-01 16:13:32.000000000 -0700
+@@ -3,25 +3,29 @@
+ # Laptop mode tools module: usb-autosuspend.
+ #
+ 
+-blacklisted() {
+-	for usbid in $AUTOSUSPEND_USBID_BLACKLIST; do
++# Check whether a USB device is listed by ID
++listed_by_id() {
++	device=$1
++	list=$2
++	for usbid in $list; do
+ 		if ! echo $usbid | grep -q ':'; then
+-			log "MSG" "WARNING: Invalid entry \"$usbid\" in AUTOSUSPEND_USBID_BLACKLIST."
++			log "MSG" "WARNING: Invalid entry \"$usbid\" in \"$2\"."
+ 		fi
+ 		vendor=$(echo $usbid | cut -d: -f1)
+ 		product=$(echo $usbid | cut -d: -f2)
+-		grep -qi $vendor $1/idVendor 2>/dev/null\
+-		 && grep -qi $product $1/idProduct 2>/dev/null\
++		grep -qi $vendor $device/idVendor 2>/dev/null\
++		 && grep -qi $product $device/idProduct 2>/dev/null\
+ 		 && return 0
+ 	done
+ 	return 1
+ }
+ 
+ # Check whether the USB driver type is blacklisted
+-blacklisted_by_type() {
++listed_by_type() {
+ 	device=$1
+ 	device_base=`basename $device`
+-	for driver_type in $AUTOSUSPEND_USBTYPE_BLACKLIST; do
++	list=$2
++	for driver_type in $list; do
+ 		if grep -q DRIVER=$driver_type $device/uevent; then
+ 			return 0
+ 		fi
+@@ -39,6 +43,21 @@
+ 	return 1
+ }
+ 
++# Checks whether a device is blacklisted by either ID or driver type
++blacklisted() {
++	listed_by_id $1 $AUTOSUSPEND_USBID_BLACKLIST\
++	|| listed_by_type $1 $AUTOSUSPEND_USBTYPE_BLACKLIST\
++	|| return 1
++	return 0
++}
++
++# Checks whether a device is whitelisted by either ID or driver type
++whitelisted() {
++	listed_by_id $1 $AUTOSUSPEND_USBID_WHITELIST\
++	|| listed_by_type $1 $AUTOSUSPEND_USBTYPE_WHITELIST\
++	|| return 1
++	return 0
++}
+ 
+ if [ x$CONTROL_USB_AUTOSUSPEND = x1 ] || [ x$ENABLE_AUTO_MODULES = x1 -a x$CONTROL_USB_AUTOSUSPEND = xauto ]; then
+     if [ $ON_AC -eq 1 ]; then
+@@ -77,11 +96,25 @@
+ 	  fi
+ 
+ 	  if [ "$DEVICE_LIST" != "" ]; then
+-	      for usb_device in $DEVICE_LIST;
+-	      do
++		for usb_device in $DEVICE_LIST; do
+ 		  usb_device=`basename $usb_device`;
+-		  if ! blacklisted /sys/bus/usb/devices/$usb_device; then
+-			if ! blacklisted_by_type /sys/bus/usb/devices/$usb_device; then
++
++		  USE_DEVICE=0
++		  if [ x$AUTOSUSPEND_USE_WHITELIST = x1 ]; then
++			if whitelisted /sys/bus/usb/devices/$usb_device; then
++			  USE_DEVICE=1
++			else
++			  log "VERBOSE" "Device $usb_device not whitelisted, skipping auto suspend."
++			fi
++		  else
++			if ! blacklisted /sys/bus/usb/devices/$usb_device; then
++			  USE_DEVICE=1
++			else
++			  logger "Device $usb_device is blacklisted, skipping auto suspend."
++			fi
++		  fi
++
++		  if [ x$USE_DEVICE = x1 ]; then
+ 			  if [ -f /sys/bus/usb/devices/$usb_device/power/autosuspend ]; then
+ 				  echo $AUTOSUSPEND_TIMEOUT > /sys/bus/usb/devices/$usb_device/power/autosuspend;
+ 				  log "VERBOSE" "Enabling auto suspend mode for usb device $usb_device."
+@@ -98,13 +131,8 @@
+ 			  else
+ 				  log "VERBOSE" "Not enabling auto power level for usb device $usb_device"
+ 			  fi
+-			else
+-			  log "VERBOSE" "Device $usb_device has blacklisted driver type, skipping auto suspend."
+-			fi
+-		  else
+-			  log "VERBOSE" "USB device $usbid is in the autosuspend blacklist."
+ 		  fi
+-	      done
++		done
+ 	  fi
+     else
+ 	  AUTOSUSPEND_TIMEOUT=0
