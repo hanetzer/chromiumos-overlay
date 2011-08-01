@@ -61,7 +61,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-			svn_sources +thumb upstream_gcc vanilla"
+			svn_sources tests +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -206,6 +206,14 @@ EOF
 			dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
 		fi
 	done
+
+	if use tests
+	then
+		TEST_INSTALL_DIR="usr/local/dejagnu/gcc"
+		dodir ${TEST_INSTALL_DIR}
+		cd ${D}/${TEST_INSTALL_DIR}
+		tar -czf "tests.tar.gz" ${WORKDIR}
+	fi
 }
 
 pkg_postinst()
