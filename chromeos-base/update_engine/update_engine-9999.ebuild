@@ -16,6 +16,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome
+	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
 	chromeos-base/verity
@@ -30,8 +31,7 @@ RDEPEND="app-arch/bzip2
 	sys-fs/e2fsprogs
 	sys-libs/e2fsprogs-libs
 	sys-libs/zlib"
-DEPEND="chromeos-base/libchromeos
-	dev-cpp/gmock
+DEPEND="dev-cpp/gmock
 	dev-cpp/gtest
 	dev-libs/dbus-glib
 	cros_host? ( dev-util/scons )
