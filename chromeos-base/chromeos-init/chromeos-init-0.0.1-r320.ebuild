@@ -1,8 +1,8 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="dea771d20b6708d9538a032c30fed4024e697547"
+CROS_WORKON_COMMIT="73240ddcf872e726d9e2e963d74af9236db3071f"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 
 inherit cros-workon
@@ -51,6 +51,12 @@ src_install() {
 	# Install log cleaning script and run it daily.
 	into /usr
 	dosbin "${S}/chromeos-cleanup-logs"
+
+	# Install headphone jack monitor & multiplexer.
+        # Run on login, killed on logout.
+	into /usr
+	dosbin "${S}/headphone-jack-monitor"
+
 	exeinto /etc/cron.daily
 	doexe "${S}/cleanup-logs.daily"
 
