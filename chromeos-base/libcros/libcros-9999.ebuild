@@ -89,7 +89,6 @@ src_install() {
 	  doins "${S}/monitor_power"
 	  doins "${S}/monitor_network"
 	  doins "${S}/monitor_sms"
-	  doins "${S}/monitor_mount"
 	  doins "${S}/monitor_update_engine"
 	  doins "${S}/cryptohome_drive"
         fi
