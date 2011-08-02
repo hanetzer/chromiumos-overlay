@@ -25,6 +25,8 @@
 =sys-boot/gnu-efi-3.0i          amd64
 =sys-devel/automake-1.11.1      amd64 x86
 =sys-devel/automake-wrapper-5  amd64 x86
+=sys-devel/binutils-2.21.1      amd64 x86
+=sys-devel/gcc-4.4.6           amd64 x86
 =x11-libs/pixman-0.17.2		amd64 x86
 
 # Needed for xorg server >=1.7.x
