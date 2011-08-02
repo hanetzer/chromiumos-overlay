@@ -41,6 +41,7 @@ RDEPEND="${RDEPEND}
 	dev-python/dbus-python
 	dev-util/strace
 	dev-util/libc-bench
+	dev-util/systemtap
 	net-analyzer/netperf
 	net-misc/dhcp
 	net-misc/iperf
