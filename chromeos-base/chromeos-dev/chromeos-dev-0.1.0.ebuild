@@ -65,6 +65,7 @@ RDEPEND="${RDEPEND}
 	sys-fs/fuse
 	sys-fs/lvm2
 	sys-fs/sshfs-fuse
+	sys-block/btrace
 	sys-power/powertop
 	sys-process/ktop
 	sys-process/procps
