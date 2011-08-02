@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit linux-info
+inherit linux-info eutils
 
 DESCRIPTION="A linux trace/probe tool"
 HOMEPAGE="http://sourceware.org/systemtap/"
@@ -21,10 +21,10 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 arm ~x86"
 IUSE="sqlite"
 
-DEPEND=">=dev-libs/elfutils-0.142
+DEPEND=">=dev-libs/elfutils-0.131
 	sys-libs/libcap
 	sqlite? ( =dev-db/sqlite-3* )"
 RDEPEND="${DEPEND}
@@ -35,7 +35,14 @@ ERROR_KPROBES="${PN} requires support for KProbes Instrumentation (KPROBES) - th
 ERROR_RELAY="${PN} works with support for user space relay support (RELAY) - this can be enabled in 'General setup -> Kernel->user space relay support (formerly relayfs)'."
 ERROR_DEBUG_FS="${PN} works best with support for Debug Filesystem (DEBUG_FS) - this can be enabled in 'Kernel hacking -> Debug Filesystem'."
 
+src_prepare() {
+	epatch "${FILESDIR}"/${PN}-1.5-comp0.patch
+	epatch "${FILESDIR}"/${PN}-1.5-aux_syscalls.patch
+}
+
 src_configure() {
+	eval export ac_cv_file__usr_include_{nss3,nss,nspr4,nspr}=
+	eval export ac_cv_file__usr_include_{avahi_client,avahi_common}=
 	econf \
 		--docdir=/usr/share/doc/${PF} \
 		--without-rpm \
