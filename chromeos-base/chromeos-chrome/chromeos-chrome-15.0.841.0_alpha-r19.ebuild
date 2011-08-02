@@ -2,20 +2,20 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
-# If CHROME_ORIGIN is set to one of {SERVER_SOURCE, LOCAL_SOURCE},
-# The build comes from the chromimum source repository (gclient sync), \
-# build server, locally provided source, or locally provided binary
-# If you are using SERVER_SOURCE, a gclient tempalte file that is in the files
-# directory, which will be copied automatically during the build and used as
-# the .gclient for 'gclient sync'
-# If building from LOCAL_SOURCE or LOCCAL_BINARY specifying BUILDTYPE
+# If CHROME_ORIGIN is set to one of {SERVER_SOURCE, LOCAL_SOURCE, LOCAL_BINARY},
+# the build comes from the chromimum source repository (gclient sync),
+# build server, locally provided source, or locally provided binary.
+# If you are using SERVER_SOURCE, a gclient template file that is in the files
+# directory which will be copied automatically during the build and used as
+# the .gclient for 'gclient sync'.
+# If building from LOCAL_SOURCE or LOCAL_BINARY specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
 # gclient is expected to be in ~/depot_tools if EGCLIENT is not set
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="94996"
+CROS_SVN_COMMIT="95011"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
