@@ -17,6 +17,7 @@ KEYWORDS="amd64 arm x86"
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-chrome
+	chromeos-base/chromeos-assets
 	dev-libs/libxml2
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1
@@ -52,8 +53,9 @@ src_compile() {
 	emake || die
 	# Rewrite xkb-layouts.xml using the XML output.
 	# ibus_input_methods.txt comes from chromeos-chrome.
-	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/ibus_input_methods.txt
-	python "${FILESDIR}"/filter.py < output.xml \
+	ASSETSIMDIR="${SYSROOT}"/usr/share/chromeos-assets/input_methods
+	LIST="${ASSETSIMDIR}"/ibus_input_methods.txt
+	python "${ASSETSIMDIR}"/filter.py < output.xml \
 	  --whitelist="${LIST}" \
 	  --rewrite=src/xkb-layouts.xml || die
 	# Remove spaces from the XML to reduce file size from ~17k to ~10k.
