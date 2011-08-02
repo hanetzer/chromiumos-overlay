@@ -118,7 +118,7 @@ src_configure() {
 		myconf="${myconf} --disable-openmp"
 	fi
 
-	use truetype && myconf="${myconf} $(use_with corefonts windows-font-dir /usr/local/share/fonts/corefonts)"
+	use truetype && myconf="${myconf} $(use_with corefonts windows-font-dir /usr/share/fonts/corefonts)"
 
 	econf \
 		${myconf} \
@@ -129,7 +129,7 @@ src_configure() {
 		--with-modules \
 		$(use_with perl) \
 		--with-perl-options='INSTALLDIRS=vendor' \
-		--with-gs-font-dir=/usr/local/share/fonts/default/ghostscript \
+		--with-gs-font-dir=/usr/share/fonts/default/ghostscript \
 		$(use_enable hdri) \
 		$(use_with !nocxx magick-plus-plus) \
 		$(use_with autotrace) \
