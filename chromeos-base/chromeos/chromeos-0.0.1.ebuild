@@ -179,6 +179,7 @@ RDEPEND="${RDEPEND}
 	media-sound/alsa-utils
 	net-firewall/iptables
 	net-misc/htpdate
+	net-misc/tor
 	modemmanager? (
 		net-misc/modemmanager
 	)
