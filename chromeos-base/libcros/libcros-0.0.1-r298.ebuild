@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="24669e41213261f7e578dc7fe9e85319ac0015ed"
+CROS_WORKON_COMMIT="87ad2bf036b5168f1815c44cd839b695f31318f2"
 CROS_WORKON_PROJECT="chromiumos/platform/cros"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
@@ -90,7 +90,6 @@ src_install() {
 	  doins "${S}/monitor_power"
 	  doins "${S}/monitor_network"
 	  doins "${S}/monitor_sms"
-	  doins "${S}/monitor_mount"
 	  doins "${S}/monitor_update_engine"
 	  doins "${S}/cryptohome_drive"
         fi
