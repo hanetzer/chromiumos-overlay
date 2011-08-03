@@ -11,7 +11,7 @@
 # dynamically generated ${BOARD_DIR}/etc/portage/profile/package.provided
 # created by the setup_board script.
 
-app-admin/eselect-1.2.3
+app-admin/eselect-1.2.9
 app-admin/eselect-esd-20060719
 app-admin/eselect-fontconfig-1.0
 app-admin/eselect-opengl-1.0.8-r1
