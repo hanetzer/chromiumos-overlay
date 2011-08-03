@@ -498,8 +498,7 @@ src_compile() {
 			TEST_TARGETS="omx_video_decode_accelerator_unittest"
 		fi
 		TEST_TARGETS="${TEST_TARGETS}
-			page_cycler_tests
-			startup_tests
+			performance_ui_tests
 			ui_tests
 			pyautolib
 			browser_tests
@@ -584,7 +583,7 @@ install_chrome_test_resources() {
 	# executables.
 	for f in _pyautolib.so libppapi_tests.so browser_tests \
 			 ui_tests sync_integration_tests \
-			 page_cycler_tests; do
+			 performance_ui_tests; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
 	done
