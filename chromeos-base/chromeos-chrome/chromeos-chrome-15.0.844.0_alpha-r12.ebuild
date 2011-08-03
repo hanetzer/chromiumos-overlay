@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="95268"
+CROS_SVN_COMMIT="95278"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -500,7 +500,6 @@ src_compile() {
 		fi
 		TEST_TARGETS="${TEST_TARGETS}
 			page_cycler_tests
-			reliability_tests
 			startup_tests
 			ui_tests
 			pyautolib
@@ -585,7 +584,7 @@ install_chrome_test_resources() {
 	# executables. We don't want debug info for tests, so we pre-strip these
 	# executables.
 	for f in _pyautolib.so libppapi_tests.so browser_tests \
-			 reliability_tests ui_tests sync_integration_tests \
+			 ui_tests sync_integration_tests \
 			 page_cycler_tests; do
 		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
 		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
