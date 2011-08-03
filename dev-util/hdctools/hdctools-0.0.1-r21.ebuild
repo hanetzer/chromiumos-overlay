@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="819f46d4166a0ccfde0ffae9f4516a2e5b5203a0"
+CROS_WORKON_COMMIT="f1fe966377dec224026cf8d8c0345b8f6d221a8c"
 CROS_WORKON_PROJECT="chromiumos/third_party/hdctools"
 
 DESCRIPTION="Software to communicate with servo/miniservo debug boards"
