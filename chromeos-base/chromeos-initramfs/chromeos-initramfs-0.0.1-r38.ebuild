@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="3d53ba103731e1f47fcb454e84beb5fc2815828f"
+CROS_WORKON_COMMIT="77ca633823c5f6aa413198f729726a302e7b4e03"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -19,8 +19,11 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 DEPEND="chromeos-base/vboot_reference
+	chromeos-base/vpd
 	media-gfx/ply-image
 	sys-apps/busybox
+	sys-apps/flashrom
+	sys-apps/pciutils
 	sys-fs/lvm2"
 RDEPEND=""
 
@@ -101,6 +104,7 @@ build_initramfs_file() {
 	libs="
 		libm.so.6
 		libc.so.6
+		libresolv.so.2
 		libdevmapper.so.1.02
 		libdl.so.2
 		libpthread.so.0
@@ -111,6 +115,7 @@ build_initramfs_file() {
 		libcrypto.so.0.9.8
 		libpng12.so.0.44.0
 		libdrm.so.2.4.0
+		libpci.so.3
 	"
 	gcc_libs=""
 	if use x86; then
@@ -152,9 +157,14 @@ build_initramfs_file() {
 	idobin /usr/bin/vbutil_kernel
 	idobin /usr/bin/crossystem
 	idobin /usr/bin/cgpt
+	idobin /usr/sbin/vpd
+	idobin /usr/sbin/flashrom
 
-	# Insure cgpt is statically linked
+	# The 'vpd' and 'cgpt' commands are statically linked; we assert
+	# as much for the protection of posterity who might otherwise be
+	# forced to debug a harder problem.
 	file ${ROOT}/usr/bin/cgpt | grep -q "statically linked" || die
+	file ${ROOT}/usr/sbin/vpd | grep -q "statically linked" || die
 
 	# The kernel emake expects the file in cpio format.
 	( cd "${INITRAMFS_TMP_S}"
