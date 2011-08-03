@@ -49,48 +49,9 @@ fi
 # TODO(sjg): simplify the eclass when we deprecate the old U-Boot
 CROS_FIRMWARE_IMAGE_STUB_IMAGE="${ROOT%/}/u-boot/u-boot.bin"
 
-construct_layout() {
-	local layout
-	local section
-	local nodepath
-	for section in $@; do
-		nodepath=${section//_/-}
-		nodepath=${nodepath,,}
-		layout="${layout} ${section}_OFFSET=$(get_config_offset /flash/${nodepath})"
-		layout="${layout} ${section}_LENGTH=$(get_config_length /flash/${nodepath})"
-	done
-	echo ${layout}
-}
-
-construct_onestop_blob() {
-	local layout
-	layout="$(construct_layout FIRMWARE_IMAGE VERIFICATION_BLOCK FIRMWARE_ID)"
-	pack_firmware_image "${FILESDIR}/onestop_layout_config" \
-		${layout} \
-		SIZE=$(get_config_length /flash/onestop-layout) \
-		FWID_STRING="'$(get_chromeos_version)'" \
-		KEYDIR=${CROS_FIRMWARE_IMAGE_DEVKEYS}/ \
-		KEYBLOCK=$2 \
-		SIGNPRIVATE=$3 \
-		U_BOOT_IMAGE=$1 \
-		OUTPUT=$4 || \
-	die "fail to pack the $4"
-}
-
-pack_image() {
-	local layout
-	layout="$(construct_layout RO_FIRMWARE_IMAGE RO_FIRMWARE_ID GBB FMAP RW_A_ONESTOP RW_B_ONESTOP)"
-	pack_firmware_image "${FILESDIR}/twostop_layout_config" \
-		${layout} \
-		SIZE=$(get_config_length /flash) \
-		RO_FIRMWARE_IMAGE=$1 \
-		GBB_IMAGE=$2 \
-		RW_A_ONESTOP_IMAGE=$3 \
-		RW_B_ONESTOP_IMAGE=$4 \
-		FWID_STRING="'$(get_chromeos_version)'" \
-		OUTPUT=$5 || \
-	die "fail to pack the $5"
-}
+# The real bmpblk must be verified and installed by HWID matchin in factory
+# process. Default one should be a pre-genereated blob.
+CROS_FIRMWARE_IMAGE_BMPBLK="${FILESDIR}/default.bmpblk"
 
 src_compile() {
 	# TODO(clchiou) fix x86 build later
@@ -109,6 +70,7 @@ src_compile() {
 		--uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
 		--dt "${CROS_FIRMWARE_DTB}" \
 		--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
+		--bmpblk "${CROS_FIRMWARE_IMAGE_BMPBLK}" \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${BUNDLE_FLAGS} \
@@ -123,6 +85,7 @@ src_compile() {
                         --uboot "${CROS_FIRMWARE_IMAGE_STUB_IMAGE}" \
 			--dt "${CROS_FIRMWARE_DTB}" \
 			--key "${CROS_FIRMWARE_IMAGE_DEVKEYS}" \
+			--bmpblk "${CROS_FIRMWARE_IMAGE_BMPBLK}" \
 			--add-config-int load_env 1 \
 			--outdir legacy \
 			--output legacy_image.bin ||
