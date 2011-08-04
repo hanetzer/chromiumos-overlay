@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="77ca633823c5f6aa413198f729726a302e7b4e03"
+CROS_WORKON_COMMIT="e841d17fbc3f3f1bec7e865b2f29545c6be4ab84"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -24,6 +24,7 @@ DEPEND="chromeos-base/vboot_reference
 	sys-apps/busybox
 	sys-apps/flashrom
 	sys-apps/pciutils
+	sys-apps/pv
 	sys-fs/lvm2"
 RDEPEND=""
 
@@ -148,8 +149,9 @@ build_initramfs_file() {
 	# For verified rootfs
 	idobin /sbin/dmsetup
 
-	# For message screen display
+	# For message screen display and progress bars
 	idobin /usr/bin/ply-image
+	idobin /usr/bin/pv
 
 	# For recovery behavior
 	idobin /usr/bin/tpmc

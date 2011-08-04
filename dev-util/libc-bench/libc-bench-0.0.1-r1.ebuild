@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="f753ff1b9271342abd3f58dbac13174b936406f3"
 CROS_WORKON_PROJECT="chromiumos/third_party/libc-bench"
 
 inherit cros-workon toolchain-funcs
