@@ -25,6 +25,9 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 
+	# chromium-os:18739
+	epatch "${FILESDIR}"/upstart-1.2-silent-console.patch
+
 	# 1.2 is the current release, backport some bug fixes from
 	# lp:upstart that will be in the 1.3 release (but don't just
 	# grab everything, because there are large changes in there
