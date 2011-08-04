@@ -16,6 +16,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/libchrome"
 DEPEND="dev-cpp/gtest
+	x11-base/xorg-server
 	${RDEPEND}"
 
 src_compile() {
