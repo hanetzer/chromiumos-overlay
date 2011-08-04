@@ -188,17 +188,25 @@ build_toolchain() {
 cross_get_version() {
   local pkg="$1"
   local cpv=""
-  if [ "$pkg" = "gcc" ]; then
-    # Users can install multiple versions of gcc at once, so we need to call
-    # gcc-config to find out which installed version is selected.
-    local path=$(CTARGET=$FLAGS_toolchain gcc-config -B || true)
-    cpv=$(portageq owners / $path | sed -e '/^\t/d')
-  elif [[ "$ARCH" = amd64 && "$pkg" = binutils ]] ; then
-    cpv=$(portageq match / sys-devel/binutils || true)
-  elif [[ "$ARCH" = amd64 && "$pkg" = glibc ]] ; then
-    cpv=$(portageq match / sys-libs/glibc || true)
+  if [[ "$ARCH" != "amd64" ]]; then
+    if [[  "$pkg" = "gcc" ]]; then
+      # Users can install multiple versions of gcc at once, so we need to call
+      # gcc-config to find out which installed version is selected.
+      local path=$(CTARGET=$FLAGS_toolchain gcc-config -B || true)
+      cpv=$(portageq owners / $path | sed -e '/^\t/d')
+    else
+      cpv=$(portageq match / cross-$FLAGS_toolchain/$pkg || true)
+    fi
   else
-    cpv=$(portageq match / cross-$FLAGS_toolchain/$pkg || true)
+    if [[ "$pkg" = binutils ]] ; then
+      cpv=$(portageq match / sys-devel/binutils || true)
+    elif [[ "$pkg" = glibc ]] ; then
+      cpv=$(portageq match / sys-libs/glibc || true)
+    elif [[ "$pkg" = gcc ]] ; then
+      cpv=$(portageq match / sys-devel/gcc || true)
+    else
+      die "Unknown pkg ${pkg}"
+    fi
   fi
   local cp=$(echo $cpv | sed -e 's/-r[0-9]*$//; s/-[^-]*$//')
   local result="${cpv#$cp-}"
@@ -244,26 +252,25 @@ install_toolchain_in_board() {
     sudo mkdir -p ${BOARD_ROOT}/usr/lib/debug
     sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}/usr/lib/debug" ./usr/lib/debug/usr/${FLAGS_toolchain} --strip-components=6 || warn "libc debug info not copied."
     GCC_PKG=cross-${FLAGS_toolchain}/gcc-$gcc_ver
+
+    # TODO(asharif): Remove this hack after a while.
+    BOARD_GCC_DIR="${BOARD_ROOT}/usr/lib/gcc"
+    if [[ -L "${BOARD_GCC_DIR}" ]] ; then
+      sudo rm -f "${BOARD_GCC_DIR}"
+    fi
+    . "${SRC_ROOT}/platform/dev/toolchain_utils.sh"
+    copy_gcc_libs "${BOARD_ROOT}" "cross-$FLAGS_toolchain/gcc-$gcc_ver"
   else
     sudo mkdir -p ${BOARD_ROOT}/usr/lib64
     sudo ln -sf ${BOARD_ROOT}/usr/lib64 ${BOARD_ROOT}/usr/lib
     sudo mkdir -p ${BOARD_ROOT}/lib64
     sudo ln -sf ${BOARD_ROOT}/lib64 ${BOARD_ROOT}/lib
     LIBC_PATH="${PKGDIR}/sys-libs/${LIBC_TAR}"
-    sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}" --strip-components=1
+    sudo emerge --oneshot --nodeps -k --root=${BOARD_ROOT} =sys-libs/glibc-${libc_ver}
     sudo mkdir -p ${BOARD_ROOT}/usr/lib/debug
     # TODO: we have no debug
     GCC_PKG=sys-devel/gcc-$gcc_ver
   fi
-
-  # TODO(asharif): Remove this hack after a while.
-  BOARD_GCC_DIR="${BOARD_ROOT}/usr/lib/gcc"
-  if [[ -L "${BOARD_GCC_DIR}" ]] ; then
-    sudo rm -f "${BOARD_GCC_DIR}"
-  fi
-  . "${SRC_ROOT}/platform/dev/toolchain_utils.sh"
-  copy_gcc_libs "${BOARD_ROOT}" "cross-$FLAGS_toolchain/gcc-$gcc_ver"
-
 
   # Some header files are needed also for rpcbind (NFS support)
   # TODO: Figure out a better way of doing this too?
