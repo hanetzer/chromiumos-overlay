@@ -3,6 +3,8 @@
 
 EAPI=2
 
+# Use a commit from 2.6.38 in our kernel tree; if you change this, be
+# sure to change this ebuild version number to match.
 EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/kernel.git"
 EGIT_COMMIT="9074e22330e7b60bb007b2768536da98194d51fe"
 
