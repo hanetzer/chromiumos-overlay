@@ -61,7 +61,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-			svn_sources +thumb upstream_gcc vanilla"
+			tests +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -74,7 +74,7 @@ else
 fi
 MY_P=${PN}-${GCC_PV}
 GITDIR=${WORKDIR}/gitdir
-GITHASH=1b70b8f872d862dfed84e7d99d1369855c063ca9
+GITHASH=gcc.gnu.org/branches/google/gcc-4_6
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -112,21 +112,14 @@ src_unpack() {
 		if [[ ! -d ${GCCDIR} ]] ; then
 			die "gcc dir not mounted/present at: ${GCCDIR}"
 		fi
-	elif use svn_sources ; then
-		SVNDIR=svn
-		GCCDIR=${SVNDIR}/gcc/${MY_P}
-		MAJOR_VERSION=$(echo ${GCC_PV} | sed 's/\./ /g' | awk '{print $1}')
-		MINOR_VERSION=$(echo ${GCC_PV} | sed 's/\./ /g' | awk '{print $2}')
-		svn co svn://gcc.gnu.org/svn/gcc/branches/google/gcc-${MAJOR_VERSION}_${MINOR_VERSION} ${GCCDIR}
-		CL=$(cd ${GCCDIR}; svnversion)
 	else
 		mkdir ${GITDIR}
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
 		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
 		if [[ "${PV}" != "${GCC_PV}" ]] ; then
-			GITHASH=$(git rev-list --max-count=1 --all)
-			echo "Getting latest hash: ${GITHASH}..."
+			GITHASH="master"
 		fi
+		einfo "Checking out ${GITHASH}."
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
 		cd -
 		GCCDIR=${GITDIR}/gcc/${MY_P}

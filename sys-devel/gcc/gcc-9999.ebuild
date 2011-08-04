@@ -61,7 +61,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_sources multislot nls nocxx
-			svn_sources tests +thumb upstream_gcc vanilla"
+			tests +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -112,13 +112,6 @@ src_unpack() {
 		if [[ ! -d ${GCCDIR} ]] ; then
 			die "gcc dir not mounted/present at: ${GCCDIR}"
 		fi
-	elif use svn_sources ; then
-		SVNDIR=svn
-		GCCDIR=${SVNDIR}/gcc/${MY_P}
-		MAJOR_VERSION=$(echo ${GCC_PV} | sed 's/\./ /g' | awk '{print $1}')
-		MINOR_VERSION=$(echo ${GCC_PV} | sed 's/\./ /g' | awk '{print $2}')
-		svn co svn://gcc.gnu.org/svn/gcc/branches/google/gcc-${MAJOR_VERSION}_${MINOR_VERSION} ${GCCDIR}
-		CL=$(cd ${GCCDIR}; svnversion)
 	else
 		mkdir ${GITDIR}
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
