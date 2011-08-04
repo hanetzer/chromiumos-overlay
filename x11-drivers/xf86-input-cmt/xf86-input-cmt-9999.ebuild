@@ -19,6 +19,7 @@ IUSE=""
 RDEPEND="chromeos-base/gestures
 	 x11-base/xorg-server"
 DEPEND="${RDEPEND}
+	>=chromeos-base/kernel-headers-2.6.38
 	x11-proto/inputproto"
 
 DOCS="README"
