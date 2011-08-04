@@ -25,7 +25,12 @@ export_uri() {
 	XORG_VERSION_STRING=$(grep "XORG_VERSION_CURRENT" "$ROOT/usr/include/xorg/xorg-server.h")
 	XORG_VERSION_STRING=${XORG_VERSION_STRING/#\#define*XORG_VERSION_CURRENT}
 	XORG_VERSION=$(($XORG_VERSION_STRING))
-	if [ $XORG_VERSION -ge 10903000 ]; then
+
+	if [ $XORG_VERSION -ge 11100000 ]; then
+		X_VERSION=1.11
+	if [ $XORG_VERSION -ge 11000000 ]; then
+		X_VERSION=1.10
+	elif [ $XORG_VERSION -ge 10903000 ]; then
 		X_VERSION=1.9
 	else
 		X_VERSION=1.7
