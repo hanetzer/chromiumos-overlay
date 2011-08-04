@@ -124,4 +124,4 @@
 # If a newer version of chrome causes flaky failure, you can add
 # something like below, which assumes 14.0.789.0_rc-r1 was the
 # last non-flaky version.
->chromeos-base/chromeos-chrome-15.0.842.0_rc-r1	-amd64 -arm -x86 ~amd64 ~arm ~x86
+#>chromeos-base/chromeos-chrome-14.0.789.0_rc-r1	-amd64 -arm -x86 ~amd64 ~arm ~x86
