@@ -20,6 +20,7 @@ REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
+    chromeos-base/kernel-headers
     initramfs? ( chromeos-base/chromeos-initramfs )
     !sys-kernel/chromeos-kernel-next
 "
