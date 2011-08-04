@@ -23,6 +23,8 @@ src_compile() {
 }
 
 src_install() {
+	xmllint --valid --noout serviceproviders.xml || \
+		die "XML document is not well-formed or is not valid"
 	emake DESTDIR="${D}" install || die "emake install failed"
 	dodoc NEWS README || die "dodoc failed"
 }
