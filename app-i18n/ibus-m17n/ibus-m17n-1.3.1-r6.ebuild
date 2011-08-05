@@ -49,6 +49,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/0010-Don-t-compile-m17nutil.c-twice-for-engine-and-setup.patch
 	epatch "${FILESDIR}"/0011-Use-gnome-autogen.sh-to-generate-configure-and-Makef.patch
 
+        epatch "${FILESDIR}"/fix-crash.patch
+
 	# Build ibus-engine-m17n for the host platform.
 	(env -i ./configure && env -i make) || die
 	# Obtain the XML output by running the binary.
