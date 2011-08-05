@@ -520,6 +520,8 @@ src_compile() {
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 	einfo "Stripped optimization flags for Chrome build"
 
+	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
+
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
 		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
