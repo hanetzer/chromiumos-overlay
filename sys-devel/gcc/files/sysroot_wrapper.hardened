@@ -27,7 +27,7 @@ non_fstack_flags=(-D__KERNEL__ -fno-stack-protector -fstack-protector-all\
 non_fPIE_flags=(-D__KERNEL__ -fPIC -fPIE -fno-PIC -fno-PIE -fno-pic -fno-pie\
   -fpic -fpie -nopie -nostartfiles -nostdlib -pie -static)
 non_pie_flags=(-D__KERNEL__ -A -fno-PIC -fno-PIE -fno-pic -fno-pie\
-  -nopie -nostartfiles -nostdlib -pie -r -shared -static)
+  -nopie -nostartfiles -nostdlib -pie -r --shared -shared -static)
 
 non_standard_flags=(-nopie)
 
