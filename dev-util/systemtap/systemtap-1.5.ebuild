@@ -27,8 +27,7 @@ IUSE="sqlite"
 DEPEND=">=dev-libs/elfutils-0.131
 	sys-libs/libcap
 	sqlite? ( =dev-db/sqlite-3* )"
-RDEPEND="${DEPEND}
-	virtual/linux-sources"
+RDEPEND="${DEPEND}"
 
 CONFIG_CHECK="~KPROBES ~RELAY ~DEBUG_FS"
 ERROR_KPROBES="${PN} requires support for KProbes Instrumentation (KPROBES) - this can be enabled in 'Instrumentation Support -> Kprobes'."
