@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp gen_makefiles"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -460,7 +460,11 @@ src_prepare() {
 
 	[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
 
-	${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
+	if use gen_makefiles; then
+		${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
+	else
+		ewarn "Skipping make file rebuild."
+	fi
 }
 
 src_configure() {
