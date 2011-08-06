@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="95747"
+CROS_SVN_COMMIT="95750"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -27,7 +27,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp gen_makefiles"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -461,11 +461,7 @@ src_prepare() {
 
 	[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
 
-	if use gen_makefiles; then
-		${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
-	else
-		ewarn "Skipping make file rebuild."
-	fi
+	${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 }
 
 src_configure() {
