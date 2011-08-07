@@ -12,7 +12,7 @@ HOMEPAGE="http://www.etalabs.net/src/libc-bench/"
 SRC_URI=""
 LICENSE=""
 SLOT="0"
-KEYWORDS="~arm ~x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND=""
