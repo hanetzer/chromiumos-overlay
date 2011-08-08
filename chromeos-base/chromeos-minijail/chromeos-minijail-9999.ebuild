@@ -28,7 +28,8 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	# Only build the tool
+	# Only build the tools
+        emake || die
 	scons minijail || die "minijail compile failed."
 }
 
@@ -50,5 +51,6 @@ src_test() {
 
 src_install() {
         into /
-        dosbin minijail || die
+        dosbin minijail{,0} || die
+	dolib.so libminijailpreload.so || die
 }
