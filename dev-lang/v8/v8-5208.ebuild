@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit toolchain-funcs
+inherit toolchain-funcs flag-o-matic
 
 DESCRIPTION="V8 JavaScript engine."
 HOMEPAGE="http://code.google.com/p/v8/"
@@ -28,7 +28,7 @@ src_compile() {
   # with "src/handles-inl.h:50: error: dereferencing pointer '<anonymous>'
   # does break strict-aliasing rules".
   # See http://code.google.com/p/v8/issues/detail?id=463
-  export CCFLAGS="$CCFLAGS -fno-strict-aliasing"
+  export CCFLAGS="$CCFLAGS -fno-strict-aliasing $(test-flags-CC -Wno-error=unused-but-set-variable)"
   export GCC_VERSION="44"
 
   local arch=""
