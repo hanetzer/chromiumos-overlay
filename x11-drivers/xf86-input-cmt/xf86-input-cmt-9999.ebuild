@@ -17,8 +17,7 @@ SLOT="0"
 IUSE=""
 
 RDEPEND="chromeos-base/gestures
-	 x11-base/xorg-server
-	 x11-libs/mtdev"
+	 x11-base/xorg-server"
 DEPEND="${RDEPEND}
 	x11-proto/inputproto"
 
