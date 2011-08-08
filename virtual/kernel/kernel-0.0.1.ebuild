@@ -9,9 +9,9 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-kernel_next"
+IUSE="-kernel_next -kernel_sources"
 
 RDEPEND="
-	kernel_next? ( sys-kernel/chromeos-kernel-next )
-	!kernel_next? ( sys-kernel/chromeos-kernel )
+	kernel_next? ( sys-kernel/chromeos-kernel-next[kernel_sources=] )
+	!kernel_next? ( sys-kernel/chromeos-kernel[kernel_sources=] )
 "

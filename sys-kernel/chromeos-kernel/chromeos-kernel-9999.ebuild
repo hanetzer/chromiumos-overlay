@@ -4,8 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
-inherit toolchain-funcs
-inherit binutils-funcs
+inherit binutils-funcs cros-kernel toolchain-funcs
 
 DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://www.chromium.org/"
@@ -153,33 +152,6 @@ src_compile() {
 		  "arch/arm/boot/dts/${dev_tree_base}.dts" || \
 		  die 'Device tree compilation failed'
 	fi
-}
-
-# Install the kernel sources into usr/src and fix symlinks.
-install_kernel_sources() {
-	local version="$(ls "${D}"/lib/modules)"
-	local dest_modules_dir="lib/modules/${version}"
-	local dest_source_dir="usr/src/${P}"
-	local dest_build_dir="${dest_source_dir}/build"
-
-	# Fix symlinks in lib/modules
-	ln -sfvT "../../../${dest_build_dir}" "${D}/${dest_modules_dir}/build" || die
-	ln -sfvT "../../../${dest_source_dir}" "${D}/${dest_modules_dir}/source" || die
-
-	einfo "Installing kernel source tree"
-	dodir "${dest_source_dir}" || die
-	rsync -a --exclude "build" "${S}/" "${D}/${dest_source_dir}" || die
-
-	einfo "Installing kernel build tree"
-	dodir "${dest_build_dir}" || die
-	cp -a "${build_dir}"/{.config,.version,Makefile,Module.symvers,include} \
-		"${D}/${dest_build_dir}" || die
-
-	# Modify Makefile to use the ROOT environment variable if defined.
-	# This path needs to be absolute so that the build directory will
-	# still work if copied elsewhere.
-	sed -i -e "s@${S}@\$(ROOT)/${dest_source_dir}@" \
-		"${D}/${dest_build_dir}/Makefile" || die
 }
 
 src_install() {

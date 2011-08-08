@@ -503,7 +503,9 @@ get_version() {
 
 	# And if we didn't pass it, we can take a nosey in the Makefile
 	kbuild_output="$(${mkfunc} KBUILD_OUTPUT ${KERNEL_MAKEFILE})"
-	OUTPUT_DIR="${OUTPUT_DIR:-${kbuild_output}}"
+	if [ -e "${kbuild_output}" ]; then
+		OUTPUT_DIR="${OUTPUT_DIR:-${kbuild_output}}"
+	fi
 
 	# And contrary to existing functions I feel we shouldn't trust the
 	# directory name to find version information as this seems insane.
@@ -527,7 +529,7 @@ get_version() {
 	# but before we do this, we need to find if we use a different object directory.
 	# This *WILL* break if the user is using localversions, but we assume it was
 	# caught before this if they are.
-	OUTPUT_DIR="${OUTPUT_DIR:-/lib/modules/${KV_MAJOR}.${KV_MINOR}.${KV_PATCH}${KV_EXTRA}/build}"
+	OUTPUT_DIR="${OUTPUT_DIR:-${ROOT}/lib/modules/${KV_MAJOR}.${KV_MINOR}.${KV_PATCH}${KV_EXTRA}/build}"
 
 	[ -h "${OUTPUT_DIR}" ] && KV_OUT_DIR="$(readlink -f ${OUTPUT_DIR})"
 	[ -d "${OUTPUT_DIR}" ] && KV_OUT_DIR="${OUTPUT_DIR}"

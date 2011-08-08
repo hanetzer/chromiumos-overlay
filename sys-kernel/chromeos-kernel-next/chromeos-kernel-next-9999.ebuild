@@ -4,8 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
-inherit toolchain-funcs
-inherit binutils-funcs
+inherit binutils-funcs cros-kernel toolchain-funcs
 
 DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://www.chromium.org/"
@@ -13,7 +12,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG} -device_tree"
+IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG} -device_tree -kernel_sources"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -190,4 +189,8 @@ src_install() {
 	dodir /usr/lib/debug/boot
 	insinto /usr/lib/debug/boot
 	doins "${build_dir}/vmlinux"
+
+	if use kernel_sources; then
+		install_kernel_sources
+	fi
 }
