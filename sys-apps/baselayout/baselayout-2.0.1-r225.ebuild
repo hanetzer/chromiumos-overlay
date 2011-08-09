@@ -150,4 +150,12 @@ pkg_postinst() {
 		[ -d "${ROOT}/$x" ] && continue
 		install -d --mode=0755 --owner=root --group=root "${ROOT}/$x"
 	done
+
+	# We add an entry for www35.vzw.com to /etc/hosts to work around bug
+	# http://crosbug.com/p/4279
+	cat <<-EOF >> "${ROOT}"/etc/hosts
+
+	# http://crosbug.com/p/4279
+	127.0.0.1	www35.vzw.com
+	EOF
 }
