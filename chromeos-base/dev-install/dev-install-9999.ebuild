@@ -50,6 +50,15 @@ src_unpack() {
 	emerge-${BOARD} --pretend --emptytree --root-deps=rdeps portage \
                 | grep -Eo " [[:alnum:]-]+/[^[:space:]/]+\b" \
                 | tr -d " " > "${S}/portage.packages"
+	# Get the list of dev and test pacakges
+	emerge-${BOARD} --pretend --emptytree --root-deps=rdeps chromeos-dev \
+                | grep -Eo " [[:alnum:]-]+/[^[:space:]/]+\b" \
+                | tr -d " " > "${S}/chromeos-dev.packages"
+
+	emerge-${BOARD} --pretend --emptytree --root-deps=rdeps chromeos-test \
+                | grep -Eo " [[:alnum:]-]+/[^[:space:]/]+\b" \
+                | tr -d " " > "${S}/chromeos-test.packages"
+
 	# Filter out all the packages that are already in chromeos.
 	while read line; do
 		grep "$line" "${S}/chromeos.packages"
@@ -61,10 +70,32 @@ src_unpack() {
 				"${S}/package.provided"
 		fi
 	done < "${S}/portage.packages"
+	# Make a list of the packages that can be installed. Those packages are
+	# in chromeos-dev or chromeos-test and not chromeos.
+	while read line; do
+                grep "$line" "${S}/chromeos.packages"
+                if [ $? -ne 0 ]; then
+                        echo "${line}" >> "${S}/package.installable"
+                fi
+        done < "${S}/chromeos-dev.packages"
+	while read line; do
+                grep "$line" "${S}/chromeos.packages"
+                if [ $? -ne 0 ]; then
+			grep "$line" "${S}/package.installable"
+			if [ $? -ne 0 ]; then
+	                        echo "${line}" >> "${S}/package.installable"
+			fi
+                fi
+        done < "${S}/chromeos-test.packages"
 
 	# Add the board specific binhost repository.
 	sed -e "s|BOARD|${BOARD}|g" "${SRCDIR}/repository.conf" > "${S}/repository.conf"
 
+	# Add dhcp to the list of packages installed since its installation will not
+	# complete (can not add dhcp group since /etc is not writeable). Bootstrap it
+	# instead.
+	grep "net-misc/dhcp" "${S}/chromeos-dev.packages" >> "${S}/package.provided"
+	grep "net-misc/dhcp" "${S}/chromeos-dev.packages" >> "${S}/bootstrap.packages"
 }
 
 src_install() {
@@ -80,6 +111,7 @@ src_install() {
 	dodir /etc/portage/make.profile
 	insinto /etc/portage/make.profile
 	doins "${S}/package.provided"
+	doins "${S}/package.installable"
 	doins make.defaults
 	doins make.conf
 

@@ -161,6 +161,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cromo
 	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
+	chromeos-base/dev-install
 	chromeos-base/entd
 	chromeos-base/flimflam
 	chromeos-base/internal
