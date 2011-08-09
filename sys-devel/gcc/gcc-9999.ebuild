@@ -116,8 +116,12 @@ src_unpack() {
 		mkdir ${GITDIR}
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
 		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
-		if [[ "${PV}" != "${GCC_PV}" ]] ; then
-			GITHASH="master"
+		if [[ "${PV}" == "9999" ]] ; then
+			if [[ "${GCC_PV}" == "4.4.3" ]] ; then
+				GITHASH="master"
+			elif [[ "${GCC_PV}" == "4.6.0" ]] ; then
+				GITHASH="gcc.gnu.org/branches/google/gcc-4_6"
+			fi
 		fi
 		einfo "Checking out ${GITHASH}."
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
