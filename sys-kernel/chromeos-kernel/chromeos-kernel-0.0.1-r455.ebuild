@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="9dcf92dfd1e7b67b2a02ade3de7ea8c940079a4d"
+CROS_WORKON_COMMIT="6e9026074aa227a56d1a48c85868c83c127722d6"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources"
+IUSE="${IUSE} -pcserial -kernel_sources -systemtap"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -101,6 +101,10 @@ src_configure() {
 	if use nfs; then
 		elog "   - adding NFS config"
 		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
+	fi
+	if use systemtap; then
+		elog "	- adding configs to support systemtap"
+		cat "${FILESDIR}"/systemtap.config >> "${build_cfg}"
 	fi
 
 	if use pcserial; then
