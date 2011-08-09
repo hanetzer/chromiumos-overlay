@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
@@ -16,7 +16,6 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-chrome
 	dev-libs/libxml2
 	dev-util/pkgconfig
@@ -53,9 +52,8 @@ src_compile() {
 	emake || die
 	# Rewrite xkb-layouts.xml using the XML output.
 	# ibus_input_methods.txt comes from chromeos-chrome.
-	ASSETSIMDIR="${SYSROOT}"/usr/share/chromeos-assets/input_methods
-	LIST="${ASSETSIMDIR}"/ibus_input_methods.txt
-	python "${ASSETSIMDIR}"/filter.py < output.xml \
+	LIST="${SYSROOT}"/usr/share/chromeos-assets/input_methods/ibus_input_methods.txt
+	python "${FILESDIR}"/filter.py < output.xml \
 	  --whitelist="${LIST}" \
 	  --rewrite=src/xkb-layouts.xml || die
 	# Remove spaces from the XML to reduce file size from ~17k to ~10k.
