@@ -6,6 +6,10 @@
 if [ -x /opt/Synaptics/bin/tpcontrol_syncontrol -a \
     -f /var/run/synapticsbus.pid ] ; then
   exec /opt/Synaptics/bin/tpcontrol_syncontrol "$@"
+elif [ -x /usr/bin/xinput ] ; then
+  # TODO(djkurtz): This is fragile, for now it works because xinput is only
+  # installed in /usr/bin/ if cmt USE flag is set when building libcros.
+  exec /opt/google/touchpad/tpcontrol_xinput "$@"
 else
   exec /opt/google/touchpad/tpcontrol_synclient "$@"
 fi

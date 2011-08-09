@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -8,7 +8,7 @@ inherit flag-o-matic toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Bridge library for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
-IUSE="install_tests"
+IUSE="install_tests cmt"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
@@ -17,7 +17,8 @@ RDEPEND="chromeos-base/flimflam
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libpcre
-	sys-apps/dbus"
+	sys-apps/dbus
+	cmt? ( x11-apps/xinput )"
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
@@ -92,10 +93,11 @@ src_install() {
 	  doins "${S}/monitor_update_engine"
 	  doins "${S}/cryptohome_drive"
         fi
-	
+
 	insinto /opt/google/touchpad
 	doins ${FILESDIR}/tpcontrol_synclient
 	doins ${FILESDIR}/tpcontrol
+	doins ${FILESDIR}/tpcontrol_xinput
 
         insinto /etc/dbus-1/system.d
 	doins "${S}/LibCrosService.conf"

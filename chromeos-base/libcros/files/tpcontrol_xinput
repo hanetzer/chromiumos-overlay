@@ -1,0 +1,75 @@
+#!/bin/sh
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+XINPUT=/usr/bin/xinput
+export DISPLAY=:0.0
+export XAUTHORITY=/home/chronos/.Xauthority
+
+COMMAND=$1
+VALUE=$2
+
+usage() {
+  echo "Usage: $0 {status|taptoclick [on|off]|sensitivity [1-5]}"
+}
+
+find_pad() {
+  # Search for an xinput entry that contains the "pad" or "Pad"
+  # Then, find a field that matches "id=".
+  # Lastly, return the part of the field after the '='.
+  return `xinput list | \
+    awk '/[pP]ad/ { for (i=1; i<NF; i++) if ($i ~/id=/) print substr($i, 4) }'`
+}
+
+find_pad
+DEVICE=$?
+VALID=0
+
+if [ $COMMAND = "status" ] ; then
+  $XINPUT list-props $DEVICE
+  VALID=1
+elif [ $COMMAND = "taptoclick" ] ; then
+  case $VALUE in
+  "on")
+    $XINPUT set-prop $DEVICE "Tap Enable" 1
+    VALID=1
+    ;;
+  "off")
+    $XINPUT set-prop $DEVICE "Tap Enable" 0
+    VALID=1
+    ;;
+  esac
+elif [ $COMMAND = "sensitivity" ] ; then
+  case $VALUE in
+  1)
+#    $XINPUT set-prop $DEVICE "Motion Speed" 10
+#    $XINPUT set-prop $DEVICE "Scroll Speed" 10
+    VALID=1
+    ;;
+  2)
+#    $XINPUT set-prop $DEVICE "Motion Speed" 25
+#    $XINPUT set-prop $DEVICE "Scroll Speed" 25
+    VALID=1
+    ;;
+  3)
+#    $XINPUT set-prop $DEVICE "Motion Speed" 50
+#    $XINPUT set-prop $DEVICE "Scroll Speed" 50
+    VALID=1
+    ;;
+  4)
+#    $XINPUT set-prop $DEVICE "Motion Speed" 75
+#    $XINPUT set-prop $DEVICE "Scroll Speed" 75
+    VALID=1
+    ;;
+  5)
+#    $XINPUT set-prop $DEVICE "Motion Speed" 100
+#    $XINPUT set-prop $DEVICE "Scroll Speed" 100
+    VALID=1
+    ;;
+  esac
+fi
+
+if [ $VALID = 0 ] ; then
+  usage
+fi
