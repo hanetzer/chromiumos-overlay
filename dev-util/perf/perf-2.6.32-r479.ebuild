@@ -14,12 +14,13 @@ PROVIDE="virtual/perf"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 arm x86"
 IUSE="+demangle +doc tui"
 
 RDEPEND="demangle? ( sys-devel/binutils )
 	dev-libs/elfutils
-	tui? ( dev-libs/newt )"
+	tui? ( dev-libs/newt )
+	!dev-util/perf-next"
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
