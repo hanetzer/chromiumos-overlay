@@ -9,15 +9,8 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm"
-IUSE="-u_boot_next -u_boot_v1"
-
-# Make sure only one u-boot is selected.
-REQUIRED_USE="u_boot_next? ( !u_boot_v1 )"
+IUSE=""
 
 RDEPEND="
-	u_boot_next? ( sys-boot/chromeos-u-boot-next )
-	!u_boot_next? (
-		u_boot_v1? ( sys-boot/chromeos-u-boot-v1 )
-		!u_boot_v1? ( sys-boot/chromeos-u-boot )
-	)
+	sys-boot/chromeos-u-boot
 "
