@@ -447,11 +447,11 @@ if [ "${ARCH}" != "amd64" ] ; then
     if [ -d "$BOARD_ROOT" ] && [ "$FLAGS_force" = "$FLAGS_FALSE" ]; then
       install_toolchain_in_board
     fi
-  fi
-  if [ "${ARCH}" == "x86" ] ; then
-    echo "Switching on gold as the default linker."
-    BINUTILS_VERSION=$(cross_get_version binutils | sed 's/-r[0-9]\+//g')
-    sudo binutils-config "${FLAGS_toolchain}-${BINUTILS_VERSION}-gold"
+    if [ "${ARCH}" == "x86" ] ; then
+      echo "Switching on gold as the default linker."
+      BINUTILS_VERSION=$(cross_get_version binutils | sed 's/-r[0-9]\+//g')
+      sudo binutils-config "${FLAGS_toolchain}-${BINUTILS_VERSION}-gold"
+    fi
   fi
 fi
 
@@ -600,6 +600,11 @@ if ${HOST_BOARD}; then
   for path in /var/lib/portage/pkgs/cross-*; do
     sudo mkdir -p $BOARD_ROOT$path
     sudo cp -a $path/glibc-* $BOARD_ROOT$path
+  done
+
+  # Select the same binutils and gcc as in the chroot.
+  for path in /etc/env.d/{binutils,gcc}/config-*; do
+    sudo cp -a $path $BOARD_ROOT$path
   done
 
   # Now cleanup paths referencing the ROOT from the *.la files.
