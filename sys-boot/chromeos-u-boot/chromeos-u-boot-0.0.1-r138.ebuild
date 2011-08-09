@@ -15,7 +15,7 @@ KEYWORDS="arm x86"
 IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
-	!sys-boot/chromeos-u-boot-next"
+	"
 
 RDEPEND="${DEPEND}
 	"
