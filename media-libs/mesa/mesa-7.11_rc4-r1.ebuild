@@ -45,7 +45,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic +debug +gallium gles +llvm motif +nptl pic selinux kernel_FreeBSD"
+	+classic debug +gallium gles +llvm motif +nptl pic selinux kernel_FreeBSD"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.24"
 # keep correct libdrm and dri2proto dep
@@ -127,6 +127,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-i915g-disable-aapoint-aaline.patch
 	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/7.11-i965-fix-indexbuf.patch
+	epatch "${FILESDIR}"/7.11-fragcoord.patch
 
 	eautoreconf
 }

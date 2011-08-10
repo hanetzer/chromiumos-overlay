@@ -1,0 +1,16 @@
+diff -aur Mesa-7.11-rc4.orig/src/gallium/drivers/i915/i915_fpc.h Mesa-7.11-rc4/src/gallium/drivers/i915/i915_fpc.h
+--- Mesa-7.11-rc4.orig/src/gallium/drivers/i915/i915_fpc.h	2011-08-09 11:18:07.565107000 -0700
++++ Mesa-7.11-rc4/src/gallium/drivers/i915/i915_fpc.h	2011-08-10 14:16:42.702312000 -0700
+@@ -39,9 +39,9 @@
+ 
+ #define I915_PROGRAM_SIZE 192
+ 
+-/* Use those indices for pos/face routing, must be >= I915_TEX_UNITS */
+-#define I915_SEMANTIC_POS  10
+-#define I915_SEMANTIC_FACE 11
++/* Use those indices for pos/face routing, must be >= num of inputs */
++#define I915_SEMANTIC_POS  100
++#define I915_SEMANTIC_FACE 101
+ 
+ 
+ /**
