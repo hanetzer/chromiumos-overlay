@@ -27,7 +27,6 @@ src_prepare() {
 	# symbols/{pc,altwin} since they are assigned in symbols/chromeos.
 	epatch "${FILESDIR}/${P}-modifier-keys.patch"
 
-	epatch "${FILESDIR}/${P}-XFER-jp-keyboard.patch"
 	epatch "${FILESDIR}/${P}-be-keyboard.patch"
 	epatch "${FILESDIR}/${P}-no-keyboard.patch"
 	epatch "${FILESDIR}/${P}-symbols-makefile.patch"
