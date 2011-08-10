@@ -137,7 +137,6 @@ RDEPEND="${RDEPEND}
 		app-benchmarks/bootchart
 	)
 	app-crypt/trousers
-	app-i18n/ibus-hangul
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
 	app-i18n/ibus-mozc-chewing
