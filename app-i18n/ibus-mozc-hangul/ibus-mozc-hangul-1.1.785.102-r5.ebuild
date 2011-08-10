@@ -20,13 +20,18 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 src_prepare() {
   cd "mozc-${PV}" || die
   # Remove the epatch lines when mozc is upgraded.
-  epatch "${FILESDIR}"/no_japanese_data.patch || die
-  epatch "${FILESDIR}"/hanja_key_bind.patch || die
-  epatch "${FILESDIR}"/comment.patch || die
-  epatch "${FILESDIR}"/crosbug18387.patch || die
-  epatch "${FILESDIR}"/crosbug18419.patch || die
-  epatch "${FILESDIR}"/crosbug18454.patch || die
-  epatch "${FILESDIR}"/crosbug18507.patch || die
+
+  epatch "${FILESDIR}"/${P}-too-big-binary.patch
+  epatch "${FILESDIR}"/${P}-does-not-work-hanja-key-binding.patch
+  epatch "${FILESDIR}"/${P}-enable-comment.patch
+  # issued as http://crosbug.com/18387
+  epatch "${FILESDIR}"/${P}-unable-select-cand-by-num.patch
+  # issued as http://crosbug.com/18419
+  epatch "${FILESDIR}"/${P}-disappear-on-BSkey.patch
+  # issued as http://crosbug.com/18454
+  epatch "${FILESDIR}"/${P}-SPkey-does-not-work.patch
+  # issued as http://crosbug.com/18507
+  epatch "${FILESDIR}"/${P}-disappear-preedit-on-switch-ime.patch
 }
 
 src_configure() {
@@ -63,13 +68,13 @@ src_install() {
   insinto /usr/share/ibus/component || die
   doins hangul/unix/ibus/mozc-hangul.xml || die
 
-  cp "out_linux/${BUILDTYPE}/ibus_mozc_hangul" /tmp || die
-  $(tc-getSTRIP) --strip-unneeded /tmp/ibus_mozc_hangul || die
+  cp "out_linux/${BUILDTYPE}/ibus_mozc_hangul" "${T}" || die
+  $(tc-getSTRIP) --strip-unneeded "${T}"/ibus_mozc_hangul || die
 
   # Check the binary size to detect binary size bloat (which happend once due
   # typos in .gyp files). Current size of the stripped ibus-mozc-hangul binary
   # is about 900k (x86) and 700k (arm).
-  test `stat -c %s /tmp/ibus_mozc_hangul` -lt 1500000 \
+  test `stat -c %s "${T}"/ibus_mozc_hangul` -lt 1500000 \
       || die 'The binary size of mozc hangul is too big (more than ~1.5MB)'
-  rm -f /tmp/ibus_mozc_hangul
+  rm -f "${T}"/ibus_mozc_hangul
 }
