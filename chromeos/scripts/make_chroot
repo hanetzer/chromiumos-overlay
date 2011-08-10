@@ -129,12 +129,10 @@ function delete_existing {
 function init_users () {
    echo "$SCRIPT_NAME: Set timezone..."
    # date +%Z has trouble with daylight time, so use host's info
+   in_chroot rm -f /etc/localtime
    if [ -f /etc/localtime ] ; then
-      in_chroot rm -f /etc/localtime
-      sudo cp /etc/localtime "${FLAGS_chroot}/etc"
+     sudo cp /etc/localtime "${FLAGS_chroot}/etc"
    else
-   in_chroot [ -f /usr/share/zoneinfo/$TZ ] || TZ=PST8PDT
-     in_chroot rm -f /etc/localtime
      in_chroot ln -sf /usr/share/zoneinfo/PST8PDT /etc/localtime
    fi
    echo "$SCRIPT_NAME: Adding user/group..."
