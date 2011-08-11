@@ -18,6 +18,10 @@ RDEPEND="x11-libs/xtrans
 	app-arch/bzip2"
 DEPEND="${RDEPEND}"
 
+src_prepare() {
+	epatch "${FILESDIR}"/1.4.2-CVE-2011-2895.patch
+}
+
 pkg_setup() {
 	xorg-2_pkg_setup
 	CONFIGURE_OPTIONS="$(use_enable ipv6)
