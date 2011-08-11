@@ -1,6 +1,6 @@
 === modified file 'init/errors.h'
 --- init/errors.h	2009-06-23 09:29:35 +0000
-+++ init/errors.h	2011-05-05 10:13:49 +0000
++++ init/errors.h	2011-08-11 20:56:28 +0000
 @@ -62,7 +62,8 @@
  #define PARSE_ILLEGAL_EXIT_STR		N_("Illegal exit status, expected integer")
  #define PARSE_ILLEGAL_UMASK_STR		N_("Illegal file creation mask, expected octal integer")
@@ -14,21 +14,152 @@
 
 === modified file 'init/job_class.c'
 --- init/job_class.c	2010-12-14 15:30:06 +0000
-+++ init/job_class.c	2011-05-05 10:13:49 +0000
-@@ -211,7 +211,7 @@
++++ init/job_class.c	2011-08-11 21:00:44 +0000
+@@ -2,7 +2,7 @@
+  *
+  * job_class.c - job class definition handling
+  *
+- * Copyright © 2010 Canonical Ltd.
++ * Copyright © 2011 Canonical Ltd.
+  * Author: Scott James Remnant <scott@netsplit.com>.
+  *
+  * This program is free software; you can redistribute it and/or modify
+@@ -55,48 +55,6 @@
+ #include "com.ubuntu.Upstart.Job.h"
+ 
+ 
+-/**
+- * JOB_DEFAULT_KILL_TIMEOUT:
+- *
+- * The default length of time to wait after sending a process the TERM
+- * signal before sending the KILL signal if it hasn't terminated.
+- **/
+-#define JOB_DEFAULT_KILL_TIMEOUT 5
+-
+-/**
+- * JOB_DEFAULT_RESPAWN_LIMIT:
+- *
+- * The default number of times in JOB_DEFAULT_RESPAWN_INTERVAL seconds that
+- * we permit a process to respawn before stoping it
+- **/
+-#define JOB_DEFAULT_RESPAWN_LIMIT 10
+-
+-/**
+- * JOB_DEFAULT_RESPAWN_INTERVAL:
+- *
+- * The default number of seconds before resetting the respawn timer.
+- **/
+-#define JOB_DEFAULT_RESPAWN_INTERVAL 5
+-
+-/**
+- * JOB_DEFAULT_UMASK:
+- *
+- * The default file creation mark for processes.
+- **/
+-#define JOB_DEFAULT_UMASK 022
+-
+-/**
+- * JOB_DEFAULT_ENVIRONMENT:
+- *
+- * Environment variables to always copy from our own environment, these
+- * can be overriden in the job definition or by events since they have the
+- * lowest priority.
+- **/
+-#define JOB_DEFAULT_ENVIRONMENT \
+-	"PATH",			\
+-	"TERM"
+-
+-
+ /* Prototypes for static functions */
+ static void job_class_add    (JobClass *class);
+ static int  job_class_remove (JobClass *class);
+@@ -210,8 +168,8 @@
+ 	class->console = CONSOLE_NONE;
  
  	class->umask = JOB_DEFAULT_UMASK;
- 	class->nice = 0;
+-	class->nice = 0;
 -	class->oom_adj = 0;
-+	class->oom_score_adj = 0;
++	class->nice = JOB_DEFAULT_NICE;
++	class->oom_score_adj = JOB_DEFAULT_OOM_SCORE_ADJ;
  
  	for (i = 0; i < RLIMIT_NLIMITS; i++)
  		class->limits[i] = NULL;
 
 === modified file 'init/job_class.h'
 --- init/job_class.h	2010-12-14 15:30:06 +0000
-+++ init/job_class.h	2011-05-12 19:31:50 +0000
-@@ -93,7 +93,7 @@
++++ init/job_class.h	2011-08-11 20:59:46 +0000
+@@ -1,6 +1,6 @@
+ /* upstart
+  *
+- * Copyright © 2010 Canonical Ltd.
++ * Copyright © 2011 Canonical Ltd.
+  * Author: Scott James Remnant <scott@netsplit.com>.
+  *
+  * This program is free software; you can redistribute it and/or modify
+@@ -67,6 +67,62 @@
+ 
+ 
+ /**
++ * JOB_DEFAULT_KILL_TIMEOUT:
++ *
++ * The default length of time to wait after sending a process the TERM
++ * signal before sending the KILL signal if it hasn't terminated.
++ **/
++#define JOB_DEFAULT_KILL_TIMEOUT 5
++
++/**
++ * JOB_DEFAULT_RESPAWN_LIMIT:
++ *
++ * The default number of times in JOB_DEFAULT_RESPAWN_INTERVAL seconds that
++ * we permit a process to respawn before stoping it
++ **/
++#define JOB_DEFAULT_RESPAWN_LIMIT 10
++
++/**
++ * JOB_DEFAULT_RESPAWN_INTERVAL:
++ *
++ * The default number of seconds before resetting the respawn timer.
++ **/
++#define JOB_DEFAULT_RESPAWN_INTERVAL 5
++
++/**
++ * JOB_DEFAULT_UMASK:
++ *
++ * The default file creation mark for processes.
++ **/
++#define JOB_DEFAULT_UMASK 022
++
++/**
++ * JOB_DEFAULT_NICE:
++ *
++ * The default nice level for processes.
++ **/
++#define JOB_DEFAULT_NICE 0
++
++/**
++ * JOB_DEFAULT_OOM_SCORE_ADJ:
++ *
++ * The default OOM score adjustment for processes.
++ **/
++#define JOB_DEFAULT_OOM_SCORE_ADJ 0
++
++/**
++ * JOB_DEFAULT_ENVIRONMENT:
++ *
++ * Environment variables to always copy from our own environment, these
++ * can be overriden in the job definition or by events since they have the
++ * lowest priority.
++ **/
++#define JOB_DEFAULT_ENVIRONMENT \
++	"PATH",			\
++	"TERM"
++
++
++/**
+  * JobClass:
+  * @entry: list header,
+  * @name: unique name,
+@@ -93,7 +149,7 @@
   * @console: how to arrange processes' stdin/out/err file descriptors,
   * @umask: file mode creation mask,
   * @nice: process priority,
@@ -37,7 +168,7 @@
   * @limits: resource limits indexed by resource,
   * @chroot: root directory of process (implies @chdir if not set),
   * @chdir: working directory of process,
-@@ -141,7 +141,7 @@
+@@ -141,7 +197,7 @@
  
  	mode_t          umask;
  	int             nice;
@@ -48,14 +179,14 @@
  	char           *chdir;
 
 === modified file 'init/job_process.c'
---- init/job_process.c	2011-05-12 19:21:16 +0000
-+++ init/job_process.c	2011-05-12 19:31:50 +0000
+--- init/job_process.c	2011-08-11 20:55:33 +0000
++++ init/job_process.c	2011-08-11 21:00:11 +0000
 @@ -513,16 +513,24 @@
  
  	/* Adjust the process OOM killer priority.
  	 */
 -	if (class->oom_adj) {
-+	if (class->oom_score_adj) {
++	if (class->oom_score_adj != JOB_DEFAULT_OOM_SCORE_ADJ) {
 +		int oom_value;
  		snprintf (filename, sizeof (filename),
 -			  "/proc/%d/oom_adj", getpid ());
@@ -63,7 +194,7 @@
 +			  "/proc/%d/oom_score_adj", getpid ());
 +		oom_value = class->oom_score_adj;
  		fd = fopen (filename, "w");
-+		if ((! fd) && (errno == EACCES)) {
++		if ((! fd) && (errno == ENOENT)) {
 +			snprintf (filename, sizeof (filename),
 +				  "/proc/%d/oom_adj", getpid ());
 +			oom_value = (class->oom_score_adj
@@ -80,9 +211,68 @@
  			if (fclose (fd)) {
  				nih_error_raise_system ();
 
+=== modified file 'init/main.c'
+--- init/main.c	2011-08-11 20:55:33 +0000
++++ init/main.c	2011-08-11 21:00:11 +0000
+@@ -32,6 +32,7 @@
+ 
+ #include <errno.h>
+ #include <stdio.h>
++#include <limits.h>
+ #include <signal.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -54,6 +55,7 @@
+ #include "paths.h"
+ #include "events.h"
+ #include "system.h"
++#include "job_class.h"
+ #include "job_process.h"
+ #include "event.h"
+ #include "conf.h"
+@@ -292,6 +294,38 @@
+ 					  NULL));
+ 
+ 
++	/* Adjust our OOM priority to the default, which will be inherited
++	 * by all jobs.
++	 */
++	if (JOB_DEFAULT_OOM_SCORE_ADJ) {
++		char  filename[PATH_MAX];
++		int   oom_value;
++		FILE *fd;
++
++		snprintf (filename, sizeof (filename),
++			  "/proc/%d/oom_score_adj", getpid ());
++		oom_value = JOB_DEFAULT_OOM_SCORE_ADJ;
++		fd = fopen (filename, "w");
++		if ((! fd) && (errno == ENOENT)) {
++			snprintf (filename, sizeof (filename),
++				  "/proc/%d/oom_adj", getpid ());
++			oom_value = (JOB_DEFAULT_OOM_SCORE_ADJ
++				     * ((JOB_DEFAULT_OOM_SCORE_ADJ < 0) ? 17 : 15)) / 1000;
++			fd = fopen (filename, "w");
++		}
++		if (! fd) {
++			nih_warn ("%s: %s", _("Unable to set default oom score"),
++				  strerror (errno));
++		} else {
++			fprintf (fd, "%d\n", oom_value);
++
++			if (fclose (fd))
++				nih_warn ("%s: %s", _("Unable to set default oom score"),
++					  strerror (errno));
++		}
++	}
++
++
+ 	/* Read configuration */
+ 	NIH_MUST (conf_source_new (NULL, CONFFILE, CONF_FILE));
+ 	NIH_MUST (conf_source_new (NULL, CONFDIR, CONF_JOB_DIR));
+
 === modified file 'init/man/init.5'
 --- init/man/init.5	2011-03-15 18:36:57 +0000
-+++ init/man/init.5	2011-05-12 19:31:50 +0000
++++ init/man/init.5	2011-08-11 20:56:28 +0000
 @@ -1,4 +1,4 @@
 -.TH init 5 2010-12-14 "Upstart"
 +.TH init 5 2011-05-12 "Upstart"
@@ -111,7 +301,7 @@
 
 === modified file 'init/parse_job.c'
 --- init/parse_job.c	2011-01-17 16:37:54 +0000
-+++ init/parse_job.c	2011-05-12 19:31:50 +0000
++++ init/parse_job.c	2011-08-11 20:56:28 +0000
 @@ -2233,6 +2233,7 @@
  	nih_local char *arg = NULL;
  	char           *endptr;
@@ -165,7 +355,7 @@
 
 === modified file 'init/tests/test_job_class.c'
 --- init/tests/test_job_class.c	2011-03-16 22:42:48 +0000
-+++ init/tests/test_job_class.c	2011-05-05 10:13:49 +0000
++++ init/tests/test_job_class.c	2011-08-11 20:56:28 +0000
 @@ -133,7 +133,7 @@
  
  		TEST_EQ (class->umask, 022);
@@ -178,7 +368,7 @@
 
 === modified file 'init/tests/test_parse_job.c'
 --- init/tests/test_parse_job.c	2010-12-14 16:20:38 +0000
-+++ init/tests/test_parse_job.c	2011-05-12 19:31:50 +0000
++++ init/tests/test_parse_job.c	2011-08-11 20:56:28 +0000
 @@ -6161,6 +6161,8 @@
  	nih_free (err);
  }

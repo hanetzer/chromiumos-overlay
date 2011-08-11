@@ -35,10 +35,13 @@ src_unpack() {
 
 	# -r 1280,1308,1309 - fix shell fd leak (and fix the fix)
 	epatch "${FILESDIR}"/upstart-1.2-fix-shell-redirect.patch
-	# -r 1281 - update to use /proc/oom_score
+	# -r 1281,1325,1327,1328 - update to use /proc/oom_score
 	epatch "${FILESDIR}"/upstart-1.2-oom-score.patch
 	# -r 1282 - add "kill signal" stanza (may be useful for us)
 	epatch "${FILESDIR}"/upstart-1.2-kill-signal.patch
+
+	# chromium-os:16450, prevent OOM killer by default
+	epatch "${FILESDIR}"/upstart-1.2-default-oom_score_adj.patch
 
 	# Patch to use kmsg at higher verbosity for logging; this is
 	# our own patch because we can't just add --verbose to the
