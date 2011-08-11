@@ -1,22 +1,21 @@
-From 355f686e3591c19036aa1907c71bf8870ce2f01c Mon Sep 17 00:00:00 2001
+From 3f1245e4c4c4c3bfd8dac4fbadc269c239f0d3fd Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
-Date: Tue, 26 Jul 2011 08:55:40 +0800
+Date: Fri, 5 Aug 2011 22:58:48 +0800
 Subject: [PATCH 7/7] xf86Helper: use LogHdrMessageVerb in xf86VDrvMsgVerb
 
 LogHdrMessageVerb allows passing a parameterized header to insert in a log
 message between MessageType and the formatted message body string.
 
 Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
-Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
 ---
- hw/xfree86/common/xf86Helper.c |   25 ++++++-------------------
- 1 files changed, 6 insertions(+), 19 deletions(-)
+ hw/xfree86/common/xf86Helper.c |   28 ++++++----------------------
+ 1 files changed, 6 insertions(+), 22 deletions(-)
 
 diff --git a/hw/xfree86/common/xf86Helper.c b/hw/xfree86/common/xf86Helper.c
-index 17dfdaf..62e4065 100644
+index 17dfdaf..ee7a4c3 100644
 --- a/hw/xfree86/common/xf86Helper.c
 +++ b/hw/xfree86/common/xf86Helper.c
-@@ -1209,36 +1209,23 @@ xf86EnableDisableFBAccess(int scrnIndex, Bool enable)
+@@ -1209,36 +1209,20 @@ xf86EnableDisableFBAccess(int scrnIndex, Bool enable)
      }
  }
  
@@ -32,11 +31,10 @@ index 17dfdaf..62e4065 100644
  		va_list args)
  {
 -    char *tmpFormat;
-+    const char *scrnName = NULL;
- 
+-
      /* Prefix the scrnIndex name to the format string. */
      if (scrnIndex >= 0 && scrnIndex < xf86NumScreens &&
- 	xf86Screens[scrnIndex]->name) {
+-	xf86Screens[scrnIndex]->name) {
 -	tmpFormat = malloc(strlen(format) +
 -			   strlen(xf86Screens[scrnIndex]->name) +
 -			   PREFIX_SIZE + 1);
@@ -49,10 +47,11 @@ index 17dfdaf..62e4065 100644
 -	strcat(tmpFormat, format);
 -	LogVMessageVerb(type, verb, tmpFormat, args);
 -	free(tmpFormat);
-+	scrnName = xf86Screens[scrnIndex]->name;
-+	LogHdrMessageVerb(type, verb, format, args, "%s(%d): ", scrnName,
-+	    scrnIndex);
-     } else
+-    } else
++	xf86Screens[scrnIndex]->name)
++	LogHdrMessageVerb(type, verb, format, args, "%s(%d): ",
++	    xf86Screens[scrnIndex]->name, scrnIndex);
++    else
  	LogVMessageVerb(type, verb, format, args);
  }
 -#undef PREFIX_SIZE

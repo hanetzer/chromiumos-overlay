@@ -1,4 +1,4 @@
-From fe179780961e46206ad73cb7139887f26984ef21 Mon Sep 17 00:00:00 2001
+From 3bcd7ecd60db48f8987e6d9d13bef1334d0d4a53 Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
 Date: Fri, 29 Jul 2011 12:21:11 +0800
 Subject: [PATCH 4/5] xf86Helper: use LogHdrMessageVerb in xf86VIDrvMsgVerb

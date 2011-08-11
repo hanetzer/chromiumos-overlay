@@ -1,6 +1,6 @@
-From 96a2d610c3b6718384764b8fd784c9f7b50d5728 Mon Sep 17 00:00:00 2001
+From 3361f882ad116750e50fe6f6e2787f057b5b356f Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
-Date: Wed, 27 Jul 2011 10:53:31 +0800
+Date: Fri, 5 Aug 2011 14:34:06 +0800
 Subject: [PATCH 5/7] os/log: Add LogVHdrMessageVerb and friends
 
 LogVHdrMessageVerb allows a custom header to be inserted in a log message,
@@ -45,10 +45,10 @@ index ba8fd9f..b2707fa 100644
  extern _X_EXPORT void AuditF(const char *f, ...) _X_ATTRIBUTE_PRINTF(1,2);
  extern _X_EXPORT void VAuditF(const char *f, va_list args) _X_ATTRIBUTE_PRINTF(1,0);
 diff --git a/os/log.c b/os/log.c
-index a7ce13b..7d3ebd0 100644
+index 2a7153e..83ef3d3 100644
 --- a/os/log.c
 +++ b/os/log.c
-@@ -422,6 +422,61 @@ LogMessage(MessageType type, const char *format, ...)
+@@ -419,6 +419,61 @@ LogMessage(MessageType type, const char *format, ...)
      va_end(ap);
  }
  
@@ -60,24 +60,24 @@ index a7ce13b..7d3ebd0 100644
 +    const char *type_str;
 +    char tmpFormat[1024];
 +    char *tmpFormat_end = &tmpFormat[sizeof(tmpFormat)];
-+    char *p = tmpFormat;
++    char *p;
 +    int left;
 +
 +    type_str = LogMessageTypeVerbString(type, verb);
 +    if (!type_str)
 +	return;
 +
-+    /* if type_str is not "", prepend it, and ' ', to hdr_format */
-+    left = tmpFormat_end - p;
-+    if (strlen(type_str))
-+	p += snprintf(p, left, "%s ", type_str);
++    /* if type_str != "", copy it and ' ' to tmpFormat; set p after ' ' */
++    p = tmpFormat;
++    if (type_str[0] != '\0')
++	p += snprintf(tmpFormat, sizeof(tmpFormat), "%s ", type_str);
 +
-+    /* append header string to tmpBuf */
++    /* append as much of hdr as fits after type_str (if there was one) */
 +    left = tmpFormat_end - p;
 +    if (left > 1)
 +	p += vsnprintf(p, left, hdr_format, hdr_args);
 +
-+    /* if still room in tmpBuf copy as much of msg_format as will fit */
++    /* append as much of msg_format as will fit after hdr */
 +    left = tmpFormat_end - p;
 +    if (left > 1)
 +	snprintf(p, left, "%s", msg_format);
