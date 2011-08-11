@@ -30,7 +30,7 @@
 =dev-python/python-xlib-0.14    amd64 arm x86
 =dev-python/pyxdg-0.17-r1	amd64 arm x86
 =dev-util/strace-4.5.20-r2      amd64 arm x86
-=dev-util/xxd-1.10      amd64 arm x86
+=dev-util/xxd-1.10              amd64 arm x86
 =gnome-base/orbit-2.14.17	amd64 arm x86
 =media-fonts/ja-ipafonts-003.02 amd64 arm x86
 =media-gfx/perceptualdiff-1.1.1 amd64 arm x86
@@ -38,6 +38,7 @@
 =media-libs/freeglut-2.4.0-r2   amd64 arm x86
 =media-libs/freeimage-3.13.1    amd64 arm x86
 =media-libs/jpeg-6b-r9          amd64 arm x86
+=media-sound/alsa-headers-1.0.24 arm
 =net-analyzer/netperf-2.4.4	amd64 arm x86
 =net-libs/gnutls-2.9.5		amd64 arm x86
 =net-libs/gssdp-0.7.1-r1        amd64 arm x86
