@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
 
 XORG_EAUTORECONF="yes"
 BASE_INDIVIDUAL_URI=""
-inherit xorg-2 cros-workon toolchain-funcs
+inherit xorg-2 cros-workon
 
 DESCRIPTION="Chromium OS multitouch input driver for Xorg X server."
 CROS_WORKON_LOCALNAME="../platform/xf86-input-cmt"
@@ -27,12 +27,4 @@ DOCS="README"
 # Explicitly call xorg-2_src_prepare, not cros-workon_src_prepare
 src_prepare() {
 	xorg-2_src_prepare
-}
-
-src_test() {
-	tc-export CC CXX
-	CFLAGS+=" -I${ROOT}/usr/include/xorg"
-	CXXFLAGS+=" -I${ROOT}/usr/include/xorg"
-	cd "${S}/src"
-	make -f Makefile.test dotest || die
 }
