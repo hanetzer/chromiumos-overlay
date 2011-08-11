@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="bc3a40a612995d6ed02c31c67d296b532d424918"
+CROS_WORKON_COMMIT="98849b969063b6a19d03e5af1217871c8b6b0e28"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r335"
@@ -36,8 +36,6 @@ RDEPEND="
 
 DEPEND="${RDEPEND}"
 
-# TODO(hungte) remove deprecated factory_SelectKeyboard in R14, when every test
-# list has been updated.
 IUSE_TESTS="
 	+tests_dummy_Fail
 	+tests_dummy_Pass
@@ -58,8 +56,8 @@ IUSE_TESTS="
 	+tests_factory_RebootStub
 	+tests_factory_Review
 	+tests_factory_ScriptWrapper
-	+tests_factory_SelectKeyboard
 	+tests_factory_SelectRegion
+	+tests_factory_SetSN
 	+tests_factory_ShowTestResults
 	+tests_factory_Touchpad
 	+tests_factory_WriteGBB
