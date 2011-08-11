@@ -86,12 +86,13 @@ src_install() {
 	insopts -m0755
 	doins "${S}/libcros.so"
         if use install_tests; then
+	  doins "${S}/cryptohome_drive"
 	  doins "${S}/libcros_service_tester"
-	  doins "${S}/monitor_power"
+	  doins "${S}/monitor_mount"
 	  doins "${S}/monitor_network"
+	  doins "${S}/monitor_power"
 	  doins "${S}/monitor_sms"
 	  doins "${S}/monitor_update_engine"
-	  doins "${S}/cryptohome_drive"
         fi
 
 	insinto /opt/google/touchpad
