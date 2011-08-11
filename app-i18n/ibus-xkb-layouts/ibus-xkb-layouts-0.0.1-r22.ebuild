@@ -16,8 +16,8 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND=">=app-i18n/ibus-1.2"
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-chrome
 	chromeos-base/chromeos-assets
+	chromeos-base/chromeos-chrome
 	dev-libs/libxml2
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1
