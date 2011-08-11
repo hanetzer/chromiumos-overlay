@@ -228,8 +228,6 @@ EOF
 
    # Niceties for interactive logins ('enter_chroot.sh'); these are ignored
    # when specifying a command to enter_chroot.sh.
-   # Warn less when apt-get installing packqages
-   echo "export LANG=C" >> "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1='\$(__git_branch_ps1 \"(%s) \")'\"\${PS1}\"" >> \
      "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cr) \${PS1}\"" >> \
