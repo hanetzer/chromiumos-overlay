@@ -63,25 +63,14 @@ src_install() {
 	doins "${S}/libpolicy.so"
 
 	insinto "/usr/include/chromeos"
-	doins "${S}/chromeos/callback.h"
-	doins "${S}/chromeos/exception.h"
-	doins "${S}/chromeos/process.h"
-	doins "${S}/chromeos/process_mock.h"
-	doins "${S}/chromeos/string.h"
-	doins "${S}/chromeos/syslog_logging.h"
-	doins "${S}/chromeos/test_helpers.h"
-	doins "${S}/chromeos/utility.h"
+	doins "${S}"/chromeos/*.h
 
 	insinto "/usr/include/chromeos/dbus"
-	doins "${S}/chromeos/dbus/abstract_dbus_service.h"
-	doins "${S}/chromeos/dbus/dbus.h"
-	doins "${S}/chromeos/dbus/service_constants.h"
+	doins "${S}"/chromeos/dbus/*.h
 
 	insinto "/usr/include/chromeos/glib"
-	doins "${S}/chromeos/glib/object.h"
+	doins "${S}"/chromeos/glib/*.h
 
 	insinto "/usr/include/policy"
-	doins "${S}/chromeos/policy/libpolicy.h"
-	doins "${S}/chromeos/policy/device_policy.h"
-	doins "${S}/chromeos/policy/mock_device_policy.h"
+	doins "${S}"/chromeos/policy/*.h
 }

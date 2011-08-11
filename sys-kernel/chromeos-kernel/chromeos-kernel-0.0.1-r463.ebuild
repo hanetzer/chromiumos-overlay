@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="0d22fcba3fabf5ee3be8619bbddf8518627dd6ca"
+CROS_WORKON_COMMIT="c37a91ca8a603ef2b3608eb06ede9f95f1c7ee60"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit toolchain-funcs
@@ -143,7 +143,7 @@ src_compile() {
 	else
 		INITRAMFS=""
 	fi
-	eval emake ${COMPILER_OPTS} \
+	eval emake ${COMPILER_OPTS} -k \
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		O="${build_dir}" \
