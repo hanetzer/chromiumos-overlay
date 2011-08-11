@@ -142,7 +142,7 @@ src_compile() {
 	else
 		INITRAMFS=""
 	fi
-	eval emake ${COMPILER_OPTS} \
+	eval emake ${COMPILER_OPTS} -k \
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		O="${build_dir}" \
