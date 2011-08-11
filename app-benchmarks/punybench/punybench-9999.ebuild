@@ -22,9 +22,14 @@ IUSE=""
 
 src_compile() {
 	tc-export CC
-	emake BOARD="${ARCH}" || die
+	if [ "${ARCH}" == "amd64" ]; then
+        PUNYARCH="x86_64"
+	else
+        PUNYARCH=${ARCH}
+	fi
+	emake BOARD="${PUNYARCH}"
 }
 
 src_install() {
-	emake install BOARD="${ARCH}" DESTDIR="${D}" || die
+	emake install BOARD="${PUNYARCH}" DESTDIR="${D}"
 }
