@@ -25,15 +25,14 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 
+	# 1.3+ has scary user and chroot session support that we just
+	# don't want to adopt yet, so we're sticking with 1.2 for the
+	# near future. Backport some bug fixes from lp:upstart
+
+	# -r 1326 - fix bug when /dev/console cannot be opened
 	# chromium-os:18739
 	epatch "${FILESDIR}"/upstart-1.2-silent-console.patch
-
-	# 1.2 is the current release, backport some bug fixes from
-	# lp:upstart that will be in the 1.3 release (but don't just
-	# grab everything, because there are large changes in there
-	# we don't want just yet)
-
-	# -r 1280,1308,1309 - fix shell fd leak (and fix the fix)
+	# -r 1280,1308,1309,1320,1329 - fix shell fd leak (and fix the fix)
 	epatch "${FILESDIR}"/upstart-1.2-fix-shell-redirect.patch
 	# -r 1281,1325,1327,1328 - update to use /proc/oom_score
 	epatch "${FILESDIR}"/upstart-1.2-oom-score.patch

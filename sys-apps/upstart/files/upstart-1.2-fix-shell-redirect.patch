@@ -75,12 +75,14 @@
  {
  	sigset_t  child_set, orig_set;
  	pid_t     pid;
-@@ -433,8 +437,24 @@
+@@ -433,8 +437,26 @@
  	 * far because read() returned zero.
  	 */
  	close (fds[0]);
 +	if (fds[1] == JOB_PROCESS_SCRIPT_FD) {
 +		int tmp = dup2 (fds[1], fds[0]);
++		if (tmp < 0)
++			job_process_error_abort (fds[1], JOB_PROCESS_ERROR_DUP, 0);
 +		close (fds[1]);
 +		fds[1] = tmp;
 +	}
