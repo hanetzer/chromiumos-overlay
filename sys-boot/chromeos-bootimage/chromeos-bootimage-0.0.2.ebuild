@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit cros-debug cros-firmware-image
+inherit cros-debug
 
 DESCRIPTION="ChromeOS arm firmware image builder"
 HOMEPAGE="http://www.chromium.org"
@@ -30,13 +30,22 @@ DEPEND="
 RDEPEND="${DEPEND}
 	sys-apps/flashrom"
 
+
+# Directory where the generated files are looked for and placed.
+CROS_FIRMWARE_IMAGE_DIR=${ROOT%/}/u-boot
+
+# Location of the board-specific bct file
+CROS_FIRMWARE_IMAGE_BCT=${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct
+
+# Location of the devkeys
+CROS_FIRMWARE_IMAGE_DEVKEYS=${ROOT%/}/usr/share/vboot/devkeys
+
+# Location of the u-boot flat device tree binary blob (FDT)
+CROS_FIRMWARE_DTB=
+
 if use x86; then
 	DST_DIR='/coreboot'
 	CROS_FIRMWARE_IMAGE_DIR="${ROOT}${DST_DIR}"
-	CROS_FIRMWARE_IMAGE_AUTOCONF="${CROS_FIRMWARE_IMAGE_DIR}/bootconf.mk"
-	CROS_FIRMWARE_IMAGE_LAYOUT_CONFIG="${FILESDIR}/"
-	CROS_FIRMWARE_IMAGE_LAYOUT_CONFIG+="cb_firmware_layout_config"
-	CROS_FIRMWARE_DTB=''
 else
 	# TODO(dianders): remove looking at PKG_CONFIG once
 	# virtual/chromeos-bootimage is complete.
