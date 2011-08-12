@@ -3,6 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/media-libs/alsa-lib/alsa-lib-1.0.24.1.ebuild,v 1.3 2011/02/17 17:26:29 sping Exp $
 
 EAPI=3
+CROS_WORKON_COMMIT="e2c2262403c5639c7ff96f47a43682ff16b7ae4f"
 
 PYTHON_DEPEND="python? 2"
 

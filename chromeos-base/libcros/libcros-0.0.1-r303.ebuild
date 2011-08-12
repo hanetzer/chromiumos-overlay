@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a5b2fc2b85b24edcc9ee89c5dcfcfe060d56f940"
+CROS_WORKON_COMMIT="58c22b32839318270c553a4b4a5cb714b61b0e96"
 CROS_WORKON_PROJECT="chromiumos/platform/cros"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
@@ -87,12 +87,13 @@ src_install() {
 	insopts -m0755
 	doins "${S}/libcros.so"
         if use install_tests; then
+	  doins "${S}/cryptohome_drive"
 	  doins "${S}/libcros_service_tester"
-	  doins "${S}/monitor_power"
+	  doins "${S}/monitor_mount"
 	  doins "${S}/monitor_network"
+	  doins "${S}/monitor_power"
 	  doins "${S}/monitor_sms"
 	  doins "${S}/monitor_update_engine"
-	  doins "${S}/cryptohome_drive"
         fi
 
 	insinto /opt/google/touchpad
