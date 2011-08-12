@@ -28,7 +28,9 @@ src_compile() {
   # with "src/handles-inl.h:50: error: dereferencing pointer '<anonymous>'
   # does break strict-aliasing rules".
   # See http://code.google.com/p/v8/issues/detail?id=463
-  export CCFLAGS="$CCFLAGS -fno-strict-aliasing $(test-flags-CC -Wno-error=unused-but-set-variable)"
+  export CCFLAGS="$CCFLAGS -fno-strict-aliasing \
+    $(test-flags-CC -Wno-error=unused-but-set-variable) \
+    $(test-flags-CC -Wno-error=conversion-null)"
   export GCC_VERSION="44"
 
   local arch=""
