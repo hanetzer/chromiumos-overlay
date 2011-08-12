@@ -2,10 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # This ebuild file installs the developer installer package. It:
-#  + Copies dev_install.sh.
-#  + Copies some config files for emerge: make.conf.user and make.conf.
+#  + Copies dev_install.
+#  + Copies some config files for emerge: make.defaults and make.conf.
 #  + Generates a list of packages installed (in base images).
-# dev_install.sh downloads and bootstraps emerge in base images without
+# dev_install downloads and bootstraps emerge in base images without
 # modifying the root filesystem.
 
 EAPI=4
@@ -27,7 +27,7 @@ DEPEND="app-arch/tar
 	sys-apps/portage
 	sys-apps/sed"
 # TODO(arkaitzr): remove dependency on tar if it's gonna be removed from the
-# base image. Also modify dev_install.sh.
+# base image. Also modify dev_install.
 RDEPEND="app-arch/tar
 	net-misc/wget
 	sys-apps/coreutils"
@@ -95,8 +95,8 @@ src_unpack() {
 	# Add dhcp to the list of packages installed since its installation will not
 	# complete (can not add dhcp group since /etc is not writeable). Bootstrap it
 	# instead.
-	grep "net-misc/dhcp" "${S}/chromeos-dev.packages" >> "${S}/package.provided"
-	grep "net-misc/dhcp" "${S}/chromeos-dev.packages" >> "${S}/bootstrap.packages"
+	grep "net-misc/dhcp-" "${S}/chromeos-dev.packages" >> "${S}/package.provided"
+	grep "net-misc/dhcp-" "${S}/chromeos-dev.packages" >> "${S}/bootstrap.packages"
 }
 
 src_install() {
@@ -106,7 +106,7 @@ src_install() {
 
 	dodir /etc/portage
 	insinto /etc/portage
-        doins "${S}/repository.conf"
+	doins "${S}/repository.conf"
         doins "${S}/bootstrap.packages"
 
 	dodir /etc/portage/make.profile

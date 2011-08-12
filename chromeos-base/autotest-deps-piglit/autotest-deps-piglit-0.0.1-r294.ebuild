@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="86b1a57d6f1e690ccf1507feeecd6139dda600b3"
+CROS_WORKON_COMMIT="17b4873522fd8fcfe6cde5e171155a8148721128"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 
@@ -25,6 +25,7 @@ AUTOTEST_DEPS_LIST="piglit"
 RDEPEND="
 	virtual/glut
 	virtual/opengl
+	dev-python/numpy
 	media-libs/tiff
 	media-libs/libpng
 	sys-libs/zlib
