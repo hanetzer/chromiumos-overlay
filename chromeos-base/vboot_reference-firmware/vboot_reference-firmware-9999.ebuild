@@ -36,7 +36,7 @@ src_compile() {
 	#fi
 	local MOCK_TPM="1"
 	case "${BOARD}" in
-		tegra2_kaen|tegra2_aebl)
+		tegra2_kaen|tegra2_aebl|x86-alex|stumpy|lumpy)
 		MOCK_TPM=""
 	esac
 
