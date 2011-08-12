@@ -32,6 +32,10 @@ src_prepare() {
   epatch "${FILESDIR}"/${P}-SPkey-does-not-work.patch
   # issued as http://crosbug.com/18507
   epatch "${FILESDIR}"/${P}-disappear-preedit-on-switch-ime.patch
+  # issued as http://crosbug.com/18419 and http://crosbug.com/19074
+  epatch "${FILESDIR}"/${P}-BSkey-and-modified-key-doesnt-work.patch
+  # issued as http://crosbug.com/18555
+  epatch "${FILESDIR}"/${P}-focusout-preedit-discard.patch
 }
 
 src_configure() {
