@@ -38,7 +38,7 @@
 =media-libs/freeglut-2.4.0-r2   amd64 arm x86
 =media-libs/freeimage-3.13.1    amd64 arm x86
 =media-libs/jpeg-6b-r9          amd64 arm x86
-=media-sound/alsa-headers-1.0.24 arm
+=media-sound/alsa-headers-1.0.24 amd64 arm x86
 =net-analyzer/netperf-2.4.4	amd64 arm x86
 =net-libs/gnutls-2.9.5		amd64 arm x86
 =net-libs/gssdp-0.7.1-r1        amd64 arm x86
