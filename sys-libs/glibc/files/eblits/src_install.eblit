@@ -32,6 +32,7 @@ toolchain-glibc_src_install() {
 		# See http://crosbug.com/1570
 		find ./usr/bin -name getent -o -name ldd -o -type f -exec rm {} ';'
 		find ./sbin -name ldconfig -o -type f -exec rm {} ';'
+		rm -rf ./usr/sbin
 	fi
 
 	if want_linuxthreads && want_nptl ; then
