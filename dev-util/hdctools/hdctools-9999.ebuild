@@ -14,7 +14,8 @@ IUSE=""
 inherit cros-workon distutils
 
 RDEPEND=">=dev-embedded/libftdi-0.18
-	dev-libs/libusb"
+	dev-libs/libusb
+	dev-python/pyusb"
 
 DEPEND="${RDEPEND}
 	app-text/htmltidy 
