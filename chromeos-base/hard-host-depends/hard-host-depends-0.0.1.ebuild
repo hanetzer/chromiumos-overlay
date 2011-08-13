@@ -64,6 +64,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyopenssl
+	dev-python/pyusb
 	=dev-util/boost-build-1.42.0
 	dev-util/cmake
 	>=dev-util/git-1.7.2
