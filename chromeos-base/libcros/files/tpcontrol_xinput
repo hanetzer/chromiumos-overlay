@@ -4,8 +4,6 @@
 # found in the LICENSE file.
 
 XINPUT=/usr/bin/xinput
-export DISPLAY=:0.0
-export XAUTHORITY=/home/chronos/.Xauthority
 
 COMMAND=$1
 VALUE=$2
