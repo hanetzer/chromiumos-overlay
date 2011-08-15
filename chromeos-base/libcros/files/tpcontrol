@@ -3,8 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Configure using tpcontrol_syncontrol if it exists, and there is a
+# /dev/serio_raw* char device for syntp to use.
 if [ -x /opt/Synaptics/bin/tpcontrol_syncontrol -a \
-    -f /var/run/synapticsbus.pid ] ; then
+     -n "$(find /dev -maxdepth 1 -type c -name 'serio_raw*' -print -quit)" ]; \
+   then
   exec /opt/Synaptics/bin/tpcontrol_syncontrol "$@"
 elif [ -x /usr/bin/xinput ] ; then
   # TODO(djkurtz): This is fragile, for now it works because xinput is only
