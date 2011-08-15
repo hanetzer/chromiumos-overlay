@@ -80,7 +80,9 @@ src_install() {
 	dolib.a "${S}/libcrosapi.a"
 
 	insinto /usr/include/cros
-	doins *.h
+	# TODO(satorux): Remove the grep -v hack once chromeos_wm_ipc_enums
+	# is removed from libcros.
+	doins $(ls *.h | grep -v chromeos_wm_ipc_enums.h)
 
 	insinto /opt/google/chrome/chromeos
 	insopts -m0755
