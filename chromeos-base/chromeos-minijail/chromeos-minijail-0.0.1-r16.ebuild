@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="cd7a9046e61e243fca916a286e49d58e2331eaa7"
+CROS_WORKON_COMMIT="bd1876279d124821aaeba3562f0250a6fbb10834"
 CROS_WORKON_PROJECT="chromiumos/platform/minijail"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -29,7 +29,8 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	# Only build the tool
+	# Only build the tools
+        emake || die
 	scons minijail || die "minijail compile failed."
 }
 
@@ -51,5 +52,6 @@ src_test() {
 
 src_install() {
         into /
-        dosbin minijail || die
+        dosbin minijail{,0} || die
+	dolib.so libminijailpreload.so || die
 }
