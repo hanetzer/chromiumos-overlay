@@ -22,15 +22,15 @@ src_install() {
 	dodir /etc/X11/xorg.conf.d
 	insinto /etc/X11/xorg.conf.d
 	if use cmt ; then
-		newins "${FILESDIR}/touchpad.conf-cmt" touchpad.conf
+		newins "${FILESDIR}/touchpad.conf-cmt" 50-touchpad-cmt.conf
 	elif use multitouch ; then
-		newins "${FILESDIR}/touchpad.conf-multitouch" touchpad.conf
+		newins "${FILESDIR}/touchpad.conf-multitouch" 50-touchpad-multitouch.conf
 	elif use synaptics ; then
-		newins "${FILESDIR}/touchpad.conf-synaptics" touchpad.conf
+		newins "${FILESDIR}/touchpad.conf-syntp" 50-touchpad-syntp.conf
 	elif use mario ; then
-		newins "${FILESDIR}/touchpad.conf-mario" touchpad.conf
+		newins "${FILESDIR}/touchpad.conf-mario" 50-touchpad-mario.conf
 	else
-		newins "${FILESDIR}/touchpad.conf" touchpad.conf
+		newins "${FILESDIR}/touchpad.conf" 50-touchpad.conf
 	fi
 	newins "${FILESDIR}/20-mouse.conf" 20-mouse.conf
 }
