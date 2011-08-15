@@ -11,7 +11,8 @@ COMMAND=$1
 VALUE=$2
 
 usage() {
-  echo "Usage: $0 {status|taptoclick [on|off]|sensitivity [1-5]}"
+  echo "Usage:"\
+    "$0 {status|taptoclick [on|off]|sensitivity [1-5]|set <property> <value>}"
 }
 
 find_pad() {
@@ -70,6 +71,11 @@ elif [ $COMMAND = "sensitivity" -a $# = 2 ] ; then
     VALID=1
     ;;
   esac
+elif [ $COMMAND = "set" -a $# = 3 ] ; then
+  PROP=$2
+  VALUE=$3
+  $XINPUT set-prop $DEVICE "${PROP}" "${VALUE}"
+  VALID=1
 fi
 
 if [ $VALID = 0 ] ; then
