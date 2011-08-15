@@ -26,10 +26,12 @@ find_pad
 DEVICE=$?
 VALID=0
 
-if [ $COMMAND = "status" ] ; then
+if [ $# = 0 ] ; then
+  VALID=0
+elif [ $COMMAND = "status" -a $# = 1 ] ; then
   $XINPUT list-props $DEVICE
   VALID=1
-elif [ $COMMAND = "taptoclick" ] ; then
+elif [ $COMMAND = "taptoclick" -a $# = 2 ] ; then
   case $VALUE in
   "on")
     $XINPUT set-prop $DEVICE "Tap Enable" 1
@@ -40,7 +42,7 @@ elif [ $COMMAND = "taptoclick" ] ; then
     VALID=1
     ;;
   esac
-elif [ $COMMAND = "sensitivity" ] ; then
+elif [ $COMMAND = "sensitivity" -a $# = 2 ] ; then
   case $VALUE in
   1)
 #    $XINPUT set-prop $DEVICE "Motion Speed" 10
