@@ -21,12 +21,17 @@ src_install() {
 
 	dodir /etc/X11/xorg.conf.d
 	insinto /etc/X11/xorg.conf.d
+	# Since syntp does not use an evdev (/dev/input/event*) device nodes,
+	# its .conf snippet can be installed alongside one of the evdev-compatible
+	# xf86-input-* touchpad drivers.
+	if use synaptics ; then
+		newins "${FILESDIR}/touchpad.conf-syntp" 50-touchpad-syntp.conf
+	fi
+	# Enable exactly one evdev-compatible X input touchpad driver.
 	if use cmt ; then
 		newins "${FILESDIR}/touchpad.conf-cmt" 50-touchpad-cmt.conf
 	elif use multitouch ; then
 		newins "${FILESDIR}/touchpad.conf-multitouch" 50-touchpad-multitouch.conf
-	elif use synaptics ; then
-		newins "${FILESDIR}/touchpad.conf-syntp" 50-touchpad-syntp.conf
 	elif use mario ; then
 		newins "${FILESDIR}/touchpad.conf-mario" 50-touchpad-mario.conf
 	else
