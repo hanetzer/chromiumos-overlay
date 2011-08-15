@@ -353,6 +353,7 @@ unpack_chrome() {
 		die "Cannot chdir to ${ECHROME_STORE_DIR}"
 
 	elog "Syncing google chrome sources using ${EGCLIENT}"
+	tc-export CC CXX
 	# We use --force to work around a race condition with
 	# checking out cros.git in parallel with the main chrome tree.
 	${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force
