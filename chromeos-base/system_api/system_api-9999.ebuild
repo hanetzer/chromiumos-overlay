@@ -12,8 +12,13 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 
-DEPEND=""
-RDEPEND=""
+# The blocker dependency is added to block libcros-0.0.1-r303 or older,
+# that installs chromeos_wm_ipc_enums.h, to avoid a collision of the file.
+# TODO(satorux): We'll leave this blocker around for at least a month
+# so that people running build_packages don't see warnings. Then, we'll
+# remove this.
+RDEPEND="!<=chromeos-base/libcros-0.0.1-r303"
+DEPEND="${RDEPEND}"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
