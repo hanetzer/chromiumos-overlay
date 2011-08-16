@@ -5,11 +5,13 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86
 BVER=${PV}
 
 # Version names
-BINUTILS_VERSION="binutils-2.20.1-mobile"
-BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg"
+if [[ "${PV}" == "9999" ]] ; then
+	BINUTILS_VERSION="binutils-2.21"
+else
+	BINUTILS_VERSION="${P}"
+fi
 
-GOLD_VERSION="binutils-20100303"
-GOLD_PKG_VERSION="${GOLD_VERSION}_cos_gg"
+BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg"
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
@@ -39,15 +41,13 @@ DEPEND="${RDEPEND}
 	sys-devel/flex"
 
 S_BINUTILS="${WORKDIR}/${BINUTILS_VERSION}"
-S_GOLD="${WORKDIR}/${GOLD_VERSION}"
 
 RESTRICT="fetch strip"
 
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
-MYBUILDDIR_GOLD="${WORKDIR}/build-gold"
 
 GITDIR=${WORKDIR}/gitdir
-GITHASH=dd03ee20829d224e234b5f2253f809250a43bc1f
+GITHASH=47950c2dc71a4e13fa989ba9b28225dedee3ccc8
 
 LIBPATH=/usr/$(get_libdir)/binutils/${CTARGET}/${BVER}
 INCPATH=${LIBPATH}/include
@@ -61,9 +61,8 @@ fi
 src_unpack() {
 	if use mounted_sources ; then
 		BINUTILS_DIR="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
-		GOLD_DIR="/usr/local/toolchain_root/binutils/${GOLD_VERSION}"
-		if [[ ! -d ${BINUTILS_DIR} ]] || [[ ! -d ${GOLD_DIR} ]] ; then
-			die "binutils dirs not mounted at: ${BINUTILS_DIR} and ${GOLD_DIR}"
+		if [[ ! -d ${BINUTILS_DIR} ]] ; then
+			die "binutils dirs not mounted at: ${BINUTILS_DIR}"
 		fi
 	else
 		mkdir ${GITDIR}
@@ -76,30 +75,16 @@ src_unpack() {
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
 		cd -
 		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
-		GOLD_DIR="${GITDIR}/binutils/${GOLD_VERSION}"
 		cd ${BINUTILS_DIR}
 		CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 		cd -
 	fi
 	if [[ ! -z ${CL} ]] ; then
 		BINUTILS_PKG_VERSION="${BINUTILS_PKG_VERSION}_${CL}"
-		GOLD_PKG_VERSION="${GOLD_PKG_VERSION}_${CL}"
 	fi
 	ln -s ${BINUTILS_DIR} ${S_BINUTILS}
-	ln -s ${GOLD_DIR} ${S_GOLD}
-
-	if ! use mounted_sources ; then
-		# Applying patches.
-		PATCH_DIR="${FILESDIR}"/binutils-2.20.1
-		for dir in "${S_BINUTILS}" "${S_GOLD}"; do
-			cd $dir
-			epatch "${PATCH_DIR}"/binutils-2.20.1-gnu-hash.patch
-			cd -
-		done
-	fi
 
 	mkdir -p "${MY_BUILDDIR_BINUTILS}"
-	mkdir -p "${MYBUILDDIR_GOLD}"
 }
 
 
@@ -128,6 +113,7 @@ src_compile() {
 		--libexecdir=${LIBPATH} \
 		--includedir=${INCPATH} \
 		--enable-64-bit-bfd \
+		--enable-gold \
 		--enable-shared \
 		--disable-werror \
 		--enable-secureplt \
@@ -151,20 +137,10 @@ src_compile() {
 	# we nuke the manpages when we're left with junk
 	# (like when we bootstrap, no perl -> no manpages)
 	find . -name '*.1' -a -size 0 | xargs rm -f
-
-	# Build gold
-	cd "${MYBUILDDIR_GOLD}"
-	gold_conf="${myconf} --with-pkgversion=${GOLD_PKG_VERSION} --enable-gold"
-	echo ./configure ${gold_conf}
-	"${S_GOLD}"/configure ${gold_conf} || die "configure gold failed"
-
-	emake all-gold || die "emake gold failed"
 }
 
 src_test() {
 	cd "${MY_BUILDDIR_BINUTILS}"
-	make check || die "check failed :("
-	cd "${MY_BUILDDIR_GOLD}"
 	make check || die "check failed :("
 }
 
@@ -259,28 +235,26 @@ src_install() {
 	# Trim all empty dirs
 	find "${D}" -type d | xargs rmdir >& /dev/null
 
-	LDWRAPPER=ldwrapper.hardened
-
-	# Call GNU ld ld.bfd and gold ld.gold
 	if use hardened && [[ ${CTARGET} != arm* ]] ; then
-		mv "${D}/${BINPATH}/ld" "${D}/${BINPATH}/ld.bfd.real" || die
-		exeinto "${BINPATH}"
-		newexe "${FILESDIR}/${LDWRAPPER}" "ld.bfd" || die
+		LDWRAPPER=ldwrapper.hardened
 	else
-		mv "${D}/${BINPATH}/ld" "${D}/${BINPATH}/ld.bfd" || die
+		LDWRAPPER=ldwrapper
 	fi
 
-	# Install gold
-	cd "${MYBUILDDIR_GOLD}"
-	emake DESTDIR="${D}" tooldir="${LIBPATH}" install-gold || die
+	mv "${D}/${BINPATH}/ld.bfd" "${D}/${BINPATH}/ld.bfd.real" || die
+	exeinto "${BINPATH}"
+	newexe "${FILESDIR}/${LDWRAPPER}" "ld.bfd" || die
 
-	if use hardened && [[ ${CTARGET} != arm* ]] ; then
-		mv "${D}/${BINPATH}/${CTARGET}-ld" "${D}/${BINPATH}/ld.gold.real" || die
+	if [[ "${BINUTILS_VERSION}" == "binutils-2.21" ]] ; then
+		ASWRAPPER=aswrapper
+		mv "${D}/${BINPATH}/as" "${D}/${BINPATH}/as.real" || die
 		exeinto "${BINPATH}"
-		newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
-	else
-		mv "${D}/${BINPATH}/${CTARGET}-ld" "${D}/${BINPATH}/ld.gold" || die
+		newexe "${FILESDIR}/${ASWRAPPER}" "as" || die
 	fi
+
+	mv "${D}/${BINPATH}/ld.gold" "${D}/${BINPATH}/ld.gold.real" || die
+	exeinto "${BINPATH}"
+	newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
 
 	# Set default to be ld.bfd in regular installation
 	dosym ld.bfd "${BINPATH}/ld"
