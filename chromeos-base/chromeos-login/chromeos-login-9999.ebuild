@@ -29,6 +29,7 @@ DEPEND="${RDEPEND}
 	>=chromeos-base/libchrome-85268
 	chromeos-base/libchrome_crypto
 	chromeos-base/libcros
+	chromeos-base/system_api
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 

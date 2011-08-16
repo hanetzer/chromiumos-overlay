@@ -17,6 +17,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
+	chromeos-base/system_api
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libxml2

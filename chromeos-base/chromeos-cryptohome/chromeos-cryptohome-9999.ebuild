@@ -29,6 +29,7 @@ DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
+	chromeos-base/system_api
 	${RDEPEND}"
 
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
