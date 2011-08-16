@@ -80,6 +80,7 @@ IUSE_TESTS="
 	+tests_netperf2
 	+tests_netpipe
 	+tests_scrashme
+	+tests_sound_infrastructure
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_FFMPEG
