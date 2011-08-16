@@ -32,7 +32,7 @@ RDEPEND="chromeos-base/metrics
 	opengles? ( virtual/opengles )"
 DEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
-	chromeos-base/libcros
+	chromeos-base/system_api
 	dev-libs/vectormath
 	${RDEPEND}"
 # This is a temporary measure -- files are being moved from this package to the
