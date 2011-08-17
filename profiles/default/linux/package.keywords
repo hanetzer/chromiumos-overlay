@@ -64,3 +64,5 @@
 
 # Unmask 2.6.38 headers in the chroot similar to the targets
 =sys-kernel/linux-headers-2.6.38	amd64 arm x86
+
+=sys-fs/squashfs-tools-4.2  amd64 x86
