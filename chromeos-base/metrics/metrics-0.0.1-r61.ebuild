@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ed7daa4cbc53dd559127b976cb93ad57577942cd"
+CROS_WORKON_COMMIT="85a07ef083ad226714c0391eb1c688935777ab72"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
 
 inherit cros-debug cros-workon flag-o-matic
@@ -63,4 +63,6 @@ src_install() {
 	doins c_metrics_library.h || die
 	doins metrics_library.h || die
 	doins metrics_library_mock.h || die
+	doins timer.h || die
+	doins timer_mock.h || die
 }
