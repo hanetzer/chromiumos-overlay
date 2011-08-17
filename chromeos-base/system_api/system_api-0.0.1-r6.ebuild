@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="45f2113018be863501e582d9e9e4045e154ee6ae"
+CROS_WORKON_COMMIT="f9f1a177e4cfef30dd4e936e0c19a2a4e5a78227"
 CROS_WORKON_PROJECT="chromiumos/platform/system_api"
 
 inherit cros-workon toolchain-funcs
@@ -18,7 +18,12 @@ KEYWORDS="amd64 arm x86"
 # TODO(satorux): We'll leave this blocker around for at least a month
 # so that people running build_packages don't see warnings. Then, we'll
 # remove this.
-RDEPEND="!<=chromeos-base/libcros-0.0.1-r303"
+#
+# Likewise, block libchromeos-0.0.1-r78 or older, that installs
+# dbus/service_constants.h. TODO(satorux): Remove this after a month.
+RDEPEND="!<=chromeos-base/libcros-0.0.1-r303
+	!<=chromeos-base/libchromeos-0.0.1-r78"
+
 DEPEND="${RDEPEND}"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
@@ -26,4 +31,7 @@ CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 src_install() {
 	insinto /usr/include/cros
 	doins window_manager/chromeos_wm_ipc_enums.h
+
+	insinto /usr/include/chromeos/dbus
+	doins dbus/service_constants.h
 }

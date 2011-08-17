@@ -29,6 +29,7 @@ RDEPEND="chromeos-base/libchrome
 "
 
 DEPEND="${RDEPEND}
+	chromeos-base/system_api
 	net-misc/modemmanager"
 
 use install_tests && MAKE_FLAGS="INSTALL_TESTS=1"

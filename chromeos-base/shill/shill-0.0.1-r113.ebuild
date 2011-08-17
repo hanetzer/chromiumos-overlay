@@ -20,6 +20,7 @@ RDEPEND="dev-libs/dbus-c++
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
+	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 	net-misc/modemmanager"

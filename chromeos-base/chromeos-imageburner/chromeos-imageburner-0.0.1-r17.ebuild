@@ -24,6 +24,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
+	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 
