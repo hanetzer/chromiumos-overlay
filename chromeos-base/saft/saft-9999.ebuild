@@ -14,8 +14,8 @@ SLOT="0"
 KEYWORDS="~x86"
 IUSE=""
 
-DEPEND="x86? ( chromeos-base/vboot_reference
-               >=chromeos-base/chromeos-firmware-0.0.1-r27 )"
+DEPEND="chromeos-base/vboot_reference
+        virtual/chromeos-firmware"
 
 src_install() {
     dstdir="/usr/sbin/firmware/saft"
