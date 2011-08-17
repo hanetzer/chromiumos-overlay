@@ -47,18 +47,18 @@ src_compile() {
 
 	# Sanity check for load.cc. Detect missing INIT_FUNC() calls.
 	python "${FILESDIR}"/check_load_cc.py < load.cc || \
-	       die "INIT_FUNC(s) are missing from load.cc."
+		die "INIT_FUNC(s) are missing from load.cc."
 
 	scons -f SConstruct.chromiumos || die "cros compile failed."
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
 	scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
 	scons -f SConstruct.chromiumos libcros_service_test || \
-            die "libcros_service_test compile failed."
-        if use install_tests; then
-	  scons -f SConstruct.chromiumos test || \
-            die "cros tests compile failed."
-        fi
+		die "libcros_service_test compile failed."
+	if use install_tests; then
+		scons -f SConstruct.chromiumos test || \
+			die "cros tests compile failed."
+	fi
 }
 
 src_test() {
@@ -87,24 +87,24 @@ src_install() {
 	insinto /opt/google/chrome/chromeos
 	insopts -m0755
 	doins "${S}/libcros.so"
-        if use install_tests; then
-	  doins "${S}/cryptohome_drive"
-	  doins "${S}/libcros_service_tester"
-	  doins "${S}/monitor_mount"
-	  doins "${S}/monitor_network"
-	  doins "${S}/monitor_power"
-	  doins "${S}/monitor_sms"
-	  doins "${S}/monitor_update_engine"
-        fi
+	if use install_tests; then
+		doins "${S}/cryptohome_drive"
+		doins "${S}/libcros_service_tester"
+		doins "${S}/monitor_mount"
+		doins "${S}/monitor_network"
+		doins "${S}/monitor_power"
+		doins "${S}/monitor_sms"
+		doins "${S}/monitor_update_engine"
+	fi
 
 	insinto /opt/google/touchpad
-	doins ${FILESDIR}/tpcontrol_synclient
-	doins ${FILESDIR}/tpcontrol
-	doins ${FILESDIR}/tpcontrol_xinput
+	doins "${FILESDIR}"/tpcontrol_synclient
+	doins "${FILESDIR}"/tpcontrol
+	doins "${FILESDIR}"/tpcontrol_xinput
 
-        insinto /etc/dbus-1/system.d
+	insinto /etc/dbus-1/system.d
 	doins "${S}/LibCrosService.conf"
 
-        insinto /usr/share/dbus-1/services
+	insinto /usr/share/dbus-1/services
 	doins "${S}/org.chromium.LibCrosService"
 }
