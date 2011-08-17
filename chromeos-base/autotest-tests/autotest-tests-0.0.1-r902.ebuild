@@ -270,6 +270,7 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
+	+tests_security_Minijail0
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
