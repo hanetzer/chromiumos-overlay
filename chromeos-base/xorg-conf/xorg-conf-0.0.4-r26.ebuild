@@ -11,7 +11,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="synaptics multitouch mario cmt"
+IUSE="synaptics multitouch mario cmt elan"
 
 RDEPEND=""
 
@@ -29,7 +29,11 @@ src_install() {
 	fi
 	# Enable exactly one evdev-compatible X input touchpad driver.
 	if use cmt ; then
-		newins "${FILESDIR}/touchpad.conf-cmt" 50-touchpad-cmt.conf
+		if use elan ; then
+			newins "${FILESDIR}/touchpad.conf-cmt-elan" 50-touchpad-cmt.conf
+		else
+			newins "${FILESDIR}/touchpad.conf-cmt" 50-touchpad-cmt.conf
+		fi
 	elif use multitouch ; then
 		newins "${FILESDIR}/touchpad.conf-multitouch" 50-touchpad-multitouch.conf
 	elif use mario ; then
