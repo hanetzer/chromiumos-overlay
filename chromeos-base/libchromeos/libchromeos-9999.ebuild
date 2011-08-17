@@ -65,9 +65,7 @@ src_install() {
 	doins "${S}"/chromeos/*.h
 
 	insinto "/usr/include/chromeos/dbus"
-	# TODO(satorux): Remove the grep -v hack once service_constants.h
-	# is removed from libchromeos.
-	doins $(ls "${S}"/chromeos/dbus/*.h | grep -v service_constants.h)
+	doins "${S}"/chromeos/dbus/*.h
 
 	insinto "/usr/include/chromeos/glib"
 	doins "${S}"/chromeos/glib/*.h
