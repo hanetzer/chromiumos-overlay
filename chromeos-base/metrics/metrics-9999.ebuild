@@ -62,4 +62,6 @@ src_install() {
 	doins c_metrics_library.h || die
 	doins metrics_library.h || die
 	doins metrics_library_mock.h || die
+	doins timer.h || die
+	doins timer_mock.h || die
 }
