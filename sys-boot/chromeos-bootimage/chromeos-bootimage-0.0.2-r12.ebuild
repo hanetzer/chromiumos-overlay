@@ -17,13 +17,16 @@ IUSE=""
 # sys-boot/chromeos-bootimage-seaboard) will do the depending on
 # sys-boot/tegra2-public-firmware-fdts.  For now we'll hardcode it.
 DEPEND="
+	!sys-boot/chromeos-bios
 	arm? (
-			!sys-boot/chromeos-bios
 			virtual/tegra-bct
 			virtual/u-boot
 			sys-boot/tegra2-public-firmware-fdts
 	     )
-	x86? ( sys-boot/chromeos-coreboot )
+	x86? (
+			sys-boot/chromeos-coreboot
+			sys-boot/x86-firmware-fdts
+		 )
 	chromeos-base/vboot_reference
 	"
 
@@ -64,19 +67,18 @@ CROS_FIRMWARE_DEVKEYS="${ROOT%/}/usr/share/vboot/devkeys"
 CROS_FIRMWARE_BMPBLK="${FILESDIR}/default.bmpblk"
 
 src_compile() {
-	# TODO(clchiou) fix x86 build later
-	if use x86; then
-		touch image.bin
-		touch legacy_image.bin
-		return
-	fi
-
-	local BUNDLE_FLAGS=''
+	local SECURE_FLAGS=''
+	local COMMON_FLAGS=''
 	if ! use cros-debug; then
-		BUNDLE_FLAGS+=' --add-config-int silent_console 1'
+		SECURE_FLAGS+=' --add-config-int silent_console 1'
+	fi
+	if use x86; then
+		COMMON_FLAGS+=" --coreboot \
+			${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/coreboot.rom"
 	fi
 
 	cros_bundle_firmware \
+		${COMMON_FLAGS} \
 		--bct "${CROS_FIRMWARE_BCT}" \
 		--uboot "${CROS_FIRMWARE_IMAGE}" \
 		--dt "${CROS_FIRMWARE_DTB}" \
@@ -84,13 +86,14 @@ src_compile() {
 		--bmpblk "${CROS_FIRMWARE_BMPBLK}" \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
-		${BUNDLE_FLAGS} \
+		${SECURE_FLAGS} \
 		--outdir normal \
 		--output image.bin ||
 	die "failed to build image."
 
 	# make legacy image
 	cros_bundle_firmware \
+		${COMMON_FLAGS} \
 		--bct "${CROS_FIRMWARE_BCT}" \
 		--uboot "${CROS_FIRMWARE_IMAGE}" \
 		--dt "${CROS_FIRMWARE_DTB}" \
