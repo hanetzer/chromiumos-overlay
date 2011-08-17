@@ -33,9 +33,9 @@ src_install() {
 	elif use multitouch ; then
 		newins "${FILESDIR}/touchpad.conf-multitouch" 50-touchpad-multitouch.conf
 	elif use mario ; then
-		newins "${FILESDIR}/touchpad.conf-mario" 50-touchpad-mario.conf
+		newins "${FILESDIR}/touchpad.conf-synaptics-mario" 50-touchpad-synaptics.conf
 	else
-		newins "${FILESDIR}/touchpad.conf" 50-touchpad.conf
+		newins "${FILESDIR}/touchpad.conf-synaptics" 50-touchpad-synaptics.conf
 	fi
 	newins "${FILESDIR}/20-mouse.conf" 20-mouse.conf
 }
