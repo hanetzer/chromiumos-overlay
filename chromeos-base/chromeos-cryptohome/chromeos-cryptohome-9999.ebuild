@@ -16,6 +16,7 @@ IUSE="test"
 RDEPEND="
 	app-crypt/trousers
 	chromeos-base/libscrypt
+	chromeos-base/metrics
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
