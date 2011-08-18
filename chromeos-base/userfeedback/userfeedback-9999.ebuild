@@ -14,9 +14,15 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND=""
+RDEPEND="chromeos-base/modem-utilities
+	chromeos-base/vboot_reference
+	media-libs/fontconfig
+	sys-apps/net-tools
+	sys-apps/pciutils
+	sys-apps/usbutils
+	x11-apps/setxkbmap"
 
-DEPEND="${RDEPEND}"
+DEPEND=""
 
 src_install() {
 	exeinto /usr/share/userfeedback/scripts
