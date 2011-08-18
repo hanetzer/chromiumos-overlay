@@ -31,7 +31,6 @@ RDEPEND="chromeos-base/metrics
 	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )"
 DEPEND="chromeos-base/libchrome
-	chromeos-base/libchromeos
 	chromeos-base/system_api
 	dev-libs/vectormath
 	${RDEPEND}"
