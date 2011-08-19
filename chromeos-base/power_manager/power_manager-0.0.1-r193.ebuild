@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d53180d9bef2766ff7903188e7d6656536ea9d5b"
+CROS_WORKON_COMMIT="d96abb22803850a4c1c6accf2eb6974a87ed0ded"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
 inherit cros-debug cros-workon toolchain-funcs

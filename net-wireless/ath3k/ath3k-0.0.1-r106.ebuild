@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="0b056069300072c35f9c6795a9a48e27bcafe82d"
+CROS_WORKON_COMMIT="4d592fe48677d5097365c91d51c0b7d4e4895be6"
 CROS_WORKON_PROJECT="chromiumos/third_party/atheros"
 
 inherit cros-workon
