@@ -5,6 +5,7 @@
 
 SYNCLIENT=/usr/bin/synclient
 
+PROG=`basename $0`
 COMMAND=$1
 VALUE=$2
 
@@ -13,24 +14,24 @@ echo_setting() {
 }
 
 usage() {
-  echo "Usage: $0 {status|taptoclick [on|off]|sensitivity [1-5]}"
+  echo "Usage: $PROG {status|taptoclick [on|off]|sensitivity [1-5]}"
 }
 
 VALID=0
 
-if [ $COMMAND = "status" ] ; then
+if [ "$COMMAND" = "status" ] ; then
   $SYNCLIENT -l
   VALID=1
-elif [ $COMMAND = "taptoclick" ] ; then
-  if [ $VALUE = "on" ] ; then
+elif [ "$COMMAND" = "taptoclick" ] ; then
+  if [ "$VALUE" = "on" ] ; then
     $SYNCLIENT "MaxTapTime=180"
     VALID=1
-  elif [ $VALUE = "off" ] ; then
+  elif [ "$VALUE" = "off" ] ; then
     $SYNCLIENT "MaxTapTime=0"
     VALID=1
   fi
-elif [ $COMMAND = "sensitivity" ] ; then
-  case $VALUE in
+elif [ "$COMMAND" = "sensitivity" ] ; then
+  case "$VALUE" in
   1)
     $SYNCLIENT "MinSpeed=0.5"
     $SYNCLIENT "MaxSpeed=1.0"

@@ -3,16 +3,69 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+VALID=1
+SYN_DISABLE="/home/chronos/.tp_disable"
+RAW_CMD="$@"
+PROG=`basename $0`
+COMMAND=$1
+VALUE=$2
+
+# Global verbs usage message
+gusage() {
+  echo "Usage: $PROG {syntp [on|off]}"
+}
+
+# Global verbs here
+# Note: "status" is special, since we want ot add our status to the end
+# of the other commands status
+if [ "$COMMAND" = "syntp" ] ; then
+  if [ "$VALUE" = "off" ] ; then
+    /usr/bin/touch "$SYN_DISABLE"
+    exit 0
+  elif [ "$VALUE" = "on" ] ; then
+    /bin/rm -f "$SYN_DISABLE"
+    exit 0
+  else
+    # bad command; force usage via pseudo-command (ntimp) "usage"
+    gusage
+    CMD="usage"
+  fi
+fi
+
+# Fall through to handle other commands; we source the script so it can
+# tell us whether or not it's valid by picking up the 'VALID' environment
+# variable.
+
 # Configure using tpcontrol_syncontrol if it exists, and there is a
-# /dev/serio_raw* char device for syntp to use.
+# /dev/serio_raw* char device for syntp to use. This lets the code work
+# after a switch but before a restart of the ui.
 if [ -x /opt/Synaptics/bin/tpcontrol_syncontrol -a \
      -n "$(find /dev -maxdepth 1 -type c -name 'serio_raw*' -print -quit)" ]; \
    then
-  exec /opt/Synaptics/bin/tpcontrol_syncontrol "$@"
+  . /opt/Synaptics/bin/tpcontrol_syncontrol "$CMD"
 elif [ -x /usr/bin/xinput ] ; then
   # TODO(djkurtz): This is fragile, for now it works because xinput is only
   # installed in /usr/bin/ if cmt USE flag is set when building libcros.
-  exec /opt/google/touchpad/tpcontrol_xinput "$@"
+  . /opt/google/touchpad/tpcontrol_xinput "$CMD"
 else
-  exec /opt/google/touchpad/tpcontrol_synclient "$@"
+  . /opt/google/touchpad/tpcontrol_synclient "$CMD"
 fi
+
+# Append global verb status results
+if [ "$COMMAND" = "status" ] ; then
+  if [ -f "$SYN_DISABLE" ]; then
+    echo "syntp: off"
+  else
+    echo "syntp: on"
+  fi
+fi
+
+# give a nice exit status
+if [ "x$VALID" = "x1" ] ; then
+  exit 0
+fi
+
+# for invalid input, append our usage to that of the other command
+gusage
+
+exit 1

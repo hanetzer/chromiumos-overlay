@@ -5,12 +5,14 @@
 
 XINPUT=/usr/bin/xinput
 
+PROG=`basename $0`
 COMMAND=$1
 VALUE=$2
 
 usage() {
   echo "Usage:"\
-    "$0 {status|taptoclick [on|off]|sensitivity [1-5]|set <property> <value>}"
+    "$PROG {status|taptoclick [on|off]|sensitivity [1-5]|"\
+    "set <property> <value>}"
 }
 
 find_pad() {
