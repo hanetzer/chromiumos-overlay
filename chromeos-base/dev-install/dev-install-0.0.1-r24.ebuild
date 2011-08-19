@@ -29,7 +29,7 @@ DEPEND="app-arch/tar
 # TODO(arkaitzr): remove dependency on tar if it's gonna be removed from the
 # base image. Also modify dev_install.
 RDEPEND="app-arch/tar
-	net-misc/wget
+	net-misc/curl
 	sys-apps/coreutils"
 
 CROS_WORKON_LOCALNAME="dev"
