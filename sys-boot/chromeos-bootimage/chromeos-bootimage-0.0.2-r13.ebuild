@@ -54,7 +54,7 @@ CROS_FIRMWARE_BCT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
 # TODO(dianders): remove looking at PKG_CONFIG once
 # virtual/chromeos-bootimage is complete.
 CROS_FIRMWARE_DTB="$(echo "${PKG_CONFIG#pkg-config-}.dtb" | tr _ '-')"
-CROS_FIRMWARE_DTB="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/dtb/${CROS_FIRMWARE_DTB}"
+CROS_FIRMWARE_DTB="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/dtb/${CROS_FIRMWARE_DTB#x86-}"
 
 # We only have a single U-Boot, and it is called u-boot.bin
 CROS_FIRMWARE_IMAGE="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/u-boot.bin"
