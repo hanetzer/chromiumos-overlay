@@ -47,6 +47,7 @@ src_prepare() {
 	# TODO(crosbug.com/14440): Uprev opencryptoki to remove this
 	# patch.
 	epatch "${FILESDIR}/opencryptoki-2.2.8-nssconstfix.patch"
+	epatch "${FILESDIR}/opencryptoki-2.2.8-no_rootkey_backup.patch"
 	eautoreconf
 }
 
