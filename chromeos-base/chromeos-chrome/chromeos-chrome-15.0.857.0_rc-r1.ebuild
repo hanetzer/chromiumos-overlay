@@ -160,10 +160,11 @@ AUTOTEST_DEPS_LIST="chrome_test pyauto_dep"
 
 IUSE_TESTS="
 	+tests_desktopui_BrowserTest
-	+tests_desktopui_SyncIntegrationTests
-	+tests_desktopui_UITest
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoLoginTests
+	+tests_desktopui_PyAutoPerfTests
+	+tests_desktopui_SyncIntegrationTests
+	+tests_desktopui_UITest
 	+tests_network_PyAutoConnectivityTests
 	"
 IUSE="${IUSE} +autotest ${IUSE_TESTS}"
@@ -366,11 +367,11 @@ src_unpack() {
 	export DEPOT_TOOLS_UPDATE=0
 
 	case "${CHROME_ORIGIN}" in
-	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY)
+	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY|GERRIT_SOURCE)
 		elog "CHROME_ORIGIN VALUE is ${CHROME_ORIGIN}"
 		;;
 	*)
-	die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE, LOCAL_BINARY"
+	die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE, LOCAL_BINARY, GERRIT_SOURCE"
 		;;
 	esac
 
@@ -420,11 +421,26 @@ src_unpack() {
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
 		export CHROME_ROOT=${ECHROME_STORE_DIR}
-
-		set_build_defines
+		;;
+	(GERRIT_SOURCE)
+		export CHROME_ROOT="/home/$(whoami)/trunk/chromium"
+		addwrite "${CHROME_ROOT}"
+		# Make the symlink to <repo_root>/src/platform/cros writeable,
+		# so that when we run hooks, gyp_chromium can generate makefiles.
+		# We need to explicitly do this because the symlink points to
+		# outside of the CHROME_ROOT.
+		# The symlink is created by chrome_set_ver to simulate the
+		# cros_deps checkout gclient does.  For details, see
+		# http://gerrit.chromium.org/gerrit/#change,5692.
+		addwrite "${CHROME_ROOT}/src/third_party/cros"
 		;;
 	(LOCAL_SOURCE)
 		addwrite "${CHROME_ROOT}"
+		;;
+	esac
+
+	case "${CHROME_ORIGIN}" in
+	LOCAL_SOURCE|SERVER_SOURCE|GERRIT_SOURCE)
 		set_build_defines
 		;;
 	esac
@@ -436,7 +452,8 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
+	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]] && \
+	   [[ "$CHROME_ORIGIN" != "GERRIT_SOURCE" ]]; then
 		return
 	fi
 
@@ -457,11 +474,18 @@ src_prepare() {
 		fi
 	fi
 
-	test -n "${EGCLIENT}" || die EGCLIENT unset
+	# The hooks may depend on the environment variables we set in this ebuild
+	# (i.e., GYP_DEFINES for gyp_chromium)
+	if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
+		# Set the dependency repos to the revision specified in the
+		# .DEPS.git file, and run the hooks in that file.
+		"${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver.py}" --runhooks || die
+	else
+		test -n "${EGCLIENT}" || die EGCLIENT unset
+		[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
+		${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
+	fi
 
-	[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
-
-	${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 }
 
 src_configure() {
@@ -488,7 +512,8 @@ strip_optimization_flags() {
 }
 
 src_compile() {
-	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]]; then
+	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]] && \
+	   [[ "$CHROME_ORIGIN" != "GERRIT_SOURCE" ]]; then
 		return
 	fi
 
@@ -758,7 +783,8 @@ src_install() {
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
-		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]]); then
+		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]] || \
+		 [[ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]]); then
 		autotest_src_install
 	fi
 
