@@ -15,9 +15,11 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="chromeos-base/modem-utilities
+RDEPEND="chromeos-base/chromeos-init
+	chromeos-base/modem-utilities
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
+	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pciutils
 	sys-apps/usbutils
@@ -31,4 +33,7 @@ src_install() {
 
 	insinto /usr/share/userfeedback/etc
 	doins etc/* || die "Could not copy etc"
+
+        insinto /etc/init
+        doins init/* || die "Could not copy init"
 }
