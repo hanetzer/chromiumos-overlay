@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="36b7ad3d9ad726546ee26c67948479fc45785a8c"
+CROS_WORKON_COMMIT="ae4c0988b09937879bbaee8c0bf403627a3bec40"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r335"
@@ -24,6 +24,7 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
+  chromeos-base/autotest-deps-audioloop
   chromeos-base/autotest-deps-glbench
   chromeos-base/autotest-private-board
   chromeos-base/flimflam
@@ -40,6 +41,7 @@ IUSE_TESTS="
 	+tests_dummy_Fail
 	+tests_dummy_Pass
 	+tests_factory_Audio
+	+tests_factory_AudioInternalLoopback
 	+tests_factory_Camera
 	+tests_factory_DeveloperRecovery
 	+tests_factory_Display
