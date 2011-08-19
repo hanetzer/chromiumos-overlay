@@ -96,6 +96,23 @@ RDEPEND="${RDEPEND}
 	>=x11-misc/util-macros-1.2
 	"
 
+# Host dependencies for building chromium.
+# Intermediate executables built for the host, then run to generate data baked
+# into chromium, need these packages to be present in the host environment in
+# order to successfully build.
+# See: http://codereview.chromium.org/7550002/
+RDEPEND="${RDEPEND}
+	dev-libs/atk
+	dev-libs/glib
+	media-libs/fontconfig
+	media-libs/freetype
+	x11-libs/cairo
+	x11-libs/libX11
+	x11-libs/libXi
+	x11-libs/libXtst
+	x11-libs/pango
+	"
+
 # Host dependencies that create usernames/groups we need to pull over to target.
 RDEPEND="${RDEPEND}
 	sys-apps/dbus
