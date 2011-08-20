@@ -74,7 +74,7 @@ else
 fi
 MY_P=${PN}-${GCC_PV}
 GITDIR=${WORKDIR}/gitdir
-GITHASH=gcc.gnu.org/branches/google/gcc-4_6
+GITHASH=a6bd0f14f3fc6d1865430a8a72c2811d4b29ed84
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -199,6 +199,14 @@ EOF
 			dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
 		fi
 	done
+
+	if use tests
+	then
+		TEST_INSTALL_DIR="usr/local/dejagnu/gcc"
+		dodir ${TEST_INSTALL_DIR}
+		cd ${D}/${TEST_INSTALL_DIR}
+		tar -czf "tests.tar.gz" ${WORKDIR}
+	fi
 }
 
 pkg_postinst()
