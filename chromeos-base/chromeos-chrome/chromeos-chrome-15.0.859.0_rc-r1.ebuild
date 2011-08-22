@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
@@ -102,7 +102,7 @@ fi
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 enable_webrtc=0 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
