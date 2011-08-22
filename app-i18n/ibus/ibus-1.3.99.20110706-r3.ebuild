@@ -55,6 +55,8 @@ src_prepare() {
 
         # TODO remove this patch with a new upstream tarball
         epatch "${FILESDIR}"/0001-Always-enable-the-new-focused-BusInputContext.patch
+        epatch "${FILESDIR}"/0001-Fix-for-ibus_serializable_-get-set-_attachment.patch
+        epatch "${FILESDIR}"/0002-Use-GVariant-as-attachment-for-IBusSerializable.patch
 }
 
 src_configure() {
