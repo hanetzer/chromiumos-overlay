@@ -57,6 +57,7 @@ RDEPEND="${RDEPEND}
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
+	net-wireless/hostapd
 	bluetooth? ( net-wireless/bluez )
 	sys-apps/coreutils
 	sys-apps/findutils
