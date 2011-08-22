@@ -103,10 +103,28 @@ src_compile() {
 		--outdir legacy \
 		--output legacy_image.bin ||
 	die "failed to build legacy image."
+
+	if use x86; then
+		local SKELETON="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/skeleton.bin"
+		local IFDTOOL="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/ifdtool"
+		if [ -r ${SKELETON} ]; then
+			cp ${SKELETON} image.ifd
+			${IFDTOOL} -i BIOS:image.bin image.ifd
+			cp ${SKELETON} legacy_image.ifd
+			${IFDTOOL} -i BIOS:legacy_image.bin legacy_image.ifd
+		fi
+	fi
 }
 
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	doins image.bin || die
 	doins legacy_image.bin || die
+	if use x86; then
+		local SKELETON="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/skeleton.bin"
+		if [ -r ${SKELETON} ]; then
+			newins image.ifd.new image.ifd || die
+			newins legacy_image.ifd.new legacy_image.ifd || die
+		fi
+	fi
 }
