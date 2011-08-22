@@ -128,6 +128,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/7.11-i965-fix-indexbuf.patch
 	epatch "${FILESDIR}"/7.11-fragcoord.patch
+	epatch "${FILESDIR}"/7.11-i915-scissor.patch
 
 	eautoreconf
 }
