@@ -29,7 +29,7 @@ src_compile() {
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tools
-        emake || die
+	emake || die
 	scons minijail || die "minijail compile failed."
 }
 
@@ -50,7 +50,10 @@ src_test() {
 }
 
 src_install() {
-        into /
-        dosbin minijail{,0} || die
+	into /
+	dosbin minijail{,0} || die
+	dolib.so libminijail.so || die
 	dolib.so libminijailpreload.so || die
+	insinto /usr/include/chromeos
+	doins libminijail.h || die
 }
