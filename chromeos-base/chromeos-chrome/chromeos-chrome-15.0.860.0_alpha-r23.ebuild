@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="97804"
+CROS_SVN_COMMIT="97815"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -425,15 +425,26 @@ src_unpack() {
 		;;
 	(GERRIT_SOURCE)
 		export CHROME_ROOT="/home/$(whoami)/trunk/chromium"
+		# TODO(rcui): Remove all these addwrite hacks once we start
+		# building off a copy of the source
 		addwrite "${CHROME_ROOT}"
-		# Make the symlink to <repo_root>/src/platform/cros writeable,
-		# so that when we run hooks, gyp_chromium can generate makefiles.
-		# We need to explicitly do this because the symlink points to
+		# Addwrite to .repo because each project's .git directory links
+	        # to the .repo directory.
+		addwrite "/home/$(whoami)/trunk/.repo/"
+		# - Make the symlinks from chromium src tree to CrOS source tree
+		# writeable so we can run hooks and reset the checkout.
+		# - We need to explicitly do this because the symlink points to
 		# outside of the CHROME_ROOT.
-		# The symlink is created by chrome_set_ver to simulate the
-		# cros_deps checkout gclient does.  For details, see
-		# http://gerrit.chromium.org/gerrit/#change,5692.
-		addwrite "${CHROME_ROOT}/src/third_party/cros"
+		# - We don't know which one is a symlink so do it for
+		#   all files/directories in src/third_party
+		# - chrome_set_ver creates symlinks in src/third_party to simulate
+		#   the cros_deps checkout gclient does.  For details, see
+		#   http://gerrit.chromium.org/gerrit/#change,5692.
+		THIRD_PARTY_DIR="${CHROME_ROOT}/src/third_party"
+		for f in `ls -1 ${THIRD_PARTY_DIR}`
+		do
+			addwrite "${THIRD_PARTY_DIR}/${f}"
+		done
 		;;
 	(LOCAL_SOURCE)
 		addwrite "${CHROME_ROOT}"
