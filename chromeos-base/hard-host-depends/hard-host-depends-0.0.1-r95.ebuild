@@ -72,14 +72,10 @@ RDEPEND="${RDEPEND}
 	dev-util/gob
 	dev-util/gperf
 	dev-util/hdctools
-	dev-util/quilt
 	dev-util/subversion[-dso]
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.30
 	dev-util/scons
-	gnome-base/gconf
-	gnome-base/gnome-common
-	=gnome-base/orbit-2.14.17
 	>=media-libs/freetype-2.2.1
 	media-libs/mesa
 	sys-apps/gsutil
@@ -130,7 +126,6 @@ RDEPEND="${RDEPEND}
 	app-editors/qemacs
 	app-editors/vim
 	dev-util/perf
-	sys-apps/ack
 	sys-apps/pv
 	"
 
