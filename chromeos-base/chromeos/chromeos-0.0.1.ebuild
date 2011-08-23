@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +localssh modemmanager X bootchart touchui"
+IUSE="bluetooth +localssh X bootchart touchui"
 
 
 ################################################################################
@@ -178,10 +178,8 @@ RDEPEND="${RDEPEND}
 	media-sound/alsa-utils
 	net-firewall/iptables
 	net-misc/htpdate
+	net-misc/modemmanager
 	net-misc/tor
-	modemmanager? (
-		net-misc/modemmanager
-	)
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
