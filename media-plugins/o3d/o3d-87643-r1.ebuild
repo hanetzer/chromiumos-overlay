@@ -48,6 +48,7 @@ src_prepare() {
 	fi
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
 	epatch ${FILESDIR}/${P}-pkgconfig.patch || die
+	epatch ${FILESDIR}/${P}-disable-gconf.patch || die
 	${EGCLIENT} runhooks || die
 }
 
