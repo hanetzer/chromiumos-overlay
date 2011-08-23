@@ -767,6 +767,11 @@ src_install() {
 		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
 	fi
 
+	# add NaCl binaries
+	if [ "$ARCH" = "x86" ]; then
+		doexe "${FROM}"/libppGoogleNaClPluginChrome.so
+	fi
+
 	insinto "${CHROME_DIR}"
 	doins "${FROM}"/chrome-wrapper
 	doins "${FROM}"/chrome.pak
@@ -776,6 +781,11 @@ src_install() {
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
+
+	# add NaCl binaries
+	if [ "$ARCH" = "x86" ]; then
+		doins "${FROM}"/nacl_irt_x86_32.nexe
+	fi
 
 	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
 	# libcros compatibility.
