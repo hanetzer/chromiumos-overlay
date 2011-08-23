@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="97883"
+CROS_SVN_COMMIT="97895"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -429,7 +429,7 @@ src_unpack() {
 		# building off a copy of the source
 		addwrite "${CHROME_ROOT}"
 		# Addwrite to .repo because each project's .git directory links
-	        # to the .repo directory.
+		# to the .repo directory.
 		addwrite "/home/$(whoami)/trunk/.repo/"
 		# - Make the symlinks from chromium src tree to CrOS source tree
 		# writeable so we can run hooks and reset the checkout.
