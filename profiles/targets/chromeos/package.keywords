@@ -90,6 +90,7 @@
 =x11-libs/libdrm-2.4.24         amd64 arm x86
 =sys-libs/libhx-3.1		amd64 arm x86
 =sys-libs/zlib-1.2.5-r2		amd64 arm x86
+=sys-power/powertop-1.98		amd64 arm x86
 =x11-apps/xinput_calibrator-0.7.5	arm
 =x11-libs/gtk+-2.18.7-r3	amd64 arm x86
 =x11-libs/pixman-0.17.2		amd64 arm x86
