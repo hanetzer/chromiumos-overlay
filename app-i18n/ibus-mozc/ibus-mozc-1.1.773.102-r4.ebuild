@@ -21,6 +21,7 @@ src_prepare() {
   cd "mozc-${PV}" || die
   epatch "${FILESDIR}"/version_number.patch || die
   epatch "${FILESDIR}"/pkg_config.patch || die
+  epatch "${FILESDIR}"/infolist.patch || die
 }
 
 src_configure() {
