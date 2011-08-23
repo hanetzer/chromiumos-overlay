@@ -97,10 +97,6 @@ glibc_do_configure() {
 	cd "${GBUILDDIR}"
 	echo "${S}"/configure ${myconf}
 	"${S}"/configure ${myconf} || die "failed to configure glibc"
-
-	# since we'll be punting them for cross-compilers, and they can cause
-	# problems (ia64+static), we'll just skip building altogether
-	is_crosscompile && sed -i '1ibuild-programs = no' config.make
 }
 
 toolchain-glibc_src_compile() {
