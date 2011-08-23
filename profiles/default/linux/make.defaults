@@ -11,7 +11,7 @@
 # pulled in during *emerge system*!
 
 # Default starting set of USE flags for all default/linux profiles.
-USE="berkdb crypt ipv6 ncurses nls pam python readline ssl tcpd zlib"
+USE="crypt ipv6 ncurses nls pam python readline ssl zlib"
 
 # make sure toolchain has sane defaults <tooclhain@gentoo.org>
 USE="${USE} fortran mudflap openmp"
@@ -19,14 +19,6 @@ USE="${USE} fortran mudflap openmp"
 # 2006/03/07 - Donnie Berkholz <dberkholz@gentoo.org>
 # Modular X: Support direct rendering by default
 USE="${USE} dri"
-
-# 2006/03/29 - Stefan Schweizer <genstef@gentoo.org>
-# isdn USE flag defaults
-USE="${USE} pppd isdnlog"
-
-# 2006/04/19 - Chris Gianelloni <wolf31o2@gentoo.org>
-# Make sure dev-lang/php works right.  See bug #120088 for more info.
-USE="${USE} cli pcre reflection session spl"
 
 # 2006/04/21 - Donnie Berkholz <dberkholz@gentoo.org>
 # Modular X: Build the Xorg X server by default
