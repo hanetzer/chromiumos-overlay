@@ -1,5 +1,5 @@
---- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/ethernet.conf
-+++ laptop-mode-tools_1.57/etc/laptop-mode/conf.d/ethernet.conf.new
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/ethernet.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/ethernet.conf.new
 @@ -22,7 +22,7 @@
  DEBUG=0
  

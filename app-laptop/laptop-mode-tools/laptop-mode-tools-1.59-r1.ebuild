@@ -7,7 +7,7 @@ inherit eutils
 
 DESCRIPTION="Linux kernel laptop_mode user-space utilities"
 HOMEPAGE="http://www.samwel.tk/laptop_mode/"
-SRC_URI="http://samwel.tk/laptop_mode/tools/downloads/laptop-mode-tools_1.57.tar.gz"
+SRC_URI="http://samwel.tk/laptop_mode/tools/downloads/laptop-mode-tools_1.59.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -40,12 +40,10 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0008-Export-PATH-to-which.patch" \
           "0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" \
           "0010-Do-not-run-usb-autosuspend-for-user-input-devices.patch" \
-          "0011-Explicitly-export-PATH.patch" \
           "0012-Skip-failed-globs-when-finding-module-scripts.patch" \
           "0013-wireless-power-can-not-find-iwconfig-but-tries-to-po.patch" \
           "0014-Disable-ethernet-control.patch" \
           "0015-Disable-file-system-remount.patch" \
-          "0016-Whitelists-for-usb-autosuspend.patch" \
         )
 
 src_unpack() {

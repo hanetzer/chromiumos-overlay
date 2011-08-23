@@ -1,5 +1,5 @@
---- laptop-mode-tools_1.57/usr/sbin/laptop_mode
-+++ laptop-mode-tools_1.57/usr/sbin/laptop_mode
+--- laptop-mode-tools-1.59/usr/sbin/laptop_mode
++++ laptop-mode-tools-1.59/usr/sbin/laptop_mode
 @@ -165,7 +165,7 @@
          elif [ "$1" = "ERR" ]; then
              logger -p $SYSLOG_FACILITY.err -t laptop-mode "$2";

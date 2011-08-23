@@ -1,5 +1,5 @@
---- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf
-+++ laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/usb-autosuspend.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/usb-autosuspend.conf
 @@ -34,7 +34,7 @@
  # The list of USB driver types that should not use autosuspend.  The driver
  # type is given by "DRIVER=..." in a USB device's uevent file.

@@ -11,13 +11,13 @@ Signed-off-by: Simon Que <sque@chromium.org>
 Change-Id: I9192a41ea84ed957fcd2ebb7e03e2defb16412ac
 ---
  .../etc/laptop-mode/laptop-mode.conf               |    2 ++
- laptop-mode-tools_1.57/usr/sbin/laptop_mode        |   13 +++++++------
+ laptop-mode-tools-1.59/usr/sbin/laptop_mode        |   13 +++++++------
  2 files changed, 9 insertions(+), 6 deletions(-)
 
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf laptop-mode-tools_1.57.new/etc/laptop-mode/laptop-mode.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf laptop-mode-tools-1.59.new/etc/laptop-mode/laptop-mode.conf
 index e0a6e06..47a2381 100644
---- laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
-+++ laptop-mode-tools_1.57.new/etc/laptop-mode/laptop-mode.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
++++ laptop-mode-tools-1.59.new/etc/laptop-mode/laptop-mode.conf
 @@ -60,6 +60,8 @@ VERBOSE_OUTPUT=0
  
  # Set this to 1 if you want to log messages to syslog
@@ -27,10 +27,10 @@ index e0a6e06..47a2381 100644
  
  # Run in shell debug mode
  # Enable this if you would like to execute the entire laptop-mode-tools program
-diff -ruN laptop-mode-tools_1.57/usr/sbin/laptop_mode laptop-mode-tools_1.57.new/usr/sbin/laptop_mode
+diff -ruN laptop-mode-tools-1.59/usr/sbin/laptop_mode laptop-mode-tools-1.59.new/usr/sbin/laptop_mode
 index 2827569..8acbc68 100644
---- laptop-mode-tools_1.57/usr/sbin/laptop_mode
-+++ laptop-mode-tools_1.57.new/usr/sbin/laptop_mode
+--- laptop-mode-tools-1.59/usr/sbin/laptop_mode
++++ laptop-mode-tools-1.59.new/usr/sbin/laptop_mode
 @@ -127,6 +127,7 @@ BATT_BRIGHTNESS_COMMAND=false
  LM_AC_BRIGHTNESS_COMMAND=false
  NOLM_AC_BRIGHTNESS_COMMAND=false

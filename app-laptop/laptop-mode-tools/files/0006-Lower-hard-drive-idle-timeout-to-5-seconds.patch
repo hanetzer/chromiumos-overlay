@@ -18,10 +18,10 @@ Review URL: http://codereview.chromium.org/5032002
  .../etc/laptop-mode/laptop-mode.conf               |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
 index 47a2381..5dc4b38 100644
---- laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
-+++ laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
 @@ -273,7 +273,7 @@ CONTROL_HD_IDLE_TIMEOUT=1
  # for battery and for AC with laptop mode on.
  #

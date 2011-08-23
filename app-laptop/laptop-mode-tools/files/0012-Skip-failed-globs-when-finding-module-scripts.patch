@@ -19,8 +19,8 @@ Module /etc/laptop-mode/modules/* is not executable or is to be skipped.
 
 diff --git a/usr/sbin/laptop_mode b/usr/sbin/laptop_mode
 index 7877f80..71a5cbe 100755
---- laptop-mode-tools_1.57/usr/sbin/laptop_mode
-+++ laptop-mode-tools_1.57/usr/sbin/laptop_mode
+--- laptop-mode-tools-1.59/usr/sbin/laptop_mode
++++ laptop-mode-tools-1.59/usr/sbin/laptop_mode
 @@ -1038,6 +1038,9 @@ lmt_main_function ()
      # Note that the /usr/local/lib path is deprecated.
      export FORCE STATE ON_AC ACTIVATE ACTIVATE_WITH_POSSIBLE_DATA_LOSS KLEVEL KMINOR WAS_ACTIVE LM_VERBOSE DEVICES

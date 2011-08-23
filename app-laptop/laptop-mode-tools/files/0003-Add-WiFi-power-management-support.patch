@@ -8,14 +8,14 @@ Review URL: http://codereview.chromium.org/1769003
  .../etc/laptop-mode/conf.d/wifi-powermgmt.conf     |   23 +++++++++++++++++++
  .../share/laptop-mode-tools/modules/wifi-powermgmt |   24 ++++++++++++++++++++
  2 files changed, 47 insertions(+), 0 deletions(-)
- create mode 100644 laptop-mode-tools_1.57/etc/laptop-mode/conf.d/wifi-powermgmt.conf
- create mode 100755 laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-powermgmt
+ create mode 100644 laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wifi-powermgmt.conf
+ create mode 100755 laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-powermgmt
 
-diff -ruN /dev/null laptop-mode-tools_1.57/etc/laptop-mode/conf.d/wifi-powermgmt.conf
+diff -ruN /dev/null laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wifi-powermgmt.conf
 new file mode 100644
 index 0000000..6ec4fec
 --- /dev/null
-+++ laptop-mode-tools_1.57/etc/laptop-mode/conf.d/wifi-powermgmt.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/wifi-powermgmt.conf
 @@ -0,0 +1,23 @@
 +#
 +# Configuration file for Laptop Mode Tools module wifi-powermgmt.
@@ -40,11 +40,11 @@ index 0000000..6ec4fec
 +# Control WiFi power management?
 +CONTROL_WIFI_POWER=1
 +
-diff -ruN /dev/null laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-powermgmt
+diff -ruN /dev/null laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-powermgmt
 new file mode 100755
 index 0000000..2efb1a6
 --- /dev/null
-+++ laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-powermgmt
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-powermgmt
 @@ -0,0 +1,24 @@
 +IWCONFIG=iwconfig
 +

@@ -18,8 +18,8 @@ There should be no more errors like this:
 
 diff --git a/usr/share/laptop-mode-tools/modules/wireless-power b/usr/share/laptop-mode-tools/modules/wireless-power
 index 6407d2a..649b40a 100755
---- laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wireless-power
-+++ laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wireless-power
+--- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wireless-power
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wireless-power
 @@ -62,6 +62,7 @@ if [ x$CONTROL_WIRELESS_POWER_SAVING = x1 ] || [ x$ENABLE_AUTO_MODULES = x1 -a x
  		IWCONFIG=/usr/sbin/iwconfig
  	else

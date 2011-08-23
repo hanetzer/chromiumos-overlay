@@ -19,14 +19,14 @@ Change-Id: Ifac0b67c7eb6663fb911be267711c44e6e8538b0
  .../modules/wifi-nl80211-powermgmt                 |   26 ++++++++++++++++++++
  .../share/laptop-mode-tools/modules/wifi-powermgmt |   24 ------------------
  2 files changed, 26 insertions(+), 24 deletions(-)
- create mode 100755 laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
- delete mode 100755 laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-powermgmt
+ create mode 100755 laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
+ delete mode 100755 laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-powermgmt
 
-diff -ruN /dev/null laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
+diff -ruN /dev/null laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
 new file mode 100755
 index 0000000..934d080
 --- /dev/null
-+++ laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
 @@ -0,0 +1,26 @@
 +IW=/usr/sbin/iw
 +
@@ -54,10 +54,10 @@ index 0000000..934d080
 +else
 +    log "VERBOSE" "WiFi power setting is disabled."
 +fi
-diff -ruN laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-powermgmt /dev/null
+diff -ruN laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-powermgmt /dev/null
 deleted file mode 100755
 index 2efb1a6..0000000
---- laptop-mode-tools_1.57/usr/share/laptop-mode-tools/modules/wifi-powermgmt
+--- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-powermgmt
 +++ /dev/null
 @@ -1,24 +0,0 @@
 -IWCONFIG=iwconfig

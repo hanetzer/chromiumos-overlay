@@ -1,5 +1,5 @@
---- laptop-mode-tools_1.57/usr/sbin/laptop_mode
-+++ laptop-mode-tools_1.57/usr/sbin/laptop_mode
+--- laptop-mode-tools-1.59/usr/sbin/laptop_mode
++++ laptop-mode-tools-1.59/usr/sbin/laptop_mode
 @@ -133,7 +133,7 @@
  
  LMT_REQ_LOCK="/var/lock/lmt-req.lock"

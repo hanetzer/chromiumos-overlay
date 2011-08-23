@@ -1,6 +1,6 @@
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/ac97-powersave.conf laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/ac97-powersave.conf
---- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/ac97-powersave.conf
-+++ laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/ac97-powersave.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/conf.d/ac97-powersave.conf laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/ac97-powersave.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/ac97-powersave.conf
++++ laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/ac97-powersave.conf
 @@ -18,7 +18,7 @@
  ###############################################################################
  
@@ -10,9 +10,9 @@ diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/ac97-powersave.conf lapt
  
  # Enable debug mode for this module
  # Set to 1 if you want to debug this module
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/intel-hda-powersave.conf laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/intel-hda-powersave.conf
---- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/intel-hda-powersave.conf
-+++ laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/intel-hda-powersave.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-hda-powersave.conf laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/intel-hda-powersave.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-hda-powersave.conf
++++ laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/intel-hda-powersave.conf
 @@ -20,7 +20,7 @@
  
  # Control INTEL HDA audio chipset power?
@@ -22,9 +22,9 @@ diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/intel-hda-powersave.conf
  
  # Handle power savings for Intel HDA under specific circumstances
  BATT_INTEL_HDA_POWERSAVE=1
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
---- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
-+++ laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
++++ laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
 @@ -20,7 +20,7 @@
  
  # Control Intel SATA chipset power management?
@@ -34,9 +34,9 @@ diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/intel-sata-powermgmt.con
  
  # Handle power management of the Intel SATA deivce under specific circumstances
  BATT_ACTIVATE_SATA_POWER=1
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/usb-autosuspend.conf
---- laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf
-+++ laptop-mode-tools_1.57.new/etc/laptop-mode/conf.d/usb-autosuspend.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/conf.d/usb-autosuspend.conf laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/usb-autosuspend.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/usb-autosuspend.conf
++++ laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/usb-autosuspend.conf
 @@ -24,7 +24,7 @@
  
  # Enable USB autosuspend feature?
@@ -46,9 +46,9 @@ diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/conf.d/usb-autosuspend.conf lap
  
  # The list of USB IDs that should not use autosuspend. Use lsusb to find out the
  # IDs of your USB devices.
-diff -ruN laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf laptop-mode-tools_1.57.new/etc/laptop-mode/laptop-mode.conf
---- laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
-+++ laptop-mode-tools_1.57.new/etc/laptop-mode/laptop-mode.conf
+diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf laptop-mode-tools-1.59.new/etc/laptop-mode/laptop-mode.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
++++ laptop-mode-tools-1.59.new/etc/laptop-mode/laptop-mode.conf
 @@ -283,7 +283,7 @@
  # Should laptop mode tools control the hard drive power management settings?
  #

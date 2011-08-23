@@ -1,5 +1,5 @@
---- laptop-mode-tools_1.57/usr/sbin/laptop_mode
-+++ laptop-mode-tools_1.57/usr/sbin/laptop_mode
+--- laptop-mode-tools-1.59/usr/sbin/laptop_mode
++++ laptop-mode-tools-1.59/usr/sbin/laptop_mode
 @@ -89,7 +89,7 @@
  NOLM_AC_CPU_GOVERNOR=ondemand
  NOLM_AC_CPU_IGNORE_NICE_LOAD=0
@@ -9,8 +9,8 @@
  CONTROL_SYSLOG_CONF=0
  LM_AC_SYSLOG_CONF=/etc/syslog-on-ac-with-lm.conf
  NOLM_AC_SYSLOG_CONF=/etc/syslog-on-ac-without-lm.conf
---- laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
-+++ laptop-mode-tools_1.57/etc/laptop-mode/laptop-mode.conf
+--- laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/laptop-mode.conf
 @@ -193,7 +193,7 @@
  # Separate them by a space, e.g. HD="/dev/hda /dev/hdb". The default is a
  # wildcard, which will get you all your IDE and SCSI/SATA drives.
