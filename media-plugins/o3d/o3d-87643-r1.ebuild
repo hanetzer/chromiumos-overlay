@@ -58,6 +58,8 @@ src_compile() {
 		append-cxxflags "-Wa,-mimplicit-it=always"
 	fi
 
+        append-cxxflags $(test-flags-CC -Wno-error=unused-but-set-variable)
+
 	# Config
 	if tc-is-cross-compiler ; then
 		tc-export AR AS LD NM RANLIB CC CXX
