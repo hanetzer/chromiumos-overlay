@@ -82,6 +82,7 @@ toolchain-glibc_src_unpack() {
 		for ((i=0; i<${#EGIT_REPO_URIS[@]}; ++i)) ; do
 			EGIT_REPO_URI=${EGIT_REPO_URIS[$i]}
 			EGIT_SOURCEDIR=${EGIT_SOURCEDIRS[$i]}
+			EGIT_COMMIT=${EGIT_COMMITS[$i]}
 			git-2_src_unpack
 		done
 	else
