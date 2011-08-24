@@ -36,6 +36,7 @@ src_unpack() {
 	epatch "${FILESDIR}"/${PN}-cross-pkg-config-sysroot.patch
 	epatch "${FILESDIR}"/${PN}-no-cross-fix-root.patch
 	epatch "${FILESDIR}"/${PN}-arm-dbus-fix.patch
+	epatch "${FILESDIR}"/${PN}-metadata.patch
 }
 
 src_install() {
