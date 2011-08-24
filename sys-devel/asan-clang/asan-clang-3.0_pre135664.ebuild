@@ -1,68 +1,53 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/clang/clang-9999.ebuild,v 1.15 2011/07/08 10:10:59 ssuominen Exp $
+#
+# This package installs LLVM's Clang of the revision we use for
+# Address Sanitizer. The Clang may be used alone and the revision is
+# usually recent enough for ChromeOS modules.
+#
+# This package is originated from
+# http://sources.gentoo.org/sys-devel/clang/clang-9999.ebuild
+#
+# Note that we use downloading sources from SVN because llvn.org has
+# not released this version yet.
 
 EAPI=3
 
-RESTRICT_PYTHON_ABIS="3.*"
-SUPPORT_PYTHON_ABIS="1"
-
-inherit subversion eutils multilib python
+inherit subversion eutils multilib
 
 DESCRIPTION="C language family frontend for LLVM"
 HOMEPAGE="http://clang.llvm.org/"
 SRC_URI=""
-ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk"
+ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk"@${PV#*_pre}
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS=""
-IUSE="alltargets debug +static-analyzer +system-cxx-headers test"
+KEYWORDS="amd64"
+IUSE="+alltargets -asan +cxx-sysroot-wrapper debug -system-cxx-headers test"
 
-# Note: for LTO support, clang will depend on binutils with gold plugins, and LLVM built after that - http://llvm.org/docs/GoldPlugin.html
-DEPEND="static-analyzer? ( dev-lang/perl )"
-RDEPEND="~sys-devel/llvm-${PV}[alltargets=]"
-
-S="${WORKDIR}/llvm"
+S="${WORKDIR}/asan"
 
 src_unpack() {
+	if use asan; then
+		ESVN_PROJECT=asan \
+			subversion_fetch "http://address-sanitizer.googlecode.com/svn/trunk/"
+	fi
+
 	# Fetching LLVM as well: see http://llvm.org/bugs/show_bug.cgi?id=4840
-	ESVN_PROJECT=llvm subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk"
-	ESVN_PROJECT=clang S="${S}"/tools/clang subversion_fetch
+	ESVN_PROJECT=llvm S="${S}"/clang_src \
+		subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk"@${PV#*_pre}
+	ESVN_PROJECT=clang S="${S}"/clang_src/tools/clang subversion_fetch
 }
 
 src_prepare() {
-	# Same as llvm doc patches
-	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
-
-	# multilib-strict
-	sed -e "/PROJ_headers/s#lib/clang#$(get_libdir)/clang#" \
-		-i tools/clang/lib/Headers/Makefile \
-		|| die "clang Makefile failed"
-	# fix the static analyzer for in-tree install
-	sed -e 's/import ScanView/from clang \0/'  \
-		-i tools/clang/tools/scan-view/scan-view \
-		|| die "scan-view sed failed"
-	sed -e "/scanview.css\|sorttable.js/s#\$RealBin#${EPREFIX}/usr/share/${PN}#" \
-		-i tools/clang/tools/scan-build/scan-build \
-		|| die "scan-build sed failed"
-	# Specify python version
-	python_convert_shebangs 2 tools/clang/tools/scan-view/scan-view
-
-	# From llvm src_prepare
-	einfo "Fixing install dirs"
-	sed -e 's,^PROJ_docsdir.*,PROJ_docsdir := $(PROJ_prefix)/share/doc/'${PF}, \
-		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \
-		-e 's,^PROJ_libdir.*,PROJ_libdir := $(PROJ_prefix)/'$(get_libdir)/llvm, \
-		-i Makefile.config.in || die "Makefile.config sed failed"
-
-	einfo "Fixing rpath"
-	sed -e 's,\$(RPATH) -Wl\,\$(\(ToolDir\|LibDir\)),$(RPATH) -Wl\,'"${EPREFIX}"/usr/$(get_libdir)/llvm, \
-		-i Makefile.rules || die "rpath sed failed"
+	if use asan; then
+	       "${S}/llvm/patch_clang.sh"
+	fi
 }
 
 src_configure() {
-	local CONF_FLAGS="--enable-shared"
+	local CONF_FLAGS=""
 
 	if use debug; then
 		CONF_FLAGS="${CONF_FLAGS} --disable-optimized"
@@ -105,18 +90,20 @@ src_configure() {
 		fi
 	fi
 
+	cd "${S}"/clang_src || die "cd failed"
 	econf ${CONF_FLAGS} || die "econf failed"
 }
 
 src_compile() {
+	cd "${S}"/clang_src || die "cd failed"
 	emake VERBOSE=1 KEEP_SYMBOLS=1 REQUIRES_RTTI=1 clang-only || die "emake failed"
 }
 
 src_test() {
-	cd "${S}"/test || die "cd failed"
+	cd "${S}"/clang_src/test || die "cd failed"
 	emake site.exp || die "updating llvm site.exp failed"
 
-	cd "${S}"/tools/clang || die "cd clang failed"
+	cd "${S}"/clang_src/tools/clang || die "cd clang failed"
 
 	echo ">>> Test phase [test]: ${CATEGORY}/${PF}"
 	if ! emake -j1 VERBOSE=1 test; then
@@ -126,54 +113,42 @@ src_test() {
 }
 
 src_install() {
-	cd "${S}"/tools/clang || die "cd clang failed"
+	cd "${S}"/clang_src/tools/clang || die "cd clang failed"
 	emake KEEP_SYMBOLS=1 DESTDIR="${D}" install || die "install failed"
 
-	if use static-analyzer ; then
-		dobin tools/scan-build/ccc-analyzer
-		dosym ccc-analyzer /usr/bin/c++-analyzer
-		dobin tools/scan-build/scan-build
+	if use cxx-sysroot-wrapper; then
+		# Try to get current gcc headers path
+		local CXX_PATH=$(gcc-config -X| cut -d: -f1 | sed 's,/include/g++-v4$,,')
 
-		insinto /usr/share/${PN}
-		doins tools/scan-build/scanview.css
-		doins tools/scan-build/sorttable.js
+		# Create the wrapper script that will substitute right libstlc++ paths.
+		# This is needed because Clang --sysroot=<sysroot>, unlike gcc, prepends
+		# its cxx-include-root with <sysroot> making it unusable.
+		# Clang maintainers consider this the right behavior (crbug.com/86037)
+		# although the Clang own includes (/usr/lib/clang/3.0/include) are never
+		# prepended with <sysroot>.
+		cat <<-EOF >"${S}/clang++.sh" || die
+			#!/bin/sh
+			exec clang++.real "\$@" \
+				-I${CXX_PATH}/include-fixed \
+				-I${CXX_PATH}/include/g++-v4 \
+				-I${CXX_PATH}/include/g++-v4/x86_64-pc-linux-gnu \
+				-I${CXX_PATH}/include/g++-v4/backward
+		EOF
+		dobin "${S}/clang++.sh" || die
 
-		cd tools/scan-view || die "cd scan-view failed"
-		dobin scan-view
-		install-scan-view() {
-			insinto "$(python_get_sitedir)"/clang
-			doins Reporter.py Resources ScanView.py startfile.py
-			touch "${ED}"/"$(python_get_sitedir)"/clang/__init__.py
-		}
-		python_execute_function install-scan-view
-	fi
-
-	# Fix install_names on Darwin.  The build system is too complicated
-	# to just fix this, so we correct it post-install
-	if [[ ${CHOST} == *-darwin* ]] ; then
-		for lib in libclang.dylib ; do
-			ebegin "fixing install_name of $lib"
-			install_name_tool -id "${EPREFIX}"/usr/lib/llvm/${lib} \
-				"${ED}"/usr/lib/llvm/${lib}
-			eend $?
-		done
-		for f in usr/bin/{c-index-test,clang} usr/lib/llvm/libclang.dylib ; do
-			ebegin "fixing references in ${f##*/}"
-			install_name_tool \
-				-change "@rpath/libclang.dylib" \
-					"${EPREFIX}"/usr/lib/llvm/libclang.dylib \
-				-change "@executable_path/../lib/libLLVM-${PV}.dylib" \
-					"${EPREFIX}"/usr/lib/llvm/libLLVM-${PV}.dylib \
-				-change "${S}"/Release/lib/libclang.dylib \
-					"${EPREFIX}"/usr/lib/llvm/libclang.dylib \
-				"${ED}"/$f
-			eend $?
-		done
+		# Make Clang take cxxabi.h from the right place. Needed by gTest.
+		# Unfortunately adding -I${CXX_PATH}/include, where right cxxabi.h resides,
+		# breaks the compilation. This is because Clang prefers this directory to
+		# its own (/usr/lib/clang/3.0/include) despite declaration order,
+		# thus it takes some includes (xmmintrin.h) from there and it drives Clang mad.
+		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.0/include/"
 	fi
 }
 
 pkg_postinst() {
-	python_mod_optimize clang
+	mv "${EPREFIX}/usr/bin/clang++" "${EPREFIX}/usr/bin/clang++.real"
+	mv "${EPREFIX}/usr/bin/clang++.sh" "${EPREFIX}/usr/bin/clang++"
+
 	if use system-cxx-headers; then
 		elog "C++ headers search path is hardcoded to the active gcc profile one"
 		elog "If you change the active gcc profile, or update gcc to a new version,"
@@ -183,8 +158,4 @@ pkg_postinst() {
 		elog "you can remerge clang with USE=system-cxx-headers to use C++ headers"
 		elog "from the active gcc profile"
 	fi
-}
-
-pkg_postrm() {
-	python_mod_cleanup clang
 }
