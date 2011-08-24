@@ -12,7 +12,7 @@ SRC_URI="http://www.tcpdump.org/release/${P}.tar.gz
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~x86-fbsd ~x86-freebsd ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~x86-fbsd ~x86-freebsd amd64-linux x86-linux"
 IUSE="+chroot smi ssl ipv6 -samba suid test"
 
 RDEPEND="net-libs/libpcap
@@ -51,6 +51,13 @@ src_configure() {
 		$(use_enable ipv6) \
 		$(use_enable samba smb) \
 		$(use_with chroot chroot /var/lib/tcpdump)
+
+	#
+	# Workaround for arm build breakage; configure emits -I/usr/include
+	# at the front of INCLS which causes host files to be used instead
+	# of target files.
+	#
+	sed -i '/-I.usr.include/s,-I/usr/include,,g' "${S}/Makefile" || die
 }
 
 src_compile() {
