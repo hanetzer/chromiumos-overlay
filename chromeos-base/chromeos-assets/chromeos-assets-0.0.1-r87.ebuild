@@ -15,7 +15,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="alex mario tegra2-ldk"
 
-DEPEND="x11-apps/xcursorgen"
+DEPEND="media-fonts/croscorefonts
+	media-fonts/droidfonts-cros
+	x11-apps/xcursorgen"
 RDEPEND=""
 
 REAL_CURSOR_NAMES="
@@ -103,9 +105,22 @@ LINK_CURSORS="
 
 CROS_WORKON_LOCALNAME="assets"
 
+src_compile() {
+	message_images/convert.py \
+		--fontdir "${ROOT}/usr/share/fonts" \
+		message_images/*/*.txt
+}
+
 src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins -r "${S}"/images/*
+
+	local png locale
+	for png in message_images/*/*.png; do
+		locale="$(basename "$(dirname "$png")")"
+		insinto "/usr/share/chromeos-assets/images/messages/$locale"
+		doins "$png"
+	done
 
 	insinto /usr/share/chromeos-assets/gaia_auth
 	doins "${S}"/gaia_auth/*
