@@ -69,7 +69,3 @@
 =sys-kernel/linux-headers-2.6.38	amd64 arm x86
 
 =sys-fs/squashfs-tools-4.2  amd64 x86
-
-# Mark gdb-7.2 and yacc-0 unstable until they can be patched
-=sys-devel/gdb-7.2 -arm -x86 -amd64 ~arm ~x86 ~amd64
-=virtual/yacc-0 -arm -x86 -amd64 ~arm ~x86 ~amd64
