@@ -151,7 +151,8 @@ DEPEND="${DEPEND}
 	build_tests? ( chromeos-base/flimflam-test )
 	build_tests? ( dev-lang/python )
 	>=dev-util/gperf-3.0.3
-	>=dev-util/pkgconfig-0.23"
+	>=dev-util/pkgconfig-0.23
+	virtual/krb5"
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
