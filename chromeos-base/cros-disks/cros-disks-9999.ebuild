@@ -17,6 +17,7 @@ SLOT="0"
 IUSE="splitdebug test"
 
 RDEPEND="
+	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	dev-cpp/gflags
