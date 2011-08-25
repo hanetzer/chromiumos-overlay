@@ -20,6 +20,7 @@ DEPEND=""
 RDEPEND="chromeos-base/audioconfig-board
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
+	net-firewall/iptables[ipv6]
 	sys-apps/smartmontools
 	sys-apps/upstart"
 
