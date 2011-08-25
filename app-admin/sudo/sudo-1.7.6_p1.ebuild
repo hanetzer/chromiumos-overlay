@@ -28,7 +28,7 @@ SRC_URI="http://www.sudo.ws/sudo/dist/${uri_prefix}${MY_P}.tar.gz
 LICENSE="as-is BSD"
 
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="amd64 arm x86"
 IUSE="pam skey offensive ldap selinux"
 
 DEPEND="pam? ( virtual/pam )
@@ -155,10 +155,16 @@ EOF
 		fperms 0440 /etc/ldap.conf.sudo
 	fi
 
+	newpamd "${FILESDIR}"/include-chromeos-auth sudo
 	pamd_mimic system-auth sudo auth account session
 
 	insinto /etc
 	doins "${S}"/sudoers
+	# See crosbug.com/11991.
+	if [ -n "${SHARED_USER_NAME}" ]; then
+		echo "${SHARED_USER_NAME} ALL=(ALL) ALL" >> "${D}"/etc/sudoers || die
+	fi
+
 	fperms 0440 /etc/sudoers
 
 	keepdir /var/db/sudo
