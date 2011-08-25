@@ -13,7 +13,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources -systemtap"
+IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -103,6 +103,10 @@ src_configure() {
 	if use systemtap; then
 		elog "	- adding configs to support systemtap"
 		cat "${FILESDIR}"/systemtap.config >> "${build_cfg}"
+	fi
+	if use serial8250; then
+		elog "	- add configs of serial8250"
+		cat "${FILESDIR}"/serial8250.config >> "${build_cfg}"
 	fi
 
 	if use pcserial; then
