@@ -238,6 +238,8 @@ IUSE_TESTS="
 	+tests_platform_NetParms
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
+	+tests_platform_Pkcs11InitOnLogin
+	+tests_platform_Pkcs11InitUnderErrors
 	+tests_platform_ProcessPrivileges
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
