@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit base autotools
+inherit autotools
 
 DESCRIPTION="Test program for capturing input device events"
 HOMEPAGE="http://cgit.freedesktop.org/evtest/"
@@ -12,24 +12,12 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 
-DEPEND="dev-libs/libxml2
-        dev-libs/libxslt
-        app-text/xmlto
-        app-text/asciidoc"
+DEPEND="app-text/asciidoc
+        app-text/xmlto"
 
-RDEPEND="dev-libs/libxml2"
-
-RESTRICT="mirror"
-
-UPSTREAMED_PATCHES=(
-	"${FILESDIR}/1.27-0001-Add-support-for-EV_SW.patch"
-)
-
-PATCHES=(
-	"${UPSTREAMED_PATCHES[@]}"
-)
+RDEPEND="dev-libs/libxml2
+         dev-libs/libxslt"
 
 src_prepare() {
-        base_src_prepare
-        eautoreconf || die "Autoreconf failed"
+        eautoreconf
 }
