@@ -424,15 +424,26 @@ src_unpack() {
 		;;
 	(GERRIT_SOURCE)
 		export CHROME_ROOT="/home/$(whoami)/trunk/chromium"
+		# TODO(rcui): Remove all these addwrite hacks once we start
+		# building off a copy of the source
 		addwrite "${CHROME_ROOT}"
-		# Make the symlink to <repo_root>/src/platform/cros writeable,
-		# so that when we run hooks, gyp_chromium can generate makefiles.
-		# We need to explicitly do this because the symlink points to
+		# Addwrite to .repo because each project's .git directory links
+		# to the .repo directory.
+		addwrite "/home/$(whoami)/trunk/.repo/"
+		# - Make the symlinks from chromium src tree to CrOS source tree
+		# writeable so we can run hooks and reset the checkout.
+		# - We need to explicitly do this because the symlink points to
 		# outside of the CHROME_ROOT.
-		# The symlink is created by chrome_set_ver to simulate the
-		# cros_deps checkout gclient does.  For details, see
-		# http://gerrit.chromium.org/gerrit/#change,5692.
-		addwrite "${CHROME_ROOT}/src/third_party/cros"
+		# - We don't know which one is a symlink so do it for
+		#   all files/directories in src/third_party
+		# - chrome_set_ver creates symlinks in src/third_party to simulate
+		#   the cros_deps checkout gclient does.  For details, see
+		#   http://gerrit.chromium.org/gerrit/#change,5692.
+		THIRD_PARTY_DIR="${CHROME_ROOT}/src/third_party"
+		for f in `ls -1 ${THIRD_PARTY_DIR}`
+		do
+			addwrite "${THIRD_PARTY_DIR}/${f}"
+		done
 		;;
 	(LOCAL_SOURCE)
 		addwrite "${CHROME_ROOT}"
@@ -756,6 +767,11 @@ src_install() {
 		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
 	fi
 
+	# add NaCl binaries
+	if [ "$ARCH" = "x86" ]; then
+		doexe "${FROM}"/libppGoogleNaClPluginChrome.so
+	fi
+
 	insinto "${CHROME_DIR}"
 	doins "${FROM}"/chrome-wrapper
 	doins "${FROM}"/chrome.pak
@@ -765,6 +781,11 @@ src_install() {
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
+
+	# add NaCl binaries
+	if [ "$ARCH" = "x86" ]; then
+		doins "${FROM}"/nacl_irt_x86_32.nexe
+	fi
 
 	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
 	# libcros compatibility.
