@@ -116,6 +116,17 @@ EOF
   echo created wrapper pkg-config
 }
 
+# Checks whether the libc version installed in the board
+# matches the one installed by the toolchain.
+board_needs_libc_update() {
+  local board_version=$(. "${BOARD_SETUP}"; echo "${LIBC_VERSION}")
+  local toolchain_version=$(cross_get_version glibc)
+  if [[ "${board_version}" = "${toolchain_version}" ]]; then
+    return 1
+  fi
+  return 0
+}
+
 # Check whether any new toolchain packages are available.
 # Returns true if new toolchain packages are available and false otherwise.
 toolchain_needs_update() {
@@ -458,6 +469,14 @@ if [ "${ARCH}" != "amd64" ] ; then
       echo "Switching on gold as the default linker."
       BINUTILS_VERSION=$(cross_get_version binutils | sed 's/-r[0-9]\+//g')
       sudo binutils-config "${FLAGS_toolchain}-${BINUTILS_VERSION}-gold"
+    fi
+  else
+    # Update the users libc in their board if needed.
+    if [ -d "$BOARD_ROOT" ] && [ "$FLAGS_force" = "$FLAGS_FALSE" ] ; then
+      if board_needs_libc_update; then
+        echo "Updating libc in the board."
+        install_toolchain_in_board
+      fi
     fi
   fi
 fi
