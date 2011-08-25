@@ -15,10 +15,12 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="cros_host"
 
-DEPEND="!!<=dev-util/crosutils-0.0.1-r1"
+# cros-devutils <= r114 installed chromeos-setimage instead of this package.
+RDEPEND="!<=chromeos-base/cros-devutils-0.0.1-r121"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
-RDEPEND="app-admin/sudo
+RDEPEND="$RDEPEND
+	app-admin/sudo
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	dev-libs/shflags

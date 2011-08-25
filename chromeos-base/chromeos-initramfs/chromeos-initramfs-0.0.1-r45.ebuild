@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="137cf87728efeac8c82b4f259c802ae0f1cf6fdd"
+CROS_WORKON_COMMIT="db1696ce05b97e9e90b2778f68be5035622ab8c8"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
