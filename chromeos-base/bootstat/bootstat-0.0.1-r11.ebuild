@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="fdc99c49ad91a1db1d023ff28626ae28e700a9e5"
+CROS_WORKON_COMMIT="0b17309ebe501729960b52c1b69d07f49b79e7c7"
 CROS_WORKON_PROJECT="chromiumos/platform/bootstat"
 inherit cros-workon
 
