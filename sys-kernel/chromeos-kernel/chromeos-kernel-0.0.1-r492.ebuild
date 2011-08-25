@@ -2,28 +2,28 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="df005a92502f70790ba9abc630a3d353f2dcf211"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_COMMIT="d79962a32781d51674e7497999629dfb00604f80"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
-inherit toolchain-funcs
-inherit binutils-funcs
+inherit binutils-funcs cros-kernel toolchain-funcs
 
-DESCRIPTION="Chrome OS Kernel-next"
+DESCRIPTION="Chrome OS Kernel"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG} -device_tree"
+IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
+IUSE="${IUSE} -pcserial -kernel_sources -systemtap"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
     chromeos-base/kernel-headers
     initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel
+    !sys-kernel/chromeos-kernel-next
 "
-RDEPEND="!sys-kernel/chromeos-kernel"
+RDEPEND="!sys-kernel/chromeos-kernel-next"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
@@ -48,7 +48,8 @@ else
 	fi
 fi
 
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
+CROS_WORKON_LOCALNAME="../third_party/kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -86,6 +87,11 @@ src_configure() {
 		mv .config "${build_cfg}"
 	fi
 
+	if use blkdevram; then
+		elog "   - adding ram block device config"
+		cat "${FILESDIR}"/blkdevram.config >> "${build_cfg}"
+	fi
+
 	if use fbconsole; then
 		elog "   - adding framebuffer console config"
 		cat "${FILESDIR}"/fbconsole.config >> "${build_cfg}"
@@ -94,6 +100,15 @@ src_configure() {
 	if use nfs; then
 		elog "   - adding NFS config"
 		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
+	fi
+	if use systemtap; then
+		elog "	- adding configs to support systemtap"
+		cat "${FILESDIR}"/systemtap.config >> "${build_cfg}"
+	fi
+
+	if use pcserial; then
+		elog "   - adding PC serial config"
+		cat "${FILESDIR}"/pcserial.config >> "${build_cfg}"
 	fi
 
 	# Use default for any options not explitly set in splitconfig
@@ -127,7 +142,7 @@ src_compile() {
 	else
 		INITRAMFS=""
 	fi
-	eval emake ${COMPILER_OPTS} \
+	eval emake ${COMPILER_OPTS} -k \
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		O="${build_dir}" \
@@ -191,4 +206,8 @@ src_install() {
 	dodir /usr/lib/debug/boot
 	insinto /usr/lib/debug/boot
 	doins "${build_dir}/vmlinux"
+
+	if use kernel_sources; then
+		install_kernel_sources
+	fi
 }
