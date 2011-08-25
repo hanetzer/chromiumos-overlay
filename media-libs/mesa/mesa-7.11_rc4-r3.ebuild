@@ -201,6 +201,25 @@ src_install() {
 	rm -f "${D}"/usr/include/GL/{glew,glxew,wglew}.h \
 		|| die "Removing glew includes failed."
 
+	# Move libGL and others from /usr/lib to /usr/lib/opengl/blah/lib
+	# because user can eselect desired GL provider.
+	ebegin "Moving libGL and friends for dynamic switching"
+		dodir /usr/$(get_libdir)/opengl/${OPENGL_DIR}/{lib,extensions,include}
+		local x
+		for x in "${D}"/usr/$(get_libdir)/libGL.{la,a,so*}; do
+			if [ -f ${x} -o -L ${x} ]; then
+				mv -f "${x}" "${D}"/usr/$(get_libdir)/opengl/${OPENGL_DIR}/lib \
+					|| die "Failed to move ${x}"
+			fi
+		done
+		for x in "${D}"/usr/include/GL/{gl.h,glx.h,glext.h,glxext.h}; do
+			if [ -f ${x} -o -L ${x} ]; then
+				mv -f "${x}" "${D}"/usr/$(get_libdir)/opengl/${OPENGL_DIR}/include \
+					|| die "Failed to move ${x}"
+			fi
+		done
+	eend $?
+
 	dodir /usr/$(get_libdir)/dri
 	insinto "/usr/$(get_libdir)/dri/"
 	insopts -m0755
@@ -219,6 +238,12 @@ src_install() {
 			doins "${S}/$(get_libdir)/${x}"
 		fi
 	done
+}
+
+pkg_postinst() {
+	# Switch to the xorg implementation.
+	echo
+	eselect opengl set --use-old ${OPENGL_DIR}
 }
 
 # $1 - VIDEO_CARDS flag
