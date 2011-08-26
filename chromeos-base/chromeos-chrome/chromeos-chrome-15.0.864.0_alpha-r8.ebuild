@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="98423"
+CROS_SVN_COMMIT="98425"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -27,7 +27,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -local_gclient hardfp"
+IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -103,7 +103,7 @@ fi
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -222,20 +222,6 @@ set_build_defines() {
 	if use touchui; then
 		BUILD_DEFINES="touchui=1 $BUILD_DEFINES"
 	fi
-
-	if use clang || use asan; then
-		if [ "$ARCH" = "x86" ]; then
-			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
-			USE_TCMALLOC="linux_use_tcmalloc=0"
-			if use asan; then
-				BUILD_DEFINES="asan=1 disable_nacl=1 $BUILD_DEFINES"
-			fi
-		else
-			die Clang is not yet supported for "${ARCH}"
-		fi
-	fi
-
-	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES}"
@@ -574,7 +560,6 @@ src_compile() {
 	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
 	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
-	        CC.host="$(tc-getCC)" CXX.host="$(tc-getCXX)" LINK.host="$(tc-getCXX)" \
 		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
