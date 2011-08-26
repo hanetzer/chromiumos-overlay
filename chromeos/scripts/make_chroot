@@ -398,6 +398,15 @@ else
 fi
 sudo_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
 
+# HACK: Select the latest toolchain. We're assuming that when this is
+# ran, the chroot has no experimental versions of new toolchains, just
+# one that is very old, and one that was just emerged.
+CHOST="$(sudo_chroot portageq envvar CHOST)"
+LATEST="$(sudo_chroot gcc-config -l | grep "${CHOST}" | tail -n1 | \
+          cut -f3 -d' ')"
+sudo_chroot sudo gcc-config "${LATEST}"
+sudo_chroot sudo emerge --unmerge "<sys-devel/gcc-${LATEST/${CHOST}-/}"
+
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
 

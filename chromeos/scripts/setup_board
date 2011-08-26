@@ -603,9 +603,13 @@ if ${HOST_BOARD}; then
     sudo cp -a $path/glibc-* $BOARD_ROOT$path
   done
 
-  # Select the same binutils and gcc as in the chroot.
-  for path in /etc/env.d/{binutils,gcc}/config-*; do
-    sudo cp -a $path $BOARD_ROOT$path
+  # The new chroot should have gcc for each target. Make sure that
+  # the latest one is correctly selected.
+  TARGETS="armv7a-cros-linux-gnueabi i686-pc-linux-gnu x86_64-pc-linux-gnu"
+  for target in ${TARGETS}; do
+    LATEST="$(ROOT=${BOARD_ROOT} gcc-config -l | \
+              grep "${target}" | tail -n1 | cut -f3 -d' ')"
+    sudo ROOT=${BOARD_ROOT} gcc-config "${LATEST}"
   done
 
   # Now cleanup paths referencing the ROOT from the *.la files.
