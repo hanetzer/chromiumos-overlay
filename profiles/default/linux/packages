@@ -7,6 +7,8 @@
 # will have.  Some will have an selinux profile (see ${PORTDIR}/profiles/selinux).
 # The idea is to only create a new family of profiles when absolutely necessary.
 
-*sys-apps/busybox
+# We don't need busybox in our chroot sdk as it is used in upstream Gentoo
+# only as a static rescue shell, and that doesn't make sense for us
+#*sys-apps/busybox
 *sys-apps/man-pages
 *sys-apps/util-linux
