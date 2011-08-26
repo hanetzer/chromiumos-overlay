@@ -39,6 +39,10 @@ RDEPEND="${DEPEND}
 
 S=${WORKDIR}
 
+# The real bmpblk must be verified and installed by HWID matchin in
+# factory process. Default one should be a pre-genereated blob.
+BMPBLK_FILE="${FILESDIR}/default.bmpblk"
+
 src_compile() {
 
 	local secure_flags=''
@@ -47,7 +51,6 @@ src_compile() {
 	local fdt_file
 	local image_file
 	local devkeys_file
-	local bmpblk_file
 
 	# Directory where the generated files are looked for and placed.
 	if use x86; then
@@ -72,10 +75,6 @@ src_compile() {
 	# Location of the devkeys
 	devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 
-	# The real bmpblk must be verified and installed by HWID matchin in
-	# factory process. Default one should be a pre-genereated blob.
-	bmpblk_file="${FILESDIR}/default.bmpblk"
-
 	if ! use cros-debug; then
 		secure_flags+=' --add-config-int silent_console 1'
 	fi
@@ -90,7 +89,7 @@ src_compile() {
 		--uboot "${image_file}" \
 		--dt "${fdt_file}" \
 		--key "${devkeys_file}" \
-		--bmpblk "${bmpblk_file}" \
+		--bmpblk "${BMPBLK_FILE}" \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${secure_flags} \
@@ -105,7 +104,7 @@ src_compile() {
 		--uboot "${image_file}" \
 		--dt "${fdt_file}" \
 		--key "${devkeys_file}" \
-		--bmpblk "${bmpblk_file}" \
+		--bmpblk "${BMPBLK_FILE}" \
 		--add-config-int load_env 1 \
 		--outdir legacy \
 		--output legacy_image.bin ||
@@ -127,6 +126,7 @@ src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	doins image.bin
 	doins legacy_image.bin
+	doins ${BMPBLK_FILE}
 	if use x86; then
 		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
 		if [ -r ${skeleton} ]; then
