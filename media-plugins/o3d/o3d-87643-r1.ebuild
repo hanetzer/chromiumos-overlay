@@ -49,6 +49,7 @@ src_prepare() {
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
 	epatch ${FILESDIR}/${P}-pkgconfig.patch || die
 	epatch ${FILESDIR}/${P}-disable-gconf.patch || die
+	epatch ${FILESDIR}/${P}-linux3.patch || die
 	${EGCLIENT} runhooks || die
 }
 
@@ -58,7 +59,7 @@ src_compile() {
 		append-cxxflags "-Wa,-mimplicit-it=always"
 	fi
 
-        append-cxxflags $(test-flags-CC -Wno-error=unused-but-set-variable)
+	append-cxxflags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
 	# Config
 	if tc-is-cross-compiler ; then
