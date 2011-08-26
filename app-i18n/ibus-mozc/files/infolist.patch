@@ -1750,6 +1750,19 @@ index 653df51..7fb52d9 100755
 +わずらう	煩う	五段・ワ行促音便	上手くいかずに悩む、苦しむ。「思い煩う」
 +わたる	渡る	五段・ラ行	移動する。「海外に渡る、職を渡る、橋を渡る」
 +わたる	亘る	五段・ラ行	長さがおよぶ。「2ヶ月に亘る捜索」
+diff --git rewriter/gen_usage_rewriter_dictionary_main.cc rewriter/gen_usage_rewriter_dictionary_main.cc
+index 096f1c1..040f507 100755
+--- rewriter/gen_usage_rewriter_dictionary_main.cc
++++ rewriter/gen_usage_rewriter_dictionary_main.cc
+@@ -274,7 +274,7 @@ void Convert() {
+         << i->value << "(" << i->key << ")" << endl;
+     ++usage_id;
+   }
+-  *ofs << "  { NULL, NULL, NULL, NULL, NULL }" << endl;
++  *ofs << "  { 0, NULL, NULL, 0, NULL }" << endl;
+   *ofs << "};" << endl;
+ 
+   if (ofs != &cout) {
 diff --git rewriter/rewriter.cc rewriter/rewriter.cc
 index 9eac6a7..ae318db 100755
 --- rewriter/rewriter.cc
