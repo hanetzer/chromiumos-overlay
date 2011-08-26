@@ -5,8 +5,7 @@ EAPI=4
 CROS_WORKON_COMMIT="cd6f9f747dcdfd7ff110fa38703f1a38cd9bb1e5"
 
 CROS_WORKON_PROJECT="chromiumos/platform/mtplot"
-XORG_EAUTORECONF="yes"
-inherit xorg-2 cros-workon
+inherit autotools cros-workon
 
 DESCRIPTION="Multitouch Contact Plotter"
 CROS_WORKON_LOCALNAME="../platform/mtplot"
@@ -19,5 +18,5 @@ RDEPEND="x11-libs/libX11"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-	xorg-2_src_prepare
+	eautoreconf
 }
