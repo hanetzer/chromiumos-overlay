@@ -3,7 +3,7 @@
 # $Header:
 
 EAPI="2"
-CROS_WORKON_COMMIT="42ad65261db24f0095688db695f220454568a60c"
+CROS_WORKON_COMMIT="7aff3df4609aac1fa7f61cd533f641f579c884b6"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashrom"
 
 inherit cros-workon toolchain-funcs
