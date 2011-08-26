@@ -313,13 +313,22 @@ print_board_make_conf() {
   done
   echo
 
+  cat <<'EOF'
+# FULL_BINHOST is populated by the full builders. It is listed first because it
+# is the lowest priority binhost. It is better to download packages from the
+# preflight binhost because they are fresher packages.
+PORTAGE_BINHOST="$FULL_BINHOST"
+
+EOF
+
   if [[ -f "$preflight_binhost" ]]; then
     cat <<'EOF'
-# PREFLIGHT_BINHOST is populated by the preflight builders. It is listed first
-# because it is the lowest priority binhost.
+# PREFLIGHT_BINHOST is populated by the preflight builders. If the same
+# package is provided by both the preflight and full binhosts, the package is
+# downloaded from the preflight binhost.
 EOF
     echo source "$preflight_binhost"
-    echo 'PORTAGE_BINHOST="$PREFLIGHT_BINHOST"'
+    echo 'PORTAGE_BINHOST="$PORTAGE_BINHOST $PREFLIGHT_BINHOST"'
     echo
   fi
 
@@ -332,14 +341,6 @@ EOF
     echo 'PORTAGE_BINHOST="$PORTAGE_BINHOST $PREFLIGHT_BINHOST"'
     echo
   fi
-
-  cat <<'EOF'
-# FULL_BINHOST is populated by the full builders. If the same package is
-# provided by both the preflight and full binhosts, the package is downloaded
-# from the full binhost.
-PORTAGE_BINHOST="$PORTAGE_BINHOST $FULL_BINHOST"
-
-EOF
 
   if [[ -f "$chrome_binhost" ]]; then
     cat <<'EOF'
