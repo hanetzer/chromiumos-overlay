@@ -127,6 +127,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-2.1.9.48-allow-missing-digests".patch
 	epatch "${FILESDIR}/${PN}-2.1.9.49-crossdev".patch
 	epatch "${FILESDIR}/${PN}-2.1.9.48-fastbuild".patch
+	epatch "${FILESDIR}/${PN}-2.1.10-rebuild".patch
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION=.*/VERSION=\"${PVR}\"/" -i pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"
