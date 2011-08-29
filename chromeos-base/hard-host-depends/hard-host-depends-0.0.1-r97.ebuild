@@ -120,6 +120,7 @@ RDEPEND="${RDEPEND}
 
 # Useful utilities for developers.
 RDEPEND="${RDEPEND}
+	app-arch/zip
 	app-portage/gentoolkit
 	app-portage/portage-utils
 	app-editors/qemacs
@@ -136,16 +137,6 @@ RDEPEND="${RDEPEND}
 # Host dependencies that are needed for autotests.
 RDEPEND="${RDEPEND}
 	dev-util/dejagnu
-	"
-
-# Host dependencies that are needed to build Icedtea
-RDEPEND="${RDEPEND}
-	app-arch/zip
-	dev-java/ant-core
-	dev-java/xalan
-	dev-java/xerces
-	sys-apps/lsb-release
-	x11-libs/libXtst
 	"
 
 # Host dependencies that are needed to create and sign images

@@ -111,7 +111,6 @@ IUSE_TESTS="
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
-	tests_graphics_O3DSelenium
 	+tests_graphics_Piglit
 	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest

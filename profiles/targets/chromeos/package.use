@@ -8,7 +8,6 @@ app-editors/vim		minimal
 app-shells/bash		-binsh -net
 app-shells/dash		binsh
 dev-cpp/glog		gflags
-dev-java/icedtea	-nss
 dev-lang/python		-berkdb -gdbm
 dev-libs/dbus-glib	tools
 dev-libs/glib		-doc
