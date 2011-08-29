@@ -75,6 +75,7 @@ RDEPEND="${RDEPEND}
 	virtual/perf
 	x86? ( x11-apps/intel-gpu-tools )
 	opengl? ( x11-apps/mesa-progs )
+	x11-apps/mtplot
 	x11-apps/xauth
 	x11-apps/xdpyinfo
 	x11-apps/xdriinfo
