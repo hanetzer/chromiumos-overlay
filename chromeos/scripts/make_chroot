@@ -86,7 +86,7 @@ if [ "$FLAGS_fast" -eq "${FLAGS_TRUE}" ]; then
 fi
 
 function in_chroot {
-  sudo chroot "$FLAGS_chroot" "$@"
+  sudo "${CHROOT_PASSTHRU[@]}" chroot "$FLAGS_chroot" "$@"
 }
 
 function bash_chroot {
@@ -358,17 +358,29 @@ fi
 # Add version of $STAGE3 for update checks
 sudo sh -c "echo STAGE3=$STAGE3 > $CHROOT_STATE"
 
-echo "$SCRIPT_NAME: Running emerge portage"
-bash_chroot emerge -uNv $USEPKG portage $EMERGE_JOBS
+echo "$SCRIPT_NAME: Updating portage"
+in_chroot emerge -uNv portage
+
+echo "$SCRIPT_NAME: Updating toolchain"
+in_chroot emerge -uNv $USEPKG '>=sys-devel/gcc-4.4' sys-libs/glibc \
+    sys-devel/binutils sys-kernel/linux-headers
+
+# HACK: Select the latest toolchain. We're assuming that when this is
+# ran, the chroot has no experimental versions of new toolchains, just
+# one that is very old, and one that was just emerged.
+CHOST="$(in_chroot portageq envvar CHOST)"
+LATEST="$(in_chroot gcc-config -l | grep "${CHOST}" | tail -n1 | \
+          cut -f3 -d' ')"
+in_chroot gcc-config "${LATEST}"
+in_chroot emerge --unmerge "<sys-devel/gcc-${LATEST/${CHOST}-/}"
 
 # dhcpcd is included in 'world' by the stage3 that we pull in for some reason.
 # We have no need to install it in our host environment, so pull it out here.
 echo "$SCRIPT_NAME: Deselecting dhcpcd"
-bash_chroot $EMERGE_CMD --deselect dhcpcd
+in_chroot $EMERGE_CMD --deselect dhcpcd
 
-echo "$SCRIPT_NAME: Running emerge ccache crossdev curl sudo ..."
-bash_chroot $EMERGE_CMD -uNv $USEPKG \
-    ccache crossdev net-misc/curl sudo $EMERGE_JOBS
+echo "$SCRIPT_NAME: Running emerge ccache curl sudo ..."
+in_chroot $EMERGE_CMD -uNv $USEPKG ccache net-misc/curl sudo $EMERGE_JOBS
 
 # Curl is now installed, so we can depend on it now.
 bash_chroot 'cat >> /etc/make.conf.host_setup' <<'EOF'
@@ -397,15 +409,6 @@ else
   UPDATE_ARGS+=" --nofast"
 fi
 sudo_chroot "${CHROOT_TRUNK}/src/scripts/update_chroot" ${UPDATE_ARGS}
-
-# HACK: Select the latest toolchain. We're assuming that when this is
-# ran, the chroot has no experimental versions of new toolchains, just
-# one that is very old, and one that was just emerged.
-CHOST="$(sudo_chroot portageq envvar CHOST)"
-LATEST="$(sudo_chroot gcc-config -l | grep "${CHOST}" | tail -n1 | \
-          cut -f3 -d' ')"
-sudo_chroot sudo gcc-config "${LATEST}"
-sudo_chroot sudo emerge --unmerge "<sys-devel/gcc-${LATEST/${CHOST}-/}"
 
 # Unmount trunk
 sudo umount "${FLAGS_chroot}/${CHROOT_TRUNK}"
