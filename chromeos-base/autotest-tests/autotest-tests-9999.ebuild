@@ -148,6 +148,7 @@ IUSE_TESTS="
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
 	+tests_kernel_fs_Inplace
+	+tests_kernel_Lmbench
 	+tests_kernel_TPMPing
 	+tests_kernel_HdParm
 	+tests_logging_CrashSender
