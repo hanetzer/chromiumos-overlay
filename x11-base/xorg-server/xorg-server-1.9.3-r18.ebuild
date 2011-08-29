@@ -142,8 +142,6 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
 	# For Gallium drivers.
 	"${FILESDIR}/1.9.3-public-_glapi_get_proc_address.patch"
-	# For glx double free.
-	"${FILESDIR}/1.9.3-glx-doublefree.patch"
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window.
 	"${FILESDIR}/1.9.3-allow-root-none.patch"
@@ -153,6 +151,8 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-mt-slot-label.patch"
 	# Make the event queue longer.
 	"${FILESDIR}/1.9.3-bigger-mieq.patch"
+	# Refcount glxdrawables to avoid crashes on double free()
+	"${FILESDIR}/1.9.3-refcnt-glxdrawable.patch"
 
 	# Fix InputDevice logging
 	"${FILESDIR}/1.9.3-0001-BACKPORT-free86-add-xf86IDrvMsg-and-friends-for-inpu.patch"

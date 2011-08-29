@@ -131,8 +131,6 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
 	# Match the behaviour of monitor_reconfigure at X.Org startup time.
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
-	# For glx double free
-	#"${FILESDIR}/1.9.3-glx-doublefree.patch"
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window.
 	"${FILESDIR}/1.10.0-allow-root-none.patch"
