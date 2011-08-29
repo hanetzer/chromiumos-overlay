@@ -34,6 +34,7 @@ RDEPEND="${RDEPEND}
 	app-crypt/tpm-tools
 	x86? ( app-editors/qemacs )
 	app-editors/vim
+	app-misc/evtest
 	app-shells/bash
 	chromeos-base/flimflam-test
 	chromeos-base/gmerge
