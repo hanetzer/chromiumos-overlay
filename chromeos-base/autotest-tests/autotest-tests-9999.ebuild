@@ -66,6 +66,7 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
+	+tests_autoupdate
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench
