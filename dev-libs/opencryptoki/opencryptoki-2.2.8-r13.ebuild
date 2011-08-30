@@ -1,1 +1,0 @@
-opencryptoki-2.2.8.ebuild
