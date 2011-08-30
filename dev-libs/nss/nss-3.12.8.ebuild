@@ -27,8 +27,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-shlibsign.patch
 	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
 	epatch "${FILESDIR}"/${P}-remove-fortezza.patch
-	epatch "${FILESDIR}"/${P}-chromeos-trust-19787.patch
-	epatch "${FILESDIR}"/${P}-chromeos-trust-19787-gen.patch
 
 	cd "${S}"/mozilla/security/coreconf
 
