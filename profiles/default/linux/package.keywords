@@ -19,7 +19,7 @@
 =dev-python/pylint-0.23.0          amd64
 =dev-python/pyusb-0.4.3         ~amd64
 
-=app-admin/eselect-opengl-1.2.4	amd64 x86
+=app-admin/eselect-opengl-1.2.4	amd64 arm x86
 =app-text/xmlto-0.0.24-r1	amd64 arm x86
 =dev-lang/nasm-2.09.10		amd64 x86
 =dev-util/boost-build-1.42.0	amd64 x86
@@ -34,7 +34,7 @@
 =sys-devel/binutils-2.21.1      amd64 x86
 =sys-devel/gcc-4.4.6           amd64 x86
 =x11-libs/pixman-0.17.2		amd64 x86
-=x11-proto/glproto-1.4.14-r1	amd64 x86
+=x11-proto/glproto-1.4.14-r1	amd64 arm x86
 
 # Needed for xorg server >=1.7.x
 =x11-base/xorg-drivers-1.7      amd64 x86
