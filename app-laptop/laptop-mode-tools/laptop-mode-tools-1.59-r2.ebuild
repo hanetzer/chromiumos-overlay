@@ -44,6 +44,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0013-wireless-power-can-not-find-iwconfig-but-tries-to-po.patch" \
           "0014-Disable-ethernet-control.patch" \
           "0015-Disable-file-system-remount.patch" \
+          "0016-Wait-for-laptop_mode-using-shell-commands.patch" \
         )
 
 src_unpack() {
@@ -57,7 +58,6 @@ src_install() {
 	local ignore="laptop-mode"
 
 	dodir /etc/pm/sleep.d
-	cd laptop-mode-tools_1.57
 
 	for module in ${ignore}; do
 		rm usr/share/laptop-mode-tools/modules/${module}
