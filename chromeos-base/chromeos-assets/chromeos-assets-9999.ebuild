@@ -122,7 +122,7 @@ src_install() {
 	done
 
 	insinto /usr/share/chromeos-assets/gaia_auth
-	doins "${S}"/gaia_auth/*
+	doins -r "${S}"/gaia_auth/*
 
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
