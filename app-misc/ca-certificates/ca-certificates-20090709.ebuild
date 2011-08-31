@@ -78,12 +78,12 @@ pkg_postinst() {
 	done
 	for d in $(find "${ROOT}"usr/share/ca-certificates -type d); do
 		if [ $(( $(stat -c 0%a "$d") & 005 )) -ne 005 ]; then
-			die "Bad permissions on directory $d"
+			ewarn "Bad permissions on directory $d"
 		fi
 	done
 	for f in $(find "${ROOT}"usr/share/ca-certificates -type f); do
 		if [ $(( $(stat -c 0%a "$f") & 004 )) -ne 004 ]; then
-			die "Bad permissions on file $f"
+			ewarn "Bad permissions on file $f"
 		fi
 	done
 	if [ $badcerts -eq 1 ]; then
