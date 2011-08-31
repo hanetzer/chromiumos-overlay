@@ -412,6 +412,33 @@ gcc-specs-pie() {
 	directive=$(gcc-specs-directive cc1)
 	return $([[ "${directive/\{!nopie:}" != "${directive}" ]])
 }
+# Returns true if gcc builds PIEs
+# For ARM, readelf -h | grep Type always has REL instead of EXEC.
+# That is why we have to read the flags one by one and check them instead
+# of test-compiling a small program.
+gcc-pie() {
+	for flag in $(echo "void f(){char a[1];}" | \
+	${CTARGET}-gcc -v -xc -c -o /dev/null - 2>&1 | \
+	grep cc1 | \
+	tr " " "\n" | \
+	tac)
+	do
+		if [[ $flag == "-fPIE" || $flag == "-fPIC" ]]
+		then
+			return 0
+		elif [[ $flag == "-fno-PIE" || $flag == "-fno-PIC" ]]
+		then
+			return 1
+		fi
+	done
+	return 1
+}
+# Returns true if gcc builds with the stack protector
+gcc-ssp() {
+	local obj=$(mktemp)
+	echo "void f(){char a[1];}" | ${CTARGET}-gcc -xc -c -o ${obj} -
+	return $(${CTARGET}-readelf -sW ${obj} | grep -q stack_chk_fail)
+}
 # Returns true if gcc builds with the stack protector
 gcc-specs-ssp() {
 	local directive

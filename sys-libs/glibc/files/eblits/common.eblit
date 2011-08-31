@@ -178,9 +178,9 @@ setup_flags() {
 	# building glibc with SSP is fraught with difficulty, especially
 	# due to __stack_chk_fail_local which would mean significant changes
 	# to the glibc build process. See bug #94325 #293721
-	use hardened && append-cflags $(test-flags-CC -fno-stack-protector)
+	use hardened && gcc-ssp && append-cflags $(test-flags-CC -fno-stack-protector)
 
-	if use hardened ; then
+	if use hardened && gcc-pie; then
 		# Force PIC macro definition for all compilations since they're all
 		# either -fPIC or -fPIE with the default-PIE compiler.
 		append-cppflags -DPIC
