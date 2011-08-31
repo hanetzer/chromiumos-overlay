@@ -4,22 +4,19 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/libscrypt"
 
-inherit cros-workon toolchain-funcs autotools
+inherit cros-workon autotools
 
 DESCRIPTION="Scrypt key derivation library"
 HOMEPAGE="http://www.tarsnap.com/scrypt.html"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="test"
+IUSE="static-libs"
 
-RDEPEND="
-	"
-
-DEPEND="
-	dev-libs/openssl
-	${RDEPEND}"
+RDEPEND="dev-libs/openssl"
+DEPEND="${RDEPEND}"
 
 CROS_WORKON_LOCALNAME="../third_party/libscrypt"
 
@@ -29,37 +26,12 @@ src_prepare() {
 }
 
 src_configure() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export CCFLAGS="$CFLAGS"
-	fi
-
-	econf || die "libscrypt configure failed."
-}
-
-src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export CCFLAGS="$CFLAGS"
-	fi
-
-	emake || die "libscrypt compile failed."
+	econf $(use_enable static-libs static)
 }
 
 src_install() {
-  dolib ${S}/.libs/libscrypt-1.1.6.so
-  dolib ${S}/.libs/libscrypt.so
+	emake install DESTDIR="${D}" || die
 
-  insinto "/usr/include/scrypt"
-  doins ${S}/src/lib/scryptenc/scryptenc.h
+	insinto /usr/include/scrypt
+	doins src/lib/scryptenc/scryptenc.h || die
 }
