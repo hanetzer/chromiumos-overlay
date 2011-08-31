@@ -40,7 +40,7 @@ inherit cros-workon cros-binary
 : ${CROS_FIRMWARE_FLASHROM_BINARY:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EXTRA_LIST
-# @DESCRIPTION: (Optional) Colon separated list of addtional resources
+# @DESCRIPTION: (Optional) Semi-colon separated list of additional resources
 : ${CROS_FIRMWARE_EXTRA_LIST:=}
 
 # Some tools (flashrom, iotools, mosys, ...) were bundled in the updater so we
@@ -80,6 +80,7 @@ esac
 UPDATE_SCRIPT="chromeos-firmwareupdate"
 FW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
+EXTRA_LOCATIONS=""
 
 # Returns true (0) if parameter starts with "bcs://"
 _is_on_bcs() {
@@ -111,12 +112,9 @@ _src_unpack() {
 	local filename="$(basename ${filepath})"
 	mkdir -p "${S}" || die "Not able to create ${S}"
 	cp "${filepath}" "${S}" || die "Can't copy ${filepath} to ${S}"
-	local extension="${filename##*.}"
-	if [[ "${extension}" != "tbz2" ]]; then
-		die "Unsupported filetype: ${filename}"
-	fi
 	cd "${S}" || die "Can't change directory to ${S}"
-	tar jxpf "${filename}" || die "Failed to unpack ${filename}"
+	tar -axpf "${filename}" ||
+	  die "Failed to unpack ${filename}"
 	RETURN_VALUE="${S}/$(tar tf ${filename})"
 }
 
@@ -142,13 +140,14 @@ _firmware_image_location() {
 		local image_location="${source_uri}"
 	fi
 	[[ -f "${image_location}"  ]] || die "File not found: ${image_location}"
-	local extension="${image_location##*.}"
-	if [[ "${extension}" = "tbz2" ]]; then
-		_src_unpack "${image_location}"
-		RETURN_VALUE="${RETURN_VALUE}"
-	else
-		RETURN_VALUE="${image_location}"
-	fi
+	case "${image_location}" in
+		*.tbz2 | *.tbz | *.tar.bz2 | *.tgz | *.tar.gz )
+			_src_unpack "${image_location}"
+			RETURN_VALUE="${RETURN_VALUE}"
+			;;
+		* )
+			RETURN_VALUE="${image_location}"
+	esac
 }
 
 cros-firmware_src_unpack() {
@@ -185,6 +184,29 @@ cros-firmware_src_unpack() {
 			EC_IMAGE_LOCATION="${RETURN_VALUE}"
 		fi
 	fi
+
+	# Fetch and unpack BCS resources in CROS_FIRMWARE_EXTRA_LIST
+	local extra extra_list
+	# For backward compatibility, ':' is still supported if there's no
+	# special URL (bcs://, file://).
+	local tr_source=';:' tr_target='\n\n'
+	if echo "${CROS_FIRMWARE_EXTRA_LIST}" | grep -q '://'; then
+		tr_source=';'
+		tr_target='\n'
+	fi
+	extra_list="$(echo "${CROS_FIRMWARE_EXTRA_LIST}" |
+			tr "$tr_source" "$tr_target")"
+	for extra in $extra_list; do
+		if _is_on_bcs "${extra}"; then
+			_bcs_fetch "${extra}"
+			_bcs_src_unpack "${extra}"
+			RETURN_VALUE="${RETURN_VALUE}"
+		else
+			RETURN_VALUE="${extra}"
+		fi
+		EXTRA_LOCATIONS="${EXTRA_LOCATIONS}:${RETURN_VALUE}"
+	done
+	EXTRA_LOCATIONS="${EXTRA_LOCATIONS#:}"
 }
 
 cros-firmware_src_compile() {
@@ -208,8 +230,8 @@ cros-firmware_src_compile() {
 	if [ -n "$CROS_FIRMWARE_FLASHROM_BINARY" ]; then
 		ext_cmd="$ext_cmd --flashrom $CROS_FIRMWARE_FLASHROM_BINARY"
 	fi
-	if [ -n "$CROS_FIRMWARE_EXTRA_LIST" ]; then
-		ext_cmd="$ext_cmd --extra $CROS_FIRMWARE_EXTRA_LIST"
+	if [ -n "$EXTRA_LOCATIONS" ]; then
+		ext_cmd="$ext_cmd --extra $EXTRA_LOCATIONS"
 	fi
 
 	# Pack firmware update script!
