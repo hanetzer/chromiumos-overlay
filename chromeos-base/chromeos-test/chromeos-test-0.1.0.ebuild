@@ -41,7 +41,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-factorytools
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
-	x86? ( chromeos-base/modem-diagnostics )
+	chromeos-base/modem-diagnostics
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
