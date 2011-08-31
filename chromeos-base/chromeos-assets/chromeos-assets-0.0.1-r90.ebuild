@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d44d2981d339a0fc3e9adf17596fe591ec02f113"
+CROS_WORKON_COMMIT="85e57e6ee328c758d329acedf2ce6165567ce517"
 CROS_WORKON_PROJECT="chromiumos/platform/assets"
 
 inherit cros-workon toolchain-funcs
@@ -123,7 +123,7 @@ src_install() {
 	done
 
 	insinto /usr/share/chromeos-assets/gaia_auth
-	doins "${S}"/gaia_auth/*
+	doins -r "${S}"/gaia_auth/*
 
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
