@@ -31,3 +31,39 @@ src_install() {
 	doins factory.conf
 	doins factorylog.conf
 }
+
+modify_upstart() {
+	local upstart_file="$1"
+	local new_rules="$2"
+	local upstart_path="${ROOT}/etc/init/${upstart_file}"
+
+	if [ ! -f "$upstart_path" ]; then
+		ewarn "Ignore non-exist upstart file: ${upstart_file}"
+		return
+	fi
+
+	grep -q "^start on " "${upstart_path}" ||
+		die "Unknown format in upstart file: ${upstart_file}"
+
+	sed -i "s/^start on .*/start on $new_rules/" "${upstart_path}" ||
+		die "Failed to modify upstart file: ${upstart_file}"
+}
+
+disable_upstart() {
+	modify_upstart "$1" "never"
+}
+
+pkg_postinst() {
+	# Create factory test image tags
+	touch "${ROOT}/root/.factory_test"
+	touch "${ROOT}/root/.leave_firmware_alone"
+
+	disable_upstart "ui.conf"
+	disable_upstart "update-engine.conf"
+	disable_upstart "chrontel.conf"
+	disable_upstart "cashew.conf"
+	disable_upstart "htpdate.conf"
+
+	modify_upstart "boot-complete.conf" "started boot-services"
+	modify_upstart "tegra-devices.conf" "starting factory"
+}
