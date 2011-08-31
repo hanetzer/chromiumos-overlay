@@ -71,3 +71,5 @@
 =sys-kernel/linux-headers-2.6.38	amd64 arm x86
 
 =sys-fs/squashfs-tools-4.2  amd64 x86
+
+=dev-util/intltool-0.41.0   amd64 x86
