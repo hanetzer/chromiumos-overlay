@@ -40,11 +40,9 @@ IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 
 src_configure() {
 	local ub_arch="$(tc-arch-kernel)"
-
 	local ub_board="$(echo "${PKG_CONFIG#pkg-config-}" | tr _ '-')"
 
-	COMMON_MAKE_FLAGS="ARCH=${ub_arch}"
-	COMMON_MAKE_FLAGS+=" CROSS_COMPILE=${CHOST}-"
+	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CHOST}-"
 	COMMON_MAKE_FLAGS+=" O=${UB_BUILD_DIR}"
 	COMMON_MAKE_FLAGS+=" -k"
 
@@ -53,9 +51,21 @@ src_configure() {
 	case "${ub_arch}" in
 		(arm)	CROS_U_BOOT_CONFIG='chromeos_tegra2_twostop_config' ;
 			CROS_FDT_DIR="board/nvidia/seaboard"
-			COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes" ;;
+			COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
+			COMMON_MAKE_FLAGS+=" ARCH=${ub_arch}"
+			;;
 		(i386)	CROS_U_BOOT_CONFIG='coreboot-x86_config'
-			CROS_FDT_DIR="board/chromebook-x86/coreboot" ;;
+			CROS_FDT_DIR="board/chromebook-x86/coreboot"
+
+			# The below is a workaround to allow the same ebuild
+			# to be used with different versions of u-boot.
+			# Eventually, when the ability to switch between
+			# incompatible u-boot versions is not needed anymore
+			# this code can be replaced with ARCH=x86
+
+			local archd="$(ls -d arch/{i386,x86} 2>/dev/null)"
+			COMMON_MAKE_FLAGS+=" ARCH=$(basename ${archd})";;
+
 		(*) die "can not build for unknown architecture ${ub_arch}";;
 	esac
 
