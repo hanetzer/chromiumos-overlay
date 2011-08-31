@@ -1,0 +1,26 @@
+diff --git a/glog-0.3.1.orig/configure b/glog-0.3.1/configure
+index e8760a6..36c5ab6 100755
+--- a/glog-0.3.1.orig/configure
++++ b/glog-0.3.1/configure
+@@ -24054,8 +24054,8 @@ fi
+ 
+ 
+ if test x"$GTEST_CONFIG" = "xyes"; then
+-  GTEST_CFLAGS=`gtest-config --cppflags --cxxflags`
+-  GTEST_LIBS=`gtest-config --ldflags --libs`
++  GTEST_CFLAGS="-I${ROOT}usr/include"
++  GTEST_LIBS="-L${ROOT}usr/lib -lgtest"
+ 
+ cat >>confdefs.h <<\_ACEOF
+ #define HAVE_LIB_GTEST 1
+@@ -24101,8 +24101,8 @@ fi
+ 
+ 
+   if test x"$GMOCK_CONFIG" = "xyes"; then
+-    GMOCK_CFLAGS=`gmock-config --cppflags --cxxflags`
+-    GMOCK_LIBS=`gmock-config --ldflags --libs`
++    GMOCK_CFLAGS="-I${ROOT}/usr/include"
++    GMOCK_LIBS="-L${ROOT}usr/lib -lgmock -lgtest"
+ 
+ cat >>confdefs.h <<\_ACEOF
+ #define HAVE_LIB_GMOCK 1

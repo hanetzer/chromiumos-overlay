@@ -3,7 +3,7 @@
 
 EAPI="2"
 
-inherit libtool
+inherit eutils libtool
 
 DESCRIPTION="Google's C++ logging library."
 HOMEPAGE="http://code.google.com/p/google-glog/"
@@ -23,6 +23,10 @@ src_configure() {
 			export ac_cv_lib_gflags_main=yes
 		fi
 	fi
+
+	# Fix the library and header paths:
+	# http://code.google.com/p/chromium-os/issues/detail?id=19901
+	epatch "${FILESDIR}"/glog-libdir-paths.patch
 
 	# The glog configure takes an optional "--with-gflags=GFLAGS_DIR".
 	# Ideally we could use pkg-config, but gflags doesn't create one yet.
