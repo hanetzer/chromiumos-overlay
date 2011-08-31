@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/libscrypt"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon toolchain-funcs autotools
 
 DESCRIPTION="Scrypt key derivation library"
 HOMEPAGE="http://www.tarsnap.com/scrypt.html"
@@ -23,6 +23,11 @@ DEPEND="
 
 CROS_WORKON_LOCALNAME="../third_party/libscrypt"
 
+src_prepare() {
+	epatch function_visibility.patch
+	eautoreconf
+}
+
 src_configure() {
 	if tc-is-cross-compiler ; then
 		tc-getCC
@@ -34,7 +39,6 @@ src_configure() {
 		export CCFLAGS="$CFLAGS"
 	fi
 
-	epatch function_visibility.patch || die "libscrypt configure failed."
 	econf || die "libscrypt configure failed."
 }
 
