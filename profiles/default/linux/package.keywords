@@ -17,7 +17,7 @@
 =dev-python/astng-0.21.1           amd64
 =dev-python/logilab-common-0.53.0  amd64
 =dev-python/pylint-0.23.0          amd64
-=dev-python/pyusb-0.4.3         ~amd64
+=dev-python/pyusb-0.4.3            amd64
 
 =app-admin/eselect-opengl-1.2.4	amd64 arm x86
 =app-text/xmlto-0.0.24-r1	amd64 arm x86
