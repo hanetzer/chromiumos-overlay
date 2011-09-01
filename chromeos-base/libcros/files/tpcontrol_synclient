@@ -31,7 +31,7 @@ elif [ "$COMMAND" = "taptoclick" ] ; then
     VALID=1
   fi
 elif [ "$COMMAND" = "sensitivity" ] ; then
-  case "$VALUE" in
+  case $VALUE in
   1)
     $SYNCLIENT "MinSpeed=0.5"
     $SYNCLIENT "MaxSpeed=1.0"

@@ -7,7 +7,6 @@ XINPUT=/usr/bin/xinput
 
 PROG=`basename $0`
 COMMAND=$1
-VALUE=$2
 
 usage() {
   echo "Usage:"\
@@ -29,10 +28,11 @@ VALID=0
 
 if [ $# = 0 ] ; then
   VALID=0
-elif [ $COMMAND = "status" -a $# = 1 ] ; then
+elif [ "$COMMAND" = "status" -a $# = 1 ] ; then
   $XINPUT list-props $DEVICE
   VALID=1
-elif [ $COMMAND = "taptoclick" -a $# = 2 ] ; then
+elif [ "$COMMAND" = "taptoclick" -a $# = 2 ] ; then
+  VALUE=$2
   case $VALUE in
   "on")
     $XINPUT set-prop $DEVICE "Tap Enable" 1
@@ -43,7 +43,8 @@ elif [ $COMMAND = "taptoclick" -a $# = 2 ] ; then
     VALID=1
     ;;
   esac
-elif [ $COMMAND = "sensitivity" -a $# = 2 ] ; then
+elif [ "$COMMAND" = "sensitivity" -a $# = 2 ] ; then
+  VALUE=$2
   case $VALUE in
   1)
 #    $XINPUT set-prop $DEVICE "Motion Speed" 10
@@ -71,10 +72,10 @@ elif [ $COMMAND = "sensitivity" -a $# = 2 ] ; then
     VALID=1
     ;;
   esac
-elif [ $COMMAND = "set" -a $# = 3 ] ; then
+elif [ "$COMMAND" = "set" -a $# = 3 ] ; then
   PROP=$2
   VALUE=$3
-  $XINPUT set-prop $DEVICE "${PROP}" "${VALUE}"
+  $XINPUT set-prop $DEVICE "$PROP" "$VALUE"
   VALID=1
 fi
 
