@@ -1,0 +1,18 @@
+diff --git a/configure.ac b/configure.ac
+index 2de562f..f9d716d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -228,10 +228,10 @@ else
+ fi
+ 
+ #Verify nss
+-NSS_LIBS=`nss-config --libs`
++NSS_LIBS=`pkg-config --libs nss`
+ if test "x${NSS_LIBS}" != "x" ; then
+-        NSS_CFLAGS=`nss-config --cflags`
+-        NSPR_CFLAGS=`nspr-config --cflags`
++        NSS_CFLAGS=`pkg-config --cflags nss`
++        NSPR_CFLAGS=`pkg-config --cflags nspr`
+         NSS_CFLAGS="${NSS_CFLAGS} -DENABLE_NSS ${NSPR_CFLAGS}"
+         have_nss="yes"
+ else
