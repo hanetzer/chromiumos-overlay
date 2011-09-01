@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="nls"
 
-RDEPEND=">=app-i18n/ibus-1.2
+RDEPEND=">=app-i18n/ibus-1.3.99
 	>=dev-libs/m17n-lib-1.6.1
 	>=dev-db/m17n-db-1.6.1
 	>=dev-db/m17n-contrib-1.1.10
@@ -38,9 +38,7 @@ src_prepare() {
 
 	# ibus-m17n-ibus-1.4.patch is taken from Fedora's repository at
 	# http://pkgs.fedoraproject.org/gitweb/?p=ibus-m17n.git;a=tree;h=refs/heads/master;hb=refs/heads/master
-	if ibus-daemon --version | egrep -e '(1\.4\.|1\.3\.99)' > /dev/null ; then
-		epatch "${FILESDIR}"/ibus-m17n-ibus-1.4.patch
-	fi
+	epatch "${FILESDIR}"/ibus-m17n-ibus-1.4.patch
 
 	epatch "${FILESDIR}"/0006-Simplify-AltGr-handling.patch
 	epatch "${FILESDIR}"/0007-Clear-errno-to-0-before-calling-strtol-strtoul.patch
