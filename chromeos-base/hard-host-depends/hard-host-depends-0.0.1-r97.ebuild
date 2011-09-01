@@ -147,6 +147,11 @@ RDEPEND="${RDEPEND}
 	sys-apps/mosys
 	"
 
+# Host dependency used by the chromeos-base/root-certificates ebuild
+RDEPEND="${RDEPEND}
+	>=app-misc/ca-certificates-20090709-r6
+	"
+
 # Host dependencies that are needed for delta_generator.
 RDEPEND="${RDEPEND}
 	chromeos-base/update_engine

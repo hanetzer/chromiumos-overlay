@@ -1,4 +1,5 @@
-# Copyright 2011 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
+# Copyright 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/app-misc/ca-certificates/ca-certificates-20090709.ebuild,v 1.6 2009/10/09 02:13:09 rich0 Exp $
 
@@ -32,15 +33,6 @@ src_unpack() {
 	for patch in "${PATCHLIST[@]}" ; do
 		epatch $patch
 	done
-
-	# The list of trusted certificates in this package isn't the
-	# list we want to ship with; we remove those files and
-	# replace them with a Google-generated list.
-	#
-	# TODO(jrbarnette) Really, this is just gross.  But this isn't
-	# quite enough to justify a git repository (yet...)
-	rm -rf usr/share/ca-certificates/*
-	tar xf ${FILESDIR}/certificates.tgz
 }
 
 pkg_setup() {
@@ -75,16 +67,6 @@ pkg_postinst() {
 	for c in $(find -L "${ROOT}"etc/ssl/certs/ -type l) ; do
 		ewarn "Broken symlink for a certificate at $c"
 		badcerts=1
-	done
-	for d in $(find "${ROOT}"usr/share/ca-certificates -type d); do
-		if [ $(( $(stat -c 0%a "$d") & 005 )) -ne 005 ]; then
-			ewarn "Bad permissions on directory $d"
-		fi
-	done
-	for f in $(find "${ROOT}"usr/share/ca-certificates -type f); do
-		if [ $(( $(stat -c 0%a "$f") & 004 )) -ne 004 ]; then
-			ewarn "Bad permissions on file $f"
-		fi
 	done
 	if [ $badcerts -eq 1 ]; then
 		ewarn "You MUST remove the above broken symlinks"

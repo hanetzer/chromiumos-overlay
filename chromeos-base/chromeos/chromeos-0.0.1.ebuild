@@ -118,6 +118,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
+	virtual/kernel
 	"
 
 # Specifically include the editor we want to appear in chromeos images, so that
@@ -164,10 +165,10 @@ RDEPEND="${RDEPEND}
 	chromeos-base/entd
 	chromeos-base/flimflam
 	chromeos-base/internal
-	virtual/kernel
 	chromeos-base/libcros
 	chromeos-base/metrics
 	chromeos-base/power_manager
+	chromeos-base/root-certificates
 	chromeos-base/speech_synthesis
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
