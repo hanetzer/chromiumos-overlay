@@ -181,6 +181,9 @@ build_toolchain() {
     CROSS_ARGS+=" --libc $FLAGS_libc_version"
   fi
 
+  if [ "${FLAGS_usepkg}" -eq "${FLAGS_FALSE}" ]; then
+    CROSS_ARGS+=" --ex-gdb"
+  fi
   sudo -E FEATURES="splitdebug ${FEATURES}" crossdev $CROSS_ARGS
 }
 
