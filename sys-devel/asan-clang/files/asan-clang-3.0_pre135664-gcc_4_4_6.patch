@@ -1,0 +1,15 @@
+Fixes the bug with not finding the runtime libs for gcc v4.4.6.
+http://groups.google.com/a/chromium.org/group/clang/browse_thread/thread/7498c728678ed984/16151f39f12776bc
+Check if it is already resolved when you advance Clang revision.
+
+--- a/asan/clang_src/tools/clang/lib/Driver/ToolChains.cpp
++++ b/asan/clang_src/tools/clang/lib/Driver/ToolChains.cpp
+@@ -1479,7 +1479,7 @@
+   }
+   static const char* GccVersions[] = {"4.6.1", "4.6.0", "4.6",
+                                       "4.5.2", "4.5.1", "4.5",
+-                                      "4.4.5", "4.4.4", "4.4.3", "4.4",
++                                      "4.4.6", "4.4.5", "4.4.4", "4.4.3", "4.4",
+                                       "4.3.4", "4.3.3", "4.3.2", "4.3",
+                                       "4.2.4", "4.2.3", "4.2.2", "4.2.1",
+                                       "4.2", "4.1.1"};

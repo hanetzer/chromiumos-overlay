@@ -41,6 +41,9 @@ src_unpack() {
 }
 
 src_prepare() {
+	epatch "${FILESDIR}/${P}-option_b.patch"
+	epatch "${FILESDIR}/${P}-gcc_4_4_6.patch"
+
 	if use asan; then
 	       "${S}/llvm/patch_clang.sh"
 	fi
