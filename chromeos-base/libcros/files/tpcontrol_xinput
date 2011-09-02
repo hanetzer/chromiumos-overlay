@@ -45,33 +45,8 @@ elif [ "$COMMAND" = "taptoclick" -a $# = 2 ] ; then
   esac
 elif [ "$COMMAND" = "sensitivity" -a $# = 2 ] ; then
   VALUE=$2
-  case $VALUE in
-  1)
-#    $XINPUT set-prop $DEVICE "Motion Speed" 10
-#    $XINPUT set-prop $DEVICE "Scroll Speed" 10
-    VALID=1
-    ;;
-  2)
-#    $XINPUT set-prop $DEVICE "Motion Speed" 25
-#    $XINPUT set-prop $DEVICE "Scroll Speed" 25
-    VALID=1
-    ;;
-  3)
-#    $XINPUT set-prop $DEVICE "Motion Speed" 50
-#    $XINPUT set-prop $DEVICE "Scroll Speed" 50
-    VALID=1
-    ;;
-  4)
-#    $XINPUT set-prop $DEVICE "Motion Speed" 75
-#    $XINPUT set-prop $DEVICE "Scroll Speed" 75
-    VALID=1
-    ;;
-  5)
-#    $XINPUT set-prop $DEVICE "Motion Speed" 100
-#    $XINPUT set-prop $DEVICE "Scroll Speed" 100
-    VALID=1
-    ;;
-  esac
+  $XINPUT set-prop $DEVICE "Sensitivity" "$VALUE"
+  VALID=1
 elif [ "$COMMAND" = "set" -a $# = 3 ] ; then
   PROP=$2
   VALUE=$3
