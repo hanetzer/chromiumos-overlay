@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="d3ee367b6d23f3b204b43b8e65e11c88a0b36bc2"
+CROS_WORKON_COMMIT="7fa6e7c4b37732f8a2dbe08eb9d92a6653a7013f"
 
 CROS_WORKON_PROJECT="chromiumos/platform/mtplot"
 inherit autotools cros-workon
