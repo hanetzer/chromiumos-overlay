@@ -101,7 +101,6 @@ RDEPEND="${RDEPEND}
 
 RDEPEND="${RDEPEND}
 	x86? (
-		chromeos-base/chromeos-acpi
 		chromeos-base/saft
 		net-wireless/iwl1000-ucode
 		net-wireless/iwl3945-ucode
