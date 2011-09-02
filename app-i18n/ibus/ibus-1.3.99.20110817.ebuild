@@ -12,7 +12,7 @@ inherit eutils flag-o-matic toolchain-funcs multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}_unofficial.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -50,11 +50,9 @@ src_prepare() {
         epatch "${FILESDIR}"/0003-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/0004-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/0005-Port-the-following-ibus-1.3-patches-to-1.4.patch
-        epatch "${FILESDIR}"/0007-Change-default-values-of-some-config.patch
-        epatch "${FILESDIR}"/0001-Fix-several-GVariant-related-issues.-And-remove-a-wr.patch
+        epatch "${FILESDIR}"/0006-Change-default-values-of-some-config.patch
 
         # TODO remove this patch with a new upstream tarball
-        epatch "${FILESDIR}"/0001-Always-enable-the-new-focused-BusInputContext.patch
         epatch "${FILESDIR}"/0001-Fix-for-ibus_serializable_-get-set-_attachment.patch
         epatch "${FILESDIR}"/0002-Use-GVariant-as-attachment-for-IBusSerializable.patch
 }
