@@ -1,6 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+app-benchmarks/i7z      -X
 app-crypt/tpm-tools     pkcs11
 app-i18n/zinnia	    	-perl
 app-editors/qemacs	-X
