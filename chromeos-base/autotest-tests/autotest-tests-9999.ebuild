@@ -184,6 +184,7 @@ IUSE_TESTS="
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_DhclientLeaseTestCase
 	+tests_network_DisableInterface
+	+tests_network_ModemManagerSMS
 	+tests_network_NegotiatedLANSpeed
 	+tests_network_Ping
 	+tests_network_UdevRename
