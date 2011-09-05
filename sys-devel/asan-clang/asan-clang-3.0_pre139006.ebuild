@@ -23,7 +23,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk"@${PV#*_pre}
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="amd64 x86"
 IUSE="+alltargets -asan +cxx-sysroot-wrapper debug -system-cxx-headers test"
 
 S="${WORKDIR}/asan"
@@ -41,9 +41,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/${P}-option_b.patch"
-	epatch "${FILESDIR}/${P}-gcc_4_4_6.patch"
-
 	if use asan; then
 	       "${S}/llvm/patch_clang.sh"
 	fi
@@ -100,6 +97,13 @@ src_configure() {
 src_compile() {
 	cd "${S}"/clang_src || die "cd failed"
 	emake VERBOSE=1 KEEP_SYMBOLS=1 REQUIRES_RTTI=1 clang-only || die "emake failed"
+	if use asan; then
+		cd "${S}"/asan || die "cd to ASAN failed"
+		emake ASAN_FLAGS=-march=i686 CLANG_BUILD="${S}"/asan lib32 ||
+			die "emake ASAN library 32 failed"
+		emake CLANG_BUILD="${S}"/asan lib64 ||
+			die "emake ASAN library 64 failed"
+	fi
 }
 
 src_test() {
@@ -112,6 +116,12 @@ src_test() {
 	if ! emake -j1 VERBOSE=1 test; then
 		has test $FEATURES && die "Make test failed. See above for details."
 		has test $FEATURES || eerror "Make test failed. See above for details."
+	fi
+
+	if use asan; then
+		cd "${S}"/asan || die "cd to ASAN failed"
+		emake CLANG_BUILD="${S}"/asan CLANG_CXX=clang++ t32 t64 ||
+			die "emake ASAN tests failed"
 	fi
 }
 
@@ -145,6 +155,14 @@ src_install() {
 		# its own (/usr/lib/clang/3.0/include) despite declaration order,
 		# thus it takes some includes (xmmintrin.h) from there and it drives Clang mad.
 		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.0/include/"
+	fi
+
+	if use asan; then
+		cd "${S}"/asan || die "cd to ASAN failed"
+		dodir /usr/lib
+		emake CLANG_BUILD="${S}"/asan INSTALL_DIR="${ED}"/usr \
+			install_lib32 install_lib64 ||
+			die "emake install of ASAN library failed"
 	fi
 }
 
