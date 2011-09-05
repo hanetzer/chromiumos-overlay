@@ -1,0 +1,59 @@
+diff -urN ../mozc-1.1.785.102.old/hangul/session.cc ./hangul/session.cc
+--- ../mozc-1.1.785.102.old/hangul/session.cc	2011-09-05 10:42:02.645528163 +0900
++++ ./hangul/session.cc	2011-09-05 10:44:50.475732589 +0900
+@@ -432,33 +432,10 @@
+     return false;
+   }
+ 
+-  bool has_alt = false;
+-  bool has_shift = false;
+-  for (size_t i = 0; i < key_event.modifier_keys_size(); ++i) {
+-    switch (key_event.modifier_keys(i)) {
+-      case commands::KeyEvent::LEFT_ALT:
+-      case commands::KeyEvent::RIGHT_ALT:
+-      case commands::KeyEvent::ALT:
+-        has_alt = true;
+-        break;
+-      case commands::KeyEvent::SHIFT:
+-      case commands::KeyEvent::LEFT_SHIFT:
+-      case commands::KeyEvent::RIGHT_SHIFT:
+-        has_shift = true;
+-        break;
+-      default:
+-        // CTRL key is ignored in won key process.
+-        break;
+-    }
+-  }
+-
+-  if (!has_alt) {
+-    return false;
+-  }
+   string hangul_string;
+   FlushPreedit(&hangul_string);
+-  // "￦" or "₩"
+-  hangul_string.append(has_shift ? "\xEF\xBF\xA6" :  "\xE2\x82\xA9");
++  // "₩"
++  hangul_string.append("\xE2\x82\xA9");
+   SetResultToOutput(hangul_string, output);
+   return true;
+ }
+@@ -551,7 +528,6 @@
+ 
+   // Treat won key specially.
+   if (ProcessWonKey(command)) {
+-    CancelContext(output);
+     return true;
+   }
+ 
+@@ -668,6 +644,11 @@
+   const KeyEvent &key_event = command->input().key();
+   commands::Output *output = command->mutable_output();
+ 
++  // Treat won key specially.
++  if (ProcessWonKey(command)) {
++    return true;
++  }
++
+   if (IsHanjaSelectionMode()) {
+     // All key is consumed on hanja selection mode.
+     return ProcessHanjaSelection(command);

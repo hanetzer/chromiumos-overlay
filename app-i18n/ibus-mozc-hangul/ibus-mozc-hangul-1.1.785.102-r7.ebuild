@@ -36,6 +36,8 @@ src_prepare() {
   epatch "${FILESDIR}"/${P}-BSkey-and-modified-key-doesnt-work.patch
   # issued as http://crosbug.com/18555
   epatch "${FILESDIR}"/${P}-focusout-preedit-discard.patch
+  # issued as http://crosbug.com/15947
+  epatch "${FILESDIR}"/${P}-enable-won-key-input.patch
 }
 
 src_configure() {
