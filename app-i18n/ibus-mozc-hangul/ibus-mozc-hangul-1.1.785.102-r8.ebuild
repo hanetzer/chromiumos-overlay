@@ -38,6 +38,8 @@ src_prepare() {
   epatch "${FILESDIR}"/${P}-focusout-preedit-discard.patch
   # issued as http://crosbug.com/15947
   epatch "${FILESDIR}"/${P}-enable-won-key-input.patch
+  # issued as http://crosbug.com/18402
+  epatch "${FILESDIR}"/${P}-enable-numpad-input.patch
 }
 
 src_configure() {

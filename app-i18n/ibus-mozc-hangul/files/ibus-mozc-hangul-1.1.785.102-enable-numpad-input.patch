@@ -1,0 +1,19 @@
+diff -urN ../mozc-1.1.785.102.old/hangul/session.cc ./hangul/session.cc
+--- ../mozc-1.1.785.102.old/hangul/session.cc	2011-09-05 21:15:36.206032573 +0900
++++ ./hangul/session.cc	2011-09-05 21:16:32.225575169 +0900
+@@ -684,6 +684,15 @@
+     }
+   }
+ 
++  // This is quick fix for ChromeOS/R15
++  if (key_event->has_special_key() &&
++      (key_event->special_key() >= KeyEvent::NUMPAD0 &&
++       key_event->special_key() <= KeyEvent::NUMPAD9)) {
++    key_event->set_key_code('0' +
++                            (key_event->special_key() - KeyEvent::NUMPAD0));
++    key_event->clear_special_key();
++  }
++
+   if (current_mode_ == kHanjaLockMode) {
+     command->mutable_output()->set_consumed(ProcessHanjaLockMode(command));
+   } else {
