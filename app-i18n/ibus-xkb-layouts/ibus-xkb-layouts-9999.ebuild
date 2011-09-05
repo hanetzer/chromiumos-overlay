@@ -59,8 +59,8 @@ src_compile() {
 	  --rewrite=src/xkb-layouts.xml || die
 	# Remove spaces from the XML to reduce file size from ~17k to ~10k.
 	# You can make it readable by 'xmllint --format' (on a target machine).
-	mv src/xkb-layouts.xml /tmp || die
-	xmllint --noblanks /tmp/xkb-layouts.xml > src/xkb-layouts.xml || die
+	mv src/xkb-layouts.xml "${T}" || die
+	xmllint --noblanks "${T}"/xkb-layouts.xml > src/xkb-layouts.xml || die
 }
 
 src_install() {

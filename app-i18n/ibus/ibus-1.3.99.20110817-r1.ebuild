@@ -88,14 +88,13 @@ src_configure() {
 
 test_fail() {
 	kill $IBUS_DAEMON_PID
-	rm -rf /tmp/.ibus-test-socket-*
+	rm -rf "${T}"/.ibus-test-socket-*
 	die
 }
 
 src_test() {
-	# Start ibus-daemon background. XDG_CONFIG_HOME variable is necessary
-	# to make g_get_user_config_dir() Glib function happy.
-	export IBUS_ADDRESS_FILE="`mktemp -d /tmp/.ibus-test-socket-XXXXXXXXXX`/ibus-socket-file"
+	# Start ibus-daemon background.
+	export IBUS_ADDRESS_FILE="`mktemp -d ${T}/.ibus-test-socket-XXXXXXXXXX`/ibus-socket-file"
 	./bus/ibus-daemon --replace --panel=disable &
 	IBUS_DAEMON_PID=$!
 
@@ -115,7 +114,7 @@ src_test() {
 
 	# Cleanup.
 	kill $IBUS_DAEMON_PID
-	rm -rf /tmp/.ibus-test-socket-*
+	rm -rf "${T}"/.ibus-test-socket-*
 }
 
 src_install() {
