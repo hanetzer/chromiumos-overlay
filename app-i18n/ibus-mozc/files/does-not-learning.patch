@@ -1,0 +1,15 @@
+diff -urN ../mozc-1.1.773.102.old/base/util.cc ./base/util.cc
+--- ../mozc-1.1.773.102.old/base/util.cc	2011-09-05 17:26:56.175527866 +0900
++++ ./base/util.cc	2011-09-05 18:27:46.745738992 +0900
+@@ -2254,11 +2254,7 @@
+       << "Can't get passwd entry for uid " << uid << ".";
+   CHECK_LT(0, strlen(pw.pw_dir))
+       << "Home directory for uid " << uid << " is not set.";
+-#if defined(OS_CHROMEOS)
+-  dir = Util::JoinPath(pw.pw_dir, "user/.mozc");
+-#else
+   dir = Util::JoinPath(pw.pw_dir, ".mozc");
+-#endif  // OS_CHROMEOS
+ #endif
+ 
+   Util::CreateDirectory(dir);

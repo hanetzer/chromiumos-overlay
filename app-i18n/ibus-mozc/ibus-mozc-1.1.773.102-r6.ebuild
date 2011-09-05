@@ -22,6 +22,8 @@ src_prepare() {
   epatch "${FILESDIR}"/version_number.patch || die
   epatch "${FILESDIR}"/pkg_config.patch || die
   epatch "${FILESDIR}"/infolist.patch || die
+  # issued as crosbug.com/19619
+  epatch "${FILESDIR}"/does-not-learning.patch
 }
 
 src_configure() {
