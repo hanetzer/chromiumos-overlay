@@ -19,6 +19,8 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 
 src_prepare() {
   cd "mozc-${PV}" || die
+  epatch "${FILESDIR}"/ibus-mozc-chewing-1.1.773.102-fix-property-string.patch
+
   # TODO: Remove the epatch lines when mozc is upgraded.
   epatch "${FILESDIR}"/pkg_config.patch
   epatch "${FILESDIR}"/chewing_dependency.patch

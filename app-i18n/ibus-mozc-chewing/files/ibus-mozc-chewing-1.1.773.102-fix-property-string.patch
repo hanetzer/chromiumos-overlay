@@ -1,0 +1,13 @@
+diff -uNr mozc-1.1.773.102.orig/chewing/unix/ibus/mozc_engine_property.cc mozc-1.1.773.102/chewing/unix/ibus/mozc_engine_property.cc
+--- mozc-1.1.773.102.orig/chewing/unix/ibus/mozc_engine_property.cc	2011-07-19 14:42:04.000000000 +0900
++++ mozc-1.1.773.102/chewing/unix/ibus/mozc_engine_property.cc	2011-09-05 13:36:09.799858923 +0900
+@@ -51,7 +51,8 @@
+   {
+     commands::HIRAGANA,
+     "CompositionMode.Chinese",
+-    "Chinese",
++    // Added an underscore as ibus-pinyin also uses the same string "Chinese".
++    "_Chinese",
+     "\xe9\x85\xB7",  //U+9177 "chewing" kanji
+     "hiragana.png",
+   },
