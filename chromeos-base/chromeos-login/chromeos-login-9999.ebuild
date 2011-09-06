@@ -13,7 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="test -touchui -webui_login"
+IUSE="-asan test -touchui -webui_login"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -81,5 +81,10 @@ src_install() {
 	if use touchui ; then
 		insinto /root
 		newins "${S}/use_touchui" .use_touchui
+	fi
+
+	if use asan; then
+		insinto /root
+		newins "${S}/debug_with_asan" .debug_with_asan
 	fi
 }
