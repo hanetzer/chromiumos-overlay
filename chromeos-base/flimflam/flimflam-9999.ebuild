@@ -94,17 +94,6 @@ src_compile() {
 	emake || die "emake failed"
 }
 
-src_test() {
-	if use modemmanager; then
-		emake tools/providerdb_test
-		if ! use x86; then
-			echo "Skipping tests on non-x86 platform..."
-		else
-			gtester --verbose tools/providerdb_test
-		fi
-	fi
-}
-
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 	keepdir /var/lib/${PN} || die
