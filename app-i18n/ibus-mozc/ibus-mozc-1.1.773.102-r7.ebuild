@@ -24,6 +24,7 @@ src_prepare() {
   epatch "${FILESDIR}"/infolist.patch || die
   # issued as crosbug.com/19619
   epatch "${FILESDIR}"/does-not-learning.patch
+  epatch "${FILESDIR}"/ibus-mozc-1.1.773.102-candidate_refactoring.patch || die
 }
 
 src_configure() {
