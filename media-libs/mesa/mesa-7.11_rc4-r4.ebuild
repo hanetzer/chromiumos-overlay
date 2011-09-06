@@ -129,6 +129,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-i965-fix-indexbuf.patch
 	epatch "${FILESDIR}"/7.11-fragcoord.patch
 	epatch "${FILESDIR}"/7.11-i915-scissor.patch
+	epatch "${FILESDIR}"/7.11-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 
 	eautoreconf
 }
