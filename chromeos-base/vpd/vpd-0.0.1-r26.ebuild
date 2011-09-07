@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f926325cb693c8e0bcc92b1a206221fdd1582cd4"
+CROS_WORKON_COMMIT="b7daf937ae9969500f38ccd7f4a66a40c3f7291c"
 CROS_WORKON_PROJECT="chromiumos/platform/vpd"
 
 inherit cros-workon
@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 DEPEND="sys-apps/util-linux"  # util-linux is for libuuid.
-RDEPEND="sys-apps/flashrom"
+RDEPEND="sys-apps/flashrom dev-libs/shflags"  # shflags for dump_vpd_log
 
 # This target list should be architecture specific
 # (no ACPI stuff on ARM for instance)
