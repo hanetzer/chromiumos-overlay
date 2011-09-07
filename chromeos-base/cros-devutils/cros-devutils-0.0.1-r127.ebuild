@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="a791cb7688b6b3d9456e9956dea697c080e85f51"
+CROS_WORKON_COMMIT="78f2b5c2a3572c7227f546319c2f9b99d584dd8c"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon multilib python
@@ -38,7 +38,6 @@ src_install() {
 		doexe gmerge || die "Could not find file to install."
 		doexe stateful_update || die "Could not find file to install."
 	else
-		doexe host/write_tegra_bios || die "Could not find file to install."
 		doexe host/cros_overlay_list || die "Could not find file to install."
 		doexe host/cros_workon || die "Could not find file to install."
 		doexe host/cros_chrome_make || die "Could not find file to install."
