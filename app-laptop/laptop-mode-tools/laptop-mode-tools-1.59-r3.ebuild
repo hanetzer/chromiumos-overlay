@@ -45,6 +45,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0014-Disable-ethernet-control.patch" \
           "0015-Disable-file-system-remount.patch" \
           "0016-Wait-for-laptop_mode-using-shell-commands.patch" \
+          "0017-usb-autosuspend-black-whitelist-in-quotes.patch" \
         )
 
 src_unpack() {
