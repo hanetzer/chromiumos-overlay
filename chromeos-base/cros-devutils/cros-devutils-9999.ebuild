@@ -37,7 +37,6 @@ src_install() {
 		doexe gmerge || die "Could not find file to install."
 		doexe stateful_update || die "Could not find file to install."
 	else
-		doexe host/write_tegra_bios || die "Could not find file to install."
 		doexe host/cros_overlay_list || die "Could not find file to install."
 		doexe host/cros_workon || die "Could not find file to install."
 		doexe host/cros_chrome_make || die "Could not find file to install."
