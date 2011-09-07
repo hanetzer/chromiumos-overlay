@@ -53,5 +53,5 @@ cros_set_board_environment_variable()
         set -- ${b}             # Set ${1} and ${2}.
         use ${1} && export BOARD=${2} && return
     done
-    ewarn "BOARD value cannot be determined; leaving unset."
+    die "Value for BOARD environment variable cannot be determined."
 }
