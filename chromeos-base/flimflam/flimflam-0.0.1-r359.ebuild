@@ -4,7 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="11829da9b4652559bfcde16355136f3092861f0c"
+CROS_WORKON_COMMIT="b785b391ddca6b3281eeceae1ce5a5726e0bd413"
 CROS_WORKON_PROJECT="chromiumos/platform/flimflam"
 
 inherit autotools cros-workon toolchain-funcs
@@ -93,17 +93,6 @@ src_configure() {
 src_compile() {
 	emake clean-generic || die "emake clean failed"
 	emake || die "emake failed"
-}
-
-src_test() {
-	if use modemmanager; then
-		emake tools/providerdb_test
-		if ! use x86; then
-			echo "Skipping tests on non-x86 platform..."
-		else
-			gtester --verbose tools/providerdb_test
-		fi
-	fi
 }
 
 src_install() {

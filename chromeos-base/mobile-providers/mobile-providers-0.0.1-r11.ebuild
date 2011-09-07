@@ -10,25 +10,38 @@ HOMEPAGE="http://live.gnome.org/NetworkManager/MobileBroadband/ServiceProviders"
 LICENSE="CC-PD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="tools"
 
 RDEPEND="!net-misc/mobile-broadband-provider-info"
 DEPEND=""
 
 CROS_WORKON_LOCALNAME="../third_party/mobile-broadband-provider-info"
 
-src_compile() {
-	eautoreconf || die "eautoreconf failed"
-	econf || die "econf failed"
+src_prepare() {
+	eautoreconf
 }
 
-src_install() {
+src_configure() {
+	econf $(use_enable tools)
+}
+
+src_compile() {
 	xmllint --valid --noout serviceproviders.xml || \
 		die "XML document is not well-formed or is not valid"
-	emake DESTDIR="${D}" install || die "emake install failed"
-	dodoc NEWS README || die "dodoc failed"
+	emake clean-generic || die "emake clean failed"
+	emake || die "emake failed"
 }
 
 src_test() {
-	make check || die "tests failed"
+	emake check || die "building tests failed"
+	if use x86; then
+		gtester --verbose src/mobile_provider_unittest
+	else
+		echo "Skipping tests on non-x86 platform..."
+	fi
+}
+
+src_install() {
+	emake DESTDIR="${D}" install || die "emake install failed"
+	dodoc NEWS README || die "dodoc failed"
 }
