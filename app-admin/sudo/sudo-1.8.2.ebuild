@@ -28,7 +28,7 @@ SRC_URI="http://www.sudo.ws/sudo/dist/${uri_prefix}${MY_P}.tar.gz
 LICENSE="as-is BSD"
 
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="amd64 arm x86"
 IUSE="pam offensive ldap selinux skey"
 
 DEPEND="pam? ( virtual/pam )
@@ -37,7 +37,7 @@ DEPEND="pam? ( virtual/pam )
 		>=net-nds/openldap-2.1.30-r1
 		dev-libs/cyrus-sasl
 	)
-	>=app-misc/editor-wrapper-3
+	app-editors/gentoo-editor
 	sys-libs/zlib
 	virtual/editor
 	virtual/mta"
@@ -116,7 +116,7 @@ src_configure() {
 	econf \
 		--enable-zlib=system \
 		--with-secure-path="${ROOTPATH}" \
-		--with-editor=/usr/libexec/editor \
+		--with-editor=/usr/libexec/gentoo-editor \
 		--with-env-editor \
 		$(use_with offensive insults) \
 		$(use_with offensive all-insults) \
@@ -151,10 +151,16 @@ EOF
 		fperms 0440 /etc/ldap.conf.sudo
 	fi
 
+	newpamd "${FILESDIR}"/include-chromeos-auth sudo
 	pamd_mimic system-auth sudo auth account session
 
 	keepdir /var/db/sudo
 	fperms 0700 /var/db/sudo
+
+	# See crosbug.com/11991.
+	if [ -n "${SHARED_USER_NAME}" ]; then
+		echo "${SHARED_USER_NAME} ALL=(ALL) ALL" >> "${D}"/etc/sudoers || die
+	fi
 }
 
 pkg_postinst() {
