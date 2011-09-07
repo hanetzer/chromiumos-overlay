@@ -23,5 +23,5 @@ CROS_WORKON_LOCALNAME="marvell"
 
 src_install() {
     dodir /lib/firmware/mrvl || die
-    cp -a "${S}"/sd8787* "${D}"/lib/firmware/mrvl/ || die
+    cp -a "${S}"/sd87* "${D}"/lib/firmware/mrvl/ || die
 }
