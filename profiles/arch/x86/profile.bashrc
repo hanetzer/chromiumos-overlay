@@ -20,14 +20,31 @@ function print_ld_paths() {
   echo "$paths"
 }
 
+# Given the path to ld-linux.so.2, determine it's version.
+function libc_version() {
+  local ld_path=$1
+  echo $(readlink -f $1/ld-linux.so.2  | sed 's/.*ld-\(.*\).so/\1/g')
+}
+
 function pre_src_test() {
+  # HACK(raymes): If host/target libc versions are different,
+  # prepend host library path to work around
+  # http://code.google.com/p/chromium-os/issues/detail?id=19936
+  local host_library_path=""
+  local host_libc=$(libc_version /lib32)
+  local target_libc=$(libc_version "$SYSROOT/lib")
+  if [[ "$host_libc" != "$target_libc" ]]; then
+    host_library_path=/lib32
+    ewarn "Host/target libc mismatch. Using host libs for src_test!"
+  fi
+
   # Set LD_LIBRARY_PATH to point to libraries in $SYSROOT, so that tests
   # will load libraries from there first
   if [[ -n "$SYSROOT" ]] && [[ "$SYSROOT" != "/" ]]; then
     if [[ -n "$LD_LIBRARY_PATH" ]]; then
-      export LD_LIBRARY_PATH="$(print_ld_paths):$LD_LIBRARY_PATH"
+      export LD_LIBRARY_PATH="$host_library_path:$(print_ld_paths):$LD_LIBRARY_PATH"
     else
-      export LD_LIBRARY_PATH="$(print_ld_paths)"
+      export LD_LIBRARY_PATH="$host_library_path:$(print_ld_paths)"
     fi
   fi
 }
