@@ -12,8 +12,10 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="tools"
 
-RDEPEND="!net-misc/mobile-broadband-provider-info"
-DEPEND=""
+RDEPEND="!net-misc/mobile-broadband-provider-info
+	>=dev-libs/glib-2.0"
+DEPEND="${RDEPEND}
+	>=dev-util/pkgconfig-0.9"
 
 CROS_WORKON_LOCALNAME="../third_party/mobile-broadband-provider-info"
 
