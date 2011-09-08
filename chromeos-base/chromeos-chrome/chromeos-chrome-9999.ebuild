@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp"
+IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -524,18 +524,25 @@ src_prepare() {
 			epatch $patch_file
 		done
 	fi
+
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
-	if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
-		# Set the dependency repos to the revision specified in the
-		# .DEPS.git file, and run the hooks in that file.
-		"${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver.py}" --runhooks || die
-	else
-		test -n "${EGCLIENT}" || die EGCLIENT unset
-		[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
-		${EGCLIENT} runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
+	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver.py}
+	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks useflag when
+        # chrome build switches to Ninja inside the chroot.
+	if use runhooks; then
+		if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
+			# Set the dependency repos to the revision specified in the
+			# .DEPS.git file, and run the hooks in that file.
+			"${ECHROME_SET_VER}" --runhooks || die
+		else
+			[ -n "${EGCLIENT}" ] || die EGCLIENT unset
+			[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
+			"${EGCLIENT}" runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
+		fi
+	elif [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
+		"${ECHROME_SET_VER}" || die
 	fi
-
 }
 
 src_configure() {
@@ -597,7 +604,7 @@ src_compile() {
 
 	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
-	emake -r V=1 BUILDTYPE="${BUILDTYPE}" \
+	emake -r $(use verbose && echo V=1) BUILDTYPE="${BUILDTYPE}" \
 		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
