@@ -31,6 +31,7 @@ net-libs/libsoup	-ssl
 # for curl-7.19.6 turning on ipv6 use flag will turn off ares
 net-misc/curl		ares
 net-misc/dhcpcd crash
+net-misc/iputils	ipv6
 net-misc/ntp            caps
 net-misc/openssh	-X
 net-misc/openvpn	pkcs11
@@ -42,6 +43,7 @@ net-wireless/wpa_supplicant	dbus debug -readline ssl
 sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb
 sys-apps/busybox	-pam -selinux
 sys-apps/dbus		-X
+sys-apps/iproute2	ipv6
 sys-apps/mawk		usrbinawk
 sys-apps/parted         device-mapper
 sys-apps/util-linux	-perl
