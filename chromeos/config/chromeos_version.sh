@@ -18,7 +18,7 @@
 # Major/minor versions.
 # Primarily for product marketing.
 export CHROMEOS_VERSION_MAJOR=0
-export CHROMEOS_VERSION_MINOR=15
+export CHROMEOS_VERSION_MINOR=16
 
 # Branch number.
 # Increment by 1 in a new release branch.
