@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="100271"
+CROS_SVN_COMMIT="100292"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -27,7 +27,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="+build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -touchui -local_gclient hardfp"
+IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -local_gclient hardfp"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -103,7 +103,7 @@ fi
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS ${USE_TCMALLOC} chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
+BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -222,6 +222,25 @@ set_build_defines() {
 	if use touchui; then
 		BUILD_DEFINES="touchui=1 $BUILD_DEFINES"
 	fi
+
+	if use clang; then
+		if [ "$ARCH" = "x86" ]; then
+			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
+			USE_TCMALLOC="linux_use_tcmalloc=0"
+		else
+			die Clang is not yet supported for "${ARCH}"
+		fi
+	fi
+
+	if use asan; then
+		if ! use clang; then
+			eerror "Asan requires Clang to run."
+			die "Please set USE=\"${USE} clang\" to enable Clang"
+		fi
+		BUILD_DEFINES="asan=1 disable_nacl=1 $BUILD_DEFINES"
+	fi
+
+	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES}"
