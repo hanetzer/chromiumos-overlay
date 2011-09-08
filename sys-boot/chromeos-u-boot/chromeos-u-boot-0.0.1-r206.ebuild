@@ -106,13 +106,8 @@ src_install() {
 	local config
 	local inst_dir
 
-	if use x86; then
-		inst_dir='/coreboot'
-	else
-		inst_dir='/u-boot'
-	fi
+	inst_dir='/firmware'
 
-	dodir "${inst_dir}"
 	insinto "${inst_dir}"
 
 	local files_to_copy='System.map u-boot.bin'
@@ -123,14 +118,42 @@ src_install() {
 
 	newins "${UB_BUILD_DIR}/u-boot" u-boot.elf
 
-	dodir "${inst_dir}/dtb"
 	insinto "${inst_dir}/dtb"
 
 	elog "Using fdt: ${CROS_FDT_FILE}.dtb"
 	newins "${UB_BUILD_DIR}/u-boot.dtb" "${CROS_FDT_FILE}.dtb"
 
-	dodir "${inst_dir}/dts"
 	insinto "${inst_dir}/dts"
 
 	doins ${CROS_FDT_DIR}/*.dts
+
+	# -----------------------------------------------------------------
+	# This piece of code will go away as soon as all scripts use the
+	# new location /firmware
+	# -----------------------------------------------------------------
+	if use x86; then
+		inst_dir='/coreboot'
+	else
+		inst_dir='/u-boot'
+	fi
+
+	insinto "${inst_dir}"
+
+	local files_to_copy='System.map u-boot.bin'
+
+	for file in ${files_to_copy}; do
+		doins "${UB_BUILD_DIR}/${file}"
+	done
+
+	newins "${UB_BUILD_DIR}/u-boot" u-boot.elf
+
+	insinto "${inst_dir}/dtb"
+
+	elog "Using fdt: ${CROS_FDT_FILE}.dtb"
+	newins "${UB_BUILD_DIR}/u-boot.dtb" "${CROS_FDT_FILE}.dtb"
+
+	insinto "${inst_dir}/dts"
+
+	doins ${CROS_FDT_DIR}/*.dts
+	# -----------------------------------------------------------------
 }
