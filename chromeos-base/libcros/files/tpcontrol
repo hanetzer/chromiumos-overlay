@@ -5,20 +5,43 @@
 
 VALID=1
 SYN_DISABLE="/home/chronos/.tp_disable"
-RAW_CMD="$@"
 PROG=`basename $0`
 COMMAND=$1
 VALUE=$2
+WANT_USAGE=0
+
+
+# Check if syntp is installed
+if [ -x /opt/Synaptics/bin/tpcontrol_syncontrol ]; then
+  SYNTP_INSTALLED=1
+else
+  SYNTP_INSTALLED=0
+fi
 
 # Global verbs usage message
 gusage() {
-  echo "Usage: $PROG {syntp [on|off]}"
+  # One usage message per global command; only output syntp usage if it is
+  # supported in the current configuration
+  if [ "x$SYNTP_INSTALLED" = "x1" ] ; then
+    echo "Usage: $PROG {syntp [on|off]}"
+  fi
 }
 
+
 # Global verbs here
-# Note: "status" is special, since we want ot add our status to the end
-# of the other commands status
-if [ "$COMMAND" = "syntp" ] ; then
+#
+# A global verb is one which is applied to all underlying tpcontrol utilities;
+# in the case of "mostly global" verbs, we have to do extra testing to drop
+# them out when they don't apply.
+#
+# Note: "status" is a special verb, since we want to add any global verb
+# status reports to the end of the underlying tpcontrol utilities status
+#
+
+#
+# syntp verb is only valid if $SYNTP_INSTALLED
+#
+if [ "$COMMAND" = "syntp" -a "x$SYNTP_INSTALLED" = "x1" ] ; then
   if [ "$VALUE" = "off" ] ; then
     /usr/bin/touch "$SYN_DISABLE"
     exit 0
@@ -26,46 +49,63 @@ if [ "$COMMAND" = "syntp" ] ; then
     /bin/rm -f "$SYN_DISABLE"
     exit 0
   else
-    # bad command; force usage via pseudo-command (ntimp) "usage"
-    gusage
-    CMD="usage"
+    # bad command; force usage via pseudo-command (unimplemented) "usage"
+    WANT_USAGE=1
   fi
 fi
+
 
 # Fall through to handle other commands; we source the script so it can
 # tell us whether or not it's valid by picking up the 'VALID' environment
 # variable.
 
-# Configure using tpcontrol_syncontrol if it exists, and there is a
-# /dev/serio_raw* char device for syntp to use. This lets the code work
-# after a switch but before a restart of the ui.
-if [ -x /opt/Synaptics/bin/tpcontrol_syncontrol -a \
+# Select an underlying tpcontrol command to run
+if [ "x$SYNTP_INSTALLED" = "x1" -a \
      -n "$(find /dev -maxdepth 1 -type c -name 'serio_raw*' -print -quit)" ]; \
    then
-  . /opt/Synaptics/bin/tpcontrol_syncontrol "$CMD"
+  # Configure using tpcontrol_syncontrol if it exists, and there is a
+  # /dev/serio_raw* char device for syntp to use. This lets the code work
+  # after a switch but before a restart of the ui.
+  CONTROL=/opt/Synaptics/bin/tpcontrol_syncontrol
 elif [ -x /usr/bin/xinput ] ; then
   # TODO(djkurtz): This is fragile, for now it works because xinput is only
   # installed in /usr/bin/ if cmt USE flag is set when building libcros.
-  . /opt/google/touchpad/tpcontrol_xinput "$CMD"
+  CONTROL=/opt/google/touchpad/tpcontrol_xinput
 else
-  . /opt/google/touchpad/tpcontrol_synclient "$CMD"
+  CONTROL=/opt/google/touchpad/tpcontrol_synclient
 fi
 
-# Append global verb status results
+# Run the underlying command
+#
+# NOTE: This is sourcing the script, not calling it in a subshell
+#
+# We only WANT_USAGE if we had a global command and it failed; we make
+# this explicit as a call, since the previous implementation was confusing
+if [ "x$WANT_USAGE" = "x1" ] ; then
+  . $CONTROL usage
+else
+  . $CONTROL
+fi
+
+# Append global verb status results; for commands which aren't applicable to
+# the current configuration, a test must be done to disable status for
+# particular global commands
 if [ "$COMMAND" = "status" ] ; then
-  if [ -f "$SYN_DISABLE" ]; then
-    echo "syntp: off"
-  else
-    echo "syntp: on"
+  # the status only applies to the syntp command if it is enabled
+  if [ "x$SYNTP_INSTALLED" = "x1" ] ; then
+    if [ -f "$SYN_DISABLE" ]; then
+      echo "syntp: off"
+    else
+      echo "syntp: on"
+    fi
   fi
 fi
 
-# give a nice exit status
-if [ "x$VALID" = "x1" ] ; then
-  exit 0
+# for invalid input, append our usage to that of the underlying command
+# which has had its usage message forced previously
+if [ "x$VALID" = "x0" ] ; then
+  gusage
+  exit 1
 fi
 
-# for invalid input, append our usage to that of the other command
-gusage
-
-exit 1
+exit 0
