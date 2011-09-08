@@ -28,7 +28,7 @@ src_compile() {
 }
 
 src_install() {
-	dodir /coreboot
-	insinto /coreboot
+	dodir /firmware
+	insinto /firmware
 	doins out/bios.bin.elf || die
 }

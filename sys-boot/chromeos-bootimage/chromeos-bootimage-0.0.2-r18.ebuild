@@ -32,8 +32,6 @@ RDEPEND="${DEPEND}
 
 # TODO(clchiou): Here are the action items for fixing x86 build that I can
 # think of:
-# * Unify the install directories (/u-boot and /coreboot) to one (probably
-#   places like /firmware or /lib/firmware?)
 # * Make BCT optional to cros_bundle_firmware because it is specific to ARM
 # * Make sure there is an x86 dtb installed
 
@@ -53,11 +51,7 @@ src_compile() {
 	local devkeys_file
 
 	# Directory where the generated files are looked for and placed.
-	if use x86; then
-		CROS_FIRMWARE_IMAGE_DIR="/coreboot"
-	else
-		CROS_FIRMWARE_IMAGE_DIR="/u-boot"
-	fi
+	CROS_FIRMWARE_IMAGE_DIR="/firmware"
 	CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/"
 
 	# Location of the board-specific bct file
@@ -134,4 +128,25 @@ src_install() {
 			newins legacy_image.ifd.new legacy_image.ifd
 		fi
 	fi
+	# -----------------------------------------------------------------
+	# The following section is going away as soon as all scripts and
+	# ebuilds have been migrated to use the new /firmware location
+	# -----------------------------------------------------------------
+	if use x86; then
+		CROS_FIRMWARE_IMAGE_DIR="/coreboot"
+	else
+		CROS_FIRMWARE_IMAGE_DIR="/u-boot"
+	fi
+	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
+	doins image.bin
+	doins legacy_image.bin
+	doins ${BMPBLK_FILE}
+	if use x86; then
+		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
+		if [ -r ${skeleton} ]; then
+			newins image.ifd.new image.ifd
+			newins legacy_image.ifd.new legacy_image.ifd
+		fi
+	fi
+	# -----------------------------------------------------------------
 }
