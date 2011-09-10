@@ -547,6 +547,7 @@ ROOT="${BOARD_ROOT}/"
 BOARD_OVERLAY="${BOARD_OVERLAY_LIST}"
 MAKEOPTS="-j${NUM_JOBS}"
 PKG_CONFIG="pkg-config-${BOARD_VARIANT}"
+BOARD_USE="${BOARD_VARIANT}"
 EOF
 if ! ${HOST_BOARD}; then
   sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \

@@ -25,33 +25,48 @@
 #  monitor any specific hardware; thus, when a new board is added, the
 #  ADHD project must be updated.
 #
-#  BOARD is only set when there is a physical board associated with
-#  the current build.  Generic build types, such as 'x86-generic', do
-#  not set BOARD.
-#
-IUSE="alex lumpy mario stumpy tegra2_aebl tegra2_asymptote tegra2_kaen tegra2_seaboard zgb"
+BOARD_USE_PREFIX="board_use_"
+ALL_BOARDS=(
+    amd64-generic
+    amd64-host
+    arm-generic
+    lumpy
+    stumpy
+    tegra2
+    tegra2_aebl
+    tegra2_arthur
+    tegra2_asymptote
+    tegra2_dev-board
+    tegra2_dev-board-opengl
+    tegra2_kaen
+    tegra2_seaboard
+    tegra2_wario
+    x86-agz
+    x86-alex
+    x86-alex_he
+    x86-dogfood
+    x86-fruitloop
+    x86-generic
+    x86-mario
+    x86-mario64
+    x86-pineview
+    x86-zgb
+    x86-zgb_he
+)
+
+# Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create the IUSE list.
+IUSE=${ALL_BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
 cros_set_board_environment_variable()
 {
-    # Please keep this list sorted.
-    local boards=(
-        # "<use-flag-name> ${BOARD}"
-        "alex x86-alex"
-        "lumpy lumpy"
-        "mario x86-mario"
-        "stumpy stumpy"
-        "tegra2_aebl tegra2_aebl"
-        "tegra2_asymptote tegra2_asymptote"
-        "tegra2_kaen tegra2_kaen"
-        "tegra2_seaboard tegra2_seaboard"
-        "zgb x86-zgb"
-    )
     local b
 
     export BOARD=""
-    for b in "${boards[@]}" ; do
-        set -- ${b}             # Set ${1} and ${2}.
-        use ${1} && export BOARD=${2} && return
+    for b in "${ALL_BOARDS[@]}"; do
+        if use ${BOARD_USE_PREFIX}${b}; then
+            export BOARD=${b} && return
+        fi
     done
+
     die "Value for BOARD environment variable cannot be determined."
 }
