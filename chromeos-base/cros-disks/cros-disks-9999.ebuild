@@ -23,6 +23,7 @@ RDEPEND="
 	dev-cpp/gflags
 	dev-libs/dbus-c++
 	dev-libs/glib
+	sys-apps/parted
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-fs/avfs
