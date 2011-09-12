@@ -1,0 +1,150 @@
+diff -uprb opencryptoki-2.2.8.orig/usr/lib/pkcs11/common/h_extern.h opencryptoki-2.2.8/usr/lib/pkcs11/common/h_extern.h
+--- opencryptoki-2.2.8.orig/usr/lib/pkcs11/common/h_extern.h	2011-09-12 14:26:16.575616351 -0700
++++ opencryptoki-2.2.8/usr/lib/pkcs11/common/h_extern.h	2011-09-07 12:30:00.198034799 -0700
+@@ -1604,6 +1604,7 @@ CK_RV _UnlockMutex( MUTEX *mutex );
+ 
+ CK_RV attach_shm(void);
+ CK_RV detach_shm(void);
++void flush_shm(void);
+ 
+ // encryption manager routines
+ //
+@@ -2403,14 +2404,23 @@ extern token_spec_t token_specific;
+ #define LogDebug(...)		do { } while (0)
+ #define LogDebug1(...)		do { } while (0)
+ #define LogBlob(...)		do { } while (0)
+-#define LogError(...)		do { } while (0)
+-#define LogError1(...)		do { } while (0)
+ #define LogWarn(...)		do { } while (0)
+ #define LogWarn1(...)		do { } while (0)
+ #define LogInfo(...)		do { } while (0)
+ #define LogInfo1(...)		do { } while (0)
+ 
++#ifdef HIDE_BAD_ERRORS
++#define LogError(...)		do { } while (0)
++#define LogError1(...)		do { } while (0)
+ #define st_err_log(...)		do { } while (0)
++#else
++#include <syslog.h>
++#define LogError(fmt, ...) syslog(LOG_ERR, "libpkcs11_tpm: " fmt, ##__VA_ARGS__)
++#define LogError1(data) \
++  syslog(LOG_ERR, "libpkcs11_tpm: %s:%d: %s", __FILE__, __LINE__, data)
++#define st_err_log(...) \
++  syslog(LOG_ERR, "libpkcs11_tpm: st_err_log at %s:%d", __FILE__, __LINE__)
++#endif
+ #endif
+ 
+ /* CKA_HIDDEN will be used to filter return results on a C_FindObjects call.
+diff -uprb opencryptoki-2.2.8.orig/usr/lib/pkcs11/common/obj_mgr.c opencryptoki-2.2.8/usr/lib/pkcs11/common/obj_mgr.c
+--- opencryptoki-2.2.8.orig/usr/lib/pkcs11/common/obj_mgr.c	2011-09-12 14:26:16.575616351 -0700
++++ opencryptoki-2.2.8/usr/lib/pkcs11/common/obj_mgr.c	2011-09-12 14:42:03.056149299 -0700
+@@ -1155,6 +1155,8 @@ object_mgr_destroy_token_objects( void )
+ 
+       memset( &global_shm->publ_tok_objs, 0x0, MAX_TOK_OBJS * sizeof(TOK_OBJ_ENTRY) );
+       memset( &global_shm->priv_tok_objs, 0x0, MAX_TOK_OBJS * sizeof(TOK_OBJ_ENTRY) );
++
++      flush_shm();
+    }
+    else
+       st_err_log(150, __FILE__, __LINE__); 
+@@ -2135,6 +2137,8 @@ object_mgr_set_attribute_values( SESSION
+       XProcUnLock( xproclock );
+    }
+ 
++   flush_shm();
++
+    return rc;
+ }
+ 
+@@ -2171,6 +2175,8 @@ object_mgr_add_to_shm( OBJECT *obj )
+       object_mgr_sort_publ_shm();
+    }
+ 
++   flush_shm();
++
+    return CKR_OK;
+ }
+ 
+@@ -2271,6 +2277,8 @@ object_mgr_del_from_shm( OBJECT *obj )
+    // object list is still sorted...so no need to re-sort
+    //
+ 
++   flush_shm();
++
+    return CKR_OK;
+ }
+ 
+diff -uprb opencryptoki-2.2.8.orig/usr/lib/pkcs11/common/utility.c opencryptoki-2.2.8/usr/lib/pkcs11/common/utility.c
+--- opencryptoki-2.2.8.orig/usr/lib/pkcs11/common/utility.c	2011-09-12 14:26:16.575616351 -0700
++++ opencryptoki-2.2.8/usr/lib/pkcs11/common/utility.c	2011-09-12 14:46:48.495745450 -0700
+@@ -1407,8 +1407,12 @@ detach_shm()
+    return CKR_OK;
+ }
+ 
+-//#endif
++void
++flush_shm()
++{
++}
+ 
++//#endif
+ 
+ CK_RV
+ compute_sha( CK_BYTE  * data,
+diff -uprb opencryptoki-2.2.8.orig/usr/lib/pkcs11/tpm_stdll/h_extern.h opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/h_extern.h
+--- opencryptoki-2.2.8.orig/usr/lib/pkcs11/tpm_stdll/h_extern.h	2011-09-12 14:26:16.586219196 -0700
++++ opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/h_extern.h	2011-09-07 12:30:17.676839542 -0700
+@@ -1221,6 +1221,7 @@ CK_RV _UnlockMutex( MUTEX *mutex );
+ 
+ CK_RV attach_shm(void);
+ CK_RV detach_shm(void);
++void flush_shm(void);
+ 
+ // encryption manager routines
+ //
+diff -uprb opencryptoki-2.2.8.orig/usr/lib/pkcs11/tpm_stdll/new_host.c opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/new_host.c
+--- opencryptoki-2.2.8.orig/usr/lib/pkcs11/tpm_stdll/new_host.c	2011-09-12 14:26:16.586219196 -0700
++++ opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/new_host.c	2011-09-07 12:39:25.758972588 -0700
+@@ -496,6 +496,7 @@ CK_RV ST_Initialize( void **FunctionList
+ 	load_public_token_objects();
+ 	XProcLock( xproclock );
+ 	global_shm->publ_loaded = TRUE;
++	flush_shm();
+ 	XProcUnLock( xproclock );
+ 
+ 	init_slotInfo();
+diff -uprb opencryptoki-2.2.8.orig/usr/lib/pkcs11/tpm_stdll/utility.c opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/utility.c
+--- opencryptoki-2.2.8.orig/usr/lib/pkcs11/tpm_stdll/utility.c	2011-09-12 14:26:16.586219196 -0700
++++ opencryptoki-2.2.8/usr/lib/pkcs11/tpm_stdll/utility.c	2011-09-12 13:33:13.092749240 -0700
+@@ -1190,6 +1190,7 @@ attach_shm()
+ 			xproclock = (void *)&global_shm->mutex;
+ 		}
+ 
++    LogError("mmap: num objects: %d/%d", global_shm->num_publ_tok_obj, global_shm->num_priv_tok_obj);
+ 		rc = CKR_OK;
+ 
+ err_out:
+@@ -1214,6 +1215,7 @@ detach_shm()
+ #if !(NOSHM) && !(MMAP)
+    shmdt( global_shm );
+ #elif MMAP
++   LogError("munmap: num objects: %d/%d", global_shm->num_publ_tok_obj, global_shm->num_priv_tok_obj);
+    // Detach from memory mapped file
+    munmap((void *)global_shm,sizeof(LW_SHM_TYPE));
+ #else
+@@ -1222,6 +1224,15 @@ detach_shm()
+    return CKR_OK;
+ }
+ 
++void
++flush_shm()
++{
++#if MMAP
++   LogError("msync: num objects: %d/%d", global_shm->num_publ_tok_obj, global_shm->num_priv_tok_obj);
++   msync((void *)global_shm,sizeof(LW_SHM_TYPE),MS_SYNC | MS_INVALIDATE);
++#endif
++}
++
+ 
+ CK_RV
+ compute_sha( CK_BYTE  * data,

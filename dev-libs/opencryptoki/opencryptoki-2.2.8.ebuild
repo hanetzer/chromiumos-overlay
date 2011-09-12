@@ -48,6 +48,7 @@ src_prepare() {
 	# patch.
 	epatch "${FILESDIR}/opencryptoki-2.2.8-nssconstfix.patch"
 	epatch "${FILESDIR}/opencryptoki-2.2.8-no_rootkey_backup.patch"
+	epatch "${FILESDIR}/opencryptoki-2.2.8-flush_shmem.patch"
 	eautoreconf
 }
 
