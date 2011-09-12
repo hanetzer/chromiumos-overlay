@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE=""
+IUSE="-asan"
 
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
 RDEPEND="${RDEPEND}
@@ -81,6 +81,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/gsutil
 	sys-apps/module-init-tools
 	!sys-apps/nih-dbus-tool
+	asan? ( sys-devel/asan-clang )
 	sys-fs/sshfs-fuse
 	sys-libs/libnih
 	sys-power/iasl
