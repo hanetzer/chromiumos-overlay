@@ -3,7 +3,7 @@
 # $Header: $
 
 EAPI="2"
-CROS_WORKON_COMMIT="3ce35003bae44f93bbf0c481bd2d6317dab6826c"
+CROS_WORKON_COMMIT="3728f3b94272b44780deb1a2eee9fc97b4f1170b"
 CROS_WORKON_PROJECT="chromiumos/platform/speech_synthesis"
 
 inherit cros-debug cros-workon eutils
