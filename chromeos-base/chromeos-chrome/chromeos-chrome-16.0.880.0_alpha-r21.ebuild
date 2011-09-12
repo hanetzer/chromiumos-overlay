@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-CROS_SVN_COMMIT="100774"
+CROS_SVN_COMMIT="100784"
 inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -27,7 +27,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -local_gclient hardfp"
+IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -153,6 +153,13 @@ DEPEND="${DEPEND}
 	build_tests? ( dev-lang/python )
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23"
+
+PATCHES=()
+if use touchui_patches; then
+	PATCHES+=(
+		"${FILESDIR}/webkit.2011091201.patch"
+		)
+fi
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
@@ -372,6 +379,11 @@ unpack_chrome() {
 	pushd "${ECHROME_STORE_DIR}" || \
 		die "Cannot chdir to ${ECHROME_STORE_DIR}"
 
+	if [ -s patches ]; then
+		elog "Reverting previous patches"
+		${EGCLIENT} revert --jobs 8 --nohooks || die
+		rm patches
+	fi
 	elog "Syncing google chrome sources using ${EGCLIENT}"
 	tc-export CC CXX
 	# We use --force to work around a race condition with
@@ -505,6 +517,14 @@ src_prepare() {
 		fi
 	fi
 
+	# Apply patches for non-localsource builds
+	if [ "$CHROME_ORIGIN" = "SERVER_SOURCE" ]; then
+		for patch_file in ${PATCHES}; do
+			einfo Applying $patch_file
+			echo $patch_file >> "${CHROME_ROOT}/patches"
+			epatch $patch_file
+		done
+	fi
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
 	if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
