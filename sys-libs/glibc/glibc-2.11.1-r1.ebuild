@@ -8,7 +8,7 @@ DESCRIPTION="GNU libc6 (also called glibc2) C library"
 HOMEPAGE="http://www.gnu.org/software/libc/libc.html"
 
 LICENSE="LGPL-2"
-KEYWORDS="~amd64 ~arm ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="amd64 ~arm ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 RESTRICT="strip" # strip ourself #46186
 EMULTILIB_PKG="true"
 
@@ -22,7 +22,7 @@ case ${PV} in
 	EGIT_REPO_URIS=( "${GIT_REPO}/glibc.git" "${GIT_REPO}/glibc-ports.git" )
 	EGIT_SOURCEDIRS=( "${S}" "${S}/ports" )
 	RELEASE_VER=${PV}
-	[[ ${PV} == 9999 ]] || EGIT_COMMITS=( "18cba386e41c58c94ffcd53df1cc5cbf91a83dec" "glibc-2.11.1" )
+	[[ ${PV} == 9999 ]] || EGIT_COMMITS=( "4d00bd56fe0092ff3c803f227a9964bffc873eb9" "glibc-2.11.1" )
 	inherit git-2
 	;;
 *_p*)
@@ -86,6 +86,7 @@ else
 	# Why SLOT 2.2 you ask yourself while sippin your tea ?
 	# Everyone knows 2.2 > 0, duh.
 	SLOT="2.2"
+	PROVIDE="virtual/libc"
 fi
 
 # General: We need a new-enough binutils for as-needed
