@@ -28,9 +28,8 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/${P}-double-version.patch"
-	epatch "${FILESDIR}"/${P}-fix-lazy-binding.patch
-	epatch "${FILESDIR}"/${P}-gold.patch
+	epatch "${FILESDIR}"/fuse-2.8.5-fix-lazy-binding.patch
+	epatch "${FILESDIR}"/fuse-2.8.5-gold.patch
 
 	elibtoolize
 }
@@ -40,7 +39,8 @@ src_configure() {
 		INIT_D_PATH="${EPREFIX}/etc/init.d" \
 		MOUNT_FUSE_PATH="${EPREFIX}/sbin" \
 		UDEV_RULES_PATH="${EPREFIX}/lib/udev/rules.d" \
-		--disable-example
+		--disable-example \
+		--disable-mtab
 }
 
 src_install() {
