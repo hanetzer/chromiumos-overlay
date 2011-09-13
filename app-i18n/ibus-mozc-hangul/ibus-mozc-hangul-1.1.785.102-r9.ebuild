@@ -40,6 +40,9 @@ src_prepare() {
   epatch "${FILESDIR}"/${P}-enable-won-key-input.patch
   # issued as http://crosbug.com/18402
   epatch "${FILESDIR}"/${P}-enable-numpad-input.patch
+
+  # http://crosbug.com/20309
+  epatch "${FILESDIR}"/${P}-no-engine-specific-hotkeys.patch
 }
 
 src_configure() {
