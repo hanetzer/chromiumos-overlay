@@ -24,8 +24,6 @@ DEPEND="sys-apps/debianutils
 "
 RDEPEND="!sys-kernel/chromeos-kernel-next"
 
-vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
-
 # TODO(vbendeb): we might need to be able to define the device tree source
 # name by some other means or to override the default. For now it must match
 # the name/board name.
