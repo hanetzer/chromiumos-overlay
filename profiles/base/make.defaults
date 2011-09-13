@@ -57,7 +57,7 @@ NETBEANS="apisupport cnd groovy gsf harness ide identity j2ee java mobility nb p
 # Build kernel modules from linux-mod by default:
 USE="${USE} modules"
 
-# ChromeOS-specific: BOARD_USE for setting BOARD envvar in cros-board.eclass
+# ChromeOS-specific: BOARD_USE for accessing board value in cros-board.eclass
 #                    KCONFIG USE_EXPAND for kernel
 #                    TESTS USE_EXPAND for autotest
 USE_EXPAND="${USE_EXPAND} BOARD_USE KCONFIG TESTS"

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=3
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 inherit toolchain-funcs cros-workon cros-board
@@ -20,11 +20,11 @@ RDEPEND=">=media-libs/alsa-lib-1.0.24.1"
 DEPEND=${RDEPEND}
 
 src_compile() {
-        cros_set_board_environment_variable
-        emake CC="$(tc-getCC)" || die "Unable to build ADHD."
+        local board=$(get_current_board_with_variant)
+        emake BOARD=${board} CC="$(tc-getCC)" || die "Unable to build ADHD."
 }
 
 src_install() {
-        cros_set_board_environment_variable
-        dobin "build/${BOARD}/gavd/gavd" || die "Unable to install ADHD"
+        local board=$(get_current_board_with_variant)
+        dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
 }

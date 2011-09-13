@@ -25,6 +25,8 @@
 #  monitor any specific hardware; thus, when a new board is added, the
 #  ADHD project must be updated.
 #
+[[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
+
 BOARD_USE_PREFIX="board_use_"
 ALL_BOARDS=(
     amd64-generic
@@ -54,19 +56,31 @@ ALL_BOARDS=(
     x86-zgb_he
 )
 
-# Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create the IUSE list.
+# Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create IUSE.
 IUSE=${ALL_BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-cros_set_board_environment_variable()
+# Require one, and only one, of the board_use flags to be set if this eclass
+# is used.  This effectively makes any ebuild that inherits this eclass require
+# a known valid board to be set.
+REQUIRED_USE="^^ ( ${IUSE} )"
+
+# Echo the current board, with variant.
+get_current_board_with_variant()
 {
     local b
 
-    export BOARD=""
     for b in "${ALL_BOARDS[@]}"; do
         if use ${BOARD_USE_PREFIX}${b}; then
-            export BOARD=${b} && return
+            echo ${b}
+            return
         fi
     done
 
-    die "Value for BOARD environment variable cannot be determined."
+    die "Unable to determine current board (with variant)."
+}
+
+# Echo the current board, without variant.
+get_current_board_no_variant()
+{
+    get_current_board_with_variant | cut -d '_' -f 1
 }
