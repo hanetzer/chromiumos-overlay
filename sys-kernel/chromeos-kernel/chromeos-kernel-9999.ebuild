@@ -186,7 +186,7 @@ src_install() {
 		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
-		local load_addr=0x01000000
+		local load_addr=0x03000000
 		if use device_tree; then
 			local its_script="${build_dir}/its_script"
 			sed "s|%BUILD_ROOT%|${boot_dir}|;\
