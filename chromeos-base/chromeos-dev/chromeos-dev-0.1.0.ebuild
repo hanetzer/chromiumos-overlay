@@ -57,6 +57,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/findutils
 	sys-apps/i2c-tools
 	x86? ( sys-apps/iotools )
+	sys-apps/kbd
 	sys-apps/less
 	x86? ( sys-apps/pciutils )
 	sys-apps/smartmontools

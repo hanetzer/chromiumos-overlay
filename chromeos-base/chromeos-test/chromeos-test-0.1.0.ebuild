@@ -60,6 +60,7 @@ RDEPEND="${RDEPEND}
 	x86? ( net-wireless/hostapd )
 	sys-apps/coreutils
 	sys-apps/findutils
+	sys-apps/kbd
 	x86? ( sys-apps/pciutils )
 	x86? ( sys-apps/superiotool )
 	sys-apps/shadow
