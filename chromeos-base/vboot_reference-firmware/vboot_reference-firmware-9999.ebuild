@@ -7,7 +7,7 @@ DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~arm ~x86"
-IUSE=""
+IUSE="-vb_mock_tpm"
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
@@ -23,26 +23,16 @@ src_compile() {
 
 	local DEBUG=""
 	if use cros-debug ; then
-		DEBUG=1
+		DEBUG="DEBUG=1"
 	fi
 
-	# Disable TPM entirely on boards that TPM chip bricks
-	local BOARD="${BOARD:-${SYSROOT##/build/}}"
+	local MOCK_TPM=""
+	if use vb_mock_tpm ; then
+		MOCK_TPM="MOCK_TPM=1"
+	fi
 
-	# TODO(clchiou) Find a new way to enable MOCK_TPM on all dev boards
-	#local MOCK_TPM=""
-	#if [ ${BOARD} = "tegra2_seaboard" ] ; then
-	#	MOCK_TPM=1
-	#fi
-	local MOCK_TPM="1"
-	case "${BOARD}" in
-		tegra2_kaen|tegra2_aebl|x86-alex|stumpy|lumpy)
-		MOCK_TPM=""
-	esac
-
-	emake	FIRMWARE_ARCH="$(tc-arch-kernel)" \
-		MOCK_TPM="${MOCK_TPM}" \
-		DEBUG="${DEBUG}" || die "${err_msg}"
+	emake FIRMWARE_ARCH="$(tc-arch-kernel)" ${DEBUG} ${MOCK_TPM} || \
+		die "${err_msg}"
 }
 
 src_install() {
