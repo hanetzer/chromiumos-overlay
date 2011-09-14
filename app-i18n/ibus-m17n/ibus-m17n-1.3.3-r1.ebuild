@@ -20,7 +20,7 @@ RDEPEND=">=app-i18n/ibus-1.3.99
 	>=dev-db/m17n-contrib-1.1.10
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-chrome
+	>=chromeos-base/chromeos-chrome-16
 	chromeos-base/chromeos-assets
 	dev-libs/libxml2
 	dev-util/pkgconfig
