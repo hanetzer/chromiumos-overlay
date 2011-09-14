@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="5c3e26612bcdcaddb2271efc2dee0e9516d356ed"
+CROS_WORKON_COMMIT="29a84d4263316008b81d9ab3a9e638157c883645"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit binutils-funcs cros-kernel toolchain-funcs
@@ -187,7 +187,7 @@ src_install() {
 		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
-		local load_addr=0x01000000
+		local load_addr=0x03000000
 		if use device_tree; then
 			local its_script="${build_dir}/its_script"
 			sed "s|%BUILD_ROOT%|${boot_dir}|;\

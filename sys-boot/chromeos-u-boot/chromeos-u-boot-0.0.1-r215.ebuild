@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="edd48fd3df33f7a7668d6cb469a3bf0c72637031"
+CROS_WORKON_COMMIT="1ca0c7d8356936a85c91db14672aea95f3c822ef"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs
@@ -126,34 +126,4 @@ src_install() {
 	insinto "${inst_dir}/dts"
 
 	doins ${CROS_FDT_DIR}/*.dts
-
-	# -----------------------------------------------------------------
-	# This piece of code will go away as soon as all scripts use the
-	# new location /firmware
-	# -----------------------------------------------------------------
-	if use x86; then
-		inst_dir='/coreboot'
-	else
-		inst_dir='/u-boot'
-	fi
-
-	insinto "${inst_dir}"
-
-	local files_to_copy='System.map u-boot.bin'
-
-	for file in ${files_to_copy}; do
-		doins "${UB_BUILD_DIR}/${file}"
-	done
-
-	newins "${UB_BUILD_DIR}/u-boot" u-boot.elf
-
-	insinto "${inst_dir}/dtb"
-
-	elog "Using fdt: ${CROS_FDT_FILE}.dtb"
-	newins "${UB_BUILD_DIR}/u-boot.dtb" "${CROS_FDT_FILE}.dtb"
-
-	insinto "${inst_dir}/dts"
-
-	doins ${CROS_FDT_DIR}/*.dts
-	# -----------------------------------------------------------------
 }
