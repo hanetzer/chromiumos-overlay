@@ -1,7 +1,9 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-0.9.8o.ebuild,v 1.6 2010/06/21 20:43:49 maekke Exp $
+
 EAPI="2"
+CROS_WORKON_COMMIT="17ce591f62c7a92b5d072dbc046faf1bb2a65f23"
 
 inherit eutils flag-o-matic toolchain-funcs cros-workon
 
@@ -12,7 +14,6 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="bindist gmp kerberos sse2 test zlib"
 CROS_WORKON_PROJECT="chromiumos/third_party/openssl"
-CROS_WORKON_COMMIT="17ce591f62c7a92b5d072dbc046faf1bb2a65f23"
 
 RDEPEND="gmp? ( dev-libs/gmp )
 	zlib? ( sys-libs/zlib )
@@ -24,10 +25,7 @@ DEPEND="${RDEPEND}
 PDEPEND="app-misc/ca-certificates"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-0.9.7e-gentoo.patch
-	epatch "${FILESDIR}"/${PN}-0.9.8e-bsd-sparc64.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8h-ldflags.patch #181438
-	epatch "${FILESDIR}"/${PN}-0.9.8m-binutils.patch #289130
 	epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8r-local-blacklist.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
