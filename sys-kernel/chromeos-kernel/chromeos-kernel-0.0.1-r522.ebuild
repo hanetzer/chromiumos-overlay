@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="1ce3ce7a49545a9b454475649b06adec792954be"
+CROS_WORKON_COMMIT="7cf99fe34835611cc788bbd070b59e2d8f672a22"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit binutils-funcs cros-kernel toolchain-funcs
@@ -24,8 +24,6 @@ DEPEND="sys-apps/debianutils
     !sys-kernel/chromeos-kernel-next
 "
 RDEPEND="!sys-kernel/chromeos-kernel-next"
-
-vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
 # TODO(vbendeb): we might need to be able to define the device tree source
 # name by some other means or to override the default. For now it must match
