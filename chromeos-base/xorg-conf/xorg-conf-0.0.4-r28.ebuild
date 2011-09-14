@@ -11,7 +11,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cmt elan mario multitouch synaptics"
+IUSE="alex cmt elan mario multitouch synaptics zgb"
 
 RDEPEND=""
 DEPEND="${RDEPEND}"
@@ -33,6 +33,10 @@ src_install() {
 		doins "${FILESDIR}/50-touchpad-cmt.conf"
 		if use elan; then
 			doins "${FILESDIR}/50-touchpad-cmt-elan.conf"
+		elif use alex; then
+			doins "${FILESDIR}/50-touchpad-cmt-alex.conf"
+		elif use zgb; then
+			doins "${FILESDIR}/50-touchpad-cmt-zgb.conf"
 		fi
 	elif use multitouch; then
 		doins "${FILESDIR}/50-touchpad-multitouch.conf"
