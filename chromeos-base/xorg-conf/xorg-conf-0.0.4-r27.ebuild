@@ -11,35 +11,35 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="synaptics multitouch mario cmt elan"
+IUSE="cmt elan mario multitouch synaptics"
 
 RDEPEND=""
+DEPEND="${RDEPEND}"
 
 src_install() {
 	insinto /etc/X11
-	newins "${FILESDIR}/xorg.conf" xorg.conf
+	ins "${FILESDIR}/xorg.conf"
 
 	dodir /etc/X11/xorg.conf.d
 	insinto /etc/X11/xorg.conf.d
 	# Since syntp does not use an evdev (/dev/input/event*) device nodes,
 	# its .conf snippet can be installed alongside one of the evdev-compatible
 	# xf86-input-* touchpad drivers.
-	if use synaptics ; then
-		newins "${FILESDIR}/touchpad.conf-syntp" 50-touchpad-syntp.conf
+	if use synaptics; then
+		doins "${FILESDIR}/50-touchpad-syntp.conf"
 	fi
 	# Enable exactly one evdev-compatible X input touchpad driver.
-	if use cmt ; then
-		if use elan ; then
-			newins "${FILESDIR}/touchpad.conf-cmt-elan" 50-touchpad-cmt.conf
-		else
-			newins "${FILESDIR}/touchpad.conf-cmt" 50-touchpad-cmt.conf
+	if use cmt; then
+		doins "${FILESDIR}/50-touchpad-cmt.conf"
+		if use elan; then
+			doins "${FILESDIR}/50-touchpad-cmt-elan.conf"
 		fi
-	elif use multitouch ; then
-		newins "${FILESDIR}/touchpad.conf-multitouch" 50-touchpad-multitouch.conf
-	elif use mario ; then
-		newins "${FILESDIR}/touchpad.conf-synaptics-mario" 50-touchpad-synaptics.conf
+	elif use multitouch; then
+		doins "${FILESDIR}/50-touchpad-multitouch.conf"
+	elif use mario; then
+		doins "${FILESDIR}/50-touchpad-synaptics-mario.conf"
 	else
-		newins "${FILESDIR}/touchpad.conf-synaptics" 50-touchpad-synaptics.conf
+		doins "${FILESDIR}/50-touchpad-synaptics.conf"
 	fi
-	newins "${FILESDIR}/20-mouse.conf" 20-mouse.conf
+	doins "${FILESDIR}/20-mouse.conf"
 }
