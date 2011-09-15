@@ -12,8 +12,7 @@ HOMEPAGE="http://www.pango.org/"
 
 LICENSE="LGPL-2 FTL"
 SLOT="0"
-# TODO(zbehan): stabilize in the chroot, and remove the previous ebuild
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE="X doc introspection test"
 
 RDEPEND=">=dev-libs/glib-2.24:2
