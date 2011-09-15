@@ -86,9 +86,6 @@ src_prepare() {
 	# add correct framework linking options, for aqua
 	epatch "${FILESDIR}/${PN}-2.18.5-macosx-aqua.patch"
 
-	# Fix chromium crash, bug 308985
-	epatch "${FILESDIR}/${PN}-2.18.7-destroy-crash.patch"
-
 	# Fix version script not used when gold linker turned on
 	epatch "${FILESDIR}/${PN}-2.18.7-gold.patch"
 
