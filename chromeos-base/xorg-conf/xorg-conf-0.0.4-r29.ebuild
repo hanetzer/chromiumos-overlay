@@ -18,7 +18,7 @@ DEPEND="${RDEPEND}"
 
 src_install() {
 	insinto /etc/X11
-	ins "${FILESDIR}/xorg.conf"
+	doins "${FILESDIR}/xorg.conf"
 
 	dodir /etc/X11/xorg.conf.d
 	insinto /etc/X11/xorg.conf.d
