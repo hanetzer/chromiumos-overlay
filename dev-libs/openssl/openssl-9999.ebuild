@@ -29,9 +29,6 @@ src_prepare() {
 	if use pkcs11; then
 		epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
 	fi
-	if ! test -f "${S}/skip-patch-local-blacklist"; then
-		epatch "${FILESDIR}"/${PN}-0.9.8r-local-blacklist.patch
-	fi
 	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
 
 	# disable fips in the build
