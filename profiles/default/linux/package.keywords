@@ -68,6 +68,9 @@
 # Mark fuse-2.8.5 unstable until it can be patched
 =sys-fs/fuse-2.8.5 -arm -x86 -amd64 ~arm ~x86 ~amd64
 
+# Mark pristine libpng-1.2.45 unstable.  It must be patched.
+=media-libs/libpng-1.2.45 -arm -x86 -amd64 ~arm ~x86 ~amd64
+
 # Unmask 2.6.38 headers in the chroot similar to the targets
 =sys-kernel/linux-headers-2.6.38	amd64 arm x86
 
