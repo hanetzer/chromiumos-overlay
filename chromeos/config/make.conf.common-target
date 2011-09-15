@@ -48,9 +48,6 @@ DISTDIR="/var/lib/portage/distfiles-target"
 GENTOO_MIRRORS="http://commondatastorage.googleapis.com/chromeos-localmirror"
 GENTOO_MIRRORS="$GENTOO_MIRRORS http://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
 
-# We want emerge to overwrite all config files automatically.
-CONFIG_PROTECT="-* /etc/make.globals"
-
 # Username and home directory of the shared user.
 SHARED_USER_NAME="chronos"
 SHARED_USER_HOME="/home/chronos/user"

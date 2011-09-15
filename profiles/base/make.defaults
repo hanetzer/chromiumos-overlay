@@ -13,7 +13,8 @@ USE_EXPAND="APACHE2_MODULES APACHE2_MPMS FOO2ZJS_DEVICES MISDN_CARDS FRITZCAPI_C
 # output. Changes need discussion on gentoo-dev.
 USE_EXPAND_HIDDEN="USERLAND KERNEL ELIBC CROSSCOMPILE_OPTS"
 
-CONFIG_PROTECT="/etc"
+# Basic CONFIG_PROTECT is defined by portage make.globals in /usr/share. That is really bad, kill it here.
+CONFIG_PROTECT="-/etc"
 CONFIG_PROTECT_MASK="/etc/env.d /etc/gconf"
 
 # Variables that are set exclusively by the profile
