@@ -22,8 +22,7 @@ DEPEND="${RDEPEND}
 	sys-apps/diffutils
 	>=dev-lang/perl-5
 	test? ( sys-devel/bc )"
-PDEPEND="app-misc/ca-certificates"
-RDEPEND="${RDEPEND}
+PDEPEND="app-misc/ca-certificates
 	 pkcs11? ( dev-libs/opencryptoki )"
 
 src_prepare() {
