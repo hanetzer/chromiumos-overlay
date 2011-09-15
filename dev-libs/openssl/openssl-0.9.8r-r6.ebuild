@@ -17,13 +17,14 @@ CROS_WORKON_PROJECT="chromiumos/third_party/openssl"
 
 RDEPEND="gmp? ( dev-libs/gmp )
 	zlib? ( sys-libs/zlib )
-	kerberos? ( app-crypt/mit-krb5 )
-	pkcs11? ( dev-libs/opencryptoki )"
+	kerberos? ( app-crypt/mit-krb5 )"
 DEPEND="${RDEPEND}
 	sys-apps/diffutils
 	>=dev-lang/perl-5
 	test? ( sys-devel/bc )"
 PDEPEND="app-misc/ca-certificates"
+RDEPEND="${RDEPEND}
+	 pkcs11? ( dev-libs/opencryptoki )"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.9.7e-gentoo.patch
