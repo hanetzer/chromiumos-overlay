@@ -25,10 +25,7 @@ PDEPEND="app-misc/ca-certificates
 	 pkcs11? ( dev-libs/opencryptoki )"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-0.9.7e-gentoo.patch
-	epatch "${FILESDIR}"/${PN}-0.9.8e-bsd-sparc64.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8h-ldflags.patch #181438
-	epatch "${FILESDIR}"/${PN}-0.9.8m-binutils.patch #289130
 	if use pkcs11; then
 		epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
 	fi
