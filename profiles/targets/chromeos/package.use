@@ -15,6 +15,7 @@ dev-libs/glib		-doc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
 dev-libs/opensc		ssl
+dev-libs/openssl	pkcs11
 dev-util/dialog		-unicode minimal
 dev-util/perf		-doc -demangle -tui
 dev-util/perf-next	-doc -demangle -tui
