@@ -12,12 +12,13 @@ HOMEPAGE="http://www.openssl.org/"
 LICENSE="openssl"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bindist gmp kerberos sse2 test zlib"
+IUSE="bindist gmp kerberos pkcs11 sse2 test zlib"
 CROS_WORKON_PROJECT="chromiumos/third_party/openssl"
 
 RDEPEND="gmp? ( dev-libs/gmp )
 	zlib? ( sys-libs/zlib )
-	kerberos? ( app-crypt/mit-krb5 )"
+	kerberos? ( app-crypt/mit-krb5 )
+	pkcs11? ( dev-libs/opencryptoki )"
 DEPEND="${RDEPEND}
 	sys-apps/diffutils
 	>=dev-lang/perl-5
@@ -29,7 +30,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.9.8e-bsd-sparc64.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8h-ldflags.patch #181438
 	epatch "${FILESDIR}"/${PN}-0.9.8m-binutils.patch #289130
-	epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
+	if use pkcs11; then
+		epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
+	fi
 	epatch "${FILESDIR}"/${PN}-0.9.8r-local-blacklist.patch
 	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
 
