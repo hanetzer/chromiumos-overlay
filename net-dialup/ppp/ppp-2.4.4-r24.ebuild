@@ -56,7 +56,7 @@ src_prepare() {
 	epatch "${WORKDIR}/patch/pppoe-lcp-timeout.patch"
 	epatch "${WORKDIR}/patch/passwordfd-read-early.patch"
 	epatch "${WORKDIR}/patch/pppd-usepeerwins.patch"
-	epatch "${FILESDIR}/fetch-peer-dns.patch"
+	epatch "${FILESDIR}/systemconfig.patch"
 
 	use eap-tls && {
 		# see http://eaptls.spe.net/index.html for more info

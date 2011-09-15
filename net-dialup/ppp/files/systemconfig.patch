@@ -1,0 +1,100 @@
+diff --git a/pppd/ipcp.c.orig b/pppd/ipcp.c
+index 324eef8..7022713 100644
+--- a/pppd/ipcp.c.orig
++++ b/pppd/ipcp.c
+@@ -91,6 +91,7 @@ static int default_route_set[NUM_PPP];	/* Have set up a default route */
+ static int proxy_arp_set[NUM_PPP];	/* Have created proxy arp entry */
+ static bool usepeerdns;			/* Ask peer for DNS addrs */
+ static bool usepeerwins;		/* Ask peer for WINS addrs */
++static bool neg_systemconfig;		/* Skip system configuration */
+ static int ipcp_is_up;			/* have called np_up() */
+ static int ipcp_is_open;		/* haven't called np_finished() */
+ static bool ask_for_local;		/* request our address from peer */
+@@ -213,6 +214,9 @@ static option_t ipcp_option_list[] = {
+     { "usepeerwins", o_bool, &usepeerwins,
+       "Ask peer for WINS address(es)", 1 },
+ 
++    { "nosystemconfig", o_bool, &neg_systemconfig,
++      "Avoid IP and route configuration of ppp device", 1 },
++
+     { "netmask", o_special, (void *)setnetmask,
+       "set netmask", OPT_PRIO | OPT_A2STRVAL | OPT_STATIC, netmask_str },
+ 
+@@ -1813,7 +1817,8 @@ ipcp_up(f)
+ 	script_setenv("DNS2", ip_ntoa(go->dnsaddr[1]), 0);
+     if (usepeerdns && (go->dnsaddr[0] || go->dnsaddr[1])) {
+ 	script_setenv("USEPEERDNS", "1", 0);
+-	create_resolv(go->dnsaddr[0], go->dnsaddr[1]);
++	if (!neg_systemconfig)
++	    create_resolv(go->dnsaddr[0], go->dnsaddr[1]);
+     }
+ 
+     if (go->winsaddr[0])
+@@ -1885,8 +1890,12 @@ ipcp_up(f)
+ 	 */
+ 	mask = GetMask(go->ouraddr);
+ 
++	if (neg_systemconfig && debug)
++		warn("Avoiding system configuration by request");
++
+ #if !(defined(SVR4) && (defined(SNI) || defined(__USLC__)))
+-	if (!sifaddr(f->unit, go->ouraddr, ho->hisaddr, mask)) {
++	if (!neg_systemconfig &&
++	    !sifaddr(f->unit, go->ouraddr, ho->hisaddr, mask)) {
+ 	    if (debug)
+ 		warn("Interface configuration failed");
+ 	    ipcp_close(f->unit, "Interface configuration failed");
+@@ -1898,7 +1907,7 @@ ipcp_up(f)
+ 	ipcp_script(_PATH_IPPREUP, 1);
+ 
+ 	/* bring the interface up for IP */
+-	if (!sifup(f->unit)) {
++	if (!neg_systemconfig && !sifup(f->unit)) {
+ 	    if (debug)
+ 		warn("Interface failed to come up");
+ 	    ipcp_close(f->unit, "Interface configuration failed");
+@@ -1906,7 +1915,8 @@ ipcp_up(f)
+ 	}
+ 
+ #if (defined(SVR4) && (defined(SNI) || defined(__USLC__)))
+-	if (!sifaddr(f->unit, go->ouraddr, ho->hisaddr, mask)) {
++	if (!neg_systemconfig &&
++	    !sifaddr(f->unit, go->ouraddr, ho->hisaddr, mask)) {
+ 	    if (debug)
+ 		warn("Interface configuration failed");
+ 	    ipcp_close(f->unit, "Interface configuration failed");
+@@ -1916,12 +1926,12 @@ ipcp_up(f)
+ 	sifnpmode(f->unit, PPP_IP, NPMODE_PASS);
+ 
+ 	/* assign a default route through the interface if required */
+-	if (ipcp_wantoptions[f->unit].default_route) 
++	if (!neg_systemconfig && ipcp_wantoptions[f->unit].default_route)
+ 	    if (sifdefaultroute(f->unit, go->ouraddr, ho->hisaddr))
+ 		default_route_set[f->unit] = 1;
+ 
+ 	/* Make a proxy ARP entry if requested. */
+-	if (ipcp_wantoptions[f->unit].proxy_arp)
++	if (!neg_systemconfig && ipcp_wantoptions[f->unit].proxy_arp)
+ 	    if (sifproxyarp(f->unit, ho->hisaddr))
+ 		proxy_arp_set[f->unit] = 1;
+ 
+@@ -1992,7 +2002,8 @@ ipcp_down(f)
+ 	sifnpmode(f->unit, PPP_IP, NPMODE_QUEUE);
+     } else {
+ 	sifnpmode(f->unit, PPP_IP, NPMODE_DROP);
+-	sifdown(f->unit);
++	if (!neg_systemconfig)
++	    sifdown(f->unit);
+ 	ipcp_clear_addrs(f->unit, ipcp_gotoptions[f->unit].ouraddr,
+ 			 ipcp_hisoptions[f->unit].hisaddr);
+     }
+@@ -2023,7 +2034,8 @@ ipcp_clear_addrs(unit, ouraddr, hisaddr)
+ 	cifdefaultroute(unit, ouraddr, hisaddr);
+ 	default_route_set[unit] = 0;
+     }
+-    cifaddr(unit, ouraddr, hisaddr);
++    if (!neg_systemconfig)
++	cifaddr(unit, ouraddr, hisaddr);
+ }
+ 
+ 
