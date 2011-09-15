@@ -233,6 +233,20 @@ EOF
    echo "export PS1=\"(cr) \${PS1}\"" >> \
      "$FLAGS_chroot/home/$USER/.bashrc"
 
+   # Select a small set of locales for the user if they haven't done so
+   # already.  This makes glibc upgrades cheap by only generating a small
+   # set of locales.  The ones listed here are basically for the buildbots
+   # which always assume these are available.  This works in conjunction
+   # with `cros_sdk --enter`.
+   # http://crosbug.com/20378
+   local localegen="$FLAGS_chroot/etc/locale.gen"
+   if ! grep -q -v -e '^#' -e '^$' "${localegen}" ; then
+     sudo_append "${localegen}" <<EOF
+en_US ISO-8859-1
+en_US.UTF-8 UTF-8
+EOF
+   fi
+
    # Add chromite as a local site-package.
    mkdir -p "${FLAGS_chroot}/home/$USER/.local/lib/python2.6/site-packages"
    ln -s ../../../../trunk/chromite \
@@ -421,34 +435,6 @@ if [[ "$FLAGS_chroot" = "$DEFAULT_CHROOT_DIR" ]]; then
   CHROOT_EXAMPLE_OPT=""
 else
   CHROOT_EXAMPLE_OPT="--chroot=$FLAGS_chroot"
-fi
-
-# TODO(raymes): Move this code back into enter_chroot.
-# This is here to workaround:
-# http://code.google.com/p/chromium-os/issues/detail?id=20378
-# Make sure user's requested locales are available
-# http://crosbug.com/19139
-# And make sure en_US{,.UTF-8} are always available as
-# that what buildbot forces internally
-locales=$(printf '%s\n' en_US en_US.UTF-8 ${LANG} \
-  $LC_{ADDRESS,ALL,COLLATE,CTYPE,IDENTIFICATION,MEASUREMENT,MESSAGES} \
-  $LC_{MONETARY,NAME,NUMERIC,PAPER,TELEPHONE,TIME} | \
-  sort -u | sed '/^C$/d')
-gen_locales=()
-for l in ${locales}; do
-  if [[ ${l} == *.* ]]; then
-    enc=${l#*.}
-  else
-    enc="ISO-8859-1"
-  fi
-  case $(echo ${enc//-} | tr '[:upper:]' '[:lower:]') in
-    utf8) enc="UTF-8";;
-  esac
-  gen_locales=("${gen_locales[@]}" "${l} ${enc}")
-done
-if [[ ${#gen_locales[@]} -gt 0 ]] ; then
-  in_chroot locale-gen -q -u \
-   -G "$(printf '%s\n' "${gen_locales[@]}")"
 fi
 
 print_time_elapsed
