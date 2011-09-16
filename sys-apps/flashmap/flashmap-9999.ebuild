@@ -13,7 +13,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 
 # Disable unit testing for now because one of the test cases for detecting
 # buffer overflow causes emake to fail when fmap_test is run.
