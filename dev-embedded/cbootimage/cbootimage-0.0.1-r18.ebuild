@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="20379c18a25191d9197bb96fd719c99336100055"
+CROS_WORKON_COMMIT="56f4048a7b55e60e037c06aae38c080b00c89014"
 CROS_WORKON_PROJECT="chromiumos/third_party/cbootimage"
 
 inherit cros-workon

@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-0.9.8o.ebuild,v 1.6 2010/06/21 20:43:49 maekke Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="17ce591f62c7a92b5d072dbc046faf1bb2a65f23"
+CROS_WORKON_COMMIT="e88106447407759a5911acc3895dbe6307ab888b"
 
 inherit eutils flag-o-matic toolchain-funcs cros-workon
 
@@ -30,7 +30,9 @@ src_prepare() {
 	if use pkcs11; then
 		epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
 	fi
-	epatch "${FILESDIR}"/${PN}-0.9.8r-local-blacklist.patch
+	if ! test -f "${S}/skip-patch-local-blacklist"; then
+		epatch "${FILESDIR}"/${PN}-0.9.8r-local-blacklist.patch
+	fi
 	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
 
 	# disable fips in the build
