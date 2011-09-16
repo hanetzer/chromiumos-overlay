@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ed45600f65af8a6382ced4856a20997a1906e8c0"
+CROS_WORKON_COMMIT="ff7b6acf1c62c25a88d6b13b4a56d39e5ffb4bab"
 CROS_WORKON_PROJECT="chromiumos/platform/saft"
 
 inherit cros-workon
