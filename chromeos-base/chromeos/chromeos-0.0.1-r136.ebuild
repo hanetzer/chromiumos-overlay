@@ -177,6 +177,7 @@ RDEPEND="${RDEPEND}
 	media-plugins/alsa-plugins
 	media-plugins/o3d
 	media-sound/alsa-utils
+	media-sound/adhd
 	net-firewall/iptables
 	net-misc/htpdate
 	net-misc/modemmanager
