@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="10518a6967f432066e49643e558bb3c31e11223d"
+CROS_WORKON_COMMIT="a4d23b5f12325369455d8114915451db8a5416c3"
 CROS_WORKON_PROJECT="chromiumos/platform/vpn-manager"
 
 inherit cros-debug cros-workon toolchain-funcs
