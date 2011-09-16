@@ -20,20 +20,16 @@ REQUIRED_USE="^^ ( ${BOARDS} arm )"
 # sys-boot/chromeos-bootimage-seaboard) will do the depending on
 # sys-boot/tegra2-public-firmware-fdts.  For now we'll hardcode it.
 DEPEND="
-	!sys-boot/chromeos-bios
 	arm? ( virtual/tegra-bct )
 	x86? ( sys-boot/chromeos-coreboot )
+	x86? ( sys-apps/coreboot-utils )
 	virtual/u-boot
 	chromeos-base/vboot_reference
 	"
 
-RDEPEND="${DEPEND}
-	sys-apps/flashrom"
-
 # TODO(clchiou): Here are the action items for fixing x86 build that I can
 # think of:
 # * Make BCT optional to cros_bundle_firmware because it is specific to ARM
-# * Make sure there is an x86 dtb installed
 
 S=${WORKDIR}
 
@@ -106,7 +102,7 @@ src_compile() {
 
 	if use x86; then
 		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
-		local ifdtool="${CROS_FIRMWARE_ROOT}/ifdtool"
+		local ifdtool="/usr/bin/ifdtool"
 		if [ -r ${skeleton} ]; then
 			cp ${skeleton} image.ifd
 			${ifdtool} -i BIOS:image.bin image.ifd
