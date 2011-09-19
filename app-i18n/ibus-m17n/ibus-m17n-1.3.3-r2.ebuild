@@ -29,6 +29,7 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	# Make it possible to override the DEFAULT_XML macro.
 	epatch "${FILESDIR}"/ibus-m17n-1.3.3-allow-override-xml-path.patch
+	epatch "${FILESDIR}"/0001-Fix-a-crash-and-add-some-warning-log-message.patch
 
 	# Build ibus-engine-m17n for the host platform.
 	(env -i ./configure && \
