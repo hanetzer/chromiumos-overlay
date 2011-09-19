@@ -122,6 +122,7 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	app-i18n/ibus
 	chromeos-base/chromeos-theme
+	chromeos-base/protofiles
 	dev-libs/atk
 	dev-libs/glib
 	dev-libs/nspr
@@ -837,9 +838,6 @@ src_install() {
 	# libcros compatibility.
 	insinto "${CHROME_DIR}"/include
 	doins "${CHROME_ROOT}/src/third_party/cros/chromeos_cros_api.h"
-
-	insinto /usr/include/proto
-	doins "${CHROME_ROOT}/src/chrome/browser/policy/proto/"*.proto
 
 	# Copy ibus_input_methods.txt so that ibus-m17n and ibus-xkb-layouts
 	# can exclude unnnecessary input methods based on the file.
