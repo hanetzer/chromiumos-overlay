@@ -54,6 +54,7 @@ src_install() {
 	# TODO(tedbo): Remove this when we find a workaround.
 	into /
 	dosbin "${FILESDIR}/functions.sh"
+	dosym "/sbin/functions.sh" "/etc/init.d/functions.sh"
 }
 
 pkg_postinst() {
