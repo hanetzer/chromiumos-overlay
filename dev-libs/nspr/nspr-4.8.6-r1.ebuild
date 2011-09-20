@@ -51,7 +51,7 @@ src_configure() {
 	esac
 
 	if tc-is-cross-compiler; then
-		myconf="--with-arch=${ARCH}"
+		myconf="${myconf} --with-arch=${ARCH}"
 	fi
 
 	myconf="${myconf} --libdir=${EPREFIX}/usr/$(get_libdir)"
