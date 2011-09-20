@@ -20,16 +20,12 @@ IUSE="+autox +xset +tpmtools hardened"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
-# Required for .proto files used in Ownership DBus calls.
-RDEPEND="
-  chromeos-base/chromeos-chrome
-"
-
 RDEPEND="${RDEPEND}
-  chromeos-base/flimflam-test
-  dev-libs/protobuf
-  dev-python/pygobject
-  autox? ( chromeos-base/autox )
+	chromeos-base/flimflam-test
+	chromeos-base/protofiles
+	dev-libs/protobuf
+	dev-python/pygobject
+	autox? ( chromeos-base/autox )
 "
 
 DEPEND="${RDEPEND}"

@@ -23,6 +23,7 @@ RDEPEND="chromeos-base/libchrome
 	dev-libs/protobuf"
 
 DEPEND="${RDEPEND}
+	chromeos-base/protofiles
 	test? ( dev-cpp/gtest )
 	cros_host? ( dev-util/scons )"
 
