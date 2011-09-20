@@ -206,7 +206,7 @@ build_toolchain() {
 cross_get_version() {
   local pkg="$1"
   local cpv=""
-  if [[ "$ARCH" != "amd64" ]]; then
+  if [[ "$CHOST" != "$FLAGS_toolchain" ]]; then
     if [[  "$pkg" = "gcc" ]]; then
       # Users can install multiple versions of gcc at once, so we need to call
       # gcc-config to find out which installed version is selected.
@@ -260,11 +260,10 @@ install_toolchain_in_board() {
   fi
   echo "Installing the toolchain into the board root."
   # Untar glibc to get most of the headers required to build.
-  PKGDIR=$(portageq envvar PKGDIR)
   LIBC_TAR="glibc-${libc_ver}.tbz2"
 
   # Install libc libraries.
-  if [ "${ARCH}" != "amd64" ] ; then
+  if [ "${CHOST}" != "$FLAGS_toolchain" ] ; then
     LIBC_PATH="${PKGDIR}/cross-${FLAGS_toolchain}/${LIBC_TAR}"
     sudo tar jxpf "${LIBC_PATH}" -C "${BOARD_ROOT}" ./usr/${FLAGS_toolchain} --strip-components=3
     sudo mkdir -p ${BOARD_ROOT}/usr/lib/debug
@@ -457,7 +456,9 @@ BOARD_OVERLAY_LIST=$(cros_overlay_list \
   --board_overlay "$FLAGS_board_overlay" \
   --variant "$VARIANT")
 
-if [ "${ARCH}" != "amd64" ] ; then
+eval $(portageq envvar -v CHOST PKGDIR)
+
+if [ "${CHOST}" != "$FLAGS_toolchain" ] ; then
   if toolchain_needs_update; then
     warn "Toolchain needs to be updated! Updating toolchain..."
     uninstall_toolchain
@@ -504,7 +505,7 @@ fi
 
 sudo mkdir -p "$BOARD_ROOT" "${BOARD_ETC}" "${BOARD_PROFILE}"
 
-if [ "${ARCH}" != "amd64" ] ; then
+if [ "${CHOST}" != "$FLAGS_toolchain" ] ; then
   # TODO(cmasone): Do this more cleanly, if we figure out what "cleanly" means.
   # Set up wrapper for pkg-config.  Point a board-specific wrapper at the
   # generic wrapper script created by crossdev-wrapper
@@ -611,7 +612,7 @@ if ${HOST_BOARD}; then
   HOST_FLAGS="--root=$BOARD_ROOT --update --verbose --deep --root-deps"
   HOST_FLAGS+=" --with-bdeps=y --newuse --jobs=$NUM_JOBS --usepkgonly"
   sudo -E $EMERGE_CMD $HOST_FLAGS $PACKAGES
-  sudo cp -a $(portageq pkgdir) $BOARD_ROOT/packages
+  sudo cp -a "${PKGDIR}" $BOARD_ROOT/packages
 
   # Install cross-compilers.
   COMPILERS=$(equery l cross-*/* --format='=$cpv')
