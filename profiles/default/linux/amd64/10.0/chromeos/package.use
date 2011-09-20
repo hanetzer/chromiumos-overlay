@@ -1,0 +1,6 @@
+# Need to undo arch/amd64/package.use because that
+# profile is shared between the cros sdk chroot and
+# amd64 target boards.
+
+chromeos-base/update_engine -delta_generator
+net-misc/openssh -kerberos

@@ -1,2 +1,7 @@
+# Note: Additions to this file affect not only the cros sdk
+# chroot, but also any amd64 boards.  So if you enable flags
+# in here for the chroot, you needed to disable them in the
+# cros profile: default/linux/amd64/10.0/chromeos/package.use
+
 chromeos-base/update_engine delta_generator
 net-misc/openssh kerberos
