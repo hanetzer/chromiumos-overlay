@@ -71,6 +71,7 @@ RDEPEND="${RDEPEND}
 	virtual/glut
 	x11-apps/setxkbmap
 	x11-apps/xauth
+	x11-apps/xinput
 	x11-apps/xset
 	x86? ( x11-misc/read-edid )
 	x11-terms/rxvt-unicode
