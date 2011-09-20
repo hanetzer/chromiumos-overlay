@@ -100,7 +100,4 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins "${S}/LibCrosService.conf"
-
-	insinto /usr/share/dbus-1/services
-	doins "${S}/org.chromium.LibCrosService"
 }
