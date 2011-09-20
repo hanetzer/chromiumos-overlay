@@ -38,7 +38,7 @@ src_compile() {
 }
 
 src_install() {
-  dodir /usr/lib/gtk-2.0/2.10.0/engines
+  dodir /usr/$(get_libdir)/gtk-2.0/2.10.0/engines
   install -m644 -o root -g root "${S}"/libtheme.so \
     "${D}"/usr/$(get_libdir)/gtk-2.0/2.10.0/engines || die
 
