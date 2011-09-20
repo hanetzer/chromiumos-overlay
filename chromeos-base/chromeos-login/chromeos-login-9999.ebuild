@@ -25,10 +25,10 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	x11-libs/gtk+"
 
 DEPEND="${RDEPEND}
-	chromeos-base/chromeos-chrome
 	>=chromeos-base/libchrome-85268
 	chromeos-base/libchrome_crypto
 	chromeos-base/libcros
+	chromeos-base/protofiles
 	chromeos-base/system_api
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
