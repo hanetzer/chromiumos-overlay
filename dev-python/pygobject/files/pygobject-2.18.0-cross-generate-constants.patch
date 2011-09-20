@@ -1,5 +1,5 @@
---- configure.ac	2009-02-18 00:20:53.000000000 +0100
-+++ configure.ac.new	2009-06-16 22:37:05.000000000 +0200
+--- a/configure.ac
++++ b/configure.ac
 @@ -214,6 +214,20 @@
  
  fi
@@ -21,17 +21,16 @@
  AC_CONFIG_FILES(
    Makefile
    pygobject-2.0.pc
---- gobject/Makefile.am	2009-06-16 22:58:36.000000000 +0200
-+++ gobject/Makefile.am.new	2009-06-16 23:01:55.000000000 +0200
-@@ -71,6 +71,12 @@
+--- a/gobject/Makefile.am
++++ b/gobject/Makefile.am
+@@ -71,6 +71,13 @@
  if PLATFORM_WIN32
  _gobject_la_CFLAGS += -DPLATFORM_WIN32
  endif
 +
++# Strip all the noise (system includes/etc...) before the main func
 +generate-constants$(EXEEXT): generate-constants.c
-+	$(CC) $(generate_constants_CFLAGS) -E -o generate-constants.pre.c generate-constants.c
-+	$(CC_FOR_BUILD) -m32 -o $@ generate-constants.pre.c
++	printf '#include <stdio.h>\nint main()' > generate-constants.pre.c
++	$(CC) $(generate_constants_CFLAGS) -E generate-constants.c | sed -e '1,/^int main/d' >> generate-constants.pre.c
++	$(CC_FOR_BUILD) -o $@ generate-constants.pre.c
 +	rm -f generate-constants.pre.c
-+
-
-
