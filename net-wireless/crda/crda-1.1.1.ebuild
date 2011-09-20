@@ -28,6 +28,11 @@ src_unpack() {
 	# install version that also handles "add" events
 	cp -f "${FILESDIR}"/regulatory.rules "${S}"/udev || \
 	    die "Failed to install new regulatory.rules"
+
+	# Make sure we hit the correct pkg-config wrapper
+	sed -i \
+		-e "s:\<pkg-config\>:$(tc-getPKG_CONFIG):" \
+		"${S}"/Makefile || die
 }
 
 src_compile() {
