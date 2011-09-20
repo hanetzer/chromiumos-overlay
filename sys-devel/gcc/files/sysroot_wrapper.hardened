@@ -114,7 +114,7 @@ do
   done
 done
 
-new_args=(${HARDENED_FLAGS} "${new_args[@]}")
+new_args=(${HARDENED_FLAGS} -mno-movbe "${new_args[@]}")
 
 if [ -n "$SYSROOT" ] ; then
   exec "${0}.real" --sysroot="$SYSROOT" "${new_args[@]}"
