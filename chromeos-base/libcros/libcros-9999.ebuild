@@ -52,8 +52,6 @@ src_compile() {
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
 	scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
-	scons -f SConstruct.chromiumos libcros_service_test || \
-		die "libcros_service_test compile failed."
 	if use install_tests; then
 		scons -f SConstruct.chromiumos test || \
 			die "cros tests compile failed."
@@ -88,7 +86,6 @@ src_install() {
 	doins "${S}/libcros.so"
 	if use install_tests; then
 		doins "${S}/cryptohome_drive"
-		doins "${S}/libcros_service_tester"
 		doins "${S}/monitor_mount"
 		doins "${S}/monitor_network"
 		doins "${S}/monitor_power"
