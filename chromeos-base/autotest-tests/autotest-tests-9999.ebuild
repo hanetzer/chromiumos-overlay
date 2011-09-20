@@ -50,7 +50,6 @@ RDEPEND="
   autox? ( chromeos-base/autox )
   dev-python/pygobject
   dev-python/pygtk
-  sys-apps/file
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
   !!~$CONFLICT

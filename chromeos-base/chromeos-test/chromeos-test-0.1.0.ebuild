@@ -59,6 +59,7 @@ RDEPEND="${RDEPEND}
 	bluetooth? ( net-wireless/bluez )
 	x86? ( net-wireless/hostapd )
 	sys-apps/coreutils
+	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
 	x86? ( sys-apps/pciutils )
