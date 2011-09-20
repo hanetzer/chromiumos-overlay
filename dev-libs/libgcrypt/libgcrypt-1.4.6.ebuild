@@ -36,6 +36,19 @@ src_configure() {
 		fi
 	fi
 
+	if tc-is-cross-compiler ; then
+		# The libgcrypt configure code is really stupid and assumes
+		# that you have an underscore symbol whenever you cross-compile.
+		# Ask gcc to see what it does instead.
+		local symprefix=$($(tc-getCPP) -E - <<<__USER_LABEL_PREFIX__ | tail -1)
+		case ${symprefix} in
+		__USER_LABEL_PREFIX__) ;; # nothing we can do here
+		"") export ac_cv_sys_symbol_underscore=no ;;
+		_)  export ac_cv_sys_symbol_underscore=yes ;;
+		*)  die "unknown symbol prefix: ${symprefix}" ;;
+		esac
+	fi
+
 	# --disable-padlock-support for bug #201917
 	# --with-gpg-error-prefix for http://bugs.gentoo.org/267479
 	econf \
