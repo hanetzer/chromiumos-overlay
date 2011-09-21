@@ -40,7 +40,8 @@ src_compile() {
 }
 
 src_install() {
-	dodir /usr/include
-	dodir /usr/lib
-	emake install-lib prefix="${D}/usr/" || die "install"
+	dodir /usr/include /usr/$(get_libdir)
+	emake install-lib \
+		prefix="${D}/usr/" \
+		libdir='$(exec_prefix)/'$(get_libdir) || die
 }
