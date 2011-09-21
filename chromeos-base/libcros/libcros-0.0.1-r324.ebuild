@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="6809d9d8eaccc76c34288cf1f41fc94b7bb1dab1"
+CROS_WORKON_COMMIT="69a693ab24a75388770e9bbc6ba45af529fc3d70"
 CROS_WORKON_PROJECT="chromiumos/platform/cros"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
@@ -101,7 +101,4 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins "${S}/LibCrosService.conf"
-
-	insinto /usr/share/dbus-1/services
-	doins "${S}/org.chromium.LibCrosService"
 }
