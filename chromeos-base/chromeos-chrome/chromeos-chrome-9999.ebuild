@@ -707,6 +707,11 @@ install_chrome_test_resources() {
 	    "${CHROME_ROOT}"/src/third_party/bidichecker/bidichecker_packaged.js \
 	    "${TEST_DIR}"/third_party/bidichecker
 
+        # Add the fake bidi locale
+        mkdir "${TEST_DIR}"/out/Release/pseudo_locales
+        fast_cp -a "${FROM}"/pseudo_locales/fake-bidi.pak \
+            "${TEST_DIR}"/out/Release/pseudo_locales
+
 	# Add the mock4js script
 	mkdir -p "${TEST_DIR}"/chrome/third_party/mock4js
 	fast_cp -a \
