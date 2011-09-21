@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit eutils multilib perl-app toolchain-funcs versionator flag-o-matic
+inherit eutils multilib perl-app toolchain-funcs versionator flag-o-matic autotools
 
 MY_PN=ImageMagick
 MY_P=${MY_PN}-${PV%.*}
@@ -81,6 +81,8 @@ pkg_setup() {
 }
 
 src_prepare() {
+	epatch "${FILESDIR}"/${PN}-6.7.2.6-lfs.patch
+	eautoreconf
 	# fix doc dir, bug #91911
 	sed -i -e \
 		's:DOCUMENTATION_PATH="${DATA_DIR}/doc/${DOCUMENTATION_RELATIVE_PATH}":DOCUMENTATION_PATH="/usr/local/share/doc/${PF}":g' \
