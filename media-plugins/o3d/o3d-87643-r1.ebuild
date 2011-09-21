@@ -31,17 +31,20 @@ set_build_defines() {
 src_prepare() {
 	set_build_defines
 
-	# TODO zhurunz: support x64 later.
 	if use x86; then
 		# TODO(piman): switch to GLES backend
 		GYP_DEFINES="target_arch=ia32";
-	else
+	elif use arm; then
 		GYP_DEFINES="target_arch=arm renderer=gles2"
 		if use opengles; then
 			GYP_DEFINES="$GYP_DEFINES gles2_backend=native_gles2"
 		else
 			GYP_DEFINES="$GYP_DEFINES gles2_backend=desktop_gl"
 		fi
+	elif use amd64; then
+		GYP_DEFINES="target_arch=x64"
+	else
+		die "unsupported arch: ${ARCH}"
 	fi
 	if [[ -n "${ROOT}" && "${ROOT}" != "/" ]]; then
 		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
