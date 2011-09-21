@@ -3,7 +3,7 @@
 
 # TODO(msb): move this ebuild to net-dns/minifakedns
 EAPI=2
-CROS_WORKON_COMMIT="e57c96f2162477d710d9cdc6e657f57813255636"
+CROS_WORKON_COMMIT="b63f90e4727cd5963ca50b30fdb1449784893438"
 CROS_WORKON_PROJECT="chromiumos/third_party/minifakedns"
 
 inherit cros-workon
