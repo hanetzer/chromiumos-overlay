@@ -850,6 +850,12 @@ src_install() {
 	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
 	doins "${INPUT_METHOD}"/ibus_input_methods.txt
 
+	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
+	# D-Bus service exported by Chrome.
+	insinto /etc/dbus-1/system.d
+	DBUS="${CHROME_ROOT}"/src/chrome/browser/chromeos/dbus
+	doins "${DBUS}"/org.chromium.LibCrosService.conf
+
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \

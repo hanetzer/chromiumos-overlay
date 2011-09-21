@@ -97,7 +97,4 @@ src_install() {
 	doins "${FILESDIR}"/tpcontrol_synclient
 	doins "${FILESDIR}"/tpcontrol
 	doins "${FILESDIR}"/tpcontrol_xinput
-
-	insinto /etc/dbus-1/system.d
-	doins "${S}/LibCrosService.conf"
 }
