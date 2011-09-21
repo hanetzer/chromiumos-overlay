@@ -50,69 +50,38 @@ src_prepare() {
 		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
 	fi
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
-	epatch ${FILESDIR}/${P}-pkgconfig.patch || die
-	epatch ${FILESDIR}/${P}-disable-gconf.patch || die
-	epatch ${FILESDIR}/${P}-linux3.patch || die
+
+	epatch "${FILESDIR}"/${P}-pkgconfig.patch
+	epatch "${FILESDIR}"/${P}-disable-gconf.patch
+	epatch "${FILESDIR}"/${P}-linux3.patch
+
 	${EGCLIENT} runhooks || die
 }
 
 src_compile() {
-	if use arm; then
-		append-cflags "-Wa,-mimplicit-it=always"
-		append-cxxflags "-Wa,-mimplicit-it=always"
-	fi
-
+	use arm && append-flags -Wa,-mimplicit-it=always
 	append-cxxflags $(test-flags-CC -Wno-error=unused-but-set-variable)
+	tc-export AR AS LD NM RANLIB CC CXX STRIP
 
-	# Config
-	if tc-is-cross-compiler ; then
-		tc-export AR AS LD NM RANLIB CC CXX
-
-		export SYSROOT="${ROOT}"
-		export CPPPATH="${ROOT}/usr/include/"
-		export LIBPATH="${ROOT}/usr/lib/"
-		export RPATH="${ROOT}/usr/lib/"
-	fi
-
-	emake BUILDTYPE=Release npo3dautoplugin
-
-	mkdir -p "${S}/opt/google/o3d" \
-		|| die "Cannot create ${S}/opt/google/o3d"
-	if use x86; then
-		mkdir -p "${S}/opt/google/o3d/lib" \
-			|| die "Cannot create ${S}/opt/google/o3d/lib"
-		cp -f out/Release/libCg.so \
-			"${S}/opt/google/o3d/lib/libCg.so" \
-			|| die "Cannot install file: $!"
-		cp -f out/Release/libCgGL.so \
-			"${S}/opt/google/o3d/lib/libCgGL.so" \
-			|| die "Cannot install file: $!"
-	fi
-	cp -f out/Release/libnpo3dautoplugin.so \
-		"${S}/opt/google/o3d/libnpo3dautoplugin.so" \
-		|| die "Cannot install file: $!"
+	emake BUILDTYPE=Release npo3dautoplugin || die
 }
 
 src_install() {
 	local destdir=/opt/google/o3d
 	local chromepluginsdir=/opt/google/chrome/plugins
-	dodir $destdir
-	exeinto $destdir
-	doexe opt/google/o3d/libnpo3dautoplugin.so \
-		|| die "Cannot not copy file: $!";
-	dodir $chromepluginsdir
-	dosym /opt/google/o3d/libnpo3dautoplugin.so $chromepluginsdir/ \
-		|| die "Cannot symlink file: $!"
-	if use x86; then
-		exeinto $destdir/lib
-		doexe opt/google/o3d/lib/libCgGL.so
-		doexe opt/google/o3d/lib/libCg.so
-	fi
 
-	# Only O2D currently works on ARM, so we include an envvars file
-	# that forces O2D mode.
-	if use arm; then
-		insinto $destdir
-		newins ${FILESDIR}/envvars.arm envvars
+	exeinto ${destdir}
+	doexe out/Release/libnpo3dautoplugin.so || die
+	dodir ${chromepluginsdir}
+	dosym ${destdir}/libnpo3dautoplugin.so ${chromepluginsdir}/ || die
+
+	if use x86; then
+		exeinto ${destdir}/lib
+		doexe out/Release/libCg{,GL}.so || die
+	elif use arm; then
+		# Only O2D currently works on ARM, so we include an envvars
+		# file that forces O2D mode.
+		insinto ${destdir}
+		newins "${FILESDIR}"/envvars.arm envvars || die
 	fi
 }
