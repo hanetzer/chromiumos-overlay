@@ -289,6 +289,12 @@ src_configure()
 	fi
 	confgcc="${confgcc} --enable-languages=${GCC_LANG}"
 
+	if [[ "${CTARGET}" == "arm-none-eabi" ]] ; then
+		# Add "--with-cpu=cortex-m3" to disable generating hardfp multilib,
+		# which causes compiler crash. See crosbug.com/20851.
+		confgcc="${confgcc} --with-cpu=cortex-m3"
+	fi
+
 	if use hardfp && [[ ${CTARGET} == arm* ]] ;
 	then
 		confgcc="${confgcc} --with-float=hard"
