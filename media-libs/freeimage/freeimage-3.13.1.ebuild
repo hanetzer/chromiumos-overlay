@@ -33,7 +33,10 @@ src_compile() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" -f Makefile.gnu install || die
+	emake \
+		DESTDIR="${D}" \
+		INSTALLDIR='$(DESTDIR)/usr/'$(get_libdir) \
+		-f Makefile.gnu install || die
 	if use cxx ; then
 		emake DESTDIR="${D}" -f Makefile.fip install || die
 	fi
