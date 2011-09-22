@@ -190,7 +190,6 @@ pkg_setup() {
 		$(use_enable opengl dri)
 		$(use_enable opengl dri2)
 		$(use_enable opengl glx)
-		$(use_enable x86 xaa)
 		$(use_enable xorg)
 		$(use_enable nptl glx-tls)
 		$(use_enable udev config-udev)
@@ -222,8 +221,13 @@ pkg_setup() {
 		--disable-xvfb
 		--disable-xnest
 		--enable-null-root-cursor
-		--with-default-font-path=built-ins
-		${conf_opts}"
+		--with-default-font-path=built-ins"
+
+	if use amd64 || use x86 ; then
+		CONFIGURE_OPTIONS+=" --enable-xaa"
+	else
+		CONFIGURE_OPTIONS+=" --disable-xaa"
+	fi
 
 	# Things we may want to remove later:
 	#	--disable-xaa (requires dropping all xaa drivers)
