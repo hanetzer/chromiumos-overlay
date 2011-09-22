@@ -157,7 +157,7 @@ DEPEND="${DEPEND}
 PATCHES=()
 if use touchui_patches; then
 	PATCHES+=(
-		"${FILESDIR}/webkit.2011091901.patch"
+		"${FILESDIR}/webkit.2011092201.patch"
 		)
 fi
 
@@ -849,6 +849,12 @@ src_install() {
 	insinto /usr/share/chromeos-assets/input_methods
 	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
 	doins "${INPUT_METHOD}"/ibus_input_methods.txt
+
+	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
+	# D-Bus service exported by Chrome.
+	insinto /etc/dbus-1/system.d
+	DBUS="${CHROME_ROOT}"/src/chrome/browser/chromeos/dbus
+	doins "${DBUS}"/org.chromium.LibCrosService.conf
 
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
