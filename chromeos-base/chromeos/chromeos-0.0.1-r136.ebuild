@@ -239,6 +239,9 @@ qemu_run() {
 	# temporarily into the sysroot because we chroot to it.
 	local qemu
 	case "${ARCH}" in
+		amd64)
+			qemu="qemu-x86_64"
+			;;
 		arm)
 			qemu="qemu-arm"
 			;;
