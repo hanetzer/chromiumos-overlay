@@ -20,6 +20,10 @@ IUSE=""
 DEPEND=""
 RDEPEND=""
 
+src_prepare() {
+	epatch "${FILESDIR}"/${PN}-2.0.1-libsuffix.patch
+}
+
 src_configure() {
 	local mycmakeargs="-DBUILD_DIVSUFSORT64=ON"
 	tc-export CC
