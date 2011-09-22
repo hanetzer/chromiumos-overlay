@@ -10,6 +10,7 @@ inherit toolchain-funcs cros-debug cros-workon
 DESCRIPTION="Chrome OS base library."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
@@ -44,34 +45,26 @@ src_test() {
 	scons unittests || die
 	scons libpolicy_unittest || die
 	if ! use x86; then
-	        echo Skipping unit tests on non-x86 platform
+		echo Skipping unit tests on non-x86 platform
 	else
-	        ./unittests || die "libchromeos unittests failed."
-	        ./libpolicy_unittest || die "libpolicy_unittest unittests failed."
+		./unittests || die "libchromeos unittests failed."
+		./libpolicy_unittest || die "libpolicy_unittest unittests failed."
 	fi
 }
 
 src_install() {
-	dodir "/usr/lib"
-	dodir "/usr/include/chromeos"
-	dodir "/usr/include/chromeos/dbus"
-	dodir "/usr/include/chromeos/glib"
+	dolib.a lib{chromeos,policy}.a || die
+	dolib.so libpolicy.so || die
 
-	insopts -m0644
-	insinto "/usr/lib"
-	doins "${S}/libchromeos.a"
-	doins "${S}/libpolicy.a"
-	doins "${S}/libpolicy.so"
+	insinto /usr/include/chromeos
+	doins chromeos/*.h || die
 
-	insinto "/usr/include/chromeos"
-	doins "${S}"/chromeos/*.h
+	insinto /usr/include/chromeos/dbus
+	doins chromeos/dbus/*.h || die
 
-	insinto "/usr/include/chromeos/dbus"
-	doins "${S}"/chromeos/dbus/*.h
+	insinto /usr/include/chromeos/glib
+	doins chromeos/glib/*.h || die
 
-	insinto "/usr/include/chromeos/glib"
-	doins "${S}"/chromeos/glib/*.h
-
-	insinto "/usr/include/policy"
-	doins "${S}"/chromeos/policy/*.h
+	insinto /usr/include/policy
+	doins chromeos/policy/*.h || die
 }
