@@ -150,7 +150,7 @@ script
 		# Exponential backoff - wait (2^attempt) - 1 seconds
     sleep \$(((1 << \$attempt) - 1))
     starttime=\$(date +%s%N)
-    /sbin/minijail --uid=209 --gid=209 "\$GOBIQDL" "\$GOBIDEV"
+    /sbin/minijail0 -u qdlservice -g qdlservice -- "\$GOBIQDL" "\$GOBIDEV"
     ret=\$?
     endtime=\$(date +%s%N)
     logger -t qdlservice "attempt \$attempt: \$ret"
