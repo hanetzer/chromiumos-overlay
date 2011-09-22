@@ -38,9 +38,9 @@ solve_lib_symlinks() {
 	if ! echo "${lib}" | grep -q '\.so\.[0-9\.]*$'; then
 		return
 	fi
-	# so_name: libpng12.so.0.44.0 -> libpng12.so
+	# so_name: libpng12.so.0.45.0 -> libpng12.so
 	local so_name="$(echo "${lib}" | sed 's/[0-9\.]*$//')"
-	# so_rev_name: libpng12.so.0.44.0 -> libpng12.so.0
+	# so_rev_name: libpng12.so.0.45.0 -> libpng12.so.0
 	local so_rev_name="$(echo "${lib}" |
 	                     sed -r 's/(\.so\.[0-9]+)\.[0-9\.]*$/\1/')"
 
@@ -113,7 +113,7 @@ build_initramfs_file() {
 	"
 	usr_libs="
 		libcrypto.so.0.9.8
-		libpng12.so.0.44.0
+		libpng12.so.0.45.0
 		libdrm.so.2.4.0
 		libpci.so.3
 	"
