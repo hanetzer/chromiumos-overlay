@@ -204,7 +204,7 @@ set_build_defines() {
 			BUILD_DEFINES="$BUILD_DEFINES v8_use_arm_eabi_hardfloat=true"
 		fi
 	elif [ "$ARCH" = "amd64" ]; then
-		BUILD_DEFINES="target_arch=x64 python_arch=x64 enable_smooth_scrolling=1 $BUILD_DEFINES"
+		BUILD_DEFINES="target_arch=x64 enable_smooth_scrolling=1 $BUILD_DEFINES"
 	else
 		die Unsupported architecture: "${ARCH}"
 	fi
@@ -255,6 +255,7 @@ set_build_defines() {
 		BUILD_DEFINES="asan=1 $BUILD_DEFINES"
 	fi
 
+	BUILD_DEFINES="system_libdir=$(get_libdir) $BUILD_DEFINES"
 	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
