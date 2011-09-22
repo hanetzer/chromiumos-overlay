@@ -39,6 +39,10 @@ function download_stuff() {
     exit 1
   fi
 
+  # Grab the fully-qualified path to the .gclient file, since we are going to
+  # change directories.
+  GCLIENT=$(readlink -e "${GCLIENT}")
+
   mkdir o3d-${SVNREV} || die "Can't create work directory"
   cd o3d-${SVNREV}
   cp "${GCLIENT}" .gclient
