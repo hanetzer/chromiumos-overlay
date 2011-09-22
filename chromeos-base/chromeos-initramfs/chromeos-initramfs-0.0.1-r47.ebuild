@@ -6,7 +6,7 @@
 # this is fixed.
 
 EAPI=2
-CROS_WORKON_COMMIT="790b63fda6fd9aa953628d2f02046589358a5cb3"
+CROS_WORKON_COMMIT="72035960c4c716a654c1e3cbda68805459302d34"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -39,9 +39,9 @@ solve_lib_symlinks() {
 	if ! echo "${lib}" | grep -q '\.so\.[0-9\.]*$'; then
 		return
 	fi
-	# so_name: libpng12.so.0.44.0 -> libpng12.so
+	# so_name: libpng12.so.0.45.0 -> libpng12.so
 	local so_name="$(echo "${lib}" | sed 's/[0-9\.]*$//')"
-	# so_rev_name: libpng12.so.0.44.0 -> libpng12.so.0
+	# so_rev_name: libpng12.so.0.45.0 -> libpng12.so.0
 	local so_rev_name="$(echo "${lib}" |
 	                     sed -r 's/(\.so\.[0-9]+)\.[0-9\.]*$/\1/')"
 
@@ -114,7 +114,7 @@ build_initramfs_file() {
 	"
 	usr_libs="
 		libcrypto.so.0.9.8
-		libpng12.so.0.44.0
+		libpng12.so.0.45.0
 		libdrm.so.2.4.0
 		libpci.so.3
 	"
