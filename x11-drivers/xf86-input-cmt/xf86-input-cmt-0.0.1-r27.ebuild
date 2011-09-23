@@ -1,13 +1,13 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=3
+EAPI=4
 CROS_WORKON_COMMIT="a4e0e5926d6c89eeac1e21f88bfe318e23b28832"
 CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
 
 XORG_EAUTORECONF="yes"
 BASE_INDIVIDUAL_URI=""
-inherit xorg-2 cros-workon
+inherit autotools-utils cros-workon
 
 DESCRIPTION="Chromium OS multitouch input driver for Xorg X server."
 CROS_WORKON_LOCALNAME="../platform/xf86-input-cmt"
@@ -25,7 +25,11 @@ DEPEND="${RDEPEND}
 
 DOCS="README"
 
-# Explicitly call xorg-2_src_prepare, not cros-workon_src_prepare
 src_prepare() {
-	xorg-2_src_prepare
+	eautoreconf
+}
+
+src_install() {
+	autotools-utils_src_install
+	remove_libtool_files all
 }
