@@ -632,8 +632,11 @@ if ${HOST_BOARD}; then
   done
 
   # The new chroot should have gcc for each target. Make sure that
-  # the latest one is correctly selected.
-  TARGETS="armv7a-cros-linux-gnueabi i686-pc-linux-gnu x86_64-pc-linux-gnu"
+  # the latest one is correctly selected. Ignore cat errors as not
+  # all overlays will have a toolchain.conf.
+  ALL_OVERLAYS=$(cros_overlay_list --all_boards)
+  TARGETS=$(cat $(printf '%s/toolchain.conf ' ${ALL_OVERLAYS}) 2>/dev/null | \
+            sort -u)
   for target in ${TARGETS}; do
     LATEST="$(ROOT=${BOARD_ROOT} gcc-config -l | \
               grep "${target}" | tail -n1 | cut -f3 -d' ')"
