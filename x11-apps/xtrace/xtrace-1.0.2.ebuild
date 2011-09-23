@@ -15,7 +15,6 @@ KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc x86 ~x86-fbsd"
 IUSE=""
 
 RDEPEND="x11-libs/libX11"
-
 DEPEND="${RDEPEND}"
 
 src_prepare() {
@@ -23,11 +22,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PV}-sync-extension.patch
 }
 
-src_compile() {
-	econf || die "econf failed"
-	emake || die "emake failed"
-}
-
 src_install() {
-	make DESTDIR="${D}" install || die "make install failed"
+	emake DESTDIR="${D}" install || die
 }
