@@ -177,6 +177,9 @@ src_install()
 
 	find "${D}" -name libiberty.a -exec rm -f "{}" \;
 
+	# Move the libraries to the proper location
+	gcc_movelibs
+
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 	cat <<-EOF > env.d
@@ -355,3 +358,31 @@ get_gcc_common_options()
 	echo ${confgcc}
 }
 
+# Grab a variable from the build system (taken from linux-info.eclass)
+get_make_var() {
+	local var=$1 makefile=${2:-${WORKDIR}/build/Makefile}
+	echo -e "e:\\n\\t@echo \$(${var})\\ninclude ${makefile}" | \
+		r=${makefile%/*} emake --no-print-directory -s -f - 2>/dev/null
+}
+XGCC() { get_make_var GCC_FOR_TARGET ; }
+
+gcc_movelibs() {
+	LIBPATH=${LIBDIR}	# cros to Gentoo glue
+
+	local multiarg removedirs=""
+	for multiarg in $($(XGCC) -print-multi-lib) ; do
+		multiarg=${multiarg#*;}
+		multiarg=${multiarg//@/ -}
+
+		local OS_MULTIDIR=$($(XGCC) ${multiarg} --print-multi-os-directory)
+		local MULTIDIR=$($(XGCC) ${multiarg} --print-multi-directory)
+		local FROMDIR="${LIBPATH}/gcc/${CTARGET}/${GCC_PV}"
+		mv "${D}/${FROMDIR}/${OS_MULTIDIR}"/* "${D}/${FROMDIR}/${MULTIDIR}/"
+	done
+
+	# We remove directories separately to avoid this case:
+	#	mv SRC/lib/../lib/*.o DEST
+	#	rmdir SRC/lib/../lib/
+	#	mv SRC/lib/../lib32/*.o DEST  # Bork
+	find "${D}" -type d -depth -delete 2>/dev/null
+}
