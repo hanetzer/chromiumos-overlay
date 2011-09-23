@@ -61,10 +61,10 @@ pkg_postinst() {
 
 	disable_upstart "ui.conf"
 	disable_upstart "update-engine.conf"
-	disable_upstart "chrontel.conf"
 	disable_upstart "cashew.conf"
 	disable_upstart "htpdate.conf"
 
 	modify_upstart "boot-complete.conf" "started boot-services"
+	modify_upstart "chrontel.conf" "factory-ui-started"
 	modify_upstart "tegra-devices.conf" "starting factory"
 }
