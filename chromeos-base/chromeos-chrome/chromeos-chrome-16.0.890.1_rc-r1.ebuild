@@ -91,7 +91,7 @@ D_CHROME_DIR="${D}/${CHROME_DIR}"
 # By default, pull from server
 CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_SOURCE}"
 
-if [ "$ARCH" = "x86" ]; then
+if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
   DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
   USE_TCMALLOC="linux_use_tcmalloc=1"
 elif [ "$ARCH" = "arm" ]; then
@@ -199,6 +199,8 @@ set_build_defines() {
 		if use hardfp; then
 			BUILD_DEFINES="$BUILD_DEFINES v8_use_arm_eabi_hardfloat=true"
 		fi
+	elif [ "$ARCH" = "amd64" ]; then
+		BUILD_DEFINES="target_arch=x64 python_arch=x64 enable_smooth_scrolling=1 $BUILD_DEFINES"
 	else
 		die Unsupported architecture: "${ARCH}"
 	fi
