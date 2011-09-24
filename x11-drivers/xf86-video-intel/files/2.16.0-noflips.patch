@@ -1,0 +1,12 @@
+diff --git a/src/intel_display.c b/src/intel_display.c
+index 84c7c08..617ddb0 100644
+--- a/src/intel_display.c
++++ b/src/intel_display.c
+@@ -1619,6 +1619,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
+ 	gp.value = &has_flipping;
+ 	(void)drmCommandWriteRead(intel->drmSubFD, DRM_I915_GETPARAM, &gp,
+ 				  sizeof(gp));
++	has_flipping = 0;
+ 	if (has_flipping && intel->swapbuffers_wait) {
+ 		xf86DrvMsg(scrn->scrnIndex, X_INFO,
+ 			   "Kernel page flipping support detected, enabling\n");

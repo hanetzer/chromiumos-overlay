@@ -1,7 +1,8 @@
-diff -paur xf86-video-intel-2.15.0.orig/src/intel.h xf86-video-intel-2.15.0.work/src/intel.h
---- xf86-video-intel-2.15.0.orig/src/intel.h	2011-04-14 02:16:40.000000000 -0700
-+++ xf86-video-intel-2.15.0.work/src/intel.h	2011-05-20 11:04:33.147587000 -0700
-@@ -462,6 +462,7 @@ extern void intel_mode_fini(intel_screen
+diff --git a/src/intel.h b/src/intel.h
+index 42afaf4..22527df 100644
+--- a/src/intel.h
++++ b/src/intel.h
+@@ -465,6 +465,7 @@ extern void intel_mode_fini(intel_screen_private *intel);
  extern int intel_get_pipe_from_crtc_id(drm_intel_bufmgr *bufmgr, xf86CrtcPtr crtc);
  extern int intel_crtc_id(xf86CrtcPtr crtc);
  extern int intel_output_dpms_status(xf86OutputPtr output);
@@ -9,23 +10,10 @@ diff -paur xf86-video-intel-2.15.0.orig/src/intel.h xf86-video-intel-2.15.0.work
  
  enum DRI2FrameEventType {
  	DRI2_SWAP,
-Only in xf86-video-intel-2.15.0.work/src: intel.h.orig
-diff -paur xf86-video-intel-2.15.0.orig/src/intel_batchbuffer.c xf86-video-intel-2.15.0.work/src/intel_batchbuffer.c
---- xf86-video-intel-2.15.0.orig/src/intel_batchbuffer.c	2011-04-14 02:16:40.000000000 -0700
-+++ xf86-video-intel-2.15.0.work/src/intel_batchbuffer.c	2011-05-20 12:04:42.647440000 -0700
-@@ -178,6 +178,8 @@ void intel_batch_emit_flush(ScrnInfoPtr 
- static Bool intel_batch_needs_flush(intel_screen_private *intel)
- {
- 	ScreenPtr screen = intel->scrn->pScreen;
-+	if (!screen)
-+		return FALSE;
- 	PixmapPtr pixmap = screen->GetScreenPixmap(screen);
- 	return intel_get_pixmap_private(pixmap)->batch_write;
- }
-Only in xf86-video-intel-2.15.0.work/src: intel_batchbuffer.c~
-diff -paur xf86-video-intel-2.15.0.orig/src/intel_display.c xf86-video-intel-2.15.0.work/src/intel_display.c
---- xf86-video-intel-2.15.0.orig/src/intel_display.c	2011-04-14 02:16:40.000000000 -0700
-+++ xf86-video-intel-2.15.0.work/src/intel_display.c	2011-05-20 12:52:17.066783000 -0700
+diff --git a/src/intel_display.c b/src/intel_display.c
+index 84c7c08..e52ca67 100644
+--- a/src/intel_display.c
++++ b/src/intel_display.c
 @@ -30,6 +30,7 @@
  #endif
  
@@ -34,7 +22,7 @@ diff -paur xf86-video-intel-2.15.0.orig/src/intel_display.c xf86-video-intel-2.1
  #include <sys/stat.h>
  #include <fcntl.h>
  #include <unistd.h>
-@@ -1425,6 +1426,109 @@ fail:
+@@ -1435,6 +1436,109 @@ fail:
  	return FALSE;
  }
  
@@ -144,7 +132,7 @@ diff -paur xf86-video-intel-2.15.0.orig/src/intel_display.c xf86-video-intel-2.1
  Bool
  intel_do_pageflip(intel_screen_private *intel,
  		  dri_bo *new_front,
-@@ -1572,6 +1676,8 @@ Bool intel_mode_pre_init(ScrnInfoPtr scr
+@@ -1584,6 +1688,8 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
  	unsigned int i;
  	int has_flipping;
  
@@ -153,12 +141,11 @@ diff -paur xf86-video-intel-2.15.0.orig/src/intel_display.c xf86-video-intel-2.1
  	mode = calloc(1, sizeof *mode);
  	if (!mode)
  		return FALSE;
-Only in xf86-video-intel-2.15.0.work/src: intel_display.c.orig
-Only in xf86-video-intel-2.15.0.work/src: intel_display.c~
-diff -paur xf86-video-intel-2.15.0.orig/src/intel_driver.c xf86-video-intel-2.15.0.work/src/intel_driver.c
---- xf86-video-intel-2.15.0.orig/src/intel_driver.c	2011-04-14 02:16:40.000000000 -0700
-+++ xf86-video-intel-2.15.0.work/src/intel_driver.c	2011-05-20 12:01:36.864574000 -0700
-@@ -1147,6 +1147,8 @@ static Bool I830EnterVT(int scrnIndex, i
+diff --git a/src/intel_driver.c b/src/intel_driver.c
+index 7fc1c1a..40ff396 100644
+--- a/src/intel_driver.c
++++ b/src/intel_driver.c
+@@ -1154,6 +1154,8 @@ static Bool I830EnterVT(int scrnIndex, int flags)
  
  	intel_set_gem_max_sizes(scrn);
  
@@ -167,6 +154,3 @@ diff -paur xf86-video-intel-2.15.0.orig/src/intel_driver.c xf86-video-intel-2.15
  	if (!xf86SetDesiredModes(scrn))
  		return FALSE;
  
-Only in xf86-video-intel-2.15.0.work/src: intel_driver.c.orig
-Only in xf86-video-intel-2.15.0.work/src: intel_driver.c.rej
-Only in xf86-video-intel-2.15.0.work/src: intel_driver.c~
