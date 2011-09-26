@@ -4,7 +4,7 @@
 
 EAPI=3
 VIM_VERSION="7.3"
-inherit vim
+inherit autotools vim
 
 VIM_ORG_PATCHES="vim-patches-${PV}.tar.bz2"
 
@@ -23,4 +23,8 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-7.3-interix-link.patch
 	fi
 	epatch "${FILESDIR}"/${PN}-7.1.285-darwin-x11link.patch
+	epatch "${FILESDIR}"/${PN}-7.3-cross.patch
+
+	cd src
+	eautoreconf
 }
