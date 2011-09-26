@@ -5,30 +5,29 @@ EAPI=2
 CROS_WORKON_COMMIT="fe801a4fb57025af3eccb4f7b87a9f1f2284fe84"
 CROS_WORKON_PROJECT="chromiumos/third_party/hdctools"
 
+inherit cros-workon distutils toolchain-funcs multilib
+
 DESCRIPTION="Software to communicate with servo/miniservo debug boards"
 HOMEPAGE=""
+
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="x86 amd64"
+KEYWORDS="amd64 x86"
 IUSE=""
-
-inherit cros-workon distutils
 
 RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-libs/libusb
 	dev-python/pyusb"
-
 DEPEND="${RDEPEND}
-	app-text/htmltidy 
-	"
+	app-text/htmltidy"
 
 src_compile() {
-	tc-export CC PKG_CONFIG 
-	emake || die "emake compile failed."
-	distutils_src_compile || die "distutils compile failed"
+	tc-export CC PKG_CONFIG
+	emake || die
+	distutils_src_compile
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "emake install failed."
-	distutils_src_install || die "distutils install failed"
+	emake DESTDIR="${D}" LIBDIR=/usr/$(get_libdir) install || die
+	distutils_src_install
 }
