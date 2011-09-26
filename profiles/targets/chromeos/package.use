@@ -33,6 +33,7 @@ net-libs/libsoup	-ssl
 # for curl-7.19.6 turning on ipv6 use flag will turn off ares
 net-misc/curl		ares
 net-misc/dhcpcd crash
+net-misc/dhcp		ipv6 -ipv4 -server
 net-misc/iputils	ipv6
 net-misc/ntp            caps
 net-misc/openssh	-X
