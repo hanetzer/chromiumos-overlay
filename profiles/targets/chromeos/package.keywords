@@ -22,6 +22,7 @@
 =dev-libs/libatasmart-0.17	amd64 arm x86
 =dev-libs/libchewing-0.3.2-r1	amd64 arm x86
 =dev-libs/libffi-3.0.9-r2       amd64 arm x86
+=dev-libs/libgpg-error-1.10-r1	amd64 arm x86
 =dev-libs/libp11-0.2.7          amd64 arm x86
 =dev-libs/m17n-lib-1.6.1-r1	amd64 arm x86
 =dev-libs/protobuf-2.2.0	amd64 arm x86
