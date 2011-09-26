@@ -74,3 +74,7 @@
 =sys-fs/squashfs-tools-4.2  amd64 x86
 
 =dev-util/intltool-0.41.0   amd64 x86
+
+# Mark vim-7.3.189 and vim-core-7.3.189 unstable until patched
+=app-editors/vim-7.3.189 -arm -x86 -amd64 ~arm ~x86 ~amd64
+=app-editors/vim-core-7.3.189 -arm -x86 -amd64 ~arm ~x86 ~amd64
