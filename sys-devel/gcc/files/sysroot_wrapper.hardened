@@ -114,7 +114,12 @@ do
   done
 done
 
-new_args=(${HARDENED_FLAGS} -mno-movbe "${new_args[@]}")
+arch_specific_flags=
+case ${0##*/} in
+  i?86*) arch_specific_flags=-mno-movbe ;;
+esac
+
+new_args=(${HARDENED_FLAGS} ${arch_specific_flags} "${new_args[@]}")
 
 if [ -n "$SYSROOT" ] ; then
   exec "${0}.real" --sysroot="$SYSROOT" "${new_args[@]}"
