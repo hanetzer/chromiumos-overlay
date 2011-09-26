@@ -183,12 +183,16 @@ QA_TEXTRELS="*"
 QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
+use_nacl() {
+	use amd64 || use x86
+}
+
 set_build_defines() {
 	# Set proper BUILD_DEFINES for the arch
 	if [ "$ARCH" = "x86" ]; then
 		BUILD_DEFINES="target_arch=ia32 enable_smooth_scrolling=1 $BUILD_DEFINES";
 	elif [ "$ARCH" = "arm" ]; then
-		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 disable_nacl=1 v8_can_use_unaligned_accesses=true";
+		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 v8_can_use_unaligned_accesses=true";
 		if [ "$(expr match "$ARM_FPU" "vfpv3")" -ne 0 ]; then
 			BUILD_DEFINES="$BUILD_DEFINES v8_can_use_vfp_instructions=true";
 		fi
@@ -204,6 +208,7 @@ set_build_defines() {
 	else
 		die Unsupported architecture: "${ARCH}"
 	fi
+	use_nacl || BUILD_DEFINES="disable_nacl=1 $BUILD_DEFINES"
 
 	# Control inclusion of optional chrome features.
 	if use chrome_remoting; then
@@ -355,7 +360,7 @@ unpack_chrome() {
 		fi
 		cp "${gclient_file}" "${ECHROME_STORE_DIR}/.gclient" \
 			|| die "Could not copy $gclient_file"
-	elif use chrome_pdf && (use x86 || use arm); then
+	elif use chrome_pdf; then
 		elog "Official Build enabling PDF sources"
 		create_gclient_file "${ECHROME_STORE_DIR}" \
 			"${PRIMARY_URL}" \
@@ -698,7 +703,7 @@ install_chrome_test_resources() {
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
 	# Add pdf test data
-	if use chrome_pdf && (use x86 || use arm); then
+	if use chrome_pdf; then
 		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
 			"${TEST_DIR}"/pdf/test/
 	fi
@@ -822,8 +827,8 @@ src_install() {
 	fi
 
 	# add NaCl binaries
-	if [ "$ARCH" = "x86" ]; then
-		doexe "${FROM}"/libppGoogleNaClPluginChrome.so
+	if use_nacl; then
+		doexe "${FROM}"/libppGoogleNaClPluginChrome.so || die
 	fi
 
 	insinto "${CHROME_DIR}"
@@ -837,8 +842,8 @@ src_install() {
 	doins "${FROM}"/*.png
 
 	# add NaCl binaries
-	if [ "$ARCH" = "x86" ]; then
-		doins "${FROM}"/nacl_irt_x86_32.nexe
+	if use_nacl; then
+		doins "${FROM}"/nacl_irt_*.nexe || die
 	fi
 
 	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
@@ -879,7 +884,7 @@ src_install() {
 	dosym libplc4.so /usr/lib/libplc4.so.0d
 	dosym libnspr4.so /usr/lib/libnspr4.so.0d
 
-	if use x86; then
+	if use amd64 || use x86; then
 		# Install Flash plugin.
 		if use chrome_internal; then
 			if [ -f "${FROM}/libgcflashplayer.so" ]; then
