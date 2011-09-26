@@ -157,7 +157,6 @@ IUSE_TESTS="
 	+tests_logging_UserCrash
 	+tests_logging_UncleanShutdown
 	+tests_logging_UncleanShutdownServer
-	+tests_login_Backdoor
 	+tests_login_BadAuthentication
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognitoMounted
