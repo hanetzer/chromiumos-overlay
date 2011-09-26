@@ -14,7 +14,7 @@ SRC_URI="mirror://sourceforge/${PN}/${MY_P}.zip
 
 LICENSE="|| ( GPL-2 FIPL-1.0 )"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~x86"
 IUSE="cxx doc"
 
 S=${WORKDIR}/${MY_PN}

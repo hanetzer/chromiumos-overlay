@@ -38,6 +38,7 @@
 =media-gfx/perceptualdiff-1.1.1 amd64 arm x86
 =media-libs/clutter-1.0.6	amd64 arm x86
 =media-libs/freeglut-2.4.0-r2   amd64 arm x86
+=media-libs/freeimage-3.13.1    amd64 arm x86
 =media-libs/jpeg-6b-r9          amd64 arm x86
 =media-sound/alsa-headers-1.0.24 amd64 arm x86
 =net-analyzer/netperf-2.4.4	amd64 arm x86
