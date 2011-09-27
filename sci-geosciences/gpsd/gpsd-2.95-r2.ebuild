@@ -1,5 +1,5 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 #
 # This file is a heavily edited version of the Gentoo original streamlined for
@@ -22,7 +22,7 @@ RDEPEND="dbus? ( >=sys-apps/dbus-0.94
 		>=dev-libs/glib-2.6
 		dev-libs/dbus-glib )
 	 ntp? ( net-misc/ntp )
-	 virtual/dev-manager
+	 sys-fs/udev
 	 virtual/libusb:1"
 
 DEPEND="${RDEPEND}

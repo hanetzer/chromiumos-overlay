@@ -65,9 +65,6 @@ if [[ ${PV} == "9999" ]]; then
 		dev-util/gtk-doc"
 fi
 
-# our portage tree needs this
-PROVIDE="virtual/dev-manager"
-
 # required kernel options
 CONFIG_CHECK="~INOTIFY_USER ~SIGNALFD ~!SYSFS_DEPRECATED ~!SYSFS_DEPRECATED_V2
 	~!IDE"

@@ -14,7 +14,6 @@ virtual/aspell-dict			app-dicts/aspell-en
 virtual/blackbox			x11-wm/blackbox
 virtual/commonlisp			dev-lisp/sbcl
 virtual/cron				sys-process/vixie-cron
-virtual/dev-manager			sys-fs/udev
 virtual/dhcpc				net-misc/dhcpcd
 virtual/fam				app-admin/gamin
 virtual/gsasl				net-libs/libgsasl
