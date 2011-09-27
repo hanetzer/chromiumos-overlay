@@ -68,11 +68,17 @@ src_prepare() {
 src_install() {
 	gnome2_src_install
 	find "${ED}/usr/$(get_libdir)/pango/1.6.0/modules" -name "*.la" -delete || die
-	# TODO(msb): Ugly Hack fix for pango-querymodules pango-querymodules needs
-	# to be run on the target so we ran it on the target and stored the result
-	# which we copy here
-	insinto /etc/pango
-	doins "${FILESDIR}"/pango.modules || die
+	if multilib_enabled; then
+		insinto "/etc/pango/${CHOST}"
+	else
+		insinto /etc/pango
+	fi
+	# TODO(msb): Ugly Hack fix for pango-querymodules pango-querymodules
+	# needs to be run on the target so we ran it on the target and stored
+	# the result which we copy here
+	sed "s:@libdir@:$(get_libdir):g" "${FILESDIR}"/pango.modules \
+		>pango.modules || die
+	doins pango.modules || die
 }
 
 pkg_postinst() {
