@@ -8,41 +8,38 @@
 #
 # This file is usually sourced by other build scripts, but can be run
 # directly to see what it would do.
-#
-# Version numbering scheme is much like Chrome's, with the addition of
-# double-incrementing branch number so trunk is always odd.
 
 #############################################################################
 # SET VERSION NUMBERS
 #############################################################################
-# Major/minor versions.
-# Primarily for product marketing.
-export CHROMEOS_VERSION_MAJOR=0
-export CHROMEOS_VERSION_MINOR=16
+# Release Build number.
+# Increment by 1 for every release build.
+export CHROMEOS_BUILD=1098
 
-# Branch number.
-# Increment by 1 in a new release branch.
-# Increment by 2 in trunk after making a release branch.
-# Does not reset on a major/minor change (always increases).
-# (Trunk is always odd; branches are always even).
-export CHROMEOS_VERSION_BRANCH=1098
+# Release Branch number.
+# Increment by 1 for every release build on a branch.
+# Reset to 0 when increasing release build number.
+export CHROMEOS_BRANCH=0
 
 # Patch number.
-# Increment by 1 each release on a branch.
+# Increment by 1 in case a non-scheduled branch release build is necessary.
 # Reset to 0 when increasing branch number.
-export CHROMEOS_VERSION_PATCH=0
+export CHROMEOS_PATCH=0
+
+# Major version for Chrome.
+export CHROME_BRANCH=16
 
 # Official builds must set CHROMEOS_OFFICIAL=1.
 if [ ${CHROMEOS_OFFICIAL:-0} -ne 1 ] && [ "${USER}" != "chrome-bot" ]; then
   # For developer builds, overwrite CHROMEOS_VERSION_PATCH with a date string
   # for use by auto-updater.
-  export CHROMEOS_VERSION_PATCH=$(date +%Y_%m_%d_%H%M)
+  export CHROMEOS_PATCH=$(date +%Y_%m_%d_%H%M)
 fi
 
 # Version string. Not indentied to appease bash.
 export CHROMEOS_VERSION_STRING=\
-"${CHROMEOS_VERSION_MAJOR}.${CHROMEOS_VERSION_MINOR}"\
-".${CHROMEOS_VERSION_BRANCH}.${CHROMEOS_VERSION_PATCH}"
+"${CHROMEOS_BUILD}.${CHROMEOS_BRANCH}"\
+".${CHROMEOS_PATCH}"
 
 # Set CHROME values (Used for releases) to pass to chromeos-chrome-bin ebuild
 # URL to chrome archive
