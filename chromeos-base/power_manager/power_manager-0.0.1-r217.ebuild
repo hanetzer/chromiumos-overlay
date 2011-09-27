@@ -64,8 +64,17 @@ src_test() {
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		TESTS="backlight file_tagger idle_dimmer plug_dimmer power_supply powerd"
-		TESTS="$TESTS resolution_selector xidle"
+		export DISPLAY=:1
+		trap 'kill %1 && wait' exit
+		"${SYSROOT}/usr/bin/Xvfb" ${DISPLAY} 2>/dev/null &
+		sleep 2
+		for ut in file_tagger power_supply powerd; do
+			"${S}/${ut}_unittest" \
+				${GTEST_ARGS} || die "${ut}_unittest failed"
+		done
+		kill %1 && wait
+		trap - exit
+		TESTS="backlight idle_dimmer plug_dimmer resolution_selector"
 		for ut in ${TESTS}; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
