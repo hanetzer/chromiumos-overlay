@@ -434,6 +434,9 @@ esac
 
 case "$BOARD" in
   *-host)
+    if [[ $FLAGS_usepkg -eq $FLAGS_TRUE ]]; then
+      die "host boards only support --nousepkg"
+    fi
     HOST_BOARD=true
     ;;
   *)
