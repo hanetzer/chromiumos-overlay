@@ -184,7 +184,7 @@ QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
 use_nacl() {
-	use amd64 || use x86
+	(use amd64 || use x86) && ! use asan
 }
 
 set_build_defines() {
@@ -251,7 +251,7 @@ set_build_defines() {
 			eerror "Asan requires Clang to run."
 			die "Please set USE=\"${USE} clang\" to enable Clang"
 		fi
-		BUILD_DEFINES="asan=1 disable_nacl=1 $BUILD_DEFINES"
+		BUILD_DEFINES="asan=1 $BUILD_DEFINES"
 	fi
 
 	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
