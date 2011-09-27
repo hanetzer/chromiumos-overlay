@@ -24,6 +24,7 @@ src_prepare() {
   # TODO: Remove the epatch lines when mozc is upgraded.
   epatch "${FILESDIR}"/pkg_config.patch
   epatch "${FILESDIR}"/chewing_dependency.patch
+  epatch "${FILESDIR}"/wait_subprocess_in_run_after_chdir.patch
 }
 
 src_configure() {
