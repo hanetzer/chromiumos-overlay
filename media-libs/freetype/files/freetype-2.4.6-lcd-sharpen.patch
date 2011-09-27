@@ -1,0 +1,183 @@
+diff -ur freetype-2.4.6/builds/unix/configure freetype-2.4.6-cros/builds/unix/configure
+--- freetype-2.4.6/builds/unix/configure	2011-07-28 21:39:28.000000000 -0700
++++ freetype-2.4.6-cros/builds/unix/configure	2011-09-27 13:18:50.000000000 -0700
+@@ -4662,7 +4662,7 @@
+ fi
+ if test x$with_zlib != xno && test -n "$LIBZ"; then
+   CFLAGS="$CFLAGS -DFT_CONFIG_OPTION_SYSTEM_ZLIB"
+-  LDFLAGS="$LDFLAGS $LIBZ"
++  LDFLAGS="$LDFLAGS $LIBZ -lm"
+   SYSTEM_ZLIB=yes
+ fi
+ 
+diff -ur freetype-2.4.6/include/freetype/freetype.h freetype-2.4.6-cros/include/freetype/freetype.h
+--- freetype-2.4.6/include/freetype/freetype.h	2011-07-28 21:01:15.000000000 -0700
++++ freetype-2.4.6-cros/include/freetype/freetype.h	2011-09-27 13:17:08.000000000 -0700
+@@ -1066,6 +1066,13 @@
+   /*      Currently, there are about a dozen TrueType fonts in the list of */
+   /*      tricky fonts; they are hard-coded in file `ttobjs.c'.            */
+   /*                                                                       */
++  /*    FT_FACE_FLAG_LCD_SHARPEN ::                                        */
++  /*      Set to enable LCD sharpening. Only effective when sub-pxiel      */
++  /*      anti-aliasing is turned on.                                      */
++  /*                                                                       */
++  /*      Currently, it's turned off for a select set of hard-coded fonts  */
++  /*      in file `ttobjs.c'.                                              */
++
+ #define FT_FACE_FLAG_SCALABLE          ( 1L <<  0 )
+ #define FT_FACE_FLAG_FIXED_SIZES       ( 1L <<  1 )
+ #define FT_FACE_FLAG_FIXED_WIDTH       ( 1L <<  2 )
+@@ -1080,6 +1087,7 @@
+ #define FT_FACE_FLAG_HINTER            ( 1L << 11 )
+ #define FT_FACE_FLAG_CID_KEYED         ( 1L << 12 )
+ #define FT_FACE_FLAG_TRICKY            ( 1L << 13 )
++#define FT_FACE_FLAG_LCD_SHARPEN       ( 1L << 14 )
+ 
+ 
+   /*************************************************************************
+diff -ur freetype-2.4.6/src/smooth/ftsmooth.c freetype-2.4.6-cros/src/smooth/ftsmooth.c
+--- freetype-2.4.6/src/smooth/ftsmooth.c	2011-05-29 21:46:55.000000000 -0700
++++ freetype-2.4.6-cros/src/smooth/ftsmooth.c	2011-09-28 14:50:44.000000000 -0700
+@@ -25,6 +25,7 @@
+ #include "ftspic.h"
+ 
+ #include "ftsmerrs.h"
++#include <math.h>
+ 
+ 
+   /* initialize renderer -- init its raster */
+@@ -94,6 +95,47 @@
+   }
+ 
+ 
++  /* soften the sub-pixel anti-aliasing and sharpen */
++  static void
++  _ft_subpixel_sharpen( FT_Bitmap*      bitmap,
++                        FT_Render_Mode  mode,
++                        FT_Byte         cutoff,
++                        double          gamma_value )
++  {
++    static FT_Bool initialized_gamma = FALSE;
++    static unsigned short gamma_ramp[256];
++    FT_UInt   width   = (FT_UInt)bitmap->width;
++    FT_UInt   height  = (FT_UInt)bitmap->rows;
++    int    ii;
++    if ( !initialized_gamma )
++    {
++      initialized_gamma = TRUE;
++      /* linear to voltage */
++      for ( ii = 0; ii < 256; ii++ )
++      {
++        gamma_ramp[ii] = (unsigned char)
++                         ( pow( (double)ii/255.0, gamma_value ) * 255.0f );
++        if (gamma_ramp[ii] < cutoff) {
++          gamma_ramp[ii] = 0;
++        }
++      }
++    }
++
++    /* horizontal in-place sub-pixel sharpening filter */
++    if ( mode == FT_RENDER_MODE_LCD )
++    {
++      FT_Byte*  line = bitmap->buffer;
++      for ( ; height > 0; height--, line += bitmap->pitch )
++      {
++        FT_UInt  xx;
++        for ( xx = 0; xx < width; xx++ )
++        {
++          line[xx] = gamma_ramp[line[xx]];
++        }
++      }
++    }
++  }
++
+   /* convert a slot's glyph image into a bitmap */
+   static FT_Error
+   ft_smooth_render_generic( FT_Renderer       render,
+@@ -288,6 +330,15 @@
+           vec->y /= 3;
+     }
+ 
++    if ( slot->face && ( slot->face->face_flags & FT_FACE_FLAG_LCD_SHARPEN ) )
++    {
++      /* These should be controllable */
++      FT_Byte cutoff = (FT_Byte)(0.25 * 255.0);
++      double gamma_value = 1.2;
++      /* sharpen the glyphs */
++      _ft_subpixel_sharpen( bitmap, mode, cutoff, gamma_value );
++    }
++
+     if ( slot->library->lcd_filter_func )
+       slot->library->lcd_filter_func( bitmap, mode, slot->library );
+ 
+diff -ur freetype-2.4.6/src/truetype/ttobjs.c freetype-2.4.6-cros/src/truetype/ttobjs.c
+--- freetype-2.4.6/src/truetype/ttobjs.c	2011-07-03 00:52:13.000000000 -0700
++++ freetype-2.4.6-cros/src/truetype/ttobjs.c	2011-09-28 15:21:37.000000000 -0700
+@@ -175,6 +175,34 @@
+     return FALSE;
+   }
+ 
++  static FT_Bool
++  tt_disable_lcd_sharpen_family( FT_String*  name )
++  {
++
++#define DISABLE_SHARP_NAMES_MAX_CHARACTERS  19
++#define DISABLE_SHARP_NAMES_COUNT            3
++
++    /* Would it be faster to use ft_strcmp and list all the family names */
++    /* exactly (like 'IPAMincho, IPAGothic, IPAPMincho, IPAPGothic')?    */
++    static const char font_names[DISABLE_SHARP_NAMES_COUNT]
++                                [DISABLE_SHARP_NAMES_MAX_CHARACTERS + 1] =
++    {
++      "IPA",
++      "Droid Sans Fallback",
++      "NanumMyeongjo",
++      /* "Song ASC", */
++      /* "MingLiU",  */
++    };
++
++    int  nn;
++
++    for ( nn = 0; nn < DISABLE_SHARP_NAMES_COUNT; nn++ )
++      if ( ft_strstr( name, font_names[nn] ) )
++        return TRUE;
++
++    return FALSE;
++  }
++
+ 
+   /* XXX: This function should be in the `sfnt' module. */
+ 
+@@ -408,6 +436,22 @@
+     return FALSE;
+   }
+ 
++  static FT_Bool
++  tt_disable_lcd_sharpen( FT_Face face )
++  {
++    if ( !face )
++      return FALSE;
++
++    /* For first, check the face name for quick check. */
++    if ( face->family_name                               &&
++         tt_disable_lcd_sharpen_family( face->family_name ) )
++      return TRUE;
++
++    /* We don't worry about Type42 fonts without `name' tables. */
++
++    return FALSE;
++  }
++
+ 
+   /* Check whether `.notdef' is the only glyph in the `loca' table. */
+   static FT_Bool
+@@ -534,6 +578,9 @@
+     if ( tt_check_trickyness( ttface ) )
+       ttface->face_flags |= FT_FACE_FLAG_TRICKY;
+ 
++    if ( !tt_disable_lcd_sharpen( ttface ) )
++      ttface->face_flags |= FT_FACE_FLAG_LCD_SHARPEN;
++
+     error = tt_face_load_hdmx( face, stream );
+     if ( error )
+       goto Exit;

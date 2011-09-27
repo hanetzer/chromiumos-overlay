@@ -57,7 +57,7 @@ src_prepare() {
 	disable_option FT_CONFIG_OPTION_OLD_INTERNALS
 
 	epatch "${FILESDIR}"/${PN}-2.3.2-enable-valid.patch
-	epatch "${FILESDIR}"/${PN}-2.3.11-lcd-sharpen.patch
+	epatch "${FILESDIR}"/${PN}-2.4.6-lcd-sharpen.patch
 
 	if use utils; then
 		cd "${WORKDIR}/ft2demos-${PV}"
