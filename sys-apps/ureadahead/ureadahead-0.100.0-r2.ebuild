@@ -22,8 +22,7 @@ DEPEND="${RDEPEND}
 	sys-devel/gettext"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-5.patch   # Downloaded from upstream
-	epatch "${FILESDIR}"/${P}-gold.patch
+	epatch "${FILESDIR}"/${P}-11.patch   # Downloaded from upstream
 }
 
 src_configure() {
