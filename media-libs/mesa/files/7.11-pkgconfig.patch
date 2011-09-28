@@ -1,0 +1,273 @@
+Replace direct calls to pkg-config with PKG_CONFIG.
+
+This is useful in a cross-compiling situation.
+diff --git a/src/egl/wayland/wayland-drm/Makefile b/src/egl/wayland/wayland-drm/Makefile
+index bc010b6..42222a9 100644
+--- a/src/egl/wayland/wayland-drm/Makefile
++++ b/src/egl/wayland/wayland-drm/Makefile
+@@ -16,8 +16,8 @@ wayland_drm_INCLUDES = \
+ 		-I$(TOP)/include
+ 
+ # Generate protocol sources
+-prefix=$(shell pkg-config --variable=prefix wayland-server)
+-exec_prefx=$(shell pkg-config --variable=exec_prefix wayland-server)
++prefix=$(shell $(PKG_CONFIG) --variable=prefix wayland-server)
++exec_prefx=$(shell $(PKG_CONFIG) --variable=exec_prefix wayland-server)
+ wayland_protocoldir = $(PWD)/protocol
+ wayland_scanner=$(exec_prefix)/bin/wayland-scanner
+ 
+diff --git a/src/gallium/drivers/r600/Makefile b/src/gallium/drivers/r600/Makefile
+index 7e21e3e..a84e283 100644
+--- a/src/gallium/drivers/r600/Makefile
++++ b/src/gallium/drivers/r600/Makefile
+@@ -4,7 +4,7 @@ include $(TOP)/configs/current
+ LIBNAME = r600
+ 
+ LIBRARY_INCLUDES = \
+-	$(shell pkg-config libdrm --cflags-only-I)
++	$(shell $(PKG_CONFIG) libdrm --cflags-only-I)
+ 
+ C_SOURCES = \
+ 	r600_asm.c \
+diff --git a/src/gallium/state_trackers/dri/drm/Makefile b/src/gallium/state_trackers/dri/drm/Makefile
+index c717b2b..695dc0c 100644
+--- a/src/gallium/state_trackers/dri/drm/Makefile
++++ b/src/gallium/state_trackers/dri/drm/Makefile
+@@ -10,7 +10,7 @@ LIBRARY_INCLUDES = \
+ 	-I$(TOP)/src/gallium/state_trackers/dri/common \
+ 	-I$(TOP)/src/mesa/drivers/dri/common \
+ 	-I$(TOP)/src/mesa/main \
+-         $(shell pkg-config --cflags-only-I libdrm)
++         $(shell $(PKG_CONFIG) --cflags-only-I libdrm)
+ 
+ 
+ C_SOURCES = \
+diff --git a/src/gallium/state_trackers/egl/Makefile b/src/gallium/state_trackers/egl/Makefile
+index 1c97022..c2f32bb 100644
+--- a/src/gallium/state_trackers/egl/Makefile
++++ b/src/gallium/state_trackers/egl/Makefile
+@@ -18,7 +18,7 @@ x11_INCLUDES = \
+ 	-I$(TOP)/src/mapi \
+ 	-I$(TOP)/src/mesa \
+ 	$(X11_CFLAGS) \
+-	$(shell pkg-config --cflags-only-I libdrm dri2proto)
++	$(shell $(PKG_CONFIG) --cflags-only-I libdrm dri2proto)
+ 
+ x11_SOURCES = $(wildcard x11/*.c) \
+ 	      $(TOP)/src/glx/dri2.c
+@@ -28,12 +28,12 @@ wayland_INCLUDES = \
+ 	-I$(TOP)/src/gallium/winsys \
+ 	-I$(TOP)/src/egl/wayland/wayland-egl \
+ 	-I$(TOP)/src/egl/wayland/wayland-drm \
+-	$(shell pkg-config --cflags-only-I libdrm wayland-client)
++	$(shell $(PKG_CONFIG) --cflags-only-I libdrm wayland-client)
+ 
+ wayland_SOURCES = $(wildcard wayland/*.c)
+ wayland_OBJECTS = $(wayland_SOURCES:.c=.o)
+ 
+-drm_INCLUDES = -I$(TOP)/src/gallium/winsys $(shell pkg-config --cflags-only-I libdrm) \
++drm_INCLUDES = -I$(TOP)/src/gallium/winsys $(shell $(PKG_CONFIG) --cflags-only-I libdrm)
+ 	       -I$(TOP)/src/gbm/main -I$(TOP)/src/gallium/state_trackers/gbm
+ drm_SOURCES = $(wildcard drm/*.c)
+ drm_OBJECTS = $(drm_SOURCES:.c=.o)
+diff --git a/src/gallium/state_trackers/xorg/Makefile b/src/gallium/state_trackers/xorg/Makefile
+index 7a44d28..d42ea54 100644
+--- a/src/gallium/state_trackers/xorg/Makefile
++++ b/src/gallium/state_trackers/xorg/Makefile
+@@ -5,12 +5,12 @@ LIBNAME = xorgtracker
+ 
+ LIBRARY_INCLUDES = \
+ 	-DHAVE_CONFIG_H \
+-	$(shell pkg-config xextproto --atleast-version=7.0.99.1 \
++	$(shell $(PKG_CONFIG) xextproto --atleast-version=7.0.99.1 \
+ 				&& echo "-DHAVE_XEXTPROTO_71") \
+-	$(shell pkg-config libkms --atleast-version=1.0 \
++	$(shell $(PKG_CONFIG) libkms --atleast-version=1.0 \
+ 				&& echo "-DHAVE_LIBKMS") \
+-	$(shell pkg-config libkms --silence-errors --cflags-only-I) \
+-	$(shell pkg-config --cflags-only-I pixman-1 xorg-server libdrm xproto dri2proto) \
++	$(shell $(PKG_CONFIG) libkms --silence-errors --cflags-only-I) \
++	$(shell $(PKG_CONFIG) --cflags-only-I pixman-1 xorg-server libdrm xproto dri2proto) \
+ 	-I$(TOP)/src/gallium/include \
+ 	-I$(TOP)/src/gallium/auxiliary \
+ 	-I$(TOP)/include \
+diff --git a/src/gallium/targets/dri-nouveau/Makefile b/src/gallium/targets/dri-nouveau/Makefile
+index eb1ee85..dacb85c 100644
+--- a/src/gallium/targets/dri-nouveau/Makefile
++++ b/src/gallium/targets/dri-nouveau/Makefile
+@@ -23,6 +23,6 @@ DRIVER_DEFINES = \
+ 
+ include ../Makefile.dri
+ 
+-DRI_LIB_DEPS += $(shell pkg-config libdrm_nouveau --libs)
++DRI_LIB_DEPS += $(shell $(PKG_CONFIG) libdrm_nouveau --libs)
+ 
+ symlinks:
+diff --git a/src/gallium/targets/xorg-i915/Makefile b/src/gallium/targets/xorg-i915/Makefile
+index 8652404..28f8873 100644
+--- a/src/gallium/targets/xorg-i915/Makefile
++++ b/src/gallium/targets/xorg-i915/Makefile
+@@ -19,6 +19,6 @@ DRIVER_PIPES = \
+ 	$(TOP)/src/gallium/drivers/rbug/librbug.a
+ 
+ DRIVER_LINKS = \
+-	$(shell pkg-config --libs libdrm libdrm_intel)
++	$(shell $(PKG_CONFIG) --libs libdrm libdrm_intel)
+ 
+ include ../Makefile.xorg
+diff --git a/src/gallium/targets/xorg-i965/Makefile b/src/gallium/targets/xorg-i965/Makefile
+index 494dce4..36df276 100644
+--- a/src/gallium/targets/xorg-i965/Makefile
++++ b/src/gallium/targets/xorg-i965/Makefile
+@@ -21,6 +21,6 @@ DRIVER_PIPES = \
+ 	$(TOP)/src/gallium/drivers/softpipe/libsoftpipe.a
+ 
+ DRIVER_LINKS = \
+-	$(shell pkg-config --libs libdrm libdrm_intel)
++	$(shell $(PKG_CONFIG) --libs libdrm libdrm_intel)
+ 
+ include ../Makefile.xorg
+diff --git a/src/gallium/targets/xorg-nouveau/Makefile b/src/gallium/targets/xorg-nouveau/Makefile
+index 755969c..cb4ae49 100644
+--- a/src/gallium/targets/xorg-nouveau/Makefile
++++ b/src/gallium/targets/xorg-nouveau/Makefile
+@@ -21,9 +21,9 @@ DRIVER_PIPES = \
+ 	$(TOP)/src/gallium/drivers/rbug/librbug.a
+ 
+ DRIVER_LINKS = \
+-	$(shell pkg-config --libs libdrm libdrm_nouveau)
++	$(shell $(PKG_CONFIG) --libs libdrm libdrm_nouveau)
+ 
+ DRIVER_INCLUDES = \
+-	$(shell pkg-config --cflags-only-I libdrm libdrm_nouveau xf86driproto)
++	$(shell $(PKG_CONFIG) --cflags-only-I libdrm libdrm_nouveau xf86driproto)
+ 
+ include ../Makefile.xorg
+diff --git a/src/gallium/targets/xorg-r300/Makefile b/src/gallium/targets/xorg-r300/Makefile
+index 195ab81..26cc559 100644
+--- a/src/gallium/targets/xorg-r300/Makefile
++++ b/src/gallium/targets/xorg-r300/Makefile
+@@ -19,6 +19,6 @@ DRIVER_PIPES = \
+ 	$(TOP)/src/gallium/drivers/rbug/librbug.a
+ 
+ DRIVER_LINKS = \
+-	$(shell pkg-config --libs libdrm)
++	$(shell $(PKG_CONFIG) --libs libdrm)
+ 
+ include ../Makefile.xorg
+diff --git a/src/gallium/targets/xorg-vmwgfx/Makefile b/src/gallium/targets/xorg-vmwgfx/Makefile
+index 04a444f..9e1d9b7 100644
+--- a/src/gallium/targets/xorg-vmwgfx/Makefile
++++ b/src/gallium/targets/xorg-vmwgfx/Makefile
+@@ -28,6 +28,6 @@ DRIVER_PIPES = \
+ 	$(TOP)/src/gallium/drivers/rbug/librbug.a
+ 
+ DRIVER_LINKS = \
+-	$(shell pkg-config --libs libdrm libkms)
++	$(shell $(PKG_CONFIG) --libs libdrm libkms)
+ 
+ include ../Makefile.xorg
+diff --git a/src/gallium/winsys/i915/drm/Makefile b/src/gallium/winsys/i915/drm/Makefile
+index 1977de1..45fbc46 100644
+--- a/src/gallium/winsys/i915/drm/Makefile
++++ b/src/gallium/winsys/i915/drm/Makefile
+@@ -9,8 +9,8 @@ C_SOURCES = \
+ 	i915_drm_fence.c \
+ 	i915_drm_winsys.c
+ 
+-LIBRARY_INCLUDES = $(shell pkg-config libdrm --cflags-only-I)
++LIBRARY_INCLUDES = $(shell $(PKG_CONFIG) libdrm --cflags-only-I)
+ 
+-LIBRARY_DEFINES = $(shell pkg-config libdrm --cflags-only-other)
++LIBRARY_DEFINES = $(shell $(PKG_CONFIG) libdrm --cflags-only-other)
+ 
+ include ../../../Makefile.template
+diff --git a/src/gallium/winsys/i965/drm/Makefile b/src/gallium/winsys/i965/drm/Makefile
+index 46f98d7..830007e 100644
+--- a/src/gallium/winsys/i965/drm/Makefile
++++ b/src/gallium/winsys/i965/drm/Makefile
+@@ -7,8 +7,8 @@ C_SOURCES = \
+ 	i965_drm_buffer.c \
+ 	i965_drm_winsys.c
+ 
+-LIBRARY_INCLUDES = $(shell pkg-config libdrm --cflags-only-I)
++LIBRARY_INCLUDES = $(shell $(PKG_CONFIG) libdrm --cflags-only-I)
+ 
+-LIBRARY_DEFINES = $(shell pkg-config libdrm --cflags-only-other)
++LIBRARY_DEFINES = $(shell $(PKG_CONFIG) --cflags-only-other)
+ 
+ include ../../../Makefile.template
+diff --git a/src/gallium/winsys/nouveau/drm/Makefile b/src/gallium/winsys/nouveau/drm/Makefile
+index 74a3c6a..ed748ac 100644
+--- a/src/gallium/winsys/nouveau/drm/Makefile
++++ b/src/gallium/winsys/nouveau/drm/Makefile
+@@ -5,7 +5,7 @@ LIBNAME = nouveaudrm
+ 
+ C_SOURCES = nouveau_drm_winsys.c
+ 
+-LIBRARY_INCLUDES = $(shell pkg-config libdrm libdrm_nouveau --cflags-only-I)
+-LIBRARY_DEFINES = $(shell pkg-config libdrm libdrm_nouveau --cflags-only-other)
++LIBRARY_INCLUDES = $(shell $(PKG_CONFIG) libdrm libdrm_nouveau --cflags-only-I)
++LIBRARY_DEFINES = $(shell $(PKG_CONFIG) libdrm libdrm_nouveau --cflags-only-other)
+ 
+ include ../../../Makefile.template
+diff --git a/src/gallium/winsys/r600/drm/Makefile b/src/gallium/winsys/r600/drm/Makefile
+index fb7b09b..f99e14c 100644
+--- a/src/gallium/winsys/r600/drm/Makefile
++++ b/src/gallium/winsys/r600/drm/Makefile
+@@ -16,7 +16,7 @@ C_SOURCES = \
+ 
+ LIBRARY_INCLUDES = -I$(TOP)/src/gallium/drivers/r600 \
+ 		   -I$(TOP)/include \
+-		   $(shell pkg-config libdrm --cflags-only-I)
++		   $(shell $(PKG_CONFIG) libdrm --cflags-only-I)
+ 
+ include ../../../Makefile.template
+ 
+diff --git a/src/gallium/winsys/radeon/drm/Makefile b/src/gallium/winsys/radeon/drm/Makefile
+index 913e6ad..a2c098f 100644
+--- a/src/gallium/winsys/radeon/drm/Makefile
++++ b/src/gallium/winsys/radeon/drm/Makefile
+@@ -10,7 +10,7 @@ C_SOURCES = \
+ 	radeon_drm_winsys.c
+ 
+ LIBRARY_INCLUDES = -I$(TOP)/include \
+-		   $(shell pkg-config libdrm --cflags-only-I)
++		   $(shell $(PKG_CONFIG) libdrm --cflags-only-I)
+ 
+ include ../../../Makefile.template
+ 
+diff --git a/src/gallium/winsys/svga/drm/Makefile b/src/gallium/winsys/svga/drm/Makefile
+index c2f59e0..51ed832 100644
+--- a/src/gallium/winsys/svga/drm/Makefile
++++ b/src/gallium/winsys/svga/drm/Makefile
+@@ -17,11 +17,11 @@ C_SOURCES = \
+ LIBRARY_INCLUDES = \
+        -I$(TOP)/src/gallium/drivers/svga \
+        -I$(TOP)/src/gallium/drivers/svga/include \
+-       $(shell pkg-config libdrm --cflags-only-I)
++       $(shell $(PKG_CONFIG) libdrm --cflags-only-I)
+ 
+ LIBRARY_DEFINES = \
+        -std=gnu99 -fvisibility=hidden \
+        -DHAVE_STDINT_H -D_FILE_OFFSET_BITS=64 \
+-       $(shell pkg-config libdrm --cflags-only-other)
++       $(shell $(PKG_CONFIG) libdrm --cflags-only-other)
+ 
+ include ../../../Makefile.template
+diff --git a/src/mesa/drivers/dri/i915/Makefile b/src/mesa/drivers/dri/i915/Makefile
+index 79e03f2..5412cfd 100644
+--- a/src/mesa/drivers/dri/i915/Makefile
++++ b/src/mesa/drivers/dri/i915/Makefile
+@@ -59,7 +59,7 @@ C_SOURCES = \
+ ASM_SOURCES = 
+ 
+ DRIVER_DEFINES = -I../intel -DI915 \
+-	$(shell pkg-config libdrm --atleast-version=2.3.1 \
++	$(shell $(PKG_CONFIG) libdrm --atleast-version=2.3.1 \
+ 				&& echo "-DDRM_VBLANK_FLIP=DRM_VBLANK_FLIP")
+ 
+ INCLUDES += $(INTEL_CFLAGS)
+-- 
+1.7.5.3.367.ga9930
+
