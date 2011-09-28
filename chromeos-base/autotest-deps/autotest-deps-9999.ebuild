@@ -55,5 +55,10 @@ RDEPEND="${RDEPEND}
   dev-libs/libnl
 "
 
+# deps/fakegudev
+RDEPEND="${RDEPEND}
+  sys-fs/udev[gudev]
+"
+
 DEPEND="${RDEPEND}"
 

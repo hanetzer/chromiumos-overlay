@@ -25,7 +25,7 @@ RDEPEND=">=dev-libs/glib-2.16
         net-dialup/ppp
         "
 
-DEPEND=">=sys-fs/udev-145[extras]
+DEPEND=">=sys-fs/udev-145[gudev]
         dev-util/pkgconfig
         dev-util/intltool
         "
