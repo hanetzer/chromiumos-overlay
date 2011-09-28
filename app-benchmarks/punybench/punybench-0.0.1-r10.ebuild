@@ -5,7 +5,7 @@
 #
 
 EAPI=2
-CROS_WORKON_COMMIT="3185a31231fa8200de9bf855cd0a392d3e302120"
+CROS_WORKON_COMMIT="beb5466ec8e87ba5a87534ffa106e02ab1f2d81c"
 CROS_WORKON_PROJECT="chromiumos/platform/punybench"
 CROS_WORKON_LOCALNAME="../platform/punybench"
 inherit toolchain-funcs cros-workon
