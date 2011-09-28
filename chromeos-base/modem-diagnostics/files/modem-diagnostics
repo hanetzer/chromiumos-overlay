@@ -56,4 +56,5 @@ echo 2>&1 Sleeping while kernel driver comes up
 sleep 4
 
 echo 2>&1 Connecting to $REMOTE_IP
+sudo stty -F /dev/ttyUSB0 raw
 sudo socat -xdd TCP:$REMOTE_IP:2500 GOPEN:/dev/ttyUSB0
