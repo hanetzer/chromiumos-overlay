@@ -54,7 +54,7 @@ sys-auth/consolekit	policykit
 sys-auth/polkit         -introspection
 sys-fs/lvm2		-lvm1 -readline -static
 sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
-sys-fs/udev		-devfs-compat extras
+sys-fs/udev		-devfs-compat -rule_generator hwdb acl
 sys-fs/squashfs         lzo
 sys-libs/ncurses	minimal
 sys-libs/pam        -berkdb
