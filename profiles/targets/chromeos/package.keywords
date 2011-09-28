@@ -90,7 +90,6 @@
 =sys-fs/ntfs3g-2011.4.12-r1	amd64 arm x86
 =sys-fs/squashfs-4.2            amd64 arm x86
 =sys-fs/sshfs-fuse-2.2		amd64 arm x86
-=sys-fs/udev-171-r2		amd64 arm x86
 =sys-kernel/linux-headers-2.6.38	amd64 arm x86
 =sys-block/btrace-1.0.0		amd64 arm x86
 =sys-libs/e2fsprogs-libs-1.41.9	amd64 arm x86
