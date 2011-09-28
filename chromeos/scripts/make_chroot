@@ -227,8 +227,11 @@ EOF
    bash_chroot ls -l /usr/local/portage/chromiumos/profiles/default/linux/amd64/10.0
 
    # Niceties for interactive logins ('enter_chroot.sh'); these are ignored
-   # when specifying a command to enter_chroot.sh.
-   echo "export PS1='\$(__git_branch_ps1 \"(%s) \")'\"\${PS1}\"" >> \
+   # when specifying a command to enter_chroot.sh.  The $r behavior is to
+   # make sure we don't reset the previous $? value which later formats in
+   # $PS1 might rely on.
+   echo "export " \
+     "PS1='\$(r=\$?; __git_branch_ps1 \"(%s) \"; exit \$r)'\"\${PS1}\"" >> \
      "$FLAGS_chroot/home/$USER/.bashrc"
    echo "export PS1=\"(cr) \${PS1}\"" >> \
      "$FLAGS_chroot/home/$USER/.bashrc"
