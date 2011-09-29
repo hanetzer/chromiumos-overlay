@@ -74,7 +74,7 @@ src_install() {
 	dodir ${chromepluginsdir}
 	dosym ${destdir}/libnpo3dautoplugin.so ${chromepluginsdir}/ || die
 
-	if use x86; then
+	if use amd64 || use x86; then
 		exeinto ${destdir}/lib
 		doexe out/Release/libCg{,GL}.so || die
 	elif use arm; then
