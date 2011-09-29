@@ -160,8 +160,7 @@ src_install() {
 	if use asan; then
 		cd "${S}"/asan || die "cd to ASAN failed"
 		dodir /usr/lib
-		emake CLANG_BUILD="${S}"/asan INSTALL_DIR="${ED}"/usr \
-			install_lib32 install_lib64 ||
+		emake CLANG_BUILD="${S}"/asan INSTALL_DIR="${ED}"/usr install_lib ||
 			die "emake install of ASAN library failed"
 	fi
 }
