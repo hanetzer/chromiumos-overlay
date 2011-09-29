@@ -28,4 +28,11 @@ src_compile() {
 src_install() {
         local board=$(get_current_board_with_variant)
         dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
+
+        # Install Upstart configuration, adhd.conf, into /etc/init.
+        #
+        # Installation method copied from 'chromeos-init-9999.ebuild'
+        dodir /etc/init
+        install --owner=root --group=root --mode=0644 \
+                "${S}"/upstart/adhd.conf "${D}/etc/init/"
 }
