@@ -11,7 +11,7 @@ ACCEPT_KEYWORDS="amd64"
 source make.conf.common
 
 # Recommended x86-specific USE flags.
-USE="mmx sse sse2 dri hardened"
+USE="${USE} mmx sse sse2 dri hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE=""
