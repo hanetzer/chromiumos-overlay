@@ -104,10 +104,22 @@ src_compile() {
 		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
 		local ifdtool="/usr/bin/ifdtool"
 		if [ -r ${skeleton} ]; then
+			# cros_bundle_firmware only produces the system firmware.
+			# In order to produce a working image on Sandybridge we
+			# need to embed this image into a Firmware Descriptor image
+			# that contains ME firmware and possibly some other BLOBs.
 			cp ${skeleton} image.ifd
 			${ifdtool} -i BIOS:image.bin image.ifd
 			cp ${skeleton} legacy_image.ifd
 			${ifdtool} -i BIOS:legacy_image.bin legacy_image.ifd
+			# Rename the final image.ifd to image.bin, so we don't
+			# have to add a lot of handling for two different names
+			# in other places. But we also want to keep the original
+			# cros_bundle_firmware images around (as image_sys.bin)
+			mv image.bin image_sys.bin
+			mv legacy_image.bin legacy_image_sys.bin
+			mv image.ifd.new image.bin
+			mv legacy_image.ifd.new legacy_image.bin
 		fi
 	fi
 }
@@ -120,8 +132,8 @@ src_install() {
 	if use x86; then
 		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
 		if [ -r ${skeleton} ]; then
-			newins image.ifd.new image.ifd
-			newins legacy_image.ifd.new legacy_image.ifd
+			doins image_sys.bin
+			doins legacy_image_sys.bin
 		fi
 	fi
 }
