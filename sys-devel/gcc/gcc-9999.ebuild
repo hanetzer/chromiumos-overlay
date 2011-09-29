@@ -162,7 +162,14 @@ src_compile()
 	then
 		GCC_CFLAGS+=" -DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE -DEFAULT_RELRO"
 	fi
-	emake CFLAGS="${GCC_CFLAGS}" LDFLAGS=-Wl,-O1 'STAGE1_CFLAGS=-O2 -pipe' BOOT_CFLAGS=-O2 all || die
+	TARGET_FLAGS="-g -O2 -pipe -fstack-protector-all -D_FORTIFY_SOURCE=2"
+	emake CFLAGS="${GCC_CFLAGS}" \
+		LDFLAGS="-Wl,-O1" \
+		STAGE1_CFLAGS="-O2 -pipe" \
+		BOOT_CFLAGS="-O2" \
+		CFLAGS_FOR_TARGET="${TARGET_FLAGS}" \
+		CXXFLAGS_FOR_TARGET="${TARGET_FLAGS}" \
+		all || die
 	popd
 	return $?
 }
