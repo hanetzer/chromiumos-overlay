@@ -82,6 +82,10 @@ src_prepare() {
 	# gdbus-codegen is a separate package
 	epatch "${FILESDIR}/${PN}-2.29.18-external-gdbus-codegen.patch"
 
+	# Skip the qsort_r test, which fails to run under cross-compilation,
+	# and thus use the qsort_r implementation provided by glib
+	epatch "${FILESDIR}/${PN}-2.30.0-qsort_r-check.patch"
+
 	# disable pyc compiling
 	ln -sfn $(type -P true) py-compile
 
