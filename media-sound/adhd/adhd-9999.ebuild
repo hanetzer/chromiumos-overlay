@@ -25,6 +25,8 @@ src_compile() {
 }
 
 src_install() {
+        # Install 'gavd' executable.
+        #
         local board=$(get_current_board_with_variant)
         dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
 
@@ -34,4 +36,12 @@ src_install() {
         dodir /etc/init
         install --owner=root --group=root --mode=0644 \
                 "${S}"/upstart/adhd.conf "${D}/etc/init/"
+
+        # Install factory default sound settings: '/etc/asound.state'
+        #
+        # Installation method copied from audioconfig-board*.ebuild
+        insinto /etc
+        doins "${S}"/factory-default/asound.state.${board} || die
+        # Install and rename for step 4.
+        # newins "${S}"/factory-default/asound.state.${board} asound.state
 }
