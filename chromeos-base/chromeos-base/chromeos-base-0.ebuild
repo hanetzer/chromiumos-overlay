@@ -12,8 +12,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-DEPEND=">=sys-apps/baselayout-2.0.1-r226"
+DEPEND=">=sys-apps/baselayout-2"
 RDEPEND="${DEPEND}
+	!<sys-apps/baselayout-2.0.1-r227
 	!<sys-libs/timezone-data-2011d"
 
 # Remove entry from /etc/group
@@ -78,6 +79,9 @@ pkg_setup() {
 }
 
 src_install() {
+	insinto /etc
+	doins "${FILESDIR}"/sysctl.conf || die
+
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/xauthority.sh || die
 
