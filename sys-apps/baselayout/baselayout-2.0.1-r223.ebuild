@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/baselayout/baselayout-2.0.1.ebuild,v 1.1 2009/05/24 19:47:02 vapier Exp $
 
-inherit useradd
+inherit useradd multilib
 
 DESCRIPTION="Filesystem baselayout and init scripts (Modified for Chromium OS)"
 HOMEPAGE="http://src.chromium.org/"
@@ -29,14 +29,23 @@ copy_or_add_daemon_user() {
 }
 
 src_install() {
-	local libdir="lib"
-	[[ ${SYMLINK_LIB} == "yes" ]] && libdir=$(get_abi_LIBDIR "${DEFAULT_ABI}")
-
 	emake \
 		OS=$(use kernel_FreeBSD && echo BSD || echo Linux) \
-		LIB=${libdir} \
 		DESTDIR="${D}" \
 		install || die
+
+	# handle multilib paths.  do it here because we want this behavior
+	# regardless of the C library that you're using.  we do explicitly
+	# list paths which the native ldconfig searches, but this isn't
+	# problematic as it doesn't change the resulting ld.so.cache or
+	# take longer to generate.  similarly, listing both the native
+	# path and the symlinked path doesn't change the resulting cache.
+	local libdir ldpaths
+	for libdir in $(get_all_libdirs) ; do
+		ldpaths+=":/${libdir}:/usr/${libdir}:/usr/local/${libdir}"
+	done
+	dosed '/^LDPATH/d' /etc/env.d/00basic || die
+	echo "LDPATH='${ldpaths#:}'" >> "${D}"/etc/env.d/00basic
 
 	# We use our own sysctl.conf, which we'll probably hack on a lot
 	# so just copy it inplace instead of using patches to avoid the
