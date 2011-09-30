@@ -38,11 +38,10 @@ src_install() {
 		rm -f "${D}/etc/${x}"
 	done
 
-	# Some things (at least gcc-config) depend on /sbin/functions.sh.
-	# TODO(tedbo): Remove this when we find a workaround.
-	into /
-	dosbin "${FILESDIR}/functions.sh"
-	dosym "/sbin/functions.sh" "/etc/init.d/functions.sh"
+	# This file has moved to openrc, but we don't want that.
+	# https://bugs.gentoo.org/373219
+	insinto /etc/init.d
+	doins "${FILESDIR}"/functions.sh || die
 }
 
 pkg_postinst() {
