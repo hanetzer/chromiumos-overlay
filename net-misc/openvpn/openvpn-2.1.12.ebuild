@@ -30,7 +30,6 @@ src_prepare() {
 		-e "s/gcc \${CC_FLAGS}/\${CC} \${CFLAGS} -Wall/" \
 		-e "s/-shared/-shared \${LDFLAGS}/" \
 		plugin/*/Makefile || die "sed failed"
-	epatch "${FILESDIR}"/pkcs11-slot.patch
 }
 
 src_configure() {
