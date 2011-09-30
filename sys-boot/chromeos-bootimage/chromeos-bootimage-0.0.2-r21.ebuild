@@ -108,16 +108,16 @@ src_compile() {
 			# In order to produce a working image on Sandybridge we
 			# need to embed this image into a Firmware Descriptor image
 			# that contains ME firmware and possibly some other BLOBs.
+			dd if=image.bin of=image_sys.bin bs=2M skip=1
+			dd if=legacy_image.bin of=legacy_image_sys.bin bs=2M skip=1
 			cp ${skeleton} image.ifd
-			${ifdtool} -i BIOS:image.bin image.ifd
+			${ifdtool} -i BIOS:image_sys.bin image.ifd
 			cp ${skeleton} legacy_image.ifd
-			${ifdtool} -i BIOS:legacy_image.bin legacy_image.ifd
+			${ifdtool} -i BIOS:legacy_image_sys.bin legacy_image.ifd
 			# Rename the final image.ifd to image.bin, so we don't
 			# have to add a lot of handling for two different names
 			# in other places. But we also want to keep the original
 			# cros_bundle_firmware images around (as image_sys.bin)
-			mv image.bin image_sys.bin
-			mv legacy_image.bin legacy_image_sys.bin
 			mv image.ifd.new image.bin
 			mv legacy_image.ifd.new legacy_image.bin
 		fi
