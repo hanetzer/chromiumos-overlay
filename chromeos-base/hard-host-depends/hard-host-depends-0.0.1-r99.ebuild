@@ -40,6 +40,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus
 	app-text/texi2html
 	chromeos-base/google-breakpad
+	chromeos-base/chromeos-base
 	chromeos-base/chromeos-installer
 	chromeos-base/cros-devutils[cros_host]
 	chromeos-base/cros-factoryutils
