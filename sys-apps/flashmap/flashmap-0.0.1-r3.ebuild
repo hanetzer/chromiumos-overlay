@@ -36,7 +36,7 @@ src_test() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
+	emake DESTDIR="${D}" USE_PKG_CONFIG=1 install || die
 }
 
 pkg_postrm() {
