@@ -35,9 +35,8 @@ PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 RESUMECOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 
-# TODO(davidjames): Remove the --ipv4 argument once ipv6 issues are fixed. See http://crosbug.com/20984
-FETCHCOMMAND='curl --ipv4 -y 30 -f --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
-RESUMECOMMAND='curl --ipv4 -y 30 -f -C - --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
+FETCHCOMMAND='curl -y 30 -f --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
+RESUMECOMMAND='curl -y 30 -f -C - --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
 
 # Print a checkpoint message every 10MB while archiving.
 PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"

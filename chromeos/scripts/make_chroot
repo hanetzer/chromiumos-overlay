@@ -400,10 +400,9 @@ echo "$SCRIPT_NAME: Running emerge ccache curl sudo ..."
 in_chroot $EMERGE_CMD -uNv $USEPKG ccache net-misc/curl sudo $EMERGE_JOBS
 
 # Curl is now installed, so we can depend on it now.
-# TODO(davidjames): Remove the --ipv4 argument once ipv6 issues are fixed. See http://crosbug.com/20984
 bash_chroot 'cat >> /etc/make.conf.host_setup' <<'EOF'
-FETCHCOMMAND='curl --ipv4 -f -y 30 --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
-RESUMECOMMAND='curl --ipv4 -f -y 30 -C - --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
+FETCHCOMMAND='curl -f -y 30 --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
+RESUMECOMMAND='curl -f -y 30 -C - --retry 9 -L --output \${DISTDIR}/\${FILE} \${URI}'
 EOF
 sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
 
