@@ -8,7 +8,7 @@ DESCRIPTION="The Mozc Chewing engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2"
 LICENSE="BSD"
-RDEPEND=">=app-i18n/ibus-1.3.99
+RDEPEND=">=app-i18n/ibus-1.3.99.20110817
 	 >=dev-libs/libchewing-0.3.2
          dev-libs/protobuf
          net-misc/curl"
@@ -20,11 +20,6 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 src_prepare() {
   cd "mozc-${PV}" || die
   epatch "${FILESDIR}"/ibus-mozc-chewing-1.1.773.102-fix-property-string.patch
-
-  # TODO: Remove the epatch lines when mozc is upgraded.
-  epatch "${FILESDIR}"/pkg_config.patch
-  epatch "${FILESDIR}"/chewing_dependency.patch
-  epatch "${FILESDIR}"/wait_subprocess_in_run_after_chdir.patch
 }
 
 src_configure() {
