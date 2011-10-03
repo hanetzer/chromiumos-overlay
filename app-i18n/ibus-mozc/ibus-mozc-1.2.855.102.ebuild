@@ -17,19 +17,6 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  epatch "${FILESDIR}"/version_number.patch || die
-  epatch "${FILESDIR}"/pkg_config.patch || die
-  epatch "${FILESDIR}"/infolist.patch || die
-  # issued as crosbug.com/19619
-  epatch "${FILESDIR}"/does-not-learning.patch
-  epatch "${FILESDIR}"/${P}-candidate_refactoring.patch || die
-
-  # http://crosbug.com/20309
-  epatch "${FILESDIR}"/${P}-no-engine-specific-hotkeys.patch || die
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
@@ -66,8 +53,8 @@ src_install() {
 
   # Check the binary size to detect binary size bloat (which happend once due
   # typos in .gyp files).
-  test `stat -c %s "${T}"/ibus_mozc` -lt 20000000 \
-      || die 'The binary size of mozc for Japanese is too big (more than ~20MB)'
+  test `stat -c %s "${T}"/ibus_mozc` -lt 25000000 \
+      || die 'The binary size of mozc for Japanese is too big (more than ~25MB)'
   rm -f "${T}"/ibus_mozc
 }
 
