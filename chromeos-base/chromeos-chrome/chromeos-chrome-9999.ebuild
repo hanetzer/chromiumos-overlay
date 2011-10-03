@@ -663,7 +663,8 @@ src_compile() {
 
 	if use build_tests; then
 		if [ "$ARCH" = "arm" ]; then
-			TEST_TARGETS="omx_video_decode_accelerator_unittest"
+			TEST_TARGETS="omx_video_decode_accelerator_unittest
+				ppapi_example_gles2"
 		fi
 		TEST_TARGETS="${TEST_TARGETS}
 			performance_ui_tests
