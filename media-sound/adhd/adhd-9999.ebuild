@@ -20,28 +20,25 @@ RDEPEND=">=media-libs/alsa-lib-1.0.24.1"
 DEPEND=${RDEPEND}
 
 src_compile() {
-        local board=$(get_current_board_with_variant)
-        emake BOARD=${board} CC="$(tc-getCC)" || die "Unable to build ADHD."
+	local board=$(get_current_board_with_variant)
+	emake BOARD=${board} CC="$(tc-getCC)" || die "Unable to build ADHD"
 }
 
 src_install() {
-        # Install 'gavd' executable.
-        #
-        local board=$(get_current_board_with_variant)
-        dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
+	# Install 'gavd' executable.
+	#
+	local board=$(get_current_board_with_variant)
+	dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
 
-        # Install Upstart configuration, adhd.conf, into /etc/init.
-        #
-        # Installation method copied from 'chromeos-init-9999.ebuild'
-        dodir /etc/init
-        install --owner=root --group=root --mode=0644 \
-                "${S}"/upstart/adhd.conf "${D}/etc/init/"
+	# Install Upstart configuration, adhd.conf, into /etc/init.
+	#
+	# Compare 'chromeos-init-9999.ebuild'.
+	insinto	 /etc/init
+	doins upstart/adhd.conf || die
 
-        # Install factory default sound settings: '/etc/asound.state'
-        #
-        # Installation method copied from audioconfig-board*.ebuild
-        insinto /etc
-        doins "${S}"/factory-default/asound.state.${board} || die
-        # Install and rename for step 4.
-        # newins "${S}"/factory-default/asound.state.${board} asound.state
+	# Install factory default sound settings: '/etc/asound.state'
+	#
+	# Installation method copied from audioconfig-board*.ebuild
+	insinto /etc
+	newins "${S}"/factory-default/asound.state.${board} asound.state || die
 }
