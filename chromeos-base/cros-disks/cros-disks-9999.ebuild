@@ -60,13 +60,15 @@ src_install() {
 	exeinto /opt/google/cros-disks
 	doexe "${S}/build-opt/disks" || die
 
-	# install upstart config file.
-	dodir /etc/init
-	install --owner=root --group=root --mode=0644 \
-		"${S}"/cros-disks.conf "${D}"/etc/init
+	# Install USB device IDs file.
+	insinto /opt/google/cros-disks
+	doins "${S}/usb-device-info" || die
 
-	# install D-Bus config file.
-	dodir /etc/dbus-1/system.d
-	install --owner=root --group=root --mode=0644 \
-		"${S}"/org.chromium.CrosDisks.conf "${D}"/etc/dbus-1/system.d
+	# Install upstart config file.
+	insinto /etc/init
+	doins "${S}"/cros-disks.conf || die
+
+	# Install D-Bus config file.
+	insinto /etc/dbus-1/system.d
+	doins "${S}"/org.chromium.CrosDisks.conf || die
 }
