@@ -32,9 +32,9 @@ ROOT_FS_DIR="$FLAGS_root"
 
 CHROMEOS_VERSION_NAME="Chromium OS"
 CHROMEOS_VERSION_AUSERVER=\
-${CHROMEOS_VERSION_AUSERVER:-"http://$(hostname):8080/update"}
+${CHROMEOS_VERSION_AUSERVER:-"http://$(hostname --fqdn):8080/update"}
 CHROMEOS_VERSION_DEVSERVER=\
-${CHROMEOS_VERSION_DEVSERVER:-"http://$(hostname):8080"}
+${CHROMEOS_VERSION_DEVSERVER:-"http://$(hostname --fqdn):8080"}
 
 # Official builds must set CHROMEOS_OFFICIAL=1.
 if [ ${CHROMEOS_OFFICIAL:-0} = 1 ]; then
