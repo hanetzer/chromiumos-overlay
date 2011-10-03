@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="dfa2bbf5e457899271917e259da3c10966a6b8c5"
+CROS_WORKON_COMMIT="88be325c328a415805c0268609a34af969ee9569"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 inherit toolchain-funcs cros-workon cros-board
@@ -26,6 +26,8 @@ src_compile() {
 }
 
 src_install() {
+        # Install 'gavd' executable.
+        #
         local board=$(get_current_board_with_variant)
         dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
 
@@ -35,4 +37,12 @@ src_install() {
         dodir /etc/init
         install --owner=root --group=root --mode=0644 \
                 "${S}"/upstart/adhd.conf "${D}/etc/init/"
+
+        # Install factory default sound settings: '/etc/asound.state'
+        #
+        # Installation method copied from audioconfig-board*.ebuild
+        insinto /etc
+        doins "${S}"/factory-default/asound.state.${board} || die
+        # Install and rename for step 4.
+        # newins "${S}"/factory-default/asound.state.${board} asound.state
 }
