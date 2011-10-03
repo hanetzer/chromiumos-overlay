@@ -10,11 +10,13 @@ inherit linux-info xorg-2
 DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="amd64 ~ia64 x86 -x86-fbsd"
-IUSE="dri sna"
+IUSE="dri sna xvmc"
 
 RDEPEND="x11-libs/libXext
 	x11-libs/libXfixes
-	x11-libs/libXvMC
+	xvmc? (
+		x11-libs/libXvMC
+	)
 	>=x11-libs/libxcb-1.5
 	>=x11-libs/libdrm-2.4.23[video_cards_intel]
 	sna? (
