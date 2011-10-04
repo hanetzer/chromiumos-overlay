@@ -2,28 +2,29 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="c157abff20635b55047e73c1b09e8329f5f39c83"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
+CROS_WORKON_COMMIT="2d6d0d62259f7d085cbc0dd41dc79737d7ee9d69"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
 inherit binutils-funcs cros-kernel toolchain-funcs
 
-DESCRIPTION="Chrome OS Kernel"
+DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="amd64 x86 arm"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250"
+IUSE="-fbconsole -initramfs -nfs ${IUSE_KCONFIG} -device_tree -kernel_sources"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
     chromeos-base/kernel-headers
     initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel-next
+    !sys-kernel/chromeos-kernel
 "
-RDEPEND="!sys-kernel/chromeos-kernel-next"
+RDEPEND="!sys-kernel/chromeos-kernel"
+
+vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
 
 # TODO(vbendeb): we might need to be able to define the device tree source
 # name by some other means or to override the default. For now it must match
@@ -46,8 +47,7 @@ else
 	fi
 fi
 
-# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
-CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -85,11 +85,6 @@ src_configure() {
 		mv .config "${build_cfg}"
 	fi
 
-	if use blkdevram; then
-		elog "   - adding ram block device config"
-		cat "${FILESDIR}"/blkdevram.config >> "${build_cfg}"
-	fi
-
 	if use fbconsole; then
 		elog "   - adding framebuffer console config"
 		cat "${FILESDIR}"/fbconsole.config >> "${build_cfg}"
@@ -98,19 +93,6 @@ src_configure() {
 	if use nfs; then
 		elog "   - adding NFS config"
 		cat "${FILESDIR}"/nfs.config >> "${build_cfg}"
-	fi
-	if use systemtap; then
-		elog "	- adding configs to support systemtap"
-		cat "${FILESDIR}"/systemtap.config >> "${build_cfg}"
-	fi
-	if use serial8250; then
-		elog "	- add configs of serial8250"
-		cat "${FILESDIR}"/serial8250.config >> "${build_cfg}"
-	fi
-
-	if use pcserial; then
-		elog "   - adding PC serial config"
-		cat "${FILESDIR}"/pcserial.config >> "${build_cfg}"
 	fi
 
 	# Use default for any options not explitly set in splitconfig
@@ -144,7 +126,7 @@ src_compile() {
 	else
 		INITRAMFS=""
 	fi
-	eval emake ${COMPILER_OPTS} -k \
+	eval emake ${COMPILER_OPTS} \
 		$INITRAMFS \
 		ARCH=${kernel_arch} \
 		O="${build_dir}" \
@@ -185,7 +167,7 @@ src_install() {
 		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
-		local load_addr=0x03000000
+		local load_addr=0x01000000
 		if use device_tree; then
 			local its_script="${build_dir}/its_script"
 			sed "s|%BUILD_ROOT%|${boot_dir}|;\
