@@ -393,13 +393,13 @@ unpack_chrome() {
 		rm patches
 	fi
 	elog "Syncing google chrome sources using ${EGCLIENT}"
-	tc-export CC CXX
 	# We use --force to work around a race condition with
 	# checking out cros.git in parallel with the main chrome tree.
 	${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force
 }
 
 src_unpack() {
+	tc-export CC CXX
 	# These are set here because $(whoami) returns the proper user here,
 	# but 'root' at the root level of the file
 	export CHROME_ROOT="${CHROME_ROOT:-/home/$(whoami)/chrome_root}"
