@@ -384,8 +384,9 @@ gcc_movelibs() {
 
 		local OS_MULTIDIR=$($(XGCC) ${multiarg} --print-multi-os-directory)
 		local MULTIDIR=$($(XGCC) ${multiarg} --print-multi-directory)
-		local FROMDIR="${LIBPATH}/gcc/${CTARGET}/${GCC_PV}"
-		mv "${D}/${FROMDIR}/${OS_MULTIDIR}"/* "${D}/${FROMDIR}/${MULTIDIR}/"
+		[[ ${OS_MULTIDIR} == ${MULTIDIR} ]] && continue
+		local FROMDIR="${LIBPATH}/gcc/${CTARGET}/$($(XGCC) -dumpversion)"
+		mv "${D}/${FROMDIR}/${OS_MULTIDIR}"/* "${D}/${FROMDIR}/${MULTIDIR}/" || die
 	done
 
 	# We remove directories separately to avoid this case:
