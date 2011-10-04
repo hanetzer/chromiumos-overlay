@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_COMMIT="a41a2e70fea956b97e4e2327b424be0708c49420"
 CROS_WORKON_PROJECT="chromium/src/base"
 
 inherit cros-workon cros-debug toolchain-funcs
@@ -12,7 +13,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="cros_host"
 
 RDEPEND="dev-libs/glib
