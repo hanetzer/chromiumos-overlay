@@ -1,15 +1,12 @@
-# Copyright 1999-2006 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/eclass/linux-info.eclass,v 1.83 2010/01/17 21:46:55 robbat2 Exp $
-#
-# Original author: John Mylchreest <johnm@gentoo.org>
-# Maintainer: kernel-misc@gentoo.org
-#
-# Please direct your bugs to the current eclass maintainer :)
+# $Header: /var/cvsroot/gentoo-x86/eclass/linux-info.eclass,v 1.90 2011/08/22 04:46:32 vapier Exp $
 
 # @ECLASS: linux-info.eclass
 # @MAINTAINER:
 # kernel-misc@gentoo.org
+# @AUTHOR:
+# Original author: John Mylchreest <johnm@gentoo.org>
 # @BLURB: eclass used for accessing kernel related information
 # @DESCRIPTION:
 # This eclass is used as a central eclass for accessing kernel
@@ -217,7 +214,8 @@ getfilevar_noexec() {
 	fi
 }
 
-# @PRIVATE-VARIABLE: _LINUX_CONFIG_EXISTS_DONE
+# @ECLASS-VARIABLE: _LINUX_CONFIG_EXISTS_DONE
+# @INTERNAL
 # @DESCRIPTION:
 # This is only set if one of the linux_config_*exists functions has been called.
 # We use it for a QA warning that the check for a config has not been performed,
@@ -229,7 +227,7 @@ linux_config_qa_check() {
 	local f="$1"
 	if [ -z "${_LINUX_CONFIG_EXISTS_DONE}" ]; then
 		ewarn "QA: You called $f before any linux_config_exists!"
-		ewarn "QA: The return value of $f will NOT gaurenteed later!"
+		ewarn "QA: The return value of $f will NOT guaranteed later!"
 	fi
 }
 
@@ -441,7 +439,7 @@ get_version_warning_done=
 # KBUILD_OUTPUT (in a decreasing priority list, we look for the env var, makefile var or the
 # symlink /lib/modules/${KV_MAJOR}.${KV_MINOR}.${KV_PATCH}${KV_EXTRA}/build).
 get_version() {
-	local kbuild_output mkfunc
+	local kbuild_output mkfunc tmplocal
 
 	# no need to execute this twice assuming KV_FULL is populated.
 	# we can force by unsetting KV_FULL
@@ -537,21 +535,32 @@ get_version() {
 	then
 		qeinfo "Found kernel object directory:"
 		qeinfo "    ${KV_OUT_DIR}"
-
-		KV_LOCAL="$(get_localversion ${KV_OUT_DIR})"
 	fi
 	# and if we STILL have not got it, then we better just set it to KV_DIR
 	KV_OUT_DIR="${KV_OUT_DIR:-${KV_DIR}}"
 
-	KV_LOCAL="${KV_LOCAL}$(get_localversion ${KV_DIR})"
-	if linux_config_src_exists; then
-		KV_LOCAL="${KV_LOCAL}$(linux_chkconfig_string LOCALVERSION)"
-		KV_LOCAL="${KV_LOCAL//\"/}"
+	# Grab the kernel release from the output directory.
+	# TODO: we MUST detect kernel.release being out of date, and 'return 1' from
+	# this function.
+	if [ -s "${KV_OUT_DIR}"/include/config/kernel.release ]; then
+		KV_LOCAL=$(<"${KV_OUT_DIR}"/include/config/kernel.release)
+	elif [ -s "${KV_OUT_DIR}"/.kernelrelease ]; then
+		KV_LOCAL=$(<"${KV_OUT_DIR}"/.kernelrelease)
+	else
+		KV_LOCAL=
+	fi
 
-		# For things like git that can append extra stuff:
-		[ -e ${KV_DIR}/scripts/setlocalversion ] &&
-			linux_chkconfig_builtin LOCALVERSION_AUTO &&
-			KV_LOCAL="${KV_LOCAL}$(sh ${KV_DIR}/scripts/setlocalversion ${KV_DIR})"
+	# KV_LOCAL currently contains the full release; discard the first bits.
+	tmplocal=${KV_LOCAL#${KV_MAJOR}.${KV_MINOR}.${KV_PATCH}${KV_EXTRA}}
+
+	# If the updated local version was not changed, the tree is not prepared.
+	# Clear out KV_LOCAL in that case.
+	# TODO: this does not detect a change in the localversion part between
+	# kernel.release and the value that would be generated.
+	if [ "$KV_LOCAL" = "$tmplocal" ]; then
+		KV_LOCAL=
+	else
+		KV_LOCAL=$tmplocal
 	fi
 
 	# And we should set KV_FULL to the full expanded version
@@ -570,7 +579,13 @@ get_version() {
 get_running_version() {
 	KV_FULL=$(uname -r)
 
-	if [[ -f ${ROOT}/lib/modules/${KV_FULL}/source/Makefile ]]; then
+	if [[ -f ${ROOT}/lib/modules/${KV_FULL}/source/Makefile && -f ${ROOT}/lib/modules/${KV_FULL}/build/Makefile ]]; then
+		KERNEL_DIR=$(readlink -f ${ROOT}/lib/modules/${KV_FULL}/source)
+		KBUILD_OUTPUT=$(readlink -f ${ROOT}/lib/modules/${KV_FULL}/build)
+		unset KV_FULL
+		get_version
+		return $?
+	elif [[ -f ${ROOT}/lib/modules/${KV_FULL}/source/Makefile ]]; then
 		KERNEL_DIR=$(readlink -f ${ROOT}/lib/modules/${KV_FULL}/source)
 		unset KV_FULL
 		get_version
@@ -583,10 +598,9 @@ get_running_version() {
 	else
 		KV_MAJOR=$(get_version_component_range 1 ${KV_FULL})
 		KV_MINOR=$(get_version_component_range 2 ${KV_FULL})
-		KV_PATCH=$(get_version_component_range 3- ${KV_FULL})
+		KV_PATCH=$(get_version_component_range 3 ${KV_FULL})
 		KV_PATCH=${KV_PATCH//-*}
-		[[ -n ${KV_FULL#*-} ]] && [[ -n ${KV_FULL//${KV_FULL#*-}} ]] \
-			&& KV_EXTRA="-${KV_FULL#*-}"
+		KV_EXTRA="${KV_FULL#${KV_MAJOR}.${KV_MINOR}.${KV_PATCH}}"
 	fi
 	return 0
 }
