@@ -64,6 +64,11 @@ src_install() {
 	insinto /opt/google/cros-disks
 	doins "${S}/usb-device-info" || die
 
+	# Install seccomp policy file.
+	if [ "$ARCH" = "x86" ]; then
+		newins "${S}/avfsd-seccomp-x86.policy" avfsd-seccomp.policy || die
+	fi
+
 	# Install upstart config file.
 	insinto /etc/init
 	doins "${S}"/cros-disks.conf || die
