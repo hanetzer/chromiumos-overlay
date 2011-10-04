@@ -1,8 +1,8 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c15a7a62097c447ed64ea1ed93db8b5d743668c4"
+CROS_WORKON_COMMIT="93715e252739f9c36f2504b19e7ab94d8a2f458c"
 CROS_WORKON_PROJECT="chromiumos/platform/assets"
 
 inherit cros-workon toolchain-funcs
@@ -105,22 +105,13 @@ LINK_CURSORS="
 
 CROS_WORKON_LOCALNAME="assets"
 
-src_compile() {
-	message_images/convert.py \
-		--fontdir "${ROOT}/usr/share/fonts" \
-		message_images/*/*.txt
-}
-
 src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins -r "${S}"/images/*
 
-	local png locale
-	for png in message_images/*/*.png; do
-		locale="$(basename "$(dirname "$png")")"
-		insinto "/usr/share/chromeos-assets/images/messages/$locale"
-		doins "$png"
-	done
+	insinto /usr/share/chromeos-assets/text
+	doins -r "${S}"/text/boot_messages
+	dosbin "${S}"/text/display_boot_message
 
 	insinto /usr/share/chromeos-assets/gaia_auth
 	doins -r "${S}"/gaia_auth/*
