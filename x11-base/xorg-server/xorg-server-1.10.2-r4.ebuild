@@ -13,10 +13,10 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 OPENGL_DIR="xorg-x11"
 
 DESCRIPTION="X.Org X servers"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc x86 ~x86-fbsd"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xorg"
-IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev opengl"
+IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl opengl tslib +udev vanilla"
 # note: we have udev 143 here as that's the real dependency X.Org needs. The upstream ebuild uses 150
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -76,7 +76,7 @@ DEPEND="${RDEPEND}
 	>=x11-proto/trapproto-3.4.3
 	>=x11-proto/videoproto-2.2.2
 	>=x11-proto/xcmiscproto-1.2.0
-	>=x11-proto/xextproto-7.0.99.3
+	>=x11-proto/xextproto-7.2.0
 	>=x11-proto/xf86dgaproto-2.0.99.1
 	>=x11-proto/xf86vidmodeproto-2.2.99.1
 	>=x11-proto/xineramaproto-1.1.3
@@ -102,20 +102,11 @@ EPATCH_SUFFIX="patch"
 
 # These have been sent upstream
 UPSTREAMED_PATCHES=(
-	# Bug with grabs that don't go away.
-	"${FILESDIR}/1.9.3-fix-grabs.patch"
-
 	# Avoid flickering when unredirecting and redirecting windows.
 	"${FILESDIR}/1.9.3-0001-ChangeGC-changes-the-GC-so-ValidateGC-should-be-call.patch"
 	"${FILESDIR}/1.9.3-0002-ValidateTree-needs-a-valid-borderClip-so-initialize-.patch"
 	"${FILESDIR}/1.9.3-0003-Eliminate-the-internal-MapWindow-UnmapWindow-cycle-a.patch"
 	"${FILESDIR}/1.9.3-0004-Since-extra-expose-events-are-no-longer-generated-du.patch"
-
-	# Fix the urxvt cursor with compositing.
-	"${FILESDIR}/1.9.3-no-damage-report.patch"
-
-	# Handle udev change events.
-	"${FILESDIR}/1.9.3-config-handle-device-change-event-properly.patch"
 
 	# Fix X server crash on removing input devices
 	"${FILESDIR}/1.9.3-deleted-block-handlers.patch"
@@ -126,43 +117,46 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-disable-acpi.patch
 	"${FILESDIR}"/${PN}-1.9-nouveau-default.patch
 
-	# Allow usage of monotonic clock while cross-compiling.
+	# Allow usage of monotonic clock while cross-compiling
 	"${FILESDIR}/monotonic-clock-fix.patch"
 	# Make the root window get created without a background so we can get
 	# seamless transitions when X starts.  This looks like it may be upstreamed
 	# soon (as a -nr flag; we just enable it by default so we can use the same
 	# command line for older X servers):
 	# http://www.mail-archive.com/xorg-devel@lists.x.org/msg09360.html
-	"${FILESDIR}/1.9.3-cache-xkbcomp-for-fast-start-up.patch"
-	"${FILESDIR}/1.7.6-xserver-bg-none-root.patch"
+	"${FILESDIR}/1.10.0-cache-xkbcomp-for-fast-start-up.patch"
 	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
-	"${FILESDIR}/1.9.3-fix-xkb-autorepeat.patch"
-	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
+	"${FILESDIR}/1.10.0-fix-xkb-autorepeat.patch"
 	# Match the behaviour of monitor_reconfigure at X.Org startup time.
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
-	# For Gallium drivers.
-	"${FILESDIR}/1.9.3-public-_glapi_get_proc_address.patch"
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window.
-	"${FILESDIR}/1.9.3-allow-root-none.patch"
-	# Dont load a default X cursor.
-	"${FILESDIR}/1.9.3-no-default-cursor.patch"
-	# Add a label for MT.
+	"${FILESDIR}/1.10.0-allow-root-none.patch"
+	# Unbreaks compile with all our modules that are disabled.
+	"${FILESDIR}/1.10.0-sdksyms.patch"
+	# Get the right path for the DRI drivers.
+	"${FILESDIR}/1.10.0-xcompile-dri-driver.patch"
+	# Add a label for MT
 	"${FILESDIR}/1.9.3-mt-slot-label.patch"
-	# Make the event queue longer.
-	"${FILESDIR}/1.9.3-bigger-mieq.patch"
-	# Refcount glxdrawables to avoid crashes on double free()
-	"${FILESDIR}/1.9.3-refcnt-glxdrawable.patch"
-
-	# Fix InputDevice logging
-	"${FILESDIR}/1.9.3-0001-BACKPORT-free86-add-xf86IDrvMsg-and-friends-for-inpu.patch"
-	"${FILESDIR}/1.9.3-0002-PARTIAL-BACKPORT-xfree86-remove-LocalDeviceRec-Ptr-d.patch"
+	# Fix Xinput driver logging
 	"${FILESDIR}/1.9.3-0003-BACKPORT-os-Add-missing-_X_ATTRIBUTE_PRINTF-to-va_li.patch"
 	"${FILESDIR}/1.9.3-0004-os-log-Pull-LogMessageTypeVerbString-out-of-LogVMess.patch"
 	"${FILESDIR}/1.9.3-0005-os-log-Add-LogVHdrMessageVerb-and-friends.patch"
-	"${FILESDIR}/1.9.3-0006-xf86Helper-use-LogHdrMessageVerb-in-xf86VIDrvMsgVerb.patch"
+	"${FILESDIR}/1.10.2-0004-xf86Helper-use-LogHdrMessageVerb-in-xf86VIDrvMsgVerb.patch"
 	"${FILESDIR}/1.9.3-0007-xf86Helper-use-LogHdrMessageVerb-in-xf86VDrvMsgVerb.patch"
 	)
+
+if ! use vanilla; then
+	PATCHES+=(
+		"${FILESDIR}/1.10.0-xserver-bg-none-root.patch"
+		"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
+		# Dont load a default X cursor.
+		"${FILESDIR}/1.9.3-no-default-cursor.patch"
+		# Make the event queue longer.
+		"${FILESDIR}/1.9.3-bigger-mieq.patch"
+
+	)
+fi
 
 pkg_setup() {
 	xorg-2_pkg_setup
@@ -190,6 +184,7 @@ pkg_setup() {
 		$(use_enable opengl dri)
 		$(use_enable opengl dri2)
 		$(use_enable opengl glx)
+		$(use_enable x86 xaa)
 		$(use_enable xorg)
 		$(use_enable nptl glx-tls)
 		$(use_enable udev config-udev)
@@ -213,7 +208,6 @@ pkg_setup() {
 		--disable-xace
 		--disable-config-dbus
 		--disable-config-hal
-		--disable-clientids
 		--disable-xf86vidmode
 		--disable-registry
 		--disable-xfake
@@ -221,13 +215,8 @@ pkg_setup() {
 		--disable-xvfb
 		--disable-xnest
 		--enable-null-root-cursor
-		--with-default-font-path=built-ins"
-
-	if use amd64 || use x86 ; then
-		CONFIGURE_OPTIONS+=" --enable-xaa"
-	else
-		CONFIGURE_OPTIONS+=" --disable-xaa"
-	fi
+		--with-default-font-path=built-ins
+		${conf_opts}"
 
 	# Things we may want to remove later:
 	#	--disable-xaa (requires dropping all xaa drivers)
