@@ -60,7 +60,7 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj graphite gtk hardened hardfp mounted_sources multilib multislot nls
+IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
 			nocxx tests +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
@@ -107,7 +107,7 @@ src_unpack() {
 	GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
 
 	local GCCDIR
-	if use mounted_sources ; then
+	if use mounted_gcc ; then
 		GCCDIR=/usr/local/toolchain_root/gcc/${MY_P}
 		if [[ ! -d ${GCCDIR} ]] ; then
 			die "gcc dir not mounted/present at: ${GCCDIR}"
@@ -260,7 +260,7 @@ pkg_postrm()
 
 src_configure()
 {
-	if use mounted_sources ; then
+	if use mounted_gcc ; then
 		local GCCBUILDDIR="/usr/local/toolchain_root/build-gcc"
 		if [[ ! -d ${GCCBUILDDIR} ]] ; then
 			die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
