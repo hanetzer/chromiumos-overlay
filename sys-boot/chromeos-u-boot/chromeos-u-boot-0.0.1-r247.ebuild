@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="aa59f395007bcbda4b10c07e79637540378c36a7"
+CROS_WORKON_COMMIT="77a74a08db0c3c777f131a6a535f0ee8697ef223"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs
