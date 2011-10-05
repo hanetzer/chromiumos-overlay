@@ -32,6 +32,7 @@ env['CCFLAGS'] += ['-fPIC',
                    '-Wall',
                    '-Werror',
                    '-DOS_CHROMEOS',
+                   '-DUSE_NSS',
                    '-DUSE_SYSTEM_LIBEVENT',
                    '-I..']
 

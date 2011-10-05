@@ -25,11 +25,9 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	ln -s "${S}" "${WORKDIR}/base" &> /dev/null
-	local config
-	config="build_config.h"
-	# TODO(cmasone): figure out some better way to deal with build_config.h
+
 	mkdir -p "${WORKDIR}/build"
-	wget "http://src.chromium.org/svn/trunk/src/build/${config}" -O "${WORKDIR}/build/${config}"
+	cp -p "${FILESDIR}/build_config.h" "${WORKDIR}/build/." || die
 
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 	epatch "${FILESDIR}/gtest_include_path_fixup.patch" || die "libchrome prepare failed."
