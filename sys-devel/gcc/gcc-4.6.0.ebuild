@@ -154,11 +154,17 @@ src_compile()
 	src_configure
 	pushd ${WORKDIR}/build
 	GCC_CFLAGS="$(portageq envvar CFLAGS)"
+	TARGET_FLAGS="-g -O2 -pipe"
 	if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" == "4.4.3" ]]
 	then
 		GCC_CFLAGS+=" -DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE -DEFAULT_RELRO"
 	fi
-	TARGET_FLAGS="-g -O2 -pipe -fstack-protector-all -D_FORTIFY_SOURCE=2"
+
+	if use hardened && [[ ${CTARGET} != arm* ]]
+	then
+		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-all -D_FORTIFY_SOURCE=2"
+	fi
+
 	emake CFLAGS="${GCC_CFLAGS}" \
 		LDFLAGS="-Wl,-O1" \
 		STAGE1_CFLAGS="-O2 -pipe" \
