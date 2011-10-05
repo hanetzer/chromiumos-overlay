@@ -67,7 +67,7 @@ if [[ "${PV}" == "9999" ]]
 then
 	if [[ -z $GCC_PV ]]
 	then
-		GCC_PV=4.4.3
+		GCC_PV=4.6.0
 	fi
 else
 	GCC_PV=${PV}
@@ -155,10 +155,6 @@ src_compile()
 	pushd ${WORKDIR}/build
 	GCC_CFLAGS="$(portageq envvar CFLAGS)"
 	TARGET_FLAGS="-g -O2 -pipe"
-	if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" == "4.4.3" ]]
-	then
-		GCC_CFLAGS+=" -DEFAULT_PIE_SSP -DEFAULT_BIND_NOW -DEFAULT_FORTIFY_SOURCE -DEFAULT_RELRO"
-	fi
 
 	if use hardened && [[ ${CTARGET} != arm* ]]
 	then
@@ -199,7 +195,7 @@ EOF
 	newins env.d $GCC_CONFIG_FILE
 	cd -
 
-	if use hardened && [[ ${CTARGET} != arm* ]] && [[ "$GCC_PV" != "4.4.3" ]]
+	if use hardened && [[ ${CTARGET} != arm* ]]
 	then
 		SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
 	else
