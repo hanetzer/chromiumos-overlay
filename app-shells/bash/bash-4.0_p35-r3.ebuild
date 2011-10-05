@@ -120,10 +120,10 @@ src_compile() {
 		$(use_enable mem-scramble) \
 		$(use_with mem-scramble bash-malloc) \
 		${myconf} || die
-	emake || die "make failed"
+	emake -j1 || die "make failed"
 
 	if use plugins ; then
-		emake -C examples/loadables all others || die
+		emake -j1 -C examples/loadables all others || die
 	fi
 }
 

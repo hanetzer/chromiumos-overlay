@@ -1,1 +1,0 @@
-bash-4.0_p35.ebuild
