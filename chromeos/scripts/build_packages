@@ -167,6 +167,15 @@ fi
 if [[ "${FLAGS_withautotest}" -eq "${FLAGS_TRUE}" ]]; then
   PACKAGES="${PACKAGES} chromeos-base/autotest-all"
 fi
+
+# Verify that all packages can be emerged from scratch, without any
+# backtracking. Only print the output if this step fails.
+if ! OUTPUT=$(emerge-${FLAGS_board} -pe --backtrack=0 --root=/does/not/exist \
+              ${PACKAGES} 2>&1); then
+  printf "%s\n" "${OUTPUT}"
+  die "emerge detected broken ebuilds. See error message above."
+fi
+
 if [[ "${FLAGS_fast}" -eq "${FLAGS_TRUE}" ]]; then
   # These flags are specific to parallel_emerge
   for pkg in ${CROS_WORKON_PKGS}; do
