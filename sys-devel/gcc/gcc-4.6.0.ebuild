@@ -252,19 +252,8 @@ pkg_postrm()
 
 src_configure()
 {
-	if use mounted_gcc ; then
-		local GCCBUILDDIR="/usr/local/toolchain_root/build-gcc"
-		if [[ ! -d ${GCCBUILDDIR} ]] ; then
-			die "build-gcc dir not mounted/present at: ${GCCBUILDIR}"
-		fi
-	else
-		local GCCBUILDDIR="${GITDIR}/build-gcc"
-	fi
-
-	local confgcc
 	# Set configuration based on path variables
-	confgcc="${confgcc} \
-		$(use_enable multilib)
+	local confgcc="$(use_enable multilib)
 		--prefix=${PREFIX} \
 		--with-slibdir=${SLIBDIR} \
 		--libdir=${LIBDIR} \
