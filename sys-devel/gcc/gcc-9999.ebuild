@@ -381,7 +381,11 @@ gcc_movelibs() {
 		local MULTIDIR=$($(XGCC) ${multiarg} --print-multi-directory)
 		[[ ${OS_MULTIDIR} == ${MULTIDIR} ]] && continue
 		local FROMDIR="${LIBPATH}/gcc/${CTARGET}/$($(XGCC) -dumpversion)"
-		mv "${D}/${FROMDIR}/${OS_MULTIDIR}"/* "${D}/${FROMDIR}/${MULTIDIR}/" || die
+		if [[ -d ${D}/${FROMDIR}/${OS_MULTIDIR} ]] ; then
+			# if we aren't building shared libraries, then the os dir
+			# won't exist.  this comes up when bootstrapping.
+			mv "${D}/${FROMDIR}/${OS_MULTIDIR}"/* "${D}/${FROMDIR}/${MULTIDIR}/" || die
+		fi
 	done
 
 	# We remove directories separately to avoid this case:
