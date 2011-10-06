@@ -83,6 +83,7 @@ RDEPEND="${RDEPEND}
 	!sys-apps/nih-dbus-tool
 	asan? ( sys-devel/asan-clang )
 	sys-fs/sshfs-fuse
+	sys-fs/udev
 	sys-libs/libnih
 	sys-power/iasl
 	x11-apps/mkfontdir
