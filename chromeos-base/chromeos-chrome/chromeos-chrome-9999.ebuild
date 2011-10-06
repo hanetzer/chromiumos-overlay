@@ -208,7 +208,6 @@ set_build_defines() {
 	else
 		die Unsupported architecture: "${ARCH}"
 	fi
-
 	use_nacl || BUILD_DEFINES="disable_nacl=1 $BUILD_DEFINES"
 
 	# Control inclusion of optional chrome features.
@@ -828,10 +827,9 @@ src_install() {
 		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
 	fi
 
-	# add executable NaCl binaries
+	# add NaCl binaries
 	if use_nacl; then
 		doexe "${FROM}"/libppGoogleNaClPluginChrome.so || die
-		doexe "${FROM}"/nacl_helper_bootstrap || die
 	fi
 
 	insinto "${CHROME_DIR}"
@@ -844,10 +842,9 @@ src_install() {
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
 
-	# add non-executable NaCl files
+	# add NaCl binaries
 	if use_nacl; then
 		doins "${FROM}"/nacl_irt_*.nexe || die
-		doins "${FROM}"/nacl_helper || die
 	fi
 
 	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
