@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -29,8 +29,7 @@ RDEPEND="app-arch/bzip2
 	net-misc/curl
 	sys-apps/rootdev
 	sys-fs/e2fsprogs
-	sys-libs/e2fsprogs-libs
-	sys-libs/zlib"
+	sys-libs/e2fsprogs-libs"
 DEPEND="dev-cpp/gmock
 	dev-cpp/gtest
 	dev-libs/dbus-glib
