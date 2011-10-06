@@ -16,10 +16,11 @@ dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
 dev-libs/opensc		ssl
 dev-libs/openssl	pkcs11
+dev-libs/protobuf	python
+dev-python/pyudev	pygobject
 dev-util/dialog		-unicode minimal
 dev-util/perf		-doc -demangle -tui
 dev-util/perf-next	-doc -demangle -tui
-dev-libs/protobuf	python
 chromeos-base/chromeos	X
 chromeos-base/chromeos-chrome   build_tests
 chromeos-base/flimflam	debug resolvfiles
