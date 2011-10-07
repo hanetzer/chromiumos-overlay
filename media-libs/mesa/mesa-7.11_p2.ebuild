@@ -123,13 +123,10 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/7.10-cross-compile.patch
 	epatch "${FILESDIR}"/7.11-i915g-lie.patch
-	epatch "${FILESDIR}"/7.11-pkgconfig.patch
 	epatch "${FILESDIR}"/7.11-i915g-disable-aapoint-aaline.patch
 	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
-	epatch "${FILESDIR}"/7.11-i965-fix-indexbuf.patch
-	epatch "${FILESDIR}"/7.11-fragcoord.patch
-	epatch "${FILESDIR}"/7.11-i915-scissor.patch
 	epatch "${FILESDIR}"/7.11-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
+	epatch "${FILESDIR}"/7.11_p2-pkgconfig.patch
 
 	eautoreconf
 }
@@ -144,10 +141,8 @@ src_configure() {
 
 	if use classic; then
 	# Configurable DRI drivers
-		driver_enable swrast
-
 		# Intel code
-		driver_enable video_cards_intel i810 i915 i965
+		driver_enable video_cards_intel i915 i965
 
 		# Nouveau code
 		driver_enable video_cards_nouveau nouveau
@@ -158,6 +153,8 @@ src_configure() {
 
 	if use gallium; then
 	# Configurable gallium drivers
+		gallium_driver_enable swrast
+
 		# Intel code
 		gallium_driver_enable video_cards_intel i915 
 
