@@ -71,6 +71,7 @@ src_unpack() {
 		epatch "${FILESDIR}"/${PN}-4.0-ldflags-for-build.patch #211947
 		epatch "${FILESDIR}"/${PN}-4.0-negative-return.patch
 		epatch "${FILESDIR}"/${PN}-4.0-parallel-build.patch #267613
+		epatch "${FILESDIR}"/${PN}-4.2-parallel-build.patch
 		# Log bash commands to syslog #91327
 		if use bashlogger ; then
 			ewarn "The logging patch should ONLY be used in restricted (i.e. honeypot) envs."
