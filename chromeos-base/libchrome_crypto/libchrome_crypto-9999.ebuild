@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND=">=chromeos-base/libchrome-87480
+RDEPEND=">=chromeos-base/libchrome-85268-r6
 	dev-libs/glib
 	dev-libs/libevent
 	dev-libs/nss

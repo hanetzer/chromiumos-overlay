@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 
-RDEPEND=">=chromeos-base/libchrome-85268
+RDEPEND=">=chromeos-base/libchrome-85268-r6
 	dev-libs/glib
 	dev-libs/libevent
 	dev-libs/nss
