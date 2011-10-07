@@ -28,6 +28,12 @@ SLOT="0"
 
 IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose"
 
+# Do not strip the nacl_helper_bootstrap binary because the binutils
+# objcopy/strip mangles the ELF program headers.
+# TODO(mcgrathr,vapier): This should be removed after portage's prepstrip
+# script is changed to use eu-strip instead of objcopy and strip.
+STRIP_MASK="*/nacl_helper_bootstrap"
+
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
 strip_portage_suffix() {
