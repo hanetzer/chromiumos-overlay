@@ -55,6 +55,7 @@ REQUIRED_USE="pam? ( !skey ) skey? ( !pam )"
 MAKEOPTS="${MAKEOPTS} SAMPLES="
 
 src_prepare() {
+	epatch "${FILESDIR}"/${P}-parallel-build.patch
 	elibtoolize
 }
 
