@@ -186,6 +186,7 @@ IUSE_TESTS="
 	+tests_network_ModemManagerSMS
 	+tests_network_NegotiatedLANSpeed
 	+tests_network_Ping
+	+tests_network_Portal
 	+tests_network_UdevRename
 	+tests_network_WiFiCaps
 	+tests_network_WiFiMatFunc
