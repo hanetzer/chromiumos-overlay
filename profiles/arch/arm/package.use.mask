@@ -27,3 +27,7 @@ dev-libs/boost mpi
 # missing keywords
 media-sound/sox amrnb amrwb ladspa
 media-plugins/gst-plugins-meta lame taglib
+
+# David Hendricks <dhendrix@chromium.org> (10 Oct 2011)
+# libpci will cause program to exit(1) during init if PCI not present in system
+sys-apps/flashrom atahpt drkaiser gfxnvidia nic3com nicintel nicintel_spi nicnatsemi nicrealtek ogp_spi rayer_spi satasii satamv
