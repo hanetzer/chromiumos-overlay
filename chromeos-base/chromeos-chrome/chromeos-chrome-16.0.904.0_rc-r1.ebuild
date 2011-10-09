@@ -28,6 +28,12 @@ SLOT="0"
 
 IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose"
 
+# Do not strip the nacl_helper_bootstrap binary because the binutils
+# objcopy/strip mangles the ELF program headers.
+# TODO(mcgrathr,vapier): This should be removed after portage's prepstrip
+# script is changed to use eu-strip instead of objcopy and strip.
+STRIP_MASK="*/nacl_helper_bootstrap"
+
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
 strip_portage_suffix() {
@@ -208,6 +214,7 @@ set_build_defines() {
 	else
 		die Unsupported architecture: "${ARCH}"
 	fi
+
 	use_nacl || BUILD_DEFINES="disable_nacl=1 $BUILD_DEFINES"
 
 	# Control inclusion of optional chrome features.
@@ -827,9 +834,10 @@ src_install() {
 		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
 	fi
 
-	# add NaCl binaries
+	# add executable NaCl binaries
 	if use_nacl; then
 		doexe "${FROM}"/libppGoogleNaClPluginChrome.so || die
+		doexe "${FROM}"/nacl_helper_bootstrap || die
 	fi
 
 	insinto "${CHROME_DIR}"
@@ -842,9 +850,10 @@ src_install() {
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
 
-	# add NaCl binaries
+	# add non-executable NaCl files
 	if use_nacl; then
 		doins "${FROM}"/nacl_irt_*.nexe || die
+		doins "${FROM}"/nacl_helper || die
 	fi
 
 	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
