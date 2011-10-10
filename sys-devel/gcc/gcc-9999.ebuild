@@ -134,9 +134,9 @@ src_unpack() {
 		COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
 	fi
 
-        if [[ "$(readlink -f $(get_gcc_dir))" != "$(readlink -f ${S})" ]]
+	if [[ "$(readlink -f $(get_gcc_dir))" != "$(readlink -f ${S})" ]]
 	then
-        	ln -sf "$(get_gcc_dir)" "${S}"
+		ln -sf "$(get_gcc_dir)" "${S}"
 	fi
 
 	use vanilla && return 0
@@ -295,7 +295,7 @@ src_configure()
 	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
 
 	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
-    --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
+	--with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 	confgcc="${confgcc} ${EXTRA_ECONF}"
 
 	# Build in a separate build tree
@@ -323,7 +323,7 @@ get_gcc_configure_options()
 				# Convert armv7{a,r,m} to armv7-{a,r,m}
 				[[ ${arm_arch} == armv7? ]] && arm_arch=${arm_arch/7/7-}
 				# Remove endian ('l' / 'eb')
-				[[ ${arm_arch} == *l  ]] && arm_arch=${arm_arch%l}
+				[[ ${arm_arch} == *l ]] && arm_arch=${arm_arch%l}
 				[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
 				confgcc="${confgcc} --with-arch=${arm_arch}"
 				confgcc="${confgcc} --disable-esp"

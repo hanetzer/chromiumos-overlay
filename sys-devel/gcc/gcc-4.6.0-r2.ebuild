@@ -102,16 +102,20 @@ fi
 DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_PV}
 STDCXX_INCDIR=${LIBDIR}/include/g++-v${GCC_PV}
 
+GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
+
 
 src_unpack() {
-	GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
 
-	local GCCDIR
 	if use mounted_gcc ; then
-		GCCDIR=/usr/local/toolchain_root/gcc/${MY_P}
-		if [[ ! -d ${GCCDIR} ]] ; then
-			die "gcc dir not mounted/present at: ${GCCDIR}"
+		if [[ ! -d "$(get_gcc_dir)" ]] ; then
+			die "gcc dir not mounted/present at: $(get_gcc_dir)"
 		fi
+	elif use upstream_gcc ; then
+		GCC_MIRROR=ftp://mirrors.kernel.org/gnu/gcc
+		GCC_TARBALL=${GCC_MIRROR}/${MY_P}/${MY_P}.tar.bz2
+		wget $GCC_TARBALL
+		tar xf ${GCC_TARBALL##*/}
 	else
 		mkdir ${GITDIR}
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
@@ -122,28 +126,17 @@ src_unpack() {
 		einfo "Checking out ${GITHASH}."
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
 		cd -
-		GCCDIR=${GITDIR}/gcc/${MY_P}
 		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 	fi
 
-	if use upstream_gcc ; then
-		GCC_MIRROR=ftp://mirrors.kernel.org/gnu/gcc
-		GCC_TARBALL=${GCC_MIRROR}/${MY_P}/${MY_P}.tar.bz2
-		wget $GCC_TARBALL
-		tar xf ${GCC_TARBALL##*/}
-		GCCDIR=${MY_P}
-	fi
-
-	GCC_BASE_VER=$(cat ${GCCDIR}/gcc/BASE-VER)
-	SLIBDIR=${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}
 
 	if [[ ! -z ${CL} ]] ; then
 		COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
 	fi
 
-	if [[ $(readlink -f ${GCCDIR}) != $(readlink -f ${S}) ]]
+	if [[ "$(readlink -f $(get_gcc_dir))" != "$(readlink -f ${S})" ]]
 	then
-		ln -sf ${GCCDIR} ${S}
+		ln -sf "$(get_gcc_dir)" "${S}"
 	fi
 
 	use vanilla && return 0
@@ -152,7 +145,7 @@ src_unpack() {
 src_compile()
 {
 	src_configure
-	pushd ${WORKDIR}/build
+	cd $(get_gcc_build_dir) || "Build dir $(get_gcc_build_dir) not found"
 	GCC_CFLAGS="$(portageq envvar CFLAGS)"
 	TARGET_FLAGS="-g -O2 -pipe"
 
@@ -168,13 +161,11 @@ src_compile()
 		CFLAGS_FOR_TARGET="${TARGET_FLAGS}" \
 		CXXFLAGS_FOR_TARGET="${TARGET_FLAGS}" \
 		all || die
-	popd
-	return $?
 }
 
 src_install()
 {
-	cd ${WORKDIR}/build
+	cd $(get_gcc_build_dir) || "Build dir $(get_gcc_build_dir) not found"
 	emake DESTDIR="${D}" install || die "Could not install gcc"
 
 	find "${D}" -name libiberty.a -exec rm -f "{}" \;
@@ -184,8 +175,9 @@ src_install()
 
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
+
 	cat <<-EOF > env.d
-LDPATH="${LIBDIR}/gcc/${CTARGET}/${GCC_BASE_VER}"
+LDPATH="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
 MANPATH="${DATADIR}/man"
 INFOPATH="${DATADIR}/info"
 STDCXX_INCDIR="${STDCXX_INCDIR}"
@@ -252,6 +244,8 @@ pkg_postrm()
 
 src_configure()
 {
+	SLIBDIR="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
+
 	# Set configuration based on path variables
 	local confgcc="$(use_enable multilib)
 		--prefix=${PREFIX} \
@@ -301,12 +295,13 @@ src_configure()
 	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
 
 	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
-    --with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
+	--with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
 	confgcc="${confgcc} ${EXTRA_ECONF}"
 
 	# Build in a separate build tree
-	mkdir -p "${WORKDIR}"/build
-	pushd "${WORKDIR}"/build > /dev/null
+	mkdir -p $(get_gcc_build_dir) || \
+		die "Could not create build dir $(get_gcc_build_dir)"
+	cd $(get_gcc_build_dir) || die "Build dir $(get_gcc_build_dir) not found"
 
 	# and now to do the actual configuration
 	addwrite /dev/zero
@@ -314,7 +309,6 @@ src_configure()
 	echo "configure ${confgcc}"
 	echo "${S}"/configure "$@"
 	"${S}"/configure ${confgcc} || die "failed to run configure"
-	popd > /dev/null
 }
 
 get_gcc_configure_options()
@@ -329,7 +323,7 @@ get_gcc_configure_options()
 				# Convert armv7{a,r,m} to armv7-{a,r,m}
 				[[ ${arm_arch} == armv7? ]] && arm_arch=${arm_arch/7/7-}
 				# Remove endian ('l' / 'eb')
-				[[ ${arm_arch} == *l  ]] && arm_arch=${arm_arch%l}
+				[[ ${arm_arch} == *l ]] && arm_arch=${arm_arch%l}
 				[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
 				confgcc="${confgcc} --with-arch=${arm_arch}"
 				confgcc="${confgcc} --disable-esp"
@@ -355,6 +349,29 @@ get_gcc_common_options()
 	confgcc="${confgcc} --enable-checking=release"
 	confgcc="${confgcc} --disable-libquadmath"
 	echo ${confgcc}
+}
+
+get_gcc_dir()
+{
+	local GCCDIR
+	if use mounted_gcc ; then
+		GCCDIR=${GCC_SOURCE_PATH:=/usr/local/toolchain_root/gcc}
+	elif use upstream_gcc ; then
+		GCCDIR=${MY_P}
+	else
+		GCCDIR=${GITDIR}/gcc/${MY_P}
+	fi
+	echo "${GCCDIR}"
+}
+
+get_gcc_build_dir()
+{
+	echo "$(get_gcc_dir)-build"
+}
+
+get_gcc_base_ver()
+{
+	cat "$(get_gcc_dir)/gcc/BASE-VER"
 }
 
 # Grab a variable from the build system (taken from linux-info.eclass)
