@@ -1,0 +1,15 @@
+--- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/hdparm
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/hdparm.new
+@@ -17,6 +17,12 @@
+ 	local MEDIA=
+ 	local BUS=
+ 
++	# Make sure the drive exists before checking anything.
++	if [ ! -e $1 ]; then
++		log "VERBOSE" "Device $1 doesn't exist, not checking."
++		return 1
++	fi
++
+ 	# If we are running udev, this is the most portable way
+ 	# It assumes more or less recent udev (> 070)
+ 	if [ $HAVE_UDEVINFO -ne 0 ] ; then
