@@ -22,7 +22,8 @@ CROS_WORKON_LOCALNAME="seabios"
 inherit cros-workon
 
 src_compile() {
-	tc-getCC
+	export LD="$(tc-getLD).bfd"
+	export CC="$(tc-getCC) -fuse-ld=bfd"
 	emake defconfig || die "${P}: configuration failed"
 	emake || die "${P}: compilation failed"
 }
