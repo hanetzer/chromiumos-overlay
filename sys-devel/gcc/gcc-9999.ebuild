@@ -376,7 +376,7 @@ get_gcc_base_ver()
 
 # Grab a variable from the build system (taken from linux-info.eclass)
 get_make_var() {
-	local var=$1 makefile=${2:-${WORKDIR}/build/Makefile}
+	local var=$1 makefile=${2:-$(get_gcc_build_dir)/Makefile}
 	echo -e "e:\\n\\t@echo \$(${var})\\ninclude ${makefile}" | \
 		r=${makefile%/*} emake --no-print-directory -s -f - 2>/dev/null
 }
