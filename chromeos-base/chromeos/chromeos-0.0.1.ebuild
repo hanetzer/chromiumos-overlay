@@ -116,6 +116,12 @@ RDEPEND="${RDEPEND}
 	"
 
 RDEPEND="${RDEPEND}
+	arm? (
+		chromeos-base/u-boot-scripts
+	)
+	"
+
+RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/kernel
