@@ -47,6 +47,7 @@ src_install() {
 		doexe host/cros_write_firmware || die "Could not find file to install."
 		doexe host/dump_i2c || die "Could not find file to install."
 		doexe host/dump_tpm || die "Could not find file to install."
+		doexe host/gdb_remote || die "Could not find file to install."
 		doexe host/willis || die "Could not find file to install."
 
                 doexe host/cros_start_vm || die "Could not find file to install."
