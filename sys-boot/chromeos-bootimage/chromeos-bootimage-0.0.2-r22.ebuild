@@ -11,7 +11,7 @@ LICENSE=""
 SLOT="0"
 KEYWORDS="arm x86"
 BOARDS="alex stumpy lumpy mario"
-IUSE="${BOARDS}"
+IUSE="${BOARDS} seabios"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -41,6 +41,7 @@ src_compile() {
 
 	local secure_flags=''
 	local common_flags=''
+	local seabios_flags=''
 	local bct_file
 	local fdt_file
 	local image_file
@@ -64,6 +65,11 @@ src_compile() {
 
 	# Location of the devkeys
 	devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
+
+	# Add a SeaBIOS payload
+	if use seabios; then
+		seabios_flags+=" --seabios=${CROS_FIRMWARE_ROOT}/bios.bin.elf"
+	fi
 
 	if ! use cros-debug; then
 		secure_flags+=' --add-config-int silent_console 1'
@@ -96,6 +102,7 @@ src_compile() {
 		--key "${devkeys_file}" \
 		--bmpblk "${BMPBLK_FILE}" \
 		--add-config-int load_env 1 \
+		${seabios_flags} \
 		--outdir legacy \
 		--output legacy_image.bin ||
 	die "failed to build legacy image."
