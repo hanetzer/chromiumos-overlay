@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="cf49c8866f1c0b3ebdd256890ba5c7b41c95dc02"
+CROS_WORKON_COMMIT="ff9c680b766b88986d27d80462bc3643dae691dd"
 CROS_WORKON_PROJECT="chromiumos/platform/userfeedback"
 
 inherit cros-workon
