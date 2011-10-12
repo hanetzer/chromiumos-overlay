@@ -148,10 +148,8 @@ pkg_postinst() {
 	elog "   export QT_IM_MODULE=\"xim\""
 	elog "   ibus-daemon -d -x"
 
-	# TODO(yusukes): Add support for a "--root=" option to
-	# gtk-query-immodules-2.0 and try to get it upstream.
-	( echo '/usr/lib/gtk-2.0/2.10.0/immodules/im-ibus.so';
-	  echo '"ibus" "IBus (Intelligent Input Bus)" "ibus" "" "ja:ko:zh:*"' ) > "${ROOT}/${GTK2_CONFDIR}/gtk.immodules"
+	# Do not create gtk.immodules here. chromeos-base/chromeos will do that
+	# later.
 
 	if use python; then
 		python_mod_optimize /usr/share/${PN}
