@@ -641,9 +641,10 @@ if ${HOST_BOARD}; then
   TARGETS=$(cat $(printf '%s/toolchain.conf ' ${ALL_OVERLAYS}) 2>/dev/null | \
             sort -u)
   for target in ${TARGETS}; do
-    LATEST="$(ROOT=${BOARD_ROOT} gcc-config -l | \
-              grep "${target}" | tail -n1 | cut -f3 -d' ')"
-    sudo ROOT=${BOARD_ROOT} gcc-config "${LATEST}"
+    CURRENT_GCC="$(gcc-config -c ${target})"
+    sudo ROOT=${BOARD_ROOT} gcc-config ${CURRENT_GCC}
+    CURRENT_BINUTILS="$(binutils-config -c ${target})"
+    sudo ROOT=${BOARD_ROOT} binutils-config ${CURRENT_BINUTILS}
   done
 
   # Now cleanup paths referencing the ROOT from the *.la files.
