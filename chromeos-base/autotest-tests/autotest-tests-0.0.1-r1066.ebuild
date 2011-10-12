@@ -101,6 +101,7 @@ IUSE_TESTS="
 	+tests_desktopui_ScreenLocker
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	+tests_desktopui_SunSpiderBench
+	tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
 	+tests_desktopui_WindowManagerFocusNewWindows
@@ -137,6 +138,7 @@ IUSE_TESTS="
 	+tests_hardware_SAT
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
+	tests_hardware_TouchScreenPresent
 	+tests_hardware_USB20
 	tests_hardware_TPM
 	+tests_hardware_TPMCheck
