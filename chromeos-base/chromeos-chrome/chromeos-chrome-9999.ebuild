@@ -280,6 +280,8 @@ create_gclient_file() {
 	local use_pdf=${5}
 	local use_trunk=${6}
 
+	local layout_tests="src/chrome/test/data/layout_tests/LayoutTests"
+
 	local pdf1="\"src/pdf\": None,"
 	local pdf2="\"src-pdf\": None,"
 	local checkout_point="CHROME_DEPS"
@@ -293,14 +295,39 @@ create_gclient_file() {
 	fi
 	echo "solutions = [" >${echrome_store_dir}/.gclient
 	cat >>${echrome_store_dir}/.gclient <<EOF
-  { "name"        : "${checkout_point}",
-	"url"         : "${primary_url}${revision}",
-	"custom_deps" : {
-	  "src/third_party/WebKit/LayoutTests": None,
-	  $pdf1
-	  $pdf2
+	{"name"        : "${checkout_point}",
+	 "url"         : "${primary_url}${revision}",
+	 "custom_deps" : {
+		"src/chrome/tools/test/reference_build/chrome": None,
+		"src/chrome/tools/test/reference_build/chrome_mac": None,
+		"src/chrome/tools/test/reference_builds/chrome_linux": None,
+		"src/chrome_frame/tools/test/reference_build/chrome": None,
+		"src/third_party/WebKit/LayoutTests": None,
+		"${layout_tests}/fast/filesystem/workers": None,
+		"${layout_tests}/fast/filesystem/resources": None,
+		"${layout_tests}/fast/js/resources": None,
+		"${layout_tests}/fast/events": None,
+		"${layout_tests}/fast/workers": None,
+		"${layout_tests}/http/tests/appcache": None,
+		"${layout_tests}/http/tests/filesystem": None,
+		"${layout_tests}/http/tests/resources": None,
+		"${layout_tests}/http/tests/websocket/tests": None,
+		"${layout_tests}/http/tests/workers": None,
+		"${layout_tests}/http/tests/xmlhttprequest": None,
+		"${layout_tests}/media": None,
+		"${layout_tests}/platform/chromium/fast/workers": None,
+		"${layout_tests}/platform/chromium-cg-mac/fast/events": None,
+		"${layout_tests}/platform/chromium-cg-mac/http/tests/workers": None,
+		"${layout_tests}/platform/chromium-cg-mac/storage/domstorage": None,
+		"${layout_tests}/platform/chromium-win/fast/events": None,
+		"${layout_tests}/platform/chromium-win/fast/workers": None,
+		"${layout_tests}/platform/chromium-win/http/tests/workers": None,
+		"${layout_tests}/platform/chromium-win/storage/domstorage": None,
+		"${layout_tests}/storage/domstorage": None,
+		$pdf1
+		$pdf2
+		},
 	},
-  },
 EOF
 	if [ -n "${auxiliary_url}" ]; then
 		cat >>${echrome_store_dir}/.gclient <<EOF
