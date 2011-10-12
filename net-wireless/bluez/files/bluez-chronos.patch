@@ -4,8 +4,8 @@ diff -Nurp bluez-4.39.orig/src/bluetooth.conf bluez-4.39/src/bluetooth.conf
 @@ -17,6 +17,10 @@
      <allow send_destination="org.bluez"/>
    </policy>
- 
-+  <policy group="plugdev">
+
++  <policy user="chronos">
 +    <allow send_destination="org.bluez"/>
 +  </policy>
 +

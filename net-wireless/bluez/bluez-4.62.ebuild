@@ -40,18 +40,7 @@ RDEPEND="${CDEPEND}
 		dev-python/dbus-python
 		dev-python/pygobject )"
 
-pkg_setup() {
-	if ! use consolekit; then
-		enewgroup plugdev
-	fi
-}
-
 src_prepare() {
-	if ! use consolekit; then
-		# No consolekit for at_console etc, so we grant plugdev the rights
-		epatch	"${FILESDIR}/bluez-plugdev.patch"
-	fi
-
 	if use cups; then
 		epatch "${FILESDIR}/4.60/cups-location.patch"
 	fi
@@ -61,6 +50,9 @@ src_prepare() {
 
 	# Incorporate ATH3k support
 	epatch "${FILESDIR}/${PN}-ath3k.patch"
+
+	# Allow user chronos to send requests
+	epatch "${FILESDIR}/${PN}-chronos.patch"
 
 	eautoreconf
 }
