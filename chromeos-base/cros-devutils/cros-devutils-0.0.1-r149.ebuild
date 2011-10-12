@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="3250e19560346472bd01170c1836acd21c02ad29"
+CROS_WORKON_COMMIT="cce25bd9d90b35e95c09e7f327d4a342d0ebc43a"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon multilib python
@@ -48,6 +48,7 @@ src_install() {
 		doexe host/cros_write_firmware || die "Could not find file to install."
 		doexe host/dump_i2c || die "Could not find file to install."
 		doexe host/dump_tpm || die "Could not find file to install."
+		doexe host/gdb_remote || die "Could not find file to install."
 		doexe host/willis || die "Could not find file to install."
 
                 doexe host/cros_start_vm || die "Could not find file to install."
