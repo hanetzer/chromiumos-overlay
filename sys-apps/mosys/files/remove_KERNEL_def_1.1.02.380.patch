@@ -1,0 +1,13 @@
+Index: Makefile
+===================================================================
+--- Makefile	(revision 380)
++++ Makefile	(working copy)
+@@ -327,7 +327,7 @@
+ MOSYS_MACROS	:= -DPROGRAM=\"$(PROGRAM)\" \
+ 		   -DVERSION=\"$(KERNELVERSION)\"
+ 
+-KBUILD_CPPFLAGS := -D__KERNEL__
++KBUILD_CPPFLAGS :=
+ 
+ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common \

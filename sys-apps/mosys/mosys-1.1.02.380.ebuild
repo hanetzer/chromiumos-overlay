@@ -14,6 +14,10 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 RDEPEND="sys-apps/util-linux"	# for libuuid
 
+src_prepare() {
+	epatch ${FILESDIR}/remove_KERNEL_def_1.1.02.380.patch
+}
+
 src_compile() {
 	# Generate a default .config for our target architecture. This will
 	# likely become more sophisticated as we broaden board support.
