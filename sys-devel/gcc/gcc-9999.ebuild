@@ -74,7 +74,6 @@ else
 fi
 MY_P=${PN}-${GCC_PV}
 GITDIR=${WORKDIR}/gitdir
-GITHASH=1b70b8f872d862dfed84e7d99d1369855c063ca9
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -121,10 +120,13 @@ src_unpack() {
 		cd ${GITDIR} || die "Could not enter ${GITDIR}"
 		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
 		if [[ "${PV}" == "9999" ]] ; then
-			GITHASH="master"
+			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
+		else
+			GCC_GITHASH=1b70b8f872d862dfed84e7d99d1369855c063ca9
 		fi
-		einfo "Checking out ${GITHASH}."
-		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
+		einfo "Checking out ${GCC_GITHASH}."
+		git checkout ${GCC_GITHASH} || \
+			die "Could not checkout ${GCC_GITHASH}"
 		cd -
 		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 	fi
