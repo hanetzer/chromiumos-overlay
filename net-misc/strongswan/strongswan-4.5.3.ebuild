@@ -12,7 +12,9 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
 SLOT="0"
 KEYWORDS="~amd64 ~ppc ~sparc ~x86"
-IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root +openssl smartcard sqlite"
+# TODO(simonjam): Figure out why +openssl broke certificate support. Until then,
+# openssl is disabled unlike upstream.
+IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root openssl +smartcard sqlite"
 
 COMMON_DEPEND="!net-misc/openswan
 	>=dev-libs/gmp-4.1.5
@@ -28,8 +30,7 @@ DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger
-	sys-apps/iproute2"
+	virtual/logger"
 
 UGID="ipsec"
 
@@ -85,11 +86,11 @@ pkg_setup() {
 			ewarn
 		fi
 	fi
+}
 
-	if use non-root; then
-		enewgroup ${UGID}
-		enewuser ${UGID} -1 -1 -1 ${UGID}
-	fi
+src_prepare() {
+	epatch "${FILESDIR}/strongswan-4.5.3-initgroups.patch" || die
+	epatch "${FILESDIR}/strongswan-4.5.3-usepeercert.patch" || die
 }
 
 src_configure() {
@@ -168,6 +169,11 @@ src_install() {
 		/etc/ipsec.d/ocspcerts \
 		/etc/ipsec.d/private \
 		/etc/ipsec.d/reqs
+
+	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets "{$D}"/etc/ipsec.d/cacerts/cacert.der
+	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
+	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
+	dosym /mnt/stateful_partition/etc/cacert.der /etc/ipsec.d/cacerts/cacert.der || die
 
 	dodoc CREDITS NEWS README TODO || die
 

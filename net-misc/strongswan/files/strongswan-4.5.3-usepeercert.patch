@@ -1,0 +1,45 @@
+diff -rupN strongswan-4.5.3/src/pluto/connections.c strongswan-4.5.3.patched/src/pluto/connections.c
+--- strongswan-4.5.3/src/pluto/connections.c	2011-04-21 11:28:53.000000000 -0700
++++ strongswan-4.5.3.patched/src/pluto/connections.c	2011-10-12 19:04:28.089387049 -0700
+@@ -897,6 +897,9 @@ static bool extract_end(struct end *dst,
+ 
+ 	dst->is_left = is_left;
+ 	dst->id = identification_create_from_string(src->id);
++	if (!is_left && src->id && streq(src->id, "%usepeercert")) {
++		dst->use_peer_cert = TRUE;
++	}
+ 	dst->ca = NULL;
+ 
+ 	/* decode CA distinguished name, if any */
+diff -rupN strongswan-4.5.3/src/pluto/connections.h strongswan-4.5.3.patched/src/pluto/connections.h
+--- strongswan-4.5.3/src/pluto/connections.h	2010-10-22 07:33:30.000000000 -0700
++++ strongswan-4.5.3.patched/src/pluto/connections.h	2011-10-12 19:04:28.089387049 -0700
+@@ -159,6 +159,7 @@ struct end {
+ 								/* rules if client behind host is a subnet */
+ 	bool allow_any;             /* IP address is subject to change */
+ 	certpolicy_t sendcert;      /* whether or not to send the certificate */
++        bool use_peer_cert;
+ };
+ 
+ struct spd_route {
+diff -rupN strongswan-4.5.3/src/pluto/ipsec_doi.c strongswan-4.5.3.patched/src/pluto/ipsec_doi.c
+--- strongswan-4.5.3/src/pluto/ipsec_doi.c	2011-05-10 10:26:54.000000000 -0700
++++ strongswan-4.5.3.patched/src/pluto/ipsec_doi.c	2011-10-12 19:04:28.089387049 -0700
+@@ -2424,7 +2424,11 @@ static bool switch_connection(struct msg
+ 	{
+ 		int pathlen;
+ 
+-		if (!peer->equals(peer, c->spd.that.id))
++		if (c->spd.that.use_peer_cert)
++		{
++			loglog(RC_LOG_SERIOUS, "skipping id check");
++		}
++		else if (!peer->equals(peer, c->spd.that.id))
+ 		{
+ 			loglog(RC_LOG_SERIOUS,
+ 					"we require peer to have ID '%Y', but peer declares '%Y'",
+@@ -5905,4 +5909,3 @@ dpd_timeout(struct state *st)
+ 		loglog(RC_LOG_SERIOUS, "DPD: unknown action");
+ 	}
+ }
+-
