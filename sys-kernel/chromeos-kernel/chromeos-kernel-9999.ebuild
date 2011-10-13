@@ -13,7 +13,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
 IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250"
+IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250 -highmem"
 REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -112,6 +112,7 @@ src_configure() {
 	use_config systemtap "systemtap support"
 	use_config serial8250 "serial8250"
 	use_config pcserial "PC serial"
+	use_config highmem "highmem"
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | kmake oldconfig
