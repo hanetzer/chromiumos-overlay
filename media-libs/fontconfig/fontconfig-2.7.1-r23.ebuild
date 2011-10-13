@@ -52,6 +52,10 @@ src_configure() {
 		replace-flags -mtune=* -DMTUNE_CENSORED
 		replace-flags -march=* -DMARCH_CENSORED
 		filter-flags -mfpu=* -mfloat-abi=*
+
+		# Decrease optimization level as a quick fix for use with
+		# qemu-arm. See <crosbug.com/21493>
+		replace-flags -O? -O1
 	fi
 	# Make the global font cache be /usr/share/cache/fontconfig
 	# by passing /usr/share for the localstatedir
