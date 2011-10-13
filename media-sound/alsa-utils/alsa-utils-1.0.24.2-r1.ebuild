@@ -16,7 +16,7 @@ SRC_URI="mirror://alsaproject/utils/${MY_P}.tar.bz2
 LICENSE="GPL-2"
 SLOT="0.9"
 KEYWORDS="amd64 arm x86"
-IUSE="doc nls minimal mario alex"
+IUSE="doc nls minimal mario alex stumpy"
 
 DEPEND=">=sys-libs/ncurses-5.1
 	dev-util/dialog
@@ -71,6 +71,8 @@ src_install() {
 		newins "${FILESDIR}/alsa-modules-mario.conf-rc" alsa.conf
 	elif use alex; then
 		newins "${FILESDIR}/alsa-modules-alex.conf-rc" alsa.conf
+	elif use stumpy; then
+		newins "${FILESDIR}/alsa-modules-stumpy.conf-rc" alsa.conf
 	else
 		newins "${FILESDIR}/alsa-modules.conf-rc" alsa.conf
 	fi
