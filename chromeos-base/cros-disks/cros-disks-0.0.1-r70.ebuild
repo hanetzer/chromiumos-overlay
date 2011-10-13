@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="c0a4aea1a3877c86257bebc1323192f357106ca3"
+CROS_WORKON_COMMIT="e81c30149a4651f036523b3582e85538f5e2160c"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="arm amd64 x86"
@@ -61,13 +61,15 @@ src_install() {
 	exeinto /opt/google/cros-disks
 	doexe "${S}/build-opt/disks" || die
 
-	# install upstart config file.
-	dodir /etc/init
-	install --owner=root --group=root --mode=0644 \
-		"${S}"/cros-disks.conf "${D}"/etc/init
+	# Install USB device IDs file.
+	insinto /opt/google/cros-disks
+	doins "${S}/usb-device-info" || die
 
-	# install D-Bus config file.
-	dodir /etc/dbus-1/system.d
-	install --owner=root --group=root --mode=0644 \
-		"${S}"/org.chromium.CrosDisks.conf "${D}"/etc/dbus-1/system.d
+	# Install upstart config file.
+	insinto /etc/init
+	doins "${S}"/cros-disks.conf || die
+
+	# Install D-Bus config file.
+	insinto /etc/dbus-1/system.d
+	doins "${S}"/org.chromium.CrosDisks.conf || die
 }
