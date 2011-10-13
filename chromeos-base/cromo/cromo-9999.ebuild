@@ -43,6 +43,27 @@ src_compile() {
 	emake $(make_flags) VCSID="${REV}" || die
 }
 
+src_test() {
+	tc-export CXX AR PKG_CONFIG
+	cros-debug-add-NDEBUG
+	[ "${REV}" = "master" ] && REV=unknown
+	emake $(make_flags) VCSID="${REV}" tests || die "could not build tests"
+	if ! use x86; then
+		echo Skipping unit tests on non-x86 platform
+	else
+		for test in ./*_unittest; do
+			# TODO: Set up enough DBus so that the server test can work
+			# Alternately, run the whole thing in a VM/qemu instance
+			if [ ${test} == "./cromo_server_unittest" ]; then
+				echo "Skipping server test in host environment"
+			else
+				echo "Running ${test}"
+				"${test}" || die "${test} failed"
+			fi
+		done
+	fi
+}
+
 src_install() {
 	emake $(make_flags) DESTDIR="${D}" install || die
 }
