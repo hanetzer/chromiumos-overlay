@@ -368,7 +368,7 @@ get_gcc_dir()
 
 get_gcc_build_dir()
 {
-	echo "$(get_gcc_dir)-build"
+	echo "$(get_gcc_dir)-build-${CTARGET}"
 }
 
 get_gcc_base_ver()
