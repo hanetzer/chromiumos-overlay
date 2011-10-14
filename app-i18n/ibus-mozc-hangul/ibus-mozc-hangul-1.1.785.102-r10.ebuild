@@ -43,6 +43,9 @@ src_prepare() {
 
   # http://crosbug.com/20309
   epatch "${FILESDIR}"/${P}-no-engine-specific-hotkeys.patch
+
+  # issued as http://crosbug.com/19483
+  epatch "${FILESDIR}"/${P}-implement-symbol-dictionary.patch
 }
 
 src_configure() {
@@ -79,6 +82,9 @@ src_install() {
   insinto /usr/share/ibus/component || die
   doins hangul/unix/ibus/mozc-hangul.xml || die
 
+  mkdir -p "${D}"/usr/share/ibus-mozc-hangul || die
+  cp "${FILESDIR}"/korean_symbols.txt  "${D}"/usr/share/ibus-mozc-hangul/ || die
+  chmod o+r "${D}"/usr/share/ibus-mozc-hangul/korean_symbols.txt || die
   cp "out_linux/${BUILDTYPE}/ibus_mozc_hangul" "${T}" || die
   $(tc-getSTRIP) --strip-unneeded "${T}"/ibus_mozc_hangul || die
 

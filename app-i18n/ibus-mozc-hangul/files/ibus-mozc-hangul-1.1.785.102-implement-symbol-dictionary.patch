@@ -1,0 +1,76 @@
+Binary files ../mozc-1.1.785.102.orig/hangul/.session.cc.swp and ./hangul/.session.cc.swp differ
+diff -urN ../mozc-1.1.785.102.orig/hangul/session.cc ./hangul/session.cc
+--- ../mozc-1.1.785.102.orig/hangul/session.cc	2011-10-14 16:54:47.935887066 +0900
++++ ./hangul/session.cc	2011-10-14 17:03:55.835684950 +0900
+@@ -115,6 +115,9 @@
+   }
+ }
+ 
++string GetSymbolTableFileName() {
++  return "/usr/share/ibus-mozc-hangul/korean_symbols.txt";
++}
+ // Holds the mapping between mozc HangulConfig enum and libhangul config string.
+ class HangulConfigMap {
+  public:
+@@ -157,11 +160,15 @@
+       last_command_time_(0),
+       last_config_updated_(0) {
+   ResetConfig();
++  ReloadSymbolDictionary(GetSymbolTableFileName());
+ }
+ 
+ Session::~Session() {
+   ResetHanjaList();
+   ::hanja_table_delete(hanja_table_);
++  if (symbol_table_ != NULL) {
++    ::hanja_table_delete(symbol_table_);
++  }
+   ::hangul_ic_delete(context_);
+ }
+ 
+@@ -228,6 +235,11 @@
+   string preedit;
+   GetPreeditString(&preedit);
+   hanja_list_ = ::hanja_table_match_prefix(hanja_table_, preedit.c_str());
++
++  if (symbol_table_ != NULL && ::hanja_list_get_size(hanja_list_) == 0) {
++    ResetHanjaList();
++    hanja_list_ = ::hanja_table_match_prefix(symbol_table_, preedit.c_str());
++  }
+   const int total_candidates = ::hanja_list_get_size(hanja_list_);
+   if (total_candidates == 0) {
+     ResetHanjaList();
+@@ -805,6 +817,15 @@
+   application_info_.CopyFrom(application_info);
+ }
+ 
++bool Session::ReloadSymbolDictionary(const string &symbol_dictionary_filename) {
++  if (Util::FileExists(symbol_dictionary_filename)) {
++    symbol_table_ = ::hanja_table_load(symbol_dictionary_filename.c_str());
++  } else {
++    symbol_table_ = NULL;
++  }
++  return (hanja_table_ != NULL) && (symbol_table_ != NULL);
++}
++
+ const commands::ApplicationInfo &Session::application_info() const {
+   return application_info_;
+ }
+diff -urN ../mozc-1.1.785.102.orig/hangul/session.h ./hangul/session.h
+--- ../mozc-1.1.785.102.orig/hangul/session.h	2011-10-14 16:54:47.935887066 +0900
++++ ./hangul/session.h	2011-10-14 16:57:13.545576592 +0900
+@@ -212,11 +212,12 @@
+   // libhangul.
+   bool HasReproduciblePreedit();
+ 
++  bool ReloadSymbolDictionary(const string &symbol_dictionary_filename);
++
+   HangulInputContext *context_;
+ 
+-  // TODO(nona): Do we need additional dictionary? The ibus-hangul has
+-  // additional symbol dictionary.
+   HanjaTable *hanja_table_;
++  HanjaTable *symbol_table_;
+   // hanja_list_ is the list of chinese characters for the hangul characters the
+   // user has typed.
+   // TODO(nona) use CandidateList.
