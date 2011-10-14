@@ -43,6 +43,7 @@ ALL_BOARDS=(
     tegra2_kaen
     tegra2_seaboard
     tegra2_wario
+    tegra3-generic
     waluigi
     x86-agz
     x86-alex
