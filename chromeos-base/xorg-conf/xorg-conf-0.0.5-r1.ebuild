@@ -4,29 +4,38 @@
 # NOTE: This ebuild could be overridden in an overlay to provide a
 # board-specific xorg.conf as necessary.
 
-EAPI=2
+EAPI=4
+inherit cros-board
 
 DESCRIPTION="Board specific xorg configuration file."
 
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex cmt elan mario multitouch synaptics"
+IUSE="alex cmt elan mario multitouch synaptics -tegra"
 
 RDEPEND=""
-DEPEND="${RDEPEND}"
+DEPEND="x11-base/xorg-server"
+
+S=${WORKDIR}
 
 src_install() {
-	local BOARD="${BOARD:-${SYSROOT##/build/}}"
+	local board=$(get_current_board_no_variant)
+	local board_variant=$(get_current_board_with_variant)
 
 	insinto /etc/X11
-	doins "${FILESDIR}/xorg.conf"
+	if ! use tegra; then
+		doins "${FILESDIR}/xorg.conf"
+	fi
 
-	dodir /etc/X11/xorg.conf.d
 	insinto /etc/X11/xorg.conf.d
-	# Since syntp does not use an evdev (/dev/input/event*) device nodes,
-	# its .conf snippet can be installed alongside one of the evdev-compatible
-	# xf86-input-* touchpad drivers.
+	if use tegra; then
+		doins "${FILESDIR}/tegra.conf"
+	fi
+
+	# Since syntp does not use evdev (/dev/input/event*) device nodes,
+	# its .conf snippet can be installed alongside one of the
+	# evdev-compatible xf86-input-* touchpad drivers.
 	if use synaptics; then
 		doins "${FILESDIR}/50-touchpad-syntp.conf"
 	fi
@@ -37,8 +46,12 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-elan.conf"
 		elif use alex; then
 			doins "${FILESDIR}/50-touchpad-cmt-alex.conf"
-		elif [ "${BOARD}" = "x86-zgb" ]; then
+		elif [ "${board}" = "x86-zgb" ]; then
 			doins "${FILESDIR}/50-touchpad-cmt-zgb.conf"
+		elif [ "${board_variant}" = "tegra2_aebl" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-aebl.conf"
+		elif [ "${board_variant}" = "tegra2_kaen" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-kaen.conf"
 		fi
 	elif use multitouch; then
 		doins "${FILESDIR}/50-touchpad-multitouch.conf"
