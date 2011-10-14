@@ -11,7 +11,7 @@ DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-new_power_button test -lockvt -touchui -nocrit"
+IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="chromeos-base/metrics
@@ -36,20 +36,20 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	local power_button
-	local suspend_lockvt
+	local power_button=LEGACY
 	if use new_power_button; then
 		power_button=NEW
-	else
-		power_button=LEGACY
 	fi
+	local suspend_lockvt=0
 	if use lockvt; then
 		suspend_lockvt=1
-	else
-		suspend_lockvt=0
+	fi
+	local is_desktop=0
+	if use is_desktop; then
+		is_desktop=1
 	fi
 	# TODO(davidjames): parallel builds
-	scons POWER_BUTTON="$power_button" lockvt=$suspend_lockvt || \
+	scons POWER_BUTTON="$power_button" lockvt=$suspend_lockvt is_desktop=$is_desktop || \
 		die "power_manager compile failed."
 }
 
