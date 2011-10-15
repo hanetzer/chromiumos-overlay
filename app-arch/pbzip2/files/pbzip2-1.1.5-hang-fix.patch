@@ -1,0 +1,125 @@
+--- pbzip2.cpp	2011-07-16 09:52:35.000000000 -0700
++++ pbzip2-fixed.cpp	2011-10-17 10:23:02.626471000 -0700
+@@ -340,7 +340,6 @@
+ inline int syncGetTerminateFlag();
+ inline void syncSetTerminateFlag(int newValue);
+ inline void syncSetFinishedFlag(int newValue);
+-inline void setLastGoodBlock(int newValue);
+ inline void syncSetLastGoodBlock(int newValue);
+ inline int syncGetLastGoodBlock();
+ void cleanupUnfinishedWork();
+@@ -668,17 +667,24 @@
+ 	{
+ 		// wake up terminator thread
+ 		pthread_cond_signal(&TerminateCond);
++		safe_mutex_unlock(&TerminateFlagMutex);
+ 
+ 		// wake up all other possibly blocked on cond threads
++		safe_mutex_lock(OutMutex);
+ 		pthread_cond_broadcast(notTooMuchNumBuffered);
++		safe_mutex_unlock(OutMutex);
+ 		if (FifoQueue != NULL)
+ 		{
++			safe_mutex_lock(FifoQueue->mut);
+ 			pthread_cond_broadcast(FifoQueue->notFull);
+ 			pthread_cond_broadcast(FifoQueue->notEmpty);
++			safe_mutex_unlock(FifoQueue->mut);
+ 		}
+ 	}
+-
+-	safe_mutex_unlock(&TerminateFlagMutex);
++	else
++	{
++		safe_mutex_unlock(&TerminateFlagMutex);
++	}
+ }
+ 
+ /*
+@@ -697,11 +703,12 @@
+ 	safe_mutex_unlock(&TerminateFlagMutex);
+ }
+ 
+-inline void setLastGoodBlock(int newValue)
++inline void syncSetLastGoodBlock(int newValue)
+ {
++	safe_mutex_lock(OutMutex);
+ 	#ifdef PBZIP_DEBUG
+ 	unsigned long long thid = (unsigned long long) pthread_self();
+-	fprintf(stderr, "(%"PRIu64") setLastGoodBlock: %d -> %d\n", thid, LastGoodBlock, newValue );
++	fprintf(stderr, "(%"PRIu64") syncSetLastGoodBlock: %d -> %d\n", thid, LastGoodBlock, newValue );
+ 	#endif
+ 
+ 	if ( (LastGoodBlock == -1) || (newValue < LastGoodBlock) )
+@@ -713,19 +720,20 @@
+ 
+ 		// wake up all other possibly blocked on cond threads
+ 		pthread_cond_broadcast(notTooMuchNumBuffered);
++		safe_mutex_unlock(OutMutex);
++
+ 		if (FifoQueue != NULL)
+ 		{
++			safe_mutex_lock(FifoQueue->mut);
+ 			pthread_cond_broadcast(FifoQueue->notFull);
+ 			pthread_cond_broadcast(FifoQueue->notEmpty);
++			safe_mutex_unlock(FifoQueue->mut);
+ 		}
+ 	}
+-}
+-
+-inline void syncSetLastGoodBlock(int newValue)
+-{
+-	safe_mutex_lock(OutMutex);
+-	setLastGoodBlock(newValue);
+-	safe_mutex_unlock(OutMutex);
++	else
++	{
++		safe_mutex_unlock(OutMutex);
++	}
+ }
+ 
+ inline int syncGetLastGoodBlock()
+@@ -1299,7 +1307,9 @@
+ 
+ 		if (producerDecompressCheckInterrupt(hInfile, fileData, NumBlocks) != 0)
+ 		{
++			safe_mutex_lock(fifo->mut);
+ 			safe_cond_broadcast(fifo->notEmpty); // just in case
++			safe_mutex_unlock(fifo->mut);
+ 			syncSetProducerDone(1);
+ 			return 0;
+ 		}
+@@ -1368,7 +1378,9 @@
+ 	}
+ 
+ 	syncSetProducerDone(1);
++	safe_mutex_lock(fifo->mut);
+ 	safe_cond_broadcast(fifo->notEmpty); // just in case
++	safe_mutex_unlock(fifo->mut);
+ 
+ 	#ifdef PBZIP_DEBUG
+ 		fprintf(stderr, "producer:  Done - exiting. Last Block: %d\n", NumBlocks);
+@@ -1918,10 +1930,14 @@
+ 	// wake up all other possibly blocked on cond threads
+ 	if (FifoQueue != NULL)
+ 	{
++		safe_mutex_lock(FifoQueue->mut);
+ 		safe_cond_broadcast(FifoQueue->notEmpty); // important
+ 		safe_cond_broadcast(FifoQueue->notFull); // not really needed
++		safe_mutex_unlock(FifoQueue->mut);
+ 	}
++	safe_mutex_lock(OutMutex);
+ 	safe_cond_broadcast(notTooMuchNumBuffered); // not really needed
++	safe_mutex_unlock(OutMutex);
+ 
+ 	if (QuietMode != 1)
+ 	{
+@@ -2559,7 +2575,9 @@
+ 	close(hInfile);
+ 
+ 	syncSetProducerDone(1);
++	safe_mutex_lock(fifo->mut);
+ 	safe_cond_broadcast(fifo->notEmpty); // just in case
++	safe_mutex_unlock(fifo->mut);
+ 
+ 	#ifdef PBZIP_DEBUG
+ 		fprintf(stderr, "producer:  Done - exiting. Num Blocks: %d\n", NumBlocks);

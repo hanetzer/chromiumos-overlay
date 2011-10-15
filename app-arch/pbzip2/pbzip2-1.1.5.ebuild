@@ -19,7 +19,7 @@ RDEPEND="${DEPEND}"
 src_unpack() {
 	unpack ${A}
 	cd ${S}
-	epatch "${FILESDIR}"/pbzip2-hang.patch || die
+	epatch "${FILESDIR}"/${P}-hang-fix.patch || die
 	sed -e 's:^CFLAGS = .*$:#&:g' -e 's:g++:$(CXX):g' -i Makefile || die
 }
 
