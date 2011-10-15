@@ -5,17 +5,14 @@ EAPI=4
 CROS_WORKON_COMMIT="c033960af4a616fbf01dad4fea432f238353540f"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
-inherit cros-debug toolchain-funcs
+inherit cros-debug toolchain-funcs cros-board
 
 DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="arm x86"
-UB_BOARDS="alex mario stumpy lumpy"
-IUSE="profiling ${UB_BOARDS}"
-
-REQUIRED_USE="^^ ( ${UB_BOARDS} arm )"
+IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/x86-firmware-fdts
