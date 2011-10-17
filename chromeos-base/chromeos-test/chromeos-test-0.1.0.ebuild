@@ -52,6 +52,7 @@ RDEPEND="${RDEPEND}
 	media-libs/tiff
 	net-analyzer/netperf
 	net-dialup/minicom
+	x86? ( net-dns/dnsmasq )
 	net-misc/dhcp
 	net-misc/iperf
 	net-misc/iputils
