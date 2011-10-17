@@ -59,7 +59,6 @@
 =net-misc/strongswan-4.5.3-r1	amd64 arm x86
 =net-misc/wget-1.12-r2		amd64 arm x86
 =sys-auth/pam_pwdfile-0.99-r1	amd64 arm x86
-=sys-apps/acl-2.2.49-r1		amd64 arm x86
 =sys-apps/baselayout-2.0.1	amd64 arm x86
 =sys-apps/busybox-1.15.3	amd64 arm x86
 =sys-apps/dbus-1.2.20-r4	amd64 arm x86
