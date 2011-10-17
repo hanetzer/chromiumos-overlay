@@ -56,7 +56,7 @@ src_unpack() {
 }
 
 src_install() {
-	local ignore="laptop-mode"
+	local ignore="laptop-mode nmi-watchdog"
 
 	dodir /etc/pm/sleep.d
 
