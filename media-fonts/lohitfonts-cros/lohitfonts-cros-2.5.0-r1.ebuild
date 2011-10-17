@@ -6,6 +6,7 @@ inherit font
 
 DESCRIPTION="6 Lohit fonts for Indic scripts"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+HOMEPAGE="http://fedorahosted.org/lohit"
 
 LICENSE="OFL-1.1"
 SLOT="0"
