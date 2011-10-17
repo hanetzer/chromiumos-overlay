@@ -25,6 +25,7 @@ DEPEND="
 	x86? ( sys-apps/coreboot-utils )
 	virtual/u-boot
 	chromeos-base/vboot_reference
+	seabios? ( sys-boot/chromeos-seabios )
 	"
 
 # TODO(clchiou): Here are the action items for fixing x86 build that I can
