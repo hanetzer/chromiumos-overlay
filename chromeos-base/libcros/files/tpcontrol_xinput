@@ -10,7 +10,7 @@ COMMAND=$1
 
 usage() {
   echo "Usage:"\
-    "$PROG {status|taptoclick [on|off]|sensitivity [1-5]|"\
+    "$PROG {status|log|taptoclick [on|off]|sensitivity [1-5]|"\
     "set <property> <value>}"
 }
 
@@ -30,6 +30,9 @@ if [ $# = 0 ] ; then
   VALID=0
 elif [ "$COMMAND" = "status" -a $# = 1 ] ; then
   $XINPUT list-props $DEVICE
+  VALID=1
+elif [ "$COMMAND" = "log" -a $# = 1 ] ; then
+  $XINPUT set-prop $DEVICE "Logging Notify" 1
   VALID=1
 elif [ "$COMMAND" = "taptoclick" -a $# = 2 ] ; then
   VALUE=$2
