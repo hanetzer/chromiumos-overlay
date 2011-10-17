@@ -74,6 +74,6 @@ src_install() {
 		# Allow non-root users to specify the 'allow_other' or 'allow_root'
 		# mount options.
 		#
-		#user_allow_other
+		user_allow_other
 	EOF
 }
