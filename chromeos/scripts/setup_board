@@ -48,7 +48,7 @@ DEFINE_boolean force $FLAGS_FALSE \
   "Force re-creating board root."
 DEFINE_string binutils_version "2.21-r1" \
   "Version of binutils to use."
-DEFINE_string gcc_version "4.6.0-r3" \
+DEFINE_string gcc_version "4.6.0-r4" \
   "Version of gcc to use."
 DEFINE_string libc_version "2.11.1-r2" \
   "Version of libc to use."
@@ -393,7 +393,7 @@ if [ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]; then
 else
   UPDATE_ARGS+=" --nousepkg"
 fi
-"${SRC_ROOT}/scripts"/update_chroot ${UPDATE_ARGS}
+#"${SRC_ROOT}/scripts"/update_chroot ${UPDATE_ARGS}
 
 get_board_and_variant $FLAGS_board $FLAGS_variant
 
