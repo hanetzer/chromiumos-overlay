@@ -99,8 +99,7 @@ RDEPEND="${RDEPEND}
 	)
 	"
 
-RDEPEND="${RDEPEND}
-	x86? (
+X86_DEPEND="
 		chromeos-base/saft
 		net-wireless/iwl1000-ucode
 		net-wireless/iwl3945-ucode
@@ -112,8 +111,10 @@ RDEPEND="${RDEPEND}
 		net-wireless/iwl6050-ucode
 		sys-apps/mosys
 		sys-boot/syslinux
-	)
-	"
+"
+
+RDEPEND="${RDEPEND} x86? ( ${X86_DEPEND} )"
+RDEPEND="${RDEPEND} amd64? ( ${X86_DEPEND} )"
 
 RDEPEND="${RDEPEND}
 	arm? (
