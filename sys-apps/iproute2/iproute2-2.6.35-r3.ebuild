@@ -55,6 +55,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.6.35-xtables.patch
 	epatch "${FILESDIR}"/${PN}-2.6.35-no-iptables.patch
 	epatch "${FILESDIR}"/${PN}-2.6.35-linking.patch
+	epatch "${FILESDIR}"/${PN}-2.6.38-parallel-build.patch
 
 	epatch_user
 
