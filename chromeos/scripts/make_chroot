@@ -165,17 +165,19 @@ function init_setup () {
    # Set up sudoers.  Inside the chroot, the user can sudo without a password.
    # (Safe enough, since the only way into the chroot is to 'sudo chroot', so
    # the user's already typed in one sudo password...)
-   bash_chroot "echo Defaults env_keep += CROS_WORKON_SRCROOT >> /etc/sudoers"
-   bash_chroot "echo Defaults env_keep += CHROMEOS_OFFICIAL >> /etc/sudoers"
-   bash_chroot "echo Defaults env_keep += PORTAGE_USERNAME >> /etc/sudoers"
-   bash_chroot "echo Defaults env_keep += http_proxy >> /etc/sudoers"
-   bash_chroot "echo Defaults env_keep += ftp_proxy >> /etc/sudoers"
-   bash_chroot "echo Defaults env_keep += all_proxy >> /etc/sudoers"
-   bash_chroot "echo %adm ALL=\(ALL\) ALL >> /etc/sudoers"
-   bash_chroot "echo root ALL=\(ALL\) ALL >> /etc/sudoers"
-   bash_chroot "echo $USER ALL=NOPASSWD: ALL >> /etc/sudoers"
-   bash_chroot chmod 0440 /etc/sudoers
-   bash_chroot chown root:root /etc/sudoers # Fix bad group on some systems
+   sudo_clobber "${FLAGS_chroot}/etc/sudoers.d/90_cros" <<EOF
+Defaults env_keep += CROS_WORKON_SRCROOT
+Defaults env_keep += CHROMEOS_OFFICIAL
+Defaults env_keep += PORTAGE_USERNAME
+Defaults env_keep += http_proxy
+Defaults env_keep += ftp_proxy
+Defaults env_keep += all_proxy
+%adm ALL=(ALL) ALL
+root ALL=(ALL) ALL
+$USER ALL=NOPASSWD: ALL
+EOF
+   bash_chroot "find /etc/sudoers* -type f -exec chmod 0440 {} +"
+   bash_chroot "chown -R root:root /etc/sudoers*" # Fix bad group for some.
 
    echo "$SCRIPT_NAME: Setting up hosts/resolv..."
    # Copy config from outside chroot into chroot
