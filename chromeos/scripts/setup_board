@@ -663,12 +663,6 @@ if ${HOST_BOARD}; then
   # Now cleanup paths referencing the ROOT from the *.la files.
   sudo find $BOARD_ROOT -type f -name '*.la' | xargs sudo \
       sed -i -e "s|$BOARD_ROOT/|/|g"
-
-  # TODO(zbehan): This should not be needed.
-  # For prebuilt amd64-host chroots, the user already exists and
-  # is called 'chronos'. The ebuild should only install that for
-  # the target.
-  sudo chroot "${BOARD_ROOT}" userdel chronos || true
 else
   sudo -E "${EMERGE_WRAPPER}" ${EMERGE_FLAGS} chromeos-base/kernel-headers
 fi

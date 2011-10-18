@@ -131,10 +131,18 @@ function init_users () {
      in_chroot ln -sf /usr/share/zoneinfo/PST8PDT /etc/localtime
    fi
    echo "$SCRIPT_NAME: Adding user/group..."
-   # Add ourselves as a user inside the chroot
+   # Add ourselves as a user inside the chroot.
    in_chroot groupadd -g 5000 eng
-   in_chroot useradd -G ${DEFGROUPS} -g eng -u `id -u` -s \
+   # We need the UID to match the host user's. This can conflict with
+   # a particular chroot UID. At the same time, the added user has to
+   # be a primary user for the given UID for sudo to work, which is
+   # determined by the order in /etc/passwd. Let's put ourselves on top
+   # of the file.
+   in_chroot useradd -o -G ${DEFGROUPS} -g eng -u `id -u` -s \
      /bin/bash -m -c "${FULLNAME}" -p ${CRYPTED_PASSWD} ${USER}
+   # Because passwd generally isn't sorted and the entry ended up at the
+   # bottom, it is safe to just take it and move it to top instead.
+   in_chroot sed -e '1{h;d};$!{H;d};$G' -i /etc/passwd
 }
 
 function init_setup () {
