@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install postinst prepare setup
+DEPEND=activefilter? ( >=virtual/libpcap-0.9.4 ) atm? ( net-dialup/linux-atm ) pam? ( virtual/pam ) gtk? ( >=x11-libs/gtk+-2.8 ) eap-tls? ( net-misc/curl >=dev-libs/openssl-0.9.7 )
+DESCRIPTION=Point-to-Point Protocol (PPP)
+EAPI=2
+HOMEPAGE=http://www.samba.org/ppp
+IUSE=activefilter atm dhcp eap-tls gtk ipv6 mppe-mppc pam radius
+KEYWORDS=alpha amd64 arm hppa ia64 ~mips ppc ppc64 s390 sh sparc x86
+LICENSE=BSD GPL-2
+RDEPEND=activefilter? ( >=virtual/libpcap-0.9.4 ) atm? ( net-dialup/linux-atm ) pam? ( virtual/pam ) gtk? ( >=x11-libs/gtk+-2.8 ) eap-tls? ( net-misc/curl >=dev-libs/openssl-0.9.7 )
+SLOT=0
+SRC_URI=ftp://ftp.samba.org/pub/ppp/ppp-2.4.4.tar.gz mirror://gentoo/ppp-2.4.4-gentoo-20080819.tar.gz dhcp? ( http://www.netservers.co.uk/gpl/ppp-dhcpc.tgz )
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	7a03929201acae1505c919d5f10e9fa6	pam	f794bf311d46a2b11d3d9362fe656bd0	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	versionator	b4e7d622ba2551eb4b5051879f5f4ad5
+_md5_=0cfd010f69a69259058858f350a5f1a8

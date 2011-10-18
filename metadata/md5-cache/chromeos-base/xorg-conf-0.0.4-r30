@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Board specific xorg configuration file.
+EAPI=2
+IUSE=alex cmt elan mario multitouch synaptics
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+SLOT=0
+_md5_=49874fabd6d691907720601457cf4c4e

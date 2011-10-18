@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Google's C++ testing framework.
+EAPI=2
+HOMEPAGE=http://code.google.com/p/googletest/
+KEYWORDS=amd64 x86 arm
+LICENSE=BSD
+SLOT=0
+SRC_URI=http://googletest.googlecode.com/files/gtest-1.4.0.tar.gz
+_md5_=0f82c0355dc9ba7e3b7659266a0325cc

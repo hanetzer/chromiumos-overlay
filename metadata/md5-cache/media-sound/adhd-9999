@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile info install unpack
+DEPEND=>=media-libs/alsa-lib-1.0.24.1 >=dev-util/git-1.6
+DESCRIPTION=Google A/V Daemon
+EAPI=4
+HOMEPAGE=http://www.chromium.org
+IUSE=board_use_amd64-generic board_use_amd64-host board_use_arm-generic board_use_lumpy board_use_stumpy board_use_tegra2 board_use_tegra2_aebl board_use_tegra2_arthur board_use_tegra2_asymptote board_use_tegra2_dev-board board_use_tegra2_dev-board-opengl board_use_tegra2_kaen board_use_tegra2_seaboard board_use_tegra2_wario board_use_tegra3-generic board_use_waluigi board_use_x86-agz board_use_x86-alex board_use_x86-alex_he board_use_x86-dogfood board_use_x86-fruitloop board_use_x86-generic board_use_x86-mario board_use_x86-mario64 board_use_x86-pineview board_use_x86-zgb board_use_x86-zgb_he
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=GPL-2
+RDEPEND=>=media-libs/alsa-lib-1.0.24.1
+REQUIRED_USE=^^ ( board_use_amd64-generic board_use_amd64-host board_use_arm-generic board_use_lumpy board_use_stumpy board_use_tegra2 board_use_tegra2_aebl board_use_tegra2_arthur board_use_tegra2_asymptote board_use_tegra2_dev-board board_use_tegra2_dev-board-opengl board_use_tegra2_kaen board_use_tegra2_seaboard board_use_tegra2_wario board_use_tegra3-generic board_use_waluigi board_use_x86-agz board_use_x86-alex board_use_x86-alex_he board_use_x86-dogfood board_use_x86-fruitloop board_use_x86-generic board_use_x86-mario board_use_x86-mario64 board_use_x86-pineview board_use_x86-zgb board_use_x86-zgb_he )
+SLOT=0
+_eclasses_=cros-board	c52276ea839beff6f7adab3e96b00ea5	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=c9ac85ef09067ba1bf0e8ff2c24f7c56

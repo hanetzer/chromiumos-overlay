@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile install unpack
+DEPEND=app-text/texi2html !<=app-emulation/qemu-0.7.0
+DESCRIPTION=Open source dynamic translator
+HOMEPAGE=http://bellard.org/qemu/index.html
+IUSE=static
+KEYWORDS=amd64 ~ppc ~x86 ~ppc64
+LICENSE=GPL-2 LGPL-2.1
+RESTRICT=test
+SLOT=0
+SRC_URI=http://savannah.nongnu.org/download/qemu/qemu-0.13.0-rc0.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	pax-utils	0bce06fc565015448fab5af5dbffc5e3	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=25518c14f3e6646799dff9f0d0a78d7f

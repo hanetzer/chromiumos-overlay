@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile install test
+DESCRIPTION=Utility for manipulating firmware ROM mapping data structure
+EAPI=4
+HOMEPAGE=http://flashmap.googlecode.com
+KEYWORDS=amd64 x86
+LICENSE=BSD
+RESTRICT=test
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/flashmap-0.2-r40.tar.bz2
+_eclasses_=multilib	7a03929201acae1505c919d5f10e9fa6	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=c8edf12b184a889df4be84af8fff85cf

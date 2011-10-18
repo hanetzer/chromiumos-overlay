@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install unpack
+DEPEND=sys-apps/debianutils chromeos-base/kernel-headers initramfs? ( chromeos-base/chromeos-initramfs ) !sys-kernel/chromeos-kernel-next >=dev-util/git-1.6
+DESCRIPTION=Based on the toolchain-funcs eclass
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-fbconsole -initramfs -nfs -blkdevram +kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2 -device_tree -pcserial -kernel_sources -systemtap +serial8250 -highmem
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=GPL-2
+RDEPEND=!sys-kernel/chromeos-kernel-next
+REQUIRED_USE=^^ ( kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2 )
+SLOT=0
+_eclasses_=binutils-funcs	76afd9aef385963c72e775c3a952adc6	cros-kernel	d8471f4218fe6050d11e7a51491f8c0b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=1cece04b3617e087c5a8216230a0f9eb

@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile info install prepare setup unpack
+DEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils tui? ( dev-libs/newt ) !dev-util/perf-next doc? ( app-text/asciidoc app-text/xmlto ) >=dev-util/git-1.6
+DESCRIPTION=Userland tools for Linux Performance Counters
+EAPI=2
+HOMEPAGE=http://perf.wiki.kernel.org/
+IUSE=+demangle +doc tui
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=GPL-2
+PROVIDE=virtual/perf
+RDEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils tui? ( dev-libs/newt ) !dev-util/perf-next
+SLOT=0
+_eclasses_=cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	versionator	b4e7d622ba2551eb4b5051879f5f4ad5
+_md5_=fce04cb508c046cb96f87f6a798702d5

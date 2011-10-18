@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure install postinst postrm preinst prepare setup test
+DEPEND=java? ( >=virtual/jdk-1.5 ) python? ( dev-python/setuptools ) emacs? ( virtual/emacs ) >=app-admin/eselect-python-20091230 java? ( >=dev-java/java-config-2.1.9-r1 source? ( app-arch/zip ) )
+DESCRIPTION=Google's Protocol Buffers -- an efficient method of encoding structured data
+EAPI=2
+HOMEPAGE=http://code.google.com/p/protobuf/
+IUSE=emacs examples java python vim-syntax elibc_FreeBSD source java
+KEYWORDS=~amd64 ~x86 ~arm
+LICENSE=Apache-2.0
+RDEPEND=java? ( >=virtual/jre-1.5 ) emacs? ( virtual/emacs ) >=app-admin/eselect-python-20091230 java? ( >=dev-java/java-config-2.1.9-r1 source? ( app-arch/zip ) )
+SLOT=0
+SRC_URI=http://protobuf.googlecode.com/files/protobuf-2.2.0.tar.bz2
+_eclasses_=elisp-common	3322f14f031ddc95feccd9089c9adc59	eutils	c89e7605f1414fa0f33eae391db1b5d3	java-pkg-opt-2	31a1663247652448431dcc8c194e2752	java-utils-2	9c079d63349fb3fcd154c1630807a59a	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	python	b3471f94188b4b0f3a0681898251591f	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	versionator	b4e7d622ba2551eb4b5051879f5f4ad5
+_md5_=590e10243fc72000dba115a62388f153

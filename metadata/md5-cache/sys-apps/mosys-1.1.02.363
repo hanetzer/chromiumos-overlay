@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile install
+DESCRIPTION=Utility for obtaining various bits of low-level system info
+EAPI=2
+HOMEPAGE=http://mosys.googlecode.com/
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=sys-apps/util-linux
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mosys-1.1.02.363.tar.bz2
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=07003379e6a0ad2206b09dbd92a2c9e3

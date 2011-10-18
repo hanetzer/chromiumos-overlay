@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DEPEND=sys-apps/module-init-tools
+DESCRIPTION=cros transitional virtual until we update portage stable to remove this
+KEYWORDS=amd64 arm x86
+RDEPEND=sys-apps/module-init-tools
+SLOT=0
+_md5_=21ffabf4604e84d448f273db8b26a057

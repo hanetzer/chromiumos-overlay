@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=sys-apps/util-linux >=sys-fs/e2fsprogs-1.41 sys-libs/libnih dev-util/pkgconfig sys-devel/gettext
+DESCRIPTION=Ureadahead - Read files in advance during boot
+EAPI=2
+HOMEPAGE=https://launchpad.net/ureadahead
+KEYWORDS=x86 amd64 arm
+LICENSE=GPL-2
+RDEPEND=sys-apps/util-linux >=sys-fs/e2fsprogs-1.41 sys-libs/libnih
+SLOT=0
+SRC_URI=http://launchpad.net/ureadahead/trunk/0.100.0/+download/ureadahead-0.100.0.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=166dfcdd4e20d0616b9dd9ac551f0657

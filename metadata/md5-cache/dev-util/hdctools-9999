@@ -1,0 +1,10 @@
+DEFINED_PHASES=compile info install postinst postrm prepare unpack
+DEPEND=>=dev-embedded/libftdi-0.18 dev-libs/libusb dev-python/pyusb app-text/htmltidy >=dev-util/git-1.6 >=app-admin/eselect-python-20091230 dev-lang/python
+DESCRIPTION=Software to communicate with servo/miniservo debug boards
+EAPI=2
+KEYWORDS=~amd64 ~x86
+LICENSE=BSD
+RDEPEND=>=dev-embedded/libftdi-0.18 dev-libs/libusb dev-python/pyusb >=app-admin/eselect-python-20091230 dev-lang/python
+SLOT=0
+_eclasses_=cros-workon	03bde44f2ebcdbabce137aab0c70dbed	distutils	6913a81639c955969c9686be71b03a30	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	python	b3471f94188b4b0f3a0681898251591f	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=ad7adb02c616d40dce2b8cf5aa82bb27

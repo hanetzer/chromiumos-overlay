@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install prepare test unpack
+DEPEND=app-crypt/trousers dev-libs/gmp >=dev-util/cmake-2.6.2-r1 userland_GNU? ( >=sys-apps/findutils-4.4.0 ) >=dev-util/git-1.6
+DESCRIPTION=TPM Emulator with small google-local changes
+EAPI=2
+HOMEPAGE=//https://developer.berlios.de/projects/tpm-emulator
+IUSE=doc
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=GPL-2
+RDEPEND=app-crypt/trousers dev-libs/gmp
+SLOT=0
+_eclasses_=base	fc89786f3f7e7bcf03334359bd5b639b	cmake-utils	6a1f5bd4039e55b76615db7bd9b70fed	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=2580f88d3a331c1a8e817aa71640cb5c

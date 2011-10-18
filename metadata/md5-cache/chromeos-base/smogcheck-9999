@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile info install prepare unpack
+DEPEND=sys-kernel/linux-headers >=dev-util/git-1.6
+DESCRIPTION=TPM SmogCheck library
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=-cros-debug cros-debug
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=BSD
+SLOT=0
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=907aa583b3592630cdc88f78a2a72b89

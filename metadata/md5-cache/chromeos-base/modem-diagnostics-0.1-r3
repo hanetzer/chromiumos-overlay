@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DEPEND=dev-libs/shflags net-misc/socat
+DESCRIPTION=Convenience script for testing attached cell modems
+EAPI=2
+KEYWORDS=x86 arm amd64
+LICENSE=BSD
+RDEPEND=dev-libs/shflags net-misc/socat
+SLOT=0
+_md5_=6132462d5312c88ad051c359e63306dd

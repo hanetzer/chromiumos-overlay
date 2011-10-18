@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install prepare unpack
+DEPEND=app-crypt/trousers chromeos-base/tpm >=dev-util/git-1.6
+DESCRIPTION=TPM firmware tests
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +tests_hardware_TPMFirmware +tests_hardware_TPMFirmwareServer +buildcheck autotest opengles
+KEYWORDS=x86 arm amd64
+LICENSE=GPL-2
+RDEPEND=app-crypt/trousers chromeos-base/tpm ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	21167ecc723ff0023c9621cdd98dae3e	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=e7d8e581df9b290c27b40210e122e817

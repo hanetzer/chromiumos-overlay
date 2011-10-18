@@ -1,0 +1,10 @@
+DEFINED_PHASES=info prepare unpack
+DEPEND=>=dev-util/git-1.6
+DESCRIPTION=Breakpad symbol dumper
+EAPI=2
+HOMEPAGE=http://code.google.com/p/google-breakpad/
+KEYWORDS=amd64 x86
+LICENSE=BSD
+SLOT=0
+_eclasses_=cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=e934e82c1a20394409d6f22dca7de8ca

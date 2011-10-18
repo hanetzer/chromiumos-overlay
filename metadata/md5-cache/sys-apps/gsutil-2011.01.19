@@ -1,0 +1,11 @@
+DEFINED_PHASES=install
+DESCRIPTION=Google Storage utility library
+EAPI=2
+HOMEPAGE=http://code.google.com/p/gsutil/
+KEYWORDS=x86 amd64
+LICENSE=Apache-2
+RDEPEND=>=dev-lang/python-2.5.1
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/gsutil_01-19-2011.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=4284715f6cc9a7adc9cc4edce3b9b941

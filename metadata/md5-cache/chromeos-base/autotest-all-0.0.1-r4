@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/autotest-tests chromeos-base/autotest-tests-ownershipapi chromeos-base/autotest-factory chromeos-base/autotest-private
+DESCRIPTION=Meta ebuild for all packages providing tests
+EAPI=2
+HOMEPAGE=http://www.chromium.org
+KEYWORDS=amd64 x86 arm
+LICENSE=GPL-2
+RDEPEND=chromeos-base/autotest-tests chromeos-base/autotest-tests-ownershipapi chromeos-base/autotest-factory chromeos-base/autotest-private
+SLOT=0
+_md5_=f321ba374c56b4ca73c3743973ab0c4f

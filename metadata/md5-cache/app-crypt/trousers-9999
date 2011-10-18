@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install postinst prepare setup unpack
+DEPEND=>=dev-libs/openssl-0.9.7 dev-util/pkgconfig || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 >=sys-devel/libtool-2.2.6b >=dev-util/git-1.6
+DESCRIPTION=An open-source TCG Software Stack (TSS) v1.1 implementation
+EAPI=2
+HOMEPAGE=http://trousers.sf.net
+IUSE=doc
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=CPL-1.0
+RDEPEND=>=dev-libs/openssl-0.9.7
+SLOT=0
+_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	base	fc89786f3f7e7bcf03334359bd5b639b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	libtool	390d374bfc41723a51e3bafbb77c9325	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	versionator	b4e7d622ba2551eb4b5051879f5f4ad5
+_md5_=33e060203063f991ed2d3309c2760de3

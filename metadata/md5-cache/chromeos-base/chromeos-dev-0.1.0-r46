@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=Adds some developer niceties on top of Chrome OS for debugging.
+EAPI=2
+HOMEPAGE=http://src.chromium.org
+IUSE=X opengl hardened -touchui
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=app-admin/sudo app-arch/gzip app-arch/tar app-benchmarks/punybench app-crypt/nss app-crypt/tpm-tools x86? ( app-editors/qemacs ) app-editors/vim app-misc/evtest app-shells/bash chromeos-base/flimflam-test chromeos-base/gmerge dev-lang/python dev-python/dbus-python dev-util/strace dev-util/libc-bench net-analyzer/netperf net-analyzer/tcpdump net-misc/dhcp net-misc/iperf net-misc/iputils net-misc/openssh net-misc/rsync net-wireless/iw net-wireless/wireless-tools sys-apps/coreutils sys-apps/diffutils x86? ( sys-apps/dmidecode ) sys-apps/findutils sys-apps/i2c-tools x86? ( sys-apps/iotools ) sys-apps/kbd sys-apps/less x86? ( sys-apps/pciutils ) sys-apps/smartmontools sys-apps/usbutils sys-apps/which hardened? ( >=sys-devel/gdb-7.1 ) !hardened? ( sys-devel/gdb ) sys-fs/fuse sys-fs/lvm2 sys-fs/sshfs-fuse sys-power/powertop sys-process/ktop sys-process/procps sys-process/psmisc sys-process/time virtual/perf x86? ( x11-apps/intel-gpu-tools ) opengl? ( x11-apps/mesa-progs ) x11-apps/mtplot x11-apps/xauth x11-apps/xdpyinfo x11-apps/xdriinfo x11-apps/xev x11-apps/xhost x11-apps/xinput touchui? ( x11-apps/xinput_calibrator ) x11-apps/xlsatoms x11-apps/xlsclients x11-apps/xmodmap x11-apps/xprop x11-apps/xrandr x11-apps/xrdb x11-apps/xset x11-apps/xtrace x11-apps/xwininfo
+SLOT=0
+_md5_=8b7a2b145f3df2101a7d47c3bea067ba

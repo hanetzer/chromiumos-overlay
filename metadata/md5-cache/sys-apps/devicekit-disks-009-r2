@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure install postinst postrm preinst prepare setup unpack
+DEPEND=>=dev-libs/glib-2.16.1 >=dev-libs/dbus-glib-0.82 >=sys-apps/dbus-1.0 >=sys-auth/polkit-0.92 >=sys-fs/udev-145[extras] >=sys-fs/lvm2-2.02.48-r2 >=sys-apps/parted-1.8.8[device-mapper] >=dev-libs/libatasmart-0.14 >=sys-apps/sg3_utils-1.27.20090411 dev-db/sqlite:3 >=dev-util/intltool-0.40 dev-util/pkgconfig dev-libs/libxslt doc? ( >=dev-util/gtk-doc-1.3 ) >=sys-apps/sed-4
+DESCRIPTION=Daemon providing interfaces to work with storage devices
+EAPI=2
+HOMEPAGE=http://www.freedesktop.org/wiki/Software/DeviceKit
+IUSE=debug doc bash-completion debug
+KEYWORDS=~amd64 ~x86
+LICENSE=GPL-2 LGPL-2
+PDEPEND=bash-completion? ( app-shells/bash-completion )
+RDEPEND=>=dev-libs/glib-2.16.1 >=dev-libs/dbus-glib-0.82 >=sys-apps/dbus-1.0 >=sys-auth/polkit-0.92 >=sys-fs/udev-145[extras] >=sys-fs/lvm2-2.02.48-r2 >=sys-apps/parted-1.8.8[device-mapper] >=dev-libs/libatasmart-0.14 >=sys-apps/sg3_utils-1.27.20090411 dev-db/sqlite:3 bash-completion? ( app-admin/eselect )
+SLOT=0
+SRC_URI=http://hal.freedesktop.org/releases/DeviceKit-disks-009.tar.gz
+_eclasses_=bash-completion	f0fab76a98c0e4b3d72b6beb28d3f653	eutils	c89e7605f1414fa0f33eae391db1b5d3	fdo-mime	9c46e30acd923ff12e325dbe96bb98b9	gnome.org	6d236bfa516020939a4adbc435063f79	gnome2	a6e6d84c3fe3f0cec09451d083331d60	gnome2-utils	0067e2e4dc66e2ff223a9c527e329407	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=84cd258e17c35a4abc3bd8ea9befc0b1

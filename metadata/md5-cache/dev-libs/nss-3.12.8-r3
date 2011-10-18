@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile install postinst postrm prepare
+DEPEND=dev-util/pkgconfig
+DESCRIPTION=Mozilla's Network Security Services library that implements PKI support
+EAPI=3
+HOMEPAGE=http://www.mozilla.org/projects/security/pki/nss/
+KEYWORDS=~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc x86 ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris
+LICENSE=|| ( MPL-1.1 GPL-2 LGPL-2.1 )
+RDEPEND=>=dev-libs/nspr-4.8.6 >=dev-db/sqlite-3.5 sys-libs/zlib
+SLOT=0
+SRC_URI=ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_12_8_RTM/src/nss-3.12.8.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=ad6c72274ca89e8c8333583484d95add

@@ -1,0 +1,8 @@
+DEFINED_PHASES=compile install unpack
+DESCRIPTION=Performance analysis and visualization of the system boot process
+HOMEPAGE=http://packages.ubuntu.com/lucid/bootchart
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+SLOT=0
+_eclasses_=multilib	7a03929201acae1505c919d5f10e9fa6	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=0c0c1735a3914c8bb073841e9453ed9a

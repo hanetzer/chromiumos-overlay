@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure install prepare
+DEPEND=>=app-i18n/ibus-1.3.99 >=app-i18n/libhangul-0.0.10 dev-libs/protobuf net-misc/curl >=app-admin/eselect-python-20091230
+DESCRIPTION=The Mozc Hangul engine for IBus Framework
+EAPI=2
+HOMEPAGE=http://code.google.com/p/mozc
+KEYWORDS=amd64 x86 arm
+LICENSE=BSD
+RDEPEND=>=app-i18n/ibus-1.3.99 >=app-i18n/libhangul-0.0.10 dev-libs/protobuf net-misc/curl >=app-admin/eselect-python-20091230
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-1.1.785.102.tar.bz2
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	python	b3471f94188b4b0f3a0681898251591f	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=58b4d5c8b28aeaf379b9d6fdcb9eb31a

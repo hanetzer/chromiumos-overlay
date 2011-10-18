@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Database of mobile broadband service providers
+HOMEPAGE=http://live.gnome.org/NetworkManager/MobileBroadband/ServiceProviders
+KEYWORDS=~amd64 ~arm ~ppc ~x86
+LICENSE=CC-PD
+SLOT=0
+SRC_URI=mirror://gnome/sources/mobile-broadband-provider-info/20100122/mobile-broadband-provider-info-20100122.tar.bz2
+_eclasses_=gnome.org	6d236bfa516020939a4adbc435063f79
+_md5_=2c498e141cdb3500bb8da8a6969610e0

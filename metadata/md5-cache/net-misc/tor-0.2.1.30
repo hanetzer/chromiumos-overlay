@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install postinst prepare
+DEPEND=dev-libs/openssl >=dev-libs/libevent-1.2
+DESCRIPTION=Anonymizing overlay network for TCP
+EAPI=2
+HOMEPAGE=http://www.torproject.org/
+IUSE=debug
+KEYWORDS=amd64 arm ppc ppc64 sparc x86 ~x86-fbsd
+LICENSE=BSD
+RDEPEND=dev-libs/openssl >=dev-libs/libevent-1.2 net-proxy/tsocks[tordns]
+SLOT=0
+SRC_URI=http://www.torproject.org/dist/tor-0.2.1.30.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=88c5866f9cdcc651c4877db31eb3a826

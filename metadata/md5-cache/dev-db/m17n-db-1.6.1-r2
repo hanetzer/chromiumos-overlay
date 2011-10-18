@@ -1,0 +1,12 @@
+DEFINED_PHASES=install prepare
+DEPEND=sys-devel/gettext
+DESCRIPTION=Database for the m17n library
+EAPI=2
+HOMEPAGE=http://www.m17n.org/m17n-lib/
+KEYWORDS=~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~sh ~sparc ~x86
+LICENSE=LGPL-2.1
+RDEPEND=virtual/libintl
+SLOT=0
+SRC_URI=mirror://gentoo/m17n-db-1.6.1.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=840c7353cbe48733c66650f02a6d9d3e

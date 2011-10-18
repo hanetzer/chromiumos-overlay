@@ -1,0 +1,12 @@
+DEFINED_PHASES=info install prepare unpack
+DEPEND=>=dev-util/git-1.6 !!<=chromeos-base/chromeos-wm-0.0.1-r230
+DESCRIPTION=Chrome OS command-line shell
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=BSD
+PDEPEND=|| ( >chromeos-base/chromeos-wm-0.0.1-r230 !!<=chromeos-base/chromeos-wm-0.0.1-r230 )
+RDEPEND=chromeos-base/vboot_reference net-misc/iputils net-wireless/iw sys-apps/net-tools x11-terms/rxvt-unicode !!<=chromeos-base/chromeos-wm-0.0.1-r230
+SLOT=0
+_eclasses_=conflict	974274f61683fa68a5c5fae14d38e018	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=18727394ee2c1b9a4f40365ad10e70c4

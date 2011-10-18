@@ -1,0 +1,10 @@
+DEFINED_PHASES=install setup
+DESCRIPTION=NVRAM image for the brcmfmac driver
+EAPI=2
+HOMEPAGE=http://src.chromium.org
+IUSE=awnh610 awnh930
+KEYWORDS=arm
+LICENSE=GPL-2
+SLOT=0
+_eclasses_=confutils	a80706bb5b9ddcf6bbd14365656d4985	eutils	c89e7605f1414fa0f33eae391db1b5d3	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=0c0e2799e53ab66679752bb9fa39e0b2

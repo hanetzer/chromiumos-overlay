@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure install prepare unpack
+DEPEND=app-arch/bzip2 app-i18n/ibus arm? ( virtual/opengles ) chromeos-base/chromeos-theme chromeos-base/protofiles dev-libs/atk dev-libs/glib dev-libs/nspr >=dev-libs/nss-3.12.2 dev-libs/libxml2 dev-libs/dbus-glib x11-libs/cairo x11-libs/libXScrnSaver x11-libs/gtk+ x11-libs/pango >=media-libs/alsa-lib-1.0.19 media-libs/fontconfig media-libs/freetype media-libs/jpeg media-libs/libpng media-libs/mesa net-misc/wget sys-libs/zlib x86? ( !chrome_internal? ( www-plugins/adobe-flash ) ) >=x11-libs/gtk+-2.14.7 x11-libs/libXScrnSaver chrome_remoting? ( x11-libs/libXtst ) x11-apps/setxkbmap build_tests? ( chromeos-base/flimflam-test ) build_tests? ( dev-lang/python ) >=dev-util/gperf-3.0.3 >=dev-util/pkgconfig-0.23
+DESCRIPTION=Open-source version of Google Chrome web browser
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose +autotest +tests_desktopui_BrowserTest +tests_desktopui_PyAutoFunctionalTests +tests_desktopui_PyAutoLoginTests +tests_desktopui_PyAutoPerfTests +tests_desktopui_SyncIntegrationTests +tests_desktopui_UITest +tests_network_PyAutoConnectivityTests +buildcheck autotest opengles
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=app-arch/bzip2 app-i18n/ibus arm? ( virtual/opengles ) chromeos-base/chromeos-theme chromeos-base/protofiles dev-libs/atk dev-libs/glib dev-libs/nspr >=dev-libs/nss-3.12.2 dev-libs/libxml2 dev-libs/dbus-glib x11-libs/cairo x11-libs/libXScrnSaver x11-libs/gtk+ x11-libs/pango >=media-libs/alsa-lib-1.0.19 media-libs/fontconfig media-libs/freetype media-libs/jpeg media-libs/libpng media-libs/mesa net-misc/wget sys-libs/zlib x86? ( !chrome_internal? ( www-plugins/adobe-flash ) ) >=x11-libs/gtk+-2.14.7 x11-libs/libXScrnSaver chrome_remoting? ( x11-libs/libXtst ) x11-apps/setxkbmap ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	21167ecc723ff0023c9621cdd98dae3e	binutils-funcs	76afd9aef385963c72e775c3a952adc6	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=d6012061c1945cab05cbbb59dc5998c7

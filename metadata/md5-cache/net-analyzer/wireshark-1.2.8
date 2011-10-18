@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install postinst prepare setup
+DEPEND=>=dev-libs/glib-2.4.0:2 zlib? ( sys-libs/zlib ) smi? ( net-libs/libsmi ) gtk? ( >=x11-libs/gtk+-2.4.0:2 x11-libs/pango dev-libs/atk ) gnutls? ( net-libs/gnutls ) gcrypt? ( dev-libs/libgcrypt ) pcap? ( net-libs/libpcap ) pcre? ( dev-libs/libpcre ) caps? ( sys-libs/libcap ) kerberos? ( virtual/krb5 ) portaudio? ( media-libs/portaudio ) ares? ( >=net-dns/c-ares-1.5 ) !ares? ( adns? ( net-libs/adns ) ) geoip? ( dev-libs/geoip ) lua? ( >=dev-lang/lua-5.1 ) selinux? ( sec-policy/selinux-wireshark ) >=dev-util/pkgconfig-0.15.0 dev-lang/perl sys-devel/bison sys-devel/flex || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 >=sys-devel/libtool-2.2.6b
+DESCRIPTION=A network protocol analyzer formerly known as ethereal
+EAPI=2
+HOMEPAGE=http://www.wireshark.org/
+IUSE=adns ares gtk ipv6 lua portaudio gnutls gcrypt geoip zlib kerberos threads profile smi +pcap pcre +caps selinux
+KEYWORDS=alpha amd64 hppa ia64 ppc ppc64 sparc x86 ~x86-fbsd
+LICENSE=GPL-2
+RDEPEND=>=dev-libs/glib-2.4.0:2 zlib? ( sys-libs/zlib ) smi? ( net-libs/libsmi ) gtk? ( >=x11-libs/gtk+-2.4.0:2 x11-libs/pango dev-libs/atk ) gnutls? ( net-libs/gnutls ) gcrypt? ( dev-libs/libgcrypt ) pcap? ( net-libs/libpcap ) pcre? ( dev-libs/libpcre ) caps? ( sys-libs/libcap ) kerberos? ( virtual/krb5 ) portaudio? ( media-libs/portaudio ) ares? ( >=net-dns/c-ares-1.5 ) !ares? ( adns? ( net-libs/adns ) ) geoip? ( dev-libs/geoip ) lua? ( >=dev-lang/lua-5.1 ) selinux? ( sec-policy/selinux-wireshark )
+SLOT=0
+SRC_URI=http://www.wireshark.org/download/src/wireshark-1.2.8.tar.gz
+_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=6dccf85e6ddbb19473aa57825e6c654b

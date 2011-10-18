@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install prepare test unpack
+DEPEND=dev-cpp/gmock dev-cpp/gtest dev-libs/dbus-glib cros_host? ( dev-util/scons ) app-arch/bzip2 chromeos-base/chromeos-ca-certificates chromeos-base/libchrome chromeos-base/libchromeos chromeos-base/metrics chromeos-base/vboot_reference chromeos-base/verity dev-cpp/gflags dev-libs/glib dev-libs/libpcre dev-libs/libxml2 dev-libs/protobuf dev-util/bsdiff net-misc/curl sys-apps/rootdev sys-fs/e2fsprogs sys-libs/e2fsprogs-libs >=dev-util/git-1.6
+DESCRIPTION=Chrome OS Update Engine.
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host -delta_generator cros-debug
+KEYWORDS=~amd64 ~arm ~x86
+LICENSE=BSD
+RDEPEND=app-arch/bzip2 chromeos-base/chromeos-ca-certificates chromeos-base/libchrome chromeos-base/libchromeos chromeos-base/metrics chromeos-base/vboot_reference chromeos-base/verity dev-cpp/gflags dev-libs/glib dev-libs/libpcre dev-libs/libxml2 dev-libs/protobuf dev-util/bsdiff net-misc/curl sys-apps/rootdev sys-fs/e2fsprogs sys-libs/e2fsprogs-libs
+SLOT=0
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=06206ee38d5e9bbfb5233f9973800126

@@ -1,0 +1,14 @@
+DEFINED_PHASES=configure install postinst prepare
+DEPEND=pam? ( virtual/pam ) skey? ( >=sys-auth/skey-1.1.5-r1 ) ldap? ( >=net-nds/openldap-2.1.30-r1 dev-libs/cyrus-sasl ) app-editors/gentoo-editor sys-libs/zlib virtual/editor virtual/mta sys-devel/bison
+DESCRIPTION=Allows users or groups to run commands as other users
+EAPI=4
+HOMEPAGE=http://www.sudo.ws/
+IUSE=pam offensive ldap selinux skey
+KEYWORDS=amd64 arm x86
+LICENSE=as-is BSD
+RDEPEND=selinux? ( sec-policy/selinux-sudo ) ldap? ( dev-lang/perl ) pam? ( sys-auth/pambase ) pam? ( virtual/pam ) skey? ( >=sys-auth/skey-1.1.5-r1 ) ldap? ( >=net-nds/openldap-2.1.30-r1 dev-libs/cyrus-sasl ) app-editors/gentoo-editor sys-libs/zlib virtual/editor virtual/mta
+REQUIRED_USE=pam? ( !skey ) skey? ( !pam )
+SLOT=0
+SRC_URI=http://www.sudo.ws/sudo/dist/sudo-1.8.2.tar.gz ftp://ftp.sudo.ws/pub/sudo/sudo-1.8.2.tar.gz
+_eclasses_=eutils	c89e7605f1414fa0f33eae391db1b5d3	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	pam	f794bf311d46a2b11d3d9362fe656bd0	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_md5_=093d4514459a3af0ece5e5cff42f40c7
