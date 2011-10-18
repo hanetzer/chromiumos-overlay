@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-inherit useradd
+inherit useradd pam
 
 DESCRIPTION="ChromeOS specific system setup"
 HOMEPAGE="http://src.chromium.org/"
@@ -15,7 +15,8 @@ IUSE="cros_host"
 DEPEND=">=sys-apps/baselayout-2"
 RDEPEND="${DEPEND}
 	!<sys-apps/baselayout-2.0.1-r227
-	!<sys-libs/timezone-data-2011d"
+	!<sys-libs/timezone-data-2011d
+	!<=app-admin/sudo-1.8.2"
 
 # Remove entry from /etc/group
 #
@@ -92,6 +93,17 @@ src_install() {
 		# Symlink /etc/localtime to something on the stateful partition, which we
 		# can then change around at runtime.
 		dosym /var/lib/timezone/localtime /etc/localtime || die
+	fi
+
+	# Add our little bit of sudo glue.
+	newpamd "${FILESDIR}"/include-chromeos-auth sudo
+	# This one line comes from the sudo ebuild.
+	pamd_mimic system-auth sudo auth account session
+	if [[ -n ${SHARED_USER_NAME} ]] ; then
+		insinto /etc/sudoers.d
+		echo "${SHARED_USER_NAME} ALL=(ALL) ALL" > 95_cros_base
+		insopts -m 440
+		doins 95_cros_base || die
 	fi
 }
 

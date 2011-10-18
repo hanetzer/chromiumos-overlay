@@ -152,16 +152,10 @@ EOF
 		fperms 0440 /etc/ldap.conf.sudo
 	fi
 
-	newpamd "${FILESDIR}"/include-chromeos-auth sudo
 	pamd_mimic system-auth sudo auth account session
 
 	keepdir /var/db/sudo
 	fperms 0700 /var/db/sudo
-
-	# See crosbug.com/11991.
-	if [ -n "${SHARED_USER_NAME}" ]; then
-		echo "${SHARED_USER_NAME} ALL=(ALL) ALL" >> "${D}"/etc/sudoers || die
-	fi
 }
 
 pkg_postinst() {
