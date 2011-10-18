@@ -1,0 +1,48 @@
+Index: chewing/session.cc
+===================================================================
+--- chewing/session.cc	(revision 74)
++++ chewing/session.cc	(working copy)
+@@ -381,14 +381,9 @@
+       }
+     }
+   } if (key_event.modifiers() == KeyEvent::CTRL) {
+-    if (key_event.has_special_key() &&
+-        KeyEvent::NUMPAD0 <= key_event.special_key() &&
+-        key_event.special_key() <= KeyEvent::NUMPAD9) {
+-      ::chewing_handle_CtrlNum(
+-          context_,
+-          '0' + key_event.special_key() - KeyEvent::NUMPAD0);
+-      status_updated = true;
+-    } else if ('0' <= key_event.key_code() && key_event.key_code() <= '9') {
++    // CtrlNum is the event just for numeric keys at the top of
++    // keyboard, not for the tenkeys.
++    if ('0' <= key_event.key_code() && key_event.key_code() <= '9') {
+       ::chewing_handle_CtrlNum(context_, key_event.key_code());
+       status_updated = true;
+     }
+@@ -466,10 +461,23 @@
+           ::chewing_handle_Capslock(context_);
+           status_updated = true;
+           break;
++        case KeyEvent::NUMPAD0:
++        case KeyEvent::NUMPAD1:
++        case KeyEvent::NUMPAD2:
++        case KeyEvent::NUMPAD3:
++        case KeyEvent::NUMPAD4:
++        case KeyEvent::NUMPAD5:
++        case KeyEvent::NUMPAD6:
++        case KeyEvent::NUMPAD7:
++        case KeyEvent::NUMPAD8:
++        case KeyEvent::NUMPAD9:
++          ::chewing_handle_Numlock(
++              context_, '0' + key_event.special_key() - KeyEvent::NUMPAD0);
++          status_updated = true;
++          break;
+         default:
+           // do nothing
+-          // Currently we don't handle the following keys:
+-          //   CapsLock, NumLock, DblTab.
++          // Currently we don't handle DblTab.
+           break;
+       }
+     } else if (key_event.modifier_keys_size() == 0) {

@@ -20,6 +20,7 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 src_prepare() {
   cd "mozc-${PV}" || die
   epatch "${FILESDIR}"/ibus-mozc-chewing-1.1.773.102-fix-property-string.patch
+  epatch "${FILESDIR}"/ibus-mozc-chewing-1.2.855.102-support-numpad.patch
 }
 
 src_configure() {
