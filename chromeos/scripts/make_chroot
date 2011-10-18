@@ -360,6 +360,13 @@ sudo mount --bind /dev "${FLAGS_chroot}/dev"
 sudo mount --bind "${GCLIENT_ROOT}" "${FLAGS_chroot}/${CHROOT_TRUNK}"
 sudo mount none -t proc "$FLAGS_chroot/proc"
 sudo mount none -t devpts "$FLAGS_chroot/dev/pts"
+sudo mkdir -p "${FLAGS_chroot}/run"
+if [ -d /run ]; then
+  sudo mount --bind /run "$FLAGS_chroot/run"
+  if [ -d /run/shm ]; then
+    sudo mount --bind /run/shm "$FLAGS_chroot/run/shm"
+  fi
+fi
 bash_chroot "rm -f /etc/make.conf.host_setup"
 bash_chroot 'cat > /etc/make.conf.host_setup' <<EOF
 # Created by make_chroot
