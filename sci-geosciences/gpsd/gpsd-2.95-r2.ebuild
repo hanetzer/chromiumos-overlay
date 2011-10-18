@@ -26,7 +26,7 @@ RDEPEND="dbus? ( >=sys-apps/dbus-0.94
 	 virtual/libusb:1"
 
 DEPEND="${RDEPEND}
-	python? ( dev-lang/python )"
+	dev-lang/python"
 
 # TODO(vbendeb): the below statement is a hack required to circumvent the
 # build system deficiency: the linker default library path is specified in
