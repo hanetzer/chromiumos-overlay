@@ -12,8 +12,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-DEPEND=">=sys-apps/baselayout-2.0.1-r225"
-RDEPEND="${DEPEND}"
+DEPEND=">=sys-apps/baselayout-2.0.1-r226"
+RDEPEND="${DEPEND}
+	!<sys-libs/timezone-data-2011d"
 
 # Adds a "daemon"-type user with no login or shell.
 copy_or_add_daemon_user() {
@@ -23,9 +24,20 @@ copy_or_add_daemon_user() {
 	copy_or_add_group "${username}" $uid
 }
 
+pkg_setup() {
+	# The sys-libs/timezone-data package installs a default /etc/localtime
+	# file automatically, so scrub that if it's a regular file.
+	local etc_tz="${ROOT}etc/localtime"
+	[[ -L ${etc_tz} ]] || rm -f "${etc_tz}"
+}
+
 src_install() {
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/xauthority.sh || die
+
+	# Symlink /etc/localtime to something on the stateful partition, which we
+	# can then change around at runtime.
+	dosym /var/lib/timezone/localtime /etc/localtime
 }
 
 pkg_postinst() {
