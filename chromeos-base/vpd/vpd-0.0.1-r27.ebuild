@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 DEPEND="sys-apps/util-linux"  # util-linux is for libuuid.
-RDEPEND="sys-apps/flashrom dev-libs/shflags"  # shflags for dump_vpd_log
+RDEPEND="sys-apps/flashrom dev-libs/shflags dev-util/shflags"  # shflags for dump_vpd_log
 
 # This target list should be architecture specific
 # (no ACPI stuff on ARM for instance)

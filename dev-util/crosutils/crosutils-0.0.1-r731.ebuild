@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="7d7d2ef0f0d9bf606333d0d5d8bf1ac8af4461f4"
+CROS_WORKON_COMMIT="43a3213f339a0f59e0a0d65586048f73eb5fffd1"
 CROS_WORKON_PROJECT="chromiumos/platform/crosutils"
 
 inherit cros-workon
@@ -15,7 +15,8 @@ KEYWORDS="amd64"
 IUSE=""
 
 DEPEND=""
-RDEPEND="dev-libs/shflags"
+RDEPEND="dev-libs/shflags
+	dev-util/shflags"
 
 CROS_WORKON_LOCALNAME="../scripts/"
 
