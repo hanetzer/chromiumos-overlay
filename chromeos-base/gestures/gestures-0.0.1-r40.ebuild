@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a9197b0cdf3a68f32755dd958c97865de5ec4260"
+CROS_WORKON_COMMIT="75819dcdab265fdb874472b4e702ce73643065aa"
 
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 inherit toolchain-funcs cros-debug cros-workon
