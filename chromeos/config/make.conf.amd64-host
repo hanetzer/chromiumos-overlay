@@ -21,7 +21,7 @@ PORTAGE_BUNZIP2_COMMAND="bunzip2"
 PKGDIR="/var/lib/portage/pkgs"
 
 source /usr/local/portage/chromiumos/chromeos/binhost/host/amd64-PREFLIGHT_BINHOST.conf
-FULL_BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/chroot-18.10.11.232501/packages/"
+FULL_BINHOST="http://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/chroot-19.10.11.042112/packages/"
 PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
 USE="${USE} -cups hardened cros_host multilib pic pie -introspection"
