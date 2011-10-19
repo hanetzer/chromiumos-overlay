@@ -14,7 +14,8 @@ KEYWORDS="~amd64"
 IUSE=""
 
 DEPEND=""
-RDEPEND="dev-libs/shflags"
+RDEPEND="dev-libs/shflags
+	dev-util/shflags"
 
 CROS_WORKON_LOCALNAME="../scripts/"
 

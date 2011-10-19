@@ -23,6 +23,7 @@ RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 	!cros_host? ( !chromeos-base/gmerge )
 	dev-lang/python
 	dev-libs/shflags
+	dev-util/shflags
 	cros_host? ( dev-util/crosutils )
 	"
 
