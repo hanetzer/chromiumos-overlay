@@ -10,7 +10,7 @@ SLOT="0"
 KEYWORDS="x86 arm amd64"
 IUSE=""
 
-RDEPEND="dev-libs/shflags
+RDEPEND="dev-util/shflags
 net-misc/socat
 "
 DEPEND="${RDEPEND}"
