@@ -30,6 +30,12 @@ pkg_setup() {
 src_prepare() {
 	epatch "${FILESDIR}"/fuse-2.8.5-fix-lazy-binding.patch
 	epatch "${FILESDIR}"/fuse-2.8.5-gold.patch
+	# This patch changes fusermount to avoid calling getpwuid(3)
+	# if '-o user=<username>' is provided in the command line.
+	# This prevents glibc's implementation of getpwuid from invoking
+	# socket/connect syscalls, which allows Chromium OS daemons to
+	# put more restrictive seccomp filters on fusermount.
+	epatch "${FILESDIR}"/fuse-2.8.6-user-option.patch
 
 	elibtoolize
 }
@@ -64,6 +70,9 @@ src_install() {
 
 	rm -rf "${D}/dev"
 
+	# user_allow_other is enabled to allow Chromium OS to run FUSE-based
+	# file system daemons as a non-root and non-chronos user, while
+	# allowing chronos to access the mount file systems.
 	dodir /etc
 	cat >"${ED}"/etc/fuse.conf <<-EOF
 		# Set the maximum number of FUSE mounts allowed to non-root users.
