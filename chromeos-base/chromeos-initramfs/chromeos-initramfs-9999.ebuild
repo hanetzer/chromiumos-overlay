@@ -128,11 +128,11 @@ build_initramfs_file() {
 
 
 	for lib in ${libs}; do
-		cp ${ROOT}/lib/${lib} ${INITRAMFS_TMP_S}/lib || die
+		cp ${ROOT}/$(get_libdir)/${lib} ${INITRAMFS_TMP_S}/lib || die
 		solve_lib_symlinks "$lib"
 	done
 	for lib in ${usr_libs}; do
-		cp ${ROOT}/usr/lib/${lib} ${INITRAMFS_TMP_S}/lib || die
+		cp ${ROOT}/usr/$(get_libdir)/${lib} ${INITRAMFS_TMP_S}/lib || die
 		solve_lib_symlinks "$lib"
 	done
 	for lib in ${gcc_libs}; do
