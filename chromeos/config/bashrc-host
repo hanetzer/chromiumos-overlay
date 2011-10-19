@@ -1,0 +1,11 @@
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+cros_env_frag_lookup() {
+	local overlay="/usr/local/portage/chromiumos"
+	local config_root="${overlay}/chromeos/config"
+	local env_file="${config_root}/env/${CATEGORY}/${PN}"
+	[[ -e ${env_file} ]] && source "${env_file}"
+}
+cros_env_frag_lookup
