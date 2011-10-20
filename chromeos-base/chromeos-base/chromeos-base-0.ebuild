@@ -87,6 +87,11 @@ pkg_postinst() {
 	local system_user="chronos"
 	local system_id="1000"
 	local system_home="/home/${system_user}/user"
+	# Add a chronos-access group to provide non-chronos users,
+	# mostly system daemons running as a non-chronos user, group permissions
+	# to access files/directories owned by chronos.
+	local system_access_user="chronos-access"
+	local system_access_id="1001"
 
 	local crypted_password='*'
 	[ -r "${SHARED_USER_PASSWD_FILE}" ] &&
@@ -98,6 +103,7 @@ pkg_postinst() {
 	add_shadow "${system_user}" "${crypted_password}"
 
 	copy_or_add_group "${system_user}" "${system_id}"
+	copy_or_add_daemon_user "${system_access_user}" "${system_access_id}"
 	copy_or_add_daemon_user "messagebus" 201  # For dbus
 	copy_or_add_daemon_user "syslog" 202      # For rsyslog
 	copy_or_add_daemon_user "ntp" 203
@@ -115,7 +121,8 @@ pkg_postinst() {
 	copy_or_add_daemon_user "tcpdump" 215     # For tcpdump --with-user
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
-	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g
+	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
+	copy_or_add_daemon_user "avfs" 301        # For avfs process
 
 	# The system_user needs to be part of the audio and video groups.
 	add_users_to_group audio "${system_user}"
@@ -129,6 +136,12 @@ pkg_postinst() {
 	# If so, we should better enforce that in copy_or_add_daemon_user and
 	# error out if another group is already assigned the group id 208.
 	sed -i "s/^\(pkcs11:[^:]*\):[^:]\+:/\1:208:/" "${GROUP_FILE}"
+
+	# All users in the pkcs11 group and all users for sandboxing FUSE-based
+	# filesystem daemons need to be in the ${system_access_user} group,
+	remove_all_users_from_group "${system_access_user}"
+	add_users_to_group "${system_access_user}" root ipsec "${system_user}" \
+		ntfs-3g avfs
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
