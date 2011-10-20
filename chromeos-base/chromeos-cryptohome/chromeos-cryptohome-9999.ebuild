@@ -53,6 +53,7 @@ src_compile() {
 	# Build the daemon and command line client
 	scons cryptohomed || die "cryptohomed compile failed."
 	scons cryptohome || die "cryptohome compile failed."
+	scons cryptohome-path || die "cryptohome-path compile failed."
 	popd
 }
 
@@ -81,6 +82,7 @@ src_install() {
 
 	dosbin "${S}/cryptohomed"
 	dosbin "${S}/cryptohome"
+	dosbin "${S}/cryptohome-path"
 	dolib "${S}/libcryptohome.so"
 
 	dobin "${S}/email_to_image"
