@@ -91,6 +91,13 @@ src_install() {
 	insinto "/etc/dbus-1/system.d"
 	doins "${S}/org.chromium.PowerManager.conf"
 
+	# Install udev rule to set usb hid devices to wake the system.
+	exeinto "/lib/udev"
+	doexe "${S}/usb-hid-wake.sh"
+
+	insinto "/lib/udev/rules.d"
+	doins "${S}/99-usb-hid-wake.rules"
+
 	# Nocrit disables low battery suspend percent by setting it to 0
 	if use nocrit; then
 		crit="usr/share/power_manager/low_battery_suspend_percent"
