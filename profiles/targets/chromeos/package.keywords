@@ -68,7 +68,6 @@
 =sys-apps/flashrom-0.9.1	amd64 x86
 =sys-apps/i2c-tools-3.0.2       amd64 arm x86
 =sys-apps/keyutils-1.1  amd64 arm x86
-=sys-apps/mawk-1.3.3_p20090820-r1 amd64 arm x86
 =sys-apps/net-tools-1.60_p20090728014017-r1   amd64 arm x86
 =sys-apps/openrc-0.4.3-r4	amd64 arm x86
 =sys-apps/parted-1.9.0		amd64 arm x86

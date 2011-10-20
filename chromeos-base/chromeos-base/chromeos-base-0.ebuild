@@ -16,7 +16,8 @@ DEPEND=">=sys-apps/baselayout-2"
 RDEPEND="${DEPEND}
 	!<sys-apps/baselayout-2.0.1-r227
 	!<sys-libs/timezone-data-2011d
-	!<=app-admin/sudo-1.8.2"
+	!<=app-admin/sudo-1.8.2
+	!<sys-apps/mawk-1.3.4"
 
 # Remove entry from /etc/group
 #
@@ -93,6 +94,10 @@ src_install() {
 		# Symlink /etc/localtime to something on the stateful partition, which we
 		# can then change around at runtime.
 		dosym /var/lib/timezone/localtime /etc/localtime || die
+
+		# We use mawk in the target boards, not gawk.
+		dodir /usr/bin
+		dosym mawk /usr/bin/awk || die
 	fi
 
 	# Add our little bit of sudo glue.
