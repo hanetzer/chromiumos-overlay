@@ -10,7 +10,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="cros_host"
 
 DEPEND=">=sys-apps/baselayout-2"
 RDEPEND="${DEPEND}
@@ -72,10 +72,12 @@ add_users_to_group() {
 }
 
 pkg_setup() {
-	# The sys-libs/timezone-data package installs a default /etc/localtime
-	# file automatically, so scrub that if it's a regular file.
-	local etc_tz="${ROOT}etc/localtime"
-	[[ -L ${etc_tz} ]] || rm -f "${etc_tz}"
+	if ! use cros_host ; then
+		# The sys-libs/timezone-data package installs a default /etc/localtime
+		# file automatically, so scrub that if it's a regular file.
+		local etc_tz="${ROOT}etc/localtime"
+		[[ -L ${etc_tz} ]] || rm -f "${etc_tz}"
+	fi
 }
 
 src_install() {
@@ -85,9 +87,12 @@ src_install() {
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/xauthority.sh || die
 
-	# Symlink /etc/localtime to something on the stateful partition, which we
-	# can then change around at runtime.
-	dosym /var/lib/timezone/localtime /etc/localtime
+	# target-specific fun
+	if ! use cros_host ; then
+		# Symlink /etc/localtime to something on the stateful partition, which we
+		# can then change around at runtime.
+		dosym /var/lib/timezone/localtime /etc/localtime || die
+	fi
 }
 
 pkg_postinst() {
