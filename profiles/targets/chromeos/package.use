@@ -6,8 +6,6 @@ app-crypt/tpm-tools     pkcs11
 app-i18n/zinnia	    	-perl
 app-editors/qemacs	-X
 app-editors/vim		minimal
-app-shells/bash		-binsh -net
-app-shells/dash		binsh
 dev-cpp/glog		gflags
 dev-lang/python		-berkdb -gdbm
 dev-libs/dbus-glib	tools
