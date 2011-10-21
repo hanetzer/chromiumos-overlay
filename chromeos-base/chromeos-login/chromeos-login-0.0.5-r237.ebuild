@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="1502896f8c9bad21fd5ad3d08d4936c8799cf238"
+CROS_WORKON_COMMIT="5e0a9c771aa6a38f56358cf7db03f593e80317b5"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="-asan test -touchui -webui_login"
+IUSE="-asan -aura test -touchui -webui_login"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -86,5 +86,10 @@ src_install() {
 	if use asan; then
 		insinto /root
 		newins "${S}/debug_with_asan" .debug_with_asan
+	fi
+
+	if use aura || use touchui; then
+		insinto /root
+		newins "${S}/no_wm" .no_wm
 	fi
 }
