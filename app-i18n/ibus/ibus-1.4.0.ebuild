@@ -4,7 +4,7 @@
 # How to run the test manually:
 #   (chroot)$ ./cros_run_unit_tests --packages ibus
 # or
-#   (chroot)$ env FEATURES="test" emerge-x86-generic -a ibus
+#   (chroot)$ env FEATURES="test" emerge-$BOARD -a ibus
 
 EAPI="2"
 inherit eutils flag-o-matic toolchain-funcs multilib python
@@ -12,7 +12,7 @@ inherit eutils flag-o-matic toolchain-funcs multilib python
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
 
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+SRC_URI="mirror://gentoo/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -52,9 +52,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/0005-Port-the-following-ibus-1.3-patches-to-1.4.patch
         epatch "${FILESDIR}"/0006-Change-default-values-of-some-config.patch
 
-        # TODO remove this patch with a new upstream tarball
-        epatch "${FILESDIR}"/0001-Fix-for-ibus_serializable_-get-set-_attachment.patch
-        epatch "${FILESDIR}"/0002-Use-GVariant-as-attachment-for-IBusSerializable.patch
+        # TODO(yusukes): Remove the patch to use upstream releases as-is.
+        epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
 }
 
 src_configure() {
@@ -72,6 +71,9 @@ src_configure() {
 	# instead to remove the dependence on iso-codes.
 	econf \
 		${GTK2_IM_MODULE_FLAG} \
+		--enable-gtk2 \
+		--disable-gtk3 \
+		--disable-dconf \
 		--disable-gconf \
 		--disable-xim \
 		--disable-key-snooper \

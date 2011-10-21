@@ -1,0 +1,30 @@
+diff --git a/bus/ibusimpl.c b/bus/ibusimpl.c
+index 1942504..853465c 100644
+--- a/bus/ibusimpl.c
++++ b/bus/ibusimpl.c
+@@ -1176,14 +1176,12 @@ bus_ibus_impl_set_focused_context (BusIBusImpl     *ibus,
+     }
+ 
+     BusEngineProxy *engine = NULL;
+-    gboolean is_enabled = FALSE;
+ 
+     if (ibus->focused_context) {
+         if (ibus->use_global_engine) {
+             /* dettach engine from the focused context */
+             engine = bus_input_context_get_engine (ibus->focused_context);
+             if (engine) {
+-                is_enabled = bus_input_context_is_enabled (ibus->focused_context);
+                 g_object_ref (engine);
+                 bus_input_context_set_engine (ibus->focused_context, NULL);
+             }
+@@ -1205,9 +1203,7 @@ bus_ibus_impl_set_focused_context (BusIBusImpl     *ibus,
+         /* attach engine to the focused context */
+         if (engine != NULL) {
+             bus_input_context_set_engine (context, engine);
+-            if (is_enabled) {
+-                bus_input_context_enable (context);
+-            }
++            bus_input_context_enable (context);
+             g_object_unref (engine);
+         }
+ 
