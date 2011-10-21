@@ -56,7 +56,6 @@ RDEPEND="
 "
 
 RDEPEND="${RDEPEND}
-  tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
@@ -230,13 +229,6 @@ IUSE_TESTS="
 	+tests_platform_LibCBench
 	+tests_platform_LongPressPower
 	+tests_platform_MemCheck
-	+tests_platform_MiniJailCmdLine
-	+tests_platform_MiniJailPidNamespace
-	+tests_platform_MiniJailPtraceDisabled
-	+tests_platform_MiniJailReadOnlyFS
-	+tests_platform_MiniJailRootCapabilities
-	+tests_platform_MiniJailUidGid
-	+tests_platform_MiniJailVfsNamespace
 	+tests_platform_NetParms
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
