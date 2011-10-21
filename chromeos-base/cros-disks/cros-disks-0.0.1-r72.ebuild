@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="c90f99a0ffa93e51da2ed14eb3c5c322f195416a"
+CROS_WORKON_COMMIT="daa9e877f661bb0366b4b5e98880981d045ffb87"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="arm amd64 x86"
@@ -64,6 +64,11 @@ src_install() {
 	# Install USB device IDs file.
 	insinto /opt/google/cros-disks
 	doins "${S}/usb-device-info" || die
+
+	# Install seccomp policy file.
+	if [ "$ARCH" = "x86" ]; then
+		newins "${S}/avfsd-seccomp-x86.policy" avfsd-seccomp.policy || die
+	fi
 
 	# Install upstart config file.
 	insinto /etc/init

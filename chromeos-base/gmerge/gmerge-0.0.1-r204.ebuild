@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="b7984b9553bbe5c0f9234bbf6f31fcbcac90918a"
+CROS_WORKON_COMMIT="6dc72015f80c02c9bb4af75edec1e7b058b964dc"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon
