@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e82888c5d5ce7ce9820ac42a24336c9ce9900e18"
+CROS_WORKON_COMMIT="1cb65a898f57eb324d0b37fc6f86b8d750a0b5d7"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -57,7 +57,6 @@ RDEPEND="
 "
 
 RDEPEND="${RDEPEND}
-  tests_platform_MiniJailRootCapabilities? ( sys-libs/libcap )
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
@@ -231,13 +230,6 @@ IUSE_TESTS="
 	+tests_platform_LibCBench
 	+tests_platform_LongPressPower
 	+tests_platform_MemCheck
-	+tests_platform_MiniJailCmdLine
-	+tests_platform_MiniJailPidNamespace
-	+tests_platform_MiniJailPtraceDisabled
-	+tests_platform_MiniJailReadOnlyFS
-	+tests_platform_MiniJailRootCapabilities
-	+tests_platform_MiniJailUidGid
-	+tests_platform_MiniJailVfsNamespace
 	+tests_platform_NetParms
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
