@@ -29,7 +29,7 @@ src_compile() {
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tools
-	emake || die
+	emake LIBDIR=$(get_libdir) || die
 	scons minijail || die "minijail compile failed."
 }
 
