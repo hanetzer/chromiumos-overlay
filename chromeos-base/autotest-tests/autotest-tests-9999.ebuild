@@ -169,6 +169,7 @@ IUSE_TESTS="
 	+tests_login_RemoteLogin
 	+tests_login_SecondFactor
 	+tests_network_3GActivate
+	+tests_network_3GAssociation
 	+tests_network_3GDisableWhileConnecting
 	+tests_network_3GDormancyDance
 	+tests_network_3GFailedConnect
