@@ -72,3 +72,6 @@
 =sys-fs/squashfs-tools-4.2  amd64 x86
 
 =dev-util/intltool-0.41.0   amd64 x86
+
+# Needed for factory autotest.
+=dev-python/pyudev-0.12		amd64 x86
