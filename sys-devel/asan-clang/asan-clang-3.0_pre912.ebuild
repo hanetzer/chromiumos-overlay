@@ -16,28 +16,28 @@ EAPI=3
 
 inherit subversion eutils multilib
 
-DESCRIPTION="C language family frontend for LLVM"
-HOMEPAGE="http://clang.llvm.org/"
+DESCRIPTION="Address Sanitizer based on Clang"
+HOMEPAGE="http://address-sanitizer.googlecode.com/"
 SRC_URI=""
-ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk"@${PV#*_pre}
+ESVN_REPO_URI="http://address-sanitizer.googlecode.com/svn/trunk"@${PV#*_pre}
 
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE="+alltargets -asan +cxx-sysroot-wrapper debug -system-cxx-headers test"
+IUSE="+alltargets +asan +cxx-sysroot-wrapper debug -system-cxx-headers test"
 
 S="${WORKDIR}/asan"
 
 src_unpack() {
-	if use asan; then
-		ESVN_PROJECT=asan \
-			subversion_fetch "http://address-sanitizer.googlecode.com/svn/trunk/"
-	fi
+	ESVN_PROJECT=asan subversion_fetch
+	. "${S}/llvm/config.sh"
+	elog "Clang revision to get is ${LLVM_REV}."
 
 	# Fetching LLVM as well: see http://llvm.org/bugs/show_bug.cgi?id=4840
 	ESVN_PROJECT=llvm S="${S}"/clang_src \
-		subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk"@${PV#*_pre}
-	ESVN_PROJECT=clang S="${S}"/clang_src/tools/clang subversion_fetch
+		subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk"@${LLVM_REV}
+	ESVN_PROJECT=clang S="${S}"/clang_src/tools/clang \
+		subversion_fetch "http://llvm.org/svn/llvm-project/cfe/trunk"@${LLVM_REV}
 }
 
 src_prepare() {
