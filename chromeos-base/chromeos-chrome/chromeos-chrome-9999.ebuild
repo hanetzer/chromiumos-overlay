@@ -94,8 +94,7 @@ addwrite "${ECHROME_STORE_DIR}"
 CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 
-# By default, pull from server
-CHROME_ORIGIN="${CHROME_ORIGIN:-SERVER_SOURCE}"
+
 
 if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
   DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
@@ -437,6 +436,18 @@ unpack_chrome() {
 	${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force
 }
 
+decide_chrome_origin() {
+	local chrome_workon="=chromeos-base/chromeos-chrome-9999"
+	local cros_workon_file="${ROOT}etc/portage/package.keywords/cros-workon"
+	if [ -e "${cros_workon_file}" ] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
+		# If user is cros_work-ing on chrome, we infer GERRIT_SOURCE
+		echo "GERRIT_SOURCE"
+	else
+		# By default, pull from server
+		echo "${CHROME_ORIGIN:-SERVER_SOURCE}"
+	fi
+}
+
 src_unpack() {
 	tc-export CC CXX
 	# These are set here because $(whoami) returns the proper user here,
@@ -444,6 +455,8 @@ src_unpack() {
 	export CHROME_ROOT="${CHROME_ROOT:-/home/$(whoami)/chrome_root}"
 	export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
+
+	CHROME_ORIGIN="$(decide_chrome_origin)"
 
 	case "${CHROME_ORIGIN}" in
 	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY|GERRIT_SOURCE)
