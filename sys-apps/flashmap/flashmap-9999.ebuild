@@ -37,9 +37,3 @@ src_test() {
 src_install() {
 	emake DESTDIR="${D}" USE_PKG_CONFIG=1 install || die
 }
-
-pkg_postrm() {
-	# ensure there are no stale .so files left over
-	einfo "Removing stale libfmap*.so links from ${ROOT}/usr/local/lib"
-	rm -f ${ROOT}/usr/local/lib/libfmap*.so
-}
