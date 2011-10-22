@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -260,6 +260,10 @@ set_build_defines() {
 			die "Please set USE=\"${USE} clang\" to enable Clang"
 		fi
 		BUILD_DEFINES="asan=1 $BUILD_DEFINES"
+	fi
+
+	if use aura; then
+		BUILD_DEFINES="use_aura=1 $BUILD_DEFINES"
 	fi
 
 	BUILD_DEFINES="system_libdir=$(get_libdir) $BUILD_DEFINES"
