@@ -14,7 +14,7 @@ KEYWORDS="x86 amd64"
 
 RDEPEND=">=dev-lang/python-2.5.1"
 BUCKET="http://commondatastorage.googleapis.com/chromeos-localmirror"
-SRC_URI="${BUCKET}/distfiles/gsutil_01-19-2011.tar.gz"
+SRC_URI="${BUCKET}/distfiles/gsutil_${PV}.tar.gz"
 
 src_install() {
 	local path="${D}/usr/local/lib"
