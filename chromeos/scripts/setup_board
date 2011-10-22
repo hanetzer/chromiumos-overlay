@@ -323,11 +323,22 @@ print_board_make_conf() {
   echo "# AUTO-GENERATED FILE. DO NOT EDIT."
   echo
   echo "# Source make.conf from each overlay."
+  local boto_config=""
   for overlay in $BOARD_OVERLAY_LIST; do
     if [[ -f "$overlay/make.conf" ]]; then
       echo source "$overlay/make.conf"
     fi
+    if [[ -f "$overlay/googlestorage_account.boto" ]]; then
+      boto_config="$overlay/googlestorage_account.boto"
+    fi
   done
+  if [[ -f "$chromeos_overlay/googlestorage_account.boto" ]]; then
+    boto_config="$chromeos_overlay/googlestorage_account.boto"
+  fi
+  local gsutil_cmd='/usr/local/bin/gsutil cp \"${URI}\" \"${DISTDIR}/${FILE}\"'
+  echo
+  echo FETCHCOMMAND_GS="\"bash -c 'BOTO_CONFIG=$boto_config $gsutil_cmd'\""
+  echo RESUMECOMMAND_GS='"$FETCHCOMMAND_GS"'
   echo
 
   cat <<'EOF'
