@@ -28,7 +28,7 @@ export_uri() {
 
 	if [ $XORG_VERSION -ge 11100000 ]; then
 		X_VERSION=1.11
-	if [ $XORG_VERSION -ge 11000000 ]; then
+	elif [ $XORG_VERSION -ge 11000000 ]; then
 		X_VERSION=1.10
 	elif [ $XORG_VERSION -ge 10903000 ]; then
 		X_VERSION=1.9
