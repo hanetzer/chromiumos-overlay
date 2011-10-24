@@ -404,7 +404,7 @@ if [ "${FLAGS_usepkg}" -eq "${FLAGS_TRUE}" ]; then
 else
   UPDATE_ARGS+=" --nousepkg"
 fi
-#"${SRC_ROOT}/scripts"/update_chroot ${UPDATE_ARGS}
+"${SRC_ROOT}/scripts"/update_chroot ${UPDATE_ARGS}
 
 get_board_and_variant $FLAGS_board $FLAGS_variant
 
