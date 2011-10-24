@@ -189,7 +189,6 @@ RDEPEND="${RDEPEND}
 	net-firewall/iptables
 	net-misc/htpdate
 	net-misc/modemmanager
-	net-misc/tor
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
