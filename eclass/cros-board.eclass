@@ -54,6 +54,7 @@ ALL_BOARDS=(
     x86-mario
     x86-mario64
     x86-pineview
+    x86-wayland
     x86-zgb
     x86-zgb_he
 )
