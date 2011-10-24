@@ -755,6 +755,11 @@ install_chrome_test_resources() {
 	fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
 		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
+	# Copy over the test data directory; eventually 'all' non-static
+	# Chrome test data will go in here.
+	mkdir "${TEST_DIR}"/out/Release/test_data
+	fast_cp -a "${FROM}"/test_data "${TEST_DIR}"/out/Release/
+
 	# Add pdf test data
 	if use chrome_pdf; then
 		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
