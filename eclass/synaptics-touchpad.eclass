@@ -35,7 +35,7 @@ export_uri() {
 	else
 		X_VERSION=1.7
 	fi
-	CROS_BINARY_URI="ssh://synaptics-private@git.chromium.org:6222/home/synaptics-private/${CATEGORY}/${SYNAPTICS_TOUCHPAD_PN}/${SYNAPTICS_TOUCHPAD_PN}-xorg-${X_VERSION}-${PV}-${PR}.tar.gz"
+	CROS_BINARY_URI="http://commondatastorage.googleapis.com/synaptics/${SYNAPTICS_TOUCHPAD_PN}-xorg-${X_VERSION}-${PV}-${PR}.tar.gz"
 }
 
 function synaptics-touchpad_src_unpack() {
