@@ -283,15 +283,19 @@ src_configure()
 		confgcc="${confgcc} --with-mode=thumb"
 	fi
 
-	local needed_libc="glibc"
-	if [[ -n ${needed_libc} ]] ; then
-		if ! has_version ${CATEGORY}/${needed_libc} ; then
-			confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
-		elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
-			confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
-		else
-			confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
+	if is_crosscompile ; then
+		local needed_libc="glibc"
+		if [[ -n ${needed_libc} ]] ; then
+			if ! has_version ${CATEGORY}/${needed_libc} ; then
+				confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
+			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
+				confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
+			else
+				confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
+			fi
 		fi
+	else
+		confgcc="${confgcc} --enable-shared --enable-threads=posix"
 	fi
 
 	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
