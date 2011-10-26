@@ -1,0 +1,157 @@
+From 2e8562612c67cc0dbda6ad6002bbb45e6241fd58 Mon Sep 17 00:00:00 2001
+From: Peng Huang <shawn.p.huang@gmail.com>
+Date: Tue, 25 Oct 2011 12:40:54 -0400
+Subject: [PATCH 2/2] Fix some issues which may cause crash likely.
+
+---
+ src/PYEnglishEditor.cc |   52 ++++++++++++++++++++++-------------------------
+ src/PYEnglishEditor.h  |    4 +-
+ 2 files changed, 26 insertions(+), 30 deletions(-)
+
+diff --git a/src/PYEnglishEditor.cc b/src/PYEnglishEditor.cc
+index 824e167..1fcca7e 100644
+--- a/src/PYEnglishEditor.cc
++++ b/src/PYEnglishEditor.cc
+@@ -357,7 +357,7 @@ EnglishEditor::EnglishEditor (PinyinProperties & props, Config &config)
+     gchar *path = g_build_filename (g_get_user_cache_dir (),
+                                      "ibus", "pinyin", "english-user.db", NULL);
+ 
+-    bool result = m_english_database->openDatabase
++    gboolean result = m_english_database->openDatabase
+         (".." G_DIR_SEPARATOR_S "data" G_DIR_SEPARATOR_S "english.db",
+          "english-user.db") ||
+         m_english_database->openDatabase
+@@ -406,26 +406,20 @@ EnglishEditor::processKeyEvent (guint keyval, guint keycode, guint modifiers)
+     m_cursor = std::min (m_cursor, (guint)m_text.length ());
+ 
+     /* Remember the input string. */
+-    switch (m_cursor) {
+-    case 0: //Empty input string
+-        {
+-            g_return_val_if_fail ('v' == keyval, FALSE);
+-            if ( 'v' == keyval ) {
+-                m_text.insert (m_cursor, keyval);
+-                m_cursor++;
+-            }
+-        }
+-        break;
+-    default: //append string
+-        {
+-            g_return_val_if_fail ('v' == m_text[0], FALSE);
+-            if (isalpha (keyval)) {
+-                m_text.insert (m_cursor, keyval);
+-                m_cursor++;
+-            }
++    if (m_cursor == 0) {
++        g_return_val_if_fail ('v' == keyval, FALSE);
++        m_text = "v";
++        m_cursor ++;
++    }
++    else {
++        g_return_val_if_fail ('v' == m_text[0], FALSE);
++        if ((keyval >= 'a' && keyval <= 'z') ||
++            (keyval >= 'A' && keyval <= 'Z')) {
++            m_text.insert (m_cursor, keyval);
++            m_cursor++;
+         }
+-        break;
+     }
++
+     /* Deal other staff with updateStateFromInput (). */
+     updateStateFromInput ();
+     update ();
+@@ -579,12 +573,12 @@ EnglishEditor::selectCandidate (guint index)
+     return TRUE;
+ }
+ 
+-bool
++gboolean
+ EnglishEditor::updateStateFromInput (void)
+ {
+     /* Do parse and candidates update here. */
+     /* prefix v double check here. */
+-    if (!m_text.length ()) {
++    if (m_text.empty ()) {
+         m_preedit_text = "";
+         m_auxiliary_text = "";
+         m_cursor = 0;
+@@ -592,8 +586,10 @@ EnglishEditor::updateStateFromInput (void)
+         return FALSE;
+     }
+ 
+-    if (!'v' == m_text[0]) {
++    if ('v' != m_text[0]) {
+         g_warning ("v is expected in m_text string.\n");
++        m_auxiliary_text = "";
++        clearLookupTable ();
+         return FALSE;
+     }
+ 
+@@ -610,9 +606,9 @@ EnglishEditor::updateStateFromInput (void)
+ 
+     /* lookup table candidate fill here. */
+     std::vector<std::string> words;
+-    bool retval = m_english_database->listWords (prefix.c_str (), words);
++    gboolean retval = m_english_database->listWords (prefix.c_str (), words);
+     if (!retval)
+-        return false;
++        return FALSE;
+ 
+     clearLookupTable ();
+     std::vector<std::string>::iterator iter;
+@@ -620,7 +616,7 @@ EnglishEditor::updateStateFromInput (void)
+         Text text (*iter);
+         m_lookup_table.appendCandidate (text);
+     }
+-    return true;
++    return TRUE;
+ }
+ 
+ /* Auxiliary Functions */
+@@ -752,18 +748,18 @@ EnglishEditor::removeCharAfter (void)
+     return TRUE;
+ }
+ 
+-bool
++gboolean
+ EnglishEditor::train (const char *word, float delta)
+ {
+     float freq = 0;
+-    bool retval = m_english_database->getWordInfo (word, freq);
++    gboolean retval = m_english_database->getWordInfo (word, freq);
+     if (retval) {
+         freq += delta;
+         m_english_database->updateWord (word, freq);
+     } else {
+         m_english_database->insertWord (word, delta);
+     }
+-    return true;
++    return TRUE;
+ }
+ 
+ #if 0
+diff --git a/src/PYEnglishEditor.h b/src/PYEnglishEditor.h
+index c2ac73b..ef52c1d 100644
+--- a/src/PYEnglishEditor.h
++++ b/src/PYEnglishEditor.h
+@@ -46,7 +46,7 @@ public:
+     virtual void candidateClicked (guint index, guint button, guint state);
+ 
+ private:
+-    bool updateStateFromInput (void);
++    gboolean updateStateFromInput (void);
+ 
+     void clearLookupTable (void);
+     void updateLookupTable (void);
+@@ -66,7 +66,7 @@ private:
+     gboolean processEditKey(guint keyval);
+     gboolean processPageKey(guint keyval);
+ 
+-    bool train(const char *word, float delta);
++    gboolean train(const char *word, float delta);
+ 
+     /* variables */
+     LookupTable m_lookup_table;
+-- 
+1.7.1
+

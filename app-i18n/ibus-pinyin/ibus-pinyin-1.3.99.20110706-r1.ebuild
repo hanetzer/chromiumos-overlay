@@ -27,6 +27,10 @@ DEPEND="${RDEPEND}
 	nls? ( >=sys-devel/gettext-0.16.1 )"
 
 src_prepare() {
+	# TODO(penghuang): Remove those patches when update to new tarball.
+	epatch "${FILESDIR}"/0001-Exit-if-config-component-is-not-ready-instead-of-cra.patch
+	epatch "${FILESDIR}"/0002-Fix-some-issues-which-may-cause-crash-likely.patch
+
 	# disable bopomofo, enable pinyin-dv, and change the cache directory.
 	epatch "${FILESDIR}"/ibus-pinyin-cros.patch
 }
