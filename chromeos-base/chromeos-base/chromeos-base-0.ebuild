@@ -18,11 +18,28 @@ RDEPEND="${DEPEND}
 
 GROUP_FILE="${ROOT}/etc/group"
 
+# Remove entry from /etc/group
+#
+# $1 - Group name
+remove_group() {
+	[ -e "${ROOT}/etc/group" ] && sed -i -e /^${1}:.\*$/d "${ROOT}/etc/group"
+}
+
 # Adds a "daemon"-type user with no login or shell.
 copy_or_add_daemon_user() {
 	local username="$1"
 	local uid="$2"
+	if user_exists "${username}"; then
+		elog "Removing existing user '$1' for copy_or_add_daemon_user"
+		remove_user "${username}"
+	fi
 	copy_or_add_user "${username}" "*" $uid $uid "" /dev/null /bin/false
+
+	if group_exists "${username}"; then
+		elog "Removing existing group '$1' for copy_or_add_daemon_user"
+		elog "Any existing group memberships will be lost"
+		remove_group "${username}"
+	fi
 	copy_or_add_group "${username}" $uid
 }
 
