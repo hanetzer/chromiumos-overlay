@@ -289,6 +289,16 @@ create_gclient_file() {
 	local pdf2="\"src-pdf\": None,"
 	local checkout_point="CHROME_DEPS"
 
+	# Bots in golo.chromium.org have a private mirror for webkit, that is only
+	# accessible from within golo.chromium.org. TODO(rcui): Remove this once
+	# we've converted all bots to GERRIT_SOURCE.
+	local hostname=$(hostname -f)
+	local webkit_trunk=""
+	if [ "${hostname%%.golo.chromium.org}" != "$hostname" ]; then
+		webkit_trunk=\
+'"webkit_trunk": "svn://svn-mirror.golo.chromium.org/webkit-readonly/trunk",'
+	fi
+
 	if [ ${use_pdf} = 0 ]; then
 		pdf1=
 		pdf2=
@@ -300,6 +310,7 @@ create_gclient_file() {
 	cat >>${echrome_store_dir}/.gclient <<EOF
 	{"name"        : "${checkout_point}",
 	 "url"         : "${primary_url}${revision}",
+	 $webkit_trunk
 	 "custom_deps" : {
 		"src/chrome/tools/test/reference_build/chrome": None,
 		"src/chrome/tools/test/reference_build/chrome_mac": None,
