@@ -14,12 +14,13 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="amd64 arm x86"
 
-RDEPEND="dev-libs/dbus-c++
+RDEPEND="chromeos-base/libchrome
+	chromeos-base/libchromeos
+	chromeos-base/mobile-providers
+	dev-libs/dbus-c++
 	dev-libs/glib"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome
-	chromeos-base/libchromeos
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
