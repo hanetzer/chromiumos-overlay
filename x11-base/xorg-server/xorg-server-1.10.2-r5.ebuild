@@ -110,6 +110,10 @@ UPSTREAMED_PATCHES=(
 
 	# Fix X server crash on removing input devices
 	"${FILESDIR}/1.9.3-deleted-block-handlers.patch"
+	
+	# Fix CVEs 2011-4028 and 4029
+	"${FILESDIR}/0001-Fix-CVE-2011-4028-File-disclosure-vulnerability.patch"
+	"${FILESDIR}/0001-Fix-CVE-2011-4029-File-permission-change-vulnerabili.patch"
 	)
 
 PATCHES=(
