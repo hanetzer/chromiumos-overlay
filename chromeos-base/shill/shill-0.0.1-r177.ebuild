@@ -18,7 +18,8 @@ RDEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
 	chromeos-base/mobile-providers
 	dev-libs/dbus-c++
-	dev-libs/glib"
+	dev-libs/glib
+	net-dns/c-ares"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
