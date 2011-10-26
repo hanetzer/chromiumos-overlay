@@ -61,6 +61,7 @@ IUSE_TESTS="
 	+tests_factory_SelectRegion
 	+tests_factory_SetSN
 	+tests_factory_ShowTestResults
+	+tests_factory_Start
 	+tests_factory_Touchpad
 	+tests_factory_WriteGBB
 	+tests_suite_Factory
