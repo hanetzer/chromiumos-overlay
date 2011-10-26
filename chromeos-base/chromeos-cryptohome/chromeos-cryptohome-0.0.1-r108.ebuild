@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d436f69e416b6f06283660ed3a611af59ab5d484"
+CROS_WORKON_COMMIT="5f444eeafc1e86b80fe4e83e5ba010484492e324"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 inherit cros-debug cros-workon toolchain-funcs
 
