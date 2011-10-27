@@ -106,7 +106,7 @@ function cleanup {
   # HACK ALERT: Instead of tracking our nested mounts, we assume they will
   # HACK ALERT: be shown in mount order. So we just reverse the list and
   # HACK ALERT: umount them.
-  mount | grep "on $(readlink -f "$FLAGS_chroot")" | awk '{print $3}' \
+  mount | grep "on $(readlink -f "$FLAGS_chroot")/" | awk '{print $3}' \
     | sort -r | xargs -r -L1 sudo umount -l
 }
 
