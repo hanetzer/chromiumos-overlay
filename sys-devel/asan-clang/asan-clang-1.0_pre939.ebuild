@@ -137,7 +137,7 @@ src_install() {
 		# This is needed because Clang --sysroot=<sysroot>, unlike gcc, prepends
 		# its cxx-include-root with <sysroot> making it unusable.
 		# Clang maintainers consider this the right behavior (crbug.com/86037)
-		# although the Clang own includes (/usr/lib/clang/3.0/include) are never
+		# although the Clang own includes (/usr/lib/clang/3.x/include) are never
 		# prepended with <sysroot>.
 		cat <<-EOF >"${S}/clang++.sh" || die
 			#!/bin/sh
@@ -152,9 +152,9 @@ src_install() {
 		# Make Clang take cxxabi.h from the right place. Needed by gTest.
 		# Unfortunately adding -I${CXX_PATH}/include, where right cxxabi.h resides,
 		# breaks the compilation. This is because Clang prefers this directory to
-		# its own (/usr/lib/clang/3.0/include) despite declaration order,
+		# its own (/usr/lib/clang/3.x/include) despite declaration order,
 		# thus it takes some includes (xmmintrin.h) from there and it drives Clang mad.
-		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.0/include/"
+		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.1/include/"
 	fi
 
 	if use asan; then
