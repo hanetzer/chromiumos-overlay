@@ -12,9 +12,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-RDEPEND="sys-apps/util-linux
-         >=sys-apps/flashmap-0.3-r2"
-DEPEND="${RDEPEND}"
+RDEPEND="sys-apps/util-linux"	# for libuuid
 
 src_compile() {
 	# Generate a default .config for our target architecture. This will
@@ -23,12 +21,7 @@ src_compile() {
 	ARCH=$(tc-arch) make defconfig || die
 
 	tc-export AR AS CC CXX LD NM STRIP OBJCOPY
-	export FMAP_LINKOPT="$(${PKG_CONFIG} --libs-only-l fmap)"
-	append-ldflags "$(${PKG_CONFIG} --libs-only-L fmap)"
-	export LDFLAGS="$(raw-ldflags)"
-	append-flags "$(${PKG_CONFIG} --cflags fmap)"
-	export CFLAGS
-
+	export LDFLAGS=$(raw-ldflags)
 	emake || die
 }
 
