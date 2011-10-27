@@ -59,23 +59,6 @@ src_compile() {
 	fi
 }
 
-src_test() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		tc-getPROG PKG_CONFIG pkg-config
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
-
-	scons -f SConstruct.chromiumos unittest || die
-	./libcros_unittests || die
-}
-
 src_install() {
 	dolib.a "${S}/libcrosapi.a"
 
