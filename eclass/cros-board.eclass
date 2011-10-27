@@ -32,6 +32,7 @@ ALL_BOARDS=(
     amd64-generic
     amd64-host
     arm-generic
+    link
     lumpy
     stumpy
     tegra2
