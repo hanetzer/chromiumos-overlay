@@ -4,9 +4,6 @@
 # Chrome cannot compile WebKit with gperf 3.0.4
 >dev-util/gperf-3.0.3
 
-# TODO: Remove when we have updated our python to 2.6.4-r1.
->dev-lang/python-2.6.4
-
 # The following are here because we override the ebuilds from the
 # portage tree for a reason other than adding an ebuild from upstream
 # that wasn't yet in our portage tree. We want to keep using our

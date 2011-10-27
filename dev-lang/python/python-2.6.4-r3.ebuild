@@ -105,6 +105,9 @@ src_prepare() {
 	# Use a cross-compile aware pkg-config command to setup libffi usage
 	epatch "${FILESDIR}"/python-2.6.4-cross-libffi-pkg-config.patch
 
+	# Set sys.platform to linux2, even on linux3.
+	epatch "${FILESDIR}/linux2.patch"
+
 	sed -i -e "s:@@GENTOO_LIBDIR@@:$(get_libdir):g" \
 		Lib/distutils/command/install.py \
 		Lib/distutils/sysconfig.py \
@@ -129,6 +132,11 @@ src_prepare() {
 	# Fix OtherFileTests.testStdin() not to assume
 	# that stdin is a tty for bug #248081.
 	sed -e "s:'osf1V5':'osf1V5' and sys.stdin.isatty():" -i Lib/test/test_file.py || die "sed failed"
+
+	# Linux-3 compat. Bug #374579 (upstream issue12571)
+	if use kernel_linux; then
+		cp -r "${S}/Lib/plat-linux2" "${S}/Lib/plat-linux3" || die "copy plat-linux failed"
+	fi
 
 	eautoreconf
 }

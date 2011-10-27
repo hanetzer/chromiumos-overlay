@@ -4,9 +4,6 @@
 # Chrome binaries currently use libjpeg-6b, so we need to mask out libjpeg-7
 >=media-libs/jpeg-7
 
-# TODO: Update our overlay to work with python-2.6.4-r1
->dev-lang/python-2.6.4
-
 # TODO: Newer versions don't compile properly due to missing dm_* headers.
 >sys-fs/lvm2-2.02.51-r3
 
