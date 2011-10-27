@@ -6,7 +6,7 @@ EAPI="4"
 CROS_WORKON_COMMIT="b3c8a92f1601c4298641fafef4bf23e3488f2678"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashmap"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon toolchain-funcs multilib
 
 DESCRIPTION="Utility for manipulating firmware ROM mapping data structure"
 HOMEPAGE="http://flashmap.googlecode.com"
@@ -36,5 +36,5 @@ src_test() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" USE_PKG_CONFIG=1 install || die
+	emake LIBDIR=$(get_libdir) DESTDIR="${D}" USE_PKG_CONFIG=1 install || die
 }
