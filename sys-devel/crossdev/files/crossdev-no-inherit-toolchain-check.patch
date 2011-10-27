@@ -1,0 +1,17 @@
+This patch removes the check which tests whether the host gcc ebuild
+inherits from toolchain.eclass.
+--- a/crossdev	2011-10-27 18:06:19.313566359 +0000
++++ b/crossdev	2011-10-27 18:06:36.573477520 +0000
+@@ -445,12 +445,6 @@
+ 	eerror "both binutils and binutils-config."
+ 	exit 1
+ fi
+-if ! egrep -qs 'inherit.*toolchain( |$)' /var/db/pkg/sys-devel/gcc-*/*.ebuild ; then
+-	eerror "Sorry, but your host system needs to have"
+-	eerror "an unstable version of gcc in order to"
+-	eerror "keep from screwing things up."
+-	exit 1
+-fi
+ 
+ setup_portage_vars
+ if [[ -z ${PORTDIR_OVERLAY} ]] ; then
