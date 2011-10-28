@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -17,38 +17,31 @@ IUSE=""
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
-src_prepare() {
-	if tc-is-cross-compiler; then
-		pushd "${S}"/src/tools/linux/dump_syms
-		epatch "${FILESDIR}"/dump_syms_mk.diff || die "Unable to patch"
-		popd
-	else
-		elog "Using host compiler and leaving -m32 to build dump_syms"
-	fi
-}
-
 src_configure() {
 	#TODO(raymes): Uprev breakpad so this isn't necessary. See
 	# (crosbug.com/14275).
 	[ "$ARCH" = "arm" ] && append-cflags "-marm" && append-cxxflags "-marm"
 
-	tc-export CC CXX LD PKG_CONFIG
 	# We purposefully disable optimizations due to optimizations causing
 	# src/processor code to crash (minidump_stackwalk) as well as tests
 	# to fail.  See
 	# http://code.google.com/p/google-breakpad/issues/detail?id=400.
-	CFLAGS="${CFLAGS} -O0" CXXFLAGS="${CXXFLAGS} -O0" econf || \
-		die "configure failed"
+	append-cflags "-O0"
+	append-cxxflags "-O0"
+
+	if ! tc-is-cross-compiler; then
+		einfo "Building local stuff with -m32"
+		append-flags "-m32"
+	fi
+	tc-export CC CXX LD PKG_CONFIG
+	econf --disable-md2core || die "configure failed"
 }
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
 	emake -C src/tools/linux/core2md || die "core2md emake failed"
 	rm src/common/linux/file_id.o
-	emake -C src/tools/linux/dump_syms || die "dumpsyms emake failed"
-	emake clean || die "make clean failed"
 	emake || die "emake failed"
-	emake -C src/tools/linux/symupload || die "symupload emake failed"
 }
 
 src_test() {
