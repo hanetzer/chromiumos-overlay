@@ -16,8 +16,6 @@ DEPEND=">=sys-apps/baselayout-2.0.1-r226"
 RDEPEND="${DEPEND}
 	!<sys-libs/timezone-data-2011d"
 
-GROUP_FILE="${ROOT}/etc/group"
-
 # Remove entry from /etc/group
 #
 # $1 - Group name
@@ -47,7 +45,7 @@ copy_or_add_daemon_user() {
 # No changes if the group does not exist.
 remove_all_users_from_group() {
 	local group="$1"
-	sed -i "/^${group}:/s/:[^:]*$/:/" "${GROUP_FILE}"
+	sed -i "/^${group}:/s/:[^:]*$/:/" "${ROOT}/etc/group"
 }
 
 # Removes a list of users from a group in /etc/group.
@@ -57,7 +55,7 @@ remove_users_from_group() {
 	local username
 	for username in "$@"; do
 		sed -i -r "/^${group}:/{s/([,:])${username}(,|$)/\1/; s/,$//}" \
-			"${GROUP_FILE}"
+			"${ROOT}/etc/group"
 	done
 }
 
@@ -68,7 +66,7 @@ add_users_to_group() {
 	local username
 	remove_users_from_group "${group}" "$@"
 	for username in "$@"; do
-		sed -i "/^${group}:/{ s/$/,${username}/ ; s/:,/:/ }" "${GROUP_FILE}"
+		sed -i "/^${group}:/{ s/$/,${username}/ ; s/:,/:/ }" "${ROOT}/etc/group"
 	done
 }
 
@@ -152,7 +150,7 @@ pkg_postinst() {
 	# TODO(benchan): Is it still true that pkcs11 must have a group id 208?
 	# If so, we should better enforce that in copy_or_add_daemon_user and
 	# error out if another group is already assigned the group id 208.
-	sed -i "s/^\(pkcs11:[^:]*\):[^:]\+:/\1:208:/" "${GROUP_FILE}"
+	sed -i "s/^\(pkcs11:[^:]*\):[^:]\+:/\1:208:/" "${ROOT}/etc/group"
 
 	# All users in the pkcs11 group and all users for sandboxing FUSE-based
 	# filesystem daemons need to be in the ${system_access_user} group,
