@@ -248,6 +248,9 @@ pkg_postrm()
 
 src_configure()
 {
+	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]] ; then
+		return
+	fi
 	SLIBDIR="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
 
 	# Set configuration based on path variables
