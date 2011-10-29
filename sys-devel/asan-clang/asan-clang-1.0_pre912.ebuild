@@ -30,7 +30,7 @@ S="${WORKDIR}/asan"
 
 src_unpack() {
 	ESVN_PROJECT=asan subversion_fetch
-	. "${S}/llvm/config.sh"
+	local LLVM_REV=$(. "${S}/llvm/config.sh"; echo ${LLVM_REV})
 	elog "Clang revision to get is ${LLVM_REV}."
 
 	# Fetching LLVM as well: see http://llvm.org/bugs/show_bug.cgi?id=4840
@@ -154,7 +154,7 @@ src_install() {
 		# breaks the compilation. This is because Clang prefers this directory to
 		# its own (/usr/lib/clang/3.x/include) despite declaration order,
 		# thus it takes some includes (xmmintrin.h) from there and it drives Clang mad.
-		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.1/include/"
+		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.0/include/"
 	fi
 
 	if use asan; then
