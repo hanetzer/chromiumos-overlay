@@ -189,22 +189,24 @@ EOF
 	newins env.d $GCC_CONFIG_FILE
 	cd -
 
-	if use hardened && [[ ${CTARGET} != arm* ]]
-	then
-		SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
-	else
-		SYSROOT_WRAPPER_FILE=sysroot_wrapper
-	fi
-
-	cd ${D}${BINDIR}
-	exeinto "${BINDIR}"
-	doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
-	for x in c++ cpp g++ gcc; do
-		if [[ -f "${CTARGET}-${x}" ]]; then
-			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-			dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
+	if is_crosscompile ; then
+		if use hardened && [[ ${CTARGET} != arm* ]]
+		then
+			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
+		else
+			SYSROOT_WRAPPER_FILE=sysroot_wrapper
 		fi
-	done
+
+		cd ${D}${BINDIR}
+		exeinto "${BINDIR}"
+		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+		for x in c++ cpp g++ gcc; do
+			if [[ -f "${CTARGET}-${x}" ]]; then
+				mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
+				dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
+			fi
+		done
+	fi
 
 	if use tests
 	then
