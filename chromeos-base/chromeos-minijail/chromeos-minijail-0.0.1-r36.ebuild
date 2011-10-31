@@ -48,6 +48,13 @@ src_test() {
 		./minijail_unittests ${GTEST_ARGS} || \
 		    die "unit tests (with ${GTEST_ARGS}) failed!"
 	fi
+
+	# TODO(wad) switch to common.mk to get qemu and valgrind coverage
+	emake libminijail_unittest || die "libminijail_unittest compile failed."
+	if use x86 ; then
+		./libminijail_unittest  || \
+		    die "unit tests failed!"
+	fi
 }
 
 src_install() {
