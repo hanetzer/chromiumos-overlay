@@ -73,6 +73,9 @@ src_install() {
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
 
+	# For user session processes.
+	dodir /etc/skel/log
+
 	if use touchui ; then
 		insinto /root
 		newins "${S}/use_touchui" .use_touchui
