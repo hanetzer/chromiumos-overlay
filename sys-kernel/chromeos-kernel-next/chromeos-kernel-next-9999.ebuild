@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
-inherit binutils-funcs cros-kernel toolchain-funcs
+inherit binutils-funcs cros-board cros-kernel toolchain-funcs
 
 DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://www.chromium.org/"
@@ -24,11 +24,6 @@ DEPEND="sys-apps/debianutils
 RDEPEND="!sys-kernel/chromeos-kernel"
 
 vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
-
-# TODO(vbendeb): we might need to be able to define the device tree source
-# name by some other means or to override the default. For now it must match
-# the name/board name.
-dev_tree_base=${PKG_CONFIG#pkg-config-}
 
 CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
 
@@ -113,6 +108,25 @@ src_configure() {
 	yes "" | kmake oldconfig
 }
 
+get_device_tree_base() {
+	local board_with_variant=$(get_current_board_with_variant)
+
+	# Do a simple mapping for device trees whose names don't match
+	# the board_with_variant format; default to just the
+	# board_with_variant format.
+	case "${board_with_variant}" in
+		(tegra2_dev-board)
+			echo tegra-harmony
+			;;
+		(tegra2_seaboard)
+			echo tegra-seaboard
+			;;
+		*)
+			echo ${board_with_variant}
+			;;
+	esac
+}
+
 src_compile() {
 	local build_targets=  # use make default target
 	if use arm; then
@@ -139,7 +153,7 @@ src_compile() {
 
 	if use device_tree; then
 		dtc -O dtb -p 500 -o "${bin_dtb}" \
-			"arch/arm/boot/dts/${dev_tree_base}.dts" \
+			"arch/arm/boot/dts/$(get_device_tree_base).dts" \
 			|| die 'Device tree compilation failed'
 	fi
 }
