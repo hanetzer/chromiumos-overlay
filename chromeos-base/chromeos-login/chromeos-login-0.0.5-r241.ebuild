@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="-asan -aura test -touchui -webui_login"
+IUSE="-asan -aura test -touchui"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -72,11 +72,6 @@ src_install() {
 
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
-
-	if use webui_login ; then
-		insinto /root
-		newins "${S}/use_webui_login" .use_webui_login
-	fi
 
 	if use touchui ; then
 		insinto /root
