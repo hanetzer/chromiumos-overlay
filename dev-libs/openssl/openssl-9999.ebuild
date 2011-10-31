@@ -27,7 +27,11 @@ PDEPEND="app-misc/ca-certificates
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.9.8h-ldflags.patch #181438
 	if use pkcs11; then
-		epatch "${FILESDIR}"/${PN}-pkcs11-engine.patch
+		sed \
+			-e "s:@GENTOO_LIBDIR@:/usr/$(get_libdir):" \
+			"${FILESDIR}"/${PN}-pkcs11-engine-r1.patch \
+			> "${T}"/pkcs11.patch
+		epatch "${T}"/pkcs11.patch
 	fi
 	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
 
@@ -45,6 +49,10 @@ src_prepare() {
 		|| die
 	# show the actual commands in the log
 	sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
+	# update the enginedir path
+	sed -i \
+		-e "/foo.*engines/s|/lib/engines|/$(get_libdir)/engines|" \
+		Configure || die
 
 	# allow openssl to be cross-compiled
 	cp "${FILESDIR}"/gentoo.config-0.9.8 gentoo.config || die "cp cross-compile failed"
