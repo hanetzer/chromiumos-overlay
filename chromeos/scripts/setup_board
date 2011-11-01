@@ -349,7 +349,7 @@ PORTAGE_BINHOST="$FULL_BINHOST"
 
 EOF
 
-  if [[ -f "$preflight_binhost" ]]; then
+  if [[ -f "$preflight_binhost" && -z "$IGNORE_PREFLIGHT_BINHOST" ]]; then
     cat <<'EOF'
 # PREFLIGHT_BINHOST is populated by the preflight builders. If the same
 # package is provided by both the preflight and full binhosts, the package is
@@ -360,7 +360,7 @@ EOF
     echo
   fi
 
-  if [[ -f "$internal_binhost" ]]; then
+  if [[ -f "$internal_binhost"  && -z "$IGNORE_PREFLIGHT_BINHOST" ]]; then
     cat <<'EOF'
 # The internal PREFLIGHT_BINHOST is populated by the internal preflight
 # builders. It takes priority over the public preflight binhost.

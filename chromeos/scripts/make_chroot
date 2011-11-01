@@ -310,13 +310,14 @@ PORTAGE_STABLE_OVERLAY="/usr/local/portage/stable"
 CROSSDEV_OVERLAY="/usr/local/portage/crossdev"
 CHROOT_OVERLAY="/usr/local/portage/chromiumos"
 CHROOT_STATE="${FLAGS_chroot}/etc/debian_chroot"
-CHROOT_PASSTHRU=(CROS_WORKON_SRCROOT="$CHROOT_TRUNK" PORTAGE_USERNAME="$USER")
+CHROOT_PASSTHRU=(CROS_WORKON_SRCROOT="$CHROOT_TRUNK" PORTAGE_USERNAME="$USER"
+                 IGNORE_PREFLIGHT_BINHOST="$IGNORE_PREFLIGHT_BINHOST")
 
 # Pass proxy variables into the environment.
 for type in http ftp all; do
    value=$(env | grep ${type}_proxy || true)
    if [ -n "${value}" ]; then
-      CHROOT_PASSTHRU=("${CHROOT_PASSTHRU[@]}" "$value")
+      CHROOT_PASSTHRU+=("$value")
    fi
 done
 
@@ -371,9 +372,16 @@ if [ -d /run ]; then
     sudo mount --bind /run/shm "$FLAGS_chroot/run/shm"
   fi
 fi
-bash_chroot "rm -f /etc/make.conf.host_setup"
+PREBUILT_SETUP="$FLAGS_chroot/etc/make.conf.prebuilt_setup"
+if [[ -z "$IGNORE_PREFLIGHT_BINHOST" ]]; then
+  echo 'PORTAGE_BINHOST="$FULL_BINHOST"' | sudo_clobber "$PREBUILT_SETUP"
+else
+  sudo_clobber "$PREBUILT_SETUP" < /dev/null
+fi
+sudo chmod 0644 "$PREBUILT_SETUP"
 bash_chroot 'cat > /etc/make.conf.host_setup' <<EOF
 # Created by make_chroot
+source make.conf.prebuilt_setup
 MAKEOPTS="-j${NUM_JOBS}"
 EOF
 sudo chmod 0644 "${FLAGS_chroot}"/etc/make.conf.host_setup
