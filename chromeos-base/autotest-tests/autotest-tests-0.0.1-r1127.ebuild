@@ -176,6 +176,7 @@ IUSE_TESTS="
 	+tests_network_3GDormancyDance
 	+tests_network_3GFailedConnect
 	+tests_network_3GLoadFirmware
+	+tests_network_3GModemControl
 	+tests_network_3GModemPresent
 	+tests_network_3GNoGobi
 	+tests_network_3GRecoverFromGobiDesync
