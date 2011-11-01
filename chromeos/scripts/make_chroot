@@ -165,6 +165,8 @@ function init_setup () {
    # Set up sudoers.  Inside the chroot, the user can sudo without a password.
    # (Safe enough, since the only way into the chroot is to 'sudo chroot', so
    # the user's already typed in one sudo password...)
+   # Make sure the sudoers.d subdir exists as older stage3 base images lack it.
+   sudo mkdir -p "${FLAGS_chroot}/etc/sudoers.d"
    sudo_clobber "${FLAGS_chroot}/etc/sudoers.d/90_cros" <<EOF
 Defaults env_keep += CROS_WORKON_SRCROOT
 Defaults env_keep += CHROMEOS_OFFICIAL
