@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/cromo"
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs multilib
 
 DESCRIPTION="Chromium OS modem manager"
 HOMEPAGE="http://www.chromium.org/"
@@ -32,7 +32,7 @@ DEPEND="${RDEPEND}
 	net-misc/modemmanager"
 
 make_flags() {
-	echo PLUGINDIR="/usr/lib/cromo/plugins"
+	echo LIBDIR="/usr/$(get_libdir)"
 	use install_tests && echo INSTALL_TESTS=1
 }
 
