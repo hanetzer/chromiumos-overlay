@@ -30,6 +30,7 @@
 BOARD_USE_PREFIX="board_use_"
 ALL_BOARDS=(
     amd64-generic
+    amd64-corei7
     amd64-host
     arm-generic
     link
