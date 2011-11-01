@@ -5,7 +5,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/minifakedns"
 
-inherit cros-workon
+inherit python cros-workon
 
 DESCRIPTION="Minimal python dns server"
 HOMEPAGE="http://code.activestate.com/recipes/491264-mini-fake-dns-server/"
@@ -21,6 +21,6 @@ DEPEND="${RDEPEND}"
 CROS_WORKON_LOCALNAME="../third_party/miniFakeDns"
 
 src_install() {
-	insinto "/usr/lib/python2.6/site-packages"
-	doins "src/miniFakeDns.py"
+	insinto "$(python_get_sitedir)"
+	doins "src/miniFakeDns.py" || die
 }
