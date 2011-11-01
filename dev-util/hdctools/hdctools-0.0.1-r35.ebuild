@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="fe2d1a60f645bd4d7d62e70294246120d3be541f"
+CROS_WORKON_COMMIT="ba097acd266541e10f9d38063a6a80c5fe9a45c1"
 CROS_WORKON_PROJECT="chromiumos/third_party/hdctools"
 
 inherit cros-workon distutils toolchain-funcs multilib
