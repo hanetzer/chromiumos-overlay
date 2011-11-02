@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d38e314992a263944b6016b788dfa19ddf1159fb"
+CROS_WORKON_COMMIT="70a66b2b794df81560bd8a6fe8910563cd564c98"
 CROS_WORKON_PROJECT="chromiumos/platform/cashew"
 
 inherit cros-debug cros-workon autotools
