@@ -670,3 +670,13 @@ fi
 
 echo "Done!"
 echo "The SYSROOT is: ${BOARD_ROOT}"
+
+# NOTE: Printing the working-on ebuilds does not only serve the informative
+# purpose. It also causes the ${BOARD_ROOT}/etc/portage/package.* files to be
+# regenerated.
+WORKING_ON=$(cros_workon --board=${FLAGS_board} list)
+if [ -n "${WORKING_ON}" ]; then
+  echo
+  echo "Currently working on the following ebuilds for this board:"
+  echo "${WORKING_ON}"
+fi
