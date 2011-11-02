@@ -45,6 +45,8 @@ src_prepare() {
 	# Fix bug with GtkToggleButton and gtk+-2.16, bug #275449
 	epatch "${FILESDIR}/${P}-gtktoggle.patch"
 
+	epatch "${FILESDIR}"/${PN}-2.14.1-libdir-pc.patch
+
 	# disable pyc compiling
 	mv "${S}"/py-compile "${S}"/py-compile.orig
 	ln -s $(type -P true) "${S}"/py-compile

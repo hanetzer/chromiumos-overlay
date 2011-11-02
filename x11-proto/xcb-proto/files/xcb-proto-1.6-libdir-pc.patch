@@ -1,0 +1,21 @@
+http://lists.freedesktop.org/archives/xcb/2011-November/007313.html
+
+[PATCH] add libdir/exec_prefix to xcb-xproto.pc
+
+If we want to base other paths off of exec_prefix or libdir (like the
+python path), we can't because the xcb-proto.pc.in file omits those
+variables.  Add them so people can leverage them in their own builds.
+
+Signed-off-by: Mike Frysinger <vapier at gentoo.org>
+
+--- a/xcb-proto.pc.in
++++ b/xcb-proto.pc.in
+@@ -1,6 +1,8 @@
+ prefix=@prefix@
++exec_prefix=@exec_prefix@
+ datarootdir=@datarootdir@
+ datadir=@datadir@
++libdir=@libdir@
+ xcbincludedir=@xcbincludedir@
+ pythondir=@pythondir@
+ 

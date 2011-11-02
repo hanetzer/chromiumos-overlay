@@ -121,7 +121,6 @@
 =x11-proto/fixesproto-4.1.1	amd64 arm x86
 =x11-proto/inputproto-2.0	amd64 arm x86
 =x11-proto/recordproto-1.14	amd64 arm x86
-=x11-proto/xcb-proto-1.6	amd64 arm x86
 =x11-proto/xextproto-7.1.1	amd64 arm x86
 =x11-proto/xineramaproto-1.2	amd64 arm x86
 =x11-proto/xf86dgaproto-2.1	amd64 arm x86
