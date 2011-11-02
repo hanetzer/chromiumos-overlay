@@ -48,7 +48,7 @@ for flag in sys.argv[1:]:
     flags.append(flag)
 
 if re.search(r'i.86', sys.argv[0]):
-  flags.append('-mno-movbe')
+  flags.extend(['-mno-movbe', '-mno-ssse3'])
 
 if 'SYSROOT' in os.environ:
   flags.append('--sysroot=%s' % os.environ['SYSROOT'])
