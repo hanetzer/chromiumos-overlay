@@ -262,10 +262,10 @@ qemu_run() {
 	# If we're running directly on the target (e.g. gmerge), we don't need to
 	# chroot or use qemu.
 	if [ "${ROOT:-/}" == "/" ]; then
-		$* || die
+		"$@" || die
 	else
 		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
-		chroot "${ROOT}" "/tmp/${qemu}" $* || die
+		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
 		rm "${ROOT}/tmp/${qemu}" || die
 	fi
 }
@@ -273,7 +273,7 @@ qemu_run() {
 generate_font_cache() {
 	mkdir -p "${ROOT}/usr/share/fontconfig" || die
 	# fc-cache needs the font files to be located in their final resting place.
-	qemu_run "/usr/bin/fc-cache -f"
+	qemu_run /usr/bin/fc-cache -f
 }
 
 generate_gtk_config() {

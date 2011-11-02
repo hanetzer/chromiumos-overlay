@@ -31,8 +31,9 @@ HOMEPAGE="http://www.linux-kvm.org"
 LICENSE="GPL-2"
 SLOT="0"
 # xen is disabled until the deps are fixed
-IUSE="+aio alsa bluetooth brltty curl debug esd fdt hardened jpeg ncurses nss \
-png pulseaudio qemu-ifup rbd sasl sdl spice ssl threads vde \
+# Removed support for ncurses.  crosbug 22309.
+IUSE="+aio alsa bluetooth brltty curl debug esd fdt hardened jpeg nss \
+png pulseaudio qemu-ifup rbd sasl sdl spice ssl static threads vde \
 +vhost-net xattr xen"
 # static, depends on libsdl being built with USE=static-libs, which can not
 # be expressed in current EAPI's
@@ -69,7 +70,10 @@ RDEPEND="
 	sys-libs/zlib
 	amd64? ( sys-apps/seabios )
 	x86? ( sys-apps/seabios )
-	aio? ( dev-libs/libaio )
+	aio? (
+		static? ( dev-libs/libaio[static-libs] )
+		!static? ( dev-libs/libaio )
+	)
 	alsa? ( >=media-libs/alsa-lib-1.0.13 )
 	bluetooth? ( net-wireless/bluez )
 	brltty? ( app-accessibility/brltty )
@@ -77,20 +81,23 @@ RDEPEND="
 	esd? ( media-sound/esound )
 	fdt? ( >=sys-apps/dtc-1.2.0 )
 	jpeg? ( virtual/jpeg )
-	ncurses? ( sys-libs/ncurses )
 	nss? ( dev-libs/nss )
 	png? ( media-libs/libpng )
 	pulseaudio? ( media-sound/pulseaudio )
 	qemu-ifup? ( sys-apps/iproute2 net-misc/bridge-utils )
 	rbd? ( sys-cluster/ceph )
 	sasl? ( dev-libs/cyrus-sasl )
-	sdl? ( >=media-libs/libsdl-1.2.11[X] )
+	sdl? ( 
+		static? ( >=media-libs/libsdl-1.2.11[X,static-libs] )
+		!static? ( >=media-libs/libsdl-1.2.11[X] )
+	)
 	spice? ( >=app-emulation/spice-0.6.0 )
 	ssl? ( net-libs/gnutls )
 	vde? ( net-misc/vde )
 	xattr? ( sys-apps/attr )
 	xen? ( app-emulation/xen )
 "
+#ncurses? ( sys-libs/ncurses )
 
 DEPEND="${RDEPEND}
 	app-text/texi2html
@@ -152,6 +159,9 @@ src_prepare() {
 	# to the qemu-devel ml - bug 337988
 	epatch "${FILESDIR}/qemu-0.11.0-mips64-user-fix.patch"
 
+	# Configuration for libsdl with static libs is broken.
+	epatch "${FILESDIR}/${P}-configure-static-sdl.patch"
+
 	[[ -n ${BACKPORTS} ]] && \
 		EPATCH_FORCE=yes EPATCH_SUFFIX="patch" EPATCH_SOURCE="${S}/patches" \
 			epatch
@@ -188,7 +198,7 @@ src_configure() {
 	conf_opts="${conf_opts} --extra-ldflags=-Wl,-z,execheap"
 
 	# Add support for static builds
-	#use static && conf_opts="${conf_opts} --static"
+	use static && conf_opts="${conf_opts} --static"
 
 	# Support debug USE flag
 	use debug && conf_opts="${conf_opts} --enable-debug --disable-strip"
@@ -204,7 +214,7 @@ src_configure() {
 	conf_opts="${conf_opts} $(use_enable fdt)"
 	conf_opts="${conf_opts} $(use_enable hardened user-pie)"
 	conf_opts="${conf_opts} $(use_enable jpeg vnc-jpeg)"
-	conf_opts="${conf_opts} $(use_enable ncurses curses)"
+	#conf_opts="${conf_opts} $(use_enable ncurses curses)"
 	conf_opts="${conf_opts} $(use_enable nss smartcard-nss)"
 	conf_opts="${conf_opts} $(use_enable png vnc-png)"
 	conf_opts="${conf_opts} $(use_enable rbd)"
