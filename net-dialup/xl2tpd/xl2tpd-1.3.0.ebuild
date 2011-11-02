@@ -21,6 +21,7 @@ RDEPEND="${DEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}/${PN}-1.3.0-LDFLAGS.patch"
+	epatch "${FILESDIR}/${PN}-1.3.0-avp-workaround.patch"
 	sed -i Makefile -e 's| -O2 ||g' || die "sed Makefile"
 	use dnsretry && epatch "${FILESDIR}/${PN}-dnsretry.patch"
 }
