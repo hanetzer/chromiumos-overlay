@@ -68,7 +68,7 @@ src_prepare() {
 	./config --test-sanity || die "I AM NOT SANE"
 }
 
-src_compile() {
+src_configure() {
 	unset APPS #197996
 	unset SCRIPTS #312551
 
@@ -118,11 +118,13 @@ src_compile() {
 		-e 's:-m[a-z0-9]* ::g' \
 	)
 	sed -i \
-		-e "/^LIBDIR=/s:=.*:=$(get_libdir):" \
-		-e "/^CFLAG/s:=.*:=${CFLAG} ${CFLAGS}:" \
-		-e "/^SHARED_LDFLAGS=/s:$: ${LDFLAGS}:" \
+		-e "/^LIBDIR=/s|=.*|=$(get_libdir)|" \
+		-e "/^CFLAG/s|=.*|=${CFLAG} ${CFLAGS}|" \
+		-e "/^SHARED_LDFLAGS=/s|$| ${LDFLAGS}|" \
 		Makefile || die
+}
 
+src_compile() {
 	# depend is needed to use $confopts
 	# rehash is needed to prep the certs/ dir
 	emake -j1 depend || die "depend failed"
@@ -150,11 +152,11 @@ src_install() {
 	local m d s
 	for m in $(find . -type f | xargs grep -L '#include') ; do
 		d=${m%/*} ; d=${d#./} ; m=${m##*/}
-		# fix up references to renamed man pages
-		sed -i '/^[.]SH "SEE ALSO"/,/^[.][^I]/s:\([^(, I]*([15])\):ssl-\1:g' ${d}/${m}
 		[[ ${m} == openssl.1* ]] && continue
 		[[ -n $(find -L ${d} -type l) ]] && die "erp, broken links already!"
 		mv ${d}/{,ssl-}${m}
+		# fix up references to renamed man pages
+		sed -i '/^[.]SH "SEE ALSO"/,/^[.]/s:\([^(, ]*(1)\):ssl-\1:g' ${d}/ssl-${m}
 		ln -s ssl-${m} ${d}/openssl-${m}
 		# locate any symlinks that point to this man page ... we assume
 		# that any broken links are due to the above renaming

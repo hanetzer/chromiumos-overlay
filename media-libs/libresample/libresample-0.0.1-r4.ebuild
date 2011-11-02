@@ -3,7 +3,7 @@
 # $Header: $
 
 EAPI="2"
-CROS_WORKON_COMMIT="004812c103c969c92fc6379384e231742485da9d"
+CROS_WORKON_COMMIT="cc9f20f439396b7d45e94b8301edd95d33f26a46"
 CROS_WORKON_PROJECT="chromiumos/third_party/libresample"
 
 inherit cros-workon toolchain-funcs
