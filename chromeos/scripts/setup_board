@@ -581,12 +581,17 @@ sudo ln -sf /etc/make.conf.user "${BOARD_ROOT}/etc/make.conf.user"
 # Select the profile to build based on the board and profile passed to
 # setup_board.  The developer can later change profiles by running
 # cros_choose_profile manually.
-cros_choose_profile \
-  --board "${FLAGS_board}" \
-  --build_root "${FLAGS_build_root}" \
-  --board_overlay "${FLAGS_board_overlay}" \
-  --variant "${FLAGS_variant}" \
-  --profile "${FLAGS_profile}"
+if ! cros_choose_profile \
+       --board "${FLAGS_board}" \
+       --build_root "${FLAGS_build_root}" \
+       --board_overlay "${FLAGS_board_overlay}" \
+       --variant "${FLAGS_variant}" \
+       --profile "${FLAGS_profile}"; then
+  error "Selecting profile failed, removing incomplete board directory!"
+  sudo rm -rf "${BOARD_ROOT}"
+  exit 1
+fi
+
 
 for wrapper in 'emerge --root-deps' ebuild eclean equery portageq; do
   generate_wrapper $wrapper
