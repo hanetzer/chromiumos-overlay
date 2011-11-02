@@ -289,7 +289,7 @@ generate_gtk_config() {
 		> "${ROOT}/${gtk2_confdir}/gdk-pixbuf.loaders"
 }
 
-pkg_postinst() {
+pkg_preinst() {
 	generate_font_cache
 
 	# This can be moved to gtk+ ebuild if necessary.
