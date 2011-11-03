@@ -450,7 +450,7 @@ hardened_gcc_is_stable() {
 		die "hardened_gcc_stable needs to be called with pie or ssp"
 	fi
 
-	hasq $(tc-arch) ${tocheck} && return 0
+	has $(tc-arch) ${tocheck} && return 0
 	return 1
 }
 
@@ -480,7 +480,7 @@ hardened_gcc_check_unsupported() {
 		die "hardened_gcc_check_unsupported needs to be called with pie or ssp"
 	fi
 
-	hasq $(tc-arch) ${tocheck} && return 0
+	has $(tc-arch) ${tocheck} && return 0
 	return 1
 }
 
