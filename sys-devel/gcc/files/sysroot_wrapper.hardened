@@ -47,7 +47,7 @@ for flag in sys.argv[1:]:
   if flag != '-nopie':
     flags.append(flag)
 
-if re.search(r'i.86', sys.argv[0]):
+if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
   flags.extend(['-mno-movbe', '-mno-ssse3'])
 
 if 'SYSROOT' in os.environ:
