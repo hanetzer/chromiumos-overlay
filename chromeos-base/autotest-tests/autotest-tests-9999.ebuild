@@ -105,7 +105,17 @@ IUSE_TESTS="
 	+tests_desktopui_WindowManagerFocusNewWindows
 	+tests_desktopui_WindowManagerHotkeys
 	tests_example_UnitTest
+        +tests_firmware_CorruptBothFwAB
+        +tests_firmware_CorruptFwA
+        +tests_firmware_CorruptFwB
+        +tests_firmware_CorruptKernelA
+        +tests_firmware_CorruptKernelB
+        +tests_firmware_DevMode
+        +tests_firmware_DevTriggerRecovery
+        +tests_firmware_RecoveryButton
 	+tests_firmware_RomSize
+        +tests_firmware_TryFwB
+        +tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
