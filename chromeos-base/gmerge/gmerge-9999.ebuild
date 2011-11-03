@@ -26,9 +26,11 @@ DEPEND="${RDEPEND}"
 CHROMEOS_PROFILE="/usr/local/portage/chromiumos/profiles/targets/chromeos"
 
 src_install() {
+        # Install tools from platform/dev into /usr/local/bin
 	exeinto /usr/local/bin
 	doexe gmerge
 	doexe stateful_update
+        doexe crdev
 
 	# Setup package.provided so that gmerge will know what packages to ignore.
 	# - $ROOT/etc/portage/profile/package.provided contains compiler tools and
