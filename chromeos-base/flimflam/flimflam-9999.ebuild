@@ -26,6 +26,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( chromeos-base/modem-utilities
 		        >=chromeos-base/mobile-providers-0.0.1-r12 )
+	>=net-dns/c-ares-1.7.0
 	nss? ( dev-libs/nss )
 	openvpn? ( net-misc/openvpn )
 	policykit? ( >=sys-auth/policykit-0.7 )
@@ -76,7 +77,7 @@ src_configure() {
 		$(use_enable ethernet ethernet builtin) \
 		$(use_enable l2tpipsec l2tpipsec builtin) \
 		$(use_enable modemmanager modemmgr) \
-        	$(use_enable nss nss builtin) \
+		$(use_enable nss nss builtin) \
 		$(use_enable openvpn openvpn builtin) \
 		$(use_enable policykit polkit) \
 		$(use_enable ppp) \
