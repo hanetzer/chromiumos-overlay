@@ -51,6 +51,7 @@ src_install() {
 		doexe host/gdb_x86_local || die "Could not find file to install."
 		doexe host/gdb_remote || die "Could not find file to install."
 		doexe host/willis || die "Could not find file to install."
+		doexe host/ssh_no_update || die "Could not find file to install."
 
                 doexe host/cros_start_vm || die "Could not find file to install."
                 doexe host/cros_stop_vm || die "Could not find file to install."
