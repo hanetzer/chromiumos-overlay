@@ -16,8 +16,6 @@ USE="${USE} mmx sse sse2 dri hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=atom -mtune=atom -mfpmath=sse"
-CFLAGS="-O2 -pipe ${MARCH_TUNE} -ggdb"
-CXXFLAGS="${CFLAGS}"
 LDFLAGS=""
 
 VIDEO_CARDS="intel vmware vesa"
@@ -25,3 +23,5 @@ INPUT_DEVICES="evdev synaptics"
 
 # Allow a board to override or define additional settings.
 source make.conf.board
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -ggdb"
+CXXFLAGS="${CFLAGS}"
