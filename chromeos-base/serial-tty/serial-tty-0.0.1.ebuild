@@ -14,6 +14,6 @@ DEPEND="!chromeos-base/tegra-debug"
 RDEPEND="sys-apps/upstart"
 
 src_install() {
-    insinto /etc/init
-    doins "${FILESDIR}"/etc/init/ttyS0.conf
+	insinto /etc/init
+	doins "${FILESDIR}"/ttyS0.conf || die
 }
