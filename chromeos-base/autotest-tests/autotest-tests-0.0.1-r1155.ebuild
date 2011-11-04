@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="7aed7d87fa392884c34b5f0794543fa1887a9b14"
+CROS_WORKON_COMMIT="5fc2c79ba97b3f8f19ff0710241adc218dd6b9e1"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -106,7 +106,17 @@ IUSE_TESTS="
 	+tests_desktopui_WindowManagerFocusNewWindows
 	+tests_desktopui_WindowManagerHotkeys
 	tests_example_UnitTest
+        +tests_firmware_CorruptBothFwAB
+        +tests_firmware_CorruptFwA
+        +tests_firmware_CorruptFwB
+        +tests_firmware_CorruptKernelA
+        +tests_firmware_CorruptKernelB
+        +tests_firmware_DevMode
+        +tests_firmware_DevTriggerRecovery
+        +tests_firmware_RecoveryButton
 	+tests_firmware_RomSize
+        +tests_firmware_TryFwB
+        +tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
