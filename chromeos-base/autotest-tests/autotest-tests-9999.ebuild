@@ -242,6 +242,7 @@ IUSE_TESTS="
 	+tests_platform_KernelErrorPaths
 	+tests_platform_KernelVersion
 	+tests_platform_LibCBench
+	+tests_platform_LidStress
 	+tests_platform_LongPressPower
 	+tests_platform_MemCheck
 	+tests_platform_NetParms
