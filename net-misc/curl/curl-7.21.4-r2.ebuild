@@ -50,8 +50,8 @@ src_prepare() {
 		"${FILESDIR}"/${PN}-7.19.7-test241.patch \
 		"${FILESDIR}"/${PN}-7.18.2-prefix.patch \
 		"${FILESDIR}"/${PN}-respect-cflags.patch \
-		"${FILESDIR}"/0001-Add-support-for-setting-name-servers.patch
-
+		"${FILESDIR}"/0001-Add-support-for-setting-name-servers.patch \
+		"${FILESDIR}"/0001-For-interface-name-to-only-refer-to-an-interface-nam.patch
 	eprefixify curl-config.in
 	eautoreconf
 }

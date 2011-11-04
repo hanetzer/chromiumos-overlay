@@ -106,7 +106,7 @@
 =x11-terms/aterm-1.0.1-r1	amd64 arm x86
 
 # Needed for curl >= 7.2.1.4
-=net-misc/curl-7.21.4-r1	amd64 arm x86
+=net-misc/curl-7.21.4-r2	amd64 arm x86
 =net-dns/c-ares-1.7.4		amd64 arm x86
 
 # Needed for xorg server >=1.7.x
