@@ -75,7 +75,6 @@ generate_wrapper() {
   local command="${1}"
   shift
   local extra_args="$@"
-  local temp=$(mktemp)
 
 
   local target="/usr/local/bin/${command}-${BOARD_VARIANT}"
