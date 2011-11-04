@@ -7,7 +7,7 @@ EAPI="3"
 PYTHON_DEPEND="python-runtime? 2"
 JAVA_PKG_IUSE="source"
 
-inherit autotools eutils distutils python java-pkg-opt-2 elisp-common toolchain-funcs
+inherit autotools eutils distutils python-old-eapi3 java-pkg-opt-2 elisp-common toolchain-funcs
 
 DESCRIPTION="Google's Protocol Buffers -- an efficient method of encoding structured data"
 HOMEPAGE="http://code.google.com/p/protobuf/"
