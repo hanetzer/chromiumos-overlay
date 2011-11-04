@@ -11,7 +11,8 @@ KEYWORDS="amd64 arm x86"
 IUSE=""
 
 DEPEND="!chromeos-base/tegra-debug"
-RDEPEND="sys-apps/upstart"
+RDEPEND="!chromeos-base/tegra-debug
+	sys-apps/upstart"
 
 src_install() {
 	insinto /etc/init
