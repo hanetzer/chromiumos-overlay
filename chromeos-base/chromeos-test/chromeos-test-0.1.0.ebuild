@@ -42,6 +42,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
+        chromeos-base/saft
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject

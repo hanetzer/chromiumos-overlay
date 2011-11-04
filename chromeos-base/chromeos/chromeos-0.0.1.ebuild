@@ -100,7 +100,6 @@ RDEPEND="${RDEPEND}
 	"
 
 X86_DEPEND="
-		chromeos-base/saft
 		net-wireless/iwl1000-ucode
 		net-wireless/iwl3945-ucode
 		net-wireless/iwl4965-ucode
