@@ -1,0 +1,4 @@
+# The CF_NCURSES_CONFIG m4 helper from ncurses needs to be migrated from
+# AC_PATH_PROGS to AC_CHECK_TOOLS.  But that'll take a while to filter
+# throughout the ecosystem ...
+export ac_cv_path_NCURSES_CONFIG=${CROS_BUILD_BOARD_BIN}/${CHOST}-ncurses5-config

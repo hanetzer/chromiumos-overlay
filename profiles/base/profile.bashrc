@@ -8,10 +8,18 @@ if ! declare -F elog >/dev/null ; then
 	}
 fi
 
+# Dumping ground for build-time helpers to utilize since SYSROOT/tmp/
+# can be nuked at any time.
+CROS_BUILD_BOARD_TREE="${SYSROOT}/build"
+CROS_BUILD_BOARD_BIN="${CROS_BUILD_BOARD_TREE}/bin"
+
+CROS_ADDONS_TREE="/usr/local/portage/chromiumos/chromeos"
+
+# Load all additional bashrc files we have for this package.
 cros_stack_bashrc() {
 	local cfg cfgd
 
-	cfgd="/usr/local/portage/chromiumos/chromeos/config/env"
+	cfgd="${CROS_ADDONS_TREE}/config/env"
 	for cfg in ${PN} ${PN}-${PV} ${PN}-${PV}-${PR} ; do
 		cfg="${cfgd}/${CATEGORY}/${cfg}"
 		[[ -f ${cfg} ]] && . "${cfg}"
@@ -56,6 +64,23 @@ cros_setup_hooks() {
 }
 cros_setup_hooks
 
+# Are we merging for the board sysroot, or for the cros sdk, or for
+# the target hardware?  Returns a string:
+#  - cros_host (the sdk)
+#  - board_sysroot
+#  - target_image
+# We can't rely on "use cros_host" as USE gets filtred based on IUSE,
+# and not all packages have IUSE=cros_host.
+cros_target() {
+	if [[ -z ${SYSROOT} && ${ROOT} == "/" ]] ; then
+		echo "cros_host"
+	elif [[ ${ROOT%/} == ${SYSROOT%/} ]] ; then
+		echo "board_sysroot"
+	else
+		echo "target_image"
+	fi
+}
+
 # Packages that use python will run a small python script to find the
 # pythondir. Unfortunately, they query the host python to find out the
 # paths for things, which means they inevitably guess wrong.  Export
@@ -71,6 +96,12 @@ cros_pre_src_unpack_python_multilib_setup() {
 	export am_cv_python_version=${py_ver}
 	export am_cv_python_pythondir="\${libdir}/python${py_ver}/site-packages"
 	export am_cv_python_pyexecdir=${am_cv_python_pythondir}
+}
+
+# Since we're storing the wrappers in a board sysroot, make sure that
+# is actually in our PATH.
+cros_pre_pkg_setup_sysroot_build_bin_dir() {
+	PATH+=":${CROS_BUILD_BOARD_BIN}"
 }
 
 # Set LANG=C globally because it speeds up build times, and we don't need
