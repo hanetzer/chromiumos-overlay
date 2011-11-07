@@ -376,16 +376,6 @@ find_local_gclient_file() {
 }
 
 unpack_chrome() {
-	# initial clone, we have to create chrome-src storage
-	# directory and play nicely with sandbox
-	if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
-		debug-print "${FUNCNAME}: Creating chrome-src directory"
-		addwrite /
-		mkdir -p "${ECHROME_STORE_DIR}" \
-			|| die "can't mkdir ${ECHROME_STORE_DIR}."
-		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
-	fi
-
 	elog "Storing CHROME_VERSION=${CHROME_VERSION} in \
 		${CHROME_VERSION_FILE} file"
 	echo ${CHROME_VERSION} > ${CHROME_VERSION_FILE}
@@ -473,6 +463,15 @@ src_unpack() {
 	export CHROME_ROOT="${CHROME_ROOT:-/home/$(whoami)/chrome_root}"
 	export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
+
+	# Create chrome-src storage directory and play nicely with sandbox.
+	if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
+		debug-print "${FUNCNAME}: Creating chrome-src directory"
+		addwrite /
+		mkdir -p "${ECHROME_STORE_DIR}" \
+			|| die "can't mkdir ${ECHROME_STORE_DIR}."
+		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+	fi
 
 	CHROME_ORIGIN="$(decide_chrome_origin)"
 
@@ -582,15 +581,13 @@ src_prepare() {
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
 
 	# We do symlink creation here if appropriate
+	mkdir -p "${ECHROME_STORE_DIR}/src/${BUILD_OUT}"
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
 		if [ -h "${BUILD_OUT_SYM}" ]; then  # remove if an existing symlink
 			rm "${BUILD_OUT_SYM}"
 		fi
 		if [ ! -e "${BUILD_OUT_SYM}" ]; then
-			if [ ! -d "${BUILD_OUT}" ]; then # Make sure the directory exists
-				mkdir "${BUILD_OUT}"
-			fi
-			ln -s "${BUILD_OUT}" "${BUILD_OUT_SYM}"
+			ln -s "${ECHROME_STORE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}"
 			export builddir_name="${BUILD_OUT_SYM}"
 		fi
 	fi
@@ -683,7 +680,7 @@ src_compile() {
 
 	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
-	emake -r $(use verbose && echo V=1) BUILDTYPE="${BUILDTYPE}" \
+	time emake -r $(use verbose && echo V=1) BUILDTYPE="${BUILDTYPE}" \
 		chrome chrome_sandbox libosmesa.so default_extensions \
 		${TEST_TARGETS} \
 		|| die "compilation failed"
@@ -722,104 +719,87 @@ fast_cp() {
 	fi
 }
 
+
+install_test_resources() {
+	# Install test resources from chrome source directory to destination.
+	local test_dir="$1"
+	shift
+	local resource dest
+	for resource in "$@"; do
+		if [[ "${CHROME_ROOT}" != "${ECHROME_STORE_DIR}" ]]; then
+			dest="$(dirname "${ECHROME_STORE_DIR}/src/${resource}")"
+			mkdir -p "${dest}"
+			rsync -a --delete --exclude=.svn \
+				"${CHROME_ROOT}/src/${resource}" "${dest}"
+		fi
+		dest="$(dirname ${test_dir}/${resource})"
+		mkdir -p "${dest}"
+		cp -al "${ECHROME_STORE_DIR}/src/${resource}" "${dest}"
+	done
+}
+
 install_chrome_test_resources() {
 	# NOTE: This is a duplicate from src_install, because it's required here.
-	FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
+	local from="${ECHROME_STORE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
+	local test_dir="${1}"
 
-	TEST_DIR="${1}"
-
-	echo Copying Chrome tests into "${TEST_DIR}"
-	mkdir -p "${TEST_DIR}/out/Release"
-
-	# Copy PyAuto scripts and suppport libs.
-	mkdir -p "${TEST_DIR}"/chrome/test
-	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
-		"${TEST_DIR}"/chrome/test/
-	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/functional \
-		"${TEST_DIR}"/chrome/test/
-	mkdir -p "${TEST_DIR}"/third_party
-	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
-
-	fast_cp -a "${FROM}"/pyproto "${TEST_DIR}"/out/Release
+	echo Copying Chrome tests into "${test_dir}"
+	mkdir -p "${test_dir}/out/Release"
 
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip these
 	# executables.
-	for f in _pyautolib.so libppapi_tests.so browser_tests \
+	for f in libppapi_tests.so browser_tests \
 			 ui_tests sync_integration_tests \
 			 performance_ui_tests; do
-		fast_cp -a "${FROM}"/${f} "${TEST_DIR}"/out/Release
-		$(tc-getSTRIP) --strip-unneeded ${TEST_DIR}/out/Release/$(basename ${f})
+		$(tc-getSTRIP) --strip-unneeded "${from}"/${f} \
+			-o ${test_dir}/out/Release/$(basename ${f})
 	done
-
-	mkdir -p "${TEST_DIR}"/base
-	fast_cp -a "${CHROME_ROOT}"/src/base/base_paths_linux.cc "${TEST_DIR}"/base
-
-	mkdir -p "${TEST_DIR}"/chrome/test
-	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/data \
-		"${TEST_DIR}"/chrome/test
-
-	mkdir -p "${TEST_DIR}"/net/data/ssl
-	fast_cp -a "${CHROME_ROOT}"/src/net/data/ssl/certificates \
-		"${TEST_DIR}"/net/data/ssl
-
-	mkdir -p "${TEST_DIR}"/net/tools
-	fast_cp -a "${CHROME_ROOT}"/src/net/tools/testserver \
-		"${TEST_DIR}"/net/tools
-
-	# Copy the third_party things we need, as well as WebKitTools
-	install_third_party_resources "${TEST_DIR}"
-	mkdir -p "${TEST_DIR}"/third_party/WebKit/WebKitTools
-	fast_cp -a "${CHROME_ROOT}"/src/third_party/WebKit/WebKitTools/Scripts \
-		"${TEST_DIR}"/third_party/WebKit/WebKitTools
 
 	# Copy over the test data directory; eventually 'all' non-static
 	# Chrome test data will go in here.
-	mkdir "${TEST_DIR}"/out/Release/test_data
-	fast_cp -a "${FROM}"/test_data "${TEST_DIR}"/out/Release/
+	mkdir "${test_dir}"/out/Release/test_data
+	cp -al "${from}"/test_data "${test_dir}"/out/Release/
+
+	# Add the fake bidi locale
+	mkdir "${test_dir}"/out/Release/pseudo_locales
+	cp -al "${from}"/pseudo_locales/fake-bidi.pak \
+		"${test_dir}"/out/Release/pseudo_locales
+
+	# Copy over npapi test plugin
+	mkdir -p "${test_dir}"/out/Release/plugins
+	cp -al "${from}"/plugins/libnpapi_test_plugin.so \
+		"${test_dir}"/out/Release/plugins
+
+	for f in ${TEST_FILES}; do
+		cp -al "${from}/${f}" "${test_dir}"
+	done
+
+	# Install Chrome test resources.
+	install_test_resources "${test_dir}" \
+		base/base_paths_linux.cc \
+		chrome/test/data \
+		chrome/test/functional \
+		chrome/third_party/mock4js/mock4js.js  \
+		net/data/ssl/certificates \
+		third_party/bidichecker/bidichecker_packaged.js
 
 	# Add pdf test data
 	if use chrome_pdf; then
-		fast_cp -a "${CHROME_ROOT}"/src/pdf/test \
-			"${TEST_DIR}"/pdf/test/
+		install_test_resources "${test_dir}" pdf/test
 	fi
-
-	# Add the bidichecker script
-	mkdir -p "${TEST_DIR}"/third_party/bidichecker
-	fast_cp -a \
-	    "${CHROME_ROOT}"/src/third_party/bidichecker/bidichecker_packaged.js \
-	    "${TEST_DIR}"/third_party/bidichecker
-
-        # Add the fake bidi locale
-        mkdir "${TEST_DIR}"/out/Release/pseudo_locales
-        fast_cp -a "${FROM}"/pseudo_locales/fake-bidi.pak \
-            "${TEST_DIR}"/out/Release/pseudo_locales
-
-	# Add the mock4js script
-	mkdir -p "${TEST_DIR}"/chrome/third_party/mock4js
-	fast_cp -a \
-	    "${CHROME_ROOT}"/src/chrome/third_party/mock4js/mock4js.js \
-	    "${TEST_DIR}"/chrome/third_party/mock4js
-
-	# Copy over npapi test plugin
-	mkdir -p "${TEST_DIR}"/out/Release/plugins
-	fast_cp -a "${FROM}"/plugins/libnpapi_test_plugin.so \
-		"${TEST_DIR}"/out/Release/plugins
-
-	for f in ${TEST_FILES}; do
-		fast_cp -a "${FROM}/${f}" "${TEST_DIR}"
-	done
-
-	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
-		"${TEST_DIR}"/out/Release
 
 	# Remove test binaries from other platforms
 	if [ -z "${E_MACHINE}" ]; then
 		echo E_MACHINE not defined!
 	else
-		cd "${TEST_DIR}"/chrome/test
+		cd "${test_dir}"/chrome/test
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
+
+	# Install pyauto test resources.
+	# TODO(nirnimesh): Avoid duplicate copies here.
+	install_pyauto_dep_resources "${test_dir}"
 }
 
 # Set up the PyAuto files also by copying out the files needed for that.
@@ -827,52 +807,36 @@ install_chrome_test_resources() {
 # and PyAuto is a svelte 30MB.
 install_pyauto_dep_resources() {
 	# NOTE: This is a duplicate from src_install, because it's required here.
-	FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
+	local from="${ECHROME_STORE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
+	local test_dir="${1}"
 
-	TEST_DIR="${1}"
+	echo "Copying PyAuto framework into ${test_dir}"
 
-	echo "Copying PyAuto framework into ${TEST_DIR}"
+	mkdir -p "${test_dir}/out/Release"
 
-	mkdir -p "${TEST_DIR}/out/Release"
-
-	# Copy PyAuto scripts and suppport libs.
-	mkdir -p "${TEST_DIR}"/chrome/test
-	fast_cp -a "${CHROME_ROOT}"/src/chrome/test/pyautolib \
-		"${TEST_DIR}"/chrome/test/
-	mkdir -p "${TEST_DIR}"/third_party
-	fast_cp -a "${FROM}"/pyproto "${TEST_DIR}"/out/Release
-	fast_cp -a "${FROM}"/pyautolib.py "${TEST_DIR}"/out/Release
+	cp -al "${from}"/pyproto "${test_dir}"/out/Release
+	cp -al "${from}"/pyautolib.py "${test_dir}"/out/Release
 
 	# When the splitdebug USE flag is used, debug info is generated for all
 	# executables. We don't want debug info for tests, so we pre-strip
 	# these executables.
-	fast_cp -a "${FROM}"/_pyautolib.so "${TEST_DIR}"/out/Release/
-	$(tc-getSTRIP) --strip-unneeded "${TEST_DIR}"/out/Release/_pyautolib.so
+	$(tc-getSTRIP) --strip-unneeded "${from}"/_pyautolib.so \
+		-o "${test_dir}"/out/Release/_pyautolib.so
 
-	install_third_party_resources "${TEST_DIR}"
+	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
+		"${test_dir}"/out/Release
 
-	mkdir -p "${TEST_DIR}"/net/tools
-	fast_cp -a "${CHROME_ROOT}"/src/net/tools/testserver \
-		"${TEST_DIR}"/net/tools
-
-	fast_cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
-		"${TEST_DIR}"/out/Release
-}
-
-# Copy over things needed from the third_party directory. This function is
-# used by both chrome_test and pyauto_dep dependencies.
-install_third_party_resources(){
-	DEST="${1}/third_party"
-	SRC=""${CHROME_ROOT}"/src/third_party"
-
-        mkdir -p "${DEST}"
-        fast_cp -a ${SRC}/tlslite ${DEST}
-        fast_cp -a ${SRC}/pyftpdlib ${DEST}
-        fast_cp -a ${SRC}/simplejson ${DEST}
+	# Copy PyAuto scripts and suppport libs.
+	install_test_resources "${test_dir}" \
+		chrome/test/pyautolib \
+		net/tools/testserver \
+		third_party/pyftpdlib \
+		third_party/simplejson \
+		third_party/tlslite
 }
 
 src_install() {
-	FROM="${CHROME_ROOT}/src/${BUILD_OUT}/${BUILDTYPE}"
+	FROM="${ECHROME_STORE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
 
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
