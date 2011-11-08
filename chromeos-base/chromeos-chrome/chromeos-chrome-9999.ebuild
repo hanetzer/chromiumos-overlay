@@ -163,7 +163,7 @@ DEPEND="${DEPEND}
 PATCHES=()
 if use touchui_patches; then
 	PATCHES+=(
-		"${FILESDIR}/webkit.2011110301.patch"
+		"${FILESDIR}/webkit.2011110701.patch"
 		)
 fi
 
