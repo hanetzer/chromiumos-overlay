@@ -26,8 +26,8 @@ PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
 USE="${USE} -cups hardened cros_host multilib pic pie -introspection"
 
-GENTOO_MIRRORS="http://commondatastorage.googleapis.com/chromeos-localmirror"
-GENTOO_MIRRORS="$GENTOO_MIRRORS http://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
+GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
+GENTOO_MIRRORS="$GENTOO_MIRRORS https://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
 
 # Remove all .la files for non-plugin libraries, with the exception of
 # libltdl.la (its presence is required by libtool's detection macro).
