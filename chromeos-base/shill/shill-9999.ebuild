@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/libchrome
 	chromeos-base/libchromeos
-	chromeos-base/mobile-providers
+	>=chromeos-base/mobile-providers-0.0.1-r12
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	net-dns/c-ares"
