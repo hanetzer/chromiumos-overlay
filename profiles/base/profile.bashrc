@@ -18,3 +18,7 @@ cros_stack_bashrc() {
 	done
 }
 cros_stack_bashrc
+
+# Set LANG=C globally because it speeds up build times, and we don't need
+# localized messages inside of our builds.
+export LANG=C
