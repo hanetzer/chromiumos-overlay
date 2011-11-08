@@ -178,8 +178,16 @@ src_install()
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 
+	local LDPATH=${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)
+	for SUBDIR in 32 64 ; do
+		if [[ -d ${D}/${LDPATH}/${SUBDIR} ]]
+		then
+			LDPATH="${LDPATH}:${LDPATH}/${SUBDIR}"
+		fi
+	done
+
 	cat <<-EOF > env.d
-LDPATH="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
+LDPATH="${LDPATH}"
 MANPATH="${DATADIR}/man"
 INFOPATH="${DATADIR}/info"
 STDCXX_INCDIR="${STDCXX_INCDIR}"
