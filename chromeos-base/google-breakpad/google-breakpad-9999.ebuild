@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit autotools cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
@@ -16,6 +16,10 @@ IUSE=""
 
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
+
+src_prepare() {
+        eautoreconf || die "eautoreconf failed"
+}
 
 src_configure() {
 	#TODO(raymes): Uprev breakpad so this isn't necessary. See
