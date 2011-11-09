@@ -44,6 +44,12 @@ setup_target_flags() {
 	# when building up just the headers.
 	just_headers && return 0
 
+	# Needed as workaround to fix:
+	# http://code.google.com/p/chromium-os/issues/detail?id=22373
+	# Can be removed when we emerge glibc to the target:
+	# http://code.google.com/p/chromium-os/issues/detail?id=20792
+	append-cflags "-ggdb"
+
 	case $(tc-arch) in
 		x86)
 			# -march needed for #185404 #199334
