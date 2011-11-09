@@ -15,7 +15,7 @@
 +[pkcs11_section]
 +engine_id = pkcs11
 +dynamic_path = @GENTOO_LIBDIR@/engines/engine_pkcs11.so
-+MODULE_PATH = @GENTOO_LIBDIR@/opencryptoki/libopencryptoki.so.0
++MODULE_PATH = @GENTOO_LIBDIR@/libchaps.so
 +PIN = 111111
 +init = 0
 +

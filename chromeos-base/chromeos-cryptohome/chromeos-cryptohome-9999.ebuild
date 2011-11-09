@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -15,6 +15,7 @@ IUSE="test"
 
 RDEPEND="
 	app-crypt/trousers
+	chromeos-base/chaps
 	chromeos-base/libscrypt
 	chromeos-base/metrics
 	dev-libs/dbus-glib

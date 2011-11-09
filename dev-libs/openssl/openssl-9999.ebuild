@@ -22,7 +22,7 @@ DEPEND="${RDEPEND}
 	>=dev-lang/perl-5
 	test? ( sys-devel/bc )"
 PDEPEND="app-misc/ca-certificates
-	 pkcs11? ( dev-libs/opencryptoki )"
+	 pkcs11? ( chromeos-base/chaps )"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-0.9.8h-ldflags.patch #181438

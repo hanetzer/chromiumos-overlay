@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -14,7 +14,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="chromeos-base/libcros
+RDEPEND="chromeos-base/chaps
+	 chromeos-base/libcros
 	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent
