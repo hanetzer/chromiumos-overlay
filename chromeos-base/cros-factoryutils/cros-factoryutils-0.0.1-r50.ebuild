@@ -27,8 +27,5 @@ DEPEND="${RDEPEND}"
 
 src_install() {
 	exeinto /usr/bin
-
-	doexe mk_memento_images_factory.sh
-	doexe serve_factory_packages.py
-	doexe update_firmware_vars.py
+	doexe factory_setup/update_firmware_vars.py
 }
