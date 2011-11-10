@@ -163,7 +163,7 @@ DEPEND="${DEPEND}
 PATCHES=()
 if use touchui_patches; then
 	PATCHES+=(
-		"${FILESDIR}/webkit.2011110901.patch"
+		"${FILESDIR}/webkit.2011111001.patch"
 		)
 fi
 
@@ -224,20 +224,23 @@ set_build_defines() {
 		BUILD_DEFINES="remoting=0 $BUILD_DEFINES"
 	fi
 
-	# This saves time and bytes.
-	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
-		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
-	fi
-
 	if use chrome_internal; then
 		#Adding chrome branding specific variables and GYP_DEFINES
 		BUILD_DEFINES="branding=Chrome buildtype=Official $BUILD_DEFINES"
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
+
+		# For internal builds, don't remove webcore debug symbols by default.
+		REMOVE_WEBCORE_DEBUG_SYMBOLS=${REMOVE_WEBCORE_DEBUG_SYMBOLS:-0}
 	elif use chrome_media; then
     echo "Building Chromium with additional media codecs and containers."
 		BUILD_DEFINES="ffmpeg_branding=ChromeOS proprietary_codecs=1 $BUILD_DEFINES"
+	fi
+
+	# This saves time and bytes.
+	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
+		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
 	fi
 
 	if use touchui; then
@@ -267,6 +270,12 @@ set_build_defines() {
 
 	BUILD_DEFINES="system_libdir=$(get_libdir) $BUILD_DEFINES"
 	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
+
+	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
+	# to accept cflags that only apply to the target.
+	if use chrome_debug; then
+		BUILD_DEFINES+=" release_extra_cflags=-ggdb"
+	fi
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES}"
@@ -665,18 +674,12 @@ src_compile() {
 		echo Building test targets: ${TEST_TARGETS}
 	fi
 
-	if ! use chrome_debug; then
-		# Override debug options for Chrome build.
-		CXXFLAGS="$(strip_chrome_debug "${CXXFLAGS}")"
-		CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
-		einfo "Stripped debug flags for Chrome build"
-	fi
-
-	# The chrome makefiles specify -O flags already so removing
-	# portage flags
+	# The chrome makefiles specify -O and -g flags already, so remove the
+	# portage flags.
+	CXXFLAGS="$(strip_chrome_debug "${CXXFLAGS}")"
+	CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
 	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
-	einfo "Stripped optimization flags for Chrome build"
 
 	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
