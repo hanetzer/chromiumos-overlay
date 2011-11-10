@@ -11,6 +11,10 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Name of user on BCS server
 : ${CROS_FIRMWARE_BCS_USER_NAME:=}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY_NAME
+# @DESCRIPTION: (Optional) Name of the ebuild overlay.
+: ${CROS_FIRMWARE_BCS_OVERLAY_NAME:=}
+
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_IMAGE
 # @DESCRIPTION: (Optional) Location of system bios image
 : ${CROS_FIRMWARE_MAIN_IMAGE:=}
@@ -99,8 +103,16 @@ _is_in_files() {
 _bcs_fetch() {
 	local filename="${1##*://}"
 
-	URI_BASE="ssh://${CROS_FIRMWARE_BCS_USER_NAME}@git.chromium.org:6222"\
+# Support both old and new locations for BCS binaries.
+# TODO(dparker@chromium.org): Remove after all binaries are using the new
+#     location. crosbug.com/22789
+	if [ -z "${CROS_FIRMWARE_BCS_OVERLAY_NAME}" ]; then
+		URI_BASE="ssh://${CROS_FIRMWARE_BCS_USER_NAME}@git.chromium.org:6222"\
 "/home/${CROS_FIRMWARE_BCS_USER_NAME}/${CATEGORY}/${PN}"
+	else
+		URI_BASE="ssh://${CROS_FIRMWARE_BCS_USER_NAME}@git.chromium.org:6222"\
+"/${CROS_FIRMWARE_BCS_OVERLAY_NAME}/${CATEGORY}/${PN}"
+fi
 	CROS_BINARY_URI="${URI_BASE}/${filename}"
 	cros-binary_fetch
 }
