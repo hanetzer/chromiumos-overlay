@@ -15,7 +15,7 @@ USE="${USE} mmx sse sse2 dri hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE=""
-CFLAGS="-O2 -pipe ${MARCH_TUNE} -ggdb"
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -g"
 CXXFLAGS="${CFLAGS}"
 LDFLAGS=""
 

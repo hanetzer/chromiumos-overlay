@@ -274,7 +274,7 @@ set_build_defines() {
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
-		BUILD_DEFINES+=" release_extra_cflags=-ggdb"
+		BUILD_DEFINES+=" release_extra_cflags=-g"
 	fi
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
@@ -646,7 +646,7 @@ src_configure() {
 }
 
 strip_chrome_debug() {
-	echo ${1} | sed -e "s/\s\(-gstabs\|-ggdb\|-gdwarf\S*\)/ /"
+	echo ${1} | sed -e "s/\s-g\S*/ /"
 }
 
 strip_optimization_flags() {

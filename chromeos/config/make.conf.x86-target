@@ -23,5 +23,5 @@ INPUT_DEVICES="evdev synaptics"
 
 # Allow a board to override or define additional settings.
 source make.conf.board
-CFLAGS="-O2 -pipe ${MARCH_TUNE} -ggdb"
+CFLAGS="-O2 -pipe ${MARCH_TUNE} -g"
 CXXFLAGS="${CFLAGS}"
