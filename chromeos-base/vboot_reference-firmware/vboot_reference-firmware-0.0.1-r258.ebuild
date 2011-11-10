@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE="-vb_mock_tpm"
 EAPI="2"
-CROS_WORKON_COMMIT="f1282d321f40ab52e696795b28ba77a2083edb5f"
+CROS_WORKON_COMMIT="9b717be86ba6155a7542bf1649dd3ab2dbc2dc3b"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="chromeos-base/vboot_reference"
