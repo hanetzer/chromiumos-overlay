@@ -61,7 +61,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
-			nocxx tests +thumb upstream_gcc vanilla"
+			nocxx openmp tests +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -363,7 +363,7 @@ get_gcc_common_options()
 	local confgcc
 	confgcc="${confgcc} --disable-libmudflap"
 	confgcc="${confgcc} --disable-libssp"
-	confgcc="${confgcc} --disable-libgomp"
+	confgcc+=" $(use_enable openmp libgomp)"
 	confgcc="${confgcc} --enable-__cxa_atexit"
 	confgcc="${confgcc} --enable-checking=release"
 	confgcc="${confgcc} --disable-libquadmath"
