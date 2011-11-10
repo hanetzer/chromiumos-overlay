@@ -13,8 +13,13 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="gflags"
 
-DEPEND="gflags? ( dev-cpp/gflags )"
-RDEPEND="${DEPEND}"
+RDEPEND="gflags? ( dev-cpp/gflags )"
+
+DEPEND="${RDEPEND}
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)"
 
 src_configure() {
 	if use gflags ; then
@@ -23,6 +28,9 @@ src_configure() {
 			export ac_cv_lib_gflags_main=yes
 		fi
 	fi
+
+	# Suppress building tests when test is not enabled.
+	use test || export ac_cv_prog_GTEST_CONFIG=no
 
 	# Fix the library and header paths:
 	# http://code.google.com/p/chromium-os/issues/detail?id=19901
