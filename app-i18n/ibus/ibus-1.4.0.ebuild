@@ -47,22 +47,22 @@ src_prepare() {
 	#epatch "${FILESDIR}"/0001-Merge-xkb-related-changes.patch
 	#epatch "${FILESDIR}"/0002-Support-changing-the-global-input-method-engine-with.patch
 
-        epatch "${FILESDIR}"/0003-Add-api-to-ibus-for-retreiving-unused-config-values.patch
+	epatch "${FILESDIR}"/0003-Add-api-to-ibus-for-retreiving-unused-config-values.patch
 	epatch "${FILESDIR}"/0004-Remove-bus_input_context_register_properties-props_e.patch
 	epatch "${FILESDIR}"/0005-Port-the-following-ibus-1.3-patches-to-1.4.patch
-        epatch "${FILESDIR}"/0006-Change-default-values-of-some-config.patch
+	epatch "${FILESDIR}"/0006-Change-default-values-of-some-config.patch
 
-        # TODO(yusukes): Remove the patch to use upstream releases as-is.
-        epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
+	# TODO(yusukes): Remove the patch to use upstream releases as-is.
+	epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
 }
 
 src_configure() {
 	# When cross-compiled, we build the gtk im module. Otherwise we don't
 	# since the module is not necessary for host environment.
 	if tc-is-cross-compiler ; then
-	       GTK2_IM_MODULE_FLAG=--enable-gtk2
+		GTK2_IM_MODULE_FLAG=--enable-gtk2
 	else
-	       GTK2_IM_MODULE_FLAG=--disable-gtk2
+		GTK2_IM_MODULE_FLAG=--disable-gtk2
 	fi
 
 	append-cflags -Wall -Werror
@@ -84,8 +84,7 @@ src_configure() {
 		$(use_enable nls) \
 		$(use_enable python) \
 		CPPFLAGS='-DOS_CHROMEOS=1' \
-		ISOCODES_CFLAGS=' ' ISOCODES_LIBS=' ' \
-		|| die
+		ISOCODES_CFLAGS=' ' ISOCODES_LIBS=' '
 }
 
 test_fail() {
