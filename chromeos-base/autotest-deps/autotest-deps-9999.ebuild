@@ -60,5 +60,10 @@ RDEPEND="${RDEPEND}
   sys-fs/udev[gudev]
 "
 
+# deps/fakemodem
+RDEPEND="${RDEPEND}
+  chromeos-base/autotest-fakemodem-conf
+"
+
 DEPEND="${RDEPEND}"
 
