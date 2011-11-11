@@ -86,6 +86,10 @@ src_prepare() {
 	# and thus use the qsort_r implementation provided by glib
 	epatch "${FILESDIR}/${PN}-2.30.0-qsort_r-check.patch"
 
+	# Add the missing G_BEGIN_DECLS / G_END_DECLS in header files.
+	# upstream bug 663880
+	epatch "${FILESDIR}/${PN}-2.30.0-missing-decls.patch"
+
 	# disable pyc compiling
 	ln -sfn $(type -P true) py-compile
 
