@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit x-modular
+inherit x-modular libtool
 
 DESCRIPTION="X C-language Bindings library"
 HOMEPAGE="http://xcb.freedesktop.org/"
@@ -32,6 +32,7 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/_xcb_conn_wait.patch
+	elibtoolize
 }
 
 src_compile() {
