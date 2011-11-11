@@ -1,8 +1,14 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-python/pygtk/pygtk-2.14.1-r1.ebuild,v 1.8 2009/09/06 20:57:05 ranger Exp $
 
-EAPI="2"
+EAPI="3"
+GCONF_DEBUG="no"
+PYTHON_DEPEND="2:2.6"
+SUPPORT_PYTHON_ABIS="1"
+# dev-python/pycairo does not support Python 2.4 / 2.5.
+RESTRICT_PYTHON_ABIS="2.4 2.5 3.* *-jython"
+PYTHON_EXPORT_PHASE_FUNCTIONS="1"
 
 inherit alternatives autotools eutils flag-o-matic gnome.org python virtualx
 
@@ -14,16 +20,15 @@ SLOT="2"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 sh sparc x86 ~x86-fbsd"
 IUSE="doc examples"
 
-RDEPEND=">=dev-libs/glib-2.8.0
-	>=x11-libs/pango-1.16.0
-	>=dev-libs/atk-1.12.0
+RDEPEND=">=dev-libs/glib-2.8:2
+	>=x11-libs/pango-1.16
+	>=dev-libs/atk-1.12
 	>=x11-libs/gtk+-2.13.6
-	>=gnome-base/libglade-2.5.0
-	>=dev-lang/python-2.4.4-r5
 	>=dev-python/pycairo-1.0.2
 	>=dev-python/pygobject-2.15.3
-	dev-python/numpy"
-
+	dev-python/numpy
+	>=gnome-base/libglade-2.5:2.0
+"
 DEPEND="${RDEPEND}
 	doc? (
 		dev-libs/libxslt
@@ -47,45 +52,61 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${PN}-2.14.1-libdir-pc.patch
 
-	# disable pyc compiling
+	# Disable pyc compiling
 	mv "${S}"/py-compile "${S}"/py-compile.orig
 	ln -s $(type -P true) "${S}"/py-compile
 
 	AT_M4DIR="m4" eautoreconf
+
+	python_copy_sources
 }
 
 src_configure() {
 	use hppa && append-flags -ffunction-sections
-	econf $(use_enable doc docs) --enable-thread
-}
-
-src_install() {
-	emake DESTDIR="${D}" install || die "emake install failed"
-	dodoc AUTHORS ChangeLog INSTALL MAPPING NEWS README THREADS TODO
-
-	if use examples; then
-		rm examples/Makefile*
-		insinto /usr/share/doc/${PF}
-		doins -r examples
-	fi
+	python_src_configure \
+		$(use_enable doc docs) \
+		--enable-thread
 }
 
 src_test() {
 	unset DBUS_SESSION_BUS_ADDRESS
-	cd tests
-	Xemake check-local || die "tests failed"
+
+	testing() {
+		cd tests
+		export XDG_CONFIG_HOME="${T}/$(PYTHON --ABI)"
+		Xemake check-local
+	}
+	python_execute_function -s testing
+}
+
+src_install() {
+	python_src_install
+	python_clean_installation_image
+	dodoc AUTHORS ChangeLog INSTALL MAPPING NEWS README THREADS TODO || die
+
+	if use examples; then
+		rm examples/Makefile*
+		insinto /usr/share/doc/${PF}
+		doins -r examples || die
+	fi
 }
 
 pkg_postinst() {
-	python_version
-	python_need_rebuild
-	python_mod_optimize /usr/$(get_libdir)/python${PYVER}/site-packages/gtk-2.0
+	python_mod_optimize gtk-2.0
+
+	create_symlinks() {
+		alternatives_auto_makesym $(python_get_sitedir)/pygtk.py pygtk.py-[0-9].[0-9]
+		alternatives_auto_makesym $(python_get_sitedir)/pygtk.pth pygtk.pth-[0-9].[0-9]
+	}
+	python_execute_function create_symlinks
 }
 
 pkg_postrm() {
-	python_version
-	python_mod_cleanup /usr/$(get_libdir)/python*/site-packages/gtk-2.0
-	rm -f "${ROOT}"/usr/$(get_libdir)/python${PYVER}/site-packages/pygtk.{py,pth}
-	alternatives_auto_makesym /usr/$(get_libdir)/python${PYVER}/site-packages/pygtk.py pygtk.py-[0-9].[0-9]
-	alternatives_auto_makesym /usr/$(get_libdir)/python${PYVER}/site-packages/pygtk.pth pygtk.pth-[0-9].[0-9]
+	python_mod_cleanup gtk-2.0
+
+	create_symlinks() {
+		alternatives_auto_makesym $(python_get_sitedir)/pygtk.py pygtk.py-[0-9].[0-9]
+		alternatives_auto_makesym $(python_get_sitedir)/pygtk.pth pygtk.pth-[0-9].[0-9]
+	}
+	python_execute_function create_symlinks
 }
