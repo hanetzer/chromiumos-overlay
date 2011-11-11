@@ -46,8 +46,8 @@ pkg_setup() {
 	G2CONF="${G2CONF}
 		$(use_enable introspection)
 		$(use_with X x)
-		$(use X && echo --x-includes=${EPREFIX}/usr/include)
-		$(use X && echo --x-libraries=${EPREFIX}/usr/$(get_libdir))"
+		$(use X && echo --x-includes=${SYSROOT}${EPREFIX}/usr/include)
+		$(use X && echo --x-libraries=${SYSROOT}${EPREFIX}/usr/$(get_libdir))"
 	DOCS="AUTHORS ChangeLog* NEWS README THANKS"
 }
 
