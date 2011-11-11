@@ -70,6 +70,8 @@ src_prepare() {
 	# disable pyc compiling
 	ln -sfn $(type -P true) py-compile
 
+	# Workaround upstream Gentoo bug #232820
+	find "${S}" -name .elibtoolized -delete
 	eautoreconf
 
 	python_copy_sources
