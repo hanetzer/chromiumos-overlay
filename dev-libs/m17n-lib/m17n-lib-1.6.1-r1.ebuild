@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-inherit flag-o-matic
+inherit flag-o-matic libtool
 
 DESCRIPTION="Multilingual Library for Unix/Linux"
 HOMEPAGE="http://www.m17n.org/m17n-lib/"
@@ -21,6 +21,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/Fix-candidates-list-update-problem.path
+	elibtoolize
 }
 
 src_configure() {
