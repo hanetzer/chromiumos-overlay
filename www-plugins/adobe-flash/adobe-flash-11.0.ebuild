@@ -124,35 +124,9 @@ src_install() {
 		BASE=${INSTALL_BASE}
 
 		# The plugin itself
-		exeinto /${BASE}/plugin
+		exeinto /${BASE}
 		doexe libflashplayer.so
-		inst_plugin /${BASE}/plugin/libflashplayer.so
-
-		# The optional KDE4 KCM plugin
-		if use kde; then
-			exeinto /${BASE}/bin/
-			doexe usr/lib/kde4/kcm_adobe_flash_player.so
-			dosym /${BASE}/bin/kcm_adobe_flash_player.so \
-				/usr/$(get_libdir)/kde4/kcm_adobe_flash_player.so
-			insinto /usr/share/kde4/services
-			doins usr/share/kde4/services/kcm_adobe_flash_player.desktop
-		else
-			# No KDE applet, so allow the GTK utility to show up in KDE:
-			sed -i usr/share/applications/flash-player-properties.desktop \
-				-e "/^NotShowIn=KDE;/d" || die "sed of .desktop file failed"
-		fi
-
-		# The userland 'properties' standalone app:
-		exeinto /${BASE}/bin
-		doexe usr/bin/flash-player-properties
-		for icon in $(find usr/share/icons/ -name '*.png'); do
-			insinto /$(dirname $icon)
-			doins $icon
-		done
-		insinto usr/share/applications
-		sed -i usr/share/applications/flash-player-properties.desktop \
-			-e "s:^Exec=:Exec=/${BASE}/bin/:" || die "sed of .desktop file failed"
-		doins usr/share/applications/flash-player-properties.desktop
+		inst_plugin /${BASE}/libflashplayer.so
 	fi
 
 	if [[ $need_lahf_wrapper ]]; then
