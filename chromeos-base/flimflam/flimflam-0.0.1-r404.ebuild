@@ -4,7 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="1863dc909dbd880977887a0515d5f4911e2a275e"
+CROS_WORKON_COMMIT="786dcb9b6c7388dacfc2188342bb2154ac508533"
 CROS_WORKON_PROJECT="chromiumos/platform/flimflam"
 
 inherit autotools cros-workon toolchain-funcs
@@ -15,7 +15,7 @@ HOMEPAGE="http://connman.net"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +l2tpipsec +modemmanager +newwifi +nss +openvpn policykit +ppp resolvconf resolvfiles threads tools +udev"
+IUSE="bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +hostroute +l2tpipsec +modemmanager +newwifi +nss +openvpn policykit +ppp resolvconf resolvfiles threads tools +udev"
 
 RDEPEND=">=dev-libs/glib-2.16
 	>=sys-apps/dbus-1.2
@@ -76,6 +76,7 @@ src_configure() {
 		$(use_enable dnsproxy dnsproxy builtin) \
 		$(use_enable doc gtk-doc) \
 		$(use_enable ethernet ethernet builtin) \
+		$(use_enable hostroute) \
 		$(use_enable l2tpipsec l2tpipsec builtin) \
 		$(use_enable modemmanager modemmgr) \
 		$(use_enable nss nss builtin) \
