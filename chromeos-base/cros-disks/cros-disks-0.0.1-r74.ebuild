@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="c42eb6f76fe482a5c8ad59441399cd89af7ae579"
+CROS_WORKON_COMMIT="ef4d4c4556829a37c0f297e721351968ded029b5"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="arm amd64 x86"
