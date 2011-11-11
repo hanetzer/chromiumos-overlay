@@ -7,7 +7,7 @@
 #   (chroot)$ env FEATURES="test" emerge-$BOARD -a ibus
 
 EAPI="2"
-inherit eutils flag-o-matic toolchain-funcs multilib python
+inherit eutils flag-o-matic toolchain-funcs multilib python libtool
 
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="http://code.google.com/p/ibus/"
@@ -54,6 +54,8 @@ src_prepare() {
 
 	# TODO(yusukes): Remove the patch to use upstream releases as-is.
 	epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
+
+	elibtoolize
 }
 
 src_configure() {
