@@ -31,6 +31,8 @@ src_compile() {
 		MOCK_TPM="MOCK_TPM=1"
 	fi
 
+	# Vboot reference knows the flags to use
+	unset CFLAGS
 	emake FIRMWARE_ARCH="$(tc-arch-kernel)" ${DEBUG} ${MOCK_TPM} || \
 		die "${err_msg}"
 }
