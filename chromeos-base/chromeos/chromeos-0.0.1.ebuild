@@ -247,6 +247,7 @@ qemu_run() {
 	case "${ARCH}" in
 		amd64)
 			qemu="qemu-x86_64"
+			return
 			;;
 		arm)
 			qemu="qemu-arm"
