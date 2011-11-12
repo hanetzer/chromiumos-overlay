@@ -1,8 +1,8 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
-EAPI=2
+EAPI=4
 CROS_WORKON_COMMIT="c3d8eb669baa929ff11e4ee465bb910eea2d6685"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
@@ -14,12 +14,14 @@ PROVIDE="virtual/perf"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
-IUSE="+demangle +doc tui"
+KEYWORDS="amd64 arm x86"
+IUSE="+demangle +doc perl python ncurses"
 
 RDEPEND="demangle? ( sys-devel/binutils )
 	dev-libs/elfutils
-	tui? ( dev-libs/newt )"
+	ncurses? ( dev-libs/newt )
+	perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) )
+	!dev-util/perf"
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
@@ -30,7 +32,10 @@ src_compile() {
 
 	pushd tools/perf
 
-	use demangle || makeargs="${makeargs} NO_DEMANGLE= "
+	use demangle || makeargs="${makeargs} NO_DEMANGLE=1 "
+	use perl || makeargs="${makeargs} NO_LIBPERL=1 "
+	use python || makeargs="${makeargs} NO_LIBPYTHON=1 "
+	use ncurses || makeargs="${makeargs} NO_NEWT=1 "
 
 	if use arm; then
 		export ARM_SHA=1
@@ -40,11 +45,11 @@ src_compile() {
 		CC="$(tc-getCC)" AR="$(tc-getAR)" \
 		prefix="/usr" bindir_relative="sbin" \
 		CFLAGS="${CFLAGS}" \
-		LDFLAGS="${LDFLAGS}" || die
+		LDFLAGS="${LDFLAGS}"
 
 	if use doc; then
 		pushd Documentation
-		emake ${makeargs} || die
+		emake ${makeargs}
 		popd
 	fi
 
@@ -54,15 +59,15 @@ src_compile() {
 src_install() {
 	pushd tools/perf
 
-	# Don't use make install or it'll be re-building the stuff :(
-	dosbin perf || die
+	dosbin perf
+	dosbin perf-archive
 
-	dodoc CREDITS || die
+	dodoc CREDITS
 
 	if use doc; then
-		dodoc Documentation/*.txt || die
-		dohtml Documentation/*.html || die
-		doman Documentation/*.1 || die
+		dodoc Documentation/*.txt
+		dohtml Documentation/*.html
+		doman Documentation/*.1
 	fi
 
 	popd
