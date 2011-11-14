@@ -22,7 +22,7 @@ RDEPEND="
 	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-libs/dbus-c++
-	dev-libs/glib
+	>=dev-libs/glib-2.30
 	sys-apps/parted
 	sys-apps/rootdev
 	sys-apps/util-linux
