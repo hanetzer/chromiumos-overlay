@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="ef4d4c4556829a37c0f297e721351968ded029b5"
+CROS_WORKON_COMMIT="45c642412e01342041c7c0710af4f3dc9f9ab209"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="arm amd64 x86"
@@ -23,7 +23,7 @@ RDEPEND="
 	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-libs/dbus-c++
-	dev-libs/glib
+	>=dev-libs/glib-2.30
 	sys-apps/parted
 	sys-apps/rootdev
 	sys-apps/util-linux
