@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 VALID=1
-SYN_DISABLE="/home/chronos/.tp_disable"
+SYN_ENABLE="/home/chronos/.syntp_enable"
 PROG=`basename $0`
 COMMAND=$1
 VALUE=$2
@@ -43,10 +43,10 @@ gusage() {
 #
 if [ "$COMMAND" = "syntp" -a "x$SYNTP_INSTALLED" = "x1" ] ; then
   if [ "$VALUE" = "off" ] ; then
-    /usr/bin/touch "$SYN_DISABLE"
+    /bin/rm -f "$SYN_ENABLE"
     exit 0
   elif [ "$VALUE" = "on" ] ; then
-    /bin/rm -f "$SYN_DISABLE"
+    /usr/bin/touch "$SYN_ENABLE"
     exit 0
   else
     # bad command; force usage via pseudo-command (unimplemented) "usage"
@@ -93,10 +93,10 @@ fi
 if [ "$COMMAND" = "status" ] ; then
   # the status only applies to the syntp command if it is enabled
   if [ "x$SYNTP_INSTALLED" = "x1" ] ; then
-    if [ -f "$SYN_DISABLE" ]; then
-      echo "syntp: off"
-    else
+    if [ -f "$SYN_ENABLE" ]; then
       echo "syntp: on"
+    else
+      echo "syntp: off"
     fi
   fi
 fi
