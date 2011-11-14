@@ -59,6 +59,7 @@ RDEPEND="${RDEPEND}
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
+  tests_test_RecallServer? ( dev-python/dnspython sys-apps/iproute2 )
 "
 
 DEPEND="${RDEPEND}"
@@ -301,6 +302,7 @@ IUSE_TESTS="
 	+tests_suite_HWQual
 	+tests_suite_Smoke
 	+tests_test_Recall
+	+tests_test_RecallServer
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
