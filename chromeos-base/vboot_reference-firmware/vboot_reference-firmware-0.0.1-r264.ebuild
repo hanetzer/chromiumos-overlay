@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="arm x86"
 IUSE="-vb_mock_tpm"
 EAPI="2"
-CROS_WORKON_COMMIT="931728a003a417bcb29cc1c203ce36d23feee9e8"
+CROS_WORKON_COMMIT="c25904536f2d8e3fe37860dff0ecc437323b760e"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="chromeos-base/vboot_reference"
@@ -32,6 +32,8 @@ src_compile() {
 		MOCK_TPM="MOCK_TPM=1"
 	fi
 
+	# Vboot reference knows the flags to use
+	unset CFLAGS
 	emake FIRMWARE_ARCH="$(tc-arch-kernel)" ${DEBUG} ${MOCK_TPM} || \
 		die "${err_msg}"
 }
