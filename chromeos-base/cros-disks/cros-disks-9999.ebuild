@@ -42,18 +42,12 @@ CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 src_compile() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
-	emake disks || die "failed to make cros-disks"
+	emake OUT=build-opt disks || die "failed to make cros-disks"
 }
 
 src_test() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-	cros-debug-add-NDEBUG
-	emake tests || die "failed to make cros-disks tests"
-	"${S}/build-opt/disks_testrunner" --gtest_filter='-*.RunAsRoot*' ||
-		die "cros-disks tests failed"
-	sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
-		"${S}/build-opt/disks_testrunner" --gtest_filter='*.RunAsRoot*' ||
-			die "cros-disks tests failed"
+	emake OUT=build-opt tests || die "failed to make cros-disks tests"
 }
 
 src_install() {
