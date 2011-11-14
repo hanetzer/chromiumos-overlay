@@ -1,18 +1,19 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_COMMIT="acd8e49e811eeb347db6f42072b4eb2aed32da21"
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
 
 inherit toolchain-funcs cros-workon
 
-DESCRIPTION="OpenGL|ES mock library."
+DESCRIPTION="OpenGL|ES mock library"
 HOMEPAGE="http://www.khronos.org/opengles/2_X/"
 SRC_URI=""
+
 LICENSE="SGI-B-2.0"
 SLOT="0"
-KEYWORDS="x86 arm"
+KEYWORDS="arm x86"
 IUSE=""
 
 RDEPEND="x11-libs/libX11
@@ -22,22 +23,10 @@ DEPEND="${RDEPEND}"
 CROS_WORKON_LOCALNAME="khronos"
 
 src_compile() {
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
-
-	scons || die "compile failed"
+	tc-export AR CC CXX LD NM RANLIB
+	scons || die
 }
 
 src_install() {
-	# libraries
-	dolib "${S}/libEGL.so"
-	dolib "${S}/libGLESv2.so"
+	dolib libEGL.so libGLESv2.so
 }
