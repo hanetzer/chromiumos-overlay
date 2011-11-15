@@ -65,7 +65,6 @@ RDEPEND="
 	x11-libs/libXmu
 	x11-libs/libXxf86vm
 	motif? ( x11-libs/openmotif )
-	sys-devel/llvm
 	${LIBDRM_DEPSTRING}
 "
 
@@ -78,6 +77,7 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xextproto-7.0.99.1
 	x11-proto/xf86driproto
 	x11-proto/xf86vidmodeproto
+	sys-devel/llvm
 "
 
 S="${WORKDIR}/${MY_P}"
