@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="9788e67758ec9e352fd19324d363cd8a5d1b3437"
+CROS_WORKON_COMMIT="d733cbe74c210a8c68a3a710d4aefed79815fcdd"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon multilib python
