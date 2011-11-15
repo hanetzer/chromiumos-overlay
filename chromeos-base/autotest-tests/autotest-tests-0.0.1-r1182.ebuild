@@ -301,6 +301,7 @@ IUSE_TESTS="
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
 	+tests_suite_Smoke
+	+tests_test_Recall
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
