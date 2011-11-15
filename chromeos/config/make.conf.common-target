@@ -69,11 +69,13 @@ LINGUAS="en"
 # Remove Gentoo init files since we use upstart.
 # Remove logrotate.d files since we don't use logrotate.
 # Remove sandbox files since we don't use that in the sysroot.
+# Remove bash-completion files as we don't install bash-completion.
 INSTALL_MASK="
   /usr/lib*/*.la
   /etc/init.d /etc/conf.d
   /etc/logrotate.d
   /etc/sandbox.d
+  /usr/share/bash-completion
 "
 PKG_INSTALL_MASK="${INSTALL_MASK}"
 
