@@ -32,6 +32,7 @@
 =dev-python/pyudev-0.12		amd64 arm x86
 =dev-python/pyusb-0.4.3         amd64 arm x86
 =dev-python/pyxdg-0.17-r1	amd64 arm x86
+=dev-python/pyyaml-3.09         amd64 arm x86
 =dev-util/intltool-0.41.0       amd64 arm x86
 =dev-util/strace-4.5.20-r2      amd64 arm x86
 =dev-util/xxd-1.10              amd64 arm x86
