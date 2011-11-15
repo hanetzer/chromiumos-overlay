@@ -31,7 +31,12 @@ GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
 GENTOO_MIRRORS="$GENTOO_MIRRORS https://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
 
 # Remove all .la files for non-plugin libraries.
-INSTALL_MASK="/usr/lib*/*.la"
+# Remove Gentoo init files since we use upstart.
+INSTALL_MASK="
+  /usr/lib*/*.la
+  /etc/init.d /etc/conf.d
+"
+PKG_INSTALL_MASK="${INSTALL_MASK}"
 
 # This is used by profiles/base/profile.bashrc to figure out that we
 # are targeting the cros-sdk (in all its various modes).  It should
