@@ -61,15 +61,8 @@ ac_cv_func_wait3_rusage=yes
 # Native language support is handled inside Chrome itself.
 LINGUAS="en"
 
-# Remove all .la files for non-plugin libraries, with the exception of
-# libltdl.la (its presence is required by libtool's detection macro).
-INSTALL_MASK="
-/usr/lib*/lib[^l]*.la
-/usr/lib*/libl[^t]*.la
-/usr/lib*/liblt[^d]*.la
-/usr/lib*/libltd[^l]*.la
-/usr/lib*/libltdl[^.]*.la
-"
+# Remove all .la files for non-plugin libraries.
+INSTALL_MASK="/usr/lib*/*.la"
 
 # Allow the user to override or define additional settings.
 source make.conf.user
