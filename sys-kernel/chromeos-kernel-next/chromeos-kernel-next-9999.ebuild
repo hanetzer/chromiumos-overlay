@@ -23,8 +23,6 @@ DEPEND="sys-apps/debianutils
 "
 RDEPEND="!sys-kernel/chromeos-kernel"
 
-vmlinux_text_base=${CHROMEOS_U_BOOT_VMLINUX_TEXT_BASE:-0x20008000}
-
 CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
