@@ -48,7 +48,6 @@ RDEPEND="${RDEPEND}
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyudev
-	dev-python/pyyaml
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
 	media-libs/tiff
