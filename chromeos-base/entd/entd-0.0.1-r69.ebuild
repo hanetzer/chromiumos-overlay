@@ -1,8 +1,8 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="05e034e5dd6856d856c7cf6579bb8333660f81f4"
+CROS_WORKON_COMMIT="2a2d61a15e973139f928cebf58b04690e84d00c7"
 CROS_WORKON_PROJECT="chromiumos/platform/entd"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -15,7 +15,8 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="chromeos-base/libcros
+RDEPEND="chromeos-base/chaps
+	 chromeos-base/libcros
 	 dev-lang/v8
 	 dev-libs/dbus-glib
 	 dev-libs/libevent

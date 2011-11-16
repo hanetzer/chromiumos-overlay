@@ -1,8 +1,8 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="d5e0b1b8b2c0fd79ed51bef6d032a9659a8a7855"
+CROS_WORKON_COMMIT="82f9d91e85330a65d8b395502ad93d326c119c79"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -16,6 +16,7 @@ IUSE="test"
 
 RDEPEND="
 	app-crypt/trousers
+	chromeos-base/chaps
 	chromeos-base/libscrypt
 	chromeos-base/metrics
 	dev-libs/dbus-glib

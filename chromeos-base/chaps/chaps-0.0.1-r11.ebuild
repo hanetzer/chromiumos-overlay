@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="b9080c931d2701881bf53d64f64ccaa7e6b33da6"
+CROS_WORKON_COMMIT="b67e29ccbfd0f8d9ca93eddc27c70073191650e9"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
 
 KEYWORDS="arm amd64 x86"
@@ -18,8 +18,11 @@ SLOT="0"
 IUSE="test"
 
 RDEPEND="
+	chromeos-base/chromeos-init
 	chromeos-base/libchrome
+	chromeos-base/libchromeos
 	dev-libs/dbus-c++
+	dev-libs/opencryptoki
 	dev-cpp/gflags"
 
 DEPEND="${RDEPEND}
@@ -46,5 +49,11 @@ src_install() {
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.Chaps.conf || die
+	# Install D-Bus service file.
+	insinto /usr/share/dbus-1/services
+	doins org.chromium.Chaps.service || die
+	# Install upstart config file.
+	insinto /etc/init
+	doins chapsd.conf || die
 }
 
