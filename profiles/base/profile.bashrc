@@ -61,7 +61,7 @@ cros_setup_hooks
 # paths for things, which means they inevitably guess wrong.  Export
 # the cached values ourselves and since we know these are going through
 # autoconf, we can leverage ${libdir} that econf sets up automatically.
-cros_python_multilib() {
+cros_pre_src_unpack_python_multilib_setup() {
 	# Avoid executing multiple times in a single build.
 	[[ ${am_cv_python_version:+set} == "set" ]] && return
 
@@ -72,7 +72,6 @@ cros_python_multilib() {
 	export am_cv_python_pythondir="\${libdir}/python${py_ver}/site-packages"
 	export am_cv_python_pyexecdir=${am_cv_python_pythondir}
 }
-cros_python_multilib
 
 # Set LANG=C globally because it speeds up build times, and we don't need
 # localized messages inside of our builds.
