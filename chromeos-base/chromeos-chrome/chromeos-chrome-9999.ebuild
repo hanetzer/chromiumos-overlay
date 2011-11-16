@@ -786,7 +786,7 @@ install_chrome_test_resources() {
 
 	# Install Chrome test resources.
 	install_test_resources "${test_dir}" \
-		base/base_paths_linux.cc \
+		base/base_paths_posix.cc \
 		chrome/test/data \
 		chrome/test/functional \
 		chrome/third_party/mock4js/mock4js.js  \
