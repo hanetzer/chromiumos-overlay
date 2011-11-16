@@ -19,6 +19,43 @@ cros_stack_bashrc() {
 }
 cros_stack_bashrc
 
+# The standard bashrc hooks do not stack.  So take care of that ourselves.
+# Now people can declare:
+#   cros_pre_pkg_preinst_foo() { ... }
+# And we'll automatically execute that in the pre_pkg_preinst func.
+#
+# Note: profile.bashrc's should avoid hooking phases that differ across
+# EAPI's (src_{prepare,configure,compile} for example).  These are fine
+# in the per-package bashrc tree (since the specific EAPI is known).
+cros_lookup_funcs() {
+	declare -f | egrep "^$1 +\(\) +$" | awk '{print $1}'
+}
+cros_stack_hooks() {
+	local phase=$1 func
+	local header=true
+
+	for func in $(cros_lookup_funcs "cros_${phase}_[-_[:alnum:]]+") ; do
+		if ${header} ; then
+			einfo "Running stacked hooks for ${phase}"
+			header=false
+		fi
+		ebegin "   ${func#cros_${phase}_}"
+		${func}
+		eend $?
+	done
+}
+cros_setup_hooks() {
+	# Avoid executing multiple times in a single build.
+	[[ ${cros_setup_hooks_run+set} == "set" ]] && return
+
+	local phase
+	for phase in {pre,post}_{src_{unpack,prepare,configure,compile,test,install},pkg_{{pre,post}{inst,rm},setup}} ; do
+		eval "${phase}() { cros_stack_hooks ${phase} ; }"
+	done
+	export cros_setup_hooks_run="booya"
+}
+cros_setup_hooks
+
 # Packages that use python will run a small python script to find the
 # pythondir. Unfortunately, they query the host python to find out the
 # paths for things, which means they inevitably guess wrong.  Export

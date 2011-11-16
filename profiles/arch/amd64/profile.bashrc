@@ -119,7 +119,7 @@ get_sysroot_ld_paths() {
 	echo "$paths"
 }
 
-pre_src_test() {
+cros_pre_src_test_ldpaths() {
 	# Set LD_LIBRARY_PATH to point to libraries in $SYSROOT, so that tests
 	# will load libraries from there first
 	if [[ -n "$SYSROOT" ]] && [[ "$SYSROOT" != "/" ]]; then

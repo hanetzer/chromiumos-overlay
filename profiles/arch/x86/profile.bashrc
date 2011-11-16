@@ -26,7 +26,7 @@ function libc_version() {
   echo $(readlink -f $1/ld-linux.so.2  | sed 's/.*ld-\(.*\).so/\1/g')
 }
 
-function pre_src_test() {
+function cros_pre_src_test_ldpaths() {
   # HACK(raymes): If host/target libc versions are different,
   # prepend host library path to work around
   # http://code.google.com/p/chromium-os/issues/detail?id=19936
