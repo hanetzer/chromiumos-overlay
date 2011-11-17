@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="6c814906c4d46918eb56beabf67adce620c988c8"
+CROS_WORKON_COMMIT="63f88180ddce248f7ac972d5dc1efea6b885a22a"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -60,6 +60,7 @@ RDEPEND="${RDEPEND}
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
   tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
+  tests_test_RecallServer? ( dev-python/dnspython sys-apps/iproute2 )
 "
 
 DEPEND="${RDEPEND}"
@@ -302,6 +303,7 @@ IUSE_TESTS="
 	+tests_suite_HWQual
 	+tests_suite_Smoke
 	+tests_test_Recall
+	+tests_test_RecallServer
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
