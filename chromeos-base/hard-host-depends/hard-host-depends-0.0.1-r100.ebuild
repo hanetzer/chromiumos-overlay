@@ -36,7 +36,7 @@ RDEPEND="${RDEPEND}
 	app-arch/sharutils
 	app-arch/unzip
 	app-crypt/nss
-	!app-emulation/qemu-user
+	>=app-emulation/qemu-user-0.12.2
 	app-i18n/ibus
 	app-text/texi2html
 	chromeos-base/google-breakpad
