@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
+CROS_WORKON_COMMIT="d3e07e0328e382529d3c175fc94f2164c3273bc5"
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -13,7 +14,6 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
-CROS_WORKON_COMMIT="f1e29d5d8f6478e87adeba7a94ac9b6aeea9a9ed"
 
 RDEPEND="chromeos-base/chromeos-minijail"
 DEPEND="${RDEPEND}"
