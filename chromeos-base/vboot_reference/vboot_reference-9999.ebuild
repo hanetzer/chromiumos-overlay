@@ -20,6 +20,8 @@ src_compile() {
 	tc-export CC AR CXX
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
+        # Vboot reference knows the flags to use
+        unset CFLAGS
 	emake ARCH=$(tc-arch) MINIMAL=$(usev minimal) || die "${err_msg}"
 	if use rbtest; then
 		emake ARCH=$(tc-arch) rbtest || die "${err_msg}"
