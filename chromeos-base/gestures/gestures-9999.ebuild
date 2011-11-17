@@ -42,5 +42,8 @@ src_test() {
 }
 
 src_install() {
+	dodir /etc
+	echo "${PVR} ${VCSID}" > "${D}/etc/gestures_version.txt"
+
 	emake DESTDIR="${D}" install || die "Install failed"
 }
