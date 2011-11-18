@@ -8,7 +8,7 @@ PYTHON_USE_WITH="ssl"
 SUPPORT_PYTHON_ABIS="1"
 RESTRICT_PYTHON_ABIS="3.*"
 
-inherit distutils
+inherit distutils eutils
 
 MY_P="gdata-${PV}"
 
@@ -27,6 +27,10 @@ RDEPEND="${DEPEND}"
 S="${WORKDIR}/${MY_P}"
 
 PYTHON_MODNAME="atom gdata"
+
+src_prepare() {
+	epatch "${FILESDIR}/${P}-tracker-add-issue.patch" || die
+}
 
 src_test() {
 	testing() {
