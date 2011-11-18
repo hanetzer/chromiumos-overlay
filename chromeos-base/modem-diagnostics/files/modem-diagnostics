@@ -7,12 +7,14 @@
 
 DEFAULT_IF=eth0
 DEFAULT_IF_IP=169.254.18.10
+DEFAULT_DEV=/dev/ttyUSB0
 
 DEFINE_boolean 'configure_interface' true\
   'Configure an interface to export data over'
 DEFINE_string 'export_interface' $DEFAULT_IF 'Interface to configure'
 DEFINE_string 'export_interface_ip' $DEFAULT_IF_IP \
   'IP address to configure export_interface to'
+DEFINE_string 'export_device' $DEFAULT_DEV 'Device to export'
 
 FLAGS "$@" || exit $?
 eval set -- "${FLAGS_ARGV}"
@@ -48,6 +50,6 @@ fi
 
 REMOTE_IP="$1"
 
-echo 2>&1 Connecting to $REMOTE_IP
-sudo stty -F /dev/ttyUSB0 raw
-sudo socat -xdd TCP:$REMOTE_IP:2500 GOPEN:/dev/ttyUSB0
+echo 2>&1 Connecting $FLAGS_export_device to $REMOTE_IP
+sudo stty -F $FLAGS_export_device raw
+sudo socat -xdd TCP:$REMOTE_IP:2500 GOPEN:$FLAGS_export_device
