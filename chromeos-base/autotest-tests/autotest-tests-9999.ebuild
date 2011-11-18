@@ -184,7 +184,9 @@ IUSE_TESTS="
 	+tests_network_3GActivate
 	+tests_network_3GAssociation
 	+tests_network_3GDisableWhileConnecting
+	+tests_network_3GDisableGobiWhileConnecting
 	+tests_network_3GDormancyDance
+	+tests_network_3GGobiPorts
 	+tests_network_3GFailedConnect
 	+tests_network_3GLoadFirmware
 	+tests_network_3GModemControl
@@ -195,10 +197,14 @@ IUSE_TESTS="
 	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
 	+tests_network_3GSuspendResume
+	+tests_network_SwitchCarrier
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
+	+tests_network_ConnmanPowerStateTracking
 	+tests_network_DhclientLeaseTestCase
 	+tests_network_DisableInterface
+	+tests_network_GobiUncleanDisconnect
+	+tests_network_LockedSIM
 	+tests_network_ModemManagerSMS
 	+tests_network_NegotiatedLANSpeed
 	+tests_network_Ping
