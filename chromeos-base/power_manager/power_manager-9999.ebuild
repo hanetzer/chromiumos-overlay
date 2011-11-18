@@ -112,4 +112,8 @@ src_install() {
 		fi
 		echo "0" > "${D}/usr/share/power_manager/use_lid"
 	fi
+
+	dodir /etc/dbus-1/system.d
+	insinto /etc/dbus-1/system.d
+	doins "${S}/RootPowerManager.conf"
 }
