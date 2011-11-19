@@ -1,0 +1,72 @@
+# -*- python -*-
+
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import os
+
+env = Environment()
+
+# Keep ebuild up to date with appropriate headers, or else figure
+# out how to get scons to handle header installation as well.
+sources = env.Split("""
+                    adjustment_method.cc
+                    adjustment_method_2.cc
+                    adjustment_method.h
+                    assembly_program.cc
+                    assembly_program.h
+                    third_party/bsdiff.h
+                    third_party/bsdiff_apply.cc
+                    third_party/bsdiff_create.cc
+                    third_party/paged_array.h
+                    courgette.h
+                    crc.cc
+                    crc.h
+                    difference_estimator.cc
+                    difference_estimator.h
+                    disassembler.cc
+                    disassembler.h
+                    disassembler_elf_32_x86.cc
+                    disassembler_elf_32_x86.h
+                    disassembler_win32_x86.cc
+                    disassembler_win32_x86.h
+                    encoded_program.cc
+                    encoded_program.h
+                    ensemble.cc
+                    ensemble.h
+                    ensemble_apply.cc
+                    ensemble_create.cc
+                    memory_allocator.cc
+                    memory_allocator.h
+                    region.h
+                    simple_delta.cc
+                    simple_delta.h
+                    streams.cc
+                    streams.h
+                    types_elf.h
+                    types_win_pe.h
+                    patch_generator_x86_32.h
+                    patcher_x86_32.h
+                    """)
+
+env.Append(
+    CPPPATH=['files'],
+    CCFLAGS=['-g']
+)
+for key in Split('CC CXX AR RANLIB LD NM CFLAGS CCFLAGS'):
+  value = os.environ.get(key)
+  if value:
+    env[key] = Split(value)
+
+env['CCFLAGS'] += ['-fPIC',
+                   '-fno-exceptions',
+                   '-DCOURGETTE_USE_CRC_LIB',
+                   '-I..']
+
+# Fix issue with scons not passing some vars through the environment.
+for key in Split('PKG_CONFIG SYSROOT'):
+  if os.environ.has_key(key):
+    env['ENV'][key] = os.environ[key]
+
+env.StaticLibrary('courgette', sources)
