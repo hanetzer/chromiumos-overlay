@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="fde81ecea98b6f591d637aef8c4f3cb1c79d47d0"
+CROS_WORKON_COMMIT="5c8cac55a0213aeb3d1a429bb24bddcccdf72403"
 CROS_WORKON_PROJECT="chromiumos/platform/cros_boot_mode"
 
 KEYWORDS="amd64 arm x86"
