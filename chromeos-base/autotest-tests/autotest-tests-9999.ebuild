@@ -87,6 +87,9 @@ IUSE_TESTS="
 	+tests_audiovideo_Microphone
 	+tests_audiovideo_PlaybackRecordSemiAuto
 	+tests_audiovideo_V4L2
+	+tests_cellular_Smoke
+	+tests_cellular_ThroughputController
+	+tests_cellular_Throughput
 	+tests_build_RootFilesystemSize
 	+tests_desktopui_ChromeFirstRender
 	+tests_desktopui_ChromeSemiAuto
