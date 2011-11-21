@@ -45,7 +45,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug +gallium gles +llvm motif +nptl pic selinux kernel_FreeBSD"
+	+classic debug +gallium gles +llvm motif +nptl pic selinux +swrast kernel_FreeBSD"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.24"
 # keep correct libdrm and dri2proto dep
@@ -155,10 +155,10 @@ src_configure() {
 
 	if use gallium; then
 	# Configurable gallium drivers
-		gallium_driver_enable swrast
+		use swrast && gallium_driver_enable swrast
 
 		# Intel code
-		gallium_driver_enable video_cards_intel i915 
+		gallium_driver_enable video_cards_intel i915
 
 		# Nouveau code
 		gallium_driver_enable video_cards_nouveau nouveau
@@ -224,7 +224,8 @@ src_install() {
 	insinto "/usr/$(get_libdir)/dri/"
 	insopts -m0755
 	# install the gallium drivers we use
-	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so swrast_dri.so )
+	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so )
+	use swrast && gallium_drivers_files+=( swrast_dri.so )
 	for x in ${gallium_drivers_files[@]}; do
 		if [ -f "${S}/$(get_libdir)/gallium/${x}" ]; then
 			doins "${S}/$(get_libdir)/gallium/${x}"

@@ -45,7 +45,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug -gallium gles llvm motif +nptl pic selinux kernel_FreeBSD"
+	+classic debug -gallium gles llvm motif +nptl pic selinux +swrast kernel_FreeBSD"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.21"
 # keep correct libdrm and dri2proto dep
@@ -143,7 +143,7 @@ src_configure() {
 
 	if use classic; then
 	# Configurable DRI drivers
-		driver_enable swrast
+		use swrast && driver_enable swrast
 
 		# Intel code
 		driver_enable video_cards_intel i810 i915 i965
@@ -251,7 +251,8 @@ src_install() {
 
 	if use classic || use gallium; then
 		ebegin "Moving DRI/Gallium drivers for dynamic switching"
-			local gallium_drivers=( i915_dri.so i965_dri.so r300_dri.so r600_dri.so swrast_dri.so )
+			local gallium_drivers=( i915_dri.so i965_dri.so r300_dri.so r600_dri.so )
+			use swrast && gallium_drivers_files+=( swrast_dri.so )
 			dodir /usr/$(get_libdir)/mesa
 			for x in ${gallium_drivers[@]}; do
 				if [ -f "${S}/$(get_libdir)/gallium/${x}" ]; then
