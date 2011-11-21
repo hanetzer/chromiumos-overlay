@@ -25,3 +25,8 @@ dev-util/git cvs perl subversion
 
 # We use asynchronous dns resolution instead of threaded dns resolution.
 net-misc/curl threads
+
+# The qemu-kvm package is compiled statically now, and version 0.15.1
+# cannot handle USE=bluetooth and static compilation.  We don't actually
+# use bluetooth functionality for this package.
+app-emulation/qemu-kvm	bluetooth
