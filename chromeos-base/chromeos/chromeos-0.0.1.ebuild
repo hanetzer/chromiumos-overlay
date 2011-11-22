@@ -246,8 +246,8 @@ qemu_run() {
 	local qemu
 	case "${ARCH}" in
 		amd64)
+			# Note that qemu is not actually run below in this case.
 			qemu="qemu-x86_64"
-			return
 			;;
 		arm)
 			qemu="qemu-arm"
@@ -263,6 +263,8 @@ qemu_run() {
 	# chroot or use qemu.
 	if [ "${ROOT:-/}" == "/" ]; then
 		"$@" || die
+	elif [ "${ARCH}" == "amd64" ]; then
+		chroot "${ROOT}" "$@" || die
 	else
 		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
 		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
