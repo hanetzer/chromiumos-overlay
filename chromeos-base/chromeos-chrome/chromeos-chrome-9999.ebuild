@@ -44,9 +44,18 @@ if use local_gclient; then
 	CHROME_VERSION="custom"
 	USE_TRUNK=0
 else
+	# Bots in golo.chromium.org have private mirrors that are only accessible
+	# from within golo.chromium.org. TODO(rcui): Remove this once we've
+	# converted all bots to GERRIT_SOURCE.
+	DOMAIN_NAME=$(hostname -d)
+	if [ "${DOMAIN_NAME}" == "golo.chromium.org" ]; then
+		EXTERNAL_URL="svn://svn-mirror.golo.chromium.org/chrome"
+		INTERNAL_URL="svn://svn-mirror.golo.chromium.org/chrome-internal"
+	else
+		EXTERNAL_URL="http://src.chromium.org/svn"
+		INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
+	fi
 	CHROME_VERSION="$(strip_portage_suffix "${PV}")"
-	EXTERNAL_URL="http://src.chromium.org/svn"
-	INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
 	[[ ( "${PV}" = "9999" ) || ( -n "${CROS_SVN_COMMIT}" ) ]]
 	USE_TRUNK=$?
 fi
@@ -302,14 +311,15 @@ create_gclient_file() {
 	local pdf2="\"src-pdf\": None,"
 	local checkout_point="CHROME_DEPS"
 
-	# Bots in golo.chromium.org have a private mirror for webkit, that is only
-	# accessible from within golo.chromium.org. TODO(rcui): Remove this once
-	# we've converted all bots to GERRIT_SOURCE.
-	local hostname=$(hostname -f)
-	local webkit_trunk=""
-	if [ "${hostname%%.golo.chromium.org}" != "$hostname" ]; then
-		webkit_trunk=\
-'"webkit_trunk": "svn://svn-mirror.golo.chromium.org/webkit-readonly/trunk",'
+	# Bots in golo.chromium.org have private mirrors that are only accessible
+	# from within golo.chromium.org. TODO(rcui): Remove this once we've
+	# converted all bots to GERRIT_SOURCE.
+	local custom_vars=''
+	if [ "${DOMAIN_NAME}" == "golo.chromium.org" ]; then
+		custom_vars='
+"webkit_trunk": "svn://svn-mirror.golo.chromium.org/webkit-readonly/trunk",
+"googlecode_url": "svn://svn-mirror.golo.chromium.org/%s",
+"sourceforge_url": "svn://svn-mirror.golo.chromium.org/%(repo)s",'
 	fi
 
 	if [ ${use_pdf} = 0 ]; then
@@ -323,7 +333,6 @@ create_gclient_file() {
 	cat >>${echrome_store_dir}/.gclient <<EOF
 	{"name"        : "${checkout_point}",
 	 "url"         : "${primary_url}${revision}",
-	 $webkit_trunk
 	 "custom_deps" : {
 		"src/chrome/tools/test/reference_build/chrome": None,
 		"src/chrome/tools/test/reference_build/chrome_mac": None,
@@ -353,6 +362,9 @@ create_gclient_file() {
 		"${layout_tests}/storage/domstorage": None,
 		$pdf1
 		$pdf2
+		},
+	 "custom_vars": {
+		$custom_vars
 		},
 	},
 EOF
