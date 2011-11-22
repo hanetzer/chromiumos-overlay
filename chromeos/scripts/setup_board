@@ -167,6 +167,7 @@ toolchain_needs_update() {
     pkgs+=" =cross-$FLAGS_toolchain/linux-headers-$FLAGS_kernel_version"
   fi
 
+  pkgs+=" cross-$FLAGS_toolchain/gdb"
   ACCEPT_KEYWORDS="~* *" emerge $flags $pkgs | grep cross-$FLAGS_toolchain/
 }
 

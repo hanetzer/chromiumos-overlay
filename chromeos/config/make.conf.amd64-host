@@ -24,7 +24,8 @@ source /usr/local/portage/chromiumos/chromeos/binhost/host/amd64-PREFLIGHT_BINHO
 FULL_BINHOST="https://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/amd64-host/chroot-01.12.11.115218/packages/"
 PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
-USE="${USE} -cups hardened cros_host multilib pic pie -introspection"
+# expat needed for XML parsing in GDB, but enable globally as overhead is tiny.
+USE="${USE} -cups hardened cros_host multilib pic pie -introspection expat"
 
 GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
 GENTOO_MIRRORS="$GENTOO_MIRRORS https://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
