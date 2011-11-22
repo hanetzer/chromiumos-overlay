@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="48a01103eb530aa9b658172c00e6e53b89ab7e9a"
+CROS_WORKON_COMMIT="f73255bedcc611d5cb61e082a14daf753e093245"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -113,4 +113,8 @@ src_install() {
 		fi
 		echo "0" > "${D}/usr/share/power_manager/use_lid"
 	fi
+
+	dodir /etc/dbus-1/system.d
+	insinto /etc/dbus-1/system.d
+	doins "${S}/RootPowerManager.conf"
 }
