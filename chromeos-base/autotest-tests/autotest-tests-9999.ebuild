@@ -236,6 +236,7 @@ IUSE_TESTS="
 	+tests_platform_CrosDisksArchive
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CrosDisksFilesystem
+	+tests_platform_CrosDisksFormat
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeFio
 	+tests_platform_CryptohomeMount
