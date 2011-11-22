@@ -678,6 +678,7 @@ src_compile() {
 			performance_ui_tests
 			ui_tests
 			pyautolib
+			chromedriver
 			browser_tests
 			sync_integration_tests"
 		echo Building test targets: ${TEST_TARGETS}
@@ -836,6 +837,8 @@ install_pyauto_dep_resources() {
 	# unstripped tests from the ${from} directory.
 	$(tc-getSTRIP) --strip-unneeded "${from}"/_pyautolib.so \
 		-o "${test_dir}"/out/Release/_pyautolib.so
+	$(tc-getSTRIP) --strip-unneeded "${from}"/chromedriver \
+		-o "${test_dir}"/out/Release/chromedriver
 
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
 		"${test_dir}"/out/Release
@@ -846,7 +849,8 @@ install_pyauto_dep_resources() {
 		net/tools/testserver \
 		third_party/pyftpdlib \
 		third_party/simplejson \
-		third_party/tlslite
+		third_party/tlslite \
+		third_party/webdriver
 }
 
 src_install() {
