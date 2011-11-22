@@ -603,13 +603,10 @@ src_prepare() {
 	# We do symlink creation here if appropriate
 	mkdir -p "${ECHROME_STORE_DIR}/src/${BUILD_OUT}"
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
-		if [ -h "${BUILD_OUT_SYM}" ]; then  # remove if an existing symlink
-			rm "${BUILD_OUT_SYM}"
-		fi
-		if [ ! -e "${BUILD_OUT_SYM}" ]; then
-			ln -s "${ECHROME_STORE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}"
-			export builddir_name="${BUILD_OUT_SYM}"
-		fi
+		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
+		ln -sfT "${ECHROME_STORE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
+			die "Could not create symlink for output directory"
+		export builddir_name="${BUILD_OUT_SYM}"
 	fi
 
 	# Apply patches for non-localsource builds
