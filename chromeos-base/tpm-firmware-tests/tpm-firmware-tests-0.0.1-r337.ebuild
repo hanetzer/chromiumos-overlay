@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a24e30cdc2f81e619f2441cdf372a7b6064e1844"
+CROS_WORKON_COMMIT="5fffeee4124ec2a27baace5e5b8e473a18f32f16"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 inherit cros-workon autotest
