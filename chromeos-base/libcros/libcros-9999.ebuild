@@ -69,7 +69,6 @@ src_install() {
 	doins "${S}/libcros.so"
 	if use install_tests; then
 		doins "${S}/cryptohome_drive"
-		doins "${S}/monitor_mount"
 		doins "${S}/monitor_network"
 		doins "${S}/monitor_power"
 		doins "${S}/monitor_sms"
