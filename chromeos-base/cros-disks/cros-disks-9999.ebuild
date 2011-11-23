@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
 KEYWORDS="~arm ~amd64 ~x86"
@@ -42,32 +42,32 @@ CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 src_compile() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
-	emake OUT=build-opt disks || die "failed to make cros-disks"
+	emake OUT=build-opt disks
 }
 
 src_test() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-	emake OUT=build-opt tests || die "failed to make cros-disks tests"
+	emake OUT=build-opt tests
 }
 
 src_install() {
 	exeinto /opt/google/cros-disks
-	doexe "${S}/build-opt/disks" || die
+	doexe build-opt/disks
 
 	# Install USB device IDs file.
 	insinto /opt/google/cros-disks
-	doins "${S}/usb-device-info" || die
+	doins usb-device-info
 
 	# Install seccomp policy file.
 	if [ "$ARCH" = "x86" ]; then
-		newins "${S}/avfsd-seccomp-x86.policy" avfsd-seccomp.policy || die
+		newins avfsd-seccomp-x86.policy avfsd-seccomp.policy
 	fi
 
 	# Install upstart config file.
 	insinto /etc/init
-	doins "${S}"/cros-disks.conf || die
+	doins cros-disks.conf
 
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
-	doins "${S}"/org.chromium.CrosDisks.conf || die
+	doins org.chromium.CrosDisks.conf
 }
