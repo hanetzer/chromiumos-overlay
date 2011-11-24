@@ -1,17 +1,25 @@
-commit 91d99461f71e36eb9b5606474d869763462e9eb9
+Author: Chris Wolfe <cwolfe@chromium.org>
+Date:   Thu Nov 24 15:07:16 2011 -0500
+
+    xf86-evdev: Avoid crashing on misbehaving evdev drivers.
+
+    Some multi-touch drivers produce ABS_MT_TRACKING_ID events
+    without the expected ABS_MT_SLOT. Added a check to ignore
+    TRACKING_ID events when the slot map is uninitialized.
+
 Author: Sadrul Habib Chowdhury <sadrul@chromium.org>
 Date:   Mon Apr 18 15:17:07 2011 -0400
 
     xf86-evdev: Add support for MT tracking for proto B.
 
 diff --git a/src/evdev.c b/src/evdev.c
-index 45873c1..b24c853 100644
+index 45873c1..d7735bf 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -87,6 +87,11 @@
  #define MODEFLAG	8
  #define COMPOSEFLAG	16
- 
+
 +/* Defining ABS_MT_SLOT for compatibility with older kernel headers. */
 +#ifndef ABS_MT_SLOT
 +#define ABS_MT_SLOT 0x2f
@@ -23,7 +31,7 @@ index 45873c1..b24c853 100644
 @@ -648,6 +653,33 @@ EvdevProcessAbsoluteMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
      if (EvdevWheelEmuFilterMotion(pInfo, ev))
          return;
- 
+
 +    if (ev->code == ABS_MT_SLOT)
 +    {
 +        int i;
@@ -45,7 +53,7 @@ index 45873c1..b24c853 100644
 +            }
 +        }
 +    }
-+    else if (IS_MT_AXIS(ev->code))
++    else if (IS_MT_AXIS(ev->code) && pEvdev->mt_slot_map)
 +    {
 +        pEvdev->mt_slot_map[pEvdev->cur_slot]
 +            [pEvdev->mt_axis_map[MT_AXIS(ev->code)]] = value;
@@ -60,7 +68,7 @@ index 45873c1..b24c853 100644
      pEvdev->prox_queued = 0;
 -
  }
- 
+
  /**
 @@ -1280,7 +1311,7 @@ EvdevAddAbsClass(DeviceIntPtr device)
  {
@@ -69,7 +77,7 @@ index 45873c1..b24c853 100644
 -    int num_axes, axis, i = 0;
 +    int num_axes, mt_num_axes, axis, i = 0;
      Atom *atoms;
- 
+
      pInfo = device->public.devicePrivate;
 @@ -1301,15 +1332,20 @@ EvdevAddAbsClass(DeviceIntPtr device)
      pEvdev->num_vals = num_axes;
@@ -77,7 +85,7 @@ index 45873c1..b24c853 100644
      memset(pEvdev->old_vals, -1, num_axes * sizeof(int));
 +    memset(pEvdev->mt_axis_map, -1, MT_NUM_AXES * sizeof(int));
      atoms = malloc(pEvdev->num_vals * sizeof(Atom));
- 
+
 +    mt_num_axes = 0;
      for (axis = ABS_X; i < MAX_VALUATORS && axis <= ABS_MAX; axis++) {
          pEvdev->axis_map[axis] = -1;
@@ -89,13 +97,13 @@ index 45873c1..b24c853 100644
          i++;
      }
 +    pEvdev->mt_num_axes = mt_num_axes;
- 
+
      EvdevInitAxesLabels(pEvdev, pEvdev->num_vals, atoms);
- 
+
 @@ -1326,6 +1362,40 @@ EvdevAddAbsClass(DeviceIntPtr device)
          return !Success;
      }
- 
+
 +    if (TestBit(ABS_MT_SLOT, pEvdev->abs_bitmask))
 +    {
 +        /* The maximum value is a valid index, so the size is + 1 */
@@ -148,7 +156,7 @@ index 45873c1..b24c853 100644
 +        }
  	break;
      }
- 
+
 @@ -2410,8 +2489,8 @@ static char* abs_labels[] = {
      AXIS_LABEL_PROP_ABS_MISC,           /* undefined */
      AXIS_LABEL_PROP_ABS_MISC,           /* undefined */
@@ -166,17 +174,17 @@ index f640fdd..4102672 100644
 @@ -80,6 +80,11 @@
  #define MAX_VALUATORS 36
  #endif
- 
+
 +#define MT_AXIS_FIRST ABS_MT_TOUCH_MAJOR
 +#define MT_NUM_AXES   (ABS_MT_PRESSURE - MT_AXIS_FIRST + 1)
 +#define MT_AXIS(x) (x) - MT_AXIS_FIRST
 +#define IS_MT_AXIS(x) (x) >= MT_AXIS_FIRST && (x) <= ABS_MT_PRESSURE
 +
- 
+
  #if GET_ABI_MAJOR(ABI_XINPUT_VERSION) < 5
  typedef struct {
 @@ -121,6 +126,13 @@ typedef struct {
- 
+
      int num_vals;           /* number of valuators */
      int axis_map[max(ABS_CNT, REL_CNT)]; /* Map evdev <axis> to index */
 +
@@ -188,4 +196,4 @@ index f640fdd..4102672 100644
 +
      int vals[MAX_VALUATORS];
      int old_vals[MAX_VALUATORS]; /* Translate absolute inputs to relative */
- 
+
