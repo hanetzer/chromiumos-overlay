@@ -20,7 +20,7 @@ RDEPEND="${RDEPEND}
 	dev-util/crosutils
 	>=sys-apps/dtc-1.3.0-r4
 	sys-boot/bootstub
-	>=sys-boot/grub-1.99-r2
+	sys-boot/grub
 	sys-boot/syslinux
 	sys-devel/crossdev
 	sys-fs/dosfstools
