@@ -52,6 +52,7 @@ IUSE_TESTS="
 	+tests_factory_Finalize
 	+tests_factory_Keyboard
 	+tests_factory_Leds
+	+tests_factory_LidSwitch
 	+tests_factory_LightSensor
 	+tests_factory_PreFinalCheck
 	+tests_factory_ProbeHWID
