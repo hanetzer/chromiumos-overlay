@@ -81,7 +81,7 @@ RDEPEND="${RDEPEND}
 	dev-util/scons
 	>=media-libs/freetype-2.2.1
 	media-libs/mesa
-	sys-apps/gsutil
+	net-misc/gsutil
 	sys-apps/module-init-tools
 	!sys-apps/nih-dbus-tool
 	asan? ( sys-devel/asan-clang )
