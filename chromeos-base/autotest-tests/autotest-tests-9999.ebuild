@@ -209,6 +209,7 @@ IUSE_TESTS="
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_LockedSIM
 	+tests_network_ModemManagerSMS
+	+tests_network_ModemManagerSMSSignal
 	+tests_network_NegotiatedLANSpeed
 	+tests_network_Ping
 	+tests_network_Portal
