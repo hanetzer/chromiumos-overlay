@@ -165,7 +165,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies to run unit tests within the chroot
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
-	dev-python/pymox
+	dev-python/mox
 	"
 
 # Host dependencies for running pylint within the chroot
