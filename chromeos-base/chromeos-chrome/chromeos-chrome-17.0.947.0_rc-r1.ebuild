@@ -256,10 +256,6 @@ set_build_defines() {
 		BUILD_DEFINES="touchui=1 $BUILD_DEFINES"
 	fi
 
-	if ! use chrome_debug_tests; then
-		BUILD_DEFINES+=" strip_tests=1"
-	fi
-
 	if use clang; then
 		if [ "$ARCH" = "x86" ]; then
 			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
