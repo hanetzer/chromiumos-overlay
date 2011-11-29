@@ -134,7 +134,13 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	"
 
-#TODO(micahc): Remove board-devices from RDEPEND in lieu of virtual/chromeos-bsp
+# TODO(micahc): Remove board-devices from RDEPEND in lieu of
+#               virtual/chromeos-bsp
+
+# TODO(gauravsh): Once shill becomes the default, remove the flimflam
+# dependency. crosbug.com/23531
+# "shill" is the new connection manager. It is still in "experimental"
+#  mode, and must be explicitly enabled (in lieu of flimflam).
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
@@ -176,6 +182,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/metrics
 	chromeos-base/power_manager
 	chromeos-base/root-certificates
+	chromeos-base/shill
 	chromeos-base/speech_synthesis
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
