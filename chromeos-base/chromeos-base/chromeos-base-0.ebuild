@@ -160,6 +160,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "cros-disks" 213  # For cros-disks
 	copy_or_add_daemon_user "tor" 214         # For tor (anonymity service)
 	copy_or_add_daemon_user "tcpdump" 215     # For tcpdump --with-user
+	copy_or_add_daemon_user "debugd" 216      # For debugd
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
