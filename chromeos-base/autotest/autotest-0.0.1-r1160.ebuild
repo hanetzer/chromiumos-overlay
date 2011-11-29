@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="81904f12dbffa5c415db9ad3026eac59a516725f"
+CROS_WORKON_COMMIT="dfca7d83e29e69562084fe5b38377145b09e56ec"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon
