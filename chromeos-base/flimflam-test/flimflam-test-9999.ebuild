@@ -20,7 +20,7 @@ RDEPEND="chromeos-base/flimflam
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
-	net-misc/dhcp
+	net-dns/dnsmasq
 	sys-apps/iproute2"
 
 DEPEND="${RDEPEND}"
