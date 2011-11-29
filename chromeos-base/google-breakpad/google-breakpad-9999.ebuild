@@ -43,8 +43,6 @@ src_configure() {
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
-	emake -C src/tools/linux/core2md || die "core2md emake failed"
-	rm src/common/linux/file_id.o
 	emake || die "emake failed"
 }
 
