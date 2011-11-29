@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -touchui -touchui_patches -local_gclient hardfp +runhooks +verbose"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -touchui -local_gclient hardfp +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -170,11 +170,6 @@ DEPEND="${DEPEND}
 	>=dev-util/pkgconfig-0.23"
 
 PATCHES=()
-if use touchui_patches; then
-	PATCHES+=(
-		"${FILESDIR}/webkit.2011111001.patch"
-		)
-fi
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
@@ -254,6 +249,10 @@ set_build_defines() {
 
 	if use touchui; then
 		BUILD_DEFINES="touchui=1 $BUILD_DEFINES"
+	fi
+
+	if ! use chrome_debug_tests; then
+		BUILD_DEFINES+=" strip_tests=1"
 	fi
 
 	if use clang; then
@@ -604,13 +603,10 @@ src_prepare() {
 	# We do symlink creation here if appropriate
 	mkdir -p "${ECHROME_STORE_DIR}/src/${BUILD_OUT}"
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
-		if [ -h "${BUILD_OUT_SYM}" ]; then  # remove if an existing symlink
-			rm "${BUILD_OUT_SYM}"
-		fi
-		if [ ! -e "${BUILD_OUT_SYM}" ]; then
-			ln -s "${ECHROME_STORE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}"
-			export builddir_name="${BUILD_OUT_SYM}"
-		fi
+		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
+		ln -sfT "${ECHROME_STORE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
+			die "Could not create symlink for output directory"
+		export builddir_name="${BUILD_OUT_SYM}"
 	fi
 
 	# Apply patches for non-localsource builds
