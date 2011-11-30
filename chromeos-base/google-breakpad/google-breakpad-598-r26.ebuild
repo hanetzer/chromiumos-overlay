@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="223e62f415afad32924481543787f4349afd281d"
+CROS_WORKON_COMMIT="75d3e600330e3545f36e38fb3cd5d139582e07e4"
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
 inherit autotools cros-debug cros-workon toolchain-funcs
@@ -44,8 +44,6 @@ src_configure() {
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
-	emake -C src/tools/linux/core2md || die "core2md emake failed"
-	rm src/common/linux/file_id.o
 	emake || die "emake failed"
 }
 
