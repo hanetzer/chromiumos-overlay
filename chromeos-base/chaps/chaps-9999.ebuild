@@ -44,9 +44,7 @@ src_test() {
 
 src_install() {
 	dosbin build-opt/chapsd || die
-	# TODO(dkrahn) Enable chaps; disabled due to crosbug.com/23585.
-	#dolib.so build-opt/libchaps.so || die
-	dosym /usr/lib/libopencryptoki.so /usr/lib/libchaps.so
+	dolib.so build-opt/libchaps.so || die
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.Chaps.conf || die
