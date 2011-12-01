@@ -62,6 +62,10 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${PN}-1.4.0-asneeded.patch
 
+	epatch "${FILESDIR}"/${P}-send-print-fixed.patch
+	epatch "${FILESDIR}"/${P}-send-unix-fd.patch
+	epatch "${FILESDIR}"/${P}-send-variant-dict.patch
+
 	# required for asneeded patch but also for bug 263909, cross-compile so
 	# don't remove eautoreconf
 	eautoreconf
