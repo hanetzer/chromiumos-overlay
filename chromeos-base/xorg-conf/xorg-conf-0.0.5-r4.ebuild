@@ -52,6 +52,8 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-aebl.conf"
 		elif [ "${board_variant}" = "tegra2_kaen" ]; then
 			doins "${FILESDIR}/50-touchpad-cmt-kaen.conf"
+		elif [ "${board}" = "lumpy" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-lumpy.conf"
 		fi
 	elif use multitouch; then
 		doins "${FILESDIR}/50-touchpad-multitouch.conf"
