@@ -19,7 +19,8 @@ find_pad() {
   # Then, find a field that matches "id=".
   # Lastly, return the part of the field after the '='.
   return `xinput list | \
-    awk '/[pP]ad/ { for (i=1; i<NF; i++) if ($i ~/id=/) print substr($i, 4) }'`
+    awk '/[pP]ad|cyapa/ { for (i=1; i<NF; i++) \
+         if ($i ~/id=/) print substr($i, 4) }'`
 }
 
 find_pad
