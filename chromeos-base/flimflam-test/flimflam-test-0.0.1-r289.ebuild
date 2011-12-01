@@ -4,7 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="bb7e3d3c6515649575ae0353fff617df62a477e5"
+CROS_WORKON_COMMIT="40522eea803ada1a4d67ece3025c161ea29423a3"
 CROS_WORKON_PROJECT="chromiumos/platform/flimflam"
 
 inherit autotools cros-workon toolchain-funcs
@@ -21,7 +21,7 @@ RDEPEND="chromeos-base/flimflam
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
-	net-misc/dhcp
+	net-dns/dnsmasq
 	sys-apps/iproute2"
 
 DEPEND="${RDEPEND}"
