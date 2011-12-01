@@ -159,6 +159,7 @@ build_initramfs_file() {
 	idobin /usr/bin/vbutil_kernel
 	idobin /usr/bin/crossystem
 	idobin /usr/bin/cgpt
+	idobin /usr/bin/dump_kernel_config
 	idobin /usr/sbin/vpd
 	idobin /usr/sbin/flashrom
 
