@@ -18,9 +18,6 @@
 # TODO: Fix cross compile on ARM of gdbm-1.8.3-r4
 >sys-libs/gdbm-1.8.3-r3
 
-# TODO: The dbus-python-0.83.1 ebuild puts stuff in /usr/lib64.
->dev-python/dbus-python-0.83.0-r1
-
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44
 
