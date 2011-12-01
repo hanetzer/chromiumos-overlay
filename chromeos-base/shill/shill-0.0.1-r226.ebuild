@@ -42,8 +42,8 @@ src_test() {
 	emake shill_unittest || die "tests compile failed."
 
 	# Run tests if we're on x86
-	if ! use x86 ; then
-		echo Skipping tests on non-x86 platform...
+	if ! use x86 && ! use amd64 ; then
+		echo Skipping tests on non-x86/amd64 platform...
 	else
 		for ut in shill ; do
 			"${S}/${ut}_unittest" \
