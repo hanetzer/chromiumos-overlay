@@ -86,6 +86,7 @@ src_install() {
 		file_util.h \
 		file_util_deprecated.h \
 		float_util.h \
+		format_macros.h \
 		gtest_prod_util.h \
 		hash_tables.h \
 		lazy_instance.h \
