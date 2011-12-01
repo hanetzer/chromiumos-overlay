@@ -73,6 +73,7 @@ src_configure() {
 	# instead to remove the dependence on iso-codes.
 	econf \
 		${GTK2_IM_MODULE_FLAG} \
+		--enable-surrounding-text \
 		--enable-gtk2 \
 		--disable-gtk3 \
 		--disable-dconf \
