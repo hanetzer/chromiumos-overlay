@@ -124,6 +124,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.10-cross-compile.patch
 	epatch "${FILESDIR}"/7.11-i915g-lie.patch
 	epatch "${FILESDIR}"/7.11-i915g-disable-aapoint-aaline.patch
+	epatch "${FILESDIR}"/7.11-i915g-no-tiling.patch
 	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/7.11-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/7.11_p2-pkgconfig.patch
