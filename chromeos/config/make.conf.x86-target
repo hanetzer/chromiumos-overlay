@@ -16,7 +16,6 @@ USE="${USE} mmx sse sse2 dri hardened"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=atom -mtune=atom -mfpmath=sse"
-LDFLAGS=""
 
 VIDEO_CARDS="intel vmware vesa"
 INPUT_DEVICES="evdev synaptics"

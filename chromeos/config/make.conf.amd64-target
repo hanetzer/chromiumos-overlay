@@ -17,7 +17,6 @@ USE="${USE} mmx sse sse2 dri hardened"
 MARCH_TUNE=""
 CFLAGS="-O2 -pipe ${MARCH_TUNE} -g"
 CXXFLAGS="${CFLAGS}"
-LDFLAGS=""
 
 VIDEO_CARDS="intel vmware vesa"
 INPUT_DEVICES="evdev synaptics"

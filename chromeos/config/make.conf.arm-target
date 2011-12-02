@@ -17,7 +17,6 @@ USE="${USE} hardened"
 # Recommended MARCH_TUNE, CFLAGS, etc.
 CFLAGS="-O2 -pipe -g"
 CXXFLAGS="${CFLAGS}"
-LDFLAGS=""
 
 # TODO: What is this for?
 UCLIBC_CPU_DEFAULT="GENERIC_ARM"
