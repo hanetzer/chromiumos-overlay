@@ -14,7 +14,7 @@ HOMEPAGE="http://trousers.sf.net"
 LICENSE="CPL-1.0"
 KEYWORDS="amd64 arm x86"
 SLOT="0"
-IUSE="doc"
+IUSE="doc tss_trace"
 
 RDEPEND=">=dev-libs/openssl-0.9.7"
 
@@ -34,13 +34,17 @@ src_prepare() {
 	base_src_prepare
 
 	sed -e "s/-Werror //" -i configure.in
+	if use tss_trace ; then
+		# Enable tracing of TSS calls.
+		export CFLAGS="$CFLAGS -DTSS_TRACE"
+	fi
 	eautoreconf
 }
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
-        export CCFLAGS="$CFLAGS"
-        emake
+	export CCFLAGS="$CFLAGS"
+	emake
 }
 
 src_install() {
