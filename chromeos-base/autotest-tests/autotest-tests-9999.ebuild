@@ -116,6 +116,7 @@ IUSE_TESTS="
         +tests_firmware_CorruptKernelB
         +tests_firmware_DevMode
         +tests_firmware_DevTriggerRecovery
+        +tests_firmware_FAFTClient
         +tests_firmware_RecoveryButton
 	+tests_firmware_RomSize
         +tests_firmware_TryFwB
