@@ -1,9 +1,10 @@
-DEFINED_PHASES=compile info install prepare unpack
+DEFINED_PHASES=info unpack
 DEPEND=>=dev-util/git-1.6
-DESCRIPTION=This is the resampling library. See README.txt for details.
-EAPI=2
+DESCRIPTION=resampling library (see README.chromiumos)
+EAPI=4
+HOMEPAGE=http://www-ccrma.stanford.edu/~jos/resample/
 KEYWORDS=~amd64 ~arm ~x86
 LICENSE=LGPL
 SLOT=0
-_eclasses_=cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
-_md5_=1052aaa75babf1183d1f952d8bd466e8
+_eclasses_=cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=94d748b9abf1e27ca37963a93d96cea8

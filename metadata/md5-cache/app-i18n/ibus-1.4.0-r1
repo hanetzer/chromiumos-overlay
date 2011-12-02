@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure install postinst postrm prepare setup test
+DEPEND=python? ( >=dev-lang/python-2.5 ) >=dev-libs/glib-2.26 python? ( >=dev-python/pygobject-2.14 ) nls? ( virtual/libintl ) >=x11-libs/gtk+-2 x11-libs/libX11 doc? ( >=dev-util/gtk-doc-1.9 ) dev-util/pkgconfig nls? ( >=sys-devel/gettext-0.16.1 ) >=app-admin/eselect-python-20091230
+DESCRIPTION=Intelligent Input Bus for Linux / Unix OS
+EAPI=2
+HOMEPAGE=http://code.google.com/p/ibus/
+IUSE=doc nls python
+KEYWORDS=amd64 arm x86
+LICENSE=LGPL-2.1
+RDEPEND=python? ( >=dev-lang/python-2.5 ) >=dev-libs/glib-2.26 python? ( >=dev-python/pygobject-2.14 ) nls? ( virtual/libintl ) >=x11-libs/gtk+-2 x11-libs/libX11 python? ( >=dev-python/dbus-python-0.83 ) python? ( dev-python/pygtk ) python? ( dev-python/pyxdg ) >=app-admin/eselect-python-20091230
+SLOT=0
+SRC_URI=mirror://gentoo/ibus-1.4.0.tar.gz
+_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=2f1dba9a99df4271205a6bc33f3005d2

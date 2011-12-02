@@ -3,11 +3,11 @@ DEPEND=>=sys-libs/ncurses-5.1 dev-util/dialog >=media-libs/alsa-lib-1.0.24.1 doc
 DESCRIPTION=Advanced Linux Sound Architecture Utils (alsactl, alsamixer, etc.)
 EAPI=3
 HOMEPAGE=http://www.alsa-project.org/
-IUSE=doc nls minimal mario alex
+IUSE=doc nls minimal mario alex stumpy
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=>=sys-libs/ncurses-5.1 dev-util/dialog >=media-libs/alsa-lib-1.0.24.1 virtual/modutils !minimal? ( sys-apps/pciutils )
 SLOT=0.9
 SRC_URI=mirror://alsaproject/utils/alsa-utils-1.0.24.2.tar.bz2 mirror://alsaproject/driver/alsa-driver-1.0.24.tar.bz2
-_eclasses_=base	fc89786f3f7e7bcf03334359bd5b639b	eutils	c89e7605f1414fa0f33eae391db1b5d3	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
-_md5_=f09e5af43ffdd41480b7da4a11de1a26
+_eclasses_=base	fc89786f3f7e7bcf03334359bd5b639b	eutils	33ef77a15337022e05342d2c772a7a5a	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=8878bb114b6831daa82deed5616a867d

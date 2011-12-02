@@ -1,0 +1,12 @@
+DEFINED_PHASES=install postinst unpack
+DESCRIPTION=Linux kernel laptop_mode user-space utilities
+EAPI=2
+HOMEPAGE=http://www.samwel.tk/laptop_mode/
+IUSE=-acpi -apm bluetooth -hal -scsi
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=sys-apps/ethtool acpi? ( sys-power/acpid ) apm? ( sys-apps/apmd ) bluetooth? ( || ( net-wireless/bluez net-wireless/bluez-utils ) ) hal? ( sys-apps/hal ) net-wireless/iw scsi? ( sys-apps/sdparm ) sys-apps/hdparm
+SLOT=0
+SRC_URI=http://samwel.tk/laptop_mode/tools/downloads/laptop-mode-tools_1.59.tar.gz
+_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=5cb51828a799112e108790bda68e1e61

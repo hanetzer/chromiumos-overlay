@@ -9,5 +9,5 @@ LICENSE=GPL-2 LGPL-2.1
 RDEPEND=alsa? ( media-libs/alsa-lib[alsa_pcm_plugins_extplug,alsa_pcm_plugins_ioplug] ) caps? ( >=sys-libs/libcap-ng-0.6.2 ) gstreamer? ( >=media-libs/gstreamer-0.10 >=media-libs/gst-plugins-base-0.10 ) usb? ( dev-libs/libusb ) cups? ( net-print/cups ) sys-fs/udev dev-libs/glib sys-apps/dbus media-libs/libsndfile >=dev-libs/libnl-1.1 !net-wireless/bluez-libs !net-wireless/bluez-utils consolekit? ( sys-auth/pambase[consolekit] ) test-programs? ( dev-python/dbus-python dev-python/pygobject )
 SLOT=0
 SRC_URI=mirror://kernel/linux/bluetooth/bluez-4.62.tar.gz
-_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	eutils	c89e7605f1414fa0f33eae391db1b5d3	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	eutils	33ef77a15337022e05342d2c772a7a5a	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=fbe76b1f95a29c416cd2ba8b36211e87

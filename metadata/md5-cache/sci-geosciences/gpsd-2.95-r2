@@ -1,5 +1,5 @@
 DEFINED_PHASES=compile configure install postinst postrm prepare
-DEPEND=dbus? ( >=sys-apps/dbus-0.94 >=dev-libs/glib-2.6 dev-libs/dbus-glib ) ntp? ( net-misc/ntp ) sys-fs/udev virtual/libusb:1 python? ( dev-lang/python ) || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 >=sys-devel/libtool-2.2.6b >=app-admin/eselect-python-20091230 python? ( dev-lang/python )
+DEPEND=dbus? ( >=sys-apps/dbus-0.94 >=dev-libs/glib-2.6 dev-libs/dbus-glib ) ntp? ( net-misc/ntp ) sys-fs/udev virtual/libusb:1 dev-lang/python || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 >=sys-devel/libtool-2.2.6b >=app-admin/eselect-python-20091230 python? ( dev-lang/python )
 DESCRIPTION=GPS daemon and library to interface GPS devices and clients
 EAPI=2
 HOMEPAGE=http://gpsd.berlios.de/
@@ -9,5 +9,5 @@ LICENSE=BSD
 RDEPEND=dbus? ( >=sys-apps/dbus-0.94 >=dev-libs/glib-2.6 dev-libs/dbus-glib ) ntp? ( net-misc/ntp ) sys-fs/udev virtual/libusb:1 >=app-admin/eselect-python-20091230 python? ( dev-lang/python )
 SLOT=0
 SRC_URI=mirror://berlios/gpsd/gpsd-2.95.tar.gz
-_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	distutils	6913a81639c955969c9686be71b03a30	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	python	b3471f94188b4b0f3a0681898251591f	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
-_md5_=df87314a2821c4bb4694667405ef3325
+_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	distutils	b4c334e216d998c4ce4b750cb091e42e	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=e9d3a17297ba9a91897a22355959b8be

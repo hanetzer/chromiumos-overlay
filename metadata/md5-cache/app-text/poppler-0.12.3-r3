@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=>=media-libs/fontconfig-2.6.0 >=media-libs/freetype-2.3.9 sys-libs/zlib abiword? ( dev-libs/libxml2:2 ) cairo? ( dev-libs/glib:2 >=x11-libs/cairo-1.8.4 >=x11-libs/gtk+-2.14.0:2 ) jpeg? ( >=media-libs/jpeg-7:0 ) jpeg2k? ( media-libs/openjpeg ) png? ( media-libs/libpng ) qt4? ( x11-libs/qt-core:4 x11-libs/qt-gui:4 ) !dev-libs/poppler !dev-libs/poppler-glib !dev-libs/poppler-qt3 !dev-libs/poppler-qt4 !app-text/poppler-utils cjk? ( >=app-text/poppler-data-0.2.1 )
 SLOT=0
 SRC_URI=http://poppler.freedesktop.org/poppler-0.12.3.tar.gz
-_eclasses_=base	fc89786f3f7e7bcf03334359bd5b639b	cmake-utils	6a1f5bd4039e55b76615db7bd9b70fed	eutils	c89e7605f1414fa0f33eae391db1b5d3	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d
+_eclasses_=base	fc89786f3f7e7bcf03334359bd5b639b	cmake-utils	6a1f5bd4039e55b76615db7bd9b70fed	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=7c498a69aacbc1821629a7334f7ba9fd
