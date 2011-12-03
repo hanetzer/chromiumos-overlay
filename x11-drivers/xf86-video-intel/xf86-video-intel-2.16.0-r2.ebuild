@@ -33,6 +33,8 @@ PATCHES=(
 	"${FILESDIR}/2.14.0-no-gamma.patch"
 	# Disable pageflipping.
 	"${FILESDIR}/2.16.0-noflips.patch"
+	# Change order of function calls.
+	"${FILESDIR}/2.16.0-display-order.patch"
 )
 
 pkg_setup() {
