@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_COMMIT="28baa5606172c45730b507f4c6047718f7a85d6b"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
-inherit cros-debug toolchain-funcs cros-board
+inherit cros-debug toolchain-funcs cros-board flag-o-matic
 
 DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
@@ -38,6 +38,8 @@ IUSE="${IUSE} ${ALL_UBOOT_FLAVORS}"
 src_configure() {
 	local ub_arch="$(tc-arch-kernel)"
 	local ub_board="$(echo "${PKG_CONFIG#pkg-config-}" | tr _ '-')"
+
+	export LDFLAGS=$(raw-ldflags)
 
 	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CHOST}-"
 	COMMON_MAKE_FLAGS+=" O=${UB_BUILD_DIR}"
