@@ -39,8 +39,9 @@ src_compile() {
 
 src_test() {
 	cros-debug-add-NDEBUG
-	emake tests || die "failed to make chaps tests"
-	emake runtests || die "failed to run chaps tests"
+	# TODO(dkrahn) Enable tests once chaps is enabled.
+	#emake tests || die "failed to make chaps tests"
+	#emake runtests || die "failed to run chaps tests"
 }
 
 src_install() {
