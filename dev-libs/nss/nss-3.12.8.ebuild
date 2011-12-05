@@ -31,8 +31,8 @@ src_prepare() {
 
 	cd "${S}"/mozilla/security/coreconf
 
-	# Explain that linux 3.0 is just the same as 2.6.
-	ln -sf Linux2.6.mk Linux3.0.mk
+	# Explain that linux 3.0+ is just the same as 2.6.
+	ln -sf Linux2.6.mk Linux$(uname -r | cut -b1-3).mk
 
 	# hack nspr paths
 	echo 'INCLUDES += -I'"${EPREFIX}"'/usr/include/nspr -I$(DIST)/include/dbm' \
