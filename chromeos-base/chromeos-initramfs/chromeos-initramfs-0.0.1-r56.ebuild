@@ -110,6 +110,7 @@ build_initramfs_file() {
 		libdl.so.2
 		libpthread.so.0
 		librt.so.1
+                libudev.so.0
 		libz.so.1
 	"
 	usr_libs="
