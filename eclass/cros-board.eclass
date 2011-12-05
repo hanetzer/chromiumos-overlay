@@ -33,6 +33,7 @@ ALL_BOARDS=(
     amd64-corei7
     amd64-host
     arm-generic
+    ironhide
     link
     lumpy
     stumpy
