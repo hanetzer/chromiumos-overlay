@@ -2,6 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # The following files are modified by make_chroot, and we do not want to clobber them.
-CONFIG_PROTECT="/etc/sudoers /etc/locale.gen"
-CONFIG_PROTECT="${CONFIG_PROTECT} /etc/hosts"
-CONFIG_PROTECT="${CONFIG_PROTECT} /etc/localtime /etc/make.conf"
+CONFIG_PROTECT="
+	/etc/locale.gen
+	/etc/hosts
+	/etc/localtime
+	/etc/make.conf
+"
