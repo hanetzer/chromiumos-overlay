@@ -11,10 +11,8 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE_KCONFIG="+kconfig_generic kconfig_atom kconfig_atom64 kconfig_tegra2"
-IUSE="-fbconsole -initramfs -nfs -blkdevram ${IUSE_KCONFIG} -device_tree"
+IUSE="-fbconsole -initramfs -nfs -blkdevram -device_tree"
 IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250 -highmem"
-REQUIRED_USE="^^ ( ${IUSE_KCONFIG/+} )"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils

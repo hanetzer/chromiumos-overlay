@@ -59,6 +59,5 @@ NETBEANS="apisupport cnd groovy gsf harness ide identity j2ee java mobility nb p
 USE="${USE} modules"
 
 # ChromeOS-specific: BOARD_USE for accessing board value in cros-board.eclass
-#                    KCONFIG USE_EXPAND for kernel
 #                    TESTS USE_EXPAND for autotest
-USE_EXPAND="${USE_EXPAND} BOARD_USE KCONFIG TESTS"
+USE_EXPAND="${USE_EXPAND} BOARD_USE TESTS"
