@@ -60,4 +60,6 @@ USE="${USE} modules"
 
 # ChromeOS-specific: BOARD_USE for accessing board value in cros-board.eclass
 #                    TESTS USE_EXPAND for autotest
-USE_EXPAND="${USE_EXPAND} BOARD_USE TESTS"
+#                    U_BOOT_CONFIG_USE for selecting U-Boot config
+#                    U_BOOT_FDT_USE for selecting U-Boot device tree
+USE_EXPAND="${USE_EXPAND} BOARD_USE TESTS U_BOOT_CONFIG_USE U_BOOT_FDT_USE"
