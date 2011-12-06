@@ -1,0 +1,78 @@
+From b1bf24b9d9c4b86c0ca8a60a7a5e551d8b9d518a Mon Sep 17 00:00:00 2001
+From: Jason Glasgow <jglasgow@chromium.org>
+Date: Thu, 3 Nov 2011 20:00:07 -0400
+Subject: [PATCH] For interface name to only refer to an interface name not a hostname.
+
+This prevents connect from blocking, which is the desired behavior
+when using the multi interfaces with c-ares.
+---
+ include/curl/curl.h |    3 +++
+ lib/connect.c       |    3 +++
+ lib/url.c           |   10 ++++++++++
+ lib/urldata.h       |    1 +
+ 4 files changed, 17 insertions(+), 0 deletions(-)
+
+diff --git a/include/curl/curl.h b/include/curl/curl.h
+index 84726e6..6606572 100644
+--- a/include/curl/curl.h
++++ b/include/curl/curl.h
+@@ -1454,6 +1454,9 @@ typedef enum {
+   /* Set the name servers for c-ares */
+   CINIT(ARES_SERVERS_CSV, OBJECTPOINT, 207),
+ 
++  /* Force the interface to be only an interface not a hostname */
++  CINIT(BIND_INTERFACE_ONLY, LONG, 208),
++
+   CURLOPT_LASTENTRY /* the last unused */
+ } CURLoption;
+ 
+diff --git a/lib/connect.c b/lib/connect.c
+index fb21fb7..2fc4172 100644
+--- a/lib/connect.c
++++ b/lib/connect.c
+@@ -315,6 +315,9 @@ static CURLcode bindlocal(struct connectdata *conn,
+       long ipver = conn->ip_version;
+       int rc;
+ 
++      if (data->set.bind_interface_only)
++        return CURLE_INTERFACE_FAILED;
++
+       if (af == AF_INET)
+         conn->ip_version = CURL_IPRESOLVE_V4;
+ #ifdef ENABLE_IPV6
+diff --git a/lib/url.c b/lib/url.c
+index 248f474..4f4706f 100644
+--- a/lib/url.c
++++ b/lib/url.c
+@@ -2014,6 +2014,16 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
+     result = setstropt(&data->set.str[STRING_DEVICE],
+                        va_arg(param, char *));
+     break;
++
++  case CURLOPT_BIND_INTERFACE_ONLY:
++    /*
++     * Force device to only refer to an interface name.  Do not try
++     * DNS on it.  Usefully when using multi sockets because DNS
++     * resolution may block.
++     */
++    data->set.bind_interface_only = (0 != va_arg(param, long));
++    break;
++
+   case CURLOPT_LOCALPORT:
+     /*
+      * Set what local port to bind the socket to when performing an operation.
+diff --git a/lib/urldata.h b/lib/urldata.h
+index bf74aaf..ea032cc 100644
+--- a/lib/urldata.h
++++ b/lib/urldata.h
+@@ -1501,6 +1501,7 @@ struct UserDefined {
+   unsigned int scope;    /* address scope for IPv6 */
+   long allowed_protocols;
+   long redir_protocols;
++  bool bind_interface_only; /* force STRING_DEVICE to refer to an interface */
+ #if defined(HAVE_GSSAPI) || defined(USE_WINDOWS_SSPI)
+   long socks5_gssapi_nec; /* flag to support nec socks5 server */
+ #endif
+-- 
+1.7.3.1
+
