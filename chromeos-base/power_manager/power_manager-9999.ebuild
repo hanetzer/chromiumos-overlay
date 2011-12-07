@@ -13,14 +13,15 @@ SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop"
 KEYWORDS="~amd64 ~arm ~x86"
 
-RDEPEND="chromeos-base/metrics
-	dev-cpp/gflags
-	dev-cpp/glog
-	sys-fs/udev
-	x11-base/xorg-server
-	x11-libs/gtk+
-	x11-libs/libX11
-	x11-libs/libXext"
+RDEPEND="app-misc/ddccontrol
+	 chromeos-base/metrics
+	 dev-cpp/gflags
+	 dev-cpp/glog
+	 sys-fs/udev
+	 x11-base/xorg-server
+	 x11-libs/gtk+
+	 x11-libs/libX11
+	 x11-libs/libXext"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome
