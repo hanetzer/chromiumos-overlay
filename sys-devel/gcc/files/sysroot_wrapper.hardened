@@ -4,16 +4,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This script ensures that '--sysroot' is passed to whatever it is wrapping.
+# This script is a meta-driver for the toolchain. It transforms the command
+# line to allow the following:
+# 1. This script ensures that '--sysroot' is passed to whatever it is wrapping.
 #
-# It also adds hardened flags to gcc invocation. The hardened flags are:
-# 1. -fstack-protector-all
-# 2. -fPIE
-# 3. -pie
-# 4. -D_FORTIFY_SOURCE=2
+# 2. It adds hardened flags to gcc invocation. The hardened flags are:
+#   -fstack-protector-all
+#   -fPIE
+#   -pie
+#   -D_FORTIFY_SOURCE=2
 #
 # It can disable -fPIE -pie by checking if -nopie is passed to gcc. In this
 # case it removes -nopie as it is a non-standard flag.
+#
+# 3. Enable clang diagnostics with -clang option
+#
+# 4. Add new -print-cmdline option to print the command line before executon
+#
+# This is currently implemented as two loops on the list of arguments. The
+# first loop # identifies hardening flags, as well as determining if clang
+# invocation is specified. The second loop build command line for clang
+# invocation as well adjusting gcc command line.
+#
+# This implementation ensure compile time of default path remains mostly
+# the same.
 #
 # There is a similar hardening wrapper that wraps ld and adds -z now -z relro
 # to the link command line (see ldwrapper).
@@ -26,36 +40,88 @@ import os
 import re
 import sys
 
-fstack=set(['-D__KERNEL__', '-fno-stack-protector', '-fstack-protector-all',
+# Full hardening. Some/all of these may be discarded depending on
+# other flags.
+harden_flags = set(['-fstack-protector-all', '-fPIE', '-pie',
+  '-D_FORTIFY_SOURCE=2'])
+disable_flags = set(['-mno-movbe', '-mno-ssse3'])
+
+# Only FORTIFY_SOURCE hardening flag is applicable for clang parser.
+clang_cmdline = ['-fsyntax-only', '-Qunused-arguments', '-D_FORTIFY_SOURCE=2']
+
+# If -clang is present.
+clang_compile_requested = 0
+
+# If -print-cmdline is present.
+print_cmdline = 0
+
+fstack = set(['-D__KERNEL__', '-fno-stack-protector', '-fstack-protector-all',
   '-fstack-protector', '-nodefaultlibs', '-nostdlib'])
-fPIE=set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
+fPIE = set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
   '-fno-pic', '-fno-pie', '-fpic', '-fpie', '-nopie', '-nostartfiles',
   '-nostdlib', '-pie', '-static'])
-pie=set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
+pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
   '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared', '-shared',
   '-static'])
-sse=set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
+sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
+wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie'])
 
-disable_flags=set(['-mno-movbe', '-mno-ssse3'])
-extra_flags=set(['-fstack-protector-all', '-fPIE', '-pie'])
-flags = ['-D_FORTIFY_SOURCE=2']
-for flag in sys.argv[1:]:
-  if flag in fstack:
-    extra_flags.discard('-fstack-protector-all')
-  if flag in fPIE:
-    extra_flags.discard('-fPIE')
-  if flag in pie:
-    extra_flags.discard('-pie')
-  if flag != '-nopie':
-    flags.append(flag)
-  if flag in sse:
-    disable_flags.discard('-mno-ssse3')
+myargs = sys.argv[1:]
+if fstack.intersection(myargs):
+  harden_flags.remove('-fstack-protector-all')
+if fPIE.intersection(myargs):
+  harden_flags.remove('-fPIE')
+if pie.intersection(myargs):
+  harden_flags.remove('-pie')
+if sse.intersection(myargs):
+  disable_flags.remove('-mno-ssse3')
+clang_compile_requested = '-clang' in myargs
+print_cmdline = '-print-cmdline' in myargs
+cmdline = [x for x in myargs if x not in wrapper_only_options]
+
+if not clang_compile_requested:
+  gcc_cmdline = cmdline
+else:
+  import subprocess
+  # Gcc flags to remove from the clang command line.
+  # TODO: Once clang supports gcc compatibility mode, remove
+  # these checks.
+  #
+  # Use of -Qunused-arguments allows this set to be small, just those
+  # that clang still warns about.
+  clang_unsupported = set(['-pass-exit-codes', '-Ofast'])
+
+  # If these options are specified, do not run clang, even if -clang is
+  # specified.
+  # This is mainly for utilities that depend on compiler output.
+  skip_clang_prefixes = ('-print-', '-dump', '@')
+  skip_clang_set = set(['-', '-E', '-M'])
+
+  # Reset gcc cmdline too. Only change is to remove -Xclang-only
+  # options if specified.
+  gcc_cmdline = []
+
+  skip_clang = False
+  for flag in cmdline:
+    if flag.startswith(skip_clang_prefixes) or flag in skip_clang_set:
+      skip_clang = True
+    elif flag not in clang_unsupported:
+      # Strip off -Xclang-only= if present.
+      if flag.startswith('-Xclang-only='):
+        opt = flag.partition('=')[2]
+        clang_cmdline.append(opt)
+        # No need to add to gcc_cmdline.
+        continue
+      else:
+        clang_cmdline.append(flag)
+    gcc_cmdline.append(flag)
 
 if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
-  flags.extend(disable_flags)
+  gcc_cmdline.extend(disable_flags)
 
 if 'SYSROOT' in os.environ:
-  flags.append('--sysroot=%s' % os.environ['SYSROOT'])
+  clang_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
+  gcc_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
 else:
   f = open('/tmp/sysroot_wrapper.error', 'a')
   f.write('Invocation with missing SYSROOT: %s\n' % ' '.join(sys.argv))
@@ -66,5 +132,25 @@ else:
   except OSError:
     pass
 
-os.execv('%s.real' % sys.argv[0], [sys.argv[0]] + list(extra_flags) + flags)
+if clang_compile_requested and not skip_clang:
+  clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
 
+  # Check for clang or clang++.
+  if sys.argv[0].endswith('++'):
+    clang_comp += '++'
+
+  if print_cmdline:
+    print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
+
+  p = subprocess.Popen([clang_comp] + clang_cmdline)
+  p.wait()
+  if p.returncode != 0:
+    sys.exit(p.returncode)
+
+if print_cmdline:
+  print '%s.real %s %s' % (sys.argv[0],
+                           ' '.join(harden_flags),
+                           ' '.join(gcc_cmdline))
+
+os.execv('%s.real' % sys.argv[0],
+         [sys.argv[0]] + list(harden_flags) + gcc_cmdline)
