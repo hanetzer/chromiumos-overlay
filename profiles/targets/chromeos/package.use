@@ -42,7 +42,7 @@ net-nds/openldap	minimal
 net-proxy/tsocks	tordns
 net-wireless/bluez	-consolekit
 net-wireless/wpa_supplicant	dbus debug -readline ssl
-sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb
+sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 sys-apps/busybox	-pam -selinux
 sys-apps/dbus		-X
 sys-apps/iproute2	ipv6
