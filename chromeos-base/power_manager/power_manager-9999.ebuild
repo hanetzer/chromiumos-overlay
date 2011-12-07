@@ -13,7 +13,8 @@ SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop"
 KEYWORDS="~amd64 ~arm ~x86"
 
-RDEPEND="chromeos-base/metrics
+RDEPEND="app-misc/ddccontrol
+	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
 	sys-fs/udev
