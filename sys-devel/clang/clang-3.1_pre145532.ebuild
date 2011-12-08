@@ -9,7 +9,7 @@ SUPPORT_PYTHON_ABIS="1"
 
 inherit subversion eutils multilib python
 
-SVN_COMMIT="145532"
+SVN_COMMIT=${PV#*_pre}
 
 DESCRIPTION="C language family frontend for LLVM"
 HOMEPAGE="http://clang.llvm.org/"
