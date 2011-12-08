@@ -18,7 +18,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 IUSE="asan debug multitarget +static-analyzer +system-cxx-headers test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
