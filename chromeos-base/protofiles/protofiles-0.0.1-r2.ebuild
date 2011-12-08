@@ -9,11 +9,7 @@
 EGIT_REPO_SERVER="http://git.chromium.org"
 EGIT_REPO_URI="${EGIT_REPO_SERVER}/chromium/src/chrome/browser/policy/proto.git"
 EGIT_PROJECT="proto"
-
-# Always being on the master revision should be fine in all cases. The protobufs
-# MUST always stay backwards comaptible or else there will be data mismatches
-# between data stored on the server from old and new versions of the protobuf.
-EGIT_COMMIT="master"
+EGIT_COMMIT="8d1605947dc59235da3b09943d31b4319bb16756"
 
 EAPI="2"
 inherit git
