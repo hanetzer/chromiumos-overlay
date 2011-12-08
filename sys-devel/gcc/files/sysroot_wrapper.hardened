@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -119,12 +119,48 @@ else:
 if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
   gcc_cmdline.extend(disable_flags)
 
+
+def get_proc_cmdline(pid):
+  with open('/proc/%i/cmdline' % pid) as fp:
+    return fp.read().replace('\0', ' ')
+  return None
+
+
+def get_proc_status(pid, item):
+  with open('/proc/%i/status' % pid) as fp:
+    for line in fp:
+      m = re.match(r'%s:\s*(.*)' % re.escape(item), line)
+      if m:
+        return m.group(1)
+  return None
+
+
+def log_parent_process_tree(f, ppid):
+  depth = 0
+
+  while ppid > 1:
+    cmdline = get_proc_cmdline(ppid)
+    f.write(' %*s {%5i}: %s\n' % (depth, '', ppid, cmdline))
+
+    ppid = get_proc_status(ppid, 'PPid')
+    if not ppid:
+      break
+    ppid = int(ppid)
+    depth += 2
+
+
 if 'SYSROOT' in os.environ:
   clang_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
   gcc_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
 else:
+  import traceback
+
   f = open('/tmp/sysroot_wrapper.error', 'a')
   f.write('Invocation with missing SYSROOT: %s\n' % ' '.join(sys.argv))
+  try:
+    log_parent_process_tree(f, os.getppid())
+  except IOError:
+    traceback.print_exc(file=f)
   f.close()
 
   try:
