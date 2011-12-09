@@ -135,12 +135,12 @@ def get_proc_status(pid, item):
   return None
 
 
-def log_parent_process_tree(f, ppid):
+def log_parent_process_tree(log, ppid):
   depth = 0
 
   while ppid > 1:
     cmdline = get_proc_cmdline(ppid)
-    f.write(' %*s {%5i}: %s\n' % (depth, '', ppid, cmdline))
+    log.warning(' %*s {%5i}: %s' % (depth, '', ppid, cmdline))
 
     ppid = get_proc_status(ppid, 'PPid')
     if not ppid:
@@ -153,18 +153,30 @@ if 'SYSROOT' in os.environ:
   clang_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
   gcc_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
 else:
+  import logging
+  import logging.handlers
   import traceback
 
-  f = open('/tmp/sysroot_wrapper.error', 'a')
-  f.write('Invocation with missing SYSROOT: %s\n' % ' '.join(sys.argv))
+  log_file = '/tmp/sysroot_wrapper.error'
+
+  log = logging.getLogger('sysroot_wrapper')
+  log.setLevel(logging.DEBUG)
+
+  handler = logging.handlers.RotatingFileHandler(log_file, maxBytes=0x20000000,
+                                                 backupCount=1)
+  formatter = logging.Formatter('%(asctime)s %(message)s')
+  handler.setFormatter(formatter)
+  log.addHandler(handler)
+
+  log.warning('Invocation with missing SYSROOT: %s' % ' '.join(sys.argv))
   try:
-    log_parent_process_tree(f, os.getppid())
+    log_parent_process_tree(log, os.getppid())
   except IOError:
-    traceback.print_exc(file=f)
-  f.close()
+    log.error('%s' % traceback.format_exc())
 
   try:
-    os.chmod('/tmp/sysroot_wrapper.error', 0666)
+    # The logging module does not support setting permissions.
+    os.chmod(log_file, 0666)
   except OSError:
     pass
 
