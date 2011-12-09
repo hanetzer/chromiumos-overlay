@@ -122,7 +122,6 @@ src_prepare() {
 	base_src_prepare
 
 	epatch "${FILESDIR}"/7.10-cross-compile.patch
-	epatch "${FILESDIR}"/7.11-i915g-lie.patch
 	epatch "${FILESDIR}"/7.11-i915g-disable-aapoint-aaline.patch
 	epatch "${FILESDIR}"/7.11-i915g-no-tiling.patch
 	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
@@ -130,6 +129,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11_p2-pkgconfig.patch
 	epatch "${FILESDIR}"/7.11_p2-Revert-i965-Avoid-generating-MOVs-for-most-ir_assign.patch
 	epatch "${FILESDIR}"/7.11_p3-builtin_function.patch
+	epatch "${FILESDIR}"/7.11-i915g-max_insn.patch
+	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
 
 	eautoreconf
 }

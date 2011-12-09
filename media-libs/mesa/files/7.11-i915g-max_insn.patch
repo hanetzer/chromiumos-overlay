@@ -1,0 +1,41 @@
+diff --git a/src/gallium/drivers/i915/i915_fpc.h b/src/gallium/drivers/i915/i915_fpc.h
+index bfd658f..26cf2fb 100644
+--- a/src/gallium/drivers/i915/i915_fpc.h
++++ b/src/gallium/drivers/i915/i915_fpc.h
+@@ -37,7 +37,7 @@
+ 
+ #include "tgsi/tgsi_parse.h"
+ 
+-#define I915_PROGRAM_SIZE (3 * I915_MAX_INSN)
++#define I915_PROGRAM_SIZE 192
+ 
+ /* Use those indices for pos/face routing, must be >= num of inputs */
+ #define I915_SEMANTIC_POS  100
+diff --git a/src/gallium/drivers/i915/i915_reg.h b/src/gallium/drivers/i915/i915_reg.h
+index 620c64e..e48a942 100644
+--- a/src/gallium/drivers/i915/i915_reg.h
++++ b/src/gallium/drivers/i915/i915_reg.h
+@@ -488,10 +488,6 @@
+ #define I915_MAX_DECL_INSN    27
+ #define I915_MAX_TEMPORARY    16
+ 
+-#define I915_MAX_INSN          (I915_MAX_DECL_INSN + \
+-				I915_MAX_TEX_INSN + \
+-				I915_MAX_ALU_INSN)
+-
+ 
+ /* Each instruction is 3 dwords long, though most don't require all
+  * this space.  Maximum of 123 instructions.  Smaller maxes per insn
+diff --git a/src/gallium/drivers/i915/i915_screen.c b/src/gallium/drivers/i915/i915_screen.c
+index 7ef24f5..991f03b 100644
+--- a/src/gallium/drivers/i915/i915_screen.c
++++ b/src/gallium/drivers/i915/i915_screen.c
+@@ -114,7 +114,7 @@ i915_get_shader_param(struct pipe_screen *screen, unsigned shader, enum pipe_sha
+          return draw_get_shader_param(shader, cap);
+       }
+    case PIPE_SHADER_FRAGMENT:
+-      /* XXX: these are just shader model 2.0 values, fix this! */
++      /* XXX: some of these are just shader model 2.0 values, fix this! */
+       switch(cap) {
+       case PIPE_SHADER_CAP_MAX_INSTRUCTIONS:
+          return I915_MAX_ALU_INSN + I915_MAX_TEX_INSN;

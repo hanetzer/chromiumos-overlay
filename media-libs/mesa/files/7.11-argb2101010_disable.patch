@@ -1,0 +1,11 @@
+--- mesa/src/mesa/drivers/dri/i965/brw_wm_surface_state.c	2011-12-08 14:52:43.110290000 -0800
++++ mesa2/src/mesa/drivers/dri/i965/brw_wm_surface_state.c	2011-12-09 10:46:28.195896000 -0800
+@@ -320,7 +320,7 @@ brw_format_for_mesa_format(gl_format mes
+       [MESA_FORMAT_R16] = BRW_SURFACEFORMAT_R16_UNORM,
+       [MESA_FORMAT_RG1616] = BRW_SURFACEFORMAT_R16G16_UNORM,
+       [MESA_FORMAT_RG1616_REV] = 0,
+-      [MESA_FORMAT_ARGB2101010] = BRW_SURFACEFORMAT_B10G10R10A2_UNORM,
++      [MESA_FORMAT_ARGB2101010] = 0,
+       [MESA_FORMAT_Z24_S8] = 0,
+       [MESA_FORMAT_S8_Z24] = 0,
+       [MESA_FORMAT_Z16] = 0,
