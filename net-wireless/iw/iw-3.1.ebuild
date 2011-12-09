@@ -21,6 +21,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-nl80211.patch"
+	epatch "${FILESDIR}/${P}-beacon-loss.patch"
 	tc-export CC LD
 }
 
