@@ -67,6 +67,7 @@ src_configure() {
 		--localstatedir=/var \
 		--enable-loopback=builtin \
 		--with-sslroots=/etc/ssl/certs \
+		--with-default-pkcs11=libchaps.so \
 		$(use_enable bluetooth) \
 		$(use_enable bootstat) \
 		$(use_enable crosmetrics) \
