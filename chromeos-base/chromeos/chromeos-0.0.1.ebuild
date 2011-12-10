@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +localssh X bootchart touchui"
+IUSE="bluetooth +localssh X bootchart touchui opengles"
 
 
 ################################################################################
@@ -141,6 +141,10 @@ RDEPEND="${RDEPEND}
 # dependency. crosbug.com/23531
 # "shill" is the new connection manager. It is still in "experimental"
 #  mode, and must be explicitly enabled (in lieu of flimflam).
+
+# Note that o3d works with opengl on x86 and opengles on ARM, but not ARM
+# opengl.
+
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
@@ -189,7 +193,10 @@ RDEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
-	media-plugins/o3d
+	!arm? ( media-plugins/o3d )
+	arm? (
+		opengles? ( media-plugins/o3d )
+	)
 	media-sound/alsa-utils
 	media-sound/adhd
 	net-firewall/iptables
