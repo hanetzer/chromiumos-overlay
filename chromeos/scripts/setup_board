@@ -323,19 +323,6 @@ install_toolchain_in_board() {
 # from each overlay, and then calculates the prebuilt URLs based on the
 # various binhost configuration files.
 print_board_make_conf() {
-  local binhost_dir="$CHROMIUMOS_OVERLAY/chromeos/binhost/target"
-  local preflight_binhost="$binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
-  local chrome_binhost="$binhost_dir/$BOARD-LATEST_RELEASE_CHROME_BINHOST.conf"
-  if [[ $ARCH = x86 && ! -f "$preflight_binhost" ]]; then
-    preflight_binhost="$binhost_dir/x86-generic-PREFLIGHT_BINHOST.conf"
-  fi
-  if [[ $ARCH = x86 && ! -f "$chrome_binhost" ]]; then
-    chrome_binhost="$binhost_dir/x86-generic-LATEST_RELEASE_CHROME_BINHOST.conf"
-  fi
-  local chromeos_overlay="$SRC_ROOT/private-overlays/chromeos-overlay"
-  local internal_binhost_dir="$chromeos_overlay/chromeos/binhost/target"
-  local internal_binhost="$internal_binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
-
   echo "# AUTO-GENERATED FILE. DO NOT EDIT."
   echo
   echo "# Source make.conf from each overlay."
@@ -348,6 +335,7 @@ print_board_make_conf() {
       boto_config="$overlay/googlestorage_account.boto"
     fi
   done
+  local chromeos_overlay="$SRC_ROOT/private-overlays/chromeos-overlay"
   if [[ -f "$chromeos_overlay/googlestorage_account.boto" ]]; then
     boto_config="$chromeos_overlay/googlestorage_account.boto"
   fi
@@ -356,6 +344,26 @@ print_board_make_conf() {
   echo FETCHCOMMAND_GS="\"bash -c 'BOTO_CONFIG=$boto_config $gsutil_cmd'\""
   echo RESUMECOMMAND_GS='"$FETCHCOMMAND_GS"'
   echo
+}
+
+print_board_binhost_config() {
+  local binhost_dir="$CHROMIUMOS_OVERLAY/chromeos/binhost/target"
+  local preflight_binhost="$binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
+  local chrome_binhost_suffix="LATEST_RELEASE_CHROME_BINHOST.conf"
+  local chrome_binhost="$binhost_dir/$BOARD-$chrome_binhost_suffix"
+  if [[ $ARCH = x86 && ! -f "$preflight_binhost" ]]; then
+    preflight_binhost="$binhost_dir/x86-generic-PREFLIGHT_BINHOST.conf"
+  fi
+  if [[ $ARCH = x86 && ! -f "$chrome_binhost" ]]; then
+    if portageq-$BOARD_VARIANT envvar USE | grep -Eq '(^| )aura( |$)'; then
+      chrome_binhost="$binhost_dir/x86-generic_aura-$chrome_binhost_suffix"
+    else
+      chrome_binhost="$binhost_dir/x86-generic-$chrome_binhost_suffix"
+    fi
+  fi
+  local chromeos_overlay="$SRC_ROOT/private-overlays/chromeos-overlay"
+  local internal_binhost_dir="$chromeos_overlay/chromeos/binhost/target"
+  local internal_binhost="$internal_binhost_dir/$BOARD-PREFLIGHT_BINHOST.conf"
 
   cat <<'EOF'
 # FULL_BINHOST is populated by the full builders. It is listed first because it
@@ -533,6 +541,7 @@ if [ -d "$BOARD_ROOT" ] ; then
   else
     if ! $HOST_BOARD; then
       print_board_make_conf | sudo_clobber $BOARD_ETC/make.conf.board
+      print_board_binhost_config | sudo_append $BOARD_ETC/make.conf.board
     fi
     if [[ $FLAGS_quiet -eq $FLAGS_FALSE ]]; then
       warn "Board output directory '$BOARD_ROOT' already exists."
@@ -591,6 +600,7 @@ if ! ${HOST_BOARD}; then
   sudo ln -sf "${CHROMIUMOS_CONFIG}/make.conf.${ARCH}-target" \
     "${BOARD_ETC}/make.conf"
   print_board_make_conf | sudo_clobber $BOARD_ETC/make.conf.board
+  print_board_binhost_config | sudo_append $BOARD_ETC/make.conf.board
 
   # We install the toolchain related bits after the BOARD_ROOT, BOARD_PROFILE
   # and BOARD_ETC directories have been created.
