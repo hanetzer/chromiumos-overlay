@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="6b961980369a1c8f4fcea989eded16f19a8ba851"
+CROS_WORKON_COMMIT="5f836676c07a4dd773e8e547bbb44d5ffaa280c8"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -14,7 +14,8 @@ SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop"
 KEYWORDS="amd64 arm x86"
 
-RDEPEND="chromeos-base/metrics
+RDEPEND="app-misc/ddccontrol
+	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
 	sys-fs/udev
