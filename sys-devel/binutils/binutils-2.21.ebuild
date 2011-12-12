@@ -1,3 +1,6 @@
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
 inherit eutils libtool flag-o-matic gnuconfig multilib versionator ${extra_eclass}
 
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~sparc-fbsd ~x86-fbsd"
