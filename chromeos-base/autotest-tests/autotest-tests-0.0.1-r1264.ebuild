@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9de1ee4a4a71486c28112408d4b58926740a70f1"
+CROS_WORKON_COMMIT="5a37916f9cb17c0c0f46500100ec57705c6be8c5"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -239,10 +239,12 @@ IUSE_TESTS="
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CrosDisksFilesystem
 	+tests_platform_CrosDisksFormat
+	+tests_platform_CryptohomeBadPerms
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeFio
 	+tests_platform_CryptohomeMount
 	+tests_platform_CryptohomeMultiple
+	+tests_platform_CryptohomeNonDirs
 	+tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
 	+tests_platform_CryptohomeTPMReOwnServer
