@@ -238,10 +238,12 @@ IUSE_TESTS="
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CrosDisksFilesystem
 	+tests_platform_CrosDisksFormat
+	+tests_platform_CryptohomeBadPerms
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeFio
 	+tests_platform_CryptohomeMount
 	+tests_platform_CryptohomeMultiple
+	+tests_platform_CryptohomeNonDirs
 	+tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
 	+tests_platform_CryptohomeTPMReOwnServer
