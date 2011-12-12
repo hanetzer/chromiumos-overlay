@@ -30,23 +30,12 @@ src_compile() {
 
 	# Only build the tools
 	emake LIBDIR=$(get_libdir) || die
-	scons minijail || die "minijail compile failed."
 }
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-
-	# Only build the tests
-	# TODO(wad) eclass-ify this.
-	scons minijail_unittests ||
-		die "minijail_unittests compile failed."
-
-	if use x86 ; then
-		./minijail_unittests ${GTEST_ARGS} || \
-		    die "unit tests (with ${GTEST_ARGS}) failed!"
-	fi
 
 	# TODO(wad) switch to common.mk to get qemu and valgrind coverage
 	emake libminijail_unittest || die "libminijail_unittest compile failed."
@@ -58,7 +47,7 @@ src_test() {
 
 src_install() {
 	into /
-	dosbin minijail{,0} || die
+	dosbin minijail0 || die
 	dolib.so libminijail.so || die
 	dolib.so libminijailpreload.so || die
 	insinto /usr/include/chromeos
