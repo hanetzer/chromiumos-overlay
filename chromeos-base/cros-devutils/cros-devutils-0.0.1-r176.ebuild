@@ -70,6 +70,9 @@ src_install() {
 		doins builder.py || die "Could not find file to install."
 		doins autoupdate.py || die "Could not find file to install."
 		doins buildutil.py || die "Could not find file to install."
+		doins constants.py || die "Could not find file to install."
+		doins devserver_util.py || die "Could not find file to install."
+		doins downloader.py || die "Could not find file to install."
 		# Related to devserver
 		dobin host/cros_generate_update_payload ||
 			die "Could not find file to install."
@@ -111,6 +114,7 @@ src_test() {
 		TESTS+="autoupdate_unittest.py "
 		TESTS+="builder_test.py "
 		TESTS+="devserver_test.py "
+		TESTS+="devserver_util_test.py "
 		#FIXME(zbehan): update_test.py doesn't seem to work right now.
 	fi
 
