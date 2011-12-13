@@ -52,7 +52,7 @@ src_configure() {
 			COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
 			COMMON_MAKE_FLAGS+=" ARCH=${ub_arch}"
 			;;
-		(i386)	CROS_U_BOOT_CONFIG='coreboot-x86_config'
+		(i386)	CROS_U_BOOT_CONFIG='chromeos_coreboot_config'
 			CROS_FDT_DIR="board/chromebook-x86/coreboot"
 
 			# The below is a workaround to allow the same ebuild
