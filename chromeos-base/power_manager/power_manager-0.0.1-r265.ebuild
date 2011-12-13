@@ -2,16 +2,16 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="38e079c62b28982b2a0d9029a5edf1a83346e92c"
+CROS_WORKON_COMMIT="122d16b081a3183269834dfa3facc0d180bc1249"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
-inherit cros-debug cros-workon scons-utils toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop -als"
+IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-misc/ddccontrol
@@ -37,13 +37,21 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	myesconsargs=(
-		$(use_scons new_power_button)
-		$(use_scons lockvt)
-		$(use_scons is_desktop)
-		$(use_scons als has_als)
-	)
-	escons || die "power_manager compile failed."
+	local power_button=LEGACY
+	if use new_power_button; then
+		power_button=NEW
+	fi
+	local suspend_lockvt=0
+	if use lockvt; then
+		suspend_lockvt=1
+	fi
+	local is_desktop=0
+	if use is_desktop; then
+		is_desktop=1
+	fi
+	# TODO(davidjames): parallel builds
+	scons POWER_BUTTON="$power_button" lockvt=$suspend_lockvt is_desktop=$is_desktop || \
+		die "power_manager compile failed."
 }
 
 src_test() {
@@ -51,13 +59,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 
 	# Build tests
-	myesconsargs=(
-		$(use_scons new_power_button)
-		$(use_scons lockvt)
-		$(use_scons is_desktop)
-		$(use_scons als has_als)
-	)
-	escons tests || die "tests compile failed."
+	scons tests || die "tests compile failed."
 
 	# Run tests if we're on x86
 	if ! use x86 ; then
