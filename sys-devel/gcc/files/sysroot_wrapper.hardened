@@ -34,7 +34,9 @@ fPIE=set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
 pie=set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
   '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared', '-shared',
   '-static'])
+sse=set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
 
+disable_flags=set(['-mno-movbe', '-mno-ssse3'])
 extra_flags=set(['-fstack-protector-all', '-fPIE', '-pie'])
 flags = ['-D_FORTIFY_SOURCE=2']
 for flag in sys.argv[1:]:
@@ -46,9 +48,11 @@ for flag in sys.argv[1:]:
     extra_flags.discard('-pie')
   if flag != '-nopie':
     flags.append(flag)
+  if flag in sse:
+    disable_flags.discard('-mno-ssse3')
 
 if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
-  flags.extend(['-mno-movbe', '-mno-ssse3'])
+  flags.extend(disable_flags)
 
 if 'SYSROOT' in os.environ:
   flags.append('--sysroot=%s' % os.environ['SYSROOT'])
