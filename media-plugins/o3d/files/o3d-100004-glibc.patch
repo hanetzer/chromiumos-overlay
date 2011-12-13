@@ -1,0 +1,19 @@
+newer versions of glibc get stricter in terms of headers they include.
+this file uses fstat() but doesn't include the stat.h header leading to:
+  CXX(target) out/Release/obj.target/breakpad_client/breakpad/src/common/linux/file_id.o
+breakpad/src/common/linux/file_id.cc: In member function 'bool google_breakpad::FileID::ElfFileIdentifier(uint8_t*)':
+breakpad/src/common/linux/file_id.cc:132:20: error: 'fstat' was not declared in this scope
+make: *** [out/Release/obj.target/breakpad_client/breakpad/src/common/linux/file_id.o] Error 1
+
+this file doesn't seem to be in upstream o3d, so there's nothing to report there ...
+
+--- a/breakpad/src/common/linux/file_id.cc
++++ b/breakpad/src/common/linux/file_id.cc
+@@ -42,6 +42,7 @@
+ #include <link.h>
+ #include <string.h>
+ #include <sys/mman.h>
++#include <sys/stat.h>
+ #include <unistd.h>
+ 
+ #include <algorithm>

@@ -53,6 +53,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${P}-disable-gconf.patch
 	epatch "${FILESDIR}"/${P}-linux3.patch
+	epatch "${FILESDIR}"/${P}-glibc.patch
 	pushd breakpad
 	epatch "${FILESDIR}"/0001-Remove-curl-types.h-include-since-this-header-has-be.patch
 	popd
