@@ -521,12 +521,9 @@ if [ "${CHOST}" != "$FLAGS_toolchain" ] ; then
   fi
 fi
 
-# TODO(shenhan): FLAGS_usepkg check is to wait for binary packages to get
-# posted, remove this in a few days.
-if [[ "${ARCH}" == "x86" ]] && [[ "$FLAGS_usepkg" == "$FLAGS_FALSE" ]] && \
-    toolchain_needs_update arm-none-eabi ; then
-  # We need a toolchain to build software for the embedded controller on the x86
-  # board.
+if [[ "${ARCH}" == "x86" ]] && toolchain_needs_update arm-none-eabi ; then
+  # We need a toolchain to build software for the embedded controller
+  # on the x86 board.
   uninstall_toolchain arm-none-eabi
   build_toolchain arm-none-eabi
 fi
