@@ -111,12 +111,15 @@ IUSE_TESTS="
 	+tests_desktopui_WindowManagerFocusNewWindows
 	+tests_desktopui_WindowManagerHotkeys
 	tests_example_UnitTest
-        +tests_firmware_CorruptBothFwAB
-        +tests_firmware_CorruptFwA
-        +tests_firmware_CorruptFwB
+        +tests_firmware_CorruptBothFwSigAB
+        +tests_firmware_CorruptBothKernelAB
+        +tests_firmware_CorruptFwSigA
+        +tests_firmware_CorruptFwSigB
         +tests_firmware_CorruptKernelA
         +tests_firmware_CorruptKernelB
+        +tests_firmware_DevFwNormalBoot
         +tests_firmware_DevMode
+        +tests_firmware_DevScreenTimeout
         +tests_firmware_DevTriggerRecovery
         +tests_firmware_FAFTClient
         +tests_firmware_RecoveryButton
