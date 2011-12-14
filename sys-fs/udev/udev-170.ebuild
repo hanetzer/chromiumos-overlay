@@ -29,29 +29,29 @@ HOMEPAGE="http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86"
-IUSE="selinux extras test"
+IUSE="selinux test rule_generator hwdb acl gudev introspection
+	keymap floppy edd action_modeswitch"
 
 COMMON_DEPEND="selinux? ( sys-libs/libselinux )
-	extras? (
-		sys-apps/acl
-		>=sys-apps/usbutils-0.82
-		virtual/libusb:0
-		sys-apps/pciutils
-		dev-libs/glib:2
-	)
+	acl? ( sys-apps/acl dev-libs/glib:2 )
+	gudev? ( dev-libs/glib:2 )
+	introspection? ( dev-libs/gobject-introspection )
+	action_modeswitch? ( virtual/libusb:0 )
 	>=sys-apps/util-linux-2.16
 	>=sys-libs/glibc-2.9"
 
 DEPEND="${COMMON_DEPEND}
-	extras? (
-		dev-util/gperf
-		dev-util/pkgconfig
-	)
+	keymap? ( dev-util/gperf )
 	virtual/os-headers
 	!<sys-kernel/linux-headers-2.6.29
 	test? ( app-text/tree )"
 
 RDEPEND="${COMMON_DEPEND}
+	hwdb?
+	(
+		>=sys-apps/usbutils-0.82
+		sys-apps/pciutils
+	)
 	!sys-apps/coldplug
 	!<sys-fs/lvm2-2.02.45
 	!sys-fs/device-mapper
@@ -189,19 +189,22 @@ src_compile() {
 		--libdir=/usr/$(get_libdir) \
 		--with-rootlibdir=/$(get_libdir) \
 		--libexecdir=/lib/udev \
-		--with-pci-ids-path=/usr/share/misc/pci.ids \
-		--with-usb-ids-path=/usr/share/misc/usb.ids \
 		--enable-logging \
 		--enable-static \
 		$(use_with selinux) \
-		$(use_enable extras) \
-		--disable-introspection \
-		--without-systemdsystemunitdir \
-		--disable-rule_generator
-	# we don't have gobject-introspection in portage tree
-	# pci.ids and usb.ids hardcoded to avoid getting /build/blah
-	# on the front.
-	# rule generator disabled (chromiumos:3562)
+		$(use_enable debug) \
+		$(use_enable rule_generator) \
+		$(use_enable hwdb) \
+		--with-pci-ids-path="/usr/share/misc/pci.ids" \
+		--with-usb-ids-path="/usr/share/misc/usb.ids" \
+		$(use_enable acl udev_acl) \
+		$(use_enable gudev) \
+		$(use_enable introspection) \
+		$(use_enable keymap) \
+		$(use_enable floppy) \
+		$(use_enable edd) \
+		$(use_enable action_modeswitch) \
+		--without-systemdsystemunitdir
 
 	emake || die "compiling udev failed"
 }
@@ -253,7 +256,7 @@ src_install() {
 
 	# keep doc in just one directory, Bug #281137
 	rm -rf "${D}/usr/share/doc/${PN}"
-	if use extras; then
+	if use keymap; then
 		dodoc extras/keymap/README.keymap.txt || die "failed installing docs"
 	fi
 }
