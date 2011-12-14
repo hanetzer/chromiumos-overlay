@@ -144,8 +144,8 @@ src_compile() {
 src_install() {
 	local inst_dir="/firmware"
 	local files_to_copy="System.map u-boot.bin"
-	local ub_boarddir="$(grep CONFIG_BOARDDIR
-			${UB_BUILD_DIR}/include/autoconf.mk |
+	local ub_boarddir="$(grep CONFIG_BOARDDIR \
+			${UB_BUILD_DIR}/include/autoconf.mk | \
 			sed 's/.*="\(.*\)"/\1/')"
 	local file
 
