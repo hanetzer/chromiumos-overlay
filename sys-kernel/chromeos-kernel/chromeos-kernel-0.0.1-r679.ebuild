@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="af223973e7cec91178f526f4b6d96cb9c2700706"
+CROS_WORKON_COMMIT="f83728e37e7376d97e2e8dfd125c84f653928752"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit binutils-funcs cros-board cros-kernel toolchain-funcs
