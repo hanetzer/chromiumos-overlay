@@ -3,7 +3,7 @@
 # $Header$
 
 EAPI="2"
-CROS_WORKON_COMMIT="080c7951165acb7cdfc9b372ad76d0772fa4f53d"
+CROS_WORKON_COMMIT="310a21ef24ace14b4d6e8095172445494f54ff25"
 CROS_WORKON_PROJECT="chromiumos/third_party/tpm-emulator"
 
 inherit cmake-utils cros-workon toolchain-funcs
