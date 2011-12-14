@@ -9,17 +9,15 @@ SUPPORT_PYTHON_ABIS="1"
 
 inherit subversion eutils multilib python
 
-SVN_COMMIT="145532"
-
 DESCRIPTION="C language family frontend for LLVM"
 HOMEPAGE="http://clang.llvm.org/"
 SRC_URI=""
-ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
+ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64"
-IUSE="asan debug multitarget +static-analyzer +system-cxx-headers test"
+KEYWORDS=""
+IUSE="debug multitarget +static-analyzer +system-cxx-headers test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
@@ -28,12 +26,8 @@ S="${WORKDIR}/llvm"
 
 src_unpack() {
 	# Fetching LLVM as well: see http://llvm.org/bugs/show_bug.cgi?id=4840
-	OLD_S="${S}"
-	ESVN_PROJECT=llvm subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk@${SVN_COMMIT}"
-	if use asan; then
-		ESVN_PROJECT=compiler-rt S="${OLD_S}"/projects/compiler-rt subversion_fetch "http://llvm.org/svn/llvm-project/compiler-rt/trunk@${SVN_COMMIT}"
-	fi
-	ESVN_PROJECT=clang S="${OLD_S}"/tools/clang subversion_fetch
+	ESVN_PROJECT=llvm subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk"
+	ESVN_PROJECT=clang S="${S}"/tools/clang subversion_fetch
 }
 
 src_prepare() {
