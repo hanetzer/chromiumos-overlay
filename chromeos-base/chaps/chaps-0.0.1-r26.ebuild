@@ -39,16 +39,13 @@ src_compile() {
 
 src_test() {
 	cros-debug-add-NDEBUG
-	# TODO(dkrahn) Enable tests once chaps is enabled.
-	#emake tests || die "failed to make chaps tests"
-	#emake runtests || die "failed to run chaps tests"
+	emake tests || die "failed to make chaps tests"
+	emake runtests || die "failed to run chaps tests"
 }
 
 src_install() {
 	dosbin build-opt/chapsd || die
-	# TODO(dkrahn) Enable chaps; disabled due to crosbug.com/23585.
-	#dolib.so build-opt/libchaps.so || die
-	dosym libopencryptoki.so /usr/$(get_libdir)/libchaps.so || die
+	dolib.so build-opt/libchaps.so || die
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.Chaps.conf || die
