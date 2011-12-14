@@ -116,9 +116,9 @@ src_compile() {
 			# In order to produce a working image on Sandybridge we
 			# need to embed this image into a Firmware Descriptor image
 			# that contains ME firmware and possibly some other BLOBs.
-			dd if=image.bin of=image_sys.bin bs=2M skip=1 || die
+			dd if=image.bin of=image_sys.bin bs=512K skip=3 || die
 			dd if=legacy_image.bin of=legacy_image_sys.bin \
-				bs=2M skip=1 || die
+				bs=512K skip=3 || die
 			cp ${skeleton} image.ifd || die
 			${ifdtool} -i BIOS:image_sys.bin image.ifd || die
 			cp ${skeleton} legacy_image.ifd || die
