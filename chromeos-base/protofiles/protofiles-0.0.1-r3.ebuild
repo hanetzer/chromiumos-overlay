@@ -27,7 +27,15 @@ DEPEND="!<=chromeos-base/chromeos-chrome-16.0.886.0_rc-r1
 	!=chromeos-base/chromeos-chrome-16.0.882.0_alpha-r1"
 RDEPEND="${DEPEND}"
 
+src_prepare() {
+	cp "${FILESDIR}"/policy_reader "${S}"
+}
+
 src_install() {
 	insinto /usr/include/proto
 	doins "${S}"/*.proto || die "Can not install protobuf files."
+	insinto /usr/share/protofiles
+	doins "${S}"/chrome_device_policy.proto
+	doins "${S}"/device_management_backend.proto
+	dobin "${S}"/policy_reader
 }
