@@ -92,6 +92,7 @@
 =sys-fs/sshfs-fuse-2.3		arm
 =sys-fs/udev-171-r2		amd64 arm x86
 =sys-kernel/linux-headers-2.6.38	amd64 arm x86
+=sys-kernel/linux-headers-3.1	amd64 arm x86
 =sys-block/btrace-1.0.0		amd64 arm x86
 =x11-libs/libdrm-2.4.24         amd64 arm x86
 =sys-libs/libhx-3.1		amd64 arm x86
