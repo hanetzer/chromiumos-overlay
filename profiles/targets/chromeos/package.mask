@@ -12,9 +12,6 @@
 # TODO: Fix lsof to cross compile on ARM
 >sys-process/lsof-4.81-r2
 
-# TODO: Fix cross compile on ARM of gdbm-1.8.3-r4
->sys-libs/gdbm-1.8.3-r3
-
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44
 
