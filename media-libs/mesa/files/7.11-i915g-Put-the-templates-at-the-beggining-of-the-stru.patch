@@ -1,0 +1,64 @@
+From 877ccb7eab8b4b1aec639ec234d0cadcea9eae55 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Thu, 15 Dec 2011 10:59:26 -0800
+Subject: [PATCH 1/2] i915g: Put the templates at the beggining of the
+ structures.
+
+Seriously. This fixes fragment-and-vertex-texturing in piglit and probably
+a boatload of other stuff.
+---
+ src/gallium/drivers/i915/i915_context.h |    6 +++---
+ src/gallium/drivers/i915/i915_state.c   |    4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/gallium/drivers/i915/i915_context.h b/src/gallium/drivers/i915/i915_context.h
+index 7406b7e..bb1b3b1 100644
+--- a/src/gallium/drivers/i915/i915_context.h
++++ b/src/gallium/drivers/i915/i915_context.h
+@@ -188,6 +188,8 @@ struct i915_depth_stencil_state {
+ };
+ 
+ struct i915_rasterizer_state {
++   struct pipe_rasterizer_state templ;
++
+    unsigned light_twoside : 1;
+    unsigned st;
+    enum interp_mode color_interp;
+@@ -196,14 +198,12 @@ struct i915_rasterizer_state {
+    unsigned LIS7;
+    unsigned sc[1];
+ 
+-   struct pipe_rasterizer_state templ;
+-
+    union { float f; unsigned u; } ds[2];
+ };
+ 
+ struct i915_sampler_state {
++   const struct pipe_sampler_state templ;
+    unsigned state[3];
+-   const struct pipe_sampler_state *templ;
+    unsigned minlod;
+    unsigned maxlod;
+ };
+diff --git a/src/gallium/drivers/i915/i915_state.c b/src/gallium/drivers/i915/i915_state.c
+index bb4089e..fc0c868 100644
+--- a/src/gallium/drivers/i915/i915_state.c
++++ b/src/gallium/drivers/i915/i915_state.c
+@@ -223,12 +223,12 @@ i915_create_sampler_state(struct pipe_context *pipe,
+    unsigned minFilt, magFilt;
+    unsigned mipFilt;
+ 
+-   cso->templ = sampler;
++   memcpy(&cso->templ, sampler, sizeof(struct pipe_sampler_state));
+ 
+    mipFilt = translate_mip_filter(sampler->min_mip_filter);
+    minFilt = translate_img_filter( sampler->min_img_filter );
+    magFilt = translate_img_filter( sampler->mag_img_filter );
+-   
++
+    if (sampler->max_anisotropy > 1)
+       minFilt = magFilt = FILTER_ANISOTROPIC;
+ 
+-- 
+1.7.5.3.367.ga9930
+

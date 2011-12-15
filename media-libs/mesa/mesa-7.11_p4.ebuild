@@ -131,6 +131,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11_p3-builtin_function.patch
 	epatch "${FILESDIR}"/7.11-i915g-max_insn.patch
 	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
+	epatch "${FILESDIR}"/7.11-i915g-Put-the-templates-at-the-beggining-of-the-stru.patch
 
 	eautoreconf
 }
