@@ -133,6 +133,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
 	epatch "${FILESDIR}"/7.11-i915g-Put-the-templates-at-the-beggining-of-the-stru.patch
 	epatch "${FILESDIR}"/7.11-force_s3tc_enable.patch
+	if use llvm; then
+		epatch "${FILESDIR}"/7.11-llvm-config.patch
+	fi
 
 	eautoreconf
 }

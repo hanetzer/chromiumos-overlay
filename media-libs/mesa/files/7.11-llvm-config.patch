@@ -1,0 +1,11 @@
+--- configure.ac	2011-12-20 13:39:39.166232813 -0800
++++ configure.ac	2011-12-20 13:42:02.365667287 -0800
+@@ -1745,7 +1745,7 @@
+     if test "x$LLVM_CONFIG" != xno; then
+ 	LLVM_VERSION=`$LLVM_CONFIG --version`
+ 	LLVM_CFLAGS=`$LLVM_CONFIG --cppflags|sed 's/-DNDEBUG\>//g'`
+-	LLVM_LIBS="`$LLVM_CONFIG --libs`"
++        LLVM_LIBS="`$LLVM_CONFIG --libs core engine bitwriter` -L`llvm-config --libdir`/llvm"
+ 
+ 	LLVM_LDFLAGS=`$LLVM_CONFIG --ldflags`
+ 	DEFINES="$DEFINES -D__STDC_CONSTANT_MACROS"
