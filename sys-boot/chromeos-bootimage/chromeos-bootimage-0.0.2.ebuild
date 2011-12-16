@@ -47,6 +47,7 @@ src_compile() {
 	local fdt_file
 	local image_file
 	local devkeys_file
+	local dd_params
 
 	# Directory where the generated files are looked for and placed.
 	CROS_FIRMWARE_IMAGE_DIR="/firmware"
@@ -109,6 +110,11 @@ src_compile() {
 	die "failed to build legacy image."
 
 	if use x86; then
+		if use link; then
+			dd_params='bs=2M skip=1'
+		else
+			dd_params='bs=512K skip=3'
+		fi
 		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
 		local ifdtool="/usr/bin/ifdtool"
 		if [ -r ${skeleton} ]; then
@@ -116,9 +122,9 @@ src_compile() {
 			# In order to produce a working image on Sandybridge we
 			# need to embed this image into a Firmware Descriptor image
 			# that contains ME firmware and possibly some other BLOBs.
-			dd if=image.bin of=image_sys.bin bs=512K skip=3 || die
+			dd if=image.bin of=image_sys.bin ${dd_params} || die
 			dd if=legacy_image.bin of=legacy_image_sys.bin \
-				bs=512K skip=3 || die
+				 ${dd_params} || die
 			cp ${skeleton} image.ifd || die
 			${ifdtool} -i BIOS:image_sys.bin image.ifd || die
 			cp ${skeleton} legacy_image.ifd || die
