@@ -2,6 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/profiles/base/profile.bashrc,v 1.3 2009/07/21 00:08:05 zmedico Exp $
 
+# Set LANG=C globally because it speeds up build times, and we don't need
+# localized messages inside of our builds.
+export LANG=C
+
 if ! declare -F elog >/dev/null ; then
 	elog() {
 		einfo "$@"
@@ -14,6 +18,23 @@ CROS_BUILD_BOARD_TREE="${SYSROOT}/build"
 CROS_BUILD_BOARD_BIN="${CROS_BUILD_BOARD_TREE}/bin"
 
 CROS_ADDONS_TREE="/usr/local/portage/chromiumos/chromeos"
+
+# Are we merging for the board sysroot, or for the cros sdk, or for
+# the target hardware?  Returns a string:
+#  - cros_host (the sdk)
+#  - board_sysroot
+#  - target_image
+# We can't rely on "use cros_host" as USE gets filtred based on IUSE,
+# and not all packages have IUSE=cros_host.
+cros_target() {
+	if [[ -z ${SYSROOT} && ${ROOT} == "/" ]] ; then
+		echo "cros_host"
+	elif [[ ${ROOT%/} == ${SYSROOT%/} ]] ; then
+		echo "board_sysroot"
+	else
+		echo "target_image"
+	fi
+}
 
 # Load all additional bashrc files we have for this package.
 cros_stack_bashrc() {
@@ -64,23 +85,6 @@ cros_setup_hooks() {
 }
 cros_setup_hooks
 
-# Are we merging for the board sysroot, or for the cros sdk, or for
-# the target hardware?  Returns a string:
-#  - cros_host (the sdk)
-#  - board_sysroot
-#  - target_image
-# We can't rely on "use cros_host" as USE gets filtred based on IUSE,
-# and not all packages have IUSE=cros_host.
-cros_target() {
-	if [[ -z ${SYSROOT} && ${ROOT} == "/" ]] ; then
-		echo "cros_host"
-	elif [[ ${ROOT%/} == ${SYSROOT%/} ]] ; then
-		echo "board_sysroot"
-	else
-		echo "target_image"
-	fi
-}
-
 # Packages that use python will run a small python script to find the
 # pythondir. Unfortunately, they query the host python to find out the
 # paths for things, which means they inevitably guess wrong.  Export
@@ -103,7 +107,3 @@ cros_pre_src_unpack_python_multilib_setup() {
 cros_pre_pkg_setup_sysroot_build_bin_dir() {
 	PATH+=":${CROS_BUILD_BOARD_BIN}"
 }
-
-# Set LANG=C globally because it speeds up build times, and we don't need
-# localized messages inside of our builds.
-export LANG=C
