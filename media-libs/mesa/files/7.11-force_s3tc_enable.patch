@@ -1,0 +1,24 @@
+--- mesa/src/gallium/auxiliary/util/u_format_s3tc.c	2011-12-08 14:52:35.826822000 -0800
++++ mesa2/src/gallium/auxiliary/util/u_format_s3tc.c	2011-12-14 15:48:20.365902000 -0800
+@@ -119,8 +119,8 @@ util_format_s3tc_init(void)
+ 
+    library = util_dl_open(DXTN_LIBNAME);
+    if (!library) {
+-      if (getenv("force_s3tc_enable") &&
+-          !strcmp(getenv("force_s3tc_enable"), "true")) {
++      if (1 /*getenv("force_s3tc_enable") &&
++          !strcmp(getenv("force_s3tc_enable"), "true")*/) {
+          debug_printf("couldn't open " DXTN_LIBNAME ", enabling DXTn due to "
+             "force_s3tc_enable=true environment variable\n");
+          util_format_s3tc_enabled = TRUE;
+--- mesa/src/mesa/state_tracker/st_extensions.c	2011-12-08 14:52:45.095129000 -0800
++++ mesa2/src/mesa/state_tracker/st_extensions.c	2011-12-14 16:50:16.857150000 -0800
+@@ -433,7 +433,7 @@ void st_init_extensions(struct st_contex
+    if (screen->is_format_supported(screen, PIPE_FORMAT_DXT5_RGBA,
+                                    PIPE_TEXTURE_2D, 0,
+                                    PIPE_BIND_SAMPLER_VIEW) &&
+-       (ctx->Mesa_DXTn || st_get_s3tc_override())) {
++       (ctx->Mesa_DXTn || 1/*st_get_s3tc_override()*/)) {
+       ctx->Extensions.EXT_texture_compression_s3tc = GL_TRUE;
+       ctx->Extensions.S3_s3tc = GL_TRUE;
+    }

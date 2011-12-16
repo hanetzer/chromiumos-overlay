@@ -132,6 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-i915g-max_insn.patch
 	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
 	epatch "${FILESDIR}"/7.11-i915g-Put-the-templates-at-the-beggining-of-the-stru.patch
+	epatch "${FILESDIR}"/7.11-force_s3tc_enable.patch
 
 	eautoreconf
 }
@@ -242,6 +243,10 @@ src_install() {
 			doins "${S}/$(get_libdir)/${x}"
 		fi
 	done
+
+    # Set driconf option to enable S3TC hardware decompression
+    insinto "/etc/"
+    doins "${FILESDIR}"/drirc
 }
 
 pkg_postinst() {
