@@ -41,6 +41,7 @@ IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
 U_BOOT_FDT_USE_PREFIX="u_boot_fdt_use_"
 ALL_FDTS=(
 	alex
+	link
 	lumpy
 	mario
 	stumpy
