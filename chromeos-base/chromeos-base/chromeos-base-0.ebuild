@@ -12,17 +12,18 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="cros_host pam"
 
-DEPEND=">=sys-apps/baselayout-2"
-RDEPEND="${DEPEND}
+DEPEND=">=sys-apps/baselayout-2
 	!<sys-apps/baselayout-2.0.1-r227
 	!<sys-libs/timezone-data-2011d
 	!<=app-admin/sudo-1.8.2
 	!<sys-apps/mawk-1.3.4
 	!<app-shells/bash-4.1
 	!<app-shells/dash-0.5.5
+	!<net-misc/openssh-5.2_p1-r8
 	!cros_host? (
 		!app-misc/editor-wrapper
 	)"
+RDEPEND="${DEPEND}"
 
 # Remove entry from /etc/group
 #
@@ -112,6 +113,11 @@ src_install() {
 		dodir /usr/libexec
 		dosym /usr/bin/vim /usr/libexec/editor || die
 		dosym /bin/more /usr/libexec/pager || die
+
+		# Install our custom ssh config settings.
+		insinto /etc/ssh
+		doins "${FILESDIR}"/ssh{,d}_config
+		fperms 600 /etc/ssh/sshd_config
 	fi
 
 	# Add our little bit of sudo glue.
