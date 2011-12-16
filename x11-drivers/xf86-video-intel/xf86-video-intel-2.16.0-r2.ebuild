@@ -10,7 +10,7 @@ inherit linux-info xorg-2
 DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="amd64 ~ia64 x86 -x86-fbsd"
-IUSE="dri sna xvmc"
+IUSE="dri sna xvmc -pageflipping"
 
 RDEPEND="x11-libs/libXext
 	x11-libs/libXfixes
@@ -31,11 +31,16 @@ PATCHES=(
 	"${FILESDIR}/2.16.0-copy-fb.patch"
 	# Prevent X from touching boot-time gamma settings.
 	"${FILESDIR}/2.14.0-no-gamma.patch"
-	# Disable pageflipping.
-	"${FILESDIR}/2.16.0-noflips.patch"
 	# Change order of function calls.
 	"${FILESDIR}/2.16.0-display-order.patch"
 )
+
+if ! use pageflipping; then
+	PATCHES+=(
+		# Disable pageflipping.
+		"${FILESDIR}/2.16.0-noflips.patch"
+	)
+fi
 
 pkg_setup() {
 	xorg-2_pkg_setup
