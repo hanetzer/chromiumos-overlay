@@ -10,7 +10,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_host"
+IUSE="cros_host pam"
 
 DEPEND=">=sys-apps/baselayout-2"
 RDEPEND="${DEPEND}
