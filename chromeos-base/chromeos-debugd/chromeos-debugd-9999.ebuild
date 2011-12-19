@@ -26,7 +26,7 @@ src_compile() {
 }
 
 src_test() {
-	emake tests
+#	emake tests
 }
 
 src_install() {
