@@ -19,7 +19,7 @@ inherit eutils
 EGIT="git.eclass"
 
 # We DEPEND on at least a bit recent git version
-DEPEND=">=dev-util/git-1.6"
+DEPEND=">=dev-vcs/git-1.6"
 
 EXPORTED_FUNCTIONS="src_unpack"
 case "${EAPI:-0}" in

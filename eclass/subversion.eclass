@@ -30,7 +30,7 @@ esac
 
 DESCRIPTION="Based on the ${ECLASS} eclass"
 
-SUBVERSION_DEPEND="dev-util/subversion[webdav-neon,webdav-serf]
+SUBVERSION_DEPEND="dev-vcs/subversion[webdav-neon,webdav-serf]
 	net-misc/rsync"
 
 if [[ -z "${ESVN_DISABLE_DEPENDENCIES}" ]]; then
@@ -240,7 +240,7 @@ subversion_fetch() {
 		ewarn "see \${ESVN_REPO_URI}"
 	fi
 
-	if has_version ">=dev-util/subversion-1.6.0"; then
+	if has_version ">=dev-vcs/subversion-1.6.0"; then
 		options="${options} --config-option=config:auth:password-stores="
 	fi
 

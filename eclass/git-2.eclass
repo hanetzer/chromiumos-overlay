@@ -13,7 +13,7 @@
 # This eclass support all EAPIs
 EXPORT_FUNCTIONS src_unpack
 
-DEPEND="dev-util/git"
+DEPEND="dev-vcs/git"
 
 # @ECLASS-VARIABLE: EGIT_SOURCEDIR
 # @DESCRIPTION:

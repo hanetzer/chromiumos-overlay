@@ -21,7 +21,7 @@ app-arch/dpkg nls
 
 # We don't need integration with cvs, perl, or subversion in git, so we can
 # disable these for faster builds.
-dev-util/git cvs perl subversion
+dev-vcs/git cvs perl subversion
 
 # We use asynchronous dns resolution instead of threaded dns resolution.
 net-misc/curl threads

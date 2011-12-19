@@ -8,9 +8,9 @@ media-libs/gd           png
 dev-libs/protobuf 	-python
 dev-perl/GD             png
 dev-python/pyudev	pygobject
-dev-util/git		cvs subversion webdav curl bash-completion
 dev-util/perf		tui -doc
-dev-util/subversion	-dso webdav-serf
+dev-vcs/git		cvs subversion webdav curl bash-completion
+dev-vcs/subversion	-dso webdav-serf
 media-gfx/imagemagick   gs truetype
 media-libs/gd           png
 net-misc/curl		ares static-libs

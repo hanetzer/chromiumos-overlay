@@ -71,14 +71,14 @@ RDEPEND="${RDEPEND}
 	dev-python/pyusb
 	=dev-util/boost-build-1.42.0
 	dev-util/cmake
-	>=dev-util/git-1.7.2
 	dev-util/gob
 	dev-util/gperf
 	dev-util/hdctools
-	dev-util/subversion[-dso]
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.30
 	dev-util/scons
+	>=dev-vcs/git-1.7.2
+	dev-vcs/subversion[-dso]
 	>=media-libs/freetype-2.2.1
 	media-libs/mesa
 	net-misc/gsutil

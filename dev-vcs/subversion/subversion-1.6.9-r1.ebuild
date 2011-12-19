@@ -28,7 +28,9 @@ CDEPEND=">=dev-db/sqlite-3.4[threadsafe]
 	kde? ( sys-apps/dbus x11-libs/qt-core x11-libs/qt-dbus x11-libs/qt-gui >=kde-base/kdelibs-4 )
 	ruby? ( >=dev-lang/ruby-1.8.2 )
 	sasl? ( dev-libs/cyrus-sasl )
-	webdav-neon? ( >=net-misc/neon-0.28 )
+	dev-util/subversion
+	net-misc/neon
+	webdav-neon? ( >=net-libs/neon-0.28 )
 	webdav-serf? ( >=net-libs/serf-0.3.0 )"
 RDEPEND="${CDEPEND}
 	apache2? ( www-servers/apache[apache2_modules_dav] )

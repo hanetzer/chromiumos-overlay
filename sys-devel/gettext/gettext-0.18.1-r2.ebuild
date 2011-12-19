@@ -22,7 +22,7 @@ DEPEND="virtual/libiconv
 	dev-libs/expat
 	acl? ( virtual/acl )"
 RDEPEND="${DEPEND}
-	git? ( dev-util/git )"
+	git? ( dev-vcs/git )"
 PDEPEND="emacs? ( app-emacs/po-mode )"
 
 src_prepare() {
