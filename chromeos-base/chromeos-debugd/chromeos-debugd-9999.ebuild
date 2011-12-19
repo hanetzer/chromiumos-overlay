@@ -26,8 +26,7 @@ src_compile() {
 }
 
 src_test() {
-	echo "Temporarily disabled..."
-#	emake tests
+	emake tests
 }
 
 src_install() {
