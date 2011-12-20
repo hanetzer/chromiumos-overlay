@@ -170,6 +170,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets-split
 	chromeos-base/chromeos-auth-config
 	chromeos-base/chromeos-base
+	chromeos-base/chromeos-debugd
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
