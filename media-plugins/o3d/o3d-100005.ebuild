@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -12,7 +12,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="opengl opengles"
+IUSE="aura opengl opengles"
 DEPEND="dev-libs/nss
 	media-libs/fontconfig
 	opengl? ( media-libs/glew )
@@ -49,6 +49,9 @@ src_prepare() {
 	if [[ -n "${ROOT}" && "${ROOT}" != "/" ]]; then
 		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
 	fi
+	if use aura; then
+		GYP_DEFINES="$GYP_DEFINES plugin_interface=ppapi p2p_apis=0 os_posix=1"
+	fi
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
 
 	epatch "${FILESDIR}"/${P}-disable-gconf.patch
@@ -66,25 +69,38 @@ src_compile() {
 	append-cxxflags $(test-flags-CC -Wno-error=unused-but-set-variable)
 	tc-export AR AS LD NM RANLIB CC CXX STRIP
 
-	emake BUILDTYPE=Release npo3dautoplugin || die
+	if use aura; then
+		emake BUILDTYPE=Release ppo3dautoplugin || die
+	else
+		emake BUILDTYPE=Release npo3dautoplugin || die
+	fi
 }
 
 src_install() {
 	local destdir=/opt/google/o3d
 	local chromepluginsdir=/opt/google/chrome/plugins
+	local chromepepperdir=/opt/google/chrome/pepper
 
+	dodir ${destdir}
 	exeinto ${destdir}
-	doexe out/Release/libnpo3dautoplugin.so || die
-	dodir ${chromepluginsdir}
-	dosym ${destdir}/libnpo3dautoplugin.so ${chromepluginsdir}/ || die
-
-	if use amd64 || use x86; then
-		exeinto ${destdir}/lib
-		doexe out/Release/libCg{,GL}.so || die
-	elif use arm; then
-		# Only O2D currently works on ARM, so we include an envvars
-		# file that forces O2D mode.
-		insinto ${destdir}
-		newins "${FILESDIR}"/envvars.arm envvars || die
+	if use aura; then
+		doexe out/Release/libppo3dautoplugin.so || die
+		dodir ${chromepepperdir}
+		dosym ${destdir}/libppo3dautoplugin.so ${chromepepperdir}/ || die
+	else
+		doexe out/Release/libnpo3dautoplugin.so || die
+		dodir ${chromepluginsdir}
+		dosym ${destdir}/libnpo3dautoplugin.so ${chromepluginsdir}/ || die
+		if use amd64 || use x86; then
+			dodir ${destdir}/lib
+			exeinto ${destdir}/lib
+			doexe out/Release/libCg{,GL}.so || die
+		elif use arm; then
+			# Only O2D currently works on ARM, so we include an envvars
+			# file that forces O2D mode.
+			insinto ${destdir}
+			newins "${FILESDIR}"/envvars.arm envvars || die
+		fi
 	fi
+
 }
