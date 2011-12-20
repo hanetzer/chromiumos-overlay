@@ -1,6 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 EAPI="2"
+CROS_WORKON_COMMIT="63779575b76ff913bc6a73850b625240f4780f60"
 
 CROS_WORKON_PROJECT="chromiumos/third_party/gobi3k-sdk"
 CROS_WORKON_LOCALNAME=../third_party/gobi3k-sdk
