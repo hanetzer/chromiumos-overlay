@@ -54,6 +54,8 @@ src_prepare() {
 
 	# TODO(yusukes): Remove the patch to use upstream releases as-is.
 	epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
+	# TODO(yusukes): Remove the patch when we upgrade ibus to the next version, 1.4.1.
+	epatch "${FILESDIR}"/${P}-fix-SEGV-in-request_surrounding_text.patch
 
 	elibtoolize
 }
