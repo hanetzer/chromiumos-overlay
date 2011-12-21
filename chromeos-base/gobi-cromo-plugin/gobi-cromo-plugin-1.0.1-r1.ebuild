@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=2
-CROS_WORKON_COMMIT="bc4a40c68bae7cdbd6b051530331de0a736f0e59"
+CROS_WORKON_COMMIT="5d8420c78d4f2cd56494c3390769c1acdd6c5fbd"
 CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
