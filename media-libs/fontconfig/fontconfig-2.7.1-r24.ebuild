@@ -99,7 +99,7 @@ src_install() {
 
 	# As of fontconfig 2.7, everything sticks their noses in here.
 	dodir /etc/sandbox.d
-	echo 'SANDBOX_PREDICT="/var/cache/fontconfig"' > "${D}"/etc/sandbox.d/37fontconfig
+	echo 'SANDBOX_PREDICT="/usr/share/cache/fontconfig"' > "${D}"/etc/sandbox.d/37fontconfig
 }
 
 pkg_postinst() {
