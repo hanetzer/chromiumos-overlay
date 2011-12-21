@@ -493,6 +493,18 @@ src_unpack() {
 		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
 	fi
 
+	# Copy in credentials to fake home directory so that build process
+	# can access svn and ssh if needed.
+	mkdir -p ${HOME}
+	SUBVERSION_CONFIG_DIR=/home/$(whoami)/.subversion
+	if [ -d ${SUBVERSION_CONFIG_DIR} ]; then
+		cp -rfp ${SUBVERSION_CONFIG_DIR} ${HOME} || die
+	fi
+	SSH_CONFIG_DIR=/home/$(whoami)/.ssh
+	if [ -d ${SSH_CONFIG_DIR} ]; then
+		cp -rfp ${SSH_CONFIG_DIR} ${HOME} || die
+	fi
+
 	CHROME_ORIGIN="$(decide_chrome_origin)"
 
 	case "${CHROME_ORIGIN}" in
@@ -506,23 +518,6 @@ src_unpack() {
 
 	case "$CHROME_ORIGIN" in
 	(SERVER_SOURCE)
-		# We are going to fetch source and build chrome
-		SUBVERSION_CONFIG_DIR=/home/$(whoami)/.subversion
-		SSH_CONFIG_DIR=/home/$(whoami)/.ssh
-
-		elog "Copying subversion credentials from \
-			${SUBVERSION_CONFIG_DIR} into  ${HOME} if exists"
-
-		if [ -d ${SUBVERSION_CONFIG_DIR} ]; then
-			# TODO(anush): investigate this creating of $HOME
-			mkdir -p ${HOME}
-			elog  "Copying ${SUBVERSION_CONFIG_DIR} ${HOME}"
-			cp -rfp ${SUBVERSION_CONFIG_DIR} ${HOME} \
-			|| die "failed to copy svn credentials into ${HOME}"
-			cp -rfp ${SSH_CONFIG_DIR} ${HOME} \
-			|| die "failed to copy ssh credentials into ${HOME}"
-		fi
-
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
 		#See if the CHROME_VERSION we used previously was different
 		CHROME_VERSION_FILE=${ECHROME_STORE_DIR}/chrome_version
