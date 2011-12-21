@@ -68,7 +68,7 @@ src_compile() {
 		--docdir=/usr/share/doc/${PF} \
 		$(use_with X x) \
 		$(use linguas_ja && echo --enable-japanese)
-	emake || die
+	emake -j 1 || die
 }
 
 src_install() {
