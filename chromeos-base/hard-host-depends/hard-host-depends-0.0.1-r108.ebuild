@@ -85,6 +85,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/module-init-tools
 	!sys-apps/nih-dbus-tool
 	asan? ( sys-devel/asan-clang )
+	sys-devel/clang
 	sys-fs/sshfs-fuse
 	sys-fs/udev
 	sys-libs/libnih
