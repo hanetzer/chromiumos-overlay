@@ -19,7 +19,10 @@ RDEPEND="${DEPEND}
 	!<=app-admin/sudo-1.8.2
 	!<sys-apps/mawk-1.3.4
 	!<app-shells/bash-4.1
-	!<app-shells/dash-0.5.5"
+	!<app-shells/dash-0.5.5
+	!cros_host? (
+		!app-misc/editor-wrapper
+	)"
 
 # Remove entry from /etc/group
 #
@@ -104,6 +107,11 @@ src_install() {
 
 		# We want dash as our main shell.
 		dosym dash /bin/sh
+
+		# Avoid the wrapper and just link to the only editor we have.
+		dodir /usr/libexec
+		dosym /usr/bin/vim /usr/libexec/editor || die
+		dosym /bin/more /usr/libexec/pager || die
 	fi
 
 	# Add our little bit of sudo glue.

@@ -86,3 +86,6 @@ sys-kernel/linux-headers-2.6.30-r1
 
 x11-apps/mkfontscale-1.0.6
 x11-misc/makedepend-1.0.1
+
+# Our chromeos-base package takes care of this.
+app-misc/editor-wrapper-4
