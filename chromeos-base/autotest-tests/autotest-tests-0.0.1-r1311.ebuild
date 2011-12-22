@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="54f56de4acea9f14ee984cf71673be75a6accc1b"
+CROS_WORKON_COMMIT="496462eceaad94f5490f57412e5bee19b1811aff"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -306,9 +306,11 @@ IUSE_TESTS="
 	+tests_security_ChromiumOSLSM
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
+	+tests_security_HardlinkRestrictions
 	+tests_security_Minijail0
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
+	+tests_security_ptraceRestrictions
 	+tests_security_RendererSandbox
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
@@ -316,6 +318,7 @@ IUSE_TESTS="
 	+tests_security_RootfsOwners
 	+tests_security_RootfsStatefulSymlinks
 	+tests_security_SuidBinaries
+	+tests_security_SymlinkRestrictions
 	+tests_suites
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
