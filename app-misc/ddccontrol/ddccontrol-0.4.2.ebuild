@@ -11,7 +11,7 @@ SRC_URI="mirror://sourceforge/${PN}/${P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 ppc x86"
-IUSE="gtk gnome doc nls"
+IUSE="gtk gnome doc nls ddcpci"
 
 RDEPEND="dev-libs/libxml2
 	gtk? ( >=x11-libs/gtk+-2.4 )
@@ -67,7 +67,8 @@ src_compile() {
 	econf $(use_enable doc) \
 		$(use_enable gtk gnome) \
 		$(use_enable gnome gnome-applet) \
-		$(use_enable nls) || die "econf failed"
+		$(use_enable nls) \
+		$(use_enable ddcpci) || die "econf failed"
 	emake || die "emake failed"
 }
 
