@@ -171,6 +171,7 @@ src_install() {
 		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
+		local zimage_bin="${D}/boot/zImage-${version}"
 		local load_addr=0x03000000
 		if use device_tree; then
 			local its_script="${build_dir}/its_script"
@@ -182,12 +183,14 @@ src_install() {
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
 		fi
+		cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
 
 		# TODO(vbendeb): remove the below .uimg link creation code
 		# after the build scripts have been modified to use the base
 		# image name.
 		cd $(dirname "${kernel_bin}")
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
+		ln -sf $(basename "${zimage_bin}") zImage || die
 	fi
 
 	# Install uncompressed kernel for debugging purposes.
