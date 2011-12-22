@@ -2,29 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="d912164a54300c15f06ee2149d13305677a351e0"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
+CROS_WORKON_COMMIT="c3d8eb669baa929ff11e4ee465bb910eea2d6685"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 
 inherit binutils-funcs cros-board cros-kernel toolchain-funcs
 
-DESCRIPTION="Chrome OS Kernel"
+DESCRIPTION="Chrome OS Kernel-next"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-fbconsole -initramfs -nfs -blkdevram -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250 -highmem"
+IUSE="-fbconsole -initramfs -nfs -device_tree -kernel_sources"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
     chromeos-base/kernel-headers
     initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel-next
+    !sys-kernel/chromeos-kernel
 "
-RDEPEND="!sys-kernel/chromeos-kernel-next"
+RDEPEND="!sys-kernel/chromeos-kernel"
 
-# TODO(jglasgow) Need to fix DEPS file to get rid of "files"
-CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -100,13 +98,8 @@ src_configure() {
 		mv .config "${build_cfg}"
 	fi
 
-	use_config blkdevram "ram block device"
 	use_config fbconsole "framebuffer console"
 	use_config nfs "NFS"
-	use_config systemtap "systemtap support"
-	use_config serial8250 "serial8250"
-	use_config pcserial "PC serial"
-	use_config highmem "highmem"
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | kmake oldconfig
@@ -172,6 +165,7 @@ src_install() {
 		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
+		local zimage_bin="${D}/boot/zImage-${version}"
 		local load_addr=0x03000000
 		if use device_tree; then
 			local its_script="${build_dir}/its_script"
@@ -183,12 +177,14 @@ src_install() {
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
 		fi
+		cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
 
 		# TODO(vbendeb): remove the below .uimg link creation code
 		# after the build scripts have been modified to use the base
 		# image name.
 		cd $(dirname "${kernel_bin}")
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
+		ln -sf $(basename "${zimage_bin}") zImage || die
 	fi
 
 	# Install uncompressed kernel for debugging purposes.
