@@ -37,7 +37,8 @@ DEPEND="pam? ( virtual/pam )
 		>=net-nds/openldap-2.1.30-r1
 		dev-libs/cyrus-sasl
 	)
-	app-editors/gentoo-editor
+	!app-editors/gentoo-editor
+	>=app-misc/editor-wrapper-3
 	sys-libs/zlib
 	virtual/editor
 	virtual/mta"
@@ -117,7 +118,7 @@ src_configure() {
 	econf \
 		--enable-zlib=system \
 		--with-secure-path="${ROOTPATH}" \
-		--with-editor=/usr/libexec/gentoo-editor \
+		--with-editor=/usr/libexec/editor \
 		--with-env-editor \
 		$(use_with offensive insults) \
 		$(use_with offensive all-insults) \
