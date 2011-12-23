@@ -160,8 +160,8 @@ src_install() {
 	kmake INSTALL_MOD_PATH="${D}" modules_install
 	kmake INSTALL_MOD_PATH="${D}" firmware_install
 
+	local version=$(ls "${D}"/lib/modules)
 	if use arm; then
-		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
@@ -184,6 +184,8 @@ src_install() {
 		cd $(dirname "${kernel_bin}")
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
 		ln -sf $(basename "${zimage_bin}") zImage || die
+	elif [ ! -e "${D}/boot/vmlinuz" ]; then
+		ln -sf "vmlinuz-${version}" "${D}/boot/vmlinuz" || die
 	fi
 
 	# Install uncompressed kernel for debugging purposes.
