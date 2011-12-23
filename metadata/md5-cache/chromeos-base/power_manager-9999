@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile info install prepare test unpack
-DEPEND=chromeos-base/metrics dev-cpp/gflags dev-cpp/glog sys-fs/udev x11-base/xorg-server x11-libs/gtk+ x11-libs/libX11 x11-libs/libXext chromeos-base/libchrome chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) test? ( x11-libs/libXtst ) x11-proto/xextproto >=dev-util/git-1.6
+DEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog sys-fs/udev x11-base/xorg-server x11-libs/gtk+ x11-libs/libX11 x11-libs/libXext chromeos-base/libchrome chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) test? ( x11-libs/libXtst ) x11-proto/xextproto >=dev-util/git-1.6 dev-util/scons
 DESCRIPTION=Power Manager for Chromium OS
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=-new_power_button test -lockvt -touchui -nocrit -is_desktop cros-debug
+IUSE=-new_power_button test -lockvt -touchui -nocrit -is_desktop -als cros-debug
 KEYWORDS=~amd64 ~arm ~x86
 LICENSE=BSD
-RDEPEND=chromeos-base/metrics dev-cpp/gflags dev-cpp/glog sys-fs/udev x11-base/xorg-server x11-libs/gtk+ x11-libs/libX11 x11-libs/libXext
+RDEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog sys-fs/udev x11-base/xorg-server x11-libs/gtk+ x11-libs/libX11 x11-libs/libXext
 SLOT=0
-_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=a95078ebc9e62e680e3ae112d387de23
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	scons-utils	bfa350a15756117faaecd9056bbb79c2	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=c4c0289737acb5d61b858ce320773bfb

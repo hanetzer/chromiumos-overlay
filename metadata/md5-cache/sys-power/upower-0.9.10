@@ -10,5 +10,5 @@ RDEPEND=>=dev-libs/dbus-glib-0.76 >=dev-libs/glib-2.21.5:2 >=sys-apps/dbus-1 >=s
 RESTRICT=test
 SLOT=0
 SRC_URI=http://upower.freedesktop.org/releases/upower-0.9.10.tar.bz2
-_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=0e9e18bb5855c699830e1b937f7c95f6

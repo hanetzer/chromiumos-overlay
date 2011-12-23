@@ -1,5 +1,5 @@
 DEFINED_PHASES=configure install prepare
-DEPEND=sys-fs/udev dev-util/pkgconfig || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 >=sys-devel/libtool-2.2.6b
+DEPEND=sys-fs/udev dev-util/pkgconfig || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 sys-devel/libtool
 DESCRIPTION=Lean and small library for ATA S.M.A.R.T. hard disks
 EAPI=2
 HOMEPAGE=http://0pointer.de/blog/projects/being-smart.html
@@ -8,5 +8,5 @@ LICENSE=LGPL-2.1
 RDEPEND=sys-fs/udev
 SLOT=0
 SRC_URI=http://0pointer.de/public/libatasmart-0.17.tar.gz
-_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	eutils	33ef77a15337022e05342d2c772a7a5a	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=autotools	63332a15502113ca711ccccb3889a109	eutils	33ef77a15337022e05342d2c772a7a5a	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=dddb0dd4487d1e70c51bb70a3d550e2c

@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install prepare unpack
+DEPEND=>=dev-libs/glib-2.16 >=sys-apps/dbus-1.2 dev-libs/dbus-glib bluetooth? ( net-wireless/bluez ) bootstat? ( chromeos-base/bootstat ) crosmetrics? ( chromeos-base/metrics ) dhcpcd? ( net-misc/dhcpcd ) diagnostics? ( sys-apps/net-tools ) modemmanager? ( chromeos-base/modem-utilities >=chromeos-base/mobile-providers-0.0.1-r12 ) >=net-dns/c-ares-1.7.0 nss? ( dev-libs/nss ) openvpn? ( net-misc/openvpn ) policykit? ( >=sys-auth/policykit-0.7 ) net-misc/curl ppp? ( net-dialup/ppp ) resolvconf? ( net-dns/openresolv ) udev? ( >=sys-fs/udev-141 ) l2tpipsec? ( chromeos-base/vpn-manager ) newwifi? ( net-wireless/wpa_supplicant[dbus] ) modemmanager? ( net-misc/modemmanager ) doc? ( dev-util/gtk-doc ) || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 sys-devel/libtool >=dev-util/git-1.6
+DESCRIPTION=Provides a daemon for managing internet connections
+EAPI=2
+HOMEPAGE=http://connman.net
+IUSE=bluetooth +bootstat +crosmetrics +debug +dhcpcd +diagnostics dnsproxy doc +ethernet +hostroute +l2tpipsec +modemmanager +newwifi +nss +openvpn policykit +ppp resolvconf resolvfiles threads tools +udev
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=>=dev-libs/glib-2.16 >=sys-apps/dbus-1.2 dev-libs/dbus-glib bluetooth? ( net-wireless/bluez ) bootstat? ( chromeos-base/bootstat ) crosmetrics? ( chromeos-base/metrics ) dhcpcd? ( net-misc/dhcpcd ) diagnostics? ( sys-apps/net-tools ) modemmanager? ( chromeos-base/modem-utilities >=chromeos-base/mobile-providers-0.0.1-r12 ) >=net-dns/c-ares-1.7.0 nss? ( dev-libs/nss ) openvpn? ( net-misc/openvpn ) policykit? ( >=sys-auth/policykit-0.7 ) net-misc/curl ppp? ( net-dialup/ppp ) resolvconf? ( net-dns/openresolv ) udev? ( >=sys-fs/udev-141 ) l2tpipsec? ( chromeos-base/vpn-manager ) newwifi? ( net-wireless/wpa_supplicant[dbus] )
+SLOT=0
+_eclasses_=autotools	63332a15502113ca711ccccb3889a109	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=8f9d51cddf44076123015b79f17b7496

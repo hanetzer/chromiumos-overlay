@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install prepare
+DEPEND=dev-libs/nss media-libs/fontconfig opengl? ( media-libs/glew ) net-misc/curl opengles? ( virtual/opengles ) x11-libs/cairo x11-libs/gtk+
+DESCRIPTION=O3D Plugin
+EAPI=2
+HOMEPAGE=http://code.google.com/p/o3d/
+IUSE=aura opengl opengles
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=dev-libs/nss media-libs/fontconfig opengl? ( media-libs/glew ) net-misc/curl opengles? ( virtual/opengles ) x11-libs/cairo x11-libs/gtk+
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/o3d-svn-100005.tar.gz
+_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=774100d6118df0e8f7e6f6dedebf5ae0

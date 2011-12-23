@@ -10,5 +10,5 @@ PDEPEND=>=sys-auth/consolekit-0.4[policykit] gtk? ( || ( >=gnome-extra/polkit-gn
 RDEPEND=>=dev-libs/glib-2.25.12 dev-libs/expat introspection? ( >=dev-libs/gobject-introspection-0.6.2 ) pam? ( virtual/pam )
 SLOT=0
 SRC_URI=http://hal.freedesktop.org/releases/polkit-0.100.tar.gz
-_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	multilib	7a03929201acae1505c919d5f10e9fa6	pam	f794bf311d46a2b11d3d9362fe656bd0	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	pam	f794bf311d46a2b11d3d9362fe656bd0	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=f4a09b0d64e4026c77a64d7a29baa48f

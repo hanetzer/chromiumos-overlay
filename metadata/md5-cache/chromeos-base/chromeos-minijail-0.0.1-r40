@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install prepare test unpack
+DEPEND=test? ( dev-cpp/gtest ) test? ( dev-cpp/gmock ) chromeos-base/libchrome chromeos-base/libchromeos sys-libs/libcap >=dev-util/git-1.6
+DESCRIPTION=Chrome OS helper binary for restricting privs of services.
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=test cros-debug
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=sys-libs/libcap
+SLOT=0
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	03bde44f2ebcdbabce137aab0c70dbed	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	10556586ae298c0d19d13091b1f2295e	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=ad7f0587b96f336f33bb5ec3e928b40a

@@ -1,0 +1,11 @@
+DEFINED_PHASES=install
+DEPEND=x11-base/xorg-server
+DESCRIPTION=Board specific xorg configuration file.
+EAPI=4
+IUSE=alex cmt elan mario multitouch synaptics -tegra board_use_amd64-generic board_use_amd64-corei7 board_use_amd64-host board_use_arm-generic board_use_ironhide board_use_link board_use_lumpy board_use_stumpy board_use_tegra2 board_use_tegra2_aebl board_use_tegra2_arthur board_use_tegra2_asymptote board_use_tegra2_dev-board board_use_tegra2_dev-board-opengl board_use_tegra2_kaen board_use_tegra2_seaboard board_use_tegra2_wario board_use_tegra3-generic board_use_waluigi board_use_x86-agz board_use_x86-alex board_use_x86-alex_he board_use_x86-dogfood board_use_x86-fruitloop board_use_x86-generic board_use_x86-mario board_use_x86-mario64 board_use_x86-pineview board_use_x86-wayland board_use_x86-zgb board_use_x86-zgb_he
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+REQUIRED_USE=^^ ( board_use_amd64-generic board_use_amd64-corei7 board_use_amd64-host board_use_arm-generic board_use_ironhide board_use_link board_use_lumpy board_use_stumpy board_use_tegra2 board_use_tegra2_aebl board_use_tegra2_arthur board_use_tegra2_asymptote board_use_tegra2_dev-board board_use_tegra2_dev-board-opengl board_use_tegra2_kaen board_use_tegra2_seaboard board_use_tegra2_wario board_use_tegra3-generic board_use_waluigi board_use_x86-agz board_use_x86-alex board_use_x86-alex_he board_use_x86-dogfood board_use_x86-fruitloop board_use_x86-generic board_use_x86-mario board_use_x86-mario64 board_use_x86-pineview board_use_x86-wayland board_use_x86-zgb board_use_x86-zgb_he )
+SLOT=0
+_eclasses_=cros-board	18dcd8cea63c3c944aced7cd97dfb5c2
+_md5_=b67febc8dc70ca734200e7f151b40eab

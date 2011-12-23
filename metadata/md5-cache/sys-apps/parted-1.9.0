@@ -1,5 +1,5 @@
 DEFINED_PHASES=configure install unpack
-DEPEND=>=sys-fs/e2fsprogs-1.27 >=sys-libs/ncurses-5.2 nls? ( >=sys-devel/gettext-0.12.1-r2 ) readline? ( >=sys-libs/readline-5.2 ) selinux? ( sys-libs/libselinux ) device-mapper? ( || ( >=sys-fs/lvm2-2.02.45 sys-fs/device-mapper ) ) || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 >=sys-devel/libtool-2.2.6b
+DEPEND=>=sys-fs/e2fsprogs-1.27 >=sys-libs/ncurses-5.2 nls? ( >=sys-devel/gettext-0.12.1-r2 ) readline? ( >=sys-libs/readline-5.2 ) selinux? ( sys-libs/libselinux ) device-mapper? ( || ( >=sys-fs/lvm2-2.02.45 sys-fs/device-mapper ) ) || ( =sys-devel/automake-1.11* ) >=sys-devel/autoconf-2.61 sys-devel/libtool
 DESCRIPTION=Create, destroy, resize, check, copy partitions and file systems
 EAPI=2
 HOMEPAGE=http://www.gnu.org/software/parted
@@ -9,5 +9,5 @@ LICENSE=GPL-3
 RDEPEND=>=sys-fs/e2fsprogs-1.27 >=sys-libs/ncurses-5.2 nls? ( >=sys-devel/gettext-0.12.1-r2 ) readline? ( >=sys-libs/readline-5.2 ) selinux? ( sys-libs/libselinux ) device-mapper? ( || ( >=sys-fs/lvm2-2.02.45 sys-fs/device-mapper ) )
 SLOT=0
 SRC_URI=mirror://gnu/parted/parted-1.9.0.tar.gz
-_eclasses_=autotools	c60f2324450f373b5ec1ad30df566782	eutils	33ef77a15337022e05342d2c772a7a5a	libtool	390d374bfc41723a51e3bafbb77c9325	multilib	7a03929201acae1505c919d5f10e9fa6	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=autotools	63332a15502113ca711ccccb3889a109	eutils	33ef77a15337022e05342d2c772a7a5a	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	7a31e3b5a682011c05f9316d88890d9d	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=d2765ceb9933ad39fc901842d2632935
