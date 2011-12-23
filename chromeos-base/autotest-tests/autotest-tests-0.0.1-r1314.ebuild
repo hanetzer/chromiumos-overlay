@@ -95,6 +95,7 @@ IUSE_TESTS="
 	+tests_build_RootFilesystemSize
 	+tests_desktopui_ChromeFirstRender
 	+tests_desktopui_ChromeSemiAuto
+	+tests_desktopui_AudioFeedback
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
