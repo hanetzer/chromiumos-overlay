@@ -436,7 +436,7 @@ gcc-pie() {
 # Returns true if gcc builds with the stack protector
 gcc-ssp() {
 	local obj=$(mktemp)
-	echo "void f(){char a[1];}" | ${CTARGET}-gcc -xc -c -o ${obj} -
+	echo "void f(){char a[100];}" | ${CTARGET}-gcc -xc -c -o ${obj} -
 	return $(${CTARGET}-readelf -sW ${obj} | grep -q stack_chk_fail)
 }
 # Returns true if gcc builds with the stack protector
