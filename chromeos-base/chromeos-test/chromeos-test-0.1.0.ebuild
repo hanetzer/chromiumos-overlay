@@ -51,6 +51,8 @@ RDEPEND="${RDEPEND}
 	dev-python/pyyaml
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
+	x86? ( media-libs/opencv )
+	amd64? ( media-libs/opencv )
 	media-libs/tiff
 	net-analyzer/netperf
 	net-dialup/minicom
