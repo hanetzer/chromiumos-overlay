@@ -1,0 +1,31 @@
+From 11cdf24d15763131a7ab4b366cad78116884d045 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Wed, 28 Dec 2011 12:35:41 -0800
+Subject: [PATCH] i915g: Add missing draw_flush call.
+
+Fixes a bunch of corruption bugs, especially some missing clipped triangles.
+---
+ src/gallium/drivers/i915/i915_context.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/src/gallium/drivers/i915/i915_context.c b/src/gallium/drivers/i915/i915_context.c
+index 5a61740..5ad5bff 100644
+--- a/src/gallium/drivers/i915/i915_context.c
++++ b/src/gallium/drivers/i915/i915_context.c
+@@ -92,6 +92,13 @@ i915_draw_vbo(struct pipe_context *pipe, const struct pipe_draw_info *info)
+ 
+    if (i915->num_vertex_sampler_views > 0)
+       i915_cleanup_vertex_sampling(i915);
++
++   /*
++    * TODO: Flush only when a user vertex/index buffer is present
++    * (or even better, modify draw module to do this
++    * internally when this condition is seen?)
++    */
++   draw_flush(i915->draw);
+ }
+ 
+ 
+-- 
+1.7.5.3.367.ga9930
+
