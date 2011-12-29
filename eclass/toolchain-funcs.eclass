@@ -417,7 +417,7 @@ gcc-specs-pie() {
 # That is why we have to read the flags one by one and check them instead
 # of test-compiling a small program.
 gcc-pie() {
-	for flag in $(echo "void f(){char a[1];}" | \
+	for flag in $(echo "void f(){char a[100];}" | \
 	${CTARGET}-gcc -v -xc -c -o /dev/null - 2>&1 | \
 	grep cc1 | \
 	tr " " "\n" | \
