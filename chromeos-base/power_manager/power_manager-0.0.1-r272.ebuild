@@ -11,7 +11,7 @@ DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop -als"
+IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop -als -aura"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-misc/ddccontrol
@@ -42,6 +42,7 @@ src_compile() {
 		$(use_scons lockvt)
 		$(use_scons is_desktop)
 		$(use_scons als has_als)
+		$(use_scons aura)
 	)
 	escons || die "power_manager compile failed."
 }
@@ -56,6 +57,7 @@ src_test() {
 		$(use_scons lockvt)
 		$(use_scons is_desktop)
 		$(use_scons als has_als)
+		$(use_scons aura)
 	)
 	escons tests || die "tests compile failed."
 
