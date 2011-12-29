@@ -9,7 +9,7 @@
 # 1. This script ensures that '--sysroot' is passed to whatever it is wrapping.
 #
 # 2. It adds hardened flags to gcc invocation. The hardened flags are:
-#   -fstack-protector-strong
+#   -fstack-protector-all
 #   -fPIE
 #   -pie
 #   -D_FORTIFY_SOURCE=2
@@ -42,7 +42,7 @@ import sys
 
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
-harden_flags = set(['-fstack-protector-strong', '-fPIE', '-pie',
+harden_flags = set(['-fstack-protector-all', '-fPIE', '-pie',
   '-D_FORTIFY_SOURCE=2'])
 disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
@@ -68,7 +68,7 @@ wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie'])
 
 myargs = sys.argv[1:]
 if fstack.intersection(myargs):
-  harden_flags.remove('-fstack-protector-strong')
+  harden_flags.remove('-fstack-protector-all')
 if fPIE.intersection(myargs):
   harden_flags.remove('-fPIE')
 if pie.intersection(myargs):
