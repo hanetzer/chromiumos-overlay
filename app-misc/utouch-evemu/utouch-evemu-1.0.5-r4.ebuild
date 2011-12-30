@@ -18,6 +18,8 @@ DEPEND="${RDEPEND}"
 PATCHES=(
         "${FILESDIR}/1.0.5-signal_exit.patch"
         "${FILESDIR}/1.0.5-timeout.patch"
+        "${FILESDIR}/1.0.5-play_timestamp.patch"
+        "${FILESDIR}/1.0.5-add_slot0.patch"
 )
 
 src_install() {
