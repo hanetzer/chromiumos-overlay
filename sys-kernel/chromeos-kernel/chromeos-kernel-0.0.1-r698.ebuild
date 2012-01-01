@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="bbe0855827c6c9ede3775488b3921f697bb9db8e"
+CROS_WORKON_COMMIT="e89d4132d87f2339233717cc3cb7174cad33e0da"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit binutils-funcs cros-board cros-kernel toolchain-funcs
@@ -168,8 +168,8 @@ src_install() {
 	kmake INSTALL_MOD_PATH="${D}" modules_install
 	kmake INSTALL_MOD_PATH="${D}" firmware_install
 
+	local version=$(ls "${D}"/lib/modules)
 	if use arm; then
-		local version=$(ls "${D}"/lib/modules)
 		local boot_dir="${build_dir}/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
@@ -192,6 +192,9 @@ src_install() {
 		cd $(dirname "${kernel_bin}")
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
 		ln -sf $(basename "${zimage_bin}") zImage || die
+	fi
+	if [ ! -e "${D}/boot/vmlinuz" ]; then
+		ln -sf "vmlinuz-${version}" "${D}/boot/vmlinuz" || die
 	fi
 
 	# Install uncompressed kernel for debugging purposes.
