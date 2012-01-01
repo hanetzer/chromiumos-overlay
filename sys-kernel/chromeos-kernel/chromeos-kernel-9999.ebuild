@@ -191,7 +191,8 @@ src_install() {
 		cd $(dirname "${kernel_bin}")
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
 		ln -sf $(basename "${zimage_bin}") zImage || die
-	elif [ ! -e "${D}/boot/vmlinuz" ]; then
+	fi
+	if [ ! -e "${D}/boot/vmlinuz" ]; then
 		ln -sf "vmlinuz-${version}" "${D}/boot/vmlinuz" || die
 	fi
 
