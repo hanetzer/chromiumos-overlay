@@ -19,7 +19,6 @@ IUSE=""
 DEPEND="sys-apps/util-linux"
 # shflags for dump_vpd_log.
 RDEPEND="sys-apps/flashrom
-	dev-libs/shflags
 	dev-util/shflags"
 
 src_compile() {
