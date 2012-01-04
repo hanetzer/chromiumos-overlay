@@ -67,13 +67,7 @@ src_test() {
 	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	emake keygen session_manager_unittest || \
-		die "chromeos-login compile tests failed."
-
-	if use x86 ; then
-		./session_manager_unittest ${GTEST_ARGS} || \
-		    die "unit tests (with ${GTEST_ARGS}) failed!"
-	fi
+	emake tests || die "chromeos-login compile tests failed."
 }
 
 src_install() {
