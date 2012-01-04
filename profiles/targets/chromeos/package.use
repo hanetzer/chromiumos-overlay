@@ -12,7 +12,7 @@ dev-libs/dbus-glib	tools
 dev-libs/glib		-doc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
-dev-libs/opensc		ssl
+dev-libs/opensc		ssl -pcsc-lite
 dev-libs/openssl	pkcs11
 dev-libs/protobuf	python
 dev-python/pyudev	pygobject
