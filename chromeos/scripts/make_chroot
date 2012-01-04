@@ -102,12 +102,7 @@ function sudo_chroot {
 
 function cleanup {
   # Clean up mounts
-  #
-  # HACK ALERT: Instead of tracking our nested mounts, we assume they will
-  # HACK ALERT: be shown in mount order. So we just reverse the list and
-  # HACK ALERT: umount them.
-  mount | grep "on $(readlink -f "$FLAGS_chroot")/" | awk '{print $3}' \
-    | sort -r | xargs -r -L1 sudo umount -l
+  safe_umount_tree "${FLAGS_chroot}"
 }
 
 function delete_existing {
@@ -349,7 +344,8 @@ then
   echo "$SCRIPT_NAME: STAGE3 already set up.  Skipping..."
 else
   echo "$SCRIPT_NAME: Unpacking STAGE3..."
-  $(type -p pbzip2 || echo bzip2) -dc "$STAGE3" | sudo tar xp -C "$FLAGS_chroot"
+  sudo tar -xp -I $(type -p pbzip2 || echo bzip2) \
+      -C "${FLAGS_chroot}" -f "${STAGE3}"
   sudo rm -f $FLAGS_chroot/etc/make.globals
   sudo rm -f $FLAGS_chroot/etc/make.conf.user
 fi
