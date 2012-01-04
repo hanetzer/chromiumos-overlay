@@ -15,10 +15,6 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-DEPEND=""
-RDEPEND="dev-libs/shflags
-	dev-util/shflags"
-
 src_configure() {
 	find . -type l -exec rm {} \; &&
 	rm -fr WATCHLISTS inherit-review-settings-ok lib/shflags ||
