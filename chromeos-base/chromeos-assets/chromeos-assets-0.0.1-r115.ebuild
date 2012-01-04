@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex mario tegra2-ldk"
+IUSE="alex lumpy mario tegra2-ldk"
 
 DEPEND="media-fonts/croscorefonts
 	media-fonts/droidfonts-cros
@@ -131,6 +131,8 @@ src_install() {
 		newins "${S}"/color_profiles/mario.bin internal_display.bin
 	elif use alex; then
 		newins "${S}"/color_profiles/alex.bin internal_display.bin
+	elif use lumpy; then
+		newins "${S}"/color_profiles/lumpy.bin internal_display.bin
 	fi
 
 	# Don't install cursors when building for Tegra, since the
