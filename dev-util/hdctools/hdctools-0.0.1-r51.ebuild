@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="be409376d3c1a5a0309047a847cba3ac4f221746"
+CROS_WORKON_COMMIT="1519276567e96c2558dacd2d17d70a0a6371c933"
 CROS_WORKON_PROJECT="chromiumos/third_party/hdctools"
 
 SUPPORT_PYTHON_ABIS="1"
@@ -19,6 +19,7 @@ IUSE=""
 
 RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-libs/libusb
+	dev-python/pyserial
 	dev-python/pyusb"
 DEPEND="${RDEPEND}
 	app-text/htmltidy"
