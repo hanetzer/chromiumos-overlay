@@ -152,7 +152,7 @@ src_compile()
 
 	if use hardened && [[ ${CTARGET} != arm* ]]
 	then
-		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
+		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-all -D_FORTIFY_SOURCE=2"
 	fi
 
 	emake CFLAGS="${GCC_CFLAGS}" \
