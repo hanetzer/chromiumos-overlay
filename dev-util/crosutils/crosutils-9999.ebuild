@@ -3,11 +3,13 @@
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/crosutils"
+CROS_WORKON_LOCALNAME="../scripts/"
 
-inherit cros-workon
+inherit python cros-workon
 
 DESCRIPTION="Chromium OS build utilities"
 HOMEPAGE="http://www.chromium.org/chromium-os"
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64"
@@ -16,8 +18,6 @@ IUSE=""
 DEPEND=""
 RDEPEND="dev-libs/shflags
 	dev-util/shflags"
-
-CROS_WORKON_LOCALNAME="../scripts/"
 
 src_configure() {
 	find . -type l -exec rm {} \; &&
@@ -30,10 +30,7 @@ src_install() {
 	exeinto /usr/lib/crosutils
 	doexe * || die "Could not install shared files."
 
-	# Install python libraries into site-packages
-	local python_version=$(/usr/bin/env python -c \
-	      "import sys; print sys.version[:3]")
-	insinto /usr/lib/python"${python_version}"/site-packages
+	insinto "$(python_get_sitedir)"
 	doins lib/*.py || die "Could not install python files."
 	rm -f lib/*.py
 
@@ -41,6 +38,6 @@ src_install() {
 	insinto /usr/lib/crosutils/lib
 	doins lib/* || die "Could not install library files"
 
-        doexe bin/loman.py || die "Could not install loman"
-        dosym /usr/lib/crosutils/loman.py /usr/bin/loman
+	doexe bin/loman.py || die "Could not install loman"
+	dosym /usr/lib/crosutils/loman.py /usr/bin/loman
 }
