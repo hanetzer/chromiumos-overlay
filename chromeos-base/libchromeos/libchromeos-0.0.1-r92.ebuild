@@ -21,6 +21,7 @@ IUSE="cros_host test"
 RDEPEND="chromeos-base/libchrome
 	dev-libs/dbus-glib
 	dev-libs/libpcre
+	dev-libs/openssl
 	dev-libs/protobuf"
 
 DEPEND="${RDEPEND}
