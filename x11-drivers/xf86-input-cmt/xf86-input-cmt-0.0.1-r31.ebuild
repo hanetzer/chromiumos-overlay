@@ -12,7 +12,7 @@ inherit autotools-utils cros-workon
 DESCRIPTION="Chromium OS multitouch input driver for Xorg X server."
 CROS_WORKON_LOCALNAME="../platform/xf86-input-cmt"
 
-KEYWORDS="arm x86"
+KEYWORDS="arm amd64 x86"
 LICENSE="BSD"
 SLOT="0"
 IUSE=""
