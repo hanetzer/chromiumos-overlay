@@ -19,7 +19,7 @@ SRC_URI="mirror://kernel/linux/bluetooth/${P}.tar.xz
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~hppa ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 arm ~hppa ~ppc ~ppc64 x86"
 IUSE="alsa caps +consolekit cups debug gstreamer pcmcia test-programs usb"
 
 CDEPEND="
@@ -40,7 +40,7 @@ CDEPEND="
 "
 DEPEND="${CDEPEND}
 	>=dev-util/pkgconfig-0.20
-	>=dev-libs/check-0.9.4
+	>=dev-libs/check-0.9.8
 	sys-devel/flex
 "
 RDEPEND="${CDEPEND}
@@ -59,20 +59,14 @@ RDEPEND="${CDEPEND}
 DOCS=( AUTHORS ChangeLog README )
 
 pkg_setup() {
-	if ! use consolekit; then
-		enewgroup plugdev
-	fi
-
 	if use test-programs; then
 		python_pkg_setup
 	fi
 }
 
 src_prepare() {
-	if ! use consolekit; then
-		# No consolekit for at_console etc, so we grant plugdev the rights
-		epatch	"${FILESDIR}/bluez-plugdev.patch"
-	fi
+	# Allow the chronos user to communicate with the daemon
+	epatch "${FILESDIR}/${PN}-chronos.patch"
 
 	if use cups; then
 		sed -i \
@@ -160,10 +154,5 @@ pkg_postinst() {
 	if use consolekit; then
 		elog "If you want to use rfcomm as a normal user, you need to add the user"
 		elog "to the uucp group."
-	else
-		elog "Since you have the consolekit use flag disabled, you will only be able to run"
-		elog "bluetooth clients as root. If you want to be able to run bluetooth clientes as "
-		elog "a regular user, you need to enable the consolekit use flag for this package or"
-		elog "to add the user to the plugdev group."
 	fi
 }
