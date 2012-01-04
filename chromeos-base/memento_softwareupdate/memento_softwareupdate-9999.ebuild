@@ -1,7 +1,7 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/memento_softwareupdate"
 
 inherit cros-workon toolchain-funcs
@@ -9,48 +9,36 @@ inherit cros-workon toolchain-funcs
 DESCRIPTION="Chrome OS Memento Updater"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 DEPEND=""
-
 RDEPEND="app-arch/gzip
-         app-shells/bash
-         dev-libs/openssl
-         dev-libs/shflags
-         dev-util/shflags
-         dev-util/xxd
-         net-misc/wget
-         sys-apps/coreutils
-         sys-apps/util-linux"
+	app-shells/bash
+	dev-libs/openssl
+	dev-libs/shflags
+	dev-util/shflags
+	dev-util/xxd
+	net-misc/wget
+	sys-apps/coreutils
+	sys-apps/util-linux"
 
 src_compile() {
-  if tc-is-cross-compiler ; then
-    tc-getCC
-    tc-getCXX
-    tc-getAR
-    tc-getRANLIB
-    tc-getLD
-    tc-getNM
-    export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-    export CCFLAGS="$CFLAGS"
-  fi
-
-  make || die "memento_softwareupdate compile failed"
+	emake \
+		CXX="$(tc-getCXX)" \
+		CCFLAGS="${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 }
 
 src_install() {
-  exeinto /opt/google/memento_updater
-
-  for i in \
-    find_omaha.sh \
-    memento_updater.sh \
-    memento_updater_logging.sh \
-    ping_omaha.sh \
-    software_update.sh \
-    split_write; do
-    doexe "${i}"
-  done
+	exeinto /opt/google/memento_updater
+	doexe \
+		find_omaha.sh \
+		memento_updater.sh \
+		memento_updater_logging.sh \
+		ping_omaha.sh \
+		software_update.sh \
+		split_write
 }
