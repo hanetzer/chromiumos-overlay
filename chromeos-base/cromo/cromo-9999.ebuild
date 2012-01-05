@@ -37,7 +37,7 @@ make_flags() {
 }
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX AR NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	REV=${CROS_WORKON_COMMIT-unknown}
 	[ "${REV}" = "master" ] && REV=unknown
