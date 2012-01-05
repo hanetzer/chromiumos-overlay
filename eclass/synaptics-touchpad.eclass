@@ -50,7 +50,8 @@ function synaptics-touchpad_src_install() {
 	export_uri
 	cros-binary_src_install
 
-	install --mode=0755 "${FILESDIR}/tpcontrol_syncontrol" "${D}/opt/Synaptics/bin"
+	exeinto /opt/Synaptics/bin
+	doexe "${FILESDIR}/tpcontrol_syncontrol" || die
 
 	# link the appropriate config files for the type of trackpad
 	if use is_touchpad && use ps_touchpad; then
