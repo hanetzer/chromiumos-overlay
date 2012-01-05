@@ -52,7 +52,6 @@ inherit cros-workon cros-binary
 # needs to extract and execute the updater.
 DEPEND="
 	>=chromeos-base/vboot_reference-1.0-r230
-	dev-libs/shflags
 	dev-util/shflags
 	>=sys-apps/flashrom-0.9.3-r36
 	sys-apps/mosys
