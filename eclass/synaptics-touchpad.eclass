@@ -53,6 +53,18 @@ function synaptics-touchpad_src_install() {
 	exeinto /opt/Synaptics/bin
 	doexe "${FILESDIR}/tpcontrol_syncontrol" || die
 
+	# If it exists, install synlogger to log calls to the Synaptics binaries.
+	# The original binaries themselves are appended with _bin, and symlinks are
+	# created with their original names that point at synlogger.
+	if [ -f "${FILESDIR}/synlogger" ]; then
+		doexe "${FILESDIR}/synlogger" || die
+		local f
+		for f in syn{control,detect,reflash} ; do
+			mv "${D}"/opt/Synaptics/bin/${f}{,_bin} || die
+			dosym synlogger /opt/Synaptics/bin/${f} || die
+		done
+	fi
+
 	# link the appropriate config files for the type of trackpad
 	if use is_touchpad && use ps_touchpad; then
 	   die "Specify only one type of touchpad"
