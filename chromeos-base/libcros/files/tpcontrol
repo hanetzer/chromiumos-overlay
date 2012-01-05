@@ -3,6 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Log all calls, with arguments, to /var/log/messages
+logger "$0" "$@"
+
 VALID=1
 SYN_ENABLE="/home/chronos/.syntp_enable"
 PROG=`basename $0`
