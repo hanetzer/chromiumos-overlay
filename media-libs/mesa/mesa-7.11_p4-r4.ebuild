@@ -123,6 +123,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/7.10-cross-compile.patch
 	epatch "${FILESDIR}"/7.11-i915g-no-tiling.patch
+	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/7.11-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/7.11_p2-pkgconfig.patch
 	epatch "${FILESDIR}"/7.11_p2-Revert-i965-Avoid-generating-MOVs-for-most-ir_assign.patch
@@ -134,6 +135,7 @@ src_prepare() {
 	if use llvm; then
 		epatch "${FILESDIR}"/7.11-llvm-config.patch
 	fi
+	epatch "${FILESDIR}"/7.11-i915g-Add-missing-draw_flush-call.patch
 
 	eautoreconf
 }
