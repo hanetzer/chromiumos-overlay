@@ -6,28 +6,19 @@
 # Purpose: Library for handling building of ChromiumOS packages
 #
 
-# @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
-# @DESCRIPTION:
-# Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
-: ${CROS_WORKON_SRCROOT:=}
+
+# Array variables. All of the following variables can contain multiple items
+# with the restriction being that all of them have to have either:
+# - the same number of items globally
+# - one item as default for all
+# - no items as the cros-workon default
+# The exception is CROS_WORKON_PROJECT which has to have all items specified.
+ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE} )
 
 # @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
 # @DESCRIPTION:
 # Sub-directory which is added to create full source checkout path
 : ${CROS_WORKON_SUBDIR:=}
-
-# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_TO_COPY
-# @DESCRIPTION:
-# Make cros-workon operate exclusively with the subtrees given by this array.
-# NOTE: This only speeds up local_cp builds. Inplace/local_git builds are unaffected.
-: ${CROS_WORKON_SUBDIRS_TO_COPY:=/}
-
-# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_BLACKLIST
-# @DESCRIPTION:
-# Array of directories in the source tree to explicitly ignore and not even copy
-# them over. This is intended, for example, for blocking infamous bloated and
-# generated content that is unwanted during the build.
-: ${CROS_WORKON_SUBDIRS_BLACKLIST:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
@@ -44,6 +35,13 @@
 # Temporary local name in third_party
 : ${CROS_WORKON_LOCALNAME:=${PN}}
 
+# @ECLASS-VARIABLE: CROS_WORKON_DESTDIR
+# @DESCRIPTION:
+# Destination directory in ${WORKDIR} for checkout.
+# Note that the default is ${S}, but is only referenced in src_unpack for
+# ebuilds that would like to override it.
+: ${CROS_WORKON_DESTDIR:=}
+
 # @ECLASS-VARIABLE: CROS_WORKON_COMMIT
 # @DESCRIPTION:
 # Git commit to checkout to
@@ -55,6 +53,20 @@
 # correctness of prebuilts. Unlike the commit hash, this SHA1 is unaffected
 # by the history of the repository, or by commit messages.
 : ${CROS_WORKON_TREE:=}
+
+# Scalar variables. These variables modify the behaviour of the eclass.
+
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_TO_COPY
+# @DESCRIPTION:
+# Make cros-workon operate exclusively with the subtrees given by this array.
+# NOTE: This only speeds up local_cp builds. Inplace/local_git builds are unaffected.
+# It will also be disabled by using project arrays, rather than a single project.
+: ${CROS_WORKON_SUBDIRS_TO_COPY:=/}
+
+# @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
+# @DESCRIPTION:
+# Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
+: ${CROS_WORKON_SRCROOT:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_LOCALGIT
 # @DESCRIPTION:
@@ -89,78 +101,119 @@
 # O=${WORKDIR}/${P}/build/${board} when compiling the kernel.
 : ${CROS_WORKON_OUTOFTREE_BUILD:=}
 
-IUSE="cros_workon_tree_$CROS_WORKON_TREE"
+# Join the tree commits to produce a unique identifier
+CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
+IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE"
 
-inherit git flag-o-matic
+inherit git-2 flag-o-matic
+
+# Sanitize all variables, autocomplete where necessary.
+# This function possibly modifies all CROS_WORKON_ variables inplace. It also
+# provides a global project_count variable which contains the number of
+# projects.
+array_vars_autocomplete() {
+	# NOTE: This one variable has to have all values explicitly filled in.
+	project_count=${#CROS_WORKON_PROJECT[@]}
+
+	# No project_count is really bad.
+	[ ${project_count} -eq 0 ] && die "Must have at least one CROS_WORKON_PROJECT"
+	# For one project, defaults will suffice.
+	[ ${project_count} -eq 1 ] && return
+
+	local count var
+	for var in "${ARRAY_VARIABLES[@]}"; do
+		eval count=\${#${var}\[@\]}
+		if [[ ${count} -ne ${project_count} ]] && [[ ${count} -ne 1 ]]; then
+			die "${var} has ${count} projects. ${project_count} or one default expected."
+		fi
+		# Invariably, ${project_count} is at least 2 here. All variables also either
+		# have all items or the first serves as default (or isn't needed if
+		# empty). By looking at the second item, determine if we need to
+		# autocomplete.
+		local i
+		if [[ ${count} -ne ${project_count} ]]; then
+			for (( i = 1; i < project_count; ++i )); do
+				eval ${var}\[i\]=\${${var}\[0\]}
+			done
+		fi
+		eval einfo "${var}: \${${var}[@]}"
+	done
+}
 
 # Calculate path where code should be checked out.
-get_path() {
-	local path
-
+# Result passed through global variable "path" to preserve proper array quoting.
+get_paths() {
+	local pathbase
 	if [[ -n "${CROS_WORKON_SRCROOT}" ]]; then
-		path="${CROS_WORKON_SRCROOT}"
+		pathbase="${CROS_WORKON_SRCROOT}"
 	elif [[ -n "${CHROMEOS_ROOT}" ]]; then
-		path="${CHROMEOS_ROOT}"
+		pathbase="${CHROMEOS_ROOT}"
 	else
-		# HACK: figure out the missing legacy path for now
-		# this only happens in amd64 chroot with sudo emerge
-		path="/home/${SUDO_USER}/trunk"
+		# HACK: Figure out the missing legacy path for now
+		# this only happens in amd64 chroot with sudo emerge.
+		pathbase="/home/${SUDO_USER}/trunk"
 	fi
 
 	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
-		path+=/src/platform
+		pathbase+=/src/platform
 	else
-		path+=/src/third_party
+		pathbase+=/src/third_party
 	fi
 
-	if [[ -n "${CROS_WORKON_LOCALNAME}" ]]; then
-		path+="/${CROS_WORKON_LOCALNAME}"
-	fi
-	if [[ -n "${CROS_WORKON_SUBDIR}" ]]; then
-		path+="/${CROS_WORKON_SUBDIR}"
-	fi
-	echo ${path}
+	path=()
+	local pathelement i
+	for (( i = 0; i < project_count; ++i )); do
+		pathelement="${pathbase}/${CROS_WORKON_LOCALNAME[i]}"
+		if [[ -n "${CROS_WORKON_SUBDIR[i]}" ]]; then
+			pathelement+="/${CROS_WORKON_SUBDIR[i]}"
+		fi
+		path+=( "${pathelement}" )
+	done
 }
 
 local_copy_git() {
+	local src="${1}"
+	local dst="${2}"
 	CLONE_OPTS="--no-hardlinks --shared"
-	PATCHFILE="${WORKDIR}/${P}"/local_changes.patch
+	PATCHFILE="${dst}"/local_changes.patch
 
-	einfo "Using experimental git copy! Beware!"
+	einfo "Using experimental git copy from ${src}"
 
-	# this produces a local clean copy of ${1} at the same branch
-	git clone ${CLONE_OPTS} "${1}" "${WORKDIR}/${P}" || \
+	# This produces a local clean copy of src at the same branch.
+	git clone ${CLONE_OPTS} "${src}" "${dst}" || \
 		die "Cannot clone local copy"
 
 	# collect local changes
-	git --binary --git-dir="${1}" --work-dir="${1}/.git" diff HEAD > "${PATCHFILE}" || \
+	git --binary --git-dir="${src}" --work-dir="${src}/.git" diff HEAD > "${PATCHFILE}" || \
 		die "Cannot create local changes patch"
 
 	# apply local changes
 	# note: wc prints file name after byte count
 	if [ "$(wc -c ${PATCHFILE})" != "0 ${PATCHFILE}" ]; then
-		git --git-dir="${WORKDIR}/${P}" --work-dir="${WORKDIR}/${P}/.git" apply ${PATCHFILE} || \
+		git --git-dir="${dst}" --work-dir="${dst}/.git" apply ${PATCHFILE} || \
 			die "Cannot apply local changes"
 	fi
 }
 
 local_copy_cp() {
-	einfo "Copying sources"
-
-	local blacklist=( "${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}" )
+	local src="${1}"
+	local dst="${2}"
+	einfo "Copying sources from ${src}"
 
 	local sl
 	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
-		if [[ -d "${1}/${sl}" ]]; then
-			mkdir -p "${S}/${sl}"
-			rsync -a "${blacklist[@]}" "${1}/${sl}"/* "${S}/${sl}" || \
-				die "rsync -a ${blacklist} ${1}/${sl}/* ${S}/${sl}"
+		if [[ -d "${src}/${sl}" ]]; then
+			mkdir -p "${dst}/${sl}"
+			cp -a "${src}/${sl}"/* "${dst}/${sl}" || \
+				die "cp -a ${src}/${sl}/* ${dst}/${sl}/"
 		fi
 	done
 }
 
 symlink_in_place() {
-	einfo "Using experimental inplace build! Beware!"
+	local src="${1}"
+	local dst="${2}"
+	einfo "Using experimental inplace build in ${src}."
 
 	SBOX_TMP=":${SANDBOX_WRITE}:"
 
@@ -169,21 +222,26 @@ symlink_in_place() {
 		ewarn "Set SANDBOX_WRITE=${CROS_WORKON_SRCROOT} in your env."
 	fi
 
-	ln -sf ${1} ${S}
+	ln -sf "${src}" "${dst}"
 }
 
 local_copy() {
-	local srcpath=$1
+	# Local vars used by all called functions.
+	local src="${1}"
+	local dst="${2}"
 
 	# If we want to use git, and the source actually is a git repo
 	if [ "${CROS_WORKON_INPLACE}" == "1" ]; then
-		symlink_in_place ${srcpath}
+		symlink_in_place "${src}" "${dst}"
 	elif [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
-		local_copy_git ${srcpath}
+		local_copy_git "${src}" "${dst}"
 	elif [ "${CROS_WORKON_OUTOFTREE_BUILD}" == "1" ]; then
-		S="${srcpath}"
+		if [ ${project_count} -gt 1 ]; then
+			die "Out of Tree Build not compatible with multi-project ebuilds."
+		fi
+		S="${src}"
 	else
-		local_copy_cp ${srcpath}
+		local_copy_cp "${src}" "${dst}"
 	fi
 }
 
@@ -199,6 +257,14 @@ set_vcsid() {
 cros-workon_src_unpack() {
 	local fetch_method # local|git
 
+	# Set the default of CROS_WORKON_DESTDIR. This is done here because S is
+	# sometimes overridden in ebuilds and we cannot rely on the global state
+	# (and therefore ordering of eclass inherits and local ebuild overrides).
+	: ${CROS_WORKON_DESTDIR:=${S}}
+
+	# Fix array variables
+	array_vars_autocomplete
+
 	if [[ "${PV}" == "9999" ]]; then
 		# Live packages
 		fetch_method=local
@@ -209,78 +275,105 @@ cros-workon_src_unpack() {
 	# Hack
 	# TODO(msb): remove once we've resolved the include path issue
 	# http://groups.google.com/a/chromium.org/group/chromium-os-dev/browse_thread/thread/5e85f28f551eeda/3ae57db97ae327ae
-	ln -s "${S}" "${WORKDIR}/${CROS_WORKON_LOCALNAME}" &> /dev/null
+	local p i
+	for p in "${CROS_WORKON_LOCALNAME[@]/#/${WORKDIR}/}"; do
+		ln -s "${S}" "${p}" &> /dev/null
+	done
 
-	local repo=${CROS_WORKON_REPO}
-	local project=${CROS_WORKON_PROJECT}
-	local path=$(get_path)
+	local repo=( "${CROS_WORKON_REPO[@]}" )
+	local project=( "${CROS_WORKON_PROJECT[@]}" )
+	local destdir=( "${CROS_WORKON_DESTDIR[@]}" )
+	get_paths
 
 	if [[ "${fetch_method}" == "git" ]] ; then
-		if [[ -d ${path}/.git ]] ; then
-			# Looks like we already have a local copy of the git repository.
-			# Let's use that repository and checkout ${CROS_WORKON_COMMIT}.
-			#  -s: For speed, share objects between ${path} and ${S}.
-			#  -n: Don't checkout any files from the repository yet. We'll
-			#      checkout the source separately.
-			#
-			# We don't use git clone to checkout the source because the -b
-			# option for clone defaults to HEAD if it can't find the revision
-			# you requested. On the other hand, git checkout fails if it can't
-			# find the revision you requested, so we use that instead.
-			local fetched=false
-			if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
-				# Since we don't have a CROS_WORKON_COMMIT revision specified,
-				# we don't know what revision the ebuild wants. Let's take the
-				# version of the code that the user has checked out.
+		all_local() {
+			local p
+			for p in "${path[@]}"; do
+				[[ -d ${p} ]] || return 1
+			done
+			return 0
+		}
+
+		local fetched=0
+		if all_local; then
+			for (( i = 0; i < project_count; ++i )); do
+				# Looks like we already have a local copy of all repositories.
+				# Let's use these and checkout ${CROS_WORKON_COMMIT}.
+				#  -s: For speed, share objects between ${path} and ${S}.
+				#  -n: Don't checkout any files from the repository yet. We'll
+				#      checkout the source separately.
 				#
-				# This almost replicates the pre-cros-workon behavior, where
-				# the code you had in your source tree was used to build
-				# things. One difference here, however, is that only committed
-				# changes are included.
-				#
-				# TODO(davidjames): We should fix the preflight buildbot to
-				# specify CROS_WORKON_COMMIT for all ebuilds, and update this
-				# code path to fail and explain the problem.
-				git clone -s "${path}" ${S} || die "Can't clone ${path}."
-				fetched=true
-			else
-				git clone -sn "${path}" ${S} || die "Can't clone ${path}."
-				if ! ( cd ${S} && git checkout -q ${CROS_WORKON_COMMIT} ) ; then
-					ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT} in ${S}."
-					ewarn "Is ${path} up to date? Try running repo sync."
-					ewarn "Falling back to git.eclass..."
-					rm -rf ${S}/.git
+				# We don't use git clone to checkout the source because the -b
+				# option for clone defaults to HEAD if it can't find the
+				# revision you requested. On the other hand, git checkout fails
+				# if it can't find the revision you requested, so we use that
+				# instead.
+
+				# Destination directory. If we have one project, it's simply
+				# ${CROS_WORKON_DESTDIR}. More projects either specify an array or go to
+				# ${S}/${project}.
+
+				if [[ "${CROS_WORKON_COMMIT[i]}" == "master" ]]; then
+					# Since we don't have a CROS_WORKON_COMMIT revision specified,
+					# we don't know what revision the ebuild wants. Let's take the
+					# version of the code that the user has checked out.
+					#
+					# This almost replicates the pre-cros-workon behavior, where
+					# the code you had in your source tree was used to build
+					# things. One difference here, however, is that only committed
+					# changes are included.
+					#
+					# TODO(davidjames): We should fix the preflight buildbot to
+					# specify CROS_WORKON_COMMIT for all ebuilds, and update this
+					# code path to fail and explain the problem.
+					git clone -s "${path[i]}" "${destdir[i]}" || \
+						die "Can't clone ${path[i]}."
+						: $(( ++fetched ))
 				else
-					fetched=true
+					git clone -sn "${path[i]}" "${destdir[i]}" || \
+						die "Can't clone ${path[i]}."
+					if ! ( cd ${destdir[i]} && git checkout -q ${CROS_WORKON_COMMIT[i]} ) ; then
+						ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT[i]} in ${destdir[i]}."
+						ewarn "Is ${path[i]} up to date? Try running repo sync."
+						ewarn "Falling back to git.eclass..."
+						rm -rf "${destdir[i]}/.git"
+					else
+						: $(( ++fetched ))
+					fi
 				fi
-			fi
-			if $fetched; then
-				set_vcsid "$(GIT_DIR="${path}/.git" git rev-parse HEAD)"
+			done
+			if [[ ${fetched} -gt 0 ]]; then
+				# TODO: Id of all repos?
+				set_vcsid "$(GIT_DIR="${path[0]}/.git" git rev-parse HEAD)"
 				return
 			fi
 		fi
 
-		EGIT_REPO_URI="${repo}/${project}.git"
-		EGIT_PROJECT="${project}${CROS_WORKON_GIT_SUFFIX}"
-		EGIT_COMMIT=${CROS_WORKON_COMMIT}
-		if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
-			# TODO(davidjames): This code should really error out if
-			# ${CROS_WORKON_COMMIT} is master, because it's going to be doing
-			# the wrong thing for branches.
-			ewarn "=== START HACK ALERT ==="
-			ewarn "We don't have a CROS_WORKON_COMMIT for ${project},"
-			ewarn "and we can't find what code to use, so we are using"
-			ewarn "the latest version. This may break your build or"
-			ewarn "produce wrong output. See http://crosbug.com/6506"
-			ewarn "=== END HACK ALERT ==="
-		fi
-		# clones to /var, copies src tree to the /build/<board>/tmp
-		git_src_unpack
-		set_vcsid "${CROS_WORKON_COMMIT}"
+		for (( i = 0; i < project_count; ++i )); do
+			EGIT_REPO_URI="${repo[i]}/${project[i]}.git"
+			EGIT_PROJECT="${project[i]}${CROS_WORKON_GIT_SUFFIX}"
+			EGIT_SOURCEDIR="${destdir[i]}"
+			EGIT_COMMIT="${CROS_WORKON_COMMIT[i]}"
+			if [[ "${EGIT_COMMIT}" = "master" ]]; then
+				# TODO(davidjames): This code should really error out if
+				# ${CROS_WORKON_COMMIT} is master, because it's going to be doing
+				# the wrong thing for branches.
+				ewarn "=== START HACK ALERT ==="
+				ewarn "We don't have a CROS_WORKON_COMMIT for ${project},"
+				ewarn "and we can't find what code to use, so we are using"
+				ewarn "the latest version. This may break your build or"
+				ewarn "produce wrong output. See http://crosbug.com/6506"
+				ewarn "=== END HACK ALERT ==="
+			fi
+			# Clones to /var, copies src tree to the /build/<board>/tmp.
+			git-2_src_unpack
+			# TODO(zbehan): Support multiple projects for vcsid?
+		done
+		set_vcsid "${CROS_WORKON_COMMIT[0]}"
 		return
 	fi
 
-	einfo "Using local source dir: $path"
+	einfo "Using local source dir(s): ${path[*]}"
 
 	# Clone from the git host + repository path specified by
 	# CROS_WORKON_REPO + CROS_WORKON_PROJECT. Checkout source from
@@ -293,17 +386,27 @@ cros-workon_src_unpack() {
 		ewarn "repo sync flimflam"
 	fi
 
+	einfo "path: ${path[*]}"
+	einfo "destdir: ${destdir[*]}"
 	# Copy source tree to /build/<board>/tmp for building
-	local_copy "${path}" || \
-		die "Cannot create a local copy"
-	set_vcsid "$(GIT_DIR="${path}/.git" git rev-parse HEAD)"
+	for (( i = 0; i < project_count; ++i )); do
+		local_copy "${path[i]}" "${destdir[i]}" || \
+			die "Cannot create a local copy"
+		set_vcsid "$(GIT_DIR="${path[0]}/.git" git rev-parse HEAD)"
+	done
 }
 
 cros-workon_pkg_info() {
-	local CROS_WORKON_SRCDIR=$(get_path)
+	print_quoted_array() { printf '"%s"\n' "$@"; }
 
+	array_vars_autocomplete > /dev/null
+	get_paths
+	CROS_WORKON_SRCDIR=("${path[@]}")
+
+	local val var
 	for var in CROS_WORKON_SRCDIR CROS_WORKON_PROJECT ; do
-		echo ${var}=\"${!var}\"
+		eval val=(\"\${${var}\[@\]}\")
+		echo ${var}=\($(print_quoted_array "${val[@]}")\)
 	done
 }
 
