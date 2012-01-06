@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="aae6105d07ed0f7d04deeda662cbda1fff0a49cc"
+CROS_WORKON_COMMIT="8388d5deccc7198381dcde6f7e167ac4211dac76"
 CROS_WORKON_PROJECT="chromiumos/platform/cromo"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
@@ -38,7 +38,7 @@ make_flags() {
 }
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
+	tc-export CXX AR NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	REV=${CROS_WORKON_COMMIT-unknown}
 	[ "${REV}" = "master" ] && REV=unknown
