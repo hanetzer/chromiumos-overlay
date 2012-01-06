@@ -4,6 +4,7 @@
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
+CROS_WORKON_USE_VCSID="1"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
 
@@ -31,10 +32,7 @@ DEPEND="${RDEPEND}
 "
 
 cr_make() {
-	REV=${CROS_WORKON_COMMIT-unknown}
-	[ "${REV}" = "master" ] && REV=unknown
 	emake \
-		VCSID="${REV}" \
 		LIBDIR=/usr/$(get_libdir) \
 		$(use install_tests && echo INSTALL_TESTS=1) \
 		"$@" || die
