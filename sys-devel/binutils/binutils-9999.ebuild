@@ -1,7 +1,9 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-inherit eutils libtool flag-o-matic gnuconfig multilib versionator ${extra_eclass}
+CROS_WORKON_PROJECT=chromiumos/third_party/binutils
+
+inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-workon
 
 KEYWORDS="~amd64 ~arm ~x86"
 
@@ -50,7 +52,6 @@ RESTRICT="fetch strip"
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
 
 GITDIR=${WORKDIR}/gitdir
-GITHASH=a473a507a2f1ee9f0d9d737968ea4bc679fb6900
 
 LIBPATH=/usr/$(get_libdir)/binutils/${CTARGET}/${BVER}
 INCPATH=${LIBPATH}/include
@@ -63,24 +64,17 @@ fi
 
 src_unpack() {
 	if use mounted_sources ; then
-		BINUTILS_DIR="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
+		BINUTILS_DIR="/usr/local/toolchain_root/binutils"
 		if [[ ! -d ${BINUTILS_DIR} ]] ; then
 			die "binutils dirs not mounted at: ${BINUTILS_DIR}"
 		fi
 	else
-		mkdir ${GITDIR}
-		cd ${GITDIR} || die "Could not enter ${GITDIR}"
-		git clone http://git.chromium.org/chromiumos/third_party/binutils.git . || die "Could not clone repo."
-		if [[ ${PV} == "9999" ]] ; then
-			GITHASH="master"
+		cros-workon_src_unpack
+		mv "${S}" "${GITDIR}"
+		BINUTILS_DIR="${GITDIR}"
+		if [ -d "${GITDIR}/.git" ]; then
+			CL=$(cd "${BINUTILS_DIR}"; git log --pretty=format:%s -n1 | egrep -o '[0-9]+')
 		fi
-		einfo "Checking out ${GITHASH}."
-		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
-		cd -
-		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
-		cd ${BINUTILS_DIR}
-		CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
-		cd -
 	fi
 	if [[ ! -z ${CL} ]] ; then
 		BINUTILS_PKG_VERSION="${BINUTILS_PKG_VERSION}_${CL}"
