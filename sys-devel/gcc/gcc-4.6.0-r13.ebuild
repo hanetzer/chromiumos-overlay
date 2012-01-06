@@ -3,18 +3,21 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI=1
+CROS_WORKON_LOCALNAME=gcc
+CROS_WORKON_PROJECT=chromiumos/third_party/gcc
+CROS_WORKON_COMMIT=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
+
+inherit eutils cros-workon
 
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
-
-inherit eutils git
 
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
 
 DESCRIPTION="The GNU Compiler Collection.  Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14."
 
 LICENSE="GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2"
-KEYWORDS="~alpha ~amd64 ~arm -hppa ~ia64 ~mips ~ppc ~ppc64 ~sh -sparc ~x86 ~x86-fbsd"
+KEYWORDS="amd64 arm x86"
 
 RDEPEND=">=sys-libs/zlib-1.1.4
 	>=sys-devel/gcc-config-1.4
@@ -115,19 +118,8 @@ src_unpack() {
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
 	else
-		mkdir ${GITDIR}
-		local OLD_S=${S}
-		S=${GITDIR}
-		EGIT_REPO_URI=http://git.chromium.org/chromiumos/third_party/gcc.git
-		if [[ "${PV}" == "9999" ]]; then
-			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
-		else
-			GCC_GITHASH=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
-		fi
-		EGIT_COMMIT="${GCC_GITHASH}"
-		EGIT_PROJECT=${PN}-git-src
-		git_fetch
-		S=${OLD_S}
+		cros-workon_src_unpack
+		mv "${S}" "${GITDIR}"
 
 		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 	fi
