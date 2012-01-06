@@ -82,5 +82,6 @@ RDEPEND="${RDEPEND}
 	x86? ( x11-misc/read-edid )
 	x11-terms/rxvt-unicode
 	app-misc/utouch-evemu
+	chromeos-base/ec-utils
 	chromeos-base/ixchariot
 	"
