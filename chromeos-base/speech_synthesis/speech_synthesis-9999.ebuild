@@ -35,17 +35,11 @@ src_compile() {
 
 src_install() {
 	dosbin "${S}/speech_synthesizer"
-	dosbin "${S}/speech_synthesizer_client"
 
 	insinto /etc/dbus-1/system.d
 	doins "${S}/SpeechSynthesizer.conf"
 
 	insinto /usr/share/dbus-1/system-services
 	doins "${S}/org.chromium.SpeechSynthesizer.service"
-
-	insinto /usr/share/chromeos-assets/accessibility/earcons
-	doins "${S}/earcons/"*
-
-	dolib "${S}/libtts.so"
 }
 
