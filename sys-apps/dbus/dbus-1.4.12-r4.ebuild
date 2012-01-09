@@ -169,6 +169,9 @@ src_install() {
 	keepdir /etc/dbus-1/system.d/
 	keepdir /etc/dbus-1/session.d/
 
+	insinto /usr/share/dbus-1/interfaces
+	doins "${FILESDIR}"/org.freedesktop.DBus.Properties.xml
+
 	dodoc AUTHORS ChangeLog HACKING NEWS README doc/TODO || die
 
 	cd "${BD}"
