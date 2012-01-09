@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -reorder -touchui -local_gclient hardfp +runhooks +verbose -drm"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -reorder -touchui -local_gclient hardfp +pgo +runhooks +verbose -drm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -610,9 +610,9 @@ src_unpack() {
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 
 
-	if use reorder; then
+	if use reorder || use pgo; then
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
-		EGIT_COMMIT="51e1b4a484a83006582ab600bad17243f979671c"
+		EGIT_COMMIT="78a2eae5d3796ebee0078cdee657f874a2760414"
 		EGIT_PROJECT="${PN}-pgo"
 		if grep -q $EGIT_COMMIT "${ECHROME_STORE_DIR}/${PGO_SUBDIR}/.git/HEAD"; then
 			einfo "PGO repo is up to date."
@@ -622,6 +622,9 @@ src_unpack() {
 			S="${ECHROME_STORE_DIR}/${PGO_SUBDIR}"
 			rm -rf "${S}"
 			git_fetch
+			pushd "${S}" > /dev/null
+			unpack ./profile.tbz2
+			popd > /dev/null
 			S="${OLD_S}"
 		fi
 	fi
@@ -724,6 +727,26 @@ src_compile() {
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 
 	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
+
+	if use pgo; then
+		append-flags -fprofile-use \
+			-fprofile-correction \
+			-Wno-error=coverage-mismatch \
+			-fopt-info=0 \
+			-fprofile-dir="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
+
+		# This is required because gcc currently may crash with an
+		# internal compiler error if the profile is stale.
+		# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51975
+		# This does not cause performance degradation.
+		append-flags -fno-vpt
+
+		# This is required because gcc emits different warnings for PGO
+		# vs. non-PGO. PGO may inline different functions from non-PGO,
+		# leading to different warnings.
+		# crbug.com/112908
+		append-flags -Wno-error=maybe-uninitialized
+	fi
 
 	if use drm; then
 		time emake -r $(use verbose && echo V=1) \
