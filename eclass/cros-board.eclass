@@ -36,6 +36,7 @@ ALL_BOARDS=(
     ironhide
     link
     lumpy
+    lumpy64
     stumpy
     tegra2
     tegra2_aebl
