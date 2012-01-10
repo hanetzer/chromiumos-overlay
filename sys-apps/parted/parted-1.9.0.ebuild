@@ -13,11 +13,11 @@ SRC_URI="mirror://gnu/${PN}/${P}.tar.gz"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 s390 sh sparc x86"
-IUSE="nls readline +debug selinux device-mapper"
+IUSE="nls readline +debug selinux device-mapper test"
 
 # specific version for gettext needed
 # to fix bug 85999
-DEPEND=">=sys-fs/e2fsprogs-1.27
+RDEPEND=">=sys-fs/e2fsprogs-1.27
 	>=sys-libs/ncurses-5.2
 	nls? ( >=sys-devel/gettext-0.12.1-r2 )
 	readline? ( >=sys-libs/readline-5.2 )
@@ -26,11 +26,15 @@ DEPEND=">=sys-fs/e2fsprogs-1.27
 		>=sys-fs/lvm2-2.02.45
 		sys-fs/device-mapper )
 	)"
+DEPEND="${RDEPEND}
+	dev-util/pkgconfig
+	test? ( >=dev-libs/check-0.9.3 )"
 
-src_unpack() {
-	        unpack ${A}
-        	cd "${S}"
-		epatch "${FILESDIR}/${P}-cross-compile.patch"
+src_prepare() {
+	# there is no configure flag for controlling the dev-libs/check test
+	sed -i configure \
+		-e "s:have_check=[a-z]*:have_check=$(usex test):g" || die
+	epatch "${FILESDIR}/${P}-cross-compile.patch"
 }
 
 src_configure() {
@@ -48,4 +52,6 @@ src_install() {
 	emake install DESTDIR="${D}" || die "Install failed"
 	dodoc AUTHORS BUGS ChangeLog NEWS README THANKS TODO
 	dodoc doc/{API,FAT,USER.jp}
+	# Scrub test-only programs http://crosbug.com/24872
+	rm -f "${D}"/usr/bin/{disk,label}
 }
