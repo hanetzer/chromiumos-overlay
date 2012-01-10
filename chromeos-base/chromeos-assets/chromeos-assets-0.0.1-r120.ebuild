@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex lumpy mario tegra2-ldk"
+IUSE="alex lumpy lumpy64 mario tegra2-ldk"
 
 DEPEND="media-fonts/croscorefonts
 	media-fonts/droidfonts-cros
