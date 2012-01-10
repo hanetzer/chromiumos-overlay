@@ -12,7 +12,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex cmt elan mario multitouch synaptics -tegra"
+IUSE="alex cmt elan mario multitouch synaptics -tegra -aura"
 
 RDEPEND=""
 DEPEND="x11-base/xorg-server"
@@ -54,6 +54,9 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-kaen.conf"
 		elif [[ "${board}" = "lumpy" || "${board}" = "lumpy64" ]]; then
 			doins "${FILESDIR}/50-touchpad-cmt-lumpy.conf"
+		fi
+		if use aura; then
+			doins "${FILESDIR}/50-touchpad-cmt-aura.conf"
 		fi
 	elif use multitouch; then
 		doins "${FILESDIR}/50-touchpad-multitouch.conf"
