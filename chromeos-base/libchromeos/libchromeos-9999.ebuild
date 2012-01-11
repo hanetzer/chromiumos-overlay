@@ -68,4 +68,7 @@ src_install() {
 
 	insinto /usr/include/policy
 	doins chromeos/policy/*.h || die
+
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins *.pc || die
 }
