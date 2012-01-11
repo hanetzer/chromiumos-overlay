@@ -35,7 +35,8 @@ RDEPEND=">=dev-libs/glib-2.16
 	resolvconf? ( net-dns/openresolv )
 	udev? ( >=sys-fs/udev-141 )
 	l2tpipsec? ( chromeos-base/vpn-manager )
-	newwifi? ( net-wireless/wpa_supplicant[dbus] )"
+	newwifi? ( net-wireless/wpa_supplicant[dbus] )
+        !chromeos-base/entd"
 
 DEPEND="${RDEPEND}
 	modemmanager? ( net-misc/modemmanager )
@@ -102,14 +103,18 @@ src_install() {
 	keepdir /var/lib/${PN} || die
 
 	if use resolvfiles ; then
-		mkdir -p "${D}"/etc/
-		ln -s /var/run/flimflam/resolv.conf "${D}"/etc/resolv.conf
+		dodir /etc
+		dosym /var/run/flimflam/resolv.conf /etc/resolv.conf || die
+		insinto /etc
+		echo "hosts: files dns" > nsswitch.conf || die
+		doins nsswitch.conf || die
 	elif use resolvconf; then
 		:
 	elif use dnsproxy ; then
-		mkdir -p "${D}"/etc/
-		echo "nameserver 127.0.0.1" > "${D}"/etc/resolv.conf
-		chmod 0644 "${D}"/etc/resolv.conf
+		dodir /etc
+		insinto /etc
+		echo "nameserver 127.0.0.1" > resolv.conf
+		doins resolv.conf || die
 	fi
 
 	if use ppp; then
