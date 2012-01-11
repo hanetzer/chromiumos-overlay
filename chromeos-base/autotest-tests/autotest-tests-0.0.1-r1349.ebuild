@@ -112,21 +112,28 @@ IUSE_TESTS="
 	+tests_desktopui_WindowManagerFocusNewWindows
 	+tests_desktopui_WindowManagerHotkeys
 	tests_example_UnitTest
-        +tests_firmware_CorruptBothFwSigAB
-        +tests_firmware_CorruptBothKernelAB
-        +tests_firmware_CorruptFwSigA
-        +tests_firmware_CorruptFwSigB
-        +tests_firmware_CorruptKernelA
-        +tests_firmware_CorruptKernelB
-        +tests_firmware_DevFwNormalBoot
-        +tests_firmware_DevMode
-        +tests_firmware_DevScreenTimeout
-        +tests_firmware_DevTriggerRecovery
-        +tests_firmware_FAFTClient
-        +tests_firmware_RecoveryButton
+	+tests_firmware_CgptState
+	+tests_firmware_CorruptBothFwBodyAB
+	+tests_firmware_CorruptBothFwSigAB
+	+tests_firmware_CorruptBothKernelAB
+	+tests_firmware_CorruptFwBodyA
+	+tests_firmware_CorruptFwBodyB
+	+tests_firmware_CorruptFwSigA
+	+tests_firmware_CorruptFwSigB
+	+tests_firmware_CorruptKernelA
+	+tests_firmware_CorruptKernelB
+	+tests_firmware_DevFwNormalBoot
+	+tests_firmware_DevMode
+	+tests_firmware_DevScreenTimeout
+	+tests_firmware_DevTriggerRecovery
+	+tests_firmware_FAFTClient
+	+tests_firmware_FwScreenCloseLid
+	+tests_firmware_FwScreenPressPower
+	+tests_firmware_InvalidUSB
+	+tests_firmware_RecoveryButton
 	+tests_firmware_RomSize
-        +tests_firmware_TryFwB
-        +tests_firmware_UserRequestRecovery
+	+tests_firmware_TryFwB
+	+tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
