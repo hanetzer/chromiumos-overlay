@@ -315,6 +315,7 @@ IUSE_TESTS="
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
 	+tests_security_HardlinkRestrictions
+	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
