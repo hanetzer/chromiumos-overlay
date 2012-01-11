@@ -32,7 +32,7 @@ src_prepare() {
 	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
 	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
 	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
-	cp -fpru "${S}"/{conmux,tko,utils} "${AUTOTEST_WORK}"
+	cp -fpru "${S}"/{conmux,tko,utils,site_utils} "${AUTOTEST_WORK}"
 	cp -fpru "${S}"/shadow_config.ini "${AUTOTEST_WORK}"
 
 	# cros directory is not from autotest upstream but cros project specific.
