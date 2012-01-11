@@ -1,0 +1,1 @@
+export glib_cv_have_qsort_r=yes
