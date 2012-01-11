@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="afb14a2186f7d6c03321b2c245a8818ff7b5a5ef"
+CROS_WORKON_COMMIT="d305cde314a6f3868b9832ab63d589f050cad42d"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 
 inherit toolchain-funcs cros-debug cros-workon
@@ -69,4 +69,7 @@ src_install() {
 
 	insinto /usr/include/policy
 	doins chromeos/policy/*.h || die
+
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins *.pc || die
 }
