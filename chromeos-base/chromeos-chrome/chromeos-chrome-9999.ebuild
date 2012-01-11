@@ -753,14 +753,15 @@ install_chrome_test_resources() {
 	echo Copying Chrome tests into "${test_dir}"
 	mkdir -p "${test_dir}/out/Release"
 
-	# Even if chrome_debug_tests is enabled, we don't need to include debug
-	# symbols for tests in the binary package, so save some time by stripping
-	# them here. Developers who need to debug the tests can use the original
-	# unstripped tests from the ${from} directory.
+	# Even if chrome_debug_tests is enabled, we don't need to include detailed
+	# debug info for tests in the binary package, so save some time by stripping
+	# everything but the symbol names. Developers who need more detailed debug
+	# info on the tests can use the original unstripped tests from the ${from}
+	# directory.
 	for f in libppapi_tests.so browser_tests \
 			 ui_tests sync_integration_tests \
 			 performance_ui_tests; do
-		$(tc-getSTRIP) --strip-unneeded "${from}"/${f} \
+		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
 			-o ${test_dir}/out/Release/$(basename ${f})
 	done
 
@@ -825,11 +826,12 @@ install_pyauto_dep_resources() {
 	cp -al "${from}"/pyproto "${test_dir}"/out/Release
 	cp -al "${from}"/pyautolib.py "${test_dir}"/out/Release
 
-	# Even if chrome_debug_tests is enabled, we don't need to include debug
-	# symbols for tests in the binary package, so save some time by stripping
-	# them here. Developers who need to debug the tests can use the original
-	# unstripped tests from the ${from} directory.
-	$(tc-getSTRIP) --strip-unneeded "${from}"/_pyautolib.so \
+	# Even if chrome_debug_tests is enabled, we don't need to include detailed
+	# debug info for tests in the binary package, so save some time by stripping
+	# everything but the symbol names. Developers who need more detailed debug
+	# info on the tests can use the original unstripped tests from the ${from}
+	# directory.
+	$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/_pyautolib.so \
 		-o "${test_dir}"/out/Release/_pyautolib.so
 
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
