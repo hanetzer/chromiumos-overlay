@@ -3,7 +3,7 @@
 # $Header: $
 
 EAPI="2"
-CROS_WORKON_COMMIT="3679ce64d28c5c76d8114fae534f87e60f4e9252"
+CROS_WORKON_COMMIT="09b8a182b1fb039c6b4e80d0246b06f7cbce17b6"
 CROS_WORKON_PROJECT="chromiumos/platform/speech_synthesis"
 
 inherit cros-debug cros-workon eutils
@@ -35,17 +35,11 @@ src_compile() {
 
 src_install() {
 	dosbin "${S}/speech_synthesizer"
-	dosbin "${S}/speech_synthesizer_client"
 
 	insinto /etc/dbus-1/system.d
 	doins "${S}/SpeechSynthesizer.conf"
 
 	insinto /usr/share/dbus-1/system-services
 	doins "${S}/org.chromium.SpeechSynthesizer.service"
-
-	insinto /usr/share/chromeos-assets/accessibility/earcons
-	doins "${S}/earcons/"*
-
-	dolib "${S}/libtts.so"
 }
 
