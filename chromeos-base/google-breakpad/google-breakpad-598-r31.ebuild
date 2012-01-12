@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b338cbed82b1ec9e7dd11f5de2d94674b97746f7"
+CROS_WORKON_COMMIT="49097314ae616d467f03d424cfb353e561cd5b82"
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
 inherit autotools cros-debug cros-workon toolchain-funcs
