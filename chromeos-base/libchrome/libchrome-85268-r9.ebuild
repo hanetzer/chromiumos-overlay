@@ -162,4 +162,7 @@ src_install() {
 
 	insinto /usr/include/build
 	doins "${WORKDIR}"/build/build_config.h || die
+
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins "${FILESDIR}"/libchrome.pc || die
 }
