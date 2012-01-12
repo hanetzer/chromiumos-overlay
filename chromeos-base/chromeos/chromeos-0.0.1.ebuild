@@ -182,6 +182,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cros_boot_mode
 	chromeos-base/dev-install
 	chromeos-base/flimflam
+	chromeos-base/inputcontrol
 	chromeos-base/internal
 	chromeos-base/libcros
 	chromeos-base/metrics
