@@ -11,6 +11,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop -als -aura"
+IUSE="${IUSE} -has_keyboard_backlight"
 KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="app-misc/ddccontrol
@@ -42,6 +43,7 @@ src_compile() {
 		$(use_scons is_desktop)
 		$(use_scons als has_als)
 		$(use_scons aura)
+		$(use_scons has_keyboard_backlight)
 	)
 	escons || die "power_manager compile failed."
 }
@@ -57,6 +59,7 @@ src_test() {
 		$(use_scons is_desktop)
 		$(use_scons als has_als)
 		$(use_scons aura)
+		$(use_scons has_keyboard_backlight)
 	)
 	escons tests || die "tests compile failed."
 
