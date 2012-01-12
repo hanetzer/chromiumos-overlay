@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="32819bc008b4892809d1f6de722de2f53ed67e7e"
+CROS_WORKON_COMMIT="c39ce5e5f27d48a6e1aee6ffb6d3e390dbf8d433"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 
 inherit cros-debug cros-workon scons-utils toolchain-funcs
@@ -12,6 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop -als -aura"
+IUSE="${IUSE} -has_keyboard_backlight"
 KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-misc/ddccontrol
@@ -43,6 +44,7 @@ src_compile() {
 		$(use_scons is_desktop)
 		$(use_scons als has_als)
 		$(use_scons aura)
+		$(use_scons has_keyboard_backlight)
 	)
 	escons || die "power_manager compile failed."
 }
@@ -58,6 +60,7 @@ src_test() {
 		$(use_scons is_desktop)
 		$(use_scons als has_als)
 		$(use_scons aura)
+		$(use_scons has_keyboard_backlight)
 	)
 	escons tests || die "tests compile failed."
 
