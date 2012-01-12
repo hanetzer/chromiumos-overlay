@@ -29,10 +29,7 @@ DEPEND="${RDEPEND}
 
 
 src_compile() {
-	tc-export CXX
-	tc-export CC
-	tc-export OBJCOPY
-	tc-export STRIP
+	tc-export CXX CC OBJCOPY STRIP AR
 	cros-debug-add-NDEBUG
 	emake OUT=${S}/build \
 		WITH_CHROME=$(use test && echo 1 || echo 0) \
@@ -41,11 +38,6 @@ src_compile() {
 }
 
 src_test() {
-	tc-export CXX
-	tc-export CC
-	tc-export OBJCOPY
-	tc-export STRIP
-	cros-debug-add-NDEBUG
 	# TODO(wad) add a verbose use flag to change the MODE=
 	emake \
 		OUT=${S}/build \
