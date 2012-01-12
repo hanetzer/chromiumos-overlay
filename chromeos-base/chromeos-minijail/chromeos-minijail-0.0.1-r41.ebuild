@@ -18,8 +18,6 @@ IUSE="test"
 RDEPEND="sys-libs/libcap"
 DEPEND="test? ( dev-cpp/gtest )
 	test? ( dev-cpp/gmock )
-	chromeos-base/libchrome
-	chromeos-base/libchromeos
 	${RDEPEND}"
 
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
