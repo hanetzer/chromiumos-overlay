@@ -60,6 +60,7 @@ src_prepare() {
 
 	append-flags -fno-strict-aliasing
 	append-flags -Wa,--noexecstack
+	filter-flags '-DVCSID=*'
 
 	sed -i '1s,^:$,#!/usr/bin/perl,' Configure #141906
 	sed -i '/^"debug-steve/d' Configure # 0.9.8k shipped broken

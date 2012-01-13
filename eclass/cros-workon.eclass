@@ -46,11 +46,6 @@
 # Build the sources in place. Don't copy them to a temp dir.
 : ${CROS_WORKON_INPLACE:=}
 
-# @ECLASS-VARIABLE: CROS_WORKON_USE_VCSID
-# @DESCRIPTION:
-# Export VCSID into the project
-: ${CROS_WORKON_USE_VCSID:=}
-
 inherit git flag-o-matic
 
 # Calculate path where code should be checked out.
@@ -137,15 +132,6 @@ local_copy() {
 	fi
 }
 
-set_vcsid() {
-	export VCSID="${1}"
-
-	if [ "${CROS_WORKON_USE_VCSID}" == "1" ]; then
-		append-flags -DVCSID=\\\"${VCSID}\\\"
-		MAKEOPTS+=" VCSID=${VCSID}"
-	fi
-}
-
 cros-workon_src_unpack() {
 	local fetch_method # local|git
 
@@ -214,7 +200,8 @@ cros-workon_src_unpack() {
 				fi
 			fi
 			if $fetched; then
-				set_vcsid "$(GIT_DIR="${path}/.git" git rev-parse HEAD)"
+				VCSID=$(GIT_DIR="${path}/.git" git rev-parse HEAD)
+				append-flags -DVCSID=\\\"${VCSID}\\\"
 				return
 			fi
 		fi
@@ -235,7 +222,7 @@ cros-workon_src_unpack() {
 		fi
 		# clones to /var, copies src tree to the /build/<board>/tmp
 		git_src_unpack
-		set_vcsid "${CROS_WORKON_COMMIT}"
+		append-flags -DVCSID=\\\"${CROS_WORKON_COMMIT}\\\"
 		return
 	fi
 
@@ -255,7 +242,8 @@ cros-workon_src_unpack() {
 	# Copy source tree to /build/<board>/tmp for building
 	local_copy "${path}" || \
 		die "Cannot create a local copy"
-	set_vcsid "$(GIT_DIR="${path}/.git" git rev-parse HEAD)"
+	VCSID=$(GIT_DIR="${path}/.git" git rev-parse HEAD)
+	append-flags -DVCSID=\\\"${VCSID}\\\"
 }
 
 cros-workon_pkg_info() {
