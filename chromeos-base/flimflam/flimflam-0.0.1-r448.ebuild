@@ -6,6 +6,7 @@
 EAPI="2"
 CROS_WORKON_COMMIT="a4c8ea1178fe7498de19a2013469c3c4bc7c4b95"
 CROS_WORKON_PROJECT="chromiumos/platform/flimflam"
+CROS_WORKON_USE_VCSID="1"
 
 inherit autotools cros-workon toolchain-funcs
 

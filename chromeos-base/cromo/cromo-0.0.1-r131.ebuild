@@ -4,6 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="769f2ea3d29600fcd919c632b7f67993a2b5bd94"
 CROS_WORKON_PROJECT="chromiumos/platform/cromo"
+CROS_WORKON_USE_VCSID="1"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
 
@@ -40,16 +41,13 @@ make_flags() {
 src_compile() {
 	tc-export CXX AR NM PKG_CONFIG
 	cros-debug-add-NDEBUG
-	REV=${CROS_WORKON_COMMIT-unknown}
-	[ "${REV}" = "master" ] && REV=unknown
-	emake $(make_flags) VCSID="${REV}" || die
+	emake $(make_flags) || die
 }
 
 src_test() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
-	[ "${REV}" = "master" ] && REV=unknown
-	emake $(make_flags) VCSID="${REV}" tests || die "could not build tests"
+	emake $(make_flags) tests || die "could not build tests"
 	if ! use x86; then
 		echo Skipping unit tests on non-x86 platform
 	else
