@@ -10,7 +10,7 @@ DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~arm ~x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
