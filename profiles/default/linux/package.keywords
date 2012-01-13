@@ -12,6 +12,8 @@
 =dev-libs/eggdbus-0.5		amd64 x86
 =dev-libs/protobuf-2.2.0	amd64 x86
 >=dev-libs/elfutils-0.152-r1	amd64 arm x86
+=dev-libs/glib-2.30.2-r1	amd64 x86
+=dev-util/gdbus-codegen-2.30.2	amd64 x86
 
 # Get a newer version of pylint
 =dev-python/astng-0.21.1           amd64
