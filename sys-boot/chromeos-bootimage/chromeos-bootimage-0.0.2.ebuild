@@ -9,20 +9,25 @@ DESCRIPTION="ChromeOS firmware image builder"
 HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 BOARDS="alex link lumpy mario stumpy"
 IUSE="${BOARDS} seabios"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
+X86_DEPEND="
+	       sys-boot/chromeos-coreboot
+	       sys-apps/coreboot-utils
+
+"
 # TODO(dianders) Eventually we'll have virtual/chromeos-bootimage.
 # When that happens the various implementations (like
 # sys-boot/chromeos-bootimage-seaboard) will do the depending on
 # sys-boot/tegra2-public-firmware-fdts.  For now we'll hardcode it.
 DEPEND="
 	arm? ( virtual/tegra-bct )
-	x86? ( sys-boot/chromeos-coreboot )
-	x86? ( sys-apps/coreboot-utils )
+	x86? ( ${X86_DEPEND} )
+	amd64? ( ${X86_DEPEND} )
 	virtual/u-boot
 	chromeos-base/vboot_reference
 	seabios? ( sys-boot/chromeos-seabios )
