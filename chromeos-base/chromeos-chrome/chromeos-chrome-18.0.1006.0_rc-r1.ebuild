@@ -156,7 +156,7 @@ RDEPEND="${RDEPEND}
 	media-libs/mesa
 	net-misc/wget
 	sys-libs/zlib
-	x86? ( !chrome_internal? ( www-plugins/adobe-flash ) )
+	!aura? ( x86? ( !chrome_internal? ( www-plugins/adobe-flash ) ) )
 	>=x11-libs/gtk+-2.14.7
 	x11-libs/libXScrnSaver
 	chrome_remoting? ( x11-libs/libXtst )
@@ -776,9 +776,11 @@ install_chrome_test_resources() {
 		"${test_dir}"/out/Release/pseudo_locales
 
 	# Copy over npapi test plugin
-	mkdir -p "${test_dir}"/out/Release/plugins
-	cp -al "${from}"/plugins/libnpapi_test_plugin.so \
-		"${test_dir}"/out/Release/plugins
+	if ! use aura; then
+		mkdir -p "${test_dir}"/out/Release/plugins
+		cp -al "${from}"/plugins/libnpapi_test_plugin.so \
+			"${test_dir}"/out/Release/plugins
+	fi
 
 	for f in ${TEST_FILES}; do
 		cp -al "${from}/${f}" "${test_dir}"
@@ -937,7 +939,7 @@ src_install() {
 	dosym libplc4.so /usr/lib/libplc4.so.0d
 	dosym libnspr4.so /usr/lib/libnspr4.so.0d
 
-	if use amd64 || use x86; then
+	if ! use aura && ( use amd64 || use x86 ); then
 		# Install Flash plugin.
 		if use chrome_internal; then
 			if [ -f "${FROM}/libgcflashplayer.so" ]; then
