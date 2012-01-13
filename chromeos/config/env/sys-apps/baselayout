@@ -1,1 +1,2 @@
-PKG_INSTALL_MASK=/etc/sysctl.conf
+PKG_INSTALL_MASK+=" /etc/sysctl.conf"
+INSTALL_MASK+=" /etc/sysctl.conf"
