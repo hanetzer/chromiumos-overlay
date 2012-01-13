@@ -10,7 +10,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-BOARDS="alex link lumpy mario stumpy"
+BOARDS="alex link lumpy lumpy64 mario stumpy"
 IUSE="${BOARDS} seabios"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
