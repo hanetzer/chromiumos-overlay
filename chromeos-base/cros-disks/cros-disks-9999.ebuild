@@ -59,8 +59,8 @@ src_install() {
 	doins usb-device-info
 
 	# Install seccomp policy file.
-	if [ "$ARCH" = "x86" ]; then
-		newins avfsd-seccomp-x86.policy avfsd-seccomp.policy
+	if [ -f "avfsd-seccomp-${ARCH}.policy" ]; then
+		newins "avfsd-seccomp-${ARCH}.policy" avfsd-seccomp.policy
 	fi
 
 	# Install upstart config file.
