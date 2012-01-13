@@ -101,7 +101,8 @@ src_configure() {
 		--enable-health \
 		--enable-maemo6 \
 		--enable-pnat \
-		--enable-wiimote
+		--enable-wiimote \
+		--enable-dbusoob
 }
 
 src_install() {
