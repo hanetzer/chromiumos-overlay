@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="bbc467e64948383146c3b230798acb37d9e39929"
+CROS_WORKON_COMMIT="07e922f87d3dbf1013e209f97eea442db1e0f998"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs cros-board flag-o-matic
@@ -11,7 +11,7 @@ DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
