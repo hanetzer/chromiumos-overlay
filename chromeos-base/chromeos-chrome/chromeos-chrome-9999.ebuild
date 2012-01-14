@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_media -clang -touchui -local_gclient hardfp +runhooks +verbose"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -touchui -local_gclient hardfp +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -249,6 +249,10 @@ set_build_defines() {
 
 	if use touchui; then
 		BUILD_DEFINES="touchui=1 $BUILD_DEFINES"
+	fi
+
+	if ! use chrome_debug_tests; then
+		BUILD_DEFINES+=" strip_tests=1"
 	fi
 
 	if use clang; then
@@ -749,10 +753,16 @@ install_chrome_test_resources() {
 	echo Copying Chrome tests into "${test_dir}"
 	mkdir -p "${test_dir}/out/Release"
 
+	# Even if chrome_debug_tests is enabled, we don't need to include detailed
+	# debug info for tests in the binary package, so save some time by stripping
+	# everything but the symbol names. Developers who need more detailed debug
+	# info on the tests can use the original unstripped tests from the ${from}
+	# directory.
 	for f in libppapi_tests.so browser_tests \
 			 ui_tests sync_integration_tests \
 			 performance_ui_tests; do
-		ln "${from}"/${f} ${test_dir}/out/Release/$(basename ${f})
+		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
+			-o ${test_dir}/out/Release/$(basename ${f})
 	done
 
 	# Copy over the test data directory; eventually 'all' non-static
@@ -817,7 +827,15 @@ install_pyauto_dep_resources() {
 
 	cp -al "${from}"/pyproto "${test_dir}"/out/Release
 	cp -al "${from}"/pyautolib.py "${test_dir}"/out/Release
-	ln "${from}"/_pyautolib.so "${test_dir}"/out/Release/_pyautolib.so
+
+	# Even if chrome_debug_tests is enabled, we don't need to include detailed
+	# debug info for tests in the binary package, so save some time by stripping
+	# everything but the symbol names. Developers who need more detailed debug
+	# info on the tests can use the original unstripped tests from the ${from}
+	# directory.
+	$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/_pyautolib.so \
+		-o "${test_dir}"/out/Release/_pyautolib.so
+
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
 		"${test_dir}"/out/Release
 

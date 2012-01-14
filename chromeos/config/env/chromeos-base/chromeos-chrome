@@ -1,3 +1,0 @@
-# Don't include autotest debug symbols in the binpkg, since they add 5G of
-# unnecessary weight.
-PKG_INSTALL_MASK+=" /usr/lib/debug/usr/local/autotest"
