@@ -15,7 +15,8 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND="chromeos-base/chromeos-minijail
-	 chromeos-base/libchrome"
+	chromeos-base/libchrome
+	chromeos-base/libchromeos"
 DEPEND="${RDEPEND}"
 
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
