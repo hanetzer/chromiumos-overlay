@@ -25,6 +25,7 @@ chromeos-base/flimflam	debug resolvfiles
 chromeos-base/vboot_reference minimal
 media-gfx/imagemagick   -gs png -truetype
 media-libs/libsndfile	minimal
+media-libs/opencv	gtk python png jpeg tiff v4l
 media-sound/pulseaudio	bluetooth dbus -esd
 net-analyzer/tcpdump	-chroot
 net-firewall/iptables	ipv6
