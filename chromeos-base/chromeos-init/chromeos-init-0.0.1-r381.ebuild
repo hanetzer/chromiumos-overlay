@@ -53,11 +53,6 @@ src_install() {
 	into /usr
 	dosbin "${S}/chromeos-cleanup-logs"
 
-	# Install headphone jack monitor & multiplexer.
-        # Run on login, killed on logout.
-	into /usr
-	dosbin "${S}/headphone-jack-monitor"
-
 	exeinto /etc/cron.daily
 	doexe "${S}/cleanup-logs.daily"
 
