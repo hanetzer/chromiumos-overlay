@@ -43,6 +43,10 @@ src_prepare() {
 	epatch "${WORKDIR}/patch/pppol2tpv3-2.6.35.patch"
 	epatch "${WORKDIR}/patch/pado-timeout.patch"
 	epatch "${WORKDIR}/patch/lcp-echo-adaptive.patch"
+	# Apply Chromium OS specific patch regarding the nosystemconfig option
+	# See https://gerrit.chromium.org/gerrit/7751 and
+	# http://crosbug.com/17185 for details.
+	epatch "${FILESDIR}/${PN}-2.4.5-systemconfig.patch"
 
 	use eap-tls && {
 		# see http://www.nikhef.nl/~janjust/ppp for more info
@@ -149,6 +153,10 @@ src_install() {
 		insinto /etc/ppp/${i}.d
 		use ipv6 && dosym ${i} /etc/ppp/${i/ip/ipv6}
 		doins "${WORKDIR}/scripts/${i}.d"/* || die "failed to install ${i}.d scripts"
+		# Remove ip-up/ip-down 40-dns.sh scripts because these scripts
+		# modify /etc/resolv.conf, which should only be managed by the
+		# connection manager (flimflam). See http://crosbug.com/24486.
+		rm -f ${D}/etc/ppp/${i}.d/40-dns.sh || die "failed to remove /etc/ppp/${i}.d/40-dns.sh"
 	done
 
 	pamd_mimic_system ppp auth account session
