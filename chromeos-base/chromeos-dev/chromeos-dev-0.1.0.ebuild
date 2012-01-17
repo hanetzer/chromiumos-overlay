@@ -44,6 +44,7 @@ RDEPEND="${RDEPEND}
 	dev-util/libc-bench
 	net-analyzer/netperf
 	net-analyzer/tcpdump
+	net-dialup/minicom
 	net-misc/dhcp
 	net-misc/iperf
 	net-misc/iputils
