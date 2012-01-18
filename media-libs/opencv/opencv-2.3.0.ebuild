@@ -33,7 +33,7 @@ RDEPEND="
 		dev-libs/glib:2
 		x11-libs/gtk+:2
 	)
-	jpeg? ( virtual/jpeg )
+	jpeg? ( media-libs/jpeg )
 	jpeg2k? ( media-libs/jasper )
 	ieee1394? ( media-libs/libdc1394 sys-libs/libraw1394 )
 	openexr? ( media-libs/openexr )
@@ -127,6 +127,16 @@ src_configure() {
 	else
 		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=OFF" )
 	fi
+	
+	# Chrome OS cross-compilation fix:
+	#
+	# Setting root folder and search paths for cross-compilation
+	# We force the cmake to use binaries (e.g. compilers, interpreters)
+	# in the host but use include/library files in the target.
+	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH=${ROOT}" )
+	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER" )
+	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY" )
+	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY" )
 
 	# things we want to be hard off or not yet figured out
 	# unicap: https://bugs.gentoo.org/show_bug.cgi?id=175881

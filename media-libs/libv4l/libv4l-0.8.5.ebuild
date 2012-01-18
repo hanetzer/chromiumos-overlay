@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ppc ppc64 sparc x86 ~amd64-linux ~x86-linux"
 IUSE=""
 
-RDEPEND="virtual/jpeg"
+RDEPEND="media-libs/jpeg"
 DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-2.6.30-r1"
 
