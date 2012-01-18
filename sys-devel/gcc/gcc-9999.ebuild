@@ -121,7 +121,7 @@ src_unpack() {
 		if [[ "${PV}" == "9999" ]] ; then
 			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
 		else
-			GCC_GITHASH=ba96771079ec460201aa9226e2231154637cbb8c
+			GCC_GITHASH=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
 		fi
 		einfo "Checking out ${GCC_GITHASH}."
 		git checkout ${GCC_GITHASH} || \
@@ -152,7 +152,7 @@ src_compile()
 
 	if use hardened && [[ ${CTARGET} != arm* ]]
 	then
-		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-all -D_FORTIFY_SOURCE=2"
+		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
 	fi
 
 	emake CFLAGS="${GCC_CFLAGS}" \
