@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND=""
+RDEPEND="x11-apps/xinput"
 DEPEND="${RDEPEND}"
 
 src_install() {
