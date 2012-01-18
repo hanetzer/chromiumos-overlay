@@ -4,6 +4,7 @@
 EAPI=2
 CROS_WORKON_COMMIT="61b4ca8cea63444fc8654df19daf01343c45c7de"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
+CROS_WORKON_USE_VCSID="1"
 
 inherit cros-debug cros-workon scons-utils toolchain-funcs
 
