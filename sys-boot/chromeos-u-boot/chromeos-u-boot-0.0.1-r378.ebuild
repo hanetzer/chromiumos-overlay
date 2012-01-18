@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="5ed4587d170920d7f1836baed6b8553735ebd5cf"
+CROS_WORKON_COMMIT="3f68143724b1f6d94b4605faf514a5a0798b7d46"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
 inherit cros-debug toolchain-funcs cros-board flag-o-matic
@@ -126,7 +126,7 @@ src_configure() {
 	if [ "arm" = "${ARCH}" ]; then
 		COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
 	fi
-	if use cros-debug; then
+	if use x86 || use cros-debug; then
 		COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 	fi
 	if use profiling; then
