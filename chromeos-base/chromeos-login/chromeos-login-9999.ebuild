@@ -13,7 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="-asan -aura test -touchui"
+IUSE="-asan -aura -is_desktop -new_power_button test -touchui"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -33,6 +33,14 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
+
+# Takes a USE flag and a filename.
+# If the USE flag is set, appends it and a trailing newline to the file.
+append_use_flag_if_set() {
+	if use "$1"; then
+		echo "$1" >> "$2"
+	fi
+}
 
 src_compile() {
 	tc-export CXX LD PKG_CONFIG
@@ -75,6 +83,8 @@ src_install() {
 	# For user session processes.
 	dodir /etc/skel/log
 
+	# TODO(derat): Remove these once session_manager_setup.sh has been updated
+	# to look at USE flags directly.
 	if use touchui ; then
 		insinto /root
 		newins "${S}/use_touchui" .use_touchui
@@ -89,4 +99,13 @@ src_install() {
 		insinto /root
 		newins "${S}/no_wm" .no_wm
 	fi
+
+	# Write a list of currently-set USE flags that session_manager_setup.sh can
+	# read at runtime while constructing Chrome's command line.  If you need to
+	# use a new flag, add it to $IUSE at the top of the file and list it here.
+	local USE_FLAG_FILE="${D}"/etc/session_manager_use_flags.txt
+	local FLAG
+	for FLAG in asan aura is_desktop new_power_button; do
+		append_use_flag_if_set "${FLAG}" "${USE_FLAG_FILE}"
+	done
 }
