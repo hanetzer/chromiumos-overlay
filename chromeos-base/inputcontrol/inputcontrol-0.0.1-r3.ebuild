@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="9e1b81dd9ac2b275dd4da495093d33a7fa88c1f4"
+CROS_WORKON_COMMIT="d5591e64cbb34b138ccccc191bf05bd979d3dff2"
 
 CROS_WORKON_PROJECT="chromiumos/platform/inputcontrol"
 
