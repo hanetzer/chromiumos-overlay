@@ -19,7 +19,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="asan debug multitarget +static-analyzer +system-cxx-headers test"
+IUSE="asan +cxx-sysroot-wrapper debug multitarget +static-analyzer +system-cxx-headers test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
@@ -168,9 +168,43 @@ src_install() {
 			eend $?
 		done
 	fi
+
+	# Taken from asan-clang ebuild.
+	if use cxx-sysroot-wrapper; then
+		# Try to get current gcc headers path
+		local CXX_PATH=$(gcc-config -X| cut -d: -f1 | sed 's,/include/g++-v4$,,')
+
+		# Create the wrapper script that will substitute right libstlc++ paths.
+		# This is needed because Clang --sysroot=<sysroot>, unlike gcc, prepends
+		# its cxx-include-root with <sysroot> making it unusable.
+		# Clang maintainers consider this the right behavior (crbug.com/86037)
+		# although the Clang own includes (/usr/lib/clang/3.x/include) are never
+		# prepended with <sysroot>.
+		cat <<-EOF >"${S}/clang++.sh" || die
+			#!/bin/sh
+			exec clang++.real "\$@" \
+				-I${CXX_PATH}/include-fixed \
+				-I${CXX_PATH}/include/g++-v4 \
+				-I${CXX_PATH}/include/g++-v4/x86_64-pc-linux-gnu \
+				-I${CXX_PATH}/include/g++-v4/backward
+		EOF
+		dobin "${S}/clang++.sh" || die
+
+		# Make Clang take cxxabi.h from the right place. Needed by gTest.
+		# Unfortunately adding -I${CXX_PATH}/include, where right cxxabi.h resides,
+		# breaks the compilation. This is because Clang prefers this directory to
+		# its own (/usr/lib/clang/3.x/include) despite declaration order,
+		# thus it takes some includes (xmmintrin.h) from there and it drives Clang mad.
+		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.0/include/"
+	fi
 }
 
 pkg_postinst() {
+	if use cxx-sysroot-wrapper; then
+		mv "${EPREFIX}/usr/bin/clang++" "${EPREFIX}/usr/bin/clang++.real"
+		mv "${EPREFIX}/usr/bin/clang++.sh" "${EPREFIX}/usr/bin/clang++"
+	fi
+
 	python_mod_optimize clang
 	if use system-cxx-headers; then
 		elog "C++ headers search path is hardcoded to the active gcc profile one"
