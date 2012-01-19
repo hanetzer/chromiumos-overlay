@@ -20,7 +20,6 @@ DEPEND=""
 RDEPEND="app-arch/gzip
 	app-shells/bash
 	dev-libs/openssl
-	dev-libs/shflags
 	dev-util/shflags
 	dev-util/xxd
 	net-misc/wget
