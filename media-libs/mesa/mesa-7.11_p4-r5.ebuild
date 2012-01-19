@@ -136,6 +136,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/7.11-llvm-config.patch
 	fi
 	epatch "${FILESDIR}"/7.11-i915g-Add-missing-draw_flush-call.patch
+	epatch "${FILESDIR}"/7.11-i915g-fix-fence.patch
 
 	eautoreconf
 }
