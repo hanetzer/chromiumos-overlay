@@ -39,4 +39,7 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins "${FILESDIR}/org.chromium.debugd.conf"
+
+	insinto /etc/init
+	doins "${FILESDIR}/debugd.conf"
 }
