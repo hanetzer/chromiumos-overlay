@@ -120,10 +120,11 @@ src_unpack() {
 		S=${GITDIR}
 		EGIT_REPO_URI=http://git.chromium.org/chromiumos/third_party/gcc.git
 		if [[ "${PV}" == "9999" ]]; then
-			: ${EGIT_COMMIT:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
+			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
 		else
-			EGIT_COMMIT=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
+			GCC_GITHASH=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
 		fi
+		EGIT_COMMIT="${GCC_GITHASH}"
 		EGIT_PROJECT=${PN}-git-src
 		git_fetch
 		S=${OLD_S}
