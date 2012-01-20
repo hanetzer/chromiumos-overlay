@@ -13,7 +13,22 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
+
+# Boards whose USE flags we write for session_manager_setup.sh.
+BOARDS=(
+	x86-alex
+	x86-alex_he
+	x86-mario
+	x86-zgb
+	x86-zgb_he
+)
+BOARD_USE_PREFIX="board_use_"
+BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
+
 IUSE="-asan -aura -is_desktop -new_power_button test -touchui"
+for flag in $BOARD_USE_FLAGS; do
+	IUSE="$IUSE $flag"
+done
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -103,9 +118,9 @@ src_install() {
 	# Write a list of currently-set USE flags that session_manager_setup.sh can
 	# read at runtime while constructing Chrome's command line.  If you need to
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
-	local USE_FLAG_FILE="${D}"/etc/session_manager_use_flags.txt
-	local FLAG
-	for FLAG in asan aura is_desktop new_power_button; do
-		append_use_flag_if_set "${FLAG}" "${USE_FLAG_FILE}"
+	local use_flag_file="${D}"/etc/session_manager_use_flags.txt
+	local flag
+	for flag in asan aura is_desktop new_power_button $BOARD_USE_FLAGS; do
+		append_use_flag_if_set "${flag}" "${use_flag_file}"
 	done
 }
