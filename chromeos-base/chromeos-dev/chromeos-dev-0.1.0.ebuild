@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="X opengl hardened -touchui"
+IUSE="bluetooth X opengl hardened -touchui"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
+	bluetooth? ( net-wireless/bluez-hcidump )
 	net-wireless/iw
 	net-wireless/wireless-tools
 	sys-apps/coreutils
