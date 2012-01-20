@@ -1,0 +1,22 @@
+#!/usr/bin/python
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""A super-duper-simple web server.  Returns 'Chromium' for all requests.
+
+Used for HTTP connectivity tests for cell modems.  See
+  trunk/src/third_party/autotest/files/client/cros/cellular/labconfig_data.py
+"""
+
+import BaseHTTPServer
+
+class HttpHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+  def address_string(self):
+    """Build address string without attempting a reverse DNS lookup."""
+    return str(self.client_address[0])
+
+  def do_GET(self):
+    self.wfile.write('Chromium\n')
+
+BaseHTTPServer.HTTPServer(('', 80), HttpHandler).serve_forever()
