@@ -62,8 +62,7 @@ src_install() {
 	doins src/common/linux/*.h || die
 	insinto /usr/include/google-breakpad/processor
 	doins src/processor/*.h || die
-	dobin src/tools/linux/core2md/core_dumper \
-	      src/tools/linux/core2md/core2md \
+	dobin src/tools/linux/core2md/core2md \
 	      src/tools/linux/dump_syms/dump_syms \
 	      src/tools/linux/symupload/sym_upload \
 	      src/tools/linux/symupload/minidump_upload || die
