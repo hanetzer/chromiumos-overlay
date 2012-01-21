@@ -18,5 +18,4 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}/2.6.0-mt-tracking-proto-b.patch"
 	"${FILESDIR}/evdev-add-phys-property-EVIOCGPHYS-as-stable-identifier.patch"
-	"${FILESDIR}/2.6.0-switch-buttons.patch"
 	)
