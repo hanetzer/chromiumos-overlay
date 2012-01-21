@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
+CROS_WORKON_COMMIT="9184a581bc66265feb8d0364a74b436e504f5f23"
 CROS_WORKON_PROJECT="chromiumos/platform/cros"
 
 inherit flag-o-matic toolchain-funcs cros-debug cros-workon
@@ -11,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 IUSE="install_tests cmt"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="amd64 x86 arm"
 
 RDEPEND="chromeos-base/flimflam
 	dev-libs/dbus-glib
