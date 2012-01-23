@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="-fbconsole -initramfs -nfs -blkdevram -device_tree"
-IUSE="${IUSE} -pcserial -kernel_sources -systemtap +serial8250 -highmem"
+IUSE="${IUSE} -pcserial -kernel_sources -systemtap -highmem"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
@@ -104,7 +104,6 @@ src_configure() {
 	use_config fbconsole "framebuffer console"
 	use_config nfs "NFS"
 	use_config systemtap "systemtap support"
-	use_config serial8250 "serial8250"
 	use_config pcserial "PC serial"
 	use_config highmem "highmem"
 
