@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="e58176c07895532d49b4cb9a660a4eeb644d4e2f"
+CROS_WORKON_COMMIT="dd3e851898b44b2b6e36eed12066a65adfd60efe"
 CROS_WORKON_PROJECT="chromiumos/platform/minijail"
 
 inherit cros-debug cros-workon toolchain-funcs
