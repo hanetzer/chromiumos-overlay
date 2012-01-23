@@ -211,6 +211,9 @@ pkg_setup() {
 }
 
 eblit-src_unpack-post() {
+	cd "${S}"
+	epatch "${FILESDIR}"/2.11/0050_all_glibc-make-3.82-rules.patch
+
 	if use hardened ; then
 		cd "${S}"
 		einfo "Patching to get working PIE binaries on PIE (hardened) platforms"
