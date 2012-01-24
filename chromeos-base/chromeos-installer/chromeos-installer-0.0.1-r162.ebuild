@@ -23,7 +23,6 @@ RDEPEND="$RDEPEND
 	app-admin/sudo
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
-	dev-libs/shflags
 	dev-util/shflags
 	sys-apps/coreutils
 	sys-apps/flashrom
