@@ -4,6 +4,7 @@
 EAPI=2
 
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
+CROS_WORKON_USE_VCSID=1
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="Gesture recognizer library"
@@ -42,8 +43,5 @@ src_test() {
 }
 
 src_install() {
-	dodir /etc
-	echo "${PVR} ${VCSID}" > "${D}/etc/gestures_version.txt"
-
 	emake DESTDIR="${D}" install || die "Install failed"
 }
