@@ -12,7 +12,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex cmt elan mario multitouch synaptics -tegra -aura"
+IUSE="alex cmt elan -exynos mario multitouch synaptics -tegra -aura"
 
 RDEPEND=""
 DEPEND="x11-base/xorg-server"
@@ -31,6 +31,8 @@ src_install() {
 	insinto /etc/X11/xorg.conf.d
 	if use tegra; then
 		doins "${FILESDIR}/tegra.conf"
+	elif use exynos; then
+		doins "${FILESDIR}/exynos.conf"
 	fi
 
 	# Since syntp does not use evdev (/dev/input/event*) device nodes,
