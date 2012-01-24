@@ -74,6 +74,16 @@ src_prepare() {
 	# extra capabilities
 	epatch "${FILESDIR}/${PN}-4.97-minijail.patch"
 
+	# HID-profile keyboard pairing support (in upstream review)
+	epatch "${FILESDIR}/${PN}-4.97-hid-0001-bt_ids-add-header-of-device-class-constants.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0002-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0003-Pass-passkey-by-pointer-rather-than-by-value.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0004-agent-add-DisplayPinCode-method.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0005-Add-AUTH_TYPE_NOTIFY_PASSKEY-to-device_request_authe.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0006-Generate-PIN-for-keyboard-devices.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0007-doc-document-DisplayPinCode.patch"
+	epatch "${FILESDIR}/${PN}-4.97-hid-0008-simple-agent-add-DisplayPinCode.patch"
+
 	if use cups; then
 		sed -i \
 			-e "s:cupsdir = \$(libdir)/cups:cupsdir = `cups-config --serverbin`:" \
