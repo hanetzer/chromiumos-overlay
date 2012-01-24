@@ -54,8 +54,11 @@ src_prepare() {
 
 	# TODO(yusukes): Remove the patch to use upstream releases as-is.
 	epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
-	# TODO(yusukes): Remove the patch when we upgrade ibus to the next version, 1.4.1.
+	# TODO(yusukes): Remove the patch when we upgrade ibus to the next
+	# version, 1.4.1.
 	epatch "${FILESDIR}"/${P}-fix-SEGV-in-request_surrounding_text.patch
+	# TODO(nona): Remove the patch when we fix crosbug.com/25335#c1
+	epatch "${FILESDIR}"/${P}-do-not-send-cursor-location-to-chrome.patch
 
 	elibtoolize
 }
