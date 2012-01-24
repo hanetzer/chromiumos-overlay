@@ -29,7 +29,8 @@ media-sound/pulseaudio	bluetooth dbus -esd
 net-analyzer/tcpdump	-chroot
 net-firewall/iptables	ipv6
 net-libs/libsoup	-ssl
-net-misc/curl		ares ipv6
+# for curl-7.19.6 turning on ipv6 use flag will turn off ares
+net-misc/curl		ares
 net-misc/dhcpcd crash
 net-misc/dhcp		ipv6 -server
 net-misc/iputils	ipv6
