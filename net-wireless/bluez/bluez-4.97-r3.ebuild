@@ -65,8 +65,14 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# Allow the chronos user to communicate with the daemon
-	epatch "${FILESDIR}/${PN}-chronos.patch"
+	# Change the default D-Bus configuration; the daemon is run as
+	# bluetooth, not root; we don't use the lp user, and we use the
+	# chronos user instead of at_console
+	epatch "${FILESDIR}/${PN}-4.97-dbus.patch"
+
+	# Run bluetoothd within minijail, as bluetooth, but with certain
+	# extra capabilities
+	epatch "${FILESDIR}/${PN}-4.97-minijail.patch"
 
 	if use cups; then
 		sed -i \
@@ -141,6 +147,8 @@ src_install() {
 	# Install oui.txt as requested in bug #283791 and approved by upstream
 	insinto /var/lib/misc
 	newins "${WORKDIR}/oui-${OUIDATE}.txt" oui.txt
+
+	fowners bluetooth:bluetooth /var/lib/bluetooth
 
 	find "${D}" -name "*.la" -delete
 }
