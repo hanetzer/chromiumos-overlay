@@ -74,6 +74,9 @@ src_prepare() {
 	# extra capabilities
 	epatch "${FILESDIR}/${PN}-4.97-minijail.patch"
 
+	# Disable initial radio power for new adapters
+	epatch "${FILESDIR}/${PN}-4.97-initially-powered.patch"
+
 	# HID-profile keyboard pairing support (in upstream review)
 	epatch "${FILESDIR}/${PN}-4.97-hid-0001-bt_ids-add-header-of-device-class-constants.patch"
 	epatch "${FILESDIR}/${PN}-4.97-hid-0002-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
