@@ -25,7 +25,7 @@
 >net-dialup/ppp-2.4.5-r3
 
 # Cross compile fix in the ebuild, and patch(es) from the upstream.
->x11-libs/libxcb-1.5-r1
+>x11-libs/libxcb-1.7
 
 # Cross compile fix in the ebuild (Icedtea -> cups -> libgcrypt).
 >dev-libs/libgcrypt-1.4.6
