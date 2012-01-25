@@ -1,0 +1,133 @@
+Downloaded from
+http://lists.freedesktop.org/archives/xcb/2011-April/007010.html
+
+---
+diff --git a/src/dri2.xml b/src/dri2.xml
+index dbd43f8..9bcde4f 100644
+--- a/src/dri2.xml
++++ b/src/dri2.xml
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <!--
+ Copyright (C) 2005 Jeremy Kolb.
+-Copyright © 2009 Intel Corporation
++Copyright © 2009-2011 Intel Corporation
+ All Rights Reserved.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+@@ -28,7 +28,7 @@ authorization from the authors.
+ -->
+
+ <xcb header="dri2" extension-xname="DRI2" extension-name="DRI2"
+-  major-version="1" minor-version="1">
++  major-version="1" minor-version="3">
+   <import>xproto</import>
+
+   <enum name="Attachment">
+@@ -46,6 +46,7 @@ authorization from the authors.
+
+   <enum name="DriverType">
+     <item name="DRI" />
++    <item name="VDPAU" />
+   </enum>
+
+   <!-- Types -->
+@@ -163,4 +164,96 @@ authorization from the authors.
+       </list>
+     </reply>
+   </request>
++
++  <request name="SwapBuffers" opcode="8">
++    <field type="DRAWABLE" name="drawable" />
++    <field type="CARD32" name="target_msc_hi" />
++    <field type="CARD32" name="target_msc_lo" />
++    <field type="CARD32" name="divisor_hi" />
++    <field type="CARD32" name="divisor_lo" />
++    <field type="CARD32" name="remainder_hi" />
++    <field type="CARD32" name="remainder_lo" />
++    <reply>
++      <pad bytes="1" />
++      <field type="CARD32" name="swap_hi" />
++      <field type="CARD32" name="swap_lo" />
++    </reply>
++  </request>
++
++  <request name="GetMSC" opcode="9">
++    <field type="DRAWABLE" name="drawable" />
++    <reply>
++      <pad bytes="1" />
++      <field type="CARD32" name="ust_hi" />
++      <field type="CARD32" name="ust_lo" />
++      <field type="CARD32" name="msc_hi" />
++      <field type="CARD32" name="msc_lo" />
++      <field type="CARD32" name="sbc_hi" />
++      <field type="CARD32" name="sbc_lo" />
++    </reply>
++  </request>
++
++  <request name="WaitMSC" opcode="10">
++    <field type="DRAWABLE" name="drawable" />
++    <field type="CARD32" name="target_msc_hi" />
++    <field type="CARD32" name="target_msc_lo" />
++    <field type="CARD32" name="divisor_hi" />
++    <field type="CARD32" name="divisor_lo" />
++    <field type="CARD32" name="remainder_hi" />
++    <field type="CARD32" name="remainder_lo" />
++    <reply>
++      <pad bytes="1" />
++      <field type="CARD32" name="ust_hi" />
++      <field type="CARD32" name="ust_lo" />
++      <field type="CARD32" name="msc_hi" />
++      <field type="CARD32" name="msc_lo" />
++      <field type="CARD32" name="sbc_hi" />
++      <field type="CARD32" name="sbc_lo" />
++    </reply>
++  </request>
++
++  <request name="WaitSBC" opcode="11">
++    <field type="DRAWABLE" name="drawable" />
++    <field type="CARD32" name="target_sbc_hi" />
++    <field type="CARD32" name="target_sbc_lo" />
++    <reply>
++      <pad bytes="1" />
++      <field type="CARD32" name="ust_hi" />
++      <field type="CARD32" name="ust_lo" />
++      <field type="CARD32" name="msc_hi" />
++      <field type="CARD32" name="msc_lo" />
++      <field type="CARD32" name="sbc_hi" />
++      <field type="CARD32" name="sbc_lo" />
++    </reply>
++  </request>
++
++  <request name="SwapInterval" opcode="12">
++    <field type="DRAWABLE" name="drawable" />
++    <field type="CARD32" name="interval" />
++    <reply>
++      <pad bytes="1" />
++      <field type="CARD32" name="swap_hi" />
++      <field type="CARD32" name="swap_lo" />
++    </reply>
++  </request>
++
++  <!-- Events -->
++
++  <event name="BufferSwapComplete" number="0">
++    <pad bytes="1" />
++    <field type="CARD16" name="event_type" />
++    <field type="DRAWABLE" name="drawable" />
++    <field type="CARD32" name="ust_hi" />
++    <field type="CARD32" name="ust_lo" />
++    <field type="CARD32" name="msc_hi" />
++    <field type="CARD32" name="msc_lo" />
++    <field type="CARD32" name="sbc_hi" />
++    <field type="CARD32" name="sbc_lo" />
++  </event>
++
++  <event name="InvalidateBuffers" number="1">
++    <pad bytes="1" />
++    <field type="DRAWABLE" name="drawable" />
++  </event>
++
+ </xcb>
+--
+1.7.4.4
