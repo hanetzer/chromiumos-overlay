@@ -138,7 +138,7 @@ local_copy() {
 }
 
 set_vcsid() {
-	export VCSID="${1}"
+	export VCSID="${PVR}-${1}"
 
 	if [ "${CROS_WORKON_USE_VCSID}" = "1" ]; then
 		append-flags -DVCSID=\\\"${VCSID}\\\"
