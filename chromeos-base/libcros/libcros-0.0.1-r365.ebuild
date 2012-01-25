@@ -75,9 +75,4 @@ src_install() {
 		doins "${S}/monitor_sms"
 		doins "${S}/monitor_update_engine"
 	fi
-
-	insinto /opt/google/touchpad
-	doins "${FILESDIR}"/tpcontrol_synclient
-	doins "${FILESDIR}"/tpcontrol
-	doins "${FILESDIR}"/tpcontrol_xinput
 }
