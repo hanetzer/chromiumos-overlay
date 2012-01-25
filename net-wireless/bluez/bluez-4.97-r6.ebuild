@@ -5,7 +5,7 @@
 EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 
-inherit multilib eutils systemd python
+inherit autotools multilib eutils systemd python
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -70,10 +70,6 @@ src_prepare() {
 	# chronos user instead of at_console
 	epatch "${FILESDIR}/${PN}-4.97-dbus.patch"
 
-	# Run bluetoothd within minijail, as bluetooth, but with certain
-	# extra capabilities
-	epatch "${FILESDIR}/${PN}-4.97-minijail.patch"
-
 	# Disable initial radio power for new adapters
 	epatch "${FILESDIR}/${PN}-4.97-initially-powered.patch"
 
@@ -109,6 +105,7 @@ src_configure() {
 		--disable-hal \
 		--localstatedir=/var \
 		--with-systemdunitdir="$(systemd_get_unitdir)" \
+		--with-ouifile=/usr/share/misc/oui.txt \
 		$(use_enable alsa) \
 		$(use_enable caps capng) \
 		$(use_enable cups) \
@@ -149,26 +146,24 @@ src_install() {
 		network/network.conf \
 		serial/serial.conf
 
-	insinto /lib/udev/rules.d/
-	newins "${FILESDIR}/${PN}-4.18-udev.rules" 70-bluetooth.rules
-	exeinto /lib/udev/
-	newexe "${FILESDIR}/${PN}-4.67-udev.script" bluetooth.sh
-
 	newinitd "${FILESDIR}/rfcomm-init.d" rfcomm
 	newconfd "${FILESDIR}/rfcomm-conf.d" rfcomm
 
+	insinto /etc/init
+	newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
+
 	# Install oui.txt as requested in bug #283791 and approved by upstream
-	insinto /var/lib/misc
+	insinto /usr/share/misc
 	newins "${WORKDIR}/oui-${OUIDATE}.txt" oui.txt
 
 	fowners bluetooth:bluetooth /var/lib/bluetooth
+
+	rm "${D}/lib/udev/rules.d/97-bluetooth.rules"
 
 	find "${D}" -name "*.la" -delete
 }
 
 pkg_postinst() {
-	udevadm control --reload-rules && udevadm trigger --subsystem-match=bluetooth
-
 	if ! has_version "net-dialup/ppp"; then
 		elog "To use dial up networking you must install net-dialup/ppp."
 	fi
