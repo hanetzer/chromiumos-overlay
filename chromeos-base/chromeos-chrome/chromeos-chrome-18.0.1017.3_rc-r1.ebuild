@@ -128,9 +128,10 @@ BUILD_OUT_SYM="c"
 
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
-TEST_FILES="ffmpeg_tests
-	omx_test
-	omx_video_decode_accelerator_unittest"
+TEST_FILES="ffmpeg_tests"
+if [ "$ARCH" = "arm" ]; then
+  TEST_FILES="${TEST_FILES} omx_video_decode_accelerator_unittest ppapi_example_gles2"
+fi
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
@@ -182,6 +183,7 @@ IUSE_TESTS="
 	+tests_desktopui_PyAutoLoginTests
 	+tests_desktopui_PyAutoPerfTests
 	+tests_desktopui_SyncIntegrationTests
+	+tests_desktopui_OMXTest
 	+tests_desktopui_UITest
 	+tests_network_PyAutoConnectivityTests
 	"
@@ -665,11 +667,7 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		if [ "$ARCH" = "arm" ]; then
-			TEST_TARGETS="omx_video_decode_accelerator_unittest
-				ppapi_example_gles2"
-		fi
-		TEST_TARGETS="${TEST_TARGETS}
+		TEST_TARGETS="${TEST_FILES}
 			performance_ui_tests
 			ui_tests
 			pyautolib
@@ -760,6 +758,7 @@ install_chrome_test_resources() {
 	# directory.
 	for f in libppapi_tests.so browser_tests \
 			 ui_tests sync_integration_tests \
+			 omx_video_decode_accelerator_unittest \
 			 performance_ui_tests; do
 		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
 			-o ${test_dir}/out/Release/$(basename ${f})
@@ -792,6 +791,7 @@ install_chrome_test_resources() {
 		chrome/test/data \
 		chrome/test/functional \
 		chrome/third_party/mock4js/mock4js.js  \
+		content/common/gpu/testdata \
 		net/data/ssl/certificates \
 		third_party/bidichecker/bidichecker_packaged.js
 
