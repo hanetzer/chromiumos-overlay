@@ -121,4 +121,10 @@ src_install() {
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
 	doins tests/devkeys/*
+	
+	# Install static library needed by install programs.
+  einfo "Installing dump_kernel_config library"
+  dolib.a build/dump_kernel_config.a || die
+  insinto /usr/include/vboot/${subdir}
+  doins "utility/include/dump_kernel_config.h" || die
 }
