@@ -153,6 +153,7 @@ RDEPEND="${RDEPEND}
 	media-libs/jpeg
 	media-libs/libpng
 	media-libs/mesa
+	media-sound/adhd
 	net-misc/wget
 	sys-fs/udev
 	sys-libs/zlib
@@ -302,6 +303,7 @@ set_build_defines() {
 	fi
 
 	BUILD_DEFINES+=( "${USE_TCMALLOC}" )
+	BUILD_DEFINES+=( "use_cras=1" )
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
