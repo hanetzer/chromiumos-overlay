@@ -89,8 +89,8 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/strongswan-4.5.3-initgroups.patch" || die
-	epatch "${FILESDIR}/strongswan-4.5.3-usepeercert.patch" || die
+	epatch "${FILESDIR}/${P}-initgroups.patch" || die
+	epatch "${FILESDIR}/${P}-ignore-peer-id-check.patch" || die
 }
 
 src_configure() {
