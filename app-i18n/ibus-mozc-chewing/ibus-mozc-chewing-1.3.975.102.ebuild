@@ -17,12 +17,6 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  epatch "${FILESDIR}"/ibus-mozc-chewing-1.1.773.102-fix-property-string.patch
-  epatch "${FILESDIR}"/ibus-mozc-chewing-1.2.855.102-support-numpad.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
@@ -31,7 +25,7 @@ src_configure() {
 
   # Currently --channel_dev=0 is not neccessary for Chewing, but just in case.
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
-      --chewing \
+      --language=chewing \
       --target_platform="ChromeOS" --channel_dev=0 || die
 }
 
@@ -44,7 +38,7 @@ src_compile() {
   # Build artifacts for the target platform.
   tc-export CXX CC AR AS RANLIB LD
   $(PYTHON) build_mozc.py build \
-      chewing/chewing.gyp:ibus_mozc_chewing -c ${BUILDTYPE} || die
+      languages/chewing/chewing.gyp:ibus_mozc_chewing -c ${BUILDTYPE} || die
 }
 
 src_install() {
@@ -54,7 +48,7 @@ src_install() {
       || die
 
   insinto /usr/share/ibus/component || die
-  doins chewing/unix/ibus/mozc-chewing.xml || die
+  doins languages/chewing/unix/ibus/mozc-chewing.xml || die
 
   cp "out_linux/${BUILDTYPE}/ibus_mozc_chewing" "${T}" || die
   $(tc-getSTRIP) --strip-unneeded "${T}"/ibus_mozc_chewing || die
