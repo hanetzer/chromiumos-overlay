@@ -17,13 +17,6 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # Remove the epatch lines when mozc is upgraded.
-
-  epatch "${FILESDIR}"/${P}-suggest-window-shows-wrong-position.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
