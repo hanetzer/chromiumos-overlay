@@ -1,8 +1,8 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="56bda2217100795daa737aa0a4623de141d01b75"
+CROS_WORKON_COMMIT="4f424abe977ebaef97b986f4571ca6bd9528afff"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 
 inherit cros-workon
@@ -13,14 +13,12 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_host"
-
-# cros-devutils <= r114 installed chromeos-setimage instead of this package.
-RDEPEND="!<=chromeos-base/cros-devutils-0.0.1-r121"
+IUSE="cros_host splitdebug"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
 RDEPEND="$RDEPEND
 	app-admin/sudo
+	chromeos-base/libchrome
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	dev-util/shflags
@@ -35,6 +33,13 @@ RDEPEND="$RDEPEND
 
 CROS_WORKON_LOCALNAME="installer"
 
+src_compile() {
+	tc-export CXX CC OBJCOPY STRIP AR
+	cros-debug-add-NDEBUG
+	emake OUT=${S}/build \
+		SPLITDEBUG=$(use splitdebug && echo 1) cros_installer
+}
+
 src_install() {
 	if ! use cros_host; then
 		exeinto /usr/sbin
@@ -46,4 +51,5 @@ src_install() {
 	fi
 
 	doexe "${S}"/chromeos-*
+	dobin "${S}/build/cros_installer"
 }
