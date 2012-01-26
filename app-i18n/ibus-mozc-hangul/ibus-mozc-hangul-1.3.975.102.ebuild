@@ -17,37 +17,6 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # Remove the epatch lines when mozc is upgraded.
-
-  epatch "${FILESDIR}"/${P}-too-big-binary.patch
-  epatch "${FILESDIR}"/${P}-does-not-work-hanja-key-binding.patch
-  epatch "${FILESDIR}"/${P}-enable-comment.patch
-  # issued as http://crosbug.com/18387
-  epatch "${FILESDIR}"/${P}-unable-select-cand-by-num.patch
-  # issued as http://crosbug.com/18419
-  epatch "${FILESDIR}"/${P}-disappear-on-BSkey.patch
-  # issued as http://crosbug.com/18454
-  epatch "${FILESDIR}"/${P}-SPkey-does-not-work.patch
-  # issued as http://crosbug.com/18507
-  epatch "${FILESDIR}"/${P}-disappear-preedit-on-switch-ime.patch
-  # issued as http://crosbug.com/18419 and http://crosbug.com/19074
-  epatch "${FILESDIR}"/${P}-BSkey-and-modified-key-doesnt-work.patch
-  # issued as http://crosbug.com/18555
-  epatch "${FILESDIR}"/${P}-focusout-preedit-discard.patch
-  # issued as http://crosbug.com/15947
-  epatch "${FILESDIR}"/${P}-enable-won-key-input.patch
-  # issued as http://crosbug.com/18402
-  epatch "${FILESDIR}"/${P}-enable-numpad-input.patch
-
-  # http://crosbug.com/20309
-  epatch "${FILESDIR}"/${P}-no-engine-specific-hotkeys.patch
-
-  # issued as http://crosbug.com/19483
-  epatch "${FILESDIR}"/${P}-implement-symbol-dictionary.patch
-}
-
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
@@ -56,7 +25,7 @@ src_configure() {
 
   # Currently --channel_dev=0 is not neccessary for Hangul, but just in case.
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
-      --hangul \
+      --language=hangul \
       --noqt \
       --target_platform="ChromeOS" --channel_dev=0 || die
 }
@@ -70,7 +39,7 @@ src_compile() {
   # Build artifacts for the target platform.
   tc-export CXX CC AR AS RANLIB LD
   $(PYTHON) build_mozc.py build \
-      hangul/hangul.gyp:ibus_mozc_hangul -c ${BUILDTYPE} || die
+      languages/hangul/hangul.gyp:ibus_mozc_hangul -c ${BUILDTYPE} || die
 }
 
 src_install() {
@@ -80,10 +49,10 @@ src_install() {
       || die
 
   insinto /usr/share/ibus/component || die
-  doins hangul/unix/ibus/mozc-hangul.xml || die
+  doins languages/hangul/unix/ibus/mozc-hangul.xml || die
 
   mkdir -p "${D}"/usr/share/ibus-mozc-hangul || die
-  cp "${FILESDIR}"/korean_symbols.txt  "${D}"/usr/share/ibus-mozc-hangul/ || die
+  cp "${WORKDIR}/mozc-${PV}"/data/hangul/korean_symbols.txt  "${D}"/usr/share/ibus-mozc-hangul/ || die
   chmod o+r "${D}"/usr/share/ibus-mozc-hangul/korean_symbols.txt || die
   cp "out_linux/${BUILDTYPE}/ibus_mozc_hangul" "${T}" || die
   $(tc-getSTRIP) --strip-unneeded "${T}"/ibus_mozc_hangul || die
