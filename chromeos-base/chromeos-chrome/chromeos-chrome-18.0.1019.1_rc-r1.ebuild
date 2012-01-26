@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -touchui -local_gclient hardfp +runhooks +verbose"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -touchui -local_gclient hardfp +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -196,7 +196,7 @@ QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
 use_nacl() {
-	(use amd64 || use x86) && ! use asan
+	(use amd64 || use x86) && ! use asan && ! use component_build
 }
 
 set_build_defines() {
@@ -240,7 +240,7 @@ set_build_defines() {
 		# For internal builds, don't remove webcore debug symbols by default.
 		REMOVE_WEBCORE_DEBUG_SYMBOLS=${REMOVE_WEBCORE_DEBUG_SYMBOLS:-0}
 	elif use chrome_media; then
-    echo "Building Chromium with additional media codecs and containers."
+		echo "Building Chromium with additional media codecs and containers."
 		BUILD_DEFINES="ffmpeg_branding=ChromeOS proprietary_codecs=1 $BUILD_DEFINES"
 	fi
 
@@ -276,6 +276,10 @@ set_build_defines() {
 
 	if use aura; then
 		BUILD_DEFINES="use_aura=1 $BUILD_DEFINES"
+	fi
+
+	if use component_build; then
+		BUILD_DEFINES="component=shared_library $BUILD_DEFINES"
 	fi
 
 	BUILD_DEFINES="system_libdir=$(get_libdir) $BUILD_DEFINES"
@@ -877,6 +881,15 @@ src_install() {
 	exeopts -m4755	# setuid the sandbox
 	newexe "${FROM}/chrome_sandbox" chrome-sandbox
 	exeopts -m0755
+
+	if use component_build; then
+		dodir "${CHROME_DIR}/lib.target"
+		exeinto "${CHROME_DIR}/lib.target"
+		for f in "${FROM}"/lib.target/*.so; do
+			doexe "$f"
+		done
+		exeinto "${CHROME_DIR}"
+	fi
 
 	# enable the chromeos local account, if the environment dictates
 	if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
