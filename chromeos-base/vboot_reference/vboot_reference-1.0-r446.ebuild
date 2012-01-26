@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="bf020a0d4db68897058503767067567565450dde"
+CROS_WORKON_COMMIT="0fc95946347a3318b41372aa8e2a4509a384e92b"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="app-crypt/trousers
