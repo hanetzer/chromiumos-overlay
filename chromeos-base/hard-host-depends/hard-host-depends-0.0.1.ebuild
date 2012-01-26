@@ -187,6 +187,11 @@ RDEPEND="${RDEPEND}
 	dev-python/gdata
 	"
 
+# Host dependencies for taking to dev boards
+RDEPEND="${RDEPEND}
+	dev-embedded/smdk-dltool
+	"
+
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
