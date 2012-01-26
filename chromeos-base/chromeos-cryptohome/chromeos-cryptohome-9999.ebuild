@@ -16,6 +16,7 @@ IUSE="test"
 RDEPEND="
 	app-crypt/trousers
 	chromeos-base/chaps
+	chromeos-base/libchromeos
 	chromeos-base/libscrypt
 	chromeos-base/metrics
 	dev-libs/dbus-glib
@@ -30,7 +31,6 @@ RDEPEND="
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome
-	chromeos-base/libchromeos
 	chromeos-base/system_api
 	${RDEPEND}"
 
