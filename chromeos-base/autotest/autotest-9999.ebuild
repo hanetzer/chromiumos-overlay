@@ -32,8 +32,7 @@ src_prepare() {
 	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
 	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
 	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
-	cp -fpru "${S}"/{conmux,tko,utils,site_utils} "${AUTOTEST_WORK}"
-	cp -fpru "${S}"/shadow_config.ini "${AUTOTEST_WORK}"
+	cp -fpru "${S}"/{conmux,tko,utils,site_utils,test_suites} "${AUTOTEST_WORK}"
 
 	# cros directory is not from autotest upstream but cros project specific.
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
@@ -53,7 +52,8 @@ src_install() {
 	TESTDIRS="
 		client/tests client/site_tests
 		client/config client/deps client/profilers
-		server/tests server/site_tests"
+		server/tests server/site_tests
+		test_suites"
 
 	# also pre-create the test dirs
 	for dir in ${TESTDIRS}; do
