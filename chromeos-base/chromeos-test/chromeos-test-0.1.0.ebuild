@@ -47,6 +47,7 @@ RDEPEND="${RDEPEND}
 	dev-python/dbus-python
 	dev-python/pygobject
 	dev-python/pygtk
+	dev-python/pyserial
 	dev-python/pyudev
 	dev-python/pyyaml
 	dev-util/dbus-spy
