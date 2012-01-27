@@ -1,0 +1,236 @@
+Binary files ../mozc-1.2.855.102.orig/session/.session.cc.swp and ./session/.session.cc.swp differ
+Binary files ../mozc-1.2.855.102.orig/session/.session.h.swp and ./session/.session.h.swp differ
+diff -urN ../mozc-1.2.855.102.orig/session/commands.proto ./session/commands.proto
+--- ../mozc-1.2.855.102.orig/session/commands.proto	2011-11-18 14:33:45.674958777 +0900
++++ ./session/commands.proto	2011-11-18 15:02:36.750262464 +0900
+@@ -236,6 +236,12 @@
+   optional CompositionMode mode = 7;
+ };
+ 
++message Rectangle {
++  required int32 x = 1;
++  required int32 y = 2;
++  required int32 width = 3;
++  required int32 height = 4;
++}
+ 
+ message SessionCommand {
+   enum CommandType {
+@@ -276,6 +282,13 @@
+ 
+     // Specify the input field type.
+     SWITCH_INPUT_FIELD_TYPE = 12;
++
++    // The client can send the current caret position whenever the caret
++    // position is changed. The caret position is used for suggest window
++    // position calculation. This is an optional message. If client can show
++    // suggest window on the correct position, this message can be ignored.
++    SEND_CARET_LOCATION = 16;
++
+   };
+   required CommandType type = 1;
+ 
+@@ -304,6 +317,10 @@
+   };
+   // Type of the input field being focused.
+   optional InputFieldType input_field_type = 6;
++
++  // Specify the current caret location, this is used for suggest window
++  // position calculation. Used with SEND_CARET_LOCATION.
++  optional Rectangle caret_rectangle = 9;
+ };
+ 
+ message Context {
+@@ -404,8 +421,6 @@
+     // can be used for pinging the server
+     NO_OPERATION = 14;
+ 
+-
+-
+     // Number of commands.
+     // When new command is added, the command should use below number
+     // and NUM_OF_COMMANDS should be incremented.
+@@ -435,8 +450,6 @@
+   // Server may be able to change the behavior by seeing the
+   // the program name.
+   optional ApplicationInfo application_info = 8;
+-
+-
+ };
+ 
+ 
+@@ -641,6 +654,20 @@
+     HORIZONTAL = 1;
+   };
+   optional Direction direction = 14 [ default = VERTICAL ];
++
++  // This position is used for suggest window position.
++  optional Rectangle composition_rectangle = 15;
++  optional Rectangle caret_rectangle = 16;
++
++  enum CandidateWindowLocation{
++    // Shows candidate window under the caret. This is used for prediction and
++    // conversion
++    CARET = 0;
++    // Shows candidate window aligned with composition area. This is used for
++    // suggestion.
++    COMPOSITION = 1;
++  }
++  optional CandidateWindowLocation window_location = 17;
+ };
+ 
+ message Status {
+diff -urN ../mozc-1.2.855.102.orig/session/session.cc ./session/session.cc
+--- ../mozc-1.2.855.102.orig/session/session.cc	2011-11-18 14:33:45.674958777 +0900
++++ ./session/session.cc	2011-11-18 17:02:13.607403760 +0900
+@@ -313,16 +313,23 @@
+ }
+ 
+ void Session::SetSessionState(const ImeContext::State state) {
++  const ImeContext::State prev_state = context_->state();
+   context_->set_state(state);
+   if (state == ImeContext::DIRECT ||
+       state == ImeContext::PRECOMPOSITION) {
+     context_->mutable_composer()->Reset();
+   } else if (state == ImeContext::CONVERSION) {
+     context_->mutable_composer()->ResetInputMode();
++  } else if (state == ImeContext::COMPOSITION) {
++    if (prev_state == ImeContext::PRECOMPOSITION) {
++      // NOTE: In case of state change including commitment, state change does
++      // not happen directly at once from CONVERSION to COMPOSITION. Actual path
++      // is CONVERSION to PRECOMPOSITION at first, then PRECOMPOSITION to
++      // COMPOSITION. However in this case we can only get one
++      // SendCaretRectangle because above state change is executed atomically.
++      composition_rectangle_.CopyFrom(caret_rectangle_);
++    }
+   }
+-  // else if (state == ImeContext::COMPOSITION) {
+-  //   Do nothing.
+-  // }
+ }
+ 
+ void Session::PushUndoContext() {
+@@ -424,6 +431,9 @@
+     case commands::SessionCommand::SWITCH_INPUT_FIELD_TYPE:
+       result = SwitchInputFieldType(command);
+       break;
++    case commands::SessionCommand::SEND_CARET_LOCATION:
++      result = SetCaretLocation(command);
++      break;
+     default:
+       LOG(WARNING) << "Unkown command" << command->DebugString();
+       result = DoNothing(command);
+@@ -2214,6 +2224,30 @@
+ void Session::Output(commands::Command *command) {
+   OutputMode(command);
+   context_->mutable_converter()->PopOutput(command->mutable_output());
++  OutputWindowLocation(command);
++}
++
++void Session::OutputWindowLocation(commands::Command *command) const {
++  if (!(command->output().has_candidates() &&
++        caret_rectangle_.IsInitialized() &&
++        composition_rectangle_.IsInitialized())) {
++    return;
++  }
++
++  DCHECK(command->output().candidates().has_category());
++  commands::Candidates *candidates =
++      command->mutable_output()->mutable_candidates();
++
++  candidates->mutable_caret_rectangle()->CopyFrom(caret_rectangle_);
++
++  candidates->mutable_composition_rectangle()->CopyFrom(
++      composition_rectangle_);
++
++  if (command->output().candidates().category() == commands::SUGGESTION) {
++    candidates->set_window_location(commands::Candidates::COMPOSITION);
++  } else {
++    candidates->set_window_location(commands::Candidates::CARET);
++  }
+ }
+ 
+ void Session::OutputMode(commands::Command *command) const {
+@@ -2426,6 +2460,39 @@
+   return true;
+ }
+ 
++bool Session::SetCaretLocation(commands::Command *command) {
++  if (!command->input().has_command()) {
++    return false;
++  }
++
++  const commands::SessionCommand &session_command = command->input().command();
++
++  if (!session_command.has_caret_rectangle()) {
++    caret_rectangle_.Clear();
++    return false;
++  }
++
++  if (!caret_rectangle_.IsInitialized()) {
++    caret_rectangle_.CopyFrom(session_command.caret_rectangle());
++    return true;
++  }
++
++  int caret_delta_y =
++      abs(caret_rectangle_.y() - session_command.caret_rectangle().y());
++
++  caret_rectangle_.CopyFrom(session_command.caret_rectangle());
++
++  const int kJumpThreshold = 30;
++
++  // If caret is jumped, gives up showing with aligning composition text.
++  if (caret_delta_y > kJumpThreshold) {
++    composition_rectangle_.CopyFrom(caret_rectangle_);
++  }
++
++
++  return true;
++}
++
+ // TODO(komatsu): delete this funciton.
+ composer::Composer *Session::get_internal_composer_only_for_unittest() {
+   return context_->mutable_composer();
+diff -urN ../mozc-1.2.855.102.orig/session/session.h ./session/session.h
+--- ../mozc-1.2.855.102.orig/session/session.h	2011-11-18 14:33:45.674958777 +0900
++++ ./session/session.h	2011-11-18 15:02:36.770262747 +0900
+@@ -267,6 +267,7 @@
+   void OutputMode(commands::Command *command) const;
+   void OutputComposition(commands::Command *command) const;
+   void OutputKey(commands::Command *command) const;
++  void OutputWindowLocation(commands::Command *command) const;
+ 
+   bool SendKeyDirectInputState(commands::Command *command);
+   bool SendKeyPrecompositionState(commands::Command *command);
+@@ -293,6 +294,11 @@
+   // Expand composition if required for nested calculation.
+   void ExpandCompositionForCalculator(commands::Command *command);
+ 
++  // Stores received caret location into caret_rectangle_.
++  bool SetCaretLocation(commands::Command *command);
++
++  commands::Rectangle composition_rectangle_;
++  commands::Rectangle caret_rectangle_;
+   DISALLOW_COPY_AND_ASSIGN(Session);
+ };
+ 
+diff -urN ../mozc-1.2.855.102.orig/unix/ibus/mozc_engine.cc ./unix/ibus/mozc_engine.cc
+--- ../mozc-1.2.855.102.orig/unix/ibus/mozc_engine.cc	2011-11-18 14:33:45.674958777 +0900
++++ ./unix/ibus/mozc_engine.cc	2011-11-18 15:02:36.790263031 +0900
+@@ -726,7 +726,15 @@
+                                    gint y,
+                                    gint w,
+                                    gint h) {
+-  // We can ignore the signal.
++  commands::Output output;
++  commands::SessionCommand command;
++  command.set_type(commands::SessionCommand::SEND_CARET_LOCATION);
++  commands::Rectangle *caret_rectangle = command.mutable_caret_rectangle();
++  caret_rectangle->set_x(x);
++  caret_rectangle->set_y(y);
++  caret_rectangle->set_width(w);
++  caret_rectangle->set_height(h);
++  client_->SendCommand(command, &output);
+ }
+ 
+ GType MozcEngine::GetType() {
