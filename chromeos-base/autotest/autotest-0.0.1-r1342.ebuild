@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="2357070cba53eb24c95573d06cbbb5178f346c21"
+CROS_WORKON_COMMIT="54890ea632d16848cce289de380ae73ba8104df5"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon
@@ -33,8 +33,7 @@ src_prepare() {
 	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
 	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
 	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
-	cp -fpru "${S}"/{conmux,tko,utils,site_utils} "${AUTOTEST_WORK}"
-	cp -fpru "${S}"/shadow_config.ini "${AUTOTEST_WORK}"
+	cp -fpru "${S}"/{conmux,tko,utils,site_utils,test_suites} "${AUTOTEST_WORK}"
 
 	# cros directory is not from autotest upstream but cros project specific.
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
@@ -54,7 +53,8 @@ src_install() {
 	TESTDIRS="
 		client/tests client/site_tests
 		client/config client/deps client/profilers
-		server/tests server/site_tests"
+		server/tests server/site_tests
+		test_suites"
 
 	# also pre-create the test dirs
 	for dir in ${TESTDIRS}; do
