@@ -3,21 +3,18 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI=1
-CROS_WORKON_COMMIT="0b84afe6cb606ac9e16e609ff5d8822f770f860b"
-CROS_WORKON_LOCALNAME=gcc
-CROS_WORKON_PROJECT=chromiumos/third_party/gcc
-
-inherit eutils cros-workon
 
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
+
+inherit eutils
 
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
 
 DESCRIPTION="The GNU Compiler Collection.  Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14."
 
 LICENSE="GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~alpha ~amd64 ~arm -hppa ~ia64 ~mips ~ppc ~ppc64 ~sh -sparc ~x86 ~x86-fbsd"
 
 RDEPEND=">=sys-libs/zlib-1.1.4
 	>=sys-devel/gcc-config-1.4
@@ -102,6 +99,7 @@ else
 	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${GCC_PV}
 fi
 DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_PV}
+STDCXX_INCDIR=${LIBDIR}/include/g++-v${GCC_PV}
 
 GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
 
@@ -118,9 +116,18 @@ src_unpack() {
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
 	else
-		cros-workon_src_unpack
-		mv "${S}" "${GITDIR}"
-
+		mkdir ${GITDIR}
+		cd ${GITDIR} || die "Could not enter ${GITDIR}"
+		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
+		if [[ "${PV}" == "9999" ]] ; then
+			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
+		else
+			GCC_GITHASH=ba96771079ec460201aa9226e2231154637cbb8c
+		fi
+		einfo "Checking out ${GCC_GITHASH}."
+		git checkout ${GCC_GITHASH} || \
+			die "Could not checkout ${GCC_GITHASH}"
+		cd -
 		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 	fi
 
@@ -146,7 +153,7 @@ src_compile()
 
 	if use hardened && [[ ${CTARGET} != arm* ]]
 	then
-		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
+		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-all -D_FORTIFY_SOURCE=2"
 	fi
 
 	emake CFLAGS="${GCC_CFLAGS}" \
@@ -168,9 +175,6 @@ src_install()
 	# Move the libraries to the proper location
 	gcc_movelibs
 
-	# Move pretty-printers to gdb datadir to shut ldconfig up
-	gcc_move_pretty_printers
-
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 
@@ -186,7 +190,7 @@ src_install()
 LDPATH="${LDPATH}"
 MANPATH="${DATADIR}/man"
 INFOPATH="${DATADIR}/info"
-STDCXX_INCDIR="$(get_stdcxx_incdir)"
+STDCXX_INCDIR="${STDCXX_INCDIR}"
 CTARGET=${CTARGET}
 GCC_PATH="${BINDIR}"
 EOF
@@ -267,8 +271,8 @@ src_configure()
 		--datadir=${DATADIR} \
 		--mandir=${DATADIR}/man \
 		--infodir=${DATADIR}/info \
-		--enable-version-specific-runtime-libs \
-		--with-gxx-include-dir=$(get_stdcxx_incdir)"
+		--enable-version-specific-runtime-libs
+		--with-gxx-include-dir=${STDCXX_INCDIR}"
 	confgcc="${confgcc} --host=${CHOST}"
 	confgcc="${confgcc} --target=${CTARGET}"
 	confgcc="${confgcc} --build=${CBUILD}"
@@ -349,9 +353,6 @@ get_gcc_configure_options()
 			confgcc="${confgcc} --enable-esp"
 			confgcc="${confgcc} --with-arch=atom"
 			confgcc="${confgcc} --with-tune=atom"
-			# Remove this once crash2 supports larger symbols.
-			# http://code.google.com/p/chromium-os/issues/detail?id=23321
-			confgcc="${confgcc} --enable-frame-pointer"
 			;;
 	esac
 	echo ${confgcc}
@@ -392,11 +393,6 @@ get_gcc_base_ver()
 	cat "$(get_gcc_dir)/gcc/BASE-VER"
 }
 
-get_stdcxx_incdir()
-{
-	echo "${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)/include/g++-v4"
-}
-
 # Grab a variable from the build system (taken from linux-info.eclass)
 get_make_var() {
 	local var=$1 makefile=${2:-$(get_gcc_build_dir)/Makefile}
@@ -404,15 +400,6 @@ get_make_var() {
 		r=${makefile%/*} emake --no-print-directory -s -f - 2>/dev/null
 }
 XGCC() { get_make_var GCC_FOR_TARGET ; }
-
-gcc_move_pretty_printers() {
-	local gdb_autoload_dir=/usr/share/gdb/auto-load
-	for i in $(cd "${D}" && find . -name \*-gdb.py); do
-		insinto "${gdb_autoload_dir}/$(dirname ${i})"
-		doins "${D}${i}"
-		rm "${D}${i}"
-	done
-}
 
 gcc_movelibs() {
 	LIBPATH=${LIBDIR}	# cros to Gentoo glue

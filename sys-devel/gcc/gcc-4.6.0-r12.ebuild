@@ -7,7 +7,7 @@ EAPI=1
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
 
-inherit eutils git
+inherit eutils
 
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
 
@@ -116,19 +116,17 @@ src_unpack() {
 		tar xf ${GCC_TARBALL##*/}
 	else
 		mkdir ${GITDIR}
-		local OLD_S=${S}
-		S=${GITDIR}
-		EGIT_REPO_URI=http://git.chromium.org/chromiumos/third_party/gcc.git
-		if [[ "${PV}" == "9999" ]]; then
+		cd ${GITDIR} || die "Could not enter ${GITDIR}"
+		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
+		if [[ "${PV}" == "9999" ]] ; then
 			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
 		else
-			GCC_GITHASH=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
+			GCC_GITHASH=23c043ea7578b21b46f96ea39d1a0ec0ac95bae6
 		fi
-		EGIT_COMMIT="${GCC_GITHASH}"
-		EGIT_PROJECT=${PN}-git-src
-		git_fetch
-		S=${OLD_S}
-
+		einfo "Checking out ${GCC_GITHASH}."
+		git checkout ${GCC_GITHASH} || \
+			die "Could not checkout ${GCC_GITHASH}"
+		cd -
 		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 	fi
 

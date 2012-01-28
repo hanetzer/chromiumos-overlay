@@ -7,7 +7,7 @@ EAPI=1
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
 
-inherit eutils git
+inherit eutils
 
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
 
@@ -61,7 +61,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
-			nocxx openmp tests +thumb upstream_gcc vanilla"
+			nocxx tests +thumb upstream_gcc vanilla"
 
 if [[ "${PV}" == "9999" ]]
 then
@@ -74,6 +74,7 @@ else
 fi
 MY_P=${PN}-${GCC_PV}
 GITDIR=${WORKDIR}/gitdir
+GITHASH=a6bd0f14f3fc6d1865430a8a72c2811d4b29ed84
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -99,6 +100,7 @@ else
 	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${GCC_PV}
 fi
 DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_PV}
+STDCXX_INCDIR=${LIBDIR}/include/g++-v${GCC_PV}
 
 GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
 
@@ -116,19 +118,14 @@ src_unpack() {
 		tar xf ${GCC_TARBALL##*/}
 	else
 		mkdir ${GITDIR}
-		local OLD_S=${S}
-		S=${GITDIR}
-		EGIT_REPO_URI=http://git.chromium.org/chromiumos/third_party/gcc.git
-		if [[ "${PV}" == "9999" ]]; then
-			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
-		else
-			GCC_GITHASH=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
+		cd ${GITDIR} || die "Could not enter ${GITDIR}"
+		git clone http://git.chromium.org/chromiumos/third_party/gcc.git . || die "Could not clone repo."
+		if [[ "${PV}" != "${GCC_PV}" ]] ; then
+			GITHASH="master"
 		fi
-		EGIT_COMMIT="${GCC_GITHASH}"
-		EGIT_PROJECT=${PN}-git-src
-		git_fetch
-		S=${OLD_S}
-
+		einfo "Checking out ${GITHASH}."
+		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
+		cd -
 		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 	fi
 
@@ -150,19 +147,19 @@ src_compile()
 	src_configure
 	cd $(get_gcc_build_dir) || "Build dir $(get_gcc_build_dir) not found"
 	GCC_CFLAGS="$(portageq envvar CFLAGS)"
-	TARGET_FLAGS=""
+	TARGET_FLAGS="-g -O2 -pipe"
 
 	if use hardened && [[ ${CTARGET} != arm* ]]
 	then
-		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
+		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-all -D_FORTIFY_SOURCE=2"
 	fi
 
 	emake CFLAGS="${GCC_CFLAGS}" \
 		LDFLAGS="-Wl,-O1" \
 		STAGE1_CFLAGS="-O2 -pipe" \
 		BOOT_CFLAGS="-O2" \
-		CFLAGS_FOR_TARGET="$(get_make_var CFLAGS_FOR_TARGET) ${TARGET_FLAGS}" \
-		CXXFLAGS_FOR_TARGET="$(get_make_var CXXFLAGS_FOR_TARGET) ${TARGET_FLAGS}" \
+		CFLAGS_FOR_TARGET="${TARGET_FLAGS}" \
+		CXXFLAGS_FOR_TARGET="${TARGET_FLAGS}" \
 		all || die
 }
 
@@ -176,49 +173,36 @@ src_install()
 	# Move the libraries to the proper location
 	gcc_movelibs
 
-	# Move pretty-printers to gdb datadir to shut ldconfig up
-	gcc_move_pretty_printers
-
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 
-	local LDPATH=${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)
-	for SUBDIR in 32 64 ; do
-		if [[ -d ${D}/${LDPATH}/${SUBDIR} ]]
-		then
-			LDPATH="${LDPATH}:${LDPATH}/${SUBDIR}"
-		fi
-	done
-
 	cat <<-EOF > env.d
-LDPATH="${LDPATH}"
+LDPATH="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
 MANPATH="${DATADIR}/man"
 INFOPATH="${DATADIR}/info"
-STDCXX_INCDIR="$(get_stdcxx_incdir)"
+STDCXX_INCDIR="${STDCXX_INCDIR}"
 CTARGET=${CTARGET}
 GCC_PATH="${BINDIR}"
 EOF
 	newins env.d $GCC_CONFIG_FILE
 	cd -
 
-	if is_crosscompile ; then
-		if use hardened && [[ ${CTARGET} != arm* ]]
-		then
-			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
-		else
-			SYSROOT_WRAPPER_FILE=sysroot_wrapper
-		fi
-
-		cd ${D}${BINDIR}
-		exeinto "${BINDIR}"
-		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
-		for x in c++ cpp g++ gcc; do
-			if [[ -f "${CTARGET}-${x}" ]]; then
-				mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-				dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
-			fi
-		done
+	if use hardened && [[ ${CTARGET} != arm* ]]
+	then
+		SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
+	else
+		SYSROOT_WRAPPER_FILE=sysroot_wrapper
 	fi
+
+	cd ${D}${BINDIR}
+	exeinto "${BINDIR}"
+	doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+	for x in c++ cpp g++ gcc; do
+		if [[ -f "${CTARGET}-${x}" ]]; then
+			mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
+			dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
+		fi
+	done
 
 	if use tests
 	then
@@ -260,9 +244,6 @@ pkg_postrm()
 
 src_configure()
 {
-	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]] ; then
-		return
-	fi
 	SLIBDIR="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
 
 	# Set configuration based on path variables
@@ -275,8 +256,8 @@ src_configure()
 		--datadir=${DATADIR} \
 		--mandir=${DATADIR}/man \
 		--infodir=${DATADIR}/info \
-		--enable-version-specific-runtime-libs \
-		--with-gxx-include-dir=$(get_stdcxx_incdir)"
+		--enable-version-specific-runtime-libs
+		--with-gxx-include-dir=${STDCXX_INCDIR}"
 	confgcc="${confgcc} --host=${CHOST}"
 	confgcc="${confgcc} --target=${CTARGET}"
 	confgcc="${confgcc} --build=${CBUILD}"
@@ -300,19 +281,15 @@ src_configure()
 		confgcc="${confgcc} --with-mode=thumb"
 	fi
 
-	if is_crosscompile ; then
-		local needed_libc="glibc"
-		if [[ -n ${needed_libc} ]] ; then
-			if ! has_version ${CATEGORY}/${needed_libc} ; then
-				confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
-			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
-				confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
-			else
-				confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
-			fi
+	local needed_libc="glibc"
+	if [[ -n ${needed_libc} ]] ; then
+		if ! has_version ${CATEGORY}/${needed_libc} ; then
+			confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
+		elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
+			confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
+		else
+			confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
 		fi
-	else
-		confgcc="${confgcc} --enable-shared --enable-threads=posix"
 	fi
 
 	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
@@ -357,9 +334,6 @@ get_gcc_configure_options()
 			confgcc="${confgcc} --enable-esp"
 			confgcc="${confgcc} --with-arch=atom"
 			confgcc="${confgcc} --with-tune=atom"
-			# Remove this once crash2 supports larger symbols.
-			# http://code.google.com/p/chromium-os/issues/detail?id=23321
-			confgcc="${confgcc} --enable-frame-pointer"
 			;;
 	esac
 	echo ${confgcc}
@@ -370,7 +344,7 @@ get_gcc_common_options()
 	local confgcc
 	confgcc="${confgcc} --disable-libmudflap"
 	confgcc="${confgcc} --disable-libssp"
-	confgcc+=" $(use_enable openmp libgomp)"
+	confgcc="${confgcc} --disable-libgomp"
 	confgcc="${confgcc} --enable-__cxa_atexit"
 	confgcc="${confgcc} --enable-checking=release"
 	confgcc="${confgcc} --disable-libquadmath"
@@ -392,17 +366,12 @@ get_gcc_dir()
 
 get_gcc_build_dir()
 {
-	echo "$(get_gcc_dir)-build-${CTARGET}"
+	echo "$(get_gcc_dir)-build"
 }
 
 get_gcc_base_ver()
 {
 	cat "$(get_gcc_dir)/gcc/BASE-VER"
-}
-
-get_stdcxx_incdir()
-{
-	echo "${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)/include/g++-v4"
 }
 
 # Grab a variable from the build system (taken from linux-info.eclass)
@@ -412,15 +381,6 @@ get_make_var() {
 		r=${makefile%/*} emake --no-print-directory -s -f - 2>/dev/null
 }
 XGCC() { get_make_var GCC_FOR_TARGET ; }
-
-gcc_move_pretty_printers() {
-	local gdb_autoload_dir=/usr/share/gdb/auto-load
-	for i in $(cd "${D}" && find . -name \*-gdb.py); do
-		insinto "${gdb_autoload_dir}/$(dirname ${i})"
-		doins "${D}${i}"
-		rm "${D}${i}"
-	done
-}
 
 gcc_movelibs() {
 	LIBPATH=${LIBDIR}	# cros to Gentoo glue
