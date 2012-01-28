@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="ab81b430a5ce0ad55edd3abbce51021b8927b2c0"
+CROS_WORKON_COMMIT="e80a08412d784e18b3c63b6f471a1da7f0b286e9"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -68,13 +68,7 @@ src_test() {
 	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	emake keygen session_manager_unittest || \
-		die "chromeos-login compile tests failed."
-
-	if use x86 ; then
-		./session_manager_unittest ${GTEST_ARGS} || \
-		    die "unit tests (with ${GTEST_ARGS}) failed!"
-	fi
+	emake tests || die "chromeos-login compile tests failed."
 }
 
 src_install() {
