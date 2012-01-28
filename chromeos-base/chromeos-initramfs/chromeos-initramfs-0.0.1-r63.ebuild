@@ -1,9 +1,5 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-
-# WARNING: cros_workon cannot detect changes to files/, please ensure
-# that you manually bump or make some change to the 9999 ebuild until
-# this is fixed.
 
 EAPI=2
 CROS_WORKON_COMMIT="a171b16b1f18a743092d89ccb43dfec94143219c"
@@ -31,7 +27,6 @@ RDEPEND=""
 CROS_WORKON_LOCALNAME="../platform/initramfs"
 
 INITRAMFS_TMP_S=${WORKDIR}/initramfs_tmp
-# Suffixed with cpio or not recognize filetype.
 INITRAMFS_FILE="initramfs.cpio.gz"
 
 solve_lib_symlinks() {
@@ -53,28 +48,20 @@ solve_lib_symlinks() {
 
 # dobin for initramfs
 idobin() {
-	local src dest
+	local src
 	for src in "$@"; do
-		if [ "${src#/}" != "${src}" ]; then
-			src="${ROOT}${src}"
-		else
-			src="${S}/${src}"
-		fi
-		dest="${INITRAMFS_TMP_S}/bin/$(basename "${src}")"
-		cp -p "${src}" "${dest}" && chmod a+rx "${dest}" ||
+		src="${ROOT}${src}"
+		cp -p "${src}" "${INITRAMFS_TMP_S}/bin" ||
 			die "Cannot install: $src"
 		elog "Copied: $src"
 	done
 }
 
 build_initramfs_file() {
-	local dir shlib lib
+	local dir lib
 
 	local subdirs="
 		bin
-		sbin
-		usr/bin
-		usr/sbin
 		etc
 		dev
 		root
@@ -83,7 +70,6 @@ build_initramfs_file() {
 		usb
 		newroot
 		lib
-		usr/lib
 		stateful
 		tmp
 		log
@@ -93,12 +79,10 @@ build_initramfs_file() {
 	done
 
 	# Copy source files not merged from our dependencies.
-	cp "${S}/init" "${INITRAMFS_TMP_S}/init" || die
+	cp init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
-	for shlib in *.sh; do
-		cp "${S}"/${shlib} ${INITRAMFS_TMP_S}/lib || die
-	done
-	cp -r ${S}/screens ${INITRAMFS_TMP_S}/etc || die
+	cp *.sh "${INITRAMFS_TMP_S}/lib" || die
+	cp -r screens "${INITRAMFS_TMP_S}/etc" || die
 
 	# Load libraries for busybox, dmsetup, & vbutil_kernel
 	# TODO: how can ebuilds support static busybox?
@@ -110,7 +94,7 @@ build_initramfs_file() {
 		libdl.so.2
 		libpthread.so.0
 		librt.so.1
-                libudev.so.0
+		libudev.so.0
 		libz.so.1
 	"
 	usr_libs="
@@ -145,7 +129,7 @@ build_initramfs_file() {
 
 	# For busybox and sh
 	idobin /bin/busybox
-	ln -s "busybox" "${INITRAMFS_TMP_S}/bin/sh"
+	ln -s busybox "${INITRAMFS_TMP_S}/bin/sh"
 
 	# For verified rootfs
 	idobin /sbin/dmsetup
@@ -153,16 +137,17 @@ build_initramfs_file() {
 	# For message screen display and progress bars
 	idobin /usr/bin/ply-image
 	idobin /usr/bin/pv
+	idobin /usr/sbin/vpd
+
+	# /usr/sbin/vpd invokes 'flashrom' via system()
+	idobin /usr/sbin/flashrom
 
 	# For recovery behavior
-	idobin /usr/bin/tpmc
-	idobin /usr/bin/dev_sign_file
-	idobin /usr/bin/vbutil_kernel
-	idobin /usr/bin/crossystem
 	idobin /usr/bin/cgpt
+	idobin /usr/bin/crossystem
 	idobin /usr/bin/dump_kernel_config
-	idobin /usr/sbin/vpd
-	idobin /usr/sbin/flashrom
+	idobin /usr/bin/tpmc
+	idobin /usr/bin/vbutil_kernel
 
 	# The 'vpd' and 'cgpt' commands are statically linked; we assert
 	# as much for the protection of posterity who might otherwise be
@@ -185,6 +170,6 @@ src_compile() {
 }
 
 src_install() {
-	dodir /boot
-	dobin ${WORKDIR}/${INITRAMFS_FILE}
+	insinto /var/lib/misc
+	doins "${WORKDIR}/${INITRAMFS_FILE}"
 }

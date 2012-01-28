@@ -17,9 +17,9 @@ IUSE="${IUSE} -pcserial -kernel_sources -systemtap -highmem"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 DEPEND="sys-apps/debianutils
-    chromeos-base/kernel-headers
-    initramfs? ( chromeos-base/chromeos-initramfs )
-    !sys-kernel/chromeos-kernel-next
+	chromeos-base/kernel-headers
+	initramfs? ( chromeos-base/chromeos-initramfs )
+	!sys-kernel/chromeos-kernel-next
 "
 RDEPEND="!sys-kernel/chromeos-kernel-next"
 
@@ -138,7 +138,8 @@ src_compile() {
 
 	local INITRAMFS=""
 	if use initramfs; then
-		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}/usr/bin/initramfs.cpio.gz"
+		local initramfs_source=/var/lib/misc/initramfs.cpio.gz
+		INITRAMFS="CONFIG_INITRAMFS_SOURCE=${ROOT}${initramfs_source}"
 		# We want to avoid copying modules into the initramfs so we need
 		# to enable the functionality required for the initramfs here.
 
