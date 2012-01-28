@@ -3,9 +3,9 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI=1
+CROS_WORKON_COMMIT="0b84afe6cb606ac9e16e609ff5d8822f770f860b"
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
-CROS_WORKON_COMMIT=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
 
 inherit eutils cros-workon
 
