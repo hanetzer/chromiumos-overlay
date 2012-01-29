@@ -55,7 +55,7 @@ is_cross \
 if [[ ${PV} != 9999* ]] ; then
 	KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc x86 ~x86-fbsd"
 fi
-IUSE="expat multitarget nls python test vanilla"
+IUSE="expat multitarget nls python test vanilla mounted_sources"
 
 RDEPEND=">=sys-libs/ncurses-5.2-r2
 	sys-libs/readline
@@ -68,6 +68,18 @@ DEPEND="${RDEPEND}
 	nls? ( sys-devel/gettext )"
 
 S=${WORKDIR}/${PN}-${MY_PV}
+
+src_unpack () {
+	if use mounted_sources ; then
+		: ${GDBDIR:=/usr/local/toolchain_root/gdb/gdb-7.2.x}
+		if [[ ! -d ${GDBDIR} ]] ; then
+			die "gdb dir not mounted/present at: ${GDBDIR}"
+		fi
+		cp -R ${GDBDIR} ${S}
+	else
+		git_src_unpack
+	fi
+}
 
 src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
