@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit autotest binutils-funcs eutils flag-o-matic multilib toolchain-funcs
+inherit autotest binutils-funcs eutils flag-o-matic git multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -26,13 +26,15 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -touchui -local_gclient hardfp +runhooks +verbose"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -reorder -touchui -local_gclient hardfp +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
 # TODO(mcgrathr,vapier): This should be removed after portage's prepstrip
 # script is changed to use eu-strip instead of objcopy and strip.
 STRIP_MASK="*/nacl_helper_bootstrap"
+
+PGO_SUBDIR="pgo"
 
 # Returns portage version without optional portage suffix.
 # $1 - Version with optional suffix.
@@ -247,6 +249,10 @@ set_build_defines() {
 	# This saves time and bytes.
 	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
 		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
+	fi
+
+	if use reorder; then
+		BUILD_DEFINES="order_text_section='${ECHROME_STORE_DIR}/${PGO_SUBDIR}/section-ordering-files/orderfile' $BUILD_DEFINES"
 	fi
 
 	if use touchui; then
@@ -590,6 +596,23 @@ src_unpack() {
 	# Chrome builds inside distfiles because of speed, so we at least make
 	# a symlink here to add compatibility with autotest eclass which uses this.
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
+
+
+	if use reorder; then
+		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
+		EGIT_COMMIT="51e1b4a484a83006582ab600bad17243f979671c"
+		EGIT_PROJECT="${PN}-pgo"
+		if grep -q $EGIT_COMMIT "${ECHROME_STORE_DIR}/${PGO_SUBDIR}/.git/HEAD"; then
+			einfo "PGO repo is up to date."
+		else
+			einfo "PGO repo not up-to-date. Fetching..."
+			local OLD_S="${S}"
+			S="${ECHROME_STORE_DIR}/${PGO_SUBDIR}"
+			rm -rf "${S}"
+			git_fetch
+			S="${OLD_S}"
+		fi
+	fi
 }
 
 src_prepare() {
