@@ -57,6 +57,7 @@ MAKEOPTS="${MAKEOPTS} SAMPLES="
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-parallel-build.patch
+	epatch "${FILESDIR}"/${P}-format-string-vuln-cve-2012-0809.patch
 	elibtoolize
 }
 
