@@ -95,6 +95,8 @@ IUSE_TESTS="
 	+tests_desktopui_ChromeFirstRender
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_AudioFeedback
+	+tests_desktopui_EnterprisePolicy
+	+tests_desktopui_EnterprisePolicyServer
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_FontCache
