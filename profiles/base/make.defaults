@@ -63,3 +63,9 @@ USE="${USE} modules"
 #                    U_BOOT_CONFIG_USE for selecting U-Boot config
 #                    U_BOOT_FDT_USE for selecting U-Boot device tree
 USE_EXPAND="${USE_EXPAND} BOARD_USE TESTS U_BOOT_CONFIG_USE U_BOOT_FDT_USE"
+
+# Samuli Suominen <ssuominen@gentoo.org> (03 Dec 2009)
+# Enable USE cxx by default so base-system and toolchain pkgs can start using USE cxx
+# instead of USE nocxx.
+# http://archives.gentoo.org/gentoo-dev/msg_a181cd0d36600067b599f4b996c6989f.xml
+USE="${USE} cxx"
