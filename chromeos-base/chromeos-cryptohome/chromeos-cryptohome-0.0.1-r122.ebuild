@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f588902dbbe375798ade45ee8ce6c1921c3770fb"
+CROS_WORKON_COMMIT="f6d38f4b28fbe2d50d2437ad6becbc733a6f92dd"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -17,6 +17,7 @@ IUSE="test"
 RDEPEND="
 	app-crypt/trousers
 	chromeos-base/chaps
+	chromeos-base/libchromeos
 	chromeos-base/libscrypt
 	chromeos-base/metrics
 	dev-libs/dbus-glib
@@ -31,7 +32,6 @@ RDEPEND="
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome
-	chromeos-base/libchromeos
 	chromeos-base/system_api
 	${RDEPEND}"
 
