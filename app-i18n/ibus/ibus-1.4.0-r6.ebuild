@@ -17,7 +17,7 @@ SRC_URI="mirror://gentoo/${P}.tar.gz"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="doc nls python"
+IUSE="aura doc nls python"
 #RESTRICT="mirror"
 
 RDEPEND="python? ( >=dev-lang/python-2.5 )
@@ -54,8 +54,14 @@ src_prepare() {
 
 	# TODO(yusukes): Remove the patch to use upstream releases as-is.
 	epatch "${FILESDIR}"/${P}-revert-adcf71e6-for-crosbug-19605.patch
-	# TODO(yusukes): Remove the patch when we upgrade ibus to the next version, 1.4.1.
+	# TODO(yusukes): Remove the patch when we upgrade ibus to the next
+	# version, 1.4.1.
 	epatch "${FILESDIR}"/${P}-fix-SEGV-in-request_surrounding_text.patch
+
+	if use aura ; then
+	   # TODO(nona): Remove the patch when we fix crosbug.com/25335#c1
+	   epatch "${FILESDIR}"/${P}-do-not-send-cursor-location-to-chrome.patch
+	fi
 
 	elibtoolize
 }
