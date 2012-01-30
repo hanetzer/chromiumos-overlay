@@ -14,10 +14,13 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="cros_host splitdebug"
 
-# TODO(adlr): remove coreutils dep if we move to busybox
-RDEPEND="$RDEPEND
-	app-admin/sudo
+DEPEND="
 	chromeos-base/libchrome
+	sys-libs/libbb"
+
+# TODO(adlr): remove coreutils dep if we move to busybox
+RDEPEND="
+	app-admin/sudo
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	dev-util/shflags
@@ -34,7 +37,6 @@ CROS_WORKON_LOCALNAME="installer"
 
 src_compile() {
 	tc-export CXX CC OBJCOPY STRIP AR
-	cros-debug-add-NDEBUG
 	emake OUT=${S}/build \
 		SPLITDEBUG=$(use splitdebug && echo 1) cros_installer
 }

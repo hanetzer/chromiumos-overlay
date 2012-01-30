@@ -37,8 +37,9 @@ src_configure() {
 }
 
 src_compile() {
-	tc-export CC AR RANLIB
-	emake busybox || die
+	tc-export CC AR STRIP RANLIB
+	emake CC="$(tc-getCC)" AR="$(tc-getAR)" STRIP="$(tc-getSTRIP)" \
+		busybox || die
 	# Add the list of utils we need. Unused symbols will be stripped
 	cp libbb/lib.a libbb/libbb.a || die
 	$AR rc libbb/libbb.a coreutils/{dd,rm}.o || die
