@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -52,8 +52,6 @@ src_install() {
 	dosbin "crash_sender" || die
 	into /usr || die
 	dobin "list_proxies" || die
-	exeinto /etc/cron.hourly || die
-	doexe "crash_sender.hourly" || die
 	insinto /etc || die
 	doins "crash_reporter_logs.conf" || die
 }
