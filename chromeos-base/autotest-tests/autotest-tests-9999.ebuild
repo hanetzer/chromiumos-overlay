@@ -92,7 +92,6 @@ IUSE_TESTS="
 	+tests_cellular_ThroughputController
 	+tests_cellular_Throughput
 	+tests_build_RootFilesystemSize
-	+tests_desktopui_ChromeFirstRender
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_EnterprisePolicy
