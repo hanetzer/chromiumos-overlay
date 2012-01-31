@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="c2f99b35944fc4a95d867d0cce181c356c811110"
+CROS_WORKON_COMMIT="77ead8819baafcd98b62b84c427b7d02a7b825ff"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 inherit toolchain-funcs cros-workon cros-board
