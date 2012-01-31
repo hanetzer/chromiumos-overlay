@@ -110,8 +110,13 @@ src_configure() {
 	# strongSwan builds and installs static libs by default which are
 	# useless to the user (and to strongSwan for that matter) because no
 	# header files or alike get installed... so disabling them is safe.
+	#
+	# On Chromium OS, we use --disable-xauth-vid to prevent strongswan
+	# from sending a XAUTH vendor ID during ISAKMP phase 1 exchange.
+	# See http://crosbug.com/25675 for details.
 	econf \
 		--disable-static \
+		--disable-xauth-vid \
 		$(use_with caps capabilities libcap) \
 		$(use_enable curl) \
 		$(use_enable ldap) \
