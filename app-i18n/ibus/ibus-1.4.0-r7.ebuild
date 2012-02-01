@@ -138,6 +138,9 @@ src_install() {
 	# Remove unnecessary files
 	rm -rf "${D}/usr/share/icons" || die
 	rm "${D}/usr/share/applications/ibus.desktop" || die
+	if use aura; then
+	        rm -rf "${D}/usr/lib/gtk-2.0/2.10.0/immodules/" || die
+	fi
 
 	dodoc AUTHORS ChangeLog NEWS README
 }
