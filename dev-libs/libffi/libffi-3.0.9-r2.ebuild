@@ -10,7 +10,7 @@ SRC_URI="ftp://sourceware.org/pub/${PN}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~mips ~ppc ~ppc64 ~x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="alpha amd64 arm hppa mips ppc ppc64 x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="debug static-libs test"
 
 RDEPEND=""
