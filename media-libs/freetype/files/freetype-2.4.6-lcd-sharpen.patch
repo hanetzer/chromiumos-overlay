@@ -113,7 +113,7 @@ diff -ur freetype-2.4.6/src/smooth/ftsmooth.c freetype-2.4.6-cros/src/smooth/fts
 diff -ur freetype-2.4.6/src/truetype/ttobjs.c freetype-2.4.6-cros/src/truetype/ttobjs.c
 --- freetype-2.4.6/src/truetype/ttobjs.c	2011-07-03 00:52:13.000000000 -0700
 +++ freetype-2.4.6-cros/src/truetype/ttobjs.c	2011-09-28 15:21:37.000000000 -0700
-@@ -175,6 +175,34 @@
+@@ -175,6 +175,35 @@
      return FALSE;
    }
  
@@ -122,7 +122,7 @@ diff -ur freetype-2.4.6/src/truetype/ttobjs.c freetype-2.4.6-cros/src/truetype/t
 +  {
 +
 +#define DISABLE_SHARP_NAMES_MAX_CHARACTERS  19
-+#define DISABLE_SHARP_NAMES_COUNT            3
++#define DISABLE_SHARP_NAMES_COUNT            4
 +
 +    /* Would it be faster to use ft_strcmp and list all the family names */
 +    /* exactly (like 'IPAMincho, IPAGothic, IPAPMincho, IPAPGothic')?    */
@@ -130,6 +130,7 @@ diff -ur freetype-2.4.6/src/truetype/ttobjs.c freetype-2.4.6-cros/src/truetype/t
 +                                [DISABLE_SHARP_NAMES_MAX_CHARACTERS + 1] =
 +    {
 +      "IPA",
++      "MotoyaG04",
 +      "Droid Sans Fallback",
 +      "NanumMyeongjo",
 +      /* "Song ASC", */
@@ -148,7 +149,7 @@ diff -ur freetype-2.4.6/src/truetype/ttobjs.c freetype-2.4.6-cros/src/truetype/t
  
    /* XXX: This function should be in the `sfnt' module. */
  
-@@ -408,6 +436,22 @@
+@@ -408,6 +437,22 @@
      return FALSE;
    }
  
@@ -171,7 +172,7 @@ diff -ur freetype-2.4.6/src/truetype/ttobjs.c freetype-2.4.6-cros/src/truetype/t
  
    /* Check whether `.notdef' is the only glyph in the `loca' table. */
    static FT_Bool
-@@ -534,6 +578,9 @@
+@@ -534,6 +579,9 @@
      if ( tt_check_trickyness( ttface ) )
        ttface->face_flags |= FT_FACE_FLAG_TRICKY;
  
