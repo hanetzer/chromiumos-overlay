@@ -52,9 +52,6 @@ src_install() {
 	into /usr
 	dosbin "${S}/chromeos-cleanup-logs"
 
-	exeinto /etc/cron.daily
-	doexe "${S}/cleanup-logs.daily"
-
 	# Install lightup_screen
 	into /usr
 	dosbin "${S}/lightup_screen"
