@@ -14,11 +14,9 @@ SLOT="0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~ppc-aix ~amd64-linux ~x86-linux"
 IUSE="doc extras idn ipv6 SECURITY_HAZARD ssl static"
 
-# sysfsutils is needed for libsysfs which is used by arping only
 RDEPEND="extras? ( !net-misc/rarpd )
 	ssl? ( dev-libs/openssl )
-	idn? ( net-dns/libidn )
-	sys-fs/sysfsutils"
+	idn? ( net-dns/libidn )"
 DEPEND="${RDEPEND}
 	virtual/os-headers"
 
@@ -38,6 +36,7 @@ src_unpack() {
 	epatch "${FILESDIR}"/${PN}-20071127-kernel-ifaddr.patch
 	epatch "${FILESDIR}"/${PN}-20070202-idn.patch #218638
 	epatch "${FILESDIR}"/${PN}-20100418-ping-CVE-2010-2529.patch #332527
+	epatch "${FILESDIR}"/${PN}-20071127-infiniband.patch #377687
 	use SECURITY_HAZARD && epatch "${FILESDIR}"/${PN}-20071127-nonroot-floodping.patch
 	use static && append-ldflags -static
 	use ssl && append-cppflags -DHAVE_OPENSSL
