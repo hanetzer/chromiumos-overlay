@@ -27,6 +27,14 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Version name of EC firmware
 : ${CROS_FIRMWARE_EC_VERSION:="IGNORE"}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_SUM
+# @DESCRIPTION: (Optional) SHA-1 checksum of system bios image
+: ${CROS_FIRMWARE_MAIN_IMAGE_SUM:=}
+
+# @ECLASS-VARIABLE: CROS_FIRMWARE_EC_SUM
+# @DESCRIPTION: (Optional) SHA-1 checksum of EC firmware image on BCS
+: ${CROS_FIRMWARE_EC_IMAGE_SUM:=}
+
 # @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
 # @DESCRIPTION: (Optional) Platform name of firmware
 : ${CROS_FIRMWARE_PLATFORM:=}
@@ -97,10 +105,11 @@ _is_in_files() {
 }
 
 # Fetch a file from the Binary Component Server
-# Parameters: URI of file "bcs://filename.tbz2"
+# Parameters: URI of file "bcs://filename.tbz2", checksum of file.
 # Returns: Nothing
 _bcs_fetch() {
 	local filename="${1##*://}"
+	local checksum="$2"
 
 # Support both old and new locations for BCS binaries.
 # TODO(dparker@chromium.org): Remove after all binaries are using the new
@@ -113,6 +122,7 @@ _bcs_fetch() {
 "/${CROS_FIRMWARE_BCS_OVERLAY_NAME}/${CATEGORY}/${PN}"
 fi
 	CROS_BINARY_URI="${URI_BASE}/${filename}"
+	CROS_BINARY_SUM="${checksum}"
 	cros-binary_fetch
 }
 
@@ -176,7 +186,8 @@ cros-firmware_src_unpack() {
 	# Fetch and unpack the system firmware image
 	if [[ -n "${CROS_FIRMWARE_MAIN_IMAGE}" ]]; then
 		if _is_on_bcs "${CROS_FIRMWARE_MAIN_IMAGE}"; then
-			_bcs_fetch "${CROS_FIRMWARE_MAIN_IMAGE}"
+			_bcs_fetch "${CROS_FIRMWARE_MAIN_IMAGE}" \
+				   "${CROS_FIRMWARE_MAIN_SUM}"
 			_bcs_src_unpack "${CROS_FIRMWARE_MAIN_IMAGE}"
 			FW_IMAGE_LOCATION="${RETURN_VALUE}"
 		else
@@ -188,7 +199,8 @@ cros-firmware_src_unpack() {
 	# Fetch and unpack the EC image
 	if [[ -n "${CROS_FIRMWARE_EC_IMAGE}" ]]; then
 		if _is_on_bcs "${CROS_FIRMWARE_EC_IMAGE}"; then
-			_bcs_fetch "${CROS_FIRMWARE_EC_IMAGE}"
+			_bcs_fetch "${CROS_FIRMWARE_EC_IMAGE}"\
+				   "${CROS_FIRMWARE_EC_SUM}"
 			_bcs_src_unpack "${CROS_FIRMWARE_EC_IMAGE}"
 			EC_IMAGE_LOCATION="${RETURN_VALUE}"
 		else
@@ -210,7 +222,7 @@ cros-firmware_src_unpack() {
 			tr "$tr_source" "$tr_target")"
 	for extra in $extra_list; do
 		if _is_on_bcs "${extra}"; then
-			_bcs_fetch "${extra}"
+			_bcs_fetch "${extra}" ""
 			_bcs_src_unpack "${extra}"
 			RETURN_VALUE="${RETURN_VALUE}"
 		else
