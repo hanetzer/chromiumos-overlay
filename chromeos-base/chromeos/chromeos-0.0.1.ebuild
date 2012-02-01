@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +localssh X bootchart touchui opengles"
+IUSE="bluetooth +localssh X bootchart touchui opengles internal"
 
 
 ################################################################################
@@ -90,7 +90,9 @@ RDEPEND="${RDEPEND}
 		media-fonts/croscorefonts
 		media-fonts/dejavu
 		media-fonts/droidfonts-cros
-		media-fonts/ja-ipafonts
+		!internal? (
+			media-fonts/ja-ipafonts
+		)
 		media-fonts/lohitfonts-cros
 		media-fonts/sil-abyssinica
 		media-fonts/ko-nanumfonts
