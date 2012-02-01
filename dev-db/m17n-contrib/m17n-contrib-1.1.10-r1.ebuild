@@ -9,7 +9,7 @@ SRC_URI="mirror://gentoo/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 DEPEND="dev-db/m17n-db"
