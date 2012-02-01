@@ -142,7 +142,7 @@ src_prepare() {
 }
 
 src_configure() {
-	tc-export PKG_CONFIG
+	tc-getPROG PKG_CONFIG pkg-config
 
 	if use !gallium && use !classic; then
 		ewarn "You enabled neither classic nor gallium USE flags. No hardware"
