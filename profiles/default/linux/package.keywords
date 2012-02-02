@@ -82,7 +82,7 @@
 =dev-python/pyudev-0.12		amd64 x86
 
 =dev-embedded/openocd-0.4.0      amd64 x86
-=dev-embedded/smdk-dltool-0.20	amd64 x86
 
 # Required by dev-util/cmake-2.8.4-r1
 =app-arch/libarchive-2.8.1      amd64 x86
+
