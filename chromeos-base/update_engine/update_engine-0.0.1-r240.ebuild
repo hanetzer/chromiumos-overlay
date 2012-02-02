@@ -14,13 +14,6 @@ SLOT="0"
 IUSE="cros_host -delta_generator"
 KEYWORDS="amd64 arm x86"
 
-# Workaround for http://crosbug.com/24975
-#
-# The update_engine unit tests are flaky because of unsafe uses of
-# 'losetup -f'.  Moreover, the loopback abuses are suspected of causing
-# general build failures.  Disable them until they can be fixed.
-RESTRICT="test"
-
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome
