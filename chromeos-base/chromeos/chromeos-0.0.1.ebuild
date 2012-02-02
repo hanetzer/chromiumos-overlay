@@ -117,7 +117,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
-	virtual/kernel
+	virtual/linux-sources
 	"
 
 # Specifically include the editor we want to appear in chromeos images, so that

@@ -1,2 +1,2 @@
-virtual/kernel	kernel_next
+virtual/linux-sources	kernel_next
 virtual/perf	kernel_next
