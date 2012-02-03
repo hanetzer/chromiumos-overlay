@@ -44,6 +44,7 @@ src_install() {
 		progs+=' utility/vbutil_keyblock'
 		progs+=' utility/vbutil_kernel'
 		progs+=' utility/vbutil_firmware'
+		progs+=' utility/vbutil_what_keys'
 		progs+=' utility/gbb_utility'
 		progs+=' utility/dump_fmap'
 		progs+=' utility/dev_debug_vboot'
