@@ -45,7 +45,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug +gallium gles +llvm motif +nptl pic selinux +swrast kernel_FreeBSD"
+	+classic debug egl +gallium gbm gles1 gles2 +llvm motif +nptl pic selinux shared-glapi +swrast kernel_FreeBSD"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.24"
 # keep correct libdrm and dri2proto dep
@@ -56,6 +56,7 @@ RDEPEND="
 	>=x11-proto/dri2proto-2.2
 	>=x11-proto/glproto-1.4.11
 	dev-libs/expat
+	gbm? ( sys-fs/udev )
 	sys-libs/talloc
 	x11-libs/libICE
 	>=x11-libs/libX11-1.3.3
@@ -184,7 +185,10 @@ src_configure() {
 		--disable-glut \
 		--without-demos \
 		--enable-xcb \
-		--disable-egl \
+		$(use_enable egl) \
+		$(use_enable gles1) \
+		$(use_enable gles2) \
+		$(use_enable shared-glapi) \
 		$(use_enable gallium) \
 		$(use_enable debug) \
 		$(use_enable nptl glx-tls) \
@@ -192,7 +196,8 @@ src_configure() {
 		$(use_enable motif) \
 		$(use_enable !pic asm) \
 		--with-dri-drivers=${DRI_DRIVERS} \
-		--with-gallium-drivers=${GALLIUM_DRIVERS}
+		--with-gallium-drivers=${GALLIUM_DRIVERS} \
+	        $(use gbm && echo "--with-egl-platforms=drm")
 }
 
 src_install() {
