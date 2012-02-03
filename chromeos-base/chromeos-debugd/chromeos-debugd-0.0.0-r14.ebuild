@@ -17,7 +17,8 @@ IUSE=""
 
 RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome
-	chromeos-base/libchromeos"
+	chromeos-base/libchromeos
+        dev-libs/dbus-c++"
 DEPEND="${RDEPEND}"
 
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
