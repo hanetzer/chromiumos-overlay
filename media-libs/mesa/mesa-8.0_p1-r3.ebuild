@@ -179,6 +179,7 @@ src_configure() {
 		--enable-xcb \
 		$(use_enable llvm llvm-gallium) \
 		$(use_enable egl) \
+		$(use_enable gbm) \
 		$(use_enable gles1) \
 		$(use_enable gles2) \
 		$(use_enable shared-glapi) \
