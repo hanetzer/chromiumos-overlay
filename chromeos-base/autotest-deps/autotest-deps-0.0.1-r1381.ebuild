@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="25427c61476251a82a665e31c6c559f55b1e7b8b"
+CROS_WORKON_COMMIT="73f6502b4479551066222ea39f2560b99a6f1335"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit cros-workon autotest-deponly
