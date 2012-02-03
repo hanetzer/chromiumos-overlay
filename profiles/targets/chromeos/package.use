@@ -7,7 +7,7 @@ app-i18n/zinnia	    	-perl
 app-editors/qemacs	-X
 app-editors/vim		minimal
 dev-cpp/glog		gflags
-dev-lang/python		-berkdb -gdbm
+dev-lang/python		-berkdb gdbm
 dev-libs/dbus-glib	tools
 dev-libs/glib		-doc
 dev-libs/nss		-utils
