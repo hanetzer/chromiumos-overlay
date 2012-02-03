@@ -63,7 +63,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
-			nocxx openmp tests +thumb upstream_gcc vanilla"
+			cxx openmp tests +thumb upstream_gcc vanilla"
 
 GITDIR=${WORKDIR}/gitdir
 
@@ -253,7 +253,7 @@ src_configure()
 	confgcc="${confgcc} --build=${CBUILD}"
 
 	# Language options for stage1/stage2.
-	if use nocxx
+	if ! use cxx
 	then
 		GCC_LANG="c"
 	else
