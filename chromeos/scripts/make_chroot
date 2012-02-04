@@ -265,12 +265,12 @@ EOF
 
    chmod a+x "$FLAGS_chroot/home/$USER/.bashrc"
    # Automatically change to scripts directory
-   echo 'cd ${CHROOT_CWD:-trunk/src/scripts}' \
+   echo 'cd ${CHROOT_CWD:-~/trunk/src/scripts}' \
        >> "$FLAGS_chroot/home/$USER/.bash_profile"
 
    # Enable bash completion for build scripts
    echo ". ~/trunk/src/scripts/bash_completion" \
-       >> "$FLAGS_chroot/home/$USER/.bash_profile"
+       >> "$FLAGS_chroot/home/$USER/.bashrc"
 
    # Warn if attempting to use source control commands inside the chroot
    for NOUSE in svn gcl gclient
