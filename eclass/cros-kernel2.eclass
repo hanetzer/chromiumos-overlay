@@ -19,6 +19,10 @@ STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 
 # Config fragments selected by USE flags
+# ...fragments will have the following variables substitutions
+# applied later (needs to be done later since these values
+# aren't reliable when used in a global context like this):
+#   %ROOT% => ${ROOT}
 
 CONFIG_FRAGMENTS=(
 	blkdevram
@@ -54,7 +58,7 @@ CONFIG_HIGHMEM64G=y
 # - VFAT FS support for EFI System Partition updates.
 initramfs_desc="initramfs"
 initramfs_config="
-CONFIG_INITRAMFS_SOURCE=${ROOT}/var/lib/misc/initramfs.cpio.gz
+CONFIG_INITRAMFS_SOURCE=\"%ROOT%/var/lib/misc/initramfs.cpio.gz\"
 CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
 CONFIG_NLS_CODEPAGE_437=y
@@ -264,7 +268,10 @@ cros-kernel2_src_configure() {
 		local msg="${fragment}_desc"
 		local config="${fragment}_config"
 		elog "   - adding ${!msg} config"
-		echo "${!config}" >> "$(get_build_cfg)"
+
+		echo "${!config}" | \
+			sed -e "s|%ROOT%|${ROOT}|g" \
+			>> "$(get_build_cfg)" || die
 	done
 
 	# Use default for any options not explitly set in splitconfig
