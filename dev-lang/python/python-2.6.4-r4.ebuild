@@ -108,6 +108,9 @@ src_prepare() {
 	# Set sys.platform to linux2, even on linux3.
 	epatch "${FILESDIR}/linux2.patch"
 
+	# Fix whichdb for the newer gdbm magic numbers.
+	epatch "${FILESDIR}/python-2.6.4-gdbm-magic-number.patch"
+
 	sed -i -e "s:@@GENTOO_LIBDIR@@:$(get_libdir):g" \
 		Lib/distutils/command/install.py \
 		Lib/distutils/sysconfig.py \
