@@ -55,8 +55,8 @@ clang_compile_requested = 0
 # If -print-cmdline is present.
 print_cmdline = 0
 
-fstack = set(['-D__KERNEL__', '-fno-stack-protector', '-fstack-protector-all',
-  '-fstack-protector', '-nodefaultlibs', '-nostdlib'])
+fstack = set(['-D__KERNEL__', '-fno-stack-protector', '-nodefaultlibs',
+              '-nostdlib'])
 fPIE = set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
   '-fno-pic', '-fno-pie', '-fpic', '-fpie', '-nopie', '-nostartfiles',
   '-nostdlib', '-pie', '-static'])
@@ -69,6 +69,7 @@ wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie'])
 myargs = sys.argv[1:]
 if fstack.intersection(myargs):
   harden_flags.remove('-fstack-protector-strong')
+  harden_flags.add('-fno-stack-protector')
 if fPIE.intersection(myargs):
   harden_flags.remove('-fPIE')
 if pie.intersection(myargs):
