@@ -1,1 +1,0 @@
-xl2tpd-1.2.3.ebuild
