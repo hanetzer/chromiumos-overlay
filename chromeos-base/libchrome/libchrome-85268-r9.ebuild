@@ -5,7 +5,7 @@ EAPI="2"
 CROS_WORKON_COMMIT="a41a2e70fea956b97e4e2327b424be0708c49420"
 CROS_WORKON_PROJECT="chromium/src/base"
 
-inherit cros-workon cros-debug toolchain-funcs
+inherit cros-workon cros-debug toolchain-funcs scons-utils
 
 DESCRIPTION="Chrome base/ library extracted for use on Chrome OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -39,7 +39,7 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	scons || die "third_party/chrome compile failed"
+	escons || die
 }
 
 # insheaders <subdir> <headers>
