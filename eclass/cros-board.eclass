@@ -34,6 +34,7 @@ ALL_BOARDS=(
     amd64-host
     arm-generic
     ironhide
+    kiev
     link
     lumpy
     lumpy64
