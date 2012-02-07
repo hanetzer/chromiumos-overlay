@@ -97,7 +97,9 @@ fi
 
 # chrome sources store directory
 if [[ -z ${ECHROME_STORE_DIR} ]] ; then
-	ECHROME_STORE_DIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/${CHROME_SRC}"
+	# Force storage to be outside of distdir, so that it's
+	# not cached across chroot recreations.
+	ECHROME_STORE_DIR="/var/cache/chromeos-chrome/${CHROME_SRC}"
 fi
 addwrite "${ECHROME_STORE_DIR}"
 
