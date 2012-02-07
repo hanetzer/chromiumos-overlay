@@ -1,7 +1,7 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="2"
+EAPI="4"
 CROS_WORKON_COMMIT="a41a2e70fea956b97e4e2327b424be0708c49420"
 CROS_WORKON_PROJECT="chromium/src/base"
 
@@ -39,7 +39,7 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	escons || die
+	escons
 }
 
 # insheaders <subdir> <headers>
@@ -48,11 +48,11 @@ src_compile() {
 insheaders() {
 	local subdir="$1/"; shift
 	insinto /usr/include/base/${subdir}
-	doins "${@/#/${subdir}}" || die
+	doins "${@/#/${subdir}}"
 }
 
 src_install() {
-	dolib.a libbase.a || die
+	dolib.a libbase.a
 
 	insheaders third_party/icu icu_utf.h
 
@@ -161,8 +161,8 @@ src_install() {
 		thread_collision_warner.h
 
 	insinto /usr/include/build
-	doins "${WORKDIR}"/build/build_config.h || die
+	doins "${WORKDIR}"/build/build_config.h
 
 	insinto /usr/$(get_libdir)/pkgconfig
-	doins "${FILESDIR}"/libchrome.pc || die
+	doins "${FILESDIR}"/libchrome.pc
 }
