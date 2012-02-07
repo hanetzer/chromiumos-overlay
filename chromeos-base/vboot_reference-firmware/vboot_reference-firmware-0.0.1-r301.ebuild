@@ -6,7 +6,7 @@ inherit cros-debug cros-workon toolchain-funcs
 DESCRIPTION="Chrome OS verified boot library (firmware build mode)"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="arm x86"
+KEYWORDS="amd64 arm x86"
 IUSE="-vb_mock_tpm"
 EAPI="2"
 CROS_WORKON_COMMIT="14d982a2beb1678ddf36e888275c665f8108480f"
