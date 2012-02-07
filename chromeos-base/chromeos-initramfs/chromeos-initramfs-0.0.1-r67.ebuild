@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9af3fe7780b03f1cb497fe990469901589e99790"
+CROS_WORKON_COMMIT="d783fa8d4cf5c600bcc07fe251aede8bb85e4267"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -43,17 +43,17 @@ build_initramfs_file() {
 
 	local subdirs="
 		bin
-		etc
 		dev
-		root
-		proc
-		sys
-		usb
-		newroot
+		etc
+		etc/screens
 		lib
-		stateful
-		tmp
 		log
+		newroot
+		proc
+		stateful
+		sys
+		tmp
+		usb
 	"
 	for dir in $subdirs; do
 		mkdir -p "${INITRAMFS_TMP_S}/$dir" || die
@@ -73,7 +73,9 @@ build_initramfs_file() {
 	cp init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 	cp *.sh "${INITRAMFS_TMP_S}/lib" || die
-	cp -r screens "${INITRAMFS_TMP_S}/etc" || die
+	cp screens/*.png "${INITRAMFS_TMP_S}/etc/screens" || die
+	${S}/make_text_images "${S}/localized_text" \
+						  "${INITRAMFS_TMP_S}/etc/screens" || die
 
 	# For busybox and sh
 	idobin /bin/busybox
