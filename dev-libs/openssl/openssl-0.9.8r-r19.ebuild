@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-0.9.8o.ebuild,v 1.6 2010/06/21 20:43:49 maekke Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="37b8c2fbc8e01f2fee53f3712a38deea74c11255"
+CROS_WORKON_COMMIT="23ca0f10bca3014d17b1444f7e22b10daf436e05"
 
 inherit eutils flag-o-matic toolchain-funcs cros-workon
 
