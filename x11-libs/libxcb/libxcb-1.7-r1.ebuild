@@ -36,7 +36,5 @@ src_prepare() {
 }
 
 src_compile() {
-	if [ -f Makefile ] || [ -f GNUmakefile ] || [ -f makefile ] ; then
-		emake XCBPROTO_XCBINCLUDEDIR="${ROOT}/usr/share/xcb" || die "emake failed"
-	fi
+	xorg-2_src_compile XCBPROTO_XCBINCLUDEDIR="${SYSROOT}/usr/share/xcb"
 }
