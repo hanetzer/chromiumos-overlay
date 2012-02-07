@@ -42,8 +42,8 @@ import sys
 
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
-harden_flags = set(['-fstack-protector-strong', '-fPIE', '-pie',
-  '-D_FORTIFY_SOURCE=2'])
+flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
+  '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
 disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang parser.
@@ -71,12 +71,12 @@ wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie', '-noccache'])
 
 myargs = sys.argv[1:]
 if fstack.intersection(myargs):
-  harden_flags.remove('-fstack-protector-strong')
-  harden_flags.add('-fno-stack-protector')
+  flags_to_add.remove('-fstack-protector-strong')
+  flags_to_add.add('-fno-stack-protector')
 if fPIE.intersection(myargs):
-  harden_flags.remove('-fPIE')
+  flags_to_add.remove('-fPIE')
 if pie.intersection(myargs):
-  harden_flags.remove('-pie')
+  flags_to_add.remove('-pie')
 if sse.intersection(myargs):
   disable_flags.remove('-mno-ssse3')
 clang_compile_requested = '-clang' in myargs
@@ -269,7 +269,7 @@ if use_ccache:
 else:
   argv0 = real_gcc
 
-execargs += [real_gcc] + list(harden_flags) + gcc_cmdline
+execargs += [real_gcc] + list(flags_to_add) + gcc_cmdline
 
 if print_cmdline:
   print '[%s] %s' % (argv0, ' '.join(execargs))
