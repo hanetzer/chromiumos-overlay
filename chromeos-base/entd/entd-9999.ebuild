@@ -22,7 +22,7 @@ RDEPEND="chromeos-base/chaps
 	 dev-libs/opencryptoki
 	 net-misc/curl"
 
-DEPEND="chromeos-base/libchrome
+DEPEND="chromeos-base/libchrome:0
 	chromeos-base/libchromeos
 	chromeos-base/libcros
 	${RDEPEND}"

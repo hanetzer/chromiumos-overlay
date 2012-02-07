@@ -22,7 +22,7 @@ RDEPEND="chromeos-base/flimflam
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
-	chromeos-base/libchrome
+	chromeos-base/libchrome:0
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	chromeos-base/update_engine

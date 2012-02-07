@@ -32,7 +32,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome
+	chromeos-base/libchrome:0
 	chromeos-base/system_api
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"

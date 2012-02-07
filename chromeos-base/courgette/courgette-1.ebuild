@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND=">=chromeos-base/libchrome-85268-r8"
+RDEPEND=">=chromeos-base/libchrome-85268-r8:0"
 DEPEND="${RDEPEND}"
 
 src_prepare() {

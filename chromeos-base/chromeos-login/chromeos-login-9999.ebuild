@@ -40,7 +40,7 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	x11-libs/gtk+"
 
 DEPEND="${RDEPEND}
-	>=chromeos-base/libchrome-85268
+	>=chromeos-base/libchrome-85268:0
 	chromeos-base/libchrome_crypto
 	chromeos-base/protofiles
 	chromeos-base/system_api

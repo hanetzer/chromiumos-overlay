@@ -28,7 +28,7 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 # deps/glbench
 RDEPEND="${RDEPEND}
   dev-cpp/gflags
-  chromeos-base/libchrome
+  chromeos-base/libchrome:0
   virtual/opengl
   opengles? ( virtual/opengles )
 "

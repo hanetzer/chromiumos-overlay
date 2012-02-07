@@ -18,7 +18,7 @@ IUSE="test"
 
 RDEPEND="
 	chromeos-base/chromeos-init
-	chromeos-base/libchrome
+	chromeos-base/libchrome:0
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/opencryptoki

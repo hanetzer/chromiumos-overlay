@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="cros_host splitdebug"
 
 DEPEND="
-	chromeos-base/libchrome
+	chromeos-base/libchrome:0
 	sys-libs/libbb"
 
 # TODO(adlr): remove coreutils dep if we move to busybox

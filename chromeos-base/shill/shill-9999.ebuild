@@ -13,7 +13,7 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="~amd64 ~arm ~x86"
 
-RDEPEND="chromeos-base/libchrome
+RDEPEND="chromeos-base/libchrome:0
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	>=chromeos-base/mobile-providers-0.0.1-r12

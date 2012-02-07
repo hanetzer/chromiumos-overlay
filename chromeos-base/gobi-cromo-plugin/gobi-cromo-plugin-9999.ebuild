@@ -17,7 +17,7 @@ IUSE="install_tests"
 
 RDEPEND="chromeos-base/cromo
 	chromeos-base/gobi-sdk
-	chromeos-base/libchrome
+	chromeos-base/libchrome:0
 	dev-cpp/glog
 	dev-libs/dbus-c++
 	chromeos-base/metrics
