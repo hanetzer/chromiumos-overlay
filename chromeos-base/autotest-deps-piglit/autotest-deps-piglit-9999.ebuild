@@ -43,3 +43,5 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 DEPEND="${RDEPEND}"
 
+# export a variable so that piglit knows where to find libglut.so
+export GLUT_LIBDIR=/usr/$(get_libdir)
