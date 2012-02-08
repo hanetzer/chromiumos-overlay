@@ -1,18 +1,18 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
-
-KEYWORDS="~amd64 ~x86 ~arm"
 
 inherit toolchain-funcs cros-debug cros-workon
 
-DESCRIPTION="File system integrity image generator for Chromium OS."
+DESCRIPTION="File system integrity image generator for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="test valgrind splitdebug"
 
 RDEPEND="test? ( chromeos-base/libchrome:0 )
@@ -25,29 +25,28 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	valgrind? ( dev-util/valgrind )"
 
-
 src_compile() {
-	tc-export CXX CC OBJCOPY STRIP AR
+	tc-export AR CC CXX OBJCOPY STRIP
 	cros-debug-add-NDEBUG
-	emake OUT=${S}/build \
+	emake \
+		OUT="${S}/build" \
 		WITH_CHROME=$(use test && echo 1 || echo 0) \
-		SPLITDEBUG=$(use splitdebug && echo 1) verity || \
-		die "failed to make verity"
+		SPLITDEBUG=0 STRIP=true \
+		verity
 }
 
 src_test() {
 	# TODO(wad) add a verbose use flag to change the MODE=
 	emake \
-		OUT=${S}/build \
+		OUT="${S}/build" \
 		VALGRIND=$(use valgrind && echo 1) \
 		MODE=opt \
 		SPLITDEBUG=0 \
 		WITH_CHROME=1 \
-		tests || die "unit tests (with ${GTEST_ARGS}) failed!"
+		tests
 }
 
 src_install() {
-	# TODO: copy splitdebug output somewhere
 	into /
-	dobin "${S}/build/verity"
+	dobin build/verity
 }
