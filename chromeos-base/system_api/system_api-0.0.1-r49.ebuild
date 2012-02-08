@@ -33,5 +33,6 @@ src_install() {
 	doins window_manager/chromeos_wm_ipc_enums.h
 
 	insinto /usr/include/chromeos/dbus
-	doins dbus/service_constants.h
+	doins dbus/*.h
+	doins dbus/*.proto
 }
