@@ -17,7 +17,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="install_tests"
 
 RDEPEND="chromeos-base/chromeos-minijail
-	chromeos-base/libchrome:0
+	chromeos-base/libchrome:0[cros-debug=]
 	>=dev-libs/glib-2.0
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++

@@ -26,7 +26,7 @@ RDEPEND="app-misc/ddccontrol
 	x11-libs/libXext"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:0
+	chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )

@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="test valgrind splitdebug"
 
-RDEPEND="test? ( chromeos-base/libchrome:0 )
+RDEPEND="test? ( chromeos-base/libchrome:0[cros-debug=] )
 	 dev-libs/openssl"
 
 # qemu use isn't reflected as it is copied into the target

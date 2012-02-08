@@ -15,7 +15,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
-DEPEND="chromeos-base/libchrome:0
+DEPEND="chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	dev-libs/dbus-glib
