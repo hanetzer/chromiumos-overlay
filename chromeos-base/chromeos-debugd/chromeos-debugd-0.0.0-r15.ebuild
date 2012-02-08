@@ -19,7 +19,10 @@ RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
         dev-libs/dbus-c++"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	net-misc/modemmanager
+	chromeos-base/shill
+	sys-apps/dbus"
 
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
