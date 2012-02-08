@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -reorder -touchui -local_gclient hardfp +runhooks +verbose"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -reorder -touchui -local_gclient hardfp +runhooks +verbose -drm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -120,7 +120,15 @@ fi
 
 # For compilation/local chrome
 BUILD_TOOL=make
-BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 swig_defines=-DOS_CHROMEOS chromeos=1 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox use_ibus=1 ${EXTRA_BUILD_ARGS}"
+COMMON_BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
+if use drm; then
+	BUILD_DEFINES="swig_defines=-DOS_LINUX"
+	BUILD_DEFINES="${BUILD_DEFINES} use_ibus=0 use_cups=0 use_gconf=0"
+	BUILD_DEFINES="${BUILD_DEFINES} use_gnome_keyring=0 use_kerberos=0"
+else
+	BUILD_DEFINES="swig_defines=-DOS_CHROMEOS chromeos=1 use_ibus=1"
+fi
+BUILD_DEFINES="${BUILD_DEFINES} ${COMMON_BUILD_DEFINES}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -226,6 +234,8 @@ set_build_defines() {
 	fi
 
 	use_nacl || BUILD_DEFINES="disable_nacl=1 $BUILD_DEFINES"
+
+	use drm && BUILD_DEFINES="use_drm=1 $BUILD_DEFINES"
 
 	# Control inclusion of optional chrome features.
 	if use chrome_remoting; then
@@ -715,10 +725,18 @@ src_compile() {
 
 	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
-	time emake -r $(use verbose && echo V=1) BUILDTYPE="${BUILDTYPE}" \
-		chrome chrome_sandbox libosmesa.so default_extensions \
-		${TEST_TARGETS} \
-		|| die "compilation failed"
+	if use drm; then
+		time emake -r $(use verbose && echo V=1) \
+			BUILDTYPE="${BUILDTYPE}" \
+			aura_demo \
+			|| die "compilation failed"
+	else
+		time emake -r $(use verbose && echo V=1) \
+			BUILDTYPE="${BUILDTYPE}" \
+			chrome chrome_sandbox libosmesa.so default_extensions \
+			${TEST_TARGETS} \
+			|| die "compilation failed"
+	fi
 
 	if use build_tests; then
 		install_chrome_test_resources "${WORKDIR}/test_src"
@@ -900,6 +918,7 @@ src_install() {
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
+	use drm && doexe "${FROM}"/aura_demo
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
