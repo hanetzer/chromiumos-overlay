@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 #
@@ -29,41 +29,41 @@
 
 BOARD_USE_PREFIX="board_use_"
 ALL_BOARDS=(
-    amd64-generic
-    amd64-corei7
-    amd64-host
-    arm-generic
-    ironhide
-    kiev
-    link
-    lumpy
-    lumpy64
-    stumpy
-    stumpy64
-    tegra2
-    tegra2_aebl
-    tegra2_arthur
-    tegra2_asymptote
-    tegra2_dev-board
-    tegra2_dev-board-opengl
-    tegra2_kaen
-    tegra2_seaboard
-    tegra2_wario
-    tegra3-generic
-    waluigi
-    x86-agz
-    x86-alex
-    x86-alex_he
-    x86-dogfood
-    x86-drm
-    x86-fruitloop
-    x86-generic
-    x86-mario
-    x86-mario64
-    x86-pineview
-    x86-wayland
-    x86-zgb
-    x86-zgb_he
+	amd64-generic
+	amd64-corei7
+	amd64-host
+	arm-generic
+	ironhide
+	kiev
+	link
+	lumpy
+	lumpy64
+	stumpy
+	stumpy64
+	tegra2
+	tegra2_aebl
+	tegra2_arthur
+	tegra2_asymptote
+	tegra2_dev-board
+	tegra2_dev-board-opengl
+	tegra2_kaen
+	tegra2_seaboard
+	tegra2_wario
+	tegra3-generic
+	waluigi
+	x86-agz
+	x86-alex
+	x86-alex_he
+	x86-dogfood
+	x86-drm
+	x86-fruitloop
+	x86-generic
+	x86-mario
+	x86-mario64
+	x86-pineview
+	x86-wayland
+	x86-zgb
+	x86-zgb_he
 )
 
 # Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create IUSE.
@@ -77,20 +77,20 @@ REQUIRED_USE="^^ ( ${IUSE} )"
 # Echo the current board, with variant.
 get_current_board_with_variant()
 {
-    local b
+	local b
 
-    for b in "${ALL_BOARDS[@]}"; do
-        if use ${BOARD_USE_PREFIX}${b}; then
-            echo ${b}
-            return
-        fi
-    done
+	for b in "${ALL_BOARDS[@]}"; do
+		if use ${BOARD_USE_PREFIX}${b}; then
+			echo ${b}
+			return
+		fi
+	done
 
-    die "Unable to determine current board (with variant)."
+	die "Unable to determine current board (with variant)."
 }
 
 # Echo the current board, without variant.
 get_current_board_no_variant()
 {
-    get_current_board_with_variant | cut -d '_' -f 1
+	get_current_board_with_variant | cut -d '_' -f 1
 }
