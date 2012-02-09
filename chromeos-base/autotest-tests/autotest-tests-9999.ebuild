@@ -223,7 +223,6 @@ IUSE_TESTS="
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
 	+tests_network_EthCapsServer
-	+tests_network_EthernetStressPlug
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_LockedSIM
 	+tests_network_ModemManagerSMS
