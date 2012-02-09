@@ -118,7 +118,15 @@ src_configure() {
 	CROS_FDT_FILE="$(get_current_u_boot_fdt)"
 	elog "Using device tree:   ${CROS_FDT_FILE}"
 
-	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CHOST}-"
+	# Firmware related binaries are compiled with 32-bit toolchain
+	# on 64-bit platforms
+	if use amd64 ; then
+		CROSS_PREFIX="i686-pc-linux-gnu-"
+	else
+		CROSS_PREFIX="${CHOST}-"
+	fi
+
+	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CROSS_PREFIX}"
 	COMMON_MAKE_FLAGS+=" O=${UB_BUILD_DIR}"
 	COMMON_MAKE_FLAGS+=" -k"
 	COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
@@ -126,7 +134,7 @@ src_configure() {
 	if [ "arm" = "${ARCH}" ]; then
 		COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
 	fi
-	if use x86 || use cros-debug; then
+	if use x86 || use amd64 || use cros-debug; then
 		COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 	fi
 	if use profiling; then
