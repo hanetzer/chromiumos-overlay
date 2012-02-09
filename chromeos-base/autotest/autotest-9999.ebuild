@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -52,8 +52,7 @@ src_install() {
 	TESTDIRS="
 		client/tests client/site_tests
 		client/config client/deps client/profilers
-		server/tests server/site_tests
-		test_suites"
+		server/tests server/site_tests"
 
 	# also pre-create the test dirs
 	for dir in ${TESTDIRS}; do
