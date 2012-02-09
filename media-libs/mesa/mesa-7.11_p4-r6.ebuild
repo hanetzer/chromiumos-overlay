@@ -138,6 +138,7 @@ src_prepare() {
 	fi
 	epatch "${FILESDIR}"/7.11-i915g-Add-missing-draw_flush-call.patch
 	epatch "${FILESDIR}"/7.11-i915g-fix-fence.patch
+	epatch "${FILESDIR}"/7.12-i965-Return-BRW_DEPTHBUFFER_D32_FLOAT-as-the-null-de.patch
 
 	eautoreconf
 }
