@@ -32,7 +32,6 @@ RDEPEND="${RDEPEND}
         app-benchmarks/punybench
 	app-crypt/nss
 	app-crypt/tpm-tools
-	x86? ( app-editors/qemacs )
 	app-editors/vim
 	app-misc/evtest
 	app-shells/bash
@@ -55,13 +54,10 @@ RDEPEND="${RDEPEND}
 	net-wireless/wireless-tools
 	sys-apps/coreutils
 	sys-apps/diffutils
-	x86? ( sys-apps/dmidecode )
 	sys-apps/findutils
 	sys-apps/i2c-tools
-	x86? ( sys-apps/iotools )
 	sys-apps/kbd
 	sys-apps/less
-	x86? ( sys-apps/pciutils )
 	sys-apps/smartmontools
 	sys-apps/usbutils
 	sys-apps/which
@@ -76,7 +72,6 @@ RDEPEND="${RDEPEND}
 	sys-process/psmisc
 	sys-process/time
 	virtual/perf
-	x86? ( x11-apps/intel-gpu-tools )
 	opengl? ( x11-apps/mesa-progs )
 	x11-apps/mtplot
 	x11-apps/xauth
@@ -95,3 +90,14 @@ RDEPEND="${RDEPEND}
 	x11-apps/xtrace
 	x11-apps/xwininfo
 	"
+
+X86_DEPEND="
+	app-editors/qemacs
+	sys-apps/dmidecode
+	sys-apps/iotools
+	sys-apps/pciutils
+	x11-apps/intel-gpu-tools
+"
+
+RDEPEND="${RDEPEND} x86? ( ${X86_DEPEND} )"
+RDEPEND="${RDEPEND} amd64? ( ${X86_DEPEND} )"
