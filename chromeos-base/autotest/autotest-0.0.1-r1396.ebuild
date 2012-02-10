@@ -1,8 +1,8 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="533fafa5afee163e280d5befcb848a3a36e21f50"
+CROS_WORKON_COMMIT="fab7f9894303a5eb16bb5fe1fa9f47266f20a9cc"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon
@@ -53,8 +53,7 @@ src_install() {
 	TESTDIRS="
 		client/tests client/site_tests
 		client/config client/deps client/profilers
-		server/tests server/site_tests
-		test_suites"
+		server/tests server/site_tests"
 
 	# also pre-create the test dirs
 	for dir in ${TESTDIRS}; do
