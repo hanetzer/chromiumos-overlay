@@ -48,6 +48,7 @@ RDEPEND="
   chromeos-base/autotest-deps-piglit
   chromeos-base/flimflam-test
   autox? ( chromeos-base/autox )
+  dev-python/numpy
   dev-python/pygobject
   dev-python/pygtk
   xset? ( x11-apps/xset )
