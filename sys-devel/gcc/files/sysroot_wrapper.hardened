@@ -42,8 +42,8 @@ import sys
 
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
-flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
-  '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
+harden_flags = set(['-fstack-protector-strong', '-fPIE', '-pie',
+  '-D_FORTIFY_SOURCE=2'])
 disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang parser.
@@ -68,12 +68,12 @@ wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie'])
 
 myargs = sys.argv[1:]
 if fstack.intersection(myargs):
-  flags_to_add.remove('-fstack-protector-strong')
-  flags_to_add.add('-fno-stack-protector')
+  harden_flags.remove('-fstack-protector-strong')
+  harden_flags.add('-fno-stack-protector')
 if fPIE.intersection(myargs):
-  flags_to_add.remove('-fPIE')
+  harden_flags.remove('-fPIE')
 if pie.intersection(myargs):
-  flags_to_add.remove('-pie')
+  harden_flags.remove('-pie')
 if sse.intersection(myargs):
   disable_flags.remove('-mno-ssse3')
 clang_compile_requested = '-clang' in myargs
@@ -198,8 +198,8 @@ if clang_compile_requested and not skip_clang:
 
 if print_cmdline:
   print '%s.real %s %s' % (sys.argv[0],
-                           ' '.join(flags_to_add),
+                           ' '.join(harden_flags),
                            ' '.join(gcc_cmdline))
 
 os.execv('%s.real' % sys.argv[0],
-         [sys.argv[0]] + list(flags_to_add) + gcc_cmdline)
+         [sys.argv[0]] + list(harden_flags) + gcc_cmdline)
