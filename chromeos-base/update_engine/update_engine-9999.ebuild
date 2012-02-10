@@ -34,6 +34,7 @@ DEPEND="dev-cpp/gmock
 	dev-cpp/gtest
 	dev-libs/dbus-glib
 	cros_host? ( dev-util/scons )
+	sys-fs/udev
 	${RDEPEND}"
 
 src_compile() {
@@ -76,6 +77,9 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
+
+	insinto /lib/udev/rules.d
+	doins 99-gpio-dutflag.rules
 
 	insinto /usr/include/chromeos/update_engine
 	doins update_engine.dbusserver.h
