@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c703ef4a5b1389e794b276446f90c4ec9a08a55a"
+CROS_WORKON_COMMIT="22c178f4d220a662a16383e6888a6953fe393266"
 CROS_WORKON_PROJECT="chromiumos/platform/assets"
 
 inherit cros-workon toolchain-funcs
