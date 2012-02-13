@@ -223,6 +223,8 @@ src_install() {
 	if use dbus ; then
 		insinto /etc/dbus-1/system.d
 		newins dbus/dbus-wpa_supplicant.conf wpa_supplicant.conf || die
+		insinto /usr/share/dbus-1/interfaces
+		doins dbus/fi.w1.wpa_supplicant1.xml || die
 		insinto /usr/share/dbus-1/system-services
 		newins dbus/fi.w1.wpa_supplicant1.service 'fi.w1.wpa_supplicant1.service' || die
 		keepdir /var/run/wpa_supplicant
