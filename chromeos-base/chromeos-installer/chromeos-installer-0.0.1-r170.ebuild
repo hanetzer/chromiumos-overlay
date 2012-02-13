@@ -1,19 +1,21 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_COMMIT="3521d702842a318275ed85964f158630837e24f2"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
+CROS_WORKON_LOCALNAME="installer"
 
 inherit cros-workon
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_host splitdebug"
+IUSE="cros_host"
 
 DEPEND="
 	chromeos-base/libchrome:0
@@ -34,24 +36,26 @@ RDEPEND="
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs"
 
-CROS_WORKON_LOCALNAME="installer"
-
 src_compile() {
-	tc-export CXX CC OBJCOPY STRIP AR
-	emake OUT=${S}/build \
-		SPLITDEBUG=$(use splitdebug && echo 1) cros_installer
+	tc-export AR CC CXX OBJCOPY
+	# Disable split debug and stripping (since portage does this).
+	emake \
+		OUT="${S}/build" \
+		SPLITDEBUG=0 STRIP=true \
+		cros_installer
 }
 
 src_install() {
+	local path
 	if ! use cros_host; then
-		exeinto /usr/sbin
-		dosym usr/sbin/chromeos-postinst /postinst
+		path="/usr/sbin"
 	else
-	# Copy chromeos-* scripts to /usr/lib/installer/ on host.
-		exeinto /usr/lib/installer
-		dosym usr/lib/installer/chromeos-postinst /postinst
+		# Copy chromeos-* scripts to /usr/lib/installer/ on host.
+		path="/usr/lib/installer"
 	fi
 
-	doexe "${S}"/chromeos-*
-	dobin "${S}/build/cros_installer"
+	exeinto ${path}
+	dosym ${path}/chromeos-postinst /postinst
+	doexe chromeos-*
+	dobin build/cros_installer
 }
