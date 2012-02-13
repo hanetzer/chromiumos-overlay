@@ -81,7 +81,7 @@ src_compile() {
 	if ! use cros-debug; then
 		secure_flags+=' --add-config-int silent_console 1'
 	fi
-	if [ use x86 || use amd64 ]; then
+	if use x86 || use amd64; then
 		common_flags+=" --coreboot \
 			${CROS_FIRMWARE_ROOT}/coreboot.rom"
 	fi
@@ -114,7 +114,7 @@ src_compile() {
 		--output legacy_image.bin ||
 	die "failed to build legacy image."
 
-	if [ use x86 || use amd64 ]; then
+	if use x86 || use amd64; then
 		if use link; then
 			dd_params='bs=2M skip=1'
 		else
@@ -150,7 +150,7 @@ src_install() {
 	doins image.bin
 	doins legacy_image.bin
 	doins ${BMPBLK_FILE}
-	if [ use x86 || use amd64 ]; then
+	if use x86 || use amd64; then
 		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
 		if [ -r ${skeleton} ]; then
 			doins image_sys.bin
