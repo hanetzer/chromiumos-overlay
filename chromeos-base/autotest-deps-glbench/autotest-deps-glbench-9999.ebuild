@@ -5,7 +5,7 @@ EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
-inherit cros-workon autotest-deponly conflict
+inherit cros-workon autotest-deponly conflict cros-debug
 
 DESCRIPTION="Autotest glbench dep"
 HOMEPAGE="http://www.chromium.org/"
@@ -35,3 +35,7 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${RDEPEND}"
 
+src_prepare() {
+	autotest-deponly_src_prepare
+	cros-debug-add-NDEBUG
+}
