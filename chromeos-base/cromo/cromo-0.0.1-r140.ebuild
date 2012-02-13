@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="753125344ffffc63930cad32b86e9f964704459e"
+CROS_WORKON_COMMIT="fd194c232f305e3da3fa81673c4f43bf6b12f9e3"
 CROS_WORKON_PROJECT="chromiumos/platform/cromo"
 CROS_WORKON_USE_VCSID="1"
 
