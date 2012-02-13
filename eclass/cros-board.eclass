@@ -67,7 +67,10 @@ ALL_BOARDS=(
 )
 
 # Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create IUSE.
-IUSE=${ALL_BOARDS[@]/#/${BOARD_USE_PREFIX}}
+# Also add cros_host so that we can inherit this eclass in ebuilds
+# that get emerged both in the cros-sdk and for target boards.
+# See REQUIRED_USE below.
+IUSE="${ALL_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host"
 
 # Require one, and only one, of the board_use flags to be set if this eclass
 # is used.  This effectively makes any ebuild that inherits this eclass require
