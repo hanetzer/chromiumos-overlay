@@ -50,6 +50,13 @@ src_test() {
 }
 
 src_install() {
+	dolib.a build/libdm-bht.a
+	insinto /usr/include/verity
+	doins dm-bht.h dm-bht-userspace.h
+	insinto /usr/include/verity
+	cd include
+	doins -r linux asm asm-generic/bitops crypto
+	cd ..
 	into /
 	dobin build/verity-static
 	dosym verity-static bin/verity
