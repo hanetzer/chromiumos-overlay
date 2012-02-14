@@ -111,8 +111,6 @@ IUSE_TESTS="
 	tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
-	+tests_desktopui_WindowManagerFocusNewWindows
-	+tests_desktopui_WindowManagerHotkeys
 	tests_example_UnitTest
 	+tests_firmware_CgptState
 	+tests_firmware_CorruptBothFwBodyAB
