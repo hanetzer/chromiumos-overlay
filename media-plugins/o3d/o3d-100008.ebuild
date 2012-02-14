@@ -62,13 +62,6 @@ src_prepare() {
 	fi
 	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
 
-	epatch "${FILESDIR}"/${P}-disable-gconf.patch
-	epatch "${FILESDIR}"/${P}-linux3.patch
-	epatch "${FILESDIR}"/${P}-glibc.patch
-	pushd breakpad
-	epatch "${FILESDIR}"/0001-Remove-curl-types.h-include-since-this-header-has-be.patch
-	popd
-
 	${EGCLIENT} runhooks || die
 }
 
