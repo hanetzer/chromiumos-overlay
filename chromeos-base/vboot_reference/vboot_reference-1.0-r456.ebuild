@@ -9,7 +9,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="minimal rbtest tpmtests"
 EAPI="2"
-CROS_WORKON_COMMIT="f5b5b4ce5f055ab92fce5c0529b9b10d7688004d"
+CROS_WORKON_COMMIT="ed5fcc0191ca1ce959b4614f3f6fa861135f506f"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="app-crypt/trousers
@@ -126,7 +126,8 @@ src_install() {
 	
 	# Install static library needed by install programs.
   einfo "Installing dump_kernel_config library"
-  dolib.a build/dump_kernel_config.a || die
+  dolib.a build/libdump_kernel_config.a || die
   insinto /usr/include/vboot/${subdir}
+  doins "utility/include/kernel_blob.h" || die
   doins "utility/include/dump_kernel_config.h" || die
 }
