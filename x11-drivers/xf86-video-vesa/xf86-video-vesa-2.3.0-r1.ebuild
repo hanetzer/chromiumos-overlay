@@ -15,5 +15,6 @@ DEPEND="${RDEPEND}
 	x11-proto/xproto"
 PATCHES=(
 	"${FILESDIR}/no-dga.patch"
+	"${FILESDIR}/2.3.0-r1-domainiobase.patch"
 )
 
