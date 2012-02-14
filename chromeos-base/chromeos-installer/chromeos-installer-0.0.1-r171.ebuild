@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="3521d702842a318275ed85964f158630837e24f2"
+CROS_WORKON_COMMIT="4268562821d08d1dfe0a907353ad574d0969bda7"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 
-inherit cros-workon
+inherit cros-workon cros-debug
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -38,6 +38,7 @@ RDEPEND="
 
 src_compile() {
 	tc-export AR CC CXX OBJCOPY
+	cros-debug-add-NDEBUG
 	# Disable split debug and stripping (since portage does this).
 	emake \
 		OUT="${S}/build" \
