@@ -214,7 +214,7 @@ eblit-src_unpack-post() {
 	cd "${S}"
 	epatch "${FILESDIR}"/2.11/0050_all_glibc-make-3.82-rules.patch
 	epatch "${FILESDIR}"/local/glibc-2.11-file-mangle.patch
-	epatch "${FILESDIR}"/2.11/glibc-2.11-frecord-gcc-switches.patch
+	epatch "${FILESDIR}"/local/glibc-2.11-vfprintf-args.patch
 
 	if use hardened ; then
 		cd "${S}"
