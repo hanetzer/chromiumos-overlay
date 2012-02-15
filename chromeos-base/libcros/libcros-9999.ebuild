@@ -1,17 +1,19 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/cros"
+CROS_WORKON_LOCALNAME="cros"
 
-inherit flag-o-matic toolchain-funcs cros-debug cros-workon
+inherit toolchain-funcs cros-debug cros-workon scons-utils
 
 DESCRIPTION="Bridge library for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
-IUSE="install_tests cmt"
+
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="~amd64 ~arm ~x86"
+IUSE="install_tests cmt"
 
 RDEPEND="chromeos-base/flimflam
 	dev-libs/dbus-glib
@@ -28,44 +30,31 @@ DEPEND="${RDEPEND}
 	chromeos-base/update_engine
 	dev-cpp/gtest"
 
-CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
-
 src_compile() {
+	tc-export AR CC CXX LD NM RANLIB PKG_CONFIG
 	cros-debug-add-NDEBUG
-	if tc-is-cross-compiler ; then
-		tc-getCC
-		tc-getCXX
-		tc-getAR
-		tc-getRANLIB
-		tc-getLD
-		tc-getNM
-		tc-getPROG PKG_CONFIG pkg-config
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
 
 	# Sanity check for load.cc. Detect missing INIT_FUNC() calls.
 	python "${FILESDIR}"/check_load_cc.py < load.cc || \
 		die "INIT_FUNC(s) are missing from load.cc."
 
-	scons -f SConstruct.chromiumos || die "cros compile failed."
+	export CCFLAGS="$CFLAGS"
+	escons -f SConstruct.chromiumos
 	# Add -fPIC when building libcrosapi.a so that it works on ARM
 	export CCFLAGS="$CCFLAGS -fPIC"
-	scons -f SConstruct.chromiumos crosapi || die "crosapi compile failed."
+	escons -f SConstruct.chromiumos crosapi
 	if use install_tests; then
-		scons -f SConstruct.chromiumos test || \
-			die "cros tests compile failed."
+		escons -f SConstruct.chromiumos test
 	fi
 }
 
 src_install() {
-	dolib.a "${S}/libcrosapi.a"
+	dolib.a libcrosapi.a
 
 	insinto /usr/include/cros
 	doins *.h
 
-	insinto /opt/google/chrome/chromeos
-	insopts -m0755
-	doins "${S}/libcros.so"
-	use install_tests && doins "${S}/monitor_sms"
+	exeinto /opt/google/chrome/chromeos
+	doexe libcros.so
+	use install_tests && doexe monitor_sms
 }
