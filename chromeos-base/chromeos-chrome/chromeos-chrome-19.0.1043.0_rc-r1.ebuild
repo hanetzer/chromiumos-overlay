@@ -168,6 +168,7 @@ RDEPEND="${RDEPEND}
 	media-libs/libpng
 	media-libs/mesa
 	net-misc/wget
+	sys-fs/udev
 	sys-libs/zlib
 	!aura? ( x86? ( !chrome_internal? ( www-plugins/adobe-flash ) ) )
 	>=x11-libs/gtk+-2.14.7
