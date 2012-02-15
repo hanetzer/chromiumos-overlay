@@ -67,11 +67,5 @@ src_install() {
 	insinto /opt/google/chrome/chromeos
 	insopts -m0755
 	doins "${S}/libcros.so"
-	if use install_tests; then
-		doins "${S}/cryptohome_drive"
-		doins "${S}/monitor_network"
-		doins "${S}/monitor_power"
-		doins "${S}/monitor_sms"
-		doins "${S}/monitor_update_engine"
-	fi
+	use install_tests && doins "${S}/monitor_sms"
 }
