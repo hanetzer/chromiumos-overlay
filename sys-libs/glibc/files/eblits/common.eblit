@@ -181,6 +181,10 @@ setup_flags() {
 	# Cant build glibc itself with fortify code
 	append-cppflags -U_FORTIFY_SOURCE
 
+	# Undefine USE_NSCD to disable of the use of nscd implementation
+	# in glibc functions (crosbug.com/21924).
+	append-cppflags -UUSE_NSCD
+
 	# building glibc with SSP is fraught with difficulty, especially
 	# due to __stack_chk_fail_local which would mean significant changes
 	# to the glibc build process. See bug #94325 #293721
