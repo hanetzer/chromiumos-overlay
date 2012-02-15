@@ -32,6 +32,8 @@ src_prepare() {
 
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 	epatch "${FILESDIR}"/gtest_include_path_fixup.patch
+
+	epatch "${FILESDIR}"/base-85268-DispatchToMethod-unused.patch
 }
 
 src_compile() {
