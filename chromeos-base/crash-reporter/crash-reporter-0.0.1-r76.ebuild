@@ -17,7 +17,7 @@ IUSE="test"
 
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).
 RDEPEND="chromeos-base/google-breakpad
-         chromeos-base/libchrome:0
+         chromeos-base/libchrome:0[cros-debug=]
          chromeos-base/libchromeos
          chromeos-base/metrics
          chromeos-base/chromeos-ca-certificates

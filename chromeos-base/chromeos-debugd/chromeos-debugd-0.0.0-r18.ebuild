@@ -16,7 +16,7 @@ KEYWORDS="amd64 arm x86"
 IUSE=""
 
 RDEPEND="chromeos-base/chromeos-minijail
-	chromeos-base/libchrome:0
+	chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
         dev-libs/dbus-c++"
 DEPEND="${RDEPEND}

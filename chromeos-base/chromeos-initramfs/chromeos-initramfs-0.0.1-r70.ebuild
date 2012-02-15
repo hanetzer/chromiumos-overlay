@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="8e478412dbd0144b2f62dd9d64496e0b11a178aa"
+CROS_WORKON_COMMIT="cd57029782bd319ba8705fbf02535514d4f6de38"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon

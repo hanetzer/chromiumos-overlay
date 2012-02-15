@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="debug"
 
-RDEPEND="chromeos-base/libchrome:0
+RDEPEND="chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-glib

@@ -16,7 +16,7 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test valgrind splitdebug"
 
-RDEPEND="test? ( chromeos-base/libchrome:0 )"
+RDEPEND="test? ( chromeos-base/libchrome:0[cros-debug=] )"
 
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.

@@ -18,7 +18,7 @@ IUSE="cros_host test"
 
 # TODO: Ideally this is only a build depend, but there is an ordering
 # issue where we need to make sure that libchrome is built first.
-RDEPEND="chromeos-base/libchrome:0
+RDEPEND="chromeos-base/libchrome:0[cros-debug=]
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/libpcre

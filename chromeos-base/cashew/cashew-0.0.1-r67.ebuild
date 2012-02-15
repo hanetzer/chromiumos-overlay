@@ -16,7 +16,7 @@ KEYWORDS="amd64 arm x86"
 IUSE="test"
 
 RDEPEND="chromeos-base/flimflam
-	chromeos-base/libchrome:0
+	chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/metrics
 	dev-cpp/gflags
 	>=dev-cpp/glog-0.3.1

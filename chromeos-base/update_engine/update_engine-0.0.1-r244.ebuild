@@ -16,7 +16,7 @@ KEYWORDS="amd64 arm x86"
 
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/libchrome:0
+	chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
