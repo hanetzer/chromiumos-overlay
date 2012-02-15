@@ -183,6 +183,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "debugd" 216      # For debugd
 	copy_or_add_daemon_user "openvpn" 217     # For openvpn
 	copy_or_add_daemon_user "bluetooth" 218   # For bluez
+	copy_or_add_daemon_user "wpa" 219         # For wpa_supplicant
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
@@ -214,4 +215,7 @@ pkg_postinst() {
 		[ -d "${ROOT}/$x" ] && continue
 		install -d --mode=0755 --owner=root --group=root "${ROOT}/$x"
 	done
+
+	# The root user must be in the wpa group for wpa_cli.
+	add_users_to_group wpa root
 }
