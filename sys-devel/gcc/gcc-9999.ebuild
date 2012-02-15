@@ -63,6 +63,16 @@ RESTRICT="mirror strip"
 IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
 			nocxx openmp tests +thumb upstream_gcc vanilla"
 
+if [[ "${PV}" == "9999" ]]
+then
+	if [[ -z $GCC_PV ]]
+	then
+		GCC_PV=4.6.0
+	fi
+else
+	GCC_PV=${PV}
+fi
+MY_P=${PN}-${GCC_PV}
 GITDIR=${WORKDIR}/gitdir
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
@@ -81,6 +91,17 @@ else
 fi
 
 PREFIX=/usr
+LIBDIR=${PREFIX}/lib/gcc/${CTARGET}/${GCC_PV}
+INCLUDEDIR=${LIBDIR}/include
+if is_crosscompile ; then
+	BINDIR=${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/${GCC_PV}
+else
+	BINDIR=${PREFIX}/${CTARGET}/gcc-bin/${GCC_PV}
+fi
+DATADIR=${PREFIX}/share/gcc-data/${CTARGET}/${GCC_PV}
+
+GCC_CONFIG_FILE=${CTARGET}-${GCC_PV}
+
 
 src_unpack() {
 
@@ -90,7 +111,7 @@ src_unpack() {
 		fi
 	elif use upstream_gcc ; then
 		GCC_MIRROR=ftp://mirrors.kernel.org/gnu/gcc
-		GCC_TARBALL=${GCC_MIRROR}/${P}/${P}.tar.bz2
+		GCC_TARBALL=${GCC_MIRROR}/${MY_P}/${MY_P}.tar.bz2
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
 	else
@@ -98,6 +119,12 @@ src_unpack() {
 		local OLD_S=${S}
 		S=${GITDIR}
 		EGIT_REPO_URI=http://git.chromium.org/chromiumos/third_party/gcc.git
+		if [[ "${PV}" == "9999" ]]; then
+			: ${GCC_GITHASH:=gcc.gnu.org/branches/google/gcc-4_6-mobile}
+		else
+			GCC_GITHASH=3e53d0e9965676b2d90e1cfd36faa4232e93edbe
+		fi
+		EGIT_COMMIT="${GCC_GITHASH}"
 		EGIT_PROJECT=${PN}-git-src
 		git_fetch
 		S=${OLD_S}
@@ -155,7 +182,7 @@ src_install()
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 
-	local LDPATH=$(get_lib_dir)
+	local LDPATH=${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)
 	for SUBDIR in 32 64 ; do
 		if [[ -d ${D}/${LDPATH}/${SUBDIR} ]]
 		then
@@ -165,13 +192,13 @@ src_install()
 
 	cat <<-EOF > env.d
 LDPATH="${LDPATH}"
-MANPATH="$(get_data_dir)/man"
-INFOPATH="$(get_data_dir)/info"
+MANPATH="${DATADIR}/man"
+INFOPATH="${DATADIR}/info"
 STDCXX_INCDIR="$(get_stdcxx_incdir)"
 CTARGET=${CTARGET}
-GCC_PATH="$(get_bin_dir)"
+GCC_PATH="${BINDIR}"
 EOF
-	newins env.d $(get_gcc_config_file)
+	newins env.d $GCC_CONFIG_FILE
 	cd -
 
 	if is_crosscompile ; then
@@ -182,13 +209,13 @@ EOF
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper
 		fi
 
-		cd ${D}$(get_bin_dir)
-		exeinto "$(get_bin_dir)"
+		cd ${D}${BINDIR}
+		exeinto "${BINDIR}"
 		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
 		for x in c++ cpp g++ gcc; do
 			if [[ -f "${CTARGET}-${x}" ]]; then
 				mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
-				dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
+				dosym "${SYSROOT_WRAPPER_FILE}" "${BINDIR}/${CTARGET}-${x}" || die
 			fi
 		done
 	fi
@@ -204,7 +231,7 @@ EOF
 
 pkg_postinst()
 {
-	gcc-config $(get_gcc_config_file)
+	gcc-config $GCC_CONFIG_FILE
 	CCACHE_BIN=$(which ccache || true)
 	if is_crosscompile && [[ -f "${CCACHE_BIN}" ]] ; then
 		mkdir -p "/usr/lib/ccache/bin"
@@ -236,15 +263,19 @@ src_configure()
 	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]] ; then
 		return
 	fi
+	SLIBDIR="${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)"
 
 	# Set configuration based on path variables
 	local confgcc="$(use_enable multilib)
 		--prefix=${PREFIX} \
-		--bindir=$(get_bin_dir) \
-		--datadir=$(get_data_dir) \
-		--mandir=$(get_data_dir)/man \
-		--infodir=$(get_data_dir)/info \
-		--includedir=$(get_lib_dir)/include \
+		--with-slibdir=${SLIBDIR} \
+		--libdir=${LIBDIR} \
+		--bindir=${BINDIR} \
+		--includedir=${INCLUDEDIR} \
+		--datadir=${DATADIR} \
+		--mandir=${DATADIR}/man \
+		--infodir=${DATADIR}/info \
+		--enable-version-specific-runtime-libs \
 		--with-gxx-include-dir=$(get_stdcxx_incdir)"
 	confgcc="${confgcc} --host=${CHOST}"
 	confgcc="${confgcc} --target=${CTARGET}"
@@ -352,9 +383,9 @@ get_gcc_dir()
 	if use mounted_gcc ; then
 		GCCDIR=${GCC_SOURCE_PATH:=/usr/local/toolchain_root/gcc}
 	elif use upstream_gcc ; then
-		GCCDIR=${P}
+		GCCDIR=${MY_P}
 	else
-		GCCDIR=${GITDIR}
+		GCCDIR=${GITDIR}/gcc/${MY_P}
 	fi
 	echo "${GCCDIR}"
 }
@@ -371,31 +402,7 @@ get_gcc_base_ver()
 
 get_stdcxx_incdir()
 {
-	echo "$(get_lib_dir)/include/g++-v4"
-}
-
-get_lib_dir()
-{
-	echo "${PREFIX}/lib/gcc/${CTARGET}/$(get_gcc_base_ver)"
-}
-
-get_bin_dir()
-{
-	if is_crosscompile ; then
-		echo ${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/$(get_gcc_base_ver)
-	else
-		echo ${PREFIX}/${CTARGET}/gcc-bin/$(get_gcc_base_ver)
-	fi
-}
-
-get_data_dir()
-{
-	echo "${PREFIX}/share/gcc-data/${CTARGET}/$(get_gcc_base_ver)"
-}
-
-get_gcc_config_file()
-{
-	echo ${CTARGET}-$(get_gcc_base_ver)
+	echo "${LIBDIR}/gcc/${CTARGET}/$(get_gcc_base_ver)/include/g++-v4"
 }
 
 # Grab a variable from the build system (taken from linux-info.eclass)
@@ -415,31 +422,8 @@ gcc_move_pretty_printers() {
 	done
 }
 
-# make sure the libtool archives have libdir set to where they actually
-# -are-, and not where they -used- to be.  also, any dependencies we have
-# on our own .la files need to be updated.
-fix_libtool_libdir_paths() {
-	pushd "${D}" >/dev/null
-
-	pushd "./${1}" >/dev/null
-	local dir="${PWD#${D%/}}"
-	local allarchives=$(echo *.la)
-	allarchives="\(${allarchives// /\\|}\)"
-	popd >/dev/null
-
-	sed -i \
-		-e "/^libdir=/s:=.*:='${dir}':" \
-		./${dir}/*.la
-	sed -i \
-		-e "/^dependency_libs=/s:/[^ ]*/${allarchives}:${LIBPATH}/\1:g" \
-		$(find ./${PREFIX}/lib* -maxdepth 3 -name '*.la') \
-		./${dir}/*.la
-
-	popd >/dev/null
-}
-
 gcc_movelibs() {
-	LIBPATH=$(get_lib_dir)	# cros to Gentoo glue
+	LIBPATH=${LIBDIR}	# cros to Gentoo glue
 
 	local multiarg removedirs=""
 	for multiarg in $($(XGCC) -print-multi-lib) ; do
@@ -448,35 +432,18 @@ gcc_movelibs() {
 
 		local OS_MULTIDIR=$($(XGCC) ${multiarg} --print-multi-os-directory)
 		local MULTIDIR=$($(XGCC) ${multiarg} --print-multi-directory)
-		local TODIR=${D}${LIBPATH}/${MULTIDIR}
-		local FROMDIR=
-
-		[[ -d ${TODIR} ]] || mkdir -p ${TODIR}
-
-		for FROMDIR in \
-			${LIBPATH}/${OS_MULTIDIR} \
-			${LIBPATH}/../${MULTIDIR} \
-			${PREFIX}/lib/${OS_MULTIDIR} \
-			${PREFIX}/${CTARGET}/lib/${OS_MULTIDIR}
-		do
-			removedirs="${removedirs} ${FROMDIR}"
-			FROMDIR=${D}${FROMDIR}
-			if [[ ${FROMDIR} != "${TODIR}" && -d ${FROMDIR} ]] ; then
-				local files=$(find "${FROMDIR}" -maxdepth 1 ! -type d 2>/dev/null)
-				if [[ -n ${files} ]] ; then
-					mv ${files} "${TODIR}"
-				fi
-			fi
-		done
-		fix_libtool_libdir_paths "${LIBPATH}/${MULTIDIR}"
+		[[ ${OS_MULTIDIR} == ${MULTIDIR} ]] && continue
+		local FROMDIR="${LIBPATH}/gcc/${CTARGET}/$($(XGCC) -dumpversion)"
+		if [[ -d ${D}/${FROMDIR}/${OS_MULTIDIR} ]] ; then
+			# if we aren't building shared libraries, then the os dir
+			# won't exist.  this comes up when bootstrapping.
+			mv "${D}/${FROMDIR}/${OS_MULTIDIR}"/* "${D}/${FROMDIR}/${MULTIDIR}/" || die
+		fi
 	done
 
 	# We remove directories separately to avoid this case:
 	#	mv SRC/lib/../lib/*.o DEST
 	#	rmdir SRC/lib/../lib/
 	#	mv SRC/lib/../lib32/*.o DEST  # Bork
-	for FROMDIR in ${removedirs} ; do
-		rmdir "${D}"${FROMDIR} >& /dev/null
-	done
-	find "${D}" -type d | xargs rmdir >& /dev/null
+	find "${D}" -type d -depth -delete 2>/dev/null
 }
