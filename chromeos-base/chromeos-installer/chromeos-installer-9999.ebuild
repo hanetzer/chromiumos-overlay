@@ -48,13 +48,13 @@ src_compile() {
 src_install() {
 	local path
 	if ! use cros_host; then
-		path="/usr/sbin"
+		path="usr/sbin"
 	else
 		# Copy chromeos-* scripts to /usr/lib/installer/ on host.
-		path="/usr/lib/installer"
+		path="usr/lib/installer"
 	fi
 
-	exeinto ${path}
+	exeinto /${path}
 	dosym ${path}/chromeos-postinst /postinst
 	doexe chromeos-*
 	dobin build/cros_installer
