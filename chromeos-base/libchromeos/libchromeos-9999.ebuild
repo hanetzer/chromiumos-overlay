@@ -1,10 +1,11 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
+CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 
-inherit toolchain-funcs cros-debug cros-workon
+inherit toolchain-funcs cros-debug cros-workon scons-utils
 
 DESCRIPTION="Chrome OS base library."
 HOMEPAGE="http://www.chromium.org/"
@@ -12,7 +13,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE="cros_host test"
 
 # TODO: Ideally this is only a build depend, but there is an ordering
@@ -29,22 +30,19 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	cros_host? ( dev-util/scons )"
 
-CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
-
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	scons libchromeos.a || die "libchromeos.a compile failed."
-	scons libpolicy.a libpolicy.so || die "libpolicy compile failed."
+	escons libchromeos.a libpolicy.a libpolicy.so
 }
 
 src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	scons unittests || die
-	scons libpolicy_unittest || die
+	escons unittests
+	escons libpolicy_unittest
 	if ! use x86; then
 		echo Skipping unit tests on non-x86 platform
 	else
@@ -54,21 +52,21 @@ src_test() {
 }
 
 src_install() {
-	dolib.a lib{chromeos,policy}.a || die
-	dolib.so libpolicy.so || die
+	dolib.a lib{chromeos,policy}.a
+	dolib.so libpolicy.so
 
 	insinto /usr/include/chromeos
-	doins chromeos/*.h || die
+	doins chromeos/*.h
 
 	insinto /usr/include/chromeos/dbus
-	doins chromeos/dbus/*.h || die
+	doins chromeos/dbus/*.h
 
 	insinto /usr/include/chromeos/glib
-	doins chromeos/glib/*.h || die
+	doins chromeos/glib/*.h
 
 	insinto /usr/include/policy
-	doins chromeos/policy/*.h || die
+	doins chromeos/policy/*.h
 
 	insinto /usr/$(get_libdir)/pkgconfig
-	doins *.pc || die
+	doins *.pc
 }
