@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth +localssh X bootchart touchui opengles internal"
+IUSE="aura bluetooth +localssh X bootchart touchui opengles internal"
 
 
 ################################################################################
@@ -162,7 +162,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-mozc-chewing
 	app-i18n/ibus-mozc-hangul
 	app-i18n/ibus-pinyin
-	app-i18n/ibus-xkb-layouts
+	!aura? ( app-i18n/ibus-xkb-layouts )
 	touchui? ( app-i18n/ibus-zinnia )
 	app-laptop/laptop-mode-tools
 	app-shells/dash
