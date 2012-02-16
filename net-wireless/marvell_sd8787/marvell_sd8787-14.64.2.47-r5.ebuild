@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="b63dc7deb90befeb43f82641d8b8be9ad51c7e25"
+CROS_WORKON_COMMIT="2acfedb5f0e9569b8ae1382bf4e65eb3aa5ec977"
 CROS_WORKON_PROJECT="chromiumos/third_party/marvell"
 
 inherit eutils cros-workon
