@@ -33,7 +33,7 @@ src_compile() {
 		OUT="${S}/build" \
 		WITH_CHROME=$(use test && echo 1 || echo 0) \
 		SPLITDEBUG=0 STRIP=true \
-		verity
+		all
 }
 
 src_test() {
@@ -49,5 +49,5 @@ src_test() {
 
 src_install() {
 	into /
-	dobin build/verity
+	dobin build/verity{,-static}
 }
