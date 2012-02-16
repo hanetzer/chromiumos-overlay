@@ -1,8 +1,8 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # Based on gentoo's modemmanager ebuild
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager"
 
 inherit eutils autotools cros-workon
@@ -17,7 +17,7 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="doc"
 
 RDEPEND=">=dev-libs/glib-2.16
         >=sys-apps/dbus-1.2
@@ -30,15 +30,22 @@ DEPEND=">=sys-fs/udev-145[gudev]
         dev-util/intltool
         "
 
-src_configure() {
-	eautoreconf || die "autoreconf failed"
+DOCS="AUTHORS ChangeLog NEWS README"
+
+src_prepare() {
+	eautoreconf
 	intltoolize --force
-	econf || die "econf failed"
+}
+
+src_configure() {
+	econf $(use_with doc docs)
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "emake install failed"
-	dodoc AUTHORS ChangeLog NEWS README
+	default
+	use doc && dohtml docs/spec.html
+	# Remove useless .la files
+	find "${D}" -name '*.la' -delete
 	insinto /etc/init
 	doins "${FILESDIR}/modemmanager.conf"
 }
