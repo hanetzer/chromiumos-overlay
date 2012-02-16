@@ -1,0 +1,16 @@
+--- ./glibc-2.11.1/csu/Makefile	2012-02-15 19:52:31.597382895 -0800
++++ ./glibc-2.11.1/csu/Makefile	2012-02-15 19:53:24.557242505 -0800
+@@ -105,11 +105,13 @@
+ # shared libraries are build using the PIC version.
+ $(objpfx)crti.S: $(objpfx)initfini.s
+ 	sed -n -e '1,/@HEADER_ENDS/p' \
++	       -e '/.text/p' \
+ 	       -e '/@_.*_PROLOG_BEGINS/,/@_.*_PROLOG_ENDS/p' \
+ 	       -e '/@TRAILER_BEGINS/,$$p' $< > $@
+ 
+ $(objpfx)crtn.S: $(objpfx)initfini.s
+ 	sed -n -e '1,/@HEADER_ENDS/p' \
++	       -e '/.text/p' \
+ 	       -e '/@_.*_EPILOG_BEGINS/,/@_.*_EPILOG_ENDS/p' \
+ 	       -e '/@TRAILER_BEGINS/,$$p' $< > $@
+ 
