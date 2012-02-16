@@ -13,12 +13,9 @@ CROS_WORKON_COMMIT="2ddd5f64515b4be9847a16de793c59b161221e1b"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 DEPEND="app-crypt/trousers
-	chromeos-base/libchrome
-	dev-cpp/gflags
-	dev-cpp/gtest
-	!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
-	sys-apps/util-linux"
+	sys-apps/util-linux
+        !minimal? ( dev-libs/libyaml )"
 
 src_compile() {
 	tc-export CC AR CXX
