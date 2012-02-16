@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit autotest binutils-funcs eutils flag-o-matic git multilib toolchain-funcs
+inherit autotest-deponly binutils-funcs eutils flag-o-matic git multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -178,27 +178,16 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${DEPEND}
 	${RDEPEND}
-	build_tests? ( chromeos-base/flimflam-test )
-	build_tests? ( dev-lang/python )
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23"
 
 PATCHES=()
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
-AUTOTEST_CLIENT_SITE_TESTS="${AUTOTEST_COMMON}/client/site_tests"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
 AUTOTEST_DEPS_LIST="chrome_test pyauto_dep"
 
-IUSE_TESTS="
-	+tests_desktopui_BrowserTest
-	+tests_desktopui_PyAutoFunctionalTests
-	+tests_desktopui_PyAutoPerfTests
-	+tests_desktopui_SyncIntegrationTests
-	+tests_desktopui_OMXTest
-	+tests_desktopui_UITest
-	"
-IUSE="${IUSE} +autotest ${IUSE_TESTS}"
+IUSE="${IUSE} +autotest"
 
 export CHROMIUM_HOME=/usr/$(get_libdir)/chromium-browser
 
@@ -754,7 +743,7 @@ src_compile() {
 
 		# HACK: It would make more sense to call autotest_src_prepare in
 		# src_prepare, but we need to call install_chrome_test_resources first.
-		autotest_src_prepare
+		autotest-deponly_src_prepare
 
 		# Remove .svn dirs
 		esvn_clean "${AUTOTEST_WORKDIR}"
@@ -983,7 +972,7 @@ src_install() {
 	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]]); then
-		autotest_src_install
+		autotest-deponly_src_install
 	fi
 
 	# Fix some perms

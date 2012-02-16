@@ -14,6 +14,7 @@ IUSE=""
 RDEPEND="
 	chromeos-base/autotest-tests
 	chromeos-base/autotest-tests-ownershipapi
+	chromeos-base/autotest-chrome
 	chromeos-base/autotest-factory
 	chromeos-base/autotest-private
 "
