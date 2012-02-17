@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="43bd0ad9e1335ea5b4d2469fe52fb95dd02559d1"
+CROS_WORKON_COMMIT="88d0e9fb2ebbbc7ba8e2026fa3b7e40c311f31b8"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 

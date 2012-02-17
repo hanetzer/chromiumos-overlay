@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b042ce5993afa7c0099fb7ab6523e0a253b39a15"
+CROS_WORKON_COMMIT="00f70966b6f52138e83743b893ae26a8444a0151"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -17,6 +17,7 @@ SLOT="0"
 
 # Boards whose USE flags we write for session_manager_setup.sh.
 BOARDS=(
+	ironhide
 	x86-alex
 	x86-alex_he
 	x86-mario
