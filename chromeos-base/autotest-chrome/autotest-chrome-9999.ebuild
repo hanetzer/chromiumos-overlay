@@ -19,6 +19,7 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
 	>chromeos-base/chromeos-chrome-19.0.1044.0_rc-r1
 	!<=chromeos-base/chromeos-chrome-19.0.1044.0_rc-r1
+	chromeos-base/flimflam-test
 "
 
 DEPEND="${RDEPEND}"
