@@ -28,6 +28,11 @@ PORTDIR_OVERLAY="/usr/local/portage/stable"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} ${BOARD_OVERLAY}"
 
+# Adding packages to the @world set causes people more trouble than it's
+# worth in our setup -- we rarely have people add custom packages outside
+# of the ChromiumOS set.  You can use "--select" to override this.
+EMERGE_DEFAULT_OPTS="--oneshot"
+
 # Use parallel bzip2 for portage if available
 PORTAGE_BZIP2_COMMAND="pbzip2"
 PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"

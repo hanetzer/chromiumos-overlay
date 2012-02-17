@@ -14,6 +14,11 @@ DISTDIR="/var/lib/portage/distfiles"
 PORTDIR_OVERLAY="/usr/local/portage/crossdev /usr/local/portage/stable"
 PORTDIR_OVERLAY="${PORTDIR_OVERLAY} /usr/local/portage/chromiumos"
 
+# Adding packages to the @world set causes people more trouble than it's
+# worth in our setup -- we rarely have people add custom packages outside
+# of the ChromiumOS set.  You can use "--select" to override this.
+EMERGE_DEFAULT_OPTS="--oneshot"
+
 PORTAGE_BZIP2_COMMAND="bzip2"
 PORTAGE_BUNZIP2_COMMAND="bunzip2"
 
