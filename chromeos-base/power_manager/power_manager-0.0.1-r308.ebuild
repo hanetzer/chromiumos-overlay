@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="efb5a8bfa22772aa192a2fe3311bd5a10defbcd6"
+CROS_WORKON_COMMIT="0318da599a0f719caf5ec3dc739d25a5a1d4e8a5"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 

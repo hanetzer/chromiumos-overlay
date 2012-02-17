@@ -12,17 +12,22 @@ EAPI="2"
 CROS_WORKON_COMMIT="2ddd5f64515b4be9847a16de793c59b161221e1b"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
-DEPEND="app-crypt/trousers
+RDEPEND="app-crypt/trousers
+	chromeos-base/libchrome
+	!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
-	sys-apps/util-linux
-        !minimal? ( dev-libs/libyaml )"
+	sys-apps/util-linux"
+
+DEPEND="$RDEPEND
+	dev-cpp/gflags
+	dev-cpp/gtest"
 
 src_compile() {
 	tc-export CC AR CXX
 	local err_msg="${PN} compile failed. "
 	err_msg+="Try running 'make clean' in the package root directory"
-        # Vboot reference knows the flags to use
-        unset CFLAGS
+	# Vboot reference knows the flags to use
+	unset CFLAGS
 	emake ARCH=$(tc-arch) MINIMAL=$(usev minimal) || die "${err_msg}"
 	if use rbtest; then
 		emake ARCH=$(tc-arch) rbtest || die "${err_msg}"
