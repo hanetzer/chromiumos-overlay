@@ -78,7 +78,7 @@ src_compile() {
 		seabios_flags+=" --seabios=${CROS_FIRMWARE_ROOT}/bios.bin.elf"
 	fi
 
-	if ! use cros-debug; then
+	if ! use x86 && ! use amd64 && ! use cros-debug; then
 		secure_flags+=' --add-config-int silent_console 1'
 	fi
 	if use x86 || use amd64; then
