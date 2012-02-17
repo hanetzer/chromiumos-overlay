@@ -1,12 +1,11 @@
 --- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/hdparm
 +++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/hdparm.new
-@@ -17,6 +17,12 @@
+@@ -17,6 +17,11 @@
  	local MEDIA=
  	local BUS=
  
 +	# Make sure the drive exists before checking anything.
 +	if [ ! -e $1 ]; then
-+		log "VERBOSE" "Device $1 doesn't exist, not checking."
 +		return 1
 +	fi
 +
