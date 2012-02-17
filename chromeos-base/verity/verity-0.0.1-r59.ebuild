@@ -49,5 +49,6 @@ src_test() {
 
 src_install() {
 	into /
-	dobin build/verity{,-static}
+	dobin build/verity-static
+	dosym verity-static bin/verity
 }
