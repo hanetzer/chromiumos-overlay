@@ -16,6 +16,7 @@ SLOT="0"
 
 # Boards whose USE flags we write for session_manager_setup.sh.
 BOARDS=(
+	ironhide
 	x86-alex
 	x86-alex_he
 	x86-mario
