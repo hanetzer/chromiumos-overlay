@@ -18,6 +18,7 @@ IUSE="cros_host"
 
 DEPEND="
 	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/vboot_reference
 	sys-libs/libbb"
 
 # TODO(adlr): remove coreutils dep if we move to busybox

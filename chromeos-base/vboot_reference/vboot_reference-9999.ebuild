@@ -27,7 +27,8 @@ src_compile() {
 	err_msg+="Try running 'make clean' in the package root directory"
 	# Vboot reference knows the flags to use
 	unset CFLAGS
-	emake ARCH=$(tc-arch) MINIMAL=$(usev minimal) || die "${err_msg}"
+	emake ARCH=$(tc-arch) MINIMAL=$(usev minimal) \
+		all libcgpt_cc || die "${err_msg}"
 	if use rbtest; then
 		emake ARCH=$(tc-arch) rbtest || die "${err_msg}"
 	fi
@@ -127,11 +128,22 @@ src_install() {
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
 	doins tests/devkeys/*
-	
+
 	# Install static library needed by install programs.
-  einfo "Installing dump_kernel_config library"
-  dolib.a build/libdump_kernel_config.a || die
-  insinto /usr/include/vboot/${subdir}
-  doins "utility/include/kernel_blob.h" || die
-  doins "utility/include/dump_kernel_config.h" || die
+	einfo "Installing dump_kernel_config library"
+	dolib.a build/libdump_kernel_config.a || die
+
+	einfo "Installing C++ version of cgpt static library:libcgpt-cc.a"
+	dolib.a build/cgpt/libcgpt-cc.a || die
+
+	einfo "Installing vboot firmware:vboot_host.a"
+	dolib.a build/vboot_host.a || die
+
+	einfo "Copying required headers"
+	insinto /usr/include/vboot/${subdir}
+	doins "utility/include/kernel_blob.h" || die
+	doins "utility/include/dump_kernel_config.h" || die
+	doins "cgpt/CgptManager.h" || die
+	doins "firmware/lib/cgptlib/include/gpt.h" || die
+	doins "firmware/include/sysincludes.h" || die
 }
