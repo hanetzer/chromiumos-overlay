@@ -47,6 +47,7 @@ RDEPEND="
   chromeos-base/autotest-deps-glbench
   chromeos-base/autotest-deps-piglit
   chromeos-base/flimflam-test
+  chromeos-base/chromeos-chrome
   autox? ( chromeos-base/autox )
   dev-python/numpy
   dev-python/pygobject

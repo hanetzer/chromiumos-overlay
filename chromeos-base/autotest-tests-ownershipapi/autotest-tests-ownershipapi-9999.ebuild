@@ -21,6 +21,7 @@ IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-test
+	chromeos-base/chromeos-chrome
 	chromeos-base/protofiles
 	dev-libs/protobuf
 	dev-python/pygobject
