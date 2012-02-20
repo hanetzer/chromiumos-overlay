@@ -1,8 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Chrome OS EC Utility (Null)
-EAPI=2
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=amd64 arm x86
-LICENSE=BSD
-SLOT=0
-_md5_=1172e3dc07eaa0af015eac13492f94f9
