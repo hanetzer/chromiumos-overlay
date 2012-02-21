@@ -1,18 +1,19 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
 
-inherit cros-debug cros-workon flag-o-matic
+inherit cros-debug cros-workon
 
 DESCRIPTION="Chrome OS Metrics Collection Utilities"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
-IUSE="debug"
+KEYWORDS="~amd64 ~arm ~x86"
+IUSE=""
 
 RDEPEND="chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
@@ -22,23 +23,21 @@ RDEPEND="chromeos-base/libchrome:0[cros-debug=]
 	sys-apps/dbus
 	sys-apps/rootdev
 	"
-
 DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	dev-cpp/gtest
 	"
 
 src_compile() {
-	use debug || append-flags -DNDEBUG
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake || die "metrics compile failed."
+	emake
 }
 
 src_test() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake tests || die "could not build tests"
+	emake tests
 	if ! use x86; then
 		echo Skipping unit tests on non-x86 platform
 	else
@@ -52,16 +51,11 @@ src_test() {
 }
 
 src_install() {
-	dobin metrics_client || die
-	dobin metrics_daemon || die
-	dobin syslog_parser.sh || die
-	dolib.a libmetrics.a || die
-	dolib.so libmetrics.so || die
+	dobin metrics_{client,daemon} syslog_parser.sh
+
+	dolib.a libmetrics.a
+	dolib.so libmetrics.so
 
 	insinto /usr/include/metrics
-	doins c_metrics_library.h || die
-	doins metrics_library.h || die
-	doins metrics_library_mock.h || die
-	doins timer.h || die
-	doins timer_mock.h || die
+	doins c_metrics_library.h metrics_library{,_mock}.h timer{,_mock}.h
 }
