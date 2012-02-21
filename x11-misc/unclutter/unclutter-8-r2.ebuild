@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-misc/unclutter/unclutter-8-r1.ebuild,v 1.9 2007/07/22 03:41:55 dberkholz Exp $
 
-inherit toolchain-funcs
+inherit eutils toolchain-funcs
 
 S="${WORKDIR}/${PN}"
 DESCRIPTION="Hides mouse pointer while not in use."
@@ -17,6 +17,8 @@ DEPEND="${RDEPEND}
 	x11-proto/xproto"
 
 src_compile() {
+	# src_prepare fails in this ebuild, so patch here
+	epatch "${FILESDIR}/${P}-keypress.patch"
 	# This xmkmf appears unnecessary
 	# xmkmf -a || die "Couldn't run xmkmf"
 	emake -j1 CDEBUGFLAGS="${CFLAGS}" CC="$(tc-getCC)" || die
