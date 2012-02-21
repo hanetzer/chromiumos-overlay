@@ -20,6 +20,7 @@ src_compile() {
 	# src_prepare fails in this ebuild, so patch here
 	epatch "${FILESDIR}/${P}-keypress.patch"
 	epatch "${FILESDIR}/${P}-listen-to-all-windows.patch"
+	epatch "${FILESDIR}/${P}-ignore-some-keys.patch"
 	# This xmkmf appears unnecessary
 	# xmkmf -a || die "Couldn't run xmkmf"
 	emake -j1 CDEBUGFLAGS="${CFLAGS}" CC="$(tc-getCC)" || die
