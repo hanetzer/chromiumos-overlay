@@ -53,7 +53,6 @@ src_test() {
 src_install() {
 	dobin metrics_{client,daemon} syslog_parser.sh
 
-	dolib.a libmetrics.a
 	dolib.so libmetrics.so
 
 	insinto /usr/include/metrics
