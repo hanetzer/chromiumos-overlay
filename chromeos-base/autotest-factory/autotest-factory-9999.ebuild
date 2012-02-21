@@ -49,6 +49,7 @@ IUSE_TESTS="
 	+tests_factory_ExternalStorage
 	+tests_factory_Fail
 	+tests_factory_Finalize
+	+tests_factory_HWID
 	+tests_factory_Keyboard
 	+tests_factory_Leds
 	+tests_factory_LidSwitch
@@ -63,6 +64,7 @@ IUSE_TESTS="
 	+tests_factory_ShowTestResults
 	+tests_factory_Start
 	+tests_factory_Touchpad
+	+tests_factory_VPD
 	+tests_factory_WriteGBB
 	+tests_suite_Factory
 "
