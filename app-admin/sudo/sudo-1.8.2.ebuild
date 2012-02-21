@@ -29,7 +29,7 @@ LICENSE="as-is BSD"
 
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="pam offensive ldap selinux skey"
+IUSE="pam offensive ldap selinux skey nls"
 
 DEPEND="pam? ( virtual/pam )
 	skey? ( >=sys-auth/skey-1.1.5-r1 )
@@ -118,6 +118,7 @@ src_configure() {
 	# enable it.. — Diego
 	econf \
 		--enable-zlib=system \
+		$(use_enable nls) \
 		--with-secure-path="${ROOTPATH}" \
 		--with-editor=/usr/libexec/editor \
 		--with-env-editor \
