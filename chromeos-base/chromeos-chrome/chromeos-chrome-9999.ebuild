@@ -719,8 +719,6 @@ src_compile() {
 	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 
-	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
-
 	if use pgo; then
 		local PROFILE_DIR
 		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
