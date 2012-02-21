@@ -10,6 +10,8 @@
 CBUILD=x86_64-pc-linux-gnu
 HOSTCC=x86_64-pc-linux-gnu-gcc
 
+LDFLAGS="-Wl,-O2 -Wl,--as-needed"
+
 ACCEPT_KEYWORDS="${ARCH}"
 USE="${ARCH} zlib bindist make-symlinks cros-debug -introspection cmt"
 
