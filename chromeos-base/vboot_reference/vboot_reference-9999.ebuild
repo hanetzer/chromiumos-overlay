@@ -1,13 +1,13 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-inherit cros-workon
+inherit cros-workon cros-au
 
 DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="minimal rbtest tpmtests"
+IUSE="32bit_au minimal rbtest tpmtests"
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
@@ -22,16 +22,41 @@ DEPEND="$RDEPEND
 	dev-cpp/gflags
 	dev-cpp/gtest"
 
-src_compile() {
+_src_compile_main() {
+	mkdir "${S}"/build-main
 	tc-export CC AR CXX
-	local err_msg="${PN} compile failed. "
-	err_msg+="Try running 'make clean' in the package root directory"
 	# Vboot reference knows the flags to use
 	unset CFLAGS
-	emake ARCH=$(tc-arch) MINIMAL=$(usev minimal) || die "${err_msg}"
-	if use rbtest; then
-		emake ARCH=$(tc-arch) rbtest || die "${err_msg}"
+	emake BUILD="${S}"/build-main \
+	      ARCH=$(tc-arch) \
+	      MINIMAL=$(usev minimal) all \
+	      $(usev rbtest rbtest "") || die
+	unset CC AR CXX
+}
+
+_src_compile_au() {
+	mkdir "${S}"/build-au
+	if use 32bit_au ; then
+		AU_TARGETS="libcgpt_cc libdump_kernel_config"
+		einfo "Building 32-bit AU_TARGETS: ${AU_TARGETS}"
+		board_setup_32bit_au_env
+	else
+		AU_TARGETS="libcgpt_cc libdump_kernel_config cgptmanager_tests"
+		einfo "Building native AU_TARGETS: ${AU_TARGETS}"
 	fi
+	tc-export CC AR CXX
+	emake BUILD="${S}"/build-au/ \
+	      CC="${CC}" \
+	      CXX="${CXX}" \
+	      ARCH=$(tc-arch) MINIMAL=$(usev minimal) \
+	      ${AU_TARGETS} \
+	      || die
+	use 32bit_au && board_teardown_32bit_au_env
+}
+
+src_compile() {
+	_src_compile_main
+	_src_compile_au
 }
 
 src_install() {
@@ -39,7 +64,7 @@ src_install() {
 
 	if use minimal ; then
 		# Installing on the target. Cherry pick programs generated
-		# by src_compile in the source tree build/ subdirectory
+		# by src_compile in the source tree build-main/ subdirectory
 		einfo "Installing target programs"
 		local progs='utility/dump_kernel_config'
 		progs+=' utility/crossystem'
@@ -58,7 +83,7 @@ src_install() {
 
 		into /usr
 		for prog in ${progs}; do
-			dobin "${S}"/build/"${prog}"
+			dobin "${S}"/build-main/"${prog}"
 		done
 
                 einfo "Installing TPM tools"
@@ -95,8 +120,9 @@ src_install() {
 
 	else
 		# Installing on host.
-		emake DESTDIR="${D}/usr/bin" install || \
-			die "${PN} install failed."
+		emake BUILD="${S}"/build-main \
+		      DESTDIR="${D}/usr/bin" install || \
+		      die "${PN} install failed."
 
 		# Install bitmap-generating scripts to /usr/share/vboot/bitmaps
 		einfo "Installing bitmap-generating scripts"
@@ -111,14 +137,14 @@ src_install() {
 
 	fi
 	if use rbtest; then
-		emake DESTDIR="${D}/usr/bin" BUILD="${S}"/build -C tests \
+		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" -C tests \
 		      install-rbtest || die "${PN} install failed."
 	fi
 	if use tpmtests; then
 		into /usr
 		# copy files starting with tpmtest, but skip .d files.
-		dobin "${S}"/build/tests/tpm_lite/tpmtest*[^.]?
-		dobin "${S}"/build/utility/tpm_set_readsrkpub
+		dobin "${S}"/build-main/tests/tpm_lite/tpmtest*[^.]?
+		dobin "${S}"/build-main/utility/tpm_set_readsrkpub
 	fi
 
 	# Install devkeys to /usr/share/vboot/devkeys
@@ -137,10 +163,22 @@ src_install() {
 	insinto "${dst_dir}"
 	doins -r firmware/include/*
 
-	# Install static library needed by install programs.
-	einfo "Installing dump_kernel_config library"
-	dolib.a build/libdump_kernel_config.a || die
 	insinto /usr/include/vboot/${subdir}
 	doins "utility/include/kernel_blob.h" || die
 	doins "utility/include/dump_kernel_config.h" || die
+	doins "cgpt/CgptManager.h" || die
+	doins "firmware/lib/cgptlib/include/gpt.h" || die
+
+	# Install static library needed by install programs.
+	# we need board_setup_32bit_au_env again so dolib.a installs to the
+	# correct location
+	use 32bit_au && board_setup_32bit_au_env
+
+	einfo "Installing dump_kernel_config library"
+	dolib.a build-au/libdump_kernel_config.a || die
+
+	einfo "Installing C++ version of cgpt static library:libcgpt-cc.a"
+	dolib.a build-au/cgpt/libcgpt-cc.a || die
+
+	use 32bit_au && board_teardown_32bit_au_env
 }
