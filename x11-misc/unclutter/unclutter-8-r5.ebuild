@@ -30,4 +30,6 @@ src_install () {
 	dobin unclutter
 	newman unclutter.man unclutter.1x
 	dodoc README
+	insinto /etc/init
+	doins "${FILESDIR}/unclutter.conf"
 }
