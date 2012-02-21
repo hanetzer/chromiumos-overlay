@@ -67,7 +67,7 @@ src_install() {
 	fi
 
 	insinto "${dest}"
-	doins -r "${src}"/lib
+	doins -r "${src}"/lib "${src}"/shopfloor
 	exeinto "${dest}"
 	doexe "${src}"/*.{py,sh}
 	exeinto "${dest}"/bin
