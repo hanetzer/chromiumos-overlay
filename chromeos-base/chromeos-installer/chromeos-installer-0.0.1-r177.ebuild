@@ -6,7 +6,7 @@ CROS_WORKON_COMMIT="30a0529a9d57747c0495221180869f73846e7030"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 
-inherit cros-workon cros-debug
+inherit cros-workon cros-debug cros-au
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_host"
+IUSE="32bit_au cros_host"
 
 DEPEND="
 	chromeos-base/libchrome:0[cros-debug=]
@@ -37,6 +37,8 @@ RDEPEND="
 	sys-fs/e2fsprogs"
 
 src_compile() {
+	use 32bit_au && board_setup_32bit_au_env
+
 	tc-export AR CC CXX OBJCOPY
 	cros-debug-add-NDEBUG
 	# Disable split debug and stripping (since portage does this).
