@@ -17,6 +17,7 @@ SLOT="0"
 IUSE="splitdebug test"
 
 RDEPEND="
+	app-arch/unrar
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	chromeos-base/metrics
