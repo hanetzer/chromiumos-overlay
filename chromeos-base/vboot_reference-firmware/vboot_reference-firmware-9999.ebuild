@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -51,14 +51,6 @@ src_compile() {
 }
 
 src_install() {
-	einfo "Installing header files and libraries"
-
-	# Install firmware/include to /build/${BOARD}/usr/include/vboot
-	local dst_dir='/usr/include/vboot'
-	dodir "${dst_dir}"
-	insinto "${dst_dir}"
-	doins -r firmware/include/*
-
 	# Install vboot_fw.a to /build/${BOARD}/usr/lib
 	insinto /usr/lib
 	doins "${S}"/build/vboot_fw.a

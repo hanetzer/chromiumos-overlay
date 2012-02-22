@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 inherit cros-workon
@@ -15,7 +15,8 @@ RDEPEND="app-crypt/trousers
 	chromeos-base/libchrome
 	!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
-	sys-apps/util-linux"
+	sys-apps/util-linux
+	!<=chromeos-base/vboot_reference-firmware-0.0.1-r307"
 
 DEPEND="$RDEPEND
 	dev-cpp/gflags
@@ -127,11 +128,19 @@ src_install() {
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
 	doins tests/devkeys/*
-	
+
+	einfo "Installing header files and libraries"
+
+	# Install firmware/include to /build/${BOARD}/usr/include/vboot
+	local dst_dir='/usr/include/vboot'
+	dodir "${dst_dir}"
+	insinto "${dst_dir}"
+	doins -r firmware/include/*
+
 	# Install static library needed by install programs.
-  einfo "Installing dump_kernel_config library"
-  dolib.a build/libdump_kernel_config.a || die
-  insinto /usr/include/vboot/${subdir}
-  doins "utility/include/kernel_blob.h" || die
-  doins "utility/include/dump_kernel_config.h" || die
+	einfo "Installing dump_kernel_config library"
+	dolib.a build/libdump_kernel_config.a || die
+	insinto /usr/include/vboot/${subdir}
+	doins "utility/include/kernel_blob.h" || die
+	doins "utility/include/dump_kernel_config.h" || die
 }
