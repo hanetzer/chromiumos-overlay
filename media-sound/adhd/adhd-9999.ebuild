@@ -17,6 +17,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND=">=media-libs/alsa-lib-1.0.24.1
+	media-libs/speex
 	>=sys-apps/dbus-1.4.12
 	dev-libs/libpthread-stubs
 	sys-fs/udev"
