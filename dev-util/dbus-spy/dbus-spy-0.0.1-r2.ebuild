@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="2b59088354ebe387136c2f3ec9f7e92059ad197d"
+CROS_WORKON_COMMIT="07a57c17322bb3b5c571458107165e51b7557050"
 CROS_WORKON_PROJECT="chromiumos/third_party/dbus-spy"
 CROS_WORKON_LOCALNAME="../third_party/dbus-spy"
 
