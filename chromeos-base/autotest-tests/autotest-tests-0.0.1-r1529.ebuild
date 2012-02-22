@@ -39,8 +39,6 @@ IUSE="${IUSE} +autotest"
 #   network_3GStressEnable
 #   network_WiFiSmokeTest
 #   network_WifiAuthenticationTests
-CONFLICT="chromeos-base/autotest-private-0.2.0"
-PDEPEND="|| ( >$CONFLICT-r29 !!~$CONFLICT )"
 RDEPEND="
   chromeos-base/autotest-deps
   chromeos-base/autotest-deps-iotools
@@ -48,20 +46,17 @@ RDEPEND="
   chromeos-base/autotest-deps-glbench
   chromeos-base/autotest-deps-piglit
   chromeos-base/flimflam-test
-  chromeos-base/chromeos-chrome
   autox? ( chromeos-base/autox )
   dev-python/numpy
   dev-python/pygobject
   dev-python/pygtk
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
-  !!~$CONFLICT
 "
 
 RDEPEND="${RDEPEND}
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
-  tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
   tests_test_RecallServer? ( dev-python/dnspython sys-apps/iproute2 )
 "
 
@@ -89,30 +84,17 @@ IUSE_TESTS="
 	+tests_audiovideo_FFMPEG
 	+tests_audiovideo_LineOutToMicInLoopback
 	+tests_audiovideo_Microphone
-	+tests_audiovideo_PlaybackRecordSemiAuto
 	+tests_audiovideo_V4L2
 	+tests_cellular_Smoke
 	+tests_cellular_ThroughputController
 	+tests_cellular_Throughput
 	+tests_build_RootFilesystemSize
-	+tests_desktopui_ChromeSemiAuto
-	+tests_desktopui_AudioFeedback
-	+tests_desktopui_EnterprisePolicy
 	+tests_desktopui_EnterprisePolicyServer
-	+tests_desktopui_MediaAudioFeedback
-	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
-	+tests_desktopui_IBusTest
 	+tests_desktopui_ImeLogin
-	+tests_desktopui_ImeTest
 	+tests_desktopui_KillRestart
-	+tests_desktopui_ScreenLocker
 	+tests_desktopui_SpeechSynthesisSemiAuto
-	+tests_desktopui_SunSpiderBench
-	tests_desktopui_TouchScreen
-	+tests_desktopui_UrlFetch
-	+tests_desktopui_V8Bench
 	tests_example_UnitTest
 	+tests_firmware_CgptState
 	+tests_firmware_CorruptBothFwBodyAB
@@ -137,22 +119,14 @@ IUSE_TESTS="
 	+tests_firmware_TryFwB
 	+tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
-	+tests_graphics_GLAPICheck
 	+tests_graphics_GLBench
-	+tests_graphics_Piglit
-	+tests_graphics_SanAngeles
-	+tests_graphics_TearTest
-	+tests_graphics_WebGLConformance
-	+tests_graphics_WindowManagerGraphicsCapture
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
-	+tests_hardware_BluetoothSemiAuto
 	+tests_hardware_ch7036
 	+tests_hardware_Components
 	+tests_hardware_DeveloperRecovery
 	+tests_hardware_DiskSize
 	+tests_hardware_EepromWriteProtect
-	+tests_hardware_ExternalDrives
 	+tests_hardware_GobiGPS
 	+tests_hardware_GPIOSwitches
 	+tests_hardware_GPS
@@ -167,12 +141,9 @@ IUSE_TESTS="
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
 	tests_hardware_TouchScreenPresent
-	+tests_hardware_USB20
 	+tests_hardware_TPMCheck
 	tests_hardware_TPMFirmware
 	+tests_hardware_Trackpad
-	+tests_hardware_USB20
-	+tests_hardware_UsbPlugIn
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
 	+tests_kernel_ConfigVerify
@@ -186,18 +157,7 @@ IUSE_TESTS="
 	+tests_logging_KernelCrash
 	+tests_logging_KernelCrashServer
 	+tests_logging_UserCrash
-	+tests_logging_UncleanShutdown
-	+tests_logging_UncleanShutdownServer
-	+tests_login_BadAuthentication
-	+tests_login_ChromeProfileSanitary
-	+tests_login_CryptohomeIncognitoMounted
-	+tests_login_CryptohomeIncognitoUnmounted
-	+tests_login_CryptohomeMounted
-	+tests_login_CryptohomeUnmounted
 	+tests_login_DBusCalls
-	+tests_login_LoginSuccess
-	+tests_login_LogoutProcessCleanup
-	+tests_login_RemoteLogin
 	+tests_login_SecondFactor
 	+tests_network_3GActivate
 	+tests_network_3GAssociation
@@ -214,7 +174,6 @@ IUSE_TESTS="
 	+tests_network_3GSafetyDance
 	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
-	+tests_network_3GSuspendResume
 	+tests_network_SwitchCarrier
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
@@ -281,9 +240,7 @@ IUSE_TESTS="
 	+tests_platform_NetParms
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
-	+tests_platform_Pkcs11InitOnLogin
 	+tests_platform_Pkcs11InitUnderErrors
-	+tests_platform_ProcessPrivileges
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
 	+tests_platform_SessionManagerTerm
@@ -298,9 +255,6 @@ IUSE_TESTS="
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
 	+tests_power_Draw
-	+tests_power_Idle
-	+tests_power_IdleServer
-	+tests_power_LoadTest
 	+tests_power_ProbeDriver
 	+tests_power_Resume
 	+tests_power_StatsCPUFreq
@@ -310,9 +264,7 @@ IUSE_TESTS="
 	+tests_power_SuspendResume
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
-	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkLmiCamera
-	+tests_realtimecomm_GTalkPlayground
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_AccountsBaseline
 	+tests_security_ChromiumOSLSM
@@ -321,10 +273,7 @@ IUSE_TESTS="
 	+tests_security_HardlinkRestrictions
 	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
-	+tests_security_NetworkListeners
-	+tests_security_ProfilePermissions
 	+tests_security_ptraceRestrictions
-	+tests_security_RendererSandbox
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
 	+tests_security_RootCA
