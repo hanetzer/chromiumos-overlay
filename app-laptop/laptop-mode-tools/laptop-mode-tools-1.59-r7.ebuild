@@ -48,6 +48,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0017-usb-autosuspend-black-whitelist-in-quotes.patch" \
           "0018-hdparm-check-for-valid-drive.patch" \
           "0019-board-specific-configurations.patch" \
+          "0020-hdparm-skips-SSDs-for-power-management.patch" \
         )
 
 src_unpack() {
