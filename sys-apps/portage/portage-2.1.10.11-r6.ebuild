@@ -126,7 +126,8 @@ src_prepare() {
 	fi
 	epatch "${FILESDIR}/${PN}-${PV}-bulk.patch"
 	epatch "${FILESDIR}/${PN}-${PV}-PKG_INSTALL_MASK-sanitizing.patch"
-	epatch "${FILESDIR}/${PN}-${PV}-0001-Strip-.GCC.command.line-from-output-files-as-well.patch"
+	epatch "${FILESDIR}/${PN}-${PV}-Strip-.GCC.command.line-from-output-files-as-well.patch"
+	epatch "${FILESDIR}/${PN}-${PV}-xpak-unpackinfo-validate-paths.patch"
 	einfo "Setting portage.VERSION to ${PVR} ..."
 	sed -e "s/^VERSION=.*/VERSION=\"${PVR}\"/" -i pym/portage/__init__.py || \
 		die "Failed to patch portage.VERSION"
