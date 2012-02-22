@@ -13,7 +13,8 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm amd64"
-DEPEND="app-crypt/trousers"
+DEPEND="app-crypt/trousers
+  !<chromeos-base/autotest-tests-0.0.1-r1521"
 RDEPEND="${DEPEND}"
 
 # Enable autotest by default.
