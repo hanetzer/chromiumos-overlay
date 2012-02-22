@@ -4,7 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="8ff0132b05147a77ac4d6ce2c739b451e8a71401"
+CROS_WORKON_COMMIT="ad8037a0b606c789619b1b8809236f5cec0e65ce"
 CROS_WORKON_PROJECT="chromiumos/platform/flimflam"
 CROS_WORKON_USE_VCSID="1"
 
