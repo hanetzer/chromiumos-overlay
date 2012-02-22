@@ -43,8 +43,8 @@ src_test() {
 	export CCFLAGS="$CFLAGS"
 	escons unittests
 	escons libpolicy_unittest
-	if ! use x86; then
-		echo Skipping unit tests on non-x86 platform
+	if ! use x86 && ! use amd64 ; then
+		ewarn "Skipping unit tests on non-x86 platform"
 	else
 		./unittests || die "libchromeos unittests failed."
 		./libpolicy_unittest || die "libpolicy_unittest unittests failed."
