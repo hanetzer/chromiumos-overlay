@@ -12,11 +12,11 @@
 inherit toolchain-funcs
 
 get_binutils_path_ld() {
-	ld_path=$(readlink -f $(which $(tc-getLD)))
-	binutils_dir=$(dirname ${ld_path})
+	local ld_path=$(readlink -f $(type -p $(tc-getLD ${1})))
+	local binutils_dir=$(dirname ${ld_path})
 	echo ${binutils_dir}
 }
 
 get_binutils_path_gold() {
-	echo $(get_binutils_path_ld)-gold
+	echo $(get_binutils_path_ld ${1})-gold
 }
