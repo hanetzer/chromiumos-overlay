@@ -70,4 +70,5 @@ src_install() {
 		doins "${FILESDIR}/50-touchpad-synaptics.conf"
 	fi
 	doins "${FILESDIR}/20-mouse.conf"
+	doins "${FILESDIR}/20-touchscreen.conf"
 }
