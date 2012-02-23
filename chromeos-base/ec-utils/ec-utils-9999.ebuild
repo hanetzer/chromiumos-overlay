@@ -17,6 +17,12 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
+# The BOARD is a special parameter. It should be the ChromeOS board name if you
+# are building EC firmware itself. However, for utility, we can always build
+# the reference configuration "bds" because the protocol should be always
+# compliant to reference one.
+BOARD="bds"
+
 src_compile() {
 	tc-export AR CC RANLIB
 	# In platform/ec Makefile, it uses "CC" to specify target chipset and
@@ -30,5 +36,5 @@ src_compile() {
 }
 
 src_install() {
-	dosbin build/bds/util/ectool
+	dosbin "build/$BOARD/util/ectool"
 }
