@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="aura bluetooth +localssh X bootchart touchui opengles internal"
+IUSE="aura bluetooth bootimage +localssh X bootchart touchui opengles internal"
 
 
 ################################################################################
@@ -255,8 +255,12 @@ RDEPEND="${RDEPEND}
 	"
 
 
-DEPEND="${RDEPEND}"
-
+# In addition to RDEPEND components, DEPEND in certain cases includes packages
+# which do not need to be installed on the target, but need to be included for
+# testing/compilation sanity check purposes.
+DEPEND="${RDEPEND}
+	bootimage? ( sys-boot/chromeos-bootimage )
+"
 
 qemu_run() {
 	# Run the emulator to execute command. It needs to be copied
