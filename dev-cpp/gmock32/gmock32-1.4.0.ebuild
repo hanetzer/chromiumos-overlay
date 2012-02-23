@@ -18,6 +18,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="32bit_au"
 REQUIRED_USE="32bit_au"
+RESTRICT="test"
 
 RDEPEND=">=dev-cpp/gtest32-${PV}"
 DEPEND="${RDEPEND}"
