@@ -245,7 +245,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  #ifndef WIN32
      out= Popen(buf,"w");
  #else
-@@ -247,30 +348,41 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -247,32 +348,41 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
  #endif
      
      if (out!=NULL) {
@@ -273,8 +273,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
              if (xkbDebugFlags)
                  DebugF("[xkb] xkb executes: %s\n",buf);
 -	    if (nameRtrn) {
--		strncpy(nameRtrn,keymap,nameRtrnLen);
--		nameRtrn[nameRtrnLen-1]= '\0';
+-		strlcpy(nameRtrn,keymap,nameRtrnLen);
 +            /* if canonicalXkmFileName already exists now, we simply
 +               overwrite it, this is OK */
 +            ret = rename(tmpXkmFile, canonicalXkmFileName);
@@ -290,6 +289,9 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
 +                goto _ret;
  	    }
 -            free(buf);
+-#ifdef WIN32
+-	    unlink(tmpname);
+-#endif
 -	    return TRUE;
 +            result = TRUE;
 +            goto _ret;
@@ -318,6 +320,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  
  static FILE *
 @@ -370,7 +489,6 @@ unsigned	missing;
+ 
  	DebugF("Loaded XKB keymap %s, defined=0x%x\n",fileName,(*xkbRtrn)->defined);
      }
      fclose(file);
