@@ -7,7 +7,7 @@ EAPI=1
 # (Crosstool-based) ChromeOS toolchain related variables.
 COST_PKG_VERSION="${P}_cos_gg"
 
-inherit eutils git
+inherit eutils git binutils-funcs
 
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
 
@@ -130,12 +130,17 @@ src_compile()
 		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
 	fi
 
+	# Do not link libgcc with gold. That is known to fail on internal linker
+	# errors. See crosbug.com/16719
+	local LD_NON_GOLD="$(get_binutils_path_ld ${CTARGET})/ld"
+
 	emake CFLAGS="${GCC_CFLAGS}" \
 		LDFLAGS="-Wl,-O1" \
 		STAGE1_CFLAGS="-O2 -pipe" \
 		BOOT_CFLAGS="-O2" \
 		CFLAGS_FOR_TARGET="$(get_make_var CFLAGS_FOR_TARGET) ${TARGET_FLAGS}" \
 		CXXFLAGS_FOR_TARGET="$(get_make_var CXXFLAGS_FOR_TARGET) ${TARGET_FLAGS}" \
+		LD_FOR_TARGET="${LD_NON_GOLD}" \
 		all || die
 }
 
