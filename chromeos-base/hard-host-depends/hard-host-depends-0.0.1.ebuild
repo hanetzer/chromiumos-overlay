@@ -100,6 +100,12 @@ RDEPEND="${RDEPEND}
 	>=x11-misc/util-macros-1.2
 	"
 
+# Various fonts are needed in order to generate messages for the
+# chromeos-initramfs package.
+RDEPEND="${RDEPEND}
+	chromeos-base/chromeos-fonts
+	"
+
 # Host dependencies for building chromium.
 # Intermediate executables built for the host, then run to generate data baked
 # into chromium, need these packages to be present in the host environment in

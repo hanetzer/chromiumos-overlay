@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="aura bluetooth bootimage +localssh X bootchart touchui opengles internal"
+IUSE="aura bluetooth bootimage +localssh X bootchart touchui opengles"
 
 
 ################################################################################
@@ -83,20 +83,10 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	X? (
 		chromeos-base/chromeos-chrome
+		chromeos-base/chromeos-fonts
 		chromeos-base/chromeos-wm
 		chromeos-base/flash-war
-		chromeos-base/internal
 		chromeos-base/xorg-conf
-		media-fonts/croscorefonts
-		media-fonts/dejavu
-		media-fonts/droidfonts-cros
-		!internal? (
-			media-fonts/ja-ipafonts
-		)
-		media-fonts/lohitfonts-cros
-		media-fonts/sil-abyssinica
-		media-fonts/ko-nanumfonts
-		media-fonts/ml-anjalioldlipi
 		x11-apps/xinit
 		x11-apps/xrandr
 		>=x11-base/xorg-server-1.6.3
