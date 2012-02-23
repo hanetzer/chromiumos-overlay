@@ -169,7 +169,6 @@ pkg_postinst() {
 	copy_or_add_daemon_user "syslog" 202      # For rsyslog
 	copy_or_add_daemon_user "ntp" 203
 	copy_or_add_daemon_user "sshd" 204
-	copy_or_add_daemon_user "pulse" 205       # For pulseaudio
 	copy_or_add_daemon_user "polkituser" 206  # For policykit
 	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
 	copy_or_add_daemon_user "pkcs11" 208      # For opencryptoki
