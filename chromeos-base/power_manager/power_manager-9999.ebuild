@@ -65,7 +65,7 @@ src_test() {
 	escons tests || die "tests compile failed."
 
 	# Run tests if we're on x86
-	if ! use x86 ; then
+	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
 		TESTS="backlight file_tagger idle_dimmer plug_dimmer power_supply powerd"
