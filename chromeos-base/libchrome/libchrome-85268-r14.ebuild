@@ -34,6 +34,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/gtest_include_path_fixup.patch
 
 	epatch "${FILESDIR}"/base-85268-DispatchToMethod-unused.patch
+	epatch "${FILESDIR}"/base-85268-ThreadRestrictions-unused.patch
 }
 
 src_compile() {
