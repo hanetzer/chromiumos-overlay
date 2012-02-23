@@ -25,7 +25,6 @@ sources = env.Split("""
                     debug/debugger_posix.cc
                     debug/stack_trace.cc
                     debug/stack_trace_posix.cc
-                    debug/trace_event.cc
                     environment.cc
                     file_path.cc
                     file_util.cc
