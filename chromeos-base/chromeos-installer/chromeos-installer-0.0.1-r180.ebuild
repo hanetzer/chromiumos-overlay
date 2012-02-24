@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="8288d60138cb106a7bfe8c180bf29ba32fdfa67c"
+CROS_WORKON_COMMIT="f597e3c0a90b84c3ec0fd3c4b59e7d0e83e3c7b9"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 
