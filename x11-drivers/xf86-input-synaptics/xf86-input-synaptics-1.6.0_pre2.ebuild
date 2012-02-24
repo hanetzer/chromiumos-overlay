@@ -1,6 +1,6 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-synaptics/xf86-input-synaptics-1.4.0.ebuild,v 1.1 2011/03/04 23:05:33 scarabeus Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-synaptics/xf86-input-synaptics-1.5.0.ebuild,v 1.1 2011/11/16 21:31:05 chithanh Exp $
 
 EAPI=4
 
@@ -9,7 +9,7 @@ inherit linux-info xorg-2
 DESCRIPTION="Driver for Synaptics touchpads"
 HOMEPAGE="http://cgit.freedesktop.org/xorg/driver/xf86-input-synaptics/"
 
-KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 ~ppc ~ppc64 x86"
 IUSE=""
 
 RDEPEND="
@@ -17,13 +17,12 @@ RDEPEND="
 	>=x11-libs/libXi-1.2
 	>=x11-libs/libXtst-1.1.0"
 DEPEND="${RDEPEND}
-	x11-proto/inputproto
 	>=x11-proto/recordproto-1.14"
 
 DOCS=( "README" )
 
-pkg_postinst() {
-	xorg-2_pkg_postinst
+pkg_pretend() {
+	linux-info_pkg_setup
 	# Just a friendly warning
 	if ! linux_config_exists \
 			|| ! linux_chkconfig_present INPUT_EVDEV; then
