@@ -206,7 +206,6 @@ RDEPEND="${RDEPEND}
 	media-sound/adhd
 	net-firewall/iptables
 	net-misc/htpdate
-	net-misc/modemmanager
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
@@ -237,6 +236,7 @@ RDEPEND="${RDEPEND}
 	sys-libs/timezone-data
 	sys-process/lsof
 	sys-process/procps
+	virtual/modemmanager
 	"
 
 # TODO(dianders):

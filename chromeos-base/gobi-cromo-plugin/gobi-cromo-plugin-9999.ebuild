@@ -28,7 +28,7 @@ RDEPEND="chromeos-base/cromo
 DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	dev-cpp/gtest
-	net-misc/modemmanager
+	virtual/modemmanager
 "
 
 cr_make() {

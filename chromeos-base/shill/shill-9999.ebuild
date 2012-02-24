@@ -25,7 +25,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
-	net-misc/modemmanager"
+	virtual/modemmanager"
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
