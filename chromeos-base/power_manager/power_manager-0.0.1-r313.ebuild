@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="92cbd32ede330879a327f6b39c62b7d5b1ca8aec"
+CROS_WORKON_COMMIT="e9f23b1a82054fb3677c3e228f395bf31d54ce7f"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 
@@ -66,7 +66,7 @@ src_test() {
 	escons tests || die "tests compile failed."
 
 	# Run tests if we're on x86
-	if ! use x86 ; then
+	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
 		TESTS="backlight file_tagger idle_dimmer plug_dimmer power_supply powerd"

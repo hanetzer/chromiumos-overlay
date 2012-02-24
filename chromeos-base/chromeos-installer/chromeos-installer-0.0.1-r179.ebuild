@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="1079bd5dbdb959d21f88918f20ca55903c551f07"
+CROS_WORKON_COMMIT="8288d60138cb106a7bfe8c180bf29ba32fdfa67c"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 
@@ -19,6 +19,7 @@ IUSE="32bit_au cros_host"
 
 DEPEND="
 	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/vboot_reference
 	sys-libs/libbb"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
