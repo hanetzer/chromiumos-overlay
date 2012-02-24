@@ -18,9 +18,6 @@ USE="${USE} hardened"
 CFLAGS="-O2 -pipe -g"
 CXXFLAGS="${CFLAGS}"
 
-# TODO: What is this for?
-UCLIBC_CPU_DEFAULT="GENERIC_ARM"
-
 VIDEO_CARDS="fbdev"
 INPUT_DEVICES="evdev"
 
