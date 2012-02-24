@@ -18,9 +18,11 @@ KEYWORDS="amd64 arm x86"
 IUSE="32bit_au cros_host"
 
 DEPEND="
-	chromeos-base/libchrome:0[cros-debug=]
-	chromeos-base/vboot_reference
-	sys-libs/libbb"
+	!cros_host? (
+		chromeos-base/libchrome:0[cros-debug=]
+		chromeos-base/vboot_reference
+		sys-libs/libbb
+	)"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
 RDEPEND="
@@ -38,6 +40,9 @@ RDEPEND="
 	sys-fs/e2fsprogs"
 
 src_compile() {
+	# We don't need the installer in the sdk, just helper scripts.
+	use cros_host && return 0
+
 	use 32bit_au && board_setup_32bit_au_env
 
 	tc-export AR CC CXX OBJCOPY
@@ -51,15 +56,15 @@ src_compile() {
 
 src_install() {
 	local path
-	if ! use cros_host; then
-		path="usr/sbin"
-	else
+	if use cros_host ; then
 		# Copy chromeos-* scripts to /usr/lib/installer/ on host.
 		path="usr/lib/installer"
+	else
+		path="usr/sbin"
+		dobin build/cros_installer
+		dosym ${path}/chromeos-postinst /postinst
 	fi
 
 	exeinto /${path}
-	dosym ${path}/chromeos-postinst /postinst
 	doexe chromeos-*
-	dobin build/cros_installer
 }
