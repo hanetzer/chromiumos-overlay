@@ -23,3 +23,6 @@ INPUT_DEVICES="evdev synaptics"
 
 # Allow a board to override or define additional settings.
 source make.conf.board
+
+# Allow the user to override or define additional settings.
+source make.conf.user

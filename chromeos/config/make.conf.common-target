@@ -78,6 +78,3 @@ INSTALL_MASK="
   /usr/share/bash-completion
 "
 PKG_INSTALL_MASK="${INSTALL_MASK}"
-
-# Allow the user to override or define additional settings.
-source make.conf.user
