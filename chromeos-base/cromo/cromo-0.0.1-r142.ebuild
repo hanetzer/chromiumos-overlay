@@ -31,7 +31,7 @@ RDEPEND="chromeos-base/chromeos-minijail
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
-	net-misc/modemmanager"
+	virtual/modemmanager"
 
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)"

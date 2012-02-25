@@ -41,7 +41,7 @@ RDEPEND=">=dev-libs/glib-2.16
         !chromeos-base/entd"
 
 DEPEND="${RDEPEND}
-	modemmanager? ( net-misc/modemmanager )
+	modemmanager? ( virtual/modemmanager )
 	doc? ( dev-util/gtk-doc )"
 
 CROS_WORKON_LOCALNAME="../third_party/flimflam"
