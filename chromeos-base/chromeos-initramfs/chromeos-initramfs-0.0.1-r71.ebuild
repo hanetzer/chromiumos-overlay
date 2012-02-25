@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="cd57029782bd319ba8705fbf02535514d4f6de38"
+CROS_WORKON_COMMIT="a633e7e276cd9906b7c1f3115d2cdc1e1a467cd2"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -14,7 +14,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
-DEPEND="chromeos-base/vboot_reference
+DEPEND="chromeos-base/chromeos-assets
+	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	media-gfx/ply-image
 	sys-apps/busybox
@@ -73,9 +74,11 @@ build_initramfs_file() {
 	cp init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 	cp *.sh "${INITRAMFS_TMP_S}/lib" || die
-	cp screens/*.png "${INITRAMFS_TMP_S}/etc/screens" || die
-	${S}/make_text_images "${S}/localized_text" \
-						  "${INITRAMFS_TMP_S}/etc/screens" || die
+	local assets="${ROOT}"/usr/share/chromeos-assets
+	cp "${assets}"/images/boot_message.png "${INITRAMFS_TMP_S}"/etc/screens
+	cp -r "${assets}"/images/spinner "${INITRAMFS_TMP_S}"/etc/screens
+	${S}/make_images "${S}/localized_text" \
+					 "${INITRAMFS_TMP_S}/etc/screens" || die
 
 	# For busybox and sh
 	idobin /bin/busybox
