@@ -18,7 +18,7 @@ MARCH_TUNE=""
 CFLAGS="-O2 -pipe ${MARCH_TUNE} -g"
 CXXFLAGS="${CFLAGS}"
 
-VIDEO_CARDS="intel vmware vesa"
+VIDEO_CARDS="intel vesa"
 INPUT_DEVICES="evdev synaptics"
 
 # Allow a board to override or define additional settings.
