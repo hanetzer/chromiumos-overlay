@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a6eb3ea6c7d395c8f501807d1bb9f340eb2edf8f"
+CROS_WORKON_COMMIT="e50f5414b5075a4a89cd7358ec02d37ef26a5ab2"
 CROS_WORKON_PROJECT="chromiumos/platform/modem-utilities"
 
 inherit cros-debug cros-workon toolchain-funcs
