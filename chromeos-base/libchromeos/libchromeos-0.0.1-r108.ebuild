@@ -42,8 +42,7 @@ src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
-	escons unittests
-	escons libpolicy_unittest
+	escons unittests libpolicy_unittest
 	if ! use x86 && ! use amd64 ; then
 		ewarn "Skipping unit tests on non-x86 platform"
 	else
