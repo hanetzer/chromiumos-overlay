@@ -5,7 +5,7 @@
 EAPI="3"
 inherit subversion eutils flag-o-matic multilib toolchain-funcs
 
-SVN_COMMIT="151057"
+SVN_COMMIT=${PV#*_pre}
 
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="http://llvm.org/"
@@ -14,7 +14,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/llvm/trunk@${SVN_COMMIT}"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 IUSE="debug gold +libffi multitarget ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl

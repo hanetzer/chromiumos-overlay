@@ -15,7 +15,7 @@ SUPPORT_PYTHON_ABIS="1"
 
 inherit subversion eutils multilib python
 
-SVN_COMMIT="151057"
+SVN_COMMIT=${PV#*_pre}
 
 DESCRIPTION="C language family frontend for LLVM"
 HOMEPAGE="http://clang.llvm.org/"
@@ -24,7 +24,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 IUSE="+asan +asan-32-explicit debug multitarget +static-analyzer test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
