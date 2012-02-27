@@ -34,6 +34,7 @@ ALL_BOARDS=(
 	amd64-host
 	arm-generic
 	daisy
+	emeraldlake2
 	ironhide
 	kiev
 	link
