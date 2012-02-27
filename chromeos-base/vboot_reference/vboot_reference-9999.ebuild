@@ -16,6 +16,7 @@ IUSE="32bit_au minimal rbtest tpmtests"
 RDEPEND="app-crypt/trousers
 	chromeos-base/libchrome:85268[cros-debug=]
 	!minimal? ( dev-libs/libyaml )
+	dev-libs/glib
 	dev-libs/openssl
 	sys-apps/util-linux
 	!<=chromeos-base/vboot_reference-firmware-0.0.1-r307"
@@ -84,13 +85,17 @@ src_install() {
 
 		into /usr
 		for prog in ${progs}; do
-			dobin "${S}"/build-main/"${prog}"
+			dobin build-main/"${prog}"
 		done
 
 		einfo "Installing TPM tools"
 		exeinto /usr/sbin
 		doexe "utility/tpm-nvsize"
 		doexe "utility/chromeos-tpm-recovery"
+
+		einfo "Installing boot tools"
+		exeinto /sbin
+		doexe build-main/utility/mount-encrypted
 
 		einfo "Installing dev tools"
 		dst_dir='/usr/share/vboot/bin'
