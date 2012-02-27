@@ -10,7 +10,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-BOARDS="alex link lumpy lumpy64 mario stumpy"
+BOARDS="alex emeraldlake2 link lumpy lumpy64 mario stumpy"
 IUSE="${BOARDS} seabios"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
@@ -115,7 +115,7 @@ src_compile() {
 	die "failed to build legacy image."
 
 	if use x86 || use amd64; then
-		if use link; then
+		if use link || use emeraldlake2; then
 			dd_params='bs=2M skip=1'
 		else
 			dd_params='bs=512K skip=3'
