@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=4
-CROS_WORKON_COMMIT="3f58f4aa66ea335853b35490ffe2105ccb9c7403"
+CROS_WORKON_COMMIT="c5b323f99515665f7ba18faccc60dd49e1ae7d9b"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 
 KEYWORDS="arm amd64 x86"

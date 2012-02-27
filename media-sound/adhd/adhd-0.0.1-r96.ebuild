@@ -30,20 +30,6 @@ src_compile() {
 }
 
 src_install() {
-	# Install 'gavd' executable.
-	#
 	local board=$(get_current_board_with_variant)
-	dobin "build/${board}/gavd/gavd" || die "Unable to install ADHD"
-
-	# Install Upstart configuration, adhd.conf, into /etc/init.
-	#
-	# Compare 'chromeos-init-9999.ebuild'.
-	insinto	 /etc/init
-	doins upstart/adhd.conf || die
-
-	# Install factory default sound settings: '/etc/asound.state'
-	#
-	# Installation method copied from audioconfig-board*.ebuild
-	insinto /etc
-	newins "${S}"/factory-default/asound.state.${board} asound.state || die
+	emake BOARD=${board} DESTDIR="${D}" install
 }
