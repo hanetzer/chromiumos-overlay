@@ -116,8 +116,13 @@ function create_autotest_workdir() {
 		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
 		mkdir -p "${dst}/${base_path}"
 		for entry in $(ls "${root_path}"); do
-			if [ -d ${entry} ]; then
-				ln -sf "${root_path}/${entry}" "${dst}/${base_path}/"
+			# Take all important binaries from SYSROOT install, make a copy.
+			if [ -d "${root_path}/${entry}" ]; then
+				# Ignore anything that has already been put in place by
+				# something else. This will typically be server/{site_tests,tests}.
+				if ! [ -e "${dst}/${base_path}/${entry}" ]; then
+					ln -sf "${root_path}/${entry}" "${dst}/${base_path}/"
+				fi
 			else
 				cp -f ${root_path}/${entry} ${dst}/${base_path}/
 			fi
