@@ -16,6 +16,12 @@
 # Sub-directory which is added to create full source checkout path
 : ${CROS_WORKON_SUBDIR:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_TO_COPY
+# @DESCRIPTION:
+# Make cros-workon operate exclusively with the subtrees given by this array.
+# NOTE: This only speeds up local_cp builds. Inplace/local_git builds are unaffected.
+: ${CROS_WORKON_SUBDIRS_TO_COPY:=/}
+
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
 # Git URL which is prefixed to CROS_WORKON_PROJECT
@@ -79,7 +85,7 @@ get_path() {
 	if [[ -n "${CROS_WORKON_SUBDIR}" ]]; then
 		path+="/${CROS_WORKON_SUBDIR}"
 	fi
-	echo ${path}
+	echo $(realpath ${path})
 }
 
 local_copy_git() {
@@ -107,8 +113,14 @@ local_copy_git() {
 local_copy_cp() {
 	einfo "Copying sources"
 
-	mkdir -p "${S}"
-	cp -a "${1}"/* "${S}" || die "cp -a ${1}/* ${S}"
+	local sl
+	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
+		if [[ -d "${1}/${sl}" ]]; then
+			mkdir -p "${S}/${sl}"
+			cp -a "${1}/${sl}"/* "${S}/${sl}" || \
+			    die "cp -a ${1}/${sl}/* ${S}/${sl}/"
+		fi
+	done
 }
 
 symlink_in_place() {
