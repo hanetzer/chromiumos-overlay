@@ -49,8 +49,6 @@ src_install() {
 			gdb_remote \
 			willis \
 			ssh_no_update \
-			cros_{start,stop}_vm \
-			image_to_live.sh \
 			gmergefs
 		popd >/dev/null
 
