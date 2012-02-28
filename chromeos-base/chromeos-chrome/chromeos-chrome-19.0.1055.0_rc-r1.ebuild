@@ -277,7 +277,7 @@ set_build_defines() {
 			eerror "Asan requires Clang to run."
 			die "Please set USE=\"${USE} clang\" to enable Clang"
 		fi
-		BUILD_DEFINES="asan=1 $BUILD_DEFINES"
+		BUILD_DEFINES="asan=1 asan_blacklist='$CHROME_ROOT/src/third_party/asan/ignore.txt' $BUILD_DEFINES"
 	fi
 
 	if use aura; then
@@ -710,6 +710,8 @@ src_compile() {
 	CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
 	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
+
+	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
 	if use drm; then
 		time emake -r $(use verbose && echo V=1) \
