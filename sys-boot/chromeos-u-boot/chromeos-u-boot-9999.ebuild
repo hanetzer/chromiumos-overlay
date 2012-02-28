@@ -147,8 +147,8 @@ src_configure() {
 }
 
 src_compile() {
-	tc-getCC
-	umake HOSTCC=${CC} HOSTSTRIP=true all
+	tc-export BUILD_CC
+	umake HOSTCC=${BUILD_CC} HOSTSTRIP=true all
 }
 
 src_install() {
