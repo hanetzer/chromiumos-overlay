@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -52,9 +52,7 @@ src_compile() {
 
 	pushd cryptohome
 	# Build the daemon and command line client
-	scons cryptohomed || die "cryptohomed compile failed."
-	scons cryptohome || die "cryptohome compile failed."
-	scons cryptohome-path || die "cryptohome-path compile failed."
+	emake || die "make failed."
 	popd
 }
 
@@ -66,15 +64,8 @@ src_test() {
 	pushd cryptohome
 	# Only build the tests
 	# TODO(wad) eclass-ify this.
-	scons cryptohome_testrunner ||
-		die "cryptohome_testrunner compile failed."	
+	emake tests || die "tests failed."
 
-	if use x86 ; then
-		# Create data for unittests
-		./init_cryptohome_data.sh test_image_dir
-		./cryptohome_testrunner ${GTEST_ARGS} || \
-		    die "unit tests (with ${GTEST_ARGS}) failed!"
-	fi
 	popd
 }
 
