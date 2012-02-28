@@ -33,6 +33,7 @@ UB_BUILD_DIR="${WORKDIR}/${ROOT}"
 U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
 	coreboot
+	daisy
 	seaboard
 	waluigi
 )
@@ -147,8 +148,8 @@ src_configure() {
 }
 
 src_compile() {
-	tc-getCC
-	umake HOSTCC=${CC} HOSTSTRIP=true all
+	tc-export BUILD_CC
+	umake HOSTCC=${BUILD_CC} HOSTSTRIP=true all
 }
 
 src_install() {
