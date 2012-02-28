@@ -11,8 +11,6 @@ IUSE="is_touchpad ps_touchpad"
 RDEPEND="x11-base/xorg-server"
 DEPEND="${RDEPEND}"
 
-CROS_BINARY_INSTALL_FLAGS="--strip-components=1"
-
 # @ECLASS-VARIABLE: SYNAPTICS_TOUCHPAD_PN
 # @DESCRIPTION: The packagename used as part of the binary tarball filename.
 : ${SYNAPTICS_TOUCHPAD_PN:=${PN}}
@@ -49,6 +47,11 @@ function synaptics-touchpad_src_install() {
 	# into the synaptics tarball.
 	export_uri
 	cros-binary_src_install
+	if [ $(ls "${D}" | wc -l) -eq 1 ]; then
+		local extra_dir="$(ls "${D}")"
+		mv "${D}/${extra_dir}/"* "${D}/"
+		rmdir "${D}/${extra_dir}/"
+	fi
 
 	exeinto /opt/Synaptics/bin
 	doexe "${FILESDIR}/tpcontrol_syncontrol" || die
