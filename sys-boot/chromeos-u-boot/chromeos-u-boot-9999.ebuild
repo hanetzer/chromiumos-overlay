@@ -32,6 +32,7 @@ UB_BUILD_DIR="${WORKDIR}/${ROOT}"
 U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
 	coreboot
+	daisy
 	seaboard
 	waluigi
 )
