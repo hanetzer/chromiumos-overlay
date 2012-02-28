@@ -16,7 +16,14 @@ DEPEND="
 	modemmanager_next? (
 		net-misc/modemmanager-next
 		net-misc/modemmanager-classic-interfaces
+		!net-misc/modemmanager
+		!net-misc/modemmanager-next-interfaces
 	)
-	!modemmanager_next? ( net-misc/modemmanager )
+	!modemmanager_next? (
+		!net-misc/modemmanager-next
+		!net-misc/modemmanager-classic-interfaces
+		net-misc/modemmanager
+		net-misc/modemmanager-next-interfaces
+	)
 "
 RDEPEND="${DEPEND}"

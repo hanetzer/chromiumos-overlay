@@ -30,6 +30,7 @@ DEPEND=">=sys-fs/udev-145[gudev]
         dev-util/pkgconfig
         dev-util/intltool
         >=dev-util/gtk-doc-1.13
+        !net-misc/modemmanager-next-interfaces
         !net-misc/modemmanager
         "
 
