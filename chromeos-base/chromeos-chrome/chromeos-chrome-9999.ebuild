@@ -653,6 +653,38 @@ src_prepare() {
 		done
 	fi
 
+	# The chrome makefiles specify -O and -g flags already, so remove the
+	# portage flags.
+	filter-flags -g -O*
+	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
+
+	if use pgo && ! use clang ; then
+		local PROFILE_DIR
+		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
+		if [[ -d "${PROFILE_DIR}" ]]; then
+			append-flags -fprofile-use \
+				-fprofile-correction \
+				-Wno-error=coverage-mismatch \
+				-fopt-info=0 \
+				-fprofile-dir="${PROFILE_DIR}"
+
+			# This is required because gcc currently may crash with an
+			# internal compiler error if the profile is stale.
+			# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51975
+			# This does not cause performance degradation.
+			append-flags -fno-vpt
+
+			# This is required because gcc emits different warnings for PGO
+			# vs. non-PGO. PGO may inline different functions from non-PGO,
+			# leading to different warnings.
+			# crbug.com/112908
+			append-flags -Wno-error=maybe-uninitialized
+		else
+			einfo "USE=+pgo, but ${PROFILE_DIR} not found."
+			einfo "Not using pgo. This is expected for arm/x86 boards."
+		fi
+	fi
+
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
 	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}
@@ -688,14 +720,6 @@ src_configure() {
 	fi
 }
 
-strip_chrome_debug() {
-	echo ${1} | sed -e "s/\s-g\S*/ /"
-}
-
-strip_optimization_flags() {
-	echo ${1} | sed -e "s/\(\s\|^\)-O\S*/ /"
-}
-
 src_compile() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]] && \
 	   [[ "$CHROME_ORIGIN" != "GERRIT_SOURCE" ]]; then
@@ -713,40 +737,6 @@ src_compile() {
 			browser_tests
 			sync_integration_tests"
 		echo Building test targets: ${TEST_TARGETS}
-	fi
-
-	# The chrome makefiles specify -O and -g flags already, so remove the
-	# portage flags.
-	CXXFLAGS="$(strip_chrome_debug "${CXXFLAGS}")"
-	CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
-	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
-	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
-
-	if use pgo && ! use clang ; then
-		local PROFILE_DIR
-		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
-		if [[ -d "${PROFILE_DIR}" ]]; then
-			append-flags -fprofile-use \
-				-fprofile-correction \
-				-Wno-error=coverage-mismatch \
-				-fopt-info=0 \
-				-fprofile-dir="${PROFILE_DIR}"
-
-			# This is required because gcc currently may crash with an
-			# internal compiler error if the profile is stale.
-			# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51975
-			# This does not cause performance degradation.
-			append-flags -fno-vpt
-
-			# This is required because gcc emits different warnings for PGO
-			# vs. non-PGO. PGO may inline different functions from non-PGO,
-			# leading to different warnings.
-			# crbug.com/112908
-			append-flags -Wno-error=maybe-uninitialized
-		else
-			einfo "USE=+pgo, but ${PROFILE_DIR} not found."
-			einfo "Not using pgo. This is expected for arm/x86 boards."
-		fi
 	fi
 
 	if use drm; then
