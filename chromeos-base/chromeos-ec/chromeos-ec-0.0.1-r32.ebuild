@@ -2,22 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
 
-EAPI=4
+EAPI="4"
 CROS_WORKON_COMMIT="b2b5455f327804bd1f72b3c617745fd5c5ca086b"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
-
-KEYWORDS="arm amd64 x86"
+CROS_WORKON_LOCALNAME="ec"
 
 inherit toolchain-funcs cros-board cros-workon
 
 DESCRIPTION="Embedded Controller firmware code"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="arm amd64 x86"
 IUSE="test bds"
-
-CROS_WORKON_LOCALNAME="ec"
 
 set_build_env() {
 	# The firmware is running on ARMv7-m (Cortex-M4)
@@ -25,10 +24,13 @@ set_build_env() {
 	tc-export CC BUILD_CC
 	export HOSTCC=${CC}
 	export BUILDCC=${BUILD_CC}
-	if [[ "$(get_current_board_with_variant)" == *generic ]] ; then
-		export BOARD=bds
-	else
-		export BOARD=$(usev bds || echo $(get_current_board_with_variant))
+
+	# Allow building for boards that don't have an EC
+	# (so we can compile test on bots for testing).
+	export BOARD=$(usev bds || get_current_board_with_variant)
+	if [[ ! -d board/${BOARD} ]] ; then
+		ewarn "Sorry, ${BOARD} not supported; doing build-test with BOARD=bds"
+		BOARD=bds
 	fi
 }
 

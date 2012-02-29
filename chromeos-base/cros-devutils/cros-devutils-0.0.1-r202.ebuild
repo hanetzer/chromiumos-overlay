@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="c9bb10819c76cf72b20457c297b2ec7bae2dc9c2"
+CROS_WORKON_COMMIT="a66fed563f48803866daa0f0419fdac85907ad8d"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
 
@@ -50,8 +50,6 @@ src_install() {
 			gdb_remote \
 			willis \
 			ssh_no_update \
-			cros_{start,stop}_vm \
-			image_to_live.sh \
 			gmergefs
 		popd >/dev/null
 
