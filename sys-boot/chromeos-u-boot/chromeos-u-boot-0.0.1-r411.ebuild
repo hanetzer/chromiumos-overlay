@@ -155,9 +155,8 @@ src_compile() {
 src_install() {
 	local inst_dir="/firmware"
 	local files_to_copy="System.map u-boot.bin"
-	local ub_boarddir="$(grep CONFIG_BOARDDIR \
-			${UB_BUILD_DIR}/include/autoconf.mk | \
-			sed 's/.*="\(.*\)"/\1/')"
+	local ub_vendor="$(get_config_var ${CROS_U_BOOT_CONFIG} VENDOR)"
+	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
 	local file
 
 	insinto "${inst_dir}"
@@ -171,5 +170,9 @@ src_install() {
 	newins "${UB_BUILD_DIR}/u-boot.dtb" "${CROS_FDT_FILE}.dtb"
 
 	insinto "${inst_dir}/dts"
-	doins ${ub_boarddir}/*.dts
+	if [ -d "${S}/board/${ub_vendor}/dts" ]; then
+		doins board/${ub_vendor}/dts/*.dts
+	else
+		doins board/${ub_vendor}/${ub_board}/*.dts
+	fi
 }
