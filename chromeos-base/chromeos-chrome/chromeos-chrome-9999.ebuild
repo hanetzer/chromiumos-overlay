@@ -644,7 +644,7 @@ src_prepare() {
 
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
-	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver.py}
+	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}
 	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks useflag when
         # chrome build switches to Ninja inside the chroot.
 	if use runhooks; then

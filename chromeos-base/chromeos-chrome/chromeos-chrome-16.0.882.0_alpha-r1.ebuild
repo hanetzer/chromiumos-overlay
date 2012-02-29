@@ -532,7 +532,7 @@ src_prepare() {
 	if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
 		# Set the dependency repos to the revision specified in the
 		# .DEPS.git file, and run the hooks in that file.
-		"${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver.py}" --runhooks || die
+		"${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}" --runhooks || die
 	else
 		test -n "${EGCLIENT}" || die EGCLIENT unset
 		[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
