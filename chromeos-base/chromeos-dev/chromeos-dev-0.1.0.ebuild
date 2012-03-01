@@ -39,8 +39,9 @@ RDEPEND="${RDEPEND}
 	chromeos-base/gmerge
 	dev-lang/python
 	dev-python/dbus-python
-	dev-util/strace
+        dev-util/hdctools
 	dev-util/libc-bench
+	dev-util/strace
 	net-analyzer/netperf
 	net-analyzer/tcpdump
 	net-dialup/minicom
