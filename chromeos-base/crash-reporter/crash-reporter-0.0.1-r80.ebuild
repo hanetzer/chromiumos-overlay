@@ -38,8 +38,10 @@ src_test() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake tests || die "could not build tests"
-	if ! use x86; then
-	        echo Skipping unit tests on non-x86 platform
+	# TODO(benchan): Enable unit tests for arm target once
+	# crosbug.com/27127 is fixed.
+	if use arm; then
+	        echo Skipping unit tests on arm platform
 	else
 	        for test in ./*_test; do
 		        "${test}" ${GTEST_ARGS} || die "${test} failed"
