@@ -15,6 +15,7 @@ IUSE="profiling"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/x86-firmware-fdts
+	!sys-boot/exynos-u-boot
 	!sys-boot/tegra2-public-firmware-fdts
 	"
 
