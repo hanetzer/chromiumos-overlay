@@ -159,6 +159,11 @@ src_install() {
 	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
 	local file
 
+	# Daisy and its variants need SPL binary.
+	if use u_boot_config_use_daisy; then
+		files_to_copy+=" spl/${ub_board}-spl.bin"
+	fi
+
 	insinto "${inst_dir}"
 	for file in ${files_to_copy}; do
 		doins "${UB_BUILD_DIR}/${file}"
