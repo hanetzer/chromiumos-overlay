@@ -5,7 +5,7 @@
 EAPI="3"
 inherit subversion eutils flag-o-matic multilib toolchain-funcs
 
-SVN_COMMIT="151057"
+SVN_COMMIT="145532"
 
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="http://llvm.org/"
