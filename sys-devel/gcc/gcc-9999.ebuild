@@ -190,16 +190,27 @@ EOF
 	fi
 }
 
+pkg_preinst()
+{
+	# We handle ccache ourselves in the sysroot wrapper.
+	rm -f /usr/lib/ccache/bin/*-*
+
+	# When we install a new toolchain, the existing cached objects become
+	# stale.  Clear out the old ones just to avoid them sitting around
+	# sucking up space indefinitely.
+	local ccache_dir="/var/cache/distfiles/ccache"
+	rm -rf "${ccache_dir}"
+	mkdir -p -m 2775 "${ccache_dir}"
+	# Disable file count/size limits since the objects should mostly stay
+	# fresh until the next compiler upgrade.  We might want to revisit
+	# this at some point, but better to have a few extra stale entries
+	# than to have valid cached objects constantly cycled out.
+	CCACHE_DIR=${ccache_dir} ccache -F0 -M0
+}
+
 pkg_postinst()
 {
 	gcc-config $(get_gcc_config_file)
-	CCACHE_BIN=$(which ccache || true)
-	if is_crosscompile && [[ -f "${CCACHE_BIN}" ]] ; then
-		mkdir -p "/usr/lib/ccache/bin"
-		for x in c++ cpp g++ gcc; do
-			dosym "${CCACHE_BIN}" "/usr/lib/ccache/bin/${CTARGET}-${x}" || die
-		done
-	fi
 }
 
 pkg_postrm()
@@ -210,12 +221,6 @@ pkg_postrm()
 			rm -f "${ROOT}"/etc/env.d/??gcc-${CTARGET}
 			rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
 		fi
-	fi
-	if is_crosscompile &&
-		[[ $(equery l gcc | grep i686-pc-linux-gnu | wc -l) -eq 1 ]] ; then
-		for x in c++ cpp g++ gcc; do
-			rm -rf "/usr/lib/ccache/bin/${CTARGET}-${x}"
-		done
 	fi
 }
 

@@ -55,6 +55,9 @@ clang_compile_requested = 0
 # If -print-cmdline is present.
 print_cmdline = 0
 
+# If ccache should be used automatically.
+use_ccache = 1
+
 fstack = set(['-D__KERNEL__', '-fno-stack-protector', '-nodefaultlibs',
               '-nostdlib'])
 fPIE = set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
@@ -64,7 +67,7 @@ pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
   '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared', '-shared',
   '-static'])
 sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
-wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie'])
+wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie', '-noccache'])
 
 myargs = sys.argv[1:]
 if fstack.intersection(myargs):
@@ -78,6 +81,7 @@ if sse.intersection(myargs):
   disable_flags.remove('-mno-ssse3')
 clang_compile_requested = '-clang' in myargs
 print_cmdline = '-print-cmdline' in myargs
+use_ccache = '-noccache' not in myargs
 cmdline = [x for x in myargs if x not in wrapper_only_options]
 
 if not clang_compile_requested:
@@ -151,8 +155,9 @@ def log_parent_process_tree(log, ppid):
 
 
 if 'SYSROOT' in os.environ:
-  clang_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
-  gcc_cmdline.append('--sysroot=%s' % os.environ['SYSROOT'])
+  sysroot = os.environ['SYSROOT']
+  clang_cmdline.append('--sysroot=%s' % sysroot)
+  gcc_cmdline.append('--sysroot=%s' % sysroot)
 else:
   import logging
   import logging.handlers
@@ -196,10 +201,42 @@ if clang_compile_requested and not skip_clang:
   if p.returncode != 0:
     sys.exit(p.returncode)
 
-if print_cmdline:
-  print '%s.real %s %s' % (sys.argv[0],
-                           ' '.join(harden_flags),
-                           ' '.join(gcc_cmdline))
+execargs = []
+real_gcc = '%s.real' % sys.argv[0]
+if use_ccache:
+  # Portage likes to set this for us when it has FEATURES=-ccache.
+  # The other vars we need to setup manually because of tools like
+  # scons that scrubs the env before we get executed.
+  os.environ.pop('CCACHE_DISABLE', None)
 
-os.execv('%s.real' % sys.argv[0],
-         [sys.argv[0]] + list(harden_flags) + gcc_cmdline)
+  # We should be able to share the objects across compilers as
+  # the pre-processed output will differ.  This allows boards
+  # that share compiler flags (like x86 boards) to share caches.
+  ccache_dir = '/var/cache/distfiles/ccache'
+  os.environ['CCACHE_DIR'] = ccache_dir
+
+  # If RESTRICT=sandbox is enabled, then sandbox won't be setup,
+  # and the env vars won't be available for appending.
+  if 'SANDBOX_WRITE' in os.environ:
+    os.environ['SANDBOX_WRITE'] += ':%s' % ccache_dir
+
+  # Minor speed up as we don't care about this in general.
+  os.environ['CCACHE_NOSTATS'] = 'no'
+  # Useful for debugging.
+  #os.environ['CCACHE_LOG'] = '/dev/stderr'
+
+  # Make sure we keep the cached files group writable.
+  os.environ['CCACHE_UMASK'] = '002'
+
+  argv0 = '/usr/bin/ccache'
+  execargs += ['ccache']
+  #gcc_cmdline += ['-noccache']
+else:
+  argv0 = real_gcc
+
+execargs += [real_gcc] + list(harden_flags) + gcc_cmdline
+
+if print_cmdline:
+  print '[%s] %s' % (argv0, ' '.join(execargs))
+
+os.execv(argv0, execargs)
