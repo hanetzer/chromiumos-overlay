@@ -322,10 +322,10 @@ diff -uNrp glibc-2.11.1~/libio/libioP.h glibc-2.11.1/libio/libioP.h
 -#define _IO_JUMPS(THIS) (THIS)->vtable
 -#define _IO_WIDE_JUMPS(THIS) ((struct _IO_FILE *) (THIS))->_wide_data->_wide_vtable
 +static inline void
-+__mangle_vtable(struct _IO_jump_t **vtable, struct _IO_jump_t *table)
++__mangle_vtable(const struct _IO_jump_t **vtable, const struct _IO_jump_t *table)
 +{
 +    struct _IO_jump_t *ptr;
-+    ptr = table;
++    ptr = (struct _IO_jump_t *)table;
 +    PTR_MANGLE(ptr);
 +    *vtable = ptr;
 +}
