@@ -3,7 +3,8 @@
 ACCEPT_KEYWORDS="amd64"
 CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"
-FEATURES="buildpkg -strict -unknown-features-warn allow-missing-manifests"
+FEATURES="buildpkg -strict -unknown-features-warn allow-missing-manifests
+          clean-logs"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
@@ -24,6 +25,8 @@ PORTAGE_BUNZIP2_COMMAND="bunzip2"
 
 # Where to store built packages.
 PKGDIR="/var/lib/portage/pkgs"
+
+PORT_LOGDIR="/var/log/portage"
 
 source /usr/local/portage/chromiumos/chromeos/binhost/host/amd64-PREFLIGHT_BINHOST.conf
 FULL_BINHOST="https://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/amd64-host/chroot-03.03.12.132959/packages/"
