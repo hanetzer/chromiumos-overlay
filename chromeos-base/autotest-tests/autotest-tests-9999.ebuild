@@ -125,6 +125,7 @@ IUSE_TESTS="
 	+tests_hardware_Components
 	+tests_hardware_DeveloperRecovery
 	+tests_hardware_DiskSize
+	+tests_hardware_EC
 	+tests_hardware_EepromWriteProtect
 	+tests_hardware_GobiGPS
 	+tests_hardware_GPIOSwitches
