@@ -89,6 +89,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${PN}-2.6-commandguide-nops.patch
 	epatch "${FILESDIR}"/${PN}-2.9-nodoctargz.patch
+	epatch "${FILESDIR}"/${PN}-3.0-ldflags.patch
 }
 
 src_configure() {

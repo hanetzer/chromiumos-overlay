@@ -1,0 +1,26 @@
+diff --git a/tools/llvm-config/CMakeLists.txt b/tools/llvm-config/CMakeLists.txt
+index 5ad58bf..fd569e5 100644
+--- a/tools/llvm-config/CMakeLists.txt
++++ b/tools/llvm-config/CMakeLists.txt
+@@ -24,7 +24,7 @@ add_custom_command(OUTPUT ${BUILDVARIABLES_OBJPATH}
+   COMMAND echo s!@LLVM_CFLAGS@!${C_FLGS}! >> ${SEDSCRIPT_OBJPATH}
+   COMMAND echo s!@LLVM_CXXFLAGS@!${CXX_FLGS}! >> ${SEDSCRIPT_OBJPATH}
+   # TODO: Use general flags for linking! not just for shared libs:
+-  COMMAND echo s!@LLVM_LDFLAGS@!${CMAKE_SHARED_LINKER_FLAGS}! >> ${SEDSCRIPT_OBJPATH}
++  COMMAND echo s!@LLVM_LDFLAGS@!${CMAKE_SHARED_LINKER_FLAGS}/llvm! >> ${SEDSCRIPT_OBJPATH}
+   COMMAND echo s!@LLVM_BUILDMODE@!${CMAKE_BUILD_TYPE}! >> ${SEDSCRIPT_OBJPATH}
+   COMMAND echo s!@LLVM_SYSTEM_LIBS@!${SYSTEM_LIBS}! >> ${SEDSCRIPT_OBJPATH}
+   COMMAND echo s!@LLVM_TARGETS_BUILT@!${LLVM_TARGETS_TO_BUILD}! >> ${SEDSCRIPT_OBJPATH}
+diff --git a/tools/llvm-config/llvm-config.cpp b/tools/llvm-config/llvm-config.cpp
+index 79fd7f8..667d02c 100644
+--- a/tools/llvm-config/llvm-config.cpp
++++ b/tools/llvm-config/llvm-config.cpp
+@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
+     ActivePrefix = CurrentExecPrefix;
+     ActiveIncludeDir = ActivePrefix + "/include";
+     ActiveBinDir = ActivePrefix + "/bin";
+-    ActiveLibDir = ActivePrefix + "/lib";
++    ActiveLibDir = ActivePrefix + "/lib/llvm";
+     ActiveIncludeOption = "-I" + ActiveIncludeDir;
+   }
+ 
