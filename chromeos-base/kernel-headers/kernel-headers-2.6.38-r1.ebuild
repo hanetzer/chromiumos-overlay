@@ -31,9 +31,7 @@ src_unpack() {
 	fi
 }
 
-src_compile() {
-	elog " Nothing to compile"
-}
+src_compile() { :; }
 
 src_install() {
 	emake \
