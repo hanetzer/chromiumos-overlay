@@ -1,0 +1,20 @@
+diff --git a/src/winfonts/winfnt.c b/src/winfonts/winfnt.c
+index 92604cd..a551896 100644
+--- a/src/winfonts/winfnt.c
++++ b/src/winfonts/winfnt.c
+@@ -831,7 +831,14 @@
+           root->charmap = root->charmaps[0];
+       }
+ 
+-      /* setup remaining flags */
++      /* set up remaining flags */
++
++      if ( font->header.last_char < font->header.first_char )
++      {
++        FT_TRACE2(( "invalid number of glyphs\n" ));
++        error = FNT_Err_Invalid_File_Format;
++        goto Fail;
++      }
+ 
+       /* reserve one slot for the .notdef glyph at index 0 */
+       root->num_glyphs = font->header.last_char -
