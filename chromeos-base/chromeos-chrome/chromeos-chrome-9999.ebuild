@@ -267,6 +267,7 @@ set_build_defines() {
 		if [ "$ARCH" = "x86" ]; then
 			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
 			USE_TCMALLOC="linux_use_tcmalloc=0"
+			export CC="clang" CXX="clang++"
 		else
 			die Clang is not yet supported for "${ARCH}"
 		fi
