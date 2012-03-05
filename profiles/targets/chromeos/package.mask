@@ -51,3 +51,6 @@
 # chromeos-chrome-14.0.787.0_rc-1 causes test failures, so block it.
 # TODO(davidjames): Remove this once the bug is fixed.
 =chromeos-base/chromeos-chrome-14.0.787.0_rc-r1
+
+# This is unloved by mesa, and should never be pulled into the targets.
+>=sys-devel/llvm-3.0
