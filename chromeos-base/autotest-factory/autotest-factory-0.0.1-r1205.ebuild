@@ -40,9 +40,11 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS="
 	+tests_dummy_Fail
 	+tests_dummy_Pass
+	+tests_factory_Antenna
 	+tests_factory_Audio
 	+tests_factory_AudioInternalLoopback
 	+tests_factory_Camera
+	+tests_factory_Cellular
 	+tests_factory_DeveloperRecovery
 	+tests_factory_Display
 	+tests_factory_Dummy
@@ -66,6 +68,7 @@ IUSE_TESTS="
 	+tests_factory_Start
 	+tests_factory_Touchpad
 	+tests_factory_VPD
+	+tests_factory_Wifi
 	+tests_factory_WriteGBB
 	+tests_suite_Factory
 "
