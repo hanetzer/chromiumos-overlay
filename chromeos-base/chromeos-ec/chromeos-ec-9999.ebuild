@@ -55,4 +55,7 @@ src_install() {
 	# Utilities
 	exeinto /usr/bin
 	doexe build/${BOARD}/util/ectool
+
+	insinto /usr/include/ec
+	doins include/lpc_commands.h
 }
