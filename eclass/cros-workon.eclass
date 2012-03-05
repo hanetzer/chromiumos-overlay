@@ -57,6 +57,15 @@
 # Export VCSID into the project
 : ${CROS_WORKON_USE_VCSID:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_GIT_SUFFIX
+# @DESCRIPTION:
+# The git eclass does not do locking on its repo.  That means
+# multiple ebuilds that use the same git repo cannot safely be
+# emerged at the same time.  Until we can get that sorted out,
+# allow ebuilds that know they'll conflict to declare a unique
+# path for storing the local clone.
+: ${CROS_WORKON_GIT_SUFFIX:=}
+
 inherit git flag-o-matic
 
 # Calculate path where code should be checked out.
@@ -232,7 +241,7 @@ cros-workon_src_unpack() {
 		fi
 
 		EGIT_REPO_URI="${repo}/${project}.git"
-		EGIT_PROJECT="${project}"
+		EGIT_PROJECT="${project}${CROS_WORKON_GIT_SUFFIX}"
 		EGIT_COMMIT=${CROS_WORKON_COMMIT}
 		if [[ "${CROS_WORKON_COMMIT}" = "master" ]]; then
 			# TODO(davidjames): This code should really error out if
