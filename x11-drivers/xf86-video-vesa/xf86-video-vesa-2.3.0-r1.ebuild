@@ -16,5 +16,6 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}/no-dga.patch"
 	"${FILESDIR}/2.3.0-r1-domainiobase.patch"
+	"${FILESDIR}/2.3.0-r1-xf86MapDomainMemory.patch"
 )
 
