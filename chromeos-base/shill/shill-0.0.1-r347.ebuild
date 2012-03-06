@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b84ba34aec59d083980d840fb845a3e2bea893cb"
+CROS_WORKON_COMMIT="605967453c2bfe1340fdfbee1bebe6526d1a9bc6"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
 inherit cros-debug cros-workon toolchain-funcs
