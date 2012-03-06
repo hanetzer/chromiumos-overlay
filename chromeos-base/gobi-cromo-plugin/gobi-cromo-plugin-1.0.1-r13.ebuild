@@ -17,7 +17,6 @@ KEYWORDS="amd64 arm x86"
 IUSE="install_tests"
 
 RDEPEND="chromeos-base/cromo
-	chromeos-base/gobi-sdk
 	chromeos-base/libchrome:0[cros-debug=]
 	dev-cpp/glog
 	dev-libs/dbus-c++
