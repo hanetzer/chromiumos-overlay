@@ -198,6 +198,11 @@ RDEPEND="${RDEPEND}
 	dev-embedded/smdk-dltool
 	"
 
+# Host dependencies for HWID processing
+RDEPEND="${RDEPEND}
+        dev-python/pyyaml
+	"
+
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
