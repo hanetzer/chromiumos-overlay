@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9863319b6542920e2648232bbb21d86b697ad1a1"
+CROS_WORKON_COMMIT="261d9ce05be1114ed03bb05c693ff48c932bce1c"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
 inherit cros-workon
@@ -39,6 +39,11 @@ idobin() {
 	done
 }
 
+# install a list of images (presumably .png files) in /etc/screens
+insimage() {
+	cp "$@" "${INITRAMFS_TMP_S}"/etc/screens || die
+}
+
 build_initramfs_file() {
 	local dir
 
@@ -71,12 +76,16 @@ build_initramfs_file() {
 	fi
 
 	# Copy source files not merged from our dependencies.
-	cp init "${INITRAMFS_TMP_S}/init" || die
+	cp "${S}"/init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
-	cp *.sh "${INITRAMFS_TMP_S}/lib" || die
-	local assets="${ROOT}"/usr/share/chromeos-assets
-	cp "${assets}"/images/boot_message.png "${INITRAMFS_TMP_S}"/etc/screens
-	cp -r "${assets}"/images/spinner "${INITRAMFS_TMP_S}"/etc/screens
+	cp "${S}"/*.sh "${INITRAMFS_TMP_S}/lib" || die
+
+	# PNG image assets
+	local shared_assets="${ROOT}"/usr/share/chromeos-assets
+	insimage "${shared_assets}"/images/boot_message.png
+	insimage "${S}"/assets/spinner_*.png
+	insimage "${S}"/assets/icon_check.png
+	insimage "${S}"/assets/icon_warning.png
 	${S}/make_images "${S}/localized_text" \
 					 "${INITRAMFS_TMP_S}/etc/screens" || die
 
