@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="cb5371ab8cbea2f7df6adf8a5f7c04786dcf9ca5"
+CROS_WORKON_COMMIT="5f34bc2aab0979bf384fa0400839bdc8f2a348bb"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
-inherit cros-workon autotest-deponly conflict
+inherit cros-workon autotest-deponly conflict cros-debug
 
-DESCRIPTION="Autotest iotools dep"
+DESCRIPTION="Autotest glbench dep"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -21,10 +21,22 @@ IUSE="+autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-AUTOTEST_DEPS_LIST="iotools"
+AUTOTEST_DEPS_LIST="glbench"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
+# deps/glbench
+RDEPEND="${RDEPEND}
+  dev-cpp/gflags
+  chromeos-base/libchrome:0[cros-debug=]
+  virtual/opengl
+  opengles? ( virtual/opengles )
+"
+
 DEPEND="${RDEPEND}"
 
+src_prepare() {
+	autotest-deponly_src_prepare
+	cros-debug-add-NDEBUG
+}
