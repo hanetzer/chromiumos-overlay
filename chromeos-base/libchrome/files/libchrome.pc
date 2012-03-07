@@ -1,5 +1,0 @@
-Name: libchrome
-Description: chrome base library
-Version: 0.0.0
-Requires: glib-2.0
-Libs: -lbase -ldl -lpthread
