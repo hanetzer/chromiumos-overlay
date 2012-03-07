@@ -59,6 +59,7 @@ IUSE_TESTS="
 	+tests_factory_LightSensor
 	+tests_factory_PreFinalCheck
 	+tests_factory_ProbeHWID
+	+tests_factory_Prompt
 	+tests_factory_RebootStub
 	+tests_factory_Review
 	+tests_factory_ScriptWrapper
