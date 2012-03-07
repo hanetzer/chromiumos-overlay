@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="f41527c55134ce3373240759fa3a621481496f4f"
+CROS_WORKON_COMMIT="6a01dab505d3c4aba2a76037ba5200a00606b610"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 inherit cros-debug cros-workon toolchain-funcs
 
@@ -76,7 +76,6 @@ src_install() {
 	dosbin "${S}/cryptohomed"
 	dosbin "${S}/cryptohome"
 	dosbin "${S}/cryptohome-path"
-	dolib "${S}/libcryptohome.so"
 
 	dobin "${S}/email_to_image"
 
