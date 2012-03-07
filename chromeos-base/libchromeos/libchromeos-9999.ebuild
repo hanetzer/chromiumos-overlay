@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 
-LIBCHROME_VERS=( 85268 )
+LIBCHROME_VERS=( 85268 125070 )
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
 
@@ -104,6 +104,7 @@ src_install() {
 
 		# Transitional code: drop once everyone has migrated
 		# to the SLOT-ed packages.
+		v=${LIBCHROME_VERS[0]}
 		dosym libchromeos-${v}.so /usr/$(get_libdir)/libchromeos.so
 		dosym libchromeos-${v}.pc /usr/$(get_libdir)/pkgconfig/libchromeos.pc
 		dosym libpolicy-${v}.so /usr/$(get_libdir)/libpolicy.so
