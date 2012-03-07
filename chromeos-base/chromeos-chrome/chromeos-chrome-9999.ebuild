@@ -488,6 +488,16 @@ decide_chrome_origin() {
 	fi
 }
 
+create_echrome_store_dir_if_not_present() {
+	if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
+		debug-print "${FUNCNAME}: Creating chrome-src directory"
+		addwrite /
+		mkdir -p "${ECHROME_STORE_DIR}" \
+			|| die "can't mkdir ${ECHROME_STORE_DIR}."
+		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
+	fi
+}
+
 src_unpack() {
 	tc-export CC CXX
 	# These are set here because $(whoami) returns the proper user here,
@@ -497,13 +507,7 @@ src_unpack() {
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create chrome-src storage directory and play nicely with sandbox.
-	if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
-		debug-print "${FUNCNAME}: Creating chrome-src directory"
-		addwrite /
-		mkdir -p "${ECHROME_STORE_DIR}" \
-			|| die "can't mkdir ${ECHROME_STORE_DIR}."
-		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
-	fi
+	create_echrome_store_dir_if_not_present
 
 	# Copy in credentials to fake home directory so that build process
 	# can access svn and ssh if needed.
