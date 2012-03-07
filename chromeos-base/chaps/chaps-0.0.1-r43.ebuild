@@ -18,12 +18,14 @@ SLOT="0"
 IUSE="test"
 
 RDEPEND="
+	app-crypt/trousers
 	chromeos-base/chromeos-init
 	chromeos-base/libchrome:0[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/opencryptoki
-	dev-cpp/gflags"
+	dev-cpp/gflags
+	>=dev-db/sqlite-3.6"
 
 DEPEND="${RDEPEND}
 	dev-cpp/gmock
