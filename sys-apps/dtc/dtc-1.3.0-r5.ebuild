@@ -1,38 +1,24 @@
 # Copyright 1999-2011 Gentoo Foundation
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/dtc/dtc-1.3.0.ebuild,v 1.1 2011/06/15 21:19:11 flameeyes Exp $
 
 EAPI=4
-inherit toolchain-funcs
-inherit eutils
+CROS_WORKON_PROJECT="chromiumos/third_party/dtc"
+CROS_WORKON_LOCALNAME="dtc"
 
-MY_P="${PN}-v${PV}"
+inherit toolchain-funcs cros-workon
 
-DESCRIPTION="Open Firmware device-trees compiler"
+DESCRIPTION="Open Firmware device-tree compiler"
 HOMEPAGE="http://www.t2-project.org/packages/dtc.html"
-SRC_URI="http://www.jdl.com/software/${MY_P}.tgz"
-
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 ppc ppc64 x86"
 IUSE=""
 
 RDEPEND=""
 DEPEND="sys-devel/flex
 	sys-devel/bison"
-
-S=${WORKDIR}/${MY_P}
-
-src_prepare() {
-	sed -i -e "s:CFLAGS =:CFLAGS +=:" \
-		   -e "s:CPPFLAGS =:CPPFLAGS +=:" \
-		   -e "s:-Werror::" \
-		   -e "s:-g -Os::" \
-		Makefile || die
-        for f in ${FILESDIR}/*.patch; do
-                epatch $f
-	done
-}
 
 src_compile() {
 	tc-export AR CC
