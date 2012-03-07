@@ -149,7 +149,7 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	app-i18n/ibus
 	arm? ( virtual/opengles )
-	chromeos-base/chromeos-theme
+	!aura? ( chromeos-base/chromeos-theme )
 	chromeos-base/protofiles
 	dev-libs/atk
 	dev-libs/glib
