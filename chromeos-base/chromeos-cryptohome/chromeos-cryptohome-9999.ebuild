@@ -75,7 +75,6 @@ src_install() {
 	dosbin "${S}/cryptohomed"
 	dosbin "${S}/cryptohome"
 	dosbin "${S}/cryptohome-path"
-	dolib "${S}/libcryptohome.so"
 
 	dobin "${S}/email_to_image"
 
