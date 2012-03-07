@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="c8f910a8601eef49cc5d47485f5a9a3af3a32558"
+CROS_WORKON_COMMIT="7119cb14995e03cd2a0699788d1b219867afdbd1"
 CROS_WORKON_PROJECT="chromiumos/platform/crosutils"
 CROS_WORKON_LOCALNAME="../scripts/"
 
