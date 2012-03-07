@@ -1,36 +1,38 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-inherit cros-workon cros-au
+EAPI="4"
+CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
+
+inherit cros-debug cros-workon cros-au
 
 DESCRIPTION="Chrome OS verified boot tools"
+
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="32bit_au minimal rbtest tpmtests"
-EAPI="2"
-CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 RDEPEND="app-crypt/trousers
-	chromeos-base/libchrome
+	chromeos-base/libchrome:85268[cros-debug=]
 	!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
 	sys-apps/util-linux
 	!<=chromeos-base/vboot_reference-firmware-0.0.1-r307"
-
-DEPEND="$RDEPEND
+DEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-cpp/gtest"
 
 _src_compile_main() {
 	mkdir "${S}"/build-main
-	tc-export CC AR CXX
+	tc-export CC AR CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
 	# Vboot reference knows the flags to use
 	unset CFLAGS
 	emake BUILD="${S}"/build-main \
 	      ARCH=$(tc-arch) \
 	      MINIMAL=$(usev minimal) all \
-	      $(usev rbtest rbtest "") || die
+	      $(usev rbtest rbtest "")
 	unset CC AR CXX
 }
 
@@ -44,13 +46,12 @@ _src_compile_au() {
 		AU_TARGETS="libcgpt_cc libdump_kernel_config cgptmanager_tests"
 		einfo "Building native AU_TARGETS: ${AU_TARGETS}"
 	fi
-	tc-export CC AR CXX
+	tc-export CC AR CXX PKG_CONFIG
 	emake BUILD="${S}"/build-au/ \
 	      CC="${CC}" \
 	      CXX="${CXX}" \
 	      ARCH=$(tc-arch) MINIMAL=$(usev minimal) \
-	      ${AU_TARGETS} \
-	      || die
+	      ${AU_TARGETS}
 	use 32bit_au && board_teardown_32bit_au_env
 }
 
@@ -86,10 +87,10 @@ src_install() {
 			dobin "${S}"/build-main/"${prog}"
 		done
 
-                einfo "Installing TPM tools"
-                exeinto /usr/sbin
-                doexe "utility/tpm-nvsize"
-                doexe "utility/chromeos-tpm-recovery"
+		einfo "Installing TPM tools"
+		exeinto /usr/sbin
+		doexe "utility/tpm-nvsize"
+		doexe "utility/chromeos-tpm-recovery"
 
 		einfo "Installing dev tools"
 		dst_dir='/usr/share/vboot/bin'
@@ -117,28 +118,14 @@ src_install() {
 		for key in ${keys_to_install}; do
 			doins "tests/devkeys/${key}"
 		done
-
 	else
 		# Installing on host.
 		emake BUILD="${S}"/build-main \
-		      DESTDIR="${D}/usr/bin" install || \
-		      die "${PN} install failed."
-
-		# Install bitmap-generating scripts to /usr/share/vboot/bitmaps
-		einfo "Installing bitmap-generating scripts"
-		dst_dir='/usr/share/vboot/bitmaps'
-		dodir "${dst_dir}"
-		exeinto "${dst_dir}"
-		doexe scripts/bitmaps/*.sh
-		dst_dir='/usr/share/vboot/bitmaps/originals'
-		dodir "${dst_dir}"
-		insinto "${dst_dir}"
-		doins scripts/bitmaps/originals/*
-
+		      DESTDIR="${D}/usr/bin" install
 	fi
 	if use rbtest; then
 		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" -C tests \
-		      install-rbtest || die "${PN} install failed."
+		      install-rbtest
 	fi
 	if use tpmtests; then
 		into /usr
@@ -164,10 +151,10 @@ src_install() {
 	doins -r firmware/include/*
 
 	insinto /usr/include/vboot/${subdir}
-	doins "utility/include/kernel_blob.h" || die
-	doins "utility/include/dump_kernel_config.h" || die
-	doins "cgpt/CgptManager.h" || die
-	doins "firmware/lib/cgptlib/include/gpt.h" || die
+	doins "utility/include/kernel_blob.h"
+	doins "utility/include/dump_kernel_config.h"
+	doins "cgpt/CgptManager.h"
+	doins "firmware/lib/cgptlib/include/gpt.h"
 
 	# Install static library needed by install programs.
 	# we need board_setup_32bit_au_env again so dolib.a installs to the
@@ -175,10 +162,10 @@ src_install() {
 	use 32bit_au && board_setup_32bit_au_env
 
 	einfo "Installing dump_kernel_config library"
-	dolib.a build-au/libdump_kernel_config.a || die
+	dolib.a build-au/libdump_kernel_config.a
 
 	einfo "Installing C++ version of cgpt static library:libcgpt-cc.a"
-	dolib.a build-au/cgpt/libcgpt-cc.a || die
+	dolib.a build-au/cgpt/libcgpt-cc.a
 
 	use 32bit_au && board_teardown_32bit_au_env
 }
