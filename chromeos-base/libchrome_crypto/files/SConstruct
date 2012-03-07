@@ -1,10 +1,14 @@
 # -*- python -*-
-
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import os
+import SCons.Util
+
+PKG_CONFIG = os.environ.get('PKG_CONFIG', 'pkg-config')
+BASE_VER = os.environ['BASE_VER']
+libchrome = 'chrome-%s' % BASE_VER
 
 env = Environment()
 
@@ -19,13 +23,17 @@ sources = env.Split("""
                     """)
 
 env.Append(
-    CPPPATH=['files'],
     CCFLAGS=['-g']
 )
-for key in Split('CC CXX AR RANLIB LD NM CFLAGS CCFLAGS'):
+for key in Split('CC CXX AR RANLIB LD NM CFLAGS CXXFLAGS CCFLAGS'):
   value = os.environ.get(key)
   if value:
     env[key] = Split(value)
+
+if os.environ.has_key('CPPFLAGS'):
+  env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CPPFLAGS'])
+if os.environ.has_key('LDFLAGS'):
+  env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
 
 env['CCFLAGS'] += ['-fPIC',
                    '-fno-exceptions',
@@ -37,12 +45,11 @@ env['CCFLAGS'] += ['-fPIC',
                    '-I..']
 
 # Fix issue with scons not passing some vars through the environment.
-for key in Split('PKG_CONFIG SYSROOT'):
+for key in Split('PKG_CONFIG_LIBDIR PKG_CONFIG_PATH SYSROOT'):
   if os.environ.has_key(key):
     env['ENV'][key] = os.environ[key]
 
 # glib, nss environment
-env.ParseConfig('%s --cflags --libs glib-2.0 gtk+-2.0 nss'
-                % env['ENV']['PKG_CONFIG'])
+env.ParseConfig('%s --cflags --libs nss lib%s' % (PKG_CONFIG, libchrome))
 
 env.StaticLibrary('chrome_crypto', sources)
