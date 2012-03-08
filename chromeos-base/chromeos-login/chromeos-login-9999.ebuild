@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="~arm ~amd64 ~x86"
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon multilib toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
@@ -46,6 +46,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	dev-cpp/gmock
+	sys-libs/glibc
 	test? ( dev-cpp/gtest )"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
@@ -62,6 +63,12 @@ src_compile() {
 	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake login_manager || die "chromeos-login compile failed."
+
+	# Build locale-archive for Chrome. This is a temporary workaround for
+	# crbug.com/116999.
+	# TODO(yusukes): Fix Chrome and remove the file.
+	mkdir -p "${T}/usr/lib64/locale"
+	localedef --prefix="${T}" -c -f UTF-8 -i en_US en_US.UTF-8 || die
 }
 
 src_test() {
@@ -89,6 +96,10 @@ src_install() {
 
 	insinto /usr/share/misc
 	doins "${S}/recovery_ui.html"
+
+	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
+	insinto /usr/$(get_libdir)/locale
+	doins "${T}/usr/lib64/locale/locale-archive"
 
 	# For user session processes.
 	dodir /etc/skel/log
