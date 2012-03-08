@@ -84,7 +84,6 @@ RDEPEND="${RDEPEND}
 	X? (
 		chromeos-base/chromeos-chrome
 		chromeos-base/chromeos-fonts
-		chromeos-base/chromeos-wm
 		chromeos-base/flash-war
 		chromeos-base/xorg-conf
 		x11-apps/xinit
