@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_COMMIT="3e2fae1885dc39c0715fbe4d19f938a5f99fd643"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_test_tools"
 
@@ -22,9 +22,13 @@ RDEPEND="dev-lang/python
 CROS_WORKON_LOCALNAME="factory_test_tools"
 
 src_install() {
-	dodir /usr/gooftool
-	insinto /usr/gooftool
-	exeinto /usr/gooftool
-	doins *.png
+	insinto /usr/local/factory/bin
+	exeinto /usr/local/factory/bin
 	doexe gooftool *.sh *.py
+	doins *.png
+	# Install symlink files
+	doins edid hwid_tool
+	# TODO(hungte) Remove following legacy folders after we've changed all
+	# reference of gooftool into /usr/loca/factory/bin (ex, R20).
+	dosym factory/bin /usr/local/gooftool
 }
