@@ -16,8 +16,10 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="test"
 
+LIBCHROME_VERS="85268"
+
 RDEPEND="chromeos-base/flimflam
-	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/metrics
 	dev-cpp/gflags
 	>=dev-cpp/glog-0.3.1
@@ -38,7 +40,7 @@ src_prepare() {
 src_configure() {
 	# set NDEBUG (or not) based on value of cros-debug USE flag
 	cros-debug-add-NDEBUG
-	econf
+	econf --with-libbase-ver=${LIBCHROME_VERS}
 }
 
 src_compile() {
