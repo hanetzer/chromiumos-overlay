@@ -4,6 +4,7 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/dtc/dtc-1.3.0.ebuild,v 1.1 2011/06/15 21:19:11 flameeyes Exp $
 
 EAPI=4
+CROS_WORKON_COMMIT="d3d4362284f95202ba68dfb660433a6b889eb9fc"
 CROS_WORKON_PROJECT="chromiumos/third_party/dtc"
 CROS_WORKON_LOCALNAME="dtc"
 
