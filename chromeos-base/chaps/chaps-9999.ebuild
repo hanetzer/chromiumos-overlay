@@ -56,5 +56,8 @@ src_install() {
 	# Install upstart config file.
 	insinto /etc/init
 	doins chapsd.conf || die
+	# Install headers for use by clients.
+	insinto /usr/include/chaps
+	doins login_event_client.h || die
 }
 
