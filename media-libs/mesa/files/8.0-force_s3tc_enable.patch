@@ -1,0 +1,15 @@
+diff --git a/src/gallium/auxiliary/util/u_format_s3tc.c b/src/gallium/auxiliary/util/u_format_s3tc.c
+index d8a7c0d..d5ddf48 100644
+--- a/src/gallium/auxiliary/util/u_format_s3tc.c
++++ b/src/gallium/auxiliary/util/u_format_s3tc.c
+@@ -119,8 +119,8 @@ util_format_s3tc_init(void)
+ 
+    library = util_dl_open(DXTN_LIBNAME);
+    if (!library) {
+-      if (getenv("force_s3tc_enable") &&
+-          !strcmp(getenv("force_s3tc_enable"), "true")) {
++      if (1 /*getenv("force_s3tc_enable") &&
++          !strcmp(getenv("force_s3tc_enable"), "true")*/) {
+          debug_printf("couldn't open " DXTN_LIBNAME ", enabling DXTn due to "
+             "force_s3tc_enable=true environment variable\n");
+          util_format_s3tc_enabled = TRUE;

@@ -1,0 +1,21 @@
+diff -aur Mesa-8.0-p2/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp Mesa-8.0-p1/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
+--- Mesa-8.0-p2/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp	2012-03-01 18:38:47.306477000 -0800
++++ Mesa-8.0-p1/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp	2012-03-02 14:56:35.372039000 -0800
+@@ -258,7 +258,7 @@
+       return;
+    }
+ 
+-#if HAVE_LLVM >= 0x0301
++#if HAVE_LLVM >= 0x0302
+    TargetOptions options;
+ #if defined(DEBUG)
+    options.JITEmitDebugInfo = true;
+@@ -270,7 +270,7 @@
+    options.NoFramePointerElim = true;
+ #endif
+    TargetMachine *TM = T->createTargetMachine(Triple, sys::getHostCPUName(), "", options);
+-#elif HAVE_LLVM == 0x0300
++#elif HAVE_LLVM >= 0x0300
+    TargetMachine *TM = T->createTargetMachine(Triple, sys::getHostCPUName(), "");
+ #else
+    TargetMachine *TM = T->createTargetMachine(Triple, "");

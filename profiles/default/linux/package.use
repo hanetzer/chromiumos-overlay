@@ -15,6 +15,8 @@ dev-vcs/subversion	-dso webdav-serf
 media-gfx/imagemagick   gs truetype
 media-libs/freeimage	-cxx
 media-libs/gd           png
+# We don't want any driver/hw rendering on the host
+media-libs/mesa         -llvm -gallium -classic
 net-misc/curl		ares static-libs
 net-wireless/bluez	-consolekit
 sci-geosciences/gpsd	-cxx

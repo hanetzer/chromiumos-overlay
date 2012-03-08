@@ -25,6 +25,8 @@ chromeos-base/flimflam	debug resolvfiles
 chromeos-base/vboot_reference minimal
 media-gfx/imagemagick   -gs png -truetype
 media-libs/libsndfile	minimal
+# disabled in profiles/default/linux/package.use
+media-libs/mesa		llvm gallium classic
 media-libs/opencv	gtk python png jpeg tiff v4l
 media-sound/pulseaudio	bluetooth dbus -esd
 net-analyzer/tcpdump	-chroot
