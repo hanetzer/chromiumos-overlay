@@ -19,9 +19,7 @@ IUSE="32bit_au cros_host"
 
 DEPEND="
 	!cros_host? (
-		chromeos-base/libchrome:0[cros-debug=]
 		chromeos-base/vboot_reference
-		sys-libs/libbb
 	)"
 
 # TODO(adlr): remove coreutils dep if we move to busybox
