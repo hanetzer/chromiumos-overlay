@@ -84,11 +84,8 @@ function touch_init_py() {
 }
 
 function setup_cross_toolchain() {
-	if tc-is-cross-compiler ; then
-		tc-export CC CXX AR RANLIB LD NM STRIP
-		export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-		export CCFLAGS="$CFLAGS"
-	fi
+	tc-export CC CXX AR RANLIB LD NM STRIP PKG_CONFIG
+	export CCFLAGS="$CFLAGS"
 
 	# TODO(fes): Check for /etc/hardened for now instead of the hardened
 	# use flag because we aren't enabling hardened on the target board.
