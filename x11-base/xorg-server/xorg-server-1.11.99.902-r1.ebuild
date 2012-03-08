@@ -133,8 +133,10 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
 	# Dont load a default X cursor.
 	"${FILESDIR}/1.9.3-no-default-cursor.patch"
-    # Ability to run without root privs
-    "${FILESDIR}/1.11.99.902-nohwaccess.patch"
+	# Ability to run without root privs
+	"${FILESDIR}/1.11.99.902-nohwaccess.patch"
+	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
+	"${FILESDIR}/1.11.99.902-safer-position-sprite.patch"
 )
 
 pkg_pretend() {
