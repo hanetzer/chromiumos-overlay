@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_COMMIT="4f27bf7eddffc420542d6c1ba58380c9291736ce"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
 
-inherit toolchain-funcs cros-debug cros-workon cros-au
+inherit toolchain-funcs cros-workon cros-au
 
 DESCRIPTION="File system integrity image generator for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="32bit_au test valgrind splitdebug"
 
-RDEPEND="chromeos-base/libchrome:0[cros-debug=]"
+RDEPEND=""
 
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.
@@ -32,7 +32,6 @@ DEPEND="${RDEPEND}
 src_compile() {
 	use 32bit_au && board_setup_32bit_au_env
 	tc-export AR CC CXX OBJCOPY STRIP
-	cros-debug-add-NDEBUG
 	emake \
 		OUT="${S}/build" \
 		WITH_CHROME=$(use test && echo 1 || echo 0) \
