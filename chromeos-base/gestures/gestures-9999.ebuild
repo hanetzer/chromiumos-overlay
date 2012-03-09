@@ -1,11 +1,11 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
 
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
-inherit toolchain-funcs cros-debug cros-workon
+inherit toolchain-funcs multilib cros-debug cros-workon
 
 DESCRIPTION="Gesture recognizer library"
 HOMEPAGE="http://www.chromium.org/"
@@ -43,5 +43,5 @@ src_test() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "Install failed"
+	emake DESTDIR="${D}" LIBDIR="/usr/$(get_libdir)" install || die "Install failed"
 }
