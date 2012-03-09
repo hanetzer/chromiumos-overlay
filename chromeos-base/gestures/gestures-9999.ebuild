@@ -1,19 +1,20 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
-
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
+
 inherit toolchain-funcs multilib cros-debug cros-workon
 
 DESCRIPTION="Gesture recognizer library"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
-IUSE="-cros-debug"
 KEYWORDS="~amd64 ~arm ~x86"
+IUSE="-cros-debug"
 
 RDEPEND="chromeos-base/libchrome:0[cros-debug=]"
 DEPEND="dev-cpp/gtest
@@ -25,23 +26,19 @@ src_compile() {
 	cros-debug-add-NDEBUG
 
 	emake clean  # TODO(adlr): remove when a better solution exists
-	emake || die "Gestures compile failed"
+	emake
 }
 
 src_test() {
-	tc-export CXX
-	cros-debug-add-NDEBUG
-
-	TARGETS="test"
-	emake ${TARGETS} || die "failed to build tests"
+	emake test
 
 	if ! use x86 ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		./test
+		./test || die
 	fi
 }
 
 src_install() {
-	emake DESTDIR="${D}" LIBDIR="/usr/$(get_libdir)" install || die "Install failed"
+	emake DESTDIR="${D}" LIBDIR="/usr/$(get_libdir)" install
 }
