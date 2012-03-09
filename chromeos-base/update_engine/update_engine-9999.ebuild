@@ -1,17 +1,19 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
-inherit toolchain-funcs cros-debug cros-workon
 
-DESCRIPTION="Chrome OS Update Engine."
+inherit toolchain-funcs cros-debug cros-workon scons-utils
+
+DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
-IUSE="cros_host -delta_generator"
 KEYWORDS="~amd64 ~arm ~x86"
+IUSE="cros_host -delta_generator"
 
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
@@ -38,29 +40,26 @@ DEPEND="dev-cpp/gmock
 	${RDEPEND}"
 
 src_compile() {
-	tc-export CC CXX AR RANLIB LD NM
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
 
-	scons ${MAKEOPTS} || die "update_engine compile failed"
+	escons
 }
 
 src_test() {
-	tc-export CC CXX AR RANLIB LD NM
-	cros-debug-add-NDEBUG
-	export CCFLAGS="$CFLAGS"
-
 	TARGETS="update_engine_unittests test_http_server delta_generator"
-	scons ${MAKEOPTS} ${TARGETS} || die "failed to build tests"
+	escons ${TARGETS}
 
 	if ! use x86 ; then
-	  echo Skipping tests on non-x86 platform...
+		einfo "Skipping tests on non-x86 platform..."
 	else
-	  for test in ./*_unittests; do
-		"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' || die "$test failed"
-		sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
-		  "$test" --gtest_filter='*.RunAsRoot*' || die "$test failed"
-	  done
+		local test
+		for test in ./*_unittests; do
+			"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' || die "$test failed"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
+				"$test" --gtest_filter='*.RunAsRoot*' || die "$test failed"
+		done
 	fi
 }
 
@@ -68,9 +67,7 @@ src_install() {
 	dosbin update_engine
 	dobin update_engine_client
 
-	if use delta_generator; then
-	  dobin delta_generator
-	fi
+	use delta_generator && dobin delta_generator
 
 	insinto /usr/share/dbus-1/services
 	doins org.chromium.UpdateEngine.service
