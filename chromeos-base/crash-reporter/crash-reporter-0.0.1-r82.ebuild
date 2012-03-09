@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="4effe5c069a3a9b47b721fea16e8c0789edda51e"
+CROS_WORKON_COMMIT="dcb659cd48f5851186c5f72c0147b14c04067343"
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
 
 inherit cros-debug cros-workon toolchain-funcs

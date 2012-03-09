@@ -1,8 +1,8 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="fd194c232f305e3da3fa81673c4f43bf6b12f9e3"
+CROS_WORKON_COMMIT="8336e88e30a73c8d71f6ec813a3a84888693a6f0"
 CROS_WORKON_PROJECT="chromiumos/platform/cromo"
 CROS_WORKON_USE_VCSID="1"
 
@@ -48,7 +48,7 @@ src_test() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake $(make_flags) tests || die "could not build tests"
-	if ! use x86; then
+	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
 		for test in ./*_unittest; do
