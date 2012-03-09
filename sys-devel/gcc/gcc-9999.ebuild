@@ -172,6 +172,7 @@ INFOPATH="$(get_data_dir)/info"
 STDCXX_INCDIR="$(get_stdcxx_incdir)"
 CTARGET=${CTARGET}
 GCC_PATH="$(get_bin_dir)"
+GCC_VER="$(get_gcc_base_ver)"
 EOF
 	newins env.d $(get_gcc_config_file)
 	cd -
