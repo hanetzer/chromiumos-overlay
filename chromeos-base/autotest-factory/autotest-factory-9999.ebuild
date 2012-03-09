@@ -42,6 +42,8 @@ IUSE_TESTS="
 	+tests_factory_Antenna
 	+tests_factory_Audio
 	+tests_factory_AudioInternalLoopback
+	+tests_factory_AudioLoop
+	+tests_factory_AudioQuality
 	+tests_factory_Camera
 	+tests_factory_Cellular
 	+tests_factory_DeveloperRecovery
