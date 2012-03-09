@@ -142,14 +142,14 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEF
 
 TEST_FILES="ffmpeg_tests"
 if [ "$ARCH" = "arm" ]; then
-  TEST_FILES="${TEST_FILES} omx_video_decode_accelerator_unittest ppapi_example_gles2"
+  TEST_FILES="${TEST_FILES} omx_video_decode_accelerator_unittest ppapi_example_video_decode"
 fi
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	app-i18n/ibus
 	arm? ( virtual/opengles )
-	chromeos-base/chromeos-theme
+	!aura? ( chromeos-base/chromeos-theme )
 	chromeos-base/protofiles
 	dev-libs/atk
 	dev-libs/glib
