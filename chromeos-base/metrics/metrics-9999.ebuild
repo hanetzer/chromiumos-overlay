@@ -38,8 +38,8 @@ src_test() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake tests
-	if ! use x86; then
-		echo Skipping unit tests on non-x86 platform
+	if ! use x86 && ! use amd64 ; then
+		elog "Skipping unit tests on non-x86 platform"
 	else
 		for test in ./*_test; do
 			# Always test the shared object we just built by
