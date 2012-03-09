@@ -375,15 +375,23 @@ function autotest_src_install() {
 	chmod -R a+x "${D}"/usr/local/autotest/*
 }
 
-function autotest_prepackage() {
+# Sets up autotest packages in build root for use by developers when running
+# tests.
+function autotest_pkg_postinst() {
 	are_we_used || return 0
-	TEST_DEP="${1}"
-	einfo "Pre-packaging test dep ${TEST_DEP}"
+	einfo "Creating autotest packages."
+	local autotest_dir="${ROOT}/usr/local/autotest"
+	local packages_dir="${autotest_dir}/packages"
+	local checksum_file="${packages_dir}/packages.checksum"
 
-	dodir /usr/local/autotest-pkgs
-	"${AUTOTEST_WORKDIR}"/utils/packager.py -d "${TEST_DEP}" \
-		-r "${D}"/usr/local/autotest-pkgs upload \
-		|| die "Can't preinstall ${1}"
+	mkdir -p "${packages_dir}"
+	touch "${checksum_file}"
+
+	# Build packages from the workdir and install them into the buildroot.
+	flock "${checksum_file}" \
+		-c "${autotest_dir}/utils/packager.py \
+				-r ${packages_dir} --all upload" ||
+		die "Could not create packages."
 }
 
-EXPORT_FUNCTIONS src_compile src_prepare src_install
+EXPORT_FUNCTIONS src_compile src_prepare src_install pkg_postinst
