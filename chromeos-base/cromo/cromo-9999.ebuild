@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -47,7 +47,7 @@ src_test() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake $(make_flags) tests || die "could not build tests"
-	if ! use x86; then
+	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
 		for test in ./*_unittest; do
