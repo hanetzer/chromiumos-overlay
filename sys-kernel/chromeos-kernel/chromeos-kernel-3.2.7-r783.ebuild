@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="8b77f706b3178994554950314cda1872427138be"
+CROS_WORKON_COMMIT="0dc8e3d76b8f1a36210d986a7bb3ba4ba8c1a79a"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
