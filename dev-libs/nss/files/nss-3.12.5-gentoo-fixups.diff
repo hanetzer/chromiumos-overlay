@@ -204,7 +204,7 @@ diff -urN nss-3.12.5-orig/mozilla/security/nss/config/nss.pc.in nss-3.12.5/mozil
 +Description: Network Security Services
 +Version: @NSS_MAJOR_VERSION@.@NSS_MINOR_VERSION@.@NSS_PATCH_VERSION@
 +Requires: nspr >= 4.8
-+Libs: -L${libdir} -lssl3 -lsmime3 -lnssutil3 -lnss3 -Wl,-R${libdir}
++Libs: -L${libdir} -lssl3 -lsmime3 -lnssutil3 -lnss3
 +Cflags: -I${includedir}
 +
 diff -urN nss-3.12.5-orig/mozilla/security/nss/Makefile nss-3.12.5/mozilla/security/nss/Makefile
