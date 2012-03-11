@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="chromeos-base/libchrome:0[cros-debug=]
+RDEPEND="chromeos-base/libchrome:85268[cros-debug=]
 	 chromeos-base/libchromeos
 	 dev-cpp/gflags
 	 dev-libs/openssl

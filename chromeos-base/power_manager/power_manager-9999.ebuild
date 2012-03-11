@@ -1,4 +1,4 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -26,7 +26,7 @@ RDEPEND="app-misc/ddccontrol
 	x11-libs/libXext"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/libchrome:85268[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )

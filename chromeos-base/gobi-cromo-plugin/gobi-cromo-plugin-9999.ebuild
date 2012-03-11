@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="install_tests"
 
 RDEPEND="chromeos-base/cromo
-	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/libchrome:85268[cros-debug=]
 	dev-cpp/glog
 	dev-libs/dbus-c++
 	chromeos-base/metrics

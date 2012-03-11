@@ -6,6 +6,8 @@ CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="~arm ~amd64 ~x86"
 
+LIBCHROME_VERS="125070"
+
 inherit cros-debug cros-workon multilib toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
@@ -43,8 +45,8 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 
 DEPEND="${RDEPEND}
 	chromeos-base/bootstat
-	>=chromeos-base/libchrome-85268:0[cros-debug=]
-	chromeos-base/libchrome_crypto
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	>=chromeos-base/libchrome_crypto-${LIBCHROME_VERS}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	dev-cpp/gmock

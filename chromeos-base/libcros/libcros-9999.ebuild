@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
@@ -24,7 +24,7 @@ RDEPEND="chromeos-base/flimflam
 
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-assets
-	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/libchrome:85268[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	chromeos-base/update_engine

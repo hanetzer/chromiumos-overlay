@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="test valgrind"
 
-RDEPEND="test? ( chromeos-base/libchrome:0[cros-debug=] )"
+RDEPEND="test? ( chromeos-base/libchrome:85268[cros-debug=] )"
 
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.
