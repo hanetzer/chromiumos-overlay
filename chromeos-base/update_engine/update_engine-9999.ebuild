@@ -51,14 +51,18 @@ src_test() {
 	TARGETS="update_engine_unittests test_http_server delta_generator"
 	escons ${TARGETS}
 
-	if ! use x86 ; then
+	if ! use x86 && ! use amd64 ; then
 		einfo "Skipping tests on non-x86 platform..."
 	else
 		local test
 		for test in ./*_unittests; do
+			# We need to set PATH so that the `openssl` in the target
+			# sysroot gets executed instead of the host one (which is
+			# compiled differently). http://crosbug.com/27683
+			PATH="$SYSROOT/usr/bin:$PATH" \
 			"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' || die "$test failed"
-			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" \
-				"$test" --gtest_filter='*.RunAsRoot*' || die "$test failed"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
+				"$test" --gtest_filter='*.RunAsRoot*' >& $T/log || die "$test failed"
 		done
 	fi
 }
