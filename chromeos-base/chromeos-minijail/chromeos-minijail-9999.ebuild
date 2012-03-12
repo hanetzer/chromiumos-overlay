@@ -37,7 +37,7 @@ src_test() {
 
 	# TODO(wad) switch to common.mk to get qemu and valgrind coverage
 	emake libminijail_unittest || die "libminijail_unittest compile failed."
-	if use x86 ; then
+	if use x86 || use amd64 ; then
 		./libminijail_unittest  || \
 		    die "unit tests failed!"
 	fi
