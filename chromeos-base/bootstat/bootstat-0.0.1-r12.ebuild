@@ -26,7 +26,7 @@ src_compile() {
 src_test() {
 	tc-export CC CXX AR PKG_CONFIG
 	emake tests || die "could not build tests"
-	if ! use x86; then
+	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
 		for test in ./*_test; do
