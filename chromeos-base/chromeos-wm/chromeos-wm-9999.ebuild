@@ -67,7 +67,7 @@ src_compile() {
 src_test() {
 	scons -j$(print_num_jobs) tests || die "failed to build tests"
 
-	if ! use x86 ; then
+	if ! use x86 && ! use amd64 ; then
 		echo Skipping tests on non-x86 platform...
 	else
 		for test in $(find -name '*_test' | sort); do
