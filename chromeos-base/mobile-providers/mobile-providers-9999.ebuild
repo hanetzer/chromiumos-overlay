@@ -35,7 +35,7 @@ src_compile() {
 
 src_test() {
 	emake check || die "building tests failed"
-	if use x86; then
+	if use x86 || use amd64 ; then
 		gtester --verbose src/mobile_provider_unittest
 	else
 		echo "Skipping tests on non-x86 platform..."
