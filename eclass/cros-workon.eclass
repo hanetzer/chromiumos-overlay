@@ -170,21 +170,12 @@ set_vcsid() {
 cros-workon_src_unpack() {
 	local fetch_method # local|git
 
-	case ${PV} in
-	(9999)
+	if [[ "${PV}" == "9999" ]]; then
+		# Live packages
 		fetch_method=local
-		;;
-	(*)
-		if [[ -z "${CROS_WORKON_SRCROOT}" ]]; then # old workflow
-			fetch_method=local
-			# HACK: this needs to go away with the transition to new workflow
-			# and also the same thing below
-			DONTFETCH=1
-		else # new workflow
-			fetch_method=git
-		fi
-		;;
-	esac
+	else
+		fetch_method=git
+	fi
 
 	# Hack
 	# TODO(msb): remove once we've resolved the include path issue
