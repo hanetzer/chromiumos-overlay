@@ -26,7 +26,7 @@ RDEPEND=""
 CROS_WORKON_LOCALNAME="../platform/initramfs"
 
 INITRAMFS_TMP_S=${WORKDIR}/initramfs_tmp
-INITRAMFS_FILE="initramfs.cpio.gz"
+INITRAMFS_FILE="initramfs.cpio.xz"
 
 # dobin for initramfs
 idobin() {
@@ -113,7 +113,8 @@ build_initramfs_file() {
 	# The kernel emake expects the file in cpio format.
 	( cd "${INITRAMFS_TMP_S}"
 	  find . | cpio -o -H newc |
-		gzip -9 > "${WORKDIR}/${INITRAMFS_FILE}" ) ||
+		xz -9 --check=crc32 --lzma2=dict=512KiB > \
+		"${WORKDIR}/${INITRAMFS_FILE}" ) ||
 		die "cannot package initramfs"
 }
 

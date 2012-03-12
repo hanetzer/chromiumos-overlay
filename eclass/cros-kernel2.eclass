@@ -58,7 +58,7 @@ CONFIG_HIGHMEM64G=y
 # - VFAT FS support for EFI System Partition updates.
 initramfs_desc="initramfs"
 initramfs_config="
-CONFIG_INITRAMFS_SOURCE=\"%ROOT%/var/lib/misc/initramfs.cpio.gz\"
+CONFIG_INITRAMFS_SOURCE=\"%ROOT%/var/lib/misc/initramfs.cpio.xz\"
 CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
 CONFIG_NLS_CODEPAGE_437=y
