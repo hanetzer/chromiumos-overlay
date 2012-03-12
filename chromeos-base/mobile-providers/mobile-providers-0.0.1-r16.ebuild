@@ -1,5 +1,5 @@
 EAPI="2"
-CROS_WORKON_COMMIT="688503ac37214fe4d6dda4091f9423e296a8baf8"
+CROS_WORKON_COMMIT="65f8961d6138281df30f939b63e8ddcafba5cb56"
 CROS_WORKON_PROJECT="chromiumos/third_party/mobile-broadband-provider-info"
 
 inherit autotools cros-workon
