@@ -13,7 +13,7 @@ DESCRIPTION="X.Org X servers"
 KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86 ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
-IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev tegra"
+IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev tegra broken_partialswaps"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -138,6 +138,20 @@ PATCHES=(
 	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
 	"${FILESDIR}/1.11.99.902-safer-position-sprite.patch"
 )
+
+src_prepare() {
+	# Partial flips
+	if use broken_partialswaps; then
+		PATCHES+=(
+		"${FILESDIR}/1.12.0-emulate-partial-flips.patch"
+		)
+	fi
+
+	for patch_file in "${PATCHES[@]}"; do
+		epatch $patch_file
+	done
+
+}
 
 pkg_pretend() {
 	# older gcc is not supported

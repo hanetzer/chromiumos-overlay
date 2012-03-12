@@ -10,7 +10,7 @@ inherit linux-info xorg-2
 DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="amd64 ~ia64 x86 -x86-fbsd"
-IUSE="dri sna xvmc -pageflipping"
+IUSE="dri sna xvmc broken_partialswaps"
 
 RDEPEND="x11-libs/libXext
 	x11-libs/libXfixes
@@ -26,21 +26,28 @@ DEPEND="${RDEPEND}
 	>=x11-proto/dri2proto-2.6"
 
 PATCHES=(
-	# Copy the initial framebuffer contents when starting X so we can get
-	# seamless transitions.
+ 	# Copy the initial framebuffer contents when starting X so we can get
+ 	# seamless transitions.
 	"${FILESDIR}/2.16.0-copy-fb.patch"
-	# Prevent X from touching boot-time gamma settings.
+ 	# Prevent X from touching boot-time gamma settings.
 	"${FILESDIR}/2.14.0-no-gamma.patch"
-	# Change order of function calls.
+ 	# Change order of function calls.
 	"${FILESDIR}/2.16.0-display-order.patch"
 )
 
-if ! use pageflipping; then
-	PATCHES+=(
-		# Disable pageflipping.
-		"${FILESDIR}/2.16.0-noflips.patch"
-	)
-fi
+src_prepare() {
+	# Disable triple buffering since we need double buffering
+	# to implement partial updates on top of flips
+	if use broken_partialswaps; then
+		PATCHES+=(
+		"${FILESDIR}/2.16.0-no-triple.patch"
+		)
+	fi
+
+	for patch_file in "${PATCHES[@]}"; do
+		epatch $patch_file
+	done
+}
 
 pkg_setup() {
 	xorg-2_pkg_setup
