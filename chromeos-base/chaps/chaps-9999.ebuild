@@ -46,6 +46,7 @@ src_test() {
 
 src_install() {
 	dosbin build-opt/chapsd || die
+	dobin build-opt/p11_replay || die
 	dolib.so build-opt/libchaps.so || die
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
