@@ -19,9 +19,7 @@ IUSE="cros_host"
 
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
-	dev-libs/nss
-	x11-libs/libX11
-	x11-libs/libXi"
+	dev-libs/nss"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	cros_host? ( dev-util/scons )"
@@ -38,6 +36,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/base-125070-DispatchToMethod-unused.patch
 	epatch "${FILESDIR}"/base-125070-headers.patch
 	epatch "${FILESDIR}"/base-85268-ThreadRestrictions-unused.patch
+	epatch "${FILESDIR}"/base-125070-no-X.patch
 }
 
 src_compile() {

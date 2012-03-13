@@ -104,14 +104,6 @@ base_libs = [
     'pc_libs' : 'glib-2.0',
   },
   {
-    'name' : 'x11',
-    'sources' : """
-                message_pump_x.cc
-                """,
-    'libs' : 'X11 Xi base-glib-${bslot}',
-    'pc_libs' : 'glib-2.0',
-  },
-  {
     'name' : 'event',
     'sources' : """
                 message_loop.cc
@@ -124,7 +116,7 @@ base_libs = [
                 threading/thread.cc
                 tracking_info.cc
                 """,
-    'libs' : 'event base-glib-${bslot} base-x11-${bslot}',
+    'libs' : 'event base-glib-${bslot}',
     'pc_libs' : 'glib-2.0',
   },
   {
