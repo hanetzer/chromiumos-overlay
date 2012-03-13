@@ -1,6 +1,16 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Note: the ${PV} should represent the overall svn rev number of the
+# chromium tree that we're extracting from rather than the svn rev of
+# the last change actually made to the base subdir.  This way packages
+# from other locations (like libchrome_crypto) can be coordinated.
+
+# XXX: Based on the above logic, this particular version should have
+#      been labeled as rev 125116 since that is what the LKGR we were
+#      using (19.0.1061.0) was pegged to.  Oh well, not a biggie;
+#      we'll fix it in the next rev bump.
+
 EAPI="4"
 CROS_WORKON_COMMIT="51d55aa18d4b8b3b137c69ea2aa7db1a82d52079"
 CROS_WORKON_PROJECT="chromium/src/base"

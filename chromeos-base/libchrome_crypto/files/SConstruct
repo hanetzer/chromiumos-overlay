@@ -20,6 +20,7 @@ sources = env.Split("""
                     rsa_private_key_nss.cc
                     signature_creator_nss.cc
                     signature_verifier_nss.cc
+                    symmetric_key_nss.cc
                     """)
 
 env.Append(
@@ -53,3 +54,12 @@ for key in Split('PKG_CONFIG_LIBDIR PKG_CONFIG_PATH SYSROOT'):
 env.ParseConfig('%s --cflags --libs nss lib%s' % (PKG_CONFIG, libchrome))
 
 env.StaticLibrary('chrome_crypto', sources)
+
+# We don't actually install the shared lib.  The point of this is to verify
+# all the necessary objects are compiled and the symbols used are available.
+# Otherwise we might not find out until building something else against the
+# static library.
+env.Append(
+    LINKFLAGS = ['-Wl,--as-needed', '-Wl,-z,defs'],
+)
+env.SharedLibrary('chrome_crypto', sources)
