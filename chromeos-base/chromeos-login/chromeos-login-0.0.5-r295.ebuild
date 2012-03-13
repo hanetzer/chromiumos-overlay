@@ -106,23 +106,6 @@ src_install() {
 	# For user session processes.
 	dodir /etc/skel/log
 
-	# TODO(derat): Remove these once session_manager_setup.sh has been updated
-	# to look at USE flags directly.
-	if use touchui ; then
-		insinto /root
-		newins "${S}/use_touchui" .use_touchui
-	fi
-
-	if use asan; then
-		insinto /root
-		newins "${S}/debug_with_asan" .debug_with_asan
-	fi
-
-	if use aura || use touchui; then
-		insinto /root
-		newins "${S}/no_wm" .no_wm
-	fi
-
 	# Write a list of currently-set USE flags that session_manager_setup.sh can
 	# read at runtime while constructing Chrome's command line.  If you need to
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
