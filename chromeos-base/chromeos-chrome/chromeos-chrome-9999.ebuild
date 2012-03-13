@@ -264,9 +264,12 @@ set_build_defines() {
 	fi
 
 	if use clang; then
-		if [ "$ARCH" = "x86" ]; then
+		if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
 			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
 			USE_TCMALLOC="linux_use_tcmalloc=0"
+
+			# The chrome build system will add -m32 for 32bit arches, and
+			# clang defaults to 64bit because our cros_sdk is 64bit default.
 			export CC="clang" CXX="clang++"
 		else
 			die Clang is not yet supported for "${ARCH}"
