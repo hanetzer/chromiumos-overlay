@@ -23,6 +23,7 @@ CROS_WORKON_LOCALNAME="../third_party/libscrypt"
 
 src_prepare() {
 	epatch function_visibility.patch
+	epatch "${FILESDIR}"/function_visibility2.patch
 	eautoreconf
 }
 
@@ -35,4 +36,5 @@ src_install() {
 
 	insinto /usr/include/scrypt
 	doins src/lib/scryptenc/scryptenc.h || die
+	doins src/lib/crypto/crypto_scrypt.h || die
 }
