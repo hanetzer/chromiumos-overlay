@@ -33,8 +33,8 @@ src_compile() {
 src_test() {
 	emake test
 
-	if ! use x86 ; then
-		echo Skipping tests on non-x86 platform...
+	if ! use x86 && ! use amd64 ; then
+		einfo "Skipping tests on non-x86 platform..."
 	else
 		./test || die
 	fi
