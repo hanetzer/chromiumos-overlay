@@ -5,10 +5,12 @@
 EAPI="3"
 inherit subversion eutils flag-o-matic multilib toolchain-funcs
 
+SVN_COMMIT="145532"
+
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="http://llvm.org/"
 SRC_URI=""
-ESVN_REPO_URI="http://llvm.org/svn/llvm-project/llvm/trunk"
+ESVN_REPO_URI="http://llvm.org/svn/llvm-project/llvm/trunk@${SVN_COMMIT}"
 
 LICENSE="UoI-NCSA"
 SLOT="0"

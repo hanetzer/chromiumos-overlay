@@ -1,12 +1,6 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/clang/clang-9999.ebuild,v 1.20 2011/11/14 15:02:31 voyageur Exp $
-#
-# This package is originated from
-# http://sources.gentoo.org/sys-devel/clang/clang-9999.ebuild
-#
-# Note that we use downloading sources from SVN because llvm.org has
-# not released this version yet.
 
 EAPI=3
 
@@ -25,7 +19,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="+asan +asan-32-explicit debug multitarget +static-analyzer test"
+IUSE="asan +cxx-sysroot-wrapper debug multitarget +static-analyzer +system-cxx-headers test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
@@ -43,12 +37,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [ "/usr/x86_64-pc-linux-gnu/gcc-bin/4.6.x-google" != $(gcc-config -B) ]; then
-		ewarn "Beware sheriff: gcc's binaries are not in '/usr/x86_64-pc-linux-gnu/gcc-bin/4.6.x-google'"
-		ewarn "and are instead in $(gcc-config -B). This may lead to an unusable clang."
-		ewarn "Please test clang with a simple hello_world.cc file and update this message"
-	fi
-
 	# Same as llvm doc patches
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
 
@@ -56,6 +44,8 @@ src_prepare() {
 	sed -e "/PROJ_headers/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/lib/Headers/Makefile \
 		|| die "clang Makefile failed"
+	# Fix cxx_include_root path for Gentoo
+	epatch "${FILESDIR}"/${PN}-3.0-fix_cxx_include_root.patch
 	# fix the static analyzer for in-tree install
 	sed -e 's/import ScanView/from clang \0/'  \
 		-i tools/clang/tools/scan-view/scan-view \
@@ -63,12 +53,6 @@ src_prepare() {
 	sed -e "/scanview.css\|sorttable.js/s#\$RealBin#${EPREFIX}/usr/share/${PN}#" \
 		-i tools/clang/tools/scan-build/scan-build \
 		|| die "scan-build sed failed"
-	# Set correct path for gold plugin
-	sed -e "/LLVMgold.so/s#lib/#$(get_libdir)/llvm/#" \
-	        -i  tools/clang/lib/Driver/Tools.cpp \
-		|| die "gold plugin path sed failed"
-	# Properly detect Gentoo's binutils-apple version
-	epatch "${FILESDIR}"/${PN}-3.0-gentoo-binutils-apple.patch
 	# Specify python version
 	python_convert_shebangs 2 tools/clang/tools/scan-view/scan-view
 
@@ -83,10 +67,6 @@ src_prepare() {
 	sed -e 's,\$(RPATH) -Wl\,\$(\(ToolDir\|LibDir\)),$(RPATH) -Wl\,'"${EPREFIX}"/usr/$(get_libdir)/llvm, \
 		-e '/OmitFramePointer/s/-fomit-frame-pointer//' \
 		-i Makefile.rules || die "rpath sed failed"
-
-	# Use system llc (from llvm ebuild) for tests
-	sed -e "/^llc_props =/s/os.path.join(llvm_tools_dir, 'llc')/'llc'/" \
-		-i tools/clang/test/lit.cfg  || die "test path sed failed"
 }
 
 src_configure() {
@@ -112,21 +92,22 @@ src_configure() {
 		CONF_FLAGS="${CONF_FLAGS} --enable-pic"
 	fi
 
+	if use system-cxx-headers; then
+		# Try to get current gcc headers path
+		local CXX_PATH=$(gcc-config -L| cut -d: -f1)
+		CONF_FLAGS="${CONF_FLAGS} --with-c-include-dirs=/usr/include:${CXX_PATH}/include"
+		CONF_FLAGS="${CONF_FLAGS} --with-cxx-include-root=${CXX_PATH}/include/g++-v4"
+		CONF_FLAGS="${CONF_FLAGS} --with-cxx-include-arch=$CHOST"
+		if has_multilib_profile; then
+			CONF_FLAGS="${CONF_FLAGS} --with-cxx-include-32bit-dir=32"
+		fi
+	fi
+
 	econf ${CONF_FLAGS} || die "econf failed"
 }
 
 src_compile() {
 	emake VERBOSE=1 KEEP_SYMBOLS=1 REQUIRES_RTTI=1 clang-only || die "emake failed"
-
-	# This option is temporary and needed until Clang build process produces both 64 and 32 -bit asan library.
-	# Currently it produces only one: 64 bit. So we need to make 32 bit ourselves.
-	if use asan-32-explicit; then
-		einfo "Compiling 32-bit asan library."
-		cd "${S}"/projects/compiler-rt/lib/asan/ || die "cd asan failed"
-		emake -f Makefile.old get_third_party || die "emake asan32 get_third_party failed"
-		emake CC="${S}"/Release/bin/clang CXX="${S}"/Release/bin/clang++ -f Makefile.old lib32 || die "emake asan32 failed"
-		# Note that the output will go to ${S}/build/Release+Asserts/ because of MakeFile.old specifics.
-	fi
 }
 
 src_test() {
@@ -145,12 +126,6 @@ src_test() {
 src_install() {
 	cd "${S}"/tools/clang || die "cd clang failed"
 	emake KEEP_SYMBOLS=1 DESTDIR="${D}" install || die "install failed"
-
-	local ver=$(sed -ne "s|^PACKAGE_VERSION='\([0-9.]*\)[^0-9.]*'|\\1|p" < ${S}/configure)
-	if use asan-32-explicit; then
-		insinto "${EPREFIX}/usr/$(get_libdir)/clang/$ver/lib/linux"
-		doins "${S}"/build/Release+Asserts/lib/clang/$ver/lib/linux/libclang_rt.asan-i386.a
-	fi
 
 	if use static-analyzer ; then
 		dobin tools/scan-build/ccc-analyzer
@@ -193,10 +168,53 @@ src_install() {
 			eend $?
 		done
 	fi
+
+	# Taken from asan-clang ebuild.
+	if use cxx-sysroot-wrapper; then
+		# Try to get current gcc headers path
+		local CXX_PATH=$(gcc-config -X| cut -d: -f1 | sed 's,/include/g++-v4$,,')
+
+		# Create the wrapper script that will substitute right libstlc++ paths.
+		# This is needed because Clang --sysroot=<sysroot>, unlike gcc, prepends
+		# its cxx-include-root with <sysroot> making it unusable.
+		# Clang maintainers consider this the right behavior (crbug.com/86037)
+		# although the Clang own includes (/usr/lib/clang/3.x/include) are never
+		# prepended with <sysroot>.
+		cat <<-EOF >"${S}/clang++.sh" || die
+			#!/bin/sh
+			exec clang++.real "\$@" \
+				-I${CXX_PATH}/include-fixed \
+				-I${CXX_PATH}/include/g++-v4 \
+				-I${CXX_PATH}/include/g++-v4/x86_64-pc-linux-gnu \
+				-I${CXX_PATH}/include/g++-v4/backward
+		EOF
+		dobin "${S}/clang++.sh" || die
+
+		# Make Clang take cxxabi.h from the right place. Needed by gTest.
+		# Unfortunately adding -I${CXX_PATH}/include, where right cxxabi.h resides,
+		# breaks the compilation. This is because Clang prefers this directory to
+		# its own (/usr/lib/clang/3.x/include) despite declaration order,
+		# thus it takes some includes (xmmintrin.h) from there and it drives Clang mad.
+		dosym ${CXX_PATH}/include/cxxabi.h "${EPREFIX}/usr/$(get_libdir)/clang/3.0/include/"
+	fi
 }
 
 pkg_postinst() {
+	if use cxx-sysroot-wrapper; then
+		mv "${EPREFIX}/usr/bin/clang++" "${EPREFIX}/usr/bin/clang++.real"
+		mv "${EPREFIX}/usr/bin/clang++.sh" "${EPREFIX}/usr/bin/clang++"
+	fi
+
 	python_mod_optimize clang
+	if use system-cxx-headers; then
+		elog "C++ headers search path is hardcoded to the active gcc profile one"
+		elog "If you change the active gcc profile, or update gcc to a new version,"
+		elog "you will have to remerge this package to update the search path"
+	else
+		elog "If clang++ fails to find C++ headers on your system,"
+		elog "you can remerge clang with USE=system-cxx-headers to use C++ headers"
+		elog "from the active gcc profile"
+	fi
 }
 
 pkg_postrm() {
