@@ -251,7 +251,7 @@ set_build_defines() {
 		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
 	fi
 
-	if use reorder; then
+	if use reorder && ! use clang; then
 		BUILD_DEFINES="order_text_section='${ECHROME_STORE_DIR}/${PGO_SUBDIR}/section-ordering-files/orderfile' $BUILD_DEFINES"
 	fi
 
@@ -606,7 +606,7 @@ src_unpack() {
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 
 
-	if use reorder || use pgo; then
+	if (use reorder || use pgo) && ! use clang; then
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="b4d4d1e9e53c841f7e22fb7167485ad405d3766d"
 		EGIT_PROJECT="${PN}-pgo"
@@ -722,7 +722,7 @@ src_compile() {
 	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
 	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
 
-	if use pgo; then
+	if use pgo && ! use clang ; then
 		local PROFILE_DIR
 		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
 		if [[ -d "${PROFILE_DIR}" ]]; then
