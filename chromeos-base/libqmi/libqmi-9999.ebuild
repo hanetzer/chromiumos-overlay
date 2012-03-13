@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/libqmi"
 
-inherit cros-workon
+inherit cros-workon multilib
 
 DESCRIPTION="Library for communicating with QMI modems"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,5 +16,5 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 src_install() {
-	dolib src/libqmi.so
+	emake DESTDIR="${D}" LIBDIR="/usr/$(get_libdir)" install
 }
