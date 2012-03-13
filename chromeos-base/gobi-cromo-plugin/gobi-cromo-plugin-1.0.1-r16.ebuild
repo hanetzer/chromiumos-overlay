@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=2
-CROS_WORKON_COMMIT="b9d7b627a8515d0d255d31b9478b91b353b4afaa"
+CROS_WORKON_COMMIT="8351a50947c3b677ea4bfdce2e006e2825ad9f8b"
 CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
 CROS_WORKON_USE_VCSID="1"
 

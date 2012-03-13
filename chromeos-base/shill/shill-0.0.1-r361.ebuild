@@ -5,7 +5,7 @@ EAPI=2
 CROS_WORKON_COMMIT="08a4ffb4ecf5893eb55c523d528bf3e52c66facf"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs multilib
 
 DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
@@ -28,11 +28,15 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	virtual/modemmanager"
 
+make_flags() {
+	echo LIBDIR="/usr/$(get_libdir)"
+}
+
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	emake shill || die "shill compile failed."
+	emake $(make_flags) shill || die "shill compile failed."
 }
 
 src_test() {
@@ -40,7 +44,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 
 	# Build tests
-	emake shill_unittest || die "tests compile failed."
+	emake $(make_flags) shill_unittest || die "tests compile failed."
 
 	# Run tests if we're on x86
 	if ! use x86 && ! use amd64 ; then
