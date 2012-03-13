@@ -57,6 +57,8 @@ src_prepare() {
 	# TODO(yusukes): Remove the patch when we upgrade ibus to the next
 	# version, 1.4.1.
 	epatch "${FILESDIR}"/${P}-fix-SEGV-in-request_surrounding_text.patch
+	# TODO(yusukes): Remove the patch when we upgrade ibus to 1.5.
+	epatch "${FILESDIR}"/${P}-fix-refcount-errors-in-libibus.patch
 
 	if use aura ; then
 	   # TODO(nona): Remove the patch when we fix crosbug.com/25335#c1
