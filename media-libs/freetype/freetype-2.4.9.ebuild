@@ -59,14 +59,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.3.2-enable-valid.patch
 	epatch "${FILESDIR}"/${PN}-2.4.6-lcd-sharpen.patch
 
-	# Security fixes for 2.4.8
-	epatch "${FILESDIR}"/${PN}-2.4.8-35604-oob-read-gray_record_cell.patch
-	epatch "${FILESDIR}"/${PN}-2.4.8-35607-memory-corruption-_bdf_parse_glyphs.patch
-	epatch "${FILESDIR}"/${PN}-2.4.8-35608-memory-corruption-T1_Open_Face.patch
-	epatch "${FILESDIR}"/${PN}-2.4.8-35641-oob-write-_bdf_parse_glyphs.patch
-	epatch "${FILESDIR}"/${PN}-2.4.8-35659-negative-num_glyphs.patch
-	epatch "${FILESDIR}"/${PN}-2.4.8-35689-memory-corruption-Move_Zp2_Point.patch
-
 	if use utils; then
 		cd "${WORKDIR}/ft2demos-${PV}"
 		sed -i -e "s:\.\.\/freetype2$:../freetype-${PV}:" Makefile || die
