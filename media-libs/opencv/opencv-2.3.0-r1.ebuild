@@ -127,7 +127,7 @@ src_configure() {
 	else
 		mycmakeargs+=( "-DINSTALL_PYTHON_EXAMPLES=OFF" )
 	fi
-	
+
 	# Chrome OS cross-compilation fix:
 	#
 	# Setting root folder and search paths for cross-compilation
@@ -137,6 +137,8 @@ src_configure() {
 	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER" )
 	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY" )
 	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY" )
+	tc-export PKG_CONFIG
+	sed -i '/^find_program/s:NAMES:& $ENV{PKG_CONFIG}:' OpenCVFindPkgConfig.cmake || die
 
 	# things we want to be hard off or not yet figured out
 	# unicap: https://bugs.gentoo.org/show_bug.cgi?id=175881
