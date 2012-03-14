@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/vpn-manager"
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs multilib
 
 DESCRIPTION="VPN tools"
 HOMEPAGE="http://www.chromium.org/"
@@ -23,21 +23,25 @@ RDEPEND="chromeos-base/libchrome:0[cros-debug=]
 DEPEND="${RDEPEND}
 	 dev-cpp/gtest"
 
+make_flags() {
+	echo LIBDIR="/usr/$(get_libdir)"
+}
+
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake || die "vpn-manager compile failed."
+	emake $(make_flags) || die "vpn-manager compile failed."
 }
 
 src_test() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake tests || die "could not build tests"
+	emake $(make_flags) tests || die "could not build tests"
 	if ! use x86 && ! use amd64 ; then
-	        echo Skipping unit tests on non-x86 platform
+		echo Skipping unit tests on non-x86 platform
 	else
-	        for test in ./*_test; do
-		        "${test}" ${GTEST_ARGS} || die "${test} failed"
+		for test in ./*_test; do
+			"${test}" ${GTEST_ARGS} || die "${test} failed"
 		done
 	fi
 }
