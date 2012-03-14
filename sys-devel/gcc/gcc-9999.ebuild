@@ -140,6 +140,35 @@ src_compile()
 		all || die
 }
 
+# Logic copied from Gentoo's toolchain.eclass.
+toolchain_src_install() {
+	# These should be symlinks
+	dodir /usr/bin
+	cd "${D}"$(get_bin_dir)
+	for x in cpp gcc g++ c++ gcov g77 gcj gcjh gfortran gccgo ; do
+		# For some reason, g77 gets made instead of ${CTARGET}-g77...
+		# this should take care of that
+		[[ -f ${x} ]] && mv ${x} ${CTARGET}-${x}
+
+		if [[ -f ${CTARGET}-${x} ]] ; then
+			if ! is_crosscompile ; then
+				ln -sf ${CTARGET}-${x} ${x}
+				dosym ${BINPATH}/${CTARGET}-${x} \
+					/usr/bin/${x}-${GCC_CONFIG_VER}
+			fi
+
+			# Create version-ed symlinks
+			dosym ${BINPATH}/${CTARGET}-${x} \
+				/usr/bin/${CTARGET}-${x}-${GCC_CONFIG_VER}
+		fi
+
+		if [[ -f ${CTARGET}-${x}-${GCC_CONFIG_VER} ]] ; then
+			rm -f ${CTARGET}-${x}-${GCC_CONFIG_VER}
+			ln -sf ${CTARGET}-${x} ${CTARGET}-${x}-${GCC_CONFIG_VER}
+		fi
+	done
+}
+
 src_install()
 {
 	cd $(get_gcc_build_dir) || "Build dir $(get_gcc_build_dir) not found"
@@ -153,6 +182,7 @@ src_install()
 	# Move pretty-printers to gdb datadir to shut ldconfig up
 	gcc_move_pretty_printers
 
+	GCC_CONFIG_VER=$(get_gcc_base_ver)
 	dodir /etc/env.d/gcc
 	insinto /etc/env.d/gcc
 
@@ -176,6 +206,8 @@ EOF
 	newins env.d $(get_gcc_config_file)
 	cd -
 
+	toolchain_src_install
+
 	if is_crosscompile ; then
 		if use hardened
 		then
@@ -184,7 +216,6 @@ EOF
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper
 		fi
 
-		cd ${D}$(get_bin_dir)
 		exeinto "$(get_bin_dir)"
 		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
 		for x in c++ cpp g++ gcc; do
