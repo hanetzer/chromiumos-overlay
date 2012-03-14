@@ -43,9 +43,7 @@ src_prepare() {
 	cp -p "${FILESDIR}/SConstruct-${SLOT}" "${S}/SConstruct" || die
 	epatch "${FILESDIR}"/gtest_include_path_fixup.patch
 
-	epatch "${FILESDIR}"/base-125070-DispatchToMethod-unused.patch
 	epatch "${FILESDIR}"/base-125070-headers.patch
-	epatch "${FILESDIR}"/base-85268-ThreadRestrictions-unused.patch
 	epatch "${FILESDIR}"/base-125070-no-X.patch
 }
 
