@@ -292,7 +292,7 @@ set_build_defines() {
 		BUILD_DEFINES="component=shared_library $BUILD_DEFINES"
 	fi
 
-	BUILD_DEFINES="system_libdir=$(get_libdir) $BUILD_DEFINES"
+	BUILD_DEFINES="system_libdir=$(get_libdir) pkg-config=$(tc-getPKG_CONFIG) $BUILD_DEFINES"
 	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
