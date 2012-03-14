@@ -58,6 +58,8 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-kaen.conf"
 		elif [[ "${board}" = "lumpy" || "${board}" = "lumpy64" ]]; then
 			doins "${FILESDIR}/50-touchpad-cmt-lumpy.conf"
+		elif [ "${board}" = "link" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-link.conf"
 		fi
 		if use aura; then
 			doins "${FILESDIR}/50-touchpad-cmt-aura.conf"
