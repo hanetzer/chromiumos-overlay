@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="de2e2cfc065ee90fcafad86412fd104012474e3e"
+CROS_WORKON_COMMIT="d8413b93ce6a7745f2bdc8fe7e2bbd2f0c4af95f"
 CROS_WORKON_PROJECT="chromiumos/platform/libqmi"
 
 inherit cros-workon
