@@ -28,7 +28,7 @@ index 1c7875e..36f7bdd 100644
      fi
  
 -    AC_RUN_IFELSE([AC_LANG_SOURCE([
-+    AC_COMPILE_IFELSE([
++    AC_COMPILE_IFELSE([AC_LANG_SOURCE([
  #include <time.h>
 +#include <unistd.h>
  
@@ -45,7 +45,7 @@ index 1c7875e..36f7bdd 100644
  }
 -    ])], [MONOTONIC_CLOCK=yes], [MONOTONIC_CLOCK=no],
 -       [MONOTONIC_CLOCK="cross compiling"])
-+    ], [MONOTONIC_CLOCK=yes], [MONOTONIC_CLOCK=no])
++    ])], [MONOTONIC_CLOCK=yes], [MONOTONIC_CLOCK=no])
  
      LIBS="$LIBS_SAVE"
      CPPFLAGS="$CPPFLAGS_SAVE"

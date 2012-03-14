@@ -6,6 +6,7 @@
 EAPI=4
 
 XORG_DOC=doc
+XORG_EAUTORECONF="yes"
 inherit xorg-2 multilib versionator
 EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 
@@ -80,7 +81,7 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xf86vidmodeproto-2.2.99.1
 	>=x11-proto/xineramaproto-1.1.3
 	>=x11-proto/xproto-7.0.22
-    >=media-fonts/font-util-1.1.0
+	>=media-fonts/font-util-1.1.0
 	dmx? (
 		>=x11-proto/dmxproto-2.2.99.1
 		doc? (
@@ -146,11 +147,7 @@ src_prepare() {
 		"${FILESDIR}/1.12.0-emulate-partial-flips.patch"
 		)
 	fi
-
-	for patch_file in "${PATCHES[@]}"; do
-		epatch $patch_file
-	done
-
+	xorg-2_src_prepare
 }
 
 pkg_pretend() {
@@ -198,8 +195,8 @@ pkg_setup() {
 		--without-dtrace
 		--without-fop
 		--with-os-vendor=Gentoo
-        --with-sha1=libcrypto
-        --disable-xvmc
+		--with-sha1=libcrypto
+		--disable-xvmc
 		--disable-xdmcp
 		--disable-screensaver
 		--disable-xdm-auth-1
@@ -220,10 +217,10 @@ pkg_setup() {
 		--with-default-font-path=built-ins
 	)
 
-   	if use amd64 || use x86 ; then
-        XORG_CONFIGURE_OPTIONS+=( --enable-xaa)
+	if use amd64 || use x86 ; then
+		XORG_CONFIGURE_OPTIONS+=( --enable-xaa)
 	else
-        XORG_CONFIGURE_OPTIONS+=( --disable-xaa)
+		XORG_CONFIGURE_OPTIONS+=( --disable-xaa)
 	fi
 
 	# Things we may want to remove later:
