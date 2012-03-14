@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="20bdec464103d08465fd5b85b2ed89ae8d83741a"
+CROS_WORKON_COMMIT="5697b72c58a30e50a188f76d3e3c676dd0f979ef"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r335"
@@ -70,6 +70,7 @@ IUSE_TESTS="
 	+tests_factory_SetSN
 	+tests_factory_ShowTestResults
 	+tests_factory_Start
+	+tests_factory_StressTest
 	+tests_factory_Touchpad
 	+tests_factory_USB
 	+tests_factory_VPD
