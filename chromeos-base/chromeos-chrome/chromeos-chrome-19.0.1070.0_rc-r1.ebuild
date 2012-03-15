@@ -251,7 +251,7 @@ set_build_defines() {
 		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
 	fi
 
-	if use reorder; then
+	if use reorder && ! use clang; then
 		BUILD_DEFINES="order_text_section='${ECHROME_STORE_DIR}/${PGO_SUBDIR}/section-ordering-files/orderfile' $BUILD_DEFINES"
 	fi
 
@@ -264,9 +264,13 @@ set_build_defines() {
 	fi
 
 	if use clang; then
-		if [ "$ARCH" = "x86" ]; then
+		if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
 			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
 			USE_TCMALLOC="linux_use_tcmalloc=0"
+
+			# The chrome build system will add -m32 for 32bit arches, and
+			# clang defaults to 64bit because our cros_sdk is 64bit default.
+			export CC="clang" CXX="clang++"
 		else
 			die Clang is not yet supported for "${ARCH}"
 		fi
@@ -288,7 +292,7 @@ set_build_defines() {
 		BUILD_DEFINES="component=shared_library $BUILD_DEFINES"
 	fi
 
-	BUILD_DEFINES="system_libdir=$(get_libdir) $BUILD_DEFINES"
+	BUILD_DEFINES="system_libdir=$(get_libdir) pkg-config=$(tc-getPKG_CONFIG) $BUILD_DEFINES"
 	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
@@ -602,7 +606,7 @@ src_unpack() {
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 
 
-	if use reorder || use pgo; then
+	if (use reorder || use pgo) && ! use clang; then
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="b4d4d1e9e53c841f7e22fb7167485ad405d3766d"
 		EGIT_PROJECT="${PN}-pgo"
@@ -649,6 +653,38 @@ src_prepare() {
 		done
 	fi
 
+	# The chrome makefiles specify -O and -g flags already, so remove the
+	# portage flags.
+	filter-flags -g -O*
+	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
+
+	if use pgo && ! use clang ; then
+		local PROFILE_DIR
+		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
+		if [[ -d "${PROFILE_DIR}" ]]; then
+			append-flags -fprofile-use \
+				-fprofile-correction \
+				-Wno-error=coverage-mismatch \
+				-fopt-info=0 \
+				-fprofile-dir="${PROFILE_DIR}"
+
+			# This is required because gcc currently may crash with an
+			# internal compiler error if the profile is stale.
+			# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51975
+			# This does not cause performance degradation.
+			append-flags -fno-vpt
+
+			# This is required because gcc emits different warnings for PGO
+			# vs. non-PGO. PGO may inline different functions from non-PGO,
+			# leading to different warnings.
+			# crbug.com/112908
+			append-flags -Wno-error=maybe-uninitialized
+		else
+			einfo "USE=+pgo, but ${PROFILE_DIR} not found."
+			einfo "Not using pgo. This is expected for arm/x86 boards."
+		fi
+	fi
+
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
 	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}
@@ -684,14 +720,6 @@ src_configure() {
 	fi
 }
 
-strip_chrome_debug() {
-	echo ${1} | sed -e "s/\s-g\S*/ /"
-}
-
-strip_optimization_flags() {
-	echo ${1} | sed -e "s/\(\s\|^\)-O\S*/ /"
-}
-
 src_compile() {
 	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]] && \
 	   [[ "$CHROME_ORIGIN" != "GERRIT_SOURCE" ]]; then
@@ -709,42 +737,6 @@ src_compile() {
 			browser_tests
 			sync_integration_tests"
 		echo Building test targets: ${TEST_TARGETS}
-	fi
-
-	# The chrome makefiles specify -O and -g flags already, so remove the
-	# portage flags.
-	CXXFLAGS="$(strip_chrome_debug "${CXXFLAGS}")"
-	CFLAGS="$(strip_chrome_debug "${CFLAGS}")"
-	CXXFLAGS="$(strip_optimization_flags "${CXXFLAGS}")"
-	CFLAGS="$(strip_optimization_flags "${CFLAGS}")"
-
-	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
-
-	if use pgo; then
-		local PROFILE_DIR
-		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
-		if [[ -d "${PROFILE_DIR}" ]]; then
-			append-flags -fprofile-use \
-				-fprofile-correction \
-				-Wno-error=coverage-mismatch \
-				-fopt-info=0 \
-				-fprofile-dir="${PROFILE_DIR}"
-
-			# This is required because gcc currently may crash with an
-			# internal compiler error if the profile is stale.
-			# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51975
-			# This does not cause performance degradation.
-			append-flags -fno-vpt
-
-			# This is required because gcc emits different warnings for PGO
-			# vs. non-PGO. PGO may inline different functions from non-PGO,
-			# leading to different warnings.
-			# crbug.com/112908
-			append-flags -Wno-error=maybe-uninitialized
-		else
-			einfo "USE=+pgo, but ${PROFILE_DIR} not found."
-			einfo "Not using pgo. This is expected for arm/x86 boards."
-		fi
 	fi
 
 	if use drm; then
