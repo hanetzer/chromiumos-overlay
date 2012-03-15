@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="a84459c4539c009f49c73be5eda95f584afb3d1d"
+CROS_WORKON_COMMIT="dfb46279991a9f462ab18e56597dc6f56e4fab2b"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
