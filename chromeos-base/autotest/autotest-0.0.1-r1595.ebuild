@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="79ce8a115daf63d3c0ded6723369a1a79a6fb47a"
+CROS_WORKON_COMMIT="77b4bf2163994ce21ff6016525b9471fad991758"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon
@@ -33,7 +33,7 @@ src_prepare() {
 	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
 	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
 	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
-	cp -fpru "${S}"/{conmux,tko,utils,site_utils,test_suites} "${AUTOTEST_WORK}"
+	cp -fpru "${S}"/{conmux,tko,utils,site_utils,test_suites,frontend} "${AUTOTEST_WORK}"
 
 	# cros directory is not from autotest upstream but cros project specific.
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
