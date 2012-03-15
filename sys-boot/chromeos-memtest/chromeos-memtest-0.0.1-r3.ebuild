@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="21e02b103c0d4b52a949e94d8a5d4f29f4740cb7"
+CROS_WORKON_COMMIT="3d4be6e3bfd819856e38a82e35c206fec4551851"
 CROS_WORKON_PROJECT="chromiumos/third_party/memtest"
 
 DESCRIPTION="The memtest86 memory tester"
