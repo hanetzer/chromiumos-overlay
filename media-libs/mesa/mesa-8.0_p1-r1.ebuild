@@ -125,7 +125,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11_p3-builtin_function.patch
 	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
 	epatch "${FILESDIR}"/8.0-force_s3tc_enable.patch
-	epatch "${FILESDIR}"/8.0-llvm.patch
 	epatch "${FILESDIR}"/8.0-libglu.patch
 
 	base_src_prepare
