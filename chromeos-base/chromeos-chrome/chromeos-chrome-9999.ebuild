@@ -281,7 +281,7 @@ set_build_defines() {
 			eerror "Asan requires Clang to run."
 			die "Please set USE=\"${USE} clang\" to enable Clang"
 		fi
-		BUILD_DEFINES="asan=1 asan_blacklist='$CHROME_ROOT/src/third_party/asan/ignore.txt' $BUILD_DEFINES"
+		BUILD_DEFINES="asan=1 asan_blacklist=/dev/null $BUILD_DEFINES"
 	fi
 
 	if use aura; then
