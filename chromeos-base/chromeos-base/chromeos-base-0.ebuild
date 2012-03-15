@@ -184,13 +184,17 @@ pkg_postinst() {
 	copy_or_add_daemon_user "bluetooth" 218   # For bluez
 	copy_or_add_daemon_user "wpa" 219         # For wpa_supplicant
 	copy_or_add_daemon_user "cras" 220        # For cras (audio)
+	copy_or_add_daemon_user "gavd" 221        # For gavd (audio)
+	copy_or_add_daemon_user "input" 222       # For /dev/input/event access
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
 	copy_or_add_daemon_user "avfs" 301        # For avfs process
 
 	# All audio interfacing will go through the audio server.
-	add_users_to_group audio "cras"
+	add_users_to_group audio "cras" "gavd"
+	add_users_to_group input "gavd"           # For /dev/input/event* access
+	add_users_to_group cras "gavd"            # For cras socket access
 	# System user is part of audio server group to play sounds.
 	add_users_to_group cras "${system_user}"
 	# The system_user needs to be part of the audio and video groups.
