@@ -186,6 +186,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "cras" 220        # For cras (audio)
 	copy_or_add_daemon_user "gavd" 221        # For gavd (audio)
 	copy_or_add_daemon_user "input" 222       # For /dev/input/event access
+	copy_or_add_daemon_user "chaps" 223       # For chaps (pkcs11)
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
@@ -201,20 +202,21 @@ pkg_postinst() {
 	add_users_to_group audio "${system_user}"
 	add_users_to_group video "${system_user}"
 
-	# The root, ipsec and ${system_user} users must be in the pkcs11 group,
-	# which must have the group id 208.
+	# Users which require access to PKCS #11 cryptographic services must be
+	# in the pkcs11 group, which must have the group id 208.
 	remove_all_users_from_group pkcs11
-	add_users_to_group pkcs11 root ipsec "${system_user}"
+	add_users_to_group pkcs11 root ipsec "${system_user}" chaps wpa
 	# TODO(benchan): Is it still true that pkcs11 must have a group id 208?
 	# If so, we should better enforce that in copy_or_add_daemon_user and
 	# error out if another group is already assigned the group id 208.
 	sed -i "s/^\(pkcs11:[^:]*\):[^:]\+:/\1:208:/" "${ROOT}/etc/group"
 
-	# All users in the pkcs11 group and all users for sandboxing FUSE-based
-	# filesystem daemons need to be in the ${system_access_user} group,
+	# All users accessing opencryptoki database files and all users for
+	# sandboxing FUSE-based filesystem daemons need to be in the
+	# ${system_access_user} group.
 	remove_all_users_from_group "${system_access_user}"
 	add_users_to_group "${system_access_user}" root ipsec "${system_user}" \
-		ntfs-3g avfs
+		ntfs-3g avfs chaps
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
