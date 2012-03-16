@@ -23,12 +23,12 @@ RDEPEND="
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/opencryptoki
-	dev-cpp/gflags
-	>=dev-db/sqlite-3.6"
+	dev-cpp/gflags"
 
 DEPEND="${RDEPEND}
 	dev-cpp/gmock
-	test? ( dev-cpp/gtest )"
+	test? ( dev-cpp/gtest )
+	dev-db/leveldb"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
