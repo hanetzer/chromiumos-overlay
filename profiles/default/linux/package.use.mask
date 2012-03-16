@@ -30,3 +30,10 @@ net-misc/curl threads
 # cannot handle USE=bluetooth and static compilation.  We don't actually
 # use bluetooth functionality for this package.
 app-emulation/qemu-kvm	bluetooth
+
+# Han Shen <shenhan@chromium.org> (16 Mar 2012) 
+#
+# Disable hardened glibc for arm - current glibc for arm port has a bug in
+# setjmp.S and __longjmp.S, this needs to be fixed before arm glibc could be
+# hardened.
+cross-armv7a-cros-linux-gnueabi/glibc hardened
