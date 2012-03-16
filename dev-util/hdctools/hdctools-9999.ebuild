@@ -13,7 +13,7 @@ HOMEPAGE=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND=">=dev-embedded/libftdi-0.18
