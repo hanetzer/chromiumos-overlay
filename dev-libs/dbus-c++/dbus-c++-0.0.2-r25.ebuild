@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="175eb3e84ee8d77b992e38edee042d58482b6b49"
+CROS_WORKON_COMMIT="6732fbce462e48fecc31013105017f61f8514e3e"
 CROS_WORKON_PROJECT="chromiumos/third_party/dbus-cplusplus"
 
 inherit toolchain-funcs cros-workon
