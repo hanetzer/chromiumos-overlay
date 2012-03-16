@@ -126,6 +126,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
 	epatch "${FILESDIR}"/8.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/8.0-libglu.patch
+	epatch "${FILESDIR}"/8.0-Revert-i915g-Implement-stipple-with-draw.patch
+	epatch "${FILESDIR}"/8.0-Revert-i915g-Remove-unused-poly-stipple-state.patch
 
 	base_src_prepare
 
