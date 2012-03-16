@@ -134,9 +134,6 @@ src_configure() {
 	COMMON_MAKE_FLAGS+=" -k"
 	COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1"
-	if [ "arm" = "${ARCH}" ]; then
-		COMMON_MAKE_FLAGS+=" USE_PRIVATE_LIBGCC=yes"
-	fi
 	if use x86 || use amd64 || use cros-debug; then
 		COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 	fi
