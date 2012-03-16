@@ -28,9 +28,9 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 # @ECLASS-VARIABLE: AUTOTEST_*_LIST
 # @DESCRIPTION:
 # The list of deps/configs/profilers provided with this package
-: ${AUTOTEST_CONFIG_LIST:=*}
-: ${AUTOTEST_DEPS_LIST:=*}
-: ${AUTOTEST_PROFILERS_LIST:=*}
+: ${AUTOTEST_CONFIG_LIST:=}
+: ${AUTOTEST_DEPS_LIST:=}
+: ${AUTOTEST_PROFILERS_LIST:=}
 
 # @ECLASS-VARIABLE: AUTOTEST_FORCE_LIST
 # @DESCRIPTION:
@@ -42,11 +42,11 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 # The list of 'find' expressions to find in the resulting image and delete
 : ${AUTOTEST_FILE_MASK:=}
 
-function fast_cp() {
+fast_cp() {
 	cp -l "$@" || cp "$@"
 }
 
-function get_test_list() {
+get_test_list() {
 	if [ -n "${AUTOTEST_FORCE_TEST_LIST}" ]; then
 		# list forced
 		echo "${AUTOTEST_FORCE_TEST_LIST}"
@@ -62,15 +62,14 @@ function get_test_list() {
 	echo "${result}"
 }
 
-# Pythonify the list of packages
-function pythonify_test_list() {
-	local result
-	result=$(for test in $*; do echo -n "${test},"; done)
-	echo ${result}
+# Pythonify the list of packages by doing the equivalent of ','.join(args)
+pythonify_test_list() {
+	local result=$(printf '%s,' "$@")
+	echo ${result%,}
 }
 
 # Create python package init files for top level test case dirs.
-function touch_init_py() {
+touch_init_py() {
 	local dirs=${1}
 	for base_dir in $dirs
 	do
@@ -83,7 +82,7 @@ function touch_init_py() {
 	done
 }
 
-function setup_cross_toolchain() {
+setup_cross_toolchain() {
 	tc-export CC CXX AR RANLIB LD NM STRIP PKG_CONFIG
 	export CCFLAGS="$CFLAGS"
 
@@ -100,7 +99,7 @@ function setup_cross_toolchain() {
 	fi
 }
 
-function create_autotest_workdir() {
+create_autotest_workdir() {
 	local dst=${1}
 
 	# create a working enviroment for pre-building
@@ -155,12 +154,14 @@ function create_autotest_workdir() {
 	done
 }
 
-function print_test_dirs() {
+print_test_dirs() {
 	local testroot="${1}"
+	local ignore_test_contents="${2}"
 
 	pushd "${testroot}" 1> /dev/null
 	for test in *; do
-		if [ -d "${test}" ] && [ -f "${test}/${test}".py ]; then
+		if [ -d "${test}" ] && [ -n "${ignore_test_contents}" -o \
+					-f "${test}/${test}".py ]; then
 			echo "${test}"
 		fi
 	done
@@ -168,7 +169,7 @@ function print_test_dirs() {
 }
 
 # checks IUSE_TESTS and sees if at least one of these is enabled
-function are_we_used() {
+are_we_used() {
 	if ! use autotest; then
 		# unused
 		return 1
@@ -180,7 +181,7 @@ function are_we_used() {
 	return 1
 }
 
-function autotest_src_prepare() {
+autotest_src_prepare() {
 	are_we_used || return 0
 	einfo "Preparing tests"
 
@@ -253,7 +254,7 @@ function autotest_src_prepare() {
 	rm -fv $( scanelf -RmyBF%a "${AUTOTEST_WORKDIR}" | grep -v -e ^${E_MACHINE} )
 }
 
-function autotest_src_compile() {
+autotest_src_compile() {
 	if ! are_we_used; then
 		ewarn "***************************************************************"
 		ewarn "* Not building any tests, because the requested list is empty *"
@@ -286,8 +287,7 @@ function autotest_src_compile() {
 	TESTS=$(\
 		for dir in ${prebuild_test_dirs}; do
 			print_test_dirs "${AUTOTEST_WORKDIR}/${dir}"
-		done | sort | uniq
-		)
+		done | sort -u)
 	NR_TESTS=$(echo ${TESTS}|wc -w)
 	if ! [ "${NR_TESTS}" = "0" ]; then
 		einfo "Building tests (${NR_TESTS}):"
@@ -318,7 +318,7 @@ function autotest_src_compile() {
 	popd 1> /dev/null
 }
 
-function autotest_src_install() {
+autotest_src_install() {
 	are_we_used || return 0
 	einfo "Installing tests"
 
@@ -372,23 +372,59 @@ function autotest_src_install() {
 	chmod -R a+x "${D}"/usr/local/autotest/*
 }
 
-# Sets up autotest packages in build root for use by developers when running
-# tests.
-function autotest_pkg_postinst() {
-	are_we_used || return 0
-	einfo "Creating autotest packages."
-	local autotest_dir="${ROOT}/usr/local/autotest"
-	local packages_dir="${autotest_dir}/packages"
-	local checksum_file="${packages_dir}/packages.checksum"
+autotest_pkg_postinst() {
+	local root_autotest_dir="${ROOT}/usr/local/autotest"
+	local path_to_image="${D}/usr/local/autotest"
+	# Should only happen when running emerge on a DUT.
+	if [ ! -d "${root_autotest_dir}" ]; then
+		einfo "Skipping packaging as no autotest installation detected."
+		return 0
+	fi
 
-	mkdir -p "${packages_dir}"
-	touch "${checksum_file}"
+	# Gather the artifacts we want autotest to package.
+	local test_opt dep_opt prof_opt
 
-	# Build packages from the workdir and install them into the buildroot.
-	flock "${checksum_file}" \
-		-c "${autotest_dir}/utils/packager.py \
-				-r ${packages_dir} --all upload" ||
-		die "Could not create packages."
+	# Only client tests can be packaged.
+	local tests_to_package_dirs="client/tests client/site_tests"
+	local client_tests=$(\
+		for dir in ${tests_to_package_dirs}; do
+			print_test_dirs "${path_to_image}/${dir}" yes
+		done | sort -u)
+
+	if [ -n "${client_tests}" ] && [ "${client_tests}" != "myfaketest" ]; then
+		# Check for test_count. The packager performs poorly when
+		# too many arguments are specified vs. --all. This should be fixed in
+		# autotest (crosbug.com/28173).
+		test_count=$(echo ${client_tests} | wc -w)
+		if [ ${test_count} -gt 10 ]; then
+			test_opt="--all"
+		else
+			test_opt="--test=$(pythonify_test_list ${client_tests})"
+		fi
+	fi
+
+	if [ "{test_opt}" != "--all" ]; then
+		if [ -n "${AUTOTEST_DEPS_LIST}" ]; then
+			dep_opt="--dep=$(pythonify_test_list ${AUTOTEST_DEPS_LIST})"
+		fi
+
+		# For *, we must generate the list of profilers.
+		if [ "${AUTOTEST_PROFILERS_LIST}" = "*" ]; then
+			AUTOTEST_PROFILERS_LIST=$(\
+				print_test_dirs "${path_to_image}/client/profilers" yes | sort -u)
+				prof_opt="--profiler=$(pythonify_test_list ${AUTOTEST_PROFILERS_LIST})"
+		fi
+	fi
+
+	if [ -n "${test_opt}" -o -n "${dep_opt}" -o -n "${prof_opt}" ]; then
+		einfo "Running packager with options ${test_opt} ${dep_opt} ${prof_opt}"
+		flock "${root_autotest_dir}/packages" \
+			-c "${root_autotest_dir}/utils/packager.py \
+				-r ${root_autotest_dir}/packages \
+				${test_opt} ${dep_opt} ${prof_opt} upload"
+	else
+		einfo "Packager not run as nothing was found to package."
+	fi
 }
 
 EXPORT_FUNCTIONS src_compile src_prepare src_install pkg_postinst
