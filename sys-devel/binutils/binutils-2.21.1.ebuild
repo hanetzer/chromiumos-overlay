@@ -6,4 +6,4 @@ PATCHVER="1.0"
 ELF2FLT_VER=""
 inherit toolchain-binutils
 
-KEYWORDS="amd64"
+KEYWORDS=""
