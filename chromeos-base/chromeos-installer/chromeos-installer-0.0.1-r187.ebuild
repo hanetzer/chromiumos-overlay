@@ -41,6 +41,9 @@ src_compile() {
 	# We don't need the installer in the sdk, just helper scripts.
 	use cros_host && return 0
 
+	# need this to get the verity headers working
+	append-cxxflags -I"${SYSROOT}"/usr/include/verity/
+
 	use 32bit_au && board_setup_32bit_au_env
 
 	tc-export AR CC CXX OBJCOPY

@@ -43,6 +43,7 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	x11-libs/gtk+"
 
 DEPEND="${RDEPEND}
+	chromeos-base/bootstat
 	>=chromeos-base/libchrome-85268:0[cros-debug=]
 	chromeos-base/libchrome_crypto
 	chromeos-base/protofiles
