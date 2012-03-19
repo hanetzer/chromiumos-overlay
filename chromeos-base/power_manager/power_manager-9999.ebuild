@@ -68,8 +68,9 @@ src_test() {
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		TESTS="backlight file_tagger idle_dimmer plug_dimmer power_supply powerd"
-		TESTS="$TESTS resolution_selector xidle"
+		TESTS="backlight file_tagger idle_dimmer plug_dimmer"
+		TESTS="$TESTS power_supply powerd resolution_selector"
+		TESTS="$TESTS state_control xidle";
 		for ut in ${TESTS}; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
@@ -86,6 +87,7 @@ src_install() {
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
+	dobin "${S}/power_state_tool"
 	dobin "${S}/suspend_delay_sample"
 	dobin "${S}/xidle-example"
 	insinto "/usr/share/power_manager"
