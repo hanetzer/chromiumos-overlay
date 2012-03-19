@@ -13,7 +13,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.gz"
 LICENSE="fontconfig"
 SLOT="1.0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="doc"
+IUSE="doc -is_desktop"
 
 # Purposefully dropped the xml USE flag and libxml2 support. Having this is
 # silly since expat is the preferred way to go per upstream and libxml2 support
@@ -74,6 +74,14 @@ src_install() {
 	insinto /etc/fonts
 	doins "${S}"/fonts.conf
 	doins "${FILESDIR}"/local.conf
+
+	# There's a lot of variability across different displays with subpixel
+	# rendering.  Until we have a better solution, turn it off and use grayscale
+	# instead on desktop boards.
+	if use is_desktop; then
+		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
+		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/.
+	fi
 
 	doman $(find "${S}" -type f -name *.1 -print)
 	newman doc/fonts-conf.5 fonts.conf.5
