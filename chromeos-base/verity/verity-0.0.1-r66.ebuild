@@ -56,7 +56,7 @@ src_install() {
 	doins dm-bht.h dm-bht-userspace.h
 	insinto /usr/include/verity
 	cd include
-	doins -r linux asm asm-generic/bitops crypto
+	doins -r linux asm asm-generic crypto
 	cd ..
 	into /
 	dobin build/verity-static
