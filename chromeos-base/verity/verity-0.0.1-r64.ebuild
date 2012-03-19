@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="4f27bf7eddffc420542d6c1ba58380c9291736ce"
+CROS_WORKON_COMMIT="896666be87dc5fd1560d8cb3c388ea513a6a053f"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
 
 inherit toolchain-funcs cros-workon cros-au
