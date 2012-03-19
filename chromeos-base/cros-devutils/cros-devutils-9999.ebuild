@@ -13,7 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="cros_host"
+IUSE="cros_host test"
 
 RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 	app-portage/gentoolkit
@@ -49,6 +49,8 @@ src_install() {
 			gdb_remote \
 			willis \
 			ssh_no_update \
+			cros_{start,stop}_vm \
+			image_to_live.sh \
 			gmergefs
 		popd >/dev/null
 
@@ -91,6 +93,16 @@ src_install() {
 
 src_test() {
 	cd "${S}" # Let's just run unit tests from ${S} rather than install and run.
+
+	# Run bundle_firmware tests
+	pushd host/lib >/dev/null
+	local libfile
+	for libfile in *.py; do
+		einfo Running tests in ${libfile}
+		python ${libfile} --test || \
+			die "Unit tests failed at ${libfile}!"
+	done
+	popd >/dev/null
 
 	local TESTS=()
 	if ! use cros_host; then
