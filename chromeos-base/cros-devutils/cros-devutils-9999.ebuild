@@ -93,6 +93,14 @@ src_test() {
 	done
 	popd >/dev/null
 
+	pushd host/tests >/dev/null
+	for ut_file in *.py; do
+		echo Running tests in ${ut_file}
+		PYTHONPATH=../lib python ${ut_file} ||
+		die "Unit tests failed at ${ut_file}!"
+	done
+	popd >/dev/null
+
 	local TESTS=()
 	if ! use cros_host; then
 		TESTS+=( gmerge_test.py )
