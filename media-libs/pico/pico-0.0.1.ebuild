@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit toolchain-funcs
+inherit toolchain-funcs eutils
 
 DESCRIPTION="the SVox Pico speech synthesis library"
 HOMEPAGE="http://www.svox.com/"
@@ -31,6 +31,9 @@ src_unpack() {
 }
 
 src_prepare() {
+	# Fix to make pico running on x64 environment.
+	epatch "${FILESDIR}"/pico-0.0.1-x64fix.patch
+
 	tc-export AR CC RANLIB
 }
 
