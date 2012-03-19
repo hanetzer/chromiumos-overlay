@@ -111,6 +111,15 @@ toolchain-glibc_src_compile() {
 		einfo " $(printf '%15s' ${v}:)   ${!v}"
 	done
 	export CC=$(tc-getCC ${CTARGET})
+	# At this stage, gcc adds hardened options regardless of "use hardened"
+	# or not. So for arm glibc compile, currently manually disable stack
+	# protector and pie for every c and assembly file.
+	# Note - change to CFLAGS is not enough - at configuring time, $(CC)
+	# will be tested whether "PIC" by default is enabled, we have to disable
+	# this at first time (configuration time).
+	if [[ "$CTARGET" == arm* ]]; then
+		CC="$CC -fno-stack-protector -fno-pie -nopie"
+	fi
 	einfo " $(printf '%15s' 'Manual CC:')   ${CC}"
 	echo
 
