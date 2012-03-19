@@ -82,6 +82,18 @@ touch_init_py() {
 	done
 }
 
+# Exports a CROS_WORKON_SUBDIRS_TO_COPY variable to ensure that only the
+# necessary files will be copied. This cannot be applied globally, as some
+# ebuilds may not have tests only.
+autotest_restrict_workon_subdirs() {
+	CROS_WORKON_SUBDIRS_TO_COPY=()
+	local var
+	for var in AUTOTEST_{CLIENT,SERVER}_{TESTS,SITE_TESTS} \
+	           AUTOTEST_{CONFIG,DEPS,PROFILERS}; do
+		CROS_WORKON_SUBDIRS_TO_COPY+=( ${!var} )
+	done
+}
+
 setup_cross_toolchain() {
 	tc-export CC CXX AR RANLIB LD NM STRIP PKG_CONFIG
 	export CCFLAGS="$CFLAGS"
@@ -426,5 +438,12 @@ autotest_pkg_postinst() {
 		einfo "Packager not run as nothing was found to package."
 	fi
 }
+
+if [[ "${CROS_WORKON_PROJECT}" == "chromiumos/third_party/autotest" ]]; then
+	# Using main autotest repo. Automatically restricting checkout.
+	# Note that this does not happen if the inherit is done prior to setting
+	# CROS_WORKON_* variables.
+	autotest_restrict_workon_subdirs
+fi
 
 EXPORT_FUNCTIONS src_compile src_prepare src_install pkg_postinst
