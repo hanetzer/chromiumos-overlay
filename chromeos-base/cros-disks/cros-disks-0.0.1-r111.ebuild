@@ -1,4 +1,4 @@
-# Copyright (C) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
 
@@ -34,7 +34,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:0[cros-debug=]
+	chromeos-base/libchrome:85268[cros-debug=]
 	chromeos-base/system_api
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"

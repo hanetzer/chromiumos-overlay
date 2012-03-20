@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="-cros-debug"
 
-RDEPEND="chromeos-base/libchrome:0[cros-debug=]"
+RDEPEND="chromeos-base/libchrome:85268[cros-debug=]"
 DEPEND="dev-cpp/gtest
 	x11-base/xorg-server
 	${RDEPEND}"

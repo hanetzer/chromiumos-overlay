@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -29,7 +29,7 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 # deps/glbench
 RDEPEND="${RDEPEND}
   dev-cpp/gflags
-  chromeos-base/libchrome:0[cros-debug=]
+  chromeos-base/libchrome:85268[cros-debug=]
   virtual/opengl
   opengles? ( virtual/opengles )
 "
