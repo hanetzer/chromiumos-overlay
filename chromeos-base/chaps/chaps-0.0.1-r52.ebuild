@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="ef5b288504967dbe609362ea233b9fc3b4c07ece"
+CROS_WORKON_COMMIT="ea48bd074c2a694780955e9596d16604e38d17aa"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
 
 KEYWORDS="arm amd64 x86"
@@ -24,12 +24,12 @@ RDEPEND="
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/opencryptoki
-	dev-cpp/gflags
-	>=dev-db/sqlite-3.6"
+	dev-cpp/gflags"
 
 DEPEND="${RDEPEND}
 	dev-cpp/gmock
-	test? ( dev-cpp/gtest )"
+	test? ( dev-cpp/gtest )
+	dev-db/leveldb"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
