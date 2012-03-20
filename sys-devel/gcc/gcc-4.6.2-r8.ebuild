@@ -123,7 +123,7 @@ src_compile()
 	GCC_CFLAGS="$(portageq envvar CFLAGS)"
 	TARGET_FLAGS=""
 
-	if use hardened && [[ ${CTARGET} != arm* ]]
+	if use hardened
 	then
 		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
 	fi
@@ -179,7 +179,7 @@ EOF
 	cd -
 
 	if is_crosscompile ; then
-		if use hardened && [[ ${CTARGET} != arm* ]]
+		if use hardened
 		then
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
 		else
