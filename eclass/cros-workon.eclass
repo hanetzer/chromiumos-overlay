@@ -66,7 +66,7 @@
 # path for storing the local clone.
 : ${CROS_WORKON_GIT_SUFFIX:=}
 
-IUSE="+cros_workon_commit_$CROS_WORKON_COMMIT"
+IUSE="cros_workon_commit_$CROS_WORKON_COMMIT"
 
 inherit git flag-o-matic
 
