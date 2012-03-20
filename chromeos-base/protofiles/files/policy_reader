@@ -12,8 +12,9 @@ PROTO_FILE="/var/lib/whitelist/policy"
 # where the input data is. This file must be in $TMP_DIR. The output is the
 # raw unsecaped string.
 function extract_protobuf_field() {
-  grep "$1:" "$TMP_DIR/$2" | \
-  printf $(sed "s/^$1: \"\(.*\)\"$/\1/")
+  protobuf_field=$(grep "$1:" "$TMP_DIR/$2" | \
+    sed "s/^$1: \"\(.*\)\"$/\1/;s/%/%%/g")
+  printf "$protobuf_field"
 }
 
 # Decodes the policy blob and prints it to the screen.
