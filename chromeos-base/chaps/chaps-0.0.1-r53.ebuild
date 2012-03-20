@@ -3,7 +3,7 @@
 # found in the LICENSE.makefile file.
 
 EAPI=2
-CROS_WORKON_COMMIT="ea48bd074c2a694780955e9596d16604e38d17aa"
+CROS_WORKON_COMMIT="96ee2db38eca5295b767747492b3095362cfa203"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
 
 KEYWORDS="arm amd64 x86"
@@ -47,6 +47,7 @@ src_test() {
 
 src_install() {
 	dosbin build-opt/chapsd || die
+	dobin build-opt/p11_replay || die
 	dolib.so build-opt/libchaps.so || die
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
