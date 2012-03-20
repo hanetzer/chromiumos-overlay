@@ -155,7 +155,9 @@ src_install() {
 	local files_to_copy="System.map u-boot.bin"
 	local ub_vendor="$(get_config_var ${CROS_U_BOOT_CONFIG} VENDOR)"
 	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
+	local ub_arch="$(get_config_var ${CROS_U_BOOT_CONFIG} ARCH)"
 	local file
+	local dts_dir
 
 	# Daisy and its variants need u-boot with dtb and SPL binary.
 	# TODO: Remove u-boot-dtb.bin when cros_bundle_firmware supports Daisy.
@@ -174,9 +176,14 @@ src_install() {
 	newins "${UB_BUILD_DIR}/u-boot.dtb" "${CROS_FDT_FILE}.dtb"
 
 	insinto "${inst_dir}/dts"
-	if [ -d "${S}/board/${ub_vendor}/dts" ]; then
-		doins board/${ub_vendor}/dts/*.dts
-	else
-		doins board/${ub_vendor}/${ub_board}/*.dts
-	fi
+	for dts_dir in "${S}/board/${ub_vendor}/dts" \
+			"board/${ub_vendor}/${ub_board}" \
+			"${S}/arch/${ub_arch}/dts" \
+			cros/dts; do
+		files_to_copy="$(find ${dts_dir} -regex '.*\.dtsi?')"
+		elog "Installing device tree files in ${dts_dir}"
+		if [ -n "${files_to_copy}" ]; then
+			doins ${files_to_copy}
+		fi
+	done
 }
