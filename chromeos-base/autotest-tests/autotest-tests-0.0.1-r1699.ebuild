@@ -74,7 +74,7 @@ IUSE_TESTS="
 	+tests_iperf
 	+tests_bonnie
 	+tests_iozone
-	+tests_ltp
+	tests_ltp
 	+tests_netperf2
 	+tests_netpipe
 	+tests_scrashme
