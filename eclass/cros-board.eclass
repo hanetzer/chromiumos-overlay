@@ -56,6 +56,7 @@ ALL_BOARDS=(
 	x86-agz
 	x86-alex
 	x86-alex_he
+	x86-alex_hubble
 	x86-dogfood
 	x86-drm
 	x86-fruitloop
