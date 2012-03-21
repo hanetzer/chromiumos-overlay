@@ -1,8 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
-CROS_WORKON_COMMIT="88e2f79ed3c640185a341973c2a4a7d693a164e2"
+EAPI=4
+CROS_WORKON_COMMIT="68c3e55f4cca21af1134349fd754470b39d7c7dd"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon
@@ -39,6 +39,17 @@ src_prepare() {
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
 	cp -fpru "${S}"/server/cros "${AUTOTEST_WORK}/server"
 
+	# Pre-create test directories.
+	local test_dirs="
+		client/tests client/site_tests
+		client/config client/deps client/profilers
+		server/tests server/site_tests packages"
+	local dir
+	for dir in ${test_dirs}; do
+		mkdir "${AUTOTEST_WORK}/${dir}"
+		touch "${AUTOTEST_WORK}/${dir}"/.keep
+	done
+
 	sed "/^enable_server_prebuild/d" "${S}/global_config.ini" > \
 		"${AUTOTEST_WORK}/global_config.ini"
 }
@@ -50,22 +61,10 @@ src_install() {
 	# base __init__.py
 	touch "${D}"/usr/local/autotest/__init__.py
 
-	TESTDIRS="
-		client/tests client/site_tests
-		client/config client/deps client/profilers
-		server/tests server/site_tests"
-
-	# also pre-create the test dirs
-	for dir in ${TESTDIRS}; do
-		mkdir "${D}/usr/local/autotest/${dir}"
-		touch "${D}/usr/local/autotest/${dir}"/.keep
-	done
-
 	# TODO: This should be more selective
 	chmod -R a+x "${D}"/usr/local/autotest
 
 	# setup stuff needed for read/write operation
-	dodir "/usr/local/autotest/packages"
 	chmod a+wx "${D}/usr/local/autotest/packages"
 
 	dodir "/usr/local/autotest/client/packages"
@@ -77,4 +76,12 @@ src_install() {
 	# Set up symlinks so that debug info works for autotests.
 	dodir /usr/lib/debug/usr/local/autotest/
 	dosym client/site_tests /usr/lib/debug/usr/local/autotest/tests
+}
+
+# Packages client.
+pkg_postinst() {
+	local root_autotest_dir="${ROOT}/usr/local/autotest"
+	flock "${root_autotest_dir}/packages" \
+			-c "${root_autotest_dir}/utils/packager.py \
+				-r ${root_autotest_dir}/packages --client upload"
 }
