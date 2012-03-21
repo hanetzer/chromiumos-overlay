@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="256b91f41906511c536ecf36372d559dbd4cb409"
+CROS_WORKON_COMMIT="b311c2e1c5d38ccd17ad1197effbaf90954f0b8e"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -30,7 +30,7 @@ BOARDS=(
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-IUSE="-asan -aura -is_desktop -new_power_button test -touchui"
+IUSE="-asan -aura -disable_login_animations -is_desktop -new_power_button test -touchui"
 for flag in $BOARD_USE_FLAGS; do
 	IUSE="$IUSE $flag"
 done
@@ -114,7 +114,8 @@ src_install() {
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
 	local use_flag_file="${D}"/etc/session_manager_use_flags.txt
 	local flag
-	for flag in asan aura is_desktop new_power_button $BOARD_USE_FLAGS; do
+	for flag in asan aura disable_login_animations is_desktop \
+                    new_power_button $BOARD_USE_FLAGS; do
 		append_use_flag_if_set "${flag}" "${use_flag_file}"
 	done
 }
