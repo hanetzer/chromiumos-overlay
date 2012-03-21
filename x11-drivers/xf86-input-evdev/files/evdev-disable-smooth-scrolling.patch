@@ -1,0 +1,15 @@
+diff --git a/src/evdev.h b/src/evdev.h
+index acd4289..fe89420 100644
+--- a/src/evdev.h
++++ b/src/evdev.h
+@@ -67,6 +67,10 @@
+ #define HAVE_SMOOTH_SCROLLING 1
+ #endif
+ 
++/* Smooth scrolling results in the mousewheel generating motion events with
++ * valuators that confuse Chrome: http://crosbug.com/118608 */
++#undef HAVE_SMOOTH_SCROLLING
++
+ #define EVDEV_MAXBUTTONS 32
+ #define EVDEV_MAXQUEUE 32
+ 

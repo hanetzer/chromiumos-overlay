@@ -14,3 +14,7 @@ RDEPEND=">=x11-base/xorg-server-1.11.99.901
 DEPEND="${RDEPEND}
 	>=x11-proto/inputproto-2.1.99.3
 	>=sys-kernel/linux-headers-2.6"
+
+PATCHES=(
+	"${FILESDIR}/evdev-disable-smooth-scrolling.patch"
+	)
