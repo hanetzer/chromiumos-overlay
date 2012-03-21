@@ -26,7 +26,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}"
 
-IUSE_TESTS="
+IUSE_TESTS=(
 	# Inherits from chrome_test or pyauto_test.
 	+tests_desktopui_BrowserTest
 	+tests_desktopui_OMXTest
@@ -83,9 +83,9 @@ IUSE_TESTS="
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
-"
+)
 
-IUSE="${IUSE} ${IUSE_TESTS}"
+IUSE="${IUSE} ${IUSE_TESTS[*]}"
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
