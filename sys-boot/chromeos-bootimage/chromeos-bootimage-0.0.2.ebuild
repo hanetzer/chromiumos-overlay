@@ -64,8 +64,8 @@ src_compile() {
 	# Location of the u-boot flat device tree binary blob (FDT)
 	# TODO(dianders): remove looking at PKG_CONFIG once
 	# virtual/chromeos-bootimage is complete.
-	fdt_file="$(echo "${PKG_CONFIG#pkg-config-}.dtb" | tr _ '-')"
-	fdt_file="${CROS_FIRMWARE_ROOT}/dtb/${fdt_file#x86-}"
+	fdt_file="$(echo "${PKG_CONFIG#pkg-config-}.dts" | tr _ '-')"
+	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${fdt_file#x86-}"
 
 	# We only have a single U-Boot, and it is called u-boot.bin
 	image_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
