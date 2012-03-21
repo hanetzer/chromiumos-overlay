@@ -21,19 +21,18 @@ KEYWORDS="amd64 arm x86"
 IUSE="doc"
 
 RDEPEND=">=dev-libs/glib-2.30.2
-        >=sys-apps/dbus-1.2
-        dev-libs/dbus-glib
-        net-dialup/ppp
-        !net-misc/modemmanager
-        "
+	>=sys-apps/dbus-1.2
+	dev-libs/dbus-glib
+	net-dialup/ppp
+	!net-misc/modemmanager"
 
-DEPEND=">=sys-fs/udev-145[gudev]
-        dev-util/pkgconfig
-        dev-util/intltool
-        >=dev-util/gtk-doc-1.13
-        !net-misc/modemmanager-next-interfaces
-        !net-misc/modemmanager
-        "
+DEPEND="${RDEPEND}
+	>=sys-fs/udev-145[gudev]
+	dev-util/pkgconfig
+	dev-util/intltool
+	>=dev-util/gtk-doc-1.13
+	!net-misc/modemmanager-next-interfaces
+	!net-misc/modemmanager"
 
 DOCS="AUTHORS ChangeLog NEWS README"
 
