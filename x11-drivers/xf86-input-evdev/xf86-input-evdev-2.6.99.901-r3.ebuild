@@ -17,4 +17,5 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}/evdev-disable-smooth-scrolling.patch"
+	"${FILESDIR}/evdev-2.6.99-wheel-accel.patch"
 	)
