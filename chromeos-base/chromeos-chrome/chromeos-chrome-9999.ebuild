@@ -656,7 +656,6 @@ src_prepare() {
 	# The chrome makefiles specify -O and -g flags already, so remove the
 	# portage flags.
 	filter-flags -g -O*
-	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
 	if use pgo && ! use clang ; then
 		local PROFILE_DIR
