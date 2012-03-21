@@ -20,7 +20,12 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-DEPEND=">=dev-util/gtk-doc-1.13
+RDEPEND=""
+
+DEPEND="${RDEPEND}
+	>=dev-libs/glib-2.30.2
+	>=dev-util/gtk-doc-1.13
+	>=sys-fs/udev-145[gudev]
 	!net-misc/modemmanager-next"
 
 src_prepare () {
