@@ -981,10 +981,12 @@ src_install() {
 	insinto "${CHROME_DIR}"/include
 	doins "${CHROME_ROOT}/src/third_party/cros/chromeos_cros_api.h"
 
-	# Copy ibus_input_methods.txt so that ibus-m17n and ibus-xkb-layouts
-	# can exclude unnnecessary input methods based on the file.
+	# Copy input_methods.txt so that ibus-m17n can exclude unnnecessary
+	# input methods based on the file.
 	insinto /usr/share/chromeos-assets/input_methods
 	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
+	doins "${INPUT_METHOD}"/input_methods.txt
+	# TODO(yusukes): Remove ibus_input_methods.txt in R20.
 	doins "${INPUT_METHOD}"/ibus_input_methods.txt
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
