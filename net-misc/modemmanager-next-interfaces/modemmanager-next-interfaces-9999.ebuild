@@ -9,7 +9,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 CROS_WORKON_LOCALNAME="../third_party/modemmanager-next"
 
-inherit cros-workon
+inherit autotools cros-workon
 
 DESCRIPTION="DBus interface descriptions and headers for ModemManager v0.6"
 HOMEPAGE="http://www.chromium.org/"
@@ -20,15 +20,25 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-DEPEND="!net-misc/modemmanager-next"
+DEPEND=">=dev-util/gtk-doc-1.13
+	!net-misc/modemmanager-next"
 
-src_configure() { :; }
-src_compile() { :; }
+src_prepare () {
+	gtkdocize || die "gtkdocize failed"
+	eautopoint
+	eautoreconf
+	intltoolize --force
+}
+
+src_compile() {
+	# Only build the .h files we need
+	emake -C include
+}
 
 src_install() {
 	insinto /usr/share/dbus-1/interfaces
 	doins introspection/org.freedesktop.ModemManager1.*.xml
 
 	insinto /usr/include/mm
-	doins include/ModemManager*.h
+	doins include/*.h
 }
