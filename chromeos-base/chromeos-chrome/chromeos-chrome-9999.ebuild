@@ -205,7 +205,7 @@ QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
 use_nacl() {
-	(use amd64 || use x86) && ! use asan && ! use component_build
+	(use amd64 || use x86) && ! use asan && ! use component_build && ! use drm
 }
 
 set_build_defines() {
@@ -757,7 +757,8 @@ src_compile() {
 	if use drm; then
 		time emake -r $(use verbose && echo V=1) \
 			BUILDTYPE="${BUILDTYPE}" \
-			aura_demo \
+			aura_demo ash_shell \
+			chrome chrome_sandbox default_extensions \
 			|| die "compilation failed"
 	else
 		time emake -r $(use verbose && echo V=1) \
@@ -944,6 +945,7 @@ src_install() {
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
 	use drm && doexe "${FROM}"/aura_demo
+	use drm && doexe "${FROM}"/ash_shell
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
 	fi
