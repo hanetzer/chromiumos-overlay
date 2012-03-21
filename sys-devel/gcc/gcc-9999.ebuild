@@ -62,8 +62,8 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
-			cxx openmp tests +thumb upstream_gcc vanilla"
+IUSE="gcj git_gcc graphite gtk hardened hardfp mounted_gcc multilib multislot
+      nls cxx openmp tests +thumb upstream_gcc vanilla"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -83,7 +83,6 @@ fi
 PREFIX=/usr
 
 src_unpack() {
-
 	if use mounted_gcc ; then
 		if [[ ! -d "$(get_gcc_dir)" ]] ; then
 			die "gcc dir not mounted/present at: $(get_gcc_dir)"
@@ -93,6 +92,16 @@ src_unpack() {
 		GCC_TARBALL=${GCC_MIRROR}/${P}/${P}.tar.bz2
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
+	elif use git_gcc ; then
+		git clone "${CROS_WORKON_REPO}/${CROS_WORKON_PROJECT}.git" "${S}"
+		if [[ -z ${GCC_GITHASH} ]] ; then
+			einfo "Checking out: ${GCC_GITHASH}"
+			pushd "$(get_gcc_dir)" >/dev/null
+			git checkout ${GCC_GITHASH} || \
+				die "Couldn't checkout ${GCC_GITHASH}"
+			popd >/dev/null
+		fi
+		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"
 	else
 		cros-workon_src_unpack
 	fi
