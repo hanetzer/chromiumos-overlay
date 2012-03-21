@@ -50,12 +50,24 @@ src_configure() {
 src_compile() {
 	emake || die
 	# Rewrite m17n.xml using the XML output.
-	# ibus_input_methods.txt comes from chromeos-chrome.
+	# input_methods.txt comes from chromeos-base/chromeos-chrome-9999.ebuild
 	ASSETSIMDIR="${SYSROOT}"/usr/share/chromeos-assets/input_methods
-	LIST="${ASSETSIMDIR}"/ibus_input_methods.txt
-	python "${ASSETSIMDIR}"/filter.py < output.xml \
-	--whitelist="${LIST}" \
-	--rewrite=src/m17n.xml || die
+
+	LIST="${ASSETSIMDIR}"/input_methods.txt
+	if [ -f ${LIST} ] ; then
+		python "${ASSETSIMDIR}"/filter.py < output.xml \
+		--whitelist="${LIST}" \
+		--rewrite=src/m17n.xml || die
+	else
+		# TODO(yusukes): Remove ibus_input_methods.txt support in R20.
+		LIST_OLD="${ASSETSIMDIR}"/ibus_input_methods.txt
+		if [ -f ${LIST_OLD} ] ; then
+		   python "${ASSETSIMDIR}"/filter.py < output.xml \
+		   --whitelist="${LIST_OLD}" \
+		   --rewrite=src/m17n.xml || die
+		fi
+	fi
+
 	# Remove spaces from the XML to reduce file size from ~4k to ~3k.
 	# You can make it readable by 'xmllint --format' (on a target machine).
 	mv src/m17n.xml "${T}"/ || die
