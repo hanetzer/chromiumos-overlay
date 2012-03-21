@@ -65,8 +65,6 @@ RESTRICT="mirror strip"
 IUSE="gcj graphite gtk hardened hardfp mounted_gcc multilib multislot nls
 			cxx openmp tests +thumb upstream_gcc vanilla"
 
-GITDIR=${WORKDIR}/gitdir
-
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
 export CTARGET=${CTARGET:-${CHOST}}
@@ -97,19 +95,6 @@ src_unpack() {
 		tar xf ${GCC_TARBALL##*/}
 	else
 		cros-workon_src_unpack
-		mv "${S}" "${GITDIR}"
-
-		CL=$(cd ${GITDIR}; git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
-	fi
-
-
-	if [[ ! -z ${CL} ]] ; then
-		COST_PKG_VERSION="${COST_PKG_VERSION}_${CL}"
-	fi
-
-	if [[ "$(readlink -f $(get_gcc_dir))" != "$(readlink -f ${S})" ]]
-	then
-		ln -sf "$(get_gcc_dir)" "${S}"
 	fi
 
 	use vanilla && return 0
@@ -302,8 +287,8 @@ src_configure()
 	addwrite /dev/zero
 	echo "Running this:"
 	echo "configure ${confgcc}"
-	echo "${S}"/configure "$@"
-	"${S}"/configure ${confgcc} || die "failed to run configure"
+	echo "$(get_gcc_dir)"/configure "$@"
+	"$(get_gcc_dir)"/configure ${confgcc} || die "failed to run configure"
 }
 
 get_gcc_configure_options()
@@ -357,7 +342,7 @@ get_gcc_dir()
 	elif use upstream_gcc ; then
 		GCCDIR=${P}
 	else
-		GCCDIR=${GITDIR}
+		GCCDIR=${S}
 	fi
 	echo "${GCCDIR}"
 }
