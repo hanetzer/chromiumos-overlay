@@ -55,7 +55,7 @@ get_test_list() {
 
 	# we cache the result of this operation in AUTOTEST_TESTS,
 	# because it's expensive and does not change over the course of one ebuild run
-	local result="${IUSE_TESTS//[+-]tests_/}"
+	local result="${IUSE_TESTS[*]//[+-]tests_/}"
 	result="${result//tests_/}"
 
 	result=$(for test in ${result}; do use tests_${test} && echo -n "${test} "; done)
