@@ -3,14 +3,13 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
 EAPI=4
-CROS_WORKON_COMMIT="3e83fdc180280486913049ff6d7725961a1a032f"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_COMMIT="538beb124ea10c298d929f36166fc9ab6d6f597a"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit cros-workon eutils toolchain-funcs linux-info
 
 DESCRIPTION="Userland tools for Linux Performance Counters"
 HOMEPAGE="http://perf.wiki.kernel.org/"
-PROVIDE="virtual/perf"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -21,11 +20,11 @@ RDEPEND="demangle? ( sys-devel/binutils )
 	dev-libs/elfutils
 	ncurses? ( dev-libs/newt )
 	perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) )
-	!dev-util/perf"
+	!dev-util/perf-next"
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
-CROS_WORKON_LOCALNAME="kernel-next"
+CROS_WORKON_LOCALNAME="kernel/files"
 
 src_compile() {
 	local makeargs=
