@@ -18,6 +18,7 @@ KEYWORDS="amd64 arm x86"
 IUSE="32bit_au cros_host"
 
 DEPEND="
+	chromeos-base/verity
 	!cros_host? (
 		chromeos-base/vboot_reference
 	)"
