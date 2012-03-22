@@ -61,22 +61,14 @@ IUSE_TESTS="
 	+tests_factory_Leds
 	+tests_factory_LidSwitch
 	+tests_factory_LightSensor
-	+tests_factory_PreFinalCheck
-	+tests_factory_ProbeHWID
 	+tests_factory_Prompt
-	+tests_factory_RebootStub
-	+tests_factory_Review
 	+tests_factory_ScriptWrapper
-	+tests_factory_SelectRegion
-	+tests_factory_SetSN
-	+tests_factory_ShowTestResults
 	+tests_factory_Start
 	+tests_factory_StressTest
 	+tests_factory_Touchpad
 	+tests_factory_USB
 	+tests_factory_VPD
 	+tests_factory_Wifi
-	+tests_factory_WriteGBB
 	+tests_suite_Factory
 "
 
