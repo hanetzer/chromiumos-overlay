@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth X opengl hardened -touchui"
+IUSE="bluetooth X opengl hardened"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -81,7 +81,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xev
 	x11-apps/xhost
 	x11-apps/xinput
-	touchui? ( x11-apps/xinput_calibrator )
+	x11-apps/xinput_calibrator
 	x11-apps/xlsatoms
 	x11-apps/xlsclients
 	x11-apps/xmodmap

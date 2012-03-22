@@ -11,7 +11,7 @@ DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-new_power_button test -lockvt -touchui -nocrit -is_desktop -als -aura"
+IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -aura"
 IUSE="${IUSE} -has_keyboard_backlight"
 KEYWORDS="~amd64 ~arm ~x86"
 
@@ -109,13 +109,6 @@ src_install() {
 			die "low_battery_suspend_percent config file missing"
 		fi
 		echo "0" > "${D}/${crit}"
-	fi
-
-	if use touchui; then
-		if [ ! -e "${D}/usr/share/power_manager/use_lid" ]; then
-			die "use_lid config file missing"
-		fi
-		echo "0" > "${D}/usr/share/power_manager/use_lid"
 	fi
 
 	dodir /etc/dbus-1/system.d
