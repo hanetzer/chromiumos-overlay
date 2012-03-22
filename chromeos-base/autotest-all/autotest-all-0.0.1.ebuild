@@ -8,11 +8,12 @@ HOMEPAGE="http://www.chromium.org"
 
 LICENSE="GPL-2"
 SLOT=0
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="amd64 arm x86"
 IUSE=""
 
 RDEPEND="
-	>=chromeos-base/autotest-tests-0.0.1-r1521
+	chromeos-base/autotest-tests
+	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-tests-ownershipapi
 	chromeos-base/autotest-chrome
 	chromeos-base/autotest-factory
