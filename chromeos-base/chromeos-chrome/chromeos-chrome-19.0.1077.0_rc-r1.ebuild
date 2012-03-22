@@ -95,13 +95,22 @@ if use local_gclient; then
 	CHROME_SRC="${CHROME_SRC}-custom"
 fi
 
-# chrome sources store directory
-if [[ -z ${ECHROME_STORE_DIR} ]] ; then
-	# Force storage to be outside of distdir, so that it's
-	# not cached across chroot recreations.
-	ECHROME_STORE_DIR="/var/cache/chromeos-chrome/${CHROME_SRC}"
+# CHROME_CACHE_DIR is used for storing output artifacts, and is always a
+# regular directory inside the chroot (i.e. it's never mounted in, so it's
+# always safe to use cp -al for these artifacts).
+if [[ -z ${CHROME_CACHE_DIR} ]] ; then
+	CHROME_CACHE_DIR="/var/cache/chromeos-chrome/${CHROME_SRC}"
 fi
-addwrite "${ECHROME_STORE_DIR}"
+addwrite "${CHROME_CACHE_DIR}"
+
+# CHROME_DISTDIR is used for storing the source code, if any source code
+# needs to be unpacked at build time (e.g. in the SERVER_SOURCE scenario.)
+# It will be mounted into the chroot, so it is never safe to use cp -al
+# for these files.
+if [[ -z ${CHROME_DISTDIR} ]] ; then
+	CHROME_DISTDIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/${CHROME_SRC}"
+fi
+addwrite "${CHROME_DISTDIR}"
 
 # chrome destination directory
 CHROME_DIR=/opt/google/chrome
@@ -252,7 +261,7 @@ set_build_defines() {
 	fi
 
 	if use reorder && ! use clang; then
-		BUILD_DEFINES="order_text_section='${ECHROME_STORE_DIR}/${PGO_SUBDIR}/section-ordering-files/orderfile' $BUILD_DEFINES"
+		BUILD_DEFINES="order_text_section='${CHROME_DISTDIR}/${PGO_SUBDIR}/section-ordering-files/orderfile' $BUILD_DEFINES"
 	fi
 
 	if use touchui; then
@@ -416,7 +425,7 @@ unpack_chrome() {
 		${CHROME_VERSION_FILE} file"
 	echo ${CHROME_VERSION} > ${CHROME_VERSION_FILE}
 
-	elog "Creating ${ECHROME_STORE_DIR}/.gclient"
+	elog "Creating ${CHROME_DISTDIR}/.gclient"
 	#until we make the pdf compile on arm.
 	#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
 	if use local_gclient; then
@@ -426,19 +435,19 @@ unpack_chrome() {
 		if [ -z ${gclient_file} ]; then
 			die "Could not find ${CHROME_GCLIENT} in overlay path"
 		fi
-		if ! diff -q "${gclient_file}" "${ECHROME_STORE_DIR}/.gclient" \
+		if ! diff -q "${gclient_file}" "${CHROME_DISTDIR}/.gclient" \
 			> /dev/null 2>&1 ; then
 			elog "Custom gclient differs.  Cleaning source tree"
-			elog "rm -rf ${ECHROME_STORE_DIR}"
-			rm -rf "${ECHROME_STORE_DIR}"
-			mkdir -p "${ECHROME_STORE_DIR}" \
-				|| die "can't mkdir ${ECHROME_STORE_DIR}."
+			elog "rm -rf ${CHROME_DISTDIR}"
+			rm -rf "${CHROME_DISTDIR}"
+			mkdir -p "${CHROME_DISTDIR}" \
+				|| die "can't mkdir ${CHROME_DISTDIR}."
 		fi
-		cp "${gclient_file}" "${ECHROME_STORE_DIR}/.gclient" \
+		cp "${gclient_file}" "${CHROME_DISTDIR}/.gclient" \
 			|| die "Could not copy $gclient_file"
 	elif use chrome_pdf; then
 		elog "Official Build enabling PDF sources"
-		create_gclient_file "${ECHROME_STORE_DIR}" \
+		create_gclient_file "${CHROME_DISTDIR}" \
 			"${PRIMARY_URL}" \
 			"${AUXILIARY_URL}" \
 			"${REVISION}" \
@@ -446,7 +455,7 @@ unpack_chrome() {
 			${USE_TRUNK} \
 			|| die "Can't write .gclient file"
 	else
-		create_gclient_file "${ECHROME_STORE_DIR}" \
+		create_gclient_file "${CHROME_DISTDIR}" \
 			"${PRIMARY_URL}" \
 			"${AUXILIARY_URL}" \
 			"${REVISION}" \
@@ -457,10 +466,10 @@ unpack_chrome() {
 	fi
 
 	elog "Using .gclient ..."
-	elog $(cat ${ECHROME_STORE_DIR}/.gclient)
+	elog $(cat ${CHROME_DISTDIR}/.gclient)
 
-	pushd "${ECHROME_STORE_DIR}" || \
-		die "Cannot chdir to ${ECHROME_STORE_DIR}"
+	pushd "${CHROME_DISTDIR}" || \
+		die "Cannot chdir to ${CHROME_DISTDIR}"
 
 	if [ -s patches ]; then
 		elog "Reverting previous patches"
@@ -492,26 +501,33 @@ decide_chrome_origin() {
 	fi
 }
 
-create_echrome_store_dir_if_not_present() {
-	if [[ ! -d ${ECHROME_STORE_DIR} ]] ; then
-		debug-print "${FUNCNAME}: Creating chrome-src directory"
-		addwrite /
-		mkdir -p "${ECHROME_STORE_DIR}" \
-			|| die "can't mkdir ${ECHROME_STORE_DIR}."
-		export SANDBOX_WRITE="${SANDBOX_WRITE%%:/}"
-	fi
+sandboxless_ensure_directory() {
+	local dir
+	for dir in "$@"; do
+		if [[ ! -d "${dir}" ]] ; then
+			# We need root access to create these directories, so we need to
+			# use sudo. This implicitly disables the sandbox.
+			sudo mkdir -p "${dir}" || die
+			sudo chown "$PORTAGE_USERNAME:portage" "${dir}" || die
+			sudo chmod 0755 "${dir}" || die
+		fi
+	done
 }
 
 src_unpack() {
 	tc-export CC CXX
+	# CHROME_ROOT is the location where the source code is used for compilation.
+	# If we're in SERVER_SOURCE mode, CHROME_ROOT is CHROME_DISTDIR. In LOCAL_SOURCE
+	# mode, this directory may be set manually to any directory. It may be mounted
+	# into the chroot, so it is not safe to use cp -al for these files.
 	# These are set here because $(whoami) returns the proper user here,
 	# but 'root' at the root level of the file
 	export CHROME_ROOT="${CHROME_ROOT:-/home/$(whoami)/chrome_root}"
 	export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
 
-	# Create chrome-src storage directory and play nicely with sandbox.
-	create_echrome_store_dir_if_not_present
+	# Create storage directories.
+	sandboxless_ensure_directory "${CHROME_DISTDIR}" "${CHROME_CACHE_DIR}"
 
 	# Copy in credentials to fake home directory so that build process
 	# can access svn and ssh if needed.
@@ -540,7 +556,7 @@ src_unpack() {
 	(SERVER_SOURCE)
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
 		#See if the CHROME_VERSION we used previously was different
-		CHROME_VERSION_FILE=${ECHROME_STORE_DIR}/chrome_version
+		CHROME_VERSION_FILE=${CHROME_DISTDIR}/chrome_version
 		if [ -f ${CHROME_VERSION_FILE} ]; then
 			OLD_CHROME_VERSION=$(cat ${CHROME_VERSION_FILE})
 		fi
@@ -549,11 +565,11 @@ src_unpack() {
 			if [ $OLD_CHROME_VERSION != $CHROME_VERSION ]; then
 				popd
 				elog "${EGCLIENT} sync failed and detected version change"
-				elog "Attempting to clean up ${ECHROME_STORE_DIR} and retry"
+				elog "Attempting to clean up ${CHROME_DISTDIR} and retry"
 				elog "OLD CHROME = ${OLD_CHROME_VERSION}"
 				elog "NEW CHROME = ${CHROME_VERSION}"
-				elog "rm -rf ${ECHROME_STORE_DIR}"
-				rm -rf "${ECHROME_STORE_DIR}"
+				elog "rm -rf ${CHROME_DISTDIR}"
+				rm -rf "${CHROME_DISTDIR}"
 				sync
 				unpack_chrome || die "${EGCLIENT} sync failed from fresh checkout"
 			else
@@ -561,10 +577,10 @@ src_unpack() {
 			fi
 		fi
 
-		elog "set the LOCAL_SOURCE to  ${ECHROME_STORE_DIR}"
+		elog "set the LOCAL_SOURCE to ${CHROME_DISTDIR}"
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
-		export CHROME_ROOT=${ECHROME_STORE_DIR}
+		export CHROME_ROOT=${CHROME_DISTDIR}
 		;;
 	(GERRIT_SOURCE)
 		export CHROME_ROOT="/home/$(whoami)/trunk/chromium"
@@ -610,12 +626,12 @@ src_unpack() {
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="b4d4d1e9e53c841f7e22fb7167485ad405d3766d"
 		EGIT_PROJECT="${PN}-pgo"
-		if grep -q $EGIT_COMMIT "${ECHROME_STORE_DIR}/${PGO_SUBDIR}/.git/HEAD"; then
+		if grep -q $EGIT_COMMIT "${CHROME_DISTDIR}/${PGO_SUBDIR}/.git/HEAD"; then
 			einfo "PGO repo is up to date."
 		else
 			einfo "PGO repo not up-to-date. Fetching..."
 			local OLD_S="${S}"
-			S="${ECHROME_STORE_DIR}/${PGO_SUBDIR}"
+			S="${CHROME_DISTDIR}/${PGO_SUBDIR}"
 			rm -rf "${S}"
 			git_fetch
 			pushd "${S}" > /dev/null
@@ -636,10 +652,10 @@ src_prepare() {
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
 
 	# We do symlink creation here if appropriate
-	mkdir -p "${ECHROME_STORE_DIR}/src/${BUILD_OUT}"
+	mkdir -p "${CHROME_CACHE_DIR}/src/${BUILD_OUT}"
 	if [ ! -z "${BUILD_OUT_SYM}" ]; then
 		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
-		ln -sfT "${ECHROME_STORE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
+		ln -sfT "${CHROME_CACHE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
 			die "Could not create symlink for output directory"
 		export builddir_name="${BUILD_OUT_SYM}"
 	fi
@@ -656,11 +672,10 @@ src_prepare() {
 	# The chrome makefiles specify -O and -g flags already, so remove the
 	# portage flags.
 	filter-flags -g -O*
-	append-flags $(test-flags-CC -Wno-error=unused-but-set-variable)
 
 	if use pgo && ! use clang ; then
 		local PROFILE_DIR
-		PROFILE_DIR="${ECHROME_STORE_DIR}/${PGO_SUBDIR}/${CTARGET_default}"
+		PROFILE_DIR="${CHROME_DISTDIR}/${PGO_SUBDIR}/${CTARGET_default}"
 		if [[ -d "${PROFILE_DIR}" ]]; then
 			append-flags -fprofile-use \
 				-fprofile-correction \
@@ -689,7 +704,7 @@ src_prepare() {
 	# (i.e., GYP_DEFINES for gyp_chromium)
 	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}
 	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks useflag when
-        # chrome build switches to Ninja inside the chroot.
+	# chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
 		if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
 			# Set the dependency repos to the revision specified in the
@@ -778,36 +793,32 @@ src_compile() {
 	fi
 }
 
+# Turn off the cp -l behavior in autotest, since the source dir and the
+# installation dir live on different bind mounts right now.
 fast_cp() {
-	if [ "${CHROME_ROOT}" = "${ECHROME_STORE_DIR}" ]; then
-		cp -l $* || cp $*
-	else
-		cp $*
-	fi
+	cp "$@"
 }
-
 
 install_test_resources() {
 	# Install test resources from chrome source directory to destination.
+	# We keep a cache of test resources inside the chroot to avoid copying
+	# multiple times.
 	local test_dir="$1"
 	shift
-	local resource dest
+	local resource cache dest
 	for resource in "$@"; do
-		if [[ "${CHROME_ROOT}" != "${ECHROME_STORE_DIR}" ]]; then
-			dest="$(dirname "${ECHROME_STORE_DIR}/src/${resource}")"
-			mkdir -p "${dest}"
-			rsync -a --delete --exclude=.svn \
-				"${CHROME_ROOT}/src/${resource}" "${dest}"
-		fi
-		dest="$(dirname ${test_dir}/${resource})"
-		mkdir -p "${dest}"
-		cp -al "${ECHROME_STORE_DIR}/src/${resource}" "${dest}"
+		cache=$(dirname "${CHROME_CACHE_DIR}/src/${resource}")
+		dest=$(dirname "${test_dir}/${resource}")
+		mkdir -p "${cache}" "${dest}"
+		rsync -a --delete --exclude=.svn \
+			"${CHROME_ROOT}/src/${resource}" "${cache}"
+		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}"
 	done
 }
 
 install_chrome_test_resources() {
 	# NOTE: This is a duplicate from src_install, because it's required here.
-	local from="${ECHROME_STORE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
+	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
 	local test_dir="${1}"
 
 	echo Copying Chrome tests into "${test_dir}"
@@ -880,7 +891,7 @@ install_chrome_test_resources() {
 # and PyAuto is a svelte 30MB.
 install_pyauto_dep_resources() {
 	# NOTE: This is a duplicate from src_install, because it's required here.
-	local from="${ECHROME_STORE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
+	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
 	local test_dir="${1}"
 
 	echo "Copying PyAuto framework into ${test_dir}"
@@ -914,7 +925,7 @@ install_pyauto_dep_resources() {
 }
 
 src_install() {
-	FROM="${ECHROME_STORE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
+	FROM="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
 
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
