@@ -43,6 +43,7 @@ src_install() {
 	dodir /debugd
 	exeinto /usr/libexec/debugd/helpers
 	doexe helpers/modem_status
+	doexe "${S}"/src/helpers/systrace.sh
 
 	insinto /etc/dbus-1/system.d
 	doins "${FILESDIR}/org.chromium.debugd.conf"
