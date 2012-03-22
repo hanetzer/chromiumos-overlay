@@ -86,13 +86,12 @@ src_compile() {
 			${CROS_FIRMWARE_ROOT}/coreboot.rom"
 	fi
 
+	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
+	common_flags+=" --uboot ${image_file} --dt ${fdt_file}"
+	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
+
 	cros_bundle_firmware \
 		${common_flags} \
-		--bct "${bct_file}" \
-		--uboot "${image_file}" \
-		--dt "${fdt_file}" \
-		--key "${devkeys_file}" \
-		--bmpblk "${BMPBLK_FILE}" \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${secure_flags} \
@@ -100,14 +99,9 @@ src_compile() {
 		--output image.bin ||
 	die "failed to build image."
 
-	# make legacy image
+	# Make legacy image
 	cros_bundle_firmware \
 		${common_flags} \
-		--bct "${bct_file}" \
-		--uboot "${image_file}" \
-		--dt "${fdt_file}" \
-		--key "${devkeys_file}" \
-		--bmpblk "${BMPBLK_FILE}" \
 		--add-config-int load_env 1 \
 		${seabios_flags} \
 		--outdir legacy \
