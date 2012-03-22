@@ -61,11 +61,8 @@ src_compile() {
 	# Location of the board-specific bct file
 	bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
 
-	# Location of the u-boot flat device tree binary blob (FDT)
-	# TODO(dianders): remove looking at PKG_CONFIG once
-	# virtual/chromeos-bootimage is complete.
-	fdt_file="$(echo "${PKG_CONFIG#pkg-config-}.dts" | tr _ '-')"
-	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${fdt_file#x86-}"
+	# Location of the U-Boot flat device tree source file
+	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
 
 	# We only have a single U-Boot, and it is called u-boot.bin
 	image_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
