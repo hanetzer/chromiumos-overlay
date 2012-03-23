@@ -80,6 +80,7 @@ src_test() {
 
 src_install() {
 	dobin "${S}/backlight-tool"
+	dobin "${S}/backlight_dbus_tool"
 	dobin "${S}/debug_sleep_quickly"
 	dobin "${S}/power-supply-info"
 	dobin "${S}/powerd"
