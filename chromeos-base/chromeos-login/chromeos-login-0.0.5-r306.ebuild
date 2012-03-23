@@ -30,7 +30,7 @@ BOARDS=(
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-IUSE="-asan -aura -disable_login_animations -is_desktop -new_power_button test -touchui"
+IUSE="-asan -aura -disable_login_animations -is_desktop -new_power_button test"
 for flag in $BOARD_USE_FLAGS; do
 	IUSE="$IUSE $flag"
 done

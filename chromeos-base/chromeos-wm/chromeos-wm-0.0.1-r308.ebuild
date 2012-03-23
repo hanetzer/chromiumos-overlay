@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-bogus_screen_resizes opengles -touchui"
+IUSE="-bogus_screen_resizes opengles"
 
 RDEPEND="chromeos-base/metrics
 	dev-cpp/gflags
@@ -50,7 +50,6 @@ CROS_WORKON_LOCALNAME="window_manager"
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
 	cros-debug-add-NDEBUG
-	use touchui && append-flags -DTOUCH_UI
 	use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
 	export CCFLAGS="$CFLAGS"
 
