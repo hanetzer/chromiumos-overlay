@@ -9,7 +9,7 @@
 # modifying the root filesystem.
 
 EAPI=4
-CROS_WORKON_COMMIT="ae569483b53f54eb1d75d9ad6dd6ab481142ced5"
+CROS_WORKON_COMMIT="66c1a9f5b73c03ebb6afd1bf927a0273bc99df3c"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 
 inherit cros-workon

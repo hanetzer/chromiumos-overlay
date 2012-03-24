@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="cdf3ec00187ba043689885c945f9618908ba76e6"
+CROS_WORKON_COMMIT="1623b1c975538cc056cf7496ffbf74e0e4b2589f"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 
@@ -69,8 +69,9 @@ src_test() {
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		TESTS="backlight file_tagger idle_dimmer plug_dimmer power_supply powerd"
-		TESTS="$TESTS resolution_selector xidle"
+		TESTS="backlight file_tagger idle_dimmer plug_dimmer"
+		TESTS="$TESTS power_supply powerd resolution_selector"
+		TESTS="$TESTS state_control xidle";
 		for ut in ${TESTS}; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"
@@ -87,6 +88,7 @@ src_install() {
 	dobin "${S}/powerd_lock_screen"
 	dobin "${S}/powerd_suspend"
 	dobin "${S}/send_metrics_on_resume"
+	dobin "${S}/power_state_tool"
 	dobin "${S}/suspend_delay_sample"
 	dobin "${S}/xidle-example"
 	insinto "/usr/share/power_manager"
