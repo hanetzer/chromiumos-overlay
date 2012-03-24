@@ -1,0 +1,13 @@
+diff -paur Mesa-8.0-p1/src/glx/glxext.c Mesa-8.0-p1_b/src/glx/glxext.c
+--- Mesa-8.0-p1/src/glx/glxext.c	2012-03-23 19:17:44.230410000 -0700
++++ Mesa-8.0-p1_b/src/glx/glxext.c	2012-03-23 19:17:08.146152000 -0700
+@@ -293,6 +293,9 @@ QueryVersion(Display * dpy, int opcode, 
+                                                                        GLX_MINOR_VERSION),
+                                                                       NULL);
+ 
++   if (!reply)
++     return GL_FALSE;
++
+    if (reply->major_version != GLX_MAJOR_VERSION) {
+       free(reply);
+       return GL_FALSE;

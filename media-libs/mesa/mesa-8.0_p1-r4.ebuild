@@ -128,6 +128,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.0-libglu.patch
 	epatch "${FILESDIR}"/8.0-Revert-i915g-Implement-stipple-with-draw.patch
 	epatch "${FILESDIR}"/8.0-Revert-i915g-Remove-unused-poly-stipple-state.patch
+	epatch "${FILESDIR}"/8.0-QueryVersion-NULL-reply.patch
 
 	base_src_prepare
 
