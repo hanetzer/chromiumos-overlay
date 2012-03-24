@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5e08bc55ffc5d23d0e20e48a6663ae1f36dd9297"
+CROS_WORKON_COMMIT="9aade7d32338648f962d0549dce3ff7ffc75c2f1"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r596"
@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 arm amd64"
+KEYWORDS="amd64 arm x86"
 
 IUSE="hardened"
 # Enable autotest by default.
