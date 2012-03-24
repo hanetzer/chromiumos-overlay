@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="b9ddd0683c7d438e4ce68eb3cb9234141a0c935d"
+CROS_WORKON_COMMIT="1b656bbe1cfa1cb98c58949c3da64245368c86e9"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 
@@ -81,6 +81,7 @@ src_test() {
 
 src_install() {
 	dobin "${S}/backlight-tool"
+	dobin "${S}/backlight_dbus_tool"
 	dobin "${S}/debug_sleep_quickly"
 	dobin "${S}/power-supply-info"
 	dobin "${S}/powerd"
