@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="e638fe3eddaff91e13f3e34683f74ab5cde0626a"
+CROS_WORKON_COMMIT="6769194ac27d91a298adb8fe400d0d73aaf7c5de"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 
