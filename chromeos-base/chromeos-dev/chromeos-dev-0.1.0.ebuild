@@ -55,6 +55,7 @@ RDEPEND="${RDEPEND}
 	net-wireless/wireless-tools
 	sys-apps/coreutils
 	sys-apps/diffutils
+	sys-apps/file
 	sys-apps/findutils
 	sys-apps/i2c-tools
 	sys-apps/kbd
