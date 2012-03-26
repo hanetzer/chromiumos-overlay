@@ -27,6 +27,12 @@ RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 DEPEND=""
 
 src_install() {
+	# Run the devserver Makefile.
+	emake install DESTDIR="$D"
+
+	dosym /build /var/lib/devserver/static/pkgroot
+	dosym /var/lib/devserver/static /usr/lib/devserver/static
+
 	exeinto /usr/bin
 	insinto /usr/bin
 
@@ -54,31 +60,9 @@ src_install() {
 			gmergefs
 		popd >/dev/null
 
-		# Devserver and friends:
-		doexe host/start_devserver devserver.py
-		# TODO(zbehan): Used by image_to_live.sh, find out why, since the
-		# target already has a copy.
-		doexe stateful_update
-		# These need to live with devserver, but not +x.
-		doins \
-			builder.py \
-			autoupdate.py \
-			buildutil.py \
-			constants.py \
-			devserver_util.py \
-			downloader.py
-		# Related to devserver
+		# Payload generation scripts.
 		dobin host/cros_generate_update_payload
 		dobin host/cros_generate_stateful_update_payload
-		# Data directory
-		diropts -m0777 # Install cache as a+w.
-		dodir /var/lib/devserver
-		dodir /var/lib/devserver/static
-		dodir /var/lib/devserver/static/cache
-		diropts -m0755
-		dosym ../../../../build /var/lib/devserver/static/pkgroot
-		# FIXME(zbehan): Remove compatibility symlink. Eventually.
-		dosym ../../var/lib/devserver/static /usr/bin/static
 
 		# Repo and git bash completion.
 		insinto /usr/share/bash-completion
