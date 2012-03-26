@@ -1,15 +1,15 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 
-DESCRIPTION="Adds some developer niceties on top of Chrome OS for debugging."
+DESCRIPTION="Adds some developer niceties on top of Chrome OS for debugging"
 HOMEPAGE="http://src.chromium.org"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth X opengl hardened"
+IUSE="bluetooth opengl X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -29,7 +29,7 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	app-arch/gzip
 	app-arch/tar
-        app-benchmarks/punybench
+	app-benchmarks/punybench
 	app-crypt/nss
 	app-crypt/tpm-tools
 	app-editors/vim
@@ -39,7 +39,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/gmerge
 	dev-lang/python
 	dev-python/dbus-python
-        dev-util/hdctools
+	dev-util/hdctools
 	dev-util/libc-bench
 	dev-util/strace
 	net-analyzer/netperf
@@ -62,8 +62,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/smartmontools
 	sys-apps/usbutils
 	sys-apps/which
-	hardened? ( >=sys-devel/gdb-7.1 )
-	!hardened? ( sys-devel/gdb )
+	sys-devel/gdb
 	sys-fs/fuse
 	sys-fs/lvm2
 	sys-fs/sshfs-fuse
