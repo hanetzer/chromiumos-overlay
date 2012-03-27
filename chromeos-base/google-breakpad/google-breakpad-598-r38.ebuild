@@ -20,6 +20,12 @@ DEPEND="${RDEPEND}"
 
 src_prepare() {
         eautoreconf || die "eautoreconf failed"
+	if ! tc-is-cross-compiler; then
+		einfo "Creating a separate 32b src directory"
+		mkdir ../work32
+		cp -a . ../work32
+		mv ../work32 .
+	fi
 }
 
 src_configure() {
@@ -31,20 +37,29 @@ src_configure() {
 	# src/processor code to crash (minidump_stackwalk) as well as tests
 	# to fail.  See
 	# http://code.google.com/p/google-breakpad/issues/detail?id=400.
-	append-cflags "-O0"
-	append-cxxflags "-O0"
+	append-flags "-O0"
 
-	if ! tc-is-cross-compiler; then
-		einfo "Building local stuff with -m32"
-		append-flags "-m32"
-	fi
 	tc-export CC CXX LD PKG_CONFIG
 	econf --disable-md2core || die "configure failed"
+
+	if ! tc-is-cross-compiler; then
+	        einfo "Running 32b configuration"
+		cd work32 || die "chdir failed"
+		append-flags "-m32"
+		econf --disable-md2core || die "configure failed"
+		filter-flags "-m32"
+	fi
 }
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
 	emake || die "emake failed"
+
+	if ! tc-is-cross-compiler; then
+		cd work32 || die "chdir failed"
+		einfo "Building dump_syms with -m32"
+		emake src/tools/linux/dump_syms/dump_syms || die "emake failed"
+	fi
 }
 
 src_test() {
@@ -66,4 +81,7 @@ src_install() {
 	      src/tools/linux/dump_syms/dump_syms \
 	      src/tools/linux/symupload/sym_upload \
 	      src/tools/linux/symupload/minidump_upload || die
+	if ! tc-is-cross-compiler; then
+		newbin work32/src/tools/linux/dump_syms/dump_syms dump_syms.32
+	fi
 }

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="2b74a7440d8e13e042e69285ad066128dec088b2"
+CROS_WORKON_COMMIT="446d03023f1997f23c592221f6349daf0fa40b2c"
 CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
 
 XORG_EAUTORECONF="yes"
