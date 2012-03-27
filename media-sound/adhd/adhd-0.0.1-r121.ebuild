@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="2d08fa54484324829b274e12b649e38befdb598f"
+CROS_WORKON_COMMIT="78957c7652b9c0061b74b8eedadf83b6e8f8bb88"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 
@@ -20,6 +20,7 @@ IUSE=""
 
 RDEPEND=">=media-libs/alsa-lib-1.0.24.1
 	media-libs/speex
+	dev-libs/iniparser
 	>=sys-apps/dbus-1.4.12
 	dev-libs/libpthread-stubs
 	sys-fs/udev"
