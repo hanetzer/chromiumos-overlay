@@ -159,6 +159,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/libxml2
 	dev-libs/dbus-glib
 	x11-libs/cairo
+	drm? ( x11-libs/libxkbcommon )
 	x11-libs/libXScrnSaver
 	x11-libs/gtk+
 	x11-libs/pango
