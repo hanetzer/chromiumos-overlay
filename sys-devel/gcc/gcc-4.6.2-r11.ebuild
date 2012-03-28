@@ -206,7 +206,9 @@ pkg_preinst()
 	# fresh until the next compiler upgrade.  We might want to revisit
 	# this at some point, but better to have a few extra stale entries
 	# than to have valid cached objects constantly cycled out.
-	CCACHE_DIR=${ccache_dir} ccache -F0 -M0
+	CCACHE_UMASK=002 CCACHE_DIR=${ccache_dir} ccache -F0 -M0
+	# Make sure the dirs have perms for emerge builders.
+	chgrp -R portage "${ccache_dir}"
 }
 
 pkg_postinst()
