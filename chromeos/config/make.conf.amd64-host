@@ -24,8 +24,9 @@ PORTDIR_OVERLAY="
 # of the ChromiumOS set.  You can use "--select" to override this.
 EMERGE_DEFAULT_OPTS="--oneshot"
 
-PORTAGE_BZIP2_COMMAND="bzip2"
-PORTAGE_BUNZIP2_COMMAND="bunzip2"
+# Use parallel bzip2 for portage if available
+PORTAGE_BZIP2_COMMAND="pbzip2"
+PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 
 # Where to store built packages.
 PKGDIR="/var/lib/portage/pkgs"
