@@ -15,12 +15,12 @@ HOMEPAGE="http://www.libpng.org/"
 SRC_URI="mirror://sourceforge/${PN}/${P}.tar.xz"
 
 LICENSE="as-is"
-SLOT="1.2"
+SLOT="0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
 IUSE=""
 
 RDEPEND="sys-libs/zlib
-	!=media-libs/libpng-1.2*:0"
+	!=media-libs/libpng-1.2*:1.2"
 DEPEND="${RDEPEND}
 	app-arch/xz-utils"
 
