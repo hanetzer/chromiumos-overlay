@@ -34,7 +34,7 @@ RDEPEND="
 	graphviz? ( >=media-gfx/graphviz-2.6 )
 	gs? ( app-text/ghostscript-gpl )
 	jbig? ( media-libs/jbigkit )
-	jpeg? ( >=media-libs/jpeg-6b:0 )
+	jpeg? ( virtual/jpeg )
 	jpeg2k? ( media-libs/jasper )
 	lcms? ( >=media-libs/lcms-1.06 )
 	lqr? ( >=media-libs/liblqr-0.1.0 )
