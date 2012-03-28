@@ -9,7 +9,7 @@
 # modifying the root filesystem.
 
 EAPI="4"
-CROS_WORKON_COMMIT="b82107a54ea6504d8e94aa723648c8938e855785"
+CROS_WORKON_COMMIT="51ccf9ee7b7dc46a9c4edd05c11d870c256ff98f"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
 SRCDIR="${CROS_WORKON_SRCROOT}/src/platform/${CROS_WORKON_LOCALNAME}/dev-install"
