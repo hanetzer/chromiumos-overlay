@@ -154,8 +154,8 @@ def log_parent_process_tree(log, ppid):
     depth += 2
 
 
-if 'SYSROOT' in os.environ:
-  sysroot = os.environ['SYSROOT']
+sysroot = os.environ.get('SYSROOT', '')
+if sysroot:
   clang_cmdline.append('--sysroot=%s' % sysroot)
   gcc_cmdline.append('--sysroot=%s' % sysroot)
 else:
@@ -220,10 +220,34 @@ if use_ccache:
   if 'SANDBOX_WRITE' in os.environ:
     os.environ['SANDBOX_WRITE'] += ':%s' % ccache_dir
 
+  # We need to get ccache to make relative paths from within the
+  # sysroot.  This lets us share cached files across boards (if
+  # all other things are equal of course like CFLAGS) as well as
+  # across versions.  A quick test is something like:
+  #   $ export CFLAGS='-O2 -g -pipe' CXXFLAGS='-O2 -g -pipe'
+  #   $ BOARD=x86-alex
+  #   $ cros_workon-$BOARD stop cros-disks
+  #   $ emerge-$BOARD cros-disks
+  #   $ cros_workon-$BOARD start cros-disks
+  #   $ emerge-$BOARD cros-disks
+  #   $ BOARD=amd64-generic
+  #   $ cros_workon-$BOARD stop cros-disks
+  #   $ emerge-$BOARD cros-disks
+  #   $ cros_workon-$BOARD start cros-disks
+  #   $ emerge-$BOARD cros-disks
+  # All of those will get cache hits (ignoring the first one
+  # which will seed the cache) due to this setting.
+  if sysroot:
+    os.environ['CCACHE_BASEDIR'] = sysroot
+
   # Minor speed up as we don't care about this in general.
-  os.environ['CCACHE_NOSTATS'] = 'no'
+  #os.environ['CCACHE_NOSTATS'] = 'no'
   # Useful for debugging.
   #os.environ['CCACHE_LOG'] = '/dev/stderr'
+
+  # We take care of nuking the cache in the gcc ebuild whenever
+  # it revbumps in a way that matters, so disable ccache's check.
+  os.environ['CCACHE_COMPILERCHECK'] = 'none'
 
   # Make sure we keep the cached files group writable.
   os.environ['CCACHE_UMASK'] = '002'
