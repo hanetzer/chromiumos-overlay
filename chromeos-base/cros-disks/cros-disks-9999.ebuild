@@ -5,15 +5,15 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 
-KEYWORDS="~arm ~amd64 ~x86"
-
 inherit toolchain-funcs cros-debug cros-workon
 
-DESCRIPTION="Disk mounting daemon for Chromium OS."
+DESCRIPTION="Disk mounting daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="~arm ~amd64 ~x86"
 IUSE="splitdebug test"
 
 RDEPEND="
@@ -37,8 +37,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
-
-CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
 src_compile() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
