@@ -182,7 +182,7 @@ QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
 use_nacl() {
-	(use amd64 || use x86) && ! use asan && ! use component_build && ! use drm
+	! use asan && ! use component_build && ! use drm
 }
 
 set_build_defines() {
@@ -729,6 +729,10 @@ src_compile() {
 		einfo "Building test targets: ${TEST_TARGETS[@]}"
 	fi
 
+	if use_nacl; then
+		NACL_TARGETS="nacl_helper_bootstrap nacl_helper"
+	fi
+
 	if use drm; then
 		time emake -r $(use verbose && echo V=1) \
 			BUILDTYPE="${BUILDTYPE}" \
@@ -739,6 +743,7 @@ src_compile() {
 		time emake -r $(use verbose && echo V=1) \
 			BUILDTYPE="${BUILDTYPE}" \
 			chrome chrome_sandbox libosmesa.so default_extensions \
+			${NACL_TARGETS} \
 			"${TEST_TARGETS[@]}" \
 			|| die "compilation failed"
 	fi
