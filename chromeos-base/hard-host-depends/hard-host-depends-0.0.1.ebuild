@@ -51,6 +51,7 @@ RDEPEND="${RDEPEND}
 	dev-db/m17n-db
 	dev-lang/nasm
 	dev-lang/swig
+	dev-lang/yasm
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.26.1
