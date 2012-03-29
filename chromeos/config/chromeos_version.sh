@@ -27,7 +27,7 @@ export CHROMEOS_BRANCH=0
 export CHROMEOS_PATCH=0
 
 # Major version for Chrome.
-export CHROME_BRANCH=19
+export CHROME_BRANCH=20
 
 # Official builds must set CHROMEOS_OFFICIAL=1.
 if [ ${CHROMEOS_OFFICIAL:-0} -ne 1 ] && [ "${USER}" != "chrome-bot" ]; then
