@@ -205,17 +205,24 @@ pkg_preinst()
 	# We handle ccache ourselves in the sysroot wrapper.
 	rm -f /usr/lib/ccache/bin/*-*
 
-	# When we install a new toolchain, the existing cached objects become
-	# stale.  Clear out the old ones just to avoid them sitting around
-	# sucking up space indefinitely.
 	local ccache_dir="/var/cache/distfiles/ccache"
-	rm -rf "${ccache_dir}"
+	local vcsid_file="${ccache_dir}/.gcc.vcsid.${CTARGET}"
+	# Clean out the ccache whenever the gcc code changes.
+	# If we are using a live ebuild, nuke it everytime just
+	# to be safe.
+	[[ ${PV} == "9999" ]] && rm -f "${vcsid_file}"
+	local old_vcsid=$(cat "${vcsid_file}" 2>/dev/null)
+	if [[ ${old_vcsid} != ${CROS_WORKON_COMMIT} ]] ; then
+		rm -rf "${ccache_dir}"
+	fi
 	mkdir -p -m 2775 "${ccache_dir}"
-	# Disable file count/size limits since the objects should mostly stay
-	# fresh until the next compiler upgrade.  We might want to revisit
-	# this at some point, but better to have a few extra stale entries
-	# than to have valid cached objects constantly cycled out.
-	CCACHE_UMASK=002 CCACHE_DIR=${ccache_dir} ccache -F0 -M0
+	echo "${CROS_WORKON_COMMIT}" > "${vcsid_file}"
+
+	# Use a 10G limit as our bots have finite resources.  A full
+	# x86-generic build uses ~6GB, while an amd64-generic uses
+	# ~8GB, so this limit should be sufficient.
+	CCACHE_UMASK=002 CCACHE_DIR=${ccache_dir} ccache -F 0 -M 11G
+
 	# Make sure the dirs have perms for emerge builders.
 	chgrp -R portage "${ccache_dir}"
 }
