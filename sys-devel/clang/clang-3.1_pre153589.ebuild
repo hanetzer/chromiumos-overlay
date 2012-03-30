@@ -1,6 +1,5 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/clang/clang-9999.ebuild,v 1.20 2011/11/14 15:02:31 voyageur Exp $
 #
 # This package is originated from
 # http://sources.gentoo.org/sys-devel/clang/clang-9999.ebuild
@@ -8,7 +7,7 @@
 # Note that we use downloading sources from SVN because llvm.org has
 # not released this version yet.
 
-EAPI=3
+EAPI=4
 
 RESTRICT_PYTHON_ABIS="3.*"
 SUPPORT_PYTHON_ABIS="1"
@@ -25,7 +24,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="+asan +asan-32-explicit debug multitarget +static-analyzer test"
+IUSE="asan-32-explicit debug multitarget +static-analyzer test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
@@ -33,13 +32,10 @@ RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
 S="${WORKDIR}/llvm"
 
 src_unpack() {
-	# Fetching LLVM as well: see http://llvm.org/bugs/show_bug.cgi?id=4840
-	OLD_S="${S}"
+	# Fetching LLVM and subprojects
 	ESVN_PROJECT=llvm subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk@${SVN_COMMIT}"
-	if use asan; then
-		ESVN_PROJECT=compiler-rt S="${OLD_S}"/projects/compiler-rt subversion_fetch "http://llvm.org/svn/llvm-project/compiler-rt/trunk@${SVN_COMMIT}"
-	fi
-	ESVN_PROJECT=clang S="${OLD_S}"/tools/clang subversion_fetch
+	ESVN_PROJECT=compiler-rt S="${S}"/projects/compiler-rt subversion_fetch "http://llvm.org/svn/llvm-project/compiler-rt/trunk@${SVN_COMMIT}"
+	ESVN_PROJECT=clang S="${S}"/tools/clang subversion_fetch
 }
 
 src_prepare() {
@@ -56,6 +52,9 @@ src_prepare() {
 	sed -e "/PROJ_headers/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/lib/Headers/Makefile \
 		|| die "clang Makefile failed"
+	sed -e "/PROJ_resources/s#lib/clang#$(get_libdir)/clang#" \
+		-i tools/clang/runtime/compiler-rt/Makefile \
+		|| die "compiler-rt Makefile failed"
 	# fix the static analyzer for in-tree install
 	sed -e 's/import ScanView/from clang \0/'  \
 		-i tools/clang/tools/scan-view/scan-view \
@@ -65,12 +64,12 @@ src_prepare() {
 		|| die "scan-build sed failed"
 	# Set correct path for gold plugin
 	sed -e "/LLVMgold.so/s#lib/#$(get_libdir)/llvm/#" \
-	        -i  tools/clang/lib/Driver/Tools.cpp \
+		-i  tools/clang/lib/Driver/Tools.cpp \
 		|| die "gold plugin path sed failed"
-	# Properly detect Gentoo's binutils-apple version
-	epatch "${FILESDIR}"/${PN}-3.0-gentoo-binutils-apple.patch
 	# Specify python version
 	python_convert_shebangs 2 tools/clang/tools/scan-view/scan-view
+	python_convert_shebangs -r 2 test/Scripts
+	python_convert_shebangs 2 projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
 
 	# From llvm src_prepare
 	einfo "Fixing install dirs"
@@ -136,10 +135,14 @@ src_test() {
 	cd "${S}"/tools/clang || die "cd clang failed"
 
 	echo ">>> Test phase [test]: ${CATEGORY}/${PF}"
-	if ! emake -j1 VERBOSE=1 test; then
-		has test $FEATURES && die "Make test failed. See above for details."
-		has test $FEATURES || eerror "Make test failed. See above for details."
-	fi
+
+	testing() {
+		if ! emake -j1 VERBOSE=1 test; then
+			has test $FEATURES && die "Make test failed. See above for details."
+			has test $FEATURES || eerror "Make test failed. See above for details."
+		fi
+	}
+	python_execute_function testing
 }
 
 src_install() {
@@ -170,6 +173,9 @@ src_install() {
 		}
 		python_execute_function install-scan-view
 	fi
+
+	# AddressSanitizer symbolizer (currently separate)
+	dobin "${S}"/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
 
 	# Fix install_names on Darwin.  The build system is too complicated
 	# to just fix this, so we correct it post-install

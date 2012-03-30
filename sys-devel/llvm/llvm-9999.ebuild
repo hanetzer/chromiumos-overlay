@@ -1,9 +1,12 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/llvm/llvm-9999.ebuild,v 1.18 2011/12/05 11:05:18 voyageur Exp $
+#
+# This package is originated from
+# http://sources.gentoo.org/sys-devel/llvm/llvm-9999.ebuild
 
-EAPI="3"
-inherit subversion eutils flag-o-matic multilib toolchain-funcs
+EAPI="4"
+PYTHON_DEPEND="2"
+inherit subversion eutils flag-o-matic multilib toolchain-funcs python
 
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="http://llvm.org/"
@@ -31,9 +34,11 @@ RDEPEND="dev-lang/perl
 	libffi? ( virtual/libffi )
 	vim-syntax? ( || ( app-editors/vim app-editors/gvim ) )"
 
-BUILD_DIR="${S}-build"
-
 pkg_setup() {
+	# Required for test and build
+	python_set_active_version 2
+	python_pkg_setup
+
 	# need to check if the active compiler is ok
 
 	broken_gcc=" 3.2.2 3.2.3 3.3.2 4.1.1 "
@@ -75,6 +80,8 @@ src_prepare() {
 		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \
 		-e 's,^PROJ_libdir.*,PROJ_libdir := $(PROJ_prefix)/'$(get_libdir)/${PN}, \
 		-i Makefile.config.in || die "Makefile.config sed failed"
+	sed -e "/ActiveLibDir = ActivePrefix/s/lib/$(get_libdir)\/${PN}/" \
+		-i tools/llvm-config/llvm-config.cpp || die "llvm-config sed failed"
 
 	einfo "Fixing rpath and CFLAGS"
 	sed -e 's,\$(RPATH) -Wl\,\$(\(ToolDir\|LibDir\)),$(RPATH) -Wl\,'"${EPREFIX}"/usr/$(get_libdir)/${PN}, \
@@ -85,8 +92,12 @@ src_prepare() {
 			-i tools/gold/Makefile || die "gold rpath sed failed"
 	fi
 
+	# Specify python version
+	python_convert_shebangs -r 2 test/Scripts
+
 	epatch "${FILESDIR}"/${PN}-2.6-commandguide-nops.patch
 	epatch "${FILESDIR}"/${PN}-2.9-nodoctargz.patch
+	epatch "${FILESDIR}"/${PN}-3.0-PPC_macro.patch
 }
 
 src_configure() {
@@ -123,23 +134,15 @@ src_configure() {
 		append-cppflags "$(pkg-config --cflags libffi)"
 	fi
 	CONF_FLAGS="${CONF_FLAGS} $(use_enable libffi)"
-	mkdir -p ${BUILD_DIR}
-	pushd ${BUILD_DIR}
-	ECONF_SOURCE=${S}
-	econf ${CONF_FLAGS} || die "econf failed"
-	popd
+	econf ${CONF_FLAGS}
 }
 
 src_compile() {
-	pushd ${BUILD_DIR}
 	emake VERBOSE=1 KEEP_SYMBOLS=1 REQUIRES_RTTI=1 || die "emake failed"
-	popd
 }
 
 src_install() {
-	pushd ${BUILD_DIR}
 	emake KEEP_SYMBOLS=1 DESTDIR="${D}" install || die "install failed"
-	popd
 
 	if use vim-syntax; then
 		insinto /usr/share/vim/vimfiles/syntax
@@ -150,7 +153,7 @@ src_install() {
 	# to just fix this, so we correct it post-install
 	local lib= f= odylib=
 	if [[ ${CHOST} == *-darwin* ]] ; then
-		for lib in lib{EnhancedDisassembly,LLVM-${PV},LTO}.dylib {BugpointPasses,LLVMHello,profile_rt}.dylib ; do
+		for lib in lib{EnhancedDisassembly,LLVM-${PV},LTO,profile_rt}.dylib {BugpointPasses,LLVMHello}.dylib ; do
 			# libEnhancedDisassembly is Darwin10 only, so non-fatal
 			[[ -f ${ED}/usr/lib/${PN}/${lib} ]] || continue
 			ebegin "fixing install_name of $lib"
