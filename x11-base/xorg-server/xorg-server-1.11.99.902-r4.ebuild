@@ -138,6 +138,9 @@ PATCHES=(
 	"${FILESDIR}/1.11.99.902-nohwaccess.patch"
 	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
 	"${FILESDIR}/1.11.99.902-safer-position-sprite.patch"
+        # Fix X server crash on removing button-only devices (crosbug.com/28467)
+        "${FILESDIR}/1.11.99.902-0001-dix-avoid-NULL-pointer-dereference-on-button-only-de.patch"
+        "${FILESDIR}/1.11.99.902-0002-dix-don-t-BUG_WARN-for-button-events-from-button-onl.patch"
 )
 
 src_prepare() {
