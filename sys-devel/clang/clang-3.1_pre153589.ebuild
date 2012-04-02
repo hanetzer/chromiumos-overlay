@@ -24,7 +24,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="asan-32-explicit debug multitarget +static-analyzer test"
+IUSE="+asan-32-explicit debug multitarget +static-analyzer test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
