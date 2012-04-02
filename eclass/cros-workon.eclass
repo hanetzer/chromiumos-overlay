@@ -42,6 +42,13 @@
 # Git commit to checkout to
 : ${CROS_WORKON_COMMIT:=master}
 
+# @ECLASS-VARIABLE: CROS_WORKON_TREE
+# @DESCRIPTION:
+# SHA1 of the contents of the repository. This is used for verifying the
+# correctness of prebuilts. Unlike the commit hash, this SHA1 is unaffected
+# by the history of the repository, or by commit messages.
+: ${CROS_WORKON_TREE:=}
+
 # @ECLASS-VARIABLE: CROS_WORKON_LOCALGIT
 # @DESCRIPTION:
 # Use git to perform local copy
@@ -66,7 +73,7 @@
 # path for storing the local clone.
 : ${CROS_WORKON_GIT_SUFFIX:=}
 
-IUSE="cros_workon_commit_$CROS_WORKON_COMMIT"
+IUSE="cros_workon_tree_$CROS_WORKON_TREE"
 
 inherit git flag-o-matic
 
