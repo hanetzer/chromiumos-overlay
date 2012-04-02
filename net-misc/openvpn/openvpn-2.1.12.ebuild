@@ -31,6 +31,7 @@ src_prepare() {
 		-e "s/-shared/-shared \${LDFLAGS}/" \
 		plugin/*/Makefile || die "sed failed"
 	epatch "${FILESDIR}"/pkcs11-slot.patch
+	epatch "${FILESDIR}"/iv_plat.patch
 }
 
 src_configure() {
