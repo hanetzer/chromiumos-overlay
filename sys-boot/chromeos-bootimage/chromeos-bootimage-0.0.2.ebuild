@@ -11,7 +11,7 @@ LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 BOARDS="alex emeraldlake2 link lumpy lumpy64 mario stumpy"
-IUSE="${BOARDS} seabios tegra"
+IUSE="${BOARDS} memtest seabios tegra"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -31,6 +31,7 @@ DEPEND="
 	virtual/u-boot
 	chromeos-base/vboot_reference
 	seabios? ( sys-boot/chromeos-seabios )
+	memtest? ( sys-boot/chromeos-memtest )
 	"
 
 # TODO(clchiou): Here are the action items for fixing x86 build that I can
@@ -64,8 +65,12 @@ src_compile() {
 	# Location of the U-Boot flat device tree source file
 	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
 
-	# We only have a single U-Boot, and it is called u-boot.bin
-	image_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
+	if use memtest; then
+		image_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
+	else
+		# We only have a single U-Boot, and it is called u-boot.bin
+		image_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
+	fi
 
 	# Location of the devkeys
 	devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
