@@ -28,6 +28,12 @@ src_configure() {
       --branding="${BRANDING}" --channel_dev=0 || die
 }
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.4.
+  epatch "${FILESDIR}"/${P}-property-access.patch
+}
+
 src_compile() {
   cd "mozc-${PV}" || die
   # Create build tools for the host platform.
