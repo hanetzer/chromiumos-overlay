@@ -16,7 +16,7 @@ index 745a1ba..72a2162 100644
 +
  #endif
 diff --git a/src/evdev.c b/src/evdev.c
-index 9f3a22a..b99ce10 100644
+index 9f3a22a..2976783 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -93,6 +93,12 @@
@@ -253,13 +253,22 @@ index 9f3a22a..b99ce10 100644
      }
  }
  
-@@ -2762,6 +2873,25 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2716,6 +2827,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+     if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
+     {
+         BOOL invert[2];
++        int btn_accel_conf_val, axis_accel_conf_val;
+         invert[0] = pEvdev->invert_x;
+         invert[1] = pEvdev->invert_y;
+ 
+@@ -2762,6 +2874,27 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
 +        prop_wheel_accel_btn = MakeAtom(EVDEV_PROP_WHEEL_ACCEL_BUTTON,
 +                strlen(EVDEV_PROP_WHEEL_ACCEL_BUTTON), TRUE);
-+
++        btn_accel_conf_val = xf86SetBoolOption(pInfo->options, EVDEV_PROP_WHEEL_ACCEL_BUTTON, 0);
++        pEvdev->wheelAccelRec.scroll_btn = btn_accel_conf_val != 0;
 +        rc = XIChangeDeviceProperty(dev, prop_wheel_accel_btn, XA_INTEGER, 8,
 +                PropModeReplace, 1, &pEvdev->wheelAccelRec.scroll_btn, FALSE);
 +        if (rc != Success)
@@ -269,7 +278,8 @@ index 9f3a22a..b99ce10 100644
 +
 +        prop_wheel_accel_axes = MakeAtom(EVDEV_PROP_WHEEL_ACCEL_AXES,
 +                strlen(EVDEV_PROP_WHEEL_ACCEL_AXES), TRUE);
-+
++        axis_accel_conf_val = xf86SetBoolOption(pInfo->options, EVDEV_PROP_WHEEL_ACCEL_AXES, 0);
++        pEvdev->wheelAccelRec.scroll_axes = axis_accel_conf_val != 0;
 +        rc = XIChangeDeviceProperty(dev, prop_wheel_accel_axes, XA_INTEGER, 8,
 +                PropModeReplace, 1, &pEvdev->wheelAccelRec.scroll_axes, FALSE);
 +        if (rc != Success)
@@ -279,7 +289,7 @@ index 9f3a22a..b99ce10 100644
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -2819,6 +2949,20 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -2819,6 +2952,20 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
