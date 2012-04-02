@@ -28,6 +28,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-shlibsign.patch
 	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
 
+	# See https://bugzilla.mozilla.org/show_bug.cgi?id=741481 for details.
+	epatch "${FILESDIR}"/${P}-cert-initlocks.patch
+
 	cd "${S}"/mozilla/security/coreconf
 
 	# Explain that linux 3.0+ is just the same as 2.6.
