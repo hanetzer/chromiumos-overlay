@@ -3,8 +3,8 @@
 ACCEPT_KEYWORDS="amd64"
 CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"
-FEATURES="buildpkg -strict -unknown-features-warn allow-missing-manifests
-          clean-logs"
+FEATURES="allow-missing-manifests buildpkg clean-logs -ebuild-locks
+          parallel-install -strict -unknown-features-warn"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
