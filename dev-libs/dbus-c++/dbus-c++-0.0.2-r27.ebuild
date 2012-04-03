@@ -16,7 +16,6 @@ SLOT="1"
 IUSE="debug doc +glib"
 KEYWORDS="amd64 x86 arm"
 
-
 RDEPEND="
 	glib? ( >=dev-libs/dbus-glib-0.76 )
 	glib? ( >=dev-libs/glib-2.19:2 )
