@@ -1,0 +1,23 @@
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+CROS_WORKON_COMMIT="2b5efed89e3c6cf9628814f230abe7cc98cfacaf"
+CROS_WORKON_TREE="6f34ccb2e8d237f278e9329af6aa089ce0ae308d"
+
+EAPI=4
+
+CROS_WORKON_PROJECT="chromiumos/platform/mtplot"
+inherit autotools cros-workon
+
+DESCRIPTION="Multitouch Contact Plotter"
+CROS_WORKON_LOCALNAME="../platform/mtplot"
+HOMEPAGE="http://src.chromium.org"
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="amd64 arm x86"
+IUSE=""
+RDEPEND="x11-libs/libX11"
+DEPEND="${RDEPEND}"
+
+src_prepare() {
+	eautoreconf
+}
