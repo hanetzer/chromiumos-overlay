@@ -20,6 +20,8 @@ media-libs/mesa         -llvm -gallium -classic
 net-misc/curl		ares static-libs
 net-wireless/bluez	-consolekit
 sci-geosciences/gpsd	-cxx
+# verity and other packages link statically with libuuid.
+sys-apps/util-linux	-perl static-libs
 sys-boot/grub       grub_platforms_pc grub_platforms_efi-64 grub_platforms_coreboot static
 sys-devel/gettext	-git
 x11-libs/cairo		X

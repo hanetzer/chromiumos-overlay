@@ -52,8 +52,6 @@ sys-apps/busybox	-pam -selinux
 sys-apps/dbus		-X
 sys-apps/iproute2	ipv6
 sys-apps/parted         device-mapper
-# verity and other packages link statically with libuuid.
-sys-apps/util-linux	-perl static-libs
 sys-auth/consolekit	policykit
 sys-auth/polkit         -introspection
 sys-fs/lvm2		-lvm1 -readline -static
