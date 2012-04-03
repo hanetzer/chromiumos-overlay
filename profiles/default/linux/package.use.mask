@@ -46,3 +46,6 @@ cross-arm-none-eabi/newlib hardened
 
 # yasm-python is blocked until we upgrade to python 2.7.
 dev-lang/yasm python
+
+# We don't care about pam support in developer-only tool.
+app-misc/screen pam
