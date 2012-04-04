@@ -7,7 +7,7 @@ EAPI=4
 
 XORG_DOC=doc
 XORG_EAUTORECONF="yes"
-inherit xorg-2 multilib versionator
+inherit xorg-2 multilib versionator flag-o-matic
 EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 
 DESCRIPTION="X.Org X servers"
@@ -81,7 +81,6 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xf86vidmodeproto-2.2.99.1
 	>=x11-proto/xineramaproto-1.1.3
 	>=x11-proto/xproto-7.0.22
-	>=media-fonts/font-util-1.1.0
 	dmx? (
 		>=x11-proto/dmxproto-2.2.99.1
 		doc? (
@@ -138,8 +137,6 @@ PATCHES=(
 	"${FILESDIR}/1.11.99.902-nohwaccess.patch"
 	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
 	"${FILESDIR}/1.11.99.902-safer-position-sprite.patch"
-        # Fix X server crash on removing button-only devices (crosbug.com/28467)
-        "${FILESDIR}/1.11.99.902-0001-dix-avoid-NULL-pointer-dereference-on-button-only-de.patch"
         "${FILESDIR}/1.11.99.902-0002-dix-don-t-BUG_WARN-for-button-events-from-button-onl.patch"
 )
 
@@ -243,6 +240,9 @@ pkg_setup() {
 		ln -s "${EROOT}usr/$(get_libdir)/opengl/global/include/$i.h" "${T}/mesa-symlinks/GL/$i.h" || die
 	done
 	append-cppflags "-I${T}/mesa-symlinks"
+
+	# Make breakage less obvious, bug #402285.
+	replace-flags -O3 -O2
 }
 
 src_install() {
