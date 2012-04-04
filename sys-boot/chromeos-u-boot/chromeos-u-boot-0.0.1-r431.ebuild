@@ -161,10 +161,9 @@ src_install() {
 	local file
 	local dts_dir
 
-	# Daisy and its variants need u-boot with dtb and SPL binary.
-	# TODO: Remove u-boot-dtb.bin when cros_bundle_firmware supports Daisy.
+	# Daisy and its variants need an SPL binary.
 	if use u_boot_config_use_daisy; then
-		files_to_copy+=" u-boot-dtb.bin spl/${ub_board}-spl.bin"
+		files_to_copy+=" spl/${ub_board}-spl.bin"
 	fi
 
 	insinto "${inst_dir}"
