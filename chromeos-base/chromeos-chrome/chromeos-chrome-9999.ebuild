@@ -956,8 +956,6 @@ src_install() {
 	insinto /usr/share/chromeos-assets/input_methods
 	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
 	doins "${INPUT_METHOD}"/input_methods.txt
-	# TODO(yusukes): Remove ibus_input_methods.txt in R20.
-	doins "${INPUT_METHOD}"/ibus_input_methods.txt
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
