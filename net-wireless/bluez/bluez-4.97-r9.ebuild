@@ -70,6 +70,11 @@ src_prepare() {
 	# chronos user instead of at_console
 	epatch "${FILESDIR}/${PN}-4.97-dbus.patch"
 
+	# Change the default SDP Server socket path to a sub-directory
+	# under /var/run, since /var/run is not writeable by the bluetooth
+	# user.
+	epatch "${FILESDIR}/${PN}-4.97-sdp-path.patch"
+
 	# Disable initial radio power for new adapters
 	epatch "${FILESDIR}/${PN}-4.97-initially-powered.patch"
 
