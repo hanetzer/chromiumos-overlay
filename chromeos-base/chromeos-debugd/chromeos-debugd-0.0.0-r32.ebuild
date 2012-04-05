@@ -46,6 +46,7 @@ src_install() {
 	doexe helpers/clock_monotonic
 	doexe helpers/modem_status
 	doexe "${S}"/src/helpers/systrace.sh
+	doexe helpers/network_status
 
 	insinto /etc/dbus-1/system.d
 	doins "${FILESDIR}/org.chromium.debugd.conf"
