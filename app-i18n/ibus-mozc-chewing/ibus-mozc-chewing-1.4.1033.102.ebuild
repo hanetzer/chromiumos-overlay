@@ -9,13 +9,19 @@ HOMEPAGE="http://code.google.com/p/mozc"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2"
 LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.3.99.20110817
-	 >=dev-libs/libchewing-0.3.2
+         >=dev-libs/libchewing-0.3.2
          dev-libs/protobuf
          net-misc/curl"
 DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
+
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.5.
+  epatch "${FILESDIR}"/${P}-arm-build-fix.patch
+}
 
 src_configure() {
   cd "mozc-${PV}" || die
@@ -25,14 +31,9 @@ src_configure() {
 
   # Currently --channel_dev=0 is not neccessary for Chewing, but just in case.
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
+      --use_libprotobuf \
       --language=chewing \
       --target_platform="ChromeOS" --channel_dev=0 || die
-}
-
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.4.
-  epatch "${FILESDIR}"/${P}-property-access.patch
 }
 
 src_compile() {
@@ -62,7 +63,9 @@ src_install() {
   # Check the binary size to detect binary size bloat (which happend once due
   # typos in .gyp files). Current size of the stripped ibus-mozc-chewing binary
   # is about 900k (x86) and 700k (arm).
-  test `stat -c %s "${T}"/ibus_mozc_chewing` -lt 1500000 \
+  FILESIZE=`stat -c %s "${T}"/ibus_mozc_chewing`
+  einfo "The binary size is ${FILESIZE}"
+  test ${FILESIZE} -lt 1500000 \
       || die 'The binary size of mozc chewing is too big (more than ~1.5MB)'
   rm -f "${T}"/ibus_mozc_chewing
 }
