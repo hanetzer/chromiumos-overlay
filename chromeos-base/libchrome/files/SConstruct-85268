@@ -81,29 +81,6 @@ base_libs = [
     'pc_libs' : 'glib-2.0',
   },
   {
-    'name' : 'gtk',
-    'sources' : """
-                message_pump_glib.cc
-                """,
-    'libs' : '',
-    'pc_libs' : 'gtk+-2.0',
-  },
-  {
-    'name' : 'event',
-    'sources' : """
-                message_loop.cc
-                message_loop_proxy.cc
-                message_loop_proxy_impl.cc
-                message_pump_libevent.cc
-                task.cc
-                threading/thread.cc
-                tracked.cc
-                tracked_objects.cc
-                """,
-    'libs' : 'event base-gtk-${bslot}',
-    'pc_libs' : 'gdk-2.0',
-  },
-  {
     'name' : 'dl',
     'sources' : """
                 native_library_linux.cc

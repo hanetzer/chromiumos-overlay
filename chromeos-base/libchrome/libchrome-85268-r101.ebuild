@@ -17,10 +17,7 @@ SLOT="${PV}"
 KEYWORDS="amd64 arm x86"
 IUSE="cros_host"
 
-RDEPEND="dev-libs/glib
-	dev-libs/libevent
-	dev-libs/nss
-	x11-libs/gtk+"
+RDEPEND="dev-libs/glib"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	cros_host? ( dev-util/scons )"
