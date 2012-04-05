@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="08afdffc182c7f04a8acdbb63240585069af8040"
-CROS_WORKON_TREE="993cc1179bc3cf66a7a1b60c9aa543996133b296"
+CROS_WORKON_COMMIT="90d216ddc6752beeb2ff63880b8e6ba379815f68"
+CROS_WORKON_TREE="12f9094cc04d739bcb7b45d96b0fb6f72d6259f2"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
