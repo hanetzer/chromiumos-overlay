@@ -17,6 +17,12 @@ KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BRANDING="${BRANDING:-Mozc}"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.5.
+  epatch "${FILESDIR}"/${P}-arm-build-fix.patch
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
@@ -24,14 +30,9 @@ src_configure() {
   export BUILD_COMMAND="emake"
 
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
+      --use_libprotobuf \
       --target_platform="ChromeOS" \
       --branding="${BRANDING}" --channel_dev=0 || die
-}
-
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.4.
-  epatch "${FILESDIR}"/${P}-property-access.patch
 }
 
 src_compile() {
@@ -59,7 +60,9 @@ src_install() {
 
   # Check the binary size to detect binary size bloat (which happend once due
   # typos in .gyp files).
-  test `stat -c %s "${T}"/ibus_mozc` -lt 25000000 \
+  FILESIZE=`stat -c %s "${T}"/ibus_mozc`
+  einfo "The binary size is ${FILESIZE}"
+  test ${FILESIZE} -lt 25000000 \
       || die 'The binary size of mozc for Japanese is too big (more than ~25MB)'
   rm -f "${T}"/ibus_mozc
 }
