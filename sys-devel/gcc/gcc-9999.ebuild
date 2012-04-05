@@ -19,7 +19,7 @@ LICENSE="GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-
 KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND=">=sys-libs/zlib-1.1.4
-	>=sys-devel/gcc-config-1.4
+	>=sys-devel/gcc-config-1.6
 	virtual/libiconv
 	>=dev-libs/gmp-4.2.1
 	>=dev-libs/mpc-0.8.1
