@@ -17,6 +17,12 @@ SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
+src_prepare() {
+  cd "mozc-${PV}" || die
+  # TOTO(nona): Remove the patch when we upgrade mozc to the next version, 1.5.
+  epatch "${FILESDIR}"/${P}-arm-build-fix.patch
+}
+
 src_configure() {
   cd "mozc-${PV}" || die
   # Generate make files
@@ -25,15 +31,10 @@ src_configure() {
 
   # Currently --channel_dev=0 is not neccessary for Hangul, but just in case.
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
+      --use_libprotobuf \
       --language=hangul \
       --noqt \
       --target_platform="ChromeOS" --channel_dev=0 || die
-}
-
-src_prepare() {
-  cd "mozc-${PV}" || die
-  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.4.
-  epatch "${FILESDIR}"/${P}-property-access.patch
 }
 
 src_compile() {
@@ -66,7 +67,9 @@ src_install() {
   # Check the binary size to detect binary size bloat (which happend once due
   # typos in .gyp files). Current size of the stripped ibus-mozc-hangul binary
   # is about 900k (x86) and 700k (arm).
-  test `stat -c %s "${T}"/ibus_mozc_hangul` -lt 1500000 \
+  FILESIZE=`stat -c %s "${T}"/ibus_mozc_hangul`
+  einfo "The binary size is ${FILESIZE}"
+  test ${FILESIZE} -lt 1500000 \
       || die 'The binary size of mozc hangul is too big (more than ~1.5MB)'
   rm -f "${T}"/ibus_mozc_hangul
 }
