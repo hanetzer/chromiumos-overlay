@@ -32,7 +32,7 @@ RDEPEND="
 
 DEPEND="
 	test? ( dev-cpp/gtest )
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/system_api
 	${RDEPEND}"
 
