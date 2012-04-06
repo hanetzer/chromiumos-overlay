@@ -15,9 +15,11 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="cros_host -delta_generator"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
@@ -43,6 +45,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
+	export BASE_VER=${LIBCHROME_VERS}
 
 	escons
 }
