@@ -15,7 +15,9 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="chromeos-base/libchrome:85268[cros-debug=]
+LIBCHROME_VERS="125070"
+
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-glib
@@ -31,6 +33,7 @@ DEPEND="${RDEPEND}
 src_compile() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 	emake
 }
 
