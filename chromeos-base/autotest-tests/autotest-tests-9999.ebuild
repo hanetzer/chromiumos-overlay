@@ -43,6 +43,7 @@ RDEPEND="
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
   chromeos-base/autotest-deps-glbench
+  chromeos-base/autotest-deps-glmark2
   chromeos-base/autotest-deps-piglit
   chromeos-base/flimflam-test
   autox? ( chromeos-base/autox )
@@ -118,6 +119,7 @@ IUSE_TESTS="
 	+tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLBench
+	+tests_graphics_GLMark2
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_ch7036
