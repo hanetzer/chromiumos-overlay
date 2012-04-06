@@ -9,12 +9,15 @@ inherit cros-debug cros-workon toolchain-funcs multilib
 DESCRIPTION="VPN tools"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="chromeos-base/libchrome:85268[cros-debug=]
+LIBCHROME_VERS="125070"
+
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	 chromeos-base/libchromeos
 	 dev-cpp/gflags
 	 dev-libs/openssl
@@ -24,7 +27,7 @@ DEPEND="${RDEPEND}
 	 dev-cpp/gtest"
 
 make_flags() {
-	echo LIBDIR="/usr/$(get_libdir)"
+	echo LIBDIR="/usr/$(get_libdir)" BASE_VER=${LIBCHROME_VERS}
 }
 
 src_compile() {
