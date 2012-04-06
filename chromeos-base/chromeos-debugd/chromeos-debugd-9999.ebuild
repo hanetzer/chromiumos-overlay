@@ -3,36 +3,38 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
+CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
 inherit cros-debug cros-workon toolchain-funcs
 
-DESCRIPTION="Chrome OS debugging service."
+DESCRIPTION="Chrome OS debugging service"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="chromeos-base/chromeos-minijail
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
-        dev-libs/dbus-c++"
+	dev-libs/dbus-c++"
 DEPEND="${RDEPEND}
 	chromeos-base/shill
 	sys-apps/dbus
 	virtual/modemmanager"
 
-CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
-
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG OBJCOPY
 	cros-debug-add-NDEBUG
-	emake
+	emake BASE_VER=${LIBCHROME_VERS}
 }
 
 src_test() {
-	emake tests
+	emake tests BASE_VER=${LIBCHROME_VERS}
 }
 
 src_install() {
