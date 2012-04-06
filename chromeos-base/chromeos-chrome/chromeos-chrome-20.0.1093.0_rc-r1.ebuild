@@ -36,12 +36,6 @@ STRIP_MASK="*/nacl_helper_bootstrap"
 
 PGO_SUBDIR="pgo"
 
-# Returns portage version without optional portage suffix.
-# $1 - Version with optional suffix.
-strip_portage_suffix() {
-  echo "$1" | cut -f 1 -d "_"
-}
-
 # Bots in golo.chromium.org have private mirrors that are only accessible
 # from within golo.chromium.org. TODO(rcui): Remove this once we've
 # converted all bots to GERRIT_SOURCE.
@@ -53,7 +47,8 @@ else
 	EXTERNAL_URL="http://src.chromium.org/svn"
 	INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
 fi
-CHROME_VERSION="$(strip_portage_suffix "${PV}")"
+# Portage version without optional portage suffix.
+CHROME_VERSION="${PV/_*/}"
 [[ ( "${PV}" = "9999" ) || ( -n "${CROS_SVN_COMMIT}" ) ]]
 USE_TRUNK=$?
 
@@ -108,28 +103,17 @@ addwrite "${CHROME_DISTDIR}"
 CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 
-
-
 if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
-  DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
-  USE_TCMALLOC="linux_use_tcmalloc=1"
+	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
+	USE_TCMALLOC="linux_use_tcmalloc=1"
 elif [ "$ARCH" = "arm" ]; then
-  DEFAULT_CHROME_DIR=chromium-rel-arm
-  # tcmalloc isn't supported on arm
-  USE_TCMALLOC="linux_use_tcmalloc=0"
+	DEFAULT_CHROME_DIR=chromium-rel-arm
+	# tcmalloc isn't supported on arm
+	USE_TCMALLOC="linux_use_tcmalloc=0"
 fi
 
 # For compilation/local chrome
 BUILD_TOOL=make
-COMMON_BUILD_DEFINES="sysroot=$ROOT python_ver=2.6 linux_sandbox_path=${CHROME_DIR}/chrome-sandbox ${EXTRA_BUILD_ARGS}"
-if use drm; then
-	BUILD_DEFINES="swig_defines=-DOS_LINUX"
-	BUILD_DEFINES="${BUILD_DEFINES} use_ibus=0 use_cups=0 use_gconf=0"
-	BUILD_DEFINES="${BUILD_DEFINES} use_gnome_keyring=0 use_kerberos=0"
-else
-	BUILD_DEFINES="swig_defines=-DOS_CHROMEOS chromeos=1 use_ibus=1"
-fi
-BUILD_DEFINES="${BUILD_DEFINES} ${COMMON_BUILD_DEFINES}"
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -141,9 +125,9 @@ BUILD_OUT_SYM="c"
 
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
-TEST_FILES="ffmpeg_tests"
+TEST_FILES=("ffmpeg_tests")
 if [ "$ARCH" = "arm" ]; then
-  TEST_FILES="${TEST_FILES} omx_video_decode_accelerator_unittest ppapi_example_video_decode"
+	TEST_FILES+=( "omx_video_decode_accelerator_unittest" "ppapi_example_video_decode" )
 fi
 
 RDEPEND="${RDEPEND}
@@ -202,41 +186,68 @@ use_nacl() {
 }
 
 set_build_defines() {
+	# General build defines.
+	BUILD_DEFINES=(
+		"sysroot=$ROOT"
+		python_ver=2.6
+		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
+		"${EXTRA_BUILD_ARGS}"
+		"system_libdir=$(get_libdir)"
+		"pkg-config=$(tc-getPKG_CONFIG)"
+	)
+
+	if use drm; then
+		BUILD_DEFINES+=(
+			swig_defines=-DOS_LINUX
+			use_ibus=0
+			use_cups=0
+			use_gconf=0
+			use_gnome_keyring=0
+			use_kerberos=0
+		)
+	else
+		BUILD_DEFINES+=(
+			swig_defines=-DOS_CHROMEOS
+			chromeos=1
+			use_ibus=1
+		)
+	fi
+
 	# Set proper BUILD_DEFINES for the arch
 	if [ "$ARCH" = "x86" ]; then
-		BUILD_DEFINES="target_arch=ia32 enable_smooth_scrolling=1 $BUILD_DEFINES";
+		BUILD_DEFINES+=( target_arch=ia32 enable_smooth_scrolling=1 )
 	elif [ "$ARCH" = "arm" ]; then
-		BUILD_DEFINES="target_arch=arm $BUILD_DEFINES armv7=1 v8_can_use_unaligned_accesses=true";
+		BUILD_DEFINES+=( target_arch=arm armv7=1 v8_can_use_unaligned_accesses=true )
 		if [ "$(expr match "$ARM_FPU" "vfpv3")" -ne 0 ]; then
-			BUILD_DEFINES="$BUILD_DEFINES v8_can_use_vfp_instructions=true";
+			BUILD_DEFINES+=( v8_can_use_vfp_instructions=true )
 		fi
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
-			BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
+			BUILD_DEFINES+=( internal_pdf=0 )
 		fi
 		if use hardfp; then
-			BUILD_DEFINES="$BUILD_DEFINES v8_use_arm_eabi_hardfloat=true"
+			BUILD_DEFINES+=( v8_use_arm_eabi_hardfloat=true )
 		fi
 	elif [ "$ARCH" = "amd64" ]; then
-		BUILD_DEFINES="target_arch=x64 enable_smooth_scrolling=1 $BUILD_DEFINES"
+		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
 	else
-		die Unsupported architecture: "${ARCH}"
+		die "Unsupported architecture: ${ARCH}"
 	fi
 
-	use_nacl || BUILD_DEFINES="disable_nacl=1 $BUILD_DEFINES"
+	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
 
-	use drm && BUILD_DEFINES="use_drm=1 $BUILD_DEFINES"
+	use drm && BUILD_DEFINES+=( use_drm=1 )
 
 	# Control inclusion of optional chrome features.
 	if use chrome_remoting; then
-		BUILD_DEFINES="remoting=1 $BUILD_DEFINES"
+		BUILD_DEFINES+=( remoting=1 )
 	else
-		BUILD_DEFINES="remoting=0 $BUILD_DEFINES"
+		BUILD_DEFINES+=( remoting=0 )
 	fi
 
 	if use chrome_internal; then
 		#Adding chrome branding specific variables and GYP_DEFINES
-		BUILD_DEFINES="branding=Chrome buildtype=Official $BUILD_DEFINES"
+		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -245,32 +256,32 @@ set_build_defines() {
 		REMOVE_WEBCORE_DEBUG_SYMBOLS=${REMOVE_WEBCORE_DEBUG_SYMBOLS:-0}
 	elif use chrome_media; then
 		echo "Building Chromium with additional media codecs and containers."
-		BUILD_DEFINES="ffmpeg_branding=ChromeOS proprietary_codecs=1 $BUILD_DEFINES"
+		BUILD_DEFINES+=( ffmpeg_branding=ChromeOS proprietary_codecs=1 )
 	fi
 
 	# This saves time and bytes.
 	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
-		BUILD_DEFINES="$BUILD_DEFINES remove_webcore_debug_symbols=1"
+		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
 	fi
 
 	if use reorder && ! use clang; then
-		BUILD_DEFINES="order_text_section='${CHROME_DISTDIR}/${PGO_SUBDIR}/section-ordering-files/orderfile' $BUILD_DEFINES"
+		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${PGO_SUBDIR}/section-ordering-files/orderfile" )
 	fi
 
 	if ! use chrome_debug_tests; then
-		BUILD_DEFINES+=" strip_tests=1"
+		BUILD_DEFINES+=( strip_tests=1 )
 	fi
 
 	if use clang; then
 		if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
-			BUILD_DEFINES="clang=1 werror= $BUILD_DEFINES"
+			BUILD_DEFINES+=( clang=1 werror= )
 			USE_TCMALLOC="linux_use_tcmalloc=0"
 
 			# The chrome build system will add -m32 for 32bit arches, and
 			# clang defaults to 64bit because our cros_sdk is 64bit default.
 			export CC="clang" CXX="clang++"
 		else
-			die Clang is not yet supported for "${ARCH}"
+			die "Clang is not yet supported for ${ARCH}"
 		fi
 	fi
 
@@ -279,28 +290,31 @@ set_build_defines() {
 			eerror "Asan requires Clang to run."
 			die "Please set USE=\"${USE} clang\" to enable Clang"
 		fi
-		BUILD_DEFINES="asan=1 asan_blacklist=/dev/null $BUILD_DEFINES"
+		BUILD_DEFINES+=( asan=1 )
 	fi
 
 	if use aura; then
-		BUILD_DEFINES="use_aura=1 $BUILD_DEFINES"
+		BUILD_DEFINES+=( use_aura=1 )
 	fi
 
 	if use component_build; then
-		BUILD_DEFINES="component=shared_library $BUILD_DEFINES"
+		BUILD_DEFINES+=( component=shared_library )
 	fi
 
-	BUILD_DEFINES="system_libdir=$(get_libdir) pkg-config=$(tc-getPKG_CONFIG) $BUILD_DEFINES"
-	BUILD_DEFINES="${USE_TCMALLOC} $BUILD_DEFINES"
+	BUILD_DEFINES+=( "${USE_TCMALLOC}" )
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
-		BUILD_DEFINES+=" release_extra_cflags=-g"
+		BUILD_DEFINES+=( release_extra_cflags=-g )
+	fi
+
+	if ! use chrome_pdf; then
+		BUILD_DEFINES+=( internal_pdf=0 )
 	fi
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
-	export GYP_DEFINES="${BUILD_DEFINES}"
+	export GYP_DEFINES="${BUILD_DEFINES[@]}"
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
@@ -419,7 +433,6 @@ unpack_chrome() {
 			1 \
 			${USE_TRUNK} \
 			|| die "Can't write .gclient file"
-		BUILD_DEFINES="$BUILD_DEFINES internal_pdf=0";
 	fi
 
 	elog "Using .gclient ..."
@@ -660,6 +673,11 @@ src_prepare() {
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
 	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}
+	einfo "Building Chrome with the following define options:"
+	local opt
+	for opt in "${BUILD_DEFINES[@]}"; do
+		einfo "${opt}"
+	done
 	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks useflag when
 	# chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
@@ -682,7 +700,7 @@ src_configure() {
 	if use gold ; then
 		if [ "${GOLD_SET}" != "yes" ]; then
 			export GOLD_SET="yes"
-			einfo "Using gold from the following location: $(which ${LD}.gold)"
+			einfo "Using gold from the following location: $(get_binutils_path_gold)"
 			export CC="${CC} -B$(get_binutils_path_gold)"
 			export CXX="${CXX} -B$(get_binutils_path_gold)"
 			export LD="$(get_binutils_path_gold)/ld"
@@ -701,14 +719,14 @@ src_compile() {
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	if use build_tests; then
-		TEST_TARGETS="${TEST_FILES}
+		TEST_TARGETS=("${TEST_FILES[@]}"
 			performance_ui_tests
 			ui_tests
 			pyautolib
 			chromedriver
 			browser_tests
-			sync_integration_tests"
-		echo Building test targets: ${TEST_TARGETS}
+			sync_integration_tests)
+		einfo "Building test targets: ${TEST_TARGETS[@]}"
 	fi
 
 	if use drm; then
@@ -721,7 +739,7 @@ src_compile() {
 		time emake -r $(use verbose && echo V=1) \
 			BUILDTYPE="${BUILDTYPE}" \
 			chrome chrome_sandbox libosmesa.so default_extensions \
-			${TEST_TARGETS} \
+			"${TEST_TARGETS[@]}" \
 			|| die "compilation failed"
 	fi
 
@@ -792,7 +810,7 @@ install_chrome_test_resources() {
 			 omx_video_decode_accelerator_unittest \
 			 performance_ui_tests; do
 		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
-			-o ${test_dir}/out/Release/$(basename ${f})
+			-o "${test_dir}/out/Release/$(basename ${f})"
 	done
 
 	# Copy over the test data directory; eventually 'all' non-static
@@ -812,7 +830,7 @@ install_chrome_test_resources() {
 			"${test_dir}"/out/Release/plugins
 	fi
 
-	for f in ${TEST_FILES}; do
+	for f in "${TEST_FILES[@]}"; do
 		cp -al "${from}/${f}" "${test_dir}"
 	done
 
