@@ -96,16 +96,21 @@ src_unpack() {
 		tar xf ${GCC_TARBALL##*/}
 	elif use git_gcc ; then
 		git clone "${CROS_WORKON_REPO}/${CROS_WORKON_PROJECT}.git" "${S}"
-		if [[ -z ${GCC_GITHASH} ]] ; then
+		if [[ -n ${GCC_GITHASH} ]] ; then
 			einfo "Checking out: ${GCC_GITHASH}"
 			pushd "$(get_gcc_dir)" >/dev/null
 			git checkout ${GCC_GITHASH} || \
 				die "Couldn't checkout ${GCC_GITHASH}"
 			popd >/dev/null
 		fi
-		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"
 	else
 		cros-workon_src_unpack
+	fi
+
+	if [[ -d ${S}/.git ]]; then
+		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"
+	elif [[ -n ${VCSID} ]]; then
+		COST_PKG_VERSION+="_${VCSID}"
 	fi
 
 	use vanilla && return 0
