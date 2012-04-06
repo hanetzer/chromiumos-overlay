@@ -16,7 +16,9 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-cros-debug"
 
-RDEPEND="chromeos-base/libchrome:85268[cros-debug=]"
+LIBCHROME_VERS="125070"
+
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
 DEPEND="dev-cpp/gtest
 	x11-base/xorg-server
 	${RDEPEND}"
@@ -24,6 +26,7 @@ DEPEND="dev-cpp/gtest
 src_compile() {
 	tc-export CXX
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 
 	emake clean  # TODO(adlr): remove when a better solution exists
 	emake
