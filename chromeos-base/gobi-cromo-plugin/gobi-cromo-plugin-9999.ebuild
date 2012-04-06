@@ -15,8 +15,10 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="install_tests"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="chromeos-base/cromo
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-cpp/glog
 	dev-libs/dbus-c++
 	chromeos-base/metrics
@@ -33,9 +35,9 @@ DEPEND="${RDEPEND}
 cr_make() {
 	emake \
 		LIBDIR=/usr/$(get_libdir) \
+		BASE_VER=${LIBCHROME_VERS} \
 		$(use install_tests && echo INSTALL_TESTS=1) \
 		"$@" || die
-
 }
 
 src_compile() {
