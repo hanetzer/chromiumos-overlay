@@ -86,6 +86,9 @@ src_prepare() {
 	# Use system llc (from llvm ebuild) for tests
 	sed -e "/^llc_props =/s/os.path.join(llvm_tools_dir, 'llc')/'llc'/" \
 		-i tools/clang/test/lit.cfg  || die "test path sed failed"
+
+	# TODO(glotov): Remove this when the crosbug.com/29065 is fixed.
+	epatch "${FILESDIR}"/${PN}-3.1-sysroot_fix.patch
 }
 
 src_configure() {
