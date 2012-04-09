@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="a2d86ce40c7f28b6dfcb7ec7b63c5ecbb6868412"
-CROS_WORKON_TREE="71437d2bb41d2499a263d66b4e4f9e29084ad0cc"
+CROS_WORKON_COMMIT="39a5280efa1d16bf98be076d0a1d19f111c6c53b"
+CROS_WORKON_TREE="5c2338e7cd1eb3283c39ca9f09257811141cc0ae"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/image-burner"

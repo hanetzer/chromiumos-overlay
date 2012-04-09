@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="ce4c47b4cd6dad9afad34da4ceec2f8efaa5ecec"
-CROS_WORKON_TREE="638ed2381779ae7166d5a35c54fe0e5937e2ff34"
+CROS_WORKON_COMMIT="fe291c89fc15dbe768c6d368cc1849aad4a1a8c0"
+CROS_WORKON_TREE="97cb3cb92c6c3b7401f659b11ab1932ef456091a"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/saft"
