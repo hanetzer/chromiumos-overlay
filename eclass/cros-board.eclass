@@ -38,6 +38,7 @@ ALL_BOARDS=(
 	emeraldlake2
 	ironhide
 	kiev
+	klang
 	link
 	lumpy
 	lumpy64
