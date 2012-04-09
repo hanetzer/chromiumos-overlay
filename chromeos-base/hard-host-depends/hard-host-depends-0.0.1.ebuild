@@ -154,6 +154,12 @@ RDEPEND="${RDEPEND}
 	dev-util/dejagnu
 	"
 
+# Host dependencies that are needed for media applications (ex, mplayer) used in
+# factory.
+RDEPEND="${RDEPEND}
+	media-libs/ffmpeg
+	"
+
 # Host dependencies that are needed to create and sign images
 RDEPEND="${RDEPEND}
 	>=chromeos-base/vboot_reference-1.0-r174
