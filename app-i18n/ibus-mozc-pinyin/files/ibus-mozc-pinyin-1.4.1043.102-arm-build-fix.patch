@@ -1,3 +1,8 @@
+Fixes build break on ARM environment.
+
+abs(INT64_VARIABLE) returns 32bit integer on ARM. To avoid this issue, we use
+llabs instead of abs.
+
 diff -urN ../mozc_origin/unix/ibus/mozc_engine.cc ./unix/ibus/mozc_engine.cc
 --- ../mozc_origin/unix/ibus/mozc_engine.cc	2012-04-09 12:28:03.815173348 +0900
 +++ ./unix/ibus/mozc_engine.cc	2012-04-09 12:28:50.835041662 +0900

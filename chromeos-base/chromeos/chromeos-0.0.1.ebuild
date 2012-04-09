@@ -152,7 +152,6 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-mozc-chewing
 	app-i18n/ibus-mozc-hangul
 	app-i18n/ibus-mozc-pinyin
-	app-i18n/ibus-pinyin
 	app-laptop/laptop-mode-tools
 	app-shells/dash
 	chromeos-base/audioconfig
