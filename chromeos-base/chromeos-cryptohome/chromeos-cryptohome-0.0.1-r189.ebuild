@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="ee06c1021760a5c4dffa08c183d68a67a767522d"
-CROS_WORKON_TREE="d0b14c906f818fea4740c95e96b999f04f5be129"
+CROS_WORKON_COMMIT="546007854067b6bd9b4e41a78e3db81a3e8eac28"
+CROS_WORKON_TREE="75285f4f6bceee889c54f6588dbd9027cd7772c3"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
