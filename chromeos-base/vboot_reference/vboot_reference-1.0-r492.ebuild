@@ -13,7 +13,7 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="32bit_au minimal rbtest tpmtests"
+IUSE="32bit_au minimal rbtest tpmtests cros_host"
 
 RDEPEND="app-crypt/trousers
 	chromeos-base/libchrome:85268[cros-debug=]
@@ -25,6 +25,11 @@ RDEPEND="app-crypt/trousers
 DEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-cpp/gtest"
+
+# We need the config in place before we run, but don't need to rebuild this
+# package every time.
+RDEPEND="${RDEPEND}
+	!cros_host? ( chromeos-base/vboot_reference-config )"
 
 _src_compile_main() {
 	mkdir "${S}"/build-main
