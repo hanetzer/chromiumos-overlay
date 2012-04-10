@@ -31,6 +31,7 @@ RDEPEND="${RDEPEND}
   chromeos-base/libchrome:85268[cros-debug=]
   virtual/opengl
   opengles? ( virtual/opengles )
+  x11-apps/xwd
 "
 
 DEPEND="${RDEPEND}"
