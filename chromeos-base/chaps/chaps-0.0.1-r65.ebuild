@@ -4,18 +4,18 @@
 CROS_WORKON_COMMIT="a9ecb6fd4b525c60bf012e4df403512ee4a9a52b"
 CROS_WORKON_TREE="d4e06b4d3462f7e6e6610110a6823b083e9f85c1"
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
-
-KEYWORDS="arm amd64 x86"
 
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="PKCS #11 layer over TrouSerS."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="arm amd64 x86"
 IUSE="test"
 
 RDEPEND="
@@ -32,35 +32,33 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	dev-db/leveldb"
 
-CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
-
 src_compile() {
 	tc-export CXX OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
-	emake all || die "failed to make chaps"
+	emake all
 }
 
 src_test() {
 	cros-debug-add-NDEBUG
-	emake tests || die "failed to make chaps tests"
-	emake runtests || die "failed to run chaps tests"
+	emake tests
+	emake runtests
 }
 
 src_install() {
-	dosbin build-opt/chapsd || die
-	dobin build-opt/p11_replay || die
-	dolib.so build-opt/libchaps.so || die
+	dosbin build-opt/chapsd
+	dobin build-opt/p11_replay
+	dolib.so build-opt/libchaps.so
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
-	doins org.chromium.Chaps.conf || die
+	doins org.chromium.Chaps.conf
 	# Install D-Bus service file.
 	insinto /usr/share/dbus-1/services
-	doins org.chromium.Chaps.service || die
+	doins org.chromium.Chaps.service
 	# Install upstart config file.
 	insinto /etc/init
-	doins chapsd.conf || die
+	doins chapsd.conf
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
-	doins login_event_client.h || die
+	doins login_event_client.h
 }
 
