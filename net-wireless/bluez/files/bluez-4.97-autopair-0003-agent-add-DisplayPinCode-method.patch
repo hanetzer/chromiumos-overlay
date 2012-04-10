@@ -1,7 +1,7 @@
-From 0611f7a240353e8740a0000af153d0987e7b472d Mon Sep 17 00:00:00 2001
+From 77310af5c0392301aaabbb6d9fbd8e391970c22b Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Mon, 23 Jan 2012 10:56:56 -0800
-Subject: [PATCHv2 4/8] agent: add DisplayPinCode method
+Subject: [PATCH 03/13] agent: add DisplayPinCode method
 
 In constrast to DisplayPasskey, this sends a UTF-8 string PIN code
 to the agent; also we support a callback for the case where the

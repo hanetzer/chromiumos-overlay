@@ -1,7 +1,7 @@
-From eddc584e5c5551ece94b5cf01bad9bf8b4d4d694 Mon Sep 17 00:00:00 2001
+From 3b65744f46fce8424fab190c8d3c16f2ddbffb05 Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Mon, 23 Jan 2012 15:25:56 -0800
-Subject: [PATCHv2 8/8] simple-agent: add DisplayPinCode
+Subject: [PATCH 08/13] simple-agent: add DisplayPinCode
 
 ---
  test/simple-agent |    5 +++++

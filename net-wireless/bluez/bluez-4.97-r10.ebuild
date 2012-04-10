@@ -78,15 +78,21 @@ src_prepare() {
 	# Disable initial radio power for new adapters
 	epatch "${FILESDIR}/${PN}-4.97-initially-powered.patch"
 
-	# HID-profile keyboard pairing support (in upstream review)
-	epatch "${FILESDIR}/${PN}-4.97-hid-0001-bt_ids-add-header-of-device-class-constants.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0002-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0003-Pass-passkey-by-pointer-rather-than-by-value.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0004-agent-add-DisplayPinCode-method.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0005-Add-AUTH_TYPE_NOTIFY_PASSKEY-to-device_request_authe.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0006-Generate-PIN-for-keyboard-devices.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0007-doc-document-DisplayPinCode.patch"
-	epatch "${FILESDIR}/${PN}-4.97-hid-0008-simple-agent-add-DisplayPinCode.patch"
+	# Automatic pairing support, including keyboard pairing support
+	# (in upstream review)
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0001-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0002-Pass-passkey-by-pointer-rather-than-by-value.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0003-agent-add-DisplayPinCode-method.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0004-Add-AUTH_TYPE_NOTIFY_PASSKEY-to-device_request_authe.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0005-Add-display-parameter-to-plugin-pincode-callback.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0006-Display-PIN-generated-by-plugin.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0007-doc-document-DisplayPinCode.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0008-simple-agent-add-DisplayPinCode.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0009-Add-support-for-retrying-a-bonding.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0010-plugin-Add-bonding-callback-support-for-plugins.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0011-bonding-retry-if-callback-returns-TRUE.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0012-bonding-call-plugin-callback-on-cancellation.patch"
+	epatch "${FILESDIR}/${PN}-4.97-autopair-0013-autopair-Add-autopair-plugin.patch"
 
 	if use cups; then
 		sed -i \

@@ -1,7 +1,7 @@
-From 3be5c0cbfbe136a3876c8fd4d2aab88420f7de68 Mon Sep 17 00:00:00 2001
+From 6a95874c4ecfbb70a2cfd1929b541120627284a6 Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Mon, 23 Jan 2012 10:43:48 -0800
-Subject: [PATCHv2 3/8] Pass passkey by pointer rather than by value
+Subject: [PATCH 02/13] Pass passkey by pointer rather than by value
 
 This allows alternate data of a different type to be passed to
 device_request_authentication() for other notification types such
@@ -13,10 +13,10 @@ as those that require a PIN.
  3 files changed, 10 insertions(+), 9 deletions(-)
 
 diff --git a/src/device.c b/src/device.c
-index 670bfc4..82afbbe 100644
+index f2f6862..982233c 100644
 --- a/src/device.c
 +++ b/src/device.c
-@@ -2544,7 +2544,7 @@ done:
+@@ -2558,7 +2558,7 @@ done:
  }
  
  int device_request_authentication(struct btd_device *device, auth_type_t type,
@@ -25,7 +25,7 @@ index 670bfc4..82afbbe 100644
  {
  	struct authentication_req *auth;
  	struct agent *agent;
-@@ -2570,7 +2570,6 @@ int device_request_authentication(struct btd_device *device, auth_type_t type,
+@@ -2584,7 +2584,6 @@ int device_request_authentication(struct btd_device *device, auth_type_t type,
  	auth->device = device;
  	auth->cb = cb;
  	auth->type = type;
@@ -33,7 +33,7 @@ index 670bfc4..82afbbe 100644
  	auth->secure = secure;
  	device->authr = auth;
  
-@@ -2584,11 +2583,13 @@ int device_request_authentication(struct btd_device *device, auth_type_t type,
+@@ -2598,11 +2597,13 @@ int device_request_authentication(struct btd_device *device, auth_type_t type,
  								auth, NULL);
  		break;
  	case AUTH_TYPE_CONFIRM:
@@ -50,10 +50,10 @@ index 670bfc4..82afbbe 100644
  	default:
  		err = -EINVAL;
 diff --git a/src/device.h b/src/device.h
-index 2558e4a..925155c 100644
+index e35b586..3907278 100644
 --- a/src/device.h
 +++ b/src/device.h
-@@ -82,7 +82,7 @@ gboolean device_is_creating(struct btd_device *device, const char *sender);
+@@ -88,7 +88,7 @@ gboolean device_is_creating(struct btd_device *device, const char *sender);
  gboolean device_is_bonding(struct btd_device *device, const char *sender);
  void device_cancel_bonding(struct btd_device *device, uint8_t status);
  int device_request_authentication(struct btd_device *device, auth_type_t type,
@@ -63,7 +63,7 @@ index 2558e4a..925155c 100644
  gboolean device_is_authenticating(struct btd_device *device);
  gboolean device_is_authorizing(struct btd_device *device);
 diff --git a/src/event.c b/src/event.c
-index d3de936..5aa5ef9 100644
+index 7f0d67c..66625a2 100644
 --- a/src/event.c
 +++ b/src/event.c
 @@ -130,7 +130,7 @@ int btd_event_request_pin(bdaddr_t *sba, bdaddr_t *dba, gboolean secure)
@@ -101,7 +101,7 @@ index d3de936..5aa5ef9 100644
 +							&passkey, FALSE, NULL);
  }
  
- void btd_event_simple_pairing_complete(bdaddr_t *local, bdaddr_t *peer,
+ void btd_event_bonding_complete(bdaddr_t *local, bdaddr_t *peer,
 -- 
 1.7.7.3
 
