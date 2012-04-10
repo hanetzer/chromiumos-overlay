@@ -157,7 +157,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies that are needed for media applications (ex, mplayer) used in
 # factory.
 RDEPEND="${RDEPEND}
-	media-libs/ffmpeg
+	media-video/ffmpeg
 	"
 
 # Host dependencies that are needed to create and sign images
