@@ -8,7 +8,9 @@ DESCRIPTION="The Mozc Pinyin engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2"
 LICENSE="BSD"
-RDEPEND="dev-libs/protobuf
+RDEPEND=">=app-i18n/ibus-1.3.99
+         >=dev-libs/glib-2.26
+         dev-libs/protobuf
          dev-libs/pyzy"
 DEPEND="${RDEPEND}"
 SLOT="0"
