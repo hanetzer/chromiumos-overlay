@@ -1,0 +1,50 @@
+From 410aa3eb45c88dd939dcecaa2aafa8f5afd6e000 Mon Sep 17 00:00:00 2001
+From: Ander Conselvan de Oliveira <ander.conselvan.de.oliveira@intel.com>
+Date: Wed, 25 Jan 2012 16:24:15 +0200
+Subject: [PATCH] egl_dri2: make flush extension useable by drm platform
+
+---
+ src/egl/drivers/dri2/platform_drm.c |    1 +
+ src/gbm/backends/dri/gbm_dri.c      |    1 +
+ src/gbm/backends/dri/gbm_driint.h   |    1 +
+ 3 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
+index 3dc2c40..bd3d1e0 100644
+--- a/src/egl/drivers/dri2/platform_drm.c
++++ b/src/egl/drivers/dri2/platform_drm.c
+@@ -141,6 +141,7 @@ dri2_initialize_drm(_EGLDriver *drv, _EGLDisplay *disp)
+    dri2_dpy->core = dri2_dpy->gbm_dri->core;
+    dri2_dpy->dri2 = dri2_dpy->gbm_dri->dri2;
+    dri2_dpy->image = dri2_dpy->gbm_dri->image;
++   dri2_dpy->flush = dri2_dpy->gbm_dri->flush;
+    dri2_dpy->driver_configs = dri2_dpy->gbm_dri->driver_configs;
+ 
+    dri2_dpy->gbm_dri->lookup_image = dri2_lookup_egl_image;
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 98f14cd..1e02287 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -70,6 +70,7 @@ struct dri_extension_match {
+ };
+ 
+ static struct dri_extension_match dri_core_extensions[] = {
++   { __DRI2_FLUSH, 1, offsetof(struct gbm_dri_device, flush) },
+    { __DRI_IMAGE, 1, offsetof(struct gbm_dri_device, image) },
+    { NULL, 0, 0 }
+ };
+diff --git a/src/gbm/backends/dri/gbm_driint.h b/src/gbm/backends/dri/gbm_driint.h
+index c5b5e17..d801a08 100644
+--- a/src/gbm/backends/dri/gbm_driint.h
++++ b/src/gbm/backends/dri/gbm_driint.h
+@@ -46,6 +46,7 @@ struct gbm_dri_device {
+    __DRIcoreExtension   *core;
+    __DRIdri2Extension   *dri2;
+    __DRIimageExtension  *image;
++   __DRI2flushExtension *flush;
+ 
+    const __DRIconfig   **driver_configs;
+    const __DRIextension *extensions[3];
+-- 
+1.7.3.4
+

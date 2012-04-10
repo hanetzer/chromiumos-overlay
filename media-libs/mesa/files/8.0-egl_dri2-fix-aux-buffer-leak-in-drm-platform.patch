@@ -1,0 +1,45 @@
+From 0695cf68f5afb903f93cc3779444d095b218271d Mon Sep 17 00:00:00 2001
+From: Mandeep Singh Baines <mandeep.baines@gmail.com>
+Date: Tue, 10 Apr 2012 14:48:14 -0700
+Subject: [PATCH] egl_dri2: fix aux buffer leak in drm platform
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Keep a reference to any newly allocated aux buffers to avoid
+re-allocating for every st_framebuffer_validate() (i.e. leaking).
+
+Signed-off-by: Mandeep Singh Baines <msb@chromium.org>
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+---
+ src/egl/drivers/dri2/platform_drm.c |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/platform_drm.c b/src/egl/drivers/dri2/platform_drm.c
+index 18ecd17..54067ff 100644
+--- a/src/egl/drivers/dri2/platform_drm.c
++++ b/src/egl/drivers/dri2/platform_drm.c
+@@ -220,16 +220,15 @@ get_aux_bo(struct dri2_egl_surface *dri2_surf,
+ {
+    struct dri2_egl_display *dri2_dpy =
+       dri2_egl_display(dri2_surf->base.Resource.Display);
+-   __DRIbuffer *b;
++   __DRIbuffer *b = dri2_surf->dri_buffers[attachment];
+ 
+-   b = NULL;
+-   if (dri2_surf->dri_buffers[attachment])
+-      b = dri2_surf->dri_buffers[attachment];
+-   if (b == NULL)
++   if (b == NULL) {
+       b = dri2_dpy->dri2->allocateBuffer(dri2_dpy->dri_screen,
+ 					 attachment, format,
+ 					 dri2_surf->base.Width,
+ 					 dri2_surf->base.Height);
++      dri2_surf->dri_buffers[attachment] = b;
++   }
+    if (b == NULL)
+       return -1;
+ 
+-- 
+1.7.3.4
+

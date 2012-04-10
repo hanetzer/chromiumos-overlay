@@ -1,0 +1,49 @@
+From ab6e081914ed2d9f8e166d6cfb9fd9998a45181d Mon Sep 17 00:00:00 2001
+From: Benjamin Franzke <benjaminfranzke@googlemail.com>
+Date: Wed, 7 Mar 2012 17:21:20 +0100
+Subject: [PATCH] gbm_dri: Fix DRIimage lookup callback
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+That is by making the dri extension variables static in gbm_dri.c.
+
+The image_lookup_extension is provided by egl_dri2 when using x11 or wayland
+platforms, when using the drm platform, gbm_dri has a wrapper for it.
+Both use the same variables name image_lookup_extension.
+
+Since -fvisibility=hidden was (probably by mistake) removed when converting to
+automake, the "image_lookup_extension" symbol from egl_dri2.c became exported
+in libEGL.so, so "image_lookup_extension" from gbm_dri.c was ignored.
+This resulted in calling incorrect callbacks.
+
+We cant make the image_lookup_extension static in egl_dri2.c right now,
+since its used across multiple files.
+
+Bugzilla: https://bugs.freedesktop.org/attachment.cgi?id=58099
+Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+---
+ src/gbm/backends/dri/gbm_dri.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
+index 34f07de..98f14cd 100644
+--- a/src/gbm/backends/dri/gbm_dri.c
++++ b/src/gbm/backends/dri/gbm_dri.c
+@@ -54,11 +54,11 @@ dri_lookup_egl_image(__DRIscreen *screen, void *image, void *data)
+    return dri->lookup_image(screen, image, dri->lookup_user_data);
+ }
+ 
+-const __DRIuseInvalidateExtension use_invalidate = {
++static const __DRIuseInvalidateExtension use_invalidate = {
+    { __DRI_USE_INVALIDATE, 1 }
+ };
+ 
+-const __DRIimageLookupExtension image_lookup_extension = {
++static const __DRIimageLookupExtension image_lookup_extension = {
+    { __DRI_IMAGE_LOOKUP, 1 },
+    dri_lookup_egl_image
+ };
+-- 
+1.7.3.4
+
