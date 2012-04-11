@@ -18,10 +18,12 @@ SLOT="0"
 KEYWORDS="arm amd64 x86"
 IUSE="test"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="
 	app-crypt/trousers
 	chromeos-base/chromeos-init
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/opencryptoki
@@ -35,6 +37,7 @@ DEPEND="${RDEPEND}
 src_compile() {
 	tc-export CXX OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 	emake all
 }
 

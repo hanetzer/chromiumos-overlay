@@ -1,8 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-CROS_WORKON_COMMIT="53edc4a78c2239b375e2ca2aa04e28cca673fb92"
-CROS_WORKON_TREE="b644e5e2d5743c0f566d2b93fa201d9f6fac94aa"
+CROS_WORKON_COMMIT="05a3ca706616027b40e7ba45af369a67f17f9ee5"
+CROS_WORKON_TREE="63c0283aa1d3e41276b309f2400d7b08fbf39988"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
@@ -17,8 +17,10 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="install_tests"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="chromeos-base/cromo
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-cpp/glog
 	dev-libs/dbus-c++
 	chromeos-base/metrics
@@ -35,9 +37,9 @@ DEPEND="${RDEPEND}
 cr_make() {
 	emake \
 		LIBDIR=/usr/$(get_libdir) \
+		BASE_VER=${LIBCHROME_VERS} \
 		$(use install_tests && echo INSTALL_TESTS=1) \
 		"$@" || die
-
 }
 
 src_compile() {

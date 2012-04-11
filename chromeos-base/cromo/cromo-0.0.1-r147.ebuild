@@ -18,8 +18,10 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="install_tests"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="chromeos-base/chromeos-minijail
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	>=dev-libs/glib-2.0
 	dev-libs/dbus-glib
 	dev-libs/dbus-c++
@@ -35,7 +37,7 @@ DEPEND="${RDEPEND}
 	virtual/modemmanager"
 
 make_flags() {
-	echo LIBDIR="/usr/$(get_libdir)"
+	echo LIBDIR="/usr/$(get_libdir)" BASE_VER=${LIBCHROME_VERS}
 	use install_tests && echo INSTALL_TESTS=1
 }
 
