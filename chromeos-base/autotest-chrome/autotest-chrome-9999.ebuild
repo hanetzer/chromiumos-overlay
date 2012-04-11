@@ -56,6 +56,7 @@ IUSE_TESTS=(
 	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest
 	+tests_graphics_WebGLConformance
+	+tests_graphics_WebGLPerformance
 	+tests_graphics_WindowManagerGraphicsCapture
 	+tests_hardware_BluetoothSemiAuto
 	+tests_hardware_ExternalDrives
