@@ -79,6 +79,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xinput
 	x11-apps/xset
 	x86? ( x11-misc/read-edid )
+	x11-misc/x11vnc
 	x11-terms/rxvt-unicode
 	app-misc/utouch-evemu
 	chromeos-base/ec-utils
