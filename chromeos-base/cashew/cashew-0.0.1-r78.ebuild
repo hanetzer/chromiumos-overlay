@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="a5dee5ccd47d17771c934446636a1db99f633999"
-CROS_WORKON_TREE="1f42a29b2d0b0518c4b0dc68d5e20a0c860ab368"
+CROS_WORKON_COMMIT="666d5b1f8f11ca4fa1555ca6b435894af5030437"
+CROS_WORKON_TREE="506ecb3c4c17715dbf99feb9b2ec62149035b9aa"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/cashew"
