@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="test"
 
-LIBCHROME_VERS="85268"
+LIBCHROME_VERS="125070"
 
 RDEPEND="chromeos-base/flimflam
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
