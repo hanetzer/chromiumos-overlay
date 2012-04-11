@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="78df4dfc7d7078ccec63aa7d54c443e603bf590a"
-CROS_WORKON_TREE="44dd4521f351bc3ddc8dd9b2bd3a0449a8374142"
+CROS_WORKON_COMMIT="372a6d8cfb587a07330eaae17663a518853c995e"
+CROS_WORKON_TREE="f07c59e46336f2e679712f1ffb9ca2027ca55fbc"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/vpn-manager"
