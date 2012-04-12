@@ -31,13 +31,6 @@
 # Optional Flags to use while installing the binary
 : ${CROS_BINARY_INSTALL_FLAGS:=}
 
-# @ECLASS-VARIABLE: CROS_BINARY_LOCAL_URI_BASE
-# @DESCRIPTION:
-# Optional URI to override CROS_BINARY_URI location.  If this variable
-# is used the filename from CROS_BINARY_URI will be used, but the path
-# to the binary will be changed.
-: ${CROS_BINARY_LOCAL_URI_BASE:=}
-
 DEPEND="net-misc/openssh
 	net-misc/wget"
 
@@ -51,7 +44,8 @@ cros-binary_check_file() {
 	local target="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
 	elog "Checking for cached $target"
 	if [[ -z "${CROS_BINARY_SUM}" ]]; then
-		return 1
+		[[ -r "${target}" ]]
+		return
 	else
 		echo "${CROS_BINARY_SUM}  ${target}" |
 			sha1sum -c --quiet >/dev/null 2>&1
@@ -60,13 +54,8 @@ cros-binary_check_file() {
 }
 
 cros-binary_fetch() {
-	local uri=${CROS_BINARY_URI}
-	if [[ ! -z "${CROS_BINARY_LOCAL_URI_BASE}" ]]; then
-		uri="${CROS_BINARY_LOCAL_URI_BASE}/${CROS_BINARY_URI##*/}"
-	fi
-
-	local scheme="${uri%%://*}"
-	local non_scheme=${uri##*//}
+	local scheme="${CROS_BINARY_URI%%://*}"
+	local non_scheme=${CROS_BINARY_URI##*//}
 	local netloc=${non_scheme%%/*}
 	local server=${netloc%%:*}
 	local port=${netloc##*:}
@@ -77,7 +66,7 @@ cros-binary_fetch() {
 	fi
 
 	local scp_args="-qo BatchMode=yes -oCheckHostIP=no -P ${port}"
-	local target="${CROS_BINARY_STORE_DIR}/${uri##*/}"
+	local target="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
 
 	addwrite "${CROS_BINARY_STORE_DIR}"
 	if [[ ! -d "${CROS_BINARY_STORE_DIR}" ]]; then
@@ -89,7 +78,7 @@ cros-binary_fetch() {
 		rm -f "${target}"
 		case "${scheme}" in
 			http|https)
-				wget "${uri}" -O "${target}" -nv -nc ||
+				wget "${CROS_BINARY_URI}" -O "${target}" -nv -nc ||
 					rm -f "${target}"
 				;;
 
@@ -109,22 +98,14 @@ cros-binary_fetch() {
 				;;
 
 			*)
-				die "Protocol for '${uri}' is unsupported."
+				die "Protocol for '${CROS_BINARY_URI}' is unsupported."
 				;;
 		esac
-
-		# if no checksum, generate a new one
-		if [[ -z "${CROS_BINARY_SUM}" ]]; then
-			local sha1=( $(sha1sum "${target}") )
-			elog "cros-binary ${target} is not checksummed.  Use:"
-			elog "CROS_BINARY_SUM=\"${sha1[0]}\""
-			CROS_BINARY_SUM="${sha1[0]}"
-		fi
 	else
 		elog "Not downloading, cached copy available in ${target}"
 	fi
 
-	cros-binary_check_file || die "Failed to fetch ${uri}."
+	cros-binary_check_file || die "Failed to fetch ${CROS_BINARY_URI}."
 }
 
 cros-binary_src_unpack() {
