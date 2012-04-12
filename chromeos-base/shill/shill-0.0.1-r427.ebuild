@@ -19,6 +19,7 @@ RDEPEND="chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	>=chromeos-base/mobile-providers-0.0.1-r12
+	chromeos-base/vpn-manager
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	net-dns/c-ares"
