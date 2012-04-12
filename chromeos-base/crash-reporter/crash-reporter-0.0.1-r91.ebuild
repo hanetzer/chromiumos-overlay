@@ -58,4 +58,7 @@ src_install() {
 	dobin "list_proxies" || die
 	insinto /etc || die
 	doins "crash_reporter_logs.conf" || die
+
+	insinto "/lib/udev/rules.d" || die
+	doins "99-crash-reporter.rules" || die
 }
