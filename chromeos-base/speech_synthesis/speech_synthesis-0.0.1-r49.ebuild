@@ -1,8 +1,8 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
-CROS_WORKON_COMMIT="b5cb983a3e9ed25949c35defdda52fde3023f574"
-CROS_WORKON_TREE="e5949acbe723c1ff2a444140db63fcc8ab110a36"
+CROS_WORKON_COMMIT="e6089d1667c9b4835295617bbb05dc5c9e96b83e"
+CROS_WORKON_TREE="09856cf121c325302696a03d1b0608a9be8fed77"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/speech_synthesis"
