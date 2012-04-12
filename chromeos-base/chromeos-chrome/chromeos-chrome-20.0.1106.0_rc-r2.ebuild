@@ -132,7 +132,7 @@ fi
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
-	app-i18n/ibus
+	>=app-i18n/ibus-1.4.99
 	arm? ( virtual/opengles )
 	!aura? ( chromeos-base/chromeos-theme )
 	chromeos-base/protofiles
