@@ -129,7 +129,8 @@ src_configure() {
 		--enable-maemo6 \
 		--enable-pnat \
 		--enable-wiimote \
-		--enable-dbusoob
+		--enable-dbusoob \
+		--enable-autopair
 }
 
 src_install() {
