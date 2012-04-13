@@ -18,6 +18,8 @@ SLOT="0"
 KEYWORDS="arm amd64 x86"
 IUSE="splitdebug test"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="
 	app-arch/unrar
 	chromeos-base/chromeos-minijail
@@ -35,7 +37,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/system_api
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
@@ -43,12 +45,12 @@ DEPEND="${RDEPEND}
 src_compile() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
-	emake OUT=build-opt disks
+	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} disks
 }
 
 src_test() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-	emake OUT=build-opt tests
+	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} tests
 }
 
 src_install() {
