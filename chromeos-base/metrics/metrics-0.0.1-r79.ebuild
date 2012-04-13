@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="65174192770abc30b06b0fe5a773eca06d4c78a4"
-CROS_WORKON_TREE="56679f120114f07489ba014180c15a5e783c03e8"
+CROS_WORKON_COMMIT="e5333c55dbd572b3b76a345d5e38b7083c1430e0"
+CROS_WORKON_TREE="1932fd45767f63a10a49953cb09d172c37438b81"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
@@ -17,7 +17,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="chromeos-base/libchrome:85268[cros-debug=]
+LIBCHROME_VERS="125070"
+
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-glib
@@ -33,6 +35,7 @@ DEPEND="${RDEPEND}
 src_compile() {
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 	emake
 }
 
