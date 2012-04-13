@@ -11,11 +11,14 @@ inherit cros-debug cros-workon scons-utils toolchain-funcs
 
 DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="amd64 arm x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -aura"
 IUSE="${IUSE} -has_keyboard_backlight"
-KEYWORDS="amd64 arm x86"
+
+LIBCHROME_VERS="125070"
 
 RDEPEND="app-misc/ddccontrol
 	chromeos-base/metrics
@@ -28,7 +31,7 @@ RDEPEND="app-misc/ddccontrol
 	x11-libs/libXext"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
@@ -39,6 +42,7 @@ DEPEND="${RDEPEND}
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 
 	myesconsargs=(
 		$(use_scons new_power_button)
