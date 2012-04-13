@@ -20,9 +20,11 @@ KEYWORDS="~x86 ~arm ~amd64"
 # Autotest enabled by default.
 IUSE="+autotest"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	virtual/opengl
 	opengles? ( virtual/opengles )
 	x11-apps/xwd
@@ -38,4 +40,5 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 src_prepare() {
 	autotest-deponly_src_prepare
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 }
