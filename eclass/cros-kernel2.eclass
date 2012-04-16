@@ -125,7 +125,7 @@ KERNEL_FDT_ITS='
 		kernel@1 {
 			description = "ChromeOS ARM Linux kernel";
 			data = /incbin/("%BUILD_ROOT%/zImage");
-			type = "kernel";
+			type = "%KERNEL_TYPE%";
 			arch = "arm";
 			os = "linux";
 			compression = "none";
@@ -291,8 +291,38 @@ get_device_tree_base() {
 		(tegra2_seaboard)
 			echo tegra-seaboard
 			;;
+		(daisy)
+			echo exynos5250-daisy
+			;;
 		*)
 			echo ${board_with_variant}
+			;;
+	esac
+}
+
+# All current tegra boards ship with an u-boot that won't allow
+# use of kernel_noload. Because of this, keep using the traditional
+# kernel type for those. This means kernel_type kernel and regular
+# load and entry point addresses.
+
+get_kernel_type() {
+	case "$(get_current_board_with_variant)" in
+		tegra*)
+			echo kernel
+			;;
+		*)
+			echo kernel_noload
+			;;
+	esac
+}
+
+get_load_addr() {
+	case "$(get_current_board_with_variant)" in
+		tegra*)
+			echo 0x03000000
+			;;
+		*)
+			echo 0
 			;;
 	esac
 }
@@ -323,13 +353,13 @@ cros-kernel2_src_install() {
 		local boot_dir="$(get_build_dir)/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
-		local load_addr=0x03000000
 		if use device_tree; then
 			local its_script="$(get_build_dir)/its_script"
 			echo "${KERNEL_FDT_ITS}" | \
 			  sed -e "s|%BUILD_ROOT%|${boot_dir}|;\
 			          s|%DEV_TREE%|$(get_bin_dtb)|; \
-			          s|%LOAD_ADDR%|${load_addr}|;" > \
+			          s|%KERNEL_TYPE%|$(get_kernel_type)|; \
+			          s|%LOAD_ADDR%|$(get_load_addr)|;" > \
 			  "${its_script}" || die
 			mkimage  -f "${its_script}" "${kernel_bin}" || die
 		else
