@@ -3,7 +3,7 @@
 CROS_WORKON_COMMIT="e7396c085292cbe33bc99092a2da17c827a538cf"
 CROS_WORKON_TREE="ce8aae303f70cbcde2cdff939b1af90f5a138a9a"
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
 
 inherit cros-debug cros-workon toolchain-funcs
@@ -32,32 +32,29 @@ DEPEND="${RDEPEND}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake || die "crash_reporter compile failed."
+	emake
 }
 
 src_test() {
-	tc-export CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake tests || die "could not build tests"
 	# TODO(benchan): Enable unit tests for arm target once
 	# crosbug.com/27127 is fixed.
 	if use arm; then
-	        echo Skipping unit tests on arm platform
+		echo Skipping unit tests on arm platform
 	else
-	        for test in ./*_test; do
-		        "${test}" ${GTEST_ARGS} || die "${test} failed"
-		done
+		# TODO(mkrebs): The tests are not currently thread-safe, so
+		# running them in the default parallel mode results in
+		# failures.
+		emake -j1 tests
 	fi
 }
 
 src_install() {
-	into / || die
-	dosbin "crash_reporter" || die
-	dosbin "crash_sender" || die
-	into /usr || die
-	dobin "list_proxies" || die
-	insinto /etc || die
-	doins "crash_reporter_logs.conf" || die
+	into /
+	dosbin crash_{reporter,sender}
+	into /usr
+	dobin list_proxies
+	insinto /etc
+	doins crash_reporter_logs.conf
 
 	insinto "/lib/udev/rules.d" || die
 	doins "99-crash-reporter.rules" || die
