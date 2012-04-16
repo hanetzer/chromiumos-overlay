@@ -263,4 +263,5 @@ execargs += [real_gcc] + list(harden_flags) + gcc_cmdline
 if print_cmdline:
   print '[%s] %s' % (argv0, ' '.join(execargs))
 
+sys.stdout.flush()
 os.execv(argv0, execargs)
