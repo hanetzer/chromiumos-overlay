@@ -960,6 +960,20 @@ src_install() {
 	doins -r "${FROM}"/resources
 	doins -r "${FROM}"/extensions
 	doins "${FROM}"/resources.pak
+	# TODO(sail): Remove these if statements when these .pak files are no longer
+	# optional.
+	if [ -z "${FROM}"/theme_resources_standard.pak ] ; then
+		doins "${FROM}"/theme_resources_standard.pak
+	fi
+	if [ -z "${FROM}"/ui_resources_standard.pak ] ; then
+		doins "${FROM}"/ui_resources_standard.pak
+	fi
+	if [ -z "${FROM}"/theme_resources_2x.pak ] ; then
+		doins "${FROM}"/theme_resources_2x.pak:
+	fi
+	if [ -z "${FROM}"/ui_resources_2x.pak ] ; then
+		doins "${FROM}"/ui_resources_2x.pak
+	fi
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
 
