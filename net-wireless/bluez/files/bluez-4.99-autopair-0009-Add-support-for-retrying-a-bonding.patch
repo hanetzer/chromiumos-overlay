@@ -1,4 +1,4 @@
-From c19ad62a7dc07c89590716c704448b9d046a1e7e Mon Sep 17 00:00:00 2001
+From 0cd8c8427019cfd7e1c69fb6a5b4261863716d56 Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Tue, 24 Jan 2012 10:34:01 -0800
 Subject: [PATCH 09/13] Add support for retrying a bonding
@@ -15,10 +15,10 @@ object on the adapter.
  3 files changed, 16 insertions(+), 1 deletions(-)
 
 diff --git a/src/adapter.c b/src/adapter.c
-index 2b58675..0274dab 100644
+index ccf7991..f065a5d 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
-@@ -3109,7 +3109,7 @@ void adapter_remove_connection(struct btd_adapter *adapter,
+@@ -2989,7 +2989,7 @@ void adapter_remove_connection(struct btd_adapter *adapter,
  	if (device_is_authenticating(device))
  		device_cancel_authentication(device, TRUE);
  
@@ -28,11 +28,11 @@ index 2b58675..0274dab 100644
  
  		DBG("Removing temporary device %s", path);
 diff --git a/src/device.c b/src/device.c
-index 1726a61..17a9d49 100644
+index f32666e..9d4517f 100644
 --- a/src/device.c
 +++ b/src/device.c
-@@ -86,6 +86,9 @@ struct bonding_req {
- 	GIOChannel *io;
+@@ -85,6 +85,9 @@ struct bonding_req {
+ 	DBusMessage *msg;
  	guint listener_id;
  	struct btd_device *device;
 +	uint8_t capability;
@@ -41,9 +41,9 @@ index 1726a61..17a9d49 100644
  };
  
  struct authentication_req {
-@@ -2178,6 +2181,9 @@ static void bonding_request_free(struct bonding_req *bonding)
- 	if (bonding->io)
- 		g_io_channel_unref(bonding->io);
+@@ -2295,6 +2298,9 @@ static void bonding_request_free(struct bonding_req *bonding)
+ 	if (bonding->conn)
+ 		dbus_connection_unref(bonding->conn);
  
 +	if (bonding->retry_timer)
 +		g_source_remove(bonding->retry_timer);
@@ -51,15 +51,15 @@ index 1726a61..17a9d49 100644
  	device = bonding->device;
  	g_free(bonding);
  
-@@ -2258,6 +2264,7 @@ proceed:
+@@ -2367,6 +2373,7 @@ proceed:
  
  	bonding->conn = dbus_connection_ref(conn);
  	bonding->msg = dbus_message_ref(msg);
 +	bonding->capability = capability;
  
- 	adapter_suspend_discovery(device->adapter);
- 
-@@ -2350,6 +2357,13 @@ static void device_auth_req_free(struct btd_device *device)
+ 	return bonding;
+ }
+@@ -2469,6 +2476,13 @@ static void device_auth_req_free(struct btd_device *device)
  	device->authr = NULL;
  }
  
@@ -74,10 +74,10 @@ index 1726a61..17a9d49 100644
  {
  	struct bonding_req *bonding = device->bonding;
 diff --git a/src/device.h b/src/device.h
-index 38765da..314cb0f 100644
+index 561865c..b957ad6 100644
 --- a/src/device.h
 +++ b/src/device.h
-@@ -80,6 +80,7 @@ void device_set_type(struct btd_device *device, device_type_t type);
+@@ -75,6 +75,7 @@ void device_set_temporary(struct btd_device *device, gboolean temporary);
  void device_set_bonded(struct btd_device *device, gboolean bonded);
  void device_set_auto_connect(struct btd_device *device, gboolean enable);
  gboolean device_is_connected(struct btd_device *device);

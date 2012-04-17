@@ -1,4 +1,4 @@
-From 3b65744f46fce8424fab190c8d3c16f2ddbffb05 Mon Sep 17 00:00:00 2001
+From 4f2f55231bad4d5da2505cb674375e9bf8ac029d Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Mon, 23 Jan 2012 15:25:56 -0800
 Subject: [PATCH 08/13] simple-agent: add DisplayPinCode
@@ -8,11 +8,11 @@ Subject: [PATCH 08/13] simple-agent: add DisplayPinCode
  1 files changed, 5 insertions(+), 0 deletions(-)
 
 diff --git a/test/simple-agent b/test/simple-agent
-index 8d65860..4416adb 100755
+index af84815..38d0235 100755
 --- a/test/simple-agent
 +++ b/test/simple-agent
 @@ -52,6 +52,11 @@ class Agent(dbus.service.Object):
- 		print "DisplayPasskey (%s, %d)" % (device, passkey)
+ 		print "DisplayPasskey (%s, %06d)" % (device, passkey)
  
  	@dbus.service.method("org.bluez.Agent",
 +					in_signature="os", out_signature="")
@@ -22,7 +22,7 @@ index 8d65860..4416adb 100755
 +	@dbus.service.method("org.bluez.Agent",
  					in_signature="ou", out_signature="")
  	def RequestConfirmation(self, device, passkey):
- 		print "RequestConfirmation (%s, %d)" % (device, passkey)
+ 		print "RequestConfirmation (%s, %06d)" % (device, passkey)
 -- 
 1.7.7.3
 

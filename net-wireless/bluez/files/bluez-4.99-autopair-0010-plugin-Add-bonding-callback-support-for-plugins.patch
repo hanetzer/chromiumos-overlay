@@ -1,4 +1,4 @@
-From 78a5b1144be6d6ea968b624152ca7b1f64642183 Mon Sep 17 00:00:00 2001
+From 83c36231418f9deff7ba16ceb0ead5d63e177a04 Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Tue, 24 Jan 2012 10:30:53 -0800
 Subject: [PATCH 10/13] plugin: Add bonding callback support for plugins
@@ -16,10 +16,10 @@ callback must be registered again separately from another callback
  2 files changed, 25 insertions(+), 0 deletions(-)
 
 diff --git a/src/device.c b/src/device.c
-index 17a9d49..1dd2cec 100644
+index 9d4517f..9a62eef 100644
 --- a/src/device.c
 +++ b/src/device.c
-@@ -138,6 +138,7 @@ struct btd_device {
+@@ -144,6 +144,7 @@ struct btd_device {
  	GSList		*primaries;		/* List of primary services */
  	GSList		*drivers;		/* List of device drivers */
  	GSList		*watches;		/* List of disconnect_data */
@@ -27,16 +27,16 @@ index 17a9d49..1dd2cec 100644
  	gboolean	temporary;
  	struct agent	*agent;
  	guint		disconn_timer;
-@@ -236,6 +237,8 @@ static void device_free(gpointer user_data)
+@@ -264,6 +265,8 @@ static void device_free(gpointer user_data)
  	g_slist_free_full(device->attios, g_free);
  	g_slist_free_full(device->attios_offline, g_free);
  
 +	g_slist_free(device->bonding_callbacks);
 +
- 	g_attrib_unref(device->attrib);
+ 	att_cleanup(device);
  
  	if (device->tmp_records)
-@@ -2357,6 +2360,20 @@ static void device_auth_req_free(struct btd_device *device)
+@@ -2476,6 +2479,20 @@ static void device_auth_req_free(struct btd_device *device)
  	device->authr = NULL;
  }
  
@@ -58,10 +58,10 @@ index 17a9d49..1dd2cec 100644
  {
  	struct bonding_req *bonding = device->bonding;
 diff --git a/src/device.h b/src/device.h
-index 314cb0f..99e0131 100644
+index b957ad6..ce8675b 100644
 --- a/src/device.h
 +++ b/src/device.h
-@@ -108,6 +108,14 @@ guint device_add_disconnect_watch(struct btd_device *device,
+@@ -103,6 +103,14 @@ guint device_add_disconnect_watch(struct btd_device *device,
  void device_remove_disconnect_watch(struct btd_device *device, guint id);
  void device_set_class(struct btd_device *device, uint32_t value);
  

@@ -5,7 +5,7 @@
 EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 
-inherit multilib eutils systemd python
+inherit autotools multilib eutils systemd python
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -42,7 +42,7 @@ CDEPEND="
 DEPEND="${CDEPEND}
 	>=dev-util/pkgconfig-0.20
 	sys-devel/flex
-	test-programs? ( >=dev-libs/check-0.9.6 )
+	test-programs? ( >=dev-libs/check-0.9.8 )
 "
 RDEPEND="${CDEPEND}
 	!net-wireless/bluez-libs
@@ -60,20 +60,42 @@ RDEPEND="${CDEPEND}
 DOCS=( AUTHORS ChangeLog README )
 
 pkg_setup() {
-	if ! use consolekit; then
-		enewgroup plugdev
-	fi
-
 	if use test-programs; then
 		python_pkg_setup
 	fi
 }
 
 src_prepare() {
-	if ! use consolekit; then
-		# No consolekit for at_console etc, so we grant plugdev the rights
-		epatch	"${FILESDIR}/bluez-plugdev.patch"
-	fi
+	# Change the default D-Bus configuration; the daemon is run as
+	# bluetooth, not root; we don't use the lp user, and we use the
+	# chronos user instead of at_console
+	epatch "${FILESDIR}/${PN}-dbus.patch"
+
+	# Change the default SDP Server socket path to a sub-directory
+	# under /var/run, since /var/run is not writeable by the bluetooth
+	# user.
+	epatch "${FILESDIR}/${PN}-sdp-path.patch"
+
+	# Disable initial radio power for new adapters
+	epatch "${FILESDIR}/${PN}-initially-powered.patch"
+
+	# Automatic pairing support, including keyboard pairing support.
+	# (accepted upstream, can be dropped for next release)
+	epatch "${FILESDIR}/${P}-autopair-0001-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
+	epatch "${FILESDIR}/${P}-autopair-0002-Pass-passkey-by-pointer-rather-than-by-value.patch"
+	epatch "${FILESDIR}/${P}-autopair-0003-agent-add-DisplayPinCode-method.patch"
+	epatch "${FILESDIR}/${P}-autopair-0004-Add-AUTH_TYPE_NOTIFY_PASSKEY-to-device_request_authe.patch"
+	epatch "${FILESDIR}/${P}-autopair-0005-Add-display-parameter-to-plugin-pincode-callback.patch"
+	epatch "${FILESDIR}/${P}-autopair-0006-Display-PIN-generated-by-plugin.patch"
+	epatch "${FILESDIR}/${P}-autopair-0007-doc-document-DisplayPinCode.patch"
+	epatch "${FILESDIR}/${P}-autopair-0008-simple-agent-add-DisplayPinCode.patch"
+	epatch "${FILESDIR}/${P}-autopair-0009-Add-support-for-retrying-a-bonding.patch"
+	epatch "${FILESDIR}/${P}-autopair-0010-plugin-Add-bonding-callback-support-for-plugins.patch"
+	epatch "${FILESDIR}/${P}-autopair-0011-bonding-retry-if-callback-returns-TRUE.patch"
+	epatch "${FILESDIR}/${P}-autopair-0012-bonding-call-plugin-callback-on-cancellation.patch"
+	epatch "${FILESDIR}/${P}-autopair-0013-autopair-Add-autopair-plugin.patch"
+
+	eautoreconf
 
 	if use cups; then
 		sed -i \
@@ -99,6 +121,7 @@ src_configure() {
 		--disable-hal \
 		--localstatedir=/var \
 		--with-systemdunitdir="$(systemd_get_unitdir)" \
+		--with-ouifile=/usr/share/misc/oui.txt \
 		$(use_enable alsa) \
 		$(use_enable caps capng) \
 		$(use_enable cups) \
@@ -110,7 +133,9 @@ src_configure() {
 		--enable-health \
 		--enable-maemo6 \
 		--enable-pnat \
-		--enable-wiimote
+		--enable-wiimote \
+		--enable-dbusoob \
+		--enable-autopair
 }
 
 src_install() {
@@ -142,9 +167,16 @@ src_install() {
 	newinitd "${FILESDIR}/rfcomm-init.d" rfcomm
 	newconfd "${FILESDIR}/rfcomm-conf.d" rfcomm
 
+	insinto /etc/init
+	newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
+
 	# Install oui.txt as requested in bug #283791 and approved by upstream
-	insinto /var/lib/misc
+	insinto /usr/share/misc
 	newins "${WORKDIR}/oui-${OUIDATE}.txt" oui.txt
+
+	fowners bluetooth:bluetooth /var/lib/bluetooth
+
+	rm "${D}/lib/udev/rules.d/97-bluetooth.rules"
 
 	find "${D}" -name "*.la" -delete
 }

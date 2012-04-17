@@ -1,4 +1,4 @@
-From 77310af5c0392301aaabbb6d9fbd8e391970c22b Mon Sep 17 00:00:00 2001
+From e84af9f6ba447c540512d56ccc7326af621749bc Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Mon, 23 Jan 2012 10:56:56 -0800
 Subject: [PATCH 03/13] agent: add DisplayPinCode method

@@ -1,4 +1,4 @@
-From 8cd02cbf9886924a8c390c78a66f7236f0df3879 Mon Sep 17 00:00:00 2001
+From 8a9347822f86059d015ae3893387aa971fa41ab7 Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Mon, 23 Jan 2012 15:25:39 -0800
 Subject: [PATCH 07/13] doc: document DisplayPinCode

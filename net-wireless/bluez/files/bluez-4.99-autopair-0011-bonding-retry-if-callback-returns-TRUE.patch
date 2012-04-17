@@ -1,4 +1,4 @@
-From 14dc5a9f5fd413b970bc909597f1e3ddf54aa772 Mon Sep 17 00:00:00 2001
+From f3d2851b74fe790896f819efbc694e288d54d819 Mon Sep 17 00:00:00 2001
 From: Scott James Remnant <scott@netsplit.com>
 Date: Tue, 24 Jan 2012 10:35:30 -0800
 Subject: [PATCH 11/13] bonding: retry if callback returns TRUE
@@ -11,10 +11,10 @@ after an appropriate backoff period.
  1 files changed, 46 insertions(+), 0 deletions(-)
 
 diff --git a/src/device.c b/src/device.c
-index 1dd2cec..cb1a9d9 100644
+index 9a62eef..4ad5aa0 100644
 --- a/src/device.c
 +++ b/src/device.c
-@@ -2374,6 +2374,44 @@ void btd_device_unregister_bonding_cb(struct btd_device *device,
+@@ -2493,6 +2493,44 @@ void btd_device_unregister_bonding_cb(struct btd_device *device,
  						device->bonding_callbacks, cb);
  }
  
@@ -30,7 +30,7 @@ index 1dd2cec..cb1a9d9 100644
 +
 +	DBG("retrying bonding");
 +	err = adapter_create_bonding(adapter, &device->bdaddr,
-+							bonding->capability);
++					device->type, bonding->capability);
 +	if (err < 0)
 +		device_bonding_complete(device, bonding->status);
 +
@@ -59,7 +59,7 @@ index 1dd2cec..cb1a9d9 100644
  gboolean device_is_retrying(struct btd_device *device)
  {
  	struct bonding_req *bonding = device->bonding;
-@@ -2388,6 +2426,14 @@ void device_bonding_complete(struct btd_device *device, uint8_t status)
+@@ -2507,6 +2545,14 @@ void device_bonding_complete(struct btd_device *device, uint8_t status)
  
  	DBG("bonding %p status 0x%02x", bonding, status);
  
