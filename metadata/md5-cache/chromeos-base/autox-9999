@@ -3,10 +3,10 @@ DEPEND=>=app-admin/eselect-python-20091230 >=dev-vcs/git-1.6
 DESCRIPTION=AutoX library for interacting with X apps
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+cros_workon_commit_master
+IUSE=cros_workon_tree_
 KEYWORDS=~amd64 ~arm ~x86
 LICENSE=BSD
 RDEPEND=dev-python/python-xlib >=app-admin/eselect-python-20091230
 SLOT=0
-_eclasses_=cros-workon	6a7df8e75a8dee6d47bd2d6d10ab5745	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=49d999421134dd5fec27175fe41d3292
