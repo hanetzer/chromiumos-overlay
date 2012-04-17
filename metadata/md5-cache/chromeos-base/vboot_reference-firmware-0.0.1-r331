@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install unpack
+DEPEND=chromeos-base/vboot_reference >=dev-vcs/git-1.6
+DESCRIPTION=Chrome OS verified boot library (firmware build mode)
+EAPI=2
+HOMEPAGE=http://git-scm.com/
+IUSE=-vb_mock_tpm cros-debug cros_workon_tree_b62cebde398e9cb558f8eacdc141deb6e21f5638
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-3
+RDEPEND=chromeos-base/vboot_reference
+SLOT=0
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=43ed57bcc09c47e8c2e1a3bdb6bcd833
