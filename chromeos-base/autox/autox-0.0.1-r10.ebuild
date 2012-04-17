@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="8b510c7d95f89c46d8349f9e13eaf5fd422795a0"
-CROS_WORKON_TREE="eddb60739953b39a30e4a4ec39a11182cac359c1"
+CROS_WORKON_COMMIT="0e87afb2d4f6cef2b5ecca593e21117a5e9379a0"
+CROS_WORKON_TREE="611b421824a85dff20fd67f6cb25b6eab9f36730"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/autox"
