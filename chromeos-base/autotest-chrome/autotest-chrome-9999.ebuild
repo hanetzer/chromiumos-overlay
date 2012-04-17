@@ -52,6 +52,7 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
 	+tests_graphics_GLAPICheck
+	+tests_graphics_GpuReset
 	+tests_graphics_Piglit
 	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest
