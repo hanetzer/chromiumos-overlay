@@ -3,9 +3,9 @@ DEPEND=>=dev-vcs/git-1.6
 DESCRIPTION=Autotest scripts and tools
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_4a2499770cf9efa8bf8195f1af7c34f9d7adf444
+IUSE=cros_workon_tree_2cf30c5ee00e7fa977c523247e66e08f8e392cdb
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 SLOT=0
 _eclasses_=cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=33ee036f7a4e282ca946a70a20c5b45b
+_md5_=3990b38da5c2d466205c8bf5ae506859
