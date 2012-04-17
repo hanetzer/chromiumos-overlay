@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="f76da005c5440d6b7bee16b44d40711aa40f70e1"
-CROS_WORKON_TREE="a3f44fae36085327c184d5cebe2a3303247fdb92"
+CROS_WORKON_COMMIT="6a3a77b86f59c609ce80f6aa3bfb858ab686caab"
+CROS_WORKON_TREE="c61b7d5f71179d4c2baed6f746d3f5819ba6020a"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
