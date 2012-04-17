@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="7e64bd296c04841a6f6cfa590b5e77c619dfb66e"
-CROS_WORKON_TREE="55bbb68e901ee68bf863fc28bb437262dc0c8414"
+CROS_WORKON_COMMIT="89daa89bbeb6e83822160b84c89ddb32e099fafb"
+CROS_WORKON_TREE="09369e36a2890ea3e8900a13b1a9ca3adfdb8890"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/libqmi"
