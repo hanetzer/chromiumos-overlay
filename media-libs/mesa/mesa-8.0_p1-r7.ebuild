@@ -141,7 +141,7 @@ src_prepare() {
 
 	base_src_prepare
 
-	NOCONFIGURE=1 ./autogen.sh
+	eautoreconf
 }
 
 src_configure() {
