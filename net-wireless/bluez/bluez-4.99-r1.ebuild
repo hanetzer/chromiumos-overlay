@@ -95,6 +95,10 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-autopair-0012-bonding-call-plugin-callback-on-cancellation.patch"
 	epatch "${FILESDIR}/${P}-autopair-0013-autopair-Add-autopair-plugin.patch"
 
+	# Automatic pairing of dumb devices. Not yet submitted upstream
+	# so kept as a separate patch on top of the above series.
+	epatch "${FILESDIR}/${PN}-autopair.patch"
+
 	eautoreconf
 
 	if use cups; then

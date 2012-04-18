@@ -227,7 +227,7 @@ index 0000000..58047b1
 +				return 6;
 +			}
 +			break;
-+		};
++		}
 +		break;
 +	}
 +
