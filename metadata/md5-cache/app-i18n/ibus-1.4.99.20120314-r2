@@ -10,4 +10,4 @@ RDEPEND=python? ( >=dev-lang/python-2.5 ) >=dev-libs/glib-2.26 python? ( >=dev-p
 SLOT=0
 SRC_URI=mirror://gentoo/ibus-1.4.99.20120314.tar.gz
 _eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=6fd411e0c78174c648a86cbfab246c3b
+_md5_=b01033adcf139f053b8fc915d894944e
