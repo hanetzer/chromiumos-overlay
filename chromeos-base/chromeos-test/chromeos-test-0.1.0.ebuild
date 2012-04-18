@@ -67,6 +67,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
+	sys-apps/memtester
 	x86? ( sys-apps/pciutils )
 	x86? ( sys-apps/superiotool )
 	sys-apps/shadow
