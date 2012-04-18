@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="69079542415b33724bb46d06f47d8a2687eef3d6"
-CROS_WORKON_TREE="5897cfb7b51b4d62a3f201928d950a26dd57e4e6"
+CROS_WORKON_COMMIT="856eb7dcde0229293a966911aca36a8d2a3b1d65"
+CROS_WORKON_TREE="a3e93908ead3bb576ab183bcb2f5792f2331a7bb"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -54,6 +54,7 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_V8Bench
 	+tests_graphics_GLAPICheck
+	+tests_graphics_GpuReset
 	+tests_graphics_Piglit
 	+tests_graphics_SanAngeles
 	+tests_graphics_TearTest
