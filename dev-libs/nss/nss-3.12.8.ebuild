@@ -32,6 +32,9 @@ src_prepare() {
 	# See https://bugzilla.mozilla.org/show_bug.cgi?id=741481 for details.
 	epatch "${FILESDIR}"/${P}-cert-initlocks.patch
 
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${P}-abort-on-failed-urandom-access.patch
+
 	cd "${S}"/mozilla/security/coreconf
 
 	# Explain that linux 3.0+ is just the same as 2.6.
