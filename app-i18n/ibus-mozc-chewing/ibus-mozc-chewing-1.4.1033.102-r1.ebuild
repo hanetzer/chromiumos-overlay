@@ -21,6 +21,7 @@ src_prepare() {
   cd "mozc-${PV}" || die
   # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.5.
   epatch "${FILESDIR}"/${P}-arm-build-fix.patch
+  epatch "${FILESDIR}"/${P}-inclusion-fix.patch
 }
 
 src_configure() {
