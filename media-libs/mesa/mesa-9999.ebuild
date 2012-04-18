@@ -5,13 +5,15 @@
 EAPI=4
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
+CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
+CROS_WORKON_LOCALNAME="../third_party/mesa"
 
 if [[ ${PV} = 9999* ]]; then
 	GIT_ECLASS="git-2"
 	EXPERIMENTAL="true"
 fi
 
-inherit base autotools multilib flag-o-matic python toolchain-funcs ${GIT_ECLASS}
+inherit base autotools multilib flag-o-matic python toolchain-funcs ${GIT_ECLASS} cros-workon
 
 OPENGL_DIR="xorg-x11"
 
@@ -26,7 +28,7 @@ DESCRIPTION="OpenGL-like graphic library for Linux"
 HOMEPAGE="http://mesa3d.sourceforge.net/"
 
 #SRC_PATCHES="mirror://gentoo/${P}-gentoo-patches-01.tar.bz2"
-if [[ $PV = 9999* ]]; then
+if [[ $PV = 9999* ]] || [[ -n ${CROS_WORKON_COMMIT} ]]; then
 	SRC_URI="${SRC_PATCHES}"
 else
 	SRC_URI="ftp://ftp.freedesktop.org/pub/mesa/${FOLDER}/${MY_SRC_P}.tar.bz2
@@ -38,7 +40,7 @@ fi
 # GLES[2]/gl[2]{,ext,platform}.h are SGI-B-2.0
 LICENSE="MIT LGPL-3 SGI-B-2.0"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86 ~x86-fbsd"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc ~x86 ~x86-fbsd"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="radeon"
@@ -97,11 +99,6 @@ pkg_setup() {
 	use ppc64 && append-flags -mminimal-toc
 }
 
-src_unpack() {
-	default
-	[[ $PV = 9999* ]] && git-2_src_unpack
-}
-
 src_prepare() {
 	# apply patches
 	if [[ ${PV} != 9999* && -n ${SRC_PATCHES} ]]; then
@@ -141,6 +138,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.0-fix-deps-order.patch
 	epatch "${FILESDIR}"/8.0-cleanup-meta.patch
 	epatch "${FILESDIR}"/8.0-fix-leaks.patch
+	epatch "${FILESDIR}"/8.0-Add-builtin-function-cpp.patch
 
 	base_src_prepare
 
