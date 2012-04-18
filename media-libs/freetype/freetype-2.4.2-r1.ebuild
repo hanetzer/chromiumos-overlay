@@ -1,1 +1,0 @@
-freetype-2.4.2.ebuild
