@@ -137,7 +137,12 @@ PATCHES=(
 	"${FILESDIR}/1.11.99.902-nohwaccess.patch"
 	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
 	"${FILESDIR}/1.11.99.902-safer-position-sprite.patch"
-        "${FILESDIR}/1.11.99.902-0002-dix-don-t-BUG_WARN-for-button-events-from-button-onl.patch"
+	"${FILESDIR}/1.11.99.902-0002-dix-don-t-BUG_WARN-for-button-events-from-button-onl.patch"
+	# Fix for printf format chars in device names: crosbug.com/29324
+	"${FILESDIR}/1.12.0-0001-os-log-trivial-cleanups.patch"
+	"${FILESDIR}/1.12.0-0002-os-xprintf-add-Xvscnprintf-and-Xscnprintf.patch"
+	"${FILESDIR}/1.12.0-0003-os-log-only-write-timestamp-if-a-message-is-actually.patch"
+	"${FILESDIR}/1.12.0-0004-os-log-refactor-logging.patch"
 )
 
 src_prepare() {
