@@ -124,6 +124,8 @@ src_install() {
 
 	# Remove unnecessary files
 	rm -rf "${D}/usr/share/icons" || die
+	rm "${D}/usr/share/ibus/component/simple.xml" || die
+	rm "${D}/usr/libexec/ibus-engine-simple" || die
 	rm "${D}/usr/share/applications/ibus.desktop" || die
         rm -rf "${D}/usr/lib/gtk-2.0/2.10.0/immodules/" || die
 
