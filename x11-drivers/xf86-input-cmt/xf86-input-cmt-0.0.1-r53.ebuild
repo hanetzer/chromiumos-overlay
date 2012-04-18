@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="d120fb04866b3c0ab9696780b9b606ceffd87352"
-CROS_WORKON_TREE="d3ac02c15d68338e40906d8df268553934a0a819"
+CROS_WORKON_COMMIT="a1884bef4b72706f2073b1de206cf9f0e08cc94d"
+CROS_WORKON_TREE="55d9d008caacb8bb4abba798b111aa0330747341"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
