@@ -10,4 +10,4 @@ RDEPEND=>=dev-libs/glib-2.14:2 sys-apps/dbus >=sys-fs/udev-169 alsa? ( media-lib
 SLOT=0
 SRC_URI=mirror://kernel/linux/bluetooth/bluez-4.99.tar.xz http://dev.gentoo.org/~pacho/bluez/oui-20120308.txt.xz
 _eclasses_=autotools	63332a15502113ca711ccccb3889a109	eutils	33ef77a15337022e05342d2c772a7a5a	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	systemd	b5da52630b2559da43198bfb56ccacba	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=2994ef1fe890f97d6032e391633c4ca3
+_md5_=cc955d297842ea9bc3b4cfb6f3cb10c8
