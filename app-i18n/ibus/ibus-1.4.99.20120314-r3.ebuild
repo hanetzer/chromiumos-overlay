@@ -17,23 +17,13 @@ SRC_URI="mirror://gentoo/${P}.tar.gz"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="doc nls python"
 #RESTRICT="mirror"
 
-RDEPEND="python? ( >=dev-lang/python-2.5 )
-	>=dev-libs/glib-2.26
-	python? ( >=dev-python/pygobject-2.14 )
-	nls? ( virtual/libintl )
+RDEPEND=">=dev-libs/glib-2.26
 	>=x11-libs/gtk+-2
 	x11-libs/libX11"
 DEPEND="${RDEPEND}
-	doc? ( >=dev-util/gtk-doc-1.9 )
-	dev-util/pkgconfig
-	nls? ( >=sys-devel/gettext-0.16.1 )"
-RDEPEND="${RDEPEND}
-	python? ( >=dev-python/dbus-python-0.83 )
-	python? ( dev-python/pygtk )
-	python? ( dev-python/pyxdg )"
+	dev-util/pkgconfig"
 
 pkg_setup() {
 	# An arch specific config directory is used on multilib systems
@@ -74,9 +64,10 @@ src_configure() {
 		--disable-key-snooper \
 		--disable-vala \
 		--enable-introspection=no \
-		$(use_enable doc gtk-doc) \
-		$(use_enable nls) \
-		$(use_enable python) \
+		--disable-gtk-doc \
+		--disable-nls \
+		--disable-python-library \
+		--disable-setup \
 		CPPFLAGS='-DOS_CHROMEOS=1' \
 		ISOCODES_CFLAGS=' ' ISOCODES_LIBS=' '
 }
@@ -123,23 +114,16 @@ src_install() {
 	fi
 
 	# Remove unnecessary files
+	rm -rf "${D}/usr/share/ibus/keymaps" || die
 	rm -rf "${D}/usr/share/icons" || die
+
+	# TODO(yusukes): The latest ibus has --disable-engine option.
 	rm "${D}/usr/share/ibus/component/simple.xml" || die
 	rm "${D}/usr/libexec/ibus-engine-simple" || die
+
 	rm "${D}/usr/share/applications/ibus.desktop" || die
+	rm "${D}/etc/bash_completion.d/ibus.bash" || die
         rm -rf "${D}/usr/lib/gtk-2.0/2.10.0/immodules/" || die
 
 	dodoc AUTHORS ChangeLog NEWS README
-}
-
-pkg_postinst() {
-	if use python; then
-		python_mod_optimize /usr/share/${PN}
-	fi
-}
-
-pkg_postrm() {
-	if use python; then
-		python_mod_cleanup /usr/share/${PN}
-	fi
 }
