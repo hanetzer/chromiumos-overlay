@@ -1,3 +1,4 @@
 #Add virtual packages for this profile
-virtual/u-boot		sys-boot/chromeos-u-boot
-virtual/chromeos-bsp	chromeos-base/chromeos-bsp-null
+virtual/u-boot			sys-boot/chromeos-u-boot
+virtual/chromeos-bsp		chromeos-base/chromeos-bsp-null
+virtual/chromeos-bsp-dev	chromeos-base/chromeos-bsp-dev-null

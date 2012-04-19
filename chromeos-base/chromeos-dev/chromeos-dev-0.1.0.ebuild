@@ -73,6 +73,7 @@ RDEPEND="${RDEPEND}
 	sys-process/psmisc
 	sys-process/time
 	virtual/perf
+	virtual/chromeos-bsp-dev
 	opengl? ( x11-apps/mesa-progs )
 	x11-apps/mtplot
 	x11-apps/xauth
