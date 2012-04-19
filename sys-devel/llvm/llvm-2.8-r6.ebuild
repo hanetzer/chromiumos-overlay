@@ -87,6 +87,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.7-nodoctargz.patch
 	epatch "${FILESDIR}"/${PN}-2.6-commandguide-nops.patch
 	epatch "${FILESDIR}"/${PN}-2.8-darwin8.patch
+	epatch "${FILESDIR}"/${PN}-2.8-lseek64.patch
 	# Upstream backport, r117774
 	epatch "${FILESDIR}"/${P}-alignof.patch
 	epatch "${FILESDIR}"/xconfigure.patch
