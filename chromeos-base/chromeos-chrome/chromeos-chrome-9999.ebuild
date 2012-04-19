@@ -248,6 +248,10 @@ set_build_defines() {
 		die "Unsupported architecture: ${ARCH}"
 	fi
 
+	if [ "$ARCH" != "arm" ]; then
+		BUILD_DEFINES+=( use_xi2_mt=2 )
+	fi
+
 	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
 
 	use drm && BUILD_DEFINES+=( use_drm=1 )
