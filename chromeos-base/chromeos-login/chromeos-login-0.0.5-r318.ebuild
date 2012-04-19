@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="d555ded050d7515b091e857df1cac63fbc38281b"
-CROS_WORKON_TREE="8d7581864dc0f8b35d1df0c3618916cdc4c49401"
+CROS_WORKON_COMMIT="ec81dd91f1a56454483baf284f4f243d7d39d8b5"
+CROS_WORKON_TREE="fe60236978dac29b4386db4e1c7d66a98026851d"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
@@ -31,7 +31,7 @@ BOARDS=(
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-IUSE="-asan -aura -disable_login_animations -is_desktop -new_power_button test"
+IUSE="-asan -aura -disable_login_animations -highdpi -is_desktop -new_power_button test -touchui"
 for flag in $BOARD_USE_FLAGS; do
 	IUSE="$IUSE $flag"
 done
@@ -115,8 +115,8 @@ src_install() {
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
 	local use_flag_file="${D}"/etc/session_manager_use_flags.txt
 	local flag
-	for flag in asan aura disable_login_animations is_desktop \
-                    new_power_button $BOARD_USE_FLAGS; do
+	for flag in asan aura disable_login_animations highdpi is_desktop \
+                    new_power_button touchui $BOARD_USE_FLAGS; do
 		append_use_flag_if_set "${flag}" "${use_flag_file}"
 	done
 }
