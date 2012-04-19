@@ -29,8 +29,10 @@ RDEPEND="
   chromeos-base/flimflam
   chromeos-base/flimflam-test
   >=chromeos-base/vpd-0.0.1-r11
+  dev-python/jsonrpclib
   dev-python/pygobject
   dev-python/pygtk
+  dev-python/ws4py
   xset? ( x11-apps/xset )
 "
 
