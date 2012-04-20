@@ -135,8 +135,6 @@ src_configure() {
 		$(use_enable test-programs test) \
 		$(use_enable usb) \
 		--enable-health \
-		--enable-maemo6 \
-		--enable-pnat \
 		--enable-wiimote \
 		--enable-dbusoob \
 		--enable-autopair
