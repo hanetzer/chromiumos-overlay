@@ -24,6 +24,7 @@ OLD_BOARDS=(
 	lumpy64
 	stumpy
 	stumpy64
+	tegra2
 	x86-alex
 	x86-mario
 	x86-mario64
