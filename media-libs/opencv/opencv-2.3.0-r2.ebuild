@@ -33,7 +33,7 @@ RDEPEND="
 		dev-libs/glib:2
 		x11-libs/gtk+:2
 	)
-	jpeg? ( media-libs/jpeg )
+	jpeg? ( virtual/jpeg )
 	jpeg2k? ( media-libs/jasper )
 	ieee1394? ( media-libs/libdc1394 sys-libs/libraw1394 )
 	openexr? ( media-libs/openexr )
