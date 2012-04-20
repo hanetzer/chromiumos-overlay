@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build +reorder hardfp -pgo +runhooks +verbose -drm"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build +reorder hardfp -pgo -pgo_generate +runhooks +verbose -drm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -102,6 +102,7 @@ addwrite "${CHROME_DISTDIR}"
 # chrome destination directory
 CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
+RELEASE_EXTRA_CFLAGS=()
 
 if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
 	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
@@ -214,6 +215,17 @@ set_build_defines() {
 		)
 	fi
 
+	if use pgo_generate ; then
+		BUILD_DEFINES+=(
+			libraries_for_target=-lgcov
+		)
+		RELEASE_EXTRA_CFLAGS+=(
+			-DPGO_GENERATE
+			-fprofile-generate
+			-Wno-error=maybe-uninitialized
+		)
+	fi
+
 	# Set proper BUILD_DEFINES for the arch
 	if [ "$ARCH" = "x86" ]; then
 		BUILD_DEFINES+=( target_arch=ia32 enable_smooth_scrolling=1 )
@@ -308,12 +320,16 @@ set_build_defines() {
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
 	if use chrome_debug; then
-		BUILD_DEFINES+=( release_extra_cflags=-g )
+		RELEASE_EXTRA_CFLAGS+=(
+			-g
+		)
 	fi
 
 	if ! use chrome_pdf; then
 		BUILD_DEFINES+=( internal_pdf=0 )
 	fi
+
+	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
 	export GYP_GENERATORS="${BUILD_TOOL}"
 	export GYP_DEFINES="${BUILD_DEFINES[@]}"
