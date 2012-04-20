@@ -2,8 +2,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/dtc/dtc-1.3.0.ebuild,v 1.1 2011/06/15 21:19:11 flameeyes Exp $
-CROS_WORKON_COMMIT="29e9f127b92984d4ea8b99dc9582bcc16d767942"
-CROS_WORKON_TREE="90ef797ff8154f15c4ada590cdd3e0958107d5cf"
+CROS_WORKON_COMMIT="7230f4d1addf2aa8a2e60b0fafe2967a28c25277"
+CROS_WORKON_TREE="2ccce661196df031e3bcfa3d9650840b4978e6de"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/dtc"
