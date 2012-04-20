@@ -167,7 +167,8 @@ RDEPEND="${RDEPEND}
 DEPEND="${DEPEND}
 	${RDEPEND}
 	>=dev-util/gperf-3.0.3
-	>=dev-util/pkgconfig-0.23"
+	>=dev-util/pkgconfig-0.23
+	net-wireless/bluez"
 
 PATCHES=()
 
