@@ -17,7 +17,7 @@ DEPEND="dev-libs/nss
 	media-libs/fontconfig
 	opengl? ( media-libs/glew )
 	net-misc/curl
-	opengles? ( virtual/opengles )
+	opengles? ( virtual/opengles x11-drivers/opengles-headers )
 	x11-libs/cairo
 	x11-libs/gtk+"
 RDEPEND="${DEPEND}"
