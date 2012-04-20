@@ -151,7 +151,7 @@ RDEPEND="${RDEPEND}
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
 	media-libs/freetype
-	media-libs/jpeg
+	virtual/jpeg
 	media-libs/libpng
 	media-libs/mesa
 	media-sound/adhd
