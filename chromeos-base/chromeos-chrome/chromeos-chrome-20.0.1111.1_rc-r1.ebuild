@@ -167,7 +167,8 @@ RDEPEND="${RDEPEND}
 DEPEND="${DEPEND}
 	${RDEPEND}
 	>=dev-util/gperf-3.0.3
-	>=dev-util/pkgconfig-0.23"
+	>=dev-util/pkgconfig-0.23
+	net-wireless/bluez"
 
 PATCHES=()
 
@@ -245,6 +246,10 @@ set_build_defines() {
 		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
 	else
 		die "Unsupported architecture: ${ARCH}"
+	fi
+
+	if [ "$ARCH" != "arm" ]; then
+		BUILD_DEFINES+=( use_xi2_mt=2 )
 	fi
 
 	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
