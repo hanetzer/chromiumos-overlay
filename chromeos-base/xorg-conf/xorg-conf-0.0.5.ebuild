@@ -50,7 +50,7 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-alex.conf"
 		elif use mario; then
 			doins "${FILESDIR}/50-touchpad-cmt-mario.conf"
-		elif [ "${board}" = "x86-zgb" ]; then
+		elif [[ "${board}" = "x86-zgb" || "${board}" = "x86-zgb32" ]]; then
 			doins "${FILESDIR}/50-touchpad-cmt-zgb.conf"
 		elif [ "${board_variant}" = "tegra2_aebl" ]; then
 			doins "${FILESDIR}/50-touchpad-cmt-aebl.conf"
