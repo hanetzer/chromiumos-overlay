@@ -223,6 +223,7 @@ set_build_defines() {
 		RELEASE_EXTRA_CFLAGS+=(
 			-DPGO_GENERATE
 			-fprofile-generate
+			-fprofile-dir=/tmp/pgo/chrome
 			-Wno-error=maybe-uninitialized
 		)
 	fi
