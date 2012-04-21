@@ -58,6 +58,7 @@ ALL_BOARDS=(
 	x86-alex_he
 	x86-alex_hubble
 	x86-alex32
+	x86-alex32_he
 	x86-dogfood
 	x86-drm
 	x86-fruitloop
@@ -69,6 +70,7 @@ ALL_BOARDS=(
 	x86-zgb
 	x86-zgb_he
 	x86-zgb32
+	x86-zgb32_he
 )
 
 # Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create IUSE.
