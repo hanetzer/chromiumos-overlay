@@ -22,9 +22,13 @@ BOARDS=(
 	ironhide
 	x86-alex
 	x86-alex_he
+	x86-alex32
+	x86-alex32_he
 	x86-mario
 	x86-zgb
 	x86-zgb_he
+	x86-zgb32
+	x86-zgb32_he
 )
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
