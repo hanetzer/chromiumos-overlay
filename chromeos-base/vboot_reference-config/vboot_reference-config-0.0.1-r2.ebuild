@@ -26,9 +26,11 @@ OLD_BOARDS=(
 	stumpy64
 	tegra2
 	x86-alex
+	x86-alex32
 	x86-mario
 	x86-mario64
 	x86-zgb
+	x86-zgb32
 )
 
 S=${WORKDIR}
