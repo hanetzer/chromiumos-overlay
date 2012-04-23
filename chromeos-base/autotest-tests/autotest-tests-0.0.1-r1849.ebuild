@@ -226,14 +226,15 @@ IUSE_TESTS="
 	+tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
 	+tests_platform_CryptohomeTPMReOwnServer
+	+tests_platform_DaemonsRespawn
 	+tests_platform_DMVerityBitCorruption
 	+tests_platform_DMVerityCorruption
-	+tests_platform_DaemonsRespawn
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
 	+tests_platform_GCC
 	+tests_platform_HighResTimers
+	+tests_platform_InstallRecoveryImage
 	+tests_platform_KernelErrorPaths
 	+tests_platform_KernelVersion
 	+tests_platform_LibCBench
@@ -246,8 +247,8 @@ IUSE_TESTS="
 	+tests_platform_Pkcs11InitUnderErrors
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
-	+tests_platform_SessionManagerTerm
 	+tests_platform_ServoPyAuto
+	+tests_platform_SessionManagerTerm
 	+tests_platform_Shutdown
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
