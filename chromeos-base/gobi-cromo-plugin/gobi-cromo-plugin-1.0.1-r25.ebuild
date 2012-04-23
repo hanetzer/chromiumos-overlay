@@ -1,8 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-CROS_WORKON_COMMIT="85540086a1710f1fdc709709804e1c1bc5b94946"
-CROS_WORKON_TREE="6ca2ee12025437a917270bd3d4f8eaca0121e589"
+CROS_WORKON_COMMIT="fde02f9a85874d1b0bf55bb4aa9d21b23aa22379"
+CROS_WORKON_TREE="c3200b8f8a3c38cd877e114f101813183791f9f5"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
