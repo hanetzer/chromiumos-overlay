@@ -11,7 +11,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="profiling"
+IUSE="profiling factory-mode"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/x86-firmware-fdts
@@ -138,6 +138,9 @@ src_configure() {
 	fi
 	if use profiling; then
 		COMMON_MAKE_FLAGS+=" VBOOT_PERFORMANCE=1"
+	fi
+	if use factory-mode; then
+		COMMON_MAKE_FLAGS+=" BUILD_FACTORY_IMAGE=1"
 	fi
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SRC=${CROS_FDT_FILE}"
 
