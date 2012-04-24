@@ -16,7 +16,7 @@ SRC_URI="mirror://sourceforge/${PN}library/${MY_P}.tar.bz2"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 ppc x86"
+KEYWORDS="amd64 arm ppc x86"
 IUSE="cuda doc eigen examples ffmpeg gstreamer gtk ieee1394 jpeg jpeg2k openexr opengl png python qt4 sse sse2 sse3 ssse3 tiff v4l xine"
 
 RDEPEND="
@@ -139,6 +139,8 @@ src_configure() {
 	mycmakeargs+=( "-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY" )
 	tc-export PKG_CONFIG
 	sed -i '/^find_program/s:NAMES:& $ENV{PKG_CONFIG}:' OpenCVFindPkgConfig.cmake || die
+	# Workaround cmake testing the compiler too soon.
+	tc-export CC CXX
 
 	# things we want to be hard off or not yet figured out
 	# unicap: https://bugs.gentoo.org/show_bug.cgi?id=175881
