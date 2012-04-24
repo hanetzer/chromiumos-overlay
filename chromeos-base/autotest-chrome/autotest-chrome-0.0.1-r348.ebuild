@@ -33,6 +33,7 @@ IUSE_TESTS=(
 	+tests_desktopui_BrowserTest
 	+tests_desktopui_OMXTest
 	+tests_desktopui_PyAutoFunctionalTests
+	+tests_desktopui_PyAutoInstall
 	+tests_desktopui_PyAutoPerfTests
 	+tests_desktopui_SyncIntegrationTests
 	+tests_desktopui_UITest
