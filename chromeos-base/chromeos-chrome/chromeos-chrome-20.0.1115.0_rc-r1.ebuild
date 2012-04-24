@@ -223,6 +223,7 @@ set_build_defines() {
 		RELEASE_EXTRA_CFLAGS+=(
 			-DPGO_GENERATE
 			-fprofile-generate
+			-fprofile-dir=/tmp/pgo/chrome
 			-Wno-error=maybe-uninitialized
 		)
 	fi
@@ -986,16 +987,16 @@ src_install() {
 	doins "${FROM}"/resources.pak
 	# TODO(sail): Remove these if statements when these .pak files are no longer
 	# optional.
-	if [ -z "${FROM}"/theme_resources_standard.pak ] ; then
+	if [ -f "${FROM}"/theme_resources_standard.pak ] ; then
 		doins "${FROM}"/theme_resources_standard.pak
 	fi
-	if [ -z "${FROM}"/ui_resources_standard.pak ] ; then
+	if [ -f "${FROM}"/ui_resources_standard.pak ] ; then
 		doins "${FROM}"/ui_resources_standard.pak
 	fi
-	if [ -z "${FROM}"/theme_resources_2x.pak ] ; then
+	if [ -f "${FROM}"/theme_resources_2x.pak ] ; then
 		doins "${FROM}"/theme_resources_2x.pak:
 	fi
-	if [ -z "${FROM}"/ui_resources_2x.pak ] ; then
+	if [ -f "${FROM}"/ui_resources_2x.pak ] ; then
 		doins "${FROM}"/ui_resources_2x.pak
 	fi
 	doins "${FROM}"/xdg-settings
