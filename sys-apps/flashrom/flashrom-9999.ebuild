@@ -18,7 +18,7 @@ KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
 +dummy ft2232_spi +gfxnvidia +internal +nic3com +nicintel +nicintel_spi
 +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
-+satasii +satamv +serprog +wiki"
++satasii +satamv +serprog +wiki static"
 
 COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
 	dediprog? ( virtual/libusb:0 )
@@ -61,6 +61,7 @@ src_compile() {
 		satasii satamv serprog \
 		internal dummy
 	_flashrom_enable wiki PRINT_WIKI
+	_flashrom_enable static STATIC
 
 	# You have to specify at least one programmer, and if you specify more than
 	# one programmer you have to include either dummy or internal in the list.
