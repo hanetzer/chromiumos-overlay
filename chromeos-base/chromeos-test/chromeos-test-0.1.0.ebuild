@@ -53,7 +53,7 @@ RDEPEND="${RDEPEND}
 	dev-util/dbus-spy
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
-	!arm? ( media-libs/opencv )
+	media-libs/opencv
 	media-libs/tiff
 	net-analyzer/netperf
 	x86? ( net-dns/dnsmasq )
