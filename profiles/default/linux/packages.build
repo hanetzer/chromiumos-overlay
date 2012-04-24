@@ -9,6 +9,7 @@
 # releases.  PLEASE DO NOT ENABLE THIS UNLESS YOU HAVE THOROUGHLY TESTED IT!
 
 app-arch/bzip2
+app-arch/gzip
 app-arch/tar
 app-shells/bash
 net-misc/rsync
@@ -36,7 +37,6 @@ sys-devel/gnuconfig
 sys-devel/make
 sys-devel/patch
 virtual/editor
-virtual/gzip
 virtual/libc
 virtual/os-headers
 virtual/portage

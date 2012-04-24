@@ -27,6 +27,7 @@
 *sys-apps/baselayout
 *app-arch/bzip2
 *app-arch/cpio
+*app-arch/gzip
 *app-arch/tar
 *app-shells/bash
 #*dev-lang/perl
@@ -65,7 +66,6 @@
 *sys-libs/readline
 *sys-libs/zlib
 *virtual/editor
-*virtual/gzip
 *virtual/libc
 *virtual/man
 *virtual/modutils
