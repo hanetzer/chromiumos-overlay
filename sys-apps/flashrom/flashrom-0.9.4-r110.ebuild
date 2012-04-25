@@ -1,8 +1,8 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/flashrom/flashrom-0.9.4.ebuild,v 1.5 2011/09/20 16:03:21 nativemad Exp $
-CROS_WORKON_COMMIT="4f17e2fc031b3f0748365990a9ea814843ef0e2e"
-CROS_WORKON_TREE="eb86c888cf32ef9c09a54510edd9423fe346bd73"
+CROS_WORKON_COMMIT="2a81d7491e5ae11fca295802cd855db7e0795141"
+CROS_WORKON_TREE="6a56996c72cace1b26f463a6cfccc57b900fd494"
 
 EAPI="3"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashrom"
@@ -20,7 +20,7 @@ KEYWORDS="amd64 x86 arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
 +dummy ft2232_spi +gfxnvidia +internal +nic3com +nicintel +nicintel_spi
 +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
-+satasii +satamv +serprog +wiki"
++satasii +satamv +serprog +wiki static"
 
 COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
 	dediprog? ( virtual/libusb:0 )
@@ -63,6 +63,7 @@ src_compile() {
 		satasii satamv serprog \
 		internal dummy
 	_flashrom_enable wiki PRINT_WIKI
+	_flashrom_enable static STATIC
 
 	# You have to specify at least one programmer, and if you specify more than
 	# one programmer you have to include either dummy or internal in the list.
