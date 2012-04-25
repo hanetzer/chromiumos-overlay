@@ -46,6 +46,7 @@ IUSE_TESTS="
 	+tests_factory_AudioInternalLoopback
 	+tests_factory_AudioLoop
 	+tests_factory_AudioQuality
+	+tests_factory_BasicWifi
 	+tests_factory_Camera
 	+tests_factory_CameraPerformanceAls
 	+tests_factory_Cellular
