@@ -904,6 +904,15 @@ install_pyauto_dep_resources() {
 		-o "${test_dir}"/out/Release/_pyautolib.so
 	$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/chromedriver \
 		-o "${test_dir}"/out/Release/chromedriver
+	if use component_build; then
+		mkdir -p "${test_dir}/out/Release/lib.target"
+		local src dst
+		for src in "${from}"/lib.target/* ; do
+			dst="${test_dir}/out/Release/${src#${from}}"
+			$(tc-getSTRIP) --strip-debug --keep-file-symbols \
+				"${src}" -o "${dst}"
+		done
+	fi
 
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
 		"${test_dir}"/out/Release
