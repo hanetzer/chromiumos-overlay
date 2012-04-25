@@ -19,7 +19,6 @@ dev-python/pyudev	pygobject
 dev-util/dialog		-unicode minimal
 dev-util/perf		-doc -demangle -tui -ncurses -perl -python
 dev-util/perf-next	-doc -demangle -tui -ncurses -perl -python
-chromeos-base/chromeos	X bluetooth
 chromeos-base/chromeos-chrome   build_tests
 chromeos-base/flimflam	debug resolvfiles
 chromeos-base/vboot_reference minimal
