@@ -138,6 +138,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.0-gbm-Create-hooks-for-dri2_loader_extension-in-dri-ba.patch
 	epatch "${FILESDIR}"/8.0-egl_dri2-use-gbm_surface-as-the-native-window-type-i.patch
 	epatch "${FILESDIR}"/8.0-egl_dri2-fix-aux-buffer-leak-in-drm-platform.patch
+	epatch "${FILESDIR}"/8.0-fix-deps-order.patch
 
 	base_src_prepare
 

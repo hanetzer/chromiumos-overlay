@@ -1,0 +1,16 @@
+diff --git a/src/mesa/Makefile b/src/mesa/Makefile
+index 71e22b9..ce38081 100644
+--- a/src/mesa/Makefile
++++ b/src/mesa/Makefile
+@@ -65,7 +65,10 @@ $(DRICORE_OBJ_DIR)/%.o: %.S
+ 
+ # Default: build dependencies, then asm_subdirs, GLSL built-in lib,
+ # then convenience libs (.a) and finally the device drivers:
+-default: $(DEPENDS) asm_subdirs $(MESA_LIBS) $(DRICORE_LIBS) driver_subdirs
++default: $(DEPENDS)
++	$(MAKE) asm_subdirs
++	$(MAKE) $(MESA_LIBS) $(DRICORE_LIBS)
++	$(MAKE) driver_subdirs
+ 
+ # include glapi_gen.mk for generating glapi headers for GLES
+ GLAPI := $(TOP)/src/mapi/glapi/gen
