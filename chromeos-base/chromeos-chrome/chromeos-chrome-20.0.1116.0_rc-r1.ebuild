@@ -199,22 +199,10 @@ set_build_defines() {
 		"pkg-config=$(tc-getPKG_CONFIG)"
 	)
 
-	if use drm; then
-		BUILD_DEFINES+=(
-			swig_defines=-DOS_LINUX
-			use_ibus=0
-			use_cups=0
-			use_gconf=0
-			use_gnome_keyring=0
-			use_kerberos=0
-		)
-	else
-		BUILD_DEFINES+=(
-			swig_defines=-DOS_CHROMEOS
-			chromeos=1
-			use_ibus=1
-		)
-	fi
+	BUILD_DEFINES+=(
+		swig_defines=-DOS_CHROMEOS
+		chromeos=1
+	)
 
 	if use pgo_generate ; then
 		BUILD_DEFINES+=(
