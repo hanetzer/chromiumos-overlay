@@ -1,11 +1,11 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 
-inherit cros-debug cros-workon scons-utils toolchain-funcs
+inherit cros-debug cros-workon eutils toolchain-funcs
 
 DESCRIPTION="Power Manager for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -42,73 +42,54 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
 
-	myesconsargs=(
-		$(use_scons new_power_button)
-		$(use_scons lockvt)
-		$(use_scons is_desktop)
-		$(use_scons als has_als)
-		$(use_scons aura)
-		$(use_scons has_keyboard_backlight)
-	)
-	escons || die "power_manager compile failed."
+	export USE_NEW_POWER_BUTTON=$(usex new_power_button y "")
+	export USE_LOCKVT=$(usex lockvt y "")
+	export USE_IS_DESKTOP=$(usex is_desktop y "")
+	export USE_ALS=$(usex als y "")
+	export USE_AURA=$(usex aura y "")
+	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
+
+	emake
 }
 
 src_test() {
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
-	cros-debug-add-NDEBUG
-
-	# Build tests
-	myesconsargs=(
-		$(use_scons new_power_button)
-		$(use_scons lockvt)
-		$(use_scons is_desktop)
-		$(use_scons als has_als)
-		$(use_scons aura)
-		$(use_scons has_keyboard_backlight)
-	)
-	escons tests || die "tests compile failed."
-
 	# Run tests if we're on x86
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		TESTS="backlight file_tagger power_supply powerd resolution_selector"
-		TESTS="$TESTS state_control xidle";
-		for ut in ${TESTS}; do
-			"${S}/${ut}_unittest" \
-				${GTEST_ARGS} || die "${ut}_unittest failed"
-		done
+		emake tests
 	fi
 }
 
 src_install() {
-	dobin "${S}/backlight-tool"
-	dobin "${S}/backlight_dbus_tool"
-	dobin "${S}/debug_sleep_quickly"
-	dobin "${S}/power-supply-info"
-	dobin "${S}/powerd"
-	dobin "${S}/powerm"
-	dobin "${S}/powerd_lock_screen"
-	dobin "${S}/powerd_suspend"
-	dobin "${S}/send_metrics_on_resume"
-	dobin "${S}/power_state_tool"
-	dobin "${S}/suspend_delay_sample"
-	dobin "${S}/xidle-example"
-	insinto "/usr/share/power_manager"
-	for item in ${S}/config/*; do
-		if [ $(basename "${item}") != "PRESUBMIT.cfg" ]; then
-			doins "${item}"
-		fi
-	done
-	insinto "/etc/dbus-1/system.d"
-	doins "${S}/org.chromium.PowerManager.conf"
+	# Built binaries
+	dobin out/backlight-tool
+	dobin out/backlight_dbus_tool
+	dobin out/power_state_tool
+	dobin out/power-supply-info
+	dobin out/powerd
+	dobin out/powerm
+	dobin out/xidle-example
+	dobin out/suspend_delay_sample
+
+	# Scripts
+	dobin debug_sleep_quickly
+	dobin powerd_lock_screen
+	dobin powerd_suspend
+	dobin send_metrics_on_resume
+
+	insinto /usr/share/power_manager
+        doins config/*
+
+	insinto /etc/dbus-1/system.d
+	doins org.chromium.PowerManager.conf
 
 	# Install udev rule to set usb hid devices to wake the system.
-	exeinto "/lib/udev"
-	doexe "${S}/usb-hid-wake.sh"
+	exeinto /lib/udev
+	doexe usb-hid-wake.sh
 
-	insinto "/lib/udev/rules.d"
-	doins "${S}/99-usb-hid-wake.rules"
+	insinto /lib/udev/rules.d
+	doins 99-usb-hid-wake.rules
 
 	# Nocrit disables low battery suspend percent by setting it to 0
 	if use nocrit; then
@@ -121,5 +102,5 @@ src_install() {
 
 	dodir /etc/dbus-1/system.d
 	insinto /etc/dbus-1/system.d
-	doins "${S}/RootPowerManager.conf"
+	doins RootPowerManager.conf
 }
