@@ -3,10 +3,10 @@ DEPEND=dev-cpp/gtest x11-base/xorg-server chromeos-base/libchrome:125070[cros-de
 DESCRIPTION=Gesture recognizer library
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=-cros-debug cros-debug cros_workon_tree_6ed584786567b451ae34cd5dbd8c505a78576be6
+IUSE=-cros-debug cros-debug cros_workon_tree_8c6f5c73fabd4fae228f52fec9cd5a36f912648d
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/libchrome:125070[cros-debug=]
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=f2cfadc925df385a372c1533ad685939
+_md5_=2b7a0b8cf858e927408df5d27758d5f4
