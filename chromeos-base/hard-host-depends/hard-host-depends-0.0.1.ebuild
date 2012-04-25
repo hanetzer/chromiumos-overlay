@@ -49,6 +49,7 @@ RDEPEND="${RDEPEND}
 	dev-lang/python
 	dev-db/m17n-contrib
 	dev-db/m17n-db
+	dev-lang/closure-compiler-bin
 	dev-lang/nasm
 	dev-lang/swig
 	dev-lang/yasm
