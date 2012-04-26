@@ -151,7 +151,7 @@ RDEPEND="${RDEPEND}
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
 	media-libs/freetype
-	media-libs/jpeg
+	virtual/jpeg
 	media-libs/libpng
 	media-libs/mesa
 	media-sound/adhd
@@ -166,6 +166,7 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${DEPEND}
 	${RDEPEND}
+	arm? ( x11-drivers/opengles-headers )
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23
 	net-wireless/bluez"
