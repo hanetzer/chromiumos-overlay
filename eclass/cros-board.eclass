@@ -41,6 +41,7 @@ ALL_BOARDS=(
 	klang
 	link
 	lumpy
+	panda
 	stumpy
 	tegra2
 	tegra2_aebl
