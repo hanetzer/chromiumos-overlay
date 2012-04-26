@@ -65,9 +65,11 @@ src_test() {
 			# sysroot gets executed instead of the host one (which is
 			# compiled differently). http://crosbug.com/27683
 			PATH="$SYSROOT/usr/bin:$PATH" \
-			"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' || die "$test failed"
+			"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' \
+                                || die "$test (fakeroot) failed, retval=$?"
 			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
-				"$test" --gtest_filter='*.RunAsRoot*' >& $T/log || die "$test failed"
+				"$test" --gtest_filter='*.RunAsRoot*' >& $T/log \
+                                || die "$test (root) failed, retval=$?"
 		done
 	fi
 }
