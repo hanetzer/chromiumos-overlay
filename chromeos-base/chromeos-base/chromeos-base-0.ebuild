@@ -197,6 +197,9 @@ pkg_postinst() {
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
 	copy_or_add_daemon_user "avfs" 301        # For avfs process
 
+	# Group that are allowed to create directories under /home/<hash>/root
+	copy_or_add_group "daemon-store" 400
+
 	# All audio interfacing will go through the audio server.
 	add_users_to_group audio "cras" "gavd"
 	add_users_to_group input "gavd"           # For /dev/input/event* access
