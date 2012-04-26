@@ -13,7 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
-IUSE="-cros-debug"
+IUSE=""
 KEYWORDS="amd64 arm x86"
 
 RDEPEND=""
