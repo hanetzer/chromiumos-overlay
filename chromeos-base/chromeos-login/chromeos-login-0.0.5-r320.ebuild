@@ -35,10 +35,8 @@ BOARDS=(
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-IUSE="-asan -aura -disable_login_animations -highdpi -is_desktop -new_power_button test -touchui"
-for flag in $BOARD_USE_FLAGS; do
-	IUSE="$IUSE $flag"
-done
+PKG_IUSE="-asan -aura -disable_login_animations -disable_webaudio -highdpi -is_desktop -new_power_button test -touchui"
+IUSE="${PKG_IUSE} ${BOARD_USE_FLAGS}"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -60,14 +58,6 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
-
-# Takes a USE flag and a filename.
-# If the USE flag is set, appends it and a trailing newline to the file.
-append_use_flag_if_set() {
-	if use "$1"; then
-		echo "$1" >> "$2"
-	fi
-}
 
 src_compile() {
 	tc-export CXX LD PKG_CONFIG
@@ -118,9 +108,9 @@ src_install() {
 	# read at runtime while constructing Chrome's command line.  If you need to
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
 	local use_flag_file="${D}"/etc/session_manager_use_flags.txt
+	local flags=( ${PKG_IUSE} ${BOARD_USE_FLAGS} )
 	local flag
-	for flag in asan aura disable_login_animations highdpi is_desktop \
-                    new_power_button touchui $BOARD_USE_FLAGS; do
-		append_use_flag_if_set "${flag}" "${use_flag_file}"
-	done
+	for flag in ${flags[@]/#[-+]} ; do
+		usev ${flag}
+	done > "${use_flag_file}"
 }
