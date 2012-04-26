@@ -43,7 +43,6 @@ src_install() {
 	dosbin debugd
 	dodir /debugd
 	exeinto /usr/libexec/debugd/helpers
-	doexe helpers/clock_monotonic
 	doexe helpers/modem_status
 	doexe "${S}"/src/helpers/systrace.sh
 	doexe helpers/network_status
