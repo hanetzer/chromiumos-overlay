@@ -11,7 +11,7 @@ LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.3.99
 	>=dev-libs/glib-2.26
 	dev-libs/protobuf
-	dev-libs/pyzy"
+	>=dev-libs/pyzy-0.0.2"
 DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
@@ -33,9 +33,12 @@ src_configure() {
 
 src_prepare() {
 	cd "mozc" || die
+	# Following 2 patches are required by any version of ibus-mozc-pinyin on
+	# ChromeOS
+	epatch "${FILESDIR}"/ibus-mozc-pinyin-introduces-typo-for-compatibility.patch
 	epatch "${FILESDIR}"/ibus-mozc-pinyin-replace-ibus-pinyin.patch
-	epatch "${FILESDIR}"/${P}-arm-build-fix.patch
-	epatch "${FILESDIR}"/${P}-introduces-typo-for-compatibility.patch
+	# Fixes the performance issue. crosbug.com/30044
+	epatch "${FILESDIR}"/${P}-skip-counting-candidates.patch
 }
 
 src_compile() {
