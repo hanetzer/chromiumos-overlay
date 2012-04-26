@@ -140,6 +140,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.0-egl_dri2-fix-aux-buffer-leak-in-drm-platform.patch
 	epatch "${FILESDIR}"/8.0-fix-deps-order.patch
 	epatch "${FILESDIR}"/8.0-cleanup-meta.patch
+	epatch "${FILESDIR}"/8.0-fix-leaks.patch
 
 	base_src_prepare
 

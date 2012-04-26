@@ -1,0 +1,106 @@
+diff --git a/src/glsl/link_uniforms.cpp b/src/glsl/link_uniforms.cpp
+index d51850c..588008a 100644
+--- a/src/glsl/link_uniforms.cpp
++++ b/src/glsl/link_uniforms.cpp
+@@ -174,8 +174,7 @@ private:
+       if (this->map->get(id, name))
+ 	 return;
+ 
+-      char *key = strdup(name);
+-      this->map->put(this->num_active_uniforms, key);
++      this->map->put(this->num_active_uniforms, name);
+ 
+       /* Each leaf uniform occupies one entry in the list of active
+        * uniforms.
+diff --git a/src/mesa/main/shaderobj.c b/src/mesa/main/shaderobj.c
+index 36f208d..d7fe8d7 100644
+--- a/src/mesa/main/shaderobj.c
++++ b/src/mesa/main/shaderobj.c
+@@ -277,7 +277,8 @@ _mesa_clear_shader_program_data(struct gl_context *ctx,
+                                 struct gl_shader_program *shProg)
+ {
+    if (shProg->UniformStorage) {
+-      _mesa_uniform_detach_all_driver_storage(shProg->UniformStorage);
++      for (unsigned i = 0; i < shProg->NumUserUniformStorage; ++i)
++         _mesa_uniform_detach_all_driver_storage(&shProg->UniformStorage[i]);
+       ralloc_free(shProg->UniformStorage);
+       shProg->NumUserUniformStorage = 0;
+       shProg->UniformStorage = NULL;
+diff --git a/src/mesa/program/hash_table.c b/src/mesa/program/hash_table.c
+index dc8563a..067c20b 100644
+--- a/src/mesa/program/hash_table.c
++++ b/src/mesa/program/hash_table.c
+@@ -149,7 +149,7 @@ hash_table_insert(struct hash_table *ht, void *data, const void *key)
+     insert_at_head(& ht->buckets[bucket], & node->link);
+ }
+ 
+-void
++int
+ hash_table_replace(struct hash_table *ht, void *data, const void *key)
+ {
+     const unsigned hash_value = (*ht->hash)(key);
+@@ -162,7 +162,7 @@ hash_table_replace(struct hash_table *ht, void *data, const void *key)
+ 
+        if ((*ht->compare)(hn->key, key) == 0) {
+ 	  hn->data = data;
+-	  return;
++	  return 1;
+        }
+     }
+ 
+@@ -172,6 +172,7 @@ hash_table_replace(struct hash_table *ht, void *data, const void *key)
+     hn->key = key;
+ 
+     insert_at_head(& ht->buckets[bucket], & hn->link);
++    return 0;
+ }
+ 
+ void
+diff --git a/src/mesa/program/hash_table.h b/src/mesa/program/hash_table.h
+index bcf65df..a14bf13 100644
+--- a/src/mesa/program/hash_table.h
++++ b/src/mesa/program/hash_table.h
+@@ -114,6 +114,10 @@ extern void hash_table_insert(struct hash_table *ht, void *data,
+ /**
+  * Add an element to a hash table with replacement
+  *
++ * \return
++ * 1 if it did replace the the value (in which case the old key is kept), 0 if
++ * it did not replace the value (in which case the new key is kept).
++ *
+  * \warning
+  * If \c key is already in the hash table, \c data will \b replace the most
+  * recently inserted \c data (see the warning in \c hash_table_insert) for
+@@ -121,7 +125,7 @@ extern void hash_table_insert(struct hash_table *ht, void *data,
+  *
+  * \sa hash_table_insert
+  */
+-extern void hash_table_replace(struct hash_table *ht, void *data,
++extern int hash_table_replace(struct hash_table *ht, void *data,
+     const void *key);
+ 
+ /**
+@@ -219,6 +223,7 @@ public:
+     */
+    void clear()
+    {
++      hash_table_call_foreach(this->ht, delete_key, NULL);
+       hash_table_clear(this->ht);
+    }
+ 
+@@ -258,9 +263,12 @@ public:
+        * because UINT_MAX+1 = 0.
+        */
+       assert(value != UINT_MAX);
+-      hash_table_replace(this->ht,
+-			 (void *) (intptr_t) (value + 1),
+-			 strdup(key));
++      char *dup_key = strdup(key);
++      int result = hash_table_replace(this->ht,
++				      (void *) (intptr_t) (value + 1),
++				      dup_key);
++      if (result)
++	 free(dup_key);
+    }
+ 
+ private:
