@@ -5,6 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 
 inherit cros-workon
+inherit python
 
 DESCRIPTION="Chrome OS Factory Tools and Data"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,19 +17,31 @@ IUSE=""
 
 DEPEND=""
 RDEPEND="!chromeos-base/chromeos-factorytools
-         dev-lang/python
-         >=chromeos-base/vpd-0.0.1-r11"
+	 dev-lang/python
+	 >=chromeos-base/vpd-0.0.1-r11"
 
 CROS_WORKON_LOCALNAME="factory"
 
+TARGET_DIR="/usr/local/factory"
+
+doexescript() {
+	local source="$1"
+	local command=$(basename "${source%.*}")
+	fperms 0755 ${TARGET_DIR}/$source
+	dosym ./${source} ${TARGET_DIR}/$command
+}
+
 src_install() {
-	insinto /usr/local/factory/bin
-	exeinto /usr/local/factory/bin
-	doexe gooftool *.sh *.py
-	doins *.png
-	# Install symlink files
-	doins edid hwid_tool
-	# TODO(hungte) Remove following legacy folders after we've changed all
-	# reference of gooftool into /usr/loca/factory/bin (ex, R20).
-	dosym factory/bin /usr/local/gooftool
+	insinto ${TARGET_DIR}/py
+	doins py/*
+	doexescript py/gooftool.py
+	doexescript py/hwid_tool.py
+	doexescript py/edid.py
+	exeinto ${TARGET_DIR}/sh
+	doexe sh/*
+	insinto ${TARGET_DIR}/misc
+	doins misc/*
+	insinto $(python_get_sitedir)/cros
+	doins py_pkg/cros/__init__.py
+	dosym ${TARGET_DIR}/py $(python_get_sitedir)/cros/factory
 }
