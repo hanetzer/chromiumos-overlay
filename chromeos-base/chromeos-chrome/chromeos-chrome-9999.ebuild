@@ -203,6 +203,7 @@ set_build_defines() {
 	BUILD_DEFINES+=(
 		swig_defines=-DOS_CHROMEOS
 		chromeos=1
+                use_ibus=1
 	)
 
 	if use pgo_generate ; then
