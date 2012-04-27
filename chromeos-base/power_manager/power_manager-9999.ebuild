@@ -72,8 +72,7 @@ src_test() {
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		TESTS="backlight file_tagger idle_dimmer plug_dimmer"
-		TESTS="$TESTS power_supply powerd resolution_selector"
+		TESTS="backlight file_tagger power_supply powerd resolution_selector"
 		TESTS="$TESTS state_control xidle";
 		for ut in ${TESTS}; do
 			"${S}/${ut}_unittest" \
