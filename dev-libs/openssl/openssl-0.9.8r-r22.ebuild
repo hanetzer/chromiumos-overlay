@@ -1,8 +1,8 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-0.9.8o.ebuild,v 1.6 2010/06/21 20:43:49 maekke Exp $
-CROS_WORKON_COMMIT="d21ee11b35a410dc687261bfc837822755e715ff"
-CROS_WORKON_TREE="dc2d98ce268538369eb15f18ffdb5c3bf26c0af7"
+CROS_WORKON_COMMIT="f0d9d5444631cf260a0913408deab348f19a89b9"
+CROS_WORKON_TREE="0ca828ea0c1387b6983ec0f66a3fbb0044356502"
 
 EAPI="2"
 
