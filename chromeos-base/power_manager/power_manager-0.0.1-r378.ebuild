@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="57d646057c8095b9d3cd41311e92c43da754c626"
-CROS_WORKON_TREE="eeeccb9f9217aaff6f591090eb52713ad7a3068c"
+CROS_WORKON_COMMIT="a612ad93202f643cb4a746758b76ffc25700e6ae"
+CROS_WORKON_TREE="0cd1861ebb86e8342233eb1571e9d5908652df70"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
@@ -74,8 +74,7 @@ src_test() {
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		TESTS="backlight file_tagger idle_dimmer plug_dimmer"
-		TESTS="$TESTS power_supply powerd resolution_selector"
+		TESTS="backlight file_tagger power_supply powerd resolution_selector"
 		TESTS="$TESTS state_control xidle";
 		for ut in ${TESTS}; do
 			"${S}/${ut}_unittest" \
