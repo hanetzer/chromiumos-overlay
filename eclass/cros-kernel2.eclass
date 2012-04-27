@@ -111,51 +111,6 @@ CONFIG_DEBUG_INFO=y
 # Add all config fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]}"
 
-
-# The following is used for constructing the FIT image if using device_tree.
-# TODO: Should this live elsewhere?  ...maybe directly in kernel source code?
-KERNEL_FDT_ITS='
-/dts-v1/;
-
-/ {
-	description = "Single Linux kernel and single FDT blob";
-	#address-cells = <1>;
-
-	images {
-		kernel@1 {
-			description = "ChromeOS ARM Linux kernel";
-			data = /incbin/("%BUILD_ROOT%/zImage");
-			type = "%KERNEL_TYPE%";
-			arch = "arm";
-			os = "linux";
-			compression = "none";
-			load = <%LOAD_ADDR%>;
-			entry = <%LOAD_ADDR%>;
-		};
-		fdt@1 {
-			description = "Board Flattened Device Tree blob";
-			data = /incbin/("%DEV_TREE%");
-			type = "flat_dt";
-			arch = "arm";
-			compression = "none";
-			hash@1 {
-				algo = "sha1";
-			};
-		};
-	};
-
-	configurations {
-		default = "conf@1";
-		conf@1 {
-			description = "The one and only";
-			kernel = "kernel@1";
-			fdt = "fdt@1";
-		};
-	};
-};
-'
-
-
 # @FUNCTION: install_kernel_sources
 # @DESCRIPTION:
 # Installs the kernel sources into ${D}/usr/src/${P} and fixes symlinks.
@@ -198,11 +153,76 @@ install_kernel_sources() {
 get_build_dir() {
 	echo "${S}/build/$(get_current_board_with_variant)"
 }
-get_bin_dtb() {
-	echo "$(get_build_dir)/device-tree.dtb"
-}
+
 get_build_cfg() {
 	echo "$(get_build_dir)/.config"
+}
+
+# @FUNCTION: emit_its_script
+# @USAGE: <output file> <device trees>
+# @DESCRIPTION:
+# Emits the its script used to build the u-boot fitImage kernel binary
+# that contains the kernel as well as device trees used when booting
+# it.
+
+emit_its_script() {
+	local iter=1
+	local its_out=${1}
+	shift
+	cat > "${its_out}" <<-EOF || die
+	/dts-v1/;
+
+	/ {
+		description = "Chrome OS kernel image with one or more FDT blobs";
+		#address-cells = <1>;
+
+		images {
+			kernel@1 {
+				data = /incbin/("${boot_dir}/zImage");
+				type = "$(get_kernel_type)";
+				arch = "arm";
+				os = "linux";
+				compression = "none";
+				load = <$(get_load_addr)>;
+				entry = <$(get_load_addr)>;
+			};
+	EOF
+
+	local dtb
+	for dtb in "$@" ; do
+		cat >> "${its_out}" <<-EOF || die
+			fdt@${iter} {
+				description = "$(basename ${dtb})";
+				data = /incbin/("${boot_dir}/${dtb}");
+				type = "flat_dt";
+				arch = "arm";
+				compression = "none";
+				hash@1 {
+					algo = "sha1";
+				};
+			};
+		EOF
+		((++iter))
+	done
+
+	cat <<-EOF >>"${its_script}"
+		};
+		configurations {
+			default = "conf@1";
+	EOF
+
+	local i
+	for i in $(seq 1 $((iter-1))) ; do
+		cat >> "${its_out}" <<-EOF || die
+			conf@${i} {
+				kernel = "kernel@1";
+				fdt = "fdt@${i}";
+			};
+		EOF
+	done
+
+	echo "	};" >> "${its_out}"
+	echo "};" >> "${its_out}"
 }
 
 kmake() {
@@ -278,7 +298,7 @@ cros-kernel2_src_configure() {
 	yes "" | kmake oldconfig
 }
 
-get_device_tree_base() {
+get_dtb_name() {
 	local board_with_variant=$(get_current_board_with_variant)
 
 	# Do a simple mapping for device trees whose names don't match
@@ -286,16 +306,19 @@ get_device_tree_base() {
 	# board_with_variant format.
 	case "${board_with_variant}" in
 		(tegra2_dev-board)
-			echo tegra-harmony
+			echo tegra-harmony.dtb
 			;;
 		(tegra2_seaboard)
-			echo tegra-seaboard
+			echo tegra-seaboard.dtb
 			;;
-		(daisy)
-			echo exynos5250-daisy
+		tegra*)
+			echo ${board_with_variant}.dtb
 			;;
 		*)
-			echo ${board_with_variant}
+			local f
+			for f in $(get_build_dir)/arch/arm/boot/*.dtb ; do
+			    basename ${f}
+			done
 			;;
 	esac
 }
@@ -336,9 +359,7 @@ cros-kernel2_src_compile() {
 	kmake -k ${build_targets}
 
 	if use device_tree; then
-		dtc -O dtb -p 500 -o "$(get_bin_dtb)" \
-			"arch/arm/boot/dts/$(get_device_tree_base).dts" \
-			|| die 'Device tree compilation failed'
+		kmake -k dtbs
 	fi
 }
 
@@ -355,12 +376,7 @@ cros-kernel2_src_install() {
 		local zimage_bin="${D}/boot/zImage-${version}"
 		if use device_tree; then
 			local its_script="$(get_build_dir)/its_script"
-			echo "${KERNEL_FDT_ITS}" | \
-			  sed -e "s|%BUILD_ROOT%|${boot_dir}|;\
-			          s|%DEV_TREE%|$(get_bin_dtb)|; \
-			          s|%KERNEL_TYPE%|$(get_kernel_type)|; \
-			          s|%LOAD_ADDR%|$(get_load_addr)|;" > \
-			  "${its_script}" || die
+			emit_its_script "${its_script}" $(get_dtb_name)
 			mkimage  -f "${its_script}" "${kernel_bin}" || die
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
