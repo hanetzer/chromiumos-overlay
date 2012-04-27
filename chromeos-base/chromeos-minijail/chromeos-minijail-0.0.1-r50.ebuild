@@ -43,6 +43,12 @@ src_test() {
 		./libminijail_unittest  || \
 		    die "unit tests failed!"
 	fi
+
+	emake syscall_filter_unittest || die "syscall_filter_unittest compile failed."
+	if use x86 || use amd64 ; then
+		./syscall_filter_unittest || \
+		    die "syscall filter unit tests failed!"
+	fi
 }
 
 src_install() {
