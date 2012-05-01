@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="ba2b3d82d5a528060cdf0f447d0e25b95d5d93e7"
-CROS_WORKON_TREE="f15ad236d25d889a9ab6a028eb190c266e57399e"
+CROS_WORKON_COMMIT="9a82ba03a563fd007b90be86b09f93e17267d93c"
+CROS_WORKON_TREE="4253a5f6d97f6b109c4be13e374f3617e6956012"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
@@ -45,7 +45,6 @@ src_install() {
 	dosbin debugd
 	dodir /debugd
 	exeinto /usr/libexec/debugd/helpers
-	doexe helpers/clock_monotonic
 	doexe helpers/modem_status
 	doexe "${S}"/src/helpers/systrace.sh
 	doexe helpers/network_status
