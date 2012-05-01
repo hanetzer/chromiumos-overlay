@@ -200,6 +200,8 @@ set_build_defines() {
 		"pkg-config=$(tc-getPKG_CONFIG)"
 	)
 
+	# use_ibus=1 is necessary for supporting i18n text input.
+	# Do not remove.
 	BUILD_DEFINES+=(
 		swig_defines=-DOS_CHROMEOS
 		chromeos=1
