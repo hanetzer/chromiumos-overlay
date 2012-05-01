@@ -64,9 +64,11 @@ src_test() {
 			# compiled differently). http://crosbug.com/27683
 			PATH="$SYSROOT/usr/bin:$PATH" \
 			"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' \
+                                && einfo "$test (fakeroot) succeeded" \
                                 || die "$test (fakeroot) failed, retval=$?"
 			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
 				"$test" --gtest_filter='*.RunAsRoot*' >& $T/log \
+                                && einfo "$test (root) succeeded" \
                                 || die "$test (root) failed, retval=$?"
 		done
 	fi
