@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="nfs"
 
 DEPEND=""
 # vpd for vpd-log.conf of upstart
@@ -62,4 +62,13 @@ src_install() {
 
 	# Some daemons and utilities access the mounts through /etc/mtab.
 	dosym /proc/mounts /etc/mtab || die
+
+	if use nfs; then
+		# With USE=nfs we remove the iptables rules to allow mounting
+		# of the root device.
+		rm "${D}/etc/init/iptables.conf" || die
+		rm "${D}/etc/init/ip6tables.conf" || die
+		# If nfs mounted use a tmpfs stateful partition like factory
+		sed -i 's/ext4/tmpfs/' "${D}/sbin/chromeos_startup" || die
+	fi
 }
