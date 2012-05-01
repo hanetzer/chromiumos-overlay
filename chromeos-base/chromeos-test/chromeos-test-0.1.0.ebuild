@@ -51,6 +51,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pyudev
 	dev-python/pyyaml
 	dev-util/dbus-spy
+	games-util/joystick
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
 	media-libs/opencv
