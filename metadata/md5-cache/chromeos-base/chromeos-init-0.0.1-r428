@@ -1,11 +1,12 @@
-DEFINED_PHASES=compile info install unpack
+DEFINED_PHASES=info install prepare unpack
 DEPEND=>=dev-vcs/git-1.6
-DESCRIPTION=Chrome OS EC Utility
-EAPI=4
+DESCRIPTION=Upstart init scripts for Chromium OS
+EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_348fe40f876cdbe7c0da51922de5fbf5ac6ccb09
+IUSE=nfs cros_workon_tree_67b30e314dc1cf4df3664aa296fb6e9ff550eabb
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
+RDEPEND=chromeos-base/audioconfig-board chromeos-base/vboot_reference chromeos-base/vpd net-firewall/iptables[ipv6] sys-apps/smartmontools sys-apps/upstart
 SLOT=0
 _eclasses_=cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=0bb32aed0b8a8288b6cc78b5633a5d59
+_md5_=7789770b205bf48686491f36c0f19134
