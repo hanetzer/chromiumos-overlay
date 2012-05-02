@@ -51,9 +51,9 @@ sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 sys-apps/busybox	-pam -selinux
 sys-apps/dbus		-X
 sys-apps/iproute2	ipv6
-sys-apps/parted         device-mapper
 sys-auth/consolekit	policykit
 sys-auth/polkit         -introspection
+sys-block/parted        device-mapper
 sys-fs/lvm2		-lvm1 -readline -static
 sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
 sys-fs/udev		-devfs-compat -rule_generator hwdb acl gudev

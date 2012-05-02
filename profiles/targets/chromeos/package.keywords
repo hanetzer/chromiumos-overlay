@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 =app-admin/rsyslog-3.22.1	amd64 arm x86
@@ -69,7 +69,6 @@
 =sys-apps/keyutils-1.1  amd64 arm x86
 =sys-apps/net-tools-1.60_p20090728014017-r1   amd64 arm x86
 =sys-apps/openrc-0.4.3-r4	amd64 arm x86
-=sys-apps/parted-1.9.0		amd64 arm x86
 =sys-apps/rescan-scsi-bus-1.29  amd64 arm x86
 =sys-apps/sg3_utils-1.27.20090411	amd64 arm x86
 =sys-apps/smartmontools-5.38    amd64 arm x86
