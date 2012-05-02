@@ -1,5 +1,5 @@
-CROS_WORKON_COMMIT="ea2e35aa7f2e223b63c55e7051e7dc6323a695cb"
-CROS_WORKON_TREE="9ff9bad50c74758889c95f75b1ec59f8ab874b84"
+CROS_WORKON_COMMIT="0cbb9656ffd38194eaeb2238534243c02ee343fc"
+CROS_WORKON_TREE="f629db418516c30b0a6e2455d83dc80b860aa680"
 
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
