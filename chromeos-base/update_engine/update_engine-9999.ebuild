@@ -67,7 +67,7 @@ src_test() {
                                 && einfo "$test (fakeroot) succeeded" \
                                 || die "$test (fakeroot) failed, retval=$?"
 			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
-				"$test" --gtest_filter='*.RunAsRoot*' >& $T/log \
+				"$test" --gtest_filter='*.RunAsRoot*' \
                                 && einfo "$test (root) succeeded" \
                                 || die "$test (root) failed, retval=$?"
 		done
