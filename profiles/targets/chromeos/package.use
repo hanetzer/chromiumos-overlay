@@ -61,5 +61,4 @@ sys-fs/squashfs         lzo
 sys-libs/gdbm		-berkdb
 sys-libs/ncurses	minimal
 sys-libs/pam        -berkdb
-sys-power/upower        -introspection
 x11-apps/xinit          minimal

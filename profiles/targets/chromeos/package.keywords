@@ -63,9 +63,6 @@
 =sys-apps/baselayout-2.0.1	amd64 arm x86
 =sys-apps/busybox-1.15.3	amd64 arm x86
 =sys-apps/dbus-1.2.20-r4	amd64 arm x86
-=sys-apps/devicekit-003		amd64 arm x86
-=sys-apps/devicekit-disks-009-r2 amd64 arm x86
-=sys-apps/devicekit-power-009-r3 amd64 arm x86
 =sys-apps/fakeroot-1.12.4        amd64 arm x86
 =sys-apps/flashrom-0.9.1	amd64 x86
 =sys-apps/i2c-tools-3.0.2       amd64 arm x86
