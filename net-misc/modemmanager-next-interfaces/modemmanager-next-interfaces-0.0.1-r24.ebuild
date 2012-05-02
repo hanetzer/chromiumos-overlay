@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="f7099bfaf93a005de8609c2b983f239981252b52"
-CROS_WORKON_TREE="b2aea246e765fd3808838ba8c93334753b8e44cf"
+CROS_WORKON_COMMIT="24291f39cb5b13144d3fefb32b525b10db494f5c"
+CROS_WORKON_TREE="bbfbd8f1448e04ce0026cb0d6485fbb98b7000ba"
 
 # Install the XML interface files for modemmanager-next.  Not part of
 # the regular modemmanager-next build because we need these headers
