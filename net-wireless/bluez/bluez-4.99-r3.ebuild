@@ -99,6 +99,12 @@ src_prepare() {
 	# so kept as a separate patch on top of the above series.
 	epatch "${FILESDIR}/${PN}-autopair.patch"
 
+	# Playstation3 Controller pairing plugin, retrieved from
+	# linux-bluetooth mailing list (posted 2012-04-18).
+	epatch "${FILESDIR}/${P}-ps3-0001.patch"
+	epatch "${FILESDIR}/${P}-ps3-0002.patch"
+	epatch "${FILESDIR}/${P}-ps3-0003.patch"
+
 	eautoreconf
 
 	if use cups; then
@@ -137,7 +143,8 @@ src_configure() {
 		--enable-health \
 		--enable-wiimote \
 		--enable-dbusoob \
-		--enable-autopair
+		--enable-autopair \
+		--enable-playstation_peripheral
 }
 
 src_install() {
@@ -171,6 +178,9 @@ src_install() {
 
 	insinto /etc/init
 	newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
+
+	insinto /lib/udev/rules.d
+	newins "${FILESDIR}/${PN}-ps3-gamepad.rules" "99-ps3-gamepad.rules"
 
 	# Install oui.txt as requested in bug #283791 and approved by upstream
 	insinto /usr/share/misc
