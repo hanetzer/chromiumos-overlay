@@ -98,7 +98,9 @@ src_install() {
 	dobin "${S}/xidle-example"
 	insinto "/usr/share/power_manager"
 	for item in ${S}/config/*; do
-		doins ${item}
+		if [ $(basename "${item}") != "PRESUBMIT.cfg" ]; then
+			doins "${item}"
+		fi
 	done
 	insinto "/etc/dbus-1/system.d"
 	doins "${S}/org.chromium.PowerManager.conf"
