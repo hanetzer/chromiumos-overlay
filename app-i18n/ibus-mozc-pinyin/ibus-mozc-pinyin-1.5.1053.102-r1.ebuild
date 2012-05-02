@@ -37,8 +37,11 @@ src_prepare() {
 	# ChromeOS
 	epatch "${FILESDIR}"/ibus-mozc-pinyin-introduces-typo-for-compatibility.patch
 	epatch "${FILESDIR}"/ibus-mozc-pinyin-replace-ibus-pinyin.patch
-	# Fixes the performance issue. crosbug.com/30044
+	# Fixes a performance issue. crosbug.com/30044
 	epatch "${FILESDIR}"/${P}-skip-counting-candidates.patch
+	# Fixes a toggling quote issue. crosbug.com/30362
+	# This patch depends on "${P}-skip-counting-candidates.patch".
+	epatch "${FILESDIR}"/${P}-toggling-quote-and-half-width-dot.patch
 }
 
 src_compile() {
