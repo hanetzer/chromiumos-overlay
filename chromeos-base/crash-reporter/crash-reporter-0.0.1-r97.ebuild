@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="b29c964a039e6d819d750ff7a6b322fae96aa188"
-CROS_WORKON_TREE="661e1b2e723a7df330431579c1c9f62c9dfa6ef0"
+CROS_WORKON_COMMIT="e60bbed4fcf62834f247c5910743e1677ff6c656"
+CROS_WORKON_TREE="3eb87abffa7a9e3d9113b566766fe13a5193c2fa"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
