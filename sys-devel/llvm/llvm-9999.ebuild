@@ -96,8 +96,11 @@ src_prepare() {
 	python_convert_shebangs -r 2 test/Scripts
 
 	epatch "${FILESDIR}"/${PN}-2.6-commandguide-nops.patch
-	epatch "${FILESDIR}"/${PN}-2.9-nodoctargz.patch
+	epatch "${FILESDIR}"/${PN}-3.2-nodoctargz.patch
 	epatch "${FILESDIR}"/${PN}-3.0-PPC_macro.patch
+
+	# User patches
+	epatch_user
 }
 
 src_configure() {
@@ -151,9 +154,11 @@ src_install() {
 
 	# Fix install_names on Darwin.  The build system is too complicated
 	# to just fix this, so we correct it post-install
-	local lib= f= odylib=
+	local lib= f= odylib= libpv=${PV}
 	if [[ ${CHOST} == *-darwin* ]] ; then
-		for lib in lib{EnhancedDisassembly,LLVM-${PV},LTO,profile_rt}.dylib {BugpointPasses,LLVMHello}.dylib ; do
+		eval $(grep PACKAGE_VERSION= configure)
+		[[ -n ${PACKAGE_VERSION} ]] && libpv=${PACKAGE_VERSION}
+		for lib in lib{EnhancedDisassembly,LLVM-${libpv},LTO,profile_rt}.dylib {BugpointPasses,LLVMHello}.dylib ; do
 			# libEnhancedDisassembly is Darwin10 only, so non-fatal
 			[[ -f ${ED}/usr/lib/${PN}/${lib} ]] || continue
 			ebegin "fixing install_name of $lib"
@@ -163,11 +168,11 @@ src_install() {
 			eend $?
 		done
 		for f in "${ED}"/usr/bin/* "${ED}"/usr/lib/${PN}/libLTO.dylib ; do
-			odylib=$(scanmacho -BF'%n#f' "${f}" | tr ',' '\n' | grep libLLVM-${PV}.dylib)
+			odylib=$(scanmacho -BF'%n#f' "${f}" | tr ',' '\n' | grep libLLVM-${libpv}.dylib)
 			ebegin "fixing install_name reference to ${odylib} of ${f##*/}"
 			install_name_tool \
 				-change "${odylib}" \
-					"${EPREFIX}"/usr/lib/${PN}/libLLVM-${PV}.dylib \
+					"${EPREFIX}"/usr/lib/${PN}/libLLVM-${libpv}.dylib \
 				"${f}"
 			eend $?
 		done
