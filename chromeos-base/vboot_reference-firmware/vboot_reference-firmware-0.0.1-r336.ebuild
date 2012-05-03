@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="81f704edad78f03deed5ef899a55e9d0c28dd16c"
-CROS_WORKON_TREE="95044244ca6cc032a811435633493065522e16bd"
+CROS_WORKON_COMMIT="23429d3d782f7506fb4747356974294cce08ac47"
+CROS_WORKON_TREE="2c98d253f97d92b3c48ea3d87d4375e64f8ea4cd"
 
 inherit cros-debug cros-workon toolchain-funcs
 
