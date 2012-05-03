@@ -177,7 +177,7 @@ PATCHES=()
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
-AUTOTEST_DEPS_LIST="chrome_test pyauto_dep"
+AUTOTEST_DEPS_LIST="chrome_test pyauto_dep page_cycler_dep"
 
 IUSE="${IUSE} +autotest"
 
@@ -764,6 +764,7 @@ src_compile() {
 	if use build_tests; then
 		install_chrome_test_resources "${WORKDIR}/test_src"
 		install_pyauto_dep_resources "${WORKDIR}/pyauto_src"
+		install_page_cycler_dep_resources "${WORKDIR}/page_cycler_src"
 
 		# NOTE: Since chrome is built inside distfiles, we have to get
 		# rid of the previous instance first.
@@ -775,6 +776,9 @@ src_compile() {
 
 		rm -rf "${deps}/pyauto_dep/test_src"
 		mv "${WORKDIR}/pyauto_src" "${deps}/pyauto_dep/test_src"
+
+		rm -rf "${deps}/page_cycler_dep/test_src"
+		mv "${WORKDIR}/page_cycler_src" "${deps}/page_cycler_dep/test_src"
 
 		# HACK: It would make more sense to call autotest_src_prepare in
 		# src_prepare, but we need to call install_chrome_test_resources first.
@@ -925,6 +929,18 @@ install_pyauto_dep_resources() {
 		third_party/simplejson \
 		third_party/tlslite \
 		third_party/webdriver
+}
+
+install_page_cycler_dep_resources() {
+	local from="${CHROME_CACHE_DIR}/src/data/page_cycler"
+	local test_dir="${1}"
+
+	if [ -r "${from}" ]; then
+		echo "Copying Page Cycler Data into ${test_dir}"
+		mkdir -p "${test_dir}"
+		install_test_resources "${test_dir}" \
+			data/page_cycler
+	fi
 }
 
 src_install() {
