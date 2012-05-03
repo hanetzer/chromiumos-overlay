@@ -988,6 +988,9 @@ src_install() {
 	if [ -f "${FROM}"/theme_resources_standard.pak ] ; then
 		doins "${FROM}"/theme_resources_standard.pak
 	fi
+	if [ -f "${FROM}"/theme_resources_touch_1x.pak ] ; then
+		doins "${FROM}"/theme_resources_touch_1x.pak:
+	fi
 	if [ -f "${FROM}"/ui_resources_standard.pak ] ; then
 		doins "${FROM}"/ui_resources_standard.pak
 	fi
