@@ -8,7 +8,7 @@ inherit java-vm-2
 
 dist="mirror://gentoo/"
 DESCRIPTION="A Gentoo-made binary build of the icedtea6 JDK"
-TARBALL_VERSION="${PVR}"
+TARBALL_VERSION="${PV}-r2"
 SRC_URI="amd64? ( ${dist}/${PN}-core-${TARBALL_VERSION}-amd64.tar.bz2 )
 	x86? ( ${dist}/${PN}-core-${TARBALL_VERSION}-x86.tar.bz2 )
 	doc? ( ${dist}/${PN}-doc-${TARBALL_VERSION}.tar.bz2 )
