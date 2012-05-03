@@ -12,7 +12,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="aura opengl opengles"
+IUSE="opengl opengles"
 DEPEND="dev-libs/nss
 	media-libs/fontconfig
 	opengl? ( media-libs/glew )
@@ -36,19 +36,6 @@ src_prepare() {
 		GYP_DEFINES="target_arch=ia32";
 	elif use arm; then
 		GYP_DEFINES="target_arch=arm"
-		if use aura; then
-			# Only explicitly set renderer to GLES2 on ARM for non-Aura.
-			# Aura requires PPAPI, which handles setting of renderer-related
-			# items in the gyp files themselves.
-			GYP_DEFINES="$GYP_DEFINES"
-		else
-			GYP_DEFINES="$GYP_DEFINES renderer=gles2"
-			if use opengles; then
-				GYP_DEFINES="$GYP_DEFINES gles2_backend=native_gles2"
-			else
-				GYP_DEFINES="$GYP_DEFINES gles2_backend=desktop_gl"
-			fi
-		fi
 	elif use amd64; then
 		GYP_DEFINES="target_arch=x64"
 	else
@@ -57,10 +44,13 @@ src_prepare() {
 	if [[ -n "${ROOT}" && "${ROOT}" != "/" ]]; then
 		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
 	fi
-	if use aura; then
-		GYP_DEFINES="$GYP_DEFINES plugin_interface=ppapi p2p_apis=0 os_posix=1"
-	fi
-	export GYP_DEFINES="$GYP_DEFINES chromeos=1 $BUILD_DEFINES"
+	export GYP_DEFINES="$GYP_DEFINES chromeos=1 plugin_interface=ppapi p2p_apis=0 os_posix=1 $BUILD_DEFINES"
+	# ebuild uses emake, ensure GYP creates Makefiles (and not .ninja)
+	# and we don't have external environment variables leak in
+	export GYP_GENERATORS=make
+	unset GYP_GENERATOR_FLAGS
+	unset BUILD_OUT
+	unset builddir_name
 
 	${EGCLIENT} runhooks || die
 }
@@ -70,38 +60,16 @@ src_compile() {
 	append-cxxflags $(test-flags-CC -Wno-error=unused-but-set-variable)
 	tc-export AR AS LD NM RANLIB CC CXX STRIP
 
-	if use aura; then
-		emake BUILDTYPE=Release ppo3dautoplugin || die
-	else
-		emake BUILDTYPE=Release npo3dautoplugin || die
-	fi
+	emake BUILDTYPE=Release ppo3dautoplugin || die
 }
 
 src_install() {
 	local destdir=/opt/google/o3d
-	local chromepluginsdir=/opt/google/chrome/plugins
 	local chromepepperdir=/opt/google/chrome/pepper
 
 	dodir ${destdir}
 	exeinto ${destdir}
-	if use aura; then
-		doexe out/Release/libppo3dautoplugin.so || die
-		dodir ${chromepepperdir}
-		dosym ${destdir}/libppo3dautoplugin.so ${chromepepperdir}/ || die
-	else
-		doexe out/Release/libnpo3dautoplugin.so || die
-		dodir ${chromepluginsdir}
-		dosym ${destdir}/libnpo3dautoplugin.so ${chromepluginsdir}/ || die
-		if use amd64 || use x86; then
-			dodir ${destdir}/lib
-			exeinto ${destdir}/lib
-			doexe out/Release/libCg{,GL}.so || die
-		elif use arm; then
-			# Only O2D currently works on ARM, so we include an envvars
-			# file that forces O2D mode.
-			insinto ${destdir}
-			newins "${FILESDIR}"/envvars.arm envvars || die
-		fi
-	fi
-
+	doexe out/Release/libppo3dautoplugin.so || die
+	dodir ${chromepepperdir}
+	dosym ${destdir}/libppo3dautoplugin.so ${chromepepperdir}/ || die
 }
