@@ -198,6 +198,7 @@ set_build_defines() {
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
+		"use_xi2_mt=2"
 	)
 
 	# use_ibus=1 is necessary for supporting i18n text input.
@@ -239,10 +240,6 @@ set_build_defines() {
 		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
 	else
 		die "Unsupported architecture: ${ARCH}"
-	fi
-
-	if [ "$ARCH" != "arm" ]; then
-		BUILD_DEFINES+=( use_xi2_mt=2 )
 	fi
 
 	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
