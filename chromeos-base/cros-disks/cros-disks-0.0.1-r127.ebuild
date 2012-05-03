@@ -1,8 +1,8 @@
 # Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
-CROS_WORKON_COMMIT="26becabc9090a4539d02dd5770839499cd2e4217"
-CROS_WORKON_TREE="ee3ee9c725c222badca1cb1760e49288de2eeb66"
+CROS_WORKON_COMMIT="bc08e7bfb1234c46e40fb66b0c9bf9e1147450b9"
+CROS_WORKON_TREE="9919a2de6dd6ce04715481b5e00152c7eff55939"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
