@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="e5333c55dbd572b3b76a345d5e38b7083c1430e0"
-CROS_WORKON_TREE="1932fd45767f63a10a49953cb09d172c37438b81"
+CROS_WORKON_COMMIT="f3ebe3d321f07decc2daf90263d4dbf4b6e5e275"
+CROS_WORKON_TREE="0b0b1f77cb4476e26dd6731f6acbc4c3bb2bfff9"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"

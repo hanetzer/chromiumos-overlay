@@ -3,10 +3,10 @@ DEPEND=chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos dev
 DESCRIPTION=Chrome OS Metrics Collection Utilities
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros-debug cros_workon_tree_1932fd45767f63a10a49953cb09d172c37438b81
+IUSE=cros-debug cros_workon_tree_0b0b1f77cb4476e26dd6731f6acbc4c3bb2bfff9
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos dev-cpp/gflags dev-libs/dbus-glib >=dev-libs/glib-2.0 sys-apps/dbus sys-apps/rootdev
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=a5a5dfdb4521dbb6efb7764c032415e8
+_md5_=4700fc9afb58acbf0d7a7b357bec2a32
