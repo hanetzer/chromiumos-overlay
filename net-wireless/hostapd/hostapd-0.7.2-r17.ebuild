@@ -1,8 +1,8 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/hostapd/hostapd-0.7.1.ebuild,v 1.1 2010/01/24 20:49:34 gurligebis Exp $
-CROS_WORKON_COMMIT="4ac8e448afe2ad60c1dbf93d7a2bfa3a6f7a1001"
-CROS_WORKON_TREE="59db94a3e5c2dc1de6dd4dc5b74883a896613d45"
+CROS_WORKON_COMMIT="d09bc5c5a7a664d8882427dc37f5e4813e9f1936"
+CROS_WORKON_TREE="18e62de10f34ed2ffbf582b182e04ed619e63cc7"
 
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
