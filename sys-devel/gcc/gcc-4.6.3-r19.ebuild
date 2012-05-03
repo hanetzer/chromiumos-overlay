@@ -1,8 +1,8 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
-CROS_WORKON_COMMIT="f75c13d848cb530bb66fbdebe7da01dc277dcc7a"
-CROS_WORKON_TREE="acd7c2ef215cb3d4de5fca6cabc0c1384fd09a60"
+CROS_WORKON_COMMIT="e1e64e913527a31c5dea669ed2d218999f28f16e"
+CROS_WORKON_TREE="6b09c5705ae07496d12c83ed112b1471e3298f49"
 
 EAPI=1
 CROS_WORKON_LOCALNAME=gcc
