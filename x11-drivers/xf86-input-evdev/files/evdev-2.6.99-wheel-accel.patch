@@ -16,7 +16,7 @@ index 745a1ba..72a2162 100644
 +
  #endif
 diff --git a/src/evdev.c b/src/evdev.c
-index 9f3a22a..2976783 100644
+index 9f3a22a..d775de4 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -93,6 +93,12 @@
@@ -41,7 +41,7 @@ index 9f3a22a..2976783 100644
  
  /* All devices the evdev driver has allocated and knows about.
   * MAXDEVICES is safe as null-terminated array, as two devices (VCP and VCK)
-@@ -669,6 +677,84 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -669,6 +677,110 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
          EvdevQueueKbdEvent(pInfo, ev, value);
  }
  
@@ -64,18 +64,43 @@ index 9f3a22a..2976783 100644
 +}
 +
 +/**
++ * Normal CDF seems like a good curve to simulate scroll wheel acceleration
++ * curve. Use following methods to generate the coefficients of a degree-4
++ * polynomial regression for a specific normal cdf in matlab.
++ *
++ * Note: x for click_speed, y for scroll pixels.
++ * In reality, x ranges from 1 to 120+ for an Apple Mighty Mouse, use range
++ * greater than that to minimize approximation error at the end points.
++ * In our case, the range is [-50, 200].
++ *
++ * matlab code to generate accel_params below:
++ * x=[-50:200];
++ * y=300*normcdf(x,120,60);
++ * a=polyfit(x,y,4);
++ */
++static double accel_params[] = {
++    -0.000000252977550,
++    0.000049601916510,
++    0.005539772199555,
++    0.246492103384611,
++    6.283184444592136
++};
++
++/**
 + * Get the number of pixels to scroll, used for axes_scroll.
 + */
 +static int
-+EvdevGetPixelsToScroll(float click_speed)
++EvdevGetPixelsToScroll(double click_speed)
 +{
-+    for (int i = 1; i < ArrayLength(steps); i++)
-+        if (click_speed <= steps[i])
-+            return ceil(bounds[i - 1] + slopes[i - 1] *
-+                        (click_speed - steps[i - 1]));
-+
-+    return ceil(bounds[ArrayLength(steps) - 1] + slopes[ArrayLength(steps) - 1]
-+                * (click_speed - steps[ArrayLength(steps) - 1]));
++    double pixels = 0;
++    double term = 1;
++    int i;
++    for (i = 1; i <= ArrayLength(accel_params); i++)
++    {
++        pixels += term * accel_params[ArrayLength(accel_params) - i];
++        term *= click_speed;
++    }
++    return ceil(pixels);
 +}
 +
 +/* In Chrome, number of pixels per button scroll is 53. */
@@ -103,7 +128,8 @@ index 9f3a22a..2976783 100644
 +        return;
 +    }
 +    click_speed = dt == 0 ? 1 : 1/dt;
-+    pixels = value * EvdevGetPixelsToScroll(click_speed);
++    pixels = EvdevGetPixelsToScroll(click_speed);
++    pixels = value > 0 ? pixels : pixels * -1;
 +    if (pEvdev->wheelAccelRec.scroll_axes)
 +    {
 +        start = (unsigned long long)(1000.0L * start_time) & 0x0FFFFFFFFLL;
@@ -126,7 +152,7 @@ index 9f3a22a..2976783 100644
  /**
   * Take the relative motion input event and process it accordingly.
   */
-@@ -678,27 +764,50 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -678,27 +790,50 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
      int value;
      EvdevPtr pEvdev = pInfo->private;
      int map;
@@ -183,7 +209,7 @@ index 9f3a22a..2976783 100644
  #endif
          default:
              /* Ignore EV_REL events if we never set up for them. */
-@@ -1434,6 +1543,8 @@ out:
+@@ -1434,6 +1569,8 @@ out:
      return !Success;
  }
  
@@ -192,7 +218,7 @@ index 9f3a22a..2976783 100644
  static int
  EvdevAddRelValuatorClass(DeviceIntPtr device)
  {
-@@ -1453,12 +1564,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1453,12 +1590,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  
  #ifndef HAVE_SMOOTH_SCROLLING
@@ -206,7 +232,7 @@ index 9f3a22a..2976783 100644
      if (EvdevBitIsSet(pEvdev->rel_bitmask, REL_DIAL))
          num_axes--;
  
-@@ -1471,6 +1577,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1471,6 +1603,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          num_axes = MAX_VALUATORS;
      }
  
@@ -214,7 +240,7 @@ index 9f3a22a..2976783 100644
      pEvdev->num_vals = num_axes;
      if (num_axes > 0) {
          pEvdev->vals = valuator_mask_new(num_axes);
-@@ -1484,10 +1591,12 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1484,10 +1617,12 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          pEvdev->axis_map[axis] = -1;
  #ifndef HAVE_SMOOTH_SCROLLING
          /* We don't post wheel events, so ignore them here too */
@@ -229,7 +255,7 @@ index 9f3a22a..2976783 100644
              continue;
          pEvdev->axis_map[axis] = i;
          i++;
-@@ -2508,6 +2617,8 @@ static char* rel_labels[] = {
+@@ -2508,6 +2643,8 @@ static char* rel_labels[] = {
      AXIS_LABEL_PROP_REL_HWHEEL,
      AXIS_LABEL_PROP_REL_DIAL,
      AXIS_LABEL_PROP_REL_WHEEL,
@@ -238,7 +264,7 @@ index 9f3a22a..2976783 100644
      AXIS_LABEL_PROP_REL_MISC
  };
  
-@@ -2619,10 +2730,10 @@ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int natoms, Atom *atoms)
+@@ -2619,10 +2756,10 @@ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int natoms, Atom *atoms)
              continue;
  
          atom = XIGetKnownProperty(labels[axis]);
@@ -253,7 +279,7 @@ index 9f3a22a..2976783 100644
      }
  }
  
-@@ -2716,6 +2827,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2716,6 +2853,7 @@ EvdevInitProperty(DeviceIntPtr dev)
      if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
      {
          BOOL invert[2];
@@ -261,7 +287,7 @@ index 9f3a22a..2976783 100644
          invert[0] = pEvdev->invert_x;
          invert[1] = pEvdev->invert_y;
  
-@@ -2762,6 +2874,27 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2762,6 +2900,27 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
@@ -289,7 +315,7 @@ index 9f3a22a..2976783 100644
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -2819,6 +2952,20 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -2819,6 +2978,20 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
