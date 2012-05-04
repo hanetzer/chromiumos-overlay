@@ -31,6 +31,7 @@ CONFIG_FRAGMENTS=(
 	initramfs
 	nfs
 	pcserial
+	realtekpstor
 	systemtap
 )
 
@@ -100,6 +101,11 @@ CONFIG_SERIAL_8250_PCI=y
 CONFIG_PARPORT=y
 CONFIG_PARPORT_PC=y
 CONFIG_PARPORT_SERIAL=y
+"
+
+realtekpstor_desc="Realtek PCI card reader"
+realtekpstor_config="
+CONFIG_RTS_PSTOR=m
 "
 
 systemtap_desc="systemtap support"
