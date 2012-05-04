@@ -58,8 +58,8 @@ RDEPEND="$COMMON_DEPEND
 	net-wireless/iw
 	sys-apps/flashrom
 	sys-apps/net-tools
-	sys-apps/parted
 	sys-apps/upstart
+	sys-block/parted
 	sys-fs/e2fsprogs"
 
 CROS_WORKON_LOCALNAME="factory_installer"

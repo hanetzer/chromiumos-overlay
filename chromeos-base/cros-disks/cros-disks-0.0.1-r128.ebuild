@@ -28,9 +28,9 @@ RDEPEND="
 	dev-cpp/gflags
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
-	sys-apps/parted
 	sys-apps/rootdev
 	sys-apps/util-linux
+	sys-block/parted
 	sys-fs/avfs
 	sys-fs/ntfs3g
 	sys-fs/udev
