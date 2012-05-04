@@ -36,7 +36,6 @@ IUSE_TESTS=(
 	+tests_desktopui_PyAutoInstall
 	+tests_desktopui_PyAutoPerfTests
 	+tests_desktopui_SyncIntegrationTests
-	+tests_desktopui_UITest
 
 	# Inherits from enterprise_ui_test.
 	+tests_desktopui_EnterprisePolicy
