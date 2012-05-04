@@ -733,8 +733,6 @@ src_compile() {
 
 	if use build_tests; then
 		TEST_TARGETS=("${TEST_FILES[@]}"
-			performance_ui_tests
-			ui_tests
 			pyautolib
 			chromedriver
 			browser_tests
@@ -824,9 +822,8 @@ install_chrome_test_resources() {
 	# info on the tests can use the original unstripped tests from the ${from}
 	# directory.
 	for f in libppapi_tests.so browser_tests \
-			 ui_tests sync_integration_tests \
-			 omx_video_decode_accelerator_unittest \
-			 performance_ui_tests; do
+			 sync_integration_tests \
+			 omx_video_decode_accelerator_unittest; do
 		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
 			-o "${test_dir}/out/Release/$(basename ${f})"
 	done
@@ -984,9 +981,12 @@ src_install() {
 	doins -r "${FROM}"/extensions
 	doins "${FROM}"/resources.pak
 	# TODO(sail): Remove these if statements when these .pak files are no longer
-	# optional.
+	# optional (http://crosbug.com/30473).
 	if [ -f "${FROM}"/theme_resources_standard.pak ] ; then
 		doins "${FROM}"/theme_resources_standard.pak
+	fi
+	if [ -f "${FROM}"/theme_resources_touch_1x.pak ] ; then
+		doins "${FROM}"/theme_resources_touch_1x.pak
 	fi
 	if [ -f "${FROM}"/ui_resources_standard.pak ] ; then
 		doins "${FROM}"/ui_resources_standard.pak
@@ -995,7 +995,7 @@ src_install() {
 		doins "${FROM}"/ui_resources_touch.pak
 	fi
 	if [ -f "${FROM}"/theme_resources_2x.pak ] ; then
-		doins "${FROM}"/theme_resources_2x.pak:
+		doins "${FROM}"/theme_resources_2x.pak
 	fi
 	if [ -f "${FROM}"/ui_resources_2x.pak ] ; then
 		doins "${FROM}"/ui_resources_2x.pak
