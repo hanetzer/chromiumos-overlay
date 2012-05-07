@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootimage +localssh X bootchart opengles"
+IUSE="bluetooth bootimage cros_ec +localssh X bootchart opengles"
 
 
 ################################################################################
@@ -248,6 +248,7 @@ RDEPEND="${RDEPEND}
 # testing/compilation sanity check purposes.
 DEPEND="${RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
+	cros_ec? ( chromeos-base/chromeos-ec )
 "
 
 qemu_run() {
