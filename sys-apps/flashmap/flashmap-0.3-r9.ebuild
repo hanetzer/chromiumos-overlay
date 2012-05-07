@@ -1,8 +1,8 @@
 # Copyright 2011 The Chromium OS Authors
 # Distributed under the terms of the GNU General Public License v2
 # $Header:
-CROS_WORKON_COMMIT="045b63af99f70a1c56a56e20e37f4d4b2a2f7eda"
-CROS_WORKON_TREE="50373bbdb7a54c2e430772cbdb59c21db0cf6d4f"
+CROS_WORKON_COMMIT="fa5c49ea40c44f6322ee9860c0a06df73a8562e1"
+CROS_WORKON_TREE="e581823802f8d3adafbbe03ff0f17cc1476697fa"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashmap"
