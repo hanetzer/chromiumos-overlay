@@ -33,32 +33,33 @@ src_install() {
 	dosym /build /var/lib/devserver/static/pkgroot
 	dosym /var/lib/devserver/static /usr/lib/devserver/static
 
-	exeinto /usr/bin
-	insinto /usr/bin
-
 	if ! use cros_host; then
-		doexe gmerge stateful_update
+		dobin gmerge stateful_update
 	else
-		pushd host >/dev/null
-		doexe \
-			cros_overlay_list \
-			cros_workon \
-			cros_chrome_make \
-			cros_workon_make \
-			cros_choose_profile \
-			cros_sign_bootstub \
-			cros_bundle_firmware \
-			cros_write_firmware \
-			dump_i2c \
-			dump_tpm \
-			gdb_x86_local \
-			gdb_remote \
-			willis \
-			ssh_no_update \
-			cros_{start,stop}_vm \
-			image_to_live.sh \
+		local host_tools
+		host_tools=(
+			cros_bundle_firmware
+			cros_choose_profile
+			cros_chrome_make
+			cros_fetch_image
+			cros_overlay_list
+			cros_sign_bootstub
+			cros_start_vm
+			cros_stop_vm
+			cros_workon
+			cros_workon_make
+			cros_write_firmware
+			dump_i2c
+			dump_tpm
+			gdb_remote
+			gdb_x86_local
 			gmergefs
-		popd >/dev/null
+			image_to_live.sh
+			ssh_no_update
+			willis
+		)
+
+		dobin "${host_tools[@]/#/host/}"
 
 		# Payload generation scripts.
 		dobin host/cros_generate_update_payload
@@ -72,6 +73,9 @@ src_install() {
 
 		insinto "$(python_get_sitedir)"
 		doins host/lib/*.py
+
+		insinto "/usr/lib/crosutils"
+		doins host/lib/cros_archive.sh
 	fi
 }
 
@@ -99,6 +103,7 @@ src_test() {
 		TESTS+=( builder_test.py )
 		TESTS+=( devserver_test.py )
 		TESTS+=( devserver_util_unittest.py )
+		TESTS+=( host/lib/cros_archive_unittest.sh )
 		#FIXME(zbehan): update_test.py doesn't seem to work right now.
 	fi
 
