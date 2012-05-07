@@ -20,6 +20,7 @@ RDEPEND="chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/vpn-manager
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
+	dev-libs/nss
 	net-dns/c-ares"
 
 DEPEND="${RDEPEND}
