@@ -11,7 +11,7 @@ LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 BOARDS="alex emeraldlake2 link lumpy lumpy64 mario stumpy"
-IUSE="${BOARDS} memtest seabios tegra"
+IUSE="${BOARDS} memtest seabios tegra factory-mode"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -49,6 +49,7 @@ src_compile() {
 	local secure_flags=''
 	local common_flags=''
 	local seabios_flags=''
+	local bootcmd_flags=''
 	local bct_file
 	local fdt_file
 	local image_file
@@ -92,9 +93,15 @@ src_compile() {
 	common_flags+=" --uboot ${image_file} --dt ${fdt_file}"
 	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
 
+	# TODO: This is a workaround since legacy image cannot boot some devices
+	#       when factory-mode is set. (crosbug.com/p/9511)
+	if ! use factory-mode; then
+		bootcmd_flags+=' --bootcmd vboot_twostop'
+	fi
+
 	cros_bundle_firmware \
 		${common_flags} \
-		--bootcmd "vboot_twostop" \
+		${bootcmd_flags} \
 		--bootsecure \
 		${secure_flags} \
 		--outdir normal \
