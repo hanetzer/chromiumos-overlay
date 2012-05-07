@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="5053b531d7f378d7adc3271c4bef9cfd5c047fbc"
-CROS_WORKON_TREE="e83137386afb5aeeaf275ba0cc6b2eccadb9050e"
+CROS_WORKON_COMMIT="82e896f6263a6cb6ae16d8e6b90c2d2a3a6bf4d8"
+CROS_WORKON_TREE="af1f4eaaa1d26567486b479ef30aa9d20647cb2a"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -9,7 +9,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
 inherit cros-workon autotest-deponly conflict
 
-DESCRIPTION="Autotest libaio dep"
+DESCRIPTION="Autotest iotools dep"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -22,9 +22,10 @@ IUSE="+autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-AUTOTEST_DEPS_LIST="libaio"
+AUTOTEST_DEPS_LIST="iotools"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 DEPEND="${RDEPEND}"
+
