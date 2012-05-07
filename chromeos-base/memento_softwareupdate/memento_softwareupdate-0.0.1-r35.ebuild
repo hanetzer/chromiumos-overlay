@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="32457ac8b04e6bc1f7fe451fff8a810bbdcfc391"
-CROS_WORKON_TREE="3c5904b1eeee8f38e0ce8a9888a703dd011206a4"
+CROS_WORKON_COMMIT="6c99c88ee134818a68cdcc934c1caef225ee4ad0"
+CROS_WORKON_TREE="4cbf6f0ec5a5efb0f3218d25577cfcb441a6b03f"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/memento_softwareupdate"
