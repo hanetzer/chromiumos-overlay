@@ -73,6 +73,15 @@
 # path for storing the local clone.
 : ${CROS_WORKON_GIT_SUFFIX:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_OUTOFTREE_BUILD
+# @DESCRIPTION:
+# Do not copy the source tree to $S; instead set $S to the
+# source tree and store compiled objects and build state
+# in $WORKDIR.  The ebuild is responsible for ensuring
+# the build output goes to $WORKDIR, e.g. setting
+# O=${WORKDIR}/${P}/build/${board} when compiling the kernel.
+: ${CROS_WORKON_OUTOFTREE_BUILD:=}
+
 IUSE="cros_workon_tree_$CROS_WORKON_TREE"
 
 inherit git flag-o-matic
@@ -162,6 +171,8 @@ local_copy() {
 		symlink_in_place ${srcpath}
 	elif [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
 		local_copy_git ${srcpath}
+	elif [ "${CROS_WORKON_OUTOFTREE_BUILD}" == "1" ]; then
+		S="${srcpath}"
 	else
 		local_copy_cp ${srcpath}
 	fi

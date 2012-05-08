@@ -16,7 +16,7 @@ DEPEND="sys-apps/debianutils
 
 IUSE="-device_tree -kernel_sources"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
-
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 # Config fragments selected by USE flags
 # ...fragments will have the following variables substitutions
@@ -157,7 +157,7 @@ install_kernel_sources() {
 }
 
 get_build_dir() {
-	echo "${S}/build/$(get_current_board_with_variant)"
+	echo "${WORKDIR}/${P}/build/$(get_current_board_with_variant)"
 }
 
 get_build_cfg() {
@@ -283,8 +283,15 @@ cros-kernel2_src_configure() {
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 		cp -f "${config}" "$(get_build_cfg)" || die
 	else
-		chromeos/scripts/prepareconfig ${config} || die
-		mv .config "$(get_build_cfg)"
+		# TODO(30872): remove this check June 1, 2012
+		# Check for stale prepareconfig.
+		if [ "${PV}" = "9999" ] &&
+			! grep -q outputfile chromeos/scripts/prepareconfig; then
+			die "Out of date prepareconfig is not supported.\n" \
+				"Please 'repo sync . && repo rebase' in:\n" \
+				"${S}"
+		fi
+		chromeos/scripts/prepareconfig ${config} "$(get_build_cfg)" || die
 	fi
 
 	local fragment
