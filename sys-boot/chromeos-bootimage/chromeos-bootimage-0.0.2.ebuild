@@ -44,12 +44,15 @@ S=${WORKDIR}
 # factory process. Default one should be a pre-genereated blob.
 BMPBLK_FILE="${FILESDIR}/default.bmpblk"
 
+netboot_required() {
+	! use memtest && ( use factory-mode || use link )
+}
+
 src_compile() {
 
 	local secure_flags=''
 	local common_flags=''
 	local seabios_flags=''
-	local bootcmd_flags=''
 	local bct_file
 	local fdt_file
 	local image_file
@@ -90,27 +93,26 @@ src_compile() {
 	fi
 
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
-	common_flags+=" --uboot ${image_file} --dt ${fdt_file}"
+	common_flags+=" --dt ${fdt_file}"
 	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
-
-	# TODO: This is a workaround since legacy image cannot boot some devices
-	#       when factory-mode is set. (crosbug.com/p/9511)
-	if ! use factory-mode; then
-		bootcmd_flags+=' --bootcmd vboot_twostop'
-	fi
 
 	cros_bundle_firmware \
 		${common_flags} \
-		${bootcmd_flags} \
+		--uboot ${image_file} \
+		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${secure_flags} \
 		--outdir normal \
 		--output image.bin ||
 	die "failed to build image."
 
+	if netboot_required; then
+		image_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
+	fi
 	# Make legacy image
 	cros_bundle_firmware \
 		${common_flags} \
+		--uboot ${image_file} \
 		--add-config-int load_env 1 \
 		${seabios_flags} \
 		--outdir legacy \

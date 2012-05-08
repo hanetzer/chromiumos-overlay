@@ -29,6 +29,7 @@ CROS_WORKON_SUBDIR="files"
 inherit cros-workon
 
 UB_BUILD_DIR="${WORKDIR}/${ROOT}"
+UB_BUILD_DIR_NB="${UB_BUILD_DIR%/}_nb"
 
 U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
@@ -57,10 +58,7 @@ ALL_FDTS=(
 )
 IUSE_FDTS=${ALL_FDTS[@]/#/${U_BOOT_FDT_USE_PREFIX}}
 
-# TODO(vbendeb): this will have to be populated when it becomes necessary to
-# build different config flavors.
-ALL_UBOOT_FLAVORS=''
-IUSE="${IUSE} ${IUSE_CONFIGS} ${IUSE_FDTS} ${ALL_UBOOT_FLAVORS}"
+IUSE="${IUSE} ${IUSE_CONFIGS} ${IUSE_FDTS}"
 
 REQUIRED_USE="${REQUIRED_USE} ^^ ( ${IUSE_CONFIGS} )"
 
@@ -73,6 +71,16 @@ get_current_u_boot_config() {
 		fi
 	done
 	die "Unable to determine current U-Boot config."
+}
+
+netboot_required() {
+	# Build netbootable image for Link unconditionally for now.
+	# TODO (vbendeb): come up with a better scheme of determining what
+	#                 platforms should always generate the netboot capable
+	#                 legacy image.
+	local board=$(get_current_board_no_variant)
+
+	use factory-mode || [[ "${board}" == "link" ]]
 }
 
 get_current_u_boot_fdt() {
@@ -129,7 +137,6 @@ src_configure() {
 	fi
 
 	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CROSS_PREFIX}"
-	COMMON_MAKE_FLAGS+=" O=${UB_BUILD_DIR}"
 	COMMON_MAKE_FLAGS+=" -k"
 	COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1"
@@ -139,18 +146,33 @@ src_configure() {
 	if use profiling; then
 		COMMON_MAKE_FLAGS+=" VBOOT_PERFORMANCE=1"
 	fi
-	if use factory-mode; then
-		COMMON_MAKE_FLAGS+=" BUILD_FACTORY_IMAGE=1"
-	fi
+
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SRC=${CROS_FDT_FILE}"
 
-	umake distclean
-	umake ${CROS_U_BOOT_CONFIG}
+	local BUILD_FLAGS="O=${UB_BUILD_DIR}"
+
+	umake ${BUILD_FLAGS} distclean
+	umake ${BUILD_FLAGS} ${CROS_U_BOOT_CONFIG}
+
+	if netboot_required; then
+		BUILD_FLAGS=" O=${UB_BUILD_DIR_NB}"
+		BUILD_FLAGS+=" BUILD_FACTORY_IMAGE=1"
+		umake ${BUILD_FLAGS} distclean
+		umake ${BUILD_FLAGS} ${CROS_U_BOOT_CONFIG}
+	fi
 }
 
 src_compile() {
 	tc-export BUILD_CC
-	umake HOSTCC=${BUILD_CC} HOSTSTRIP=true all
+	local BUILD_FLAGS="O=${UB_BUILD_DIR}"
+
+	umake ${BUILD_FLAGS} HOSTCC=${BUILD_CC} HOSTSTRIP=true all
+
+	if netboot_required; then
+		BUILD_FLAGS="O=${UB_BUILD_DIR_NB}"
+		BUILD_FLAGS+=" BUILD_FACTORY_IMAGE=1"
+		umake ${BUILD_FLAGS} HOSTCC=${BUILD_CC} HOSTSTRIP=true all
+	fi
 }
 
 src_install() {
@@ -172,6 +194,11 @@ src_install() {
 		doins "${UB_BUILD_DIR}/${file}"
 	done
 	newins "${UB_BUILD_DIR}/u-boot" u-boot.elf
+
+	if netboot_required; then
+		newins "${UB_BUILD_DIR_NB}/u-boot.bin" u-boot_netboot.bin
+		newins "${UB_BUILD_DIR_NB}/u-boot" u-boot_netboot.elf
+	fi
 
 	insinto "${inst_dir}/dtb"
 	elog "Using fdt: ${CROS_FDT_FILE}.dtb"
