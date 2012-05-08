@@ -1,6 +1,6 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-4.5.3.ebuild,v 1.2 2011/08/05 08:16:55 gurligebis Exp $
+# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-4.6.3.ebuild,v 1.1 2012/05/01 14:05:18 gurligebis Exp $
 
 EAPI=2
 inherit eutils linux-info
@@ -11,9 +11,10 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 
 LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~sparc ~x86"
+KEYWORDS="arm amd64 ~ppc ~sparc x86"
 # TODO(simonjam): Figure out why +openssl broke certificate support. Until then,
 # openssl is disabled unlike upstream.
+# See http://codereview.chromium.org/6833010 and http://crosbug.com/12695 for details.
 IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root openssl +smartcard sqlite"
 
 COMMON_DEPEND="!net-misc/openswan
@@ -89,7 +90,11 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# Initialize the supplementary group access list when pluto starts.
+	# See http://crosbug.com/16252 for details.
 	epatch "${FILESDIR}/${P}-initgroups.patch" || die
+	# Provide an option to ignore peer ID check in pluto.
+	# See http://crosbug.com/24476 for details.
 	epatch "${FILESDIR}/${P}-ignore-peer-id-check.patch" || die
 }
 
@@ -175,6 +180,8 @@ src_install() {
 		/etc/ipsec.d/private \
 		/etc/ipsec.d/reqs
 
+	# Replace various IPsec files with symbolic links to runtime generated
+	# files (by l2tpipsec_vpn) on the stateful partition of Chromium OS.
 	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets "{$D}"/etc/ipsec.d/cacerts/cacert.der
 	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
 	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
