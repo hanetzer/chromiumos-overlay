@@ -62,6 +62,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/m17n-lib
 	dev-libs/protobuf
 	dev-python/cherrypy
+	dev-python/ctypesgen
 	dev-python/dbus-python
 	dev-python/imaging
 	dev-python/m2crypto
