@@ -248,7 +248,9 @@ pkg_preinst()
 	[[ ${PV} == "9999" ]] && rm -f "${vcsid_file}"
 	local old_vcsid=$(cat "${vcsid_file}" 2>/dev/null)
 	if [[ ${old_vcsid} != ${CROS_WORKON_COMMIT} ]] ; then
-		rm -rf "${ccache_dir}"
+		# Don't just delete the whole dir as that would punt
+		# the vcsid tag files from other targets too.
+		rm -rf "${ccache_dir}"/*
 	fi
 	mkdir -p -m 2775 "${ccache_dir}"
 	echo "${CROS_WORKON_COMMIT}" > "${vcsid_file}"
