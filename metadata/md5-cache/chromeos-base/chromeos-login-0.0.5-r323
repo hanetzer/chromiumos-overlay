@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install prepare test unpack
+DEPEND=chromeos-base/chromeos-cryptohome chromeos-base/chromeos-minijail chromeos-base/metrics dev-libs/dbus-glib dev-libs/glib dev-libs/nss dev-libs/protobuf x11-libs/gtk+ chromeos-base/bootstat chromeos-base/libchrome:125070[cros-debug=] >=chromeos-base/libchrome_crypto-125070 chromeos-base/protofiles chromeos-base/system_api dev-cpp/gmock sys-libs/glibc test? ( dev-cpp/gtest ) >=dev-vcs/git-1.6
+DESCRIPTION=Login manager for Chromium OS.
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -aura -disable_login_animations -disable_webaudio -highdpi -is_desktop -new_power_button test -touchui board_use_daisy board_use_ironhide board_use_x86-alex board_use_x86-alex_he board_use_x86-alex32 board_use_x86-alex32_he board_use_x86-mario board_use_x86-zgb board_use_x86-zgb_he board_use_x86-zgb32 board_use_x86-zgb32_he cros-debug cros_workon_tree_f57148f29182e8c5d24034d64f57a3d37333d706
+KEYWORDS=arm amd64 x86
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-cryptohome chromeos-base/chromeos-minijail chromeos-base/metrics dev-libs/dbus-glib dev-libs/glib dev-libs/nss dev-libs/protobuf x11-libs/gtk+
+SLOT=0
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=42dcc01cbd25f2416647eeb962f6490d

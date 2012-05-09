@@ -1,0 +1,36 @@
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+CROS_WORKON_COMMIT="3c4ec0dda70e4eaeb7c6ca5e4d64210fe84bc7ec"
+CROS_WORKON_TREE="f35db216f8ecb0198fc3bc63941343ebf7001d9c"
+
+EAPI=4
+CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
+
+XORG_EAUTORECONF="yes"
+BASE_INDIVIDUAL_URI=""
+inherit autotools-utils cros-workon
+
+DESCRIPTION="Chromium OS multitouch input driver for Xorg X server."
+CROS_WORKON_LOCALNAME="../platform/xf86-input-cmt"
+
+KEYWORDS="arm amd64 x86"
+LICENSE="BSD"
+SLOT="0"
+IUSE=""
+
+RDEPEND="chromeos-base/gestures
+	 x11-base/xorg-server"
+DEPEND="${RDEPEND}
+	>=chromeos-base/kernel-headers-2.6.38
+	x11-proto/inputproto"
+
+DOCS="README"
+
+src_prepare() {
+	eautoreconf
+}
+
+src_install() {
+	autotools-utils_src_install
+	remove_libtool_files all
+}
