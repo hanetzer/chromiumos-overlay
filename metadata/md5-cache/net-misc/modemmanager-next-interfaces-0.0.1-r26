@@ -3,9 +3,9 @@ DEPEND=>=dev-libs/glib-2.30.2 >=dev-util/gtk-doc-1.13 >=sys-fs/udev-145[gudev] !
 DESCRIPTION=DBus interface descriptions and headers for ModemManager v0.6
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_9a4d9c8574408f9bbf67d5644f7ad73ac468c73f
+IUSE=cros_workon_tree_342bdbe567ae1a4ccc8505c50d9c6f8ee53b1322
 KEYWORDS=amd64 arm x86
 LICENSE=LGPL-2.1
 SLOT=0
 _eclasses_=autotools	addbdf6cce5024ac93ad2084ad5e1d2d	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=ba54f7766f1fcbfb6dc0ad9966fc87c0
+_md5_=c3dc972c4cf4cb43f8c51d67557f46f3
