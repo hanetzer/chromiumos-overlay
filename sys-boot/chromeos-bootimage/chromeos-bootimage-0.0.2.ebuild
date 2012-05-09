@@ -55,19 +55,25 @@ src_compile() {
 	local seabios_flags=''
 	local bct_file
 	local fdt_file
+	local fdt_legacy_file
 	local image_file
 	local devkeys_file
 	local dd_params
 
 	# Directory where the generated files are looked for and placed.
 	CROS_FIRMWARE_IMAGE_DIR="/firmware"
-	CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/"
+	CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 
 	# Location of the board-specific bct file
 	bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
 
 	# Location of the U-Boot flat device tree source file
 	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
+	fdt_legacy_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}_legacy.dts"
+	if [ ! -f "${fdt_legacy_file}" ]; then
+		elog "Dedicated device tree \"${fdt_legacy_file}\" not found"
+		fdt_legacy_file=${fdt_file}
+	fi
 
 	if use memtest; then
 		image_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
@@ -93,11 +99,11 @@ src_compile() {
 	fi
 
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
-	common_flags+=" --dt ${fdt_file}"
 	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
 
 	cros_bundle_firmware \
 		${common_flags} \
+		--dt ${fdt_file} \
 		--uboot ${image_file} \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
@@ -112,6 +118,7 @@ src_compile() {
 	# Make legacy image
 	cros_bundle_firmware \
 		${common_flags} \
+		--dt ${fdt_legacy_file} \
 		--uboot ${image_file} \
 		--add-config-int load_env 1 \
 		${seabios_flags} \
