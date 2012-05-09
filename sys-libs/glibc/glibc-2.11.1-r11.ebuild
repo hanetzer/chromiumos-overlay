@@ -217,6 +217,7 @@ eblit-src_unpack-post() {
 	epatch "${FILESDIR}"/2.11/glibc-2.11-frecord-gcc-switches.patch
 	epatch "${FILESDIR}"/2.11/glibc-2.11-disable-memset-warning.patch
 	epatch "${FILESDIR}"/local/glibc-2.11-vfprintf-args.patch
+	epatch "${FILESDIR}"/local/glibc-2.11-arm-hardfp.patch
 
 	if use hardened ; then
 		cd "${S}"
@@ -255,6 +256,18 @@ eblit-src_unpack-post() {
 			-e 's:-fstack-protector$:-fstack-protector-all:' \
 			nscd/Makefile \
 			|| die "Failed to ensure nscd builds with ssp-all"
+	fi
+}
+
+eblit-src_install-post() {
+	# Add a symlink to the old ldso name until everyone has migrated.
+	if ! just_headers && [[ ${CTARGET} == arm* ]] ; then
+		local libdir="${D}"
+		is_crosscompile && libdir+="/usr/${CTARGET}"
+		libdir+="/lib"
+		if [[ ! -e ${libdir}/ld-linux.so.3 ]] ; then
+			ln -s ld-linux-armhf.so.3 "${libdir}/ld-linux.so.3" || die
+		fi
 	fi
 }
 
