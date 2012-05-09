@@ -3,10 +3,10 @@ DEPEND=chromeos-base/verity !cros_host? ( chromeos-base/vboot_reference ) >=dev-
 DESCRIPTION=Chrome OS Installer
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=32bit_au cros_host cros_workon_tree_b7a551631df95837393ab0b70ece2c74b7701e36 cros-debug
+IUSE=32bit_au cros_host cros_workon_tree_cb1b0dab0c1cca5be7dfa08ffd0a234ed32d88fe cros-debug
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=app-admin/sudo chromeos-base/vboot_reference chromeos-base/vpd dev-util/shflags sys-apps/coreutils sys-apps/flashrom sys-apps/hdparm sys-apps/rootdev sys-apps/util-linux sys-apps/which sys-fs/dosfstools sys-fs/e2fsprogs
 SLOT=0
 _eclasses_=cros-au	f9ae34f03ddcc4a8450e4f603ffef8f8	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=54da6b6852c9c2a88423e8c16ad265e9
+_md5_=0b4ed7454a904f41241eb3793442413f
