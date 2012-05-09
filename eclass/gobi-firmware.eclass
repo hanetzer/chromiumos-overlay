@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 #
@@ -64,10 +64,10 @@ GOBI_FIRMWARE_CARRIER_DOCO=12
 GOBI_FIRMWARE_CARRIER_DELLX=15
 GOBI_FIRMWARE_CARRIER_OMH=16
 
-# Check for EAPI 2 or 3
+# Check for EAPI 2+
 case "${EAPI:-0}" in
-	3|2) ;;
-	1|0|:) DEPEND="EAPI-UNSUPPORTED" ;;
+	4|3|2) ;;
+	*) die "unsupported EAPI" ;;
 esac
 
 gobi-firmware_install_udev_qcserial_rules() {

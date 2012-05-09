@@ -21,10 +21,10 @@
 # Family of Tegra chip (determines BCT configuration)
 : ${TEGRA_BCT_CHIP_FAMILY:=t25}
 
-# Check for EAPI 2 or 3
+# Check for EAPI 2+
 case "${EAPI:-0}" in
-	3|2) ;;
-	1|0|:) DEPEND="EAPI-UNSUPPORTED" ;;
+	4|3|2) ;;
+	*) die "unsupported EAPI" ;;
 esac
 
 tegra-bct_src_configure() {

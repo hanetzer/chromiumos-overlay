@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 #
@@ -41,10 +41,10 @@
 DEPEND="net-misc/openssh
 	net-misc/wget"
 
-# Check for EAPI 2 or 3
+# Check for EAPI 2+
 case "${EAPI:-0}" in
-	3|2) ;;
-	1|0|:) DEPEND="EAPI-UNSUPPORTED" ;;
+	4|3|2) ;;
+	*) die "unsupported EAPI" ;;
 esac
 
 cros-binary_check_file() {

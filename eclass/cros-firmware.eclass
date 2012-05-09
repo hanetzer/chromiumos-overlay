@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 #
 # Original Author: The Chromium OS Authors <chromium-os-dev@chromium.org>
@@ -83,10 +83,10 @@ RDEPEND="
 	sys-apps/mosys
 	sys-apps/util-linux"
 
-# Check for EAPI 2 or 3
+# Check for EAPI 2+
 case "${EAPI:-0}" in
-	3|2) ;;
-	1|0|:) DEPEND="EAPI-UNSUPPORTED" ;;
+	4|3|2) ;;
+	*) die "unsupported EAPI" ;;
 esac
 
 UPDATE_SCRIPT="chromeos-firmwareupdate"

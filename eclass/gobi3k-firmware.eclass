@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # Original Author: The Chromium OS Authors <chromium-os-dev@chromium.org>
@@ -6,7 +6,7 @@
 # See:
 # https://sites.google.com/a/google.com/chromeos/for-team-members/systems/gobi3kfirmwaretarball
 
-inherit cros-binary 
+inherit cros-binary
 
 # @ECLASS-VARIABLE: GOBI_FIRMWARE_VID
 # @DESCRIPTION:
@@ -28,10 +28,10 @@ inherit cros-binary
 # Install firmware for this list of carrier names.
 : ${GOBI_FIRMWARE_CARRIERS:=}
 
-# Check for EAPI 2 or 3
+# Check for EAPI 2+
 case "${EAPI:-0}" in
-	3|2) ;;
-	1|0|:) DEPEND="EAPI-UNSUPPORTED" ;;
+	4|3|2) ;;
+	*) die "unsupported EAPI" ;;
 esac
 
 gobi3k-firmware_src_unpack() {
