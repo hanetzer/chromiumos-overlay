@@ -236,4 +236,7 @@ pkg_postinst() {
 
 	# The root user must be in the wpa group for wpa_cli.
 	add_users_to_group wpa root
+
+	# Restrict tcsd access to root and chaps.
+	add_users_to_group tss root chaps
 }
