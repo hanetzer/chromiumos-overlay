@@ -84,26 +84,6 @@ print_cmdline = '-print-cmdline' in myargs
 use_ccache = '-noccache' not in myargs
 cmdline = [x for x in myargs if x not in wrapper_only_options]
 
-# Temporary fixup. Currently there are packages that have
-# "-mfloat-abi=soft/softfp" hard-coded in the build system. They are
-#  - chromeos-chrome/src/build/common.gypi (fixed)
-#  - chromeos-chrome/src/native_client/build/common.gypi
-#     (pending https://chromiumcodereview.appspot.com/10302012/)
-#  - chromeos-chrome/src/third_party/ffmpeg/ffmpeg.gyp
-#     (pending fix)
-# TODO(shenhan): remove this hack once all the above get fixed.
-if sys.argv[0].find('armv7a-') >= 0:
-  cmdline = [c for c in cmdline
-             if c != '-mfloat-abi=soft' and c != '-mfloat-abi=softfp']
-# We have 2 steps to roll-in the hardfp changes
-#  - submit this script (together with use hardfp for gcc)
-#  - submit make.conf change for "daisy" and "arm-generic"
-# It is safer to add unconditially the following to command line until all the
-# above parts are submitted.
-# TODO(shenhan): remove this part once all other codes are in.
-  cmdline.insert(0, "-mfloat-abi=hard")
-#
-
 if not clang_compile_requested:
   gcc_cmdline = cmdline
 else:
