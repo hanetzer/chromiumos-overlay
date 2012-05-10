@@ -18,6 +18,7 @@ DEPEND=""
 # vpd for vpd-log.conf of upstart
 # vboot_reference for crossystem
 RDEPEND="chromeos-base/audioconfig-board
+	chromeos-base/chromeos-disableecho
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	net-firewall/iptables[ipv6]
