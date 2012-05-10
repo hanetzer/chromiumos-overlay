@@ -23,7 +23,7 @@ src_configure() {
 	econf --prefix= \
 		--libexecdir=/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
-		--localstatedir=/var --
+		--rundir=/var/run/dhcpcd --
 }
 
 src_compile() {
