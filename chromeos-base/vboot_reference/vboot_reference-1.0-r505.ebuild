@@ -134,6 +134,10 @@ src_install() {
 		# Installing on host.
 		emake BUILD="${S}"/build-main \
 		      DESTDIR="${D}/usr/bin" install
+		# EC firmware needs to compile directly from source
+		dodir /usr/src/vboot
+		insinto /usr/src/vboot
+		doins -r firmware/include firmware/lib
 	fi
 	if use rbtest; then
 		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" -C tests \
