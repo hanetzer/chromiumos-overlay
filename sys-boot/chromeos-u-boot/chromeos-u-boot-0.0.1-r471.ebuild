@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="821cb043219992b6b8f83911b7175526b1beeed6"
-CROS_WORKON_TREE="568701a844af6f9c4225b00c89ecbf13b1bd593b"
+CROS_WORKON_COMMIT="01e28716ce13664ea638558efa9fd8c07722a799"
+CROS_WORKON_TREE="46cff1043835669c7730eecf4fde60a04bbedebb"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
