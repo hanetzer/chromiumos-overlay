@@ -10,7 +10,7 @@ DESCRIPTION="Open Source implementation of X86 BIOS"
 HOMEPAGE="http://www.coreboot.org/SeaBIOS"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86"
+KEYWORDS="~amd64 ~x86"
 IUSE=""
 
 RDEPEND=""
