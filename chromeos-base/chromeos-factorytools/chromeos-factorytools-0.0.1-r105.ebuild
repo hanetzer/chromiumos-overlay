@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="b360a49cb49a5ed5fec4ed205e2db71ffe7c863c"
-CROS_WORKON_TREE="f47253858eb9fefab9f5baa2da48b51faa08382b"
+CROS_WORKON_COMMIT="a6abb7bd16fe4df03e26816a9536d20fb0eabedf"
+CROS_WORKON_TREE="a0f32cf8138e06a032276268e39fe777bc360d30"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/factory_test_tools"
