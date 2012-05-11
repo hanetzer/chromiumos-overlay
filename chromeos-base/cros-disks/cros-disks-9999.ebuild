@@ -1,6 +1,5 @@
-# Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE.makefile file.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
