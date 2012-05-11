@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="74011d196c0079e372f6751320dbad406b574c37"
-CROS_WORKON_TREE="30518b14992e1003d915025712d74c4d9c05fc24"
+CROS_WORKON_COMMIT="5fe744ca3cb9616f006f06675cf434ac36c4fec7"
+CROS_WORKON_TREE="846f597411845048446c80038fe5022dfb8442ee"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/chrontel"
