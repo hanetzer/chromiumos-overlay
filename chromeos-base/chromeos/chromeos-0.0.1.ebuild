@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootimage cros_ec +localssh X bootchart opengles"
+IUSE="bluetooth bootimage cros_ec gdmwimax +localssh X bootchart opengles"
 
 
 ################################################################################
@@ -184,6 +184,9 @@ RDEPEND="${RDEPEND}
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
+	gdmwimax? (
+		chromeos-base/wimax_manager
+	)
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
 	!arm? ( media-plugins/o3d )
@@ -197,6 +200,9 @@ RDEPEND="${RDEPEND}
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
+	gdmwimax? (
+		net-wireless/gdmwimax
+	)
 	net-wireless/marvell_sd8787
 	bluetooth? (
 		net-wireless/bluez
