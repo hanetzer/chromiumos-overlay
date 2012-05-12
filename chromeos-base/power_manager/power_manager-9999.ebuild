@@ -22,9 +22,9 @@ RDEPEND="app-misc/ddccontrol
 	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
+	dev-libs/glib
 	sys-fs/udev
 	x11-base/xorg-server
-	x11-libs/gtk+
 	x11-libs/libX11
 	x11-libs/libXext"
 
