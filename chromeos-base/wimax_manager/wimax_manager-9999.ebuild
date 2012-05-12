@@ -48,4 +48,12 @@ src_install() {
 	# Install upstart config file.
 	insinto /etc/init
 	doins wimax_manager.conf
+
+	# Install D-Bus config file.
+	insinto /etc/dbus-1/system.d
+	doins dbus_bindings/org.chromium.WiMaxManager.conf
+
+	# Install D-Bus introspection XML files.
+	insinto /usr/share/dbus-1/interfaces
+	doins dbus_bindings/org.chromium.WiMaxManager*.xml
 }
