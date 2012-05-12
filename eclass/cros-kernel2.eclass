@@ -27,6 +27,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 CONFIG_FRAGMENTS=(
 	blkdevram
 	fbconsole
+	gdmwimax
 	highmem
 	initramfs
 	nfs
@@ -45,6 +46,15 @@ CONFIG_BLK_DEV_RAM_SIZE=16384
 fbconsole_desc="framebuffer console"
 fbconsole_config="
 CONFIG_FRAMEBUFFER_CONSOLE=y
+"
+
+gdmwimax_desc="GCT GDM72xx WiMAX support"
+gdmwimax_config="
+CONFIG_WIMAX_GDM72XX=m
+CONFIG_WIMAX_GDM72XX_K_MODE=y
+CONFIG_WIMAX_GDM72XX_QOS=y
+CONFIG_WIMAX_GDM72XX_USB=y
+CONFIG_WIMAX_GDM72XX_USB_PM=y
 "
 
 highmem_desc="highmem"
