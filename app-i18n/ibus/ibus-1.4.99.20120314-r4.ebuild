@@ -17,19 +17,13 @@ SRC_URI="mirror://gentoo/${P}.tar.gz"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
+IUSE=""
 #RESTRICT="mirror"
 
 RDEPEND=">=dev-libs/glib-2.26
-	>=x11-libs/gtk+-2
 	x11-libs/libX11"
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
-
-pkg_setup() {
-	# An arch specific config directory is used on multilib systems
-	has_multilib_profile && GTK2_CONFDIR="/etc/gtk-2.0/${CHOST}"
-	GTK2_CONFDIR=${GTK2_CONFDIR:=/etc/gtk-2.0/}
-}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-0003-Add-api-to-ibus-for-retreiving-unused-config-values.patch
@@ -123,7 +117,7 @@ src_install() {
 
 	rm "${D}/usr/share/applications/ibus.desktop" || die
 	rm "${D}/etc/bash_completion.d/ibus.bash" || die
-        rm -rf "${D}/usr/lib/gtk-2.0/2.10.0/immodules/" || die
+	rm -rf "${D}/usr/lib/gtk-2.0/2.10.0/immodules/" || die
 
 	dodoc AUTHORS ChangeLog NEWS README
 }
