@@ -15,7 +15,9 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="test valgrind"
 
-RDEPEND="test? ( chromeos-base/libchrome:85268[cros-debug=] )"
+LIBCHROME_VERS="125070"
+
+RDEPEND="test? ( chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=] )"
 
 # qemu use isn't reflected as it is copied into the target
 # from the build host environment.
@@ -29,6 +31,7 @@ src_compile() {
 	# TODO(wad) figure out what this means since the makefile handles this
 	# decision already.
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 
 	emake OUT="${S}"/build \
 		MODE=opt \

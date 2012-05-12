@@ -13,8 +13,10 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="32bit_au minimal rbtest tpmtests cros_host"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="app-crypt/trousers
-	chromeos-base/libchrome:85268[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	!minimal? ( dev-libs/libyaml )
 	dev-libs/glib
 	dev-libs/openssl
@@ -33,6 +35,7 @@ _src_compile_main() {
 	mkdir "${S}"/build-main
 	tc-export CC AR CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 	# Vboot reference knows the flags to use
 	unset CFLAGS
 	emake BUILD="${S}"/build-main \

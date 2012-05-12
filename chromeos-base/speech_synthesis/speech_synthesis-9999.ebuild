@@ -16,7 +16,9 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-DEPEND="chromeos-base/libchrome:85268[cros-debug=]
+LIBCHROME_VERS="125070"
+
+DEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	dev-libs/dbus-glib
@@ -30,6 +32,7 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	tc-export CXX
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 }
 
 src_install() {
