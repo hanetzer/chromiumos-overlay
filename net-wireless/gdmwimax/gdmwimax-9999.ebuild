@@ -45,4 +45,8 @@ src_install() {
 	doexe cm/cm
 	insinto /opt/gct
 	doins cm/cm.conf
+
+	# Install firmware.
+	insinto /lib/firmware/gdm72xx
+	doins firmware/gdmuimg.bin
 }
