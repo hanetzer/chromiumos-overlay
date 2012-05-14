@@ -3,10 +3,10 @@ DEPEND=media-libs/alsa-lib >=dev-vcs/git-1.6
 DESCRIPTION=Autotest audioloop dep
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_workon_tree_e6e2103fcb31ce2ba4f6a435672211c8208c8986 +buildcheck autotest opengles
+IUSE=+autotest cros_workon_tree_73ba56e646b12ae07a1b9be7e44141680d539305 +buildcheck autotest opengles
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=media-libs/alsa-lib ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	0b5aa99586551aba480b4cda605b5b1a	autotest-deponly	c768cc6b3a334584419444354d68ba8e	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=7dd83cd8aa2adbd392c5747c74941ec9
+_md5_=309a0aba0306e136b09ba6270002a7b9
