@@ -33,7 +33,6 @@ src_prepare() {
 			> "${T}"/pkcs11.patch
 		epatch "${T}"/pkcs11.patch
 	fi
-	epatch "${FILESDIR}"/${PN}-0.9.8r-verify-retcode.patch
 
 	# disable fips in the build
 	# make sure the man pages are suffixed #302165
