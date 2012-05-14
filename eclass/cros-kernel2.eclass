@@ -417,6 +417,16 @@ cros-kernel2_src_install() {
 		ln -sf "vmlinuz-${version}" "${D}/boot/vmlinuz" || die
 	fi
 
+	# Check the size of kernel image and issue warning when image size is near
+	# the limit.
+	local kernel_image_size=$(stat -c '%s' -L "${D}"/boot/vmlinuz)
+	einfo "Kernel image size is ${kernel_image_size} bytes."
+	if [[ ${kernel_image_size} -gt $((16 * 1024 * 1024)) ]]; then
+		die "Kernel image is larger than 16 MB."
+	elif [[ ${kernel_image_size} -gt $((14 * 1024 * 1024)) ]]; then
+		ewarn "Kernel image is larger than 14 MB. Limit is 16 MB."
+	fi
+
 	# Install uncompressed kernel for debugging purposes.
 	insinto /usr/lib/debug/boot
 	doins "$(get_build_dir)/vmlinux"
