@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="9631a1acd5b8475b46290e5ea9750de668636c7f"
-CROS_WORKON_TREE="35dd455adebb75debc341108d6e1e4ffcacb4cb7"
+CROS_WORKON_COMMIT="4fe834b30f929824a9fb23b812b465aaff45653b"
+CROS_WORKON_TREE="4579a16e7e092bc48fce5f9939539c58b5637ea0"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
