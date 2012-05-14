@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile info install test unpack
-DEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog sys-fs/udev x11-base/xorg-server x11-libs/gtk+ x11-libs/libX11 x11-libs/libXext chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) test? ( x11-libs/libXtst ) x11-proto/xextproto >=dev-vcs/git-1.6
+DEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog dev-libs/glib sys-fs/udev x11-base/xorg-server x11-libs/libX11 x11-libs/libXext chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) test? ( x11-libs/libXtst ) x11-proto/xextproto >=dev-vcs/git-1.6
 DESCRIPTION=Power Manager for Chromium OS
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
 IUSE=-new_power_button test -lockvt -nocrit -is_desktop -als -aura -has_keyboard_backlight cros-debug cros_workon_tree_bae3c51ba1c3998dccbc5709dea63c5938ec2141
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
-RDEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog sys-fs/udev x11-base/xorg-server x11-libs/gtk+ x11-libs/libX11 x11-libs/libXext
+RDEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog dev-libs/glib sys-fs/udev x11-base/xorg-server x11-libs/libX11 x11-libs/libXext
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a8e07b0dd4833a4c36bac4d53946eec0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=39a791817562f988e35ab8d89d865f15
+_md5_=dd2663f77c7133abd6a37ef8be3cc2b3
