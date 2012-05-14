@@ -81,6 +81,6 @@ src_install() {
 pkg_postinst() {
 	local root_autotest_dir="${ROOT}/usr/local/autotest"
 	flock "${root_autotest_dir}/packages" \
-			-c "${root_autotest_dir}/utils/packager.py \
+			-c "python -B ${root_autotest_dir}/utils/packager.py \
 				-r ${root_autotest_dir}/packages --client upload"
 }

@@ -322,7 +322,7 @@ autotest_src_compile() {
 	fi
 
 	# Cleanup some temp files after compiling
-	for mask in '*.[do]' ${AUTOTEST_FILE_MASK}; do
+	for mask in '*.[do]' '*.pyc' ${AUTOTEST_FILE_MASK}; do
 		einfo "Purging ${mask}"
 		find . -name "${mask}" -delete
 	done
@@ -431,7 +431,7 @@ autotest_pkg_postinst() {
 	if [ -n "${test_opt}" -o -n "${dep_opt}" -o -n "${prof_opt}" ]; then
 		einfo "Running packager with options ${test_opt} ${dep_opt} ${prof_opt}"
 		flock "${root_autotest_dir}/packages" \
-			-c "${root_autotest_dir}/utils/packager.py \
+			-c "python -B ${root_autotest_dir}/utils/packager.py \
 				-r ${root_autotest_dir}/packages \
 				${test_opt} ${dep_opt} ${prof_opt} upload"
 	else
