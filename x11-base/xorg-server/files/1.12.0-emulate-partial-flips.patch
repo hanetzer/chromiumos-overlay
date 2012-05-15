@@ -1,6 +1,6 @@
-diff -aur xorg-server-1.11.99.902.orig/glx/glxcmds.c xorg-server-1.11.99.902.work/glx/glxcmds.c
---- xorg-server-1.11.99.902.orig/glx/glxcmds.c	2012-03-07 13:36:05.651366000 -0800
-+++ xorg-server-1.11.99.902.work/glx/glxcmds.c	2012-03-07 13:37:26.501810000 -0800
+diff -aur xorg-server-1.12.0/glx/glxcmds.c xorg-server-1.12.0.work/glx/glxcmds.c
+--- xorg-server-1.12.0/glx/glxcmds.c	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/glx/glxcmds.c	2012-05-15 12:45:19.748748000 -0700
 @@ -761,7 +761,7 @@
      }
  
@@ -28,9 +28,9 @@ diff -aur xorg-server-1.11.99.902.orig/glx/glxcmds.c xorg-server-1.11.99.902.wor
  
      return Success;
  }
-diff -aur xorg-server-1.11.99.902.orig/glx/glxdrawable.h xorg-server-1.11.99.902.work/glx/glxdrawable.h
---- xorg-server-1.11.99.902.orig/glx/glxdrawable.h	2012-03-07 13:36:05.657339000 -0800
-+++ xorg-server-1.11.99.902.work/glx/glxdrawable.h	2012-03-07 13:36:30.707289000 -0800
+diff -aur xorg-server-1.12.0/glx/glxdrawable.h xorg-server-1.12.0.work/glx/glxdrawable.h
+--- xorg-server-1.12.0/glx/glxdrawable.h	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/glx/glxdrawable.h	2012-05-15 12:45:19.751764000 -0700
 @@ -46,10 +46,10 @@
  struct __GLXdrawable {
      void (*destroy)(__GLXdrawable *private);
@@ -45,9 +45,9 @@ diff -aur xorg-server-1.11.99.902.orig/glx/glxdrawable.h xorg-server-1.11.99.902
  
      DrawablePtr pDraw;
      XID drawId;
-diff -aur xorg-server-1.11.99.902.orig/glx/glxdri2.c xorg-server-1.11.99.902.work/glx/glxdri2.c
---- xorg-server-1.11.99.902.orig/glx/glxdri2.c	2012-03-07 13:36:05.668331000 -0800
-+++ xorg-server-1.11.99.902.work/glx/glxdri2.c	2012-03-13 17:38:21.444189000 -0700
+diff -aur xorg-server-1.12.0/glx/glxdri2.c xorg-server-1.12.0.work/glx/glxdri2.c
+--- xorg-server-1.12.0/glx/glxdri2.c	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/glx/glxdri2.c	2012-05-15 12:45:19.756753000 -0700
 @@ -111,10 +111,12 @@
  }
  
@@ -129,9 +129,9 @@ diff -aur xorg-server-1.11.99.902.orig/glx/glxdri2.c xorg-server-1.11.99.902.wor
  }
  
  static const __DRIdri2LoaderExtension loaderExtension = {
-diff -aur xorg-server-1.11.99.902.orig/glx/glxdri.c xorg-server-1.11.99.902.work/glx/glxdri.c
---- xorg-server-1.11.99.902.orig/glx/glxdri.c	2012-03-07 13:36:05.661336000 -0800
-+++ xorg-server-1.11.99.902.work/glx/glxdri.c	2012-03-07 13:36:30.741272000 -0800
+diff -aur xorg-server-1.12.0/glx/glxdri.c xorg-server-1.12.0.work/glx/glxdri.c
+--- xorg-server-1.12.0/glx/glxdri.c	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/glx/glxdri.c	2012-05-15 12:45:19.760766000 -0700
 @@ -273,7 +273,7 @@
  
  
@@ -141,9 +141,9 @@ diff -aur xorg-server-1.11.99.902.orig/glx/glxdri.c xorg-server-1.11.99.902.work
  			       int x, int y, int w, int h)
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) basePrivate;
-diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.99.902.work/hw/xfree86/dri2/dri2.c
---- xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c	2012-03-07 13:36:07.034206000 -0800
-+++ xorg-server-1.11.99.902.work/hw/xfree86/dri2/dri2.c	2012-03-07 13:38:28.701795000 -0800
+diff -aur xorg-server-1.12.0/hw/xfree86/dri2/dri2.c xorg-server-1.12.0.work/hw/xfree86/dri2/dri2.c
+--- xorg-server-1.12.0/hw/xfree86/dri2/dri2.c	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/hw/xfree86/dri2/dri2.c	2012-05-15 13:10:25.003201000 -0700
 @@ -84,6 +84,7 @@
      int			 swap_limit; /* for N-buffering */
      unsigned long	 serialNumber;
@@ -180,7 +180,7 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
      }
  
      pPriv->needInvalidate = TRUE;
-@@ -641,9 +643,115 @@
+@@ -641,9 +643,118 @@
      pPriv->blockedOnMsc = TRUE;
  }
  
@@ -230,6 +230,7 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
 +    }
 +
 +    REGION_SUBTRACT(pScreen, pCopyFrontToBack, pPreviousRegion, pRegion);
++    REGION_DESTROY(pScreen, pPreviousRegion);
 +    (*ds->CopyRegion)(pDraw, pCopyFrontToBack, pSrcBuffer, pDestBuffer);
 +
 +    /*
@@ -287,6 +288,8 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
 +
 +    pPriv->previous_region = REGION_CREATE(pScreen, NULL, 0);
 +    REGION_COPY(pScreen, pPriv->previous_region, pRegion);
++
++    REGION_DESTROY(pScreen, pCopyFrontToBack);
 +    return TRUE;
 +}
 +
@@ -298,7 +301,7 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
  {
      DRI2ScreenPtr   ds = DRI2GetScreen(pDraw->pScreen);
      DRI2DrawablePtr pPriv;
-@@ -666,8 +774,13 @@
+@@ -666,8 +777,13 @@
      if (pSrcBuffer == NULL || pDestBuffer == NULL)
  	return BadValue;
  
@@ -313,7 +316,7 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
      return Success;
  }
  
-@@ -797,8 +910,8 @@
+@@ -797,8 +913,8 @@
      box.x2 = pDraw->width;
      box.y2 = pDraw->height;
      RegionInit(&region, &box, 0);
@@ -324,7 +327,7 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
  
      ust = ((CARD64)tv_sec * 1000000) + tv_usec;
      if (swap_complete)
-@@ -874,6 +987,8 @@
+@@ -874,6 +990,8 @@
  	return BadDrawable;
      }
  
@@ -333,14 +336,16 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.c xorg-server-1.11.9
      /* Old DDX or no swap interval, just blit */
      if (!ds->ScheduleSwap || !pPriv->swap_interval) {
  	BoxRec box;
-@@ -1324,3 +1439,4 @@
+@@ -1324,3 +1442,4 @@
      if (minor != NULL)
  	*minor = DRI2VersRec.minorversion;
  }
 +
-diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2ext.c xorg-server-1.11.99.902.work/hw/xfree86/dri2/dri2ext.c
---- xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2ext.c	2012-03-07 13:36:07.038206000 -0800
-+++ xorg-server-1.11.99.902.work/hw/xfree86/dri2/dri2ext.c	2012-03-07 13:36:30.768256000 -0800
+Only in xorg-server-1.12.0.work/hw/xfree86/dri2: dri2.c~
+Only in xorg-server-1.12.0.work/hw/xfree86/dri2: .dri2.c.swp
+diff -aur xorg-server-1.12.0/hw/xfree86/dri2/dri2ext.c xorg-server-1.12.0.work/hw/xfree86/dri2/dri2ext.c
+--- xorg-server-1.12.0/hw/xfree86/dri2/dri2ext.c	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/hw/xfree86/dri2/dri2ext.c	2012-05-15 12:45:19.775755000 -0700
 @@ -322,7 +322,7 @@
  
      VERIFY_REGION(pRegion, stuff->region, client, DixReadAccess);
@@ -350,9 +355,9 @@ diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2ext.c xorg-server-1.1
      if (status != Success)
  	return status;
  
-diff -aur xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.h xorg-server-1.11.99.902.work/hw/xfree86/dri2/dri2.h
---- xorg-server-1.11.99.902.orig/hw/xfree86/dri2/dri2.h	2012-03-07 13:36:07.036200000 -0800
-+++ xorg-server-1.11.99.902.work/hw/xfree86/dri2/dri2.h	2012-03-07 13:36:30.773251000 -0800
+diff -aur xorg-server-1.12.0/hw/xfree86/dri2/dri2.h xorg-server-1.12.0.work/hw/xfree86/dri2/dri2.h
+--- xorg-server-1.12.0/hw/xfree86/dri2/dri2.h	2012-03-04 20:26:18.000000000 -0800
++++ xorg-server-1.12.0.work/hw/xfree86/dri2/dri2.h	2012-05-15 12:45:19.781767000 -0700
 @@ -252,10 +252,12 @@
  			     int count,
  			     int *out_count);
