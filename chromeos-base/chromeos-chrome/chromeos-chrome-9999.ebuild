@@ -161,6 +161,7 @@ RDEPEND="${RDEPEND}
 	!aura? ( >=x11-libs/gtk+-2.14.7 )
 	x11-libs/libXcomposite
 	x11-libs/libXcursor
+	x11-libs/libXrandr
 	x11-libs/libXScrnSaver
 	chrome_remoting? ( x11-libs/libXtst )
 	x11-apps/setxkbmap"
