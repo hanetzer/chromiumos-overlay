@@ -15,9 +15,3 @@
 
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44
-
-# Newer glibc is not ready for testing yet.
->=cross-armv7a-cros-linux-gnueabi/glibc-2.12
->=cross-i686-pc-linux-gnu/glibc-2.12
->=cross-x86_64-cros-linux-gnu/glibc-2.12
->=sys-libs/glibc-2.12
