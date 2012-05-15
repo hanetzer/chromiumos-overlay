@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="052f8ed10b733f70387911a6519ea41a72674551"
-CROS_WORKON_TREE="e08fbdd0a28ca5e6100c42b33312a7c00bfe802d"
+CROS_WORKON_COMMIT="e5627e7a2506fdd93f3b6edf48c76b68bfe75326"
+CROS_WORKON_TREE="8f459ef16b87c47cb26400078c2ae353cb41455b"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
