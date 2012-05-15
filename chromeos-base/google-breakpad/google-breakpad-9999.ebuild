@@ -39,9 +39,11 @@ src_configure() {
 	append-flags "-O0"
 
 	tc-export CC CXX LD PKG_CONFIG
-	econf --disable-md2core || die "configure failed"
 
-	if ! tc-is-cross-compiler; then
+	if tc-is-cross-compiler; then
+		econf --disable-md2core || die "configure failed"
+	else
+		econf || die "configure failed"
 	        einfo "Running 32b configuration"
 		cd work32 || die "chdir failed"
 		append-flags "-m32"
@@ -82,5 +84,6 @@ src_install() {
 	      src/tools/linux/symupload/minidump_upload || die
 	if ! tc-is-cross-compiler; then
 		newbin work32/src/tools/linux/dump_syms/dump_syms dump_syms.32
+		dobin src/tools/linux/md2core/minidump-2-core
 	fi
 }
