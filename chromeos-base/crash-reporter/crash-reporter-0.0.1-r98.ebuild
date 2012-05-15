@@ -16,9 +16,11 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="test"
 
+LIBCHROME_VERS="125070"
+
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).
 RDEPEND="chromeos-base/google-breakpad
-         chromeos-base/libchrome:85268[cros-debug=]
+         chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
          chromeos-base/libchromeos
          chromeos-base/metrics
          chromeos-base/chromeos-ca-certificates
@@ -32,6 +34,7 @@ DEPEND="${RDEPEND}"
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 	emake
 }
 
