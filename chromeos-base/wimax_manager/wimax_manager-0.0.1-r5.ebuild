@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="5c6895f89ca02dbeba3db9865172476d5edbea61"
-CROS_WORKON_TREE="20edc14cb03393e642d775fd0a4cbae1e95da2e8"
+CROS_WORKON_COMMIT="3a8f375b6d7418a275b8b40ddb939b565866c24c"
+CROS_WORKON_TREE="9c953e3a52a3d531508db436ec00aebc19311822"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/wimax_manager"
