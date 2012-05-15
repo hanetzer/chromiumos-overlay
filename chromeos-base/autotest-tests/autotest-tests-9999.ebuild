@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
@@ -280,6 +280,8 @@ IUSE_TESTS="
 	+tests_security_HtpdateHTTP
 	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
+	+tests_security_OpenSSLBlacklist
+	+tests_security_OpenSSLRegressions
 	+tests_security_ptraceRestrictions
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
