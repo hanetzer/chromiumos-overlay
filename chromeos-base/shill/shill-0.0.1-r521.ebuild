@@ -27,6 +27,7 @@ RDEPEND="chromeos-base/libchrome:125070[cros-debug=]
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
+	chromeos-base/wimax_manager
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 	virtual/modemmanager"
