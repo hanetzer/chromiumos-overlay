@@ -146,7 +146,6 @@ RDEPEND="${RDEPEND}
 	x11-libs/cairo
 	drm? ( x11-libs/libxkbcommon )
 	x11-libs/libXScrnSaver
-	x11-libs/gtk+
 	x11-libs/pango
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
@@ -159,7 +158,9 @@ RDEPEND="${RDEPEND}
 	sys-fs/udev
 	sys-libs/zlib
 	!aura? ( x86? ( !chrome_internal? ( www-plugins/adobe-flash ) ) )
-	>=x11-libs/gtk+-2.14.7
+	!aura? ( >=x11-libs/gtk+-2.14.7 )
+	x11-libs/libXcomposite
+	x11-libs/libXcursor
 	x11-libs/libXScrnSaver
 	chrome_remoting? ( x11-libs/libXtst )
 	x11-apps/setxkbmap"
