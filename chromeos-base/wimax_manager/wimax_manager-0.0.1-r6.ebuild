@@ -29,40 +29,42 @@ RDEPEND="gdmwimax? (
 DEPEND="gdmwimax? (
 	${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/system_api
 	net-wireless/gdmwimax
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 )"
 
 src_compile() {
-	if use gdmwimax; then
-		tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-		cros-debug-add-NDEBUG
-		emake OUT=build-opt BASE_VER=${LIBCHROME_VERS}
-	fi
+	use gdmwimax || return 0
+
+	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
+	cros-debug-add-NDEBUG
+	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS}
 }
 
 src_test() {
-	if use gdmwimax; then
-		emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} tests
-	fi
+	use gdmwimax || return 0
+
+	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} tests
 }
 
 src_install() {
-	if use gdmwimax; then
-		# Install daemon executable.
-		dosbin build-opt/wimax-manager
-
-		# Install upstart config file.
-		insinto /etc/init
-		doins wimax_manager.conf
-
-		# Install D-Bus config file.
-		insinto /etc/dbus-1/system.d
-		doins dbus_bindings/org.chromium.WiMaxManager.conf
-	fi
-
 	# Install D-Bus introspection XML files.
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.WiMaxManager*.xml
+
+	# Skip the rest of the files unless USE=gdmwimax is specified.
+	use gdmwimax || return 0
+
+	# Install daemon executable.
+	dosbin build-opt/wimax-manager
+
+	# Install upstart config file.
+	insinto /etc/init
+	doins wimax_manager.conf
+
+	# Install D-Bus config file.
+	insinto /etc/dbus-1/system.d
+	doins dbus_bindings/org.chromium.WiMaxManager.conf
 }
