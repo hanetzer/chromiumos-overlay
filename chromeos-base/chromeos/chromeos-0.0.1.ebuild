@@ -184,9 +184,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
-	gdmwimax? (
-		chromeos-base/wimax_manager
-	)
+	chromeos-base/wimax_manager
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
 	!arm? ( media-plugins/o3d )
