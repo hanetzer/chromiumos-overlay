@@ -57,20 +57,20 @@ RDEPEND="${RDEPEND}
 	media-libs/opencv
 	media-libs/tiff
 	net-analyzer/netperf
-	x86? ( net-dns/dnsmasq )
+	net-dns/dnsmasq
 	net-misc/dhcp
 	net-misc/iperf
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
 	bluetooth? ( net-wireless/bluez-test )
-	x86? ( net-wireless/hostapd )
+	net-wireless/hostapd
 	sys-apps/coreutils
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
 	sys-apps/memtester
-	x86? ( sys-apps/pciutils )
+        !arm? ( sys-apps/pciutils )
 	x86? ( sys-apps/superiotool )
 	sys-apps/shadow
 	sys-process/procps
@@ -81,7 +81,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xauth
 	x11-apps/xinput
 	x11-apps/xset
-	x86? ( x11-misc/read-edid )
+	!arm? ( x11-misc/read-edid )
 	x11-misc/x11vnc
 	x11-terms/rxvt-unicode
 	app-misc/utouch-evemu
