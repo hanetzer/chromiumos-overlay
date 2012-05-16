@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="c7ef5e3053b06ceb56ee311723c55e05b65b5f68"
-CROS_WORKON_TREE="091b1c73421e491576f8a3d6da99b3b5657d9ad9"
+CROS_WORKON_COMMIT="ca6716aa22e8db9913f352ab8631ac2a9f5fce05"
+CROS_WORKON_TREE="d9a48827d6fb0a5635034cc644c6dde99feb00c1"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/gdmwimax"
