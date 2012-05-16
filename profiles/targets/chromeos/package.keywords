@@ -126,4 +126,8 @@
 # last non-flaky version.
 #>chromeos-base/chromeos-chrome-15.0.871.0_rc-r1	-amd64 -arm -x86 ~amd64 ~arm ~x86
 
+# dlaurie: Pin chrome to build 21.0.1137.5_rc
+# http://crosbug.com/30952 : Logout taking too long and causing VM test to fail
+>chromeos-base/chromeos-chrome-21.0.1137.5_rc-r1	-amd64 -arm -x86 ~amd64 ~arm ~x86
+
 =dev-embedded/openocd-0.4.0      amd64 x86
