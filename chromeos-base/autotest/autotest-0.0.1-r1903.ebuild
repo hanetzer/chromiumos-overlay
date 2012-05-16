@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="597fcc481fd955a825f6000ff1fbc33924ef654f"
-CROS_WORKON_TREE="39f8bdb1e1d23cc1f3a9655cd97c6fdd56243f32"
+CROS_WORKON_COMMIT="54a41f650e254cea81fdd65bbf2458407ea3b048"
+CROS_WORKON_TREE="5dcf2c6a274f3d866d9cd25a259dc27ee4c2a650"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -38,7 +38,6 @@ src_prepare() {
 
 	# cros directory is not from autotest upstream but cros project specific.
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
-	emake -C "${AUTOTEST_WORK}/client/cros/factory/static" BUILD_DEPS="${S}"/client/build_deps
 	cp -fpru "${S}"/server/cros "${AUTOTEST_WORK}/server"
 
 	# Pre-create test directories.
