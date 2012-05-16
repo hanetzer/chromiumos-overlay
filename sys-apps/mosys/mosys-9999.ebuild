@@ -1,17 +1,17 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="2"
+EAPI="4"
+CROS_WORKON_PROJECT="chromiumos/platform/mosys"
+CROS_WORKON_LOCALNAME="../platform/mosys"
 
-inherit flag-o-matic toolchain-funcs
+inherit flag-o-matic toolchain-funcs cros-workon
 
 DESCRIPTION="Utility for obtaining various bits of low-level system info"
 HOMEPAGE="http://mosys.googlecode.com/"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-${PV}.tar.bz2"
-
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~amd64 ~arm ~x86"
 RDEPEND="sys-apps/util-linux
          >=sys-apps/flashmap-0.3-r4"
 DEPEND="${RDEPEND}"
