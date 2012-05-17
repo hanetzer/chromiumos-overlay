@@ -17,6 +17,7 @@ RDEPEND="${RDEPEND}
 	app-admin/sudo
 	dev-embedded/cbootimage
 	dev-embedded/u-boot-tools
+	dev-util/ccache
 	dev-util/crosutils
 	>=sys-apps/dtc-1.3.0-r5
 	sys-boot/bootstub
