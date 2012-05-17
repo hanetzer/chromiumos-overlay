@@ -282,9 +282,9 @@ cros-kernel2_src_configure() {
 		config="${S}/${CHROMEOS_KERNEL_CONFIG}"
 	else
 		if [ "${ARCH}" = "x86" ]; then
-			config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-intel-menlow"}
+			config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromiumos-i386"}
 		else
-			config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromeos-${ARCH}"}
+			config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromiumos-${ARCH}"}
 		fi
 	fi
 
