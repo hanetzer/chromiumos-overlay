@@ -878,9 +878,7 @@ install_chrome_test_resources() {
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
 
-	# Install pyauto test resources.
-	# TODO(nirnimesh): Avoid duplicate copies here.
-	install_pyauto_dep_resources "${test_dir}"
+	# Symlinks to resources in pyauto_dep will be created at runtime.
 }
 
 # Set up the PyAuto files also by copying out the files needed for that.
