@@ -11,7 +11,7 @@ LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 BOARDS="alex emeraldlake2 link lumpy lumpy64 mario stumpy"
-IUSE="${BOARDS} memtest seabios tegra factory-mode"
+IUSE="${BOARDS} exynos factory-mode memtest seabios tegra"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -25,6 +25,7 @@ X86_DEPEND="
 # sys-boot/chromeos-bootimage-seaboard) will do the depending on
 # sys-boot/tegra2-public-firmware-fdts.  For now we'll hardcode it.
 DEPEND="
+	exynos? ( sys-boot/exynos-pre-boot )
 	tegra? ( virtual/tegra-bct )
 	x86? ( ${X86_DEPEND} )
 	amd64? ( ${X86_DEPEND} )
