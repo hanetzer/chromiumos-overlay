@@ -146,6 +146,8 @@ src_install() {
 	cp -RP certs/* "${D}"/etc/ssl/certs/ || die "failed to install certs"
 	rm -r "${D}"/etc/ssl/certs/{demo,expired}
 
+	install -m 644 "${FILESDIR}"/blacklist "${D}"/etc/ssl/blacklist
+
 	# Namespace openssl programs to prevent conflicts with other man pages
 	cd "${D}"/usr/share/man
 	local m d s
