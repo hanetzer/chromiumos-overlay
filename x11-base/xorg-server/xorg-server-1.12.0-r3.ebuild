@@ -143,6 +143,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-0002-os-xprintf-add-Xvscnprintf-and-Xscnprintf.patch"
 	"${FILESDIR}/1.12.0-0003-os-log-only-write-timestamp-if-a-message-is-actually.patch"
 	"${FILESDIR}/1.12.0-0004-os-log-refactor-logging.patch"
+	# crosbug.com/30363
+	"${FILESDIR}/1.12.0-dix-don-t-emulate-scroll-events-for-non-existing-axe.patch"
 )
 
 src_prepare() {
