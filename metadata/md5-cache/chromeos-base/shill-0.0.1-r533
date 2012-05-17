@@ -3,10 +3,10 @@ DEPEND=chromeos-base/chromeos-minijail chromeos-base/libchrome:125070[cros-debug
 DESCRIPTION=Shill Connection Manager for Chromium OS
 EAPI=2
 HOMEPAGE=http://src.chromium.org
-IUSE=test cros-debug cros_workon_tree_15b7dd2de5cb337a38334a7de4f3edc0e0ee1cc3
+IUSE=test cros-debug cros_workon_tree_e989e3da9b680c05a04c32c63d5dee275c87baa0
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/chromeos-minijail chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics >=chromeos-base/mobile-providers-0.0.1-r12 chromeos-base/vpn-manager dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/nss net-dns/c-ares
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	ae99843d340e56d327866de7db3c281a	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=5b97494861776cd2783e42d739a26cc5
+_md5_=439a0bf791f21d51b7ea2e9464cbe9d0
