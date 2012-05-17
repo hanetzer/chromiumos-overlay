@@ -42,6 +42,7 @@ ALL_BOARDS=(
 	link
 	lumpy
 	panda
+	raspberrypi
 	stumpy
 	tegra2
 	tegra2_aebl
