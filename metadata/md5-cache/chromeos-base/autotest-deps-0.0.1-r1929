@@ -3,10 +3,10 @@ DEPEND=dev-cpp/gtest chromeos-base/autotest-deps-libaio app-i18n/ibus dev-libs/g
 DESCRIPTION=Autotest common deps
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_workon_tree_7d5b82f7140d55c26822412f262e9af4e187c28b +buildcheck autotest opengles
+IUSE=+autotest cros_workon_tree_9e634d8f566a489aadfd6f719978c14af6252547 +buildcheck autotest opengles
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 RDEPEND=dev-cpp/gtest chromeos-base/autotest-deps-libaio app-i18n/ibus dev-libs/glib sys-apps/dbus dev-libs/libnl sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	0b5aa99586551aba480b4cda605b5b1a	autotest-deponly	c768cc6b3a334584419444354d68ba8e	cros-workon	ae99843d340e56d327866de7db3c281a	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=660a3df0a3dda866fa101f6420b0858e
+_md5_=00b4487daf0b63cd084b9586296a0934
