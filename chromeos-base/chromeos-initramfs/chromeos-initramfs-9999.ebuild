@@ -14,6 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 DEPEND="chromeos-base/chromeos-assets
+	chromeos-base/chromeos-assets-split
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	media-gfx/ply-image
