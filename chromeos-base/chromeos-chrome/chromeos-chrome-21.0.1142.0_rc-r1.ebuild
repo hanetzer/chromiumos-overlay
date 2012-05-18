@@ -863,8 +863,7 @@ install_chrome_test_resources() {
 		chrome/third_party/mock4js/mock4js.js  \
 		content/common/gpu/testdata \
 		net/data/ssl/certificates \
-		third_party/bidichecker/bidichecker_packaged.js \
-		data/page_cycler
+		third_party/bidichecker/bidichecker_packaged.js
 
 	# Add pdf test data
 	if use chrome_pdf; then
