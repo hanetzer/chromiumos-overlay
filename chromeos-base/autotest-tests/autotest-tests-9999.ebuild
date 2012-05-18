@@ -131,6 +131,8 @@ IUSE_TESTS="
 	+tests_hardware_GobiGPS
 	+tests_hardware_GPIOSwitches
 	+tests_hardware_GPS
+	+tests_hardware_I2CProbe
+	+tests_hardware_Interrupt
 	+tests_hardware_Keyboard
 	+tests_hardware_LightSensor
 	+tests_hardware_MemoryThroughput
