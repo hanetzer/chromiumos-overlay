@@ -34,6 +34,7 @@ CONFIG_FRAGMENTS=(
 	pcserial
 	realtekpstor
 	systemtap
+	vfat
 )
 
 blkdevram_desc="ram block device"
@@ -66,12 +67,18 @@ CONFIG_HIGHMEM64G=y
 # to enable the functionality required for the initramfs here.
 # NOTES:
 # - TPM support to ensure proper locking.
-# - VFAT FS support for EFI System Partition updates.
+# - We need VFAT FS support for EFI System Partition updates, but it is not
+#   included here. We need to set USE="initramfs vfat" for recovery and factory
+#   install.
 initramfs_desc="initramfs"
 initramfs_config="
 CONFIG_INITRAMFS_SOURCE=\"%ROOT%/var/lib/misc/initramfs.cpio.xz\"
 CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
+"
+
+vfat_desc="vfat"
+vfat_config="
 CONFIG_NLS_CODEPAGE_437=y
 CONFIG_NLS_ISO8859_1=y
 CONFIG_FAT_FS=y
