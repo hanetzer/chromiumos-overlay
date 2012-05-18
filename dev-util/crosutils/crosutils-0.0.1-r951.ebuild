@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="4d8c2855098e3a09df00d59078d63b05d00e8a93"
-CROS_WORKON_TREE="d55103db07c823c4e181832aedb38095e7076c74"
+CROS_WORKON_COMMIT="05780783a936c39fc271ba71f0afec3601b8e837"
+CROS_WORKON_TREE="6562e9ca6530edae51fb479519664050b6cdb9b1"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/crosutils"

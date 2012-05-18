@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="8020951d8fde3225704f50480fc4c7c1f20938c1"
-CROS_WORKON_TREE="4b901007fd9326389bda7dd7c74c0af05a82fc8b"
+CROS_WORKON_COMMIT="0fe27c084a2a327c0868b54d7f65d303614bd21f"
+CROS_WORKON_TREE="ef065b3760bc639b529363ad5ff62f45b42adb36"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -83,6 +83,6 @@ src_install() {
 pkg_postinst() {
 	local root_autotest_dir="${ROOT}/usr/local/autotest"
 	flock "${root_autotest_dir}/packages" \
-			-c "${root_autotest_dir}/utils/packager.py \
+			-c "python -B ${root_autotest_dir}/utils/packager.py \
 				-r ${root_autotest_dir}/packages --client upload"
 }
