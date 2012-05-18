@@ -54,6 +54,7 @@ IUSE_TESTS="
 	+tests_factory_Camera
 	+tests_factory_CameraPerformanceAls
 	+tests_factory_Cellular
+	+tests_factory_Connector
 	+tests_factory_DeveloperRecovery
 	+tests_factory_Display
 	+tests_factory_Dummy
@@ -72,6 +73,7 @@ IUSE_TESTS="
 	+tests_factory_Start
 	+tests_factory_StressTest
 	+tests_factory_Touchpad
+	+tests_factory_Touchscreen
 	+tests_factory_USB
 	+tests_factory_VPD
 	+tests_factory_Wifi
