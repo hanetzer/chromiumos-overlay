@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="0fe27c084a2a327c0868b54d7f65d303614bd21f"
-CROS_WORKON_TREE="ef065b3760bc639b529363ad5ff62f45b42adb36"
+CROS_WORKON_COMMIT="86f134c272c016981485a247ddcfcf159209fbb9"
+CROS_WORKON_TREE="074d6be33483d2861b8f4123aa07d93793d7dda8"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -133,6 +133,8 @@ IUSE_TESTS="
 	+tests_hardware_GobiGPS
 	+tests_hardware_GPIOSwitches
 	+tests_hardware_GPS
+	+tests_hardware_I2CProbe
+	+tests_hardware_Interrupt
 	+tests_hardware_Keyboard
 	+tests_hardware_LightSensor
 	+tests_hardware_MemoryThroughput
