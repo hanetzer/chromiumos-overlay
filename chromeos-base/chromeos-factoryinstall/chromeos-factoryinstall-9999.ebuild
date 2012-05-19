@@ -91,6 +91,8 @@ src_install() {
 }
 
 pkg_postinst() {
+	[[ "$(cros_target)" != "target_image" ]] && return 0
+
 	STATEFUL="${ROOT}/usr/local"
 	STATEFUL_LSB="${STATEFUL}/etc/lsb-factory"
 
