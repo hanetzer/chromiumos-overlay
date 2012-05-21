@@ -185,6 +185,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-python/mox
+	sys-apps/fakeroot
 	"
 
 # Host dependencies for running pylint within the chroot
