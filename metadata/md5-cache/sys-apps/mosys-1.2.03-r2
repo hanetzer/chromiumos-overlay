@@ -1,11 +1,12 @@
 DEFINED_PHASES=compile info install unpack
-DEPEND=>=dev-vcs/git-1.6
-DESCRIPTION=Chrome OS EC Utility
+DEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4 >=dev-vcs/git-1.6
+DESCRIPTION=Utility for obtaining various bits of low-level system info
 EAPI=4
-HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_e48bdbb3aa9b4e3a0c5d97bf62b74b2f4f274c21
+HOMEPAGE=http://mosys.googlecode.com/
+IUSE=cros_workon_tree_c879c3801c371a336e53aded762b5eeee607cb66
 KEYWORDS=amd64 arm x86
-LICENSE=BSD
+LICENSE=GPL-2
+RDEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
 SLOT=0
 _eclasses_=cros-workon	ae99843d340e56d327866de7db3c281a	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=6e24286a57d0fb7afba21187916ef21a
+_md5_=7e09e794f61f228cf1f967cd88ee8858
