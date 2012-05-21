@@ -4,6 +4,9 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 
+# TODO(sjg): Remove cros-board as it violates the idea of having no specific
+# board knowledge in the build system. At present it is only needed for the
+# netboot hack.
 inherit cros-debug toolchain-funcs cros-board flag-o-matic
 
 DESCRIPTION="Das U-Boot boot loader"
@@ -40,25 +43,7 @@ ALL_CONFIGS=(
 )
 IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
 
-U_BOOT_FDT_USE_PREFIX="u_boot_fdt_use_"
-ALL_FDTS=(
-	alex
-	emeraldlake2
-	link
-	lumpy
-	mario
-	stumpy
-	tegra2-aebl
-	tegra2-arthur
-	tegra2-asymptote
-	tegra2-dev-board
-	tegra2-kaen
-	tegra2-seaboard
-	tegra3-waluigi
-)
-IUSE_FDTS=${ALL_FDTS[@]/#/${U_BOOT_FDT_USE_PREFIX}}
-
-IUSE="${IUSE} ${IUSE_CONFIGS} ${IUSE_FDTS}"
+IUSE="${IUSE} ${IUSE_CONFIGS}"
 
 REQUIRED_USE="${REQUIRED_USE} ^^ ( ${IUSE_CONFIGS} )"
 
@@ -81,19 +66,6 @@ netboot_required() {
 	local board=$(get_current_board_no_variant)
 
 	use factory-mode || [[ "${board}" == "link" ]]
-}
-
-get_current_u_boot_fdt() {
-	local use_fdt
-	for use_fdt in ${IUSE_FDTS}; do
-		if use ${use_fdt}; then
-			echo ${use_fdt#${U_BOOT_FDT_USE_PREFIX}}
-			return
-		fi
-	done
-	local ub_soc="$(get_config_var ${CROS_U_BOOT_CONFIG} SOC)"
-	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
-	echo "${ub_soc}-${ub_board}"
 }
 
 # This function can only be called after make config
@@ -125,9 +97,6 @@ src_configure() {
 	CROS_U_BOOT_CONFIG="$(get_current_u_boot_config)"
 	elog "Using U-Boot config: ${CROS_U_BOOT_CONFIG}"
 
-	CROS_FDT_FILE="$(get_current_u_boot_fdt)"
-	elog "Using device tree:   ${CROS_FDT_FILE}"
-
 	# Firmware related binaries are compiled with 32-bit toolchain
 	# on 64-bit platforms
 	if use amd64 ; then
@@ -146,8 +115,6 @@ src_configure() {
 	if use profiling; then
 		COMMON_MAKE_FLAGS+=" VBOOT_PERFORMANCE=1"
 	fi
-
-	COMMON_MAKE_FLAGS+=" DEV_TREE_SRC=${CROS_FDT_FILE}"
 
 	local BUILD_FLAGS="O=${UB_BUILD_DIR}"
 
@@ -200,14 +167,10 @@ src_install() {
 		newins "${UB_BUILD_DIR_NB}/u-boot" u-boot_netboot.elf
 	fi
 
-	insinto "${inst_dir}/dtb"
-	elog "Using fdt: ${CROS_FDT_FILE}.dtb"
-	newins "${UB_BUILD_DIR}/u-boot.dtb" "${CROS_FDT_FILE}.dtb"
-
 	insinto "${inst_dir}/dts"
-	for dts_dir in "${S}/board/${ub_vendor}/dts" \
+	for dts_dir in "board/${ub_vendor}/dts" \
 			"board/${ub_vendor}/${ub_board}" \
-			"${S}/arch/${ub_arch}/dts" \
+			"arch/${ub_arch}/dts" \
 			cros/dts; do
 		files_to_copy="$(find ${dts_dir} -regex '.*\.dtsi?')"
 		elog "Installing device tree files in ${dts_dir}"
