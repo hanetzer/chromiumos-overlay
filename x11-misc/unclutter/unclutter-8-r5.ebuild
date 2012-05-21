@@ -21,6 +21,7 @@ src_compile() {
 	epatch "${FILESDIR}/${P}-keypress.patch"
 	epatch "${FILESDIR}/${P}-listen-to-all-windows.patch"
 	epatch "${FILESDIR}/${P}-ignore-some-keys.patch"
+	epatch "${FILESDIR}/${P}-disable-tap.patch"
 	# This xmkmf appears unnecessary
 	# xmkmf -a || die "Couldn't run xmkmf"
 	emake -j1 CDEBUGFLAGS="${CFLAGS}" CC="$(tc-getCC)" || die
