@@ -878,6 +878,8 @@ install_chrome_test_resources() {
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
 
+	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
+		"${test_dir}"/out/Release
 	# Symlinks to resources in pyauto_dep will be created at runtime.
 }
 
