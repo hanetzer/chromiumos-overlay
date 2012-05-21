@@ -14,7 +14,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="profiling factory-mode"
+IUSE="dev profiling factory-mode"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/x86-firmware-fdts
@@ -106,9 +106,15 @@ src_configure() {
 	fi
 
 	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CROSS_PREFIX}"
-	COMMON_MAKE_FLAGS+=" -k"
 	COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1"
+	if use dev; then
+		# Avoid hiding the errors and warnings
+		COMMON_MAKE_FLAGS+=" -s"
+	else
+		COMMON_MAKE_FLAGS+=" -k"
+		COMMON_MAKE_FLAGS+=" WERROR=y"
+	fi
 	if use x86 || use amd64 || use cros-debug; then
 		COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 	fi
