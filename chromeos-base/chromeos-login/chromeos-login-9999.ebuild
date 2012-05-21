@@ -71,7 +71,7 @@ src_compile() {
 src_test() {
 	tc-export CXX LD PKG_CONFIG
 	cros-debug-add-NDEBUG
-
+	append-cppflags -DUNIT_TEST
 	emake tests || die "chromeos-login compile tests failed."
 }
 
