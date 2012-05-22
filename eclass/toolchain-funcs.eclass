@@ -1,6 +1,6 @@
-# Copyright 1999-2007 Gentoo Foundation
+# Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/eclass/toolchain-funcs.eclass,v 1.97 2009/12/01 04:44:17 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/eclass/toolchain-funcs.eclass,v 1.109 2011/12/10 19:45:00 vapier Exp $
 
 # @ECLASS: toolchain-funcs.eclass
 # @MAINTAINER:
@@ -13,28 +13,38 @@
 # in such a way that you can rely on the function always returning
 # something sane.
 
-___ECLASS_RECUR_TOOLCHAIN_FUNCS="yes"
-[[ -z ${___ECLASS_RECUR_MULTILIB} ]] && inherit multilib
+if [[ ${___ECLASS_ONCE_TOOLCHAIN_FUNCS} != "recur -_+^+_- spank" ]] ; then
+___ECLASS_ONCE_TOOLCHAIN_FUNCS="recur -_+^+_- spank"
+
+inherit multilib
 
 DESCRIPTION="Based on the ${ECLASS} eclass"
 
-tc-getPROG() {
-	local var=$1
-	local prog=$2
+# tc-getPROG <VAR [search vars]> <default> [tuple]
+_tc-getPROG() {
+	local tuple=$1
+	local v var vars=$2
+	local prog=$3
 
-	if [[ -n ${!var} ]] ; then
-		echo "${!var}"
-		return 0
-	fi
+	var=${vars%% *}
+	for v in ${vars} ; do
+		if [[ -n ${!v} ]] ; then
+			export ${var}="${!v}"
+			echo "${!v}"
+			return 0
+		fi
+	done
 
 	local search=
-	[[ -n $3 ]] && search=$(type -p "$3-${prog}")
-	[[ -z ${search} && -n ${CHOST} ]] && search=$(type -p "${CHOST}-${prog}")
+	[[ -n $4 ]] && search=$(type -p "$4-${prog}")
+	[[ -z ${search} && -n ${!tuple} ]] && search=$(type -p "${!tuple}-${prog}")
 	[[ -n ${search} ]] && prog=${search##*/}
 
 	export ${var}=${prog}
 	echo "${!var}"
 }
+tc-getBUILD_PROG() { _tc-getPROG CBUILD "BUILD_$1 $1_FOR_BUILD HOST$1" "${@:2}"; }
+tc-getPROG() { _tc-getPROG CHOST "$@"; }
 
 # @FUNCTION: tc-getAR
 # @USAGE: [toolchain prefix]
@@ -79,7 +89,7 @@ tc-getOBJCOPY() { tc-getPROG OBJCOPY objcopy "$@"; }
 # @FUNCTION: tc-getF77
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the Fortran 77 compiler
-tc-getF77() { tc-getPROG F77 f77 "$@"; }
+tc-getF77() { tc-getPROG F77 gfortran "$@"; }
 # @FUNCTION: tc-getFC
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the Fortran 90 compiler
@@ -92,30 +102,59 @@ tc-getGCJ() { tc-getPROG GCJ gcj "$@"; }
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the pkg-config tool
 tc-getPKG_CONFIG() { tc-getPROG PKG_CONFIG pkg-config "$@"; }
+# @FUNCTION: tc-getRC
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the Windows resource compiler
+tc-getRC() { tc-getPROG RC windres "$@"; }
+# @FUNCTION: tc-getDLLWRAP
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the Windows dllwrap utility
+tc-getDLLWRAP() { tc-getPROG DLLWRAP dllwrap "$@"; }
 
+# @FUNCTION: tc-getBUILD_AR
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the archiver for building binaries to run on the build machine
+tc-getBUILD_AR() { tc-getBUILD_PROG AR ar "$@"; }
+# @FUNCTION: tc-getBUILD_AS
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the assembler for building binaries to run on the build machine
+tc-getBUILD_AS() { tc-getBUILD_PROG AS as "$@"; }
 # @FUNCTION: tc-getBUILD_CC
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the C compiler for building binaries to run on the build machine
-tc-getBUILD_CC() {
-	local v
-	for v in CC_FOR_BUILD BUILD_CC HOSTCC ; do
-		if [[ -n ${!v} ]] ; then
-			export BUILD_CC=${!v}
-			echo "${!v}"
-			return 0
-		fi
-	done
-
-	local search=
-	if [[ -n ${CBUILD} ]] ; then
-		search=$(type -p ${CBUILD}-gcc)
-		search=${search##*/}
-	fi
-	search=${search:-gcc}
-
-	export BUILD_CC=${search}
-	echo "${search}"
-}
+tc-getBUILD_CC() { tc-getBUILD_PROG CC gcc "$@"; }
+# @FUNCTION: tc-getBUILD_CPP
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the C preprocessor for building binaries to run on the build machine
+tc-getBUILD_CPP() { tc-getBUILD_PROG CPP cpp "$@"; }
+# @FUNCTION: tc-getBUILD_CXX
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the C++ compiler for building binaries to run on the build machine
+tc-getBUILD_CXX() { tc-getBUILD_PROG CXX g++ "$@"; }
+# @FUNCTION: tc-getBUILD_LD
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the linker for building binaries to run on the build machine
+tc-getBUILD_LD() { tc-getBUILD_PROG LD ld "$@"; }
+# @FUNCTION: tc-getBUILD_STRIP
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the strip program for building binaries to run on the build machine
+tc-getBUILD_STRIP() { tc-getBUILD_PROG STRIP strip "$@"; }
+# @FUNCTION: tc-getBUILD_NM
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the symbol/object thingy for building binaries to run on the build machine
+tc-getBUILD_NM() { tc-getBUILD_PROG NM nm "$@"; }
+# @FUNCTION: tc-getBUILD_RANLIB
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the archiver indexer for building binaries to run on the build machine
+tc-getBUILD_RANLIB() { tc-getBUILD_PROG RANLIB ranlib "$@"; }
+# @FUNCTION: tc-getBUILD_OBJCOPY
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the object copier for building binaries to run on the build machine
+tc-getBUILD_OBJCOPY() { tc-getBUILD_PROG OBJCOPY objcopy "$@"; }
+# @FUNCTION: tc-getBUILD_PKG_CONFIG
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the pkg-config tool for building binaries to run on the build machine
+tc-getBUILD_PKG_CONFIG() { tc-getBUILD_PROG PKG_CONFIG pkg-config "$@"; }
 
 # @FUNCTION: tc-export
 # @USAGE: <list of toolchain variables>
@@ -142,7 +181,7 @@ tc-is-cross-compiler() {
 # The possible return values:
 #  - only: the target is always softfloat (never had fpu)
 #  - yes:  the target should support softfloat
-#  - no:   the target should support hardfloat
+#  - no:   the target doesn't support softfloat
 # @CODE
 # This allows us to react differently where packages accept
 # softfloat flags in the case where support is optional, but
@@ -159,6 +198,19 @@ tc-is-softfloat() {
 	esac
 }
 
+# @FUNCTION: tc-is-hardfloat
+# @DESCRIPTION:
+# See if this toolchain is a hardfloat based one.
+# @CODE
+# The possible return values:
+#  - yes:  the target should support hardfloat
+#  - no:   the target doesn't support hardfloat
+tc-is-hardfloat() {
+	[[ ${CTARGET//_/-} == *-hardfloat-* ]] \
+		&& echo "yes" \
+		|| echo "no"
+}
+
 # @FUNCTION: tc-is-static-only
 # @DESCRIPTION:
 # Return shell true if the target does not support shared libs, shell false
@@ -168,6 +220,97 @@ tc-is-static-only() {
 
 	# *MiNT doesn't have shared libraries, only platform so far
 	return $([[ ${host} == *-mint* ]])
+}
+
+# @FUNCTION: tc-env_build
+# @USAGE: <command> [command args]
+# @INTERNAL
+# @DESCRIPTION:
+# Setup the compile environment to the build tools and then execute the
+# specified command.  We use tc-getBUILD_XX here so that we work with
+# all of the semi-[non-]standard env vars like $BUILD_CC which often
+# the target build system does not check.
+tc-env_build() {
+	CFLAGS=${BUILD_CFLAGS:--O1 -pipe} \
+	CXXFLAGS=${BUILD_CXXFLAGS:--O1 -pipe} \
+	CPPFLAGS=${BUILD_CPPFLAGS} \
+	LDFLAGS=${BUILD_LDFLAGS} \
+	AR=$(tc-getBUILD_AR) \
+	AS=$(tc-getBUILD_AS) \
+	CC=$(tc-getBUILD_CC) \
+	CPP=$(tc-getBUILD_CPP) \
+	CXX=$(tc-getBUILD_CXX) \
+	LD=$(tc-getBUILD_LD) \
+	NM=$(tc-getBUILD_NM) \
+	PKG_CONFIG=$(tc-getBUILD_PKG_CONFIG) \
+	RANLIB=$(tc-getBUILD_RANLIB) \
+	"$@"
+}
+
+# @FUNCTION: econf_build
+# @USAGE: [econf flags]
+# @DESCRIPTION:
+# Sometimes we need to locally build up some tools to run on CBUILD because
+# the package has helper utils which are compiled+executed when compiling.
+# This won't work when cross-compiling as the CHOST is set to a target which
+# we cannot natively execute.
+#
+# For example, the python package will build up a local python binary using
+# a portable build system (configure+make), but then use that binary to run
+# local python scripts to build up other components of the overall python.
+# We cannot rely on the python binary in $PATH as that often times will be
+# a different version, or not even installed in the first place.  Instead,
+# we compile the code in a different directory to run on CBUILD, and then
+# use that binary when compiling the main package to run on CHOST.
+#
+# For example, with newer EAPIs, you'd do something like:
+# @CODE
+# src_configure() {
+# 	ECONF_SOURCE=${S}
+# 	if tc-is-cross-compiler ; then
+# 		mkdir "${WORKDIR}"/${CBUILD}
+# 		pushd "${WORKDIR}"/${CBUILD} >/dev/null
+# 		econf_build --disable-some-unused-stuff
+# 		popd >/dev/null
+# 	fi
+# 	... normal build paths ...
+# }
+# src_compile() {
+# 	if tc-is-cross-compiler ; then
+# 		pushd "${WORKDIR}"/${CBUILD} >/dev/null
+# 		emake one-or-two-build-tools
+# 		ln/mv build-tools to normal build paths in ${S}/
+# 		popd >/dev/null
+# 	fi
+# 	... normal build paths ...
+# }
+# @CODE
+econf_build() {
+	tc-env_build econf --build=${CBUILD:-${CHOST}} "$@"
+}
+
+# @FUNCTION: tc-has-openmp
+# @USAGE: [toolchain prefix]
+# @DESCRIPTION:
+# See if the toolchain supports OpenMP.
+tc-has-openmp() {
+	local base="${T}/test-tc-openmp"
+	cat <<-EOF > "${base}.c"
+	#include <omp.h>
+	int main() {
+		int nthreads, tid, ret = 0;
+		#pragma omp parallel private(nthreads, tid)
+		{
+		tid = omp_get_thread_num();
+		nthreads = omp_get_num_threads(); ret += tid + nthreads;
+		}
+		return ret;
+	}
+	EOF
+	$(tc-getCC "$@") -fopenmp "${base}.c" -o "${base}" >&/dev/null
+	local ret=$?
+	rm -f "${base}"*
+	return ${ret}
 }
 
 # @FUNCTION: tc-has-tls
@@ -232,25 +375,25 @@ ninj() { [[ ${type} == "kern" ]] && echo $1 || echo $2 ; }
 		nios2*)		echo nios2;;
 		nios*)		echo nios;;
 		powerpc*)
-					# Starting with linux-2.6.15, the 'ppc' and 'ppc64' trees
-					# have been unified into simply 'powerpc', but until 2.6.16,
-					# ppc32 is still using ARCH="ppc" as default
-					if [[ $(KV_to_int ${KV}) -ge $(KV_to_int 2.6.16) ]] && [[ ${type} == "kern" ]] ; then
-						echo powerpc
-					elif [[ $(KV_to_int ${KV}) -eq $(KV_to_int 2.6.15) ]] && [[ ${type} == "kern" ]] ; then
-						if [[ ${host} == powerpc64* ]] || [[ ${PROFILE_ARCH} == "ppc64" ]] ; then
-							echo powerpc
-						else
-							echo ppc
-						fi
-					elif [[ ${host} == powerpc64* ]] ; then
-						echo ppc64
-					elif [[ ${PROFILE_ARCH} == "ppc64" ]] ; then
-						ninj ppc64 ppc
-					else
-						echo ppc
-					fi
-					;;
+			# Starting with linux-2.6.15, the 'ppc' and 'ppc64' trees
+			# have been unified into simply 'powerpc', but until 2.6.16,
+			# ppc32 is still using ARCH="ppc" as default
+			if [[ ${type} == "kern" ]] && [[ $(KV_to_int ${KV}) -ge $(KV_to_int 2.6.16) ]] ; then
+				echo powerpc
+			elif [[ ${type} == "kern" ]] && [[ $(KV_to_int ${KV}) -eq $(KV_to_int 2.6.15) ]] ; then
+				if [[ ${host} == powerpc64* ]] || [[ ${PROFILE_ARCH} == "ppc64" ]] ; then
+					echo powerpc
+				else
+					echo ppc
+				fi
+			elif [[ ${host} == powerpc64* ]] ; then
+				echo ppc64
+			elif [[ ${PROFILE_ARCH} == "ppc64" ]] ; then
+				ninj ppc64 ppc
+			else
+				echo ppc
+			fi
+			;;
 		s390*)		echo s390;;
 		sh64*)		ninj sh64 sh;;
 		sh*)		echo sh;;
@@ -260,6 +403,7 @@ ninj() { [[ ${type} == "kern" ]] && echo $1 || echo $2 ; }
 						|| echo sparc
 					;;
 		vax*)		echo vax;;
+		x86_64*freebsd*) echo amd64;;
 		x86_64*)
 			# Starting with linux-2.6.24, the 'x86_64' and 'i386'
 			# trees have been unified into 'x86'.
@@ -315,30 +459,39 @@ tc-endian() {
 	esac
 }
 
+# Internal func.  The first argument is the version info to expand.
+# Query the preprocessor to improve compatibility across different
+# compilers rather than maintaining a --version flag matrix. #335943
+_gcc_fullversion() {
+	local ver="$1"; shift
+	set -- `$(tc-getCPP "$@") -E -P - <<<"__GNUC__ __GNUC_MINOR__ __GNUC_PATCHLEVEL__"`
+	eval echo "$ver"
+}
+
 # @FUNCTION: gcc-fullversion
 # @RETURN: compiler version (major.minor.micro: [3.4.6])
 gcc-fullversion() {
-	$(tc-getCC "$@") -dumpversion
+	_gcc_fullversion '$1.$2.$3' "$@"
 }
 # @FUNCTION: gcc-version
 # @RETURN: compiler version (major.minor: [3.4].6)
 gcc-version() {
-	gcc-fullversion "$@" | cut -f1,2 -d.
+	_gcc_fullversion '$1.$2' "$@"
 }
 # @FUNCTION: gcc-major-version
 # @RETURN: major compiler version (major: [3].4.6)
 gcc-major-version() {
-	gcc-version "$@" | cut -f1 -d.
+	_gcc_fullversion '$1' "$@"
 }
 # @FUNCTION: gcc-minor-version
 # @RETURN: minor compiler version (minor: 3.[4].6)
 gcc-minor-version() {
-	gcc-version "$@" | cut -f2 -d.
+	_gcc_fullversion '$2' "$@"
 }
 # @FUNCTION: gcc-micro-version
 # @RETURN: micro compiler version (micro: 3.4.[6])
 gcc-micro-version() {
-	gcc-fullversion "$@" | cut -f3 -d. | cut -f1 -d-
+	_gcc_fullversion '$3' "$@"
 }
 
 # Returns the installation directory - internal toolchain
@@ -411,33 +564,6 @@ gcc-specs-pie() {
 	local directive
 	directive=$(gcc-specs-directive cc1)
 	return $([[ "${directive/\{!nopie:}" != "${directive}" ]])
-}
-# Returns true if gcc builds PIEs
-# For ARM, readelf -h | grep Type always has REL instead of EXEC.
-# That is why we have to read the flags one by one and check them instead
-# of test-compiling a small program.
-gcc-pie() {
-	for flag in $(echo "void f(){char a[100];}" | \
-	${CTARGET}-gcc -v -xc -c -o /dev/null - 2>&1 | \
-	grep cc1 | \
-	tr " " "\n" | \
-	tac)
-	do
-		if [[ $flag == "-fPIE" || $flag == "-fPIC" ]]
-		then
-			return 0
-		elif [[ $flag == "-fno-PIE" || $flag == "-fno-PIC" ]]
-		then
-			return 1
-		fi
-	done
-	return 1
-}
-# Returns true if gcc builds with the stack protector
-gcc-ssp() {
-	local obj=$(mktemp)
-	echo "void f(){char a[100];}" | ${CTARGET}-gcc -xc -c -o ${obj} -
-	return $(${CTARGET}-readelf -sW ${obj} | grep -q stack_chk_fail)
 }
 # Returns true if gcc builds with the stack protector
 gcc-specs-ssp() {
@@ -635,3 +761,38 @@ gen_usr_ldscript() {
 		fperms a+x "/usr/${libdir}/${lib}" || die "could not change perms on ${lib}"
 	done
 }
+
+#
+# ChromiumOS extensions below here.
+#
+
+# Returns true if gcc builds PIEs
+# For ARM, readelf -h | grep Type always has REL instead of EXEC.
+# That is why we have to read the flags one by one and check them instead
+# of test-compiling a small program.
+gcc-pie() {
+	for flag in $(echo "void f(){char a[100];}" | \
+	${CTARGET}-gcc -v -xc -c -o /dev/null - 2>&1 | \
+	grep cc1 | \
+	tr " " "\n" | \
+	tac)
+	do
+		if [[ $flag == "-fPIE" || $flag == "-fPIC" ]]
+		then
+			return 0
+		elif [[ $flag == "-fno-PIE" || $flag == "-fno-PIC" ]]
+		then
+			return 1
+		fi
+	done
+	return 1
+}
+
+# Returns true if gcc builds with the stack protector
+gcc-ssp() {
+	local obj=$(mktemp)
+	echo "void f(){char a[100];}" | ${CTARGET}-gcc -xc -c -o ${obj} -
+	return $(${CTARGET}-readelf -sW ${obj} | grep -q stack_chk_fail)
+}
+
+fi
