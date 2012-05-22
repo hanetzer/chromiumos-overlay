@@ -3,10 +3,10 @@ DEPEND=app-crypt/trousers chromeos-base/chromeos-init chromeos-base/libchrome:12
 DESCRIPTION=PKCS #11 layer over TrouSerS.
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=test cros-debug cros_workon_tree_4f7738d38e97cee828ef333ee49d454e7a29deaa
+IUSE=test cros-debug cros_workon_tree_c0935212e56b545d1678973453416fe87bd1155c
 KEYWORDS=arm amd64 x86
 LICENSE=BSD
 RDEPEND=app-crypt/trousers chromeos-base/chromeos-init chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos dev-libs/dbus-c++ dev-libs/opencryptoki dev-cpp/gflags
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	ae99843d340e56d327866de7db3c281a	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	6177ab16afca7327c797de1df341169d	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=93252eccd130dfc7c59120c31477eaf1
+_md5_=46d6adc2fd474b885ff788ae5e60dfb2
