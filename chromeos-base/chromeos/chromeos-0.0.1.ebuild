@@ -293,22 +293,6 @@ generate_font_cache() {
 	qemu_run /usr/bin/fc-cache -f
 }
 
-generate_gtk_config() {
-	local gtk2_confdir="/etc/gtk-2.0"
-
-	mkdir -p "${ROOT}/${gtk2_confdir}" || die
-
-	# Generate gtk+ config file via qemu inside chroot.
-	# See http:/crosbug.com/12284
-	qemu_run "/usr/bin/gtk-query-immodules-2.0" \
-		> "${ROOT}/${gtk2_confdir}/gtk.immodules"
-	qemu_run "/usr/bin/gdk-pixbuf-query-loaders" \
-		> "${ROOT}/${gtk2_confdir}/gdk-pixbuf.loaders"
-}
-
 pkg_preinst() {
 	generate_font_cache
-
-	# This can be moved to gtk+ ebuild if necessary.
-	generate_gtk_config
 }
