@@ -157,7 +157,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/audioconfig
 	chromeos-base/board-devices
 	chromeos-base/bootstat
-	chromeos-base/cashew
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/chromeos-auth-config
