@@ -1,7 +1,7 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="acbf4e0ff5a0f556597a83e8d4b255d5fdd1819f"
-CROS_WORKON_TREE="3711c796c47f3d7cd771dc4e7e8ebf1024e5e5d1"
+CROS_WORKON_COMMIT="03c6def98a62adf3165a7fdf0480cd4f2c652fc8"
+CROS_WORKON_TREE="80f975a737ad7c2c075c10efb20a34254f157b3c"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -10,28 +10,34 @@ CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r596"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest conflict
 
-DESCRIPTION="ltp autotest"
+DESCRIPTION="login_OwnershipApi autotest"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="x86 arm amd64"
 
-IUSE="hardened"
+IUSE="+autox +xset +tpmtools hardened"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
+	chromeos-base/flimflam-test
+	chromeos-base/chromeos-chrome
 	chromeos-base/protofiles
 	dev-libs/protobuf
 	dev-python/pygobject
-	!<chromeos-base/autotest-tests-0.0.1-r1723
+	autox? ( chromeos-base/autox )
 "
 
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+tests_ltp
+	+tests_login_OwnershipApi
+	+tests_login_OwnershipNotRetaken
+	+tests_login_OwnershipRetaken
+	+tests_login_OwnershipTaken
+	+tests_login_RemoteOwnership
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
