@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="internal"
+IUSE="cros_host internal"
 
 # Internal and external builds deliver different fonts for Japanese.
 # Although the two fonts can in theory co-exist, the font selection
@@ -32,13 +32,13 @@ JA_FONTS="
 	)
 	"
 
-
 # List of font packages used in Chromium OS.  This list is separate
 # so that it can be shared between the host in
 # chromeos-base/hard-host-depends and the target in
 # chromeos-base/chromeos.
 RDEPEND="
-	$JA_FONTS
+	${JA_FONTS}
+	!cros_host? ( chromeos-base/chromeos-assets )
 	media-fonts/croscorefonts
 	media-fonts/dejavu
 	media-fonts/droidfonts-cros
@@ -47,3 +47,45 @@ RDEPEND="
 	media-fonts/ml-anjalioldlipi
 	media-fonts/sil-abyssinica
 	"
+
+qemu_run() {
+	# Run the emulator to execute command. It needs to be copied
+	# temporarily into the sysroot because we chroot to it.
+	local qemu
+	case "${ARCH}" in
+		amd64)
+			# Note that qemu is not actually run below in this case.
+			qemu="qemu-x86_64"
+			;;
+		arm)
+			qemu="qemu-arm"
+			;;
+		x86)
+			qemu="qemu-i386"
+			;;
+		*)
+			die "Unable to determine QEMU from ARCH."
+	esac
+
+	# If we're running directly on the target (e.g. gmerge), we don't need to
+	# chroot or use qemu.
+	if [ "${ROOT:-/}" == "/" ]; then
+		"$@" || die
+	elif [ "${ARCH}" == "amd64" ]; then
+		chroot "${ROOT}" "$@" || die
+	else
+		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
+		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
+		rm "${ROOT}/tmp/${qemu}" || die
+	fi
+}
+
+generate_font_cache() {
+	mkdir -p "${ROOT}/usr/share/fontconfig" || die
+	# fc-cache needs the font files to be located in their final resting place.
+	qemu_run /usr/bin/fc-cache -f
+}
+
+pkg_preinst() {
+	generate_font_cache
+}
