@@ -18,7 +18,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
-+dummy ft2232_spi +gfxnvidia +internal +nic3com +nicintel +nicintel_spi
++dummy ft2232_spi +gfxnvidia +internal +linux_spi +nic3com +nicintel +nicintel_spi
 +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
 +satasii +satamv +serprog +wiki static"
 
@@ -58,7 +58,7 @@ src_compile() {
 	# Programmer
 	flashrom_enable \
 		atahpt bitbang_spi buspirate_spi dediprog drkaiser \
-		ft2232_spi gfxnvidia nic3com nicintel nicintel_spi nicnatsemi nicrealtek \
+		ft2232_spi gfxnvidia linux_spi nic3com nicintel nicintel_spi nicnatsemi nicrealtek \
 		ogp_spi rayer_spi \
 		satasii satamv serprog \
 		internal dummy
