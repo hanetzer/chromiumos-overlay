@@ -27,6 +27,7 @@ RDEPEND="
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/opencryptoki
+	dev-libs/openssl
 	dev-cpp/gflags"
 
 DEPEND="${RDEPEND}
