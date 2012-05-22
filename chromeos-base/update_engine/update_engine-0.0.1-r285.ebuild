@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="4d740ebe4fd3cef70d415113f427f64ee5e87f7e"
-CROS_WORKON_TREE="6020d4f900a1b4bf797694071771e06b8dfa4822"
+CROS_WORKON_COMMIT="ab3bb451ab67929234cc1db9c33ade4fcdf6662f"
+CROS_WORKON_TREE="28dd53341ce6602407c568ebdc939e9decd504a4"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
@@ -53,26 +53,24 @@ src_compile() {
 }
 
 src_test() {
-	TARGETS="update_engine_unittests test_http_server delta_generator"
+	UNITTESTS_BINARY=update_engine_unittests
+	TARGETS="${UNITTESTS_BINARY} test_http_server delta_generator"
 	escons ${TARGETS}
 
 	if ! use x86 && ! use amd64 ; then
 		einfo "Skipping tests on non-x86 platform..."
 	else
-		local test
-		for test in ./*_unittests; do
-			# We need to set PATH so that the `openssl` in the target
-			# sysroot gets executed instead of the host one (which is
-			# compiled differently). http://crosbug.com/27683
-			PATH="$SYSROOT/usr/bin:$PATH" \
-			"$test" --gtest_filter='-*.RunAsRoot*:*.Fakeroot*' \
-                                && einfo "$test (fakeroot) succeeded" \
-                                || die "$test (fakeroot) failed, retval=$?"
-			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
-				"$test" --gtest_filter='*.RunAsRoot*' \
-                                && einfo "$test (root) succeeded" \
-                                || die "$test (root) failed, retval=$?"
-		done
+		# We need to set PATH so that the `openssl` in the target
+		# sysroot gets executed instead of the host one (which is
+		# compiled differently). http://crosbug.com/27683
+		PATH="$SYSROOT/usr/bin:$PATH" \
+		"./${UNITTESTS_BINARY}" --gtest_filter='-*.RunAsRoot*' \
+			&& einfo "./${UNITTESTS_BINARY} (unprivileged) succeeded" \
+			|| die "./${UNITTESTS_BINARY} (unprivileged) failed, retval=$?"
+		sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
+			"./${UNITTESTS_BINARY}" --gtest_filter='*.RunAsRoot*' \
+			&& einfo "./${UNITTESTS_BINARY} (root) succeeded" \
+			|| die "./${UNITTESTS_BINARY} (root) failed, retval=$?"
 	fi
 }
 
