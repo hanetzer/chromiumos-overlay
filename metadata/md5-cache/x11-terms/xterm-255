@@ -9,5 +9,5 @@ LICENSE=MIT
 RDEPEND=x11-libs/libX11 x11-libs/libXrender x11-libs/libXt x11-libs/libXmu x11-libs/libxkbfile x11-libs/libXft x11-libs/libXaw x11-apps/xmessage unicode? ( x11-apps/luit ) Xaw3d? ( x11-libs/Xaw3d )
 SLOT=0
 SRC_URI=ftp://invisible-island.net/xterm/xterm-255.tgz
-_eclasses_=multilib	5f4ad6cf85e365e8f0c6050ddd21659e	toolchain-funcs	6177ab16afca7327c797de1df341169d
+_eclasses_=multilib	5f4ad6cf85e365e8f0c6050ddd21659e	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a
 _md5_=0e8c765a4b6d83bf496a1cb03122fff8

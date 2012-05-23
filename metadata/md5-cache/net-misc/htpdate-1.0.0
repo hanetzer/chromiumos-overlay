@@ -5,5 +5,5 @@ KEYWORDS=amd64 arm hppa ~mips ppc s390 sh x86
 LICENSE=GPL-2
 SLOT=0
 SRC_URI=http://www.clevervest.com/htp/archive/c/htpdate-1.0.0.tar.gz
-_eclasses_=multilib	5f4ad6cf85e365e8f0c6050ddd21659e	toolchain-funcs	6177ab16afca7327c797de1df341169d
+_eclasses_=multilib	5f4ad6cf85e365e8f0c6050ddd21659e	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a
 _md5_=06d10d75c5f9a7562899898fd2056cdc
