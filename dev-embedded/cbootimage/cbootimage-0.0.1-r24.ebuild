@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="56bbad5511c39c3c3b6cd0852e814c9fcd2313bf"
-CROS_WORKON_TREE="1ccc90f941a609b273aa9b24995ba26882250d12"
+CROS_WORKON_COMMIT="8060724d71a0e268acb2e9d1f2eb36e11c92f780"
+CROS_WORKON_TREE="e96543d408d7091364fc9b675c788d93be60d081"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/cbootimage"
