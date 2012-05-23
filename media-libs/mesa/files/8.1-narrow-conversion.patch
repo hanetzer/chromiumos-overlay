@@ -1,0 +1,17 @@
+--- a/src/mesa/main/ff_fragment_shader.cpp.orig	2012-05-22 17:32:41.868404889 -0700
++++ b/src/mesa/main/ff_fragment_shader.cpp	2012-05-22 17:33:48.618632095 -0700
+@@ -944,10 +944,10 @@ emit_texenv(struct texenv_fragment_progr
+       }
+       else {
+ 	 float const_data[4] = {
+-	    1 << rgb_shift,
+-	    1 << rgb_shift,
+-	    1 << rgb_shift,
+-	    1 << alpha_shift
++	   static_cast<float>(1 << rgb_shift),
++	   static_cast<float>(1 << rgb_shift),
++	   static_cast<float>(1 << rgb_shift),
++	   static_cast<float>(1 << alpha_shift)
+ 	 };
+ 	 shift = new(p->mem_ctx) ir_constant(glsl_type::vec4_type,
+ 					     (ir_constant_data *)const_data);

@@ -131,6 +131,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.0-cleanup-meta.patch
 	epatch "${FILESDIR}"/8.0-fix-leaks.patch
 	epatch "${FILESDIR}"/8.1-Add-builtin-function-cpp.patch
+	epatch "${FILESDIR}"/8.1-narrow-conversion.patch
 
 	base_src_prepare
 
