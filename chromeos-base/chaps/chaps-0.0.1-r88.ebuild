@@ -50,6 +50,7 @@ src_test() {
 
 src_install() {
 	dosbin build-opt/chapsd
+	dobin build-opt/chaps_client
 	dobin build-opt/p11_replay
 	dolib.so build-opt/libchaps.so
 	# Install D-Bus config file.
