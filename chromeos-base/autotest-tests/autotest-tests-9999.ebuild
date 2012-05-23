@@ -263,6 +263,7 @@ IUSE_TESTS="
 	+tests_power_Draw
 	+tests_power_ProbeDriver
 	+tests_power_Resume
+	+tests_power_Standby
 	+tests_power_StatsCPUFreq
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
