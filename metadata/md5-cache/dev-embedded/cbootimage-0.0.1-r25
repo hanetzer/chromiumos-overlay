@@ -3,9 +3,9 @@ DEPEND=>=dev-vcs/git-1.6
 DESCRIPTION=Utility for signing Tegra2 boot images
 EAPI=2
 HOMEPAGE=http://git.chromium.org
-IUSE=cros_workon_tree_e96543d408d7091364fc9b675c788d93be60d081
+IUSE=cros_workon_tree_3c1f68b1c84462e5e30c6f8f6f354ecff67f44bd
 KEYWORDS=amd64 arm x86
 LICENSE=GPLv2
 SLOT=0
 _eclasses_=cros-workon	ae99843d340e56d327866de7db3c281a	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=8f16dde5c67539795d6e8d581dcdf3f8
+_md5_=39b7f80e2cf2b69f071c0468d22e31ce
