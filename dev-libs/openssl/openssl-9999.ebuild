@@ -1,37 +1,62 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-0.9.8o.ebuild,v 1.6 2010/06/21 20:43:49 maekke Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1c.ebuild,v 1.2 2012/05/20 14:01:08 vapier Exp $
 
-EAPI="2"
+EAPI="4"
 
 inherit eutils flag-o-matic toolchain-funcs cros-workon
 
-DESCRIPTION="Toolkit for SSL v2/v3 and TLS v1"
-HOMEPAGE="http://www.openssl.org/"
-LICENSE="openssl"
-SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
-IUSE="bindist gmp kerberos pkcs11 sse2 test zlib"
 CROS_WORKON_PROJECT="chromiumos/third_party/openssl"
 
-RDEPEND="gmp? ( dev-libs/gmp )
-	zlib? ( sys-libs/zlib )
+REV="1.7"
+DESCRIPTION="full-strength general purpose cryptography library (including SSL v2/v3 and TLS v1)"
+HOMEPAGE="http://www.openssl.org/"
+
+LICENSE="openssl"
+SLOT="0"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~sparc-fbsd ~x86-fbsd"
+IUSE="bindist gmp kerberos rfc3779 sse2 static-libs test vanilla zlib"
+
+# Have the sub-libs in RDEPEND with [static-libs] since, logically,
+# our libssl.a depends on libz.a/etc... at runtime.
+LIB_DEPEND="gmp? ( dev-libs/gmp[static-libs(+)] )
+	zlib? ( sys-libs/zlib[static-libs(+)] )
 	kerberos? ( app-crypt/mit-krb5 )"
+# The blocks are temporary just to make sure people upgrade to a
+# version that lack runtime version checking.  We'll drop them in
+# the future.
+RDEPEND="static-libs? ( ${LIB_DEPEND} )
+	!static-libs? ( ${LIB_DEPEND//\[static-libs(+)]} )"
 DEPEND="${RDEPEND}
 	sys-apps/diffutils
 	>=dev-lang/perl-5
 	test? ( sys-devel/bc )"
-PDEPEND="app-misc/ca-certificates
-	 pkcs11? ( chromeos-base/chaps )"
+PDEPEND="app-misc/ca-certificates"
+
+# src_unpack() {
+# 	cros-workon-src_unpack
+#	unpack ${P}.tar.gz
+#	SSL_CNF_DIR="/etc/ssl"
+#	sed \
+#		-e "/^DIR=/s:=.*:=${SSL_CNF_DIR}:" \
+#		"${DISTDIR}"/${PN}-c_rehash.sh.${REV} \
+#		> "${WORKDIR}"/c_rehash || die #416717
+# }
 
 src_prepare() {
-	epatch "${FILESDIR}"/${PN}-0.9.8h-ldflags.patch #181438
-	if use pkcs11; then
-		sed \
-			-e "s:@GENTOO_LIBDIR@:/usr/$(get_libdir):" \
-			"${FILESDIR}"/${PN}-pkcs11-engine-r1.patch \
-			> "${T}"/pkcs11.patch
-		epatch "${T}"/pkcs11.patch
+	# Make sure we only ever touch Makefile.org and avoid patching a file
+	# that gets blown away anyways by the Configure script in src_configure
+	rm -f Makefile
+
+	if ! use vanilla ; then
+		epatch "${FILESDIR}"/${PN}-1.0.0a-ldflags.patch #327421
+		epatch "${FILESDIR}"/${PN}-1.0.0d-fbsd-amd64.patch #363089
+		epatch "${FILESDIR}"/${PN}-1.0.0d-windres.patch #373743
+		epatch "${FILESDIR}"/${PN}-1.0.0h-pkg-config.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1-parallel-build.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1-x32.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1-ipv6.patch
+		epatch_user #332661
 	fi
 
 	# disable fips in the build
@@ -44,41 +69,37 @@ src_prepare() {
 		-e $(has noman FEATURES \
 			&& echo '/^install:/s:install_docs::' \
 			|| echo '/^MANDIR=/s:=.*:=/usr/share/man:') \
-		Makefile{,.org} \
+		Makefile.org \
 		|| die
 	# show the actual commands in the log
 	sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
-	# update the enginedir path
-	sed -i \
-		-e "/foo.*engines/s|/lib/engines|/$(get_libdir)/engines|" \
-		Configure || die
 
 	# allow openssl to be cross-compiled
-	cp "${FILESDIR}"/gentoo.config-0.9.8 gentoo.config || die "cp cross-compile failed"
+	cp "${FILESDIR}"/gentoo.config-1.0.0 gentoo.config || die
 	chmod a+rx gentoo.config
 
 	append-flags -fno-strict-aliasing
-	append-flags -Wa,--noexecstack
+	append-flags $(test-flags-CC -Wa,--noexecstack)
 
 	sed -i '1s,^:$,#!/usr/bin/perl,' Configure #141906
-	sed -i '/^"debug-steve/d' Configure # 0.9.8k shipped broken
 	./config --test-sanity || die "I AM NOT SANE"
 }
 
 src_configure() {
 	unset APPS #197996
 	unset SCRIPTS #312551
+	unset CROSS_COMPILE #311473
 
-	tc-export CC AR RANLIB
+	tc-export CC AR RANLIB # RC
 
 	# Clean out patent-or-otherwise-encumbered code
 	# Camellia: Royalty Free            http://en.wikipedia.org/wiki/Camellia_(cipher)
-	# IDEA:     5,214,703 25/05/2010    http://en.wikipedia.org/wiki/International_Data_Encryption_Algorithm
+	# IDEA:     Expired                 http://en.wikipedia.org/wiki/International_Data_Encryption_Algorithm
 	# EC:       ????????? ??/??/2015    http://en.wikipedia.org/wiki/Elliptic_Curve_Cryptography
 	# MDC2:     Expired                 http://en.wikipedia.org/wiki/MDC-2
 	# RC5:      5,724,428 03/03/2015    http://en.wikipedia.org/wiki/RC5
 
-	use_ssl() { use $1 && echo "enable-${2:-$1} ${*:3}" || echo "no-${2:-$1}" ; }
+	use_ssl() { usex $1 "enable-${2:-$1}" "no-${2:-$1}" " ${*:3}" ; }
 	echoit() { echo "$@" ; "$@" ; }
 
 	local krb5=$(has_version app-crypt/mit-krb5 && echo "MIT" || echo "Heimdal")
@@ -93,17 +114,19 @@ src_configure() {
 		$(use sse2 || echo "no-sse2") \
 		enable-camellia \
 		$(use_ssl !bindist ec) \
-		$(use_ssl !bindist idea) \
+		enable-idea \
 		enable-mdc2 \
 		$(use_ssl !bindist rc5) \
 		enable-tlsext \
 		$(use_ssl gmp gmp -lgmp) \
 		$(use_ssl kerberos krb5 --with-krb5-flavor=${krb5}) \
+		$(use_ssl rfc3779) \
 		$(use_ssl zlib) \
 		--prefix=/usr \
-		--openssldir=/etc/ssl \
+		--openssldir=${SSL_CNF_DIR} \
+		--libdir=$(get_libdir) \
 		shared threads \
-		|| die "Configure failed"
+		|| die
 
 	# Clean out hardcoded flags that openssl uses
 	local CFLAG=$(grep ^CFLAG= Makefile | LC_ALL=C sed \
@@ -115,36 +138,44 @@ src_configure() {
 		-e 's:-m[a-z0-9]* ::g' \
 	)
 	sed -i \
-		-e "/^LIBDIR=/s|=.*|=$(get_libdir)|" \
 		-e "/^CFLAG/s|=.*|=${CFLAG} ${CFLAGS}|" \
 		-e "/^SHARED_LDFLAGS=/s|$| ${LDFLAGS}|" \
 		Makefile || die
 }
 
 src_compile() {
-	# depend is needed to use $confopts
-	# rehash is needed to prep the certs/ dir
-	emake -j1 depend || die "depend failed"
-	emake -j1 all rehash || die "make all failed"
+	# depend is needed to use $confopts; it also doesn't matter
+	# that it's -j1 as the code itself serializes subdirs
+	emake -j1 depend
+	emake all
+	# rehash is needed to prep the certs/ dir; do this
+	# separately to avoid parallel build issues.
+	emake rehash
 }
 
-# Tests disabled: `openssl req` tests fail.
-# TODO(ellyjones): fix me :)
+# TODO(ellyjones): these are broken even in upstream
 # src_test() {
-# 	emake -j1 test || die "make test failed"
+# 	emake -j1 test
 # }
 
 src_install() {
-	emake -j1 INSTALL_PREFIX="${D}" install || die
+	emake INSTALL_PREFIX="${D}" install
+	dobin "${S}"/tools/c_rehash #333117
 	dodoc CHANGES* FAQ NEWS README doc/*.txt doc/c-indentation.el
 	dohtml -r doc/*
+	use rfc3779 && dodoc engines/ccgost/README.gost
+
+	# This is crappy in that the static archives are still built even
+	# when USE=static-libs.  But this is due to a failing in the openssl
+	# build system: the static archives are built as PIC all the time.
+	# Only way around this would be to manually configure+compile openssl
+	# twice; once with shared lib support enabled and once without.
+	use static-libs || rm -f "${D}"/usr/lib*/lib*.a
 
 	# create the certs directory
-	dodir /etc/ssl/certs
-	cp -RP certs/* "${D}"/etc/ssl/certs/ || die "failed to install certs"
-	rm -r "${D}"/etc/ssl/certs/{demo,expired}
-
-	install -m 644 "${FILESDIR}"/blacklist "${D}"/etc/ssl/blacklist
+	dodir ${SSL_CNF_DIR}/certs
+	cp -RP certs/* "${D}"${SSL_CNF_DIR}/certs/ || die
+	rm -r "${D}"${SSL_CNF_DIR}/certs/{demo,expired}
 
 	# Namespace openssl programs to prevent conflicts with other man pages
 	cd "${D}"/usr/share/man
@@ -172,13 +203,19 @@ src_install() {
 	echo 'SANDBOX_PREDICT="/dev/crypto"' > "${D}"/etc/sandbox.d/10openssl
 
 	diropts -m0700
-	keepdir /etc/ssl/private
+	keepdir ${SSL_CNF_DIR}/private
 }
 
 pkg_preinst() {
-	preserve_old_lib /usr/$(get_libdir)/lib{crypto,ssl}.so.0.9.{6,7}
+	has_version ${CATEGORY}/${PN}:0.9.8 && return 0
+	preserve_old_lib /usr/$(get_libdir)/lib{crypto,ssl}.so.0.9.8
 }
 
 pkg_postinst() {
-	preserve_old_lib_notify /usr/$(get_libdir)/lib{crypto,ssl}.so.0.9.{6,7}
+	ebegin "Running 'c_rehash ${ROOT%/}${SSL_CNF_DIR}/certs/' to rebuild hashes #333069"
+	c_rehash "${ROOT%/}${SSL_CNF_DIR}/certs" >/dev/null
+	eend $?
+
+	has_version ${CATEGORY}/${PN}:0.9.8 && return 0
+	preserve_old_lib_notify /usr/$(get_libdir)/lib{crypto,ssl}.so.0.9.8
 }
