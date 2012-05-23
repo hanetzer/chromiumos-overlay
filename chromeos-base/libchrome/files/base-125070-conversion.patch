@@ -1,0 +1,11 @@
+--- a/time_posix.cc.orig  2012-05-22 17:04:50.252715756 -0700
++++ b/time_posix.cc       2012-05-22 17:04:52.742723993 -0700
+@@ -34,7 +34,7 @@ struct timespec TimeDelta::ToTimeSpec() 
+   }
+   struct timespec result =
+       {seconds,
+-       microseconds * Time::kNanosecondsPerMicrosecond};
++       static_cast<long int>(microseconds * Time::kNanosecondsPerMicrosecond)};
+   return result;
+ }
+ 

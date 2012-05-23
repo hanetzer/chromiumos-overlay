@@ -45,6 +45,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/base-125070-headers.patch
 	epatch "${FILESDIR}"/base-125070-no-X.patch
+	epatch "${FILESDIR}"/base-125070-conversion.patch
 }
 
 src_compile() {
