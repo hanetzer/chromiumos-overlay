@@ -42,6 +42,7 @@ ALL_BOARDS=(
 	link
 	lumpy
 	panda
+	parrot
 	raspberrypi
 	stumpy
 	tegra2
