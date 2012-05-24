@@ -22,6 +22,8 @@ export CONFIG_SITE=/usr/share/config.site
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
+# Block AFE runtime data and test data that is not useful here.
+CROS_WORKON_SUBDIR_BLACKLIST=( "packages" "results" "site-packages" "frontend/client/www" {client,server}/{tests,site_tests} )
 
 AUTOTEST_WORK="${WORKDIR}/autotest-work"
 
@@ -37,11 +39,11 @@ src_prepare() {
 	# cros directory is not from autotest upstream but cros project specific.
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
 
-        # TODO(jsalz): remove this hard-coded path once the icedtea6-bin
-        # package is fixed and /usr/bin/java works (https://bugs.gentoo.org/416341)
+	# TODO(jsalz): remove this hard-coded path once the icedtea6-bin
+	# package is fixed and /usr/bin/java works (https://bugs.gentoo.org/416341)
 	PATH=/opt/icedtea6-bin-1.6.2/bin:$PATH \
-            emake -C "${AUTOTEST_WORK}/client/cros/factory/static" \
-            BUILD_DEPS="${S}"/client/build_deps
+		emake -C "${AUTOTEST_WORK}/client/cros/factory/static" \
+		BUILD_DEPS="${S}"/client/build_deps
 	cp -fpru "${S}"/server/cros "${AUTOTEST_WORK}/server"
 
 	# Pre-create test directories.

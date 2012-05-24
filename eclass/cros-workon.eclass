@@ -22,6 +22,13 @@
 # NOTE: This only speeds up local_cp builds. Inplace/local_git builds are unaffected.
 : ${CROS_WORKON_SUBDIRS_TO_COPY:=/}
 
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_BLACKLIST
+# @DESCRIPTION:
+# Array of directories in the source tree to explicitly ignore and not even copy
+# them over. This is intended, for example, for blocking infamous bloated and
+# generated content that is unwanted during the build.
+: ${CROS_WORKON_SUBDIRS_BLACKLIST:=}
+
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
 # Git URL which is prefixed to CROS_WORKON_PROJECT
@@ -140,12 +147,14 @@ local_copy_git() {
 local_copy_cp() {
 	einfo "Copying sources"
 
+	local blacklist=( "${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}" )
+
 	local sl
 	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
 		if [[ -d "${1}/${sl}" ]]; then
 			mkdir -p "${S}/${sl}"
-			cp -a "${1}/${sl}"/* "${S}/${sl}" || \
-			    die "cp -a ${1}/${sl}/* ${S}/${sl}/"
+			rsync -a "${blacklist[@]}" "${1}/${sl}"/* "${S}/${sl}" || \
+				die "rsync -a ${blacklist} ${1}/${sl}/* ${S}/${sl}"
 		fi
 	done
 }
