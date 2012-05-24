@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="2ff0450528547862b33c2d1ec32d60341d850c94"
-CROS_WORKON_TREE="8682449abb1ce8d9d6b908f825a0eca4b0e9f2cc"
+CROS_WORKON_COMMIT="caf196d91f286211c21e84b150dda8067ca5e47d"
+CROS_WORKON_TREE="971ab196d565948e07d594a31dcf4d2d4b8835b0"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/seabios"
