@@ -1,0 +1,28 @@
+diff --git a/src/evdev.c b/src/evdev.c
+index d638dfc..75a5f7c 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -206,6 +206,11 @@ static inline void EvdevSetBit(unsigned long *array, int bit)
+     array[bit / LONG_BITS] |= (1LL << (bit % LONG_BITS));
+ }
+ 
++static inline void EvdevClearBit(unsigned long *array, int bit)
++{
++    array[bit / LONG_BITS] &= ~(1LL << (bit % LONG_BITS));
++}
++
+ static int
+ EvdevGetMajorMinor(InputInfoPtr pInfo)
+ {
+@@ -2194,6 +2199,11 @@ EvdevProbe(InputInfoPtr pInfo)
+         }
+     }
+ 
++    if (has_rel_axes) {
++        /* Don't honor ABS_VOLUME on rel devices (fixes a MS mouse) */
++        EvdevClearBit(pEvdev->abs_bitmask, ABS_VOLUME);
++    }
++
+     for (i = 0; i < ABS_MAX; i++) {
+         if (EvdevBitIsSet(pEvdev->abs_bitmask, i)) {
+             has_abs_axes = TRUE;
