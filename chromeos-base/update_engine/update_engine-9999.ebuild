@@ -28,6 +28,7 @@ RDEPEND="app-arch/bzip2
 	dev-libs/glib
 	dev-libs/libpcre
 	dev-libs/libxml2
+	dev-libs/openssl
 	dev-libs/protobuf
 	dev-util/bsdiff
 	net-misc/curl
