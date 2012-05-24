@@ -274,6 +274,7 @@ IUSE_TESTS="
 	+tests_realtimecomm_GTalkLmiCamera
 	+tests_realtimecomm_GTalkunittest
 	+tests_security_AccountsBaseline
+	+tests_security_ASLR
 	+tests_security_ChromiumOSLSM
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
