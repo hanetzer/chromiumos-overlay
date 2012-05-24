@@ -16,7 +16,7 @@ index 745a1ba..72a2162 100644
 +
  #endif
 diff --git a/src/evdev.c b/src/evdev.c
-index 9f3a22a..d775de4 100644
+index 9f3a22a..d638dfc 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -93,6 +93,12 @@
@@ -232,15 +232,19 @@ index 9f3a22a..d775de4 100644
      if (EvdevBitIsSet(pEvdev->rel_bitmask, REL_DIAL))
          num_axes--;
  
-@@ -1471,6 +1603,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1471,6 +1603,11 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          num_axes = MAX_VALUATORS;
      }
  
 +    num_axes += 2; /* For START and END time axes */
++    if (!EvdevBitIsSet(pEvdev->rel_bitmask, REL_WHEEL))
++        num_axes++;
++    if (!EvdevBitIsSet(pEvdev->rel_bitmask, REL_HWHEEL))
++        num_axes++;
      pEvdev->num_vals = num_axes;
      if (num_axes > 0) {
          pEvdev->vals = valuator_mask_new(num_axes);
-@@ -1484,10 +1617,12 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1484,10 +1621,12 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          pEvdev->axis_map[axis] = -1;
  #ifndef HAVE_SMOOTH_SCROLLING
          /* We don't post wheel events, so ignore them here too */
@@ -255,7 +259,7 @@ index 9f3a22a..d775de4 100644
              continue;
          pEvdev->axis_map[axis] = i;
          i++;
-@@ -2508,6 +2643,8 @@ static char* rel_labels[] = {
+@@ -2508,6 +2647,8 @@ static char* rel_labels[] = {
      AXIS_LABEL_PROP_REL_HWHEEL,
      AXIS_LABEL_PROP_REL_DIAL,
      AXIS_LABEL_PROP_REL_WHEEL,
@@ -264,7 +268,7 @@ index 9f3a22a..d775de4 100644
      AXIS_LABEL_PROP_REL_MISC
  };
  
-@@ -2619,10 +2756,10 @@ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int natoms, Atom *atoms)
+@@ -2619,10 +2760,10 @@ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int natoms, Atom *atoms)
              continue;
  
          atom = XIGetKnownProperty(labels[axis]);
@@ -279,7 +283,7 @@ index 9f3a22a..d775de4 100644
      }
  }
  
-@@ -2716,6 +2853,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2716,6 +2857,7 @@ EvdevInitProperty(DeviceIntPtr dev)
      if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
      {
          BOOL invert[2];
@@ -287,7 +291,7 @@ index 9f3a22a..d775de4 100644
          invert[0] = pEvdev->invert_x;
          invert[1] = pEvdev->invert_y;
  
-@@ -2762,6 +2900,27 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2762,6 +2904,27 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
@@ -315,7 +319,7 @@ index 9f3a22a..d775de4 100644
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -2819,6 +2978,20 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -2819,6 +2982,20 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
@@ -337,10 +341,10 @@ index 9f3a22a..d775de4 100644
                 atom == prop_product_id || atom == prop_device ||
                 atom == prop_virtual)
 diff --git a/src/evdev.h b/src/evdev.h
-index acd4289..2a0dd79 100644
+index fe89420..ceac077 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -247,6 +247,16 @@ typedef struct {
+@@ -251,6 +251,16 @@ typedef struct {
      EventQueueRec           queue[EVDEV_MAXQUEUE];
  
      enum fkeymode           fkeymode;
