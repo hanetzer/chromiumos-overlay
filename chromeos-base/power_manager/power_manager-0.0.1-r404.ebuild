@@ -82,6 +82,16 @@ src_install() {
 
 	insinto /usr/share/power_manager
         doins config/*
+	# If is a desktop system, shorten the react_ms, and bring in the
+	# lock_ms to off_ms + react_ms
+	if use is_desktop; then
+		react="usr/share/power_manager/react_ms"
+		plugged_off="usr/share/power_manager/plugged_off_ms"
+		lock="usr/share/power_manager/lock_ms"
+		echo "10000" > "${D}/${react}"
+		plugged_off_ms=$(cat "${D}/${plugged_off}")
+		echo "$(($plugged_off_ms + 10000))" > "${D}/${lock}"
+	fi
 
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.PowerManager.conf
