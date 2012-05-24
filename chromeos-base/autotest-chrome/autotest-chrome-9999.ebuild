@@ -20,6 +20,7 @@ RDEPEND="
 	>chromeos-base/chromeos-chrome-19.0.1044.0_rc-r1
 	!<=chromeos-base/chromeos-chrome-19.0.1044.0_rc-r1
 	>chromeos-base/autotest-tests-0.0.1-r1528
+	chromeos-base/autotest-deps-ffmpeg
 	chromeos-base/flimflam-test
 	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
@@ -37,6 +38,9 @@ IUSE_TESTS=(
 
 	# Inherits from enterprise_ui_test.
 	+tests_desktopui_EnterprisePolicy
+
+	# Uses chrome_test dependency.
+	+tests_audiovideo_FFMPEG
 
 	# Inherits from cros_ui_test.
 	+tests_audiovideo_PlaybackRecordSemiAuto

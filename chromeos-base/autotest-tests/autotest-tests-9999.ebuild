@@ -40,10 +40,10 @@ IUSE="${IUSE} +autotest"
 #   network_WifiAuthenticationTests
 RDEPEND="
   chromeos-base/autotest-deps
-  chromeos-base/autotest-deps-iotools
-  chromeos-base/autotest-deps-libaio
   chromeos-base/autotest-deps-glbench
   chromeos-base/autotest-deps-glmark2
+  chromeos-base/autotest-deps-iotools
+  chromeos-base/autotest-deps-libaio
   chromeos-base/autotest-deps-piglit
   chromeos-base/flimflam-test
   autox? ( chromeos-base/autox )
@@ -80,7 +80,6 @@ IUSE_TESTS="
 	+tests_sound_infrastructure
 	+tests_sleeptest
 	+tests_unixbench
-	+tests_audiovideo_FFMPEG
 	+tests_audiovideo_LineOutToMicInLoopback
 	+tests_audiovideo_Microphone
 	+tests_audiovideo_V4L2
