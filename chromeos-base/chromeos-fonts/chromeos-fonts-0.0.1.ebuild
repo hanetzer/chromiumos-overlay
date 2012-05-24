@@ -46,6 +46,7 @@ RDEPEND="
 	media-fonts/lohitfonts-cros
 	media-fonts/ml-anjalioldlipi
 	media-fonts/sil-abyssinica
+	media-libs/fontconfig
 	"
 
 qemu_run() {
