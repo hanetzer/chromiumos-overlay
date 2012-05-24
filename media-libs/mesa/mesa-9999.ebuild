@@ -122,23 +122,13 @@ src_prepare() {
 	epatch "${FILESDIR}"/7.11_p3-builtin_function.patch
 	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
 	epatch "${FILESDIR}"/8.0-force_s3tc_enable.patch
-	epatch "${FILESDIR}"/8.0-libglu.patch
 	epatch "${FILESDIR}"/8.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.0-i965-Make-sure-we-do-render-between-two-hiz-flushes.patch
-	epatch "${FILESDIR}"/8.0-Revert-i915g-Implement-stipple-with-draw.patch
-	epatch "${FILESDIR}"/8.0-Revert-i915g-Remove-unused-poly-stipple-state.patch
 	epatch "${FILESDIR}"/8.0-QueryVersion-NULL-reply.patch
-	epatch "${FILESDIR}"/8.0-shared-glapi-Convert-to-automake.patch
-	epatch "${FILESDIR}"/8.0-gbm_dri-Fix-DRIimage-lookup-callback.patch
-	epatch "${FILESDIR}"/8.0-egl_dri2-make-flush-extension-useable-by-drm-platfor.patch
-	epatch "${FILESDIR}"/8.0-gbm-Add-gbm_surface-interface.patch
-	epatch "${FILESDIR}"/8.0-gbm-Create-hooks-for-dri2_loader_extension-in-dri-ba.patch
-	epatch "${FILESDIR}"/8.0-egl_dri2-use-gbm_surface-as-the-native-window-type-i.patch
-	epatch "${FILESDIR}"/8.0-egl_dri2-fix-aux-buffer-leak-in-drm-platform.patch
 	epatch "${FILESDIR}"/8.0-fix-deps-order.patch
 	epatch "${FILESDIR}"/8.0-cleanup-meta.patch
 	epatch "${FILESDIR}"/8.0-fix-leaks.patch
-	epatch "${FILESDIR}"/8.0-Add-builtin-function-cpp.patch
+	epatch "${FILESDIR}"/8.1-Add-builtin-function-cpp.patch
 
 	base_src_prepare
 

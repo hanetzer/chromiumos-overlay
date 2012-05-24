@@ -1,17 +1,3 @@
-diff --git a/src/glsl/link_uniforms.cpp b/src/glsl/link_uniforms.cpp
-index d51850c..588008a 100644
---- a/src/glsl/link_uniforms.cpp
-+++ b/src/glsl/link_uniforms.cpp
-@@ -174,8 +174,7 @@ private:
-       if (this->map->get(id, name))
- 	 return;
- 
--      char *key = strdup(name);
--      this->map->put(this->num_active_uniforms, key);
-+      this->map->put(this->num_active_uniforms, name);
- 
-       /* Each leaf uniform occupies one entry in the list of active
-        * uniforms.
 diff --git a/src/mesa/main/shaderobj.c b/src/mesa/main/shaderobj.c
 index 36f208d..d7fe8d7 100644
 --- a/src/mesa/main/shaderobj.c
