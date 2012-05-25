@@ -164,7 +164,7 @@ index 98b30af..934d49e 100644
 +		return 0;
 +	}
 +
-+	set_tap_property(display, info, 1);
++	set_tap_property(display, info, 0);
 +
 +	return info;
 +}
@@ -212,7 +212,7 @@ index 98b30af..934d49e 100644
  		    PointerMotionMask|ButtonPressMask|ButtonReleaseMask,
  		    GrabModeAsync, GrabModeAsync, None, cursor[screen],
  		    CurrentTime)==GrabSuccess){
-+	      if(touchpad_device) set_tap_property(display, touchpad_device, 0);
++	      if(touchpad_device) set_tap_property(display, touchpad_device, 1);
 +	      
  		/* wait for a button event or large cursor motion */
  		XEvent event;
@@ -221,7 +221,7 @@ index 98b30af..934d49e 100644
  			ALMOSTEQUAL(rooty,event.xmotion.y)) ||
  		       (event.type!=KeyPress && event.type!=MotionNotify));
  		XUngrabPointer(display, CurrentTime);
-+		if(touchpad_device) set_tap_property(display, touchpad_device, 1); 
++		if(touchpad_device) set_tap_property(display, touchpad_device, 0); 
  	    }
 +	    
  	}else{
