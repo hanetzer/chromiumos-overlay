@@ -134,14 +134,7 @@ def OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
 
 
 def main():
-    key_strings = ['search', 'leftcontrol', 'leftalt', 'capslock', 'disabled']
-    for use_search_key_as in key_strings:
-        for use_leftcontrol_key_as in key_strings:
-            for use_leftalt_key_as in key_strings:
-                OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
-                                 use_leftalt_key_as, False)
-                OutputRemapEntry(use_search_key_as, use_leftcontrol_key_as,
-                                 use_leftalt_key_as, True)
+    OutputRemapEntry('search', 'leftcontrol', 'leftalt', True)
 
 if __name__ == '__main__':
   sys.exit(main())

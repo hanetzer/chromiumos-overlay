@@ -40,7 +40,6 @@ PATCHES=(
 	"${FILESDIR}"/${P}-backspace-and-arrow-keys.patch
 	"${FILESDIR}"/${P}-gb-dvorak-deadkey.patch
 	"${FILESDIR}"/${P}-symbols-makefile.patch
-	"${FILESDIR}"/${P}-modifier-keys.patch
 	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
 )
