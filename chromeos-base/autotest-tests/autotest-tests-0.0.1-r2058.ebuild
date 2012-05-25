@@ -249,6 +249,7 @@ IUSE_TESTS="
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
 	+tests_platform_Pkcs11InitUnderErrors
+	+tests_platform_Pkcs11ChangeAuthData
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
 	+tests_platform_ServoPyAuto
