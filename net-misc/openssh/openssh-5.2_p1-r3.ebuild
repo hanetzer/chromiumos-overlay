@@ -102,6 +102,7 @@ src_unpack() {
 	[[ -n ${HPN_PATCH} ]] && use hpn && epatch "${DISTDIR}"/${HPN_PATCH}
 	epatch "${FILESDIR}"/${PN}-4.7p1-selinux.diff #191665
 	epatch "${FILESDIR}"/${P}-autoconf.patch
+	epatch "${FILESDIR}"/${P}-ssh-keysign-readconf.patch
 
 	# in 5.2p1, the AES-CTR multithreaded variant is temporarily broken, and
 	# causes random hangs when combined with the -f switch of ssh.
