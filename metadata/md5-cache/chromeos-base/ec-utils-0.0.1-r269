@@ -3,9 +3,9 @@ DEPEND=>=dev-vcs/git-1.6
 DESCRIPTION=Chrome OS EC Utility
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_4605e4899a9935a7a59f17ae8aa368da9d8b392d
+IUSE=cros_workon_tree_1ad7eb4488b576cad515cee9fa7d1a8852e1c703
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 SLOT=0
 _eclasses_=cros-workon	ae99843d340e56d327866de7db3c281a	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=4c1107e8d73ae8eae5791c940c867d21
+_md5_=89f451b445f34b729e22066e6a082d0a
