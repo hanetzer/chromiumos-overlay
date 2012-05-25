@@ -37,7 +37,6 @@ RDEPEND="${DEPEND}"
 
 MY_S="${WORKDIR}/${P}/wpa_supplicant"
 
-
 pkg_setup() {
 	if use gnutls && use ssl ; then
 		einfo "You have both 'gnutls' and 'ssl' USE flags enabled: defaulting to USE=\"ssl\""
