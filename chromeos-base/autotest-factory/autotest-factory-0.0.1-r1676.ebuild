@@ -69,6 +69,7 @@ IUSE_TESTS="
 	+tests_factory_LidSwitch
 	+tests_factory_LightSensor
 	+tests_factory_Prompt
+	+tests_factory_RemovableStorage
 	+tests_factory_ScriptWrapper
 	+tests_factory_Start
 	+tests_factory_StressTest
