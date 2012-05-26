@@ -1,13 +1,13 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="7ecd1d6d3c23b6acb13f90062d062647ddb4fed3"
-CROS_WORKON_TREE="796393a5afc4290d974f4ab391a0003c72c3056e"
+CROS_WORKON_COMMIT="b85a7ce9d686799e88bf65fa95ed49c6d561d621"
+CROS_WORKON_TREE="07c839b63d24bc123ad6bf20b6c7031f5990055e"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="../platform/ec"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon toolchain-funcs cros-board
 
 DESCRIPTION="Chrome OS EC Utility"
 
@@ -19,11 +19,13 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-# The BOARD is a special parameter. It should be the ChromeOS board name if you
-# are building EC firmware itself. However, for utility, we can always build
-# the reference configuration "bds" because the protocol should be always
-# compliant to reference one.
-BOARD="bds"
+set_board() {
+	export BOARD=$(get_current_board_with_variant)
+	if [[ ! -d board/${BOARD} ]] ; then
+		ewarn "${BOARD} does not use Chrome EC. Setting BOARD=bds."
+		BOARD=bds
+	fi
+}
 
 src_compile() {
 	tc-export AR CC RANLIB
@@ -35,10 +37,12 @@ src_compile() {
 	# be executed on target devices (i.e., arm/x86/amd64), not the build
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
 	export HOSTCC="$CC"
+	set_board
 	emake utils
 }
 
 src_install() {
+	set_board
 	dosbin "build/$BOARD/util/ectool"
 	dosbin "build/$BOARD/util/stm32mon"
 }
