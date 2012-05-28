@@ -63,6 +63,7 @@ IUSE_TESTS=(
 	+tests_hardware_ExternalDrives
 	+tests_hardware_USB20
 	+tests_hardware_UsbPlugIn
+	 tests_logging_AsanCrash
 	+tests_logging_UncleanShutdown
 	+tests_logging_UncleanShutdownServer
 	+tests_login_BadAuthentication
