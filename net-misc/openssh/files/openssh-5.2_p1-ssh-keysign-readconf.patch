@@ -5,11 +5,11 @@ http://crosbug.com/31285
 --- Makefile.in
 +++ Makefile.in
 @@ -149,7 +149,7 @@
- ssh-agent$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-agent.o
- 	$(LD) -o $@ ssh-agent.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS)
- 
--ssh-keygen$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keygen.o
-+ssh-keygen$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keygen.o readconf.o
+ ssh-keygen$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keygen.o
  	$(LD) -o $@ ssh-keygen.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS)
  
- ssh-keysign$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keysign.o
+-ssh-keysign$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keysign.o
++ssh-keysign$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keysign.o readconf.o
+ 	$(LD) -o $@ ssh-keysign.o readconf.o $(LDFLAGS) -lssh -lopenbsd-compat $(LIBS)
+ 
+ ssh-keyscan$(EXEEXT): $(LIBCOMPAT) libssh.a ssh-keyscan.o
