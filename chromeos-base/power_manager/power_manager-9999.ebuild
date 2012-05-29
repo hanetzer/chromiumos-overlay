@@ -14,7 +14,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -aura"
-IUSE="${IUSE} -has_keyboard_backlight"
+IUSE="${IUSE} -has_keyboard_backlight +x11"
 
 LIBCHROME_VERS="125070"
 
@@ -48,6 +48,7 @@ src_compile() {
 	export USE_ALS=$(usex als y "")
 	export USE_AURA=$(usex aura y "")
 	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
+	export USE_X11=$(usex x11 y "")
 
 	emake
 }
@@ -69,8 +70,10 @@ src_install() {
 	dobin out/power-supply-info
 	dobin out/powerd
 	dobin out/powerm
-	dobin out/xidle-example
 	dobin out/suspend_delay_sample
+	if use x11; then
+		dobin out/xidle-example
+	fi
 
 	# Scripts
 	dobin debug_sleep_quickly
