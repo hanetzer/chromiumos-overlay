@@ -73,9 +73,11 @@ IUSE_TESTS="
 	+tests_factory_ScriptWrapper
 	+tests_factory_Start
 	+tests_factory_StressTest
+	+tests_factory_SyncEventLogs
 	+tests_factory_Touchpad
 	+tests_factory_Touchscreen
 	+tests_factory_USB
+	+tests_factory_VerifyComponents
 	+tests_factory_VPD
 	+tests_factory_Wifi
 	+tests_suite_Factory
