@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="e15f96d1d70d74a7ccbd111a51b54ca20833a0bf"
-CROS_WORKON_TREE="264ea2cc46116edcaafeadf6922152979069e956"
+CROS_WORKON_COMMIT="4cc63375c83e221a99957e2e097c52db434259d9"
+CROS_WORKON_TREE="bb6e2db05078ecebda483bffe308a2ec14296b39"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
@@ -16,7 +16,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -aura"
-IUSE="${IUSE} -has_keyboard_backlight"
+IUSE="${IUSE} -has_keyboard_backlight +x11"
 
 LIBCHROME_VERS="125070"
 
@@ -50,6 +50,7 @@ src_compile() {
 	export USE_ALS=$(usex als y "")
 	export USE_AURA=$(usex aura y "")
 	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
+	export USE_X11=$(usex x11 y "")
 
 	emake
 }
@@ -71,8 +72,10 @@ src_install() {
 	dobin out/power-supply-info
 	dobin out/powerd
 	dobin out/powerm
-	dobin out/xidle-example
 	dobin out/suspend_delay_sample
+	if use x11; then
+		dobin out/xidle-example
+	fi
 
 	# Scripts
 	dobin debug_sleep_quickly
