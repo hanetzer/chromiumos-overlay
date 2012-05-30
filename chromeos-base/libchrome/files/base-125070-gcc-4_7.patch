@@ -9,3 +9,13 @@
    return result;
  }
  
+--- a/message_pump_libevent.cc.orig	2012-05-30 16:51:53.954509506 -0700
++++ a/message_pump_libevent.cc	2012-05-30 16:52:04.654541674 -0700
+@@ -6,6 +6,7 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#include <unistd.h>
+ 
+ #include "base/auto_reset.h"
+ #include "base/compiler_specific.h"
