@@ -56,7 +56,6 @@ src_install() {
 	doins build/${BOARD}/ec.bin
 	# Intermediate files for debugging
 	doins build/${BOARD}/ec.*.elf
-	doins build/${BOARD}/ec.obj
 	# Utilities
 	exeinto /usr/bin
 	doexe build/${BOARD}/util/ectool
