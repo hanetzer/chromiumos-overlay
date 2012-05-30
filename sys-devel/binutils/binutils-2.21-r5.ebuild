@@ -50,7 +50,7 @@ RESTRICT="fetch strip"
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
 
 GITDIR=${WORKDIR}/gitdir
-GITHASH=ab6f46c625ecdd294e5dd47727d75489def179b5
+GITHASH=a473a507a2f1ee9f0d9d737968ea4bc679fb6900
 
 LIBPATH=/usr/$(get_libdir)/binutils/${CTARGET}/${BVER}
 INCPATH=${LIBPATH}/include
