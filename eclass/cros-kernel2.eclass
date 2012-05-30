@@ -10,7 +10,6 @@ LICENSE="GPL-2"
 SLOT="0"
 
 DEPEND="sys-apps/debianutils
-	chromeos-base/kernel-headers
 	initramfs? ( chromeos-base/chromeos-initramfs )
 "
 
