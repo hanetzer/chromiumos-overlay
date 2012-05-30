@@ -17,6 +17,10 @@ SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
 IUSE="test bds"
 
+# We don't want binchecks since we're cross-compiling firmware images using
+# non-standard layout.
+RESTRICT="binchecks"
+
 set_build_env() {
 	# The firmware is running on ARMv7-m (Cortex-M4)
 	export CROSS_COMPILE=arm-none-eabi-
@@ -50,8 +54,9 @@ src_install() {
 	# EC firmware binary
 	insinto /firmware
 	doins build/${BOARD}/ec.bin
-	# Firmware disassembly for debugging
-	doins build/${BOARD}/ec.*.dis
+	# Intermediate files for debugging
+	doins build/${BOARD}/ec.*.elf
+	doins build/${BOARD}/ec.obj
 	# Utilities
 	exeinto /usr/bin
 	doexe build/${BOARD}/util/ectool
