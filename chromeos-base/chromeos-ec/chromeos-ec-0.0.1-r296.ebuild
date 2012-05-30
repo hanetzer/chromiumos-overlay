@@ -1,8 +1,8 @@
 # Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
-CROS_WORKON_COMMIT="2835e5594e19d3de99fa4f77131908a13fd8a36d"
-CROS_WORKON_TREE="8d41b97fec209dee05d46eb58c643a9681ca3a0b"
+CROS_WORKON_COMMIT="6654374f31f562dfd0012f83ca4d58735458e4b2"
+CROS_WORKON_TREE="f821fd36c13b9fb2bd20026466ea058a2c0ada94"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
@@ -58,7 +58,6 @@ src_install() {
 	doins build/${BOARD}/ec.bin
 	# Intermediate files for debugging
 	doins build/${BOARD}/ec.*.elf
-	doins build/${BOARD}/ec.obj
 	# Utilities
 	exeinto /usr/bin
 	doexe build/${BOARD}/util/ectool
