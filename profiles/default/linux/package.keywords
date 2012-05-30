@@ -71,10 +71,6 @@
 
 # Once we update past these versions, we should move the
 # keywords to the ebuild itself and drop these.
-=sys-kernel/linux-headers-3.1	amd64 arm x86
-=cross-i686-pc-linux-gnu/linux-headers-3.1	x86
-=cross-x86_64-cros-linux-gnu/linux-headers-3.1	amd64
-=cross-armv7a-cros-linux-gnu/linux-headers-3.1	arm
 =cross-arm-none-eabi/newlib-1.18.0	arm
 
 =sys-fs/squashfs-tools-4.2  amd64 x86
