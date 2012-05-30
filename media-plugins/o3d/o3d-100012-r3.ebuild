@@ -51,6 +51,7 @@ src_prepare() {
 	unset GYP_GENERATOR_FLAGS
 	unset BUILD_OUT
 	unset builddir_name
+	epatch "${FILESDIR}"/gcc-4_7.patch
 
 	${EGCLIENT} runhooks || die
 }
