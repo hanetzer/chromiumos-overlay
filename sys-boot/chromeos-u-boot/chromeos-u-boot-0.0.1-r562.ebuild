@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="e7ad4eec19f42123b5f034db1a09c2ed85403069"
-CROS_WORKON_TREE="3f0a64ebbd9012fc3a750287f6002c5f113f9d5d"
+CROS_WORKON_COMMIT="d3c15a19aee124b859feb961acd5282d3524dd76"
+CROS_WORKON_TREE="86a9aaaba76b410c61f7de49bee7ff486bf4a24d"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
@@ -16,7 +16,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="profiling factory-mode"
+IUSE="dev profiling factory-mode"
 
 DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 	!sys-boot/x86-firmware-fdts
@@ -108,9 +108,15 @@ src_configure() {
 	fi
 
 	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CROSS_PREFIX}"
-	COMMON_MAKE_FLAGS+=" -k"
 	COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1"
+	if use dev; then
+		# Avoid hiding the errors and warnings
+		COMMON_MAKE_FLAGS+=" -s"
+	else
+		COMMON_MAKE_FLAGS+=" -k"
+		COMMON_MAKE_FLAGS+=" WERROR=y"
+	fi
 	if use x86 || use amd64 || use cros-debug; then
 		COMMON_MAKE_FLAGS+=" VBOOT_DEBUG=1"
 	fi
