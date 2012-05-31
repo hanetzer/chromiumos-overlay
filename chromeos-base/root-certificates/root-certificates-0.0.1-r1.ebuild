@@ -22,7 +22,8 @@ IUSE=""
 # as there's no way with Portage to specify that dependency here (as
 # of this writing, at any rate).
 RDEPEND="!app-misc/ca-certificates"
-DEPEND="$RDEPEND"
+DEPEND="$RDEPEND
+	dev-libs/openssl"
 
 # Because this ebuild has no source package, "${S}" doesn't get
 # automatically created.  The compile phase depends on "${S}" to
