@@ -1,8 +1,8 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/flashrom/flashrom-0.9.4.ebuild,v 1.5 2011/09/20 16:03:21 nativemad Exp $
-CROS_WORKON_COMMIT="0eaa0cab7e4d11eb53fe2906ba78178531802eaf"
-CROS_WORKON_TREE="c0c432158024c5642ff0f04cef82a1309f16fd2d"
+CROS_WORKON_COMMIT="d6a0f664e2360c6a96facc3e2a190cbd1eb71101"
+CROS_WORKON_TREE="1d6c8db822bbe4d7f25847a6dde4c21316c9cd0d"
 
 EAPI="3"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashrom"
@@ -18,8 +18,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
-+dummy ft2232_spi +gfxnvidia +internal +linux_spi +nic3com +nicintel +nicintel_spi
-+nicnatsemi +nicrealtek +ogp_spi +rayer_spi
++dummy ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com +nicintel
++nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
 +satasii +satamv +serprog +wiki static"
 
 COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
@@ -58,8 +58,8 @@ src_compile() {
 	# Programmer
 	flashrom_enable \
 		atahpt bitbang_spi buspirate_spi dediprog drkaiser \
-		ft2232_spi gfxnvidia linux_spi nic3com nicintel nicintel_spi nicnatsemi nicrealtek \
-		ogp_spi rayer_spi \
+		ft2232_spi gfxnvidia linux_i2c linux_spi nic3com nicintel \
+		nicintel_spi nicnatsemi nicrealtek ogp_spi rayer_spi \
 		satasii satamv serprog \
 		internal dummy
 	_flashrom_enable wiki PRINT_WIKI
