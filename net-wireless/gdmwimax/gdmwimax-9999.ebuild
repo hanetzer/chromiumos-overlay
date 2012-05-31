@@ -27,7 +27,7 @@ src_prepare() {
 }
 
 src_compile() {
-	tc-export CC CXX
+	tc-export AR CC
 	emake -C sdk
 	emake -C cm
 }
