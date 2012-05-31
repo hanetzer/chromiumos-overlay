@@ -280,6 +280,7 @@ IUSE_TESTS="
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
 	+tests_security_HardlinkRestrictions
+	+tests_security_HciconfigDefaultSettings
 	+tests_security_HtpdateHTTP
 	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
