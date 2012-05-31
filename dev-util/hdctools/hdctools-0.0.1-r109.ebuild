@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="e29e723d117b05c23d03e486ff9a1c4e70237b07"
-CROS_WORKON_TREE="bc8ad41e2f7f45bf1e6d14ff1744deb79cfd33ce"
+CROS_WORKON_COMMIT="112d03cfe2c4f7f12b443e50674ae8f5a7eaff12"
+CROS_WORKON_TREE="4c06a6778aa3344a5f33045651769c5e42465dec"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/hdctools"
