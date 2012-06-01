@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="2684ce6854770e265be7fce57e4428149f1bbbc8"
-CROS_WORKON_TREE="b037e2af3bde173bcdd19098161f1e1559b18ef2"
+CROS_WORKON_COMMIT="154f7861d19a2bd5c79c488f9989610971db451b"
+CROS_WORKON_TREE="849051d3d14573c981af53db226e3738747172ac"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/dbus-cplusplus"
