@@ -50,7 +50,7 @@ RESTRICT="fetch strip"
 MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
 
 GITDIR=${WORKDIR}/gitdir
-GITHASH=a473a507a2f1ee9f0d9d737968ea4bc679fb6900
+GITHASH=f54ec260744a6ea0597179e896a1edfacf5d9877
 
 LIBPATH=/usr/$(get_libdir)/binutils/${CTARGET}/${BVER}
 INCPATH=${LIBPATH}/include
@@ -63,7 +63,7 @@ fi
 
 src_unpack() {
 	if use mounted_sources ; then
-		BINUTILS_DIR="/usr/local/toolchain_root/binutils/${BINUTILS_VERSION}"
+		BINUTILS_DIR="/usr/local/toolchain_root/binutils"
 		if [[ ! -d ${BINUTILS_DIR} ]] ; then
 			die "binutils dirs not mounted at: ${BINUTILS_DIR}"
 		fi
@@ -77,7 +77,7 @@ src_unpack() {
 		einfo "Checking out ${GITHASH}."
 		git checkout ${GITHASH} || die "Could not checkout ${GITHASH}"
 		cd -
-		BINUTILS_DIR="${GITDIR}/binutils/${BINUTILS_VERSION}"
+		BINUTILS_DIR="${GITDIR}"
 		cd ${BINUTILS_DIR}
 		CL=$(git log --pretty=format:%s -n1 | grep -o '[0-9]\+')
 		cd -
