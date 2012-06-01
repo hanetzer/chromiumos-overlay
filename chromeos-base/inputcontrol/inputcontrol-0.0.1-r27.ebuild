@@ -17,10 +17,6 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="x11-apps/xinput"
+RDEPEND="app-arch/gzip
+	 x11-apps/xinput"
 DEPEND="${RDEPEND}"
-
-src_install() {
-	emake DESTDIR="${D}" install || die "Install failed"
-}
-
