@@ -22,8 +22,14 @@ CROS_WORKON_LOCALNAME="chromiumos-assets"
 
 src_install() {
 	insinto /usr/share/chromeos-assets/images
-	doins "${S}"/images/*
+	doins -r "${S}"/images/*
 
-  insinto /usr/share/chromeos-assets/screensavers
-  doins -r "${S}"/screensavers/*
+	insinto /usr/share/chromeos-assets/images_100_percent
+	doins -r "${S}"/images_100_percent/*
+
+	insinto /usr/share/chromeos-assets/images_200_percent
+	doins -r "${S}"/images_200_percent/*
+
+	insinto /usr/share/chromeos-assets/screensavers
+	doins -r "${S}"/screensavers/*
 }
