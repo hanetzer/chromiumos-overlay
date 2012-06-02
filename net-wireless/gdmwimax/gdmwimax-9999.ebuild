@@ -27,6 +27,8 @@ src_prepare() {
 }
 
 src_compile() {
+	# Do not fortify source. See crosbug.com/p/10133 for details.
+	append-flags -U_FORTIFY_SOURCE
 	tc-export AR CC
 	emake -C sdk
 	emake -C cm
