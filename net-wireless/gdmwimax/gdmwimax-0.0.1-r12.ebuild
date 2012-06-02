@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="038b5f21f6cd1f47f40284a89616cd44bb98eafd"
-CROS_WORKON_TREE="bb65cc3f1084d9df838428330a7eb639f4228ac7"
+CROS_WORKON_COMMIT="6f276e8925fed8406452749770b227ea0692bb61"
+CROS_WORKON_TREE="2d33273aa149b8445906ba2bbd9718f63bc52b70"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/gdmwimax"
@@ -29,6 +29,8 @@ src_prepare() {
 }
 
 src_compile() {
+	# Do not fortify source. See crosbug.com/p/10133 for details.
+	append-flags -U_FORTIFY_SOURCE
 	tc-export AR CC
 	emake -C sdk
 	emake -C cm
