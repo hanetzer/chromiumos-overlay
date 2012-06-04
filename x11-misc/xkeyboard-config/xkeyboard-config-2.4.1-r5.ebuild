@@ -39,7 +39,6 @@ PATCHES=(
 	"${FILESDIR}"/xorg-cve-2012-0064.patch
 	"${FILESDIR}"/${P}-backspace-and-arrow-keys.patch
 	"${FILESDIR}"/${P}-gb-dvorak-deadkey.patch
-	"${FILESDIR}"/${P}-symbols-makefile.patch
 	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
 )
@@ -49,16 +48,6 @@ src_prepare() {
 	if [[ ${XORG_EAUTORECONF} != no ]]; then
 		intltoolize --copy --automake || die
 	fi
-
-	# Generate symbols/chromeos.
-	python "${FILESDIR}"/gen_symbols_chromeos.py > symbols/chromeos || die
-
-	# Regenerate symbols/symbols.dir.
-	pushd symbols/
-	xkbcomp -lfhlpR '*' > symbols.dir || die
-	popd
-	# Regenerate symbols/Makefile.in from the patched symbols/Makefile.am.
-	autoreconf -v --install || die
 }
 
 src_compile() {
