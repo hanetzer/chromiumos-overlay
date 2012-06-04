@@ -203,6 +203,9 @@ src_install() {
 
 	diropts -m0700
 	keepdir ${SSL_CNF_DIR}/private
+
+	insinto ${SSL_CNF_DIR}
+	doins "${FILESDIR}"/blacklist
 }
 
 pkg_preinst() {
