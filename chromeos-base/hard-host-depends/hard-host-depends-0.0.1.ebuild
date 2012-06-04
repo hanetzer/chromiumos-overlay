@@ -70,9 +70,11 @@ RDEPEND="${RDEPEND}
 	dev-python/m2crypto
 	dev-python/pygobject
 	dev-python/pygtk
+	dev-python/pyinotify
 	dev-python/pyopenssl
 	dev-python/pyudev
 	dev-python/pyusb
+	dev-python/ws4py
 	=dev-util/boost-build-1.42.0
 	dev-util/cmake
 	dev-util/gob
