@@ -12,6 +12,7 @@ HOMEPAGE="http://mosys.googlecode.com/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
+IUSE="static"
 RDEPEND="sys-apps/util-linux
          >=sys-apps/flashmap-0.3-r4"
 DEPEND="${RDEPEND}"
@@ -28,6 +29,13 @@ src_compile() {
 	export LDFLAGS="$(raw-ldflags)"
 	append-flags "$(${PKG_CONFIG} --cflags fmap)"
 	export CFLAGS
+
+	if use static; then
+		#  We can't use append-ldflags because the build system doesn't
+		#  handle LDFLAGS correctly:
+		#  http://code.google.com/p/mosys/issues/detail?id=3
+		append-flags "-static"
+	fi
 
 	emake || die
 }
