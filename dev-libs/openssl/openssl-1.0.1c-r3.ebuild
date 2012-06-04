@@ -35,15 +35,14 @@ DEPEND="${RDEPEND}
 	test? ( sys-devel/bc )"
 PDEPEND="app-misc/ca-certificates"
 
-# src_unpack() {
-# 	cros-workon-src_unpack
-#	unpack ${P}.tar.gz
-#	SSL_CNF_DIR="/etc/ssl"
-#	sed \
-#		-e "/^DIR=/s:=.*:=${SSL_CNF_DIR}:" \
-#		"${DISTDIR}"/${PN}-c_rehash.sh.${REV} \
-#		> "${WORKDIR}"/c_rehash || die #416717
-# }
+src_unpack() {
+	cros-workon_src_unpack
+	SSL_CNF_DIR="/etc/ssl"
+	sed \
+		-e "/^DIR=/s:=.*:=${SSL_CNF_DIR}:" \
+		"${FILESDIR}"/c_rehash.sh \
+		> "${WORKDIR}"/c_rehash || die #416717
+}
 
 src_prepare() {
 	# Make sure we only ever touch Makefile.org and avoid patching a file
