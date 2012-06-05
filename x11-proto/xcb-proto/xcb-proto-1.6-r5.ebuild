@@ -19,6 +19,7 @@ IUSE="exynos"
 PATCHES=(
 	"${FILESDIR}/1.6-fix_negative.patch"
 	"${FILESDIR}/1.6-libdir-pc.patch"
+	"${FILESDIR}/1.6-xcbgen_xtypes.patch"
 )
 
 RDEPEND=""
@@ -31,7 +32,7 @@ pkg_setup() {
 
 src_prepare() {
 	if use exynos ; then
-		PATCHES+=( "${FILESDIR}/xcb_dri2.patch" )
+		PATCHES+=( "${FILESDIR}/1.6-dri2.patch" )
 	fi
 	xorg-2_src_prepare
 }
