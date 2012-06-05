@@ -35,8 +35,5 @@ src_compile() {
 
 src_install() {
 	emake DESTDIR="${D}" LIBDIR=/usr/$(get_libdir) install || die
-	# distutils takes care of installing servod, and doesn't like
-	# it when something else already installed it ...
-	rm -f "${D}"/usr/bin/servod
 	distutils_src_install
 }
