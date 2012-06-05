@@ -42,7 +42,8 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
-	dev-libs/protobuf"
+	dev-libs/protobuf
+	sys-apps/util-linux"
 
 DEPEND="${RDEPEND}
 	chromeos-base/bootstat
