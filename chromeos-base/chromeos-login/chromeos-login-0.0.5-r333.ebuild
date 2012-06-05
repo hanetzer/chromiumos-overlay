@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="8aeb19c2eb568be5e87ef9783841661ecffb2254"
-CROS_WORKON_TREE="2c0a8adb42e201c2bf6ceeb5a10eea9268df4b75"
+CROS_WORKON_COMMIT="40ea62543f732c0ffc5738d3f22f94d7f93fd30a"
+CROS_WORKON_TREE="ec18dd2d8910a1ea6edc8e6ae615de66216bd5f5"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
@@ -44,7 +44,8 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
-	dev-libs/protobuf"
+	dev-libs/protobuf
+	sys-apps/util-linux"
 
 DEPEND="${RDEPEND}
 	chromeos-base/bootstat
