@@ -22,7 +22,6 @@ RDEPEND="
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
-	dev-libs/opencryptoki
 	dev-libs/openssl
 	dev-libs/protobuf
 	sys-apps/keyutils
@@ -85,7 +84,4 @@ src_install() {
 	dodir /usr/share/dbus-1/services/
 	insinto /usr/share/dbus-1/services/
 	doins "${S}/share/org.chromium.Cryptohome.service"
-
-	# For opencryptoki.
-	dodir /etc/skel/.tpm
 }

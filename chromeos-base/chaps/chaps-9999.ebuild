@@ -24,7 +24,6 @@ RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
-	dev-libs/opencryptoki
 	dev-libs/openssl
 	dev-cpp/gflags"
 
@@ -63,5 +62,7 @@ src_install() {
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
 	doins login_event_client.h
+	insinto /usr/include/chaps/pkcs11
+	doins pkcs11/*.h
 }
 

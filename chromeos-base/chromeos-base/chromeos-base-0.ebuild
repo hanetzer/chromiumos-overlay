@@ -175,7 +175,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "sshd" 204
 	copy_or_add_daemon_user "polkituser" 206  # For policykit
 	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
-	copy_or_add_daemon_user "pkcs11" 208      # For opencryptoki
+	copy_or_add_daemon_user "pkcs11" 208      # For pkcs11 clients
 	copy_or_add_daemon_user "qdlservice" 209  # for QDLService
 	copy_or_add_daemon_user "cromo" 210       # For cromo (modem manager)
 #	copy_or_add_daemon_user "cashew" 211      # Deprecated, do not reuse
@@ -211,13 +211,9 @@ pkg_postinst() {
 	add_users_to_group video "${system_user}"
 
 	# Users which require access to PKCS #11 cryptographic services must be
-	# in the pkcs11 group, which must have the group id 208.
+	# in the pkcs11 group.
 	remove_all_users_from_group pkcs11
 	add_users_to_group pkcs11 root ipsec "${system_user}" chaps wpa
-	# TODO(benchan): Is it still true that pkcs11 must have a group id 208?
-	# If so, we should better enforce that in copy_or_add_daemon_user and
-	# error out if another group is already assigned the group id 208.
-	sed -i "s/^\(pkcs11:[^:]*\):[^:]\+:/\1:208:/" "${ROOT}/etc/group"
 
 	# All users accessing opencryptoki database files and all users for
 	# sandboxing FUSE-based filesystem daemons need to be in the
