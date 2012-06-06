@@ -10,7 +10,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-BOARDS="alex emeraldlake2 link lumpy lumpy64 mario stumpy"
+BOARDS="alex emeraldlake2 link lumpy lumpy64 mario parrot stumpy"
 IUSE="${BOARDS} exynos factory-mode memtest seabios tegra"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
