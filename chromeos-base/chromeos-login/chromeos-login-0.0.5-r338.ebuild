@@ -1,9 +1,9 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 CROS_WORKON_COMMIT="afdaa4ce6ee3df2b0b9f2e8f7d6c367781eb21ee"
 CROS_WORKON_TREE="55cf0b6bd7bba5594810008790277335b88ad06b"
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -103,6 +103,14 @@ src_install() {
 
 	# For user session processes.
 	dodir /etc/skel/log
+
+	# For user NSS database
+	diropts -m0700
+	# Need to dodir each directory in order to get the opts right.
+	dodir /etc/skel/.pki
+	dodir /etc/skel/.pki/nssdb
+	# Yes, the created (empty) DB does work on ARM, x86 and x86_64.
+	nsscertutil -N -d "sql:${D}/etc/skel/.pki/nssdb" -f <(echo '') || die
 
 	# Write a list of currently-set USE flags that session_manager_setup.sh can
 	# read at runtime while constructing Chrome's command line.  If you need to
