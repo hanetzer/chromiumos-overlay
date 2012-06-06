@@ -1,6 +1,6 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-4.6.3.ebuild,v 1.1 2012/05/01 14:05:18 gurligebis Exp $
+# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-4.6.4.ebuild,v 1.1 2012/05/31 16:30:53 gurligebis Exp $
 
 EAPI=2
 inherit eutils linux-info
@@ -11,8 +11,11 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 
 LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
 SLOT="0"
-KEYWORDS="~arm ~amd64 ~ppc ~sparc ~x86"
-IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root +openssl smartcard sqlite"
+KEYWORDS="arm amd64 ~ppc ~sparc x86"
+# TODO(simonjam): Figure out why +openssl broke certificate support. Until then,
+# openssl is disabled unlike upstream.
+# See http://codereview.chromium.org/6833010 and http://crosbug.com/12695 for details.
+IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root openssl +smartcard sqlite"
 
 COMMON_DEPEND="!net-misc/openswan
 	>=dev-libs/gmp-4.1.5
@@ -28,8 +31,7 @@ DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger
-	sys-apps/iproute2"
+	virtual/logger"
 
 UGID="ipsec"
 
@@ -85,11 +87,15 @@ pkg_setup() {
 			ewarn
 		fi
 	fi
+}
 
-	if use non-root; then
-		enewgroup ${UGID}
-		enewuser ${UGID} -1 -1 -1 ${UGID}
-	fi
+src_prepare() {
+	# Initialize the supplementary group access list when pluto starts.
+	# See http://crosbug.com/16252 for details.
+	epatch "${FILESDIR}/${P}-initgroups.patch" || die
+	# Provide an option to ignore peer ID check in pluto.
+	# See http://crosbug.com/24476 for details.
+	epatch "${FILESDIR}/${P}-ignore-peer-id-check.patch" || die
 }
 
 src_configure() {
@@ -109,8 +115,13 @@ src_configure() {
 	# strongSwan builds and installs static libs by default which are
 	# useless to the user (and to strongSwan for that matter) because no
 	# header files or alike get installed... so disabling them is safe.
+	#
+	# On Chromium OS, we use --disable-xauth-vid to prevent strongswan
+	# from sending a XAUTH vendor ID during ISAKMP phase 1 exchange.
+	# See http://crosbug.com/25675 for details.
 	econf \
 		--disable-static \
+		--disable-xauth-vid \
 		$(use_with caps capabilities libcap) \
 		$(use_enable curl) \
 		$(use_enable ldap) \
@@ -168,6 +179,13 @@ src_install() {
 		/etc/ipsec.d/ocspcerts \
 		/etc/ipsec.d/private \
 		/etc/ipsec.d/reqs
+
+	# Replace various IPsec files with symbolic links to runtime generated
+	# files (by l2tpipsec_vpn) on the stateful partition of Chromium OS.
+	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets "{$D}"/etc/ipsec.d/cacerts/cacert.der
+	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
+	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
+	dosym /mnt/stateful_partition/etc/cacert.der /etc/ipsec.d/cacerts/cacert.der || die
 
 	dodoc CREDITS NEWS README TODO || die
 

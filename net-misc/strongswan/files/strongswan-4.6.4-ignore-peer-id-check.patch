@@ -1,6 +1,6 @@
-diff -rupN strongswan-4.6.3/src/pluto/ipsec_doi.c strongswan-4.6.3.patched/src/pluto/ipsec_doi.c
---- strongswan-4.6.3/src/pluto/ipsec_doi.c	2011-10-14 08:41:07.000000000 -0700
-+++ strongswan-4.6.3.patched/src/pluto/ipsec_doi.c	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/pluto/ipsec_doi.c strongswan-4.6.4.patched/src/pluto/ipsec_doi.c
+--- strongswan-4.6.4/src/pluto/ipsec_doi.c	2011-10-16 08:19:04.000000000 -0700
++++ strongswan-4.6.4.patched/src/pluto/ipsec_doi.c	2012-06-05 22:27:58.208664827 -0700
 @@ -112,6 +112,8 @@ enum endpoint {
  	EP_REMOTE = 1 << 1,
  };
@@ -27,9 +27,9 @@ diff -rupN strongswan-4.6.3/src/pluto/ipsec_doi.c strongswan-4.6.3.patched/src/p
  		}
  
  		if (c->spd.that.ca)
-diff -rupN strongswan-4.6.3/src/pluto/plutomain.c strongswan-4.6.3.patched/src/pluto/plutomain.c
---- strongswan-4.6.3/src/pluto/plutomain.c	2012-03-19 23:37:09.000000000 -0700
-+++ strongswan-4.6.3.patched/src/pluto/plutomain.c	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/pluto/plutomain.c strongswan-4.6.4.patched/src/pluto/plutomain.c
+--- strongswan-4.6.4/src/pluto/plutomain.c	2012-02-06 09:05:46.000000000 -0800
++++ strongswan-4.6.4.patched/src/pluto/plutomain.c	2012-06-05 22:27:58.208664827 -0700
 @@ -256,6 +256,8 @@ bool pkcs11_keep_state = FALSE;
  /* by default pluto does not allow pkcs11 proxy access via whack */
  bool pkcs11_proxy = FALSE;
@@ -57,9 +57,9 @@ diff -rupN strongswan-4.6.3/src/pluto/plutomain.c strongswan-4.6.3.patched/src/p
  
  		default:
  #ifdef DEBUG
-diff -rupN strongswan-4.6.3/src/starter/args.c strongswan-4.6.3.patched/src/starter/args.c
---- strongswan-4.6.3/src/starter/args.c	2012-04-12 00:28:28.000000000 -0700
-+++ strongswan-4.6.3.patched/src/starter/args.c	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/starter/args.c strongswan-4.6.4.patched/src/starter/args.c
+--- strongswan-4.6.4/src/starter/args.c	2012-05-30 09:17:15.000000000 -0700
++++ strongswan-4.6.4.patched/src/starter/args.c	2012-06-05 22:27:58.208664827 -0700
 @@ -189,6 +189,7 @@ static const token_info_t token_info[] =
  	{ ARG_STR,  offsetof(starter_config_t, setup.pkcs11initargs), NULL             },
  	{ ARG_ENUM, offsetof(starter_config_t, setup.pkcs11keepstate), LST_bool        },
@@ -68,9 +68,9 @@ diff -rupN strongswan-4.6.3/src/starter/args.c strongswan-4.6.3.patched/src/star
  
  	/* KLIPS keywords */
  	{ ARG_LST,  offsetof(starter_config_t, setup.klipsdebug), LST_klipsdebug       },
-diff -rupN strongswan-4.6.3/src/starter/confread.h strongswan-4.6.3.patched/src/starter/confread.h
---- strongswan-4.6.3/src/starter/confread.h	2012-04-12 00:28:28.000000000 -0700
-+++ strongswan-4.6.3.patched/src/starter/confread.h	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/starter/confread.h strongswan-4.6.4.patched/src/starter/confread.h
+--- strongswan-4.6.4/src/starter/confread.h	2012-05-30 09:17:15.000000000 -0700
++++ strongswan-4.6.4.patched/src/starter/confread.h	2012-06-05 22:27:58.208664827 -0700
 @@ -210,6 +210,7 @@ struct starter_config {
  				char     *pkcs11initargs;
  				bool     pkcs11keepstate;
@@ -79,9 +79,9 @@ diff -rupN strongswan-4.6.3/src/starter/confread.h strongswan-4.6.3.patched/src/
  
  				/* KLIPS keywords */
  				char    **klipsdebug;
-diff -rupN strongswan-4.6.3/src/starter/invokepluto.c strongswan-4.6.3.patched/src/starter/invokepluto.c
---- strongswan-4.6.3/src/starter/invokepluto.c	2012-03-19 23:37:09.000000000 -0700
-+++ strongswan-4.6.3.patched/src/starter/invokepluto.c	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/starter/invokepluto.c strongswan-4.6.4.patched/src/starter/invokepluto.c
+--- strongswan-4.6.4/src/starter/invokepluto.c	2012-02-06 09:05:46.000000000 -0800
++++ strongswan-4.6.4.patched/src/starter/invokepluto.c	2012-06-05 22:27:58.208664827 -0700
 @@ -238,6 +238,10 @@ starter_start_pluto (starter_config_t *c
  	{
  		arg[argc++] = "--pkcs11proxy";
@@ -93,9 +93,9 @@ diff -rupN strongswan-4.6.3/src/starter/invokepluto.c strongswan-4.6.3.patched/s
  
  	if (_pluto_pid)
  	{
-diff -rupN strongswan-4.6.3/src/starter/keywords.c strongswan-4.6.3.patched/src/starter/keywords.c
---- strongswan-4.6.3/src/starter/keywords.c	2012-04-12 00:29:32.000000000 -0700
-+++ strongswan-4.6.3.patched/src/starter/keywords.c	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/starter/keywords.c strongswan-4.6.4.patched/src/starter/keywords.c
+--- strongswan-4.6.4/src/starter/keywords.c	2012-05-30 09:20:52.000000000 -0700
++++ strongswan-4.6.4.patched/src/starter/keywords.c	2012-06-05 22:27:58.208664827 -0700
 @@ -54,7 +54,7 @@ struct kw_entry {
      kw_token_t token;
  };
@@ -269,9 +269,9 @@ diff -rupN strongswan-4.6.3/src/starter/keywords.c strongswan-4.6.3.patched/src/
    };
  
  #ifdef __GNUC__
-diff -rupN strongswan-4.6.3/src/starter/keywords.h strongswan-4.6.3.patched/src/starter/keywords.h
---- strongswan-4.6.3/src/starter/keywords.h	2012-04-12 00:28:28.000000000 -0700
-+++ strongswan-4.6.3.patched/src/starter/keywords.h	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/starter/keywords.h strongswan-4.6.4.patched/src/starter/keywords.h
+--- strongswan-4.6.4/src/starter/keywords.h	2012-05-30 09:17:15.000000000 -0700
++++ strongswan-4.6.4.patched/src/starter/keywords.h	2012-06-05 22:27:58.208664827 -0700
 @@ -43,9 +43,10 @@ typedef enum {
  	KW_PKCS11INITARGS,
  	KW_PKCS11KEEPSTATE,
@@ -289,9 +289,9 @@ diff -rupN strongswan-4.6.3/src/starter/keywords.h strongswan-4.6.3.patched/src/
  
  #endif /* _KEYWORDS_H_ */
 -
-diff -rupN strongswan-4.6.3/src/starter/keywords.txt strongswan-4.6.3.patched/src/starter/keywords.txt
---- strongswan-4.6.3/src/starter/keywords.txt	2012-04-12 00:28:28.000000000 -0700
-+++ strongswan-4.6.3.patched/src/starter/keywords.txt	2012-05-08 11:01:16.921003004 -0700
+diff -rupN strongswan-4.6.4/src/starter/keywords.txt strongswan-4.6.4.patched/src/starter/keywords.txt
+--- strongswan-4.6.4/src/starter/keywords.txt	2012-05-30 09:17:15.000000000 -0700
++++ strongswan-4.6.4.patched/src/starter/keywords.txt	2012-06-05 22:27:58.208664827 -0700
 @@ -56,6 +56,7 @@ pkcs11module,      KW_PKCS11MODULE
  pkcs11initargs,    KW_PKCS11INITARGS
  pkcs11keepstate,   KW_PKCS11KEEPSTATE
