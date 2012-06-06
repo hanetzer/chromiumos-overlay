@@ -21,6 +21,8 @@ PATCHES=(
         "${FILESDIR}/1.0.5-play_timestamp.patch"
         "${FILESDIR}/1.0.5-add_slot0.patch"
         "${FILESDIR}/1.0.5-getopt.patch"
+        "${FILESDIR}/1.0.5-fix_init_absinfo.patch"
+        "${FILESDIR}/1.0.5-add_resolution.patch"
 )
 
 src_install() {
