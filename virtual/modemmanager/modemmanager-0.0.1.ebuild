@@ -9,9 +9,10 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-modemmanager_next"
+IUSE="+modemmanager_next"
 
-# crosbug.com/26708 tracks the modemmanager -> modemmanager-next transition
+# TODO(benchan): Remove this virtual package once there is no need to switch
+# back to modemmanager.
 DEPEND="
 	modemmanager_next? (
 		net-misc/modemmanager-next
