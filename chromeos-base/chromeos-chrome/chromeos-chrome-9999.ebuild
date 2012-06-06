@@ -931,10 +931,9 @@ install_pyauto_dep_resources() {
 }
 
 install_page_cycler_dep_resources() {
-	local from="${CHROME_CACHE_DIR}/src/data/page_cycler"
 	local test_dir="${1}"
 
-	if [ -r "${from}" ]; then
+	if [ -r "${CHROME_ROOT}/src/data/page_cycler" ]; then
 		echo "Copying Page Cycler Data into ${test_dir}"
 		mkdir -p "${test_dir}"
 		install_test_resources "${test_dir}" \
