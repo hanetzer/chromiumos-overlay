@@ -20,10 +20,6 @@ X86_DEPEND="
 	       sys-apps/coreboot-utils
 
 "
-# TODO(dianders) Eventually we'll have virtual/chromeos-bootimage.
-# When that happens the various implementations (like
-# sys-boot/chromeos-bootimage-seaboard) will do the depending on
-# sys-boot/tegra2-public-firmware-fdts.  For now we'll hardcode it.
 DEPEND="
 	exynos? ( sys-boot/exynos-pre-boot )
 	tegra? ( virtual/tegra-bct )
@@ -34,10 +30,6 @@ DEPEND="
 	seabios? ( sys-boot/chromeos-seabios )
 	memtest? ( sys-boot/chromeos-memtest )
 	"
-
-# TODO(clchiou): Here are the action items for fixing x86 build that I can
-# think of:
-# * Make BCT optional to cros_bundle_firmware because it is specific to ARM
 
 S=${WORKDIR}
 
