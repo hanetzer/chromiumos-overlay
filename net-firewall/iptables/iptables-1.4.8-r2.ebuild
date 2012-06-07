@@ -18,6 +18,9 @@ DEPEND="virtual/os-headers"
 RDEPEND=""
 
 src_prepare() {
+	# use the saner headers from the kernel
+	rm -f include/linux/{kernel,types}.h
+
 	epatch "${FILESDIR}/${P}-build.patch" #321271
 	epatch_user
 	eautoreconf
