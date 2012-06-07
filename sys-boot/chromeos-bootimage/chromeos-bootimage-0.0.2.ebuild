@@ -56,7 +56,6 @@ src_compile() {
 	local seabios_flags=''
 	local bct_file
 	local fdt_file
-	local fdt_legacy_file
 	local image_file
 	local devkeys_file
 	local dd_params
@@ -70,11 +69,6 @@ src_compile() {
 
 	# Location of the U-Boot flat device tree source file
 	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
-	fdt_legacy_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}_legacy.dts"
-	if [ ! -f "${fdt_legacy_file}" ]; then
-		elog "Dedicated device tree \"${fdt_legacy_file}\" not found"
-		fdt_legacy_file=${fdt_file}
-	fi
 
 	if use memtest; then
 		image_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
@@ -116,12 +110,13 @@ src_compile() {
 	if netboot_required; then
 		image_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
 	fi
-	# Make legacy image
+	# Make legacy image, with console always enabled
 	cros_bundle_firmware \
 		${common_flags} \
-		--dt ${fdt_legacy_file} \
+		--dt ${fdt_file} \
 		--uboot ${image_file} \
 		--add-config-int load_env 1 \
+		--add-node-enable console 1 \
 		${seabios_flags} \
 		--outdir legacy \
 		--output legacy_image.bin ||
