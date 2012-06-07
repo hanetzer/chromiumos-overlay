@@ -49,6 +49,49 @@ netboot_required() {
 	! use memtest && ( use factory-mode || use link )
 }
 
+# Build standard and legacy images for the given device tree file
+# Args:
+#    $1: fdt_file - full name of device tree file
+#    $2: image_file - full name of image file to write to
+#    $3: common_flags - flags to use for all images
+#    $4: verified_flags - extra flags to use for verified image
+#    $5: nv_flags - extra flags to pass for non-verified image
+build_image() {
+	local legacy_image_file
+	local fdt_file="$1"
+	local image_file="$2"
+	local common_flags="$3"
+	local verified_flags="$4"
+	local nv_flags="$5"
+
+	einfo "Building images for ${fdt_file}"
+	cros_bundle_firmware \
+		${common_flags} \
+		--dt ${fdt_file} \
+		--uboot ${image_file} \
+		--bootcmd "vboot_twostop" \
+		--bootsecure \
+		${verified_flags} \
+		--outdir normal \
+		--output image.bin ||
+		die "failed to build image."
+
+	# Make legacy image
+	legacy_image_file="${image_file}"
+	if netboot_required; then
+		legacy_image_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
+	fi
+	cros_bundle_firmware \
+		${common_flags} \
+		--dt ${fdt_file} \
+		--uboot ${legacy_image_file} \
+		--add-config-int load_env 1 \
+		${nv_flags} \
+		--outdir legacy \
+		--output legacy_image.bin ||
+		die "failed to build legacy image."
+}
+
 src_compile() {
 
 	local secure_flags=''
@@ -96,31 +139,8 @@ src_compile() {
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
 	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
 
-	cros_bundle_firmware \
-		${common_flags} \
-		--dt ${fdt_file} \
-		--uboot ${image_file} \
-		--bootcmd "vboot_twostop" \
-		--bootsecure \
-		${secure_flags} \
-		--outdir normal \
-		--output image.bin ||
-	die "failed to build image."
-
-	if netboot_required; then
-		image_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
-	fi
-	# Make legacy image, with console always enabled
-	cros_bundle_firmware \
-		${common_flags} \
-		--dt ${fdt_file} \
-		--uboot ${image_file} \
-		--add-config-int load_env 1 \
-		--add-node-enable console 1 \
-		${seabios_flags} \
-		--outdir legacy \
-		--output legacy_image.bin ||
-	die "failed to build legacy image."
+	build_image "${fdt_file}" "${image_file}" "${common_flags}" \
+			"${verified_flags}" "${seabios_flags}"
 
 	if use x86 || use amd64; then
 		if use link || use emeraldlake2 || use parrot; then
