@@ -72,7 +72,7 @@ qemu_run() {
 	# chroot or use qemu.
 	if [ "${ROOT:-/}" = "/" ]; then
 		"$@" || die
-	elif [ "${ARCH}" = "amd64" ]; then
+	elif [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "x86" ]; then
 		chroot "${ROOT}" "$@" || die
 	elif [ "${ARCH}" = "arm" ]; then
 		# Disabled until segfault can be tracked down.
