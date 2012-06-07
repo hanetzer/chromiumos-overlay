@@ -141,36 +141,6 @@ src_compile() {
 
 	build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
 			"${verified_flags}" "${seabios_flags}"
-
-	if use x86 || use amd64; then
-		if use link || use emeraldlake2 || use parrot; then
-			dd_params='bs=2M skip=1'
-		else
-			dd_params='bs=512K skip=3'
-		fi
-		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
-		local ifdtool="/usr/bin/ifdtool"
-		if [ -r ${skeleton} ]; then
-			# cros_bundle_firmware only produces the system firmware.
-			# In order to produce a working image on Sandybridge we
-			# need to embed this image into a Firmware Descriptor image
-			# that contains ME firmware and possibly some other BLOBs.
-			dd if=image.bin of=image_sys.bin ${dd_params} || die
-			dd if=legacy_image.bin of=legacy_image_sys.bin \
-				 ${dd_params} || die
-			cp ${skeleton} image.ifd || die
-			${ifdtool} -i BIOS:image_sys.bin image.ifd || die
-			cp ${skeleton} legacy_image.ifd || die
-			${ifdtool} -i BIOS:legacy_image_sys.bin \
-				legacy_image.ifd || die
-			# Rename the final image.ifd to image.bin, so we don't
-			# have to add a lot of handling for two different names
-			# in other places. But we also want to keep the original
-			# cros_bundle_firmware images around (as image_sys.bin)
-			mv image.ifd.new image.bin || die
-			mv legacy_image.ifd.new legacy_image.bin || die
-		fi
-	fi
 }
 
 src_install() {
@@ -178,11 +148,4 @@ src_install() {
 	doins image.bin
 	doins legacy_image.bin
 	doins ${BMPBLK_FILE}
-	if use x86 || use amd64; then
-		local skeleton="${CROS_FIRMWARE_ROOT}/skeleton.bin"
-		if [ -r ${skeleton} ]; then
-			doins image_sys.bin
-			doins legacy_image_sys.bin
-		fi
-	fi
 }
