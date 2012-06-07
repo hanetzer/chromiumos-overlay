@@ -105,6 +105,11 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-ps3-0002.patch"
 	epatch "${FILESDIR}/${P}-ps3-0003.patch"
 
+	# Fix EIR parsing causing class of devices to be lost, retrieved
+	# from GIT head.
+	epatch "${FILESDIR}/${P}-eir-Fix-incorrect-eir_has_data_type-parsing.patch"
+	epatch "${FILESDIR}/${P}-eir-Fix-incorrect-eir_length-parsing.patch"
+
 	eautoreconf
 
 	if use cups; then
