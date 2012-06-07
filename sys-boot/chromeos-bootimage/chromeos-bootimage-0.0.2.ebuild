@@ -10,6 +10,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
+# TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex emeraldlake2 link lumpy lumpy64 mario parrot stumpy"
 IUSE="${BOARDS} exynos factory-mode memtest seabios tegra"
 
@@ -58,8 +59,15 @@ build_image() {
 	local common_flags="$3"
 	local verified_flags="$4"
 	local nv_flags="$5"
+	local board
+	local base
 
 	einfo "Building images for ${fdt_file}"
+
+	# Bash stuff to turn '/path/to/exynos-5250-snow.dts' into 'snow'
+	base=$(basename ${fdt_file})
+	board=${base%%.dts}
+	board=${board##*-}
 	cros_bundle_firmware \
 		${common_flags} \
 		--dt ${fdt_file} \
@@ -68,7 +76,7 @@ build_image() {
 		--bootsecure \
 		${verified_flags} \
 		--outdir out \
-		--output image.bin ||
+		--output "image-${board}.bin" ||
 		die "failed to build image."
 
 	# Make non-vboot image
@@ -84,7 +92,7 @@ build_image() {
 		--add-node-enable console 1 \
 		${nv_flags} \
 		--outdir nvout \
-		--output nv_image.bin ||
+		--output "nv_image-${board}.bin" ||
 		die "failed to build legacy image."
 }
 
@@ -105,9 +113,6 @@ src_compile() {
 
 	# Location of the board-specific bct file
 	bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
-
-	# Location of the U-Boot flat device tree source file
-	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
 
 	if use memtest; then
 		uboot_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
@@ -135,8 +140,23 @@ src_compile() {
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
 	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
 
-	build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
-			"${verified_flags}" "${seabios_flags}"
+	# TODO(sjg@chromium.org): For x86 we can't build all the images
+	# yet, since we need to use a different skeleton file for each.
+	if use x86 || use amd64; then
+		einfo "x86: Only building for board ${U_BOOT_FDT_USE}"
+		# Location of the U-Boot flat device tree source file
+		fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
+		build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
+				"${verified_flags}" "${seabios_flags}"
+
+	else
+		einfo "Building all images"
+		for fdt_file in ${CROS_FIRMWARE_ROOT}/dts/*.dts; do
+			build_image "${fdt_file}" "${uboot_file}" \
+				"${common_flags}" \
+				"${verified_flags}" "${seabios_flags}"
+		done
+	fi
 }
 
 src_install() {
