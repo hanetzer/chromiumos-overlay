@@ -49,7 +49,10 @@ netboot_required() {
 	! use memtest && ( use factory-mode || use link )
 }
 
-# Build standard and legacy images for the given device tree file
+# Build vboot and non-vboot images for the given device tree file
+# A vboot image performs a full verified boot, and this is the normal case.
+# A non-vboot image doesn't do a check for updated firmware, and just boots
+# the kernel without verity enabled.
 # Args:
 #    $1: fdt_file - full name of device tree file
 #    $2: uboot_file - full name of U-Boot binary
@@ -57,7 +60,7 @@ netboot_required() {
 #    $4: verified_flags - extra flags to use for verified image
 #    $5: nv_flags - extra flags to pass for non-verified image
 build_image() {
-	local legacy_uboot_file
+	local nv_uboot_file
 	local fdt_file="$1"
 	local uboot_file="$2"
 	local common_flags="$3"
@@ -72,23 +75,24 @@ build_image() {
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${verified_flags} \
-		--outdir normal \
+		--outdir out \
 		--output image.bin ||
 		die "failed to build image."
 
-	# Make legacy image
-	legacy_uboot_file="${uboot_file}"
+	# Make non-vboot image
+	nv_uboot_file="${uboot_file}"
 	if netboot_required; then
-		legacy_uboot_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
+		nv_uboot_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
 	fi
 	cros_bundle_firmware \
 		${common_flags} \
 		--dt ${fdt_file} \
-		--uboot ${legacy_uboot_file} \
+		--uboot ${nv_uboot_file} \
 		--add-config-int load_env 1 \
+		--add-node-enable console 1 \
 		${nv_flags} \
-		--outdir legacy \
-		--output legacy_image.bin ||
+		--outdir nvout \
+		--output nv_image.bin ||
 		die "failed to build legacy image."
 }
 
@@ -145,7 +149,6 @@ src_compile() {
 
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
-	doins image.bin
-	doins legacy_image.bin
+	doins *image*.bin
 	doins ${BMPBLK_FILE}
 }
