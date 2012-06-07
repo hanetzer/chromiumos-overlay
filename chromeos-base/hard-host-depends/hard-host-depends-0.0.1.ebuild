@@ -89,6 +89,7 @@ RDEPEND="${RDEPEND}
 	media-libs/mesa
 	net-misc/gsutil
 	sys-apps/module-init-tools
+        sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
 	=sys-devel/automake-1.10*
 	sys-devel/clang
