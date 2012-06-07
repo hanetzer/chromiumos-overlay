@@ -13,7 +13,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.gz"
 LICENSE="fontconfig"
 SLOT="1.0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="doc -is_desktop"
+IUSE="doc -highdpi -is_desktop"
 
 # Purposefully dropped the xml USE flag and libxml2 support. Having this is
 # silly since expat is the preferred way to go per upstream and libxml2 support
@@ -31,6 +31,15 @@ DEPEND="${RDEPEND}
 		=app-text/docbook-sgml-dtd-3.1*
 	)"
 PDEPEND="app-admin/eselect-fontconfig"
+
+# Checks that a passed-in fontconfig default symlink (e.g. "10-autohint.conf")
+# is present and dies if it isn't.
+check_fontconfig_default() {
+	local path="${D}"/etc/fonts/conf.d/"$1"
+	if [ ! -L "$path" ]; then
+		die "Didn't find $1 among default fontconfig settings (at $path)."
+	fi
+}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-latin-reorder.patch	#130466
@@ -75,12 +84,22 @@ src_install() {
 	doins "${S}"/fonts.conf
 	doins "${FILESDIR}"/local.conf
 
+	# Test that fontconfig's defaults for basic rendering settings match what we
+	# want to use.
+	check_fontconfig_default 10-autohint.conf
+	check_fontconfig_default 10-hinting.conf
+	check_fontconfig_default 10-hinting-slight.conf
+	check_fontconfig_default 10-sub-pixel-rgb.conf
+
 	# There's a lot of variability across different displays with subpixel
 	# rendering.  Until we have a better solution, turn it off and use grayscale
-	# instead on desktop boards.
-	if use is_desktop; then
+	# instead on desktop boards.  Also disable it on high-DPI displays, since
+	# they have little need for it and use subpixel positioning, which can
+	# interact poorly with it (http://crbug.com/125066#c8).
+	if use is_desktop || use highdpi; then
 		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
 		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/.
+		check_fontconfig_default 10-no-sub-pixel.conf
 	fi
 
 	doman $(find "${S}" -type f -name *.1 -print)
