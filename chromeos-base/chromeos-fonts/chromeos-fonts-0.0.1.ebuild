@@ -70,10 +70,13 @@ qemu_run() {
 
 	# If we're running directly on the target (e.g. gmerge), we don't need to
 	# chroot or use qemu.
-	if [ "${ROOT:-/}" == "/" ]; then
+	if [ "${ROOT:-/}" = "/" ]; then
 		"$@" || die
-	elif [ "${ARCH}" == "amd64" ]; then
+	elif [ "${ARCH}" = "amd64" ]; then
 		chroot "${ROOT}" "$@" || die
+	elif [ "${ARCH}" = "arm" ]; then
+		# Disabled until segfault can be tracked down.
+		return 0
 	else
 		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
 		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
