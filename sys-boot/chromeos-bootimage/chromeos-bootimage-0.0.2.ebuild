@@ -52,14 +52,14 @@ netboot_required() {
 # Build standard and legacy images for the given device tree file
 # Args:
 #    $1: fdt_file - full name of device tree file
-#    $2: image_file - full name of image file to write to
+#    $2: uboot_file - full name of U-Boot binary
 #    $3: common_flags - flags to use for all images
 #    $4: verified_flags - extra flags to use for verified image
 #    $5: nv_flags - extra flags to pass for non-verified image
 build_image() {
-	local legacy_image_file
+	local legacy_uboot_file
 	local fdt_file="$1"
-	local image_file="$2"
+	local uboot_file="$2"
 	local common_flags="$3"
 	local verified_flags="$4"
 	local nv_flags="$5"
@@ -68,7 +68,7 @@ build_image() {
 	cros_bundle_firmware \
 		${common_flags} \
 		--dt ${fdt_file} \
-		--uboot ${image_file} \
+		--uboot ${uboot_file} \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${verified_flags} \
@@ -77,14 +77,14 @@ build_image() {
 		die "failed to build image."
 
 	# Make legacy image
-	legacy_image_file="${image_file}"
+	legacy_uboot_file="${uboot_file}"
 	if netboot_required; then
-		legacy_image_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
+		legacy_uboot_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
 	fi
 	cros_bundle_firmware \
 		${common_flags} \
 		--dt ${fdt_file} \
-		--uboot ${legacy_image_file} \
+		--uboot ${legacy_uboot_file} \
 		--add-config-int load_env 1 \
 		${nv_flags} \
 		--outdir legacy \
@@ -99,7 +99,7 @@ src_compile() {
 	local seabios_flags=''
 	local bct_file
 	local fdt_file
-	local image_file
+	local uboot_file
 	local devkeys_file
 	local dd_params
 
@@ -114,10 +114,10 @@ src_compile() {
 	fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
 
 	if use memtest; then
-		image_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
+		uboot_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
 	else
 		# We only have a single U-Boot, and it is called u-boot.bin
-		image_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
+		uboot_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
 	fi
 
 	# Location of the devkeys
@@ -139,7 +139,7 @@ src_compile() {
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
 	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
 
-	build_image "${fdt_file}" "${image_file}" "${common_flags}" \
+	build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
 			"${verified_flags}" "${seabios_flags}"
 
 	if use x86 || use amd64; then
