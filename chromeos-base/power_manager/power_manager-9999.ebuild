@@ -14,7 +14,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -aura"
-IUSE="${IUSE} -has_keyboard_backlight +x11"
+IUSE="${IUSE} -has_keyboard_backlight"
 
 LIBCHROME_VERS="125070"
 
@@ -48,7 +48,6 @@ src_compile() {
 	export USE_ALS=$(usex als y "")
 	export USE_AURA=$(usex aura y "")
 	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
-	export USE_X11=$(usex x11 y "")
 
 	emake
 }
@@ -71,9 +70,6 @@ src_install() {
 	dobin out/powerd
 	dobin out/powerm
 	dobin out/suspend_delay_sample
-	if use x11; then
-		dobin out/xidle-example
-	fi
 
 	# Scripts
 	dobin debug_sleep_quickly
@@ -82,7 +78,7 @@ src_install() {
 	dobin send_metrics_on_resume
 
 	insinto /usr/share/power_manager
-        doins config/*
+	doins config/*
 	# If is a desktop system, shorten the react_ms, and bring in the
 	# lock_ms to off_ms + react_ms
 	if use is_desktop; then
