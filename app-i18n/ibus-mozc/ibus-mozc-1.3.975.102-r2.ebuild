@@ -8,7 +8,9 @@ DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2"
 LICENSE="BSD"
+# TOOD(nona): Remove libcurl dependency after upgrade mozc to the next version.
 RDEPEND=">=app-i18n/ibus-1.2
+         dev-libs/openssl
          dev-libs/protobuf
          net-misc/curl"
 DEPEND="${RDEPEND}"
