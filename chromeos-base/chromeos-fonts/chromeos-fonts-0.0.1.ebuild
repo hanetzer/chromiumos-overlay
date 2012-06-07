@@ -74,9 +74,6 @@ qemu_run() {
 		"$@" || die
 	elif [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "x86" ]; then
 		chroot "${ROOT}" "$@" || die
-	elif [ "${ARCH}" = "arm" ]; then
-		# Disabled until segfault can be tracked down.
-		return 0
 	else
 		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
 		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
