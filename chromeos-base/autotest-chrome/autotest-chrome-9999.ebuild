@@ -81,6 +81,7 @@ IUSE_TESTS=(
 	+tests_platform_Pkcs11InitOnLogin
 	+tests_platform_Pkcs11Persistence
 	+tests_platform_ProcessPrivileges
+	+tests_power_Consumption
 	+tests_power_Idle
 	+tests_power_IdleServer
 	+tests_power_LoadTest
