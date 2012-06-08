@@ -128,7 +128,7 @@ src_compile() {
 	die "failed to build legacy image."
 
 	if use x86 || use amd64; then
-		if use link || use emeraldlake2; then
+		if use link || use emeraldlake2 || use parrot; then
 			dd_params='bs=2M skip=1'
 		else
 			dd_params='bs=512K skip=3'
