@@ -262,6 +262,7 @@ IUSE_TESTS="
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BatteryCharge
+	+tests_power_Consumption
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
 	+tests_power_Draw
