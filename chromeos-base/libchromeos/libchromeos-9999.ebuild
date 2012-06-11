@@ -26,7 +26,6 @@ LIBCHROME_DEPEND=$(
 RDEPEND="${LIBCHROME_DEPEND}
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
-	dev-libs/libpcre
 	dev-libs/openssl
 	dev-libs/protobuf"
 
