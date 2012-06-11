@@ -15,3 +15,11 @@ RDEPEND=">=dev-db/sqlite-3.6.18
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig
 	>=sys-devel/gettext-0.16.1"
+
+src_prepare() {
+	# We use pyzy-0.0.4 + patches to fix bugs instead of later version of pyzy
+	# since some API are changed on pyzy-0.0.5.
+	epatch "${FILESDIR}"/${P}-fixes-double-pinyin-parse-error.patch
+	epatch "${FILESDIR}"/${P}-fixes-incorrect-memory-handling-on-database.patch
+}
+
