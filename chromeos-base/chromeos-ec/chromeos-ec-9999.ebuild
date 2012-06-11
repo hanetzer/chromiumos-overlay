@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="test bds"
+IUSE="test bds snow"
 
 # We don't want binchecks since we're cross-compiling firmware images using
 # non-standard layout.
@@ -30,16 +30,22 @@ set_build_env() {
 
 	# Allow building for boards that don't have an EC
 	# (so we can compile test on bots for testing).
-	export BOARD=$(usev bds || get_current_board_with_variant)
-	if [[ ! -d board/${BOARD} ]] ; then
-		ewarn "Sorry, ${BOARD} not supported; doing build-test with BOARD=bds"
-		BOARD=bds
+	export EC_BOARD=$(usev bds || get_current_board_with_variant)
+	if [[ ! -d board/${EC_BOARD} ]] ; then
+		ewarn "Sorry, ${EC_BOARD} not supported; doing build-test with BOARD=bds"
+		EC_BOARD=bds
+	fi
+
+	# FIXME: hack to separate BOARD= used by EC Makefile and Portage,
+	# crosbug.com/p/10377
+	if use snow; then
+		EC_BOARD=snow
 	fi
 }
 
 src_compile() {
 	set_build_env
-	emake all
+	BOARD=${EC_BOARD} emake all
 }
 
 src_test() {
@@ -53,10 +59,10 @@ src_install() {
 	set_build_env
 	# EC firmware binary
 	insinto /firmware
-	doins build/${BOARD}/ec.bin
+	doins build/${EC_BOARD}/ec.bin
 	# Intermediate files for debugging
-	doins build/${BOARD}/ec.*.elf
+	doins build/${EC_BOARD}/ec.*.elf
 	# Utilities
 	exeinto /usr/bin
-	doexe build/${BOARD}/util/ectool
+	doexe build/${EC_BOARD}/util/ectool
 }
