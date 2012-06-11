@@ -56,6 +56,7 @@ ALL_BOARDS=(
 	tegra2_wario
 	tegra3-generic
 	waluigi
+	cardhu
 	x86-agz
 	x86-alex
 	x86-alex_he
