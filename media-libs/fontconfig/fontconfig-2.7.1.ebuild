@@ -102,6 +102,14 @@ src_install() {
 		check_fontconfig_default 10-no-sub-pixel.conf
 	fi
 
+	# Disable hinting on high-DPI displays, where we're already using subpixel
+	# positioning.
+	if use highdpi; then
+		rm "${D}"/etc/fonts/conf.d/10-hinting.conf
+		dosym ../conf.avail/10-unhinted.conf /etc/fonts/conf.d/.
+		check_fontconfig_default 10-unhinted.conf
+	fi
+
 	doman $(find "${S}" -type f -name *.1 -print)
 	newman doc/fonts-conf.5 fonts.conf.5
 	dodoc doc/fontconfig-user.{txt,pdf}
