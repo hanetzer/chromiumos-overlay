@@ -55,6 +55,11 @@ src_compile() {
 		cros_installer
 }
 
+
+src_test() {
+	emake tests
+}
+
 src_install() {
 	local path
 	if use cros_host ; then
