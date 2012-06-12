@@ -7,7 +7,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 CROS_WORKON_LOCALNAME="../common" # FIXME: HACK
 
-LIBCHROME_VERS=( 85268 125070 )
+LIBCHROME_VERS=( 125070 )
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
 
