@@ -6,7 +6,7 @@ EAPI=4
 inherit xorg-2
 
 DESCRIPTION="Generic Linux input driver"
-KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86"
 IUSE=""
 
 RDEPEND=">=x11-base/xorg-server-1.11.99.901
