@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="d6f71088c0e177931ad141e5b2f2376c0364b11b"
-CROS_WORKON_TREE="c67804655630c2c299f2dc17e14aabadb8f01029"
+CROS_WORKON_COMMIT="e7ebc99d01d74fa53569f6e551622e42ebf3ba22"
+CROS_WORKON_TREE="534c525f23fc6298b4787d192b0ab88b6d30b831"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
