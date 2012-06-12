@@ -319,14 +319,6 @@ cros-kernel2_src_configure() {
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 		cp -f "${config}" "$(get_build_cfg)" || die
 	else
-		# TODO(30872): remove this check June 1, 2012
-		# Check for stale prepareconfig.
-		if [ "${PV}" = "9999" ] &&
-			! grep -q outputfile chromeos/scripts/prepareconfig; then
-			die "Out of date prepareconfig is not supported.\n" \
-				"Please 'repo sync . && repo rebase' in:\n" \
-				"${S}"
-		fi
 		chromeos/scripts/prepareconfig ${config} "$(get_build_cfg)" || die
 	fi
 
