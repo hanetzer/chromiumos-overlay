@@ -23,6 +23,7 @@ PATCHES=(
         "${FILESDIR}/1.0.5-getopt.patch"
         "${FILESDIR}/1.0.5-fix_init_absinfo.patch"
         "${FILESDIR}/1.0.5-add_resolution.patch"
+        "${FILESDIR}/1.0.5-raw_access_api.patch"
 )
 
 src_install() {
