@@ -218,6 +218,7 @@ eblit-src_unpack-post() {
 	epatch "${FILESDIR}"/2.11/glibc-2.11-disable-memset-warning.patch
 	epatch "${FILESDIR}"/local/glibc-2.11-vfprintf-args.patch
 	epatch "${FILESDIR}"/local/glibc-2.11-arm-hardfp.patch
+	epatch "${FILESDIR}"/2.11/glibc-2.11-resolv-milliseconds.patch
 
 	if use hardened ; then
 		cd "${S}"

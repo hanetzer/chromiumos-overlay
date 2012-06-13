@@ -1,0 +1,94 @@
+Provide the means for specifying the DNS server timeout
+in milliseconds in order to do sub-second retry/failover.
+
+This change is being discussed upstream in the thread:
+http://sourceware.org/ml/libc-alpha/2012-06/msg00571.html
+
+--- resolv/res_debug.c	2012-06-22 20:53:31.000000000 -0700
++++ resolv/res_debug.c	2012-06-22 20:55:10.000000000 -0700
+@@ -588,6 +588,7 @@
+ 	case RES_USEBSTRING:	return "ip6-bytstring";
+ 	case RES_USE_EDNS0:	return "edns0";
+ 	case RES_USE_DNSSEC:	return "dnssec";
++	case RES_TIMEOUT_MS:	return "timeout-in-milliseconds";
+ 				/* XXX nonreentrant */
+ 	default:		sprintf(nbuf, "?0x%lx?", (u_long)option);
+ 				return (nbuf);
+--- resolv/res_init.c	2012-06-22 20:53:31.000000000 -0700
++++ resolv/res_init.c	2012-06-22 20:55:10.000000000 -0700
+@@ -503,11 +503,20 @@
+ 				printf(";;\tndots=%d\n", statp->ndots);
+ #endif
+ 		} else if (!strncmp(cp, "timeout:", sizeof("timeout:") - 1)) {
++			statp->options &= ~RES_TIMEOUT_MS;
+ 			i = atoi(cp + sizeof("timeout:") - 1);
+ 			if (i <= RES_MAXRETRANS)
+ 				statp->retrans = i;
+ 			else
+ 				statp->retrans = RES_MAXRETRANS;
++		} else if (!strncmp(cp, "timeout-ms:",
++				    sizeof("timeout-ms:") - 1)) {
++			statp->options |= RES_TIMEOUT_MS;
++			i = atoi(cp + sizeof("timeout-ms:") - 1);
++			if (i <= RES_MAXRETRANS * 1000)
++				statp->retrans = i;
++			else
++				statp->retrans = RES_MAXRETRANS * 1000;
+ 		} else if (!strncmp(cp, "attempts:", sizeof("attempts:") - 1)){
+ 			i = atoi(cp + sizeof("attempts:") - 1);
+ 			if (i <= RES_MAXRETRY)
+--- resolv/resolv.h	2012-06-22 20:53:31.000000000 -0700
++++ resolv/resolv.h	2012-06-22 21:01:37.000000000 -0700
+@@ -219,6 +219,8 @@
+ #define RES_SNGLKUPREOP	0x00400000	/* -"-, but open new socket for each
+ 					   request */
+ #define RES_USE_DNSSEC	0x00800000	/* use DNSSEC using OK bit in OPT */
++#define RES_TIMEOUT_MS	0x02000000	/* Timeout is specified in
++					   milliseconds instead of seconds. */
+ 
+ #define RES_DEFAULT	(RES_RECURSE|RES_DEFNAMES|RES_DNSRCH|RES_NOIP6DOTINT)
+ 
+--- resolv/res_send.c	2012-06-22 20:53:31.000000000 -0700
++++ resolv/res_send.c	2012-06-22 21:02:11.000000000 -0700
+@@ -1011,11 +1011,29 @@
+ 	/*
+ 	 * Compute time for the total operation.
+ 	 */
+-	int seconds = (statp->retrans << ns);
++	int operation_time;
++	if (statp->retrans > (INT_MAX >> ns)) {
++		/*
++		 * Saturate operation_time if it would have exceeded INT_MAX
++		 */
++		operation_time = INT_MAX;
++	} else {
++		operation_time = (statp->retrans << ns);
++	}
+ 	if (ns > 0)
+-		seconds /= statp->nscount;
+-	if (seconds <= 0)
++		operation_time /= statp->nscount;
++	time_t seconds;
++	long milliseconds;
++	if (operation_time <= 0) {
+ 		seconds = 1;
++		milliseconds = 0;
++	} else if ((statp->options & RES_TIMEOUT_MS) != 0) {
++		seconds = operation_time / 1000;
++		milliseconds = operation_time % 1000;
++	} else {
++		seconds = operation_time;
++		milliseconds = 0;
++	}
+ 	bool single_request = (statp->options & RES_SNGLKUP) != 0;
+ 	bool single_request_reopen = (statp->options & RES_SNGLKUPREOP) != 0;
+ 	int save_gotsomewhere = *gotsomewhere;
+@@ -1027,7 +1045,7 @@
+ 		return retval;
+  retry:
+ 	evNowTime(&now);
+-	evConsTime(&timeout, seconds, 0);
++	evConsTime(&timeout, seconds, milliseconds * 1000000L);
+ 	evAddTime(&finish, &now, &timeout);
+ 	int need_recompute = 0;
+ 	int nwritten = 0;
