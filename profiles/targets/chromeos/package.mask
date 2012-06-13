@@ -42,9 +42,6 @@
 # Custom patches
 >sys-boot/syslinux-3.83-r4
 
-# Mask until chromiumos specific patches are added to newer upstream ebuilds
->x11-drivers/xf86-input-mouse-1.7.0-r1
-
 # chromeos-chrome-14.0.787.0_rc-1 causes test failures, so block it.
 # TODO(davidjames): Remove this once the bug is fixed.
 =chromeos-base/chromeos-chrome-14.0.787.0_rc-r1
