@@ -31,6 +31,7 @@ IUSE_TESTS=(
 	# Inherits from chrome_test or pyauto_test.
 	+tests_desktopui_BrowserTest
 	+tests_desktopui_OMXTest
+	+tests_desktopui_PyAutoEnduranceTests
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoInstall
 	+tests_desktopui_PyAutoPerfTests
