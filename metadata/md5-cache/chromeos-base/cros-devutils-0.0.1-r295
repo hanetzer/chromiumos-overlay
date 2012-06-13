@@ -3,10 +3,10 @@ DEPEND=>=dev-vcs/git-1.6 >=app-admin/eselect-python-20091230
 DESCRIPTION=Development utilities for ChromiumOS
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host test cros_workon_tree_93e1ced52e457fbe58ff99d8a28205be62491f90
+IUSE=cros_host test cros_workon_tree_97acb337f7ac28884664f15ce42a7dcadcf60d6a
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=cros_host? ( app-emulation/qemu-kvm ) app-portage/gentoolkit cros_host? ( app-shells/bash ) !cros_host? ( !chromeos-base/gmerge ) dev-lang/python dev-util/shflags cros_host? ( dev-util/crosutils ) >=app-admin/eselect-python-20091230
 SLOT=0
 _eclasses_=cros-workon	237c0018e532537348d84078955d66c4	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=a4e3d5a7a22919497c63c7515044972e
+_md5_=fc7b2b4a1ff6da8a4e7f063b0f3b512f
