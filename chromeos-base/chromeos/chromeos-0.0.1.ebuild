@@ -95,6 +95,7 @@ RDEPEND="${RDEPEND}
 
 X86_DEPEND="
 		net-wireless/iwl1000-ucode
+		net-wireless/iwl2030-ucode
 		net-wireless/iwl3945-ucode
 		net-wireless/iwl4965-ucode
 		>=net-wireless/iwl5000-ucode-8.24.2.12
