@@ -15,7 +15,8 @@ SLOT="0"
 IUSE="test"
 KEYWORDS="amd64 arm x86"
 
-RDEPEND="chromeos-base/chromeos-minijail
+RDEPEND="chromeos-base/bootstat
+	chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
