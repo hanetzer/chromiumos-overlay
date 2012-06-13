@@ -14,5 +14,6 @@ RESTRICT="test"
 
 DEPEND="
 	>=x11-libs/libdrm-2.4.6
-	>=x11-libs/libpciaccess-0.10"
+	>=x11-libs/libpciaccess-0.10
+	x11-libs/cairo"
 RDEPEND="${DEPEND}"
