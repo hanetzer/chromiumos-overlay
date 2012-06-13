@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
@@ -17,6 +17,7 @@ SLOT="0"
 IUSE=""
 
 RDEPEND="chromeos-base/gestures
+	 chromeos-base/libevdev
 	 x11-base/xorg-server"
 DEPEND="${RDEPEND}
 	x11-proto/inputproto"
