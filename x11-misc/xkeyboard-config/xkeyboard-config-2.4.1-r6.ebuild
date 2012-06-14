@@ -37,7 +37,6 @@ XORG_CONFIGURE_OPTIONS=(
 PATCHES=(
 	"${FILESDIR}"/${P}-extended-function-keys.patch
 	"${FILESDIR}"/xorg-cve-2012-0064.patch
-	"${FILESDIR}"/${P}-backspace-and-arrow-keys.patch
 	"${FILESDIR}"/${P}-gb-dvorak-deadkey.patch
 	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
