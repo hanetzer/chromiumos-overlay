@@ -86,6 +86,7 @@ IUSE_TESTS=(
 	+tests_power_Idle
 	+tests_power_IdleServer
 	+tests_power_LoadTest
+	+tests_power_UiResume
 	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkPlayground
 	+tests_security_BluetoothUIXSS
