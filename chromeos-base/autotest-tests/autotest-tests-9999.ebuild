@@ -299,6 +299,7 @@ IUSE_TESTS="
 	+tests_security_SeccompSyscallFilters
 	+tests_security_SuidBinaries
 	+tests_security_SymlinkRestrictions
+	+tests_security_SysVIPC
 	+tests_suites
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
