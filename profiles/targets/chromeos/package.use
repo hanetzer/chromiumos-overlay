@@ -37,6 +37,7 @@ net-libs/libsoup	-ssl
 net-misc/curl		ares
 net-misc/dhcpcd crash
 net-misc/dhcp		ipv6 -server
+net-misc/iperf		threads
 net-misc/iputils	ipv6
 net-misc/ntp            caps
 net-misc/openssh	-X
