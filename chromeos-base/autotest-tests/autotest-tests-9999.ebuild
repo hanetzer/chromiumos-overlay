@@ -260,6 +260,7 @@ IUSE_TESTS="
 	+tests_platform_ToolchainOptions
 	+tests_power_ARMSettings
 	+tests_power_Backlight
+	+tests_power_BacklightServer
 	+tests_power_BatteryCharge
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
