@@ -36,13 +36,13 @@ src_compile() {
 	tc-export CXX OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
-	emake all
+	emake OUT=build-opt
 }
 
 src_test() {
 	cros-debug-add-NDEBUG
-	emake tests
-	emake runtests
+	emake OUT=build-opt tests
+	emake OUT=build-opt more_tests
 }
 
 src_install() {
