@@ -90,6 +90,7 @@ IUSE_TESTS=(
 	+tests_power_LoadTest
 	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkPlayground
+	+tests_security_BluetoothUIXSS
 	+tests_security_BundledExtensions
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
