@@ -1,0 +1,57 @@
+From e2c08e824b9698f911fb6c20da43ce7476de0b3f Mon Sep 17 00:00:00 2001
+From: Michael Karcher <freedesktop-bugzilla@mkarcher.dialup.fu-berlin.de>
+Date: Sun, 10 Jun 2012 01:49:30 +0200
+Subject: [PATCH] i915g: Fix depth/stencil glClear
+
+This patch fixes a copy/paste error and masking of depth/stencil (stencil
+is in the top 8 bits), and makes glean/readPixSanity happy.
+
+Both the stencil and the depth buffer piglit test also pass if
+glClear(DEPTH | STENCIL) is executed instead of
+glClear(DEPTH)/glClear(STENCIL).
+
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Tested-by: Christopher Egert <cme3000@gmail.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+---
+ src/gallium/drivers/i915/i915_clear.c |   11 +++++------
+ 1 files changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/src/gallium/drivers/i915/i915_clear.c b/src/gallium/drivers/i915/i915_clear.c
+index d6e6f56..30a3926 100644
+--- a/src/gallium/drivers/i915/i915_clear.c
++++ b/src/gallium/drivers/i915/i915_clear.c
+@@ -95,17 +95,16 @@ i915_clear_emit(struct pipe_context *pipe, unsigned buffers,
+          if (buffers & PIPE_CLEAR_STENCIL
+                || depth_tex->b.b.format != PIPE_FORMAT_Z24_UNORM_S8_UINT) {
+             clear_params |= CLEARPARAM_WRITE_STENCIL;
+-            clear_stencil = packed_z_stencil & 0xff;
+-            clear_depth = packed_z_stencil;
+-         } else
+-            clear_depth = packed_z_stencil & 0xffffff00;
++            clear_stencil = packed_z_stencil >> 24;
++         }
+ 
++         clear_depth = packed_z_stencil & 0xffffff;
+          depth_clear_bbp = 32;
+       } else {
+          clear_depth = (packed_z_stencil & 0xffff) | (packed_z_stencil << 16);
+          depth_clear_bbp = 16;
+       }
+-   } else if (buffers & PIPE_CLEAR_DEPTH) {
++   } else if (buffers & PIPE_CLEAR_STENCIL) {
+       struct pipe_surface *zbuf = i915->framebuffer.zsbuf;
+ 
+       clear_params |= CLEARPARAM_WRITE_STENCIL;
+@@ -114,7 +113,7 @@ i915_clear_emit(struct pipe_context *pipe, unsigned buffers,
+ 
+       packed_z_stencil = util_pack_z_stencil(depth_tex->b.b.format, depth, stencil);
+       depth_clear_bbp = 32;
+-      clear_stencil = packed_z_stencil & 0xff;
++      clear_stencil = packed_z_stencil >> 24;
+    }
+ 
+    /* hw can't fastclear both depth and color if their bbp mismatch. */
+-- 
+1.7.5.3.367.ga9930
+
