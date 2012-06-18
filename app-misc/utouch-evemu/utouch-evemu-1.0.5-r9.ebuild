@@ -11,8 +11,9 @@ SRC_URI="http://launchpad.net/utouch-evemu/trunk/v${PV}/+download/${P}.tar.gz"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
+IUSE="X"
 
-RDEPEND=">=x11-base/xorg-server-1.8"
+RDEPEND="X? ( >=x11-base/xorg-server-1.8 )"
 DEPEND="${RDEPEND}"
 
 PATCHES=(
