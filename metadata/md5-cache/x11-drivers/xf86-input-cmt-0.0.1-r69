@@ -3,10 +3,10 @@ DEPEND=chromeos-base/gestures x11-base/xorg-server x11-proto/inputproto || ( >=s
 DESCRIPTION=Chromium OS multitouch input driver for Xorg X server.
 EAPI=4
 HOMEPAGE=http://git-scm.com/
-IUSE=cros_workon_tree_2b4f639afb7a7f79abad5f9c58b942570f9c07ab
+IUSE=cros_workon_tree_15d475e98a18e4c693bdf2ee9abdc372b922eca6
 KEYWORDS=arm amd64 x86
 LICENSE=BSD
 RDEPEND=chromeos-base/gestures x11-base/xorg-server
 SLOT=0
 _eclasses_=autotools	addbdf6cce5024ac93ad2084ad5e1d2d	autotools-utils	966fed1f979132a778b0b48c74a16adb	base	fc89786f3f7e7bcf03334359bd5b639b	cros-workon	237c0018e532537348d84078955d66c4	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=3f63a8e09218b2b357bc80a7f6d9b817
+_md5_=13dec63bed2b29232f0fca66dd55376f
