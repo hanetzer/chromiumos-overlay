@@ -34,6 +34,7 @@ ALL_BOARDS=(
 	amd64-drm
 	amd64-host
 	arm-generic
+	butterfly
 	daisy
 	emeraldlake2
 	ironhide
@@ -44,6 +45,7 @@ ALL_BOARDS=(
 	panda
 	parrot
 	raspberrypi
+	stout
 	stumpy
 	tegra2
 	tegra2_aebl
