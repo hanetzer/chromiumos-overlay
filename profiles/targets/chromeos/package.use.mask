@@ -25,3 +25,6 @@ sys-apps/busybox make-symlinks
 # ACPI support is currently disabled in laptop-mode-tools.
 # TODO(davidjames): Should it be enabled?
 app-laptop/laptop-mode-tools acpi
+
+# Allow hardened glibc on the target.
+sys-libs/glibc -hardened
