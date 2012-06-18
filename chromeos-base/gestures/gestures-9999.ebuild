@@ -20,7 +20,6 @@ LIBCHROME_VERS="125070"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
 DEPEND="dev-cpp/gtest
-	x11-base/xorg-server
 	${RDEPEND}"
 
 src_compile() {
