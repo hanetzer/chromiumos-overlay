@@ -17,7 +17,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 src_compile() {
-	tc-export CXX
+	tc-export CC CXX
 	cros-debug-add-NDEBUG
 	emake
 }
