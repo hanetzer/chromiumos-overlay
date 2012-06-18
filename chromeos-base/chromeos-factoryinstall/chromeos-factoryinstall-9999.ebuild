@@ -114,7 +114,7 @@ EOF
 	# TODO(nsanders): Add runtime switches in init.git
 	# Remove ui.conf startup script, which will make sure chrome doesn't
 	# run, since it tries to update on startup
-	sed -i 's/start on starting boot-services/start on never/' \
+	sed -i 's/start on started boot-services/start on never/' \
 		"${ROOT}/etc/init/ui.conf" ||
 		die "Failed to disable UI"
 
