@@ -24,7 +24,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="+asan-32-explicit debug multitarget +static-analyzer test"
+IUSE="debug multitarget +static-analyzer test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
@@ -107,45 +107,25 @@ src_configure() {
 	if use multitarget; then
 		CONF_FLAGS="${CONF_FLAGS} --enable-targets=all"
 	else
-		CONF_FLAGS="${CONF_FLAGS} --enable-targets=host-only"
+		CONF_FLAGS="${CONF_FLAGS} --enable-targets=host,cpp"
 	fi
 
 	if use amd64; then
 		CONF_FLAGS="${CONF_FLAGS} --enable-pic"
 	fi
 
-	econf ${CONF_FLAGS} || die "econf failed"
+	# clang prefers clang over gcc, so we may need to force that
+	tc-export CC CXX
+	econf ${CONF_FLAGS}
 }
 
 src_compile() {
-	emake VERBOSE=1 KEEP_SYMBOLS=1 REQUIRES_RTTI=1 clang-only || die "emake failed"
-
-	# This option is temporary and needed until Clang build process produces both 64 and 32 -bit asan library.
-	# Currently it produces only one: 64 bit. So we need to make 32 bit ourselves.
-	if use asan-32-explicit; then
-		# Propagate the user's .subversion configuration to the sandbox environment
-		# where the 32-bit subversion checkouts will happen.
-		local SUBVERSION_CONFIG_DIR="${ESVN_STORE_DIR}/.subversion"
-		einfo "Copying subversion credentials from " \
-			"${SUBVERSION_CONFIG_DIR} (if existing) into ${HOME}"
-
-		if [[ -d "${SUBVERSION_CONFIG_DIR}" ]]; then
-			mkdir -p "${HOME}/.subversion" || die "create .subversion dir failed"
-			cp -rfp -t "${HOME}" "${SUBVERSION_CONFIG_DIR}/" \
-				|| die "failed to copy svn credentials into ${HOME}/.subversion"
-		fi
-
-		einfo "Compiling 32-bit asan library."
-		cd "${S}"/projects/compiler-rt/lib/asan/ || die "cd asan failed"
-		emake -f Makefile.old get_third_party || die "emake asan32 get_third_party failed"
-		emake CC="${S}"/Release/bin/clang CXX="${S}"/Release/bin/clang++ -f Makefile.old lib32 || die "emake asan32 failed"
-		# Note that the output will go to ${S}/build/Release+Asserts/ because of MakeFile.old specifics.
-	fi
+	emake VERBOSE=1 KEEP_SYMBOLS=1 REQUIRES_RTTI=1 clang-only
 }
 
 src_test() {
 	cd "${S}"/test || die "cd failed"
-	emake site.exp || die "updating llvm site.exp failed"
+	emake site.exp
 
 	cd "${S}"/tools/clang || die "cd clang failed"
 
@@ -162,13 +142,7 @@ src_test() {
 
 src_install() {
 	cd "${S}"/tools/clang || die "cd clang failed"
-	emake KEEP_SYMBOLS=1 DESTDIR="${D}" install || die "install failed"
-
-	local ver=$(sed -ne "s|^PACKAGE_VERSION='\([0-9.]*\)[^0-9.]*'|\\1|p" < ${S}/configure)
-	if use asan-32-explicit; then
-		insinto "${EPREFIX}/usr/$(get_libdir)/clang/$ver/lib/linux"
-		doins "${S}"/build/Release+Asserts/lib/clang/$ver/lib/linux/libclang_rt.asan-i386.a
-	fi
+	emake KEEP_SYMBOLS=1 DESTDIR="${D}" install
 
 	if use static-analyzer ; then
 		dobin tools/scan-build/ccc-analyzer
