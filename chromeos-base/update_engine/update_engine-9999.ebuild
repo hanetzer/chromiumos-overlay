@@ -35,7 +35,8 @@ RDEPEND="app-arch/bzip2
 	sys-apps/rootdev
 	sys-fs/e2fsprogs
 	sys-libs/e2fsprogs-libs"
-DEPEND="dev-cpp/gmock
+DEPEND="chromeos-base/system_api
+	dev-cpp/gmock
 	dev-cpp/gtest
 	dev-libs/dbus-glib
 	cros_host? ( dev-util/scons )
