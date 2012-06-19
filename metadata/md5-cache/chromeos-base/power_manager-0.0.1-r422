@@ -1,5 +1,5 @@
 DEFINED_PHASES=compile info install test unpack
-DEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog dev-libs/glib sys-fs/udev x11-base/xorg-server x11-libs/libX11 x11-libs/libXext chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) test? ( x11-libs/libXtst ) x11-proto/xextproto dev-vcs/git
+DEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog dev-libs/glib sys-fs/udev x11-base/xorg-server x11-libs/libX11 x11-libs/libXext chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) test? ( x11-libs/libXtst ) x11-proto/xextproto >=dev-vcs/git-1.6
 DESCRIPTION=Power Manager for Chromium OS
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
@@ -8,5 +8,5 @@ KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=app-misc/ddccontrol chromeos-base/metrics dev-cpp/gflags dev-cpp/glog dev-libs/glib sys-fs/udev x11-base/xorg-server x11-libs/libX11 x11-libs/libXext
 SLOT=0
-_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	9f694f5599e09db55a88342fa5eb9084	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	237c0018e532537348d84078955d66c4	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git	a673225a1558ef94456dbd8ce271d16a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=051e3cfff894def6eb2b02b99bfa1da0
