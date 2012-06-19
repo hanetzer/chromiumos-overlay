@@ -36,6 +36,13 @@ JA_FONTS="
 # so that it can be shared between the host in
 # chromeos-base/hard-host-depends and the target in
 # chromeos-base/chromeos.
+#
+# The glibc requirement is a bit funky.  For target boards, we make sure it is
+# installed before any other package (by way of setup_board), but for the sdk
+# board, we don't have that toolchain-specific tweak.  So we end up installing
+# these in parallel and the chroot logic for font generation fails.  We can
+# drop this when we stop executing the helper in the $ROOT via `chroot` and/or
+# `qemu` (e.g. when we do `ROOT=/build/amd64-host/ emerge chromeos-fonts`).
 RDEPEND="
 	${JA_FONTS}
 	!cros_host? ( chromeos-base/chromeos-assets )
@@ -47,6 +54,7 @@ RDEPEND="
 	media-fonts/ml-anjalioldlipi
 	media-fonts/sil-abyssinica
 	media-libs/fontconfig
+	cros_host? ( sys-libs/glibc )
 	"
 
 qemu_run() {
