@@ -181,6 +181,7 @@ src_configure() {
 		--with-driver=dri \
 		--disable-glut \
 		--without-demos \
+		--enable-texture-float \
 		--enable-xcb \
 		$(use_enable llvm llvm-gallium) \
 		$(use_enable egl) \
