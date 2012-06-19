@@ -23,19 +23,14 @@ RDEPEND="app-misc/ddccontrol
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/glib
-	sys-fs/udev
-	x11-base/xorg-server
-	x11-libs/libX11
-	x11-libs/libXext"
+	sys-fs/udev"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )
-	test? ( x11-libs/libXtst )
-	x11-proto/xextproto"
+	test? ( dev-cpp/gtest )"
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
