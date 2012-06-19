@@ -1,8 +1,8 @@
 # Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
-CROS_WORKON_COMMIT="e1c54ee4646b520b4b3f85d2885b73abe51c46a6"
-CROS_WORKON_TREE="2ba042a539b0dc3156ab92ab8072f55d55aea188"
+CROS_WORKON_COMMIT="354cf7b96f5db2db31fbeccf1f44f5600cf067ea"
+CROS_WORKON_TREE="accc644a4e1555f0809f1827c6f234a2a8d6de86"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
@@ -38,13 +38,13 @@ src_compile() {
 	tc-export CXX OBJCOPY PKG_CONFIG STRIP
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
-	emake all
+	emake OUT=build-opt
 }
 
 src_test() {
 	cros-debug-add-NDEBUG
-	emake tests
-	emake runtests
+	emake OUT=build-opt tests
+	emake OUT=build-opt more_tests
 }
 
 src_install() {
