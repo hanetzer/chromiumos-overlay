@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="6c424e0d5bbae36e8dcf3cc7c2364076b17d4b3c"
-CROS_WORKON_TREE="2d043b86db333601e3b6bc7571241a31a8a427f9"
+CROS_WORKON_COMMIT="da404eeab4fd33987f421fe97871f3d778477525"
+CROS_WORKON_TREE="6c0f9dc420a180066f010b0aaf5339c2a84981b1"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/mosys"
