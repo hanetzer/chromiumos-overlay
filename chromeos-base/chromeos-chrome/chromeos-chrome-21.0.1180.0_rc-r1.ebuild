@@ -164,7 +164,8 @@ RDEPEND="${RDEPEND}
 	x11-libs/libXrandr
 	x11-libs/libXScrnSaver
 	chrome_remoting? ( x11-libs/libXtst )
-	x11-apps/setxkbmap"
+	x11-apps/setxkbmap
+	!arm? ( x11-libs/libva )"
 
 DEPEND="${DEPEND}
 	${RDEPEND}
