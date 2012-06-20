@@ -50,6 +50,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0019-board-specific-configurations.patch" \
           "0020-hdparm-skips-SSDs-for-power-management.patch" \
           "0021-alternate-config-dir.patch" \
+          "0022-interactive-governor-parameters.patch" \
         )
 
 src_unpack() {
