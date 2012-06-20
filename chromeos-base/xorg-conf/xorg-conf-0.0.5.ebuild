@@ -12,7 +12,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex cmt elan -exynos mario multitouch synaptics -tegra -aura"
+IUSE="alex butterfly cmt elan -exynos mario multitouch stout synaptics -tegra -aura"
 
 RDEPEND=""
 DEPEND="x11-base/xorg-server"
@@ -48,6 +48,10 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-elan.conf"
 		elif use alex; then
 			doins "${FILESDIR}/50-touchpad-cmt-alex.conf"
+		elif use butterfly; then
+			doins "${FILESDIR}/50-touchpad-cmt-butterfly.conf"
+		elif use stout; then
+			doins "${FILESDIR}/50-touchpad-cmt-stout.conf"
 		elif use mario; then
 			doins "${FILESDIR}/50-touchpad-cmt-mario.conf"
 		elif [[ "${board}" = "x86-zgb" || "${board}" = "x86-zgb32" ]]; then
