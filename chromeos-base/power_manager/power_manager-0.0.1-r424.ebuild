@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="dd1df91b8e33c5fe52e1987881cdfee9f0b55b9e"
-CROS_WORKON_TREE="e2d7bd72589d37a5b976e783d10e79c255f02513"
+CROS_WORKON_COMMIT="630181c65cd4130319c69bbbc34a9fa9a364ccc6"
+CROS_WORKON_TREE="4784778485edc04638bb3e8075e868cd342d7348"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
@@ -25,19 +25,14 @@ RDEPEND="app-misc/ddccontrol
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/glib
-	sys-fs/udev
-	x11-base/xorg-server
-	x11-libs/libX11
-	x11-libs/libXext"
+	sys-fs/udev"
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )
-	test? ( x11-libs/libXtst )
-	x11-proto/xextproto"
+	test? ( dev-cpp/gtest )"
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
