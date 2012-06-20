@@ -202,7 +202,7 @@ pkg_postinst() {
 
 	# All audio interfacing will go through the audio server.
 	add_users_to_group audio "cras" "gavd"
-	add_users_to_group input "gavd"           # For /dev/input/event* access
+	add_users_to_group input "cras" "gavd"    # For /dev/input/event* access
 	add_users_to_group cras "gavd"            # For cras socket access
 	# System user is part of audio server group to play sounds.
 	add_users_to_group cras "${system_user}"
