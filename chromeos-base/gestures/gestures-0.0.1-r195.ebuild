@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="11e8aa4b11b7415f40681433102533e799f8dbfa"
-CROS_WORKON_TREE="e39765def2b8ac4efc451e37d49e0c3c1f6cfec2"
+CROS_WORKON_COMMIT="2e424d4f422133aac0c89df48cc695a38c94c843"
+CROS_WORKON_TREE="8aefc465c47701f9f3d483283f5e75350a376dfe"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
@@ -22,7 +22,6 @@ LIBCHROME_VERS="125070"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
 DEPEND="dev-cpp/gtest
-	x11-base/xorg-server
 	${RDEPEND}"
 
 src_compile() {
