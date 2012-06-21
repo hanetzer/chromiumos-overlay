@@ -17,7 +17,7 @@ USE="${USE} mmx sse sse2 dri hardened"
 MARCH_TUNE=""
 
 VIDEO_CARDS="intel vesa"
-INPUT_DEVICES="evdev synaptics"
+INPUT_DEVICES="evdev synaptics cmt"
 
 # Allow a board to override or define additional settings.
 source make.conf.board
