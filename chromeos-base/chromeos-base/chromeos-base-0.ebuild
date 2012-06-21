@@ -194,7 +194,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "bluetooth" 218   # For bluez
 	copy_or_add_daemon_user "wpa" 219         # For wpa_supplicant
 	copy_or_add_daemon_user "cras" 220        # For cras (audio)
-	copy_or_add_daemon_user "gavd" 221        # For gavd (audio)
+#	copy_or_add_daemon_user "gavd" 221        # For gavd (audio) (deprecated)
 	copy_or_add_daemon_user "input" 222       # For /dev/input/event access
 	copy_or_add_daemon_user "chaps" 223       # For chaps (pkcs11)
 	copy_or_add_daemon_user "dhcp" 224        # For dhcpcd (DHCP client)
@@ -207,9 +207,8 @@ pkg_postinst() {
 	copy_or_add_group "daemon-store" 400
 
 	# All audio interfacing will go through the audio server.
-	add_users_to_group audio "cras" "gavd"
-	add_users_to_group input "cras" "gavd"    # For /dev/input/event* access
-	add_users_to_group cras "gavd"            # For cras socket access
+	add_users_to_group audio "cras"
+	add_users_to_group input "cras"           # For /dev/input/event* access
 	# System user is part of audio server group to play sounds.
 	add_users_to_group cras "${system_user}"
 	# The system_user needs to be part of the audio and video groups.
