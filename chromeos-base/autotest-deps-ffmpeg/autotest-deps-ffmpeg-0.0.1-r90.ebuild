@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="c61cb0f7bf2b977678efa6c20865a922599c5e7f"
-CROS_WORKON_TREE="d36f0dd01797d487906efc63d7b1149b69a4313a"
+CROS_WORKON_COMMIT="c681fa2428af2ea9fe55992adaa2106e21f72f6b"
+CROS_WORKON_TREE="1f2bf29d82d3d83116a8512a9ba2969b0ff5faf0"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
@@ -10,31 +10,26 @@ CROS_WORKON_SUBDIR=files
 
 inherit cros-workon autotest-deponly
 
-DESCRIPTION="Autotest glmark2 dependency"
-HOMEPAGE="https://launchpad.net/glmark2"
+DESCRIPTION="Autotest chromium ffmpeg dep"
+HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="GPL-3"
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 
 # Autotest enabled by default.
 IUSE="+autotest"
 
-AUTOTEST_DEPS_LIST="glmark2"
+AUTOTEST_DEPS_LIST="ffmpeg"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
-# deps/glmark2
-RDEPEND="
-	virtual/opengl
-	media-libs/libpng
-	sys-libs/zlib
-	x11-libs/libX11
-	x11-libs/libXau
-	x11-libs/libXdmcp
-	x11-libs/libXext
+# deps/ffmpeg
+RDEPEND="${RDEPEND}
+	chromeos-base/chromeos-chrome
 "
 
 DEPEND="${RDEPEND}"
+
