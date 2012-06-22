@@ -1025,11 +1025,6 @@ src_install() {
 		doins "${FROM}"/nacl_helper || die
 	fi
 
-	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
-	# libcros compatibility.
-	insinto "${CHROME_DIR}"/include
-	doins "${CHROME_ROOT}/src/third_party/cros/chromeos_cros_api.h"
-
 	# Copy input_methods.txt so that ibus-m17n can exclude unnnecessary
 	# input methods based on the file.
 	insinto /usr/share/chromeos-assets/input_methods
