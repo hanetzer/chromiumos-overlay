@@ -175,7 +175,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam
 	chromeos-base/inputcontrol
 	chromeos-base/internal
-	chromeos-base/libcros
 	chromeos-base/metrics
 	chromeos-base/power_manager
 	chromeos-base/root-certificates
