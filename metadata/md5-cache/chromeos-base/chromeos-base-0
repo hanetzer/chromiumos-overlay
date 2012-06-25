@@ -8,4 +8,4 @@ LICENSE=GPL-2
 RDEPEND=>=sys-apps/baselayout-2 !<sys-apps/baselayout-2.0.1-r227 !<sys-libs/timezone-data-2011d !<=app-admin/sudo-1.8.2 !<sys-apps/mawk-1.3.4 !<app-shells/bash-4.1 !<app-shells/dash-0.5.5 !<net-misc/openssh-5.2_p1-r8 !cros_host? ( !app-misc/editor-wrapper sys-libs/timezone-data ) sys-apps/baselayout
 SLOT=0
 _eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	pam	3f746974e1cc47cabe3bd488c08cdc8e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29	useradd	fc85780d70dd069e45dbdfb10311d5d2
-_md5_=3c45a7c3f46359915be6f3f51762f48e
+_md5_=31681e25009e56d46720b8583022422a
