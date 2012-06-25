@@ -104,6 +104,7 @@ src_install() {
 
 	insinto /lib/udev/rules.d
 	doins "${FILESDIR}"/99-usb-access.rules || die
+	doins "${FILESDIR}"/55-serial.rules || die
 
 	# target-specific fun
 	if ! use cros_host ; then
@@ -230,6 +231,11 @@ pkg_postinst() {
 	# chrome-usb will have access to unclaimed usbfs nodes
 	copy_or_add_group "chrome-usb" 401
 	add_users_to_group "chrome-usb" "${system_user}"
+
+	# Dedicated group for owning access to serial devices.
+	copy_or_add_group "serial" 402
+	add_users_to_group "serial" "${system_user}"
+	add_users_to_group "serial" "uucp"
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
