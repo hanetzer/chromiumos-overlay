@@ -1,15 +1,19 @@
 --- laptop-mode-tools-1.59//usr/sbin/laptop_mode	2012-06-15 17:33:49.052591220 -0700
 +++ laptop-mode-tools-1.59//usr/sbin/laptop_mode	2012-06-20 11:02:11.248576131 -0700
-@@ -37,6 +37,8 @@
+@@ -37,6 +37,12 @@
  # as well, so don't change the format!
  LMTVERSION=1.59
  
-+: ${LAPTOP_MODE_CONFIG_DIR:=/etc/laptop-mode}
++if [ -f /var/run/laptop-mode-tools/laptop-mode.conf ]; then
++    LAPTOP_MODE_CONFIG_DIR=/var/run/laptop-mode-tools
++else
++    LAPTOP_MODE_CONFIG_DIR=/etc/laptop-mode
++fi
 +
  # This script is loaded from multiple scripts to set the config defaults
  # and to read the configuration on top of those. Only when the command is
  # recognized does this script do anything else.
-@@ -229,26 +231,32 @@
+@@ -229,26 +235,32 @@
      # Source config. Some config settings have been moved from the main config file
      # to modular configuration files, and to support existing laptop-mode.conf
      # files from earlier versions, we source the modular configuration files FIRST.
@@ -58,7 +62,7 @@
      fi
  
      if [ x$ENABLE_LAPTOP_MODE_TOOLS = x0 ]; then
-@@ -1049,7 +1057,7 @@
+@@ -1049,7 +1061,7 @@
  
      # Note that the /usr/local/lib path is deprecated.
      export FORCE STATE ON_AC ACTIVATE ACTIVATE_WITH_POSSIBLE_DATA_LOSS KLEVEL KMINOR WAS_ACTIVE LM_VERBOSE DEVICES
