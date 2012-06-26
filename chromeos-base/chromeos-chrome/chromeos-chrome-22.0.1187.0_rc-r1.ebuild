@@ -997,29 +997,25 @@ src_install() {
 	doins -r "${FROM}"/resources
 	doins -r "${FROM}"/extensions
 	doins "${FROM}"/resources.pak
-	# TODO(sail): Remove these if statements when these .pak files are no longer
+
+	# TODO(sail): Remove this condition loop when these .pak files are no longer
 	# optional (http://crosbug.com/30473).
-	if [ -f "${FROM}"/theme_resources_standard.pak ] ; then
-		doins "${FROM}"/theme_resources_standard.pak
-	fi
-	if [ -f "${FROM}"/theme_resources_touch_1x.pak ] ; then
-		doins "${FROM}"/theme_resources_touch_1x.pak
-	fi
-	if [ -f "${FROM}"/theme_resources_touch_2x.pak ] ; then
-		doins "${FROM}"/theme_resources_touch_2x.pak
-	fi
-	if [ -f "${FROM}"/ui_resources_standard.pak ] ; then
-		doins "${FROM}"/ui_resources_standard.pak
-	fi
-	if [ -f "${FROM}"/ui_resources_touch.pak ] ; then
-		doins "${FROM}"/ui_resources_touch.pak
-	fi
-	if [ -f "${FROM}"/theme_resources_2x.pak ] ; then
-		doins "${FROM}"/theme_resources_2x.pak
-	fi
-	if [ -f "${FROM}"/ui_resources_2x.pak ] ; then
-		doins "${FROM}"/ui_resources_2x.pak
-	fi
+	local pak paks
+	paks=(
+		theme_resources_standard.pak
+		theme_resources_2x.pak
+		theme_resources_touch_1x.pak
+		theme_resources_touch_2x.pak
+		ui_resources_standard.pak
+		ui_resources_2x.pak
+		ui_resources_touch.pak
+		ui_resources_touch_2x.pak
+	)
+	for pak in "${paks[@]}"; do
+		if [ -f "${FROM}/${pak}" ] ; then
+			doins "${FROM}/${pak}"
+		fi
+	done
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
 
@@ -1028,11 +1024,6 @@ src_install() {
 		doins "${FROM}"/nacl_irt_*.nexe || die
 		doins "${FROM}"/nacl_helper || die
 	fi
-
-	# Create copy of chromeos_cros_api.h file so that test_build_root can check for
-	# libcros compatibility.
-	insinto "${CHROME_DIR}"/include
-	doins "${CHROME_ROOT}/src/third_party/cros/chromeos_cros_api.h"
 
 	# Copy input_methods.txt so that ibus-m17n can exclude unnnecessary
 	# input methods based on the file.
