@@ -30,6 +30,7 @@ S="${WORKDIR}/${MY_P}"
 PATCHES=(
 "${FILESDIR}/${PN}-1.0.23-modprobe.d.patch"
 "${FILESDIR}/${P}-separate-usr-var-fs.patch"
+"${FILESDIR}/${P}-Do-not-access-other-cards-than-specified-for.patch"
 )
 
 src_configure() {
