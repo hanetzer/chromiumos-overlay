@@ -5,6 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 
 inherit cros-workon
+inherit cros-binary
 inherit python
 
 DESCRIPTION="Chrome OS Factory Tools and Data"
@@ -24,24 +25,20 @@ CROS_WORKON_LOCALNAME="factory"
 
 TARGET_DIR="/usr/local/factory"
 
-doexescript() {
-	local source="$1"
-	local command=$(basename "${source%.*}")
-	fperms 0755 ${TARGET_DIR}/$source
-	dosym ./${source} ${TARGET_DIR}/$command
+CROS_BINARY_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20111110-r1376.tar.bz2"
+CROS_BINARY_SUM="761af448631b4dd2339e01b04cb11140ad6d7706"
+
+src_unpack() {
+        cros-workon_src_unpack
+        cros-binary_src_unpack
+}
+
+src_compile() {
+        emake CLOSURE_LIB_ARCHIVE="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
 }
 
 src_install() {
-	insinto ${TARGET_DIR}/py
-	doins py/*
-	doexescript py/gooftool.py
-	doexescript py/hwid_tool.py
-	doexescript py/edid.py
-	exeinto ${TARGET_DIR}/sh
-	doexe sh/*
-	insinto ${TARGET_DIR}/misc
-	doins misc/*
-	insinto $(python_get_sitedir)/cros
-	doins py_pkg/cros/__init__.py
-	dosym ${TARGET_DIR}/py $(python_get_sitedir)/cros/factory
+        emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" \
+            install
+        dosym ${TARGET_DIR}/py $(python_get_sitedir)/cros/factory
 }
