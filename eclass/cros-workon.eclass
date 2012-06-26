@@ -63,6 +63,13 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # It will also be disabled by using project arrays, rather than a single project.
 : ${CROS_WORKON_SUBDIRS_TO_COPY:=/}
 
+# @ECLASS-VARIABLE: CROS_WORKON_SUBDIRS_BLACKLIST
+# @DESCRIPTION:
+# Array of directories in the source tree to explicitly ignore and not even copy
+# them over. This is intended, for example, for blocking infamous bloated and
+# generated content that is unwanted during the build.
+: ${CROS_WORKON_SUBDIRS_BLACKLIST:=}
+
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
 # Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
@@ -199,13 +206,14 @@ local_copy_cp() {
 	local src="${1}"
 	local dst="${2}"
 	einfo "Copying sources from ${src}"
+	local blacklist=( "${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}" )
 
 	local sl
 	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
 		if [[ -d "${src}/${sl}" ]]; then
 			mkdir -p "${dst}/${sl}"
-			cp -a "${src}/${sl}"/* "${dst}/${sl}" || \
-				die "cp -a ${src}/${sl}/* ${dst}/${sl}/"
+			rsync -a "${blacklist[@]}" "${src}/${sl}"/* "${dst}/${sl}" || \
+				die "rsync -a ${blacklist[@]} ${src}/${sl}/* ${dst}/${sl}"
 		fi
 	done
 }
