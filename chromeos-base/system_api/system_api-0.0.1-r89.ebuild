@@ -14,16 +14,9 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 
-# The blocker dependency is added to block libcros-0.0.1-r303 or older,
-# that installs chromeos_wm_ipc_enums.h, to avoid a collision of the file.
-# TODO(satorux): We'll leave this blocker around for at least a month
-# so that people running build_packages don't see warnings. Then, we'll
-# remove this.
-#
 # Likewise, block libchromeos-0.0.1-r78 or older, that installs
 # dbus/service_constants.h. TODO(satorux): Remove this after a month.
-RDEPEND="!<=chromeos-base/libcros-0.0.1-r303
-	!<=chromeos-base/libchromeos-0.0.1-r78"
+RDEPEND="!<=chromeos-base/libchromeos-0.0.1-r78"
 
 DEPEND="${RDEPEND}"
 
