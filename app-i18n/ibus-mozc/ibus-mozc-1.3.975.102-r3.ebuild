@@ -6,20 +6,32 @@ inherit eutils flag-o-matic python toolchain-funcs
 
 DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2
+internal? ( gs://chromeos-localmirror-private/distfiles/GoogleJapaneseInputDictinoaryForChromeOS-${PV}.tar.bz2 )"
 LICENSE="BSD"
-# TOOD(nona): Remove libcurl dependency after upgrade mozc to the next version.
+IUSE="internal"
+# TODO(nona): Remove libcurl dependency.
 RDEPEND=">=app-i18n/ibus-1.2
          dev-libs/openssl
          dev-libs/protobuf
-         net-misc/curl"
+         internal? (
+                 net-misc/curl
+         )"
 DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
 BUILDTYPE="${BUILDTYPE:-Release}"
-BRANDING="${BRANDING:-Mozc}"
+RESTRICT="mirror"
 
 src_configure() {
+  if use internal; then
+    BRANDING="${BRANDING:-GoogleJapaneseInput}"
+    SIZE_LIMIT=20000000
+  else
+    BRANDING="${BRANDING:-Mozc}"
+    SIZE_LIMIT=25000000
+  fi
+
   cd "mozc-${PV}" || die
   # Generate make files
   export GYP_DEFINES="chromeos=1 use_libzinnia=0"
@@ -31,6 +43,13 @@ src_configure() {
 }
 
 src_prepare() {
+  if use internal; then
+    einfo "Building Google Japanese Input for ChromeOS"
+    rm -fr "mozc-${PV}/data/dictionary" || die
+    mv  "dictionary" "mozc-${PV}/data" || die
+  else
+    einfo "Building Mozc for ChromiumOS"
+  fi
   cd "mozc-${PV}" || die
   # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.4.
   epatch "${FILESDIR}"/${P}-property-access.patch
@@ -61,12 +80,7 @@ src_install() {
 
   # Check the binary size to detect binary size bloat (which happend once due
   # typos in .gyp files).
-  test `stat -c %s "${T}"/ibus_mozc` -lt 25000000 \
-      || die 'The binary size of mozc for Japanese is too big (more than ~25MB)'
+  test `stat -c %s "${T}"/ibus_mozc` -lt ${SIZE_LIMIT} \
+      || die "The binary size of mozc for Japanese is too big (more than ~${SIZE_LIMIT})"
   rm -f "${T}"/ibus_mozc
-}
-
-pkg_postinst() {
-  ewarn "Don't forget to update the ebuild file for the official build if you"
-  ewarn "update this ebuild file."
 }
