@@ -186,6 +186,8 @@ pkg_setup() {
 		$(use_enable !tegra dri)
 		$(use_enable !tegra dri2)
 		$(use_enable !arm glx)
+		$(use_enable !arm vgahw)
+		$(use_enable !arm vbe)
 		$(use_enable xnest)
 		$(use_enable xorg)
 		$(use_enable xvfb)
