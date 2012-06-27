@@ -38,7 +38,9 @@ src_compile() {
 }
 
 src_install() {
-        emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" \
-            install
-        dosym ${TARGET_DIR}/py $(python_get_sitedir)/cros/factory
+        emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" install
+        dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
+        # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
+        # install files directly into custom as appropriate.
+        dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
 }
