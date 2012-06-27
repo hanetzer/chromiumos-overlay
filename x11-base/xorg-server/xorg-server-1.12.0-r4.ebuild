@@ -185,7 +185,7 @@ pkg_setup() {
 		$(use_enable !minimal install-libxf86config)
 		$(use_enable !tegra dri)
 		$(use_enable !tegra dri2)
-		$(use_enable !tegra glx)
+		$(use_enable !arm glx)
 		$(use_enable xnest)
 		$(use_enable xorg)
 		$(use_enable xvfb)
