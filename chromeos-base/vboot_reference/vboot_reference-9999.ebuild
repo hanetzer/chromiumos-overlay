@@ -114,6 +114,7 @@ src_install() {
 		doexe "${src_dir}/resign_firmwarefd.sh"
 		doexe "${src_dir}/make_dev_firmware.sh"
 		doexe "${src_dir}/make_dev_ssd.sh"
+		doexe "${src_dir}/set_gbb_flags.sh"
 
 		# TODO(hungte) Since we now install all keyset into
 		# /usr/share/vboot/devkeys, maybe SAFT does not need to install
