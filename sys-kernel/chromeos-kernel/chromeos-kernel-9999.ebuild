@@ -13,6 +13,7 @@ inherit cros-workon cros-kernel2
 DESCRIPTION="Chrome OS Kernel"
 KEYWORDS="~amd64 ~arm ~x86"
 
-DEPEND="!sys-kernel/chromeos-kernel-next"
-RDEPEND="!sys-kernel/chromeos-kernel-next"
+RDEPEND="!sys-kernel/chromeos-kernel-next
+	!sys-kernel/chromeos-kernel-exynos"
+DEPEND="${RDEPEND}"
 
