@@ -3,10 +3,10 @@ DEPEND=>=app-admin/eselect-python-20091230 dev-vcs/git
 DESCRIPTION=Chromium OS build utilities
 EAPI=2
 HOMEPAGE=http://www.chromium.org/chromium-os
-IUSE=cros_workon_tree_f85a9166465522537b2d2ff4afe572aab5f1b7cf
+IUSE=cros_workon_tree_50990d512c0a7ae251a72d2b433769e2e71afecc
 KEYWORDS=amd64
 LICENSE=BSD
 RDEPEND=>=app-admin/eselect-python-20091230
 SLOT=0
 _eclasses_=cros-workon	e0f2fe8aed45b4f8ca1c06169b727a16	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=666dfd5fcce7403a148e04dfafce3e9a
+_md5_=7c0d4de4351f35e5130b692825ecaacc
