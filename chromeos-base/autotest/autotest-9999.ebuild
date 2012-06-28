@@ -39,11 +39,6 @@ src_prepare() {
 	# cros directory is not from autotest upstream but cros project specific.
 	cp -fpru "${S}"/client/cros "${AUTOTEST_WORK}/client"
 
-	# TODO(jsalz): remove this hard-coded path once the icedtea6-bin
-	# package is fixed and /usr/bin/java works (https://bugs.gentoo.org/416341)
-	PATH=/opt/icedtea6-bin-1.6.2/bin:$PATH \
-		emake -C "${AUTOTEST_WORK}/client/cros/factory/static" \
-		BUILD_DEPS="${S}"/client/build_deps
 	cp -fpru "${S}"/server/cros "${AUTOTEST_WORK}/server"
 
 	# Pre-create test directories.
