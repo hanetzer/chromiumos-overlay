@@ -153,6 +153,19 @@ CONFIG_DEBUG_INFO=y
 # Add all config fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]}"
 
+# If an overlay has eclass overrides, but doesn't actually override this
+# eclass, we'll have ECLASSDIR pointing to the active overlay's
+# eclass/ dir, but this eclass is still in the main chromiumos tree.  So
+# add a check to locate the cros-kernel/ regardless of what's going on.
+ECLASSDIR_LOCAL=${BASH_SOURCE[0]%/*}
+defconfig_dir() {
+        local d="${ECLASSDIR}/cros-kernel"
+        if [[ ! -d ${d} ]] ; then
+                d="${ECLASSDIR_LOCAL}/cros-kernel"
+        fi
+        echo "${d}"
+}
+
 # @FUNCTION: install_kernel_sources
 # @DESCRIPTION:
 # Installs the kernel sources into ${D}/usr/src/${P} and fixes symlinks.
@@ -198,6 +211,24 @@ get_build_dir() {
 
 get_build_cfg() {
 	echo "$(get_build_dir)/.config"
+}
+
+get_build_arch() {
+	if [ "${ARCH}" = "arm" ] ; then
+		case "${CHROMEOS_KERNEL_SPLITCONFIG}" in
+			*tegra*)
+				echo "tegra"
+				;;
+			*exynos*)
+				echo "exynos5"
+				;;
+			*)
+				echo "arm"
+				;;
+		esac
+	else
+		echo $(tc-arch-kernel)
+	fi
 }
 
 # @FUNCTION: emit_its_script
@@ -304,14 +335,12 @@ cros-kernel2_src_configure() {
 	# CHROMEOS_KERNEL_SPLITCONFIG. CHROMEOS_KERNEL_CONFIG is set relative
 	# to the root of the kernel source tree.
 	local config
+	local cfgarch="$(get_build_arch)"
+
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 		config="${S}/${CHROMEOS_KERNEL_CONFIG}"
 	else
-		if [ "${ARCH}" = "x86" ]; then
-			config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromiumos-i386"}
-		else
-			config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromiumos-${ARCH}"}
-		fi
+		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromiumos-${cfgarch}"}
 	fi
 
 	elog "Using kernel config: ${config}"
@@ -319,7 +348,15 @@ cros-kernel2_src_configure() {
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 		cp -f "${config}" "$(get_build_cfg)" || die
 	else
-		chromeos/scripts/prepareconfig ${config} "$(get_build_cfg)" || die
+		if [ -e chromeos/scripts/prepareconfig ] ; then
+			chromeos/scripts/prepareconfig ${config} \
+				"$(get_build_cfg)" || die
+		else
+			config="$(defconfig_dir)/${cfgarch}_defconfig"
+			ewarn "Can't prepareconfig, falling back to default " \
+				"${config}"
+			cp "${config}" "$(get_build_cfg)" || die
+		fi
 	fi
 
 	local fragment
