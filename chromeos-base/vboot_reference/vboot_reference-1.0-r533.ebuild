@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="17b8224ea582b2ba90b30a3e8e2d913e49c7818a"
-CROS_WORKON_TREE="17458e3e00091416f4c09608b2e07e8848d6ed46"
+CROS_WORKON_COMMIT="61603e2d6128d6fadd2fd8b1f16d60c5df8c00bd"
+CROS_WORKON_TREE="ff6dac8e70c6a07a3630a897f94914d596bb6b0b"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
@@ -116,6 +116,7 @@ src_install() {
 		doexe "${src_dir}/resign_firmwarefd.sh"
 		doexe "${src_dir}/make_dev_firmware.sh"
 		doexe "${src_dir}/make_dev_ssd.sh"
+		doexe "${src_dir}/set_gbb_flags.sh"
 
 		# TODO(hungte) Since we now install all keyset into
 		# /usr/share/vboot/devkeys, maybe SAFT does not need to install
