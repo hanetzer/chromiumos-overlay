@@ -4,6 +4,11 @@ in milliseconds in order to do sub-second retry/failover.
 This change is being discussed upstream in the thread:
 http://sourceware.org/ml/libc-alpha/2012-06/msg00571.html
 
+The change to change the maximum retries is submitted
+separately at:
+http://sourceware.org/ml/libc-alpha/2012-06/msg00761.html
+
+
 --- resolv/res_debug.c	2012-06-22 20:53:31.000000000 -0700
 +++ resolv/res_debug.c	2012-06-22 20:55:10.000000000 -0700
 @@ -588,6 +588,7 @@
@@ -37,8 +42,17 @@ http://sourceware.org/ml/libc-alpha/2012-06/msg00571.html
  		} else if (!strncmp(cp, "attempts:", sizeof("attempts:") - 1)){
  			i = atoi(cp + sizeof("attempts:") - 1);
  			if (i <= RES_MAXRETRY)
---- resolv/resolv.h	2012-06-22 20:53:31.000000000 -0700
-+++ resolv/resolv.h	2012-06-22 21:01:37.000000000 -0700
+--- resolv/resolv.h	2012-06-28 09:58:28.000000000 -0700
++++ resolv/resolv.h	2012-06-28 09:58:04.000000000 -0700
+@@ -97,7 +97,7 @@
+ # define MAXRESOLVSORT		10	/* number of net to sort on */
+ # define RES_MAXNDOTS		15	/* should reflect bit field size */
+ # define RES_MAXRETRANS		30	/* only for resolv.conf/RES_OPTIONS */
+-# define RES_MAXRETRY		5	/* only for resolv.conf/RES_OPTIONS */
++# define RES_MAXRETRY		15	/* only for resolv.conf/RES_OPTIONS */
+ # define RES_DFLRETRY		2	/* Default #/tries. */
+ # define RES_MAXTIME		65535	/* Infinity, in milliseconds. */
+ 
 @@ -219,6 +219,8 @@
  #define RES_SNGLKUPREOP	0x00400000	/* -"-, but open new socket for each
  					   request */
