@@ -23,7 +23,6 @@ IUSE_INPUT_DEVICES="
 	input_devices_joystick
 	input_devices_keyboard
 	input_devices_mouse
-	input_devices_multitouch
 	input_devices_mutouch
 	input_devices_penmount
 	input_devices_tslib
@@ -91,7 +90,6 @@ PDEPEND="
 	input_devices_joystick?    ( x11-drivers/xf86-input-joystick )
 	input_devices_keyboard?    ( x11-drivers/xf86-input-keyboard )
 	input_devices_mouse?       ( x11-drivers/xf86-input-mouse )
-	input_devices_multitouch?  ( x11-drivers/xf86-input-multitouch )
 	input_devices_mutouch?     ( x11-drivers/xf86-input-mutouch )
 	input_devices_penmount?    ( x11-drivers/xf86-input-penmount )
 	input_devices_tslib?       ( x11-drivers/xf86-input-tslib )
