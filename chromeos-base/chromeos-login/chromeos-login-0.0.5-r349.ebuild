@@ -35,7 +35,8 @@ BOARDS=(
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-PKG_IUSE="-asan -aura -disable_login_animations -disable_webaudio -highdpi -is_desktop -new_power_button test -touchui"
+PKG_IUSE="-asan -aura -disable_login_animations -disable_webaudio -highdpi
+	  -is_desktop -new_power_button test -touchui +X"
 IUSE="${PKG_IUSE} ${BOARD_USE_FLAGS}"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
@@ -58,6 +59,12 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
+
+src_prepare() {
+	if ! use X; then
+		epatch "${FILESDIR}"/0001-Remove-X-from-session_manager_setup.sh.patch
+	fi
+}
 
 src_compile() {
 	tc-export CXX LD PKG_CONFIG
