@@ -7,11 +7,11 @@ inherit eutils flag-o-matic python toolchain-funcs
 DESCRIPTION="The Mozc engine for IBus Framework"
 HOMEPAGE="http://code.google.com/p/mozc"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-${PV}.tar.bz2
-internal? ( gs://chromeos-localmirror-private/distfiles/GoogleJapaneseInputDictinoaryForChromeOS-${PV}.tar.bz2 )"
+internal? ( gs://chromeos-localmirror-private/distfiles/GoogleJapaneseInputFilesForChromeOS-${PV}.tar.bz2 )"
 LICENSE="BSD"
 IUSE="internal"
 # TODO(nona): Remove libcurl dependency.
-RDEPEND=">=app-i18n/ibus-1.2
+RDEPEND=">=app-i18n/ibus-1.4.1
          dev-libs/openssl
          dev-libs/protobuf
          internal? (
@@ -39,20 +39,27 @@ src_configure() {
 
   $(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
       --target_platform="ChromeOS" \
-      --branding="${BRANDING}" --channel_dev=0 || die
+      --use_libprotobuf \
+      --branding="${BRANDING}" || die
 }
 
 src_prepare() {
   if use internal; then
     einfo "Building Google Japanese Input for ChromeOS"
     rm -fr "mozc-${PV}/data/dictionary" || die
-    mv  "dictionary" "mozc-${PV}/data" || die
+    rm -fr "mozc-${PV}/dictionary" || die
+    rm -f "mozc-${PV}/mozc_version_template.txt" || die
+    mv  "data/dictionary" "mozc-${PV}/data/" || die
+    mv  "dictionary" "mozc-${PV}/" || die
+    mv  "mozc_version_template.txt" "mozc-${PV}/" || die
+    # Reduce a binary size.
+    # TODO(hsumita): Remove this patch when it becomes a default behavior of
+    # Mozc for ChromeOS.
+    rm -f "mozc-${PV}/converter/converter_base.gyp" || die
+    mv  "converter/converter_base.gyp" "mozc-${PV}/converter/" || die
   else
     einfo "Building Mozc for ChromiumOS"
   fi
-  cd "mozc-${PV}" || die
-  # TODO(nona): Remove the patch when we upgrade mozc to the next version, 1.4.
-  epatch "${FILESDIR}"/${P}-property-access.patch
 }
 
 src_compile() {
