@@ -34,6 +34,7 @@ ALL_BOARDS=(
 	amd64-drm
 	amd64-host
 	arm-generic
+	beaglebone
 	butterfly
 	daisy
 	emeraldlake2

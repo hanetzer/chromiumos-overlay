@@ -36,6 +36,7 @@ UB_BUILD_DIR_NB="${UB_BUILD_DIR%/}_nb"
 
 U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
+	beaglebone
 	coreboot
 	daisy
 	seaboard
@@ -150,7 +151,7 @@ src_compile() {
 
 src_install() {
 	local inst_dir="/firmware"
-	local files_to_copy="System.map u-boot.bin"
+	local files_to_copy="System.map u-boot.bin u-boot.img"
 	local ub_vendor="$(get_config_var ${CROS_U_BOOT_CONFIG} VENDOR)"
 	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
 	local ub_arch="$(get_config_var ${CROS_U_BOOT_CONFIG} ARCH)"

@@ -10,6 +10,7 @@
 SERIAL_USE_PREFIX="serial_use_"
 ALL_SERIALPORTS=(
 	ttyAMA{0..5}
+	ttyO{0..5}
 	ttyS{0..5}
 	ttySAC{0..5}
 )
