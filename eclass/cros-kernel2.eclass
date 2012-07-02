@@ -25,6 +25,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 CONFIG_FRAGMENTS=(
 	blkdevram
+	ca0132
 	fbconsole
 	gdmwimax
 	highmem
@@ -42,6 +43,11 @@ blkdevram_config="
 CONFIG_BLK_DEV_RAM=y
 CONFIG_BLK_DEV_RAM_COUNT=16
 CONFIG_BLK_DEV_RAM_SIZE=16384
+"
+
+ca0132_desc="CA0132 ALSA codec"
+ca0132_config="
+CONFIG_SND_HDA_CODEC_CA0132=y
 "
 
 fbconsole_desc="framebuffer console"
