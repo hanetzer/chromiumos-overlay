@@ -172,6 +172,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/verity
 	media-gfx/imagemagick[gs,truetype]
 	sys-apps/mosys
+	sys-fs/libfat
 	"
 
 # Host dependency used by the chromeos-base/root-certificates ebuild
