@@ -237,7 +237,7 @@ set_build_defines() {
 			BUILD_DEFINES+=( internal_pdf=0 )
 		fi
 		if use hardfp; then
-			BUILD_DEFINES+=( v8_use_arm_eabi_hardfloat=true )
+			BUILD_DEFINES+=( v8_use_arm_eabi_hardfloat=true arm_float_abi=hard )
 		fi
 	elif [ "$ARCH" = "amd64" ]; then
 		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
