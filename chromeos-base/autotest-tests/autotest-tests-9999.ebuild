@@ -237,6 +237,7 @@ IUSE_TESTS="
 	+tests_platform_GCC
 	+tests_platform_HighResTimers
 	+tests_platform_InstallRecoveryImage
+	+tests_platform_InstallTestImage
 	+tests_platform_KernelErrorPaths
 	+tests_platform_KernelVersion
 	+tests_platform_LibCBench
