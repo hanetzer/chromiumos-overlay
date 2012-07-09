@@ -72,6 +72,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pygtk
 	dev-python/pyinotify
 	dev-python/pyopenssl
+        dev-python/python-daemon
 	dev-python/pyudev
 	dev-python/pyusb
 	dev-python/ws4py
