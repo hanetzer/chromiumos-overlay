@@ -11,7 +11,7 @@ LICENSE=""
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
-BOARDS="alex emeraldlake2 link lumpy lumpy64 mario parrot stumpy"
+BOARDS="alex butterfly emeraldlake2 link lumpy lumpy64 mario parrot stout stumpy"
 IUSE="${BOARDS} exynos factory-mode memtest seabios tegra"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
