@@ -1,0 +1,40 @@
+From 278f3f5255c15388fa6e4bedcda4a27cbbebae5c Mon Sep 17 00:00:00 2001
+From: Stuart Abercrombie <sabercrombie@chromium.org>
+Date: Fri, 29 Jun 2012 16:14:02 -0700
+Subject: [PATCH] Save and restore vertex buffer state in util_gen_mipmap.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Calling glGenerateMipmap could overwrite vertex buffer state, leading to incorrect rendering or crashes depending on the Gallium driver.
+
+This was happening on WebGL Conformance test texture-size.
+
+Before 784dd51198433e5c299da4a7742c68d21d68d1c1 this was covered up by redundant vertex buffer validation.
+
+Reviewed-by: Stéphane Marchesin <marcheu@chromium.org>
+---
+ src/gallium/auxiliary/util/u_gen_mipmap.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/src/gallium/auxiliary/util/u_gen_mipmap.c b/src/gallium/auxiliary/util/u_gen_mipmap.c
+index 82474cd..2ff1af7 100644
+--- a/src/gallium/auxiliary/util/u_gen_mipmap.c
++++ b/src/gallium/auxiliary/util/u_gen_mipmap.c
+@@ -1556,6 +1556,7 @@ util_gen_mipmap(struct gen_mipmap_state *ctx,
+    cso_save_geometry_shader(ctx->cso);
+    cso_save_viewport(ctx->cso);
+    cso_save_vertex_elements(ctx->cso);
++   cso_save_vertex_buffers(ctx->cso);
+ 
+    /* bind our state */
+    cso_set_blend(ctx->cso, &ctx->blend);
+@@ -1679,4 +1680,5 @@ util_gen_mipmap(struct gen_mipmap_state *ctx,
+    cso_restore_viewport(ctx->cso);
+    cso_restore_vertex_elements(ctx->cso);
+    cso_restore_stream_outputs(ctx->cso);
++   cso_restore_vertex_buffers(ctx->cso);
+ }
+-- 
+1.7.7.3
+
