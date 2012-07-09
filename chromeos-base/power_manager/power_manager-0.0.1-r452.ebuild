@@ -70,7 +70,6 @@ src_install() {
 
 	# Scripts
 	dobin debug_sleep_quickly
-	dobin powerd_lock_screen
 	dobin powerd_suspend
 	dobin send_metrics_on_resume
 
