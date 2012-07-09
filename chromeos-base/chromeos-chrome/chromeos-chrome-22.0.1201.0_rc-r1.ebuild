@@ -129,6 +129,8 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEF
 TEST_FILES=("ffmpeg_tests")
 if [ "$ARCH" = "arm" ]; then
 	TEST_FILES+=( "omx_video_decode_accelerator_unittest" "ppapi_example_video_decode" )
+else
+	TEST_FILES+=( "video_decode_accelerator_unittest" "ppapi_example_video_decode" )
 fi
 
 RDEPEND="${RDEPEND}
@@ -828,9 +830,16 @@ install_chrome_test_resources() {
 	# everything but the symbol names. Developers who need more detailed debug
 	# info on the tests can use the original unstripped tests from the ${from}
 	# directory.
-	for f in libppapi_tests.so browser_tests \
-			sync_integration_tests \
-			omx_video_decode_accelerator_unittest; do
+	TEST_INSTALL_TARGETS=(
+		"libppapi_tests.so"
+		"browser_tests"
+		"sync_integration_tests" )
+	if [ "$ARCH" = "arm" ]; then
+		TEST_INSTALL_TARGETS+=( "omx_video_decode_accelerator_unittest" )
+	else
+		TEST_INSTALL_TARGETS+=( "video_decode_accelerator_unittest" )
+	fi
+	for f in "${TEST_INSTALL_TARGETS[@]}"; do
 		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
 			-o "${test_dir}/out/Release/$(basename ${f})"
 	done
