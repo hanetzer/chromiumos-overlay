@@ -43,4 +43,7 @@ src_install() {
         # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
         # install files directly into custom as appropriate.
         dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
+
+        # Directories used by Goofy.
+        keepdir /var/factory/{,log,state,tests}
 }
