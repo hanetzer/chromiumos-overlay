@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="4b09efad0252be33a14d51cab933c7139c1f805c"
-CROS_WORKON_TREE="4a51d3bfdd14009f4be9415f305ff61fa9d774c2"
+CROS_WORKON_COMMIT=5231ec5d472a00e09388447c1fafa9975d3f4ade
+CROS_WORKON_TREE="e393f9aaf51cd658eed10f65d0c5dedaa3f3f5c9"
 
 # This ebuild file installs the developer installer package. It:
 #  + Copies dev_install.
