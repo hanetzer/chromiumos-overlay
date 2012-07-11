@@ -268,7 +268,8 @@ want__thread() {
 
 use_multiarch() {
 	# Make sure binutils is new enough to support indirect functions #336792
-	local bver=$($(tc-getLD ${CTARGET}) -v | awk '{print $NF}') nver
+	local bver nver
+	bver=$($(tc-getLD ${CTARGET}) -v | sed -n -r '1{s:[^0-9]*::;s:^([0-9.]*).*:\1:;p}')
 	case $(tc-arch ${CTARGET}) in
 		amd64|x86) nver="2.20" ;;
 		sparc)     nver="2.21" ;;

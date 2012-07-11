@@ -1,8 +1,8 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/glibc-9999.ebuild,v 1.1 2011/08/23 18:37:57 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/glibc-2.15-r2.ebuild,v 1.1 2012/05/18 05:04:44 vapier Exp $
 
-inherit eutils versionator libtool toolchain-funcs flag-o-matic gnuconfig multilib binutils-funcs
+inherit eutils versionator libtool toolchain-funcs flag-o-matic gnuconfig multilib unpacker binutils-funcs
 
 DESCRIPTION="GNU libc6 (also called glibc2) C library"
 HOMEPAGE="http://www.gnu.org/software/libc/libc.html"
@@ -17,12 +17,9 @@ RELEASE_VER=""
 BRANCH_UPDATE=""
 SNAP_VER=""
 case ${PV} in
-*)
-	GIT_REPO="http://git.chromium.org/chromiumos/third_party"
-	EGIT_REPO_URIS=( "${GIT_REPO}/glibc.git" "${GIT_REPO}/glibc-ports.git" )
+9999*)
+	EGIT_REPO_URIS=( "git://sourceware.org/git/glibc.git" "git://sourceware.org/git/glibc-ports.git" )
 	EGIT_SOURCEDIRS=( "${S}" "${S}/ports" )
-	RELEASE_VER=${PV}
-	[[ ${PV} == 9999 ]] || EGIT_COMMITS=( "4d00bd56fe0092ff3c803f227a9964bffc873eb9" "glibc-2.11.1" )
 	inherit git-2
 	;;
 *_p*)
@@ -36,14 +33,12 @@ esac
 MANPAGE_VER=""                                 # pregenerated manpages
 INFOPAGE_VER=""                                # pregenerated infopages
 LIBIDN_VER=""                                  # it's integrated into the main tarball now
-PATCH_VER="1"                                  # Gentoo patchset
-PORTS_VER=""                                   # version of glibc ports addon
-LT_VER=""                                      # version of linuxthreads addon
+PATCH_VER="18"                                 # Gentoo patchset
+PORTS_VER=${RELEASE_VER}                       # version of glibc ports addon
 NPTL_KERN_VER=${NPTL_KERN_VER:-"2.6.9"}        # min kernel version nptl requires
-#LT_KERN_VER=${LT_KERN_VER:-"2.4.1"}           # min kernel version linuxthreads requires
 
-IUSE="debug gd glibc-omitfp hardened multilib nls selinux profile vanilla crosscompile_opts_headers-only ${LT_VER:+glibc-compat20 nptl nptlonly}"
-[[ -n ${RELEASE_VER} ]] && [[ -z ${EGIT_REPO_URIS} ]] && S=${WORKDIR}/glibc-${RELEASE_VER}${SNAP_VER:+-${SNAP_VER}}
+IUSE="debug gd hardened multilib selinux profile vanilla crosscompile_opts_headers-only"
+[[ -n ${RELEASE_VER} ]] && S=${WORKDIR}/glibc-${RELEASE_VER}${SNAP_VER:+-${SNAP_VER}}
 
 # Here's how the cross-compile logic breaks down ...
 #  CTARGET - machine that will target the binaries
@@ -86,7 +81,6 @@ else
 	# Why SLOT 2.2 you ask yourself while sippin your tea ?
 	# Everyone knows 2.2 > 0, duh.
 	SLOT="2.2"
-	PROVIDE="virtual/libc"
 fi
 
 # General: We need a new-enough binutils for as-needed
@@ -98,17 +92,15 @@ DEPEND=">=sys-devel/gcc-3.4.4
 	ppc? ( >=sys-devel/gcc-4.1.0 )
 	ppc64? ( >=sys-devel/gcc-4.1.0 )
 	>=sys-devel/binutils-2.15.94
-	${LT_VER:+nptl? (} >=sys-kernel/linux-headers-${NPTL_KERN_VER} ${LT_VER:+)}
-	>=sys-devel/gcc-config-1.3.12
 	>=app-misc/pax-utils-0.1.10
 	virtual/os-headers
-	nls? ( sys-devel/gettext )
-	>=sys-apps/sandbox-1.2.18.1-r2
+	!<sys-apps/sandbox-1.2.18.1-r2
 	!<sys-apps/portage-2.1.2
+	>=sys-devel/patch-2.6.1
 	selinux? ( sys-libs/libselinux )"
 RDEPEND="!sys-kernel/ps3-sources
-	nls? ( sys-devel/gettext )
-	selinux? ( sys-libs/libselinux )"
+	selinux? ( sys-libs/libselinux )
+	!sys-libs/nss-db"
 
 if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
 	DEPEND="${DEPEND} !crosscompile_opts_headers-only? ( ${CATEGORY}/gcc )"
@@ -136,11 +128,10 @@ SRC_URI=$(
 		[[ -n ${PORTS_VER} ]] && PORTS_VER=${SNAP_VER}
 		upstream_uris ${TARNAME}-${SNAP_VER}.tar.bz2
 	elif [[ -z ${EGIT_REPO_URIS} ]] ; then
-		upstream_uris ${TARNAME}-${RELEASE_VER}.tar.bz2
+		upstream_uris ${TARNAME}-${RELEASE_VER}.tar.xz
 	fi
 	[[ -n ${LIBIDN_VER}    ]] && upstream_uris glibc-libidn-${LIBIDN_VER}.tar.bz2
-	[[ -n ${PORTS_VER}     ]] && upstream_uris ${TARNAME}-ports-${PORTS_VER}.tar.bz2
-	[[ -n ${LT_VER}        ]] && upstream_uris ${TARNAME}-linuxthreads-${LT_VER}.tar.bz2
+	[[ -n ${PORTS_VER}     ]] && upstream_uris ${TARNAME}-ports-${PORTS_VER}.tar.xz
 	[[ -n ${BRANCH_UPDATE} ]] && gentoo_uris glibc-${RELEASE_VER}-branch-update-${BRANCH_UPDATE}.patch.bz2
 	[[ -n ${PATCH_VER}     ]] && gentoo_uris glibc-${RELEASE_VER}-patches-${PATCH_VER}.tar.bz2
 	[[ -n ${MANPAGE_VER}   ]] && gentoo_uris glibc-manpages-${MANPAGE_VER}.tar.bz2
@@ -196,41 +187,28 @@ for x in setup {pre,post}inst ; do
 	fi
 done
 
-pkg_setup() {
-	eblit-run pkg_setup
-
-	# Static binary sanity check #332927
-	if [[ ${ROOT} == "/" ]] && \
-	   has_version "<${CATEGORY}/${P}" && \
-	   built_with_use sys-apps/coreutils static
-	then
-		eerror "Please rebuild coreutils with USE=-static, then install"
-		eerror "glibc, then you may rebuild coreutils with USE=static."
-		die "Avoiding system meltdown #332927"
+eblit-src_unpack-pre() {
+	if [[ ${CTARGET} == x86_64* ]] && has x32 $(get_all_abis) ; then
+		GLIBC_PATCH_EXCLUDE+=" 0080_all_glibc-2.15-revert-x86_64-eagain-pthread_cond_wait.patch"
+	else
+		GLIBC_PATCH_EXCLUDE+=" 1200_all_glibc-${PV}-x32.patch"
 	fi
 }
 
 eblit-src_unpack-post() {
 	cd "${S}"
-	epatch "${FILESDIR}"/2.11/0050_all_glibc-make-3.82-rules.patch
-	epatch "${FILESDIR}"/local/glibc-2.11-file-mangle.patch
+	epatch "${FILESDIR}"/local/glibc-2.14-file-mangle.patch
 	epatch "${FILESDIR}"/2.11/glibc-2.11-frecord-gcc-switches.patch
 	epatch "${FILESDIR}"/2.11/glibc-2.11-disable-memset-warning.patch
-	epatch "${FILESDIR}"/local/glibc-2.11-vfprintf-args.patch
-	epatch "${FILESDIR}"/local/glibc-2.11-arm-hardfp.patch
+	epatch "${FILESDIR}"/local/glibc-2.14-vfprintf-args.patch
 	epatch "${FILESDIR}"/2.11/glibc-2.11-resolv-milliseconds.patch
-
 	if use hardened ; then
 		cd "${S}"
 		einfo "Patching to get working PIE binaries on PIE (hardened) platforms"
-		gcc-specs-pie && epatch "${FILESDIR}"/2.11/glibc-2.11-hardened-pie.patch
+		gcc-specs-pie && epatch "${FILESDIR}"/2.12/glibc-2.12-hardened-pie.patch
 		epatch "${FILESDIR}"/2.10/glibc-2.10-hardened-configure-picdefault.patch
 		epatch "${FILESDIR}"/2.10/glibc-2.10-hardened-inittls-nosysenter.patch
-		epatch "${FILESDIR}"/2.11/glibc-2.11-tls-stack-addition.patch \
-			|| die "Could not apply TLS adjustment patch."
-
-		einfo "Patching Glibc to support older SSP __guard"
-		epatch "${FILESDIR}"/2.10/glibc-2.10-hardened-ssp-compat.patch
+		epatch "${FILESDIR}"/2.11/glibc-2.11-tls-stack-addition.patch
 
 		einfo "Installing Hardened Gentoo SSP and FORTIFY_SOURCE handler"
 		cp -f "${FILESDIR}"/2.6/glibc-2.6-gentoo-stack_chk_fail.c \
@@ -260,14 +238,18 @@ eblit-src_unpack-post() {
 	fi
 }
 
-eblit-src_install-post() {
-	# Add a symlink to the old ldso name until everyone has migrated.
-	if ! just_headers && [[ ${CTARGET} == arm* ]] ; then
-		local libdir="${D}"
-		is_crosscompile && libdir+="/usr/${CTARGET}"
-		libdir+="/lib"
-		if [[ ! -e ${libdir}/ld-linux.so.3 ]] ; then
-			ln -s ld-linux-armhf.so.3 "${libdir}/ld-linux.so.3" || die
+eblit-pkg_preinst-post() {
+	if [[ ${CTARGET} == arm* ]] ; then
+		# Backwards compat support for renaming hardfp ldsos #417287
+		local oldso='/lib/ld-linux.so.3'
+		local nldso='/lib/ld-linux-armhf.so.3'
+		if [[ -e ${D}${nldso} ]] ; then
+			if scanelf -qRyi "${ROOT}$(alt_prefix)"/*bin/ | grep -s "^${oldso}" ; then
+				ewarn "Symlinking old ldso (${oldso}) to new ldso (${nldso})."
+				ewarn "Please rebuild all packages using this old ldso as compat"
+				ewarn "support will be dropped in the future."
+				ln -s "${nldso##*/}" "${D}$(alt_prefix)${oldso}"
+			fi
 		fi
 	fi
 }
