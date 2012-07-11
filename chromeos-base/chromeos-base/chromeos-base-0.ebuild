@@ -195,6 +195,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "input" 222       # For /dev/input/event access
 	copy_or_add_daemon_user "chaps" 223       # For chaps (pkcs11)
 	copy_or_add_daemon_user "dhcp" 224        # For dhcpcd (DHCP client)
+	copy_or_add_daemon_user "tpmd" 225        # For tpmd
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
