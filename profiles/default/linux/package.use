@@ -38,3 +38,4 @@ net-misc/dhcpcd -crash
 app-emulation/qemu-kvm	static qemu_user_targets_arm qemu_user_targets_i386 qemu_user_targets_x86_64
 dev-libs/libaio		static-libs
 cross-armv7a-cros-linux-gnueabi/gcc   hardfp
+cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
