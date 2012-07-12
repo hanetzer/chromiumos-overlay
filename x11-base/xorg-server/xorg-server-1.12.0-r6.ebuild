@@ -145,6 +145,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-0004-os-log-refactor-logging.patch"
 	# crosbug.com/30363
 	"${FILESDIR}/1.12.0-dix-don-t-emulate-scroll-events-for-non-existing-axe.patch"
+	# Don't attend clients which are already gone, race condition in dri2
+	"${FILESDIR}/1.12.0-do-not-attend-gone-clients.patch"
 )
 
 src_prepare() {
