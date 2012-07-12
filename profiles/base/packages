@@ -66,8 +66,7 @@
 *sys-libs/readline
 *sys-libs/zlib
 *virtual/editor
-# Temp hack to enable glibc upgrade.
-#*virtual/libc
+*virtual/libc
 *virtual/man
 *virtual/modutils
 *virtual/os-headers
