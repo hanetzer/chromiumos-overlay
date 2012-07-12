@@ -2,6 +2,8 @@
 # profile is shared between the cros sdk chroot and
 # amd64 target boards.
 
+app-arch/bzip2 -static-libs
+app-arch/pbzip2 -static
 chromeos-base/update_engine -delta_generator
 net-misc/openssh -kerberos
 sys-apps/flashrom -dediprog -ft2232_spi -serprog
