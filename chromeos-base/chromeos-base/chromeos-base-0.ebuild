@@ -99,11 +99,7 @@ src_install() {
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/xauthority.sh || die
 
-	exeinto /lib/udev
-	doexe "${FILESDIR}"/secure_parent_device.sh || die
-
 	insinto /lib/udev/rules.d
-	doins "${FILESDIR}"/99-usb-access.rules || die
 	doins "${FILESDIR}"/55-serial.rules || die
 
 	# target-specific fun
@@ -227,10 +223,6 @@ pkg_postinst() {
 	remove_all_users_from_group "${system_access_user}"
 	add_users_to_group "${system_access_user}" root ipsec "${system_user}" \
 		ntfs-3g avfs chaps
-
-	# chrome-usb will have access to unclaimed usbfs nodes
-	copy_or_add_group "chrome-usb" 401
-	add_users_to_group "chrome-usb" "${system_user}"
 
 	# Dedicated group for owning access to serial devices.
 	copy_or_add_group "serial" 402
