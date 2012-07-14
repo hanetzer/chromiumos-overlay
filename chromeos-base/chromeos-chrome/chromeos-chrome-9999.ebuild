@@ -175,7 +175,6 @@ RDEPEND="${RDEPEND}
 	net-misc/wget
 	sys-fs/udev
 	sys-libs/zlib
-	!aura? ( x86? ( !chrome_internal? ( www-plugins/adobe-flash ) ) )
 	!aura? ( >=x11-libs/gtk+-2.14.7 )
 	x11-libs/libXcomposite
 	x11-libs/libXcursor
@@ -1077,10 +1076,6 @@ src_install() {
 			else
 				die No internal Flash plugin.
 			fi
-		else
-			# Use Flash from www-plugins/adobe-flash package.
-			dosym /opt/netscape/plugins/libflashplayer.so \
-				"${CHROME_DIR}"/plugins/libflashplayer.so
 		fi
 	fi
 }
