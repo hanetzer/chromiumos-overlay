@@ -199,7 +199,6 @@ sys-libs/lib-compat-loki
 <www-client/opera-9.62
 www-client/mozilla-firefox-bin
 www-client/seamonkey-bin
-<www-plugins/adobe-flash-10.0.20.7_alpha
 www-plugins/nspluginwrapper
 x11-misc/googleearth
 x11-misc/qcomicbook
