@@ -22,11 +22,6 @@ src_prepare() {
 }
 
 src_compile() {
-	# Provide timestamp of when this was built, in number of seconds since
-	# 01 Jan 1970 in UTC time.
-	local DATE=$(expr $(date -u +%s) - 86400)
-	# Set it back one day to avoid dealing with time zones.
-	append-cppflags -DRECENT_COMPILE_DATE=${DATE}
 	# Our unprivileged group is called "nobody"
 	append-cppflags '-DUNPRIV_GROUP=\"nobody\"'
 	tc-export CC
@@ -34,7 +29,7 @@ src_compile() {
 }
 
 src_install() {
-	dosbin tlsdate{,-helper}
-	doman tlsdate.1
+	dosbin src/tlsdate{,-helper}
+	doman man/tlsdate{,-helper}.1
 	dodoc README
 }
