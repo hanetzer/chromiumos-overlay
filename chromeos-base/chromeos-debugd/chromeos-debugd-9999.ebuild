@@ -52,4 +52,5 @@ src_install() {
 
 	insinto /etc/init
 	doins "${FILESDIR}/debugd.conf"
+	doins "${FILESDIR}/trace_marker-test.conf"
 }
