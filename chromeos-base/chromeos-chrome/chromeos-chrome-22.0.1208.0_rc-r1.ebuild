@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
@@ -26,7 +26,7 @@ KEYWORDS="amd64 arm x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build +reorder hardfp -pgo -pgo_generate +runhooks +verbose -drm +nacl"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build hardfp -pgo_use -pgo_generate +runhooks +verbose -drm +nacl"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -34,6 +34,8 @@ IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome
 # script is changed to use eu-strip instead of objcopy and strip.
 STRIP_MASK="*/nacl_helper_bootstrap"
 
+# When we get to EAPI=4
+# REQUIRED_USE=<pgo_generate and pgo_use are mutually exclusive>
 PGO_SUBDIR="pgo"
 
 # Bots in golo.chromium.org have private mirrors that are only accessible
@@ -124,6 +126,20 @@ BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
 # Unsetting BUILD_OUT_SYM will revert this behavior
 BUILD_OUT_SYM="c"
 
+PGO_SUFFIX=".pgo.tar.bz2"
+PGO_LOCATION="gs://chromeos-prebuilt/pgo-job/canonicals/"
+
+add_pgo_arches() {
+	local file a
+	for a in "$@" ; do
+		file="chromeos-chrome-${a}-${PV}${PGO_SUFFIX}"
+		SRC_URI+="pgo_use? ( ${a}? ( ${PGO_LOCATION}${file} ) ) "
+	done
+}
+
+RESTRICT="mirror"
+add_pgo_arches x86 amd64 arm
+
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES=("ffmpeg_tests")
@@ -211,7 +227,7 @@ set_build_defines() {
 	BUILD_DEFINES+=(
 		swig_defines=-DOS_CHROMEOS
 		chromeos=1
-                use_ibus=1
+		use_ibus=1
 	)
 
 	if use pgo_generate ; then
@@ -275,10 +291,6 @@ set_build_defines() {
 	# This saves time and bytes.
 	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
-	fi
-
-	if use reorder && ! use clang; then
-		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${PGO_SUBDIR}/section-ordering-files/orderfile" )
 	fi
 
 	if ! use chrome_debug_tests; then
@@ -609,23 +621,27 @@ src_unpack() {
 	# a symlink here to add compatibility with autotest eclass which uses this.
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 
+	if use pgo_use && ! use clang; then
+		local PROFILE_DIR="${WORKDIR}/pgo"
+		mkdir "${PROFILE_DIR}"
+		cd "${PROFILE_DIR}"
+		unpack "chromeos-chrome-${ARCH}-${PV}${PGO_SUFFIX}"
+		cd "${WORKDIR}"
+		if [[ -d "${PROFILE_DIR}/chrome" ]]; then
+			append-flags -fprofile-use \
+				-fprofile-correction \
+				-fprofile-dir="${PROFILE_DIR}/chrome"
 
-	if (use reorder || use pgo) && ! use clang; then
-		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
-		EGIT_COMMIT="b4d4d1e9e53c841f7e22fb7167485ad405d3766d"
-		EGIT_PROJECT="${PN}-pgo"
-		if grep -q $EGIT_COMMIT "${CHROME_DISTDIR}/${PGO_SUBDIR}/.git/HEAD"; then
-			einfo "PGO repo is up to date."
+			# This is required because gcc emits different warnings
+			# for PGO vs. non-PGO. PGO may inline different
+			# functions from non-PGO, leading to different warnings.
+			# crbug.com/112908
+			append-flags -Wno-error=maybe-uninitialized
+			einfo "Using the PGO data"
 		else
-			einfo "PGO repo not up-to-date. Fetching..."
-			local OLD_S="${S}"
-			S="${CHROME_DISTDIR}/${PGO_SUBDIR}"
-			rm -rf "${S}"
-			git_fetch
-			pushd "${S}" > /dev/null
-			unpack ./profile.tbz2
-			popd > /dev/null
-			S="${OLD_S}"
+			einfo "USE=+pgo_use, but ${PROFILE_DIR}/chrome not "\
+			      "created from pgo.tar.bz2."
+			die "PGO data supply failed"
 		fi
 	fi
 }
@@ -660,33 +676,6 @@ src_prepare() {
 	# The chrome makefiles specify -O and -g flags already, so remove the
 	# portage flags.
 	filter-flags -g -O*
-
-	if use pgo && ! use clang ; then
-		local PROFILE_DIR
-		PROFILE_DIR="${CHROME_DISTDIR}/${PGO_SUBDIR}/${CTARGET_default}"
-		if [[ -d "${PROFILE_DIR}" ]]; then
-			append-flags -fprofile-use \
-				-fprofile-correction \
-				-Wno-error=coverage-mismatch \
-				-fopt-info=0 \
-				-fprofile-dir="${PROFILE_DIR}"
-
-			# This is required because gcc currently may crash with an
-			# internal compiler error if the profile is stale.
-			# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51975
-			# This does not cause performance degradation.
-			append-flags -fno-vpt
-
-			# This is required because gcc emits different warnings for PGO
-			# vs. non-PGO. PGO may inline different functions from non-PGO,
-			# leading to different warnings.
-			# crbug.com/112908
-			append-flags -Wno-error=maybe-uninitialized
-		else
-			einfo "USE=+pgo, but ${PROFILE_DIR} not found."
-			einfo "Not using pgo. This is expected for arm/x86 boards."
-		fi
-	fi
 
 	# The hooks may depend on the environment variables we set in this ebuild
 	# (i.e., GYP_DEFINES for gyp_chromium)
@@ -1052,6 +1041,11 @@ src_install() {
 		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]] || \
 		 [[ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]]); then
 		autotest-deponly_src_install
+	fi
+	if use pgo_generate; then
+		local pgo_file_dest="chromeos-chrome-${ARCH}-${PV}${PGO_SUFFIX}"
+		echo "${PGO_LOCATION}${pgo_file_dest}" \
+			> "${D_CHROME_DIR}/profilelocation"
 	fi
 
 	# Fix some perms
