@@ -46,6 +46,10 @@ set_build_env() {
 src_compile() {
 	set_build_env
 	BOARD=${EC_BOARD} emake all
+
+	EXTRA_ARGS="out=build/${EC_BOARD}_shifted "
+	EXTRA_ARGS+="EXTRA_CFLAGS=\"-DSHIFT_CODE_FOR_TEST\""
+	BOARD=${EC_BOARD} emake all ${EXTRA_ARGS}
 }
 
 src_test() {
@@ -60,6 +64,7 @@ src_install() {
 	# EC firmware binary
 	insinto /firmware
 	doins build/${EC_BOARD}/ec.bin
+	newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
 	# Intermediate files for debugging
 	doins build/${EC_BOARD}/ec.*.elf
 	# Utilities
