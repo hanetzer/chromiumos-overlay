@@ -1,0 +1,39 @@
+From 049b8bf71b5cab17a5359b1ef3c785e982c6a0c7 Mon Sep 17 00:00:00 2001
+From: Chris Wolfe <cwolfe@chromium.org>
+Date: Mon, 16 Jul 2012 13:55:33 -0400
+Subject: [PATCH] intel: Disable MSAA
+
+---
+ src/mesa/drivers/dri/intel/intel_fbo.c |   16 ++--------------
+ 1 files changed, 2 insertions(+), 14 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/intel/intel_fbo.c b/src/mesa/drivers/dri/intel/intel_fbo.c
+index bbd5f66..96749fe 100644
+--- a/src/mesa/drivers/dri/intel/intel_fbo.c
++++ b/src/mesa/drivers/dri/intel/intel_fbo.c
+@@ -194,20 +194,8 @@ intel_unmap_renderbuffer(struct gl_context *ctx,
+ static unsigned
+ quantize_num_samples(struct intel_context *intel, unsigned num_samples)
+ {
+-   switch (intel->gen) {
+-   case 6:
+-      /* Gen6 supports only 4x multisampling. */
+-      if (num_samples > 0)
+-         return 4;
+-      else
+-         return 0;
+-   case 7:
+-      /* TODO: MSAA only implemented on Gen6 */
+-      return 0;
+-   default:
+-      /* MSAA unsupported */
+-      return 0;
+-   }
++   /* Disable MSAA to avoid rendering glitches. */
++   return 0;
+ }
+ 
+ 
+-- 
+1.7.7.3
+
