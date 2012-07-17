@@ -179,26 +179,11 @@ if sysroot:
   clang_cmdline.append('--sysroot=%s' % sysroot)
   gcc_cmdline.append('--sysroot=%s' % sysroot)
 else:
-  import fcntl
   import logging
   import logging.handlers
   import traceback
 
-  # While RotatingFileHandler takes care of locking across threads, it
-  # does not lock the file(s) that it does rotation on.  So we need to
-  # manage our own lock file for gating access to the log file.
-  o_cloexec = getattr(os, 'O_CLOEXEC', 0)
-  def lock(filename):
-    fd = os.open(filename + '.lock', os.W_OK|os.O_CREAT|o_cloexec, 0666)
-    os.fchmod(fd, 0666)
-    fcntl.lockf(fd, fcntl.LOCK_EX)
-    return fd
-  def unlock(fd):
-    fcntl.lockf(fd, fcntl.LOCK_UN)
-    os.close(fd)
-
   log_file = '/tmp/sysroot_wrapper.error'
-  fd = lock(log_file)
 
   log = logging.getLogger('sysroot_wrapper')
   log.setLevel(logging.DEBUG)
@@ -220,10 +205,6 @@ else:
     os.chmod(log_file, 0666)
   except OSError:
     pass
-
-  # Flush all our messages and release the lock.
-  handler.flush()
-  unlock(fd)
 
 if clang_compile_requested and not skip_clang:
   clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
