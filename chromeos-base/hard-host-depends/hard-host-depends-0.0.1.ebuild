@@ -68,6 +68,7 @@ RDEPEND="${RDEPEND}
 	dev-python/dbus-python
 	dev-python/imaging
 	dev-python/m2crypto
+        dev-python/netifaces
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyinotify
