@@ -920,6 +920,7 @@ install_pyauto_dep_resources() {
 
 	# Copy PyAuto scripts and suppport libs.
 	install_test_resources "${test_dir}" \
+		chrome/browser/resources/gaia_auth \
 		chrome/test/pyautolib \
 		net/tools/testserver \
 		third_party/pyftpdlib \
