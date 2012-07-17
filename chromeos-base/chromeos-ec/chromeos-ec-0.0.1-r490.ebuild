@@ -1,8 +1,8 @@
 # Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
-CROS_WORKON_COMMIT="acf6f963a160f045d6b4c58f0ee3e249ded76b4e"
-CROS_WORKON_TREE="1c724e7480104f9fa1284f6a3f013cbd44501c12"
+CROS_WORKON_COMMIT=096ffbb04e0462e9e211ef16fc7ba725e3e6ba18
+CROS_WORKON_TREE="8e222d60d4fb0220da64558e8ca2d059a16e5954"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
@@ -48,6 +48,10 @@ set_build_env() {
 src_compile() {
 	set_build_env
 	BOARD=${EC_BOARD} emake all
+
+	EXTRA_ARGS="out=build/${EC_BOARD}_shifted "
+	EXTRA_ARGS+="EXTRA_CFLAGS=\"-DSHIFT_CODE_FOR_TEST\""
+	BOARD=${EC_BOARD} emake all ${EXTRA_ARGS}
 }
 
 src_test() {
@@ -62,6 +66,7 @@ src_install() {
 	# EC firmware binary
 	insinto /firmware
 	doins build/${EC_BOARD}/ec.bin
+	newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
 	# Intermediate files for debugging
 	doins build/${EC_BOARD}/ec.*.elf
 	# Utilities
