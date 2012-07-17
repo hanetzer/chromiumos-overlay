@@ -1,7 +1,7 @@
 # Copyright (C) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE.makefile file.
-CROS_WORKON_COMMIT=096ffbb04e0462e9e211ef16fc7ba725e3e6ba18
+CROS_WORKON_COMMIT="096ffbb04e0462e9e211ef16fc7ba725e3e6ba18"
 CROS_WORKON_TREE="8e222d60d4fb0220da64558e8ca2d059a16e5954"
 
 EAPI="4"
