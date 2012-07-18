@@ -9,6 +9,7 @@ app-editors/vim		minimal
 dev-cpp/glog		gflags
 dev-lang/python		-berkdb gdbm
 dev-libs/dbus-glib	tools
+dev-libs/elfutils	-utils
 dev-libs/glib		-doc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
