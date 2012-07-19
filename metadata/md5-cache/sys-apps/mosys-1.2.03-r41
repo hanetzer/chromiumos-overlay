@@ -3,10 +3,10 @@ DEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4 dev-vcs/git
 DESCRIPTION=Utility for obtaining various bits of low-level system info
 EAPI=4
 HOMEPAGE=http://mosys.googlecode.com/
-IUSE=static cros_workon_tree_f1b608cb02e8f7c79df5f56a62f9a456f862fc2b
+IUSE=static cros_workon_tree_5db96090f454b37d22426447ff4c77af56457320
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
 SLOT=0
 _eclasses_=cros-workon	e0f2fe8aed45b4f8ca1c06169b727a16	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=957b1d5179fe52df6ad9b821f3474e34
+_md5_=d1688fb63ccaab1174d933affa4d258e
