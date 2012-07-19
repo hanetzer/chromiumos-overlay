@@ -17,7 +17,7 @@ IUSE="${BOARDS} exynos factory-mode memtest seabios tegra cros_ec"
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
 X86_DEPEND="
-	       sys-boot/chromeos-coreboot
+	       virtual/chromeos-coreboot
 	       sys-apps/coreboot-utils
 
 "
