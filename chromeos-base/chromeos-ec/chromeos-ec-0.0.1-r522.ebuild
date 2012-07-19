@@ -63,9 +63,10 @@ src_test() {
 
 src_install() {
 	set_build_env
-	# EC firmware binary
+	# EC firmware binaries
 	insinto /firmware
 	doins build/${EC_BOARD}/ec.bin
+	doins build/${EC_BOARD}/ec.RW.bin
 	newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
 	# Intermediate files for debugging
 	doins build/${EC_BOARD}/ec.*.elf
