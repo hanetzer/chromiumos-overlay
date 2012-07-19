@@ -143,6 +143,7 @@ add_pgo_arches x86 amd64 arm
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES=("ffmpeg_tests")
+PPAPI_TEST_FILES=("test_case.html" "test_case.html.mock-http-headers" "test_page.css" "ppapi_nacl_tests_newlib.nmf")
 if [ "$ARCH" = "arm" ]; then
 	TEST_FILES+=( "omx_video_decode_accelerator_unittest" "ppapi_example_video_decode" )
 else
@@ -851,6 +852,10 @@ install_chrome_test_resources() {
 
 	for f in "${TEST_FILES[@]}"; do
 		cp -al "${from}/${f}" "${test_dir}"
+	done
+
+	for f in "${PPAPI_TEST_FILES[@]}"; do
+		cp -al "${from}/${f}" "${test_dir}/out/Release"
 	done
 
 	# Install Chrome test resources.
