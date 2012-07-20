@@ -147,6 +147,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-dix-don-t-emulate-scroll-events-for-non-existing-axe.patch"
 	# Don't attend clients which are already gone, race condition in dri2
 	"${FILESDIR}/1.12.0-do-not-attend-gone-clients.patch"
+	# crosbug.com/p/11408
+	"${FILESDIR}/1.12.0-fix-scale-to-desktop-for-edge-ABS-events.patch"
 )
 
 src_prepare() {
