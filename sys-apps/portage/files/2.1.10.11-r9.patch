@@ -445,6 +445,20 @@ index 10f603e..a90729c 100755
  	mydigests=mf.getTypeDigests("DIST")
  
  	fetchlist_dict = portage.FetchlistDict(checkdir, repoman_settings, portdb)
+diff --git a/cnf/make.globals b/cnf/make.globals
+index 0be9732..df40d6e 100644
+--- a/cnf/make.globals
++++ b/cnf/make.globals
+@@ -101,6 +101,9 @@ PORTAGE_RSYNC_OPTS="--recursive --links --safe-links --perms --times --compress
+ # message should be produced.
+ PORTAGE_SYNC_STALE="30"
+ 
++# Executed before emerge exit if FEATURES=clean-logs is enabled.
++PORT_LOGDIR_CLEAN="find \"\${PORT_LOGDIR}\" -type f ! -name \"summary.log*\" -mtime +7 -delete"
++
+ # Minimal CONFIG_PROTECT
+ CONFIG_PROTECT="/etc"
+ CONFIG_PROTECT_MASK="/etc/env.d"
 diff --git a/man/emerge.1 b/man/emerge.1
 index 835d2c0..e1df6d2 100644
 --- a/man/emerge.1
@@ -475,7 +489,7 @@ index 835d2c0..e1df6d2 100644
  .BR "\-\-rebuilt\-binaries [ y | n ]"
  Replace installed packages with binary packages that have
 diff --git a/man/make.conf.5 b/man/make.conf.5
-index e86dc74..059a6a4 100644
+index e86dc74..a388fd4 100644
 --- a/man/make.conf.5
 +++ b/man/make.conf.5
 @@ -198,10 +198,6 @@ non-developers as well. The \fBsandbox\fR feature is very important and
@@ -489,6 +503,33 @@ index e86dc74..059a6a4 100644
  .B assume\-digests
  When commiting work to cvs with \fBrepoman\fR(1), assume that all existing 
  SRC_URI digests are correct.  This feature also affects digest generation via
+@@ -241,6 +237,12 @@ like "File not recognized: File truncated"), try recompiling the application
+ with ccache disabled before reporting a bug. Unless you are doing development
+ work, do not enable ccache.
+ .TP
++.B clean\-logs
++Enable automatic execution of the command specified by the
++PORT_LOGDIR_CLEAN variable. The default PORT_LOGDIR_CLEAN setting will
++remove all files from PORT_LOGDIR that were last modified at least 7
++days ago.
++.TP
+ .B collision\-protect
+ A QA\-feature to ensure that a package doesn't overwrite files it doesn't own.
+ The \fICOLLISION_IGNORE\fR variable can be used to selectively disable this
+@@ -599,6 +601,13 @@ directory does not exist, it will be created automatically and group permissions
+ will be applied to it.  If the directory already exists, portage will not
+ modify it's permissions.
+ .TP
++.B PORT_LOGDIR_CLEAN
++This variable should contain a command for portage to call in order
++to clean PORT_LOGDIR. The command string should contain a
++\\${PORT_LOGDIR} place\-holder that will be substituted
++with the value of that variable. This variable will have no effect
++unless \fBclean\-logs\fR is enabled in \fBFEATURES\fR.
++.TP
+ \fBPORTAGE_BINHOST\fR = \fI[space delimited URI list]\fR
+ This is a list of hosts from which portage will grab prebuilt\-binary packages.
+ Each entry in the list must specify the full address of a directory
 diff --git a/man/portage.5 b/man/portage.5
 index f115570..1f05d97 100644
 --- a/man/portage.5
@@ -1033,6 +1074,73 @@ index c978ce2..57b376d 100644
  		for line in wrap(desc, desc_width):
  			print(desc_indent + line)
  		print()
+diff --git a/pym/_emerge/main.py b/pym/_emerge/main.py
+index 2830214..4cabafd 100644
+--- a/pym/_emerge/main.py
++++ b/pym/_emerge/main.py
+@@ -28,7 +28,8 @@ import portage.exception
+ from portage.data import secpass
+ from portage.dbapi.dep_expand import dep_expand
+ from portage.util import normalize_path as normpath
+-from portage.util import shlex_split, writemsg_level, writemsg_stdout
++from portage.util import (shlex_split, varexpand,
++	writemsg_level, writemsg_stdout)
+ from portage._sets import SETPREFIX
+ from portage._global_updates import _global_updates
+ 
+@@ -388,6 +389,8 @@ def post_emerge(myaction, myopts, myfiles,
+ 				" %s spawn failed of %s\n" % (bad("*"), postemerge,),
+ 				level=logging.ERROR, noiselevel=-1)
+ 
++	clean_logs(settings)
++
+ 	if "--quiet" not in myopts and \
+ 		myaction is None and "@world" in myfiles:
+ 		show_depclean_suggestion()
+@@ -1222,7 +1225,6 @@ def ionice(settings):
+ 	if not ionice_cmd:
+ 		return
+ 
+-	from portage.util import varexpand
+ 	variables = {"PID" : str(os.getpid())}
+ 	cmd = [varexpand(x, mydict=variables) for x in ionice_cmd]
+ 
+@@ -1238,6 +1240,35 @@ def ionice(settings):
+ 		out.eerror("PORTAGE_IONICE_COMMAND returned %d" % (rval,))
+ 		out.eerror("See the make.conf(5) man page for PORTAGE_IONICE_COMMAND usage instructions.")
+ 
++def clean_logs(settings):
++
++	if "clean-logs" not in settings.features:
++		return
++
++	clean_cmd = settings.get("PORT_LOGDIR_CLEAN")
++	if clean_cmd:
++		clean_cmd = shlex_split(clean_cmd)
++	if not clean_cmd:
++		return
++
++	logdir = settings.get("PORT_LOGDIR")
++	if logdir is None or not os.path.isdir(logdir):
++		return
++
++	variables = {"PORT_LOGDIR" : logdir}
++	cmd = [varexpand(x, mydict=variables) for x in clean_cmd]
++
++	try:
++		rval = portage.process.spawn(cmd, env=os.environ)
++	except portage.exception.CommandNotFound:
++		rval = 127
++
++	if rval != os.EX_OK:
++		out = portage.output.EOutput()
++		out.eerror("PORT_LOGDIR_CLEAN returned %d" % (rval,))
++		out.eerror("See the make.conf(5) man page for "
++			"PORT_LOGDIR_CLEAN usage instructions.")
++
+ def setconfig_fallback(root_config):
+ 	from portage._sets.base import DummyPackageSet
+ 	from portage._sets.files import WorldSelectedSet
 diff --git a/pym/_emerge/search.py b/pym/_emerge/search.py
 index 35f0412..3fed2b6 100644
 --- a/pym/_emerge/search.py
@@ -1595,18 +1703,20 @@ index 9e7e455..ef90bf6 100644
  		return myhash, mysize
  	finally:
 diff --git a/pym/portage/const.py b/pym/portage/const.py
-index f108176..fac9fe5 100644
+index f108176..bfcdbef 100644
 --- a/pym/portage/const.py
 +++ b/pym/portage/const.py
-@@ -86,7 +86,6 @@ EBUILD_PHASES            = ("pretend", "setup", "unpack", "prepare", "configure"
+@@ -86,16 +86,16 @@ EBUILD_PHASES            = ("pretend", "setup", "unpack", "prepare", "configure"
                             "package", "preinst", "postinst","prerm", "postrm",
                             "nofetch", "config", "info", "other")
  SUPPORTED_FEATURES       = frozenset([
 -                           "allow-missing-manifests",
                             "assume-digests", "binpkg-logs", "buildpkg", "buildsyspkg", "candy",
-                            "ccache", "chflags", "collision-protect", "compress-build-logs",
+-                           "ccache", "chflags", "collision-protect", "compress-build-logs",
++                           "ccache", "chflags", "clean-logs",
++                           "collision-protect", "compress-build-logs",
                             "digest", "distcc", "distcc-pump", "distlocks", "ebuild-locks", "fakeroot",
-@@ -94,8 +93,8 @@ SUPPORTED_FEATURES       = frozenset([
+                            "fail-clean", "fixpackages", "force-mirror", "getbinpkg",
                             "installsources", "keeptemp", "keepwork", "fixlafiles", "lmirror",
                             "metadata-transfer", "mirror", "multilib-strict", "news",
                             "noauto", "noclean", "nodoc", "noinfo", "noman",
@@ -2402,6 +2512,19 @@ index 13efab7..b2f96e6 100644
  	def _pkgdir_category(self):
  		return self.pkgdir.rstrip(os.sep).split(os.sep)[-2]
  
+diff --git a/pym/portage/package/ebuild/_config/special_env_vars.py b/pym/portage/package/ebuild/_config/special_env_vars.py
+index 87aa606..02a7844 100644
+--- a/pym/portage/package/ebuild/_config/special_env_vars.py
++++ b/pym/portage/package/ebuild/_config/special_env_vars.py
+@@ -156,7 +156,7 @@ environ_filter += [
+ 	"PORTAGE_RO_DISTDIRS",
+ 	"PORTAGE_RSYNC_EXTRA_OPTS", "PORTAGE_RSYNC_OPTS",
+ 	"PORTAGE_RSYNC_RETRIES", "PORTAGE_SYNC_STALE",
+-	"PORTAGE_USE", "PORT_LOGDIR",
++	"PORTAGE_USE", "PORT_LOGDIR", "PORT_LOGDIR_CLEAN",
+ 	"QUICKPKG_DEFAULT_OPTS",
+ 	"RESUMECOMMAND", "RESUMECOMMAND_FTP",
+ 	"RESUMECOMMAND_HTTP", "RESUMECOMMAND_HTTPS",
 diff --git a/pym/portage/package/ebuild/config.py b/pym/portage/package/ebuild/config.py
 index a591c9a..5ed477e 100644
 --- a/pym/portage/package/ebuild/config.py
