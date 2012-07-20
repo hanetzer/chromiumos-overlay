@@ -29,9 +29,7 @@ src_prepare() {
 }
 
 src_configure() {
-	: ${WAF_BINARY:="${S}/waf"}
-
-	local myconf
+	local myconf="--enable-gl"
 
 	if use gles2; then
 		myconf+="--enable-glesv2"
@@ -44,13 +42,6 @@ src_configure() {
 		fi
 	fi
 
-	tc-export CC CXX PKG_CONFIG
-	export PKGCONFIG=${PKG_CONFIG}
-
-	# it does not know --libdir specification, dandy huh
-	CCFLAGS="${CFLAGS}" LINKFLAGS="${LDFLAGS}" "${WAF_BINARY}" \
-		--prefix=/usr \
-		--enable-gl \
-		${myconf} \
-		configure || die "configure failed"
+	export PKGCONFIG=$(tc-getPKG_CONFIG)
+	waf-utils_src_configure ${myconf}
 }
