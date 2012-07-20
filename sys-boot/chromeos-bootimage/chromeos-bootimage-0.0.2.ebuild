@@ -27,7 +27,6 @@ DEPEND="
 	x86? ( ${X86_DEPEND} )
 	amd64? ( ${X86_DEPEND} )
 	virtual/u-boot
-	chromeos-base/chromeos-ec
 	chromeos-base/vboot_reference
 	seabios? ( sys-boot/chromeos-seabios )
 	memtest? ( sys-boot/chromeos-memtest )
@@ -50,18 +49,16 @@ netboot_required() {
 # Args:
 #    $1: fdt_file - full name of device tree file
 #    $2: uboot_file - full name of U-Boot binary
-#    $3: ec_file - full name of the EC read/write binary
-#    $4: common_flags - flags to use for all images
-#    $5: verified_flags - extra flags to use for verified image
-#    $6: nv_flags - extra flags to pass for non-verified image
+#    $3: common_flags - flags to use for all images
+#    $4: verified_flags - extra flags to use for verified image
+#    $5: nv_flags - extra flags to pass for non-verified image
 build_image() {
 	local nv_uboot_file
 	local fdt_file="$1"
 	local uboot_file="$2"
-	local ec_file="$3"
-	local common_flags="$4"
-	local verified_flags="$5"
-	local nv_flags="$6"
+	local common_flags="$3"
+	local verified_flags="$4"
+	local nv_flags="$5"
 	local board
 	local base
 
@@ -75,7 +72,6 @@ build_image() {
 		${common_flags} \
 		--dt ${fdt_file} \
 		--uboot ${uboot_file} \
-		--ec ${ec_file} \
 		--bootcmd "vboot_twostop" \
 		--bootsecure \
 		${verified_flags} \
@@ -92,7 +88,6 @@ build_image() {
 		${common_flags} \
 		--dt ${fdt_file} \
 		--uboot ${nv_uboot_file} \
-		--ec ${ec_file} \
 		--add-config-int load_env 1 \
 		--add-node-enable console 1 \
 		${nv_flags} \
@@ -109,7 +104,6 @@ src_compile() {
 	local bct_file
 	local fdt_file
 	local uboot_file
-	local ec_file
 	local devkeys_file
 	local dd_params
 
@@ -126,9 +120,6 @@ src_compile() {
 		# We only have a single U-Boot, and it is called u-boot.bin
 		uboot_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
 	fi
-
-	# Location of the EC RW image
-	ec_file="${CROS_FIRMWARE_ROOT}/ec.RW.bin"
 
 	# Location of the devkeys
 	devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
@@ -155,15 +146,14 @@ src_compile() {
 		einfo "x86: Only building for board ${U_BOOT_FDT_USE}"
 		# Location of the U-Boot flat device tree source file
 		fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
-		build_image "${fdt_file}" "${uboot_file}" "${ec_file}" \
-				"${common_flags}" "${verified_flags}" \
-				"${seabios_flags}"
+		build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
+				"${verified_flags}" "${seabios_flags}"
 
 	else
 		einfo "Building all images"
 		for fdt_file in ${CROS_FIRMWARE_ROOT}/dts/*.dts; do
 			build_image "${fdt_file}" "${uboot_file}" \
-				"${ec_file}" "${common_flags}" \
+				"${common_flags}" \
 				"${verified_flags}" "${seabios_flags}"
 		done
 	fi
