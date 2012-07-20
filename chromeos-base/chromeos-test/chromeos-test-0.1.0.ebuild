@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth"
+IUSE="bluetooth cros_ec"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -85,6 +85,6 @@ RDEPEND="${RDEPEND}
 	x11-misc/x11vnc
 	x11-terms/rxvt-unicode
 	app-misc/utouch-evemu
-	chromeos-base/ec-utils
+	cros_ec? ( chromeos-base/ec-utils)
 	chromeos-base/ixchariot
 	"
