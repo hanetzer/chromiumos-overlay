@@ -52,13 +52,6 @@ src_compile() {
 	BOARD=${EC_BOARD} emake all ${EXTRA_ARGS}
 }
 
-src_test() {
-	set_build_env
-	# TODO(vpalatin) Enable once the qemu build is ready.
-	#emake tests
-	#emake qemu-tests
-}
-
 src_install() {
 	set_build_env
 	# EC firmware binaries
