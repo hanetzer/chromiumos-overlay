@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) !dev-util/perf-next
 SLOT=0
 _eclasses_=cros-workon	e0f2fe8aed45b4f8ca1c06169b727a16	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
-_md5_=6dbd80a0e873db061f553ff85cb6b7be
+_md5_=2cf56e59745e9c9201808157f179fcc2
