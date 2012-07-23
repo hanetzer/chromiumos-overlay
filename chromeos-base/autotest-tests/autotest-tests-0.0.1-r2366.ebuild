@@ -261,6 +261,7 @@ IUSE_TESTS="
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
 	+tests_platform_ToolchainOptions
+	+tests_platform_TouchpadSynDrop
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BacklightServer
