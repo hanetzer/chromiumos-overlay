@@ -1,8 +1,8 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
-CROS_WORKON_COMMIT="34795a6f2e61688886556b6d6c56ad3a8d2367b2"
-CROS_WORKON_TREE="90bd8700ef1701abb67926348313bbaf25820304"
+CROS_WORKON_COMMIT=921d7bf3459b46e5ff0fd8f1b70fec640b1395a6
+CROS_WORKON_TREE="859b89483814b2761d3cd0812dd27a97b2d3f569"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
