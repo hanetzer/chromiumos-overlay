@@ -149,6 +149,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-do-not-attend-gone-clients.patch"
 	# crosbug.com/p/11408
 	"${FILESDIR}/1.12.0-fix-scale-to-desktop-for-edge-ABS-events.patch"
+	# Fix for xfixes pointer barriers
+	"${FILESDIR}/1.12.0-xfixes-safer-barriers.patch"
 )
 
 src_prepare() {
