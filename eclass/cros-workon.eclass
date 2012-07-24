@@ -1,4 +1,4 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 #
@@ -127,6 +127,8 @@ array_vars_autocomplete() {
 	# For one project, defaults will suffice.
 	[ ${project_count} -eq 1 ] && return
 
+	[[ ${CROS_WORKON_OUTOFTREE_BUILD} == "1" ]] && die "Out of Tree Build not compatible with multi-project ebuilds"
+
 	local count var
 	for var in "${ARRAY_VARIABLES[@]}"; do
 		eval count=\${#${var}\[@\]}
@@ -244,9 +246,6 @@ local_copy() {
 	elif [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
 		local_copy_git "${src}" "${dst}"
 	elif [ "${CROS_WORKON_OUTOFTREE_BUILD}" == "1" ]; then
-		if [ ${project_count} -gt 1 ]; then
-			die "Out of Tree Build not compatible with multi-project ebuilds."
-		fi
 		S="${src}"
 	else
 		local_copy_cp "${src}" "${dst}"
@@ -296,6 +295,35 @@ cros-workon_src_unpack() {
 	local project=( "${CROS_WORKON_PROJECT[@]}" )
 	local destdir=( "${CROS_WORKON_DESTDIR[@]}" )
 	get_paths
+
+	if [[ ${fetch_method} == "git" && ${CROS_WORKON_OUTOFTREE_BUILD} == "1" ]] ; then
+		# See if the local repo exists, is unmodified, and is checked out to
+		# the right rev.  This will be the common case, so support it to make
+		# builds a bit faster.
+		if [[ -d ${path} ]] ; then
+			if [[ ${CROS_WORKON_COMMIT} == "$(get_rev "${path}/.git")" ]] ; then
+				local changes=$(
+					cd "${path}"
+					# Needed as `git status` likes to grab a repo lock.
+					addpredict "${PWD}"
+					# Ignore untracked files as they (should) be ignored by the build too.
+					git status --porcelain | grep -v '^[?][?]'
+				)
+				if [[ -z ${changes} ]] ; then
+					fetch_method=local
+				else
+					# Assume that if the dev has changes, they want it that way.
+					: #ewarn "${path} contains changes"
+				fi
+			else
+				ewarn "${path} is not at rev ${CROS_WORKON_COMMIT}"
+			fi
+		else
+			# This will hit minilayout users a lot, and rarely non-minilayout
+			# users.  So don't bother warning here.
+			: #ewarn "${path} does not exist"
+		fi
+	fi
 
 	if [[ "${fetch_method}" == "git" ]] ; then
 		all_local() {
