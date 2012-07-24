@@ -262,6 +262,10 @@ set_vcsid() {
 	fi
 }
 
+get_rev() {
+	GIT_DIR="$1" git rev-parse HEAD
+}
+
 cros-workon_src_unpack() {
 	local fetch_method # local|git
 
@@ -352,7 +356,7 @@ cros-workon_src_unpack() {
 			done
 			if [[ ${fetched} -gt 0 ]]; then
 				# TODO: Id of all repos?
-				set_vcsid "$(GIT_DIR="${path[0]}/.git" git rev-parse HEAD)"
+				set_vcsid "$(get_rev "${path[0]}/.git")"
 				return
 			fi
 		fi
@@ -400,7 +404,7 @@ cros-workon_src_unpack() {
 	for (( i = 0; i < project_count; ++i )); do
 		local_copy "${path[i]}" "${destdir[i]}" || \
 			die "Cannot create a local copy"
-		set_vcsid "$(GIT_DIR="${path[0]}/.git" git rev-parse HEAD)"
+		set_vcsid "$(get_rev "${path[0]}/.git")"
 	done
 }
 
