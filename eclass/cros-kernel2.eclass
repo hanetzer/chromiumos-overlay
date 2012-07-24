@@ -229,7 +229,7 @@ install_kernel_sources() {
 }
 
 get_build_dir() {
-	echo "${WORKDIR}/${P}/build/$(get_current_board_with_variant)"
+	echo "${SYSROOT}/var/cache/portage/${CATEGORY}/${PN}"
 }
 
 get_build_cfg() {
@@ -252,6 +252,11 @@ get_build_arch() {
 	else
 		echo $(tc-arch-kernel)
 	fi
+}
+
+cros-kernel2_pkg_setup() {
+	mkdir -p -m 755 "$(get_build_dir)"
+	chown ${PORTAGE_USERNAME}:${PORTAGE_GRPNAME} "$(get_build_dir)"
 }
 
 # @FUNCTION: emit_its_script
@@ -350,7 +355,7 @@ kmake() {
 }
 
 cros-kernel2_src_configure() {
-	mkdir -p "$(get_build_dir)"
+	addwrite "$(get_build_dir)"
 
 	# Use a single or split kernel config as specified in the board or variant
 	# make.conf overlay. Default to the arch specific split config if an
@@ -367,6 +372,16 @@ cros-kernel2_src_configure() {
 	fi
 
 	elog "Using kernel config: ${config}"
+
+	# Keep a handle on the old .config in case it hasn't changed.  This way
+	# we can keep the old timestamp which will avoid regenerating stuff that
+	# hasn't actually changed.
+	local temp_config="${T}/old-kernel-config"
+	if [[ -e $(get_build_cfg) ]] ; then
+		cp -a "$(get_build_cfg)" "${temp_config}"
+	else
+		rm -f "${temp_config}"
+	fi
 
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
 		cp -f "${config}" "$(get_build_cfg)" || die
@@ -397,6 +412,11 @@ cros-kernel2_src_configure() {
 
 	# Use default for any options not explitly set in splitconfig
 	yes "" | kmake oldconfig
+
+	# Restore the old config if it is unchanged.
+	if cmp -s "$(get_build_cfg)" "${temp_config}" ; then
+		touch -r "${temp_config}" "$(get_build_cfg)"
+	fi
 }
 
 get_dtb_name() {
@@ -514,4 +534,4 @@ cros-kernel2_src_install() {
 	fi
 }
 
-EXPORT_FUNCTIONS src_configure src_compile src_install
+EXPORT_FUNCTIONS pkg_setup src_configure src_compile src_install
