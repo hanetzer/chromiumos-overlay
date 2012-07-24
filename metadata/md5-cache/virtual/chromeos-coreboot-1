@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS Firmware virtual package
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=amd64 x86
+RDEPEND=sys-boot/chromeos-coreboot
+SLOT=0
+_md5_=25e75c9bd76a5cda7833ad3c80fe0f3f
