@@ -41,6 +41,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_prepare() {
+	epatch "${FILESDIR}"/va_terminate.patch
 	eautoreconf
 }
 
