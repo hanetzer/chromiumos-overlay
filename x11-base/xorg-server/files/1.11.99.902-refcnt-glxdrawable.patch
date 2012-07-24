@@ -59,7 +59,7 @@ index de9c3f0..b3ea784 100644
 -	!AddResource(pDraw->id, __glXDrawableRes, pGlxDraw)) {
 -	pGlxDraw->destroy (pGlxDraw);
 -	return BadAlloc;
-+    if (drawableId != glxDrawableId) {
++    if (drawableId != glxDrawableId && type == GLX_DRAWABLE_WINDOW) {
 +	/* Add the glx drawable under the XID of the underlying X drawable
 +	 * too.  That way we'll get a callback in DrawableGone and can
 +	 * clean up properly when the drawable is destroyed. */
