@@ -100,7 +100,7 @@ cros-coreboot_src_compile() {
 			elog "   - adding ${board_root}/me.bin"
 			ifdtool -i "ME:${board_root}/me.bin" \
 				"${build_root}/skeleton.bin" || die
-			mv "${build_root}/skeleton"{.new,} || die
+			mv "${build_root}/skeleton.bin"{.new,} || die
 		fi
 	else
 		die "${flash_descriptor_file} not found"
