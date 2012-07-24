@@ -109,12 +109,30 @@ IUSE_TESTS="
 	+tests_firmware_DevMode
 	+tests_firmware_DevScreenTimeout
 	+tests_firmware_DevTriggerRecovery
+	+tests_firmware_ECAdc
+	+tests_firmware_ECBattery
+	+tests_firmware_ECBootTime
+	+tests_firmware_ECCharging
+	+tests_firmware_ECCorruptFwBodyA
+	+tests_firmware_ECCorruptFwSigA
+	+tests_firmware_ECKeyboard
+	+tests_firmware_ECLidSwitch
+	+tests_firmware_ECPeci
+	+tests_firmware_ECPowerButton
+	+tests_firmware_ECPowerG3
+	+tests_firmware_ECThermal
+	+tests_firmware_ECUsbPorts
+	+tests_firmware_ECWakeSource
+	+tests_firmware_ECWatchdog
 	+tests_firmware_FAFTClient
 	+tests_firmware_FwScreenCloseLid
 	+tests_firmware_FwScreenPressPower
 	+tests_firmware_InvalidUSB
 	+tests_firmware_RecoveryButton
+	+tests_firmware_RollbackFirmware
+	+tests_firmware_RollbackKernel
 	+tests_firmware_RomSize
+	+tests_firmware_ShellBall
 	+tests_firmware_TryFwB
 	+tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
