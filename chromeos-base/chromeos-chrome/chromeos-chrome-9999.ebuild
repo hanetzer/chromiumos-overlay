@@ -865,6 +865,7 @@ install_chrome_test_resources() {
 		chrome/test/functional \
 		chrome/third_party/mock4js/mock4js.js  \
 		content/common/gpu/testdata \
+		content/test/data \
 		net/data/ssl/certificates \
 		third_party/bidichecker/bidichecker_packaged.js
 
