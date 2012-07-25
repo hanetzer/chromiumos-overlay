@@ -9,5 +9,5 @@ LICENSE=GPL-2
 PDEPEND=|| ( >chromeos-base/autotest-tests-0.0.1-r596 !!<=chromeos-base/autotest-tests-0.0.1-r596 )
 RDEPEND=chromeos-base/flimflam-test chromeos-base/chromeos-chrome chromeos-base/protofiles dev-libs/protobuf dev-python/pygobject autox? ( chromeos-base/autox ) ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) ) !!<=chromeos-base/autotest-tests-0.0.1-r596
 SLOT=0
-_eclasses_=autotest	6d0d5b3bb841519e0a8c2b41ee974f1a	conflict	974274f61683fa68a5c5fae14d38e018	cros-workon	e0f2fe8aed45b4f8ca1c06169b727a16	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=autotest	6d0d5b3bb841519e0a8c2b41ee974f1a	conflict	974274f61683fa68a5c5fae14d38e018	cros-workon	0ba2bddff4609fd203dcab47d89312e1	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=2904cb50070b798a06639bb17f51a06b
