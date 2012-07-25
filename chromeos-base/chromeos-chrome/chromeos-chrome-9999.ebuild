@@ -1005,17 +1005,17 @@ src_install() {
 	# optional (http://crosbug.com/30473).
 	local pak paks
 	paks=(
-		theme_resources_standard.pak
-		theme_resources_touch_1x.pak
-		ui_resources_standard.pak
-		ui_resources_touch.pak
+		theme_resources_100_percent.pak
+		theme_resources_touch_100_percent.pak
+		ui_resources_100_percent.pak
+		ui_resources_touch_100_percent.pak
 	)
 	if use highdpi; then
 		paks+=(
-			theme_resources_2x.pak
-			theme_resources_touch_2x.pak
-			ui_resources_2x.pak
-			ui_resources_touch_2x.pak
+			theme_resources_200_percent.pak
+			theme_resources_touch_200_percent.pak
+			ui_resources_200_percent.pak
+			ui_resources_touch_200_percent.pak
 		)
 	fi
 	for pak in "${paks[@]}"; do
