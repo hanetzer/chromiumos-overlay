@@ -143,6 +143,7 @@ add_pgo_arches x86 amd64 arm
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES=("ffmpeg_tests")
+PPAPI_TEST_FILES=("test_case.html" "test_case.html.mock-http-headers" "test_page.css" "ppapi_nacl_tests_newlib.nmf")
 if [ "$ARCH" = "arm" ]; then
 	TEST_FILES+=( "omx_video_decode_accelerator_unittest" "ppapi_example_video_decode" )
 else
@@ -853,6 +854,10 @@ install_chrome_test_resources() {
 		cp -al "${from}/${f}" "${test_dir}"
 	done
 
+	for f in "${PPAPI_TEST_FILES[@]}"; do
+		cp -al "${from}/${f}" "${test_dir}/out/Release"
+	done
+
 	# Install Chrome test resources.
 	install_test_resources "${test_dir}" \
 		base/base_paths_posix.cc \
@@ -860,6 +865,7 @@ install_chrome_test_resources() {
 		chrome/test/functional \
 		chrome/third_party/mock4js/mock4js.js  \
 		content/common/gpu/testdata \
+		content/test/data \
 		net/data/ssl/certificates \
 		third_party/bidichecker/bidichecker_packaged.js
 
@@ -1000,15 +1006,19 @@ src_install() {
 	# optional (http://crosbug.com/30473).
 	local pak paks
 	paks=(
-		theme_resources_standard.pak
-		theme_resources_2x.pak
-		theme_resources_touch_1x.pak
-		theme_resources_touch_2x.pak
-		ui_resources_standard.pak
-		ui_resources_2x.pak
-		ui_resources_touch.pak
-		ui_resources_touch_2x.pak
+		theme_resources_100_percent.pak
+		theme_resources_touch_100_percent.pak
+		ui_resources_100_percent.pak
+		ui_resources_touch_100_percent.pak
 	)
+	if use highdpi; then
+		paks+=(
+			theme_resources_200_percent.pak
+			theme_resources_touch_200_percent.pak
+			ui_resources_200_percent.pak
+			ui_resources_touch_200_percent.pak
+		)
+	fi
 	for pak in "${paks[@]}"; do
 		if [ -f "${FROM}/${pak}" ] ; then
 			doins "${FROM}/${pak}"
