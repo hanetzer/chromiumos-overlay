@@ -17,7 +17,7 @@ SLOT="0"
 IUSE="em100-mode"
 
 
-RDEPEND=""
+RDEPEND="!sys-boot/chromeos-coreboot"
 
 DEPEND="sys-power/iasl
 	sys-apps/coreboot-utils
