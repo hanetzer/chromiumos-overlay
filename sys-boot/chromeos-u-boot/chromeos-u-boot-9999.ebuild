@@ -176,7 +176,6 @@ src_install() {
 
 	insinto "${inst_dir}/dts"
 	for dts_dir in "board/${ub_vendor}/dts" \
-			"board/${ub_vendor}/${ub_board}" \
 			"arch/${ub_arch}/dts" \
 			cros/dts; do
 		files_to_copy="$(find ${dts_dir} -regex '.*\.dtsi?')"
