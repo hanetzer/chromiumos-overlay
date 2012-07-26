@@ -37,6 +37,7 @@ ALL_BOARDS=(
 	butterfly
 	daisy
 	emeraldlake2
+	fb1
 	ironhide
 	kiev
 	klang
