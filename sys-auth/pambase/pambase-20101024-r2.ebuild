@@ -1,19 +1,19 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-auth/pambase/pambase-20090620.1-r1.ebuild,v 1.7 2009/10/09 19:22:35 maekke Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-auth/pambase/pambase-20101024-r2.ebuild,v 1.4 2012/05/19 21:34:59 flameeyes Exp $
 
-EAPI=2
+EAPI=4
 
 inherit eutils
 
 DESCRIPTION="PAM base configuration files"
 HOMEPAGE="http://www.gentoo.org/proj/en/base/pam/"
-SRC_URI="http://www.flameeyes.eu/gentoo-distfiles/${P}.tar.bz2"
+SRC_URI="http://dev.gentoo.org/~flameeyes/${PN}/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="debug cracklib passwdqc consolekit gnome-keyring selinux mktemp ssh +sha512"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~sparc-fbsd ~x86-fbsd ~x86-freebsd ~amd64-linux ~ia64-linux ~x86-linux"
+IUSE="debug cracklib passwdqc consolekit gnome-keyring selinux mktemp pam_ssh +sha512 pam_krb5 minimal"
 RESTRICT="binchecks"
 
 RDEPEND="
@@ -29,15 +29,18 @@ RDEPEND="
 	selinux? ( >=sys-libs/pam-0.99[selinux] )
 	passwdqc? ( >=sys-auth/pam_passwdqc-1.0.4 )
 	mktemp? ( sys-auth/pam_mktemp )
-	ssh? ( sys-auth/pam_ssh )
+	pam_ssh? ( sys-auth/pam_ssh )
 	sha512? ( >=sys-libs/pam-1.0.1 )
+	pam_krb5? (
+		>=sys-libs/pam-1.1.0
+		>=sys-auth/pam_krb5-4.3
+	)
 	!<sys-freebsd/freebsd-pam-modules-6.2-r1
 	!<sys-libs/pam-0.99.9.0-r1"
 DEPEND="app-portage/portage-utils"
 
 src_prepare() {
-	# Disable nullok option.
-	epatch "${FILESDIR}/${P}-disable-nullok.patch"
+	epatch "${FILESDIR}"/${P}-disable-nullok.patch
 }
 
 src_compile() {
@@ -69,13 +72,30 @@ src_compile() {
 		$(use_var GNOME_KEYRING gnome-keyring) \
 		$(use_var selinux) \
 		$(use_var mktemp) \
-		$(use_var PAM_SSH ssh) \
+		$(use_var PAM_SSH pam_ssh) \
 		$(use_var sha512) \
+		$(use_var KRB5 pam_krb5) \
+		$(use_var minimal) \
 		IMPLEMENTATION=${implementation} \
-		LINUX_PAM_VERSION=${linux_pam_version} \
-		|| die "emake failed"
+		LINUX_PAM_VERSION=${linux_pam_version}
 }
 
+src_test() { :; }
+
 src_install() {
-	emake GIT=true DESTDIR="${D}" install || die "emake install failed"
+	emake GIT=true DESTDIR="${ED}" install
+}
+
+pkg_postinst() {
+	if use sha512; then
+		elog "Starting from version 20080801, pambase optionally enables"
+		elog "SHA512-hashed passwords. For this to work, you need sys-libs/pam-1.0.1"
+		elog "built against sys-libs/glibc-2.7 or later."
+		elog "If you don't have support for this, it will automatically fallback"
+		elog "to MD5-hashed passwords, just like before."
+		elog
+		elog "Please note that the change only affects the newly-changed passwords"
+		elog "and that SHA512-hashed passwords will not work on earlier versions"
+		elog "of glibc or Linux-PAM."
+	fi
 }
