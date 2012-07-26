@@ -242,13 +242,6 @@ src_install() {
 	exeinto "${BINPATH}"
 	newexe "${FILESDIR}/${LDWRAPPER}" "ld.bfd" || die
 
-	if [[ "${BINUTILS_VERSION}" == "binutils-2.21" ]] ; then
-		ASWRAPPER=aswrapper
-		mv "${D}/${BINPATH}/as" "${D}/${BINPATH}/as.real" || die
-		exeinto "${BINPATH}"
-		newexe "${FILESDIR}/${ASWRAPPER}" "as" || die
-	fi
-
 	mv "${D}/${BINPATH}/ld.gold" "${D}/${BINPATH}/ld.gold.real" || die
 	exeinto "${BINPATH}"
 	newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
