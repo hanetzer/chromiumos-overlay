@@ -20,6 +20,7 @@ DEPEND=""
 RDEPEND="!chromeos-base/chromeos-factorytools
 	 dev-lang/python
          dev-python/netifaces
+	 dev-python/setproctitle
 	 >=chromeos-base/vpd-0.0.1-r11"
 
 CROS_WORKON_LOCALNAME="factory"

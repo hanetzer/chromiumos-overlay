@@ -76,6 +76,7 @@ RDEPEND="${RDEPEND}
         dev-python/python-daemon
 	dev-python/pyudev
 	dev-python/pyusb
+	dev-python/setproctitle
 	dev-python/ws4py
 	=dev-util/boost-build-1.42.0
 	dev-util/cmake
