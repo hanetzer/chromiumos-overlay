@@ -145,7 +145,7 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEF
 TEST_FILES=("ffmpeg_tests")
 PPAPI_TEST_FILES=("test_case.html" "test_case.html.mock-http-headers" "test_page.css" "ppapi_nacl_tests_newlib.nmf")
 if [ "$ARCH" = "arm" ]; then
-	TEST_FILES+=( "omx_video_decode_accelerator_unittest" "ppapi_example_video_decode" )
+	TEST_FILES+=( "ppapi_example_video_decode" )
 else
 	TEST_FILES+=( "video_decode_accelerator_unittest" "ppapi_example_video_decode" )
 fi
@@ -823,9 +823,7 @@ install_chrome_test_resources() {
 		"libppapi_tests.so"
 		"browser_tests"
 		"sync_integration_tests" )
-	if [ "$ARCH" = "arm" ]; then
-		TEST_INSTALL_TARGETS+=( "omx_video_decode_accelerator_unittest" )
-	else
+	if [ "$ARCH" != "arm" ]; then
 		TEST_INSTALL_TARGETS+=( "video_decode_accelerator_unittest" )
 	fi
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
