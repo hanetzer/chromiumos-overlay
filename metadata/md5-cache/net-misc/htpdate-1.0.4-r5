@@ -6,4 +6,4 @@ LICENSE=GPL-2
 SLOT=0
 SRC_URI=http://www.clevervest.com/htp/archive/c/htpdate-1.0.4.tar.gz
 _eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=5b0700783ca084764b5e54ea5c0b4674
+_md5_=c2c2b29ffb0cdec0f657467f32907a71
