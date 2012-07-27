@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build hardfp -pgo_use -pgo_generate +runhooks +verbose -drm +nacl"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build hardfp -highdpi -pgo_use -pgo_generate +runhooks +verbose -drm +nacl"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
