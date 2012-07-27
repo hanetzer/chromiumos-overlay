@@ -128,7 +128,6 @@ src_install() {
 	fi
 
 	exeinto /usr/share/userfeedback/scripts
-	doexe test/mm.sh test/mm-status || die "Can't copy user feedback scripts"
 	dobin bin/ff_debug
 	dobin bin/mm_debug
 	dobin bin/set_apn
