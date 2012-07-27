@@ -142,13 +142,8 @@ add_pgo_arches x86 amd64 arm
 
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
-TEST_FILES=("ffmpeg_tests")
+TEST_FILES=("ffmpeg_tests" "video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=("test_case.html" "test_case.html.mock-http-headers" "test_page.css" "ppapi_nacl_tests_newlib.nmf")
-if [ "$ARCH" = "arm" ]; then
-	TEST_FILES+=( "ppapi_example_video_decode" )
-else
-	TEST_FILES+=( "video_decode_accelerator_unittest" "ppapi_example_video_decode" )
-fi
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
@@ -822,10 +817,9 @@ install_chrome_test_resources() {
 	TEST_INSTALL_TARGETS=(
 		"libppapi_tests.so"
 		"browser_tests"
-		"sync_integration_tests" )
-	if [ "$ARCH" != "arm" ]; then
-		TEST_INSTALL_TARGETS+=( "video_decode_accelerator_unittest" )
-	fi
+		"sync_integration_tests"
+		"video_decode_accelerator_unittest" )
+
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
 		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
 			-o "${test_dir}/out/Release/$(basename ${f})"
