@@ -35,6 +35,9 @@ COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
 	satasii? ( sys-apps/pciutils )
 	satamv? ( sys-apps/pciutils )
 	ogp_spi? ( sys-apps/pciutils )"
+# Force pciutils to rebuild as USE=static-libs in chroot.
+COMMON_DEPEND="${COMMON_DEPEND}
+	sys-apps/pciutils[static-libs]"
 RDEPEND="${COMMON_DEPEND}
 	internal? ( sys-apps/dmidecode )"
 DEPEND="${COMMON_DEPEND}
@@ -61,7 +64,6 @@ src_compile() {
 		satasii satamv serprog \
 		internal dummy
 	_flashrom_enable wiki PRINT_WIKI
-	_flashrom_enable static STATIC
 
 	# You have to specify at least one programmer, and if you specify more than
 	# one programmer you have to include either dummy or internal in the list.
@@ -82,12 +84,31 @@ src_compile() {
 	fi
 
 	tc-export AR CC RANLIB
+
 	# WARNERROR=no, bug 347879
-	emake WARNERROR=no ${args} || die
+	# TODO(hungte) Workaround for crosbug.com/32967: always provide
+	# dynamic and static version binaries if 'static' is not
+	# specified in USE flag.  We should deprecate this behavior once
+	# we find a better way to fix flashrom execution dependency.
+
+	local dynamic_args="$args CONFIG_STATIC=no"
+	local static_args="$args CONFIG_STATIC=yes"
+	emake WARNERROR=no ${static_args} || die
+	if ! use static; then
+		# Provide the static one as flashrom_s.
+		cp flashrom flashrom_s
+		emake clean
+		emake WARNERROR=no ${dynamic_args} || die
+	fi
 }
 
 src_install() {
 	dosbin flashrom || die
+	if ! use static;then
+		# crosbug.com/32967: Default target is not static. Provide the
+		# auxiliary static version as flashrom_s.
+		dosbin flashrom_s || die
+	fi
 	doman flashrom.8
 	dodoc ChangeLog README
 }
