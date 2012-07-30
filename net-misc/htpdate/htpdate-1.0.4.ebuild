@@ -27,6 +27,7 @@ src_unpack() {
 	epatch "${FILESDIR}/${P}-errorsarentsuccess.patch"
 	epatch "${FILESDIR}/${P}-64bit_limits.patch"
 	epatch "${FILESDIR}/${P}-relative_path.patch"
+	epatch "${FILESDIR}/${P}-all_headers.patch"
 	gunzip htpdate.8.gz || die
 }
 
