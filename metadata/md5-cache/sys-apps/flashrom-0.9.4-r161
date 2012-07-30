@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install unpack
+DEPEND=atahpt? ( sys-apps/pciutils ) dediprog? ( virtual/libusb:0 ) drkaiser? ( sys-apps/pciutils ) ft2232_spi? ( dev-embedded/libftdi ) gfxnvidia? ( sys-apps/pciutils ) internal? ( sys-apps/pciutils ) nic3com? ( sys-apps/pciutils ) nicintel? ( sys-apps/pciutils ) nicintel_spi? ( sys-apps/pciutils ) nicnatsemi? ( sys-apps/pciutils ) nicrealtek? ( sys-apps/pciutils ) rayer_spi? ( sys-apps/pciutils ) satasii? ( sys-apps/pciutils ) satamv? ( sys-apps/pciutils ) ogp_spi? ( sys-apps/pciutils ) sys-apps/pciutils[static-libs] sys-apps/diffutils dev-vcs/git
+DESCRIPTION=Utility for reading, writing, erasing and verifying flash ROM chips
+EAPI=3
+HOMEPAGE=http://flashrom.org/
+IUSE=+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser +dummy ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com +nicintel +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi +satasii +satamv +serprog +wiki static cros_workon_tree_85c39bc6b6b52de2683f3920d1458adc7a3b65a3
+KEYWORDS=amd64 x86 arm
+LICENSE=GPL-2
+RDEPEND=atahpt? ( sys-apps/pciutils ) dediprog? ( virtual/libusb:0 ) drkaiser? ( sys-apps/pciutils ) ft2232_spi? ( dev-embedded/libftdi ) gfxnvidia? ( sys-apps/pciutils ) internal? ( sys-apps/pciutils ) nic3com? ( sys-apps/pciutils ) nicintel? ( sys-apps/pciutils ) nicintel_spi? ( sys-apps/pciutils ) nicnatsemi? ( sys-apps/pciutils ) nicrealtek? ( sys-apps/pciutils ) rayer_spi? ( sys-apps/pciutils ) satasii? ( sys-apps/pciutils ) satamv? ( sys-apps/pciutils ) ogp_spi? ( sys-apps/pciutils ) sys-apps/pciutils[static-libs] internal? ( sys-apps/dmidecode )
+SLOT=0
+_eclasses_=cros-workon	0ba2bddff4609fd203dcab47d89312e1	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=3d415c9771b410d60013bc7c13b47fed
