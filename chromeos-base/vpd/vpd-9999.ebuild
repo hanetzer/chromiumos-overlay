@@ -29,7 +29,7 @@ src_compile() {
 src_install() {
 	# This target list should be architecture specific
 	# (no ACPI stuff on ARM for instance)
-	dosbin vpd util/dump_vpd_log
+	dosbin vpd vpd_s util/dump_vpd_log
 }
 
 # disabled due to buildbot failure
