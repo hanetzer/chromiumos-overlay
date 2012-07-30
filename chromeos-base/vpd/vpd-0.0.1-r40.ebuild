@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="609cf74374755967eaff02f2bbbbee6832c1ebad"
-CROS_WORKON_TREE="9c00728c9df77c5bffe9eebe9e617e91b8fb6489"
+CROS_WORKON_COMMIT=12cae25ac55aebbc6a86536f49607eea677fffbc
+CROS_WORKON_TREE="6ab461747188bc5842cccf9d322d6d4be2ccc159"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/vpd"
@@ -31,7 +31,7 @@ src_compile() {
 src_install() {
 	# This target list should be architecture specific
 	# (no ACPI stuff on ARM for instance)
-	dosbin vpd util/dump_vpd_log
+	dosbin vpd vpd_s util/dump_vpd_log
 }
 
 # disabled due to buildbot failure
