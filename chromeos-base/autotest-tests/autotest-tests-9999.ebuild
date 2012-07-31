@@ -113,8 +113,6 @@ IUSE_TESTS="
 	+tests_firmware_ECBattery
 	+tests_firmware_ECBootTime
 	+tests_firmware_ECCharging
-	+tests_firmware_ECCorruptFwBodyA
-	+tests_firmware_ECCorruptFwSigA
 	+tests_firmware_ECKeyboard
 	+tests_firmware_ECLidSwitch
 	+tests_firmware_ECPeci
@@ -133,6 +131,7 @@ IUSE_TESTS="
 	+tests_firmware_RollbackKernel
 	+tests_firmware_RomSize
 	+tests_firmware_ShellBall
+	+tests_firmware_SoftwareSync
 	+tests_firmware_TryFwB
 	+tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
