@@ -196,6 +196,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "chaps" 223       # For chaps (pkcs11)
 	copy_or_add_daemon_user "dhcp" 224        # For dhcpcd (DHCP client)
 	copy_or_add_daemon_user "tpmd" 225        # For tpmd
+	copy_or_add_daemon_user "mtp" 226         # For libmtp
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
@@ -230,6 +231,15 @@ pkg_postinst() {
 	add_users_to_group "serial" "${system_user}"
 	add_users_to_group "serial" "uucp"
 
+	# The root user must be in the wpa group for wpa_cli.
+	add_users_to_group wpa root
+
+	# Restrict tcsd access to root and chaps.
+	add_users_to_group tss root chaps
+
+	# Add mtp user to usb group for USB device access.
+	add_users_to_group usb mtp
+
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
 	for x in /dev /home /media \
@@ -237,10 +247,4 @@ pkg_postinst() {
 		[ -d "${ROOT}/$x" ] && continue
 		install -d --mode=0755 --owner=root --group=root "${ROOT}/$x"
 	done
-
-	# The root user must be in the wpa group for wpa_cli.
-	add_users_to_group wpa root
-
-	# Restrict tcsd access to root and chaps.
-	add_users_to_group tss root chaps
 }
