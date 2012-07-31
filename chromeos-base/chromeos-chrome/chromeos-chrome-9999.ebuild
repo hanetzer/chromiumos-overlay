@@ -998,6 +998,10 @@ src_install() {
 	# optional (http://crosbug.com/30473).
 	local pak paks
 	paks=(
+		chrome_100_percent.pak
+		chrome_touch_100_percent.pak
+		# TODO(flackr): Remove theme and ui resource paks after
+		# crbug.com/139803 has landed.
 		theme_resources_100_percent.pak
 		theme_resources_touch_100_percent.pak
 		ui_resources_100_percent.pak
@@ -1005,10 +1009,13 @@ src_install() {
 	)
 	if use highdpi; then
 		paks+=(
+			chrome_200_percent.pak
+			chrome_touch_200_percent.pak
 			theme_resources_200_percent.pak
 			theme_resources_touch_200_percent.pak
 			ui_resources_200_percent.pak
 			ui_resources_touch_200_percent.pak
+			webkit_resources_200_percent.pak
 		)
 	fi
 	for pak in "${paks[@]}"; do
