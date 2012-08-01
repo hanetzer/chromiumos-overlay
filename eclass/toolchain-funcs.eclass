@@ -16,7 +16,7 @@
 if [[ ${___ECLASS_ONCE_TOOLCHAIN_FUNCS} != "recur -_+^+_- spank" ]] ; then
 ___ECLASS_ONCE_TOOLCHAIN_FUNCS="recur -_+^+_- spank"
 
-inherit multilib
+inherit multilib binutils-funcs
 
 DESCRIPTION="Based on the ${ECLASS} eclass"
 
@@ -793,6 +793,25 @@ gcc-ssp() {
 	local obj=$(mktemp)
 	echo "void f(){char a[100];}" | ${CTARGET}-gcc -xc -c -o ${obj} -
 	return $(${CTARGET}-readelf -sW ${obj} | grep -q stack_chk_fail)
+}
+
+# Sets up environment variables required to build with Clang
+# This should be replaced with a sysroot wrapper ala GCC if/when
+# we get serious about building with Clang.
+clang-setup-env() {
+	use clang || return 0
+	case ${ARCH} in
+	amd64|x86)
+		export CC="clang" CXX="clang++"
+		append-flags --sysroot="${SYSROOT}"
+		append-flags -B$(get_binutils_path_gold)
+		;;
+	*) die "Clang is not yet supported for ${ARCH}"
+	esac
+
+	if use asan; then
+		append-flags -fsanitize=address -fno-omit-frame-pointer
+	fi
 }
 
 fi
