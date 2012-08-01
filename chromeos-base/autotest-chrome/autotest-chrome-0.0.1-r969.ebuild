@@ -52,6 +52,7 @@ IUSE_TESTS=(
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
 	+tests_desktopui_ImeTest
+	+tests_desktopui_LoadBigFile
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_ScreenLocker
 	tests_desktopui_TouchScreen
