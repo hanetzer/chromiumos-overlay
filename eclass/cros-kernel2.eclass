@@ -33,6 +33,7 @@ CONFIG_FRAGMENTS=(
 	kvm
 	nfs
 	pcserial
+	samsung_serial
 	realtekpstor
 	systemtap
 	vfat
@@ -142,6 +143,12 @@ CONFIG_SERIAL_8250_PCI=y
 CONFIG_PARPORT=y
 CONFIG_PARPORT_PC=y
 CONFIG_PARPORT_SERIAL=y
+"
+
+samsung_serial_desc="Samsung serialport"
+samsung_serial_config="
+CONFIG_SERIAL_SAMSUNG=y
+CONFIG_SERIAL_SAMSUNG_CONSOLE=y
 "
 
 realtekpstor_desc="Realtek PCI card reader"
