@@ -6,6 +6,11 @@
 # localized messages inside of our builds.
 export LANG=C
 
+# Since unittests on the buildbots don't automatically get access to an
+# X server, don't let local dev stations get access either.  If a test
+# really needs an X server, they should launch their own with Xvfb.
+unset DISPLAY
+
 if ! declare -F elog >/dev/null ; then
 	elog() {
 		einfo "$@"
