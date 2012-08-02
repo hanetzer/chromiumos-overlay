@@ -26,6 +26,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 CONFIG_FRAGMENTS=(
 	blkdevram
 	ca0132
+	cifs
 	fbconsole
 	gdmwimax
 	highmem
@@ -49,6 +50,11 @@ CONFIG_BLK_DEV_RAM_SIZE=16384
 ca0132_desc="CA0132 ALSA codec"
 ca0132_config="
 CONFIG_SND_HDA_CODEC_CA0132=y
+"
+
+cifs_desc="Samba/CIFS Support"
+cifs_config="
+CONFIG_CIFS=m
 "
 
 fbconsole_desc="framebuffer console"
