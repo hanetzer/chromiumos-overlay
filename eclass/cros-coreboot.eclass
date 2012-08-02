@@ -43,14 +43,16 @@ DEPEND="sys-power/iasl
 [[ -z ${COREBOOT_BOARD_ROOT} ]] && die "COREBOOT_BOARD_ROOT must be set"
 [[ -z ${COREBOOT_BUILD_ROOT} ]] && die "COREBOOT_BUILD_ROOT must be set"
 
+cros-coreboot_pre_src_prepare() {
+	cp configs/config.${COREBOOT_BOARD} .config
+}
+
 cros-coreboot_src_compile() {
 	tc-export CC
 	local board="${COREBOOT_BOARD}"
 	local build_root="${COREBOOT_BUILD_ROOT}"
 	local board_root="3rdparty/mainboard/${COREBOOT_BOARD_ROOT}"
 	local flash_descriptor_file=''
-
-	cp configs/config.${board} .config
 
 	# Set KERNELREVISION (really coreboot revision) to the ebuild revision
 	# number followed by a dot and the first seven characters of the git
@@ -115,4 +117,4 @@ cros-coreboot_src_install() {
 	fi
 }
 
-EXPORT_FUNCTIONS src_compile src_install
+EXPORT_FUNCTIONS src_compile src_install pre_src_prepare
