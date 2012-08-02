@@ -47,6 +47,7 @@ RDEPEND="
 	${JA_FONTS}
 	!cros_host? ( chromeos-base/chromeos-assets )
 	media-fonts/croscorefonts
+	media-fonts/notofonts
 	media-fonts/dejavu
 	media-fonts/droidfonts-cros
 	media-fonts/ko-nanumfonts
