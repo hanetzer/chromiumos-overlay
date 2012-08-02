@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="d024847f5af032699bab466e3e396f52f3ceff68"
-CROS_WORKON_TREE="96fc682335776096ff1b507900dffd9d7436de74"
+CROS_WORKON_COMMIT=8080b5b84ae899201a6620396b23191e28013948
+CROS_WORKON_TREE="42199716d28a0311de8204b4f21e9b318165b0ba"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/modem-utilities"
