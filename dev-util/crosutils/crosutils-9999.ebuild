@@ -33,7 +33,4 @@ src_install() {
 	# Install libraries
 	insinto /usr/lib/crosutils/lib
 	doins lib/* || die "Could not install library files"
-
-	doexe bin/loman.py || die "Could not install loman"
-	dosym /usr/lib/crosutils/loman.py /usr/bin/loman
 }
