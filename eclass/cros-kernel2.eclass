@@ -323,7 +323,7 @@ kmake() {
 	local cross=${CHOST}-
 	# Hack for using 64-bit kernel with 32-bit user-space
 	if [ "${ARCH}" = "x86" -a "${kernel_arch}" = "x86_64" ]; then
-		cross=${CBUILD}-
+		cross=x86_64-cros-linux-gnu-
 	else
 		# TODO(raymes): Force GNU ld over gold. There are still some
 		# gold issues to iron out. See: 13209.
