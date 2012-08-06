@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/flashrom/flashrom-0.9.4.ebuild,v 1.5 2011/09/20 16:03:21 nativemad Exp $
 
-EAPI="3"
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/flashrom"
 
 inherit cros-workon toolchain-funcs
@@ -18,7 +18,7 @@ KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
 +dummy ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com +nicintel
 +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
-+satasii +satamv +serprog +wiki static"
++satasii +satamv +serprog +wiki static -use_os_timer"
 
 COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
 	dediprog? ( virtual/libusb:0 )
@@ -69,7 +69,7 @@ src_compile() {
 	# one programmer you have to include either dummy or internal in the list.
 	for prog in ${IUSE//[+-]} ; do
 		case ${prog} in
-			internal|dummy|wiki) continue ;;
+			internal|dummy|wiki|use_os_timer) continue ;;
 		esac
 
 		use ${prog} && : $(( progs++ ))
@@ -84,6 +84,16 @@ src_compile() {
 	fi
 
 	tc-export AR CC RANLIB
+
+	# Configure Flashrom to use OS timer instead of calibrated delay loop
+	# if USE flag is specified or if a certain board requires it.
+	if use use_os_timer ; then
+		einfo "Configuring Flashrom to use OS timer"
+		args="$args CONFIG_USE_OS_TIMER=yes"
+	else
+		einfo "Configuring Flashrom to use delay loop"
+		args="$args CONFIG_USE_OS_TIMER=no"
+	fi
 
 	# WARNERROR=no, bug 347879
 	# TODO(hungte) Workaround for crosbug.com/32967: always provide
@@ -110,5 +120,5 @@ src_install() {
 		dosbin flashrom_s || die
 	fi
 	doman flashrom.8
-	dodoc ChangeLog README
+	dodoc README
 }
