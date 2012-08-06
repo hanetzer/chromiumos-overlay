@@ -7,6 +7,9 @@
 # link this to avoid library mismatch errors.  http://crosbug.com/32519
 app-arch/bzip2 static-libs
 app-arch/pbzip2 static
+# Same for pigz.
+app-arch/pigz static
+sys-libs/zlib static-libs
 
 chromeos-base/update_engine delta_generator
 dev-embedded/openocd  ftdi

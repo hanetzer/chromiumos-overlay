@@ -1,7 +1,6 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-=app-arch/pigz-2.1.6            amd64 x86
 =app-crypt/mit-krb5-1.7-r2       amd64 x86
 =app-emulation/qemu-kvm-0.15.1-r2 amd64
 =dev-cpp/gflags-1.2             amd64 x86

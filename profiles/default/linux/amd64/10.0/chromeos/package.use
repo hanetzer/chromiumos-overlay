@@ -4,6 +4,9 @@
 
 app-arch/bzip2 -static-libs
 app-arch/pbzip2 -static
+app-arch/pigz -static
+sys-libs/zlib -static-libs
+
 chromeos-base/update_engine -delta_generator
 dev-embedded/openocd  -ftdi
 net-misc/openssh -kerberos
