@@ -14,7 +14,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -aura"
-IUSE="${IUSE} -has_keyboard_backlight"
+IUSE="${IUSE} -has_keyboard_backlight -stay_awake_with_headphones"
 
 LIBCHROME_VERS="125070"
 
@@ -23,6 +23,7 @@ RDEPEND="app-misc/ddccontrol
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/glib
+	media-sound/adhd
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}
@@ -43,6 +44,7 @@ src_configure() {
 	export USE_ALS=$(usex als y "")
 	export USE_AURA=$(usex aura y "")
 	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
+	export USE_STAY_AWAKE_WITH_HEADPHONES=$(usex stay_awake_with_headphones y "")
 }
 
 src_test() {
