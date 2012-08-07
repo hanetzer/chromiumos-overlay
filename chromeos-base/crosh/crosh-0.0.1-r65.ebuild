@@ -3,31 +3,27 @@
 CROS_WORKON_COMMIT="e591664b8407383d7c8f0437434e73ec8cafc8ee"
 CROS_WORKON_TREE="1d9d2eba7dcb0b2dd9a5f7e008706fd6d86b6b80"
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/crosh"
 
-# Files from chromeos-wm are being moved to this package; ensure that we don't
-# get conflicts by installing this and an old version of chromeos-wm at the
-# same time.
-CONFLICT_LIST="chromeos-base/chromeos-wm-0.0.1-r230"
-inherit cros-workon toolchain-funcs conflict
+inherit cros-workon
 
 DESCRIPTION="Chrome OS command-line shell"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
+IUSE=""
 
 RDEPEND="chromeos-base/vboot_reference
 	net-misc/iputils
 	net-wireless/iw
-	sys-apps/net-tools
-	x11-terms/rxvt-unicode"
+	sys-apps/net-tools"
 DEPEND=""
 
 src_install() {
-	dobin cros-term
 	dobin crosh
 	dobin crosh-dev
 	dobin crosh-usb
