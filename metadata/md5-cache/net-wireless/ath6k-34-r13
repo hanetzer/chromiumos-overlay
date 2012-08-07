@@ -1,12 +1,12 @@
 DEFINED_PHASES=info install unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Atheros AR300x firmware
+DESCRIPTION=Atheros AR600x firmware
 EAPI=2
 HOMEPAGE=http://www.atheros.com/
-IUSE=cros_workon_tree_7d379cfb5652816f4df8916deb4ef57066b82710
+IUSE=cros_workon_tree_15432001bb53d7bfb41caecc20448cfbfd517d33
 KEYWORDS=amd64 arm x86
 LICENSE=Atheros
 RESTRICT=binchecks strip test
 SLOT=0
 _eclasses_=cros-workon	0ba2bddff4609fd203dcab47d89312e1	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=fc0373816cad3e7c527d109b9dfbfda9
+_md5_=870f31387fc5f1ab53e06947d850fec8
