@@ -32,7 +32,7 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 
-src_compile() {
+src_configure() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
@@ -43,8 +43,6 @@ src_compile() {
 	export USE_ALS=$(usex als y "")
 	export USE_AURA=$(usex aura y "")
 	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
-
-	emake
 }
 
 src_test() {
@@ -58,13 +56,11 @@ src_test() {
 
 src_install() {
 	# Built binaries
-	dobin out/backlight-tool
-	dobin out/backlight_dbus_tool
-	dobin out/power_state_tool
-	dobin out/power-supply-info
-	dobin out/powerd
-	dobin out/powerm
-	dobin out/suspend_delay_sample
+	pushd out >/dev/null
+	dobin backlight-tool backlight_dbus_tool
+	dobin power_state_tool power-supply-info power{d,m}
+	dobin suspend_delay_sample
+	popd >/dev/null
 
 	# Scripts
 	dobin debug_sleep_quickly
