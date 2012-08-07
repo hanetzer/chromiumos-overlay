@@ -103,6 +103,13 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # O=${WORKDIR}/${P}/build/${board} when compiling the kernel.
 : ${CROS_WORKON_OUTOFTREE_BUILD:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_INCREMENTAL_BUILD
+# @DESCRIPTION:
+# If set to "1", store output objects in a location that is not wiped
+# between emerges.  If disabled, objects will be written to ${WORKDIR}
+# like normal.
+: ${CROS_WORKON_INCREMENTAL_BUILD:=}
+
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE"
@@ -408,11 +415,32 @@ cros-workon_src_unpack() {
 	done
 }
 
+cros-workon_get_build_dir() {
+	local dir
+	if [[ ${CROS_WORKON_INCREMENTAL_BUILD} == "1" ]]; then
+		dir="${SYSROOT}/var/cache/portage/${CATEGORY}/${PN}"
+		[[ ${SLOT:-0} != "0" ]] && dir+=":${SLOT}"
+	else
+		dir="${WORKDIR}/build"
+	fi
+	echo "${dir}"
+}
+
+
+cros-workon_pkg_setup() {
+	if [[ ${CROS_WORKON_INCREMENTAL_BUILD} == "1" ]]; then
+		local out=$(cros-workon_get_build_dir)
+		addwrite "${out}"
+		mkdir -p -m 755 "${out}"
+		chown ${PORTAGE_USERNAME}:${PORTAGE_GRPNAME} "${out}" "${out%/*}"
+	fi
+}
+
 cros-workon_src_prepare() {
 	if [[ -e ${S}/common.mk ]] ; then
-		: ${OUT=${WORKDIR}/build}
+		: ${OUT=$(cros-workon_get_build_dir)}
 		export OUT
-		mkdir -p "${OUT}"
+		[[ ${CROS_WORKON_INCREMENTAL_BUILD} != "1" ]] && mkdir -p "${OUT}"
 	fi
 }
 
@@ -470,4 +498,4 @@ cros-workon_pkg_info() {
 	done
 }
 
-EXPORT_FUNCTIONS src_unpack pkg_info
+EXPORT_FUNCTIONS pkg_setup src_unpack pkg_info

@@ -16,6 +16,7 @@ DEPEND="sys-apps/debianutils
 IUSE="-device_tree -kernel_sources"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_INCREMENTAL_BUILD=1
 
 # Config fragments selected by USE flags
 # ...fragments will have the following variables substitutions
@@ -236,7 +237,7 @@ install_kernel_sources() {
 
 	einfo "Installing kernel build tree"
 	dodir "${dest_build_dir}"
-	cp -pPR "$(get_build_dir)"/{.config,.version,Makefile,Module.symvers,include} \
+	cp -pPR "$(cros-workon_get_build_dir)"/{.config,.version,Makefile,Module.symvers,include} \
 		"${D}/${dest_build_dir}" || die
 
 	# Modify Makefile to use the ROOT environment variable if defined.
@@ -246,12 +247,8 @@ install_kernel_sources() {
 		"${D}/${dest_build_dir}/Makefile" || die
 }
 
-get_build_dir() {
-	echo "${SYSROOT}/var/cache/portage/${CATEGORY}/${PN}"
-}
-
 get_build_cfg() {
-	echo "$(get_build_dir)/.config"
+	echo "$(cros-workon_get_build_dir)/.config"
 }
 
 get_build_arch() {
@@ -273,8 +270,7 @@ get_build_arch() {
 }
 
 cros-kernel2_pkg_setup() {
-	mkdir -p -m 755 "$(get_build_dir)"
-	chown ${PORTAGE_USERNAME}:${PORTAGE_GRPNAME} "$(get_build_dir)"
+	cros-workon_pkg_setup
 }
 
 # @FUNCTION: emit_its_script
@@ -368,13 +364,11 @@ kmake() {
 		ARCH=${kernel_arch} \
 		LDFLAGS="$(raw-ldflags)" \
 		CROSS_COMPILE="${cross}" \
-		O="$(get_build_dir)" \
+		O="$(cros-workon_get_build_dir)" \
 		"$@"
 }
 
 cros-kernel2_src_configure() {
-	addwrite "$(get_build_dir)"
-
 	# Use a single or split kernel config as specified in the board or variant
 	# make.conf overlay. Default to the arch specific split config if an
 	# overlay or variant does not set either CHROMEOS_KERNEL_CONFIG or
@@ -455,7 +449,7 @@ get_dtb_name() {
 			;;
 		*)
 			local f
-			for f in $(get_build_dir)/arch/arm/boot/*.dtb ; do
+			for f in $(cros-workon_get_build_dir)/arch/arm/boot/*.dtb ; do
 			    basename ${f}
 			done
 			;;
@@ -510,11 +504,11 @@ cros-kernel2_src_install() {
 
 	local version=$(ls "${D}"/lib/modules)
 	if use arm; then
-		local boot_dir="$(get_build_dir)/arch/${ARCH}/boot"
+		local boot_dir="$(cros-workon_get_build_dir)/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
 		if use device_tree; then
-			local its_script="$(get_build_dir)/its_script"
+			local its_script="$(cros-workon_get_build_dir)/its_script"
 			emit_its_script "${its_script}" $(get_dtb_name)
 			mkimage  -f "${its_script}" "${kernel_bin}" || die
 		else
@@ -545,7 +539,7 @@ cros-kernel2_src_install() {
 
 	# Install uncompressed kernel for debugging purposes.
 	insinto /usr/lib/debug/boot
-	doins "$(get_build_dir)/vmlinux"
+	doins "$(cros-workon_get_build_dir)/vmlinux"
 
 	if use kernel_sources; then
 		install_kernel_sources
