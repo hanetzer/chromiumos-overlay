@@ -25,7 +25,7 @@ inherit cros-workon cros-binary
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_VERSION
 # @DESCRIPTION: (Optional) Version name of EC firmware
-: ${CROS_FIRMWARE_EC_VERSION:="IGNORE"}
+: ${CROS_FIRMWARE_EC_VERSION:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of system bios image
@@ -55,6 +55,11 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Semi-colon separated list of additional resources
 : ${CROS_FIRMWARE_EXTRA_LIST:=}
 
+# TODO(hungte) Support "local_mainfw" and "local_ecfw".
+# $board-overlay/make.conf may contain these flags to always create "firmware
+# from source".
+IUSE="bootimage cros_ec"
+
 # Some tools (flashrom, iotools, mosys, ...) were bundled in the updater so we
 # don't write RDEPEND=$DEPEND. RDEPEND should have an explicit list of what it
 # needs to extract and execute the updater.
@@ -63,6 +68,12 @@ DEPEND="
 	dev-util/shflags
 	>=sys-apps/flashrom-0.9.3-r36
 	sys-apps/mosys
+	"
+
+# Build firmware from source.
+DEPEND="$DEPEND
+	bootimage? ( sys-boot/chromeos-bootimage )
+	cros_ec? ( chromeos-base/chromeos-ec )
 	"
 
 # Maintenance note:  The factory install shim downloads and executes
@@ -111,16 +122,17 @@ _bcs_fetch() {
 	local filename="${1##*://}"
 	local checksum="$2"
 
-# Support both old and new locations for BCS binaries.
-# TODO(dparker@chromium.org): Remove after all binaries are using the new
-#     location. crosbug.com/22789
-	if [ -z "${CROS_FIRMWARE_BCS_OVERLAY_NAME}" ]; then
-		URI_BASE="ssh://${CROS_FIRMWARE_BCS_USER_NAME}@git.chromium.org:6222"\
-"/home/${CROS_FIRMWARE_BCS_USER_NAME}/${CATEGORY}/${PN}"
-	else
-		URI_BASE="ssh://${CROS_FIRMWARE_BCS_USER_NAME}@git.chromium.org:6222"\
-"/${CROS_FIRMWARE_BCS_OVERLAY_NAME}/${CATEGORY}/${PN}"
-fi
+	local bcs_host="git.chromium.org:6222"
+	local bcs_user="${CROS_FIRMWARE_BCS_USER_NAME}"
+	local bcs_pkgdir="${CATEGORY}/${PN}"
+	local bcs_root="$CROS_FIRMWARE_BCS_OVERLAY_NAME"
+
+	# Support both old and new locations for BCS binaries.
+	# TODO(dparker@chromium.org): Remove after all binaries are using the
+	# new location. crosbug.com/22789
+	[ -z "$bcs_root" ] && bcs_root="home/$CROS_FIRMWARE_BCS_USER_NAME"
+
+	URI_BASE="ssh://$bcs_user@$bcs_host/$bcs_root/$bcs_pkgdir"
 	CROS_BINARY_URI="${URI_BASE}/${filename}"
 	CROS_BINARY_SUM="${checksum}"
 	cros-binary_fetch
@@ -233,30 +245,41 @@ cros-firmware_src_unpack() {
 	EXTRA_LOCATIONS="${EXTRA_LOCATIONS#:}"
 }
 
+_add_param() {
+	local prefix="$1"
+	local value="$2"
+
+	if [[ -n "$value" ]]; then
+		echo "$prefix '$value' "
+	fi
+}
+
+_add_bool_param() {
+	local prefix="$1"
+	local value="$2"
+
+	if [[ -n "$value" ]]; then
+		echo "$prefix "
+	fi
+}
+
 cros-firmware_src_compile() {
-	local image_cmd="" ext_cmd=""
+	local image_cmd="" ext_cmd="" local_image_cmd=""
+	local root="${ROOT%/}"
 
 	# Prepare images
-	if [ -n "${FW_IMAGE_LOCATION}" ]; then
-		image_cmd="$image_cmd -b ${FW_IMAGE_LOCATION}"
-	fi
-	if [ -n "${EC_IMAGE_LOCATION}" ]; then
-		image_cmd="$image_cmd -e ${EC_IMAGE_LOCATION}"
-	fi
+	image_cmd+="$(_add_param -b "${FW_IMAGE_LOCATION}")"
+	image_cmd+="$(_add_param -e "${EC_IMAGE_LOCATION}")"
+	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
 
 	# Prepare extra commands
-	if [ -n "$CROS_FIRMWARE_UNSTABLE" ]; then
-		ext_cmd="$ext_cmd --unstable"
-	fi
-	if [ -n "$CROS_FIRMWARE_SCRIPT" ]; then
-		ext_cmd="$ext_cmd --script $CROS_FIRMWARE_SCRIPT"
-	fi
-	if [ -n "$CROS_FIRMWARE_FLASHROM_BINARY" ]; then
-		ext_cmd="$ext_cmd --flashrom $CROS_FIRMWARE_FLASHROM_BINARY"
-	fi
-	if [ -n "$EXTRA_LOCATIONS" ]; then
-		ext_cmd="$ext_cmd --extra $EXTRA_LOCATIONS"
-	fi
+	ext_cmd+="$(_add_bool_param --unstable "${CROS_FIRMWARE_UNSTABLE}")"
+	ext_cmd+="$(_add_param --extra "${EXTRA_LOCATIONS}")"
+	ext_cmd+="$(_add_param --script "${CROS_FIRMWARE_SCRIPT}")"
+	ext_cmd+="$(_add_param --platform "${CROS_FIRMWARE_PLATFORM}")"
+	ext_cmd+="$(_add_param --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}")"
+	ext_cmd+="$(_add_param --tool_base \
+	            "$root/firmware/utils:$root/usr/sbin:$root/usr/bin")"
 
 	# Pack firmware update script!
 	if [ -z "$image_cmd" ]; then
@@ -267,14 +290,30 @@ cros-firmware_src_compile() {
 	else
 		# create a new script
 		einfo "Building ${BOARD} firmware updater: $image_cmd $ext_cmd"
-		"${WORKDIR}/${CROS_WORKON_LOCALNAME}"/pack_firmware.sh \
-			--ec_version "${CROS_FIRMWARE_EC_VERSION}" \
-                        --platform "${CROS_FIRMWARE_PLATFORM}" \
-			-o ${UPDATE_SCRIPT} $image_cmd $ext_cmd \
-			--tool_base="$ROOT/usr/sbin:$ROOT/usr/bin" ||
+		./pack_firmware.sh $image_cmd $ext_cmd -o $UPDATE_SCRIPT ||
 		die "Cannot pack firmware."
 	fi
-	chmod +x ${UPDATE_SCRIPT}
+
+	# Create local updaters
+	local local_image_cmd="" output_bom output_file
+	if use cros_ec; then
+		local_image_cmd+="-e $root/firmware/ec.bin "
+	fi
+	if use bootimage; then
+		for fw_file in $root/firmware/image-*.bin; do
+			einfo "Updater for local fw - $fw_file"
+			output_bom=${fw_file##*/image-}
+			output_bom=${output_bom%%.bin}
+			output_file=updater-$output_bom.sh
+			./pack_firmware.sh -b $fw_file -o $output_file \
+				$local_image_cmd $ext_cmd ||
+				die "Cannot pack local firmware."
+		done
+	elif use cros_ec; then
+		# TODO(hungte) Deal with a platform that has only EC and no
+		# BIOS, which is usually incorrect configuration.
+		die "Sorry, platform without local BIOS EC is not supported."
+	fi
 }
 
 cros-firmware_src_install() {
@@ -283,6 +322,12 @@ cros-firmware_src_install() {
 
 	# install factory wipe script
 	dosbin firmware-factory-wipe
+
+	# install updaters for firmware-from-source archive.
+	if use bootimage; then
+		exeinto /firmware
+		doexe updater-*.sh
+	fi
 }
 
 EXPORT_FUNCTIONS src_unpack src_compile src_install
