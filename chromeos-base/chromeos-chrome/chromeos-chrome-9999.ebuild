@@ -143,7 +143,15 @@ add_pgo_arches x86 amd64 arm
 CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES=("ffmpeg_tests" "video_decode_accelerator_unittest" "ppapi_example_video_decode")
-PPAPI_TEST_FILES=("test_case.html" "test_case.html.mock-http-headers" "test_page.css" "ppapi_nacl_tests_newlib.nmf")
+PPAPI_TEST_FILES=(
+	lib{32,64}
+	ppapi_nacl_tests_{newlib,glibc}.nmf
+	ppapi_nacl_tests_{newlib,glibc}_{x32,x64,arm}.nexe
+	test_case.html
+	test_case.html.mock-http-headers
+	test_page.css
+	test_url_loader_data
+)
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
@@ -395,7 +403,6 @@ create_gclient_file() {
 		"${layout_tests}/http/tests/appcache": None,
 		"${layout_tests}/http/tests/filesystem": None,
 		"${layout_tests}/http/tests/resources": None,
-		"${layout_tests}/http/tests/websocket/tests": None,
 		"${layout_tests}/http/tests/workers": None,
 		"${layout_tests}/http/tests/xmlhttprequest": None,
 		"${layout_tests}/media": None,
@@ -859,7 +866,11 @@ install_chrome_test_resources() {
 		content/common/gpu/testdata \
 		content/test/data \
 		net/data/ssl/certificates \
-		third_party/bidichecker/bidichecker_packaged.js
+		ppapi/tests/test_case.html \
+		ppapi/tests/test_url_loader_data \
+		third_party/bidichecker/bidichecker_packaged.js \
+		third_party/WebKit/Tools/Scripts \
+		third_party/WebKit/LayoutTests/http/tests/websocket/tests
 
 	# Add pdf test data
 	if use chrome_pdf; then
