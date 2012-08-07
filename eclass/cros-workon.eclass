@@ -112,7 +112,7 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE"
 
-inherit git-2 flag-o-matic
+inherit git-2 flag-o-matic toolchain-funcs
 
 # Sanitize all variables, autocomplete where necessary.
 # This function possibly modifies all CROS_WORKON_ variables inplace. It also
@@ -296,6 +296,12 @@ cros-workon_src_unpack() {
 	local destdir=( "${CROS_WORKON_DESTDIR[@]}" )
 	get_paths
 
+	# Automatically build out-of-tree for common.mk packages.
+	# TODO(vapier): Enable this once all common.mk packages have converted.
+	#if [[ -e ${path}/common.mk ]] ; then
+	#	: ${CROS_WORKON_OUTOFTREE_BUILD:=1}
+	#fi
+
 	if [[ ${fetch_method} == "git" && ${CROS_WORKON_OUTOFTREE_BUILD} == "1" ]] ; then
 		# See if the local repo exists, is unmodified, and is checked out to
 		# the right rev.  This will be the common case, so support it to make
@@ -434,6 +440,54 @@ cros-workon_src_unpack() {
 			die "Cannot create a local copy"
 		set_vcsid "$(get_rev "${path[0]}/.git")"
 	done
+}
+
+cros-workon_src_prepare() {
+	if [[ -e ${S}/common.mk ]] ; then
+		: ${OUT=${WORKDIR}/build}
+		export OUT
+		mkdir -p "${OUT}"
+	fi
+}
+
+cros-workon_src_configure() {
+	if [[ -e ${S}/common.mk ]] ; then
+		# We somewhat overshoot here, but it isn't harmful,
+		# and catches all the packages we care about.
+		tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+
+		# Portage takes care of this for us.
+		export SPLITDEBUG=0
+
+		if [[ $(type -t cros-debug-add-NDEBUG) == "function" ]] ; then
+			# Only run this if we've inherited cros-debug.eclass.
+			cros-debug-add-NDEBUG
+		fi
+		if [[ ${LIBCHROME_VERS:+set} == "set" ]] ; then
+			# For packages that use libchromeos, set it up automatically.
+			export BASE_VER=${LIBCHROME_VERS}
+		fi
+	else
+		default
+	fi
+}
+
+cros-workon_src_compile() {
+	if [[ -e ${S}/common.mk ]] ; then
+		emake
+	else
+		default
+	fi
+}
+
+cros-workon_src_test() {
+	if [[ -e ${S}/common.mk ]] ; then
+		emake \
+			VALGRIND=$(use_if_iuse valgrind && echo 1) \
+			tests
+	else
+		default
+	fi
 }
 
 cros-workon_pkg_info() {
