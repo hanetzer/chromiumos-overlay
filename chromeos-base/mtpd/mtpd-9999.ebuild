@@ -23,6 +23,7 @@ RDEPEND="
 	dev-cpp/gflags
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
+	dev-libs/protobuf
 	media-libs/libmtp
 	sys-fs/udev
 "
