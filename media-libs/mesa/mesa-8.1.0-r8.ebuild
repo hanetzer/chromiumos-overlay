@@ -135,6 +135,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-i915g-Fix-depth-stencil-glClear.patch
 	epatch "${FILESDIR}"/8.1-save-restore-vb-state-in-util-gen-mipmap.patch
 	epatch "${FILESDIR}"/8.1-intel-disable-msaa.patch
+	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 
 	base_src_prepare
 
