@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-DEPEND=""
+DEPEND="chromeos-base/chromeos-chrome"
 RDEPEND="!chromeos-base/chromeos-factorytools
 	 dev-lang/python
          dev-python/netifaces
@@ -45,6 +45,12 @@ src_install() {
         # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
         # install files directly into custom as appropriate.
         dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
+
+        # We need to preserve the chromedriver (from chromeos-chrome pyauto test
+        # folder which is stripped by default) for factory test images.
+        local pyauto_path="/usr/local/autotest/client/deps/pyauto_dep"
+        exeinto "$TARGET_DIR/bin/"
+        doexe "${ROOT}$pyauto_path/test_src/out/Release/chromedriver"
 
         # Directories used by Goofy.
         keepdir /var/factory/{,log,state,tests}
