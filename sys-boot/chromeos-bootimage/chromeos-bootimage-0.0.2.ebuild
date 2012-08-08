@@ -111,7 +111,7 @@ build_image() {
 
 src_compile() {
 
-	local secure_flags=''
+	local verified_flags=''
 	local common_flags=''
 	local seabios_flags=''
 	local bct_file
@@ -146,7 +146,7 @@ src_compile() {
 	fi
 
 	if ! use x86 && ! use amd64 && ! use cros-debug; then
-		secure_flags+=' --add-config-int silent_console 1'
+		verified_flags+=' --add-config-int silent_console 1'
 	fi
 	if use x86 || use amd64; then
 		common_flags+=" --coreboot \
