@@ -64,6 +64,7 @@ pkg_postinst() {
 	disable_upstart "power.conf"
 	disable_upstart "powerd.conf"
 	disable_upstart "powerm.conf"
+	disable_upstart "temp_metrics.conf"
 
 	modify_upstart "boot-complete.conf" "started boot-services"
 	modify_upstart "chrontel.conf" "factory-ui-started"
