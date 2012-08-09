@@ -129,7 +129,7 @@ EOF
 		die "Failed to disable TPM locking"
 
 	# Stop any power management and updater daemons
-	for conf in power powerd powerm update-engine; do
+	for conf in power powerd powerm update-engine temp_metrics; do
 		sed -i 's/^start on .*/start on never/' \
 			"${ROOT}/etc/init/$conf.conf" ||
 			die "Failed to disable $conf"
