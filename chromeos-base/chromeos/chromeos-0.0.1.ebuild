@@ -255,8 +255,8 @@ DEPEND="${RDEPEND}
 	cros_ec? ( chromeos-base/chromeos-ec )
 "
 
-# Add dev-util/perf to the image. This is needed to do
+# Add dev-util/quipper to the image. This is needed to do
 # profiling on ChromiumOS on live systems.
 RDEPEND="${RDEPEND}
-	dev-util/perf
+	dev-util/quipper
 "
