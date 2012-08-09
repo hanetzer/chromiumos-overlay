@@ -30,13 +30,18 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/system_api"
+	chromeos-base/system_api
+	test? ( dev-cpp/gtest )"
 
 src_compile() {
 	tc-export CXX CC PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
 	emake OUT=build-opt
+}
+
+src_test() {
+	emake OUT=build-opt tests
 }
 
 src_install() {
