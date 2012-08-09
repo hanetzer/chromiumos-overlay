@@ -30,15 +30,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS=(
-	# Inherits from chrome_test or pyauto_test.
-	+tests_desktopui_BrowserTest
-	+tests_desktopui_OMXTest
-	+tests_desktopui_PyAutoEnduranceTests
-	+tests_desktopui_PyAutoFunctionalTests
-	+tests_desktopui_PyAutoInstall
-	+tests_desktopui_PyAutoPerfTests
-	+tests_desktopui_SyncIntegrationTests
-
 	# Inherits from enterprise_ui_test.
 	+tests_desktopui_EnterprisePolicy
 
@@ -46,6 +37,13 @@ IUSE_TESTS=(
 	+tests_audiovideo_FFMPEG
 
 	# Inherits from cros_ui_test.
+	+tests_desktopui_BrowserTest
+	+tests_desktopui_OMXTest
+	+tests_desktopui_PyAutoEnduranceTests
+	+tests_desktopui_PyAutoFunctionalTests
+	+tests_desktopui_PyAutoInstall
+	+tests_desktopui_PyAutoPerfTests
+	+tests_desktopui_SyncIntegrationTests
 	+tests_audiovideo_PlaybackRecordSemiAuto
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_ChromeSemiAuto
@@ -55,7 +53,7 @@ IUSE_TESTS=(
 	+tests_desktopui_LoadBigFile
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_ScreenLocker
-	+tests_desktopui_TouchScreen
+	 tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
 	+tests_enterprise_DevicePolicy
 	+tests_graphics_GLAPICheck
