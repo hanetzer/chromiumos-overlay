@@ -21,7 +21,7 @@ RDEPEND="x11-libs/libXau
 DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen )
 	dev-libs/libxslt
-	>=x11-proto/xcb-proto-1.6
+	>=x11-proto/xcb-proto-1.7.1
 	>=dev-lang/python-2.5[xml]"
 
 pkg_setup() {
@@ -31,7 +31,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}"/_xcb_conn_wait.patch
 	elibtoolize
 }
 

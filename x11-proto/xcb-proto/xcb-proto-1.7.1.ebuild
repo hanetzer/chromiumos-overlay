@@ -14,13 +14,6 @@ EGIT_REPO_URI="git://anongit.freedesktop.org/git/xcb/proto"
 	SRC_URI="http://xcb.freedesktop.org/dist/${P}.tar.bz2"
 
 KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~x86-fbsd ~x86-freebsd ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="exynos"
-
-PATCHES=(
-	"${FILESDIR}/1.6-fix_negative.patch"
-	"${FILESDIR}/1.6-libdir-pc.patch"
-	"${FILESDIR}/1.6-xcbgen_xtypes.patch"
-)
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -31,9 +24,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if use exynos ; then
-		PATCHES+=( "${FILESDIR}/1.6-dri2.patch" )
-	fi
 	xorg-2_src_prepare
 }
 
