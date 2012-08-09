@@ -53,8 +53,9 @@ IUSE_TESTS=(
 	+tests_desktopui_LoadBigFile
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_ScreenLocker
-	tests_desktopui_TouchScreen
+	+tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
+	+tests_enterprise_DevicePolicy
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GpuReset
 	+tests_graphics_Piglit
