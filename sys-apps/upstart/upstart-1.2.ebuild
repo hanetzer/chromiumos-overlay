@@ -42,6 +42,9 @@ src_unpack() {
 	# chromium-os:16450, prevent OOM killer by default
 	epatch "${FILESDIR}"/upstart-1.2-default-oom_score_adj.patch
 
+	# chromium-os:33165, make EXIT_STATUS!=* possible
+	epatch "${FILESDIR}"/upstart-1.2-negate-match.patch
+
 	# Patch to use kmsg at higher verbosity for logging; this is
 	# our own patch because we can't just add --verbose to the
 	# kernel command-line when we need to.
