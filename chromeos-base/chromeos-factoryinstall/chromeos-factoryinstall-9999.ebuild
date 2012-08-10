@@ -111,11 +111,10 @@ EOF
 	touch "${ROOT}"/root/.leave_firmware_alone ||
 		die "Cannot disable firmware updating"
 
-	# TODO(nsanders): Add runtime switches in init.git
-	# Remove ui.conf startup script, which will make sure chrome doesn't
-	# run, since it tries to update on startup
-	sed -i 's/start on started boot-services/start on never/' \
-		"${ROOT}/etc/init/ui.conf" ||
+	# Upstart honors the last 'start on' clause it finds.
+	# Alter ui.conf startup script, which will make sure chrome doesn't
+	# run, since it tries to update on startup.
+	echo 'start on never' >> "${ROOT}/etc/init/ui.conf" ||
 		die "Failed to disable UI"
 
 	# Set network to start up another way
@@ -130,8 +129,7 @@ EOF
 
 	# Stop any power management and updater daemons
 	for conf in power powerd powerm update-engine temp_metrics; do
-		sed -i 's/^start on .*/start on never/' \
-			"${ROOT}/etc/init/$conf.conf" ||
+		echo 'start on never' >> "${ROOT}/etc/init/$conf.conf" ||
 			die "Failed to disable $conf"
 	done
 
