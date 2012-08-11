@@ -1,6 +1,6 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT=ca874f962188a139c47c6e95b408eea61fe0b51f
+CROS_WORKON_COMMIT="ca874f962188a139c47c6e95b408eea61fe0b51f"
 CROS_WORKON_TREE="73a08272bacc2ba5b38385d835102d6fa01d5488"
 
 EAPI=4
@@ -178,7 +178,6 @@ src_install() {
 
 	insinto "${inst_dir}/dts"
 	for dts_dir in "board/${ub_vendor}/dts" \
-			"board/${ub_vendor}/${ub_board}" \
 			"arch/${ub_arch}/dts" \
 			cros/dts; do
 		files_to_copy="$(find ${dts_dir} -regex '.*\.dtsi?')"
