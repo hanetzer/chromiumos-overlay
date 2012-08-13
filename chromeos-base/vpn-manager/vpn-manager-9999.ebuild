@@ -1,10 +1,11 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/vpn-manager"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon toolchain-funcs multilib
+inherit cros-debug cros-workon multilib
 
 DESCRIPTION="VPN tools"
 HOMEPAGE="http://www.chromium.org/"
@@ -26,32 +27,29 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 DEPEND="${RDEPEND}
 	 dev-cpp/gtest"
 
-make_flags() {
-	echo LIBDIR="/usr/$(get_libdir)" BASE_VER=${LIBCHROME_VERS}
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+	export LIBDIR="/usr/$(get_libdir)"
 }
 
 src_compile() {
-	tc-export CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake $(make_flags) || die "vpn-manager compile failed."
+	cros-workon_src_compile
 }
 
 src_test() {
-	tc-export CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake $(make_flags) tests || die "could not build tests"
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
-		for test in ./*_test; do
-			"${test}" ${GTEST_ARGS} || die "${test} failed"
-		done
+		cros-workon_src_test
 	fi
 }
 
 src_install() {
-	into /usr || die
-	dosbin "l2tpipsec_vpn" || die
-	exeinto /usr/libexec/l2tpipsec_vpn || die
-	doexe "bin/pluto_updown" || die
+	dosbin "${OUT}"/l2tpipsec_vpn
+	exeinto /usr/libexec/l2tpipsec_vpn
+	doexe "bin/pluto_updown"
 }
