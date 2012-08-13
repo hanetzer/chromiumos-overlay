@@ -4,8 +4,9 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit toolchain-funcs cros-debug cros-workon
+inherit cros-debug cros-workon
 
 DESCRIPTION="PKCS #11 layer over TrouSerS."
 HOMEPAGE="http://www.chromium.org/"
@@ -35,24 +36,28 @@ DEPEND="${RDEPEND}
 RDEPEND+="
 	chromeos-base/chromeos-init"
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CXX OBJCOPY PKG_CONFIG STRIP
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
-	emake OUT=build-opt
+	cros-workon_src_compile
 }
 
 src_test() {
-	cros-debug-add-NDEBUG
-	emake OUT=build-opt tests
-	emake OUT=build-opt more_tests
+	cros-workon_src_test
+	emake more_tests
 }
 
 src_install() {
-	dosbin build-opt/chapsd
-	dobin build-opt/chaps_client
-	dobin build-opt/p11_replay
-	dolib.so build-opt/libchaps.so
+	dosbin "${OUT}"/chapsd
+	dobin "${OUT}"/chaps_client
+	dobin "${OUT}"/p11_replay
+	dolib.so "${OUT}"/libchaps.so
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.Chaps.conf
