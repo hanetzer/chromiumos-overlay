@@ -4,8 +4,9 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/xnu_quick_test"
 CROS_WORKON_LOCALNAME="../platform/xnu_quick_test"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit toolchain-funcs cros-workon
+inherit cros-workon
 
 DESCRIPTION="Simple kernel regression test suite"
 HOMEPAGE="http://www.chromium.org/"
@@ -15,9 +16,16 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CC
-	emake
+	cros-workon_src_compile
 }
 
 src_install() {
