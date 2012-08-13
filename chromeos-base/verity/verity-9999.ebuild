@@ -3,8 +3,9 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dm-verity"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit toolchain-funcs cros-workon cros-au
+inherit cros-workon cros-au
 
 DESCRIPTION="File system integrity image generator for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -28,29 +29,25 @@ DEPEND="${RDEPEND}
 	)
 	valgrind? ( dev-util/valgrind )"
 
-src_compile() {
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
 	use 32bit_au && board_setup_32bit_au_env
-	tc-export AR CC CXX OBJCOPY STRIP
-	emake \
-		OUT="${S}/build" \
-		WITH_CHROME=$(use test && echo 1 || echo 0) \
-		SPLITDEBUG=0 STRIP=true \
-		all
+	cros-workon_src_configure
+}
+
+src_compile() {
+	cros-workon_src_compile
 }
 
 src_test() {
-	# TODO(wad) add a verbose use flag to change the MODE=
-	emake \
-		OUT="${S}/build" \
-		VALGRIND=$(use valgrind && echo 1) \
-		MODE=opt \
-		SPLITDEBUG=0 \
-		WITH_CHROME=1 \
-		tests
+	cros-workon_src_test
 }
 
 src_install() {
-	dolib.a build/libdm-bht.a
+	dolib.a "${OUT}"/libdm-bht.a
 	insinto /usr/include/verity
 	doins dm-bht.h dm-bht-userspace.h
 	insinto /usr/include/verity
@@ -58,6 +55,6 @@ src_install() {
 	doins -r linux asm asm-generic crypto
 	cd ..
 	into /
-	dobin build/verity-static
+	dobin "${OUT}"/verity-static
 	dosym verity-static bin/verity
 }
