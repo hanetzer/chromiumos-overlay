@@ -1,11 +1,11 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
-CROS_WORKON_LOCALNAME="mtpd"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit toolchain-funcs cros-debug cros-workon
+inherit cros-debug cros-workon
 
 DESCRIPTION="MTP daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="splitdebug test"
+IUSE="test"
 
 LIBCHROME_VERS="125070"
 
@@ -33,20 +33,26 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	test? ( dev-cpp/gtest )"
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CXX CC PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
-	emake OUT=build-opt
+	cros-workon_src_compile
 }
 
 src_test() {
-	emake OUT=build-opt tests
+	# Needed for `cros_run_unit_tests`.
+	cros-workon_src_test
 }
 
 src_install() {
 	exeinto /opt/google/mtpd
-	doexe build-opt/mtpd
+	doexe "${OUT}"/mtpd
 
 	# Install seccomp policy file.
 	insinto /opt/google/mtpd
