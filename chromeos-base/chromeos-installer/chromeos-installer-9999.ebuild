@@ -4,6 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-workon cros-debug cros-au
 
@@ -38,27 +39,29 @@ RDEPEND="
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs"
 
-src_compile() {
-	# We don't need the installer in the sdk, just helper scripts.
-	use cros_host && return 0
+src_prepare() {
+	cros-workon_src_prepare
+}
 
+src_configure() {
 	# need this to get the verity headers working
 	append-cxxflags -I"${SYSROOT}"/usr/include/verity/
 
 	use 32bit_au && board_setup_32bit_au_env
 
-	tc-export AR CC CXX OBJCOPY
-	cros-debug-add-NDEBUG
-	# Disable split debug and stripping (since portage does this).
-	emake \
-		OUT="${S}/build" \
-		SPLITDEBUG=0 STRIP=true \
-		cros_installer
+	cros-workon_src_configure
 }
 
+src_compile() {
+	# We don't need the installer in the sdk, just helper scripts.
+	use cros_host && return 0
+
+	cros-workon_src_compile
+}
 
 src_test() {
-	emake tests
+	# Needed for `cros_run_unit_tests`.
+	cros-workon_src_test
 }
 
 src_install() {
@@ -68,7 +71,7 @@ src_install() {
 		path="usr/lib/installer"
 	else
 		path="usr/sbin"
-		dobin build/cros_installer
+		dobin "${OUT}"/cros_installer
 		dosym ${path}/chromeos-postinst /postinst
 	fi
 
