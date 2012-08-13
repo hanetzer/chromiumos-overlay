@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-evdev/xf86-input-evdev-2.7.0.ebuild,v 1.13 2012/07/16 14:16:28 chithanh Exp $
 
+XORG_EAUTORECONF=yes
+
 EAPI=4
 inherit xorg-2
 
@@ -20,4 +22,5 @@ PATCHES=(
 	"${FILESDIR}/evdev-2.6.99-wheel-accel.patch"
 	"${FILESDIR}/evdev-2.6.99-fix-ms-mice.patch"
 	"${FILESDIR}"/${PN}-2.7.0-horizontal-scrolling.patch
+	"${FILESDIR}"/${P}-feedback-log.patch
 )
