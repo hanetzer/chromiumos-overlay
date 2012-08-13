@@ -3,6 +3,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/cros_boot_mode"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit toolchain-funcs cros-debug cros-workon
 
@@ -26,34 +27,29 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	valgrind? ( dev-util/valgrind )"
 
-src_compile() {
-	tc-export CC CXX OBJCOPY PKG_CONFIG
-	# TODO(wad) figure out what this means since the makefile handles this
-	# decision already.
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
+src_prepare() {
+	cros-workon_src_prepare
+}
 
-	emake OUT="${S}"/build \
-		MODE=opt \
-		SPLITDEBUG=0 STRIP=true all
+src_configure() {
+	cros-workon_src_configure
+}
+
+src_compile() {
+	cros-workon_src_compile
 }
 
 src_test() {
-	# TODO(wad) add a verbose use flag to change the MODE=
-	emake \
-		OUT="${S}"/build \
-		VALGRIND=$(use valgrind && echo 1) \
-		MODE=dbg \
-		SPLITDEBUG=0 \
-		tests
+	# Needed for `cros_run_unit_tests`.
+	cros-workon_src_test
 }
 
 src_install() {
 	into /
-	dobin build/cros_boot_mode
+	dobin "${OUT}"/cros_boot_mode
 
 	into /usr
-	dolib.so build/libcros_boot_mode.so
+	dolib.so "${OUT}"/libcros_boot_mode.so
 
 	insinto /usr/include/cros_boot_mode
 	doins \
