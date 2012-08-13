@@ -3,8 +3,9 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/wimax_manager"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit toolchain-funcs cros-debug cros-workon
+inherit cros-debug cros-workon
 
 DESCRIPTION="Chromium OS WiMAX Manager"
 HOMEPAGE="http://www.chromium.org/"
@@ -33,18 +34,24 @@ DEPEND="gdmwimax? (
 	test? ( dev-cpp/gtest )
 )"
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	use gdmwimax || return 0
-
-	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-	cros-debug-add-NDEBUG
-	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS}
+	cros-workon_src_compile
 }
 
 src_test() {
 	use gdmwimax || return 0
 
-	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} tests
+	# Needed for `cros_run_unit_tests`.
+	cros-workon_src_test
 }
 
 src_install() {
@@ -56,7 +63,7 @@ src_install() {
 	use gdmwimax || return 0
 
 	# Install daemon executable.
-	dosbin build-opt/wimax-manager
+	dosbin "${OUT}"/wimax-manager
 
 	# Install upstart config file.
 	insinto /etc/init
