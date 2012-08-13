@@ -4,6 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/libevdev"
 CROS_WORKON_USE_VCSID=1
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit toolchain-funcs multilib cros-debug cros-workon
 
@@ -16,10 +17,16 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CC CXX
-	cros-debug-add-NDEBUG
-	emake
+	cros-workon_src_compile
 }
 
 src_install() {
