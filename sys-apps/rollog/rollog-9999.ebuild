@@ -4,8 +4,9 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/rollog"
 CROS_WORKON_LOCALNAME="../platform/rollog"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit flag-o-matic toolchain-funcs cros-workon
+inherit cros-workon
 
 DESCRIPTION="Utility for implementing rolling logs for bug regression"
 HOMEPAGE="http://www.chromium.org/"
@@ -13,21 +14,20 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="static"
+IUSE=""
+
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
 
 src_compile() {
-	tc-export CC
-	export FMAP_LINKOPT="$(${PKG_CONFIG} --libs-only-l fmap)"
-	append-ldflags "$(${PKG_CONFIG} --libs-only-L fmap)"
-	export LDFLAGS="$(raw-ldflags)"
-	append-flags "$(${PKG_CONFIG} --cflags fmap)"
-	export CFLAGS
-
-	use static && append-ldflags -static
-
-	emake
+	cros-workon_src_compile
 }
 
 src_install() {
-	dobin rollog
+	dobin "${OUT}"/rollog
 }
