@@ -1,11 +1,12 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-# $Header:$
-EAPI=4
+
+EAPI="4"
 
 CROS_WORKON_PROJECT="chromiumos/platform/bootcache"
 CROS_WORKON_LOCALNAME="../platform/bootcache"
-inherit toolchain-funcs cros-workon
+CROS_WORKON_OUTOFTREE_BUILD=1
+inherit cros-workon
 
 DESCRIPTION="Utility for creating store for boot cache"
 HOMEPAGE="http://git.chromium.org/gitweb/?s=bootcache"
@@ -16,13 +17,20 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CC
-	emake
+	cros-workon_src_compile
 }
 
 src_install() {
-	dosbin bootcache
+	dosbin "${OUT}"/bootcache
 
 	insinto /etc/init
 	doins bootcache.conf
