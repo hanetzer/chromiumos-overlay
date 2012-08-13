@@ -1,13 +1,17 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
-inherit cros-debug cros-workon toolchain-funcs
+CROS_WORKON_LOCALNAME="cryptohome"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
+inherit cros-debug cros-workon
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
@@ -26,62 +30,39 @@ RDEPEND="
 	dev-libs/protobuf
 	sys-apps/keyutils
 	sys-fs/ecryptfs-utils"
-
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/system_api
 	${RDEPEND}"
 
-CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
+src_prepare() {
+	cros-workon_src_prepare
+}
 
-# TODO(msb): fix this ugly hackery
-src_unpack() {
-	cros-workon_src_unpack
-	pushd "${S}"
-	mkdir "${CROS_WORKON_LOCALNAME}"
-	mv * "${CROS_WORKON_LOCALNAME}"
-	popd
+src_configure() {
+	cros-workon_src_configure
 }
 
 src_compile() {
-	cros-debug-add-NDEBUG
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
-	export CCFLAGS="$CFLAGS"
-
-	pushd cryptohome
-	# Build the daemon and command line client
-	emake || die "make failed."
-	popd
+	cros-workon_src_compile
 }
 
 src_test() {
-	cros-debug-add-NDEBUG
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
-	export CCFLAGS="$CFLAGS"
-
-	pushd cryptohome
-	# Only build the tests
-	# TODO(wad) eclass-ify this.
-	emake tests || die "tests failed."
-
-	popd
+	# Needed for `cros_run_unit_tests`.
+	cros-workon_src_test
 }
 
 src_install() {
-	S="${S}/cryptohome"
+	pushd "${OUT}" >/dev/null
+	dosbin cryptohomed cryptohome cryptohome-path
+	popd >/dev/null
 
-	dosbin "${S}/cryptohomed"
-	dosbin "${S}/cryptohome"
-	dosbin "${S}/cryptohome-path"
+	dobin email_to_image
 
-	dobin "${S}/email_to_image"
-
-	dodir /etc/dbus-1/system.d
 	insinto /etc/dbus-1/system.d
-	doins "${S}/etc/Cryptohome.conf"
+	doins etc/Cryptohome.conf
 
-	dodir /usr/share/dbus-1/services/
 	insinto /usr/share/dbus-1/services/
-	doins "${S}/share/org.chromium.Cryptohome.service"
+	doins share/org.chromium.Cryptohome.service
 }
