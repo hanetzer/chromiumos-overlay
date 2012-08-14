@@ -51,6 +51,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0020-hdparm-skips-SSDs-for-power-management.patch" \
           "0021-alternate-config-dir.patch" \
           "0022-interactive-governor-parameters.patch" \
+          "0023-disable-cpufreq-frequency-control.patch" \
         )
 
 src_unpack() {
