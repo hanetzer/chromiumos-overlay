@@ -13,6 +13,7 @@ IUSE=""
 
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
 RDEPEND="${RDEPEND}
+	app-arch/lzop
 	app-arch/pigz
 	app-admin/sudo
 	dev-embedded/cbootimage
