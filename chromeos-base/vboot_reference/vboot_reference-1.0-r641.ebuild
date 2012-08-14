@@ -1,6 +1,6 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT=9a6e6e7785988dc9a0434d5b734d282460a9ce6b
+CROS_WORKON_COMMIT="9a6e6e7785988dc9a0434d5b734d282460a9ce6b"
 CROS_WORKON_TREE="ea4037e57005d0edfcb6878ea3ab54eaa0e18981"
 
 EAPI="4"
