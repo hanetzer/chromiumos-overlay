@@ -65,5 +65,8 @@ RDEPEND="${RDEPEND}
   chromeos-base/autotest-fakemodem-conf
 "
 
+RDEPEND="${RDEPEND}
+  sys-devel/binutils
+"
 DEPEND="${RDEPEND}"
 
