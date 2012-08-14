@@ -35,8 +35,8 @@ DEPEND="
 
 S=${WORKDIR}
 
-# The real bmpblk must be verified and installed by HWID matchin in
-# factory process. Default one should be a pre-genereated blob.
+# Usually we put official pretty bitmaps for firmware branches, and ugly default
+# bitmaps here for ToT.
 BMPBLK_FILE="${FILESDIR}/default.bmpblk"
 
 netboot_required() {
