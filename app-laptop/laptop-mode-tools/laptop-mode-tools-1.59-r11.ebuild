@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 
-IUSE="-acpi -apm bluetooth -hal -defgov_interactive -scsi"
+IUSE="-acpi -apm bluetooth -hal -scsi"
 
 DEPEND=""
 
@@ -53,14 +53,11 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0022-interactive-governor-parameters.patch" \
         )
 
-src_prepare() {
-	epatch "${PATCHES[@]/#/${FILESDIR}/}"
-	# HACK: setup the interactive governor as default (w/ input boost)
-	if use defgov_interactive; then
-		local C=etc/laptop-mode/conf.d/cpufreq.conf
-		sed -i '/_GOVERNOR=.*/s//_GOVERNOR=interactive/' ${C}
-		printf '%s_CPU_INPUT_BOOST=1\n' BATT LM_AC NOLM_AC >> "${C}"
-	fi
+src_unpack() {
+	unpack ${A}
+	for PATCH in "${PATCHES[@]}"; do
+		epatch "${FILESDIR}/$PATCH"
+	done
 }
 
 src_install() {
