@@ -136,6 +136,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-save-restore-vb-state-in-util-gen-mipmap.patch
 	epatch "${FILESDIR}"/8.1-intel-disable-msaa.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
+	epatch "${FILESDIR}"/8.1-array-overflow.patch
 
 	base_src_prepare
 
