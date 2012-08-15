@@ -66,6 +66,8 @@ src_install() {
 			doins "${FILESDIR}/50-touchpad-cmt-link.conf"
 		elif [ "${board}" = "daisy" ]; then
 			doins "${FILESDIR}/50-touchpad-cmt-daisy.conf"
+		elif [ "${board}" = "parrot" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-parrot.conf"
 		fi
 		if use aura; then
 			doins "${FILESDIR}/50-touchpad-cmt-aura.conf"
