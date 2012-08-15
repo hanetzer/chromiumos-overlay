@@ -126,6 +126,7 @@ IUSE_TESTS="
 	+tests_firmware_FwScreenCloseLid
 	+tests_firmware_FwScreenPressPower
 	+tests_firmware_InvalidUSB
+	+tests_firmware_RONormalBoot
 	+tests_firmware_RecoveryButton
 	+tests_firmware_RollbackFirmware
 	+tests_firmware_RollbackKernel
