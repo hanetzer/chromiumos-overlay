@@ -33,8 +33,8 @@ BOARDS=(
 BOARD_USE_PREFIX="board_use_"
 BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
 
-PKG_IUSE="-asan -aura -disable_login_animations -disable_webaudio -highdpi
-	  -is_desktop -new_power_button test -touchui +X"
+PKG_IUSE="-asan -aura -disable_login_animations -disable_oobe_animation
+	  -disable_webaudio -highdpi -is_desktop -new_power_button test -touchui +X"
 IUSE="${PKG_IUSE} ${BOARD_USE_FLAGS}"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
