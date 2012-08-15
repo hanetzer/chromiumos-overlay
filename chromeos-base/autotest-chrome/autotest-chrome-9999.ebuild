@@ -81,6 +81,8 @@ IUSE_TESTS=(
 	+tests_login_LogoutProcessCleanup
 	+tests_login_RemoteLogin
 	+tests_network_3GSuspendResume
+	+tests_network_ONC
+	+tests_network_ONCServer
 	+tests_platform_Pkcs11InitOnLogin
 	+tests_platform_Pkcs11Persistence
 	+tests_platform_ProcessPrivileges
