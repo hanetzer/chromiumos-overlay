@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU Public License v2
-CROS_WORKON_COMMIT="171511cc833ba592a0a19028f291c4f34bcc7ed2"
-CROS_WORKON_TREE="349c566ee9a83cf0ca4ff4f31d4c2f74e45ccba9"
+CROS_WORKON_COMMIT=8be5d4f39a3d0beb1cac7a934e74ea04ed5bcec6
+CROS_WORKON_TREE="394c34c4d344e99c49a1a6346bc91a339d0b566b"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/xf86-video-armsoc"
