@@ -55,6 +55,10 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Semi-colon separated list of additional resources
 : ${CROS_FIRMWARE_EXTRA_LIST:=}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_FORCE_UPDATE
+# @DESCRIPTION: (Optional) Always add "force update firmware" tag.
+: ${CROS_FIRMWARE_FORCE_UPDATE:=}
+
 # TODO(hungte) Support "local_mainfw" and "local_ecfw".
 # $board-overlay/make.conf may contain these flags to always create "firmware
 # from source".
@@ -327,6 +331,13 @@ cros-firmware_src_install() {
 	if use bootimage; then
 		exeinto /firmware
 		doexe updater-*.sh
+	fi
+
+	# The "force_update_firmware" tag file is used by chromeos-installer.
+	if [ -n "$CROS_FIRMWARE_FORCE_UPDATE" ]; then
+		insinto /root
+		touch .force_update_firmware
+		doins .force_update_firmware
 	fi
 }
 
