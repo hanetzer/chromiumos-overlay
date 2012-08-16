@@ -3,11 +3,11 @@ DEPEND=>=sys-libs/ncurses-5.2-r5 dev-libs/lzo truetype? ( media-libs/freetype ) 
 DESCRIPTION=GNU GRUB 2 boot loader
 EAPI=2
 HOMEPAGE=http://www.gnu.org/software/grub/
-IUSE=truetype cros_workon_tree_de451f885054036e2a1e04b8ef9e66b22499a795
+IUSE=truetype cros_workon_tree_a626b63d9eb83c6985625569fa10d3b820ae9dd4
 KEYWORDS=amd64
 LICENSE=GPL-3
 PROVIDE=virtual/bootloader
 RDEPEND=>=sys-libs/ncurses-5.2-r5 dev-libs/lzo truetype? ( media-libs/freetype )
 SLOT=0
 _eclasses_=cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=e38a8b424e967ca8b688efe3a193db84
+_md5_=711548c3fe9035427c30f34cb5339d5d
