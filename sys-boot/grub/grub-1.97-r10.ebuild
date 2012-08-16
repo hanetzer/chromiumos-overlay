@@ -1,6 +1,6 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT=d1c858167c0caae45f8a07147c4e19f74edc7708
+CROS_WORKON_COMMIT="d1c858167c0caae45f8a07147c4e19f74edc7708"
 CROS_WORKON_TREE="a626b63d9eb83c6985625569fa10d3b820ae9dd4"
 
 inherit eutils toolchain-funcs cros-workon
