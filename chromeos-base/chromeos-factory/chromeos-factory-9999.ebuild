@@ -18,6 +18,7 @@ IUSE=""
 
 DEPEND="chromeos-base/chromeos-chrome"
 RDEPEND="!chromeos-base/chromeos-factorytools
+	 chromeos-base/chromeos-factory-board
 	 dev-lang/python
          dev-python/netifaces
 	 dev-python/setproctitle
