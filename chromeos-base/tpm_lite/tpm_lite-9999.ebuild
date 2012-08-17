@@ -8,7 +8,6 @@ CROS_WORKON_PROJECT="chromiumos/platform/tpm_lite"
 inherit cros-workon autotools
 inherit cros-workon base
 inherit cros-workon eutils
-inherit cros-workon linux-info
 
 DESCRIPTION="TPM Light Command Library testsuite"
 LICENSE="GPL-2"
@@ -18,7 +17,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 DEPEND="app-crypt/trousers"
 
-CROS_WORKON_LOCALNAME="tpm_lite/src"
+CROS_WORKON_LOCALNAME="tpm_lite"
 
 src_compile() {
   pushd src

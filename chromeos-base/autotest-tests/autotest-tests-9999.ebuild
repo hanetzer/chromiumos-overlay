@@ -58,6 +58,7 @@ RDEPEND="${RDEPEND}
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
   tests_test_RecallServer? ( dev-python/dnspython sys-apps/iproute2 )
+  tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
 "
 
 DEPEND="${RDEPEND}"
@@ -164,6 +165,7 @@ IUSE_TESTS="
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TPMCheck
 	tests_hardware_TPMFirmware
+	tests_hardware_TPMFirmwareServer
 	+tests_hardware_Trackpad
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_bma150
