@@ -1,12 +1,11 @@
-DEFINED_PHASES=compile info install test unpack
-DEPEND=dev-cpp/gtest x11-libs/libXi chromeos-base/libchrome:125070[cros-debug=] dev-vcs/git
-DESCRIPTION=Gesture recognizer library
+DEFINED_PHASES=compile info install unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=evdev userspace library
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros-debug cros_workon_tree_b46ea0649d0b7cf711881ae83ed68fa467dcab2c
+IUSE=cros-debug cros_workon_tree_1dcc655c43ae6954bdedd7b09c075487611b05b7
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
-RDEPEND=chromeos-base/libchrome:125070[cros-debug=]
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=d823c63001846864843be317a05dae50
+_md5_=941cd5df4e15a3259af68c82085de21a
