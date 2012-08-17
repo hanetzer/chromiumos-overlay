@@ -78,6 +78,9 @@ CONFIG_HIGHMEM64G=y
 # to enable the functionality required for the initramfs here.
 # NOTES:
 # - TPM support to ensure proper locking.
+# - I2C-DEV support to make /dev/i2c-* available, for all devices having
+#   components on I2C bus and will be used during recovery / factory install
+#   stage. Ex: Ethernet, EC, ... etc.
 # - We need VFAT FS support for EFI System Partition updates, but it is not
 #   included here. We need to set USE="initramfs vfat" for recovery and factory
 #   install.
@@ -86,6 +89,7 @@ initramfs_config="
 CONFIG_INITRAMFS_SOURCE=\"%ROOT%/var/lib/misc/initramfs.cpio.xz\"
 CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
+CONFIG_I2C_CHARDEV=y
 "
 
 vfat_desc="vfat"
