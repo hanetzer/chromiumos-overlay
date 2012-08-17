@@ -22,7 +22,7 @@ src_compile() { :; }
 
 src_install() {
 	insinto /lib/firmware
-	doins "${S}/iwlwifi-6000g2b-5.ucode" || die
+	doins "${S}/iwlwifi-6000g2b-6.ucode" || die
 
 	dodoc README* || die "dodoc failed"
 }
