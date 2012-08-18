@@ -29,15 +29,12 @@ DEPEND="
 	virtual/u-boot
 	cros_ec? ( chromeos-base/chromeos-ec )
 	chromeos-base/vboot_reference
+	sys-boot/chromeos-bmpblk
 	seabios? ( sys-boot/chromeos-seabios )
 	memtest? ( sys-boot/chromeos-memtest )
 	"
 
 S=${WORKDIR}
-
-# Usually we put official pretty bitmaps for firmware branches, and ugly default
-# bitmaps here for ToT.
-BMPBLK_FILE="${FILESDIR}/default.bmpblk"
 
 netboot_required() {
 	! use memtest && ( use factory-mode || use link )
@@ -154,7 +151,8 @@ src_compile() {
 	fi
 
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
-	common_flags+=" --key ${devkeys_file} --bmpblk ${BMPBLK_FILE}"
+	common_flags+=" --key ${devkeys_file}"
+	common_flags+=" --bmpblk ${CROS_FIRMWARE_ROOT}/bmpblk.bin"
 
 	# TODO(sjg@chromium.org): For x86 we can't build all the images
 	# yet, since we need to use a different skeleton file for each.
@@ -179,5 +177,4 @@ src_compile() {
 src_install() {
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	doins *image*.bin
-	doins ${BMPBLK_FILE}
 }
