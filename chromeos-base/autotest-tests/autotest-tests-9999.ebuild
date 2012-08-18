@@ -172,6 +172,7 @@ IUSE_TESTS="
 	+tests_kernel_fs_Punybench
 	+tests_kernel_Lmbench
 	+tests_kernel_LowMemNotify
+	+tests_kernel_SchedBandwith
 	+tests_kernel_TPMPing
 	+tests_kernel_HdParm
 	+tests_logging_CrashSender
