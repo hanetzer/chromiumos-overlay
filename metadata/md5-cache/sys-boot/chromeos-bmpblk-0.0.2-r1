@@ -1,0 +1,10 @@
+DEFINED_PHASES=install unpack
+DEPEND=net-misc/openssh net-misc/wget
+DESCRIPTION=Chrome OS Firmware Bitmap Block
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+SLOT=0
+_eclasses_=cros-binary	918cbd033e44284c43dd8cd52b94d369
+_md5_=27923dada2eda1e80799a95afa77b95d
