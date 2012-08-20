@@ -1,7 +1,7 @@
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/flashrom/flashrom-0.9.4.ebuild,v 1.5 2011/09/20 16:03:21 nativemad Exp $
-CROS_WORKON_COMMIT=7797e4c566c8bc906adb9dc475c7bebb70d09c7f
+CROS_WORKON_COMMIT="7797e4c566c8bc906adb9dc475c7bebb70d09c7f"
 CROS_WORKON_TREE="005dfe91168b210ac4475c0442853b747c1e4fa5"
 
 EAPI="4"
