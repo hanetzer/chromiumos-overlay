@@ -42,7 +42,10 @@ src_compile() {
 }
 
 src_install() {
-        emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" install
+        emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" \
+          PYTHON_SITEDIR="${EROOT}/$(python_get_sitedir)" \
+          PYTHON="$(PYTHON)" \
+          par install
         dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
         # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
         # install files directly into custom as appropriate.
@@ -63,4 +66,8 @@ src_install() {
 
 pkg_postinst() {
 	python_mod_optimize ${TARGET_DIR}/py
+        # Sanity check: make sure we can import stuff with only the
+        # .par file.
+	PYTHONPATH="${EROOT}/${TARGET_DIR}/factory.par" "$(PYTHON)" -c \
+	  "import cros.factory.test.state" || die
 }
