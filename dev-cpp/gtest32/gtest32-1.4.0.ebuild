@@ -27,6 +27,7 @@ S="${WORKDIR}/${MY_P}"
 src_prepare() {
 	sed -i -e "s|/tmp|${T}|g" test/gtest-filepath_test.cc || die "sed failed"
 	epatch "${FILESDIR}"/${MY_P}-asneeded.patch
+	epatch "${FILESDIR}"/${MY_P}-gcc-4.7.patch
 	eautoreconf
 }
 
