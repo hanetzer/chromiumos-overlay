@@ -23,4 +23,5 @@ PATCHES=(
 	"${FILESDIR}/evdev-2.6.99-fix-ms-mice.patch"
 	"${FILESDIR}"/${PN}-2.7.0-horizontal-scrolling.patch
 	"${FILESDIR}"/${P}-feedback-log.patch
+	"${FILESDIR}"/evdev-2.7.0-add-touch-event-timestamp.patch
 )
