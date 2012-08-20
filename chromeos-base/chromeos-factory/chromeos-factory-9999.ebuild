@@ -48,11 +48,14 @@ src_install() {
         # install files directly into custom as appropriate.
         dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
 
-        # We need to preserve the chromedriver (from chromeos-chrome pyauto test
-        # folder which is stripped by default) for factory test images.
+        # We need to preserve the chromedriver and selenium library
+        # (from chromeos-chrome pyauto test folder which is stripped by default)
+        # for factory test images.
         local pyauto_path="/usr/local/autotest/client/deps/pyauto_dep"
         exeinto "$TARGET_DIR/bin/"
         doexe "${ROOT}$pyauto_path/test_src/out/Release/chromedriver"
+        insinto "$TARGET_DIR/py/automation"
+        doins -r "${ROOT}$pyauto_path/test_src/third_party/webdriver/pylib/selenium"
 
         # Directories used by Goofy.
         keepdir /var/factory/{,log,state,tests}
