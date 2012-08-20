@@ -24,4 +24,5 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.7.0-horizontal-scrolling.patch
 	"${FILESDIR}"/${P}-feedback-log.patch
 	"${FILESDIR}"/evdev-2.7.0-add-touch-event-timestamp.patch
+	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
 )

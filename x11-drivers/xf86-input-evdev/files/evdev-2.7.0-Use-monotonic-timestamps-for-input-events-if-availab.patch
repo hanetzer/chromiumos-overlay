@@ -1,0 +1,75 @@
+From bfc9d37c5edae4793001fa158554babe1b8bae5c Mon Sep 17 00:00:00 2001
+From: Yufeng Shen <miletus@chromium.org>
+Date: Mon, 20 Aug 2012 14:55:57 -0400
+Subject: [PATCH] x11-drivers/xf86-input-evdev: Use monotonic timestamps for
+ input events
+
+BUG=chrome-os-partner:12187
+TEST=On Link, grep "time stamps" /var/log/Xorg.0.log
+     Make sure monotonic timestamp is used for evdev
+     Run "xinput test-xi2" and move fingers on touch device
+     Note that valuator 4 (Touch Timestamp) is using
+     monotonic timestamp.
+---
+ src/evdev.c |   11 +++++++++++
+ src/evdev.h |    1 +
+ 2 files changed, 12 insertions(+), 0 deletions(-)
+
+diff --git a/src/evdev.c b/src/evdev.c
+index 77ad10e..259301d 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -42,6 +42,7 @@
+ #include <unistd.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <time.h>
+ 
+ #include <xf86.h>
+ #include <xf86Xinput.h>
+@@ -61,6 +62,11 @@
+ #define XI_PROP_VIRTUAL_DEVICE "Virtual Device"
+ #endif
+ 
++/* Set clockid to be used for timestamps */
++#ifndef EVIOCSCLOCKID
++#define EVIOCSCLOCKID  _IOW('E', 0xa0, int)
++#endif
++
+ /* removed from server, purge when dropping support for server 1.10 */
+ #define XI86_SEND_DRAG_EVENTS   0x08
+ 
+@@ -2099,6 +2105,7 @@ EvdevCache(InputInfoPtr pInfo)
+     EvdevPtr pEvdev = pInfo->private;
+     int i, len;
+     struct input_id id;
++    unsigned int clk = CLOCK_MONOTONIC;
+ 
+     char name[1024]                  = {0};
+     unsigned long bitmask[NLONGS(EV_CNT)]      = {0};
+@@ -2124,6 +2131,10 @@ EvdevCache(InputInfoPtr pInfo)
+ 
+     strcpy(pEvdev->name, name);
+ 
++    pEvdev->is_monotonic = (ioctl(pInfo->fd, EVIOCSCLOCKID, &clk) == 0);
++    xf86IDrvMsg(pInfo, X_PROBED, "Using %s input event time stamps\n",
++                pEvdev->is_monotonic ? "monotonic" : "realtime");
++
+     len = ioctl(pInfo->fd, EVIOCGBIT(0, sizeof(bitmask)), bitmask);
+     if (len < 0) {
+         xf86IDrvMsg(pInfo, X_ERROR, "ioctl EVIOCGBIT failed: %s\n",
+diff --git a/src/evdev.h b/src/evdev.h
+index e32ba54..4179579 100644
+--- a/src/evdev.h
++++ b/src/evdev.h
+@@ -176,6 +176,7 @@ typedef struct {
+     BOOL swap_axes;
+     BOOL invert_x;
+     BOOL invert_y;
++    BOOL is_monotonic;
+ 
+     int delta[REL_CNT];
+     unsigned int abs_queued, rel_queued, prox_queued;
+-- 
+1.7.7.3
+
