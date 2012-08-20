@@ -57,3 +57,7 @@ src_install() {
         # Directories used by Goofy.
         keepdir /var/factory/{,log,state,tests}
 }
+
+pkg_postinst() {
+	python_mod_optimize ${TARGET_DIR}/py
+}
