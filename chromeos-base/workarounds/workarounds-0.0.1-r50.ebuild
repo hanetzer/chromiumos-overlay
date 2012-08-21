@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="ab6f9f9ed84ae882e95e6eb1285cc3c6b990e38e"
-CROS_WORKON_TREE="e7a3d41df4ff1c87a0468ee0bc9be3aaf63a6fb4"
+CROS_WORKON_COMMIT="75cba0ea40e9c26884edd2f461e64edb8ddb3719"
+CROS_WORKON_TREE="28b853f26c54be19d5b908cd661715ec5544a5c2"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/workarounds"
