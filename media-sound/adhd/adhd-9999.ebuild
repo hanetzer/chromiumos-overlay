@@ -43,4 +43,7 @@ src_compile() {
 src_install() {
 	local board=$(get_current_board_with_variant)
 	emake BOARD=${board} DESTDIR="${D}" install
+
+	insinto /usr/share/alsa/ucm
+	nonfatal doins -r ucm-config/${board}/*
 }
