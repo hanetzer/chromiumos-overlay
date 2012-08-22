@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="9e99bc960e1d5a7a2ed8339b51843686c73e096f"
-CROS_WORKON_TREE="ceee7e997b11e56e4ae00b4d7e74886674273bf3"
+CROS_WORKON_COMMIT=9d3b6bd6864680afd939808673aaeff1409376eb
+CROS_WORKON_TREE="fa38d6c32b52aeb2291cca1c80717aafcf3287ca"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
@@ -70,6 +70,7 @@ src_install() {
 	dobin debug_sleep_quickly
 	dobin powerd_suspend
 	dobin send_metrics_on_resume
+	dobin suspend_stress_test
 
 	insinto /usr/share/power_manager
 	doins config/*
