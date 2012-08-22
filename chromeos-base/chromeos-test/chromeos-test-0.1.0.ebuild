@@ -38,7 +38,6 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	app-crypt/tpm-tools
 	chromeos-base/autox
-	chromeos-base/chromeos-factory
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
