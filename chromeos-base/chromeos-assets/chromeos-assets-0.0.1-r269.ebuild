@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="594b671fff2ca509a100f8646cc2c1d6c0ed5201"
-CROS_WORKON_TREE="44535cf8bea2a089eafc8f5824e5929669cd5abd"
+CROS_WORKON_COMMIT=589cb8b5a7538b585db4a0de72bf1abd93386d8c
+CROS_WORKON_TREE="000bd34d2d7c0e769cc31bbdaefdc2c61ebca0e4"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/assets"
@@ -109,6 +109,12 @@ CROS_WORKON_LOCALNAME="assets"
 src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins -r "${S}"/images/*
+
+	insinto /usr/share/chromeos-assets/images_100_percent
+	doins -r "${S}"/images_100_percent/*
+
+	insinto /usr/share/chromeos-assets/images_200_percent
+	doins -r "${S}"/images_200_percent/*
 
 	insinto /usr/share/chromeos-assets/text
 	doins -r "${S}"/text/boot_messages
