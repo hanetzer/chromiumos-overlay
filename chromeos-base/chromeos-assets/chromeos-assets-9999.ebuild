@@ -108,6 +108,12 @@ src_install() {
 	insinto /usr/share/chromeos-assets/images
 	doins -r "${S}"/images/*
 
+	insinto /usr/share/chromeos-assets/images_100_percent
+	doins -r "${S}"/images_100_percent/*
+
+	insinto /usr/share/chromeos-assets/images_200_percent
+	doins -r "${S}"/images_200_percent/*
+
 	insinto /usr/share/chromeos-assets/text
 	doins -r "${S}"/text/boot_messages
 	dosbin "${S}"/text/display_boot_message
