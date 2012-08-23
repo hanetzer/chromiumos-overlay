@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="919bf0c5b89355665a6a42c88ff6f1cd54ac4370"
-CROS_WORKON_TREE="a3928ec33acc583f64c5e437c932a68d8cf84aa7"
+CROS_WORKON_COMMIT=be24c739e9ec2ad544356a7b96fd94917321d05c
+CROS_WORKON_TREE="e9991722eb0982ac3c1212c1763ec73c94c41995"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/crosutils"
@@ -35,7 +35,4 @@ src_install() {
 	# Install libraries
 	insinto /usr/lib/crosutils/lib
 	doins lib/* || die "Could not install library files"
-
-	doexe bin/loman.py || die "Could not install loman"
-	dosym /usr/lib/crosutils/loman.py /usr/bin/loman
 }
