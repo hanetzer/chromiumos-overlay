@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare unpack
+DEPEND=virtual/opengl media-libs/libpng sys-libs/zlib x11-libs/libX11 x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext dev-vcs/git
+DESCRIPTION=Autotest glmark2 dependency
+EAPI=2
+HOMEPAGE=https://launchpad.net/glmark2
+IUSE=+autotest cros_workon_tree_6ea5a82b0b4c66f478e670e46667c84fc017cd81 +buildcheck autotest opengles
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-3
+RDEPEND=virtual/opengl media-libs/libpng sys-libs/zlib x11-libs/libX11 x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	6d0d5b3bb841519e0a8c2b41ee974f1a	autotest-deponly	c768cc6b3a334584419444354d68ba8e	cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=101add322f3627c424b03aa846298d15
