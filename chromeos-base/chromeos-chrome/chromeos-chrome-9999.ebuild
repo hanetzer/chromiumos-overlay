@@ -145,6 +145,8 @@ CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEF
 TEST_FILES=("ffmpeg_tests" "video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=(
 	lib{32,64}
+	mock_nacl_gdb
+	nacl_test_data
 	ppapi_nacl_tests_{newlib,glibc}.nmf
 	ppapi_nacl_tests_{newlib,glibc}_{x32,x64,arm}.nexe
 	test_case.html
