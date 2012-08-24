@@ -28,6 +28,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-chromeos-root-certs.patch
 	epatch "${FILESDIR}"/${P}-remove-fortezza.patch
 	epatch "${FILESDIR}"/${P}-chromeos-cert-nicknames.patch
+	epatch "${FILESDIR}"/${P}-chromeos-mitm-root.patch
 
 	# See https://bugzilla.mozilla.org/show_bug.cgi?id=741481 for details.
 	epatch "${FILESDIR}"/${P}-cert-initlocks.patch
