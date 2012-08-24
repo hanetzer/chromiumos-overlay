@@ -47,6 +47,7 @@ src_install() {
 	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
 	dosbin "${S}/clobber-log"
+	dosbin "${S}/display_low_battery_alert"
 
 	# Install log cleaning script and run it daily.
 	into /usr
