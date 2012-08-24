@@ -1002,42 +1002,18 @@ src_install() {
 	insinto "${CHROME_DIR}"
 	doins "${FROM}"/chrome-wrapper
 	doins "${FROM}"/chrome.pak
+	doins "${FROM}"/chrome_100_percent.pak
 	doins -r "${FROM}"/locales
 	doins -r "${FROM}"/resources
 	doins -r "${FROM}"/extensions
 	doins "${FROM}"/resources.pak
-
-	# TODO(sail): Remove this condition loop when these .pak files are no longer
-	# optional (http://crosbug.com/30473).
-	local pak paks
-	paks=(
-		chrome_100_percent.pak
-		chrome_touch_100_percent.pak
-		# TODO(flackr): Remove theme and ui resource paks after
-		# crbug.com/139803 has landed.
-		theme_resources_100_percent.pak
-		theme_resources_touch_100_percent.pak
-		ui_resources_100_percent.pak
-		ui_resources_touch_100_percent.pak
-	)
-	if use highdpi; then
-		paks+=(
-			chrome_200_percent.pak
-			chrome_touch_200_percent.pak
-			theme_resources_200_percent.pak
-			theme_resources_touch_200_percent.pak
-			ui_resources_200_percent.pak
-			ui_resources_touch_200_percent.pak
-			webkit_resources_200_percent.pak
-		)
-	fi
-	for pak in "${paks[@]}"; do
-		if [ -f "${FROM}/${pak}" ] ; then
-			doins "${FROM}/${pak}"
-		fi
-	done
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
+
+	# Add high DPI resources.
+	if use highdpi; then
+		doins "${FROM}"/chrome_200_percent.pak
+	fi
 
 	# add non-executable NaCl files
 	if use_nacl; then
