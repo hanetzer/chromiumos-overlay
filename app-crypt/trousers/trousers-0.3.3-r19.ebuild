@@ -2,7 +2,7 @@
 # Copyright 2010 Google, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # $Header$
-CROS_WORKON_COMMIT=d1de1b4534238681aa26267791822cbd1833101e
+CROS_WORKON_COMMIT="d1de1b4534238681aa26267791822cbd1833101e"
 CROS_WORKON_TREE="fa5b6ccd97d4f3f245e61d7aa5715787bcf3aceb"
 
 EAPI="2"
