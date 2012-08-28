@@ -151,6 +151,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-fix-scale-to-desktop-for-edge-ABS-events.patch"
 	# Fix for xfixes pointer barriers
 	"${FILESDIR}/1.12.0-xfixes-safer-barriers.patch"
+	# crosbug.com/33813
+	"${FILESDIR}/1.12.0-suffix-match-udev-paths.patch"
 )
 
 src_prepare() {
