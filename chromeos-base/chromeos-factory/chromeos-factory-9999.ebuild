@@ -68,6 +68,6 @@ pkg_postinst() {
 	python_mod_optimize ${TARGET_DIR}/py
         # Sanity check: make sure we can import stuff with only the
         # .par file.
-	PYTHONPATH="${EROOT}/${TARGET_DIR}/factory.par" "$(PYTHON)" -c \
-	  "import cros.factory.test.state" || die
+	PYTHONPATH="${EROOT}/${TARGET_DIR}/bundle/shopfloor/factory.par" \
+          "$(PYTHON)" -c "import cros.factory.test.state" || die
 }
