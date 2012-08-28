@@ -2,8 +2,8 @@
 # Copyright 2010 Google, Inc.
 # Distributed under the terms of the GNU General Public License v2
 # $Header$
-CROS_WORKON_COMMIT="f02001f80e16a6b07508f3aaefe9f675edf9bb8d"
-CROS_WORKON_TREE="d8092a4b64efc2c96d05ce814b3f79be4f19a00f"
+CROS_WORKON_COMMIT=d1de1b4534238681aa26267791822cbd1833101e
+CROS_WORKON_TREE="fa5b6ccd97d4f3f245e61d7aa5715787bcf3aceb"
 
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
