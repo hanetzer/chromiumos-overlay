@@ -8,4 +8,4 @@ LICENSE=GPL-3
 RDEPEND=app-crypt/trousers chromeos-base/libchrome:125070[cros-debug=] !minimal? ( dev-libs/libyaml ) dev-libs/glib dev-libs/openssl sys-apps/util-linux !<=chromeos-base/vboot_reference-firmware-0.0.1-r307 !cros_host? ( chromeos-base/vboot_reference-config )
 SLOT=0
 _eclasses_=cros-au	f9ae34f03ddcc4a8450e4f603ffef8f8	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=b0c5a377f4e9f1e48071c139637aefd8
+_md5_=e68920f987da6d7b64bdce0ca6e8a8a2
