@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="6201cf5ab4a71c2faa61f61a2e5553a04db3c730"
-CROS_WORKON_TREE="642dac3cedf83befcee33d11f661a3158c060f11"
+CROS_WORKON_COMMIT=275b07fb79f3bd2d9ffc944db3840931cedc46e1
+CROS_WORKON_TREE="7605c91efce60eb20d61db76a0f8ecbe82fe17f2"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/minijail"
