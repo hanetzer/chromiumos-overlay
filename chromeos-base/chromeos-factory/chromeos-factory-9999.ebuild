@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="+autotest +build_tests"
 
 DEPEND="chromeos-base/chromeos-chrome"
 RDEPEND="!chromeos-base/chromeos-factorytools
@@ -47,18 +47,21 @@ src_install() {
           PYTHON="$(PYTHON)" \
           par install
         dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
-        # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
-        # install files directly into custom as appropriate.
-        dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
 
-        # We need to preserve the chromedriver and selenium library
-        # (from chromeos-chrome pyauto test folder which is stripped by default)
-        # for factory test images.
-        local pyauto_path="/usr/local/autotest/client/deps/pyauto_dep"
-        exeinto "$TARGET_DIR/bin/"
-        doexe "${ROOT}$pyauto_path/test_src/out/Release/chromedriver"
-        insinto "$TARGET_DIR/py/automation"
-        doins -r "${ROOT}$pyauto_path/test_src/third_party/webdriver/pylib/selenium"
+        if use autotest && use build_tests; then
+            # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
+            # install files directly into custom as appropriate.
+            dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
+
+            # We need to preserve the chromedriver and selenium library
+            # (from chromeos-chrome pyauto test folder which is stripped by default)
+            # for factory test images.
+            local pyauto_path="/usr/local/autotest/client/deps/pyauto_dep"
+            exeinto "$TARGET_DIR/bin/"
+            doexe "${ROOT}$pyauto_path/test_src/out/Release/chromedriver"
+            insinto "$TARGET_DIR/py/automation"
+            doins -r "${ROOT}$pyauto_path/test_src/third_party/webdriver/pylib/selenium"
+        fi
 
         # Directories used by Goofy.
         keepdir /var/factory/{,log,state,tests}
