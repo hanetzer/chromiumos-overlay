@@ -137,6 +137,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-intel-disable-msaa.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
+	epatch "${FILESDIR}"/8.1-lastlevel.patch
 
 	base_src_prepare
 
