@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="44f0f569ca11e5bdb6bb8283a1bc44139864169f"
-CROS_WORKON_TREE="5f183cda449496aa0b23a5f595bfa44bbef21c88"
+CROS_WORKON_COMMIT=894236585f9b631a3994214143cfb9a559c12691
+CROS_WORKON_TREE="47b703ec01875ba3e77bd97ce5c039c656758f61"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
