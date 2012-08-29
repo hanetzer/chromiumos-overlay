@@ -1,8 +1,8 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/wpa_supplicant/wpa_supplicant-0.7.0.ebuild,v 1.7 2009/07/24 16:42:43 josejx Exp $
-CROS_WORKON_COMMIT="e4c622c8ad0b5e692b2d116bbfbfd06fd0033adf"
-CROS_WORKON_TREE="b1cf97579623eb84c9c0756fa1cb717e148d868c"
+CROS_WORKON_COMMIT=011a681c44c3b1693c50a77c011b8485f6ff2d18
+CROS_WORKON_TREE="c87b2475e696a1250702008494326d2ba0f0011e"
 
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
