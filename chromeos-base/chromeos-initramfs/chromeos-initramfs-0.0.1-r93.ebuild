@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="db2d802614e769f6367d07bf245652b402cd785c"
-CROS_WORKON_TREE="c0003abc703fef2b1b5c3c12366c11c81995c22a"
+CROS_WORKON_COMMIT=8cfe025aff51934ade60ce254980dc9eb7ac4c10
+CROS_WORKON_TREE="f87a096f0e1363134b4198fb26250750e495d6e0"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
@@ -23,7 +23,6 @@ DEPEND="chromeos-base/chromeos-assets
 	sys-apps/busybox
 	sys-apps/flashrom
 	sys-apps/pv
-	sys-block/parted
 	sys-fs/lvm2"
 RDEPEND=""
 
@@ -106,9 +105,6 @@ build_initramfs_file() {
 
 	# /usr/sbin/vpd invokes 'flashrom' via system()
 	idobin /usr/sbin/flashrom
-
-	# /usr/sbin/parted is used to identify the install dest
-	idobin /usr/sbin/parted
 
 	# For recovery behavior
 	idobin /usr/bin/cgpt
