@@ -33,6 +33,8 @@ PATCHES=(
 	"${FILESDIR}/2.14.0-no-gamma.patch"
  	# Change order of function calls.
 	"${FILESDIR}/2.16.0-display-order.patch"
+	# BLT ring hang fix.
+	"${FILESDIR}/2.16.0-blt-hang.patch"
 )
 
 src_prepare() {
