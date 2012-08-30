@@ -21,7 +21,6 @@ DEPEND="chromeos-base/chromeos-assets
 	sys-apps/busybox
 	sys-apps/flashrom
 	sys-apps/pv
-	sys-block/parted
 	sys-fs/lvm2"
 RDEPEND=""
 
@@ -104,9 +103,6 @@ build_initramfs_file() {
 
 	# /usr/sbin/vpd invokes 'flashrom' via system()
 	idobin /usr/sbin/flashrom
-
-	# /usr/sbin/parted is used to identify the install dest
-	idobin /usr/sbin/parted
 
 	# For recovery behavior
 	idobin /usr/bin/cgpt
