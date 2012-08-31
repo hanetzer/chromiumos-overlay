@@ -100,7 +100,7 @@ else:
   # specified.
   # This is mainly for utilities that depend on compiler output.
   skip_clang_prefixes = ('-print-', '-dump', '@')
-  skip_clang_set = set(['-', '-E', '-M'])
+  skip_clang_set = set(['-', '-E', '-M', '-x'])
 
   # Reset gcc cmdline too. Only change is to remove -Xclang-only
   # options if specified.
@@ -108,7 +108,7 @@ else:
 
   skip_clang = False
   for flag in cmdline:
-    if flag.startswith(skip_clang_prefixes) or flag in skip_clang_set:
+    if flag.startswith(skip_clang_prefixes) or flag in skip_clang_set or flag.endswith('.S'):
       skip_clang = True
     elif flag not in clang_unsupported:
       # Strip off -Xclang-only= if present.
