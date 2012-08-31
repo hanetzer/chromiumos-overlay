@@ -36,14 +36,11 @@ src_test() {
 	export CCFLAGS="$CFLAGS"
 
 	# TODO(wad) switch to common.mk to get qemu and valgrind coverage
-	emake libminijail_unittest || die "libminijail_unittest compile failed."
+	emake tests || die "unit tests compile failed."
+
 	if use x86 || use amd64 ; then
 		./libminijail_unittest  || \
-		    die "unit tests failed!"
-	fi
-
-	emake syscall_filter_unittest || die "syscall_filter_unittest compile failed."
-	if use x86 || use amd64 ; then
+		    die "libminijail unit tests failed!"
 		./syscall_filter_unittest || \
 		    die "syscall filter unit tests failed!"
 	fi
