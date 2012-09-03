@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit autotest-deponly binutils-funcs eutils flag-o-matic git multilib toolchain-funcs
+inherit autotest-deponly binutils-funcs eutils flag-o-matic git-2 multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -26,7 +26,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build hardfp +highdpi -pgo_use -pgo_generate +runhooks +verbose -drm +nacl"
+IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build hardfp +highdpi -pgo_use -pgo_generate +reorder +runhooks +verbose -drm +nacl"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -36,7 +36,7 @@ STRIP_MASK="*/nacl_helper_bootstrap"
 
 # When we get to EAPI=4
 # REQUIRED_USE=<pgo_generate and pgo_use are mutually exclusive>
-PGO_SUBDIR="pgo"
+REORDER_SUBDIR="reorder"
 
 # Bots in golo.chromium.org have private mirrors that are only accessible
 # from within golo.chromium.org. TODO(rcui): Remove this once we've
@@ -300,6 +300,10 @@ set_build_defines() {
 
 	if ! use chrome_debug_tests; then
 		BUILD_DEFINES+=( strip_tests=1 )
+	fi
+
+	if use reorder && ! use clang; then
+		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile" )
 	fi
 
 	if use clang; then
@@ -646,6 +650,25 @@ src_unpack() {
 			einfo "USE=+pgo_use, but ${PROFILE_DIR}/chrome not "\
 			      "created from pgo.tar.bz2."
 			die "PGO data supply failed"
+		fi
+	fi
+
+	if use reorder && ! use clang; then
+		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
+		EGIT_COMMIT="5caa2a82643e54de628d407d3e72299127599649"
+		EGIT_PROJECT="${PN}-reorder"
+		# TODO(glotov): try the following git-2 code instead of the whole block.
+		# EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
+		# git-2_src_unpack
+		if grep -q $EGIT_COMMIT "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
+			einfo "Reorder profile repo is up to date."
+		else
+			einfo "Reorder profile repo not up-to-date. Fetching..."
+			local OLD_S="${S}"
+			S="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
+			rm -rf "${S}"
+			git_fetch
+			S="${OLD_S}"
 		fi
 	fi
 }
