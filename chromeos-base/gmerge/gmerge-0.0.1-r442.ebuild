@@ -38,7 +38,6 @@ src_install() {
 	# - $CHROMEOS_PROFILE/package.provided contains packages that we don't
 	#   want to install to the device.
 	insinto /usr/local/etc/make.profile/package.provided
-	newins "${ROOT}"/etc/portage/profile/package.provided compiler
+	newins "${SYSROOT}"/etc/portage/profile/package.provided compiler
 	newins "${CHROMEOS_PROFILE}"/package.provided chromeos
 }
-
