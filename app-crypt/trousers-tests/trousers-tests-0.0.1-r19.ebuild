@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="d1de1b4534238681aa26267791822cbd1833101e"
-CROS_WORKON_TREE="fa5b6ccd97d4f3f245e61d7aa5715787bcf3aceb"
+CROS_WORKON_COMMIT=3d1cfbad24be57811fa07fe87431ae27a89ef615
+CROS_WORKON_TREE="b9659592a05d64ceaecd62f6fc4559c41cdf851b"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
