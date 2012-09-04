@@ -11,7 +11,7 @@ LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.3.99
 	>=dev-libs/glib-2.26
 	dev-libs/protobuf
-	>=dev-libs/pyzy-0.0.2"
+	>=dev-libs/pyzy-0.1.0"
 DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
@@ -20,13 +20,12 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 src_configure() {
 	cd "mozc" || die
 	# Generate make files
-	export GYP_DEFINES="chromeos=1 use_libzinnia=0"
+	export GYP_DEFINES="chromeos=1 use_libzinnia=0 use_libprotobuf=1"
 	export BUILD_COMMAND="emake"
 
 	# Currently --channel_dev=0 is not necessary for Pinyin, but just in case.
 	$(PYTHON) build_mozc.py gyp --gypdir="third_party/gyp" \
 		--language=pinyin \
-		--use_libprotobuf \
 		--noqt \
 		--target_platform="ChromeOS" --channel_dev=0 || die
 }
@@ -35,13 +34,8 @@ src_prepare() {
 	cd "mozc" || die
 	# Following 2 patches are required by any version of ibus-mozc-pinyin on
 	# ChromeOS
-	epatch "${FILESDIR}"/ibus-mozc-pinyin-introduces-typo-for-compatibility.patch
-	epatch "${FILESDIR}"/ibus-mozc-pinyin-replace-ibus-pinyin.patch
-	# Fixes a performance issue. crosbug.com/30044
-	epatch "${FILESDIR}"/${P}-skip-counting-candidates.patch
-	# Fixes a toggling quote issue. crosbug.com/30362
-	# This patch depends on "${P}-skip-counting-candidates.patch".
-	epatch "${FILESDIR}"/${P}-toggling-quote-and-half-width-dot.patch
+	epatch "${FILESDIR}"/ibus-mozc-pinyin-introduces-typo-for-compatibility.patch || die
+	epatch "${FILESDIR}"/ibus-mozc-pinyin-replace-ibus-pinyin.patch || die
 }
 
 src_compile() {
