@@ -10,8 +10,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 LICENSE="BSD"
 RDEPEND=">=app-i18n/ibus-1.3.99
          >=app-i18n/libhangul-0.0.10
-         dev-libs/protobuf
-         net-misc/curl"
+         dev-libs/protobuf"
 DEPEND="${RDEPEND}"
 SLOT="0"
 KEYWORDS="amd64 x86 arm"
