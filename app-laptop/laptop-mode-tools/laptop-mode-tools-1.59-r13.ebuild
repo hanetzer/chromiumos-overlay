@@ -36,7 +36,6 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0003-Add-WiFi-power-management-support.patch" \
           "0005-switch-wifi-support-to-nl80211.patch" \
           "0006-Lower-hard-drive-idle-timeout-to-5-seconds.patch" \
-          "0007-Find-ARM-file-system.patch" \
           "0008-Export-PATH-to-which.patch" \
           "0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" \
           "0010-Do-not-run-usb-autosuspend-for-user-input-devices.patch" \
