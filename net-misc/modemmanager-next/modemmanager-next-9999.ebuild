@@ -43,7 +43,10 @@ src_prepare() {
 }
 
 src_configure() {
+	# TODO(benchan): Remove --without-qmi after libqmi is imported into
+	# Chromium OS tree (crosbug.com/34044).
 	econf \
+		--without-qmi \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
 		$(use_with doc docs)
 }
