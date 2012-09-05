@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure prepare
+DEPEND=>=dev-db/sqlite-3.6.18 >=dev-libs/glib-2.24 dev-util/pkgconfig >=sys-devel/gettext-0.16.1
+DESCRIPTION=The Chinese PinYin and Bopomofo conversion library.
+EAPI=4
+HOMEPAGE=http://code.google.com/p/pyzy/
+KEYWORDS=amd64 x86 arm
+LICENSE=LGPL-2.1
+RDEPEND=>=dev-db/sqlite-3.6.18 >=dev-libs/glib-2.24
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/pyzy-0.1.0.tar.gz http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/pyzy-database-1.0.0.tar.bz2
+_eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=76cafb41ce874a4deeced4faf6cc6e4e

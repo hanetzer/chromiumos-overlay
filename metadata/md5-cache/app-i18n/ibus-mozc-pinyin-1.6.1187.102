@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile configure install prepare
-DEPEND=>=app-i18n/ibus-1.3.99 >=dev-libs/glib-2.26 dev-libs/protobuf >=dev-libs/pyzy-0.0.2 >=app-admin/eselect-python-20091230
+DEPEND=>=app-i18n/ibus-1.3.99 >=dev-libs/glib-2.26 dev-libs/protobuf >=dev-libs/pyzy-0.1.0 >=app-admin/eselect-python-20091230
 DESCRIPTION=The Mozc Pinyin engine for IBus Framework
 EAPI=2
 HOMEPAGE=http://code.google.com/p/mozc
 KEYWORDS=amd64 x86 arm
 LICENSE=BSD
-RDEPEND=>=app-i18n/ibus-1.3.99 >=dev-libs/glib-2.26 dev-libs/protobuf >=dev-libs/pyzy-0.0.2 >=app-admin/eselect-python-20091230
+RDEPEND=>=app-i18n/ibus-1.3.99 >=dev-libs/glib-2.26 dev-libs/protobuf >=dev-libs/pyzy-0.1.0 >=app-admin/eselect-python-20091230
 SLOT=0
-SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-1.5.1053.102.tar.bz2
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mozc-1.6.1187.102.tar.bz2
 _eclasses_=eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=faa9f1302be4bd2e71eb3897ccd37801
+_md5_=f085927751e204acc4e55b5e02b731af
