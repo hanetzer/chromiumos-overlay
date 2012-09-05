@@ -121,8 +121,6 @@ PATCHES=(
 	# Allow setting the root window background to nothing to further reduce
 	# flicker when showing and hiding the composite overlay window.
 	"${FILESDIR}/1.11.99.902-allow-root-none.patch"
-	# Add a label for MT.
-	"${FILESDIR}/1.9.3-mt-slot-label.patch"
 	# Refcount glxdrawables to avoid crashes on double free()
 	"${FILESDIR}/1.11.99.902-refcnt-glxdrawable.patch"
 
