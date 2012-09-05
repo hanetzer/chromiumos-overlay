@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="a5c25eb0a985ef4c0d1ec85ae6f5ff05f2b5a033"
-CROS_WORKON_TREE="56a3c2c2f9b98f3b371e6180e22cc9068359dc4d"
+CROS_WORKON_COMMIT=9f08939171b54ff6405096d5d0c9a4c9bb515a10
+CROS_WORKON_TREE="1bffe40ecd973921806d2ba6a1a930aac0548d45"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/init"
@@ -49,6 +49,7 @@ src_install() {
 	dosbin "${S}/chromeos-boot-alert"
 	dosbin "${S}/clobber-state"
 	dosbin "${S}/clobber-log"
+	dosbin "${S}/display_low_battery_alert"
 
 	# Install log cleaning script and run it daily.
 	into /usr
