@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="d31d0b79a65e6113d54fb706ddc8abc863325cb9"
-CROS_WORKON_TREE="a2f22d6e028a66c198751e9cf6f5fcafd1a3c801"
+CROS_WORKON_COMMIT=ae3ab1dc5027ddf5ba8010ec98df750c30505a08
+CROS_WORKON_TREE="cf9b3a8b6e349d113c0d5dabe7a9538fdd23d5bb"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
@@ -56,12 +56,7 @@ src_install() {
 #		newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
 #	fi
 
-#   TODO(thestig) Add config files when ready.
-#	# Install upstart config file.
-#	insinto /etc/init
-#	doins mtpd.conf
-
-#	# Install D-Bus config file.
-#	insinto /etc/dbus-1/system.d
-#	doins org.chromium.Mtpd.conf
+	# Install D-Bus config file.
+	insinto /etc/dbus-1/system.d
+	doins org.chromium.Mtpd.conf
 }
