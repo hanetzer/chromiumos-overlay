@@ -115,7 +115,6 @@ PATCHES=(
 	# Allow usage of monotonic clock while cross-compiling.
 	"${FILESDIR}/1.11.99.902-monotonic-clock-fix.patch"
 	"${FILESDIR}/1.11.99.902-cache-xkbcomp-for-fast-start-up.patch"
-	"${FILESDIR}/1.7.6-export-Xi-to-core.patch"
 	"${FILESDIR}/1.11.99.902-fix-xkb-autorepeat.patch"
 	# Match the behaviour of monitor_reconfigure at X.Org startup time.
 	"${FILESDIR}/1.9.3-chromeos-mode.patch"
