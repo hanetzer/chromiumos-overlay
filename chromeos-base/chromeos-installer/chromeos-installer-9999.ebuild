@@ -34,6 +34,7 @@ RDEPEND="
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-apps/which
+	sys-block/parted
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs"
 
