@@ -37,6 +37,7 @@ RDEPEND="${RDEPEND}
 	app-arch/gzip
 	app-arch/tar
 	app-crypt/tpm-tools
+	app-misc/tmux
 	chromeos-base/autox
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
@@ -56,6 +57,7 @@ RDEPEND="${RDEPEND}
 	media-libs/opencv
 	media-libs/tiff
 	net-analyzer/netperf
+	net-dialup/minicom
 	net-dns/dnsmasq
 	net-misc/dhcp
 	net-misc/iperf
