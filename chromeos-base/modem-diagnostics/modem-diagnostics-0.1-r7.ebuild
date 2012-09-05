@@ -19,4 +19,5 @@ S=${WORKDIR}
 
 src_install() {
 	dobin "${FILESDIR}"/modem-diagnostics
+	dobin "${FILESDIR}"/qpst_setup
 }
