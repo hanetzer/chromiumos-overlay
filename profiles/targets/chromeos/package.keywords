@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-=app-admin/rsyslog-3.22.1	amd64 arm x86
+=app-admin/rsyslog-5.8.11	amd64 arm x86
 =app-arch/tar-1.23-r4		amd64 arm x86
 =app-benchmarks/i7z-0.27-r1	amd64 x86
 =app-editors/nano-2.2.5 	amd64 arm x86

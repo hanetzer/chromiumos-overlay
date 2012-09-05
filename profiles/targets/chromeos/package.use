@@ -3,6 +3,7 @@
 
 app-benchmarks/i7z      -X
 app-crypt/tpm-tools     pkcs11
+app-admin/rsyslog	-ssl
 app-i18n/zinnia	    	-perl
 app-editors/qemacs	-X
 app-editors/vim		minimal
