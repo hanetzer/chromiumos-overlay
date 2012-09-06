@@ -26,6 +26,7 @@ AUTOTEST_DEPS_LIST="piglit"
 RDEPEND="
 	virtual/glut
 	virtual/opengl
+	dev-python/mako
 	dev-python/numpy
 	media-libs/tiff
 	media-libs/libpng
