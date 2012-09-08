@@ -1,8 +1,8 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # Based on gentoo's modemmanager ebuild
-CROS_WORKON_COMMIT="a564804f3da99082d0f2c7e4add8681d76dc8317"
-CROS_WORKON_TREE="66f3672d93227066ca1a29f85a28b420a1e9ffe0"
+CROS_WORKON_COMMIT="9bd3a256ca30ba29ccef1c2f9dbdf1f93e310ec0"
+CROS_WORKON_TREE="a4d698b5bfe8d421d86796e265771792d1892ede"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"

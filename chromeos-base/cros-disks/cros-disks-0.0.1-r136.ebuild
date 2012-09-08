@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="74c4799a071d7a8942e96cd7dc8c90f80eb360c6"
-CROS_WORKON_TREE="e6401503922160bfd73ed0635b826ec0dbd1ae05"
+CROS_WORKON_COMMIT=b47e9d82cc7be508538507910e2a8eea8e334736
+CROS_WORKON_TREE="eaf1157d47134a960a2f11ed818ec63ff2a5757a"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
