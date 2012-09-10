@@ -19,7 +19,7 @@ SLOT="0"
 # Boards whose USE flags we write for session_manager_setup.sh.
 BOARDS=(
 	daisy
-	ironhide
+	link
 	x86-alex
 	x86-alex_he
 	x86-alex32
