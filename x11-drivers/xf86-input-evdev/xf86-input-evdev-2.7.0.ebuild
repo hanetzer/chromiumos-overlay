@@ -25,4 +25,6 @@ PATCHES=(
 	"${FILESDIR}"/${P}-feedback-log.patch
 	"${FILESDIR}"/evdev-2.7.0-add-touch-event-timestamp.patch
 	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
+	# crosbug.com/p/13787
+	"${FILESDIR}"/evdev-2.7.0-fix-emulated-wheel.patch
 )

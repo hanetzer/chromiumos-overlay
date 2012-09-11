@@ -1,0 +1,113 @@
+diff --git a/src/emuWheel.c b/src/emuWheel.c
+index ae894fa..3cfa734 100644
+--- a/src/emuWheel.c
++++ b/src/emuWheel.c
+@@ -52,7 +52,6 @@ static Atom prop_wheel_button   = 0;
+ 
+ /* Local Funciton Prototypes */
+ static BOOL EvdevWheelEmuHandleButtonMap(InputInfoPtr pInfo, WheelAxisPtr pAxis, char *axis_name);
+-static int EvdevWheelEmuInertia(InputInfoPtr pInfo, WheelAxisPtr axis, int value);
+ 
+ /* Filter mouse button events */
+ BOOL
+@@ -149,8 +148,15 @@ EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv)
+ 	 */
+ 	if (pAxis)
+ 	{
+-	    if (EvdevWheelEmuInertia(pInfo, pAxis, value))
+-		pOtherAxis->traveled_distance = 0;
++	    if (pAxis->up_button) {
++		/*
++		 * Try to emit an emulated wheel event. For REL_Y, up is -
++		 * and down is + but, for REL_WHEEL, up is + and down is -.
++		 */
++		pEv->code = (pEv->code == REL_Y) ? REL_WHEEL : REL_HWHEEL;
++		pEv->value *= (pEv->code == REL_WHEEL) ? -1 : 1;
++		EvdevProcessRelativeMotionEvent(pInfo, pEv);
++	    }
+ 	}
+ 
+ 	/* Eat motion events while emulateWheel button pressed. */
+@@ -160,40 +166,6 @@ EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv)
+     return FALSE;
+ }
+ 
+-/* Simulate inertia for our emulated mouse wheel.
+-   Returns the number of wheel events generated.
+- */
+-static int
+-EvdevWheelEmuInertia(InputInfoPtr pInfo, WheelAxisPtr axis, int value)
+-{
+-    EvdevPtr pEvdev = (EvdevPtr)pInfo->private;
+-    int button;
+-    int inertia;
+-    int rc = 0;
+-
+-    /* if this axis has not been configured, just eat the motion */
+-    if (!axis->up_button)
+-	return rc;
+-
+-    axis->traveled_distance += value;
+-
+-    if (axis->traveled_distance < 0) {
+-	button = axis->up_button;
+-	inertia = -pEvdev->emulateWheel.inertia;
+-    } else {
+-	button = axis->down_button;
+-	inertia = pEvdev->emulateWheel.inertia;
+-    }
+-
+-    /* Produce button press events for wheel motion */
+-    while(abs(axis->traveled_distance) > pEvdev->emulateWheel.inertia) {
+-	axis->traveled_distance -= inertia;
+-	EvdevQueueButtonClicks(pInfo, button, 1);
+-	rc++;
+-    }
+-    return rc;
+-}
+-
+ /* Handle button mapping here to avoid code duplication,
+ returns true if a button mapping was found. */
+ static BOOL
+diff --git a/src/evdev.c b/src/evdev.c
+index f7a5ff7..c7b2adc 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -773,7 +773,12 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+         EvdevQueueButtonClicks(pInfo, wheel_button, abs(value));
+         return;
+     }
+-    click_speed = dt == 0 ? 1 : 1/dt;
++    if (dt == 0)
++	dt = 1.0;
++    if (pEvdev->emulateWheel.enabled)
++	click_speed = abs(value) / (pEvdev->emulateWheel.inertia * dt);
++    else
++	click_speed = 1 / dt;
+     pixels = EvdevGetPixelsToScroll(click_speed);
+     pixels = value > 0 ? pixels : pixels * -1;
+     if (pEvdev->wheelAccelRec.scroll_axes)
+@@ -798,7 +803,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+ /**
+  * Take the relative motion input event and process it accordingly.
+  */
+-static void
++void
+ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
+ {
+     int value;
+diff --git a/src/evdev.h b/src/evdev.h
+index 2ede36d..f5cf088 100644
+--- a/src/evdev.h
++++ b/src/evdev.h
+@@ -291,6 +291,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
+ 				   int v[MAX_VALUATORS]);
+ unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
+ 
++/* Event processing functions */
++void EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo,
++				     struct input_event *ev);
++
+ /* Middle Button emulation */
+ int  EvdevMBEmuTimer(InputInfoPtr);
+ BOOL EvdevMBEmuFilterEvent(InputInfoPtr, int, BOOL);
