@@ -94,7 +94,7 @@ else:
   #
   # Use of -Qunused-arguments allows this set to be small, just those
   # that clang still warns about.
-  clang_unsupported = set(['-pass-exit-codes', '-Ofast'])
+  clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-fvisibility=internal'])
 
   # If these options are specified, do not run clang, even if -clang is
   # specified.
