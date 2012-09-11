@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="2"
-inherit autotest-deponly binutils-funcs eutils flag-o-matic git multilib toolchain-funcs
+inherit autotest-deponly binutils-funcs eutils flag-o-matic git-2 multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -657,18 +657,12 @@ src_unpack() {
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="5caa2a82643e54de628d407d3e72299127599649"
 		EGIT_PROJECT="${PN}-reorder"
-		# TODO(glotov): try the following git-2 code instead of the whole block.
-		# EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
-		# git-2_src_unpack
 		if grep -q $EGIT_COMMIT "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
 			einfo "Reorder profile repo is up to date."
 		else
 			einfo "Reorder profile repo not up-to-date. Fetching..."
-			local OLD_S="${S}"
-			S="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
-			rm -rf "${S}"
-			git_fetch
-			S="${OLD_S}"
+			EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
+			git-2_src_unpack
 		fi
 	fi
 }
