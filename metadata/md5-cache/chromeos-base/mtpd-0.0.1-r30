@@ -3,10 +3,10 @@ DEPEND=chromeos-base/libchromeos dev-cpp/gflags dev-libs/dbus-c++ >=dev-libs/gli
 DESCRIPTION=MTP daemon for Chromium OS
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=splitdebug test cros-debug cros_workon_tree_5b1f9134a83ef6b8fd13309de6929e3e8e207ddc
+IUSE=splitdebug test cros-debug cros_workon_tree_220581979ea28e0948ac5aef5db40896754b8b8f
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/libchromeos dev-cpp/gflags dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/protobuf media-libs/libmtp sys-fs/udev
 SLOT=0
 _eclasses_=cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=b73b75e2347c27e80d2ed4018cfe2472
+_md5_=4f2c97a46f3606b4ce3880155cf6e835
