@@ -1,0 +1,287 @@
+This patch adds a new fast path for glTexImage2D and glTexSubImage2D,
+intel_texsubimage_tiled_memcpy, which is optimized for Google Chrome's
+paint rectangles. The fast path is implemented only for 2D GL_BGRA
+textures on gen >= 6.
+
+Reduces the time spent in glTexImage and glTexSubImage by roughly 3.4x on
+Sandybridge for the workload described below.
+
+=== Performance Analysis ===
+
+Workload description:
+
+    Personalize your google.com page with a wallpaper.  Start chromium
+with flags "--ignore-gpu-blacklist --enable-accelerated-painting
+--force-compositing-mode".  Start recording with chrome://tracing. Visit
+google.com and wait for page to finish rendering.  Measure the time spent
+by process CrGpuMain in GLES2DecoderImpl::HandleTexImage2D and
+HandleTexSubImage2D.
+
+System config:
+
+    cpu: Sandybridge Mobile GT2+ (0x0126)
+    kernel 3.4.9 x86_64
+    chromium 21.0.1180.81 (151980)
+
+Statistics:
+
+           |  N   Median  Avg    Stddev
+    -------|-----------------------------------
+    before | 10   120.0   106.9   7.86
+    after  | 10   436.8   362.6  34.17
+
+    Difference at 95.0% confidence:
+        255.655 +/- 23.2936
+        239.136% +/- 21.7884%
+
+    Ratio:
+        avg:    3.39
+        median: 3.64
+
+CC: Stéphane Marchesin <marcheu@chromium.org>
+Signed-off-by: Chad Versace <chad.versace@linux.intel.com>
+
+diff --git a/src/mesa/drivers/dri/intel/intel_tex.h b/src/mesa/drivers/dri/intel/intel_tex.h
+index 88a7d55..777574d 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex.h
++++ b/src/mesa/drivers/dri/intel/intel_tex.h
+@@ -85,4 +85,15 @@ bool intel_copy_texsubimage(struct intel_context *intel,
+                             GLint x, GLint y,
+                             GLsizei width, GLsizei height);
+
++bool
++intel_texsubimage_tiled_memcpy(struct gl_context *ctx,
++                               GLuint dims,
++                               struct gl_texture_image *texImage,
++                               GLint xoffset, GLint yoffset, GLint zoffset,
++                               GLsizei width, GLsizei height, GLsizei depth,
++                               GLenum format, GLenum type,
++                               const GLvoid *pixels,
++                               const struct gl_pixelstore_attrib *packing,
++                               bool for_glTexImage);
++
+ #endif
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_image.c b/src/mesa/drivers/dri/intel/intel_tex_image.c
+index 68f4ff4..7496847 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_image.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_image.c
+@@ -210,10 +210,22 @@ intelTexImage(struct gl_context * ctx,
+               const struct gl_pixelstore_attrib *unpack,
+               GLsizei imageSize)
+ {
++   bool ok;
++
+    DBG("%s target %s level %d %dx%dx%d\n", __FUNCTION__,
+        _mesa_lookup_enum_by_nr(texImage->TexObject->Target),
+        texImage->Level, width, height, depth);
+
++   ok = intel_texsubimage_tiled_memcpy(ctx, dims, texImage,
++                                       0, 0, 0, /*x,y,z offsets*/
++                                       texImage->Width,
++                                       texImage->Height,
++                                       texImage->Depth,
++                                       format, type, pixels, unpack,
++                                       true /*for_glTexImage*/);
++   if (ok)
++      return;
++
+    /* Attempt to use the blitter for PBO image uploads.
+     */
+    if (dims <= 2 &&
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_subimage.c b/src/mesa/drivers/dri/intel/intel_tex_subimage.c
+index eb8b983..bee5988 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_subimage.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_subimage.c
+@@ -26,6 +26,7 @@
+  *
+  **************************************************************************/
+
++#include "main/macros.h"
+ #include "main/mtypes.h"
+ #include "main/pbo.h"
+ #include "main/texobj.h"
+@@ -148,6 +149,167 @@ intel_blit_texsubimage(struct gl_context * ctx,
+    return true;
+ }
+
++/**
++ * \brief A fast path for glTexImage and glTexSubImage.
++ *
++ * \param for_glTexImage Was this called from glTexImage or glTexSubImage?
++ *
++ * This fast path is taken when the hardware natively supports the texture
++ * format (such as GL_BGRA) and when the texture memory is X-tiled. It uploads
++ * the texture data by mapping the texture memory without a GTT fence, thus
++ * acquiring a tiled view of the memory, and then memcpy'ing sucessive
++ * subspans within each tile.
++ *
++ * This is a performance win over the conventional texture upload path because
++ * it avoids the performance penalty of writing throuh the write-combine
++ * buffer. In the conventional texture upload path,
++ * texstore.c:store_texsubimage(), the texture memory is mapped through a GTT
++ * fence, thus acquiring a linear view of the memory, then each row in the
++ * image is memcpy'd. In this fast path, we replace each row's memcpy with
++ * a sequence of memcpy's over each bit6 swizzle span in the row. A large
++ * memcpy through the write-combine buffer has been observed on Sandybridge to
++ * be approximately 3x slower than a memcpy to normal memory.  So, one would
++ * expect this fast path to be approximately 3x faster than the conventional
++ * texture upload path. This expectation has been confirmed on Sandybridge,
++ * where the performance gain on 256x256 GL_BGRA textures is roughly 3.4x.
++ *
++ * This fast path's use case is Google Chrome's paint rectangles.  Chrome (as
++ * of version 21) renders each page as a tiling of 256x256 GL_BGRA textures.
++ * Each page's content is initially uploaded with glTexImage2D and damaged
++ * regions are updated with glTexSubImage2D.
++ */
++bool
++intel_texsubimage_tiled_memcpy(struct gl_context * ctx,
++                               GLuint dims,
++                               struct gl_texture_image *texImage,
++                               GLint xoffset, GLint yoffset, GLint zoffset,
++                               GLsizei width, GLsizei height, GLsizei depth,
++                               GLenum format, GLenum type,
++                               const GLvoid *pixels,
++                               const struct gl_pixelstore_attrib *packing,
++                               bool for_glTexImage)
++{
++   struct intel_context *intel = intel_context(ctx);
++   struct intel_texture_image *image = intel_texture_image(texImage);
++
++   /* Offset into the miptree for the texture image. */
++   uint32_t image_offset_x;
++   uint32_t image_offset_y;
++
++   /* The miptree's buffer. */
++   drm_intel_bo *bo;
++
++   int error = 0;
++
++   /* Restrict to gen >= 6 because the performance impact on earlier chipsets
++    * has not been investigated.
++    *
++    * This function could be expanded to accommodate more textures and
++    * chipets, but more performance inverstigation is needed.
++    */
++   if (intel->gen < 6 ||
++       dims != 2 ||
++       depth != 1 ||
++       format != GL_BGRA ||
++       type != GL_UNSIGNED_BYTE ||
++       pixels == NULL ||
++       packing->Alignment > 4)
++      return false;
++
++   if (for_glTexImage) {
++      ctx->Driver.AllocTextureImageBuffer(ctx, texImage, texImage->TexFormat,
++                                          width, height, 1);
++   }
++
++   if (!image->mt ||
++       image->mt->region->tiling != I915_TILING_X) {
++      /* The algorithm below is written only for X-tiled memory.
++       *
++       * Memcpy'ing to Y-tiled memory is likely faster when done the
++       * conventional way: that is, map the memory through a fence in order to
++       * acquire a linear view of the memory, then memcpy one row at a time.
++       * Due to the arrangement of Y-tiled memory, if we were to upload
++       * a Y-tiled buffer using the algorithm below, then we could only copy
++       * one byte at a time.
++       */
++      return false;
++   }
++
++   intel_miptree_get_image_offset(image->mt,
++                                  texImage->Level,
++                                  texImage->Face,
++                                  0 /*layer*/,
++                                  &image_offset_x,
++                                  &image_offset_y);
++
++   bo = image->mt->region->bo;
++   error = drm_intel_bo_map(image->mt->region->bo, true /*write_enable*/);
++   if (error || bo->virtual == NULL) {
++      DBG("%s: failed to map bo\n", __FUNCTION__);
++      return false;
++   }
++
++   /* We postponed printing this message until having committed to executing
++    * the function.
++    */
++   DBG("%s: level=%d offset=(%d,%d) (w,h)=(%d,%d)\n",
++       __FUNCTION__, texImage->Level, xoffset, yoffset, width, height);
++
++   /* In the tiling algorithm below, some variables are in units of pixels,
++    * others are in units of bytes, and others (such as height) are unitless.
++    * Each variable name is either prefixed or suffixed with its units.
++    */
++
++   const uint32_t pixel_max_x = xoffset + width;
++   const uint32_t pixel_max_y = yoffset + height;
++
++   const uint32_t tile_size_bytes = 4096;
++
++   const uint32_t tile_width_bytes = 512;
++   const uint32_t tile_width_pixels = 128;
++
++   const uint32_t tile_height = 8;
++
++   const uint32_t cpp = 4; /* chars per pixel of GL_BGRA */
++   const uint32_t swizzle_width_pixels = 16;
++
++   const uint32_t stride_bytes = image->mt->region->pitch * cpp;
++   const uint32_t width_tiles = stride_bytes / tile_width_bytes;
++
++   uint8_t *map = bo->virtual
++               + image_offset_y * stride_bytes
++               + image_offset_x * cpp;
++
++   for (uint32_t pixel_y = yoffset; pixel_y < pixel_max_y; ++pixel_y) {
++      const uint32_t byte_offset_y = (pixel_y / tile_height) * width_tiles * tile_size_bytes
++                                   + (pixel_y % tile_height) * tile_width_bytes;
++
++      for (uint32_t pixel_x = xoffset; pixel_x < pixel_max_x; pixel_x += swizzle_width_pixels) {
++         const uint32_t byte_offset_x = (pixel_x / tile_width_pixels) * tile_size_bytes
++                                      + (pixel_x % tile_width_pixels) * cpp;
++         intptr_t byte_offset = byte_offset_y + byte_offset_x;
++         if (intel->has_swizzling) {
++            bool bit6 = (byte_offset >> 6) & 1;
++            bool bit9 = (byte_offset >> 9) & 1;
++            bool bit10 = (byte_offset >> 10) & 1;
++
++            byte_offset += 64 * (bit9 ^ bit10) * (1 - 2 * bit6);
++         }
++
++         const uint32_t swizzle_bound_pixels = ALIGN(pixel_x + 1, swizzle_width_pixels);
++         const uint32_t memcpy_bound_pixels = MIN2(pixel_max_x, swizzle_bound_pixels);
++         const uint32_t copy_size = cpp * (memcpy_bound_pixels - pixel_x);
++
++         memcpy(map + byte_offset, pixels, copy_size);
++         pixels += copy_size;
++         pixel_x -= (pixel_x % swizzle_width_pixels);
++      }
++   }
++
++   drm_intel_bo_unmap(bo);
++   return true;
++}
++
+ static void
+ intelTexSubImage2D(struct gl_context * ctx,
+                    struct gl_texture_image *texImage,
+@@ -157,6 +319,16 @@ intelTexSubImage2D(struct gl_context * ctx,
+                    const GLvoid * pixels,
+                    const struct gl_pixelstore_attrib *packing)
+ {
++   bool ok;
++
++   ok = intel_texsubimage_tiled_memcpy(ctx, 2 /*dims*/, texImage,
++                                       xoffset, yoffset, 0,
++                                       width, height, 1,
++                                       format, type, pixels, packing,
++                                       false /*for_glTexImage*/);
++   if (ok)
++     return;
++
+    if (!intel_blit_texsubimage(ctx, texImage,
+                               xoffset, yoffset,
+                               width, height,
