@@ -298,6 +298,7 @@ IUSE_TESTS="
 	+tests_platform_TempFS
 	+tests_platform_ToolchainOptions
 	+tests_platform_TouchpadSynDrop
+	+tests_platform_TPMEvict
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BacklightServer
