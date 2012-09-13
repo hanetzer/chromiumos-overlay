@@ -48,11 +48,9 @@ src_install() {
 	exeinto /opt/google/mtpd
 	doexe build-opt/mtpd
 
-#   TODO(jorgelo) Add security policy. http://crosbug.com/33228
-#	# Install seccomp policy file.
-#	if [ -f "mtpd-seccomp-${ARCH}.policy" ]; then
-#		newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
-#	fi
+	# Install seccomp policy file.
+	insinto /opt/google/mtpd
+	newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
 
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
