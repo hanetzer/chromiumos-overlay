@@ -74,6 +74,7 @@ RDEPEND="${RDEPEND}
         !arm? ( sys-apps/pciutils )
 	x86? ( sys-apps/superiotool )
 	sys-apps/shadow
+	sys-devel/binutils
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
