@@ -51,6 +51,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0021-alternate-config-dir.patch" \
           "0022-interactive-governor-parameters.patch" \
           "0023-disable-cpufreq-frequency-control.patch" \
+		  "0024-check-for-existence-of-alarm-file.patch" \
         )
 
 src_unpack() {
