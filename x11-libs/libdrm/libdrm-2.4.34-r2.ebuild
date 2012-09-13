@@ -28,10 +28,6 @@ RDEPEND="dev-libs/libpthread-stubs
 	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )"
 DEPEND="${RDEPEND}"
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-2.4.28-solaris.patch
-)
-
 pkg_setup() {
 	XORG_CONFIGURE_OPTIONS=(
 		--enable-udev
