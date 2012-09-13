@@ -97,6 +97,8 @@ IUSE_TESTS="
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_firmware_CgptState
+	+tests_firmware_CgptStress
+	+tests_firmware_ConsecutiveBoot
 	+tests_firmware_CorruptBothFwBodyAB
 	+tests_firmware_CorruptBothFwSigAB
 	+tests_firmware_CorruptBothKernelAB
@@ -108,6 +110,7 @@ IUSE_TESTS="
 	+tests_firmware_CorruptKernelB
 	+tests_firmware_DevFwNormalBoot
 	+tests_firmware_DevMode
+	+tests_firmware_DevModeStress
 	+tests_firmware_DevScreenTimeout
 	+tests_firmware_DevTriggerRecovery
 	+tests_firmware_ECAdc
@@ -119,11 +122,14 @@ IUSE_TESTS="
 	+tests_firmware_ECPeci
 	+tests_firmware_ECPowerButton
 	+tests_firmware_ECPowerG3
+	+tests_firmware_ECSharedMem
 	+tests_firmware_ECThermal
 	+tests_firmware_ECUsbPorts
 	+tests_firmware_ECWakeSource
 	+tests_firmware_ECWatchdog
+	+tests_firmware_ECWriteProtect
 	+tests_firmware_FAFTClient
+	+tests_firmware_FAFTSetup
 	+tests_firmware_FwScreenCloseLid
 	+tests_firmware_FwScreenPressPower
 	+tests_firmware_InvalidUSB
@@ -135,6 +141,12 @@ IUSE_TESTS="
 	+tests_firmware_ShellBall
 	+tests_firmware_SoftwareSync
 	+tests_firmware_TryFwB
+	+tests_firmware_UpdateECBin
+	+tests_firmware_UpdateFirmwareDataKeyVersion
+	+tests_firmware_UpdateFirmwareVersion
+	+tests_firmware_UpdateKernelDataKeyVersion
+	+tests_firmware_UpdateKernelSubkeyVersion
+	+tests_firmware_UpdateKernelVersion
 	+tests_firmware_UserRequestRecovery
 	tests_firmware_VbootCrypto
 	+tests_graphics_GLBench
