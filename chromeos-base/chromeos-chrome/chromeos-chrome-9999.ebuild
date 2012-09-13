@@ -21,12 +21,10 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-KEYWORDS="~amd64 ~arm ~x86"
-
 LICENSE="BSD"
 SLOT="0"
-
-IUSE="-asan -aura +build_tests x86 +gold +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build hardfp +highdpi -pgo_use -pgo_generate +reorder +runhooks +verbose -drm +nacl"
+KEYWORDS="~amd64 ~arm ~x86"
+IUSE="-asan -aura +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -pgo_use -pgo_generate +reorder +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -248,11 +246,21 @@ set_build_defines() {
 	fi
 
 	# Set proper BUILD_DEFINES for the arch
-	if [ "$ARCH" = "x86" ]; then
+	case ${ARCH} in
+	x86)
 		BUILD_DEFINES+=( target_arch=ia32 enable_smooth_scrolling=1 )
-	elif [ "$ARCH" = "arm" ]; then
-		BUILD_DEFINES+=( target_arch=arm armv7=1 v8_can_use_unaligned_accesses=true )
-		if [ "$(expr match "$ARM_FPU" "vfpv3")" -ne 0 ]; then
+		;;
+	arm)
+		BUILD_DEFINES+=(
+			target_arch=arm
+			armv7=1
+			v8_can_use_unaligned_accesses=true
+			arm_neon=$(usex neon 1 0)
+		)
+		if [[ -n ${ARM_FPU} ]]; then
+			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
+		fi
+		if [[ ${ARM_FPU} == *"vfpv3"* ]]; then
 			BUILD_DEFINES+=( v8_can_use_vfp_instructions=true )
 		fi
 		if use chrome_internal; then
@@ -262,11 +270,14 @@ set_build_defines() {
 		if use hardfp; then
 			BUILD_DEFINES+=( v8_use_arm_eabi_hardfloat=true arm_float_abi=hard )
 		fi
-	elif [ "$ARCH" = "amd64" ]; then
+		;;
+	amd64)
 		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
-	else
+		;;
+	*)
 		die "Unsupported architecture: ${ARCH}"
-	fi
+		;;
+	esac
 
 	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
 
