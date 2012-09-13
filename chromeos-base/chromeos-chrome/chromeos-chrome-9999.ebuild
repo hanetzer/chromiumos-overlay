@@ -197,7 +197,7 @@ DEPEND="${DEPEND}
 	>=dev-util/pkgconfig-0.23
 	net-wireless/bluez"
 
-PATCHES=()
+PATCHES=( "${FILESDIR}/webkit.gestureconfig.patch" )
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
