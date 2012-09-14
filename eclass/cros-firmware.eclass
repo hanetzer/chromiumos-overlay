@@ -69,6 +69,7 @@ IUSE="bootimage cros_ec"
 # needs to extract and execute the updater.
 DEPEND="
 	>=chromeos-base/vboot_reference-1.0-r230
+	chromeos-base/vpd
 	dev-util/shflags
 	>=sys-apps/flashrom-0.9.3-r36
 	sys-apps/mosys
@@ -95,7 +96,6 @@ RDEPEND="
 	app-arch/sharutils
 	app-arch/tar
 	chromeos-base/vboot_reference
-	sys-apps/mosys
 	sys-apps/util-linux"
 
 # Check for EAPI 2+
