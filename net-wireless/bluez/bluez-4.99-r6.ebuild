@@ -123,7 +123,6 @@ src_configure() {
 	use readline || export ac_cv_header_readline_readline_h=no
 
 	econf \
-		--enable-hid2hci \
 		--enable-audio \
 		--enable-bccmd \
 		--enable-datafiles \
