@@ -38,9 +38,6 @@
 # to the binary will be changed.
 : ${CROS_BINARY_LOCAL_URI_BASE:=}
 
-DEPEND="net-misc/openssh
-	net-misc/wget"
-
 # Check for EAPI 2+
 case "${EAPI:-0}" in
 	4|3|2) ;;

@@ -205,6 +205,8 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	chromeos-base/ssh-known-hosts
 	chromeos-base/ssh-root-dot-dir
+	net-misc/openssh
+	net-misc/wget
 	"
 
 # Host dependencies that are needed for chromite/bin/upload_package_status
