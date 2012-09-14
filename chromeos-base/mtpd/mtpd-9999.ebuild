@@ -52,6 +52,10 @@ src_install() {
 	insinto /opt/google/mtpd
 	newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
 
+	# Install upstart config file.
+	insinto /etc/init
+	doins mtpd.conf
+
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.Mtpd.conf
