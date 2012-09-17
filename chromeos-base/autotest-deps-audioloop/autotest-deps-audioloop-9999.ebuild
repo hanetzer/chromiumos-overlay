@@ -26,7 +26,8 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 # deps/audioloop
 RDEPEND="${RDEPEND}
-	media-libs/alsa-lib"
+	media-libs/alsa-lib
+	media-sound/adhd"
 
 DEPEND="${RDEPEND}"
 
