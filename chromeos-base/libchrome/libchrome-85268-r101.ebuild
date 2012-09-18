@@ -9,7 +9,7 @@ CROS_WORKON_GIT_SUFFIX="-${PV}"
 inherit cros-workon cros-debug toolchain-funcs scons-utils
 
 DESCRIPTION="Chrome base/ library extracted for use on Chrome OS"
-HOMEPAGE="http://www.chromium.org/"
+HOMEPAGE="http://dev.chromium.org/chromium-os/packages/libchrome"
 SRC_URI=""
 
 LICENSE="BSD"
