@@ -60,16 +60,20 @@ src_test() {
 src_install() {
 	# Built binaries
 	pushd out >/dev/null
-	dobin backlight-tool backlight_dbus_tool
-	dobin power_state_tool power-supply-info power{d,m}
-	dobin suspend_delay_sample
+	dobin powerd/powerd
+	dobin powerm/powerm
+	dobin tools/backlight_dbus_tool
+	dobin tools/backlight-tool
+	dobin tools/power_state_tool
+	dobin tools/power-supply-info
+	dobin tools/suspend_delay_sample
 	popd >/dev/null
 
 	# Scripts
-	dobin debug_sleep_quickly
-	dobin powerd_suspend
-	dobin send_metrics_on_resume
-	dobin suspend_stress_test
+	dobin scripts/debug_sleep_quickly
+	dobin scripts/powerd_suspend
+	dobin scripts/send_metrics_on_resume
+	dobin scripts/suspend_stress_test
 
 	insinto /usr/share/power_manager
 	doins config/*
@@ -85,14 +89,15 @@ src_install() {
 	fi
 
 	insinto /etc/dbus-1/system.d
-	doins org.chromium.PowerManager.conf
+	doins dbus/org.chromium.PowerManager.conf
+	doins dbus/RootPowerManager.conf
 
 	# Install udev rule to set usb hid devices to wake the system.
 	exeinto /lib/udev
-	doexe usb-hid-wake.sh
+	doexe udev/usb-hid-wake.sh
 
 	insinto /lib/udev/rules.d
-	doins 99-usb-hid-wake.rules
+	doins udev/99-usb-hid-wake.rules
 
 	# Nocrit disables low battery suspend percent by setting it to 0
 	if use nocrit; then
@@ -102,8 +107,4 @@ src_install() {
 		fi
 		echo "0" > "${D}/${crit}"
 	fi
-
-	dodir /etc/dbus-1/system.d
-	insinto /etc/dbus-1/system.d
-	doins RootPowerManager.conf
 }
