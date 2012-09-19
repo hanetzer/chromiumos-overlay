@@ -189,6 +189,17 @@ else:
 if clang_compile_requested and not skip_clang:
   clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
 
+  # Specify the target for clang.
+  gcc_comp = os.path.basename(sys.argv[0])
+  arch = gcc_comp.split('-')[0]
+  if arch == 'i386' or arch == 'i486' or arch == 'i586' or arch == 'i686':
+    clang_cmdline.insert(0, '-m32')
+  elif arch == 'x86_64':
+    clang_cmdline.insert(0, '-m64')
+  elif arch.startswith('arm'):
+    clang_cmdline.insert(0, 'armv7a-cros-linux-gnueabi')
+    clang_cmdline.insert(0, '-ccc-host-triple')
+
   # Check for clang or clang++.
   if sys.argv[0].endswith('++'):
     clang_comp += '++'
