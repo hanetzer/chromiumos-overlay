@@ -319,7 +319,7 @@ set_build_defines() {
 
 	if use clang; then
 		if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
-			BUILD_DEFINES+=( clang=1 werror= )
+			BUILD_DEFINES+=( clang=1 clang_use_chrome_plugins=0 werror= )
 			USE_TCMALLOC="linux_use_tcmalloc=0"
 
 			# The chrome build system will add -m32 for 32bit arches, and
