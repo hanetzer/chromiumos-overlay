@@ -40,6 +40,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-gb-dvorak-deadkey.patch
 	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
+	"${FILESDIR}"/${P}-f15-mod3.patch
 )
 
 src_prepare() {
