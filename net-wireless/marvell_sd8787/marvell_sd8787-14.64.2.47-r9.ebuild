@@ -1,7 +1,7 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="9fa10832efefc59af8d1c2d7fd1a07f218f3a606"
-CROS_WORKON_TREE="3330d9379228e7ddb4f47d625e542a69102627b5"
+CROS_WORKON_COMMIT="2a66fe09813030c13062522a0ec7736342509f56"
+CROS_WORKON_TREE="981641c05bb55e5c1056ebee7db607a06194ce1a"
 
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/marvell"
