@@ -91,6 +91,7 @@ src_install() {
 		progs+=' utility/gbb_utility'
 		progs+=' utility/dump_fmap'
 		progs+=' utility/dev_debug_vboot'
+		progs+=' utility/enable_dev_usb_boot'
 		progs+=' cgpt/cgpt'
 
 		into /usr
