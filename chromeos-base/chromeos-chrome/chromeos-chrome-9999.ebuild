@@ -40,7 +40,7 @@ REORDER_SUBDIR="reorder"
 # from within golo.chromium.org. TODO(rcui): Remove this once we've
 # converted all bots to GERRIT_SOURCE.
 DOMAIN_NAME=$(hostname -d)
-if [ "${DOMAIN_NAME}" == "golo.chromium.org" ]; then
+if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
 	EXTERNAL_URL="svn://svn-mirror.golo.chromium.org/chrome"
 	INTERNAL_URL="svn://svn-mirror.golo.chromium.org/chrome-internal"
 else
@@ -49,19 +49,19 @@ else
 fi
 # Portage version without optional portage suffix.
 CHROME_VERSION="${PV/_*/}"
-[[ ( "${PV}" = "9999" ) || ( -n "${CROS_SVN_COMMIT}" ) ]]
+[[ "${PV}" == "9999" || -n "${CROS_SVN_COMMIT}" ]]
 USE_TRUNK=$?
 
 REVISION="/${CHROME_VERSION}"
-if [ ${USE_TRUNK} = 0 ]; then
+if [[ ${USE_TRUNK} == 0 ]]; then
 	REVISION=
-	if [ -n "${CROS_SVN_COMMIT}" ]; then
+	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
 		REVISION="@${CROS_SVN_COMMIT}"
 	fi
 fi
 
 if use chrome_internal; then
-	if [ ${USE_TRUNK} = 0 ]; then
+	if [[ ${USE_TRUNK} == 0 ]]; then
 		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
 		AUXILIARY_URL="${INTERNAL_URL}/trunk/src-internal"
 	else
@@ -69,7 +69,7 @@ if use chrome_internal; then
 		AUXILIARY_URL=
 	fi
 else
-	if [ ${USE_TRUNK} = 0 ]; then
+	if [[ ${USE_TRUNK} == 0 ]]; then
 		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
 	else
 		PRIMARY_URL="${EXTERNAL_URL}/releases"
@@ -104,10 +104,10 @@ CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 RELEASE_EXTRA_CFLAGS=()
 
-if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
+if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
 	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
 	USE_TCMALLOC="linux_use_tcmalloc=1"
-elif [ "$ARCH" = "arm" ]; then
+elif [[ "${ARCH}" == "arm" ]]; then
 	DEFAULT_CHROME_DIR=chromium-rel-arm
 	# tcmalloc isn't supported on arm
 	USE_TCMALLOC="linux_use_tcmalloc=0"
@@ -215,8 +215,9 @@ use_nacl() {
 
 set_build_defines() {
 	# General build defines.
+	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
-		"sysroot=$ROOT"
+		"sysroot=${ROOT}"
 		python_ver=2.6
 		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"${EXTRA_BUILD_ARGS}"
@@ -246,7 +247,7 @@ set_build_defines() {
 	fi
 
 	# Set proper BUILD_DEFINES for the arch
-	case ${ARCH} in
+	case "${ARCH}" in
 	x86)
 		BUILD_DEFINES+=( target_arch=ia32 enable_smooth_scrolling=1 )
 		;;
@@ -257,10 +258,10 @@ set_build_defines() {
 			v8_can_use_unaligned_accesses=true
 			arm_neon=$(usex neon 1 0)
 		)
-		if [[ -n ${ARM_FPU} ]]; then
+		if [[ -n "${ARM_FPU}" ]]; then
 			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
 		fi
-		if [[ ${ARM_FPU} == *"vfpv3"* ]]; then
+		if [[ $"{ARM_FPU}" == *"vfpv3"* ]]; then
 			BUILD_DEFINES+=( v8_can_use_vfp_instructions=true )
 		fi
 		if use chrome_internal; then
@@ -305,7 +306,7 @@ set_build_defines() {
 	fi
 
 	# This saves time and bytes.
-	if [ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" = "1" ]; then
+	if [[ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" == "1" ]]; then
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
 	fi
 
@@ -318,7 +319,7 @@ set_build_defines() {
 	fi
 
 	if use clang; then
-		if [ "$ARCH" = "x86" ] || [ "$ARCH" = "amd64" ]; then
+		if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
 			BUILD_DEFINES+=( clang=1 clang_use_chrome_plugins=0 werror= )
 			USE_TCMALLOC="linux_use_tcmalloc=0"
 
@@ -388,18 +389,18 @@ create_gclient_file() {
 	# from within golo.chromium.org. TODO(rcui): Remove this once we've
 	# converted all bots to GERRIT_SOURCE.
 	local custom_vars=''
-	if [ "${DOMAIN_NAME}" == "golo.chromium.org" ]; then
+	if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
 		custom_vars='
 "webkit_trunk": "svn://svn-mirror.golo.chromium.org/webkit-readonly/trunk",
 "googlecode_url": "svn://svn-mirror.golo.chromium.org/%s",
 "sourceforge_url": "svn://svn-mirror.golo.chromium.org/%(repo)s",'
 	fi
 
-	if [ ${use_pdf} = 0 ]; then
+	if [[ ${use_pdf} == 0 ]]; then
 		pdf1=
 		pdf2=
 	fi
-	if [ ${use_trunk} = 0 ]; then
+	if [[ ${use_trunk} == 0 ]]; then
 		checkout_point="src"
 	fi
 	echo "solutions = [" >${echrome_store_dir}/.gclient
@@ -432,22 +433,22 @@ create_gclient_file() {
 		"${layout_tests}/platform/chromium-win/http/tests/workers": None,
 		"${layout_tests}/platform/chromium-win/storage/domstorage": None,
 		"${layout_tests}/storage/domstorage": None,
-		$pdf1
-		$pdf2
+		${pdf1}
+		${pdf2}
 		},
 	 "custom_vars": {
-		$custom_vars
+		${custom_vars}
 		},
 	},
 EOF
-	if [ -n "${auxiliary_url}" ]; then
+	if [[ -n "${auxiliary_url}" ]]; then
 		cat >>${echrome_store_dir}/.gclient <<EOF
   { "name"        : "aux_src",
 	"url"         : "${auxiliary_url}${revision}",
   },
 EOF
 	fi
-	if [ ${use_trunk} = 0 ]; then
+	if [[ ${use_trunk} == 0 ]]; then
 		cat >>${echrome_store_dir}/.gclient <<EOF
   { "name"        : "cros",
 	"url"         : "${primary_url}/tools/cros.DEPS${revision}",
@@ -487,10 +488,10 @@ unpack_chrome() {
 	elog "Using .gclient ..."
 	elog $(cat ${CHROME_DISTDIR}/.gclient)
 
-	pushd "${CHROME_DISTDIR}" || \
+	pushd "${CHROME_DISTDIR}" ||
 		die "Cannot chdir to ${CHROME_DISTDIR}"
 
-	if [ -s patches ]; then
+	if [[ -s patches ]]; then
 		elog "Reverting previous patches"
 		${EGCLIENT} revert --jobs 8 --nohooks || die
 		rm patches
@@ -504,10 +505,10 @@ unpack_chrome() {
 decide_chrome_origin() {
 	local chrome_workon="=chromeos-base/chromeos-chrome-9999"
 	local cros_workon_file="${ROOT}etc/portage/package.keywords/cros-workon"
-	if [ -e "${cros_workon_file}" ] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
+	if [[ -e "${cros_workon_file}" ]] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
 		# GERRIT_SOURCE is the default for cros_workon
 		# Warn the user if CHROME_ORIGIN is already set
-		if [ -n "${CHROME_ORIGIN}" ] && [ "${CHROME_ORIGIN}" != GERRIT_SOURCE ]; then
+		if [[ -n "${CHROME_ORIGIN}" && "${CHROME_ORIGIN}" != GERRIT_SOURCE ]]; then
 			ewarn "CHROME_ORIGIN is already set to ${CHROME_ORIGIN}."
 			ewarn "This will prevent you from building from gerrit."
 			ewarn "Please run 'unset CHROME_ORIGIN' to reset Chrome"
@@ -527,7 +528,7 @@ sandboxless_ensure_directory() {
 			# We need root access to create these directories, so we need to
 			# use sudo. This implicitly disables the sandbox.
 			sudo mkdir -p "${dir}" || die
-			sudo chown "$PORTAGE_USERNAME:portage" "${dir}" || die
+			sudo chown "${PORTAGE_USERNAME}:portage" "${dir}" || die
 			sudo chmod 0755 "${dir}" || die
 		fi
 	done
@@ -541,8 +542,9 @@ src_unpack() {
 	# into the chroot, so it is not safe to use cp -al for these files.
 	# These are set here because $(whoami) returns the proper user here,
 	# but 'root' at the root level of the file
-	export CHROME_ROOT="${CHROME_ROOT:-/home/$(whoami)/chrome_root}"
-	export EGCLIENT="${EGCLIENT:-/home/$(whoami)/depot_tools/gclient}"
+	local WHOAMI=$(whoami)
+	export CHROME_ROOT="${CHROME_ROOT:-/home/${WHOAMI}/chrome_root}"
+	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -551,12 +553,12 @@ src_unpack() {
 	# Copy in credentials to fake home directory so that build process
 	# can access svn and ssh if needed.
 	mkdir -p ${HOME}
-	SUBVERSION_CONFIG_DIR=/home/$(whoami)/.subversion
-	if [ -d ${SUBVERSION_CONFIG_DIR} ]; then
+	SUBVERSION_CONFIG_DIR=/home/${WHOAMI}/.subversion
+	if [[ -d ${SUBVERSION_CONFIG_DIR} ]]; then
 		cp -rfp ${SUBVERSION_CONFIG_DIR} ${HOME} || die
 	fi
-	SSH_CONFIG_DIR=/home/$(whoami)/.ssh
-	if [ -d ${SSH_CONFIG_DIR} ]; then
+	SSH_CONFIG_DIR=/home/${WHOAMI}/.ssh
+	if [[ -d ${SSH_CONFIG_DIR} ]]; then
 		cp -rfp ${SSH_CONFIG_DIR} ${HOME} || die
 	fi
 
@@ -571,17 +573,17 @@ src_unpack() {
 		;;
 	esac
 
-	case "$CHROME_ORIGIN" in
+	case "${CHROME_ORIGIN}" in
 	(SERVER_SOURCE)
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
 		#See if the CHROME_VERSION we used previously was different
 		CHROME_VERSION_FILE=${CHROME_DISTDIR}/chrome_version
-		if [ -f ${CHROME_VERSION_FILE} ]; then
+		if [[ -f ${CHROME_VERSION_FILE} ]]; then
 			OLD_CHROME_VERSION=$(cat ${CHROME_VERSION_FILE})
 		fi
 
 		if ! unpack_chrome; then
-			if [ $OLD_CHROME_VERSION != $CHROME_VERSION ]; then
+			if [[ ${OLD_CHROME_VERSION} != ${CHROME_VERSION} ]]; then
 				popd
 				elog "${EGCLIENT} sync failed and detected version change"
 				elog "Attempting to clean up ${CHROME_DISTDIR} and retry"
@@ -602,13 +604,13 @@ src_unpack() {
 		export CHROME_ROOT=${CHROME_DISTDIR}
 		;;
 	(GERRIT_SOURCE)
-		export CHROME_ROOT="/home/$(whoami)/trunk/chromium"
+		export CHROME_ROOT="/home/${WHOAMI}/trunk/chromium"
 		# TODO(rcui): Remove all these addwrite hacks once we start
 		# building off a copy of the source
 		addwrite "${CHROME_ROOT}"
 		# Addwrite to .repo because each project's .git directory links
 		# to the .repo directory.
-		addwrite "/home/$(whoami)/trunk/.repo/"
+		addwrite "/home/${WHOAMI}/trunk/.repo/"
 		# - Make the symlinks from chromium src tree to CrOS source tree
 		# writeable so we can run hooks and reset the checkout.
 		# - We need to explicitly do this because the symlink points to
@@ -668,7 +670,7 @@ src_unpack() {
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="5caa2a82643e54de628d407d3e72299127599649"
 		EGIT_PROJECT="${PN}-reorder"
-		if grep -q $EGIT_COMMIT "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
+		if grep -q ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
 			einfo "Reorder profile repo is up to date."
 		else
 			einfo "Reorder profile repo not up-to-date. Fetching..."
@@ -679,8 +681,9 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]] && \
-	   [[ "$CHROME_ORIGIN" != "GERRIT_SOURCE" ]]; then
+	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
+	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" &&
+	      "${CHROME_ORIGIN}" != "GERRIT_SOURCE" ]]; then
 		return
 	fi
 
@@ -689,7 +692,7 @@ src_prepare() {
 
 	# We do symlink creation here if appropriate
 	mkdir -p "${CHROME_CACHE_DIR}/src/${BUILD_OUT}"
-	if [ ! -z "${BUILD_OUT_SYM}" ]; then
+	if [[ ! -z "${BUILD_OUT_SYM}" ]]; then
 		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
 		ln -sfT "${CHROME_CACHE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
 			die "Could not create symlink for output directory"
@@ -697,11 +700,11 @@ src_prepare() {
 	fi
 
 	# Apply patches for non-localsource builds
-	if [ "$CHROME_ORIGIN" = "SERVER_SOURCE" ]; then
+	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
 		for patch_file in ${PATCHES}; do
-			einfo Applying $patch_file
-			echo $patch_file >> "${CHROME_ROOT}/patches"
-			epatch $patch_file
+			einfo Applying ${patch_file}
+			echo ${patch_file} >> "${CHROME_ROOT}/patches"
+			epatch ${patch_file}
 		done
 	fi
 
@@ -709,9 +712,10 @@ src_prepare() {
 	# portage flags.
 	filter-flags -g -O*
 
-	# The hooks may depend on the environment variables we set in this ebuild
-	# (i.e., GYP_DEFINES for gyp_chromium)
-	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/$(whoami)/trunk/chromite/bin/chrome_set_ver}
+	local WHOAMI=$(whoami)
+	# The hooks may depend on the environment variables we set in this
+	# ebuild (i.e., GYP_DEFINES for gyp_chromium)
+	ECHROME_SET_VER=${ECHROME_SET_VER:=/home/${WHOAMI}/trunk/chromite/bin/chrome_set_ver}
 	einfo "Building Chrome with the following define options:"
 	local opt
 	for opt in "${BUILD_DEFINES[@]}"; do
@@ -723,7 +727,7 @@ src_prepare() {
 	# First check for Chrome credentials.
 	if [[ ! -d google_apis/internal ]]; then
 		# Then look for ChromeOS supplied credentials.
-		local PRIVATE_OVERLAYS_DIR=/home/$(whoami)/trunk/src/private-overlays
+		local PRIVATE_OVERLAYS_DIR=/home/${WHOAMI}/trunk/src/private-overlays
 		local GAPI_CONFIG_FILE=${PRIVATE_OVERLAYS_DIR}/chromeos-overlay/googleapikeys
 		# RE to match the allowed names.
 		local NRE="('google_(api_key|default_client_(id|secret))')"
@@ -736,7 +740,7 @@ src_prepare() {
 		local TRE="^${WS}${NRE}${WS}[:=]${WS}${CRE}.*"
 		if [[ ! -f "${GAPI_CONFIG_FILE}" ]]; then
 			# Then developer credentials.
-			GAPI_CONFIG_FILE=/home/$(whoami)/.googleapikeys
+			GAPI_CONFIG_FILE=/home/${WHOAMI}/.googleapikeys
 		fi
 		if [[ -f "${GAPI_CONFIG_FILE}" ]]; then
 			mkdir "${HOME}"/.gyp
@@ -754,16 +758,16 @@ src_prepare() {
 	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
-		if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
+		if [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 			# Set the dependency repos to the revision specified in the
 			# .DEPS.git file, and run the hooks in that file.
 			"${ECHROME_SET_VER}" --runhooks || die
 		else
-			[ -n "${EGCLIENT}" ] || die EGCLIENT unset
-			[ -f "$EGCLIENT" ] || die EGCLIENT at "$EGCLIENT" does not exist
+			[[ -n "${EGCLIENT}" ]] || die EGCLIENT unset
+			[[ -f "${EGCLIENT}" ]] || die EGCLIENT at "${EGCLIENT}" does not exist
 			"${EGCLIENT}" runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 		fi
-	elif [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
+	elif [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		"${ECHROME_SET_VER}" || die
 	fi
 }
@@ -771,7 +775,7 @@ src_prepare() {
 src_configure() {
 	tc-export CXX CC AR AS RANLIB LD
 	if use gold ; then
-		if [ "${GOLD_SET}" != "yes" ]; then
+		if [[ "${GOLD_SET}" != "yes" ]]; then
 			export GOLD_SET="yes"
 			einfo "Using gold from the following location: $(get_binutils_path_gold)"
 			export CC="${CC} -B$(get_binutils_path_gold)"
@@ -784,8 +788,9 @@ src_configure() {
 }
 
 src_compile() {
-	if [[ "$CHROME_ORIGIN" != "LOCAL_SOURCE" ]] && [[ "$CHROME_ORIGIN" != "SERVER_SOURCE" ]] && \
-	   [[ "$CHROME_ORIGIN" != "GERRIT_SOURCE" ]]; then
+	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
+	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" &&
+	      "${CHROME_ORIGIN}" != "GERRIT_SOURCE" ]]; then
 		return
 	fi
 
@@ -859,7 +864,7 @@ install_test_resources() {
 	# Install test resources from chrome source directory to destination.
 	# We keep a cache of test resources inside the chroot to avoid copying
 	# multiple times.
-	local test_dir="$1"
+	local test_dir="${1}"
 	shift
 	local resource cache dest
 	for resource in "$@"; do
@@ -892,7 +897,8 @@ install_chrome_test_resources() {
 		"video_decode_accelerator_unittest" )
 
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
-		$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/${f} \
+		$(tc-getSTRIP) --strip-debug \
+			--keep-file-symbols "${from}"/${f} \
 			-o "${test_dir}/out/Release/$(basename ${f})"
 	done
 
@@ -942,7 +948,7 @@ install_chrome_test_resources() {
 	fi
 
 	# Remove test binaries from other platforms
-	if [ -z "${E_MACHINE}" ]; then
+	if [[ -z "${E_MACHINE}" ]]; then
 		echo E_MACHINE not defined!
 	else
 		cd "${test_dir}"/chrome/test
@@ -969,14 +975,16 @@ install_pyauto_dep_resources() {
 	cp -al "${from}"/pyproto "${test_dir}"/out/Release
 	cp -al "${from}"/pyautolib.py "${test_dir}"/out/Release
 
-	# Even if chrome_debug_tests is enabled, we don't need to include detailed
-	# debug info for tests in the binary package, so save some time by stripping
-	# everything but the symbol names. Developers who need more detailed debug
-	# info on the tests can use the original unstripped tests from the ${from}
-	# directory.
-	$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/_pyautolib.so \
+	# Even if chrome_debug_tests is enabled, we don't need to include
+	# detailed debug info for tests in the binary package, so save some
+	# time by stripping everything but the symbol names. Developers who
+	# need more detailed debug info on the tests can use the original
+	# unstripped tests from the ${from} directory.
+	$(tc-getSTRIP) --strip-debug \
+		--keep-file-symbols "${from}"/_pyautolib.so \
 		-o "${test_dir}"/out/Release/_pyautolib.so
-	$(tc-getSTRIP) --strip-debug --keep-file-symbols "${from}"/chromedriver \
+	$(tc-getSTRIP) --strip-debug \
+		--keep-file-symbols "${from}"/chromedriver \
 		-o "${test_dir}"/out/Release/chromedriver
 	if use component_build; then
 		mkdir -p "${test_dir}/out/Release/lib.target"
@@ -1005,7 +1013,7 @@ install_pyauto_dep_resources() {
 install_page_cycler_dep_resources() {
 	local test_dir="${1}"
 
-	if [ -r "${CHROME_ROOT}/src/data/page_cycler" ]; then
+	if [[ -r "${CHROME_ROOT}/src/data/page_cycler" ]]; then
 		echo "Copying Page Cycler Data into ${test_dir}"
 		mkdir -p "${test_dir}"
 		install_test_resources "${test_dir}" \
@@ -1018,7 +1026,7 @@ src_install() {
 
 	# Override default strip flags and lose the '-R .comment'
 	# in order to play nice with the crash server.
-	if [ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]; then
+	if [[ -z "${KEEP_CHROME_DEBUG_SYMBOLS}" ]]; then
 		export PORTAGE_STRIP_FLAGS="--strip-unneeded"
 	else
 		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
@@ -1045,13 +1053,13 @@ src_install() {
 		dodir "${CHROME_DIR}/lib.target"
 		exeinto "${CHROME_DIR}/lib.target"
 		for f in "${FROM}"/lib.target/*.so; do
-			doexe "$f"
+			doexe "${f}"
 		done
 		exeinto "${CHROME_DIR}"
 	fi
 
 	# enable the chromeos local account, if the environment dictates
-	if [ "${CHROMEOS_LOCAL_ACCOUNT}" != "" ]; then
+	if [[ -n "${CHROMEOS_LOCAL_ACCOUNT}" ]]; then
 		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
 	fi
 
@@ -1097,9 +1105,9 @@ src_install() {
 
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
-	if use build_tests && ([[ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]] || \
-		 [[ "${CHROME_ORIGIN}" = "SERVER_SOURCE" ]] || \
-		 [[ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]]); then
+	if use build_tests && [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ||
+		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
+		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		autotest-deponly_src_install
 	fi
 	if use pgo_generate; then
@@ -1124,12 +1132,12 @@ src_install() {
 	if ! use aura && ( use amd64 || use x86 ); then
 		# Install Flash plugin.
 		if use chrome_internal; then
-			if [ -f "${FROM}/libgcflashplayer.so" ]; then
+			if [[ -f "${FROM}/libgcflashplayer.so" ]]; then
 				# Install Flash from the binary drop.
 				exeinto "${CHROME_DIR}"/plugins
 				doexe "${FROM}/libgcflashplayer.so"
 				doexe "${FROM}/plugin.vch"
-			elif [ "${CHROME_ORIGIN}" = "LOCAL_SOURCE" ]; then
+			elif [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ]]; then
 				# Install Flash from the local source repository.
 				exeinto "${CHROME_DIR}"/plugins
 				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/libgcflashplayer.so
