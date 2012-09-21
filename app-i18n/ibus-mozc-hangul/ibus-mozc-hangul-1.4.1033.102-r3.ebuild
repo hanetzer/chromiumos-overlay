@@ -20,6 +20,7 @@ src_prepare() {
   cd "mozc-${PV}" || die
   # TOTO(nona): Remove the patch when we upgrade mozc to the next version, 1.5.
   epatch "${FILESDIR}"/${P}-arm-build-fix.patch
+  epatch "${FILESDIR}"/${P}-consume-hanja-key.patch
 }
 
 src_configure() {
