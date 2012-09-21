@@ -717,8 +717,42 @@ src_prepare() {
 	for opt in "${BUILD_DEFINES[@]}"; do
 		einfo "${opt}"
 	done
-	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks useflag when
-	# chrome build switches to Ninja inside the chroot.
+
+	# Get credentials to fake home directory so that built chromium
+	# can access Google services.
+	# First check for Chrome credentials.
+	if [[ ! -d google_apis/internal ]]; then
+		# Then look for ChromeOS supplied credentials.
+		local PRIVATE_OVERLAYS_DIR=/home/$(whoami)/trunk/src/private-overlays
+		local GAPI_CONFIG_FILE=${PRIVATE_OVERLAYS_DIR}/chromeos-overlay/googleapikeys
+		# RE to match the allowed names.
+		local NRE="('google_(api_key|default_client_(id|secret))')"
+		# RE to match whitespace.
+		local WS="[[:space:]]*"
+		# RE to match allowed values.
+		local CRE="('[^\\\\']*')"
+		# And combining them into one RE for describing the lines
+		# we want to allow.
+		local TRE="^${WS}${NRE}${WS}[:=]${WS}${CRE}.*"
+		if [[ ! -f "${GAPI_CONFIG_FILE}" ]]; then
+			# Then developer credentials.
+			GAPI_CONFIG_FILE=/home/$(whoami)/.googleapikeys
+		fi
+		if [[ -f "${GAPI_CONFIG_FILE}" ]]; then
+			mkdir "${HOME}"/.gyp
+			cat <<-EOF >"${HOME}/.gyp/include.gypi"
+			{
+				'variables': {
+				$(sed -nr -e "/^${TRE}/{s//\1: \4,/;p;}" \
+					"${GAPI_CONFIG_FILE}")
+				}
+			}
+			EOF
+		fi
+	fi
+
+	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks
+	# useflag when chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
 		if [ "${CHROME_ORIGIN}" = "GERRIT_SOURCE" ]; then
 			# Set the dependency repos to the revision specified in the
