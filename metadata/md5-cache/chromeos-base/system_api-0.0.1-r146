@@ -1,12 +1,12 @@
 DEFINED_PHASES=info install unpack
-DEPEND=app-arch/tar sys-apps/coreutils sys-apps/grep sys-apps/portage sys-apps/sed dev-vcs/git
-DESCRIPTION=Chromium OS Developer Packages installer
-EAPI=4
-HOMEPAGE=http://www.chromium.org/chromium-os
-IUSE=cros_workon_tree_288ad505e7179a0f120f1884e05715c184882578
+DEPEND=!<=chromeos-base/libchromeos-0.0.1-r78 dev-vcs/git
+DESCRIPTION=Chrome OS system API (D-Bus service names, etc.)
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_workon_tree_c61042b7bc006c2cc6758f69b74e41f99320894d
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
-RDEPEND=app-arch/tar net-misc/curl sys-apps/coreutils
+RDEPEND=!<=chromeos-base/libchromeos-0.0.1-r78
 SLOT=0
 _eclasses_=cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=9158d5888362711d0b8c30776822cfb6
+_md5_=ab9d9835f666b7af7a3eb9097ef8b006
