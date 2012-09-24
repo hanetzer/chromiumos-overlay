@@ -63,9 +63,6 @@ src_test() {
 
 src_install() {
 	dobin "shill" || die
-	# Install upstart config file
-	insinto /etc/init
-	doins shill.conf || die
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
