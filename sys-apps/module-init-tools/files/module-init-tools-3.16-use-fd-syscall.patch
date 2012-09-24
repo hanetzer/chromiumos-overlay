@@ -157,7 +157,7 @@ diff -uNrp module-init-tools-3.16~/util.h module-init-tools-3.16/util.h
 +# elif defined(__i386__)
 +#  define __NR_finit_module 350
 +# elif defined(__arm__)
-+#  define __NR_finit_module 378
++#  define __NR_finit_module 379
 +# endif
 +#endif
 +
