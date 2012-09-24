@@ -20,6 +20,7 @@ DEPEND="chromeos-base/chromeos-chrome"
 RDEPEND="!chromeos-base/chromeos-factorytools
 	 chromeos-base/chromeos-factory-board
 	 dev-lang/python
+         dev-python/argparse
 	 dev-python/jsonrpclib
          dev-python/netifaces
 	 dev-python/setproctitle
