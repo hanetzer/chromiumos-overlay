@@ -149,6 +149,9 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-xfixes-safer-barriers.patch"
 	# crosbug.com/33813
 	"${FILESDIR}/1.12.0-suffix-match-udev-paths.patch"
+	# crosbug.com/31570
+	"${FILESDIR}/1.12.0-os-make-timers-signal-safe.patch"
+	"${FILESDIR}/1.12.0-os-block-signals-when-accessing-global-timer-list.patch"
 )
 
 src_prepare() {
