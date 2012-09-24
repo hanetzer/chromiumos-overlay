@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT=68d0136389aa27255d076b052621664297b83982
-CROS_WORKON_TREE="68b300d23e6a0981ac140c8a266f233d19cef851"
+CROS_WORKON_COMMIT=b758dd44435357cc46f2675779171e7bbb9def6e
+CROS_WORKON_TREE="48583a753b903deda10c5c149eb5d4aa7492dac5"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
@@ -22,6 +22,7 @@ DEPEND="chromeos-base/chromeos-chrome"
 RDEPEND="!chromeos-base/chromeos-factorytools
 	 chromeos-base/chromeos-factory-board
 	 dev-lang/python
+         dev-python/argparse
 	 dev-python/jsonrpclib
          dev-python/netifaces
 	 dev-python/setproctitle
