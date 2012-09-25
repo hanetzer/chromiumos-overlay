@@ -1,9 +1,15 @@
+Subject: [PATCH] disable vt switching for verified boot
+
 This patch disables the Ctrl-Alt-Fx shortcut for switching between virtual
 terminals when we're in verified boot mode.
+---
+ hw/xfree86/common/xf86Events.c |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
 
-diff -aurp xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c xorg-server-1.9.3.work/hw/xfree86/common/xf86Events.c
---- xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c	2010-12-22 18:58:57.313355000 -0800
-+++ xorg-server-1.9.3.work/hw/xfree86/common/xf86Events.c	2010-12-22 20:05:46.377368000 -0800
+diff --git a/hw/xfree86/common/xf86Events.c b/hw/xfree86/common/xf86Events.c
+index 41ffabd..1ed8c86 100644
+--- a/hw/xfree86/common/xf86Events.c
++++ b/hw/xfree86/common/xf86Events.c
 @@ -176,7 +176,19 @@ ProcessInputEvents (void)
  void
  xf86ProcessActionEvent(ActionEvent action, void *arg)
@@ -24,7 +30,7 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c xorg-server-1.9
      switch (action) {
      case ACTION_TERMINATE:
  	if (!xf86Info.dontZap) {
-@@ -196,6 +208,8 @@ xf86ProcessActionEvent(ActionEvent actio
+@@ -196,6 +208,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
  	break;
      case ACTION_SWITCHSCREEN:
  	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && arg) {
@@ -33,7 +39,7 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c xorg-server-1.9
  	    int vtno = *((int *) arg);
  
  	    if (vtno != xf86Info.vtno) {
-@@ -208,6 +222,8 @@ xf86ProcessActionEvent(ActionEvent actio
+@@ -208,6 +222,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
  	break;
      case ACTION_SWITCHSCREEN_NEXT:
  	if (VTSwitchEnabled && !xf86Info.dontVTSwitch) {
@@ -42,7 +48,7 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c xorg-server-1.9
  	    if (!xf86VTActivate(xf86Info.vtno + 1)) {
  		/* If first try failed, assume this is the last VT and
  		 * try wrapping around to the first vt.
-@@ -221,6 +237,8 @@ xf86ProcessActionEvent(ActionEvent actio
+@@ -221,6 +237,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
  	break;
      case ACTION_SWITCHSCREEN_PREV:
  	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && xf86Info.vtno > 0) {
@@ -51,8 +57,6 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/common/xf86Events.c xorg-server-1.9
  	    if (!xf86VTActivate(xf86Info.vtno - 1)) {
  		/* Don't know what the maximum VT is, so can't wrap around */
  		ErrorF("Failed to switch from vt%02d to previous vt: %s\n",
-Only in xorg-server-1.9.3.work/hw/xfree86/common: xf86Events.c.orig
-Only in xorg-server-1.9.3.work/hw/xfree86/common: xf86Events.c.rej
-Only in xorg-server-1.9.3.work/hw/xfree86/common: xf86Events.c~
-Only in xorg-server-1.9.3.work/xkb: xkbUtils.c.rej
-Only in xorg-server-1.9.3.work/xkb: xkbUtils.c~
+-- 
+1.7.7.3
+

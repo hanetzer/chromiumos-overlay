@@ -1,7 +1,8 @@
-diff -ur a/configure.ac b/configure.ac
---- a/configure.ac	2011-10-31 19:40:02.000000000 +0100
-+++ b/configure.ac	2011-10-31 19:41:02.372745481 +0100
-@@ -1624,7 +1624,6 @@
+diff --git a/configure.ac b/configure.ac
+index 2693ce7..ac752fc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1620,7 +1620,6 @@ if test "x$XORG" = xyes; then
  		  	linux_alpha=yes
  			;;
  		  i*86|amd64*|x86_64*|ia64*)
@@ -9,3 +10,6 @@ diff -ur a/configure.ac b/configure.ac
  			;;
  		  *)
  			;;
+-- 
+1.7.7.3
+

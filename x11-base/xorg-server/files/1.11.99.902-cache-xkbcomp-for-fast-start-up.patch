@@ -1,7 +1,8 @@
-diff -pur xorg-server-1.10.0.orig/configure.ac xorg-server-1.10.0.work/configure.ac
---- xorg-server-1.10.0.orig/configure.ac	2011-03-18 14:29:26.405493000 -0700
-+++ xorg-server-1.10.0.work/configure.ac	2011-03-18 14:31:13.390824000 -0700
-@@ -537,9 +537,9 @@ AC_MSG_RESULT([$FONTPATH])
+diff --git a/configure.ac b/configure.ac
+index f94b88c..03beb36 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -515,9 +515,9 @@ AC_MSG_RESULT([$FONTPATH])
  AC_ARG_WITH(xkb-path,         AS_HELP_STRING([--with-xkb-path=PATH], [Path to XKB base dir (default: ${datadir}/X11/xkb)]),
  				[ XKBPATH="$withval" ],
  				[ XKBPATH="${datadir}/X11/xkb" ])
@@ -13,7 +14,7 @@ diff -pur xorg-server-1.10.0.orig/configure.ac xorg-server-1.10.0.work/configure
  AC_ARG_WITH(default-xkb-rules, AS_HELP_STRING([--with-default-xkb-rules=RULES],
                                     [Keyboard ruleset (default: base/evdev)]),
                                  [ XKB_DFLT_RULES="$withval" ],
-@@ -1170,7 +1170,7 @@ AC_DEFINE_DIR(XKB_BIN_DIRECTORY, XKB_BIN
+@@ -1202,7 +1202,7 @@ AC_DEFINE_DIR(XKB_BIN_DIRECTORY, XKB_BIN_DIRECTORY, [Path to XKB bin dir])
  dnl Make sure XKM_OUTPUT_DIR is an absolute path
  XKBOUTPUT_FIRSTCHAR=`echo $XKBOUTPUT | cut -b 1`
  if [[ x$XKBOUTPUT_FIRSTCHAR != x/ -a x$XKBOUTPUT_FIRSTCHAR != 'x$' ]] ; then
@@ -22,10 +23,11 @@ diff -pur xorg-server-1.10.0.orig/configure.ac xorg-server-1.10.0.work/configure
  fi
  
  dnl XKM_OUTPUT_DIR (used in code) must end in / or file names get hosed
-diff -pur xorg-server-1.10.0.orig/xkb/README.compiled xorg-server-1.10.0.work/xkb/README.compiled
---- xorg-server-1.10.0.orig/xkb/README.compiled	2011-03-18 14:29:33.872843000 -0700
-+++ xorg-server-1.10.0.work/xkb/README.compiled	2011-03-18 14:31:13.395820000 -0700
-@@ -4,10 +4,10 @@ current keymap and/or any scratch keymap
+diff --git a/xkb/README.compiled b/xkb/README.compiled
+index 71caa2f..a4a2ae0 100644
+--- a/xkb/README.compiled
++++ b/xkb/README.compiled
+@@ -4,10 +4,10 @@ current keymap and/or any scratch keymaps used by clients.  The X server
  or some other tool might destroy or replace the files in this directory,
  so it is not a safe place to store compiled keymaps for long periods of
  time.  The default keymap for any server is usually stored in:
@@ -40,9 +42,10 @@ diff -pur xorg-server-1.10.0.orig/xkb/README.compiled xorg-server-1.10.0.work/xk
  
  Unless the X server is modified, sharing this directory between servers on
  different hosts could cause problems.
-diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxLoad.c
---- xorg-server-1.10.0.orig/xkb/ddxLoad.c	2011-03-18 14:29:33.937878000 -0700
-+++ xorg-server-1.10.0.work/xkb/ddxLoad.c	2011-03-18 14:50:43.851134000 -0700
+diff --git a/xkb/ddxLoad.c b/xkb/ddxLoad.c
+index 1961423..411b677 100644
+--- a/xkb/ddxLoad.c
++++ b/xkb/ddxLoad.c
 @@ -30,6 +30,12 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
  
  #include <xkb-config.h>
@@ -124,7 +127,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
  				XkbComponentNamesPtr	names,
  				unsigned		want,
-@@ -179,7 +213,11 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -179,7 +213,11 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
  				int			nameRtrnLen)
  {
      FILE *	out;
@@ -137,7 +140,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  
      const char	*emptystring = "";
      char *xkbbasedirflag = NULL;
-@@ -190,15 +228,67 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -190,15 +228,67 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
      /* WIN32 has no popen. The input must be stored in a file which is
         used as input for xkbcomp. xkbcomp does not read from stdin. */
      char tmpname[PATH_MAX];
@@ -208,7 +211,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  #ifdef WIN32
      strcpy(tmpname, Win32TempDir());
      strcat(tmpname, "\\xkb_XXXXXX");
-@@ -222,15 +312,21 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -222,15 +312,21 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
  	}
      }
  
@@ -233,7 +236,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  	buf = NULL;
  
      free(xkbbasedirflag);
-@@ -240,6 +336,11 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -240,6 +336,11 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
          return FALSE;
      }
      
@@ -245,7 +248,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  #ifndef WIN32
      out= Popen(buf,"w");
  #else
-@@ -247,32 +348,41 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -247,32 +348,41 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
  #endif
      
      if (out!=NULL) {
@@ -302,7 +305,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  #ifdef WIN32
          /* remove the temporary file */
          unlink(tmpname);
-@@ -285,8 +397,15 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		
+@@ -287,8 +397,15 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
      }
      if (nameRtrn)
  	nameRtrn[0]= '\0';
@@ -319,8 +322,7 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
  }
  
  static FILE *
-@@ -370,7 +489,6 @@ unsigned	missing;
- 
+@@ -372,7 +489,6 @@ unsigned	missing;
  	DebugF("Loaded XKB keymap %s, defined=0x%x\n",fileName,(*xkbRtrn)->defined);
      }
      fclose(file);
@@ -328,3 +330,6 @@ diff -pur xorg-server-1.10.0.orig/xkb/ddxLoad.c xorg-server-1.10.0.work/xkb/ddxL
      return (need|want)&(~missing);
  }
  
+-- 
+1.7.7.3
+

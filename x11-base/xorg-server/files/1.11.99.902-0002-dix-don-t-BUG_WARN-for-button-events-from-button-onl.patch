@@ -21,7 +21,7 @@ diff --git a/dix/getevents.c b/dix/getevents.c
 index 151d82a..06390cd 100644
 --- a/dix/getevents.c
 +++ b/dix/getevents.c
-@@ -838,7 +838,7 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
+@@ -840,7 +840,7 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
      ScreenPtr scr = miPointerGetScreen(dev);
      double x, y;
  

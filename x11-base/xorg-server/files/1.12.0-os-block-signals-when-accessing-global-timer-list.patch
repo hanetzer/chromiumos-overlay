@@ -131,7 +131,7 @@ index 852362e..f105acc 100644
  }
  
  OsTimerPtr
-@@ -541,10 +547,13 @@ TimerFree(OsTimerPtr timer)
+@@ -542,10 +548,13 @@ TimerFree(OsTimerPtr timer)
  void
  TimerCheck(void)
  {
@@ -146,7 +146,7 @@ index 852362e..f105acc 100644
  }
  
  void
-@@ -552,11 +561,13 @@ TimerInit(void)
+@@ -553,11 +562,13 @@ TimerInit(void)
  {
      OsTimerPtr timer;
  

@@ -31,7 +31,7 @@ diff --git a/dix/getevents.c b/dix/getevents.c
 index 23bbe06..c960d44 100644
 --- a/dix/getevents.c
 +++ b/dix/getevents.c
-@@ -1598,6 +1598,9 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type,
+@@ -1577,6 +1577,9 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type,
      /* Now turn the smooth-scrolling axes back into emulated button presses
       * for legacy clients, based on the integer delta between before and now */
      for (i = 0; i < valuator_mask_size(&mask); i++) {
@@ -42,5 +42,5 @@ index 23bbe06..c960d44 100644
              continue;
  
 -- 
-1.7.5.3.367.ga9930
+1.7.7.3
 

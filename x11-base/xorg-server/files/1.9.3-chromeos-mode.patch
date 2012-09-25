@@ -1,7 +1,8 @@
-diff -aurp xorg-server-1.9.3.orig/hw/xfree86/modes/xf86Crtc.c xorg-server-1.9.3.work/hw/xfree86/modes/xf86Crtc.c
---- xorg-server-1.9.3.orig/hw/xfree86/modes/xf86Crtc.c	2010-12-22 18:58:57.960269000 -0800
-+++ xorg-server-1.9.3.work/hw/xfree86/modes/xf86Crtc.c	2010-12-22 20:17:23.451048000 -0800
-@@ -2227,6 +2227,108 @@ xf86TargetUserpref(ScrnInfoPtr scrn, xf8
+diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
+index da9db34..6d97c0d 100644
+--- a/hw/xfree86/modes/xf86Crtc.c
++++ b/hw/xfree86/modes/xf86Crtc.c
+@@ -2259,6 +2259,108 @@ xf86TargetUserpref(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
      return FALSE;
  }
  
@@ -110,7 +111,7 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/modes/xf86Crtc.c xorg-server-1.9.3.
  static Bool
  xf86CrtcSetInitialGamma(xf86CrtcPtr crtc, float gamma_red, float gamma_green,
          float gamma_blue)
-@@ -2380,6 +2482,8 @@ xf86InitialConfiguration (ScrnInfoPtr sc
+@@ -2413,6 +2515,8 @@ xf86InitialConfiguration (ScrnInfoPtr scrn, Bool canGrow)
      } else {
  	if (xf86TargetUserpref(scrn, config, modes, enabled, width, height))
  	    xf86DrvMsg(i, X_INFO, "Using user preference for initial modes\n");
@@ -119,6 +120,6 @@ diff -aurp xorg-server-1.9.3.orig/hw/xfree86/modes/xf86Crtc.c xorg-server-1.9.3.
  	else if (xf86TargetPreferred(scrn, config, modes, enabled, width, height))
  	    xf86DrvMsg(i, X_INFO, "Using exact sizes for initial modes\n");
  	else if (xf86TargetAspect(scrn, config, modes, enabled, width, height))
-Only in xorg-server-1.9.3.work/hw/xfree86/modes: xf86Crtc.c.orig
-Only in xorg-server-1.9.3.work/hw/xfree86/modes: xf86Crtc.c.rej
-Only in xorg-server-1.9.3.work/hw/xfree86/modes: xf86Crtc.c~
+-- 
+1.7.7.3
+

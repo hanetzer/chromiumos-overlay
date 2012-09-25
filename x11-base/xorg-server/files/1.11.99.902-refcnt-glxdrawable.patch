@@ -17,16 +17,16 @@ Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
 Cc: Kristian Høgsberg <krh@bitplanet.net>
 Cc: Michel Dänzer <daenzer@vmware.com>
 ---
- glx/glxcmds.c     |   23 +++++++++++++++--------
+ glx/glxcmds.c     |   22 ++++++++++++++--------
  glx/glxdrawable.h |    3 +++
- glx/glxext.c      |   15 ++++++++++-----
- 3 files changed, 28 insertions(+), 13 deletions(-)
+ glx/glxext.c      |   19 ++++++++++---------
+ 3 files changed, 27 insertions(+), 17 deletions(-)
 
 diff --git a/glx/glxcmds.c b/glx/glxcmds.c
 index de9c3f0..b3ea784 100644
 --- a/glx/glxcmds.c
 +++ b/glx/glxcmds.c
-@@ -529,6 +529,7 @@ __glXGetDrawable(__GLXcontext *glxc, GLXDrawable drawId, ClientPtr client,
+@@ -496,6 +496,7 @@ __glXGetDrawable(__GLXcontext *glxc, GLXDrawable drawId, ClientPtr client,
  	*error = BadAlloc;
  	return NULL;
      }
@@ -34,7 +34,7 @@ index de9c3f0..b3ea784 100644
  
      return pGlxDraw;
  }
-@@ -1099,8 +1100,10 @@ __glXDrawableInit(__GLXdrawable *drawable,
+@@ -1095,8 +1096,10 @@ __glXDrawableInit(__GLXdrawable *drawable,
      drawable->pDraw = pDraw;
      drawable->type = type;
      drawable->drawId = drawId;
@@ -45,12 +45,12 @@ index de9c3f0..b3ea784 100644
  
      return GL_TRUE;
  }
-@@ -1130,15 +1133,18 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen,
+@@ -1126,15 +1129,18 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen,
  	pGlxDraw->destroy (pGlxDraw);
  	return BadAlloc;
      }
 +    pGlxDraw->refcnt++;
-
+ 
 -    /*
 -     * Windows aren't refcounted, so track both the X and the GLX window
 -     * so we get called regardless of destruction order.
@@ -92,7 +92,8 @@ diff --git a/glx/glxext.c b/glx/glxext.c
 index 4bd5d6b..77db8b0 100644
 --- a/glx/glxext.c
 +++ b/glx/glxext.c
-@@ -128,15 +128,16 @@ static Bool DrawableGone(__GLXdrawable *glxPriv, XID xid)
+@@ -118,17 +118,18 @@ static Bool DrawableGone(__GLXdrawable *glxPriv, XID xid)
+ {
      __GLXcontext *c, *next;
  
 -    if (glxPriv->type == GLX_DRAWABLE_WINDOW) {
@@ -112,12 +113,13 @@ index 4bd5d6b..77db8b0 100644
 +	    else
 +		    FreeResourceByType(other, __glXDrawableRes, TRUE);
      }
-
+ 
 +    if (--glxPriv->refcnt)
 +	    return True;
 +
      for (c = glxAllContexts; c; c = next) {
  	next = c->next;
+ 	if (c->isCurrent && (c->drawPriv == glxPriv || c->readPriv == glxPriv)) {
 -- 
-1.7.2.3
+1.7.7.3
 

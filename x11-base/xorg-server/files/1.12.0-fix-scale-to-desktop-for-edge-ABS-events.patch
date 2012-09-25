@@ -31,7 +31,7 @@ diff --git a/dix/getevents.c b/dix/getevents.c
 index b78d5ce..9898c6a 100644
 --- a/dix/getevents.c
 +++ b/dix/getevents.c
-@@ -890,9 +890,9 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
+@@ -861,9 +861,9 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
  
      /* scale x&y to desktop coordinates */
      *screenx = rescaleValuatorAxis(x, dev->valuator->axes + 0, NULL,

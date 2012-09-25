@@ -1,7 +1,8 @@
-diff -aurp xorg-server-1.9.3/dix/window.c xorg-server-1.9.3-root-none//dix/window.c
---- xorg-server-1.9.3/dix/window.c	2011-02-21 00:10:46.004374317 -0800
-+++ xorg-server-1.9.3-root-none//dix/window.c	2011-02-21 00:15:13.524249906 -0800
-@@ -992,12 +992,8 @@ ChangeWindowAttributes(WindowPtr pWin, M
+diff --git a/dix/window.c b/dix/window.c
+index 823294b..d293e90 100644
+--- a/dix/window.c
++++ b/dix/window.c
+@@ -1127,12 +1127,8 @@ ChangeWindowAttributes(WindowPtr pWin, Mask vmask, XID *vlist, ClientPtr client)
  	    {
  		if (pWin->backgroundState == BackgroundPixmap)
  		    (*pScreen->DestroyPixmap)(pWin->background.pixmap);
@@ -16,3 +17,6 @@ diff -aurp xorg-server-1.9.3/dix/window.c xorg-server-1.9.3-root-none//dix/windo
  	    }
  	    else if (pixID == ParentRelative)
  	    {
+-- 
+1.7.7.3
+

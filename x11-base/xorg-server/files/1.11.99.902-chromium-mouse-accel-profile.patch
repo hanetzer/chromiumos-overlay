@@ -2,8 +2,8 @@ diff --git a/dix/ptrveloc.c b/dix/ptrveloc.c
 index 30e14b1..ea447a8 100644
 --- a/dix/ptrveloc.c
 +++ b/dix/ptrveloc.c
-@@ -879,6 +879,81 @@ SmoothLimitedProfile(
-     return vel->min_acceleration + res;
+@@ -869,6 +869,81 @@ PowerProfile(
+     return (pow(acc, vel_dist)) * vel->min_acceleration;
  }
  
 +/**
@@ -42,7 +42,7 @@ index 30e14b1..ea447a8 100644
 + * time of writing have a CPI of approximately 1000, so that may be a good
 + * default value.
 + */
-+static double 
++static double
 +ChromiumMouseProfile(
 +    DeviceIntPtr dev,
 +    DeviceVelocityPtr vel,
@@ -82,9 +82,9 @@ index 30e14b1..ea447a8 100644
 +    return acc * new_inch_per_sec / inch_per_sec;
 +}
  
- static float
- LinearProfile(
-@@ -924,6 +999,8 @@ GetAccelerationProfile(
+ /**
+  * just a smooth function in [0..1] -> [0..1]
+@@ -1015,6 +1090,8 @@ GetAccelerationProfile(
              return LinearProfile;
          case AccelProfileSmoothLimited:
              return SmoothLimitedProfile;
@@ -107,3 +107,6 @@ index 6f999a8..979bd30 100644
  
  /* fwd */
  struct _DeviceVelocityRec;
+-- 
+1.7.7.3
+

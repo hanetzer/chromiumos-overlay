@@ -23,7 +23,7 @@ diff --git a/configure.ac b/configure.ac
 index 1c7875e..36f7bdd 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -908,19 +908,17 @@ if ! test "x$have_clock_gettime" = xno; then
+@@ -935,19 +935,17 @@ if ! test "x$have_clock_gettime" = xno; then
          CPPFLAGS="$CPPFLAGS -D_POSIX_C_SOURCE=200112L"
      fi
  
@@ -50,5 +50,5 @@ index 1c7875e..36f7bdd 100644
      LIBS="$LIBS_SAVE"
      CPPFLAGS="$CPPFLAGS_SAVE"
 -- 
-1.7.0.1
+1.7.7.3
 
