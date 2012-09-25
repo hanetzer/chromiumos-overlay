@@ -46,6 +46,7 @@ src_compile() {
 
 	# Vboot reference knows the flags to use
 	unset CFLAGS
+	emake clean # In case someone built locally - drop ./build stuff.
 	emake FIRMWARE_ARCH="${FIRMWARE_ARCH}" ${DEBUG} ${MOCK_TPM} || \
 		die "${err_msg}"
 }
