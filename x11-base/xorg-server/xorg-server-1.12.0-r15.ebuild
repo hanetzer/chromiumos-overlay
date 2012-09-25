@@ -131,8 +131,6 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-no-default-cursor.patch"
 	# Ability to run without root privs
 	"${FILESDIR}/1.11.99.902-nohwaccess.patch"
-	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
-	"${FILESDIR}/1.11.99.902-safer-position-sprite.patch"
 	"${FILESDIR}/1.11.99.902-0002-dix-don-t-BUG_WARN-for-button-events-from-button-onl.patch"
 	# Fix for printf format chars in device names: crosbug.com/29324
 	"${FILESDIR}/1.12.0-0001-os-log-trivial-cleanups.patch"
@@ -152,6 +150,8 @@ PATCHES=(
 	# crosbug.com/31570
 	"${FILESDIR}/1.12.0-os-make-timers-signal-safe.patch"
 	"${FILESDIR}/1.12.0-os-block-signals-when-accessing-global-timer-list.patch"
+	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
+	"${FILESDIR}/1.12.0-mi-don-t-check-for-core-events-in-miPointerSetPositi.patch"
 )
 
 src_prepare() {
