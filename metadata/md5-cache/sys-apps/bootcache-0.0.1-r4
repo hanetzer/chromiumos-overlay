@@ -1,12 +1,11 @@
 DEFINED_PHASES=compile info install unpack
-DEPEND=sys-apps/util-linux dev-vcs/git
-DESCRIPTION=ChromeOS vital product data utilities
+DEPEND=dev-vcs/git
+DESCRIPTION=Utility for creating store for boot cache
 EAPI=4
-HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_d475cfdb415d315602dc4289d7a3e348eab5442e
+HOMEPAGE=http://git.chromium.org/gitweb/?s=bootcache
+IUSE=cros_workon_tree_54c869c3436c42f1273d3c4ad627fa255b92e9ca
 KEYWORDS=amd64 arm x86
-LICENSE=BSD
-RDEPEND=sys-apps/flashrom dev-util/shflags
+LICENSE=GPL-2
 SLOT=0
 _eclasses_=cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=06f78c7b881092023203320d0d098927
+_md5_=02530288341efa564314fcfbcaaca94e
