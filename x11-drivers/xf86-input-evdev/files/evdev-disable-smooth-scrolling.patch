@@ -1,3 +1,11 @@
+Subject: [PATCH] Disable smooth scrolling
+
+Smooth scrolling results in the mousewheel generating motion events with
+valuators that confuse Chrome: http://crosbug.com/118608
+---
+ src/evdev.h |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
 diff --git a/src/evdev.h b/src/evdev.h
 index acd4289..fe89420 100644
 --- a/src/evdev.h
@@ -13,3 +21,6 @@ index acd4289..fe89420 100644
  #define EVDEV_MAXBUTTONS 32
  #define EVDEV_MAXQUEUE 32
  
+-- 
+1.7.7.3
+

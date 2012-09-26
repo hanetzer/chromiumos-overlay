@@ -1,8 +1,16 @@
+Subject: [PATCH] Fix some MS mice
+
+Don't honor ABS_VOLUME if declared on devices with REL X/Y axes.
+This fixes a crash for at least one MS mouse.
+---
+ src/evdev.c |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
 diff --git a/src/evdev.c b/src/evdev.c
 index d638dfc..75a5f7c 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -206,6 +206,11 @@ static inline void EvdevSetBit(unsigned long *array, int bit)
+@@ -205,6 +205,11 @@ static inline void EvdevSetBit(unsigned long *array, int bit)
      array[bit / LONG_BITS] |= (1LL << (bit % LONG_BITS));
  }
  
@@ -14,7 +22,7 @@ index d638dfc..75a5f7c 100644
  static int
  EvdevGetMajorMinor(InputInfoPtr pInfo)
  {
-@@ -2194,6 +2199,11 @@ EvdevProbe(InputInfoPtr pInfo)
+@@ -2268,6 +2273,11 @@ EvdevProbe(InputInfoPtr pInfo)
          }
      }
  
@@ -26,3 +34,6 @@ index d638dfc..75a5f7c 100644
      for (i = 0; i < ABS_MAX; i++) {
          if (EvdevBitIsSet(pEvdev->abs_bitmask, i)) {
              has_abs_axes = TRUE;
+-- 
+1.7.7.3
+

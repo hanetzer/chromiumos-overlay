@@ -48,7 +48,7 @@ index abf7be8..7af71d8 100644
  static char *evdevDefaults[] = {
      "XkbRules",     "evdev",
      "XkbModel",     "evdev",
-@@ -858,6 +861,10 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -833,6 +836,10 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
  }
  
  #ifdef MULTITOUCH
@@ -59,7 +59,7 @@ index abf7be8..7af71d8 100644
  static void
  EvdevProcessTouch(InputInfoPtr pInfo)
  {
-@@ -1090,7 +1097,7 @@ EvdevPostProximityEvents(InputInfoPtr pInfo, int which, int num_v, int first_v,
+@@ -1065,7 +1072,7 @@ EvdevPostProximityEvents(InputInfoPtr pInfo, int which, int num_v, int first_v,
   * Post the queued key/button events.
   */
  static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
@@ -68,7 +68,7 @@ index abf7be8..7af71d8 100644
  {
      int i;
      EvdevPtr pEvdev = pInfo->private;
-@@ -1120,6 +1127,10 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -1095,6 +1102,10 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
              break;
  #ifdef MULTITOUCH
          case EV_QUEUE_TOUCH:
@@ -79,7 +79,7 @@ index abf7be8..7af71d8 100644
              xf86PostTouchEvent(pInfo->dev, pEvdev->queue[i].detail.touch,
                                 pEvdev->queue[i].val, 0,
                                 pEvdev->queue[i].touchMask);
-@@ -1149,7 +1160,7 @@ EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1124,7 +1135,7 @@ EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
      EvdevPostProximityEvents(pInfo, TRUE, num_v, first_v, v);
      EvdevPostRelativeMotionEvents(pInfo, num_v, first_v, v);
      EvdevPostAbsoluteMotionEvents(pInfo, num_v, first_v, v);
@@ -88,7 +88,7 @@ index abf7be8..7af71d8 100644
      EvdevPostProximityEvents(pInfo, FALSE, num_v, first_v, v);
  
      memset(pEvdev->delta, 0, sizeof(pEvdev->delta));
-@@ -1382,6 +1393,7 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
+@@ -1367,6 +1378,7 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
      int num_mt_axes = 0, /* number of MT-only axes */
          num_mt_axes_total = 0; /* total number of MT axes, including
                                    double-counted ones, excluding blacklisted */
@@ -96,7 +96,7 @@ index abf7be8..7af71d8 100644
      Atom *atoms;
  
      pInfo = device->public.devicePrivate;
-@@ -1480,7 +1492,17 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
+@@ -1465,7 +1477,17 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
          }
      }
  #endif
@@ -115,7 +115,7 @@ index abf7be8..7af71d8 100644
  
      i = 0;
      for (axis = ABS_X; i < MAX_VALUATORS && axis <= ABS_MAX; axis++) {
-@@ -1510,7 +1532,16 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
+@@ -1495,7 +1517,16 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
  
      EvdevInitAxesLabels(pEvdev, Absolute, pEvdev->num_vals + num_mt_axes, atoms);
  
@@ -133,7 +133,7 @@ index abf7be8..7af71d8 100644
                                         GetMotionHistorySize(), Absolute)) {
          xf86IDrvMsg(pInfo, X_ERROR, "failed to initialize valuator class device.\n");
          goto out;
-@@ -1909,6 +1940,8 @@ EvdevInit(DeviceIntPtr device)
+@@ -1893,6 +1924,8 @@ EvdevInit(DeviceIntPtr device)
      for(i = 0; i < max(ABS_CNT,REL_CNT); i++)
        pEvdev->axis_map[i]=-1;
  
@@ -146,7 +146,7 @@ diff --git a/src/evdev.h b/src/evdev.h
 index ea2a012..0432e90 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -244,6 +244,11 @@ typedef struct {
+@@ -246,6 +246,11 @@ typedef struct {
      unsigned long led_bitmask[NLONGS(LED_CNT)];
      struct input_absinfo absinfo[ABS_CNT];
  

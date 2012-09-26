@@ -1,3 +1,17 @@
+Subject: [PATCH] Accelerate emulated wheel events
+
+Use the Chromium OS Mouse Wheel acceleration for Emulated Wheel
+events.  This acceleration replaces the simpler "accumulated inertia
+mapped to number of button clicks" approach.
+
+The main motivation of this change is to send Emulated Wheel events to
+Chrome using the scroll valuators instead of legacy button events.
+---
+ src/emuWheel.c |   46 +++++++++-------------------------------------
+ src/evdev.c    |    9 +++++++--
+ src/evdev.h    |    4 ++++
+ 3 files changed, 20 insertions(+), 39 deletions(-)
+
 diff --git a/src/emuWheel.c b/src/emuWheel.c
 index ae894fa..3cfa734 100644
 --- a/src/emuWheel.c
@@ -73,7 +87,7 @@ diff --git a/src/evdev.c b/src/evdev.c
 index f7a5ff7..c7b2adc 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -773,7 +773,12 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+@@ -754,7 +754,12 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
          EvdevQueueButtonClicks(pInfo, wheel_button, abs(value));
          return;
      }
@@ -87,7 +101,7 @@ index f7a5ff7..c7b2adc 100644
      pixels = EvdevGetPixelsToScroll(click_speed);
      pixels = value > 0 ? pixels : pixels * -1;
      if (pEvdev->wheelAccelRec.scroll_axes)
-@@ -798,7 +803,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+@@ -773,7 +778,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
  /**
   * Take the relative motion input event and process it accordingly.
   */
@@ -100,7 +114,7 @@ diff --git a/src/evdev.h b/src/evdev.h
 index 2ede36d..f5cf088 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -291,6 +291,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -293,6 +293,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
  				   int v[MAX_VALUATORS]);
  unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
  
@@ -111,3 +125,6 @@ index 2ede36d..f5cf088 100644
  /* Middle Button emulation */
  int  EvdevMBEmuTimer(InputInfoPtr);
  BOOL EvdevMBEmuFilterEvent(InputInfoPtr, int, BOOL);
+-- 
+1.7.7.3
+
