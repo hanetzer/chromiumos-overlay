@@ -2,11 +2,10 @@ diff --git a/dix/ptrveloc.c b/dix/ptrveloc.c
 index 30e14b1..ea447a8 100644
 --- a/dix/ptrveloc.c
 +++ b/dix/ptrveloc.c
-@@ -869,6 +869,81 @@ PowerProfile(
-     return (pow(acc, vel_dist)) * vel->min_acceleration;
+@@ -863,6 +863,82 @@ PowerProfile(DeviceIntPtr dev,
  }
  
-+/**
+ /**
 + * Computes Acceleration based on the Chromium acceleration algorithm.
 + * This algorithm was taken from our Chromium MultiTouch touchpad driver.
 + * We think about acceleration curve taking an input velocity and returning
@@ -81,18 +80,20 @@ index 30e14b1..ea447a8 100644
 +        new_inch_per_sec = kLineM * inch_per_sec + kLineB;
 +    return acc * new_inch_per_sec / inch_per_sec;
 +}
- 
- /**
++
++/**
   * just a smooth function in [0..1] -> [0..1]
-@@ -1015,6 +1090,8 @@ GetAccelerationProfile(
-             return LinearProfile;
-         case AccelProfileSmoothLimited:
-             return SmoothLimitedProfile;
-+        case AccelProfileChromiumMouse:
-+            return ChromiumMouseProfile;
-         case AccelProfileNone:
-             return NoProfile;
-         default:
+  *  - point symmetry at 0.5
+  *  - f'(0) = f'(1) = 0
+@@ -988,6 +1064,8 @@ GetAccelerationProfile(DeviceVelocityPtr vel, int profile_num)
+         return LinearProfile;
+     case AccelProfileSmoothLimited:
+         return SmoothLimitedProfile;
++    case AccelProfileChromiumMouse:
++        return ChromiumMouseProfile;
+     case AccelProfileNone:
+         return NoProfile;
+     default:
 diff --git a/include/ptrveloc.h b/include/ptrveloc.h
 index 6f999a8..979bd30 100644
 --- a/include/ptrveloc.h

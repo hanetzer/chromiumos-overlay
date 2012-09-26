@@ -17,24 +17,24 @@ Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
 Cc: Kristian Høgsberg <krh@bitplanet.net>
 Cc: Michel Dänzer <daenzer@vmware.com>
 ---
- glx/glxcmds.c     |   22 ++++++++++++++--------
+ glx/glxcmds.c     |   24 +++++++++++++++---------
  glx/glxdrawable.h |    3 +++
  glx/glxext.c      |   19 ++++++++++---------
- 3 files changed, 27 insertions(+), 17 deletions(-)
+ 3 files changed, 28 insertions(+), 18 deletions(-)
 
 diff --git a/glx/glxcmds.c b/glx/glxcmds.c
 index de9c3f0..b3ea784 100644
 --- a/glx/glxcmds.c
 +++ b/glx/glxcmds.c
-@@ -496,6 +496,7 @@ __glXGetDrawable(__GLXcontext *glxc, GLXDrawable drawId, ClientPtr client,
- 	*error = BadAlloc;
- 	return NULL;
+@@ -507,6 +507,7 @@ __glXGetDrawable(__GLXcontext * glxc, GLXDrawable drawId, ClientPtr client,
+         *error = BadAlloc;
+         return NULL;
      }
 +    pGlxDraw->refcnt++;
  
      return pGlxDraw;
  }
-@@ -1095,8 +1096,10 @@ __glXDrawableInit(__GLXdrawable *drawable,
+@@ -1127,8 +1128,10 @@ __glXDrawableInit(__GLXdrawable * drawable,
      drawable->pDraw = pDraw;
      drawable->type = type;
      drawable->drawId = drawId;
@@ -45,20 +45,21 @@ index de9c3f0..b3ea784 100644
  
      return GL_TRUE;
  }
-@@ -1126,15 +1129,18 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen,
- 	pGlxDraw->destroy (pGlxDraw);
- 	return BadAlloc;
+@@ -1158,15 +1161,18 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen * pGlxScreen,
+         pGlxDraw->destroy(pGlxDraw);
+         return BadAlloc;
      }
-+    pGlxDraw->refcnt++;
- 
+-
 -    /*
 -     * Windows aren't refcounted, so track both the X and the GLX window
 -     * so we get called regardless of destruction order.
 -     */
 -    if (drawableId != glxDrawableId && type == GLX_DRAWABLE_WINDOW &&
--	!AddResource(pDraw->id, __glXDrawableRes, pGlxDraw)) {
--	pGlxDraw->destroy (pGlxDraw);
--	return BadAlloc;
+-        !AddResource(pDraw->id, __glXDrawableRes, pGlxDraw)) {
+-        pGlxDraw->destroy(pGlxDraw);
+-        return BadAlloc;
++    pGlxDraw->refcnt++;
++
 +    if (drawableId != glxDrawableId && type == GLX_DRAWABLE_WINDOW) {
 +	/* Add the glx drawable under the XID of the underlying X drawable
 +	 * too.  That way we'll get a callback in DrawableGone and can
@@ -77,8 +78,8 @@ index 2a365c5..80c3234 100644
 --- a/glx/glxdrawable.h
 +++ b/glx/glxdrawable.h
 @@ -51,8 +51,11 @@ struct __GLXdrawable {
-     void      (*waitX)(__GLXdrawable *);
-     void      (*waitGL)(__GLXdrawable *);
+     void (*waitX) (__GLXdrawable *);
+     void (*waitGL) (__GLXdrawable *);
  
 +    int refcnt; /* number of resources handles referencing this */
 +
@@ -87,12 +88,12 @@ index 2a365c5..80c3234 100644
 +    XID otherId; /* for glx1.3 we need to track the original Drawable as well */
  
      /*
-     ** Either GLX_DRAWABLE_PIXMAP, GLX_DRAWABLE_WINDOW or
+      ** Either GLX_DRAWABLE_PIXMAP, GLX_DRAWABLE_WINDOW or
 diff --git a/glx/glxext.c b/glx/glxext.c
 index 4bd5d6b..77db8b0 100644
 --- a/glx/glxext.c
 +++ b/glx/glxext.c
-@@ -118,17 +118,18 @@ static Bool DrawableGone(__GLXdrawable *glxPriv, XID xid)
+@@ -123,17 +123,18 @@ DrawableGone(__GLXdrawable * glxPriv, XID xid)
  {
      __GLXcontext *c, *next;
  
@@ -118,8 +119,8 @@ index 4bd5d6b..77db8b0 100644
 +	    return True;
 +
      for (c = glxAllContexts; c; c = next) {
- 	next = c->next;
- 	if (c->isCurrent && (c->drawPriv == glxPriv || c->readPriv == glxPriv)) {
+         next = c->next;
+         if (c->isCurrent && (c->drawPriv == glxPriv || c->readPriv == glxPriv)) {
 -- 
 1.7.7.3
 

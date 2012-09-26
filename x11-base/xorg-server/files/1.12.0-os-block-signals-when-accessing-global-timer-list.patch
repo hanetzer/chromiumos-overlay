@@ -33,7 +33,7 @@ diff --git a/os/WaitFor.c b/os/WaitFor.c
 index 852362e..f105acc 100644
 --- a/os/WaitFor.c
 +++ b/os/WaitFor.c
-@@ -124,7 +124,7 @@ struct _OsTimerRec {
+@@ -122,7 +122,7 @@ struct _OsTimerRec {
  
  static void DoTimer(OsTimerPtr timer, CARD32 now, OsTimerPtr *prev);
  static void CheckAllTimers(void);
@@ -42,74 +42,73 @@ index 852362e..f105acc 100644
  
  /*****************
   * WaitForSomething:
-@@ -194,6 +194,7 @@ WaitForSomething(int *pClientsReady)
- 	else
- 	{
-         wt = NULL;
-+        OsBlockSignals();
- 	if (timers)
-         {
-             now = GetTimeInMillis();
-@@ -213,6 +214,7 @@ WaitForSomething(int *pClientsReady)
- 		wt = &waittime;
- 	    }
- 	}
-+        OsReleaseSignals();
- 	XFD_COPYSET(&AllSockets, &LastSelectMask);
- 	}
+@@ -186,6 +186,7 @@ WaitForSomething(int *pClientsReady)
+         }
+         else {
+             wt = NULL;
++            OsBlockSignals();
+             if (timers) {
+                 now = GetTimeInMillis();
+                 timeout = timers->expires - now;
+@@ -204,6 +205,7 @@ WaitForSomething(int *pClientsReady)
+                     wt = &waittime;
+                 }
+             }
++            OsReleaseSignals();
+             XFD_COPYSET(&AllSockets, &LastSelectMask);
+         }
  
-@@ -268,6 +270,7 @@ WaitForSomething(int *pClientsReady)
- 	    if (*checkForInput[0] != *checkForInput[1])
- 		return 0;
+@@ -251,6 +253,7 @@ WaitForSomething(int *pClientsReady)
+             if (*checkForInput[0] != *checkForInput[1])
+                 return 0;
  
 +            OsBlockSignals();
- 	    if (timers)
- 	    {
+             if (timers) {
                  int expired = 0;
-@@ -278,15 +281,19 @@ WaitForSomething(int *pClientsReady)
- 		while (timers && (int) (timers->expires - now) <= 0)
- 		    DoTimer(timers, now, &timers);
+ 
+@@ -261,14 +264,18 @@ WaitForSomething(int *pClientsReady)
+                 while (timers && (int) (timers->expires - now) <= 0)
+                     DoTimer(timers, now, &timers);
  
 -                if (expired)
 +                if (expired) {
 +                    OsReleaseSignals();
                      return 0;
 +                }
- 	    }
+             }
 +            OsReleaseSignals();
- 	}
- 	else
- 	{
- 	    fd_set tmp_set;
+         }
+         else {
+             fd_set tmp_set;
  
- 	    if (*checkForInput[0] == *checkForInput[1]) {
+             if (*checkForInput[0] == *checkForInput[1]) {
 +                OsBlockSignals();
- 	        if (timers)
- 	        {
+                 if (timers) {
                      int expired = 0;
-@@ -297,9 +304,12 @@ WaitForSomething(int *pClientsReady)
- 		    while (timers && (int) (timers->expires - now) <= 0)
- 		        DoTimer(timers, now, &timers);
+ 
+@@ -279,9 +286,12 @@ WaitForSomething(int *pClientsReady)
+                     while (timers && (int) (timers->expires - now) <= 0)
+                         DoTimer(timers, now, &timers);
  
 -                    if (expired)
 +                    if (expired) {
 +                        OsReleaseSignals();
                          return 0;
 +                    }
- 	        }
+                 }
 +                OsReleaseSignals();
- 	    }
- 	    if (someReady)
- 		XFD_ORSET(&LastSelectMask, &ClientsWithInput, &LastSelectMask);
-@@ -405,7 +415,6 @@ CheckAllTimers(void)
+             }
+             if (someReady)
+                 XFD_ORSET(&LastSelectMask, &ClientsWithInput, &LastSelectMask);
+@@ -382,7 +392,6 @@ CheckAllTimers(void)
      OsTimerPtr timer;
      CARD32 now;
  
 -    OsBlockSignals();
- start:
+  start:
      now = GetTimeInMillis();
  
-@@ -415,7 +424,6 @@ start:
+@@ -392,7 +401,6 @@ CheckAllTimers(void)
              goto start;
          }
      }
@@ -117,21 +116,21 @@ index 852362e..f105acc 100644
  }
  
  static void
-@@ -423,13 +431,11 @@ DoTimer(OsTimerPtr timer, CARD32 now, OsTimerPtr *prev)
+@@ -400,13 +408,11 @@ DoTimer(OsTimerPtr timer, CARD32 now, OsTimerPtr *prev)
  {
      CARD32 newTime;
  
 -    OsBlockSignals();
      *prev = timer->next;
      timer->next = NULL;
-     newTime = (*timer->callback)(timer, now, timer->arg);
+     newTime = (*timer->callback) (timer, now, timer->arg);
      if (newTime)
- 	TimerSet(timer, 0, newTime, timer->callback, timer->arg);
+         TimerSet(timer, 0, newTime, timer->callback, timer->arg);
 -    OsReleaseSignals();
  }
  
  OsTimerPtr
-@@ -542,10 +548,13 @@ TimerFree(OsTimerPtr timer)
+@@ -508,10 +514,13 @@ TimerFree(OsTimerPtr timer)
  void
  TimerCheck(void)
  {
@@ -141,20 +140,19 @@ index 852362e..f105acc 100644
 +    OsBlockSignals();
 +    now = GetTimeInMillis();
      while (timers && (int) (timers->expires - now) <= 0)
- 	DoTimer(timers, now, &timers);
+         DoTimer(timers, now, &timers);
 +    OsReleaseSignals();
  }
  
  void
-@@ -553,11 +562,13 @@ TimerInit(void)
+@@ -519,10 +528,12 @@ TimerInit(void)
  {
      OsTimerPtr timer;
  
 +    OsBlockSignals();
-     while ((timer = timers))
-     {
- 	timers = timer->next;
- 	free(timer);
+     while ((timer = timers)) {
+         timers = timer->next;
+         free(timer);
      }
 +    OsReleaseSignals();
  }

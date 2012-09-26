@@ -2,30 +2,30 @@ diff --git a/glx/glxcmds.c b/glx/glxcmds.c
 index 5cd95f6..de22540 100644
 --- a/glx/glxcmds.c
 +++ b/glx/glxcmds.c
-@@ -762,7 +762,7 @@ int __glXDisp_WaitGL(__GLXclientState *cl, GLbyte *pc)
+@@ -784,7 +784,7 @@ __glXDisp_WaitGL(__GLXclientState * cl, GLbyte * pc)
      }
  
      if (glxc && glxc->drawPriv->waitGL)
--	(*glxc->drawPriv->waitGL)(glxc->drawPriv);
-+	(*glxc->drawPriv->waitGL)(client, glxc->drawPriv);
+-        (*glxc->drawPriv->waitGL) (glxc->drawPriv);
++        (*glxc->drawPriv->waitGL) (client, glxc->drawPriv);
  
      return Success;
  }
-@@ -788,7 +788,7 @@ int __glXDisp_WaitX(__GLXclientState *cl, GLbyte *pc)
+@@ -811,7 +811,7 @@ __glXDisp_WaitX(__GLXclientState * cl, GLbyte * pc)
      }
  
      if (glxc && glxc->drawPriv->waitX)
--	(*glxc->drawPriv->waitX)(glxc->drawPriv);
-+	(*glxc->drawPriv->waitX)(client, glxc->drawPriv);
+-        (*glxc->drawPriv->waitX) (glxc->drawPriv);
++        (*glxc->drawPriv->waitX) (client, glxc->drawPriv);
  
      return Success;
  }
-@@ -1789,7 +1789,7 @@ int __glXDisp_CopySubBufferMESA(__GLXclientState *cl, GLbyte *pc)
- 	pGlxDraw->copySubBuffer == NULL)
- 	return __glXError(GLXBadDrawable);
+@@ -1841,7 +1841,7 @@ __glXDisp_CopySubBufferMESA(__GLXclientState * cl, GLbyte * pc)
+         pGlxDraw->copySubBuffer == NULL)
+         return __glXError(GLXBadDrawable);
  
--    (*pGlxDraw->copySubBuffer)(pGlxDraw, x, y, width, height);
-+    (*pGlxDraw->copySubBuffer)(client, pGlxDraw, x, y, width, height);
+-    (*pGlxDraw->copySubBuffer) (pGlxDraw, x, y, width, height);
++    (*pGlxDraw->copySubBuffer) (client, pGlxDraw, x, y, width, height);
  
      return Success;
  }
@@ -35,15 +35,15 @@ index 80c3234..7e71a23 100644
 +++ b/glx/glxdrawable.h
 @@ -46,10 +46,10 @@ enum {
  struct __GLXdrawable {
-     void (*destroy)(__GLXdrawable *private);
-     GLboolean (*swapBuffers)(ClientPtr client, __GLXdrawable *);
--    void      (*copySubBuffer)(__GLXdrawable *drawable,
-+    void      (*copySubBuffer)(ClientPtr client, __GLXdrawable *drawable,
- 			       int x, int y, int w, int h);
--    void      (*waitX)(__GLXdrawable *);
--    void      (*waitGL)(__GLXdrawable *);
-+    void      (*waitX)(ClientPtr client, __GLXdrawable *);
-+    void      (*waitGL)(ClientPtr client, __GLXdrawable *);
+     void (*destroy) (__GLXdrawable * private);
+      GLboolean(*swapBuffers) (ClientPtr client, __GLXdrawable *);
+-    void (*copySubBuffer) (__GLXdrawable * drawable,
++    void (*copySubBuffer) (ClientPtr client, __GLXdrawable * drawable,
+                            int x, int y, int w, int h);
+-    void (*waitX) (__GLXdrawable *);
+-    void (*waitGL) (__GLXdrawable *);
++    void (*waitX) (ClientPtr client, __GLXdrawable *);
++    void (*waitGL) (ClientPtr client, __GLXdrawable *);
  
      int refcnt; /* number of resources handles referencing this */
  
@@ -51,39 +51,38 @@ diff --git a/glx/glxdri.c b/glx/glxdri.c
 index 326f539..3fbf118 100644
 --- a/glx/glxdri.c
 +++ b/glx/glxdri.c
-@@ -273,7 +273,7 @@ __glXDRIdrawableSwapInterval(__GLXdrawable *baseDrawable, int interval)
- 
+@@ -270,7 +270,7 @@ __glXDRIdrawableSwapInterval(__GLXdrawable * baseDrawable, int interval)
+ }
  
  static void
--__glXDRIdrawableCopySubBuffer(__GLXdrawable *basePrivate,
-+__glXDRIdrawableCopySubBuffer(ClientPtr client, __GLXdrawable *basePrivate,
- 			       int x, int y, int w, int h)
+-__glXDRIdrawableCopySubBuffer(__GLXdrawable * basePrivate,
++__glXDRIdrawableCopySubBuffer(ClientPtr client, __GLXdrawable * basePrivate,
+                               int x, int y, int w, int h)
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) basePrivate;
 diff --git a/glx/glxdri2.c b/glx/glxdri2.c
 index 5e524db..ff6145b 100644
 --- a/glx/glxdri2.c
 +++ b/glx/glxdri2.c
-@@ -111,10 +111,12 @@ __glXDRIdrawableDestroy(__GLXdrawable *drawable)
+@@ -114,10 +114,11 @@ __glXDRIdrawableDestroy(__GLXdrawable * drawable)
  }
  
  static void
--__glXDRIdrawableCopySubBuffer(__GLXdrawable *drawable,
-+__glXDRIdrawableCopySubBuffer(ClientPtr client,
-+			       __GLXdrawable *drawable,
- 			       int x, int y, int w, int h)
+-__glXDRIdrawableCopySubBuffer(__GLXdrawable * drawable,
++__glXDRIdrawableCopySubBuffer(ClientPtr client, __GLXdrawable * drawable,
+                               int x, int y, int w, int h)
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) drawable;
 +    __GLXDRIscreen *screen = private->screen;
      BoxRec box;
      RegionRec region;
  
-@@ -124,12 +126,27 @@ __glXDRIdrawableCopySubBuffer(__GLXdrawable *drawable,
+@@ -127,12 +128,27 @@ __glXDRIdrawableCopySubBuffer(__GLXdrawable * drawable,
      box.y2 = private->height - y;
      RegionInit(&region, &box, 0);
  
 -    DRI2CopyRegion(drawable->pDraw, &region,
--		   DRI2BufferFrontLeft, DRI2BufferBackLeft);
+-                   DRI2BufferFrontLeft, DRI2BufferBackLeft);
 +    LogMessage(X_INFO, "%s:%d \n",__func__,__LINE__);
 +#if __DRI2_FLUSH_VERSION >= 3
 +    LogMessage(X_INFO, "%s:%d flushing\n",__func__,__LINE__);
@@ -100,44 +99,44 @@ index 5e524db..ff6145b 100644
 +
 +    LogMessage(X_INFO, "%s:%d \n",__func__,__LINE__);
 +    DRI2CopyRegion(client, drawable->pDraw, &region,
-+		   DRI2BufferFrontLeft, DRI2BufferBackLeft, TRUE);
++                   DRI2BufferFrontLeft, DRI2BufferBackLeft, TRUE);
  }
  
  static void
--__glXDRIdrawableWaitX(__GLXdrawable *drawable)
-+__glXDRIdrawableWaitX(ClientPtr client, __GLXdrawable *drawable)
+-__glXDRIdrawableWaitX(__GLXdrawable * drawable)
++__glXDRIdrawableWaitX(ClientPtr client, __GLXdrawable * drawable)
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) drawable;
      BoxRec box;
-@@ -141,12 +158,12 @@ __glXDRIdrawableWaitX(__GLXdrawable *drawable)
+@@ -144,12 +160,12 @@ __glXDRIdrawableWaitX(__GLXdrawable * drawable)
      box.y2 = private->height;
      RegionInit(&region, &box, 0);
  
 -    DRI2CopyRegion(drawable->pDraw, &region,
--		   DRI2BufferFakeFrontLeft, DRI2BufferFrontLeft);
+-                   DRI2BufferFakeFrontLeft, DRI2BufferFrontLeft);
 +    DRI2CopyRegion(client, drawable->pDraw, &region,
-+		   DRI2BufferFakeFrontLeft, DRI2BufferFrontLeft, FALSE);
++                   DRI2BufferFakeFrontLeft, DRI2BufferFrontLeft, FALSE);
  }
  
  static void
--__glXDRIdrawableWaitGL(__GLXdrawable *drawable)
-+__glXDRIdrawableWaitGL(ClientPtr client, __GLXdrawable *drawable)
+-__glXDRIdrawableWaitGL(__GLXdrawable * drawable)
++__glXDRIdrawableWaitGL(ClientPtr client, __GLXdrawable * drawable)
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) drawable;
      BoxRec box;
-@@ -158,8 +175,8 @@ __glXDRIdrawableWaitGL(__GLXdrawable *drawable)
+@@ -161,8 +177,8 @@ __glXDRIdrawableWaitGL(__GLXdrawable * drawable)
      box.y2 = private->height;
      RegionInit(&region, &box, 0);
  
 -    DRI2CopyRegion(drawable->pDraw, &region,
--		   DRI2BufferFrontLeft, DRI2BufferFakeFrontLeft);
+-                   DRI2BufferFrontLeft, DRI2BufferFakeFrontLeft);
 +    DRI2CopyRegion(client, drawable->pDraw, &region,
-+		   DRI2BufferFrontLeft, DRI2BufferFakeFrontLeft, FALSE);
++                   DRI2BufferFrontLeft, DRI2BufferFakeFrontLeft, FALSE);
  }
  
  static void
-@@ -569,7 +586,7 @@ static void
- dri2FlushFrontBuffer(__DRIdrawable *driDrawable, void *loaderPrivate)
+@@ -565,7 +581,7 @@ static void
+ dri2FlushFrontBuffer(__DRIdrawable * driDrawable, void *loaderPrivate)
  {
      (void) driDrawable;
 -    __glXDRIdrawableWaitGL((__GLXdrawable *) loaderPrivate);
@@ -149,43 +148,34 @@ diff --git a/hw/xfree86/dri2/dri2.c b/hw/xfree86/dri2/dri2.c
 index d03d082..28383fb 100644
 --- a/hw/xfree86/dri2/dri2.c
 +++ b/hw/xfree86/dri2/dri2.c
-@@ -84,6 +84,7 @@ typedef struct _DRI2Drawable {
-     int			 swap_limit; /* for N-buffering */
-     unsigned long	 serialNumber;
-     Bool		 needInvalidate;
-+    RegionPtr            previous_region;
+@@ -87,6 +87,7 @@ typedef struct _DRI2Drawable {
+     int swap_limit;             /* for N-buffering */
+     unsigned long serialNumber;
+     Bool needInvalidate;
++    RegionPtr previous_region;
  } DRI2DrawableRec, *DRI2DrawablePtr;
  
  typedef struct _DRI2Screen {
-@@ -172,6 +173,7 @@ DRI2AllocateDrawable(DrawablePtr pDraw)
+@@ -175,6 +176,7 @@ DRI2AllocateDrawable(DrawablePtr pDraw)
      pPriv->swap_count = 0;
      pPriv->target_sbc = -1;
      pPriv->swap_interval = 1;
 +    pPriv->previous_region = NULL;
      /* Initialize last swap target from DDX if possible */
-     if (!ds->GetMSC || !(*ds->GetMSC)(pDraw, &ust, &pPriv->last_swap_target))
- 	pPriv->last_swap_target = 0;
-@@ -290,7 +292,7 @@ DRI2CreateDrawable(ClientPtr client, DrawablePtr pDraw, XID id,
- 	pPriv = DRI2AllocateDrawable(pDraw);
-     if (pPriv == NULL)
- 	return BadAlloc;
--    
-+
-     dri2_id = FakeClientID(client->index);
-     rc = DRI2AddDrawableRef(pPriv, id, dri2_id, invalidate, priv);
-     if (rc != Success)
-@@ -534,8 +536,8 @@ do_get_buffers(DrawablePtr pDraw, int *width, int *height,
- 	box.y2 = pPriv->height;
- 	RegionInit(&region, &box, 0);
+     if (!ds->GetMSC || !(*ds->GetMSC) (pDraw, &ust, &pPriv->last_swap_target))
+         pPriv->last_swap_target = 0;
+@@ -552,8 +554,8 @@ do_get_buffers(DrawablePtr pDraw, int *width, int *height,
+         box.y2 = pPriv->height;
+         RegionInit(&region, &box, 0);
  
--	DRI2CopyRegion(pDraw, &region, DRI2BufferFakeFrontLeft,
--		       DRI2BufferFrontLeft);
-+	DRI2CopyRegion(NULL, pDraw, &region, DRI2BufferFakeFrontLeft,
-+		       DRI2BufferFrontLeft, FALSE);
+-        DRI2CopyRegion(pDraw, &region, DRI2BufferFakeFrontLeft,
+-                       DRI2BufferFrontLeft);
++        DRI2CopyRegion(NULL, pDraw, &region, DRI2BufferFakeFrontLeft,
++                       DRI2BufferFrontLeft, FALSE);
      }
  
      pPriv->needInvalidate = TRUE;
-@@ -643,9 +645,118 @@ DRI2BlockClient(ClientPtr client, DrawablePtr pDraw)
+@@ -661,9 +663,118 @@ DRI2BlockClient(ClientPtr client, DrawablePtr pDraw)
      pPriv->blockedOnMsc = TRUE;
  }
  
@@ -300,17 +290,17 @@ index d03d082..28383fb 100644
 +
  int
 -DRI2CopyRegion(DrawablePtr pDraw, RegionPtr pRegion,
--	       unsigned int dest, unsigned int src)
+-               unsigned int dest, unsigned int src)
 +DRI2CopyRegion(ClientPtr client, DrawablePtr pDraw, RegionPtr pRegion,
-+	       unsigned int dest, unsigned int src, Bool invalidate)
++               unsigned int dest, unsigned int src, Bool invalidate)
  {
-     DRI2ScreenPtr   ds = DRI2GetScreen(pDraw->pScreen);
+     DRI2ScreenPtr ds = DRI2GetScreen(pDraw->pScreen);
      DRI2DrawablePtr pPriv;
-@@ -668,8 +779,13 @@ DRI2CopyRegion(DrawablePtr pDraw, RegionPtr pRegion,
+@@ -685,8 +796,13 @@ DRI2CopyRegion(DrawablePtr pDraw, RegionPtr pRegion,
      if (pSrcBuffer == NULL || pDestBuffer == NULL)
- 	return BadValue;
+         return BadValue;
  
--    (*ds->CopyRegion)(pDraw, pRegion, pDestBuffer, pSrcBuffer);
+-    (*ds->CopyRegion) (pDraw, pRegion, pDestBuffer, pSrcBuffer);
 +    if (invalidate &&
 +        DRI2CopyRegionWithFlip(client, pDraw, pRegion,
 +                               pDestBuffer, pSrcBuffer))
@@ -321,47 +311,46 @@ index d03d082..28383fb 100644
      return Success;
  }
  
-@@ -799,8 +915,8 @@ DRI2SwapComplete(ClientPtr client, DrawablePtr pDraw, int frame,
+@@ -814,8 +930,8 @@ DRI2SwapComplete(ClientPtr client, DrawablePtr pDraw, int frame,
      box.x2 = pDraw->width;
      box.y2 = pDraw->height;
      RegionInit(&region, &box, 0);
 -    DRI2CopyRegion(pDraw, &region, DRI2BufferFakeFrontLeft,
--		   DRI2BufferFrontLeft);
+-                   DRI2BufferFrontLeft);
 +    DRI2CopyRegion(client, pDraw, &region, DRI2BufferFakeFrontLeft,
-+		   DRI2BufferFrontLeft, FALSE);
++                   DRI2BufferFrontLeft, FALSE);
  
-     ust = ((CARD64)tv_sec * 1000000) + tv_usec;
+     ust = ((CARD64) tv_sec * 1000000) + tv_usec;
      if (swap_complete)
-@@ -876,6 +992,8 @@ DRI2SwapBuffers(ClientPtr client, DrawablePtr pDraw, CARD64 target_msc,
- 	return BadDrawable;
+@@ -889,6 +1005,8 @@ DRI2SwapBuffers(ClientPtr client, DrawablePtr pDraw, CARD64 target_msc,
+         return BadDrawable;
      }
  
 +    pPriv->previous_region = NULL;
 +
      /* Old DDX or no swap interval, just blit */
      if (!ds->ScheduleSwap || !pPriv->swap_interval) {
- 	BoxRec box;
-@@ -1326,3 +1444,4 @@ DRI2Version(int *major, int *minor)
+         BoxRec box;
+@@ -1345,3 +1463,4 @@ DRI2Version(int *major, int *minor)
      if (minor != NULL)
- 	*minor = DRI2VersRec.minorversion;
+         *minor = DRI2VersRec.minorversion;
  }
 +
 diff --git a/hw/xfree86/dri2/dri2.h b/hw/xfree86/dri2/dri2.h
 index a67e35f..e30fb7a 100644
 --- a/hw/xfree86/dri2/dri2.h
 +++ b/hw/xfree86/dri2/dri2.h
-@@ -252,10 +252,12 @@ extern _X_EXPORT DRI2BufferPtr *DRI2GetBuffers(DrawablePtr pDraw,
- 			     int count,
- 			     int *out_count);
+@@ -248,9 +248,11 @@ extern _X_EXPORT DRI2BufferPtr *DRI2GetBuffers(DrawablePtr pDraw,
+                                                unsigned int *attachments,
+                                                int count, int *out_count);
  
 -extern _X_EXPORT int DRI2CopyRegion(DrawablePtr pDraw,
 +extern _X_EXPORT int DRI2CopyRegion(ClientPtr client,
-+		   DrawablePtr pDraw,
- 		   RegionPtr pRegion,
- 		   unsigned int dest,
--		   unsigned int src);
-+		   unsigned int src,
-+		   Bool invalidate);
++                                    DrawablePtr pDraw,
+                                     RegionPtr pRegion,
+-                                    unsigned int dest, unsigned int src);
++                                    unsigned int dest, unsigned int src,
++                                    Bool invalidate);
  
  /**
   * Determine the major and minor version of the DRI2 extension.
@@ -369,14 +358,14 @@ diff --git a/hw/xfree86/dri2/dri2ext.c b/hw/xfree86/dri2/dri2ext.c
 index 73ef7f2..dfa242a 100644
 --- a/hw/xfree86/dri2/dri2ext.c
 +++ b/hw/xfree86/dri2/dri2ext.c
-@@ -322,7 +322,7 @@ ProcDRI2CopyRegion(ClientPtr client)
+@@ -319,7 +319,7 @@ ProcDRI2CopyRegion(ClientPtr client)
  
      VERIFY_REGION(pRegion, stuff->region, client, DixReadAccess);
  
 -    status = DRI2CopyRegion(pDrawable, pRegion, stuff->dest, stuff->src);
 +    status = DRI2CopyRegion(client, pDrawable, pRegion, stuff->dest, stuff->src, TRUE);
      if (status != Success)
- 	return status;
+         return status;
  
 -- 
 1.7.7.3

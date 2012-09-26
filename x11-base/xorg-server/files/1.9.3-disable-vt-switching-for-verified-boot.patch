@@ -10,7 +10,7 @@ diff --git a/hw/xfree86/common/xf86Events.c b/hw/xfree86/common/xf86Events.c
 index 41ffabd..1ed8c86 100644
 --- a/hw/xfree86/common/xf86Events.c
 +++ b/hw/xfree86/common/xf86Events.c
-@@ -176,7 +176,19 @@ ProcessInputEvents (void)
+@@ -176,7 +176,19 @@ ProcessInputEvents(void)
  void
  xf86ProcessActionEvent(ActionEvent action, void *arg)
  {
@@ -29,34 +29,34 @@ index 41ffabd..1ed8c86 100644
 +
      switch (action) {
      case ACTION_TERMINATE:
- 	if (!xf86Info.dontZap) {
+         if (!xf86Info.dontZap) {
 @@ -196,6 +208,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
- 	break;
+         break;
      case ACTION_SWITCHSCREEN:
- 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && arg) {
+         if (VTSwitchEnabled && !xf86Info.dontVTSwitch && arg) {
 +            if (!crosAllowVTSwitching)
 +                break;
- 	    int vtno = *((int *) arg);
+             int vtno = *((int *) arg);
  
- 	    if (vtno != xf86Info.vtno) {
+             if (vtno != xf86Info.vtno) {
 @@ -208,6 +222,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
- 	break;
+         break;
      case ACTION_SWITCHSCREEN_NEXT:
- 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch) {
+         if (VTSwitchEnabled && !xf86Info.dontVTSwitch) {
 +            if (!crosAllowVTSwitching)
 +                break;
- 	    if (!xf86VTActivate(xf86Info.vtno + 1)) {
- 		/* If first try failed, assume this is the last VT and
- 		 * try wrapping around to the first vt.
+             if (!xf86VTActivate(xf86Info.vtno + 1)) {
+                 /* If first try failed, assume this is the last VT and
+                  * try wrapping around to the first vt.
 @@ -221,6 +237,8 @@ xf86ProcessActionEvent(ActionEvent action, void *arg)
- 	break;
+         break;
      case ACTION_SWITCHSCREEN_PREV:
- 	if (VTSwitchEnabled && !xf86Info.dontVTSwitch && xf86Info.vtno > 0) {
+         if (VTSwitchEnabled && !xf86Info.dontVTSwitch && xf86Info.vtno > 0) {
 +            if (!crosAllowVTSwitching)
 +                break;
- 	    if (!xf86VTActivate(xf86Info.vtno - 1)) {
- 		/* Don't know what the maximum VT is, so can't wrap around */
- 		ErrorF("Failed to switch from vt%02d to previous vt: %s\n",
+             if (!xf86VTActivate(xf86Info.vtno - 1)) {
+                 /* Don't know what the maximum VT is, so can't wrap around */
+                 ErrorF("Failed to switch from vt%02d to previous vt: %s\n",
 -- 
 1.7.7.3
 

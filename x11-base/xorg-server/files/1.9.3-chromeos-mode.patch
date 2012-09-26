@@ -2,14 +2,14 @@ diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
 index da9db34..6d97c0d 100644
 --- a/hw/xfree86/modes/xf86Crtc.c
 +++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -2259,6 +2259,108 @@ xf86TargetUserpref(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
+@@ -2207,6 +2207,108 @@ xf86TargetUserpref(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
      return FALSE;
  }
  
 +static const int max_projector_pixels = 1280 * 720;
 +
-+static Bool findNearestResolutions(xf86OutputPtr larger_output, xf86OutputPtr smaller_output, 
-+		DisplayModePtr* larger_resolution, DisplayModePtr* smaller_resolution, 
++static Bool findNearestResolutions(xf86OutputPtr larger_output, xf86OutputPtr smaller_output,
++		DisplayModePtr* larger_resolution, DisplayModePtr* smaller_resolution,
 +		DisplayModePtr* screen_resolution)
 +{
 +    DisplayModePtr current;
@@ -19,10 +19,10 @@ index da9db34..6d97c0d 100644
 +    *screen_resolution = smaller_output->probed_modes;
 +
 +    for (current = larger_output->probed_modes; current->next; current = current->next);
-+    
++
 +    for (; current; current = current->prev)
 +    {
-+	if (xf86ModeWidth(current, r) >= xf86ModeWidth(*smaller_resolution, r) && 
++	if (xf86ModeWidth(current, r) >= xf86ModeWidth(*smaller_resolution, r) &&
 +	    xf86ModeHeight(current, r) >= xf86ModeHeight(*smaller_resolution, r) ) {
 +	    *larger_resolution = current;
 +	    return TRUE;
@@ -110,16 +110,16 @@ index da9db34..6d97c0d 100644
 +
  static Bool
  xf86CrtcSetInitialGamma(xf86CrtcPtr crtc, float gamma_red, float gamma_green,
-         float gamma_blue)
-@@ -2413,6 +2515,8 @@ xf86InitialConfiguration (ScrnInfoPtr scrn, Bool canGrow)
-     } else {
- 	if (xf86TargetUserpref(scrn, config, modes, enabled, width, height))
- 	    xf86DrvMsg(i, X_INFO, "Using user preference for initial modes\n");
-+	else if (xf86TargetChromeOS(scrn, config, modes, enabled, width, height))
-+	    xf86DrvMsg(i, X_INFO, "Using ChromeOS mode for initial modes\n");
- 	else if (xf86TargetPreferred(scrn, config, modes, enabled, width, height))
- 	    xf86DrvMsg(i, X_INFO, "Using exact sizes for initial modes\n");
- 	else if (xf86TargetAspect(scrn, config, modes, enabled, width, height))
+                         float gamma_blue)
+@@ -2369,6 +2471,8 @@ xf86InitialConfiguration(ScrnInfoPtr scrn, Bool canGrow)
+     else {
+         if (xf86TargetUserpref(scrn, config, modes, enabled, width, height))
+             xf86DrvMsg(i, X_INFO, "Using user preference for initial modes\n");
++        else if (xf86TargetChromeOS(scrn, config, modes, enabled, width, height))
++            xf86DrvMsg(i, X_INFO, "Using ChromeOS mode for initial modes\n");
+         else if (xf86TargetPreferred
+                  (scrn, config, modes, enabled, width, height))
+             xf86DrvMsg(i, X_INFO, "Using exact sizes for initial modes\n");
 -- 
 1.7.7.3
 

@@ -16,8 +16,8 @@ diff --git a/xfixes/cursor.c b/xfixes/cursor.c
 index 7c46269..b9d5c4b 100644
 --- a/xfixes/cursor.c
 +++ b/xfixes/cursor.c
-@@ -1079,7 +1079,15 @@ BOOL
- barrier_is_blocking_direction(const struct PointerBarrier *barrier, int direction)
+@@ -1055,7 +1055,15 @@ barrier_is_blocking_direction(const struct PointerBarrier * barrier,
+                               int direction)
  {
      /* Barriers define which way is ok, not which way is blocking */
 -    return (barrier->directions & direction) != direction;

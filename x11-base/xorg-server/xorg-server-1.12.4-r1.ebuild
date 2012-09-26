@@ -1,20 +1,19 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-base/xorg-server/xorg-server-1.11.99.902.ebuild,v 1.1 2012/01/30 12:38:52 chithanh Exp $
-
+# $Header: /var/cvsroot/gentoo-x86/x11-base/xorg-server/xorg-server-1.12.2.ebuild,v 1.9 2012/07/22 12:54:50 chithanh Exp $
 
 EAPI=4
 
 XORG_DOC=doc
 XORG_EAUTORECONF="yes"
-inherit xorg-2 multilib versionator flag-o-matic
+inherit flag-o-matic xorg-2 multilib versionator
 EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 
 DESCRIPTION="X.Org X servers"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86 ~x86-fbsd"
+KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
-IUSE="${IUSE_SERVERS} -doc ipv6 minimal nptl tslib +udev tegra broken_partialswaps"
+IUSE="${IUSE_SERVERS} broken_partialswaps -doc ipv6 minimal nptl selinux tegra tslib +udev"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -56,7 +55,8 @@ RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	)
 	tslib? ( >=x11-libs/tslib-1.0 )
 	udev? ( >=sys-fs/udev-150 )
-	>=x11-apps/xinit-1.3"
+	>=x11-apps/xinit-1.3
+	selinux? ( sec-policy/selinux-xserver )"
 
 DEPEND="${RDEPEND}
 	sys-devel/flex
@@ -78,6 +78,7 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xcmiscproto-1.2.0
 	>=x11-proto/xextproto-7.1.99
 	>=x11-proto/xf86dgaproto-2.0.99.1
+	>=x11-proto/xf86rushproto-1.1.2
 	>=x11-proto/xf86vidmodeproto-2.2.99.1
 	>=x11-proto/xineramaproto-1.1.3
 	>=x11-proto/xproto-7.0.22
@@ -131,14 +132,6 @@ PATCHES=(
 	"${FILESDIR}/1.9.3-no-default-cursor.patch"
 	# Ability to run without root privs
 	"${FILESDIR}/1.11.99.902-nohwaccess.patch"
-	"${FILESDIR}/1.11.99.902-0002-dix-don-t-BUG_WARN-for-button-events-from-button-onl.patch"
-	# Fix for printf format chars in device names: crosbug.com/29324
-	"${FILESDIR}/1.12.0-0001-os-log-trivial-cleanups.patch"
-	"${FILESDIR}/1.12.0-0002-os-xprintf-add-Xvscnprintf-and-Xscnprintf.patch"
-	"${FILESDIR}/1.12.0-0003-os-log-only-write-timestamp-if-a-message-is-actually.patch"
-	"${FILESDIR}/1.12.0-0004-os-log-refactor-logging.patch"
-	# crosbug.com/30363
-	"${FILESDIR}/1.12.0-dix-don-t-emulate-scroll-events-for-non-existing-axe.patch"
 	# Don't attend clients which are already gone, race condition in dri2
 	"${FILESDIR}/1.12.0-do-not-attend-gone-clients.patch"
 	# crosbug.com/p/11408
@@ -148,7 +141,6 @@ PATCHES=(
 	# crosbug.com/33813
 	"${FILESDIR}/1.12.0-suffix-match-udev-paths.patch"
 	# crosbug.com/31570
-	"${FILESDIR}/1.12.0-os-make-timers-signal-safe.patch"
 	"${FILESDIR}/1.12.0-os-block-signals-when-accessing-global-timer-list.patch"
 	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
 	"${FILESDIR}/1.12.0-mi-don-t-check-for-core-events-in-miPointerSetPositi.patch"
@@ -274,7 +266,7 @@ src_install() {
 	fi
 
 	newinitd "${FILESDIR}"/xdm-setup.initd-1 xdm-setup
-	newinitd "${FILESDIR}"/xdm.initd-5 xdm
+	newinitd "${FILESDIR}"/xdm.initd-8 xdm
 	newconfd "${FILESDIR}"/xdm.confd-4 xdm
 
 	# install the @x11-module-rebuild set for Portage
@@ -300,6 +292,11 @@ pkg_postinst() {
 		ewarn "	emerge portage-utils; qlist -I -C x11-drivers/"
 		ewarn "or using sets from portage-2.2:"
 		ewarn "	emerge @x11-module-rebuild"
+	fi
+
+	if use udev && has_version sys-fs/udev[-keymap]; then
+		ewarn "sys-fs/udev was built without keymap support. This may cause input device"
+		ewarn "autoconfiguration to fail."
 	fi
 }
 

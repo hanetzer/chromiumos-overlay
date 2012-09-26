@@ -24,9 +24,9 @@ diff --git a/mi/mipointer.c b/mi/mipointer.c
 index a56838e..4defaf5 100644
 --- a/mi/mipointer.c
 +++ b/mi/mipointer.c
-@@ -583,7 +583,7 @@ miPointerSetPosition(DeviceIntPtr pDev, int mode, double *screenx, double *scree
+@@ -575,7 +575,7 @@ miPointerSetPosition(DeviceIntPtr pDev, int mode, double *screenx,
  
-     miPointerPtr        pPointer; 
+     miPointerPtr pPointer;
  
 -    if (!pDev || !pDev->coreEvents)
 +    if (!pDev)

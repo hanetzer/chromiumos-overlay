@@ -36,16 +36,16 @@ diff --git a/dix/cursor.c b/dix/cursor.c
 index 6bff447..8771abf 100644
 --- a/dix/cursor.c
 +++ b/dix/cursor.c
-@@ -487,10 +487,26 @@ CursorPtr
+@@ -455,10 +455,26 @@ CursorPtr
  CreateRootCursor(char *unused1, unsigned int unused2)
  {
-     CursorPtr 	curs;
+     CursorPtr curs;
 +#ifdef NULL_ROOT_CURSOR
 +    CursorMetricRec cm;
 +#else
-     FontPtr 	cursorfont;
-     int	err;
-     XID		fontID;
+     FontPtr cursorfont;
+     int err;
+     XID fontID;
 +#endif
 +
 +#ifdef NULL_ROOT_CURSOR
@@ -55,22 +55,22 @@ index 6bff447..8771abf 100644
 +    cm.yhot = 0;
  
 +    AllocARGBCursor(NULL, NULL, NULL, &cm, 0, 0, 0, 0, 0, 0,
-+		    &curs, serverClient, (XID)0);
++                    &curs, serverClient, (XID)0);
 +
 +    if (curs == NullCursor)
 +        return NullCursor;
 +#else
      fontID = FakeClientID(0);
      err = OpenFont(serverClient, fontID, FontLoadAll | FontOpenSync,
- 	(unsigned)strlen(defaultCursorFont), defaultCursorFont);
-@@ -504,6 +520,7 @@ CreateRootCursor(char *unused1, unsigned int unused2)
+                    (unsigned) strlen(defaultCursorFont), defaultCursorFont);
+@@ -472,6 +488,7 @@ CreateRootCursor(char *unused1, unsigned int unused2)
      if (AllocGlyphCursor(fontID, 0, fontID, 1, 0, 0, 0, ~0, ~0, ~0,
- 			 &curs, serverClient, (XID)0) != Success)
- 	return NullCursor;
+                          &curs, serverClient, (XID) 0) != Success)
+         return NullCursor;
 +#endif
  
-     if (!AddResource(FakeClientID(0), RT_CURSOR, (pointer)curs))
- 	return NullCursor;
+     if (!AddResource(FakeClientID(0), RT_CURSOR, (pointer) curs))
+         return NullCursor;
 diff --git a/include/dix-config.h.in b/include/dix-config.h.in
 index 3fb6413..d9871d4 100644
 --- a/include/dix-config.h.in
