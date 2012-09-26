@@ -1,8 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-CROS_WORKON_COMMIT="21c674c4b13ce04161a0e3f1bb0bf51fc4e0cfc3"
-CROS_WORKON_TREE="939a25bf177a7bb400a166aaa7341c5aa46a9275"
+CROS_WORKON_COMMIT="fea3a2207e20746f7ab3960064a28635d5022c21"
+CROS_WORKON_TREE="f56bc11247e02bcbdee5b8113c99e42e611a2bf5"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
