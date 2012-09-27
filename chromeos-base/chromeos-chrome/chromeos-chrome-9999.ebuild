@@ -505,18 +505,18 @@ decide_chrome_origin() {
 	local chrome_workon="=chromeos-base/chromeos-chrome-9999"
 	local cros_workon_file="${ROOT}etc/portage/package.keywords/cros-workon"
 	if [[ -e "${cros_workon_file}" ]] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
-		# GERRIT_SOURCE is the default for cros_workon
+		# LOCAL_SOURCE is the default for cros_workon
 		# Warn the user if CHROME_ORIGIN is already set
-		if [[ -n "${CHROME_ORIGIN}" && "${CHROME_ORIGIN}" != GERRIT_SOURCE ]]; then
+		if [[ -n "${CHROME_ORIGIN}" && "${CHROME_ORIGIN}" != LOCAL_SOURCE ]]; then
 			ewarn "CHROME_ORIGIN is already set to ${CHROME_ORIGIN}."
-			ewarn "This will prevent you from building from gerrit."
+			ewarn "This will prevent you from building from your local checkout."
 			ewarn "Please run 'unset CHROME_ORIGIN' to reset Chrome"
 			ewarn "to the default source location."
 		fi
-		echo "${CHROME_ORIGIN:-GERRIT_SOURCE}"
+		: ${CHROME_ORIGIN:=LOCAL_SOURCE}
 	else
 		# By default, pull from server
-		echo "${CHROME_ORIGIN:-SERVER_SOURCE}"
+		: ${CHROME_ORIGIN:=SERVER_SOURCE}
 	fi
 }
 
@@ -535,14 +535,7 @@ sandboxless_ensure_directory() {
 
 src_unpack() {
 	tc-export CC CXX
-	# CHROME_ROOT is the location where the source code is used for compilation.
-	# If we're in SERVER_SOURCE mode, CHROME_ROOT is CHROME_DISTDIR. In LOCAL_SOURCE
-	# mode, this directory may be set manually to any directory. It may be mounted
-	# into the chroot, so it is not safe to use cp -al for these files.
-	# These are set here because $(whoami) returns the proper user here,
-	# but 'root' at the root level of the file
 	local WHOAMI=$(whoami)
-	export CHROME_ROOT="${CHROME_ROOT:-/home/${WHOAMI}/chrome_root}"
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
 
@@ -561,7 +554,7 @@ src_unpack() {
 		cp -rfp ${SSH_CONFIG_DIR} ${HOME} || die
 	fi
 
-	CHROME_ORIGIN="$(decide_chrome_origin)"
+	decide_chrome_origin
 
 	case "${CHROME_ORIGIN}" in
 	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY|GERRIT_SOURCE)
@@ -572,6 +565,13 @@ src_unpack() {
 		;;
 	esac
 
+	# Prepare and set CHROME_ROOT based on CHROME_ORIGIN.
+	# CHROME_ROOT is the location where the source code is used for compilation.
+	# If we're in SERVER_SOURCE mode, CHROME_ROOT is CHROME_DISTDIR. In LOCAL_SOURCE
+	# mode, this directory may be set manually to any directory. It may be mounted
+	# into the chroot, so it is not safe to use cp -al for these files.
+	# These are set here because $(whoami) returns the proper user here,
+	# but 'root' at the root level of the file
 	case "${CHROME_ORIGIN}" in
 	(SERVER_SOURCE)
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
@@ -597,13 +597,13 @@ src_unpack() {
 			fi
 		fi
 
-		elog "set the LOCAL_SOURCE to ${CHROME_DISTDIR}"
+		elog "set the chrome source root to ${CHROME_DISTDIR}"
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
-		export CHROME_ROOT=${CHROME_DISTDIR}
+		CHROME_ROOT=${CHROME_DISTDIR}
 		;;
 	(GERRIT_SOURCE)
-		export CHROME_ROOT="/home/${WHOAMI}/trunk/chromium"
+		CHROME_ROOT="/home/${WHOAMI}/trunk/chromium"
 		# TODO(rcui): Remove all these addwrite hacks once we start
 		# building off a copy of the source
 		addwrite "${CHROME_ROOT}"
@@ -626,6 +626,10 @@ src_unpack() {
 		done
 		;;
 	(LOCAL_SOURCE)
+		: ${CHROME_ROOT:=/home/${WHOAMI}/chrome_root}
+		if [[ ! -d "${CHROME_ROOT}/src" ]]; then
+			die "${CHROME_ROOT} does not contain a valid chromium checkout!"
+		fi
 		addwrite "${CHROME_ROOT}"
 		;;
 	esac
