@@ -51,7 +51,7 @@ index abf7be8..ece3538 100644
  /* removed from server, purge when dropping support for server 1.10 */
  #define XI86_SEND_DRAG_EVENTS   0x08
  
-@@ -1969,6 +1975,12 @@ EvdevInit(DeviceIntPtr device)
+@@ -1971,6 +1977,12 @@ EvdevInit(DeviceIntPtr device)
      return Success;
  }
  
@@ -64,7 +64,7 @@ index abf7be8..ece3538 100644
  /**
   * Init all extras (wheel emulation, etc.) and grab the device.
   */
-@@ -1986,6 +1998,10 @@ EvdevOn(DeviceIntPtr device)
+@@ -1988,6 +2000,10 @@ EvdevOn(DeviceIntPtr device)
      if (rc != Success)
          return rc;
  
@@ -79,7 +79,7 @@ diff --git a/src/evdev.h b/src/evdev.h
 index ea2a012..777e332 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -178,6 +178,7 @@ typedef struct {
+@@ -179,6 +179,7 @@ typedef struct {
      BOOL swap_axes;
      BOOL invert_x;
      BOOL invert_y;

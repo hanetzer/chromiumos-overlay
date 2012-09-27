@@ -7,24 +7,26 @@ mapped to number of button clicks" approach.
 The main motivation of this change is to send Emulated Wheel events to
 Chrome using the scroll valuators instead of legacy button events.
 ---
- src/emuWheel.c |   46 +++++++++-------------------------------------
+ src/emuWheel.c |   48 +++++++++---------------------------------------
  src/evdev.c    |    9 +++++++--
  src/evdev.h    |    4 ++++
- 3 files changed, 20 insertions(+), 39 deletions(-)
+ 3 files changed, 20 insertions(+), 41 deletions(-)
 
 diff --git a/src/emuWheel.c b/src/emuWheel.c
 index ae894fa..3cfa734 100644
 --- a/src/emuWheel.c
 +++ b/src/emuWheel.c
-@@ -52,7 +52,6 @@ static Atom prop_wheel_button   = 0;
+@@ -50,9 +50,6 @@ static Atom prop_wheel_inertia  = 0;
+ static Atom prop_wheel_timeout  = 0;
+ static Atom prop_wheel_button   = 0;
  
- /* Local Funciton Prototypes */
- static BOOL EvdevWheelEmuHandleButtonMap(InputInfoPtr pInfo, WheelAxisPtr pAxis, char *axis_name);
+-/* Local Funciton Prototypes */
 -static int EvdevWheelEmuInertia(InputInfoPtr pInfo, WheelAxisPtr axis, int value);
- 
+-
  /* Filter mouse button events */
  BOOL
-@@ -149,8 +148,15 @@ EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv)
+ EvdevWheelEmuFilterButton(InputInfoPtr pInfo, unsigned int button, int value)
+@@ -148,8 +145,15 @@ EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv)
  	 */
  	if (pAxis)
  	{
@@ -42,7 +44,7 @@ index ae894fa..3cfa734 100644
  	}
  
  	/* Eat motion events while emulateWheel button pressed. */
-@@ -160,40 +166,6 @@ EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv)
+@@ -159,40 +163,6 @@ EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv)
      return FALSE;
  }
  
@@ -87,7 +89,7 @@ diff --git a/src/evdev.c b/src/evdev.c
 index f7a5ff7..c7b2adc 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -754,7 +754,12 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+@@ -755,7 +755,12 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
          EvdevQueueButtonClicks(pInfo, wheel_button, abs(value));
          return;
      }
@@ -101,7 +103,7 @@ index f7a5ff7..c7b2adc 100644
      pixels = EvdevGetPixelsToScroll(click_speed);
      pixels = value > 0 ? pixels : pixels * -1;
      if (pEvdev->wheelAccelRec.scroll_axes)
-@@ -773,7 +778,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+@@ -774,7 +779,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
  /**
   * Take the relative motion input event and process it accordingly.
   */
@@ -114,7 +116,7 @@ diff --git a/src/evdev.h b/src/evdev.h
 index 2ede36d..f5cf088 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -293,6 +293,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -294,6 +294,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
  				   int v[MAX_VALUATORS]);
  unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
  
