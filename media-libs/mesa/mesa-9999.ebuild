@@ -183,6 +183,7 @@ src_configure() {
 	econf \
 		--disable-option-checking \
 		--with-driver=dri \
+		--disable-glu \
 		--disable-glut \
 		--without-demos \
 		--enable-texture-float \
@@ -212,8 +213,8 @@ src_install() {
 		dobin "${S}"/src/glsl/glsl_compiler || die
 	fi
 	# Remove redundant headers
-	# GLUT thing
-	rm -f "${D}"/usr/include/GL/glut*.h || die "Removing glut include failed."
+	# GLU and GLUT
+	rm -f "${D}"/usr/include/GL/glu*.h || die "Removing GLU and GLUT headers failed."
 	# Glew includes
 	rm -f "${D}"/usr/include/GL/{glew,glxew,wglew}.h \
 		|| die "Removing glew includes failed."
