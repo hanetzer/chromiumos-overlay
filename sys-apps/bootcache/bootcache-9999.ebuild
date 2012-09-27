@@ -23,4 +23,7 @@ src_compile() {
 
 src_install() {
 	dosbin bootcache
+
+	insinto /etc/init
+	doins bootcache.conf
 }

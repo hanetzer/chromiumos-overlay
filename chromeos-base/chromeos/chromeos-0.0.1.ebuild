@@ -207,6 +207,7 @@ RDEPEND="${RDEPEND}
 	)
 	sci-geosciences/gpsd
 	>=sys-apps/baselayout-2.0.0
+	sys-apps/bootcache
 	sys-apps/coreutils
 	sys-apps/dbus
 	sys-apps/eject
