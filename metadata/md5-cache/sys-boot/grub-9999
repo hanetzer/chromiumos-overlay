@@ -9,5 +9,5 @@ LICENSE=GPL-3
 PROVIDE=virtual/bootloader
 RDEPEND=>=sys-libs/ncurses-5.2-r5 dev-libs/lzo truetype? ( media-libs/freetype )
 SLOT=0
-_eclasses_=cros-workon	5d827d1ae52833f4aac1330ff4c2b6d2	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=cros-workon	055aff79f2eb8c287dc801d47ee051a0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=7fdeb9c847312ab0f739ff1611f2a7eb
