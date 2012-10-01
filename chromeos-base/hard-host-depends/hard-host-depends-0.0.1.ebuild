@@ -152,6 +152,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	dev-util/perf
 	sys-apps/pv
+	app-shells/bash-completion
 	"
 
 # Host dependencies that are needed for unit tests
