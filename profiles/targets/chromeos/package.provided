@@ -85,5 +85,8 @@ sys-kernel/gentoo-sources-2.6.30-r6
 x11-apps/mkfontscale-1.0.6
 x11-misc/makedepend-1.0.1
 
+# Legacy font map encodings which we don't care about.  http://crosbug.com/25001
+media-fonts/encodings-1.0.3
+
 # Our chromeos-base package takes care of this.
 app-misc/editor-wrapper-4
