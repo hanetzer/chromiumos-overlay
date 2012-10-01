@@ -106,12 +106,10 @@ RELEASE_EXTRA_CFLAGS=()
 
 if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
 	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
-	USE_TCMALLOC="linux_use_tcmalloc=1"
 elif [[ "${ARCH}" == "arm" ]]; then
 	DEFAULT_CHROME_DIR=chromium-rel-arm
-	# tcmalloc isn't supported on arm
-	USE_TCMALLOC="linux_use_tcmalloc=0"
 fi
+USE_TCMALLOC="linux_use_tcmalloc=1"
 
 # For compilation/local chrome
 BUILD_TOOL=make
