@@ -20,7 +20,6 @@ LIBCHROME_VERS="125070"
 
 RDEPEND="
 	app-crypt/trousers
-	chromeos-base/chromeos-init
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/dbus-c++
@@ -31,6 +30,10 @@ DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )
 	dev-db/leveldb"
+
+# We only depend on this for the init script.
+RDEPEND+="
+	chromeos-base/chromeos-init"
 
 src_compile() {
 	tc-export CXX OBJCOPY PKG_CONFIG STRIP
