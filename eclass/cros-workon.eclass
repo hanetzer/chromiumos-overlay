@@ -75,11 +75,6 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
 : ${CROS_WORKON_SRCROOT:=}
 
-# @ECLASS-VARIABLE: CROS_WORKON_LOCALGIT
-# @DESCRIPTION:
-# Use git to perform local copy
-: ${CROS_WORKON_LOCALGIT:=}
-
 # @ECLASS-VARIABLE: CROS_WORKON_INPLACE
 # @DESCRIPTION:
 # Build the sources in place. Don't copy them to a temp dir.
@@ -180,30 +175,6 @@ get_paths() {
 	done
 }
 
-local_copy_git() {
-	local src="${1}"
-	local dst="${2}"
-	CLONE_OPTS="--no-hardlinks --shared"
-	PATCHFILE="${dst}"/local_changes.patch
-
-	einfo "Using experimental git copy from ${src}"
-
-	# This produces a local clean copy of src at the same branch.
-	git clone ${CLONE_OPTS} "${src}" "${dst}" || \
-		die "Cannot clone local copy"
-
-	# collect local changes
-	git --binary --git-dir="${src}" --work-dir="${src}/.git" diff HEAD > "${PATCHFILE}" || \
-		die "Cannot create local changes patch"
-
-	# apply local changes
-	# note: wc prints file name after byte count
-	if [ "$(wc -c ${PATCHFILE})" != "0 ${PATCHFILE}" ]; then
-		git --git-dir="${dst}" --work-dir="${dst}/.git" apply ${PATCHFILE} || \
-			die "Cannot apply local changes"
-	fi
-}
-
 local_copy_cp() {
 	local src="${1}"
 	local dst="${2}"
@@ -243,8 +214,6 @@ local_copy() {
 	# If we want to use git, and the source actually is a git repo
 	if [ "${CROS_WORKON_INPLACE}" == "1" ]; then
 		symlink_in_place "${src}" "${dst}"
-	elif [ -n "${CROS_WORKON_LOCALGIT}" ] && [ -d ${srcpath}/.git ]; then
-		local_copy_git "${src}" "${dst}"
 	elif [ "${CROS_WORKON_OUTOFTREE_BUILD}" == "1" ]; then
 		S="${src}"
 	else
