@@ -350,17 +350,18 @@ cros-workon_src_unpack() {
 					if ! ( cd ${destdir[i]} && git checkout -q ${CROS_WORKON_COMMIT[i]} ) ; then
 						ewarn "Cannot run git checkout ${CROS_WORKON_COMMIT[i]} in ${destdir[i]}."
 						ewarn "Is ${path[i]} up to date? Try running repo sync."
-						ewarn "Falling back to git.eclass..."
 						rm -rf "${destdir[i]}/.git"
 					else
 						: $(( ++fetched ))
 					fi
 				fi
 			done
-			if [[ ${fetched} -gt 0 ]]; then
+			if [[ ${fetched} -eq ${project_count} ]]; then
 				# TODO: Id of all repos?
 				set_vcsid "$(get_rev "${path[0]}/.git")"
 				return
+			else
+				ewarn "Falling back to git.eclass..."
 			fi
 		fi
 
