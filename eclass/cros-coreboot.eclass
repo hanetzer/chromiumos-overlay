@@ -29,18 +29,12 @@ DEPEND="sys-power/iasl
 # Coreboot Configuration name.
 : ${COREBOOT_BOARD:=}
 
-# @ECLASS-VARIABLE: COREBOOT_BOARD_ROOT
-# @DESCRIPTION:
-# Directory within 3rdparty/mainboard appropriate for selected board.
-: ${COREBOOT_BOARD_ROOT:=}
-
 # @ECLASS-VARIABLE: COREBOOT_BUILD_ROOT
 # @DESCRIPTION:
 # Build directory root
 : ${COREBOOT_BUILD_ROOT:=}
 
 [[ -z ${COREBOOT_BOARD} ]] && die "COREBOOT_BOARD must be set"
-[[ -z ${COREBOOT_BOARD_ROOT} ]] && die "COREBOOT_BOARD_ROOT must be set"
 [[ -z ${COREBOOT_BUILD_ROOT} ]] && die "COREBOOT_BUILD_ROOT must be set"
 
 cros-coreboot_pre_src_prepare() {
@@ -51,8 +45,6 @@ cros-coreboot_src_compile() {
 	tc-export CC
 	local board="${COREBOOT_BOARD}"
 	local build_root="${COREBOOT_BUILD_ROOT}"
-	local board_root="3rdparty/mainboard/${COREBOOT_BOARD_ROOT}"
-	local flash_descriptor_file=''
 
 	# Set KERNELREVISION (really coreboot revision) to the ebuild revision
 	# number followed by a dot and the first seven characters of the git
@@ -74,47 +66,16 @@ cros-coreboot_src_compile() {
 	emake obj="${build_root}" oldconfig
 	emake obj="${build_root}"
 
-	# build a firmware descriptor image skeleton if there is a firmware
-	# descriptor available.
-	flash_descriptor_file=${board_root}/descriptor.bin
-	if [[ -r ${flash_descriptor_file} ]]; then
-		elog "Creating Intel Firmware Descriptor skeleton."
-		# For now we assume all Sandybridge/Ivybridge systems
-		# come with an 8MB flash part, and the BIOS image lives at the
-		# end of the IFD image.
-		dd if="${flash_descriptor_file}" \
-			of="${build_root}/skeleton.bin" bs=8M conv=sync
-
-		# Modify firmware descriptor if building for the EM100 emulator.
-		if use em100-mode; then
-			ifdtool --em100 "${build_root}/skeleton.bin" || die
-			mv "${build_root}/skeleton.bin"{.new,} || die
-		fi
-
-		if [[ -r ${board_root}/gbe.bin ]]; then
-			elog "   - adding ${board_root}/gbe.bin"
-			ifdtool -i "GbE:${board_root}/gbe.bin" \
-				"${build_root}/skeleton.bin" || die
-			mv "${build_root}/skeleton.bin"{.new,} || die
-		fi
-
-		if [[ -r ${board_root}/me.bin ]]; then
-			elog "   - adding ${board_root}/me.bin"
-			ifdtool -i "ME:${board_root}/me.bin" \
-				"${build_root}/skeleton.bin" || die
-			mv "${build_root}/skeleton.bin"{.new,} || die
-		fi
-	else
-		die "${flash_descriptor_file} not found"
+	# Modify firmware descriptor if building for the EM100 emulator.
+	if use em100-mode; then
+		ifdtool --em100 "${build_root}/coreboot.rom" || die
+		mv "${build_root}/coreboot.rom"{.new,} || die
 	fi
 }
 
 cros-coreboot_src_install() {
 	insinto /firmware
 	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
-	if [[ -r ${COREBOOT_BUILD_ROOT}/skeleton.bin ]]; then
-		doins "${COREBOOT_BUILD_ROOT}/skeleton.bin"
-	fi
 }
 
 EXPORT_FUNCTIONS src_compile src_install pre_src_prepare
