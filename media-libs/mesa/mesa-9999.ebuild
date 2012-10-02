@@ -137,6 +137,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/8.1-lastlevel.patch
 	epatch "${FILESDIR}"/8.1-i965-texture-upload.patch
+	epatch "${FILESDIR}"/8.1-remove-non-interleaved-to-interleaved-upload.patch
 
 	base_src_prepare
 
