@@ -298,6 +298,7 @@ IUSE_TESTS="
 	+tests_platform_Shutdown
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
+	+tests_platform_TLSDate
 	+tests_platform_ToolchainOptions
 	+tests_platform_TouchpadSynDrop
 	+tests_platform_TPMEvict
