@@ -242,6 +242,7 @@ IUSE_TESTS="
 	+tests_network_netperf2
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
+	+tests_platform_Attestation
 	+tests_platform_BootDevice
 	+tests_platform_BootPerf
 	+tests_platform_BootPerfServer
