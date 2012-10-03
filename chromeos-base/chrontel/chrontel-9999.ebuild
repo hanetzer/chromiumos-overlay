@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
-IUSE="-aura -bogus_screen_resizes -use_alsa_control"
+IUSE="-bogus_screen_resizes -use_alsa_control"
 
 CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
@@ -25,8 +25,8 @@ DEPEND="${RDEPEND}"
 
 src_compile() {
 	tc-export CC PKG_CONFIG
+        append-flags -DUSE_AURA
         use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
-        use aura && append-flags -DUSE_AURA
         use use_alsa_control && append-flags -DUSE_ALSA_CONTROL
         export CCFLAGS="$CFLAGS"
 	emake || die "end compile failed."

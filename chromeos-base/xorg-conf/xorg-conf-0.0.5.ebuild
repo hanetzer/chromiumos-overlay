@@ -12,7 +12,7 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="alex butterfly cmt elan -exynos mario stout synaptics -tegra -aura"
+IUSE="alex butterfly cmt elan -exynos mario stout synaptics -tegra"
 
 RDEPEND=""
 DEPEND="x11-base/xorg-server"
@@ -69,9 +69,7 @@ src_install() {
 		elif [ "${board}" = "parrot" ]; then
 			doins "${FILESDIR}/50-touchpad-cmt-parrot.conf"
 		fi
-		if use aura; then
-			doins "${FILESDIR}/50-touchpad-cmt-aura.conf"
-		fi
+		doins "${FILESDIR}/50-touchpad-cmt-aura.conf"
 	elif use mario; then
 		doins "${FILESDIR}/50-touchpad-synaptics-mario.conf"
 	else

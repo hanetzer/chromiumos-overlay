@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan -aura +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -157,7 +157,6 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	>=app-i18n/ibus-1.4.99
 	arm? ( virtual/opengles )
-	!aura? ( chromeos-base/chromeos-theme )
 	chromeos-base/protofiles
 	dev-libs/atk
 	dev-libs/glib
@@ -178,7 +177,6 @@ RDEPEND="${RDEPEND}
 	net-misc/wget
 	sys-fs/udev
 	sys-libs/zlib
-	!aura? ( >=x11-libs/gtk+-2.14.7 )
 	x11-libs/libXcomposite
 	x11-libs/libXcursor
 	x11-libs/libXrandr
@@ -336,10 +334,6 @@ set_build_defines() {
 			die "Please set USE=\"${USE} clang\" to enable Clang"
 		fi
 		BUILD_DEFINES+=( asan=1 )
-	fi
-
-	if use aura; then
-		BUILD_DEFINES+=( use_aura=1 )
 	fi
 
 	if use component_build; then
@@ -919,13 +913,6 @@ install_chrome_test_resources() {
 	cp -al "${from}"/pseudo_locales/fake-bidi.pak \
 		"${test_dir}"/out/Release/pseudo_locales
 
-	# Copy over npapi test plugin
-	if ! use aura; then
-		mkdir -p "${test_dir}"/out/Release/plugins
-		cp -al "${from}"/plugins/libnpapi_test_plugin.so \
-			"${test_dir}"/out/Release/plugins
-	fi
-
 	for f in "${TEST_FILES[@]}"; do
 		cp -al "${from}/${f}" "${test_dir}"
 	done
@@ -1135,23 +1122,4 @@ src_install() {
 	dosym libplds4.so /usr/lib/libplds4.so.0d
 	dosym libplc4.so /usr/lib/libplc4.so.0d
 	dosym libnspr4.so /usr/lib/libnspr4.so.0d
-
-	if ! use aura && ( use amd64 || use x86 ); then
-		# Install Flash plugin.
-		if use chrome_internal; then
-			if [[ -f "${FROM}/libgcflashplayer.so" ]]; then
-				# Install Flash from the binary drop.
-				exeinto "${CHROME_DIR}"/plugins
-				doexe "${FROM}/libgcflashplayer.so"
-				doexe "${FROM}/plugin.vch"
-			elif [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ]]; then
-				# Install Flash from the local source repository.
-				exeinto "${CHROME_DIR}"/plugins
-				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/libgcflashplayer.so
-				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/plugin.vch
-			else
-				die No internal Flash plugin.
-			fi
-		fi
-	fi
 }
