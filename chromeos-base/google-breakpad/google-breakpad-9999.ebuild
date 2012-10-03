@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
 inherit autotools cros-debug cros-workon toolchain-funcs
@@ -18,7 +18,7 @@ RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-        eautoreconf || die "eautoreconf failed"
+	eautoreconf
 	if ! tc-is-cross-compiler; then
 		einfo "Creating a separate 32b src directory"
 		mkdir ../work32
@@ -40,50 +40,52 @@ src_configure() {
 
 	tc-export CC CXX LD PKG_CONFIG
 
-	if tc-is-cross-compiler; then
-		econf --disable-md2core || die "configure failed"
-	else
-		econf || die "configure failed"
+	econf
+
+	if ! tc-is-cross-compiler; then
 	        einfo "Running 32b configuration"
 		cd work32 || die "chdir failed"
 		append-flags "-m32"
-		econf --disable-md2core || die "configure failed"
+		econf
 		filter-flags "-m32"
 	fi
 }
 
 src_compile() {
 	tc-export CC CXX PKG_CONFIG
-	emake || die "emake failed"
+	emake
 
 	if ! tc-is-cross-compiler; then
 		cd work32 || die "chdir failed"
-		einfo "Building dump_syms with -m32"
-		emake src/tools/linux/dump_syms/dump_syms || die "emake failed"
+		einfo "Building dump_syms and minidump-2-core with -m32"
+		emake src/tools/linux/dump_syms/dump_syms \
+		      src/tools/linux/md2core/minidump-2-core
 	fi
 }
 
 src_test() {
-	emake check || die "Tests failed"
+	emake check
 }
 
 src_install() {
 	tc-export CXX PKG_CONFIG
-	emake DESTDIR="${D}" install || die "emake install failed"
+	emake DESTDIR="${D}" install
 	insinto /usr/include/google-breakpad/client/linux/handler
-	doins src/client/linux/handler/*.h || die
+	doins src/client/linux/handler/*.h
 	insinto /usr/include/google-breakpad/client/linux/crash_generation
-	doins src/client/linux/crash_generation/*.h || die
+	doins src/client/linux/crash_generation/*.h
 	insinto /usr/include/google-breakpad/common/linux
-	doins src/common/linux/*.h || die
+	doins src/common/linux/*.h
 	insinto /usr/include/google-breakpad/processor
-	doins src/processor/*.h || die
+	doins src/processor/*.h
 	dobin src/tools/linux/core2md/core2md \
+	      src/tools/linux/md2core/minidump-2-core \
 	      src/tools/linux/dump_syms/dump_syms \
 	      src/tools/linux/symupload/sym_upload \
-	      src/tools/linux/symupload/minidump_upload || die
+	      src/tools/linux/symupload/minidump_upload
 	if ! tc-is-cross-compiler; then
 		newbin work32/src/tools/linux/dump_syms/dump_syms dump_syms.32
-		dobin src/tools/linux/md2core/minidump-2-core
+		newbin work32/src/tools/linux/md2core/minidump-2-core \
+		       minidump-2-core.32
 	fi
 }
