@@ -3,10 +3,11 @@
 CROS_WORKON_COMMIT="7c94a5dc3e9c863358441fd247da072dac1394dd"
 CROS_WORKON_TREE="ba5b1a1fc0009e9175b4da3870445b510d11fc50"
 
-EAPI=4
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit toolchain-funcs cros-debug cros-workon
+inherit cros-debug cros-workon
 
 DESCRIPTION="Disk mounting daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -15,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="arm amd64 x86"
-IUSE="splitdebug test"
+IUSE="test"
 
 LIBCHROME_VERS="125070"
 
@@ -41,20 +42,26 @@ DEPEND="${RDEPEND}
 	dev-cpp/gmock
 	test? ( dev-cpp/gtest )"
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-	cros-debug-add-NDEBUG
-	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} disks
+	cros-workon_src_compile
 }
 
 src_test() {
-	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
-	emake OUT=build-opt BASE_VER=${LIBCHROME_VERS} tests
+	# Needed for `cros_run_unit_tests`.
+	cros-workon_src_test
 }
 
 src_install() {
 	exeinto /opt/google/cros-disks
-	doexe build-opt/disks
+	doexe "${OUT}"/disks
 
 	# Install USB device IDs file.
 	insinto /opt/google/cros-disks

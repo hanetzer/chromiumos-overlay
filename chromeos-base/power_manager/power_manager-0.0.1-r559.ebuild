@@ -3,9 +3,10 @@
 CROS_WORKON_COMMIT="9634e26550459ab9ff1294f46b614bfc40acceae"
 CROS_WORKON_TREE="f1271a9eb0dae2bc28a804feaa7fe9b70734914e"
 
-EAPI=4
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-debug cros-workon eutils toolchain-funcs
 
@@ -35,10 +36,12 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
 src_configure() {
-	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
+	cros-workon_src_configure
 
 	export USE_NEW_POWER_BUTTON=$(usex new_power_button y "")
 	export USE_LOCKVT=$(usex lockvt y "")
@@ -50,18 +53,22 @@ src_configure() {
 	export USE_TOUCH_DEVICE=$(usex touch_device y "")
 }
 
+src_compile() {
+	cros-workon_src_compile
+}
+
 src_test() {
 	# Run tests if we're on x86
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
-		emake tests
+		cros-workon_src_test
 	fi
 }
 
 src_install() {
 	# Built binaries
-	pushd out >/dev/null
+	pushd "${OUT}" >/dev/null
 	dobin powerd/powerd
 	dobin powerm/powerm
 	dobin tools/backlight_dbus_tool
