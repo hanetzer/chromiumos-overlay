@@ -6,7 +6,7 @@ Subject: [PATCH] Accelerate wheel scrolling
  3 files changed, 164 insertions(+), 18 deletions(-)
 
 diff --git a/include/evdev-properties.h b/include/evdev-properties.h
-index 745a1ba..72a2162 100644
+index 745a1ba..66e8a75 100644
 --- a/include/evdev-properties.h
 +++ b/include/evdev-properties.h
 @@ -87,4 +87,8 @@
@@ -19,7 +19,7 @@ index 745a1ba..72a2162 100644
 +
  #endif
 diff --git a/src/evdev.c b/src/evdev.c
-index 9f3a22a..d638dfc 100644
+index 54772c7..a75dcc5 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -93,6 +93,12 @@
@@ -60,15 +60,15 @@ index 9f3a22a..d638dfc 100644
 + *
 + * matlab code to generate accel_params below:
 + * x=[-50:200];
-+ * y=300*normcdf(x,120,60);
++ * y=600*normcdf(x,77,40);
 + * a=polyfit(x,y,4);
 + */
 +static double accel_params[] = {
-+    -0.000000252977550,
-+    0.000049601916510,
-+    0.005539772199555,
-+    0.246492103384611,
-+    6.283184444592136
++    -9.528484576366295e-08,
++    -1.515738095456648e-04,
++    3.940238948978762e-02,
++    1.732410732791920,
++    4.412651786252371,
 +};
 +
 +/**
@@ -300,7 +300,7 @@ index 9f3a22a..d638dfc 100644
                 atom == prop_product_id || atom == prop_device ||
                 atom == prop_virtual)
 diff --git a/src/evdev.h b/src/evdev.h
-index fe89420..ceac077 100644
+index b958a83..da32fe2 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -253,6 +253,15 @@ typedef struct {
@@ -320,5 +320,5 @@ index fe89420..ceac077 100644
  
  /* Event posting functions */
 -- 
-1.7.7.3
+1.7.8.6
 
