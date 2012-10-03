@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan -aura +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -pgo_use -pgo_generate +reorder +runhooks +verbose"
+IUSE="-asan -aura +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -359,6 +359,10 @@ set_build_defines() {
 
 	if ! use chrome_pdf; then
 		BUILD_DEFINES+=( internal_pdf=0 )
+	fi
+
+	if use oem_wallpaper; then
+		BUILD_DEFINES+=( use_oem_wallpaper=1 )
 	fi
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
