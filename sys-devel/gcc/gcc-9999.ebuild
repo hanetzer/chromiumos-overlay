@@ -261,7 +261,7 @@ pkg_preinst()
 	CCACHE_UMASK=002 CCACHE_DIR=${ccache_dir} ccache -F 0 -M 11G
 
 	# Make sure the dirs have perms for emerge builders.
-	chgrp -R portage "${ccache_dir}"
+	chown -R ${PORTAGE_USERNAME}:portage "${ccache_dir}"
 }
 
 pkg_postinst()
