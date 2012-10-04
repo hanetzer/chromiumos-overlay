@@ -9,7 +9,8 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootimage cros_ec gdmwimax +localssh X bootchart opengles"
+IUSE="bluetooth bootimage coreboot cros_ec
+      gdmwimax +localssh X bootchart opengles"
 
 
 ################################################################################
@@ -245,6 +246,7 @@ RDEPEND="${RDEPEND}
 #
 # See http://crosbug.com/8144
 RDEPEND="${RDEPEND}
+	coreboot? ( virtual/chromeos-coreboot )
 	sys-apps/which
 	"
 

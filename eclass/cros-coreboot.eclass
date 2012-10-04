@@ -71,9 +71,15 @@ cros-coreboot_src_compile() {
 		ifdtool --em100 "${build_root}/coreboot.rom" || die
 		mv "${build_root}/coreboot.rom"{.new,} || die
 	fi
+
+	# Build cbmem for the target
+	cd util/cbmem
+	emake clean
+	emake
 }
 
 cros-coreboot_src_install() {
+	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
 }
