@@ -1,5 +1,4 @@
-commit 3ef8e9825cd2a881dc46fc46514131426722123e
-Author: Michael Spang <spang@google.com>
+From: Michael Spang <spang@google.com>
 Date:   Mon Aug 13 11:35:32 2012 -0400
 Subject: [PATCH] Add events debug log support
 

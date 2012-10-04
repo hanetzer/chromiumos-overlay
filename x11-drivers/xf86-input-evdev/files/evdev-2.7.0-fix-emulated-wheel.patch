@@ -1,3 +1,4 @@
+From: Chung-yih Wang <cywang@chromium.org>
 Subject: [PATCH] Accelerate emulated wheel events
 
 Use the Chromium OS Mouse Wheel acceleration for Emulated Wheel

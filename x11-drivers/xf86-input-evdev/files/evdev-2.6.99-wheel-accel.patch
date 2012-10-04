@@ -1,3 +1,4 @@
+From: Ang Pan <oscarpan@chromium.org>
 Subject: [PATCH] Accelerate wheel scrolling
 ---
  include/evdev-properties.h |    4 +
