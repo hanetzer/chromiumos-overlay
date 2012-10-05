@@ -6,7 +6,7 @@ EAPI=4
 DESCRIPTION="Chrome OS Firmware virtual package"
 HOMEPAGE="http://src.chromium.org"
 
-ICENSE="BSD"
+LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86"
 
