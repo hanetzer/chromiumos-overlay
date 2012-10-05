@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-asan +aura +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -pgo_use -pgo_generate +reorder +runhooks +verbose"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -157,7 +157,6 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	>=app-i18n/ibus-1.4.99
 	arm? ( virtual/opengles )
-	!aura? ( chromeos-base/chromeos-theme )
 	chromeos-base/protofiles
 	dev-libs/atk
 	dev-libs/glib
@@ -178,7 +177,6 @@ RDEPEND="${RDEPEND}
 	net-misc/wget
 	sys-fs/udev
 	sys-libs/zlib
-	!aura? ( >=x11-libs/gtk+-2.14.7 )
 	x11-libs/libXcomposite
 	x11-libs/libXcursor
 	x11-libs/libXrandr
@@ -338,10 +336,6 @@ set_build_defines() {
 		BUILD_DEFINES+=( asan=1 )
 	fi
 
-	if use aura; then
-		BUILD_DEFINES+=( use_aura=1 )
-	fi
-
 	if use component_build; then
 		BUILD_DEFINES+=( component=shared_library )
 	fi
@@ -359,6 +353,10 @@ set_build_defines() {
 
 	if ! use chrome_pdf; then
 		BUILD_DEFINES+=( internal_pdf=0 )
+	fi
+
+	if use oem_wallpaper; then
+		BUILD_DEFINES+=( use_oem_wallpaper=1 )
 	fi
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
@@ -505,18 +503,18 @@ decide_chrome_origin() {
 	local chrome_workon="=chromeos-base/chromeos-chrome-9999"
 	local cros_workon_file="${ROOT}etc/portage/package.keywords/cros-workon"
 	if [[ -e "${cros_workon_file}" ]] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
-		# GERRIT_SOURCE is the default for cros_workon
+		# LOCAL_SOURCE is the default for cros_workon
 		# Warn the user if CHROME_ORIGIN is already set
-		if [[ -n "${CHROME_ORIGIN}" && "${CHROME_ORIGIN}" != GERRIT_SOURCE ]]; then
+		if [[ -n "${CHROME_ORIGIN}" && "${CHROME_ORIGIN}" != LOCAL_SOURCE ]]; then
 			ewarn "CHROME_ORIGIN is already set to ${CHROME_ORIGIN}."
-			ewarn "This will prevent you from building from gerrit."
+			ewarn "This will prevent you from building from your local checkout."
 			ewarn "Please run 'unset CHROME_ORIGIN' to reset Chrome"
 			ewarn "to the default source location."
 		fi
-		echo "${CHROME_ORIGIN:-GERRIT_SOURCE}"
+		: ${CHROME_ORIGIN:=LOCAL_SOURCE}
 	else
 		# By default, pull from server
-		echo "${CHROME_ORIGIN:-SERVER_SOURCE}"
+		: ${CHROME_ORIGIN:=SERVER_SOURCE}
 	fi
 }
 
@@ -535,14 +533,7 @@ sandboxless_ensure_directory() {
 
 src_unpack() {
 	tc-export CC CXX
-	# CHROME_ROOT is the location where the source code is used for compilation.
-	# If we're in SERVER_SOURCE mode, CHROME_ROOT is CHROME_DISTDIR. In LOCAL_SOURCE
-	# mode, this directory may be set manually to any directory. It may be mounted
-	# into the chroot, so it is not safe to use cp -al for these files.
-	# These are set here because $(whoami) returns the proper user here,
-	# but 'root' at the root level of the file
 	local WHOAMI=$(whoami)
-	export CHROME_ROOT="${CHROME_ROOT:-/home/${WHOAMI}/chrome_root}"
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
 
@@ -561,7 +552,7 @@ src_unpack() {
 		cp -rfp ${SSH_CONFIG_DIR} ${HOME} || die
 	fi
 
-	CHROME_ORIGIN="$(decide_chrome_origin)"
+	decide_chrome_origin
 
 	case "${CHROME_ORIGIN}" in
 	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY|GERRIT_SOURCE)
@@ -572,6 +563,13 @@ src_unpack() {
 		;;
 	esac
 
+	# Prepare and set CHROME_ROOT based on CHROME_ORIGIN.
+	# CHROME_ROOT is the location where the source code is used for compilation.
+	# If we're in SERVER_SOURCE mode, CHROME_ROOT is CHROME_DISTDIR. In LOCAL_SOURCE
+	# mode, this directory may be set manually to any directory. It may be mounted
+	# into the chroot, so it is not safe to use cp -al for these files.
+	# These are set here because $(whoami) returns the proper user here,
+	# but 'root' at the root level of the file
 	case "${CHROME_ORIGIN}" in
 	(SERVER_SOURCE)
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
@@ -597,13 +595,13 @@ src_unpack() {
 			fi
 		fi
 
-		elog "set the LOCAL_SOURCE to ${CHROME_DISTDIR}"
+		elog "set the chrome source root to ${CHROME_DISTDIR}"
 		elog "From this point onwards there is no difference between \
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
-		export CHROME_ROOT=${CHROME_DISTDIR}
+		CHROME_ROOT=${CHROME_DISTDIR}
 		;;
 	(GERRIT_SOURCE)
-		export CHROME_ROOT="/home/${WHOAMI}/trunk/chromium"
+		CHROME_ROOT="/home/${WHOAMI}/trunk/chromium"
 		# TODO(rcui): Remove all these addwrite hacks once we start
 		# building off a copy of the source
 		addwrite "${CHROME_ROOT}"
@@ -626,6 +624,10 @@ src_unpack() {
 		done
 		;;
 	(LOCAL_SOURCE)
+		: ${CHROME_ROOT:=/home/${WHOAMI}/chrome_root}
+		if [[ ! -d "${CHROME_ROOT}/src" ]]; then
+			die "${CHROME_ROOT} does not contain a valid chromium checkout!"
+		fi
 		addwrite "${CHROME_ROOT}"
 		;;
 	esac
@@ -911,13 +913,6 @@ install_chrome_test_resources() {
 	cp -al "${from}"/pseudo_locales/fake-bidi.pak \
 		"${test_dir}"/out/Release/pseudo_locales
 
-	# Copy over npapi test plugin
-	if ! use aura; then
-		mkdir -p "${test_dir}"/out/Release/plugins
-		cp -al "${from}"/plugins/libnpapi_test_plugin.so \
-			"${test_dir}"/out/Release/plugins
-	fi
-
 	for f in "${TEST_FILES[@]}"; do
 		cp -al "${from}/${f}" "${test_dir}"
 	done
@@ -1127,23 +1122,4 @@ src_install() {
 	dosym libplds4.so /usr/lib/libplds4.so.0d
 	dosym libplc4.so /usr/lib/libplc4.so.0d
 	dosym libnspr4.so /usr/lib/libnspr4.so.0d
-
-	if ! use aura && ( use amd64 || use x86 ); then
-		# Install Flash plugin.
-		if use chrome_internal; then
-			if [[ -f "${FROM}/libgcflashplayer.so" ]]; then
-				# Install Flash from the binary drop.
-				exeinto "${CHROME_DIR}"/plugins
-				doexe "${FROM}/libgcflashplayer.so"
-				doexe "${FROM}/plugin.vch"
-			elif [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ]]; then
-				# Install Flash from the local source repository.
-				exeinto "${CHROME_DIR}"/plugins
-				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/libgcflashplayer.so
-				doexe ${CHROME_ROOT}/src/third_party/adobe/flash/binaries/chromeos/plugin.vch
-			else
-				die No internal Flash plugin.
-			fi
-		fi
-	fi
 }
