@@ -27,6 +27,7 @@ CONFIG_FRAGMENTS=(
 	blkdevram
 	ca0132
 	cifs
+	debug
 	fbconsole
 	gdmwimax
 	highmem
@@ -56,6 +57,11 @@ CONFIG_SND_HDA_DSP_LOADER=y
 cifs_desc="Samba/CIFS Support"
 cifs_config="
 CONFIG_CIFS=m
+"
+
+debug_desc="debug settings"
+debug_config="
+CONFIG_DEBUG_INFO=y
 "
 
 fbconsole_desc="framebuffer console"
