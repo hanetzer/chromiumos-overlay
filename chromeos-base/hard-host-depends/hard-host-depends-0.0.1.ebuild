@@ -11,6 +11,12 @@ SLOT="0"
 KEYWORDS="amd64 x86"
 IUSE=""
 
+# Pull in any site-specific or private-overlay-specific packages needed on the
+# host.
+RDEPEND="${RDEPEND}
+	virtual/hard-host-depends-bsp
+	"
+
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
 RDEPEND="${RDEPEND}
 	app-arch/lzop
