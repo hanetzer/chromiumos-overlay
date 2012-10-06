@@ -1,12 +1,12 @@
 DEFINED_PHASES=info install unpack
 DEPEND=chromeos-base/chromeos-init dev-vcs/git
-DESCRIPTION=Additional upstart jobs that will be installed on test images
+DESCRIPTION=Additional upstart jobs that will be installed on dev images
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_c9abab2e4000103fb55ba12570a0ad68e6aa815d
+IUSE=cros_workon_tree_696fd3ed0369803137394af6ea9789edbc8d1a72
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/chromeos-init
 SLOT=0
 _eclasses_=cros-workon	055aff79f2eb8c287dc801d47ee051a0	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=3381fec851b6d056d7ddc666d426a384
+_md5_=a142d8e31910d789420beaeeb5aace03
