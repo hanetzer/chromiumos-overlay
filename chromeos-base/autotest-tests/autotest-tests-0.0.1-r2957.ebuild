@@ -96,6 +96,7 @@ IUSE_TESTS="
 	+tests_desktopui_GTK2Config
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
+	+tests_desktopui_PyAutoPerf
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_firmware_CgptState
