@@ -2,9 +2,9 @@ From: Ang Pan <oscarpan@chromium.org>
 Subject: [PATCH] Accelerate wheel scrolling
 ---
  include/evdev-properties.h |    4 +
- src/evdev.c                |  207 ++++++++++++++++++++++++++++++++++++++------
- src/evdev.h                |   12 +++
- 3 files changed, 198 insertions(+), 25 deletions(-)
+ src/evdev.c                |  192 +++++++++++++++++++++++++++++++++++++++-----
+ src/evdev.h                |   13 +++
+ 3 files changed, 190 insertions(+), 19 deletions(-)
 
 diff --git a/include/evdev-properties.h b/include/evdev-properties.h
 index 745a1ba..66e8a75 100644
@@ -33,7 +33,7 @@ index 54772c7..a75dcc5 100644
  static const char *evdevDefaults[] = {
      "XkbRules",     "evdev",
      "XkbModel",     "evdev",
-@@ -134,6 +137,7 @@ static Atom prop_axis_label;
+@@ -134,12 +137,17 @@ static Atom prop_axis_label;
  static Atom prop_btn_label;
  static Atom prop_device;
  static Atom prop_virtual;
@@ -41,7 +41,17 @@ index 54772c7..a75dcc5 100644
  
  /* All devices the evdev driver has allocated and knows about.
   * MAXDEVICES is safe as null-terminated array, as two devices (VCP and VCK)
-@@ -670,6 +674,89 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
+  * cannot be used by evdev, leaving us with a space of 2 at the end. */
+ static EvdevPtr evdev_devices[MAXDEVICES] = {NULL};
+ 
++static double TimevalToDouble(const struct timeval* tv) {
++    return (double)(tv->tv_sec) + (double)(tv->tv_usec) / 1000000.0;
++}
++
+ static int EvdevSwitchMode(ClientPtr client, DeviceIntPtr device, int mode)
+ {
+     InputInfoPtr pInfo;
+@@ -670,6 +678,97 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
          EvdevQueueKbdEvent(pInfo, ev, value);
  }
  
@@ -92,32 +102,40 @@ index 54772c7..a75dcc5 100644
 + * Mouse scroll acceleration.
 + */
 +static void
-+EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
-+                double start_time, double end_time)
++EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
 +{
 +    double pixels;
 +    double dt; /* seconds */
 +    double click_speed; /* clicks / second */
 +    EvdevPtr pEvdev = pInfo->private;
++    double start_time;
++    double end_time = TimevalToDouble(&ev->time);
++    int map;
++    EvdevRelWheelPtr wheel = (ev->code == REL_WHEEL) ? &pEvdev->wheel :
++                                                       &pEvdev->hwheel;
 +
-+    if (!pEvdev->wheelAccelRec.scroll_axes)
-+    {
-+        EvdevQueueButtonClicks(pInfo, wheel_button, abs(value));
-+        return;
++    /* Check if this scroll is in same direction as previous scroll event */
++    if ((wheel->value < 0 && ev->value < 0) ||
++        (wheel->value > 0 && ev->value > 0)) {
++        start_time = wheel->time;
++    } else {
++        start_time = end_time;
 +    }
 +
 +    /* If start_time == end_time, compute click_speed using dt = 1 second */
 +    dt = (end_time - start_time) ?: 1.0;
-+    click_speed = value / dt;
++    click_speed = ev->value / dt;
++
++    wheel->value = ev->value;
++    wheel->time = end_time;
++
 +    pixels = EvdevGetPixelsToScroll(click_speed);
++    /* For historical reasons the vertical wheel (REL_WHEEL) is inverted */
++    pixels *= (ev->code == REL_WHEEL) ? -1 : 1;
 +
 +    valuator_mask_zero(pEvdev->vals);
-+    if (wheel_button == wheel_down_button || wheel_button == wheel_up_button)
-+        valuator_mask_set_double(pEvdev->vals, pEvdev->axis_map[REL_WHEEL],
-+                                 -pixels);
-+    else
-+        valuator_mask_set_double(pEvdev->vals, pEvdev->axis_map[REL_HWHEEL],
-+                                 pixels);
++    map = pEvdev->axis_map[ev->code];
++    valuator_mask_set_double(pEvdev->vals, map, pixels);
 +    if (pEvdev->start_time_valuator_index >= 0)
 +       valuator_mask_set_double(pEvdev->vals,
 +                                pEvdev->start_time_valuator_index, start_time);
@@ -131,64 +149,22 @@ index 54772c7..a75dcc5 100644
  /**
   * Take the relative motion input event and process it accordingly.
   */
-@@ -679,27 +766,50 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
-     int value;
+@@ -680,6 +779,14 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
      EvdevPtr pEvdev = pInfo->private;
      int map;
-+    int last_wheel_button, current_wheel_button;
-+    double start_time, end_time;
  
++#ifndef HAVE_SMOOTH_SCROLLING
++    if (pEvdev->scroll_axes && (ev->code == REL_WHEEL ||
++                                ev->code == REL_HWHEEL)) {
++        EvdevAccelWheel(pInfo, ev);
++        return;
++    }
++#endif
++
      /* Get the signed value, earlier kernels had this as unsigned */
      value = ev->value;
-+    end_time = ev->time.tv_sec + ev->time.tv_usec / 1000000.0;
  
-     switch (ev->code) {
- #ifndef HAVE_SMOOTH_SCROLLING
-         case REL_WHEEL:
--            if (value > 0)
--                EvdevQueueButtonClicks(pInfo, wheel_up_button, value);
--            else if (value < 0)
--                EvdevQueueButtonClicks(pInfo, wheel_down_button, -value);
-+            last_wheel_button = pEvdev->wheelAccelRec.lastWheelButtonVertical;
-+            current_wheel_button = (value >= 0) ?
-+                                   wheel_up_button : wheel_down_button;
-+            start_time = (last_wheel_button == current_wheel_button) ?
-+                         pEvdev->wheelAccelRec.lastWheelClickTimeVertical :
-+                         end_time;
-+            EvdevAccelWheel(pInfo, current_wheel_button, value, start_time,
-+                            end_time);
-+            pEvdev->wheelAccelRec.lastWheelButtonVertical =
-+                current_wheel_button;
-+            pEvdev->wheelAccelRec.lastWheelClickTimeVertical = end_time;
-+            break;
-+        case REL_HWHEEL:
-+            last_wheel_button = pEvdev->wheelAccelRec.lastWheelButtonHorizontal;
-+            current_wheel_button = (value >= 0) ?
-+                                   wheel_right_button : wheel_left_button;
-+            start_time = (last_wheel_button == current_wheel_button) ?
-+                         pEvdev->wheelAccelRec.lastWheelClickTimeHorizontal :
-+                         end_time;
-+            EvdevAccelWheel(pInfo, current_wheel_button, value, start_time,
-+                            end_time);
-+            pEvdev->wheelAccelRec.lastWheelButtonHorizontal =
-+                current_wheel_button;
-+            pEvdev->wheelAccelRec.lastWheelClickTimeHorizontal = end_time;
-             break;
- 
-         case REL_DIAL:
--        case REL_HWHEEL:
-             if (value > 0)
-                 EvdevQueueButtonClicks(pInfo, wheel_right_button, value);
-             else if (value < 0)
-                 EvdevQueueButtonClicks(pInfo, wheel_left_button, -value);
-             break;
--        /* We don't post wheel events as axis motion. */
-+        /* We don't post DIAL events as axis motion. */
-+
- #endif
-         default:
-             /* Ignore EV_REL events if we never set up for them. */
-@@ -1533,12 +1643,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1533,12 +1640,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  
  #ifndef HAVE_SMOOTH_SCROLLING
@@ -201,7 +177,7 @@ index 54772c7..a75dcc5 100644
      if (EvdevBitIsSet(pEvdev->rel_bitmask, REL_DIAL))
          num_axes--;
  
-@@ -1546,17 +1650,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1546,17 +1647,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  #endif
  
@@ -231,7 +207,7 @@ index 54772c7..a75dcc5 100644
      atoms = malloc(pEvdev->num_vals * sizeof(Atom));
  
      for (axis = REL_X; i < MAX_VALUATORS && axis <= REL_MAX; axis++)
-@@ -1564,7 +1671,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1564,7 +1668,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          pEvdev->axis_map[axis] = -1;
  #ifndef HAVE_SMOOTH_SCROLLING
          /* We don't post wheel events, so ignore them here too */
@@ -240,7 +216,7 @@ index 54772c7..a75dcc5 100644
              continue;
  #endif
          if (!EvdevBitIsSet(pEvdev->rel_bitmask, axis))
-@@ -1573,9 +1680,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1573,9 +1677,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          i++;
      }
  
@@ -263,7 +239,7 @@ index 54772c7..a75dcc5 100644
                                         GetMotionHistorySize(), Relative)) {
          xf86IDrvMsg(pInfo, X_ERROR, "failed to initialize valuator class device.\n");
          goto out;
-@@ -1590,11 +1708,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1590,11 +1705,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
      for (axis = REL_X; axis <= REL_MAX; axis++)
      {
          int axnum = pEvdev->axis_map[axis];
@@ -283,7 +259,7 @@ index 54772c7..a75dcc5 100644
          xf86InitValuatorDefaults(device, axnum);
  #ifdef HAVE_SMOOTH_SCROLLING
          if (axis == REL_WHEEL)
-@@ -1606,6 +1731,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1606,6 +1728,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
  #endif
      }
  
@@ -301,7 +277,7 @@ index 54772c7..a75dcc5 100644
      free(atoms);
  
      return Success;
-@@ -1767,6 +1903,9 @@ EvdevInit(DeviceIntPtr device)
+@@ -1767,6 +1900,9 @@ EvdevInit(DeviceIntPtr device)
      for(i = 0; i < max(ABS_CNT,REL_CNT); i++)
        pEvdev->axis_map[i]=-1;
  
@@ -311,7 +287,7 @@ index 54772c7..a75dcc5 100644
      if (pEvdev->flags & EVDEV_KEYBOARD_EVENTS)
  	EvdevAddKeyClass(device);
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -2845,6 +2984,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2845,6 +2981,7 @@ EvdevInitProperty(DeviceIntPtr dev)
      if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
      {
          BOOL invert[2];
@@ -319,16 +295,16 @@ index 54772c7..a75dcc5 100644
          invert[0] = pEvdev->invert_x;
          invert[1] = pEvdev->invert_y;
  
-@@ -2891,6 +3031,16 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2891,6 +3028,16 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
 +        prop_wheel_accel_axes = MakeAtom(EVDEV_PROP_WHEEL_ACCEL_AXES,
 +                strlen(EVDEV_PROP_WHEEL_ACCEL_AXES), TRUE);
 +        axis_accel_conf_val = xf86SetBoolOption(pInfo->options, EVDEV_PROP_WHEEL_ACCEL_AXES, 0);
-+        pEvdev->wheelAccelRec.scroll_axes = axis_accel_conf_val != 0;
++        pEvdev->scroll_axes = axis_accel_conf_val != 0;
 +        rc = XIChangeDeviceProperty(dev, prop_wheel_accel_axes, XA_INTEGER, 8,
-+                PropModeReplace, 1, &pEvdev->wheelAccelRec.scroll_axes, FALSE);
++                PropModeReplace, 1, &pEvdev->scroll_axes, FALSE);
 +        if (rc != Success)
 +            return;
 +
@@ -336,7 +312,7 @@ index 54772c7..a75dcc5 100644
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -2960,6 +3110,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -2960,6 +3107,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
@@ -346,7 +322,7 @@ index 54772c7..a75dcc5 100644
 +            return BadMatch;
 +
 +        if (!checkonly)
-+            pEvdev->wheelAccelRec.scroll_axes = *((BOOL*)val->data);
++            pEvdev->scroll_axes = *((BOOL*)val->data);
      } else if (atom == prop_axis_label || atom == prop_btn_label ||
                 atom == prop_product_id || atom == prop_device ||
                 atom == prop_virtual)
@@ -354,7 +330,20 @@ diff --git a/src/evdev.h b/src/evdev.h
 index b958a83..da32fe2 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -245,6 +245,9 @@ typedef struct {
+@@ -149,6 +149,12 @@ typedef struct {
+ #endif
+ } EventQueueRec, *EventQueuePtr;
+ 
++/* Mouse scroll wheel state for one axis (REL_WHEEL or REL_WHEEL) */
++typedef struct {
++    int value;              /* last scroll wheel value */
++    double time;            /* evdev timestamp of last scroll event */
++} EvdevRelWheelRec, *EvdevRelWheelPtr;
++
+ typedef struct {
+     unsigned short id_vendor;
+     unsigned short id_product;
+@@ -245,6 +251,9 @@ typedef struct {
      unsigned long led_bitmask[NLONGS(LED_CNT)];
      struct input_absinfo absinfo[ABS_CNT];
  
@@ -364,19 +353,14 @@ index b958a83..da32fe2 100644
      /* minor/major number */
      dev_t min_maj;
  
-@@ -253,6 +256,15 @@ typedef struct {
+@@ -253,6 +262,10 @@ typedef struct {
      EventQueueRec           queue[EVDEV_MAXQUEUE];
  
      enum fkeymode           fkeymode;
 +
-+    /* Mouse scroll wheel acceleration information. */
-+    struct {
-+        int lastWheelButtonVertical;
-+        int lastWheelButtonHorizontal;
-+        double lastWheelClickTimeVertical;
-+        double lastWheelClickTimeHorizontal;
-+        BOOL scroll_axes; /* 0: off */
-+    } wheelAccelRec;
++    BOOL                    scroll_axes;
++    EvdevRelWheelRec        wheel;       /* scroll state for REL_WHEEL */
++    EvdevRelWheelRec        hwheel;      /* scroll state for REL_HWHEEL */
  } EvdevRec, *EvdevPtr;
  
  /* Event posting functions */

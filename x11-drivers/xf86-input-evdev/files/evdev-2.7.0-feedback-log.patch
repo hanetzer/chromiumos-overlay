@@ -148,7 +148,7 @@ diff --git a/src/evdev.c b/src/evdev.c
 index abf7be8..31b7565 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -193,7 +193,7 @@ static size_t EvdevCountBits(unsigned long *array, size_t nlongs)
+@@ -197,7 +197,7 @@ static size_t EvdevCountBits(unsigned long *array, size_t nlongs)
      return count;
  }
  
@@ -157,7 +157,7 @@ index abf7be8..31b7565 100644
  {
      return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));
  }
-@@ -1168,6 +1168,16 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1165,6 +1165,16 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
              EvdevProcessSyncEvent(pInfo, ev);
              break;
      }
@@ -174,7 +174,7 @@ index abf7be8..31b7565 100644
  }
  
  #undef ABS_X_VALUE
-@@ -1949,6 +1959,7 @@ EvdevInit(DeviceIntPtr device)
+@@ -1946,6 +1956,7 @@ EvdevInit(DeviceIntPtr device)
      EvdevWheelEmuInitProperty(device);
      EvdevDragLockInitProperty(device);
      EvdevAppleInitProperty(device);
@@ -195,7 +195,7 @@ index ea2a012..601537d 100644
  /* Function key mode */
  enum fkeymode {
      FKEYMODE_UNKNOWN = 0,
-@@ -255,6 +257,12 @@ typedef struct {
+@@ -261,6 +263,12 @@ typedef struct {
      int                     num_queue;
      EventQueueRec           queue[EVDEV_MAXQUEUE];
  
@@ -207,8 +207,8 @@ index ea2a012..601537d 100644
 +
      enum fkeymode           fkeymode;
  
-     /* Mouse scroll wheel acceleration information. */
-@@ -310,9 +318,12 @@ BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
+     BOOL                    scroll_axes;
+@@ -311,9 +319,12 @@ BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
  void EvdevDragLockPreInit(InputInfoPtr pInfo);
  BOOL EvdevDragLockFilterEvent(InputInfoPtr pInfo, unsigned int button, int value);
  

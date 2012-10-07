@@ -22,7 +22,7 @@ diff --git a/src/evdev.c b/src/evdev.c
 index d638dfc..75a5f7c 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -203,6 +203,11 @@ static inline void EvdevSetBit(unsigned long *array, int bit)
+@@ -207,6 +207,11 @@ static inline void EvdevSetBit(unsigned long *array, int bit)
      array[bit / LONG_BITS] |= (1LL << (bit % LONG_BITS));
  }
  
@@ -34,7 +34,7 @@ index d638dfc..75a5f7c 100644
  static int
  EvdevGetMajorMinor(InputInfoPtr pInfo)
  {
-@@ -2292,6 +2297,11 @@ EvdevProbe(InputInfoPtr pInfo)
+@@ -2289,6 +2294,11 @@ EvdevProbe(InputInfoPtr pInfo)
          }
      }
  

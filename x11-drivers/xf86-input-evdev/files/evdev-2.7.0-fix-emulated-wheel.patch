@@ -90,16 +90,16 @@ diff --git a/src/evdev.c b/src/evdev.c
 index f7a5ff7..c7b2adc 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -750,6 +750,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+@@ -760,6 +760,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
  
      /* If start_time == end_time, compute click_speed using dt = 1 second */
      dt = (end_time - start_time) ?: 1.0;
 +    if (pEvdev->emulateWheel.enabled)
 +        dt *= pEvdev->emulateWheel.inertia;
-     click_speed = value / dt;
-     pixels = EvdevGetPixelsToScroll(click_speed);
+     click_speed = ev->value / dt;
  
-@@ -773,7 +775,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+     wheel->value = ev->value;
+@@ -785,7 +787,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
  /**
   * Take the relative motion input event and process it accordingly.
   */
@@ -112,7 +112,7 @@ diff --git a/src/evdev.h b/src/evdev.h
 index 2ede36d..f5cf088 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -296,6 +296,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -297,6 +297,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
  				   int v[MAX_VALUATORS]);
  unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
  
