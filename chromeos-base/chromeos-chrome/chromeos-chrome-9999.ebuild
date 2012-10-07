@@ -999,6 +999,7 @@ install_pyauto_dep_resources() {
 		chrome/test/pyautolib \
 		net/tools/testserver \
 		third_party/pyftpdlib \
+		third_party/pywebsocket \
 		third_party/simplejson \
 		third_party/tlslite \
 		third_party/webdriver
