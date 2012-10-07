@@ -2,9 +2,9 @@ From: Ang Pan <oscarpan@chromium.org>
 Subject: [PATCH] Accelerate wheel scrolling
 ---
  include/evdev-properties.h |    4 +
- src/evdev.c                |  169 +++++++++++++++++++++++++++++++++++++++-----
- src/evdev.h                |    9 +++
- 3 files changed, 164 insertions(+), 18 deletions(-)
+ src/evdev.c                |  207 ++++++++++++++++++++++++++++++++++++++------
+ src/evdev.h                |   12 +++
+ 3 files changed, 198 insertions(+), 25 deletions(-)
 
 diff --git a/include/evdev-properties.h b/include/evdev-properties.h
 index 745a1ba..66e8a75 100644
@@ -23,20 +23,17 @@ diff --git a/src/evdev.c b/src/evdev.c
 index 54772c7..a75dcc5 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -93,6 +93,12 @@
+@@ -93,6 +93,9 @@
  #define ABS_MT_TRACKING_ID 0x39
  #endif
  
-+#ifndef AXIS_LABEL_PROP_REL_START_TIME
-+#define AXIS_LABEL_PROP_REL_START_TIME	"Rel Start Timestamp"
-+#endif
-+#ifndef AXIS_LABEL_PROP_REL_END_TIME
-+#define AXIS_LABEL_PROP_REL_END_TIME	"Rel End Timestamp"
-+#endif
++#define AXIS_LABEL_PROP_ABS_DBL_START_TIME  "Abs Dbl Start Timestamp"
++#define AXIS_LABEL_PROP_ABS_DBL_END_TIME    "Abs Dbl End Timestamp"
++
  static const char *evdevDefaults[] = {
      "XkbRules",     "evdev",
      "XkbModel",     "evdev",
-@@ -134,6 +140,7 @@ static Atom prop_axis_label;
+@@ -134,6 +137,7 @@ static Atom prop_axis_label;
  static Atom prop_btn_label;
  static Atom prop_device;
  static Atom prop_virtual;
@@ -44,7 +41,7 @@ index 54772c7..a75dcc5 100644
  
  /* All devices the evdev driver has allocated and knows about.
   * MAXDEVICES is safe as null-terminated array, as two devices (VCP and VCK)
-@@ -670,6 +677,86 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -670,6 +674,89 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
          EvdevQueueKbdEvent(pInfo, ev, value);
  }
  
@@ -64,7 +61,7 @@ index 54772c7..a75dcc5 100644
 + * y=600*normcdf(x,77,40);
 + * a=polyfit(x,y,4);
 + */
-+static double accel_params[] = {
++static const double accel_params[] = {
 +    -9.528484576366295e-08,
 +    -1.515738095456648e-04,
 +    3.940238948978762e-02,
@@ -75,7 +72,7 @@ index 54772c7..a75dcc5 100644
 +/**
 + * Get the number of pixels to scroll, used for axes_scroll.
 + */
-+static int
++static double
 +EvdevGetPixelsToScroll(double click_speed)
 +{
 +    double pixels = 0;
@@ -84,13 +81,12 @@ index 54772c7..a75dcc5 100644
 +    for (i = 1; i <= ArrayLength(accel_params); i++)
 +    {
 +        pixels += term * accel_params[ArrayLength(accel_params) - i];
-+        term *= click_speed;
++        term *= fabs(click_speed);
 +    }
-+    return ceil(pixels);
++    if (click_speed < 0)
++        pixels *= -1;
++    return pixels;
 +}
-+
-+/* In Chrome, number of pixels per button scroll is 53. */
-+#define PIXELS_PER_SCROLL_BUTTON 53
 +
 +/**
 + * Mouse scroll acceleration.
@@ -99,32 +95,36 @@ index 54772c7..a75dcc5 100644
 +EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
 +                double start_time, double end_time)
 +{
-+    int pixels;
++    double pixels;
 +    double dt; /* seconds */
 +    double click_speed; /* clicks / second */
-+    unsigned int start, end;
-+    EvdevPtr pEvdev;
++    EvdevPtr pEvdev = pInfo->private;
 +
-+    pEvdev = pInfo->private;
-+    dt = end_time - start_time;
 +    if (!pEvdev->wheelAccelRec.scroll_axes)
 +    {
 +        EvdevQueueButtonClicks(pInfo, wheel_button, abs(value));
 +        return;
 +    }
-+    click_speed = dt == 0 ? 1 : 1/dt;
++
++    /* If start_time == end_time, compute click_speed using dt = 1 second */
++    dt = (end_time - start_time) ?: 1.0;
++    click_speed = value / dt;
 +    pixels = EvdevGetPixelsToScroll(click_speed);
-+    pixels = value > 0 ? pixels : pixels * -1;
-+    if (pEvdev->wheelAccelRec.scroll_axes)
-+    {
-+        start = (unsigned long long)(1000.0L * start_time) & 0x0FFFFFFFFLL;
-+        end = (unsigned long long)(1000.0L * end_time) & 0x0FFFFFFFFLL;
-+        if (wheel_button == wheel_down_button ||
-+            wheel_button == wheel_up_button)
-+            xf86PostMotionEvent(pInfo->dev, 1, 2, 4, 0, -pixels, start, end);
-+        else
-+            xf86PostMotionEvent(pInfo->dev, 1, 2, 4, pixels, 0, start, end);
-+    }
++
++    valuator_mask_zero(pEvdev->vals);
++    if (wheel_button == wheel_down_button || wheel_button == wheel_up_button)
++        valuator_mask_set_double(pEvdev->vals, pEvdev->axis_map[REL_WHEEL],
++                                 -pixels);
++    else
++        valuator_mask_set_double(pEvdev->vals, pEvdev->axis_map[REL_HWHEEL],
++                                 pixels);
++    if (pEvdev->start_time_valuator_index >= 0)
++       valuator_mask_set_double(pEvdev->vals,
++                                pEvdev->start_time_valuator_index, start_time);
++    if (pEvdev->end_time_valuator_index >= 0)
++        valuator_mask_set_double(pEvdev->vals,
++                                 pEvdev->end_time_valuator_index, end_time);
++    xf86PostMotionEventM(pInfo->dev, TRUE, pEvdev->vals);
 +}
 +#endif
 +
@@ -188,16 +188,7 @@ index 54772c7..a75dcc5 100644
  #endif
          default:
              /* Ignore EV_REL events if we never set up for them. */
-@@ -1514,6 +1624,8 @@ out:
-     return !Success;
- }
- 
-+#define AXIS_LABEL_ACCEL_START_IDX 6
-+#define AXIS_LABEL_ACCEL_END_IDX 10
- static int
- EvdevAddRelValuatorClass(DeviceIntPtr device)
- {
-@@ -1533,12 +1645,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1533,12 +1643,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  
  #ifndef HAVE_SMOOTH_SCROLLING
@@ -210,19 +201,37 @@ index 54772c7..a75dcc5 100644
      if (EvdevBitIsSet(pEvdev->rel_bitmask, REL_DIAL))
          num_axes--;
  
-@@ -1551,6 +1657,11 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
-         num_axes = MAX_VALUATORS;
+@@ -1546,17 +1650,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+         goto out;
+ #endif
+ 
+-    if (num_axes > MAX_VALUATORS) {
+-        xf86IDrvMsg(pInfo, X_WARNING, "found %d axes, limiting to %d.\n", num_axes, MAX_VALUATORS);
+-        num_axes = MAX_VALUATORS;
++    /* -2 to leave room for start and end timestamps */
++    if (num_axes > MAX_VALUATORS - 2) {
++        xf86IDrvMsg(pInfo, X_WARNING, "found %d axes, limiting to %d.\n", num_axes, MAX_VALUATORS - 2);
++        num_axes = MAX_VALUATORS - 2;
      }
  
-+    num_axes += 2; /* For START and END time axes */
-+    if (!EvdevBitIsSet(pEvdev->rel_bitmask, REL_WHEEL))
-+        num_axes++;
-+    if (!EvdevBitIsSet(pEvdev->rel_bitmask, REL_HWHEEL))
-+        num_axes++;
-     pEvdev->num_vals = num_axes;
-     if (num_axes > 0) {
-         pEvdev->vals = valuator_mask_new(num_axes);
-@@ -1564,10 +1675,12 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+-    pEvdev->num_vals = num_axes;
+-    if (num_axes > 0) {
+-        pEvdev->vals = valuator_mask_new(num_axes);
+-        if (!pEvdev->vals)
+-            goto out;
+-    }
++    pEvdev->start_time_valuator_index = num_axes;
++    pEvdev->end_time_valuator_index = num_axes + 1;
++
++    /* +2 for timestamp valuators */
++    pEvdev->num_vals = num_axes + 2;
++    pEvdev->vals = valuator_mask_new(pEvdev->num_vals);
++    if (!pEvdev->vals)
++        goto out;
+     atoms = malloc(pEvdev->num_vals * sizeof(Atom));
+ 
+     for (axis = REL_X; i < MAX_VALUATORS && axis <= REL_MAX; axis++)
+@@ -1564,7 +1671,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          pEvdev->axis_map[axis] = -1;
  #ifndef HAVE_SMOOTH_SCROLLING
          /* We don't post wheel events, so ignore them here too */
@@ -230,38 +239,79 @@ index 54772c7..a75dcc5 100644
 +        if (axis == REL_DIAL)
              continue;
  #endif
--        if (!EvdevBitIsSet(pEvdev->rel_bitmask, axis))
-+        if (!EvdevBitIsSet(pEvdev->rel_bitmask, axis) &&
-+            (axis < AXIS_LABEL_ACCEL_START_IDX ||
-+             axis > AXIS_LABEL_ACCEL_END_IDX))
-             continue;
-         pEvdev->axis_map[axis] = i;
+         if (!EvdevBitIsSet(pEvdev->rel_bitmask, axis))
+@@ -1573,9 +1680,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          i++;
-@@ -2637,6 +2750,8 @@ static const char *rel_labels[] = {
-     AXIS_LABEL_PROP_REL_HWHEEL,
-     AXIS_LABEL_PROP_REL_DIAL,
-     AXIS_LABEL_PROP_REL_WHEEL,
-+    AXIS_LABEL_PROP_REL_START_TIME,
-+    AXIS_LABEL_PROP_REL_END_TIME,
-     AXIS_LABEL_PROP_REL_MISC
- };
- 
-@@ -2748,10 +2863,10 @@ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int mode, int natoms, Atom *ato
-             continue;
- 
-         atom = XIGetKnownProperty(labels[axis]);
--        if (!atom) /* Should not happen */
--            continue;
--
--        atoms[pEvdev->axis_map[axis]] = atom;
-+        atoms[pEvdev->axis_map[axis]] = atom ? atom :
-+                                        MakeAtom(labels[axis],
-+                                                 strlen(labels[axis]),
-+                                                 TRUE);
      }
- }
  
-@@ -2845,6 +2960,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+-    EvdevInitAxesLabels(pEvdev, Relative, pEvdev->num_vals, atoms);
++    /* Initialize all axis label atoms except Start & End Timestamps */
++    EvdevInitAxesLabels(pEvdev, Relative, num_axes, atoms);
++
++    /* Create atoms for Start & End Timestamps */
++    atoms[pEvdev->start_time_valuator_index] =
++        MakeAtom(AXIS_LABEL_PROP_ABS_DBL_START_TIME,
++                 strlen(AXIS_LABEL_PROP_ABS_DBL_START_TIME),
++                 TRUE);
++    atoms[pEvdev->end_time_valuator_index] =
++        MakeAtom(AXIS_LABEL_PROP_ABS_DBL_END_TIME,
++                 strlen(AXIS_LABEL_PROP_ABS_DBL_END_TIME),
++                 TRUE);
+ 
+-    if (!InitValuatorClassDeviceStruct(device, num_axes, atoms,
++    if (!InitValuatorClassDeviceStruct(device, pEvdev->num_vals, atoms,
+                                        GetMotionHistorySize(), Relative)) {
+         xf86IDrvMsg(pInfo, X_ERROR, "failed to initialize valuator class device.\n");
+         goto out;
+@@ -1590,11 +1708,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+     for (axis = REL_X; axis <= REL_MAX; axis++)
+     {
+         int axnum = pEvdev->axis_map[axis];
++        int mode = Relative;
+ 
+         if (axnum == -1)
+             continue;
++
++#ifndef HAVE_SMOOTH_SCROLLING
++        if (axis == REL_WHEEL || axis == REL_HWHEEL)
++            mode = Absolute;
++#endif
++
+         xf86InitValuatorAxisStruct(device, axnum, atoms[axnum], -1, -1, 1, 0, 1,
+-                                   Relative);
++                                   mode);
+         xf86InitValuatorDefaults(device, axnum);
+ #ifdef HAVE_SMOOTH_SCROLLING
+         if (axis == REL_WHEEL)
+@@ -1606,6 +1731,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+ #endif
+     }
+ 
++#ifndef HAVE_SMOOTH_SCROLLING
++    /* Initialize valuators for scroll wheel Start & End Timestamps */
++    xf86InitValuatorAxisStruct(device, pEvdev->start_time_valuator_index,
++                               atoms[pEvdev->start_time_valuator_index],
++                               0, INT_MAX, 1, 0, 1, Absolute);
++
++    xf86InitValuatorAxisStruct(device, pEvdev->end_time_valuator_index,
++                               atoms[pEvdev->end_time_valuator_index],
++                               0, INT_MAX, 1, 0, 1, Absolute);
++#endif
++
+     free(atoms);
+ 
+     return Success;
+@@ -1767,6 +1903,9 @@ EvdevInit(DeviceIntPtr device)
+     for(i = 0; i < max(ABS_CNT,REL_CNT); i++)
+       pEvdev->axis_map[i]=-1;
+ 
++    pEvdev->start_time_valuator_index = -1;
++    pEvdev->end_time_valuator_index = -1;
++
+     if (pEvdev->flags & EVDEV_KEYBOARD_EVENTS)
+ 	EvdevAddKeyClass(device);
+     if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
+@@ -2845,6 +2984,7 @@ EvdevInitProperty(DeviceIntPtr dev)
      if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
      {
          BOOL invert[2];
@@ -269,7 +319,7 @@ index 54772c7..a75dcc5 100644
          invert[0] = pEvdev->invert_x;
          invert[1] = pEvdev->invert_y;
  
-@@ -2891,6 +3007,16 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2891,6 +3031,16 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
@@ -286,7 +336,7 @@ index 54772c7..a75dcc5 100644
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -2960,6 +3086,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -2960,6 +3110,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
@@ -304,7 +354,17 @@ diff --git a/src/evdev.h b/src/evdev.h
 index b958a83..da32fe2 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -253,6 +253,15 @@ typedef struct {
+@@ -245,6 +245,9 @@ typedef struct {
+     unsigned long led_bitmask[NLONGS(LED_CNT)];
+     struct input_absinfo absinfo[ABS_CNT];
+ 
++    int start_time_valuator_index;
++    int end_time_valuator_index;
++
+     /* minor/major number */
+     dev_t min_maj;
+ 
+@@ -253,6 +256,15 @@ typedef struct {
      EventQueueRec           queue[EVDEV_MAXQUEUE];
  
      enum fkeymode           fkeymode;
@@ -321,5 +381,5 @@ index b958a83..da32fe2 100644
  
  /* Event posting functions */
 -- 
-1.7.8.6
+1.7.7.3
 

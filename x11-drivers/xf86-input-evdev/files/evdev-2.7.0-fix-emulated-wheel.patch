@@ -9,9 +9,9 @@ The main motivation of this change is to send Emulated Wheel events to
 Chrome using the scroll valuators instead of legacy button events.
 ---
  src/emuWheel.c |   48 +++++++++---------------------------------------
- src/evdev.c    |    9 +++++++--
+ src/evdev.c    |    4 +++-
  src/evdev.h    |    4 ++++
- 3 files changed, 20 insertions(+), 41 deletions(-)
+ 3 files changed, 16 insertions(+), 40 deletions(-)
 
 diff --git a/src/emuWheel.c b/src/emuWheel.c
 index ae894fa..3cfa734 100644
@@ -90,21 +90,16 @@ diff --git a/src/evdev.c b/src/evdev.c
 index f7a5ff7..c7b2adc 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -755,7 +755,12 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
-         EvdevQueueButtonClicks(pInfo, wheel_button, abs(value));
-         return;
-     }
--    click_speed = dt == 0 ? 1 : 1/dt;
-+    if (dt == 0)
-+	dt = 1.0;
+@@ -750,6 +750,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+ 
+     /* If start_time == end_time, compute click_speed using dt = 1 second */
+     dt = (end_time - start_time) ?: 1.0;
 +    if (pEvdev->emulateWheel.enabled)
-+	click_speed = abs(value) / (pEvdev->emulateWheel.inertia * dt);
-+    else
-+	click_speed = 1 / dt;
++        dt *= pEvdev->emulateWheel.inertia;
+     click_speed = value / dt;
      pixels = EvdevGetPixelsToScroll(click_speed);
-     pixels = value > 0 ? pixels : pixels * -1;
-     if (pEvdev->wheelAccelRec.scroll_axes)
-@@ -774,7 +779,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
+ 
+@@ -773,7 +775,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, int wheel_button, int value,
  /**
   * Take the relative motion input event and process it accordingly.
   */
@@ -117,7 +112,7 @@ diff --git a/src/evdev.h b/src/evdev.h
 index 2ede36d..f5cf088 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -294,6 +294,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -296,6 +296,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
  				   int v[MAX_VALUATORS]);
  unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
  
