@@ -51,7 +51,7 @@ index abf7be8..ece3538 100644
  /* removed from server, purge when dropping support for server 1.10 */
  #define XI86_SEND_DRAG_EVENTS   0x08
  
-@@ -1988,6 +1994,12 @@ EvdevInit(DeviceIntPtr device)
+@@ -1998,6 +2004,12 @@ EvdevInit(DeviceIntPtr device)
      return Success;
  }
  
@@ -64,7 +64,7 @@ index abf7be8..ece3538 100644
  /**
   * Init all extras (wheel emulation, etc.) and grab the device.
   */
-@@ -2005,6 +2017,10 @@ EvdevOn(DeviceIntPtr device)
+@@ -2015,6 +2027,10 @@ EvdevOn(DeviceIntPtr device)
      if (rc != Success)
          return rc;
  
