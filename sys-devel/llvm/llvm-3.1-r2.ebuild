@@ -12,7 +12,7 @@ SRC_URI="http://llvm.org/releases/${PV}/${P}.src.tar.gz"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~x86 ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
+KEYWORDS="amd64 ~arm ~ppc x86 ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
 IUSE="debug gold +libffi multitarget ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl
@@ -102,6 +102,11 @@ src_prepare() {
 
 	# Apply r600 OpenCL-related patches, bug #425688
 	epatch "${FILESDIR}"/cl-patches/*.patch
+
+	# Make llvm cross-compile
+	epatch "${FILESDIR}"/xconfigure.patch
+	epatch "${FILESDIR}"/xmakefile.patch
+	epatch "${FILESDIR}"/${P}-no-sample.patch
 
 	# User patches
 	epatch_user
