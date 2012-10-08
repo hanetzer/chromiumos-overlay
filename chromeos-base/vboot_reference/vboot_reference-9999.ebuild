@@ -79,6 +79,7 @@ src_install() {
 		local progs='utility/dump_kernel_config'
 		progs+=' utility/crossystem'
 		progs+=' utility/dev_sign_file'
+		progs+=' utility/dumpRSAPublicKey'
 		progs+=' utility/tpm_init_temp_fix'
 		progs+=' utility/tpmc'
 		progs+=' utility/vbutil_key'
