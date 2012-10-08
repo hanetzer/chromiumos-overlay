@@ -1,6 +1,7 @@
---- ../../distdir/llvm-2.8/Makefile	2010-08-15 00:07:12.000000000 -0700
-+++ Makefile	2011-05-31 19:09:43.581689360 -0700
-@@ -108,6 +108,11 @@
+diff -aur llvm-3.1.src.orig/Makefile llvm-3.1.src/Makefile
+--- llvm-3.1.src.orig/Makefile	2012-01-16 18:56:49.000000000 -0800
++++ llvm-3.1.src/Makefile	2012-10-08 13:39:18.854266324 -0700
+@@ -111,6 +111,11 @@
  	  cd BuildTools ; \
  	  unset CFLAGS ; \
  	  unset CXXFLAGS ; \
@@ -10,5 +11,6 @@
 +	  CC=$(HOST_CC) ;\
 +	  CXX=$(HOST_CXX) ;\
  	  $(PROJ_SRC_DIR)/configure --build=$(BUILD_TRIPLE) \
- 		--host=$(BUILD_TRIPLE) --target=$(BUILD_TRIPLE); \
- 	  cd .. ; \
+ 		--host=$(BUILD_TRIPLE) --target=$(BUILD_TRIPLE) \
+ 	        --disable-polly ; \
+Only in llvm-3.1.src/: Makefile.orig

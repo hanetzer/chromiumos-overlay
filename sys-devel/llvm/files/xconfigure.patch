@@ -1,6 +1,7 @@
---- ../../distdir/llvm-2.8/configure	2010-10-06 16:26:40.000000000 -0700
-+++ configure	2011-05-31 19:25:13.951836419 -0700
-@@ -1943,13 +1943,13 @@
+diff -aur llvm-3.1.src.orig/configure llvm-3.1.src/configure
+--- llvm-3.1.src.orig/configure	2012-05-11 13:48:57.000000000 -0700
++++ llvm-3.1.src/configure	2012-10-08 13:38:31.363732213 -0700
+@@ -1952,13 +1952,13 @@
  
  
  
@@ -19,9 +20,9 @@
 +#  fi
 +#fi
  
- 
- 
-@@ -4515,7 +4515,7 @@
+ ac_ext=c
+ ac_cpp='$CPP $CPPFLAGS'
+@@ -4798,7 +4798,7 @@
    test -z "$BUILD_CC" && { { echo "$as_me:$LINENO: error: no acceptable cc found in \$PATH" >&5
  echo "$as_me: error: no acceptable cc found in \$PATH" >&2;}
     { (exit 1); exit 1; }; }
@@ -30,3 +31,4 @@
    rm -f conftest*
    echo 'int main () { return 0; }' > conftest.$ac_ext
    ac_cv_build_exeext=
+Only in llvm-3.1.src/: configure.orig
