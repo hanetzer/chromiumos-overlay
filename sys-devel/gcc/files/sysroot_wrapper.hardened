@@ -94,7 +94,10 @@ else:
   #
   # Use of -Qunused-arguments allows this set to be small, just those
   # that clang still warns about.
-  clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-fvisibility=internal'])
+  clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-Wclobbered',
+    '-fvisibility=internal', '-Woverride-init', '-Wunsafe-loop-optimizations',
+    '-Wlogical-op', '-Wmissing-parameter-type', '-Wold-style-declaration'])
+  clang_unsupported_prefixes = ('-Wstrict-aliasing=')
 
   # If these options are specified, do not run clang, even if -clang is
   # specified.
@@ -110,7 +113,8 @@ else:
   for flag in cmdline:
     if flag.startswith(skip_clang_prefixes) or flag in skip_clang_set or flag.endswith('.S'):
       skip_clang = True
-    elif flag not in clang_unsupported:
+    elif not (flag in clang_unsupported or
+              flag.startswith(clang_unsupported_prefixes)):
       # Strip off -Xclang-only= if present.
       if flag.startswith('-Xclang-only='):
         opt = flag.partition('=')[2]
