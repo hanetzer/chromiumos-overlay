@@ -33,7 +33,7 @@ else
 fi
 IUSE=""
 
-RDEPEND=">=x11-libs/libva-1.1.0
+RDEPEND=">=x11-libs/libva-1.1.0_rc1
 	!<x11-libs/libva-1.0.15[video_cards_intel]
 	>=x11-libs/libdrm-2.4.23[video_cards_intel]"
 
