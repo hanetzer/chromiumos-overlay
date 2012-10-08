@@ -40,7 +40,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	emake $(make_flags) shill || die "shill compile failed."
+	emake $(make_flags) shill shims || die "shill compile failed."
 }
 
 src_test() {
@@ -63,6 +63,8 @@ src_test() {
 
 src_install() {
 	dobin "shill" || die
+	exeinto "/usr/$(get_libdir)/shill/shims"
+	doexe build/shims/nss-get-cert || die
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
