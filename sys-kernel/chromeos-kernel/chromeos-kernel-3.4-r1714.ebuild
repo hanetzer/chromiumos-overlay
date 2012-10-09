@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="09d6ea060d870cbcf5ba25771afe3330e55173c1"
-CROS_WORKON_TREE="a8291ddcd719cf44d0f75f8b021f7d2efecdc489"
+CROS_WORKON_COMMIT=14667949f42de39c36f0121d71b93f274d1b3888
+CROS_WORKON_TREE="c2bc85e4f354d94638c02ed5e05d1733c20e3e93"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
