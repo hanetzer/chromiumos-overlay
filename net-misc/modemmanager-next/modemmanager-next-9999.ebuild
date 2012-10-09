@@ -17,12 +17,13 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="doc"
+IUSE="doc qmi"
 
-RDEPEND=">=dev-libs/glib-2.30.2
+RDEPEND=">=dev-libs/glib-2.32
 	>=sys-apps/dbus-1.2
 	dev-libs/dbus-glib
 	net-dialup/ppp
+	qmi? ( net-libs/libqmi )
 	!net-misc/modemmanager"
 
 DEPEND="${RDEPEND}
@@ -36,19 +37,17 @@ DEPEND="${RDEPEND}
 DOCS="AUTHORS ChangeLog NEWS README"
 
 src_prepare() {
-	gtkdocize || die "gtkdocize failed"
+	gtkdocize
 	eautopoint
 	eautoreconf
 	intltoolize --force
 }
 
 src_configure() {
-	# TODO(benchan): Remove --without-qmi after libqmi is imported into
-	# Chromium OS tree (crosbug.com/34044).
 	econf \
-		--without-qmi \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
-		$(use_with doc docs)
+		$(use_with doc docs) \
+		$(use_with qmi)
 }
 
 src_install() {
