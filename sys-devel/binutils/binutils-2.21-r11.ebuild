@@ -1,6 +1,6 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT=69da00c2fc9ec94ec3c1b4e3cbf50706600c40d9
+CROS_WORKON_COMMIT="69da00c2fc9ec94ec3c1b4e3cbf50706600c40d9"
 CROS_WORKON_TREE="918304c88d46dc127ac0496727f1a481356f762a"
 
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
