@@ -271,6 +271,7 @@ IUSE_TESTS="
 	+tests_platform_DebugDaemonTracePath
 	+tests_platform_DMVerityBitCorruption
 	+tests_platform_DMVerityCorruption
+	+tests_platform_EncryptedStateful
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
@@ -331,6 +332,7 @@ IUSE_TESTS="
 	+tests_security_HtpdateHTTP
 	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
+	+tests_security_ModuleLocking
 	+tests_security_OpenFDs
 	+tests_security_OpenSSLBlacklist
 	+tests_security_OpenSSLRegressions
