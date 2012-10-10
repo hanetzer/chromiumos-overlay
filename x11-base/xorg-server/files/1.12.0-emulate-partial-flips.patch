@@ -1,8 +1,7 @@
-diff --git a/glx/glxcmds.c b/glx/glxcmds.c
-index 5cd95f6..de22540 100644
---- a/glx/glxcmds.c
-+++ b/glx/glxcmds.c
-@@ -784,7 +784,7 @@ __glXDisp_WaitGL(__GLXclientState * cl, GLbyte * pc)
+diff -rupN xorg-server-1.12.4.no_flips_patch/glx/glxcmds.c xorg-server-1.12.4-fixed/glx/glxcmds.c
+--- xorg-server-1.12.4.no_flips_patch/glx/glxcmds.c	2012-10-09 18:55:42.752590466 -0700
++++ xorg-server-1.12.4-fixed/glx/glxcmds.c	2012-10-09 19:09:42.971761178 -0700
+@@ -784,7 +784,7 @@ __glXDisp_WaitGL(__GLXclientState * cl,
      }
  
      if (glxc && glxc->drawPriv->waitGL)
@@ -11,7 +10,7 @@ index 5cd95f6..de22540 100644
  
      return Success;
  }
-@@ -811,7 +811,7 @@ __glXDisp_WaitX(__GLXclientState * cl, GLbyte * pc)
+@@ -811,7 +811,7 @@ __glXDisp_WaitX(__GLXclientState * cl, G
      }
  
      if (glxc && glxc->drawPriv->waitX)
@@ -20,7 +19,7 @@ index 5cd95f6..de22540 100644
  
      return Success;
  }
-@@ -1841,7 +1841,7 @@ __glXDisp_CopySubBufferMESA(__GLXclientState * cl, GLbyte * pc)
+@@ -1841,7 +1841,7 @@ __glXDisp_CopySubBufferMESA(__GLXclientS
          pGlxDraw->copySubBuffer == NULL)
          return __glXError(GLXBadDrawable);
  
@@ -29,10 +28,9 @@ index 5cd95f6..de22540 100644
  
      return Success;
  }
-diff --git a/glx/glxdrawable.h b/glx/glxdrawable.h
-index 80c3234..7e71a23 100644
---- a/glx/glxdrawable.h
-+++ b/glx/glxdrawable.h
+diff -rupN xorg-server-1.12.4.no_flips_patch/glx/glxdrawable.h xorg-server-1.12.4-fixed/glx/glxdrawable.h
+--- xorg-server-1.12.4.no_flips_patch/glx/glxdrawable.h	2012-10-09 18:55:42.752590466 -0700
++++ xorg-server-1.12.4-fixed/glx/glxdrawable.h	2012-10-09 19:09:42.971761178 -0700
 @@ -46,10 +46,10 @@ enum {
  struct __GLXdrawable {
      void (*destroy) (__GLXdrawable * private);
@@ -47,24 +45,10 @@ index 80c3234..7e71a23 100644
  
      int refcnt; /* number of resources handles referencing this */
  
-diff --git a/glx/glxdri.c b/glx/glxdri.c
-index 326f539..3fbf118 100644
---- a/glx/glxdri.c
-+++ b/glx/glxdri.c
-@@ -270,7 +270,7 @@ __glXDRIdrawableSwapInterval(__GLXdrawable * baseDrawable, int interval)
- }
- 
- static void
--__glXDRIdrawableCopySubBuffer(__GLXdrawable * basePrivate,
-+__glXDRIdrawableCopySubBuffer(ClientPtr client, __GLXdrawable * basePrivate,
-                               int x, int y, int w, int h)
- {
-     __GLXDRIdrawable *private = (__GLXDRIdrawable *) basePrivate;
-diff --git a/glx/glxdri2.c b/glx/glxdri2.c
-index 5e524db..ff6145b 100644
---- a/glx/glxdri2.c
-+++ b/glx/glxdri2.c
-@@ -114,10 +114,11 @@ __glXDRIdrawableDestroy(__GLXdrawable * drawable)
+diff -rupN xorg-server-1.12.4.no_flips_patch/glx/glxdri2.c xorg-server-1.12.4-fixed/glx/glxdri2.c
+--- xorg-server-1.12.4.no_flips_patch/glx/glxdri2.c	2012-10-09 18:55:42.742590362 -0700
++++ xorg-server-1.12.4-fixed/glx/glxdri2.c	2012-10-09 19:09:42.971761178 -0700
+@@ -114,10 +114,11 @@ __glXDRIdrawableDestroy(__GLXdrawable *
  }
  
  static void
@@ -77,7 +61,7 @@ index 5e524db..ff6145b 100644
      BoxRec box;
      RegionRec region;
  
-@@ -127,12 +128,27 @@ __glXDRIdrawableCopySubBuffer(__GLXdrawable * drawable,
+@@ -127,12 +128,27 @@ __glXDRIdrawableCopySubBuffer(__GLXdrawa
      box.y2 = private->height - y;
      RegionInit(&region, &box, 0);
  
@@ -108,7 +92,7 @@ index 5e524db..ff6145b 100644
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) drawable;
      BoxRec box;
-@@ -144,12 +160,12 @@ __glXDRIdrawableWaitX(__GLXdrawable * drawable)
+@@ -144,12 +160,12 @@ __glXDRIdrawableWaitX(__GLXdrawable * dr
      box.y2 = private->height;
      RegionInit(&region, &box, 0);
  
@@ -124,7 +108,7 @@ index 5e524db..ff6145b 100644
  {
      __GLXDRIdrawable *private = (__GLXDRIdrawable *) drawable;
      BoxRec box;
-@@ -161,8 +177,8 @@ __glXDRIdrawableWaitGL(__GLXdrawable * drawable)
+@@ -161,8 +177,8 @@ __glXDRIdrawableWaitGL(__GLXdrawable * d
      box.y2 = private->height;
      RegionInit(&region, &box, 0);
  
@@ -144,10 +128,21 @@ index 5e524db..ff6145b 100644
  }
  
  static const __DRIdri2LoaderExtension loaderExtension = {
-diff --git a/hw/xfree86/dri2/dri2.c b/hw/xfree86/dri2/dri2.c
-index d03d082..28383fb 100644
---- a/hw/xfree86/dri2/dri2.c
-+++ b/hw/xfree86/dri2/dri2.c
+diff -rupN xorg-server-1.12.4.no_flips_patch/glx/glxdri.c xorg-server-1.12.4-fixed/glx/glxdri.c
+--- xorg-server-1.12.4.no_flips_patch/glx/glxdri.c	2012-10-09 18:55:42.752590466 -0700
++++ xorg-server-1.12.4-fixed/glx/glxdri.c	2012-10-09 19:09:42.971761178 -0700
+@@ -270,7 +270,7 @@ __glXDRIdrawableSwapInterval(__GLXdrawab
+ }
+ 
+ static void
+-__glXDRIdrawableCopySubBuffer(__GLXdrawable * basePrivate,
++__glXDRIdrawableCopySubBuffer(ClientPtr client, __GLXdrawable * basePrivate,
+                               int x, int y, int w, int h)
+ {
+     __GLXDRIdrawable *private = (__GLXDRIdrawable *) basePrivate;
+diff -rupN xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/dri2.c xorg-server-1.12.4-fixed/hw/xfree86/dri2/dri2.c
+--- xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/dri2.c	2012-10-09 18:55:42.772590688 -0700
++++ xorg-server-1.12.4-fixed/hw/xfree86/dri2/dri2.c	2012-10-09 19:40:45.082111594 -0700
 @@ -87,6 +87,7 @@ typedef struct _DRI2Drawable {
      int swap_limit;             /* for N-buffering */
      unsigned long serialNumber;
@@ -164,7 +159,7 @@ index d03d082..28383fb 100644
      /* Initialize last swap target from DDX if possible */
      if (!ds->GetMSC || !(*ds->GetMSC) (pDraw, &ust, &pPriv->last_swap_target))
          pPriv->last_swap_target = 0;
-@@ -552,8 +554,8 @@ do_get_buffers(DrawablePtr pDraw, int *width, int *height,
+@@ -552,8 +554,8 @@ do_get_buffers(DrawablePtr pDraw, int *w
          box.y2 = pPriv->height;
          RegionInit(&region, &box, 0);
  
@@ -175,7 +170,7 @@ index d03d082..28383fb 100644
      }
  
      pPriv->needInvalidate = TRUE;
-@@ -661,9 +663,118 @@ DRI2BlockClient(ClientPtr client, DrawablePtr pDraw)
+@@ -661,9 +663,124 @@ DRI2BlockClient(ClientPtr client, Drawab
      pPriv->blockedOnMsc = TRUE;
  }
  
@@ -199,6 +194,12 @@ index d03d082..28383fb 100644
 +
 +    /* Make sure we have a window */
 +    if (pDraw->type != DRAWABLE_WINDOW)
++        return FALSE;
++
++    /* If swaps aren't implemented via flips then we cannot
++     * assume the front and back exchange with each swap.
++     * This is necessary for the tracking/blitting here to work. */
++    if (!DRI2CanFlip(pDraw))
 +        return FALSE;
 +
 +    /* Ensure that our window is the screen pixmap */
@@ -296,7 +297,7 @@ index d03d082..28383fb 100644
  {
      DRI2ScreenPtr ds = DRI2GetScreen(pDraw->pScreen);
      DRI2DrawablePtr pPriv;
-@@ -685,8 +796,13 @@ DRI2CopyRegion(DrawablePtr pDraw, RegionPtr pRegion,
+@@ -685,8 +802,13 @@ DRI2CopyRegion(DrawablePtr pDraw, Region
      if (pSrcBuffer == NULL || pDestBuffer == NULL)
          return BadValue;
  
@@ -311,7 +312,7 @@ index d03d082..28383fb 100644
      return Success;
  }
  
-@@ -814,8 +930,8 @@ DRI2SwapComplete(ClientPtr client, DrawablePtr pDraw, int frame,
+@@ -814,8 +936,8 @@ DRI2SwapComplete(ClientPtr client, Drawa
      box.x2 = pDraw->width;
      box.y2 = pDraw->height;
      RegionInit(&region, &box, 0);
@@ -322,7 +323,7 @@ index d03d082..28383fb 100644
  
      ust = ((CARD64) tv_sec * 1000000) + tv_usec;
      if (swap_complete)
-@@ -889,6 +1005,8 @@ DRI2SwapBuffers(ClientPtr client, DrawablePtr pDraw, CARD64 target_msc,
+@@ -889,6 +1011,8 @@ DRI2SwapBuffers(ClientPtr client, Drawab
          return BadDrawable;
      }
  
@@ -331,16 +332,28 @@ index d03d082..28383fb 100644
      /* Old DDX or no swap interval, just blit */
      if (!ds->ScheduleSwap || !pPriv->swap_interval) {
          BoxRec box;
-@@ -1345,3 +1463,4 @@ DRI2Version(int *major, int *minor)
+@@ -1345,3 +1469,4 @@ DRI2Version(int *major, int *minor)
      if (minor != NULL)
          *minor = DRI2VersRec.minorversion;
  }
 +
-diff --git a/hw/xfree86/dri2/dri2.h b/hw/xfree86/dri2/dri2.h
-index a67e35f..e30fb7a 100644
---- a/hw/xfree86/dri2/dri2.h
-+++ b/hw/xfree86/dri2/dri2.h
-@@ -248,9 +248,11 @@ extern _X_EXPORT DRI2BufferPtr *DRI2GetBuffers(DrawablePtr pDraw,
+Binary files xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/.dri2.c.swp and xorg-server-1.12.4-fixed/hw/xfree86/dri2/.dri2.c.swp differ
+diff -rupN xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/dri2ext.c xorg-server-1.12.4-fixed/hw/xfree86/dri2/dri2ext.c
+--- xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/dri2ext.c	2012-10-09 18:55:42.772590688 -0700
++++ xorg-server-1.12.4-fixed/hw/xfree86/dri2/dri2ext.c	2012-10-09 19:09:42.911760524 -0700
+@@ -319,7 +319,7 @@ ProcDRI2CopyRegion(ClientPtr client)
+ 
+     VERIFY_REGION(pRegion, stuff->region, client, DixReadAccess);
+ 
+-    status = DRI2CopyRegion(pDrawable, pRegion, stuff->dest, stuff->src);
++    status = DRI2CopyRegion(client, pDrawable, pRegion, stuff->dest, stuff->src, TRUE);
+     if (status != Success)
+         return status;
+ 
+diff -rupN xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/dri2.h xorg-server-1.12.4-fixed/hw/xfree86/dri2/dri2.h
+--- xorg-server-1.12.4.no_flips_patch/hw/xfree86/dri2/dri2.h	2012-10-09 18:55:42.772590688 -0700
++++ xorg-server-1.12.4-fixed/hw/xfree86/dri2/dri2.h	2012-10-09 19:09:42.911760524 -0700
+@@ -248,9 +248,11 @@ extern _X_EXPORT DRI2BufferPtr *DRI2GetB
                                                 unsigned int *attachments,
                                                 int count, int *out_count);
  
@@ -354,19 +367,3 @@ index a67e35f..e30fb7a 100644
  
  /**
   * Determine the major and minor version of the DRI2 extension.
-diff --git a/hw/xfree86/dri2/dri2ext.c b/hw/xfree86/dri2/dri2ext.c
-index 73ef7f2..dfa242a 100644
---- a/hw/xfree86/dri2/dri2ext.c
-+++ b/hw/xfree86/dri2/dri2ext.c
-@@ -319,7 +319,7 @@ ProcDRI2CopyRegion(ClientPtr client)
- 
-     VERIFY_REGION(pRegion, stuff->region, client, DixReadAccess);
- 
--    status = DRI2CopyRegion(pDrawable, pRegion, stuff->dest, stuff->src);
-+    status = DRI2CopyRegion(client, pDrawable, pRegion, stuff->dest, stuff->src, TRUE);
-     if (status != Success)
-         return status;
- 
--- 
-1.7.7.3
-
