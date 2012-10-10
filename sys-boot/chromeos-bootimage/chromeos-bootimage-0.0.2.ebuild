@@ -12,14 +12,14 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex butterfly emeraldlake2 link lumpy lumpy64 mario parrot stout stumpy"
-IUSE="${BOARDS} exynos factory-mode memtest seabios tegra cros_ec"
+IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
 X86_DEPEND="
 	       virtual/chromeos-coreboot
 	       sys-apps/coreboot-utils
-
+	       sys-boot/chromeos-seabios
 "
 DEPEND="
 	exynos? ( sys-boot/exynos-pre-boot )
@@ -30,14 +30,47 @@ DEPEND="
 	cros_ec? ( chromeos-base/chromeos-ec )
 	chromeos-base/vboot_reference
 	sys-boot/chromeos-bmpblk
-	seabios? ( sys-boot/chromeos-seabios )
 	memtest? ( sys-boot/chromeos-memtest )
 	"
 
 S=${WORKDIR}
 
+# Directory where the generated files are looked for and placed.
+CROS_FIRMWARE_IMAGE_DIR="/firmware"
+CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
+
 netboot_required() {
 	! use memtest && ( use factory-mode || use link )
+}
+
+create_seabios_cbfs() {
+	local oprom=${CROS_FIRMWARE_ROOT}/pci????,????.rom
+	local seabios_cbfs=seabios.cbfs
+	local cbfs_size=$(( 2*1024*1024 ))
+	local bootblock=$( mktemp )
+
+	# Create a dummy bootblock to make cbfstool happy
+	dd if=/dev/zero of=$bootblock count=1 bs=64
+	# Create empty CBFS
+	cbfstool ${seabios_cbfs} create ${cbfs_size} $bootblock
+	# Clean up
+	rm $bootblock
+	# Add SeaBIOS binary to CBFS
+	cbfstool ${seabios_cbfs} add-payload ${CROS_FIRMWARE_ROOT}/bios.bin.elf payload
+	# Add VGA option rom to CBFS
+	cbfstool ${seabios_cbfs} add $oprom $( basename $oprom ) optionrom
+	# Print CBFS inventory
+	cbfstool ${seabios_cbfs} print
+	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
+	# image are a pointer to the CBFS master header. Per default a CBFS
+	# lives at 4G - rom size, and the CBFS master header ends up at
+	# 0xffffffa0. However our CBFS lives at 4G-4M and is 2M in size, so
+	# the CBFS master header is at 0xffdfffa0 instead. The two lines
+	# below correct the according byte in that pointer to make all CBFS
+	# parsing code happy. In the long run we should fix cbfstool and
+	# remove this workaround.
+	/bin/echo -ne \\0737 | dd of=${seabios_cbfs} \
+			seek=$(( ${cbfs_size} - 2 )) bs=1 conv=notrunc
 }
 
 # Build vboot and non-vboot images for the given device tree file
@@ -110,16 +143,11 @@ src_compile() {
 
 	local verified_flags=''
 	local common_flags=''
-	local seabios_flags=''
 	local bct_file
 	local fdt_file
 	local uboot_file
 	local devkeys_file
 	local dd_params
-
-	# Directory where the generated files are looked for and placed.
-	CROS_FIRMWARE_IMAGE_DIR="/firmware"
-	CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 
 	# Location of the board-specific bct file
 	bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
@@ -137,15 +165,13 @@ src_compile() {
 	# Location of the devkeys
 	devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 
-	# Add a SeaBIOS payload
-	if use seabios; then
-		seabios_flags+=" --seabios=${CROS_FIRMWARE_ROOT}/bios.bin.elf"
-	fi
-
 	if ! use x86 && ! use amd64 && ! use cros-debug; then
 		verified_flags+=' --add-config-int silent_console 1'
 	fi
 	if use x86 || use amd64; then
+		# Add a SeaBIOS payload
+		create_seabios_cbfs
+		common_flags+=" --seabios ./seabios.cbfs"
 		common_flags+=" --coreboot \
 			${CROS_FIRMWARE_ROOT}/coreboot.rom"
 	fi
@@ -161,15 +187,14 @@ src_compile() {
 		# Location of the U-Boot flat device tree source file
 		fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
 		build_image "${fdt_file}" "${uboot_file}" "${ec_file}" \
-				"${common_flags}" "${verified_flags}" \
-				"${seabios_flags}"
+				"${common_flags}" "${verified_flags}" ""
 
 	else
 		einfo "Building all images"
 		for fdt_file in ${CROS_FIRMWARE_ROOT}/dts/*.dts; do
 			build_image "${fdt_file}" "${uboot_file}" \
 				"${ec_file}" "${common_flags}" \
-				"${verified_flags}" "${seabios_flags}"
+				"${verified_flags}" ""
 		done
 	fi
 }
