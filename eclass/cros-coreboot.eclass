@@ -82,6 +82,11 @@ cros-coreboot_src_install() {
 	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
+	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
+		configs/config.${COREBOOT_BOARD} )
+	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
+		configs/config.${COREBOOT_BOARD} ).rom
+	newins ${OPROM} ${CBFSOPROM}
 }
 
 EXPORT_FUNCTIONS src_compile src_install pre_src_prepare
