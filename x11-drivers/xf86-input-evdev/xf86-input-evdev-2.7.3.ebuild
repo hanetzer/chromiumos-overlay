@@ -20,7 +20,6 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}/evdev-disable-smooth-scrolling.patch"
 	"${FILESDIR}/evdev-2.6.99-wheel-accel.patch"
-	"${FILESDIR}/evdev-2.6.99-fix-ms-mice.patch"
 	"${FILESDIR}"/evdev-2.7.0-feedback-log.patch
 	"${FILESDIR}"/evdev-2.7.0-add-touch-event-timestamp.patch
 	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
