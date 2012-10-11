@@ -32,4 +32,6 @@ src_install() {
 	dodir /firmware
 	insinto /firmware
 	doins out/bios.bin.elf || die
+	doins bootorder || die
+	doins boot-menu-wait || die
 }

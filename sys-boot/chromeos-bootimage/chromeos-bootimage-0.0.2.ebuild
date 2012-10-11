@@ -56,9 +56,12 @@ create_seabios_cbfs() {
 	# Clean up
 	rm $bootblock
 	# Add SeaBIOS binary to CBFS
-	cbfstool ${seabios_cbfs} add-payload ${CROS_FIRMWARE_ROOT}/bios.bin.elf payload
+	cbfstool ${seabios_cbfs} add-payload ${CROS_FIRMWARE_ROOT}/bios.bin.elf payload lzma
 	# Add VGA option rom to CBFS
 	cbfstool ${seabios_cbfs} add $oprom $( basename $oprom ) optionrom
+	# Add additional configuration
+	cbfstool ${seabios_cbfs} add ${CROS_FIRMWARE_ROOT}/bootorder bootorder raw
+	cbfstool ${seabios_cbfs} add ${CROS_FIRMWARE_ROOT}/boot-menu-wait boot-menu-wait raw
 	# Print CBFS inventory
 	cbfstool ${seabios_cbfs} print
 	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
