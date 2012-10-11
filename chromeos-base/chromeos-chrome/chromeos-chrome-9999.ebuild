@@ -210,6 +210,18 @@ use_nacl() {
 	! use asan && ! use component_build && ! use drm && use nacl
 }
 
+# Like the `usex` helper:
+# Usage: echox [int] [echo-if-true] [echo-if-false]
+# If [int] is 0, then echo the 2nd arg (default of yes), else
+# echo the 3rd arg (default of no).
+echox() {
+	# Like the `usex` helper.
+	[[ ${1:-$?} -eq 0 ]] && echo "${2:-yes}" || echo "${3:-no}"
+}
+echo10() { echox ${1:-$?} 1 0 ; }
+echotf() { echox ${1:-$?} true false ; }
+use10()  { usex $1 1 0 ; }
+usetf()  { usex $1 true false ; }
 set_build_defines() {
 	# General build defines.
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
@@ -251,22 +263,19 @@ set_build_defines() {
 	arm)
 		BUILD_DEFINES+=(
 			target_arch=arm
-			armv7=1
-			v8_can_use_unaligned_accesses=true
-			arm_neon=$(usex neon 1 0)
+			arm_float_abi=$(usex hardfp hard softfp)
+			arm_neon=$(use10 neon)
+			armv7=$([[ ${CHOST} == armv7* ]]; echo10)
+			v8_can_use_unaligned_accesses=$([[ ${CHOST} == armv[67]* ]]; echotf)
+			v8_can_use_vfp3_instructions=$([[ ${ARM_FPU} == *vfpv[34]* ]]; echotf)
+			v8_use_arm_eabi_hardfloat=$(usetf hardfp)
 		)
 		if [[ -n "${ARM_FPU}" ]]; then
 			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
 		fi
-		if [[ $"{ARM_FPU}" == *"vfpv3"* ]]; then
-			BUILD_DEFINES+=( v8_can_use_vfp_instructions=true )
-		fi
 		if use chrome_internal; then
 			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
 			BUILD_DEFINES+=( internal_pdf=0 )
-		fi
-		if use hardfp; then
-			BUILD_DEFINES+=( v8_use_arm_eabi_hardfloat=true arm_float_abi=hard )
 		fi
 		;;
 	amd64)
