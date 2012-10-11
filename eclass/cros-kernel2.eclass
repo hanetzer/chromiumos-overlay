@@ -30,11 +30,13 @@ CONFIG_FRAGMENTS=(
 	debug
 	fbconsole
 	gdmwimax
+	gobi
 	highmem
 	initramfs
 	kvm
 	nfs
 	pcserial
+	qmi
 	samsung_serial
 	realtekpstor
 	systemtap
@@ -74,6 +76,11 @@ gdmwimax_config="
 CONFIG_WIMAX_GDM72XX=m
 CONFIG_WIMAX_GDM72XX_USB=y
 CONFIG_WIMAX_GDM72XX_USB_PM=y
+"
+
+gobi_desc="Qualcomm Gobi modem driver"
+gobi_config="
+CONFIG_USB_NET_GOBI=m
 "
 
 highmem_desc="highmem"
@@ -160,6 +167,11 @@ CONFIG_SERIAL_8250_PCI=y
 CONFIG_PARPORT=y
 CONFIG_PARPORT_PC=y
 CONFIG_PARPORT_SERIAL=y
+"
+
+qmi_desc="QMI WWAN driver"
+qmi_config="
+CONFIG_USB_NET_QMI_WWAN=m
 "
 
 samsung_serial_desc="Samsung serialport"
