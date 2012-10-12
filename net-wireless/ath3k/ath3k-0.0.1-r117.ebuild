@@ -1,6 +1,6 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT=97aecef022a031b779926ef7c18067df7f1161cc
+CROS_WORKON_COMMIT="97aecef022a031b779926ef7c18067df7f1161cc"
 CROS_WORKON_TREE="a36293541c1ec3915933a80d5428f8a652793dbd"
 
 EAPI="2"
