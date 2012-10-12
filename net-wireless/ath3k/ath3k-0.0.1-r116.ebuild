@@ -1,7 +1,7 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="99fa6117f232744dd561d7f6435d066bf5d28f7f"
-CROS_WORKON_TREE="c490e296bfeb225ddbfcbc70a031051cb17a4cf1"
+CROS_WORKON_COMMIT=97aecef022a031b779926ef7c18067df7f1161cc
+CROS_WORKON_TREE="a36293541c1ec3915933a80d5428f8a652793dbd"
 
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/atheros"
