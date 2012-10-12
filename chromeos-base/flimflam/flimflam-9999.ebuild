@@ -133,4 +133,8 @@ src_install() {
 	dobin bin/set_apn
 	dobin bin/wpa_debug
 	dobin bin/set_arpgw
+
+	# flimflam is deprecated in favor of shill, so the actual executable is
+	# not needed anymore.
+	rm -f "${D}"/usr/sbin/flimflamd
 }
