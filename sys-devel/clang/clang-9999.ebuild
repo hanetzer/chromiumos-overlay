@@ -121,6 +121,18 @@ src_compile() {
 	# This option is temporary and needed until Clang build process produces both 64 and 32 -bit asan library.
 	# Currently it produces only one: 64 bit. So we need to make 32 bit ourselves.
 	if use asan-32-explicit; then
+		# Propagate the user's .subversion configuration to the sandbox environment
+		# where the 32-bit subversion checkouts will happen.
+		local SUBVERSION_CONFIG_DIR="${ESVN_STORE_DIR}/.subversion"
+		einfo "Copying subversion credentials from " \
+			"${SUBVERSION_CONFIG_DIR} (if existing) into ${HOME}"
+
+		if [[ -d "${SUBVERSION_CONFIG_DIR}" ]]; then
+			mkdir -p "${HOME}/.subversion" || die "create .subversion dir failed"
+			cp -rfp -t "${HOME}" "${SUBVERSION_CONFIG_DIR}/" \
+				|| die "failed to copy svn credentials into ${HOME}/.subversion"
+		fi
+
 		einfo "Compiling 32-bit asan library."
 		cd "${S}"/projects/compiler-rt/lib/asan/ || die "cd asan failed"
 		emake -f Makefile.old get_third_party || die "emake asan32 get_third_party failed"
