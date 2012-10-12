@@ -47,6 +47,7 @@ ALL_BOARDS=(
 	panda
 	parrot
 	raspberrypi
+	spring
 	stout
 	stumpy
 	tegra2
