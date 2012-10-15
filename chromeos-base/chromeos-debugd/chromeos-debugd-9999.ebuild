@@ -21,7 +21,8 @@ LIBCHROME_VERS="125070"
 RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
-	dev-libs/dbus-c++"
+	dev-libs/dbus-c++
+	dev-libs/glib:2"
 DEPEND="${RDEPEND}
 	chromeos-base/shill
 	sys-apps/dbus
