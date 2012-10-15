@@ -14,7 +14,7 @@
 #############################################################################
 # Release Build number.
 # Increment by 1 for every release build.
-export CHROMEOS_BUILD=3046
+export CHROMEOS_BUILD=3047
 
 # Release Branch number.
 # Increment by 1 for every release build on a branch.
