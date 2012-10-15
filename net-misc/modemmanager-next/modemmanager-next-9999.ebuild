@@ -83,10 +83,12 @@ src_install() {
 	#
 	# TODO(thieule): Renable all plugins after we deprecate cromo.
 	# crosbug.com/33930
-	find "${D}" -name 'libmm-plugin-*.so' ! \
-		\( -name 'libmm-plugin-samsung.so' -o \
-		   -name 'libmm-plugin-novatel-lte.so' \) \
-		-delete
+	if ! use qmi; then
+		find "${D}" -name 'libmm-plugin-*.so' ! \
+			\( -name 'libmm-plugin-samsung.so' -o \
+			   -name 'libmm-plugin-novatel-lte.so' \) \
+			-delete
+	fi
 
 	insinto /etc/init
 	doins "${FILESDIR}/modemmanager.conf"
