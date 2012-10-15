@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="93771d9b1dbc8a417c2ed507024f02c8775e83c7"
-CROS_WORKON_TREE="20c18c8afdb547b332ca4bd9032fb90cdc08785d"
+CROS_WORKON_COMMIT=2f2f34202c7317ca6485a80ff8c086cd041da5b8
+CROS_WORKON_TREE="434d1b6acfd19c48d9e9d3a26d29c6324624e23d"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
@@ -23,7 +23,8 @@ LIBCHROME_VERS="125070"
 RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
-	dev-libs/dbus-c++"
+	dev-libs/dbus-c++
+	dev-libs/glib:2"
 DEPEND="${RDEPEND}
 	chromeos-base/shill
 	sys-apps/dbus
