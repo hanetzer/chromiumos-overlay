@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="8884ddc035127623418d2a1c0d1233f32789851b"
-CROS_WORKON_TREE="b0c5a1f8632a6c8063eaffcba2be02da008d1c6e"
+CROS_WORKON_COMMIT=589e763e493ff2544d2f98cdfaceed6865e066b8
+CROS_WORKON_TREE="aac8fef67a3b7b56c9b6cb32af538d32e9e70b15"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/seabios"
@@ -34,4 +34,6 @@ src_install() {
 	dodir /firmware
 	insinto /firmware
 	doins out/bios.bin.elf || die
+	doins bootorder || die
+	doins boot-menu-wait || die
 }
