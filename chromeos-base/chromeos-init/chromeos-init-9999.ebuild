@@ -70,6 +70,7 @@ src_install() {
 		rm "${D}/etc/init/iptables.conf" || die
 		rm "${D}/etc/init/ip6tables.conf" || die
 		# If nfs mounted use a tmpfs stateful partition like factory
-		sed -i 's/ext4/tmpfs/' "${D}/sbin/chromeos_startup" || die
+		sed -i 's/ext4/tmpfs/; s/,commit=600//' \
+			"${D}/sbin/chromeos_startup" || die
 	fi
 }
