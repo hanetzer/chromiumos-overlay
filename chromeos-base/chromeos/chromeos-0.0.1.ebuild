@@ -215,6 +215,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/eject
 	sys-apps/flashrom
 	sys-apps/grep
+	sys-apps/less
 	sys-apps/mawk
 	sys-apps/module-init-tools
 	sys-apps/net-tools
