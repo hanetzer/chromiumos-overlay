@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="7269d7bbbac55dff5646b64c10140a6dd8a85c40"
-CROS_WORKON_TREE="2dc0eae6b586e342bbd51db7367afa235c49287d"
+CROS_WORKON_COMMIT=c8e35478670f5a753997d28958961c71fd1b76c4
+CROS_WORKON_TREE="35fabe65c789c2860b7b790bcbba172cb8f9f337"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
