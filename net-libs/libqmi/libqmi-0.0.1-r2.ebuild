@@ -1,8 +1,8 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # Based on gentoo's modemmanager ebuild
-CROS_WORKON_COMMIT="9f58905ddb6d17d84a8c165cc477565b6f6540c7"
-CROS_WORKON_TREE="e135ab77c3331ecae38e15627556f2292a1df3d8"
+CROS_WORKON_COMMIT="f2adccd4f7f8e81feb1b0d39205f0a86c8f5ef81"
+CROS_WORKON_TREE="788dc1fec4d188292c037e0c298368b4d9056f90"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/libqmi"

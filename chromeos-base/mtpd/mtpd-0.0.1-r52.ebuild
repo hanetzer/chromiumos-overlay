@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="9a9345bb208660bf0082bebce0884460c5affb33"
-CROS_WORKON_TREE="715d92e4eb58b60c6df2ea357d6391107b85fc53"
+CROS_WORKON_COMMIT=5de55c8c2401fd0b4b75943a9240044691f1c193
+CROS_WORKON_TREE="90436e59f9bc6ddcbd5d41d191cd2a90aace2ec1"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
