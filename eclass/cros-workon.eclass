@@ -365,22 +365,18 @@ cros-workon_src_unpack() {
 			fi
 		fi
 
+		# Since we have no indication of being on a branch, it would
+		# default to 'master', and that might not contain our commit, as
+		# minilayout can have git checkouts independent of the repo tree.
+		# Hack around this by using empty branch. This will cause git fetch to
+		# pull all branches instead. Note that the branch has to be a space,
+		# rather than empty, for this trick to work.
+		EGIT_BRANCH=" "
 		for (( i = 0; i < project_count; ++i )); do
 			EGIT_REPO_URI="${repo[i]}/${project[i]}.git"
 			EGIT_PROJECT="${project[i]}${CROS_WORKON_GIT_SUFFIX}"
 			EGIT_SOURCEDIR="${destdir[i]}"
 			EGIT_COMMIT="${CROS_WORKON_COMMIT[i]}"
-			if [[ "${EGIT_COMMIT}" = "master" ]]; then
-				# TODO(davidjames): This code should really error out if
-				# ${CROS_WORKON_COMMIT} is master, because it's going to be doing
-				# the wrong thing for branches.
-				ewarn "=== START HACK ALERT ==="
-				ewarn "We don't have a CROS_WORKON_COMMIT for ${project},"
-				ewarn "and we can't find what code to use, so we are using"
-				ewarn "the latest version. This may break your build or"
-				ewarn "produce wrong output. See http://crosbug.com/6506"
-				ewarn "=== END HACK ALERT ==="
-			fi
 			# Clones to /var, copies src tree to the /build/<board>/tmp.
 			git-2_src_unpack
 			# TODO(zbehan): Support multiple projects for vcsid?
