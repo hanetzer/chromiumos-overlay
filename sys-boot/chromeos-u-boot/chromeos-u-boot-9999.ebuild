@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
+CROS_WORKON_PROJECT=("chromiumos/third_party/u-boot" "chromiumos/platform/vboot_reference")
 
 # TODO(sjg): Remove cros-board as it violates the idea of having no specific
 # board knowledge in the build system. At present it is only needed for the
@@ -16,8 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="dev profiling factory-mode"
 
-DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
-	!sys-boot/x86-firmware-fdts
+DEPEND="!sys-boot/x86-firmware-fdts
 	!sys-boot/exynos-u-boot
 	!sys-boot/tegra2-public-firmware-fdts
 	"
@@ -25,8 +24,10 @@ DEPEND=">=chromeos-base/vboot_reference-firmware-0.0.1-r175
 RDEPEND="${DEPEND}
 	"
 
-CROS_WORKON_LOCALNAME="u-boot"
-CROS_WORKON_SUBDIR="files"
+CROS_WORKON_LOCALNAME=("u-boot" "../platform/vboot_reference")
+CROS_WORKON_SUBDIR=("files" "")
+VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
+CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
@@ -107,7 +108,7 @@ src_configure() {
 	fi
 
 	COMMON_MAKE_FLAGS="CROSS_COMPILE=${CROSS_PREFIX}"
-	COMMON_MAKE_FLAGS+=" VBOOT=${ROOT%/}/usr"
+	COMMON_MAKE_FLAGS+=" VBOOT_SOURCE=${VBOOT_REFERENCE_DESTDIR}"
 	COMMON_MAKE_FLAGS+=" DEV_TREE_SEPARATE=1"
 	if use dev; then
 		# Avoid hiding the errors and warnings
