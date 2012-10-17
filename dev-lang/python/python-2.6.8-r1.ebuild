@@ -100,6 +100,7 @@ src_prepare() {
 		sed -i 's:^python$EXE:${HOSTPYTHON}:' Lib/*/regen || die
 	fi
 	epatch "${FILESDIR}"/python-2.6.8-cross-distutils.patch
+	epatch "${FILESDIR}"/python-2.6.8-configure-sizeof.patch
 
 	sed -i -e "s:sys.exec_prefix]:sys.exec_prefix, '/usr/local']:g" \
 		Lib/site.py || die "sed failed to add /usr/local to prefixes"
