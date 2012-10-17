@@ -69,7 +69,6 @@ src_install() {
 		elif [ "${board}" = "parrot" ]; then
 			doins "${FILESDIR}/50-touchpad-cmt-parrot.conf"
 		fi
-		doins "${FILESDIR}/50-touchpad-cmt-aura.conf"
 	elif use mario; then
 		doins "${FILESDIR}/50-touchpad-synaptics-mario.conf"
 	else
