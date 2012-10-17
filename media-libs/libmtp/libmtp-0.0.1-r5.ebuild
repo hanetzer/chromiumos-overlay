@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="b2a60bcfc6ffb5b5cc71f369e6ae70eb87c7ecfa"
-CROS_WORKON_TREE="1d58c4b312b6a2fd1836d64255c9b8ea3136a911"
+CROS_WORKON_COMMIT="a8eb0cc17138dd0f6ea0ed93242d25e8d349be88"
+CROS_WORKON_TREE="1fc52fbe27cd7e75a4f9ee8c2ade8c751241a9f3"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromium/deps/libmtp"
