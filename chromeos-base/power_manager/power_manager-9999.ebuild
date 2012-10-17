@@ -79,6 +79,7 @@ src_install() {
 	dobin scripts/debug_sleep_quickly
 	dobin scripts/powerd_suspend
 	dobin scripts/send_metrics_on_resume
+	dobin scripts/set_short_powerd_timeouts
 	dobin scripts/suspend_stress_test
 
 	insinto /usr/share/power_manager
