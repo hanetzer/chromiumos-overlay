@@ -144,6 +144,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-os-block-signals-when-accessing-global-timer-list.patch"
 	# Fix for crash with floating touchscreen (http://crosbug.com/27529)
 	"${FILESDIR}/1.12.0-mi-don-t-check-for-core-events-in-miPointerSetPositi.patch"
+	# Add the flag to specify the maximum VT the user can switch to
+	"${FILESDIR}/1.12.0-add-maxvt-flag.patch"
 )
 
 src_prepare() {
