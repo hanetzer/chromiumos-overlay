@@ -8,7 +8,7 @@ KEYWORDS="~arm ~amd64 ~x86"
 
 LIBCHROME_VERS="125070"
 
-inherit cros-debug cros-workon multilib toolchain-funcs
+inherit cros-debug cros-workon cros-board multilib toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
@@ -16,27 +16,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 
-# Boards whose USE flags we write for session_manager_setup.sh.
-BOARDS=(
-	daisy
-	link
-	x86-alex
-	x86-alex_he
-	x86-alex32
-	x86-alex32_he
-	x86-mario
-	x86-zgb
-	x86-zgb_he
-	x86-zgb32
-	x86-zgb32_he
-)
-BOARD_USE_PREFIX="board_use_"
-BOARD_USE_FLAGS=${BOARDS[@]/#/${BOARD_USE_PREFIX}}
-
-PKG_IUSE="-asan -disable_login_animations -disable_oobe_animation
-	  -disable_webaudio -has_hdd -highdpi -is_desktop -natural_scroll_default
-	  -new_power_button test -touchui +X"
-IUSE="${PKG_IUSE} ${BOARD_USE_FLAGS}"
+IUSE="-asan -disable_login_animations -disable_oobe_animation
+	-disable_webaudio -has_hdd -highdpi -is_desktop -natural_scroll_default
+	-new_power_button test -touchui +X"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -122,7 +104,7 @@ src_install() {
 	# read at runtime while constructing Chrome's command line.  If you need to
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
 	local use_flag_file="${D}"/etc/session_manager_use_flags.txt
-	local flags=( ${PKG_IUSE} ${BOARD_USE_FLAGS} )
+	local flags=( ${IUSE} )
 	local flag
 	for flag in ${flags[@]/#[-+]} ; do
 		usev ${flag}
