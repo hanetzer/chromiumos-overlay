@@ -109,6 +109,7 @@ IUSE_TESTS="
 	+tests_firmware_CorruptFwSigB
 	+tests_firmware_CorruptKernelA
 	+tests_firmware_CorruptKernelB
+	+tests_firmware_DevBootUSB
 	+tests_firmware_DevFwNormalBoot
 	+tests_firmware_DevMode
 	+tests_firmware_DevModeStress
