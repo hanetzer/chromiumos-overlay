@@ -62,10 +62,13 @@ src_test() {
 }
 
 src_install() {
-	dobin "shill" || die
-	exeinto "/usr/$(get_libdir)/shill/shims"
+	dobin shill || die
+	local shims_dir="/usr/$(get_libdir)/shill/shims"
+	exeinto "${shims_dir}"
 	doexe build/shims/nss-get-cert || die
 	doexe build/shims/openvpn-script || die
+	insinto "${shims_dir}"
+	doins build/shims/wpa_supplicant.conf || die
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
