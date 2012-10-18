@@ -31,10 +31,10 @@ PATCHES=(
 	"${FILESDIR}/2.16.0-copy-fb.patch"
  	# Prevent X from touching boot-time gamma settings.
 	"${FILESDIR}/2.14.0-no-gamma.patch"
- 	# Change order of function calls.
-	"${FILESDIR}/2.16.0-display-order.patch"
 	# BLT ring hang fix.
 	"${FILESDIR}/2.16.0-blt-hang.patch"
+	# Disable backlight adjustments on DPMS mode changes.
+	"${FILESDIR}/2.16.0-no-backlight.patch"
 )
 
 src_prepare() {
