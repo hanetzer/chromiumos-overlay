@@ -77,6 +77,7 @@ src_install() {
 
 	# Scripts
 	dobin scripts/debug_sleep_quickly
+	dobin scripts/powerd_dbus_suspend
 	dobin scripts/powerd_suspend
 	dobin scripts/send_metrics_on_resume
 	dobin scripts/set_short_powerd_timeouts
