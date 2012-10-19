@@ -75,7 +75,7 @@ cros-coreboot_src_compile() {
 	# Build cbmem for the target
 	cd util/cbmem
 	emake clean
-	emake
+	CROSS_COMPILE="${CHOST}-" emake
 }
 
 cros-coreboot_src_install() {
