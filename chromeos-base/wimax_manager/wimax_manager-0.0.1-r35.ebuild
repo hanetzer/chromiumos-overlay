@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="e5158f892b13feadb9f370faf3d1f014b541adaf"
-CROS_WORKON_TREE="6c3dfe672c574d81d295ef3287894062e40b06bd"
+CROS_WORKON_COMMIT=f1c5480184e153f8f4de2ad9050e02b04cfbbe92
+CROS_WORKON_TREE="adbd98ca9fe5a06b73013010a6de2b56ac46bfb8"
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/wimax_manager"
@@ -22,7 +22,6 @@ LIBCHROME_VERS="125070"
 RDEPEND="gdmwimax? (
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	dev-cpp/gflags
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 )"
