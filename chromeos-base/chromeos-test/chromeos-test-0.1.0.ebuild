@@ -43,7 +43,8 @@ RDEPEND="${RDEPEND}
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/recover-duts
-        chromeos-base/saft
+	chromeos-base/saft
+	chromeos-base/touchbot
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject
