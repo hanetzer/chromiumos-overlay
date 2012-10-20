@@ -807,6 +807,7 @@ src_compile() {
 	if use build_tests; then
 		TEST_TARGETS=("${TEST_FILES[@]}"
 			pyautolib
+			peerconnection_server
 			chromedriver
 			browser_tests
 			sync_integration_tests)
@@ -1111,6 +1112,7 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
 		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		autotest-deponly_src_install
+		doexe "${FROM}/peerconnection_server"
 	fi
 	if use pgo_generate; then
 		local pgo_file_dest="chromeos-chrome-${ARCH}-${PV}${PGO_SUFFIX}"
