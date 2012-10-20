@@ -42,7 +42,6 @@ src_install() {
 			cros_choose_profile
 			cros_chrome_make
 			cros_fetch_image
-			cros_overlay_list
 			cros_sign_bootstub
 			cros_start_vm
 			cros_stop_vm
