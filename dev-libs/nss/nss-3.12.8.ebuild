@@ -36,6 +36,9 @@ src_prepare() {
 	# See http://crosbug.com/29623 for details.
 	epatch "${FILESDIR}"/${P}-abort-on-failed-urandom-access.patch
 
+	# See https://bugzilla.mozilla.org/show_bug.cgi?id=802429 for details
+	epatch "${FILESDIR}"/${P}-bugzilla-802429.patch
+
 	cd "${S}"/mozilla/security/coreconf
 
 	# Explain that linux 3.0+ is just the same as 2.6.
