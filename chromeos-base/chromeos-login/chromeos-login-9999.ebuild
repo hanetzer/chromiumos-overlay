@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -accelerate_2d_canvas -disable_login_animations
+IUSE="-asan +accelerate_2d_canvas -disable_login_animations
 	-disable_oobe_animation -disable_webaudio -has_hdd -highdpi -is_desktop
 	-natural_scroll_default -new_power_button test -touchui +X"
 
