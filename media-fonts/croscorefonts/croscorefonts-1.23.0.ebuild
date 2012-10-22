@@ -4,10 +4,10 @@
 
 inherit font
 
-DESCRIPTION="Arimo, Tinos and Cousine in 4 weights developed by Ascender for Chrom*OS"
+DESCRIPTION="Arimo, Tinos and Cousine in 4 weights and Symbol Neu developed by Monotype Imaging for Chrom*OS"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
-LICENSE="OFL-1.1"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh x86 ~x86-fbsd"
 IUSE=""
