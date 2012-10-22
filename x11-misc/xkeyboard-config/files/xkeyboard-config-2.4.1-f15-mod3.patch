@@ -5,7 +5,7 @@ diff -uNr xkb.orig/symbols/pc xkb/symbols/pc
      modifier_map Lock   { Caps_Lock, ISO_Lock };
      modifier_map Control{ Control_L, Control_R };
      modifier_map Mod2   { Num_Lock };
-+    modifier_map Mod3   { F15 };
++    modifier_map Mod3   { XF86Launch6 };
      modifier_map Mod4   { Super_L, Super_R };
  
      //  Fake keys for virtual<->real modifiers mapping 
