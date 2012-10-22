@@ -445,10 +445,17 @@ create_gclient_file() {
 		},
 	},
 EOF
+	local internal_revision=${revision}
+	# If we're syncing to TOT, there won't be a matching internal revision for
+	# the external revision. Rely on gclient sync --transitive to pick one of the
+	# right revisions.
+	if [[ ${use_trunk} == 0 ]]; then
+		internal_revision=
+	fi
 	if [[ -n "${auxiliary_url}" ]]; then
 		cat >>${echrome_store_dir}/.gclient <<EOF
   { "name"        : "aux_src",
-	"url"         : "${auxiliary_url}${revision}",
+	"url"         : "${auxiliary_url}${internal_revision}",
   },
 EOF
 	fi
@@ -501,9 +508,7 @@ unpack_chrome() {
 		rm patches
 	fi
 	elog "Syncing google chrome sources using ${EGCLIENT}"
-	# We use --force to work around a race condition with
-	# checking out cros.git in parallel with the main chrome tree.
-	${EGCLIENT} sync --jobs 8 --nohooks --delete_unversioned_trees --force
+	${EGCLIENT} sync --nohooks --delete_unversioned_trees --transitive
 }
 
 decide_chrome_origin() {
