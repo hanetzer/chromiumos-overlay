@@ -20,8 +20,7 @@ RDEPEND="app-crypt/trousers
 	!minimal? ( dev-libs/libyaml )
 	dev-libs/glib
 	dev-libs/openssl
-	sys-apps/util-linux
-	!<=chromeos-base/vboot_reference-firmware-0.0.1-r307"
+	sys-apps/util-linux"
 DEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-cpp/gtest"
