@@ -23,6 +23,7 @@ RDEPEND="chromeos-base/bootstat
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/nss
+	net-dialup/ppp
 	net-dns/c-ares"
 
 DEPEND="${RDEPEND}
@@ -67,6 +68,7 @@ src_install() {
 	exeinto "${shims_dir}"
 	doexe build/shims/nss-get-cert || die
 	doexe build/shims/openvpn-script || die
+	doexe build/shims/shill-pppd-plugin.so || die
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf || die
 	# Install introspection XML
