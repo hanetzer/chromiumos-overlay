@@ -19,7 +19,8 @@ CROS_WORKON_LOCALNAME="../third_party/chrontel"
 RDEPEND="x11-libs/libX11
 	x11-libs/libXdmcp
 	x11-libs/libXrandr
-	media-libs/alsa-lib"
+	media-libs/alsa-lib
+	media-sound/adhd"
 
 DEPEND="${RDEPEND}"
 
