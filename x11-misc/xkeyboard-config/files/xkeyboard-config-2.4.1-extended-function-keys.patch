@@ -142,61 +142,61 @@ index 7d47d66..73b5af2 100644
      key <FK03> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F3, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_3 ]
-+	symbols[Group1]= [ F3, F3, F3, F3, XF86_Switch_VT_3 ]
++	symbols[Group1]= [ F3, F3, F3, F3, F3 ]
      };
  
      key <FK04> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F4, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_4 ]
-+	symbols[Group1]= [ F4, F4, F4, F4, XF86_Switch_VT_4 ]
++	symbols[Group1]= [ F4, F4, F4, F4, F4 ]
      };
  
      key <FK05> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F5, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_5 ]
-+	symbols[Group1]= [ F5, F5, F5, F5, XF86_Switch_VT_5 ]
++	symbols[Group1]= [ F5, F5, F5, F5, F5 ]
      };
  
      key <FK06> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F6, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_6 ]
-+	symbols[Group1]= [ F6, F6, F6, F6, XF86_Switch_VT_6 ]
++	symbols[Group1]= [ F6, F6, F6, F6, F6 ]
      };
  
      key <FK07> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F7, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_7 ]
-+	symbols[Group1]= [ F7, F7, F7, F7, XF86_Switch_VT_7 ]
++	symbols[Group1]= [ F7, F7, F7, F7, F7 ]
      };
  
      key <FK08> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F8, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_8 ]
-+	symbols[Group1]= [ F8, F8, F8, F8, XF86_Switch_VT_8 ]
++	symbols[Group1]= [ F8, F8, F8, F8, F8 ]
      };
  
      key <FK09> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F9, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_9 ]
-+	symbols[Group1]= [ F9, F9, F9, F9, XF86_Switch_VT_9 ]
++	symbols[Group1]= [ F9, F9, F9, F9, F9 ]
      };
  
      key <FK10> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F10, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_10 ]
-+	symbols[Group1]= [ F10, F10, F10, F10, XF86_Switch_VT_10 ]
++	symbols[Group1]= [ F10, F10, F10, F10, F10 ]
      };
  
      key <FK11> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F11, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_11 ]
-+	symbols[Group1]= [ F11, F11, F11, F11, XF86_Switch_VT_11 ]
++	symbols[Group1]= [ F11, F11, F11, F11, F11 ]
      };
  
      key <FK12> {
  	type="CTRL+ALT",
 -	symbols[Group1]= [ F12, VoidSymbol, VoidSymbol, VoidSymbol, XF86_Switch_VT_12 ]
-+	symbols[Group1]= [ F12, F12, F12, F12, XF86_Switch_VT_12 ]
++	symbols[Group1]= [ F12, F12, F12, F12, F12 ]
      };
  
  };
