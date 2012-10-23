@@ -15,6 +15,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
+	!<chromeos-base/flimflam-0.0.1-r526
 	chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
@@ -63,6 +64,11 @@ src_test() {
 }
 
 src_install() {
+	dobin bin/ff_debug || die
+	dobin bin/mm_debug || die
+	dobin bin/set_apn || die
+	dobin bin/set_arpgw || die
+	dobin bin/wpa_debug || die
 	dobin shill || die
 	local shims_dir="/usr/$(get_libdir)/shill/shims"
 	exeinto "${shims_dir}"

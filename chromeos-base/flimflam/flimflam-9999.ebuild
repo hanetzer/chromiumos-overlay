@@ -26,7 +26,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	dhcpcd? ( net-misc/dhcpcd )
 	diagnostics? ( sys-apps/net-tools )
 	modemmanager? ( chromeos-base/modem-utilities
-		        >=chromeos-base/mobile-providers-0.0.1-r12 )
+					>=chromeos-base/mobile-providers-0.0.1-r12 )
 	>=net-dns/c-ares-1.7.0
 	nss? ( dev-libs/nss )
 	openvpn? ( net-misc/openvpn )
@@ -37,7 +37,7 @@ RDEPEND=">=dev-libs/glib-2.16
 	udev? ( >=sys-fs/udev-141 )
 	l2tpipsec? ( chromeos-base/vpn-manager )
 	newwifi? ( net-wireless/wpa_supplicant[dbus] )
-        !chromeos-base/entd"
+	!chromeos-base/entd"
 
 DEPEND="${RDEPEND}
 	modemmanager? ( virtual/modemmanager )
@@ -126,13 +126,6 @@ src_install() {
 		# exist).
 		#cp "${D}"/usr/lib/flimflam/scripts/60-flimflam.sh ${ppp_dir}
 	fi
-
-	exeinto /usr/share/userfeedback/scripts
-	dobin bin/ff_debug
-	dobin bin/mm_debug
-	dobin bin/set_apn
-	dobin bin/wpa_debug
-	dobin bin/set_arpgw
 
 	# flimflam is deprecated in favor of shill, so the actual executable is
 	# not needed anymore.
