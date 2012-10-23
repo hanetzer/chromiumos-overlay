@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="db5fb4775c4b5c6ec036523274cbd4d5fce1134e"
-CROS_WORKON_TREE="b82605321dfdb5bb8a01d6f75d78dd8892d0e464"
+CROS_WORKON_COMMIT=09207b4786e001d5fea7a05c262597358239b795
+CROS_WORKON_TREE="f98ccfada7588704c36dffe29a69cc038cf36ee2"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/ply-image"
