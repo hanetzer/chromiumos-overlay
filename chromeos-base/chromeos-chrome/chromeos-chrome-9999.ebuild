@@ -40,13 +40,16 @@ REORDER_SUBDIR="reorder"
 # from within golo.chromium.org. TODO(rcui): Remove this once we've
 # converted all bots to GERRIT_SOURCE.
 DOMAIN_NAME=$(hostname -d)
+
+SVN_MIRROR_URL="svn://svn-mirror.golo.chromium.org"
 if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
-	EXTERNAL_URL="svn://svn-mirror.golo.chromium.org/chrome"
-	INTERNAL_URL="svn://svn-mirror.golo.chromium.org/chrome-internal"
+	EXTERNAL_URL="${SVN_MIRROR_URL}/chrome"
+	INTERNAL_URL="${SVN_MIRROR_URL}/chrome-internal"
 else
 	EXTERNAL_URL="http://src.chromium.org/svn"
 	INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
 fi
+
 # Portage version without optional portage suffix.
 CHROME_VERSION="${PV/_*/}"
 [[ "${PV}" == "9999" || -n "${CROS_SVN_COMMIT}" ]]
@@ -390,14 +393,16 @@ create_gclient_file() {
 	local checkout_point="CHROME_DEPS"
 
 	# Bots in golo.chromium.org have private mirrors that are only accessible
-	# from within golo.chromium.org. TODO(rcui): Remove this once we've
-	# converted all bots to GERRIT_SOURCE.
+	# from within golo.chromium.org.
 	local custom_vars=''
 	if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
-		custom_vars='
-"webkit_trunk": "svn://svn-mirror.golo.chromium.org/webkit-readonly/trunk",
-"googlecode_url": "svn://svn-mirror.golo.chromium.org/%s",
-"sourceforge_url": "svn://svn-mirror.golo.chromium.org/%(repo)s",'
+		custom_vars=$(cat <<EOF
+"svn_url": "${SVN_MIRROR_URL}",
+"webkit_trunk": "${SVN_MIRROR_URL}/webkit-readonly/trunk",
+"googlecode_url": "${SVN_MIRROR_URL}/%s",
+"sourceforge_url": "${SVN_MIRROR_URL}/%(repo)s",
+EOF
+)
 	fi
 
 	if [[ ${use_pdf} == 0 ]]; then
