@@ -907,6 +907,7 @@ install_chrome_test_resources() {
 	TEST_INSTALL_TARGETS=(
 		"libppapi_tests.so"
 		"browser_tests"
+		"peerconnection_server"
 		"sync_integration_tests"
 		"video_decode_accelerator_unittest" )
 
@@ -1121,7 +1122,6 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
 		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		autotest-deponly_src_install
-		doexe "${FROM}/peerconnection_server"
 	fi
 	if use pgo_generate; then
 		local pgo_file_dest="chromeos-chrome-${ARCH}-${PV}${PGO_SUFFIX}"
