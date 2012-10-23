@@ -74,6 +74,7 @@ src_install() {
 	exeinto "${shims_dir}"
 	doexe build/shims/nss-get-cert || die
 	doexe build/shims/openvpn-script || die
+	doexe build/shims/set-apn-helper || die
 	doexe build/shims/shill-pppd-plugin.so || die
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf || die
