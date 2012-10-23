@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="6d2c72dddf3dbbc6a614d4fa1a7a3d670756c01f"
-CROS_WORKON_TREE="45890d2d1a9c0d9d4ef9a332e2f1872e30fc10e9"
+CROS_WORKON_COMMIT=2697aa9f22fec28f14a954e11368bd7d16073ffb
+CROS_WORKON_TREE="0f7b17c0c38759dd1aa0172d2e22370b7a292fb4"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
@@ -25,6 +25,7 @@ RDEPEND="chromeos-base/bootstat
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/nss
+	net-dialup/ppp
 	net-dns/c-ares"
 
 DEPEND="${RDEPEND}
@@ -69,6 +70,7 @@ src_install() {
 	exeinto "${shims_dir}"
 	doexe build/shims/nss-get-cert || die
 	doexe build/shims/openvpn-script || die
+	doexe build/shims/shill-pppd-plugin.so || die
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf || die
 	# Install introspection XML
