@@ -159,12 +159,14 @@ src_install() {
 	local file
 	local dts_dir
 
+	insinto "${inst_dir}"
+
 	# Daisy and its variants need an SPL binary.
 	if use u_boot_config_use_daisy; then
 		files_to_copy+=" spl/${ub_board}-spl.bin"
+		newins "${UB_BUILD_DIR}/spl/u-boot-spl" "${ub_board}-spl.elf"
 	fi
 
-	insinto "${inst_dir}"
 	for file in ${files_to_copy}; do
 		doins "${UB_BUILD_DIR}/${file}"
 	done
