@@ -68,6 +68,8 @@ src_install() {
 	dobin bin/mm_debug || die
 	dobin bin/set_apn || die
 	dobin bin/set_arpgw || die
+	dobin bin/shill_login_user || die
+	dobin bin/shill_logout_user || die
 	dobin bin/wpa_debug || die
 	dobin shill || die
 	local shims_dir="/usr/$(get_libdir)/shill/shims"
