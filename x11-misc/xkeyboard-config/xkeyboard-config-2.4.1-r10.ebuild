@@ -41,6 +41,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
 	"${FILESDIR}"/${P}-f15-mod3.patch
+	"${FILESDIR}"/${P}-add-f19-24.patch
 )
 
 src_prepare() {
