@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -1052,6 +1052,10 @@ src_install() {
 	use drm && doexe "${FROM}"/ash_shell
 	if use chrome_internal && use chrome_pdf; then
 		doexe "${FROM}"/libpdf.so
+	fi
+	if use chrome_internal && use widevine_cdm; then
+		doexe "${FROM}"/libwidevinecdmplugin.so
+		doexe "${FROM}"/libwidevinecdm.so
 	fi
 	exeopts -m4755	# setuid the sandbox
 	newexe "${FROM}/chrome_sandbox" chrome-sandbox
