@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="b1ec860e24acccf9b538dbd4c25b543583d5f7fe"
-CROS_WORKON_TREE="a0bbcbba48ca4a55ab772f1c7bd22b99a884e2e7"
+CROS_WORKON_COMMIT=16f63498737e8f81ce5b6035f844c7bfbdce1d56
+CROS_WORKON_TREE="dda25106a8e66055906f3f4afea82540da44a5bf"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
@@ -76,6 +76,7 @@ src_install() {
 	exeinto "${shims_dir}"
 	doexe build/shims/nss-get-cert || die
 	doexe build/shims/openvpn-script || die
+	doexe build/shims/set-apn-helper || die
 	doexe build/shims/shill-pppd-plugin.so || die
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf || die
