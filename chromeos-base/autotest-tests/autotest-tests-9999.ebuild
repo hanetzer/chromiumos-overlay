@@ -97,6 +97,7 @@ IUSE_TESTS="
 	+tests_desktopui_PyAutoPerf
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
+	+tests_example_CrosTest
 	+tests_firmware_CgptState
 	+tests_firmware_CgptStress
 	+tests_firmware_ConsecutiveBoot
