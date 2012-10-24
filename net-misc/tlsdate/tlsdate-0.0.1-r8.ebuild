@@ -1,7 +1,7 @@
 # Copyright 2012 The Chromium OS Authors
 # Distributed under the terms of the GNU General Public License v2
-CROS_WORKON_COMMIT="b0f7fea2aa8e1b57d1921e10b2df721f6bddfd69"
-CROS_WORKON_TREE="3c60c13e4a42ed919c22b19842cdc73b3a75697f"
+CROS_WORKON_COMMIT=9c3e49f2f4823c822fe29342e3eebbd38154d55a
+CROS_WORKON_TREE="097eaaf92997d53b7f79bce6c7f562d25bd0a27c"
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/tlsdate"
