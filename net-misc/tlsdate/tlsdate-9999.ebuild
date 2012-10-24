@@ -35,7 +35,7 @@ src_compile() {
 }
 
 src_install() {
-	dosbin src/tlsdate{,-helper}
+	dosbin src/tlsdate{,-helper,d}
 	doman man/tlsdate{,-helper}.1
 	dodoc README
 }
