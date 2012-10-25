@@ -104,8 +104,7 @@ src_install() {
 	keepdir /var/lib/${PN} || die
 
 	if use resolvfiles ; then
-		dodir /etc
-		dosym /var/run/flimflam/resolv.conf /etc/resolv.conf || die
+		:
 	elif use resolvconf; then
 		:
 	elif use dnsproxy ; then

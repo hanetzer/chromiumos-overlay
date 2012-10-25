@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
-	!<chromeos-base/flimflam-0.0.1-r527
+	!<chromeos-base/flimflam-0.0.1-r530
 	chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
@@ -82,6 +82,7 @@ src_install() {
 	doins build/shims/wpa_supplicant.conf || die
 	insinto /etc
 	doins shims/nsswitch.conf || die
+	dosym /var/run/shill/resolv.conf /etc/resolv.conf || die
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf || die
 	# Install introspection XML
