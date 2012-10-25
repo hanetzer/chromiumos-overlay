@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
-	!<chromeos-base/flimflam-0.0.1-r526
+	!<chromeos-base/flimflam-0.0.1-r527
 	chromeos-base/libchrome:125070[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
@@ -78,6 +78,8 @@ src_install() {
 	doexe build/shims/shill-pppd-plugin.so || die
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf || die
+	insinto /etc
+	doins shims/nsswitch.conf || die
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml

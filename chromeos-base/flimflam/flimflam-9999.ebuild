@@ -106,9 +106,6 @@ src_install() {
 	if use resolvfiles ; then
 		dodir /etc
 		dosym /var/run/flimflam/resolv.conf /etc/resolv.conf || die
-		insinto /etc
-		echo "hosts: files dns" > nsswitch.conf || die
-		doins nsswitch.conf || die
 	elif use resolvconf; then
 		:
 	elif use dnsproxy ; then
