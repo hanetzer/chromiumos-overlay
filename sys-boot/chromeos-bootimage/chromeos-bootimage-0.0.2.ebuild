@@ -79,16 +79,23 @@ build_image() {
 	base=$(basename ${fdt_file})
 	board=${base%%.dts}
 	board=${board##*-}
-	cros_bundle_firmware \
-		${common_flags} \
+	cmdline="${common_flags} \
 		--dt ${fdt_file} \
 		--uboot ${uboot_file} \
 		${ec_file_flag} \
-		--bootcmd "vboot_twostop" \
+		--bootcmd vboot_twostop \
 		--bootsecure \
-		${verified_flags} \
-		--outdir out \
-		--output "image-${board}.bin" ||
+		${verified_flags}"
+
+	# Build an RO-normal image, and an RW (twostop) image. This assumes
+	# that the fdt has the flags set to 1 by default.
+	cros_bundle_firmware ${cmdline} \
+		--outdir "out-${board}.ro" \
+		--output "image-${board}.ro.bin" ||
+		die "failed to build image."
+	cros_bundle_firmware ${cmdline} --force-rw \
+		--outdir "out-${board}.rw" \
+		--output "image-${board}.rw.bin" ||
 		die "failed to build image."
 
 	# Make non-vboot image
@@ -104,7 +111,7 @@ build_image() {
 		--add-config-int load_env 1 \
 		--add-node-enable console 1 \
 		${nv_flags} \
-		--outdir nvout \
+		--outdir "nvout-${board}" \
 		--output "nv_image-${board}.bin" ||
 		die "failed to build legacy image."
 }
