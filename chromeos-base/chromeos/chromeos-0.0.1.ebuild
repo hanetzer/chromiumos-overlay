@@ -196,7 +196,7 @@ RDEPEND="${RDEPEND}
 	media-sound/alsa-utils
 	media-sound/adhd
 	net-firewall/iptables
-	net-misc/htpdate
+	net-misc/tlsdate
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
