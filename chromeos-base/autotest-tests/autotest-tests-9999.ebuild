@@ -217,7 +217,8 @@ IUSE_TESTS="
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_ConnmanPowerStateTracking
-	+tests_network_DhclientLeaseTestCase
+	+tests_network_DhcpNegotiationSuccess
+	+tests_network_DhcpRenew
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
 	+tests_network_EthCapsServer
