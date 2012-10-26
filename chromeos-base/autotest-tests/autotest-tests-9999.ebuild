@@ -96,7 +96,6 @@ IUSE_TESTS="
 	+tests_desktopui_KillRestart
 	+tests_desktopui_PyAutoPerf
 	+tests_desktopui_SpeechSynthesisSemiAuto
-	+tests_desktopui_WebRTC
 	tests_example_UnitTest
 	+tests_firmware_CgptState
 	+tests_firmware_CgptStress
