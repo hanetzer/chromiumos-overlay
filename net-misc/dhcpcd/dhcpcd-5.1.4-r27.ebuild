@@ -1,8 +1,8 @@
 # Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/dhcpcd/dhcpcd-5.2.1.ebuild,v 1.1 2010/03/02 18:14:07 williamh Exp $
-CROS_WORKON_COMMIT="1ce6dcbd9dbc307c4f1cfdacb336441c694858d3"
-CROS_WORKON_TREE="d07392d380509dbe13033bd44cdca6039469f86e"
+CROS_WORKON_COMMIT=d69478333868fc621d38d0fdd3a801a11bf4d85e
+CROS_WORKON_TREE="9d9cb367ab7cfdd35a7918bbd255ffa189ba1fab"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/dhcpcd"
