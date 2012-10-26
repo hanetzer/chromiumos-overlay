@@ -26,7 +26,8 @@ pkg_setup() {
 		$(use_enable ipv6)
 		$(use_enable doc devel-docs)
 		$(use_with doc xmlto)
-		--with-bzip2
+		--without-bzip2
+		--disable-freetype
 		--without-fop
 		--with-encodingsdir="${EPREFIX}/usr/share/fonts/encodings"
 	)
