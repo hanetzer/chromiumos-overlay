@@ -80,6 +80,8 @@ src_install() {
 	doins build/shims/wpa_supplicant.conf || die
 	insinto /etc
 	doins shims/nsswitch.conf || die
+	insinto /etc/dbus-1/system.d
+	doins shims/org.chromium.flimflam.conf || die
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
