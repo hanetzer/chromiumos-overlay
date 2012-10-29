@@ -69,7 +69,6 @@
 =sys-apps/openrc-0.4.3-r4	amd64 arm x86
 =sys-apps/rescan-scsi-bus-1.29  amd64 arm x86
 =sys-apps/sg3_utils-1.27.20090411	amd64 arm x86
-=sys-apps/smartmontools-5.38    amd64 arm x86
 =sys-apps/sysvinit-2.86-r12	amd64 arm x86
 =sys-apps/usbutils-0.86-r1	amd64 arm x86
 =sys-apps/util-linux-2.16.1	amd64 arm x86
