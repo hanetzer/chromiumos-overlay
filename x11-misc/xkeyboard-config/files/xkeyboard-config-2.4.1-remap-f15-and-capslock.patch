@@ -1,0 +1,30 @@
+diff -ur xkeyboard-config-2.4.1.orig/symbols/pc xkeyboard-config-2.4.1/symbols/pc
+--- xkeyboard-config-2.4.1.orig/symbols/pc	2011-06-15 12:46:52.000000000 -0700
++++ xkeyboard-config-2.4.1/symbols/pc	2012-10-29 16:18:58.269311769 -0700
+@@ -19,7 +19,10 @@
+     key  <TAB> {	[ Tab,	ISO_Left_Tab	]	};
+     key <RTRN> {	[ Return	]	};
+ 
+-    key <CAPS> {	[ Caps_Lock	]	};
++    // Generate a non Caps_Lock symbol (F16) for <CAPS> to allow the user to
++    // remap the key. Chrome remaps the F16 key symbol back to VKEY_CAPITAL when
++    // needed. crbug.com/146204.
++    key <CAPS> {	[ XF86Launch7	]	};
+ 
+     key <NMLK> {	[ Num_Lock 	]	};
+ 
+@@ -38,8 +41,12 @@
+     // begin modifier mappings
+     modifier_map Shift  { Shift_L, Shift_R };
+     modifier_map Lock   { Caps_Lock, ISO_Lock };
+-    modifier_map Control{ Control_L, Control_R };
++    // Use F15 (i.e. "Diamond" on Stout keyboard) as Control.
++    modifier_map Control{ Control_L, Control_R, <FK15> };
+     modifier_map Mod2   { Num_Lock };
++    // Use <CAPS> as Mod3. The Mod3Mask mask will be remapped to ControlMask,
++    // Mod1Mask (Alt), etc. in Chrome. crbug.com/146204
++    modifier_map Mod3   { <CAPS> };
+     modifier_map Mod4   { Super_L, Super_R };
+ 
+     //  Fake keys for virtual<->real modifiers mapping 
+Only in xkeyboard-config-2.4.1/symbols: pc~
