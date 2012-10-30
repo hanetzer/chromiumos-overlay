@@ -43,39 +43,6 @@ netboot_required() {
 	! use memtest && ( use factory-mode || use link )
 }
 
-create_seabios_cbfs() {
-	local oprom=${CROS_FIRMWARE_ROOT}/pci????,????.rom
-	local seabios_cbfs=seabios.cbfs
-	local cbfs_size=$(( 2*1024*1024 ))
-	local bootblock=$( mktemp )
-
-	# Create a dummy bootblock to make cbfstool happy
-	dd if=/dev/zero of=$bootblock count=1 bs=64
-	# Create empty CBFS
-	cbfstool ${seabios_cbfs} create ${cbfs_size} $bootblock
-	# Clean up
-	rm $bootblock
-	# Add SeaBIOS binary to CBFS
-	cbfstool ${seabios_cbfs} add-payload ${CROS_FIRMWARE_ROOT}/bios.bin.elf payload lzma
-	# Add VGA option rom to CBFS
-	cbfstool ${seabios_cbfs} add $oprom $( basename $oprom ) optionrom
-	# Add additional configuration
-	cbfstool ${seabios_cbfs} add ${CROS_FIRMWARE_ROOT}/bootorder bootorder raw
-	cbfstool ${seabios_cbfs} add ${CROS_FIRMWARE_ROOT}/boot-menu-wait boot-menu-wait raw
-	# Print CBFS inventory
-	cbfstool ${seabios_cbfs} print
-	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
-	# image are a pointer to the CBFS master header. Per default a CBFS
-	# lives at 4G - rom size, and the CBFS master header ends up at
-	# 0xffffffa0. However our CBFS lives at 4G-4M and is 2M in size, so
-	# the CBFS master header is at 0xffdfffa0 instead. The two lines
-	# below correct the according byte in that pointer to make all CBFS
-	# parsing code happy. In the long run we should fix cbfstool and
-	# remove this workaround.
-	/bin/echo -ne \\0737 | dd of=${seabios_cbfs} \
-			seek=$(( ${cbfs_size} - 2 )) bs=1 conv=notrunc
-}
-
 # Build vboot and non-vboot images for the given device tree file
 # A vboot image performs a full verified boot, and this is the normal case.
 # A non-vboot image doesn't do a check for updated firmware, and just boots
@@ -173,8 +140,7 @@ src_compile() {
 	fi
 	if use x86 || use amd64; then
 		# Add a SeaBIOS payload
-		create_seabios_cbfs
-		common_flags+=" --seabios ./seabios.cbfs"
+		common_flags+=" --seabios ${CROS_FIRMWARE_ROOT}/seabios.cbfs"
 		common_flags+=" --coreboot \
 			${CROS_FIRMWARE_ROOT}/coreboot.rom"
 	fi
