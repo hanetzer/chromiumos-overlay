@@ -169,7 +169,7 @@ src_install() {
 	insinto "${dst_dir}"
 	doins -r firmware/include/*
 
-	insinto /usr/include/vboot/${subdir}
+	insinto /usr/include/vboot/
 	doins "utility/include/kernel_blob.h"
 	doins "utility/include/dump_kernel_config.h"
 	doins "cgpt/CgptManager.h"
