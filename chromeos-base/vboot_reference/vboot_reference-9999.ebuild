@@ -168,6 +168,10 @@ src_install() {
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
 	doins -r firmware/include/*
+	for arch in $(ls firmware/arch/); do
+		insinto "${dst_dir}"/arch/"${arch}"
+		doins firmware/arch/"${arch}"/include/biosincludes.h
+	done
 
 	insinto /usr/include/vboot/
 	doins "utility/include/kernel_blob.h"
