@@ -39,6 +39,7 @@ ALL_BOARDS=(
 	daisy
 	emeraldlake2
 	fb1
+	graysreef
 	ironhide
 	kiev
 	klang
