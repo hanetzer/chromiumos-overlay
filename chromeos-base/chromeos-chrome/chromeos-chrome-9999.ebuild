@@ -605,7 +605,7 @@ src_unpack() {
 				elog "NEW CHROME = ${CHROME_VERSION}"
 				elog "rm -rf ${CHROME_DISTDIR}"
 				rm -rf "${CHROME_DISTDIR}"
-				sync
+				sandboxless_ensure_directory "${CHROME_DISTDIR}"
 				unpack_chrome || die "${EGCLIENT} sync failed from fresh checkout"
 			else
 				die "${EGCLIENT} sync failed"
