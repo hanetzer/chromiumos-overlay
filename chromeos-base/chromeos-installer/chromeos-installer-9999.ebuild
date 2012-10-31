@@ -19,6 +19,7 @@ IUSE="32bit_au cros_host"
 
 DEPEND="
 	chromeos-base/verity
+	dev-cpp/gmock
 	!cros_host? (
 		chromeos-base/vboot_reference
 	)"
