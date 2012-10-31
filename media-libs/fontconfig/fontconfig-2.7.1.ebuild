@@ -13,7 +13,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.gz"
 LICENSE="fontconfig"
 SLOT="1.0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="doc -highdpi -is_desktop"
+IUSE="cros_host doc -highdpi -is_desktop"
 
 # Purposefully dropped the xml USE flag and libxml2 support. Having this is
 # silly since expat is the preferred way to go per upstream and libxml2 support
@@ -95,8 +95,10 @@ src_install() {
 	# rendering.  Until we have a better solution, turn it off and use grayscale
 	# instead on desktop boards.  Also disable it on high-DPI displays, since
 	# they have little need for it and use subpixel positioning, which can
-	# interact poorly with it (http://crbug.com/125066#c8).
-	if use is_desktop || use highdpi; then
+	# interact poorly with it (http://crbug.com/125066#c8).  Additionally,
+	# disable it when installing to the host sysroot so the images in the
+	# initramfs package won't use subpixel rendering (http://crosbug.com/27872).
+	if use is_desktop || use highdpi || use cros_host; then
 		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
 		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/.
 		check_fontconfig_default 10-no-sub-pixel.conf
