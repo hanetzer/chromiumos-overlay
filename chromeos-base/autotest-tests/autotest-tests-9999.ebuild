@@ -345,6 +345,7 @@ IUSE_TESTS="
 	+tests_security_RootCA
 	+tests_security_RootfsOwners
 	+tests_security_RootfsStatefulSymlinks
+	+tests_security_RuntimeExecStack
 	+tests_security_SandboxedServices
 	+tests_security_SeccompSyscallFilters
 	+tests_security_SuidBinaries
