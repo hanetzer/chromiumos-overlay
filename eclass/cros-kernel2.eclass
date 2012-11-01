@@ -360,7 +360,7 @@ kmake() {
 			"$@"
 	fi
 
-	emake \
+	cw_emake \
 		ARCH=${kernel_arch} \
 		LDFLAGS="$(raw-ldflags)" \
 		CROSS_COMPILE="${cross}" \
