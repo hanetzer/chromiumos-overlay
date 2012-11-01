@@ -183,6 +183,7 @@ IUSE_TESTS="
 	tests_hardware_TPMFirmwareServer
 	+tests_hardware_Trackpad
 	+tests_hardware_VideoOutSemiAuto
+	+tests_hardware_Xrandr
 	+tests_hardware_bma150
 	+tests_kernel_ConfigVerify
 	+tests_kernel_fs_Inplace
