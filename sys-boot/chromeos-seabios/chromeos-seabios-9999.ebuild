@@ -23,6 +23,10 @@ CROS_WORKON_LOCALNAME="seabios"
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon
 
+# Directory where the generated files are looked for and placed.
+CROS_FIRMWARE_IMAGE_DIR="/firmware"
+CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
+
 create_seabios_cbfs() {
 	local oprom=${CROS_FIRMWARE_ROOT}/pci????,????.rom
 	local seabios_cbfs=seabios.cbfs
