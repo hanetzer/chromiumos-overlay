@@ -52,7 +52,7 @@ src_compile() {
 	emake spotless || die "make spotless failed"
 
 	# The syslinux build can't tolerate "-Wl,-O*"
-	filter-ldflags -Wl,-O1 -Wl,-O2 -Wl,-Os
+	export LDFLAGS=$(raw-ldflags)
 
 	if [ "${ROOT}" != "/" ]; then
 		tc-export CC CXX AR RANLIB LD NM
