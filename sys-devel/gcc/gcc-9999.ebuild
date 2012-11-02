@@ -111,6 +111,13 @@ src_unpack() {
 		COST_PKG_VERSION+="_${VCSID}"
 	fi
 
+	# install the libstdc++ python into the right location
+	# http://gcc.gnu.org/PR51368
+	# We can drop this once we move to 4.7+.
+	sed -i \
+		'/^pythondir =/s:=.*:= $(datadir)/python:' \
+		"${S}"/libstdc++-v3/python/Makefile.in || die
+
 	use vanilla && return 0
 }
 
@@ -287,14 +294,16 @@ src_configure()
 	fi
 
 	# Set configuration based on path variables
+	local DATAPATH=$(get_data_dir)
 	local confgcc="$(use_enable multilib)
 		--prefix=${PREFIX} \
 		--bindir=$(get_bin_dir) \
-		--datadir=$(get_data_dir) \
-		--mandir=$(get_data_dir)/man \
-		--infodir=$(get_data_dir)/info \
+		--datadir=${DATAPATH} \
+		--mandir=${DATAPATH}/man \
+		--infodir=${DATAPATH}/info \
 		--includedir=$(get_lib_dir)/include \
-		--with-gxx-include-dir=$(get_stdcxx_incdir)"
+		--with-gxx-include-dir=$(get_stdcxx_incdir)
+		--with-python-dir=${DATAPATH#${PREFIX}}/python"
 	confgcc="${confgcc} --host=${CHOST}"
 	confgcc="${confgcc} --target=${CTARGET}"
 	confgcc="${confgcc} --build=${CBUILD}"
@@ -456,12 +465,18 @@ get_make_var() {
 XGCC() { get_make_var GCC_FOR_TARGET ; }
 
 gcc_move_pretty_printers() {
-	local gdb_autoload_dir=/usr/share/gdb/auto-load
-	for i in $(cd "${D}" && find . -name \*-gdb.py); do
-		insinto "${gdb_autoload_dir}/$(dirname ${i})"
-		doins "${D}${i}"
-		rm "${D}${i}"
+	LIBPATH=$(get_lib_dir)  # cros to Gentoo glue
+
+	local py gdbdir=/usr/share/gdb/auto-load${LIBPATH}
+	pushd "${D}"${LIBPATH} >/dev/null
+	for py in $(find . -name '*-gdb.py') ; do
+		local multidir=${py%/*}
+		insinto "${gdbdir}/${multidir}"
+		sed -i "/^libdir =/s:=.*:= '${LIBPATH}/${multidir}':" "${py}" || die #348128
+		doins "${py}" || die
+		rm "${py}" || die
 	done
+	popd >/dev/null
 }
 
 # make sure the libtool archives have libdir set to where they actually
