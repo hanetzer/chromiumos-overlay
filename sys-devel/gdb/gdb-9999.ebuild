@@ -29,7 +29,7 @@ case ${PV} in
 	# weekly snapshots
 	SRC_URI="ftp://sources.redhat.com/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.bz2"
 	;;
-7.2 | 9999*)
+*)
 	# live git tree
 	EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/gdb.git"
 	EGIT_COMMIT=c4aa8d2c86b0fbfd969fd80fbc91727740a2dd27
