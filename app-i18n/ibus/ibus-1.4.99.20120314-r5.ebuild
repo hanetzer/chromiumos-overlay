@@ -35,6 +35,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-do-not-send-cursor-location-to-chrome.patch
 	# TODO(penghuang): Remove the patch when we fix ibus issue 1438.
 	epatch "${FILESDIR}"/${P}-disable-ibus-daemon-tests.patch
+        # TODO(nona): Remove the patch when the next ibus update cycle.
+        epatch "${FILESDIR}"/${P}-fix-double-free.patch
 
 	elibtoolize
 }
