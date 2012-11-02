@@ -3,14 +3,16 @@
 CROS_WORKON_COMMIT="a5eeac71a63ca408b5074885a7b1d4003fef6c74"
 CROS_WORKON_TREE="8baa80976fc32d98c3ef5ab5de3b7d33685e10ad"
 
-EAPI=4
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon
 
 DESCRIPTION="Build chromeos crash handler"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
@@ -31,11 +33,16 @@ RDEPEND="chromeos-base/google-breakpad
          sys-apps/findutils"
 DEPEND="${RDEPEND}"
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
-	emake
+	cros-workon_src_compile
 }
 
 src_test() {
@@ -53,12 +60,13 @@ src_test() {
 
 src_install() {
 	into /
-	dosbin crash_{reporter,sender}
+	dosbin "${OUT}"/crash_reporter
+	dosbin crash_sender
 	into /usr
-	dobin list_proxies
+	dobin "${OUT}"/list_proxies
 	insinto /etc
 	doins crash_reporter_logs.conf
 
-	insinto "/lib/udev/rules.d" || die
-	doins "99-crash-reporter.rules" || die
+	insinto /lib/udev/rules.d
+	doins 99-crash-reporter.rules
 }
