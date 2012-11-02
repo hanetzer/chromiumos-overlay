@@ -36,16 +36,16 @@ create_seabios_cbfs() {
 	# Create a dummy bootblock to make cbfstool happy
 	dd if=/dev/zero of=$bootblock count=1 bs=64
 	# Create empty CBFS
-	cbfstool ${seabios_cbfs} create ${cbfs_size} $bootblock
+	cbfstool ${seabios_cbfs} create -s ${cbfs_size} -B $bootblock
 	# Clean up
 	rm $bootblock
 	# Add SeaBIOS binary to CBFS
-	cbfstool ${seabios_cbfs} add-payload out/bios.bin.elf payload lzma
+	cbfstool ${seabios_cbfs} add-payload -f out/bios.bin.elf -n payload -c lzma
 	# Add VGA option rom to CBFS
-	cbfstool ${seabios_cbfs} add $oprom $( basename $oprom ) optionrom
+	cbfstool ${seabios_cbfs} add -f $oprom -n $( basename $oprom ) -t optionrom
 	# Add additional configuration
-	cbfstool ${seabios_cbfs} add bootorder bootorder raw
-	cbfstool ${seabios_cbfs} add boot-menu-wait boot-menu-wait raw
+	cbfstool ${seabios_cbfs} add -f bootorder -n bootorder -t raw
+	cbfstool ${seabios_cbfs} add -f boot-menu-wait -n boot-menu-wait -t raw
 	# Print CBFS inventory
 	cbfstool ${seabios_cbfs} print
 	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
