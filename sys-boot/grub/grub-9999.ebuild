@@ -1,6 +1,8 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+EAPI="2"
+
 inherit eutils toolchain-funcs cros-workon
 
 DESCRIPTION="GNU GRUB 2 boot loader"
@@ -9,7 +11,6 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
 IUSE="truetype"
-EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/grub2"
 
 RDEPEND=">=sys-libs/ncurses-5.2-r5

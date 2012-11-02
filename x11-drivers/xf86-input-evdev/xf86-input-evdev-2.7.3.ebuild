@@ -2,15 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-input-evdev/xf86-input-evdev-2.7.3.ebuild,v 1.1 2012/08/14 01:24:15 chithanh Exp $
 
+EAPI=4
 XORG_EAUTORECONF=yes
 
-EAPI=4
 inherit xorg-2
 
 DESCRIPTION="Generic Linux input driver"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86"
 IUSE=""
-
 RDEPEND=">=x11-base/xorg-server-1.10[udev]
 	sys-libs/mtdev"
 DEPEND="${RDEPEND}
