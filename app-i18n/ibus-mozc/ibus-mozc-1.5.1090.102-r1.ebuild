@@ -60,6 +60,9 @@ src_prepare() {
   else
     einfo "Building Mozc for ChromiumOS"
   fi
+
+  # Remove the patch when mozc-1.7 is released.
+  epatch "${FILESDIR}"/${P}-attachment-cleanup.patch
 }
 
 src_compile() {
