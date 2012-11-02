@@ -77,7 +77,7 @@ diff -uNrp module-init-tools-3.16~/insmod.c module-init-tools-3.16/insmod.c
  	}
  
 -	ret = init_module(file, len, options);
-+	ret = finit_module(fd, options);
++	ret = finit_module(fd, options, 0);
 +	if (ret != 0 && errno == ENOSYS)
 +		ret = init_module(file, len, options);
  	if (ret != 0) {
@@ -127,7 +127,7 @@ diff -uNrp module-init-tools-3.16~/modprobe.c module-init-tools-3.16/modprobe.c
 +	if (fd < 0)
 +		ret = init_module(module->data, module->len, opts);
 +	else {
-+	    ret = finit_module(fd, opts);
++	    ret = finit_module(fd, opts, 0);
 +	    if (ret != 0 && errno == ENOSYS)
 +		    ret = init_module(module->data, module->len, opts);
 +	}
@@ -162,12 +162,12 @@ diff -uNrp module-init-tools-3.16~/util.h module-init-tools-3.16/util.h
 +#endif
 +
 +#ifdef __NR_finit_module
-+static inline int finit_module(int fd, const char *uargs)
++static inline int finit_module(int fd, const char *uargs, int flags)
 +{
-+	return syscall(__NR_finit_module, fd, uargs);
++	return syscall(__NR_finit_module, fd, uargs, flags);
 +}
 +#else
-+static inline int finit_module(int fd, const char *uargs)
++static inline int finit_module(int fd, const char *uargs, int flags)
 +{
 +	errno = ENOSYS;
 +	return -1;
