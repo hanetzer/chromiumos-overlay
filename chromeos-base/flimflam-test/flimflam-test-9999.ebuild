@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="chromeos-base/flimflam
+RDEPEND="chromeos-base/shill
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/pygobject

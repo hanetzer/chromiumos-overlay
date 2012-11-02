@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="bluetooth bootimage coreboot cros_ec
-      gdmwimax +localssh X bootchart opengles"
+	  gdmwimax +localssh X bootchart opengles"
 
 
 ################################################################################
@@ -134,11 +134,6 @@ RDEPEND="${RDEPEND}
 # TODO(micahc): Remove board-devices from RDEPEND in lieu of
 #               virtual/chromeos-bsp
 
-# TODO(gauravsh): Once shill becomes the default, remove the flimflam
-# dependency. crosbug.com/23531
-# "shill" is the new connection manager. It is still in "experimental"
-#  mode, and must be explicitly enabled (in lieu of flimflam).
-
 # Note that o3d works with opengl on x86 and opengles on ARM, but not ARM
 # opengl.
 
@@ -174,7 +169,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
 	chromeos-base/dev-install
-	chromeos-base/flimflam
 	chromeos-base/inputcontrol
 	chromeos-base/internal
 	chromeos-base/metrics

@@ -155,7 +155,7 @@ src_install() {
 		doins "${WORKDIR}/scripts/${i}.d"/* || die "failed to install ${i}.d scripts"
 		# Remove ip-up/ip-down 40-dns.sh scripts because these scripts
 		# modify /etc/resolv.conf, which should only be managed by the
-		# connection manager (flimflam). See http://crosbug.com/24486.
+		# connection manager (shill). See http://crosbug.com/24486.
 		rm -f ${D}/etc/ppp/${i}.d/40-dns.sh || die "failed to remove /etc/ppp/${i}.d/40-dns.sh"
 	done
 
