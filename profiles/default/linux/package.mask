@@ -11,7 +11,7 @@
 # available in portage:
 
 # Custom patches
->sys-boot/syslinux-3.83-r4
+>=sys-boot/syslinux-3.84
 
 # libpng security vulnerability fix
 <media-libs/libpng-1.2.44

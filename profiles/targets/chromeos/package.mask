@@ -34,7 +34,7 @@
 >=app-i18n/ibus-mozc-29
 
 # Custom patches
->sys-boot/syslinux-3.83-r4
+>=sys-boot/syslinux-3.84
 
 # chromeos-chrome-14.0.787.0_rc-1 causes test failures, so block it.
 # TODO(davidjames): Remove this once the bug is fixed.
