@@ -3,8 +3,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header:$
 #
-CROS_WORKON_COMMIT="e1ef188aef7dc7334f06fa65709435623e059919"
-CROS_WORKON_TREE="de7ac6bd5c6bbf8d2b8fff7c28ae5abd5f22cd8f"
+CROS_WORKON_COMMIT=55d1fdf0e14eb8576a7515ebf67744cbf698f35b
+CROS_WORKON_TREE="506022af61275f1feabacc36d54df8170b8d7570"
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/punybench"
