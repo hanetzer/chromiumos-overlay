@@ -44,5 +44,4 @@ src_compile() {
 src_install() {
 	set_board
 	dosbin "build/$BOARD/util/ectool"
-	dosbin "build/$BOARD/util/stm32mon"
 }
