@@ -27,7 +27,9 @@ RDEPEND="chromeos-base/bootstat
 	>=dev-libs/glib-2.30
 	dev-libs/nss
 	net-dialup/ppp
-	net-dns/c-ares"
+	net-dns/c-ares
+	net-misc/dhcpcd
+	net-wireless/wpa_supplicant[dbus]"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
