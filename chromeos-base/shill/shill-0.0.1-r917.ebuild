@@ -29,6 +29,7 @@ RDEPEND="chromeos-base/bootstat
 	net-dialup/ppp
 	net-dns/c-ares
 	net-misc/dhcpcd
+	net-misc/openvpn
 	net-wireless/wpa_supplicant[dbus]"
 
 DEPEND="${RDEPEND}
