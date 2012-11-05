@@ -87,6 +87,8 @@ src_install() {
 	dosym /var/run/shill/resolv.conf /etc/resolv.conf
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf
+	insinto /usr/share/shill
+	doins data/cellular_operator_info
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
