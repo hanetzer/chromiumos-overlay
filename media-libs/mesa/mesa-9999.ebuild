@@ -138,6 +138,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-lastlevel.patch
 	epatch "${FILESDIR}"/8.1-i965-texture-upload.patch
 	epatch "${FILESDIR}"/8.1-remove-non-interleaved-to-interleaved-upload.patch
+	epatch "${FILESDIR}"/8.1-disable-guardband.patch
 	epatch "${FILESDIR}"/8.1-uniform-array-bounds-check.patch
 
 	base_src_prepare
