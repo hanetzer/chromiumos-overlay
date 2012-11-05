@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
@@ -44,7 +44,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	emake $(make_flags) shill shims || die "shill compile failed."
+	emake $(make_flags) shill shims
 }
 
 src_test() {
@@ -52,7 +52,7 @@ src_test() {
 	cros-debug-add-NDEBUG
 
 	# Build tests
-	emake $(make_flags) shill_unittest || die "tests compile failed."
+	emake $(make_flags) shill_unittest
 
 	# Run tests if we're on x86
 	if ! use x86 && ! use amd64 ; then
@@ -66,27 +66,27 @@ src_test() {
 }
 
 src_install() {
-	dobin bin/ff_debug || die
-	dobin bin/mm_debug || die
-	dobin bin/set_apn || die
-	dobin bin/set_arpgw || die
-	dobin bin/shill_login_user || die
-	dobin bin/shill_logout_user || die
-	dobin bin/wpa_debug || die
-	dobin shill || die
+	dobin bin/ff_debug
+	dobin bin/mm_debug
+	dobin bin/set_apn
+	dobin bin/set_arpgw
+	dobin bin/shill_login_user
+	dobin bin/shill_logout_user
+	dobin bin/wpa_debug
+	dobin shill
 	local shims_dir="/usr/$(get_libdir)/shill/shims"
 	exeinto "${shims_dir}"
-	doexe build/shims/nss-get-cert || die
-	doexe build/shims/openvpn-script || die
-	doexe build/shims/set-apn-helper || die
-	doexe build/shims/shill-pppd-plugin.so || die
+	doexe build/shims/nss-get-cert
+	doexe build/shims/openvpn-script
+	doexe build/shims/set-apn-helper
+	doexe build/shims/shill-pppd-plugin.so
 	insinto "${shims_dir}"
-	doins build/shims/wpa_supplicant.conf || die
+	doins build/shims/wpa_supplicant.conf
 	insinto /etc
-	doins shims/nsswitch.conf || die
-	dosym /var/run/shill/resolv.conf /etc/resolv.conf || die
+	doins shims/nsswitch.conf
+	dosym /var/run/shill/resolv.conf /etc/resolv.conf
 	insinto /etc/dbus-1/system.d
-	doins shims/org.chromium.flimflam.conf || die
+	doins shims/org.chromium.flimflam.conf
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
