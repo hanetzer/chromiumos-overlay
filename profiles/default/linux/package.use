@@ -3,6 +3,7 @@
 # to the host packages in the chroot, as well as packages built for a
 # target board.
 
+app-arch/tar		minimal
 app-crypt/mit-krb5	-keyutils
 dev-embedded/libftdi	-cxx
 dev-libs/nss		utils
