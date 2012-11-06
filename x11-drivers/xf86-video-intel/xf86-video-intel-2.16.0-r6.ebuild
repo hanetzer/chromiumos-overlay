@@ -35,6 +35,8 @@ PATCHES=(
 	"${FILESDIR}/2.16.0-blt-hang.patch"
 	# Disable backlight adjustments on DPMS mode changes.
 	"${FILESDIR}/2.16.0-no-backlight.patch"
+	# Avoid display corruption when unable to flip
+	"${FILESDIR}/2.16.0-fix-blt-damage.patch"
 )
 
 src_prepare() {
