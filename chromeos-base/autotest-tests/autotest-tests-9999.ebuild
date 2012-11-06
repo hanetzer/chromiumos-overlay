@@ -241,6 +241,7 @@ IUSE_TESTS="
 	+tests_network_WiFiManager
 	+tests_network_WiFiSmokeTest
 	+tests_network_WifiAuthenticationTests
+	+tests_network_WiFiInterop
 	+tests_network_VPN
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
