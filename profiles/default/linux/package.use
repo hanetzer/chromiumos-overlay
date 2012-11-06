@@ -8,7 +8,6 @@ app-crypt/mit-krb5	-keyutils
 dev-embedded/libftdi	-cxx
 dev-libs/nss		utils
 dev-libs/dbus-glib	tools
-media-libs/gd           png
 dev-libs/protobuf 	-python
 dev-perl/GD             png
 dev-python/pyudev	pygobject
@@ -20,6 +19,7 @@ media-libs/freeimage	-cxx
 media-libs/gd           png
 # We don't want any driver/hw rendering on the host
 media-libs/mesa         -llvm -gallium -classic
+media-sound/alsa-utils	-libsamplerate minimal
 net-misc/curl		ares static-libs
 net-wireless/bluez	-consolekit
 sci-geosciences/gpsd	-cxx
