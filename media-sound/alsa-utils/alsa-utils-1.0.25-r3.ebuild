@@ -10,21 +10,23 @@ MY_P=${P/_rc/rc}
 DESCRIPTION="Advanced Linux Sound Architecture Utils (alsactl, alsamixer, etc.)"
 HOMEPAGE="http://www.alsa-project.org/"
 SRC_URI="mirror://alsaproject/utils/${MY_P}.tar.bz2
-	mirror://alsaproject/driver/alsa-driver-${PV}.tar.bz2"
+	!minimal? ( mirror://alsaproject/driver/alsa-driver-${PV}.tar.bz2 )"
 
 LICENSE="GPL-2"
 SLOT="0.9"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ~ppc ppc64 sh sparc x86"
-IUSE="doc nls minimal"
+IUSE="doc +libsamplerate minimal +ncurses nls"
 
-COMMON_DEPEND=">=sys-libs/ncurses-5.1
-	dev-util/dialog
-	>=media-libs/alsa-lib-1.0.25
-	media-libs/libsamplerate"
+COMMON_DEPEND=">=media-libs/alsa-lib-1.0.25
+	libsamplerate? ( media-libs/libsamplerate )
+	ncurses? ( >=sys-libs/ncurses-5.1 )"
+RDEPEND="${COMMON_DEPEND}
+	!minimal? (
+		dev-util/dialog
+		sys-apps/pciutils
+	)"
 DEPEND="${COMMON_DEPEND}
 	doc? ( app-text/xmlto )"
-RDEPEND="${COMMON_DEPEND}
-	!minimal? ( sys-apps/pciutils )"
 
 S="${WORKDIR}/${MY_P}"
 PATCHES=(
@@ -38,7 +40,10 @@ src_configure() {
 	use doc || myconf="--disable-xmlto"
 
 	econf ${myconf} \
+		$(use_enable libsamplerate alsaloop) \
 		$(use_enable nls) \
+		$(use_enable ncurses alsamixer) \
+		$(use_enable !minimal alsaconf) \
 		"$(systemd_with_unitdir)"
 }
 
@@ -51,7 +56,7 @@ src_install() {
 
 	dodoc ${ALSA_UTILS_DOCS} || die
 
-	newbin "${WORKDIR}/alsa-driver-${PV}/utils/alsa-info.sh" \
+	use minimal || newbin "${WORKDIR}/alsa-driver-${PV}/utils/alsa-info.sh" \
 		alsa-info
 
 	newinitd "${FILESDIR}/alsasound.initd-r5" alsasound
