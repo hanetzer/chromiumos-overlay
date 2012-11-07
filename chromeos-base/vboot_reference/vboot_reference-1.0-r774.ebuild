@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT=0c69afc5b391ad833fc184eef8423032b9b5705a
+CROS_WORKON_COMMIT="0c69afc5b391ad833fc184eef8423032b9b5705a"
 CROS_WORKON_TREE="f8ef7bb03784e57624570881fab57ce9abe4c19b"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
