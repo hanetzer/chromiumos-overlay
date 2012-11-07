@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT=f87d58aa3e1695a86f26f8cf76a867b046de1a8e
+CROS_WORKON_COMMIT="f87d58aa3e1695a86f26f8cf76a867b046de1a8e"
 CROS_WORKON_TREE="8c5693bad91da39ef4eb14c6ca292cf749c06c45"
 CROS_WORKON_PROJECT="chromiumos/platform/crosh"
 
