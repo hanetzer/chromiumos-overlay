@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/crda/crda-1.1.1.ebuild,v 1.1 2010/01/26 17:02:57 chainsaw Exp $
 
+EAPI="2"
+
 inherit toolchain-funcs multilib
 
 DESCRIPTION="Central Regulatory Domain Agent for wireless networks."
@@ -13,14 +15,12 @@ SLOT="0"
 KEYWORDS="amd64 arm ppc x86 ~amd64-linux ~x86-linux"
 IUSE=""
 RDEPEND="dev-libs/libgcrypt
-	dev-libs/libnl
+	dev-libs/libnl:0
 	net-wireless/wireless-regdb"
 DEPEND="${RDEPEND}
 	dev-python/m2crypto"
 
-src_unpack() {
-	unpack ${A}
-
+src_prepare() {
 	##Make sure we install the rules where udev rules go...
 	sed -i -e "/^UDEV_RULE_DIR/s:lib:$(get_libdir):" "${S}"/Makefile || \
 	    die "Makefile sed failed"
