@@ -20,7 +20,7 @@ KEYWORDS="amd64 arm x86"
 IUSE="debug ipv6 logwatch madwifi +ssl +wps"
 
 DEPEND="ssl? ( dev-libs/openssl )
-	>=dev-libs/libnl-1.1
+	dev-libs/libnl:0
 	madwifi? ( ||
 		( >net-wireless/madwifi-ng-tools-0.9.3
 		net-wireless/madwifi-old ) )"
