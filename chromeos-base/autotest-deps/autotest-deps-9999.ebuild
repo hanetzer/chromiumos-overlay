@@ -52,7 +52,7 @@ RDEPEND="${RDEPEND}
 
 # deps/iwcap
 RDEPEND="${RDEPEND}
-  dev-libs/libnl
+  dev-libs/libnl:0
 "
 
 # deps/fakegudev

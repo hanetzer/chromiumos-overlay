@@ -23,6 +23,7 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/vpn-manager
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
+	dev-libs/libnl:0
 	dev-libs/nss
 	net-dialup/ppp
 	net-dns/c-ares
