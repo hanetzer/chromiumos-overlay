@@ -137,6 +137,9 @@ RDEPEND="${RDEPEND}
 # Note that o3d works with opengl on x86 and opengles on ARM, but not ARM
 # opengl.
 
+# We depend on dash for the /bin/sh shell for runtime speeds, but we also
+# depend on bash to make the dev mode experience better.  We do not enable
+# things like line editing in dash, so its interactive mode is very bare.
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
@@ -151,6 +154,7 @@ RDEPEND="${RDEPEND}
 	app-i18n/ibus-mozc-hangul
 	app-i18n/ibus-mozc-pinyin
 	app-laptop/laptop-mode-tools
+	app-shells/bash
 	app-shells/dash
 	chromeos-base/audioconfig
 	chromeos-base/board-devices
