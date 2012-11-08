@@ -91,7 +91,7 @@ build_image() {
 	# that the fdt has the flags set to 1 by default.
 	cros_bundle_firmware ${cmdline} \
 		--outdir "out-${board}.ro" \
-		--output "image-${board}.ro.bin" ||
+		--output "image-${board}.bin" ||
 		die "failed to build image."
 	cros_bundle_firmware ${cmdline} --force-rw \
 		--outdir "out-${board}.rw" \
