@@ -47,6 +47,7 @@ ALL_BOARDS=(
 	lumpy
 	panda
 	parrot
+	puppy
 	raspberrypi
 	spring
 	stout
