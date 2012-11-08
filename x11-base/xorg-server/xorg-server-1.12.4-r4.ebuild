@@ -127,7 +127,6 @@ PATCHES=(
 	"${FILESDIR}/1.11.99.902-chromium-mouse-accel-profile.patch"
 
 	"${FILESDIR}/1.11.99.902-xserver-bg-none-root.patch"
-	"${FILESDIR}/1.9.3-disable-vt-switching-for-verified-boot.patch"
 	# Dont load a default X cursor.
 	"${FILESDIR}/1.9.3-no-default-cursor.patch"
 	# Ability to run without root privs
