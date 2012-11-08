@@ -24,6 +24,4 @@ PATCHES=(
 	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
 	# crosbug.com/p/13787
 	"${FILESDIR}"/evdev-2.7.0-fix-emulated-wheel.patch
-        # crosbug.com/35291
-	"${FILESDIR}"/evdev-2.7.3-Add-SYN_DROPPED-handling.patch
 )
