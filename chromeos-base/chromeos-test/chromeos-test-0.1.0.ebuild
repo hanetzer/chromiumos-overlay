@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 
 DESCRIPTION="Adds packages that are required for testing."
 HOMEPAGE="http://src.chromium.org"
@@ -42,8 +42,10 @@ RDEPEND="${RDEPEND}
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
+	chromeos-base/protofiles
 	chromeos-base/recover-duts
 	chromeos-base/saft
+	chromeos-base/system_api
 	chromeos-base/touchbot
 	dev-lang/python
 	dev-python/dbus-python

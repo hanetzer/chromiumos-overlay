@@ -18,16 +18,16 @@ IUSE=""
 
 LIBCHROME_VERS="125070"
 
-DEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
-	chromeos-base/system_api
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libxml2
 	media-libs/alsa-lib
-	media-libs/libresample
 	media-libs/pico"
-RDEPEND="${DEPEND}"
+DEPEND="${DEPEND}
+	chromeos-base/system_api
+	media-libs/libresample"
 
 src_prepare() {
 	tc-export CXX
@@ -44,4 +44,3 @@ src_install() {
 	insinto /usr/share/dbus-1/system-services
 	doins org.chromium.SpeechSynthesizer.service
 }
-

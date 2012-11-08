@@ -131,7 +131,6 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	>=app-i18n/ibus-1.4.99
 	arm? ( virtual/opengles )
-	chromeos-base/protofiles
 	dev-libs/atk
 	dev-libs/glib
 	dev-libs/nspr
@@ -162,6 +161,7 @@ RDEPEND="${RDEPEND}
 DEPEND="${DEPEND}
 	${RDEPEND}
 	arm? ( x11-drivers/opengles-headers )
+	chromeos-base/protofiles
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23
 	net-wireless/bluez"
