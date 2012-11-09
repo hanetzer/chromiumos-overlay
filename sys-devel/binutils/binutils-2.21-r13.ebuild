@@ -234,7 +234,7 @@ src_install() {
 	# Trim all empty dirs
 	find "${D}" -type d | xargs rmdir >& /dev/null
 
-	if use hardened && [[ ${CTARGET} != arm* ]] ; then
+	if use hardened ; then
 		LDWRAPPER=ldwrapper.hardened
 	else
 		LDWRAPPER=ldwrapper
