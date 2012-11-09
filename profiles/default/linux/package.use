@@ -17,6 +17,7 @@ dev-vcs/subversion	-dso webdav-serf
 media-gfx/imagemagick   gs truetype
 media-libs/freeimage	-cxx
 media-libs/gd           png
+media-libs/libmtp       -crypt
 # We don't want any driver/hw rendering on the host
 media-libs/mesa         -llvm -gallium -classic
 media-sound/alsa-utils	-libsamplerate minimal
