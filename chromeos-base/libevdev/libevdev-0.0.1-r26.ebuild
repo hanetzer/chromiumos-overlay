@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT=f616b12163b70ade1e927cd43559bbe67a1f4aaf
+CROS_WORKON_COMMIT="f616b12163b70ade1e927cd43559bbe67a1f4aaf"
 CROS_WORKON_TREE="372537f1fc41317832544b79118b0789fdf92dbf"
 CROS_WORKON_PROJECT="chromiumos/platform/libevdev"
 CROS_WORKON_USE_VCSID=1
