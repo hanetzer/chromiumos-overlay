@@ -29,7 +29,6 @@ CROS_WORKON_LOCALNAME=vboot_reference
 
 # path from root of repo
 AUTOTEST_CLIENT_SITE_TESTS=autotest/client
-AUTOTEST_SERVER_SITE_TESTS=autotest/server
 
 function src_compile {
 	# for Makefile

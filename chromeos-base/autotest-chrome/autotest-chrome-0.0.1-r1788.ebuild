@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="04b17dc6481691f3c16b0bb353cdfffded9cc0ea"
-CROS_WORKON_TREE="e5e9112f063d216825f2b4bc3374e8fac85cfaa4"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+CROS_WORKON_COMMIT="0574d681213326f7d79b2a9c540a1726595b0bb9"
+CROS_WORKON_TREE="dd71fe054bd4648f0904571da70bec1844947a8a"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
@@ -73,7 +73,6 @@ IUSE_TESTS=(
 	+tests_hardware_UsbPlugIn
 	 tests_logging_AsanCrash
 	+tests_logging_UncleanShutdown
-	+tests_logging_UncleanShutdownServer
 	+tests_login_BadAuthentication
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognitoMounted
@@ -85,14 +84,12 @@ IUSE_TESTS=(
 	+tests_login_RemoteLogin
 	+tests_network_3GSuspendResume
 	+tests_network_ONC
-	+tests_network_ONCServer
 	+tests_platform_Pkcs11InitOnLogin
 	+tests_platform_Pkcs11Persistence
 	+tests_platform_ProcessPrivileges
 	+tests_power_AudioDetector
 	+tests_power_Consumption
 	+tests_power_Idle
-	+tests_power_IdleServer
 	+tests_power_LoadTest
 	+tests_power_UiResume
 	+tests_realtimecomm_GTalkAudioPlayground

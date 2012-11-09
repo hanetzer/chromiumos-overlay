@@ -71,7 +71,6 @@ IUSE_TESTS=(
 	+tests_hardware_UsbPlugIn
 	 tests_logging_AsanCrash
 	+tests_logging_UncleanShutdown
-	+tests_logging_UncleanShutdownServer
 	+tests_login_BadAuthentication
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognitoMounted
@@ -83,14 +82,12 @@ IUSE_TESTS=(
 	+tests_login_RemoteLogin
 	+tests_network_3GSuspendResume
 	+tests_network_ONC
-	+tests_network_ONCServer
 	+tests_platform_Pkcs11InitOnLogin
 	+tests_platform_Pkcs11Persistence
 	+tests_platform_ProcessPrivileges
 	+tests_power_AudioDetector
 	+tests_power_Consumption
 	+tests_power_Idle
-	+tests_power_IdleServer
 	+tests_power_LoadTest
 	+tests_power_UiResume
 	+tests_realtimecomm_GTalkAudioPlayground

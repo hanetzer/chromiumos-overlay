@@ -57,14 +57,12 @@ RDEPEND="
 RDEPEND="${RDEPEND}
   tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
   tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
-  tests_test_RecallServer? ( dev-python/dnspython sys-apps/iproute2 )
   tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
 "
 
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+tests_autoupdate
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench
@@ -88,72 +86,18 @@ IUSE_TESTS="
 	+tests_cellular_Smoke
 	+tests_cellular_ThroughputController
 	+tests_cellular_Throughput
-	+tests_chromeperf_PGOPageCycler
 	+tests_build_RootFilesystemSize
-	+tests_desktopui_EnterprisePolicyServer
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
-	+tests_desktopui_PyAutoPerf
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_example_CrosTest
-	+tests_firmware_CgptState
-	+tests_firmware_CgptStress
-	+tests_firmware_ConsecutiveBoot
-	+tests_firmware_CorruptBothFwBodyAB
-	+tests_firmware_CorruptBothFwSigAB
-	+tests_firmware_CorruptBothKernelAB
-	+tests_firmware_CorruptFwBodyA
-	+tests_firmware_CorruptFwBodyB
-	+tests_firmware_CorruptFwSigA
-	+tests_firmware_CorruptFwSigB
-	+tests_firmware_CorruptKernelA
-	+tests_firmware_CorruptKernelB
-	+tests_firmware_DevBootUSB
-	+tests_firmware_DevFwNormalBoot
-	+tests_firmware_DevMode
-	+tests_firmware_DevModeStress
-	+tests_firmware_DevScreenTimeout
-	+tests_firmware_DevTriggerRecovery
-	+tests_firmware_ECAdc
-	+tests_firmware_ECBattery
-	+tests_firmware_ECBootTime
-	+tests_firmware_ECCharging
-	+tests_firmware_ECKeyboard
-	+tests_firmware_ECLidSwitch
-	+tests_firmware_ECPeci
-	+tests_firmware_ECPowerButton
-	+tests_firmware_ECPowerG3
-	+tests_firmware_ECSharedMem
-	+tests_firmware_ECThermal
-	+tests_firmware_ECUsbPorts
-	+tests_firmware_ECWakeSource
-	+tests_firmware_ECWatchdog
-	+tests_firmware_ECWriteProtect
-	+tests_firmware_FAFTSetup
-	+tests_firmware_FwScreenCloseLid
-	+tests_firmware_FwScreenPressPower
-	+tests_firmware_InvalidUSB
-	+tests_firmware_RONormalBoot
-	+tests_firmware_RecoveryButton
-	+tests_firmware_RollbackFirmware
-	+tests_firmware_RollbackKernel
-	+tests_firmware_RomSize
-	+tests_firmware_ShellBall
-	+tests_firmware_SoftwareSync
-	+tests_firmware_TryFwB
-	+tests_firmware_UpdateECBin
-	+tests_firmware_UpdateFirmwareDataKeyVersion
-	+tests_firmware_UpdateFirmwareVersion
-	+tests_firmware_UpdateKernelDataKeyVersion
-	+tests_firmware_UpdateKernelSubkeyVersion
-	+tests_firmware_UpdateKernelVersion
-	+tests_firmware_UserRequestRecovery
-	tests_firmware_VbootCrypto
 	+tests_graphics_GLBench
 	+tests_graphics_GLMark2
+	+tests_firmware_RomSize
+	tests_firmware_VbootCrypto
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_ch7036
@@ -180,7 +124,6 @@ IUSE_TESTS="
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TPMCheck
 	tests_hardware_TPMFirmware
-	tests_hardware_TPMFirmwareServer
 	+tests_hardware_Trackpad
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_Xrandr
@@ -196,7 +139,6 @@ IUSE_TESTS="
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
-	+tests_logging_KernelCrashServer
 	+tests_logging_UserCrash
 	+tests_login_DBusCalls
 	+tests_login_SecondFactor
@@ -207,7 +149,6 @@ IUSE_TESTS="
 	+tests_network_3GDormancyDance
 	+tests_network_3GGobiPorts
 	+tests_network_3GFailedConnect
-	+tests_network_3GLoadFirmware
 	+tests_network_3GModemControl
 	+tests_network_3GModemPresent
 	+tests_network_3GNoGobi
@@ -223,7 +164,6 @@ IUSE_TESTS="
 	+tests_network_DhcpRenew
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
-	+tests_network_EthCapsServer
 	+tests_network_EthernetStressPlug
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_LockedSIM
@@ -234,27 +174,16 @@ IUSE_TESTS="
 	+tests_network_Portal
 	+tests_network_UdevRename
 	+tests_network_WiFiCaps
-	+tests_network_WiFiMatFunc
-	+tests_network_WiFiPerf
-	+tests_network_WiFiRoaming
-	+tests_network_WiFiSecMat
-	+tests_network_WiFiManager
 	+tests_network_WiFiSmokeTest
 	+tests_network_WifiAuthenticationTests
-	+tests_network_WiFiInterop
-	+tests_network_VPN
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
 	+tests_platform_Attestation
-	+tests_platform_BootDevice
 	+tests_platform_BootPerf
-	+tests_platform_BootPerfServer
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CleanShutdown
-	+tests_platform_CloseOpenLid
-	+tests_platform_CloseOpenLidSimple
 	+tests_platform_CrosDisksArchive
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CrosDisksFilesystem
@@ -267,7 +196,6 @@ IUSE_TESTS="
 	+tests_platform_CryptohomeNonDirs
 	+tests_platform_CryptohomeStress
 	+tests_platform_CryptohomeTestAuth
-	+tests_platform_CryptohomeTPMReOwnServer
 	+tests_platform_DaemonsRespawn
 	+tests_platform_DebugDaemonGetModemStatus
 	+tests_platform_DebugDaemonGetNetworkStatus
@@ -280,15 +208,9 @@ IUSE_TESTS="
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
-	+tests_platform_GCC
 	+tests_platform_HighResTimers
-	+tests_platform_InstallRecoveryImage
-	+tests_platform_InstallTestImage
-	+tests_platform_KernelErrorPaths
 	+tests_platform_KernelVersion
 	+tests_platform_LibCBench
-	+tests_platform_LidStress
-	+tests_platform_LongPressPower
 	+tests_platform_MemCheck
 	+tests_platform_NetParms
 	+tests_platform_OSLimits
@@ -299,7 +221,6 @@ IUSE_TESTS="
 	+tests_platform_Pkcs11LoadPerf
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
-	+tests_platform_ServoPyAuto
 	+tests_platform_SessionManagerTerm
 	+tests_platform_Shutdown
 	+tests_platform_SuspendStress
@@ -311,7 +232,6 @@ IUSE_TESTS="
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BacklightControl
-	+tests_power_BacklightServer
 	+tests_power_BatteryCharge
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
@@ -354,11 +274,9 @@ IUSE_TESTS="
 	+tests_security_SuidBinaries
 	+tests_security_SymlinkRestrictions
 	+tests_security_SysVIPC
-	+tests_suites
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
-	+tests_test_Recall
-	+tests_test_RecallServer
+	+test_Recall
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"

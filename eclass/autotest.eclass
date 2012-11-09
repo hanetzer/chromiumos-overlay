@@ -19,8 +19,6 @@ export AUTOTEST_WORKDIR="${WORKDIR}/autotest-work"
 # Location of the appropriate test directory inside ${S}
 : ${AUTOTEST_CLIENT_TESTS:=client/tests}
 : ${AUTOTEST_CLIENT_SITE_TESTS:=client/site_tests}
-: ${AUTOTEST_SERVER_TESTS:=server/tests}
-: ${AUTOTEST_SERVER_SITE_TESTS:=server/site_tests}
 : ${AUTOTEST_CONFIG:=client/config}
 : ${AUTOTEST_DEPS:=client/deps}
 : ${AUTOTEST_PROFILERS:=client/profilers}
@@ -204,8 +202,6 @@ autotest_src_prepare() {
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/config
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/deps
 	mkdir -p "${AUTOTEST_WORKDIR}"/client/profilers
-	mkdir -p "${AUTOTEST_WORKDIR}"/server/tests
-	mkdir -p "${AUTOTEST_WORKDIR}"/server/site_tests
 
 	TEST_LIST=$(get_test_list)
 
@@ -250,7 +246,7 @@ autotest_src_prepare() {
 	# Each test directory needs to be visited and have an __init__.py created.
 	# However, that only applies to the directories which have a main .py file.
 	pushd "${AUTOTEST_WORKDIR}" > /dev/null || die "AUTOTEST_WORKDIR does not exist?!"
-	for dir in client/tests client/site_tests server/tests server/site_tests; do
+	for dir in client/tests client/site_tests; do
 		pushd "${dir}" > /dev/null || continue
 		for sub in *; do
 			[ -f "${sub}/${sub}.py" ] || continue
@@ -294,8 +290,7 @@ autotest_src_compile() {
 	# This only prints the tests that have the associated .py
 	# (and therefore a setup function)
 	local prebuild_test_dirs="
-		client/tests client/site_tests
-		server/tests server/site_tests"
+		client/tests client/site_tests"
 	TESTS=$(\
 		for dir in ${prebuild_test_dirs}; do
 			print_test_dirs "${AUTOTEST_WORKDIR}/${dir}"
@@ -339,9 +334,7 @@ autotest_src_install() {
 	# testcase directories besides what this package provides.
 	local instdirs="
 		client/tests
-		client/site_tests
-		server/tests
-		server/site_tests"
+		client/site_tests"
 
 	for dir in ${instdirs}; do
 		[ -d "${AUTOTEST_WORKDIR}/${dir}" ] || continue
