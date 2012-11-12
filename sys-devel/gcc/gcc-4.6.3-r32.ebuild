@@ -116,9 +116,12 @@ src_unpack() {
 	# install the libstdc++ python into the right location
 	# http://gcc.gnu.org/PR51368
 	# We can drop this once we move to 4.7+.
-	sed -i \
+	if ! use mounted_gcc ; then
+	    # 'mounted_gcc' is usually readonly
+	    sed -i \
 		'/^pythondir =/s:=.*:= $(datadir)/python:' \
-		"${S}"/libstdc++-v3/python/Makefile.in || die
+		"$(get_gcc_dir)"/libstdc++-v3/python/Makefile.in || die
+	fi
 
 	use vanilla && return 0
 }

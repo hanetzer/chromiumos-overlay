@@ -2,14 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="efa31be1005ffe89d29746768864ec9501776eb8"
-CROS_WORKON_TREE="3c96f9b1ca8a4bfe6b0fb834a00ffafed0669ddd"
+CROS_WORKON_COMMIT=fe1421a7e5a43f3b596102db6ec69f790836f2e2
+CROS_WORKON_TREE="2411de46c817af90e6e360cdd0d50bdb67b6a5bf"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
 inherit cros-workon
 
-DESCRIPTION="Additional upstart jobs that will be installed on dev images"
+DESCRIPTION="Additional upstart jobs that will be installed on test images"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
@@ -21,5 +21,5 @@ RDEPEND="${DEPEND}"
 src_install() {
 	insinto /etc/init
 	insopts --owner=root --group=root --mode=0644
-	doins dev-init/*.conf
+	doins test-init/*.conf
 }
