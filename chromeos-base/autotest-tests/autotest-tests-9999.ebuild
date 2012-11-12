@@ -81,6 +81,7 @@ IUSE_TESTS="
 	+tests_unixbench
 	+tests_audiovideo_CRASFormatConversion
 	+tests_audiovideo_LineOutToMicInLoopback
+	+tests_audiovideo_LoopbackLatency
 	+tests_audiovideo_Microphone
 	+tests_audiovideo_V4L2
 	+tests_cellular_Smoke
