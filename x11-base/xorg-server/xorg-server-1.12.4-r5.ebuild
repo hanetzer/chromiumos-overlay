@@ -145,6 +145,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-mi-don-t-check-for-core-events-in-miPointerSetPositi.patch"
 	# Add the flag to specify the maximum VT the user can switch to
 	"${FILESDIR}/1.12.0-add-maxvt-flag.patch"
+	# crosbug.com/30822
+	"${FILESDIR}/1.12.4-Experimental-per-Randr-CRTC-pointer-scaling.patch"
 )
 
 src_prepare() {
