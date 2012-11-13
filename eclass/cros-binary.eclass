@@ -63,7 +63,7 @@ cros-binary_fetch() {
 	fi
 
 	local scheme="${uri%%://*}"
-	local non_scheme=${uri##*//}
+	local non_scheme=${uri#*://}
 	local netloc=${non_scheme%%/*}
 	local server=${netloc%%:*}
 	local port=${netloc##*:}
