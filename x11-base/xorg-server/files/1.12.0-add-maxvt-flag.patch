@@ -1,3 +1,18 @@
+From: Yoshiki IGUCHI <yoshiki@chromium.org>
+Date: Mon, 12 Nov 2012 14:21:28 +0800
+Subject: [PATCH] Add the flag to specify the maximum VT number the user
+ can switch to.
+
+This CL adds the flag named '-maxvt', which specify the maximum VT
+number the user can switch to with Ctrl-Alt-Fn keys.
+
+BUG=chromium:153961
+TEST=manual
+---
+ hw/xfree86/common/xf86Events.c |    4 +++-
+ os/utils.c                     |   12 ++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletions(-)
+
 diff --git a/hw/xfree86/common/xf86Events.c b/hw/xfree86/common/xf86Events.c
 index 3ad34b5..cfe92f0 100644
 --- a/hw/xfree86/common/xf86Events.c
@@ -24,7 +39,7 @@ diff --git a/os/utils.c b/os/utils.c
 index 04bcbc6..8b19838 100644
 --- a/os/utils.c
 +++ b/os/utils.c
-@@ -201,6 +201,8 @@ Bool PanoramiXExtensionDisabledHack = FALSE;
+@@ -202,6 +202,8 @@ Bool PanoramiXExtensionDisabledHack = FALSE;
  
  int auditTrailLevel = 1;
  
@@ -32,8 +47,8 @@ index 04bcbc6..8b19838 100644
 +
  char *SeatId = NULL;
  
- sig_atomic_t inSignalContext = FALSE;
-@@ -503,6 +505,7 @@ UseMsg(void)
+ #if defined(SVR4) || defined(__linux__) || defined(CSRG_BASED)
+@@ -502,6 +504,7 @@ UseMsg(void)
  #ifdef RLIMIT_STACK
      ErrorF("-ls int                limit stack space to N Kb\n");
  #endif
@@ -41,7 +56,7 @@ index 04bcbc6..8b19838 100644
      ErrorF("-nolock                disable the locking mechanism\n");
      ErrorF("-nolisten string       don't listen on protocol\n");
      ErrorF("-noreset               don't reset after last client exists\n");
-@@ -744,6 +747,15 @@ ProcessCommandLine(int argc, char *argv[])
+@@ -734,6 +737,15 @@ ProcessCommandLine(int argc, char *argv[])
                  UseMsg();
          }
  #endif
@@ -57,3 +72,6 @@ index 04bcbc6..8b19838 100644
          else if (strcmp(argv[i], "-nolock") == 0) {
  #if !defined(WIN32) && !defined(__CYGWIN__)
              if (getuid() != 0)
+-- 
+1.7.7.3
+
