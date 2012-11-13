@@ -2,10 +2,13 @@ diff --git a/tools/dbus-print-message.c b/tools/dbus-print-message.c
 index 75d00ac..abb45ee 100644
 --- a/tools/dbus-print-message.c
 +++ b/tools/dbus-print-message.c
-@@ -142,6 +142,281 @@ print_ay (DBusMessageIter *iter, int depth)
+@@ -142,6 +142,284 @@ print_ay (DBusMessageIter *iter, int depth)
    free (bytes);
  }
  
++#include <inttypes.h>
++#define DBUS_INT64_PRINTF_ARGUMENT PRIi64
++#define DBUS_UINT64_PRINTF_ARGUMENT PRIu64
 +#define MAXPFX 4096
 +
 +static int
@@ -61,8 +64,8 @@ index 75d00ac..abb45ee 100644
 +      break;
 +    case DBUS_TYPE_INT64:
 +      dbus_message_iter_get_basic(iter, &i64v);
-+#ifdef DBUS_INT64_PRINTF_MODIFIER
-+      snprintf(buf, sz, "%s/%" DBUS_INT64_PRINTF_MODIFIER "d", pfx, i64v);
++#ifdef DBUS_INT64_PRINTF_ARGUMENT
++      snprintf(buf, sz, "%s/%" DBUS_INT64_PRINTF_ARGUMENT, pfx, i64v);
 +#else
 +      snprintf(buf, sz, "%s/[int64]", pfx);
 +#endif
@@ -77,8 +80,8 @@ index 75d00ac..abb45ee 100644
 +      break;
 +    case DBUS_TYPE_UINT64:
 +      dbus_message_iter_get_basic(iter, &u64v);
-+#ifdef DBUS_UINT64_PRINTF_MODIFIER
-+      snprintf(buf, sz, "%s/%" DBUS_UINT64_PRINTF_MODIFIER "u", pfx, u64v);
++#ifdef DBUS_UINT64_PRINTF_ARGUMENT
++      snprintf(buf, sz, "%s/%" DBUS_UINT64_PRINTF_ARGUMENT, pfx, u64v);
 +#else
 +      snprintf(buf, sz, "%s/[uint64]", pfx);
 +#endif
@@ -145,8 +148,8 @@ index 75d00ac..abb45ee 100644
 +{
 +  dbus_uint64_t uv;
 +  dbus_message_iter_get_basic(iter, &uv);
-+#ifdef DBUS_UINT64_PRINTF_MODIFIER
-+  printf("%s%s%" DBUS_UINT64_PRINTF_MODIFIER "u\n", pfx, pfx[0] ? " " : "", uv);
++#ifdef DBUS_UINT64_PRINTF_ARGUMENT
++  printf("%s%s%" DBUS_UINT64_PRINTF_ARGUMENT "\n", pfx, pfx[0] ? " " : "", uv);
 +#else
 +  printf("%s%s[uint64]\n", pfx, pfx[0] ? " " : "");
 +#endif
@@ -156,8 +159,8 @@ index 75d00ac..abb45ee 100644
 +{
 +  dbus_int64_t iv;
 +  dbus_message_iter_get_basic(iter, &iv);
-+#ifdef DBUS_INT64_PRINTF_MODIFIER
-+  printf("%s%s%" DBUS_INT64_PRINTF_MODIFIER "d\n", pfx, pfx[0] ? " " : "", iv);
++#ifdef DBUS_INT64_PRINTF_ARGUMENT
++  printf("%s%s%" DBUS_INT64_PRINTF_ARGUMENT "\n", pfx, pfx[0] ? " " : "", iv);
 +#else
 +  printf("%s%s[int64]\n", pfx, pfx[0] ? " " : "");
 +#endif
