@@ -14,7 +14,7 @@ HOMEPAGE="http://www.freedesktop.org/wiki/Software/XKeyboardConfig"
 [[ ${PV} == *9999* ]] || SRC_URI="${XORG_BASE_INDIVIDUAL_URI}/data/${P}.tar.bz2"
 
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~x86-fbsd ~x86-interix ~amd64-linux ~x86-linux ~ppc-macos ~x86-macos ~sparc-solaris ~x86-solaris"
-IUSE=""
+IUSE="parrot"
 
 LICENSE="MIT"
 SLOT="0"
@@ -43,6 +43,8 @@ PATCHES=(
 	"${FILESDIR}"/${P}-remap-f15-and-capslock.patch
 	"${FILESDIR}"/${P}-add-f19-24.patch
 )
+
+use parrot && PATCHES+=( "${FILESDIR}"/${P}-parrot-euro-sign.patch )
 
 src_prepare() {
 	xorg-2_src_prepare
