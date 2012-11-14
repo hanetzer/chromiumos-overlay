@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="da3bdd0086ea4e11a15a3739c26a603463d30f68"
-CROS_WORKON_TREE="40fa3477058d5ac16e912a6763ae1304a38cc8ef"
+CROS_WORKON_COMMIT="24b2d89de0aa91ba968ead7bcb92450280255806"
+CROS_WORKON_TREE="3dc85a711e8560caa66ff457623c985d8256abe2"
 CROS_WORKON_PROJECT="chromiumos/third_party/gdmwimax"
 
 inherit cros-workon
