@@ -16,14 +16,18 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND="dev-util/perf
-	net-misc/curl
-	sys-libs/zlib"
+	dev-libs/openssl
+	dev-libs/protobuf"
 DEPEND="test? ( dev-cpp/gtest )
-	net-misc/curl
-	sys-libs/zlib"
+	dev-libs/openssl
+	dev-libs/protobuf"
 
 src_configure() {
 	tc-export CXX
+}
+
+src_compile() {
+	emake ${PN}.exe
 }
 
 src_test() {
