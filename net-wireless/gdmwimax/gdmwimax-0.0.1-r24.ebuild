@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=da3bdd0086ea4e11a15a3739c26a603463d30f68
+CROS_WORKON_COMMIT="da3bdd0086ea4e11a15a3739c26a603463d30f68"
 CROS_WORKON_TREE="40fa3477058d5ac16e912a6763ae1304a38cc8ef"
 CROS_WORKON_PROJECT="chromiumos/third_party/gdmwimax"
 
