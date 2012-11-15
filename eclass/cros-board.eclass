@@ -37,6 +37,8 @@ ALL_BOARDS=(
 	beaglebone
 	butterfly
 	daisy
+	daisy_spring
+	daisy_snow
 	emeraldlake2
 	fb1
 	graysreef
@@ -49,7 +51,6 @@ ALL_BOARDS=(
 	parrot
 	puppy
 	raspberrypi
-	spring
 	stout
 	stumpy
 	tegra2
