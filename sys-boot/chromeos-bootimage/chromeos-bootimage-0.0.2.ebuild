@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex butterfly emeraldlake2 graysreef link lumpy lumpy64 mario parrot stout stumpy"
-IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec"
+IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -31,6 +31,7 @@ DEPEND="
 	chromeos-base/vboot_reference
 	sys-boot/chromeos-bmpblk
 	memtest? ( sys-boot/chromeos-memtest )
+	depthcharge? ( sys-boot/depthcharge )
 	"
 
 S=${WORKDIR}
@@ -131,6 +132,9 @@ src_compile() {
 
 	if use memtest; then
 		uboot_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
+	elif use depthcharge; then
+		uboot_file="${CROS_FIRMWARE_ROOT}/depthcharge/depthcharge.bin"
+		U_BOOT_FDT_USE="${U_BOOT_FDT_USE}_dc"
 	else
 		# We only have a single U-Boot, and it is called u-boot.bin
 		uboot_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
