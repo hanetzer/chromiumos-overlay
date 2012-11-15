@@ -52,33 +52,6 @@ fi
 
 # Portage version without optional portage suffix.
 CHROME_VERSION="${PV/_*/}"
-[[ "${PV}" == "9999" || -n "${CROS_SVN_COMMIT}" ]]
-USE_TRUNK=$?
-
-REVISION="/${CHROME_VERSION}"
-if [[ ${USE_TRUNK} == 0 ]]; then
-	REVISION=
-	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
-		REVISION="@${CROS_SVN_COMMIT}"
-	fi
-fi
-
-if use chrome_internal; then
-	if [[ ${USE_TRUNK} == 0 ]]; then
-		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
-		AUXILIARY_URL="${INTERNAL_URL}/trunk/src-internal"
-	else
-		PRIMARY_URL="${INTERNAL_URL}/trunk/tools/buildspec/releases"
-		AUXILIARY_URL=
-	fi
-else
-	if [[ ${USE_TRUNK} == 0 ]]; then
-		PRIMARY_URL="${EXTERNAL_URL}/trunk/src"
-	else
-		PRIMARY_URL="${EXTERNAL_URL}/releases"
-	fi
-	AUXILIARY_URL=
-fi
 
 CHROME_SRC="chrome-src"
 if use chrome_internal; then
@@ -378,142 +351,21 @@ set_build_defines() {
 	export DEPOT_TOOLS_UPDATE=0
 }
 
-create_gclient_file() {
-	local echrome_store_dir=${1}
-	local primary_url=${2}
-	local auxiliary_url=${3}
-	local revision=${4}
-	local use_pdf=${5}
-	local use_trunk=${6}
-
-	local layout_tests="src/chrome/test/data/layout_tests/LayoutTests"
-
-	local pdf1="\"src/pdf\": None,"
-	local pdf2="\"src-pdf\": None,"
-	local checkout_point="CHROME_DEPS"
-
-	# Bots in golo.chromium.org have private mirrors that are only accessible
-	# from within golo.chromium.org.
-	local custom_vars=''
-	if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
-		custom_vars=$(cat <<EOF
-"svn_url": "${SVN_MIRROR_URL}",
-"webkit_trunk": "${SVN_MIRROR_URL}/webkit-readonly/trunk",
-"googlecode_url": "${SVN_MIRROR_URL}/%s",
-"sourceforge_url": "${SVN_MIRROR_URL}/%(repo)s",
-EOF
-)
-	fi
-
-	if [[ ${use_pdf} == 0 ]]; then
-		pdf1=
-		pdf2=
-	fi
-	if [[ ${use_trunk} == 0 ]]; then
-		checkout_point="src"
-	fi
-	echo "solutions = [" >${echrome_store_dir}/.gclient
-	cat >>${echrome_store_dir}/.gclient <<EOF
-	{"name"        : "${checkout_point}",
-	 "url"         : "${primary_url}${revision}",
-	 "custom_deps" : {
-		"src/chrome/tools/test/reference_build/chrome": None,
-		"src/chrome/tools/test/reference_build/chrome_mac": None,
-		"src/chrome/tools/test/reference_builds/chrome_linux": None,
-		"src/chrome_frame/tools/test/reference_build/chrome": None,
-		"src/third_party/WebKit/LayoutTests": None,
-		"${layout_tests}/fast/filesystem/workers": None,
-		"${layout_tests}/fast/filesystem/resources": None,
-		"${layout_tests}/fast/js/resources": None,
-		"${layout_tests}/fast/events": None,
-		"${layout_tests}/fast/workers": None,
-		"${layout_tests}/http/tests/appcache": None,
-		"${layout_tests}/http/tests/filesystem": None,
-		"${layout_tests}/http/tests/resources": None,
-		"${layout_tests}/http/tests/workers": None,
-		"${layout_tests}/http/tests/xmlhttprequest": None,
-		"${layout_tests}/media": None,
-		"${layout_tests}/platform/chromium/fast/workers": None,
-		"${layout_tests}/platform/chromium-cg-mac/fast/events": None,
-		"${layout_tests}/platform/chromium-cg-mac/http/tests/workers": None,
-		"${layout_tests}/platform/chromium-cg-mac/storage/domstorage": None,
-		"${layout_tests}/platform/chromium-win/fast/events": None,
-		"${layout_tests}/platform/chromium-win/fast/workers": None,
-		"${layout_tests}/platform/chromium-win/http/tests/workers": None,
-		"${layout_tests}/platform/chromium-win/storage/domstorage": None,
-		"${layout_tests}/storage/domstorage": None,
-		${pdf1}
-		${pdf2}
-		},
-	 "custom_vars": {
-		${custom_vars}
-		},
-	},
-EOF
-	local internal_revision=${revision}
-	# If we're syncing to TOT, there won't be a matching internal revision for
-	# the external revision. Rely on gclient sync --transitive to pick one of the
-	# right revisions.
-	if [[ ${use_trunk} == 0 ]]; then
-		internal_revision=
-	fi
-	if [[ -n "${auxiliary_url}" ]]; then
-		cat >>${echrome_store_dir}/.gclient <<EOF
-  { "name"        : "aux_src",
-	"url"         : "${auxiliary_url}${internal_revision}",
-  },
-EOF
-	fi
-	if [[ ${use_trunk} == 0 ]]; then
-		cat >>${echrome_store_dir}/.gclient <<EOF
-  { "name"        : "cros",
-	"url"         : "${primary_url}/tools/cros.DEPS${revision}",
-  },
-EOF
-	fi
-	echo "]" >>${echrome_store_dir}/.gclient
-}
-
 unpack_chrome() {
-	elog "Storing CHROME_VERSION=${CHROME_VERSION} in \
-		${CHROME_VERSION_FILE} file"
-	echo ${CHROME_VERSION} > ${CHROME_VERSION_FILE}
-
-	elog "Creating ${CHROME_DISTDIR}/.gclient"
-	#until we make the pdf compile on arm.
-	#http://code.google.com/p/chrome-os-partner/issues/detail?id=1572
-	if use chrome_pdf; then
-		elog "Official Build enabling PDF sources"
-		create_gclient_file "${CHROME_DISTDIR}" \
-			"${PRIMARY_URL}" \
-			"${AUXILIARY_URL}" \
-			"${REVISION}" \
-			0 \
-			${USE_TRUNK} \
-			|| die "Can't write .gclient file"
-	else
-		create_gclient_file "${CHROME_DISTDIR}" \
-			"${PRIMARY_URL}" \
-			"${AUXILIARY_URL}" \
-			"${REVISION}" \
-			1 \
-			${USE_TRUNK} \
-			|| die "Can't write .gclient file"
+	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/sync_chrome )
+	use chrome_internal && cmd+=( --internal )
+	use chrome_pdf && cmd+=( --pdf )
+	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
+		cmd+=( --revision="${CROS_SVN_COMMIT}" )
+	elif [[ "${CHROME_VERSION}" != "9999" ]]; then
+		cmd+=( --tag="${CHROME_VERSION}" )
 	fi
-
-	elog "Using .gclient ..."
-	elog $(cat ${CHROME_DISTDIR}/.gclient)
-
-	pushd "${CHROME_DISTDIR}" ||
-		die "Cannot chdir to ${CHROME_DISTDIR}"
-
-	if [[ -s patches ]]; then
-		elog "Reverting previous patches"
-		${EGCLIENT} revert --jobs 8 --nohooks || die
-		rm patches
-	fi
-	elog "Syncing google chrome sources using ${EGCLIENT}"
-	${EGCLIENT} sync --nohooks --delete_unversioned_trees --transitive
+	# --reset tells sync_chrome to blow away local changes and to feel
+	# free to delete any directories that get in the way of syncing. This
+	# is needed for unattended operation.
+	cmd+=( --reset --gclient="${EGCLIENT}" "${CHROME_DISTDIR}" )
+	elog "${cmd[*]}"
+	"${cmd[@]}" || die
 }
 
 decide_chrome_origin() {
@@ -590,27 +442,7 @@ src_unpack() {
 	case "${CHROME_ORIGIN}" in
 	(SERVER_SOURCE)
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
-		#See if the CHROME_VERSION we used previously was different
-		CHROME_VERSION_FILE=${CHROME_DISTDIR}/chrome_version
-		if [[ -f ${CHROME_VERSION_FILE} ]]; then
-			OLD_CHROME_VERSION=$(cat ${CHROME_VERSION_FILE})
-		fi
-
-		if ! unpack_chrome; then
-			if [[ ${OLD_CHROME_VERSION} != ${CHROME_VERSION} ]]; then
-				popd
-				elog "${EGCLIENT} sync failed and detected version change"
-				elog "Attempting to clean up ${CHROME_DISTDIR} and retry"
-				elog "OLD CHROME = ${OLD_CHROME_VERSION}"
-				elog "NEW CHROME = ${CHROME_VERSION}"
-				elog "rm -rf ${CHROME_DISTDIR}"
-				rm -rf "${CHROME_DISTDIR}"
-				sandboxless_ensure_directory "${CHROME_DISTDIR}"
-				unpack_chrome || die "${EGCLIENT} sync failed from fresh checkout"
-			else
-				die "${EGCLIENT} sync failed"
-			fi
-		fi
+		unpack_chrome
 
 		elog "set the chrome source root to ${CHROME_DISTDIR}"
 		elog "From this point onwards there is no difference between \
