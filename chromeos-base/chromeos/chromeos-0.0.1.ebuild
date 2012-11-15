@@ -262,3 +262,8 @@ DEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-util/quipper
 "
+
+# USB / WiFi Firmware
+RDEPEND="${RDEPEND}
+	net-wireless/realtek-rt2800-firmware
+"
