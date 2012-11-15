@@ -198,6 +198,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies to run unit tests within the chroot
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
+	dev-python/mock
 	dev-python/mox
 	dev-python/unittest2
 	"
