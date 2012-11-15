@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="4c4e21e12e64e9917168e170369f845d88fb5f6f"
-CROS_WORKON_TREE="1f11221ea8398b8fd78b0ab54b53eed18a648cec"
+CROS_WORKON_COMMIT=e7b3de2a3cdc9f6b4de29d9616530aeb6df269ad
+CROS_WORKON_TREE="76519a85f6ae53721a9d3a6d21d5235aaa3a7bde"
 CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
 
 XORG_EAUTORECONF="yes"
