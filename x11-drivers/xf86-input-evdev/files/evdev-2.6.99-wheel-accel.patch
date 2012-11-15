@@ -1,5 +1,7 @@
 From: Ang Pan <oscarpan@chromium.org>
+Date: Thu, 15 Nov 2012 15:38:44 +0800
 Subject: [PATCH] Accelerate wheel scrolling
+
 ---
  include/evdev-properties.h |    4 +
  src/evdev.c                |  198 +++++++++++++++++++++++++++++++++++++++----
@@ -7,7 +9,6 @@ Subject: [PATCH] Accelerate wheel scrolling
  3 files changed, 196 insertions(+), 19 deletions(-)
 
 diff --git a/include/evdev-properties.h b/include/evdev-properties.h
-index 745a1ba..66e8a75 100644
 --- a/include/evdev-properties.h
 +++ b/include/evdev-properties.h
 @@ -87,4 +87,8 @@
@@ -20,10 +21,9 @@ index 745a1ba..66e8a75 100644
 +
  #endif
 diff --git a/src/evdev.c b/src/evdev.c
-index 54772c7..008c6b8 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -93,6 +93,9 @@
+@@ -99,6 +99,9 @@
  #define ABS_MT_TRACKING_ID 0x39
  #endif
  
@@ -33,7 +33,7 @@ index 54772c7..008c6b8 100644
  static const char *evdevDefaults[] = {
      "XkbRules",     "evdev",
      "XkbModel",     "evdev",
-@@ -134,12 +137,17 @@ static Atom prop_axis_label;
+@@ -140,12 +143,17 @@ static Atom prop_axis_label;
  static Atom prop_btn_label;
  static Atom prop_device;
  static Atom prop_virtual;
@@ -51,7 +51,7 @@ index 54772c7..008c6b8 100644
  static int EvdevSwitchMode(ClientPtr client, DeviceIntPtr device, int mode)
  {
      InputInfoPtr pInfo;
-@@ -670,6 +678,103 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -676,6 +684,103 @@ EvdevProcessButtonEvent(InputInfoPtr pInfo, struct input_event *ev)
          EvdevQueueKbdEvent(pInfo, ev, value);
  }
  
@@ -155,7 +155,7 @@ index 54772c7..008c6b8 100644
  /**
   * Take the relative motion input event and process it accordingly.
   */
-@@ -680,6 +785,14 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -686,6 +791,14 @@ EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
      EvdevPtr pEvdev = pInfo->private;
      int map;
  
@@ -170,7 +170,7 @@ index 54772c7..008c6b8 100644
      /* Get the signed value, earlier kernels had this as unsigned */
      value = ev->value;
  
-@@ -1533,12 +1646,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1539,12 +1652,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  
  #ifndef HAVE_SMOOTH_SCROLLING
@@ -183,7 +183,7 @@ index 54772c7..008c6b8 100644
      if (EvdevBitIsSet(pEvdev->rel_bitmask, REL_DIAL))
          num_axes--;
  
-@@ -1546,17 +1653,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1552,17 +1659,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  #endif
  
@@ -213,7 +213,7 @@ index 54772c7..008c6b8 100644
      atoms = malloc(pEvdev->num_vals * sizeof(Atom));
  
      for (axis = REL_X; i < MAX_VALUATORS && axis <= REL_MAX; axis++)
-@@ -1564,7 +1674,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1570,7 +1680,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          pEvdev->axis_map[axis] = -1;
  #ifndef HAVE_SMOOTH_SCROLLING
          /* We don't post wheel events, so ignore them here too */
@@ -222,7 +222,7 @@ index 54772c7..008c6b8 100644
              continue;
  #endif
          if (!EvdevBitIsSet(pEvdev->rel_bitmask, axis))
-@@ -1573,9 +1683,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1579,9 +1689,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          i++;
      }
  
@@ -245,7 +245,7 @@ index 54772c7..008c6b8 100644
                                         GetMotionHistorySize(), Relative)) {
          xf86IDrvMsg(pInfo, X_ERROR, "failed to initialize valuator class device.\n");
          goto out;
-@@ -1590,11 +1711,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1596,11 +1717,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
      for (axis = REL_X; axis <= REL_MAX; axis++)
      {
          int axnum = pEvdev->axis_map[axis];
@@ -265,7 +265,7 @@ index 54772c7..008c6b8 100644
          xf86InitValuatorDefaults(device, axnum);
  #ifdef HAVE_SMOOTH_SCROLLING
          if (axis == REL_WHEEL)
-@@ -1606,6 +1734,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1612,6 +1740,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
  #endif
      }
  
@@ -283,7 +283,7 @@ index 54772c7..008c6b8 100644
      free(atoms);
  
      return Success;
-@@ -1767,6 +1906,9 @@ EvdevInit(DeviceIntPtr device)
+@@ -1773,6 +1912,9 @@ EvdevInit(DeviceIntPtr device)
      for(i = 0; i < max(ABS_CNT,REL_CNT); i++)
        pEvdev->axis_map[i]=-1;
  
@@ -293,7 +293,7 @@ index 54772c7..008c6b8 100644
      if (pEvdev->flags & EVDEV_KEYBOARD_EVENTS)
  	EvdevAddKeyClass(device);
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -2845,6 +2987,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2861,6 +3003,7 @@ EvdevInitProperty(DeviceIntPtr dev)
      if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
      {
          BOOL invert[2];
@@ -301,7 +301,7 @@ index 54772c7..008c6b8 100644
          invert[0] = pEvdev->invert_x;
          invert[1] = pEvdev->invert_y;
  
-@@ -2891,6 +3034,16 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -2907,6 +3050,16 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
@@ -318,7 +318,7 @@ index 54772c7..008c6b8 100644
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -2960,6 +3113,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -2976,6 +3129,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
@@ -333,7 +333,6 @@ index 54772c7..008c6b8 100644
                 atom == prop_product_id || atom == prop_device ||
                 atom == prop_virtual)
 diff --git a/src/evdev.h b/src/evdev.h
-index b958a83..8375c08 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -149,6 +149,12 @@ typedef struct {
@@ -349,7 +348,7 @@ index b958a83..8375c08 100644
  typedef struct {
      unsigned short id_vendor;
      unsigned short id_product;
-@@ -245,6 +251,9 @@ typedef struct {
+@@ -246,6 +252,9 @@ typedef struct {
      unsigned long led_bitmask[NLONGS(LED_CNT)];
      struct input_absinfo absinfo[ABS_CNT];
  
@@ -359,7 +358,7 @@ index b958a83..8375c08 100644
      /* minor/major number */
      dev_t min_maj;
  
-@@ -253,6 +262,10 @@ typedef struct {
+@@ -254,6 +263,10 @@ typedef struct {
      EventQueueRec           queue[EVDEV_MAXQUEUE];
  
      enum fkeymode           fkeymode;
@@ -371,5 +370,5 @@ index b958a83..8375c08 100644
  
  /* Event posting functions */
 -- 
-1.7.8.6
+1.7.7.3
 

@@ -17,11 +17,11 @@ DEPEND="${RDEPEND}
 	>=sys-kernel/linux-headers-2.6"
 
 PATCHES=(
+	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
 	"${FILESDIR}/evdev-disable-smooth-scrolling.patch"
 	"${FILESDIR}/evdev-2.6.99-wheel-accel.patch"
 	"${FILESDIR}"/evdev-2.7.0-feedback-log.patch
 	"${FILESDIR}"/evdev-2.7.0-add-touch-event-timestamp.patch
-	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
 	# crosbug.com/p/13787
 	"${FILESDIR}"/evdev-2.7.0-fix-emulated-wheel.patch
 )

@@ -1,5 +1,5 @@
 From: Daniel Erat <derat@chromium.org>
-Date:   Wed Mar 21 10:44:51 2012 -0700
+Date: Wed, 21 Mar 2012 10:44:51 -0700
 Subject: [PATCH] Disable smooth scrolling in xf86-input-evdev.
 
 This caused additional valuator-containing motion events to
@@ -14,7 +14,6 @@ TEST=manual: we scroll 106 pixels for each scrollwheel click on stumpy
  1 files changed, 4 insertions(+), 0 deletions(-)
 
 diff --git a/src/evdev.h b/src/evdev.h
-index acd4289..fe89420 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -67,6 +67,10 @@
