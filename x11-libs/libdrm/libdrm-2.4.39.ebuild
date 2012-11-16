@@ -21,7 +21,7 @@ for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
-IUSE="${IUSE_VIDEO_CARDS} libkms"
+IUSE="${IUSE_VIDEO_CARDS} libkms tests"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
@@ -47,9 +47,18 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if [[ ${PV} = 9999* ]]; then
+	if [[ ${PV} = 9999* ]] && ! use tests; then
 		# tests are restricted, no point in building them
 		sed -ie 's/tests //' "${S}"/Makefile.am
 	fi
 	xorg-2_src_prepare
+}
+
+src_install() {
+	xorg-2_src_install
+
+	if use tests; then
+		into /usr/local/
+		dobin "${WORKDIR}/${PF}_build/tests"/*/.libs/*
+	fi
 }
