@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT=f5b1284e877189ae39f5be47c7b55b4002d9f6a6
+CROS_WORKON_COMMIT="f5b1284e877189ae39f5be47c7b55b4002d9f6a6"
 CROS_WORKON_TREE="16df0c37406aa9d921697f8bae26fb6cc9cbb260"
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
 
