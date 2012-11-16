@@ -33,6 +33,8 @@ src_install() {
 	#   inserted password.
 	insinto /etc/pam.d
 	doins "${FILESDIR}/chromeos-auth" || die
+
+	dosbin "${FILESDIR}/is_developer_end_user" || die
 }
 
 pkg_postinst() {
