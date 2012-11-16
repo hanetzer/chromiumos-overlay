@@ -198,15 +198,14 @@ src_install() {
 	[[ -n ${src}${dst} ]] && FAKE_TARGETS="${FAKE_TARGETS} ${CTARGET/${src}/${dst}}"
 
 	# Generate an env.d entry for this binutils
-	cd "${MYBUILDDIR_BINUTILS}"
 	insinto /etc/env.d/binutils
-	cat <<-EOF > env.d
+	cat <<-EOF > "${T}"/env.d
 	TARGET="${CTARGET}"
 	VER="${BVER}"
 	LIBPATH="${LIBPATH}"
 	FAKE_TARGETS="${FAKE_TARGETS}"
 	EOF
-	newins env.d ${CTARGET}-${BVER}
+	newins "${T}"/env.d ${CTARGET}-${BVER}
 
 	# Handle documentation
 	if ! is_cross ; then
@@ -265,15 +264,14 @@ src_install() {
 	dosym ld.gold "${BINPATH}-gold/ld"
 
 	# Install gold binutils-config configuration file
-	cd ${MYBUILDDIR_GOLD}
 	insinto /etc/env.d/binutils
-	cat <<-EOF > env.d
+	cat <<-EOF > "${T}"/env.d
 	TARGET="${CTARGET}"
 	VER="${BVER}-gold"
 	LIBPATH="${LIBPATH}-gold"
 	FAKE_TARGETS="${FAKE_TARGETS}"
 	EOF
-	newins env.d ${CTARGET}-${BVER}-gold
+	newins "${T}"/env.d ${CTARGET}-${BVER}-gold
 
 	# Move the locale directory to where it is supposed to be
 	mv "${D}/usr/share/locale" "${D}/${DATAPATH}/"
