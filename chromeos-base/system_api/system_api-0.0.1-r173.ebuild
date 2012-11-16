@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT=16e22d62da60372e70fb274a2bace6c10bf53003
+CROS_WORKON_COMMIT="16e22d62da60372e70fb274a2bace6c10bf53003"
 CROS_WORKON_TREE="b42c9cac64249ec708872002fe902c20ff72c994"
 CROS_WORKON_PROJECT="chromiumos/platform/system_api"
 
