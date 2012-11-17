@@ -21,10 +21,6 @@ DEPEND="${RDEPEND}"
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
 src_install() {
-	insinto /usr/include/cros
-	doins window_manager/chromeos_wm_ipc_enums.h
-
 	insinto /usr/include/chromeos/dbus
-	doins dbus/*.h
-	doins dbus/*.proto
+	doins -r dbus/*
 }
