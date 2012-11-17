@@ -147,6 +147,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-add-maxvt-flag.patch"
 	# Save touchpoint last coordinates before transform
 	"${FILESDIR}/1.13.0-dix-Save-touchpoint-last-coordinates-before-transform.patch"
+	# crbug.com/30822
+	"${FILESDIR}/1.12.4-Per-Randr-CRTC-pointer-scaling.patch"
 )
 
 src_prepare() {
