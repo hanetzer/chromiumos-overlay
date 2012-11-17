@@ -142,9 +142,11 @@ src_compile()
 
 # Logic copied from Gentoo's toolchain.eclass.
 toolchain_src_install() {
+	BINPATH=$(get_bin_dir) # cros to Gentoo glue
+
 	# These should be symlinks
 	dodir /usr/bin
-	cd "${D}"$(get_bin_dir)
+	cd "${D}"${BINPATH}
 	for x in cpp gcc g++ c++ gcov g77 gcj gcjh gfortran gccgo ; do
 		# For some reason, g77 gets made instead of ${CTARGET}-g77...
 		# this should take care of that
