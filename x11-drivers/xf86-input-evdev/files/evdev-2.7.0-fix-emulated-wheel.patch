@@ -10,9 +10,9 @@ The main motivation of this change is to send Emulated Wheel events to
 Chrome using the scroll valuators instead of legacy button events.
 ---
  src/emuWheel.c |   48 +++++++++---------------------------------------
- src/evdev.c    |    4 +++-
+ src/evdev.c    |   20 +++++++++++++++++++-
  src/evdev.h    |    4 ++++
- 3 files changed, 16 insertions(+), 40 deletions(-)
+ 3 files changed, 32 insertions(+), 40 deletions(-)
 
 diff --git a/src/emuWheel.c b/src/emuWheel.c
 --- a/src/emuWheel.c
@@ -89,7 +89,15 @@ diff --git a/src/emuWheel.c b/src/emuWheel.c
 diff --git a/src/evdev.c b/src/evdev.c
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -761,6 +761,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
+@@ -131,6 +131,7 @@ static BOOL EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab);
+ static void EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int calibration[4]);
+ static int EvdevOpenDevice(InputInfoPtr pInfo);
+ static void EvdevCloseDevice(InputInfoPtr pInfo);
++static void EvdevForceWheel(InputInfoPtr pInfo);
+ 
+ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int mode, int natoms, Atom *atoms);
+ static void EvdevInitButtonLabels(EvdevPtr pEvdev, int natoms, Atom *atoms);
+@@ -761,6 +762,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
  
      /* If start_time == end_time, compute click_speed using dt = 1 second */
      dt = (end_time - start_time) ?: 1.0;
@@ -98,7 +106,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      click_speed = ev->value / dt;
  
      wheel->value = ev->value;
-@@ -786,7 +788,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
+@@ -786,7 +789,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
  /**
   * Take the relative motion input event and process it accordingly.
   */
@@ -107,6 +115,35 @@ diff --git a/src/evdev.c b/src/evdev.c
  EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      int value;
+@@ -1693,6 +1696,8 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+     if (!EvdevBitIsSet(pEvdev->bitmask, EV_REL))
+         goto out;
+ 
++    EvdevForceWheel(pInfo);
++
+     num_axes = EvdevCountBits(pEvdev->rel_bitmask, NLONGS(REL_MAX));
+     if (num_axes < 1)
+         goto out;
+@@ -2226,6 +2231,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
+ }
+ 
+ /**
++ * Some devices require REL_WHEEL and REL_HWHEEL axes to emulate wheel
++ * activities.
++ */
++static void
++EvdevForceWheel(InputInfoPtr pInfo)
++{
++    EvdevPtr pEvdev = pInfo->private;
++
++    EvdevSetBit(pEvdev->rel_bitmask, REL_WHEEL);
++    EvdevSetBit(pEvdev->rel_bitmask, REL_HWHEEL);
++}
++
++/**
+  * Some devices only have other axes (e.g. wheels), but we
+  * still need x/y for these. The server relies on devices having
+  * x/y as axes 0/1 and core/XI 1.x clients expect it too (#44655)
 diff --git a/src/evdev.h b/src/evdev.h
 --- a/src/evdev.h
 +++ b/src/evdev.h
