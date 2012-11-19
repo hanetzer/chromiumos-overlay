@@ -89,6 +89,7 @@ IUSE_TESTS="
 	+tests_build_RootFilesystemSize
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
+	+tests_desktopui_HangDetector
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
 	+tests_desktopui_SpeechSynthesisSemiAuto
