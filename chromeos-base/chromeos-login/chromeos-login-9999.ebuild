@@ -16,9 +16,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -chromeos_keyboard -disable_login_animations
-	-disable_oobe_animation -disable_webaudio -has_hdd -highdpi -is_desktop
-	-natural_scroll_default -new_power_button test -touchui +X"
+IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
+	-has_hdd -highdpi -is_desktop -natural_scroll_default -new_power_button
+	test -touchui +X"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
