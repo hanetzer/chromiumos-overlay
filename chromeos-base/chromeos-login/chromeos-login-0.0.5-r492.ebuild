@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=d10a32fe42ccffac29911250c9cf87d2ef90b9f6
-CROS_WORKON_TREE="8add15469f08b93c1e81e84644aa0d7e05a6b236"
+CROS_WORKON_COMMIT="0afc603d86c482d75baa3828e9fce6f2f815f587"
+CROS_WORKON_TREE="956452469342f843886ff9115524a8b0b6adf7ac"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="arm amd64 x86"
@@ -18,9 +18,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 
-IUSE="-asan -chromeos_keyboard -disable_login_animations
-	-disable_oobe_animation -disable_webaudio -has_hdd -highdpi -is_desktop
-	-natural_scroll_default -new_power_button test -touchui +X"
+IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
+	-has_hdd -highdpi -is_desktop -natural_scroll_default -new_power_button
+	test -touchui +X"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
