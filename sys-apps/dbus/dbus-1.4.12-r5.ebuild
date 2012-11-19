@@ -66,6 +66,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-send-unix-fd.patch
 	epatch "${FILESDIR}"/${P}-send-variant-dict.patch
 
+	# chromium-os:36381
+	epatch "${FILESDIR}"/${P}-match-rules.patch
+
 	# required for asneeded patch but also for bug 263909, cross-compile so
 	# don't remove eautoreconf
 	eautoreconf
