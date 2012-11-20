@@ -166,4 +166,32 @@ src_install() {
 	mkdir -p "${D}"/usr/share/cursors/xorg-x11/default
 	echo Inherits=chromeos \
 		>"${D}"/usr/share/cursors/xorg-x11/default/index.theme
+
+	#
+	# Speech synthesis
+	#
+
+	insinto /usr/share/chromeos-assets/speech_synthesis/patts
+
+	# Speech synthesis component extension code
+	doins "${S}"/speech_synthesis/patts/manifest.json
+	doins "${S}"/speech_synthesis/patts/tts_main.js
+	doins "${S}"/speech_synthesis/patts/tts_service.nmf
+
+	# Speech synthesis voice data
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-US.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-US.zip
+	doins -r "${S}"/voice_data_hmm_en-US
+
+	# Speech synthesis engine (platform-specific native client module)
+	if use arm ; then
+		unzip "${S}"/speech_synthesis/patts/tts_service_pexe_arm.nexe.zip
+		doins "${S}"/tts_service_pexe_arm.nexe
+	elif use x86 ; then
+		unzip "${S}"/speech_synthesis/patts/tts_service_x86-32.nexe.zip
+		doins "${S}"/tts_service_x86-32.nexe
+	elif use amd64 ; then
+		unzip "${S}"/speech_synthesis/patts/tts_service_x86-64.nexe.zip
+		doins "${S}"/tts_service_x86-64.nexe
+	fi
 }
