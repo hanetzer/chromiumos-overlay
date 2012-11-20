@@ -114,32 +114,21 @@ src_prepare() {
 			configure.ac || die
 	fi
 
-	epatch "${FILESDIR}"/7.10-cross-compile.patch
-	epatch "${FILESDIR}"/7.11-i915g-no-tiling.patch
+	epatch "${FILESDIR}"/9.0-cross-compile.patch
 	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/7.11-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/7.11_p2-pkgconfig.patch
-	epatch "${FILESDIR}"/7.11_p3-builtin_function.patch
-	epatch "${FILESDIR}"/7.11-argb2101010_disable.patch
-	epatch "${FILESDIR}"/8.0-force_s3tc_enable.patch
-	epatch "${FILESDIR}"/8.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
-	epatch "${FILESDIR}"/8.0-i965-Make-sure-we-do-render-between-two-hiz-flushes.patch
-	epatch "${FILESDIR}"/8.0-QueryVersion-NULL-reply.patch
-	epatch "${FILESDIR}"/8.0-fix-deps-order.patch
-	epatch "${FILESDIR}"/8.0-cleanup-meta.patch
-	epatch "${FILESDIR}"/8.0-fix-leaks.patch
-	epatch "${FILESDIR}"/8.1-Add-builtin-function-cpp.patch
-	epatch "${FILESDIR}"/8.1-narrow-conversion.patch
-	epatch "${FILESDIR}"/8.1-i915g-Fix-depth-stencil-glClear.patch
-	epatch "${FILESDIR}"/8.1-save-restore-vb-state-in-util-gen-mipmap.patch
-	epatch "${FILESDIR}"/8.1-intel-disable-msaa.patch
+	epatch "${FILESDIR}"/9.0-builtin_function.patch
+	epatch "${FILESDIR}"/9.0-force_s3tc_enable.patch
+	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
+	epatch "${FILESDIR}"/9.0-i965-Make-sure-we-do-render-between-two-hiz-flushes.patch
+	epatch "${FILESDIR}"/9.0-Add-builtin-function-cpp.patch
+	epatch "${FILESDIR}"/9.0-intel-disable-msaa.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/8.1-lastlevel.patch
-	epatch "${FILESDIR}"/8.1-i965-texture-upload.patch
-	epatch "${FILESDIR}"/8.1-remove-non-interleaved-to-interleaved-upload.patch
 	epatch "${FILESDIR}"/8.1-disable-guardband.patch
-	epatch "${FILESDIR}"/8.1-uniform-array-bounds-check.patch
+	epatch "${FILESDIR}"/9.0-uniform-array-bounds-check.patch
 
 	base_src_prepare
 

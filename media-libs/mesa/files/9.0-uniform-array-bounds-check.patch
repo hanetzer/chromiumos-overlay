@@ -1,8 +1,8 @@
 diff --git a/src/mesa/main/uniform_query.cpp b/src/mesa/main/uniform_query.cpp
-index f5d998f..a226563 100644
+index bddb8f9..66a2399 100644
 --- a/src/mesa/main/uniform_query.cpp
 +++ b/src/mesa/main/uniform_query.cpp
-@@ -164,11 +164,14 @@ validate_uniform_parameters(struct gl_context *ctx,
+@@ -237,11 +237,14 @@ validate_uniform_parameters(struct gl_context *ctx,
        return false;
     }
  
@@ -21,7 +21,7 @@ index f5d998f..a226563 100644
        _mesa_error(ctx, GL_INVALID_OPERATION, "%s(location=%d)",
  		  caller, location);
        return false;
-@@ -655,9 +658,6 @@ _mesa_uniform(struct gl_context *ctx, struct gl_shader_program *shProg,
+@@ -728,9 +731,6 @@ _mesa_uniform(struct gl_context *ctx, struct gl_shader_program *shProg,
      * will have already generated an error.
      */
     if (uni->array_elements != 0) {
@@ -31,7 +31,7 @@ index f5d998f..a226563 100644
        count = MIN2(count, (int) (uni->array_elements - offset));
     }
  
-@@ -811,9 +811,6 @@ _mesa_uniform_matrix(struct gl_context *ctx, struct gl_shader_program *shProg,
+@@ -885,9 +885,6 @@ _mesa_uniform_matrix(struct gl_context *ctx, struct gl_shader_program *shProg,
      * will have already generated an error.
      */
     if (uni->array_elements != 0) {
@@ -41,9 +41,9 @@ index f5d998f..a226563 100644
        count = MIN2(count, (int) (uni->array_elements - offset));
     }
  
-@@ -943,10 +940,13 @@ _mesa_get_uniform_location(struct gl_context *ctx,
+@@ -1021,10 +1018,13 @@ _mesa_get_uniform_location(struct gl_context *ctx,
     if (!found)
-       return -1;
+       return GL_INVALID_INDEX;
  
 -   /* Since array_elements is 0 for non-arrays, this causes look-ups of 'a[0]'
 -    * to (correctly) fail if 'a' is not an array.
@@ -55,6 +55,6 @@ index f5d998f..a226563 100644
 -   if (array_lookup && shProg->UniformStorage[location].array_elements == 0) {
 +   if (array_lookup
 +	 && offset >= shProg->UniformStorage[location].array_elements) {
-       return -1;
+       return GL_INVALID_INDEX;
     }
  

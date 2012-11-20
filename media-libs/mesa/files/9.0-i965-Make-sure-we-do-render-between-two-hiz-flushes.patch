@@ -14,10 +14,10 @@ primitives get rendered before every hiz flush.
  3 files changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/src/mesa/drivers/dri/i965/brw_context.c b/src/mesa/drivers/dri/i965/brw_context.c
-index 65de260..3c146f5 100644
+index 1448965..9ba1742 100644
 --- a/src/mesa/drivers/dri/i965/brw_context.c
 +++ b/src/mesa/drivers/dri/i965/brw_context.c
-@@ -277,6 +277,7 @@ brwCreateContext(int api,
+@@ -332,6 +332,7 @@ brwCreateContext(int api,
  	 brw->urb.max_gs_entries = 256;
        }
        brw->urb.gen6_gs_previously_active = false;
@@ -26,10 +26,10 @@ index 65de260..3c146f5 100644
        brw->urb.size = 1024;
        brw->max_vs_threads = 72;
 diff --git a/src/mesa/drivers/dri/i965/brw_context.h b/src/mesa/drivers/dri/i965/brw_context.h
-index 0c50b6b..e204e4e 100644
+index 9232a72..d13e85c 100644
 --- a/src/mesa/drivers/dri/i965/brw_context.h
 +++ b/src/mesa/drivers/dri/i965/brw_context.h
-@@ -792,6 +792,7 @@ struct brw_context
+@@ -871,6 +871,7 @@ struct brw_context
         * URB space for the GS.
         */
        bool gen6_gs_previously_active;
@@ -38,7 +38,7 @@ index 0c50b6b..e204e4e 100644
  
     
 diff --git a/src/mesa/drivers/dri/i965/brw_draw.c b/src/mesa/drivers/dri/i965/brw_draw.c
-index da37b18..9244a82 100644
+index 323310a..211d68d 100644
 --- a/src/mesa/drivers/dri/i965/brw_draw.c
 +++ b/src/mesa/drivers/dri/i965/brw_draw.c
 @@ -293,10 +293,14 @@ static void brw_merge_inputs( struct brw_context *brw,
@@ -57,29 +57,25 @@ index da37b18..9244a82 100644
  {
     struct gl_context *ctx = &brw->intel.ctx;
     struct intel_context *intel = &brw->intel;
-@@ -305,10 +309,12 @@ brw_predraw_resolve_buffers(struct brw_context *brw)
+@@ -305,9 +309,11 @@ brw_predraw_resolve_buffers(struct brw_context *brw)
  
     /* Resolve the depth buffer's HiZ buffer. */
     depth_irb = intel_get_renderbuffer(ctx->DrawBuffer, BUFFER_DEPTH);
--   if (depth_irb && depth_irb->mt) {
-+   if (depth_irb && depth_irb->mt && brw->urb.prims_since_last_flush > 0 ) {
+-   if (depth_irb)
++   if (depth_irb && brw->urb.prims_since_last_flush > 0 )
        intel_renderbuffer_resolve_hiz(intel, depth_irb);
-    }
  
 +   brw->urb.prims_since_last_flush = nr_prims;
 +
     /* Resolve depth buffer of each enabled depth texture. */
     for (int i = 0; i < BRW_MAX_TEX_UNIT; i++) {
        if (!ctx->Texture.Unit[i]._ReallyEnabled)
-@@ -426,7 +432,7 @@ static bool brw_try_draw_prims( struct gl_context *ctx,
-    /* Resolves must occur after updating state and finalizing textures but
-     * before setting up any hardware state for this draw call.
+@@ -438,7 +444,7 @@ static bool brw_try_draw_prims( struct gl_context *ctx,
+     * and finalizing textures but before setting up any hardware state for
+     * this draw call.
      */
 -   brw_predraw_resolve_buffers(brw);
 +   brw_predraw_resolve_buffers(brw, nr_prims);
  
-    /* Bind all inputs, derive varying and size information:
-     */
--- 
-1.7.5.3.367.ga9930
-
+    /* This workaround has to happen outside of brw_state_upload() because it
+     * may flush the batchbuffer for a blit, affecting the state flags.
