@@ -100,6 +100,8 @@ src_unpack() {
 		fi
 	else
 		cros-workon_src_unpack
+		cd "${S}"
+		[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/90_all_gcc-4.7-x32.patch
 	fi
 
 	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
@@ -109,8 +111,6 @@ src_unpack() {
 	elif [[ -n ${VCSID} ]]; then
 		COST_PKG_VERSION+="_${VCSID}"
 	fi
-
-	use vanilla && return 0
 }
 
 src_compile()
@@ -381,6 +381,9 @@ get_gcc_configure_options()
 			# Remove this once crash2 supports larger symbols.
 			# http://code.google.com/p/chromium-os/issues/detail?id=23321
 			confgcc="${confgcc} --enable-frame-pointer"
+			;;
+		x86_64*-gnux32)
+			confgcc="${confgcc} --with-abi=x32 --with-multilib-list=mx32"
 			;;
 	esac
 	echo ${confgcc}
