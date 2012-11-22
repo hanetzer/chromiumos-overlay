@@ -17,7 +17,7 @@ HOMEPAGE="http://hostap.epitest.fi"
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="debug ipv6 logwatch madwifi +ssl +wps"
+IUSE="ipv6 logwatch madwifi +ssl +wps"
 
 DEPEND="ssl? ( dev-libs/openssl )
 	dev-libs/libnl:0
@@ -91,9 +91,7 @@ src_configure() {
 		echo "CONFIG_IPV6=y" >> ${CONFIG}
 	fi
 
-	if ! use debug; then
-		echo "CONFIG_NO_STDOUT_DEBUG=y" >> ${CONFIG}
-	fi
+	echo "CONFIG_DEBUG_FILE=y" >> ${CONFIG}
 
 	# TODO: Add support for BSD drivers
 
