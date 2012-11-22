@@ -145,6 +145,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-mi-don-t-check-for-core-events-in-miPointerSetPositi.patch"
 	# Add the flag to specify the maximum VT the user can switch to
 	"${FILESDIR}/1.12.0-add-maxvt-flag.patch"
+	# Save touchpoint last coordinates before transform
+	"${FILESDIR}/1.13.0-dix-Save-touchpoint-last-coordinates-before-transform.patch"
 )
 
 src_prepare() {
