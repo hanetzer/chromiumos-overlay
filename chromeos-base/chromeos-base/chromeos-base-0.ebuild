@@ -102,6 +102,9 @@ src_install() {
 	insinto /lib/udev/rules.d
 	doins "${FILESDIR}"/55-serial.rules || die
 
+	insinto /lib/udev/rules.d
+	doins "${FILESDIR}"/99-usb-printer.rules || die
+
 	# target-specific fun
 	if ! use cros_host ; then
 		dodir /bin /usr/bin
