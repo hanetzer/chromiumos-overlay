@@ -13,7 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 IUSE="cros_factory_bundle"
 
 CROS_WORKON_LOCALNAME="factory-utils"
