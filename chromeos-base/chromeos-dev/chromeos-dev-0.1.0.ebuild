@@ -94,6 +94,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xtrace
 	x11-apps/xwd
 	x11-apps/xwininfo
+	x11-misc/xdotool
 	"
 
 X86_DEPEND="

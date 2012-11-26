@@ -89,6 +89,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xset
 	!arm? ( x11-misc/read-edid )
 	x11-misc/x11vnc
+	x11-misc/xdotool
 	x11-terms/rxvt-unicode
 	app-misc/utouch-evemu
 	cros_ec? ( chromeos-base/ec-utils )
