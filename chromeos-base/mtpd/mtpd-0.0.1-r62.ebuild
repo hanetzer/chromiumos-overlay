@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="e9e678c2f272fd7388afd3c2ccf94ed762ea2708"
-CROS_WORKON_TREE="f22aaaed44fcd884a8a9aa07d7300735d82d1642"
+CROS_WORKON_COMMIT="85d2ce42e73ca9afeffba3552a35a8d4b01b9c22"
+CROS_WORKON_TREE="f55cd88017c597fe7b086e3f233062ee8cdcdc36"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
