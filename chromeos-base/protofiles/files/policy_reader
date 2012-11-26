@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 TMP_DIR="/tmp"
-PROTO_DIR="/usr/share/protofiles"
+PROTO_DIR="/usr/local/share/protofiles"
 PROTO_FILE="/var/lib/whitelist/policy"
 
 # Extracts a field from the protobuf and unescapes it. This function takes two
