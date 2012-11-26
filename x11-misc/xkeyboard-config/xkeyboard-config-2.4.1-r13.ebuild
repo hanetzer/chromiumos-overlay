@@ -42,6 +42,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
 	"${FILESDIR}"/${P}-remap-f15-and-capslock.patch
 	"${FILESDIR}"/${P}-add-f19-24.patch
+        "${FILESDIR}"/${P}-gb-extd-deadkey.patch
 )
 
 use parrot && PATCHES+=( "${FILESDIR}"/${P}-parrot-euro-sign.patch )
