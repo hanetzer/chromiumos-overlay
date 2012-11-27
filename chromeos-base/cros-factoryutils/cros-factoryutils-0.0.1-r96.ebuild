@@ -4,6 +4,8 @@
 # TODO(jsalz): Remove this ebuild; it's no longer used.
 
 EAPI="4"
+CROS_WORKON_COMMIT="c759366a1dd3d733b12bb2edc3bae9868d38ee5b"
+CROS_WORKON_TREE="46e050754b5a2f5392223d734036b7b51dde5b5b"
 CROS_WORKON_PROJECT="chromiumos/platform/factory-utils"
 
 inherit cros-workon
