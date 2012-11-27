@@ -90,7 +90,6 @@ RDEPEND="${RDEPEND}
 		x11-apps/xinit
 		x11-apps/xrandr
 		>=x11-base/xorg-server-1.6.3
-		x11-misc/unclutter
 	)
 	"
 
