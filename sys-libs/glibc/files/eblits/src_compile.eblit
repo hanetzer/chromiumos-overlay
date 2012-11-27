@@ -1,6 +1,6 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/files/eblits/src_compile.eblit,v 1.19 2011/10/11 21:20:30 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/files/eblits/src_compile.eblit,v 1.29 2012/11/18 08:06:49 vapier Exp $
 
 glibc_do_configure() {
 	local myconf
@@ -19,7 +19,6 @@ glibc_do_configure() {
 	[[ -d ports ]] && ADDONS="${ADDONS},ports"
 	popd > /dev/null
 
-	use nls || myconf="${myconf} --disable-nls"
 	myconf="${myconf} $(use_enable hardened stackguard-randomization)"
 	if has_version '<sys-libs/glibc-2.13' ; then
 		myconf="${myconf} --enable-old-ssp-compat"
@@ -82,6 +81,8 @@ glibc_do_configure() {
 		--infodir=/usr/share/info
 		--libexecdir=/usr/$(get_libdir)/misc/glibc
 		$(use_multiarch || echo --disable-multi-arch)
+		--enable-obsolete-rpc
+		$(in_iuse systemtap && use_enable systemtap)
 		${EXTRA_ECONF}"
 
 	# There is no configure option for this and we need to export it
@@ -98,12 +99,22 @@ glibc_do_configure() {
 	cd "${GBUILDDIR}"
 	echo "${S}"/configure ${myconf}
 	"${S}"/configure ${myconf} || die "failed to configure glibc"
+
+	# ia64 static cross-compilers are a pita in so much that they
+	# can't produce static ELFs (as the libgcc.a is broken).  so
+	# disable building of the programs for those targets if it
+	# doesn't work.
+	# XXX: We could turn this into a compiler test, but ia64 is
+	# the only one that matters, so this should be fine for now.
+	if is_crosscompile && [[ ${CTARGET} == ia64* ]] ; then
+		sed -i '1i+link-static = touch $@' config.make
+	fi
 }
 
 toolchain-glibc_src_compile() {
 	echo
 	local v
-	for v in ABI CBUILD CHOST CTARGET CBUILD_OPT CTARGET_OPT CC CFLAGS ; do
+	for v in ABI CBUILD CHOST CTARGET CBUILD_OPT CTARGET_OPT CC {AS,C,CPP,CXX,LD}FLAGS ; do
 		einfo " $(printf '%15s' ${v}:)   ${!v}"
 	done
 	export CC=$(tc-getCC ${CTARGET})
@@ -153,6 +164,7 @@ toolchain-glibc_headers_compile() {
 		libc_cv_mlong_double_128ibm=yes \
 		libc_cv_ppc_machine=yes \
 		libc_cv_ppc_rel16=yes \
+		libc_cv_predef_{fortify_source,stack_protector}=no \
 		libc_cv_visibility_attribute=yes \
 		libc_cv_z_combreloc=yes \
 		libc_cv_z_execstack=yes \

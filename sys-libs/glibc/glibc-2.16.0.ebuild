@@ -1,34 +1,44 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/glibc-9999.ebuild,v 1.16 2012/11/02 18:25:11 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/glibc-2.16.0.ebuild,v 1.16 2012/11/18 09:32:24 vapier Exp $
 
-inherit eutils versionator toolchain-funcs flag-o-matic gnuconfig multilib unpacker multiprocessing binutils-funcs
+inherit eutils versionator toolchain-funcs flag-o-matic gnuconfig multilib unpacker multiprocessing
 
 DESCRIPTION="GNU libc6 (also called glibc2) C library"
 HOMEPAGE="http://www.gnu.org/software/libc/libc.html"
 
 LICENSE="LGPL-2"
-#KEYWORDS="~amd64 ~ia64 ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS=""
 RESTRICT="strip" # strip ourself #46186
 EMULTILIB_PKG="true"
 
 # Configuration variables
 RELEASE_VER=""
+BRANCH_UPDATE=""
+SNAP_VER=""
 case ${PV} in
 9999*)
 	EGIT_REPO_URIS=( "git://sourceware.org/git/glibc.git" "git://sourceware.org/git/glibc-ports.git" )
 	EGIT_SOURCEDIRS=( "${S}" "${S}/ports" )
 	inherit git-2
 	;;
+*_p*)
+	RELEASE_VER=${PV%_p*}
+	SNAP_VER=${PV#*_p}
+	;;
 *)
 	RELEASE_VER=${PV}
 	;;
 esac
-PATCH_VER=""                                   # Gentoo patchset
+MANPAGE_VER=""                                 # pregenerated manpages
+INFOPAGE_VER=""                                # pregenerated infopages
+LIBIDN_VER=""                                  # it's integrated into the main tarball now
+PATCH_VER="8"                                  # Gentoo patchset
 PORTS_VER=${RELEASE_VER}                       # version of glibc ports addon
-NPTL_KERN_VER=${NPTL_KERN_VER:-"2.6.9"}        # min kernel version nptl requires
+NPTL_KERN_VER=${NPTL_KERN_VER:-"2.6.16"}       # min kernel version nptl requires
 
 IUSE="debug gd hardened multilib selinux systemtap profile vanilla crosscompile_opts_headers-only"
+[[ -n ${RELEASE_VER} ]] && S=${WORKDIR}/glibc-${RELEASE_VER}${SNAP_VER:+-${SNAP_VER}}
 
 # Here's how the cross-compile logic breaks down ...
 #  CTARGET - machine that will target the binaries
@@ -52,7 +62,7 @@ if [[ ${CTARGET} == ${CHOST} ]] ; then
 	fi
 fi
 
-[[ ${CTARGET} == hppa* ]] && NPTL_KERN_VER=${NPTL_KERN_VER/2.6.9/2.6.20}
+[[ ${CTARGET} == hppa* ]] && NPTL_KERN_VER=${NPTL_KERN_VER/2.6.16/2.6.20}
 
 is_crosscompile() {
 	[[ ${CHOST} != ${CTARGET} ]]
@@ -99,9 +109,20 @@ SRC_URI=$(
 		echo mirror://gentoo/$1 ${devspace//URI/$1}
 	}
 
-	[[ -z ${EGIT_REPO_URIS} ]] && upstream_uris ${P}.tar.xz
-	[[ -n ${PORTS_VER}     ]] && upstream_uris ${TARNAME}-ports-${PORTS_VER}.tar.bz2
+	TARNAME=${PN}
+	if [[ -n ${SNAP_VER} ]] ; then
+		TARNAME="${PN}-${RELEASE_VER}"
+		[[ -n ${PORTS_VER} ]] && PORTS_VER=${SNAP_VER}
+		upstream_uris ${TARNAME}-${SNAP_VER}.tar.bz2
+	elif [[ -z ${EGIT_REPO_URIS} ]] ; then
+		upstream_uris ${TARNAME}-${RELEASE_VER}.tar.xz
+	fi
+	[[ -n ${LIBIDN_VER}    ]] && upstream_uris glibc-libidn-${LIBIDN_VER}.tar.bz2
+	[[ -n ${PORTS_VER}     ]] && upstream_uris ${TARNAME}-ports-${PORTS_VER}.tar.xz
+	[[ -n ${BRANCH_UPDATE} ]] && gentoo_uris glibc-${RELEASE_VER}-branch-update-${BRANCH_UPDATE}.patch.bz2
 	[[ -n ${PATCH_VER}     ]] && gentoo_uris glibc-${RELEASE_VER}-patches-${PATCH_VER}.tar.bz2
+	[[ -n ${MANPAGE_VER}   ]] && gentoo_uris glibc-manpages-${MANPAGE_VER}.tar.bz2
+	[[ -n ${INFOPAGE_VER}  ]] && gentoo_uris glibc-infopages-${INFOPAGE_VER}.tar.bz2
 )
 
 # eblit-include [--skip] <function> [version]
@@ -157,7 +178,7 @@ eblit-src_unpack-post() {
 	if use hardened ; then
 		cd "${S}"
 		einfo "Patching to get working PIE binaries on PIE (hardened) platforms"
-		gcc-specs-pie && epatch "${FILESDIR}"/2.12/glibc-2.12-hardened-pie.patch
+		gcc-specs-pie && epatch "${FILESDIR}"/2.16/glibc-2.16-hardened-pie.patch
 		epatch "${FILESDIR}"/2.10/glibc-2.10-hardened-configure-picdefault.patch
 		epatch "${FILESDIR}"/2.10/glibc-2.10-hardened-inittls-nosysenter.patch
 
@@ -186,5 +207,21 @@ eblit-src_unpack-post() {
 			-e 's:-fstack-protector$:-fstack-protector-all:' \
 			nscd/Makefile \
 			|| die "Failed to ensure nscd builds with ssp-all"
+	fi
+}
+
+eblit-pkg_preinst-post() {
+	if [[ ${CTARGET} == arm* ]] ; then
+		# Backwards compat support for renaming hardfp ldsos #417287
+		local oldso='/lib/ld-linux.so.3'
+		local nldso='/lib/ld-linux-armhf.so.3'
+		if [[ -e ${D}${nldso} ]] ; then
+			if scanelf -qRyi "${ROOT}$(alt_prefix)"/*bin/ | grep -s "^${oldso}" ; then
+				ewarn "Symlinking old ldso (${oldso}) to new ldso (${nldso})."
+				ewarn "Please rebuild all packages using this old ldso as compat"
+				ewarn "support will be dropped in the future."
+				ln -s "${nldso##*/}" "${D}$(alt_prefix)${oldso}"
+			fi
+		fi
 	fi
 }
