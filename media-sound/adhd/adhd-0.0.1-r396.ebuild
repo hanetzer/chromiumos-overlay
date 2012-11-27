@@ -39,7 +39,7 @@ src_configure() {
 
 src_compile() {
 	local board=$(get_current_board_with_variant)
-	emake BOARD=${board} CC="$(tc-getCC)" || die "Unable to build ADHD"
+	emake BOARD=${board} CFLAGS="-O0" CC="$(tc-getCC)" || die "Unable to build ADHD"
 }
 
 src_install() {
