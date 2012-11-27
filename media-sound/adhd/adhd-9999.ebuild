@@ -23,7 +23,8 @@ RDEPEND=">=media-libs/alsa-lib-1.0.24.1
 	>=sys-apps/dbus-1.4.12
 	dev-libs/libpthread-stubs
 	sys-fs/udev"
-DEPEND=${RDEPEND}
+DEPEND="${RDEPEND}
+	media-libs/ladspa-sdk"
 
 src_prepare() {
 	cd cras
