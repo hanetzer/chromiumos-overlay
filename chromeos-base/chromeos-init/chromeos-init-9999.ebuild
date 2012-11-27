@@ -40,6 +40,7 @@ src_install() {
 
 	# Install various utility files
 	dosbin killers
+	dosbin date-proxy-watcher
 
 	# Install startup/shutdown scripts.
 	dosbin chromeos_startup chromeos_shutdown
