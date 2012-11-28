@@ -180,7 +180,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/power_manager
 	chromeos-base/root-certificates
 	chromeos-base/shill
-	chromeos-base/speech_synthesis
 	chromeos-base/update_engine
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
