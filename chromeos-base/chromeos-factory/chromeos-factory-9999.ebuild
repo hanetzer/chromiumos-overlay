@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/platform/factory"
+CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
+CROS_WORKON_LOCALNAME=("factory" "installer")
+CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
 
 inherit cros-workon
 inherit cros-binary
@@ -48,6 +50,10 @@ src_install() {
           PYTHON="$(PYTHON)" \
           par install
         dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
+
+        # Replace chromeos-common.sh symlink with the real file
+        cp --remove-destination "${S}/installer/chromeos-common.sh" \
+          "${D}${TARGET_DIR}/bundle/factory_setup/lib/chromeos-common.sh" || die
 
         if use autotest && use build_tests; then
             # For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
