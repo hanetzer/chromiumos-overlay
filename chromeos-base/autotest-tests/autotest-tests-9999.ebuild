@@ -130,6 +130,7 @@ IUSE_TESTS="
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_Xrandr
 	+tests_hardware_bma150
+	+tests_kernel_Bootcache
 	+tests_kernel_ConfigVerify
 	+tests_kernel_fs_Inplace
 	+tests_kernel_fs_Punybench
