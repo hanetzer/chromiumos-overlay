@@ -18,6 +18,8 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}"/evdev-2.7.0-Use-monotonic-timestamps-for-input-events-if-availab.patch
+        # crosbug.com/35291
+	"${FILESDIR}"/evdev-2.7.3-Add-SYN_DROPPED-handling.patch
 	"${FILESDIR}/evdev-disable-smooth-scrolling.patch"
 	"${FILESDIR}/evdev-2.6.99-wheel-accel.patch"
 	"${FILESDIR}"/evdev-2.7.0-feedback-log.patch

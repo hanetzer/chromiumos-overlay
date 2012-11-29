@@ -145,7 +145,7 @@ new file mode 100644
 diff --git a/src/evdev.c b/src/evdev.c
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -203,7 +203,7 @@ static size_t EvdevCountBits(unsigned long *array, size_t nlongs)
+@@ -219,7 +219,7 @@ static size_t EvdevCountBits(unsigned long *array, size_t nlongs)
      return count;
  }
  
@@ -154,8 +154,8 @@ diff --git a/src/evdev.c b/src/evdev.c
  {
      return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));
  }
-@@ -1172,6 +1172,16 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
-             EvdevProcessSyncEvent(pInfo, ev);
+@@ -1208,6 +1208,16 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+             syn_dropped = EvdevProcessSyncEvent(pInfo, ev);
              break;
      }
 +
@@ -168,10 +168,10 @@ diff --git a/src/evdev.c b/src/evdev.c
 +      pEvdev->debug_buf_tail++;
 +      pEvdev->debug_buf_tail %= DEBUG_BUF_SIZE;
 +    }
+     return syn_dropped;
  }
  
- #undef ABS_X_VALUE
-@@ -1953,6 +1963,7 @@ EvdevInit(DeviceIntPtr device)
+@@ -2308,6 +2318,7 @@ EvdevInit(DeviceIntPtr device)
      EvdevWheelEmuInitProperty(device);
      EvdevDragLockInitProperty(device);
      EvdevAppleInitProperty(device);
@@ -188,10 +188,10 @@ diff --git a/src/evdev.h b/src/evdev.h
  
 +#define DEBUG_BUF_SIZE 65536
 +
- /* Function key mode */
- enum fkeymode {
-     FKEYMODE_UNKNOWN = 0,
-@@ -262,6 +264,12 @@ typedef struct {
+ #define _ABS_MT_FIRST       ABS_MT_TOUCH_MAJOR
+ #define _ABS_MT_LAST        ABS_MT_DISTANCE
+ #define _ABS_MT_CNT         (_ABS_MT_LAST - _ABS_MT_FIRST + 1)
+@@ -268,6 +270,12 @@ typedef struct {
      int                     num_queue;
      EventQueueRec           queue[EVDEV_MAXQUEUE];
  
@@ -203,8 +203,8 @@ diff --git a/src/evdev.h b/src/evdev.h
 +
      enum fkeymode           fkeymode;
  
-     BOOL                    scroll_axes;
-@@ -312,9 +320,12 @@ BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
+     /* Sync timestamps */
+@@ -329,9 +337,12 @@ BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
  void EvdevDragLockPreInit(InputInfoPtr pInfo);
  BOOL EvdevDragLockFilterEvent(InputInfoPtr pInfo, unsigned int button, int value);
  

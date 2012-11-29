@@ -95,9 +95,9 @@ diff --git a/src/evdev.c b/src/evdev.c
  static void EvdevCloseDevice(InputInfoPtr pInfo);
 +static void EvdevForceWheel(InputInfoPtr pInfo);
  
- static void EvdevInitAxesLabels(EvdevPtr pEvdev, int mode, int natoms, Atom *atoms);
- static void EvdevInitButtonLabels(EvdevPtr pEvdev, int natoms, Atom *atoms);
-@@ -761,6 +762,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
+ static int EvdevInjectEvent(InputInfoPtr pInfo, uint16_t type,
+                             uint16_t code, int32_t value);
+@@ -787,6 +788,8 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
  
      /* If start_time == end_time, compute click_speed using dt = 1 second */
      dt = (end_time - start_time) ?: 1.0;
@@ -106,7 +106,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      click_speed = ev->value / dt;
  
      wheel->value = ev->value;
-@@ -786,7 +789,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
+@@ -812,7 +815,7 @@ EvdevAccelWheel(InputInfoPtr pInfo, struct input_event *ev)
  /**
   * Take the relative motion input event and process it accordingly.
   */
@@ -115,7 +115,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      int value;
-@@ -1693,6 +1696,8 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -2048,6 +2051,8 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
      if (!EvdevBitIsSet(pEvdev->bitmask, EV_REL))
          goto out;
  
@@ -124,7 +124,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      num_axes = EvdevCountBits(pEvdev->rel_bitmask, NLONGS(REL_MAX));
      if (num_axes < 1)
          goto out;
-@@ -2226,6 +2231,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
+@@ -2583,6 +2588,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
  }
  
  /**
@@ -147,7 +147,7 @@ diff --git a/src/evdev.c b/src/evdev.c
 diff --git a/src/evdev.h b/src/evdev.h
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -297,6 +297,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -314,6 +314,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
  				   int v[MAX_VALUATORS]);
  unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
  

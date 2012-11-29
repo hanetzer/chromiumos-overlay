@@ -69,10 +69,10 @@ diff --git a/src/debug.c b/src/debug.c
 diff --git a/src/evdev.c b/src/evdev.c
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -1229,11 +1229,14 @@ EvdevReadInput(InputInfoPtr pInfo)
- {
+@@ -1569,11 +1569,14 @@ EvdevReadInput(InputInfoPtr pInfo)
      struct input_event ev[NUM_EVENTS];
      int i, len = sizeof(ev);
+     BOOL sync_evdev_state = FALSE;
 +    EvdevPtr pEvdev = pInfo->private;
 +
 +    if (pEvdev->block_input)
@@ -85,7 +85,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  
          if (pEvdev->mtdev)
              len = mtdev_get(pEvdev->mtdev, pInfo->fd, ev, NUM_EVENTS) *
-@@ -2006,6 +2009,7 @@ EvdevInit(DeviceIntPtr device)
+@@ -2361,6 +2364,7 @@ EvdevInit(DeviceIntPtr device)
      EvdevDragLockInitProperty(device);
      EvdevAppleInitProperty(device);
      EvdevDebugInitProperty(device);
@@ -96,7 +96,7 @@ diff --git a/src/evdev.c b/src/evdev.c
 diff --git a/src/evdev.h b/src/evdev.h
 --- a/src/evdev.h
 +++ b/src/evdev.h
-@@ -279,6 +279,8 @@ typedef struct {
+@@ -291,6 +291,8 @@ typedef struct {
      BOOL                    scroll_axes;
      EvdevRelWheelRec        wheel;       /* scroll state for REL_WHEEL */
      EvdevRelWheelRec        hwheel;      /* scroll state for REL_HWHEEL */
@@ -104,8 +104,8 @@ diff --git a/src/evdev.h b/src/evdev.h
 +    BOOL                    block_input; /* block read for SYN_DROPPED test */
  } EvdevRec, *EvdevPtr;
  
- /* Event posting functions */
-@@ -335,5 +337,9 @@ void Evdev3BEmuInitProperty(DeviceIntPtr);
+ typedef struct {
+@@ -352,5 +354,9 @@ void Evdev3BEmuInitProperty(DeviceIntPtr);
  void EvdevWheelEmuInitProperty(DeviceIntPtr);
  void EvdevDragLockInitProperty(DeviceIntPtr);
  void EvdevAppleInitProperty(DeviceIntPtr);
