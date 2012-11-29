@@ -92,6 +92,7 @@ IUSE_TESTS="
 	+tests_desktopui_HangDetector
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
+	+tests_desktopui_SimpleLogin
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_example_CrosTest
@@ -206,6 +207,7 @@ IUSE_TESTS="
 	+tests_platform_DMVerityBitCorruption
 	+tests_platform_DMVerityCorruption
 	+tests_platform_EncryptedStateful
+	+tests_platform_ExternalUSBStress
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
