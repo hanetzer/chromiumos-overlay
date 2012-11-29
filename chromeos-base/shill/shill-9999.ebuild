@@ -78,6 +78,7 @@ src_install() {
 	dobin shill
 	local shims_dir="/usr/$(get_libdir)/shill/shims"
 	exeinto "${shims_dir}"
+	doexe build/shims/net-diags-upload
 	doexe build/shims/nss-get-cert
 	doexe build/shims/openvpn-script
 	doexe build/shims/set-apn-helper
