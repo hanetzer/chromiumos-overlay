@@ -32,6 +32,7 @@ src_configure() {
 
 src_prepare() {
 	cd "mozc" || die
+	epatch "${FILESDIR}"/"${P}"-clear-key-state-on-disable.patch || die
 	# Following 2 patches are required by any version of ibus-mozc-pinyin on
 	# ChromeOS
 	epatch "${FILESDIR}"/ibus-mozc-pinyin-introduces-typo-for-compatibility.patch || die
