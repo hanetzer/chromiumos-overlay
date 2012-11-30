@@ -203,6 +203,3 @@ www-plugins/nspluginwrapper
 x11-misc/googleearth
 x11-misc/qcomicbook
 
-# AMD64 Team; <amd64@gentoo.org>
-# grub is not available on no-multilib-profiles; use sys-boot/grub-static
-sys-boot/grub
