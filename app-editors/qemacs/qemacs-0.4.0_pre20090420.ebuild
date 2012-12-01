@@ -33,6 +33,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${PN}-0.4.0_pre20080605-Makefile.patch"
 	# Make backup files optional
 	epatch "${FILESDIR}/${PN}-0.4.0_pre20080605-make_backup.patch"
+	# Suppress stripping
+	epatch "${FILESDIR}/${P}-nostrip.patch"
 
 	use unicode && epatch "${FILESDIR}/${PN}-0.3.2_pre20070226-tty_utf8.patch"
 
