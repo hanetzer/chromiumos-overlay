@@ -1,6 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-EAPI="2"
+
+EAPI="4"
 
 CROS_WORKON_COMMIT="150ef6765590447eda106ceeadf4aa8b31a13599"
 CROS_WORKON_TREE="4afbea1b8695b5f88826ee96afbc9d8ae6763034"
@@ -17,14 +18,9 @@ IUSE=""
 
 # TODO(jglasgow): remove realpath dependency
 RDEPEND="
-	app-misc/realpath
+	|| ( >=sys-apps/coreutils-8.15 app-misc/realpath )
 "
 
-src_compile () {
+src_configure() {
 	tc-export LD CXX CC OBJCOPY AR
-	emake || die Building
-}
-
-src_install () {
-	emake DESTDIR="${D}" install || die Installing
 }
