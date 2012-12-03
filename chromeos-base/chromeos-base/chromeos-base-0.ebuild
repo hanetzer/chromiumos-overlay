@@ -210,8 +210,11 @@ pkg_postinst() {
 	# All audio interfacing will go through the audio server.
 	add_users_to_group audio "cras"
 	add_users_to_group input "cras"           # For /dev/input/event* access
-	# System user is part of audio server group to play sounds.
-	add_users_to_group cras "${system_user}"
+
+	# The system user is part of the audio server group to play sounds.  The
+	# power manager user needs to check whether audio is playing.
+	add_users_to_group cras "${system_user}" power
+
 	# The system_user needs to be part of the audio and video groups.
 	add_users_to_group audio "${system_user}"
 	add_users_to_group video "${system_user}"
