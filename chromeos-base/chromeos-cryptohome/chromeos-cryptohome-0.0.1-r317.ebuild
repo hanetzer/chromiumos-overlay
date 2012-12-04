@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="dd52cec4f86d94a2d39b9eb7a223ac6ecd2204b2"
-CROS_WORKON_TREE="47eb55b7ca3e285843a6ee77c2a49aae44f555e4"
+CROS_WORKON_COMMIT="aacb687d0518c7aa9f02a8b69aecec1fc71c1654"
+CROS_WORKON_TREE="0882129b186a3df3dfba23a97a7cc2c6b551628a"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 CROS_WORKON_LOCALNAME="cryptohome"
 CROS_WORKON_OUTOFTREE_BUILD=1
