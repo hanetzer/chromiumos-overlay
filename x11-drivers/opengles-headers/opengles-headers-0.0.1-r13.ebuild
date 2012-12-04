@@ -29,6 +29,10 @@ src_install() {
 	doins "${S}/include/EGL/eglext.h"
 	insinto /usr/include/KHR
 	doins "${S}/include/KHR/khrplatform.h"
+	insinto /usr/include/GLES
+	doins "${S}/include/GLES/gl.h"
+	doins "${S}/include/GLES/glext.h"
+	doins "${S}/include/GLES/glplatform.h"
 	insinto /usr/include/GLES2
 	doins "${S}/include/GLES2/gl2.h"
 	doins "${S}/include/GLES2/gl2ext.h"
