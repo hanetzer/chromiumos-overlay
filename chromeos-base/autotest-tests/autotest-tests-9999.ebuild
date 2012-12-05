@@ -93,7 +93,6 @@ IUSE_TESTS="
 	+tests_desktopui_HangDetector
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
-	+tests_desktopui_SimpleLogin
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_example_CrosTest

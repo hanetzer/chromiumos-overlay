@@ -17,9 +17,8 @@ KEYWORDS="~x86 ~arm ~amd64"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="
-	>chromeos-base/chromeos-chrome-19.0.1044.0_rc-r1
-	!<=chromeos-base/chromeos-chrome-19.0.1044.0_rc-r1
-	>chromeos-base/autotest-tests-0.0.1-r1528
+	chromeos-base/autotest-tests
+	chromeos-base/chromeos-chrome
 	chromeos-base/autotest-deps-ffmpeg
 	chromeos-base/flimflam-test
 	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
@@ -53,6 +52,7 @@ IUSE_TESTS=(
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_NaClSanity
 	+tests_desktopui_ScreenLocker
+	+tests_desktopui_SimpleLogin
 	 tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_WebRTC
