@@ -436,10 +436,12 @@ cros-workon_pkg_setup() {
 }
 
 cros-workon_src_prepare() {
+	local out="$(cros-workon_get_build_dir)"
+	[[ ${CROS_WORKON_INCREMENTAL_BUILD} != "1" ]] && mkdir -p "${out}"
+
 	if [[ -e ${S}/common.mk ]] ; then
-		: ${OUT=$(cros-workon_get_build_dir)}
+		: ${OUT=${out}}
 		export OUT
-		[[ ${CROS_WORKON_INCREMENTAL_BUILD} != "1" ]] && mkdir -p "${OUT}"
 	fi
 }
 

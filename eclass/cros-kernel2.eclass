@@ -15,8 +15,11 @@ DEPEND="sys-apps/debianutils
 
 IUSE="-device_tree -kernel_sources"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
-CROS_WORKON_OUTOFTREE_BUILD=1
-CROS_WORKON_INCREMENTAL_BUILD=1
+
+# Build out-of-tree and incremental by default, but allow an ebuild inheriting
+# this eclass to explicitly build in-tree.
+: ${CROS_WORKON_OUTOFTREE_BUILD:=1}
+: ${CROS_WORKON_INCREMENTAL_BUILD:=1}
 
 # Config fragments selected by USE flags
 # ...fragments will have the following variables substitutions
@@ -368,6 +371,10 @@ kmake() {
 		"$@"
 }
 
+cros-kernel2_src_prepare() {
+	cros-workon_src_prepare
+}
+
 cros-kernel2_src_configure() {
 	# Use a single or split kernel config as specified in the board or variant
 	# make.conf overlay. Default to the arch specific split config if an
@@ -546,4 +553,4 @@ cros-kernel2_src_install() {
 	fi
 }
 
-EXPORT_FUNCTIONS pkg_setup src_configure src_compile src_install
+EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_compile src_install
