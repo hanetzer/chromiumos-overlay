@@ -21,6 +21,7 @@ RDEPEND="chromeos-base/chromeos-disableecho
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	net-firewall/iptables[ipv6]
+	sys-apps/chvt
 	sys-apps/smartmontools
 	sys-apps/upstart"
 
