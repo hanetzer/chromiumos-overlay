@@ -54,11 +54,25 @@ src_prepare() {
 	xorg-2_src_prepare
 }
 
+src_compile() {
+	xorg-2_src_compile
+
+	# Manually build tests since they are not built automatically.
+	# This should match the logic of tests/Makefile.am.  e.g. gem tests for
+	# intel only.
+	TESTS=( dr{i,m}stat )
+	if use video_cards_intel; then
+		TESTS+=( gem_{basic,flink,readwrite,mmap} )
+	fi
+	use tests && emake -C "${AUTOTOOLS_BUILD_DIR}"/tests "${TESTS[@]}"
+}
+
 src_install() {
 	xorg-2_src_install
 
 	if use tests; then
 		into /usr/local/
 		dobin "${AUTOTOOLS_BUILD_DIR}"/tests/*/.libs/*
+		dobin "${TESTS[@]/#/${AUTOTOOLS_BUILD_DIR}/tests/.libs/}"
 	fi
 }
