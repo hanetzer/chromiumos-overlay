@@ -59,6 +59,6 @@ src_install() {
 
 	if use tests; then
 		into /usr/local/
-		dobin "${WORKDIR}/${PF}_build/tests"/*/.libs/*
+		dobin "${AUTOTOOLS_BUILD_DIR}"/tests/*/.libs/*
 	fi
 }
