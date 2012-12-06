@@ -277,7 +277,7 @@ cros-kernel2_pkg_setup() {
 }
 
 # @FUNCTION: emit_its_script
-# @USAGE: <output file> <device trees>
+# @USAGE: <output file> <boot_dir> <dtb_dir> <device trees>
 # @DESCRIPTION:
 # Emits the its script used to build the u-boot fitImage kernel binary
 # that contains the kernel as well as device trees used when booting
@@ -286,6 +286,10 @@ cros-kernel2_pkg_setup() {
 emit_its_script() {
 	local iter=1
 	local its_out=${1}
+	shift
+	local boot_dir=${1}
+	shift
+	local dtb_dir=${1}
 	shift
 	cat > "${its_out}" <<-EOF || die
 	/dts-v1/;
@@ -311,7 +315,7 @@ emit_its_script() {
 		cat >> "${its_out}" <<-EOF || die
 			fdt@${iter} {
 				description = "$(basename ${dtb})";
-				data = /incbin/("${boot_dir}/${dtb}");
+				data = /incbin/("${dtb_dir}/${dtb}");
 				type = "flat_dt";
 				arch = "arm";
 				compression = "none";
@@ -438,7 +442,13 @@ cros-kernel2_src_configure() {
 	fi
 }
 
+# @FUNCTION: get_dtb_name
+# @USAGE: <dtb_dir>
+# @DESCRIPTION:
+# Get the name(s) of the device tree binary file(s) to include.
+
 get_dtb_name() {
+	local dtb_dir=${1}
 	local board_with_variant=$(get_current_board_with_variant)
 
 	# Do a simple mapping for device trees whose names don't match
@@ -456,7 +466,7 @@ get_dtb_name() {
 			;;
 		*)
 			local f
-			for f in $(cros-workon_get_build_dir)/arch/arm/boot/*.dtb ; do
+			for f in ${dtb_dir}/*.dtb ; do
 			    basename ${f}
 			done
 			;;
@@ -514,9 +524,20 @@ cros-kernel2_src_install() {
 		local boot_dir="$(cros-workon_get_build_dir)/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
+		local dtb_dir="${boot_dir}"
+
+		# Newer kernels (after linux-next 12/3/12) put dtbs in the dts
+		# dir.  Use that if we we find no dtbs directly in boot_dir.
+		# Note that we try boot_dir first since the newer kernel will
+		# actually rm ${boot_dir}/*.dtb so we'll have no stale files.
+		if ! ls "${dtb_dir}"/*.dtb &> /dev/null; then
+			dtb_dir="${boot_dir}/dts"
+		fi
+
 		if use device_tree; then
 			local its_script="$(cros-workon_get_build_dir)/its_script"
-			emit_its_script "${its_script}" $(get_dtb_name)
+			emit_its_script "${its_script}" "${boot_dir}" \
+				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
 			mkimage  -f "${its_script}" "${kernel_bin}" || die
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
