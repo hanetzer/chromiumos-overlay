@@ -89,6 +89,7 @@ src_configure() {
 		echo "CONFIG_IPV6=y" >> ${CONFIG}
 	fi
 
+	echo "CONFIG_RSN_PREAUTH=y" >> ${CONFIG}
 	echo "CONFIG_DEBUG_FILE=y" >> ${CONFIG}
 
 	# TODO: Add support for BSD drivers
