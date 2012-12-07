@@ -12,8 +12,7 @@ SLOT="0"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh x86 ~x86-fbsd"
 IUSE=""
 
-# Once we have ttf files as well, make it 'ttc ttf'.
-FONT_SUFFIX="ttc"
+FONT_SUFFIX="ttc ttf"
 FONT_S="${S}"
 FONTDIR="/usr/share/fonts/noto"
 
