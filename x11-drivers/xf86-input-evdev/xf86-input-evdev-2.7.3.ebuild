@@ -24,4 +24,5 @@ PATCHES=(
 	"${FILESDIR}"/evdev-2.7.0-add-touch-event-timestamp.patch
 	# crosbug.com/p/13787
 	"${FILESDIR}"/evdev-2.7.0-fix-emulated-wheel.patch
+	"${FILESDIR}"/evdev-2.7.0-add-block-reading-support.patch
 )
