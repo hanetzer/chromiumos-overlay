@@ -75,7 +75,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/findutils
 	sys-apps/kbd
 	sys-apps/memtester
-        !arm? ( sys-apps/pciutils )
+	!arm? ( sys-apps/pciutils )
 	x86? ( sys-apps/superiotool )
 	sys-apps/shadow
 	sys-devel/binutils
