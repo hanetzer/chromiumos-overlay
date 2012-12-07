@@ -203,6 +203,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "proxystate" 227  # For proxy monitoring
 	copy_or_add_daemon_user "power" 228       # For powerd
 	copy_or_add_daemon_user "watchdog" 229    # For daisydog
+	copy_or_add_daemon_user "devbroker" 230   # For permission_broker
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
@@ -248,6 +249,10 @@ pkg_postinst() {
 
 	# Add mtp user to usb group for USB device access.
 	add_users_to_group usb mtp
+
+	# Create a group for device access via permission_broker
+	copy_or_add_group "devbroker-access" 403
+	add_users_to_group devbroker-access "${system_user}"
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
