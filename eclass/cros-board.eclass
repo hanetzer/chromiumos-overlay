@@ -33,6 +33,7 @@ ALL_BOARDS=(
 	amd64-corei7
 	amd64-drm
 	amd64-host
+	aries
 	arm-generic
 	beaglebone
 	butterfly
