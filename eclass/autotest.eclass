@@ -378,6 +378,7 @@ autotest_src_install() {
 }
 
 autotest_pkg_postinst() {
+	are_we_used || return 0
 	local root_autotest_dir="${ROOT}/usr/local/autotest"
 	local path_to_image="${D}/usr/local/autotest"
 	# Should only happen when running emerge on a DUT.
