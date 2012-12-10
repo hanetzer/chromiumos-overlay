@@ -41,6 +41,15 @@ src_compile() {
 	emake BOARD=${board} CC="$(tc-getCC)" || die "Unable to build ADHD"
 }
 
+src_test() {
+	if ! use x86 && ! use amd64 ; then
+		elog "Skipping unit tests on non-x86 platform"
+	else
+		cd cras
+		emake check
+	fi
+}
+
 src_install() {
 	local board=$(get_current_board_with_variant)
 	emake BOARD=${board} DESTDIR="${D}" install
