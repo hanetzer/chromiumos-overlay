@@ -153,7 +153,13 @@ _src_unpack() {
 	cd "${S}" || die "Can't change directory to ${S}"
 	tar -axpf "${filename}" ||
 	  die "Failed to unpack ${filename}"
-	RETURN_VALUE="${S}/$(tar tf ${filename})"
+	local contents="$(tar -atf "${filename}")"
+	if [ "$(echo "$contents" | wc -l)" -gt 1 ]; then
+		# Currently we can only serve one file (or directory).
+		ewarn "WARNING: package $filename contains multiple files."
+		contents="$(echo "$contents" | head -n 1)"
+	fi
+	RETURN_VALUE="${S}/$contents"
 }
 
 # Unpack a tbz2 archive fetched from the BCS to ${S}
