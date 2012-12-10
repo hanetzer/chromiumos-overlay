@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="f08d1bdcf378e25b3b5ad5af2545d72668dfec6b"
-CROS_WORKON_TREE="6098ce19e7325fe6dbdb785e785575b9dc22c805"
+CROS_WORKON_COMMIT="c36338ad91acd8f3b1a294afda25c19ea785c7ae"
+CROS_WORKON_TREE="854c860dca816523a0caaff3178b75a502164ca2"
 CROS_WORKON_PROJECT="chromiumos/third_party/daisydog"
 
 inherit cros-workon toolchain-funcs
