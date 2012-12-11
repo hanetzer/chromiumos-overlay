@@ -61,8 +61,9 @@ src_prepare() {
     einfo "Building Mozc for ChromiumOS"
   fi
 
-  # Remove the patch when mozc-1.7 is released.
-  epatch "${FILESDIR}"/${P}-attachment-cleanup.patch
+  # Remove the patch when new mozc is released.
+  epatch "${FILESDIR}"/${P}-attachment-cleanup.patch || die
+  epatch "${FILESDIR}"/${P}-handle-extra-keysyms.patch || die
 }
 
 src_compile() {
