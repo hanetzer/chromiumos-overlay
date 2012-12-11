@@ -70,9 +70,10 @@ netboot_required() {
 	# TODO (vbendeb): come up with a better scheme of determining what
 	#                 platforms should always generate the netboot capable
 	#                 legacy image.
-	local board=$(get_current_board_no_variant)
+	local board=$(get_current_board_with_variant)
 
-	use factory-mode || [[ "${board}" == "link" ]]
+	use factory-mode || [[ "${board}" == "link" ]] || \
+		[[ "${board}" == "daisy_spring" ]]
 }
 
 # @FUNCTION: get_config_var

@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex butterfly emeraldlake2 graysreef link lumpy lumpy64 mario parrot stout stumpy"
-IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge"
+IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge spring"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -41,7 +41,7 @@ CROS_FIRMWARE_IMAGE_DIR="/firmware"
 CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 
 netboot_required() {
-	! use memtest && ( use factory-mode || use link )
+	! use memtest && ( use factory-mode || use link || use spring)
 }
 
 # Build vboot and non-vboot images for the given device tree file
