@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="dev-util/perf
+RDEPEND="virtual/perf
 	dev-libs/openssl
 	dev-libs/protobuf"
 DEPEND="test? ( dev-cpp/gtest )
