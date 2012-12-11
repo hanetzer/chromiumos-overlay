@@ -69,3 +69,5 @@ sys-libs/ncurses	minimal
 sys-libs/pam        -berkdb
 x11-apps/xinit          minimal
 x11-base/xorg-server -suid
+x11-libs/libdrm		libkms
+x11-libs/libdrm-tests	libkms

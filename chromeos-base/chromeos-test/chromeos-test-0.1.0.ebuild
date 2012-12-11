@@ -87,6 +87,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xauth
 	x11-apps/xinput
 	x11-apps/xset
+	x11-libs/libdrm-tests
 	!arm? ( x11-misc/read-edid )
 	x11-misc/x11vnc
 	x11-misc/xdotool
