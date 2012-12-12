@@ -66,9 +66,7 @@ src_install() {
 	doins usb-device-info
 
 	# Install seccomp policy file.
-	if [ -f "avfsd-seccomp-${ARCH}.policy" ]; then
-		newins "avfsd-seccomp-${ARCH}.policy" avfsd-seccomp.policy
-	fi
+	newins "avfsd-seccomp-${ARCH}.policy" avfsd-seccomp.policy
 
 	# Install upstart config file.
 	insinto /etc/init
