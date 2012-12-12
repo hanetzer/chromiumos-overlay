@@ -11,7 +11,7 @@ BVER=${PV}
 
 # Version names
 if [[ "${PV}" == "9999" ]] ; then
-	BINUTILS_VERSION="binutils-2.21"
+	BINUTILS_VERSION="binutils-2.22"
 else
 	BINUTILS_VERSION="${P}"
 fi
@@ -114,6 +114,7 @@ src_compile() {
 		--enable-shared \
 		--disable-werror \
 		--enable-secureplt \
+		--enable-plugins \
 		--without-included-gettext \
 		--build=${CBUILD} \
 		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry \
