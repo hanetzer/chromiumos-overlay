@@ -94,6 +94,7 @@ IUSE_TESTS="
 	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
 	+tests_desktopui_SpeechSynthesisSemiAuto
+	+tests_desktopui_VideoSanity
 	tests_example_UnitTest
 	+tests_example_CrosTest
 	+tests_graphics_GLBench
