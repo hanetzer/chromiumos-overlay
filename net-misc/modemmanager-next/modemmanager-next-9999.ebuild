@@ -86,6 +86,7 @@ src_install() {
 	if ! use qmi; then
 		find "${D}" -name 'libmm-plugin-*.so' ! \
 			\( -name 'libmm-plugin-samsung.so' -o \
+			   -name 'libmm-plugin-huawei.so' -o \
 			   -name 'libmm-plugin-novatel-lte.so' \) \
 			-delete
 	fi
