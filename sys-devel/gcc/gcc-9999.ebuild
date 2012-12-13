@@ -8,9 +8,6 @@ CROS_WORKON_PROJECT=chromiumos/third_party/gcc
 
 inherit eutils cros-workon binutils-funcs
 
-# (Crosstool-based) ChromeOS toolchain related variables.
-COST_PKG_VERSION="${P}_cos_gg"
-
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
 
 DESCRIPTION="The GNU Compiler Collection.  Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14."
@@ -104,6 +101,8 @@ src_unpack() {
 	else
 		cros-workon_src_unpack
 	fi
+
+	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
 
 	if [[ -d ${S}/.git ]]; then
 		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"
