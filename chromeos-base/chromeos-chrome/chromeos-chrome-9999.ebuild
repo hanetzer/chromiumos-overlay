@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -88,7 +88,6 @@ fi
 USE_TCMALLOC="linux_use_tcmalloc=1"
 
 # For compilation/local chrome
-BUILD_TOOL=make
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -344,7 +343,7 @@ set_build_defines() {
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
-	export GYP_GENERATORS="${BUILD_TOOL}"
+	export GYP_GENERATORS="$(usex ninja ninja make)"
 	export GYP_DEFINES="${BUILD_DEFINES[@]}"
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
@@ -404,6 +403,7 @@ src_unpack() {
 	tc-export CC CXX
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
+	export ENINJA="${ENINJA:-/home/${WHOAMI}/depot_tools/ninja}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -637,6 +637,15 @@ src_configure() {
 	fi
 }
 
+chrome_make() {
+	if use ninja; then
+		PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
+			-C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
+	else
+		emake -r $(usex verbose V=1 "") "BUILDTYPE=${BUILDTYPE}" "$@" || die
+	fi
+}
+
 src_compile() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
 	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" &&
@@ -646,34 +655,29 @@ src_compile() {
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
+	# default_extensions
+	local chrome_targets=( chrome chrome_sandbox default_extensions )
 	if use build_tests; then
-		TEST_TARGETS=("${TEST_FILES[@]}"
+		chrome_targets+=( "${TEST_FILES[@]}"
 			pyautolib
 			peerconnection_server
 			chromedriver
 			browser_tests
-			sync_integration_tests)
+			sync_integration_tests )
 		einfo "Building test targets: ${TEST_TARGETS[@]}"
 	fi
 
 	if use_nacl; then
-		NACL_TARGETS="nacl_helper_bootstrap nacl_helper"
+		chrome_targets+=( nacl_helper_bootstrap nacl_helper )
 	fi
 
 	if use drm; then
-		time emake -r $(use verbose && echo V=1) \
-			BUILDTYPE="${BUILDTYPE}" \
-			aura_demo ash_shell \
-			chrome chrome_sandbox default_extensions \
-			|| die "compilation failed"
+		chrome_targets+=( aura_demo ash_shell )
 	else
-		time emake -r $(use verbose && echo V=1) \
-			BUILDTYPE="${BUILDTYPE}" \
-			chrome chrome_sandbox libosmesa.so default_extensions \
-			${NACL_TARGETS} \
-			"${TEST_TARGETS[@]}" \
-			|| die "compilation failed"
+		chrome_targets+=( libosmesa.so )
 	fi
+
+	chrome_make "${chrome_targets[@]}"
 
 	if use build_tests; then
 		install_chrome_test_resources "${WORKDIR}/test_src"
