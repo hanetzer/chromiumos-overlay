@@ -75,6 +75,7 @@ src_install() {
 	dobin tools/power_state_tool
 	dobin tools/power-supply-info
 	dobin tools/suspend_delay_sample
+	dobin tools/memory_suspend_test
 	popd >/dev/null
 
 	# Scripts
