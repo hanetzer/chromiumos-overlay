@@ -36,20 +36,6 @@ STRIP_MASK="*/nacl_helper_bootstrap"
 # REQUIRED_USE=<pgo_generate and pgo_use are mutually exclusive>
 REORDER_SUBDIR="reorder"
 
-# Bots in golo.chromium.org have private mirrors that are only accessible
-# from within golo.chromium.org. TODO(rcui): Remove this once we've
-# converted all bots to GERRIT_SOURCE.
-DOMAIN_NAME=$(hostname -d)
-
-SVN_MIRROR_URL="svn://svn-mirror.golo.chromium.org"
-if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
-	EXTERNAL_URL="${SVN_MIRROR_URL}/chrome"
-	INTERNAL_URL="${SVN_MIRROR_URL}/chrome-internal"
-else
-	EXTERNAL_URL="http://src.chromium.org/svn"
-	INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
-fi
-
 # Portage version without optional portage suffix.
 CHROME_VERSION="${PV/_*/}"
 
@@ -80,11 +66,6 @@ CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 RELEASE_EXTRA_CFLAGS=()
 
-if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
-	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
-elif [[ "${ARCH}" == "arm" ]]; then
-	DEFAULT_CHROME_DIR=chromium-rel-arm
-fi
 USE_TCMALLOC="linux_use_tcmalloc=1"
 
 # For compilation/local chrome
@@ -110,8 +91,6 @@ add_pgo_arches() {
 
 RESTRICT="mirror"
 add_pgo_arches x86 amd64 arm
-
-CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES=("ffmpeg_tests" "video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=(
