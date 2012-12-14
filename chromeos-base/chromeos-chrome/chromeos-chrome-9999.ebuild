@@ -497,13 +497,14 @@ src_unpack() {
 
 	if use reorder && ! use clang; then
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
-		EGIT_COMMIT="5caa2a82643e54de628d407d3e72299127599649"
+		EGIT_COMMIT="dcf80480a6edf3ca4dfcf9e5132811295ed44d96"
 		EGIT_PROJECT="${PN}-reorder"
-		if grep -q ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
+		if grep -qs ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
 			einfo "Reorder profile repo is up to date."
 		else
 			einfo "Reorder profile repo not up-to-date. Fetching..."
 			EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
+			rm -rf "${EGIT_SOURCEDIR}"
 			git-2_src_unpack
 		fi
 	fi
