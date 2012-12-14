@@ -73,13 +73,13 @@ src_install() {
 	dobin tools/backlight-tool
 	dobin tools/power_state_tool
 	dobin tools/power-supply-info
+	dobin tools/powerd_dbus_suspend
 	dobin tools/suspend_delay_sample
 	dobin tools/memory_suspend_test
 	popd >/dev/null
 
 	# Scripts
 	dobin scripts/debug_sleep_quickly
-	dobin scripts/powerd_dbus_suspend
 	dobin scripts/powerd_suspend
 	dobin scripts/send_metrics_on_resume
 	dobin scripts/set_short_powerd_timeouts
