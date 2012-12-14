@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
 EAPI=1
-CROS_WORKON_COMMIT="a58ca97cdad2a6e81603bbef2adf53162255f70e"
-CROS_WORKON_TREE="2a07ce121252e90f7ac6faf0b87d36840e0681bf"
+CROS_WORKON_COMMIT="164c96f2f2c2aec1854ec2866d1ad865b2326251"
+CROS_WORKON_TREE="896542d4852cae24c8117b2a0706e0e8c2a51fdd"
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
 
