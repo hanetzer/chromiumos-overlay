@@ -3,7 +3,7 @@
 
 EAPI=2
 CROS_WORKON_COMMIT="dcaefdda36ec9e3c281d70ccabb2ec900efce1a7"
-CROS_WORKON_TREE="44b89bea06c331c68a43eca131f4c991de2f72c6"
+CROS_WORKON_TREE="3900587b42f00844a88f0547832d455e0f5673e2"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit cros-workon autotest-deponly
