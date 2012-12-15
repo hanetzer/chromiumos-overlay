@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -35,20 +35,6 @@ STRIP_MASK="*/nacl_helper_bootstrap"
 # When we get to EAPI=4
 # REQUIRED_USE=<pgo_generate and pgo_use are mutually exclusive>
 REORDER_SUBDIR="reorder"
-
-# Bots in golo.chromium.org have private mirrors that are only accessible
-# from within golo.chromium.org. TODO(rcui): Remove this once we've
-# converted all bots to GERRIT_SOURCE.
-DOMAIN_NAME=$(hostname -d)
-
-SVN_MIRROR_URL="svn://svn-mirror.golo.chromium.org"
-if [[ "${DOMAIN_NAME}" == "golo.chromium.org" ]]; then
-	EXTERNAL_URL="${SVN_MIRROR_URL}/chrome"
-	INTERNAL_URL="${SVN_MIRROR_URL}/chrome-internal"
-else
-	EXTERNAL_URL="http://src.chromium.org/svn"
-	INTERNAL_URL="svn://svn.chromium.org/chrome-internal"
-fi
 
 # Portage version without optional portage suffix.
 CHROME_VERSION="${PV/_*/}"
@@ -80,15 +66,9 @@ CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 RELEASE_EXTRA_CFLAGS=()
 
-if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
-	DEFAULT_CHROME_DIR=chromium-rel-linux-chromiumos
-elif [[ "${ARCH}" == "arm" ]]; then
-	DEFAULT_CHROME_DIR=chromium-rel-arm
-fi
 USE_TCMALLOC="linux_use_tcmalloc=1"
 
 # For compilation/local chrome
-BUILD_TOOL=make
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
 BUILD_OUT="${BUILD_OUT:-out_${BOARD}}"
@@ -111,8 +91,6 @@ add_pgo_arches() {
 
 RESTRICT="mirror"
 add_pgo_arches x86 amd64 arm
-
-CHROME_BASE=${CHROME_BASE:-"http://build.chromium.org/f/chromium/snapshots/${DEFAULT_CHROME_DIR}"}
 
 TEST_FILES=("ffmpeg_tests" "video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=(
@@ -344,7 +322,7 @@ set_build_defines() {
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
-	export GYP_GENERATORS="${BUILD_TOOL}"
+	export GYP_GENERATORS="$(usex ninja ninja make)"
 	export GYP_DEFINES="${BUILD_DEFINES[@]}"
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
@@ -404,6 +382,7 @@ src_unpack() {
 	tc-export CC CXX
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
+	export ENINJA="${ENINJA:-/home/${WHOAMI}/depot_tools/ninja}"
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
@@ -518,13 +497,14 @@ src_unpack() {
 
 	if use reorder && ! use clang; then
 		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
-		EGIT_COMMIT="5caa2a82643e54de628d407d3e72299127599649"
+		EGIT_COMMIT="dcf80480a6edf3ca4dfcf9e5132811295ed44d96"
 		EGIT_PROJECT="${PN}-reorder"
-		if grep -q ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
+		if grep -qs ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
 			einfo "Reorder profile repo is up to date."
 		else
 			einfo "Reorder profile repo not up-to-date. Fetching..."
 			EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
+			rm -rf "${EGIT_SOURCEDIR}"
 			git-2_src_unpack
 		fi
 	fi
@@ -637,6 +617,15 @@ src_configure() {
 	fi
 }
 
+chrome_make() {
+	if use ninja; then
+		PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
+			-C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
+	else
+		emake -r $(usex verbose V=1 "") "BUILDTYPE=${BUILDTYPE}" "$@" || die
+	fi
+}
+
 src_compile() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
 	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" &&
@@ -646,34 +635,29 @@ src_compile() {
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
+	# default_extensions
+	local chrome_targets=( chrome chrome_sandbox default_extensions )
 	if use build_tests; then
-		TEST_TARGETS=("${TEST_FILES[@]}"
+		chrome_targets+=( "${TEST_FILES[@]}"
 			pyautolib
 			peerconnection_server
 			chromedriver
 			browser_tests
-			sync_integration_tests)
+			sync_integration_tests )
 		einfo "Building test targets: ${TEST_TARGETS[@]}"
 	fi
 
 	if use_nacl; then
-		NACL_TARGETS="nacl_helper_bootstrap nacl_helper"
+		chrome_targets+=( nacl_helper_bootstrap nacl_helper )
 	fi
 
 	if use drm; then
-		time emake -r $(use verbose && echo V=1) \
-			BUILDTYPE="${BUILDTYPE}" \
-			aura_demo ash_shell \
-			chrome chrome_sandbox default_extensions \
-			|| die "compilation failed"
+		chrome_targets+=( aura_demo ash_shell )
 	else
-		time emake -r $(use verbose && echo V=1) \
-			BUILDTYPE="${BUILDTYPE}" \
-			chrome chrome_sandbox libosmesa.so default_extensions \
-			${NACL_TARGETS} \
-			"${TEST_TARGETS[@]}" \
-			|| die "compilation failed"
+		chrome_targets+=( libosmesa.so )
 	fi
+
+	chrome_make "${chrome_targets[@]}"
 
 	if use build_tests; then
 		install_chrome_test_resources "${WORKDIR}/test_src"
