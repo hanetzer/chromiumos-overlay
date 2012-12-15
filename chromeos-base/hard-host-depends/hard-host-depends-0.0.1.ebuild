@@ -23,6 +23,7 @@ RDEPEND="${RDEPEND}
 	app-arch/pigz
 	app-admin/sudo
 	dev-embedded/cbootimage
+	dev-embedded/tegrarcm
 	dev-embedded/u-boot-tools
 	dev-util/ccache
 	dev-util/crosutils
