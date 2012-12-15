@@ -56,7 +56,7 @@ clang_compile_requested = 0
 print_cmdline = 0
 
 # If ccache should be used automatically.
-use_ccache = 1
+use_ccache = True # @CCACHE_DEFAULT@ Keep this comment for code.
 
 fstack = set(['-D__KERNEL__', '-fno-stack-protector', '-nodefaultlibs',
               '-nostdlib'])
@@ -81,7 +81,9 @@ if sse.intersection(myargs):
   disable_flags.remove('-mno-ssse3')
 clang_compile_requested = '-clang' in myargs
 print_cmdline = '-print-cmdline' in myargs
-use_ccache = '-noccache' not in myargs
+if '-noccache' in myargs:
+  # Only explicitly disable so we can set defaults up top.
+  use_ccache = False
 cmdline = [x for x in myargs if x not in wrapper_only_options]
 
 if not clang_compile_requested:

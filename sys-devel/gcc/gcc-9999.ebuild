@@ -60,7 +60,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj git_gcc graphite gtk hardened hardfp mounted_gcc multilib multislot
-      nls cxx openmp tests +thumb upstream_gcc vanilla"
+      nls cxx openmp tests +thumb upstream_gcc vanilla +wrapper_ccache"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -219,6 +219,9 @@ EOF
 
 		exeinto "$(get_bin_dir)"
 		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+		sed -i \
+			-e "/^use_ccache = .*@CCACHE_DEFAULT@/s:=[^#]*:= $(usex wrapper_ccache True False) :" \
+			"${D}$(get_bin_dir)/${SYSROOT_WRAPPER_FILE}" || die
 		for x in c++ cpp g++ gcc; do
 			if [[ -f "${CTARGET}-${x}" ]]; then
 				mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
