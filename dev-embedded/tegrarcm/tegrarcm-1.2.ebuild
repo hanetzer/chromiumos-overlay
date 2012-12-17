@@ -7,6 +7,8 @@ EGIT_REPO_URI="git://nv-tegra.nvidia.com/tools/tegrarcm.git"
 EGIT_COMMIT="v${PV}"
 inherit git-2
 
+inherit autotools
+
 DESCRIPTION="Utility for downloading code to tegra system in recovery mode"
 HOMEPAGE="http://sourceforge.net/projects/tegra-rcm/"
 
@@ -17,15 +19,10 @@ IUSE=""
 
 RDEPEND=">=dev-libs/crypto++-5.6
 	virtual/libusb:1"
-DEPEND="${RDEPEND}
-	sys-devel/autoconf
-	sys-devel/automake"
+DEPEND="${RDEPEND}"
 
-src_configure() {
-	autoreconf --install --symlink
-	if [[ -x ${ECONF_SOURCE:-.}/configure ]] ; then
-		econf
-	fi
+src_prepare() {
+	eautoreconf
 }
 
 src_install() {
