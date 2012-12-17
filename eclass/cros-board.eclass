@@ -42,7 +42,10 @@ ALL_BOARDS=(
 	daisy_snow
 	emeraldlake2
 	fb1
-	graysreef
+	haswell
+	haswell_baskingridge
+	haswell_wtm1
+	haswell_wtm2
 	ironhide
 	kiev
 	klang
