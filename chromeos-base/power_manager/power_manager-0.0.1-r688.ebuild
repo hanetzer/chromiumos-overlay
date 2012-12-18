@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="5643add7666415aeca9d7abc0b02300658df3132"
-CROS_WORKON_TREE="0d959ca0b4f291364c47da6102664e351518213a"
+CROS_WORKON_COMMIT="b021134851985d40f6a8aa80a1e9e57d336491e4"
+CROS_WORKON_TREE="b45767825bf6f80db723b1e45ac09a9af1a5d897"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -75,13 +75,13 @@ src_install() {
 	dobin tools/backlight-tool
 	dobin tools/power_state_tool
 	dobin tools/power-supply-info
+	dobin tools/powerd_dbus_suspend
 	dobin tools/suspend_delay_sample
 	dobin tools/memory_suspend_test
 	popd >/dev/null
 
 	# Scripts
 	dobin scripts/debug_sleep_quickly
-	dobin scripts/powerd_dbus_suspend
 	dobin scripts/powerd_suspend
 	dobin scripts/send_metrics_on_resume
 	dobin scripts/set_short_powerd_timeouts
