@@ -33,9 +33,3 @@ src_compile() {
 	tc-export CC
 	emake CFLAGS="-Wall ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 }
-
-src_install() {
-	dosbin src/tlsdate{,-helper,d}
-	doman man/tlsdate{,-helper}.1
-	dodoc README
-}
