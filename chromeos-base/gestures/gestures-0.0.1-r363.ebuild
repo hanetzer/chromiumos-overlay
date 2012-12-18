@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="e96417ae8d54cccf2fc6bab31151acad0c2bad8b"
-CROS_WORKON_TREE="940a16312e9705150c61d6aae5040ede406ad582"
+CROS_WORKON_COMMIT="7421930c1d1edd1045e60997a86b6cae64178910"
+CROS_WORKON_TREE="b6f886e8fd8cb1db4e48f921cbf8b45199aa6f49"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
 
