@@ -133,3 +133,8 @@ PYTHON_SINGLE_TARGET="python2_6"
 #                    U_BOOT_FDT_USE for selecting U-Boot device tree
 USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS U_BOOT_CONFIG_USE U_BOOT_FDT_USE"
 USE_EXPAND_HIDDEN="${USE_EXPAND_HIDDEN} CROS_WORKON_TREE"
+
+# Default licenses that are accepted for ChromiumOS builds.
+# If you want to accept more, use the --accept_licenses flag
+# when running setup_board.
+ACCEPT_LICENSE="* -@EULA -@CHROMEOS"
