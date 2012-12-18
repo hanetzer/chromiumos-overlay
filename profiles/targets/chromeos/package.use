@@ -68,3 +68,4 @@ sys-libs/gdbm		-berkdb
 sys-libs/ncurses	minimal
 sys-libs/pam        -berkdb
 x11-apps/xinit          minimal
+x11-base/xorg-server -suid

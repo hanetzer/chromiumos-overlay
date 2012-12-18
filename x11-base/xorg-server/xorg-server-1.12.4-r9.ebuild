@@ -13,7 +13,8 @@ DESCRIPTION="X.Org X servers"
 KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd ~x86-fbsd"
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
-IUSE="${IUSE_SERVERS} broken_partialswaps -doc ipv6 minimal nptl selinux tegra tslib +udev"
+# +suid needed because sparcs default off
+IUSE="${IUSE_SERVERS} broken_partialswaps -doc ipv6 minimal nptl selinux +suid tegra tslib +udev"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -173,7 +174,6 @@ pkg_setup() {
 	# localstatedir is used for the log location; we need to override the default
 	#	from ebuild.sh
 	# sysconfdir is used for the xorg.conf location; same applies
-	#	--enable-install-setuid needed because sparcs default off
 	# NOTE: fop is used for doc generating ; and i have no idea if gentoo
 	#	package it somewhere
 	XORG_CONFIGURE_OPTIONS=(
@@ -199,9 +199,9 @@ pkg_setup() {
 		$(use_enable udev config-udev)
 		$(use_with doc doxygen)
 		$(use_with doc xmlto)
+		$(use_enable suid install-setuid)
 		--sysconfdir=/etc/X11
 		--localstatedir=/var
-		--enable-install-setuid
 		--with-fontrootdir=/usr/share/fonts
 		--with-xkb-output=/var/lib/xkb
 		--disable-config-hal
