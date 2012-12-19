@@ -18,9 +18,11 @@ BUILDTYPE="${BUILDTYPE:-Release}"
 
 src_prepare() {
   cd "mozc-${PV}" || die
-  # TOTO(nona): Remove the patch when we upgrade mozc to the next version, 1.5.
-  epatch "${FILESDIR}"/${P}-arm-build-fix.patch
-  epatch "${FILESDIR}"/${P}-consume-hanja-key.patch
+  # TODO(hsumita): Remove the patch when we upgrade mozc to 1.5.
+  epatch "${FILESDIR}"/${P}-arm-build-fix.patch || die
+  epatch "${FILESDIR}"/${P}-consume-hanja-key.patch || die
+  # TODO(hsumita): Remove the patch when we upgrade mozc to 1.8 or 1.9.
+  epatch "${FILESDIR}"/${P}-handle-extra-keysyms.patch || die
 }
 
 src_configure() {
