@@ -6,4 +6,3 @@ ACTION=="add", SUBSYSTEM=="usb", ATTR{bInterfaceClass}=="07", ATTRS{idProduct}==
     PROGRAM="/usr/bin/dbus-send --system --type=method_call --dest=org.chromium.LibCrosService \
         /org/chromium/LibCrosService org.chromium.LibCrosServiceInterface.PrinterAdded \
         string:$attr{idVendor} string:$attr{idProduct}"
-

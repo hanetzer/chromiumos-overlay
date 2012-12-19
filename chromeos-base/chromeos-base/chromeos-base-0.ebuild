@@ -100,10 +100,7 @@ src_install() {
 	doins "${FILESDIR}"/xauthority.sh || die
 
 	insinto /lib/udev/rules.d
-	doins "${FILESDIR}"/55-serial.rules || die
-
-	insinto /lib/udev/rules.d
-	doins "${FILESDIR}"/99-usb-printer.rules || die
+	doins "${FILESDIR}"/udev-rules/*.rules || die
 
 	# target-specific fun
 	if ! use cros_host ; then
@@ -257,6 +254,11 @@ pkg_postinst() {
 	# Create a group for device access via permission_broker
 	copy_or_add_group "devbroker-access" 403
 	add_users_to_group devbroker-access "${system_user}"
+
+	# Give the power manager access to I2C devices so it can adjust external
+	# displays' brightness via DDC.
+	copy_or_add_group i2c 404
+	add_users_to_group i2c power
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
