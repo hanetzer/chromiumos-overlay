@@ -16,7 +16,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/llvm/trunk"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="debug gold +libffi multitarget ocaml test udis86 vim-syntax"
+IUSE="debug doc gold +libffi multitarget ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl
 	>=sys-devel/make-3.79

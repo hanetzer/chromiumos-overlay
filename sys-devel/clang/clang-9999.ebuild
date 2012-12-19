@@ -122,9 +122,6 @@ src_compile() {
 }
 
 src_test() {
-	cd "${S}"/test || die "cd failed"
-	emake site.exp
-
 	cd "${S}"/tools/clang || die "cd clang failed"
 
 	echo ">>> Test phase [test]: ${CATEGORY}/${PF}"
