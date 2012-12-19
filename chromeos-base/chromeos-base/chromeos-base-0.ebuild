@@ -128,6 +128,10 @@ src_install() {
 		insinto /etc/ssh
 		doins "${FILESDIR}"/ssh{,d}_config
 		fperms 600 /etc/ssh/sshd_config
+
+		# Custom login shell snippets.
+		insinto /etc/profile.d
+		doins "${FILESDIR}"/cursor.sh
 	fi
 
 	# Add our little bit of sudo glue.
