@@ -37,6 +37,8 @@ PATCHES=(
 	"${FILESDIR}/2.16.0-no-backlight.patch"
 	# Avoid display corruption when unable to flip
 	"${FILESDIR}/2.16.0-fix-blt-damage.patch"
+	# Split framebuffer and flip crtcs indepenently.
+	"${FILESDIR}/2.16.0-per-crtc-flip.patch"
 )
 
 src_prepare() {
