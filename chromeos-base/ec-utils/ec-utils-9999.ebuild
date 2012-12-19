@@ -42,4 +42,12 @@ src_compile() {
 src_install() {
 	set_board
 	dosbin "build/$BOARD/util/ectool"
+	if [[ -d board/${BOARD}/userspace/etc/init ]] ; then
+		insinto /etc/init
+		doins board/${BOARD}/userspace/etc/init/*.conf
+	fi
+	if [[ -d board/${BOARD}/userspace/usr/share/ec ]] ; then
+		insinto /usr/share/ec
+		doins board/${BOARD}/userspace/usr/share/ec/*
+	fi
 }
