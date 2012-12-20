@@ -17,3 +17,7 @@ RDEPEND="!sys-kernel/chromeos-kernel-next
 	!sys-kernel/chromeos-kernel-exynos"
 DEPEND="${RDEPEND}"
 
+src_test() {
+	# Needed for `cros_run_unit_tests`.
+	cros-kernel2_src_test
+}

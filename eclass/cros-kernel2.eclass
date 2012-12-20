@@ -13,7 +13,9 @@ DEPEND="sys-apps/debianutils
 	initramfs? ( chromeos-base/chromeos-initramfs )
 "
 
-IUSE="-device_tree -kernel_sources"
+# TODO(sque): Remove the "smatch" use flag once all boards have opted in to
+# smatch testing.
+IUSE="-device_tree -kernel_sources -smatch"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
@@ -288,6 +290,10 @@ get_build_arch() {
 }
 
 cros-kernel2_pkg_setup() {
+	# This is needed for running src_test().  The kernel code will need to
+	# be rebuilt with `make check`.  If incremental build were enabled,
+	# `make check` would have nothing left to build.
+	use test && use smatch && export CROS_WORKON_INCREMENTAL_BUILD=0
 	cros-workon_pkg_setup
 }
 
@@ -521,11 +527,65 @@ cros-kernel2_src_compile() {
 		build_targets="uImage modules"
 	fi
 
-	kmake -k ${build_targets}
+	local src_dir="$(cros-workon_get_build_dir)/source"
+	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+	SMATCH_ERROR_FILE="${src_dir}/chromeos/check/smatch_errors.log"
+
+	if use test && use smatch && [[ -e "${SMATCH_ERROR_FILE}" ]]; then
+		local make_check_cmd="smatch -p=kernel"
+		local test_options=(
+			CHECK="${make_check_cmd}"
+			C=1
+		)
+		SMATCH_LOG_FILE="$(cros-workon_get_build_dir)/make.log"
+
+		# The path names in the log file are build-dependent.  Strip out
+		# the part of the path before "kernel/files" and retains what
+		# comes after it: the file, line number, and error message.
+		kmake -k ${build_targets} "${test_options[@]}" |& \
+			tee "${SMATCH_LOG_FILE}"
+	else
+		kmake -k ${build_targets}
+	fi
 
 	if use device_tree; then
 		kmake -k dtbs
 	fi
+}
+
+cros-kernel2_src_test() {
+	use smatch || return
+	[[ -e ${SMATCH_ERROR_FILE} ]] || \
+		die "smatch whitelist file ${SMATCH_ERROR_FILE} not found!"
+	[[ -e ${SMATCH_LOG_FILE} ]] || \
+		die "Log file from src_compile() ${SMATCH_LOG_FILE} not found!"
+
+	grep -w error: "${SMATCH_LOG_FILE}" | grep -o "kernel/files.*" \
+		> "${SMATCH_LOG_FILE}.errors"
+	local num_errors=$(wc -l < "${SMATCH_LOG_FILE}.errors")
+	local num_warnings=$(egrep -wc "warn:|warning:" "${SMATCH_LOG_FILE}")
+	einfo "smatch found ${num_errors} errors and ${num_warnings} warnings."
+
+	# Create a version of the error database that doesn't have line numbers,
+	# since line numbers will shift as code is added or removed.
+	local build_dir="$(cros-workon_get_build_dir)"
+	local no_line_numbers_file="${build_dir}/no_line_numbers.log"
+	sed -r "s/:[0-9]+//" "${SMATCH_ERROR_FILE}" > "${no_line_numbers_file}"
+
+	# For every smatch error that came up during the build, check if it is
+	# in the error database file.
+	local num_unknown_errors=0
+	local line=""
+	while read line; do
+		local no_line_num=$(echo "${line}" | sed -r "s/:[0-9]+//")
+		if ! fgrep -q "${no_line_num}" "${no_line_numbers_file}"; then
+			eerror "Non-whitelisted error found: \"${line}\""
+			: $(( ++num_unknown_errors ))
+		fi
+	done < "${SMATCH_LOG_FILE}.errors"
+
+	[[ ${num_unknown_errors} -eq 0 ]] || \
+		die "smatch found ${num_unknown_errors} unknown errors."
 }
 
 cros-kernel2_src_install() {
@@ -589,4 +649,4 @@ cros-kernel2_src_install() {
 	fi
 }
 
-EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_compile src_install
+EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_compile src_test src_install
