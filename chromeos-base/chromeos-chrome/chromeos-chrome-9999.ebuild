@@ -323,7 +323,7 @@ set_build_defines() {
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
 	export GYP_GENERATORS="$(usex ninja ninja make)"
-	export GYP_DEFINES="${BUILD_DEFINES[@]}"
+	export GYP_DEFINES="${BUILD_DEFINES[*]}"
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
@@ -529,13 +529,15 @@ src_prepare() {
 		export builddir_name="${BUILD_OUT_SYM}"
 	fi
 
+
+	# Fix for http://code.google.com/p/gyp/issues/detail?id=314
+	if use ninja; then
+		PATCHES+=( "${FILESDIR}/ninja.patch" )
+	fi
+
 	# Apply patches for non-localsource builds
 	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
-		for patch_file in ${PATCHES}; do
-			einfo Applying ${patch_file}
-			echo ${patch_file} >> "${CHROME_ROOT}/patches"
-			epatch ${patch_file}
-		done
+		epatch "${PATCHES[@]}"
 	fi
 
 	# The chrome makefiles specify -O and -g flags already, so remove the
@@ -584,6 +586,36 @@ src_prepare() {
 			EOF
 		fi
 	fi
+}
+
+src_configure() {
+	tc-export CXX CC AR AS RANLIB
+	export CC_host=$(tc-getBUILD_CC)
+	export CXX_host=$(tc-getBUILD_CXX)
+	export AR_host=$(tc-getBUILD_AR)
+	if use gold ; then
+		if [[ "${GOLD_SET}" != "yes" ]]; then
+			export GOLD_SET="yes"
+			einfo "Using gold from the following location: $(get_binutils_path_gold)"
+			export CC="${CC} -B$(get_binutils_path_gold)"
+			export CXX="${CXX} -B$(get_binutils_path_gold)"
+		fi
+	else
+		ewarn "gold disabled. Using GNU ld."
+	fi
+
+	# Use g++ as the linker driver.
+	export LD="${CXX}"
+	export LD_host=$(tc-getBUILD_CXX)
+
+	local build_tool_flags=()
+	if use ninja; then
+		build_tool_flags+=(
+			"config=${BUILDTYPE}"
+			"output_dir=${builddir_name}"
+		)
+	fi
+	export GYP_GENERATOR_FLAGS="${build_tool_flags[*]}"
 
 	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
@@ -599,21 +631,6 @@ src_prepare() {
 		fi
 	elif [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		"${ECHROME_SET_VER}" || die
-	fi
-}
-
-src_configure() {
-	tc-export CXX CC AR AS RANLIB LD
-	if use gold ; then
-		if [[ "${GOLD_SET}" != "yes" ]]; then
-			export GOLD_SET="yes"
-			einfo "Using gold from the following location: $(get_binutils_path_gold)"
-			export CC="${CC} -B$(get_binutils_path_gold)"
-			export CXX="${CXX} -B$(get_binutils_path_gold)"
-			export LD="$(get_binutils_path_gold)/ld"
-		fi
-	else
-		ewarn "gold disabled. Using GNU ld."
 	fi
 }
 
