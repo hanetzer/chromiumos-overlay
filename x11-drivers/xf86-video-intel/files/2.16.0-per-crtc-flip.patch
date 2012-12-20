@@ -1,4 +1,4 @@
-From a610cc908300813b5c7c09a50dda8e8b1d3dc319 Mon Sep 17 00:00:00 2001
+From f104d62e50906be7859778b7d69dd4229c999774 Mon Sep 17 00:00:00 2001
 From: Chris Wolfe <cwolfe@chromium.org>
 Date: Fri, 30 Nov 2012 16:00:19 -0500
 Subject: [PATCH] xf86-video-intel: Split framebuffer and flip crtcs.
@@ -22,12 +22,12 @@ video and WebKit poster circle demo. Added and removed displays while
 active and while suspended.
 ---
  src/intel.h         |   55 ++++-
- src/intel_display.c |  675 ++++++++++++++++++++++++++++++++++++++++++---------
+ src/intel_display.c |  684 ++++++++++++++++++++++++++++++++++++++++++---------
  src/intel_dri.c     |  159 +++++++++++--
  src/intel_driver.c  |   10 +
  src/intel_uxa.c     |   48 ++++
  src/intel_video.c   |   11 +-
- 6 files changed, 820 insertions(+), 138 deletions(-)
+ 6 files changed, 829 insertions(+), 138 deletions(-)
 
 diff --git a/src/intel.h b/src/intel.h
 index 22527df..99b2cfe 100644
@@ -144,7 +144,7 @@ index 22527df..99b2cfe 100644
  void intel_shadow_blt(intel_screen_private *intel);
  void intel_shadow_create(struct intel_screen_private *intel);
 diff --git a/src/intel_display.c b/src/intel_display.c
-index bac3f8f..7fa8c73 100644
+index bac3f8f..f6b50b2 100644
 --- a/src/intel_display.c
 +++ b/src/intel_display.c
 @@ -44,27 +44,33 @@
@@ -211,7 +211,17 @@ index bac3f8f..7fa8c73 100644
  	xf86CrtcPtr crtc;
  	struct list link;
  };
-@@ -330,16 +346,97 @@ intel_crtc_dpms(xf86CrtcPtr intel_crtc, int mode)
+@@ -109,6 +125,9 @@ struct intel_output {
+ };
+ 
+ static void
++intel_crtc_merge_scanouts(intel_screen_private *intel);
++
++static void
+ intel_output_dpms(xf86OutputPtr output, int mode);
+ 
+ static void
+@@ -330,16 +349,97 @@ intel_crtc_dpms(xf86CrtcPtr intel_crtc, int mode)
  
  }
  
@@ -311,7 +321,7 @@ index bac3f8f..7fa8c73 100644
  	int i, ret = FALSE;
  
  	output_ids = calloc(sizeof(uint32_t), xf86_config->num_output);
-@@ -372,9 +469,18 @@ intel_crtc_apply(xf86CrtcPtr crtc)
+@@ -372,9 +472,20 @@ intel_crtc_apply(xf86CrtcPtr crtc)
  			       crtc->gamma_blue, crtc->gamma_size);
  #endif
  
@@ -321,8 +331,10 @@ index bac3f8f..7fa8c73 100644
 -	fb_id = mode->fb_id;
 +
 +	intel_crtc_box(crtc, &crtc_box);
-+	if (!intel_find_scanout(intel, &crtc_box, &scanout))
-+		return FALSE;
++	if (!intel_find_scanout(intel, &crtc_box, &scanout)) {
++		/* partially intersects a scanout; merge everything */
++		intel_crtc_merge_scanouts(intel);
++	}
 +	if (scanout != NULL) {
 +		fb_id = intel_pixmap_ensure_fb(intel, scanout->pixmap);
 +		x -= scanout->area.x1;
@@ -331,7 +343,7 @@ index bac3f8f..7fa8c73 100644
  	if (intel_crtc->rotate_fb_id) {
  		fb_id = intel_crtc->rotate_fb_id;
  		x = 0;
-@@ -396,7 +502,6 @@ intel_crtc_apply(xf86CrtcPtr crtc)
+@@ -396,7 +507,6 @@ intel_crtc_apply(xf86CrtcPtr crtc)
  		for (i = 0; i < xf86_config->num_output; i++) {
  		    xf86OutputPtr output = xf86_config->output[i];
  		    struct intel_output *intel_output;
@@ -339,7 +351,7 @@ index bac3f8f..7fa8c73 100644
  		    if (output->crtc != crtc)
  			continue;
  
-@@ -421,20 +526,20 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
+@@ -421,20 +531,20 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
  {
  	ScrnInfoPtr scrn = crtc->scrn;
  	intel_screen_private *intel = intel_get_screen_private(scrn);
@@ -366,7 +378,7 @@ index bac3f8f..7fa8c73 100644
  		if (ret < 0) {
  			ErrorF("failed to add fb\n");
  			return FALSE;
-@@ -454,14 +559,17 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
+@@ -454,14 +564,17 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
  	intel_batch_submit(crtc->scrn);
  
  	mode_to_kmode(crtc->scrn, &intel_crtc->kmode, mode);
@@ -392,7 +404,7 @@ index bac3f8f..7fa8c73 100644
  }
  
  static void
-@@ -1349,31 +1457,51 @@ intel_output_init(ScrnInfoPtr scrn, struct intel_mode *mode, int num)
+@@ -1349,31 +1462,51 @@ intel_output_init(ScrnInfoPtr scrn, struct intel_mode *mode, int num)
  	list_add(&intel_output->link, &mode->outputs);
  }
  
@@ -449,7 +461,7 @@ index bac3f8f..7fa8c73 100644
  	if (intel->back_buffer) {
  		drm_intel_bo_unreference(intel->back_buffer);
  		intel->back_buffer = NULL;
-@@ -1390,7 +1518,7 @@ intel_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
+@@ -1390,7 +1523,7 @@ intel_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
  	ret = drmModeAddFB(mode->fd, width, height, scrn->depth,
  			   scrn->bitsPerPixel, pitch,
  			   intel->front_buffer->handle,
@@ -458,7 +470,7 @@ index bac3f8f..7fa8c73 100644
  	if (ret)
  		goto fail;
  
-@@ -1426,9 +1554,9 @@ fail:
+@@ -1426,9 +1559,9 @@ fail:
  	scrn->virtualX = old_width;
  	scrn->virtualY = old_height;
  	scrn->displayWidth = old_pitch;
@@ -471,7 +483,7 @@ index bac3f8f..7fa8c73 100644
  
  	return FALSE;
  }
-@@ -1536,86 +1664,403 @@ void intel_copy_fb(ScrnInfoPtr pScrn)
+@@ -1536,86 +1669,407 @@ void intel_copy_fb(ScrnInfoPtr pScrn)
  
  }
  
@@ -536,21 +548,7 @@ index bac3f8f..7fa8c73 100644
 -		goto error_out;
 +	if (mode->scanout_state == INTEL_SCANOUT_SPLIT)
 +		return TRUE; /* nothing to do */
- 
- 	intel_batch_submit(scrn);
- 
--	/*
--	 * Queue flips on all enabled CRTCs
--	 * Note that if/when we get per-CRTC buffers, we'll have to update this.
--	 * Right now it assumes a single shared fb across all CRTCs, with the
--	 * kernel fixing up the offset of each CRTC as necessary.
--	 *
--	 * Also, flips queued on disabled or incorrectly configured displays
--	 * may never complete; this is a configuration error.
--	 */
--	mode->fe_frame = 0;
--	mode->fe_tv_sec = 0;
--	mode->fe_tv_usec = 0;
++
 +	old_state = mode->scanout_state;
 +	mode->scanout_state = INTEL_SCANOUT_SPLIT;
 +
@@ -607,25 +605,31 @@ index bac3f8f..7fa8c73 100644
 +		}
 +	}
  
- 	for (i = 0; i < config->num_crtc; i++) {
--		if (!config->crtc[i]->enabled)
+ 	intel_batch_submit(scrn);
+ 
+-	/*
+-	 * Queue flips on all enabled CRTCs
+-	 * Note that if/when we get per-CRTC buffers, we'll have to update this.
+-	 * Right now it assumes a single shared fb across all CRTCs, with the
+-	 * kernel fixing up the offset of each CRTC as necessary.
+-	 *
+-	 * Also, flips queued on disabled or incorrectly configured displays
+-	 * may never complete; this is a configuration error.
+-	 */
+-	mode->fe_frame = 0;
+-	mode->fe_tv_sec = 0;
+-	mode->fe_tv_usec = 0;
++	for (i = 0; i < config->num_crtc; i++) {
 +		xf86CrtcPtr crtc = config->crtc[i];
 +		if (!crtc->enabled)
- 			continue;
- 
--		mode->flip_info = flip_info;
--		mode->flip_count++;
++			continue;
++
 +		if (!intel_crtc_apply(crtc))
 +			goto fail;
 +	}
 +
-+	intel_batch_submit(scrn);
- 
--		crtc = config->crtc[i]->driver_private;
 +	intel_free_scratch_front_pixmap(screen_pixmap);
- 
--		flip = calloc(1, sizeof(struct intel_pageflip));
--		if (flip == NULL) {
++
 +	return TRUE;
 +
 +fail:
@@ -634,19 +638,12 @@ index bac3f8f..7fa8c73 100644
 +	return FALSE;
 +}
 +
-+void
-+intel_merge_fb(intel_screen_private *intel)
++static void
++intel_crtc_merge_scanouts(intel_screen_private *intel)
 +{
-+	ScrnInfoPtr scrn = intel->scrn;
 +	struct intel_mode *mode = intel->modes;
-+	xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(scrn);
 +	PixmapPtr screen_pixmap;
 +	int i, old_state;
-+
-+	if (mode->scanout_state == INTEL_SCANOUT_FRONT)
-+		return; /* nothing to do */
-+
-+	intel_batch_submit(scrn);
 +
 +	old_state = mode->scanout_state;
 +	mode->scanout_state = INTEL_SCANOUT_FRONT;
@@ -671,18 +668,34 @@ index bac3f8f..7fa8c73 100644
 +		intel_destroy_scanout(scanout);
 +	}
 +
-+	for (i = 0; i < config->num_crtc; i++) {
++	intel_free_scratch_front_pixmap(screen_pixmap);
++}
++
++void
++intel_merge_fb(intel_screen_private *intel)
++{
++	ScrnInfoPtr scrn = intel->scrn;
++	struct intel_mode *mode = intel->modes;
++	xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(scrn);
++	int i;
++
++	if (mode->scanout_state == INTEL_SCANOUT_FRONT)
++		return; /* nothing to do */
++
++	intel_crtc_merge_scanouts(intel);
++	intel_batch_submit(scrn);
+ 
+ 	for (i = 0; i < config->num_crtc; i++) {
+-		if (!config->crtc[i]->enabled)
 +		xf86CrtcPtr crtc = config->crtc[i];
 +		if (!crtc->enabled)
-+			continue;
-+
+ 			continue;
+ 
+-		mode->flip_info = flip_info;
+-		mode->flip_count++;
 +		if (!intel_crtc_apply(crtc))
 +			continue; /* update as many crtcs as possible */
 +	}
-+
-+	intel_batch_submit(scrn);
-+
-+	intel_free_scratch_front_pixmap(screen_pixmap);
 +}
 +
 +Bool
@@ -718,11 +731,14 @@ index bac3f8f..7fa8c73 100644
 +			return FALSE;
 +		}
 +	}
-+
+ 
+-		crtc = config->crtc[i]->driver_private;
 +	/* did not intersect any scanouts; use the screen. */
 +	return TRUE;
 +}
-+
+ 
+-		flip = calloc(1, sizeof(struct intel_pageflip));
+-		if (flip == NULL) {
 +Bool
 +intel_covering_scanout(intel_screen_private *intel, BoxPtr area,
 +		       struct intel_scanout **out_scanout)
@@ -855,11 +871,7 @@ index bac3f8f..7fa8c73 100644
 +			crtc_id(reference_crtc),
 +			flip_info->pipe);
 +	}
- 
--		if (drmModePageFlip(mode->fd,
--				    crtc_id(crtc),
--				    mode->fb_id,
--				    DRM_MODE_PAGE_FLIP_EVENT, flip)) {
++
 +	intel_batch_submit(scrn);
 +
 +	reference_crtc->flip.pending = 0;
@@ -886,7 +898,11 @@ index bac3f8f..7fa8c73 100644
 +
 +		flip_data[i]->reference_crtc = reference_crtc;
 +		flip_data[i]->flipped_crtc = intel_crtc;
-+
+ 
+-		if (drmModePageFlip(mode->fd,
+-				    crtc_id(crtc),
+-				    mode->fb_id,
+-				    DRM_MODE_PAGE_FLIP_EVENT, flip)) {
 +		ret = drmModePageFlip(mode->fd,
 +				      crtc_id(intel_crtc),
 +				      new_front_fb_id,
@@ -928,7 +944,7 @@ index bac3f8f..7fa8c73 100644
  	return FALSE;
  }
  
-@@ -1635,31 +2080,33 @@ intel_page_flip_handler(int fd, unsigned int frame, unsigned int tv_sec,
+@@ -1635,31 +2089,33 @@ intel_page_flip_handler(int fd, unsigned int frame, unsigned int tv_sec,
  			  unsigned int tv_usec, void *event_data)
  {
  	struct intel_pageflip *flip = event_data;
@@ -980,7 +996,7 @@ index bac3f8f..7fa8c73 100644
  }
  
  static void
-@@ -1714,6 +2161,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
+@@ -1714,6 +2170,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
  
  	for (i = 0; i < mode->mode_res->count_connectors; i++)
  		intel_output_init(scrn, mode, i);
@@ -988,7 +1004,7 @@ index bac3f8f..7fa8c73 100644
  
  	xf86InitialConfiguration(scrn, TRUE);
  
-@@ -1746,7 +2194,6 @@ intel_mode_init(struct intel_screen_private *intel)
+@@ -1746,7 +2203,6 @@ intel_mode_init(struct intel_screen_private *intel)
  		 * feedback on every server generation, so perform the
  		 * registration within ScreenInit and not PreInit.
  		 */
@@ -996,7 +1012,7 @@ index bac3f8f..7fa8c73 100644
  		AddGeneralSocket(mode->fd);
  		RegisterBlockAndWakeupHandlers((BlockHandlerProcPtr)NoopDDA,
  					       drm_wakeup_handler, mode);
-@@ -1758,9 +2205,9 @@ intel_mode_remove_fb(intel_screen_private *intel)
+@@ -1758,9 +2214,9 @@ intel_mode_remove_fb(intel_screen_private *intel)
  {
  	struct intel_mode *mode = intel->modes;
  
@@ -1009,7 +1025,7 @@ index bac3f8f..7fa8c73 100644
  	}
  }
  
-@@ -1768,6 +2215,7 @@ void
+@@ -1768,6 +2224,7 @@ void
  intel_mode_fini(intel_screen_private *intel)
  {
  	struct intel_mode *mode = intel->modes;
@@ -1017,7 +1033,7 @@ index bac3f8f..7fa8c73 100644
  
  	while(!list_is_empty(&mode->crtcs)) {
  		xf86CrtcDestroy(list_first_entry(&mode->crtcs,
-@@ -1781,8 +2229,9 @@ intel_mode_fini(intel_screen_private *intel)
+@@ -1781,8 +2238,9 @@ intel_mode_fini(intel_screen_private *intel)
  						   link)->output);
  	}
  
