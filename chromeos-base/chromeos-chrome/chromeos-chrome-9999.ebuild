@@ -635,8 +635,7 @@ src_compile() {
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
-	# default_extensions
-	local chrome_targets=( chrome chrome_sandbox default_extensions )
+	local chrome_targets=( chrome chrome_sandbox )
 	if use build_tests; then
 		chrome_targets+=( "${TEST_FILES[@]}"
 			pyautolib
@@ -645,6 +644,13 @@ src_compile() {
 			browser_tests
 			sync_integration_tests )
 		einfo "Building test targets: ${TEST_TARGETS[@]}"
+	fi
+
+	# The default_extensions target is a no-op for external builds, and is
+	# broken with Ninja in this situation. For now, only enable it on
+	# builds where it installs something.
+	if use chrome_internal; then
+		chrome_targets+=( default_extensions )
 	fi
 
 	if use_nacl; then
