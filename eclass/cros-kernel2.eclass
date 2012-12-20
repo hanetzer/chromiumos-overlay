@@ -105,6 +105,7 @@ CONFIG_HIGHMEM64G=y
 initramfs_desc="initramfs"
 initramfs_config="
 CONFIG_INITRAMFS_SOURCE=\"%ROOT%/var/lib/misc/initramfs.cpio.xz\"
+CONFIG_INITRAMFS_COMPRESSION_XZ=y
 CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
 CONFIG_I2C_CHARDEV=y
