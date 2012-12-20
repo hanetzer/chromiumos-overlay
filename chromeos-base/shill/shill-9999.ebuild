@@ -25,6 +25,7 @@ RDEPEND="chromeos-base/bootstat
 	>=dev-libs/glib-2.30
 	dev-libs/libnl:3
 	dev-libs/nss
+	dev-libs/protobuf
 	net-dialup/ppp
 	net-dns/c-ares
 	net-misc/dhcpcd
