@@ -536,7 +536,7 @@ src_prepare() {
 	fi
 
 	# Apply patches for non-localsource builds
-	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
+	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
 		epatch "${PATCHES[@]}"
 	fi
 
