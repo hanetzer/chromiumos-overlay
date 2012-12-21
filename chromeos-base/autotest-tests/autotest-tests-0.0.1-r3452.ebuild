@@ -100,6 +100,7 @@ IUSE_TESTS="
 	+tests_example_CrosTest
 	+tests_graphics_GLBench
 	+tests_graphics_GLMark2
+	+tests_graphics_KernelMemory
 	+tests_graphics_LibDRM
 	+tests_firmware_RomSize
 	tests_firmware_VbootCrypto
