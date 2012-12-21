@@ -3,7 +3,7 @@
 
 EAPI=2
 CROS_WORKON_COMMIT="86e70ad8beeb4d3e7b3acaec89b2718e5222ddaa"
-CROS_WORKON_TREE="f66b33d68c45bc0e022c7d0bd8564f19c9652eb8"
+CROS_WORKON_TREE="ebd0eb92476c6a6de14bbd6daac4ac23245f8bb5"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
