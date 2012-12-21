@@ -159,6 +159,7 @@ RDEPEND="${RDEPEND}
 	dev-util/perf
 	sys-apps/pv
 	app-shells/bash-completion
+	sys-devel/smatch
 	"
 
 # Host dependencies that are needed for unit tests
