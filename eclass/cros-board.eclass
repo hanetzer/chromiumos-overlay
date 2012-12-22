@@ -37,10 +37,12 @@ ALL_BOARDS=(
 	arm-generic
 	beaglebone
 	butterfly
+	chronos
 	daisy
 	daisy_spring
 	daisy_snow
 	emeraldlake2
+	eureka
 	fb1
 	haswell
 	haswell_baskingridge
