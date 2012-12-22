@@ -26,6 +26,7 @@ RDEPEND="app-misc/ddccontrol
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/glib
+	dev-libs/protobuf
 	media-sound/adhd
 	sys-fs/udev"
 
@@ -33,7 +34,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/system_api
-	dev-libs/protobuf
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 

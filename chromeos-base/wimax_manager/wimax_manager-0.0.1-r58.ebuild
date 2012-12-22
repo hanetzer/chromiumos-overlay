@@ -24,13 +24,13 @@ RDEPEND="gdmwimax? (
 	chromeos-base/metrics
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
+	dev-libs/protobuf
 )"
 
 DEPEND="gdmwimax? (
 	${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/system_api
-	dev-libs/protobuf
 	net-wireless/gdmwimax
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
