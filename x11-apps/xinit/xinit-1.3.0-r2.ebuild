@@ -29,6 +29,7 @@ PDEPEND="x11-apps/xrdb
 
 PATCHES=(
 	"${FILESDIR}/0001-Gentoo-customizations.patch"
+	"${FILESDIR}/${PN}-1.3.1-prio-process.patch"
 )
 
 pkg_setup() {
