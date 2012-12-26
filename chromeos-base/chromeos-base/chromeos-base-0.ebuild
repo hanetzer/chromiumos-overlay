@@ -260,6 +260,10 @@ pkg_postinst() {
 	copy_or_add_group i2c 404
 	add_users_to_group i2c power
 
+	# The power manager needs to read from /dev/input/event* to observe power
+	# button and lid events.
+	add_users_to_group input power
+
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
 	for x in /dev /home /media \
