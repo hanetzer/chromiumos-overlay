@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="0aedbe1950225f8c8f3e535efa9575dc3a9c970d"
-CROS_WORKON_TREE="2e43c9fcdf9a410d82e38b09b8918ddd599e5490"
+CROS_WORKON_COMMIT="ef2a02fe7d31e6416cdbb56d75f8c57e6aed3c5a"
+CROS_WORKON_TREE="03a2fa3729891985574a0724ce0e2f2df5d2f68c"
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 inherit cros-debug cros-workon cros-au
