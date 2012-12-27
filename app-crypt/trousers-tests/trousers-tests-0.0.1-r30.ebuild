@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="22c1120fb5c05e62e92c7fc8dd1c5d331297d326"
-CROS_WORKON_TREE="3d2328f5eb19b40f8c6a314d07f83ff860e91539"
+CROS_WORKON_COMMIT="e3afe51c44ea5b1ebbc6fc6561c46fd0608cde2a"
+CROS_WORKON_TREE="c6b3d8822b63163c977a8d4e0bc9ef3c9cd7b011"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
 
 inherit cros-workon autotest
