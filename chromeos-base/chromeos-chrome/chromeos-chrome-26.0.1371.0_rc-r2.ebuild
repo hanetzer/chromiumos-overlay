@@ -530,11 +530,6 @@ src_prepare() {
 	fi
 
 
-	# Fix for http://code.google.com/p/gyp/issues/detail?id=314
-	if use ninja; then
-		PATCHES+=( "${FILESDIR}/ninja.patch" )
-	fi
-
 	# Apply patches for non-localsource builds
 	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
 		epatch "${PATCHES[@]}"
