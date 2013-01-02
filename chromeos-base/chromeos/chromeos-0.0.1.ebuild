@@ -89,6 +89,7 @@ RDEPEND="${RDEPEND}
 		chromeos-base/xorg-conf
 		x11-apps/xinit
 		x11-apps/xrandr
+		x11-apps/xset-mini
 		>=x11-base/xorg-server-1.6.3
 	)
 	"
