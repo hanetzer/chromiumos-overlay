@@ -248,6 +248,7 @@ IUSE_TESTS="
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
 	+tests_power_Draw
+	+tests_power_HotCPUSuspend
 	+tests_power_NoConsoleSuspend
 	+tests_power_ProbeDriver
 	+tests_power_Resume
@@ -257,7 +258,9 @@ IUSE_TESTS="
 	+tests_power_StatsUSB
 	+tests_power_Status
 	+tests_power_SuspendResume
+	+tests_power_SuspendShutdown
 	+tests_power_WakeupRTC
+	+tests_power_VideoSuspend
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
 	+tests_realtimecomm_GTalkLmiCamera
