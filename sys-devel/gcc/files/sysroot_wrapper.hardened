@@ -204,7 +204,7 @@ if clang_compile_requested and not skip_clang:
     clang_cmdline.insert(0, '-m64')
   elif arch.startswith('arm'):
     clang_cmdline.insert(0, 'armv7a-cros-linux-gnueabi')
-    clang_cmdline.insert(0, '-ccc-host-triple')
+    clang_cmdline.insert(0, '-target')
 
   # Check for clang or clang++.
   if sys.argv[0].endswith('++'):
