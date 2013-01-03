@@ -6,8 +6,8 @@
 # even if modemmanager-next isn't installed.
 
 EAPI="4"
-CROS_WORKON_COMMIT="c64d4c0a0b6cbc7f157c824438738bf00e49513d"
-CROS_WORKON_TREE="92f3f2f094cf1e92c6217d10f6d7b3bdef3d39bb"
+CROS_WORKON_COMMIT="f27eca5b358078b1da12d10214b23654013472cc"
+CROS_WORKON_TREE="4ea7e94047c243908f0a895b3a81461f4cf95282"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 CROS_WORKON_LOCALNAME="../third_party/modemmanager-next"
 
