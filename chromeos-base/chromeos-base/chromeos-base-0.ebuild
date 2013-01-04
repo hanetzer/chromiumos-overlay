@@ -260,6 +260,10 @@ pkg_postinst() {
 	copy_or_add_group i2c 404
 	add_users_to_group i2c power
 
+	# Give the power manager access to /dev/tty* so it can disable VT switching
+	# before suspending the system.
+	add_users_to_group tty power
+
 	# The power manager needs to read from /dev/input/event* to observe power
 	# button and lid events.
 	add_users_to_group input power
