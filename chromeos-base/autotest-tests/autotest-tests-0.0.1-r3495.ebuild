@@ -260,7 +260,6 @@ IUSE_TESTS="
 	+tests_power_SuspendResume
 	+tests_power_SuspendShutdown
 	+tests_power_WakeupRTC
-	+tests_power_VideoSuspend
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
 	+tests_realtimecomm_GTalkLmiCamera
