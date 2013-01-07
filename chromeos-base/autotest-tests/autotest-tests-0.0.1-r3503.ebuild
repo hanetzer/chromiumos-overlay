@@ -269,6 +269,7 @@ IUSE_TESTS="
 	+tests_security_ChromiumOSLSM
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
+	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
 	+tests_security_HciconfigDefaultSettings
 	+tests_security_HtpdateHTTP
