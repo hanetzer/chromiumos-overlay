@@ -1,0 +1,12 @@
+diff -urN xkeyboard-config-2.4.1.orig/symbols/inet xkeyboard-config-2.4.1/symbols/inet
+--- xkeyboard-config-2.4.1.orig/symbols/inet	2013-01-08 13:44:31.973855477 +0900
++++ xkeyboard-config-2.4.1/symbols/inet	2013-01-08 13:56:07.894520987 +0900
+@@ -221,7 +221,7 @@
+  
+     key <FK13>   {      [ XF86Tools         ]       };
+     key <FK14>   {      [ XF86Launch5       ]       };
+-    key <FK15>   {      [ XF86Launch6       ]       };
++    key <FK15>   {      [ Control_L       ]       };
+     key <FK16>   {      [ XF86Launch7       ]       };
+     key <FK17>   {      [ XF86Launch8       ]       };
+     key <FK18>   {      [ XF86Launch9       ]       };
