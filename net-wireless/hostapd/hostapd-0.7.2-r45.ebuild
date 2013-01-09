@@ -67,6 +67,7 @@ src_configure() {
 	echo "CONFIG_EAP_SAKE=y" >> ${CONFIG}
 	echo "CONFIG_EAP_GPSK=y" >> ${CONFIG}
 	echo "CONFIG_EAP_GPSK_SHA256=y" >> ${CONFIG}
+        echo "CONFIG_IEEE80211W=y" >> ${CONFIG}
 
 	einfo "Enabling drivers: "
 
