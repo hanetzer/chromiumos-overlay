@@ -212,12 +212,20 @@ defconfig_dir() {
         echo "${d}"
 }
 
+# @FUNCTION: kernelversion
+# @DESCRIPTION:
+# Returns the current compiled kernel version.
+# Note: Only valid after src_configure has finished running.
+kernelversion() {
+	kmake -s --no-print-directory kernelversion
+}
+
 # @FUNCTION: install_kernel_sources
 # @DESCRIPTION:
 # Installs the kernel sources into ${D}/usr/src/${P} and fixes symlinks.
 # The package must have already installed a directory under ${D}/lib/modules.
 install_kernel_sources() {
-	local version=$(ls "${D}"/lib/modules)
+	local version=$(kernelversion)
 	local dest_modules_dir=lib/modules/${version}
 	local dest_source_dir=usr/src/${P}
 	local dest_build_dir=${dest_source_dir}/build
@@ -520,7 +528,7 @@ cros-kernel2_src_install() {
 	kmake INSTALL_MOD_PATH="${D}" modules_install
 	kmake INSTALL_MOD_PATH="${D}" firmware_install
 
-	local version=$(ls "${D}"/lib/modules)
+	local version=$(kernelversion)
 	if use arm; then
 		local boot_dir="$(cros-workon_get_build_dir)/arch/${ARCH}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
