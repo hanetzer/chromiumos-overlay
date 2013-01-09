@@ -20,7 +20,11 @@ IUSE=""
 
 LIBCHROME_VERS="125070"
 
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libevdev
+	dev-cpp/gflags
+	sys-fs/udev
+	x11-libs/pixman"
 DEPEND="dev-cpp/gtest
 	x11-libs/libXi
 	${RDEPEND}"
