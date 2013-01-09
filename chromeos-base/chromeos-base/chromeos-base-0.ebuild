@@ -210,6 +210,7 @@ pkg_postinst() {
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
 	copy_or_add_daemon_user "avfs" 301        # For avfs process
+	copy_or_add_daemon_user "fuse-exfat" 302  # For exfat-fuse prcoess
 
 	# Group that are allowed to create directories under /home/<hash>/root
 	copy_or_add_group "daemon-store" 400
@@ -240,7 +241,7 @@ pkg_postinst() {
 	# ${system_access_user} group.
 	remove_all_users_from_group "${system_access_user}"
 	add_users_to_group "${system_access_user}" root ipsec "${system_user}" \
-		ntfs-3g avfs chaps
+		ntfs-3g avfs fuse-exfat chaps
 
 	# Dedicated group for owning access to serial devices.
 	copy_or_add_group "serial" 402
