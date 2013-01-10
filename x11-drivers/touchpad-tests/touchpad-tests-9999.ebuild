@@ -17,6 +17,7 @@ IUSE=""
 RDEPEND="chromeos-base/gestures
 	chromeos-base/libevdev
 	app-misc/utouch-evemu
+	chromeos-base/xorg-conf
 	x11-proto/inputproto"
 DEPEND=${RDEPEND}
 
