@@ -143,6 +143,7 @@ IUSE_TESTS="
 	+tests_kernel_SchedBandwith
 	+tests_kernel_TPMPing
 	+tests_kernel_HdParm
+	+tests_kernel_ProtocolCheck
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
