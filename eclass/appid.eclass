@@ -4,6 +4,11 @@
 # $Header: $
 
 # @ECLASS: appid.eclass
+# @MAINTAINER:
+# ChromiumOS Build Team
+# @BUGREPORTS:
+# Please report bugs via http://crosbug.com/new (with label Area-Build)
+# @VCSURL: http://git.chromium.org/gitweb/?p=chromiumos/overlays/chromiumos-overlay.git;a=blob;f=eclass/@ECLASS@
 # @BLURB: Eclass for setting up the omaha appid field in /etc/lsb-release
 
 # @FUNCTION: doappid

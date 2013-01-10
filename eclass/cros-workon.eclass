@@ -1,10 +1,17 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-#
-# Original Author: The Chromium OS Authors <chromium-os-dev@chromium.org>
-# Purpose: Library for handling building of ChromiumOS packages
-#
+# @ECLASS: cros-workon.eclass
+# @MAINTAINER:
+# ChromiumOS Build Team
+# @BUGREPORTS:
+# Please report bugs via http://crosbug.com/new (with label Area-Build)
+# @VCSURL: http://git.chromium.org/gitweb/?p=chromiumos/overlays/chromiumos-overlay.git;a=blob;f=eclass/@ECLASS@
+# @BLURB: helper eclass for building ChromiumOS packages from git
+# @DESCRIPTION:
+# A lot of ChromiumOS packages (src/platform/ and src/third_party/) are
+# managed in the same way.  You've got a git tree and you want to build
+# it.  This automates a lot of that common stuff in one place.
 
 
 # Array variables. All of the following variables can contain multiple items
