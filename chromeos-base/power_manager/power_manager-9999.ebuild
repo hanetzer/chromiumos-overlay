@@ -68,6 +68,7 @@ src_install() {
 	# Built binaries
 	pushd "${OUT}" >/dev/null
 	dobin powerd/powerd
+	dobin powerd/powerd_setuid_helper
 	dobin powerm/powerm
 	dobin tools/backlight_dbus_tool
 	dobin tools/backlight-tool
@@ -77,6 +78,9 @@ src_install() {
 	dobin tools/suspend_delay_sample
 	dobin tools/memory_suspend_test
 	popd >/dev/null
+
+	fowners root:power /usr/bin/powerd_setuid_helper
+	fperms 4750 /usr/bin/powerd_setuid_helper
 
 	# Scripts
 	dobin scripts/debug_sleep_quickly
