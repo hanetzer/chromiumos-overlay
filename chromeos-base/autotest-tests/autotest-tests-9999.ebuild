@@ -214,6 +214,7 @@ IUSE_TESTS="
 	+tests_platform_DMVerityBitCorruption
 	+tests_platform_DMVerityCorruption
 	+tests_platform_EncryptedStateful
+	+tests_platform_EvdevSynDropTest
 	+tests_platform_ExternalUSBBootStress
 	+tests_platform_ExternalUSBStress
 	+tests_platform_FileNum
