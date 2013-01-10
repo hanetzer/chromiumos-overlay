@@ -27,7 +27,7 @@ src_configure() {
 }
 
 src_compile() {
-	emake ${PN}.exe
+	emake ${PN}
 }
 
 src_test() {
@@ -35,5 +35,5 @@ src_test() {
 }
 
 src_install() {
-	dobin ${PN}.exe
+	dobin ${PN}
 }
