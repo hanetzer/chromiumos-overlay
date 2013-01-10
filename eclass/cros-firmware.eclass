@@ -16,8 +16,12 @@ inherit cros-workon cros-binary
 : ${CROS_FIRMWARE_BCS_OVERLAY_NAME:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_IMAGE
-# @DESCRIPTION: (Optional) Location of system bios image
+# @DESCRIPTION: (Optional) Location of system firmware (BIOS) image
 : ${CROS_FIRMWARE_MAIN_IMAGE:=}
+
+# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_RW_IMAGE
+# @DESCRIPTION: (Optional) Location of RW system firmware image
+: ${CROS_FIRMWARE_MAIN_RW_IMAGE:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_IMAGE
 # @DESCRIPTION: (Optional) Location of EC firmware image
@@ -28,8 +32,12 @@ inherit cros-workon cros-binary
 : ${CROS_FIRMWARE_EC_VERSION:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_SUM
-# @DESCRIPTION: (Optional) SHA-1 checksum of system bios image
+# @DESCRIPTION: (Optional) SHA-1 checksum of system firmware (BIOS) image
 : ${CROS_FIRMWARE_MAIN_IMAGE_SUM:=}
+
+# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_RW_IMAGE_SUM
+# @DESCRIPTION: (Optional) SHA-1 checksum of RW system firmware image
+: ${CROS_FIRMWARE_MAIN_RW_IMAGE_SUM:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of EC firmware image on BCS
@@ -106,6 +114,7 @@ esac
 
 UPDATE_SCRIPT="chromeos-firmwareupdate"
 FW_IMAGE_LOCATION=""
+FW_RW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=""
 
@@ -218,6 +227,19 @@ cros-firmware_src_unpack() {
 		fi
 	fi
 
+	# Fetch and unpack the system RW firmware image
+	if [[ -n "${CROS_FIRMWARE_MAIN_RW_IMAGE}" ]]; then
+		if _is_on_bcs "${CROS_FIRMWARE_MAIN_RW_IMAGE}"; then
+			_bcs_fetch "${CROS_FIRMWARE_MAIN_RW_IMAGE}" \
+				   "${CROS_FIRMWARE_MAIN_RW_IMAGE_SUM}"
+			_bcs_src_unpack "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
+			FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
+		else
+			_firmware_image_location "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
+			FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
+		fi
+	fi
+
 	# Fetch and unpack the EC image
 	if [[ -n "${CROS_FIRMWARE_EC_IMAGE}" ]]; then
 		if _is_on_bcs "${CROS_FIRMWARE_EC_IMAGE}"; then
@@ -280,6 +302,7 @@ cros-firmware_src_compile() {
 	# Prepare images
 	image_cmd+="$(_add_param -b "${FW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -e "${EC_IMAGE_LOCATION}")"
+	image_cmd+="$(_add_param -w "${FW_RW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
 
 	# Prepare extra commands
