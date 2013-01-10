@@ -36,6 +36,7 @@ CONFIG_FRAGMENTS=(
 	gdmwimax
 	gobi
 	highmem
+	i2cdev
 	initramfs
 	kvm
 	nfs
@@ -90,6 +91,11 @@ CONFIG_USB_NET_GOBI=m
 highmem_desc="highmem"
 highmem_config="
 CONFIG_HIGHMEM64G=y
+"
+
+i2cdev_desc="I2C device interface"
+i2cdev_config="
+CONFIG_I2C_CHARDEV=y
 "
 
 # We want to avoid copying modules into the initramfs so we need
