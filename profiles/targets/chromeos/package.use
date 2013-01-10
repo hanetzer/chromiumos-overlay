@@ -24,6 +24,7 @@ dev-util/perf-next	-doc -demangle -tui -ncurses -perl -python
 chromeos-base/chromeos-chrome   build_tests
 chromeos-base/vboot_reference minimal
 media-gfx/imagemagick   -gs png -truetype
+media-libs/freeimage	png
 media-libs/libdvdread   -css
 media-libs/libsndfile	minimal
 # disabled in profiles/default/linux/package.use
