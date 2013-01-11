@@ -33,15 +33,15 @@ inherit cros-workon cros-binary
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of system firmware (BIOS) image
-: ${CROS_FIRMWARE_MAIN_IMAGE_SUM:=}
+: ${CROS_FIRMWARE_MAIN_SUM:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_RW_IMAGE_SUM
+# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_RW_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of RW system firmware image
-: ${CROS_FIRMWARE_MAIN_RW_IMAGE_SUM:=}
+: ${CROS_FIRMWARE_MAIN_RW_SUM:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of EC firmware image on BCS
-: ${CROS_FIRMWARE_EC_IMAGE_SUM:=}
+: ${CROS_FIRMWARE_EC_SUM:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
 # @DESCRIPTION: (Optional) Platform name of firmware
@@ -231,7 +231,7 @@ cros-firmware_src_unpack() {
 	if [[ -n "${CROS_FIRMWARE_MAIN_RW_IMAGE}" ]]; then
 		if _is_on_bcs "${CROS_FIRMWARE_MAIN_RW_IMAGE}"; then
 			_bcs_fetch "${CROS_FIRMWARE_MAIN_RW_IMAGE}" \
-				   "${CROS_FIRMWARE_MAIN_RW_IMAGE_SUM}"
+				   "${CROS_FIRMWARE_MAIN_RW_SUM}"
 			_bcs_src_unpack "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
 			FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
 		else
