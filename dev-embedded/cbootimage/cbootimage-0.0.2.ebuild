@@ -4,7 +4,7 @@
 EAPI=4
 
 EGIT_REPO_URI="git://nv-tegra.nvidia.com/tools/cbootimage.git"
-EGIT_COMMIT="ce21ef893f0a0b321c2e0a99ff8a1641d6c40625"
+EGIT_COMMIT="0bbfaf91d1bfdf1bebf884d100e874e4e6b16b6a"
 inherit git-2
 
 DESCRIPTION="Utility for signing Tegra2 boot images"
