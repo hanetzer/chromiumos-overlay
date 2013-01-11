@@ -288,6 +288,7 @@ IUSE_TESTS="
 	+tests_security_RuntimeExecStack
 	+tests_security_SandboxedServices
 	+tests_security_SeccompSyscallFilters
+	+tests_security_SMMLocked
 	+tests_security_StatefulPermissions
 	+tests_security_SuidBinaries
 	+tests_security_SymlinkRestrictions
