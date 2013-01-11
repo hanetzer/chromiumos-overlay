@@ -154,6 +154,10 @@ src_compile() {
 		common_flags+=" --seabios ${CROS_FIRMWARE_ROOT}/seabios.cbfs"
 		common_flags+=" --coreboot \
 			${CROS_FIRMWARE_ROOT}/coreboot.rom"
+		if use depthcharge; then
+			common_flags+=" --coreboot-elf=${CROS_FIRMWARE_ROOT}"
+			common_flags+="/depthcharge/depthcharge.elf"
+		fi
 	fi
 
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
