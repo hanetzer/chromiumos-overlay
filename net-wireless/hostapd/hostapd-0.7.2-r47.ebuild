@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/hostapd/hostapd-0.7.1.ebuild,v 1.1 2010/01/24 20:49:34 gurligebis Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="7eb5233ba14c4f570e13f2ce8785cc35f536bd14"
-CROS_WORKON_TREE="b3b03cd0f538c415255d66e5c4e372207ad4dad4"
+CROS_WORKON_COMMIT="1bbbdff330b51262e36c40d3b660a1b0a957362c"
+CROS_WORKON_TREE="658d8c33912f152d0ab1eeda6eea051046160ffa"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 CROS_WORKON_LOCALNAME="wpa_supplicant"
 
