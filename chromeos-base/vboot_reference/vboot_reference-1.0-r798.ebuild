@@ -70,6 +70,14 @@ src_compile() {
 	_src_compile_au
 }
 
+src_test() {
+	if use cros_host; then
+		emake runtests
+	else
+		einfo "Skipping unit tests since they're compiled for target."
+	fi
+}
+
 src_install() {
 	local dst_dir
 
