@@ -101,6 +101,12 @@ else:
     '-Wlogical-op', '-Wmissing-parameter-type', '-Wold-style-declaration'])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=')
 
+  # Clang may use different options for the same or similar functionality.
+  gcc_to_clang = {
+    '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
+    '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
+  }
+
   # If these options are specified, do not run clang, even if -clang is
   # specified.
   # This is mainly for utilities that depend on compiler output.
@@ -123,6 +129,8 @@ else:
         clang_cmdline.append(opt)
         # No need to add to gcc_cmdline.
         continue
+      elif flag in gcc_to_clang.keys():
+        clang_cmdline.append(gcc_to_clang[flag])
       else:
         clang_cmdline.append(flag)
     gcc_cmdline.append(flag)
