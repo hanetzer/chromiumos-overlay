@@ -289,6 +289,15 @@ get_build_arch() {
 	fi
 }
 
+# @FUNCTION: cros_chkconfig_present
+# @USAGE: <option to check config for>
+# @DESCRIPTION:
+# Returns success of the provided option is present in the build config.
+cros_chkconfig_present() {
+	local config=$1
+	grep -q "^CONFIG_$1=[ym]$" "$(get_build_cfg)"
+}
+
 cros-kernel2_pkg_setup() {
 	# This is needed for running src_test().  The kernel code will need to
 	# be rebuilt with `make check`.  If incremental build were enabled,
@@ -522,9 +531,12 @@ get_load_addr() {
 }
 
 cros-kernel2_src_compile() {
-	local build_targets=  # use make default target
+	local build_targets=()  # use make default target
 	if use arm; then
-		build_targets="uImage modules"
+		build_targets=(
+			"uImage"
+			$(cros_chkconfig_present MODULES && echo "modules")
+		)
 	fi
 
 	local src_dir="$(cros-workon_get_build_dir)/source"
@@ -542,10 +554,10 @@ cros-kernel2_src_compile() {
 		# The path names in the log file are build-dependent.  Strip out
 		# the part of the path before "kernel/files" and retains what
 		# comes after it: the file, line number, and error message.
-		kmake -k ${build_targets} "${test_options[@]}" |& \
+		kmake -k ${build_targets[@]} "${test_options[@]}" |& \
 			tee "${SMATCH_LOG_FILE}"
 	else
-		kmake -k ${build_targets}
+		kmake -k ${build_targets[@]}
 	fi
 
 	if use device_tree; then
@@ -591,7 +603,9 @@ cros-kernel2_src_test() {
 cros-kernel2_src_install() {
 	dodir /boot
 	kmake INSTALL_PATH="${D}/boot" install
-	kmake INSTALL_MOD_PATH="${D}" modules_install
+	if cros_chkconfig_present MODULES; then
+		kmake INSTALL_MOD_PATH="${D}" modules_install
+	fi
 	kmake INSTALL_MOD_PATH="${D}" firmware_install
 
 	local version=$(kernelversion)
