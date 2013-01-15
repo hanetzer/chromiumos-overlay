@@ -17,11 +17,6 @@ media-fonts/ko-nanumfonts X
 media-fonts/ml-anjalioldlipi X
 media-fonts/notofonts X
 
-# David James <davidjames@chromium.org> (09 Sep 2010)
-# Please don't overwrite the binaries in our build environment with symlinks.
-# See also http://crosbug.com/6723
-sys-apps/busybox make-symlinks
-
 # David James <davidjames@chromium.org> (14 Feb 2011)
 # ACPI support is currently disabled in laptop-mode-tools.
 # TODO(davidjames): Should it be enabled?
