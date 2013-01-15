@@ -1,5 +1,5 @@
---- ../perceptualdiff-1.1.1-src/Metric.cpp	2009-05-22 14:27:14.000000000 -0700
-+++ Metric.cpp	2010-04-15 12:42:36.000000000 -0700
+--- a/Metric.cpp
++++ b/Metric.cpp
 @@ -19,6 +19,7 @@
  #include "RGBAImage.h"
  #include "LPyramid.h"
