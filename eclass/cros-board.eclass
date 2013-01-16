@@ -39,6 +39,7 @@ ALL_BOARDS=(
 	butterfly
 	chronos
 	daisy
+	daisy-drm
 	daisy_spring
 	daisy_snow
 	emeraldlake2
