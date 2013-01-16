@@ -3,10 +3,10 @@ DEPEND=chromeos-base/chromeos-chrome dev-vcs/git
 DESCRIPTION=Autotest chromium ffmpeg dep
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_workon_tree_bf9011bcac48ad76b2c862ae5e197a94e27ec2f3 +buildcheck autotest opengles
+IUSE=+autotest cros_workon_tree_50dc4cad897079372f36fa1a5816fbce4bf1916c +buildcheck autotest opengles
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=chromeos-base/chromeos-chrome ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	autotest-deponly	c768cc6b3a334584419444354d68ba8e	cros-workon	5f2f8a42fa8e9e59f25015d9167f93a4	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=920fa1c8d33af394316af142384051e2
+_md5_=3f74372d24b67d259742e8a8533ca5ef
