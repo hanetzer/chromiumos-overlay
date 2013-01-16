@@ -92,6 +92,7 @@ IUSE_TESTS=(
 	+tests_power_LoadTest
 	+tests_power_SuspendStress
 	+tests_power_UiResume
+	+tests_power_VideoDetector
 	+tests_power_VideoSuspend
 	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkPlayground
