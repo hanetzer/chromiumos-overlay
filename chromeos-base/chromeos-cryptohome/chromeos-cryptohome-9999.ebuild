@@ -55,7 +55,7 @@ src_test() {
 
 src_install() {
 	pushd "${OUT}" >/dev/null
-	dosbin cryptohomed cryptohome cryptohome-path
+	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache
 	popd >/dev/null
 
 	dobin email_to_image
