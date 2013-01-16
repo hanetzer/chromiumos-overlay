@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 
 DESCRIPTION="Chrome OS (meta package)"
 HOMEPAGE="http://src.chromium.org"
@@ -9,8 +9,8 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles"
-
+IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles
+	cros_embedded"
 
 ################################################################################
 #
@@ -61,64 +61,107 @@ IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles"
 # If the package is needed only on some target boards, consider making it
 # conditional through USE flags in the board overlays.
 #
+# Variable Naming Convention:
+# ---------------------------
+# CROS_COMMON_* : Dependencies common to all CrOS flavors
+# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
+# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
 ################################################################################
 
-# XServer
-RDEPEND="${RDEPEND}
-	X? (
-		chromeos-base/chromeos-chrome
-		chromeos-base/chromeos-fonts
-		chromeos-base/xorg-conf
-		x11-apps/xinit
-		x11-apps/xrandr
-		x11-apps/xset-mini
-		>=x11-base/xorg-server-1.6.3
-	)
-	"
+################################################################################
+#
+# Per Package Comments:
+# --------------------
+# Please add any comments specific to why certain packages are
+# pulled into the dependecy here. This is optional and required only when
+# the dependency isn't obvious
+#
+################################################################################
 
-X86_DEPEND="
-		sys-boot/syslinux
-"
+################################################################################
+#
+# CROS_COMMON_* : Dependencies common to all CrOS flavors (embedded, regular)
+#
+################################################################################
 
-RDEPEND="${RDEPEND} x86? ( ${X86_DEPEND} )"
-RDEPEND="${RDEPEND} amd64? ( ${X86_DEPEND} )"
-
-RDEPEND="${RDEPEND}
-	arm? (
-		chromeos-base/u-boot-scripts
-	)
-	"
-
-RDEPEND="${RDEPEND}
+CROS_COMMON_RDEPEND="
+	bluetooth? ( net-wireless/bluez )
+	bootchart? ( app-benchmarks/bootchart )
+	coreboot? ( virtual/chromeos-coreboot )
+	gdmwimax? ( net-wireless/gdmwimax )
+	sys-apps/upstart
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/linux-sources
-	"
+"
+CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
+	bootimage? ( sys-boot/chromeos-bootimage )
+	cros_ec? ( chromeos-base/chromeos-ec )
+"
 
+################################################################################
+#
+# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
+#
+# Comments on individual packages:
+# --------------------------------
+# app-editors/vim:
 # Specifically include the editor we want to appear in chromeos images, so that
 # it is deterministic which editor is chosen by 'virtual/editor' dependencies
 # (such as in the 'sudo' package).  See crosbug.com/5777.
-RDEPEND="${RDEPEND}
-	app-editors/vim
-	"
-
-# TODO(micahc): Remove board-devices from RDEPEND in lieu of
-#               virtual/chromeos-bsp
-
-# Note that o3d works with opengl on x86 and opengles on ARM, but not ARM
-# opengl.
-
+#
+# app-shells/bash:
 # We depend on dash for the /bin/sh shell for runtime speeds, but we also
 # depend on bash to make the dev mode experience better.  We do not enable
 # things like line editing in dash, so its interactive mode is very bare.
-RDEPEND="${RDEPEND}
+# media-plugins/o3d:
+# Note that o3d works with opengl on x86 and opengles on ARM, but not ARM
+# opengl.
+#
+# dev-util/quipper:
+# This is needed to support profiling live ChromiumOS systems.
+#
+# sys-apps/which:
+# In gentoo, the 'which' command is part of 'system' and certain packages
+# assume sys-apps/which is already installed, since we dont install 'system'
+# explicitly list sys-apps/which.
+#
+# net-wireless/realtek-rt2800-firmware:
+# USB / WiFi Firmware.
+################################################################################
+
+CROS_X86_RDEPEND="
+	sys-boot/syslinux
+	media-plugins/o3d
+"
+CROS_ARM_RDEPEND="
+	chromeos-base/u-boot-scripts
+	opengles? ( media-plugins/o3d )
+"
+
+CROS_X_RDEPEND="
+	chromeos-base/chromeos-chrome
+	chromeos-base/chromeos-fonts
+	chromeos-base/xorg-conf
+	x11-apps/xinit
+	x11-apps/xrandr
+	x11-apps/xset-mini
+	x11-base/xorg-server
+"
+
+CROS_RDEPEND="
+	x86? ( ${CROS_X86_RDEPEND} )
+	amd64? ( ${CROS_X86_RDEPEND} )
+	arm? ( ${CROS_ARM_RDEPEND} )
+	X? ( ${CROS_X_RDEPEND} )
+"
+
+CROS_RDEPEND="${CROS_RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
 	app-arch/tar
-	bootchart? (
-		app-benchmarks/bootchart
-	)
 	app-crypt/trousers
+	app-editors/vim
 	app-i18n/ibus-english-m
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc
@@ -157,27 +200,19 @@ RDEPEND="${RDEPEND}
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	chromeos-base/wimax_manager
+	dev-util/quipper
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
-	!arm? ( media-plugins/o3d )
-	arm? (
-		opengles? ( media-plugins/o3d )
-	)
-	media-sound/alsa-utils
 	media-sound/adhd
+	media-sound/alsa-utils
 	net-firewall/iptables
 	net-misc/tlsdate
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
-	gdmwimax? (
-		net-wireless/gdmwimax
-	)
 	net-wireless/marvell_sd8787
-	bluetooth? (
-		net-wireless/bluez
-	)
-	>=sys-apps/baselayout-2.0.0
+	net-wireless/realtek-rt2800-firmware
+	sys-apps/baselayout
 	sys-apps/bootcache
 	sys-apps/coreutils
 	sys-apps/dbus
@@ -195,6 +230,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/upstart
 	sys-apps/ureadahead
 	sys-apps/util-linux
+	sys-apps/which
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
@@ -202,40 +238,34 @@ RDEPEND="${RDEPEND}
 	sys-process/lsof
 	sys-process/procps
 	virtual/modemmanager
-	"
-
-# TODO(dianders):
-# In gentoo, the 'which' command is part of 'system'.  That means that packages
-# assume that it's there and don't list it as an explicit dependency.  At the
-# moment, we don't emerge 'system', but we really should at least emerge the
-# embedded profile system.  Until then, we'll list it as a dependency here.
-#
-# Note that even gentoo's 'embedded' profile effectively has 'which' in its
-# implicit dependencies, since it depepends on busybox and the default busybox
-# config from gentoo provides which.
-#
-# See http://crosbug.com/8144
-RDEPEND="${RDEPEND}
-	coreboot? ( virtual/chromeos-coreboot )
-	sys-apps/which
-	"
-
-
-# In addition to RDEPEND components, DEPEND in certain cases includes packages
-# which do not need to be installed on the target, but need to be included for
-# testing/compilation sanity check purposes.
-DEPEND="${RDEPEND}
-	bootimage? ( sys-boot/chromeos-bootimage )
-	cros_ec? ( chromeos-base/chromeos-ec )
 "
 
-# Add dev-util/quipper to the image. This is needed to do
-# profiling on ChromiumOS on live systems.
-RDEPEND="${RDEPEND}
-	dev-util/quipper
+# Build time dependencies
+CROS_DEPEND="${CROS_RDEPEND}
 "
 
-# USB / WiFi Firmware
-RDEPEND="${RDEPEND}
-	net-wireless/realtek-rt2800-firmware
+################################################################################
+# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
+#
+################################################################################
+
+CROS_E_RDEPEND="${CROS_E_RDEPEND}
+	sys-apps/busybox
+"
+
+# Build time dependencies
+CROS_E_DEPEND="${CROS_E_RDEPEND}
+"
+
+################################################################################
+# Assemble the final RDEPEND and DEPEND variables for portage
+################################################################################
+RDEPEND="${CROS_COMMON_RDEPEND}
+	cros_embedded? ( ${CROS_E_RDEPEND} )
+	!cros_embedded? ( ${CROS_RDEPEND} )
+"
+
+DEPEND="${CROS_COMMON_DEPEND}
+	cros_embedded? ( ${CROS_E_DEPEND} )
+	!cros_embedded? ( ${CROS_DEPEND} )
 "

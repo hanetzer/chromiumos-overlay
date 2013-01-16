@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth opengl X"
+IUSE="bluetooth cros_embedded opengl X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -25,7 +25,64 @@ IUSE="bluetooth opengl X"
 # Don't include packages that are indirect dependencies: only
 # include a package if a file *in that package* is expected to be
 # useful.
-RDEPEND="${RDEPEND}
+
+################################################################################
+#
+# CROS_COMMON_* : Dependencies common to all CrOS flavors (embedded, regular)
+#
+################################################################################
+
+CROS_COMMON_RDEPEND="
+	app-crypt/nss
+	bluetooth? ( net-wireless/bluez-hcidump )
+	sys-devel/gdb
+"
+CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
+"
+
+################################################################################
+#
+# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
+#
+################################################################################
+CROS_X86_RDEPEND="
+	app-benchmarks/i7z
+	app-editors/qemacs
+	sys-apps/dmidecode
+	sys-apps/iotools
+	sys-apps/pciutils
+	x11-apps/intel-gpu-tools
+"
+
+CROS_X_RDEPEND="
+	opengl? ( x11-apps/mesa-progs )
+	x11-apps/mtplot
+	x11-apps/xauth
+	x11-apps/xdpyinfo
+	x11-apps/xdriinfo
+	x11-apps/xev
+	x11-apps/xhost
+	x11-apps/xinput
+	x11-apps/xinput_calibrator
+	x11-apps/xlsatoms
+	x11-apps/xlsclients
+	x11-apps/xmodmap
+	x11-apps/xprop
+	x11-apps/xrdb
+	x11-apps/xset
+	x11-apps/xtrace
+	x11-apps/xwd
+	x11-apps/xwininfo
+	x11-misc/xdotool
+"
+
+CROS_RDEPEND="
+	x86? ( ${CROS_X86_RDEPEND} )
+	amd64? ( ${CROS_X86_RDEPEND} )
+	X? ( ${CROS_X_RDEPEND} )
+"
+
+CROS_RDEPEND="${CROS_RDEPEND}
 	app-admin/sudo
 	app-arch/gzip
 	app-arch/tar
@@ -53,7 +110,6 @@ RDEPEND="${RDEPEND}
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
-	bluetooth? ( net-wireless/bluez-hcidump )
 	net-wireless/iw
 	net-wireless/wireless-tools
 	sys-apps/coreutils
@@ -75,37 +131,28 @@ RDEPEND="${RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
-	virtual/perf
 	virtual/chromeos-bsp-dev
-	opengl? ( x11-apps/mesa-progs )
-	x11-apps/mtplot
-	x11-apps/xauth
-	x11-apps/xdpyinfo
-	x11-apps/xdriinfo
-	x11-apps/xev
-	x11-apps/xhost
-	x11-apps/xinput
-	x11-apps/xinput_calibrator
-	x11-apps/xlsatoms
-	x11-apps/xlsclients
-	x11-apps/xmodmap
-	x11-apps/xprop
-	x11-apps/xrdb
-	x11-apps/xset
-	x11-apps/xtrace
-	x11-apps/xwd
-	x11-apps/xwininfo
-	x11-misc/xdotool
+	virtual/perf
 	"
 
-X86_DEPEND="
-	app-benchmarks/i7z
-	app-editors/qemacs
-	sys-apps/dmidecode
-	sys-apps/iotools
-	sys-apps/pciutils
-	x11-apps/intel-gpu-tools
+################################################################################
+# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
+#
+################################################################################
+
+#CROS_E_RDEPEND="${CROS_E_RDEPEND}
+#"
+
+# Build time dependencies
+#CROS_E_DEPEND="${CROS_E_RDEPEND}
+#"
+
+################################################################################
+# Assemble the final RDEPEND and DEPEND variables for portage
+################################################################################
+RDEPEND="${CROS_COMMON_RDEPEND}
+	!cros_embedded? ( ${CROS_RDEPEND} )
 "
 
-RDEPEND="${RDEPEND} x86? ( ${X86_DEPEND} )"
-RDEPEND="${RDEPEND} amd64? ( ${X86_DEPEND} )"
+DEPEND="${CROS_COMMON_DEPEND}
+"

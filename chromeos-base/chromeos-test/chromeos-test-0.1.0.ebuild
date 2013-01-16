@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth cros_ec"
+IUSE="bluetooth cros_ec cros_embedded"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -32,15 +32,49 @@ IUSE="bluetooth cros_ec"
 # TODO(jrbarnette):  It's not known definitively that the list
 # below contains no unneeded dependencies.  More work is needed to
 # determine for sure that every package listed is actually used.
-RDEPEND="${RDEPEND}
+
+
+################################################################################
+#
+# CROS_COMMON_* : Dependencies common to all CrOS flavors (embedded, regular)
+#
+################################################################################
+
+CROS_COMMON_RDEPEND="
+	bluetooth? ( net-wireless/bluez-test )
+	cros_ec? ( chromeos-base/ec-utils )
+	dev-util/dbus-spy
+	net-misc/rsync
+"
+CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
+"
+
+################################################################################
+#
+# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
+#
+################################################################################
+CROS_X86_RDEPEND="
+	sys-apps/pciutils
+	x11-misc/read-edid
+"
+
+CROS_RDEPEND="
+	x86? ( ${CROS_X86_RDEPEND} )
+	amd64? ( ${CROS_X86_RDEPEND} )
+"
+
+CROS_RDEPEND="${CROS_RDEPEND}
 	app-admin/sudo
 	app-arch/gzip
 	app-arch/tar
 	app-crypt/tpm-tools
 	app-misc/tmux
+	app-misc/utouch-evemu
 	chromeos-base/autox
 	chromeos-base/chromeos-test-init
 	chromeos-base/flimflam-test
+	chromeos-base/ixchariot
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/protofiles
@@ -55,7 +89,6 @@ RDEPEND="${RDEPEND}
 	dev-python/pyserial
 	dev-python/pyudev
 	dev-python/pyyaml
-	dev-util/dbus-spy
 	games-util/joystick
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
@@ -68,8 +101,6 @@ RDEPEND="${RDEPEND}
 	net-misc/iperf
 	net-misc/iputils
 	net-misc/openssh
-	net-misc/rsync
-	bluetooth? ( net-wireless/bluez-test )
 	net-wireless/hostapd
 	sci-geosciences/gpsd
 	sys-apps/coreutils
@@ -77,8 +108,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/findutils
 	sys-apps/kbd
 	sys-apps/memtester
-	!arm? ( sys-apps/pciutils )
-	x86? ( sys-apps/superiotool )
 	sys-apps/shadow
 	sys-devel/binutils
 	sys-process/procps
@@ -90,11 +119,28 @@ RDEPEND="${RDEPEND}
 	x11-apps/xinput
 	x11-apps/xset
 	x11-libs/libdrm-tests
-	!arm? ( x11-misc/read-edid )
 	x11-misc/x11vnc
 	x11-misc/xdotool
 	x11-terms/rxvt-unicode
-	app-misc/utouch-evemu
-	cros_ec? ( chromeos-base/ec-utils )
-	chromeos-base/ixchariot
 	"
+
+################################################################################
+# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
+#
+################################################################################
+
+#CROS_E_RDEPEND="${CROS_E_RDEPEND}
+#"
+
+# Build time dependencies
+#CROS_E_DEPEND="${CROS_E_RDEPEND}
+#"
+
+################################################################################
+# Assemble the final RDEPEND and DEPEND variables for portage
+################################################################################
+RDEPEND="${CROS_COMMON_RDEPEND}
+	!cros_embedded? ( ${CROS_RDEPEND} )
+"
+DEPEND="${CROS_COMMON_DEPEND}
+"
