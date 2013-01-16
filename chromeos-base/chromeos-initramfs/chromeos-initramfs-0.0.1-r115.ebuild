@@ -20,7 +20,7 @@ DEPEND="chromeos-base/chromeos-assets
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	media-gfx/ply-image
-	sys-apps/busybox
+	sys-apps/busybox[-make-symlinks]
 	sys-apps/flashrom
 	sys-apps/pv
 	sys-fs/lvm2"
