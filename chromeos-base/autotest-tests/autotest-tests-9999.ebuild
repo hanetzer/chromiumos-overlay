@@ -244,6 +244,7 @@ IUSE_TESTS="
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BacklightControl
+	+tests_power_BacklightSuspend
 	+tests_power_BatteryCharge
 	+tests_power_CameraSuspend
 	+tests_power_CPUFreq
