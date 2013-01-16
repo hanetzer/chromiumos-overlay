@@ -39,8 +39,7 @@ _src_compile_main() {
 	unset CFLAGS
 	emake BUILD="${S}"/build-main \
 	      ARCH=$(tc-arch) \
-	      MINIMAL=$(usev minimal) all \
-	      $(usev rbtest rbtest "")
+	      MINIMAL=$(usev minimal) all
 	unset CC AR CXX
 }
 
@@ -69,11 +68,9 @@ src_compile() {
 }
 
 src_test() {
-	if use cros_host; then
-		emake runtests
-	else
-		einfo "Skipping unit tests since they're compiled for target."
-	fi
+	emake BUILD="${S}"/build-main \
+	      ARCH=$(tc-arch) \
+	      MINIMAL=$(usev minimal) runtests
 }
 
 src_install() {
