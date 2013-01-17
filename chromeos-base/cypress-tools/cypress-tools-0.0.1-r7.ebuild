@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="90499755efdf05dafe54fb82d1ecb1b2bb626b73"
-CROS_WORKON_TREE="820d2c7d49e27b7ca8839ab0dca4dcfba3a1cde8"
+CROS_WORKON_COMMIT="5a70d590af8ae7211ab0a3ce69433cb3d9ffa144"
+CROS_WORKON_TREE="4614c03641dd88053b2bab281ab385ddfac73551"
 CROS_WORKON_PROJECT="chromiumos/third_party/cypress-tools"
 inherit toolchain-funcs cros-workon
 
