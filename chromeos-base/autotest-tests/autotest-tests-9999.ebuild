@@ -226,6 +226,7 @@ IUSE_TESTS="
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
+	+tests_platform_GesturesRegressionTest
 	+tests_platform_HighResTimers
 	+tests_platform_KernelVersion
 	+tests_platform_LibCBench
