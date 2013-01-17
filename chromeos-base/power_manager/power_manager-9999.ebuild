@@ -70,7 +70,6 @@ src_install() {
 	pushd "${OUT}" >/dev/null
 	dobin powerd/powerd
 	dobin powerd/powerd_setuid_helper
-	dobin powerm/powerm
 	dobin tools/backlight_dbus_tool
 	dobin tools/backlight-tool
 	dobin tools/power_state_tool
@@ -105,7 +104,6 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
-	doins dbus/RootPowerManager.conf
 
 	# Install udev rule to set usb hid devices to wake the system.
 	exeinto /lib/udev
