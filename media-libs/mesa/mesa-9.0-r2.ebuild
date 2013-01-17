@@ -132,6 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-disable-guardband.patch
 	epatch "${FILESDIR}"/9.0-uniform-array-bounds-check.patch
 	epatch "${FILESDIR}"/9.0-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
+	epatch "${FILESDIR}"/9.0-fail-compile-on-bad-uniform-access.patch
 
 	base_src_prepare
 
