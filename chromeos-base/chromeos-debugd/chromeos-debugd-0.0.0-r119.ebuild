@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="64775b3aff7aff073727e644036ffe35c117324b"
-CROS_WORKON_TREE="46af993a63ae88772158b95de388f6fb80003954"
+CROS_WORKON_COMMIT="79c45d3f9397f95b3a61468ca276dba25428c832"
+CROS_WORKON_TREE="459638c3f74df04313b72951e7f16b7fafa5c505"
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
@@ -50,6 +50,7 @@ src_install() {
 	doexe helpers/icmp
 	doexe helpers/netif
 	doexe helpers/modem_status
+	doexe "${S}"/src/helpers/minijail-setuid-hack.sh
 	doexe "${S}"/src/helpers/systrace.sh
 	doexe helpers/network_status
 
