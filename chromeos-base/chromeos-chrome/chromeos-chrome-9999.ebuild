@@ -647,32 +647,39 @@ src_compile() {
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
-	local chrome_targets=( chrome chrome_sandbox )
-	if use build_tests; then
-		chrome_targets+=( "${TEST_FILES[@]}"
-			pyautolib
-			peerconnection_server
-			chromedriver
-			browser_tests
-			sync_integration_tests )
-		einfo "Building test targets: ${TEST_TARGETS[@]}"
-	fi
+	local chrome_targets=()
 
-	# The default_extensions target is a no-op for external builds, and is
-	# broken with Ninja in this situation. For now, only enable it on
-	# builds where it installs something.
-	if use chrome_internal; then
-		chrome_targets+=( default_extensions )
-	fi
-
-	if use_nacl; then
-		chrome_targets+=( nacl_helper_bootstrap nacl_helper )
-	fi
-
-	if use drm; then
-		chrome_targets+=( aura_demo ash_shell )
+	if [[ -n "${CHROME_TARGET_OVERRIDE}" ]]; then
+		chrome_targets=( ${CHROME_TARGET_OVERRIDE} )
+		einfo "Building custom targets: ${chrome_targets[*]}"
 	else
-		chrome_targets+=( libosmesa.so )
+		chrome_targets=( chrome chrome_sandbox )
+		if use build_tests; then
+			chrome_targets+=( "${TEST_FILES[@]}"
+				pyautolib
+				peerconnection_server
+				chromedriver
+				browser_tests
+				sync_integration_tests )
+			einfo "Building test targets: ${TEST_TARGETS[@]}"
+		fi
+
+		# The default_extensions target is a no-op for external builds, and is
+		# broken with Ninja in this situation. For now, only enable it on
+		# builds where it installs something.
+		if use chrome_internal; then
+			chrome_targets+=( default_extensions )
+		fi
+
+		if use_nacl; then
+			chrome_targets+=( nacl_helper_bootstrap nacl_helper )
+		fi
+
+		if use drm; then
+			chrome_targets+=( aura_demo ash_shell )
+		else
+			chrome_targets+=( libosmesa.so )
+		fi
 	fi
 
 	chrome_make "${chrome_targets[@]}"
