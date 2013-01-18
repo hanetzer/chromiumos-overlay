@@ -632,7 +632,7 @@ src_configure() {
 chrome_make() {
 	if use ninja; then
 		PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
-			-C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
+			${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
 	else
 		emake -r $(usex verbose V=1 "") "BUILDTYPE=${BUILDTYPE}" "$@" || die
 	fi
