@@ -40,11 +40,10 @@ PATCHES=(
 	"${FILESDIR}"/${P}-gb-dvorak-deadkey.patch
 	"${FILESDIR}"/${P}-no-keyboard.patch
 	"${FILESDIR}"/${P}-colemack-neo-capslock-remap.patch
-	"${FILESDIR}"/${P}-remap-f15-and-capslock.patch
+	"${FILESDIR}"/${P}-remap-capslock.patch
 	"${FILESDIR}"/${P}-add-f19-24.patch
-        "${FILESDIR}"/${P}-gb-extd-deadkey.patch
-        # Shold be removed after crbug.com/157065 is fixed.
-        "${FILESDIR}"/${P}-remap-f15-as-ctrl_l.patch
+	"${FILESDIR}"/${P}-gb-extd-deadkey.patch
+	"${FILESDIR}"/${P}-remap-f15-as-mod2mask.patch
 )
 
 use parrot && PATCHES+=( "${FILESDIR}"/${P}-parrot-euro-sign.patch )
