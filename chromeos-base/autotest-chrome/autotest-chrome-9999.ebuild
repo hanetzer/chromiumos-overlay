@@ -19,7 +19,6 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
-	chromeos-base/autotest-deps-ffmpeg
 	chromeos-base/flimflam-test
 	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "

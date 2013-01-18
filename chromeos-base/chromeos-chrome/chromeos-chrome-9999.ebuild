@@ -763,6 +763,7 @@ install_chrome_test_resources() {
 	TEST_INSTALL_TARGETS=(
 		"libppapi_tests.so"
 		"browser_tests"
+		"ffmpeg_tests"
 		"peerconnection_server"
 		"sync_integration_tests"
 		"video_decode_accelerator_unittest" )
