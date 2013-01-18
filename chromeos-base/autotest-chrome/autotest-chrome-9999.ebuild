@@ -32,11 +32,11 @@ IUSE_TESTS=(
 
 	# Uses chrome_test dependency.
 	+tests_audiovideo_FFMPEG
+        +tests_audiovideo_VDA
 
 	# Inherits from cros_ui_test.
 	+tests_desktopui_BrowserTest
 	+tests_desktopui_DocViewing
-	+tests_desktopui_OMXTest
 	+tests_desktopui_PyAutoEnduranceTests
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoInstall
