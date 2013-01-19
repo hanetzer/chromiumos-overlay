@@ -25,6 +25,7 @@ RDEPEND="app-misc/ddccontrol
 	chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
+	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/protobuf
 	media-sound/adhd
