@@ -95,6 +95,7 @@ src_prepare() {
 	# Provide an option to ignore peer ID check in pluto.
 	# See http://crosbug.com/24476 for details.
 	epatch "${FILESDIR}/${P}-ignore-peer-id-check.patch" || die
+	epatch "${FILESDIR}/${P}-ignore-peer-id-doi.patch" || die
 }
 
 src_configure() {
