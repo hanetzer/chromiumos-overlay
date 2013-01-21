@@ -14,7 +14,6 @@ dev-python/pyudev	pygobject
 dev-util/perf		tui -doc
 dev-vcs/git		cvs subversion webdav curl bash-completion
 dev-vcs/subversion	-dso webdav-serf
-media-gfx/imagemagick   gs truetype
 media-libs/freeimage	-cxx
 media-libs/gd           png
 media-libs/libmtp       -crypt

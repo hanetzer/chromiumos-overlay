@@ -182,7 +182,6 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	>=chromeos-base/vboot_reference-1.0-r174
 	chromeos-base/verity
-	media-gfx/imagemagick[gs,truetype]
 	sys-apps/mosys
 	sys-fs/libfat
 	"
