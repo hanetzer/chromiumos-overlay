@@ -31,6 +31,7 @@ src_prepare() {
 	epatch ${FILESDIR}/3.4-v4l-Media-Exynos-Header-file-support-for-G-Scaler-driver.patch
 	epatch ${FILESDIR}/3.4-v4l-MFC-update-MFC-v4l2-driver-to-support-MFC6.x.patch
 	epatch ${FILESDIR}/3.4-v4l-CHROMIUM-v4l2-exynos-move-CID-enums-into-videodev2.h.patch
+	epatch ${FILESDIR}/3.4-v4l-add-buffer-exporting-via-dmabuf.patch
 }
 
 src_install() {
