@@ -187,12 +187,9 @@ set_build_defines() {
 		"use_xi2_mt=2"
 	)
 
-	# use_ibus=1 is necessary for supporting i18n text input.
-	# Do not remove.
 	BUILD_DEFINES+=(
 		swig_defines=-DOS_CHROMEOS
 		chromeos=1
-		use_ibus=1
 	)
 
 	if use pgo_generate ; then
