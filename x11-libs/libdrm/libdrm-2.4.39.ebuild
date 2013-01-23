@@ -21,14 +21,22 @@ for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
-IUSE="${IUSE_VIDEO_CARDS} libkms tests"
+IUSE="${IUSE_VIDEO_CARDS} libkms"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
 	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )"
 DEPEND="${RDEPEND}"
 
-pkg_setup() {
+src_prepare() {
+	if [[ ${PV} = 9999* ]]; then
+		# tests are restricted, no point in building them
+		sed -ie 's/tests //' "${S}"/Makefile.am
+	fi
+	xorg-2_src_prepare
+}
+
+src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
 		--enable-udev
 		$(use_enable video_cards_intel intel)
@@ -40,36 +48,5 @@ pkg_setup() {
 		$(use_enable libkms)
 	)
 
-	xorg-2_pkg_setup
-}
-
-src_prepare() {
-	if [[ ${PV} = 9999* ]] && ! use tests; then
-		# tests are restricted, no point in building them
-		sed -ie 's/tests //' "${S}"/Makefile.am
-	fi
-	xorg-2_src_prepare
-}
-
-src_compile() {
-	xorg-2_src_compile
-
-	# Manually build tests since they are not built automatically.
-	# This should match the logic of tests/Makefile.am.  e.g. gem tests for
-	# intel only.
-	TESTS=( dr{i,m}stat )
-	if use video_cards_intel; then
-		TESTS+=( gem_{basic,flink,readwrite,mmap} )
-	fi
-	use tests && emake -C "${AUTOTOOLS_BUILD_DIR}"/tests "${TESTS[@]}"
-}
-
-src_install() {
-	xorg-2_src_install
-
-	if use tests; then
-		into /usr/local/
-		dobin "${AUTOTOOLS_BUILD_DIR}"/tests/*/.libs/*
-		dobin "${TESTS[@]/#/${AUTOTOOLS_BUILD_DIR}/tests/.libs/}"
-	fi
+	xorg-2_src_configure
 }
