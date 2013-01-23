@@ -30,5 +30,4 @@ CROS_WORKON_LOCALNAME="../third_party/flimflam"
 src_install() {
 	exeinto /usr/lib/flimflam/test
 	doexe test/* || die
-	cp -rv test/swindle ${D}/usr/lib/flimflam/test/swindle
 }
