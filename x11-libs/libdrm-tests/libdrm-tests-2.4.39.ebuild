@@ -27,6 +27,7 @@ IUSE="${IUSE_VIDEO_CARDS} libkms"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
+	sys-fs/udev
 	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )
 	~x11-libs/libdrm-${PV}"
 DEPEND="${RDEPEND}"
