@@ -33,3 +33,9 @@ src_compile() {
 	tc-export CC
 	emake CFLAGS="-Wall ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 }
+
+src_install() {
+	default
+	insinto /etc/tlsdate
+	doins "${FILESDIR}/tlsdated.conf"
+}
