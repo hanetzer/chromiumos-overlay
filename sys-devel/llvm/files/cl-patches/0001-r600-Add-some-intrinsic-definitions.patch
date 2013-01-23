@@ -13,10 +13,10 @@ diff --git a/include/llvm/Intrinsics.td b/include/llvm/Intrinsics.td
 index 069f907..e90dd85 100644
 --- a/include/llvm/Intrinsics.td
 +++ b/include/llvm/Intrinsics.td
-@@ -441,3 +441,4 @@ include "llvm/IntrinsicsCellSPU.td"
- include "llvm/IntrinsicsXCore.td"
- include "llvm/IntrinsicsPTX.td"
+@@ -469,3 +469,4 @@
  include "llvm/IntrinsicsHexagon.td"
+ include "llvm/IntrinsicsNVVM.td"
+ include "llvm/IntrinsicsMips.td"
 +include "llvm/IntrinsicsR600.td"
 diff --git a/include/llvm/IntrinsicsR600.td b/include/llvm/IntrinsicsR600.td
 new file mode 100644

@@ -94,11 +94,9 @@ src_prepare() {
 	# Specify python version
 	python_convert_shebangs -r 2 test/Scripts
 
-	epatch "${FILESDIR}"/${PN}-2.6-commandguide-nops.patch
-	epatch "${FILESDIR}"/${PN}-2.9-nodoctargz.patch
+	epatch "${FILESDIR}"/${P}-nodoctargz.patch
 	epatch "${FILESDIR}"/${PN}-3.0-PPC_macro.patch
-	epatch "${FILESDIR}"/${P}-ivybridge_support.patch
-	epatch "${FILESDIR}"/${P}-fix_debug_line_info.patch
+	epatch "${FILESDIR}"/${PN}-3.1-fix_debug_line_info.patch
 
 	# Apply r600 OpenCL-related patches, bug #425688
 	epatch "${FILESDIR}"/cl-patches/*.patch
@@ -106,7 +104,7 @@ src_prepare() {
 	# Make llvm cross-compile
 	epatch "${FILESDIR}"/xconfigure.patch
 	epatch "${FILESDIR}"/xmakefile.patch
-	epatch "${FILESDIR}"/${P}-no-sample.patch
+	epatch "${FILESDIR}"/${PN}-3.1-no-sample.patch
 
 	# User patches
 	epatch_user
