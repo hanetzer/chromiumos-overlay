@@ -44,7 +44,7 @@ src_prepare() {
 	if [[ -n "${ROOT}" && "${ROOT}" != "/" ]]; then
 		GYP_DEFINES="$GYP_DEFINES sysroot=$ROOT"
 	fi
-	export GYP_DEFINES="$GYP_DEFINES chromeos=1 plugin_interface=ppapi p2p_apis=0 os_posix=1 $BUILD_DEFINES"
+	export GYP_DEFINES="$GYP_DEFINES chromeos=1 plugin_interface=ppapi p2p_apis=0 os_posix=1 plugin_branding=gtpo3d $BUILD_DEFINES"
 	# ebuild uses emake, ensure GYP creates Makefiles (and not .ninja)
 	# and we don't have external environment variables leak in
 	export GYP_GENERATORS=make
