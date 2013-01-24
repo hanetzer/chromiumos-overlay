@@ -35,6 +35,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-misc/evtest
 	app-shells/bash
+	chromeos-base/chromeos-dev-init
 	chromeos-base/flimflam-test
 	chromeos-base/gmerge
 	chromeos-base/protofiles

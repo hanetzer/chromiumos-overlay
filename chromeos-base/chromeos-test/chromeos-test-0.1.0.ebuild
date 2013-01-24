@@ -39,6 +39,7 @@ RDEPEND="${RDEPEND}
 	app-crypt/tpm-tools
 	app-misc/tmux
 	chromeos-base/autox
+	chromeos-base/chromeos-test-init
 	chromeos-base/flimflam-test
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
