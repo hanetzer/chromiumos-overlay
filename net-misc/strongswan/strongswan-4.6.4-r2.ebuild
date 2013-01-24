@@ -44,7 +44,6 @@ pkg_setup() {
 		eerror "This ebuild currently only supports ${PN} with the"
 		eerror "native Linux 2.6 IPsec stack on kernels >= 2.6.16."
 		eerror
-		die "Please install a recent 2.6 kernel."
 	fi
 
 	if use nat-transport; then
