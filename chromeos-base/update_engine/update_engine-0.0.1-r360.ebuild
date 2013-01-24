@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="d793606f2d46f5020669ecf24af2f4a3bb446b30"
-CROS_WORKON_TREE="4ce9d6da9a3be8556e621fa3ae8b39d1fe494548"
+CROS_WORKON_COMMIT="8a86fa5d460aab18f6eecbaec8a86dc2cf450c0f"
+CROS_WORKON_TREE="710d2a199a01f3240679d17489ca9b3f162bf0b0"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils

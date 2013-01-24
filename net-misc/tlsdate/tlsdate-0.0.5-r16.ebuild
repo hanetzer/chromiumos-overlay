@@ -14,13 +14,18 @@ HOMEPAGE="https://github.com/ioerror/tlsdate"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="dbus"
 
-DEPEND="dev-libs/openssl"
+DEPEND="dev-libs/openssl
+	dbus? ( sys-apps/dbus )"
 RDEPEND="${DEPEND}"
 
 src_prepare() {
 	eautoreconf
+}
+
+src_configure() {
+	econf $(use_enable dbus)
 }
 
 src_compile() {
