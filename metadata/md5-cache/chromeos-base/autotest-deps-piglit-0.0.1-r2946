@@ -3,10 +3,10 @@ DEPEND=virtual/glut virtual/opengl dev-python/mako dev-python/numpy media-libs/t
 DESCRIPTION=dependencies for Piglit (collection of automated tests for OpenGl based on glean and mesa)
 EAPI=2
 HOMEPAGE=http://cgit.freedesktop.org/piglit
-IUSE=+autotest cros_workon_tree_8ca520afead23ab5039368d2e7e3ed1feaa5b45a +buildcheck autotest opengles
+IUSE=+autotest cros_workon_tree_ec90ae7dcda8ac62c3fd231cd0a86d7c677ed5b8 +buildcheck autotest opengles
 KEYWORDS=amd64 arm x86
 LICENSE=GPL
 RDEPEND=virtual/glut virtual/opengl dev-python/mako dev-python/numpy media-libs/tiff media-libs/libpng sys-libs/zlib x11-libs/libICE x11-libs/libSM x11-libs/libX11 x11-libs/libXtst x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext x11-libs/libXi x11-libs/libXpm ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	autotest-deponly	c768cc6b3a334584419444354d68ba8e	cros-workon	5f2f8a42fa8e9e59f25015d9167f93a4	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=6d1b5b71cdcabe3e9a28583176d4b747
+_md5_=97c8b51cbf833a98d44621aa6141418b
