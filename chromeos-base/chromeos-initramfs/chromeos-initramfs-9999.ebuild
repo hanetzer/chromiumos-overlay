@@ -1,10 +1,10 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 
-inherit cros-workon
+inherit cros-workon cros-board
 
 DESCRIPTION="Create Chrome OS initramfs"
 HOMEPAGE="http://www.chromium.org/"
@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="netboot_ramfs"
 DEPEND="chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/vboot_reference
@@ -21,13 +21,11 @@ DEPEND="chromeos-base/chromeos-assets
 	sys-apps/busybox[-make-symlinks]
 	sys-apps/flashrom
 	sys-apps/pv
-	sys-fs/lvm2"
+	sys-fs/lvm2
+	netboot_ramfs? ( chromeos-base/chromeos-installshim )"
 RDEPEND=""
 
 CROS_WORKON_LOCALNAME="../platform/initramfs"
-
-INITRAMFS_TMP_S=${WORKDIR}/initramfs_tmp
-INITRAMFS_FILE="initramfs.cpio.xz"
 
 # dobin for initramfs
 idobin() {
@@ -39,15 +37,174 @@ idobin() {
 	done
 }
 
+# only copy library dependencies
+idodep() {
+	local src
+	for src in "$@"; do
+		"${FILESDIR}/copy_elf" "--lib-only" "${ROOT}" \
+			"${INITRAMFS_TMP_S}" "${src}" || \
+			die "Cannot install: $src"
+		elog "Copied dependency for: $src"
+	done
+}
+
 # install a list of images (presumably .png files) in /etc/screens
 insimage() {
 	cp "$@" "${INITRAMFS_TMP_S}"/etc/screens || die
 }
 
+pull_initramfs_binary() {
+	# For busybox and sh
+	idobin /bin/busybox
+	ln -s busybox "${INITRAMFS_TMP_S}/bin/sh"
+
+	# For verified rootfs
+	idobin /sbin/dmsetup
+
+	# For message screen display and progress bars
+	idobin /usr/bin/ply-image
+	idobin /usr/bin/pv
+	idobin /usr/sbin/vpd
+
+	# /usr/sbin/vpd invokes 'flashrom' via system()
+	idobin /usr/sbin/flashrom
+
+	# For recovery behavior
+	idobin /usr/bin/cgpt
+	idobin /usr/bin/crossystem
+	idobin /usr/bin/dump_kernel_config
+	idobin /usr/bin/tpmc
+	idobin /usr/bin/vbutil_kernel
+}
+
+pull_netboot_ramfs_binary() {
+	# We want to keep GNU sh at /bin/sh, so let's change shebang for init
+	# to busybox explicitly.
+	sed -i '1s|.*|#!/bin/busybox sh\nset -x|' "${INITRAMFS_TMP_S}/init" || die
+
+	# Busybox and utilities
+	idobin /bin/busybox
+	local bin_name
+	local busybox_bins=(
+		awk
+		basename
+		cat
+		chmod
+		chroot
+		cp
+		cut
+		date
+		dirname
+		expr
+		find
+		grep
+		gzip
+		id
+		ifconfig
+		mkdir
+		mkfs.vfat
+		mktemp
+		modprobe
+		mount
+		rm
+		rmdir
+		sed
+		sleep
+		sync
+		tee
+		tr
+		true
+		udhcpc
+		umount
+		uname
+		uniq
+	)
+	for bin_name in ${busybox_bins[@]}; do
+		ln -s busybox "${INITRAMFS_TMP_S}/bin/${bin_name}" || die
+	done
+
+	# Factory installer
+	idobin /usr/sbin/factory_install.sh
+	idobin /usr/sbin/chromeos-common.sh
+	idobin /usr/sbin/netboot_postinst.sh
+	idobin /usr/sbin/chromeos-install
+	cp "${ROOT}"/usr/share/misc/shflags "${INITRAMFS_TMP_S}"/usr/share/misc
+
+	# Binaries used by factory installer
+	idobin /bin/bash
+	idobin /bin/dd
+	idobin /bin/sh
+	idobin /bin/xxd
+	idobin /sbin/blockdev
+	idobin /sbin/fsck.vfat
+	idobin /sbin/sfdisk
+	idobin /usr/bin/cgpt
+	idobin /usr/bin/crossystem
+	idobin /usr/bin/getopt
+	idobin /usr/bin/openssl
+	idobin /usr/bin/uudecode
+	idobin /usr/bin/wget
+	idobin /usr/sbin/flashrom
+	idobin /usr/sbin/htpdate
+	idobin /usr/sbin/lightup_screen
+	idobin /usr/sbin/partprobe
+	ln -s "/bin/cgpt" "${INITRAMFS_TMP_S}/usr/bin/cgpt" || die
+
+	# For message screen display
+	idobin /usr/bin/ply-image
+	idobin /usr/sbin/vpd
+
+	# Network support
+	cp "${FILESDIR}"/udhcpc.script "${INITRAMFS_TMP_S}/etc" || die
+	chmod +x "${INITRAMFS_TMP_S}/etc/udhcpc.script"
+
+	# USB Ethernet kernel module
+	USBNET_MOD_PATH=$(find "${ROOT}"/lib/modules/ -name usbnet.ko)
+	[ -n "$USBNET_MOD_PATH" ] || die
+	USBNET_DIR_PATH=$(dirname "${USBNET_MOD_PATH}")
+	USBNET_INSTALL_PATH="${USBNET_DIR_PATH#${ROOT}}"
+	mkdir -p "${INITRAMFS_TMP_S}/${USBNET_INSTALL_PATH}"
+	for module in $(find "${USBNET_DIR_PATH}" -name "*.ko"); do
+		cp -p "${module}" "${INITRAMFS_TMP_S}/${USBNET_INSTALL_PATH}/"
+		elog "Copied: ${module#${ROOT}}"
+	done
+
+	# Generates lsb-factory
+	LSBDIR="mnt/stateful_partition/dev_image/etc"
+	GENERATED_LSB_FACTORY="${INITRAMFS_TMP_S}/${LSBDIR}/lsb-factory"
+	SERVER_ADDR="${SERVER_ADDR-10.0.0.1}"
+	BOARD="$(get_current_board_with_variant)"
+	mkdir -p "${INITRAMFS_TMP_S}/${LSBDIR}"
+	cat "${FILESDIR}"/lsb-factory.template | \
+		sed "s/%BOARD%/${BOARD}/g" |
+		sed "s/%SERVER_ADDR%/${SERVER_ADDR}/g" \
+		>"${GENERATED_LSB_FACTORY}"
+	ln -s "/$LSBDIR/lsb-factory" "${INITRAMFS_TMP_S}/etc/lsb-release"
+
+	# Partition table
+	cp "${ROOT}"/root/.gpt_layout "${INITRAMFS_TMP_S}"/root/
+	cp "${ROOT}"/root/.pmbr_code "${INITRAMFS_TMP_S}"/root/
+
+	# Generates write_gpt.sh
+	INSTALLED_SCRIPT="${INITRAMFS_TMP_S}"/usr/sbin/write_gpt.sh
+	BUILD_LIBRARY_DIR="${PORTDIR}"/../../scripts/build_library
+	BINPATH="${PORTDIR}"/../../../chromite/bin:"${PATH}"
+	BOARD=$(get_current_board_with_variant)
+	. "${BUILD_LIBRARY_DIR}"/disk_layout_util.sh || die
+	PATH="${BINPATH}" write_partition_script usb "${INSTALLED_SCRIPT}" || die
+
+	# Install Memento updater
+	MEMENTO_PATH="opt/google/memento_updater"
+	mkdir -p "${INITRAMFS_TMP_S}/${MEMENTO_PATH}"
+	cp "${ROOT}/${MEMENTO_PATH}"/* "${INITRAMFS_TMP_S}/${MEMENTO_PATH}" || \
+		die "Failed copying memento_updater"
+	idodep $(cd "${ROOT}"; find "${MEMENTO_PATH}" -type f)
+}
+
 build_initramfs_file() {
 	local dir
 
-	local subdirs="
+	local subdirs=(
 		bin
 		dev
 		etc
@@ -56,12 +213,16 @@ build_initramfs_file() {
 		log
 		newroot
 		proc
+		root
 		stateful
 		sys
 		tmp
 		usb
-	"
-	for dir in $subdirs; do
+		usr/bin
+		usr/sbin
+		usr/share/misc
+	)
+	for dir in ${subdirs[@]}; do
 		mkdir -p "${INITRAMFS_TMP_S}/$dir" || die
 	done
 
@@ -89,27 +250,11 @@ build_initramfs_file() {
 	${S}/make_images "${S}/localized_text" \
 					 "${INITRAMFS_TMP_S}/etc/screens" || die
 
-	# For busybox and sh
-	idobin /bin/busybox
-	ln -s busybox "${INITRAMFS_TMP_S}/bin/sh"
-
-	# For verified rootfs
-	idobin /sbin/dmsetup
-
-	# For message screen display and progress bars
-	idobin /usr/bin/ply-image
-	idobin /usr/bin/pv
-	idobin /usr/sbin/vpd
-
-	# /usr/sbin/vpd invokes 'flashrom' via system()
-	idobin /usr/sbin/flashrom
-
-	# For recovery behavior
-	idobin /usr/bin/cgpt
-	idobin /usr/bin/crossystem
-	idobin /usr/bin/dump_kernel_config
-	idobin /usr/bin/tpmc
-	idobin /usr/bin/vbutil_kernel
+	if use netboot_ramfs; then
+		pull_netboot_ramfs_binary
+	else
+		pull_initramfs_binary
+	fi
 
 	# The kernel emake expects the file in cpio format.
 	( cd "${INITRAMFS_TMP_S}"
@@ -120,6 +265,13 @@ build_initramfs_file() {
 }
 
 src_compile() {
+	INITRAMFS_TMP_S=${WORKDIR}/initramfs_tmp
+	if use netboot_ramfs; then
+		INITRAMFS_FILE="netboot_ramfs.cpio.xz"
+	else
+		INITRAMFS_FILE="initramfs.cpio.xz"
+	fi
+
 	einfo "Creating ${INITRAMFS_FILE}"
 	build_initramfs_file
 	INITRAMFS_FILE_SIZE=$(stat --printf="%s" "${WORKDIR}/${INITRAMFS_FILE}")

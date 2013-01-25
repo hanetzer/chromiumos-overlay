@@ -59,7 +59,7 @@ def _ReadDependencies(root, binary):
   return libs
 
 
-def _CopyDependencies(rootdir, destdir, binaries):
+def _CopyDependencies(rootdir, destdir, binaries, lib_only):
   """Copy a list of binaries and their shared library dependencies.
 
   `binaries` is a list of paths to binary files.  Each binary is
@@ -69,6 +69,9 @@ def _CopyDependencies(rootdir, destdir, binaries):
 
   Paths of binary files are full paths, but are found relative to
   `rootdir`.  Library files are also found relative to `rootdir`.
+
+  If 'lib_only' is True, the binary itself will not be copied. Only
+  its library dependencies will get copied.
   """
   bindir = os.path.join(destdir, "bin")
   libdir = os.path.join(destdir, "lib")
@@ -79,8 +82,9 @@ def _CopyDependencies(rootdir, destdir, binaries):
     # work.
     binsource = rootdir + binary
     bindest = os.path.join(bindir, os.path.basename(binary))
-    shutil.copyfile(binsource, bindest)
-    shutil.copymode(binsource, bindest)
+    if not lib_only:
+      shutil.copyfile(binsource, bindest)
+      shutil.copymode(binsource, bindest)
 
     # Breadth-first search to find all shared libraries and copy
     # them into the 'lib' directory.  Note that unlike `binary`,
@@ -98,11 +102,17 @@ def _CopyDependencies(rootdir, destdir, binaries):
 
 
 def main():
-  root = sys.argv[1]
-  dest = sys.argv[2]
-  binaries = sys.argv[3:]
+  i = 1
+  lib_only = False
+  if sys.argv[i] == '--lib-only':
+    lib_only = True
+    i += 1
 
-  _CopyDependencies(root, dest, binaries)
+  root = sys.argv[i]
+  dest = sys.argv[i + 1]
+  binaries = sys.argv[i + 2:]
+
+  _CopyDependencies(root, dest, binaries, lib_only)
   sys.exit(0)
 
 
