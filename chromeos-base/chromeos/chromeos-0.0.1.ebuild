@@ -9,8 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootimage coreboot cros_ec
-	  gdmwimax +localssh X bootchart opengles"
+IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles"
 
 
 ################################################################################
@@ -63,22 +62,6 @@ IUSE="bluetooth bootimage coreboot cros_ec
 # conditional through USE flags in the board overlays.
 #
 ################################################################################
-
-
-# Enable ssh locally for chromium-os device.
-# TODO(derat): Remove the "localssh" USE flag.  It's expanded in scope beyond
-# SSH to the point where it should really be called "crosh", but building
-# without it is also unsupported and likely to break a bunch of stuff.
-RDEPEND="${RDEPEND}
-	localssh? (
-		app-admin/sudo
-		app-arch/tar
-		chromeos-base/crosh
-		chromeos-base/workarounds
-		net-misc/openssh
-		x11-terms/rxvt-unicode
-	)
-	"
 
 # XServer
 RDEPEND="${RDEPEND}
@@ -143,6 +126,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/rsyslog
 	app-arch/sharutils
+	app-arch/tar
 	bootchart? (
 		app-benchmarks/bootchart
 	)
@@ -172,6 +156,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cromo
 	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
+	chromeos-base/crosh
 	chromeos-base/dev-install
 	chromeos-base/inputcontrol
 	chromeos-base/internal
