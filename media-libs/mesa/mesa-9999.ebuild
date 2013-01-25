@@ -171,7 +171,7 @@ src_configure() {
 		gallium_driver_enable video_cards_radeon r300 r600
 	fi
 
-	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config
+	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
 
 	# --with-driver=dri|xlib|osmesa || do we need osmesa?
 	econf \
