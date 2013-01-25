@@ -27,6 +27,7 @@ RESTRICT="test"
 RDEPEND="!static? ( selinux? ( sys-libs/libselinux ) )
 	pam? ( sys-libs/pam )"
 DEPEND="${RDEPEND}
+	savedconfig? ( chromeos-base/busybox-config )
 	static? ( selinux? ( sys-libs/libselinux[static-libs(+)] ) )
 	>=sys-kernel/linux-headers-2.6.39"
 
