@@ -3,10 +3,10 @@ DEPEND=app-crypt/trousers chromeos-base/tpm dev-vcs/git
 DESCRIPTION=TPM firmware tests
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +tests_hardware_TPMFirmware +tests_hardware_TPMFirmwareServer cros_workon_tree_8d393bbd94a9e8fe3e6454b7f00cae9db1161c5a +buildcheck autotest opengles
+IUSE=+autotest +tests_hardware_TPMFirmware +tests_hardware_TPMFirmwareServer cros_workon_tree_268db6481da233a3d219862339d21209b90da033 +buildcheck autotest opengles
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 RDEPEND=app-crypt/trousers chromeos-base/tpm ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	cros-workon	5f2f8a42fa8e9e59f25015d9167f93a4	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	67ac3c6b8f6caf33237b492c976c061a	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=7d55e276393e7bb00924c43e69a75f15
+_md5_=2273bd9bd3e775987f5c5c36be0bf876
