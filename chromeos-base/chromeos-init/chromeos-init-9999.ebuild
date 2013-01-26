@@ -42,7 +42,6 @@ src_install() {
 
 	# Install various utility files
 	dosbin "${S}/killers"
-	dosbin "${S}/send_boot_metrics"
 
 	# Install startup/shutdown scripts.
 	dosbin "${S}/chromeos_startup" "${S}/chromeos_shutdown"
