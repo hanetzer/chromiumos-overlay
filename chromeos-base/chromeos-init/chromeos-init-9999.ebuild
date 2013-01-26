@@ -18,6 +18,7 @@ DEPEND=""
 # vpd for vpd-log.conf of upstart
 # vboot_reference for crossystem
 RDEPEND="chromeos-base/chromeos-disableecho
+	!<chromeos-base/shill-0.0.1-r805
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	net-firewall/iptables[ipv6]
