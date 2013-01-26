@@ -1,8 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-CROS_WORKON_COMMIT="69da00c2fc9ec94ec3c1b4e3cbf50706600c40d9"
-CROS_WORKON_TREE="918304c88d46dc127ac0496727f1a481356f762a"
+CROS_WORKON_COMMIT="9c1580ea72a5a3b15d90a9baf82c2f7707b793c4"
+CROS_WORKON_TREE="2a7750a0cddd72df341d61250ade80d6270afbd7"
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
 
 inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-workon
@@ -13,7 +13,7 @@ BVER=${PV}
 
 # Version names
 if [[ "${PV}" == "9999" ]] ; then
-	BINUTILS_VERSION="binutils-2.21"
+	BINUTILS_VERSION="binutils-2.22"
 else
 	BINUTILS_VERSION="${P}"
 fi
@@ -116,6 +116,7 @@ src_compile() {
 		--enable-shared \
 		--disable-werror \
 		--enable-secureplt \
+		--enable-plugins \
 		--without-included-gettext \
 		--build=${CBUILD} \
 		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry \
