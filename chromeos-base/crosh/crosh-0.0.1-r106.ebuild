@@ -17,10 +17,15 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="chromeos-base/vboot_reference
+RDEPEND="app-admin/sudo
+	chromeos-base/vboot_reference
+	chromeos-base/workarounds
 	net-misc/iputils
+	net-misc/openssh
 	net-wireless/iw
-	sys-apps/net-tools"
+	sys-apps/net-tools
+	x11-terms/rxvt-unicode
+"
 DEPEND=""
 
 src_install() {
