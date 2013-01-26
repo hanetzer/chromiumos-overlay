@@ -123,7 +123,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/9.0-i965-Make-sure-we-do-render-between-two-hiz-flushes.patch
 	epatch "${FILESDIR}"/9.0-Add-builtin-function-cpp.patch
-	epatch "${FILESDIR}"/9.0-intel-disable-msaa.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/8.1-lastlevel.patch
