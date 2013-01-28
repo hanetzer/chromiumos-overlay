@@ -576,14 +576,16 @@ cros-kernel2_src_test() {
 	# since line numbers will shift as code is added or removed.
 	local build_dir="$(cros-workon_get_build_dir)"
 	local no_line_numbers_file="${build_dir}/no_line_numbers.log"
-	sed -r "s/:[0-9]+//" "${SMATCH_ERROR_FILE}" > "${no_line_numbers_file}"
+	sed -r "s/(:[0-9]+){1,2}//" "${SMATCH_ERROR_FILE}" > \
+		"${no_line_numbers_file}"
 
 	# For every smatch error that came up during the build, check if it is
 	# in the error database file.
 	local num_unknown_errors=0
 	local line=""
 	while read line; do
-		local no_line_num=$(echo "${line}" | sed -r "s/:[0-9]+//")
+		local no_line_num=$(echo "${line}" | \
+			sed -r "s/(:[0-9]+){1,2}//")
 		if ! fgrep -q "${no_line_num}" "${no_line_numbers_file}"; then
 			eerror "Non-whitelisted error found: \"${line}\""
 			: $(( ++num_unknown_errors ))
