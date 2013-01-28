@@ -75,12 +75,13 @@ RDEPEND="${RDEPEND}
 	dev-python/dbus-python
 	dev-python/imaging
 	dev-python/m2crypto
-        dev-python/netifaces
+	dev-python/mako
+	dev-python/netifaces
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyinotify
 	dev-python/pyopenssl
-        dev-python/python-daemon
+	dev-python/python-daemon
 	dev-python/pyudev
 	dev-python/pyusb
 	dev-python/setproctitle
@@ -100,7 +101,7 @@ RDEPEND="${RDEPEND}
 	media-libs/mesa
 	net-misc/gsutil
 	sys-apps/module-init-tools
-        sys-apps/usbutils
+	sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
 	=sys-devel/automake-1.10*
 	sys-devel/clang
