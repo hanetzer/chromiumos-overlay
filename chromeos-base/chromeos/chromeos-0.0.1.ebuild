@@ -78,16 +78,6 @@ RDEPEND="${RDEPEND}
 	"
 
 X86_DEPEND="
-		net-wireless/iwl1000-ucode
-		net-wireless/iwl2000-ucode
-		net-wireless/iwl2030-ucode
-		net-wireless/iwl3945-ucode
-		net-wireless/iwl4965-ucode
-		>=net-wireless/iwl5000-ucode-8.24.2.12
-		net-wireless/iwl6000-ucode
-		net-wireless/iwl6005-ucode
-		net-wireless/iwl6030-ucode
-		net-wireless/iwl6050-ucode
 		sys-apps/mosys
 		sys-boot/syslinux
 "
