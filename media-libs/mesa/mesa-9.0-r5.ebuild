@@ -132,6 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.0-uniform-array-bounds-check.patch
 	epatch "${FILESDIR}"/9.0-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
 	epatch "${FILESDIR}"/9.0-fail-compile-on-bad-uniform-access.patch
+	epatch "${FILESDIR}"/9.0-glx-Check-that-swap_buffers_reply-is-non-NULL-before.patch
 
 	base_src_prepare
 
