@@ -328,6 +328,8 @@ set_build_defines() {
 	# of -fstack-protector-strong, so re-add it to the end of the
 	# command-line, since gcc uses "last flag wins" for stack protector.
 	CXXFLAGS+=" -fstack-protector-strong"
+	# Enable std::vector []-operator bounds checking.
+	CXXFLAGS+=" -D__google_stl_debug_vector=1"
 }
 
 unpack_chrome() {
