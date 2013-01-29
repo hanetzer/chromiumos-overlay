@@ -20,9 +20,9 @@ DEPEND="virtual/pkgconfig
 	>=dev-libs/nspr-${NSPR_VER}"
 
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
+	>=dev-libs/nss-${PV}
 	>=dev-db/sqlite-3.5
-	sys-libs/zlib
-	!<app-crypt/nss-${PV}"
+	sys-libs/zlib"
 
 src_setup() {
 	export LC_ALL="C"
@@ -49,9 +49,6 @@ src_prepare() {
 	# Don't default to the TPM for SHA-256. Fixed in NSS 3.14.1
 	# See https://bugzilla.mozilla.org/show_bug.cgi?id=802429 for details
 	epatch "${FILESDIR}"/${PN}-3.14-bugzilla-802429.patch
-
-	# Remove roots that were added between 3.14.1 and 3.14.2 due to misissuance
-	epatch "${FILESDIR}"/${PN}-3.14-remove-turktrust-roots.patch
 
 	cd "${S}"/mozilla/security/coreconf || die
 	# hack nspr paths
@@ -118,117 +115,19 @@ src_compile() {
 	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} ${SHLIBSIGN_ARG} || die "nss make failed"
 }
 
-# Altering these 3 libraries breaks the CHK verification.
-# All of the following cause it to break:
-# - stripping
-# - prelink
-# - ELF signing
-# http://www.mozilla.org/projects/security/pki/nss/tech-notes/tn6.html
-# Either we have to NOT strip them, or we have to forcibly resign after
-# stripping.
-#local_libdir="$(get_libdir)"
-#export STRIP_MASK="
-#	*/${local_libdir}/libfreebl3.so*
-#	*/${local_libdir}/libnssdbm3.so*
-#	*/${local_libdir}/libsoftokn3.so*"
-
-export NSS_CHK_SIGN_LIBS="freebl3 nssdbm3 softokn3"
-
-generate_chk() {
-	local shlibsign="$1"
-	local libdir="$2"
-	einfo "Resigning core NSS libraries for FIPS validation"
-	shift 2
-	for i in ${NSS_CHK_SIGN_LIBS} ; do
-		local libname=lib${i}.so
-		local chkname=lib${i}.chk
-		"${shlibsign}" \
-			-i "${libdir}"/${libname} \
-			-o "${libdir}"/${chkname}.tmp \
-		&& mv -f \
-			"${libdir}"/${chkname}.tmp \
-			"${libdir}"/${chkname} \
-		|| die "Failed to sign ${libname}"
-	done
-}
-
-cleanup_chk() {
-	local libdir="$1"
-	shift 1
-	for i in ${NSS_CHK_SIGN_LIBS} ; do
-		local libfname="${libdir}/lib${i}.so"
-		# If the major version has changed, then we have old chk files.
-		[ ! -f "${libfname}" -a -f "${libfname}.chk" ] \
-			&& rm -f "${libfname}.chk"
-	done
-}
-
 src_install () {
-	MINOR_VERSION=12
-	cd "${S}"/mozilla/security/dist || die
-
-	dodir /usr/$(get_libdir) || die
-	cp -L */lib/*$(get_libname) "${ED}"/usr/$(get_libdir) || die "copying shared libs failed"
-	# We generate these after stripping the libraries, else they don't match.
-	#cp -L */lib/*.chk "${ED}"/usr/$(get_libdir) || die "copying chk files failed"
-	cp -L */lib/libcrmf.a "${ED}"/usr/$(get_libdir) || die "copying libs failed"
-
-	# Install nss-config and pkgconfig file
-	dodir /usr/bin || die
-	cp -L */bin/nss-config "${ED}"/usr/bin || die
-	dodir /usr/$(get_libdir)/pkgconfig || die
-	cp -L */lib/pkgconfig/nss.pc "${ED}"/usr/$(get_libdir)/pkgconfig || die
-
-	# all the include files
-	insinto /usr/include/nss
-	doins public/nss/*.h || die
-	cd "${ED}"/usr/$(get_libdir) || die
-	local n=
-	for file in *$(get_libname); do
-		n=${file%$(get_libname)}$(get_libname ${MINOR_VERSION})
-		mv ${file} ${n} || die
-		ln -s ${n} ${file} || die
-		if [[ ${CHOST} == *-darwin* ]]; then
-			install_name_tool -id "${EPREFIX}/usr/$(get_libdir)/${n}" ${n} || die
-		fi
-	done
-
 	local nssutils
-	# Always enabled because we need it for chk generation.
-	nssutils="shlibsign"
+	# The tests we do not need to install.
+	#nssutils_test="bltest crmftest dbtest dertimetest
+	#fipstest remtest sdrtest"
+	nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
+	cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
+	nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
+	pk12util pp rsaperf selfserv signtool signver ssltap strsclnt
+	symkeyutil tstclnt vfychain vfyserv"
 	cd "${S}"/mozilla/security/dist/*/bin/ || die
 	for f in $nssutils; do
 		# TODO(cmasone): switch to normal nss tool names
 		newbin ${f} nss${f} || die
 	done
-
-	# Prelink breaks the CHK files. We don't have any reliable way to run
-	# shlibsign after prelink.
-	declare -a libs
-	for l in ${NSS_CHK_SIGN_LIBS} ; do
-		libs+=("${EPREFIX}/usr/$(get_libdir)/lib${l}.so")
-	done
-	OLD_IFS="${IFS}" IFS=":" ; liblist="${libs[*]}" ; IFS="${OLD_IFS}"
-	echo -e "PRELINK_PATH_MASK=${liblist}" >"${T}/90nss" || die
-	unset libs liblist
-	doenvd "${T}/90nss" || die
-}
-
-pkg_postinst() {
-	elog "We have reverted back to using upstreams soname."
-	elog "Please run revdep-rebuild --library libnss3.so.12 , this"
-	elog "will correct most issues. If you find a binary that does"
-	elog "not run please re-emerge package to ensure it properly"
-	elog " links after upgrade."
-	elog
-	local tool_root
-	# We must re-sign the libraries AFTER they are stripped.
-	if ! tc-is-cross-compiler; then
-		tool_root = "${EROOT}"
-	fi
-	generate_chk "${tool_root}"/usr/bin/nssshlibsign "${EROOT}"/usr/$(get_libdir)
-}
-
-pkg_postrm() {
-	cleanup_chk "${EROOT}"/usr/$(get_libdir)
 }
