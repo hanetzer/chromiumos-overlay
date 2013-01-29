@@ -71,6 +71,7 @@ RDEPEND="${RDEPEND}
 	net-misc/rsync
 	bluetooth? ( net-wireless/bluez-test )
 	net-wireless/hostapd
+	sci-geosciences/gpsd
 	sys-apps/coreutils
 	sys-apps/file
 	sys-apps/findutils
