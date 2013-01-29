@@ -396,6 +396,10 @@ src_unpack() {
 	if [[ -d ${SSH_CONFIG_DIR} ]]; then
 		cp -rfp ${SSH_CONFIG_DIR} ${HOME} || die
 	fi
+	NET_CONFIG=/home/${WHOAMI}/.netrc
+	if [[ -f ${NET_CONFIG} ]]; then
+		cp -fp ${NET_CONFIG} ${HOME} || die
+	fi
 
 	decide_chrome_origin
 
