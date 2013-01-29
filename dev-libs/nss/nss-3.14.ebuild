@@ -10,19 +10,21 @@ RTM_NAME="NSS_${PV//./_}_RTM"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="http://www.mozilla.org/projects/security/pki/nss/"
-SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz"
+SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
+	http://dev.gentoo.org/~anarchy/patches/${PN}-3.14-add_spi+cacerts_ca_certs.patch
+	http://dev.gentoo.org/~anarchy/patches/${PN}-3.13.3_pem.support"
 
 LICENSE="|| ( MPL-1.1 GPL-2 LGPL-2.1 )"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 ~sparc x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+IUSE="utils"
 
 DEPEND="virtual/pkgconfig
 	>=dev-libs/nspr-${NSPR_VER}"
 
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
 	>=dev-db/sqlite-3.5
-	sys-libs/zlib
-	!<app-crypt/nss-${PV}"
+	sys-libs/zlib"
 
 src_setup() {
 	export LC_ALL="C"
@@ -32,26 +34,9 @@ src_prepare() {
 	# Custom changes for gentoo
 	epatch "${FILESDIR}/${PN}-3.13-gentoo-fixup.patch"
 	epatch "${FILESDIR}/${PN}-3.12.6-gentoo-fixup-warnings.patch"
+	epatch "${DISTDIR}/${PN}-3.14-add_spi+cacerts_ca_certs.patch"
+	epatch "${DISTDIR}/${PN}-3.13.3_pem.support"
 	epatch "${FILESDIR}/${PN}-3.13.5-x32.patch"
-
-	# Fix cross-compiling of NSS. This is an alternative to upstream's
-	# patch at https://bugs.gentoo.org/show_bug.cgi?id=436216
-	epatch "${FILESDIR}/${PN}-3.12.8-shlibsign.patch"
-
-	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
-	# attribute). See http://crosbug.com/19403 for details.
-	epatch "${FILESDIR}"/${PN}-3.14-chromeos-cert-nicknames.patch
-
-	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
-	# See http://crosbug.com/29623 for details.
-	epatch "${FILESDIR}"/${PN}-3.14-abort-on-failed-urandom-access.patch
-
-	# Don't default to the TPM for SHA-256. Fixed in NSS 3.14.1
-	# See https://bugzilla.mozilla.org/show_bug.cgi?id=802429 for details
-	epatch "${FILESDIR}"/${PN}-3.14-bugzilla-802429.patch
-
-	# Remove roots that were added between 3.14.1 and 3.14.2 due to misissuance
-	epatch "${FILESDIR}"/${PN}-3.14-remove-turktrust-roots.patch
 
 	cd "${S}"/mozilla/security/coreconf || die
 	# hack nspr paths
@@ -94,8 +79,8 @@ src_compile() {
 	*) die "Failed to detect whether your arch is 64bits or 32bits, disable distcc if you're using it, please";;
 	esac
 
-	export NSPR_INCLUDE_DIR="${ROOT}"/usr/include/nspr
-	export NSPR_LIB_DIR="${ROOT}"/usr/lib
+	export NSPR_INCLUDE_DIR=`nspr-config --includedir`
+	export NSPR_LIB_DIR=`nspr-config --libdir`
 	export BUILD_OPT=1
 	export NSS_USE_SYSTEM_SQLITE=1
 	export NSDISTMODE=copy
@@ -104,18 +89,12 @@ src_compile() {
 	export FREEBL_NO_DEPEND=1
 	export ASFLAGS=""
 
-	# Cross-compile Love
-	( filter-flags -m* ;
-	  cd "${S}"/mozilla/security/coreconf &&
-	  emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" LDFLAGS= CC="$(tc-getBUILD_CC)" || die "coreconf make failed" )
-	cd "${S}"/mozilla/security/dbm
-	NSINSTALL=$(readlink -f $(find "${S}"/mozilla/security/coreconf -type f -name nsinstall))
-	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} || die "dbm make failed"
-	cd "${S}"/mozilla/security/nss
-	if tc-is-cross-compiler; then
-		SHLIBSIGN_ARG="SHLIBSIGN=/usr/bin/nssshlibsign"
-	fi
-	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} ${SHLIBSIGN_ARG} || die "nss make failed"
+	cd "${S}"/mozilla/security/coreconf || die
+	emake -j1 CC="$(tc-getCC)" || die "coreconf make failed"
+	cd "${S}"/mozilla/security/dbm || die
+	emake -j1 CC="$(tc-getCC)" || die "dbm make failed"
+	cd "${S}"/mozilla/security/nss || die
+	emake -j1 CC="$(tc-getCC)" || die "nss make failed"
 }
 
 # Altering these 3 libraries breaks the CHK verification.
@@ -196,10 +175,19 @@ src_install () {
 	local nssutils
 	# Always enabled because we need it for chk generation.
 	nssutils="shlibsign"
+	if use utils; then
+		# The tests we do not need to install.
+		#nssutils_test="bltest crmftest dbtest dertimetest
+		#fipstest remtest sdrtest"
+		nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
+		cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
+		nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
+		pk12util pp rsaperf selfserv shlibsign signtool signver ssltap strsclnt
+		symkeyutil tstclnt vfychain vfyserv"
+	fi
 	cd "${S}"/mozilla/security/dist/*/bin/ || die
 	for f in $nssutils; do
-		# TODO(cmasone): switch to normal nss tool names
-		newbin ${f} nss${f} || die
+		dobin ${f} || die
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run
@@ -215,18 +203,8 @@ src_install () {
 }
 
 pkg_postinst() {
-	elog "We have reverted back to using upstreams soname."
-	elog "Please run revdep-rebuild --library libnss3.so.12 , this"
-	elog "will correct most issues. If you find a binary that does"
-	elog "not run please re-emerge package to ensure it properly"
-	elog " links after upgrade."
-	elog
-	local tool_root
 	# We must re-sign the libraries AFTER they are stripped.
-	if ! tc-is-cross-compiler; then
-		tool_root = "${EROOT}"
-	fi
-	generate_chk "${tool_root}"/usr/bin/nssshlibsign "${EROOT}"/usr/$(get_libdir)
+	generate_chk "${EROOT}"/usr/bin/shlibsign "${EROOT}"/usr/$(get_libdir)
 }
 
 pkg_postrm() {

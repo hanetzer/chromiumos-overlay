@@ -3,8 +3,9 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/nspr/nspr-4.9.2.ebuild,v 1.8 2012/11/29 23:40:13 blueness Exp $
 
 EAPI=3
+WANT_AUTOCONF="2.1"
 
-inherit eutils multilib toolchain-funcs versionator
+inherit autotools eutils multilib toolchain-funcs versionator
 
 MIN_PV="$(get_version_component_range 2)"
 
@@ -32,8 +33,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-4.8.9-link-flags.patch
 	epatch "${FILESDIR}"/${PN}-4.9.1-x32_v0.2.patch
 
-	# ChromeOS: Fix x64 -> x86 cross-compilation
-	epatch "${FILESDIR}"/${PN}-4.9.2-r1-cross.patch
+	# We must run eautoconf to regenerate configure
+	cd "${S}"/mozilla/nsprpub
+	eautoconf
 
 	# make sure it won't find Perl out of Prefix
 	sed -i -e "s/perl5//g" "${S}"/mozilla/nsprpub/configure || die
@@ -53,15 +55,9 @@ src_configure() {
 		*32-bit*|*ppc*|*i386*) ;;
 		*) die "Failed to detect whether your arch is 64bits or 32bits, disable distcc if you're using it, please";;
 	esac
-
 	myconf="${myconf} --libdir=${EPREFIX}/usr/$(get_libdir)"
 
-	export HOST_CC="${HOSTCC}"
-	export HOST_CFLAGS="-g"
-	export HOST_LDFLAGS="-g"
-	LC_ALL="C" HOST_CC="$HOST_CC" HOST_CFLAGS="$HOST_CFLAGS" \
-		HOST_LDFLAGS="$HOST_LDFLAGS" ECONF_SOURCE="../mozilla/nsprpub" \
-		econf \
+	LC_ALL="C" ECONF_SOURCE="../mozilla/nsprpub" econf \
 		$(use_enable debug) \
 		$(use_enable !debug optimize) \
 		${myconf} || die "econf failed"
@@ -108,11 +104,4 @@ src_install () {
 
 	# Remove stupid files in /usr/bin
 	rm -f "${ED}"/usr/bin/prerr.properties || die "failed to cleanup unneeded files"
-}
-
-pkg_postinst() {
-	ewarn
-	ewarn "Please make sure you run revdep-rebuild after upgrade."
-	ewarn "This is *extremely* important to ensure your system nspr works properly."
-	ewarn
 }
