@@ -37,6 +37,10 @@ src_prepare() {
 	# Respect LDFLAGS
 	sed -i -e 's/\$(MKSHLIB) \$(OBJS)/\$(MKSHLIB) \$(LDFLAGS) \$(OBJS)/g' \
 		mozilla/nsprpub/config/rules.mk
+
+	# Disable useless rpath flags http://crosbug.com/38334
+	find -name Makefile.in -exec \
+		sed -i -e "/^DSO_LDOPTS.*-Wl,-R,'\$\$ORIGIN'/d" {} +
 }
 
 src_configure() {
