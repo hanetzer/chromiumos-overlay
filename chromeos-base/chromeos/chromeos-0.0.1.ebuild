@@ -162,7 +162,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/internal
 	chromeos-base/metrics
 	chromeos-base/mtpd
-	chromeos-base/permission_broker
 	chromeos-base/power_manager
 	chromeos-base/root-certificates
 	chromeos-base/shill
