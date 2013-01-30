@@ -119,7 +119,7 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
-IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE"
+IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
 
 inherit git-2 flag-o-matic toolchain-funcs
 
@@ -460,7 +460,7 @@ cros-workon_src_configure() {
 
 		# Portage takes care of this for us.
 		export SPLITDEBUG=0
-
+		export MODE=$(usex profiling profiling opt)
 		if [[ $(type -t cros-debug-add-NDEBUG) == "function" ]] ; then
 			# Only run this if we've inherited cros-debug.eclass.
 			cros-debug-add-NDEBUG
@@ -516,6 +516,25 @@ cros-workon_src_test() {
 		emake \
 			VALGRIND=$(use_if_iuse valgrind && echo 1) \
 			tests
+	else
+		default
+	fi
+}
+
+cros-workon_src_install() {
+	# common.mk supports coverage analysis, but only generates data when
+	# the tests have been run as part of the build process. Thus this code
+	# needs to test of the analysis output is present before trying to
+	# install it.
+	if [[ -e ${S}/common.mk ]] ; then
+		if use profiling; then
+			if [[ -d "${WORKDIR}/build/lcov-html" ]]; then
+				local dir="${PN}"
+				[[ ${SLOT} != "0" ]] && dir+=":${SLOT}"
+				insinto "/usr/share/profiling/${dir}/lcov"
+				doins -r "${WORKDIR}"/build/lcov-html/*
+			fi
+		fi
 	else
 		default
 	fi
