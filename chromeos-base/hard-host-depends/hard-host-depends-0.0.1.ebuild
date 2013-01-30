@@ -233,6 +233,12 @@ RDEPEND="${RDEPEND}
 	dev-python/pyyaml
 	"
 
+# Tools for working with compiler generated profile information
+# (such as coverage analysis in common.mk)
+RDEPEND="${RDEPEND}
+	dev-util/lcov
+	"
+
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
