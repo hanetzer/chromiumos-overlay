@@ -57,6 +57,7 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_WebRTC
 	+tests_desktopui_VideoSanity
+	+tests_desktopui_YouTubeHTML5
 	+tests_enterprise_DevicePolicy
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GpuReset
