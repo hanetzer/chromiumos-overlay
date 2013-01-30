@@ -766,6 +766,10 @@ clang-setup-env() {
 		export CC="clang" CXX="clang++"
 		append-flags --sysroot="${SYSROOT}"
 		append-flags -B$(get_binutils_path_gold)
+
+		# Some boards use optimizations (e.g. -mfpmath=sse) that
+		# clang does not support.
+		append-flags -Qunused-arguments
 		;;
 	*) die "Clang is not yet supported for ${ARCH}"
 	esac
