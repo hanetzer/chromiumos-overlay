@@ -230,7 +230,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies for HWID processing
 RDEPEND="${RDEPEND}
-        dev-python/pyyaml
+	dev-python/pyyaml
 	"
 
 # Uninstall these packages.
