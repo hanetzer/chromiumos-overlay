@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose widevine_cdm"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -324,6 +324,10 @@ set_build_defines() {
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
+	# Chrome's build overrides the Chrome OS build wrapper's addition
+	# of -fstack-protector-strong, so re-add it to the end of the
+	# command-line, since gcc uses "last flag wins" for stack protector.
+	CXXFLAGS+=" -fstack-protector-strong"
 }
 
 unpack_chrome() {
@@ -653,6 +657,9 @@ src_compile() {
 	if [[ -n "${CHROME_TARGET_OVERRIDE}" ]]; then
 		chrome_targets=( ${CHROME_TARGET_OVERRIDE} )
 		einfo "Building custom targets: ${chrome_targets[*]}"
+	elif use content_shell; then
+		chrome_targets=( content_shell chrome_sandbox )
+		einfo "Building content_shell"
 	else
 		chrome_targets=( chrome chrome_sandbox )
 		if use build_tests; then
@@ -896,6 +903,7 @@ src_install() {
 	doexe "${FROM}"/chrome
 	doexe "${FROM}"/libffmpegsumo.so
 	doexe "${FROM}"/libosmesa.so
+	use content_shell && doexe "${FROM}"/content_shell
 	use drm && doexe "${FROM}"/aura_demo
 	use drm && doexe "${FROM}"/ash_shell
 	if use chrome_internal && use chrome_pdf; then
@@ -933,6 +941,7 @@ src_install() {
 	doins "${FROM}"/chrome-wrapper
 	doins "${FROM}"/chrome.pak
 	doins "${FROM}"/chrome_100_percent.pak
+	use content_shell && doins "${FROM}"/content_shell.pak
 	doins -r "${FROM}"/locales
 	doins -r "${FROM}"/resources
 	doins -r "${FROM}"/extensions
