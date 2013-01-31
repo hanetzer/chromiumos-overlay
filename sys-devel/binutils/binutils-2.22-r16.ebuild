@@ -32,7 +32,7 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="http://sources.redhat.com/binutils/"
 LICENSE="|| ( GPL-3 LGPL-3 )"
-IUSE="hardened mounted_sources multislot multitarget nls test vanilla"
+IUSE="hardened mounted_binutils multislot multitarget nls test vanilla"
 if use multislot ; then
 	SLOT="${CTARGET}-${BVER}"
 elif is_cross ; then
@@ -65,7 +65,7 @@ else
 fi
 
 src_unpack() {
-	if use mounted_sources ; then
+	if use mounted_binutils ; then
 		BINUTILS_DIR="/usr/local/toolchain_root/binutils"
 		if [[ ! -d ${BINUTILS_DIR} ]] ; then
 			die "binutils dirs not mounted at: ${BINUTILS_DIR}"
