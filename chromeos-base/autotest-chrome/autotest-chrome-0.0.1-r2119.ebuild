@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="7b7b68c12f615169841f82f44cae47ce5f4bdc1d"
-CROS_WORKON_TREE="466223dca69d9ac393f49ab91e20b78125807c47"
+CROS_WORKON_COMMIT="3e8ebd23e704dcbd76b1fbf568220b7a423a8a20"
+CROS_WORKON_TREE="7275985c7ac065b1fc6b7ef1599486815a1150c2"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -21,7 +21,6 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
-	chromeos-base/autotest-deps-ffmpeg
 	chromeos-base/flimflam-test
 	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
