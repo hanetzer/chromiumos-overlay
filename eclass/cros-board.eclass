@@ -59,6 +59,7 @@ ALL_BOARDS=(
 	parrot
 	puppy
 	raspberrypi
+	ricochet
 	stout
 	stumpy
 	tegra2
