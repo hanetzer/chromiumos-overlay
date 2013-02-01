@@ -13,9 +13,7 @@ DEPEND="sys-apps/debianutils
 	initramfs? ( chromeos-base/chromeos-initramfs )
 "
 
-# TODO(sque): Remove the "smatch" use flag once all boards have opted in to
-# smatch testing.
-IUSE="-device_tree -kernel_sources -smatch"
+IUSE="-device_tree -kernel_sources"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
@@ -296,7 +294,7 @@ cros-kernel2_pkg_setup() {
 	# This is needed for running src_test().  The kernel code will need to
 	# be rebuilt with `make check`.  If incremental build were enabled,
 	# `make check` would have nothing left to build.
-	use test && use smatch && export CROS_WORKON_INCREMENTAL_BUILD=0
+	use test && export CROS_WORKON_INCREMENTAL_BUILD=0
 	cros-workon_pkg_setup
 }
 
@@ -537,7 +535,7 @@ cros-kernel2_src_compile() {
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 	SMATCH_ERROR_FILE="${src_dir}/chromeos/check/smatch_errors.log"
 
-	if use test && use smatch && [[ -e "${SMATCH_ERROR_FILE}" ]]; then
+	if use test && [[ -e "${SMATCH_ERROR_FILE}" ]]; then
 		local make_check_cmd="smatch -p=kernel"
 		local test_options=(
 			CHECK="${make_check_cmd}"
@@ -560,7 +558,6 @@ cros-kernel2_src_compile() {
 }
 
 cros-kernel2_src_test() {
-	use smatch || return
 	[[ -e ${SMATCH_ERROR_FILE} ]] || \
 		die "smatch whitelist file ${SMATCH_ERROR_FILE} not found!"
 	[[ -e ${SMATCH_LOG_FILE} ]] || \
