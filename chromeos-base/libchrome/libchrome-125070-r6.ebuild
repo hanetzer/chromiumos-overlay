@@ -46,6 +46,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/base-125070-headers.patch
 	epatch "${FILESDIR}"/base-125070-no-X.patch
 	epatch "${FILESDIR}"/base-125070-gcc-4_7.patch
+	epatch "${FILESDIR}"/base-125070-x32.patch
 }
 
 src_compile() {
