@@ -72,11 +72,12 @@ src_install() {
 	dobin powerd/powerd_setuid_helper
 	dobin tools/backlight_dbus_tool
 	dobin tools/backlight-tool
+	dobin tools/memory_suspend_test
+	dobin tools/powerd_dbus_suspend
 	dobin tools/power_state_tool
 	dobin tools/power-supply-info
-	dobin tools/powerd_dbus_suspend
+	dobin tools/set_power_policy
 	dobin tools/suspend_delay_sample
-	dobin tools/memory_suspend_test
 	popd >/dev/null
 
 	fowners root:power /usr/bin/powerd_setuid_helper
