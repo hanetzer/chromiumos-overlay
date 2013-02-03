@@ -18,6 +18,8 @@ RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
+	[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/{curl,lss}-x32.patch
+
 	eautoreconf
 	if ! tc-is-cross-compiler; then
 		einfo "Creating a separate 32b src directory"
