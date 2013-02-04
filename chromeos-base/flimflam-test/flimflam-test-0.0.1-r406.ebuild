@@ -4,8 +4,8 @@
 # $Header: /var/cvsroot/gentoo-x86/net-misc/connman/connman-0.43.ebuild,v 1.1 2009/10/05 12:22:24 dagger Exp $
 
 EAPI="2"
-CROS_WORKON_COMMIT="4cfa9dca3676465bf2ea35eeaf71a2f241e94161"
-CROS_WORKON_TREE="93ba80236f878c56dd1c6b62ddc2944bae584962"
+CROS_WORKON_COMMIT="7407023b523d80195f20471513093ad9deb9b3d0"
+CROS_WORKON_TREE="43a974fea5872a50dabd7fc3ad68bdbc5f13bf4e"
 CROS_WORKON_PROJECT="chromiumos/platform/flimflam"
 
 inherit autotools cros-workon toolchain-funcs
