@@ -49,6 +49,7 @@ CONFIG_FRAGMENTS=(
 	systemtap
 	tpm
 	vfat
+	x32
 )
 
 blkdevram_desc="ram block device"
@@ -204,6 +205,11 @@ CONFIG_KPROBES=y
 CONFIG_DEBUG_INFO=y
 "
 
+x32_desc="x32 ABI support"
+x32_config="
+CONFIG_X86_X32=y
+"
+
 # Add all config fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]}"
 REQUIRED_USE="
@@ -211,6 +217,7 @@ REQUIRED_USE="
 	netboot_ramfs? ( !initramfs )
 	initramfs? ( i2cdev tpm )
 	netboot_ramfs? ( i2cdev tpm )
+	x32? ( amd64 )
 "
 
 # If an overlay has eclass overrides, but doesn't actually override this
