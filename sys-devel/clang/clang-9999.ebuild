@@ -14,6 +14,26 @@ SUPPORT_PYTHON_ABIS="1"
 
 inherit subversion eutils multilib python
 
+EGIT_REPO_URIS=(
+	"llvm"
+		""
+		#"git://github.com/llvm-mirror/llvm.git"
+		#"http://llvm.org/git/llvm.git"
+		"https://git.chromium.org/git/native_client/pnacl-llvm.git"
+		""	# EGIT_COMMIT
+	"compiler-rt"
+		"projects/compiler-rt"
+		"git://github.com/llvm-mirror/compiler-rt.git"
+		#"http://llvm.org/git/compiler-rt.git"
+		""	# EGIT_COMMIT
+	"clang"
+		"tools/clang"
+		"git://github.com/llvm-mirror/clang.git"
+		#"http://llvm.org/git/clang.git"
+		""	# EGIT_COMMIT
+)
+inherit git-2
+
 DESCRIPTION="C language family frontend for LLVM"
 HOMEPAGE="http://clang.llvm.org/"
 SRC_URI=""
@@ -30,6 +50,17 @@ RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"
 S="${WORKDIR}/llvm"
 
 src_unpack() {
+	set -- "${EGIT_REPO_URIS[@]}"
+	while [[ $# -gt 0 ]]; do
+		ESVN_PROJECT=$1 \
+		EGIT_SOURCEDIR="${S}/$2" \
+		EGIT_REPO_URI=$3 \
+		EGIT_COMMIT=$4 \
+		git-2_src_unpack
+		shift 4
+	done
+	return
+
 	# Fetching LLVM and subprojects
 	ESVN_PROJECT=llvm subversion_fetch "http://llvm.org/svn/llvm-project/llvm/trunk"
 	ESVN_PROJECT=compiler-rt S="${S}"/projects/compiler-rt subversion_fetch "http://llvm.org/svn/llvm-project/compiler-rt/trunk"
