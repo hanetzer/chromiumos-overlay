@@ -1,0 +1,175 @@
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 0108bc9..f4d8e50 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -30,7 +30,7 @@ AM_CPPFLAGS =-I$(top_srcdir)/include
+ 
+ @DRIVER_NAME@_drv_la_LTLIBRARIES = @DRIVER_NAME@_drv.la
+ @DRIVER_NAME@_drv_la_LDFLAGS = -module -avoid-version
+-@DRIVER_NAME@_drv_la_LIBADD = $(MTDEV_LIBS) $(UDEV_LIBS)
++@DRIVER_NAME@_drv_la_LIBADD = $(MTDEV_LIBS) $(UDEV_LIBS) -ltouchnoisefilter
+ @DRIVER_NAME@_drv_ladir = @inputdir@
+ 
+ @DRIVER_NAME@_drv_la_SOURCES = @DRIVER_NAME@.c \
+diff --git a/src/debug.c b/src/debug.c
+index 842694e..f0891ef 100644
+--- a/src/debug.c
++++ b/src/debug.c
+@@ -56,6 +56,10 @@ EvdevDumpLog(InputInfoPtr pInfo) {
+     for (i = 0; i < DEBUG_BUF_SIZE; ++i) {
+         struct debug_event *de =
+             &pEvdev->debug_buf[(pEvdev->debug_buf_tail + i) % DEBUG_BUF_SIZE];
++        if (de->slot == SLOT_CANCELED) {
++            fprintf(fp, "# CANCELED_TRACKING_ID: %d\n", de->canceled_id);
++            continue;
++        }
+         if (de->ev.time.tv_sec == 0 && de->ev.time.tv_usec == 0)
+             continue;
+         fprintf(fp, "E: %ld.%06ld %04x %04x %d %d\n",
+diff --git a/src/evdev.c b/src/evdev.c
+index fc741e2..fae0a0a 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -933,6 +933,7 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
+         if (ev->code == ABS_MT_TRACKING_ID) {
+             pEvdev->cached_tid[slot_index] = ev->value;
+             if (ev->value >= 0) {
++                pEvdev->last_valid_tracking_ids[slot_index] = ev->value;
+                 pEvdev->slot_state = SLOTSTATE_OPEN;
+ 
+                 if (slot_index >= 0)
+@@ -1106,6 +1107,14 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+ {
+     int i;
+     EvdevPtr pEvdev = pInfo->private;
++#ifdef MULTITOUCH
++    uint64_t canceled_slots = 0;
++
++    if (pEvdev->touch_noise_filter) {
++        XFilterGetCanceledTouches(pEvdev->touch_noise_filter,
++                                  &canceled_slots);
++    }
++#endif
+ 
+     for (i = 0; i < pEvdev->num_queue; i++) {
+         switch (pEvdev->queue[i].type) {
+@@ -1136,6 +1145,25 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+             valuator_mask_set_double(pEvdev->queue[i].touchMask,
+                                      pEvdev->touch_time_valuator_index,
+                                      TimevalToDouble(&ev->time));
++            if (canceled_slots & (1ULL << pEvdev->queue[i].detail.touch)) {
++                /* Move to 0,0 with 255 pressure and touch_major. */
++                valuator_mask_set_double(pEvdev->queue[i].touchMask,
++                    pEvdev->axis_map[ABS_MT_POSITION_X], 0);
++                valuator_mask_set_double(pEvdev->queue[i].touchMask,
++                    pEvdev->axis_map[ABS_MT_POSITION_Y], 0);
++                valuator_mask_set_double(pEvdev->queue[i].touchMask,
++                    pEvdev->axis_map[ABS_MT_TOUCH_MAJOR], 255);
++                valuator_mask_set_double(pEvdev->queue[i].touchMask,
++                    pEvdev->axis_map[ABS_MT_PRESSURE], 255);
++
++                /* Log the fact that we're canceling a touch. */
++                pEvdev->debug_buf[pEvdev->debug_buf_tail].canceled_id =
++                    pEvdev->last_valid_tracking_ids[
++                        pEvdev->queue[i].detail.touch];
++                pEvdev->debug_buf[pEvdev->debug_buf_tail].slot = SLOT_CANCELED;
++                pEvdev->debug_buf_tail++;
++                pEvdev->debug_buf_tail %= DEBUG_BUF_SIZE;
++            }
+             xf86PostTouchEvent(pInfo->dev, pEvdev->queue[i].detail.touch,
+                                pEvdev->queue[i].val, 0,
+                                pEvdev->queue[i].touchMask);
+@@ -1203,6 +1231,9 @@ static BOOL
+ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+ {
+     BOOL syn_dropped = FALSE;
++    EvdevPtr ptrEvdev = pInfo->private;
++    if (ptrEvdev->touch_noise_filter)
++        XFilterHandleInputEvent(ptrEvdev->touch_noise_filter, ev);
+     switch (ev->type) {
+         case EV_REL:
+             EvdevProcessRelativeMotionEvent(pInfo, ev);
+@@ -2975,6 +3006,11 @@ EvdevCloseDevice(InputInfoPtr pInfo)
+         mtdev_close_delete(pEvdev->mtdev);
+         pEvdev->mtdev = NULL;
+     }
++    if (pEvdev->touch_noise_filter)
++    {
++        FreeXFilter(pEvdev->touch_noise_filter);
++        pEvdev->touch_noise_filter = NULL;
++    }
+ #endif
+ 
+ }
+@@ -3047,6 +3083,14 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
+         goto error;
+     }
+ 
++#ifdef MULTITOUCH
++    if (!pEvdev->touch_noise_filter && (pEvdev->flags & EVDEV_TOUCHSCREEN)) {
++        pEvdev->touch_noise_filter = NewXFilter();
++        memset(pEvdev->last_valid_tracking_ids, -1,
++               sizeof(pEvdev->last_valid_tracking_ids));
++    }
++#endif
++
+     EvdevAddDevice(pInfo);
+ 
+     if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
+@@ -3570,3 +3614,12 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+ 
+     return Success;
+ }
++
++#ifdef MULTITOUCH
++_X_EXPORT void TouchNoiseFilterLog(const char* format, ...) {
++  va_list args;
++  va_start(args, format);
++  xf86VDrvMsgVerb(-1, X_ERROR, 0, format, args);
++  va_end(args);
++}
++#endif
+diff --git a/src/evdev.h b/src/evdev.h
+index d1abac2..23eed58 100644
+--- a/src/evdev.h
++++ b/src/evdev.h
+@@ -45,6 +45,7 @@
+ 
+ #ifdef MULTITOUCH
+ #include <mtdev.h>
++#include <touch_noise_filter/touch_noise_filter.h>
+ #endif
+ 
+ #ifndef EV_CNT /* linux 2.6.23 kernels and earlier lack _CNT defines */
+@@ -109,6 +110,8 @@
+ 
+ #define MAX_SLOT_COUNT  64
+ 
++#define SLOT_CANCELED -1
++
+ /* Function key mode */
+ enum fkeymode {
+     FKEYMODE_UNKNOWN = 0,
+@@ -182,6 +185,8 @@ typedef struct {
+     enum SlotState slot_state;
+ #ifdef MULTITOUCH
+     struct mtdev *mtdev;
++    void* touch_noise_filter;
++    int last_valid_tracking_ids[MAX_SLOT_COUNT];
+ #endif
+ 
+     int flags;
+@@ -275,8 +280,11 @@ typedef struct {
+     EventQueueRec           queue[EVDEV_MAXQUEUE];
+ 
+     struct debug_event {
+-      struct input_event ev;
+-      int slot;
++      union {
++        struct input_event ev;
++        __s32 canceled_id;
++      };
++      int slot;  // if slot is SLOT_CANCELED, cancelled_id has the tracking ID
+     } debug_buf[DEBUG_BUF_SIZE];
+     size_t debug_buf_tail;
+ 

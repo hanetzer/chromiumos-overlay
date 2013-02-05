@@ -10,7 +10,8 @@ inherit xorg-2
 DESCRIPTION="Generic Linux input driver"
 KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sh ~sparc x86"
 IUSE=""
-RDEPEND=">=x11-base/xorg-server-1.10[udev]
+RDEPEND="chromeos-base/touch_noise_filter
+	>=x11-base/xorg-server-1.10[udev]
 	sys-libs/mtdev"
 DEPEND="${RDEPEND}
 	>=x11-proto/inputproto-2.1.99.3
@@ -27,4 +28,5 @@ PATCHES=(
 	# crosbug.com/p/13787
 	"${FILESDIR}"/evdev-2.7.0-fix-emulated-wheel.patch
 	"${FILESDIR}"/evdev-2.7.0-add-block-reading-support.patch
+	"${FILESDIR}"/evdev-2.7.3-Filer-touch-noise.patch
 )
