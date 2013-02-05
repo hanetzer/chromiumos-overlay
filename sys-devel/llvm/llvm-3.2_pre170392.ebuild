@@ -8,6 +8,12 @@ EAPI="4"
 PYTHON_DEPEND="2"
 inherit subversion eutils flag-o-matic multilib toolchain-funcs python pax-utils
 
+EGIT_REPO_URI="https://git.chromium.org/git/native_client/pnacl-llvm.git"
+EGIT_MASTER="upstream/master"
+# Set to the corresponding commit.
+EGIT_COMMIT="6c583141bf6b7a6b5f8125c1037ecbc089813288"
+inherit git-2
+
 SVN_COMMIT=${PV#*_pre}
 
 DESCRIPTION="Low Level Virtual Machine"
