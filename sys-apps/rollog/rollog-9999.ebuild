@@ -29,5 +29,6 @@ src_compile() {
 }
 
 src_install() {
+	cros-workon_src_install
 	dobin "${OUT}"/rollog
 }

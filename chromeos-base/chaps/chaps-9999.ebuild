@@ -54,6 +54,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	dosbin "${OUT}"/chapsd
 	dobin "${OUT}"/chaps_client
 	dobin "${OUT}"/p11_replay

@@ -51,6 +51,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	exeinto /opt/google/mtpd
 	doexe "${OUT}"/mtpd
 

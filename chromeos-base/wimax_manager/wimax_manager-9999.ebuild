@@ -55,6 +55,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	# Install D-Bus introspection XML files.
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.WiMaxManager*.xml

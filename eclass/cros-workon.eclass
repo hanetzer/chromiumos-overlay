@@ -531,7 +531,7 @@ cros-workon_src_install() {
 	# install it.
 	if [[ -e ${S}/common.mk ]] ; then
 		if use profiling; then
-			if [[ -d "${WORKDIR}/build/lcov-html" ]]; then
+			if [[ -d "${WORKDIR}/build/lcov-html" ]] ; then
 				local dir="${PN}"
 				[[ ${SLOT} != "0" ]] && dir+=":${SLOT}"
 				insinto "/usr/share/profiling/${dir}/lcov"

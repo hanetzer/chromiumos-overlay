@@ -49,6 +49,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	dosbin "${OUT}"/l2tpipsec_vpn
 	exeinto /usr/libexec/l2tpipsec_vpn
 	doexe "bin/pluto_updown"

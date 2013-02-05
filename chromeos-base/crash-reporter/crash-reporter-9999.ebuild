@@ -57,6 +57,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	into /
 	dosbin "${OUT}"/crash_reporter
 	dosbin crash_sender

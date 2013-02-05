@@ -45,6 +45,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	into /
 	dobin "${OUT}"/cros_boot_mode
 
