@@ -52,8 +52,16 @@ src_test() {
 
 src_install() {
 	local board=$(get_current_board_with_variant)
+	local board_no_variant=$(get_current_board_no_variant)
 	emake BOARD=${board} DESTDIR="${D}" install
 
+	# install ucm config files
 	insinto /usr/share/alsa/ucm
-	nonfatal doins -r ucm-config/${board}/*
+	local board_dir
+	for board_dir in ${board} ${board_no_variant} ; do
+		if [[ -d ucm-config/${board_dir} ]] ; then
+			doins -r ucm-config/${board_dir}/*
+			break
+		fi
+	done
 }
