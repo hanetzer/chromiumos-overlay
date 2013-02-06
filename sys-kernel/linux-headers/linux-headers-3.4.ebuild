@@ -32,6 +32,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/3.4-v4l-MFC-update-MFC-v4l2-driver-to-support-MFC6.x.patch
 	epatch "${FILESDIR}"/3.4-v4l-CHROMIUM-v4l2-exynos-move-CID-enums-into-videodev2.h.patch
 	epatch "${FILESDIR}"/3.4-v4l-add-buffer-exporting-via-dmabuf.patch
+	epatch "${FILESDIR}"/3.4-modprobe-CHROMIUM-module-add-syscall-to-load-module-from-fd.patch
 	epatch "${FILESDIR}"/3.4-modprobe-CHROMIUM-finit_module-add-syscall-to-asm-generic.patch
 	epatch "${FILESDIR}"/3.4-modprobe-CHROMIUM-finit_module-add-syscall-to-ARM.patch
 }
