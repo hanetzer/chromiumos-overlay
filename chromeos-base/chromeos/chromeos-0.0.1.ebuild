@@ -89,7 +89,6 @@ CROS_COMMON_RDEPEND="
 	bootchart? ( app-benchmarks/bootchart )
 	coreboot? ( virtual/chromeos-coreboot )
 	gdmwimax? ( net-wireless/gdmwimax )
-	sys-apps/upstart
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/linux-sources
