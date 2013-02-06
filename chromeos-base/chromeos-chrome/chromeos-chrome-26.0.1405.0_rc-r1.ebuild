@@ -92,7 +92,7 @@ add_pgo_arches() {
 RESTRICT="mirror"
 add_pgo_arches x86 amd64 arm
 
-TEST_FILES=("ffmpeg_tests" "video_decode_accelerator_unittest" "ppapi_example_video_decode")
+TEST_FILES=("video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=(
 	lib{32,64}
 	mock_nacl_gdb
@@ -670,6 +670,7 @@ src_compile() {
 				peerconnection_server
 				chromedriver
 				browser_tests
+				ffmpeg_tests
 				sync_integration_tests )
 			einfo "Building test targets: ${TEST_TARGETS[@]}"
 		fi
