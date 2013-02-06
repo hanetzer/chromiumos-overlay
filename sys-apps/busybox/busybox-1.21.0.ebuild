@@ -53,6 +53,7 @@ src_prepare() {
 
 	# patches go here!
 	epatch "${FILESDIR}"/${PN}-1.19.0-bb.patch
+	epatch "${FILESDIR}"/${PN}-1.21.0-modutils-use-finit_module-if-available.patch
 	#epatch "${FILESDIR}"/${P}-*.patch
 	#cp "${FILESDIR}"/ginit.c init/ || die
 
