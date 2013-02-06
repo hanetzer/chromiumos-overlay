@@ -1,11 +1,12 @@
-DEFINED_PHASES=info install setup unpack
-DEPEND=dev-vcs/git
-DESCRIPTION=Chrome OS workarounds utilities.
-EAPI=2
-HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_8e3abcfd92ce8bfc7ee4c9f5dfcfb0168fbc5794 profiling
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4 dev-vcs/git
+DESCRIPTION=Utility for obtaining various bits of low-level system info
+EAPI=4
+HOMEPAGE=http://mosys.googlecode.com/
+IUSE=static cros_workon_tree_bdece7053cdc1fcfce35898c32866f110845e4cb profiling
 KEYWORDS=amd64 arm x86
-LICENSE=BSD
+LICENSE=GPL-2
+RDEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	0e0f7b3566ee6a10bab214e04f13c825	eutils	33ef77a15337022e05342d2c772a7a5a	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	5f4ad6cf85e365e8f0c6050ddd21659e	portability	0be430f759a631e692678ed796e09f5c	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=d8903b1e5205851d73488017f8f87460
+_md5_=854718901689b49330055a538460dc0b
