@@ -392,7 +392,10 @@ cros-workon_src_unpack() {
 			EGIT_SOURCEDIR="${destdir[i]}"
 			EGIT_COMMIT="${CROS_WORKON_COMMIT[i]}"
 			# Clones to /var, copies src tree to the /build/<board>/tmp.
-			git-2_src_unpack
+			# Make sure git-2 does not run `unpack` for us automatically.
+			# The normal cros-workon flow above doesn't do it, so don't
+			# let git-2 do it either.  http://crosbug.com/38342
+			EGIT_NOUNPACK=true git-2_src_unpack
 			# TODO(zbehan): Support multiple projects for vcsid?
 		done
 		set_vcsid "${CROS_WORKON_COMMIT[0]}"
