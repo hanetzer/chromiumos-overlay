@@ -27,11 +27,13 @@ src_unpack() {
 
 src_prepare() {
 	[[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/${PV}
-	epatch ${FILESDIR}/3.4-v4l-Add-DMABUF-as-a-memory-type.patch
-	epatch ${FILESDIR}/3.4-v4l-Media-Exynos-Header-file-support-for-G-Scaler-driver.patch
-	epatch ${FILESDIR}/3.4-v4l-MFC-update-MFC-v4l2-driver-to-support-MFC6.x.patch
-	epatch ${FILESDIR}/3.4-v4l-CHROMIUM-v4l2-exynos-move-CID-enums-into-videodev2.h.patch
-	epatch ${FILESDIR}/3.4-v4l-add-buffer-exporting-via-dmabuf.patch
+	epatch "${FILESDIR}"/3.4-v4l-Add-DMABUF-as-a-memory-type.patch
+	epatch "${FILESDIR}"/3.4-v4l-Media-Exynos-Header-file-support-for-G-Scaler-driver.patch
+	epatch "${FILESDIR}"/3.4-v4l-MFC-update-MFC-v4l2-driver-to-support-MFC6.x.patch
+	epatch "${FILESDIR}"/3.4-v4l-CHROMIUM-v4l2-exynos-move-CID-enums-into-videodev2.h.patch
+	epatch "${FILESDIR}"/3.4-v4l-add-buffer-exporting-via-dmabuf.patch
+	epatch "${FILESDIR}"/3.4-modprobe-CHROMIUM-finit_module-add-syscall-to-asm-generic.patch
+	epatch "${FILESDIR}"/3.4-modprobe-CHROMIUM-finit_module-add-syscall-to-ARM.patch
 }
 
 src_install() {
