@@ -14,6 +14,8 @@ dev-python/pyudev	pygobject
 dev-util/perf		tui -doc
 dev-vcs/git		cvs subversion webdav curl bash-completion
 dev-vcs/subversion	-dso webdav-serf
+games-emulation/zsnes	ao -debug
+media-libs/libao	alsa
 media-libs/freeimage	-cxx
 media-libs/gd           png
 media-libs/libmtp       -crypt
