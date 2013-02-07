@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="640113066b0a717955004e702a2afefe051d36a2"
-CROS_WORKON_TREE="7e911e28b8bcde9bbdf4cff52eec7ac57adc3980"
+CROS_WORKON_COMMIT="a718a09f3d076358ace08bab8ae3a2bbc1c6b102"
+CROS_WORKON_TREE="9d012e3c44f6e5d77ddaf9c3208b842a6b8aac6e"
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
