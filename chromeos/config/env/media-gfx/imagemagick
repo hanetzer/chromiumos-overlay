@@ -13,6 +13,12 @@ cros_pre_src_configure_imagemagick_local() {
 	fi
 }
 
+# Force install to use -j1 since it can flake.
+# http://crosbug.com/34617
+cros_pre_src_install_imagemagick_single_install() {
+	MAKEOPTS+=" -j1"
+}
+
 # When installing a binpkg, we externally set INSTALL_MASK/etc...
 # to kill all *.la files.  This would break imagemagick because it
 # uses libltdl which utilizes libtool linker scripts (.la) to locate
