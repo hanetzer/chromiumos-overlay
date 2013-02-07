@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="e7d0813602a7a8c67ebd957e7575b3050179f621"
-CROS_WORKON_TREE="b9bc9b0b7a16498f6c3ed97218ad1c764bdca2bb"
+CROS_WORKON_COMMIT="69b0349e001ec3cb7cf2ff7e04ebef1c063402ea"
+CROS_WORKON_TREE="2ab9f87d498f1b6c3eb2b60b6cb4ceab955352ba"
 CROS_WORKON_PROJECT="chromiumos/platform/permission_broker"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
