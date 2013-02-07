@@ -10,7 +10,7 @@ HOMEPAGE="http://code.google.com/p/iotools/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 amd64"
-IUSE="hardened"
+IUSE="hardened static"
 
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
@@ -22,7 +22,7 @@ src_compile() {
 		fi
 	fi
 
-	emake CC="$(tc-getCC)" || die "emake failed"
+	emake STATIC=$(usex static 1 0) CC="$(tc-getCC)" || die "emake failed"
 }
 
 IOTOOLS_COMMANDS="and btr bts busy_loop cmos_read cmos_write cpu_list \
