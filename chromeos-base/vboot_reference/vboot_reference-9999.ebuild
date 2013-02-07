@@ -11,7 +11,7 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="32bit_au minimal rbtest tpmtests cros_host"
+IUSE="32bit_au minimal tpmtests cros_host"
 
 LIBCHROME_VERS="125070"
 
@@ -24,11 +24,6 @@ RDEPEND="app-crypt/trousers
 DEPEND="${RDEPEND}
 	dev-cpp/gflags
 	dev-cpp/gtest"
-
-# We need the config in place before we run, but don't need to rebuild this
-# package every time.
-RDEPEND="${RDEPEND}
-	!cros_host? ( chromeos-base/vboot_reference-config )"
 
 _src_compile_main() {
 	mkdir "${S}"/build-main
@@ -140,16 +135,7 @@ src_install() {
 		done
 	else
 		# Installing on host.
-		emake BUILD="${S}"/build-main \
-		      DESTDIR="${D}/usr/bin" install
-		# EC firmware needs to compile directly from source
-		dodir /usr/src/vboot
-		insinto /usr/src/vboot
-		doins -r firmware/include firmware/lib
-	fi
-	if use rbtest; then
-		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" -C tests \
-		      install-rbtest
+		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" install
 	fi
 	if use tpmtests; then
 		into /usr
