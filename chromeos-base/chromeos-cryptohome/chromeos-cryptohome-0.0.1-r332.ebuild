@@ -56,6 +56,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	pushd "${OUT}" >/dev/null
 	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache
 	popd >/dev/null

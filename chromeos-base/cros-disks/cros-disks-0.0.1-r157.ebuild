@@ -61,6 +61,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	exeinto /opt/google/cros-disks
 	doexe "${OUT}"/disks
 

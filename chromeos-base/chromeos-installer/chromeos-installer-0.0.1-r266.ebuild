@@ -68,6 +68,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	local path
 	if use cros_host ; then
 		# Copy chromeos-* scripts to /usr/lib/installer/ on host.

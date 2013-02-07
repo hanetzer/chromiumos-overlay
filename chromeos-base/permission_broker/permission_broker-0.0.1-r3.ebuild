@@ -54,6 +54,7 @@ src_test() {
 }
 
 src_install() {
+	cros-workon_src_install
 	# Built binaries
 	pushd "${OUT}" >/dev/null
 	dobin permission_broker
