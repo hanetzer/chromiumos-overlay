@@ -77,7 +77,6 @@ games-emulation/caps
 games-emulation/goosnes
 games-emulation/nestra
 games-emulation/snes9express
-games-emulation/snes9x
 games-emulation/zinc
 games-emulation/zsnes
 games-emulation/mupen64
