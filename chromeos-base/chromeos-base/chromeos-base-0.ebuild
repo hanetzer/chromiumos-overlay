@@ -15,6 +15,11 @@ IUSE="cros_host pam"
 # We need to make sure timezone-data is merged before us.
 # See pkg_setup below as well as http://crosbug.com/27413
 # and friends.
+# Similarly, we have to make sure bash is merged before us.
+# We don't need dash because only bash modifies ROOT duing
+# pkg_* stages, and depending on dash would disable a little
+# bit of possible parallelism.
+# See http://crosbug.com/38597 for more details.
 DEPEND=">=sys-apps/baselayout-2
 	!<sys-apps/baselayout-2.0.1-r227
 	!<sys-libs/timezone-data-2011d
@@ -25,6 +30,7 @@ DEPEND=">=sys-apps/baselayout-2
 	!<net-misc/openssh-5.2_p1-r8
 	!cros_host? (
 		!app-misc/editor-wrapper
+		app-shells/bash
 		sys-libs/timezone-data
 	)"
 RDEPEND="${DEPEND}"
