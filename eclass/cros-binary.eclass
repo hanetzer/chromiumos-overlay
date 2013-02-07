@@ -85,7 +85,7 @@ cros-binary_fetch() {
 	if ! cros-binary_check_file; then
 		rm -f "${target}"
 		case "${scheme}" in
-			http|https)
+			http|https|ftp)
 				wget "${uri}" -O "${target}" -nv -nc ||
 					rm -f "${target}"
 				;;
