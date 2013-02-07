@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="bcfc17cf4f4ad7f90b365abada1e3991bfe02a5a"
-CROS_WORKON_TREE="482758b2628f6cce1913020b920b5ca0bd88c7fc"
+CROS_WORKON_COMMIT="a70eedb1dbf63188d47bd3d589b5e1e8023b2b6e"
+CROS_WORKON_TREE="302c41d4ade0b2d90738953d9df7c2815437e12b"
 CROS_WORKON_PROJECT="chromiumos/platform/vpn-manager"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
