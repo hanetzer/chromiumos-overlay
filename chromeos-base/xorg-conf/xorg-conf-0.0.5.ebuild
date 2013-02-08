@@ -12,11 +12,17 @@ DESCRIPTION="Board specific xorg configuration file."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cmt elan -exynos synaptics -tegra"
+IUSE="alex butterfly cmt elan -exynos mario stout synaptics -tegra"
+
+RDEPEND=""
+DEPEND="x11-base/xorg-server"
 
 S=${WORKDIR}
 
 src_install() {
+	local board=$(get_current_board_no_variant)
+	local board_variant=$(get_current_board_with_variant)
+
 	insinto /etc/X11
 	if ! use tegra; then
 		doins "${FILESDIR}/xorg.conf"
@@ -35,22 +41,35 @@ src_install() {
 	if use synaptics; then
 		doins "${FILESDIR}/50-touchpad-syntp.conf"
 	fi
-
-	if use cros_host; then
-		# Install all cmt files when installing on the host
-		doins "${FILESDIR}"/*.conf
-	elif use cmt; then
-		# install the cmt config file matching the current board
+	# Enable exactly one evdev-compatible X input touchpad driver.
+	if use cmt; then
 		doins "${FILESDIR}/50-touchpad-cmt.conf"
-
-		local board=$(get_current_board_no_variant)
-		doins "${FILESDIR}/50-touchpad-cmt-${board}.conf"
-
-		# install cmt config file for elan, which is not a board
 		if use elan; then
 			doins "${FILESDIR}/50-touchpad-cmt-elan.conf"
+		elif use alex; then
+			doins "${FILESDIR}/50-touchpad-cmt-alex.conf"
+		elif use butterfly; then
+			doins "${FILESDIR}/50-touchpad-cmt-butterfly.conf"
+		elif use stout; then
+			doins "${FILESDIR}/50-touchpad-cmt-stout.conf"
+		elif use mario; then
+			doins "${FILESDIR}/50-touchpad-cmt-mario.conf"
+		elif [[ "${board}" = "x86-zgb" || "${board}" = "x86-zgb32" ]]; then
+			doins "${FILESDIR}/50-touchpad-cmt-zgb.conf"
+		elif [ "${board_variant}" = "tegra2_aebl" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-aebl.conf"
+		elif [ "${board_variant}" = "tegra2_kaen" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-kaen.conf"
+		elif [[ "${board}" = "lumpy" || "${board}" = "lumpy64" ]]; then
+			doins "${FILESDIR}/50-touchpad-cmt-lumpy.conf"
+		elif [ "${board}" = "link" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-link.conf"
+		elif [ "${board}" = "daisy" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-daisy.conf"
+		elif [ "${board}" = "parrot" ]; then
+			doins "${FILESDIR}/50-touchpad-cmt-parrot.conf"
 		fi
-	elif use board_use_mario; then
+	elif use mario; then
 		doins "${FILESDIR}/50-touchpad-synaptics-mario.conf"
 	else
 		doins "${FILESDIR}/50-touchpad-synaptics.conf"
