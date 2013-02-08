@@ -17,8 +17,8 @@ LICENSE="BSD"
 SLOT="0"
 
 IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
-	-has_diamond_key -has_hdd -highdpi -is_desktop -natural_scroll_default
-	-new_power_button test -touchui +X"
+	-exynos -has_diamond_key -has_hdd -highdpi -is_desktop
+	-natural_scroll_default	-new_power_button test -touchui +X"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
