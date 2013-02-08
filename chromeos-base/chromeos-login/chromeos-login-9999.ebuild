@@ -4,21 +4,20 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
-KEYWORDS="~arm ~amd64 ~x86"
-
-LIBCHROME_VERS="180609"
-
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
-
+KEYWORDS="~arm ~amd64 ~x86"
 IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
 	-exynos -has_diamond_key -has_hdd -highdpi -is_desktop
 	-natural_scroll_default	-new_power_button test -touchui +X"
+
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
@@ -47,10 +46,12 @@ src_prepare() {
 	fi
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-	tc-export CXX LD PKG_CONFIG
-	cros-debug-add-NDEBUG
-	emake login_manager || die "chromeos-login compile failed."
+	cros-workon_src_compile
 
 	# Build locale-archive for Chrome. This is a temporary workaround for
 	# crbug.com/116999.
@@ -60,13 +61,12 @@ src_compile() {
 }
 
 src_test() {
-	tc-export CXX LD PKG_CONFIG
-	cros-debug-add-NDEBUG
 	append-cppflags -DUNIT_TEST
-	emake tests || die "chromeos-login compile tests failed."
+	cros-workon_src_test
 }
 
 src_install() {
+	cros-workon_src_install
 	into /
 	dosbin "${S}/keygen"
 	dosbin "${S}/session_manager_setup.sh"
