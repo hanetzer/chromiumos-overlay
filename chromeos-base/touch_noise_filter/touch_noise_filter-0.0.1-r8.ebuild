@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="a78c2440333ca1fd3af5ab2f37c0e417dcd9419e"
-CROS_WORKON_TREE="d94a7aa4b43294e4fe5d0d56cf5cd61d209f3127"
+CROS_WORKON_COMMIT="9408e8f7fbf7bd24fc31184a0bd426f154b96e1e"
+CROS_WORKON_TREE="bc3dac8d139c2357be1d932abc35bddaf06f6a14"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_noise_filter"
 CROS_WORKON_USE_VCSID=1
 
