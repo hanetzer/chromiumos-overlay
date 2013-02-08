@@ -36,6 +36,7 @@ IUSE_TESTS="
 	+tests_login_OwnershipRetaken
 	+tests_login_OwnershipTaken
 	+tests_login_RemoteOwnership
+	+tests_login_UserPolicyKeys
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
