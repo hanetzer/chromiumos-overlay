@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="a3df396f95e6f5f91adaafb2d25c981bd6c650ef"
-CROS_WORKON_TREE="b21faacf6a9940571ef122363c19a1ac02595b4b"
+CROS_WORKON_COMMIT="0b0bcb3112a0a935efa8c748f097306d1299819a"
+CROS_WORKON_TREE="496ae7dc233c4da3f9586c7b62194d1e879a7c61"
 CROS_WORKON_PROJECT="chromiumos/platform/cros_boot_mode"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
