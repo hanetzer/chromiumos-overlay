@@ -13,7 +13,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 
-inherit cros-workon cros-board
+inherit cros-workon cros-board multiprocessing
 
 DESCRIPTION="Chromium OS Developer Packages installer"
 HOMEPAGE="http://www.chromium.org/chromium-os"
@@ -59,14 +59,27 @@ src_compile() {
 		chromeos-test
 	)
 	einfo "Ignore warnings below related to LD_PRELOAD/libsandbox.so"
+	multijob_init
 	for pkg in ${pkgs[@]} ; do
+		# The ebuild env will modify certain variables in ways that we
+		# do not care for.  For example, PORTDIR_OVERLAY is modified to
+		# only point to the current tree which screws up the search of
+		# the board-specific overlays.
+		(
+		multijob_child_init
+		env -i PATH="${PATH}" PORTAGE_USERNAME="${PORTAGE_USERNAME}" \
 		emerge-${BOARD} \
 			--pretend --quiet --emptytree --ignore-default-opts \
 			--root-deps=rdeps ${pkg} | \
 			egrep -o ' [[:alnum:]-]+/[^[:space:]/]+\b' | \
-			tr -d ' ' > ${pkg}.packages &
+			tr -d ' ' | \
+			sort > ${pkg}.packages
+		_pipestatus=${PIPESTATUS[*]}
+		[[ ${_pipestatus// } -eq 0 ]] || die "\`emerge-${BOARD} ${pkg}\` failed"
+		) &
+		multijob_post_fork
 	done
-	wait
+	multijob_finish
 	# No virtual packages in package.provided.
 	grep -v "virtual/" chromeos.packages > package.provided
 
