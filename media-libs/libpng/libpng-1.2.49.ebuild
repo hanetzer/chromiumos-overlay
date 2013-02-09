@@ -17,7 +17,7 @@ SRC_URI="mirror://sourceforge/${PN}/${P}.tar.xz"
 LICENSE="as-is"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips s390 sh sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE=""
+IUSE="static-libs"
 
 RDEPEND="sys-libs/zlib
 	!=media-libs/libpng-1.2*:0"
@@ -29,5 +29,5 @@ src_prepare() {
 }
 
 src_configure() {
-	econf --disable-static
+	econf $(use_enable static-libs static)
 }
