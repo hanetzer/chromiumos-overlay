@@ -20,7 +20,7 @@ LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	>=chromeos-base/libchromeos-0.0.1-r156
+	chromeos-base/platform2
 	dev-libs/dbus-c++
 	dev-libs/glib:2
 	dev-libs/libpcre

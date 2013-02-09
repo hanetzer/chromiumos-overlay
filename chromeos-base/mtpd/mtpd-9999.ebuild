@@ -20,7 +20,7 @@ LIBCHROME_VERS="180609"
 
 RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/libchromeos
+	chromeos-base/platform2
 	dev-cpp/gflags
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
@@ -30,7 +30,6 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
 	test? ( dev-cpp/gtest )"
 
 src_prepare() {

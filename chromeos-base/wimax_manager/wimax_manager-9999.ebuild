@@ -18,8 +18,7 @@ IUSE="gdmwimax test"
 LIBCHROME_VERS="180609"
 
 RDEPEND="gdmwimax? (
-	chromeos-base/libchromeos
-	chromeos-base/metrics
+	chromeos-base/platform2
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/protobuf
@@ -28,7 +27,6 @@ RDEPEND="gdmwimax? (
 DEPEND="gdmwimax? (
 	${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/system_api
 	net-wireless/gdmwimax
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
