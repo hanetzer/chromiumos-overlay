@@ -76,10 +76,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/ixchariot
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
+	chromeos-base/platform2
 	chromeos-base/protofiles
 	chromeos-base/recover-duts
 	chromeos-base/saft
-	chromeos-base/system_api
 	chromeos-base/telemetry
 	chromeos-base/touchbot
 	dev-lang/python

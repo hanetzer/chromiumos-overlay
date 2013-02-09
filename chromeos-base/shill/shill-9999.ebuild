@@ -20,8 +20,7 @@ RDEPEND="chromeos-base/bootstat
 	cellular? ( chromeos-base/cromo )
 	!<chromeos-base/flimflam-0.0.1-r530
 	chromeos-base/libchrome:180609[cros-debug=]
-	chromeos-base/libchromeos
-	chromeos-base/metrics
+	chromeos-base/platform2
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 	chromeos-base/wimax_manager
 	vpn? ( chromeos-base/vpn-manager )
@@ -41,7 +40,6 @@ RDEPEND="chromeos-base/bootstat
 	net-wireless/wpa_supplicant[dbus]"
 
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 

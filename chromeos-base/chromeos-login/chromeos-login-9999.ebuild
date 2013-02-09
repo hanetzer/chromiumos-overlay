@@ -21,7 +21,7 @@ LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
-	chromeos-base/metrics
+	chromeos-base/platform2
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
@@ -33,7 +33,6 @@ DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	>=chromeos-base/libchrome_crypto-${LIBCHROME_VERS}
 	chromeos-base/protofiles
-	chromeos-base/system_api
 	dev-cpp/gmock
 	sys-libs/glibc
 	test? ( dev-cpp/gtest )"
