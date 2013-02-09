@@ -11,9 +11,9 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
-SRCDIR="${CROS_WORKON_SRCROOT}/src/platform/${CROS_WORKON_LOCALNAME}/dev-install"
+CROS_WORKON_OUTOFTREE_BUILD="1"
 
-inherit cros-workon
+inherit cros-workon cros-board
 
 DESCRIPTION="Chromium OS Developer Packages installer"
 HOMEPAGE="http://www.chromium.org/chromium-os"
@@ -36,8 +36,15 @@ RDEPEND="app-arch/tar
 
 S=${WORKDIR}
 
-src_unpack() {
-	local pkg pkgs BOARD="${BOARD:-${SYSROOT##/build/}}"
+src_prepare() {
+	SRCDIR="${S}/dev-install"
+	mkdir -p "$(cros-workon_get_build_dir)"
+}
+
+src_compile() {
+	cd "$(cros-workon_get_build_dir)"
+
+	local pkg pkgs BOARD=$(get_current_board_with_variant)
 
 	pkgs=(
 		# Generate a list of packages that go into the base image. These
@@ -76,15 +83,16 @@ src_unpack() {
 }
 
 src_install() {
+	local build_dir=$(cros-workon_get_build_dir)
+
 	cd "${SRCDIR}"
-	exeinto /usr/bin
-	doexe dev_install
+	dobin dev_install
 
 	insinto /etc/portage
-	doins "${S}"/{bootstrap.packages,repository.conf}
+	doins "${build_dir}"/{bootstrap.packages,repository.conf}
 
 	insinto /etc/portage/make.profile
-	doins "${S}"/package.{installable,provided} make.{conf,defaults}
+	doins "${build_dir}"/package.{installable,provided} make.{conf,defaults}
 
 	insinto /etc/env.d
 	doins 99devinstall
@@ -92,4 +100,3 @@ src_install() {
 	# Python will be installed in /usr/local after running dev_install.
 	dosym "/usr/local/bin/python2.6" "/usr/bin/python"
 }
-
