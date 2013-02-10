@@ -101,10 +101,10 @@ src_install() {
 	cd "${SRCDIR}"
 	dobin dev_install
 
-	insinto /etc/portage
+	insinto /usr/share/${PN}/portage
 	doins "${build_dir}"/{bootstrap.packages,repository.conf}
 
-	insinto /etc/portage/make.profile
+	insinto /usr/share/${PN}/portage/make.profile
 	doins "${build_dir}"/package.{installable,provided} make.{conf,defaults}
 
 	insinto /etc/env.d
@@ -112,4 +112,19 @@ src_install() {
 
 	# Python will be installed in /usr/local after running dev_install.
 	dosym "/usr/local/bin/python2.6" "/usr/bin/python"
+}
+
+pkg_preinst() {
+	if [[ $(cros_target) == "target_image" ]]; then
+		# We don't want to install these files into the normal /build/
+		# dir because we need different settings at build time vs what
+		# we want at runtime in release images.  Thus, install the files
+		# into /usr/share but symlink them into /etc for the images.
+		local f srcdir="/usr/share/${PN}"
+		pushd "${ED}/${srcdir}" >/dev/null
+		for f in $(find -type f -printf '%P '); do
+			dosym "${srcdir}/${f}" "/etc/${f}"
+		done
+		popd >/dev/null
+	fi
 }
