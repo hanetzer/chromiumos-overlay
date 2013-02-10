@@ -3,7 +3,7 @@
 
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
-inherit binutils-funcs cros-board toolchain-funcs
+inherit binutils-funcs cros-board toolchain-funcs linux-info
 
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
@@ -317,6 +317,7 @@ cros-kernel2_pkg_setup() {
 	# `make check` would have nothing left to build.
 	use test && export CROS_WORKON_INCREMENTAL_BUILD=0
 	cros-workon_pkg_setup
+	linux-info_pkg_setup
 }
 
 # @FUNCTION: emit_its_script
@@ -678,6 +679,8 @@ cros-kernel2_src_install() {
 
 	if use kernel_sources; then
 		install_kernel_sources
+	else
+		dosym "$(cros-workon_get_build_dir)" "/usr/src/linux"
 	fi
 }
 
