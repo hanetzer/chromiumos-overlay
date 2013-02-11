@@ -84,6 +84,11 @@ src_install() {
 src_test() {
 	cd "${S}" # Let's just run unit tests from ${S} rather than install and run.
 
+	# Setup FDT test file
+	pushd host/tests >/dev/null
+	./make-test.sh || die
+	popd >/dev/null
+
 	# Run bundle_firmware tests
 	pushd host/lib >/dev/null
 	local libfile
