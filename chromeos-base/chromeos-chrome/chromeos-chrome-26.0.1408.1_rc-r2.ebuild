@@ -724,6 +724,8 @@ src_compile() {
 
 		# Remove .svn dirs
 		esvn_clean "${AUTOTEST_WORKDIR}"
+		# Remove .git dirs
+		find "${AUTOTEST_WORKDIR}" -type d -name .git -prune -exec rm -rf {} +
 
 		autotest_src_compile
 	fi
@@ -746,7 +748,7 @@ install_test_resources() {
 		cache=$(dirname "${CHROME_CACHE_DIR}/src/${resource}")
 		dest=$(dirname "${test_dir}/${resource}")
 		mkdir -p "${cache}" "${dest}"
-		rsync -a --delete --exclude=.svn \
+		rsync -a --delete --exclude=.svn --exclude=.git \
 			"${CHROME_ROOT}/src/${resource}" "${cache}"
 		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}"
 	done
