@@ -13,9 +13,9 @@ CROS_WORKON_COMMIT="a5095bcf1fdc5df4a4bc861eba930db6d5a15a7d"
 CROS_WORKON_TREE="744b50eccb90bd470a7492be256f6fbb7b8cc543"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
-SRCDIR="${CROS_WORKON_SRCROOT}/src/platform/${CROS_WORKON_LOCALNAME}/dev-install"
+CROS_WORKON_OUTOFTREE_BUILD="1"
 
-inherit cros-workon
+inherit cros-workon cros-board multiprocessing
 
 DESCRIPTION="Chromium OS Developer Packages installer"
 HOMEPAGE="http://www.chromium.org/chromium-os"
@@ -38,8 +38,15 @@ RDEPEND="app-arch/tar
 
 S=${WORKDIR}
 
-src_unpack() {
-	local pkg pkgs BOARD="${BOARD:-${SYSROOT##/build/}}"
+src_prepare() {
+	SRCDIR="${S}/dev-install"
+	mkdir -p "$(cros-workon_get_build_dir)"
+}
+
+src_compile() {
+	cd "$(cros-workon_get_build_dir)"
+
+	local pkg pkgs BOARD=$(get_current_board_with_variant)
 
 	pkgs=(
 		# Generate a list of packages that go into the base image. These
@@ -54,14 +61,27 @@ src_unpack() {
 		chromeos-test
 	)
 	einfo "Ignore warnings below related to LD_PRELOAD/libsandbox.so"
+	multijob_init
 	for pkg in ${pkgs[@]} ; do
+		# The ebuild env will modify certain variables in ways that we
+		# do not care for.  For example, PORTDIR_OVERLAY is modified to
+		# only point to the current tree which screws up the search of
+		# the board-specific overlays.
+		(
+		multijob_child_init
+		env -i PATH="${PATH}" PORTAGE_USERNAME="${PORTAGE_USERNAME}" \
 		emerge-${BOARD} \
 			--pretend --quiet --emptytree --ignore-default-opts \
 			--root-deps=rdeps ${pkg} | \
 			egrep -o ' [[:alnum:]-]+/[^[:space:]/]+\b' | \
-			tr -d ' ' > ${pkg}.packages &
+			tr -d ' ' | \
+			sort > ${pkg}.packages
+		_pipestatus=${PIPESTATUS[*]}
+		[[ ${_pipestatus// } -eq 0 ]] || die "\`emerge-${BOARD} ${pkg}\` failed"
+		) &
+		multijob_post_fork
 	done
-	wait
+	multijob_finish
 	# No virtual packages in package.provided.
 	grep -v "virtual/" chromeos.packages > package.provided
 
@@ -78,15 +98,16 @@ src_unpack() {
 }
 
 src_install() {
+	local build_dir=$(cros-workon_get_build_dir)
+
 	cd "${SRCDIR}"
-	exeinto /usr/bin
-	doexe dev_install
+	dobin dev_install
 
-	insinto /etc/portage
-	doins "${S}"/{bootstrap.packages,repository.conf}
+	insinto /usr/share/${PN}/portage
+	doins "${build_dir}"/{bootstrap.packages,repository.conf}
 
-	insinto /etc/portage/make.profile
-	doins "${S}"/package.{installable,provided} make.{conf,defaults}
+	insinto /usr/share/${PN}/portage/make.profile
+	doins "${build_dir}"/package.{installable,provided} make.{conf,defaults}
 
 	insinto /etc/env.d
 	doins 99devinstall
@@ -95,3 +116,17 @@ src_install() {
 	dosym "/usr/local/bin/python2.6" "/usr/bin/python"
 }
 
+pkg_preinst() {
+	if [[ $(cros_target) == "target_image" ]]; then
+		# We don't want to install these files into the normal /build/
+		# dir because we need different settings at build time vs what
+		# we want at runtime in release images.  Thus, install the files
+		# into /usr/share but symlink them into /etc for the images.
+		local f srcdir="/usr/share/${PN}"
+		pushd "${ED}/${srcdir}" >/dev/null
+		for f in $(find -type f -printf '%P '); do
+			dosym "${srcdir}/${f}" "/etc/${f}"
+		done
+		popd >/dev/null
+	fi
+}
