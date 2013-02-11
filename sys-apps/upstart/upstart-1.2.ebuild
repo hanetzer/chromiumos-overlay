@@ -54,7 +54,7 @@ src_unpack() {
 }
 
 src_compile() {
-	econf --prefix=/ --includedir='${prefix}/usr/include' \
+	econf --prefix=/ --exec-prefix= --includedir='${prefix}/usr/include' \
 		$(use_enable nls) || die "econf failed"
 
 	emake NIH_DBUS_TOOL=$(which nih-dbus-tool) \
