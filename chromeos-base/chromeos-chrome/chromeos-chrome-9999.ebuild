@@ -185,7 +185,6 @@ set_build_defines() {
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
 		"use_xi2_mt=2"
-		"test_isolation_mode=hashtable"
 	)
 
 	BUILD_DEFINES+=(
@@ -671,7 +670,6 @@ src_compile() {
 				peerconnection_server
 				chromedriver
 				browser_tests
-				browser_tests_run
 				ffmpeg_tests
 				sync_integration_tests )
 			einfo "Building test targets: ${TEST_TARGETS[@]}"
@@ -800,9 +798,6 @@ install_chrome_test_resources() {
 	for f in "${PPAPI_TEST_FILES[@]}"; do
 		cp -al "${from}/${f}" "${test_dir}/out/Release"
 	done
-
-	# Add .isolated files
-	cp -al "${from}"/*.isolated "${test_dir}/out/Release"
 
 	# Install Chrome test resources.
 	install_test_resources "${test_dir}" \
@@ -975,9 +970,6 @@ src_install() {
 	doins "${FROM}"/resources.pak
 	doins "${FROM}"/xdg-settings
 	doins "${FROM}"/*.png
-	if use build_tests; then
-		doins "${FROM}"/*.isolated
-	fi
 
 	# Add high DPI resources.
 	if use highdpi; then
