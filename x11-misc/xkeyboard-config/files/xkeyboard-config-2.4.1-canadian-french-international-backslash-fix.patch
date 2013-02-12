@@ -1,0 +1,15 @@
+diff -urN xkeyboard-config-2.4.1.orig/symbols/ca xkeyboard-config-2.4.1/symbols/ca
+--- xkeyboard-config-2.4.1.orig/symbols/ca	2013-02-12 14:54:38.080613910 +0900
++++ xkeyboard-config-2.4.1/symbols/ca	2013-02-12 22:33:16.644842749 +0900
+@@ -470,6 +470,10 @@
+ xkb_symbols "eng" {
+     name[Group1] = "English (Canada)";
+     include "us(basic)"
++
++    // Remap international-backslash key as backslash/bar instead of
++    // less/greater to meet key top indicator.
++    Key <LSGT> { [ backslash, bar ] };
+ };
+ 
+ // EXTRAS:
+Binary files xkeyboard-config-2.4.1.orig/symbols/.ca.swp and xkeyboard-config-2.4.1/symbols/.ca.swp differ
