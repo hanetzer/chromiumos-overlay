@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 
-LIBCHROME_VERS=( 125070 )
+LIBCHROME_VERS=( 125070 180609 )
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
 
