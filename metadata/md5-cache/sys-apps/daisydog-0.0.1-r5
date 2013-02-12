@@ -3,9 +3,9 @@ DEPEND=dev-vcs/git
 DESCRIPTION=Simple HW watchdog daemon
 EAPI=4
 HOMEPAGE=http://git.chromium.org/gitweb/?p=chromiumos/third_party/daisydog.git
-IUSE=cros_workon_tree_70399b45e7d690039110a3cd25d04b3648d79fe5 profiling
+IUSE=cros_workon_tree_2c8708e6200a42264e4438d7ec7e82c77f001a77 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	8931d8a0199ca7a5c2dbc08c97a66fb6	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=324684bfcb2d9d52e8586989bd55df93
+_md5_=21218da8075dc8d503ef62da3b6af7e5
