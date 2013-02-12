@@ -671,9 +671,12 @@ src_compile() {
 				peerconnection_server
 				chromedriver
 				browser_tests
-				browser_tests_run
 				ffmpeg_tests
 				sync_integration_tests )
+			# .isolated for arm doesn't work currently.
+			if ! use arm; then
+				chrome_targets+=( browser_tests_run )
+			fi
 			einfo "Building test targets: ${TEST_TARGETS[@]}"
 		fi
 
