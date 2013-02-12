@@ -53,7 +53,8 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug egl +gallium -gbm gles1 gles2 +llvm motif +nptl pic selinux shared-glapi kernel_FreeBSD"
+	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm motif +nptl pic selinux
+	shared-glapi kernel_FreeBSD xlib-glx"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.31"
 # keep correct libdrm and dri2proto dep
@@ -198,6 +199,8 @@ src_configure() {
 		$(use_enable motif glw) \
 		$(use_enable motif) \
 		$(use_enable !pic asm) \
+		$(use_enable dri) \
+		$(use_enable xlib-glx) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 	        $(use gbm && echo "--with-egl-platforms=drm")
