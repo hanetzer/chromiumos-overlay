@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 KEYWORDS="~arm ~amd64 ~x86"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
 
