@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit autotools eutils
+inherit autotools eutils flag-o-matic
 
 DESCRIPTION="Upstart is an event-based replacement for the init daemon"
 HOMEPAGE="http://upstart.ubuntu.com/"
@@ -54,6 +54,9 @@ src_unpack() {
 }
 
 src_compile() {
+	# Rearrange PATH so that /usr/local does not override /usr.
+	append-cppflags '-DPATH="\"/usr/bin:/usr/sbin:/sbin:/bin:/usr/local/sbin:/usr/local/bin\""'
+
 	econf --prefix=/ --exec-prefix= --includedir='${prefix}/usr/include' \
 		$(use_enable nls) || die "econf failed"
 
