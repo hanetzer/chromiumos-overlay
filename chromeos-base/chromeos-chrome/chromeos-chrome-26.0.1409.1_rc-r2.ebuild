@@ -932,8 +932,8 @@ src_install() {
 		doexe "${FROM}"/libpdf.so
 	fi
 	if use chrome_internal && use widevine_cdm; then
-		doexe "${FROM}"/libwidevinecdmplugin.so
-		doexe "${FROM}"/libwidevinecdm.so
+		doexe "${FROM}"/libwidevinecdmadapter.so || die
+		doexe "${FROM}"/libwidevinecdm.so || die
 	fi
 	exeopts -m4755	# setuid the sandbox
 	newexe "${FROM}/chrome_sandbox" chrome-sandbox
