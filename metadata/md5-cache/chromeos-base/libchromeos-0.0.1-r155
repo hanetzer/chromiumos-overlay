@@ -3,10 +3,10 @@ DEPEND=chromeos-base/libchrome:125070[cros-debug=] dev-libs/dbus-c++ dev-libs/db
 DESCRIPTION=Chrome OS base library.
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host test cros-debug cros_workon_tree_c89e02a828bc8d4c5847954db11e87e64bec6f18 profiling
+IUSE=cros_host test cros-debug cros_workon_tree_740efdcfe5277978eb064637961c32cbea5e48d1 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/libchrome:125070[cros-debug=] dev-libs/dbus-c++ dev-libs/dbus-glib dev-libs/openssl dev-libs/protobuf
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	8931d8a0199ca7a5c2dbc08c97a66fb6	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	scons-utils	bfa350a15756117faaecd9056bbb79c2	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=325f3a40c2fcbe9e7925865b0d253ed1
+_md5_=c3b54dd94a6071345e93d2df3d2251bf
