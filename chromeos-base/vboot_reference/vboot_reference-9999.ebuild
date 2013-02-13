@@ -70,52 +70,10 @@ src_test() {
 
 src_install() {
 	local dst_dir
-
+	einfo "Installing programs"
 	if use minimal ; then
-		# Installing on the target. Cherry pick programs generated
-		# by src_compile in the source tree build-main/ subdirectory
-		einfo "Installing target programs"
-		local progs='utility/dump_kernel_config'
-		progs+=' utility/crossystem'
-		progs+=' utility/dev_sign_file'
-		progs+=' utility/dumpRSAPublicKey'
-		progs+=' utility/tpm_init_temp_fix'
-		progs+=' utility/tpmc'
-		progs+=' utility/vbutil_key'
-		progs+=' utility/vbutil_keyblock'
-		progs+=' utility/vbutil_kernel'
-		progs+=' utility/vbutil_firmware'
-		progs+=' utility/vbutil_what_keys'
-		progs+=' utility/gbb_utility'
-		progs+=' utility/dump_fmap'
-		progs+=' utility/dev_debug_vboot'
-		progs+=' utility/enable_dev_usb_boot'
-		progs+=' cgpt/cgpt'
-
-		into /usr
-		for prog in ${progs}; do
-			dobin build-main/"${prog}"
-		done
-
-		einfo "Installing TPM tools"
-		exeinto /usr/sbin
-		doexe "utility/tpm-nvsize"
-		doexe "utility/chromeos-tpm-recovery"
-
-		einfo "Installing boot tools"
-		exeinto /sbin
-		doexe build-main/utility/mount-encrypted
-
-		einfo "Installing dev tools"
-		dst_dir='/usr/share/vboot/bin'
-		local src_dir='scripts/image_signing'
-		dodir "${dst_dir}"
-		exeinto "${dst_dir}"
-		doexe "${src_dir}/common_minimal.sh"
-		doexe "${src_dir}/resign_firmwarefd.sh"
-		doexe "${src_dir}/make_dev_firmware.sh"
-		doexe "${src_dir}/make_dev_ssd.sh"
-		doexe "${src_dir}/set_gbb_flags.sh"
+		# Installing on the target
+		emake BUILD="${S}"/build-main DESTDIR="${D}" MINIMAL=1 install
 
 		# TODO(hungte) Since we now install all keyset into
 		# /usr/share/vboot/devkeys, maybe SAFT does not need to install
@@ -134,9 +92,10 @@ src_install() {
 			doins "tests/devkeys/${key}"
 		done
 	else
-		# Installing on host.
+		# Installing on the host
 		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" install
 	fi
+
 	if use tpmtests; then
 		into /usr
 		# copy files starting with tpmtest, but skip .d files.
