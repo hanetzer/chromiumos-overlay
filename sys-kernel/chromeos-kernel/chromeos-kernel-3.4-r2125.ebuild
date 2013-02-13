@@ -3,7 +3,7 @@
 
 EAPI=4
 CROS_WORKON_COMMIT="1865052d4041d818fb245be254aba2803f786cd3"
-CROS_WORKON_TREE="1b3bb4fee909e481fafe8126da0f40b948eac26d"
+CROS_WORKON_TREE="d25ca017c5a8add774b103d3bda62bb198fe2944"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
