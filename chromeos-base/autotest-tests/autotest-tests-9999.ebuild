@@ -252,7 +252,6 @@ IUSE_TESTS="
 	+tests_power_CPUIdle
 	+tests_power_Draw
 	+tests_power_HotCPUSuspend
-	+tests_power_IdleSuspend
 	+tests_power_KernelSuspend
 	+tests_power_MemorySuspend
 	+tests_power_NoConsoleSuspend

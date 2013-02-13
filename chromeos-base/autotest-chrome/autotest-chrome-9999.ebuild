@@ -91,6 +91,7 @@ IUSE_TESTS=(
 	+tests_power_AudioDetector
 	+tests_power_Consumption
 	+tests_power_Idle
+	+tests_power_IdleSuspend
 	+tests_power_LoadTest
 	+tests_power_SuspendStress
 	+tests_power_UiResume
