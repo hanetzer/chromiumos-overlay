@@ -30,6 +30,9 @@ RDEPEND="chromeos-base/bootstat
 	dev-libs/protobuf
 	net-dialup/ppp
 	net-dns/c-ares
+        net-libs/libmnl
+        net-libs/libnetfilter_queue
+        net-libs/libnfnetlink
 	net-misc/dhcpcd
 	net-misc/openvpn
 	net-wireless/wpa_supplicant[dbus]"
