@@ -21,7 +21,7 @@ HOMEPAGE="http://www.chromium.org/chromium-os"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="cros-debug"
 
 DEPEND="app-arch/tar
 	sys-apps/coreutils
@@ -44,7 +44,13 @@ src_prepare() {
 src_compile() {
 	cd "$(cros-workon_get_build_dir)"
 
-	local pkg pkgs BOARD=$(get_current_board_with_variant)
+	local useflags pkg pkgs BOARD=$(get_current_board_with_variant)
+
+	# We need to pass down cros-debug automatically because this is often
+	# times toggled at the ./build_packages level.  This is a hack of sorts,
+	# but covers the most common case.
+	useflags="${USE}"
+	use cros-debug || useflags+=" -cros-debug"
 
 	pkgs=(
 		# Generate a list of packages that go into the base image. These
@@ -67,7 +73,7 @@ src_compile() {
 		# the board-specific overlays.
 		(
 		multijob_child_init
-		env -i PATH="${PATH}" PORTAGE_USERNAME="${PORTAGE_USERNAME}" \
+		env -i PATH="${PATH}" PORTAGE_USERNAME="${PORTAGE_USERNAME}" USE="${useflags}" \
 		emerge-${BOARD} \
 			--pretend --quiet --emptytree --ignore-default-opts \
 			--root-deps=rdeps ${pkg} | \
