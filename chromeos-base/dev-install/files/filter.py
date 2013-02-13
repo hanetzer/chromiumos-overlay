@@ -24,6 +24,12 @@ f.close()
 dev_pkgs = set(open('chromeos-dev.packages', 'r').readlines())
 test_pkgs = set(open('chromeos-test.packages', 'r').readlines())
 inst_pkgs = (dev_pkgs | test_pkgs) - cros_pkgs
+
+# We have to keep virtuals because portage will complain if we list
+# them in package.provided, but it still needs to install a binpkg
+# for the new style virtuals.
+inst_pkgs = inst_pkgs | set([x for x in cros_pkgs if x.startswith('virtual/')])
+
 f = open('package.installable', 'w')
 f.write(''.join(inst_pkgs))
 f.close()
