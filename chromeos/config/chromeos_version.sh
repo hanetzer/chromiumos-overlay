@@ -14,7 +14,7 @@
 #############################################################################
 # Release Build number.
 # Increment by 1 for every release build.
-export CHROMEOS_BUILD=3703
+export CHROMEOS_BUILD=3704
 
 # Release Branch number.
 # Increment by 1 for every release build on a branch.
@@ -27,7 +27,7 @@ export CHROMEOS_BRANCH=0
 export CHROMEOS_PATCH=0
 
 # Major version for Chrome.
-export CHROME_BRANCH=26
+export CHROME_BRANCH=27
 
 # Official builds must set CHROMEOS_OFFICIAL=1.
 if [ ${CHROMEOS_OFFICIAL:-0} -ne 1 ] && [ "${USER}" != "chrome-bot" ]; then
