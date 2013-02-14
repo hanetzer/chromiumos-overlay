@@ -3,10 +3,10 @@ DEPEND=chromeos-base/bootstat chromeos-base/chromeos-minijail !<chromeos-base/fl
 DESCRIPTION=Shill Connection Manager for Chromium OS
 EAPI=4
 HOMEPAGE=http://src.chromium.org
-IUSE=test cros-debug cros_workon_tree_b3a73eff0ddaad3b4547528cc7008ca175dd23d8 profiling
+IUSE=test cros-debug cros_workon_tree_3b0111fde21d29a02dc03e91d956c5e832501d43 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/bootstat chromeos-base/chromeos-minijail !<chromeos-base/flimflam-0.0.1-r530 chromeos-base/libchrome:125070[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics >=chromeos-base/mobile-providers-0.0.1-r12 chromeos-base/vpn-manager dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/libnl:3 dev-libs/nss dev-libs/protobuf net-dialup/ppp net-dns/c-ares net-libs/libmnl net-libs/libnetfilter_queue net-libs/libnfnetlink net-misc/dhcpcd net-misc/openvpn net-wireless/wpa_supplicant[dbus]
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	8931d8a0199ca7a5c2dbc08c97a66fb6	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=f76e516ded452cc6ddf31a2220219725
+_md5_=1535170484c95cba77cf500cae810597
