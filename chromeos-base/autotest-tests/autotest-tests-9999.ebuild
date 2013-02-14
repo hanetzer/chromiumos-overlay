@@ -262,7 +262,6 @@ IUSE_TESTS="
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
 	+tests_power_Status
-	+tests_power_SuspendResume
 	+tests_power_SuspendShutdown
 	+tests_power_WakeupRTC
 	+tests_power_x86Settings
