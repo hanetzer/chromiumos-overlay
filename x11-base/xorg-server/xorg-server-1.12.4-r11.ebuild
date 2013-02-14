@@ -150,6 +150,14 @@ PATCHES=(
 	"${FILESDIR}/1.13.0-dix-Save-touchpoint-last-coordinates-before-transform.patch"
 	# crbug.com/30822
 	"${FILESDIR}/1.12.4-Per-Randr-CRTC-pointer-scaling.patch"
+	# Xi: fix "shadows previous local" warnings
+	"${FILESDIR}/1.12.99-Xi-fix-shadows-previous-local-warnings.patch"
+	# Touch: Fix duplicate TouchBegin selection with virtual devices
+	"${FILESDIR}/1.13.0-Touch-Fix-duplicate-TouchBegin-selection-with-virtua.patch"
+	# dix: split xi2_mask_isset into a per-device function
+	"${FILESDIR}/1.13.99-dix-split-xi2_mask_isset-into-a-per-device-function.patch"
+	# Xi: fix touch event selction conflicts
+	"${FILESDIR}/1.13.99-Xi-fix-touch-event-selction-conflicts-57301.patch"
 )
 
 src_prepare() {
