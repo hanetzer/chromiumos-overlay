@@ -114,7 +114,7 @@ src_test() {
 	else
 		TESTS+=( autoupdate_unittest.py )
 		TESTS+=( builder_test.py )
-		TESTS+=( devserver_test.py )
+		TESTS+=( devserver_unittest.py )
 		TESTS+=( common_util_unittest.py )
 		TESTS+=( host/lib/cros_archive_unittest.sh )
 		#FIXME(zbehan): update_test.py doesn't seem to work right now.
