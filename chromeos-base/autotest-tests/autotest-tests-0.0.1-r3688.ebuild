@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="687b498c4e337c0d8bc25de2d701edbbbd37a10f"
-CROS_WORKON_TREE="8ad1e7941044afac52e3fb3ed8bda312cfdae2cf"
+CROS_WORKON_COMMIT="afe3b1eb5842825417dc6b880afcd0986979b6e8"
+CROS_WORKON_TREE="a0f0ab382ab341ef66a6c9fd0b3054a12bf51467"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
@@ -264,7 +264,6 @@ IUSE_TESTS="
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
 	+tests_power_Status
-	+tests_power_SuspendResume
 	+tests_power_SuspendShutdown
 	+tests_power_WakeupRTC
 	+tests_power_x86Settings

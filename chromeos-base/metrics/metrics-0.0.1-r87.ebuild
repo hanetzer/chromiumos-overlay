@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="79bb74a9b0330cba56154bd6577a83c10867f974"
-CROS_WORKON_TREE="a9dd89abdf31ca728d1fe3e82783ae405d2f4617"
+CROS_WORKON_COMMIT="023af3b10511f328ae9f0f69868153aecaf320e3"
+CROS_WORKON_TREE="9f3e891c2d2a00256d984bd2b937bc10bebbdc0b"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
 
 inherit cros-debug cros-workon
@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
