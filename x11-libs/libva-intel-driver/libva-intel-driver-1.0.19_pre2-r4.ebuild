@@ -43,6 +43,7 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	epatch "${FILESDIR}"/va_terminate.patch
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
+	epatch "${FILESDIR}"/disable-bo-recycling-in-libva.patch
 	eautoreconf
 }
 
