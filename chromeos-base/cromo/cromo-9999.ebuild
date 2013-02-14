@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="install_tests"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
