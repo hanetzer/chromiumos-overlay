@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Generic ebuild which satisifies virtual/chromeos-bsp-dev. This is a direct dependency of chromeos-base/chromeos-dev, but is expected to be overridden in an overlay for each specialized board. A typical non-generic implementation will install any board-specific developer only files and executables which are not suitable for inclusion in a generic board overlay.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+SLOT=0
+_md5_=405778f2dff73566d7ea241ab4bb0375
