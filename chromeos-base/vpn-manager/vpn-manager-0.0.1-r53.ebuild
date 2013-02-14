@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="a70eedb1dbf63188d47bd3d589b5e1e8023b2b6e"
-CROS_WORKON_TREE="302c41d4ade0b2d90738953d9df7c2815437e12b"
+CROS_WORKON_COMMIT="ad554789de9c837afd658bbbaa5ae35a07b2f3e3"
+CROS_WORKON_TREE="ae91348d32166e20fae7cf210e78fa0d3a37d6f9"
 CROS_WORKON_PROJECT="chromiumos/platform/vpn-manager"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	 chromeos-base/libchromeos
