@@ -17,7 +17,6 @@ KEYWORDS="amd64 x86"
 IUSE=""
 
 DEPEND=""
-RDEPEND="virtual/cron"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -41,9 +40,6 @@ src_compile() {
 src_install() {
 	dosbin mcelog || die
 	doman mcelog.8
-
-	exeinto /etc/cron.daily
-	newexe mcelog.cron mcelog || die
 
 	insinto /etc/logrotate.d/
 	newins mcelog.logrotate mcelog || die
