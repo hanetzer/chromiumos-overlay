@@ -12,7 +12,7 @@ dev-libs/protobuf 	-python
 dev-perl/GD             png
 dev-python/pyudev	pygobject
 dev-util/perf		tui -doc
-dev-vcs/git		cvs subversion webdav curl bash-completion
+dev-vcs/git		bash-completion curl cvs -gpg subversion webdav
 dev-vcs/subversion	-dso webdav-serf
 games-emulation/zsnes	ao -debug
 media-libs/libao	alsa
