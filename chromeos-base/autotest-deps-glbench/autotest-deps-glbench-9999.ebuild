@@ -20,7 +20,7 @@ KEYWORDS="~x86 ~arm ~amd64"
 # Autotest enabled by default.
 IUSE="+autotest"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
