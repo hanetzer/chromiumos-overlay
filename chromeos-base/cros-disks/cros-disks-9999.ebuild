@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
 IUSE="test"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="
 	app-arch/unrar
