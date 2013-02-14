@@ -85,11 +85,13 @@ IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles
 ################################################################################
 
 CROS_COMMON_RDEPEND="
-	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
-	coreboot? ( virtual/chromeos-coreboot )
+	chromeos-base/chromeos-base
+	bluetooth? ( net-wireless/bluez )
 	gdmwimax? ( net-wireless/gdmwimax )
+	sys-apps/baselayout
 	virtual/chromeos-bsp
+	coreboot? ( virtual/chromeos-coreboot )
 	virtual/chromeos-firmware
 	virtual/linux-sources
 "
@@ -176,7 +178,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/chromeos-auth-config
-	chromeos-base/chromeos-base
 	chromeos-base/chromeos-debugd
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
@@ -212,7 +213,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/crda
 	net-wireless/marvell_sd8787
 	net-wireless/realtek-rt2800-firmware
-	sys-apps/baselayout
 	sys-apps/bootcache
 	sys-apps/coreutils
 	sys-apps/dbus
