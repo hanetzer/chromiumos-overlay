@@ -15,7 +15,10 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="test"
 
+LIBCHROME_VERS="125070"
+
 RDEPEND="
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/dbus-glib
 	dev-libs/glib
