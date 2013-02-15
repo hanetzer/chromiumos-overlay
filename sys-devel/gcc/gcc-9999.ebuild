@@ -60,7 +60,7 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj git_gcc graphite gtk hardened hardfp mounted_gcc multilib multislot
-      nls cxx openmp tests +thumb upstream_gcc vanilla +wrapper_ccache"
+      nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -127,6 +127,10 @@ src_compile()
 
 	EXTRA_CFLAGS_FOR_TARGET="${TARGET_FLAGS} ${CFLAGS_FOR_TARGET}"
 	EXTRA_CXXFLAGS_FOR_TARGET="${TARGET_FLAGS} ${CXXFLAGS_FOR_TARGET}"
+
+	if use vtable_verify ; then
+		EXTRA_CXXFLAGS_FOR_TARGET+=" -fvtable-verify=std"
+	fi
 
 	# Do not link libgcc with gold. That is known to fail on internal linker
 	# errors. See crosbug.com/16719
@@ -325,6 +329,10 @@ src_configure()
 	if use thumb && [[ ${CTARGET} == arm* ]] ;
 	then
 		confgcc="${confgcc} --with-mode=thumb"
+	fi
+
+	if use vtable_verify ; then
+		confgcc="${confgcc} --enable-cxx-flags=-Wl,-L../libsupc++/.libs,--whole-archive,-lvtv_init,--no-whole-archive"
 	fi
 
 	if is_crosscompile ; then
