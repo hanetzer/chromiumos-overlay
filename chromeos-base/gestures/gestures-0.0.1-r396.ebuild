@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="976b35554909874c61b0621718c28cc7e0219498"
-CROS_WORKON_TREE="12ac19adbd0ee12dbf14123a36cb81ee95c072aa"
+CROS_WORKON_COMMIT="b1458ce1d407003e2a418d6a1514fd307f65fe27"
+CROS_WORKON_TREE="615a35daed53d55ccbef228273f0df164b059ab1"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
 
@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libevdev
