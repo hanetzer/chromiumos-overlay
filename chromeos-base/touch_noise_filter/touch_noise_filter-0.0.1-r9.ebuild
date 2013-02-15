@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="9408e8f7fbf7bd24fc31184a0bd426f154b96e1e"
-CROS_WORKON_TREE="bc3dac8d139c2357be1d932abc35bddaf06f6a14"
+CROS_WORKON_COMMIT="1157782683c43d2cf7a16fe7f71c4a9a568fd838"
+CROS_WORKON_TREE="0d0d018bc85511443111790c788de5b0119318b7"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_noise_filter"
 CROS_WORKON_USE_VCSID=1
 
@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
 DEPEND="${RDEPEND}"
