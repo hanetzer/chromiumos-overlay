@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="4af947bf5d07958e09168b9db82e465a5679a6c3"
-CROS_WORKON_TREE="da4f7be65e405a67f54a309a3b61c7b192ba43bc"
+CROS_WORKON_COMMIT="f4fbb705327109a64f4e9118e2ee029879aab427"
+CROS_WORKON_TREE="27d6ce6d6d08e7bc8609bf7c0b5adc21d9e563d7"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -18,9 +18,10 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="test"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-c++
@@ -31,7 +32,6 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/system_api
 	test? ( dev-cpp/gtest )"
 

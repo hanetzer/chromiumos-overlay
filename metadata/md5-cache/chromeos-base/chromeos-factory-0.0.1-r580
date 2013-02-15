@@ -3,10 +3,10 @@ DEPEND=chromeos-base/chromeos-chrome dev-python/pyyaml dev-vcs/git >=app-admin/e
 DESCRIPTION=Chrome OS Factory Tools and Data
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +build_tests cros_workon_tree_81e32741a13054949372d423b27d6ad51f17ca46_e5c05be79112b34348527a8b17d8b287d91a9140 profiling
+IUSE=+autotest +build_tests cros_workon_tree_22506ea4bd8c8aa25347f8ff3d4236bad00f6f31_e5c05be79112b34348527a8b17d8b287d91a9140 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=!chromeos-base/chromeos-factorytools chromeos-base/chromeos-factory-board dev-lang/python dev-python/argparse dev-python/jsonrpclib dev-python/netifaces dev-python/pyyaml dev-python/setproctitle dev-util/stressapptest >=chromeos-base/vpd-0.0.1-r11 >=app-admin/eselect-python-20091230
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-binary	ac9ee005b156dda74522130fe7ff1b49	cros-workon	8931d8a0199ca7a5c2dbc08c97a66fb6	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=ff4f9e28401a6f76f26a6cc55fa6882b
+_md5_=f57da409cc4e065b56aacbd7b1173759
