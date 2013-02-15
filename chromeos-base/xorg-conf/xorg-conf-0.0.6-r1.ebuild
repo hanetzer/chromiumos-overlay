@@ -5,8 +5,10 @@
 # board-specific xorg.conf as necessary.
 
 EAPI=4
+CROS_WORKON_COMMIT="5f7441271867fea6f5a1e3e08e20146c57de0052"
+CROS_WORKON_TREE="3b2ce67d3404826b7d6089b8401d28ddbba02f96"
 CROS_WORKON_PROJECT="chromiumos/platform/xorg-conf"
-CROS_WORKON_USE_VCSID=1
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-board cros-workon
 
@@ -30,55 +32,55 @@ src_install() {
 
 	insinto /etc/X11
 	if ! use tegra; then
-		doins "${FILESDIR}/xorg.conf"
+		doins xorg.conf
 	fi
 
 	insinto /etc/X11/xorg.conf.d
 	if use tegra; then
-		doins "${FILESDIR}/tegra.conf"
+		doins tegra.conf
 	elif use exynos; then
-		doins "${FILESDIR}/exynos.conf"
+		doins exynos.conf
 	fi
 
 	# Since syntp does not use evdev (/dev/input/event*) device nodes,
 	# its .conf snippet can be installed alongside one of the
 	# evdev-compatible xf86-input-* touchpad drivers.
 	if use synaptics; then
-		doins "${FILESDIR}/50-touchpad-syntp.conf"
+		doins 50-touchpad-syntp.conf
 	fi
 	# Enable exactly one evdev-compatible X input touchpad driver.
 	if use cmt; then
-		doins "${FILESDIR}/50-touchpad-cmt.conf"
+		doins 50-touchpad-cmt.conf
 		if use elan; then
-			doins "${FILESDIR}/50-touchpad-cmt-elan.conf"
+			doins 50-touchpad-cmt-elan.conf
 		elif use alex; then
-			doins "${FILESDIR}/50-touchpad-cmt-alex.conf"
+			doins 50-touchpad-cmt-alex.conf
 		elif use butterfly; then
-			doins "${FILESDIR}/50-touchpad-cmt-butterfly.conf"
+			doins 50-touchpad-cmt-butterfly.conf
 		elif use stout; then
-			doins "${FILESDIR}/50-touchpad-cmt-stout.conf"
+			doins 50-touchpad-cmt-stout.conf
 		elif use mario; then
-			doins "${FILESDIR}/50-touchpad-cmt-mario.conf"
+			doins 50-touchpad-cmt-mario.conf
 		elif [[ "${board}" = "x86-zgb" || "${board}" = "x86-zgb32" ]]; then
-			doins "${FILESDIR}/50-touchpad-cmt-zgb.conf"
+			doins 50-touchpad-cmt-zgb.conf
 		elif [ "${board_variant}" = "tegra2_aebl" ]; then
-			doins "${FILESDIR}/50-touchpad-cmt-aebl.conf"
+			doins 50-touchpad-cmt-aebl.conf
 		elif [ "${board_variant}" = "tegra2_kaen" ]; then
-			doins "${FILESDIR}/50-touchpad-cmt-kaen.conf"
+			doins 50-touchpad-cmt-kaen.conf
 		elif [[ "${board}" = "lumpy" || "${board}" = "lumpy64" ]]; then
-			doins "${FILESDIR}/50-touchpad-cmt-lumpy.conf"
+			doins 50-touchpad-cmt-lumpy.conf
 		elif [ "${board}" = "link" ]; then
-			doins "${FILESDIR}/50-touchpad-cmt-link.conf"
+			doins 50-touchpad-cmt-link.conf
 		elif [ "${board}" = "daisy" ]; then
-			doins "${FILESDIR}/50-touchpad-cmt-daisy.conf"
+			doins 50-touchpad-cmt-daisy.conf
 		elif [ "${board}" = "parrot" ]; then
-			doins "${FILESDIR}/50-touchpad-cmt-parrot.conf"
+			doins 50-touchpad-cmt-parrot.conf
 		fi
 	elif use mario; then
-		doins "${FILESDIR}/50-touchpad-synaptics-mario.conf"
+		doins 50-touchpad-synaptics-mario.conf
 	else
-		doins "${FILESDIR}/50-touchpad-synaptics.conf"
+		doins 50-touchpad-synaptics.conf
 	fi
-	doins "${FILESDIR}/20-mouse.conf"
-	doins "${FILESDIR}/20-touchscreen.conf"
+	doins 20-mouse.conf
+	doins 20-touchscreen.conf
 }
