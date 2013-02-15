@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="0b0bcb3112a0a935efa8c748f097306d1299819a"
-CROS_WORKON_TREE="496ae7dc233c4da3f9586c7b62194d1e879a7c61"
+CROS_WORKON_COMMIT="0c195b8bb2f1953ec562e7f6933ac9ed02fc399a"
+CROS_WORKON_TREE="f4d9510e1e2de6c0cc389b10226de1a86ce80dd9"
 CROS_WORKON_PROJECT="chromiumos/platform/cros_boot_mode"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="test valgrind"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="test? ( chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=] )"
 
