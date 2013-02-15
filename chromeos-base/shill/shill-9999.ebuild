@@ -80,6 +80,8 @@ src_install() {
 	dobin bin/shill_logout_user
 	dobin bin/wpa_debug
 	dobin shill
+	# Netfilter queue helper is run directly from init, so install in sbin.
+	dosbin build/shims/netfilter-queue-helper
 	local shims_dir="/usr/$(get_libdir)/shill/shims"
 	exeinto "${shims_dir}"
 	doexe build/shims/net-diags-upload
