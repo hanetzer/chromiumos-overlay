@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="da69cb6518d331988aa281eaddf375ebdd1576df"
-CROS_WORKON_TREE="65ab1b83312911b175f9aeb7dfb0f18a5e21730a"
+CROS_WORKON_COMMIT="f3c7ce1a967ec325633d7e09bb3368f6964e8723"
+CROS_WORKON_TREE="66048a5882e77032d44cd07dded68733974131f0"
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -18,7 +18,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="test"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).
 RDEPEND="chromeos-base/google-breakpad
