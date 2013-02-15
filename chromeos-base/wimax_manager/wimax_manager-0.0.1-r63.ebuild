@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="e92ff20c87f08ecd4e0d5be7d216e5f7659020ee"
-CROS_WORKON_TREE="25ace169ba59d9c96d7fd95f4809f291b6619f44"
+CROS_WORKON_COMMIT="7d37adc28dd51c739dbc9c65b8c8cfb278af5312"
+CROS_WORKON_TREE="f1adf43bc56c82e59fce37c025d9fbad8e8d352d"
 CROS_WORKON_PROJECT="chromiumos/platform/wimax_manager"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
