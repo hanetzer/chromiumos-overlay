@@ -16,13 +16,14 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
-+dummy ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com +nicintel
-+nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
++dummy +fdtmap ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com
++nicintel +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
 +satasii +satamv +serprog +wiki static -use_os_timer"
 
 COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
 	dediprog? ( virtual/libusb:0 )
 	drkaiser? ( sys-apps/pciutils )
+	fdtmap? ( sys-apps/dtc )
 	ft2232_spi? ( dev-embedded/libftdi )
 	gfxnvidia? ( sys-apps/pciutils )
 	internal? ( sys-apps/pciutils )
@@ -58,7 +59,7 @@ src_compile() {
 
 	# Programmer
 	flashrom_enable \
-		atahpt bitbang_spi buspirate_spi dediprog drkaiser \
+		atahpt bitbang_spi buspirate_spi dediprog drkaiser fdtmap \
 		ft2232_spi gfxnvidia linux_i2c linux_spi nic3com nicintel \
 		nicintel_spi nicnatsemi nicrealtek ogp_spi rayer_spi \
 		satasii satamv serprog \
@@ -121,4 +122,15 @@ src_install() {
 	fi
 	doman flashrom.8
 	dodoc README
+}
+
+src_test() {
+	elog Running flashrom unit tests
+
+	# Setup FDT test file
+	if [ -d tests ]; then
+		pushd tests >/dev/null
+		./tests.py || die
+		popd >/dev/null
+	fi
 }
