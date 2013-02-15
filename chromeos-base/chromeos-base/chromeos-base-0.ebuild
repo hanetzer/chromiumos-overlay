@@ -137,6 +137,9 @@ src_install() {
 		doins "${FILESDIR}"/cursor.sh
 	fi
 
+	# Some daemons and utilities access the mounts through /etc/mtab.
+	dosym /proc/mounts /etc/mtab || die
+
 	# Add our little bit of sudo glue.
 	newpamd "${FILESDIR}"/include-chromeos-auth sudo
 	# This one line comes from the sudo ebuild.
