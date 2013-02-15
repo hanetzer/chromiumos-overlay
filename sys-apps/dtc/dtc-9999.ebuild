@@ -13,7 +13,7 @@ DESCRIPTION="Open Firmware device-tree compiler"
 HOMEPAGE="http://www.t2-project.org/packages/dtc.html"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86"
 IUSE=""
 
 RDEPEND=""
