@@ -91,6 +91,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-crypt/tpm-tools
 	app-editors/vim
 	app-misc/evtest
+	app-misc/screen
 	app-shells/bash
 	chromeos-base/chromeos-dev-init
 	chromeos-base/flimflam-test
