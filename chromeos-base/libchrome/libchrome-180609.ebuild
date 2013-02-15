@@ -73,6 +73,7 @@ src_install() {
 		memory
 		metrics
 		posix
+		strings
 		synchronization
 		threading
 	)
