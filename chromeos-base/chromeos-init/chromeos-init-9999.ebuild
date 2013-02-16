@@ -53,6 +53,7 @@ src_install() {
 	into /usr
 	dosbin chromeos-cleanup-logs
 	dosbin simple-rotate
+	dosbin netfilter-common
 
 	# Install lightup_screen
 	dosbin lightup_screen
