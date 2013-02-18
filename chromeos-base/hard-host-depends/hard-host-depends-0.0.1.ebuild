@@ -240,6 +240,11 @@ RDEPEND="${RDEPEND}
 	dev-util/lcov
 	"
 
+# Host dependencies for touchpad firmware tools
+RDEPEND="${RDEPEND}
+	chromeos-base/cypress-tools
+	"
+
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
