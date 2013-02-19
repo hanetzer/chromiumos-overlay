@@ -30,6 +30,7 @@ RDEPEND="
 	sys-apps/util-linux
 	sys-block/parted
 	sys-fs/avfs
+	sys-fs/exfat-utils
 	sys-fs/fuse-exfat
 	sys-fs/ntfs3g
 	sys-fs/udev
