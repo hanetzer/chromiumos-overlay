@@ -28,6 +28,7 @@ DEPEND=">=sys-apps/baselayout-2
 	!<app-shells/bash-4.1
 	!<app-shells/dash-0.5.5
 	!<net-misc/openssh-5.2_p1-r8
+	!<chromeos-base/chromeos-init-0.0.1-r630
 	!cros_host? (
 		!app-misc/editor-wrapper
 		app-shells/bash
