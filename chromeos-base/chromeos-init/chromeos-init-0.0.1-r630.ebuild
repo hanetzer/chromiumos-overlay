@@ -58,9 +58,6 @@ src_install() {
 	# Install lightup_screen
 	dosbin lightup_screen
 
-	# Some daemons and utilities access the mounts through /etc/mtab.
-	dosym /proc/mounts /etc/mtab || die
-
 	if use nfs; then
 		# With USE=nfs we remove the iptables rules to allow mounting
 		# of the root device.
