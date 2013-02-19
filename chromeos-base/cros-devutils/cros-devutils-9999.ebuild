@@ -55,6 +55,7 @@ src_install() {
 			gmergefs
 			image_to_live.sh
 			paycheck.py
+			blockdiff.py
 			strip_package
 			ssh_no_update
 			willis
