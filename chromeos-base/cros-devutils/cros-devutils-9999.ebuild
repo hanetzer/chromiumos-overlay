@@ -54,6 +54,7 @@ src_install() {
 			gdb_x86_local
 			gmergefs
 			image_to_live.sh
+			paycheck.py
 			strip_package
 			ssh_no_update
 			willis
