@@ -251,6 +251,19 @@ get_rev() {
 cros-workon_src_unpack() {
 	local fetch_method # local|git
 
+	# Sanity check.  We cannot have S set to WORKDIR because if/when we try
+	# to check out repos, git will die if it tries to check out into a dir
+	# that already exists.  Some packages might try this when out-of-tree
+	# builds are enabled, and they'll work fine most of the time because
+	# they'll be using a full manifest and will just re-use the existing
+	# checkout in src/platform/*.  But if the code detects that it has to
+	# make its own checkout, things fall apart.  For out-of-tree builds,
+	# the initial $S doesn't even matter because it resets it below to the
+	# repo in src/platform/.
+	if [[ ${S} == "${WORKDIR}" ]]; then
+		die "Sorry, but \$S cannot be set to \$WORKDIR"
+	fi
+
 	# Set the default of CROS_WORKON_DESTDIR. This is done here because S is
 	# sometimes overridden in ebuilds and we cannot rely on the global state
 	# (and therefore ordering of eclass inherits and local ebuild overrides).
