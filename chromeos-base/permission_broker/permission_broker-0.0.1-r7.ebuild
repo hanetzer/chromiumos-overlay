@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="aaa2033beb4686ad9bcfb627ce15a261e0276598"
-CROS_WORKON_TREE="776388e6735f905afd39b66e90e09d59b2dfca43"
+CROS_WORKON_COMMIT="5a24fdfd7118bf43669d1fd8e2e8383ef6843dea"
+CROS_WORKON_TREE="a846173c67207207897199fd152204fcef65f28c"
 CROS_WORKON_PROJECT="chromiumos/platform/permission_broker"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -16,7 +16,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/metrics
 	dev-cpp/gflags
@@ -45,7 +45,6 @@ src_compile() {
 }
 
 src_test() {
-	# Run tests if we're on x86
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
