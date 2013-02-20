@@ -34,8 +34,6 @@ RDEPEND="app-arch/tar
 	net-misc/curl
 	sys-apps/coreutils"
 
-S=${WORKDIR}
-
 src_prepare() {
 	SRCDIR="${S}/dev-install"
 	mkdir -p "$(cros-workon_get_build_dir)"
