@@ -628,6 +628,9 @@ src_configure() {
 			# Set the dependency repos to the revision specified in the
 			# .DEPS.git file, and run the hooks in that file.
 			"${ECHROME_SET_VER}" --runhooks || die
+		elif [[ ! -f .gclient ]]; then
+			# Probably a git submodules checkout
+			PATH=${PATH}:/home/$(whoami)/depot_tools git runhooks --force || die  "Failed to run git runhooks"
 		else
 			[[ -n "${EGCLIENT}" ]] || die EGCLIENT unset
 			[[ -f "${EGCLIENT}" ]] || die EGCLIENT at "${EGCLIENT}" does not exist
