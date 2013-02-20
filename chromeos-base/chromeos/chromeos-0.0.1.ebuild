@@ -86,6 +86,7 @@ IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles
 
 CROS_COMMON_RDEPEND="
 	bootchart? ( app-benchmarks/bootchart )
+	app-shells/dash
 	chromeos-base/chromeos-base
 	bluetooth? ( net-wireless/bluez )
 	gdmwimax? ( net-wireless/gdmwimax )
@@ -171,7 +172,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/ibus-mozc-pinyin
 	app-laptop/laptop-mode-tools
 	app-shells/bash
-	app-shells/dash
 	chromeos-base/audioconfig
 	chromeos-base/board-devices
 	chromeos-base/bootstat
