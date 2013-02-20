@@ -14,7 +14,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/metrics
 	dev-cpp/gflags
@@ -43,7 +43,6 @@ src_compile() {
 }
 
 src_test() {
-	# Run tests if we're on x86
 	if use arm ; then
 		echo Skipping tests on non-x86 platform...
 	else
