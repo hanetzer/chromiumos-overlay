@@ -24,8 +24,6 @@ IUSE="alex butterfly cmt elan -exynos mario stout synaptics -tegra"
 RDEPEND=""
 DEPEND="x11-base/xorg-server"
 
-S=${WORKDIR}
-
 src_install() {
 	local board=$(get_current_board_no_variant)
 	local board_variant=$(get_current_board_with_variant)
