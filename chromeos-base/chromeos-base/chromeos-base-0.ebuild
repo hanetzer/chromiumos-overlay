@@ -10,7 +10,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_host pam"
+IUSE="cros_embedded cros_host pam"
 
 # We need to make sure timezone-data is merged before us.
 # See pkg_setup below as well as http://crosbug.com/27413
@@ -31,7 +31,9 @@ DEPEND=">=sys-apps/baselayout-2
 	!<chromeos-base/chromeos-init-0.0.1-r630
 	!cros_host? (
 		!app-misc/editor-wrapper
-		app-shells/bash
+		!cros_embedded? (
+			app-shells/bash
+		)
 		sys-libs/timezone-data
 	)"
 RDEPEND="${DEPEND}"
@@ -125,7 +127,7 @@ src_install() {
 
 		# Avoid the wrapper and just link to the only editor we have.
 		dodir /usr/libexec
-		dosym /usr/bin/vim /usr/libexec/editor || die
+		dosym /usr/bin/$(usex cros_embedded vi vim) /usr/libexec/editor || die
 		dosym /bin/more /usr/libexec/pager || die
 
 		# Install our custom ssh config settings.
