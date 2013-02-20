@@ -159,7 +159,9 @@ QA_EXECSTACK="*"
 QA_PRESTRIPPED="*"
 
 use_nacl() {
-	! use asan && ! use component_build && ! use drm && use nacl
+	# 32bit asan conflicts with nacl: crosbug.com/38980
+	! (use asan && [[ ${ARCH} == "x86" ]]) && \
+	! use component_build && ! use drm && use nacl
 }
 
 # Like the `usex` helper:
