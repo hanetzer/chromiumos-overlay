@@ -91,12 +91,17 @@ src_test() {
 	./make-test.sh || die
 	popd >/dev/null
 
-	# Run bundle_firmware tests
+	# Run host/lib tests
 	pushd host/lib >/dev/null
 	local libfile
+	local test_flag
 	for libfile in *.py; do
+		test_flag=""
+		if [[ ${libfile} != *_unittest.py ]]; then
+			test_flag="--test"
+		fi
 		einfo Running tests in ${libfile}
-		python ${libfile} --test || \
+		python ${libfile} ${test_flag} || \
 			die "Unit tests failed at ${libfile}!"
 	done
 	popd >/dev/null
