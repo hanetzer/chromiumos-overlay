@@ -80,6 +80,7 @@ IUSE_TESTS="
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_audiovideo_CRASFormatConversion
+	+tests_audiovideo_Formats
 	+tests_audiovideo_LineOutToMicInLoopback
 	+tests_audiovideo_LoopbackLatency
 	+tests_audiovideo_Microphone
