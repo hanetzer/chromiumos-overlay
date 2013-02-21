@@ -15,7 +15,7 @@ KEYWORDS="amd64 arm x86"
 BMPBLK_NAME="bmpblk-${PV}.bin"
 MIRROR_SITE="http://commondatastorage.googleapis.com/chromeos-localmirror"
 CROS_BINARY_URI="$MIRROR_SITE/distfiles/$PN/$BMPBLK_NAME"
-CROS_BINARY_SUM="8efb8099517faa6c7600e6bcfae154fdaa48397e"
+CROS_BINARY_SUM="52017d404ac67be56cfd1d46b129443c6f1b7ba5"
 
 src_install() {
 	insinto /firmware
