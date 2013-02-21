@@ -3,11 +3,11 @@ DEPEND=chromeos-base/flimflam-test chromeos-base/chromeos-chrome chromeos-base/p
 DESCRIPTION=login_OwnershipApi autotest
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autox +xset +tpmtools hardened +autotest +tests_login_OwnershipApi +tests_login_OwnershipNotRetaken +tests_login_OwnershipRetaken +tests_login_OwnershipTaken +tests_login_RemoteOwnership +tests_login_UserPolicyKeys cros_workon_tree_63a98bd7688b31892828a961185cccd07b19a4ba profiling +buildcheck autotest opengles
+IUSE=+autox +xset +tpmtools hardened +autotest +tests_login_OwnershipApi +tests_login_OwnershipNotRetaken +tests_login_OwnershipRetaken +tests_login_OwnershipTaken +tests_login_RemoteOwnership +tests_login_UserPolicyKeys cros_workon_tree_40a0d406973f532a688b0a7064257d7611b5904e profiling +buildcheck autotest opengles
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 PDEPEND=|| ( >chromeos-base/autotest-tests-0.0.1-r596 !!<=chromeos-base/autotest-tests-0.0.1-r596 )
 RDEPEND=chromeos-base/flimflam-test chromeos-base/chromeos-chrome chromeos-base/protofiles dev-libs/protobuf dev-python/pygobject autox? ( chromeos-base/autox ) ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) ) !!<=chromeos-base/autotest-tests-0.0.1-r596
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	conflict	974274f61683fa68a5c5fae14d38e018	cros-workon	b56f74d0f3a4a9024a0dbe4950e62769	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=7a861ce5c44fde1a20da510586844d4a
+_md5_=a07b6e9e23ae6994c174a7438889ea40
