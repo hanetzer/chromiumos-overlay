@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="43970a2573b7c8fea9f4c2010e7bef7785ca0e82"
-CROS_WORKON_TREE="591f91e4c277c550fa255fe1320936d484dc9530"
+CROS_WORKON_COMMIT="5ad1606ad8b3f74b2b7960a3003a2d1ca75d52b8"
+CROS_WORKON_TREE="ac811f7acac503b4f139fa4ec848e55708db55b2"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
@@ -18,7 +18,7 @@ KEYWORDS="amd64 arm x86"
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
 	!<chromeos-base/flimflam-0.0.1-r530
-	chromeos-base/libchrome:125070[cros-debug=]
+	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	>=chromeos-base/mobile-providers-0.0.1-r12
