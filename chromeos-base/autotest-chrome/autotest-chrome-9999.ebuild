@@ -82,7 +82,7 @@ IUSE_TESTS=(
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
 	+tests_login_RemoteLogin
-	+tests_network_3GSuspendResume
+	+tests_network_MobileSuspendResume
 	+tests_network_NavigateToUrl
 	+tests_network_ONC
 	+tests_platform_Pkcs11InitOnLogin
