@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="6c2cdd0d7a90a25d45ecdaa92768fbada98fa140"
-CROS_WORKON_TREE="8bc4efb2776b9561989480c38320b683c300c533"
+CROS_WORKON_COMMIT="78218ce4a3c029b927eadef1c2c91af8bbee97f2"
+CROS_WORKON_TREE="0a40c52806ad5259b0eb21d360a40e467d788de2"
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
@@ -18,11 +18,11 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/libchromeos
+	>=chromeos-base/libchromeos-0.0.1-r156
 	dev-libs/dbus-c++
 	dev-libs/glib:2
 	dev-libs/libpcre"
