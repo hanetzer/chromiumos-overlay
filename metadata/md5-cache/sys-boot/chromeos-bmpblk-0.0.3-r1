@@ -6,4 +6,4 @@ KEYWORDS=amd64 arm x86
 LICENSE=BSD
 SLOT=0
 _eclasses_=cros-binary	ac9ee005b156dda74522130fe7ff1b49
-_md5_=27923dada2eda1e80799a95afa77b95d
+_md5_=f0852c3f7d722c3ef8eab0780b1b2e3a
