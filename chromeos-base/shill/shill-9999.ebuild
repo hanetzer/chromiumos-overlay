@@ -16,7 +16,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 RDEPEND="chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
 	!<chromeos-base/flimflam-0.0.1-r530
-	chromeos-base/libchrome:125070[cros-debug=]
+	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	>=chromeos-base/mobile-providers-0.0.1-r12
