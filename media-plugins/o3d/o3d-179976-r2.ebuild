@@ -53,6 +53,9 @@ src_prepare() {
 	unset builddir_name
 	epatch "${FILESDIR}"/gcc-4_7.patch
 
+	epatch "${FILESDIR}/o3d-38135.patch" || \
+		die "Could not apply patch o3d-38135.patch"
+
 	${EGCLIENT} runhooks || die
 }
 
