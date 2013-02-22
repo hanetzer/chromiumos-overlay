@@ -94,7 +94,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/screen
 	app-shells/bash
 	chromeos-base/chromeos-dev-init
-	chromeos-base/flimflam-test
+	chromeos-base/shill-test-scripts
 	chromeos-base/gmerge
 	chromeos-base/protofiles
 	chromeos-base/system_api

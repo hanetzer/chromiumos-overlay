@@ -20,7 +20,7 @@ IUSE="+autox +xset +tpmtools hardened"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
-	chromeos-base/flimflam-test
+	chromeos-base/shill-test-scripts
 	chromeos-base/chromeos-chrome
 	chromeos-base/protofiles
 	dev-libs/protobuf

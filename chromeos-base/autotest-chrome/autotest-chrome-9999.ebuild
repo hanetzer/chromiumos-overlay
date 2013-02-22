@@ -19,7 +19,7 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
-	chromeos-base/flimflam-test
+	chromeos-base/shill-test-scripts
 	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
 

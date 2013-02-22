@@ -73,7 +73,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/utouch-evemu
 	chromeos-base/autox
 	chromeos-base/chromeos-test-init
-	chromeos-base/flimflam-test
+	chromeos-base/shill-test-scripts
 	chromeos-base/ixchariot
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
