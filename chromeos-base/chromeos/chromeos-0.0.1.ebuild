@@ -85,14 +85,15 @@ IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles
 ################################################################################
 
 CROS_COMMON_RDEPEND="
+	app-admin/rsyslog
+	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
 	chromeos-base/chromeos-base
-	bluetooth? ( net-wireless/bluez )
+	coreboot? ( virtual/chromeos-coreboot )
 	gdmwimax? ( net-wireless/gdmwimax )
 	sys-apps/baselayout
 	virtual/chromeos-bsp
-	coreboot? ( virtual/chromeos-coreboot )
 	virtual/chromeos-firmware
 	virtual/linux-sources
 "
@@ -159,7 +160,6 @@ CROS_RDEPEND="
 "
 
 CROS_RDEPEND="${CROS_RDEPEND}
-	app-admin/rsyslog
 	app-arch/sharutils
 	app-arch/tar
 	app-crypt/trousers
@@ -251,6 +251,7 @@ CROS_DEPEND="${CROS_RDEPEND}
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
 	sys-apps/busybox
+	chromeos-base/chromeos-embedded-init
 "
 
 # Build time dependencies
