@@ -39,6 +39,7 @@ EMULTILIB_PKG="true"
 PATCHES=(
 	"${FILESDIR}"/${P}-system-libs.patch
 	"${FILESDIR}"/${P}-glxtrace-only.patch
+	"${FILESDIR}"/${PN}-3.0-gcc47.patch
 )
 
 pkg_setup() {
