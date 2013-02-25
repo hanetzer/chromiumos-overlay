@@ -34,6 +34,7 @@ IUSE_INPUT_DEVICES="
 IUSE_VIDEO_CARDS="
 	video_cards_ark
 	video_cards_ast
+	video_cards_armsoc
 	video_cards_cirrus
 	video_cards_dummy
 	video_cards_epson
@@ -100,6 +101,7 @@ PDEPEND="
 
 	video_cards_ark?           ( x11-drivers/xf86-video-ark )
 	video_cards_ast?           ( x11-drivers/xf86-video-ast )
+	video_cards_armsoc?        ( x11-drivers/xf86-video-armsoc )
 	video_cards_cirrus?        ( x11-drivers/xf86-video-cirrus )
 	video_cards_dummy?         ( x11-drivers/xf86-video-dummy )
 	video_cards_fbdev?         ( x11-drivers/xf86-video-fbdev )
