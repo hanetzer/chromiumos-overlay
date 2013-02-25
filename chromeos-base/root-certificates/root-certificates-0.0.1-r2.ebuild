@@ -33,12 +33,22 @@ DEPEND="$RDEPEND
 # earlier versions of EAPI don't require this.
 S="${WORKDIR}"
 
+src_unpack() {
+	# Unpack the root cert tarball. The root certs are stored in the tree as
+	# a tarball because that's the format provided to us by security; we
+	# could store them unpacked, but then dropping the new certs is more of
+	# a pain.
+	tar xvjf "${FILESDIR}"/roots.tar.bz2
+}
+
 # N.B.  The cert files are in ${FILESDIR}, not a separate source
 # code repo.  If you add or delete a cert file, you'll need to bump
 # the revision number for this ebuild manually.
 src_install() {
 	insinto /usr/share/ca-certificates
-	doins "${FILESDIR}"/chromeos-certs/*.crt
+	for x in "${S}"/roots/*.pem; do
+		newins $x "$(basename "$x" .pem)".crt
+	done
 
 	# Create required inputs to the update-ca-certificates script.
 	dodir /etc/ssl/certs
