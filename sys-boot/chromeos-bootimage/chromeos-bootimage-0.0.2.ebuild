@@ -160,6 +160,13 @@ src_compile() {
 		fi
 	fi
 
+	# TODO(clchiou): The cros_splash_blob is a short-term hack; remove this
+	# when we have vboot-next.  See chrome-os-partner:17716 for details.
+	if use exynos; then
+		common_flags+=" --add-blob cros-splash"
+		common_flags+=" ${FILESDIR}/cros_splash_blob.bin"
+	fi
+
 	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
 	common_flags+=" --key ${devkeys_file}"
 	common_flags+=" --bmpblk ${CROS_FIRMWARE_ROOT}/bmpblk.bin"
