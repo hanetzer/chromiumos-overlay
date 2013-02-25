@@ -1,7 +1,7 @@
-From e1f718b600029d43bb2e2e4a6b50e5a990c6d08d Mon Sep 17 00:00:00 2001
-From: Chris Wolfe <cwolfe@chromium.org>
-Date: Mon, 5 Nov 2012 11:10:24 -0500
-Subject: [PATCH] xf86-video-intel: Avoid display corruption when unable to
+From 8a1e358f760db1596ca228aeb159742dacca9b41 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Wed, 6 Mar 2013 19:00:38 -0800
+Subject: [PATCH 3/4] xf86-video-intel: Avoid display corruption when unable to
  flip.
 
 This replaces the previous patch to xorg-server for crosbug/33775.
@@ -13,21 +13,17 @@ BUG=chromium-os:35796
 TEST=Rapidly minimize/restore/tile window so that the animation spans
      monitors, observe that none of the preview shadow is left behind.
 ---
- src/intel_dri.c |   12 +++++++++---
- 1 files changed, 9 insertions(+), 3 deletions(-)
+ src/intel_dri.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/src/intel_dri.c b/src/intel_dri.c
-index 1227dbb..938a022 100644
+index 48bd682..46dbedb 100644
 --- a/src/intel_dri.c
 +++ b/src/intel_dri.c
-@@ -1151,10 +1151,16 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
- 
- 	/* Flips need to be submitted one frame before */
- 	if (can_exchange(draw, front, back)) {
--	    swap_type = DRI2_FLIP;
--	    flip = 1;
-+		swap_type = DRI2_FLIP;
-+		flip = 1;
+@@ -1342,6 +1342,13 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
+ 			goto blit_fallback;
+ 		swap_type = DRI2_FLIP_SPLIT;
+ 		flip = 1;
 +	} else {
 +		/* Using the DRI2_SWAP path defers the back-to-front blit until
 +		 * the frame event handler. If another swap comes in before that
@@ -36,10 +32,8 @@ index 1227dbb..938a022 100644
 +		 * problem we force an immediate blit here. */
 +		goto blit_fallback;
  	}
--
- 	swap_info->type = swap_type;
  
- 	/* Correct target_msc by 'flip' if swap_type == DRI2_FLIP.
+ 	swap_info->type = swap_type;
 -- 
-1.7.7.3
+1.8.1.3
 

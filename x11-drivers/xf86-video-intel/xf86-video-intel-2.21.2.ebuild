@@ -1,6 +1,6 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-video-intel/xf86-video-intel-2.16.0.ebuild,v 1.1 2011/08/11 15:51:43 chithanh Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-drivers/xf86-video-intel/xf86-video-intel-2.21.2.ebuild,v 1.1 2013/02/11 19:28:34 remi Exp $
 
 EAPI=4
 
@@ -9,36 +9,42 @@ inherit linux-info xorg-2
 
 DESCRIPTION="X.Org driver for Intel cards"
 
-KEYWORDS="amd64 ~ia64 x86 -x86-fbsd"
-IUSE="dri sna xvmc broken_partialswaps"
+KEYWORDS="amd64 x86 ~amd64-fbsd -x86-fbsd"
+IUSE="glamor sna +uxa xvmc broken_partialswaps"
+
+REQUIRED_USE="|| ( glamor sna uxa )"
 
 RDEPEND="x11-libs/libXext
 	x11-libs/libXfixes
-	xvmc? (
-		x11-libs/libXvMC
+	>=x11-libs/pixman-0.27.1
+	>=x11-libs/libdrm-2.4.29[video_cards_intel]
+	glamor? (
+		x11-libs/glamor
 	)
-	>=x11-libs/libxcb-1.5
-	>=x11-libs/libdrm-2.4.23[video_cards_intel]
 	sna? (
 		>=x11-base/xorg-server-1.10
-	)"
+	)
+	xvmc? (
+		x11-libs/libXvMC
+		>=x11-libs/libxcb-1.5
+		x11-libs/xcb-util
+	)
+"
 DEPEND="${RDEPEND}
-	>=x11-proto/dri2proto-2.6"
+	>=x11-proto/dri2proto-2.6
+	x11-proto/resourceproto"
 
 PATCHES=(
- 	# Copy the initial framebuffer contents when starting X so we can get
- 	# seamless transitions.
-	"${FILESDIR}/2.16.0-copy-fb.patch"
  	# Prevent X from touching boot-time gamma settings.
 	"${FILESDIR}/2.14.0-no-gamma.patch"
-	# BLT ring hang fix.
-	"${FILESDIR}/2.16.0-blt-hang.patch"
 	# Disable backlight adjustments on DPMS mode changes.
-	"${FILESDIR}/2.16.0-no-backlight.patch"
-	# Avoid display corruption when unable to flip
-	"${FILESDIR}/2.16.0-fix-blt-damage.patch"
+	"${FILESDIR}/2.21.2-no-backlight.patch"
 	# Split framebuffer and flip crtcs indepenently.
-	"${FILESDIR}/2.16.0-per-crtc-flip.patch"
+	"${FILESDIR}/2.21.2-per-crtc-flip.patch"
+	# Avoid display corruption when unable to flip
+	"${FILESDIR}/2.21.2-fix-blt-damage.patch"
+	# Fix fbcon copy
+	"${FILESDIR}/2.21.2-copy-fb.patch"
 )
 
 src_prepare() {
@@ -57,7 +63,7 @@ src_prepare() {
 
 pkg_setup() {
 	xorg-2_pkg_setup
-	CONFIGURE_OPTIONS="$(use_enable dri) --disable-xvmc --enable-kms-only"
+	CONFIGURE_OPTIONS="$(use_enable dri) --disable-xvmc --enable-kms-only --enable-uxa"
 }
 
 pkg_postinst() {
@@ -69,7 +75,7 @@ pkg_postinst() {
 		ewarn "    Graphics support --->"
 		ewarn "      Direct Rendering Manager (XFree86 4.1.0 and higher DRI support)  --->"
 		ewarn "      <*>   Intel 830M, 845G, 852GM, 855GM, 865G (i915 driver)  --->"
-		ewarn "              i915 driver"
+		ewarn "	      i915 driver"
 		ewarn "      [*]       Enable modesetting on intel by default"
 		echo
 	fi
