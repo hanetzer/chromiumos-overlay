@@ -239,6 +239,7 @@ IUSE_TESTS="
 	+tests_platform_LibCBench
 	+tests_platform_MemCheck
 	+tests_platform_NetParms
+	+tests_platform_OpenSSLActual
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
 	+tests_platform_Pkcs11InitUnderErrors
@@ -252,6 +253,7 @@ IUSE_TESTS="
 	+tests_platform_SuspendStress
 	+tests_platform_TempFS
 	+tests_platform_TLSDate
+	+tests_platform_TLSDateActual
 	+tests_platform_ToolchainOptions
 	+tests_platform_TouchpadSynDrop
 	+tests_platform_TPMEvict
