@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="517e2a9ed452bb027fe7c3ca366e02507a9e055a"
-CROS_WORKON_TREE="23bcec965bed40f0a0258487c8a8e0ff1ea119b9"
+CROS_WORKON_COMMIT="de324056d5e871b03ec2777480dc4f513cca25ed"
+CROS_WORKON_TREE="dccdd2303f2d0c57e9c7a6bae0053233d42df28e"
 CROS_WORKON_PROJECT="chromiumos/platform/touchpad-tests"
 
 XORG_EAUTORECONF="yes"
