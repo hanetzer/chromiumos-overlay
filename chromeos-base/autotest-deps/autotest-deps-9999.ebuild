@@ -68,6 +68,7 @@ RDEPEND="${RDEPEND}
 # deps/touchpad-tests
 RDEPEND="${RDEPEND}
   x11-drivers/touchpad-tests
+  chromeos-base/mttools
 "
 
 RDEPEND="${RDEPEND}
