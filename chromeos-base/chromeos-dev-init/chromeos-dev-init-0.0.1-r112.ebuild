@@ -14,8 +14,11 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
+IUSE="cros_embedded"
 
-DEPEND="chromeos-base/chromeos-init"
+DEPEND="!cros_embedded? ( chromeos-base/chromeos-init )
+	 cros_embedded? ( chromeos-base/chromeos-embedded-init )
+"
 RDEPEND="${DEPEND}"
 
 src_install() {
