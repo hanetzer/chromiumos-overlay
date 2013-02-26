@@ -135,6 +135,10 @@ src_install() {
 		doins "${FILESDIR}"/ssh{,d}_config
 		fperms 600 /etc/ssh/sshd_config
 
+		if ! use pam ; then
+			sed -i -e '/^UsePAM/d' "${D}"/etc/ssh/sshd_config || die
+		fi
+
 		# Custom login shell snippets.
 		insinto /etc/profile.d
 		doins "${FILESDIR}"/cursor.sh
