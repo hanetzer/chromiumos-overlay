@@ -133,6 +133,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.0-fail-compile-on-bad-uniform-access.patch
 	epatch "${FILESDIR}"/9.0-glx-Check-that-swap_buffers_reply-is-non-NULL-before.patch
 	epatch "${FILESDIR}"/9.0-gen_matypes-cross.patch
+	epatch "${FILESDIR}"/9.0-i965-use-cxx-linker.patch
 
 	base_src_prepare
 
