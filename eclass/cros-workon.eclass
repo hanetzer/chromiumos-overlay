@@ -544,11 +544,20 @@ cros-workon_src_install() {
 	# install it.
 	if [[ -e ${S}/common.mk ]] ; then
 		if use profiling; then
-			if [[ -d "${WORKDIR}/build/lcov-html" ]] ; then
+			LCOV_DIR=$(find "${WORKDIR}" -name "lcov-html")
+			if [[ $(echo "${LCOV_DIR}" | wc -c) -gt 1 ]] ; then
+
+				die "More then one instance of lcov-html " \
+				    "found! The instances are ${LCOV_DIR}. " \
+				    "It is unclear which version to use, " \
+				    "failing install."
+
+			fi
+			if [[ -d "${LCOV_DIR}" ]] ; then
 				local dir="${PN}"
 				[[ ${SLOT} != "0" ]] && dir+=":${SLOT}"
 				insinto "/usr/share/profiling/${dir}/lcov"
-				doins -r "${WORKDIR}"/build/lcov-html/*
+				doins -r "${LCOV_DIR}"/*
 			fi
 		fi
 	else
