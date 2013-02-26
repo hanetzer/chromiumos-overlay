@@ -35,6 +35,9 @@ IUSE="bluetooth cros_embedded opengl X"
 CROS_COMMON_RDEPEND="
 	app-crypt/nss
 	bluetooth? ( net-wireless/bluez-hcidump )
+	chromeos-base/chromeos-dev-init
+	chromeos-base/gmerge
+	net-misc/openssh
 	sys-devel/gdb
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
@@ -93,9 +96,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/evtest
 	app-misc/screen
 	app-shells/bash
-	chromeos-base/chromeos-dev-init
 	chromeos-base/shill-test-scripts
-	chromeos-base/gmerge
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	dev-lang/python
@@ -109,7 +110,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-misc/dhcp
 	net-misc/iperf
 	net-misc/iputils
-	net-misc/openssh
 	net-misc/rsync
 	net-wireless/iw
 	net-wireless/wireless-tools
