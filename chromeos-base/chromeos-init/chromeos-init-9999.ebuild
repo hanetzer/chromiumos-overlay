@@ -52,6 +52,7 @@ src_install() {
 	# Install log cleaning script and run it daily.
 	into /usr
 	dosbin chromeos-cleanup-logs
+	dosbin simple-rotate
 
 	# Install lightup_screen
 	dosbin lightup_screen
