@@ -17,7 +17,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als"
 IUSE="${IUSE} -has_keyboard_backlight -stay_awake_with_headphones -touch_device"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="app-misc/ddccontrol
 	chromeos-base/metrics
