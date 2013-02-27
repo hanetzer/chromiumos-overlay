@@ -3,10 +3,10 @@ DEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/ne
 DESCRIPTION=Userland tools for Linux Performance Counters
 EAPI=4
 HOMEPAGE=http://perf.wiki.kernel.org/
-IUSE=+demangle +doc perl python ncurses cros_workon_tree_cb39e7cae5cae8b18e64717bf5e0aa48b062e4c1 profiling
+IUSE=+demangle +doc perl python ncurses cros_workon_tree_69e0b75690725245e5be29c4a461d854fb6e63f8 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) !dev-util/perf-next
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	9357ca23f0f82eae4efe7195ec6837b1	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
-_md5_=b6d675585db10d03beb77d7b61725a28
+_md5_=13f44be77dce2e1dd19d2bdae7408d83
