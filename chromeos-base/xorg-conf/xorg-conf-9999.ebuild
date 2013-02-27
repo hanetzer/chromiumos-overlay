@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="alex butterfly cmt elan -exynos mario stout synaptics -tegra"
+IUSE="alex butterfly cmt -egl elan -exynos mario stout synaptics -tegra"
 
 RDEPEND=""
 DEPEND="x11-base/xorg-server"
@@ -34,7 +34,7 @@ src_install() {
 	insinto /etc/X11/xorg.conf.d
 	if use tegra; then
 		doins tegra.conf
-	elif use exynos; then
+	elif use exynos && use egl; then
 		doins exynos.conf
 	fi
 
