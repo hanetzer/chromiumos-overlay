@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="8a659d80dc1912c664ef16f0bc66acaa01bd8b73"
-CROS_WORKON_TREE="8226794f20e27fc312ecf28b6306cfe3a374c29b"
+CROS_WORKON_COMMIT="fc661a18c07822f1700b870d8435189d5d809f3b"
+CROS_WORKON_TREE="2d28524c2004c79495d6f37fac51d3458a1ace3b"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="cros_host -delta_generator"
 
-LIBCHROME_VERS="125070"
+LIBCHROME_VERS="180609"
 
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
