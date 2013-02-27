@@ -110,6 +110,9 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-eir-Fix-incorrect-eir_has_data_type-parsing.patch"
 	epatch "${FILESDIR}/${P}-eir-Fix-incorrect-eir_length-parsing.patch"
 
+	# Add a GetCachedServices function to the device API.
+	epatch "${FILESDIR}/${P}-sdpcache-Get-cached-services.patch"
+
 	eautoreconf
 
 	if use cups; then
