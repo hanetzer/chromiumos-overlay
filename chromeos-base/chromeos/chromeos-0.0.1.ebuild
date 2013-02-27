@@ -92,6 +92,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-base
 	coreboot? ( virtual/chromeos-coreboot )
 	gdmwimax? ( net-wireless/gdmwimax )
+	net-firewall/iptables
 	sys-apps/baselayout
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
@@ -206,7 +207,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-plugins/alsa-plugins
 	media-sound/adhd
 	media-sound/alsa-utils
-	net-firewall/iptables
 	net-misc/tlsdate
 	net-wireless/ath3k
 	net-wireless/ath6k

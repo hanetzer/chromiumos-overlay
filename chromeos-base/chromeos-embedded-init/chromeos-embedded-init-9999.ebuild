@@ -34,8 +34,8 @@ src_install() {
 	dosbin embedded-init/agetty
 
 	doins cgroups.conf dbus.conf failsafe-delay.conf failsafe.conf
-	doins install-completed.conf pre-shutdown.conf pstore.conf
-	doins syslog.conf tty2.conf
+	doins install-completed.conf ip6tables.conf iptables.conf
+	doins pre-shutdown.conf pstore.conf syslog.conf tty2.conf
 
 #	install --owner=root --group=root --mode=0644 \
 #		"${S}"/*.conf "${D}/etc/init/"
