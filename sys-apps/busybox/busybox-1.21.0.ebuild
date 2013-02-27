@@ -46,6 +46,15 @@ busybox_config_option() {
 	einfo $(grep "CONFIG_$2[= ]" .config || echo Could not find CONFIG_$2 ...)
 }
 
+busybox_config_enabled() {
+	local val=$(sed -n "/^CONFIG_$1=/s:^[^=]*=::p" .config)
+	case ${val} in
+	"") return 1 ;;
+	y)  return 0 ;;
+	*)  echo "${val}" | sed -r 's:^"(.*)"$:\1:' ;;
+	esac
+}
+
 src_prepare() {
 	unset KBUILD_OUTPUT #88088
 	append-flags -fno-strict-aliasing #310413
@@ -54,6 +63,8 @@ src_prepare() {
 	# patches go here!
 	epatch "${FILESDIR}"/${PN}-1.19.0-bb.patch
 	epatch "${FILESDIR}"/${PN}-1.21.0-modutils-use-finit_module-if-available.patch
+	epatch "${FILESDIR}"/${PN}-1.21.0-udhcpc-support-resolv.conf-symlinks.patch
+	epatch "${FILESDIR}"/${PN}-1.21.0-udhcpc-tweak-math-shell-style-with-the-metric-var.patch
 	#epatch "${FILESDIR}"/${P}-*.patch
 	#cp "${FILESDIR}"/ginit.c init/ || die
 
@@ -197,6 +208,16 @@ src_install() {
 	fi
 	if use livecd ; then
 		dosym busybox /bin/vi
+	fi
+
+	if busybox_config_enabled UDHCPC; then
+		local path=$(busybox_config_enabled UDHCPC_DEFAULT_SCRIPT)
+		exeinto "${path%/*}"
+		newexe examples/udhcp/simple.script "${path##*/}"
+	fi
+	if busybox_config_enabled UDHCPD; then
+		insinto /etc
+		doins examples/udhcp/udhcpd.conf
 	fi
 
 	# bundle up the symlink files for use later
