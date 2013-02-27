@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="37ee99ffb8c39932c79688ff5247d07eac2457af"
-CROS_WORKON_TREE="7c766ef61c79c9df0f033f7ad17b1a2f116db777"
+CROS_WORKON_COMMIT="b3b243f380e0c93cf782e3ce7afe524bed398e41"
+CROS_WORKON_TREE="ec574dbf2b7b5c440d850eadc23a0b6e4cd6e4b9"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
