@@ -248,6 +248,10 @@ get_rev() {
 	GIT_DIR="$1" git rev-parse HEAD
 }
 
+using_common_mk() {
+	[[ -n $(find "${S}" -name common.mk -exec grep -l common-mk.git {} +) ]]
+}
+
 cros-workon_src_unpack() {
 	local fetch_method # local|git
 
@@ -462,14 +466,14 @@ cros-workon_src_prepare() {
 	local out="$(cros-workon_get_build_dir)"
 	[[ ${CROS_WORKON_INCREMENTAL_BUILD} != "1" ]] && mkdir -p "${out}"
 
-	if [[ -e ${S}/common.mk ]] ; then
+	if using_common_mk ; then
 		: ${OUT=${out}}
 		export OUT
 	fi
 }
 
 cros-workon_src_configure() {
-	if [[ -e ${S}/common.mk ]] ; then
+	if using_common_mk ; then
 		# We somewhat overshoot here, but it isn't harmful,
 		# and catches all the packages we care about.
 		tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
@@ -520,7 +524,7 @@ cw_emake() {
 }
 
 cros-workon_src_compile() {
-	if [[ -e ${S}/common.mk ]] ; then
+	if using_common_mk ; then
 		cw_emake
 	else
 		default
@@ -528,7 +532,7 @@ cros-workon_src_compile() {
 }
 
 cros-workon_src_test() {
-	if [[ -e ${S}/common.mk ]] ; then
+	if using_common_mk ; then
 		emake \
 			VALGRIND=$(use_if_iuse valgrind && echo 1) \
 			tests
@@ -542,7 +546,7 @@ cros-workon_src_install() {
 	# the tests have been run as part of the build process. Thus this code
 	# needs to test of the analysis output is present before trying to
 	# install it.
-	if [[ -e ${S}/common.mk ]] ; then
+	if using_common_mk ; then
 		if use profiling; then
 			LCOV_DIR=$(find "${WORKDIR}" -name "lcov-html")
 			if [[ $(echo "${LCOV_DIR}" | wc -l) -gt 1 ]] ; then
