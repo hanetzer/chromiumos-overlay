@@ -90,6 +90,7 @@ CROS_COMMON_RDEPEND="
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
 	chromeos-base/chromeos-base
+	chromeos-base/metrics
 	coreboot? ( virtual/chromeos-coreboot )
 	gdmwimax? ( net-wireless/gdmwimax )
 	net-firewall/iptables
@@ -192,7 +193,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/dev-install
 	chromeos-base/inputcontrol
 	chromeos-base/internal
-	chromeos-base/metrics
 	chromeos-base/mtpd
 	chromeos-base/permission_broker
 	chromeos-base/power_manager
