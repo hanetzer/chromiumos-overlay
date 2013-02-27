@@ -6,7 +6,7 @@ CROS_WORKON_COMMIT="6e8f24e5f10aeba2feb9d72a49f276fc0f2ed7de"
 CROS_WORKON_TREE="4677180b651268e80a28763a89399281ec778d46"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 
-LIBCHROME_VERS=( 125070 180609 )
+LIBCHROME_VERS=( 180609 )
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
 
