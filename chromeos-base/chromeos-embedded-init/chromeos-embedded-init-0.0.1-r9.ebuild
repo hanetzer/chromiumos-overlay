@@ -29,6 +29,7 @@ src_install() {
 	insinto /etc/init
 	doins startup.conf
 	doins embedded-init/boot-services.conf
+	doins embedded-init/udhcpc.conf
 
 	# TODO(cmasone): Either use getty across the whole source tree, or
 	# convince busybox that it can simulate agetty.  Or something.
@@ -38,6 +39,9 @@ src_install() {
 	doins cgroups.conf dbus.conf failsafe-delay.conf failsafe.conf
 	doins install-completed.conf ip6tables.conf iptables.conf
 	doins pre-shutdown.conf pstore.conf syslog.conf tty2.conf
+
+	# udhcp support
+	dosym /var/run/resolv.conf /etc
 
 #	install --owner=root --group=root --mode=0644 \
 #		"${S}"/*.conf "${D}/etc/init/"
