@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-1.0.18.ebuild,v 1.1 2012/06/08 15:31:07 aballier Exp $
 
-EAPI="3"
+EAPI="4"
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
@@ -11,7 +11,7 @@ if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	EGIT_REPO_URI="git://anongit.freedesktop.org/git/vaapi/intel-driver"
 fi
 
-inherit autotools ${SCM} multilib
+inherit autotools ${SCM} multilib eutils
 
 DESCRIPTION="HW video decode support for Intel integrated graphics"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/vaapi"
