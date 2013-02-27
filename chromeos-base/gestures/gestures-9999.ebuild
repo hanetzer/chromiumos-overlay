@@ -21,8 +21,7 @@ LIBCHROME_VERS="180609"
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libevdev
 	dev-cpp/gflags
-	sys-fs/udev
-	x11-libs/pixman"
+	sys-fs/udev"
 DEPEND="dev-cpp/gtest
 	x11-libs/libXi
 	${RDEPEND}"
