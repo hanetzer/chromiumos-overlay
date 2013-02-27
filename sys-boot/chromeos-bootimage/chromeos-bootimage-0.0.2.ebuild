@@ -117,7 +117,7 @@ build_image() {
 		die "failed to build legacy image."
 }
 
-src_compile() {
+src_compile_uboot() {
 
 	local verified_flags=''
 	local common_flags=''
@@ -132,9 +132,6 @@ src_compile() {
 
 	if use memtest; then
 		uboot_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
-	elif use depthcharge; then
-		uboot_file="${CROS_FIRMWARE_ROOT}/depthcharge/depthcharge.bin"
-		U_BOOT_FDT_USE="${U_BOOT_FDT_USE}_dc"
 	else
 		# We only have a single U-Boot, and it is called u-boot.bin
 		uboot_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
@@ -154,10 +151,6 @@ src_compile() {
 		common_flags+=" --seabios ${CROS_FIRMWARE_ROOT}/seabios.cbfs"
 		common_flags+=" --coreboot \
 			${CROS_FIRMWARE_ROOT}/coreboot.rom"
-		if use depthcharge; then
-			common_flags+=" --coreboot-elf=${CROS_FIRMWARE_ROOT}"
-			common_flags+="/depthcharge/depthcharge.elf"
-		fi
 	fi
 
 	# TODO(clchiou): The cros_splash_blob is a short-term hack; remove this
@@ -173,6 +166,7 @@ src_compile() {
 
 	# TODO(sjg@chromium.org): For x86 we can't build all the images
 	# yet, since we need to use a different skeleton file for each.
+
 	if use x86 || use amd64; then
 		einfo "x86: Only building for board ${U_BOOT_FDT_USE}"
 		# Location of the U-Boot flat device tree source file
@@ -187,6 +181,62 @@ src_compile() {
 				"${ec_file}" "${common_flags}" \
 				"${verified_flags}" ""
 		done
+	fi
+}
+
+src_compile_depthcharge() {
+	local froot="${CROS_FIRMWARE_ROOT}"
+	# Location of various files
+	local bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
+	local uboot_file="${froot}/depthcharge/depthcharge.bin"
+	local ec_file="${froot}/ec.RW.bin"
+	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
+	local fdt_file="${froot}/dts/fmap.dts"
+	local bmpblk_file="${froot}/bmpblk.bin"
+	local coreboot_file="${froot}/coreboot.rom"
+
+	local common=''
+	common+=" --board ${BOARD_USE} --bct ${bct_file} --key ${devkeys_file}"
+	common+=" --bmpblk ${bmpblk_file} --coreboot ${coreboot_file}"
+	common+=" --dt ${fdt_file} --uboot ${uboot_file}"
+
+	if use x86 || use amd64; then
+		common+=" --seabios ${CROS_FIRMWARE_ROOT}/seabios.cbfs"
+	fi
+
+	if use cros_ec; then
+		common+=" --ec ${ec_file}"
+	fi
+
+	local depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
+	local netboot_elf="${froot}/depthcharge/netboot.elf"
+
+	# Build an RO-normal image, and an RW (twostop) image. This assumes
+	# that the fdt has the right gbb flags set.
+	einfo "Building RO image."
+	cros_bundle_firmware ${common} \
+		--coreboot-elf="${depthcharge_elf}" \
+		--outdir "out.ro" --output "image.bin" ||
+		die "failed to build RO image."
+	einfo "Building RW image."
+	cros_bundle_firmware ${common} --force-rw \
+		--coreboot-elf="${depthcharge_elf}" \
+		--outdir "out.rw" --output "image.rw.bin" ||
+		die "failed to build RW image."
+
+	# Build a netboot image.
+	einfo "Building netboot image."
+	cros_bundle_firmware ${common} \
+		--coreboot-elf="${netboot_elf}" \
+		--outdir "out.net" --output "image.net.bin" ||
+		die "failed to build netboot image."
+}
+
+src_compile() {
+	if use depthcharge; then
+		src_compile_depthcharge
+	else
+		src_compile_uboot
 	fi
 }
 
