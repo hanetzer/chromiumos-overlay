@@ -65,6 +65,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-1.21.0-modutils-use-finit_module-if-available.patch
 	epatch "${FILESDIR}"/${PN}-1.21.0-udhcpc-support-resolv.conf-symlinks.patch
 	epatch "${FILESDIR}"/${PN}-1.21.0-udhcpc-tweak-math-shell-style-with-the-metric-var.patch
+	epatch "${FILESDIR}"/${PN}-1.21.0-bbunzip-ignore-the-q-flag-with-the-decompressors.patch
+	epatch "${FILESDIR}"/${PN}-1.21.0-bbunzip-fix-order-of-flags-vs-bit-defines.patch
 	#epatch "${FILESDIR}"/${P}-*.patch
 	#cp "${FILESDIR}"/ginit.c init/ || die
 
