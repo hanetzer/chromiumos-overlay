@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="09237cf319a94face93e274f50f867ba8667f08d"
-CROS_WORKON_TREE="f692cd31d5db01372baeb9a0a6f2916fcdc3761c"
+CROS_WORKON_COMMIT="fbbbaaa9b1872e9e9dc3a8450d7fb7dcae7973df"
+CROS_WORKON_TREE="24358b44632414b3210f95b2c518430adf58d459"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
@@ -55,6 +55,7 @@ src_install() {
 	into /usr
 	dosbin chromeos-cleanup-logs
 	dosbin simple-rotate
+	dosbin netfilter-common
 
 	# Install lightup_screen
 	dosbin lightup_screen
