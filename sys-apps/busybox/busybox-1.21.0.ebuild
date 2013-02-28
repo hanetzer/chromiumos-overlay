@@ -223,6 +223,9 @@ src_install() {
 	# bundle up the symlink files for use later
 	emake DESTDIR="${ED}" install
 	rm _install/bin/busybox
+	# for compatibility, provide /usr/bin/env
+	mkdir -p _install/usr/bin
+	ln -s /bin/env _install/usr/bin/env
 	tar cf busybox-links.tar -C _install . || : #;die
 	insinto /usr/share/${PN}
 	use make-symlinks && doins busybox-links.tar
