@@ -71,6 +71,10 @@ src_install() {
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
 	doins login_event_client.h
+	doins chaps_proxy_mock.h
+	doins chaps_interface.h
+	doins chaps.h
+	doins attributes.h
 	insinto /usr/include/chaps/pkcs11
 	doins pkcs11/*.h
 }
