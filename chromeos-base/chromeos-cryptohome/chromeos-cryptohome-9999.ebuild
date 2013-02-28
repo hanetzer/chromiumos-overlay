@@ -34,6 +34,7 @@ DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/system_api
+	chromeos-base/vboot_reference
 	${RDEPEND}"
 
 src_prepare() {
@@ -57,6 +58,7 @@ src_install() {
 	cros-workon_src_install
 	pushd "${OUT}" >/dev/null
 	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache
+	dosbin mount-encrypted
 	popd >/dev/null
 
 	dobin email_to_image

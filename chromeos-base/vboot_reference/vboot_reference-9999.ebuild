@@ -117,7 +117,7 @@ src_install() {
 	local dst_dir='/usr/include/vboot'
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
-	doins -r firmware/include/*
+	doins -r firmware/include/* host/include/*
 	for arch in $(ls firmware/arch/); do
 		insinto "${dst_dir}"/arch/"${arch}"
 		doins firmware/arch/"${arch}"/include/biosincludes.h
@@ -139,6 +139,9 @@ src_install() {
 
 	einfo "Installing C++ version of cgpt static library:libcgpt-cc.a"
 	dolib.a build-au/cgpt/libcgpt-cc.a
+
+	einfo "Installing host library"
+	dolib.a build-main/libvboot_host.a
 
 	use 32bit_au && board_teardown_32bit_au_env
 }
