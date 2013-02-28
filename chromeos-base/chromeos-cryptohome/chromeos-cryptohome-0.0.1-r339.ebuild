@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="9d9522c7c69bc804c4fb110b212047e712c0d7b4"
-CROS_WORKON_TREE="b8e7d480f72ecd85cd21e34f38aa1cc6247e36d5"
+CROS_WORKON_COMMIT="188d53717d6b04aec420b4c09fc72320d3781e32"
+CROS_WORKON_TREE="f5a255e2057c5ad9ea015e3b12ffc32a9308a571"
 CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
 CROS_WORKON_LOCALNAME="cryptohome"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -36,6 +36,7 @@ DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/system_api
+	chromeos-base/vboot_reference
 	${RDEPEND}"
 
 src_prepare() {
@@ -59,6 +60,7 @@ src_install() {
 	cros-workon_src_install
 	pushd "${OUT}" >/dev/null
 	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache
+	dosbin mount-encrypted
 	popd >/dev/null
 
 	dobin email_to_image
