@@ -64,4 +64,8 @@ src_install() {
 			break
 		fi
 	done
+
+	# install dbus config allowing cras access
+	insinto /etc/dbus-1/system.d
+	doins dbus-config/org.chromium.cras.conf
 }
