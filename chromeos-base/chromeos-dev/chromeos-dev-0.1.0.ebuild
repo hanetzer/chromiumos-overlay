@@ -50,7 +50,6 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 ################################################################################
 CROS_X86_RDEPEND="
 	app-benchmarks/i7z
-	app-editors/qemacs
 	sys-apps/dmidecode
 	sys-apps/iotools
 	sys-apps/pciutils
@@ -92,6 +91,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-benchmarks/punybench
 	app-crypt/nss
 	app-crypt/tpm-tools
+	app-editors/qemacs
 	app-editors/vim
 	app-misc/evtest
 	app-misc/screen
