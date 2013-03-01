@@ -59,16 +59,11 @@ LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.31"
 RDEPEND="
 	!<x11-base/xorg-server-1.7
 	!<=x11-proto/xf86driproto-2.0.3
-	>=x11-proto/dri2proto-2.2
-	>=x11-proto/glproto-1.4.11
 	dev-libs/expat
 	gbm? ( sys-fs/udev )
-	x11-libs/libICE
 	>=x11-libs/libX11-1.3.99.901
 	x11-libs/libXdamage
 	x11-libs/libXext
-	x11-libs/libXi
-	x11-libs/libXmu
 	x11-libs/libXxf86vm
 	motif? ( x11-libs/openmotif )
 	${LIBDRM_DEPSTRING}
@@ -83,6 +78,8 @@ DEPEND="${RDEPEND}
 	>=x11-proto/xextproto-7.0.99.1
 	x11-proto/xf86driproto
 	x11-proto/xf86vidmodeproto
+	>=x11-proto/dri2proto-2.2
+	>=x11-proto/glproto-1.4.11
 	!arm? ( sys-devel/llvm )
 "
 
