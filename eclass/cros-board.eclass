@@ -46,10 +46,10 @@ ALL_BOARDS=(
 	emeraldlake2
 	eureka
 	fb1
-	haswell
-	haswell_baskingridge
-	haswell_wtm1
-	haswell_wtm2
+	fox
+	fox_baskingridge
+	fox_wtm1
+	fox_wtm2
 	ironhide
 	kiev
 	klang
