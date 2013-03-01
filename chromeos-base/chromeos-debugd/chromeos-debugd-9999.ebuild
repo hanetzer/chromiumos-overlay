@@ -49,6 +49,7 @@ src_install() {
 	doexe helpers/netif
 	doexe helpers/modem_status
 	doexe "${S}"/src/helpers/minijail-setuid-hack.sh
+	doexe "${S}"/src/helpers/send_at_command.sh
 	doexe "${S}"/src/helpers/systrace.sh
 	doexe helpers/network_status
 
