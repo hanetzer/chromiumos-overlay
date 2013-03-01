@@ -179,7 +179,7 @@ get_paths() {
 	else
 		# HACK: Figure out the missing legacy path for now
 		# this only happens in amd64 chroot with sudo emerge.
-		pathbase="/home/${SUDO_USER}/trunk"
+		pathbase="/mnt/host/source"
 	fi
 
 	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
