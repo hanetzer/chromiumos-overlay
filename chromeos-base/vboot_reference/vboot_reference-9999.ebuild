@@ -13,53 +13,38 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="32bit_au minimal tpmtests cros_host"
 
-LIBCHROME_VERS="180609"
-
-RDEPEND="app-crypt/trousers
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	!minimal? ( dev-libs/libyaml )
-	dev-libs/glib
+RDEPEND="!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
 	sys-apps/util-linux"
-DEPEND="${RDEPEND}
-	dev-cpp/gflags
-	dev-cpp/gtest"
+DEPEND="${RDEPEND}"
 
 _src_compile_main() {
 	mkdir "${S}"/build-main
 	tc-export CC AR CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
 	# Vboot reference knows the flags to use
 	unset CFLAGS
 	emake BUILD="${S}"/build-main \
 	      ARCH=$(tc-arch) \
 	      MINIMAL=$(usev minimal) all
-	unset CC AR CXX
+	unset CC AR CXX PKG_CONFIG
 }
 
 _src_compile_au() {
+	board_setup_32bit_au_env
 	mkdir "${S}"/build-au
-	if use 32bit_au ; then
-		AU_TARGETS="libcgpt_cc libdump_kernel_config"
-		einfo "Building 32-bit AU_TARGETS: ${AU_TARGETS}"
-		board_setup_32bit_au_env
-	else
-		AU_TARGETS="libcgpt_cc libdump_kernel_config cgptmanager_tests"
-		einfo "Building native AU_TARGETS: ${AU_TARGETS}"
-	fi
+	einfo "Building 32-bit library for installer to use"
 	tc-export CC AR CXX PKG_CONFIG
 	emake BUILD="${S}"/build-au/ \
-	      CC="${CC}" \
-	      CXX="${CXX}" \
-	      ARCH=$(tc-arch) MINIMAL=$(usev minimal) \
-	      ${AU_TARGETS}
-	use 32bit_au && board_teardown_32bit_au_env
+	      ARCH=$(tc-arch) \
+	      MINIMAL=$(usev minimal) tinyhostlib
+	unset CC AR CXX PKG_CONFIG
+	board_teardown_32bit_au_env
 }
 
 src_compile() {
 	_src_compile_main
-	_src_compile_au
+	use 32bit_au && _src_compile_au
 }
 
 src_test() {
@@ -123,25 +108,25 @@ src_install() {
 		doins firmware/arch/"${arch}"/include/biosincludes.h
 	done
 
+        # FIXME(crosbug.com/39444): Don't violate the implied API. These
+        # headers should be relocated in the source if they're really
+        # needed.
 	insinto /usr/include/vboot/
+	doins "cgpt/cgpt.h"
+	doins "cgpt/cgpt_params.h"
 	doins "utility/include/kernel_blob.h"
 	doins "utility/include/dump_kernel_config.h"
-	doins "cgpt/CgptManager.h"
+	doins "firmware/lib/cgptlib/include/cgptlib.h"
 	doins "firmware/lib/cgptlib/include/gpt.h"
-
-	# Install static library needed by install programs.
-	# we need board_setup_32bit_au_env again so dolib.a installs to the
-	# correct location
-	use 32bit_au && board_setup_32bit_au_env
-
-	einfo "Installing dump_kernel_config library"
-	dolib.a build-au/libdump_kernel_config.a
-
-	einfo "Installing C++ version of cgpt static library:libcgpt-cc.a"
-	dolib.a build-au/cgpt/libcgpt-cc.a
 
 	einfo "Installing host library"
 	dolib.a build-main/libvboot_host.a
 
-	use 32bit_au && board_teardown_32bit_au_env
+	# Install 32-bit library needed by installer programs.
+	if use 32bit_au; then
+		einfo "Installing 32-bit host library"
+                insopts -m0644
+                insinto /usr/lib/vboot32
+                doins build-au/libvboot_host.a
+	fi
 }
