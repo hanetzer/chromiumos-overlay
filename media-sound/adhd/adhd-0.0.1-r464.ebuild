@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="c92945360a01040350480c375dae2ceae088b0ec"
-CROS_WORKON_TREE="cb04ba60f37bae0216e8a19810fc203359aecb27"
+CROS_WORKON_COMMIT="a701f593e5d05deb6359fcb40e85d95650d65e10"
+CROS_WORKON_TREE="92cc246a769ab0f17f504712b9c4bc6fac9f7217"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 
@@ -66,4 +66,8 @@ src_install() {
 			break
 		fi
 	done
+
+	# install dbus config allowing cras access
+	insinto /etc/dbus-1/system.d
+	doins dbus-config/org.chromium.cras.conf
 }
