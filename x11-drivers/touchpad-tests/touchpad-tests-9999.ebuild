@@ -3,27 +3,22 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/touchpad-tests"
-
-XORG_EAUTORECONF="yes"
-BASE_INDIVIDUAL_URI=""
-inherit autotools-utils cros-workon
-
-DESCRIPTION="Chromium OS multitouch driver regression tests."
 CROS_WORKON_LOCALNAME="../platform/touchpad-tests"
 
-KEYWORDS="~arm amd64 ~x86"
+inherit cros-workon
+
+DESCRIPTION="Chromium OS multitouch driver regression tests"
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND="chromeos-base/gestures
 	chromeos-base/libevdev
 	app-misc/utouch-evemu
 	x11-proto/inputproto"
-
 DEPEND=${RDEPEND}
-
-DOCS=""
 
 src_prepare() {
 	cros-workon_src_prepare
@@ -34,7 +29,7 @@ src_configure() {
 }
 
 src_compile() {
-	emake all
+	cros-workon_src_compile
 }
 
 src_install() {
