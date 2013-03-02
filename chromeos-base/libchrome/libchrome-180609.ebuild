@@ -12,6 +12,7 @@
 EAPI="4"
 CROS_WORKON_COMMIT="94b9b5d64fa557377ab1e3a5e3bd6cca7d0b73d8"
 CROS_WORKON_PROJECT="chromium/src/base"
+CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_GIT_SUFFIX="-${PV}"
 
 inherit cros-workon cros-debug toolchain-funcs scons-utils

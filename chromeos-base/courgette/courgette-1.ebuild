@@ -4,6 +4,7 @@
 EAPI="4"
 CROS_WORKON_COMMIT="2a813cecf1b7357b1a2faf0f9e5bbb73ba9276b6"
 CROS_WORKON_PROJECT="chromium/src/courgette"
+CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug toolchain-funcs scons-utils
 

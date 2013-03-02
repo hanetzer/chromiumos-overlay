@@ -9,6 +9,7 @@
 EAPI="4"
 CROS_WORKON_COMMIT="001e5e97d7b300a1b68e7baee0187ab6a535b085"
 CROS_WORKON_PROJECT="chromium/src/crypto"
+CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug toolchain-funcs scons-utils
 

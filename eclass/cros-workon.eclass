@@ -117,6 +117,16 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # like normal.
 : ${CROS_WORKON_INCREMENTAL_BUILD:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_BLACKLIST
+# @DESCRIPTION:
+# If set to "1", the cros-workon uprev system on the bots will not automatically
+# revbump your package when changes are made.  This is useful if you want more
+# direct control over when updates to the source git repo make it into the
+# ebuild, or if the git repo you're using is not part of the official manifest.
+# e.g. If you set CROS_WORKON_REPO or EGIT_REPO_URI to an external (to Google)
+# site, set this to "1".
+: ${CROS_WORKON_BLACKLIST:=}
+
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
