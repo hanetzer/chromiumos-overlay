@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_LOCALNAME="../platform/chromiumos-wide-profiling"
 CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-wide-profiling"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 DESCRIPTION="Program used to collect performance data on ChromeOS machines"
 HOMEPAGE=""
@@ -15,7 +15,10 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="virtual/perf
+LIBCHROME_VERS="180609"
+
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	virtual/perf
 	dev-libs/openssl
 	dev-libs/protobuf"
 DEPEND="test? ( dev-cpp/gtest )
@@ -23,7 +26,9 @@ DEPEND="test? ( dev-cpp/gtest )
 	dev-libs/protobuf"
 
 src_configure() {
-	tc-export CXX
+	tc-export CXX PKG_CONFIG
+	cros-debug-add-NDEBUG
+	export BASE_VER=${LIBCHROME_VERS}
 }
 
 src_compile() {
