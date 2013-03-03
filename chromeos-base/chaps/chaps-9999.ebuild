@@ -15,7 +15,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="test"
+IUSE="test -clang -asan"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -45,6 +46,7 @@ src_configure() {
 }
 
 src_compile() {
+	use clang && clang-setup-env
 	cros-workon_src_compile
 }
 
