@@ -35,8 +35,8 @@ CROS_WORKON_LOCALNAME="factory"
 
 TARGET_DIR="/usr/local/factory"
 
-CROS_BINARY_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20111110-r1376.tar.bz2"
-CROS_BINARY_SUM="761af448631b4dd2339e01b04cb11140ad6d7706"
+CROS_BINARY_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
+CROS_BINARY_SUM="56cebce034fad6a8c1ecf9f159e3310dbb25b331"
 
 src_unpack() {
 	cros-workon_src_unpack
