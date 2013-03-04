@@ -414,6 +414,7 @@ get_gcc_common_options()
 	confgcc="${confgcc} --enable-__cxa_atexit"
 	confgcc="${confgcc} --enable-checking=release"
 	confgcc="${confgcc} --disable-libquadmath"
+	confgcc="${confgcc} --disable-libitm"
 	echo ${confgcc}
 }
 

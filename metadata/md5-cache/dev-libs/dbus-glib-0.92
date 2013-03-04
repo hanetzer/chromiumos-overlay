@@ -10,5 +10,5 @@ PDEPEND=bash-completion? ( app-shells/bash-completion )
 RDEPEND=>=sys-apps/dbus-1.1 >=dev-libs/glib-2.26 >=dev-libs/expat-1.95.8 bash-completion? ( app-admin/eselect )
 SLOT=0
 SRC_URI=http://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-0.92.tar.gz
-_eclasses_=bash-completion	f0fab76a98c0e4b3d72b6beb28d3f653	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	64fc271a237429f84f36b91c9f4b9912
+_eclasses_=bash-completion	f0fab76a98c0e4b3d72b6beb28d3f653	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3
 _md5_=ceea851a254cbd523cadfbcafbb7fb90
