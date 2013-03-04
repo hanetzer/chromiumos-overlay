@@ -57,10 +57,12 @@ IUSE_TESTS=(
 	+tests_desktopui_WebRtcBrowserTest
 	+tests_video_VideoDecodeAcceleration
 	+tests_video_VideoSanity
+	+tests_video_YouTube
 	+tests_video_YouTubeHTML5
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_DevicePolicy
 	+tests_enterprise_InstallAttributes
+	+tests_enterprise_Policies
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GpuReset
 	+tests_graphics_Piglit
