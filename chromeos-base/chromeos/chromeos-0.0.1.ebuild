@@ -90,6 +90,7 @@ CROS_COMMON_RDEPEND="
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
 	chromeos-base/chromeos-base
+	chromeos-base/chromeos-installer
 	chromeos-base/metrics
 	coreboot? ( virtual/chromeos-coreboot )
 	gdmwimax? ( net-wireless/gdmwimax )
@@ -183,7 +184,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-debugd
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
-	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-login
 	chromeos-base/crash-reporter
 	chromeos-base/cromo
@@ -251,6 +251,7 @@ CROS_DEPEND="${CROS_RDEPEND}
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
 	sys-apps/busybox
+	sys-libs/uuid
 	chromeos-base/chromeos-embedded-init
 "
 
