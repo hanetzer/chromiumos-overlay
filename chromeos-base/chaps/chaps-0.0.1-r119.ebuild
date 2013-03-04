@@ -3,8 +3,8 @@
 # found in the LICENSE.makefile file.
 
 EAPI="4"
-CROS_WORKON_COMMIT="1d9fe927b754c92f5274228f195dc4c94891e825"
-CROS_WORKON_TREE="4c8bc91e30c14b9e7942bd7427505379bbff8a56"
+CROS_WORKON_COMMIT="ca96daa1da55bc34590c983d13bbad8d5bd55a2e"
+CROS_WORKON_TREE="a4e4c8313873f9647f5bc346c35eae37033fc3e7"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -17,7 +17,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="arm amd64 x86"
-IUSE="test"
+IUSE="test -clang -asan"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -47,6 +48,7 @@ src_configure() {
 }
 
 src_compile() {
+	use clang && clang-setup-env
 	cros-workon_src_compile
 }
 

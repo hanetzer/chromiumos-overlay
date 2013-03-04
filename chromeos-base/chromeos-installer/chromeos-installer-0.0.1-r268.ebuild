@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="559b0464835039be4a1e8a5b55367dee621f1d8a"
-CROS_WORKON_TREE="7cd483fd81297122a038f70467f54d6532782c2f"
+CROS_WORKON_COMMIT="b3730299182fe0f3754206ae6ce3391a2802e7c6"
+CROS_WORKON_TREE="1ad44b0009212ca8daec9e992c4d2f98e40b6130"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -49,6 +49,8 @@ src_prepare() {
 src_configure() {
 	# need this to get the verity headers working
 	append-cxxflags -I"${SYSROOT}"/usr/include/verity/
+	append-cxxflags -I"${SYSROOT}"/usr/include/vboot
+	append-ldflags -L"${SYSROOT}"/usr/lib/vboot32
 
 	use 32bit_au && board_setup_32bit_au_env
 
