@@ -107,6 +107,7 @@ IUSE_TESTS="
 	+tests_graphics_SyncControlTest
 	+tests_firmware_RomSize
 	tests_firmware_VbootCrypto
+	+tests_flaky_test
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_ch7036
