@@ -19,18 +19,21 @@ EGIT_REPO_URIS=(
 		""
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
-		"https://git.chromium.org/git/native_client/pnacl-llvm.git"
-		"6c583141bf6b7a6b5f8125c1037ecbc089813288"	# EGIT_COMMIT
+		#"https://git.chromium.org/git/native_client/pnacl-llvm.git"
+		"http://chromium.googlesource.com/chromiumos/third_party/llvm"
+		"c8a196ae8fad3cba7a777e2e7916fd36ebf70fe6"	# EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
-		"git://github.com/llvm-mirror/compiler-rt.git"
+		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
-		"fe0b77be4057ba90a0321107cc5d0f603f297bfa"	# EGIT_COMMIT
+		"http://chromium.googlesource.com/chromiumos/third_party/compiler-rt"
+		"2cf585e94866c97528b0743b1e4c01f779fa500f"	# EGIT_COMMIT
 	"clang"
 		"tools/clang"
-		"git://github.com/llvm-mirror/clang.git"
+		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
-		"13d288bab69d517430b7c9473abac58fb491e17d"	# EGIT_COMMIT
+		"http://chromium.googlesource.com/chromiumos/third_party/clang"
+		"9efe057ac090ed0d45a64b82e68c74e52c67ed91"	# EGIT_COMMIT
 )
 inherit git-2
 

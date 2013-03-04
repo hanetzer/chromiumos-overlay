@@ -19,17 +19,20 @@ EGIT_REPO_URIS=(
 		""
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
-		"https://git.chromium.org/git/native_client/pnacl-llvm.git"
+		#"https://git.chromium.org/git/native_client/pnacl-llvm.git"
+		"http://chromium.googlesource.com/chromiumos/third_party/llvm"
 		""	# EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
-		"git://github.com/llvm-mirror/compiler-rt.git"
+		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
+		"http://chromium.googlesource.com/chromiumos/third_party/compiler-rt"
 		""	# EGIT_COMMIT
 	"clang"
 		"tools/clang"
-		"git://github.com/llvm-mirror/clang.git"
+		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
+		"http://chromium.googlesource.com/chromiumos/third_party/clang"
 		""	# EGIT_COMMIT
 )
 inherit git-2
