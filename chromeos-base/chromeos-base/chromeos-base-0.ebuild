@@ -29,6 +29,7 @@ DEPEND=">=sys-apps/baselayout-2
 	!<app-shells/dash-0.5.5
 	!<net-misc/openssh-5.2_p1-r8
 	!<chromeos-base/chromeos-init-0.0.1-r630
+	cros_embedded? ( !app-admin/sudo )
 	!cros_host? (
 		!app-misc/editor-wrapper
 		!cros_embedded? (
@@ -110,6 +111,8 @@ src_install() {
 
 	insinto /lib/udev/rules.d
 	doins "${FILESDIR}"/udev-rules/*.rules || die
+
+	use cros_embedded && dobin "${FILESDIR}"/sudo
 
 	# target-specific fun
 	if ! use cros_host ; then
