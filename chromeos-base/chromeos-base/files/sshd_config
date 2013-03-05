@@ -10,4 +10,5 @@ PasswordAuthentication no
 UsePAM yes
 PrintMotd no
 PrintLastLog no
+UseDns no
 Subsystem sftp internal-sftp
