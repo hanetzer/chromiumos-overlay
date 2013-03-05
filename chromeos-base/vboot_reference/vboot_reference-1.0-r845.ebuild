@@ -16,6 +16,7 @@ KEYWORDS="amd64 arm x86"
 IUSE="32bit_au minimal tpmtests cros_host"
 
 RDEPEND="!minimal? ( dev-libs/libyaml )
+	app-crypt/trousers
 	dev-libs/openssl
 	sys-apps/util-linux"
 DEPEND="${RDEPEND}"
