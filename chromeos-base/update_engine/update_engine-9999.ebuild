@@ -22,7 +22,6 @@ RDEPEND="app-arch/bzip2
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	chromeos-base/vboot_reference
 	chromeos-base/verity
 	dev-cpp/gflags
 	dev-libs/glib
@@ -33,8 +32,7 @@ RDEPEND="app-arch/bzip2
 	dev-util/bsdiff
 	net-misc/curl
 	sys-apps/rootdev
-	sys-fs/e2fsprogs
-	sys-libs/e2fsprogs-libs"
+	sys-fs/e2fsprogs"
 DEPEND="chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
