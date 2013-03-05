@@ -7,4 +7,4 @@ KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=!app-misc/ca-certificates
 SLOT=0
-_md5_=21ffe6c5709db1cc31ff3f64150a78a2
+_md5_=7dbce564664fba0164aed15180a75761

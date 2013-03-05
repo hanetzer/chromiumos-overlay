@@ -74,6 +74,7 @@ src_install() {
 	dosbin "${S}/session_manager_setup.sh"
 	dosbin "${S}/session_manager"
 	dosbin "${S}/xstart.sh"
+	dobin "${S}/cros-xauth"
 
 	insinto /usr/share/dbus-1/interfaces
 	doins "${S}/session_manager.xml"
