@@ -4,6 +4,8 @@
 
 EAPI="4"
 
+inherit eutils
+
 DESCRIPTION="Command-line flags module for Unix shell scripts"
 HOMEPAGE="http://code.google.com/p/shflags/"
 SRC_URI="http://shflags.googlecode.com/files/${P}.tgz"
@@ -16,6 +18,10 @@ IUSE="examples"
 src_test() {
 	cd src
 	./shflags_test.sh || die
+}
+
+src_prepare() {
+	      epatch "${FILESDIR}"/${PN}-1.0.3-add-support-for-busybox-getopt.patch
 }
 
 src_install() {

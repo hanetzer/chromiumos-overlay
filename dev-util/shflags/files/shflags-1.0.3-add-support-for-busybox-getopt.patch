@@ -1,0 +1,37 @@
+From 8ecb41ed440709e7c5ab80c26be5748698aeb631 Mon Sep 17 00:00:00 2001
+From: Mandeep Singh Baines <msb@chromium.org>
+Date: Mon, 4 Mar 2013 22:39:09 -0800
+Subject: [PATCH] add support for busybox getopt
+
+busybox's getopt can be compiled with or without long options
+so we need to test for that.
+
+Signed-off-by: Mandeep Singh Baines <msb@chromium.org>
+---
+ src/shflags | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/shflags b/src/shflags
+index f69928e..ae41656 100644
+--- a/src/shflags
++++ b/src/shflags
+@@ -119,12 +119,12 @@ __FLAGS_GETOPT_VERS_BSD=2
+ getopt >/dev/null 2>&1
+ case $? in
+   0) __FLAGS_GETOPT_VERS=${__FLAGS_GETOPT_VERS_STD} ;;  # bsd getopt
+-  2)
++  1|2)
+     # TODO(kward): look into '-T' option to test the internal getopt() version
+-    if [ "`getopt --version`" = '-- ' ]; then
+-      __FLAGS_GETOPT_VERS=${__FLAGS_GETOPT_VERS_STD}
+-    else
++    if [ "`getopt -lfoo '' --foo 2>/dev/null`" = " --foo --" ]; then
+       __FLAGS_GETOPT_VERS=${__FLAGS_GETOPT_VERS_ENH}
++    else
++      __FLAGS_GETOPT_VERS=${__FLAGS_GETOPT_VERS_STD}
+     fi
+     ;;
+   *)
+-- 
+1.7.12.4
+
