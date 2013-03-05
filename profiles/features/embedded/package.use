@@ -1,1 +1,2 @@
 sys-apps/busybox	make-symlinks savedconfig
+sys-libs/uuid		static-libs
