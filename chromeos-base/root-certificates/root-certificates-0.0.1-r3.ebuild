@@ -47,7 +47,13 @@ src_unpack() {
 src_install() {
 	insinto /usr/share/ca-certificates
 	for x in "${S}"/roots/*.pem; do
-		newins $x "$(basename "$x" .pem)".crt
+		# Rename the certs by hash. The tarball names them by issuer
+		# name, but some of these names have unicode in them, which
+		# makes gmerge combust. Some day, this will be fixed.
+		# crosbug.com/35982
+		fp=$(openssl x509 -in "$x" -sha256 -fingerprint -noout \
+		     | cut -f2 -d=)
+		newins $x "$fp".crt
 	done
 
 	# Create required inputs to the update-ca-certificates script.
