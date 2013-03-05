@@ -100,14 +100,14 @@ IUSE_TESTS="
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_example_CrosTest
+	+tests_firmware_RomSize
+	tests_firmware_VbootCrypto
+	+tests_flaky_test
 	+tests_graphics_GLBench
 	+tests_graphics_GLMark2
 	+tests_graphics_KernelMemory
 	+tests_graphics_LibDRM
 	+tests_graphics_SyncControlTest
-	+tests_firmware_RomSize
-	tests_firmware_VbootCrypto
-	+tests_flaky_test
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_ch7036
