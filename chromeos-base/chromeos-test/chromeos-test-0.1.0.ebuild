@@ -94,6 +94,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/perceptualdiff
 	media-libs/opencv
 	media-libs/tiff
+	media-sound/sox
 	net-analyzer/netperf
 	net-dialup/minicom
 	net-dns/dnsmasq
