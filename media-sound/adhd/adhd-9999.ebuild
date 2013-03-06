@@ -19,6 +19,7 @@ IUSE=""
 
 RDEPEND=">=media-libs/alsa-lib-1.0.24.1
 	media-libs/speex
+	chromeos-base/metrics
 	dev-libs/iniparser
 	>=sys-apps/dbus-1.4.12
 	dev-libs/libpthread-stubs
@@ -33,7 +34,7 @@ src_prepare() {
 
 src_configure() {
 	cd cras
-	econf
+	econf --enable-chromeos-metrics
 }
 
 src_compile() {
