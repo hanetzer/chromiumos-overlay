@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="7ef79034d2cd192b5ca0a4cda31092b742cd3a7c"
-CROS_WORKON_TREE="af835f56a21aeba9724bb0bbb288fa0eb4bc7633"
+CROS_WORKON_COMMIT="a413eecfd0a472c88ff2e159bb3eda85a0ee7deb"
+CROS_WORKON_TREE="6c4f18777c44ef8e6340f34eb10891b5674ad0b1"
 CROS_WORKON_LOCALNAME="../platform/chromiumos-wide-profiling"
 CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-wide-profiling"
 
