@@ -16,6 +16,7 @@ KEYWORDS="amd64 arm x86"
 IUSE=""
 
 RDEPEND="chromeos-base/gestures
+	app-misc/utouch-evemu
 	chromeos-base/libevdev"
 
 DEPEND=${RDEPEND}
