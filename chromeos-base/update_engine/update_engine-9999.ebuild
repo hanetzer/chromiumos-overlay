@@ -24,6 +24,7 @@ RDEPEND="app-arch/bzip2
 	chromeos-base/metrics
 	chromeos-base/verity
 	dev-cpp/gflags
+	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libpcre
 	dev-libs/libxml2
@@ -32,13 +33,12 @@ RDEPEND="app-arch/bzip2
 	dev-util/bsdiff
 	net-misc/curl
 	sys-apps/rootdev
-	sys-fs/e2fsprogs"
+	sys-fs/e2fsprogs
+	sys-fs/udev"
 DEPEND="chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
-	dev-libs/dbus-glib
 	cros_host? ( dev-util/scons )
-	sys-fs/udev
 	${RDEPEND}"
 
 src_compile() {
