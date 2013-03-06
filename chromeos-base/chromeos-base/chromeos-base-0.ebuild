@@ -228,6 +228,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "nfqueue" 232     # For netfilter-queue
 	copy_or_add_daemon_user "tlsdate-dbus" 233 # For tlsdate-dbus-announce
 	copy_or_add_daemon_user "tlsdate" 234
+	copy_or_add_daemon_user "debugd-logs" 233 233 # For debugd's unprivileged logs
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
@@ -236,6 +237,7 @@ pkg_postinst() {
 
 	# Group that are allowed to create directories under /home/<hash>/root
 	copy_or_add_group "daemon-store" 400
+	copy_or_add_group "logs-access" 401
 
 	# All audio interfacing will go through the audio server.
 	add_users_to_group audio "cras"
@@ -269,6 +271,9 @@ pkg_postinst() {
 	copy_or_add_group "serial" 402
 	add_users_to_group "serial" "${system_user}"
 	add_users_to_group "serial" "uucp"
+
+	# debugd-logs has logs access
+	add_users_to_group "logs-access" "debugd-logs"
 
 	# The root user must be in the wpa group for wpa_cli.
 	add_users_to_group wpa root
