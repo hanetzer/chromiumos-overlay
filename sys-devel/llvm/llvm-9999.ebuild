@@ -8,7 +8,8 @@ EAPI="4"
 PYTHON_DEPEND="2"
 inherit subversion eutils flag-o-matic multilib toolchain-funcs python pax-utils
 
-EGIT_REPO_URI="http://chromium.googlesource.com/chromiumos/third_party/llvm"
+EGIT_REPO_URI="https://git.chromium.org/git/native_client/pnacl-llvm.git"
+EGIT_MASTER="upstream/master"
 # Set to the corresponding commit.
 #EGIT_COMMIT=""
 inherit git-2
