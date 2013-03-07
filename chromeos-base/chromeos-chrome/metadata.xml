@@ -22,6 +22,5 @@
 	<flag name='reorder'>Re-order symbols using profile data</flag>
 	<flag name='runhooks'>Run build hooks</flag>
 	<flag name='verbose'>Verbose build output</flag>
-	<flag name='widevine_cdm'>Build widevine plugin</flag>
 </use>
 </pkgmetadata>
