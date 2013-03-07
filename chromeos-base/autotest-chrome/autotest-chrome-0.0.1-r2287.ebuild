@@ -38,7 +38,6 @@ IUSE_TESTS=(
 	# Inherits from cros_ui_test.
 	+tests_desktopui_BrowserTest
 	+tests_desktopui_DocViewing
-	+tests_desktopui_PyAutoEnduranceTests
 	+tests_desktopui_PyAutoFunctionalTests
 	+tests_desktopui_PyAutoInstall
 	+tests_desktopui_PyAutoPerfTests
