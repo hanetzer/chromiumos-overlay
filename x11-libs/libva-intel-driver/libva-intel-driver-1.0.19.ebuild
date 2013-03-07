@@ -19,9 +19,7 @@ if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SRC_URI=""
 	S="${WORKDIR}/${PN}"
 else
-	MY_P=${P#libva-}
-	SRC_URI="http://cgit.freedesktop.org/vaapi/intel-driver/snapshot/${MY_P}.tar.bz2"
-	S="${WORKDIR}/${MY_P}"
+	SRC_URI="http://cgit.freedesktop.org/vaapi/releases/libva-intel-driver/${P}.tar.bz2"
 fi
 
 LICENSE="MIT"
@@ -31,17 +29,18 @@ if [ "${PV%9999}" = "${PV}" ] ; then
 else
 	KEYWORDS=""
 fi
-IUSE=""
+IUSE="wayland X"
 
-RDEPEND=">=x11-libs/libva-1.1.0_rc1
+RDEPEND=">=x11-libs/libva-1.1.0[X?,wayland?]
 	!<x11-libs/libva-1.0.15[video_cards_intel]
-	>=x11-libs/libdrm-2.4.23[video_cards_intel]"
+	>=x11-libs/libdrm-2.4.23[video_cards_intel]
+	wayland? ( media-libs/mesa[egl] )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_prepare() {
-	epatch "${FILESDIR}"/va_terminate.patch
+	epatch "${FILESDIR}"/libm.patch
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
 	epatch "${FILESDIR}"/disable-bo-recycling-in-libva.patch
 	eautoreconf
