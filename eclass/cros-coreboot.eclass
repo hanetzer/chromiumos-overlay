@@ -72,6 +72,11 @@ cros-coreboot_src_compile() {
 		mv "${build_root}/coreboot.rom"{.new,} || die
 	fi
 
+	# Extract the coreboot ramstage file into the build_root.
+	cbfstool "${build_root}/coreboot.rom" extract \
+		-n "fallback/coreboot_ram" \
+		-f "${build_root}/coreboot_ram.stage" || die
+
 	# Build cbmem for the target
 	cd util/cbmem
 	emake clean
@@ -82,6 +87,7 @@ cros-coreboot_src_install() {
 	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
+	newins "${COREBOOT_BUILD_ROOT}/coreboot_ram.stage" coreboot_ram.stage
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
 		configs/config.${COREBOOT_BOARD} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
