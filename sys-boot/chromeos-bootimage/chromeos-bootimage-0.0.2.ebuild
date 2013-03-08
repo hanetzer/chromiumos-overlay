@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex butterfly emeraldlake2 fox link lumpy lumpy64 mario parrot stout stumpy"
-IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge spring"
+IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge unified_depthcharge spring"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -194,39 +194,55 @@ src_compile_depthcharge() {
 	local fdt_file="${froot}/dts/fmap.dts"
 	local bmpblk_file="${froot}/bmpblk.bin"
 	local coreboot_file="${froot}/coreboot.rom"
+	local ramstage_file="${froot}/coreboot_ram.stage"
 
-	local common=''
-	common+=" --board ${BOARD_USE} --bct ${bct_file} --key ${devkeys_file}"
-	common+=" --bmpblk ${bmpblk_file} --coreboot ${coreboot_file}"
-	common+=" --dt ${fdt_file} --uboot ${uboot_file}"
+	if use unified_depthcharge; then
+		uboot_file="${froot}/depthcharge/depthcharge.unified.payload"
+	fi
+
+	local common=(
+		--board "${BOARD_USE}"
+		--bct "${bct_file}"
+		--key "${devkeys_file}"
+		--bmpblk "${bmpblk_file}"
+		--coreboot "${coreboot_file}"
+		--dt "${fdt_file}"
+		--uboot "${uboot_file}"
+	)
 
 	if use x86 || use amd64; then
-		common+=" --seabios ${CROS_FIRMWARE_ROOT}/seabios.cbfs"
+		common+=(
+			--seabios "${CROS_FIRMWARE_ROOT}/seabios.cbfs"
+			--add-blob ramstage "${ramstage_file}"
+		)
 	fi
 
 	if use cros_ec; then
-		common+=" --ec ${ec_file}"
+		common+=( --ec "${ec_file}" )
 	fi
 
 	local depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
+
+	if use unified_depthcharge; then
+		depthcharge_elf="${froot}/depthcharge/depthcharge.unified.elf"
+	fi
+
 	local netboot_elf="${froot}/depthcharge/netboot.elf"
 
-	# Build an RO-normal image, and an RW (twostop) image. This assumes
-	# that the fdt has the right gbb flags set.
 	einfo "Building RO image."
-	cros_bundle_firmware ${common} \
+	cros_bundle_firmware ${common[@]} \
 		--coreboot-elf="${depthcharge_elf}" \
 		--outdir "out.ro" --output "image.bin" ||
 		die "failed to build RO image."
 	einfo "Building RW image."
-	cros_bundle_firmware ${common} --force-rw \
+	cros_bundle_firmware "${common[@]}" --force-rw \
 		--coreboot-elf="${depthcharge_elf}" \
 		--outdir "out.rw" --output "image.rw.bin" ||
 		die "failed to build RW image."
 
 	# Build a netboot image.
 	einfo "Building netboot image."
-	cros_bundle_firmware ${common} \
+	cros_bundle_firmware "${common[@]}" \
 		--coreboot-elf="${netboot_elf}" \
 		--outdir "out.net" --output "image.net.bin" ||
 		die "failed to build netboot image."
