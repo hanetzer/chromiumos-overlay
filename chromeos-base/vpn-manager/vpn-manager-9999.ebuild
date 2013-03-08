@@ -23,7 +23,7 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	 dev-cpp/gflags
 	 dev-libs/openssl
 	 net-dialup/xl2tpd
-	 net-misc/strongswan[cisco,nat-transport]"
+	 net-misc/strongswan"
 DEPEND="${RDEPEND}
 	 dev-cpp/gtest"
 

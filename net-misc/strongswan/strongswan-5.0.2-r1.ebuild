@@ -1,21 +1,18 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-4.6.4.ebuild,v 1.1 2012/05/31 16:30:53 gurligebis Exp $
+# $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-5.0.2.ebuild,v 1.1 2013/02/02 17:34:50 gurligebis Exp $
 
 EAPI=2
-inherit eutils linux-info
+inherit eutils linux-info user
 
 DESCRIPTION="IPsec-based VPN solution focused on security and ease of use, supporting IKEv1/IKEv2 and MOBIKE"
 HOMEPAGE="http://www.strongswan.org/"
 SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 
-LICENSE="GPL-2 RSA-MD5 RSA-PKCS11 DES"
+LICENSE="GPL-2 RSA DES"
 SLOT="0"
-KEYWORDS="arm amd64 ~ppc ~sparc x86"
-# TODO(simonjam): Figure out why +openssl broke certificate support. Until then,
-# openssl is disabled unlike upstream.
-# See http://codereview.chromium.org/6833010 and http://crosbug.com/12695 for details.
-IUSE="+caps cisco curl debug dhcp eap farp gcrypt ldap +ikev1 +ikev2 mysql nat-transport +non-root openssl +smartcard sqlite"
+KEYWORDS="amd64 arm ~ppc ~ppc64 x86"
+IUSE="+caps curl debug dhcp eap farp gcrypt ldap mysql +non-root +openssl sqlite pam"
 
 COMMON_DEPEND="!net-misc/openswan
 	>=dev-libs/gmp-4.1.5
@@ -23,17 +20,24 @@ COMMON_DEPEND="!net-misc/openswan
 	caps? ( sys-libs/libcap )
 	curl? ( net-misc/curl )
 	ldap? ( net-nds/openldap )
-	smartcard? ( dev-libs/opensc )
-	openssl? ( >=dev-libs/openssl-0.9.8[-bindist] )
+	openssl? ( >=dev-libs/openssl-0.9.8 )
 	mysql? ( virtual/mysql )
-	sqlite? ( >=dev-db/sqlite-3.3.1 )"
+	sqlite? ( >=dev-db/sqlite-3.3.1 )
+	pam? ( sys-libs/pam )"
 DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger"
+	virtual/logger
+	sys-apps/iproute2"
 
 UGID="ipsec"
+
+src_prepare() {
+	epatch "${FILESDIR}/${P}-initgroups.patch"
+	epatch "${FILESDIR}/${P}-quick-mode-select-proposal-subset.patch"
+	epatch "${FILESDIR}/${P}-ignore-spurious-quick-mode.patch"
+}
 
 pkg_setup() {
 	linux-info_pkg_setup
@@ -44,15 +48,6 @@ pkg_setup() {
 		eerror "This ebuild currently only supports ${PN} with the"
 		eerror "native Linux 2.6 IPsec stack on kernels >= 2.6.16."
 		eerror
-	fi
-
-	if use nat-transport; then
-		ewarn
-		ewarn "You have enabled NAT Traversal for transport mode with the IKEv1"
-		ewarn "protocol. Please double check if you really require this feature"
-		ewarn "as it is potentially insecure and usually only required in certain"
-		ewarn "situations when interoperating with Windows using L2TP/IPsec."
-		ewarn
 	fi
 
 	if kernel_is -lt 2 6 34; then
@@ -88,16 +83,6 @@ pkg_setup() {
 	fi
 }
 
-src_prepare() {
-	# Initialize the supplementary group access list when pluto starts.
-	# See http://crosbug.com/16252 for details.
-	epatch "${FILESDIR}/${P}-initgroups.patch" || die
-	# Provide an option to ignore peer ID check in pluto.
-	# See http://crosbug.com/24476 for details.
-	epatch "${FILESDIR}/${P}-ignore-peer-id-check.patch" || die
-	epatch "${FILESDIR}/${P}-ignore-peer-id-doi.patch" || die
-}
-
 src_configure() {
 	local myconf=""
 
@@ -115,18 +100,19 @@ src_configure() {
 	# strongSwan builds and installs static libs by default which are
 	# useless to the user (and to strongSwan for that matter) because no
 	# header files or alike get installed... so disabling them is safe.
-	#
-	# On Chromium OS, we use --disable-xauth-vid to prevent strongswan
-	# from sending a XAUTH vendor ID during ISAKMP phase 1 exchange.
-	# See http://crosbug.com/25675 for details.
+	if use pam && use eap; then
+		myconf="${myconf} --enable-eap-gtc"
+	else
+		myconf="${myconf} --disable-eap-gtc"
+	fi
 	econf \
 		--disable-static \
-		--disable-xauth-vid \
+		--enable-ikev1 \
+		--enable-ikev2 \
+		--enable-pkcs11 \
 		$(use_with caps capabilities libcap) \
 		$(use_enable curl) \
 		$(use_enable ldap) \
-		$(use_enable smartcard) \
-		$(use_enable cisco cisco-quirks) \
 		$(use_enable debug leak-detective) \
 		$(use_enable eap eap-sim) \
 		$(use_enable eap eap-sim-file) \
@@ -135,18 +121,14 @@ src_configure() {
 		$(use_enable eap eap-simaka-reauth) \
 		$(use_enable eap eap-identity) \
 		$(use_enable eap eap-md5) \
-		$(use_enable eap eap-gtc) \
 		$(use_enable eap eap-aka) \
 		$(use_enable eap eap-aka-3gpp2) \
 		$(use_enable eap eap-mschapv2) \
 		$(use_enable eap eap-radius) \
-		$(use_enable nat-transport) \
 		$(use_enable openssl) \
 		$(use_enable gcrypt) \
 		$(use_enable mysql) \
 		$(use_enable sqlite) \
-		$(use_enable ikev1 pluto) \
-		$(use_enable ikev2 charon) \
 		$(use_enable dhcp) \
 		$(use_enable farp) \
 		${myconf}
@@ -161,7 +143,6 @@ src_install() {
 	if use non-root; then
 		fowners ${UGID}:${UGID} \
 			/etc/ipsec.conf \
-			/etc/ipsec.secrets \
 			/etc/strongswan.conf
 
 		dir_ugid="${UGID}"
@@ -182,12 +163,21 @@ src_install() {
 
 	# Replace various IPsec files with symbolic links to runtime generated
 	# files (by l2tpipsec_vpn) on the stateful partition of Chromium OS.
-	rm -f "${D}"/etc/ipsec.conf "${D}"/etc/ipsec.secrets "{$D}"/etc/ipsec.d/cacerts/cacert.der
-	dosym /mnt/stateful_partition/etc/ipsec.conf /etc/ipsec.conf || die
-	dosym /mnt/stateful_partition/etc/ipsec.secrets /etc/ipsec.secrets || die
-	dosym /mnt/stateful_partition/etc/cacert.der /etc/ipsec.d/cacerts/cacert.der || die
+	rm -f \
+		"${D}"/etc/ipsec.conf \
+		"${D}"/etc/ipsec.secrets \
+		"{$D}"/etc/ipsec.d/cacerts/cacert.der \
+		"{$D}"/etc/strongswan.conf
+	dosym /mnt/stateful_partition/etc/ipsec.conf \
+		/etc/ipsec.conf || die
+	dosym /mnt/stateful_partition/etc/ipsec.secrets \
+		/etc/ipsec.secrets || die
+	dosym /mnt/stateful_partition/etc/cacert.der \
+		/etc/ipsec.d/cacerts/cacert.der || die
+	dosym /mnt/stateful_partition/etc/strongswan.conf \
+		/etc/strongswan.conf || die
 
-	dodoc CREDITS NEWS README TODO || die
+	dodoc NEWS README TODO || die
 
 	# shared libs are used only internally and there are no static libs,
 	# so it's safe to get rid of the .la files
