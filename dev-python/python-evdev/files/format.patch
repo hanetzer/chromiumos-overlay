@@ -108,6 +108,81 @@ index 9424140..b979a0a 100644
  
      def close(self):
          os.close(self.fd)
+diff --git a/evdev/events.py b/evdev/events.py
+index ed7aaa4..c75764e 100644
+--- a/evdev/events.py
++++ b/evdev/events.py
+@@ -68,11 +68,11 @@ class InputEvent(object):
+         return self.sec + (self.usec / 1000000.0)
+ 
+     def __str__(s):
+-        msg = 'event at {:f}, code {:02d}, type {:02d}, val {:02d}'
++        msg = 'event at {0:f}, code {1:02d}, type {2:02d}, val {3:02d}'
+         return msg.format(s.timestamp(), s.code, s.type, s.value)
+ 
+     def __repr__(s):
+-        msg = '{}({!r}, {!r}, {!r}, {!r}, {!r})'
++        msg = '{0}({1!r}, {2!r}, {3!r}, {4!r}, {5!r})'
+         return msg.format(s.__class__.__name__,
+                           s.sec, s.usec, s.type, s.code, s.value)
+ 
+@@ -107,12 +107,12 @@ class KeyEvent(object):
+         try:    ks = ('up', 'down', 'hold')[self.keystate]
+         except: ks = 'unknown'
+ 
+-        msg = 'key event at {:f}, {} ({}), {}'
++        msg = 'key event at {0:f}, {1} ({2}), {3}'
+         return msg.format(self.event.timestamp(),
+                           self.scancode, self.keycode, ks)
+ 
+     def __repr__(s):
+-        return '{}({!r})'.format(s.__class__.__name__, s.event)
++        return '{0}({1!r})'.format(s.__class__.__name__, s.event)
+ 
+ 
+ class RelEvent(object):
+@@ -128,11 +128,11 @@ class RelEvent(object):
+         self.event = event
+ 
+     def __str__(self):
+-        msg = 'relative axis event at {:f}, {} '
++        msg = 'relative axis event at {0:f}, {1} '
+         return msg.format(self.event.timestamp(), REL[self.event.code])
+ 
+     def __repr__(s):
+-        return '{}({!r})'.format(s.__class__.__name__, s.event)
++        return '{0}({1!r})'.format(s.__class__.__name__, s.event)
+ 
+ 
+ class AbsEvent(object):
+@@ -148,11 +148,11 @@ class AbsEvent(object):
+         self.event = event
+ 
+     def __str__(self):
+-        msg = 'absolute axis event at {:f}, {} '
++        msg = 'absolute axis event at {0:f}, {1} '
+         return msg.format(self.event.timestamp(), ABS[self.event.code])
+ 
+     def __repr__(s):
+-        return '{}({!r})'.format(s.__class__.__name__, s.event)
++        return '{0}({1!r})'.format(s.__class__.__name__, s.event)
+ 
+ 
+ class SynEvent(object):
+@@ -168,11 +168,11 @@ class SynEvent(object):
+         self.event = event
+ 
+     def __str__(self):
+-        msg = 'synchronization event at {:f}, {} '
++        msg = 'synchronization event at {0:f}, {1} '
+         return msg.format(self.event.timestamp(), SYN[self.event.code])
+ 
+     def __repr__(s):
+-        return '{}({!r})'.format(s.__class__.__name__, s.event)
++        return '{0}({1!r})'.format(s.__class__.__name__, s.event)
+ 
+ 
+ #: Used by :func:`evdev.util.categorize()`
 diff --git a/evdev/uinput.py b/evdev/uinput.py
 index 2e14a54..4a485ce 100644
 --- a/evdev/uinput.py
