@@ -10,11 +10,12 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="test -clang -asan"
+IUSE="test -clang -asan +tpm"
 KEYWORDS="~amd64 ~arm ~x86"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="chromeos-base/bootstat
+	tpm? ( chromeos-base/chaps )
 	chromeos-base/chromeos-minijail
 	!<chromeos-base/flimflam-0.0.1-r530
 	chromeos-base/libchrome:180609[cros-debug=]
