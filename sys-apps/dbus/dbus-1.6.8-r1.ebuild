@@ -1,42 +1,39 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/dbus-1.4.12.ebuild,v 1.7 2011/06/26 10:44:46 armin76 Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/dbus-1.6.8.ebuild,v 1.10 2013/01/20 11:21:03 pinkbyte Exp $
 
-EAPI=2
-inherit autotools eutils multilib flag-o-matic python systemd virtualx
+EAPI=4
+inherit autotools eutils linux-info flag-o-matic python virtualx user
 
 DESCRIPTION="A message bus system, a simple way for applications to talk to each other"
 HOMEPAGE="http://dbus.freedesktop.org/"
 SRC_URI="http://dbus.freedesktop.org/releases/dbus/${P}.tar.gz"
 
-LICENSE="|| ( GPL-2 AFL-2.1 )"
+LICENSE="|| ( AFL-2.1 GPL-2 )"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ~ppc64 s390 sh sparc x86 ~x86-fbsd"
+KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd ~x86-linux"
 IUSE="debug doc selinux static-libs test X"
 
-RDEPEND="
+RDEPEND=">=dev-libs/expat-2
+	selinux? (
+		sec-policy/selinux-dbus
+		sys-libs/libselinux
+		)
 	X? (
 		x11-libs/libX11
 		x11-libs/libXt
-	)
-	selinux? (
-		sys-libs/libselinux
-		sec-policy/selinux-dbus
-	)
-	>=dev-libs/expat-1.95.8
-"
+		)"
 DEPEND="${RDEPEND}
-	dev-util/pkgconfig
+	virtual/pkgconfig
 	doc? (
 		app-doc/doxygen
 		app-text/docbook-xml-dtd:4.1.2
 		app-text/xmlto
-	)
+		)
 	test? (
-		=dev-lang/python-2*
-		>=dev-libs/glib-2.22:2
-	)
-"
+		>=dev-libs/glib-2.24
+		dev-lang/python:2.7
+		)"
 
 # out of sources build directory
 BD=${WORKDIR}/${P}-build
@@ -45,29 +42,34 @@ TBD=${WORKDIR}/${P}-tests-build
 
 pkg_setup() {
 	enewgroup messagebus
-	enewuser messagebus -1 "-1" -1 messagebus
+	enewuser messagebus -1 -1 -1 messagebus
 
 	if use test; then
 		python_set_active_version 2
 		python_pkg_setup
 	fi
+
+	if use kernel_linux; then
+		CONFIG_CHECK="~EPOLL"
+		linux-info_pkg_setup
+	fi
 }
 
 src_prepare() {
+	epatch "${FILESDIR}"/${PN}-1.5.12-selinux-when-dropping-capabilities-only-include-AUDI.patch
+
 	# Tests were restricted because of this
 	sed -i \
 		-e 's/.*bus_dispatch_test.*/printf ("Disabled due to excess noise\\n");/' \
 		-e '/"dispatch"/d' \
 		bus/test-main.c || die
 
-	epatch "${FILESDIR}"/${PN}-1.4.0-asneeded.patch
-
 	epatch "${FILESDIR}"/${P}-send-print-fixed.patch
-	epatch "${FILESDIR}"/${P}-send-unix-fd.patch
-	epatch "${FILESDIR}"/${P}-send-variant-dict.patch
+	epatch "${FILESDIR}"/${PN}-1.4.12-send-unix-fd.patch
+	epatch "${FILESDIR}"/${PN}-1.4.12-send-variant-dict.patch
 
 	# chromium-os:36381
-	epatch "${FILESDIR}"/${P}-match-rules.patch
+	epatch "${FILESDIR}"/${PN}-1.4.12-match-rules.patch
 
 	# required for asneeded patch but also for bug 263909, cross-compile so
 	# don't remove eautoreconf
@@ -75,54 +77,54 @@ src_prepare() {
 }
 
 src_configure() {
-	local my_conf
+	local myconf
 
 	# so we can get backtraces from apps
 	append-flags -rdynamic
 
 	# libaudit is *only* used in DBus wrt SELinux support, so disable it, if
 	# not on an SELinux profile.
-	my_conf="$(use_with X x)
+	myconf=(
+		--disable-silent-rules
+		--localstatedir="${EPREFIX}/var"
+		--docdir="${EPREFIX}/usr/share/doc/${PF}"
+		--htmldir="${EPREFIX}/usr/share/doc/${PF}/html"
+		$(use_enable static-libs static)
 		$(use_enable debug verbose-mode)
-		$(use_enable debug asserts)
-		$(use_enable kernel_linux inotify)
-		$(use_enable kernel_FreeBSD kqueue)
+		--disable-asserts
+		--disable-checks
 		$(use_enable selinux)
 		$(use_enable selinux libaudit)
-		$(use_enable static-libs static)
-		--enable-shared
+		$(use_enable kernel_linux inotify)
+		$(use_enable kernel_FreeBSD kqueue)
+		--disable-systemd
+		--disable-embedded-tests
+		--disable-modular-tests
+		$(use_enable debug stats)
 		--with-xml=expat
+		--with-session-socket-dir=/tmp
 		--with-system-pid-file=/var/run/dbus.pid
 		--with-system-socket=/var/run/dbus/system_bus_socket
-		--with-session-socket-dir=/tmp
 		--with-dbus-user=messagebus
-		$(systemd_with_unitdir)
-		--localstatedir=/var"
+		$(use_with X x)
+		)
 
 	mkdir "${BD}"
 	cd "${BD}"
 	einfo "Running configure in ${BD}"
-	ECONF_SOURCE="${S}" econf ${my_conf} \
-		$(use_enable doc doxygen-docs) \
-		$(use_enable doc xml-docs)
+	ECONF_SOURCE="${S}" econf "${myconf[@]}" \
+		$(use_enable doc xml-docs) \
+		$(use_enable doc doxygen-docs)
 
 	if use test; then
-		local circular
-		if ! has_version dev-libs/dbus-glib; then
-			circular="--disable-modular-tests"
-			ewarn "Skipping modular tests because dev-libs/dbus-glib is missing"
-		fi
-
 		mkdir "${TBD}"
 		cd "${TBD}"
 		einfo "Running configure in ${TBD}"
-		ECONF_SOURCE="${S}" econf \
-			${my_conf} \
+		ECONF_SOURCE="${S}" econf "${myconf[@]}" \
+			$(use_enable test asserts) \
 			$(use_enable test checks) \
 			$(use_enable test embedded-tests) \
-			$(use_enable test modular-tests) \
-			$(use_enable test asserts) \
-			${circular}
+			$(has_version dev-libs/dbus-glib && echo --enable-modular-tests)
 	fi
 }
 
@@ -133,61 +135,47 @@ src_compile() {
 
 	cd "${BD}"
 	einfo "Running make in ${BD}"
-	emake || die
-
-	if use doc; then
-		doxygen || die
-	fi
+	emake
 
 	if use test; then
 		cd "${TBD}"
 		einfo "Running make in ${TBD}"
-		emake || die
+		emake
 	fi
 }
 
 src_test() {
 	cd "${TBD}"
-	DBUS_VERBOSE=1 Xemake -j1 check || die
+	DBUS_VERBOSE=1 Xemake -j1 check
 }
 
 src_install() {
-	# initscript
-	newinitd "${FILESDIR}"/dbus.init-1.0 dbus || die
+	newinitd "${FILESDIR}"/dbus.initd dbus
 
 	if use X; then
 		# dbus X session script (#77504)
 		# turns out to only work for GDM (and startx). has been merged into
 		# other desktop (kdm and such scripts)
-		exeinto /etc/X11/xinit/xinitrc.d/
-		doexe "${FILESDIR}"/80-dbus || die
+		exeinto /etc/X11/xinit/xinitrc.d
+		doexe "${FILESDIR}"/80-dbus
 	fi
 
-	# needs to exist for the system socket
-	keepdir /var/run/dbus
-
 	# needs to exist for dbus sessions to launch
-	keepdir /usr/lib/dbus-1.0/services
 	keepdir /usr/share/dbus-1/services
-	keepdir /etc/dbus-1/system.d/
-	keepdir /etc/dbus-1/session.d/
+	keepdir /etc/dbus-1/{session,system}.d
+	# machine-id symlink from pkg_postinst()
+	keepdir /var/lib/dbus
 
+	# http://crosbug.com/23839
 	insinto /usr/share/dbus-1/interfaces
 	doins "${FILESDIR}"/org.freedesktop.DBus.Properties.xml
 
-	dodoc AUTHORS ChangeLog HACKING NEWS README doc/TODO || die
+	dodoc AUTHORS ChangeLog HACKING NEWS README doc/TODO
 
 	cd "${BD}"
-	# FIXME: split dtd's in dbus-dtd ebuild
-	emake DESTDIR="${D}" install || die
-	if use doc; then
-		dohtml -p api/ doc/api/html/* || die
-		cd "${S}"
-		dohtml doc/*.html || die
-	fi
+	emake DESTDIR="${D}" install
 
-	# Remove .la files
-	find "${D}" -type f -name '*.la' -exec rm -f {} +
+	prune_libtool_files --all
 }
 
 pkg_postinst() {
@@ -202,8 +190,10 @@ pkg_postinst() {
 	ewarn "the new version of the daemon."
 	ewarn "Don't do this while X is running because it will restart your X as well."
 
-	# Move to /etc per #370451 and ensure unique id is generated
-	[[ -e ${ROOT}/var/lib/dbus/machine-id ]] && \
-		mv -vf "${ROOT}"/var/lib/dbus/machine-id "${ROOT}"/etc/machine-id
-	dbus-uuidgen --ensure="${ROOT}"/etc/machine-id
+	# Ensure unique id is generated and put it in /etc wrt #370451 but symlink
+	# for DBUS_MACHINE_UUID_FILE (see tools/dbus-launch.c) and reverse
+	# dependencies with hardcoded paths (although the known ones got fixed already)
+	# This is handled at runtime on Chrome OS.
+	# dbus-uuidgen --ensure="${EROOT}"/etc/machine-id
+	# ln -sf "${EROOT}"/etc/machine-id "${EROOT}"/var/lib/dbus/machine-id
 }
