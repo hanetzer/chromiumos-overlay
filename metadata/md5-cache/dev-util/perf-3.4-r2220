@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) !dev-util/perf-next doc? ( app-text/asciidoc app-text/xmlto ) dev-vcs/git
+DESCRIPTION=Userland tools for Linux Performance Counters
+EAPI=4
+HOMEPAGE=http://perf.wiki.kernel.org/
+IUSE=+demangle +doc perl python ncurses cros_workon_tree_e3f56aafd41fd2a87e184eda189698bbc4826902 profiling
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) !dev-util/perf-next
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	01b7a221ed254c010703fd454e011ea6	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=148a6a0936decbe6093bdf2e2f18d602
