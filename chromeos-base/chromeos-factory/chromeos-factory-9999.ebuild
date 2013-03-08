@@ -26,6 +26,7 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/argparse
 	dev-python/jsonrpclib
 	dev-python/netifaces
+	dev-python/python-evdev
 	dev-python/pyyaml
 	dev-python/setproctitle
 	dev-util/stressapptest
