@@ -71,6 +71,13 @@ src_prepare() {
 
 	epatch "${FILESDIR}/nss-3.13.1-solaris-gcc.patch"
 
+	# use host shlibsign if need be #436216
+	if tc-is-cross-compiler ; then
+		sed -i \
+			-e 's:"${2}"/shlibsign:nssshlibsign:' \
+			"${S}"/mozilla/security/nss/cmd/shlibsign/sign.sh || die
+	fi
+
 	# dirty hack
 	cd "${S}"/mozilla/security/nss || die
 	sed -i -e "/CRYPTOLIB/s:\$(SOFTOKEN_LIB_DIR):../freebl/\$(OBJDIR):" \
@@ -79,40 +86,76 @@ src_prepare() {
 		cmd/platlibs.mk || die
 }
 
-src_compile() {
-	strip-flags
+nssarch() {
+	# Most of the arches are the same as $ARCH
+	local t=${1:-${CHOST}}
+	case ${t} in
+	hppa*)   echo "parisc";;
+	i?86*)   echo "i686";;
+	x86_64*) echo "x86_64";;
+	*)       tc-arch ${t};;
+	esac
+}
 
+nssbits() {
+	local cc="${1}CC" cppflags="${1}CPPFLAGS" cflags="${1}CFLAGS"
 	echo > "${T}"/test.c || die
-	$(tc-getCC) ${CFLAGS} -c "${T}"/test.c -o "${T}"/test.o || die
+	${!cc} ${!cppflags} ${!cflags} -c "${T}"/test.c -o "${T}"/test.o || die
 	case $(file "${T}"/test.o) in
-	*32-bit*x86-64*) export USE_x32=1;;
-	*64-bit*|*ppc64*|*x86_64*) export USE_64=1;;
+	*32-bit*x86-64*) echo USE_x32=1;;
+	*64-bit*|*ppc64*|*x86_64*) echo USE_64=1;;
 	*32-bit*|*ppc*|*i386*) ;;
 	*) die "Failed to detect whether your arch is 64bits or 32bits, disable distcc if you're using it, please";;
 	esac
+}
+
+src_compile() {
+	strip-flags
+
+	tc-export AR RANLIB {BUILD_,}{CC,PKG_CONFIG}
+	local makeargs=(
+		CC="${CC}"
+		AR="${AR} rc \$@"
+		RANLIB="${RANLIB}"
+		OPTIMIZER=
+		$(nssbits)
+	)
 
 	export NSPR_INCLUDE_DIR="${ROOT}"/usr/include/nspr
 	export NSPR_LIB_DIR="${ROOT}"/usr/lib
+
+	# Do not let `uname` be used.
+	if use kernel_linux ; then
+		makeargs+=(
+			OS_TARGET=Linux
+			OS_RELEASE=2.6
+			OS_TEST="$(nssarch)"
+		)
+	fi
+
 	export BUILD_OPT=1
 	export NSS_USE_SYSTEM_SQLITE=1
 	export NSDISTMODE=copy
 	export NSS_ENABLE_ECC=1
-	export XCFLAGS="${CFLAGS}"
+	export XCFLAGS="${CFLAGS} ${CPPFLAGS}"
 	export FREEBL_NO_DEPEND=1
 	export ASFLAGS=""
 
-	# Cross-compile Love
-	( filter-flags -m* ;
-	  cd "${S}"/mozilla/security/coreconf &&
-	  emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" LDFLAGS= CC="$(tc-getBUILD_CC)" || die "coreconf make failed" )
-	cd "${S}"/mozilla/security/dbm
-	NSINSTALL=$(readlink -f $(find "${S}"/mozilla/security/coreconf -type f -name nsinstall))
-	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} || die "dbm make failed"
-	cd "${S}"/mozilla/security/nss
-	if tc-is-cross-compiler; then
-		SHLIBSIGN_ARG="SHLIBSIGN=/usr/bin/nssshlibsign"
-	fi
-	emake -j1 BUILD_OPT=1 XCFLAGS="${CFLAGS}" CC="$(tc-getCC)" NSINSTALL="${NSINSTALL}" OS_TEST=${ARCH} ${SHLIBSIGN_ARG} || die "nss make failed"
+	local d
+
+	# Build the host tools first.
+	LDFLAGS="${BUILD_LDFLAGS}" \
+	XCFLAGS="${BUILD_CFLAGS}" \
+	emake -j1 -C mozilla/security/coreconf \
+		CC="${BUILD_CC}" \
+		$(nssbits BUILD_) \
+		|| die
+	makeargs+=( NSINSTALL="${PWD}/$(find -type f -name nsinstall)" )
+
+	# Then build the target tools.
+	for d in dbm nss ; do
+		emake -j1 "${makeargs[@]}" -C mozilla/security/${d} || die "${d} make failed"
+	done
 }
 
 src_install () {

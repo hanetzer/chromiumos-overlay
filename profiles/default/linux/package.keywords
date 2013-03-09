@@ -42,8 +42,3 @@
 
 # Required by dev-util/cmake-2.8.4-r1
 =app-arch/libarchive-2.8.1      amd64 x86
-
-# Requires custom patches before unmasking
-=dev-libs/nspr-4.9.2 -* ~arm ~x86 ~amd64
-=dev-libs/nss-3.14 -* ~arm ~x86 ~amd64
-=app-crypt/nss-3.14 -* ~arm ~x86 ~amd64

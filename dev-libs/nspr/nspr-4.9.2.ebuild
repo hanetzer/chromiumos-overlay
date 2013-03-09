@@ -3,8 +3,9 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/nspr/nspr-4.9.2.ebuild,v 1.8 2012/11/29 23:40:13 blueness Exp $
 
 EAPI=3
+WANT_AUTOCONF="2.1"
 
-inherit eutils multilib toolchain-funcs versionator
+inherit autotools eutils multilib toolchain-funcs versionator
 
 MIN_PV="$(get_version_component_range 2)"
 
@@ -19,8 +20,6 @@ IUSE="debug"
 
 src_prepare() {
 	mkdir build inst
-	epatch "${FILESDIR}"/${PN}-4.8-config.patch
-	epatch "${FILESDIR}"/${PN}-4.6.1-config-1.patch
 	epatch "${FILESDIR}"/${PN}-4.6.1-lang.patch
 	epatch "${FILESDIR}"/${PN}-4.7.0-prtime.patch
 	epatch "${FILESDIR}"/${PN}-4.7.1-solaris.patch
@@ -34,6 +33,10 @@ src_prepare() {
 
 	# ChromeOS: Fix x64 -> x86 cross-compilation
 	epatch "${FILESDIR}"/${PN}-4.9.2-r1-cross.patch
+
+	# We must run eautoconf to regenerate configure
+	cd "${S}"/mozilla/nsprpub
+	eautoconf
 
 	# make sure it won't find Perl out of Prefix
 	sed -i -e "s/perl5//g" "${S}"/mozilla/nsprpub/configure || die
@@ -80,8 +83,6 @@ src_compile() {
 }
 
 src_install () {
-	# Their build system is royally confusing, as usual
-	MINOR_VERSION=${MIN_PV} # Used for .so version
 	cd "${S}"/build
 	emake DESTDIR="${D}" install || die "emake install failed"
 
@@ -89,18 +90,6 @@ src_install () {
 	for file in *.a; do
 		einfo "removing static libraries as upstream has requested!"
 		rm -f ${file} || die "failed to remove static libraries."
-	done
-
-	local n=
-	# aix-soname.patch does this already
-	[[ ${CHOST} == *-aix* ]] ||
-	for file in *$(get_libname); do
-		n=${file%$(get_libname)}$(get_libname ${MINOR_VERSION})
-		mv ${file} ${n} || die "failed to mv files around"
-		ln -s ${n} ${file} || die "failed to symlink files."
-		if [[ ${CHOST} == *-darwin* ]]; then
-			install_name_tool -id "${EPREFIX}/usr/$(get_libdir)/${n}" ${n} || die
-		fi
 	done
 
 	# install nspr-config
