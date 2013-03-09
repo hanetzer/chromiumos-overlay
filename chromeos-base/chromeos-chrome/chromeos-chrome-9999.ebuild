@@ -129,6 +129,8 @@ RDEPEND="${RDEPEND}
 		x11-apps/setxkbmap
 		x11-libs/libXcomposite
 		x11-libs/libXcursor
+		x11-libs/libXi
+		x11-libs/libXdamage
 		x11-libs/libXrandr
 		x11-libs/libXScrnSaver
 		!arm? ( x11-libs/libva )
