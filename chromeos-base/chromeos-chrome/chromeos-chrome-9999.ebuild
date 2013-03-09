@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose X"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -115,7 +115,6 @@ RDEPEND="${RDEPEND}
 	dev-libs/dbus-glib
 	x11-libs/cairo
 	drm? ( x11-libs/libxkbcommon )
-	x11-libs/libXScrnSaver
 	x11-libs/pango
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
@@ -126,13 +125,16 @@ RDEPEND="${RDEPEND}
 	net-misc/wget
 	sys-fs/udev
 	sys-libs/zlib
-	x11-libs/libXcomposite
-	x11-libs/libXcursor
-	x11-libs/libXrandr
-	x11-libs/libXScrnSaver
-	chrome_remoting? ( x11-libs/libXtst )
-	x11-apps/setxkbmap
-	!arm? ( x11-libs/libva )"
+	X? (
+		x11-apps/setxkbmap
+		x11-libs/libXcomposite
+		x11-libs/libXcursor
+		x11-libs/libXrandr
+		x11-libs/libXScrnSaver
+		!arm? ( x11-libs/libva )
+		chrome_remoting? ( x11-libs/libXtst )
+	)"
+
 
 DEPEND="${DEPEND}
 	${RDEPEND}
