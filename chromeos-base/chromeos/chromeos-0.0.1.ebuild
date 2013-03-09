@@ -91,6 +91,7 @@ CROS_COMMON_RDEPEND="
 	app-shells/dash
 	chromeos-base/bootstat
 	chromeos-base/chromeos-base
+	chromeos-base/chromeos-fonts
 	chromeos-base/chromeos-installer
 	chromeos-base/metrics
 	chromeos-base/update_engine
@@ -98,6 +99,7 @@ CROS_COMMON_RDEPEND="
 	gdmwimax? ( net-wireless/gdmwimax )
 	net-firewall/iptables
 	sys-apps/baselayout
+	sys-libs/timezone-data
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/linux-sources
@@ -234,7 +236,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
-	sys-libs/timezone-data
 	sys-process/lsof
 	sys-process/procps
 	virtual/modemmanager
