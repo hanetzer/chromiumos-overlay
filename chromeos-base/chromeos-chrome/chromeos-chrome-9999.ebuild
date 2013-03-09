@@ -66,8 +66,6 @@ CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
 RELEASE_EXTRA_CFLAGS=()
 
-USE_TCMALLOC="linux_use_tcmalloc=1"
-
 # For compilation/local chrome
 BUILDTYPE="${BUILDTYPE:-Release}"
 BOARD="${BOARD:-${SYSROOT##/build/}}"
@@ -177,6 +175,9 @@ echotf() { echox ${1:-$?} true false ; }
 use10()  { usex $1 1 0 ; }
 usetf()  { usex $1 true false ; }
 set_build_defines() {
+	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
+	USE_TCMALLOC="linux_use_tcmalloc=$([[ ${CHOST} != armv6* ]]; echo10)"
+
 	# General build defines.
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
