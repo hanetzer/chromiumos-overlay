@@ -245,11 +245,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cypress-tools
 	"
 
-# Host dependencies for building Platform2
-RDEPEND="${RDEPEND}
-	dev-util/gyp
-	"
-
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
