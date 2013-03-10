@@ -20,6 +20,7 @@ IUSE="hardened"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
+	chromeos-base/autotest-deps-ltp
 	chromeos-base/protofiles
 	dev-libs/protobuf
 	dev-python/pygobject
@@ -29,7 +30,7 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+tests_ltp
+	+tests_kernel_LTP
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
