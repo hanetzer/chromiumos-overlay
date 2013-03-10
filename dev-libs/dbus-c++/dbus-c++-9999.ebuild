@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/dbus-cplusplus"
 
-inherit toolchain-funcs cros-workon
+inherit cros-workon autotools
 
 DESCRIPTION="C++ D-Bus bindings"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/dbus-c%2B%2B"
@@ -25,7 +25,7 @@ DEPEND="${DEPEND}
 	dev-util/pkgconfig"
 
 src_prepare() {
-	./bootstrap || die "failed to bootstrap autotools"
+	eautoreconf
 }
 
 src_configure() {
