@@ -34,8 +34,26 @@ idobin() {
 	local src
 	for src in "$@"; do
 		"${FILESDIR}/copy_elf" "${ROOT}" "${INITRAMFS_TMP_S}" "${src}" ||
-			die "Cannot install: $src"
-		elog "Copied: $src"
+			die "Cannot install: ${src}"
+		elog "Copied: ${src}"
+	done
+}
+
+# Special handling for futility wrapper. This will go away once futility is
+# converted to a single binary.
+idofutility() {
+	local src
+        local base
+	for src in "$@"; do
+		"${FILESDIR}/copy_elf" "${ROOT}" "${INITRAMFS_TMP_S}" "${src}" ||
+			die "Cannot install: ${src}"
+		base=$(basename "${src}")
+		mv -f "${INITRAMFS_TMP_S}/bin/${base}" \
+			"${INITRAMFS_TMP_S}/bin/old_bins/${base}" ||
+                        die "Cannot mv: ${src}"
+		ln -sf futility "${INITRAMFS_TMP_S}/bin/${base}" ||
+                        die "Cannot symlink: ${src}"
+		elog "Symlinked: /bin/${base} -> futility"
 	done
 }
 
@@ -45,8 +63,8 @@ idodep() {
 	for src in "$@"; do
 		"${FILESDIR}/copy_elf" "--lib-only" "${ROOT}" \
 			"${INITRAMFS_TMP_S}" "${src}" || \
-			die "Cannot install: $src"
-		elog "Copied dependency for: $src"
+			die "Cannot install: ${src}"
+		elog "Copied dependency for: ${src}"
 	done
 }
 
@@ -72,11 +90,12 @@ pull_initramfs_binary() {
 	idobin /usr/sbin/flashrom
 
 	# For recovery behavior
-	idobin /usr/bin/cgpt
-	idobin /usr/bin/crossystem
-	idobin /usr/bin/dump_kernel_config
-	idobin /usr/bin/tpmc
-	idobin /usr/bin/vbutil_kernel
+	idobin /usr/bin/futility
+	idofutility /usr/bin/old_bins/cgpt
+	idofutility /usr/bin/old_bins/crossystem
+	idofutility /usr/bin/old_bins/dump_kernel_config
+	idofutility /usr/bin/old_bins/tpmc
+	idofutility /usr/bin/old_bins/vbutil_kernel
 }
 
 pull_netboot_ramfs_binary() {
@@ -208,6 +227,7 @@ build_initramfs_file() {
 
 	local subdirs=(
 		bin
+		bin/old_bins
 		dev
 		etc
 		etc/screens
