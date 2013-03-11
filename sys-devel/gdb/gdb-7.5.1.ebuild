@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-9999.ebuild,v 1.13 2013/02/21 16:08:27 ago Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-7.5.1.ebuild,v 1.13 2013/02/21 16:08:27 ago Exp $
 
 EAPI="3"
 
@@ -29,7 +29,7 @@ case ${PV} in
 	# weekly snapshots
 	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.bz2"
 	;;
-9999*)
+7.5.1 | 9999*)
 	# live git tree
 	EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/gdb.git"
 	EGIT_COMMIT=166725a2f7bca6eeb8cf3dcb7a22907ed8b9a764
@@ -66,6 +66,7 @@ DEPEND="${RDEPEND}
 	virtual/yacc
 	test? ( dev-util/dejagnu )
 	nls? ( sys-devel/gettext )"
+is_cross && DEPEND+=" =${CATEGORY}/gdb-7.2-r99:${CTARGET}"
 
 S=${WORKDIR}/${PN}-${MY_PV}
 
