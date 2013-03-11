@@ -90,9 +90,14 @@ IUSE_TESTS="
 	+tests_audiovideo_LoopbackLatency
 	+tests_audiovideo_Microphone
 	+tests_audiovideo_V4L2
+	+tests_cellular_CdmaConfig
+	+tests_cellular_Dummy
+	+tests_cellular_ModemControl
+	+tests_cellular_Signal
 	+tests_cellular_Smoke
 	+tests_cellular_ThroughputController
 	+tests_cellular_Throughput
+	+tests_cellular_ZeroSignal
 	+tests_build_RootFilesystemSize
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
