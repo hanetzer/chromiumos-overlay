@@ -18,6 +18,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND=">=media-libs/alsa-lib-1.0.24.1
+	media-libs/sbc
 	media-libs/speex
 	chromeos-base/metrics
 	dev-libs/iniparser
