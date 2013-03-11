@@ -26,7 +26,11 @@ src_prepare() {
 
 src_configure() {
 	# Our unprivileged group is called "nobody"
-	econf $(use_enable dbus) --with-unpriv-group=nobody
+	econf $(use_enable dbus) \
+	      --with-unpriv-user=tlsdate \
+	      --with-unpriv-group=tlsdate \
+	      --with-dbus-user=tlsdate-dbus \
+	      --with-dbus-group=tlsdate-dbus
 }
 
 src_compile() {
@@ -38,4 +42,6 @@ src_install() {
 	default
 	insinto /etc/tlsdate
 	doins "${FILESDIR}/tlsdated.conf"
+	insinto /etc/dbus-1/system.d
+	doins "${FILESDIR}/org.torproject.tlsdate.conf"
 }
