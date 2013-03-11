@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth cros_ec cros_embedded"
+IUSE="cros_ec cros_embedded"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -41,7 +41,6 @@ IUSE="bluetooth cros_ec cros_embedded"
 ################################################################################
 
 CROS_COMMON_RDEPEND="
-	bluetooth? ( net-wireless/bluez-test )
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
 	net-misc/rsync
