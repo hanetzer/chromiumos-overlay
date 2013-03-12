@@ -51,10 +51,10 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm motif +nptl pic selinux
+	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD xlib-glx"
 
-LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.31"
+LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.42"
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
 RDEPEND="
@@ -66,21 +66,20 @@ RDEPEND="
 	x11-libs/libXdamage
 	x11-libs/libXext
 	x11-libs/libXxf86vm
-	motif? ( x11-libs/openmotif )
 	${LIBDRM_DEPSTRING}
 "
 
 DEPEND="${RDEPEND}
 	=dev-lang/python-2*
 	dev-libs/libxml2
-	dev-util/pkgconfig
-	x11-misc/makedepend
-	x11-proto/inputproto
+	sys-devel/bison
+	sys-devel/flex
+	virtual/pkgconfig
+	>=x11-proto/dri2proto-2.6
+	>=x11-proto/glproto-1.4.11
 	>=x11-proto/xextproto-7.0.99.1
 	x11-proto/xf86driproto
 	x11-proto/xf86vidmodeproto
-	>=x11-proto/dri2proto-2.2
-	>=x11-proto/glproto-1.4.11
 	!arm? ( sys-devel/llvm )
 "
 
@@ -114,24 +113,19 @@ src_prepare() {
 	fi
 
 	epatch "${FILESDIR}"/9.0-cross-compile.patch
-	epatch "${FILESDIR}"/7.11-mesa-st-no-flush-front.patch
-	epatch "${FILESDIR}"/7.11-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
-	epatch "${FILESDIR}"/7.11_p2-pkgconfig.patch
-	epatch "${FILESDIR}"/9.0-builtin_function.patch
+	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
+	epatch "${FILESDIR}"/9.1-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/9.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/9.0-i965-Make-sure-we-do-render-between-two-hiz-flushes.patch
-	epatch "${FILESDIR}"/9.0-Add-builtin-function-cpp.patch
+	epatch "${FILESDIR}"/9.1-builtin_function.patch
+	epatch "${FILESDIR}"/9.1-Add-builtin-function-cpp.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
-	epatch "${FILESDIR}"/8.1-lastlevel.patch
-	epatch "${FILESDIR}"/8.1-disable-guardband.patch
-	epatch "${FILESDIR}"/9.0-uniform-array-bounds-check.patch
-	epatch "${FILESDIR}"/9.0-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
+	epatch "${FILESDIR}"/9.1-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
 	epatch "${FILESDIR}"/9.0-fail-compile-on-bad-uniform-access.patch
-	epatch "${FILESDIR}"/9.0-glx-Check-that-swap_buffers_reply-is-non-NULL-before.patch
-	epatch "${FILESDIR}"/9.0-gen_matypes-cross.patch
-	epatch "${FILESDIR}"/9.0-i965-use-cxx-linker.patch
+	epatch "${FILESDIR}"/9.1-gen_matypes-cross.patch
+	epatch "${FILESDIR}"/9.1-fix-compile-disable-asm.patch
 
 	base_src_prepare
 
@@ -148,6 +142,8 @@ src_configure() {
 
 	if use classic; then
 	# Configurable DRI drivers
+		driver_enable swrast
+
 		# Intel code
 		driver_enable video_cards_intel i915 i965
 
@@ -192,10 +188,7 @@ src_configure() {
 		$(use_enable gallium) \
 		$(use_enable debug) \
 		$(use_enable nptl glx-tls) \
-		$(use_enable motif glw) \
-		$(use_enable motif) \
 		$(use_enable !pic asm) \
-		$(use_enable dri) \
 		$(use_enable xlib-glx) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
@@ -205,10 +198,6 @@ src_configure() {
 src_install() {
 	base_src_install
 
-	# Save the glsl-compiler for later use
-	if ! tc-is-cross-compiler; then
-		dobin "${S}"/src/glsl/glsl_compiler || die
-	fi
 	# Remove redundant headers
 	# GLU and GLUT
 	rm -f "${D}"/usr/include/GL/glu*.h || die "Removing GLU and GLUT headers failed."

@@ -1,7 +1,10 @@
-From 332dfbeae2da90f44c32b4ded4b1d1c4a684d4d6 Mon Sep 17 00:00:00 2001
+From 9c99f02c703016442e1d3f5b4449af07fe589920 Mon Sep 17 00:00:00 2001
 From: Mike Frysinger <vapier@gentoo.org>
-Date: Tue, 31 Jan 2012 17:54:37 -0500
+Date: Mon, 11 Mar 2013 19:12:22 -0700
 Subject: [PATCH] gen_matypes: fix cross-compiling with gcc
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 The current gen_matypes logic assumes that the host compiler will produce
 information that is useful for the target compiler.  Unfortunately, this
@@ -12,32 +15,21 @@ compiler to produce assembly from the gen_matypes.c source, then process
 it with a shell script to create a usable header.  This is similar to how
 the linux kernel creates its asm-offsets.c file.
 
+Change-Id: I6990fc3b5313c7065055af23f2db3515fff4251d
 Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
 ---
- configs/current.in         |  2 ++
- configure.ac               |  6 ++++++
- src/mesa/x86/Makefile      | 18 +++++++++++++++---
- src/mesa/x86/gen_matypes.c | 35 +++++++++++++++++++++++++++++------
- 4 files changed, 52 insertions(+), 9 deletions(-)
+ configure.ac                |  6 ++++++
+ src/mesa/x86-64/Makefile.am | 10 ++++++++++
+ src/mesa/x86/Makefile.am    | 10 ++++++++++
+ src/mesa/x86/gen_matypes.c  | 35 +++++++++++++++++++++++++++++------
+ 4 files changed, 55 insertions(+), 6 deletions(-)
 
-diff --git a/configs/current.in b/configs/current.in
-index ec3f319..724fcdc 100644
---- a/configs/current.in
-+++ b/configs/current.in
-@@ -223,6 +223,8 @@ ifneq ($(LLVM_VERSION),)
- endif
- 
- HAVE_XF86VIDMODE = @HAVE_XF86VIDMODE@
-+
-+GEN_ASM_OFFSETS = @GEN_ASM_OFFSETS@
- 
- GALLIUM_PIPE_LOADER_DEFINES = @GALLIUM_PIPE_LOADER_DEFINES@
- GALLIUM_PIPE_LOADER_LIBS = @GALLIUM_PIPE_LOADER_LIBS@
 diff --git a/configure.ac b/configure.ac
-index 1b571b9..82a8cc9 100644
+index 3204869..12f31b8 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -102,6 +102,7 @@ AC_MSG_RESULT([$acv_mesa_CLANG])
+@@ -99,6 +99,7 @@ AC_MSG_RESULT([$acv_mesa_CLANG])
  
  dnl If we're using GCC, make sure that it is at least version 3.3.0.  Older
  dnl versions are explictly not supported.
@@ -45,7 +37,7 @@ index 1b571b9..82a8cc9 100644
  if test "x$GCC" = xyes -a "x$acv_mesa_CLANG" = xno; then
      AC_MSG_CHECKING([whether gcc version is sufficient])
      major=0
-@@ -119,7 +120,12 @@ if test "x$GCC" = xyes -a "x$acv_mesa_CLANG" = xno; then
+@@ -116,7 +117,12 @@ if test "x$GCC" = xyes -a "x$acv_mesa_CLANG" = xno; then
      else
          AC_MSG_RESULT([yes])
      fi
@@ -56,10 +48,10 @@ index 1b571b9..82a8cc9 100644
  fi
 +AM_CONDITIONAL([GEN_ASM_OFFSETS], test "x$GEN_ASM_OFFSETS" = xyes)
  
- 
- MKDEP_OPTIONS=-fdepend
+ dnl Make sure the pkg-config macros are defined
+ m4_ifndef([PKG_PROG_PKG_CONFIG],
 diff --git a/src/mesa/x86-64/Makefile.am b/src/mesa/x86-64/Makefile.am
-index baeb4b6..604f90a 100644
+index baeb4b6..809cbaa 100644
 --- a/src/mesa/x86-64/Makefile.am
 +++ b/src/mesa/x86-64/Makefile.am
 @@ -34,7 +34,17 @@ gen_matypes_SOURCES = ../x86/gen_matypes.c
@@ -81,7 +73,7 @@ index baeb4b6..604f90a 100644
 +
 +endif
 diff --git a/src/mesa/x86/Makefile.am b/src/mesa/x86/Makefile.am
-index 5976bb4..c73330c 100644
+index 5976bb4..93c1698 100644
 --- a/src/mesa/x86/Makefile.am
 +++ b/src/mesa/x86/Makefile.am
 @@ -34,7 +34,17 @@ gen_matypes_SOURCES = gen_matypes.c
@@ -103,7 +95,7 @@ index 5976bb4..c73330c 100644
 +
 +endif
 diff --git a/src/mesa/x86/gen_matypes.c b/src/mesa/x86/gen_matypes.c
-index 4fe99e7..cb74247 100644
+index 61f181c..825fb67 100644
 --- a/src/mesa/x86/gen_matypes.c
 +++ b/src/mesa/x86/gen_matypes.c
 @@ -52,7 +52,7 @@ do {									\
@@ -165,5 +157,5 @@ index 4fe99e7..cb74247 100644
  
  int main( int argc, char **argv )
 -- 
-1.8.0.2
+1.8.1.3
 
