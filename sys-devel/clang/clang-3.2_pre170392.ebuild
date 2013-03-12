@@ -70,10 +70,10 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [ "/usr/x86_64-pc-linux-gnu/gcc-bin/4.6.x-google" != $(gcc-config -B) ]; then
-		ewarn "Beware sheriff: gcc's binaries are not in '/usr/x86_64-pc-linux-gnu/gcc-bin/4.6.x-google'"
+	if [ "/usr/x86_64-pc-linux-gnu/gcc-bin/4.7.x-google" != $(gcc-config -B) ]; then
+		ewarn "Beware sheriff: gcc's binaries are not in '/usr/x86_64-pc-linux-gnu/gcc-bin/4.7.x-google'"
 		ewarn "and are instead in $(gcc-config -B). This may lead to an unusable clang."
-		ewarn "Please test clang with a simple hello_world.cc file and update this message"
+		ewarn "Please test clang with a simple hello_world.cc file and update this message."
 	fi
 
 	# Same as llvm doc patches
