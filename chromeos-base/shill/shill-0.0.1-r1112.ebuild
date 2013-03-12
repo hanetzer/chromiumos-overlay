@@ -32,9 +32,9 @@ RDEPEND="chromeos-base/bootstat
 	dev-libs/protobuf
 	net-dialup/ppp
 	net-dns/c-ares
-        net-libs/libmnl
-        net-libs/libnetfilter_queue
-        net-libs/libnfnetlink
+	net-libs/libmnl
+	net-libs/libnetfilter_queue
+	net-libs/libnfnetlink
 	net-misc/dhcpcd
 	net-misc/openvpn
 	net-wireless/wpa_supplicant[dbus]"
@@ -43,7 +43,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	chromeos-base/wimax_manager
 	test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )
+	dev-cpp/gtest
 	virtual/modemmanager"
 
 make_flags() {
