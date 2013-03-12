@@ -1,16 +1,23 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 #
 # Original Author: The Chromium OS Authors <chromium-os-dev@chromium.org>
 # Purpose: Generate shell script containing firmware update bundle.
 #
 
+# TODO(hungte) Remove cros-binary when BCS_OVERLAY transition is ready.
 inherit cros-workon cros-binary
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY
+# @DESCRIPTION: (Optional) Name of board overlay on Binary Component Server
+: ${CROS_FIRMWARE_BCS_OVERLAY:=${BOARD_OVERLAY##*/}}
+
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_USER_NAME
 # @DESCRIPTION: (Optional) Name of user on BCS server
 : ${CROS_FIRMWARE_BCS_USER_NAME:=}
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY_NAME
 # @DESCRIPTION: (Optional) Name of the ebuild overlay.
 : ${CROS_FIRMWARE_BCS_OVERLAY_NAME:=}
@@ -31,14 +38,17 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Version name of EC firmware
 : ${CROS_FIRMWARE_EC_VERSION:=}
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of system firmware (BIOS) image
 : ${CROS_FIRMWARE_MAIN_SUM:=}
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_RW_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of RW system firmware image
 : ${CROS_FIRMWARE_MAIN_RW_SUM:=}
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_SUM
 # @DESCRIPTION: (Optional) SHA-1 checksum of EC firmware image on BCS
 : ${CROS_FIRMWARE_EC_SUM:=}
@@ -52,7 +62,7 @@ inherit cros-workon cros-binary
 : ${CROS_FIRMWARE_SCRIPT:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_UNSTABLE
-# @DESCRIPTION: (Optional) Mark firmrware as unstable (always RO+RW update)
+# @DESCRIPTION: (Optional) Mark firmware as unstable (always RO+RW update)
 : ${CROS_FIRMWARE_UNSTABLE:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BINARY
@@ -67,7 +77,12 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Always add "force update firmware" tag.
 : ${CROS_FIRMWARE_FORCE_UPDATE:=}
 
-# TODO(hungte) Support "local_mainfw" and "local_ecfw".
+# Check for EAPI 2+
+case "${EAPI:-0}" in
+	4|3|2) ;;
+	*) die "unsupported EAPI" ;;
+esac
+
 # $board-overlay/make.conf may contain these flags to always create "firmware
 # from source".
 IUSE="bootimage cros_ec"
@@ -106,23 +121,24 @@ RDEPEND="
 	chromeos-base/vboot_reference
 	sys-apps/util-linux"
 
-# Check for EAPI 2+
-case "${EAPI:-0}" in
-	4|3|2) ;;
-	*) die "unsupported EAPI" ;;
-esac
+RESTRICT="mirror"
+
+# Local variables.
 
 UPDATE_SCRIPT="chromeos-firmwareupdate"
 FW_IMAGE_LOCATION=""
 FW_RW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
-EXTRA_LOCATIONS=""
+EXTRA_LOCATIONS=()
+RETURN_VALUE=""
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # Returns true (0) if parameter starts with "bcs://"
 _is_on_bcs() {
 	[[ "${1%%://*}" = "bcs" ]]
 }
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # Returns true (0) if parameter starts with "file://"
 _is_in_files() {
 	[[ "${1%%://*}" = "file" ]]
@@ -152,6 +168,7 @@ _bcs_fetch() {
 	cros-binary_fetch
 }
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # Unpack a tbz2 firmware archive to ${S}
 # Parameters: Location of archived firmware
 # Returns: Location of unpacked firmware as $RETURN_VALUE
@@ -172,6 +189,7 @@ _src_unpack() {
 	RETURN_VALUE="${S}/$contents"
 }
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # Unpack a tbz2 archive fetched from the BCS to ${S}
 # Parameters: URI of file. Example: "bcs://filename.tbz2"
 # Returns: Location of unpacked firmware as $RETURN_VALUE
@@ -185,6 +203,7 @@ _bcs_src_unpack() {
 	RETURN_VALUE="${RETURN_VALUE}"
 }
 
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 # Provides the location of a firmware image given a URI.
 # Unpacks the firmware image if necessary.
 # Parameters: URI of file.
@@ -208,17 +227,65 @@ _firmware_image_location() {
 	esac
 }
 
-cros-firmware_src_unpack() {
-	cros-workon_src_unpack
+# New SRC_URI based approach.
 
-	# Backwards compatibility with the older naming convention.
-	if [[ -n "${CROS_FIRMWARE_BIOS_ARCHIVE}" ]]; then
-		CROS_FIRMWARE_MAIN_IMAGE="bcs://${CROS_FIRMWARE_BIOS_ARCHIVE}"
-	fi
-	if [[ -n "${CROS_FIRMWARE_EC_ARCHIVE}" ]]; then
-		CROS_FIRMWARE_EC_IMAGE="bcs://${CROS_FIRMWARE_EC_ARCHIVE}"
-	fi
+# TODO(hungte) Replace RETURN_VALUE hack by $(_add_source $url).
+_add_source() {
+	local protocol="${1%%://*}"
+	local uri="${1#*://}"
+	local overlay="${CROS_FIRMWARE_BCS_OVERLAY#overlay-}"
+	local user="bcs-${overlay#variant-*-}"
+	local bcs_url="gs://chromeos-binaries/HOME/${user}/overlay-${overlay}"
 
+	case "${protocol}" in
+		bcs)
+			SRC_URI+=" ${bcs_url}/${CATEGORY}/${PN}/${uri}"
+			RETURN_VALUE="${DISTDIR}/${uri##*/}"
+			;;
+		http|https)
+			SRC_URI+=" $1"
+			RETURN_VALUE="${DISTDIR}/${1##*/}"
+			;;
+		file)
+			RETURN_VALUE="${uri}"
+			;;
+		*)
+			RETURN_VALUE="$1"
+			;;
+	esac
+}
+
+# TODO(hungte) Replace RETURN_VALUE hack by $(_unpack_archive $url).
+_unpack_archive() {
+	local input="$1"
+	local archive="${input##*/}"
+	local folder="${S}/.dist/${archive}"
+	# "unpack" defaults to ${DISTDIR}, so for files already downloaded into
+	# ${DISTDIR} (ex, bcs://, http://, or other things in SRC_URI), strip
+	# the ${DISTDIR} prefix. For any other files (ex, ${FILESDIR}/file), use
+	# the complete ${input} path.
+	local unpack_name="${input#${DISTDIR}/}"
+
+	case "${input##*.}" in
+		tar|tbz2|tbz|bz|gz|tgz|zip|xz) ;;
+		*)
+			RETURN_VALUE="${input}"
+			return
+			;;
+	esac
+
+	mkdir -p "${folder}" || die "Not able to create ${folder}"
+	(cd "${folder}" && unpack "${unpack_name}") ||
+		die "Failed to unpack ${unpack_name}."
+	local contents=($(ls "${folder}"))
+	if [[ ${#contents[@]} -gt 1 ]]; then
+		# Currently we can only serve one file (or directory).
+		ewarn "WARNING: package ${input} contains multiple files."
+	fi
+	RETURN_VALUE="${folder}/${contents}"
+}
+
+_legacy_src_unpack() {
 	# Fetch and unpack the system firmware image
 	if [[ -n "${CROS_FIRMWARE_MAIN_IMAGE}" ]]; then
 		if _is_on_bcs "${CROS_FIRMWARE_MAIN_IMAGE}"; then
@@ -260,7 +327,7 @@ cros-firmware_src_unpack() {
 
 	# Fetch and unpack BCS resources in CROS_FIRMWARE_EXTRA_LIST
 	local extra extra_list
-	# For backward compatibility, ':' is still supported if there's no
+	# For backward compatibility, colon is still supported when there is no
 	# special URL (bcs://, file://).
 	local tr_source=';:' tr_target='\n\n'
 	if echo "${CROS_FIRMWARE_EXTRA_LIST}" | grep -q '://'; then
@@ -269,7 +336,8 @@ cros-firmware_src_unpack() {
 	fi
 	extra_list="$(echo "${CROS_FIRMWARE_EXTRA_LIST}" |
 			tr "$tr_source" "$tr_target")"
-	for extra in $extra_list; do
+	EXTRA_LOCATIONS=()
+	for extra in ${extra_list}; do
 		if _is_on_bcs "${extra}"; then
 			_bcs_fetch "${extra}" ""
 			_bcs_src_unpack "${extra}"
@@ -277,9 +345,32 @@ cros-firmware_src_unpack() {
 		else
 			RETURN_VALUE="${extra}"
 		fi
-		EXTRA_LOCATIONS="${EXTRA_LOCATIONS}:${RETURN_VALUE}"
+		EXTRA_LOCATIONS+=(${RETURN_VALUE})
 	done
-	EXTRA_LOCATIONS="${EXTRA_LOCATIONS#:}"
+}
+
+cros-firmware_src_unpack() {
+	cros-workon_src_unpack
+
+	if [[ -n "${CROS_FIRMWARE_BCS_OVERLAY_NAME}" ]]; then
+		_legacy_src_unpack
+		return
+	fi
+
+	_unpack_archive "${FW_IMAGE_LOCATION}"
+	FW_IMAGE_LOCATION="${RETURN_VALUE}"
+	_unpack_archive "${FW_RW_IMAGE_LOCATION}"
+	FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
+	_unpack_archive "${EC_IMAGE_LOCATION}"
+	EC_IMAGE_LOCATION="${RETURN_VALUE}"
+
+	local extra
+	local extra_list=()
+	for extra in "${EXTRA_LOCATIONS[@]}"; do
+		_unpack_archive "${extra}"
+		extra_list+=(${RETURN_VALUE})
+	done
+	EXTRA_LOCATIONS=("${extra_list[@]}")
 }
 
 _add_param() {
@@ -312,7 +403,7 @@ cros-firmware_src_compile() {
 
 	# Prepare extra commands
 	ext_cmd+="$(_add_bool_param --unstable "${CROS_FIRMWARE_UNSTABLE}")"
-	ext_cmd+="$(_add_param --extra "${EXTRA_LOCATIONS}")"
+	ext_cmd+="$(_add_param --extra "$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")")"
 	ext_cmd+="$(_add_param --script "${CROS_FIRMWARE_SCRIPT}")"
 	ext_cmd+="$(_add_param --platform "${CROS_FIRMWARE_PLATFORM}")"
 	ext_cmd+="$(_add_param --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}")"
@@ -327,7 +418,7 @@ cros-firmware_src_compile() {
 		echo -n > ${UPDATE_SCRIPT}
 	else
 		# create a new script
-		einfo "Building ${BOARD} firmware updater: $image_cmd $ext_cmd"
+		einfo "Build ${BOARD_USE} firmware updater: $image_cmd $ext_cmd"
 		./pack_firmware.sh $image_cmd $ext_cmd -o $UPDATE_SCRIPT ||
 		die "Cannot pack firmware."
 	fi
@@ -374,5 +465,29 @@ cros-firmware_src_install() {
 		doins .force_update_firmware
 	fi
 }
+
+cros-firmware_setup_source() {
+	_add_source "${CROS_FIRMWARE_MAIN_IMAGE}"
+	FW_IMAGE_LOCATION="${RETURN_VALUE}"
+	_add_source "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
+	FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
+	_add_source "${CROS_FIRMWARE_EC_IMAGE}"
+	EC_IMAGE_LOCATION="${RETURN_VALUE}"
+
+	local backup_IFS="${IFS}"
+	IFS=';'
+	local extra_list=(${CROS_FIRMWARE_EXTRA_LIST})
+	IFS="${backup_IFS}"
+	EXTRA_LOCATIONS=()
+	for extra in "${extra_list[@]}"; do
+		_add_source "${extra}"
+		EXTRA_LOCATIONS+=(${RETURN_VALUE})
+	done
+}
+
+# If "inherit cros-firmware" appears at end of ebuild file, build source URI
+# automatically. Otherwise, you have to put an explicit call to
+# "cros-firmware_setup_source" at end of ebuild file.
+[[ -n "${CROS_FIRMWARE_MAIN_IMAGE}" ]] && cros-firmware_setup_source
 
 EXPORT_FUNCTIONS src_unpack src_compile src_install
