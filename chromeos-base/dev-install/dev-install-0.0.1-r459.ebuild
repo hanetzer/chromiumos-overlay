@@ -9,8 +9,8 @@
 # modifying the root filesystem.
 
 EAPI="4"
-CROS_WORKON_COMMIT="7081a732ad2c8bc930e12f8aeb20c95d145b3334"
-CROS_WORKON_TREE="6eb09f41ba16c410af9bbfe01cdf0ca3fe6b6029"
+CROS_WORKON_COMMIT="597ca1198129fab4b870618c74ae4d51b6b85e4a"
+CROS_WORKON_TREE="ae6f2543c17e05c66b249852d15090e66a96c45f"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
 CROS_WORKON_OUTOFTREE_BUILD="1"
@@ -86,8 +86,10 @@ src_compile() {
 		multijob_post_fork
 	done
 	multijob_finish
-	# No virtual packages in package.provided.
-	grep -v "virtual/" chromeos.packages > package.provided
+	# No virtual packages in package.provided. We store packages for
+	# package.provided in file chromeos-base.packages as package.provided is a
+	# directory.
+	grep -v "virtual/" chromeos.packages > chromeos-base.packages
 
 	python "${FILESDIR}"/filter.py || die
 
@@ -97,7 +99,7 @@ src_compile() {
 	# Add dhcp to the list of packages installed since its installation will not
 	# complete (can not add dhcp group since /etc is not writeable). Bootstrap it
 	# instead.
-	grep "net-misc/dhcp-" chromeos-dev.packages >> package.provided
+	grep "net-misc/dhcp-" chromeos-dev.packages >> chromeos-base.packages
 	grep "net-misc/dhcp-" chromeos-dev.packages >> bootstrap.packages
 }
 
@@ -111,7 +113,10 @@ src_install() {
 	doins "${build_dir}"/{bootstrap.packages,repository.conf}
 
 	insinto /usr/share/${PN}/portage/make.profile
-	doins "${build_dir}"/package.{installable,provided} make.{conf,defaults}
+	doins "${build_dir}"/package.installable make.{conf,defaults}
+
+	insinto /usr/share/${PN}/portage/make.profile/package.provided
+	doins "${build_dir}"/chromeos-base.packages
 
 	insinto /etc/env.d
 	doins 99devinstall
