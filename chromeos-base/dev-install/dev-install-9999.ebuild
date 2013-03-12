@@ -84,8 +84,10 @@ src_compile() {
 		multijob_post_fork
 	done
 	multijob_finish
-	# No virtual packages in package.provided.
-	grep -v "virtual/" chromeos.packages > package.provided
+	# No virtual packages in package.provided. We store packages for
+	# package.provided in file chromeos-base.packages as package.provided is a
+	# directory.
+	grep -v "virtual/" chromeos.packages > chromeos-base.packages
 
 	python "${FILESDIR}"/filter.py || die
 
@@ -95,7 +97,7 @@ src_compile() {
 	# Add dhcp to the list of packages installed since its installation will not
 	# complete (can not add dhcp group since /etc is not writeable). Bootstrap it
 	# instead.
-	grep "net-misc/dhcp-" chromeos-dev.packages >> package.provided
+	grep "net-misc/dhcp-" chromeos-dev.packages >> chromeos-base.packages
 	grep "net-misc/dhcp-" chromeos-dev.packages >> bootstrap.packages
 }
 
@@ -109,7 +111,10 @@ src_install() {
 	doins "${build_dir}"/{bootstrap.packages,repository.conf}
 
 	insinto /usr/share/${PN}/portage/make.profile
-	doins "${build_dir}"/package.{installable,provided} make.{conf,defaults}
+	doins "${build_dir}"/package.installable make.{conf,defaults}
+
+	insinto /usr/share/${PN}/portage/make.profile/package.provided
+	doins "${build_dir}"/chromeos-base.packages
 
 	insinto /etc/env.d
 	doins 99devinstall

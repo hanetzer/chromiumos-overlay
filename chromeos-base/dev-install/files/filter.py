@@ -15,7 +15,7 @@ f.close()
 # After bootstrapping the package will be assumed
 # to be installed by emerge.
 prov_pkgs = [x for x in boot_pkgs if not x.startswith('virtual/')]
-f = open('package.provided', 'a')
+f = open('chromeos-base.packages', 'a')
 f.write(''.join(prov_pkgs))
 f.close()
 
