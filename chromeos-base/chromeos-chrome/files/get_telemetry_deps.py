@@ -1,20 +1,23 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import ast
 import os
+import subprocess
 import sys
 
 
 def GetAllDeps(chrome_root):
-  telemetry_tools = os.path.join(chrome_root, 'src/tools/telemetry/tools')
-  if not os.path.exists(os.path.join(telemetry_tools,
-                                     'telemetry_bootstrap.py')):
-    raise IOError('Telemetry Bootstrap script not found')
-  sys.path.append(telemetry_tools)
-  import telemetry_bootstrap
-  deps_content = open(os.path.join(chrome_root,
-                      'src/tools/perf/perf_lib/bootstrap_deps'))
-  deps_list = telemetry_bootstrap.ListAllDepsPaths(chrome_root,deps_content)
+  run_multipage_benchmarks = os.path.join(
+      chrome_root, 'src/tools/perf/run_multipage_benchmarks')
+  if not os.path.exists(run_multipage_benchmarks):
+    raise IOError('run_multipage_benchmark script does not exist.')
+  print_bootstrap = subprocess.Popen([run_multipage_benchmarks,
+                                      '--print-bootstrap-deps'],
+                                     stdout=subprocess.PIPE)
+  # STDOUT will have the deps list.
+  deps_list = print_bootstrap.communicate()[0]
+  deps_list = ast.literal_eval(deps_list)
   # Remove the 'src/' at the front of each dep.
   return [dep.split('src/')[1] for dep in deps_list]
 
@@ -44,7 +47,7 @@ def main():
   chrome_root = sys.argv[1]
   try:
     deps_list = GetAllDeps(chrome_root)
-  except IOError:
+  except (IOError, subprocess.CalledProcessError):
     print ''
     return
   # Filter out any unneeded deps before returning.
