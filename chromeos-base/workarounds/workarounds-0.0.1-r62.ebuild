@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="9c2a1bae7920a3b944fedadca940f9962430bb92"
-CROS_WORKON_TREE="179b8cbcdc825b35b56dacf4f40cb02b67f51033"
+CROS_WORKON_COMMIT="8dbfbcee4f4270450c2d731738279edc79fa3f1b"
+CROS_WORKON_TREE="73516617883f8ab57733670899a6f7fcee1bef1e"
 CROS_WORKON_PROJECT="chromiumos/platform/workarounds"
 
 inherit cros-workon
