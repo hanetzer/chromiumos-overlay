@@ -1,0 +1,20 @@
+diff --git a/pango/pango-utils.c b/pango/pango-utils.c
+index 100dbc7..a8b9f50 100644
+--- a/pango/pango-utils.c
++++ b/pango/pango-utils.c
+@@ -620,6 +620,7 @@ read_config (void)
+       read_config_file (filename, FALSE);
+       g_free (filename);
+ 
++      /*
+       home = g_get_home_dir ();
+       if (home && *home)
+ 	{
+@@ -631,6 +632,7 @@ read_config (void)
+       envvar = g_getenv ("PANGO_RC_FILE");
+       if (envvar)
+ 	read_config_file (envvar, TRUE);
++      */
+     }
+ }
+ 

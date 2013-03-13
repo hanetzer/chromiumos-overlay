@@ -13,7 +13,7 @@ HOMEPAGE="http://www.pango.org/"
 LICENSE="LGPL-2 FTL"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="X doc introspection test"
+IUSE="X cros_host doc introspection test"
 
 RDEPEND=">=dev-libs/glib-2.24:2
 	>=media-libs/fontconfig-2.5.0:1.0
@@ -54,8 +54,13 @@ pkg_setup() {
 src_prepare() {
 	gnome2_src_prepare
 
+	# Disable reading $HOME/.pangorc if building for the target
+	if ! use cros_host ; then
+		epatch "${FILESDIR}/${PN}-1.28.4-pangorc.patch"
+	fi
+
 	# make config file location host specific so that a 32bit and 64bit pango
-	# wont fight with each other on a multilib system.  Fix building for
+	# won't fight with each other on a multilib system.  Fix building for
 	# emul-linux-x86-gtklibs
 	if multilib_enabled ; then
 		epatch "${FILESDIR}/${PN}-1.26.0-lib64.patch"
