@@ -82,6 +82,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pyinotify
 	dev-python/pyopenssl
 	dev-python/python-daemon
+	dev-python/python-evdev
 	dev-python/pyudev
 	dev-python/pyusb
 	dev-python/setproctitle
