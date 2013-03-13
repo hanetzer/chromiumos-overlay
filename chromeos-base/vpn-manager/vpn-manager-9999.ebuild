@@ -50,6 +50,8 @@ src_test() {
 
 src_install() {
 	cros-workon_src_install
+	insinto /usr/include/chromeos/vpn-manager
+	doins service_error.h
 	dosbin "${OUT}"/l2tpipsec_vpn
 	exeinto /usr/libexec/l2tpipsec_vpn
 	doexe "bin/pluto_updown"
