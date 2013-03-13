@@ -27,6 +27,7 @@ src_install() {
 	insinto /etc/init
 	doins startup.conf
 	doins embedded-init/boot-services.conf
+	doins embedded-init/login-prompt-visible.conf
 	doins embedded-init/udhcpc.conf
 
 	# TODO(cmasone): Either use getty across the whole source tree, or
@@ -34,23 +35,14 @@ src_install() {
 	# http://crosbug.com/39188
 	dosbin embedded-init/agetty
 
-	doins cgroups.conf dbus.conf failsafe-delay.conf failsafe.conf
-	doins install-completed.conf ip6tables.conf iptables.conf
-	doins pre-shutdown.conf pstore.conf syslog.conf tty2.conf
+	doins boot-complete.conf cgroups.conf dbus.conf failsafe-delay.conf
+	doins failsafe.conf halt.conf install-completed.conf ip6tables.conf
+	doins iptables.conf pre-shutdown.conf pstore.conf reboot.conf
+	doins syslog.conf system-services.conf tty2.conf update-engine.conf
 
 	# udhcp support
 	dosym /var/run/resolv.conf /etc
 
-#	install --owner=root --group=root --mode=0644 \
-#		"${S}"/*.conf "${D}/etc/init/"
-#	install --owner=root --group=root --mode=0644 \
-#		"${S}"/dev-init/*.conf "${D}/etc/init/"
-#	install --owner=root --group=root --mode=0644 \
-#		"${S}"/test-init/*.conf "${D}/etc/init/"
-#	rm ${D}/etc/init/ui.conf
-#	rm ${D}/etc/init/udev*.conf
-
-	dodir /etc
 	insinto /etc
 	doins issue rsyslog.chromeos
 
