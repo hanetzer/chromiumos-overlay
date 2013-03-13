@@ -130,6 +130,8 @@ FW_IMAGE_LOCATION=""
 FW_RW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
+
+# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
 RETURN_VALUE=""
 
 # TODO(hungte) Remove when BCS_OVERLAY transition is ready.
@@ -229,47 +231,45 @@ _firmware_image_location() {
 
 # New SRC_URI based approach.
 
-# TODO(hungte) Replace RETURN_VALUE hack by $(_add_source $url).
 _add_source() {
-	local protocol="${1%%://*}"
-	local uri="${1#*://}"
+	local var="$1"
+	local input="${!var}"
+	local protocol="${input%%://*}"
+	local uri="${input#*://}"
 	local overlay="${CROS_FIRMWARE_BCS_OVERLAY#overlay-}"
 	local user="bcs-${overlay#variant-*-}"
 	local bcs_url="gs://chromeos-binaries/HOME/${user}/overlay-${overlay}"
 
+	# Input without ${protocol} are local files (ex, ${FILESDIR}/file).
 	case "${protocol}" in
 		bcs)
 			SRC_URI+=" ${bcs_url}/${CATEGORY}/${PN}/${uri}"
-			RETURN_VALUE="${DISTDIR}/${uri##*/}"
 			;;
 		http|https)
-			SRC_URI+=" $1"
-			RETURN_VALUE="${DISTDIR}/${1##*/}"
-			;;
-		file)
-			RETURN_VALUE="${uri}"
-			;;
-		*)
-			RETURN_VALUE="$1"
+			SRC_URI+=" ${input}"
 			;;
 	esac
 }
 
-# TODO(hungte) Replace RETURN_VALUE hack by $(_unpack_archive $url).
 _unpack_archive() {
-	local input="$1"
+	local var="$1"
+	local input="${!var}"
 	local archive="${input##*/}"
 	local folder="${S}/.dist/${archive}"
-	# "unpack" defaults to ${DISTDIR}, so for files already downloaded into
-	# ${DISTDIR} (ex, bcs://, http://, or other things in SRC_URI), strip
-	# the ${DISTDIR} prefix. For any other files (ex, ${FILESDIR}/file), use
-	# the complete ${input} path.
-	local unpack_name="${input#${DISTDIR}/}"
+
+	# Remote source files (bcs://, http://, ...) are downloaded into
+	# ${DISTDIR}, which is the default location for command 'unpack'.
+	# For any other files (ex, ${FILESDIR}/file), use complete file path.
+	local unpack_name="${input}"
+	if [[ "${unpack_name}" =~ "://" ]]; then
+		input="${DISTDIR}/${archive}"
+		unpack_name="${archive}"
+	fi
 
 	case "${input##*.}" in
 		tar|tbz2|tbz|bz|gz|tgz|zip|xz) ;;
 		*)
-			RETURN_VALUE="${input}"
+			eval ${var}="'${input}'"
 			return
 			;;
 	esac
@@ -282,7 +282,7 @@ _unpack_archive() {
 		# Currently we can only serve one file (or directory).
 		ewarn "WARNING: package ${input} contains multiple files."
 	fi
-	RETURN_VALUE="${folder}/${contents}"
+	eval ${var}="'${folder}/${contents}'"
 }
 
 _legacy_src_unpack() {
@@ -351,26 +351,20 @@ _legacy_src_unpack() {
 
 cros-firmware_src_unpack() {
 	cros-workon_src_unpack
+	local i
 
 	if [[ -n "${CROS_FIRMWARE_BCS_OVERLAY_NAME}" ]]; then
 		_legacy_src_unpack
 		return
 	fi
 
-	_unpack_archive "${FW_IMAGE_LOCATION}"
-	FW_IMAGE_LOCATION="${RETURN_VALUE}"
-	_unpack_archive "${FW_RW_IMAGE_LOCATION}"
-	FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
-	_unpack_archive "${EC_IMAGE_LOCATION}"
-	EC_IMAGE_LOCATION="${RETURN_VALUE}"
-
-	local extra
-	local extra_list=()
-	for extra in "${EXTRA_LOCATIONS[@]}"; do
-		_unpack_archive "${extra}"
-		extra_list+=(${RETURN_VALUE})
+	for i in {FW,FW_RW,EC}_IMAGE_LOCATION; do
+		_unpack_archive ${i}
 	done
-	EXTRA_LOCATIONS=("${extra_list[@]}")
+
+	for ((i = 0; i < ${#EXTRA_LOCATIONS[@]}; i++)); do
+		_unpack_archive "EXTRA_LOCATIONS[$i]"
+	done
 }
 
 _add_param() {
@@ -466,22 +460,34 @@ cros-firmware_src_install() {
 	fi
 }
 
-cros-firmware_setup_source() {
-	_add_source "${CROS_FIRMWARE_MAIN_IMAGE}"
-	FW_IMAGE_LOCATION="${RETURN_VALUE}"
-	_add_source "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
-	FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
-	_add_source "${CROS_FIRMWARE_EC_IMAGE}"
-	EC_IMAGE_LOCATION="${RETURN_VALUE}"
+# @FUNCTION: _expand_list
+# @USAGE <var> <ifs> <string>
+# @DESCRIPTION:
+# Internal function to expand a string (separated by ifs) into bash array.
+_expand_list() {
+	local var="$1" ifs="$2"
+	IFS="${ifs}" read -r -a ${var} <<<"${*:3}"
+}
 
-	local backup_IFS="${IFS}"
-	IFS=';'
-	local extra_list=(${CROS_FIRMWARE_EXTRA_LIST})
-	IFS="${backup_IFS}"
-	EXTRA_LOCATIONS=()
-	for extra in "${extra_list[@]}"; do
-		_add_source "${extra}"
-		EXTRA_LOCATIONS+=(${RETURN_VALUE})
+# @FUNCTION: cros-firmware_setup_source
+# @DESCRIPTION:
+# Configures all firmware binary source files to SRC_URI, and updates local
+# destination mapping (*_LOCATION). Must be invoked after CROS_FIRMWARE_*_IMAGE
+# are set.
+cros-firmware_setup_source() {
+	local i
+
+	FW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_IMAGE}"
+	FW_RW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_RW_IMAGE}"
+	EC_IMAGE_LOCATION="${CROS_FIRMWARE_EC_IMAGE}"
+	_expand_list EXTRA_LOCATIONS ";" "${CROS_FIRMWARE_EXTRA_LIST}"
+
+	for i in {FW,FW_RW,EC}_IMAGE_LOCATION; do
+		_add_source ${i}
+	done
+
+	for ((i = 0; i < ${#EXTRA_LOCATIONS[@]}; i++)); do
+		_add_source "EXTRA_LOCATIONS[$i]"
 	done
 }
 
