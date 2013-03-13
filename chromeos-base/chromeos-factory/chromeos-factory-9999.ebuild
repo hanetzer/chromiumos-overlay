@@ -19,9 +19,9 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE="+autotest +build_tests"
 
 DEPEND="chromeos-base/chromeos-chrome
-	dev-python/pyyaml"
+	dev-python/pyyaml
+	chromeos-base/chromeos-factory-board"
 RDEPEND="!chromeos-base/chromeos-factorytools
-	chromeos-base/chromeos-factory-board
 	dev-lang/python
 	dev-python/argparse
 	dev-python/jsonrpclib
@@ -49,9 +49,17 @@ src_compile() {
 }
 
 src_install() {
+	overlay_zip="${EROOT}usr/local/factory/bundle/shopfloor/overlay.zip"
+	if [ -e "$overlay_zip" ]; then
+		make_par_args="--add-zip $overlay_zip"
+	else
+		make_par_args=
+	fi
+
 	emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" \
 		PYTHON_SITEDIR="${EROOT}/$(python_get_sitedir)" \
 		PYTHON="$(PYTHON)" \
+		MAKE_PAR_ARGS="$make_par_args" \
 		par install
 
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
