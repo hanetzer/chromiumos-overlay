@@ -89,6 +89,7 @@ CROS_COMMON_RDEPEND="
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
+	chromeos-base/bootstat
 	chromeos-base/chromeos-base
 	chromeos-base/chromeos-installer
 	chromeos-base/metrics
@@ -178,7 +179,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-shells/bash
 	chromeos-base/audioconfig
 	chromeos-base/board-devices
-	chromeos-base/bootstat
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/chromeos-auth-config
