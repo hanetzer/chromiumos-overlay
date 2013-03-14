@@ -17,13 +17,13 @@ IUSE=""
 
 LIBCHROME_VERS="180609"
 
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	virtual/perf
+COMMON_DEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-libs/openssl
 	dev-libs/protobuf"
-DEPEND="test? ( dev-cpp/gtest )
-	dev-libs/openssl
-	dev-libs/protobuf"
+RDEPEND="${COMMON_DEPEND}
+	virtual/perf"
+DEPEND="${COMMON_DEPEND}
+	test? ( dev-cpp/gtest )"
 
 src_configure() {
 	tc-export CXX PKG_CONFIG
