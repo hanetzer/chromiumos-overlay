@@ -217,7 +217,6 @@ REQUIRED_USE="
 	netboot_ramfs? ( !initramfs )
 	initramfs? ( i2cdev tpm )
 	netboot_ramfs? ( i2cdev tpm )
-	x32? ( amd64 )
 "
 
 # If an overlay has eclass overrides, but doesn't actually override this
@@ -397,7 +396,7 @@ kmake() {
 
 	local cross=${CHOST}-
 	# Hack for using 64-bit kernel with 32-bit user-space
-	if [[ "${ABI:-${ARCH}}" != "amd64" && "${kernel_arch}" == "x86_64" ]]; then
+	if [[ "${ARCH}" == "x86" && "${kernel_arch}" == "x86_64" ]]; then
 		cross=x86_64-cros-linux-gnu-
 	else
 		# TODO(raymes): Force GNU ld over gold. There are still some
@@ -405,7 +404,7 @@ kmake() {
 		tc-export LD CC CXX
 
 		set -- \
-			LD="$(get_binutils_path_ld)/ld" \
+			LD="$(get_binutils_path_ld)/ld $(usex x32 '-m elf_x86_64' '')" \
 			CC="${CC} -B$(get_binutils_path_ld)" \
 			CXX="${CXX} -B$(get_binutils_path_ld)" \
 			"$@"
