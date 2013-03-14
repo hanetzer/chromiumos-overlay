@@ -159,8 +159,8 @@ pull_netboot_ramfs_binary() {
 	idobin /sbin/blockdev
 	idobin /sbin/fsck.vfat
 	idobin /sbin/sfdisk
-	idobin /usr/bin/cgpt
-	idobin /usr/bin/crossystem
+	idofutility /usr/bin/cgpt
+	idofutility /usr/bin/crossystem
 	idobin /usr/bin/getopt
 	idobin /usr/bin/openssl
 	idobin /usr/bin/uudecode
