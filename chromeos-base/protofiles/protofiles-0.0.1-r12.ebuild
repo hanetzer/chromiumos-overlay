@@ -9,7 +9,7 @@
 EGIT_REPO_SERVER="http://git.chromium.org"
 EGIT_REPO_URI="${EGIT_REPO_SERVER}/chromium/src/chrome/browser/policy/proto.git"
 EGIT_PROJECT="proto"
-EGIT_COMMIT="18f481b411ea0a861f0879af2065effce0e1fe6c"
+EGIT_COMMIT="d8c1e0366f2a87f99809ba649051041a9889868b"
 
 EAPI="2"
 inherit git
