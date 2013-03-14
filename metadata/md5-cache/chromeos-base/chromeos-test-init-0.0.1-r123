@@ -1,11 +1,12 @@
-DEFINED_PHASES=compile info install setup unpack
-DEPEND=dev-vcs/git
-DESCRIPTION=A set of file system microbenchmarks
-EAPI=2
-HOMEPAGE=http://git.chromium.org/gitweb/?s=punybench
-IUSE=cros_workon_tree_82e2c58d5dd033f61d396db341daca182448c8ad profiling
+DEFINED_PHASES=info install setup unpack
+DEPEND=chromeos-base/chromeos-init dev-vcs/git
+DESCRIPTION=Additional upstart jobs that will be installed on test images
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_workon_tree_123c54f123ab9c49789758b380da134a60890c1d profiling
 KEYWORDS=amd64 arm x86
-LICENSE=GPL-2
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-init
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=abfa544e95b6ef0ba1107f03bba7583d
+_md5_=49d2d8781bf7487ec8b073ab4fd534ae

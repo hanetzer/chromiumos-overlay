@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="385ff01b09d0f070924afea3e90fc6a3994547f4"
-CROS_WORKON_TREE="1a2e5d54d84ac8da99690917e75f708592c9b850"
+CROS_WORKON_COMMIT="c863ec1f053292c20c8620a44b738f38769e5eeb"
+CROS_WORKON_TREE="123c54f123ab9c49789758b380da134a60890c1d"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
@@ -29,6 +29,7 @@ src_install() {
 	insinto /etc/init
 	doins startup.conf
 	doins embedded-init/boot-services.conf
+	doins embedded-init/login-prompt-visible.conf
 	doins embedded-init/udhcpc.conf
 
 	# TODO(cmasone): Either use getty across the whole source tree, or
@@ -36,23 +37,14 @@ src_install() {
 	# http://crosbug.com/39188
 	dosbin embedded-init/agetty
 
-	doins cgroups.conf dbus.conf failsafe-delay.conf failsafe.conf
-	doins install-completed.conf ip6tables.conf iptables.conf
-	doins pre-shutdown.conf pstore.conf syslog.conf tty2.conf
+	doins boot-complete.conf cgroups.conf dbus.conf failsafe-delay.conf
+	doins failsafe.conf halt.conf install-completed.conf ip6tables.conf
+	doins iptables.conf pre-shutdown.conf pstore.conf reboot.conf
+	doins syslog.conf system-services.conf tty2.conf update-engine.conf
 
 	# udhcp support
 	dosym /var/run/resolv.conf /etc
 
-#	install --owner=root --group=root --mode=0644 \
-#		"${S}"/*.conf "${D}/etc/init/"
-#	install --owner=root --group=root --mode=0644 \
-#		"${S}"/dev-init/*.conf "${D}/etc/init/"
-#	install --owner=root --group=root --mode=0644 \
-#		"${S}"/test-init/*.conf "${D}/etc/init/"
-#	rm ${D}/etc/init/ui.conf
-#	rm ${D}/etc/init/udev*.conf
-
-	dodir /etc
 	insinto /etc
 	doins issue rsyslog.chromeos
 
