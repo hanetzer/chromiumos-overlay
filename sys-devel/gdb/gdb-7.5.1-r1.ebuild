@@ -32,7 +32,8 @@ case ${PV} in
 7.5.1 | 9999*)
 	# live git tree
 	EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/gdb.git"
-	EGIT_COMMIT=166725a2f7bca6eeb8cf3dcb7a22907ed8b9a764
+	EGIT_BRANCH="chromeos_master"
+	EGIT_COMMIT=0ea2048212cc7769aeb9681b7f4e2df8163edd35
 	inherit git-2
 	SRC_URI=""
 	;;
