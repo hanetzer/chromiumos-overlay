@@ -113,6 +113,9 @@ src_prepare() {
 	# Add a GetCachedServices function to the device API.
 	epatch "${FILESDIR}/${P}-sdpcache-Get-cached-services.patch"
 
+	# Fix a pointer arithmetic bug in textfile parsing.
+	epatch "${FILESDIR}/${PN}-textfile-parsing.patch"
+
 	eautoreconf
 
 	if use cups; then
