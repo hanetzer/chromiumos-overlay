@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("9af2b6738562fc53d607be3326d3e8679ec2340f" "a15214bd02de83bba0eeab7e28b1418dc39398a7")
-CROS_WORKON_TREE=("dfd291761ba4063f6eb161de968bcc4a068c7fc3" "24ec68f9eb7ce8743459f343a03a7a347c1c28cd")
+CROS_WORKON_COMMIT=("6519c3a347efd6f3bbec2e5918d9daf2808efdda" "a15214bd02de83bba0eeab7e28b1418dc39398a7")
+CROS_WORKON_TREE=("071b492c42c797e80888c2b167e7703faace7630" "24ec68f9eb7ce8743459f343a03a7a347c1c28cd")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
@@ -21,9 +21,9 @@ KEYWORDS="amd64 arm x86"
 IUSE="+autotest +build_tests"
 
 DEPEND="chromeos-base/chromeos-chrome
-	dev-python/pyyaml"
+	dev-python/pyyaml
+	chromeos-base/chromeos-factory-board"
 RDEPEND="!chromeos-base/chromeos-factorytools
-	chromeos-base/chromeos-factory-board
 	dev-lang/python
 	dev-python/argparse
 	dev-python/jsonrpclib
@@ -51,9 +51,17 @@ src_compile() {
 }
 
 src_install() {
+	overlay_zip="${EROOT}usr/local/factory/bundle/shopfloor/overlay.zip"
+	if [ -e "$overlay_zip" ]; then
+		make_par_args="--add-zip $overlay_zip"
+	else
+		make_par_args=
+	fi
+
 	emake DESTDIR="${D}" TARGET_DIR="${TARGET_DIR}" \
 		PYTHON_SITEDIR="${EROOT}/$(python_get_sitedir)" \
 		PYTHON="$(PYTHON)" \
+		MAKE_PAR_ARGS="$make_par_args" \
 		par install
 
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
