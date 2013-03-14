@@ -85,6 +85,7 @@ IUSE_TESTS=(
 	+tests_network_MobileSuspendResume
 	+tests_network_NavigateToUrl
 	+tests_network_ONC
+	+tests_platform_ChromeCgroups
 	+tests_platform_Pkcs11InitOnLogin
 	+tests_platform_Pkcs11Persistence
 	+tests_platform_ProcessPrivileges
