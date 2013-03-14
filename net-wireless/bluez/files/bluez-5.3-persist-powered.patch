@@ -10,7 +10,7 @@ the "settings" adapter's file storing the last Powered status before
 shutdown. This status is restored on startup.
 
 diff --git a/src/adapter.c b/src/adapter.c
-index e553626..0c9acbc 100644
+index e553626..03673ad 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
 @@ -384,6 +384,10 @@ static void store_adapter_info(struct btd_adapter *adapter)
@@ -37,7 +37,16 @@ index e553626..0c9acbc 100644
  		if (adapter->current_settings & MGMT_SETTING_POWERED) {
  			adapter_start(adapter);
  		} else {
-@@ -3846,6 +3856,7 @@ static void load_config(struct btd_adapter *adapter)
+@@ -3748,6 +3758,8 @@ static void convert_config(struct btd_adapter *adapter, const char *filename,
+ 		mode = get_mode(str);
+ 		g_key_file_set_boolean(key_file, "General", "Discoverable",
+ 					mode == MODE_DISCOVERABLE);
++		g_key_file_set_boolean(key_file, "General", "Powered",
++			mode == MODE_DISCOVERABLE || mode == MODE_CONNECTABLE);
+ 	}
+ 
+ 	if (read_local_name(&adapter->bdaddr, str) == 0)
+@@ -3846,6 +3858,7 @@ static void load_config(struct btd_adapter *adapter)
  	char address[18];
  	struct stat st;
  	GError *gerr = NULL;
@@ -45,7 +54,7 @@ index e553626..0c9acbc 100644
  
  	ba2str(&adapter->bdaddr, address);
  
-@@ -3897,6 +3908,16 @@ static void load_config(struct btd_adapter *adapter)
+@@ -3897,6 +3910,16 @@ static void load_config(struct btd_adapter *adapter)
  		gerr = NULL;
  	}
  
