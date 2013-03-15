@@ -92,7 +92,6 @@ src_configure() {
 		$(use_enable static-libs static)
 		$(use_enable debug verbose-mode)
 		--disable-asserts
-		--disable-checks
 		$(use_enable selinux)
 		$(use_enable selinux libaudit)
 		$(use_enable kernel_linux inotify)
