@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="6ef625dc9f1b2d2fbddbf43db12d9e0b1044044e"
-CROS_WORKON_TREE="01042758f33d956cce1d6465dc3aee9fb5bd007e"
+CROS_WORKON_COMMIT="7af804e969e14ae2c37ea47a2e46201c77adc860"
+CROS_WORKON_TREE="399a4c0749f136c1c4067bd2348a3999aa705114"
 CROS_WORKON_LOCALNAME="../platform/chromiumos-wide-profiling"
 CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-wide-profiling"
 
@@ -28,19 +28,17 @@ DEPEND="${COMMON_DEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_configure() {
-	tc-export CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
+	cros-workon_src_configure
 }
 
 src_compile() {
-	emake ${PN}
+	cros-workon_src_compile
 }
 
 src_test() {
-	emake check
+	cros-workon_src_test
 }
 
 src_install() {
-	dobin ${PN}
+	dobin quipper
 }
