@@ -26,19 +26,17 @@ DEPEND="${COMMON_DEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_configure() {
-	tc-export CXX PKG_CONFIG
-	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
+	cros-workon_src_configure
 }
 
 src_compile() {
-	emake ${PN}
+	cros-workon_src_compile
 }
 
 src_test() {
-	emake check
+	cros-workon_src_test
 }
 
 src_install() {
-	dobin ${PN}
+	dobin quipper
 }
