@@ -1,0 +1,12 @@
+DEFINED_PHASES=info install setup unpack
+DEPEND=!cros_embedded? ( chromeos-base/chromeos-init ) cros_embedded? ( chromeos-base/chromeos-embedded-init ) dev-vcs/git
+DESCRIPTION=Additional upstart jobs that will be installed on dev images
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_embedded cros_workon_tree_6a1f73a3b7dea91c20a39f9b97c0689927674974 profiling
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=!cros_embedded? ( chromeos-base/chromeos-init ) cros_embedded? ( chromeos-base/chromeos-embedded-init )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=874dd74d214b9b48edbaa476a51e14f5
