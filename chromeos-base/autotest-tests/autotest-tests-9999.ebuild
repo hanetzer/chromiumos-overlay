@@ -140,6 +140,7 @@ IUSE_TESTS="
 	+tests_hardware_TPMCheck
 	tests_hardware_TPMFirmware
 	+tests_hardware_Trackpad
+	+tests_hardware_TrackpadFunction
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_Xrandr
 	+tests_hardware_bma150
