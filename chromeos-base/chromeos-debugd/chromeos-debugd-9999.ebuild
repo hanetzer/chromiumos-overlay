@@ -23,7 +23,9 @@ RDEPEND="chromeos-base/chromeos-minijail
 	>=chromeos-base/libchromeos-0.0.1-r156
 	dev-libs/dbus-c++
 	dev-libs/glib:2
-	dev-libs/libpcre"
+	dev-libs/libpcre
+	sys-apps/memtester
+	sys-apps/smartmontools"
 DEPEND="${RDEPEND}
 	chromeos-base/shill
 	sys-apps/dbus
