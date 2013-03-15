@@ -159,6 +159,7 @@ pull_netboot_ramfs_binary() {
 	idobin /sbin/sfdisk
 	idofutility /usr/bin/cgpt
 	idofutility /usr/bin/crossystem
+	idobin /usr/bin/futility
 	idobin /usr/bin/getopt
 	idobin /usr/bin/openssl
 	idobin /usr/bin/uudecode
