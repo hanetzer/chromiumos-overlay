@@ -57,6 +57,7 @@ ALL_BOARDS=(
 	lumpy
 	panda
 	parrot
+	peach
 	puppy
 	raspberrypi
 	ricochet
