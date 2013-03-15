@@ -1,2 +1,3 @@
-sys-apps/busybox	make-symlinks savedconfig
-sys-libs/uuid		static-libs
+chromeos-base/chromeos-chrome	content_shell -autotest -build_tests -chrome_remoting -nacl -reorder
+sys-apps/busybox		make-symlinks savedconfig
+sys-libs/uuid			static-libs
