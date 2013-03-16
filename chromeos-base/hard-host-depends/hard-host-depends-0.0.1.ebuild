@@ -217,6 +217,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/ssh-known-hosts
 	chromeos-base/ssh-root-dot-dir
 	net-misc/openssh
+	net-misc/socat
 	net-misc/wget
 	"
 
