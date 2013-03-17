@@ -1,0 +1,53 @@
+From 68132e4db53c3751832f5ed3900f2787e4d5369b Mon Sep 17 00:00:00 2001
+From: Frank Henigman <fjhenigman@chromium.org>
+Date: Mon, 11 Mar 2013 17:12:19 -0400
+Subject: [PATCH 3/6] draw: delete unneeded LLVM stuff earlier
+
+Get rid of unneeded LLVM stuff right after generating code.  This saves
+a lot of memory per shader (~480K for a small shader on a 32-bit build).
+---
+ src/gallium/auxiliary/draw/draw_llvm.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/src/gallium/auxiliary/draw/draw_llvm.c b/src/gallium/auxiliary/draw/draw_llvm.c
+index 20c9b79..1f1aa2f 100644
+--- a/src/gallium/auxiliary/draw/draw_llvm.c
++++ b/src/gallium/auxiliary/draw/draw_llvm.c
+@@ -457,6 +457,14 @@ draw_llvm_create_variant(struct draw_llvm *llvm,
+    variant->jit_func_elts = (draw_jit_vert_func_elts)
+          gallivm_jit_function(variant->gallivm, variant->function_elts);
+ 
++   gallivm_free_function(variant->gallivm,
++                         variant->function, variant->jit_func);
++
++   gallivm_free_function(variant->gallivm,
++                         variant->function_elts, variant->jit_func_elts);
++
++   gallivm_teardown(variant->gallivm);
++
+    variant->shader = shader;
+    variant->list_item_global.base = variant;
+    variant->list_item_local.base = variant;
+@@ -1562,17 +1570,8 @@ draw_llvm_destroy_variant(struct draw_llvm_variant *variant)
+ {
+    struct draw_llvm *llvm = variant->llvm;
+ 
+-   if (variant->function_elts) {
+-      gallivm_free_function(variant->gallivm,
+-                            variant->function_elts, variant->jit_func_elts);
+-   }
+-
+-   if (variant->function) {
+-      gallivm_free_function(variant->gallivm,
+-                            variant->function, variant->jit_func);
+-   }
+-
+-   gallivm_destroy(variant->gallivm);
++   gallivm_free_code(variant->gallivm);
++   FREE(variant->gallivm);
+ 
+    remove_from_list(&variant->list_item_local);
+    variant->shader->variants_cached--;
+-- 
+1.8.1.3
+

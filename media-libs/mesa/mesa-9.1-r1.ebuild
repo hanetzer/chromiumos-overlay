@@ -129,6 +129,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.0-fail-compile-on-bad-uniform-access.patch
 	epatch "${FILESDIR}"/9.1-gen_matypes-cross.patch
 	epatch "${FILESDIR}"/9.1-fix-compile-disable-asm.patch
+	epatch "${FILESDIR}"/9.1-0001-gallivm-one-code-memory-pool-with-deferred-free.patch
+	epatch "${FILESDIR}"/9.1-0002-gallivm-separate-LLVM-teardown-from-freeing-code.patch
+	epatch "${FILESDIR}"/9.1-0003-draw-delete-unneeded-LLVM-stuff-earlier.patch
 
 	base_src_prepare
 
