@@ -1,12 +1,11 @@
 DEFINED_PHASES=info install setup unpack
-DEPEND=dev-vcs/git
-DESCRIPTION=Chrome OS command-line shell
-EAPI=4
+DEPEND=media-fonts/croscorefonts media-fonts/droidfonts-cros x11-apps/xcursorgen dev-vcs/git
+DESCRIPTION=Chrome OS assets (images, sounds, etc.)
+EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_b4e35630b5c8f594c980d69fd71babafb55cf3c8 profiling
+IUSE=alex lumpy lumpy64 mario tegra2-ldk cros_workon_tree_cf9b6ea9c9a927d8c8c8c12933216f9e83f0bcbc profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
-RDEPEND=app-admin/sudo chromeos-base/salsa chromeos-base/vboot_reference chromeos-base/workarounds net-misc/iputils net-misc/openssh net-wireless/iw sys-apps/net-tools x11-terms/rxvt-unicode
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=f63f1d6d9d1855854af5df948c55c61d
+_md5_=f20e47e79b11bc08cd805ab2e805aa64
