@@ -228,7 +228,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "nfqueue" 232     # For netfilter-queue
 	copy_or_add_daemon_user "tlsdate-dbus" 233 # For tlsdate-dbus-announce
 	copy_or_add_daemon_user "tlsdate" 234
-	copy_or_add_daemon_user "debugd-logs" 233 233 # For debugd's unprivileged logs
+	copy_or_add_daemon_user "debugd-logs" 235 # For debugd's unprivileged logs
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
