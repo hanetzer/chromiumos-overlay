@@ -10,7 +10,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="test -clang -asan +tpm"
+IUSE="-asan -clang test +tpm +vpn"
 KEYWORDS="~amd64 ~arm ~x86"
 REQUIRED_USE="asan? ( clang )"
 
@@ -22,19 +22,19 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	>=chromeos-base/mobile-providers-0.0.1-r12
-	chromeos-base/vpn-manager
+	vpn? ( chromeos-base/vpn-manager )
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/libnl:3
 	dev-libs/nss
 	dev-libs/protobuf
-	net-dialup/ppp
+	vpn? ( net-dialup/ppp )
 	net-dns/c-ares
 	net-libs/libmnl
 	net-libs/libnetfilter_queue
 	net-libs/libnfnetlink
 	net-misc/dhcpcd
-	net-misc/openvpn
+	vpn? ( net-misc/openvpn )
 	net-wireless/wpa_supplicant[dbus]"
 
 DEPEND="${RDEPEND}
@@ -46,6 +46,7 @@ DEPEND="${RDEPEND}
 
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)"
+	use vpn || echo SHILL_VPN=0
 }
 
 src_compile() {
@@ -94,9 +95,9 @@ src_install() {
 	exeinto "${shims_dir}"
 	doexe build/shims/net-diags-upload
 	doexe build/shims/nss-get-cert
-	doexe build/shims/openvpn-script
+	use vpn && doexe build/shims/openvpn-script
 	doexe build/shims/set-apn-helper
-	doexe build/shims/shill-pppd-plugin.so
+	use vpn && doexe build/shims/shill-pppd-plugin.so
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf
 	insinto /etc
