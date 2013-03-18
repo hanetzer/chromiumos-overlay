@@ -32,6 +32,7 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/pyyaml
 	dev-python/setproctitle
 	dev-util/stressapptest
+	chromeos-base/chromeos-factory-board
 	>=chromeos-base/vpd-0.0.1-r11"
 
 CROS_WORKON_LOCALNAME="factory"
