@@ -106,6 +106,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/hostapd
 	sci-geosciences/gpsd
 	sys-apps/coreutils
+	sys-apps/dtc
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
