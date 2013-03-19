@@ -648,7 +648,7 @@ cros-kernel2_src_install() {
 			local its_script="$(cros-workon_get_build_dir)/its_script"
 			emit_its_script "${its_script}" "${boot_dir}" \
 				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
-			mkimage  -f "${its_script}" "${kernel_bin}" || die
+			mkimage -D "-I dts -O dtb -p 512" -f "${its_script}" "${kernel_bin}" || die
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
 		fi
