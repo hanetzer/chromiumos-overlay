@@ -432,7 +432,14 @@ cros-kernel2_src_configure() {
 	local cfgarch="$(get_build_arch)"
 
 	if [ -n "${CHROMEOS_KERNEL_CONFIG}" ]; then
-		config="${S}/${CHROMEOS_KERNEL_CONFIG}"
+		case ${CHROMEOS_KERNEL_CONFIG} in
+			/*)
+				config="${CHROMEOS_KERNEL_CONFIG}"
+				;;
+			*)
+				config="${S}/${CHROMEOS_KERNEL_CONFIG}"
+				;;
+		esac
 	else
 		config=${CHROMEOS_KERNEL_SPLITCONFIG:-"chromiumos-${cfgarch}"}
 	fi
