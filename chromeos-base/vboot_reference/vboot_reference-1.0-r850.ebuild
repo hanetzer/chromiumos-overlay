@@ -106,10 +106,6 @@ src_install() {
 	dodir "${dst_dir}"
 	insinto "${dst_dir}"
 	doins -r firmware/include/* host/include/*
-	for arch in $(ls firmware/arch/); do
-		insinto "${dst_dir}"/arch/"${arch}"
-		doins firmware/arch/"${arch}"/include/biosincludes.h
-	done
 
         # FIXME(crosbug.com/39444): Don't violate the implied API. These
         # headers should be relocated in the source if they're really
