@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile info install setup test unpack
+DEPEND=chromeos-base/bootstat tpm? ( chromeos-base/chaps ) chromeos-base/chromeos-minijail !<chromeos-base/flimflam-0.0.1-r530 chromeos-base/libchrome:180609[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics >=chromeos-base/mobile-providers-0.0.1-r12 vpn? ( chromeos-base/vpn-manager ) dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/libnl:3 dev-libs/nss dev-libs/protobuf vpn? ( net-dialup/ppp ) net-dns/c-ares net-libs/libmnl net-libs/libnetfilter_queue net-libs/libnfnetlink net-misc/dhcpcd vpn? ( net-misc/openvpn ) net-wireless/wpa_supplicant[dbus] chromeos-base/system_api chromeos-base/wimax_manager test? ( dev-cpp/gmock ) dev-cpp/gtest virtual/modemmanager dev-vcs/git
+DESCRIPTION=Shill Connection Manager for Chromium OS
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+IUSE=-asan -clang test +tpm +vpn cros-debug cros_workon_tree_04bee73234d3ec3816bab91453414bf517219d16 profiling
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=chromeos-base/bootstat tpm? ( chromeos-base/chaps ) chromeos-base/chromeos-minijail !<chromeos-base/flimflam-0.0.1-r530 chromeos-base/libchrome:180609[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics >=chromeos-base/mobile-providers-0.0.1-r12 vpn? ( chromeos-base/vpn-manager ) dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/libnl:3 dev-libs/nss dev-libs/protobuf vpn? ( net-dialup/ppp ) net-dns/c-ares net-libs/libmnl net-libs/libnetfilter_queue net-libs/libnfnetlink net-misc/dhcpcd vpn? ( net-misc/openvpn ) net-wireless/wpa_supplicant[dbus]
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=2594973a6fc424a61626925e1e4db143
