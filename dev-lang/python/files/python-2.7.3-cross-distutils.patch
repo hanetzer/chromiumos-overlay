@@ -37,7 +37,7 @@ respect the target's lib structure by getting the libdir name from Makefile.
 --- a/Lib/distutils/command/build_ext.py
 +++ b/Lib/distutils/command/build_ext.py
 @@ -201,7 +201,8 @@
-                 and sysconfig.get_config_var('Py_ENABLE_SHARED'):
+             and sysconfig.get_config_var('Py_ENABLE_SHARED'):
              if sys.executable.startswith(os.path.join(sys.exec_prefix, "bin")):
                  # building third party extensions
 -                self.library_dirs.append(sysconfig.get_config_var('LIBDIR'))
@@ -78,13 +78,12 @@ respect the target's lib structure by getting the libdir name from Makefile.
      """
      if prefix is None:
          prefix = plat_specific and EXEC_PREFIX or PREFIX
-@@ -119,9 +119,10 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
+@@ -119,8 +119,10 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
          prefix = plat_specific and EXEC_PREFIX or PREFIX
  
      if os.name == "posix":
 -        libpython = os.path.join(prefix,
--                                "@@GENTOO_LIBDIR@@",
--                                "python" + get_python_version())
+-                                 "@@GENTOO_LIBDIR@@", "python" + get_python_version())
 +        for libdir in ['@@GENTOO_LIBDIR@@', 'lib64', 'lib32', 'libx32', 'lib']:
 +            libpython = os.path.join(prefix, libdir, "python" + get_python_version())
 +            if os.path.exists(libpython):

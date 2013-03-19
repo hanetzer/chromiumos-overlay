@@ -2,20 +2,22 @@ some of the modules that we compile need more modules on the host to make work
 
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -924,23 +924,23 @@ libinstall:	build_all
- 		done; \
- 	done
- 	$(INSTALL_DATA) $(srcdir)/LICENSE $(DESTDIR)$(LIBDEST)/LICENSE.txt
+@@ -952,25 +952,25 @@ libinstall:
+ 		$(INSTALL_DATA) $(srcdir)/Modules/xxmodule.c \
+ 			$(DESTDIR)$(LIBDEST)/distutils/tests ; \
+ 	fi
 -	PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
 +	PYTHONPATH=$(HOSTPYTHONPATH):$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
  		./$(HOSTPYTHON) -Wi -tt $(DESTDIR)$(LIBDEST)/compileall.py \
  		-d $(LIBDEST) -f \
- 		-x 'bad_coding|badsyntax|site-packages' $(DESTDIR)$(LIBDEST)
+ 		-x 'bad_coding|badsyntax|site-packages|lib2to3/tests/data' \
+ 		$(DESTDIR)$(LIBDEST)
 -	PYTHONPATH=$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
 +	PYTHONPATH=$(HOSTPYTHONPATH):$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
  		./$(HOSTPYTHON) -Wi -tt -O $(DESTDIR)$(LIBDEST)/compileall.py \
  		-d $(LIBDEST) -f \
- 		-x 'bad_coding|badsyntax|site-packages' $(DESTDIR)$(LIBDEST)
+ 		-x 'bad_coding|badsyntax|site-packages|lib2to3/tests/data' \
+ 		$(DESTDIR)$(LIBDEST)
 -	-PYTHONPATH=$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
 +	-PYTHONPATH=$(HOSTPYTHONPATH):$(DESTDIR)$(LIBDEST)  $(RUNSHARED) \
  		./$(HOSTPYTHON) -Wi -t $(DESTDIR)$(LIBDEST)/compileall.py \
@@ -30,4 +32,4 @@ some of the modules that we compile need more modules on the host to make work
 +	-PYTHONPATH=$(HOSTPYTHONPATH):$(DESTDIR)$(LIBDEST) $(RUNSHARED) \
  		./$(HOSTPYTHON) -Wi -t -c "import lib2to3.pygram, lib2to3.patcomp;lib2to3.patcomp.PatternCompiler()"
  
- # Install the include files
+ # Create the PLATDIR source directory, if one wasn't distributed..

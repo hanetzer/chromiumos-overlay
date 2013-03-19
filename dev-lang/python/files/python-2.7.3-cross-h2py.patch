@@ -2,17 +2,19 @@ use the host python when running the h2py code, and have that search sysroot
 
 --- a/Makefile.pre.in
 +++ b/Makefile.pre.in
-@@ -431,8 +431,8 @@ platformspecificmods: $(BUILDPYTHON) sharedmods
- 			cp $(srcdir)/Lib/plat-generic/regen $(srcdir)/Lib/$(PLATDIR)/regen; \
- 		fi \
- 	fi
--	@EXE="$(BUILDEXE)"; export EXE; \
--	PATH="`pwd`:$$PATH"; export PATH; \
-+	@HOSTPYTHON="`realpath $(HOSTPYTHON)`"; export HOSTPYTHON; \
-+	INCLUDE="$(SYSROOT)$(INCLUDEDIR)"; export INCLUDE; \
- 	PYTHONPATH="`pwd`/Lib"; export PYTHONPATH; \
- 	cd $(srcdir)/Lib/$(PLATDIR); \
- 	$(RUNSHARED) ./regen || exit 1; \
+@@ -431,10 +431,10 @@
+ $(srcdir)/Lib/$(PLATDIR):
+ 	mkdir $(srcdir)/Lib/$(PLATDIR)
+ 	cp $(srcdir)/Lib/plat-generic/regen $(srcdir)/Lib/$(PLATDIR)/regen
+-	export PATH; PATH="`pwd`:$$PATH"; \
++	export INCLUDE="$(SYSROOT)$(INCLUDEDIR)"; \
+ 	export PYTHONPATH; PYTHONPATH="`pwd`/Lib"; \
+ 	export DYLD_FRAMEWORK_PATH; DYLD_FRAMEWORK_PATH="`pwd`"; \
+-	export EXE; EXE="$(BUILDEXE)"; \
++	export HOSTPYTHON="`realpath $(HOSTPYTHON)`"; \
+ 	cd $(srcdir)/Lib/$(PLATDIR); $(RUNSHARED) ./regen
+ 
+ python-config: $(srcdir)/Misc/python-config.in
 --- a/Tools/scripts/h2py.py
 +++ b/Tools/scripts/h2py.py
 @@ -60,6 +60,7 @@ except KeyError:
