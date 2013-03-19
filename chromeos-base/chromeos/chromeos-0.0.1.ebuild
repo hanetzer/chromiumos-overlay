@@ -9,8 +9,8 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootimage coreboot cros_ec gdmwimax X bootchart opengles
-	cros_embedded"
+IUSE="bluetooth bootchart bootimage coreboot cros_ec cros_embedded gdmwimax
+	opengles X"
 
 ################################################################################
 #
@@ -189,7 +189,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-login
 	chromeos-base/crash-reporter
-	chromeos-base/cromo
 	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
@@ -238,7 +237,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-fs/udev
 	sys-process/lsof
 	sys-process/procps
-	virtual/modemmanager
 "
 
 # Build time dependencies

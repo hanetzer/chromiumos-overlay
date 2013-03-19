@@ -17,6 +17,7 @@ REQUIRED_USE="asan? ( clang )"
 RDEPEND="chromeos-base/bootstat
 	tpm? ( chromeos-base/chaps )
 	chromeos-base/chromeos-minijail
+	cellular? ( chromeos-base/cromo )
 	!<chromeos-base/flimflam-0.0.1-r530
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/libchromeos
@@ -35,14 +36,14 @@ RDEPEND="chromeos-base/bootstat
 	net-libs/libnfnetlink
 	net-misc/dhcpcd
 	vpn? ( net-misc/openvpn )
+	cellular? ( virtual/modemmanager )
 	net-wireless/wpa_supplicant[dbus]"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	chromeos-base/wimax_manager
 	test? ( dev-cpp/gmock )
-	dev-cpp/gtest
-	cellular? ( virtual/modemmanager )"
+	dev-cpp/gtest"
 
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)"
