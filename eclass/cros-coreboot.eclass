@@ -10,7 +10,7 @@
 
 inherit toolchain-funcs
 
-DESCRIPTION="coreboot x86 firmware"
+DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
@@ -19,9 +19,15 @@ IUSE="em100-mode"
 
 RDEPEND="!sys-boot/chromeos-coreboot"
 
-DEPEND="sys-power/iasl
-	sys-apps/coreboot-utils
+# Dependency shared by x86 and amd64.
+DEPEND_X86="
+	sys-power/iasl
 	sys-boot/chromeos-mrc
+	sys-apps/coreboot-utils
+	"
+
+DEPEND="x86? ($DEPEND_X86)
+	amd64? ($DEPEND_X86)
 	"
 
 # @ECLASS-VARIABLE: COREBOOT_BOARD
