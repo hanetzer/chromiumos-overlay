@@ -10,7 +10,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-asan -clang test +tpm +vpn"
+IUSE="-asan -clang +cellular test +tpm +vpn"
 KEYWORDS="~amd64 ~arm ~x86"
 REQUIRED_USE="asan? ( clang )"
 
@@ -21,7 +21,7 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	>=chromeos-base/mobile-providers-0.0.1-r12
+	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 	vpn? ( chromeos-base/vpn-manager )
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
@@ -42,10 +42,11 @@ DEPEND="${RDEPEND}
 	chromeos-base/wimax_manager
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
-	virtual/modemmanager"
+	cellular? ( virtual/modemmanager )"
 
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)"
+	use cellular || echo SHILL_CELLULAR=0
 	use vpn || echo SHILL_VPN=0
 }
 
@@ -82,8 +83,8 @@ src_test() {
 
 src_install() {
 	dobin bin/ff_debug
-	dobin bin/mm_debug
-	dobin bin/set_apn
+	use cellular && dobin bin/mm_debug
+	use cellular && dobin bin/set_apn
 	dobin bin/set_arpgw
 	dobin bin/shill_login_user
 	dobin bin/shill_logout_user
@@ -96,7 +97,7 @@ src_install() {
 	doexe build/shims/net-diags-upload
 	doexe build/shims/nss-get-cert
 	use vpn && doexe build/shims/openvpn-script
-	doexe build/shims/set-apn-helper
+	use cellular && doexe build/shims/set-apn-helper
 	use vpn && doexe build/shims/shill-pppd-plugin.so
 	insinto "${shims_dir}"
 	doins build/shims/wpa_supplicant.conf
@@ -106,7 +107,7 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf
 	insinto /usr/share/shill
-	doins data/cellular_operator_info
+	use cellular && doins data/cellular_operator_info
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
