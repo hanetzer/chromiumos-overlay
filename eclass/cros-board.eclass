@@ -44,7 +44,6 @@ ALL_BOARDS=(
 	daisy_snow
 	dalmore
 	emeraldlake2
-	eureka
 	fb1
 	fox
 	fox_baskingridge
@@ -61,6 +60,7 @@ ALL_BOARDS=(
 	puppy
 	raspberrypi
 	ricochet
+	sonic
 	stout
 	stumpy
 	tegra2
