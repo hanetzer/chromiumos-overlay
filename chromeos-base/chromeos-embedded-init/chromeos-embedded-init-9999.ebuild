@@ -12,6 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
+IUSE="+vt"
 
 DEPEND=""
 RDEPEND="${DEPEND}
@@ -38,7 +39,9 @@ src_install() {
 	doins boot-complete.conf cgroups.conf dbus.conf failsafe-delay.conf
 	doins failsafe.conf halt.conf install-completed.conf ip6tables.conf
 	doins iptables.conf pre-shutdown.conf pstore.conf reboot.conf
-	doins syslog.conf system-services.conf tty2.conf update-engine.conf
+	doins syslog.conf system-services.conf update-engine.conf
+
+	use vt && doins tty2.conf
 
 	# udhcp support
 	dosym /var/run/resolv.conf /etc
