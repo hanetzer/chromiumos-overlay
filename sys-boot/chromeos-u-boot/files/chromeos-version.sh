@@ -17,4 +17,5 @@
 #
 # The make command will read the temporary makefile from stdin and
 # parse the e target.
-printf 'e:;@echo $(U_BOOT_VERSION)\ninclude '$1'/Makefile\n' | make -f - e
+printf 'e:;@echo $(U_BOOT_VERSION)\ninclude '$1'/Makefile\n' | make -f - e | \
+  sed 's/-rc/_rc/'
