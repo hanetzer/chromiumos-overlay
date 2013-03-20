@@ -49,7 +49,7 @@ net-nds/openldap	minimal
 net-proxy/tsocks	tordns
 net-wireless/bluez	alsa -consolekit -readline
 net-wireless/bluez-test	alsa -consolekit -readline test-programs
-net-wireless/wpa_supplicant	dbus debug -readline ssl
+net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
 sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 sys-apps/busybox	-pam -selinux
 sys-apps/dbus		-X

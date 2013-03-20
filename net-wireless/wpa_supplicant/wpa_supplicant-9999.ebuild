@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/wpa_supplicant/wpa_supplicant-0.7.0.ebuild,v 1.7 2009/07/24 16:42:43 josejx Exp $
 
-EAPI="2"
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 
 inherit eutils toolchain-funcs qt3 qt4 cros-workon
@@ -14,7 +14,8 @@ LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline ssl wps kernel_linux kernel_FreeBSD"
+IUSE="dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline smartcard ssl wps kernel_linux kernel_FreeBSD"
+REQUIRED_USE="smartcard? ( ssl )"
 
 DEPEND="dev-libs/libnl:0
 	dbus? ( sys-apps/dbus )
@@ -30,7 +31,8 @@ DEPEND="dev-libs/libnl:0
 		x11-libs/qt-svg:4 )
 	!qt4? ( qt3? ( x11-libs/qt:3 ) )
 	readline? ( sys-libs/ncurses sys-libs/readline )
-	ssl? ( dev-libs/openssl dev-libs/engine_pkcs11 )
+	ssl? ( dev-libs/openssl )
+	smartcard? ( dev-libs/engine_pkcs11 )
 	!ssl? ( gnutls? ( net-libs/gnutls ) )
 	!ssl? ( !gnutls? ( dev-libs/libtommath ) )"
 RDEPEND="${DEPEND}"
@@ -126,14 +128,16 @@ src_configure() {
 	# SSL authentication methods
 	if use ssl ; then
 		echo "CONFIG_TLS=openssl"    >> ${CFGFILE}
-		echo "CONFIG_SMARTCARD=y"    >> ${CFGFILE}
 	elif use gnutls ; then
 		echo "CONFIG_TLS=gnutls"     >> ${CFGFILE}
 		echo "CONFIG_GNUTLS_EXTRA=y" >> ${CFGFILE}
 	else
 		echo "CONFIG_TLS=internal"   >> ${CFGFILE}
 	fi
-
+	if use smartcard ; then
+		# REQUIRED_USE ensures that ssl is set too.
+		echo "CONFIG_SMARTCARD=y"    >> ${CFGFILE}
+	fi
 	if use kernel_linux ; then
 		# Linux specific drivers
 		#echo "CONFIG_DRIVER_ATMEL=y"       >> ${CFGFILE}
