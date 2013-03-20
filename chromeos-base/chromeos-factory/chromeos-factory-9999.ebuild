@@ -20,6 +20,7 @@ IUSE="+autotest +build_tests"
 
 DEPEND="chromeos-base/chromeos-chrome
 	dev-python/pyyaml
+	dev-python/unittest2
 	chromeos-base/chromeos-factory-board"
 RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-lang/python
@@ -29,6 +30,7 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/python-evdev
 	dev-python/pyyaml
 	dev-python/setproctitle
+	dev-python/unittest2
 	dev-util/stressapptest
 	chromeos-base/chromeos-factory-board
 	>=chromeos-base/vpd-0.0.1-r11"
