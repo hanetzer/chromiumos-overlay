@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare setup unpack
+DEPEND=dev-cpp/gtest chromeos-base/autotest-deps-libaio app-i18n/ibus dev-libs/glib sys-apps/dbus dev-libs/libnl:0 sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf x11-drivers/touchpad-tests chromeos-base/mttools sys-devel/binutils dev-vcs/git
+DESCRIPTION=Autotest common deps
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest cros_workon_tree_04a6f7071196fcae22cadc6bb38367d7dabdf181 profiling +buildcheck autotest opengles
+KEYWORDS=x86 arm amd64
+LICENSE=GPL-2
+RDEPEND=dev-cpp/gtest chromeos-base/autotest-deps-libaio app-i18n/ibus dev-libs/glib sys-apps/dbus dev-libs/libnl:0 sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf x11-drivers/touchpad-tests chromeos-base/mttools sys-devel/binutils ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	534125295770b6401a8180bb518da0e9	autotest-deponly	c768cc6b3a334584419444354d68ba8e	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=21633c5b87d4f05e6c27461f8ae71bd8
