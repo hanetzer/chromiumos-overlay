@@ -116,6 +116,9 @@ src_prepare() {
 	# Fix a pointer arithmetic bug in textfile parsing.
 	epatch "${FILESDIR}/${PN}-textfile-parsing.patch"
 
+	# Fix CreatePairedDevice and DiscoverServices concurrence bug.
+	epatch "${FILESDIR}/${P}-sdp-on-bonding.patch"
+
 	eautoreconf
 
 	if use cups; then
