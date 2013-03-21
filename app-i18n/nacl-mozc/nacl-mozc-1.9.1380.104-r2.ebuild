@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
+inherit eutils
+
 DESCRIPTION="The Mozc engine for IME extension API"
 HOMEPAGE="http://code.google.com/p/mozc"
 SRC_URI="gs://chromeos-localmirror-private/distfiles/nacl-mozc-${PV}.tar.gz"
@@ -22,6 +24,11 @@ src_prepare() {
 	if ! use amd64 ; then
 		rm nacl_session_handler_x86_64.nexe || die
 	fi
+
+	# Insert the public key to manifest.json.
+	# The key is used to execute NaCl Mozc as a component extension.
+	# With this key, NaCl Mozc is handled as id:fpfbhcjppmaeaijcidgiibchfbnhbelj.
+	epatch "${FILESDIR}"/${P}-insert-internal-public-key.patch
 }
 
 src_install() {
