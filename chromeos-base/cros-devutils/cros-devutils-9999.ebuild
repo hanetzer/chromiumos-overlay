@@ -79,7 +79,7 @@ src_install() {
 		doins host/lib/*.py
 
 		insinto "$(python_get_sitedir)/update_payload"
-		doins $(ls -1 host/lib/update_payload/*.py | grep -v unittest)
+		doins $(printf '%s\n' host/lib/update_payload/*.py | grep -v unittest)
 
 		insinto "/usr/lib/crosutils"
 		doins host/lib/cros_archive.sh
