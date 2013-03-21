@@ -94,6 +94,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-fonts
 	chromeos-base/chromeos-installer
 	chromeos-base/metrics
+	chromeos-base/shill
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )
 	gdmwimax? ( net-wireless/gdmwimax )
@@ -199,10 +200,8 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/permission_broker
 	chromeos-base/power_manager
 	chromeos-base/root-certificates
-	chromeos-base/shill
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
-	chromeos-base/wimax_manager
 	dev-util/quipper
 	media-gfx/ply-image
 	media-plugins/alsa-plugins

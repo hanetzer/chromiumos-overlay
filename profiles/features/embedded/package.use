@@ -1,3 +1,5 @@
 chromeos-base/chromeos-chrome	content_shell -autotest -build_tests -chrome_remoting -nacl -reorder
+chromeos-base/shill	-vpn
+net-wireless/wpa_supplicant	-smartcard
 sys-apps/busybox		make-symlinks savedconfig
 sys-libs/uuid			static-libs
