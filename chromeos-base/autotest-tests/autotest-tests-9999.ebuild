@@ -265,6 +265,7 @@ IUSE_TESTS="
 	+tests_power_CameraSuspend
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
+	+tests_power_DarkResumeShutdownServer
 	+tests_power_Draw
 	+tests_power_HotCPUSuspend
 	+tests_power_KernelSuspend
