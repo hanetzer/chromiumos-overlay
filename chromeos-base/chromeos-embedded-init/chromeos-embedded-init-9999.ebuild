@@ -36,10 +36,10 @@ src_install() {
 	# http://crosbug.com/39188
 	dosbin embedded-init/agetty
 
-	doins boot-complete.conf cgroups.conf dbus.conf failsafe-delay.conf
-	doins failsafe.conf halt.conf install-completed.conf ip6tables.conf
-	doins iptables.conf pre-shutdown.conf pstore.conf reboot.conf
-	doins syslog.conf system-services.conf update-engine.conf
+	doins boot-complete.conf cgroups.conf cron-lite.conf dbus.conf
+	doins failsafe-delay.conf failsafe.conf halt.conf install-completed.conf
+	doins ip6tables.conf iptables.conf pre-shutdown.conf pstore.conf
+	doins reboot.conf syslog.conf system-services.conf update-engine.conf
 
 	use vt && doins tty2.conf
 
