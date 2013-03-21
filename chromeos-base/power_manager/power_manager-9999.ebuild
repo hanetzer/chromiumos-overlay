@@ -75,7 +75,6 @@ src_install() {
 	dobin tools/backlight-tool
 	dobin tools/memory_suspend_test
 	dobin tools/powerd_dbus_suspend
-	dobin tools/power_state_tool
 	dobin tools/power-supply-info
 	dobin tools/set_power_policy
 	dobin tools/suspend_delay_sample
