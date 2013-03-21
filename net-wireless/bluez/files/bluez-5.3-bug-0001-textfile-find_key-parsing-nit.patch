@@ -1,0 +1,29 @@
+From b8782baf6a397b5caea47564a7548bc1bbc62d0f Mon Sep 17 00:00:00 2001
+From: Alex Deymo <deymo@chromium.org>
+Date: Fri, 15 Mar 2013 16:27:20 -0500
+Subject: [PATCH 1/2] textfile: find_key parsing nit
+
+The find_key function should return a pointer to the begining of the
+line in the config file (map) that has the given keyword. This patch
+fixes a wrong logic when the another keyword has the given keyword as a
+prefix and appears in the first line of the file.
+---
+ src/textfile.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/textfile.c b/src/textfile.c
+index ed6bfba..a4e54a4 100644
+--- a/src/textfile.c
++++ b/src/textfile.c
+@@ -101,7 +101,7 @@ static inline char *find_key(char *map, size_t size, const char *key, size_t len
+ 	while (ptrlen > len + 1) {
+ 		int cmp = (icase) ? strncasecmp(ptr, key, len) : strncmp(ptr, key, len);
+ 		if (cmp == 0) {
+-			if (ptr == map)
++			if (ptr == map && *(ptr + len) == ' ')
+ 				return ptr;
+ 
+ 			if ((*(ptr - 1) == '\r' || *(ptr - 1) == '\n') &&
+-- 
+1.8.1.3
+

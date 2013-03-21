@@ -104,6 +104,24 @@ src_prepare() {
 	# the patch rather than deal with Shill ;)
 	epatch "${FILESDIR}/${P}-persist-powered.patch"
 
+	# textfile.c parsing bugs.
+	# Accepted upstream (for 5.4)
+	epatch "${FILESDIR}/${P}-bug-0001-textfile-find_key-parsing-nit.patch"
+	epatch "${FILESDIR}/${P}-bug-0002-textfile-Fix-a-pointer-arithmetic-logic-bug-in-read_.patch"
+
+	# SEGFAULT fix on agent callbacks.
+	# Accepted upstream (for 5.4)
+	epatch "${FILESDIR}/${P}-bug-core-Fix-wrong-argument-on-agent-_cb-functions.patch"
+
+	# agent implementation on bluetoothctl/bt_console client.
+	# Submitted upstream, not yet accepted.
+	epatch "${FILESDIR}/${P}-agent-0001-client-Add-color-modifiers-to-NEW-CHG-and-DEL-events.patch"
+	epatch "${FILESDIR}/${P}-agent-0002-client-Right-prompt-management-on-agent-input.patch"
+	epatch "${FILESDIR}/${P}-agent-0003-client-agent-command-capability-argument-and-autocom.patch"
+	epatch "${FILESDIR}/${P}-agent-0004-client-Agent-s-DisplayPincode-implementation.patch"
+	epatch "${FILESDIR}/${P}-agent-0005-client-Agent-s-DisplayPasskey-implementation.patch"
+	epatch "${FILESDIR}/${P}-agent-0006-client-Agent-s-RequestPasskey-implementation.patch"
+
 	eautoreconf
 
 	if use cups; then

@@ -1,0 +1,102 @@
+From 78bab83f7803466338e8ba2b587b889a616e38a1 Mon Sep 17 00:00:00 2001
+From: Alex Deymo <deymo@chromium.org>
+Date: Tue, 12 Mar 2013 20:15:16 -0700
+Subject: [PATCH 1/6] client: Add color modifiers to NEW, CHG and DEL events.
+
+Events like [NEW], [CHG] and [DEL] can appear in the command console at
+any time, even when the user is typing a command. The last line is kept
+making the event line appear just before it, something that can be
+unnoticed. This patch add meaningful colors for those three event to make
+it easier to see them.
+---
+ client/display.h |  3 +++
+ client/main.c    | 20 +++++++++++++-------
+ 2 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/client/display.h b/client/display.h
+index 393a3c8..9cb891a 100644
+--- a/client/display.h
++++ b/client/display.h
+@@ -22,6 +22,9 @@
+  */
+ 
+ #define COLOR_OFF	"\x1B[0m"
++#define COLOR_RED	"\x1B[0;91m"
++#define COLOR_GREEN	"\x1B[0;92m"
++#define COLOR_YELLOW	"\x1B[0;93m"
+ #define COLOR_BLUE	"\x1B[0;34m"
+ 
+ void rl_printf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
+diff --git a/client/main.c b/client/main.c
+index 9a927a8..d8547c0 100644
+--- a/client/main.c
++++ b/client/main.c
+@@ -41,6 +41,11 @@
+ #include "agent.h"
+ #include "display.h"
+ 
++/* String display constants */
++#define COLORED_NEW	COLOR_GREEN "NEW" COLOR_OFF
++#define COLORED_CHG	COLOR_YELLOW "CHG" COLOR_OFF
++#define COLORED_DEL	COLOR_RED "DEL" COLOR_OFF
++
+ static GMainLoop *main_loop;
+ static DBusConnection *dbus_conn;
+ 
+@@ -252,7 +257,7 @@ static void proxy_added(GDBusProxy *proxy, void *user_data)
+ 		if (device_is_child(proxy, default_ctrl) == TRUE) {
+ 			dev_list = g_list_append(dev_list, proxy);
+ 
+-			print_device(proxy, "NEW");
++			print_device(proxy, COLORED_NEW);
+ 		}
+ 	} else if (!strcmp(interface, "org.bluez.Adapter1")) {
+ 		ctrl_list = g_list_append(ctrl_list, proxy);
+@@ -260,7 +265,7 @@ static void proxy_added(GDBusProxy *proxy, void *user_data)
+ 		if (!default_ctrl)
+ 			default_ctrl = proxy;
+ 
+-		print_adapter(proxy, "NEW");
++		print_adapter(proxy, COLORED_NEW);
+ 	} else if (!strcmp(interface, "org.bluez.AgentManager1")) {
+ 		if (!agent_manager) {
+ 			agent_manager = proxy;
+@@ -282,12 +287,12 @@ static void proxy_removed(GDBusProxy *proxy, void *user_data)
+ 		if (device_is_child(proxy, default_ctrl) == TRUE) {
+ 			dev_list = g_list_remove(dev_list, proxy);
+ 
+-			print_device(proxy, "DEL");
++			print_device(proxy, COLORED_DEL);
+ 		}
+ 	} else if (!strcmp(interface, "org.bluez.Adapter1")) {
+ 		ctrl_list = g_list_remove(ctrl_list, proxy);
+ 
+-		print_adapter(proxy, "DEL");
++		print_adapter(proxy, COLORED_DEL);
+ 
+ 		if (default_ctrl == proxy) {
+ 			default_ctrl = NULL;
+@@ -319,8 +324,8 @@ static void property_changed(GDBusProxy *proxy, const char *name,
+ 
+ 				dbus_message_iter_get_basic(&addr_iter,
+ 								&address);
+-				str = g_strdup_printf("[CHG] Device %s ",
+-								address);
++				str = g_strdup_printf("[" COLORED_CHG
++						"] Device %s ", address);
+ 			} else
+ 				str = g_strdup("");
+ 
+@@ -336,7 +341,8 @@ static void property_changed(GDBusProxy *proxy, const char *name,
+ 			const char *address;
+ 
+ 			dbus_message_iter_get_basic(&addr_iter, &address);
+-			str = g_strdup_printf("[CHG] Controller %s ", address);
++			str = g_strdup_printf("[" COLORED_CHG
++						"] Controller %s ", address);
+ 		} else
+ 			str = g_strdup("");
+ 
+-- 
+1.8.1.3
+

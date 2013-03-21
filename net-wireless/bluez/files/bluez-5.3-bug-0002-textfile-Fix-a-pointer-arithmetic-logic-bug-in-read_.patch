@@ -1,0 +1,28 @@
+From e4bfa385003114c637467441df105d3bf9427796 Mon Sep 17 00:00:00 2001
+From: Alex Deymo <deymo@chromium.org>
+Date: Fri, 15 Mar 2013 16:29:19 -0500
+Subject: [PATCH 2/2] textfile: Fix a pointer arithmetic logic bug in
+ read_key()
+
+A substraction of pointers ends up in a wrong computation of the size
+passed to strnpbrk() in read_key(). This patch fixes the pointer logic.
+---
+ src/textfile.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/textfile.c b/src/textfile.c
+index a4e54a4..7267f3a 100644
+--- a/src/textfile.c
++++ b/src/textfile.c
+@@ -335,7 +335,7 @@ static char *read_key(const char *pathname, const char *key, int icase)
+ 		goto unmap;
+ 	}
+ 
+-	end = strnpbrk(off, size - (map - off), "\r\n");
++	end = strnpbrk(off, size - (off - map), "\r\n");
+ 	if (!end) {
+ 		err = -EILSEQ;
+ 		goto unmap;
+-- 
+1.8.1.3
+

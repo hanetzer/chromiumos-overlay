@@ -1,0 +1,48 @@
+From 69cb78eb00272171edbfdd605b7fadf5b8fe8ab6 Mon Sep 17 00:00:00 2001
+From: Alex Deymo <deymo@chromium.org>
+Date: Wed, 13 Mar 2013 14:39:56 -0700
+Subject: [PATCH 4/6] client: Agent's DisplayPincode implementation
+
+Implements the DisplayPinCode(object device, string pincode) method.
+---
+ client/agent.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/client/agent.c b/client/agent.c
+index ea89623..3ac240a 100644
+--- a/client/agent.c
++++ b/client/agent.c
+@@ -175,6 +175,20 @@ static DBusMessage *request_pincode(DBusConnection *conn,
+ 	return NULL;
+ }
+ 
++static DBusMessage *display_pincode(DBusConnection *conn,
++					DBusMessage *msg, void *user_data)
++{
++	const char *device;
++	const char *pincode;
++
++	dbus_message_get_args(msg, NULL, DBUS_TYPE_OBJECT_PATH, &device,
++				DBUS_TYPE_STRING, &pincode, DBUS_TYPE_INVALID);
++
++	rl_printf(AGENT_PROMPT "PIN code: %s\n", pincode);
++
++	return dbus_message_new_method_return(msg);
++}
++
+ static DBusMessage *request_confirmation(DBusConnection *conn,
+ 					DBusMessage *msg, void *user_data)
+ {
+@@ -250,6 +264,9 @@ static const GDBusMethodTable methods[] = {
+ 	{ GDBUS_ASYNC_METHOD("RequestPinCode",
+ 			GDBUS_ARGS({ "device", "o" }),
+ 			GDBUS_ARGS({ "pincode", "s" }), request_pincode) },
++	{ GDBUS_METHOD("DisplayPinCode",
++			GDBUS_ARGS({ "device", "o" }, { "pincode", "s" }),
++			NULL, display_pincode) },
+ 	{ GDBUS_ASYNC_METHOD("RequestConfirmation",
+ 			GDBUS_ARGS({ "device", "o" }, { "passkey", "u" }),
+ 			NULL, request_confirmation) },
+-- 
+1.8.1.3
+
