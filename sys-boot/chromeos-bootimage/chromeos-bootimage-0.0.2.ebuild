@@ -80,6 +80,16 @@ build_image() {
 	base=$(basename ${fdt_file})
 	board=${base%%.dts}
 	board=${board##*-}
+
+	# TODO(vbendeb): remove this once peach is better supported:
+	# Exynos5420 boards should not be using default component locations.
+	local soc=${base/-*}  # Get soc name out of the device tree name.
+	if [[ "${soc}" == "exynos5420" ]]; then
+		common_flags+=' --bl1=/build/peach/firmware/E5420.nbl1.bin'
+		common_flags+=' --bl2=/build/peach/firmware/smdk5420-spl.bin'
+		common_flags+=' -D -s'
+	fi
+
 	cmdline="${common_flags} \
 		--dt ${fdt_file} \
 		--uboot ${uboot_file} \
