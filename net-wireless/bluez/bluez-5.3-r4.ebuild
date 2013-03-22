@@ -114,13 +114,22 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-bug-core-Fix-wrong-argument-on-agent-_cb-functions.patch"
 
 	# agent implementation on bluetoothctl/bt_console client.
-	# Submitted upstream, not yet accepted.
+	# Accepted upstream (for 5.4)
 	epatch "${FILESDIR}/${P}-agent-0001-client-Add-color-modifiers-to-NEW-CHG-and-DEL-events.patch"
 	epatch "${FILESDIR}/${P}-agent-0002-client-Right-prompt-management-on-agent-input.patch"
 	epatch "${FILESDIR}/${P}-agent-0003-client-agent-command-capability-argument-and-autocom.patch"
 	epatch "${FILESDIR}/${P}-agent-0004-client-Agent-s-DisplayPincode-implementation.patch"
 	epatch "${FILESDIR}/${P}-agent-0005-client-Agent-s-DisplayPasskey-implementation.patch"
 	epatch "${FILESDIR}/${P}-agent-0006-client-Agent-s-RequestPasskey-implementation.patch"
+
+	# Autopair plugin implementation, similar to our BlueZ 4.99 plugin.
+	# Submitted upstream, not decided.
+	epatch "${FILESDIR}/${P}-autopair-0001-core-Convert-the-pincode-callback-to-an-interable-li.patch"
+	epatch "${FILESDIR}/${P}-autopair-0002-plugins-Extend-the-pin-code-callback-with-the-call-n.patch"
+	epatch "${FILESDIR}/${P}-autopair-0003-core-Add-support-for-retrying-a-bonding.patch"
+	epatch "${FILESDIR}/${P}-autopair-0004-core-retry-bonding-attempt-until-the-iterator-reachs.patch"
+	epatch "${FILESDIR}/${P}-autopair-0005-core-Add-device_get_class-to-the-public-interface.patch"
+	epatch "${FILESDIR}/${P}-autopair-0006-autopair-Add-the-autopair-plugin.patch"
 
 	eautoreconf
 
