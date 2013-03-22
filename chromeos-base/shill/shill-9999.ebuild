@@ -23,6 +23,7 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
+	chromeos-base/wimax_manager
 	vpn? ( chromeos-base/vpn-manager )
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
@@ -41,7 +42,6 @@ RDEPEND="chromeos-base/bootstat
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
-	chromeos-base/wimax_manager
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
