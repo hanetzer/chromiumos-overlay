@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("f7c0c2f6064bed809b69f1ba32a53ff5b18b0d72" "22a16ef21026572f57716a5c7fa8b6d8a9b71da4")
-CROS_WORKON_TREE=("1046b04a60120bb4dd1c1078bd6760085d46dfcc" "35cbfc3844631a206bcf59918aa7c4b45a37c52c")
+CROS_WORKON_COMMIT=("59f77f9d91d71cd3fe0dc22bc1e464689f4a78ed" "22a16ef21026572f57716a5c7fa8b6d8a9b71da4")
+CROS_WORKON_TREE=("ecfe943e11959b695fee99e28ff6e68244d19330" "35cbfc3844631a206bcf59918aa7c4b45a37c52c")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
@@ -22,6 +22,7 @@ IUSE="+autotest +build_tests"
 
 DEPEND="chromeos-base/chromeos-chrome
 	dev-python/pyyaml
+	dev-python/unittest2
 	chromeos-base/chromeos-factory-board"
 RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-lang/python
@@ -31,6 +32,7 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/python-evdev
 	dev-python/pyyaml
 	dev-python/setproctitle
+	dev-python/unittest2
 	dev-util/stressapptest
 	chromeos-base/chromeos-factory-board
 	>=chromeos-base/vpd-0.0.1-r11"
