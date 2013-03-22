@@ -29,7 +29,6 @@ src_install() {
 	doins startup.conf
 	doins embedded-init/boot-services.conf
 	doins embedded-init/login-prompt-visible.conf
-	doins embedded-init/udhcpc.conf
 
 	# TODO(cmasone): Either use getty across the whole source tree, or
 	# convince busybox that it can simulate agetty.  Or something.
@@ -42,9 +41,6 @@ src_install() {
 	doins reboot.conf syslog.conf system-services.conf update-engine.conf
 
 	use vt && doins tty2.conf
-
-	# udhcp support
-	dosym /var/run/resolv.conf /etc
 
 	insinto /etc
 	doins issue rsyslog.chromeos
