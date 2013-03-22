@@ -230,6 +230,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "tlsdate" 234
 	copy_or_add_daemon_user "debugd-logs" 235 # For debugd's unprivileged logs
 	copy_or_add_daemon_user "debugfs-access" 236 # Access to debugfs
+	copy_or_add_daemon_user "shill-crypto" 237 # For shill's crypto-util
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
