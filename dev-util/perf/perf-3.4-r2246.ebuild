@@ -4,7 +4,7 @@
 
 EAPI=4
 CROS_WORKON_COMMIT="b3e96c8265f783848d8b5ea1fbb8520bb8bed227"
-CROS_WORKON_TREE="23aa2b45e30c876438805cb9c285999bfdfb5723"
+CROS_WORKON_TREE="36764a17a5c9d61c9b6216f8a3dc1b8c6081bcad"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit cros-workon eutils toolchain-funcs linux-info
