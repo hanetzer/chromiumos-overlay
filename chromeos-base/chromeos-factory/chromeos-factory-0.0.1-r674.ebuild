@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("e2ed04c2c433646a0f39c8687ba0766bd13a9044" "59f8c4329d091228fd30ccc8535218b9abdba671")
-CROS_WORKON_TREE=("c452122d5d295b55202698580673278706d24506" "a67e4a5b85bf6893922fddc6a8de7c9c3e2359e2")
+CROS_WORKON_COMMIT=("6e5a21cbdcd6c9f772ab2d7226b63d4200bd8cc8" "59f8c4329d091228fd30ccc8535218b9abdba671")
+CROS_WORKON_TREE=("4e09342ffe5f1049bab359b9ea038414045e7d22" "a67e4a5b85bf6893922fddc6a8de7c9c3e2359e2")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
@@ -89,6 +89,9 @@ src_install() {
 
 	# Directories used by Goofy.
 	keepdir /var/factory/{,log,state,tests}
+
+        # Make sure everything is group- and world-readable.
+        chmod -R go=rX "${D}${TARGET_DIR}"
 }
 
 pkg_postinst() {
