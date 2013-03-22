@@ -19,7 +19,7 @@ EGIT_REPO_URIS=(
 		""
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
-		"http://git.chromium.org/git/native_client/pnacl-llvm.git"
+		"https://git.chromium.org/git/native_client/pnacl-llvm.git"
 		"6c583141bf6b7a6b5f8125c1037ecbc089813288"	# EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
