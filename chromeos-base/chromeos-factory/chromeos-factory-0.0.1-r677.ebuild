@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("bddcb131a3a636da49cc56c73b472ea68a672f80" "59f8c4329d091228fd30ccc8535218b9abdba671")
-CROS_WORKON_TREE=("b3fca454d3f8a96fe2cd22955a8f08f193b54a64" "a67e4a5b85bf6893922fddc6a8de7c9c3e2359e2")
+CROS_WORKON_COMMIT=("73cacfa72d9845fd9950db145c4f435a39ca01e6" "59f8c4329d091228fd30ccc8535218b9abdba671")
+CROS_WORKON_TREE=("99458e90a4922f784d311eab09ff446acdf6f806" "a67e4a5b85bf6893922fddc6a8de7c9c3e2359e2")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
