@@ -1,37 +1,42 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-cpp/gmock/gmock-1.5.0.ebuild,v 1.2 2011/11/11 20:12:12 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-cpp/gmock/gmock-1.6.0.ebuild,v 1.6 2012/08/24 09:23:27 xmw Exp $
 
 EAPI="4"
 
-inherit libtool cros-au
+inherit eutils libtool cros-au
 
 MY_PN=${PN%32}
 MY_P="${MY_PN}-${PV}"
 
 DESCRIPTION="Google's C++ mocking framework"
 HOMEPAGE="http://code.google.com/p/googlemock/"
-SRC_URI="http://googlemock.googlecode.com/files/${MY_P}.tar.bz2"
+SRC_URI="http://googlemock.googlecode.com/files/${MY_P}.zip"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="amd64 arm ~mips ppc ~ppc64 x86"
 IUSE="32bit_au"
 REQUIRED_USE="32bit_au"
 RESTRICT="test"
 
-RDEPEND=">=dev-cpp/gtest32-${PV}"
-DEPEND="${RDEPEND}"
+RDEPEND="=dev-cpp/gtest32-${PV}*"
+DEPEND="app-arch/unzip
+	${RDEPEND}"
 
 S="${WORKDIR}/${MY_P}"
 
 src_unpack() {
 	default
 	# make sure we always use the system one
-	rm -r "${S}"/gtest/Makefile* || die
+	rm -r "${S}"/gtest/{Makefile,configure}* || die
 }
 
 src_prepare() {
+	sed -i -r \
+		-e '/^install-(data|exec)-local:/s|^.*$|&\ndisabled-&|' \
+		Makefile.in
+        epatch "${FILESDIR}/1.6.0-fix_mutex.patch" || die
 	elibtoolize
 }
 
