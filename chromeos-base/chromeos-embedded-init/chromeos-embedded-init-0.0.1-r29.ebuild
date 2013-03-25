@@ -40,7 +40,8 @@ src_install() {
 	doins boot-complete.conf cgroups.conf cron-lite.conf dbus.conf
 	doins failsafe-delay.conf failsafe.conf halt.conf install-completed.conf
 	doins ip6tables.conf iptables.conf pre-shutdown.conf pstore.conf
-	doins reboot.conf syslog.conf system-services.conf update-engine.conf
+	doins reboot.conf shill.conf shill_respawn.conf syslog.conf
+	doins system-services.conf update-engine.conf wpasupplicant.conf
 
 	use vt && doins tty2.conf
 
