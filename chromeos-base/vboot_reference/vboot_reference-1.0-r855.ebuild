@@ -10,7 +10,7 @@ inherit cros-debug cros-workon cros-au
 
 DESCRIPTION="Chrome OS verified boot tools"
 
-LICENSE="GPL-3"
+LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="32bit_au minimal tpmtests cros_host"
