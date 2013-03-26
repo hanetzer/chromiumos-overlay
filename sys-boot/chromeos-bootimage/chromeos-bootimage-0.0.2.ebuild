@@ -198,7 +198,6 @@ src_compile_depthcharge() {
 	local froot="${CROS_FIRMWARE_ROOT}"
 	# Location of various files
 	local bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
-	local uboot_file="${froot}/depthcharge/depthcharge.bin"
 	local ec_file="${froot}/ec.RW.bin"
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
@@ -206,8 +205,13 @@ src_compile_depthcharge() {
 	local coreboot_file="${froot}/coreboot.rom"
 	local ramstage_file="${froot}/coreboot_ram.stage"
 
+	local uboot_file
 	if use unified_depthcharge; then
 		uboot_file="${froot}/depthcharge/depthcharge.unified.payload"
+	elif [[ -a "${froot}/depthcharge/depthcharge.rw.bin" ]]; then
+		uboot_file="${froot}/depthcharge/depthcharge.rw.bin"
+	else
+		uboot_file="${froot}/depthcharge/depthcharge.bin"
 	fi
 
 	local common=(
@@ -231,10 +235,13 @@ src_compile_depthcharge() {
 		common+=( --ec "${ec_file}" )
 	fi
 
-	local depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
-
+	local depthcharge_elf
 	if use unified_depthcharge; then
 		depthcharge_elf="${froot}/depthcharge/depthcharge.unified.elf"
+	elif [[ -a "${froot}/depthcharge/depthcharge.ro.elf" ]]; then
+		depthcharge_elf="${froot}/depthcharge/depthcharge.ro.elf"
+	else
+		depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
 	fi
 
 	local netboot_elf="${froot}/depthcharge/netboot.elf"
