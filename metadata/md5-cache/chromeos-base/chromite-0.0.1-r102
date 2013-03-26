@@ -1,12 +1,11 @@
-DEFINED_PHASES=info install setup unpack
+DEFINED_PHASES=info setup test unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Chrome OS command-line shell
+DESCRIPTION=Wrapper for running chromite unit tests
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_69f9994e5db3af276ea66116aa0df81081c85037 profiling
+IUSE=cros_workon_tree_dc2abe89c3dee6b7b0c6abfe562968096b5516f2 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
-RDEPEND=app-admin/sudo chromeos-base/salsa chromeos-base/vboot_reference chromeos-base/workarounds net-misc/iputils net-misc/openssh net-wireless/iw sys-apps/net-tools x11-terms/rxvt-unicode
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	65223299e336454b5f869f6cbfbf552a	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=5a91206c536dc201432d08fd3d947ba9
+_md5_=27c2e3dc0eea7d9b460d3a88aeec3789
