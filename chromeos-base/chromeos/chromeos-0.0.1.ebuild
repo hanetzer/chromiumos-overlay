@@ -95,6 +95,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-installer
 	chromeos-base/crash-reporter
 	chromeos-base/metrics
+	chromeos-base/root-certificates
 	chromeos-base/shill
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )
@@ -200,7 +201,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/mtpd
 	chromeos-base/permission_broker
 	chromeos-base/power_manager
-	chromeos-base/root-certificates
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	dev-util/quipper
