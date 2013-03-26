@@ -207,10 +207,7 @@ src_compile_depthcharge() {
 
 	local uboot_file
 	if use unified_depthcharge; then
-		uboot_file="${froot}/depthcharge/depthcharge.unified.payload"
-		if [[ ! -a "${uboot_file}" ]]; then
-			uboot_file="${froot}/depthcharge/depthcharge.payload"
-		fi
+		uboot_file="${froot}/depthcharge/depthcharge.payload"
 	else
 		uboot_file="${froot}/depthcharge/depthcharge.rw.bin"
 	fi
@@ -238,10 +235,7 @@ src_compile_depthcharge() {
 
 	local depthcharge_elf
 	if use unified_depthcharge; then
-		depthcharge_elf="${froot}/depthcharge/depthcharge.unified.elf"
-		if [[ ! -a "${depthcharge_elf}" ]]; then
-			depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
-		fi
+		depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
 	else
 		depthcharge_elf="${froot}/depthcharge/depthcharge.ro.elf"
 	fi
