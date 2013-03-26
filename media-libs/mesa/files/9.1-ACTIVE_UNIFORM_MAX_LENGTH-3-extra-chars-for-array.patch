@@ -1,0 +1,40 @@
+From 946f02599d06a6f2c768156f1017cec1c4dcdc4e Mon Sep 17 00:00:00 2001
+From: Haixia Shi <hshi@chromium.org>
+Date: Tue, 26 Mar 2013 12:02:13 -0700
+Subject: [PATCH] ACTIVE_UNIFORM_MAX_LENGTH should include 3 extra characters
+ for arrays.
+
+If the active uniform is an array, then the length of the uniform name should
+include the three extra characters for the "[0]" suffix, which is required by
+the GL 4.2 spec to be appended to the uniform name in glGetActiveUniform().
+
+This avoids the situation where the output buffer does not have enough space
+to hold the "[0]" suffix, resulting in an incomplete array specification like
+"foobar[0".
+
+BUG=https://code.google.com/p/chromium/issues/detail?id=223014
+Change-Id: Ie581f71186feafa1a1554d85e4517693252120d3
+---
+ src/mesa/main/shaderapi.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/main/shaderapi.c b/src/mesa/main/shaderapi.c
+index be69467..68767f4 100644
+--- a/src/mesa/main/shaderapi.c
++++ b/src/mesa/main/shaderapi.c
+@@ -519,8 +519,11 @@ get_programiv(struct gl_context *ctx, GLuint program, GLenum pname, GLint *param
+ 
+       for (i = 0; i < shProg->NumUserUniformStorage; i++) {
+ 	 /* Add one for the terminating NUL character.
++	  * However if the uniform is an array, then add three extra characters
++	  * for the appended "[0]" suffix, in addition to the terminating NUL.
+ 	  */
+-	 const GLint len = strlen(shProg->UniformStorage[i].name) + 1;
++	 const GLint len = strlen(shProg->UniformStorage[i].name) + 1 +
++	     ((shProg->UniformStorage[i].array_elements != 0) ? 3 : 0);
+ 
+ 	 if (len > max_len)
+ 	    max_len = len;
+-- 
+1.8.1.3
+
