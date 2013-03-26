@@ -85,8 +85,8 @@ build_image() {
 	# Exynos5420 boards should not be using default component locations.
 	local soc=${base/-*}  # Get soc name out of the device tree name.
 	if [[ "${soc}" == "exynos5420" ]]; then
-		common_flags+=' --bl1=/build/peach/firmware/E5420.nbl1.bin'
-		common_flags+=' --bl2=/build/peach/firmware/smdk5420-spl.bin'
+		common_flags+=" --bl1=${SYSROOT}/firmware/E5420.nbl1.bin"
+		common_flags+=" --bl2=${SYSROOT}/firmware/smdk5420-spl.bin"
 		common_flags+=' -D -s'
 	fi
 
@@ -103,11 +103,11 @@ build_image() {
 	cros_bundle_firmware ${cmdline} \
 		--outdir "out-${board}.ro" \
 		--output "image-${board}.bin" ||
-		die "failed to build image."
+		die "failed to build RO image: ${cmdline}"
 	cros_bundle_firmware ${cmdline} --force-rw \
 		--outdir "out-${board}.rw" \
 		--output "image-${board}.rw.bin" ||
-		die "failed to build image."
+		die "failed to build RW image: ${cmdline}"
 
 	# Make non-vboot image
 	nv_uboot_file="${uboot_file}"
@@ -124,7 +124,7 @@ build_image() {
 		${nv_flags} \
 		--outdir "nvout-${board}" \
 		--output "nv_image-${board}.bin" ||
-		die "failed to build legacy image."
+		die "failed to build legacy image: ${cmdline}"
 }
 
 src_compile_uboot() {
