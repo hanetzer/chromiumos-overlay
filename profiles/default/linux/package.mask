@@ -13,7 +13,3 @@
 # Custom patches
 >=sys-boot/syslinux-3.84
 
-# TODO(rsleevi): Masked for testing!
->=app-crypt/nss-3.14.3
->=dev-libs/nspr-4.9.5
->=dev-libs/nss-3.14.3

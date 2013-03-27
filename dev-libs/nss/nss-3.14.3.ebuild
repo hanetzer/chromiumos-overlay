@@ -10,21 +10,19 @@ RTM_NAME="NSS_${PV//./_}_RTM"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="http://www.mozilla.org/projects/security/pki/nss/"
-SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
-	http://dev.gentoo.org/~anarchy/patches/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch
-	http://dev.gentoo.org/~anarchy/patches/${PN}-3.13.3_pem.support"
+SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 ~s390 ~sh sparc x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
-IUSE="utils"
 
 DEPEND="virtual/pkgconfig
 	>=dev-libs/nspr-${NSPR_VER}"
 
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
 	>=dev-db/sqlite-3.5
-	sys-libs/zlib"
+	sys-libs/zlib
+	!<app-crypt/nss-${PV}"
 
 src_setup() {
 	export LC_ALL="C"
@@ -34,11 +32,15 @@ src_prepare() {
 	# Custom changes for gentoo
 	epatch "${FILESDIR}/${PN}-3.14.1-gentoo-fixups-r1.patch"
 	epatch "${FILESDIR}/${PN}-3.12.6-gentoo-fixup-warnings.patch"
-	epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
-	epatch "${DISTDIR}/${PN}-3.13.3_pem.support"
 	epatch "${FILESDIR}/${PN}-3.14.2-x32.patch"
 	epatch "${FILESDIR}/${PN}-3.14.2-sqlite.patch"
-	epatch "${FILESDIR}/${PN}-3.14.3_sync_with_upstream_softokn_changes.patch"
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.14-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.14-abort-on-failed-urandom-access.patch
 
 	cd "${S}"/mozilla/security/coreconf || die
 	# hack nspr paths
@@ -64,7 +66,7 @@ src_prepare() {
 	# use host shlibsign if need be #436216
 	if tc-is-cross-compiler ; then
 		sed -i \
-			-e 's:"${2}"/shlibsign:shlibsign:' \
+			-e 's:"${2}"/shlibsign:nssshlibsign:' \
 			"${S}"/mozilla/security/nss/cmd/shlibsign/sign.sh || die
 	fi
 
@@ -198,8 +200,7 @@ cleanup_chk() {
 	done
 }
 
-src_install () {
-	MINOR_VERSION=12
+src_install() {
 	cd "${S}"/mozilla/security/dist || die
 
 	dodir /usr/$(get_libdir) || die
@@ -218,32 +219,14 @@ src_install () {
 	insinto /usr/include/nss
 	doins public/nss/*.h || die
 	cd "${ED}"/usr/$(get_libdir) || die
-	local n file
-	for file in *$(get_libname); do
-		n=${file%$(get_libname)}$(get_libname ${MINOR_VERSION})
-		mv ${file} ${n} || die
-		ln -s ${n} ${file} || die
-		if [[ ${CHOST} == *-darwin* ]]; then
-			install_name_tool -id "${EPREFIX}/usr/$(get_libdir)/${n}" ${n} || die
-		fi
-	done
 
 	local f nssutils
 	# Always enabled because we need it for chk generation.
 	nssutils="shlibsign"
-	if use utils; then
-		# The tests we do not need to install.
-		#nssutils_test="bltest crmftest dbtest dertimetest
-		#fipstest remtest sdrtest"
-		nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
-		cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
-		nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
-		pk12util pp rsaperf selfserv shlibsign signtool signver ssltap strsclnt
-		symkeyutil tstclnt vfychain vfyserv"
-	fi
 	cd "${S}"/mozilla/security/dist/*/bin/ || die
 	for f in $nssutils; do
-		dobin ${f} || die
+		# TODO(cmasone): switch to normal nss tool names
+		newbin ${f} nss${f}|| die
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run
@@ -260,11 +243,11 @@ src_install () {
 
 pkg_postinst() {
 	# We must re-sign the libraries AFTER they are stripped.
-	local shlibsign="${EROOT}/usr/bin/shlibsign"
+	local shlibsign="${EROOT}/usr/bin/nssshlibsign"
 	# See if we can execute it (cross-compiling & such). #436216
 	"${shlibsign}" -h >&/dev/null
 	if [[ $? -gt 1 ]] ; then
-		shlibsign="shlibsign"
+		shlibsign="nssshlibsign"
 	fi
 	generate_chk "${shlibsign}" "${EROOT}"/usr/$(get_libdir)
 }
