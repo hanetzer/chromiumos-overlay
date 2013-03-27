@@ -950,7 +950,7 @@ src_install() {
 	# Copy input_methods.txt so that ibus-m17n can exclude unnnecessary
 	# input methods based on the file.
 	insinto /usr/share/chromeos-assets/input_methods
-	INPUT_METHOD="${CHROME_ROOT}"/src/chrome/browser/chromeos/input_method
+	INPUT_METHOD="${CHROME_ROOT}"/src/chromeos/ime
 	doins "${INPUT_METHOD}"/input_methods.txt
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
