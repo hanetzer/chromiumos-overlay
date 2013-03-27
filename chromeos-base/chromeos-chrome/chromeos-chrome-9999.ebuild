@@ -81,7 +81,7 @@ add_pgo_arches() {
 	done
 }
 
-RESTRICT="mirror strip"
+RESTRICT="mirror"
 add_pgo_arches x86 amd64 arm
 
 TEST_FILES=("video_decode_accelerator_unittest" "ppapi_example_video_decode")
@@ -968,10 +968,12 @@ src_install() {
 	fi
 
 	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/deploy_chrome )
+	# Disable stripping for now, as deploy_chrome doesn't generate splitdebug files.
 	cmd+=(
 		--board="${BOARD}"
 		--build-dir="${FROM}"
 		--gyp-defines="${GYP_DEFINES}"
+		--nostrip
 		--staging-dir="${D_CHROME_DIR}"
 		--staging-flags="${USE}"
 		--staging-only
@@ -980,9 +982,6 @@ src_install() {
 		--strip-flags="${PORTAGE_STRIP_FLAGS}"
 		--verbose
 	)
-	if has nostrip ${FEATURES}; then
-		cmd+=( --nostrip )
-	fi
 	einfo "${cmd[*]}"
 	"${cmd[@]}" || die
 }
