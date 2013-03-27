@@ -18,7 +18,7 @@ KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
 +dummy +fdtmap ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com
 +nicintel +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
-+satasii +satamv +serprog +wiki static -use_os_timer"
++satasii +satamv +serprog +wiki static -use_os_timer cros_host"
 
 COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
 	dediprog? ( virtual/libusb:0 )
@@ -125,10 +125,10 @@ src_install() {
 }
 
 src_test() {
-	elog Running flashrom unit tests
-
 	# Setup FDT test file
-	if [ -d tests ]; then
+	if use cros_host && [ -d tests ]; then
+		elog Running flashrom unit tests
+
 		pushd tests >/dev/null
 		./tests.py || die
 		popd >/dev/null
