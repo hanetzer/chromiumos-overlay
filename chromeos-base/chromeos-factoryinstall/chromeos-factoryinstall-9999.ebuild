@@ -134,7 +134,7 @@ EOF
 		die "Failed to disable TPM locking"
 
 	# Stop any power management and updater daemons
-	for conf in power powerd update-engine; do
+	for conf in powerd update-engine; do
 		echo 'start on never' >> "${ROOT}/etc/init/$conf.conf" ||
 			die "Failed to disable $conf"
 	done
