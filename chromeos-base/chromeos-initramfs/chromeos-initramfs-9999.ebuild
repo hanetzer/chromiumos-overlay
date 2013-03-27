@@ -3,6 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
+CROS_WORKON_LOCALNAME="../platform/initramfs"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 
 inherit cros-workon cros-board
@@ -14,6 +15,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="netboot_ramfs"
+
 DEPEND="chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/vboot_reference
@@ -26,44 +28,45 @@ DEPEND="chromeos-base/chromeos-assets
 	netboot_ramfs? ( chromeos-base/chromeos-installshim )"
 RDEPEND=""
 
-CROS_WORKON_LOCALNAME="../platform/initramfs"
+src_prepare() {
+	local srcroot='/mnt/host/source'
+	BUILD_LIBRARY_DIR="${srcroot}/src/scripts/build_library"
+
+	# Need the lddtree from the chromite dir.
+	local chromite_bin="${srcroot}/chromite/bin"
+	export PATH="${chromite_bin}:${PATH}"
+}
+
+# doexe for initramfs
+idoexe() {
+	einfo "Copied: $*"
+	lddtree \
+		--verbose \
+		--copy-non-elfs \
+		--root="${SYSROOT}" \
+		--copy-to-tree="${INITRAMFS_TMP_S}" \
+		--libdir='/lib' \
+		"$@" || die "failed to copy $*"
+}
 
 # dobin for initramfs
 idobin() {
-	local src
-	for src in "$@"; do
-		"${FILESDIR}/copy_elf" "${ROOT}" "${INITRAMFS_TMP_S}" "${src}" ||
-			die "Cannot install: ${src}"
-		elog "Copied: ${src}"
-	done
+	idoexe --bindir='/bin' "$@"
 }
 
 # Special handling for futility wrapper. This will go away once futility is
 # converted to a single binary.
 idofutility() {
-	local src
-        local base
+	local src base
+	idobin "$@"
 	for src in "$@"; do
-		"${FILESDIR}/copy_elf" "${ROOT}" "${INITRAMFS_TMP_S}" "${src}" ||
-			die "Cannot install: ${src}"
 		base=$(basename "${src}")
 		mv -f "${INITRAMFS_TMP_S}/bin/${base}" \
 			"${INITRAMFS_TMP_S}/bin/old_bins/${base}" ||
-                        die "Cannot mv: ${src}"
+			die "Cannot mv: ${src}"
 		ln -sf futility "${INITRAMFS_TMP_S}/bin/${base}" ||
-                        die "Cannot symlink: ${src}"
-		elog "Symlinked: /bin/${base} -> futility"
-	done
-}
-
-# only copy library dependencies
-idodep() {
-	local src
-	for src in "$@"; do
-		"${FILESDIR}/copy_elf" "--lib-only" "${ROOT}" \
-			"${INITRAMFS_TMP_S}" "${src}" || \
-			die "Cannot install: ${src}"
-		elog "Copied dependency for: ${src}"
+			die "Cannot symlink: ${src}"
+		einfo "Symlinked: /bin/${base} -> futility"
 	done
 }
 
@@ -148,7 +151,7 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/chromeos-common.sh
 	idobin /usr/sbin/netboot_postinst.sh
 	idobin /usr/sbin/chromeos-install
-	cp "${ROOT}"/usr/share/misc/shflags "${INITRAMFS_TMP_S}"/usr/share/misc
+	cp "${SYSROOT}"/usr/share/misc/shflags "${INITRAMFS_TMP_S}"/usr/share/misc
 
 	# Binaries used by factory installer
 	idobin /bin/bash
@@ -180,15 +183,15 @@ pull_netboot_ramfs_binary() {
 	chmod +x "${INITRAMFS_TMP_S}/etc/udhcpc.script"
 
 	# USB Ethernet kernel module
-	USBNET_MOD_PATH=$(find "${ROOT}"/lib/modules/ -name usbnet.ko)
+	USBNET_MOD_PATH=$(find "${SYSROOT}"/lib/modules/ -name usbnet.ko)
 	[ -n "$USBNET_MOD_PATH" ] || die
 	USBNET_DIR_PATH=$(dirname "${USBNET_MOD_PATH}")
-	USBNET_INSTALL_PATH="${USBNET_DIR_PATH#${ROOT}}"
+	USBNET_INSTALL_PATH="${USBNET_DIR_PATH#${SYSROOT}}"
 	mkdir -p "${INITRAMFS_TMP_S}/${USBNET_INSTALL_PATH}"
-	for module in $(find "${USBNET_DIR_PATH}" -name "*.ko"); do
+	while read module ; do
 		cp -p "${module}" "${INITRAMFS_TMP_S}/${USBNET_INSTALL_PATH}/"
-		elog "Copied: ${module#${ROOT}}"
-	done
+		einfo "Copied: ${module#${SYSROOT}}"
+	done < <(find "${USBNET_DIR_PATH}" -name '*.ko')
 
 	# Generates lsb-factory
 	LSBDIR="mnt/stateful_partition/dev_image/etc"
@@ -203,23 +206,17 @@ pull_netboot_ramfs_binary() {
 	ln -s "/$LSBDIR/lsb-factory" "${INITRAMFS_TMP_S}/etc/lsb-release"
 
 	# Partition table
-	cp "${ROOT}"/root/.gpt_layout "${INITRAMFS_TMP_S}"/root/
-	cp "${ROOT}"/root/.pmbr_code "${INITRAMFS_TMP_S}"/root/
+	cp "${SYSROOT}"/root/.gpt_layout "${INITRAMFS_TMP_S}"/root/
+	cp "${SYSROOT}"/root/.pmbr_code "${INITRAMFS_TMP_S}"/root/
 
 	# Generates write_gpt.sh
 	INSTALLED_SCRIPT="${INITRAMFS_TMP_S}"/usr/sbin/write_gpt.sh
-	BUILD_LIBRARY_DIR="${PORTDIR}"/../../scripts/build_library
-	BINPATH="${PORTDIR}"/../../../chromite/bin:"${PATH}"
 	BOARD=$(get_current_board_with_variant)
 	. "${BUILD_LIBRARY_DIR}"/disk_layout_util.sh || die
-	PATH="${BINPATH}" write_partition_script usb "${INSTALLED_SCRIPT}" || die
+	write_partition_script usb "${INSTALLED_SCRIPT}" || die
 
 	# Install Memento updater
-	MEMENTO_PATH="opt/google/memento_updater"
-	mkdir -p "${INITRAMFS_TMP_S}/${MEMENTO_PATH}"
-	cp "${ROOT}/${MEMENTO_PATH}"/* "${INITRAMFS_TMP_S}/${MEMENTO_PATH}" || \
-		die "Failed copying memento_updater"
-	idodep $(cd "${ROOT}"; find "${MEMENTO_PATH}" -type f)
+	idoexe '/opt/google/memento_updater/*'
 }
 
 build_initramfs_file() {
@@ -264,7 +261,7 @@ build_initramfs_file() {
 	cp "${S}"/*.sh "${INITRAMFS_TMP_S}/lib" || die
 
 	# PNG image assets
-	local shared_assets="${ROOT}"/usr/share/chromeos-assets
+	local shared_assets="${SYSROOT}"/usr/share/chromeos-assets
 	insimage "${shared_assets}"/images/boot_message.png
 	insimage "${S}"/assets/spinner_*.png
 	insimage "${S}"/assets/icon_check.png
