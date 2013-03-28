@@ -1,8 +1,9 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/autox"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit python cros-workon
 
@@ -16,9 +17,14 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 RDEPEND="dev-python/python-xlib"
-DEPEND=
+DEPEND=""
+
+pkg_setup() {
+	python_pkg_setup
+	cros-workon_pkg_setup
+}
 
 src_install() {
 	insinto "$(python_get_sitedir)"
-	doins autox.py || die
+	doins autox.py
 }
