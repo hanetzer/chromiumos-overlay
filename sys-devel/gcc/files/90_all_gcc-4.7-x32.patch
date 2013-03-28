@@ -1,8 +1,7 @@
-this patch was created from:
+git diff 6bd686c1cc586e318a520b1b3b09732bf7c915f0^...74e1f4df1f44b2249061b7770e4020b2abdb3877
+         (remotes/origin/gcc-4_7-branch)             (remotes/origin/hjl/x32/gcc-4_7-branch)
 
-git diff -p 475e5d65b13bfb798ff1f2c45ab46619ab050283^..remotes/origin/hjl/x32/gcc-4_7-branch
-
-hjlu's 4.7 branch is pretty much all backports from code in trunk
+then filtered out useless configure & ChangeLog files
 
 --- a/boehm-gc/configure
 +++ b/boehm-gc/configure
@@ -42,7 +41,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  #   endif
 --- a/gcc/ada/gcc-interface/Makefile.in
 +++ b/gcc/ada/gcc-interface/Makefile.in
-@@ -349,6 +349,10 @@ GNATMAKE_OBJS = a-except.o ali.o ali-util.o aspects.o s-casuti.o alloc.o \
+@@ -350,6 +350,10 @@ GNATMAKE_OBJS = a-except.o ali.o ali-util.o aspects.o s-casuti.o alloc.o \
  ifeq ($(strip $(filter-out %x86_64, $(arch))),)
    ifeq ($(strip $(MULTISUBDIR)),/32)
      arch:=i686
@@ -53,7 +52,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    endif
  endif
  
-@@ -2131,6 +2135,43 @@ ifeq ($(strip $(filter-out %x86_64 linux%,$(arch) $(osys))),)
+@@ -2132,6 +2136,43 @@ ifeq ($(strip $(filter-out %x86_64 linux%,$(arch) $(osys))),)
    LIBRARY_VERSION := $(LIB_VERSION)
  endif
  
@@ -118,7 +117,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    /* ??? The IA-64 unwinder doesn't compensate for signals.  */
 --- a/gcc/ada/link.c
 +++ b/gcc/ada/link.c
-@@ -187,7 +187,11 @@ unsigned char __gnat_using_gnu_linker = 1;
+@@ -165,7 +165,11 @@ unsigned char __gnat_objlist_file_supported = 1;
  const char *__gnat_object_library_extension = ".a";
  unsigned char __gnat_separate_run_path_options = 0;
  #if defined (__x86_64)
@@ -132,7 +131,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  #endif
 --- a/gcc/config.gcc
 +++ b/gcc/config.gcc
-@@ -486,6 +486,10 @@ fi
+@@ -494,6 +494,10 @@ fi
  
  case ${target} in
  i[34567]86-*-*)
@@ -143,7 +142,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	if test "x$enable_cld" = xyes; then
  		tm_defines="${tm_defines} USE_IX86_CLD=1"
  	fi
-@@ -495,7 +499,24 @@ i[34567]86-*-*)
+@@ -503,7 +507,24 @@ i[34567]86-*-*)
  	tm_file="vxworks-dummy.h ${tm_file}"
  	;;
  x86_64-*-*)
@@ -169,7 +168,23 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	if test "x$enable_cld" = xyes; then
  		tm_defines="${tm_defines} USE_IX86_CLD=1"
  	fi
-@@ -3201,7 +3222,7 @@ case "${target}" in
+@@ -1318,7 +1339,14 @@ x86_64-*-linux* | x86_64-*-kfreebsd*-gnu | x86_64-*-knetbsd*-gnu)
+ 	tmake_file="${tmake_file} i386/t-linux64"
+ 	x86_multilibs="${with_multilib_list}"
+ 	if test "$x86_multilibs" = "default"; then
+-		x86_multilibs="m64,m32"
++		case ${with_abi} in
++		x32 | mx32)
++			x86_multilibs="mx32"
++			;;
++		*)
++			x86_multilibs="m64,m32"
++			;;
++		esac
+ 	fi
+ 	x86_multilibs=`echo $x86_multilibs | sed -e 's/,/ /g'`
+ 	for x86_multilib in ${x86_multilibs}; do
+@@ -3227,7 +3255,7 @@ case "${target}" in
  		;;
  
  	i[34567]86-*-* | x86_64-*-*)
@@ -262,10 +277,10 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  ;;; Unused letters:
 -;;;     B     H           T  W
 +;;;     B     H           T
- ;;;           h  k          v
+ ;;;           h jk          v
  
  ;; Integer register constraints.
-@@ -193,6 +193,16 @@
+@@ -188,6 +188,16 @@
     instructions)."
    (match_operand 0 "x86_64_immediate_operand"))
  
@@ -310,6 +325,13 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  #else
  #define MULTILIB_DEFAULTS { "m32" }
  #endif
+@@ -126,3 +135,6 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #define TARGET_THREAD_SPLIT_STACK_OFFSET \
+   (TARGET_64BIT ? (TARGET_X32 ? 0x40 : 0x70) : 0x30)
+ #endif
++
++#undef WCHAR_TYPE
++#define WCHAR_TYPE (TARGET_LP64 ? "int" : "long int")
 --- a/gcc/config/i386/i386-opts.h
 +++ b/gcc/config/i386/i386-opts.h
 @@ -71,6 +71,11 @@ enum cmodel {
@@ -326,7 +348,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    ASM_INTEL
 --- a/gcc/config/i386/i386.c
 +++ b/gcc/config/i386/i386.c
-@@ -2445,6 +2445,8 @@ static rtx (*ix86_gen_andsp) (rtx, rtx, rtx);
+@@ -2448,6 +2448,8 @@ static rtx (*ix86_gen_andsp) (rtx, rtx, rtx);
  static rtx (*ix86_gen_allocate_stack_worker) (rtx, rtx);
  static rtx (*ix86_gen_adjust_stack_and_probe) (rtx, rtx, rtx);
  static rtx (*ix86_gen_probe_stack_range) (rtx, rtx, rtx);
@@ -335,7 +357,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  /* Preferred alignment for stack boundary in bits.  */
  unsigned int ix86_preferred_stack_boundary;
-@@ -2655,7 +2657,6 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
+@@ -2658,7 +2660,6 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
       preceding options while match those first.  */
    static struct ix86_target_opts isa_opts[] =
    {
@@ -343,7 +365,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      { "-mfma4",		OPTION_MASK_ISA_FMA4 },
      { "-mfma",		OPTION_MASK_ISA_FMA },
      { "-mxop",		OPTION_MASK_ISA_XOP },
-@@ -2727,6 +2728,7 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
+@@ -2730,6 +2731,7 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
    size_t len;
    size_t line_len;
    size_t sep_len;
@@ -351,7 +373,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
    memset (opts, '\0', sizeof (opts));
  
-@@ -2744,6 +2746,21 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
+@@ -2747,6 +2749,21 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
        opts[num++][1] = tune;
      }
  
@@ -373,7 +395,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    /* Pick out the options in isa options.  */
    for (i = 0; i < ARRAY_SIZE (isa_opts); i++)
      {
-@@ -3090,6 +3107,46 @@ ix86_option_override_internal (bool main_args_p)
+@@ -3095,6 +3112,46 @@ ix86_option_override_internal (bool main_args_p)
        sw = "attribute";
      }
  
@@ -420,7 +442,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  #ifdef SUBTARGET_OVERRIDE_OPTIONS
    SUBTARGET_OVERRIDE_OPTIONS;
  #endif
-@@ -3098,9 +3155,6 @@ ix86_option_override_internal (bool main_args_p)
+@@ -3103,9 +3160,6 @@ ix86_option_override_internal (bool main_args_p)
    SUBSUBTARGET_OVERRIDE_OPTIONS;
  #endif
  
@@ -430,7 +452,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    /* -fPIC is the default for x86_64.  */
    if (TARGET_MACHO && TARGET_64BIT)
      flag_pic = 2;
-@@ -3169,6 +3223,17 @@ ix86_option_override_internal (bool main_args_p)
+@@ -3174,6 +3228,17 @@ ix86_option_override_internal (bool main_args_p)
    else
      ix86_arch_specified = 1;
  
@@ -448,7 +470,16 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    if (!global_options_set.x_ix86_abi)
      ix86_abi = DEFAULT_ABI;
  
-@@ -3743,11 +3808,33 @@ ix86_option_override_internal (bool main_args_p)
+@@ -3587,7 +3652,7 @@ ix86_option_override_internal (bool main_args_p)
+   ix86_preferred_stack_boundary = PREFERRED_STACK_BOUNDARY_DEFAULT;
+   if (global_options_set.x_ix86_preferred_stack_boundary_arg)
+     {
+-      int min = (TARGET_64BIT ? 4 : 2);
++      int min = (TARGET_64BIT ? (TARGET_SSE ? 4 : 3) : 2);
+       int max = (TARGET_SEH ? 4 : 12);
+ 
+       if (ix86_preferred_stack_boundary_arg < min
+@@ -3750,11 +3815,33 @@ ix86_option_override_internal (bool main_args_p)
    if (TARGET_64BIT)
      {
        ix86_gen_leave = gen_leave_rex64;
@@ -483,7 +514,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        ix86_gen_andsp = gen_anddi3;
        ix86_gen_allocate_stack_worker = gen_allocate_stack_worker_probe_di;
        ix86_gen_adjust_stack_and_probe = gen_adjust_stack_and_probedi;
-@@ -3755,12 +3842,10 @@ ix86_option_override_internal (bool main_args_p)
+@@ -3762,12 +3849,10 @@ ix86_option_override_internal (bool main_args_p)
      }
    else
      {
@@ -496,7 +527,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        ix86_gen_andsp = gen_andsi3;
        ix86_gen_allocate_stack_worker = gen_allocate_stack_worker_probe_si;
        ix86_gen_adjust_stack_and_probe = gen_adjust_stack_and_probesi;
-@@ -7220,8 +7305,8 @@ function_value_64 (enum machine_mode orig_mode, enum machine_mode mode,
+@@ -7227,8 +7312,8 @@ function_value_64 (enum machine_mode orig_mode, enum machine_mode mode,
      }
    else if (POINTER_TYPE_P (valtype))
      {
@@ -507,7 +538,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      }
  
    ret = construct_container (mode, orig_mode, valtype, 1,
-@@ -7292,7 +7377,8 @@ ix86_function_value (const_tree valtype, const_tree fntype_or_decl,
+@@ -7299,7 +7384,8 @@ ix86_function_value (const_tree valtype, const_tree fntype_or_decl,
    return ix86_function_value_1 (valtype, fntype_or_decl, orig_mode, mode);
  }
  
@@ -517,7 +548,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  static enum machine_mode
  ix86_promote_function_mode (const_tree type, enum machine_mode mode,
-@@ -7302,7 +7388,7 @@ ix86_promote_function_mode (const_tree type, enum machine_mode mode,
+@@ -7309,7 +7395,7 @@ ix86_promote_function_mode (const_tree type, enum machine_mode mode,
    if (type != NULL_TREE && POINTER_TYPE_P (type))
      {
        *punsignedp = POINTERS_EXTEND_UNSIGNED;
@@ -526,7 +557,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      }
    return default_promote_function_mode (type, mode, punsignedp, fntype,
  					for_return);
-@@ -7580,12 +7666,13 @@ setup_incoming_varargs_64 (CUMULATIVE_ARGS *cum)
+@@ -7587,12 +7673,13 @@ setup_incoming_varargs_64 (CUMULATIVE_ARGS *cum)
  
    for (i = cum->regno; i < max; i++)
      {
@@ -543,7 +574,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      }
  
    if (ix86_varargs_fpr_size)
-@@ -8640,8 +8727,11 @@ gen_push (rtx arg)
+@@ -8652,8 +8739,11 @@ gen_push (rtx arg)
      m->fs.cfa_offset += UNITS_PER_WORD;
    m->fs.sp_offset += UNITS_PER_WORD;
  
@@ -556,7 +587,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  				   gen_rtx_PRE_DEC (Pmode,
  						    stack_pointer_rtx)),
  		      arg);
-@@ -8652,9 +8742,12 @@ gen_push (rtx arg)
+@@ -8664,9 +8754,12 @@ gen_push (rtx arg)
  static rtx
  gen_pop (rtx arg)
  {
@@ -570,7 +601,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  				   gen_rtx_POST_INC (Pmode,
  						     stack_pointer_rtx)));
  }
-@@ -9121,7 +9214,7 @@ ix86_emit_save_regs (void)
+@@ -9141,7 +9234,7 @@ ix86_emit_save_regs (void)
    for (regno = FIRST_PSEUDO_REGISTER - 1; regno-- > 0; )
      if (!SSE_REGNO_P (regno) && ix86_save_reg (regno, true))
        {
@@ -579,7 +610,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	RTX_FRAME_RELATED_P (insn) = 1;
        }
  }
-@@ -9201,7 +9294,7 @@ ix86_emit_save_regs_using_mov (HOST_WIDE_INT cfa_offset)
+@@ -9221,7 +9314,7 @@ ix86_emit_save_regs_using_mov (HOST_WIDE_INT cfa_offset)
    for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
      if (!SSE_REGNO_P (regno) && ix86_save_reg (regno, true))
        {
@@ -588,7 +619,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	cfa_offset -= UNITS_PER_WORD;
        }
  }
-@@ -9276,7 +9369,7 @@ pro_epilogue_adjust_stack (rtx dest, rtx src, rtx offset,
+@@ -9296,7 +9389,7 @@ pro_epilogue_adjust_stack (rtx dest, rtx src, rtx offset,
    rtx insn;
    bool add_frame_related_expr = false;
  
@@ -597,7 +628,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      insn = gen_pro_epilogue_adjust_stack_si_add (dest, src, offset);
    else if (x86_64_immediate_operand (offset, DImode))
      insn = gen_pro_epilogue_adjust_stack_di_add (dest, src, offset);
-@@ -10138,7 +10231,7 @@ ix86_expand_prologue (void)
+@@ -10159,7 +10252,7 @@ ix86_expand_prologue (void)
  	 to implement macro RETURN_ADDR_RTX and intrinsic function
  	 expand_builtin_return_addr etc.  */
        t = plus_constant (crtl->drap_reg, -UNITS_PER_WORD);
@@ -606,7 +637,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        insn = emit_insn (gen_push (t));
        RTX_FRAME_RELATED_P (insn) = 1;
  
-@@ -10310,7 +10403,7 @@ ix86_expand_prologue (void)
+@@ -10364,7 +10457,7 @@ ix86_expand_prologue (void)
        emit_insn (ix86_gen_allocate_stack_worker (eax, eax));
  
        /* Use the fact that AX still contains ALLOCATE.  */
@@ -615,7 +646,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  			   ? gen_pro_epilogue_adjust_stack_di_sub
  			   : gen_pro_epilogue_adjust_stack_si_sub);
  
-@@ -10335,14 +10428,18 @@ ix86_expand_prologue (void)
+@@ -10389,14 +10482,18 @@ ix86_expand_prologue (void)
        if (r10_live && eax_live)
          {
  	  t = choose_baseaddr (m->fs.sp_offset - allocate);
@@ -637,7 +668,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	}
      }
    gcc_assert (m->fs.sp_offset == frame.stack_pointer_offset);
-@@ -10512,7 +10609,7 @@ ix86_emit_restore_regs_using_pop (void)
+@@ -10566,7 +10663,7 @@ ix86_emit_restore_regs_using_pop (void)
  
    for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
      if (!SSE_REGNO_P (regno) && ix86_save_reg (regno, false))
@@ -646,7 +677,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  }
  
  /* Emit code and notes for the LEAVE instruction.  */
-@@ -10555,11 +10652,11 @@ ix86_emit_restore_regs_using_mov (HOST_WIDE_INT cfa_offset,
+@@ -10609,11 +10706,11 @@ ix86_emit_restore_regs_using_mov (HOST_WIDE_INT cfa_offset,
    for (regno = 0; regno < FIRST_PSEUDO_REGISTER; regno++)
      if (!SSE_REGNO_P (regno) && ix86_save_reg (regno, maybe_eh_return))
        {
@@ -660,7 +691,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	insn = emit_move_insn (reg, mem);
  
          if (m->fs.cfa_reg == crtl->drap_reg && regno == REGNO (crtl->drap_reg))
-@@ -11164,8 +11261,8 @@ ix86_expand_split_stack_prologue (void)
+@@ -11223,8 +11320,8 @@ ix86_expand_split_stack_prologue (void)
  	{
  	  rtx rax;
  
@@ -671,7 +702,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  use_reg (&call_fusage, rax);
  	}
  
-@@ -11244,8 +11341,8 @@ ix86_expand_split_stack_prologue (void)
+@@ -11303,8 +11400,8 @@ ix86_expand_split_stack_prologue (void)
    /* If we are in 64-bit mode and this function uses a static chain,
       we saved %r10 in %rax before calling _morestack.  */
    if (TARGET_64BIT && DECL_STATIC_CHAIN (cfun->decl))
@@ -682,23 +713,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
    /* If this function calls va_start, we need to store a pointer to
       the arguments on the old stack, because they may not have been
-@@ -11375,10 +11472,14 @@ ix86_decompose_address (rtx addr, struct ix86_address *out)
- 	{
- 	  addr = XEXP (addr, 0);
- 
--	  /* Strip subreg.  */
-+	  /* Adjust SUBREGs.  */
- 	  if (GET_CODE (addr) == SUBREG
- 	      && GET_MODE (SUBREG_REG (addr)) == SImode)
- 	    addr = SUBREG_REG (addr);
-+	  else if (GET_MODE (addr) == DImode)
-+	    addr = gen_rtx_SUBREG (SImode, addr, 0);
-+	  else if (GET_MODE (addr) != VOIDmode)
-+	    return 0;
- 	}
-     }
- 
-@@ -11434,6 +11535,12 @@ ix86_decompose_address (rtx addr, struct ix86_address *out)
+@@ -11522,6 +11619,12 @@ ix86_decompose_address (rtx addr, struct ix86_address *out)
  	      scale = 1 << scale;
  	      break;
  
@@ -711,7 +726,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	    case UNSPEC:
  	      if (XINT (op, 1) == UNSPEC_TP
  	          && TARGET_TLS_DIRECT_SEG_REFS
-@@ -11503,6 +11610,12 @@ ix86_decompose_address (rtx addr, struct ix86_address *out)
+@@ -11604,6 +11707,12 @@ ix86_decompose_address (rtx addr, struct ix86_address *out)
  	return 0;
      }
  
@@ -724,7 +739,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    /* Extract the integral value of scale.  */
    if (scale_rtx)
      {
-@@ -12455,15 +12568,20 @@ legitimize_pic_address (rtx orig, rtx reg)
+@@ -12549,15 +12658,20 @@ legitimize_pic_address (rtx orig, rtx reg)
  /* Load the thread pointer.  If TO_REG is true, force it into a register.  */
  
  static rtx
@@ -749,7 +764,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
    return tp;
  }
-@@ -12515,6 +12633,7 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12609,6 +12723,7 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  {
    rtx dest, base, off;
    rtx pic = NULL_RTX, tp = NULL_RTX;
@@ -757,7 +772,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    int type;
  
    switch (model)
-@@ -12540,7 +12659,7 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12634,7 +12749,7 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  	  else
  	    emit_insn (gen_tls_dynamic_gnu2_32 (dest, x, pic));
  
@@ -766,7 +781,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  dest = force_reg (Pmode, gen_rtx_PLUS (Pmode, tp, dest));
  
  	  set_unique_reg_note (get_last_insn (), REG_EQUAL, x);
-@@ -12554,7 +12673,8 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12648,7 +12763,8 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  	      rtx rax = gen_rtx_REG (Pmode, AX_REG), insns;
  
  	      start_sequence ();
@@ -776,7 +791,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	      insns = get_insns ();
  	      end_sequence ();
  
-@@ -12589,7 +12709,7 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12683,7 +12799,7 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  	  else
  	    emit_insn (gen_tls_dynamic_gnu2_32 (base, tmp, pic));
  
@@ -785,7 +800,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  set_unique_reg_note (get_last_insn (), REG_EQUAL,
  			       gen_rtx_MINUS (Pmode, tmp, tp));
  	}
-@@ -12602,7 +12722,8 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12696,7 +12812,8 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  	      rtx rax = gen_rtx_REG (Pmode, AX_REG), insns, eqv;
  
  	      start_sequence ();
@@ -795,7 +810,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	      insns = get_insns ();
  	      end_sequence ();
  
-@@ -12645,6 +12766,9 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12739,6 +12856,9 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  	      return dest;
  	    }
  
@@ -805,7 +820,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  pic = NULL;
  	  type = UNSPEC_GOTNTPOFF;
  	}
-@@ -12667,22 +12791,23 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12761,22 +12881,23 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  	  type = UNSPEC_INDNTPOFF;
  	}
  
@@ -837,7 +852,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  dest = gen_reg_rtx (Pmode);
  	  emit_insn (gen_subsi3 (dest, base, off));
  	}
-@@ -12696,12 +12821,13 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
+@@ -12790,12 +12911,13 @@ legitimize_tls_address (rtx x, enum tls_model model, bool for_mov)
  
        if (TARGET_64BIT || TARGET_ANY_GNU_TLS)
  	{
@@ -853,15 +868,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  dest = gen_reg_rtx (Pmode);
  	  emit_insn (gen_subsi3 (dest, base, off));
  	}
-@@ -13756,6 +13882,7 @@ get_some_local_dynamic_name (void)
-    Z -- likewise, with special suffixes for x87 instructions.
-    * -- print a star (in certain assembler syntax)
-    A -- print an absolute memory reference.
-+   E -- print address with DImode register names if TARGET_64BIT.
-    w -- print the operand as if it's a "word" (HImode) even if it isn't.
-    s -- print a shift double count, followed by the assemblers argument
- 	delimiter.
-@@ -13780,6 +13907,7 @@ get_some_local_dynamic_name (void)
+@@ -13875,6 +13997,7 @@ get_some_local_dynamic_name (void)
     ; -- print a semicolon (after prefixes due to bug in older gas).
     ~ -- print "i" if TARGET_AVX2, "f" otherwise.
     @ -- print a segment register of thread base pointer load
@@ -869,22 +876,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
   */
  
  void
-@@ -13831,7 +13959,14 @@ ix86_print_operand (FILE *file, rtx x, int code)
- 	  ix86_print_operand (file, x, 0);
- 	  return;
- 
-+	case 'E':
-+	  /* Wrap address in an UNSPEC to declare special handling.  */
-+	  if (TARGET_64BIT)
-+	    x = gen_rtx_UNSPEC (DImode, gen_rtvec (1, x), UNSPEC_LEA_ADDR);
- 
-+	  output_address (x);
-+	  return;
-+	    
- 	case 'L':
- 	  if (ASSEMBLER_DIALECT == ASM_ATT)
- 	    putc ('l', file);
-@@ -14283,6 +14418,11 @@ ix86_print_operand (FILE *file, rtx x, int code)
+@@ -14385,6 +14508,11 @@ ix86_print_operand (FILE *file, rtx x, int code)
  	  putc (TARGET_AVX2 ? 'i' : 'f', file);
  	  return;
  
@@ -896,7 +888,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	default:
  	    output_operand_lossage ("invalid operand code '%c'", code);
  	}
-@@ -14422,8 +14562,8 @@ ix86_print_operand (FILE *file, rtx x, int code)
+@@ -14524,8 +14652,8 @@ ix86_print_operand (FILE *file, rtx x, int code)
  static bool
  ix86_print_operand_punct_valid_p (unsigned char code)
  {
@@ -907,53 +899,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  }
  
  /* Print a memory operand whose address is ADDR.  */
-@@ -14436,6 +14576,7 @@ ix86_print_operand_address (FILE *file, rtx addr)
-   int scale;
-   int ok;
-   bool vsib = false;
-+  int code = 0;
- 
-   if (GET_CODE (addr) == UNSPEC && XINT (addr, 1) == UNSPEC_VSIBADDR)
-     {
-@@ -14446,6 +14587,12 @@ ix86_print_operand_address (FILE *file, rtx addr)
-       addr = XVECEXP (addr, 0, 0);
-       vsib = true;
-     }
-+  else if (GET_CODE (addr) == UNSPEC && XINT (addr, 1) == UNSPEC_LEA_ADDR)
-+    {
-+      gcc_assert (TARGET_64BIT);
-+      ok = ix86_decompose_address (XVECEXP (addr, 0, 0), &parts);
-+      code = 'q';
-+    }
-   else
-     ok = ix86_decompose_address (addr, &parts);
- 
-@@ -14516,15 +14663,15 @@ ix86_print_operand_address (FILE *file, rtx addr)
-     }
-   else
-     {
--      int code = 0;
--
--      /* Print SImode registers for zero-extended addresses to force
--	 addr32 prefix.  Otherwise print DImode registers to avoid it.  */
--      if (TARGET_64BIT)
--	code = ((GET_CODE (addr) == ZERO_EXTEND
--		 || GET_CODE (addr) == AND)
--		? 'l'
--		: 'q');
-+      /* Print SImode register names for zero-extended
-+	 addresses to force addr32 prefix.  */
-+      if (TARGET_64BIT
-+	  && (GET_CODE (addr) == ZERO_EXTEND
-+	      || GET_CODE (addr) == AND))
-+	{
-+	  gcc_assert (!code);
-+	  code = 'l';
-+	}
- 
-       if (ASSEMBLER_DIALECT == ASM_ATT)
- 	{
-@@ -20299,7 +20446,7 @@ ix86_split_to_parts (rtx operand, rtx *parts, enum machine_mode mode)
+@@ -20428,7 +20556,7 @@ ix86_split_to_parts (rtx operand, rtx *parts, enum machine_mode mode)
        gcc_assert (ok);
  
        operand = copy_rtx (operand);
@@ -962,7 +908,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        parts[0] = parts[1] = parts[2] = parts[3] = operand;
        return size;
      }
-@@ -20452,7 +20599,7 @@ ix86_split_long_move (rtx operands[])
+@@ -20581,7 +20709,7 @@ ix86_split_long_move (rtx operands[])
        if (push_operand (operands[0], VOIDmode))
  	{
  	  operands[0] = copy_rtx (operands[0]);
@@ -971,7 +917,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	}
        else
          operands[0] = gen_lowpart (DImode, operands[0]);
-@@ -21007,14 +21154,9 @@ ix86_adjust_counter (rtx countreg, HOST_WIDE_INT value)
+@@ -21136,14 +21264,9 @@ ix86_adjust_counter (rtx countreg, HOST_WIDE_INT value)
  rtx
  ix86_zero_extend_to_Pmode (rtx exp)
  {
@@ -989,7 +935,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  }
  
  /* Divide COUNTREG by SCALE.  */
-@@ -22042,11 +22184,11 @@ ix86_expand_movmem (rtx dst, rtx src, rtx count_exp, rtx align_exp,
+@@ -22171,11 +22294,11 @@ ix86_expand_movmem (rtx dst, rtx src, rtx count_exp, rtx align_exp,
        gcc_unreachable ();
      case loop:
        need_zero_guard = true;
@@ -1003,7 +949,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        break;
      case rep_prefix_8_byte:
        size_needed = 8;
-@@ -22212,13 +22354,13 @@ ix86_expand_movmem (rtx dst, rtx src, rtx count_exp, rtx align_exp,
+@@ -22341,13 +22464,13 @@ ix86_expand_movmem (rtx dst, rtx src, rtx count_exp, rtx align_exp,
        break;
      case loop:
        expand_set_or_movmem_via_loop (dst, src, destreg, srcreg, NULL,
@@ -1019,7 +965,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  				     expected_size);
        break;
      case rep_prefix_8_byte:
-@@ -22430,11 +22572,11 @@ ix86_expand_setmem (rtx dst, rtx count_exp, rtx val_exp, rtx align_exp,
+@@ -22559,11 +22682,11 @@ ix86_expand_setmem (rtx dst, rtx count_exp, rtx val_exp, rtx align_exp,
        gcc_unreachable ();
      case loop:
        need_zero_guard = true;
@@ -1033,7 +979,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        break;
      case rep_prefix_8_byte:
        size_needed = 8;
-@@ -22605,11 +22747,11 @@ ix86_expand_setmem (rtx dst, rtx count_exp, rtx val_exp, rtx align_exp,
+@@ -22734,11 +22857,11 @@ ix86_expand_setmem (rtx dst, rtx count_exp, rtx val_exp, rtx align_exp,
        break;
      case loop:
        expand_set_or_movmem_via_loop (dst, NULL, destreg, NULL, promoted_val,
@@ -1047,7 +993,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
        break;
      case rep_prefix_8_byte:
        expand_setmem_via_rep_stos (dst, destreg, promoted_val, count_exp,
-@@ -22972,13 +23114,13 @@ ix86_expand_call (rtx retval, rtx fnaddr, rtx callarg1,
+@@ -23101,13 +23224,13 @@ ix86_expand_call (rtx retval, rtx fnaddr, rtx callarg1,
        && !local_symbolic_operand (XEXP (fnaddr, 0), VOIDmode))
      fnaddr = gen_rtx_MEM (QImode, construct_plt_address (XEXP (fnaddr, 0)));
    else if (sibcall
@@ -1066,7 +1012,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      }
  
    vec_len = 0;
-@@ -24291,10 +24433,13 @@ ix86_trampoline_init (rtx m_tramp, tree fndecl, rtx chain_value)
+@@ -24421,10 +24544,13 @@ ix86_trampoline_init (rtx m_tramp, tree fndecl, rtx chain_value)
        /* Load the function address to r11.  Try to load address using
  	 the shorter movl instead of movabs.  We may want to support
  	 movq for kernel mode, but kernel does not use trampolines at
@@ -1083,7 +1029,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  	  mem = adjust_address (m_tramp, HImode, offset);
  	  emit_move_insn (mem, gen_int_mode (0xbb41, HImode));
-@@ -24313,9 +24458,9 @@ ix86_trampoline_init (rtx m_tramp, tree fndecl, rtx chain_value)
+@@ -24443,9 +24569,9 @@ ix86_trampoline_init (rtx m_tramp, tree fndecl, rtx chain_value)
  	  offset += 10;
  	}
  
@@ -1096,7 +1042,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	{
  	  opcode = 0xba41;
  	  size = 6;
-@@ -31952,7 +32097,7 @@ x86_this_parameter (tree function)
+@@ -32082,7 +32208,7 @@ x86_this_parameter (tree function)
          parm_regs = x86_64_ms_abi_int_parameter_registers;
        else
          parm_regs = x86_64_int_parameter_registers;
@@ -1125,7 +1071,16 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  /* SSE4.1 defines round instructions */
  #define	OPTION_MASK_ISA_ROUND	OPTION_MASK_ISA_SSE4_1
-@@ -1760,7 +1760,7 @@ do {							\
+@@ -705,7 +705,7 @@ enum target_cpu_default
+ #define MAIN_STACK_BOUNDARY (TARGET_64BIT ? 128 : 32)
+ 
+ /* Minimum stack boundary.  */
+-#define MIN_STACK_BOUNDARY (TARGET_64BIT ? 128 : 32)
++#define MIN_STACK_BOUNDARY (TARGET_64BIT ? (TARGET_SSE ? 128 : 64) : 32)
+ 
+ /* Boundary (in *bits*) on which the stack pointer prefers to be
+    aligned; the compiler cannot rely on having this alignment.  */
+@@ -1774,7 +1774,7 @@ do {							\
  /* Specify the machine mode that pointers have.
     After generation of rtl, the compiler makes no further distinction
     between pointers and any other objects of this machine mode.  */
@@ -1136,15 +1091,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
     from being `POINTER_SIZE' bits wide to `Pmode' are sign-extended and
 --- a/gcc/config/i386/i386.md
 +++ b/gcc/config/i386/i386.md
-@@ -38,6 +38,7 @@
- ;; Z -- likewise, with special suffixes for x87 instructions.
- ;; * -- print a star (in certain assembler syntax)
- ;; A -- print an absolute memory reference.
-+;; E -- print address with DImode register names if TARGET_64BIT.
- ;; w -- print the operand as if it's a "word" (HImode) even if it isn't.
- ;; s -- print a shift double count, followed by the assemblers argument
- ;;	delimiter.
-@@ -60,7 +61,9 @@
+@@ -61,7 +61,9 @@
  ;; Y -- print condition for XOP pcom* instruction.
  ;; + -- print a branch hint as 'cs' or 'ds' prefix
  ;; ; -- print a semicolon (after prefixes due to bug in older gas).
@@ -1154,15 +1101,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  (define_c_enum "unspec" [
    ;; Relocation specifiers
-@@ -109,6 +112,7 @@
-   UNSPEC_CALL_NEEDS_VZEROUPPER
-   UNSPEC_PAUSE
-   UNSPEC_XBEGIN_ABORT
-+  UNSPEC_LEA_ADDR
- 
-   ;; For SSE/MMX support:
-   UNSPEC_FIX_NOTRUNC
-@@ -892,6 +896,11 @@
+@@ -901,6 +903,11 @@
  ;; pointer-sized quantities.  Exactly one of the two alternatives will match.
  (define_mode_iterator P [(SI "Pmode == SImode") (DI "Pmode == DImode")])
  
@@ -1174,7 +1113,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  ;; This mode iterator allows :PTR to be used for patterns that operate on
  ;; ptr_mode sized quantities.
  (define_mode_iterator PTR
-@@ -1700,8 +1709,8 @@
+@@ -1709,8 +1716,8 @@
     (set_attr "mode" "SI")])
  
  (define_insn "*push<mode>2_prologue"
@@ -1185,7 +1124,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
     (clobber (mem:BLK (scratch)))]
    ""
    "push{<imodesuffix>}\t%1"
-@@ -1709,16 +1718,16 @@
+@@ -1718,16 +1725,16 @@
     (set_attr "mode" "<MODE>")])
  
  (define_insn "*pop<mode>1"
@@ -1206,103 +1145,19 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
     (clobber (mem:BLK (scratch)))]
    ""
    "pop{<imodesuffix>}\t%0"
-@@ -1958,7 +1967,7 @@
-       return "#";
+@@ -3399,9 +3406,9 @@
+ })
  
-     case TYPE_LEA:
--      return "lea{q}\t{%a1, %0|%0, %a1}";
-+      return "lea{q}\t{%E1, %0|%0, %E1}";
- 
-     default:
-       gcc_assert (!flag_pic || LEGITIMATE_PIC_OPERAND_P (operands[1]));
-@@ -1967,7 +1976,7 @@
-       else if (which_alternative == 2)
- 	return "movabs{q}\t{%1, %0|%0, %1}";
-       else if (ix86_use_lea_for_mov (insn, operands))
--	return "lea{q}\t{%a1, %0|%0, %a1}";
-+	return "lea{q}\t{%E1, %0|%0, %E1}";
-       else
- 	return "mov{q}\t{%1, %0|%0, %1}";
-     }
-@@ -2199,12 +2208,12 @@
-       return "movd\t{%1, %0|%0, %1}";
- 
-     case TYPE_LEA:
--      return "lea{l}\t{%a1, %0|%0, %a1}";
-+      return "lea{l}\t{%E1, %0|%0, %E1}";
- 
-     default:
-       gcc_assert (!flag_pic || LEGITIMATE_PIC_OPERAND_P (operands[1]));
-       if (ix86_use_lea_for_mov (insn, operands))
--	return "lea{l}\t{%a1, %0|%0, %a1}";
-+	return "lea{l}\t{%E1, %0|%0, %E1}";
-       else
- 	return "mov{l}\t{%1, %0|%0, %1}";
-     }
-@@ -3382,7 +3391,7 @@
- 			"=r,o,?*Ym,?*y,?*Yi,?*x")
+ (define_insn "*zero_extendsidi2_rex64"
+-  [(set (match_operand:DI 0 "nonimmediate_operand"  "=r,o,?*Ym,?*y,?*Yi,*x")
++  [(set (match_operand:DI 0 "nonimmediate_operand"	   "=r  ,o,?*Ym,?*y,?*Yi,*x")
  	(zero_extend:DI
- 	 (match_operand:SI 1 "nonimmediate_operand"
--	        	"rm,0,r   ,m  ,r   ,m")))]
-+	        	"rmWz,0,r   ,m  ,r   ,m")))]
+-	 (match_operand:SI 1 "nonimmediate_operand" "rm,0,r   ,m  ,r   ,m")))]
++	 (match_operand:SI 1 "x86_64_zext_general_operand" "rmWz,0,r   ,m  ,r   ,m")))]
    "TARGET_64BIT"
    "@
     mov{l}\t{%1, %k0|%k0, %1}
-@@ -5437,7 +5446,7 @@
-   [(set (match_operand:SI 0 "register_operand" "=r")
- 	(subreg:SI (match_operand:DI 1 "lea_address_operand" "p") 0))]
-   "TARGET_64BIT"
--  "lea{l}\t{%a1, %0|%0, %a1}"
-+  "lea{l}\t{%E1, %0|%0, %E1}"
-   "&& reload_completed && ix86_avoid_lea_for_addr (insn, operands)"
-   [(const_int 0)]
- {
-@@ -5451,7 +5460,7 @@
-   [(set (match_operand:SWI48 0 "register_operand" "=r")
- 	(match_operand:SWI48 1 "lea_address_operand" "p"))]
-   ""
--  "lea{<imodesuffix>}\t{%a1, %0|%0, %a1}"
-+  "lea{<imodesuffix>}\t{%E1, %0|%0, %E1}"
-   "reload_completed && ix86_avoid_lea_for_addr (insn, operands)"
-   [(const_int 0)]
- {
-@@ -5466,7 +5475,7 @@
- 	(zero_extend:DI
- 	  (subreg:SI (match_operand:DI 1 "lea_address_operand" "j") 0)))]
-   "TARGET_64BIT"
--  "lea{l}\t{%a1, %k0|%k0, %a1}"
-+  "lea{l}\t{%E1, %k0|%k0, %E1}"
-   [(set_attr "type" "lea")
-    (set_attr "mode" "SI")])
- 
-@@ -5475,7 +5484,7 @@
- 	(zero_extend:DI
- 	  (match_operand:SI 1 "lea_address_operand" "j")))]
-   "TARGET_64BIT"
--  "lea{l}\t{%a1, %k0|%k0, %a1}"
-+  "lea{l}\t{%E1, %k0|%k0, %E1}"
-   [(set_attr "type" "lea")
-    (set_attr "mode" "SI")])
- 
-@@ -5485,7 +5494,7 @@
- 	  (subreg:DI (match_operand:SI 1 "lea_address_operand" "p") 0)
- 	  (match_operand:DI 2 "const_32bit_mask" "n")))]
-   "TARGET_64BIT"
--  "lea{l}\t{%a1, %k0|%k0, %a1}"
-+  "lea{l}\t{%E1, %k0|%k0, %E1}"
-   [(set_attr "type" "lea")
-    (set_attr "mode" "SI")])
- 
-@@ -5495,7 +5504,7 @@
- 	  (match_operand:DI 1 "lea_address_operand" "p")
- 	  (match_operand:DI 2 "const_32bit_mask" "n")))]
-   "TARGET_64BIT"
--  "lea{l}\t{%a1, %k0|%k0, %a1}"
-+  "lea{l}\t{%E1, %k0|%k0, %E1}"
-   [(set_attr "type" "lea")
-    (set_attr "mode" "SI")])
- 
-@@ -11130,10 +11139,15 @@
+@@ -11126,10 +11133,15 @@
     (set_attr "modrm" "0")])
  
  (define_expand "indirect_jump"
@@ -1320,7 +1175,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    ""
    "jmp\t%A0"
    [(set_attr "type" "ibr")
-@@ -11175,12 +11189,13 @@
+@@ -11171,12 +11183,13 @@
        operands[0] = expand_simple_binop (Pmode, code, op0, op1, NULL_RTX, 0,
  					 OPTAB_DIRECT);
      }
@@ -1337,7 +1192,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
     (use (label_ref (match_operand 1 "" "")))]
    ""
    "jmp\t%A0"
-@@ -11268,7 +11283,7 @@
+@@ -11264,7 +11277,7 @@
  })
  
  (define_insn_and_split "*call_vzeroupper"
@@ -1346,7 +1201,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	 (match_operand 1 "" ""))
     (unspec [(match_operand 2 "const_int_operand" "")]
     	   UNSPEC_CALL_NEEDS_VZEROUPPER)]
-@@ -11280,7 +11295,7 @@
+@@ -11276,7 +11289,7 @@
    [(set_attr "type" "call")])
  
  (define_insn "*call"
@@ -1355,7 +1210,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	 (match_operand 1 "" ""))]
    "!SIBLING_CALL_P (insn)"
    "* return ix86_output_call_insn (insn, operands[0]);"
-@@ -11332,7 +11347,7 @@
+@@ -11328,7 +11341,7 @@
    [(set_attr "type" "call")])
  
  (define_insn_and_split "*sibcall_vzeroupper"
@@ -1364,7 +1219,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	 (match_operand 1 "" ""))
     (unspec [(match_operand 2 "const_int_operand" "")]
     	   UNSPEC_CALL_NEEDS_VZEROUPPER)]
-@@ -11344,7 +11359,7 @@
+@@ -11340,7 +11353,7 @@
    [(set_attr "type" "call")])
  
  (define_insn "*sibcall"
@@ -1373,7 +1228,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	 (match_operand 1 "" ""))]
    "SIBLING_CALL_P (insn)"
    "* return ix86_output_call_insn (insn, operands[0]);"
-@@ -11441,7 +11456,7 @@
+@@ -11437,7 +11450,7 @@
  
  (define_insn_and_split "*call_value_vzeroupper"
    [(set (match_operand 0 "" "")
@@ -1382,7 +1237,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	      (match_operand 2 "" "")))
     (unspec [(match_operand 3 "const_int_operand" "")]
     	   UNSPEC_CALL_NEEDS_VZEROUPPER)]
-@@ -11454,7 +11469,7 @@
+@@ -11450,7 +11463,7 @@
  
  (define_insn "*call_value"
    [(set (match_operand 0 "" "")
@@ -1391,7 +1246,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	      (match_operand 2 "" "")))]
    "!SIBLING_CALL_P (insn)"
    "* return ix86_output_call_insn (insn, operands[1]);"
-@@ -11462,7 +11477,7 @@
+@@ -11458,7 +11471,7 @@
  
  (define_insn_and_split "*sibcall_value_vzeroupper"
    [(set (match_operand 0 "" "")
@@ -1400,7 +1255,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	      (match_operand 2 "" "")))
     (unspec [(match_operand 3 "const_int_operand" "")]
     	   UNSPEC_CALL_NEEDS_VZEROUPPER)]
-@@ -11475,7 +11490,7 @@
+@@ -11471,7 +11484,7 @@
  
  (define_insn "*sibcall_value"
    [(set (match_operand 0 "" "")
@@ -1409,7 +1264,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	      (match_operand 2 "" "")))]
    "SIBLING_CALL_P (insn)"
    "* return ix86_output_call_insn (insn, operands[1]);"
-@@ -12580,7 +12595,7 @@
+@@ -12576,7 +12589,7 @@
    [(set (match_operand:SI 0 "register_operand" "=a")
  	(unspec:SI
  	 [(match_operand:SI 1 "register_operand" "b")
@@ -1418,16 +1273,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	  (match_operand:SI 3 "constant_call_address_operand" "z")]
  	 UNSPEC_TLS_GD))
     (clobber (match_scratch:SI 4 "=d"))
-@@ -12589,7 +12604,7 @@
-   "!TARGET_64BIT && TARGET_GNU_TLS"
- {
-   output_asm_insn
--    ("lea{l}\t{%a2@tlsgd(,%1,1), %0|%0, %a2@tlsgd[%1*1]}", operands);
-+    ("lea{l}\t{%E2@tlsgd(,%1,1), %0|%0, %E2@tlsgd[%1*1]}", operands);
-   if (TARGET_SUN_TLS)
- #ifdef HAVE_AS_IX86_TLSGDPLT
-     return "call\t%a2@tlsgdplt";
-@@ -12605,26 +12620,26 @@
+@@ -12601,20 +12614,20 @@
    [(parallel
      [(set (match_operand:SI 0 "register_operand" "")
  	  (unspec:SI [(match_operand:SI 2 "register_operand" "")
@@ -1456,14 +1302,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    "TARGET_64BIT"
  {
    if (!TARGET_X32)
-     fputs (ASM_BYTE "0x66\n", asm_out_file);
-   output_asm_insn
--    ("lea{q}\t{%a1@tlsgd(%%rip), %%rdi|rdi, %a1@tlsgd[rip]}", operands);
-+    ("lea{q}\t{%E1@tlsgd(%%rip), %%rdi|rdi, %E1@tlsgd[rip]}", operands);
-   fputs (ASM_SHORT "0x6666\n", asm_out_file);
-   fputs ("\trex64\n", asm_out_file);
-   if (TARGET_SUN_TLS)
-@@ -12635,14 +12650,15 @@
+@@ -12631,14 +12644,15 @@
     (set (attr "length")
  	(symbol_ref "TARGET_X32 ? 15 : 16"))])
  
@@ -1485,7 +1324,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  (define_insn "*tls_local_dynamic_base_32_gnu"
    [(set (match_operand:SI 0 "register_operand" "=a")
-@@ -12679,12 +12695,12 @@
+@@ -12675,12 +12689,12 @@
        (clobber (match_scratch:SI 4 ""))
        (clobber (reg:CC FLAGS_REG))])])
  
@@ -1504,7 +1343,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    "TARGET_64BIT"
  {
    output_asm_insn
-@@ -12696,13 +12712,14 @@
+@@ -12692,13 +12706,14 @@
    [(set_attr "type" "multi")
     (set_attr "length" "12")])
  
@@ -1524,7 +1363,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  ;; Local dynamic of a single variable is a lose.  Show combine how
  ;; to convert that back to global dynamic.
-@@ -12714,7 +12731,7 @@
+@@ -12710,7 +12725,7 @@
  		     (match_operand:SI 2 "constant_call_address_operand" "z")]
  		    UNSPEC_TLS_LD_BASE)
  	 (const:SI (unspec:SI
@@ -1533,7 +1372,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  		    UNSPEC_DTPOFF))))
     (clobber (match_scratch:SI 4 "=d"))
     (clobber (match_scratch:SI 5 "=c"))
-@@ -12812,7 +12829,7 @@
+@@ -12808,7 +12823,7 @@
  (define_insn "tls_initial_exec_64_sun"
    [(set (match_operand:DI 0 "register_operand" "=a")
  	(unspec:DI
@@ -1542,7 +1381,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	 UNSPEC_TLS_IE_SUN))
     (clobber (reg:CC FLAGS_REG))]
    "TARGET_64BIT && TARGET_SUN_TLS"
-@@ -12829,7 +12846,7 @@
+@@ -12825,7 +12840,7 @@
    [(set (match_dup 3)
  	(plus:SI (match_operand:SI 2 "register_operand" "")
  		 (const:SI
@@ -1551,7 +1390,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  			     UNSPEC_TLSDESC))))
     (parallel
      [(set (match_operand:SI 0 "register_operand" "")
-@@ -12847,10 +12864,10 @@
+@@ -12843,7 +12858,7 @@
    [(set (match_operand:SI 0 "register_operand" "=r")
  	(plus:SI (match_operand:SI 1 "register_operand" "b")
  		 (const:SI
@@ -1559,12 +1398,8 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
 +		  (unspec:SI [(match_operand 2 "tls_symbolic_operand" "")]
  			      UNSPEC_TLSDESC))))]
    "!TARGET_64BIT && TARGET_GNU2_TLS"
--  "lea{l}\t{%a2@TLSDESC(%1), %0|%0, %a2@TLSDESC[%1]}"
-+  "lea{l}\t{%E2@TLSDESC(%1), %0|%0, %E2@TLSDESC[%1]}"
-   [(set_attr "type" "lea")
-    (set_attr "mode" "SI")
-    (set_attr "length" "6")
-@@ -12858,7 +12875,7 @@
+   "lea{l}\t{%E2@TLSDESC(%1), %0|%0, %E2@TLSDESC[%1]}"
+@@ -12854,7 +12869,7 @@
  
  (define_insn "*tls_dynamic_gnu2_call_32"
    [(set (match_operand:SI 0 "register_operand" "=a")
@@ -1573,7 +1408,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  		    (match_operand:SI 2 "register_operand" "0")
  		    ;; we have to make sure %ebx still points to the GOT
  		    (match_operand:SI 3 "register_operand" "b")
-@@ -12874,13 +12891,13 @@
+@@ -12870,13 +12885,13 @@
  (define_insn_and_split "*tls_dynamic_gnu2_combine_32"
    [(set (match_operand:SI 0 "register_operand" "=&a")
  	(plus:SI
@@ -1589,16 +1424,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  		    UNSPEC_DTPOFF))))
     (clobber (reg:CC FLAGS_REG))]
    "!TARGET_64BIT && TARGET_GNU2_TLS"
-@@ -12912,7 +12929,7 @@
- 	(unspec:DI [(match_operand 1 "tls_symbolic_operand" "")]
- 		   UNSPEC_TLSDESC))]
-   "TARGET_64BIT && TARGET_GNU2_TLS"
--  "lea{q}\t{%a1@TLSDESC(%%rip), %0|%0, %a1@TLSDESC[rip]}"
-+  "lea{q}\t{%E1@TLSDESC(%%rip), %0|%0, %E1@TLSDESC[rip]}"
-   [(set_attr "type" "lea")
-    (set_attr "mode" "DI")
-    (set_attr "length" "7")
-@@ -12934,7 +12951,7 @@
+@@ -12930,7 +12945,7 @@
  (define_insn_and_split "*tls_dynamic_gnu2_combine_64"
    [(set (match_operand:DI 0 "register_operand" "=&a")
  	(plus:DI
@@ -1607,7 +1433,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  		     (match_operand:DI 3 "" "")
  		     (reg:DI SP_REG)]
  		    UNSPEC_TLSDESC)
-@@ -15733,17 +15750,17 @@
+@@ -15729,17 +15744,17 @@
    "ix86_current_function_needs_cld = 1;")
  
  (define_insn "*strmovdi_rex_1"
@@ -1634,7 +1460,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "both")
     (set_attr "mode" "DI")])
-@@ -15758,7 +15775,7 @@
+@@ -15754,7 +15769,7 @@
  	(plus:P (match_dup 3)
  		(const_int 4)))]
    "!(fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1643,7 +1469,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "both")
     (set_attr "mode" "SI")])
-@@ -15773,7 +15790,7 @@
+@@ -15769,7 +15784,7 @@
  	(plus:P (match_dup 3)
  		(const_int 2)))]
    "!(fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1652,7 +1478,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "both")
     (set_attr "mode" "HI")])
-@@ -15788,7 +15805,7 @@
+@@ -15784,7 +15799,7 @@
  	(plus:P (match_dup 3)
  		(const_int 1)))]
    "!(fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1661,7 +1487,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "both")
     (set (attr "prefix_rex")
-@@ -15811,20 +15828,20 @@
+@@ -15807,20 +15822,20 @@
    "ix86_current_function_needs_cld = 1;")
  
  (define_insn "*rep_movdi_rex64"
@@ -1691,7 +1517,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "prefix_rep" "1")
     (set_attr "memory" "both")
-@@ -15843,7 +15860,7 @@
+@@ -15839,7 +15854,7 @@
  	(mem:BLK (match_dup 4)))
     (use (match_dup 5))]
    "!(fixed_regs[CX_REG] || fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1700,7 +1526,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "prefix_rep" "1")
     (set_attr "memory" "both")
-@@ -15860,7 +15877,7 @@
+@@ -15856,7 +15871,7 @@
  	(mem:BLK (match_dup 4)))
     (use (match_dup 5))]
    "!(fixed_regs[CX_REG] || fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1709,7 +1535,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "prefix_rep" "1")
     (set_attr "memory" "both")
-@@ -15921,14 +15938,14 @@
+@@ -15917,14 +15932,14 @@
    "ix86_current_function_needs_cld = 1;")
  
  (define_insn "*strsetdi_rex_1"
@@ -1729,7 +1555,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "store")
     (set_attr "mode" "DI")])
-@@ -15940,7 +15957,7 @@
+@@ -15936,7 +15951,7 @@
  	(plus:P (match_dup 1)
  		(const_int 4)))]
    "!(fixed_regs[AX_REG] || fixed_regs[DI_REG])"
@@ -1738,7 +1564,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "store")
     (set_attr "mode" "SI")])
-@@ -15952,7 +15969,7 @@
+@@ -15948,7 +15963,7 @@
  	(plus:P (match_dup 1)
  		(const_int 2)))]
    "!(fixed_regs[AX_REG] || fixed_regs[DI_REG])"
@@ -1747,7 +1573,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "store")
     (set_attr "mode" "HI")])
-@@ -15964,7 +15981,7 @@
+@@ -15960,7 +15975,7 @@
  	(plus:P (match_dup 1)
  		(const_int 1)))]
    "!(fixed_regs[AX_REG] || fixed_regs[DI_REG])"
@@ -1756,7 +1582,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "memory" "store")
     (set (attr "prefix_rex")
-@@ -15985,18 +16002,18 @@
+@@ -15981,18 +15996,18 @@
    "ix86_current_function_needs_cld = 1;")
  
  (define_insn "*rep_stosdi_rex64"
@@ -1781,7 +1607,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "prefix_rep" "1")
     (set_attr "memory" "store")
-@@ -16013,7 +16030,7 @@
+@@ -16009,7 +16024,7 @@
     (use (match_operand:SI 2 "register_operand" "a"))
     (use (match_dup 4))]
    "!(fixed_regs[AX_REG] || fixed_regs[CX_REG] || fixed_regs[DI_REG])"
@@ -1790,7 +1616,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "prefix_rep" "1")
     (set_attr "memory" "store")
-@@ -16029,7 +16046,7 @@
+@@ -16025,7 +16040,7 @@
     (use (match_operand:QI 2 "register_operand" "a"))
     (use (match_dup 4))]
    "!(fixed_regs[AX_REG] || fixed_regs[CX_REG] || fixed_regs[DI_REG])"
@@ -1799,7 +1625,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "prefix_rep" "1")
     (set_attr "memory" "store")
-@@ -16150,7 +16167,7 @@
+@@ -16146,7 +16161,7 @@
     (clobber (match_operand:P 1 "register_operand" "=D"))
     (clobber (match_operand:P 2 "register_operand" "=c"))]
    "!(fixed_regs[CX_REG] || fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1808,7 +1634,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "mode" "QI")
     (set (attr "prefix_rex")
-@@ -16190,7 +16207,7 @@
+@@ -16186,7 +16201,7 @@
     (clobber (match_operand:P 1 "register_operand" "=D"))
     (clobber (match_operand:P 2 "register_operand" "=c"))]
    "!(fixed_regs[CX_REG] || fixed_regs[SI_REG] || fixed_regs[DI_REG])"
@@ -1817,7 +1643,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "mode" "QI")
     (set (attr "prefix_rex")
-@@ -16231,7 +16248,7 @@
+@@ -16227,7 +16242,7 @@
     (clobber (match_operand:P 1 "register_operand" "=D"))
     (clobber (reg:CC FLAGS_REG))]
    "!(fixed_regs[AX_REG] || fixed_regs[CX_REG] || fixed_regs[DI_REG])"
@@ -1826,16 +1652,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
    [(set_attr "type" "str")
     (set_attr "mode" "QI")
     (set (attr "prefix_rex")
-@@ -16663,7 +16680,7 @@
- 
-     default:
-       operands[2] = SET_SRC (XVECEXP (PATTERN (insn), 0, 0));
--      return "lea{<imodesuffix>}\t{%a2, %0|%0, %a2}";
-+      return "lea{<imodesuffix>}\t{%E2, %0|%0, %E2}";
-     }
- }
-   [(set (attr "type")
-@@ -17391,131 +17408,131 @@
+@@ -17372,131 +17387,131 @@
  ;; alternative when no register is available later.
  
  (define_peephole2
@@ -2005,7 +1822,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  
  ;; Convert compares with 1 to shorter inc/dec operations when CF is not
  ;; required and register dies.  Similarly for 128 to -128.
-@@ -17626,7 +17643,7 @@
+@@ -17607,7 +17622,7 @@
  ;;  leal    (%edx,%eax,4), %eax
  
  (define_peephole2
@@ -2014,7 +1831,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
     (parallel [(set (match_operand 0 "register_operand" "")
  		   (ashift (match_operand 1 "register_operand" "")
  			   (match_operand 2 "const_int_operand" "")))
-@@ -17652,16 +17669,16 @@
+@@ -17633,16 +17648,16 @@
    enum machine_mode op1mode = GET_MODE (operands[1]);
    enum machine_mode mode = op1mode == DImode ? DImode : SImode;
    int scale = 1 << INTVAL (operands[2]);
@@ -2037,7 +1854,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
      operands[5] = gen_rtx_SUBREG (op1mode, operands[5], 0);
    operands[0] = dest;
  })
-@@ -18052,7 +18069,7 @@
+@@ -18033,7 +18048,7 @@
  {
    rtx (*insn)(rtx);
  
@@ -2108,13 +1925,6 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  msse5
 --- a/gcc/config/i386/predicates.md
 +++ b/gcc/config/i386/predicates.md
-@@ -1,5 +1,5 @@
- ;; Predicate definitions for IA-32 and x86-64.
--;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
-+;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
- ;; Free Software Foundation, Inc.
- ;;
- ;; This file is part of GCC.
 @@ -341,6 +341,16 @@
      (match_operand 0 "general_operand")))
  
@@ -2179,7 +1989,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  ;; Match exactly zero.
 --- a/gcc/config/i386/sse.md
 +++ b/gcc/config/i386/sse.md
-@@ -8126,8 +8126,8 @@
+@@ -8054,8 +8054,8 @@
    "monitor\t%0, %1, %2"
    [(set_attr "length" "3")])
  
@@ -2310,7 +2120,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  mgnu
 --- a/gcc/configure
 +++ b/gcc/configure
-@@ -13756,7 +13756,14 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
+@@ -13796,7 +13796,14 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
  	    LD="${LD-ld} -m elf_i386_fbsd"
  	    ;;
  	  x86_64-*linux*)
@@ -2328,7 +2138,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	    LD="${LD-ld} -m elf32ppclinux"
 --- a/gcc/doc/invoke.texi
 +++ b/gcc/doc/invoke.texi
-@@ -636,7 +636,7 @@ Objective-C and Objective-C++ Dialects}.
+@@ -637,7 +637,7 @@ Objective-C and Objective-C++ Dialects}.
  -mveclibabi=@var{type} -mvect8-ret-in-mem @gol
  -mpc32 -mpc64 -mpc80 -mstackrealign @gol
  -momit-leaf-frame-pointer  -mno-red-zone -mno-tls-direct-seg-refs @gol
@@ -2337,7 +2147,20 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  -m32 -m64 -mx32 -mlarge-data-threshold=@var{num} @gol
  -msse2avx -mfentry -m8bit-idiv @gol
  -mavx256-split-unaligned-load -mavx256-split-unaligned-store}
-@@ -13763,6 +13763,18 @@ be statically or dynamically linked.
+@@ -13548,6 +13548,12 @@ Attempt to keep the stack boundary aligned to a 2 raised to @var{num}
+ byte boundary.  If @option{-mpreferred-stack-boundary} is not specified,
+ the default is 4 (16 bytes or 128 bits).
+ 
++@strong{Warning:} When generating code for the x86-64 architecture with
++SSE extensions disabled, @option{-mpreferred-stack-boundary=3} can be
++used to keep the stack boundary aligned to 8 byte boundary.  You must
++build all modules with @option{-mpreferred-stack-boundary=3}, including
++any libraries.  This includes the system libraries and startup modules.
++
+ @item -mincoming-stack-boundary=@var{num}
+ @opindex mincoming-stack-boundary
+ Assume the incoming stack is aligned to a 2 raised to @var{num} byte
+@@ -13941,6 +13947,18 @@ be statically or dynamically linked.
  @opindex mcmodel=large
  Generate code for the large model: This model makes no assumptions
  about addresses and sizes of sections.
@@ -2385,7 +2208,7 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  with the corresponding @samp{Enum} record.  The string is checked and
 --- a/gcc/dwarf2out.c
 +++ b/gcc/dwarf2out.c
-@@ -10178,7 +10178,9 @@ dbx_reg_number (const_rtx rtl)
+@@ -10181,7 +10181,9 @@ dbx_reg_number (const_rtx rtl)
      }
  #endif
  
@@ -2396,6 +2219,26 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  }
  
  /* Optionally add a DW_OP_piece term to a location description expression.
+@@ -11669,6 +11671,8 @@ mem_loc_descriptor (rtx rtl, enum machine_mode mode,
+     case REG:
+       if (GET_MODE_CLASS (mode) != MODE_INT
+ 	  || (GET_MODE_SIZE (mode) > DWARF2_ADDR_SIZE
++	      && rtl != arg_pointer_rtx
++	      && rtl != frame_pointer_rtx
+ #ifdef POINTERS_EXTEND_UNSIGNED
+ 	      && (mode != Pmode || mem_mode == VOIDmode)
+ #endif
+@@ -11941,7 +11945,9 @@ mem_loc_descriptor (rtx rtl, enum machine_mode mode,
+     case PLUS:
+     plus:
+       if (is_based_loc (rtl)
+-	  && GET_MODE_SIZE (mode) <= DWARF2_ADDR_SIZE
++	  && (GET_MODE_SIZE (mode) <= DWARF2_ADDR_SIZE
++	      || XEXP (rtl, 0) == arg_pointer_rtx
++	      || XEXP (rtl, 0) == frame_pointer_rtx)
+ 	  && GET_MODE_CLASS (mode) == MODE_INT)
+ 	mem_loc_result = based_loc_descr (XEXP (rtl, 0),
+ 					  INTVAL (XEXP (rtl, 1)),
 --- a/gcc/emit-rtl.c
 +++ b/gcc/emit-rtl.c
 @@ -964,6 +964,22 @@ void
@@ -2572,6 +2415,30 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
 -/* { dg-final { scan-assembler-not "-18874240" } } */
 +/* { dg-final { scan-assembler-not "\[,\\t \]+-18874240" } } */
 --- /dev/null
++++ b/gcc/testsuite/gcc.target/i386/pr52857-1.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile { target { ! { ia32 } } } } */
++/* { dg-options "-g -O -mx32 -maddress-mode=long" } */
++
++extern void get_BID128 (int *);
++void 
++__bid128_div (void)
++{
++  int res;
++  get_BID128 (&res);
++}
+--- /dev/null
++++ b/gcc/testsuite/gcc.target/i386/pr52857-2.c
+@@ -0,0 +1,8 @@
++/* { dg-do compile { target { ! { ia32 } } } } */
++/* { dg-options "-g -O -mx32 -maddress-mode=long" } */
++
++void uw_init_context_1 (void *);
++void _Unwind_ForcedUnwind (void)
++{
++  uw_init_context_1 (__builtin_dwarf_cfa ());
++}
+--- /dev/null
 +++ b/gcc/testsuite/gcc.target/i386/pr52876.c
 @@ -0,0 +1,25 @@
 +/* { dg-do run { target { x32 } } } */
@@ -2649,6 +2516,15 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
 +    } else
 +      i = g[c];
 +}
+--- a/gcc/testsuite/gcc.target/i386/pr54157.c
++++ b/gcc/testsuite/gcc.target/i386/pr54157.c
+@@ -1,5 +1,5 @@
+ /* { dg-do compile { target { ! { ia32 } } } } */
+-/* { dg-options "-O2 -mx32 -ftree-vectorize" } */
++/* { dg-options "-O2 -mx32 -maddress-mode=long -ftree-vectorize" } */
+ 
+ struct s2{
+   int n[24 -1][24 -1][24 -1];
 --- a/libffi/configure
 +++ b/libffi/configure
 @@ -6282,7 +6282,14 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
@@ -2703,12 +2579,13 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	}
 --- a/libffi/src/x86/ffitarget.h
 +++ b/libffi/src/x86/ffitarget.h
-@@ -53,9 +53,15 @@ typedef unsigned long long     ffi_arg;
+@@ -53,9 +53,16 @@ typedef unsigned long long     ffi_arg;
  typedef long long              ffi_sarg;
  #endif
  #else
-+#if defined __x86_64__ && !defined __LP64__
++#if defined __x86_64__ && defined __ILP32__
 +#define FFI_SIZEOF_ARG 8
++#define FFI_SIZEOF_JAVA_RAW  4
 +typedef unsigned long long     ffi_arg;
 +typedef long long              ffi_sarg;
 +#else
@@ -2843,6 +2720,32 @@ hjlu's 4.7 branch is pretty much all backports from code in trunk
  	    ;;
  	  ppc64-*linux*|powerpc64-*linux*)
  	    LD="${LD-ld} -m elf32ppclinux"
+--- a/libjava/include/x86_64-signal.h
++++ b/libjava/include/x86_64-signal.h
+@@ -47,6 +47,10 @@ do									\
+ 									\
+   bool _is_64_bit = false;						\
+ 									\
++  /* Skip 67h address size prefix.  */					\
++  if (_rip[0] == 0x67)							\
++    _rip++;								\
++									\
+   if ((_rip[0] & 0xf0) == 0x40)  /* REX byte present.  */		\
+     {									\
+       unsigned char _rex = _rip[0] & 0x0f;				\
+@@ -64,10 +68,10 @@ do									\
+ 	{								\
+ 	  if (_is_64_bit)						\
+ 	    _min_value_dividend =					\
+-	      _gregs[REG_RAX] == (greg_t)0x8000000000000000UL;		\
++	      _gregs[REG_RAX] == (greg_t)0x8000000000000000ULL;		\
+ 	  else								\
+ 	    _min_value_dividend =					\
+-	      (_gregs[REG_RAX] & 0xffffffff) == (greg_t)0x80000000UL;	\
++	      (_gregs[REG_RAX] & 0xffffffff) == (greg_t)0x80000000ULL;	\
+ 	}								\
+ 									\
+       if (_min_value_dividend)						\
 --- a/libmudflap/configure
 +++ b/libmudflap/configure
 @@ -6393,7 +6393,14 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
