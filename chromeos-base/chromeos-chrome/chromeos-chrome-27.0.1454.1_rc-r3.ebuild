@@ -144,7 +144,8 @@ PATCHES=()
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
-AUTOTEST_DEPS_LIST="chrome_test pyauto_dep page_cycler_dep telemetry_dep"
+AUTOTEST_DEPS_LIST="chrome_test pyauto_dep page_cycler_dep perf_data_dep \
+telemetry_dep"
 
 IUSE="${IUSE} +autotest"
 
@@ -710,6 +711,7 @@ src_compile() {
 		install_chrome_test_resources "${WORKDIR}/test_src"
 		install_pyauto_dep_resources "${WORKDIR}/pyauto_src"
 		install_page_cycler_dep_resources "${WORKDIR}/page_cycler_src"
+		install_perf_data_dep_resources "${WORKDIR}/perf_data_src"
 		install_telemetry_dep_resources "${WORKDIR}/telemetry_src"
 
 		# NOTE: Since chrome is built inside distfiles, we have to get
@@ -725,6 +727,9 @@ src_compile() {
 
 		rm -rf "${deps}/page_cycler_dep/test_src"
 		mv "${WORKDIR}/page_cycler_src" "${deps}/page_cycler_dep/test_src"
+
+		rm -rf "${deps}/perf_data_dep/test_src"
+		mv "${WORKDIR}/perf_data_src" "${deps}/perf_data_dep/test_src"
 
 		rm -rf "${deps}/telemetry_dep/test_src"
 		mv "${WORKDIR}/telemetry_src" "${deps}/telemetry_dep/test_src"
@@ -905,16 +910,24 @@ install_page_cycler_dep_resources() {
 	fi
 }
 
+install_perf_data_dep_resources() {
+	local test_dir="${1}"
+
+	if [[ -r "${CHROME_ROOT}/src/tools/perf/data" ]]; then
+		echo "Copying Perf Data into ${test_dir}"
+		mkdir -p "${test_dir}"
+		install_test_resources "${test_dir}" tools/perf/data
+	fi
+}
+
 install_telemetry_dep_resources() {
 	local test_dir="${1}"
 
 	if [[ -r "${CHROME_ROOT}/src/tools/telemetry" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
-		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROME_ROOT} \
-		            chrome/test)
+		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROME_ROOT})
 		install_test_resources "${test_dir}" $DEPS_LIST \
-                    tools/perf/data \
 		    tools/perf/run_multipage_benchmarks \
 		    tools/perf/run_tests
 	fi
