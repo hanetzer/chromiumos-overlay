@@ -28,7 +28,7 @@ if [ -z "${FLAGS_version}" ]; then
   export CHROMEOS_PATCH=0
 
   # Official builds must set CHROMEOS_OFFICIAL=1.
-  if [ ${CHROMEOS_OFFICIAL:-0} -ne 1 ] && [ "${USER}" != "chrome-bot" ]; then
+  if [ ${CHROMEOS_OFFICIAL:-0} -ne 1 ]; then
     # For developer builds, overwrite CHROMEOS_VERSION_PATCH with a date string
     # for use by auto-updater.
     export CHROMEOS_PATCH=$(date +%Y_%m_%d_%H%M)
