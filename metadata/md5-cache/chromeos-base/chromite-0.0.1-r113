@@ -1,11 +1,11 @@
-DEFINED_PHASES=info install setup unpack
-DEPEND=media-fonts/croscorefonts media-fonts/droidfonts-cros x11-apps/xcursorgen dev-vcs/git
-DESCRIPTION=Chrome OS assets (images, sounds, etc.)
-EAPI=2
+DEFINED_PHASES=info setup test unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Wrapper for running chromite unit tests
+EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=alex lumpy lumpy64 mario tegra2-ldk cros_workon_tree_1bf929f60917c47aa5822f188b432bdebc215ef4 profiling
+IUSE=cros_workon_tree_89bc18ff2315d8eb29e87d8e732e5b727c679871 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	785f8daabf9cf84ba3906f80a313e944	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=7c2b43d02ac882827192a6ec446e0048
+_md5_=b43175d4c69277ddaf35363e711c10c9
