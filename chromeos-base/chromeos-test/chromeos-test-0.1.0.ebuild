@@ -81,6 +81,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/recover-duts
 	chromeos-base/saft
 	chromeos-base/system_api
+	chromeos-base/telemetry
 	chromeos-base/touchbot
 	dev-lang/python
 	dev-python/dbus-python
