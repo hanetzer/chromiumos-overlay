@@ -48,3 +48,4 @@ sys-apps/pciutils	static-libs
 # xz-utils includes liblzma, which is picked by bmpblk_utility (vboot_reference)
 # and may be executed outside chroot.
 app-arch/xz-utils	static-libs
+sys-apps/util-linux	-suid
