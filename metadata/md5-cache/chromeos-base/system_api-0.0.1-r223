@@ -3,10 +3,10 @@ DEPEND=!<=chromeos-base/libchromeos-0.0.1-r78 dev-vcs/git
 DESCRIPTION=Chrome OS system API (D-Bus service names, etc.)
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_workon_tree_a65e532886c5f55e65791cf4791cc9a32268323b profiling
+IUSE=cros_workon_tree_f50e1df366acf8837fc8be7d47ded7d2ca1df78a profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=!<=chromeos-base/libchromeos-0.0.1-r78
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	785f8daabf9cf84ba3906f80a313e944	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=2e8463e299dd8a74279388e14bcb9747
+_md5_=b64c68dab7dbc2f27792210e9d29ffdc
