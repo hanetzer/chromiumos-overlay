@@ -509,7 +509,9 @@ cw_emake() {
 
 	# Clean up a previous build dir if it exists.  Use sudo in case some
 	# files happened to be owned by root or are otherwise marked a-w.
-	sudo rm -rf "${dir}%failed" &
+	# Grep out the sandbox related preload error to avoid confusing devs.
+	(sudo rm -rf "${dir}%failed" 2>&1 | \
+		grep -v 'LD_PRELOAD cannot be preloaded: ignored') &
 
 	if ! nonfatal emake "$@" ; then
 		# If things failed, move the incremental dir out of the way --
