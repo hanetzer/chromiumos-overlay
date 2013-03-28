@@ -263,6 +263,7 @@ IUSE_TESTS="
 	+tests_power_BacklightSuspend
 	+tests_power_BatteryCharge
 	+tests_power_CameraSuspend
+	+tests_power_CheckAfterSuspend
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
 	+tests_power_DarkResumeShutdownServer
