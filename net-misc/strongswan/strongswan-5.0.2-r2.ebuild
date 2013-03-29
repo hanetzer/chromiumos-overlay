@@ -28,8 +28,7 @@ DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger
-	sys-apps/iproute2"
+	virtual/logger"
 
 UGID="ipsec"
 
