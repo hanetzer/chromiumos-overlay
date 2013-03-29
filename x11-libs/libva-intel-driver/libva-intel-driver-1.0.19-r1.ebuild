@@ -42,7 +42,9 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	epatch "${FILESDIR}"/libm.patch
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
-	epatch "${FILESDIR}"/disable-bo-recycling-in-libva.patch
+	epatch "${FILESDIR}"/Add-IS_SNB_GT1-IS_SNB_GT2-IS_IVB_GT1-IS_IVB_GT2-and-.patch
+	epatch "${FILESDIR}"/Render-Update-the-maximum-number-of-WM-threads.patch
+	epatch "${FILESDIR}"/Update-the-size-of-DMV-buffer-for-H.264-decoding-on-.patch
 	eautoreconf
 }
 
