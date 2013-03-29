@@ -974,6 +974,16 @@ src_install() {
 	chmod -R a+r "${D}"
 	find "${D}" -perm /111 -print0 | xargs -0 chmod a+x
 
+	# The following symlinks are needed in order to run chrome.
+	# TODO(rcui): Remove this.  Not needed for running Chrome.
+	dosym libnss3.so /usr/lib/libnss3.so.1d
+	dosym libnssutil3.so.12 /usr/lib/libnssutil3.so.1d
+	dosym libsmime3.so.12 /usr/lib/libsmime3.so.1d
+	dosym libssl3.so.12 /usr/lib/libssl3.so.1d
+	dosym libplds4.so /usr/lib/libplds4.so.0d
+	dosym libplc4.so /usr/lib/libplc4.so.0d
+	dosym libnspr4.so /usr/lib/libnspr4.so.0d
+
 	# Create the main Chrome install directory.
 	dodir "${CHROME_DIR}"
 	insinto "${CHROME_DIR}"
