@@ -165,7 +165,6 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/bin/openssl
 	idobin /usr/bin/uudecode
 	idobin /usr/bin/wget
-	idobin /usr/sbin/ectool
 	idobin /usr/sbin/flashrom
 	idobin /usr/sbin/htpdate
 	idobin /usr/sbin/lightup_screen
