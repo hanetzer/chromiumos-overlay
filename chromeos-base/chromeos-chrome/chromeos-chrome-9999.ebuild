@@ -232,10 +232,6 @@ set_build_defines() {
 		if [[ -n "${ARM_FPU}" ]]; then
 			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
 		fi
-		if use chrome_internal; then
-			#http://code.google.com/p/chrome-os-partner/issues/detail?id=1142
-			BUILD_DEFINES+=( internal_pdf=0 )
-		fi
 		;;
 	amd64)
 		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
