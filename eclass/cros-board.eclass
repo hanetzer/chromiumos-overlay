@@ -63,6 +63,7 @@ ALL_BOARDS=(
 	ricochet
 	sonic
 	stout
+	stout32
 	stumpy
 	tegra2
 	tegra2_aebl
