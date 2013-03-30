@@ -55,7 +55,6 @@ src_test() {
 }
 
 src_install() {
-	local dst_dir
 	einfo "Installing programs"
 	if use minimal ; then
 		# Installing on the target
@@ -71,9 +70,7 @@ src_install() {
 		keys_to_install+=' kernel_subkey.vbpubk'
 		keys_to_install+=' kernel_data_key.vbprivk'
 
-		dst_dir='/usr/sbin/firmware/saft'
-		dodir "${dst_dir}"
-		insinto "${dst_dir}"
+		insinto /usr/sbin/firmware/saft
 		for key in ${keys_to_install}; do
 			doins "tests/devkeys/${key}"
 		done
@@ -92,29 +89,13 @@ src_install() {
 	# Install devkeys to /usr/share/vboot/devkeys
 	# (shared by host and target)
 	einfo "Installing devkeys"
-	dst_dir='/usr/share/vboot/devkeys'
-	dodir "${dst_dir}"
-	insinto "${dst_dir}"
+	insinto /usr/share/vboot/devkeys
 	doins tests/devkeys/*
 
-	einfo "Installing header files and libraries"
-
-	# Install firmware/include to /build/${BOARD}/usr/include/vboot
-	local dst_dir='/usr/include/vboot'
-	dodir "${dst_dir}"
-	insinto "${dst_dir}"
-	doins -r firmware/include/* host/include/*
-
-        # FIXME(crosbug.com/39444): Don't violate the implied API. These
-        # headers should be relocated in the source if they're really
-        # needed.
-	insinto /usr/include/vboot/
-	doins "cgpt/cgpt.h"
-	doins "cgpt/cgpt_params.h"
-	doins "utility/include/kernel_blob.h"
-	doins "utility/include/dump_kernel_config.h"
-	doins "firmware/lib/cgptlib/include/cgptlib.h"
-	doins "firmware/lib/cgptlib/include/gpt.h"
+	# Install public headers to /build/${BOARD}/usr/include/vboot
+	einfo "Installing header files"
+	insinto /usr/include/vboot
+	doins firmware/include/* host/include/*
 
 	einfo "Installing host library"
 	dolib.a build-main/libvboot_host.a
