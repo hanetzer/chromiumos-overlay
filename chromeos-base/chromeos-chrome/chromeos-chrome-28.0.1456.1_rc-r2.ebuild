@@ -967,11 +967,6 @@ src_install() {
 		autotest-deponly_src_install
 		env -uRESTRICT prepstrip "${D}/usr/local/autotest"
 	fi
-	if use pgo_generate; then
-		local pgo_file_dest="chromeos-chrome-${ARCH}-${PV}${PGO_SUFFIX}"
-		echo "${PGO_LOCATION}${pgo_file_dest}" \
-			> "${D_CHROME_DIR}/profilelocation"
-	fi
 
 	# Fix some perms.
 	# TODO(rcui): Remove this - shouldn't be needed, and is just covering up
@@ -991,10 +986,18 @@ src_install() {
 
 	# Create the main Chrome install directory.
 	dodir "${CHROME_DIR}"
+	insinto "${CHROME_DIR}"
+
+	if use pgo_generate; then
+		local pgo_file_dest="chromeos-chrome-${ARCH}-${PV}${PGO_SUFFIX}"
+		echo "${PGO_LOCATION}${pgo_file_dest}" > "${T}/profilelocation"
+		doins "${T}/profilelocation"
+	fi
 
 	# enable the chromeos local account, if the environment dictates
 	if [[ -n "${CHROMEOS_LOCAL_ACCOUNT}" ]]; then
-		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${D_CHROME_DIR}/localaccount"
+		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${T}/localaccount"
+		doins "${T}/localaccount"
 	fi
 
 	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/deploy_chrome )
