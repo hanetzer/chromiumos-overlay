@@ -38,6 +38,11 @@ doappid() {
 	dodir /etc
 
 	local lsb="${D}/etc/lsb-release"
+	local canary_appid="{90F229CE-83E2-4FAF-8479-E368A34938B1}"
 	[[ -e ${lsb} ]] && die "${lsb} already exists!"
-	echo "CHROMEOS_RELEASE_APPID=${appid}" > "${lsb}" || die "creating ${lsb} failed!"
+	cat <<-EOF > "${lsb}" || die "creating ${lsb} failed!"
+	CHROMEOS_RELEASE_APPID=${appid}
+	CHROMEOS_BOARD_APPID=${appid}
+	CHROMEOS_CANARY_APPID=${canary_appid}
+	EOF
 }
