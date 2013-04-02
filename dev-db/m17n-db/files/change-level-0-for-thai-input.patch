@@ -1,0 +1,39 @@
+diff --git a/m17n-db-1.6.1.orig/MIM/th-kesmanee.mim b/m17n-db-1.6.1/MIM/th-kesmanee.mim
+index 086f85a..5fdf684 100644
+--- a/m17n-db-1.6.1.orig/MIM/th-kesmanee.mim
++++ b/m17n-db-1.6.1/MIM/th-kesmanee.mim
+@@ -36,7 +36,7 @@ The correction algorithm follows the one shown in the following
+ The level of character sequence acceptance defined in WTT 2.0.
+ 0 accepts any key sequence.  2 accepts only orthographic ones.
+ 1 is somewhere between.")
+-	1 0 1 2))
++	0 0 1 2))
+ 
+ (macro
+ 
+diff --git a/m17n-db-1.6.1.orig/MIM/th-pattachote.mim b/m17n-db-1.6.1/MIM/th-pattachote.mim
+index 7c70789..48e2ed2 100644
+--- a/m17n-db-1.6.1.orig/MIM/th-pattachote.mim
++++ b/m17n-db-1.6.1/MIM/th-pattachote.mim
+@@ -36,7 +36,7 @@ The correction algorithm follows the one shown in the following
+ The level of character sequence acceptance defined in WTT 2.0.
+ 0 accepts any key sequence.  2 accepts only orthographic ones.
+ 1 is somewhere between.")
+-	1 0 1 2))
++	0 0 1 2))
+ 
+ (include (th kesmanee) macro)
+ 
+diff --git a/m17n-db-1.6.1.orig/MIM/th-tis820.mim b/m17n-db-1.6.1/MIM/th-tis820.mim
+index c6204fb..d2b6040 100644
+--- a/m17n-db-1.6.1.orig/MIM/th-tis820.mim
++++ b/m17n-db-1.6.1/MIM/th-tis820.mim
+@@ -36,7 +36,7 @@ The correction algorithm follows the one shown in the following
+ The level of character sequence acceptance defined in WTT 2.0.
+ 0 accepts any key sequence.  2 accepts only orthographic ones.
+ 1 is somewhere between.")
+-	1 0 1 2))
++	0 0 1 2))
+ 
+ (include (th kesmanee) macro)
+ 

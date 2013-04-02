@@ -19,6 +19,7 @@ RDEPEND="virtual/libintl"
 
 src_prepare() {
 	epatch "${FILESDIR}/do-not-commit-extra-space.patch"
+	epatch "${FILESDIR}/change-level-0-for-thai-input.patch"
 }
 
 src_install() {
