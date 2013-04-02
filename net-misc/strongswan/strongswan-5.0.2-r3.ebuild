@@ -161,20 +161,16 @@ src_install() {
 		/etc/ipsec.d/reqs
 
 	# Replace various IPsec files with symbolic links to runtime generated
-	# files (by l2tpipsec_vpn) on the stateful partition of Chromium OS.
-	rm -f \
-		"${D}"/etc/ipsec.conf \
-		"${D}"/etc/ipsec.secrets \
-		"{$D}"/etc/ipsec.d/cacerts/cacert.der \
-		"{$D}"/etc/strongswan.conf
-	dosym /mnt/stateful_partition/etc/ipsec.conf \
-		/etc/ipsec.conf || die
-	dosym /mnt/stateful_partition/etc/ipsec.secrets \
-		/etc/ipsec.secrets || die
-	dosym /mnt/stateful_partition/etc/cacert.der \
-		/etc/ipsec.d/cacerts/cacert.der || die
-	dosym /mnt/stateful_partition/etc/strongswan.conf \
-		/etc/strongswan.conf || die
+	# files (by l2tpipsec_vpn) in /var/run on Chromium OS.
+	local link_path=/var/run/l2tpipsec_vpn/current
+	for cfg_file in \
+		/etc/ipsec.conf \
+		/etc/ipsec.secrets \
+		/etc/ipsec.d/cacerts/cacert.der \
+		/etc/strongswan.conf; do
+		rm -f "${D}${cfg_file}"
+		dosym "${link_path}/$(basename $cfg_file)" "${cfg_file}"
+	done
 
 	dodoc NEWS README TODO || die
 
