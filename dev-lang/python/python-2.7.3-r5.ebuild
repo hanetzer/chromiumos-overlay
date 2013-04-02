@@ -101,6 +101,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/python-2.7.3-cross-setup-sysroot.patch
 		epatch "${FILESDIR}"/python-2.7.3-cross-h2py.patch
 		epatch "${FILESDIR}"/python-2.7.3-cross-install-compile.patch
+		epatch "${FILESDIR}"/python-2.7.3-gcc-4_8.patch
 		sed -i 's:^python$EXE:${HOSTPYTHON}:' Lib/*/regen || die
 	fi
 	epatch "${FILESDIR}"/python-2.7.3-cross-distutils.patch
