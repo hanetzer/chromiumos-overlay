@@ -1,3 +1,16 @@
+From: Andrew de los Reyes <adlr@chromium.org>
+Date: Tue, 2 Apr 2013 19:25:54 +0800
+Subject: [PATCH] Link and use touch_noise_filter
+
+BUG=chromium-os:38742
+TEST=Tested on Link. Touches are filtered.
+---
+ src/Makefile.am |  2 +-
+ src/debug.c     |  4 ++++
+ src/evdev.c     | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/evdev.h     | 12 ++++++++++--
+ 4 files changed, 69 insertions(+), 3 deletions(-)
+
 diff --git a/src/Makefile.am b/src/Makefile.am
 index 0108bc9..f4d8e50 100644
 --- a/src/Makefile.am
@@ -12,10 +25,10 @@ index 0108bc9..f4d8e50 100644
  
  @DRIVER_NAME@_drv_la_SOURCES = @DRIVER_NAME@.c \
 diff --git a/src/debug.c b/src/debug.c
-index 842694e..f0891ef 100644
+index 89e31f6..05cdabf 100644
 --- a/src/debug.c
 +++ b/src/debug.c
-@@ -56,6 +56,10 @@ EvdevDumpLog(InputInfoPtr pInfo) {
+@@ -60,6 +60,10 @@ EvdevDumpLog(InputInfoPtr pInfo) {
      for (i = 0; i < DEBUG_BUF_SIZE; ++i) {
          struct debug_event *de =
              &pEvdev->debug_buf[(pEvdev->debug_buf_tail + i) % DEBUG_BUF_SIZE];
@@ -27,7 +40,7 @@ index 842694e..f0891ef 100644
              continue;
          fprintf(fp, "E: %ld.%06ld %04x %04x %d %d\n",
 diff --git a/src/evdev.c b/src/evdev.c
-index fc741e2..fae0a0a 100644
+index 59fa9bd..883eb7f 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -933,6 +933,7 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
@@ -53,7 +66,7 @@ index fc741e2..fae0a0a 100644
  
      for (i = 0; i < pEvdev->num_queue; i++) {
          switch (pEvdev->queue[i].type) {
-@@ -1136,6 +1145,25 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -1136,6 +1145,27 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
              valuator_mask_set_double(pEvdev->queue[i].touchMask,
                                       pEvdev->touch_time_valuator_index,
                                       TimevalToDouble(&ev->time));
@@ -69,27 +82,28 @@ index fc741e2..fae0a0a 100644
 +                    pEvdev->axis_map[ABS_MT_PRESSURE], 255);
 +
 +                /* Log the fact that we're canceling a touch. */
-+                pEvdev->debug_buf[pEvdev->debug_buf_tail].canceled_id =
-+                    pEvdev->last_valid_tracking_ids[
-+                        pEvdev->queue[i].detail.touch];
-+                pEvdev->debug_buf[pEvdev->debug_buf_tail].slot = SLOT_CANCELED;
-+                pEvdev->debug_buf_tail++;
-+                pEvdev->debug_buf_tail %= DEBUG_BUF_SIZE;
++                if (pEvdev->debug_buf) {
++                    pEvdev->debug_buf[pEvdev->debug_buf_tail].canceled_id =
++                        pEvdev->last_valid_tracking_ids[
++                            pEvdev->queue[i].detail.touch];
++                    pEvdev->debug_buf[pEvdev->debug_buf_tail].slot = SLOT_CANCELED;
++                    pEvdev->debug_buf_tail++;
++                    pEvdev->debug_buf_tail %= DEBUG_BUF_SIZE;
++                }
 +            }
              xf86PostTouchEvent(pInfo->dev, pEvdev->queue[i].detail.touch,
                                 pEvdev->queue[i].val, 0,
                                 pEvdev->queue[i].touchMask);
-@@ -1203,6 +1231,9 @@ static BOOL
- EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1204,6 +1234,8 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      BOOL syn_dropped = FALSE;
-+    EvdevPtr ptrEvdev = pInfo->private;
-+    if (ptrEvdev->touch_noise_filter)
-+        XFilterHandleInputEvent(ptrEvdev->touch_noise_filter, ev);
+     EvdevPtr pEvdev = pInfo->private;
++    if (pEvdev->touch_noise_filter)
++        XFilterHandleInputEvent(pEvdev->touch_noise_filter, ev);
      switch (ev->type) {
          case EV_REL:
              EvdevProcessRelativeMotionEvent(pInfo, ev);
-@@ -2975,6 +3006,11 @@ EvdevCloseDevice(InputInfoPtr pInfo)
+@@ -2977,6 +3009,11 @@ EvdevCloseDevice(InputInfoPtr pInfo)
          mtdev_close_delete(pEvdev->mtdev);
          pEvdev->mtdev = NULL;
      }
@@ -101,7 +115,7 @@ index fc741e2..fae0a0a 100644
  #endif
  
  }
-@@ -3047,6 +3083,14 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
+@@ -3049,6 +3086,14 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
          goto error;
      }
  
@@ -116,7 +130,7 @@ index fc741e2..fae0a0a 100644
      EvdevAddDevice(pInfo);
  
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -3570,3 +3614,12 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -3572,3 +3617,12 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
      return Success;
  }
@@ -130,7 +144,7 @@ index fc741e2..fae0a0a 100644
 +}
 +#endif
 diff --git a/src/evdev.h b/src/evdev.h
-index d1abac2..23eed58 100644
+index 6ce774e..d744ed5 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -45,6 +45,7 @@
@@ -170,6 +184,9 @@ index d1abac2..23eed58 100644
 +        __s32 canceled_id;
 +      };
 +      int slot;  // if slot is SLOT_CANCELED, cancelled_id has the tracking ID
-     } debug_buf[DEBUG_BUF_SIZE];
+     } *debug_buf;
      size_t debug_buf_tail;
  
+-- 
+1.8.1.3
+

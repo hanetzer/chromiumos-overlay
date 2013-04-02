@@ -3,16 +3,18 @@ Date: Mon, 13 Aug 2012 11:35:32 -0400
 Subject: [PATCH] Add events debug log support
 
 This adds a new xinput property "Dump Debug Logs" that dumps the last
-64k input events to /var/log/evdev_input_events.dat.
+64k input events to /var/log/evdev_input_events.dat for touchscreen
+devices only.
 ---
- src/Makefile.am |    3 +-
- src/debug.c     |  114 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- src/evdev.c     |   13 ++++++-
- src/evdev.h     |   11 +++++
- 4 files changed, 139 insertions(+), 2 deletions(-)
+ src/Makefile.am |   3 +-
+ src/debug.c     | 143 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/evdev.c     |  15 +++++-
+ src/evdev.h     |  14 ++++++
+ 4 files changed, 173 insertions(+), 2 deletions(-)
  create mode 100644 src/debug.c
 
 diff --git a/src/Makefile.am b/src/Makefile.am
+index 804ef73..0108bc9 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -39,5 +39,6 @@ AM_CPPFLAGS =-I$(top_srcdir)/include
@@ -25,9 +27,10 @@ diff --git a/src/Makefile.am b/src/Makefile.am
  
 diff --git a/src/debug.c b/src/debug.c
 new file mode 100644
+index 0000000..f79934d
 --- /dev/null
 +++ b/src/debug.c
-@@ -0,0 +1,114 @@
+@@ -0,0 +1,143 @@
 +// Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -59,8 +62,12 @@ new file mode 100644
 +EvdevDumpLog(InputInfoPtr pInfo) {
 +    EvdevPtr pEvdev = pInfo->private;
 +    int i;
++    FILE *fp;
 +
-+    FILE *fp = fopen(INPUT_EVENTS_LOG_FILE, "w");
++    if (!pEvdev->debug_buf)
++        return;
++
++    fp = fopen(INPUT_EVENTS_LOG_FILE, "w");
 +    if (!fp) {
 +        xf86IDrvMsg(pInfo, X_ERROR, "fopen: %s: %s\n",
 +            INPUT_EVENTS_LOG_FILE, strerror(errno));
@@ -128,8 +135,33 @@ new file mode 100644
 +}
 +
 +void
++EvdevDebugFreeBuffer(EvdevPtr pEvdev)
++{
++    if (pEvdev->debug_buf) {
++        free(pEvdev->debug_buf);
++        pEvdev->debug_buf = NULL;
++    }
++}
++
++void
++EvdevDebugAllocateBuffer(EvdevPtr pEvdev)
++{
++    if (pEvdev->flags & EVDEV_TOUCHSCREEN) {
++        pEvdev->debug_buf = (struct debug_event *)
++            malloc(sizeof(struct debug_event) * DEBUG_BUF_SIZE);
++    } else {
++        pEvdev->debug_buf = NULL;
++    }
++}
++
++void
 +EvdevDebugInitProperty(DeviceIntPtr dev)
 +{
++    InputInfoPtr pInfo = dev->public.devicePrivate;
++    EvdevPtr pEvdev = pInfo->private;
++
++    if (!(pEvdev->flags & EVDEV_TOUCHSCREEN))
++        return;
 +
 +    dump_debug_log_prop = MakeAtom(XI_PROP_DUMP_DEBUG_LOG,
 +        strlen(XI_PROP_DUMP_DEBUG_LOG), TRUE);
@@ -143,6 +175,7 @@ new file mode 100644
 +        EvdevDebugGetProperty, NULL);
 +}
 diff --git a/src/evdev.c b/src/evdev.c
+index cc809e8..db2758c 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -219,7 +219,7 @@ static size_t EvdevCountBits(unsigned long *array, size_t nlongs)
@@ -154,15 +187,22 @@ diff --git a/src/evdev.c b/src/evdev.c
  {
      return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));
  }
-@@ -1208,6 +1208,16 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1194,6 +1194,7 @@ static BOOL
+ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+ {
+     BOOL syn_dropped = FALSE;
++    EvdevPtr pEvdev = pInfo->private;
+     switch (ev->type) {
+         case EV_REL:
+             EvdevProcessRelativeMotionEvent(pInfo, ev);
+@@ -1208,6 +1209,15 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
              syn_dropped = EvdevProcessSyncEvent(pInfo, ev);
              break;
      }
 +
 +    // Add touch events to the debug log. Keypresses are not included.
-+    if (ev->type == EV_ABS || ev->type == EV_SYN ||
-+        (ev->type == EV_KEY && ev->code == BTN_TOUCH)) {
-+      EvdevPtr pEvdev = pInfo->private;
++    if (pEvdev->debug_buf && (ev->type == EV_ABS || ev->type == EV_SYN ||
++        (ev->type == EV_KEY && ev->code == BTN_TOUCH))) {
 +      pEvdev->debug_buf[pEvdev->debug_buf_tail].ev = *ev;
 +      pEvdev->debug_buf[pEvdev->debug_buf_tail].slot = pEvdev->cur_slot;
 +      pEvdev->debug_buf_tail++;
@@ -171,15 +211,25 @@ diff --git a/src/evdev.c b/src/evdev.c
      return syn_dropped;
  }
  
-@@ -2308,6 +2318,7 @@ EvdevInit(DeviceIntPtr device)
+@@ -2308,6 +2318,8 @@ EvdevInit(DeviceIntPtr device)
      EvdevWheelEmuInitProperty(device);
      EvdevDragLockInitProperty(device);
      EvdevAppleInitProperty(device);
++    EvdevDebugAllocateBuffer(pEvdev);
 +    EvdevDebugInitProperty(device);
  
      return Success;
  }
+@@ -2391,6 +2403,7 @@ EvdevProc(DeviceIntPtr device, int what)
+     case DEVICE_CLOSE:
+ 	xf86IDrvMsg(pInfo, X_INFO, "Close\n");
+         EvdevCloseDevice(pInfo);
++        EvdevDebugFreeBuffer(pEvdev);
+         EvdevFreeMasks(pEvdev);
+         EvdevRemoveDevice(pInfo);
+         pEvdev->min_maj = 0;
 diff --git a/src/evdev.h b/src/evdev.h
+index 5d6045d..6f87326 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -101,6 +101,8 @@
@@ -198,13 +248,13 @@ diff --git a/src/evdev.h b/src/evdev.h
 +    struct debug_event {
 +      struct input_event ev;
 +      int slot;
-+    } debug_buf[DEBUG_BUF_SIZE];
++    } *debug_buf;
 +    size_t debug_buf_tail;
 +
      enum fkeymode           fkeymode;
  
      /* Sync timestamps */
-@@ -329,9 +337,12 @@ BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
+@@ -329,9 +337,15 @@ BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
  void EvdevDragLockPreInit(InputInfoPtr pInfo);
  BOOL EvdevDragLockFilterEvent(InputInfoPtr pInfo, unsigned int button, int value);
  
@@ -216,7 +266,10 @@ diff --git a/src/evdev.h b/src/evdev.h
  void EvdevDragLockInitProperty(DeviceIntPtr);
  void EvdevAppleInitProperty(DeviceIntPtr);
 +void EvdevDebugInitProperty(DeviceIntPtr);
++void EvdevDebugAllocateBuffer(EvdevPtr);
++void EvdevDebugFreeBuffer(EvdevPtr);
++
  #endif
 -- 
-1.7.7.3
+1.8.1.3
 

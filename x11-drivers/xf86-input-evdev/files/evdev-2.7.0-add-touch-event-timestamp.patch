@@ -47,11 +47,12 @@ TEST=Run "xinput test-xi2" on Link and check that for non-touch events
       valuators:
           0: 1.19
 ---
- src/evdev.c |   47 ++++++++++++++++++++++++++++++++++++++++++-----
- src/evdev.h |    4 ++++
+ src/evdev.c | 47 ++++++++++++++++++++++++++++++++++++++++++-----
+ src/evdev.h |  4 ++++
  2 files changed, 46 insertions(+), 5 deletions(-)
 
 diff --git a/src/evdev.c b/src/evdev.c
+index db2758c..b6409dd 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -102,6 +102,8 @@
@@ -182,6 +183,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      if (pEvdev->flags & EVDEV_KEYBOARD_EVENTS)
  	EvdevAddKeyClass(device);
 diff --git a/src/evdev.h b/src/evdev.h
+index 6f87326..7b7ca8d 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -260,6 +260,10 @@ typedef struct {
@@ -196,5 +198,5 @@ diff --git a/src/evdev.h b/src/evdev.h
      int end_time_valuator_index;
  
 -- 
-1.7.7.3
+1.8.1.3
 

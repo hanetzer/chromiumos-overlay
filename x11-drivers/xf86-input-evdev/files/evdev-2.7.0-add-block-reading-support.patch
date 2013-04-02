@@ -6,12 +6,13 @@ Subject: [PATCH] Add block reading support
     event reading by skipping read() calls in ReadInput() in order to
     generate the SYN_DROPPED event for testing the SYN_DROPPED handling.
 ---
- src/debug.c |   37 +++++++++++++++++++++++++++++++++++++
- src/evdev.c |    6 +++++-
- src/evdev.h |    6 ++++++
- 3 files changed, 48 insertions(+), 1 deletions(-)
+ src/debug.c | 37 +++++++++++++++++++++++++++++++++++++
+ src/evdev.c |  6 +++++-
+ src/evdev.h |  5 +++++
+ 3 files changed, 47 insertions(+), 1 deletion(-)
 
 diff --git a/src/debug.c b/src/debug.c
+index f79934d..89e31f6 100644
 --- a/src/debug.c
 +++ b/src/debug.c
 @@ -19,10 +19,12 @@
@@ -27,7 +28,7 @@ diff --git a/src/debug.c b/src/debug.c
  static Atom dump_debug_log_prop;
  
  static void
-@@ -112,3 +114,38 @@ EvdevDebugInitProperty(DeviceIntPtr dev)
+@@ -141,3 +143,38 @@ EvdevDebugInitProperty(DeviceIntPtr dev)
      XIRegisterPropertyHandler(dev, EvdevDebugSetProperty,
          EvdevDebugGetProperty, NULL);
  }
@@ -67,6 +68,7 @@ diff --git a/src/debug.c b/src/debug.c
 +    XIRegisterPropertyHandler(dev, EvdevBlockSetProperty, NULL, NULL);
 +}
 diff --git a/src/evdev.c b/src/evdev.c
+index 5360dfa..59fa9bd 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -1569,11 +1569,14 @@ EvdevReadInput(InputInfoPtr pInfo)
@@ -85,15 +87,16 @@ diff --git a/src/evdev.c b/src/evdev.c
  
          if (pEvdev->mtdev)
              len = mtdev_get(pEvdev->mtdev, pInfo->fd, ev, NUM_EVENTS) *
-@@ -2361,6 +2364,7 @@ EvdevInit(DeviceIntPtr device)
-     EvdevDragLockInitProperty(device);
+@@ -2362,6 +2365,7 @@ EvdevInit(DeviceIntPtr device)
      EvdevAppleInitProperty(device);
+     EvdevDebugAllocateBuffer(pEvdev);
      EvdevDebugInitProperty(device);
 +    EvdevBlockInitProperty(device);
  
      return Success;
  }
 diff --git a/src/evdev.h b/src/evdev.h
+index 38beb98..6ce774e 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -291,6 +291,8 @@ typedef struct {
@@ -105,16 +108,18 @@ diff --git a/src/evdev.h b/src/evdev.h
  } EvdevRec, *EvdevPtr;
  
  typedef struct {
-@@ -352,5 +354,9 @@ void Evdev3BEmuInitProperty(DeviceIntPtr);
+@@ -352,8 +354,11 @@ void Evdev3BEmuInitProperty(DeviceIntPtr);
  void EvdevWheelEmuInitProperty(DeviceIntPtr);
  void EvdevDragLockInitProperty(DeviceIntPtr);
  void EvdevAppleInitProperty(DeviceIntPtr);
 +
 +/* For debugging and testing */
  void EvdevDebugInitProperty(DeviceIntPtr);
+ void EvdevDebugAllocateBuffer(EvdevPtr);
+ void EvdevDebugFreeBuffer(EvdevPtr);
 +void EvdevBlockInitProperty(DeviceIntPtr);
-+
+ 
  #endif
 -- 
-1.7.7.3
+1.8.1.3
 

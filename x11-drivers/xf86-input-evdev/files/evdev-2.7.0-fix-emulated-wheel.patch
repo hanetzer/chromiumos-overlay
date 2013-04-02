@@ -9,12 +9,13 @@ mapped to number of button clicks" approach.
 The main motivation of this change is to send Emulated Wheel events to
 Chrome using the scroll valuators instead of legacy button events.
 ---
- src/emuWheel.c |   48 +++++++++---------------------------------------
- src/evdev.c    |   20 +++++++++++++++++++-
- src/evdev.h    |    4 ++++
+ src/emuWheel.c | 48 +++++++++---------------------------------------
+ src/evdev.c    | 20 +++++++++++++++++++-
+ src/evdev.h    |  4 ++++
  3 files changed, 32 insertions(+), 40 deletions(-)
 
 diff --git a/src/emuWheel.c b/src/emuWheel.c
+index db989c5..dae4031 100644
 --- a/src/emuWheel.c
 +++ b/src/emuWheel.c
 @@ -50,9 +50,6 @@ static Atom prop_wheel_inertia  = 0;
@@ -87,6 +88,7 @@ diff --git a/src/emuWheel.c b/src/emuWheel.c
  returns true if a button mapping was found. */
  static BOOL
 diff --git a/src/evdev.c b/src/evdev.c
+index b6409dd..5360dfa 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -131,6 +131,7 @@ static BOOL EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab);
@@ -124,7 +126,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      num_axes = EvdevCountBits(pEvdev->rel_bitmask, NLONGS(REL_MAX));
      if (num_axes < 1)
          goto out;
-@@ -2583,6 +2588,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
+@@ -2585,6 +2590,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
  }
  
  /**
@@ -145,6 +147,7 @@ diff --git a/src/evdev.c b/src/evdev.c
   * still need x/y for these. The server relies on devices having
   * x/y as axes 0/1 and core/XI 1.x clients expect it too (#44655)
 diff --git a/src/evdev.h b/src/evdev.h
+index 7b7ca8d..38beb98 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -314,6 +314,10 @@ void EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
@@ -159,5 +162,5 @@ diff --git a/src/evdev.h b/src/evdev.h
  int  EvdevMBEmuTimer(InputInfoPtr);
  BOOL EvdevMBEmuFilterEvent(InputInfoPtr, int, BOOL);
 -- 
-1.7.7.3
+1.8.1.3
 
