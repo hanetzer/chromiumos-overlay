@@ -81,13 +81,21 @@ build_image() {
 	board=${base%%.dts}
 	board=${board##*-}
 
-	# TODO(vbendeb): remove this once peach is better supported:
-	# Exynos5420 boards should not be using default component locations.
-	local soc=${base/-*}  # Get soc name out of the device tree name.
-	if [[ "${soc}" == "exynos5420" ]]; then
-		common_flags+=" --bl1=${SYSROOT}/firmware/E5420.nbl1.bin"
-		common_flags+=" --bl2=${SYSROOT}/firmware/smdk5420-spl.bin"
-		common_flags+=' -D -s'
+	if use exynos; then
+		# This is an exynos platform, let's add the appropriate image
+		# components' parameters.
+		local fw_root="${SYSROOT}/firmware"
+
+		# Get exynos model out of the device tree name, derive
+		# <model> out of exynos<model>-device.dts
+		local soc="${base/-*}"
+		local exynos_model="${soc#exynos}"
+
+		common_flags+=' -D' # Please no default components.
+		common_flags+=" --ecro ${fw_root}/ec.RO.bin"
+		common_flags+=" --ec ${fw_root}/ec.RW.bin"
+		common_flags+=" --bl1=${fw_root}/E${exynos_model}.nbl1.bin"
+		common_flags+=" --bl2=${fw_root}/smdk${exynos_model}-spl.bin"
 	fi
 
 	cmdline="${common_flags} \
