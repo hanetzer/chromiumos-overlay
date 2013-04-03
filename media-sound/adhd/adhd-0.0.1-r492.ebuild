@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="87f1cec0c440a8e0d8a2a44ae23f8a55c0ad2966"
-CROS_WORKON_TREE="c8b8acd1654856928ba38871d7e73aa187e9f530"
+CROS_WORKON_COMMIT="f9a4c19abc0d4fd16980d0d1681e79720a9054df"
+CROS_WORKON_TREE="6b0a0e840c6e3f13e955c70da4196fef1a12ddc9"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 
@@ -22,7 +22,6 @@ IUSE=""
 RDEPEND=">=media-libs/alsa-lib-1.0.24.1
 	media-libs/sbc
 	media-libs/speex
-	chromeos-base/metrics
 	dev-libs/iniparser
 	>=sys-apps/dbus-1.4.12
 	dev-libs/libpthread-stubs
@@ -37,7 +36,7 @@ src_prepare() {
 
 src_configure() {
 	cd cras
-	econf --enable-chromeos-metrics
+	econf
 }
 
 src_compile() {
