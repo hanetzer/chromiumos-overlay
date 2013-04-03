@@ -80,6 +80,7 @@ src_configure() {
 
 	einfo "  nl80211 driver enabled"
 	echo "CONFIG_DRIVER_NL80211=y" >> ${CONFIG}
+	echo "CONFIG_DRIVER_WIRED=y" >> ${CONFIG}
 
 	# misc
 	echo "CONFIG_RADIUS_SERVER=y" >> ${CONFIG}
