@@ -97,6 +97,7 @@ src_install() {
 	exeinto "${shims_dir}"
 	doexe build/shims/net-diags-upload
 	doexe build/shims/nss-get-cert
+	doexe build/shims/crypto-util
 	use vpn && doexe build/shims/openvpn-script
 	use cellular && doexe build/shims/set-apn-helper
 	use vpn && doexe build/shims/shill-pppd-plugin.so
