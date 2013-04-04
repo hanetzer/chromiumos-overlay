@@ -87,6 +87,7 @@ src_install() {
 		find "${D}" -name 'libmm-plugin-*.so' ! \
 			\( -name 'libmm-plugin-samsung.so' -o \
 			   -name 'libmm-plugin-huawei.so' -o \
+			   -name 'libmm-plugin-altair-lte.so' -o \
 			   -name 'libmm-plugin-novatel-lte.so' \) \
 			-delete
 	fi
