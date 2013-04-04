@@ -113,6 +113,7 @@ src_compile() {
 		--includedir=${INCPATH} \
 		--enable-64-bit-bfd \
 		--enable-gold \
+		--enable-threads \
 		--enable-shared \
 		--disable-werror \
 		--enable-secureplt \

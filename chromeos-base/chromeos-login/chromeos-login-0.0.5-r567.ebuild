@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="e4b662475107a9ea27233330a2bb5cd230650516"
-CROS_WORKON_TREE="b799195a28bc67f6effe8669ad62f32421b1be4d"
+CROS_WORKON_COMMIT="e20fcd93becd2d28616c8e1943027659962a6a71"
+CROS_WORKON_TREE="6962158d469c78dadfc5377346ff4b531e96a18c"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
