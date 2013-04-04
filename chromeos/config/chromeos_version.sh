@@ -15,7 +15,7 @@
 if [ -z "${FLAGS_version}" ]; then
   # Release Build number.
   # Increment by 1 for every release build.
-  export CHROMEOS_BUILD=3956
+  export CHROMEOS_BUILD=3957
 
   # Release Branch number.
   # Increment by 1 for every release build on a branch.
