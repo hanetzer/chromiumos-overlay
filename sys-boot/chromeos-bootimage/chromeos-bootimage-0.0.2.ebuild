@@ -51,28 +51,23 @@ netboot_required() {
 # Args:
 #    $1: fdt_file - full name of device tree file
 #    $2: uboot_file - full name of U-Boot binary
-#    $3: ec_file - full name of the EC read/write binary
-#    $4: common_flags - flags to use for all images
-#    $5: verified_flags - extra flags to use for verified image
-#    $6: nv_flags - extra flags to pass for non-verified image
+#    $3: common_flags - flags to use for all images
+#    $4: verified_flags - extra flags to use for verified image
 
 build_image() {
 	local nv_uboot_file
 	local fdt_file="$1"
 	local uboot_file="$2"
-	local ec_file="$3"
-	local common_flags="$4"
-	local verified_flags="$5"
-	local nv_flags="$6"
+	local common_flags="$3"
+	local verified_flags="$4"
 
 	local board
 	local base
 
 	local ec_file_flag
 	if use cros_ec; then
-		ec_file_flag="--ec ${ec_file}"
-	else
-		ec_file_flag=""
+		common_flags+=" --ecro ${CROS_FIRMWARE_ROOT}/ec.RO.bin"
+		common_flags+=" --ec ${CROS_FIRMWARE_ROOT}/ec.RW.bin"
 	fi
 	einfo "Building images for ${fdt_file}"
 
@@ -84,7 +79,6 @@ build_image() {
 	if use exynos; then
 		# This is an exynos platform, let's add the appropriate image
 		# components' parameters.
-		local fw_root="${SYSROOT}/firmware"
 
 		# Get exynos model out of the device tree name, derive
 		# <model> out of exynos<model>-device.dts
@@ -92,10 +86,8 @@ build_image() {
 		local exynos_model="${soc#exynos}"
 
 		common_flags+=' -D' # Please no default components.
-		common_flags+=" --ecro ${fw_root}/ec.RO.bin"
-		common_flags+=" --ec ${fw_root}/ec.RW.bin"
-		common_flags+=" --bl1=${fw_root}/E${exynos_model}.nbl1.bin"
-		common_flags+=" --bl2=${fw_root}/smdk${exynos_model}-spl.bin"
+		common_flags+=" --bl1=${CROS_FIRMWARE_ROOT}/E${exynos_model}.nbl1.bin"
+		common_flags+=" --bl2=${CROS_FIRMWARE_ROOT}/smdk${exynos_model}-spl.bin"
 	fi
 
 	cmdline="${common_flags} \
@@ -129,7 +121,6 @@ build_image() {
 		${ec_file_flag} \
 		--add-config-int load_env 1 \
 		--add-node-enable console 1 \
-		${nv_flags} \
 		--outdir "nvout-${board}" \
 		--output "nv_image-${board}.bin" ||
 		die "failed to build legacy image: ${cmdline}"
@@ -139,14 +130,10 @@ src_compile_uboot() {
 
 	local verified_flags=''
 	local common_flags=''
-	local bct_file
 	local fdt_file
 	local uboot_file
 	local devkeys_file
 	local dd_params
-
-	# Location of the board-specific bct file
-	bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
 
 	if use memtest; then
 		uboot_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
@@ -178,9 +165,13 @@ src_compile_uboot() {
 		common_flags+=" ${FILESDIR}/cros_splash_blob.bin"
 	fi
 
-	common_flags+=" --board ${BOARD_USE} --bct ${bct_file}"
+	common_flags+=" --board ${BOARD_USE}"
 	common_flags+=" --key ${devkeys_file}"
 	common_flags+=" --bmpblk ${CROS_FIRMWARE_ROOT}/bmpblk.bin"
+
+	if use tegra; then
+		common_flags+=" --bct ${CROS_FIRMWARE_ROOT}/bct/board.bct"
+	fi
 
 	# TODO(sjg@chromium.org): For x86 we can't build all the images
 	# yet, since we need to use a different skeleton file for each.
@@ -189,15 +180,14 @@ src_compile_uboot() {
 		einfo "x86: Only building for board ${U_BOOT_FDT_USE}"
 		# Location of the U-Boot flat device tree source file
 		fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
-		build_image "${fdt_file}" "${uboot_file}" "${ec_file}" \
-				"${common_flags}" "${verified_flags}" ""
+		build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
+		  "${verified_flags}"
 
 	else
 		einfo "Building all images"
 		for fdt_file in ${CROS_FIRMWARE_ROOT}/dts/*.dts; do
 			build_image "${fdt_file}" "${uboot_file}" \
-				"${ec_file}" "${common_flags}" \
-				"${verified_flags}" ""
+			  "${common_flags}" "${verified_flags}"
 		done
 	fi
 }
@@ -205,7 +195,7 @@ src_compile_uboot() {
 src_compile_depthcharge() {
 	local froot="${CROS_FIRMWARE_ROOT}"
 	# Location of various files
-	local bct_file="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}/bct/board.bct"
+
 	local ec_file="${froot}/ec.RW.bin"
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
@@ -222,7 +212,6 @@ src_compile_depthcharge() {
 
 	local common=(
 		--board "${BOARD_USE}"
-		--bct "${bct_file}"
 		--key "${devkeys_file}"
 		--bmpblk "${bmpblk_file}"
 		--coreboot "${coreboot_file}"
