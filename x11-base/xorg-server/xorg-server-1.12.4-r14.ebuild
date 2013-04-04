@@ -158,6 +158,8 @@ PATCHES=(
 	"${FILESDIR}/1.13.99-dix-split-xi2_mask_isset-into-a-per-device-function.patch"
 	# Xi: fix touch event selction conflicts
 	"${FILESDIR}/1.13.99-Xi-fix-touch-event-selction-conflicts-57301.patch"
+	# crbug.com/222933 - NULL valuator dereference unplugging HID device
+	"${FILESDIR}/1.12.4-Avoid-NULL-valuator.patch"
 )
 
 src_prepare() {
