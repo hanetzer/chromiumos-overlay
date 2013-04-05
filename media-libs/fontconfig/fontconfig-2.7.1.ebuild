@@ -46,6 +46,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-fonts-config.patch
 	epatch "${FILESDIR}"/${P}-metric-aliases.patch
 	epatch "${FILESDIR}"/${P}-conf-d.patch
+	epatch "${FILESDIR}"/${P}-host-flag.patch
 	epunt_cxx	#74077
 
 	# Needed to get a sane .so versioning on fbsd, please dont drop
