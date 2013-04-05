@@ -166,7 +166,9 @@ src_configure() {
 
 	if use gallium; then
 	# Configurable gallium drivers
-		gallium_driver_enable swrast
+		if use !xlib-glx; then
+			gallium_driver_enable swrast
+		fi
 
 		# Intel code
 		gallium_driver_enable video_cards_intel i915
@@ -200,6 +202,7 @@ src_configure() {
 		$(use_enable nptl glx-tls) \
 		$(use_enable !pic asm) \
 		$(use_enable xlib-glx) \
+		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
 	        $(use gbm && echo "--with-egl-platforms=drm")
