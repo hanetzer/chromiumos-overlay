@@ -499,7 +499,7 @@ src_unpack() {
 			# for PGO vs. non-PGO. PGO may inline different
 			# functions from non-PGO, leading to different warnings.
 			# crbug.com/112908
-			append-flags -Wno-error=maybe-uninitialized
+			append-flags -Wno-error
 			einfo "Using the PGO data"
 		else
 			einfo "USE=+pgo_use, but ${PROFILE_DIR}/chrome not "\
