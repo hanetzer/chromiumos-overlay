@@ -373,16 +373,13 @@ src_install() {
 	# The sysconfig module will actually read the pyconfig.h at runtime to see what kind
 	# of functionality is enabled in the build.  Deploy it behind the back of portage as
 	# need be.
-	ln "${ED}/usr/include/python${SLOT}"/pyconfig{.,_}h || die
+	ln "${ED}/usr/include/python${SLOT}/pyconfig.h" "${libdir}/pyconfig_h" || die
+
+	# Workaround https://bugs.gentoo.org/380569
+	keepdir /etc/env.d/python
 }
 
 pkg_preinst() {
-	# Workaround https://bugs.gentoo.org/380569
-	mkdir -p "${ED}/etc/env.d/python"
-
-	# See end of src_install above.
-	mv "${ED}/usr/include/python${SLOT}/pyconfig_h" "${T}/" || die
-
 	if has_version "<${CATEGORY}/${PN}-${SLOT}" && ! has_version "${CATEGORY}/${PN}:2.7"; then
 		python_updater_warning="1"
 	fi
@@ -409,10 +406,12 @@ pkg_postinst() {
 		ewarn "'python-updater [options]' to rebuild Python modules."
 	fi
 
+	local pyconfig="${EROOT}/usr/$(get_libdir)/python${SLOT}/pyconfig_h"
 	if [[ ! -e ${EROOT}/usr/include/python${SLOT}/pyconfig.h ]] ; then
 		# See pkg_preinst above for details.
-		install -D -m644 "${T}/pyconfig_h" "${EROOT}/usr/include/python${SLOT}/pyconfig.h" || die
+		install -D -m644 "${pyconfig}" "${EROOT}/usr/include/python${SLOT}/pyconfig.h" || die
 	fi
+	rm "${pyconfig}" || die
 }
 
 pkg_postrm() {
