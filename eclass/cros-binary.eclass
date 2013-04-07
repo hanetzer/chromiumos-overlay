@@ -40,7 +40,7 @@ cros-binary_add_uri()
 			die "Unknown protocol: ${uri}"
 			;;
 	esac
-	RESTRICT+="mirror"
+	RESTRICT+=" mirror"
 }
 
 # @ECLASS-FUNCTION: cros-binary_add_gs_uri
