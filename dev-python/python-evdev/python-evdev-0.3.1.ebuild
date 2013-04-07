@@ -16,6 +16,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
+DEPEND="dev-python/setuptools"
+RDEPEND=""
+
 src_prepare() {
 	epatch "${FILESDIR}/format.patch"
 	distutils_src_prepare
