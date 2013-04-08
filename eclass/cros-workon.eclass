@@ -259,7 +259,7 @@ get_rev() {
 }
 
 using_common_mk() {
-	[[ -n $(find "${S}" -name common.mk -exec grep -l common-mk.git {} +) ]]
+	[[ -n $(find -H "${S}" -name common.mk -exec grep -l common-mk.git {} +) ]]
 }
 
 cros-workon_src_unpack() {
