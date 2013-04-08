@@ -98,6 +98,15 @@ pull_initramfs_binary() {
 	idofutility /usr/bin/old_bins/dump_kernel_config
 	idofutility /usr/bin/old_bins/tpmc
 	idofutility /usr/bin/old_bins/vbutil_kernel
+
+	# PNG image assets
+	local shared_assets="${SYSROOT}"/usr/share/chromeos-assets
+	insimage "${shared_assets}"/images/boot_message.png
+	insimage "${S}"/assets/spinner_*.png
+	insimage "${S}"/assets/icon_check.png
+	insimage "${S}"/assets/icon_warning.png
+	${S}/make_images "${S}/localized_text" \
+					 "${INITRAMFS_TMP_S}/etc/screens" || die
 }
 
 pull_netboot_ramfs_binary() {
@@ -174,9 +183,9 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/partprobe
 	ln -s "/bin/cgpt" "${INITRAMFS_TMP_S}/usr/bin/cgpt" || die
 
-	# For message screen display
-	idobin /usr/bin/ply-image
-	idobin /usr/sbin/vpd
+	# We don't need to display image. Create empty constants.sh so that
+	# messages.sh doesn't freak out.
+	touch "${INITRAMFS_TMP_S}/etc/screens/constants.sh"
 
 	# Network support
 	cp "${FILESDIR}"/udhcpc.script "${INITRAMFS_TMP_S}/etc" || die
@@ -259,15 +268,6 @@ build_initramfs_file() {
 	cp "${S}"/init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 	cp "${S}"/*.sh "${INITRAMFS_TMP_S}/lib" || die
-
-	# PNG image assets
-	local shared_assets="${SYSROOT}"/usr/share/chromeos-assets
-	insimage "${shared_assets}"/images/boot_message.png
-	insimage "${S}"/assets/spinner_*.png
-	insimage "${S}"/assets/icon_check.png
-	insimage "${S}"/assets/icon_warning.png
-	${S}/make_images "${S}/localized_text" \
-					 "${INITRAMFS_TMP_S}/etc/screens" || die
 
 	if use netboot_ramfs; then
 		pull_netboot_ramfs_binary
