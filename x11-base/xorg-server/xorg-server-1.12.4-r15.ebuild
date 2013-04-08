@@ -14,7 +14,8 @@ KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
 # +suid needed because sparcs default off
-IUSE="${IUSE_SERVERS} broken_partialswaps -doc ipv6 minimal nptl selinux +suid tegra tslib +udev"
+IUSE="${IUSE_SERVERS} broken_partialswaps -doc ipv6 minimal nptl selinux +suid
+tegra tslib +udev xlib-glx"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -199,7 +200,9 @@ pkg_setup() {
 		$(use_enable !minimal install-libxf86config)
 		$(use_enable !tegra dri)
 		$(use_enable !tegra dri2)
-		$(use_enable !arm glx)
+		$(use_enable !xlib-glx glx)
+		$(use_enable !xlib-glx dri)
+		$(use_enable !xlib-glx dri2)
 		$(use_enable !arm vgahw)
 		$(use_enable !arm vbe)
 		$(use_enable xnest)
