@@ -39,6 +39,8 @@ DEPEND="sys-power/iasl
 
 cros-coreboot_pre_src_prepare() {
 	cp configs/config.${COREBOOT_BOARD} .config
+	rm -rf 3rdparty/*
+	cp -a "${FILESDIR}"/3rdparty/* 3rdparty
 }
 
 cros-coreboot_src_compile() {
