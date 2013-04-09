@@ -1,0 +1,18 @@
+--- laptop-mode-tools-1.59/usr/sbin/laptop_mode	2013-04-09 20:54:56.692407471 +0800
++++ laptop-mode-tools-1.59/usr/sbin/laptop_mode	2013-04-09 20:57:54.949159851 +0800
+@@ -1115,7 +1115,14 @@
+ 
+ lock_retry ()
+ {
+-	( $FLOCK -n -x -w 1 8 || exit 0;
++	(
++	# We try for 30 seconds before giving up, so we don't miss
++	# "Event-3" in the following example if the previous two events
++	# are still running:
++	# Event-1: laptop_mode force modules=usb-autosuspend devices=1-6:1.3
++	# Event-2: laptop_mode auto
++	# Event-3: laptop_mode force
++	$FLOCK -x -w 30 8 || exit 0;
+ 	i=10;
+ 	while [ $i -ge 1 ]
+ 	do
