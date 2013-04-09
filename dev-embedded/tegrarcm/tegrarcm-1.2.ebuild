@@ -3,9 +3,9 @@
 
 EAPI=4
 
-EGIT_REPO_URI="git://nv-tegra.nvidia.com/tools/tegrarcm.git"
 EGIT_COMMIT="v${PV}"
-inherit git-2
+SRC_URI="http://nv-tegra.nvidia.com/gitweb/?p=tools/tegrarcm.git;a=snapshot;hb=${EGIT_COMMIT};sf=tgz -> ${PN}-${EGIT_COMMIT}.tar.gz"
+S=${WORKDIR}/${PN}
 
 inherit autotools
 
