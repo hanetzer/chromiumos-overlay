@@ -1,15 +1,13 @@
 From: Andrew de los Reyes <adlr@chromium.org>
 Date: Tue, 2 Apr 2013 19:25:54 +0800
-Subject: [PATCH] Link and use touch_noise_filter
+Subject: [PATCH] evdev-2.7.3-Filer-touch-noise
 
-BUG=chromium-os:38742
-TEST=Tested on Link. Touches are filtered.
 ---
  src/Makefile.am |  2 +-
  src/debug.c     |  4 ++++
- src/evdev.c     | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/evdev.c     | 57 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  src/evdev.h     | 12 ++++++++++--
- 4 files changed, 69 insertions(+), 3 deletions(-)
+ 4 files changed, 72 insertions(+), 3 deletions(-)
 
 diff --git a/src/Makefile.am b/src/Makefile.am
 index 0108bc9..f4d8e50 100644
@@ -40,7 +38,7 @@ index 89e31f6..05cdabf 100644
              continue;
          fprintf(fp, "E: %ld.%06ld %04x %04x %d %d\n",
 diff --git a/src/evdev.c b/src/evdev.c
-index 59fa9bd..883eb7f 100644
+index 59fa9bd..b7e0129 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -933,6 +933,7 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
@@ -130,16 +128,19 @@ index 59fa9bd..883eb7f 100644
      EvdevAddDevice(pInfo);
  
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -3572,3 +3617,12 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -3572,3 +3617,15 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
      return Success;
  }
 +
 +#ifdef MULTITOUCH
-+_X_EXPORT void TouchNoiseFilterLog(const char* format, ...) {
++_X_EXPORT void TouchNoiseFilterLog(int verb, const char* format, ...) {
 +  va_list args;
 +  va_start(args, format);
-+  xf86VDrvMsgVerb(-1, X_ERROR, 0, format, args);
++  if (verb > 0)
++    xf86VDrvMsgVerb(-1, X_INFO, 7, format, args);
++  else
++    xf86VDrvMsgVerb(-1, X_ERROR, 0, format, args);
 +  va_end(args);
 +}
 +#endif
