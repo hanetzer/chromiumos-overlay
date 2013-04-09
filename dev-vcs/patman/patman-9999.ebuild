@@ -6,7 +6,7 @@ EAPI=4
 PYTHON_DEPEND="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/u-boot"
 CROS_WORKON_LOCALNAME="u-boot"
-CROS_WORKON_SUBDIR="files/tools/patman"
+CROS_WORKON_SUBDIR="files"
 
 inherit cros-workon distutils
 
@@ -22,6 +22,7 @@ DEPEND="dev-python/setuptools"
 RDEPEND=""
 
 src_prepare() {
+	cd tools/patman
 	rm patman
 	cp "${FILESDIR}/setup.py" .
 	touch __init__.py
@@ -29,8 +30,13 @@ src_prepare() {
 	distutils_src_prepare
 }
 
-src_install() {
-	dobin "${FILESDIR}/patman"
+src_compile() {
+	cd tools/patman
+	distutils_src_compile
+}
 
+src_install() {
+	cd tools/patman
+	dobin "${FILESDIR}/patman"
 	distutils_src_install
 }
