@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile info install postinst prepare setup unpack
-DEPEND=media-libs/alsa-lib media-sound/adhd dev-vcs/git
-DESCRIPTION=Autotest audioloop dep
+DEPEND=virtual/opengl media-libs/libpng sys-libs/zlib x11-libs/libX11 x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext dev-vcs/git
+DESCRIPTION=Autotest glmark2 dependency
 EAPI=2
-HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_workon_tree_e19aae959d59cf29ea03f2beb9919c5ab30f7db8 profiling +buildcheck autotest opengles
+HOMEPAGE=https://launchpad.net/glmark2
+IUSE=+autotest cros_workon_tree_d5429f99004be7b61516db792eb4c8adab435d9a profiling +buildcheck autotest opengles
 KEYWORDS=amd64 arm x86
-LICENSE=GPL-2
-RDEPEND=media-libs/alsa-lib media-sound/adhd ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+LICENSE=GPL-3
+RDEPEND=virtual/opengl media-libs/libpng sys-libs/zlib x11-libs/libX11 x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	autotest-deponly	c768cc6b3a334584419444354d68ba8e	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	f2196417b4b7371018b88ca95b9d7b9e	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=da7919e4d5e5a30e6b7376fecf8690c2
+_md5_=a7bd3f79902d2b5cbb5314148d914618
