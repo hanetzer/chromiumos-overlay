@@ -1,0 +1,122 @@
+From f09aa788d79d36688bcfdd3b49b92367590c5f16 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Tue, 2 Apr 2013 10:01:21 +0100
+Subject: [PATCH] DRI2GetMSC: Do not send a bogus ust for when the drawable is
+ not displayed
+
+According to the opengl glx_sync_control spec, the Unadjusted System Time
+(or UST) is a 64-bit monotonically increasing counter that is available
+throughout the system:
+http://www.opengl.org/registry/specs/OML/glx_sync_control.txt
+
+Therefore, sending 0, even in this corner case, is out of spec. However,
+we cannot just return FALSE here as that triggers a BadDrawable error to
+be sent, and as is often the case mishandled, to the client. This results
+in a certain compositor terminating, for example.
+
+As an alternative we can use the monotonic system timestamp which in
+theory should also be monotonic with the previous and subsequent vblank
+times.
+
+Based on a patch by Daniel Kurtz.
+
+Reported-by: Daniel Kurtz <djkurtz@chromium.org>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+---
+ src/intel_dri.c   | 14 ++++++++++++--
+ src/sna/sna_dri.c | 21 ++++++++++++++++++---
+ 2 files changed, 30 insertions(+), 5 deletions(-)
+
+diff --git a/src/intel_dri.c b/src/intel_dri.c
+index f351203..8f27921 100644
+--- a/src/intel_dri.c
++++ b/src/intel_dri.c
+@@ -1326,6 +1326,16 @@ blit_fallback:
+ 	return TRUE;
+ }
+ 
++static uint64_t gettime_us(void)
++{
++	struct timespec tv;
++
++	if (clock_gettime(CLOCK_MONOTONIC, &tv))
++		return 0;
++
++	return (uint64_t)tv.tv_sec * 1000000 + tv.tv_nsec / 1000;
++}
++
+ /*
+  * Get current frame count and frame count timestamp, based on drawable's
+  * crtc.
+@@ -1339,9 +1349,9 @@ I830DRI2GetMSC(DrawablePtr draw, CARD64 *ust, CARD64 *msc)
+ 	drmVBlank vbl;
+ 	int ret, pipe = I830DRI2DrawablePipe(draw);
+ 
+-	/* Drawable not displayed, make up a value */
++	/* Drawable not displayed, make up a *monotonic* value */
+ 	if (pipe == -1) {
+-		*ust = 0;
++		*ust = gettime_us();
+ 		*msc = 0;
+ 		return TRUE;
+ 	}
+diff --git a/src/sna/sna_dri.c b/src/sna/sna_dri.c
+index 0962e25..5fb1662 100644
+--- a/src/sna/sna_dri.c
++++ b/src/sna/sna_dri.c
+@@ -37,6 +37,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
+ #endif
+ 
+ #include <errno.h>
++#include <time.h>
+ #include <string.h>
+ 
+ #include "sna.h"
+@@ -2216,6 +2217,16 @@ sna_dri_async_swap(ClientPtr client, DrawablePtr draw,
+ }
+ #endif
+ 
++static uint64_t gettime_us(void)
++{
++	struct timespec tv;
++
++	if (clock_gettime(CLOCK_MONOTONIC, &tv))
++		return 0;
++
++	return (uint64_t)tv.tv_sec * 1000000 + tv.tv_nsec / 1000;
++}
++
+ /*
+  * Get current frame count and frame count timestamp, based on drawable's
+  * crtc.
+@@ -2227,13 +2238,16 @@ sna_dri_get_msc(DrawablePtr draw, CARD64 *ust, CARD64 *msc)
+ 	drmVBlank vbl;
+ 	int pipe;
+ 
+-	/* Drawable not displayed, make up a value */
+-	*ust = *msc = 0;
+ 
+ 	pipe = sna_dri_get_pipe(draw);
+ 	DBG(("%s(pipe=%d)\n", __FUNCTION__, pipe));
+-	if (pipe == -1)
++	if (pipe == -1) {
++fail:
++		/* Drawable not displayed, make up a *monotonic* value */
++		*ust = gettime_us();
++		*msc = 0;
+ 		return TRUE;
++	}
+ 
+ 	VG_CLEAR(vbl);
+ 	vbl.request.type = DRM_VBLANK_RELATIVE | pipe_select(pipe);
+@@ -2246,6 +2260,7 @@ sna_dri_get_msc(DrawablePtr draw, CARD64 *ust, CARD64 *msc)
+ 	} else {
+ 		DBG(("%s: query failed on pipe %d, ret=%d\n",
+ 		     __FUNCTION__, pipe, errno));
++		goto fail;
+ 	}
+ 
+ 	return TRUE;
+-- 
+1.8.1.3
+
