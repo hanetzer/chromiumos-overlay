@@ -23,4 +23,6 @@ CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 src_install() {
 	insinto /usr/include/chromeos/dbus
 	doins -r dbus/*
+	insinto /usr/include/chromeos/switches
+	doins -r switches/*
 }
