@@ -256,8 +256,6 @@ CROS_DEPEND="${CROS_RDEPEND}
 ################################################################################
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
-	sys-apps/busybox
-	sys-libs/uuid
 	chromeos-base/chromeos-embedded-init
 "
 

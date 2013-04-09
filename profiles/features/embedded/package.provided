@@ -1,7 +1,0 @@
-sys-apps/coreutils-8.20		# provided by busybox
-sys-apps/findutils-4.4.2	# provided by busybox
-sys-apps/hdparm-9.20		# provided by busybox
-sys-apps/sed-4.2.1		# provided by busybox
-sys-apps/shadow-4.1.2.2		# provided by busybox
-sys-apps/util-linux-2.21.2	# provided by busybox
-sys-apps/which-2.20		# provided by busybox
