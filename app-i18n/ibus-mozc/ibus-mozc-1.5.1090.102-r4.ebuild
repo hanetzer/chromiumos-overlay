@@ -64,6 +64,7 @@ src_prepare() {
   # Remove the patch when new mozc is released.
   epatch "${FILESDIR}"/${P}-attachment-cleanup.patch || die
   epatch "${FILESDIR}"/${P}-handle-extra-keysyms.patch || die
+  epatch "${FILESDIR}"/${P}-gcc-4_8.patch || die
 }
 
 src_compile() {

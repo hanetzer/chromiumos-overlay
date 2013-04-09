@@ -1,0 +1,19 @@
+diff -rupN mozc-1.5.1090.102.orig/gyp/common.gypi mozc-1.5.1090.102/gyp/common.gypi
+--- mozc-1.5.1090.102.orig/gyp/common.gypi	2013-04-08 16:28:04.696033285 -0700
++++ mozc-1.5.1090.102/gyp/common.gypi	2013-04-08 16:28:30.086259116 -0700
+@@ -51,6 +51,7 @@
+       '-Wno-sign-compare',
+       '-Wno-deprecated-declarations',
+       '-Wwrite-strings',
++      '-Wno-unused-local-typedefs',
+     ],
+     # gcc_cflags will be shared with Mac and Linux except for NaCl.
+     'gcc_cflags': [
+@@ -729,6 +730,7 @@
+           # We use deprecated <hash_map> and <hash_set> instead of upcoming
+           # <unordered_map> and <unordered_set>.
+           '-Wno-deprecated',
++          '-Wno-unused-local-typedefs',
+         ],
+         'conditions': [
+           ['chromeos==1', {
