@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="test bds snow spring"
+IUSE="test bds peach_pit snow spring"
 
 # We don't want binchecks since we're cross-compiling firmware images using
 # non-standard layout.
@@ -46,6 +46,9 @@ set_build_env() {
 	if use spring; then
 		ewarn "USE=spring detected; overriding EC_BOARD=spring"
 		EC_BOARD=spring
+	fi
+	if use peach_pit; then
+		EC_BOARD=pit
 	fi
 
 }
