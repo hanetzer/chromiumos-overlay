@@ -32,6 +32,11 @@ src_install() {
 	doins embedded-init/boot-services.conf
 	doins embedded-init/login-prompt-visible.conf
 
+	# TODO(cmasone): Either use getty across the whole source tree, or
+	# convince busybox that it can simulate agetty.  Or something.
+	# http://crosbug.com/39188
+	dosbin embedded-init/agetty
+
 	doins boot-complete.conf cgroups.conf crash-reporter.conf cron-lite.conf
 	doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 	doins install-completed.conf ip6tables.conf iptables.conf
