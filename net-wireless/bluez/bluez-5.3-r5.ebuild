@@ -131,6 +131,11 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-autopair-0005-core-Add-device_get_class-to-the-public-interface.patch"
 	epatch "${FILESDIR}/${P}-autopair-0006-autopair-Add-the-autopair-plugin.patch"
 
+	# Connectability properties exported on the new Input1 interface.
+	# Submitted upstream. Not yet accepted after several iterations upstream.
+	epatch "${FILESDIR}/${P}-hid-0001-input-Documentation-for-new-Input1-interface.patch"
+	epatch "${FILESDIR}/${P}-hid-0002-input-Implement-the-new-ReconnectMode-Input1-propert.patch"
+
 	eautoreconf
 
 	if use cups; then
