@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="705ea59383ffed988873427b89dd6ef87b982fdb"
-CROS_WORKON_TREE="aad89ddc9a2a2c968ccc4314d46a80d77fa841c8"
+CROS_WORKON_COMMIT="330a47fba93b9acef48503646413554cd5053b7a"
+CROS_WORKON_TREE="a0ac7243cf2def539dccf277c330262fbebffbcf"
 CROS_WORKON_PROJECT="chromiumos/platform/system_api"
 
 inherit cros-workon toolchain-funcs
@@ -25,4 +25,6 @@ CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 src_install() {
 	insinto /usr/include/chromeos/dbus
 	doins -r dbus/*
+	insinto /usr/include/chromeos/switches
+	doins -r switches/*
 }
