@@ -3,9 +3,9 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
 EAPI=4
-CROS_WORKON_COMMIT="ea09a35dafdb06c47ac48dedb4a556d40037306e"
-CROS_WORKON_TREE="4c3d4da1e617cd42fd623ac62eda81bf97251171"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_COMMIT="c94260f2d621546ddca561b5bc4815ae70e955a3"
+CROS_WORKON_TREE="e12273cfeb9754e12670b3c934f074d73d253386"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 inherit cros-workon eutils toolchain-funcs linux-info
 
@@ -21,11 +21,11 @@ RDEPEND="demangle? ( sys-devel/binutils )
 	dev-libs/elfutils
 	ncurses? ( dev-libs/newt )
 	perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) )
-	!dev-util/perf"
+	!dev-util/perf-next"
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
-CROS_WORKON_LOCALNAME="kernel-next"
+CROS_WORKON_LOCALNAME="kernel/files"
 
 src_compile() {
 	local makeargs=
