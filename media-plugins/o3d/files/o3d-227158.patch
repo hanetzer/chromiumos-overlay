@@ -1,0 +1,112 @@
+--- o3d/ppapi_plugin/cross/whitelist.cc
++++ o3d/ppapi_plugin/cross/whitelist.cc
+@@ -37,6 +37,7 @@
+ 
+ #include "base/basictypes.h"
+ #include "base/logging.h"
++#include "ppapi/cpp/dev/url_util_dev.h"
+ #include "ppapi/cpp/private/var_private.h"
+ 
+ // TODO(jhorwich) Unfork this file when PPAPI plugin is merged into
+@@ -56,41 +57,9 @@
+   O3D_PLUGIN_DOMAIN_WHITELIST
+ };
+ 
+-static const char kHttpsProtocol[] = "https://";
+-
+-static std::string GetURL(pp::InstancePrivate *instance) {
+-  std::string url;
+-  pp::VarPrivate window = instance->GetWindowObject();
+-  pp::VarPrivate location = window.GetProperty("location");
+-  pp::VarPrivate href = location.GetProperty("href");
+-  url = href.AsString();
+-  return url;
+-}
+-
+-static std::string ParseUrlHost(const std::string &in_url) {
+-  size_t host_start;
+-  if (in_url.find(kHttpsProtocol) == 0) {
+-    host_start = sizeof(kHttpsProtocol) - 1;
+-  } else {
+-    // Do not allow usage on non https pages.
+-    return "";
+-  }
+-  size_t path_start = in_url.find("/", host_start);
+-  if (path_start == std::string::npos) {
+-    path_start = in_url.size();
+-  }
+-  const std::string host_and_port(
+-      in_url.substr(host_start, path_start - host_start));
+-  size_t colon_pos = host_and_port.find(":");
+-  if (colon_pos == std::string::npos) {
+-    colon_pos = host_and_port.size();
+-  }
+-  return host_and_port.substr(0, colon_pos);
+-}
+-
+-static bool IsDomainWhitelisted(const std::string &in_url) {
+-  std::string host(ParseUrlHost(in_url));
++static const char kHttpsProtocol[] = "https";
+ 
++static bool IsHostWhitelisted(std::string host) {
+   // convert the host to a lower-cased version so we
+   // don't have to worry about case mismatches.
+   std::transform(host.begin(), host.end(), host.begin(), ::tolower);
+@@ -105,23 +74,46 @@
+   return false;
+ }
+ 
++static std::string GetURLComponent(std::string url,
++                                   const struct PP_URLComponent_Dev* comp) {
++  std::string result;
++  if (comp->begin >= 0 &&
++      comp->len > 0 && 
++      (comp->begin < url.size()) &&
++      (comp->len <= url.size() - comp->begin)) {
++    result = url.substr(comp->begin, comp->len);
++  }
++  return result;
++}
++
+ #endif  // O3D_PLUGIN_DOMAIN_WHITELIST
+ 
+ bool IsDomainAuthorized(pp::InstancePrivate *instance) {
+ #ifdef O3D_PLUGIN_DOMAIN_WHITELIST
+-  std::string url(GetURL(instance));
+-  if (url.empty()) {
+-    // This can happen in Chrome due to a bug with cross-origin security checks,
+-    // including on legitimate pages. Until it's fixed we'll just allow any
+-    // domain when this happens.
+-    // http://code.google.com/p/chromium/issues/detail?id=64229
+-    LOG(WARNING) <<
+-        "Allowing use despite inability to determine the hosting page";
+-    return true;
++  const pp::URLUtil_Dev* utils = pp::URLUtil_Dev::Get();
++  if (utils == NULL) {
++    LOG(ERROR) << "Unable to get URLUtil_Dev interface - unauthorized";
++    return false;
++  }
++  PP_URLComponents_Dev components;
++  pp::Var doc_url = utils->GetDocumentURL(*instance, &components);
++  if (!doc_url.is_string()) {
++    LOG(ERROR) << "Unable to get document URL - unauthorized";
++    return false;
++  }
++  std::string url = doc_url.AsString();
++  std::string scheme = GetURLComponent(url, &components.scheme);
++  std::string host = GetURLComponent(url, &components.host);
++
++  // Require HTTPS
++  if (scheme.compare(kHttpsProtocol) != 0) {
++    LOG(ERROR) << "Non-HTTPS scheme - unauthorized";
++    return false;
+   }
+-  bool authorized = IsDomainWhitelisted(url);
++
++  bool authorized = IsHostWhitelisted(host);
+   if (!authorized) {
+-    LOG(ERROR) << "Unauthorized domain";
++    LOG(ERROR) << "Unauthorized host";
+   }
+   return authorized;
+ #else

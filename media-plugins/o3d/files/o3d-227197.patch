@@ -1,0 +1,32 @@
+--- o3d/core/cross/buffer.h	(revision 193397)
++++ o3d/core/cross/buffer.h	(working copy)
+@@ -215,6 +215,10 @@
+ 
+   void AdjustBufferMemoryInfo(bool add);
+ 
++  bool InternalSet(o3d::RawData *raw_data,
++                   size_t offset,
++                   size_t length);
++
+   Features* features_;
+ 
+   // Fields.
+--- o3d/core/cross/buffer.cc	(revision 193397)
++++ o3d/core/cross/buffer.cc	(working copy)
+@@ -389,6 +389,16 @@
+ bool Buffer::Set(o3d::RawData *raw_data,
+                  size_t offset,
+                  size_t length) {
++  bool ret = InternalSet(raw_data, offset, length);
++  if (!ret) {
++    Free();
++  }
++  return ret;
++}
++
++bool Buffer::InternalSet(o3d::RawData *raw_data,
++                         size_t offset,
++                         size_t length) {
+   DCHECK(raw_data);
+ 
+   if (!raw_data->IsOffsetLengthValid(offset, length)) {

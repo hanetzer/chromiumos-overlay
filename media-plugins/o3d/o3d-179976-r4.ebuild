@@ -56,6 +56,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/gcc-4_7.patch
 	epatch "${FILESDIR}/o3d-38135.patch" || \
 		die "Could not apply patch o3d-38135.patch"
+        epatch "${FILESDIR}/o3d-227158.patch" || \
+                die "Could not apply patch o3d-227158.patch"
+        epatch "${FILESDIR}/o3d-227181.patch" || \
+                die "Could not apply patch o3d-227181.patch"
+        epatch "${FILESDIR}/o3d-227197.patch" || \
+                die "Could not apply patch o3d-227197.patch"
 
 	${EGCLIENT} runhooks || die
 }
