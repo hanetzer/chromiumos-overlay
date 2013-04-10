@@ -161,6 +161,8 @@ PATCHES=(
 	"${FILESDIR}/1.13.99-Xi-fix-touch-event-selction-conflicts-57301.patch"
 	# crbug.com/222933 - NULL valuator dereference unplugging HID device
 	"${FILESDIR}/1.12.4-Avoid-NULL-valuator.patch"
+	# crbug.com/220687
+	"${FILESDIR}/1.12.4-DRI2-Block-clients-on-VT-switch.patch"
 )
 
 src_prepare() {
