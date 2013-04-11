@@ -8,6 +8,8 @@ app-i18n/zinnia	    	-perl
 app-editors/qemacs	-X
 app-editors/vim		minimal
 dev-cpp/glog		gflags
+# flashrom's libraries must be static
+dev-embedded/libftdi    static-libs
 dev-lang/python		-berkdb gdbm
 dev-libs/dbus-glib	tools
 dev-libs/elfutils	-utils
