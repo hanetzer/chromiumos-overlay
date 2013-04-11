@@ -98,7 +98,8 @@ else:
   # that clang still warns about.
   clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-Wclobbered',
     '-fvisibility=internal', '-Woverride-init', '-Wunsafe-loop-optimizations',
-    '-Wlogical-op', '-Wmissing-parameter-type', '-Wold-style-declaration'])
+    '-Wlogical-op', '-Wmissing-parameter-type', '-Wold-style-declaration',
+    '-Wno-psabi'])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=')
 
   # Clang may use different options for the same or similar functionality.
