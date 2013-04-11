@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
@@ -60,11 +60,12 @@ IUSE_TESTS=(
 	+tests_video_YouTubeHTML5
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_DevicePolicy
+	+tests_enterprise_InstallAttributes
 	+tests_graphics_GLAPICheck
 	+tests_graphics_GpuReset
 	+tests_graphics_Piglit
 	+tests_graphics_SanAngeles
-        +tests_graphics_Sanity
+	+tests_graphics_Sanity
 	+tests_graphics_TearTest
         +tests_graphics_VTSwitch
 	+tests_graphics_WebGLConformance
