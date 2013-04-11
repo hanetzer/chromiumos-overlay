@@ -19,6 +19,9 @@ SLOT="0"
 KEYWORDS="arm amd64 x86"
 IUSE="test bds peach_pit snow spring"
 
+RDEPEND="dev-embedded/libftdi"
+DEPEND="${RDEPEND}"
+
 # We don't want binchecks since we're cross-compiling firmware images using
 # non-standard layout.
 RESTRICT="binchecks"

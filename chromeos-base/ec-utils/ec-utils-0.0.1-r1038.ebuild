@@ -19,6 +19,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
+RDEPEND="dev-embedded/libftdi"
+DEPEND="${RDEPEND}"
+
 set_board() {
 	export BOARD=$(get_current_board_with_variant)
 	if [[ ! -d board/${BOARD} ]] ; then
