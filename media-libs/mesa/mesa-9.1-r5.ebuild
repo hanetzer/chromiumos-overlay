@@ -136,6 +136,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-0005-draw-cache-LLVM-compilation.patch
 	epatch "${FILESDIR}"/9.1-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
 	epatch "${FILESDIR}"/9.1-ACTIVE_UNIFORM_MAX_LENGTH-3-extra-chars-for-array.patch
+	epatch "${FILESDIR}"/9.1-i915-gallium-release-old-fragment-shader-sampler-views.patch
 
 	base_src_prepare
 
