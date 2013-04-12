@@ -14,7 +14,7 @@ DEPEND="sys-apps/debianutils
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
 "
 
-IUSE="-device_tree -kernel_sources"
+IUSE="-device_tree -kernel_sources -wireless34"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
@@ -389,6 +389,11 @@ kmake() {
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 
 	local cross=${CHOST}-
+
+	if use wireless34 ; then
+		set -- "$@" WIFIVERSION="-3.4"
+	fi
+
 	# Hack for using 64-bit kernel with 32-bit user-space
 	if [[ "${ARCH}" == "x86" && "${kernel_arch}" == "x86_64" ]]; then
 		cross=x86_64-cros-linux-gnu-
