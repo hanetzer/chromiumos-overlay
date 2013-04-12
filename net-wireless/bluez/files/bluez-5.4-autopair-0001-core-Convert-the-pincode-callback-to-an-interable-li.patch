@@ -1,7 +1,7 @@
-From a4b725dfcb51ec833462cce56d7c8a5d3d6e1c6c Mon Sep 17 00:00:00 2001
+From 39d05123e2eb340fc5f4e89714f1155ddbd90816 Mon Sep 17 00:00:00 2001
 From: Alex Deymo <deymo@chromium.org>
 Date: Tue, 19 Mar 2013 13:33:02 -0700
-Subject: [PATCH 1/6] core: Convert the pincode callback to an interable list.
+Subject: [PATCH 1/8] core: Convert the pincode callback to an interable list.
 
 The current pincode callback list on the adapter keeps track of all the
 pincode callbacks registered by a plugin for that adapter and calls each
@@ -14,14 +14,14 @@ of the last function called and the number of times called. This will
 allow to provide more information about the bonding status to the pincode
 callback.
 ---
- src/adapter.c | 51 +++++++++++++++++++++++++++++++++++++++++++--------
+ src/adapter.c | 52 ++++++++++++++++++++++++++++++++++++++++++++--------
  src/adapter.h |  4 ++++
  src/device.c  | 13 +++++++++++++
  src/device.h  |  1 +
- 4 files changed, 61 insertions(+), 8 deletions(-)
+ 4 files changed, 62 insertions(+), 8 deletions(-)
 
 diff --git a/src/adapter.c b/src/adapter.c
-index 3dd6e71..a9e1b4f 100644
+index f469d52..bca1750 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
 @@ -121,6 +121,12 @@ struct service_auth {
@@ -30,14 +30,14 @@ index 3dd6e71..a9e1b4f 100644
  
 +struct pincb_iter {
 +	GSList *it;			/* current callback function */
-+	int count;			/* numer of times it() was called */
-+	/* When the iterator reaches the end, it is NULL and count is -1 */
++	uint32_t attempt;		/* numer of times it() was called */
++	/* When the iterator reaches the end, it is NULL and attempt is 0 */
 +};
 +
  struct btd_adapter {
  	int ref_count;
  
-@@ -4800,22 +4806,43 @@ static void user_passkey_notify_callback(uint16_t index, uint16_t length,
+@@ -4798,22 +4804,44 @@ static void user_passkey_notify_callback(uint16_t index, uint16_t length,
  		error("device_notify_passkey: %s", strerror(-err));
  }
  
@@ -47,6 +47,7 @@ index 3dd6e71..a9e1b4f 100644
 +	struct pincb_iter *iter = g_new0(struct pincb_iter, 1);
 +
 +	iter->it = adapter->pin_callbacks;
++	iter->attempt = 1;
 +
 +	return iter;
 +}
@@ -56,7 +57,7 @@ index 3dd6e71..a9e1b4f 100644
 +}
 +
 +gboolean pincb_iter_end(struct pincb_iter *iter) {
-+	return iter->it == NULL && iter->count == -1;
++	return iter->it == NULL && iter->attempt == 0;
 +}
 +
 +static ssize_t pincb_iter_next(struct pincb_iter *iter,
@@ -75,20 +76,20 @@ index 3dd6e71..a9e1b4f 100644
 +	while (iter->it != NULL) {
 +		cb = iter->it->data;
 +		ret = cb(adapter, device, pin_buf, display);
-+		iter->count++;
++		iter->attempt++;
  		if (ret > 0)
  			return ret;
-+		iter->count = 0;
++		iter->attempt = 1;
 +		iter->it = g_slist_next(iter->it);
  	}
-+	iter->count = -1;
++	iter->attempt = 0;
  
 -	return -1;
 +	return 0;
  }
  
  static void pin_code_request_callback(uint16_t index, uint16_t length,
-@@ -4829,6 +4856,7 @@ static void pin_code_request_callback(uint16_t index, uint16_t length,
+@@ -4827,6 +4855,7 @@ static void pin_code_request_callback(uint16_t index, uint16_t length,
  	ssize_t pinlen;
  	char addr[18];
  	int err;
@@ -96,7 +97,7 @@ index 3dd6e71..a9e1b4f 100644
  
  	if (length < sizeof(*ev)) {
  		error("Too small PIN code request event");
-@@ -4846,7 +4874,14 @@ static void pin_code_request_callback(uint16_t index, uint16_t length,
+@@ -4844,7 +4873,14 @@ static void pin_code_request_callback(uint16_t index, uint16_t length,
  	}
  
  	memset(pin, 0, sizeof(pin));
@@ -128,7 +129,7 @@ index 8d23a64..d158334 100644
   * type. If FALSE, disables fast connectable, i.e. sets page scan interval and
   * type to default values. Valid for both connectable and discoverable modes. */
 diff --git a/src/device.c b/src/device.c
-index ab51960..abaac25 100644
+index ee17514..8c4b98a 100644
 --- a/src/device.c
 +++ b/src/device.c
 @@ -85,6 +85,7 @@ struct bonding_req {
@@ -158,7 +159,7 @@ index ab51960..abaac25 100644
  	if (bonding->agent) {
  		agent_cancel(bonding->agent);
  		agent_unref(bonding->agent);
-@@ -3752,6 +3758,13 @@ void device_bonding_failed(struct btd_device *device, uint8_t status)
+@@ -3740,6 +3746,13 @@ void device_bonding_failed(struct btd_device *device, uint8_t status)
  	bonding_request_free(bonding);
  }
  

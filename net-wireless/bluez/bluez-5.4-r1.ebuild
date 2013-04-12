@@ -69,22 +69,6 @@ src_prepare() {
 	# user.
 	epatch "${FILESDIR}/${PN}-sdp-path.patch"
 
-	# Automatic pairing support, including keyboard pairing support.
-	# (accepted upstream, can be dropped for next release)
-	#epatch "${FILESDIR}/${P}-autopair-0001-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0002-Pass-passkey-by-pointer-rather-than-by-value.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0003-agent-add-DisplayPinCode-method.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0004-Add-AUTH_TYPE_NOTIFY_PASSKEY-to-device_request_authe.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0005-Add-display-parameter-to-plugin-pincode-callback.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0006-Display-PIN-generated-by-plugin.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0007-doc-document-DisplayPinCode.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0008-simple-agent-add-DisplayPinCode.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0009-Add-support-for-retrying-a-bonding.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0010-plugin-Add-bonding-callback-support-for-plugins.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0011-bonding-retry-if-callback-returns-TRUE.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0012-bonding-call-plugin-callback-on-cancellation.patch"
-	#epatch "${FILESDIR}/${P}-autopair-0013-autopair-Add-autopair-plugin.patch"
-
 	# Automatic pairing of dumb devices. Not yet submitted upstream
 	# so kept as a separate patch on top of the above series.
 	#epatch "${FILESDIR}/${PN}-autopair.patch"
@@ -101,7 +85,13 @@ src_prepare() {
 	# the patch rather than deal with Shill ;)
 	epatch "${FILESDIR}/${P}-persist-powered.patch"
 
-	# Autopair plugin implementation, similar to our BlueZ 4.99 plugin.
+	# Connectability properties exported on the new Input1 interface.
+	# Submitted upstream. Not yet accepted after several iterations upstream.
+	epatch "${FILESDIR}/${P}-hid-0001-input-Documentation-for-new-Input1-interface.patch"
+	epatch "${FILESDIR}/${P}-hid-0002-input-Implement-the-new-ReconnectMode-Input1-propert.patch"
+
+	# Automatic pairing support, including random and fixed pincode for
+	# keyboard pairing.
 	# Submitted upstream, not decided.
 	epatch "${FILESDIR}/${P}-autopair-0001-core-Convert-the-pincode-callback-to-an-interable-li.patch"
 	epatch "${FILESDIR}/${P}-autopair-0002-plugins-Extend-the-pin-code-callback-with-the-call-n.patch"
@@ -109,11 +99,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-autopair-0004-core-retry-bonding-attempt-until-the-iterator-reachs.patch"
 	epatch "${FILESDIR}/${P}-autopair-0005-core-Add-device_get_class-to-the-public-interface.patch"
 	epatch "${FILESDIR}/${P}-autopair-0006-autopair-Add-the-autopair-plugin.patch"
-
-	# Connectability properties exported on the new Input1 interface.
-	# Submitted upstream. Not yet accepted after several iterations upstream.
-	epatch "${FILESDIR}/${P}-hid-0001-input-Documentation-for-new-Input1-interface.patch"
-	epatch "${FILESDIR}/${P}-hid-0002-input-Implement-the-new-ReconnectMode-Input1-propert.patch"
+	epatch "${FILESDIR}/${P}-autopair-0007-core-Expose-the-last-bonding-attempt-timeout-on-retr.patch"
+	epatch "${FILESDIR}/${P}-autopair-0008-autopair-Try-a-fixed-pincode-for-keyboards-rejecting.patch"
 
 	eautoreconf
 

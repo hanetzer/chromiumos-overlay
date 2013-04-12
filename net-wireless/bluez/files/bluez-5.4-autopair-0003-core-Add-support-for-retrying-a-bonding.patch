@@ -1,7 +1,7 @@
-From d13e461dd9cd5eb1d5226092961565613708ef1e Mon Sep 17 00:00:00 2001
+From 7344c43e0d7b99a1f1725037b26b9ea44589d12c Mon Sep 17 00:00:00 2001
 From: Alex Deymo <deymo@chromium.org>
 Date: Wed, 20 Mar 2013 17:48:29 -0700
-Subject: [PATCH 3/6] core: Add support for retrying a bonding
+Subject: [PATCH 3/8] core: Add support for retrying a bonding
 
 In order to retry a bonding we need a timer that will perform the
 retry, we need to stash the status and capability of the bonding
@@ -15,10 +15,10 @@ object on the adapter.
  3 files changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/src/adapter.c b/src/adapter.c
-index 73372e6..6fa0303 100644
+index 9541833..29d5606 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
-@@ -4291,7 +4291,7 @@ static void adapter_remove_connection(struct btd_adapter *adapter,
+@@ -4282,7 +4282,7 @@ static void adapter_remove_connection(struct btd_adapter *adapter,
  	if (device_is_authenticating(device))
  		device_cancel_authentication(device, TRUE);
  
@@ -28,7 +28,7 @@ index 73372e6..6fa0303 100644
  
  		DBG("Removing temporary device %s", path);
 diff --git a/src/device.c b/src/device.c
-index abaac25..2c3f981 100644
+index 8c4b98a..0a39add 100644
 --- a/src/device.c
 +++ b/src/device.c
 @@ -86,6 +86,9 @@ struct bonding_req {
@@ -79,7 +79,7 @@ index abaac25..2c3f981 100644
  	if (bonding->device)
  		bonding->device->bonding = NULL;
  
-@@ -3606,6 +3615,13 @@ static void device_auth_req_free(struct btd_device *device)
+@@ -3594,6 +3603,13 @@ static void device_auth_req_free(struct btd_device *device)
  	device->authr = NULL;
  }
  

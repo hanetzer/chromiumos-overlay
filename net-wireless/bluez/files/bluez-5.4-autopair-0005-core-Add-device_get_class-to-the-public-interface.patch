@@ -1,7 +1,7 @@
-From 11cc5208cf3804d40c4c2092253391950eaeeab0 Mon Sep 17 00:00:00 2001
+From 2f74c2d8d656e5963d915850d8d9a480bf82ad8d Mon Sep 17 00:00:00 2001
 From: Alex Deymo <deymo@chromium.org>
 Date: Tue, 19 Mar 2013 18:30:48 -0700
-Subject: [PATCH 5/6] core: Add device_get_class to the public interface.
+Subject: [PATCH 5/8] core: Add device_get_class to the public interface.
 
 Exports the device class to plugins.
 ---
@@ -10,7 +10,7 @@ Exports the device class to plugins.
  2 files changed, 6 insertions(+)
 
 diff --git a/src/device.c b/src/device.c
-index 5045efe..dd0a49b 100644
+index c1e7d22..bfa5ca8 100644
 --- a/src/device.c
 +++ b/src/device.c
 @@ -2127,6 +2127,11 @@ void device_set_class(struct btd_device *device, uint32_t class)
