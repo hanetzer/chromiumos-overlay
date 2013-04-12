@@ -69,9 +69,6 @@ src_prepare() {
 	# user.
 	epatch "${FILESDIR}/${PN}-sdp-path.patch"
 
-	# Enable A2PD Source endpoints.
-	epatch "${FILESDIR}/${P}-enable-source.patch"
-
 	# Automatic pairing support, including keyboard pairing support.
 	# (accepted upstream, can be dropped for next release)
 	#epatch "${FILESDIR}/${P}-autopair-0001-Rename-AUTH_TYPE_NOTIFY-to-AUTH_TYPE_NOTIFY_PASSKEY.patch"
@@ -103,24 +100,6 @@ src_prepare() {
 	# manager to deal with powering up/down the adapter. We restore
 	# the patch rather than deal with Shill ;)
 	epatch "${FILESDIR}/${P}-persist-powered.patch"
-
-	# textfile.c parsing bugs.
-	# Accepted upstream (for 5.4)
-	epatch "${FILESDIR}/${P}-bug-0001-textfile-find_key-parsing-nit.patch"
-	epatch "${FILESDIR}/${P}-bug-0002-textfile-Fix-a-pointer-arithmetic-logic-bug-in-read_.patch"
-
-	# SEGFAULT fix on agent callbacks.
-	# Accepted upstream (for 5.4)
-	epatch "${FILESDIR}/${P}-bug-core-Fix-wrong-argument-on-agent-_cb-functions.patch"
-
-	# agent implementation on bluetoothctl/bt_console client.
-	# Accepted upstream (for 5.4)
-	epatch "${FILESDIR}/${P}-agent-0001-client-Add-color-modifiers-to-NEW-CHG-and-DEL-events.patch"
-	epatch "${FILESDIR}/${P}-agent-0002-client-Right-prompt-management-on-agent-input.patch"
-	epatch "${FILESDIR}/${P}-agent-0003-client-agent-command-capability-argument-and-autocom.patch"
-	epatch "${FILESDIR}/${P}-agent-0004-client-Agent-s-DisplayPincode-implementation.patch"
-	epatch "${FILESDIR}/${P}-agent-0005-client-Agent-s-DisplayPasskey-implementation.patch"
-	epatch "${FILESDIR}/${P}-agent-0006-client-Agent-s-RequestPasskey-implementation.patch"
 
 	# Autopair plugin implementation, similar to our BlueZ 4.99 plugin.
 	# Submitted upstream, not decided.
