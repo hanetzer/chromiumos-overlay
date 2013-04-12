@@ -36,6 +36,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-initgroups.patch"
 	epatch "${FILESDIR}/${P}-quick-mode-select-proposal-subset.patch"
 	epatch "${FILESDIR}/${P}-ignore-spurious-quick-mode.patch"
+	epatch "${FILESDIR}/${P}-Check-return-value-of-ECDSA_Verify.patch"
 }
 
 pkg_setup() {
