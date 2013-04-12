@@ -65,7 +65,7 @@ cros-coreboot_src_compile() {
 	fi
 
 	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
-	emake obj="${build_root}" oldconfig
+	yes "" | emake obj="${build_root}" oldconfig
 	emake obj="${build_root}"
 
 	# Modify firmware descriptor if building for the EM100 emulator.
