@@ -1,11 +1,11 @@
-DEFINED_PHASES=compile configure info install prepare setup unpack
+DEFINED_PHASES=info setup test unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Utility for creating store for boot cache
+DESCRIPTION=Wrapper for running chromite unit tests
 EAPI=4
-HOMEPAGE=http://git.chromium.org/gitweb/?s=bootcache
-IUSE=cros_workon_tree_933dc61ef690ca77ad5557123455b289bced1865 profiling
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_workon_tree_af46eeea972644fc6a4dfe0693768e8a256c221a profiling
 KEYWORDS=amd64 arm x86
-LICENSE=GPL-2
+LICENSE=BSD
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	f2196417b4b7371018b88ca95b9d7b9e	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=0a27f7e838cdd38f5072958f7101dbf2
+_md5_=11985c43769194130a822f7e2414e4f7
