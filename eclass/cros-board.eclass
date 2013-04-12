@@ -74,6 +74,7 @@ ALL_BOARDS=(
 	stout
 	stout32
 	stumpy
+	stumpy_pico
 	tegra2
 	tegra2_aebl
 	tegra2_arthur
