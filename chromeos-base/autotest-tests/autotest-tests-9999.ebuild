@@ -82,6 +82,7 @@ IUSE_TESTS="
 	+tests_sound_infrastructure
 	+tests_sleeptest
 	+tests_unixbench
+	+tests_audiovideo_Aplay
 	+tests_audiovideo_CRASFormatConversion
 	+tests_audiovideo_Formats
 	+tests_audiovideo_LineOutToMicInLoopback
