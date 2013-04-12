@@ -271,9 +271,11 @@ if use_ccache:
   # Useful for debugging.
   #os.environ['CCACHE_LOG'] = '/dev/stderr'
 
-  # We take care of nuking the cache in the gcc ebuild whenever
-  # it revbumps in a way that matters, so disable ccache's check.
-  os.environ['CCACHE_COMPILERCHECK'] = 'none'
+  # The gcc ebuild takes care of nuking the cache in the whenever it revbumps
+  # in a way that matters, so we should be able to disable ccache's check.
+  # We've found in practice though that sometimes that doesn't happen.  Since
+  # the default check is cheap (it's a stat() in mtime mode), keep it enabled.
+  #os.environ['CCACHE_COMPILERCHECK'] = 'none'
 
   # Make sure we keep the cached files group writable.
   os.environ['CCACHE_UMASK'] = '002'
