@@ -38,6 +38,7 @@ CONFIG_FRAGMENTS=(
 	highmem
 	i2cdev
 	initramfs
+	kgdb
 	kvm
 	netboot_ramfs
 	nfs
@@ -97,6 +98,12 @@ i2cdev_desc="I2C device interface"
 i2cdev_config="
 CONFIG_I2C_CHARDEV=y
 "
+
+kgdb_desc="Enable kgdb"
+kgdb_config="
+CONFIG_KGDB=y
+CONFIG_KGDB_KDB=y
+"""
 
 tpm_desc="TPM support"
 tpm_config="
