@@ -10,7 +10,7 @@ app-editors/vim		minimal
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
 dev-embedded/libftdi    static-libs
-dev-lang/python		-berkdb gdbm
+dev-lang/python		-berkdb gdbm -sqlite
 dev-libs/dbus-glib	tools
 dev-libs/elfutils	-utils
 dev-libs/glib		-doc

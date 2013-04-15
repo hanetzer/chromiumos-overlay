@@ -5,7 +5,9 @@
 
 app-arch/tar		minimal
 app-crypt/mit-krb5	-keyutils
+dev-db/sqlite		extensions
 dev-embedded/libftdi	-cxx
+dev-lang/python		sqlite
 dev-libs/nss		utils
 dev-libs/dbus-glib	tools
 dev-libs/protobuf 	-python
