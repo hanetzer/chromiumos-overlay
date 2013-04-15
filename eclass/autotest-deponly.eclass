@@ -6,8 +6,6 @@
 # Purpose: Eclass for handling autotest deps packages
 #
 
-EAPI=2
-
 inherit autotest
 
 

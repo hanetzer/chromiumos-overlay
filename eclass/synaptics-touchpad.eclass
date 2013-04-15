@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI="2"
 inherit eutils cros-binary
 
 # Synaptics touchpad generic eclass.
@@ -36,12 +35,12 @@ export_uri() {
 	CROS_BINARY_URI="http://commondatastorage.googleapis.com/synaptics/${SYNAPTICS_TOUCHPAD_PN}-xorg-${X_VERSION}-${PV}-${PR}.tar.gz"
 }
 
-function synaptics-touchpad_src_unpack() {
+synaptics-touchpad_src_unpack() {
 	export_uri
 	cros-binary_src_unpack
 }
 
-function synaptics-touchpad_src_install() {
+synaptics-touchpad_src_install() {
 	# Currently you must have files/* in each ebuild that inherits
 	# from here. These files will go away soon after they are pushed
 	# into the synaptics tarball.
@@ -80,6 +79,4 @@ function synaptics-touchpad_src_install() {
 	else
 	   die "Type of touchpad not specified"
 	fi
-
 }
-
