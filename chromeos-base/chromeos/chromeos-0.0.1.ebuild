@@ -256,6 +256,8 @@ CROS_DEPEND="${CROS_RDEPEND}
 ################################################################################
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
+	sys-apps/shadow
+	sys-apps/util-linux
 	chromeos-base/chromeos-embedded-init
 "
 
