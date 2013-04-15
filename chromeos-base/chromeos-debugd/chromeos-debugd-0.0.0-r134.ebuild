@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="1b99208439ba6beda1f64dbfe6d6a133857fb441"
-CROS_WORKON_TREE="a6fc3267bfeeb8c6d405a8c2380e2046ee8a2abc"
+CROS_WORKON_COMMIT="654b32d88e26693753113ddbccc65eaffc92af89"
+CROS_WORKON_TREE="d3509a0ade8c75b581eba00818f76ef2458d4c05"
 CROS_WORKON_PROJECT="chromiumos/platform/debugd"
 CROS_WORKON_LOCALNAME=$(basename ${CROS_WORKON_PROJECT})
 
