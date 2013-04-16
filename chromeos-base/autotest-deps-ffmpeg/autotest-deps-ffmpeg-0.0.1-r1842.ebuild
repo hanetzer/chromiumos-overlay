@@ -1,16 +1,19 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="975309ff839551dd0c908f0e7e7fe3dd86af100b"
-CROS_WORKON_TREE="cb114adea40232450ebc7cccfa85ab9ae682ef08"
+CROS_WORKON_COMMIT="f42521f7349de3a33876358f21cd99f622078b6c"
+CROS_WORKON_TREE="23920602670c3c74161917a671033184208aff94"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
 
 inherit cros-workon autotest-deponly
 
-DESCRIPTION="Autotest audioloop dep"
+DESCRIPTION="Autotest chromium ffmpeg dep"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
@@ -18,18 +21,15 @@ KEYWORDS="amd64 arm x86"
 # Autotest enabled by default.
 IUSE="+autotest"
 
-CROS_WORKON_LOCALNAME=../third_party/autotest
-CROS_WORKON_SUBDIR=files
-
-AUTOTEST_DEPS_LIST="audioloop"
+AUTOTEST_DEPS_LIST="ffmpeg"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
-# deps/audioloop
+# deps/ffmpeg
 RDEPEND="${RDEPEND}
-	media-libs/alsa-lib
-	media-sound/adhd"
+	chromeos-base/chromeos-chrome
+"
 
 DEPEND="${RDEPEND}"
 
