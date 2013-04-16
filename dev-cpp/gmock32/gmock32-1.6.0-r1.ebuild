@@ -47,4 +47,6 @@ src_configure() {
 
 src_install() {
 	dolib.a lib/.libs/libgmock{,_main}.a
+	# See http://crbug.com/231769
+	board_teardown_32bit_au_env
 }

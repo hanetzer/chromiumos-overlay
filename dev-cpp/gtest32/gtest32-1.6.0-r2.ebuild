@@ -53,4 +53,6 @@ src_test() {
 
 src_install() {
 	dolib.a lib/.libs/libgtest{,_main}.a
+	# See http://crbug.com/231769
+	board_teardown_32bit_au_env
 }
