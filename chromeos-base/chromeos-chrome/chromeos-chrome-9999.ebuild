@@ -14,7 +14,7 @@
 # gclient is expected to be in ~/depot_tools if EGCLIENT is not set
 # to gclient path.
 
-EAPI="2"
+EAPI="4"
 inherit autotest-deponly binutils-funcs eutils flag-o-matic git-2 multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
@@ -26,8 +26,11 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
-# When we get to EAPI=4
-# REQUIRED_USE=<pgo_generate and pgo_use are mutually exclusive>
+# pgo_generate and pgo_use are mutually exclusive.
+REQUIRED_USE="
+	pgo_generate? ( !pgo_use )
+	pgo_use? ( !pgo_generate )
+"
 REORDER_SUBDIR="reorder"
 
 # Portage version without optional portage suffix.
