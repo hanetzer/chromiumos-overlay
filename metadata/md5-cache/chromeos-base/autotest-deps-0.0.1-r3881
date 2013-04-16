@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=dev-cpp/gtest chromeos-base/autotest-deps-libaio app-i18n/ibus dev-libs/glib sys-apps/dbus dev-libs/libnl:0 sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf x11-drivers/touchpad-tests chromeos-base/mttools sys-devel/binutils ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	autotest-deponly	584e7113e8ded6cfa4abb617ff0fa5e7	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	f2196417b4b7371018b88ca95b9d7b9e	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=9e7a27b6b8ac0f48a92475302d4d35b9
+_md5_=948f274b8c6c42460ffa5fcce4093b23
