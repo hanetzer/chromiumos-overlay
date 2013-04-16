@@ -12,7 +12,7 @@ SRC_URI="mirror://gentoo/${P}.tar.bz2
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_embedded"
+IUSE=""
 
 src_install() {
 	emake \
@@ -42,12 +42,6 @@ src_install() {
 	# https://bugs.gentoo.org/373219
 	insinto /etc/init.d
 	doins "${FILESDIR}"/functions.sh || die
-
-	# Use ash as the login shell when we don't have bash
-	if use cros_embedded; then
-		sed -i -e 's:/bin/bash:/bin/ash:' \
-			"${D}"/usr/share/baselayout/passwd
-	fi
 }
 
 pkg_postinst() {
