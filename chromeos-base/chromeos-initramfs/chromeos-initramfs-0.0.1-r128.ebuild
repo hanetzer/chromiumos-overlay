@@ -144,6 +144,7 @@ pull_netboot_ramfs_binary() {
 		rmdir
 		sed
 		sleep
+		stty
 		sync
 		tee
 		tr
