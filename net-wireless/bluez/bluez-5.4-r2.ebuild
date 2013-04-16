@@ -102,6 +102,11 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-autopair-0007-core-Expose-the-last-bonding-attempt-timeout-on-retr.patch"
 	epatch "${FILESDIR}/${P}-autopair-0008-autopair-Try-a-fixed-pincode-for-keyboards-rejecting.patch"
 
+	# Automatic reconnect to HID devices when they come back in range.
+	# Also fix a memory leak on the input profile.
+	epatch "${FILESDIR}/${P}-input-0001-input-Fix-memory-leak-for-hidp_connadd_req.patch"
+	epatch "${FILESDIR}/${P}-input-0002-input-Automatically-attempt-a-reconnect-when-require.patch"
+
 	eautoreconf
 
 	if use cups; then
