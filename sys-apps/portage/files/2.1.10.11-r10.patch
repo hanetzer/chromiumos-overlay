@@ -2002,7 +2002,7 @@ index bf8ecd9..46524e4 100644
  
  		failures = {}
 diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
-index 7f7873b..5214aa1 100644
+index 7f7873b..2dfffc7 100644
 --- a/pym/portage/dbapi/vartree.py
 +++ b/pym/portage/dbapi/vartree.py
 @@ -60,6 +60,7 @@ from _emerge.PollScheduler import PollScheduler
@@ -2031,7 +2031,38 @@ index 7f7873b..5214aa1 100644
  			if self._lock is None:
  				raise AssertionError("not locked")
  			self._lock_count = 0
-@@ -1839,16 +1840,10 @@ class dblink(object):
+@@ -884,12 +885,24 @@ class vardbapi(dbapi):
+ 				removed += 1
+ 
+ 		if removed:
+-			self._bump_mtime(pkg.mycpv)
+-			f = atomic_ofstream(os.path.join(pkg.dbdir, "CONTENTS"))
+-			write_contents(new_contents, root, f)
+-			f.close()
+-			self._bump_mtime(pkg.mycpv)
+-			pkg._clear_contents_cache()
++			self.writeContentsToContentsFile(pkg, new_contents)
++
++	def writeContentsToContentsFile(self, pkg, new_contents):
++		"""
++		@param pkg: package to write contents file for
++		@type pkg: dbapi
++		@param new_contents: contents to write to CONTENTS file
++		@type new_contents: contents dictionary of the form
++		                    {u'/path/to/file' : (contents_attribute 1, ...),
++		                    ...}
++		"""
++		root = self.settings['ROOT']
++		self._bump_mtime(pkg.mycpv)
++		f = atomic_ofstream(os.path.join(pkg.dbdir, "CONTENTS"))
++		write_contents(new_contents, root, f)
++		f.close()
++		self._bump_mtime(pkg.mycpv)
++		pkg._clear_contents_cache()
+ 
+ 	class _owners_cache(object):
+ 		"""
+@@ -1839,16 +1852,10 @@ class dblink(object):
  		else:
  			self.settings.pop("PORTAGE_LOG_FILE", None)
  
@@ -2052,7 +2083,7 @@ index 7f7873b..5214aa1 100644
  
  		return os.EX_OK
  
-@@ -3270,6 +3265,15 @@ class dblink(object):
+@@ -3270,6 +3277,15 @@ class dblink(object):
  					max_dblnk = dblnk
  			self._installed_instance = max_dblnk
  
@@ -2068,7 +2099,7 @@ index 7f7873b..5214aa1 100644
  		# We check for unicode encoding issues after src_install. However,
  		# the check must be repeated here for binary packages (it's
  		# inexpensive since we call os.walk() here anyway).
-@@ -3394,14 +3398,6 @@ class dblink(object):
+@@ -3394,14 +3410,6 @@ class dblink(object):
  			if installed_files:
  				return 1
  
@@ -2083,7 +2114,7 @@ index 7f7873b..5214aa1 100644
  		# Make sure the ebuild environment is initialized and that ${T}/elog
  		# exists for logging of collision-protect eerror messages.
  		if myebuild is None:
-@@ -3413,6 +3409,14 @@ class dblink(object):
+@@ -3413,6 +3421,14 @@ class dblink(object):
  			for other in others_in_slot])
  		prepare_build_dirs(settings=self.settings, cleanup=cleanup)
  
@@ -2098,7 +2129,7 @@ index 7f7873b..5214aa1 100644
  		if collisions:
  			collision_protect = "collision-protect" in self.settings.features
  			protect_owned = "protect-owned" in self.settings.features
-@@ -3803,17 +3807,24 @@ class dblink(object):
+@@ -3803,17 +3819,24 @@ class dblink(object):
  			if pkgcmp(catpkgsplit(self.pkg)[1:], catpkgsplit(v)[1:]) < 0:
  				downgrade = True
  
