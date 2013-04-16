@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="b3b243f380e0c93cf782e3ce7afe524bed398e41"
-CROS_WORKON_TREE="ec574dbf2b7b5c440d850eadc23a0b6e4cd6e4b9"
+CROS_WORKON_COMMIT="a0607ee2f495d17aa1e773a0ec75bdbc5d47dc66"
+CROS_WORKON_TREE="454c02ab79ddff968c8e1e7a73a282dfe10c84b7"
 CROS_WORKON_PROJECT="chromiumos/platform/cros-disks"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -25,7 +25,6 @@ RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	dev-cpp/gflags
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	sys-apps/rootdev

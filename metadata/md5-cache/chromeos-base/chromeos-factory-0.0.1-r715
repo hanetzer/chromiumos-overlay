@@ -9,4 +9,4 @@ LICENSE=BSD
 RDEPEND=!chromeos-base/chromeos-factorytools dev-lang/python dev-python/argparse dev-python/jsonrpclib dev-python/netifaces dev-python/python-evdev dev-python/pyyaml dev-python/setproctitle dev-python/unittest2 dev-util/stressapptest chromeos-base/chromeos-factory-board >=chromeos-base/vpd-0.0.1-r11 >=app-admin/eselect-python-20091230
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-binary	d00656722dea3e7b4f43470d7043070a	cros-workon	f2196417b4b7371018b88ca95b9d7b9e	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=24a981c9f2c00c046201aecad21c0ede
+_md5_=11c4e04dba194776f5951ea1945e99cd
