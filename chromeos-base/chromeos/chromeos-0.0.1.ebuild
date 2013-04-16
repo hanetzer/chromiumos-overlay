@@ -107,6 +107,7 @@ CROS_COMMON_RDEPEND="
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/linux-sources
+	virtual/modutils
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
@@ -228,7 +229,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/flashrom
 	sys-apps/grep
 	sys-apps/mawk
-	sys-apps/module-init-tools
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pv
