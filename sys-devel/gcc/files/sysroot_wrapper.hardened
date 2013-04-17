@@ -106,6 +106,7 @@ else:
   gcc_to_clang = {
     '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
     '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
+    '-Wno-unused-but-set-variable': '-Wno-unused-variable',
   }
 
   # If these options are specified, do not run clang, even if -clang is
