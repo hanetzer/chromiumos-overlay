@@ -104,6 +104,7 @@ CROS_COMMON_RDEPEND="
 	net-misc/tlsdate
 	sys-apps/baselayout
 	sys-libs/timezone-data
+	sys-process/procps
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/linux-sources
@@ -243,7 +244,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	sys-process/lsof
-	sys-process/procps
 "
 
 # Build time dependencies
