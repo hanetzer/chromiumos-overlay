@@ -103,6 +103,10 @@ CROS_COMMON_RDEPEND="
 	net-firewall/iptables
 	net-misc/tlsdate
 	sys-apps/baselayout
+	sys-apps/coreutils
+	sys-apps/grep
+	sys-apps/net-tools
+	sys-apps/sed
 	sys-libs/timezone-data
 	sys-process/procps
 	virtual/chromeos-bsp
@@ -224,17 +228,13 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/marvell_sd8787
 	net-wireless/realtek-rt2800-firmware
 	sys-apps/bootcache
-	sys-apps/coreutils
 	sys-apps/dbus
 	sys-apps/eject
 	sys-apps/flashrom
-	sys-apps/grep
 	sys-apps/mawk
 	sys-apps/mosys
-	sys-apps/net-tools
 	sys-apps/pv
 	sys-apps/rootdev
-	sys-apps/sed
 	sys-apps/shadow
 	sys-apps/upstart
 	sys-apps/ureadahead
