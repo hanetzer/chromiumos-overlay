@@ -13,8 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
-RDEPEND="x11-libs/libX11
-	media-gfx/imagemagick"
+RDEPEND="x11-libs/libX11"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
