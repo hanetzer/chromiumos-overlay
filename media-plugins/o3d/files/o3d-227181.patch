@@ -25,14 +25,15 @@
    //   ElementArray of elements in this shape.
 --- o3d/core/cross/shape.cc	(revision 193397)
 +++ o3d/core/cross/shape.cc	(working copy)
-@@ -44,6 +44,14 @@
+@@ -44,6 +44,15 @@
      : ParamObject(service_locator) {
  }
  
 +Shape::~Shape() {
++  ElementRefArray copy(elements_.begin(), elements_.end());
 +  // Unregister any Elements that might think they own us.
-+  ElementRefArray::iterator iter, end = elements_.end();
-+  for (iter = elements_.begin(); iter != end; ++iter) {
++  ElementRefArray::iterator iter, end = copy.end();
++  for (iter = copy.begin(); iter != end; ++iter) {
 +    iter->Get()->SetOwner(0);
 +  }
 +}
