@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_embedded opengl X"
+IUSE="bluetooth cros_embedded opengl X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -34,6 +34,7 @@ IUSE="cros_embedded opengl X"
 
 CROS_COMMON_RDEPEND="
 	app-crypt/nss
+	bluetooth? ( net-wireless/bluez-hcidump )
 	chromeos-base/chromeos-dev-init
 	chromeos-base/gmerge
 	net-misc/openssh
