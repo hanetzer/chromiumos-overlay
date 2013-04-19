@@ -34,11 +34,6 @@ set_build_env() {
 	# Allow building for boards that don't have an EC
 	# (so we can compile test on bots for testing).
 	export EC_BOARD=$(usev bds || get_current_board_with_variant)
-	if [[ ! -d board/${EC_BOARD} ]] ; then
-		ewarn "Sorry, ${EC_BOARD} not supported; doing build-test with BOARD=bds"
-		EC_BOARD=bds
-	fi
-
 	# FIXME: hack to separate BOARD= used by EC Makefile and Portage,
 	# crosbug.com/p/10377
 	if use snow; then
@@ -47,17 +42,22 @@ set_build_env() {
 	# If building for spring hack in spring, must happen after snow due
 	# to hirearchy of current overlays.
 	if use spring; then
-		ewarn "USE=spring detected; overriding EC_BOARD=spring"
 		EC_BOARD=spring
 	fi
 	if use peach_pit; then
 		EC_BOARD=pit
 	fi
-
+	if [[ ! -d board/${EC_BOARD} ]] ; then
+		ewarn "Sorry, ${EC_BOARD} not supported; doing build-test with BOARD=bds"
+		EC_BOARD=bds
+	else
+		elog "Building for board ${EC_BOARD}"
+	fi
 }
 
 src_compile() {
 	set_build_env
+	BOARD=${EC_BOARD} emake clean
 	BOARD=${EC_BOARD} emake all
 
 	EXTRA_ARGS="out=build/${EC_BOARD}_shifted "
