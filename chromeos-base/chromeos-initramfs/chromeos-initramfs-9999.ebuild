@@ -161,6 +161,7 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/chromeos-common.sh
 	idobin /usr/sbin/netboot_postinst.sh
 	idobin /usr/sbin/chromeos-install
+	idobin /usr/sbin/ping_shopfloor.sh
 	cp "${SYSROOT}"/usr/share/misc/shflags "${INITRAMFS_TMP_S}"/usr/share/misc
 
 	# Binaries used by factory installer

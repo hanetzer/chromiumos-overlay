@@ -73,6 +73,7 @@ src_install() {
 	doexe factory_install.sh
 	doexe factory_reset.sh
 	doexe netboot_postinst.sh
+	doexe ping_shopfloor.sh
 
 	insinto /root
 	newins $FILESDIR/dot.factory_installer .factory_installer
