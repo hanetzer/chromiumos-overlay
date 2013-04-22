@@ -8,5 +8,5 @@ KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/chromeos-disableecho !<chromeos-base/shill-0.0.1-r805 chromeos-base/vboot_reference chromeos-base/vpd net-firewall/iptables[ipv6] sys-apps/chvt sys-apps/smartmontools sys-apps/upstart
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	f2196417b4b7371018b88ca95b9d7b9e	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	2a0a929a8680a7812d274afa57bcdc14	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=b2d7d5e32cf104a2e4f88f19ad229d77
