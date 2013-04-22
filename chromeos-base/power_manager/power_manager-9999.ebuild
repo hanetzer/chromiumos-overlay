@@ -84,6 +84,7 @@ src_install() {
 	fperms 4750 /usr/bin/powerd_setuid_helper
 
 	# Scripts
+	dobin scripts/activate_short_dark_resume
 	dobin scripts/debug_sleep_quickly
 	dobin scripts/powerd_suspend
 	dobin scripts/send_metrics_on_resume
