@@ -62,6 +62,7 @@ ALL_BOARDS=(
 	puppy
 	raspberrypi
 	ricochet
+	slippy
 	sonic
 	stout
 	stout32
