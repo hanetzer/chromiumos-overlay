@@ -129,7 +129,7 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
-IUSE="cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
+IUSE="cros_host cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
 
 inherit git-2 flag-o-matic toolchain-funcs
 
@@ -502,13 +502,18 @@ cros-workon_src_configure() {
 	else
 		default
 	fi
-	local p
-	for p in "${CROS_WORKON_PROJECT[@]}"; do
-		if [[ ${p} == chromiumos/platform/* ]]; then
-			append-flags -clang
-			break
-		fi
-	done
+
+	if ! use cros_host; then
+		# For target board packages, build with -clang.  This is a flag our
+		# compiler wrapper uses, not the real gcc.
+		local p
+		for p in "${CROS_WORKON_PROJECT[@]}"; do
+			if [[ ${p} == chromiumos/platform/* ]]; then
+				append-flags -clang
+				break
+			fi
+		done
+	fi
 }
 
 cw_emake() {
