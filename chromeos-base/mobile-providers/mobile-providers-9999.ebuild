@@ -1,4 +1,7 @@
-EAPI="2"
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/mobile-broadband-provider-info"
 
 inherit autotools cros-workon
@@ -29,20 +32,15 @@ src_configure() {
 src_compile() {
 	xmllint --valid --noout serviceproviders.xml || \
 		die "XML document is not well-formed or is not valid"
-	emake clean-generic || die "emake clean failed"
-	emake || die "emake failed"
+	emake clean-generic
+	emake
 }
 
 src_test() {
-	emake check || die "building tests failed"
+	emake check
 	if use x86 || use amd64 ; then
 		gtester --verbose src/mobile_provider_unittest
 	else
 		echo "Skipping tests on non-x86 platform..."
 	fi
-}
-
-src_install() {
-	emake DESTDIR="${D}" install || die "emake install failed"
-	dodoc NEWS README || die "dodoc failed"
 }
