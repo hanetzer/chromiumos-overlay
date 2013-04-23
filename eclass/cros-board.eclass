@@ -58,6 +58,7 @@ ALL_BOARDS=(
 	parrot
 	peach
 	peach_pit
+	peppy
 	puppy
 	raspberrypi
 	ricochet
