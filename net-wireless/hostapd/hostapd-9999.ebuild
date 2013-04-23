@@ -15,7 +15,7 @@ HOMEPAGE="http://hostap.epitest.fi"
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="ipv6 logwatch madwifi +ssl +wps"
+IUSE="ipv6 logwatch madwifi +ssl +wps weak_urandom_low_security"
 
 DEPEND="ssl? ( dev-libs/openssl )
 	dev-libs/libnl:0
@@ -94,7 +94,12 @@ src_configure() {
 	echo "CONFIG_RSN_PREAUTH=y" >> ${CONFIG}
 	echo "CONFIG_DEBUG_FILE=y" >> ${CONFIG}
 
-	# TODO: Add support for BSD drivers
+	if use weak_urandom_low_security; then
+		ewarn "hostapd is being configured to use a weak random"
+		ewarn "number generator.  You should not use this in a"
+		ewarn "production environment!"
+		echo "CONFIG_WEAK_URANDOM_LOW_SECURITY=y" >> ${CONFIG}
+	fi
 
 	default_src_configure
 }
