@@ -1,4 +1,4 @@
-From e93b7d904540f70a38b2aa3a0a0e6945729f7be1 Mon Sep 17 00:00:00 2001
+From 5be5f24995393d2b848abcf0b2de26291ff6e859 Mon Sep 17 00:00:00 2001
 From: Alex Deymo <deymo@chromium.org>
 Date: Wed, 20 Mar 2013 20:38:35 -0700
 Subject: [PATCH 4/8] core: retry bonding attempt until the iterator reachs the
@@ -16,17 +16,17 @@ next call to the same function) in the pincode callback list. This
 effectively allows a plugin try different pincodes for the same device
 during the same bonding.
 ---
- src/adapter.c | 90 ++++++++++++++++++++++++++++++++++++++++++++++++++---------
+ src/adapter.c | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++---------
  src/adapter.h |  3 ++
  src/device.c  | 46 ++++++++++++++++++++++++++++--
  src/device.h  |  2 ++
- 4 files changed, 126 insertions(+), 15 deletions(-)
+ 4 files changed, 127 insertions(+), 15 deletions(-)
 
 diff --git a/src/adapter.c b/src/adapter.c
-index 29d5606..145133c 100644
+index 29d5606..b54f18e 100644
 --- a/src/adapter.c
 +++ b/src/adapter.c
-@@ -4960,6 +4960,44 @@ static void bonding_complete(struct btd_adapter *adapter,
+@@ -4960,6 +4960,45 @@ static void bonding_complete(struct btd_adapter *adapter,
  	check_oob_bonding_complete(adapter, bdaddr, status);
  }
  
@@ -61,7 +61,8 @@ index 29d5606..145133c 100644
 +	}
 +
 +	/* Ignore disconnects during retry. */
-+	if (status == MGMT_STATUS_DISCONNECTED && device_is_retrying(device))
++	if (status == MGMT_STATUS_DISCONNECTED &&
++					device && device_is_retrying(device))
 +		return;
 +
 +	/* In any other case, finish the bonding. */
@@ -71,7 +72,7 @@ index 29d5606..145133c 100644
  struct pair_device_data {
  	struct btd_adapter *adapter;
  	bdaddr_t bdaddr;
-@@ -5013,7 +5051,7 @@ static void pair_device_complete(uint8_t status, uint16_t length,
+@@ -5013,7 +5052,7 @@ static void pair_device_complete(uint8_t status, uint16_t length,
  		error("Pair device failed: %s (0x%02x)",
  						mgmt_errstr(status), status);
  
@@ -80,7 +81,7 @@ index 29d5606..145133c 100644
  						data->addr_type, status);
  		return;
  	}
-@@ -5023,17 +5061,13 @@ static void pair_device_complete(uint8_t status, uint16_t length,
+@@ -5023,17 +5062,13 @@ static void pair_device_complete(uint8_t status, uint16_t length,
  		return;
  	}
  
@@ -100,7 +101,7 @@ index 29d5606..145133c 100644
  	if (adapter->pair_device_id > 0) {
  		error("Unable pair since another pairing is in progress");
  		return -EBUSY;
-@@ -5041,6 +5075,18 @@ int adapter_create_bonding(struct btd_adapter *adapter, const bdaddr_t *bdaddr,
+@@ -5041,6 +5076,18 @@ int adapter_create_bonding(struct btd_adapter *adapter, const bdaddr_t *bdaddr,
  
  	suspend_discovery(adapter);
  
@@ -119,7 +120,7 @@ index 29d5606..145133c 100644
  	ba2str(bdaddr, addr);
  	DBG("hci%u bdaddr %s type %d io_cap 0x%02x",
  				adapter->dev_id, addr, addr_type, io_cap);
-@@ -5093,7 +5139,7 @@ static void dev_disconnected(struct btd_adapter *adapter,
+@@ -5093,7 +5140,7 @@ static void dev_disconnected(struct btd_adapter *adapter,
  	if (device)
  		adapter_remove_connection(adapter, device);
  
@@ -128,7 +129,7 @@ index 29d5606..145133c 100644
  						MGMT_STATUS_DISCONNECTED);
  }
  
-@@ -5147,7 +5193,8 @@ static void auth_failed_callback(uint16_t index, uint16_t length,
+@@ -5147,7 +5194,8 @@ static void auth_failed_callback(uint16_t index, uint16_t length,
  		return;
  	}
  
@@ -138,7 +139,7 @@ index 29d5606..145133c 100644
  }
  
  static void store_link_key(struct btd_adapter *adapter,
-@@ -5747,14 +5794,31 @@ static void connect_failed_callback(uint16_t index, uint16_t length,
+@@ -5747,14 +5795,31 @@ static void connect_failed_callback(uint16_t index, uint16_t length,
  
  	device = adapter_find_device(adapter, &ev->addr.bdaddr);
  	if (device) {
@@ -268,5 +269,5 @@ index 61a294b..f81721a 100644
  int device_request_passkey(struct btd_device *device);
  int device_confirm_passkey(struct btd_device *device, uint32_t passkey,
 -- 
-1.8.1.3
+1.8.2.1
 
