@@ -31,6 +31,7 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
+	+tests_login_MultiUserPolicy
 	+tests_login_OwnershipApi
 	+tests_login_OwnershipNotRetaken
 	+tests_login_OwnershipRetaken
