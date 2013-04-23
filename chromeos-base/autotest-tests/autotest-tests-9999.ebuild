@@ -137,6 +137,7 @@ IUSE_TESTS="
 	+tests_hardware_SAT
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
+	+tests_hardware_TouchScreenPowerCycles
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TPMCheck
 	tests_hardware_TPMFirmware
