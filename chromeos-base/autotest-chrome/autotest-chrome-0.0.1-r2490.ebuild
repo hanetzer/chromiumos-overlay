@@ -56,6 +56,7 @@ IUSE_TESTS=(
 	 tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_WebRTC
+	+tests_desktopui_WebRtcBrowserTest
 	+tests_video_VideoDecodeAcceleration
 	+tests_video_VideoSanity
 	+tests_video_YouTubeHTML5
