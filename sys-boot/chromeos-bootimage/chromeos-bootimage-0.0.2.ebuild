@@ -74,7 +74,7 @@ build_image() {
 	# Bash stuff to turn '/path/to/exynos-5250-snow.dts' into 'snow'
 	base=$(basename ${fdt_file})
 	board=${base%%.dts}
-	board=${board##*-}
+	board=${board#*-}
 
 	if use exynos; then
 		# This is an exynos platform, let's add the appropriate image
