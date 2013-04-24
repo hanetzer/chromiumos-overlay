@@ -105,8 +105,11 @@ CROS_COMMON_RDEPEND="
 	sys-apps/baselayout
 	sys-apps/coreutils
 	sys-apps/grep
+	sys-apps/mawk
 	sys-apps/net-tools
 	sys-apps/sed
+	sys-apps/util-linux
+	sys-apps/which
 	sys-libs/timezone-data
 	sys-process/procps
 	virtual/chromeos-bsp
@@ -231,15 +234,12 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/dbus
 	sys-apps/eject
 	sys-apps/flashrom
-	sys-apps/mawk
 	sys-apps/mosys
 	sys-apps/pv
 	sys-apps/rootdev
 	sys-apps/shadow
 	sys-apps/upstart
 	sys-apps/ureadahead
-	sys-apps/util-linux
-	sys-apps/which
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
