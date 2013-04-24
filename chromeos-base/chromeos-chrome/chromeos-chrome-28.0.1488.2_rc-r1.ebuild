@@ -26,6 +26,12 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
+# Do not strip the nacl_helper_bootstrap binary because the binutils
+# objcopy/strip mangles the ELF program headers.
+# TODO(mcgrathr,vapier): This should be removed after portage's prepstrip
+# script is changed to use eu-strip instead of objcopy and strip.
+STRIP_MASK="*/nacl_helper_bootstrap"
+
 # pgo_generate and pgo_use are mutually exclusive.
 REQUIRED_USE="
 	pgo_generate? ( !pgo_use )
