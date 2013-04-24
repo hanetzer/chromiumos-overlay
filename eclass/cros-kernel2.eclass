@@ -553,7 +553,7 @@ cros-kernel2_src_compile() {
 	local build_targets=()  # use make default target
 	if use arm; then
 		build_targets=(
-			"zImage"
+			$(use device_tree && echo "zImage")
 			$(use device_tree || echo "uImage")
 			$(cros_chkconfig_present MODULES && echo "modules")
 		)
