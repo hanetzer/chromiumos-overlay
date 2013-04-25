@@ -26,8 +26,13 @@ DEPEND_X86="
 	sys-apps/coreboot-utils
 	"
 
+DEPEND_ARM="
+	sys-apps/coreboot-utils
+	"
+
 DEPEND="x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
+	arm? ($DEPEND_ARM)
 	"
 
 # @ECLASS-VARIABLE: COREBOOT_BOARD
@@ -100,7 +105,9 @@ cros-coreboot_src_install() {
 		configs/config.${COREBOOT_BOARD} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
 		configs/config.${COREBOOT_BOARD} ).rom
-	newins ${OPROM} ${CBFSOPROM}
+	if [[ -n "${OPROM}" ]]; then
+		newins ${OPROM} ${CBFSOPROM}
+	fi
 }
 
 EXPORT_FUNCTIONS src_compile src_install pre_src_prepare
