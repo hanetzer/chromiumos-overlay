@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit eutils toolchain-funcs cros-workon
+inherit eutils toolchain-funcs multiprocessing cros-workon
 
 DESCRIPTION="GNU GRUB 2 boot loader"
 HOMEPAGE="http://www.gnu.org/software/grub/"
@@ -26,12 +26,13 @@ CROS_WORKON_LOCALNAME="grub2"
 
 src_configure() {
 	local target
+	multijob_init
 	for target in i386 x86_64 ; do
 		local program_prefix=
 		[[ ${target} != "x86_64" ]] && program_prefix=${target}-
 		mkdir -p ${target}-build
 		pushd ${target}-build >/dev/null
-		ECONF_SOURCE="${S}" econf \
+		ECONF_SOURCE="${S}" multijob_child_init econf \
 			--disable-werror \
 			--disable-grub-mkfont \
 			--disable-grub-fstest \
@@ -44,14 +45,20 @@ src_configure() {
 			--program-prefix=${program_prefix}
 		popd >/dev/null
 	done
+	multijob_finish
 }
 
 src_compile() {
-	emake -C i386-build -j1 COMMON_LDFLAGS='-Wl,-melf_i386 -nostdlib'
-	emake -C x86_64-build -j1
+	multijob_init
+	multijob_child_init emake -C i386-build -j1 \
+		COMMON_LDFLAGS='-Wl,-melf_i386 -nostdlib'
+	multijob_child_init emake -C x86_64-build -j1
+	multijob_finish
 }
 
 src_install() {
-	emake -C i386-build DESTDIR="${D}" install
-	emake -C x86_64-build DESTDIR="${D}" install
+	multijob_init
+	multijob_child_init emake -C i386-build DESTDIR="${D}" install
+	multijob_child_init emake -C x86_64-build DESTDIR="${D}" install
+	multijob_finish
 }
