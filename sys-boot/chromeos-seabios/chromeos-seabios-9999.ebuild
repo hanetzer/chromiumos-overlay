@@ -36,7 +36,7 @@ create_seabios_cbfs() {
 	# Create a dummy bootblock to make cbfstool happy
 	dd if=/dev/zero of=$bootblock count=1 bs=64
 	# Create empty CBFS
-	cbfstool ${seabios_cbfs} create -s ${cbfs_size} -B $bootblock
+	cbfstool ${seabios_cbfs} create -s ${cbfs_size} -B $bootblock -m x86
 	# Clean up
 	rm $bootblock
 	# Add SeaBIOS binary to CBFS
