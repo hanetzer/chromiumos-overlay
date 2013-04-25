@@ -16,10 +16,13 @@ IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge unified_de
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
+COREBOOT_DEPEND="
+	virtual/chromeos-coreboot
+	sys-apps/coreboot-utils
+"
 X86_DEPEND="
-	       virtual/chromeos-coreboot
-	       sys-apps/coreboot-utils
-	       sys-boot/chromeos-seabios
+	${COREBOOT_DEPEND}
+	sys-boot/chromeos-seabios
 "
 DEPEND="
 	exynos? ( sys-boot/exynos-pre-boot )
@@ -31,7 +34,7 @@ DEPEND="
 	chromeos-base/vboot_reference
 	sys-boot/chromeos-bmpblk
 	memtest? ( sys-boot/chromeos-memtest )
-	depthcharge? ( sys-boot/depthcharge )
+	depthcharge? ( ${COREBOOT_DEPEND} sys-boot/depthcharge )
 	"
 
 S=${WORKDIR}
