@@ -14,7 +14,7 @@ DEPEND="sys-apps/debianutils
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
 "
 
-IUSE="-device_tree -kernel_sources -wireless34"
+IUSE="-device_tree -kernel_sources -wireless34 -wifi_testbed_ap"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
@@ -48,6 +48,7 @@ CONFIG_FRAGMENTS=(
 	systemtap
 	tpm
 	vfat
+	wifi_testbed_ap
 	x32
 )
 
@@ -197,6 +198,16 @@ systemtap_desc="systemtap support"
 systemtap_config="
 CONFIG_KPROBES=y
 CONFIG_DEBUG_INFO=y
+"
+
+wifi_testbed_ap_desc="Defer ath9k EEPROM regulatory"
+wifi_testbed_ap_warning="
+Don't use the wifi_testbed_ap flag unless you know what you are doing!
+An image built with this flag set must never be run outside a
+sealed RF chamber!
+"
+wifi_testbed_ap_config="
+CONFIG_ATH_DEFER_EEPROM_REGULATORY=y
 "
 
 x32_desc="x32 ABI support"
@@ -476,6 +487,11 @@ cros-kernel2_src_configure() {
 		local msg="${fragment}_desc"
 		local config="${fragment}_config"
 		elog "   - adding ${!msg} config"
+		local warning="${fragment}_warning"
+		local warning_msg="${!warning}"
+		if [[ -n "${warning_msg}" ]] ; then
+			ewarn "${warning_msg}"
+		fi
 
 		echo "${!config}" | \
 			sed -e "s|%ROOT%|${ROOT}|g" \
