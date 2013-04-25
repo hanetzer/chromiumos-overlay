@@ -20,28 +20,38 @@ DEPEND="${RDEPEND}
 	dev-lang/ruby"
 PROVIDE="virtual/bootloader"
 
-export STRIP_MASK="*/grub/*/*.mod"
+export STRIP_MASK="*/*grub/*/*.mod"
 
 CROS_WORKON_LOCALNAME="grub2"
 
 src_configure() {
-	econf \
-		--disable-werror \
-		--disable-grub-mkfont \
-		--disable-grub-fstest \
-		--disable-efiemu \
-		--sbindir=/sbin \
-		--bindir=/bin \
-		--libdir=/$(get_libdir) \
-		--with-platform=efi \
-		--target=x86_64 \
-		--program-prefix=
+	local target
+	for target in i386 x86_64 ; do
+		local program_prefix=
+		[[ ${target} != "x86_64" ]] && program_prefix=${target}-
+		mkdir -p ${target}-build
+		pushd ${target}-build >/dev/null
+		ECONF_SOURCE="${S}" econf \
+			--disable-werror \
+			--disable-grub-mkfont \
+			--disable-grub-fstest \
+			--disable-efiemu \
+			--sbindir=/sbin \
+			--bindir=/bin \
+			--libdir=/$(get_libdir) \
+			--with-platform=efi \
+			--target=${target} \
+			--program-prefix=${program_prefix}
+		popd >/dev/null
+	done
 }
 
 src_compile() {
-	emake -j1
+	emake -C i386-build -j1 COMMON_LDFLAGS='-Wl,-melf_i386 -nostdlib'
+	emake -C x86_64-build -j1
 }
 
 src_install() {
-	emake DESTDIR="${D}" install
+	emake -C i386-build DESTDIR="${D}" install
+	emake -C x86_64-build DESTDIR="${D}" install
 }
