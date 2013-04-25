@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="2"
+EAPI="4"
 
 inherit eutils toolchain-funcs cros-workon
 
@@ -39,9 +39,9 @@ src_configure() {
 }
 
 src_compile() {
-	emake -j1 || die "${SRCPATH} compile failed."
+	emake -j1
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
+	emake DESTDIR="${D}" install
 }
