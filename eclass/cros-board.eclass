@@ -44,6 +44,7 @@ ALL_BOARDS=(
 	daisy_snow
 	dalmore
 	emeraldlake2
+	falco
 	fb1
 	fox
 	fox_baskingridge
