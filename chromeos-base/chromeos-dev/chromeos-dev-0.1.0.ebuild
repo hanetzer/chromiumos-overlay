@@ -34,6 +34,7 @@ IUSE="cros_embedded opengl X"
 
 CROS_COMMON_RDEPEND="
 	app-crypt/nss
+	app-shells/bash
 	chromeos-base/chromeos-dev-init
 	chromeos-base/gmerge
 	net-misc/openssh
@@ -94,7 +95,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-editors/vim
 	app-misc/evtest
 	app-misc/screen
-	app-shells/bash
 	chromeos-base/shill-test-scripts
 	chromeos-base/protofiles
 	chromeos-base/system_api
