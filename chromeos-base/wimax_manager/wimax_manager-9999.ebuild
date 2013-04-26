@@ -66,6 +66,10 @@ src_install() {
 	# Install daemon executable.
 	dosbin "${OUT}"/wimax-manager
 
+	# Install WiMAX Manager default config file.
+	insinto /usr/share/wimax-manager
+	doins default.conf
+
 	# Install upstart config file.
 	insinto /etc/init
 	doins wimax_manager.conf
