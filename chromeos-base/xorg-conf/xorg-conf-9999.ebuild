@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="alex butterfly cmt -egl elan -exynos mario stout synaptics -tegra"
 
-RDEPEND=""
+RDEPEND="!chromeos-base/touchpad-linearity"
 DEPEND="x11-base/xorg-server"
 
 src_install() {
@@ -79,4 +79,12 @@ src_install() {
 	fi
 	doins 20-mouse.conf
 	doins 20-touchscreen.conf
+
+	insinto "/usr/share/gestures"
+	case ${board} in
+	lumpy|lumpy64)
+		doins "files/lumpy_linearity.dat" ;;
+	daisy)
+		doins "files/daisy_linearity.dat" ;;
+	esac
 }
