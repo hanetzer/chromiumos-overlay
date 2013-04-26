@@ -21,6 +21,7 @@ DEPEND="${RDEPEND}
 
 src_compile() {
 	local makeargs=
+	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 
 	pushd tools/perf
 
@@ -34,6 +35,7 @@ src_compile() {
 	fi
 
 	emake ${makeargs} \
+		ARCH=${kernel_arch} \
 		CC="$(tc-getCC)" AR="$(tc-getAR)" \
 		prefix="/usr" bindir_relative="sbin" \
 		CFLAGS="${CFLAGS}" \
