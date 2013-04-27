@@ -51,7 +51,9 @@ DEPEND="x86? ($DEPEND_X86)
 cros-coreboot_pre_src_prepare() {
 	cp configs/config.${COREBOOT_BOARD} .config
 	rm -rf 3rdparty
-	cp -pPR "${FILESDIR}"/3rdparty ./ || die
+	if [[ -d "${FILESDIR}"/3rdparty ]]; then
+		cp -pPR "${FILESDIR}"/3rdparty ./ || die
+	fi
 }
 
 cros-coreboot_src_compile() {
