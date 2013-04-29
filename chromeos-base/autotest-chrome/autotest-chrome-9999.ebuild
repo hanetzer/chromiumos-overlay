@@ -31,7 +31,7 @@ IUSE_TESTS=(
 
 	# Uses chrome_test dependency.
 	+tests_audiovideo_FFMPEG
-        +tests_audiovideo_VDA
+	+tests_audiovideo_VDA
 
 	# Inherits from cros_ui_test.
 	+tests_desktopui_BrowserTest

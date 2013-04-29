@@ -33,6 +33,7 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS=(
 	# Tests that depend on telemetry
 	+tests_telemetry_LoginTest
+	+tests_video_VideoDecodeMemoryUsage
 )
 
 IUSE="${IUSE} ${IUSE_TESTS[*]}"
