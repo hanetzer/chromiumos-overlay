@@ -161,11 +161,18 @@ env['CCFLAGS'] += ['-fPIC',
                    '-Wall',
                    '-Werror',
                    '-Wno-psabi',
-                   '-Wno-c++11-extensions',
                    '-DOS_CHROMEOS=1',
                    '-DTOOLKIT_VIEWS=1',
                    '-DUSE_AURA=1',
                    '-I..']
+
+# Flags for clang taken from build/common.gypi in the clang==1 section.
+CLANG_FLAGS = (
+  '-Wno-c++11-extensions',
+  '-Wno-char-subscripts',
+)
+
+env['CCFLAGS'] += ['-Xclang-only=%s' % x for x in CLANG_FLAGS]
 
 # Fix issue with scons not passing some vars through the environment.
 for key in Split('PKG_CONFIG SYSROOT'):
