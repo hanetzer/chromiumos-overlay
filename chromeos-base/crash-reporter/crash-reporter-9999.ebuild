@@ -29,7 +29,8 @@ RDEPEND="chromeos-base/google-breakpad
          test? ( dev-cpp/gtest )
          net-misc/curl
          sys-apps/findutils"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+        sys-devel/flex"
 
 src_prepare() {
 	cros-workon_src_prepare
@@ -63,6 +64,7 @@ src_install() {
 	dosbin crash_sender
 	into /usr
 	dobin "${OUT}"/list_proxies
+	dobin "${OUT}"/warn_collector
 	insinto /etc
 	doins crash_reporter_logs.conf
 

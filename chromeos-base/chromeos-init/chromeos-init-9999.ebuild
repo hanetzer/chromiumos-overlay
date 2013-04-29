@@ -19,14 +19,17 @@ IUSE="nfs"
 DEPEND=""
 # vpd for vpd-log.conf of upstart
 # vboot_reference for crossystem
-RDEPEND="chromeos-base/chromeos-disableecho
+RDEPEND="
+	chromeos-base/crash-reporter
+	chromeos-base/chromeos-disableecho
 	!<chromeos-base/shill-0.0.1-r805
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	net-firewall/iptables[ipv6]
 	sys-apps/chvt
 	sys-apps/smartmontools
-	sys-apps/upstart"
+	sys-apps/upstart
+"
 
 src_install() {
 	into /	# We want /sbin, not /usr/sbin, etc.
