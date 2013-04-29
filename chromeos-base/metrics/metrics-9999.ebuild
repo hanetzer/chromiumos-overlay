@@ -26,6 +26,7 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	sys-apps/rootdev
 	"
 DEPEND="${RDEPEND}
+	chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
 	"
