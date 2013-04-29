@@ -72,13 +72,17 @@ src_install() {
 	dobin powerd/powerd
 	dobin powerd/powerd_setuid_helper
 	dobin tools/backlight_dbus_tool
-	dobin tools/backlight-tool
+	dobin tools/backlight_tool
 	dobin tools/memory_suspend_test
 	dobin tools/powerd_dbus_suspend
-	dobin tools/power-supply-info
+	dobin tools/power_supply_info
 	dobin tools/set_power_policy
 	dobin tools/suspend_delay_sample
 	popd >/dev/null
+
+	# Install symlinks for legacy names with hyphens instead of underscores.
+	dosym backlight_tool /usr/bin/backlight-tool
+	dosym power_supply_info /usr/bin/power-supply-info
 
 	fowners root:power /usr/bin/powerd_setuid_helper
 	fperms 4750 /usr/bin/powerd_setuid_helper
