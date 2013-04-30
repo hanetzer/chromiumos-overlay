@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r2.ebuild,v 1.1 2010/12/13 00:35:03 flameeyes Exp $
 
-EAPI=2
+EAPI=4
 
 inherit eutils toolchain-funcs flag-o-matic
 
@@ -21,22 +21,12 @@ RDEPEND="app-arch/bzip2
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-	epatch ${FILESDIR}/4.3_bspatch-support-input-output-positioning.patch || die
-	epatch ${FILESDIR}/4.3_bsdiff-divsufsort.patch || die
+	epatch "${FILESDIR}"/${PV}_bspatch-extent-files.patch
+	epatch "${FILESDIR}"/${PV}_bsdiff-divsufsort.patch
+	epatch "${FILESDIR}"/${PV}_makefile.patch
 }
 
-doecho() {
-	echo "$@"
-	"$@"
-}
-
-src_compile() {
+src_configure() {
 	append-lfs-flags
-	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bsdiff bsdiff.c -lbz2 -ldivsufsort64 || die "failed compiling bsdiff"
-	doecho $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} -o bspatch bspatch.c -lbz2 || die "failed compiling bspatch"
-}
-
-src_install() {
-	dobin bs{diff,patch} || die
-	doman bs{diff,patch}.1 || die
+        tc-export CC
 }

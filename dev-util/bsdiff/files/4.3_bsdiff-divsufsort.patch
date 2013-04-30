@@ -1,7 +1,47 @@
-diff -urN bsdiff-4.3/bsdiff.c bsdiff-4.3-new/bsdiff.c
---- bsdiff-4.3/bsdiff.c	2005-08-16 15:13:52.000000000 -0700
-+++ bsdiff-4.3-new/bsdiff.c	2012-03-28 17:17:04.000000000 -0700
-@@ -38,106 +38,15 @@
+Make bsdiff use libdivsufsort + tiny / cosmetic fixes.
+--- bsdiff.1
++++ bsdiff.1
+@@ -33,20 +33,21 @@
+ .Nd generate a patch between two binary files
+ .Sh SYNOPSIS
+ .Nm
+-.Ao Ar oldfile Ac Ao Ar newfile Ac Ao Ar patchfile Ac
++.Ar oldfile newfile patchfile
+ .Sh DESCRIPTION
+ .Nm
+ compares
+-.Ao Ar oldfile Ac
++.Ar oldfile
+ to
+-.Ao Ar newfile Ac
++.Ar newfile
+ and writes to
+-.Ao Ar patchfile Ac
+-a binary patch suitable for use by bspatch(1).
++.Ar patchfile
++a binary patch suitable for use by
++.Xr bspatch 1 .
+ When
+-.Ao Ar oldfile Ac
++.Ar oldfile
+ and
+-.Ao Ar newfile Ac
++.Ar newfile
+ are two versions of an executable program, the
+ patches produced are on average a factor of five smaller
+ than those produced by any other binary patch tool known
+@@ -54,7 +55,7 @@ to the author.
+ .Pp
+ .Nm
+ uses memory equal to 17 times the size of 
+-.Ao Ar oldfile Ac ,
++.Ar oldfile ,
+ and requires
+ an absolute minimum working set size of 8 times the size of oldfile.
+ .Sh SEE ALSO
+--- bsdiff.c
++++ bsdiff.c
+@@ -38,106 +38,15 @@ __FBSDID("$FreeBSD: src/usr.bin/bsdiff/bsdiff/bsdiff.c,v 1.1 2005/08/06 01:59:05
  #include <string.h>
  #include <unistd.h>
  
@@ -72,14 +112,7 @@ diff -urN bsdiff-4.3/bsdiff.c bsdiff-4.3-new/bsdiff.c
 -{
 -	off_t buckets[256];
 -	off_t i,h,len;
-+#if _FILE_OFFSET_BITS == 64
-+#include "divsufsort64.h"
-+#define saidx_t saidx64_t
-+#define divsufsort divsufsort64
-+#else
-+#include "divsufsort.h"
-+#endif
- 
+-
 -	for(i=0;i<256;i++) buckets[i]=0;
 -	for(i=0;i<oldsize;i++) buckets[old[i]]++;
 -	for(i=1;i<256;i++) buckets[i]+=buckets[i-1];
@@ -109,14 +142,30 @@ diff -urN bsdiff-4.3/bsdiff.c bsdiff-4.3-new/bsdiff.c
 -		};
 -		if(len) I[i-len]=-len;
 -	};
--
++#if _FILE_OFFSET_BITS == 64
++#include "divsufsort64.h"
++#define saidx_t saidx64_t
++#define divsufsort divsufsort64
++#else
++#include "divsufsort.h"
++#endif
+ 
 -	for(i=0;i<oldsize+1;i++) I[V[i]]=i;
 -}
 +#define MIN(x,y) (((x)<(y)) ? (x) : (y))
  
  static off_t matchlen(u_char *old,off_t oldsize,u_char *new,off_t newsize)
  {
-@@ -168,7 +77,7 @@
+@@ -149,7 +58,7 @@ static off_t matchlen(u_char *old,off_t oldsize,u_char *new,off_t newsize)
+ 	return i;
+ }
+ 
+-static off_t search(off_t *I,u_char *old,off_t oldsize,
++static off_t search(saidx_t *I,u_char *old,off_t oldsize,
+ 		u_char *new,off_t newsize,off_t st,off_t en,off_t *pos)
+ {
+ 	off_t x,y;
+@@ -168,7 +77,7 @@ static off_t search(off_t *I,u_char *old,off_t oldsize,
  	};
  
  	x=st+(en-st)/2;
@@ -125,31 +174,33 @@ diff -urN bsdiff-4.3/bsdiff.c bsdiff-4.3-new/bsdiff.c
  		return search(I,old,oldsize,new,newsize,x,en,pos);
  	} else {
  		return search(I,old,oldsize,new,newsize,st,x,pos);
-@@ -198,7 +107,7 @@
+@@ -198,8 +107,8 @@ int main(int argc,char *argv[])
  	int fd;
  	u_char *old,*new;
  	off_t oldsize,newsize;
 -	off_t *I,*V;
+-	off_t scan,pos,len;
 +	saidx_t *I;
- 	off_t scan,pos,len;
++	off_t scan,pos=0,len;
  	off_t lastscan,lastpos,lastoffset;
  	off_t oldscore,scsc;
-@@ -224,12 +133,9 @@
+ 	off_t s,Sf,lenf,Sb,lenb;
+@@ -224,12 +133,9 @@ int main(int argc,char *argv[])
  		(read(fd,old,oldsize)!=oldsize) ||
  		(close(fd)==-1)) err(1,"%s",argv[1]);
  
 -	if(((I=malloc((oldsize+1)*sizeof(off_t)))==NULL) ||
 -		((V=malloc((oldsize+1)*sizeof(off_t)))==NULL)) err(1,NULL);
+-
+-	qsufsort(I,V,old,oldsize);
 +	if(((I=malloc((oldsize+1)*sizeof(saidx_t)))==NULL)) err(1,NULL);
  
--	qsufsort(I,V,old,oldsize);
--
 -	free(V);
 +	if(divsufsort(old, I, oldsize)) err(1, "divsufsort");
  
  	/* Allocate newsize+1 bytes instead of newsize bytes to ensure
  		that we never try to malloc(0) and get a NULL pointer */
-@@ -274,7 +180,17 @@
+@@ -274,7 +180,17 @@ int main(int argc,char *argv[])
  	while(scan<newsize) {
  		oldscore=0;
  
@@ -167,7 +218,7 @@ diff -urN bsdiff-4.3/bsdiff.c bsdiff-4.3-new/bsdiff.c
  			len=search(I,old,oldsize,new+scan,newsize-scan,
  					0,oldsize,&pos);
  
-@@ -289,6 +205,17 @@
+@@ -289,6 +205,17 @@ int main(int argc,char *argv[])
  			if((scan+lastoffset<oldsize) &&
  				(old[scan+lastoffset] == new[scan]))
  				oldscore--;
