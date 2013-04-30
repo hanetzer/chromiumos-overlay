@@ -59,6 +59,7 @@ src_compile() {
 	set_build_env
 	BOARD=${EC_BOARD} emake clean
 	BOARD=${EC_BOARD} emake all
+	BOARD=${EC_BOARD} emake tests
 
 	EXTRA_ARGS="out=build/${EC_BOARD}_shifted "
 	EXTRA_ARGS+="EXTRA_CFLAGS=\"-DSHIFT_CODE_FOR_TEST\""
@@ -73,6 +74,12 @@ src_install() {
 	doins build/${EC_BOARD}/ec.RW.bin
 	newins build/${EC_BOARD}/ec.RO.flat ec.RO.bin
 	newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
+	# EC test binaries
+	if ls build/${EC_BOARD}/test-*.bin &>/dev/null ; then
+		doins build/${EC_BOARD}/test-*.bin
+	else
+		ewarn "No test binaries found"
+	fi
 	# Intermediate files for debugging
 	doins build/${EC_BOARD}/ec.*.elf
 	# Utilities
