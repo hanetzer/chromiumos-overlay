@@ -8,7 +8,7 @@ DESCRIPTION="The Mozc engine for IME extension API"
 HOMEPAGE="http://code.google.com/p/mozc"
 S="${WORKDIR}"
 SRC_URI="!internal? ( http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nacl-mozc-${PV}.tgz )
-internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.10.1391.4.tgz )"
+internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.10.1400.4.tgz )"
 
 LICENSE="BSD"
 IUSE="internal"
@@ -34,7 +34,7 @@ src_prepare() {
 	# The key is used to execute NaCl Mozc as a component extension.
 	if use internal; then
 		# NaCl Mozc is handled as id:fpfbhcjppmaeaijcidgiibchfbnhbelj.
-		epatch "${FILESDIR}"/nacl-mozc-1.10.1391.4-insert-internal-public-key.patch
+		epatch "${FILESDIR}"/nacl-mozc-1.10.1400.4-insert-internal-public-key.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
