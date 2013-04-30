@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="fd0eb11bd350489e616892ddf40866f93eb739dd"
-CROS_WORKON_TREE="0b04a0907fe4edb5240ae831211fede597ac9fe3"
+CROS_WORKON_COMMIT="af654c6d51e76d057e30d9cf1efc2f2034ef067a"
+CROS_WORKON_TREE="016e508b6966e396f081e609d5fa1401781d4344"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
 
 inherit cros-debug cros-workon
@@ -28,6 +28,7 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	sys-apps/rootdev
 	"
 DEPEND="${RDEPEND}
+	chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
 	"
