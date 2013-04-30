@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="a18d9dea9fb4e1e9b0f4527313bfd8ac8b972122"
-CROS_WORKON_TREE="230201844dbc6602c88f49eed429636d34809984"
+CROS_WORKON_COMMIT="67e35d8aefb7838cc30f425ebf9e6558643b68d9"
+CROS_WORKON_TREE="7c95bf800b86f98729871dcef6b0bf041d5e2a1e"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -74,13 +74,17 @@ src_install() {
 	dobin powerd/powerd
 	dobin powerd/powerd_setuid_helper
 	dobin tools/backlight_dbus_tool
-	dobin tools/backlight-tool
+	dobin tools/backlight_tool
 	dobin tools/memory_suspend_test
 	dobin tools/powerd_dbus_suspend
-	dobin tools/power-supply-info
+	dobin tools/power_supply_info
 	dobin tools/set_power_policy
 	dobin tools/suspend_delay_sample
 	popd >/dev/null
+
+	# Install symlinks for legacy names with hyphens instead of underscores.
+	dosym backlight_tool /usr/bin/backlight-tool
+	dosym power_supply_info /usr/bin/power-supply-info
 
 	fowners root:power /usr/bin/powerd_setuid_helper
 	fperms 4750 /usr/bin/powerd_setuid_helper
