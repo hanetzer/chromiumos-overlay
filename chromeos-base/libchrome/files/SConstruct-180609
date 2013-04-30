@@ -85,6 +85,7 @@ base_libs = [
                 third_party/nspr/prtime.cc
                 threading/non_thread_safe_impl.cc
                 threading/platform_thread_posix.cc
+                threading/simple_thread.cc
                 threading/thread_checker_impl.cc
                 threading/thread_collision_warner.cc
                 threading/thread_id_name_manager.cc
