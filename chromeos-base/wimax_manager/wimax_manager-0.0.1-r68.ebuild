@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="b9f4689969f00db7946d285573bf9453f119944b"
-CROS_WORKON_TREE="0e2c70c6bbc458e0e1ef5b2c11b6bdaf8b056e4a"
+CROS_WORKON_COMMIT="a29db58141a1346d6bb95e00ede2d7795a10a9ff"
+CROS_WORKON_TREE="62e9e413f5017a6842af246a08d428fd267e1f8b"
 CROS_WORKON_PROJECT="chromiumos/platform/wimax_manager"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -67,6 +67,10 @@ src_install() {
 
 	# Install daemon executable.
 	dosbin "${OUT}"/wimax-manager
+
+	# Install WiMAX Manager default config file.
+	insinto /usr/share/wimax-manager
+	doins default.conf
 
 	# Install upstart config file.
 	insinto /etc/init
