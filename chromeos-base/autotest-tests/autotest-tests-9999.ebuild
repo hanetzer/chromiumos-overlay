@@ -189,6 +189,7 @@ IUSE_TESTS="
 	+tests_network_EthernetStressPlug
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_LockedSIM
+	+tests_network_LTEActivate
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
 	+tests_network_NegotiatedLANSpeed
