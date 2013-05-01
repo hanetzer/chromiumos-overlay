@@ -3,8 +3,8 @@
 # found in the LICENSE.makefile file.
 
 EAPI="4"
-CROS_WORKON_COMMIT="312b884c42f5f6a6177e416f5b812b1556ac195f"
-CROS_WORKON_TREE="70aabd3227bcc84f5c90fe725cc9ef52797e10a7"
+CROS_WORKON_COMMIT="24c8610c7f11fcb4c4d37593a5f5475ec8459044"
+CROS_WORKON_TREE="4fcafd8508f821912e0dc8765daed598f6689886"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
@@ -61,6 +61,7 @@ src_compile() {
 	set_build_env
 	BOARD=${EC_BOARD} emake clean
 	BOARD=${EC_BOARD} emake all
+	BOARD=${EC_BOARD} emake tests
 
 	EXTRA_ARGS="out=build/${EC_BOARD}_shifted "
 	EXTRA_ARGS+="EXTRA_CFLAGS=\"-DSHIFT_CODE_FOR_TEST\""
@@ -75,6 +76,12 @@ src_install() {
 	doins build/${EC_BOARD}/ec.RW.bin
 	newins build/${EC_BOARD}/ec.RO.flat ec.RO.bin
 	newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
+	# EC test binaries
+	if ls build/${EC_BOARD}/test-*.bin &>/dev/null ; then
+		doins build/${EC_BOARD}/test-*.bin
+	else
+		ewarn "No test binaries found"
+	fi
 	# Intermediate files for debugging
 	doins build/${EC_BOARD}/ec.*.elf
 	# Utilities
