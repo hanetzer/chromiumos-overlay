@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="bluetooth bootchart bootimage coreboot cros_ec cros_embedded gdmwimax
-	opengles X"
+	mtd opengles X"
 
 ################################################################################
 #
@@ -111,6 +111,7 @@ CROS_COMMON_RDEPEND="
 	sys-apps/util-linux
 	sys-apps/which
 	sys-libs/timezone-data
+	mtd? ( sys-fs/mtd-utils )
 	sys-process/procps
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
