@@ -69,10 +69,6 @@ src_prepare() {
 	# user.
 	epatch "${FILESDIR}/${PN}-sdp-path.patch"
 
-	# Automatic pairing of dumb devices. Not yet submitted upstream
-	# so kept as a separate patch on top of the above series.
-	#epatch "${FILESDIR}/${PN}-autopair.patch"
-
 	# Playstation3 Controller pairing plugin, retrieved from
 	# linux-bluetooth mailing list (posted 2012-04-18).
 	#epatch "${FILESDIR}/${P}-ps3-0001.patch"
@@ -86,7 +82,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-persist-powered.patch"
 
 	# Connectability properties exported on the new Input1 interface.
-	# Submitted upstream. Not yet accepted after several iterations upstream.
+	# Accepted upstream, can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-hid-0001-input-Documentation-for-new-Input1-interface.patch"
 	epatch "${FILESDIR}/${P}-hid-0002-input-Implement-the-new-ReconnectMode-Input1-propert.patch"
 
@@ -104,8 +100,13 @@ src_prepare() {
 
 	# Automatic reconnect to HID devices when they come back in range.
 	# Also fix a memory leak on the input profile.
+	# Accepted upstream, can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-input-0001-input-Fix-memory-leak-for-hidp_connadd_req.patch"
 	epatch "${FILESDIR}/${P}-input-0002-input-Automatically-attempt-a-reconnect-when-require.patch"
+
+	# Fix an issue while disconnecting audio devices.
+	# Submitted upstream, not decided.
+	epatch "${FILESDIR}/${P}-audio-audio-Don-t-create-an-avctp-session-on-avrcp-disconn.patch"
 
 	eautoreconf
 
