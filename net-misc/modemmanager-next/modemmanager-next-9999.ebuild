@@ -5,7 +5,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 
-inherit eutils autotools cros-workon
+inherit eutils autotools cros-workon flag-o-matic
 
 # ModemManager likes itself with capital letters
 MY_P=${P/modemmanager/ModemManager}
@@ -44,6 +44,7 @@ src_prepare() {
 }
 
 src_configure() {
+        append-flags -Xclang-only=-Wno-unneeded-internal-declaration
 	econf \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
 		$(use_with doc docs) \
