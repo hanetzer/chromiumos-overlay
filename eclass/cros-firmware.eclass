@@ -30,6 +30,10 @@ inherit cros-workon cros-binary
 # @DESCRIPTION: (Optional) Location of RW system firmware image
 : ${CROS_FIRMWARE_MAIN_RW_IMAGE:=}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE
+# @DESCRIPTION: (Optional) Re-sign and generate a RW system firmware image.
+: ${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE:=}
+
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_IMAGE
 # @DESCRIPTION: (Optional) Location of EC firmware image
 : ${CROS_FIRMWARE_EC_IMAGE:=}
@@ -394,6 +398,8 @@ cros-firmware_src_compile() {
 	image_cmd+="$(_add_param -e "${EC_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -w "${FW_RW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
+	image_cmd+="$(_add_bool_param --create_bios_rw_image \
+		      "${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}")"
 
 	# Prepare extra commands
 	ext_cmd+="$(_add_bool_param --unstable "${CROS_FIRMWARE_UNSTABLE}")"
