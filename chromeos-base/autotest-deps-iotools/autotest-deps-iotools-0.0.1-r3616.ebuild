@@ -1,19 +1,20 @@
-# Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="2a501596a0b76d4c281810d5bf9b6ff8e112ee0a"
-CROS_WORKON_TREE="bb952c4442cd0dccba60f73bf63e9e838dfbdd3a"
+CROS_WORKON_COMMIT="9fa7c63da6ca34e79f952beda8fecde0b87548fa"
+CROS_WORKON_TREE="e0c5c3b385855c19acbfd95fa2b767388d5df790"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
-inherit cros-workon autotest-deponly
+CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
+inherit cros-workon autotest-deponly conflict
 
-DESCRIPTION="Autotest audioloop dep"
+DESCRIPTION="Autotest iotools dep"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="x86 arm amd64"
 
 # Autotest enabled by default.
 IUSE="+autotest"
@@ -21,15 +22,10 @@ IUSE="+autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-AUTOTEST_DEPS_LIST="audioloop"
+AUTOTEST_DEPS_LIST="iotools"
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
-
-# deps/audioloop
-RDEPEND="${RDEPEND}
-	media-libs/alsa-lib
-	media-sound/adhd"
 
 DEPEND="${RDEPEND}"
 
