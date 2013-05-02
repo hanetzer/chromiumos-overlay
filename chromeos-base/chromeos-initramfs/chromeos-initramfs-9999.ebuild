@@ -279,7 +279,7 @@ build_initramfs_file() {
 	# The kernel emake expects the file in cpio format.
 	( cd "${INITRAMFS_TMP_S}"
 	  find . | cpio -o -H newc |
-		xz -9 --check=crc32 --lzma2=dict=512KiB > \
+		xz -9 --check=crc32 > \
 		"${WORKDIR}/${INITRAMFS_FILE}" ) ||
 		die "cannot package initramfs"
 }
