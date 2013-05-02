@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare setup unpack
+DEPEND=chromeos-base/autotest-tests chromeos-base/autotest-chrome chromeos-base/chromeos-chrome chromeos-base/telemetry dev-vcs/git
+DESCRIPTION=Autotest tests that require telemetry
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +tests_telemetry_LoginTest cros_host cros_workon_tree_5ece5db2eaefa20d230f148fc6a3869871de460f profiling +buildcheck autotest opengles
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=chromeos-base/autotest-tests chromeos-base/autotest-chrome chromeos-base/chromeos-chrome chromeos-base/telemetry ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	534125295770b6401a8180bb518da0e9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	f06dc57981a1a3617acd3921d176dc70	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=7604448edf2405fa0e8a5ff4096825cc
