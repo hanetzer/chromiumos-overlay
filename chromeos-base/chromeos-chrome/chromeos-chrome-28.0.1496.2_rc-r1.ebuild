@@ -228,6 +228,18 @@ set_build_defines() {
 		)
 	fi
 
+	# Add proper CFLAGS when -clang is in CFLAGS and not use clang.
+	# Flags for clang taken from build/common.gypi in the clang==1 section.
+	if  is-flag -clang && ! use clang ; then
+		CLANG_FLAGS=(
+			'-Wno-c++11-extensions'
+			'-Wno-char-subscripts'
+			'-Wno-unused-function'
+			'-Wno-unnamed-type-template-args'
+		)
+		RELEASE_EXTRA_CFLAGS+=" ${CLANG_FLAGS[*]/#/-Xclang-only=}"
+	fi
+
 	# Set proper BUILD_DEFINES for the arch
 	case "${ARCH}" in
 	x86)
