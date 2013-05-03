@@ -24,6 +24,7 @@ RDEPEND="chromeos-base/chromeos-minijail
 	dev-libs/dbus-c++
 	dev-libs/glib:2
 	dev-libs/libpcre
+	net-libs/libpcap
 	sys-apps/memtester
 	sys-apps/smartmontools"
 DEPEND="${RDEPEND}
@@ -47,12 +48,14 @@ src_install() {
 	dosbin debugd
 	dodir /debugd
 	exeinto /usr/libexec/debugd/helpers
+	doexe helpers/capture_packets
 	doexe helpers/icmp
 	doexe helpers/netif
 	doexe helpers/modem_status
 	doexe "${S}"/src/helpers/minijail-setuid-hack.sh
 	doexe "${S}"/src/helpers/send_at_command.sh
 	doexe "${S}"/src/helpers/systrace.sh
+	doexe "${S}"/src/helpers/capture_utility.sh
 	doexe helpers/network_status
 
 	insinto /etc/dbus-1/system.d
