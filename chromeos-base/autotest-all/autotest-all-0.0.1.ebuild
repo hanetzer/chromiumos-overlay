@@ -18,7 +18,6 @@ RDEPEND="
 	chromeos-base/autotest-chrome
 	chromeos-base/autotest-factory
 	chromeos-base/autotest-private
-	chromeos-base/autotest-telemetry
 "
 
 DEPEND="${RDEPEND}"

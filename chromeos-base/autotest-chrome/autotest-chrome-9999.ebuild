@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
-DESCRIPTION="Autotest tests that require chrome_test or pyauto deps"
+DESCRIPTION="Autotest tests that require chrome_test, pyauto, or Telemetry deps"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -17,9 +17,11 @@ KEYWORDS="~x86 ~arm ~amd64"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="
+	!chromeos-base/autotest-telemetry
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts
+	chromeos-base/telemetry
 	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
 
@@ -32,6 +34,11 @@ IUSE_TESTS=(
 	# Uses chrome_test dependency.
 	+tests_audiovideo_FFMPEG
 	+tests_audiovideo_VDA
+
+	# Tests that depend on telemetry.
+	+tests_login_CryptohomeMountedTelemetry
+	+tests_telemetry_LoginTest
+	+tests_video_VideoDecodeMemoryUsage
 
 	# Inherits from cros_ui_test.
 	+tests_desktopui_BrowserTest
@@ -121,6 +128,13 @@ AUTOTEST_CONFIG_LIST=""
 AUTOTEST_PROFILERS_LIST=""
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+src_prepare() {
+	# Telemetry tests require the path to telemetry source to exist in order to
+	# build.
+	export PYTHONPATH="${SYSROOT}/usr/local/telemetry/src/tools/telemetry"
+	autotest_src_prepare
+}
 
 src_configure() {
 	cros-workon_src_configure
