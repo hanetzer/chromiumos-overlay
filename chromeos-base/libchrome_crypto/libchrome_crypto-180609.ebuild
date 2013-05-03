@@ -31,6 +31,7 @@ src_prepare() {
 	ln -s "${S}" "${WORKDIR}/crypto" &> /dev/null
 	cp -p "${FILESDIR}/SConstruct" "${S}" || die
 	epatch "${FILESDIR}/memory_annotation.patch"
+	epatch "${FILESDIR}/rsa_private_key_add_create_from_keypair.patch"
 }
 
 src_compile() {
