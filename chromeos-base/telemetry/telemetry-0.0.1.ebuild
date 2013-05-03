@@ -13,7 +13,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 
 # Ensure the telemetry dep tarball is created already.
-DEPEND="chromeos-base/autotest-chrome"
+DEPEND="chromeos-base/chromeos-chrome"
 RDEPEND=""
 
 S=${WORKDIR}
