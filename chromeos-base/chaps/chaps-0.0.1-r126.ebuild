@@ -3,8 +3,8 @@
 # found in the LICENSE.makefile file.
 
 EAPI="4"
-CROS_WORKON_COMMIT="c129cd4ded05c3759ba7ec6f0b0a0b2c543e49dc"
-CROS_WORKON_TREE="20034f9646d6072f93e3e28f784efc4204f368de"
+CROS_WORKON_COMMIT="38e705c7ae25e8f41b2468531a844d1934c6d937"
+CROS_WORKON_TREE="d77b06dc8eb9ae2a967ae449a7284149359efaf3"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -73,6 +73,7 @@ src_install() {
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
 	doins login_event_client.h
+	doins isolate.h
 	doins chaps_proxy_mock.h
 	doins chaps_interface.h
 	doins chaps.h
