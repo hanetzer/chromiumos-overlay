@@ -21,6 +21,7 @@ RDEPEND="app-emulation/qemu-kvm
 	app-shells/bash
 	chromeos-base/cros-devutils
 	dev-util/crosutils
+	dev-python/django
 	"
 
 # These are all either bash / python scripts.  No actual builds DEPS.
