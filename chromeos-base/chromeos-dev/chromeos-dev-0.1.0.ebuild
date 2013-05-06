@@ -57,6 +57,7 @@ CROS_X86_RDEPEND="
 "
 
 CROS_X_RDEPEND="
+	dev-util/apitrace
 	opengl? ( x11-apps/mesa-progs )
 	x11-apps/mtplot
 	x11-apps/xauth
