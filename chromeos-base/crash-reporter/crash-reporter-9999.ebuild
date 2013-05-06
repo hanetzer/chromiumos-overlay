@@ -21,7 +21,8 @@ LIBCHROME_VERS="180609"
 # crash_sender uses sys-apps/findutils (for /usr/bin/find).
 RDEPEND="chromeos-base/google-breakpad
          chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-         chromeos-base/platform2
+         chromeos-base/libchromeos
+         chromeos-base/metrics
          chromeos-base/chromeos-ca-certificates
          dev-cpp/gflags
          dev-libs/libpcre

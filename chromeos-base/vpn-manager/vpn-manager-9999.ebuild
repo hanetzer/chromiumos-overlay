@@ -19,7 +19,7 @@ IUSE=""
 LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	 chromeos-base/platform2
+	 chromeos-base/libchromeos
 	 dev-cpp/gflags
 	 dev-libs/openssl
 	 net-dialup/xl2tpd

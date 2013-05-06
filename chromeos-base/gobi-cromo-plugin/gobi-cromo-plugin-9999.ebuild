@@ -21,7 +21,7 @@ RDEPEND="chromeos-base/cromo
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-cpp/glog
 	dev-libs/dbus-c++
-	chromeos-base/platform2
+	chromeos-base/metrics
 	chromeos-base/gobi3k-sdk
 	|| (
 		!internal? ( chromeos-base/gobi3k-lib-bin )

@@ -97,7 +97,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/screen
 	chromeos-base/shill-test-scripts
 	chromeos-base/protofiles
-	chromeos-base/platform2
+	chromeos-base/system_api
 	dev-lang/python
 	dev-python/dbus-python
 	dev-util/hdctools

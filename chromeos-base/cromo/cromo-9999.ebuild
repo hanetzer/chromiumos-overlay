@@ -26,10 +26,12 @@ RDEPEND="chromeos-base/chromeos-minijail
 	dev-cpp/gflags
 	dev-cpp/glog
 	install_tests? ( dev-cpp/gtest )
-	chromeos-base/platform2
+	chromeos-base/libchromeos
+	chromeos-base/metrics
 "
 
 DEPEND="${RDEPEND}
+	chromeos-base/system_api
 	virtual/modemmanager"
 
 make_flags() {

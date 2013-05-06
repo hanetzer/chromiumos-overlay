@@ -16,7 +16,7 @@ KEYWORDS="~amd64 ~arm ~x86"
 
 LIBCHROME_VERS="180609"
 
-RDEPEND="chromeos-base/platform2
+RDEPEND="chromeos-base/metrics
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/glib
@@ -25,6 +25,8 @@ RDEPEND="chromeos-base/platform2
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libchromeos
+	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 

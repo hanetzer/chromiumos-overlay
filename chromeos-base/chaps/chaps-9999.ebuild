@@ -22,7 +22,7 @@ LIBCHROME_VERS="180609"
 RDEPEND="
 	app-crypt/trousers
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/platform2
+	chromeos-base/libchromeos
 	dev-libs/dbus-c++
 	dev-libs/openssl
 	dev-cpp/gflags"

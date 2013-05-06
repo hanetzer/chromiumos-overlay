@@ -94,7 +94,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-fonts
 	chromeos-base/chromeos-installer
 	chromeos-base/crash-reporter
-	chromeos-base/platform2
+	chromeos-base/metrics
 	chromeos-base/root-certificates
 	chromeos-base/shill
 	chromeos-base/update_engine
@@ -210,6 +210,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-login
+	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
 	chromeos-base/dev-install

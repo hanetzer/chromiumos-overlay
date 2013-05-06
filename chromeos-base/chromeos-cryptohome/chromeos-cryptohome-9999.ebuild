@@ -20,8 +20,9 @@ IUSE="test"
 RDEPEND="
 	app-crypt/trousers
 	chromeos-base/chaps
-	chromeos-base/platform2
+	chromeos-base/libchromeos
 	chromeos-base/libscrypt
+	chromeos-base/metrics
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
@@ -29,10 +30,10 @@ RDEPEND="
 	dev-libs/protobuf
 	sys-apps/keyutils
 	sys-fs/ecryptfs-utils"
-
 DEPEND="
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome:180609[cros-debug=]
+	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	${RDEPEND}"
 
