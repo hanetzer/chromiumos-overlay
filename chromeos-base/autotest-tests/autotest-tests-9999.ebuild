@@ -165,6 +165,7 @@ IUSE_TESTS="
 	+tests_logging_KernelCrash
 	+tests_logging_UserCrash
 	+tests_login_DBusCalls
+	+tests_login_SameSessionTwice
 	+tests_login_SecondFactor
 	+tests_network_3GActivate
 	+tests_network_3GAssociation
