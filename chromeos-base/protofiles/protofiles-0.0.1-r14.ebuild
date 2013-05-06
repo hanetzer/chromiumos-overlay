@@ -9,10 +9,10 @@
 EGIT_REPO_SERVER="http://git.chromium.org"
 EGIT_REPO_URI="${EGIT_REPO_SERVER}/chromium/src/chrome/browser/policy/proto.git"
 EGIT_PROJECT="proto"
-EGIT_COMMIT="250106dd8541e23054b645ee50554ddd5b666072"
+EGIT_COMMIT="ddb256462699b0b8c3323f724832bc59769bf0ec"
 
-EAPI="2"
-inherit git
+EAPI="4"
+inherit git-2
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
 HOMEPAGE="http://chromium.org"
@@ -23,22 +23,11 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-DEPEND="!<=chromeos-base/chromeos-chrome-16.0.886.0_rc-r1
-	!=chromeos-base/chromeos-chrome-16.0.882.0_alpha-r1"
-RDEPEND="${DEPEND}"
-
-src_prepare() {
-	cp "${FILESDIR}"/policy_reader "${S}"
-}
-
 src_install() {
 	insinto /usr/include/proto
-	doins "${S}"/chromeos/*.proto || \
-		die "Can not install chromeos protobuf files."
-	doins "${S}"/cloud/*.proto || \
-		die "Can not install cloud policy protobuf files."
+	doins "${S}"/{chromeos,cloud}/*.proto
 	insinto /usr/share/protofiles
 	doins "${S}"/chromeos/chrome_device_policy.proto
 	doins "${S}"/cloud/device_management_backend.proto
-	dobin "${S}"/policy_reader
+	dobin "${FILESDIR}"/policy_reader
 }
