@@ -1010,7 +1010,15 @@ src_install() {
 		doins "${T}/localaccount"
 	fi
 
-	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/deploy_chrome )
+	# Use the deploy_chrome from the *Chrome* checkout.  The
+	# benefit of doing this is if a new buildspec of Chrome requires a
+	# non-backwards compatible change to deploy_chrome, we can commit the
+	# fix to deploy_chrome without breaking existing Chrome OS release builds,
+	# and then roll the DEPS for chromite in the Chrome checkout.
+	#
+	# Another benefit is each version of Chrome will have the right
+	# corresponding version of deploy_chrome.
+	local cmd=( "${CHROME_ROOT}"/src/third_party/chromite/bin/deploy_chrome )
 	# Disable stripping for now, as deploy_chrome doesn't generate splitdebug files.
 	cmd+=(
 		--board="${BOARD}"
