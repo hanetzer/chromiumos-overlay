@@ -8,7 +8,7 @@
 
 EAPI=4
 
-inherit multilib libtool
+inherit eutils libtool multilib toolchain-funcs
 
 DESCRIPTION="Portable Network Graphics library"
 HOMEPAGE="http://www.libpng.org/"
@@ -17,7 +17,7 @@ SRC_URI="mirror://sourceforge/${PN}/${P}.tar.xz"
 LICENSE="as-is"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips s390 sh sparc x86 ~sparc-fbsd ~x86-fbsd"
-IUSE="static-libs"
+IUSE="pnm2png static-libs"
 
 RDEPEND="sys-libs/zlib
 	!=media-libs/libpng-1.2*:0"
@@ -25,9 +25,24 @@ DEPEND="${RDEPEND}
 	app-arch/xz-utils"
 
 src_prepare() {
+	epatch "${FILESDIR}"/${P}-pnm2png-eof.patch
+	epatch "${FILESDIR}"/${P}-pnm2png-comment-line.patch
+	epatch "${FILESDIR}"/${P}-pnm2png-pbm.patch
+	epatch "${FILESDIR}"/${P}-pnm2png-truncate-get-token.patch
 	elibtoolize
 }
 
 src_configure() {
 	econf $(use_enable static-libs static)
+}
+
+src_compile() {
+	emake
+	use pnm2png &&
+		emake -C contrib/pngminus -f makefile.std pnm2png CC=$(tc-getCC)
+}
+
+src_install() {
+	emake DESTDIR="${D}" install
+	use pnm2png && dobin contrib/pngminus/pnm2png
 }
