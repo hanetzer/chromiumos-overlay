@@ -52,13 +52,7 @@ make_flags() {
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
-	if use clang; then
-		clang-setup-env
-
-		# TODO: remove this flag (crosbug.com/33311)
-		export EXTRA_CXXFLAGS="-Wno-bind-to-temporary-copy"
-	fi
-
+	clang-setup-env
 	emake $(make_flags) shill shims
 }
 
