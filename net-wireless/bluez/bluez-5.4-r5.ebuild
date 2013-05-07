@@ -92,7 +92,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-autopair-0001-core-Convert-the-pincode-callback-to-an-interable-li.patch"
 	epatch "${FILESDIR}/${P}-autopair-0002-plugins-Extend-the-pin-code-callback-with-the-call-n.patch"
 	epatch "${FILESDIR}/${P}-autopair-0003-core-Add-support-for-retrying-a-bonding.patch"
-	epatch "${FILESDIR}/${P}-autopair-0004-core-retry-bonding-attempt-until-the-iterator-reachs.patch"
+	epatch "${FILESDIR}/${P}-autopair-0004-core-retry-bonding-attempt-until-the-iterator-reache.patch"
 	epatch "${FILESDIR}/${P}-autopair-0005-core-Add-device_get_class-to-the-public-interface.patch"
 	epatch "${FILESDIR}/${P}-autopair-0006-autopair-Add-the-autopair-plugin.patch"
 	epatch "${FILESDIR}/${P}-autopair-0007-core-Expose-the-last-bonding-attempt-timeout-on-retr.patch"
