@@ -133,6 +133,7 @@ pull_netboot_ramfs_binary() {
 		find
 		grep
 		gzip
+		head
 		id
 		ifconfig
 		mkdir
