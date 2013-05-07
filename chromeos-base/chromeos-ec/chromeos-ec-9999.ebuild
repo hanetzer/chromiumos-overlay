@@ -86,3 +86,7 @@ src_install() {
 	exeinto /usr/bin
 	doexe build/${EC_BOARD}/util/ectool
 }
+
+src_test() {
+	emake runtests
+}
