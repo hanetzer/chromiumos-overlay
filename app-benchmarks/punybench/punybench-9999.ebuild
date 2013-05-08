@@ -30,6 +30,10 @@ src_compile() {
 	emake BOARD="${PUNYARCH}"
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_install() {
 	emake install BOARD="${PUNYARCH}" DESTDIR="${D}"
 }
