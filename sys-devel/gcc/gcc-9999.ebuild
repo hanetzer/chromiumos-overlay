@@ -306,7 +306,8 @@ src_configure()
 		--mandir=${DATAPATH}/man \
 		--infodir=${DATAPATH}/info \
 		--includedir=$(get_lib_dir)/include \
-		--with-gxx-include-dir=$(get_stdcxx_incdir)
+		--with-gxx-include-dir=$(get_stdcxx_incdir) \
+		--disable-libatomic \
 		--with-python-dir=${DATAPATH#${PREFIX}}/python"
 	confgcc="${confgcc} --host=${CHOST}"
 	confgcc="${confgcc} --target=${CTARGET}"
