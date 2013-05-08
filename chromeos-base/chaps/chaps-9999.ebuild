@@ -62,7 +62,7 @@ src_install() {
 	dolib.so "${OUT}"/libchaps.so
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
-	doins org.chromium.Chaps.conf
+	doins "${OUT}"/org.chromium.Chaps.conf
 	# Install D-Bus service file.
 	insinto /usr/share/dbus-1/services
 	doins org.chromium.Chaps.service
