@@ -40,6 +40,10 @@ DEPEND="dev-cpp/gmock
 	cros_host? ( dev-util/scons )
 	${RDEPEND}"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
