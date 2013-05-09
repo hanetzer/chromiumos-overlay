@@ -43,3 +43,8 @@ src_prepare() {
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
 }
+
+src_configure() {
+	cros-workon_src_configure
+}
+
