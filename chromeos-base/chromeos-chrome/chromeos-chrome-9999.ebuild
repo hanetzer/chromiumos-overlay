@@ -267,7 +267,7 @@ set_build_defines() {
 	fi
 
 	if use chrome_internal; then
-		#Adding chrome branding specific variables and GYP_DEFINES
+		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
@@ -547,7 +547,7 @@ src_prepare() {
 	elog "${CHROME_ROOT} should be set here properly"
 	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
 
-	# We do symlink creation here if appropriate
+	# We do symlink creation here if appropriate.
 	mkdir -p "${CHROME_CACHE_DIR}/src/${BUILD_OUT}"
 	if [[ ! -z "${BUILD_OUT_SYM}" ]]; then
 		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
@@ -557,7 +557,7 @@ src_prepare() {
 	fi
 
 
-	# Apply patches for non-localsource builds
+	# Apply patches for non-localsource builds.
 	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
 		epatch "${PATCHES[@]}"
 	fi
@@ -576,9 +576,8 @@ src_prepare() {
 		einfo "${opt}"
 	done
 
-	# Get credentials to fake home directory so that built chromium
-	# can access Google services.
-	# First check for Chrome credentials.
+	# Get the credentials to fake home directory so that the version of chromium
+	# we build can access Google services. First, check for Chrome credentials.
 	if [[ ! -d google_apis/internal ]]; then
 		# Then look for ChromeOS supplied credentials.
 		local PRIVATE_OVERLAYS_DIR=/home/${WHOAMI}/trunk/src/private-overlays
@@ -639,7 +638,7 @@ src_configure() {
 	fi
 	export GYP_GENERATOR_FLAGS="${build_tool_flags[*]}"
 
-	# TODO(rcui): crosbug.com/20435.  Investigate removal of runhooks
+	# TODO(rcui): crosbug.com/20435. Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
 		if [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
@@ -841,12 +840,12 @@ install_chrome_test_resources() {
 		third_party/WebKit/Tools/Scripts \
 		third_party/WebKit/LayoutTests/http/tests/websocket/tests
 
-	# Add pdf test data
+	# Add the pdf test data if needed.
 	if use chrome_pdf; then
 		install_test_resources "${test_dir}" pdf/test
 	fi
 
-	# Remove test binaries from other platforms
+	# Remove test binaries from other platforms.
 	if [[ -z "${E_MACHINE}" ]]; then
 		echo E_MACHINE not defined!
 	else
@@ -1004,7 +1003,7 @@ src_install() {
 		doins "${T}/profilelocation"
 	fi
 
-	# enable the chromeos local account, if the environment dictates
+	# Enable the chromeos local account, if the environment dictates.
 	if [[ -n "${CHROMEOS_LOCAL_ACCOUNT}" ]]; then
 		echo "${CHROMEOS_LOCAL_ACCOUNT}" > "${T}/localaccount"
 		doins "${T}/localaccount"
