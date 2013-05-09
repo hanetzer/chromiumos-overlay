@@ -105,12 +105,11 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-input-0002-input-Automatically-attempt-a-reconnect-when-require.patch"
 
 	# Fix an issue while disconnecting audio devices.
-	# Submitted upstream, a different version of this fix was proposed and
-	# accepted. This patch can be removed on bluez-5.5
+	# Submitted upstream, accepted. This patch can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-audio-audio-Don-t-create-an-avctp-session-on-avrcp-disconn.patch"
 
 	# Request the device long name if only the short name is known.
-	# Sent upstream, not decided.
+	# Sent upstream, accepted. This patch can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-core-Don-t-update-a-known-long-name-with-a-short-nam.patch"
 
 	eautoreconf

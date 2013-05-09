@@ -1,6 +1,6 @@
-From 393f2cb29464888941e9a3ca73430dba51e0fae0 Mon Sep 17 00:00:00 2001
+From 494cf0967da2c883d855cbd0e1cf6896672a3a4e Mon Sep 17 00:00:00 2001
 From: Alex Deymo <deymo@chromium.org>
-Date: Thu, 2 May 2013 13:50:57 -0700
+Date: Fri, 3 May 2013 12:39:56 +0300
 Subject: [PATCH] audio: Don't create an avctp session on avrcp disconnect
 
 If a paired and connected audio device is disconnected, the
@@ -34,102 +34,32 @@ Steps to reproduce using bluetoothctl:
 The "remove" command succeeds, but bluetoothd does not sends a removal
 signal ([DEL] message) for that device.
 ---
- profiles/audio/avctp.c   | 13 ++++++++-----
- profiles/audio/avctp.h   |  2 +-
- profiles/audio/avrcp.c   |  2 +-
- profiles/audio/control.c |  2 +-
- 4 files changed, 11 insertions(+), 8 deletions(-)
+ profiles/audio/device.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/profiles/audio/avctp.c b/profiles/audio/avctp.c
-index 21aeb6f..c521e22 100644
---- a/profiles/audio/avctp.c
-+++ b/profiles/audio/avctp.c
-@@ -1205,7 +1205,7 @@ static struct avctp *find_session(GSList *list, struct btd_device *device)
- 	return NULL;
- }
+diff --git a/profiles/audio/device.c b/profiles/audio/device.c
+index 907221d..49410a5 100644
+--- a/profiles/audio/device.c
++++ b/profiles/audio/device.c
+@@ -185,7 +185,7 @@ static void disconnect_cb(struct btd_device *btd_dev, gboolean removal,
+ 	device_remove_control_timer(dev);
+ 	device_remove_avdtp_timer(dev);
  
--static struct avctp *avctp_get_internal(struct btd_device *device)
-+static struct avctp *avctp_get_internal(struct btd_device *device, bool create)
- {
- 	struct avctp_server *server;
- 	struct avctp *session;
-@@ -1218,6 +1218,9 @@ static struct avctp *avctp_get_internal(struct btd_device *device)
- 	if (session)
- 		return session;
+-	if (dev->control)
++	if (dev->control && priv->avctp_state != AVCTP_STATE_DISCONNECTED)
+ 		avrcp_disconnect(dev);
  
-+	if (!create)
-+		return NULL;
-+
- 	session = g_new0(struct avctp, 1);
+ 	if (dev->sink && priv->sink_state != SINK_STATE_DISCONNECTED)
+@@ -256,7 +256,8 @@ static void device_sink_cb(struct audio_device *dev,
+ 	case SINK_STATE_DISCONNECTED:
+ 		if (dev->control) {
+ 			device_remove_control_timer(dev);
+-			avrcp_disconnect(dev);
++			if (priv->avctp_state != AVCTP_STATE_DISCONNECTED)
++				avrcp_disconnect(dev);
+ 		}
  
- 	session->server = server;
-@@ -1312,7 +1315,7 @@ static void avctp_confirm_cb(GIOChannel *chan, gpointer data)
- 	if (!device)
- 		return;
- 
--	session = avctp_get_internal(device);
-+	session = avctp_get_internal(device, TRUE);
- 	if (session == NULL)
- 		return;
- 
-@@ -1819,7 +1822,7 @@ struct avctp *avctp_connect(struct audio_device *device)
- 	GError *err = NULL;
- 	GIOChannel *io;
- 
--	session = avctp_get_internal(device->btd_dev);
-+	session = avctp_get_internal(device->btd_dev, TRUE);
- 	if (!session)
- 		return NULL;
- 
-@@ -1892,7 +1895,7 @@ void avctp_disconnect(struct avctp *session)
- 	avctp_set_state(session, AVCTP_STATE_DISCONNECTED);
- }
- 
--struct avctp *avctp_get(struct audio_device *device)
-+struct avctp *avctp_get(struct audio_device *device, bool create)
- {
--	return avctp_get_internal(device->btd_dev);
-+	return avctp_get_internal(device->btd_dev, create);
- }
-diff --git a/profiles/audio/avctp.h b/profiles/audio/avctp.h
-index 648e982..14b0a21 100644
---- a/profiles/audio/avctp.h
-+++ b/profiles/audio/avctp.h
-@@ -116,7 +116,7 @@ int avctp_register(struct btd_adapter *adapter, gboolean master);
- void avctp_unregister(struct btd_adapter *adapter);
- 
- struct avctp *avctp_connect(struct audio_device *device);
--struct avctp *avctp_get(struct audio_device *device);
-+struct avctp *avctp_get(struct audio_device *device, bool create);
- int avctp_connect_browsing(struct avctp *session);
- void avctp_disconnect(struct avctp *session);
- 
-diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
-index 512b018..af5d4ae 100644
---- a/profiles/audio/avrcp.c
-+++ b/profiles/audio/avrcp.c
-@@ -2867,7 +2867,7 @@ void avrcp_disconnect(struct audio_device *dev)
- {
- 	struct avctp *session;
- 
--	session = avctp_get(dev);
-+	session = avctp_get(dev, FALSE);
- 	if (!session)
- 		return;
- 
-diff --git a/profiles/audio/control.c b/profiles/audio/control.c
-index 6086bde..fa7b606 100644
---- a/profiles/audio/control.c
-+++ b/profiles/audio/control.c
-@@ -84,7 +84,7 @@ static void state_changed(struct audio_device *dev, avctp_state_t old_state,
- 		if (control->session)
- 			break;
- 
--		control->session = avctp_get(dev);
-+		control->session = avctp_get(dev, TRUE);
- 
- 		break;
- 	case AVCTP_STATE_CONNECTED:
+ 		device_set_state(dev, AUDIO_STATE_DISCONNECTED);
 -- 
 1.8.2.1
 
