@@ -67,6 +67,10 @@ src_prepare() {
 		"${AUTOTEST_WORK}/global_config.ini"
 }
 
+src_configure() {
+	cros-workon_src_configue
+}
+
 src_install() {
 	insinto /usr/local/autotest
 	doins -r "${AUTOTEST_WORK}"/*
