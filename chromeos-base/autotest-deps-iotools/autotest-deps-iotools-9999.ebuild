@@ -27,3 +27,6 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 DEPEND="${RDEPEND}"
 
+src_configure() {
+cros-workon_src_configure
+}
