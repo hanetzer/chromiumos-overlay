@@ -168,6 +168,7 @@ IUSE_TESTS="
 	+tests_network_3GAssociation
 	+tests_network_3GDisableWhileConnecting
 	+tests_network_3GDisableGobiWhileConnecting
+	+tests_network_3GDisconnectFailure
 	+tests_network_3GDormancyDance
 	+tests_network_3GGobiPorts
 	+tests_network_3GFailedConnect
