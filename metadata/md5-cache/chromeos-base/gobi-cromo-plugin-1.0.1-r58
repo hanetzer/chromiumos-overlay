@@ -2,10 +2,10 @@ DEFINED_PHASES=compile configure info install setup unpack
 DEPEND=chromeos-base/cromo chromeos-base/libchrome:180609[cros-debug=] dev-cpp/glog dev-libs/dbus-c++ chromeos-base/platform2 chromeos-base/gobi3k-sdk || ( !internal? ( chromeos-base/gobi3k-lib-bin ) chromeos-base/gobi3k-lib ) install_tests? ( dev-cpp/gmock dev-cpp/gtest ) dev-cpp/gmock dev-cpp/gtest virtual/modemmanager dev-vcs/git
 DESCRIPTION=Cromo plugin to control Qualcomm Gobi modems
 EAPI=2
-IUSE=install_tests internal cros-debug cros_host cros_workon_tree_ profiling
-KEYWORDS=~amd64 ~arm ~x86
+IUSE=install_tests internal cros-debug cros_host cros_workon_tree_112da6c28fe38503cca109ad6f5e9533fec67659 profiling
+KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/cromo chromeos-base/libchrome:180609[cros-debug=] dev-cpp/glog dev-libs/dbus-c++ chromeos-base/platform2 chromeos-base/gobi3k-sdk || ( !internal? ( chromeos-base/gobi3k-lib-bin ) chromeos-base/gobi3k-lib ) install_tests? ( dev-cpp/gmock dev-cpp/gtest )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	051dbe898c525dcf678621c21f9d08e4	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=4c4f682755aeb38f0b6ba2fb781f93f0
+_md5_=4d5d59d7439f712055343fafbf6b53ca
