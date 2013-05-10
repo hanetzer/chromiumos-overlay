@@ -19,6 +19,10 @@ RDEPEND="!minimal? ( dev-libs/libyaml )
 DEPEND="app-crypt/trousers
 	${RDEPEND}"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 _src_compile_main() {
 	mkdir "${S}"/build-main
 	tc-export CC AR CXX PKG_CONFIG
