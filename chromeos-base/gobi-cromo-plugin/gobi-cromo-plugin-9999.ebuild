@@ -43,6 +43,10 @@ cr_make() {
 		"$@" || die
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CXX LD CC
 	cros-debug-add-NDEBUG
