@@ -186,7 +186,12 @@ IUSE_TESTS="
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_ConnmanPowerStateTracking
+	+tests_network_DefaultProfileCreation
+	+tests_network_DefaultProfileServices
+	+tests_network_DhcpClasslessStaticRoute
 	+tests_network_DhcpNegotiationSuccess
+	+tests_network_DhcpNegotiationTimeout
+	+tests_network_DhcpNonAsciiParameter
 	+tests_network_DhcpRenew
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
@@ -199,6 +204,7 @@ IUSE_TESTS="
 	+tests_network_NegotiatedLANSpeed
 	+tests_network_Ping
 	+tests_network_Portal
+	+tests_network_ShillInitScripts
 	+tests_network_UdevRename
 	+tests_network_WiFiCaps
 	+tests_network_WiFiSmokeTest
