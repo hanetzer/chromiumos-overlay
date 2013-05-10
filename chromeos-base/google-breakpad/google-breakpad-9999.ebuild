@@ -30,6 +30,7 @@ src_prepare() {
 }
 
 src_configure() {
+	cros-workon_src_configure
 	#TODO(raymes): Uprev breakpad so this isn't necessary. See
 	# (crosbug.com/14275).
 	[ "$ARCH" = "arm" ] && append-cflags "-marm" && append-cxxflags "-marm"
