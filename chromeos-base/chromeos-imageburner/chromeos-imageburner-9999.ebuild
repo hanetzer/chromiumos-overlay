@@ -31,6 +31,10 @@ DEPEND="${RDEPEND}
 		dev-cpp/gtest
 	)"
 
+src_configure() {
+        cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
