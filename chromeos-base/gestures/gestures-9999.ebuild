@@ -26,6 +26,10 @@ DEPEND="dev-cpp/gtest
 	x11-libs/libXi
 	${RDEPEND}"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CXX
 	cros-debug-add-NDEBUG
