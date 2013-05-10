@@ -38,6 +38,10 @@ cr_scons() {
 	BASE_VER=${v} escons -C ${v} -Y "${S}" "$@"
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
