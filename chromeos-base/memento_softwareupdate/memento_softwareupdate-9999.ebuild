@@ -25,6 +25,10 @@ RDEPEND="app-arch/gzip
 	sys-apps/coreutils
 	sys-apps/util-linux"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	emake \
 		CXX="$(tc-getCXX)" \
