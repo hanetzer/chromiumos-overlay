@@ -19,6 +19,10 @@ DEPEND=""
 CROS_WORKON_LOCALNAME=../third_party/cypress-tools
 CROS_WORKON_SUBDIR=
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC
 	emake || die "Compile failed"
