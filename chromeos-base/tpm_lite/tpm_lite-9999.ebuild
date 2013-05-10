@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header$
 
-EAPI="2"
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/tpm_lite"
 
 inherit cros-workon autotools
@@ -19,16 +19,20 @@ DEPEND="app-crypt/trousers"
 
 CROS_WORKON_LOCALNAME="tpm_lite"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
-  pushd src
-  tc-export CC CXX LD AR RANLIB NM
-  emake cross USE_TPM_EMULATOR=0 || die emake failed
-  popd
+	pushd src
+	tc-export CC CXX LD AR RANLIB NM
+	emake cross USE_TPM_EMULATOR=0
+	popd
 }
 
 src_install() {
-  pushd src
-  dobin testsuite/tpmtest_*
-  dolib tlcl/libtlcl.a
-  popd
+	pushd src
+	dobin testsuite/tpmtest_*
+	dolib tlcl/libtlcl.a
+	popd
 }
