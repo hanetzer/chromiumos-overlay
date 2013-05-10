@@ -21,6 +21,7 @@ DEPEND="media-libs/libpng
 RDEPEND="${DEPEND}"
 
 src_configure() {
+	cros-workon_src_configure
 	tc-export CC
 	export OUT=$(cros-workon_get_build_dir)
 	export SRC=${S}
