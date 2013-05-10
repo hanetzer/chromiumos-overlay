@@ -30,7 +30,7 @@ src_prepare() {
 src_configure() {
 	econf \
 		$(use_enable static{-libs,}) \
-		$(use_with doc{,s}) \
+		$(use_enable {,gtk-}doc) \
 		$(use_with test{,s})
 }
 
