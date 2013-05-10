@@ -20,5 +20,6 @@ RDEPEND="
 "
 
 src_configure() {
+	cros-workon_src_configure
 	tc-export LD CXX CC OBJCOPY AR
 }
