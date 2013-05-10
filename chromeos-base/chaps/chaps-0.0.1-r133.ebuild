@@ -3,8 +3,8 @@
 # found in the LICENSE.makefile file.
 
 EAPI="4"
-CROS_WORKON_COMMIT="268e8fc2a8475a137822e0d1b9fac10c8f60a50c"
-CROS_WORKON_TREE="c7777c0d7e551b48cc84bd1e6311e5f16935c626"
+CROS_WORKON_COMMIT="3f104bfc59da894873f0e867e8856324e431e834"
+CROS_WORKON_TREE="886fdcb37c44696d9d80e5892991cd055a933e1c"
 CROS_WORKON_PROJECT="chromiumos/platform/chaps"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -64,7 +64,7 @@ src_install() {
 	dolib.so "${OUT}"/libchaps.so
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
-	doins org.chromium.Chaps.conf
+	doins "${OUT}"/org.chromium.Chaps.conf
 	# Install D-Bus service file.
 	insinto /usr/share/dbus-1/services
 	doins org.chromium.Chaps.service
