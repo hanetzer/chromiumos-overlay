@@ -21,6 +21,10 @@ LIBCHROME_VERS="180609"
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
 DEPEND="${RDEPEND}"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
