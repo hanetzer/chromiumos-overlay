@@ -28,6 +28,10 @@ set_board() {
 	fi
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export AR CC RANLIB
 	# In platform/ec Makefile, it uses "CC" to specify target chipset and
