@@ -39,6 +39,10 @@ make_flags() {
 	use install_tests && echo INSTALL_TESTS=1
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CXX AR NM PKG_CONFIG
 	cros-debug-add-NDEBUG
