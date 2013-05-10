@@ -49,6 +49,10 @@ make_flags() {
 	use vpn || echo SHILL_VPN=0
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
