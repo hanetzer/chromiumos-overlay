@@ -24,6 +24,10 @@ RDEPEND="x11-libs/libX11
 
 DEPEND="${RDEPEND}"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC PKG_CONFIG
         append-flags -DUSE_AURA
