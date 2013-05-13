@@ -256,3 +256,9 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
 	"
+
+# Host dependencies for testing factory software
+RDEPEND="${RDEPEND}
+	dev-python/flup
+	dev-python/twisted
+	"
