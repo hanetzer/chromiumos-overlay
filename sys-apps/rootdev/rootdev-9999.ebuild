@@ -14,6 +14,10 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 IUSE=""
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-getCC
 	emake || die
