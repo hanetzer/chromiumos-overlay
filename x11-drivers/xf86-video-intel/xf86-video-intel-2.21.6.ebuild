@@ -45,8 +45,6 @@ PATCHES=(
 	"${FILESDIR}/2.21.2-fix-blt-damage.patch"
 	# Fix fbcon copy
 	"${FILESDIR}/2.21.2-copy-fb.patch"
-	# Don't send 0 for UST when Drawable is not visible
-	"${FILESDIR}/2.21.6-DRI2GetMSC-Do-not-send-a-bogus-ust-for-when-the-draw.patch"
 )
 
 src_prepare() {
