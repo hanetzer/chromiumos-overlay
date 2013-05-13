@@ -23,6 +23,10 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}
 	sys-libs/ncurses"
 DEPEND="${RDEPEND}"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	cd try_touch_experiment
 	tc-export CXX PKG_CONFIG
