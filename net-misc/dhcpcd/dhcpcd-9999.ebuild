@@ -18,7 +18,7 @@ RDEPEND=">=sys-apps/dbus-1.2"
 DEPEND="${RDEPEND}"
 
 src_configure() {
-	econf --prefix= \
+	cros-workon_src_configure --prefix= \
 		--libexecdir=/lib/dhcpcd \
 		--dbdir=/var/lib/dhcpcd \
 		--rundir=/var/run/dhcpcd --
