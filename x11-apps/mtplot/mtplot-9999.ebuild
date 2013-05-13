@@ -19,3 +19,7 @@ DEPEND="${RDEPEND}"
 src_prepare() {
 	eautoreconf
 }
+
+src_configure() {
+	cros-workon_src_configure
+}
