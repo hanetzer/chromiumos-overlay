@@ -27,6 +27,10 @@ RDEPEND=">=dev-embedded/libftdi-0.18
 DEPEND="${RDEPEND}
 	app-text/htmltidy"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC PKG_CONFIG
 	emake || die
