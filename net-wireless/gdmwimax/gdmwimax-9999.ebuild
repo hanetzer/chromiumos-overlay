@@ -26,6 +26,10 @@ src_prepare() {
 	EOF
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	# Do not fortify source. See crosbug.com/p/10133 for details.
 	append-flags -U_FORTIFY_SOURCE
