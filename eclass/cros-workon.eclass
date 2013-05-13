@@ -490,6 +490,12 @@ cros-workon_src_prepare() {
 }
 
 cros-workon_src_configure() {
+	if ! use cros_host && [[ ${CROS_WORKON_CLANG} == "1" ]]; then
+		# For target board packages, build with -clang.  This is a flag our
+		# compiler wrapper uses, not the real gcc.
+		append-flags -clang
+	fi
+
 	if using_common_mk ; then
 		# We somewhat overshoot here, but it isn't harmful,
 		# and catches all the packages we care about.
@@ -508,12 +514,6 @@ cros-workon_src_configure() {
 		fi
 	else
 		default
-	fi
-
-	if ! use cros_host && [[ ${CROS_WORKON_CLANG} == "1" ]]; then
-		# For target board packages, build with -clang.  This is a flag our
-		# compiler wrapper uses, not the real gcc.
-		append-flags -clang
 	fi
 }
 
