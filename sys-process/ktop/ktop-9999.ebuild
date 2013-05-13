@@ -19,6 +19,10 @@ IUSE=""
 
 DEPEND="sys-libs/ncurses"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC
 	emake || die
