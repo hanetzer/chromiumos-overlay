@@ -53,6 +53,10 @@ flashrom_enable() {
 	for u in "$@" ; do _flashrom_enable $u ; done
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	local progs=0
 	local args=""
