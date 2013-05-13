@@ -135,6 +135,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-i915-gallium-release-old-fragment-shader-sampler-views.patch
 	epatch "${FILESDIR}"/9.1-i965-Fix-SNB-GPU-hangs-when-a-blorp-batch-is-the-fir.patch
 	epatch "${FILESDIR}"/9.1-i965-Fix-hangs-on-HSW-since-the-gen6-blorp-fix.patch
+	epatch "${FILESDIR}"/9.1-i965-Enable-the-Bay-Trail-platform.patch
 
 	base_src_prepare
 
