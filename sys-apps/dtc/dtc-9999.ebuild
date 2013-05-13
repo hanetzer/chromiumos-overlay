@@ -20,6 +20,10 @@ RDEPEND=""
 DEPEND="sys-devel/flex
 	sys-devel/bison"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export AR CC
 	emake PREFIX="/usr" LIBDIR="/usr/$(get_libdir)"
