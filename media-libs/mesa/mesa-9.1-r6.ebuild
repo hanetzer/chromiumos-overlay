@@ -120,7 +120,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/9.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
-	epatch "${FILESDIR}"/9.0-i965-Make-sure-we-do-render-between-two-hiz-flushes.patch
 	epatch "${FILESDIR}"/9.1-builtin_function.patch
 	epatch "${FILESDIR}"/9.1-Add-builtin-function-cpp.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
@@ -137,6 +136,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
 	epatch "${FILESDIR}"/9.1-ACTIVE_UNIFORM_MAX_LENGTH-3-extra-chars-for-array.patch
 	epatch "${FILESDIR}"/9.1-i915-gallium-release-old-fragment-shader-sampler-views.patch
+	epatch "${FILESDIR}"/9.1-i965-Fix-SNB-GPU-hangs-when-a-blorp-batch-is-the-fir.patch
+	epatch "${FILESDIR}"/9.1-i965-Fix-hangs-on-HSW-since-the-gen6-blorp-fix.patch
 
 	base_src_prepare
 

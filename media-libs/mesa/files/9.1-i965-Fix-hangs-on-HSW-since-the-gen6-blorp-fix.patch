@@ -1,0 +1,179 @@
+From 5d06c9ea0f1aa2f312660413acd1bd6a1dafe1a6 Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Mon, 6 May 2013 20:44:21 -0700
+Subject: [PATCH] i965: Fix hangs on HSW since the gen6 blorp fix.
+
+The constant packets for gen6 are too small for gen7, and while IVB seems
+happy with them HSW blows up.  Fix it by emitting the correct packets on
+gen7, for all stages.
+
+v2: Include the packets instead of just skipping them.
+NOTE: This is a candidate for the stable branches.
+Reviewed-and-tested-by: Chad Versace <chad.versace@linux.intel.com>
+Reviewed-by: Kenneth Graunke <kenneth@whitecape.org>
+---
+ src/mesa/drivers/dri/i965/gen7_blorp.cpp | 103 ++++++++++++++++++++++++++++++-
+ 1 file changed, 101 insertions(+), 2 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i965/gen7_blorp.cpp b/src/mesa/drivers/dri/i965/gen7_blorp.cpp
+index 1c23866..f55805c 100644
+--- a/src/mesa/drivers/dri/i965/gen7_blorp.cpp
++++ b/src/mesa/drivers/dri/i965/gen7_blorp.cpp
+@@ -276,6 +276,37 @@ gen7_blorp_emit_sampler_state(struct brw_context *brw,
+ }
+ 
+ 
++/* 3DSTATE_VS
++ *
++ * Disable vertex shader.
++ */
++static void
++gen7_blorp_emit_vs_disable(struct brw_context *brw,
++                           const brw_blorp_params *params)
++{
++   struct intel_context *intel = &brw->intel;
++
++   BEGIN_BATCH(7);
++   OUT_BATCH(_3DSTATE_CONSTANT_VS << 16 | (7 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++
++   BEGIN_BATCH(6);
++   OUT_BATCH(_3DSTATE_VS << 16 | (6 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++}
++
++
+ /* 3DSTATE_HS
+  *
+  * Disable the hull shader.
+@@ -287,6 +318,16 @@ gen7_blorp_emit_hs_disable(struct brw_context *brw,
+    struct intel_context *intel = &brw->intel;
+ 
+    BEGIN_BATCH(7);
++   OUT_BATCH(_3DSTATE_CONSTANT_HS << 16 | (7 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++
++   BEGIN_BATCH(7);
+    OUT_BATCH(_3DSTATE_HS << 16 | (7 - 2));
+    OUT_BATCH(0);
+    OUT_BATCH(0);
+@@ -327,6 +368,16 @@ gen7_blorp_emit_ds_disable(struct brw_context *brw,
+ {
+    struct intel_context *intel = &brw->intel;
+ 
++   BEGIN_BATCH(7);
++   OUT_BATCH(_3DSTATE_CONSTANT_DS << 16 | (7 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++
+    BEGIN_BATCH(6);
+    OUT_BATCH(_3DSTATE_DS << 16 | (6 - 2));
+    OUT_BATCH(0);
+@@ -337,6 +388,36 @@ gen7_blorp_emit_ds_disable(struct brw_context *brw,
+    ADVANCE_BATCH();
+ }
+ 
++/* 3DSTATE_GS
++ *
++ * Disable the geometry shader.
++ */
++static void
++gen7_blorp_emit_gs_disable(struct brw_context *brw,
++                           const brw_blorp_params *params)
++{
++   struct intel_context *intel = &brw->intel;
++
++   BEGIN_BATCH(7);
++   OUT_BATCH(_3DSTATE_CONSTANT_GS << 16 | (7 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++
++   BEGIN_BATCH(7);
++   OUT_BATCH(_3DSTATE_GS << 16 | (7 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++}
+ 
+ /* 3DSTATE_STREAMOUT
+  *
+@@ -573,6 +654,22 @@ gen7_blorp_emit_constant_ps(struct brw_context *brw,
+    ADVANCE_BATCH();
+ }
+ 
++static void
++gen7_blorp_emit_constant_ps_disable(struct brw_context *brw,
++                                    const brw_blorp_params *params)
++{
++   struct intel_context *intel = &brw->intel;
++
++   BEGIN_BATCH(7);
++   OUT_BATCH(_3DSTATE_CONSTANT_PS << 16 | (7 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++}
+ 
+ static void
+ gen7_blorp_emit_depth_stencil_config(struct brw_context *brw,
+@@ -784,11 +881,11 @@ gen7_blorp_exec(struct intel_context *intel,
+                                        wm_surf_offset_texture);
+       sampler_offset = gen7_blorp_emit_sampler_state(brw, params);
+    }
+-   gen6_blorp_emit_vs_disable(brw, params);
++   gen7_blorp_emit_vs_disable(brw, params);
+    gen7_blorp_emit_hs_disable(brw, params);
+    gen7_blorp_emit_te_disable(brw, params);
+    gen7_blorp_emit_ds_disable(brw, params);
+-   gen6_blorp_emit_gs_disable(brw, params);
++   gen7_blorp_emit_gs_disable(brw, params);
+    gen7_blorp_emit_streamout_disable(brw, params);
+    gen6_blorp_emit_clip_disable(brw, params);
+    gen7_blorp_emit_sf_config(brw, params);
+@@ -798,6 +895,8 @@ gen7_blorp_exec(struct intel_context *intel,
+                                                 wm_bind_bo_offset);
+       gen7_blorp_emit_sampler_state_pointers_ps(brw, params, sampler_offset);
+       gen7_blorp_emit_constant_ps(brw, params, wm_push_const_offset);
++   } else {
++      gen7_blorp_emit_constant_ps_disable(brw, params);
+    }
+    gen7_blorp_emit_ps_config(brw, params, prog_offset, prog_data);
+    gen7_blorp_emit_cc_viewport(brw, params);
+-- 
+1.8.2.1
+

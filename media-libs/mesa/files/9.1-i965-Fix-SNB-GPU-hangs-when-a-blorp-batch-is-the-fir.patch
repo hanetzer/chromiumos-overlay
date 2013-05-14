@@ -1,0 +1,91 @@
+From 1dfea559c3f188a7a82a4abc09765ba09e939522 Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Wed, 1 May 2013 16:08:12 -0700
+Subject: [PATCH] i965: Fix SNB GPU hangs when a blorp batch is the first thing
+ to execute.
+
+The GPU apparently goes looking for constants even though there are no
+shader stages enabled, and gets stuck because we haven't told it there are
+no constants to collect.  If any other user of the 3D pipeline had run
+(even the Render accel of the X server!) since power on, then the in-GPU
+constant buffers would have been set up with some contents we didn't use,
+and we would succeed.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=56416
+Reviewed-by: Kenneth Graunke <kenneth@whitecape.org>
+Tested-by: Dave Airlie <airlied@redhat.com>
+NOTE: This is a candidate for the stable branches.
+---
+ src/mesa/drivers/dri/i965/gen6_blorp.cpp | 35 ++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/i965/gen6_blorp.cpp b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+index 3e7467e..0ed5bee 100644
+--- a/src/mesa/drivers/dri/i965/gen6_blorp.cpp
++++ b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+@@ -595,6 +595,15 @@ gen6_blorp_emit_vs_disable(struct brw_context *brw,
+       intel_emit_post_sync_nonzero_flush(intel);
+    }
+ 
++   /* Disable the push constant buffers. */
++   BEGIN_BATCH(5);
++   OUT_BATCH(_3DSTATE_CONSTANT_VS << 16 | (5 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++
+    BEGIN_BATCH(6);
+    OUT_BATCH(_3DSTATE_VS << 16 | (6 - 2));
+    OUT_BATCH(0);
+@@ -616,6 +625,15 @@ gen6_blorp_emit_gs_disable(struct brw_context *brw,
+ {
+    struct intel_context *intel = &brw->intel;
+ 
++   /* Disable all the constant buffers. */
++   BEGIN_BATCH(5);
++   OUT_BATCH(_3DSTATE_CONSTANT_GS << 16 | (5 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++
+    BEGIN_BATCH(7);
+    OUT_BATCH(_3DSTATE_GS << 16 | (7 - 2));
+    OUT_BATCH(0);
+@@ -798,6 +816,21 @@ gen6_blorp_emit_constant_ps(struct brw_context *brw,
+    ADVANCE_BATCH();
+ }
+ 
++static void
++gen6_blorp_emit_constant_ps_disable(struct brw_context *brw,
++                                    const brw_blorp_params *params)
++{
++   struct intel_context *intel = &brw->intel;
++
++   /* Disable the push constant buffers. */
++   BEGIN_BATCH(5);
++   OUT_BATCH(_3DSTATE_CONSTANT_PS << 16 | (5 - 2));
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   OUT_BATCH(0);
++   ADVANCE_BATCH();
++}
+ 
+ /**
+  * 3DSTATE_BINDING_TABLE_POINTERS
+@@ -1084,6 +1117,8 @@ gen6_blorp_exec(struct intel_context *intel,
+    gen6_blorp_emit_sf_config(brw, params);
+    if (params->use_wm_prog)
+       gen6_blorp_emit_constant_ps(brw, params, wm_push_const_offset);
++   else
++      gen6_blorp_emit_constant_ps_disable(brw, params);
+    gen6_blorp_emit_wm_config(brw, params, prog_offset, prog_data);
+    if (params->use_wm_prog)
+       gen6_blorp_emit_binding_table_pointers(brw, params, wm_bind_bo_offset);
+-- 
+1.8.2.1
+
