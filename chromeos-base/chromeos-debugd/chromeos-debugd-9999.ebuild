@@ -64,6 +64,11 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/debugd.conf"
 	doins "${FILESDIR}/trace_marker-test.conf"
+
+	insinto /etc/init/perf_commands
+	doins "${FILESDIR}/perf_commands/arm.txt"
+	doins "${FILESDIR}/perf_commands/core.txt"
+	doins "${FILESDIR}/perf_commands/unknown.txt"
 }
 
 src_configure() {
