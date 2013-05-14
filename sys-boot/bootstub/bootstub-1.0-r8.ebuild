@@ -15,6 +15,10 @@ IUSE=""
 CROS_WORKON_PROJECT="chromiumos/third_party/bootstub"
 DEPEND="sys-boot/gnu-efi"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	emake -j1 CC="$(tc-getCC)" LD="$(tc-getLD)" \
               OBJCOPY="$(tc-getPROG OBJCOPY objcopy)" \
