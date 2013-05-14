@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="24beb9976a482c40cf5ad8302dcb2032dd5307d1"
-CROS_WORKON_TREE="5fb06007558b33d9ef22d8f440446630df5c24c1"
+CROS_WORKON_COMMIT="a26c722b0a65556faf59d86d90ada13a2a663feb"
+CROS_WORKON_TREE="a7f0944bf851937ea5d9e77edd475a16ec10b54f"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="../platform/ec"
 
@@ -28,6 +28,10 @@ set_board() {
 		ewarn "${BOARD} does not use Chrome EC. Setting BOARD=bds."
 		BOARD=bds
 	fi
+}
+
+src_configure() {
+	cros-workon_src_configure
 }
 
 src_compile() {

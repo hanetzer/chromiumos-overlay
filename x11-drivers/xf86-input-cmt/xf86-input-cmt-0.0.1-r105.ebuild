@@ -30,6 +30,10 @@ src_prepare() {
 	eautoreconf
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_install() {
 	autotools-utils_src_install
 	remove_libtool_files all
