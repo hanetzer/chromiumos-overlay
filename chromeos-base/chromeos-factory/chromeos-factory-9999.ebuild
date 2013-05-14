@@ -5,14 +5,17 @@ EAPI=4
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
+CROS_WORKON_LOCALNAME="factory"
 
-inherit cros-workon
-inherit cros-binary
-inherit python
+inherit cros-workon python
+
+CLOSURE_LIB_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
+WEBGL_AQUARIUM_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130515.tar.bz2"
 
 DESCRIPTION="Chrome OS Factory Tools and Data"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI=""
+SRC_URI="${CLOSURE_LIB_URI}
+	${WEBGL_AQUARIUM_URI}"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
@@ -35,20 +38,22 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	chromeos-base/chromeos-factory-board
 	>=chromeos-base/vpd-0.0.1-r11"
 
-CROS_WORKON_LOCALNAME="factory"
-
 TARGET_DIR="/usr/local/factory"
 
-CROS_BINARY_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
-CROS_BINARY_SUM="56cebce034fad6a8c1ecf9f159e3310dbb25b331"
 
 src_unpack() {
+	default
 	cros-workon_src_unpack
-	cros-binary_src_unpack
+
+	# Need to remove webgl_aquarium_static/ first because we have a README
+	# file in it.
+	local webgl_aquarium_path="${S}/py/test/pytests/webgl_aquarium_static"
+	rm -rf ${webgl_aquarium_path}
+	mv "${WORKDIR}/webgl_aquarium_static" "${webgl_aquarium_path%/*}" || die
 }
 
 src_compile() {
-	emake CLOSURE_LIB_ARCHIVE="${CROS_BINARY_STORE_DIR}/${CROS_BINARY_URI##*/}"
+	emake CLOSURE_LIB_ARCHIVE="${DISTDIR}/${CLOSURE_LIB_URI##*/}"
 }
 
 src_install() {
