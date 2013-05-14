@@ -512,6 +512,8 @@ cros-workon_src_configure() {
 			# For packages that use libchromeos, set it up automatically.
 			export BASE_VER=${LIBCHROME_VERS}
 		fi
+	elif [[ -x ${ECONF_SOURCE:-.}/configure ]]; then
+		econf "$@"
 	else
 		default
 	fi
