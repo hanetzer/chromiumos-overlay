@@ -3,8 +3,8 @@
 
 EAPI=2
 
-CROS_WORKON_COMMIT="a059101ec8a50baa6f13d35844e13910f6baf167"
-CROS_WORKON_TREE="bfb5a8712813658b24525efbc94c8dc46380afff"
+CROS_WORKON_COMMIT="a3633b1f3ba298fc09e64baa64037b62c2918c31"
+CROS_WORKON_TREE="fccc9cb7f14f908b962606c357c1f2e96062ca8d"
 CROS_WORKON_PROJECT="chromiumos/platform/smogcheck"
 inherit toolchain-funcs cros-debug cros-workon
 

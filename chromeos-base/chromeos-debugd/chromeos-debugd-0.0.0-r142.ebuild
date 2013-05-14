@@ -67,3 +67,7 @@ src_install() {
 	doins "${FILESDIR}/debugd.conf"
 	doins "${FILESDIR}/trace_marker-test.conf"
 }
+
+src_configure() {
+	cros-workon_src_configure
+}
