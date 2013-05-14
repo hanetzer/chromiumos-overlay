@@ -83,6 +83,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/telemetry
 	chromeos-base/touchbot
 	dev-lang/python
+	dev-libs/opensc
 	dev-python/dbus-python
 	dev-python/pygobject
 	dev-python/pygtk
