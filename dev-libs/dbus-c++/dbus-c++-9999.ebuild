@@ -30,7 +30,7 @@ src_prepare() {
 }
 
 src_configure() {
-	econf \
+	cros-workon_src_configure \
 		$(use_enable debug) \
 		$(use_enable doc doxygen-docs) \
 		$(use_enable glib glib)
