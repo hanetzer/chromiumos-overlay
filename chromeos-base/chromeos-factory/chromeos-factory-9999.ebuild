@@ -81,9 +81,6 @@ src_install() {
 		"${D}${TARGET_DIR}/bundle/factory_setup/" || die
 
 	if use autotest && use build_tests; then
-		# For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
-		# install files directly into custom as appropriate.
-		dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
 		# We need to preserve the chromedriver and selenium library
 		# (from chromeos-chrome pyauto test folder which is stripped by default)
 		# for factory test images.
