@@ -26,7 +26,7 @@ src_prepare() {
 }
 
 src_configure() {
-	econf $(use_enable tools)
+	cros-workon_src_configure $(use_enable tools)
 }
 
 src_compile() {
