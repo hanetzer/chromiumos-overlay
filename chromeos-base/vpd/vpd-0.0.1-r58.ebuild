@@ -23,6 +23,10 @@ DEPEND="sys-apps/util-linux"
 RDEPEND="sys-apps/flashrom
 	dev-util/shflags"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC
 	emake all
