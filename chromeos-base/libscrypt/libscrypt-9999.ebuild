@@ -27,7 +27,8 @@ src_prepare() {
 }
 
 src_configure() {
-	econf $(use_enable static-libs static)
+	cros-workon_src_configure \
+		$(use_enable static-libs static)
 }
 
 src_install() {
