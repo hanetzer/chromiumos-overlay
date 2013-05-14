@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/bootstat"
 inherit cros-workon
 
@@ -17,14 +17,17 @@ RDEPEND=""
 
 DEPEND="dev-cpp/gtest"
 
+src_configure() {
+	cros-workon_src_configure
+        tc-export CC CXX AR PKG_CONFIG
+}
+
 src_compile() {
-	tc-export CC CXX AR PKG_CONFIG
-	emake || die "bootstat compile failed."
+	emake
 }
 
 src_test() {
-	tc-export CC CXX AR PKG_CONFIG
-	emake tests || die "could not build tests"
+	emake tests
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
@@ -36,13 +39,13 @@ src_test() {
 
 src_install() {
 	into /
-	dosbin bootstat || die
-	dosbin bootstat_get_last || die
-	dobin bootstat_summary || die
+	dosbin bootstat
+	dosbin bootstat_get_last
+	dobin bootstat_summary
 
 	into /usr
-	dolib.a libbootstat.a || die
+	dolib.a libbootstat.a
 
 	insinto /usr/include/metrics
-	doins bootstat.h || die
+	doins bootstat.h
 }
