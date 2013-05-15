@@ -31,8 +31,7 @@ src_prepare() {
 }
 
 src_configure() {
-	cros-workon_src_configure
-	econf \
+	cros-workon_src_configure \
 		$(use_enable static-libs static) \
 		$(use_enable doc doxygen) \
 		$(use_enable crypt mtpz)

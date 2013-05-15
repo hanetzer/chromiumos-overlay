@@ -30,7 +30,6 @@ src_prepare() {
 }
 
 src_configure() {
-	cros-workon_src_configure
 	#TODO(raymes): Uprev breakpad so this isn't necessary. See
 	# (crosbug.com/14275).
 	[ "$ARCH" = "arm" ] && append-cflags "-marm" && append-cxxflags "-marm"
@@ -43,7 +42,7 @@ src_configure() {
 
 	tc-export CC CXX LD PKG_CONFIG
 
-	econf
+	cros-workon_src_configure
 
 	if ! tc-is-cross-compiler; then
 	        einfo "Running 32b configuration"
