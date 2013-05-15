@@ -24,6 +24,10 @@ KEYWORDS="amd64 arm x86"
 RESTRICT="test"
 FEATURES="test"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export AR CC LD NM STRIP OBJCOPY
 	emake || die
