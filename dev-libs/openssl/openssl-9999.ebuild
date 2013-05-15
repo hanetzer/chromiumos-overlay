@@ -85,6 +85,7 @@ src_prepare() {
 }
 
 src_configure() {
+	cros-workon_src_configure
 	unset APPS #197996
 	unset SCRIPTS #312551
 	unset CROSS_COMPILE #311473
