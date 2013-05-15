@@ -49,6 +49,7 @@ CONFIG_FRAGMENTS=(
 	tpm
 	vfat
 	wifi_testbed_ap
+	wireless34
 	x32
 )
 
@@ -213,6 +214,13 @@ CONFIG_ATH_DEFER_EEPROM_REGULATORY=y
 x32_desc="x32 ABI support"
 x32_config="
 CONFIG_X86_X32=y
+"
+
+wireless34_desc="Wireless 3.4 stack"
+wireless34_config="
+CONFIG_ATH9K_BTCOEX=m
+CONFIG_ATH9K_BTCOEX_COMMON=m
+CONFIG_ATH9K_BTCOEX_HW=m
 "
 
 # Add all config fragments as off by default
