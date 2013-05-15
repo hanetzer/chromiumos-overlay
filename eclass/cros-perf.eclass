@@ -19,6 +19,10 @@ RDEPEND="demangle? ( sys-devel/binutils )
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	local makeargs=
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
