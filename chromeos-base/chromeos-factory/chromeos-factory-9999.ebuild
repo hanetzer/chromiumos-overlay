@@ -71,6 +71,10 @@ src_install() {
 	cp --remove-destination "${S}/installer/chromeos-common.sh" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/lib/chromeos-common.sh" || die
 
+	# Replace fmap.py symlink with the real file
+	cp --remove-destination "${S}/py/gooftool/fmap.py" \
+		"${D}${TARGET_DIR}/bundle/factory_setup/" || die
+
 	if use autotest && use build_tests; then
 		# For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
 		# install files directly into custom as appropriate.
