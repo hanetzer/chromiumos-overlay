@@ -939,7 +939,8 @@ install_telemetry_dep_resources() {
 		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROME_ROOT})
 		install_test_resources "${test_dir}" $DEPS_LIST \
 		    tools/perf/run_multipage_benchmarks \
-		    tools/perf/run_tests
+		    tools/perf/run_tests \
+		    chrome/test/telemetry
 	fi
 }
 
