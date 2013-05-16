@@ -24,7 +24,6 @@ src_install() {
 	into /	# We want /sbin, not /usr/sbin, etc.
 
 	# Install Upstart configuration files.
-	dodir /etc/init
 	insinto /etc/init
 	doins startup.conf
 	doins embedded-init/boot-services.conf
@@ -43,10 +42,13 @@ src_install() {
 	doins issue rsyslog.chromeos
 
 	# Install startup/shutdown scripts.
-	dosbin "${S}/embedded-init/chromeos_startup"
-	dosbin "${S}/embedded-init/chromeos_shutdown"
+	dosbin embedded-init/chromeos_startup
+	dosbin embedded-init/chromeos_shutdown
+	dosbin clobber-state
+	dosbin clobber-log
 
 	# Install log cleaning script and run it daily.
 	into /usr
 	dosbin chromeos-cleanup-logs
+	dosbin simple-rotate
 }
