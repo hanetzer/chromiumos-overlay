@@ -54,7 +54,9 @@ RDEPEND="
 	media-fonts/ko-nanumfonts
 	media-fonts/lohitfonts-cros
 	media-fonts/ml-anjalioldlipi
+	media-fonts/my-padauk
 	media-fonts/sil-abyssinica
+	media-fonts/tibt-jomolhari
 	media-libs/fontconfig
 	cros_host? ( sys-libs/glibc )
 	"
