@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("acbd8013b052377f2e5b7579c5ea0bdd4a3b7a77" "77369cbc6f7bdb6b7c7c03e6576208f1fe84385c")
-CROS_WORKON_TREE=("ea565ddb392aaa41259e441e6931ae41ced7c133" "cb373042560fb0b3a532c371c6ff633d750cb30d")
+CROS_WORKON_COMMIT=("cfeb729c47074f357467fcfd97afafff6e29d96f" "77369cbc6f7bdb6b7c7c03e6576208f1fe84385c")
+CROS_WORKON_TREE=("7d3f49c4a9b6fcb3df1781eb8341473f6bf7b72c" "cb373042560fb0b3a532c371c6ff633d750cb30d")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
@@ -83,9 +83,6 @@ src_install() {
 		"${D}${TARGET_DIR}/bundle/factory_setup/" || die
 
 	if use autotest && use build_tests; then
-		# For now, point 'custom' to suite_Factory.  TODO(jsalz): Actually
-		# install files directly into custom as appropriate.
-		dosym ../autotest/client/site_tests/suite_Factory ${TARGET_DIR}/custom
 		# We need to preserve the chromedriver and selenium library
 		# (from chromeos-chrome pyauto test folder which is stripped by default)
 		# for factory test images.
