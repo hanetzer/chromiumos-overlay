@@ -16,6 +16,10 @@ inherit cros-workon toolchain-funcs
 RDEPEND=""
 DEPEND=""
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	emake || die "emake failed"
