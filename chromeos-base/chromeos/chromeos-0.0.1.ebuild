@@ -9,8 +9,8 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="bluetooth bootchart bootimage coreboot cros_ec cros_embedded gdmwimax
-	mtd opengles X"
+IUSE="+alsa bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
+	gdmwimax mtd opengles X"
 
 ################################################################################
 #
@@ -85,6 +85,7 @@ IUSE="bluetooth bootchart bootimage coreboot cros_ec cros_embedded gdmwimax
 ################################################################################
 
 CROS_COMMON_RDEPEND="
+	alsa? ( media-sound/alsa-utils )
 	app-admin/rsyslog
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
@@ -99,6 +100,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/shill
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )
+	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	gdmwimax? ( net-wireless/gdmwimax )
 	net-firewall/iptables
 	net-misc/tlsdate
@@ -201,7 +203,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/nacl-mozc
 	app-laptop/laptop-mode-tools
 	app-shells/bash
-	chromeos-base/audioconfig
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
@@ -223,8 +224,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-util/quipper
 	media-gfx/ply-image
 	media-plugins/alsa-plugins
-	media-sound/adhd
-	media-sound/alsa-utils
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
