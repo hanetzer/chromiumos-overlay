@@ -16,5 +16,6 @@ KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
 src_configure() {
+	cros-workon_src_configure
 	tc-export CC
 }
