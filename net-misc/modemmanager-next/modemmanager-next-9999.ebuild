@@ -45,7 +45,7 @@ src_prepare() {
 
 src_configure() {
         append-flags -Xclang-only=-Wno-unneeded-internal-declaration
-	econf \
+	cros-workon_src_configure \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
 		$(use_with doc docs) \
 		$(use_with qmi)
