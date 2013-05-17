@@ -1,0 +1,13 @@
+--- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/usb-autosuspend.conf
++++ laptop-mode-tools-1.59/etc/laptop-mode/conf.d/usb-autosuspend.conf
+@@ -54,8 +54,8 @@
+ 
+ # Trigger auto-suspension of the USB deivce under conditional circumstances
+ BATT_SUSPEND_USB=1
+-LM_AC_SUSPEND_USB=0
+-NOLM_AC_SUSPEND_USB=0
++LM_AC_SUSPEND_USB=1
++NOLM_AC_SUSPEND_USB=1
+ 
+ # USB Auto-Suspend timeout in seconds
+ # Number of seconds after which the USB devices should suspend

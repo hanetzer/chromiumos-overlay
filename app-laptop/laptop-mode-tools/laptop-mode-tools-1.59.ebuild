@@ -55,6 +55,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0025-add-blacklists-for-runtime-pm.patch" \
           "0026-wait-lock-for-30-seconds.patch" \
           "0027-ac-supply-not-battery.patch" \
+          "0028-usb-autosuspend-on-ac.patch" \
         )
 
 src_unpack() {
