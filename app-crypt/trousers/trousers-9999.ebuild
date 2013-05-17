@@ -40,6 +40,10 @@ src_prepare() {
 	eautoreconf
 }
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM
 	export CCFLAGS="$CFLAGS"
