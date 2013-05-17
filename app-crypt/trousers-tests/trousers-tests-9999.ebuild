@@ -30,7 +30,11 @@ CROS_WORKON_LOCALNAME=trousers
 # path from root of repo
 AUTOTEST_CLIENT_SITE_TESTS=autotest
 
-function src_compile {
+src_configure() {
+	cros-workon_src_configure
+}
+
+src_compile() {
 	# for Makefile
 	export TROUSERS_DIR=${WORKDIR}/${P}
 	autotest_src_compile
