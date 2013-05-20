@@ -117,6 +117,7 @@ CROS_COMMON_RDEPEND="
 	sys-process/procps
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
+	virtual/chromeos-interface
 	virtual/linux-sources
 	virtual/modutils
 "
@@ -173,7 +174,6 @@ CROS_ARM_RDEPEND="
 "
 
 CROS_X_RDEPEND="
-	chromeos-base/chromeos-chrome
 	chromeos-base/chromeos-fonts
 	chromeos-base/xorg-conf
 	x11-apps/xinit
@@ -210,7 +210,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-debugd
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
-	chromeos-base/chromeos-login
 	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
 	chromeos-base/dev-install
