@@ -333,7 +333,7 @@ src_configure()
 	fi
 
 	if use vtable_verify ; then
-		confgcc="${confgcc} --enable-cxx-flags=-Wl,-L../libsupc++/.libs,--whole-archive,-lvtv_init,--no-whole-archive"
+		confgcc="${confgcc} --enable-cxx-flags=-Wl,-L../libsupc++/.libs --enable-vtable-verify"
 	fi
 
 	if is_crosscompile ; then
