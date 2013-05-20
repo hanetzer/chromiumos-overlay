@@ -141,6 +141,7 @@ pull_netboot_ramfs_binary() {
 		mount
 		rm
 		rmdir
+		route
 		sed
 		sleep
 		stty
