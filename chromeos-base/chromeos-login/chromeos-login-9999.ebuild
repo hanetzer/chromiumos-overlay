@@ -20,6 +20,7 @@ IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
 LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
+	!<chromeos-base/chromeos-init-0.0.2-r674
 	chromeos-base/chromeos-minijail
 	chromeos-base/platform2
 	dev-libs/dbus-glib
@@ -67,23 +68,26 @@ src_test() {
 src_install() {
 	cros-workon_src_install
 	into /
-	dosbin "${S}/keygen"
-	dosbin "${S}/session_manager_setup.sh"
-	dosbin "${S}/session_manager"
-	dosbin "${S}/xstart.sh"
-	dobin "${S}/cros-xauth"
+	dosbin keygen
+	dosbin session_manager_setup.sh
+	dosbin session_manager
+	dosbin xstart.sh
+	dobin cros-xauth
 
 	insinto /usr/share/dbus-1/interfaces
-	doins "${S}/session_manager.xml"
+	doins session_manager.xml
 
 	insinto /etc/dbus-1/system.d
-	doins "${S}/SessionManager.conf"
+	doins SessionManager.conf
+
+	insinto /etc/init
+	doins login.conf logout.conf machine-info.conf ui.conf
 
 	insinto /usr/share/dbus-1/services
-	doins "${S}/org.chromium.SessionManager.service"
+	doins org.chromium.SessionManager.service
 
 	insinto /usr/share/misc
-	doins "${S}/recovery_ui.html"
+	doins recovery_ui.html
 
 	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
 	insinto /usr/$(get_libdir)/locale
