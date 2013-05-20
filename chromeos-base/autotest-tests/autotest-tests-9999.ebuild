@@ -331,7 +331,7 @@ IUSE_TESTS="
 	+tests_security_SysVIPC
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
-	+test_Recall
+	+tests_test_Recall
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
