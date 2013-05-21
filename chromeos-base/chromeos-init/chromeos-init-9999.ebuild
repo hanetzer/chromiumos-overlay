@@ -41,9 +41,11 @@ src_install() {
 	insinto /etc
 	doins issue rsyslog.chromeos
 
-	# Install various utility files
+	# Install various utility files.
 	dosbin killers
 	dosbin date-proxy-watcher
+	insinto /usr/share/cros
+	doins startup_utils.sh
 
 	# Install startup/shutdown scripts.
 	dosbin chromeos_startup chromeos_shutdown

@@ -43,6 +43,10 @@ src_install() {
 
 	# Install various utility files.
 	dosbin killers
+	insinto /usr/share/cros
+	# TODO(petkov): Consider a separate USE flag for mounting encrypted
+	# vs. unencrypted /var and /home/chronos (crbug.com/242840).
+	doins embedded-init/startup_utils.sh
 
 	# Install startup/shutdown scripts.
 	dosbin embedded-init/chromeos_startup
