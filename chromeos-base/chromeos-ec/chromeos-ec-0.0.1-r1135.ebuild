@@ -26,6 +26,10 @@ DEPEND="${RDEPEND}"
 # non-standard layout.
 RESTRICT="binchecks"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 set_build_env() {
 	# The firmware is running on ARMv7-m (Cortex-M4)
 	export CROSS_COMPILE=arm-none-eabi-
