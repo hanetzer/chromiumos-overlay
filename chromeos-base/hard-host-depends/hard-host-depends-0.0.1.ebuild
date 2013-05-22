@@ -259,6 +259,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies for testing factory software
 RDEPEND="${RDEPEND}
+	dev-python/django
 	dev-python/flup
 	dev-python/twisted
 	"
