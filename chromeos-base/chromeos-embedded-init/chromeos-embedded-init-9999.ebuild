@@ -49,8 +49,7 @@ src_install() {
 	doins embedded-init/startup_utils.sh
 
 	# Install startup/shutdown scripts.
-	dosbin embedded-init/chromeos_startup
-	dosbin chromeos_shutdown
+	dosbin chromeos_startup chromeos_shutdown
 	dosbin clobber-state
 	dosbin clobber-log
 
