@@ -41,9 +41,12 @@ src_install() {
 	insinto /etc
 	doins issue rsyslog.chromeos
 
+	# Install various utility files.
+	dosbin killers
+
 	# Install startup/shutdown scripts.
 	dosbin embedded-init/chromeos_startup
-	dosbin embedded-init/chromeos_shutdown
+	dosbin chromeos_shutdown
 	dosbin clobber-state
 	dosbin clobber-log
 
