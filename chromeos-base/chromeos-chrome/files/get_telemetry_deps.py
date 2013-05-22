@@ -8,11 +8,11 @@ import sys
 
 
 def GetAllDeps(chrome_root):
-  run_multipage_benchmarks = os.path.join(
-      chrome_root, 'src/tools/perf/run_multipage_benchmarks')
-  if not os.path.exists(run_multipage_benchmarks):
-    raise IOError('run_multipage_benchmark script does not exist.')
-  print_bootstrap = subprocess.Popen([run_multipage_benchmarks,
+  run_measurement = os.path.join(
+      chrome_root, 'src/tools/perf/run_measurement')
+  if not os.path.exists(run_measurement):
+    raise IOError('run_measurement script does not exist.')
+  print_bootstrap = subprocess.Popen([run_measurement,
                                       '--print-bootstrap-deps'],
                                      stdout=subprocess.PIPE)
   # STDOUT will have the deps list.
