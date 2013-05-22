@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE=""
+IUSE="internal"
 
 # Pull in any site-specific or private-overlay-specific packages needed on the
 # host.
@@ -27,6 +27,7 @@ RDEPEND="${RDEPEND}
 	dev-embedded/u-boot-tools
 	dev-util/ccache
 	dev-util/crosutils
+	internal? ( dev-embedded/embedded-build-tools )
 	>=sys-apps/dtc-1.3.0-r5
 	sys-boot/bootstub
 	sys-boot/grub
