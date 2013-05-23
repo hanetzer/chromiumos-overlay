@@ -80,10 +80,6 @@ src_install() {
 	dobin tools/suspend_delay_sample
 	popd >/dev/null
 
-	# Install symlinks for legacy names with hyphens instead of underscores.
-	dosym backlight_tool /usr/bin/backlight-tool
-	dosym power_supply_info /usr/bin/power-supply-info
-
 	fowners root:power /usr/bin/powerd_setuid_helper
 	fperms 4750 /usr/bin/powerd_setuid_helper
 
