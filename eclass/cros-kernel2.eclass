@@ -32,6 +32,7 @@ CONFIG_FRAGMENTS=(
 	blkdevram
 	ca0132
 	cifs
+	dyndebug
 	fbconsole
 	gdmwimax
 	gobi
@@ -70,6 +71,11 @@ CONFIG_SND_HDA_DSP_LOADER=y
 cifs_desc="Samba/CIFS Support"
 cifs_config="
 CONFIG_CIFS=m
+"
+
+dyndebug_desc="Enable Dynamic Debug"
+dyndebug_config="
+CONFIG_DYNAMIC_DEBUG=y
 "
 
 fbconsole_desc="framebuffer console"
