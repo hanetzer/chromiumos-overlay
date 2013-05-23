@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="802bca578faca8d24e93c58fc0676ede5fdd181b"
-CROS_WORKON_TREE="2a5b1f6110c75ce84ee58f50f70f18cfaa9cd88c"
+CROS_WORKON_COMMIT="7e68245ed9764aa6f88f3a4ad81c775515aed8e4"
+CROS_WORKON_TREE="88e14ce9de77de72fca6c4f43f32f0003c46df83"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
@@ -43,9 +43,12 @@ src_install() {
 	insinto /etc
 	doins issue rsyslog.chromeos
 
+	# Install various utility files.
+	dosbin killers
+
 	# Install startup/shutdown scripts.
 	dosbin embedded-init/chromeos_startup
-	dosbin embedded-init/chromeos_shutdown
+	dosbin chromeos_shutdown
 	dosbin clobber-state
 	dosbin clobber-log
 
