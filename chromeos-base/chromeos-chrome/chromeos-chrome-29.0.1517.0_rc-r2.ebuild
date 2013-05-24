@@ -656,6 +656,7 @@ src_configure() {
 	elif [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		"${ECHROME_SET_VER}" || die
 	fi
+	use vtable_verify && append-ldflags -fvtable-verify=preinit
 }
 
 chrome_make() {
