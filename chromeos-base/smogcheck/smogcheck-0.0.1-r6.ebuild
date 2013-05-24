@@ -20,6 +20,10 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	sys-kernel/linux-headers"
 
+src_configure() {
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export CC
 	cros-debug-add-NDEBUG

@@ -31,7 +31,8 @@ src_prepare() {
 }
 
 src_configure() {
-	econf --prefix="/usr/local/autotest/client/deps/kernel_ltp_dep"
+	cros-workon_src_configure \
+		--prefix="/usr/local/autotest/client/deps/kernel_ltp_dep"
 	# Used in make install
 	export SKIP_IDCHECK=1
 }
