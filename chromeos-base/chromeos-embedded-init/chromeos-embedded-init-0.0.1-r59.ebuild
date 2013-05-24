@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="7e68245ed9764aa6f88f3a4ad81c775515aed8e4"
-CROS_WORKON_TREE="88e14ce9de77de72fca6c4f43f32f0003c46df83"
+CROS_WORKON_COMMIT="9173e46c231647aec7c44ba76679acc2a4fa6526"
+CROS_WORKON_TREE="e5b63f07b0b3d13dd28a3756d3621f47ecf54cbd"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
@@ -45,6 +45,10 @@ src_install() {
 
 	# Install various utility files.
 	dosbin killers
+	insinto /usr/share/cros
+	# TODO(petkov): Consider a separate USE flag for mounting encrypted
+	# vs. unencrypted /var and /home/chronos (crbug.com/242840).
+	doins embedded-init/startup_utils.sh
 
 	# Install startup/shutdown scripts.
 	dosbin embedded-init/chromeos_startup
