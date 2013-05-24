@@ -70,7 +70,8 @@ src_install() {
 	doins chapsd.conf
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
-	doins login_event_client.h
+	doins token_manager_client.h
+	doins token_manager_interface.h
 	doins isolate.h
 	doins chaps_proxy_mock.h
 	doins chaps_interface.h
