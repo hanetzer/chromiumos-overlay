@@ -88,7 +88,7 @@ src_prepare() {
 
 	# Automatic pairing support, including random and fixed pincode for
 	# keyboard pairing.
-	# Submitted upstream, not decided.
+	# Accepted upstream, can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-autopair-0001-core-Convert-the-pincode-callback-to-an-interable-li.patch"
 	epatch "${FILESDIR}/${P}-autopair-0002-plugins-Extend-the-pin-code-callback-with-the-call-n.patch"
 	epatch "${FILESDIR}/${P}-autopair-0003-core-Add-support-for-retrying-a-bonding.patch"
@@ -111,6 +111,10 @@ src_prepare() {
 	# Request the device long name if only the short name is known.
 	# Sent upstream, accepted. This patch can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-core-Don-t-update-a-known-long-name-with-a-short-nam.patch"
+
+	# Disable the AVRCP profiles. Those profiles have bugs and are not used
+	# by the chromebook. This patch can be removed on bluez-5.6.
+	epatch "${FILESDIR}/${P}-audio-Disable-AVRCP-profiles.patch"
 
 	eautoreconf
 
