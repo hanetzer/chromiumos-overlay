@@ -184,6 +184,7 @@ IUSE_TESTS="
 	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
 	+tests_network_SwitchCarrier
+	+tests_network_CDMAActivate
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_ConnmanPowerStateTracking
