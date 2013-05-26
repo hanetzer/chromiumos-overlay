@@ -189,6 +189,9 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/partprobe
 	ln -s "/bin/cgpt" "${INITRAMFS_TMP_S}/usr/bin/cgpt" || die
 
+	# Install ectool if there is one
+	[ -e /usr/sbin/ectool ] && idobin /usr/sbin/ectool
+
 	# We don't need to display image. Create empty constants.sh so that
 	# messages.sh doesn't freak out.
 	touch "${INITRAMFS_TMP_S}/etc/screens/constants.sh"
