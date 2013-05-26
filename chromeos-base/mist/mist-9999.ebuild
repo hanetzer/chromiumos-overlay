@@ -7,7 +7,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-debug cros-workon
 
-DESCRIPTION="Chromium OS Modem Identity Switching Tool"
+DESCRIPTION="Chromium OS Modem Interface Switching Tool"
 HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="BSD"
@@ -21,6 +21,7 @@ RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/protobuf
+	virtual/libusb:1
 "
 
 DEPEND="
@@ -47,4 +48,6 @@ src_test() {
 
 src_install() {
 	cros-workon_src_install
+
+	dobin "${OUT}"/mist
 }
