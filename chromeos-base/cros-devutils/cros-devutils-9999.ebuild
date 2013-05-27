@@ -41,7 +41,6 @@ src_install() {
 			cros_bundle_firmware
 			cros_choose_profile
 			cros_chrome_make
-			cros_fetch_image
 			cros_sign_bootstub
 			cros_start_vm
 			cros_stop_vm
@@ -81,9 +80,6 @@ src_install() {
 		insinto "$(python_get_sitedir)/update_payload"
 		doins $(printf '%s\n' host/lib/update_payload/*.py | grep -v unittest)
 		doins host/lib/update_payload/update-payload-key.pub.pem
-
-		insinto "/usr/lib/crosutils"
-		doins host/lib/cros_archive.sh
 	fi
 }
 
@@ -129,7 +125,6 @@ src_test() {
 		TESTS+=( builder_test.py )
 		TESTS+=( devserver_unittest.py )
 		TESTS+=( common_util_unittest.py )
-		TESTS+=( host/lib/cros_archive_unittest.sh )
 		#FIXME(zbehan): update_test.py doesn't seem to work right now.
 	fi
 
