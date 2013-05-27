@@ -10,7 +10,7 @@ CROS_WORKON_LOCALNAME="factory"
 inherit cros-workon python
 
 CLOSURE_LIB_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
-WEBGL_AQUARIUM_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130515.tar.bz2"
+WEBGL_AQUARIUM_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2"
 
 DESCRIPTION="Chrome OS Factory Tools and Data"
 HOMEPAGE="http://www.chromium.org/"
