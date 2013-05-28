@@ -47,7 +47,7 @@ src_configure() {
         append-flags -Xclang-only=-Wno-unneeded-internal-declaration
 	cros-workon_src_configure \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
-		$(use_with doc docs) \
+		$(use_enable {,gtk-}doc) \
 		$(use_with qmi)
 }
 
