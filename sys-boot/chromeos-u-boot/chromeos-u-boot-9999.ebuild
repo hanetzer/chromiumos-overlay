@@ -123,10 +123,14 @@ src_configure() {
 		DEV_TREE_SEPARATE=1
 		"HOSTCC=${BUILD_CC}"
 		HOSTSTRIP=true
+		USE_STDINT=1
 	)
 	if use dev; then
 		# Avoid hiding the errors and warnings
-		COMMON_MAKE_FLAGS+=( -s )
+		COMMON_MAKE_FLAGS+=(
+			-s
+			QUIET=1
+		)
 	else
 		COMMON_MAKE_FLAGS+=(
 			-k
@@ -175,6 +179,7 @@ src_install() {
 	local ub_vendor="$(get_config_var ${CROS_U_BOOT_CONFIG} VENDOR)"
 	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
 	local ub_arch="$(get_config_var ${CROS_U_BOOT_CONFIG} ARCH)"
+	local f
 
 	insinto "${inst_dir}"
 
@@ -184,7 +189,10 @@ src_install() {
 		newins "${UB_BUILD_DIR}/spl/u-boot-spl" "${ub_board}-spl.elf"
 	fi
 
-	doins "${files_to_copy[@]/#/${UB_BUILD_DIR}/}"
+	for f in "${files_to_copy[@]}"; do
+		[[ -f "${UB_BUILD_DIR}/${f}" ]] &&
+			doins "${f/#/${UB_BUILD_DIR}/}"
+	done
 	newins "${UB_BUILD_DIR}/u-boot" u-boot.elf
 
 	if netboot_required; then
