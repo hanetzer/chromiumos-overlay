@@ -72,6 +72,7 @@ base_libs = [
                 stringprintf.cc
                 string_split.cc
                 string_util.cc
+                sync_socket_posix.cc
                 synchronization/condition_variable_posix.cc
                 synchronization/lock.cc
                 synchronization/lock_impl_posix.cc
