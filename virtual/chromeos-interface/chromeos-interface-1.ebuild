@@ -14,10 +14,17 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-content_shell"
+IUSE="-content_shell -chromeless_tty"
 
-RDEPEND="content_shell? ( chromeos-base/content_shell )
-	!content_shell? ( chromeos-base/chromeos-login chromeos-base/chromeos-chrome )
+RDEPEND="
+	!chromeless_tty? (
+		content_shell? ( chromeos-base/content_shell )
+		!content_shell? (
+			chromeos-base/chromeos-login
+			chromeos-base/chromeos-chrome
+		)
+	)
+	chromeless_tty? ( chromeos-base/tty1 )
 "
 
 DEPEND="${RDEPEND}"
