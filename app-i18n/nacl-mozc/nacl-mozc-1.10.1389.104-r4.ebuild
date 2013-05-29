@@ -37,6 +37,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/nacl-mozc-1.10.1401.4-insert-internal-public-key.patch
 		# Support 'BracketRight' key.
 		epatch "${FILESDIR}"/nacl-mozc-1.10.1401.4-support-bracket-right-key.patch
+		epatch "${FILESDIR}"/nacl-mozc-1.10.1401.4-call-startIme.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
