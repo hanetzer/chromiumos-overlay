@@ -36,6 +36,7 @@ ALL_BOARDS=(
 	aries
 	arm-generic
 	beaglebone
+	blackwall
 	butterfly
 	chronos
 	daisy
