@@ -66,7 +66,7 @@ src_prepare() {
 }
 
 src_configure() {
-	cros-workon_src_configue
+	cros-workon_src_configure
 }
 
 src_install() {
