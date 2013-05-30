@@ -41,6 +41,7 @@ IUSE="cros_ec cros_embedded"
 ################################################################################
 
 CROS_COMMON_RDEPEND="
+	chromeos-base/chromeos-test-init
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
 	net-misc/rsync
@@ -71,7 +72,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/tmux
 	app-misc/utouch-evemu
 	chromeos-base/autox
-	chromeos-base/chromeos-test-init
 	chromeos-base/shill-test-scripts
 	chromeos-base/ixchariot
 	chromeos-base/minifakedns
