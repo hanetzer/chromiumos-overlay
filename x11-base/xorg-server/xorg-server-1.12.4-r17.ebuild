@@ -163,6 +163,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.4-Avoid-NULL-valuator.patch"
 	# crbug.com/220687
 	"${FILESDIR}/1.12.4-DRI2-Block-clients-on-VT-switch.patch"
+	# crbug.com/245026
+	"${FILESDIR}/1.12.4-os-connection-Clear-ListenTransCount-after-closing-a.patch"
 )
 
 src_prepare() {
