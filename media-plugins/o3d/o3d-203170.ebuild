@@ -54,14 +54,6 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/gyp_o3d.patch
 	epatch "${FILESDIR}"/gcc-4_7.patch
-	epatch "${FILESDIR}/o3d-38135.patch" || \
-		die "Could not apply patch o3d-38135.patch"
-        epatch "${FILESDIR}/o3d-227158.patch" || \
-                die "Could not apply patch o3d-227158.patch"
-        epatch "${FILESDIR}/o3d-227181.patch" || \
-                die "Could not apply patch o3d-227181.patch"
-        epatch "${FILESDIR}/o3d-227197.patch" || \
-                die "Could not apply patch o3d-227197.patch"
 
 	${EGCLIENT} runhooks || die
 }
@@ -80,7 +72,8 @@ src_install() {
 
 	dodir ${destdir}
 	exeinto ${destdir}
-	doexe out/Release/libppo3dautoplugin.so || die
+	doexe out/Release/libppgtpo3dautoplugin.so || die
 	dodir ${chromepepperdir}
-	dosym ${destdir}/libppo3dautoplugin.so ${chromepepperdir}/ || die
+	dosym ${destdir}/libppgtpo3dautoplugin.so \
+              ${chromepepperdir}/libppo3dautoplugin.so || die
 }
