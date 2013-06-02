@@ -20,7 +20,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="dev profiling factory-mode"
+IUSE="dev profiling factory-mode smdk5420-u-boot"
 
 DEPEND="!sys-boot/x86-firmware-fdts
 	!sys-boot/exynos-u-boot
@@ -38,6 +38,7 @@ ALL_CONFIGS=(
 	beaglebone
 	coreboot
 	daisy
+	peach
 	seaboard
 	waluigi
 )
@@ -53,6 +54,10 @@ REQUIRED_USE="${REQUIRED_USE} ^^ ( ${IUSE_CONFIGS} )"
 # signifying which version to use.
 get_current_u_boot_config() {
 	local use_config
+	if use smdk5420-u-boot; then
+		echo 'smdk5420_config'
+		return
+	fi
 	for use_config in ${IUSE_CONFIGS}; do
 		if use ${use_config}; then
 			echo "chromeos_${use_config#${U_BOOT_CONFIG_USE_PREFIX}}_config"
@@ -183,10 +188,10 @@ src_install() {
 
 	insinto "${inst_dir}"
 
-	# Daisy and its variants need an SPL binary.
-	if use u_boot_config_use_daisy; then
-		files_to_copy+=( spl/${ub_board}-spl.bin )
-		newins "${UB_BUILD_DIR}/spl/u-boot-spl" "${ub_board}-spl.elf"
+	# Daisy, peach and their variants need an SPL binary.
+	if use u_boot_config_use_daisy || use u_boot_config_use_peach ; then
+		newins "${UB_BUILD_DIR}/spl/${ub_board}-spl.bin" \
+		  u-boot-spl.wrapped.bin
 	fi
 
 	for f in "${files_to_copy[@]}"; do
@@ -200,23 +205,6 @@ src_install() {
 		newins "${UB_BUILD_DIR_NB}/u-boot" u-boot_netboot.elf
 	fi
 
-	insinto "${inst_dir}/dts"
-	local dts_dir dts_dirs=(
-		"board/${ub_vendor}/dts"
-		"board/${ub_vendor}/${ub_board}"
-		"arch/${ub_arch}/dts"
-		"cros/dts"
-	)
-	for dts_dir in "${dts_dirs[@]}"; do
-		files_to_copy=$(find ${dts_dir} -regex '.*\.dtsi?')
-		if [[ -n ${files_to_copy} ]]; then
-			elog "Installing device tree files in ${dts_dir}"
-			# TODO(sjg@chromium.org): For now, skip exynos5420
-			for f in ${files_to_copy}; do
-				if echo $f | grep -vq 5420; then
-					doins ${f}
-				fi
-			done
-		fi
-	done
+	insinto "${inst_dir}/dtb"
+	doins "${UB_BUILD_DIR}/dts/"*.dtb
 }
