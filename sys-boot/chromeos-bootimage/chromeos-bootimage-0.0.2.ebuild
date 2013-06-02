@@ -38,6 +38,57 @@ DEPEND="
 	depthcharge? ( ${COREBOOT_DEPEND} sys-boot/depthcharge )
 	"
 
+# All device trees which could be possibly used for creating chromeos
+# bootimage. The appropriate binary tree blobs are supposed to be published by
+# their respective u-boot/depthcharge/etc ebuilds, so tree<->board
+# combinations are limited and attempts to build say an x86 board with an
+# exynos device tree will fail.
+ALL_DEV_TREES=(
+	alex
+	butterfly
+	emeraldlake2
+	exynos5250-smdk5250
+	exynos5250-snow
+	exynos5250-spring
+	exynos5420-peach-pit-adv
+	exynos5420-peach_pit
+	exynos5420-smdk5420
+	link
+	link_legacy
+	lumpy
+	parrot
+	stout
+	stumpy
+)
+DEV_TREE_SUFFIX="_dtb"
+
+IUSE_DEV_TREES=${ALL_DEV_TREES[@]/%/${DEV_TREE_SUFFIX}}
+IUSE+=" ${IUSE_DEV_TREES}"
+
+get_dev_tree_base_name() {
+	local use_dev_tree
+
+	# If 'USE=<base_bame>_dtb' is set explicitly, use the requested device
+	# tree.
+	for use_dev_tree in ${IUSE_DEV_TREES}; do
+		if use ${use_dev_tree}; then
+			echo "${use_dev_tree%${DEV_TREE_SUFFIX}}"
+			return
+		fi
+	done
+
+	# If not set explicitly - use default device tree for a board.
+	case "${BOARD_USE}" in
+		(peach_pit) echo "exynos5420-peach_pit";;
+		(daisy_spring) echo "exynos5250-spring";;
+		(daisy) echo "exynos5250-snow";;
+		(link|stout|parrot|butterfly) echo "${BOARD_USE}";;
+		(stout32) echo "stout";;
+		(*) die \
+		  "Unable to determine device tree for board ${BOARD_USE}." ;;
+	esac
+}
+
 S=${WORKDIR}
 
 # Directory where the generated files are looked for and placed.
@@ -64,34 +115,21 @@ build_image() {
 	local uboot_file="$2"
 	local common_flags="$3"
 	local verified_flags="$4"
-
-	local board
-	local base
-
 	local ec_file_flag
+	local image_name_base
+
 	if use cros_ec; then
 		common_flags+=" --ecro ${CROS_FIRMWARE_ROOT}/ec.RO.bin"
 		common_flags+=" --ec ${CROS_FIRMWARE_ROOT}/ec.RW.bin"
 	fi
-	einfo "Building images for ${fdt_file}"
-
-	# Bash stuff to turn '/path/to/exynos-5250-snow.dts' into 'snow'
-	base=$(basename ${fdt_file})
-	board=${base%%.dts}
-	board=${board#*-}
 
 	if use exynos; then
 		# This is an exynos platform, let's add the appropriate image
 		# components' parameters.
-
-		# Get exynos model out of the device tree name, derive
-		# <model> out of exynos<model>-device.dts
-		local soc="${base/-*}"
-		local exynos_model="${soc#exynos}"
-
 		common_flags+=' -D' # Please no default components.
-		common_flags+=" --bl1=${CROS_FIRMWARE_ROOT}/E${exynos_model}.nbl1.bin"
-		common_flags+=" --bl2=${CROS_FIRMWARE_ROOT}/smdk${exynos_model}-spl.bin"
+		common_flags+=" --bl1=${CROS_FIRMWARE_ROOT}/u-boot.bl1.bin"
+		common_flags+=" --bl2="
+		common_flags+="${CROS_FIRMWARE_ROOT}/u-boot-spl.wrapped.bin"
 	fi
 
 	cmdline="${common_flags} \
@@ -102,16 +140,22 @@ build_image() {
 		--bootsecure \
 		${verified_flags}"
 
+	# Let's derive image name base from the device tree file name, after
+	# all device tree determines image properties.
+	image_name_base="$(basename "${fdt_file}")" # base name
+	image_name_base="${image_name_base%.*}" # file name extension
+	image_name_base="${image_name_base#*-}" # prefix up to the first dash
+
+	einfo "Building images for ${image_name_base}"
+
 	# Build an RO-normal image, and an RW (twostop) image. This assumes
 	# that the fdt has the flags set to 1 by default.
 	cros_bundle_firmware ${cmdline} \
-		--outdir "out-${board}.ro" \
-		--output "image-${board}.bin" ||
+		--output "image-${image_name_base}.bin" ||
 		die "failed to build RO image: ${cmdline}"
 	cros_bundle_firmware ${cmdline} --force-rw \
-		--outdir "out-${board}.rw" \
-		--output "image-${board}.rw.bin" ||
-		die "failed to build RW image: ${cmdline}"
+		--output "image-${image_name_base}.rw.bin" ||
+	die "failed to build RW image: ${cmdline}"
 
 	# Make non-vboot image
 	nv_uboot_file="${uboot_file}"
@@ -125,8 +169,7 @@ build_image() {
 		${ec_file_flag} \
 		--add-config-int load_env 1 \
 		--add-node-enable console 1 \
-		--outdir "nvout-${board}" \
-		--output "nv_image-${board}.bin" ||
+		--output "nv_image-${image_name_base}.bin" ||
 		die "failed to build legacy image: ${cmdline}"
 }
 
@@ -172,28 +215,17 @@ src_compile_uboot() {
 	common_flags+=" --board ${BOARD_USE}"
 	common_flags+=" --key ${devkeys_file}"
 	common_flags+=" --bmpblk ${CROS_FIRMWARE_ROOT}/bmpblk.bin"
+	common_flags+=' --outdir "outdir"'
 
 	if use tegra; then
 		common_flags+=" --bct ${CROS_FIRMWARE_ROOT}/bct/board.bct"
 	fi
 
-	# TODO(sjg@chromium.org): For x86 we can't build all the images
-	# yet, since we need to use a different skeleton file for each.
+	fdt_file="$(get_dev_tree_base_name)"
+	fdt_file="${CROS_FIRMWARE_ROOT}/dtb/${fdt_file}.dtb"
 
-	if use x86 || use amd64; then
-		einfo "x86: Only building for board ${U_BOOT_FDT_USE}"
-		# Location of the U-Boot flat device tree source file
-		fdt_file="${CROS_FIRMWARE_ROOT}/dts/${U_BOOT_FDT_USE}.dts"
-		build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
-		  "${verified_flags}"
-
-	else
-		einfo "Building all images"
-		for fdt_file in ${CROS_FIRMWARE_ROOT}/dts/*.dts; do
-			build_image "${fdt_file}" "${uboot_file}" \
-			  "${common_flags}" "${verified_flags}"
-		done
-	fi
+	build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
+	  "${verified_flags}"
 }
 
 src_compile_depthcharge() {
