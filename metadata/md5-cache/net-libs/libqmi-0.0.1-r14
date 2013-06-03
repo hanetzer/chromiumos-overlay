@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure info install prepare setup unpack
+DEPEND=>=dev-libs/glib-2.32 doc? ( dev-util/gtk-doc ) virtual/pkgconfig || ( >=sys-devel/automake-1.11.1:1.11 >=sys-devel/automake-1.12:1.12 ) >=sys-devel/autoconf-2.68 sys-devel/libtool dev-vcs/git
+DESCRIPTION=QMI modem protocol helper library
+EAPI=4
+HOMEPAGE=http://cgit.freedesktop.org/libqmi/
+IUSE=doc static-libs test cros_host cros_workon_tree_ce98306969b37d8e2be2d06097a392cbe361a4bf profiling
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=>=dev-libs/glib-2.32
+SLOT=0
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	c02fcda64ecf889a037b97f6b0a68130	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=3ff39bf14e5e83c6eb391c0e03491ea6

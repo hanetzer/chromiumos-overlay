@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Init script to run agetty on VT1. For use in headless builds.
+EAPI=4
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=sys-apps/upstart
+SLOT=0
+_md5_=ba359e2ab0c456ea6eeb92935e486419
