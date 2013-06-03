@@ -33,6 +33,7 @@ RDEPEND="
 	chromeos-base/dev-install
 	chromeos-base/shill
 	chromeos-base/vboot_reference
+	media-gfx/ply-image
 	net-firewall/iptables
 	net-misc/tlsdate
 	>=sys-apps/baselayout-2.0.0
