@@ -54,9 +54,8 @@ src_prepare() {
 		enable_option FT_DEBUG_MEMORY
 	fi
 
-	disable_option FT_CONFIG_OPTION_OLD_INTERNALS
-
 	epatch "${FILESDIR}"/${PN}-2.3.2-enable-valid.patch
+	epatch "${FILESDIR}"/${PN}-2.4.12-new-cff-engine-on.patch
 
 	if use utils; then
 		cd "${WORKDIR}/ft2demos-${PV}"
