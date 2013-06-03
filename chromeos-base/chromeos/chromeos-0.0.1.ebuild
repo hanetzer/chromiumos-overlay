@@ -93,6 +93,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/bootstat
 	chromeos-base/chromeos-base
 	chromeos-base/chromeos-fonts
+	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/crash-reporter
 	chromeos-base/metrics
@@ -258,7 +259,6 @@ CROS_DEPEND="${CROS_RDEPEND}
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
 	sys-apps/shadow
 	sys-apps/util-linux
-	chromeos-base/chromeos-embedded-init
 "
 
 # Build time dependencies
