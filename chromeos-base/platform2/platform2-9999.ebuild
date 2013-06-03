@@ -7,6 +7,7 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=(
 	"common-mk"
 	"cros-disks"
+	"debugd"
 	"libchromeos"
 	"metrics"
 	"system_api"
@@ -36,7 +37,6 @@ LIBCHROME_DEPEND=$(
 RDEPEND_cros_disks="
 	!cros_host? (
 		app-arch/unrar
-		chromeos-base/chromeos-minijail
 		sys-apps/util-linux
 		sys-block/parted
 		sys-fs/avfs
@@ -47,11 +47,28 @@ RDEPEND_cros_disks="
 	)
 "
 
+RDEPEND_debugd="
+	!cros_host? (
+		dev-libs/libpcre
+		net-libs/libpcap
+		sys-apps/memtester
+		sys-apps/smartmontools
+	)
+"
+
+DEPEND_debugd="
+	!cros_host? (
+		chromeos-base/shill
+		virtual/modemmanager
+	)
+"
+
 RDEPEND="
 	platform2? (
 		$(for v in ${!RDEPEND_*}; do echo "${!v}"; done)
 
 		${LIBCHROME_DEPEND}
+		chromeos-base/chromeos-minijail
 		dev-cpp/gflags
 		dev-libs/dbus-c++
 		dev-libs/dbus-glib
@@ -173,6 +190,26 @@ platform2_install_cros-disks() {
 	doins org.chromium.CrosDisks.conf
 }
 
+platform2_install_debugd() {
+	into /
+	dosbin "${OUT}"/debugd
+	dodir /debugd
+
+	exeinto /usr/libexec/debugd/helpers
+	doexe "${OUT}"/{capture_packets,icmp,netif,modem_status,network_status}
+
+	doexe src/helpers/{minijail-setuid-hack,send_at_command,systrace,capture_utility}.sh
+
+	insinto /etc/dbus-1/system.d
+	doins share/org.chromium.debugd.conf
+
+	insinto /etc/init
+	doins share/{debugd,trace_marker-test}.conf
+
+	insinto /etc/init/perf_commands
+	doins share/perf_commands/{arm,core,unknown}.txt
+}
+
 platform2_install_libchromeos() {
 	./platform2_preinstall.sh "${OUT}" "${LIBCHROME_VERS}"
 
@@ -241,6 +278,13 @@ platform2_test_cros-disks() {
 		"${gtest_filter_root_tests}"
 	platform2_test "run" "${OUT}/disks_testrunner" "0" \
 		"${gtest_filter_user_tests}"
+}
+
+platform2_test_debugd() {
+	pushd "${SRC}/src" >/dev/null
+	platform2_test "run" "${OUT}/debugd_testrunner"
+	./helpers/capture_utility_test.sh || die
+	popd >/dev/null
 }
 
 platform2_test_libchromeos() {

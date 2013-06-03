@@ -60,16 +60,13 @@ src_install() {
 	doexe helpers/network_status
 
 	insinto /etc/dbus-1/system.d
-	doins "${FILESDIR}/org.chromium.debugd.conf"
+	doins "${S}/share/org.chromium.debugd.conf"
 
 	insinto /etc/init
-	doins "${FILESDIR}/debugd.conf"
-	doins "${FILESDIR}/trace_marker-test.conf"
+	doins "${S}"/share/{debugd,trace_marker-test}.conf
 
 	insinto /etc/init/perf_commands
-	doins "${FILESDIR}/perf_commands/arm.txt"
-	doins "${FILESDIR}/perf_commands/core.txt"
-	doins "${FILESDIR}/perf_commands/unknown.txt"
+	doins "${S}"/share/perf_commands/{arm,core,unknown}.txt
 }
 
 src_configure() {
