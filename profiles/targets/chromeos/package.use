@@ -56,6 +56,7 @@ sys-apps/dbus		-X
 sys-apps/iproute2	ipv6
 # mosys: crosbug.com/p/11630
 sys-apps/mosys          static
+sys-apps/flashrom       static
 sys-apps/smartmontools	minimal
 sys-auth/consolekit	policykit
 sys-auth/polkit         -introspection
