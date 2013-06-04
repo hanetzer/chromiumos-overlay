@@ -21,6 +21,7 @@ RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	dev-libs/protobuf
+	sys-fs/udev
 	virtual/libusb:1
 "
 
