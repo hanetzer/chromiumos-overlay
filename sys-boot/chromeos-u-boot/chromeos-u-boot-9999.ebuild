@@ -211,7 +211,12 @@ src_install() {
 		files_to_copy=$(find ${dts_dir} -regex '.*\.dtsi?')
 		if [[ -n ${files_to_copy} ]]; then
 			elog "Installing device tree files in ${dts_dir}"
-			doins ${files_to_copy}
+			# TODO(sjg@chromium.org): For now, skip exynos5420
+			for f in ${files_to_copy}; do
+				if echo $f | grep -vq 5420; then
+					doins ${f}
+				fi
+			done
 		fi
 	done
 }
