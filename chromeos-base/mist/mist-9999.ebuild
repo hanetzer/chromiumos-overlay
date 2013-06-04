@@ -51,4 +51,7 @@ src_install() {
 	cros-workon_src_install
 
 	dobin "${OUT}"/mist
+
+	insinto /usr/share/mist
+	doins default.conf
 }
