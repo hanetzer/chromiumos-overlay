@@ -5,22 +5,11 @@
 # Purpose: Generate shell script containing firmware update bundle.
 #
 
-# TODO(hungte) Remove cros-binary when BCS_OVERLAY transition is ready.
-inherit cros-workon cros-binary
+inherit cros-workon
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY
 # @DESCRIPTION: (Optional) Name of board overlay on Binary Component Server
 : ${CROS_FIRMWARE_BCS_OVERLAY:=${BOARD_OVERLAY##*/}}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_USER_NAME
-# @DESCRIPTION: (Optional) Name of user on BCS server
-: ${CROS_FIRMWARE_BCS_USER_NAME:=}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# @ECLASS-VARIABLE: CROS_FIRMWARE_BCS_OVERLAY_NAME
-# @DESCRIPTION: (Optional) Name of the ebuild overlay.
-: ${CROS_FIRMWARE_BCS_OVERLAY_NAME:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_IMAGE
 # @DESCRIPTION: (Optional) Location of system firmware (BIOS) image
@@ -41,21 +30,6 @@ inherit cros-workon cros-binary
 # @ECLASS-VARIABLE: CROS_FIRMWARE_EC_VERSION
 # @DESCRIPTION: (Optional) Version name of EC firmware
 : ${CROS_FIRMWARE_EC_VERSION:=}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_SUM
-# @DESCRIPTION: (Optional) SHA-1 checksum of system firmware (BIOS) image
-: ${CROS_FIRMWARE_MAIN_SUM:=}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# @ECLASS-VARIABLE: CROS_FIRMWARE_MAIN_RW_SUM
-# @DESCRIPTION: (Optional) SHA-1 checksum of RW system firmware image
-: ${CROS_FIRMWARE_MAIN_RW_SUM:=}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# @ECLASS-VARIABLE: CROS_FIRMWARE_EC_SUM
-# @DESCRIPTION: (Optional) SHA-1 checksum of EC firmware image on BCS
-: ${CROS_FIRMWARE_EC_SUM:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
 # @DESCRIPTION: (Optional) Platform name of firmware
@@ -135,104 +109,6 @@ FW_RW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-RETURN_VALUE=""
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# Returns true (0) if parameter starts with "bcs://"
-_is_on_bcs() {
-	[[ "${1%%://*}" = "bcs" ]]
-}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# Returns true (0) if parameter starts with "file://"
-_is_in_files() {
-	[[ "${1%%://*}" = "file" ]]
-}
-
-# Fetch a file from the Binary Component Server
-# Parameters: URI of file "bcs://filename.tbz2", checksum of file.
-# Returns: Nothing
-_bcs_fetch() {
-	${CROS_BINARY_FETCH_REQUIRED} || return 0
-	local filename="${1##*://}"
-	local checksum="$2"
-
-	local bcs_host="git.chromium.org:6222"
-	local bcs_user="${CROS_FIRMWARE_BCS_USER_NAME}"
-	local bcs_pkgdir="${CATEGORY}/${PN}"
-	local bcs_root="$CROS_FIRMWARE_BCS_OVERLAY_NAME"
-
-	# Support both old and new locations for BCS binaries.
-	# TODO(dparker@chromium.org): Remove after all binaries are using the
-	# new location. crosbug.com/22789
-	[ -z "$bcs_root" ] && bcs_root="home/$CROS_FIRMWARE_BCS_USER_NAME"
-
-	URI_BASE="ssh://$bcs_user@$bcs_host/$bcs_root/$bcs_pkgdir"
-	CROS_BINARY_URI="${URI_BASE}/${filename}"
-	CROS_BINARY_SUM="${checksum}"
-	cros-binary_fetch
-}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# Unpack a tbz2 firmware archive to ${S}
-# Parameters: Location of archived firmware
-# Returns: Location of unpacked firmware as $RETURN_VALUE
-_src_unpack() {
-	local filepath="${1}"
-	local filename="$(basename ${filepath})"
-	mkdir -p "${S}" || die "Not able to create ${S}"
-	cp "${filepath}" "${S}" || die "Can't copy ${filepath} to ${S}"
-	cd "${S}" || die "Can't change directory to ${S}"
-	tar -axpf "${filename}" ||
-	  die "Failed to unpack ${filename}"
-	local contents="$(tar -atf "${filename}")"
-	if [ "$(echo "$contents" | wc -l)" -gt 1 ]; then
-		# Currently we can only serve one file (or directory).
-		ewarn "WARNING: package $filename contains multiple files."
-		contents="$(echo "$contents" | head -n 1)"
-	fi
-	RETURN_VALUE="${S}/$contents"
-}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# Unpack a tbz2 archive fetched from the BCS to ${S}
-# Parameters: URI of file. Example: "bcs://filename.tbz2"
-# Returns: Location of unpacked firmware as $RETURN_VALUE
-_bcs_src_unpack() {
-	local filename="${1##*://}"
-	if ${CROS_BINARY_FETCH_REQUIRED}; then
-		_src_unpack "${CROS_BINARY_STORE_DIR}/${filename}"
-	else
-		_src_unpack "${DISTDIR}/${filename}"
-	fi
-	RETURN_VALUE="${RETURN_VALUE}"
-}
-
-# TODO(hungte) Remove when BCS_OVERLAY transition is ready.
-# Provides the location of a firmware image given a URI.
-# Unpacks the firmware image if necessary.
-# Parameters: URI of file.
-#   Example: "file://filename.ext" or an absolute filepath.
-# Returns the absolute filepath of the unpacked firmware as $RETURN_VALUE
-_firmware_image_location() {
-	local source_uri=$1
-	if _is_in_files "${source_uri}"; then
-		local image_location="${FILESDIR}/${source_uri#*://}"
-	else
-		local image_location="${source_uri}"
-	fi
-	[[ -f "${image_location}"  ]] || die "File not found: ${image_location}"
-	case "${image_location}" in
-		*.tbz2 | *.tbz | *.tar.bz2 | *.tgz | *.tar.gz )
-			_src_unpack "${image_location}"
-			RETURN_VALUE="${RETURN_VALUE}"
-			;;
-		* )
-			RETURN_VALUE="${image_location}"
-	esac
-}
-
 # New SRC_URI based approach.
 
 _add_source() {
@@ -289,78 +165,9 @@ _unpack_archive() {
 	eval ${var}="'${folder}/${contents}'"
 }
 
-_legacy_src_unpack() {
-	# Fetch and unpack the system firmware image
-	if [[ -n "${CROS_FIRMWARE_MAIN_IMAGE}" ]]; then
-		if _is_on_bcs "${CROS_FIRMWARE_MAIN_IMAGE}"; then
-			_bcs_fetch "${CROS_FIRMWARE_MAIN_IMAGE}" \
-				   "${CROS_FIRMWARE_MAIN_SUM}"
-			_bcs_src_unpack "${CROS_FIRMWARE_MAIN_IMAGE}"
-			FW_IMAGE_LOCATION="${RETURN_VALUE}"
-		else
-			_firmware_image_location "${CROS_FIRMWARE_MAIN_IMAGE}"
-			FW_IMAGE_LOCATION="${RETURN_VALUE}"
-		fi
-	fi
-
-	# Fetch and unpack the system RW firmware image
-	if [[ -n "${CROS_FIRMWARE_MAIN_RW_IMAGE}" ]]; then
-		if _is_on_bcs "${CROS_FIRMWARE_MAIN_RW_IMAGE}"; then
-			_bcs_fetch "${CROS_FIRMWARE_MAIN_RW_IMAGE}" \
-				   "${CROS_FIRMWARE_MAIN_RW_SUM}"
-			_bcs_src_unpack "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
-			FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
-		else
-			_firmware_image_location "${CROS_FIRMWARE_MAIN_RW_IMAGE}"
-			FW_RW_IMAGE_LOCATION="${RETURN_VALUE}"
-		fi
-	fi
-
-	# Fetch and unpack the EC image
-	if [[ -n "${CROS_FIRMWARE_EC_IMAGE}" ]]; then
-		if _is_on_bcs "${CROS_FIRMWARE_EC_IMAGE}"; then
-			_bcs_fetch "${CROS_FIRMWARE_EC_IMAGE}"\
-				   "${CROS_FIRMWARE_EC_SUM}"
-			_bcs_src_unpack "${CROS_FIRMWARE_EC_IMAGE}"
-			EC_IMAGE_LOCATION="${RETURN_VALUE}"
-		else
-			_firmware_image_location "${CROS_FIRMWARE_EC_IMAGE}"
-			EC_IMAGE_LOCATION="${RETURN_VALUE}"
-		fi
-	fi
-
-	# Fetch and unpack BCS resources in CROS_FIRMWARE_EXTRA_LIST
-	local extra extra_list
-	# For backward compatibility, colon is still supported when there is no
-	# special URL (bcs://, file://).
-	local tr_source=';:' tr_target='\n\n'
-	if echo "${CROS_FIRMWARE_EXTRA_LIST}" | grep -q '://'; then
-		tr_source=';'
-		tr_target='\n'
-	fi
-	extra_list="$(echo "${CROS_FIRMWARE_EXTRA_LIST}" |
-			tr "$tr_source" "$tr_target")"
-	EXTRA_LOCATIONS=()
-	for extra in ${extra_list}; do
-		if _is_on_bcs "${extra}"; then
-			_bcs_fetch "${extra}" ""
-			_bcs_src_unpack "${extra}"
-			RETURN_VALUE="${RETURN_VALUE}"
-		else
-			RETURN_VALUE="${extra}"
-		fi
-		EXTRA_LOCATIONS+=(${RETURN_VALUE})
-	done
-}
-
 cros-firmware_src_unpack() {
 	cros-workon_src_unpack
 	local i
-
-	if [[ -n "${CROS_FIRMWARE_BCS_OVERLAY_NAME}" ]]; then
-		_legacy_src_unpack
-		return
-	fi
 
 	for i in {FW,FW_RW,EC}_IMAGE_LOCATION; do
 		_unpack_archive ${i}
