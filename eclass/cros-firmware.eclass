@@ -238,9 +238,15 @@ cros-firmware_src_compile() {
 	if use bootimage; then
 		if use depthcharge; then
 			einfo "Updater for local fw"
+			output_file="updater.sh"
 			./pack_firmware.sh -b $root/firmware/image.bin \
-				-o updater.sh $local_image_cmd $ext_cmd ||
+				-o $output_file $local_image_cmd $ext_cmd ||
 				die "Cannot pack local firmware."
+			if [[ -z "$image_cmd" ]]; then
+				# When no pre-built binaries are available,
+				# dupe local updater to system updater.
+				cp -f "$output_file" "$UPDATE_SCRIPT"
+			fi
 		else
 			for fw_file in $root/firmware/image-*.bin; do
 				einfo "Updater for local fw - $fw_file"
