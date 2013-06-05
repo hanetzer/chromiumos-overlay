@@ -25,7 +25,6 @@ RDEPEND="app-admin/sudo
 	net-misc/openssh
 	net-wireless/iw
 	sys-apps/net-tools
-	x11-terms/rxvt-unicode
 "
 DEPEND=""
 
