@@ -337,6 +337,10 @@ set_build_defines() {
 		BUILD_DEFINES+=( use_oem_wallpaper=1 )
 	fi
 
+	if use spring; then
+		BUILD_DEFINES+=( use_spring_wallpaper=1 )
+	fi
+
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
 	export GYP_GENERATORS="$(usex ninja ninja make)"
