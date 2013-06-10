@@ -105,6 +105,9 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-ps3-0002.patch"
 	epatch "${FILESDIR}/${P}-ps3-0003.patch"
 
+	# Fix a crash to the Playstation3 Controller pairing plugin.
+	epatch "${FILESDIR}/${P}-ps3-playstation-Prevents-the-playstation-plugin-to-crash.patch"
+
 	# Fix EIR parsing causing class of devices to be lost, retrieved
 	# from GIT head.
 	epatch "${FILESDIR}/${P}-eir-Fix-incorrect-eir_has_data_type-parsing.patch"
