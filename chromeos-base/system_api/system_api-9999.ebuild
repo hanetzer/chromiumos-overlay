@@ -11,8 +11,10 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
+IUSE="platform2"
 
 src_install() {
+	use platform2 && return 0
 	insinto /usr/include/chromeos
 	doins -r dbus switches
 }

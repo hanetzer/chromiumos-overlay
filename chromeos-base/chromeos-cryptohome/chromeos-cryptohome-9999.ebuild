@@ -21,6 +21,7 @@ RDEPEND="
 	app-crypt/trousers
 	chromeos-base/chaps
 	chromeos-base/platform2
+	chromeos-base/libchromeos
 	chromeos-base/libscrypt
 	dev-libs/dbus-glib
 	dev-libs/glib
@@ -31,6 +32,7 @@ RDEPEND="
 	sys-fs/ecryptfs-utils"
 
 DEPEND="
+	chromeos-base/system_api
 	test? ( dev-cpp/gtest )
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/vboot_reference

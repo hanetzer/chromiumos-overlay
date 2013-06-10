@@ -20,6 +20,8 @@ LIBCHROME_VERS="180609"
 RDEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libchromeos
+	chromeos-base/metrics
 	chromeos-base/platform2
 	chromeos-base/verity
 	dev-cpp/gflags
@@ -35,7 +37,8 @@ RDEPEND="app-arch/bzip2
 	sys-fs/e2fsprogs
 	sys-fs/udev"
 
-DEPEND="dev-cpp/gmock
+DEPEND="chromeos-base/system_api
+	dev-cpp/gmock
 	dev-cpp/gtest
 	cros_host? ( dev-util/scons )
 	${RDEPEND}"

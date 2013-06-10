@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="cros_host test"
+IUSE="cros_host platform2 test"
 
 LIBCHROME_DEPEND=$(
 	printf \
@@ -39,10 +39,13 @@ cr_scons() {
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
+
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export CCFLAGS="$CFLAGS"
@@ -55,6 +58,8 @@ src_compile() {
 }
 
 src_test() {
+	use platform2 && return 0
+
 	local v
 	for v in ${LIBCHROME_VERS[@]} ; do
 		cr_scons ${v} unittests libpolicy_unittest
@@ -68,6 +73,8 @@ src_test() {
 }
 
 src_install() {
+	use platform2 && return 0
+
 	local v
 	insinto /usr/$(get_libdir)/pkgconfig
 	for v in ${LIBCHROME_VERS[@]} ; do

@@ -20,6 +20,7 @@ RDEPEND="chromeos-base/bootstat
 	cellular? ( chromeos-base/cromo )
 	!<chromeos-base/flimflam-0.0.1-r530
 	chromeos-base/libchrome:180609[cros-debug=]
+	chromeos-base/libchromeos
 	chromeos-base/platform2
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 	chromeos-base/wimax_manager

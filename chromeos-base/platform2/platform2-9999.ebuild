@@ -60,19 +60,6 @@ RDEPEND="
 		dev-libs/protobuf
 		sys-apps/dbus
 		sys-apps/rootdev
-
-		!chromeos-base/cros-disks
-		!chromeos-base/libchromeos
-		!chromeos-base/metrics
-		!chromeos-base/system_api
-	)
-	!platform2? (
-		chromeos-base/libchromeos
-		chromeos-base/system_api
-		chromeos-base/metrics
-		!cros_host? (
-			chromeos-base/cros-disks
-		)
 	)
 "
 

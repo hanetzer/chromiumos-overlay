@@ -95,6 +95,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-fonts
 	chromeos-base/chromeos-installer
 	chromeos-base/crash-reporter
+	chromeos-base/metrics
 	chromeos-base/platform2
 	chromeos-base/root-certificates
 	chromeos-base/shill

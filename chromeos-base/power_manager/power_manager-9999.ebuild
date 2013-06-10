@@ -20,6 +20,7 @@ IUSE="${IUSE} -has_keyboard_backlight -stay_awake_with_headphones -touch_device"
 LIBCHROME_VERS="180609"
 
 RDEPEND="app-misc/ddccontrol
+	chromeos-base/metrics
 	chromeos-base/platform2
 	dev-cpp/gflags
 	dev-cpp/glog
@@ -31,6 +32,8 @@ RDEPEND="app-misc/ddccontrol
 
 DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libchromeos
+	chromeos-base/metrics
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 

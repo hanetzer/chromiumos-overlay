@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="platform2"
 
 LIBCHROME_VERS="180609"
 
@@ -32,10 +32,12 @@ DEPEND="${RDEPEND}
 	"
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
 	export BASE_VER=${LIBCHROME_VERS}
@@ -43,6 +45,7 @@ src_compile() {
 }
 
 src_test() {
+	use platform2 && return 0
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake tests
@@ -59,6 +62,7 @@ src_test() {
 }
 
 src_install() {
+	use platform2 && return 0
 	dobin metrics_{client,daemon} syslog_parser.sh
 
 	dolib.so libmetrics.so

@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="test"
+IUSE="platform2 test"
 
 LIBCHROME_VERS="180609"
 
@@ -42,23 +42,30 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_prepare() {
+	use platform2 && return 0
 	cros-workon_src_prepare
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
 	cros-workon_src_compile
 }
 
 src_test() {
+	use platform2 && return 0
+
 	# Needed for `cros_run_unit_tests`.
 	cros-workon_src_test
 }
 
 src_install() {
+	use platform2 && return 0
+
 	cros-workon_src_install
 	exeinto /opt/google/cros-disks
 	doexe "${OUT}"/disks
