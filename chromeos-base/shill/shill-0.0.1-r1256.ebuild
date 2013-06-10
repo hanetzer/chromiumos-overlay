@@ -91,6 +91,9 @@ src_install() {
 	dobin shill
 	# Netfilter queue helper is run directly from init, so install in sbin.
 	dosbin build/shims/netfilter-queue-helper
+	# Install Netfilter queue helper syscall filter policy file.
+	insinto /usr/share/policy
+	newins "shims/nfqueue-seccomp-${ARCH}.policy" nfqueue-seccomp.policy
 	local shims_dir="/usr/$(get_libdir)/shill/shims"
 	exeinto "${shims_dir}"
 	doexe build/shims/net-diags-upload
