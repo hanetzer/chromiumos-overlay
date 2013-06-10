@@ -174,8 +174,9 @@ IUSE_TESTS="
 	+tests_network_3GDisableGobiWhileConnecting
 	+tests_network_3GDisconnectFailure
 	+tests_network_3GDormancyDance
-	+tests_network_3GGobiPorts
 	+tests_network_3GFailedConnect
+	+tests_network_3GGobiPorts
+	+tests_network_3GIdentifiers
 	+tests_network_3GModemControl
 	+tests_network_3GModemPresent
 	+tests_network_3GNoGobi
