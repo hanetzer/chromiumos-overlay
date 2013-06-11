@@ -211,6 +211,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-debugd
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
+	chromeos-base/cros-disks
 	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
 	chromeos-base/dev-install
