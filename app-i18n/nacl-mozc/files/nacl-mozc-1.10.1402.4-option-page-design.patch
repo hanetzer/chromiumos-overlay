@@ -1,0 +1,674 @@
+diff -urN nacl_mozc_org/_locales/en/messages.json nacl_mozc/_locales/en/messages.json
+--- nacl_mozc_org/_locales/en/messages.json	2013-06-11 19:27:09.561749000 +0900
++++ nacl_mozc/_locales/en/messages.json	2013-06-11 19:35:20.528478000 +0900
+@@ -118,6 +118,21 @@
+   "configSuggestionsSize": {
+     "message": "Maximum number of suggestions"
+   },
++  "configSettingsTitle": {
++    "message": "Japanese input settings"
++  },
++  "configBasicsTitle": {
++    "message": "Basics"
++  },
++  "configInputAssistanceTitle": {
++    "message": "Input Assistance"
++  },
++  "configSuggestTitle": {
++    "message": "Suggest"
++  },
++  "configPrivacyTitle": {
++    "message": "Privacy"
++  },
+   "configCreditsDescription": {
+     "message": "Copyright © 2013 Google Inc. All Rights Reserved."
+   },
+diff -urN nacl_mozc_org/_locales/ja/messages.json nacl_mozc/_locales/ja/messages.json
+--- nacl_mozc_org/_locales/ja/messages.json	2013-06-11 19:27:09.478749000 +0900
++++ nacl_mozc/_locales/ja/messages.json	2013-06-11 19:34:53.038049000 +0900
+@@ -118,6 +118,21 @@
+   "configSuggestionsSize": {
+     "message": "サジェストの最大候補数"
+   },
++  "configSettingsTitle": {
++    "message": "日本語入力の設定"
++  },
++  "configBasicsTitle": {
++    "message": "基本設定"
++  },
++  "configInputAssistanceTitle": {
++    "message": "入力補助"
++  },
++  "configSuggestTitle": {
++    "message": "サジェスト"
++  },
++  "configPrivacyTitle": {
++    "message": "プライバシー"
++  },
+   "configCreditsDescription": {
+     "message": "Copyright © 2013 Google Inc. All Rights Reserved."
+   },
+diff -urN nacl_mozc_org/option_page.js nacl_mozc/option_page.js
+--- nacl_mozc_org/option_page.js	2013-06-11 19:27:08.956742000 +0900
++++ nacl_mozc/option_page.js	2013-06-11 19:33:34.637812000 +0900
+@@ -56,6 +56,43 @@
+ };
+ 
+ /**
++ * Option title information data.
++ * @const
++ * @type {Array.<!Object>}
++ * @private
++ */
++mozc.OPTION_TITLES_ = [
++  {
++    id: 'settings_title',
++    name: chrome.i18n.getMessage('configSettingsTitle')
++  },
++  {
++    id: 'basics_title',
++    name: chrome.i18n.getMessage('configBasicsTitle')
++  },
++  {
++    id: 'input_assistance_title',
++    name: chrome.i18n.getMessage('configInputAssistanceTitle')
++  },
++  {
++    id: 'suggest_title',
++    name: chrome.i18n.getMessage('configSuggestTitle')
++  },
++  {
++    id: 'privacy_title',
++    name: chrome.i18n.getMessage('configPrivacyTitle')
++  },
++  {
++    id: 'credits_title',
++    name: chrome.i18n.getMessage('configCreditsDescription')
++  },
++  {
++    id: 'oss_credits_title',
++    name: chrome.i18n.getMessage('configOssCreditsDescription')
++  }
++];
++
++/**
+  * Option checkbox information data.
+  * @const
+  * @type {Array.<!Object>}
+@@ -248,6 +285,7 @@
+ mozc.OptionPage = function(naclMozc, domDocument, consoleObject) {
+   /**
+    * NaclMozc object.
++   * This value will be null when the option page is unloaded.
+    * @type {mozc.NaclMozc}
+    * @private
+    */
+@@ -255,14 +293,16 @@
+ 
+   /**
+    * Document object of the option page.
+-   * @type {!HTMLDocument}
++   * This value will be null when the option page is unloaded.
++   * @type {HTMLDocument}
+    * @private
+    */
+   this.document_ = domDocument;
+ 
+   /**
+    * Console object of the option page.
+-   * @type {!Object}
++   * This value will be null when the option page is unloaded.
++   * @type {Object}
+    * @private
+    */
+   this.console_ = consoleObject;
+@@ -272,29 +312,33 @@
+  * Initializes the option page.
+  */
+ mozc.OptionPage.prototype.initialize = function() {
++  if (!this.naclMozc_) {
++    console.error('The option page is already unloaded.');
++    return;
++  }
++  this.initPages_();
+   this.naclMozc_.callWhenInitialized(
+       this.naclMozc_.getConfig.bind(
+           this.naclMozc_,
+-          this.initPages_.bind(this))
++          this.onConfigLoaded_.bind(this))
+   );
+ };
+ 
+ /**
+- * Creates an TR element including title string and element.
+- * @param {string} title Title string.
+- * @param {!Element} element Element object to be inserted.
+- * @return {!Element} Created TR element.
+- * @private
++ * Unloads the option page.
+  */
+-mozc.OptionPage.prototype.createTrElement_ = function(title, element) {
+-  var tr = this.document_.createElement('tr');
+-  var labelTh = this.document_.createElement('th');
+-  labelTh.appendChild(this.document_.createTextNode(title));
+-  var elementTd = this.document_.createElement('td');
+-  elementTd.appendChild(element);
+-  tr.appendChild(labelTh);
+-  tr.appendChild(elementTd);
+-  return tr;
++mozc.OptionPage.prototype.unload = function() {
++  this.naclMozc_ = null;
++  this.document_ = null;
++  this.console_ = null;
++};
++
++/**
++ * Gets whether the option page is unloaded.
++ * @return {boolean} Whether the option page is already unloaded.
++ */
++mozc.OptionPage.prototype.isUnloaded = function() {
++  return this.naclMozc_ == null;
+ };
+ 
+ /**
+@@ -313,12 +357,101 @@
+ 
+ /**
+  * Initializes the page.
++ * @private
++ */
++mozc.OptionPage.prototype.initPages_ = function() {
++  this.document_.title = chrome.i18n.getMessage('configSettingsTitle');
++  for (var i = 0; i < mozc.OPTION_TITLES_.length; ++i) {
++    var optionTitle = mozc.OPTION_TITLES_[i];
++    this.document_.getElementById(optionTitle.id).innerHTML =
++        optionTitle.name;
++  }
++
++  // A checkbox (id:"CHECK_BOX_ID") is in a DIV (id:"CHECK_BOX_ID_div") and has
++  // a label (id:"CHECK_BOX_ID_label").
++  // <div id="CHECK_BOX_ID_div">
++  //   <span>
++  //     <input type="checkbox" id="CHECK_BOX_ID">
++  //     <span>
++  //       <label for="CHECK_BOX_ID" id="CHECK_BOX_ID_label">...</label>
++  //     </span>
++  //   </span>
++  // </div>
++  for (var i = 0; i < mozc.OPTION_CHECKBOXES_.length; ++i) {
++    var optionCheckbox = mozc.OPTION_CHECKBOXES_[i];
++    if (optionCheckbox.disabled) {
++      this.document_.getElementById(optionCheckbox.id + '_div').style
++          .visibility = 'hidden';
++    }
++    this.document_.getElementById(optionCheckbox.id + '_label').innerHTML =
++        optionCheckbox.name;
++    this.document_.getElementById(optionCheckbox.id).addEventListener(
++        'change', this.saveConfig_.bind(this), true);
++  }
++
++  // A selection (id:"SELECTION_ID") is in a DIV (id:"SELECTION_ID_div") and has
++  // a label (id:"SELECTION_ID_label")
++  // <div id="SELECTION_ID_div">
++  //   <span class="controlled-setting-with-label">
++  //     <span class="selection-label" id="SELECTION_ID_label">...</span>
++  //     <select id="SELECTION_ID"></select>
++  //   </span>
++  // </div>
++  for (var i = 0; i < mozc.OPTION_SELECTIONS_.length; ++i) {
++    var optionSelection = mozc.OPTION_SELECTIONS_[i];
++    this.document_.getElementById(optionSelection.id + '_label').innerHTML =
++        optionSelection.name;
++    var selectionElement = this.document_.getElementById(optionSelection.id);
++    selectionElement.innerHTML = optionSelection.name;
++    while (selectionElement.hasChildNodes()) {
++      selectionElement.removeChild(selectionElement.firstChild);
++    }
++    for (var j = 0; j < optionSelection.items.length; ++j) {
++      selectionElement.appendChild(this.createOptionElement_(
++          optionSelection.items[j].name,
++          optionSelection.items[j].value));
++    }
++    selectionElement.addEventListener(
++        'change', this.saveConfig_.bind(this), true);
++  }
++
++  // We use a select element for number selection.
++  // A selection (id:"NUMBER_ID") is in a DIV (id:"NUMBER_ID_div") and has a
++  // label (id:"NUMBER_ID_label")
++  // <div id="NUMBER_ID_div">
++  //   <span class="controlled-setting-with-label">
++  //     <span class="selection-label" id="NUMBER_ID_label">...</span>
++  //     <select id="NUMBER_ID"></select>
++  //   </span>
++  // </div>
++  for (var i = 0; i < mozc.OPTION_NUMBERS_.length; ++i) {
++    var optionNumber = mozc.OPTION_NUMBERS_[i];
++    this.document_.getElementById(optionNumber.id + '_label').innerHTML =
++        optionNumber.name;
++    var selectionElement = this.document_.getElementById(optionNumber.id);
++    selectionElement.innerHTML = optionNumber.name;
++    while (selectionElement.hasChildNodes()) {
++      selectionElement.removeChild(selectionElement.firstChild);
++    }
++    for (var j = optionNumber.min; j <= optionNumber.max; ++j) {
++      selectionElement.appendChild(this.createOptionElement_(j, j));
++    }
++    selectionElement.addEventListener(
++        'change', this.saveConfig_.bind(this), true);
++  }
++};
++
++/**
++ * Called when the configuration is loaded.
+  * @param {Object} response Response data of GET_CONFIG from NaCl module.
+  * @private
+  */
+-mozc.OptionPage.prototype.initPages_ = function(response) {
++mozc.OptionPage.prototype.onConfigLoaded_ = function(response) {
++  if (this.isUnloaded()) {
++    console.error('The option page is already unloaded.');
++    return;
++  }
+   var config = response['output']['config'];
+-
+   for (var i = 0; i < mozc.OPTION_CHECKBOXES_.length; ++i) {
+     var optionCheckbox = mozc.OPTION_CHECKBOXES_[i];
+     if (optionCheckbox.disabled) {
+@@ -336,67 +469,24 @@
+                   config[optionCheckbox.configId] :
+                   mozc.DEFAULT_CONFIG_[optionCheckbox.configId];
+     }
+-    var checkbox = this.document_.createElement('input');
+-    checkbox.type = 'checkbox';
+-    checkbox.id = optionCheckbox.id;
+-    checkbox.checked = value;
+-    checkbox.addEventListener('change', this.saveConfig_.bind(this), true);
+-    var label = this.document_.createElement('label');
+-    label.setAttribute('for', optionCheckbox.id);
+-    label.appendChild(this.document_.createTextNode(optionCheckbox.name));
+-    var checkboxDiv = this.document_.createElement('div');
+-    checkboxDiv.appendChild(checkbox);
+-    checkboxDiv.appendChild(label);
+-    this.document_.body.appendChild(checkboxDiv);
++    this.document_.getElementById(optionCheckbox.id).checked = value;
+   }
+-
+-  var optionTable = this.document_.createElement('table');
+-
+   for (var i = 0; i < mozc.OPTION_SELECTIONS_.length; ++i) {
+     var optionSelection = mozc.OPTION_SELECTIONS_[i];
+     var value = (config[optionSelection.configId] != undefined) ?
+                 config[optionSelection.configId] :
+                 mozc.DEFAULT_CONFIG_[optionSelection.configId];
+-    var select = this.document_.createElement('select');
+-    select.id = optionSelection.id;
+-    select.addEventListener('change', this.saveConfig_.bind(this), true);
+-    for (var j = 0; j < optionSelection.items.length; ++j) {
+-      select.appendChild(this.createOptionElement_(
+-          optionSelection.items[j].name,
+-          optionSelection.items[j].value));
+-      if (optionSelection.items[j].value == value) {
+-        select.selectedIndex = j;
+-      }
+-    }
+-    optionTable.appendChild(this.createTrElement_(
+-        optionSelection.name, select));
++    this.document_.getElementById(optionSelection.id).value = value;
+   }
+-
+   for (var i = 0; i < mozc.OPTION_NUMBERS_.length; ++i) {
+     var optionNumber = mozc.OPTION_NUMBERS_[i];
+     var value = (config[optionNumber.configId] != undefined) ?
+                 config[optionNumber.configId] :
+                 mozc.DEFAULT_CONFIG_[optionNumber.configId];
+-    var number = this.document_.createElement('input');
+-    number.id = optionNumber.id;
+-    number.min = optionNumber.min;
+-    number.max = optionNumber.max;
+-    number.type = 'number';
+-    number.value = value;
+-    number.addEventListener('change', this.saveConfig_.bind(this), true);
+-    optionTable.appendChild(this.createTrElement_(optionNumber.name, number));
+-  }
+-  this.document_.body.appendChild(optionTable);
+-
+-  this.document_.body.appendChild(this.document_.createElement('hr'));
+-  var creditDiv = this.document_.createElement('div');
+-  creditDiv.innerHTML = chrome.i18n.getMessage('configCreditsDescription');
+-  this.document_.body.appendChild(creditDiv);
+-  var ossCreditDiv = this.document_.createElement('div');
+-  ossCreditDiv.innerHTML =
+-      chrome.i18n.getMessage('configOssCreditsDescription');
+-  this.document_.body.appendChild(ossCreditDiv);
++    this.document_.getElementById(optionNumber.id).value = value;
++  }
+ 
++  this.document_.body.style.visibility = 'visible';
+   // Outputs the version information to JavaScript console.
+   this.naclMozc_.getVersionInfo((function(message) {
+     this.console_.log(JSON.stringify(message));
+@@ -408,6 +498,11 @@
+  * @private
+  */
+ mozc.OptionPage.prototype.saveConfig_ = function() {
++  if (this.isUnloaded()) {
++    console.error('The option page is already unloaded.');
++    return;
++  }
++
+   var config = {};
+   for (var i = 0; i < mozc.OPTION_CHECKBOXES_.length; ++i) {
+     var optionCheckbox = mozc.OPTION_CHECKBOXES_[i];
+diff -urN nacl_mozc_org/options.css nacl_mozc/options.css
+--- nacl_mozc_org/options.css	1970-01-01 09:00:00.000000000 +0900
++++ nacl_mozc/options.css	2013-06-11 19:28:52.692373000 +0900
+@@ -0,0 +1,164 @@
++/**
++ * NaCl Mozc option page style seet.
++ *
++ */
++
++body {
++  color: rgb(48, 57, 66);
++  font: 75% 'Segoe UI', Arial, Meiryo, 'MS PGothic', sans-serif;
++  max-width:640px;
++  visibility:hidden;
++}
++
++input[type='checkbox'] {
++  -webkit-appearance: none;
++  background-image: -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
++  border: 1px solid rgba(0, 0, 0, .25);
++  border-radius: 2px;
++  bottom: 2px;
++  box-shadow: 0 1px 0 rgba(0, 0, 0, .08),
++      inset 0 1px 2px rgba(255, 255, 255, .75);
++  color: #444;
++  font: inherit;
++  height: 13px;
++  margin: 4px 1px 0 0;
++  position: relative;
++  -webkit-user-select: none;
++  text-shadow: 0 1px 0 rgb(240, 240, 240);
++  vertical-align: middle;
++  width: 13px;
++}
++
++input[type='checkbox']:checked::before {
++  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAcklEQVQY02NgwA/YoJgoEA/Es4DYgJBCJSBeD8SboRinBiYg7kZS2IosyQ/Eakh8LySFq4FYHFlxGRBvBOJYqMRqJMU+yApNkSRAeC0Sux3dfSCTetE0wKyXxOWhMKhTYIr9CAUXyJMzgLgBagBBgDPGAI2LGdNt0T1AAAAAAElFTkSuQmCC);
++  background-size: 100% 100%;
++  content: '';
++  display: block;
++  height: 100%;
++  -webkit-user-select: none;
++  width: 100%;
++}
++
++input[type='checkbox']:disabled {
++  opacity: .75;
++}
++
++label {
++  display: inline;
++  padding: 0;
++  cursor: default;
++}
++
++label:hover {
++  color: black;
++}
++
++h1 {
++  display: block;
++  font-size: 1.5em;
++  font-weight: normal;
++  line-height: 1;
++  margin: 0;
++  -webkit-margin-after: .67em;
++  -webkit-margin-before: .67em;
++  -webkit-margin-end: 0;
++  -webkit-margin-start: 0;
++  padding: 1px 0 13px;
++  -webkit-user-select: none;
++}
++
++h1::after {
++  background-color: #eee;
++  content: ' ';
++  display: block;
++  height: 1px;
++  -webkit-margin-end: 20px;
++  position: relative;
++  top: 13px;
++}
++
++h3 {
++  color: black;
++  font-size: 1.2em;
++  font-weight: normal;
++  line-height: 1;
++  margin-bottom: .8em;
++  -webkit-margin-start: -18px;
++  -webkit-user-select: none;
++}
++
++section {
++  margin: 8px 0 24px;
++  max-width: 600px;
++  -webkit-padding-start: 20px;
++}
++
++select {
++  -webkit-appearance: none;
++  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAYAAAAbQcSUAAAAaUlEQVQoz2P4//8/A7UwdkEGhiggTsODo4g2LBEImJmZvwE1/UfHIHGQPNGGAbHCggULFrKxsf1ENgjEB4mD5EnxJoaByAZB5Yk3DNlAPj6+L8gGkWUYzMC3b982IRtEtmFQjaxYxDAwAGi4TwMYKNLfAAAAAElFTkSuQmCC),
++      -webkit-linear-gradient(#ededed, #ededed 38%, #dedede);
++  background-position: right center;
++  background-repeat: no-repeat;
++  border: 1px solid rgba(0, 0, 0, .25);
++  border-radius: 2px;
++  box-shadow: 0 1px 0 rgba(0, 0, 0, .08), inset 0 1px 2px rgba(255, 255, 255, .75);
++  color: #444;
++  font: inherit;
++  margin: 0 1px 0 0;
++  min-height: 2em;
++  min-width: 240px;
++  padding-bottom: 1px;
++  -webkit-padding-end: 20px;
++  -webkit-padding-start: 6px;
++  text-shadow: 0 1px 0 rgb(240, 240, 240);
++  -webkit-user-select: none;
++}
++
++select:disabled {
++  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAICAYAAAAbQcSUAAAAWklEQVQoz2P4//8/A7UwdkEGhiggTsODo4g2LBEIGhoa/uPCIHmiDQNihQULFizEZhBIHCRPijexGggzCCpPvGHoBiIbRJZhMAPfvn3bhGwQ2YZBNbJiEcPAAIgGZrTRc1ZLAAAAAElFTkSuQmCC),
++      -webkit-linear-gradient(#f1f1f1, #f1f1f1 38%, #e6e6e6);
++  border-color: rgba(80, 80, 80, .2);
++  box-shadow: 0 1px 0 rgba(80, 80, 80, .08), inset 0 1px 2px rgba(255, 255, 255, .75);
++  color: #aaa;
++}
++
++option {
++  font: inherit;
++  font-weight: normal;
++}
++
++footer {
++  border-top: 1px solid #eee;
++  -webkit-margin-end: 20px;
++  margin-top: 16px;
++  padding: 8px 0;
++  text-align: right;
++}
++
++.controlled-setting-with-label {
++  -webkit-box-align: center;
++  display: -webkit-box;
++  padding-bottom: 7px;
++  padding-top: 7px;
++}
++
++.controlled-setting-with-label > input + span {
++  -webkit-box-align: center;
++  -webkit-box-flex: 1;
++  display: -webkit-box;
++  -webkit-margin-start: .6em;
++}
++
++.controlled-setting-with-label > input:disabled + span label {
++  color: #999;
++}
++
++.controlled-setting-with-label label {
++  display: inline;
++  padding: 0;
++}
++
++.selection-label {
++  display: -webkit-box;
++  width: 230px;
++}
+diff -urN nacl_mozc_org/options.html nacl_mozc/options.html
+--- nacl_mozc_org/options.html	2013-06-11 19:27:09.785753000 +0900
++++ nacl_mozc/options.html	2013-06-11 19:35:39.243775000 +0900
+@@ -2,9 +2,138 @@
+ <html>
+ <head>
+ <meta charset="UTF-8">
+-<script type="text/javascript" src="options.js"></script>
+-<title>Chrome NaCl Mozc exntension Options</title>
++<script src="options.js"></script>
++<link rel="stylesheet" href="options.css">
++<title>Japanese input settings</title>
+ </head>
+ <body>
++<div id="settings_title_div">
++<header>
++<h1 id="settings_title">Japanese input settings</h1>
++</header>
++</div>
++
++<div>
++  <section>
++    <h3 id="basics_title">Basics</h3>
++    <div id="preedit_method_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="preedit_method_label">Input mode:</span>
++        <select id="preedit_method"></select>
++      </span>
++    </div>
++    <div id="punctuation_method_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="punctuation_method_label">Punctuation style:</span>
++        <select id="punctuation_method"></select>
++      </span>
++    </div>
++    <div id="symbol_method_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="symbol_method_label">Symbol style:</span>
++        <select id="symbol_method"></select>
++      </span>
++    </div>
++    <div id="space_character_form_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="space_character_form_label">Space input style:</span>
++        <select id="space_character_form"></select>
++      </span>
++    </div>
++    <div id="selection_shortcut_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="selection_shortcut_label">Selection shortcut:</span>
++        <select id="selection_shortcut"></select>
++      </span>
++    </div>
++    <div id="session_keymap_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="session_keymap_label">Keymap style:</span>
++        <select id="session_keymap"></select>
++      </span>
++    </div>
++    <div id="history_learning_level_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="history_learning_level_label">Adjust conversion based on previous input:</span>
++        <select id="history_learning_level"></select>
++      </span>
++    </div>
++  </section>
++</div>
++
++<div>
++  <section>
++    <h3 id="input_assistance_title">Input Assistance</h3>
++    <div id="use_auto_ime_turn_off_div">
++      <span class="controlled-setting-with-label">
++        <input type="checkbox" id="use_auto_ime_turn_off">
++        <span>
++          <label for="use_auto_ime_turn_off" id="use_auto_ime_turn_off_label">Automatically switch to halfwidth</label>
++        </span>
++      </span>
++    </div>
++    <div id="shift_key_mode_switch_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="shift_key_mode_switch_label">Shift key mode switch:</span>
++        <select id="shift_key_mode_switch"></select>
++      </span>
++    </div>
++  </section>
++</div>
++
++<div>
++  <section>
++    <h3 id="suggest_title">Suggest</h3>
++    <div id="use_history_suggest_div">
++      <span class="controlled-setting-with-label">
++        <input type="checkbox" id="use_history_suggest">
++        <span>
++          <label for="use_history_suggest" id="use_history_suggest_label">Use input history</label>
++        </span>
++      </span>
++    </div>
++    <div id="use_dictionary_suggest_div">
++      <span class="controlled-setting-with-label">
++        <input type="checkbox" id="use_dictionary_suggest">
++        <span>
++          <label for="use_dictionary_suggest" id="use_dictionary_suggest_label">Use system dictionary</label>
++        </span>
++      </span>
++    </div>
++    <div id="suggestions_size_div">
++      <span class="controlled-setting-with-label">
++        <span class="selection-label" id="suggestions_size_label">Maximum number of suggestions:</span>
++        <select id="suggestions_size"></select>
++      </span>
++    </div>
++  </section>
++</div>
++
++<div>
++  <section>
++    <h3 id="privacy_title">Privacy</h3>
++    <div id="incognito_mode_div">
++      <span class="controlled-setting-with-label">
++        <input type="checkbox" id="incognito_mode">
++        <span>
++          <label for="incognito_mode" id="incognito_mode_label">Temporarily disable conversion personalization, history-based suggestions and user dictionary</label>
++        </span>
++      </span>
++    </div>
++    <div id="upload_usage_stats_div">
++      <span class="controlled-setting-with-label">
++        <input type="checkbox" id="upload_usage_stats">
++        <span>
++          <label for="upload_usage_stats" id="upload_usage_stats_label">Help make Google Japanese Input better by automatically sending usage statistics and crash reports to Google (changes will take effect after you log out and log back in)</label>
++        </span>
++      </span>
++    </div>
++  </section>
++</div>
++
++<footer>
++<div id="credits_title">Copyright c 2013 Google Inc. All Rights Reserved.</div>
++<div id="oss_credits_title">This software is made possible by <a href="credits_en.html">open source software</a>.</div>
++</footer>
+ </body>
+ </html>

@@ -36,6 +36,7 @@ src_prepare() {
 		# NaCl Mozc is handled as id:fpfbhcjppmaeaijcidgiibchfbnhbelj.
 		epatch "${FILESDIR}"/nacl-mozc-1.10.1402.4-insert-internal-public-key.patch
 		epatch "${FILESDIR}"/nacl-mozc-1.10.1402.4-call-startIme.patch
+		epatch "${FILESDIR}"/nacl-mozc-1.10.1402.4-option-page-design.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
