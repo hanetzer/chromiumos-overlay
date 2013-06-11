@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks -spring +verbose vtable_verify X"
+IUSE="-asan +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -drm +gold hardfp +highdpi +nacl neon -ninja -oem_wallpaper -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
 # Don't strip NaCl executables. These are not linux executables and the
 # linux host's strip command doesn't know how to handle them correctly.
@@ -333,9 +333,7 @@ set_build_defines() {
 		BUILD_DEFINES+=( internal_pdf=0 )
 	fi
 
-	if use spring; then
-		BUILD_DEFINES+=( use_spring_wallpaper=1 )
-	elif use oem_wallpaper; then
+	if use oem_wallpaper; then
 		BUILD_DEFINES+=( use_oem_wallpaper=1 )
 	fi
 
