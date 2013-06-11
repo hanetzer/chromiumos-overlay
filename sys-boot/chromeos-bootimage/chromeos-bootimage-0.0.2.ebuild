@@ -59,6 +59,8 @@ ALL_DEV_TREES=(
 	parrot
 	stout
 	stumpy
+	tegra114-dalmore
+	tegra114-venice
 )
 DEV_TREE_SUFFIX="_dtb"
 
@@ -215,7 +217,7 @@ src_compile_uboot() {
 	common_flags+=" --board ${BOARD_USE}"
 	common_flags+=" --key ${devkeys_file}"
 	common_flags+=" --bmpblk ${CROS_FIRMWARE_ROOT}/bmpblk.bin"
-	common_flags+=' --outdir "outdir"'
+	common_flags+=' --outdir outdir'
 
 	if use tegra; then
 		common_flags+=" --bct ${CROS_FIRMWARE_ROOT}/bct/board.bct"
