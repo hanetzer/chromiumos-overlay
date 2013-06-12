@@ -15,7 +15,7 @@ HOMEPAGE="http://hostap.epitest.fi"
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="ipv6 logwatch madwifi +ssl +wps weak_urandom_low_security"
+IUSE="ipv6 logwatch madwifi +ssl +wps weak_urandom_low_security spectrum_mgmt"
 
 DEPEND="ssl? ( dev-libs/openssl )
 	dev-libs/libnl:0
@@ -100,6 +100,9 @@ src_configure() {
 		ewarn "number generator.  You should not use this in a"
 		ewarn "production environment!"
 		echo "CONFIG_WEAK_URANDOM_LOW_SECURITY=y" >> ${CONFIG}
+	fi
+	if use spectrum_mgmt; then
+		echo "CONFIG_SPECTRUM_MANAGEMENT_CAPABILITY=y" >> ${CONFIG}
 	fi
 
 	default_src_configure
