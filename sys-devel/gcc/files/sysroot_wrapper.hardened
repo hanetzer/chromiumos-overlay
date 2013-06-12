@@ -172,8 +172,8 @@ def log_parent_process_tree(log, ppid):
 
 sysroot = os.environ.get('SYSROOT', '')
 if sysroot:
-  clang_cmdline.append('--sysroot=%s' % sysroot)
-  gcc_cmdline.append('--sysroot=%s' % sysroot)
+  clang_cmdline.insert(0, '--sysroot=%s' % sysroot)
+  gcc_cmdline.insert(0, '--sysroot=%s' % sysroot)
 else:
   import logging
   import logging.handlers
