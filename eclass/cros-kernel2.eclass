@@ -628,8 +628,9 @@ cros-kernel2_src_test() {
 	[[ -e ${SMATCH_LOG_FILE} ]] || \
 		die "Log file from src_compile() ${SMATCH_LOG_FILE} not found!"
 
-	grep -w error: "${SMATCH_LOG_FILE}" | grep -o "kernel/files/.*" \
-		| sed s:"kernel/files/"::g > "${SMATCH_LOG_FILE}.errors"
+	local prefix="$(realpath "${S}")/"
+	grep -w error: "${SMATCH_LOG_FILE}" | grep -o "${prefix}.*" \
+		| sed s:"${prefix}"::g > "${SMATCH_LOG_FILE}.errors"
 	local num_errors=$(wc -l < "${SMATCH_LOG_FILE}.errors")
 	local num_warnings=$(egrep -wc "warn:|warning:" "${SMATCH_LOG_FILE}")
 	einfo "smatch found ${num_errors} errors and ${num_warnings} warnings."
