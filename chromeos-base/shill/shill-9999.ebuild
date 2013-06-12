@@ -21,6 +21,7 @@ RDEPEND="chromeos-base/bootstat
 	!<chromeos-base/flimflam-0.0.1-r530
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/libchromeos
+	chromeos-base/metrics
 	chromeos-base/platform2
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 	chromeos-base/wimax_manager
@@ -30,6 +31,7 @@ RDEPEND="chromeos-base/bootstat
 	dev-libs/libnl:3
 	dev-libs/nss
 	dev-libs/protobuf
+	cellular? ( net-dialup/ppp )
 	vpn? ( net-dialup/ppp )
 	net-dns/c-ares
 	net-libs/libmnl
