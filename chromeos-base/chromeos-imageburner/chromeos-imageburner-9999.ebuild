@@ -41,7 +41,6 @@ src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake image_burner
-	emake image_burner_tester
 }
 
 src_test() {
@@ -51,7 +50,7 @@ src_test() {
 }
 
 src_install() {
-	dosbin image_burner{,_tester}
+	dosbin image_burner
 
 	insinto /etc/dbus-1/system.d
 	doins ImageBurner.conf
