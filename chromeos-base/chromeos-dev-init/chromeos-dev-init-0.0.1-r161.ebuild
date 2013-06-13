@@ -14,15 +14,8 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_embedded"
-
-DEPEND="!cros_embedded? ( chromeos-base/chromeos-init )
-	 cros_embedded? ( chromeos-base/chromeos-embedded-init )
-"
-RDEPEND="${DEPEND}"
 
 src_install() {
 	insinto /etc/init
-	insopts --owner=root --group=root --mode=0644
 	doins dev-init/*.conf
 }
