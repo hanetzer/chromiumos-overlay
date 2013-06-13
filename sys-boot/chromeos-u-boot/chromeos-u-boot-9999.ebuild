@@ -192,6 +192,7 @@ src_install() {
 	if use u_boot_config_use_daisy || use u_boot_config_use_peach ; then
 		newins "${UB_BUILD_DIR}/spl/${ub_board}-spl.bin" \
 		  u-boot-spl.wrapped.bin
+		newins "${UB_BUILD_DIR}/spl/u-boot-spl" u-boot-spl.elf
 	fi
 
 	for f in "${files_to_copy[@]}"; do
