@@ -43,6 +43,7 @@ RDEPEND="chromeos-base/bootstat
 	net-wireless/wpa_supplicant[dbus]"
 
 DEPEND="${RDEPEND}
+	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
