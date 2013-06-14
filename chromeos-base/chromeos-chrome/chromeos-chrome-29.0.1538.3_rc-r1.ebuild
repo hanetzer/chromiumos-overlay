@@ -637,6 +637,8 @@ src_configure() {
 		)
 	fi
 	export GYP_GENERATOR_FLAGS="${build_tool_flags[*]}"
+	export BOTO_CONFIG=/home/$(whoami)/.boto
+	export PATH=${PATH}:/home/$(whoami)/depot_tools
 
 	# TODO(rcui): crosbug.com/20435. Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
@@ -647,7 +649,7 @@ src_configure() {
 			"${ECHROME_SET_VER}" --runhooks || die
 		elif [[ ! -f .gclient ]]; then
 			# Probably a git submodules checkout
-			PATH=${PATH}:/home/$(whoami)/depot_tools git runhooks --force || die  "Failed to run git runhooks"
+			git runhooks --force || die "Failed to run git runhooks"
 		else
 			[[ -n "${EGCLIENT}" ]] || die EGCLIENT unset
 			[[ -f "${EGCLIENT}" ]] || die EGCLIENT at "${EGCLIENT}" does not exist
