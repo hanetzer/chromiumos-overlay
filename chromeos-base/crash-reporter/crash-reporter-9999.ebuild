@@ -71,4 +71,6 @@ src_install() {
 
 	insinto /lib/udev/rules.d
 	doins 99-crash-reporter.rules
+
+	dosbin kernel_log_collector.sh
 }
