@@ -179,9 +179,24 @@ src_install() {
 	doins "${S}"/speech_synthesis/patts/tts_service.nmf
 
 	# Speech synthesis voice data
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE.zip
+	doins -r "${S}"/voice_data_hmm_de-DE
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB.zip
+	doins -r "${S}"/voice_data_hmm_en-GB
 	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-US.js
 	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-US.zip
 	doins -r "${S}"/voice_data_hmm_en-US
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES.zip
+	doins -r "${S}"/voice_data_hmm_es-ES
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR.zip
+	doins -r "${S}"/voice_data_hmm_fr-FR
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT.zip
+	doins -r "${S}"/voice_data_hmm_it-IT
 
 	# Speech synthesis engine (platform-specific native client module)
 	if use arm ; then
