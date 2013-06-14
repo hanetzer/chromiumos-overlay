@@ -37,6 +37,7 @@ CROS_COMMON_RDEPEND="
 	app-shells/bash
 	chromeos-base/chromeos-dev-init
 	chromeos-base/gmerge
+	net-dialup/lrzsz
 	net-misc/openssh
 	sys-devel/gdb
 "
