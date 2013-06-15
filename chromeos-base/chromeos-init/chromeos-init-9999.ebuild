@@ -40,6 +40,7 @@ src_install() {
 	# Install log cleaning script and run it daily.
 	dosbin chromeos-cleanup-logs
 	dosbin simple-rotate
+	dosbin netfilter-common
 
 	insinto /etc
 	doins issue rsyslog.chromeos
@@ -85,7 +86,6 @@ src_install() {
 		doins startup_utils.sh
 
 		into /usr
-		dosbin netfilter-common
 		dosbin lightup_screen
 
 		if use nfs; then
