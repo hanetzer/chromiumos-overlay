@@ -3,11 +3,11 @@ DEPEND=chromeos-base/chromeos-chrome dev-python/pyyaml dev-python/unittest2 chro
 DESCRIPTION=Chrome OS Factory Tools and Data
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +build_tests cros_host cros_workon_tree_2fcab467fef347845e7ca686c0429f9d6ea0ccf3_bfd6490d3702a7d15771586f4f512166030ae7f8 profiling
+IUSE=+autotest +build_tests cros_host cros_workon_tree_ca5a1d822545e6b58c8f124b6c95d1cafe0d42f2_bfd6490d3702a7d15771586f4f512166030ae7f8 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=!chromeos-base/chromeos-factorytools dev-lang/python dev-python/argparse dev-python/jsonrpclib dev-python/netifaces dev-python/python-evdev dev-python/pyyaml dev-python/setproctitle dev-python/unittest2 dev-util/stressapptest chromeos-base/chromeos-factory-board >=chromeos-base/vpd-0.0.1-r11 >=app-admin/eselect-python-20091230
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	c02fcda64ecf889a037b97f6b0a68130	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=50bf19e26add3ed258dd26789bcf93c4
+_md5_=acb0a093f1c4ef26c4fb1db82fd992b5
