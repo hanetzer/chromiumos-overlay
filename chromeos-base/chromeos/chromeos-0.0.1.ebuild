@@ -164,6 +164,9 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 #
 # app-i18n/nacl-mozc:
 # An text input processors based on IME extension APIs.
+#
+# app-i18n/chinese-input:
+# A suite of Chinese input methods based on IME extension APIs.
 ################################################################################
 
 CROS_X86_RDEPEND="
@@ -196,6 +199,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-arch/tar
 	app-crypt/trousers
 	app-editors/vim
+	app-i18n/chinese-input
 	app-i18n/ibus-english-m
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc

@@ -1,0 +1,20 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI="4"
+
+DESCRIPTION="This is a meta package for installing Chinese IME packages"
+HOMEPAGE="http://www.google.com/inputtools/"
+
+LICENSE="Apache License 2.0"
+SLOT="0"
+KEYWORDS="x86 amd64 arm"
+IUSE="internal"
+
+DEPEND="internal? ( app-i18n/GoogleChineseInput-pinyin )
+        internal? ( app-i18n/GoogleChineseInput-wubi )
+        internal? ( app-i18n/GoogleChineseInput-zhuyin )
+        internal? ( app-i18n/GoogleChineseInput-cangjie )
+        !internal? ( app-i18n/chromeos-cangjie )
+        !internal? ( app-i18n/chromeos-pinyin )
+        !internal? ( app-i18n/chromeos-zhuyin )"
