@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="cd89289893e98d68a1eced7eed4a61fab785050e"
-CROS_WORKON_TREE="bfe59f7f328b48d5038f6f3125d860bb4f75105b"
+CROS_WORKON_COMMIT="4ef02fd4a941c3ad89d1f2215b0cc0ab9bcb206d"
+CROS_WORKON_TREE="70455e81da44ebd3744f89c7cd4b9f36165ef26e"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
@@ -24,6 +24,7 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/libchrome:180609[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
+	cellular? ( chromeos-base/mist )
 	chromeos-base/platform2
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 	chromeos-base/wimax_manager

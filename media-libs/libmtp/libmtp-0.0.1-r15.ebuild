@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="7bc42f093d644eeaf1c77fab60883881843c3c65"
-CROS_WORKON_TREE="62ba988dca03df08f1aac5d601d47b64ffb869ea"
+CROS_WORKON_COMMIT="40240d6f1c1560d1851c217cecada93050e2db0e"
+CROS_WORKON_TREE="7d450a79360752633901d63aa4f506647cfaeaaa"
 CROS_WORKON_PROJECT="chromium/deps/libmtp"
 CROS_WORKON_LOCALNAME="../../chromium/src/third_party/libmtp"
 

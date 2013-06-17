@@ -3,15 +3,15 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
 EAPI=4
-CROS_WORKON_COMMIT="3490c276fe521420aaa61e5835c7740509581d65"
-CROS_WORKON_TREE="e2418e3bdf398e01d16f7b5877049d6434757bd5"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/files"
+CROS_WORKON_COMMIT="06cdb331cb4c67f89bd1f44e467ec6529e428018"
+CROS_WORKON_TREE="0549537cbecfce688d6ad70d6199c03efa012df9"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
+CROS_WORKON_LOCALNAME="kernel-next"
 
 inherit cros-workon cros-perf
 
 KEYWORDS="amd64 arm x86"
-RDEPEND="!dev-util/perf-next"
+RDEPEND="!dev-util/perf"
 DEPEND="${RDEPEND}
 	${DEPEND}"
 
