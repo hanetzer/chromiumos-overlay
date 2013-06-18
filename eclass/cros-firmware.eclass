@@ -72,7 +72,7 @@ DEPEND="
 	>=chromeos-base/vboot_reference-1.0-r230
 	chromeos-base/vpd
 	dev-util/shflags
-	>=sys-apps/flashrom-0.9.3-r36
+	>=sys-apps/flashrom-0.9.4-r269
 	sys-apps/mosys
 	"
 
