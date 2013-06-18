@@ -49,8 +49,16 @@ DEPEND="x86? ($DEPEND_X86)
 [[ -z ${COREBOOT_BUILD_ROOT} ]] && die "COREBOOT_BUILD_ROOT must be set"
 
 cros-coreboot_pre_src_prepare() {
-	cp configs/config.${COREBOOT_BOARD} .config
 	rm -rf 3rdparty
+
+	if [[ -s "${FILESDIR}"/config ]]; then
+		# Attempt to get config from overlay first
+		cp -v "${FILESDIR}"/config .config
+	elif [[ -s "configs/config.${COREBOOT_BOARD}" ]]; then
+		# Otherwise use config from coreboot tree
+		cp -v "configs/config.${COREBOOT_BOARD}" .config
+	fi
+
 	if [[ -d "${FILESDIR}"/3rdparty ]]; then
 		cp -pPR "${FILESDIR}"/3rdparty ./ || die
 	fi
