@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/mist"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon
+inherit cros-debug cros-workon udev
 
 DESCRIPTION="Chromium OS Modem Interface Switching Tool"
 HOMEPAGE="http://www.chromium.org/"
@@ -54,4 +54,6 @@ src_install() {
 
 	insinto /usr/share/mist
 	doins default.conf
+
+	udev_dorules 51-mist.rules
 }
