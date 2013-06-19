@@ -241,7 +241,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "avfs" 301        # For avfs process
 	copy_or_add_daemon_user "fuse-exfat" 302  # For exfat-fuse prcoess
 
-	# Group that are allowed to create directories under /home/<hash>/root
+	# Group that is allowed to create directories under /home/root/<hash>.
 	copy_or_add_group "daemon-store" 400
 	copy_or_add_group "logs-access" 401
 
@@ -306,6 +306,9 @@ pkg_postinst() {
 	# The power manager needs to read from /dev/input/event* to observe power
 	# button and lid events.
 	add_users_to_group input power
+
+	# Chaps needs access to the daemon-store.
+	add_users_to_group "daemon-store" chaps
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
