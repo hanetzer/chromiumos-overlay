@@ -1,0 +1,24 @@
+From: Jungshik Shin <jshin@chromium.org>
+Gentoo-BUG-URL: http://bugs.gentoo.org/473970
+Subject: Fix ragel-6.7 for cross-compile 
+
+Use simple 'test -r' to check for a local build file.
+AC_CHECK_FILES bails out when used for cross-compile and is not supposed
+to be used for checking the presence of a build file as opposed to a host
+file such as /dev/urandom.
+
+--- ragel-6.7/configure.in
++++ ragel-6.7/configure.in
+@@ -27,9 +27,9 @@
+ 
+ dnl Choose defaults for the build_parsers and build_manual vars. If the dist
+ dnl file is present in the root then default to no, otherwise go for it.
+-AC_CHECK_FILES( $srcdir/DIST, 
+-	[ . $srcdir/DIST; ], 
+-	[ build_parsers=yes; build_manual=yes; ] )
++
++AS_IF([test -r $srcdir/DIST], [. $srcdir/DIST], [build_parsers=yes;
++       build_manual=yes])
+ 
+ dnl
+ dnl Enable arg to explicitly control the building of the manual

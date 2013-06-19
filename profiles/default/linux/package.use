@@ -51,3 +51,5 @@ sys-apps/pciutils	static-libs
 # and may be executed outside chroot.
 app-arch/xz-utils	static-libs
 sys-apps/util-linux	-suid
+# We don't have any font with graphite table. Drop graphite from harfbuzz.
+media-libs/harfbuzz	-graphite

@@ -263,3 +263,8 @@ RDEPEND="${RDEPEND}
 	dev-python/flup
 	dev-python/twisted
 	"
+
+# Host dependencies for building harfbuzz
+RDEPEND="${RDEPEND}
+	dev-util/ragel
+	"
