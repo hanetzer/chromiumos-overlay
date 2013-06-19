@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="f24d0f811ff85709a4099fbecee866d4c4cdeb25"
-CROS_WORKON_TREE="05f31196de8a5e4c9ef75047205f69666eae3a20"
+CROS_WORKON_COMMIT="8c7a9bb39fb7fbcd46d374a3b4ab8ecaf46b038d"
+CROS_WORKON_TREE="ddeed580da3213695b25a8b796f262b31ada2ea6"
 CROS_WORKON_PROJECT="chromiumos/platform/mist"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
