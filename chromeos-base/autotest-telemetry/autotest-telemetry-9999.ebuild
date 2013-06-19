@@ -6,6 +6,7 @@ EAPI=4
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_SUBDIR=files
+CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon autotest
 
