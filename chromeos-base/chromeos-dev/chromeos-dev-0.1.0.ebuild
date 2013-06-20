@@ -37,6 +37,7 @@ CROS_COMMON_RDEPEND="
 	app-shells/bash
 	chromeos-base/chromeos-dev-init
 	chromeos-base/gmerge
+	dev-util/strace
 	net-dialup/lrzsz
 	net-misc/openssh
 	sys-devel/gdb
@@ -104,7 +105,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/dbus-python
 	dev-util/hdctools
 	dev-util/libc-bench
-	dev-util/strace
 	net-analyzer/netperf
 	net-analyzer/tcpdump
 	net-dialup/minicom
