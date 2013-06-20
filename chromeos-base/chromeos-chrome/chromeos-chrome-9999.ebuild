@@ -223,6 +223,10 @@ set_build_defines() {
 		RELEASE_EXTRA_CFLAGS+=(
 			-DPGO_GENERATE
 			-fprofile-generate
+			# TODO(asharif): Remove these -fno-* flags after fixing:
+			# https://code.google.com/p/chromium/issues/detail?id=239059
+			-fno-vpt
+			-fno-profile-values
 			-fprofile-dir=/tmp/pgo/chrome
 			-Wno-error=maybe-uninitialized
 		)
