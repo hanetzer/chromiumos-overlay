@@ -4,8 +4,8 @@
 EAPI="4"
 inherit eutils
 
-DESCRIPTION="The Chinese Pinyin input engine for IME extension API."
-HOMEPAGE="http://www.google.com/inputtools/"
+DESCRIPTION="The Chinese Cangjie input engine for IME extension API."
+HOMEPAGE="https://code.google.com/p/google-input-tools/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="Apache License 2.0"
