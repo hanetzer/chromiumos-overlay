@@ -129,6 +129,7 @@ src_configure() {
 		"HOSTCC=${BUILD_CC}"
 		HOSTSTRIP=true
 		USE_STDINT=1
+		QEMU_ARCH=
 	)
 	if use dev; then
 		# Avoid hiding the errors and warnings
