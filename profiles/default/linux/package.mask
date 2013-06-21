@@ -13,6 +13,3 @@
 # Custom patches
 >=sys-boot/syslinux-3.84
 
-# TODO(jshin) : Masked before applying local patches to get them built.
->=x11-libs/pango-1.32.5
-=media-libs/harfbuzz-0.9.18

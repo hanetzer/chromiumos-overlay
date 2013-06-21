@@ -1,0 +1,21 @@
+Apply the upstream patch to link the basic module against harfbuzz
+
+This is to apply the upstream fix :
+   http://bugs.freedesktop.org/show_bug.cgi?id=58496)
+
+See also https://bugs.gentoo.org/show_bug.cgi?id=459374
+
+
+diff --git a/modules/basic/Makefile.am b/modules/basic/Makefile.am
+index 2195c92..9726870 100644
+--- a/modules/basic/Makefile.am
++++ b/modules/basic/Makefile.am
+@@ -12,7 +12,7 @@ endif
+ endif
+ 
+ pango_basic_fc_la_LDFLAGS = -module $(MODULE_LIBTOOL_OPTIONS)
+-pango_basic_fc_la_LIBADD = $(pangoft2libs)
++pango_basic_fc_la_LIBADD = $(pangoft2libs) $(HARFBUZZ_LIBS)
+ pango_basic_fc_la_SOURCES = basic-fc.c
+ libpango_basic_fc_la_SOURCES = basic-fc.c
+ libpango_basic_fc_la_CFLAGS = -DPANGO_MODULE_PREFIX=_pango_basic_fc
