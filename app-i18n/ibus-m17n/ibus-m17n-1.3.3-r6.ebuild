@@ -72,11 +72,6 @@ src_compile() {
 	# You can make it readable by 'xmllint --format' (on a target machine).
 	mv src/m17n.xml "${T}"/ || die
 	xmllint --noblanks "${T}"/m17n.xml > src/m17n.xml || die
-	# Sanity checks.
-	grep m17n:ar:kbd src/m17n.xml 2>&1 > /dev/null \
-	    || die  # in m17n-db, whitelisted
-	grep m17n:mr:itrans src/m17n.xml 2>&1 > /dev/null \
-	    || die  # in m17n-db-contrib, whitelisted
 }
 
 src_install() {
