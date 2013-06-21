@@ -206,6 +206,13 @@ RDEPEND="${RDEPEND}
 	dev-python/mox
 	dev-python/unittest2
 	"
+# Host dependencies to run autotest's unit tests within the chroot.
+RDEPEND="${RDEPEND}
+	dev-python/httplib2
+	dev-python/python-dateutil
+	dev-python/six
+	dev-python/dnspython
+	"
 
 # Host dependencies for running pylint within the chroot
 RDEPEND="${RDEPEND}
