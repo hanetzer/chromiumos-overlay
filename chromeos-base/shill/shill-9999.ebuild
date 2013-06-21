@@ -87,6 +87,7 @@ src_install() {
 	dobin bin/ff_debug
 	use cellular && dobin bin/mm_debug
 	use cellular && dobin bin/set_apn
+	use cellular && dobin bin/set_cellular_ppp
 	dobin bin/set_arpgw
 	dobin bin/shill_login_user
 	dobin bin/shill_logout_user
