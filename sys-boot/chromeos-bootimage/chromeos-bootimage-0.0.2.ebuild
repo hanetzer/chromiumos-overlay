@@ -247,6 +247,12 @@ src_compile_depthcharge() {
 	else
 		uboot_file="${froot}/depthcharge/depthcharge.rw.bin"
 	fi
+	local netboot_file
+	if use unified_depthcharge; then
+		netboot_file="${froot}/depthcharge/netboot.payload"
+	else
+		netboot_file="${froot}/depthcharge/netboot.bin"
+	fi
 
 	local common=(
 		--board "${BOARD_USE}"
@@ -254,7 +260,6 @@ src_compile_depthcharge() {
 		--bmpblk "${bmpblk_file}"
 		--coreboot "${coreboot_file}"
 		--dt "${fdt_file}"
-		--uboot "${uboot_file}"
 	)
 
 	if use x86 || use amd64; then
@@ -280,19 +285,22 @@ src_compile_depthcharge() {
 	einfo "Building RO image."
 	cros_bundle_firmware ${common[@]} \
 		--coreboot-elf="${depthcharge_elf}" \
-		--outdir "out.ro" --output "image.bin" ||
+		--outdir "out.ro" --output "image.bin" \
+		--uboot "${uboot_file}" ||
 		die "failed to build RO image."
 	einfo "Building RW image."
 	cros_bundle_firmware "${common[@]}" --force-rw \
 		--coreboot-elf="${depthcharge_elf}" \
-		--outdir "out.rw" --output "image.rw.bin" ||
+		--outdir "out.rw" --output "image.rw.bin" \
+		--uboot "${uboot_file}" ||
 		die "failed to build RW image."
 
 	# Build a netboot image.
 	einfo "Building netboot image."
 	cros_bundle_firmware "${common[@]}" \
 		--coreboot-elf="${netboot_elf}" \
-		--outdir "out.net" --output "image.net.bin" ||
+		--outdir "out.net" --output "image.net.bin" \
+		--uboot "${netboot_file}" ||
 		die "failed to build netboot image."
 }
 
