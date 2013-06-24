@@ -590,8 +590,7 @@ cros-kernel2_src_compile() {
 	local build_targets=()  # use make default target
 	if use arm; then
 		build_targets=(
-			$(use device_tree && echo "zImage")
-			$(use device_tree || echo "uImage")
+			$(usex device_tree 'zImage dtbs' uImage)
 			$(cros_chkconfig_present MODULES && echo "modules")
 		)
 	fi
@@ -615,10 +614,6 @@ cros-kernel2_src_compile() {
 			tee "${SMATCH_LOG_FILE}"
 	else
 		kmake -k ${build_targets[@]}
-	fi
-
-	if use device_tree; then
-		kmake -k dtbs
 	fi
 }
 
