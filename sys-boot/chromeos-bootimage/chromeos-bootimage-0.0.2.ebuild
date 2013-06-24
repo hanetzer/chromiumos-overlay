@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex butterfly emeraldlake2 link lumpy lumpy64 mario parrot stout stumpy"
-BOARDS="${BOARDS} falco fox peppy slippy"
+BOARDS="${BOARDS} bolt falco fox peppy slippy"
 IUSE="${BOARDS} exynos factory-mode memtest tegra cros_ec depthcharge unified_depthcharge spring"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"

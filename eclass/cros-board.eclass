@@ -37,6 +37,7 @@ ALL_BOARDS=(
 	arm-generic
 	beaglebone
 	blackwall
+	bolt
 	butterfly
 	chronos
 	daisy
