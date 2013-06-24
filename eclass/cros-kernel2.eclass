@@ -630,12 +630,15 @@ cros-kernel2_src_test() {
 }
 
 cros-kernel2_src_install() {
+	local build_targets=(
+		install
+		firmware_install
+		$(cros_chkconfig_present MODULES && echo "modules_install")
+	)
+
 	dodir /boot
-	kmake INSTALL_PATH="${D}/boot" install
-	if cros_chkconfig_present MODULES; then
-		kmake INSTALL_MOD_PATH="${D}" modules_install
-	fi
-	kmake INSTALL_MOD_PATH="${D}" firmware_install
+	kmake INSTALL_PATH="${D}/boot" INSTALL_MOD_PATH="${D}" \
+		"${build_targets[@]}"
 
 	local version=$(kernelrelease)
 	if use arm; then
