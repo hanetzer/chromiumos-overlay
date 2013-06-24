@@ -8,7 +8,7 @@ DESCRIPTION="Init script to run agetty on VT1.  For use in headless builds."
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="+vt"
 
 RDEPEND="
 	sys-apps/upstart
@@ -23,6 +23,8 @@ RDEPEND="
 S="${WORKDIR}"
 
 src_install() {
-	insinto /etc/init
-	doins "${FILESDIR}"/tty1.conf
+	if use vt ; then
+		insinto /etc/init
+		doins "${FILESDIR}"/tty1.conf
+	fi
 }
