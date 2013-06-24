@@ -370,12 +370,12 @@ emit_its_script() {
 		images {
 			kernel@1 {
 				data = /incbin/("${boot_dir}/zImage");
-				type = "$(get_kernel_type)";
+				type = "kernel_noload";
 				arch = "arm";
 				os = "linux";
 				compression = "none";
-				load = <$(get_load_addr)>;
-				entry = <$(get_load_addr)>;
+				load = <0>;
+				entry = <0>;
 			};
 	EOF
 
@@ -555,33 +555,6 @@ get_dtb_name() {
 			for f in ${dtb_dir}/*.dtb ; do
 			    basename ${f}
 			done
-			;;
-	esac
-}
-
-# All current tegra boards ship with an u-boot that won't allow
-# use of kernel_noload. Because of this, keep using the traditional
-# kernel type for those. This means kernel_type kernel and regular
-# load and entry point addresses.
-
-get_kernel_type() {
-	case "$(get_current_board_with_variant)" in
-		tegra*)
-			echo kernel
-			;;
-		*)
-			echo kernel_noload
-			;;
-	esac
-}
-
-get_load_addr() {
-	case "$(get_current_board_with_variant)" in
-		tegra*)
-			echo 0x03000000
-			;;
-		*)
-			echo 0
 			;;
 	esac
 }
