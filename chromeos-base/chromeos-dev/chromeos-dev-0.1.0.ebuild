@@ -34,9 +34,12 @@ IUSE="cros_embedded opengl X"
 
 CROS_COMMON_RDEPEND="
 	app-crypt/nss
+	app-editors/qemacs
+	app-editors/vim
 	app-shells/bash
 	chromeos-base/chromeos-dev-init
 	chromeos-base/gmerge
+	chromeos-base/shill-test-scripts
 	dev-util/strace
 	net-dialup/lrzsz
 	net-misc/openssh
@@ -93,13 +96,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-benchmarks/punybench
 	app-crypt/nss
 	app-crypt/tpm-tools
-	app-editors/qemacs
-	app-editors/vim
 	app-misc/evtest
 	app-misc/screen
 	chromeos-base/platform2
 	chromeos-base/protofiles
-	chromeos-base/shill-test-scripts
 	chromeos-base/system_api
 	dev-lang/python
 	dev-python/dbus-python
