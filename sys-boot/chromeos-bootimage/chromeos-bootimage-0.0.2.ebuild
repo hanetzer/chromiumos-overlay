@@ -81,7 +81,7 @@ get_dev_tree_base_name() {
 
 	# If not set explicitly - use default device tree for a board.
 	case "${BOARD_USE}" in
-		(peach_pit) echo "exynos5420-peach_pit";;
+		(peach_pit) echo "exynos5420-peach-pit";;
 		(daisy_spring) echo "exynos5250-spring";;
 		(daisy) echo "exynos5250-snow";;
 		(link|stout|parrot|butterfly) echo "${BOARD_USE}";;
