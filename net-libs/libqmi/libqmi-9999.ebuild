@@ -13,7 +13,7 @@ HOMEPAGE="http://cgit.freedesktop.org/libqmi/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="doc static-libs test"
+IUSE="doc static-libs"
 
 RDEPEND=">=dev-libs/glib-2.32"
 DEPEND="${RDEPEND}
@@ -28,8 +28,12 @@ src_prepare() {
 src_configure() {
 	econf \
 		$(use_enable static{-libs,}) \
-		$(use_enable {,gtk-}doc) \
-		$(use_with test{,s})
+		$(use_enable {,gtk-}doc)
+}
+
+src_test() {
+	# TODO(benchan): Run unit tests for arm via qemu-arm.
+	[[ "${ARCH}" != "arm" ]] && emake check
 }
 
 src_install() {
