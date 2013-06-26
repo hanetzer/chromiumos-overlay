@@ -1,11 +1,11 @@
-DEFINED_PHASES=compile configure info install prepare setup unpack
-DEPEND=chromeos-base/gestures app-misc/utouch-evemu chromeos-base/libevdev dev-vcs/git
-DESCRIPTION=Chromium OS multitouch utilities
+DEFINED_PHASES=info install setup unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Chrome OS system API (D-Bus service names, etc.)
 EAPI=4
-IUSE=cros_host cros_workon_tree_56c1c3d68425e6e158b008da6872d9500a6f7493 profiling
+HOMEPAGE=http://www.chromium.org/
+IUSE=platform2 cros_host cros_workon_tree_3ee6aed3e34410049aa0f927def527d4b8256606 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
-RDEPEND=chromeos-base/gestures app-misc/utouch-evemu chromeos-base/libevdev
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	c02fcda64ecf889a037b97f6b0a68130	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=c8236e20df5fe66b7a8664552403b9b4
+_md5_=e29fbe913ae199e9a5aeebefb7c504e1
