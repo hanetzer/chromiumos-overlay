@@ -34,6 +34,7 @@ IUSE_TESTS=(
 
 	# Uses chrome_test dependency.
 	+tests_audiovideo_VDA
+	+tests_audiovideo_VDAPerf
 
 	# Tests that depend on telemetry.
 	+tests_bluetooth_RegressionClient
@@ -49,7 +50,10 @@ IUSE_TESTS=(
 	+tests_security_ProfilePermissionsTelemetry
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
+	+tests_video_VideoDecodeAcceleration
 	+tests_video_VideoDecodeMemoryUsage
+	+tests_video_VideoSanity
+	+tests_video_VideoSeek
 
 	# Inherits from cros_ui_test.
 	+tests_desktopui_BrowserTest
@@ -73,9 +77,6 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_WebRTC
 	+tests_desktopui_WebRtcBrowserTest
-	+tests_video_VideoDecodeAcceleration
-	+tests_video_VideoSanity
-	+tests_video_VideoSeek
 	+tests_video_YouTubePage
 	+tests_video_YouTubeFlash
 	+tests_video_YouTubeHTML5
