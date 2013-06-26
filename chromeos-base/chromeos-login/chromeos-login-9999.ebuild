@@ -13,9 +13,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
-	-egl -exynos -has_diamond_key -has_hdd -highdpi -is_desktop
-	-natural_scroll_default	-new_power_button test -touchui +X"
+IUSE="-asan -chromeos_keyboard -deep_memory_profiler -disable_login_animations
+	-disable_webaudio -egl -exynos -has_diamond_key -has_hdd -highdpi
+	-is_desktop -natural_scroll_default -new_power_button test -touchui +X"
 
 LIBCHROME_VERS="180609"
 
