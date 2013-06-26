@@ -41,6 +41,7 @@ CONFIG_FRAGMENTS=(
 	initramfs
 	kgdb
 	kvm
+	mbim
 	netboot_ramfs
 	nfs
 	pcserial
@@ -155,6 +156,13 @@ CONFIG_VIRTIO_NET=m
 CONFIG_VIRTIO_CONSOLE=m
 CONFIG_VIRTIO_RING=m
 CONFIG_VIRTIO_PCI=m
+"
+
+# TODO(benchan): Remove the 'mbim' use flag and unconditionally enable the
+# CDC MBIM driver once Chromium OS fully supports MBIM.
+mbim_desc="CDC MBIM driver"
+mbim_config="
+CONFIG_USB_NET_CDC_MBIM=m
 "
 
 nfs_desc="NFS"
