@@ -1,6 +1,6 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-1.0.18.ebuild,v 1.1 2012/06/08 15:31:07 aballier Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-1.0.20.ebuild,v 1.2 2013/06/19 19:44:17 aballier Exp $
 
 EAPI="4"
 
@@ -19,7 +19,7 @@ if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	SRC_URI=""
 	S="${WORKDIR}/${PN}"
 else
-	SRC_URI="http://cgit.freedesktop.org/vaapi/releases/libva-intel-driver/${P}.tar.bz2"
+	SRC_URI="http://www.freedesktop.org/software/vaapi/releases/libva-intel-driver/${P}.tar.bz2"
 fi
 
 LICENSE="MIT"
@@ -29,23 +29,27 @@ if [ "${PV%9999}" = "${PV}" ] ; then
 else
 	KEYWORDS=""
 fi
-IUSE="wayland X"
+IUSE="+drm wayland X"
 
-RDEPEND=">=x11-libs/libva-1.1.0[X?,wayland?]
+RDEPEND=">=x11-libs/libva-1.1.0[X?,wayland?,drm?]
 	!<x11-libs/libva-1.0.15[video_cards_intel]
 	>=x11-libs/libdrm-2.4.23[video_cards_intel]
-	wayland? ( media-libs/mesa[egl] )"
+	wayland? ( media-libs/mesa[egl] >=dev-libs/wayland-1 )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
 src_prepare() {
-	epatch "${FILESDIR}"/libm.patch
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
-	epatch "${FILESDIR}"/Add-IS_SNB_GT1-IS_SNB_GT2-IS_IVB_GT1-IS_IVB_GT2-and-.patch
-	epatch "${FILESDIR}"/Render-Update-the-maximum-number-of-WM-threads.patch
-	epatch "${FILESDIR}"/Update-the-size-of-DMV-buffer-for-H.264-decoding-on-.patch
 	eautoreconf
+}
+
+src_configure() {
+	econf \
+		--disable-silent-rules \
+		$(use_enable drm) \
+		$(use_enable wayland) \
+		$(use_enable X x11)
 }
 
 src_install() {
