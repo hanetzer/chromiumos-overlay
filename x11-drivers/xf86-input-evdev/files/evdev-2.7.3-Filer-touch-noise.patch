@@ -5,12 +5,12 @@ Subject: [PATCH] evdev-2.7.3-Filer-touch-noise
 ---
  src/Makefile.am |  2 +-
  src/debug.c     |  4 ++++
- src/evdev.c     | 57 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- src/evdev.h     | 12 ++++++++++--
- 4 files changed, 72 insertions(+), 3 deletions(-)
+ src/evdev.c     | 62 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/evdev.h     | 12 +++++++++--
+ 4 files changed, 77 insertions(+), 3 deletions(-)
 
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 0108bc9..f4d8e50 100644
+index 804ef73..5e7d195 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -30,7 +30,7 @@ AM_CPPFLAGS =-I$(top_srcdir)/include
@@ -38,7 +38,7 @@ index 89e31f6..05cdabf 100644
              continue;
          fprintf(fp, "E: %ld.%06ld %04x %04x %d %d\n",
 diff --git a/src/evdev.c b/src/evdev.c
-index 59fa9bd..b7e0129 100644
+index 59fa9bd..7da2ec5 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -933,6 +933,7 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
@@ -113,12 +113,17 @@ index 59fa9bd..b7e0129 100644
  #endif
  
  }
-@@ -3049,6 +3086,14 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
+@@ -3049,6 +3086,19 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
          goto error;
      }
  
 +#ifdef MULTITOUCH
-+    if (!pEvdev->touch_noise_filter && (pEvdev->flags & EVDEV_TOUCHSCREEN)) {
++    Bool enable_touch_noise_filter = xf86CheckBoolOption(
++        pInfo->options, "EnableTouchNoiseFilter", 0);
++    xf86IDrvMsg(pInfo, X_INFO, "Enable TouchNoiseFilter %d.\n",
++                enable_touch_noise_filter);
++    if (enable_touch_noise_filter && !pEvdev->touch_noise_filter &&
++        (pEvdev->flags & EVDEV_TOUCHSCREEN)) {
 +        pEvdev->touch_noise_filter = NewXFilter();
 +        memset(pEvdev->last_valid_tracking_ids, -1,
 +               sizeof(pEvdev->last_valid_tracking_ids));
@@ -128,7 +133,7 @@ index 59fa9bd..b7e0129 100644
      EvdevAddDevice(pInfo);
  
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -3572,3 +3617,15 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -3572,3 +3622,15 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
      return Success;
  }
@@ -189,5 +194,5 @@ index 6ce774e..d744ed5 100644
      size_t debug_buf_tail;
  
 -- 
-1.8.1.3
+1.8.3
 
