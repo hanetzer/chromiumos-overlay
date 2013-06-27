@@ -163,10 +163,13 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 # TODO(nona): Remove all ibus engines. crbug.com/i171351
 #
 # app-i18n/nacl-mozc:
-# An text input processors based on IME extension APIs.
+# A text input processors based on IME extension APIs.
 #
 # app-i18n/chinese-input:
 # A suite of Chinese input methods based on IME extension APIs.
+#
+# app-i18n/chromeos-hangul
+# A Hangul input processor based on extension APIs.
 ################################################################################
 
 CROS_X86_RDEPEND="
@@ -204,6 +207,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/ibus-m17n
 	app-i18n/ibus-mozc-hangul
 	app-i18n/nacl-mozc
+	app-i18n/chromeos-hangul
 	app-laptop/laptop-mode-tools
 	app-shells/bash
 	chromeos-base/board-devices
