@@ -41,6 +41,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
+	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	eautoreconf
 }
 

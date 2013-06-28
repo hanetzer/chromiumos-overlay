@@ -1,0 +1,108 @@
+From 23001edbcf91a91113b550c88e87fefb043d19ae Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Fri, 28 Jun 2013 14:47:29 -0700
+Subject: [PATCH] Avoid GPU crash with malformed streams
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When streams are malformed, we can get p-frames without any reference
+picture. However the code still assumes 1 reference picture at least,
+which leads to a GPU crash. Instead, use the number of reference
+pictures sent from the API to bound the number of reference pictures
+we tell the GPU we have.
+
+BUG=chromium:252389
+TEST=go to youtube and play http://www.youtube.com/watch?v=6v2L2UGZJAM ; it doesn't crash
+
+Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
+---
+ src/gen6_mfd.c  | 9 +++++++++
+ src/gen75_mfd.c | 9 +++++++++
+ src/gen7_mfd.c  | 9 +++++++++
+ 3 files changed, 27 insertions(+)
+
+diff --git a/src/gen6_mfd.c b/src/gen6_mfd.c
+index 68e1900..ab693e9 100755
+--- a/src/gen6_mfd.c
++++ b/src/gen6_mfd.c
+@@ -645,6 +645,8 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
+     int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
+     unsigned int chroma_log2_weight_denom, luma_log2_weight_denom;
+     int slice_type;
++    int num_surfaces = 0;
++    int i;
+ 
+     if (slice_param->slice_type == SLICE_TYPE_I ||
+         slice_param->slice_type == SLICE_TYPE_SI) {
+@@ -682,6 +684,13 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
+         }
+     }
+ 
++    /* Don't bind a surface which doesn't exist, that crashes the GPU */
++    for (i = 0; i < ARRAY_ELEMS(gen6_mfd_context->reference_surface); i++)
++        if (gen6_mfd_context->reference_surface[i].surface_id != VA_INVALID_ID)
++            num_surfaces ++;
++    num_ref_idx_l0 = MIN(num_ref_idx_l0, num_surfaces);
++    num_ref_idx_l1 = MIN(num_ref_idx_l1, num_surfaces);
++
+     first_mb_in_slice = slice_param->first_mb_in_slice << mbaff_picture;
+     slice_hor_pos = first_mb_in_slice % width_in_mbs; 
+     slice_ver_pos = first_mb_in_slice / width_in_mbs;
+diff --git a/src/gen75_mfd.c b/src/gen75_mfd.c
+index 9ca32cb..f8dcfe0 100644
+--- a/src/gen75_mfd.c
++++ b/src/gen75_mfd.c
+@@ -982,6 +982,8 @@ gen75_mfd_avc_slice_state(VADriverContextP ctx,
+                          pic_param->seq_fields.bits.mb_adaptive_frame_field_flag);
+     int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
+     int slice_type;
++    int num_surfaces = 0;
++    int i;
+ 
+     if (slice_param->slice_type == SLICE_TYPE_I ||
+         slice_param->slice_type == SLICE_TYPE_SI) {
+@@ -1008,6 +1010,13 @@ gen75_mfd_avc_slice_state(VADriverContextP ctx,
+         num_ref_idx_l1 = slice_param->num_ref_idx_l1_active_minus1 + 1;
+     }
+ 
++    /* Don't bind a surface which doesn't exist, that crashes the GPU */
++    for (i = 0; i < ARRAY_ELEMS(gen7_mfd_context->reference_surface); i++)
++        if (gen7_mfd_context->reference_surface[i].surface_id != VA_INVALID_ID)
++            num_surfaces ++;
++    num_ref_idx_l0 = MIN(num_ref_idx_l0, num_surfaces);
++    num_ref_idx_l1 = MIN(num_ref_idx_l1, num_surfaces);
++
+     first_mb_in_slice = slice_param->first_mb_in_slice << mbaff_picture;
+     slice_hor_pos = first_mb_in_slice % width_in_mbs; 
+     slice_ver_pos = first_mb_in_slice / width_in_mbs;
+diff --git a/src/gen7_mfd.c b/src/gen7_mfd.c
+index ff8ef11..6378c91 100755
+--- a/src/gen7_mfd.c
++++ b/src/gen7_mfd.c
+@@ -648,6 +648,8 @@ gen7_mfd_avc_slice_state(VADriverContextP ctx,
+                          pic_param->seq_fields.bits.mb_adaptive_frame_field_flag);
+     int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
+     int slice_type;
++    int num_surfaces = 0;
++    int i;
+ 
+     if (slice_param->slice_type == SLICE_TYPE_I ||
+         slice_param->slice_type == SLICE_TYPE_SI) {
+@@ -674,6 +676,13 @@ gen7_mfd_avc_slice_state(VADriverContextP ctx,
+         num_ref_idx_l1 = slice_param->num_ref_idx_l1_active_minus1 + 1;
+     }
+ 
++    /* Don't bind a surface which doesn't exist, that crashes the GPU */
++    for (i = 0; i < ARRAY_ELEMS(gen7_mfd_context->reference_surface); i++)
++        if (gen7_mfd_context->reference_surface[i].surface_id != VA_INVALID_ID)
++            num_surfaces ++;
++    num_ref_idx_l0 = MIN(num_ref_idx_l0, num_surfaces);
++    num_ref_idx_l1 = MIN(num_ref_idx_l1, num_surfaces);
++
+     first_mb_in_slice = slice_param->first_mb_in_slice << mbaff_picture;
+     slice_hor_pos = first_mb_in_slice % width_in_mbs; 
+     slice_ver_pos = first_mb_in_slice / width_in_mbs;
+-- 
+1.8.3
+
