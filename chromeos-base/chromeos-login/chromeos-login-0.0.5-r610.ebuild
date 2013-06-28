@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="a2340908d64c2ead46c4505b2350516e14db0a23"
-CROS_WORKON_TREE="26cc2770ab118e0dbd0340526658b1dbd542ff3c"
+CROS_WORKON_COMMIT="d4ef1c70ef35bf4bc1e451131f5e3a28b95ac111"
+CROS_WORKON_TREE="d7307f4afc5e7fbf8cb1b495235ef873a6ae1b51"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
@@ -15,9 +15,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="arm amd64 x86"
-IUSE="-asan -chromeos_keyboard -disable_login_animations -disable_webaudio
-	-egl -exynos -has_diamond_key -has_hdd -highdpi -is_desktop
-	-natural_scroll_default	-new_power_button test -touchui +X"
+IUSE="-asan -chromeos_keyboard -deep_memory_profiler -disable_login_animations
+	-disable_webaudio -egl -exynos -has_diamond_key -has_hdd -highdpi
+	-is_desktop -natural_scroll_default -new_power_button test -touchui +X"
 
 LIBCHROME_VERS="180609"
 
