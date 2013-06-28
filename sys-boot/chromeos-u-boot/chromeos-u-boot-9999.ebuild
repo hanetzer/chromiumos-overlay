@@ -12,7 +12,7 @@ CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
 # TODO(sjg): Remove cros-board as it violates the idea of having no specific
 # board knowledge in the build system. At present it is only needed for the
 # netboot hack.
-inherit cros-debug toolchain-funcs cros-board flag-o-matic cros-workon
+inherit toolchain-funcs cros-board flag-o-matic cros-workon
 
 DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
@@ -129,6 +129,7 @@ src_configure() {
 		"HOSTCC=${BUILD_CC}"
 		HOSTSTRIP=true
 		USE_STDINT=1
+		VBOOT_DEBUG=1
 		QEMU_ARCH=
 	)
 	if use dev; then
@@ -143,9 +144,7 @@ src_configure() {
 			WERROR=y
 		)
 	fi
-	if use x86 || use amd64 || use cros-debug; then
-		COMMON_MAKE_FLAGS+=( VBOOT_DEBUG=1 )
-	fi
+
 	if use profiling; then
 		COMMON_MAKE_FLAGS+=( VBOOT_PERFORMANCE=1 )
 	fi
