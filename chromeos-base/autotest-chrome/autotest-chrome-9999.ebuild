@@ -81,7 +81,7 @@ IUSE_TESTS=(
 	+tests_graphics_SanAngeles
 	+tests_graphics_Sanity
 	+tests_graphics_TearTest
-        +tests_graphics_VTSwitch
+	+tests_graphics_VTSwitch
 	+tests_graphics_WebGLConformance
 	+tests_graphics_WebGLPerformance
 	+tests_hardware_BluetoothSemiAuto
@@ -121,6 +121,7 @@ IUSE_TESTS=(
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
+	+tests_security_SandboxStatusBrowserTest
 )
 
 IUSE="${IUSE} ${IUSE_TESTS[*]}"
