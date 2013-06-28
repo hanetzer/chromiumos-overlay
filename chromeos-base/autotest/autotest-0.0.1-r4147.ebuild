@@ -95,6 +95,11 @@ src_install() {
 	dosym client/site_tests /usr/lib/debug/usr/local/autotest/tests
 }
 
+src_test() {
+	# Run the autotest unit tests.
+	./utils/unittest_suite.py --debug || die "Autotest unit tests failed."
+}
+
 # Packages client.
 pkg_postinst() {
 	local root_autotest_dir="${ROOT}/usr/local/autotest"
