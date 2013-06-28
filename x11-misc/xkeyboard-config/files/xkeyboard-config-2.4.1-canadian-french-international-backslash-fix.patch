@@ -1,6 +1,17 @@
 diff -urN xkeyboard-config-2.4.1.orig/symbols/ca xkeyboard-config-2.4.1/symbols/ca
 --- xkeyboard-config-2.4.1.orig/symbols/ca	2013-02-12 14:54:38.080613910 +0900
 +++ xkeyboard-config-2.4.1/symbols/ca	2013-02-12 22:33:16.644842749 +0900
+@@ -386,8 +386,8 @@
+     			NoSymbol, dead_abovering ]	};
+ 
+     key.type[group1]="EIGHT_LEVEL_SEMIALPHABETIC";
+-    key <AD12>	{ [  ccedilla,   Ccedilla,     asciitilde, NoSymbol,
+-		   dead_tilde,    dead_macron ]	};
++    key <AD12>	{ [  ccedilla,   Ccedilla,     dead_tilde, NoSymbol,
++		   asciitilde,    dead_macron ]	};
+ 
+     key <AC01>	{ [         a,          A,     NoSymbol, NoSymbol,
+     			   ae,         AE ]	};
 @@ -470,6 +470,10 @@
  xkb_symbols "eng" {
      name[Group1] = "English (Canada)";
@@ -12,4 +23,3 @@ diff -urN xkeyboard-config-2.4.1.orig/symbols/ca xkeyboard-config-2.4.1/symbols/
  };
  
  // EXTRAS:
-Binary files xkeyboard-config-2.4.1.orig/symbols/.ca.swp and xkeyboard-config-2.4.1/symbols/.ca.swp differ
