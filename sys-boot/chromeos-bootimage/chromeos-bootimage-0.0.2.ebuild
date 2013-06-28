@@ -153,9 +153,11 @@ build_image() {
 	# Build an RO-normal image, and an RW (twostop) image. This assumes
 	# that the fdt has the flags set to 1 by default.
 	cros_bundle_firmware ${cmdline} \
+		--outdir "out.ro" \
 		--output "image-${image_name_base}.bin" ||
 		die "failed to build RO image: ${cmdline}"
 	cros_bundle_firmware ${cmdline} --force-rw \
+		--outdir "out.rw" \
 		--output "image-${image_name_base}.rw.bin" ||
 	die "failed to build RW image: ${cmdline}"
 
@@ -171,6 +173,7 @@ build_image() {
 		${ec_file_flag} \
 		--add-config-int load_env 1 \
 		--add-node-enable console 1 \
+		--outdir "out.nv" \
 		--output "nv_image-${image_name_base}.bin" ||
 		die "failed to build legacy image: ${cmdline}"
 }
@@ -217,7 +220,6 @@ src_compile_uboot() {
 	common_flags+=" --board ${BOARD_USE}"
 	common_flags+=" --key ${devkeys_file}"
 	common_flags+=" --bmpblk ${CROS_FIRMWARE_ROOT}/bmpblk.bin"
-	common_flags+=' --outdir outdir'
 
 	if use tegra; then
 		common_flags+=" --bct ${CROS_FIRMWARE_ROOT}/bct/board.bct"
@@ -313,6 +315,21 @@ src_compile() {
 }
 
 src_install() {
+	local fdt_file updated_fdt d
+
 	insinto "${CROS_FIRMWARE_IMAGE_DIR}"
 	doins *image*.bin
+
+	if use depthcharge; then
+		return
+	fi
+
+	fdt_file="$(get_dev_tree_base_name)"
+	insinto "${CROS_FIRMWARE_IMAGE_DIR}/dtb"
+	for d in out.*; do
+		updated_fdt="${d}/updated.dtb"
+		if [[ -f "${updated_fdt}" ]]; then
+			newins  "${updated_fdt}" "${fdt_file}.${d#*.}.dtb"
+		fi
+	done
 }
