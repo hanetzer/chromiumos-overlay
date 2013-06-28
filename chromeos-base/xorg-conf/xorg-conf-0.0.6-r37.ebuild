@@ -75,6 +75,8 @@ src_install() {
 			doins 50-touchpad-cmt-parrot.conf
 		elif [ "${board}" = "falco" ]; then
 			doins 50-touchpad-cmt-falco.conf
+		elif [ "${board}" = "puppy" ]; then
+			doins 50-touchpad-cmt-puppy.conf
 		fi
 	elif use mario; then
 		doins 50-touchpad-synaptics-mario.conf
