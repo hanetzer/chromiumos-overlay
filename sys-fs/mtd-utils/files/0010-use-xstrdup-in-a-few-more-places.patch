@@ -1,0 +1,83 @@
+From 8b9a95e55a099e89ace56a6e30504e0173f074c3 Mon Sep 17 00:00:00 2001
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Wed, 8 May 2013 17:00:00 -0400
+Subject: [PATCH [mtd-utils] 10/12] use xstrdup in a few more places
+
+These call sites either assume there is no failure (they deref the
+pointer right away), or the exit themselves.  Use xstrdup() instead.
+
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ jffs2reader.c           | 2 +-
+ mkfs.jffs2.c            | 2 +-
+ mkfs.ubifs/mkfs.ubifs.c | 4 ++--
+ nanddump.c              | 5 +----
+ 4 files changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/jffs2reader.c b/jffs2reader.c
+index 5231ff0..a62da9a 100644
+--- a/jffs2reader.c
++++ b/jffs2reader.c
+@@ -694,7 +694,7 @@ struct jffs2_raw_dirent *resolvepath0(char *o, size_t size, uint32_t ino,
+ 		return NULL;
+ 	}
+ 
+-	pp = path = strdup(p);
++	pp = path = xstrdup(p);
+ 
+ 	if (*path == '/') {
+ 		path++;
+diff --git a/mkfs.jffs2.c b/mkfs.jffs2.c
+index c1b0f0d..f09c0b2 100644
+--- a/mkfs.jffs2.c
++++ b/mkfs.jffs2.c
+@@ -469,7 +469,7 @@ static int interpret_table_entry(struct filesystem_entry *root, char *line)
+ 	} else {
+ 		/* If parent is NULL (happens with device table entries),
+ 		 * try and find our parent now) */
+-		tmp = strdup(name);
++		tmp = xstrdup(name);
+ 		dir = dirname(tmp);
+ 		parent = find_filesystem_entry(root, dir, S_IFDIR);
+ 		free(tmp);
+diff --git a/mkfs.ubifs/mkfs.ubifs.c b/mkfs.ubifs/mkfs.ubifs.c
+index 427e37d..f9977bc 100644
+--- a/mkfs.ubifs/mkfs.ubifs.c
++++ b/mkfs.ubifs/mkfs.ubifs.c
+@@ -534,7 +534,7 @@ static int get_options(int argc, char**argv)
+ 				return err_msg("bad maximum LEB count");
+ 			break;
+ 		case 'o':
+-			output = strdup(optarg);
++			output = xstrdup(optarg);
+ 			break;
+ 		case 'D':
+ 			tbl_file = optarg;
+@@ -627,7 +627,7 @@ static int get_options(int argc, char**argv)
+ 	}
+ 
+ 	if (optind != argc && !output)
+-		output = strdup(argv[optind]);
++		output = xstrdup(argv[optind]);
+ 
+ 	if (!output)
+ 		return err_msg("not output device or file specified");
+diff --git a/nanddump.c b/nanddump.c
+index c72d12b..4ee7ed4 100644
+--- a/nanddump.c
++++ b/nanddump.c
+@@ -156,10 +156,7 @@ static void process_options(int argc, char * const argv[])
+ 				start_addr = simple_strtoll(optarg, &error);
+ 				break;
+ 			case 'f':
+-				if (!(dumpfile = strdup(optarg))) {
+-					perror("stddup");
+-					exit(EXIT_FAILURE);
+-				}
++				dumpfile = xstrdup(optarg);
+ 				break;
+ 			case 'l':
+ 				length = simple_strtoll(optarg, &error);
+-- 
+1.8.2.1
+

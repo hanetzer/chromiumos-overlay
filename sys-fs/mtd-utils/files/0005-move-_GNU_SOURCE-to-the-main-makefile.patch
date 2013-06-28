@@ -1,0 +1,120 @@
+From d3585169ebb7ec8d7172260d015ac486872e730a Mon Sep 17 00:00:00 2001
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Wed, 8 May 2013 12:08:18 -0400
+Subject: [PATCH [mtd-utils] 05/12] move _GNU_SOURCE to the main makefile
+
+A bunch of utils are relying on _GNU_SOURCE already.  The new prompt code
+uses getline() which is now part of POSIX, but in older versions of glibc,
+it was behind _GNU_SOURCE as it was a GNU extension.
+
+This change doesn't actually tie us to glibc.  Only code that uses GNU
+extensions does that.  It just kills warning when using older versions of
+glibc.
+
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ Makefile                | 2 +-
+ include/xalloc.h        | 2 +-
+ mkfs.jffs2.c            | 1 -
+ mkfs.ubifs/mkfs.ubifs.h | 2 --
+ nanddump.c              | 1 -
+ nandtest.c              | 1 -
+ nandwrite.c             | 1 -
+ 7 files changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index c8d25f2..bf57a13 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@
+ 
+ VERSION = 1.5.0
+ 
+-CPPFLAGS += -I./include -I$(BUILDDIR)/include -I./ubi-utils/include $(ZLIBCPPFLAGS) $(LZOCPPFLAGS)
++CPPFLAGS += -D_GNU_SOURCE -I./include -I$(BUILDDIR)/include -I./ubi-utils/include $(ZLIBCPPFLAGS) $(LZOCPPFLAGS)
+ 
+ ifeq ($(WITHOUT_XATTR), 1)
+   CPPFLAGS += -DWITHOUT_XATTR
+diff --git a/include/xalloc.h b/include/xalloc.h
+index f1cc8d4..532b80f 100644
+--- a/include/xalloc.h
++++ b/include/xalloc.h
+@@ -27,6 +27,7 @@
+ #ifndef __MTD_UTILS_XALLOC_H__
+ #define __MTD_UTILS_XALLOC_H__
+ 
++#include <stdarg.h>
+ #include <stdlib.h>
+ #include <string.h>
+ 
+@@ -84,7 +85,6 @@ static char *xstrdup(const char *s)
+ }
+ 
+ #ifdef _GNU_SOURCE
+-#include <stdarg.h>
+ 
+ __attribute__((unused))
+ static int xasprintf(char **strp, const char *fmt, ...)
+diff --git a/mkfs.jffs2.c b/mkfs.jffs2.c
+index 7ade078..c1b0f0d 100644
+--- a/mkfs.jffs2.c
++++ b/mkfs.jffs2.c
+@@ -49,7 +49,6 @@
+ 
+ #define PROGRAM_NAME "mkfs.jffs2"
+ 
+-#define _GNU_SOURCE
+ #include <sys/types.h>
+ #include <stdio.h>
+ #include <sys/stat.h>
+diff --git a/mkfs.ubifs/mkfs.ubifs.h b/mkfs.ubifs/mkfs.ubifs.h
+index 01161ef..6030c48 100644
+--- a/mkfs.ubifs/mkfs.ubifs.h
++++ b/mkfs.ubifs/mkfs.ubifs.h
+@@ -23,8 +23,6 @@
+ #ifndef __MKFS_UBIFS_H__
+ #define __MKFS_UBIFS_H__
+ 
+-#define _GNU_SOURCE
+-#define _LARGEFILE64_SOURCE
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <stdio.h>
+diff --git a/nanddump.c b/nanddump.c
+index be458c6..85ccd5d 100644
+--- a/nanddump.c
++++ b/nanddump.c
+@@ -15,7 +15,6 @@
+ 
+ #define PROGRAM_NAME "nanddump"
+ 
+-#define _GNU_SOURCE
+ #include <ctype.h>
+ #include <errno.h>
+ #include <fcntl.h>
+diff --git a/nandtest.c b/nandtest.c
+index 0187b87..3437b57 100644
+--- a/nandtest.c
++++ b/nandtest.c
+@@ -1,6 +1,5 @@
+ #define PROGRAM_NAME "nandtest"
+ 
+-#define _GNU_SOURCE
+ #include <ctype.h>
+ #include <errno.h>
+ #include <fcntl.h>
+diff --git a/nandwrite.c b/nandwrite.c
+index de8e7d2..a6b6581 100644
+--- a/nandwrite.c
++++ b/nandwrite.c
+@@ -21,7 +21,6 @@
+ 
+ #define PROGRAM_NAME "nandwrite"
+ 
+-#define _GNU_SOURCE
+ #include <ctype.h>
+ #include <errno.h>
+ #include <fcntl.h>
+-- 
+1.8.2.1
+

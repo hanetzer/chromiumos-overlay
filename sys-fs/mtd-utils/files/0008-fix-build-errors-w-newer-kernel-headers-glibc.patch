@@ -1,0 +1,40 @@
+From e143a7e6220e0ce740840c36278955fd640d2439 Mon Sep 17 00:00:00 2001
+From: Mike Frysinger <vapier@gentoo.org>
+Date: Wed, 8 May 2013 12:22:59 -0400
+Subject: [PATCH [mtd-utils] 08/12] fix build errors w/newer kernel headers &
+ glibc
+
+Building with linux-headers-3.9 and glibc-2.17 fails like so:
+In file included from summary.h:15:0,
+                 from jffs2dump.c:37:
+/usr/include/linux/uio.h:16:8: error: redefinition of 'struct iovec'
+ struct iovec
+        ^
+In file included from /usr/include/bits/fcntl-linux.h:38:0,
+                 from /usr/include/bits/fcntl.h:61,
+                 from /usr/include/fcntl.h:35,
+                 from jffs2dump.c:25:
+/usr/include/bits/uio.h:43:8: note: originally defined here
+ struct iovec
+        ^
+
+Signed-off-by: Mike Frysinger <vapier@gentoo.org>
+---
+ summary.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/summary.h b/summary.h
+index 95f25c6..e9d95a5 100644
+--- a/summary.h
++++ b/summary.h
+@@ -12,7 +12,6 @@
+ #ifndef JFFS2_SUMMARY_H
+ #define JFFS2_SUMMARY_H
+ 
+-#include <linux/uio.h>
+ #include <linux/jffs2.h>
+ 
+ #define DIRTY_SPACE(x) do { typeof(x) _x = (x); \
+-- 
+1.8.2.1
+
