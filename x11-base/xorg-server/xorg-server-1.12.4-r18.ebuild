@@ -202,11 +202,6 @@ pkg_setup() {
 		$(use_enable !minimal record)
 		$(use_enable !minimal xfree86-utils)
 		$(use_enable !minimal install-libxf86config)
-		$(use_enable !tegra dri)
-		$(use_enable !tegra dri2)
-		$(use_enable !xlib-glx glx)
-		$(use_enable !xlib-glx dri)
-		$(use_enable !xlib-glx dri2)
 		$(use_enable !arm vgahw)
 		$(use_enable !arm vbe)
 		$(use_enable xnest)
@@ -247,10 +242,18 @@ pkg_setup() {
 		--with-default-font-path=built-ins
 	)
 
+	if use tegra || use xlib-glx ; then
+		XORG_CONFIGURE_OPTIONS+=(--disable-dri --disable-dri2)
+	else
+		XORG_CONFIGURE_OPTIONS+=(--enable-dri --enable-dri2)
+	fi
+
 	if use amd64 || use x86 ; then
 		XORG_CONFIGURE_OPTIONS+=( --enable-xaa)
+		XORG_CONFIGURE_OPTIONS+=( --enable-glx)
 	else
 		XORG_CONFIGURE_OPTIONS+=( --disable-xaa)
+		XORG_CONFIGURE_OPTIONS+=( --disable-glx)
 	fi
 
 	# Things we may want to remove later:
