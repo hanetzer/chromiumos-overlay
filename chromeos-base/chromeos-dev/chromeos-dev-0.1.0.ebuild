@@ -33,6 +33,7 @@ IUSE="cros_embedded opengl X"
 ################################################################################
 
 CROS_COMMON_RDEPEND="
+	app-arch/tar
 	app-crypt/nss
 	app-editors/qemacs
 	app-editors/vim
@@ -92,7 +93,6 @@ CROS_RDEPEND="
 CROS_RDEPEND="${CROS_RDEPEND}
 	app-admin/sudo
 	app-arch/gzip
-	app-arch/tar
 	app-benchmarks/punybench
 	app-crypt/nss
 	app-crypt/tpm-tools
