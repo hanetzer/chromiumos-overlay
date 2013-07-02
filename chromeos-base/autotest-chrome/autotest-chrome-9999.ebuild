@@ -38,6 +38,7 @@ IUSE_TESTS=(
 	# Tests that depend on telemetry.
 	+tests_login_CryptohomeMountedTelemetry
 	+tests_telemetry_LoginTest
+	+tests_telemetry_UnitTests
 	+tests_video_VideoDecodeMemoryUsage
 
 	# Inherits from cros_ui_test.
