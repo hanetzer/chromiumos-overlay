@@ -2,39 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header$
 
-EAPI="2"
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/tpm"
-
-inherit cros-workon autotools
-inherit cros-workon base
-inherit cros-workon eutils
-inherit cros-workon linux-info
-
-DESCRIPTION="Various TPM tools"
-LICENSE="BSD"
-HOMEPAGE="http://www.chromium.org/"
-SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
-
-DEPEND="app-crypt/trousers"
-
 CROS_WORKON_LOCALNAME="../third_party/tpm"
 
+inherit cros-workon toolchain-funcs
+
+DESCRIPTION="Various TPM tools"
+HOMEPAGE="http://www.chromium.org/"
+
+LICENSE="BSD"
+SLOT="0"
+KEYWORDS="~amd64 ~arm ~x86"
+IUSE=""
+
+RDEPEND="app-crypt/trousers"
+DEPEND="${RDEPEND}"
+
 src_compile() {
-  if tc-is-cross-compiler ; then
-    tc-getCC
-    tc-getCXX
-    tc-getAR
-    tc-getRANLIB
-    tc-getLD
-    tc-getNM
-    export PKG_CONFIG_PATH="${ROOT}/usr/lib/pkgconfig/"
-    export CCFLAGS="$CFLAGS"
-  fi
-  (cd nvtool; emake) || die emake failed
+	emake -C nvtool CC="$(tc-getCC)"
 }
 
 src_install() {
-  exeinto /usr/bin
-  doexe nvtool/tpm-nvtool
+	dobin nvtool/tpm-nvtool
 }
