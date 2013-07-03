@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile info install postinst prepare setup unpack
-DEPEND=app-crypt/trousers chromeos-base/tpm dev-vcs/git
-DESCRIPTION=TPM firmware tests
+DEPEND=dev-vcs/git
+DESCRIPTION=tpm check test
 EAPI=2
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +tests_hardware_TPMFirmware +tests_hardware_TPMFirmwareServer cros_host cros_workon_tree_78ca7508f5a7f4fcdffdbacbf17ee08459e03263 profiling +buildcheck autotest opengles
+IUSE=+autotest +tests_hardware_TPMCheck cros_host cros_workon_tree_903aaf5102134605fac6a26ac54d74b3c65989ac profiling +buildcheck autotest opengles
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
-RDEPEND=app-crypt/trousers chromeos-base/tpm ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	534125295770b6401a8180bb518da0e9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	c02fcda64ecf889a037b97f6b0a68130	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=83969a301fec58e554d22990aa695b26
+_md5_=abce36f6aef8f2caff072e88b83d478a
