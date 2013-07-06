@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="test bds peach_pit snow spring"
+IUSE="cros_host test bds peach_pit snow spring"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -37,7 +37,14 @@ set_build_env() {
 
 	# Allow building for boards that don't have an EC
 	# (so we can compile test on bots for testing).
-	export EC_BOARD=$(usev bds || get_current_board_with_variant)
+	# Also, it is possible that we are building this package for
+	# purposes of emitting the host-side tools, in which case let's
+	# assume EC_BOARD=bds for purposes of this build.
+	if use cros_host; then
+		export EC_BOARD=bds
+	else
+		export EC_BOARD=$(usev bds || get_current_board_with_variant)
+	fi
 	# FIXME: hack to separate BOARD= used by EC Makefile and Portage,
 	# crosbug.com/p/10377
 	if use snow; then
@@ -72,23 +79,31 @@ src_compile() {
 
 src_install() {
 	set_build_env
-	# EC firmware binaries
-	insinto /firmware
-	doins build/${EC_BOARD}/ec.bin
-	doins build/${EC_BOARD}/ec.RW.bin
-	newins build/${EC_BOARD}/ec.RO.flat ec.RO.bin
-	newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
-	# EC test binaries
-	if ls build/${EC_BOARD}/test-*.bin &>/dev/null ; then
-		doins build/${EC_BOARD}/test-*.bin
+
+	# If we are building host-side tools, install flash_ec and stm32mon
+	# rather than target-specific binaries.
+	if use cros_host; then
+		dobin util/flash_ec
+		dobin build/${EC_BOARD}/util/stm32mon
 	else
-		ewarn "No test binaries found"
+		# EC firmware binaries
+		insinto /firmware
+		doins build/${EC_BOARD}/ec.bin
+		doins build/${EC_BOARD}/ec.RW.bin
+		newins build/${EC_BOARD}/ec.RO.flat ec.RO.bin
+		newins build/${EC_BOARD}_shifted/ec.bin ec_autest_image.bin
+		# EC test binaries
+		if ls build/${EC_BOARD}/test-*.bin &>/dev/null ; then
+			doins build/${EC_BOARD}/test-*.bin
+		else
+			ewarn "No test binaries found"
+		fi
+		# Intermediate files for debugging
+		doins build/${EC_BOARD}/ec.*.elf
+		# Utilities
+		exeinto /usr/bin
+		doexe build/${EC_BOARD}/util/ectool
 	fi
-	# Intermediate files for debugging
-	doins build/${EC_BOARD}/ec.*.elf
-	# Utilities
-	exeinto /usr/bin
-	doexe build/${EC_BOARD}/util/ectool
 }
 
 src_test() {
