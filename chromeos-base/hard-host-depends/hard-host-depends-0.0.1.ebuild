@@ -277,3 +277,8 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-util/ragel
 	"
+
+# Host dependencies for building EC tools
+RDEPEND="${RDEPEND}
+	chromeos-base/chromeos-ec
+	"
