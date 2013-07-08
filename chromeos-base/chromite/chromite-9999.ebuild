@@ -5,6 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/chromite"
 CROS_WORKON_LOCALNAME="../../chromite"
 CROS_WORKON_OUTOFTREE_BUILD=1
+RESTRICT="test"
 
 inherit cros-workon
 
