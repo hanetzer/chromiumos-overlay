@@ -180,6 +180,7 @@ src_install() {
 		System.map
 		u-boot.bin
 		u-boot.img
+		$(usex u_boot_config_use_beaglebone MLO)
 	)
 	local ub_vendor="$(get_config_var ${CROS_U_BOOT_CONFIG} VENDOR)"
 	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
@@ -206,6 +207,8 @@ src_install() {
 		newins "${UB_BUILD_DIR_NB}/u-boot" u-boot_netboot.elf
 	fi
 
-	insinto "${inst_dir}/dtb"
-	doins "${UB_BUILD_DIR}/dts/"*.dtb
+	if ! use u_boot_config_use_beaglebone; then
+		insinto "${inst_dir}/dtb"
+		doins "${UB_BUILD_DIR}/dts/"*.dtb
+	fi
 }
