@@ -13,4 +13,7 @@
       <pkg>x11-libs/gtk+</pkg> (GTK+ 2).
     </flag>
   </use>
+  <upstream>
+    <remote-id type="cpe">cpe:/a:ibus_project:ibus-m17n</remote-id>
+  </upstream>
 </pkgmetadata>
