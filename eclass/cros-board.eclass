@@ -59,6 +59,8 @@ ALL_BOARDS=(
 	lumpy
 	panda
 	parrot
+	parrot32
+	parrot64
 	peach
 	peach_pit
 	peppy

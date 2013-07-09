@@ -85,6 +85,7 @@ get_dev_tree_base_name() {
 		(daisy_spring) echo "exynos5250-spring";;
 		(daisy) echo "exynos5250-snow";;
 		(link|stout|parrot|butterfly) echo "${BOARD_USE}";;
+		(parrot32|parrot64) echo "parrot";;
 		(stout32) echo "stout";;
 		(*) die \
 		  "Unable to determine device tree for board ${BOARD_USE}." ;;
