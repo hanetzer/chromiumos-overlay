@@ -8,7 +8,7 @@ DESCRIPTION="The Google Input Tools (keyboard part) based on IME Extension API"
 HOMEPAGE="https://code.google.com/p/google-input-tools"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
-LICENSE="Apache License 2.0"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 S="${WORKDIR}/${PN}"

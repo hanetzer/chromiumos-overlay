@@ -6,7 +6,7 @@ EAPI="4"
 DESCRIPTION="This is a meta package for installing Chinese IME packages"
 HOMEPAGE="http://www.google.com/inputtools/"
 
-LICENSE="Apache License 2.0"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="x86 amd64 arm"
 IUSE="internal"
