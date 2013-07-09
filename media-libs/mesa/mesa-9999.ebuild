@@ -122,7 +122,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/9.1-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
-	epatch "${FILESDIR}"/9.0-fail-compile-on-bad-uniform-access.patch
 	epatch "${FILESDIR}"/9.1-gen_matypes-cross.patch
 	epatch "${FILESDIR}"/9.1-fix-compile-disable-asm.patch
 	epatch "${FILESDIR}"/9.1-0001-gallivm-one-code-memory-pool-with-deferred-free.patch
@@ -131,11 +130,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
 	epatch "${FILESDIR}"/9.1-0005-draw-cache-LLVM-compilation.patch
 	epatch "${FILESDIR}"/9.1-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
-	epatch "${FILESDIR}"/9.1-ACTIVE_UNIFORM_MAX_LENGTH-3-extra-chars-for-array.patch
-	epatch "${FILESDIR}"/9.1-i915-gallium-release-old-fragment-shader-sampler-views.patch
-	epatch "${FILESDIR}"/9.1-i965-Fix-SNB-GPU-hangs-when-a-blorp-batch-is-the-fir.patch
-	epatch "${FILESDIR}"/9.1-i965-Fix-hangs-on-HSW-since-the-gen6-blorp-fix.patch
-	epatch "${FILESDIR}"/9.1-i965-Enable-the-Bay-Trail-platform.patch
+	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
+	epatch "${FILESDIR}"/9.1-Fix-webgl-regression.patch
 
 	base_src_prepare
 
