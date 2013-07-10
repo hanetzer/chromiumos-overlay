@@ -17,12 +17,13 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="doc qmi"
+IUSE="doc mbim qmi"
 
 RDEPEND=">=dev-libs/glib-2.32
 	>=sys-apps/dbus-1.2
 	dev-libs/dbus-glib
 	net-dialup/ppp
+	mbim? ( net-libs/libmbim )
 	qmi? ( net-libs/libqmi )
 	!net-misc/modemmanager"
 
@@ -48,6 +49,7 @@ src_configure() {
 	cros-workon_src_configure \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
 		$(use_enable {,gtk-}doc) \
+		$(use_with mbim) \
 		$(use_with qmi)
 }
 
@@ -92,11 +94,15 @@ src_install() {
 	if ! use qmi; then
 		find "${D}" -name 'libmm-plugin-*.so' ! \
 			\( -name 'libmm-plugin-samsung.so' -o \
+			   -name 'libmm-plugin-generic.so' -o \
 			   -name 'libmm-plugin-huawei.so' -o \
 			   -name 'libmm-plugin-zte.so' -o \
 			   -name 'libmm-plugin-altair-lte.so' -o \
 			   -name 'libmm-plugin-novatel-lte.so' \) \
 			-delete
+		if ! use mbim; then
+			find "${D}" -name 'libmm-plugin-generic.so' -delete
+		fi
 	fi
 
 	insinto /etc/init
