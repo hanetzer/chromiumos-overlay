@@ -1,4 +1,4 @@
-From 23001edbcf91a91113b550c88e87fefb043d19ae Mon Sep 17 00:00:00 2001
+From 10cc47b4341cf2a1cfae1b035907e092c6f95d49 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Fri, 28 Jun 2013 14:47:29 -0700
 Subject: [PATCH] Avoid GPU crash with malformed streams
@@ -17,13 +17,13 @@ TEST=go to youtube and play http://www.youtube.com/watch?v=6v2L2UGZJAM ; it does
 
 Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
 ---
- src/gen6_mfd.c  | 9 +++++++++
- src/gen75_mfd.c | 9 +++++++++
- src/gen7_mfd.c  | 9 +++++++++
- 3 files changed, 27 insertions(+)
+ src/gen6_mfd.c  | 11 +++++++++++
+ src/gen75_mfd.c |  9 +++++++++
+ src/gen7_mfd.c  |  9 +++++++++
+ 3 files changed, 29 insertions(+)
 
 diff --git a/src/gen6_mfd.c b/src/gen6_mfd.c
-index 68e1900..ab693e9 100755
+index 68e1900..330ab06 100755
 --- a/src/gen6_mfd.c
 +++ b/src/gen6_mfd.c
 @@ -645,6 +645,8 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
@@ -35,7 +35,7 @@ index 68e1900..ab693e9 100755
  
      if (slice_param->slice_type == SLICE_TYPE_I ||
          slice_param->slice_type == SLICE_TYPE_SI) {
-@@ -682,6 +684,13 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -682,6 +684,15 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
          }
      }
  
@@ -43,8 +43,10 @@ index 68e1900..ab693e9 100755
 +    for (i = 0; i < ARRAY_ELEMS(gen6_mfd_context->reference_surface); i++)
 +        if (gen6_mfd_context->reference_surface[i].surface_id != VA_INVALID_ID)
 +            num_surfaces ++;
-+    num_ref_idx_l0 = MIN(num_ref_idx_l0, num_surfaces);
-+    num_ref_idx_l1 = MIN(num_ref_idx_l1, num_surfaces);
++    if (num_surfaces == 0) {
++        num_ref_idx_l0 = 0;
++        num_ref_idx_l1 = 0;
++    }
 +
      first_mb_in_slice = slice_param->first_mb_in_slice << mbaff_picture;
      slice_hor_pos = first_mb_in_slice % width_in_mbs; 
