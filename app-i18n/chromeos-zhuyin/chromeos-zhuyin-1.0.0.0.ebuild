@@ -15,6 +15,7 @@ S="${WORKDIR}/${PN}"
 
 src_prepare() {
   epatch "${FILESDIR}"/${P}-insert-public-key.patch
+  epatch "${FILESDIR}"/${P}-fix-permission.patch
 }
 
 src_install() {
