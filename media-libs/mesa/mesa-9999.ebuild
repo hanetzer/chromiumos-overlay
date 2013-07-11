@@ -132,6 +132,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
 	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
 	epatch "${FILESDIR}"/9.1-Fix-webgl-regression.patch
+	epatch "${FILESDIR}"/9.1-no-fail-hwctx.patch
 
 	base_src_prepare
 
