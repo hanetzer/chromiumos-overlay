@@ -7,4 +7,4 @@ KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=chromeos-base/autotest-tests chromeos-base/autotest-tests-ltp chromeos-base/autotest-tests-ownershipapi chromeos-base/autotest-chrome chromeos-base/autotest-factory chromeos-base/autotest-private
 SLOT=0
-_md5_=6a56442807a5c5df1c5ba68dd9cd5c3f
+_md5_=66e996e61c9f97c6090b4322d492d20c
