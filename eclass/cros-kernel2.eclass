@@ -707,6 +707,9 @@ cros-kernel2_src_install() {
 	else
 		dosym "$(cros-workon_get_build_dir)" "/usr/src/linux"
 	fi
+
+  rm "${D}/boot/config-${version}"
+  rm "${D}/boot/System.map-${version}"
 }
 
 EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_compile src_test src_install
