@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="5d851b17501ac27d28e7ced3fe72f3b4fdd37260"
-CROS_WORKON_TREE="e7339357f6ece0d3fe9cb07907dfe470e44c3397"
+CROS_WORKON_COMMIT="5db19692534f5ce992c5b28cacb00c3189045273"
+CROS_WORKON_TREE="a112bf958ed79092fe5cca3e1ca35e9ecfb78502"
 CROS_WORKON_PROJECT="chromiumos/platform/shill"
 CROS_WORKON_LOCALNAME="shill"
 
