@@ -434,20 +434,30 @@ kmake() {
 		set -- "$@" WIFIVERSION="-3.4"
 	fi
 
+	# TODO(raymes): Force GNU ld over gold. There are still some
+	# gold issues to iron out. See: 13209.
+	tc-export LD CC CXX
+
+	local binutils_path=$(get_binutils_path_ld)
+
 	# Hack for using 64-bit kernel with 32-bit user-space
 	if [[ "${ARCH}" == "x86" && "${kernel_arch}" == "x86_64" ]]; then
 		cross=x86_64-cros-linux-gnu-
-	else
-		# TODO(raymes): Force GNU ld over gold. There are still some
-		# gold issues to iron out. See: 13209.
-		tc-export LD CC CXX
-
-		set -- \
-			LD="$(get_binutils_path_ld)/ld $(usex x32 '-m elf_x86_64' '')" \
-			CC="${CC} -B$(get_binutils_path_ld)" \
-			CXX="${CXX} -B$(get_binutils_path_ld)" \
-			"$@"
+		binutils_path=$(echo "$binutils_path" | sed -e \
+				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
+		LD=$(echo "$LD" | sed -e \
+				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
+		CC=$(echo "$CC" | sed -e \
+				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
+		CXX=$(echo "$CXX" | sed -e \
+				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
 	fi
+
+	set -- \
+		LD="${binutils_path}/ld $(usex x32 '-m elf_x86_64' '')" \
+		CC="${CC} -B${binutils_path}" \
+		CXX="${CXX} -B${binutils_path}" \
+		"$@"
 
 	cw_emake \
 		ARCH=${kernel_arch} \
