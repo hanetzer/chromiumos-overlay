@@ -3,7 +3,7 @@
 
 EAPI=4
 CROS_WORKON_COMMIT=("23725582b79dbaf56a61a9a36623a13942d87a75" "013579ea30bc5977feecee8d8d7f972c5f730abb")
-CROS_WORKON_TREE=("050ea08aa56ad1d92ddf975f1e65a858e21bd7ec" "8f7feab9e5412f4fc754137e7c71513731e4dcea")
+CROS_WORKON_TREE=("c357ae4e5a83383731091f7517ced5b514cbb4b5" "8f7feab9e5412f4fc754137e7c71513731e4dcea")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
