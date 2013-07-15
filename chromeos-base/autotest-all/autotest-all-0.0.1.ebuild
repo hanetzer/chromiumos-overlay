@@ -15,6 +15,7 @@ KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE=""
 
 RDEPEND="
+	chromeos-base/autotest-client
 	chromeos-base/autotest-tests
 	chromeos-base/autotest-tests-ibus
 	chromeos-base/autotest-tests-ltp
@@ -22,6 +23,7 @@ RDEPEND="
 	chromeos-base/autotest-tests-touchpad
 	chromeos-base/autotest-chrome
 	chromeos-base/autotest-factory
+	chromeos-base/autotest-factory-install
 	chromeos-base/autotest-private-all
 "
 

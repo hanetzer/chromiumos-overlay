@@ -72,6 +72,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/ckermit
 	app-misc/tmux
 	app-misc/utouch-evemu
+	chromeos-base/autotest-client
 	chromeos-base/autox
 	chromeos-base/shill-test-scripts
 	chromeos-base/ixchariot
