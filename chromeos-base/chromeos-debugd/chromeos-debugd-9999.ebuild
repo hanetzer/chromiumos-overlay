@@ -67,7 +67,7 @@ src_install() {
 	insinto /etc/init
 	doins "${S}"/share/{debugd,trace_marker-test}.conf
 
-	insinto /etc/init/perf_commands
+	insinto /etc/perf_commands
 	doins "${S}"/share/perf_commands/{arm,core,unknown}.txt
 }
 
