@@ -20,6 +20,7 @@ IUSE="${IUSE} +autotest"
 
 RDEPEND="
 	!chromeos-base/autotest-telemetry
+	chromeos-base/autotest-deps-piglit
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts

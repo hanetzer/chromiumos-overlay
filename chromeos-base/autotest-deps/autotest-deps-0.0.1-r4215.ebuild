@@ -24,7 +24,7 @@ CROS_WORKON_SUBDIR=files
 # following deps don't compile: boottool, mysql, pgpool, pgsql, systemtap, # dejagnu, libcap, libnet
 # following deps are not deps: factory
 # following tests are going to be moved: chrome_test
-AUTOTEST_DEPS_LIST="fio gfxtest gtest hdparm ibusclient iwcap realtimecomm_playground sysstat sox test_tones fakegudev fakemodem pyxinput example_cros_dep touchpad-tests"
+AUTOTEST_DEPS_LIST="fio gfxtest gtest hdparm iwcap realtimecomm_playground sysstat sox test_tones fakegudev fakemodem pyxinput example_cros_dep"
 AUTOTEST_CONFIG_LIST=*
 AUTOTEST_PROFILERS_LIST=*
 
@@ -45,13 +45,6 @@ RDEPEND="${RDEPEND}
 #  chromeos-base/chromeos-chrome
 #"
 
-# deps/ibusclient
-RDEPEND="${RDEPEND}
-  app-i18n/ibus
-  dev-libs/glib
-  sys-apps/dbus
-"
-
 # deps/iwcap
 RDEPEND="${RDEPEND}
   dev-libs/libnl:0
@@ -65,12 +58,6 @@ RDEPEND="${RDEPEND}
 # deps/fakemodem
 RDEPEND="${RDEPEND}
   chromeos-base/autotest-fakemodem-conf
-"
-
-# deps/touchpad-tests
-RDEPEND="${RDEPEND}
-  x11-drivers/touchpad-tests
-  chromeos-base/mttools
 "
 
 RDEPEND="${RDEPEND}

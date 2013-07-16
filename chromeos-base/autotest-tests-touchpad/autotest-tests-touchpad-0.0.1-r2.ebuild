@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="5cb8f91e6853de4ecc351a842eb8f1c1919094bb"
-CROS_WORKON_TREE="85b32061dbf87775fe309338dfca504ec2df51a5"
+CROS_WORKON_COMMIT="1750c4c4ab932b9c0a04207d981d9402870b4bea"
+CROS_WORKON_TREE="bcda63b83945e58960c53d7a27e7d343cebbfb98"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit cros-workon autotest
 
-DESCRIPTION="ibus autotest"
+DESCRIPTION="touchpad autotest"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
@@ -17,14 +17,13 @@ KEYWORDS="amd64 arm x86"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="
-	chromeos-base/autotest-deps-ibus
-	dev-python/pygtk
+	chromeos-base/autotest-deps-touchpad
 "
 
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+tests_desktopui_ImeLogin
+	+tests_platform_GesturesRegressionTest
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"

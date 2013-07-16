@@ -27,9 +27,6 @@ LIBCHROME_VERS="180609"
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
 #
-# pygtk is used only in the following:
-#   desktopui_ImeTest
-#   desktopui_ImeLogin
 # pygobject is used only in the following:
 #   desktopui_ScreenLocker
 #   hardware_BluetoothSemiAuto
@@ -48,12 +45,10 @@ RDEPEND="
   chromeos-base/autotest-deps-glmark2
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
-  chromeos-base/autotest-deps-piglit
   chromeos-base/shill-test-scripts
   autox? ( chromeos-base/autox )
   dev-python/numpy
   dev-python/pygobject
-  dev-python/pygtk
   xset? ( x11-apps/xset )
   tpmtools? ( app-crypt/tpm-tools )
 "
@@ -102,7 +97,6 @@ IUSE_TESTS="
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
 	+tests_desktopui_HangDetector
-	+tests_desktopui_ImeLogin
 	+tests_desktopui_KillRestart
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
@@ -252,7 +246,6 @@ IUSE_TESTS="
 	+tests_platform_FileNum
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
-	+tests_platform_GesturesRegressionTest
 	+tests_platform_HighResTimers
 	+tests_platform_KernelVersion
 	+tests_platform_LibCBench
