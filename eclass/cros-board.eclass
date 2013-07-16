@@ -84,6 +84,7 @@ ALL_BOARDS=(
 	tegra3-generic
 	waluigi
 	cardhu
+	wolf
 	x32-generic
 	x86-agz
 	x86-alex
