@@ -66,6 +66,7 @@ base_libs = [
                 profiler/alternate_timer.cc
                 profiler/tracked_time.cc
                 safe_strerror_posix.cc
+                sha1_portable.cc
                 string16.cc
                 string_number_conversions.cc
                 string_piece.cc
