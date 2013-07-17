@@ -124,6 +124,12 @@ src_install() {
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
 
+	mkdir "${S}"/connectivity_diagnostics_deploy
+	unzip "${S}"/connectivity_diagnostics/connectivity_diagnostics.zip \
+		-d "${S}"/connectivity_diagnostics_deploy
+	insinto /usr/share/chromeos-assets/connectivity_diagnostics
+	doins -r "${S}"/connectivity_diagnostics_deploy/*
+
 	unzip "${S}"/accessibility/extensions/access_chromevox.zip
 	insinto /usr/share/chromeos-assets/accessibility/extensions/access_chromevox
 	doins -r "${S}"/chromevox_deploy/*
