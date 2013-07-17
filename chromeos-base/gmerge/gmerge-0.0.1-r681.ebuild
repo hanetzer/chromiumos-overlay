@@ -20,6 +20,7 @@ IUSE=""
 RDEPEND="app-shells/bash
 	dev-lang/python
 	dev-util/shflags
+	net-misc/wget
 	sys-apps/portage"
 DEPEND="${RDEPEND}"
 
