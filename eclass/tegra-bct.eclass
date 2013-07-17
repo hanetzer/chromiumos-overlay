@@ -16,6 +16,12 @@
 # Flash memory configuration file to install
 : ${TEGRA_BCT_FLASH_CONFIG:=}
 
+# @ECLASS-VARIABLE: TEGRA_BCT_ODM_DATA_CONFIG
+# @DESCRIPTION:
+# (Optional) ODM DATA value for specified board. ODM DATA specifies
+# different configurations like memory and debug UART.
+: ${TEGRA_BCT_ODM_DATA_CONFIG:=}
+
 # @ECLASS-VARIABLE: TEGRA_BCT_CHIP_FAMILY
 # @DESCRIPTION:
 # Family of Tegra chip (determines BCT configuration)
@@ -30,6 +36,7 @@ esac
 tegra-bct_src_configure() {
 	local sdram_file=${FILESDIR}/${TEGRA_BCT_SDRAM_CONFIG}
 	local flash_file=${FILESDIR}/${TEGRA_BCT_FLASH_CONFIG}
+	local odmdata_file=${FILESDIR}/${TEGRA_BCT_ODM_DATA_CONFIG}
 
 	if [ -z "${TEGRA_BCT_SDRAM_CONFIG}" ]; then
 		die "No SDRAM configuration file selected."
@@ -52,6 +59,13 @@ tegra-bct_src_configure() {
 
 	cat ${sdram_file} >> board.cfg ||
 		die "Failed to read SDRAM config file."
+
+	# TEGRA_BCT_ODM_DATA_CONFIG is optional, Only use it if set.
+	if [ ! -z "${TEGRA_BCT_ODM_DATA_CONFIG}" ]; then
+		einfo "Using odmdata          : ${TEGRA_BCT_ODM_DATA_CONFIG}"
+		cat ${odmdata_file} >> board.cfg ||
+			die "Failed to read ODMDATA config file."
+	fi
 }
 
 tegra-bct_src_compile() {
@@ -63,11 +77,17 @@ tegra-bct_src_compile() {
 tegra-bct_src_install() {
 	local sdram_file=${FILESDIR}/${TEGRA_BCT_SDRAM_CONFIG}
 	local flash_file=${FILESDIR}/${TEGRA_BCT_FLASH_CONFIG}
+	local odmdata_file=${FILESDIR}/${TEGRA_BCT_ODM_DATA_CONFIG}
 
 	insinto /firmware/bct
 
 	doins "${sdram_file}"
 	doins "${flash_file}"
+
+	# TEGRA_BCT_ODM_DATA_CONFIG is optional, Only use it if set.
+	if [ ! -z "${TEGRA_BCT_ODM_DATA_CONFIG}" ]; then
+		doins "${odmdata_file}"
+	fi
 
 	if [ "$(basename ${sdram_file})" != "sdram.cfg" ]; then
 		dosym "$(basename ${sdram_file})" /firmware/bct/sdram.cfg
