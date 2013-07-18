@@ -22,6 +22,7 @@ RDEPEND="chromeos-base/chromeos-minijail
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/platform2
+	chromeos-base/system_api
 	dev-libs/dbus-c++
 	dev-libs/glib:2
 	dev-libs/libpcre
@@ -58,6 +59,7 @@ src_install() {
 	doexe "${S}"/src/helpers/systrace.sh
 	doexe "${S}"/src/helpers/capture_utility.sh
 	doexe helpers/network_status
+	doexe helpers/wimax_status
 
 	insinto /etc/dbus-1/system.d
 	doins "${S}/share/org.chromium.debugd.conf"
