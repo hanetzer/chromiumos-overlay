@@ -94,9 +94,6 @@ src_install() {
 
 	insinto /usr/share/power_manager
 	doins config/*
-	if use is_desktop; then
-		echo 1 >"${D}/usr/share/power_manager/suspend_at_login_screen"
-	fi
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
