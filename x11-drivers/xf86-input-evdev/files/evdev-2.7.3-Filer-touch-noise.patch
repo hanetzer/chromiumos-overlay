@@ -69,15 +69,15 @@ index 59fa9bd..7da2ec5 100644
                                       pEvdev->touch_time_valuator_index,
                                       TimevalToDouble(&ev->time));
 +            if (canceled_slots & (1ULL << pEvdev->queue[i].detail.touch)) {
-+                /* Move to 0,0 with 255 pressure and touch_major. */
++                /* Move to 0,0 with max pressure and touch_major. */
 +                valuator_mask_set_double(pEvdev->queue[i].touchMask,
 +                    pEvdev->axis_map[ABS_MT_POSITION_X], 0);
 +                valuator_mask_set_double(pEvdev->queue[i].touchMask,
 +                    pEvdev->axis_map[ABS_MT_POSITION_Y], 0);
 +                valuator_mask_set_double(pEvdev->queue[i].touchMask,
-+                    pEvdev->axis_map[ABS_MT_TOUCH_MAJOR], 255);
++                    pEvdev->axis_map[ABS_MT_TOUCH_MAJOR], pEvdev->absinfo[ABS_MT_TOUCH_MAJOR].maximum);
 +                valuator_mask_set_double(pEvdev->queue[i].touchMask,
-+                    pEvdev->axis_map[ABS_MT_PRESSURE], 255);
++                    pEvdev->axis_map[ABS_MT_PRESSURE], pEvdev->absinfo[ABS_MT_PRESSURE].maximum);
 +
 +                /* Log the fact that we're canceling a touch. */
 +                if (pEvdev->debug_buf) {
