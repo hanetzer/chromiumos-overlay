@@ -3,10 +3,10 @@ DEPEND=!net-misc/mobile-broadband-provider-info >=dev-libs/glib-2.0 >=dev-util/p
 DESCRIPTION=Database of mobile broadband service providers (with local modifications)
 EAPI=4
 HOMEPAGE=http://live.gnome.org/NetworkManager/MobileBroadband/ServiceProviders
-IUSE=tools cros_host cros_workon_tree_03d9530a5e58f840fb9e23f2bd1fe306491140d1 profiling
+IUSE=tools cros_host cros_workon_tree_0cead0b5e9e22bf541ba2394e313b9b9e0b9c950 profiling
 KEYWORDS=amd64 arm x86
 LICENSE=CC-PD
 RDEPEND=!net-misc/mobile-broadband-provider-info >=dev-libs/glib-2.0
 SLOT=0
 _eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	c02fcda64ecf889a037b97f6b0a68130	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=7743a28a108599720c447764075b1431
+_md5_=b7b3ef1cf0c63cb6010b81cda147e030
