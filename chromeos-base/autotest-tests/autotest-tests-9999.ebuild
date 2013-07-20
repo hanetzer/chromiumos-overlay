@@ -179,7 +179,7 @@ IUSE_TESTS="
 	+tests_network_3GSafetyDance
 	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
-	+tests_network_SwitchCarrier
+	+tests_network_BasicProfileProperties
 	+tests_network_CDMAActivate
 	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
@@ -191,6 +191,8 @@ IUSE_TESTS="
 	+tests_network_DhcpNegotiationTimeout
 	+tests_network_DhcpNonAsciiParameter
 	+tests_network_DhcpRenew
+	+tests_network_DhcpStaticIP
+	+tests_network_DhcpWpadNegotiation
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
 	+tests_network_EthernetStressPlug
@@ -203,8 +205,11 @@ IUSE_TESTS="
 	+tests_network_Ping
 	+tests_network_Portal
 	+tests_network_ShillInitScripts
+	+tests_network_SwitchCarrier
 	+tests_network_UdevRename
+	+tests_network_VPNConnect
 	+tests_network_WiFiCaps
+	+tests_network_WiFiInvalidParameters
 	+tests_network_WiFiSmokeTest
 	+tests_network_WifiAuthenticationTests
 	+tests_network_WlanHasIP
