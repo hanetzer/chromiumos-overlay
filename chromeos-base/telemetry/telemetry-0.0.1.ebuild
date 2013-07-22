@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit python
+inherit python cros-constants
 
 DESCRIPTION="Chromium telemetry dep"
 HOMEPAGE="http://www.chromium.org/"
@@ -19,7 +19,7 @@ RDEPEND=""
 S=${WORKDIR}
 
 src_unpack() {
-	ln -s "${SYSROOT}/usr/local/autotest/packages/dep-telemetry_dep.tar.bz2" .
+	ln -s "${SYSROOT}${AUTOTEST_BASE}/packages/dep-telemetry_dep.tar.bz2" .
 	unpack ./dep-telemetry_dep.tar.bz2
 	# Some telemetry code hardcodes in 'src'
 	mv test_src src || die

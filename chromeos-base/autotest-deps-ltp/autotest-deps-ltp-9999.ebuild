@@ -7,7 +7,7 @@ CROS_WORKON_LOCALNAME=../third_party/ltp
 CROS_WORKON_SUBDIR=
 
 CONFLICT_LIST="chromeos-base/autotest-tests-ltp-0.0.1-r2064"
-inherit cros-workon conflict
+inherit cros-workon conflict cros-constants
 
 DESCRIPTION="Autotest kernel ltp dep"
 HOMEPAGE="http://www.chromium.org/"
@@ -30,7 +30,7 @@ src_prepare() {
 
 src_configure() {
 	cros-workon_src_configure \
-		--prefix="/usr/local/autotest/client/deps/kernel_ltp_dep"
+		--prefix="${AUTOTEST_BASE}/client/deps/kernel_ltp_dep"
 	# Used in make install
 	export SKIP_IDCHECK=1
 }

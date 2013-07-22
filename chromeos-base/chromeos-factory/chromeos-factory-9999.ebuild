@@ -7,7 +7,7 @@ CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
 CROS_WORKON_LOCALNAME="factory"
 
-inherit cros-workon python
+inherit cros-workon python cros-constants
 
 CLOSURE_LIB_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
 WEBGL_AQUARIUM_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2"
@@ -85,7 +85,7 @@ src_install() {
 		# We need to preserve the chromedriver and selenium library
 		# (from chromeos-chrome pyauto test folder which is stripped by default)
 		# for factory test images.
-		local pyauto_path="/usr/local/autotest/client/deps/pyauto_dep"
+		local pyauto_path="${AUTOTEST_BASE}/client/deps/pyauto_dep"
 		exeinto "$TARGET_DIR/bin/"
 		doexe "${ROOT}$pyauto_path/test_src/out/Release/chromedriver"
 		insinto "$TARGET_DIR/py/automation"

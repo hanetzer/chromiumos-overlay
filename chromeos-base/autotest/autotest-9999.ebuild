@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
-inherit toolchain-funcs flag-o-matic cros-workon
+inherit toolchain-funcs flag-o-matic cros-workon cros-constants
 
 DESCRIPTION="Autotest scripts and tools"
 HOMEPAGE="http://www.chromium.org/"
@@ -70,30 +70,38 @@ src_configure() {
 }
 
 src_install() {
-	insinto /usr/local/autotest
+	insinto ${AUTOTEST_BASE}
 	doins -r "${AUTOTEST_WORK}"/*
 
 	# base __init__.py
-	touch "${D}"/usr/local/autotest/__init__.py
+	touch "${D}"${AUTOTEST_BASE}/__init__.py
 
 	# TODO: This should be more selective
-	chmod -R a+x "${D}"/usr/local/autotest
+	chmod -R a+x "${D}"${AUTOTEST_BASE}
 
 	# setup stuff needed for read/write operation
-	chmod a+wx "${D}/usr/local/autotest/packages"
+	chmod a+wx "${D}${AUTOTEST_BASE}/packages"
 
-	dodir "/usr/local/autotest/client/packages"
-	chmod a+wx "${D}/usr/local/autotest/client/packages"
+	dodir "${AUTOTEST_BASE}/client/packages"
+	chmod a+wx "${D}${AUTOTEST_BASE}/client/packages"
 
-	dodir "/usr/local/autotest/server/tmp"
-	chmod a+wx "${D}/usr/local/autotest/server/tmp"
+	dodir "${AUTOTEST_BASE}/server/tmp"
+	chmod a+wx "${D}${AUTOTEST_BASE}/server/tmp"
 
 	# Set up symlinks so that debug info works for autotests.
-	dodir /usr/lib/debug/usr/local/autotest/
-	dosym client/site_tests /usr/lib/debug/usr/local/autotest/tests
+	dodir /usr/lib/debug${AUTOTEST_BASE}/
+	dosym client/site_tests /usr/lib/debug${AUTOTEST_BASE}/tests
 }
 
 src_test() {
 	# Run the autotest unit tests.
 	./utils/unittest_suite.py --debug || die "Autotest unit tests failed."
+}
+
+# Packages client.
+pkg_postinst() {
+	local root_autotest_dir="${ROOT}${AUTOTEST_BASE}"
+	flock "${root_autotest_dir}/packages" \
+			-c "python -B ${root_autotest_dir}/utils/packager.py \
+				-r ${root_autotest_dir}/packages --client upload"
 }

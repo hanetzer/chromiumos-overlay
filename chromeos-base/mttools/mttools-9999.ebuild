@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/mttools"
 
-inherit cros-workon
+inherit cros-workon cros-constants
 
 DESCRIPTION="Chromium OS multitouch utilities"
 
@@ -35,5 +35,5 @@ src_compile() {
 
 src_install() {
 	# install to autotest deps directory for dependency
-	emake DESTDIR="${D}/usr/local/autotest/client/deps/touchpad-tests/framework" install
+	emake DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests/framework" install
 }

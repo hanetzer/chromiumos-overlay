@@ -3,6 +3,9 @@
 
 EAPI=4
 
+inherit cros-constants
+
+
 DESCRIPTION="Meta ebuild for all packages providing tests"
 HOMEPAGE="http://www.chromium.org"
 
@@ -36,7 +39,7 @@ src_unpack() {
 
 src_install() {
 	# So that this package properly owns the file
-	insinto /usr/local/autotest/test_suites
+	insinto ${AUTOTEST_BASE}/test_suites
 	doins "${SUITE_DEPENDENCIES_FILE}"
 	doins "${SUITE_TO_CONTROL_MAP}"
 }
@@ -44,7 +47,7 @@ src_install() {
 # Pre-processes control files and installs DEPENDENCIES info,
 # and creates client-autotest.tar.bz2
 pkg_postinst() {
-	local root_autotest_dir="${ROOT}/usr/local/autotest"
+	local root_autotest_dir="${ROOT}${AUTOTEST_BASE}"
 	python -B "${root_autotest_dir}/site_utils/suite_preprocessor.py" \
 		-a "${root_autotest_dir}" \
 		-o "${root_autotest_dir}/test_suites/${SUITE_DEPENDENCIES_FILE}"

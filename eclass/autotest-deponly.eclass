@@ -6,12 +6,13 @@
 # Purpose: Eclass for handling autotest deps packages
 #
 
-inherit autotest
+inherit autotest cros-constants
 
 
 AUTOTEST_CONFIG_LIST=""
 AUTOTEST_DEPS_LIST=""
 AUTOTEST_PROFILERS_LIST=""
+_NEW_AUTOTEST_LANDED_FLAG=1
 
 #
 # In order to build only deps (call their setup function), we need to have
@@ -48,7 +49,7 @@ echo "    self.job.setup_dep(['${item}'])" >> myfaketest.py
 autotest-deponly_src_install() {
 	autotest_src_install
 
-	rm -rf ${D}/usr/local/autotest/client/site_tests/myfaketest || die
+	rm -rf "${D}${AUTOTEST_BASE}/client/site_tests/myfaketest" || die
 }
 
 EXPORT_FUNCTIONS src_prepare src_install

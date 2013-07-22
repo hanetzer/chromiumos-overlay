@@ -17,3 +17,4 @@ src_install() {
 	insinto /etc/init
 	doins test-init/*.conf
 }
+

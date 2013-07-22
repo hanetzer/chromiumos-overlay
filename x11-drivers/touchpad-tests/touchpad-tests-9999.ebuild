@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/touchpad-tests"
 CROS_WORKON_LOCALNAME="../platform/touchpad-tests"
 
-inherit cros-workon
+inherit cros-workon cros-constants
 
 DESCRIPTION="Chromium OS multitouch driver regression tests"
 
@@ -35,5 +35,5 @@ src_compile() {
 
 src_install() {
 	# install to autotest deps directory for dependency
-	emake DESTDIR="${D}/usr/local/autotest/client/deps/touchpad-tests" install
+	emake DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests" install
 }

@@ -21,3 +21,9 @@ CROS_GIT_HOST_URL="https://chromium.googlesource.com"
 # @DESCRIPTION:
 # Url for the git server containing various Chrome/OS repos.
 CROS_GIT_INT_HOST_URL="https://chrome-internal.googlesource.com"
+
+# @ECLASS-VARIABLE: AUTOTEST_BASE
+# @DESCRIPTION:
+# Path to build-time destination of autotest (relative to sysroot).
+AUTOTEST_BASE="/usr/local/build/autotest"
+

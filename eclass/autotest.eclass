@@ -6,6 +6,8 @@
 # Purpose: Eclass for handling autotest test packages
 #
 
+inherit cros-constants
+
 RDEPEND="( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )"
 
 IUSE="+buildcheck autotest opengles"
@@ -113,13 +115,13 @@ create_autotest_workdir() {
 	local dst=${1}
 
 	# create a working enviroment for pre-building
-	ln -sf "${SYSROOT}"/usr/local/autotest/{conmux,tko,global_config.ini,shadow_config.ini} "${dst}"/
+	ln -sf "${SYSROOT}"${AUTOTEST_BASE}/{conmux,tko,global_config.ini,shadow_config.ini} "${dst}"/
 
 	# NOTE: in order to make autotest not notice it's running from /usr/local/, we need
 	# to make sure the binaries are real, because they do the path magic
 	local root_path base_path
 	for base_path in utils server; do
-		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
+		root_path="${SYSROOT}${AUTOTEST_BASE}/${base_path}"
 		mkdir -p "${dst}/${base_path}"
 		for entry in $(ls "${root_path}"); do
 			# Take all important binaries from SYSROOT install, make a copy.
@@ -135,7 +137,7 @@ create_autotest_workdir() {
 		done
 	done
 	for base_path in client client/bin; do
-		root_path="${SYSROOT}/usr/local/autotest/${base_path}"
+		root_path="${SYSROOT}${AUTOTEST_BASE}/${base_path}"
 		mkdir -p "${dst}/${base_path}"
 
 		# Skip bin, because it is processed separately, and test-provided dirs
@@ -147,14 +149,14 @@ create_autotest_workdir() {
 	done
 	# replace the important binaries with real copies
 	for base_path in autotest autotest_client; do
-		root_path="${SYSROOT}/usr/local/autotest/client/bin/${base_path}"
+		root_path="${SYSROOT}${AUTOTEST_BASE}/client/bin/${base_path}"
 		rm "${dst}/client/bin/${base_path}"
 		cp -f ${root_path} "${dst}/client/bin/${base_path}"
 	done
 
 	# Selectively pull in deps that are not provided by the current test package
 	for base_path in config deps profilers; do
-		for dir in "${SYSROOT}/usr/local/autotest/client/${base_path}"/*; do
+		for dir in "${SYSROOT}${AUTOTEST_BASE}/client/${base_path}"/*; do
 			if [ -d "${dir}" ] && \
 				! [ -d "${AUTOTEST_WORKDIR}/client/${base_path}/$(basename ${dir})" ]; then
 				# directory does not exist, create a symlink
@@ -339,7 +341,7 @@ autotest_src_install() {
 	for dir in ${instdirs}; do
 		[ -d "${AUTOTEST_WORKDIR}/${dir}" ] || continue
 
-		insinto /usr/local/autotest/$(dirname ${dir})
+		insinto ${AUTOTEST_BASE}/$(dirname ${dir})
 		doins -r "${AUTOTEST_WORKDIR}/${dir}"
 	done
 
@@ -354,7 +356,7 @@ autotest_src_install() {
 	for dir in ${instdirs}; do
 		[ -d "${AUTOTEST_WORKDIR}/client/${dir}" ] || continue
 
-		insinto /usr/local/autotest/client/${dir}
+		insinto ${AUTOTEST_BASE}/client/${dir}
 
 		eval provided=\${AUTOTEST_${dir^^*}_LIST}
 		# * means provided all, figure out the list from ${S}
@@ -374,15 +376,15 @@ autotest_src_install() {
 
 	# TODO: Not all needs to be executable, but it's hard to pick selectively.
 	# The source repo should already contain stuff with the right permissions.
-	chmod -R a+x "${D}"/usr/local/autotest/*
+	chmod -R a+x "${D}"${AUTOTEST_BASE}/*
 }
 
 autotest_pkg_postinst() {
 	are_we_used || return 0
-	local root_autotest_dir="${ROOT}/usr/local/autotest"
-	local path_to_image="${D}/usr/local/autotest"
+	local root_autotest_dir="${ROOT}${AUTOTEST_BASE}"
+	local path_to_image="${D}${AUTOTEST_BASE}"
 	# Should only happen when running emerge on a DUT.
-	if [ ! -d "${root_autotest_dir}" ]; then
+	if [ ! -e "${root_autotest_dir}/utils/packager.py" ]; then
 		einfo "Skipping packaging as no autotest installation detected."
 		return 0
 	fi
