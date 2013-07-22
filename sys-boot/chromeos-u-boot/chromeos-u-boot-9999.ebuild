@@ -148,6 +148,7 @@ src_configure() {
 		USE_STDINT=1
 		VBOOT_DEBUG=1
 		QEMU_ARCH=
+		WERROR=y
 	)
 	if use dev; then
 		# Avoid hiding the errors and warnings
@@ -158,7 +159,6 @@ src_configure() {
 	else
 		COMMON_MAKE_FLAGS+=(
 			-k
-			WERROR=y
 		)
 	fi
 
