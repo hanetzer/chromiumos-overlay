@@ -134,8 +134,11 @@ AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 src_prepare() {
 	# Telemetry tests require the path to telemetry source to exist in order to
-	# build.
-	export PYTHONPATH="${SYSROOT}/usr/local/telemetry/src/tools/telemetry"
+	# build.  Copy the telemetry source to a temporary directory that is writable,
+	# so that file removals in Telemetry source can be performed properly.
+	export TMP_DIR="$(mktemp -d)"
+	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
+	export PYTHONPATH="${TMP_DIR}/telemetry/src/tools/telemetry"
 	autotest_src_prepare
 }
 
