@@ -6,7 +6,7 @@ EAPI=2
 # CROS_WORKON_REPO=FILL_YOUR_REPO_URL_HERE
 # inherit toolchain-funcs flag-o-matic cros-workon autotest
 
-DESCRIPTION="Private autotest tests"
+DESCRIPTION="All private autotest tests"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 LICENSE="GPL-2"

@@ -19,7 +19,7 @@ RDEPEND="
 	chromeos-base/autotest-tests-touchpad
 	chromeos-base/autotest-chrome
 	chromeos-base/autotest-factory
-	chromeos-base/autotest-private
+	chromeos-base/autotest-private-all
 "
 
 DEPEND="${RDEPEND}"
