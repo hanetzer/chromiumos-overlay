@@ -39,6 +39,7 @@ IUSE_TESTS=(
 	# Tests that depend on telemetry.
 	+tests_login_CryptohomeMountedTelemetry
 	+tests_network_ChromeCellularNetworkPresent
+	+tests_network_ChromeCellularSmokeTest
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_video_VideoDecodeMemoryUsage
