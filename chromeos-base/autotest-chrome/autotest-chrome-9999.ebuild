@@ -19,6 +19,7 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
 	!chromeos-base/autotest-telemetry
 	chromeos-base/autotest-deps-piglit
+	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts
@@ -94,6 +95,7 @@ IUSE_TESTS=(
 	# Chromium waterfall once we have hardware there.
 	+tests_graphics_TearTest
 	+tests_graphics_WebGLConformance
+	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
 	+tests_hardware_BluetoothSemiAuto
 	+tests_hardware_ExternalDrives
