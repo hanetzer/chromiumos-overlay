@@ -204,6 +204,7 @@ IUSE_TESTS="
 	+tests_network_Ping
 	+tests_network_Portal
 	+tests_network_ShillInitScripts
+	+tests_network_SIMLocking
 	+tests_network_SwitchCarrier
 	+tests_network_UdevRename
 	+tests_network_VPNConnect
