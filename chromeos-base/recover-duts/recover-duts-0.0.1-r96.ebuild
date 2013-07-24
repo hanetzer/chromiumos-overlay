@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="9eb333def4417ed220984a2e1224ef4db8590dbb"
-CROS_WORKON_TREE="678dc23d9ef54f9bdb4dccf1cbc6d015a254c709"
+CROS_WORKON_COMMIT="f56890dd570f72bba6823790b17a3ebcfe885280"
+CROS_WORKON_TREE="aa7adccd92ab7e59082026f9ce073123f304869d"
 CROS_WORKON_PROJECT="chromiumos/platform/crostestutils"
 
 inherit cros-workon
 
-DESCRIPTION="Host test utilities for ChromiumOS"
+DESCRIPTION="Test tool that recovers bricked Chromium OS test devices"
 HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="GPL-2"
@@ -18,15 +18,24 @@ KEYWORDS="amd64 arm x86"
 CROS_WORKON_LOCALNAME="crostestutils"
 
 
-RDEPEND="app-emulation/qemu-kvm
-	app-portage/gentoolkit
-	app-shells/bash
-	chromeos-base/cros-devutils
-	dev-util/crosutils
-	dev-python/django
-	"
+RDEPEND="
+chromeos-base/chromeos-init
+dev-lang/python
+"
 
 # These are all either bash / python scripts.  No actual builds DEPS.
 DEPEND=""
 
 # Use default src_compile and src_install which use Makefile.
+
+src_install() {
+	pushd "${S}/recover_duts" || die
+	exeinto "/usr/bin"
+	doexe recover_duts.py
+
+	pushd "hooks" || die
+	dodir /usr/bin/hooks
+	exeinto /usr/bin/hooks
+	doexe *
+	popd
+}
