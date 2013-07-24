@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
-DESCRIPTION="Autotest tests that require chrome_test, pyauto, or Telemetry deps"
+DESCRIPTION="Autotest tests that require chrome_test, pyauto, or telemetry deps"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -38,7 +38,11 @@ IUSE_TESTS=(
 
 	# Tests that depend on telemetry.
         +tests_bluetooth_RegressionClient
+	+tests_login_CryptohomeIncognitoTelemetry
 	+tests_login_CryptohomeMountedTelemetry
+	+tests_login_CryptohomeTelemetry
+	+tests_login_LogoutProcessCleanupTelemetry
+	+tests_login_ProfilePermissionsTelemetry
 	+tests_network_ChromeCellularNetworkPresent
 	+tests_network_ChromeCellularSmokeTest
 	+tests_telemetry_LoginTest

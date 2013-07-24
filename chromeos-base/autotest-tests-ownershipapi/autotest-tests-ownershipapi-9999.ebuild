@@ -23,6 +23,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/shill-test-scripts
 	chromeos-base/chromeos-chrome
 	chromeos-base/protofiles
+	chromeos-base/telemetry
 	dev-libs/protobuf
 	dev-python/pygobject
 	autox? ( chromeos-base/autox )
@@ -31,6 +32,7 @@ RDEPEND="${RDEPEND}
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
+	# Uses chrome test dependency.
 	+tests_login_MultipleSessions
 	+tests_login_GuestAndActualSession
 	+tests_login_MultiUserPolicy
@@ -40,6 +42,9 @@ IUSE_TESTS="
 	+tests_login_OwnershipTaken
 	+tests_login_RemoteOwnership
 	+tests_login_UserPolicyKeys
+
+	# Tests that depend on telemetry.
+	+tests_login_OwnershipTakenTelemetry
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
@@ -52,3 +57,13 @@ AUTOTEST_CONFIG_LIST=""
 AUTOTEST_PROFILERS_LIST=""
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+src_prepare() {
+	# Telemetry tests require the path to telemetry source to exist in order to
+	# build.  Copy the telemetry source to a temporary directory that is writable,
+	# so that file removals in Telemetry source can be performed properly.
+	export TMP_DIR="$(mktemp -d)"
+	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
+	export PYTHONPATH="${TMP_DIR}/telemetry/src/tools/telemetry"
+	autotest_src_prepare
+}
