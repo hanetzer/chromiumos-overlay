@@ -35,7 +35,6 @@ LIBCHROME_VERS="180609"
 #   network_3GSafetyDance
 #   network_3GSmokeTest
 #   network_3GStressEnable
-#   network_WiFiSmokeTest
 #   network_WifiAuthenticationTests
 RDEPEND="
   chromeos-base/autotest-deps
@@ -210,7 +209,6 @@ IUSE_TESTS="
 	+tests_network_VPNConnect
 	+tests_network_WiFiCaps
 	+tests_network_WiFiInvalidParameters
-	+tests_network_WiFiSmokeTest
 	+tests_network_WifiAuthenticationTests
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
