@@ -239,8 +239,6 @@ src_compile_depthcharge() {
 		depthcharge_elf="${froot}/depthcharge/depthcharge.ro.elf"
 	fi
 
-	local netboot_elf="${froot}/depthcharge/netboot.elf"
-
 	einfo "Building RO image."
 	cros_bundle_firmware ${common[@]} \
 		--coreboot-elf="${depthcharge_elf}" \
@@ -255,9 +253,12 @@ src_compile_depthcharge() {
 		die "failed to build RW image."
 
 	# Build a netboot image.
+	# Readonly bootloader is regular depthcharge. Verified bootloaders are
+	# netboot images. It is more flexible for factory process that provides
+	# an option to exit netboot image.
 	einfo "Building netboot image."
 	cros_bundle_firmware "${common[@]}" \
-		--coreboot-elf="${netboot_elf}" \
+		--coreboot-elf="${depthcharge_elf}" \
 		--outdir "out.net" --output "image.net.bin" \
 		--uboot "${netboot_file}" ||
 		die "failed to build netboot image."
