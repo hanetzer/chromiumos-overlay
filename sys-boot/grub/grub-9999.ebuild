@@ -16,16 +16,17 @@ CROS_WORKON_PROJECT="chromiumos/third_party/grub2"
 RDEPEND=">=sys-libs/ncurses-5.2-r5
 	dev-libs/lzo
 	truetype? ( media-libs/freetype )"
-DEPEND="${RDEPEND}
-	dev-lang/ruby"
+DEPEND="${RDEPEND}"
 PROVIDE="virtual/bootloader"
 
-export STRIP_MASK="*/*grub/*/*.mod"
+export STRIP_MASK="*.img *.mod *.module"
 
 CROS_WORKON_LOCALNAME="grub2"
 
 src_configure() {
 	local target
+	# Fix timestamps to prevent unnecessary rebuilding
+	find "${S}" -exec touch -r "${S}/configure" {} +
 	multijob_init
 	for target in i386 x86_64 ; do
 		local program_prefix=
@@ -35,8 +36,11 @@ src_configure() {
 		ECONF_SOURCE="${S}" multijob_child_init econf \
 			--disable-werror \
 			--disable-grub-mkfont \
-			--disable-grub-fstest \
+			--disable-grub-mount \
+			--disable-device-mapper \
 			--disable-efiemu \
+			--disable-libzfs \
+			--disable-nls \
 			--sbindir=/sbin \
 			--bindir=/bin \
 			--libdir=/$(get_libdir) \
@@ -50,15 +54,14 @@ src_configure() {
 
 src_compile() {
 	multijob_init
-	multijob_child_init emake -C i386-build -j1 \
-		COMMON_LDFLAGS='-Wl,-melf_i386 -nostdlib'
+	multijob_child_init emake -C i386-build -j1
 	multijob_child_init emake -C x86_64-build -j1
 	multijob_finish
 }
 
 src_install() {
-	multijob_init
-	multijob_child_init emake -C i386-build DESTDIR="${D}" install
-	multijob_child_init emake -C x86_64-build DESTDIR="${D}" install
-	multijob_finish
+	# The two installations have several file conflicts that prevent
+	# parallel installation.
+	emake -C i386-build DESTDIR="${D}" install
+	emake -C x86_64-build DESTDIR="${D}" install
 }
