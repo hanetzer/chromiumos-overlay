@@ -38,7 +38,6 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0006-Lower-hard-drive-idle-timeout-to-5-seconds.patch" \
           "0008-Export-PATH-to-which.patch" \
           "0009-only-log-VERBOSE-msgs-to-syslog-when-DEBUG.patch" \
-          "0010-Do-not-run-usb-autosuspend-for-user-input-devices.patch" \
           "0012-Skip-failed-globs-when-finding-module-scripts.patch" \
           "0013-wireless-power-can-not-find-iwconfig-but-tries-to-po.patch" \
           "0014-Disable-ethernet-control.patch" \
@@ -90,6 +89,9 @@ src_install() {
 
 	insinto /lib/udev/rules.d
 	doins etc/rules/99-laptop-mode.rules
+
+	insinto /etc/laptop-mode/conf.d/board-specific
+	doins "${FILESDIR}/usb-autosuspend-cros.conf"
 }
 
 pkg_postinst() {
