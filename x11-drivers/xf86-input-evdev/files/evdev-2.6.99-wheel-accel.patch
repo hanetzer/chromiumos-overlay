@@ -66,21 +66,21 @@ diff --git a/src/evdev.c b/src/evdev.c
 + * greater than that to minimize approximation error at the end points.
 + * In our case, the range is [-50, 200].
 + *
-+ * matlab code to generate accel_params below:
-+ * x=[-50:200];
-+ * y=600*normcdf(x,77,40);
-+ * a=polyfit(x,y,4);
++ * matlab/octave code to generate accel_params below:
++ * x = [-50:200];
++ * y = 580 * normcdf(x,100,40) + 20;
++ * a = polyfit(x,y,4);
 + */
 +static const double accel_params[] = {
-+    -9.528484576366295e-08,
-+    -1.515738095456648e-04,
-+    3.940238948978762e-02,
-+    1.732410732791920,
-+    4.412651786252371,
++    -1.0012e-06,
++    1.6313e-04,
++    1.9727e-02,
++    2.5547e-01,
++    1.5937e+01,
 +};
 +
-+/* when x is 155, the polinomial curve gives 600, the max pixels to scroll */
-+static const double max_allowed_click_speed = 155;
++/* when x is 177, the polynomial curve gives 450, the max pixels to scroll */
++static const double max_allowed_click_speed = 177;
 +
 +/**
 + * Get the number of pixels to scroll, used for axes_scroll.
