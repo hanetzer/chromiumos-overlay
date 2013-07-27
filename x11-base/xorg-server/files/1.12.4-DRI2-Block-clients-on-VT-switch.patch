@@ -1,6 +1,6 @@
-From 01e4f27229a377e467c8be8254139f3ed76d65cf Mon Sep 17 00:00:00 2001
+From c1696263ac372f2d0a02247e30787b710abb6a16 Mon Sep 17 00:00:00 2001
 From: Daniel Kurtz <djkurtz@chromium.org>
-Date: Fri, 8 Feb 2013 15:01:11 -0800
+Date: Sat, 27 Jul 2013 19:44:31 +0800
 Subject: [PATCH] DRI2: Block clients on VT switch
 
 Typically a DRM X11 video driver will drop DRM master on a VT switch to
@@ -12,7 +12,10 @@ it solves the exact same problem from clients using DRI2 via GLX.
 
 Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
 
-BUG=chromium-os:38551
+v2: Unwrap EnterVT and LeaveVT on CloseScreen to avoid infinite recursion
+on VT switch for server generation > 1.
+
+BUG=chromium:220687,chromium:265051
 TEST=Install developer image
   Login as guest
   Browse to www.youtube.com
@@ -20,14 +23,21 @@ TEST=Install developer image
   Wait 15 seconds
   VT switch back
   => User should NOT be logged out!
+TEST=ssh to device
+  stop ui
+  X :1 &  # start a test X server
+  DISPLAY=:1 xev &    # start a test X client
+  kill %2             # kill test X client
+  chvt 2              # VT-2 switch
+  => No X server crash
 ---
- hw/xfree86/dri2/dri2.c    | 51 ++++++++++++++++++++++++++++++++++
+ hw/xfree86/dri2/dri2.c    | 56 +++++++++++++++++++++++++++++++++++++
  hw/xfree86/dri2/dri2.h    |  3 ++
  hw/xfree86/dri2/dri2ext.c | 70 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 124 insertions(+)
+ 3 files changed, 129 insertions(+)
 
 diff --git a/hw/xfree86/dri2/dri2.c b/hw/xfree86/dri2/dri2.c
-index bca82d3..e8c3533 100644
+index bca82d3..850e476 100644
 --- a/hw/xfree86/dri2/dri2.c
 +++ b/hw/xfree86/dri2/dri2.c
 @@ -111,6 +111,9 @@ typedef struct _DRI2Screen {
@@ -105,6 +115,21 @@ index bca82d3..e8c3533 100644
      return TRUE;
  
   err_out:
+@@ -1282,9 +1333,14 @@ void
+ DRI2CloseScreen(ScreenPtr pScreen)
+ {
+     DRI2ScreenPtr ds = DRI2GetScreen(pScreen);
++    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+ 
+     pScreen->ConfigNotify = ds->ConfigNotify;
+ 
++    /* Unwrap enter/leave VT callbacks */
++    pScrn->EnterVT = ds->enterVT;
++    pScrn->LeaveVT = ds->leaveVT;
++
+     free(ds->driverNames);
+     free(ds);
+     dixSetPrivate(&pScreen->devPrivates, dri2ScreenPrivateKey, NULL);
 diff --git a/hw/xfree86/dri2/dri2.h b/hw/xfree86/dri2/dri2.h
 index 06546bb..b10974d 100644
 --- a/hw/xfree86/dri2/dri2.h
@@ -217,5 +242,5 @@ index 2579a5c..96fc0fb 100644
                                   DRI2NumberEvents,
                                   DRI2NumberErrors,
 -- 
-1.8.1
+1.8.3
 
