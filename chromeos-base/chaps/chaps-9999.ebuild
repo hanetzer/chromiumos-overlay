@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="test"
+IUSE="platform2 test"
 
 LIBCHROME_VERS="180609"
 
@@ -38,23 +38,28 @@ RDEPEND+="
 	chromeos-base/chromeos-init"
 
 src_prepare() {
+	use platform2 && return 0
 	cros-workon_src_prepare
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
 	cros-workon_src_compile
 }
 
 src_test() {
+	use platform2 && return 0
 	cros-workon_src_test
 	emake more_tests
 }
 
 src_install() {
+	use platform2 && return 0
 	cros-workon_src_install
 	dosbin "${OUT}"/chapsd
 	dobin "${OUT}"/chaps_client

@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="platform2"
 
 LIBCHROME_VERS="180609"
 
@@ -35,16 +35,20 @@ DEPEND="${RDEPEND}
 	virtual/modemmanager"
 
 src_compile() {
+	use platform2 && return 0
+
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG OBJCOPY
 	cros-debug-add-NDEBUG
 	emake BASE_VER=${LIBCHROME_VERS}
 }
 
 src_test() {
+	use platform2 && return 0
 	emake tests BASE_VER=${LIBCHROME_VERS}
 }
 
 src_install() {
+	use platform2 && return 0
 	cd build-opt
 	into /
 	dosbin debugd
@@ -72,5 +76,6 @@ src_install() {
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
