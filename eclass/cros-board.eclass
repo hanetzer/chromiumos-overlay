@@ -57,6 +57,7 @@ ALL_BOARDS=(
 	klang
 	link
 	lumpy
+	nyan
 	panda
 	parrot
 	parrot32
