@@ -165,6 +165,12 @@ PATCHES=(
 	"${FILESDIR}/1.12.4-DRI2-Block-clients-on-VT-switch.patch"
 	# crbug.com/245026
 	"${FILESDIR}/1.12.4-os-connection-Clear-ListenTransCount-after-closing-a.patch"
+	# Next 5 patches for crbug.com/265447
+	"${FILESDIR}/1.12.99-dix-return-early-from-DisableDevice-if-the-device-is.patch"
+	"${FILESDIR}/1.12.99-dix-move-freeing-the-sprite-into-a-function.patch"
+	"${FILESDIR}/1.12.99-dix-free-the-sprite-when-disabling-the-device.patch"
+	"${FILESDIR}/1.12.99-dix-disable-non-sprite-owners-first-when-disabling-p.patch"
+	"${FILESDIR}/1.12.99-dix-disable-all-devices-before-shutdown.patch"
 )
 
 src_prepare() {
