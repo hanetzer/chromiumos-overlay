@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="167f390efd2f2b76b48ec7aafbf8ddc5024d21c6"
-CROS_WORKON_TREE="6bfa94c93538b60f205a2049734dfc8f64f53ee3"
+CROS_WORKON_COMMIT="5297488b426406aa7d65319c0c96cb3145744040"
+CROS_WORKON_TREE="ab52bf5757ee1bba3e26de85a26d03efe0d8e7af"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
