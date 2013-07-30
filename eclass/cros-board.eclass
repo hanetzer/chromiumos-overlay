@@ -63,6 +63,7 @@ ALL_BOARDS=(
 	parrot32
 	parrot64
 	peach
+	peach_kirby
 	peach_pit
 	peppy
 	puppy
