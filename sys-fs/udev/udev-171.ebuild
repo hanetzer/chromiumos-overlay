@@ -156,6 +156,10 @@ src_prepare() {
 	# patches go here...
 	epatch "${FILESDIR}"/udev-170-fusectl-opts.patch
 
+	# prevent probing of zram (causes swapon to fail)
+	# chromium:265568
+	epatch "${FILESDIR}"/udev-171-no-probe-zram.patch
+
 	# backport some patches
 	if [[ -n "${PATCHSET}" ]]
 	then
