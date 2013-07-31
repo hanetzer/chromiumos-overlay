@@ -849,7 +849,8 @@ install_chrome_test_resources() {
 		ppapi/tests/test_url_loader_data \
 		third_party/bidichecker/bidichecker_packaged.js \
 		third_party/WebKit/Tools/Scripts \
-		third_party/WebKit/LayoutTests/http/tests/websocket/tests
+		third_party/WebKit/LayoutTests/http/tests/websocket/tests \
+                third_party/accessibility-developer-tools/gen/axs_testing.js
 
 	# Add the pdf test data if needed.
 	if use chrome_pdf; then
