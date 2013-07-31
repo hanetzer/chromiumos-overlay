@@ -83,6 +83,7 @@ src_install() {
 
 	insinto /etc/init
 	doins login.conf logout.conf machine-info.conf ui.conf
+	doins ui-respawn.conf
 
 	insinto /usr/share/dbus-1/services
 	doins org.chromium.SessionManager.service
