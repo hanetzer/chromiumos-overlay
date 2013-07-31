@@ -45,6 +45,9 @@ src_unpack() {
 	# chromium-os:33165, make EXIT_STATUS!=* possible
 	epatch "${FILESDIR}"/upstart-1.2-negate-match.patch
 
+	# issue EXIT_* in events when exit status is zero for daemons
+	epatch "${FILESDIR}"/upstart-1.2-fail-on-zero-exit.patch
+
 	# Patch to use kmsg at higher verbosity for logging; this is
 	# our own patch because we can't just add --verbose to the
 	# kernel command-line when we need to.
