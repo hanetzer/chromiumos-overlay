@@ -31,7 +31,7 @@ DEPEND="
 	tegra? ( virtual/tegra-bct )
 	x86? ( ${X86_DEPEND} )
 	amd64? ( ${X86_DEPEND} )
-	virtual/u-boot
+	!depthcharge? ( virtual/u-boot )
 	cros_ec? ( chromeos-base/chromeos-ec )
 	chromeos-base/vboot_reference
 	sys-boot/chromeos-bmpblk
