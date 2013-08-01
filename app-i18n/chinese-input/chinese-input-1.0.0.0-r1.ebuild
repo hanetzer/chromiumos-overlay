@@ -13,8 +13,7 @@ IUSE="internal"
 
 DEPEND="internal? ( app-i18n/GoogleChineseInput-pinyin )
         internal? ( app-i18n/GoogleChineseInput-wubi )
-        internal? ( app-i18n/GoogleChineseInput-zhuyin )
         internal? ( app-i18n/GoogleChineseInput-cangjie )
         !internal? ( app-i18n/chromeos-cangjie )
         !internal? ( app-i18n/chromeos-pinyin )
-        !internal? ( app-i18n/chromeos-zhuyin )"
+        app-i18n/ibus-mozc-chewing"
