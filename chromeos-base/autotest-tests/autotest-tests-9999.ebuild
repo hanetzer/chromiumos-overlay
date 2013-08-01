@@ -82,6 +82,9 @@ IUSE_TESTS="
 	+tests_audiovideo_LoopbackLatency
 	+tests_audiovideo_Microphone
 	+tests_audiovideo_V4L2
+	+tests_bluetooth_Sanity_AdapterPresent
+	+tests_bluetooth_Sanity_DefaultState
+	+tests_bluetooth_Sanity_ValidAddress
 	+tests_cellular_CdmaConfig
 	+tests_cellular_Dummy
 	+tests_cellular_ModemControl
@@ -308,7 +311,6 @@ IUSE_TESTS="
 	+tests_security_DbusOwners
 	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
-	+tests_security_HciconfigDefaultSettings
 	+tests_security_HtpdateHTTP
 	+tests_security_kASLR
 	+tests_security_Minijail_seccomp
