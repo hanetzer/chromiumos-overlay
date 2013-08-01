@@ -37,6 +37,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-quick-mode-select-proposal-subset.patch"
 	epatch "${FILESDIR}/${P}-ignore-spurious-quick-mode.patch"
 	epatch "${FILESDIR}/${P}-Check-return-value-of-ECDSA_Verify.patch"
+	epatch "${FILESDIR}/${P}-is_asn1.patch"
 }
 
 pkg_setup() {
