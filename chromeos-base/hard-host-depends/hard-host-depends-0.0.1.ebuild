@@ -173,6 +173,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies that are needed for autotests.
 RDEPEND="${RDEPEND}
+	dev-python/btsocket
 	dev-util/dejagnu
 	"
 
