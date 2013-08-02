@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="96927a43b3f0e3124bb278c1b73c461c7e651c3e"
-CROS_WORKON_TREE="f9d290f474b49f683540a69c3feb34a8418f360f"
+CROS_WORKON_COMMIT="fc5a3f747da3bf6296497c9f2c424ea7db9f51af"
+CROS_WORKON_TREE="de7d8ed6bae941bf2012f2fe61b1a2fc8fa24441"
 CROS_WORKON_PROJECT="chromiumos/platform/btsocket"
 CROS_WORKON_LOCALNAME="../platform/btsocket"
 PYTHON_DEPEND="2"
