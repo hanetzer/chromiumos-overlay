@@ -3,8 +3,8 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/perf/perf-2.6.32.ebuild,v 1.1 2009/12/04 16:33:24 flameeyes Exp $
 
 EAPI=4
-CROS_WORKON_COMMIT="4ea318089006033753303f059cd8e28cfdc2bc7d"
-CROS_WORKON_TREE="4e936f32918012dfb90fc0d703c63080dc4cc164"
+CROS_WORKON_COMMIT="067fc3bd1f30e9a96e52290116243be2f9a97f01"
+CROS_WORKON_TREE="c7875ce52a0325e13f54f710335d6500947b7327"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 CROS_WORKON_LOCALNAME="kernel-next"
 
