@@ -124,6 +124,13 @@ src_install() {
 	insinto /usr/share/chromeos-assets/input_methods
 	doins "${S}"/input_methods/*
 
+	mkdir "${S}"/connectivity_diagnostics_launcher_deploy
+	pushd "${S}"/connectivity_diagnostics_launcher_deploy > /dev/null
+	unpack ./../connectivity_diagnostics_launcher/connectivity_diagnostics_launcher.zip
+	insinto /usr/share/chromeos-assets/connectivity_diagnostics_launcher
+	doins -r "${S}"/connectivity_diagnostics_launcher_deploy/*
+	popd > /dev/null
+
 	mkdir "${S}"/connectivity_diagnostics_deploy
 	unzip "${S}"/connectivity_diagnostics/connectivity_diagnostics.zip \
 		-d "${S}"/connectivity_diagnostics_deploy
