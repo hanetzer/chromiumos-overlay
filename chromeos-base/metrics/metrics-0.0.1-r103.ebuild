@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="aefd72cc9786dac103ce08758e786a46a8882cad"
-CROS_WORKON_TREE="dc708c3851559f0e9ff3c0f2ad5fc5a0a2b10c6b"
+CROS_WORKON_COMMIT="6121e821fe4517ebbe503494f1d624dd1a356f89"
+CROS_WORKON_TREE="07a962b357424d925d7f9a74d38f51053b473adc"
 CROS_WORKON_PROJECT="chromiumos/platform/metrics"
 
 inherit cros-debug cros-workon
