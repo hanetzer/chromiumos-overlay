@@ -85,12 +85,12 @@ src_install() {
 	fperms 4750 /usr/bin/powerd_setuid_helper
 
 	# Scripts
-	dobin scripts/activate_short_dark_resume
-	dobin scripts/debug_sleep_quickly
-	dobin scripts/powerd_suspend
-	dobin scripts/send_metrics_on_resume
-	dobin scripts/set_short_powerd_timeouts
-	dobin scripts/suspend_stress_test
+	dobin powerd/powerd_suspend
+	dobin tools/activate_short_dark_resume
+	dobin tools/debug_sleep_quickly
+	dobin tools/send_metrics_on_resume
+	dobin tools/set_short_powerd_timeouts
+	dobin tools/suspend_stress_test
 
 	insinto /usr/share/power_manager
 	doins config/*
