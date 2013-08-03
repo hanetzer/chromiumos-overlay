@@ -38,8 +38,8 @@ IUSE_TESTS=(
 
 	# Tests that depend on telemetry.
         +tests_bluetooth_RegressionClient
+	+tests_login_ChromeProfileSanitaryTelemetry
 	+tests_login_CryptohomeIncognitoTelemetry
-	+tests_login_CryptohomeMountedTelemetry
 	+tests_login_CryptohomeTelemetry
 	+tests_login_LogoutProcessCleanupTelemetry
 	+tests_login_ProfilePermissionsTelemetry
@@ -94,7 +94,6 @@ IUSE_TESTS=(
 	+tests_hardware_UsbPlugIn
 	 tests_logging_AsanCrash
 	+tests_logging_UncleanShutdown
-	+tests_login_BadAuthentication
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognitoMounted
 	+tests_login_CryptohomeIncognitoUnmounted
