@@ -103,7 +103,6 @@ IUSE_TESTS="
 	tests_example_UnitTest
 	+tests_example_CrosTest
 	+tests_firmware_TouchMTB
-	+tests_firmware_TouchMTB_next
 	+tests_firmware_RomSize
 	tests_firmware_VbootCrypto
 	+tests_flaky_test
