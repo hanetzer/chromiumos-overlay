@@ -95,6 +95,7 @@ IUSE_TESTS="
 	+tests_desktopui_GTK2Config
 	+tests_desktopui_HangDetector
 	+tests_desktopui_KillRestart
+	+tests_desktopui_Respawn
 	+tests_desktopui_SpeechSynthesisSemiAuto
 	tests_example_UnitTest
 	+tests_example_CrosTest
