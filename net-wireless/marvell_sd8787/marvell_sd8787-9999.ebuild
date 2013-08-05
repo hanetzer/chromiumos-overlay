@@ -22,10 +22,10 @@ RDEPEND=""
 CROS_WORKON_LOCALNAME="marvell"
 
 src_install() {
-    dodir /lib/firmware/mrvl || die
-    if use pcie; then
-       cp -a "${S}"/pcie8*.bin "${D}"/lib/firmware/mrvl/
-    else
-       cp -a "${S}"/sd8*.bin "${D}"/lib/firmware/mrvl/
-    fi
+	insinto /lib/firmware/mrvl
+	if use pcie; then
+		doins pcie8*.bin
+	else
+		doins sd8*.bin
+	fi
 }
