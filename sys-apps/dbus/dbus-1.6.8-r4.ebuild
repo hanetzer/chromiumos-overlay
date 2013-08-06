@@ -64,6 +64,7 @@ src_prepare() {
 		-e '/"dispatch"/d' \
 		bus/test-main.c || die
 
+	epatch "${FILESDIR}"/${P}-_dbus_printf_string_upper_bound-copy-t.patch
 	epatch "${FILESDIR}"/${P}-send-print-fixed.patch
 	epatch "${FILESDIR}"/${PN}-1.4.12-send-unix-fd.patch
 	epatch "${FILESDIR}"/${PN}-1.4.12-send-variant-dict.patch
