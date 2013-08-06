@@ -20,7 +20,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="dalmore dev profiling factory-mode smdk5420-u-boot"
+IUSE="dalmore dev efs factory-mode profiling smdk5420-u-boot"
 
 DEPEND="!sys-boot/x86-firmware-fdts
 	!sys-boot/exynos-u-boot
@@ -32,6 +32,7 @@ RDEPEND="${DEPEND}
 
 UB_BUILD_DIR="${WORKDIR}/build"
 UB_BUILD_DIR_NB="${UB_BUILD_DIR%/}_nb"
+UB_BUILD_DIR_RO="${UB_BUILD_DIR%/}_ro"
 
 U_BOOT_CONFIG_USE_PREFIX="u_boot_config_use_"
 ALL_CONFIGS=(
@@ -181,6 +182,16 @@ src_configure() {
 		umake "${BUILD_NB_FLAGS[@]}" distclean
 		umake "${BUILD_NB_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
 	fi
+
+	if use efs; then
+		BUILD_RO_FLAGS=(
+			"O=${UB_BUILD_DIR_RO}"
+			CROS_RO=1
+			CROS_SMALL=1
+		)
+		umake "${BUILD_RO_FLAGS[@]}" distclean
+		umake "${BUILD_RO_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
+	fi
 }
 
 src_compile() {
@@ -188,6 +199,9 @@ src_compile() {
 
 	if netboot_required; then
 		umake "${BUILD_NB_FLAGS[@]}" all
+	fi
+	if use efs; then
+		umake "${BUILD_RO_FLAGS[@]}" all
 	fi
 }
 
@@ -199,25 +213,33 @@ src_install() {
 		u-boot.img
 		$(usex u_boot_config_use_beaglebone MLO)
 	)
-	local ub_vendor="$(get_config_var ${CROS_U_BOOT_CONFIG} VENDOR)"
-	local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
-	local ub_arch="$(get_config_var ${CROS_U_BOOT_CONFIG} ARCH)"
 	local f
 
 	insinto "${inst_dir}"
 
 	# Daisy, peach and their variants need an SPL binary.
 	if use u_boot_config_use_daisy || use u_boot_config_use_peach ; then
-		newins "${UB_BUILD_DIR}/spl/${ub_board}-spl.bin" \
-		  u-boot-spl.wrapped.bin
-		newins "${UB_BUILD_DIR}/spl/u-boot-spl" u-boot-spl.elf
+		local ub_board="$(get_config_var ${CROS_U_BOOT_CONFIG} BOARD)"
+		local spl_bin="spl/${ub_board}-spl.bin"
+		local spl_map="spl/System.spl.map"
+
+		newins "${UB_BUILD_DIR}/${spl_bin}" u-boot-spl.wrapped.bin
+		newins "${UB_BUILD_DIR}/${spl_map}" System.spl.map
+		if use efs; then
+			newins "${UB_BUILD_DIR_RO}/u-boot.bin" u-boot-ro.bin
+			# The read-only SPL to be used, once we start building
+			# it using its own conffiguration
+			newins "${UB_BUILD_DIR_RO}/${spl_bin}" \
+				u-boot-spl-ro.wrapped.bin
+			newins "${UB_BUILD_DIR_RO}/${spl_map}" \
+				System.spl-ro.map
+		fi
 	fi
 
 	for f in "${files_to_copy[@]}"; do
 		[[ -f "${UB_BUILD_DIR}/${f}" ]] &&
 			doins "${f/#/${UB_BUILD_DIR}/}"
 	done
-	newins "${UB_BUILD_DIR}/u-boot" u-boot.elf
 
 	# u-boot-nodtb-tegra.bin has prepended SPL but no appended DTB.
 	if use u_boot_config_use_venice ; then
@@ -226,7 +248,6 @@ src_install() {
 
 	if netboot_required; then
 		newins "${UB_BUILD_DIR_NB}/u-boot.bin" u-boot_netboot.bin
-		newins "${UB_BUILD_DIR_NB}/u-boot" u-boot_netboot.elf
 	fi
 
 	if ! use u_boot_config_use_beaglebone; then
