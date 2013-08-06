@@ -98,6 +98,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-crypt/tpm-tools
 	app-misc/evtest
 	app-misc/screen
+	chromeos-base/audiotest
 	chromeos-base/platform2
 	chromeos-base/protofiles
 	chromeos-base/system_api
