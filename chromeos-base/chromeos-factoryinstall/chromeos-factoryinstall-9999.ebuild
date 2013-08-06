@@ -4,7 +4,7 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
-inherit cros-workon
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Factory Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -63,6 +63,11 @@ RDEPEND="$COMMON_DEPEND
 CROS_WORKON_LOCALNAME="factory_installer"
 
 FACTORY_SERVER="${FACTORY_SERVER:-$(hostname -f)}"
+
+src_compile() {
+	tc-export AR CC CXX RANLIB
+	emake || die
+}
 
 src_install() {
 	insinto /etc/init
