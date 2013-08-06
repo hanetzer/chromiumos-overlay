@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="3dba4c57adac03ccaf123f7c8c6f9c535112efb4"
-CROS_WORKON_TREE="ad960ff09583b2166b4931e9f2aba756fe396921"
+CROS_WORKON_COMMIT="e9c2f9569d80ffe6392a492ce848ae3dff751f8c"
+CROS_WORKON_TREE="dea6200aaa61bbe1e665ff07bd2c3d0fddbffa49"
 CROS_WORKON_PROJECT="chromiumos/platform/image-burner"
 CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT##*/}
 
