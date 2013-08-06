@@ -13,7 +13,7 @@ KEYWORDS="amd64 arm x86"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex butterfly emeraldlake2 link lumpy lumpy64 mario parrot stout stumpy"
 BOARDS="${BOARDS} bolt falco fox peppy slippy"
-IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec"
+IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs"
 IUSE="${IUSE} depthcharge unified_depthcharge spring"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
@@ -58,6 +58,7 @@ netboot_required() {
 #    $2: uboot_file - full name of U-Boot binary
 #    $3: common_flags - flags to use for all images
 #    $4: verified_flags - extra flags to use for verified image
+#    $5: uboot_ro_file - full name of U-Boot RO binary
 
 build_image() {
 	local nv_uboot_file
@@ -65,6 +66,7 @@ build_image() {
 	local uboot_file="$2"
 	local common_flags="$3"
 	local verified_flags="$4"
+	local uboot_ro_file="$5"
 	local board base ec_file_flag
 
 	if use cros_ec; then
@@ -97,13 +99,23 @@ build_image() {
 	# Build an RO-normal image, and an RW (twostop) image. This assumes
 	# that the fdt has the flags set to 1 by default.
 	cros_bundle_firmware ${cmdline} \
+		--add-blob ro-boot "${uboot_file}" \
 		--outdir "out-${board}.ro" \
 		--output "image-${board}.bin" ||
 		die "failed to build RO image: ${cmdline}"
 	cros_bundle_firmware ${cmdline} --force-rw \
+		--add-blob ro-boot "${uboot_file}" \
 		--outdir "out-${board}.rw" \
 		--output "image-${board}.rw.bin" ||
 		die "failed to build RW image: ${cmdline}"
+	if use efs; then
+		cros_bundle_firmware ${cmdline} --force-rw \
+			--add-blob ro-boot "${uboot_ro_file}" \
+			--force-efs  \
+			--outdir "out-${board}.efs" \
+			--output "image-${board}.efs.bin" ||
+			die "failed to build EFS image: ${cmdline}"
+	fi
 
 	# Make non-vboot image
 	nv_uboot_file="${uboot_file}"
@@ -130,6 +142,7 @@ src_compile_uboot() {
 	local uboot_file
 	local devkeys_file
 	local dd_params
+	local uboot_ro_file
 
 	if use memtest; then
 		uboot_file="${CROS_FIRMWARE_ROOT}/x86-memtest"
@@ -137,6 +150,7 @@ src_compile_uboot() {
 		# We only have a single U-Boot, and it is called u-boot.bin
 		uboot_file="${CROS_FIRMWARE_ROOT}/u-boot.bin"
 	fi
+	uboot_ro_file="${CROS_FIRMWARE_ROOT}/u-boot-ro.bin"
 
 	# Location of the EC RW image
 	ec_file="${CROS_FIRMWARE_ROOT}/ec.RW.bin"
@@ -175,7 +189,8 @@ src_compile_uboot() {
 		einfo "Building all images"
 		for fdt_file in "${CROS_FIRMWARE_ROOT}"/dtb/*.dtb; do
 			build_image "${fdt_file}" "${uboot_file}" \
-				"${common_flags}" "${verified_flags}"
+				"${common_flags}" "${verified_flags}" \
+				"${uboot_ro_file}"
 		done
 	else
 		if use build-all-fw; then
@@ -185,7 +200,7 @@ src_compile_uboot() {
 		# Location of the U-Boot flat device tree source file
 		fdt_file="${CROS_FIRMWARE_ROOT}/dtb/${U_BOOT_FDT_USE}.dtb"
 		build_image "${fdt_file}" "${uboot_file}" "${common_flags}" \
-			"${verified_flags}"
+			"${verified_flags}" "${uboot_ro_file}"
 	fi
 }
 
