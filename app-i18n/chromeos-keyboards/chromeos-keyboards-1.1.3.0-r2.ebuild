@@ -6,7 +6,7 @@ inherit eutils
 
 DESCRIPTION="The Google Input Tools (keyboard part) based on IME Extension API"
 HOMEPAGE="https://code.google.com/p/google-input-tools"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PF}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
