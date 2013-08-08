@@ -94,6 +94,8 @@ IUSE_TESTS="
 	+tests_cellular_Throughput
 	+tests_cellular_ZeroSignal
 	+tests_build_RootFilesystemSize
+	+tests_desktopui_CrashyReboot
+	+tests_desktopui_CrashyRebootServer
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
 	+tests_desktopui_HangDetector
