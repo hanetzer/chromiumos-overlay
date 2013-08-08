@@ -133,6 +133,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
 	epatch "${FILESDIR}"/9.1-Fix-webgl-regression.patch
 	epatch "${FILESDIR}"/9.1-no-fail-hwctx.patch
+	epatch "${FILESDIR}"/9.1-Disable-fast-clears.patch
 
 	base_src_prepare
 
