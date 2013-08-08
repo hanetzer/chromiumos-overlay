@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="4c0b05a5054ce9a48d25ddd0ab3b2bea1d1a3ec6"
-CROS_WORKON_TREE="688fb962d0def4a91f695d053771697c08c3759f"
+CROS_WORKON_COMMIT="6c6595c99169145a2cb63201ecebdc44645b1e7e"
+CROS_WORKON_TREE="8432bd38c41a966906a8370ef53e60de9e5b4da6"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
-inherit cros-workon
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Chrome OS Factory Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -65,6 +65,11 @@ RDEPEND="$COMMON_DEPEND
 CROS_WORKON_LOCALNAME="factory_installer"
 
 FACTORY_SERVER="${FACTORY_SERVER:-$(hostname -f)}"
+
+src_compile() {
+	tc-export AR CC CXX RANLIB
+	emake || die
+}
 
 src_install() {
 	insinto /etc/init
