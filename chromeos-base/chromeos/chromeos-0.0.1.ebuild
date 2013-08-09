@@ -238,7 +238,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/realtek-rt2800-firmware
 	sys-apps/bootcache
 	sys-apps/dbus
-	sys-apps/eject
 	sys-apps/flashrom
 	sys-apps/mosys
 	sys-apps/pv
