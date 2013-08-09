@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
-inherit autotools cros-debug cros-workon toolchain-funcs flag-o-matic multiprocessing
+inherit cros-debug cros-workon toolchain-funcs flag-o-matic multiprocessing
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
@@ -21,7 +21,7 @@ DEPEND="${RDEPEND}"
 src_prepare() {
 	[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/lss-x32.patch
 
-	eautoreconf
+	find "${S}" -type f -exec touch -r "${S}"/configure {} +
 }
 
 src_configure() {
