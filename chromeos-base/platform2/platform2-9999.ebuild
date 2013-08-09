@@ -37,6 +37,7 @@ LIBCHROME_DEPEND=$(
 RDEPEND_cros_disks="
 	!cros_host? (
 		app-arch/unrar
+		sys-apps/eject
 		sys-apps/util-linux
 		sys-block/parted
 		sys-fs/avfs
