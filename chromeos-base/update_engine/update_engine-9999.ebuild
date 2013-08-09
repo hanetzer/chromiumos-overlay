@@ -17,7 +17,7 @@ IUSE="cros_host -delta_generator"
 
 LIBCHROME_VERS="180609"
 
-RDEPEND="app-arch/bzip2
+COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
@@ -41,7 +41,11 @@ DEPEND="chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
 	cros_host? ( dev-util/scons )
-	${RDEPEND}"
+	${COMMON_DEPEND}"
+
+RDEPEND="chromeos-base/chromeos-installer
+	${COMMON_DEPEND}"
+
 
 src_configure() {
 	cros-workon_src_configure
