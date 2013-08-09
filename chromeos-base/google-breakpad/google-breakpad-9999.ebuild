@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
-inherit autotools cros-debug cros-workon toolchain-funcs
+inherit autotools cros-debug cros-workon toolchain-funcs flag-o-matic
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
@@ -48,7 +48,9 @@ src_configure() {
 	        einfo "Running 32b configuration"
 		cd work32 || die "chdir failed"
 		append-flags "-m32"
+		append-lfs-flags # crbug.com/266064
 		econf
+		filter-lfs-flags
 		filter-flags "-m32"
 	fi
 }
