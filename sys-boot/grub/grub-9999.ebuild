@@ -10,13 +10,9 @@ HOMEPAGE="http://www.gnu.org/software/grub/"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE="truetype"
+IUSE=""
 CROS_WORKON_PROJECT="chromiumos/third_party/grub2"
 
-RDEPEND=">=sys-libs/ncurses-5.2-r5
-	dev-libs/lzo
-	truetype? ( media-libs/freetype )"
-DEPEND="${RDEPEND}"
 PROVIDE="virtual/bootloader"
 
 export STRIP_MASK="*.img *.mod *.module"
