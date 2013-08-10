@@ -29,10 +29,11 @@ src_configure() {
 	find "${S}" -exec touch -r "${S}/configure" {} +
 	multijob_init
 	for target in i386 x86_64 ; do
-		local program_prefix=
-		[[ ${target} != "x86_64" ]] && program_prefix=${target}-
 		mkdir -p ${target}-build
 		pushd ${target}-build >/dev/null
+                # GRUB defaults to a --program-prefix set based on target
+                # platform; explicitly set it to nothing to install unprefixed
+                # tools.  https://savannah.gnu.org/bugs/?39818
 		ECONF_SOURCE="${S}" multijob_child_init econf \
 			--disable-werror \
 			--disable-grub-mkfont \
@@ -46,7 +47,7 @@ src_configure() {
 			--libdir=/$(get_libdir) \
 			--with-platform=efi \
 			--target=${target} \
-			--program-prefix=${program_prefix}
+			--program-prefix=
 		popd >/dev/null
 	done
 	multijob_finish
