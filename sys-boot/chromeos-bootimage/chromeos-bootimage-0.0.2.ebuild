@@ -273,6 +273,7 @@ src_compile_depthcharge() {
 	# an option to exit netboot image.
 	einfo "Building netboot image."
 	cros_bundle_firmware "${common[@]}" \
+		--force-rw \
 		--coreboot-elf="${depthcharge_elf}" \
 		--outdir "out.net" --output "image.net.bin" \
 		--uboot "${netboot_file}" ||
