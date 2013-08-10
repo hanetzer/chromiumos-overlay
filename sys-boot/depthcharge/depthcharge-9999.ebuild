@@ -9,6 +9,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
+IUSE="mocktpm"
 
 X86_DEPEND="
 	sys-apps/coreboot-utils
@@ -42,6 +43,10 @@ src_compile() {
 		export CC="${CROSS_COMPILE}gcc"
 	else
 		export CROSS_COMPILE=${CHOST}-
+	fi
+
+	if use mocktpm ; then
+		export MOCK_TPM=1
 	fi
 
 	emake defconfig \
