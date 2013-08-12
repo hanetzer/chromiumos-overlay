@@ -6,7 +6,7 @@ inherit eutils
 
 DESCRIPTION="The Korean Hangul input engine for IME extension API."
 HOMEPAGE="https://code.google.com/p/google-input-tools/"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PF}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
@@ -14,6 +14,16 @@ KEYWORDS="amd64 x86 arm"
 
 src_prepare() {
   epatch "${FILESDIR}"/${P}-insert-public-key.patch
+  # Removes unused NaCl binaries.
+  if ! use arm ; then
+          rm hangul_arm.nexe || die
+  fi
+  if ! use x86 ; then
+          rm hangul_x86_32.nexe || die
+  fi
+  if ! use amd64 ; then
+          rm hangul_x86_64.nexe || die
+  fi
 }
 
 src_install() {
