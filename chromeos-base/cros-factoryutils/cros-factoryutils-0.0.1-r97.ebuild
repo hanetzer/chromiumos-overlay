@@ -19,7 +19,7 @@ KEYWORDS="amd64 arm x86"
 IUSE="cros_factory_bundle"
 
 CROS_WORKON_LOCALNAME="factory-utils"
-RDEPEND=""
+RDEPEND="dev-util/dialog"
 
 # chromeos-installer for solving "lib/chromeos-common.sh" symlink.
 # vboot_reference for binary programs (ex, cgpt).
