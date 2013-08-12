@@ -42,9 +42,9 @@ IUSE_TESTS=(
 	+tests_login_CryptohomeIncognitoTelemetry
 	+tests_login_CryptohomeTelemetry
 	+tests_login_LogoutProcessCleanupTelemetry
-	+tests_login_ProfilePermissionsTelemetry
 	+tests_network_ChromeCellularNetworkPresent
 	+tests_network_ChromeCellularSmokeTest
+	+tests_security_ProfilePermissionsTelemetry
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_video_VideoDecodeMemoryUsage
