@@ -110,7 +110,6 @@ IUSE_TESTS="
 	+tests_graphics_GLMark2
 	+tests_graphics_KernelMemory
 	+tests_graphics_LibDRM
-	+tests_graphics_Sanity
 	+tests_graphics_SyncControlTest
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
