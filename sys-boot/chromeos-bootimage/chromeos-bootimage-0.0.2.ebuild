@@ -268,13 +268,27 @@ src_compile_depthcharge() {
 		die "failed to build RW image."
 
 	# Build a netboot image.
-	# Readonly bootloader is regular depthcharge. Verified bootloaders are
-	# netboot images. It is more flexible for factory process that provides
-	# an option to exit netboot image.
+	#
+	# The readonly payload is usually depthcharge and the read/write
+	# payload is usually netboot. This way the netboot image can be used
+	# to boot a normal image if necessary.
+	#
+	# This doesn't work on systems which optionally run the video BIOS
+	# and don't use early firmware selection, specifically link and lumpy,
+	# because both depthcharge and netboot run in normal mode and
+	# continuously reboot the machine to alternatively enable and disable
+	# graphics. On those systems, netboot is used for both payloads.
 	einfo "Building netboot image."
+	local netboot_elf="${froot}/depthcharge/netboot.elf"
+	local netboot_ro
+	if ! use unified_depthcharge && ( use lumpy || use link ); then
+		netboot_ro="${netboot_elf}"
+	else
+		netboot_ro="${depthcharge_elf}"
+	fi
 	cros_bundle_firmware "${common[@]}" \
 		--force-rw \
-		--coreboot-elf="${depthcharge_elf}" \
+		--coreboot-elf="${netboot_ro}" \
 		--outdir "out.net" --output "image.net.bin" \
 		--uboot "${netboot_file}" ||
 		die "failed to build netboot image."
