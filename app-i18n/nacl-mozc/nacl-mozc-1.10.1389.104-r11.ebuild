@@ -37,6 +37,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-insert-internal-public-key.patch
 		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-call-startIme.patch
 		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-disable-clear-history-button.patch
+		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-do-not-handle-hankaku-key.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
