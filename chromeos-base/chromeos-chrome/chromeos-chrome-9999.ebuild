@@ -710,13 +710,6 @@ src_compile() {
 			einfo "Building test targets: ${TEST_TARGETS[@]}"
 		fi
 
-		# The default_extensions target is a no-op for external builds, and is
-		# broken with Ninja in this situation. For now, only enable it on
-		# builds where it installs something.
-		if use chrome_internal; then
-			chrome_targets+=( default_extensions )
-		fi
-
 		if use_nacl; then
 			chrome_targets+=( nacl_helper_bootstrap nacl_helper )
 		fi
