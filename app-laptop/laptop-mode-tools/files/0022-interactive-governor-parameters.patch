@@ -28,7 +28,7 @@
 +	fi
 +	if [ -f ${INTERACTIVE_DIR}/$sysfs_name ]; then
 +		log "VERBOSE" "Setting $sysfs_name for all cpus"
-+		set_sysctl $INTERACTIVE_DIR/$sysfs_name ${config_value}
++		set_sysctl $INTERACTIVE_DIR/$sysfs_name "${config_value}"
 +	fi
 +}
 +
