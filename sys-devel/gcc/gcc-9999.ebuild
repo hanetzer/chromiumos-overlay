@@ -235,6 +235,9 @@ EOF
 				dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
 			fi
 		done
+		for x in clang clang++; do
+			dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
+		done
 	fi
 
 	if use tests

@@ -17,10 +17,11 @@
 # It can disable -fPIE -pie by checking if -nopie is passed to gcc. In this
 # case it removes -nopie as it is a non-standard flag.
 #
-# 3. Enable clang diagnostics with -clang option
+# 3. Enable clang diagnostics with -clang-syntax option
 #
 # 4. Add new -print-cmdline option to print the command line before executon
 #
+# 5. Enable clang codegen.
 # This is currently implemented as two loops on the list of arguments. The
 # first loop # identifies hardening flags, as well as determining if clang
 # invocation is specified. The second loop build command line for clang
@@ -46,14 +47,14 @@ flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
   '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
 disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
-# Only FORTIFY_SOURCE hardening flag is applicable for clang parser.
-clang_cmdline = ['-fsyntax-only', '-Qunused-arguments', '-D_FORTIFY_SOURCE=2']
+# Only FORTIFY_SOURCE hardening flag is applicable for clang.
+clang_flags = set(['-Qunused-arguments', '-D_FORTIFY_SOURCE=2', '-fPIE'])
 
-# If -clang is present.
-clang_compile_requested = 0
+# If -clang-syntax is present or the command line uses clang instead of gcc.
+invoke_clang = False
 
 # If -print-cmdline is present.
-print_cmdline = 0
+print_cmdline = False
 
 # If ccache should be used automatically.
 use_ccache = True # @CCACHE_DEFAULT@ Keep this comment for code.
@@ -67,26 +68,37 @@ pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
   '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared', '-shared',
   '-static'])
 sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
-wrapper_only_options = set(['-clang', '-print-cmdline', '-nopie', '-noccache'])
+#TODO remove '-clang' when sdk uprevs and gcc is deployed
+wrapper_only_options = set(['-clang-syntax', '-print-cmdline', '-clang',
+                            '-nopie', '-noccache'])
 
 myargs = sys.argv[1:]
+
 if fstack.intersection(myargs):
   flags_to_add.remove('-fstack-protector-strong')
   flags_to_add.add('-fno-stack-protector')
 if fPIE.intersection(myargs):
   flags_to_add.remove('-fPIE')
+  clang_flags.remove('-fPIE')
 if pie.intersection(myargs):
   flags_to_add.remove('-pie')
 if sse.intersection(myargs):
   disable_flags.remove('-mno-ssse3')
-clang_compile_requested = '-clang' in myargs
 print_cmdline = '-print-cmdline' in myargs
-if '-noccache' in myargs:
+clang_cmdline = list(clang_flags)
+clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
+invoke_clang = ('-clang-syntax' in myargs or clang_codegen
+                or '-clang' in myargs)
+if '-noccache' in myargs or clang_codegen:
+  # TODO make clang work with ccache.
+  # Clang does not work with ccache well. At lease it fails at
+  # package adhd.
+
   # Only explicitly disable so we can set defaults up top.
   use_ccache = False
 cmdline = [x for x in myargs if x not in wrapper_only_options]
 
-if not clang_compile_requested:
+if not invoke_clang:
   gcc_cmdline = cmdline
 else:
   import subprocess
@@ -109,11 +121,11 @@ else:
     '-Wno-unused-but-set-variable': '-Wno-unused-variable',
   }
 
-  # If these options are specified, do not run clang, even if -clang is
+  # If these options are specified, do not run clang, even if -clang-syntax is
   # specified.
   # This is mainly for utilities that depend on compiler output.
   skip_clang_prefixes = ('-print-', '-dump', '@')
-  skip_clang_set = set(['-', '-E', '-M', '-x'])
+  skip_clang_set = set(['-', '-E', '-M'])
 
   # Reset gcc cmdline too. Only change is to remove -Xclang-only
   # options if specified.
@@ -121,7 +133,10 @@ else:
 
   skip_clang = False
   for flag in cmdline:
-    if flag.startswith(skip_clang_prefixes) or flag in skip_clang_set or flag.endswith('.S'):
+    if (not clang_codegen and
+        (flag.startswith(skip_clang_prefixes) or
+         flag in skip_clang_set or
+         flag.endswith('.S'))):
       skip_clang = True
     elif not (flag in clang_unsupported or
               flag.startswith(clang_unsupported_prefixes)):
@@ -139,6 +154,7 @@ else:
 
 if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
   gcc_cmdline.extend(disable_flags)
+  clang_cmdline.extend(disable_flags)
 
 
 def get_proc_cmdline(pid):
@@ -168,6 +184,45 @@ def log_parent_process_tree(log, ppid):
       break
     ppid = int(ppid)
     depth += 2
+
+
+# clang doesn't provide its own viable libstdc++ implementation.
+# Instead, it uses gcc's. So we need to find and include path and
+# the lib path from gcc. There is no gcc-config for cros-compiler,
+# so we have to do it in this way.
+#
+# TODO: make ebuild calculate the values and write it to the wrapper to
+# avoid calling gcc everytime.
+def get_gcc_include():
+  lang_parameter = 'c'
+  if sys.argv[0].endswith('++'):
+    lang_parameter += '++'
+  origin_cmd = sys.argv[0]
+  if 'clang++' in origin_cmd:
+    origin_cmd = origin_cmd.replace('clang++', 'g++')
+  if 'clang' in origin_cmd:
+    origin_cmd = origin_cmd.replace('clang', 'gcc')
+  real_cmd = '%s.real' % origin_cmd
+
+  command = [real_cmd, '-v', '-E', '-x', lang_parameter, '-']
+  p = subprocess.Popen(command, stdin=subprocess.PIPE,
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  out, err = p.communicate(input='')
+  gcc_include = []
+  include_start = False
+  for line in err.splitlines():
+    if '#include <...> search starts here:' in line:
+      include_start = True
+      continue
+    if 'End of search list' in line:
+      include_start = False
+    if include_start == True:
+      if not line.endswith('include'):
+        gcc_include.append('-I' + line.strip())
+    if 'LIBRARY_PATH' in line:
+      lib_path = line.split(':')[0].split('=')[1]
+      gcc_include.append('-B' + lib_path)
+  return gcc_include
 
 
 sysroot = os.environ.get('SYSROOT', '')
@@ -202,31 +257,31 @@ else:
   except OSError:
     pass
 
-if clang_compile_requested and not skip_clang:
+if invoke_clang and not skip_clang:
   clang_comp = os.environ.get('CLANG', '/usr/bin/clang')
-
-  # Specify the target for clang.
-  gcc_comp = os.path.basename(sys.argv[0])
-  arch = gcc_comp.split('-')[0]
-  if arch == 'i386' or arch == 'i486' or arch == 'i586' or arch == 'i686':
-    clang_cmdline.insert(0, '-m32')
-  elif arch == 'x86_64':
-    clang_cmdline.insert(0, '-m64')
-  elif arch.startswith('arm'):
-    clang_cmdline.insert(0, 'armv7a-cros-linux-gnueabi')
-    clang_cmdline.insert(0, '-target')
 
   # Check for clang or clang++.
   if sys.argv[0].endswith('++'):
     clang_comp += '++'
 
+  # Specify the target for clang.
+  gcc_comp = os.path.basename(sys.argv[0])
+  arch = "-".join(gcc_comp.split('-')[0:-1])
+  clang_cmdline = ['-target', arch] + clang_cmdline
+
+  if clang_codegen and sys.argv[0].endswith('++'):
+    clang_cmdline += get_gcc_include()
+  elif not clang_codegen:
+    clang_cmdline.append('-fsyntax-only')
+
   if print_cmdline:
     print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
 
-  p = subprocess.Popen([clang_comp] + clang_cmdline)
-  p.wait()
-  if p.returncode != 0:
-    sys.exit(p.returncode)
+  if not clang_codegen:
+    p = subprocess.Popen([clang_comp] + clang_cmdline)
+    p.wait()
+    if p.returncode != 0:
+      sys.exit(p.returncode)
 
 execargs = []
 real_gcc = '%s.real' % sys.argv[0]
@@ -287,10 +342,13 @@ if use_ccache:
 else:
   argv0 = real_gcc
 
-execargs += [real_gcc] + list(flags_to_add) + gcc_cmdline
-
-if print_cmdline:
-  print '[%s] %s' % (argv0, ' '.join(execargs))
+if clang_codegen:
+  execargs += [clang_comp] + clang_cmdline
+  argv0 = clang_comp
+else:
+  execargs += [real_gcc] + list(flags_to_add) + gcc_cmdline
+  if print_cmdline:
+    print '[%s] %s' % (argv0, ' '.join(execargs))
 
 sys.stdout.flush()
 os.execv(argv0, execargs)
