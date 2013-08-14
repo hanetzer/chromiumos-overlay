@@ -33,7 +33,6 @@ IUSE_TESTS=(
 	+tests_desktopui_EnterprisePolicy
 
 	# Uses chrome_test dependency.
-	+tests_audiovideo_FFMPEG
 	+tests_audiovideo_VDA
 
 	# Tests that depend on telemetry.
