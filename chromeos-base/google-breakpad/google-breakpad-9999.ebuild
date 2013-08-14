@@ -33,7 +33,7 @@ src_configure() {
 	# src/processor code to crash (minidump_stackwalk) as well as tests
 	# to fail.  See
 	# http://code.google.com/p/google-breakpad/issues/detail?id=400.
-	append-flags "-O0"
+	append-flags "-O0" -g
 
 	tc-export CC CXX LD PKG_CONFIG
 
