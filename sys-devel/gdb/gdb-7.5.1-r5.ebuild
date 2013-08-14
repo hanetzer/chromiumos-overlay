@@ -33,7 +33,7 @@ case ${PV} in
 	# live git tree
 	EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/gdb.git"
 	EGIT_BRANCH="chromeos_master"
-	EGIT_COMMIT=0ea2048212cc7769aeb9681b7f4e2df8163edd35
+	EGIT_COMMIT=d84c423433280ff67d602c52b51c725b2fbcbe48
 	inherit git-2
 	SRC_URI=""
 	;;
