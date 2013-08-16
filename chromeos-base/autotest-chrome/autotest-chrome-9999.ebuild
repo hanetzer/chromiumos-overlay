@@ -81,12 +81,9 @@ IUSE_TESTS=(
 	+tests_enterprise_DevicePolicy
 	+tests_enterprise_InstallAttributes
 	+tests_enterprise_Policies
-	+tests_graphics_GLAPICheck
-	+tests_graphics_GpuReset
-	+tests_graphics_Piglit
-	+tests_graphics_SanAngeles
+	# TODO(ihf): Move TearTest to autotest-tests and unify WebGL* with
+	# Chromium waterfall once we have hardware there.
 	+tests_graphics_TearTest
-	+tests_graphics_VTSwitch
 	+tests_graphics_WebGLConformance
 	+tests_graphics_WebGLPerformance
 	+tests_hardware_BluetoothSemiAuto
