@@ -158,10 +158,6 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 # net-wireless/realtek-rt2800-firmware:
 # USB / WiFi Firmware.
 #
-# app-i18n/ibus-*:
-# The ibus implementation of text input conversion engines.
-# TODO(nona): Remove all ibus engines. crbug.com/i171351
-#
 # app-i18n/nacl-mozc:
 # A text input processors based on IME extension APIs.
 #
@@ -203,9 +199,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-crypt/trousers
 	app-editors/vim
 	app-i18n/chinese-input
-	app-i18n/ibus-english-m
-	app-i18n/ibus-m17n
-	app-i18n/ibus-mozc-hangul
 	app-i18n/nacl-mozc
 	app-i18n/chromeos-hangul
 	app-laptop/laptop-mode-tools
