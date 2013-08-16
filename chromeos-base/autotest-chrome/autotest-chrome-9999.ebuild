@@ -42,6 +42,7 @@ IUSE_TESTS=(
 	+tests_login_CryptohomeTelemetry
 	+tests_login_LogoutProcessCleanupTelemetry
 	+tests_network_ChromeCellularNetworkPresent
+	+tests_network_ChromeCellularNetworkProperties
 	+tests_network_ChromeCellularSmokeTest
 	+tests_security_ProfilePermissionsTelemetry
 	+tests_telemetry_LoginTest
