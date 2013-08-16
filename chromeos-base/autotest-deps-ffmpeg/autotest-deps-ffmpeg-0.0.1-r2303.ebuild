@@ -7,6 +7,7 @@ CROS_WORKON_TREE="3aa60eaf83d4ceaa2e27bc009d1295e8d960a2aa"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
+CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon autotest-deponly
 
