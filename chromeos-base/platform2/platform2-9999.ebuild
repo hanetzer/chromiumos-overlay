@@ -45,31 +45,28 @@ LIBCHROME_DEPEND=$(
 RDEPEND_chaps="app-crypt/trousers"
 
 RDEPEND_cros_disks="
-	!cros_host? (
-		app-arch/unrar
-		sys-apps/eject
-		sys-apps/util-linux
-		sys-block/parted
-		sys-fs/avfs
-		sys-fs/exfat-utils
-		sys-fs/fuse-exfat
-		sys-fs/ntfs3g
-		sys-fs/udev
-	)
+	app-arch/unrar
+	sys-apps/eject
+	sys-apps/util-linux
+	sys-block/parted
+	sys-fs/avfs
+	sys-fs/exfat-utils
+	sys-fs/fuse-exfat
+	sys-fs/ntfs3g
+	sys-fs/udev
 "
 
 RDEPEND_debugd="
-	!cros_host? (
-		dev-libs/libpcre
-		net-libs/libpcap
-		sys-apps/memtester
-		sys-apps/smartmontools
-	)
+	dev-libs/libpcre
+	net-libs/libpcap
+	sys-apps/memtester
+	sys-apps/smartmontools
 "
 
 RDEPEND_cromo="cellular? ( dev-cpp/glog )"
 
-RDEPEND_shill="chromeos-base/bootstat
+RDEPEND_shill="
+	chromeos-base/bootstat
 	chromeos-base/chromeos-minijail
 	!<chromeos-base/flimflam-0.0.1-r530
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
@@ -97,7 +94,7 @@ DEPEND_wimax_manager="gdmwimax? ( net-wireless/gdmwimax )"
 
 RDEPEND="
 	platform2? (
-		$(for v in ${!RDEPEND_*}; do echo "${!v}"; done)
+		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
 
 		${LIBCHROME_DEPEND}
 		chromeos-base/chromeos-minijail
@@ -114,10 +111,12 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	platform2? (
-		$(for v in ${!DEPEND_*}; do echo "${!v}"; done)
+		!cros_host? (
+			$(for v in ${!DEPEND_*}; do echo "${!v}"; done)
+			virtual/modemmanager
+		)
 
 		chromeos-base/protofiles
-		!cros_host? ( virtual/modemmanager )
 		test? (
 			app-shells/dash
 			dev-cpp/gmock
