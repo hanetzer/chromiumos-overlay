@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="install_tests"
+IUSE="install_tests platform2"
 
 LIBCHROME_VERS="180609"
 
@@ -43,16 +43,21 @@ make_flags() {
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
+
 	tc-export CXX AR NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake $(make_flags) || die
 }
 
 src_test() {
+	use platform2 && return 0
+
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
 	emake $(make_flags) tests || die "could not build tests"
@@ -73,5 +78,7 @@ src_test() {
 }
 
 src_install() {
+	use platform2 && return 0
+
 	emake $(make_flags) DESTDIR="${D}" install || die
 }

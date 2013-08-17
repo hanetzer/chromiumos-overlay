@@ -12,7 +12,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-asan -clang +cellular test +tpm +vpn"
+IUSE="-asan -clang +cellular platform2 test +tpm +vpn"
 KEYWORDS="amd64 arm x86"
 REQUIRED_USE="asan? ( clang )"
 
@@ -57,10 +57,14 @@ make_flags() {
 }
 
 src_configure() {
+	use platform2 && return 0
+
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
+
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	clang-setup-env
@@ -68,6 +72,8 @@ src_compile() {
 }
 
 src_test() {
+	use platform2 && return 0
+
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
@@ -86,6 +92,8 @@ src_test() {
 }
 
 src_install() {
+	use platform2 && return 0
+
 	dobin bin/ff_debug
 	use cellular && dobin bin/mm_debug
 	use cellular && dobin bin/set_apn

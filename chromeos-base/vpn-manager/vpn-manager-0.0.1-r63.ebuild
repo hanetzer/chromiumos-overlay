@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="platform2"
 
 LIBCHROME_VERS="180609"
 
@@ -31,19 +31,25 @@ DEPEND="${RDEPEND}
 	 dev-cpp/gtest"
 
 src_prepare() {
+	use platform2 && return 0
 	cros-workon_src_prepare
 }
 
 src_configure() {
+	use platform2 && return 0
+
 	cros-workon_src_configure
 	export LIBDIR="/usr/$(get_libdir)"
 }
 
 src_compile() {
+	use platform2 && return 0
 	cros-workon_src_compile
 }
 
 src_test() {
+	use platform2 && return 0
+
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
@@ -52,6 +58,8 @@ src_test() {
 }
 
 src_install() {
+	use platform2 && return 0
+
 	cros-workon_src_install
 	insinto /usr/include/chromeos/vpn-manager
 	doins service_error.h

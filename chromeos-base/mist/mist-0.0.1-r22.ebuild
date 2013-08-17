@@ -15,13 +15,14 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="test"
+IUSE="platform2 test"
 
 LIBCHROME_VERS="180609"
 
 RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
+	chromeos-base/platform2
 	dev-libs/protobuf
 	sys-fs/udev
 	virtual/libusb:1
@@ -34,22 +35,27 @@ DEPEND="
 "
 
 src_prepare() {
+	use platform2 && return 0
 	cros-workon_src_prepare
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
 src_compile() {
+	use platform2 && return 0
 	cros-workon_src_compile
 }
 
 src_test() {
+	use platform2 && return 0
 	cros-workon_src_test
 }
 
 src_install() {
+	use platform2 && return 0
 	cros-workon_src_install
 
 	dobin "${OUT}"/mist

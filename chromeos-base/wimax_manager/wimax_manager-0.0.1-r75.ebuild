@@ -15,7 +15,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="gdmwimax test"
+IUSE="gdmwimax platform2 test"
 
 LIBCHROME_VERS="180609"
 
@@ -38,10 +38,12 @@ DEPEND="gdmwimax? (
 )"
 
 src_prepare() {
+	use platform2 && return 0
 	cros-workon_src_prepare
 }
 
 src_configure() {
+	use platform2 && return 0
 	cros-workon_src_configure
 }
 
@@ -51,6 +53,7 @@ src_compile() {
 }
 
 src_test() {
+	use platform2 && return 0
 	use gdmwimax || return 0
 
 	# Needed for `cros_run_unit_tests`.
@@ -58,6 +61,8 @@ src_test() {
 }
 
 src_install() {
+	use platform2 && return 0
+
 	cros-workon_src_install
 	# Install D-Bus introspection XML files.
 	insinto /usr/share/dbus-1/interfaces
