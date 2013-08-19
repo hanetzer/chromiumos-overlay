@@ -3,7 +3,6 @@
 
 EAPI=4
 
-CROS_WORKON_LOCALNAME="../platform/audiotest"
 CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_PROJECT="chromiumos/platform/audiotest"
 inherit cros-workon

@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
-CROS_WORKON_LOCALNAME="../third_party/kernel/files"
+CROS_WORKON_LOCALNAME="kernel/files"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2

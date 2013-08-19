@@ -3,7 +3,6 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/dbus-spy"
-CROS_WORKON_LOCALNAME="../third_party/dbus-spy"
 
 inherit cros-workon
 

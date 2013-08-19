@@ -3,7 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
-CROS_WORKON_LOCALNAME="../platform/ec"
+CROS_WORKON_LOCALNAME="ec"
 
 inherit cros-workon toolchain-funcs cros-board
 

@@ -3,7 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
-CROS_WORKON_LOCALNAME="../third_party/kernel-next/"
+CROS_WORKON_LOCALNAME="kernel-next"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
