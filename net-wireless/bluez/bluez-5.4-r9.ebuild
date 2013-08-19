@@ -160,6 +160,8 @@ src_install() {
 		cd "${S}"
 	fi
 
+	dobin attrib/gatttool
+
 	insinto /etc/bluetooth
 	doins src/main.conf
 
