@@ -45,6 +45,8 @@ src_configure() {
 	popd >/dev/null
 
 	if use cros_host; then
+		# The mindump code is still wordsize specific.  Needs to be redone
+		# like https://code.google.com/p/google-breakpad/source/detail?r=987.
 		einfo "Building a 32-bit version of tools"
 		mkdir work32
 		pushd work32 >/dev/null
@@ -65,7 +67,6 @@ src_compile() {
 	if use cros_host; then
 		einfo "Building 32-bit tools"
 		emake -C work32 \
-			src/tools/linux/dump_syms/dump_syms \
 			src/tools/linux/md2core/minidump-2-core
 	fi
 }
@@ -94,7 +95,6 @@ src_install() {
 	doins src/processor/*.h
 
 	if use cros_host; then
-		newbin work32/src/tools/linux/dump_syms/dump_syms dump_syms.32
 		newbin work32/src/tools/linux/md2core/minidump-2-core \
 		       minidump-2-core.32
 	fi
