@@ -29,11 +29,7 @@ src_configure() {
 	# (crosbug.com/14275).
 	[[ "${ARCH}" = "arm" ]] && append-flags "-marm"
 
-	# We purposefully disable optimizations due to optimizations causing
-	# src/processor code to crash (minidump_stackwalk) as well as tests
-	# to fail.  See
-	# http://code.google.com/p/google-breakpad/issues/detail?id=400.
-	append-flags "-O0" -g
+	append-flags -g
 
 	tc-export CC CXX LD PKG_CONFIG
 
@@ -51,6 +47,8 @@ src_configure() {
 		mkdir work32
 		pushd work32 >/dev/null
 		append-flags "-m32"
+		# Can be dropped once this is merged upstream:
+		# https://breakpad.appspot.com/619002/
 		append-lfs-flags # crbug.com/266064
 		ECONF_SOURCE=${S} multijob_child_init cros-workon_src_configure
 		filter-lfs-flags
