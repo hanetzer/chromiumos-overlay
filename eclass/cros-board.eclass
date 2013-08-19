@@ -35,6 +35,7 @@ ALL_BOARDS=(
 	amd64-host
 	aries
 	arm-generic
+	bayleybay
 	beaglebone
 	blackwall
 	bolt
