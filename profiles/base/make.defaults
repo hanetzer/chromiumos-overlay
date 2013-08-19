@@ -131,7 +131,8 @@ PYTHON_SINGLE_TARGET="python2_7"
 #                    TESTS USE_EXPAND for autotest
 #                    U_BOOT_CONFIG_USE for selecting U-Boot config
 #                    U_BOOT_FDT_USE for selecting U-Boot device tree
-USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS U_BOOT_CONFIG_USE U_BOOT_FDT_USE"
+#                    LINUX_FIRMARE for selecting upstream firmware components
+USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS U_BOOT_CONFIG_USE U_BOOT_FDT_USE LINUX_FIRMWARE"
 USE_EXPAND_HIDDEN="${USE_EXPAND_HIDDEN} CROS_WORKON_TREE"
 
 # Default licenses that are accepted for ChromiumOS builds.
