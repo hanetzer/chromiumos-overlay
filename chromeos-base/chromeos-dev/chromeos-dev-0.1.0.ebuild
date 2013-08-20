@@ -56,6 +56,7 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 ################################################################################
 CROS_X86_RDEPEND="
 	app-benchmarks/i7z
+	dev-util/turbostat
 	sys-apps/dmidecode
 	sys-apps/iotools
 	sys-apps/pciutils
