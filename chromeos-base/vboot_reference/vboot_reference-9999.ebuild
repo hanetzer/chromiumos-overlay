@@ -63,21 +63,6 @@ src_install() {
 	if use minimal ; then
 		# Installing on the target
 		emake BUILD="${S}"/build-main DESTDIR="${D}" MINIMAL=1 install
-
-		# TODO(hungte) Since we now install all keyset into
-		# /usr/share/vboot/devkeys, maybe SAFT does not need to install
-		# its own keys anymore.
-		einfo "Installing keys for SAFT"
-		local keys_to_install='recovery_kernel_data_key.vbprivk'
-		keys_to_install+=' firmware.keyblock '
-		keys_to_install+=' firmware_data_key.vbprivk'
-		keys_to_install+=' kernel_subkey.vbpubk'
-		keys_to_install+=' kernel_data_key.vbprivk'
-
-		insinto /usr/sbin/firmware/saft
-		for key in ${keys_to_install}; do
-			doins "tests/devkeys/${key}"
-		done
 	else
 		# Installing on the host
 		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" install
