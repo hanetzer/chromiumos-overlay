@@ -134,6 +134,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-Disable-fast-clears.patch
 	epatch "${FILESDIR}"/9.1-mesa-Workaround-corruption-on-i915g.patch
+	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 
 	base_src_prepare
 
