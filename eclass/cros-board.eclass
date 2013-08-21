@@ -37,6 +37,7 @@ ALL_BOARDS=(
 	arm-generic
 	bayleybay
 	beaglebone
+	beltino
 	blackwall
 	bolt
 	butterfly
