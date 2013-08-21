@@ -317,6 +317,7 @@ IUSE_TESTS="
 	+tests_security_ChromiumOSLSM
 	+tests_security_DbusMap
 	+tests_security_DbusOwners
+	+tests_security_EnableChromeTesting
 	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
 	+tests_security_HtpdateHTTP
@@ -341,6 +342,7 @@ IUSE_TESTS="
 	+tests_security_StatefulPermissions
 	+tests_security_SuidBinaries
 	+tests_security_SymlinkRestrictions
+	+tests_security_SysLogPermissions
 	+tests_security_SysVIPC
 	+tests_security_x86Registers
 	+tests_suite_HWConfig
