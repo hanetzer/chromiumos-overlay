@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="X"
 
 RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/modem-utilities
@@ -22,7 +22,7 @@ RDEPEND="chromeos-base/chromeos-init
 	sys-apps/net-tools
 	sys-apps/pciutils
 	sys-apps/usbutils
-	x11-apps/setxkbmap"
+	X? ( x11-apps/setxkbmap )"
 
 DEPEND=""
 
