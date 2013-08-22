@@ -123,6 +123,7 @@ IUSE_TESTS=(
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
+	+tests_security_SandboxLinuxUnittests
 	+tests_security_SandboxStatusBrowserTest
 )
 
