@@ -129,7 +129,7 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 
 # @ECLASS-VARIABLE: CROS_WORKON_CLANG
 # @DESCRIPTION:
-# If set to "1", for target board packages, build with -clang.
+# If set to "1", for target board packages, build with -clang-syntax.
 # This is a flag our compiler wrapper uses, not the real gcc. If you want to
 # disable this feature, set this to "0".
 : ${CROS_WORKON_CLANG:=1}
@@ -491,9 +491,9 @@ cros-workon_src_prepare() {
 
 cros-workon_src_configure() {
 	if ! use cros_host && [[ ${CROS_WORKON_CLANG} == "1" ]]; then
-		# For target board packages, build with -clang.  This is a flag our
+		# For target board packages, build with -clang-syntax.  This is a flag our
 		# compiler wrapper uses, not the real gcc.
-		append-flags -clang
+		append-flags -clang-syntax
 	fi
 
 	if using_common_mk ; then

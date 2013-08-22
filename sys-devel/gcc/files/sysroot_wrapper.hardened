@@ -68,8 +68,7 @@ pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
   '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared', '-shared',
   '-static'])
 sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
-#TODO remove '-clang' when sdk uprevs and gcc is deployed
-wrapper_only_options = set(['-clang-syntax', '-print-cmdline', '-clang',
+wrapper_only_options = set(['-clang-syntax', '-print-cmdline',
                             '-nopie', '-noccache'])
 
 myargs = sys.argv[1:]
@@ -87,8 +86,8 @@ if sse.intersection(myargs):
 print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = list(clang_flags)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
-invoke_clang = ('-clang-syntax' in myargs or clang_codegen
-                or '-clang' in myargs)
+invoke_clang = '-clang-syntax' in myargs or clang_codegen
+
 if '-noccache' in myargs or clang_codegen:
   # TODO make clang work with ccache.
   # Clang does not work with ccache well. At lease it fails at
