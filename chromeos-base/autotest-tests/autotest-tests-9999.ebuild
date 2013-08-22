@@ -42,6 +42,7 @@ RDEPEND="
   chromeos-base/autotest-deps-glmark2
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
+  chromeos-base/autotest-deps-piglit
   chromeos-base/shill-test-scripts
   autox? ( chromeos-base/autox )
   dev-python/numpy
