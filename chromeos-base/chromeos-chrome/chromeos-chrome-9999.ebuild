@@ -705,7 +705,8 @@ src_compile() {
 				peerconnection_server
 				chromedriver
 				browser_tests
-				sync_integration_tests )
+				sync_integration_tests
+				sandbox_linux_unittests )
 			einfo "Building test targets: ${TEST_TARGETS[@]}"
 		fi
 
@@ -810,6 +811,7 @@ install_chrome_test_resources() {
 		"browser_tests"
 		"peerconnection_server"
 		"sync_integration_tests"
+		"sandbox_linux_unittests"
 		"video_decode_accelerator_unittest" )
 
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
