@@ -41,6 +41,7 @@ ALL_BOARDS=(
 	blackwall
 	bolt
 	butterfly
+	cardhu
 	chronos
 	daisy
 	daisy-drm
@@ -57,6 +58,7 @@ ALL_BOARDS=(
 	ironhide
 	kiev
 	klang
+	leon
 	link
 	lumpy
 	nyan
@@ -88,7 +90,6 @@ ALL_BOARDS=(
 	tegra2_wario
 	tegra3-generic
 	waluigi
-	cardhu
 	wolf
 	x32-generic
 	x86-agz
