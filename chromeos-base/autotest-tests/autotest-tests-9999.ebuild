@@ -123,6 +123,7 @@ IUSE_TESTS="
 	+tests_graphics_VTSwitch
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
+	+tests_hardware_Badblocks
 	+tests_hardware_ch7036
 	+tests_hardware_Components
 	+tests_hardware_DeveloperRecovery
