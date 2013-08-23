@@ -198,6 +198,7 @@ IUSE_TESTS="
 	+tests_network_ConnmanPowerStateTracking
 	+tests_network_DefaultProfileCreation
 	+tests_network_DefaultProfileServices
+	+tests_network_DestinationVerification
 	+tests_network_DhcpClasslessStaticRoute
 	+tests_network_DhcpNegotiationSuccess
 	+tests_network_DhcpNegotiationTimeout
