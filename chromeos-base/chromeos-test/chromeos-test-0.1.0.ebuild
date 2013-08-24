@@ -69,6 +69,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-arch/gzip
 	app-arch/tar
 	app-crypt/tpm-tools
+	app-misc/ckermit
 	app-misc/tmux
 	app-misc/utouch-evemu
 	chromeos-base/autox
