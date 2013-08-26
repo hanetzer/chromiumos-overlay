@@ -1,0 +1,21 @@
+Makes the udev rules run a script to start brltty instead of just
+running it directly.
+--- a/Hotplug/udev.rules	(revision 7581)
++++ b/Hotplug/udev.rules	(working copy)
+@@ -287,14 +287,14 @@
+ GOTO="brltty_run"
+ 
+ LABEL="brltty_run"
+-ENV{BRLTTY_PID_FILE}="/var/run/brltty.$kernel.pid"
++ENV{BRLTTY_PID_FILE}="/var/run/brltty/brltty.$kernel.pid"
+ ACTION=="add", GOTO="brltty_add"
+ ACTION=="remove", GOTO="brltty_remove"
+ GOTO="brltty_end"
+ 
+ LABEL="brltty_add"
+ SYMLINK+="brltty/$env{BRLTTY_DRIVER}-$env{BRLTTY_DEVICE}"
+-RUN+="/bin/brltty -E -P$env{BRLTTY_PID_FILE}"
++RUN+="/lib/udev/brltty"
+ GOTO="brltty_end"
+ 
+ LABEL="brltty_remove"

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This script starts brltty in a minijail sandbox.
+
+BRLTTY_RUNDIR=/var/run/brltty
+BRLAPI_SOCKETDIR=/var/lib/BrlAPI
+
+# Ensure that the directories exist and have the right permissions.
+mkdir -p -m 0750 "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
+chown -R brltty:brltty "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
+chmod 755 "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
+
+# Files created by the daemon shouldn't be accessible by users not in the
+# brltty group.
+umask 0007
+
+exec /sbin/minijail0 -u brltty -g brltty -G -- \
+  /bin/brltty -E -P${BRLTTY_PID_FILE}

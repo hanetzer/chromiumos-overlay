@@ -2,7 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+cros_pre_src_prepare_brltty_config() {
+	epatch "${FILESDIR}"/${P}-tty0-openflags.patch
+	epatch "${FILESDIR}"/${P}-udev-run-script.patch
+	epatch "${FILESDIR}"/${P}-remove-umask-calls.patch
+}
+
 cros_post_src_install_brltty_config() {
 	insinto /etc
 	doins "${FILESDIR}"/brltty.conf
+	exeinto $(udev_get_udevdir)
+	doexe "${FILESDIR}"/brltty
 }

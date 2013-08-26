@@ -236,6 +236,7 @@ pkg_postinst() {
 	copy_or_add_daemon_user "shill-crypto" 237 # For shill's crypto-util
 	copy_or_add_daemon_user "avahi" 238       # For avahi-daemon
 	copy_or_add_daemon_user "p2p" 239         # For p2p
+	copy_or_add_daemon_user "brltty" 240      # For braille displays
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
 	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
@@ -310,6 +311,13 @@ pkg_postinst() {
 
 	# Chaps needs access to the daemon-store.
 	add_users_to_group "daemon-store" chaps
+
+	# brltty needs access to usb and tty devices.
+	add_users_to_group usb brltty
+	add_users_to_group tty brltty
+
+	# The system_user needs to access braille displays.
+	add_users_to_group brltty ${system_user}
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
