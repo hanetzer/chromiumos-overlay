@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=sys-boot/libpayload dev-vcs/git
+DESCRIPTION=coreboot's coreinfo payload
+EAPI=4
+HOMEPAGE=http://www.coreboot.org
+IUSE=cros_host cros_workon_tree_a8efb462df801e15221eda9ac3235b6fd324af75 profiling
+KEYWORDS=amd64 x86
+LICENSE=GPL-2
+RDEPEND=sys-boot/libpayload
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	6b0e80c5c6c014fea4ed744c3515520d	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=96b65b2f7d7b0795a8d1fdc9072fa21a
