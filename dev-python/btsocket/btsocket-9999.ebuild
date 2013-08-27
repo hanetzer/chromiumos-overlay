@@ -15,10 +15,3 @@ LICENSE="BSD-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
-
-src_install() {
-	# distutils.eclass doesn't allow us to install into /usr/local, so we
-	# have to do this manually
-	"$(PYTHON)" setup.py install --root="${D}" --prefix=/usr/local
-	DISTUTILS_SRC_INSTALL_EXECUTED="1"
-}
