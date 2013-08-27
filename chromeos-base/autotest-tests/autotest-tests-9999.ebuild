@@ -86,6 +86,7 @@ IUSE_TESTS="
 	+tests_bluetooth_Sanity_AdapterPresent
 	+tests_bluetooth_Sanity_DefaultState
 	+tests_bluetooth_Sanity_Discoverable
+	+tests_bluetooth_Sanity_Discovery
 	+tests_bluetooth_Sanity_ValidAddress
 	+tests_cellular_CdmaConfig
 	+tests_cellular_Dummy
