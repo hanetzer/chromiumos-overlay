@@ -21,7 +21,7 @@ for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
-IUSE="${IUSE_VIDEO_CARDS} libkms"
+IUSE="${IUSE_VIDEO_CARDS} libkms manpages"
 REQUIRED_USE="video_cards_exynos? ( libkms )"
 RESTRICT="test" # see bug #236845
 
@@ -51,6 +51,7 @@ src_configure() {
 		$(use_enable video_cards_radeon radeon)
 		$(use_enable video_cards_vmware vmwgfx)
 		$(use_enable libkms)
+		$(use_enable manpages)
 	)
 	xorg-2_src_configure
 }
