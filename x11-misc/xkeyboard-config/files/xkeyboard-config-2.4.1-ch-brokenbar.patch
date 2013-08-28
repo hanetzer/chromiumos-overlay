@@ -1,0 +1,10 @@
+--- xkeyboard-config-2.4.1.orig/symbols/ch	2013-08-28 19:26:16.858449142 +0900
++++ xkeyboard-config-2.4.1/symbols/ch	2013-08-28 19:26:16.877729860 +0900
+@@ -7,5 +7,5 @@
+     name[Group1]= "German (Switzerland)";
+     key <TLDE> { [    section,     degree                           ] };
+-    key <AE01> { [          1,       plus,          bar, exclamdown ] };
++    key <AE01> { [          1,       plus,    brokenbar, exclamdown ] };
+     key <AE02> { [          2,   quotedbl,           at, oneeighth  ] };
+     key <AE03> { [          3,   asterisk,   numbersign             ] };
+     key <AE04> { [          4,   ccedilla                           ] };
