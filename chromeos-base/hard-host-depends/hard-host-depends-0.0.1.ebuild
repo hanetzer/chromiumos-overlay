@@ -270,6 +270,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-python/django
 	dev-python/flup
+	dev-python/jsonrpclib
 	dev-python/twisted
 	"
 
