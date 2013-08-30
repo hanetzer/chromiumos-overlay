@@ -36,6 +36,7 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/unittest2
 	dev-util/stressapptest
 	chromeos-base/chromeos-factory-board
+	chromeos-base/memento_softwareupdate
 	>=chromeos-base/vpd-0.0.1-r11"
 
 TARGET_DIR="/usr/local/factory"
