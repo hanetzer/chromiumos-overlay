@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="cros_host cros_p2p -delta_generator"
+IUSE="cros_host -delta_generator"
 
 LIBCHROME_VERS="180609"
 
@@ -24,7 +24,6 @@ COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/metrics
 	chromeos-base/platform2
 	chromeos-base/verity
-	cros_p2p? ( chromeos-base/p2p )
 	dev-cpp/gflags
 	dev-libs/dbus-glib
 	dev-libs/glib
