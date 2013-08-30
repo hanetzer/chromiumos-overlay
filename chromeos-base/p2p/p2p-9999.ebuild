@@ -30,5 +30,5 @@ src_prepare() {
 }
 
 src_configure() {
-	econf $(use_enable test tests)
+	cros-workon_src_configure $(use_enable test tests)
 }
