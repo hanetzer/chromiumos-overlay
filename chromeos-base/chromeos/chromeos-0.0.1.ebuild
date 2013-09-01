@@ -114,6 +114,7 @@ CROS_COMMON_RDEPEND="
 	sys-apps/sed
 	sys-apps/util-linux
 	sys-apps/which
+	sys-libs/gcc-libs
 	sys-libs/timezone-data
 	mtd? ( sys-fs/mtd-utils )
 	sys-process/procps
