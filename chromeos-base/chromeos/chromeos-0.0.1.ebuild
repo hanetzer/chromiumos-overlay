@@ -241,7 +241,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
-	sys-process/lsof
 "
 
 # Build time dependencies

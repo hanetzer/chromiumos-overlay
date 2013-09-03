@@ -28,6 +28,7 @@ RDEPEND="
 	net-firewall/iptables[ipv6]
 	sys-apps/rootdev
 	sys-apps/upstart
+	sys-process/lsof
 	!cros_embedded? (
 		chromeos-base/chromeos-disableecho
 		chromeos-base/vpd
