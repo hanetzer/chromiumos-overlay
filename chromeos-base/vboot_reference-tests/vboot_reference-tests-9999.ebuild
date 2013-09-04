@@ -32,3 +32,4 @@ function src_compile {
 	export VBOOT_SRC_DIR=${WORKDIR}/${P}
 	autotest_src_compile
 }
+

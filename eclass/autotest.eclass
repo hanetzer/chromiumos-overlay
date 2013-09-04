@@ -398,15 +398,7 @@ autotest_pkg_postinst() {
 		done | sort -u)
 
 	if [ -n "${client_tests}" ] && [ "${client_tests}" != "myfaketest" ]; then
-		# Check for test_count. The packager performs poorly when
-		# too many arguments are specified vs. --all. This should be fixed in
-		# autotest (crosbug.com/28173).
-		test_count=$(echo ${client_tests} | wc -w)
-		if [ ${test_count} -gt 10 ]; then
-			test_opt="--all"
-		else
-			test_opt="--test=$(pythonify_test_list ${client_tests})"
-		fi
+		test_opt="--test=$(pythonify_test_list ${client_tests})"
 	fi
 
 	if [ "{test_opt}" != "--all" ]; then

@@ -67,3 +67,4 @@ src_prepare() {
 	export PYTHONPATH="${TMP_DIR}/telemetry/src/tools/telemetry"
 	autotest_src_prepare
 }
+

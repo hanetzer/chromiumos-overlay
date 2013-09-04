@@ -1064,3 +1064,4 @@ src_install() {
 		move_and_symlink_files "${CHROME_DIR}" "/usr/local/${CHROME_DIR}"
 	fi
 }
+
