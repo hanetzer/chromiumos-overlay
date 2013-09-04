@@ -8,5 +8,5 @@ KEYWORDS=~amd64 ~arm ~x86
 LICENSE=BSD
 RDEPEND=!!chromeos-base/flimflam-test chromeos-base/shill dev-lang/python dev-python/dbus-python dev-python/pygobject net-dns/dnsmasq sys-apps/iproute2
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	a6089f48a592483a05acf71fa1c32134	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	a6089f48a592483a05acf71fa1c32134	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=70e6d4b7b3ef087a30b87c0c53849f74

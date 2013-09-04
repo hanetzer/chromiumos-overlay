@@ -9,5 +9,5 @@ LICENSE=FTL GPL-2
 RDEPEND=sys-libs/zlib bzip2? ( app-arch/bzip2 ) X? ( x11-libs/libX11 x11-libs/libXau x11-libs/libXdmcp )
 SLOT=2
 SRC_URI=mirror://sourceforge/freetype/freetype-2.4.12.tar.bz2 utils? ( mirror://sourceforge/freetype/ft2demos-2.4.12.tar.bz2 ) doc? ( mirror://sourceforge/freetype/freetype-doc-2.4.12.tar.bz2 )
-_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	966fed1f979132a778b0b48c74a16adb	base	fc89786f3f7e7bcf03334359bd5b639b	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	966fed1f979132a778b0b48c74a16adb	base	fc89786f3f7e7bcf03334359bd5b639b	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=9e334f42b3f5ac3e61382440bbd5b1d3
