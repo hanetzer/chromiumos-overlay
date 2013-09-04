@@ -40,6 +40,7 @@ src_test() {
 src_install() {
 	into /
 	dosbin bootstat
+	dosbin bootstat_archive
 	dosbin bootstat_get_last
 	dobin bootstat_summary
 
