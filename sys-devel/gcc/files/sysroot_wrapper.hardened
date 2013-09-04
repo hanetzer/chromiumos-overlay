@@ -224,6 +224,16 @@ def get_gcc_include():
   return gcc_include
 
 
+def get_cmd_path(cmd):
+  """Return the canonicalized dir for the cmd found via $PATH."""
+
+  for path in os.environ['PATH'].split(':'):
+    cmd_path = os.path.join(path, cmd)
+    if os.path.exists(cmd_path):
+      cmd_full = os.path.realpath(cmd_path)
+      return os.path.dirname(cmd_full)
+  return None
+
 sysroot = os.environ.get('SYSROOT', '')
 if sysroot:
   clang_cmdline.insert(0, '--sysroot=%s' % sysroot)
@@ -266,7 +276,18 @@ if invoke_clang and not skip_clang:
   # Specify the target for clang.
   gcc_comp = os.path.basename(sys.argv[0])
   arch = "-".join(gcc_comp.split('-')[0:-1])
-  clang_cmdline = ['-target', arch] + clang_cmdline
+  linker = arch + '-ld'
+  linker_path = get_cmd_path(linker)
+  clang_cmdline = clang_cmdline + ['-B' + linker_path]
+  if re.match(r'i.86', arch):
+    # We can not set -target for x86 because our target is i686-pc-linux-gnu.
+    # If the target is set, it will search for libclang_rt.asan-i686.a
+    # when linking against ASAN. However, this file does not exist.
+    # The libclang_rt.asan-i386.a is there, but we can not set target to
+    # i386-pc-linux-gnu, because the i386-pc-linux-gnu-ld does not exist.
+    clang_cmdline += ['-m32']
+  else:
+    clang_cmdline += ['-target', arch]
 
   if clang_codegen and sys.argv[0].endswith('++'):
     clang_cmdline += get_gcc_include()
