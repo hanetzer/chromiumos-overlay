@@ -496,11 +496,6 @@ cros-workon_src_configure() {
 		append-flags -clang-syntax
 	fi
 
-	if [[ $(type -t cros-debug-add-NDEBUG) == "function" ]] ; then
-		# Only run this if we've inherited cros-debug.eclass.
-		cros-debug-add-NDEBUG
-	fi
-
 	if using_common_mk ; then
 		# We somewhat overshoot here, but it isn't harmful,
 		# and catches all the packages we care about.
@@ -509,6 +504,10 @@ cros-workon_src_configure() {
 		# Portage takes care of this for us.
 		export SPLITDEBUG=0
 		export MODE=$(usex profiling profiling opt)
+		if [[ $(type -t cros-debug-add-NDEBUG) == "function" ]] ; then
+			# Only run this if we've inherited cros-debug.eclass.
+			cros-debug-add-NDEBUG
+		fi
 		if [[ ${LIBCHROME_VERS:+set} == "set" ]] ; then
 			# For packages that use libchromeos, set it up automatically.
 			export BASE_VER=${LIBCHROME_VERS}
