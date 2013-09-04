@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
-inherit cros-debug cros-workon toolchain-funcs flag-o-matic multiprocessing
+inherit cros-workon toolchain-funcs flag-o-matic multiprocessing
 
 DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
