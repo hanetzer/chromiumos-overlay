@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=chromeos-base/metrics chromeos-base/platform2 dev-cpp/gflags dev-cpp/glog dev-libs/dbus-glib dev-libs/glib dev-libs/protobuf media-sound/adhd sys-fs/udev chromeos-base/libchrome:180609[cros-debug=] chromeos-base/libchromeos chromeos-base/system_api test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) dev-vcs/git
+DESCRIPTION=Power Manager for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-new_power_button test -lockvt -nocrit -is_desktop -als -mosys_eventlog -has_keyboard_backlight -stay_awake_with_headphones -touch_device cros-debug cros_host cros_workon_tree_3619995e3f495678944b009115ed725cf800b3d0 profiling
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=chromeos-base/metrics chromeos-base/platform2 dev-cpp/gflags dev-cpp/glog dev-libs/dbus-glib dev-libs/glib dev-libs/protobuf media-sound/adhd sys-fs/udev
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	a6089f48a592483a05acf71fa1c32134	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=e360f893b69ca79b542b9da295c88564

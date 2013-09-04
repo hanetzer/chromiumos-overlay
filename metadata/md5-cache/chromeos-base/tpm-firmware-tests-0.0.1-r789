@@ -8,5 +8,5 @@ KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 RDEPEND=app-crypt/trousers chromeos-base/tpm ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
-_eclasses_=autotest	534125295770b6401a8180bb518da0e9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	6b0e80c5c6c014fea4ed744c3515520d	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=autotest	534125295770b6401a8180bb518da0e9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	a6089f48a592483a05acf71fa1c32134	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=f6e093f17f2edea836da64d011754c44

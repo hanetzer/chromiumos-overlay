@@ -10,5 +10,5 @@ RDEPEND=expat? ( dev-libs/expat ) !expat? ( dev-libs/libxml2 ) gnutls? ( >=net-l
 RESTRICT=test
 SLOT=0
 SRC_URI=http://www.webdav.org/neon/neon-0.29.0.tar.gz
-_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=679e11dc28cd8d2034c2bdceb1805419
