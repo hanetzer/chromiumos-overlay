@@ -763,7 +763,18 @@ clang-setup-env() {
 	use clang || return 0
 	case ${ARCH} in
 	amd64|x86)
-		export CC="${CHOST}-clang" CXX="${CHOST}-clang++"
+		export CC="clang" CXX="clang++"
+
+		local clang_flags=(
+			--sysroot="${SYSROOT}"
+			-B$(get_binutils_path_gold)
+			$(usex x86 -m32 '')
+		)
+		append-flags "${clang_flags[@]}"
+
+		# Some boards use optimizations (e.g. -mfpmath=sse) that
+		# clang does not support.
+		append-flags -Qunused-arguments
 		;;
 	*) die "Clang is not yet supported for ${ARCH}"
 	esac
