@@ -27,7 +27,7 @@ board_setup_32bit_au_env()
 	__AU_OLD_SYSROOT=${SYSROOT}
 	export SYSROOT=/usr/${CHOST}
 	append-ldflags -L"${__AU_OLD_SYSROOT}"/usr/lib
-	append-cxxflags -isystem "${__AU_OLD_SYSROOT}"/usr/include
+	append-cppflags -isystem "${__AU_OLD_SYSROOT}"/usr/include
 }
 
 # undo what we did in the above function
