@@ -136,6 +136,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-mesa-Workaround-corruption-on-i915g.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/9.1-i965-128bpp-xtiling.patch
+	epatch "${FILESDIR}"/9.1-max_array_access.patch
 
 	base_src_prepare
 
