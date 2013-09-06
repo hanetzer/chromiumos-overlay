@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/libchrome:180609[cros-debug=] dev-libs/openssl dev-libs/protobuf test? ( dev-cpp/gtest ) dev-vcs/git
+DESCRIPTION=Program used to collect performance data on ChromeOS machines
+EAPI=4
+IUSE=cros-debug cros_host cros_workon_tree_965a929c7007f100936bb79d21b6c1ea261e4e61 profiling
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=chromeos-base/libchrome:180609[cros-debug=] dev-libs/openssl dev-libs/protobuf virtual/perf
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	6b0e80c5c6c014fea4ed744c3515520d	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=bc3818cfb553635699e24d1a9b2a9de4
