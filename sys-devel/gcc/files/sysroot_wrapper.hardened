@@ -44,7 +44,7 @@ import sys
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
-  '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
+                    '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
 disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
@@ -57,16 +57,16 @@ invoke_clang = False
 print_cmdline = False
 
 # If ccache should be used automatically.
-use_ccache = True # @CCACHE_DEFAULT@ Keep this comment for code.
+use_ccache = True  # @CCACHE_DEFAULT@ Keep this comment for code.
 
 fstack = set(['-D__KERNEL__', '-fno-stack-protector', '-nodefaultlibs',
               '-nostdlib'])
 fPIE = set(['-D__KERNEL__', '-fPIC', '-fPIE', '-fno-PIC', '-fno-PIE',
-  '-fno-pic', '-fno-pie', '-fpic', '-fpie', '-nopie', '-nostartfiles',
-  '-nostdlib', '-pie', '-static'])
+            '-fno-pic', '-fno-pie', '-fpic', '-fpie', '-nopie',
+            '-nostartfiles', '-nostdlib', '-pie', '-static'])
 pie = set(['-D__KERNEL__', '-A', '-fno-PIC', '-fno-PIE', '-fno-pic', '-fno-pie',
-  '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared', '-shared',
-  '-static'])
+           '-nopie', '-nostartfiles', '-nostdlib', '-pie', '-r', '--shared',
+           '-shared', '-static'])
 sse = set(['-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-msse4a'])
 wrapper_only_options = set(['-clang-syntax', '-print-cmdline',
                             '-nopie', '-noccache'])
@@ -86,9 +86,28 @@ if sse.intersection(myargs):
 print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = list(clang_flags)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
+
+# We will start to enable ASAN for cros-workon packages.
+# For ASAN, if a library is built with ASAN, then all the binaries that use
+# this library should at lease link against ASAN.
+# Our solution is to add '-fsanitize=address' to LDFLAGS for asan bot.
+# This causes another problem. Packages that are built with gcc.real have the
+# '-fsanitize=address' option in the link time. We use clang for all asan
+# built. This is a conflict. Our solution is if we see a gcc command with
+# '-fsanitize=address', we first try to run it without '-fsanitize=address'.
+# If it is successful, then we are fine. otherwise, we check the output of the
+# command, if it contains some thing like undefinited symbol "asan_init", we
+# invoke clang and run again. If there is an error in the gcc command, that is
+# not related to ASAN, we just exit.
+
+ASAN_FLAG = '-fsanitize=address'
+# some package will transfer '-fsanitize=address' to '-Wl,-fsanitize=address'.
+myargs = [ASAN_FLAG if ASAN_FLAG in x else x for x in myargs]
+link_with_asan = not clang_codegen and ASAN_FLAG in myargs
+clang_codegen |= link_with_asan
 invoke_clang = '-clang-syntax' in myargs or clang_codegen
 
-if '-noccache' in myargs or clang_codegen:
+if '-noccache' in myargs or clang_codegen and not link_with_asan:
   # TODO make clang work with ccache.
   # Clang does not work with ccache well. At lease it fails at
   # package adhd.
@@ -108,16 +127,17 @@ else:
   # Use of -Qunused-arguments allows this set to be small, just those
   # that clang still warns about.
   clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-Wclobbered',
-    '-fvisibility=internal', '-Woverride-init', '-Wunsafe-loop-optimizations',
-    '-Wlogical-op', '-Wmissing-parameter-type', '-Wold-style-declaration',
-    '-Wno-psabi'])
+                           '-fvisibility=internal', '-Woverride-init',
+                           '-Wunsafe-loop-optimizations', '-Wlogical-op',
+                           '-Wmissing-parameter-type',
+                           '-Wold-style-declaration', '-Wno-psabi'])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=')
 
   # Clang may use different options for the same or similar functionality.
   gcc_to_clang = {
-    '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
-    '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
-    '-Wno-unused-but-set-variable': '-Wno-unused-variable',
+      '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
+      '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
+      '-Wno-unused-but-set-variable': '-Wno-unused-variable',
   }
 
   # If these options are specified, do not run clang, even if -clang-syntax is
@@ -175,8 +195,8 @@ def log_parent_process_tree(log, ppid):
   depth = 0
 
   while ppid > 1:
-    cmdline = get_proc_cmdline(ppid)
-    log.warning(' %*s {%5i}: %s' % (depth, '', ppid, cmdline))
+    cmd = get_proc_cmdline(ppid)
+    log.warning(' %*s {%5i}: %s' % (depth, '', ppid, cmd))
 
     ppid = get_proc_status(ppid, 'PPid')
     if not ppid:
@@ -193,6 +213,7 @@ def log_parent_process_tree(log, ppid):
 # TODO: make ebuild calculate the values and write it to the wrapper to
 # avoid calling gcc everytime.
 def get_gcc_include():
+  """Get the libstdc++ path."""
   lang_parameter = 'c'
   if sys.argv[0].endswith('++'):
     lang_parameter += '++'
@@ -215,7 +236,7 @@ def get_gcc_include():
       continue
     if 'End of search list' in line:
       include_start = False
-    if include_start == True:
+    if include_start:
       if not line.endswith('include'):
         gcc_include.append('-I' + line.strip())
     if 'LIBRARY_PATH' in line:
@@ -233,6 +254,38 @@ def get_cmd_path(cmd):
       cmd_full = os.path.realpath(cmd_path)
       return os.path.dirname(cmd_full)
   return None
+
+
+def link_asan():
+  """link process when '-fsanitize=address' appears in a gcc command."""
+  orig_gcc_cmdline = [x for x in gcc_cmdline if ASAN_FLAG not in x]
+  gcc_execargs = (execargs + [real_gcc] +
+                  list(flags_to_add) + orig_gcc_cmdline)
+
+  p = subprocess.Popen(gcc_execargs,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+  out, err = p.communicate()
+  errorcode = p.returncode
+  found_clang_undef = False
+  if (out and '__asan_' in out or
+      err and '__asan_' in err):
+    found_clang_undef = True
+
+  if errorcode != 0 and found_clang_undef:
+    if print_cmdline:
+      print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
+    clang_execargs = [clang_comp] + clang_cmdline
+    sys.stdout.flush()
+    os.execv(clang_comp, clang_execargs)
+  else:
+    if print_cmdline:
+      print '[%s] %s' % (argv0, ' '.join(gcc_execargs))
+    if out:
+      print out
+    if err:
+      print >> sys.stderr, err
+    sys.exit(errorcode)
 
 sysroot = os.environ.get('SYSROOT', '')
 if sysroot:
@@ -275,10 +328,10 @@ if invoke_clang and not skip_clang:
 
   # Specify the target for clang.
   gcc_comp = os.path.basename(sys.argv[0])
-  arch = "-".join(gcc_comp.split('-')[0:-1])
+  arch = '-'.join(gcc_comp.split('-')[0:-1])
   linker = arch + '-ld'
   linker_path = get_cmd_path(linker)
-  clang_cmdline = clang_cmdline + ['-B' + linker_path]
+  clang_cmdline += ['-B' + linker_path]
   if re.match(r'i.86', arch):
     # We can not set -target for x86 because our target is i686-pc-linux-gnu.
     # If the target is set, it will search for libclang_rt.asan-i686.a
@@ -294,10 +347,9 @@ if invoke_clang and not skip_clang:
   elif not clang_codegen:
     clang_cmdline.append('-fsyntax-only')
 
-  if print_cmdline:
-    print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
-
   if not clang_codegen:
+    if print_cmdline:
+      print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
     p = subprocess.Popen([clang_comp] + clang_cmdline)
     p.wait()
     if p.returncode != 0:
@@ -343,32 +395,35 @@ if use_ccache:
     os.environ['CCACHE_BASEDIR'] = sysroot
 
   # Minor speed up as we don't care about this in general.
-  #os.environ['CCACHE_NOSTATS'] = 'no'
+  # os.environ['CCACHE_NOSTATS'] = 'no'
   # Useful for debugging.
-  #os.environ['CCACHE_LOG'] = '/dev/stderr'
+  # os.environ['CCACHE_LOG'] = '/dev/stderr'
 
   # The gcc ebuild takes care of nuking the cache in the whenever it revbumps
   # in a way that matters, so we should be able to disable ccache's check.
   # We've found in practice though that sometimes that doesn't happen.  Since
   # the default check is cheap (it's a stat() in mtime mode), keep it enabled.
-  #os.environ['CCACHE_COMPILERCHECK'] = 'none'
+  # os.environ['CCACHE_COMPILERCHECK'] = 'none'
 
   # Make sure we keep the cached files group writable.
   os.environ['CCACHE_UMASK'] = '002'
 
   argv0 = '/usr/bin/ccache'
   execargs += ['ccache']
-  #gcc_cmdline += ['-noccache']
 else:
   argv0 = real_gcc
+
+if link_with_asan:
+  link_asan()
 
 if clang_codegen:
   execargs += [clang_comp] + clang_cmdline
   argv0 = clang_comp
 else:
   execargs += [real_gcc] + list(flags_to_add) + gcc_cmdline
-  if print_cmdline:
-    print '[%s] %s' % (argv0, ' '.join(execargs))
+
+if print_cmdline:
+  print '[%s] %s' % (argv0, ' '.join(execargs))
 
 sys.stdout.flush()
 os.execv(argv0, execargs)
