@@ -22,7 +22,7 @@ CROS_WORKON_SUBDIR=files
 # following deps don't compile: boottool, mysql, pgpool, pgsql, systemtap, # dejagnu, libcap, libnet
 # following deps are not deps: factory
 # following tests are going to be moved: chrome_test
-AUTOTEST_DEPS_LIST="fio gfxtest gtest hdparm iwcap realtimecomm_playground sysstat sox test_tones fakegudev fakemodem pyxinput example_cros_dep"
+AUTOTEST_DEPS_LIST="fio gfxtest gtest hdparm iwcap realtimecomm_playground sysstat fakegudev fakemodem pyxinput example_cros_dep"
 AUTOTEST_CONFIG_LIST=*
 AUTOTEST_PROFILERS_LIST=*
 
