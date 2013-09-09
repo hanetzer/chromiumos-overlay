@@ -236,6 +236,7 @@ IUSE_TESTS="
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CleanShutdown
 	+tests_platform_CompressedSwap
+	+tests_platform_CompressedSwapPerf
 	+tests_platform_CrosDisksArchive
 	+tests_platform_CrosDisksDBus
 	+tests_platform_CrosDisksFilesystem
