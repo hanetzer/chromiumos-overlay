@@ -262,11 +262,11 @@ REQUIRED_USE="
 # add a check to locate the cros-kernel/ regardless of what's going on.
 ECLASSDIR_LOCAL=${BASH_SOURCE[0]%/*}
 defconfig_dir() {
-        local d="${ECLASSDIR}/cros-kernel"
-        if [[ ! -d ${d} ]] ; then
-                d="${ECLASSDIR_LOCAL}/cros-kernel"
-        fi
-        echo "${d}"
+	local d="${ECLASSDIR}/cros-kernel"
+	if [[ ! -d ${d} ]] ; then
+		d="${ECLASSDIR_LOCAL}/cros-kernel"
+	fi
+	echo "${d}"
 }
 
 # @FUNCTION: kernelrelease
@@ -567,6 +567,7 @@ cros-kernel2_src_compile() {
 	if use arm; then
 		build_targets=(
 			$(usex device_tree 'zImage dtbs' uImage)
+			$(usex board_use_beaglebone dtbs '')
 			$(cros_chkconfig_present MODULES && echo "modules")
 		)
 	fi
@@ -665,6 +666,20 @@ cros-kernel2_src_install() {
 			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
+			if use board_use_beaglebone; then
+				# On beaglebone, the device tree .dtb file is stored
+				# under /boot/dts, loaded into memory, and then
+				# passed on the 'bootm' command line.
+				#
+				# We install more .dtb files than we need, but it's
+				# less work than a hard-coded list that gets out of
+				# date.
+				#
+				# TODO(jrbarnette):  Really, beaglebone should use a
+				# FIT image, same as other boards.
+				insinto /boot/dts
+				doins "${dtb_dir}"/*.dtb
+			fi
 		fi
 		cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
 
