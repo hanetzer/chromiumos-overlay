@@ -15,7 +15,7 @@
 # to gclient path.
 
 EAPI="4"
-inherit autotest-deponly binutils-funcs eutils flag-o-matic git-2 multilib toolchain-funcs
+inherit autotest-deponly binutils-funcs cros-constants eutils flag-o-matic git-2 multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -482,7 +482,7 @@ src_unpack() {
 		#   all files/directories in src/third_party
 		# - chrome_set_ver creates symlinks in src/third_party to simulate
 		#   the cros_deps checkout gclient does.  For details, see
-		#   http://gerrit.chromium.org/gerrit/#change,5692.
+		#   https://chromium-review.googlesource.com/#/c/5692/.
 		THIRD_PARTY_DIR="${CHROME_ROOT}/src/third_party"
 		for f in `ls -1 ${THIRD_PARTY_DIR}`
 		do
@@ -534,7 +534,7 @@ src_unpack() {
 	fi
 
 	if use reorder && ! use clang; then
-		EGIT_REPO_URI="http://git.chromium.org/chromiumos/profile/chromium.git"
+		EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="88c20da2d91098449373f2e2f5cef35c193b8add"
 		EGIT_PROJECT="${PN}-reorder"
 		if grep -qs ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then

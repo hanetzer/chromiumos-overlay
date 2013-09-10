@@ -13,6 +13,7 @@
 # managed in the same way.  You've got a git tree and you want to build
 # it.  This automates a lot of that common stuff in one place.
 
+inherit cros-constants
 
 # Array variables. All of the following variables can contain multiple items
 # with the restriction being that all of them have to have either:
@@ -30,7 +31,7 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # @ECLASS-VARIABLE: CROS_WORKON_REPO
 # @DESCRIPTION:
 # Git URL which is prefixed to CROS_WORKON_PROJECT
-: ${CROS_WORKON_REPO:=http://git.chromium.org}
+: ${CROS_WORKON_REPO:=${CROS_GIT_HOST_URL}}
 
 # @ECLASS-VARIABLE: CROS_WORKON_PROJECT
 # @DESCRIPTION:

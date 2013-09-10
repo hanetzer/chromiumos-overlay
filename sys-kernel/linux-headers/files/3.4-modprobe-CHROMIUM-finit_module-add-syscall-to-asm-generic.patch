@@ -12,7 +12,7 @@ TEST=parrot build & boot, manual testing
  http://git.kernel.org/?p=linux/kernel/git/rusty/linux.git;a=shortlog;h=refs/heads/modules-wip]
 Change-Id: Ifeb1db7350685967ee9d4cffe06d1df689e289bd
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-on: https://gerrit.chromium.org/gerrit/34304
+Reviewed-on: https://chromium-review.googlesource.com/#/c/34304
 Reviewed-by: Olof Johansson <olofj@chromium.org>
 ---
  include/asm-generic/unistd.h | 5 ++++-

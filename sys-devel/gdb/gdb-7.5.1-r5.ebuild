@@ -4,7 +4,7 @@
 
 EAPI="3"
 
-inherit flag-o-matic eutils
+inherit cros-constants flag-o-matic eutils
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
@@ -31,7 +31,7 @@ case ${PV} in
 	;;
 7.5.1 | 9999*)
 	# live git tree
-	EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/gdb.git"
+	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/gdb.git"
 	EGIT_BRANCH="chromeos_master"
 	EGIT_COMMIT=d84c423433280ff67d602c52b51c725b2fbcbe48
 	inherit git-2

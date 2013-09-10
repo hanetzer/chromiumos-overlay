@@ -4,7 +4,9 @@
 
 EAPI=4
 
-EGIT_REPO_URI="http://git.chromium.org/chromiumos/third_party/${PN}.git"
+inherit cros-constants
+
+EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/${PN}.git"
 EGIT_COMMIT="f91afe4f3ebcac3fb65a402c6c85cf1df5e2b52a"
 XORG_EAUTORECONF="yes"
 

@@ -44,7 +44,7 @@ src_prepare() {
 	epatch "${WORKDIR}/patch/pado-timeout.patch"
 	epatch "${WORKDIR}/patch/lcp-echo-adaptive.patch"
 	# Apply Chromium OS specific patch regarding the nosystemconfig option
-	# See https://gerrit.chromium.org/gerrit/7751 and
+	# See https://chromium-review.googlesource.com/#/c/7751/ and
 	# http://crosbug.com/17185 for details.
 	epatch "${FILESDIR}/${PN}-2.4.5-systemconfig.patch"
 

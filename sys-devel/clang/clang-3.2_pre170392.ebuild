@@ -12,14 +12,14 @@ EAPI=4
 RESTRICT_PYTHON_ABIS="3.*"
 SUPPORT_PYTHON_ABIS="1"
 
-inherit subversion eutils multilib python
+inherit cros-constants subversion eutils multilib python
 
 EGIT_REPO_URIS=(
 	"llvm"
 		""
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
-		"https://git.chromium.org/git/native_client/pnacl-llvm.git"
+		"${CROS_GIT_HOST_URL}/native_client/pnacl-llvm.git"
 		"6c583141bf6b7a6b5f8125c1037ecbc089813288"	# EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"

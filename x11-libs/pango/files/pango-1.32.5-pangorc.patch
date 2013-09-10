@@ -2,7 +2,7 @@ Disable reading $HOME/.config/pango/pangorc if building for the target.
 
 patch by Jungshik Shin (jungshik@google) <jshin@chromium.org> adopted
 from jorgelo's patch for pango-1.28 
-(see  https://gerrit.chromium.org/gerrit/45316 ).
+(see  https://chromium-review.googlesource.com/#/c/45316 ).
 
 TEST='emerge-$BOARD pango' applies the patch and pango builds.
 TEST='USE=cros_host emerge-$BOARD pango' does not apply the patch

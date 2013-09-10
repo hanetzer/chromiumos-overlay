@@ -6,10 +6,11 @@
 
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/third_party/ktop"
-inherit toolchain-funcs cros-workon
+
+inherit cros-constants cros-workon toolchain-funcs
 
 DESCRIPTION="Utility for looking at top users of system calls"
-HOMEPAGE="http://git.chromium.org/gitweb/?s=ktop"
+HOMEPAGE="${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}"
 SRC_URI=""
 
 LICENSE="GPL-2"

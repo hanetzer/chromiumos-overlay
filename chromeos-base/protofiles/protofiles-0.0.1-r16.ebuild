@@ -6,13 +6,13 @@
 # project. It is not cros-work-able if changes to the protobufs are needed
 # these should be done in the Chromium repository.
 
-EGIT_REPO_SERVER="http://git.chromium.org"
-EGIT_REPO_URI="${EGIT_REPO_SERVER}/chromium/src/chrome/browser/policy/proto.git"
+EAPI="4"
+
+inherit cros-constants git-2
+
+EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/policy/proto.git"
 EGIT_PROJECT="proto"
 EGIT_COMMIT="c2f336d4dc9af16cb65446e215c62b7515fa1375"
-
-EAPI="4"
-inherit git-2
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
 HOMEPAGE="http://chromium.org"

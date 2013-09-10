@@ -22,7 +22,7 @@ BUG=chromium-os:34134
 TEST=parrot build, manual testing
 
 Change-Id: I51122d61d0085ed40d2ac9b542646b28d066d5e3
-Reviewed-on: https://gerrit.chromium.org/gerrit/34302
+Reviewed-on: https://chromium-review.googlesource.com/#/c/34302
 Tested-by: Kees Cook <keescook@chromium.org>
 Reviewed-by: Olof Johansson <olofj@chromium.org>
 Commit-Ready: Kees Cook <keescook@chromium.org>

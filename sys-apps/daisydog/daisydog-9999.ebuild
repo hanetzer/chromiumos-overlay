@@ -4,10 +4,10 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/daisydog"
 
-inherit cros-workon toolchain-funcs
+inherit cros-constants cros-workon toolchain-funcs
 
 DESCRIPTION="Simple HW watchdog daemon"
-HOMEPAGE="http://git.chromium.org/gitweb/?p=chromiumos/third_party/daisydog.git"
+HOMEPAGE="${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}"
 SRC_URI=""
 
 LICENSE="GPL-2"

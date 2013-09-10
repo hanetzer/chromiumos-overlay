@@ -7,10 +7,10 @@
 EAPI=2
 CROS_WORKON_PROJECT="chromiumos/platform/punybench"
 CROS_WORKON_LOCALNAME="../platform/punybench"
-inherit toolchain-funcs cros-workon
+inherit cros-constants cros-workon toolchain-funcs
 
 DESCRIPTION="A set of file system microbenchmarks"
-HOMEPAGE="http://git.chromium.org/gitweb/?s=punybench"
+HOMEPAGE="${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}"
 SRC_URI=""
 
 LICENSE="GPL-2"
