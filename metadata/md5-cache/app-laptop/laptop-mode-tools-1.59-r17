@@ -8,5 +8,5 @@ LICENSE=GPL-2
 RDEPEND=sys-apps/ethtool acpi? ( sys-power/acpid ) apm? ( sys-apps/apmd ) bluetooth? ( || ( net-wireless/bluez net-wireless/bluez-utils ) ) hal? ( sys-apps/hal ) net-wireless/iw scsi? ( sys-apps/sdparm ) sys-apps/hdparm
 SLOT=0
 SRC_URI=http://samwel.tk/laptop_mode/tools/downloads/laptop-mode-tools_1.59.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=4d6904e58067dfddfe8f4a7918b93d05
