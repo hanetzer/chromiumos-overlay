@@ -770,6 +770,7 @@ clang-setup-env() {
 
 	if use asan; then
 		append-flags -fsanitize=address -fno-omit-frame-pointer
+		append-ldflags -fsanitize=address
 	fi
 }
 
