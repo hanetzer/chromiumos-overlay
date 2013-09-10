@@ -5,8 +5,8 @@
 # @MAINTAINER:
 # ChromiumOS Build Team
 # @BUGREPORTS:
-# Please report bugs via http://crosbug.com/new (with label Area-Build)
-# @VCSURL: http://git.chromium.org/gitweb/?p=chromiumos/overlays/chromiumos-overlay.git;a=blob;f=eclass/@ECLASS@
+# Please report bugs via http://crbug.com/new (with label Build)
+# @VCSURL: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/eclass/@ECLASS@
 # @BLURB: helper eclass for building ChromiumOS packages from git
 # @DESCRIPTION:
 # A lot of ChromiumOS packages (src/platform/ and src/third_party/) are

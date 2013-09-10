@@ -1,12 +1,12 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-#
+
 # @ECLASS: cros-cpfe.eclass
 # @MAINTAINER:
 # ChromiumOS Build Team
 # @BUGREPORTS:
-# Please report bugs via http://crosbug.com/new (with label Area-Build)
-# @VCSURL: http://git.chromium.org/gitweb/?p=chromiumos/overlays/chromiumos-overlay.git;a=blob;f=eclass/@ECLASS@
+# Please report bugs via http://crbug.com/new (with label Build)
+# @VCSURL: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/eclass/@ECLASS@
 # @BLURB: helper eclass for fetching binary components from CPFE binary host.
 # @DESCRIPTION:
 # Binary components (especially for private usage) are usually uploaded by CPFE
