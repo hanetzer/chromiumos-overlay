@@ -51,4 +51,3 @@ export GLUT_LIBDIR=/usr/$(get_libdir)
 src_configure() {
 	cros-workon_src_configure
 }
-

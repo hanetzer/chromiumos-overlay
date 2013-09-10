@@ -401,17 +401,18 @@ autotest_pkg_postinst() {
 		test_opt="--test=$(pythonify_test_list ${client_tests})"
 	fi
 
-	if [ "{test_opt}" != "--all" ]; then
-		if [ -n "${AUTOTEST_DEPS_LIST}" ]; then
-			dep_opt="--dep=$(pythonify_test_list ${AUTOTEST_DEPS_LIST})"
-		fi
+	if [ -n "${AUTOTEST_DEPS_LIST}" ]; then
+		dep_opt="--dep=$(pythonify_test_list ${AUTOTEST_DEPS_LIST})"
+	fi
 
-		# For *, we must generate the list of profilers.
-		if [ "${AUTOTEST_PROFILERS_LIST}" = "*" ]; then
-			AUTOTEST_PROFILERS_LIST=$(\
-				print_test_dirs "${path_to_image}/client/profilers" yes | sort -u)
-				prof_opt="--profiler=$(pythonify_test_list ${AUTOTEST_PROFILERS_LIST})"
-		fi
+	# For *, we must generate the list of profilers.
+	if [ "${AUTOTEST_PROFILERS_LIST}" = "*" ]; then
+		AUTOTEST_PROFILERS_LIST=$(\
+			print_test_dirs "${path_to_image}/client/profilers" yes | sort -u)
+	fi
+
+	if [ -n "${AUTOTEST_PROFILERS_LIST}" ]; then
+		prof_opt="--profiler=$(pythonify_test_list ${AUTOTEST_PROFILERS_LIST})"
 	fi
 
 	if [ -n "${test_opt}" -o -n "${dep_opt}" -o -n "${prof_opt}" ]; then

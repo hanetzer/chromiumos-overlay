@@ -36,4 +36,3 @@ function src_compile {
         export MINIMAL=1  # Makefile requires this for cross-compiling
 	autotest_src_compile
 }
-

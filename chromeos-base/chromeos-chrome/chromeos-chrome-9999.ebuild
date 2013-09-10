@@ -1079,3 +1079,4 @@ pkg_preinst() {
 		elog "Done running migration script."
 	fi
 }
+

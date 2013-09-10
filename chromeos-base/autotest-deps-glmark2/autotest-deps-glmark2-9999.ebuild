@@ -40,4 +40,3 @@ DEPEND="${RDEPEND}"
 src_configure() {
 	cros-workon_src_configure
 }
-

@@ -95,4 +95,3 @@ AUTOTEST_CONFIG_LIST=""
 AUTOTEST_PROFILERS_LIST=""
 
 AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
-
