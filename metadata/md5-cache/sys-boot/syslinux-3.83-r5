@@ -7,5 +7,5 @@ LICENSE=GPL-2
 RDEPEND=sys-fs/mtools dev-perl/Crypt-PasswdMD5 dev-perl/Digest-SHA1
 SLOT=0
 SRC_URI=mirror://kernel/linux/utils/boot/syslinux/syslinux-3.83.tar.bz2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	96f95d3d08ac0518311d8c8eb02669f3	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	01a8b1eb019305bc4b4a8bd0b04e4cd8	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	b2fbe80e0a5e48060d7a842e016fe4fe	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=ee7b7a4b5d2167e2b8bd4c148d6a8df9
