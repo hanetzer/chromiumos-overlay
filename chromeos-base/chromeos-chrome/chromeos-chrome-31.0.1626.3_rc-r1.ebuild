@@ -1065,3 +1065,17 @@ src_install() {
 	fi
 }
 
+
+# This function is temporary, will be removed when
+# https://chromium-review.googlesource.com/#/c/62880/ has
+# made it through the chrome pfq builder.
+pkg_preinst() {
+	local ov_path=/mnt/host/source/src/third_party/chromiumos-overlay
+	local sfile="${ov_path}/${CATEGORY}/${PN}/files/pkg_preinst_script"
+	elog "Checking for existence of migration script ${sfile}"
+	if [ -e "${sfile}" ]; then
+		elog "Detected migration script ${sfile}, running it."
+		(. "${sfile}") || die
+		elog "Done running migration script."
+	fi
+}
