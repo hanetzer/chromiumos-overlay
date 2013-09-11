@@ -18,6 +18,7 @@ IUSE=""
 LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/metrics
 	dev-libs/glib
 	net-dns/avahi"
 
