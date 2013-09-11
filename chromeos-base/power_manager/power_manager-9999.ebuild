@@ -74,6 +74,7 @@ src_install() {
 	dobin powerd/powerd_setuid_helper
 	dobin tools/backlight_dbus_tool
 	dobin tools/backlight_tool
+	dobin tools/get_powerd_initial_backlight_level
 	dobin tools/memory_suspend_test
 	dobin tools/powerd_dbus_suspend
 	dobin tools/power_supply_info
