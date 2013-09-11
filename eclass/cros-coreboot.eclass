@@ -14,7 +14,7 @@ DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="em100-mode"
+IUSE="em100-mode memmaps"
 
 
 RDEPEND="!sys-boot/chromeos-coreboot"
@@ -107,6 +107,7 @@ cros-coreboot_src_compile() {
 }
 
 cros-coreboot_src_install() {
+	local mapfile
 	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
@@ -118,6 +119,13 @@ cros-coreboot_src_install() {
 	if [[ -n "${OPROM}" ]]; then
 		newins ${OPROM} ${CBFSOPROM}
 	fi
+	if use memmaps; then
+		for mapfile in ${COREBOOT_BUILD_ROOT}/cbfs/fallback/*.map
+		do
+			doins $mapfile
+		done
+	fi
+	newins .config coreboot.config
 }
 
 EXPORT_FUNCTIONS src_compile src_install pre_src_prepare
