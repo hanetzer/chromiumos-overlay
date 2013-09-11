@@ -32,8 +32,3 @@ src_prepare() {
 src_configure() {
 	cros-workon_src_configure $(use_enable test tests)
 }
-
-src_test() {
-	# Needed for `cros_run_unit_tests`.
-	cros-workon_src_test
-}
