@@ -1,4 +1,4 @@
-chromeos-base/chromeos-chrome	content_shell -autotest -build_tests -chrome_remoting -nacl -reorder
+chromeos-base/chromeos-chrome	-accessibility content_shell -autotest -build_tests -chrome_remoting -nacl -reorder
 chromeos-base/chromeos-init	vt
 chromeos-base/shill	-vpn
 net-wireless/wpa_supplicant	-smartcard
