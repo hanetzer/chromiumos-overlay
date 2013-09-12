@@ -1092,3 +1092,4 @@ pkg_postinst() {
 		autotest_pkg_postinst
 	fi
 }
+

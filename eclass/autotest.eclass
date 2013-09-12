@@ -417,10 +417,13 @@ autotest_pkg_postinst() {
 
 	if [ -n "${test_opt}" -o -n "${dep_opt}" -o -n "${prof_opt}" ]; then
 		einfo "Running packager with options ${test_opt} ${dep_opt} ${prof_opt}"
+		local logfile=${root_autotest_dir}/packages/${PN}.log
 		flock "${root_autotest_dir}/packages" \
 			-c "python -B ${root_autotest_dir}/utils/packager.py \
 				-r ${root_autotest_dir}/packages \
-				${test_opt} ${dep_opt} ${prof_opt} upload"
+				${test_opt} ${dep_opt} ${prof_opt} upload && \
+				echo ${CATEGORY}/${PN} > ${logfile} && \
+				echo ${test_opt} ${dep_opt} ${prof_opt} >> ${logfile}"
 	else
 		einfo "Packager not run as nothing was found to package."
 	fi

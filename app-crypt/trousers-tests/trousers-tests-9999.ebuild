@@ -39,3 +39,4 @@ src_compile() {
 	export TROUSERS_DIR=${WORKDIR}/${P}
 	autotest_src_compile
 }
+
