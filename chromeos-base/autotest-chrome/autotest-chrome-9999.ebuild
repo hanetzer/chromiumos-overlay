@@ -74,6 +74,7 @@ IUSE_TESTS=(
 	+tests_desktopui_WebRtcBrowserTest
 	+tests_video_VideoDecodeAcceleration
 	+tests_video_VideoSanity
+	+tests_video_VideoSeek
 	+tests_video_YouTubePage
 	+tests_video_YouTubeFlash
 	+tests_video_YouTubeHTML5
