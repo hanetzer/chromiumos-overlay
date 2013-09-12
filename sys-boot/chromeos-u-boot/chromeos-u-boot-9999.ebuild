@@ -42,6 +42,7 @@ ALL_CONFIGS=(
 	peach
 	seaboard
 	venice
+	venice2
 	waluigi
 )
 IUSE_CONFIGS=${ALL_CONFIGS[@]/#/${U_BOOT_CONFIG_USE_PREFIX}}
@@ -242,7 +243,7 @@ src_install() {
 	done
 
 	# u-boot-nodtb-tegra.bin has prepended SPL but no appended DTB.
-	if use u_boot_config_use_venice ; then
+	if use u_boot_config_use_venice || use u_boot_config_use_venice2; then
 		newins "${UB_BUILD_DIR}/u-boot-nodtb-tegra.bin" u-boot.bin
 	fi
 
