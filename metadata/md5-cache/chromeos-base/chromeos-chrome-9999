@@ -3,7 +3,7 @@ DEPEND=app-arch/bzip2 >=app-i18n/ibus-1.4.99 arm? ( virtual/opengles ) dev-libs/
 DESCRIPTION=Open-source version of Google Chrome web browser
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=-asan accessibility bluetooth +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon -ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X +autotest +buildcheck autotest opengles
+IUSE=-asan +accessibility bluetooth +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon -ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X +autotest +buildcheck autotest opengles
 KEYWORDS=~amd64 ~arm ~x86
 LICENSE=BSD
 RDEPEND=app-arch/bzip2 >=app-i18n/ibus-1.4.99 arm? ( virtual/opengles ) dev-libs/atk dev-libs/glib dev-libs/nspr >=dev-libs/nss-3.12.2 dev-libs/libxml2 dev-libs/dbus-glib x11-libs/cairo drm? ( x11-libs/libxkbcommon ) x11-libs/pango >=media-libs/alsa-lib-1.0.19 media-libs/fontconfig media-libs/freetype media-libs/libpng media-libs/mesa >=media-sound/adhd-0.0.1-r310 net-misc/wget sys-fs/udev sys-libs/zlib X? ( x11-apps/setxkbmap x11-libs/libXcomposite x11-libs/libXcursor x11-libs/libXi x11-libs/libXdamage x11-libs/libXrandr x11-libs/libXScrnSaver !arm? ( x11-libs/libva ) chrome_remoting? ( x11-libs/libXtst ) ) accessibility? ( app-accessibility/brltty ) ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
@@ -12,4 +12,4 @@ RESTRICT=mirror
 SLOT=0
 SRC_URI=pgo_use? ( x86? ( gs://chromeos-prebuilt/pgo-job/canonicals/chromeos-chrome-x86-9999.pgo.tar.bz2 ) ) pgo_use? ( amd64? ( gs://chromeos-prebuilt/pgo-job/canonicals/chromeos-chrome-amd64-9999.pgo.tar.bz2 ) ) pgo_use? ( arm? ( gs://chromeos-prebuilt/pgo-job/canonicals/chromeos-chrome-arm-9999.pgo.tar.bz2 ) )
 _eclasses_=autotest	4ac1c9b227f1bfcfd62be90206642883	autotest-deponly	584e7113e8ded6cfa4abb617ff0fa5e7	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=0f8e8fa3ce88dc9dbbe0b22d6588bd10
+_md5_=015607e59f7cf0fb14fd1e0e6911f99b
