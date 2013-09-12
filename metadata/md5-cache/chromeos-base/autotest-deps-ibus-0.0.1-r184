@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install postinst prepare setup unpack
+DEPEND=app-i18n/ibus dev-libs/glib sys-apps/dbus dev-vcs/git
+DESCRIPTION=Autotest ibusclient deps
+EAPI=2
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest cros_host cros_workon_tree_4022e862d4fc3c3a9356ce65f42f589bbcbcafee profiling +buildcheck autotest opengles
+KEYWORDS=amd64 arm x86
+LICENSE=GPL-2
+RDEPEND=app-i18n/ibus dev-libs/glib sys-apps/dbus ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	4ac1c9b227f1bfcfd62be90206642883	autotest-deponly	584e7113e8ded6cfa4abb617ff0fa5e7	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	0c64ac6fc110b2158c758d855b3ea5c1	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=c4697a6e93257ff910858ce9d00ad6f3
