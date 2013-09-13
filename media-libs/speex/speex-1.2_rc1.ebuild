@@ -24,6 +24,7 @@ src_unpack() {
 	unpack ${A}
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-configure.patch
+	epatch "${FILESDIR}"/${P}-backup-input-length.patch
 
 	sed -i -e 's:noinst_PROGRAMS:check_PROGRAMS:' \
 		"${S}"/libspeex/Makefile.am \
