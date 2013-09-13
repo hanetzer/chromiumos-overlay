@@ -15,7 +15,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_host cros_p2p -delta_generator"
+IUSE="-asan -clang cros_host cros_p2p -delta_generator"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -57,6 +58,7 @@ src_configure() {
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
+	clang-setup-env
 	export CCFLAGS="$CFLAGS"
 	export BASE_VER=${LIBCHROME_VERS}
 

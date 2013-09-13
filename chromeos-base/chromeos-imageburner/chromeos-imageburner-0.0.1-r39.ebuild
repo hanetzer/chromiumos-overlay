@@ -16,7 +16,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="test"
+IUSE="-asan -clang test"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -42,6 +43,7 @@ src_configure() {
 src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
+	clang-setup-env
 	emake image_burner
 }
 
