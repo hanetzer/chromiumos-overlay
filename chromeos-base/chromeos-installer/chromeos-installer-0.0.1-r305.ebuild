@@ -82,5 +82,8 @@ src_install() {
 	fi
 
 	exeinto /${path}
-	doexe chromeos-*
+	doexe chromeos-* encrypted_import
+
+	insinto /etc/init
+	doins crx-import.conf
 }
