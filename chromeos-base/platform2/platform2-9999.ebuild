@@ -106,6 +106,18 @@ RDEPEND="
 		dev-libs/protobuf
 		sys-apps/dbus
 		sys-apps/rootdev
+
+		!chromeos-base/chaps[-platform2]
+		!chromeos-base/cromo[-platform2]
+		!chromeos-base/cros-disks[-platform2]
+		!chromeos-base/chromeos-debugd[-platform2]
+		!chromeos-base/libchromeos[-platform2]
+		!chromeos-base/metrics[-platform2]
+		!chromeos-base/mist[-platform2]
+		!chromeos-base/shill[-platform2]
+		!chromeos-base/system_api[-platform2]
+		!chromeos-base/vpn-manager[-platform2]
+		!chromeos-base/wimax_manager[-platform2]
 	)
 "
 
@@ -209,8 +221,10 @@ platform2_install_chaps() {
 	dolib.so "${OUT}"/lib/libchaps.so
 
 	# Install D-Bus config file.
-	insinto /etc/dbus-1/system.d
-	doins org.chromium.Chaps.conf
+	dodir /etc/dbus-1/system.d
+	sed 's,@POLICY_PERMISSIONS@,group="pkcs11",' \
+		"org.chromium.Chaps.conf.in" \
+		> "${D}/etc/dbus-1/system.d/org.chromium.Chaps.conf"
 
 	# Install D-Bus service file.
 	insinto /usr/share/dbus-1/services
@@ -243,7 +257,7 @@ platform2_install_cromo() {
 	use cellular || return 0
 
 	dosbin "${OUT}"/cromo
-	dolib.so "${OUT}"/obj/cromo/libcromo.a
+	dolib.so "${OUT}"/libcromo.a
 
 	dobin mm-cromo-command
 
@@ -254,6 +268,11 @@ platform2_install_cromo() {
 	doins modem_handler.h cromo_server.h plugin.h \
 		hooktable.h carrier.h utilities.h modem.h \
 		sms_message.h sms_cache.h
+
+	insinto /usr/include/cromo/dbus_adaptors
+	doins "${OUT}"/gen/include/dbus_adaptors/mm-{mobile,serial}-error.h
+	doins "${OUT}"/gen/include/dbus_adaptors/org.freedesktop.ModemManager.*.h
+	doins "${OUT}"/gen/include/cromo/dbus_adaptors/org.freedesktop.DBus.Properties.h
 
 	dodir /usr/$(get_libdir)/cromo/plugins
 }

@@ -48,6 +48,7 @@ src_configure() {
 }
 
 src_compile() {
+	use platform2 && return 0
 	use gdmwimax || return 0
 	cros-workon_src_compile
 }
