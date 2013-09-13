@@ -9,4 +9,4 @@ LICENSE=BSD
 RDEPEND=!!chromeos-base/flimflam-test chromeos-base/shill dev-lang/python dev-python/dbus-python dev-python/pygobject net-dns/dnsmasq sys-apps/iproute2
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	0c64ac6fc110b2158c758d855b3ea5c1	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=236da38795519e42af024b976f90577c
+_md5_=e39f8f5e509e9677f259c177d5a58f37
