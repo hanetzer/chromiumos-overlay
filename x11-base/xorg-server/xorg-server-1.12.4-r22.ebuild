@@ -14,8 +14,8 @@ KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
 # +suid needed because sparcs default off
-IUSE="${IUSE_SERVERS} broken_partialswaps -doc ipv6 minimal nptl selinux +suid
-tegra tslib +udev xlib-glx"
+IUSE="${IUSE_SERVERS} broken_partialswaps dga -doc ipv6 minimal nptl selinux
++suid tegra tslib +udev xinerama xlib-glx"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -232,8 +232,8 @@ pkg_setup() {
 		--disable-screensaver
 		--disable-xdm-auth-1
 		--disable-dbe
-		--disable-xinerama
-		--disable-dga
+		$(use_enable xinerama)
+		$(use_enable dga)
 		--disable-xace
 		--disable-config-dbus
 		--disable-config-hal
