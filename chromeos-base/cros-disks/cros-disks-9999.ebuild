@@ -14,7 +14,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="platform2 test"
+IUSE="-asan -clang platform2 test"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -49,6 +50,7 @@ src_prepare() {
 
 src_configure() {
 	use platform2 && return 0
+	clang-setup-env
 	cros-workon_src_configure
 }
 
