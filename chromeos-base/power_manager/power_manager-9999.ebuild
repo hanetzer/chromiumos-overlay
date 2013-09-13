@@ -15,7 +15,8 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -mosys_eventlog"
-IUSE="${IUSE} -has_keyboard_backlight -stay_awake_with_headphones -touch_device"
+IUSE="${IUSE} -asan -clang -has_keyboard_backlight -stay_awake_with_headphones -touch_device"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -41,6 +42,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 
 	export USE_ALS=$(usex als y "")
