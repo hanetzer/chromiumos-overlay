@@ -13,7 +13,8 @@ HOMEPAGE=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -26,6 +27,7 @@ DEPEND="${COMMON_DEPEND}
 	test? ( dev-cpp/gtest )"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
