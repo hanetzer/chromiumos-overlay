@@ -24,7 +24,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="-asan accessibility bluetooth +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon -ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
+IUSE="-asan +accessibility bluetooth +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon -ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
 # Don't strip NaCl executables. These are not linux executables and the
 # linux host's strip command doesn't know how to handle them correctly.
@@ -206,6 +206,7 @@ set_build_defines() {
 		python_ver=${pyver}
 		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"linux_link_libbrlapi=$(use10 accessibility)"
+		"use_brlapi=$(use10 accessibility)"
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
