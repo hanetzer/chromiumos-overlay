@@ -10,4 +10,4 @@ RDEPEND=!chromeos-base/chromeos-factorytools dev-lang/python dev-python/argparse
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-workon	0c64ac6fc110b2158c758d855b3ea5c1	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=c87a90db76da2cf33e6b58a557d6d3e4
+_md5_=60b1c9b537e29cc0cbb45ff3801113c4
