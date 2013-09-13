@@ -15,15 +15,15 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
-RDEPEND="!!chromeos-base/flimflam-test
-	chromeos-base/shill
+DEPEND="!!chromeos-base/flimflam-test
 	dev-lang/python
 	dev-python/dbus-python
-	dev-python/pygobject
+	dev-python/pygobject"
+
+RDEPEND="${DEPEND}
+	chromeos-base/shill
 	net-dns/dnsmasq
 	sys-apps/iproute2"
-
-DEPEND="${RDEPEND}"
 
 src_install() {
 	exeinto /usr/lib/flimflam/test
