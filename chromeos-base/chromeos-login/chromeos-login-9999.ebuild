@@ -13,10 +13,12 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="-asan -chromeos_keyboard -deep_memory_profiler -disable_login_animations
-	-disable_webaudio -egl -exynos -fade_boot_splash_screen
-	-gpu_sandbox_allow_sysv_shm -has_diamond_key -has_hdd -highdpi -is_desktop
-	-natural_scroll_default -new_power_button test -touchui +X"
+IUSE="-asan -chromeos_keyboard -clang -deep_memory_profiler
+	-disable_login_animations -disable_webaudio -egl -exynos
+	-fade_boot_splash_screen -gpu_sandbox_allow_sysv_shm -has_diamond_key
+	-has_hdd -highdpi -is_desktop -natural_scroll_default -new_power_button
+	test -touchui +X"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -49,6 +51,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
