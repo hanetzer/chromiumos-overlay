@@ -227,6 +227,7 @@ IUSE_TESTS="
 	+tests_network_WiFiCaps
 	+tests_network_WiFiInvalidParameters
 	+tests_network_WifiAuthenticationTests
+	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
 	+tests_platform_AccurateTime
