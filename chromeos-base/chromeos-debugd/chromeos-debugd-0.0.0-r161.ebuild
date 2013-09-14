@@ -16,7 +16,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="platform2"
+IUSE="-asan -clang platform2"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -41,6 +42,7 @@ src_compile() {
 
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG OBJCOPY
 	cros-debug-add-NDEBUG
+	clang-setup-env
 	emake BASE_VER=${LIBCHROME_VERS}
 }
 

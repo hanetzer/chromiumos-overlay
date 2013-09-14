@@ -15,7 +15,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -30,6 +31,7 @@ src_configure() {
 src_compile() {
 	cd try_touch_experiment
 	tc-export CXX PKG_CONFIG
+	clang-setup-env
 	export BASE_VER=${LIBCHROME_VERS}
 	emake
 }
