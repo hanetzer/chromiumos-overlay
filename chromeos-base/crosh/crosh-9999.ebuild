@@ -3,6 +3,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/crosh"
+CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-workon
 
