@@ -21,7 +21,7 @@ IUSE_LINUX_FIRMWARE=(
 	marvell-pcie8897
 )
 
-DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787 )"
+DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )"
 
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_}"
 
