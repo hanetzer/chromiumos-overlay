@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon toolchain-funcs
@@ -12,7 +12,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 # Factory install images operate by downloading content from a
 # server.  In some cases, the downloaded content contains programs
@@ -64,9 +65,14 @@ CROS_WORKON_LOCALNAME="factory_installer"
 
 FACTORY_SERVER="${FACTORY_SERVER:-$(hostname -f)}"
 
+src_configure() {
+	clang-setup-env
+	cros-workon_src_configure
+}
+
 src_compile() {
 	tc-export AR CC CXX RANLIB
-	emake || die
+	emake
 }
 
 src_install() {
