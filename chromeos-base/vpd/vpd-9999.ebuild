@@ -18,8 +18,10 @@ IUSE=""
 # util-linux is for libuuid.
 DEPEND="sys-apps/util-linux"
 # shflags for dump_vpd_log.
+# chromeos-activate-date for ActivateDate upstart and script.
 RDEPEND="sys-apps/flashrom
-	dev-util/shflags"
+	dev-util/shflags
+	virtual/chromeos-activate-date"
 
 src_configure() {
 	cros-workon_src_configure
