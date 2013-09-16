@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/chrontel"
 
 inherit cros-workon
@@ -12,7 +12,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
-IUSE="-bogus_screen_resizes -use_alsa_control"
+IUSE="-asan -bogus_screen_resizes -clang -use_alsa_control"
+REQUIRED_USE="asan? ( clang )"
 
 CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
@@ -25,6 +26,7 @@ RDEPEND="x11-libs/libX11
 DEPEND="${RDEPEND}"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
@@ -34,7 +36,7 @@ src_compile() {
         use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
         use use_alsa_control && append-flags -DUSE_ALSA_CONTROL
         export CCFLAGS="$CFLAGS"
-	emake || die "end compile failed."
+	emake
 }
 
 src_install() {
