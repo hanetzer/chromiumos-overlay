@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-wireless/hostapd/hostapd-0.7.1.ebuild,v 1.1 2010/01/24 20:49:34 gurligebis Exp $
 
-EAPI="2"
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 CROS_WORKON_LOCALNAME="wpa_supplicant"
 
@@ -15,7 +15,9 @@ HOMEPAGE="http://hostap.epitest.fi"
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="ipv6 logwatch madwifi +ssl +wps weak_urandom_low_security spectrum_mgmt"
+IUSE="-asan -clang ipv6 logwatch madwifi +ssl +wps
+	weak_urandom_low_security spectrum_mgmt"
+REQUIRED_USE="asan? ( clang )"
 
 DEPEND="ssl? ( dev-libs/openssl )
 	dev-libs/libnl:0
@@ -33,6 +35,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 	local CONFIG="${MY_S}/.config"
 
@@ -111,12 +114,12 @@ src_configure() {
 src_compile() {
 	default_src_compile
 
-	emake -C hostapd || die "emake failed"
+	emake -C hostapd
 
 	if use ssl; then
 		cd ${MY_S}
-		emake nt_password_hash || die "emake nt_password_hash failed"
-		emake hlr_auc_gw || die "emake hlr_auc_gw failed"
+		emake nt_password_hash
+		emake hlr_auc_gw
 	fi
 }
 
