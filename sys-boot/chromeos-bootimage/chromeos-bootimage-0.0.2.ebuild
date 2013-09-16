@@ -94,6 +94,7 @@ build_image() {
 		${ec_file_flag} \
 		--bootcmd vboot_twostop \
 		--bootsecure \
+		--add-config-int load-environment 0 \
 		${verified_flags}"
 
 	# Build an RO-normal image, and an RW (twostop) image. This assumes
@@ -127,7 +128,6 @@ build_image() {
 		--dt ${fdt_file} \
 		--uboot ${nv_uboot_file} \
 		${ec_file_flag} \
-		--add-config-int load_env 1 \
 		--add-node-enable console 1 \
 		--outdir "out-${board}.nv" \
 		--output "nv_image-${board}.bin" ||
