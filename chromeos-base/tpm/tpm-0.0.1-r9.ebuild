@@ -16,10 +16,16 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="app-crypt/trousers"
 DEPEND="${RDEPEND}"
+
+src_configure() {
+	clang-setup-env
+	cros-workon_src_configure
+}
 
 src_compile() {
 	emake -C nvtool CC="$(tc-getCC)"

@@ -3,7 +3,7 @@ DEPEND=>=app-admin/eselect-opengl-1.0.8 dev-libs/openssl media-libs/freetype >=x
 DESCRIPTION=X.Org X servers
 EAPI=4
 HOMEPAGE=http://xorg.freedesktop.org/
-IUSE=dmx kdrive xnest xorg xvfb broken_partialswaps -doc ipv6 minimal nptl selinux +suid tegra tslib +udev xlib-glx static-libs doc
+IUSE=dmx kdrive xnest xorg xvfb broken_partialswaps dga -doc ipv6 minimal nptl selinux +suid tegra tslib +udev xinerama xlib-glx static-libs doc
 KEYWORDS=~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd ~x86-fbsd
 LICENSE=MIT
 PDEPEND=xorg? ( >=x11-base/xorg-drivers-1.12 )
@@ -12,4 +12,4 @@ REQUIRED_USE=!minimal? ( || ( dmx kdrive xnest xorg xvfb ) )
 SLOT=0
 SRC_URI=http://xorg.freedesktop.org/releases/individual/xserver/xorg-server-1.12.4.tar.bz2
 _eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	966fed1f979132a778b0b48c74a16adb	base	fc89786f3f7e7bcf03334359bd5b639b	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed	xorg-2	b83efc910bb3ac2c64f89e2623f181f5
-_md5_=5dfb103303bc5bc3cd99716a1fb0bfaa
+_md5_=949e0da9d131e8ecc839e395e8f3a146
