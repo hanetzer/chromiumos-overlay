@@ -13,7 +13,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 DEPEND=""
 RDEPEND="app-arch/gzip
@@ -26,6 +27,7 @@ RDEPEND="app-arch/gzip
 	sys-apps/util-linux"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
