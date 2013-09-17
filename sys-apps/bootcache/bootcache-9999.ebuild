@@ -15,13 +15,15 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 src_prepare() {
 	cros-workon_src_prepare
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
