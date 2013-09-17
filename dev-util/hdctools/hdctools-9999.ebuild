@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/hdctools"
 
 SUPPORT_PYTHON_ABIS="1"
@@ -14,7 +14,8 @@ HOMEPAGE=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-libs/libusb
@@ -26,16 +27,17 @@ DEPEND="${RDEPEND}
 	app-text/htmltidy"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
 	tc-export CC PKG_CONFIG
-	emake || die
+	emake
 	distutils_src_compile
 }
 
 src_install() {
-	emake DESTDIR="${D}" LIBDIR=/usr/$(get_libdir) install || die
+	emake DESTDIR="${D}" LIBDIR=/usr/$(get_libdir) install
 	distutils_src_install
 }
