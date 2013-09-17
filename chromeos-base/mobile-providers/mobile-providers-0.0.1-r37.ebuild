@@ -14,7 +14,8 @@ HOMEPAGE="http://live.gnome.org/NetworkManager/MobileBroadband/ServiceProviders"
 LICENSE="CC-PD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="tools"
+IUSE="-asan -clang tools"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="!net-misc/mobile-broadband-provider-info
 	>=dev-libs/glib-2.0"
@@ -28,6 +29,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure $(use_enable tools)
 }
 
