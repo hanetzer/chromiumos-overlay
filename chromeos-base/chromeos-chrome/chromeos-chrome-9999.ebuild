@@ -704,7 +704,6 @@ src_compile() {
 			chrome_targets+=( "${TEST_FILES[@]}"
 				pyautolib
 				peerconnection_server
-				chromedriver
 				browser_tests
 				sync_integration_tests
 				sandbox_linux_unittests )
@@ -889,9 +888,6 @@ install_pyauto_dep_resources() {
 	$(tc-getSTRIP) --strip-debug \
 		--keep-file-symbols "${from}"/_pyautolib.so \
 		-o "${test_dir}"/out/Release/_pyautolib.so
-	$(tc-getSTRIP) --strip-debug \
-		--keep-file-symbols "${from}"/chromedriver \
-		-o "${test_dir}"/out/Release/chromedriver
 	if use component_build; then
 		mkdir -p "${test_dir}/out/Release/lib.target"
 		local src dst
