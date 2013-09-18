@@ -1,0 +1,80 @@
+Makes brltty not show cofusing messages such as 'screen not in text mode'
+to the user when the api client is not connected.  This is needed because
+it is hard to localize those messages and they don't mean anything to
+the end user.
+--- a/Programs/scr_base.c
++++ b/Programs/scr_base.c
+@@ -82,7 +82,7 @@
+   }
+ }
+ 
+-static const char *text_BaseScreen = "no screen";
++static const char *text_BaseScreen = "";
+ 
+ static int
+ selectVirtualTerminal_BaseScreen (int vt) {
+--- a/Programs/config.c	(revision 7783)
++++ b/Programs/config.c	(working copy)
+@@ -1273,7 +1273,7 @@
+ exitBrailleDriver (void) {
+   if (brailleConstructed) {
+     clearStatusCells(&brl);
+-    message(NULL, gettext("BRLTTY terminated"), MSG_NODELAY|MSG_SILENT);
++    writeBrailleText("", "");
+   }
+ 
+   stopBrailleDriver();
+--- a/Drivers/Screen/Linux/screen.c	(revision 7783)
++++ b/Drivers/Screen/Linux/screen.c	(working copy)
+@@ -42,14 +42,16 @@
+   PARM_CHARSET,
+   PARM_HFB,
+   PARM_DEBUGSFM,
++  PARM_MSGS,
+ } ScreenParameters;
+-#define SCRPARMS "charset", "hfb", "debugsfm"
++#define SCRPARMS "charset", "hfb", "debugsfm", "msgs"
+ 
+ #include "scr_driver.h"
+ #include "screen.h"
+ 
+ static const char *problemText;
+ static unsigned int debugScreenFontMap = 0;
++static unsigned int showProblemText = 1;
+ 
+ #define UNICODE_ROW_DIRECT 0XF000
+ 
+@@ -622,6 +624,15 @@
+     }
+   }
+ 
++  showProblemText = 1;
++  if (*parameters[PARM_MSGS]) {
++    if (!validateYesNo(&showProblemText, parameters[PARM_MSGS])) {
++      logMessage(LOG_WARNING, "%s: %s", "invalid value for msgs",
++                 parameters[PARM_MSGS]);
++      showProblemText = 1;
++    }
++  }
++
+   return 1;
+ }
+ 
+@@ -1021,7 +1032,7 @@
+   }
+ 
+   description->rows = 1;
+-  description->cols = strlen(problemText);
++  description->cols = showProblemText ? strlen(problemText) : 0;
+   description->posx = 0;
+   description->posy = 0;
+   return 0;
+@@ -1092,7 +1103,7 @@
+   if (readScreenDimensions(&columns, &rows)) {
+     if (validateScreenBox(box, columns, rows)) {
+       if (problemText) {
+-        setScreenMessage(box, buffer, problemText);
++        setScreenMessage(box, buffer, showProblemText ? problemText : "");
+         return 1;
+       }
+ 
