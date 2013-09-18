@@ -13,7 +13,8 @@ HOMEPAGE="http://libmtp.sourceforge.net/"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="+crypt doc examples static-libs"
+IUSE="-asan -clang +crypt doc examples static-libs"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="virtual/libusb:1
 	crypt? ( dev-libs/libgcrypt )"
@@ -31,6 +32,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure \
 		$(use_enable static-libs static) \
 		$(use_enable doc doxygen) \
