@@ -259,11 +259,11 @@ REQUIRED_USE="
 # add a check to locate the cros-kernel/ regardless of what's going on.
 ECLASSDIR_LOCAL=${BASH_SOURCE[0]%/*}
 defconfig_dir() {
-	local d="${ECLASSDIR}/cros-kernel"
-	if [[ ! -d ${d} ]] ; then
-		d="${ECLASSDIR_LOCAL}/cros-kernel"
-	fi
-	echo "${d}"
+        local d="${ECLASSDIR}/cros-kernel"
+        if [[ ! -d ${d} ]] ; then
+                d="${ECLASSDIR_LOCAL}/cros-kernel"
+        fi
+        echo "${d}"
 }
 
 # @FUNCTION: kernelrelease
@@ -581,8 +581,7 @@ cros-kernel2_src_compile() {
 	local build_targets=()  # use make default target
 	if use arm; then
 		build_targets=(
-			$(usex device_tree zImage uImage)
-			dtbs
+			$(usex device_tree 'zImage dtbs' uImage)
 			$(cros_chkconfig_present MODULES && echo "modules")
 		)
 	fi
@@ -680,19 +679,7 @@ cros-kernel2_src_install() {
 				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
 			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
 		else
-			# Currently on beaglebone, the device tree .dtb file is
-			# stored under /boot/dts, loaded into memory, and then
-			# passed on the 'bootm' command line.
-			#
-			# TODO(jrbarnette):  Really, we should use a FIT
-			# image, same as all the other boards, and get rid
-			# of the device_tree USE flag once and for all.
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
-			mkdir "${D}/boot/dts"
-			local dtb
-			for dtb in $(get_dtb_name "${dtb_dir}"); do
-				cp "${dtb_dir}/${dtb}" "${D}/boot/dts" || die
-			done
 		fi
 		cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
 
