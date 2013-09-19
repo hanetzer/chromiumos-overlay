@@ -3,7 +3,10 @@
 
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
-inherit binutils-funcs cros-board toolchain-funcs linux-info
+# Since we use CHROMEOS_KERNEL_CONFIG and CHROMEOS_KERNEL_SPLITCONFIG here,
+# it is not safe to reuse the kernel prebuilts across different boards. Inherit
+# the cros-board eclass to make sure that doesn't happen.
+inherit binutils-funcs cros-board linux-info toolchain-funcs
 
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
@@ -553,28 +556,10 @@ cros-kernel2_src_configure() {
 
 get_dtb_name() {
 	local dtb_dir=${1}
-	local board_with_variant=$(get_current_board_with_variant)
-
-	# Do a simple mapping for device trees whose names don't match
-	# the board_with_variant format; default to just the
-	# board_with_variant format.
-	case "${board_with_variant}" in
-		(tegra2_dev-board)
-			echo tegra-harmony.dtb
-			;;
-		(tegra2_seaboard)
-			echo tegra-seaboard.dtb
-			;;
-		tegra*)
-			echo ${board_with_variant}.dtb
-			;;
-		*)
-			local f
-			for f in ${dtb_dir}/*.dtb ; do
-			    basename ${f}
-			done
-			;;
-	esac
+	local f
+	for f in ${dtb_dir}/*.dtb ; do
+		basename ${f}
+	done
 }
 
 cros-kernel2_src_compile() {
