@@ -1,0 +1,11 @@
+DEFINED_PHASES=-
+DEPEND=internal? ( net-wireless/gdmwimax-private ) !internal? ( net-wireless/gdmwimax )
+DESCRIPTION=Virtual package for GCT GDM7205 WiMAX SDK
+EAPI=4
+HOMEPAGE=http://www.gctsemi.com/
+IUSE=internal
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=internal? ( net-wireless/gdmwimax-private ) !internal? ( net-wireless/gdmwimax )
+SLOT=0
+_md5_=310fba337a7bf55425f60a0a4441d50d
