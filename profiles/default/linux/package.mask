@@ -13,3 +13,7 @@
 # Custom patches
 >=sys-boot/syslinux-3.84
 
+# Disabled while upreving NSS and NSPR
+>=dev-libs/nspr-4.10
+>=dev-libs/nss-3.15
+>=app-crypt/nss-3.15
