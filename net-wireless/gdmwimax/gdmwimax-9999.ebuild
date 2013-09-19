@@ -14,6 +14,10 @@ SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE=""
 
+RDEPEND="!net-wireless/gdmwimax-private"
+
+DEPEND="${RDEPEND}"
+
 src_prepare() {
 	# Create build configuration file.
 	cat > .config <<-EOF
