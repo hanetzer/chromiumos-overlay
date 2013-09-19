@@ -90,7 +90,7 @@ RDEPEND_vpn_manager="
 
 DEPEND_chaps="dev-db/leveldb"
 
-DEPEND_wimax_manager="gdmwimax? ( net-wireless/gdmwimax )"
+DEPEND_wimax_manager="gdmwimax? ( virtual/gdmwimax )"
 
 RDEPEND="
 	platform2? (

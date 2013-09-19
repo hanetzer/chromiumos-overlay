@@ -103,7 +103,6 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
-	gdmwimax? ( net-wireless/gdmwimax )
 	net-firewall/iptables
 	net-misc/tlsdate
 	sys-apps/baselayout
