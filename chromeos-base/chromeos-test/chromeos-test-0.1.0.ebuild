@@ -92,6 +92,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/pyserial
 	dev-python/pyudev
 	dev-python/pyyaml
+	dev-python/selenium
 	games-util/joystick
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
