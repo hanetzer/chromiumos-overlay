@@ -1,6 +1,6 @@
-diff -aurN nss-3.14-urandom/mozilla/security/nss/lib/freebl/unix_rand.c nss-3.14/mozilla/security/nss/lib/freebl/unix_rand.c
---- nss-3.14-urandom/mozilla/security/nss/lib/freebl/unix_rand.c	2012-12-28 16:31:12.017070243 -0800
-+++ nss-3.14/mozilla/security/nss/lib/freebl/unix_rand.c	2012-12-28 16:31:49.107466816 -0800
+diff -aurN nss-3.15-urandom/lib/freebl/unix_rand.c nss-3.15/lib/freebl/unix_rand.c
+--- nss-3.15-urandom/lib/freebl/unix_rand.c	2012-12-28 16:31:12.017070243 -0800
++++ nss-3.15/lib/freebl/unix_rand.c	2012-12-28 16:31:49.107466816 -0800
 @@ -925,6 +925,17 @@
      || defined(HPUX)
      if (bytes)

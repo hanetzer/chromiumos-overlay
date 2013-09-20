@@ -8,7 +8,10 @@ app-crypt/mit-krb5	-keyutils
 dev-db/sqlite		extensions
 dev-embedded/libftdi	-cxx tools
 dev-lang/python		sqlite
-dev-libs/nss		utils
+# We want to re-enable this, but we'll have to update hard-host-depends to
+# stop pulling in app-crypt/nss and add an upgrade hook to uninstall that
+# from the sdk.
+#dev-libs/nss		utils
 dev-libs/dbus-glib	tools
 dev-libs/protobuf 	-python
 dev-perl/GD             png
