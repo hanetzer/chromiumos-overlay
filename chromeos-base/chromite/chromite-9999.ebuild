@@ -15,9 +15,6 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 
-# Chromite tests are running rogue CQ interactions with live Gerrit.
-RESTRICT="test"
-
 src_test() {
 	# Run the chromite unit tests, resetting the environment to the standard
 	# one using a sudo invocation.
