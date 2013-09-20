@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/cromo"
 CROS_WORKON_USE_VCSID="1"
 
@@ -14,7 +14,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="install_tests platform2"
+IUSE="-asan -clang install_tests platform2"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -42,6 +43,7 @@ make_flags() {
 
 src_configure() {
 	use platform2 && return 0
+	clang-setup-env
 	cros-workon_src_configure
 }
 
@@ -50,7 +52,7 @@ src_compile() {
 
 	tc-export CXX AR NM PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake $(make_flags) || die
+	emake $(make_flags)
 }
 
 src_test() {
@@ -58,7 +60,7 @@ src_test() {
 
 	tc-export CXX AR PKG_CONFIG
 	cros-debug-add-NDEBUG
-	emake $(make_flags) tests || die "could not build tests"
+	emake $(make_flags) tests
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
 	else
@@ -78,5 +80,5 @@ src_test() {
 src_install() {
 	use platform2 && return 0
 
-	emake $(make_flags) DESTDIR="${D}" install || die
+	emake $(make_flags) DESTDIR="${D}" install
 }
