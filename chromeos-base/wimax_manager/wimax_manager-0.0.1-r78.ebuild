@@ -33,9 +33,9 @@ DEPEND="gdmwimax? (
 	${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/system_api
-	net-wireless/gdmwimax
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
+	virtual/gdmwimax
 )"
 
 src_prepare() {

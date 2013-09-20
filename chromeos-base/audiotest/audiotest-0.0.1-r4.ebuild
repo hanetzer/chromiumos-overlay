@@ -15,7 +15,8 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-3"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="media-libs/alsa-lib
 	media-sound/adhd
@@ -27,6 +28,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
