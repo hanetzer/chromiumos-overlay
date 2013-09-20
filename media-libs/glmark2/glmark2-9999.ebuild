@@ -30,7 +30,7 @@ src_configure() {
 	local myconf="--enable-gl"
 
 	if use gles2; then
-		myconf+="--enable-glesv2"
+		myconf+=" --enable-glesv2"
 	fi
 
 	if use drm; then
