@@ -19,7 +19,7 @@ RDEPEND="!net-wireless/gdmwimax-private"
 
 DEPEND="${RDEPEND}"
 
-src_prepare() {
+src_configure() {
 	# Create build configuration file.
 	cat > .config <<-EOF
 		CONFIG_DM_INTERFACE=y
@@ -29,17 +29,16 @@ src_prepare() {
 		CONFIG_ENABLE_SERVICE_FLOW=n
 		CONFIG_WIMAX2=n
 	EOF
-}
 
-src_configure() {
+	# Do not fortify source. See crosbug.com/p/10133 for details.
+	append-flags -U_FORTIFY_SOURCE
+	tc-export AR CC
+
 	clang-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
-	# Do not fortify source. See crosbug.com/p/10133 for details.
-	append-flags -U_FORTIFY_SOURCE
-	tc-export AR CC
 	emake -C sdk
 	emake -C cm
 }
