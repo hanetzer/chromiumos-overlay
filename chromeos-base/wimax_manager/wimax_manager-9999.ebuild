@@ -25,6 +25,7 @@ RDEPEND="gdmwimax? (
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/protobuf
+	virtual/gdmwimax
 )"
 
 DEPEND="gdmwimax? (
@@ -33,7 +34,6 @@ DEPEND="gdmwimax? (
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
-	virtual/gdmwimax
 )"
 
 src_prepare() {
