@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Chrome OS activate date mechanism
+EAPI=4
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=!<chromeos-base/chromeos-bsp-spring-private-0.0.1-r15 !<chromeos-base/chromeos-bsp-pit-private-0.0.1-r11 !<chromeos-base/chromeos-bsp-daisy-private-0.0.1-r26 !<chromeos-base/chromeos-bsp-alex-0.0.1-r11 !<chromeos-base/chromeos-bsp-lumpy-private-0.0.5-r22 !<chromeos-base/chromeos-bsp-lumpy-0.0.5-r14 !<chromeos-base/chromeos-bsp-stumpy-0.0.3-r8
+SLOT=0
+_md5_=d8297cf9ccb7fa169d5c845018e700dd

@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS Activate Date virtual package
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-activate-date
+SLOT=0
+_md5_=fadd4d0f687668719527360cebe28be4
