@@ -28,7 +28,7 @@
 # This is unloved by mesa, and should never be pulled into the targets.
 # It is actually for clang and ASAN that we want to have edge versions.
 # This should be kept in sync with package.keywords.
-=sys-devel/llvm-3.2_pre*
+=sys-devel/llvm-3.4_pre*
 
 # This pins Chrome to the version below by masking more recent versions.
 #>chromeos-base/chromeos-chrome-32.0.1658.2_rc-r1

@@ -19,18 +19,20 @@ EGIT_REPO_URIS=(
 		""
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
-		"${CROS_GIT_HOST_URL}/native_client/pnacl-llvm.git"
-		"6c583141bf6b7a6b5f8125c1037ecbc089813288"	# EGIT_COMMIT
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
+		"f62372f6a30373e976831bf4905a7c2fe45a9030"	# EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
-		"git://github.com/llvm-mirror/compiler-rt.git"
+		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
-		"fe0b77be4057ba90a0321107cc5d0f603f297bfa"	# EGIT_COMMIT
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
+		"369ffffa48cb611a63dc5c7926e5c00181b14ba1"	# EGIT_COMMIT
 	"clang"
 		"tools/clang"
-		"git://github.com/llvm-mirror/clang.git"
+		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
-		"13d288bab69d517430b7c9473abac58fb491e17d"	# EGIT_COMMIT
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
+		"5774e390199a572d10b22c78a80ed2cdde94304d"	# EGIT_COMMIT
 )
 inherit git-2
 
@@ -78,14 +80,18 @@ src_prepare() {
 
 	# Same as llvm doc patches
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
+	epatch "${FILESDIR}"/${PN}-3.4-gentoo-install.patch
 
 	# multilib-strict
-	sed -e "/PROJ_headers/s#lib/clang#$(get_libdir)/clang#" \
+	sed -e "/PROJ_headers\|HeaderDir/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/lib/Headers/Makefile \
-		|| die "clang Makefile failed"
-	sed -e "/PROJ_resources/s#lib/clang#$(get_libdir)/clang#" \
+		|| die "clang Makefile sed failed"
+	sed -e "/PROJ_resources\|ResourceDir/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/runtime/compiler-rt/Makefile \
-		|| die "compiler-rt Makefile failed"
+		|| die "compiler-rt Makefile sed failed"
+	sed -e "s#/lib/#/lib{{(32|64)?}}/#" \
+		-i tools/clang/test/Preprocessor/iwithprefix.c \
+		|| die "clang test sed failed"
 	# fix the static analyzer for in-tree install
 	sed -e 's/import ScanView/from clang \0/'  \
 		-i tools/clang/tools/scan-view/scan-view \
@@ -93,14 +99,11 @@ src_prepare() {
 	sed -e "/scanview.css\|sorttable.js/s#\$RealBin#${EPREFIX}/usr/share/${PN}#" \
 		-i tools/clang/tools/scan-build/scan-build \
 		|| die "scan-build sed failed"
-	# Set correct path for gold plugin
+	# Set correct path for gold plugin and coverage lib
 	sed -e "/LLVMgold.so/s#lib/#$(get_libdir)/llvm/#" \
+		-e "s#lib\(/libprofile_rt.a\)#$(get_libdir)/llvm\1#" \
 		-i  tools/clang/lib/Driver/Tools.cpp \
-		|| die "gold plugin path sed failed"
-	# Specify python version
-	python_convert_shebangs 2 tools/clang/tools/scan-view/scan-view
-	python_convert_shebangs -r 2 test/Scripts
-	python_convert_shebangs 2 projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
+		|| die "driver tools paths sed failed"
 
 	# From llvm src_prepare
 	einfo "Fixing install dirs"
@@ -118,6 +121,7 @@ src_prepare() {
 	sed -e "/^llc_props =/s/os.path.join(llvm_tools_dir, 'llc')/'llc'/" \
 		-i tools/clang/test/lit.cfg  || die "test path sed failed"
 
+
 	# User patches
 	epatch_user
 }
@@ -127,7 +131,8 @@ src_configure() {
 		--with-optimize-option=
 		$(use_enable !debug optimized)
 		$(use_enable debug assertions)
-		$(use_enable debug expensive-checks)"
+		$(use_enable debug expensive-checks)
+		--with-clang-resource-dir=../$(get_libdir)/clang/3.4"
 
 	# Setup the search path to include the Prefix includes
 	if use prefix ; then
@@ -144,6 +149,9 @@ src_configure() {
 	if use amd64; then
 		CONF_FLAGS="${CONF_FLAGS} --enable-pic"
 	fi
+
+	# build with a suitable Python version
+	python_export_best
 
 	# clang prefers clang over gcc, so we may need to force that
 	tc-export CC CXX

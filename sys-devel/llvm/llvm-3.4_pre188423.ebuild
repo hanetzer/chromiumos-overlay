@@ -8,10 +8,10 @@ EAPI="4"
 PYTHON_DEPEND="2"
 inherit cros-constants subversion eutils flag-o-matic multilib toolchain-funcs python pax-utils
 
-EGIT_REPO_URI="${CROS_GIT_HOST_URL}/native_client/pnacl-llvm.git"
-EGIT_MASTER="upstream/master"
+EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
+EGIT_MASTER=""
 # Set to the corresponding commit.
-EGIT_COMMIT="6c583141bf6b7a6b5f8125c1037ecbc089813288"
+EGIT_COMMIT="f62372f6a30373e976831bf4905a7c2fe45a9030"
 inherit git-2
 
 SVN_COMMIT=${PV#*_pre}
@@ -83,6 +83,8 @@ pkg_setup() {
 src_prepare() {
 	# unfortunately ./configure won't listen to --mandir and the-like, so take
 	# care of this.
+	epatch "${FILESDIR}"/${PN}-3.2-nodoctargz.patch
+	epatch "${FILESDIR}"/${PN}-3.4-gentoo-install.patch
 	einfo "Fixing install dirs"
 	sed -e 's,^PROJ_docsdir.*,PROJ_docsdir := $(PROJ_prefix)/share/doc/'${PF}, \
 		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \
@@ -99,12 +101,6 @@ src_prepare() {
 		sed -e 's,\$(SharedLibDir),'"${EPREFIX}"/usr/$(get_libdir)/${PN}, \
 			-i tools/gold/Makefile || die "gold rpath sed failed"
 	fi
-
-	# Specify python version
-	python_convert_shebangs -r 2 test/Scripts
-
-	epatch "${FILESDIR}"/${PN}-3.2-nodoctargz.patch
-	epatch "${FILESDIR}"/${PN}-3.0-PPC_macro.patch
 
 	# User patches
 	epatch_user
