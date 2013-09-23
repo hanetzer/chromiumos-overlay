@@ -11,6 +11,7 @@ media-libs/freetype bindist
 # ( http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/eclass/font.eclass?revision=1.50&view=markup )
 media-fonts/croscorefonts X
 media-fonts/crosextrafonts X
+media-fonts/crosextrafonts-carlito X
 media-fonts/lohitfonts-cros X
 media-fonts/droidfonts-cros X
 media-fonts/ja-ipafonts X

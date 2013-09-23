@@ -48,6 +48,7 @@ RDEPEND="
 	!cros_host? ( chromeos-base/chromeos-assets )
 	media-fonts/croscorefonts
 	media-fonts/crosextrafonts
+	media-fonts/crosextrafonts-carlito
 	media-fonts/notofonts
 	media-fonts/dejavu
 	media-fonts/droidfonts-cros
