@@ -17,7 +17,8 @@ HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="doc mbim qmi"
+IUSE="-asan -clang doc mbim qmi"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND=">=dev-libs/glib-2.32
 	>=sys-apps/dbus-1.2
@@ -45,6 +46,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	append-flags -Xclang-only=-Wno-unneeded-internal-declaration
 	cros-workon_src_configure \
 		--with-html-dir="\${datadir}/doc/${PF}/html" \
