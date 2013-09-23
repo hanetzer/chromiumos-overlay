@@ -25,7 +25,6 @@ IUSE="${IUSE} +autotest"
 RDEPEND="
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
-  chromeos-base/autotest-deps-audioloop
   chromeos-base/autotest-deps-glbench
   chromeos-base/autotest-private-board
   chromeos-base/chromeos-factory
