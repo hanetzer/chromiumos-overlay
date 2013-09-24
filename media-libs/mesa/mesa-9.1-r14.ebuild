@@ -9,7 +9,6 @@ CROS_WORKON_TREE="9fac2f50764a0dd604f1d1c3458343cedc871d1d"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
-CROS_WORKON_LOCALNAME="../third_party/mesa"
 CROS_WORKON_BLACKLIST="1"
 
 if [[ ${PV} = 9999* ]]; then
@@ -217,7 +216,7 @@ src_install() {
 	base_src_install
 
 	# Remove redundant headers
-        # GLU and GLUT
+	# GLU and GLUT
 	rm -f "${D}"/usr/include/GL/glu*.h || die "Removing GLU and GLUT headers failed."
 	# Glew includes
 	rm -f "${D}"/usr/include/GL/{glew,glxew,wglew}.h \
