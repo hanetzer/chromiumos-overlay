@@ -46,7 +46,7 @@ src_install() {
 	fi
 	# Enable exactly one evdev-compatible X input touchpad driver.
 	if use cmt; then
-		doins 50-touchpad-cmt.conf
+		doins 40-touchpad-cmt.conf
 		if use elan; then
 			doins 50-touchpad-cmt-elan.conf
 		elif use alex; then
