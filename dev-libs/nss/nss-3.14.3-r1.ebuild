@@ -41,6 +41,7 @@ src_prepare() {
 	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
 	# See http://crosbug.com/29623 for details.
 	epatch "${FILESDIR}"/${PN}-3.14-abort-on-failed-urandom-access.patch
+	epatch "${FILESDIR}"/${PN}-3.14.3_secmod_header_guard.patch
 
 	cd "${S}"/mozilla/security/coreconf || die
 	# hack nspr paths
