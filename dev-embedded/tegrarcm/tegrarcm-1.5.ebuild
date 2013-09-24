@@ -1,16 +1,13 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
 
-EGIT_COMMIT="v${PV}"
-SRC_URI="http://nv-tegra.nvidia.com/gitweb/?p=tools/tegrarcm.git;a=snapshot;hb=${EGIT_COMMIT};sf=tgz -> ${PN}-${EGIT_COMMIT}.tar.gz"
-S=${WORKDIR}/${PN}
-
 inherit autotools
 
 DESCRIPTION="Utility for downloading code to tegra system in recovery mode"
-HOMEPAGE="http://sourceforge.net/projects/tegra-rcm/"
+HOMEPAGE="http://github.com/NVIDIA/tegrarcm/"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-v${PV}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
