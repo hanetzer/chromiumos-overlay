@@ -138,6 +138,7 @@ else:
       '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
       '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
       '-Wno-unused-but-set-variable': '-Wno-unused-variable',
+      '-Wunused-but-set-variable': '-Wunused-variable',
   }
 
   # If these options are specified, do not run clang, even if -clang-syntax is
