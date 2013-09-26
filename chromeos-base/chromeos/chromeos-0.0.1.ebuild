@@ -229,7 +229,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/crda
 	net-wireless/marvell_sd8787
 	net-wireless/realtek-rt2800-firmware
-	sys-apps/bootcache
 	sys-apps/dbus
 	sys-apps/flashrom
 	sys-apps/mosys
