@@ -334,7 +334,7 @@ get_build_arch() {
 				;;
 		esac
 	else
-		echo $(tc-arch-kernel)
+		tc-arch-kernel
 	fi
 }
 
@@ -696,6 +696,17 @@ cros-kernel2_src_install() {
 	# Install uncompressed kernel for debugging purposes.
 	insinto /usr/lib/debug/boot
 	doins "$(cros-workon_get_build_dir)/vmlinux"
+
+	# Also install the vdso shared ELFs for crash reporting.
+	exeinto /lib/modules/${version}/vdso
+	if use x86 || use amd64; then
+		# Install the debug versions and let portage do splitdebug on them.
+		local f dbg
+		for dbg in "$(cros-workon_get_build_dir)/arch/x86/vdso"/vdso*.so.dbg; do
+			f=${dbg##*/}
+			newexe "${dbg}" "${f%.dbg}"
+		done
+	fi
 
 	if use kernel_sources; then
 		install_kernel_sources
