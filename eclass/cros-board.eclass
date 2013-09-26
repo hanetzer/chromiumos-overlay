@@ -28,6 +28,9 @@
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
 BOARD_USE_PREFIX="board_use_"
+
+# Obsolete boards' names are commented-out but retained in this list so
+# they won't be accidentally recycled in the future.
 ALL_BOARDS=(
 	amd64-generic
 	amd64-corei7
@@ -48,7 +51,7 @@ ALL_BOARDS=(
 	daisy_spring
 	daisy_snow
 	dalmore
-	emeraldlake2
+	#emeraldlake2
 	falco
 	fb1
 	fox
@@ -80,17 +83,17 @@ ALL_BOARDS=(
 	stout32
 	stumpy
 	stumpy_pico
-	tegra2
-	tegra2_aebl
-	tegra2_arthur
-	tegra2_asymptote
-	tegra2_dev-board
-	tegra2_dev-board-opengl
-	tegra2_kaen
-	tegra2_seaboard
-	tegra2_wario
+	#tegra2
+	#tegra2_aebl
+	#tegra2_arthur
+	#tegra2_asymptote
+	#tegra2_dev-board
+	#tegra2_dev-board-opengl
+	#tegra2_kaen
+	#tegra2_seaboard
+	#tegra2_wario
 	tegra3-generic
-	waluigi
+	#waluigi
 	wolf
 	x32-generic
 	x86-agz
@@ -101,12 +104,12 @@ ALL_BOARDS=(
 	x86-alex32_he
 	x86-dogfood
 	x86-drm
-	x86-fruitloop
+	#x86-fruitloop
 	x86-generic
 	x86-mario
 	x86-mario64
-	x86-pineview
-	x86-wayland
+	#x86-pineview
+	#x86-wayland
 	x86-zgb
 	x86-zgb_he
 	x86-zgb32
