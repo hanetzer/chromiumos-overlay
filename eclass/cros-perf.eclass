@@ -10,7 +10,8 @@ HOMEPAGE="http://perf.wiki.kernel.org/"
 LICENSE="GPL-2"
 
 SLOT="0"
-IUSE="+demangle +doc perl python ncurses"
+IUSE="-asan -clang +demangle +doc perl python ncurses"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="demangle? ( sys-devel/binutils )
 	dev-libs/elfutils
@@ -20,6 +21,7 @@ DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
