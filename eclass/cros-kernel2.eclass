@@ -698,13 +698,23 @@ cros-kernel2_src_install() {
 	doins "$(cros-workon_get_build_dir)/vmlinux"
 
 	# Also install the vdso shared ELFs for crash reporting.
-	exeinto /lib/modules/${version}/vdso
+	# We use slightly funky filenames so as to better integrate with
+	# debugging processes (crash reporter/gdb/etc...).  The basename
+	# will be the SONAME (what the runtime process sees), but since
+	# that is not unique among all inputs, we also install into a dir
+	# with the original filename.  e.g. we will install:
+	#  /lib/modules/3.8.11/vdso/vdso32-syscall.so/linux-gate.so
 	if use x86 || use amd64; then
-		# Install the debug versions and let portage do splitdebug on them.
-		local f dbg
-		for dbg in "$(cros-workon_get_build_dir)/arch/x86/vdso"/vdso*.so.dbg; do
-			f=${dbg##*/}
-			newexe "${dbg}" "${f%.dbg}"
+		local d f soname
+		# Use the debug versions (.so.dbg) so portage can run splitdebug on them.
+		for f in "$(cros-workon_get_build_dir)/arch/x86/vdso"/vdso*.so.dbg; do
+			d="/lib/modules/${version}/vdso/${f##*/}"
+
+			exeinto "${d}"
+			newexe "${f}" "linux-gate.so"
+
+			soname=$(scanelf -qF'%S#f' "${f}")
+			dosym "linux-gate.so" "${d}/${soname}"
 		done
 	fi
 
