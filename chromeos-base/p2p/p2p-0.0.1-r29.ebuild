@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="1cce6aa8854e58ecc2695e1c361008c61fa267fd"
-CROS_WORKON_TREE="c446436e41d06cbc3aa6f3cdf84d1d105d3404bd"
+CROS_WORKON_COMMIT="b56690871be109af6c411d1d945d635d22b02778"
+CROS_WORKON_TREE="3f3bd90f41d3b2d02d06df250cdc056825b2598d"
 CROS_WORKON_PROJECT="chromiumos/platform/p2p"
 
 inherit autotools cros-debug cros-workon
