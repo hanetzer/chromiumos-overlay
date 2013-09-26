@@ -80,7 +80,7 @@ cros-coreboot_src_compile() {
 	# on 64-bit platforms
 	if use amd64 ; then
 		export CROSS_COMPILE="i686-pc-linux-gnu-"
-		export CC="${CROSS_COMPILE}-gcc"
+		export CC="${CROSS_COMPILE}gcc"
 	else
 		export CROSS_COMPILE=${CHOST}-
 	fi
