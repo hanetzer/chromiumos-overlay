@@ -97,11 +97,3 @@ src_test() {
 	# Run the autotest unit tests.
 	./utils/unittest_suite.py --debug || die "Autotest unit tests failed."
 }
-
-# Packages client.
-pkg_postinst() {
-	local root_autotest_dir="${ROOT}/usr/local/autotest"
-	flock "${root_autotest_dir}/packages" \
-			-c "python -B ${root_autotest_dir}/utils/packager.py \
-				-r ${root_autotest_dir}/packages --client upload"
-}
