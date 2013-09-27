@@ -34,6 +34,7 @@ media-libs/libsndfile	minimal
 media-libs/mesa		llvm gallium classic
 media-libs/opencv	gtk python png jpeg tiff v4l
 media-sound/pulseaudio	bluetooth dbus -esd
+media-sound/sox		alsa
 media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -dvd -dvdnav -enca -faac -faad -live -quicktime -mp3 -rar -real -speex -schroedinger -theora -tremor -toolame -twolame -vorbis -xscreensaver -x264 -xv -xvid
 net-analyzer/tcpdump	-chroot
 net-firewall/iptables	ipv6
