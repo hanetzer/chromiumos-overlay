@@ -12,8 +12,7 @@ HOMEPAGE="https://github.com/ioerror/tlsdate"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-asan -clang +dbus"
-REQUIRED_USE="asan? ( clang )"
+IUSE="+dbus"
 
 DEPEND="dev-libs/openssl
 	dbus? ( sys-apps/dbus )"
@@ -24,7 +23,6 @@ src_prepare() {
 }
 
 src_configure() {
-	clang-setup-env
 	# Our unprivileged group is called "nobody"
 	cros-workon_src_configure \
 		$(use_enable dbus) \
