@@ -45,6 +45,11 @@ RDEPEND="${RDEPEND}
 #  chromeos-base/chromeos-chrome
 #"
 
+# deps/lansim
+RDEPEND="${RDEPEND}
+  dev-python/dpkt
+"
+
 # deps/iwcap
 RDEPEND="${RDEPEND}
   dev-libs/libnl:0
