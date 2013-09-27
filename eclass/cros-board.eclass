@@ -45,7 +45,7 @@ ALL_BOARDS=(
 	bolt
 	butterfly
 	cardhu
-	chronos
+	#chronos
 	daisy
 	daisy-drm
 	daisy_spring
@@ -59,7 +59,7 @@ ALL_BOARDS=(
 	fox_wtm1
 	fox_wtm2
 	ironhide
-	kiev
+	#kiev
 	klang
 	leon
 	link
@@ -75,7 +75,7 @@ ALL_BOARDS=(
 	peppy
 	puppy
 	raspberrypi
-	ricochet
+	#ricochet
 	samus
 	slippy
 	sonic
