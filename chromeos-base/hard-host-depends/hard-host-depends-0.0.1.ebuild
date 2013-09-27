@@ -74,6 +74,7 @@ RDEPEND="${RDEPEND}
 	dev-python/cherrypy
 	dev-python/ctypesgen
 	dev-python/dbus-python
+	dev-python/dpkt
 	dev-python/imaging
 	dev-python/m2crypto
 	dev-python/mako

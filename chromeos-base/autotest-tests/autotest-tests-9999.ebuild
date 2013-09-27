@@ -231,6 +231,7 @@ IUSE_TESTS="
 	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
+	+tests_p2p_ConsumeFiles
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
 	+tests_platform_Attestation
