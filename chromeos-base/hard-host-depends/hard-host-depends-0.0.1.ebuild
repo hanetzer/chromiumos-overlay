@@ -223,8 +223,6 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies to scp binaries from the binary component server
 RDEPEND="${RDEPEND}
-	chromeos-base/ssh-known-hosts
-	chromeos-base/ssh-root-dot-dir
 	net-misc/openssh
 	net-misc/socat
 	net-misc/wget
