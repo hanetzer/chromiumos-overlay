@@ -87,6 +87,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-libs/opensc
 	dev-python/btsocket
 	dev-python/dbus-python
+	dev-python/dpkt
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyserial
