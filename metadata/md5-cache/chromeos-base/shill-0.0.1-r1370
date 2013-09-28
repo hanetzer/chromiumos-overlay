@@ -3,11 +3,11 @@ DEPEND=chromeos-base/bootstat tpm? ( chromeos-base/chaps ) chromeos-base/chromeo
 DESCRIPTION=Shill Connection Manager for Chromium OS
 EAPI=4
 HOMEPAGE=http://src.chromium.org
-IUSE=-asan -clang +cellular platform2 test +tpm +vpn cros-debug cros_host cros_workon_tree_8211db4161af1ed776ad5d3971c075a2a00a8da0 profiling
+IUSE=-asan -clang +cellular platform2 test +tpm +vpn cros-debug cros_host cros_workon_tree_7bf42c205ec1c1e8f055b1b4f307d8936e9564ff profiling
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 RDEPEND=chromeos-base/bootstat tpm? ( chromeos-base/chaps ) chromeos-base/chromeos-minijail cellular? ( chromeos-base/cromo ) !<chromeos-base/flimflam-0.0.1-r530 chromeos-base/libchrome:180609[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics cellular? ( chromeos-base/mist ) chromeos-base/platform2 cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 ) chromeos-base/wimax_manager vpn? ( chromeos-base/vpn-manager ) dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/libnl:3 dev-libs/nss dev-libs/protobuf cellular? ( net-dialup/ppp ) vpn? ( net-dialup/ppp ) net-dns/c-ares net-libs/libmnl net-libs/libnetfilter_queue net-libs/libnfnetlink net-misc/dhcpcd vpn? ( net-misc/openvpn ) cellular? ( virtual/modemmanager ) net-wireless/wpa_supplicant[dbus]
 REQUIRED_USE=asan? ( clang )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	417aca45c487d76465be460ece177719	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	37b5397aa3b2a3ac2759ec4405974c90	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=d1c1c7820605fdb3b4aa8079e7cddb69
+_md5_=a62ee669bc047022bda40e9d2652981e
