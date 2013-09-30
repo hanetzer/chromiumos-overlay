@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-new_power_button test -lockvt -nocrit -is_desktop -als -mosys_eventlog"
+IUSE="-legacy_power_button test -lockvt -nocrit -is_desktop -als -mosys_eventlog"
 IUSE="${IUSE} -asan -clang -has_keyboard_backlight -stay_awake_with_headphones -touch_device"
 REQUIRED_USE="asan? ( clang )"
 
@@ -48,9 +48,9 @@ src_configure() {
 	export USE_ALS=$(usex als y "")
 	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
 	export USE_IS_DESKTOP=$(usex is_desktop y "")
+	export USE_LEGACY_POWER_BUTTON=$(usex legacy_power_button y "")
 	export USE_LOCKVT=$(usex lockvt y "")
 	export USE_MOSYS_EVENTLOG=$(usex mosys_eventlog y "")
-	export USE_NEW_POWER_BUTTON=$(usex new_power_button y "")
 	export USE_STAY_AWAKE_WITH_HEADPHONES=$(usex stay_awake_with_headphones y "")
 	export USE_TOUCH_DEVICE=$(usex touch_device y "")
 }
