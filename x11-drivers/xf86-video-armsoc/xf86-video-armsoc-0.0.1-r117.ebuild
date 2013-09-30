@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="18eb16f21b2d29bfb421dbdb47e145707488f8d5"
-CROS_WORKON_TREE="a56416584811ae77d3a959a3561c794e458009eb"
+CROS_WORKON_COMMIT="8613894e87e74a4d21ba78b8a50bb3733e53b93d"
+CROS_WORKON_TREE="dbc5cd704acf1f83233d85f6c43a076fc7ec2d72"
 CROS_WORKON_PROJECT="chromiumos/third_party/xf86-video-armsoc"
 CROS_WORKON_LOCALNAME="xf86-video-armsoc"
 
