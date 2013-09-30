@@ -1,6 +1,6 @@
---- ssl.c.orig	2012-04-02 14:49:21.093698637 -0700
-+++ ssl.c	2012-04-02 14:48:50.663277244 -0700
-@@ -3912,11 +3912,14 @@
+--- openvpn-2.3.2/src/openvpn/ssl.c.orig	2013-09-30 09:28:06.906781451 -0700
++++ openvpn-2.3.2/src/openvpn/ssl.c	2013-09-30 09:30:00.236829170 -0700
+@@ -1780,11 +1780,14 @@
        struct env_set *es = session->opt->es;
        struct env_item *e;
        struct buffer out = alloc_buf_gc (512*3, &gc);
@@ -15,7 +15,7 @@
  #if defined(TARGET_LINUX)
        buf_printf (&out, "IV_PLAT=linux\n");
  #elif defined(TARGET_SOLARIS)
-@@ -3932,6 +3935,12 @@
+@@ -1800,6 +1803,12 @@
  #elif defined(WIN32)
        buf_printf (&out, "IV_PLAT=win\n");
  #endif
@@ -26,5 +26,5 @@
 +      if (iv_plat_rel != NULL)
 +        buf_printf (&out, "IV_PLAT_REL=%s\n", iv_plat_rel);
  
-       /* push mac addr */
-       {
+       /* push LZO status */
+ #ifdef ENABLE_LZO_STUB

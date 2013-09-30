@@ -1,6 +1,6 @@
-diff -u openvpn-2.1.12.orig/pkcs11.c openvpn-2.1.12/pkcs11.c
---- openvpn-2.1.12.orig/pkcs11.c	2011-03-17 12:57:45.000000000 -0700
-+++ openvpn-2.1.12/pkcs11.c	2011-10-10 09:36:55.000000000 -0700
+diff -u openvpn-2.3.2.orig/src/openvpn/pkcs11.c openvpn-2.3.2/pkcs11.c
+--- openvpn-2.3.2.orig/src/openvpn/pkcs11.c	2011-03-17 12:57:45.000000000 -0700
++++ openvpn-2.3.2/src/openvpn/pkcs11.c	2011-10-10 09:36:55.000000000 -0700
 @@ -602,6 +602,115 @@
  	return success;
  }
