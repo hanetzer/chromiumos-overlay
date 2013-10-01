@@ -259,9 +259,10 @@ pkg_postinst() {
 	add_users_to_group audio "${system_user}"
 	add_users_to_group video "${system_user}"
 
-	# The Xorg user needs to be part of the input and video groups.
+	# The Xorg user needs to be part of the input, video and tty groups.
 	add_users_to_group input "xorg"
 	add_users_to_group video "xorg"
+	add_users_to_group tty "xorg"
 
 	# Users which require access to PKCS #11 cryptographic services must be
 	# in the pkcs11 group.
