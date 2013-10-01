@@ -14,7 +14,7 @@ KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
 # +suid needed because sparcs default off
-IUSE="${IUSE_SERVERS} broken_partialswaps dga -doc ipv6 minimal nptl selinux
+IUSE="${IUSE_SERVERS} dga -doc ipv6 minimal nptl selinux
 +suid tegra tslib +udev xinerama xlib-glx"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
@@ -171,15 +171,13 @@ PATCHES=(
 	"${FILESDIR}/1.12.99-dix-free-the-sprite-when-disabling-the-device.patch"
 	"${FILESDIR}/1.12.99-dix-disable-non-sprite-owners-first-when-disabling-p.patch"
 	"${FILESDIR}/1.12.99-dix-disable-all-devices-before-shutdown.patch"
+	# Partial flips. This is a replacement for broken partial swaps on
+	# Sandy Bridge and later, but it's actually faster on other Intel
+	# chipsets as well.
+	"${FILESDIR}/1.12.0-emulate-partial-flips.patch"
 )
 
 src_prepare() {
-	# Partial flips
-	if use broken_partialswaps; then
-		PATCHES+=(
-		"${FILESDIR}/1.12.0-emulate-partial-flips.patch"
-		)
-	fi
 	xorg-2_src_prepare
 }
 

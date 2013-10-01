@@ -10,7 +10,7 @@ inherit linux-info xorg-2
 DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="amd64 x86 ~amd64-fbsd -x86-fbsd"
-IUSE="glamor sna +uxa xvmc broken_partialswaps"
+IUSE="glamor sna +uxa xvmc"
 
 REQUIRED_USE="|| ( glamor sna uxa )"
 
@@ -45,17 +45,12 @@ PATCHES=(
 	"${FILESDIR}/2.21.2-fix-blt-damage.patch"
 	# Fix fbcon copy
 	"${FILESDIR}/2.21.2-copy-fb.patch"
+	# Disable triple buffering since we need double buffering
+	# to implement partial updates on top of flips
+	"${FILESDIR}/2.16.0-no-triple.patch"
 )
 
 src_prepare() {
-	# Disable triple buffering since we need double buffering
-	# to implement partial updates on top of flips
-	if use broken_partialswaps; then
-		PATCHES+=(
-		"${FILESDIR}/2.16.0-no-triple.patch"
-		)
-	fi
-
 	for patch_file in "${PATCHES[@]}"; do
 		epatch $patch_file
 	done
