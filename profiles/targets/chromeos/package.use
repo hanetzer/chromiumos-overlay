@@ -8,6 +8,9 @@ app-crypt/tpm-tools     pkcs11
 app-i18n/zinnia	    	-perl
 app-editors/qemacs	-X
 app-editors/vim		minimal
+# We don't use network functionality in bash, and since we ship it in a release
+# image, we'd prefer that attack surface simply not exist.
+app-shells/bash		-net
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
 dev-embedded/libftdi    static-libs
