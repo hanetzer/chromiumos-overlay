@@ -17,7 +17,7 @@ IUSE="-asan -clang -deep_memory_profiler -disable_login_animations
 	-disable_webaudio -egl -exynos -fade_boot_splash_screen
 	-gpu_sandbox_allow_sysv_shm -has_diamond_key -has_hdd -highdpi
 	-is_desktop -legacy_keyboard -legacy_power_button
-	-natural_scroll_default test -touchui +X"
+	-natural_scroll_default test +X"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"

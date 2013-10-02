@@ -14,8 +14,8 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="-legacy_power_button test -lockvt -nocrit -is_desktop -als -mosys_eventlog"
-IUSE="${IUSE} -asan -clang -has_keyboard_backlight -stay_awake_with_headphones -touch_device"
+IUSE="-legacy_power_button test -lockvt -is_desktop -als -mosys_eventlog"
+IUSE="${IUSE} -asan -clang -has_keyboard_backlight"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
@@ -51,8 +51,6 @@ src_configure() {
 	export USE_LEGACY_POWER_BUTTON=$(usex legacy_power_button y "")
 	export USE_LOCKVT=$(usex lockvt y "")
 	export USE_MOSYS_EVENTLOG=$(usex mosys_eventlog y "")
-	export USE_STAY_AWAKE_WITH_HEADPHONES=$(usex stay_awake_with_headphones y "")
-	export USE_TOUCH_DEVICE=$(usex touch_device y "")
 }
 
 src_compile() {
@@ -107,13 +105,4 @@ src_install() {
 
 	insinto /lib/udev/rules.d
 	doins udev/99-usb-hid-wake.rules
-
-	# Nocrit disables low battery suspend percent by setting it to 0
-	if use nocrit; then
-		crit="usr/share/power_manager/low_battery_suspend_percent"
-		if [ ! -e "${D}/${crit}" ]; then
-			die "low_battery_suspend_percent config file missing"
-		fi
-		echo "0" > "${D}/${crit}"
-	fi
 }
