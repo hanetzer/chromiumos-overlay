@@ -5,8 +5,8 @@
 #
 
 EAPI=4
-CROS_WORKON_COMMIT="c1ea6a1873fb28c64afa2eb56391fe11d6eedb65"
-CROS_WORKON_TREE="c86b8a7fea81fdbc1613ccfc0134a7563552fc58"
+CROS_WORKON_COMMIT="52d09bd25a02b3866aba1bb492f36a2d851d6472"
+CROS_WORKON_TREE="235f592178311af797b3230503069777982fdc3d"
 CROS_WORKON_PROJECT="chromiumos/third_party/ktop"
 
 inherit cros-constants cros-workon toolchain-funcs

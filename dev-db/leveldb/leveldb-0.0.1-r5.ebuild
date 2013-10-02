@@ -3,8 +3,8 @@
 # found in the LICENSE.makefile file.
 
 EAPI=4
-CROS_WORKON_COMMIT="fd1218ceec51a67b42921c2a0fe4da08bd7f1a90"
-CROS_WORKON_TREE="cddf50f93e1fdd9ade5b86f46b4b7a7b79b4800e"
+CROS_WORKON_COMMIT="117f7a31c15e13937d01cebbf593d3a862a99214"
+CROS_WORKON_TREE="a73fe156028f5254fbe8cfbfb76967b7553a3b9d"
 CROS_WORKON_PROJECT="chromiumos/third_party/leveldb"
 
 inherit toolchain-funcs cros-debug cros-workon
