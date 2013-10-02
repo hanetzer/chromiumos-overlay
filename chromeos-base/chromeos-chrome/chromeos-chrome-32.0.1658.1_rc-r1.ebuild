@@ -803,6 +803,7 @@ install_chrome_test_resources() {
 	TEST_INSTALL_TARGETS=(
 		"libppapi_tests.so"
 		"browser_tests"
+		"chrome_sandbox"
 		"peerconnection_server"
 		"sync_integration_tests"
 		"sandbox_linux_unittests"
