@@ -16,5 +16,5 @@ IUSE="platform2"
 src_install() {
 	use platform2 && return 0
 	insinto /usr/include/chromeos
-	doins -r dbus environment switches
+	doins -r dbus switches
 }
