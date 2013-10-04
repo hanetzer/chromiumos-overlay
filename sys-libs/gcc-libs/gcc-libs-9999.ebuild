@@ -17,7 +17,7 @@ inherit eutils cros-workon binutils-funcs multilib
 
 DESCRIPTION="The GNU Compiler Collection.  This builds and installs the libgcc and libstdc++ libraries.  It it board-specific."
 
-LICENSE="GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2"
+LICENSE="GPL-3 LGPL-3 FDL-1.2"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
 IUSE="hardened hardfp mounted_gcc +thumb vtable_verify"
