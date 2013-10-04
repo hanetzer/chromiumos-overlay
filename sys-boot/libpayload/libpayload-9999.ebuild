@@ -58,7 +58,7 @@ src_install() {
 	if use x86 || use amd64 ; then
 		archdir="x86"
 	elif use arm ; then
-		archdir="armv7"
+		archdir="arm"
 	fi
 
 	insinto "${destdir}"/lib
