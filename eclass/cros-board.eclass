@@ -74,6 +74,7 @@ ALL_BOARDS=(
 	peach_pit
 	peppy
 	puppy
+	rambi
 	raspberrypi
 	#ricochet
 	samus
