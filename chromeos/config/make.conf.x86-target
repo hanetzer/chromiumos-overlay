@@ -17,7 +17,7 @@ USE="${USE} mmx sse sse2 dri hardened"
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=atom -mtune=atom -mfpmath=sse"
 
-VIDEO_CARDS="intel vesa"
+VIDEO_CARDS="intel fbdev"
 INPUT_DEVICES="evdev synaptics cmt"
 
 # Allow a board to override or define additional settings.
