@@ -5,8 +5,8 @@ CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"
 LDFLAGS="-Wl,-O2 -Wl,--as-needed"
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
-          -ebuild-locks parallel-install sandbox -strict userfetch userpriv
-          usersandbox -unknown-features-warn"
+          -ebuild-locks -merge-sync parallel-install sandbox -strict userfetch
+          userpriv usersandbox -unknown-features-warn"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
