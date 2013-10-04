@@ -1,0 +1,133 @@
+Fixes from brltty trunk:
+- Use the correct environment variable names in the generated part of
+  the udev rules file.
+- Add command line flag to exclude devices that are generic (e.g.
+  usb->serial chips that don't have specific vendor/product IDs)
+--- a/updusbdevs
++++ b/updusbdevs
+@@ -319,14 +319,19 @@
+    return "<!-- $comment -->"
+ }
+ 
+-proc makeLines_android {vendor product drivers descriptions} {
++proc makeLines_android {vendor product drivers descriptions exclude} {
+    set lines [list]
+ 
+    foreach description $descriptions {
+       lappend lines [makeComment_android $description]
+    }
+ 
+-   lappend lines "<usb-device vendor-id=\"$vendor\" product-id=\"$product\" />"
++   set line "<usb-device vendor-id=\"$vendor\" product-id=\"$product\" />"
++   if {$exclude} {
++      set line [makeComment_android $line]
++   }
++   lappend lines $line
++
+    return $lines
+ }
+ 
+@@ -334,14 +339,19 @@
+    return "# $comment"
+ }
+ 
+-proc makeLines_hotplug {vendor product drivers descriptions} {
++proc makeLines_hotplug {vendor product drivers descriptions exclude} {
+    set lines [list]
+ 
+    foreach description $descriptions {
+       lappend lines [makeComment_hotplug $description]
+    }
+ 
+-   lappend lines [format "brltty-%s 0x%04x 0x%04x 0x%04x" [join $drivers ","] 3 $vendor $product]
++   set line [format "brltty-%s 0x%04x 0x%04x 0x%04x" [join $drivers ","] 3 $vendor $product]
++   if {$exclude} {
++      set line [makeComment_hotplug $line]
++   }
++   lappend lines $line
++
+    return $lines
+ }
+ 
+@@ -349,14 +359,19 @@
+    return "# $comment"
+ }
+ 
+-proc makeLines_udev {vendor product drivers descriptions} {
++proc makeLines_udev {vendor product drivers descriptions exclude} {
+    set lines [list]
+ 
+    foreach description $descriptions {
+       lappend lines [makeComment_udev $description]
+    }
+ 
+-   lappend lines [format "ENV\{PRODUCT\}==\"%x/%x/*\", ENV\{BRLTTY_DRIVER\}=\"%s\", GOTO=\"brltty_usb_run\"" $vendor $product [join $drivers ","]]
++   set line [format "ENV\{PRODUCT\}==\"%x/%x/*\", ENV\{BRLTTY_BRAILLE_DRIVER\}=\"%s\", GOTO=\"brltty_usb_run\"" $vendor $product [join $drivers ","]]
++   if {$exclude} {
++      set line [makeComment_udev $line]
++   }
++   lappend lines $line
++
+    return $lines
+ }
+ 
+@@ -364,14 +379,21 @@
+    return "; $comment"
+ }
+ 
+-proc makeLines_windows {vendor product drivers descriptions} {
++proc makeLines_windows {vendor product drivers descriptions exclude} {
+    set lines [list]
+-   lappend lines [format "\"\$1: %s\"=LIBUSB_DEV, USB\\VID_%04X&PID_%04X" [join $descriptions ", "] $vendor $product]
++   set line [format "\"\$1: %s\"=LIBUSB_DEV, USB\\VID_%04X&PID_%04X" [join $descriptions ", "] $vendor $product]
++
++   if {$exclude} {
++      set line [makeComment_windows $line]
++   }
++
++   lappend lines $line
+    return $lines
+ }
+ 
+ proc makeLines {linesArray schemes deviceTable} {
+    global genericDevices
++   upvar #0 optionValues(nogeneric) excludeGenericDevices
+ 
+    foreach scheme $schemes {
+       set makeLines makeLines_$scheme
+@@ -400,6 +422,8 @@
+                lappend descriptions "[dict get $deviceEntry name] \[[dict get $deviceEntry model]\]"
+             }
+ 
++            set exclude 0
++
+             if {[dict get $productEntry generic]} {
+                lappend lines [$makeComment "Generic Identifier"]
+                set generic [dict get $genericDevices $identifier]
+@@ -412,9 +436,11 @@
+                      lappend lines [$makeComment "$header: [dict get $generic $property]"]
+                   }
+                }
++
++               set exclude $excludeGenericDevices
+             }
+ 
+-            eval [list lappend lines] [$makeLines $vendor $product [lsort -unique $codes] [lsort $descriptions]]
++            eval [list lappend lines] [$makeLines $vendor $product [lsort -unique $codes] [lsort $descriptions] $exclude]
+             lappend lines ""
+          }
+       }
+@@ -598,9 +624,10 @@
+ }]
+ 
+ set optionDefinitions {
+-   {quiet   counter}
+-   {verbose counter}
+-   {test    flag}
++   {quiet     counter}
++   {verbose   counter}
++   {test      flag}
++   {nogeneric flag}
+ }
+ 
+ if {![processOptions optionValues argv $optionDefinitions]} {
