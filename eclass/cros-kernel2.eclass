@@ -17,7 +17,7 @@ DEPEND="sys-apps/debianutils
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
 "
 
-IUSE="-device_tree -kernel_sources -wireless34 -wifi_testbed_ap"
+IUSE="-device_tree -kernel_sources nfc -wireless34 -wifi_testbed_ap"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
@@ -46,6 +46,7 @@ CONFIG_FRAGMENTS=(
 	kvm
 	mbim
 	netboot_ramfs
+	nfc
 	nfs
 	pcserial
 	qmi
@@ -114,6 +115,18 @@ kgdb_config="
 CONFIG_KGDB=y
 CONFIG_KGDB_KDB=y
 """
+
+nfc_desc="Enable NFC support"
+nfc_config="
+CONFIG_NFC=m
+CONFIG_NFC_HCI=m
+CONFIG_NFC_LLCP=y
+CONFIG_NFC_NCI=m
+CONFIG_NFC_PN533=m
+CONFIG_NFC_PN544=m
+CONFIG_NFC_PN544_I2C=m
+CONFIG_NFC_SHDLC=y
+"
 
 tpm_desc="TPM support"
 tpm_config="

@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="+alsa bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
-	+fonts gdmwimax mtd opengles pam X"
+	+fonts gdmwimax mtd nfc opengles pam X"
 
 ################################################################################
 #
@@ -106,6 +106,7 @@ CROS_COMMON_RDEPEND="
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	net-firewall/iptables
 	net-misc/tlsdate
+	nfc? ( net-wireless/neard chromeos-base/neard-configs )
 	sys-apps/baselayout
 	sys-apps/coreutils
 	sys-apps/grep
