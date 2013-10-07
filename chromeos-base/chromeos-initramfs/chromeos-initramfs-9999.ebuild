@@ -147,6 +147,7 @@ pull_netboot_ramfs_binary() {
 		stty
 		sync
 		tee
+		tftp
 		tr
 		true
 		udhcpc
