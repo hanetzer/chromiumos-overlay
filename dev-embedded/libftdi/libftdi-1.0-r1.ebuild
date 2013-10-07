@@ -1,0 +1,1 @@
+libftdi-1.0.ebuild
