@@ -33,6 +33,7 @@ S=${WORKDIR}/${MY_P}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PN}-1.0-staticlibs.patch
+	epatch "${FILESDIR}"/${PN}-1.0-getopts.patch
 }
 
 src_configure() {
@@ -59,5 +60,9 @@ src_install() {
 	if use examples ; then
 		docinto examples
 		dodoc examples/*.c
+	fi
+	if use tools ; then
+		insinto "/usr/share/${PN}"
+		doins ${FILESDIR}/confs/*.conf
 	fi
 }
