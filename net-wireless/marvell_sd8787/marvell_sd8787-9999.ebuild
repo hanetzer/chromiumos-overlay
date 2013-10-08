@@ -8,7 +8,7 @@ inherit eutils cros-workon
 
 DESCRIPTION="Marvell SD8787 firmware image"
 HOMEPAGE="http://www.marvell.com/"
-LICENSE="Marvell International Ltd."
+LICENSE="Marvell-sd8787"
 
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
