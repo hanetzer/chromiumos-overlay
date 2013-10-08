@@ -74,6 +74,8 @@ src_install() {
 		doins 50-touchpad-cmt-falco.conf
 	elif [ "${board}" = "puppy" ]; then
 		doins 50-touchpad-cmt-puppy.conf
+	elif [ "${board}" = "wolf" ]; then
+		doins 50-touchpad-cmt-wolf.conf
 	fi
 	doins 20-mouse.conf
 	doins 20-touchscreen.conf
