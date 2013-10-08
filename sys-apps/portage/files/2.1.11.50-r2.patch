@@ -1,18 +1,17 @@
 diff --git a/bin/ebuild-helpers/prepstrip b/bin/ebuild-helpers/prepstrip
-index fb20777..8b96621 100755
+index fb20777..8c9957c 100755
 --- a/bin/ebuild-helpers/prepstrip
 +++ b/bin/ebuild-helpers/prepstrip
 @@ -342,7 +342,12 @@ do
  	elif [[ ${f} == *"SB executable"* || ${f} == *"SB shared object"* ]] ; then
  		process_elf "${x}" "${inode_link}" ${PORTAGE_STRIP_FLAGS}
  	elif [[ ${f} == *"SB relocatable"* ]] ; then
--		process_elf "${x}" "${inode_link}" ${SAFE_STRIP_FLAGS}
-+		__vecho "   ${x:${#D}}"
-+		save_elf_sources "${x}"
-+		if ${strip_this} ; then
-+			[[ ${x} == *.ko ]] && save_elf_debug "${x}" "${inode_link}_debug"
-+			${STRIP} ${SAFE_STRIP_FLAGS} "${x}"
-+		fi
++		# Disable splitdebug for object files as breakpad fails atm w/them.
++		# http://crosbug.com/204974
++		FEATURES_splitdebug_save=${FEATURES_splitdebug}
++		[[ ${x} != *.ko ]] && FEATURES_splitdebug=false
+ 		process_elf "${x}" "${inode_link}" ${SAFE_STRIP_FLAGS}
++		FEATURES_splitdebug=${FEATURES_splitdebug_save}
  	fi
  
  	if ${was_not_writable} ; then
