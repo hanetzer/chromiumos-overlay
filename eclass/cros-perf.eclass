@@ -26,49 +26,34 @@ src_configure() {
 }
 
 src_compile() {
-	local makeargs=
-	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
-
-	pushd tools/perf
-
-	use demangle || makeargs="${makeargs} NO_DEMANGLE=1 "
-	use perl || makeargs="${makeargs} NO_LIBPERL=1 "
-	use python || makeargs="${makeargs} NO_LIBPYTHON=1 "
-	use ncurses || makeargs="${makeargs} NO_NEWT=1 "
-
-	if use arm; then
-		export ARM_SHA=1
-	fi
-
-	emake ${makeargs} \
-		ARCH=${kernel_arch} \
-		CC="$(tc-getCC)" AR="$(tc-getAR)" \
-		prefix="/usr" bindir_relative="sbin" \
-		CFLAGS="${CFLAGS}" \
+	local makeargs=(
+		ARCH="${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}"
+		CC="$(tc-getCC)"
+		AR="$(tc-getAR)"
+		prefix="/usr"
+		bindir_relative="sbin"
+		CFLAGS="${CFLAGS} ${CPPFLAGS}"
 		LDFLAGS="${LDFLAGS}"
+	)
 
-	if use doc; then
-		pushd Documentation
-		emake ${makeargs}
-		popd
-	fi
+	use demangle || makeargs+=( NO_DEMANGLE=1 )
+	use perl || makeargs+=( NO_LIBPERL=1 )
+	use python || makeargs+=( NO_LIBPYTHON=1 )
+	use ncurses || makeargs+=( NO_NEWT=1 )
 
-	popd
+	emake -C tools/perf "${makeargs[@]}"
+	use doc && emake -C tools/perf/Documentation "${makeargs[@]}"
 }
 
 src_install() {
-	pushd tools/perf
+	cd tools/perf
 
-	dosbin perf
-	dosbin perf-archive
+	dosbin perf{,-archive}
 
 	dodoc CREDITS
-
 	if use doc; then
 		dodoc Documentation/*.txt
 		dohtml Documentation/*.html
 		doman Documentation/*.1
 	fi
-
-	popd
 }
