@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="+alsa bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
-	gdmwimax mtd opengles X"
+	+fonts gdmwimax mtd opengles X"
 
 ################################################################################
 #
@@ -92,7 +92,7 @@ CROS_COMMON_RDEPEND="
 	app-shells/dash
 	chromeos-base/bootstat
 	chromeos-base/chromeos-base
-	chromeos-base/chromeos-fonts
+	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/crash-reporter
@@ -178,7 +178,6 @@ CROS_ARM_RDEPEND="
 "
 
 CROS_X_RDEPEND="
-	chromeos-base/chromeos-fonts
 	chromeos-base/xorg-conf
 	x11-apps/xinit
 	x11-apps/xrandr
