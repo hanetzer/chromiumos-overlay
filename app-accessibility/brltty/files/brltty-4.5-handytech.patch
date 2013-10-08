@@ -1,0 +1,224 @@
+Backport from brltty svn trunk: adds support for HandyTech Basic Braille series displays.
+--- /dev/null
++++ b/Tables/brl-ht-bb.ktb
+@@ -0,0 +1,22 @@
++###############################################################################
++# BRLTTY - A background process providing access to the console screen (when in
++#          text mode) for a blind person using a refreshable braille display.
++#
++# Copyright (C) 1995-2013 by The BRLTTY Developers.
++#
++# BRLTTY comes with ABSOLUTELY NO WARRANTY.
++#
++# This is free software, placed under the terms of the
++# GNU Lesser General Public License, as published by the Free Software
++# Foundation; either version 2.1 of the License, or (at your option) any
++# later version. Please see the file LICENSE-LGPL for details.
++#
++# Web Page: http://mielke.cc/brltty/
++#
++# This software is maintained by Dave Mielke <dave@mielke.cc>.
++###############################################################################
++
++title HandyTech Basic Braille
++
++include brl-bm-display6.kti
++include brl-bm-routing6.kti
+--- a/Programs/brl.h
++++ b/Programs/brl.h
+@@ -33,6 +33,9 @@
+ typedef struct BrailleDataStruct BrailleData;
+ 
+ typedef struct BrailleDisplayStruct BrailleDisplay;
++typedef int BrailleFirmnessSetter (BrailleDisplay *brl, BrailleFirmness setting);
++typedef int BrailleSensitivitySetter (BrailleDisplay *brl, BrailleSensitivity setting);
++typedef void BrailleKeyRotator (BrailleDisplay *brl, unsigned char *set, unsigned char *key);
+ 
+ struct BrailleDisplayStruct {
+   unsigned int textColumns, textRows;
+--- a/Drivers/Braille/HandyTech/braille.c
++++ b/Drivers/Braille/HandyTech/braille.c
+@@ -177,6 +177,20 @@
+   KEY_NAME_TABLE(easyBraille),
+ END_KEY_NAME_TABLES
+ 
++BEGIN_KEY_NAME_TABLE(basicBraille)
++  KEY_NAME_ENTRY(HT_KEY_B2, "Display3"),
++  KEY_NAME_ENTRY(HT_KEY_B3, "Display2"),
++  KEY_NAME_ENTRY(HT_KEY_B4, "Display1"),
++  KEY_NAME_ENTRY(HT_KEY_B5, "Display4"),
++  KEY_NAME_ENTRY(HT_KEY_B6, "Display5"),
++  KEY_NAME_ENTRY(HT_KEY_B7, "Display6"),
++END_KEY_NAME_TABLE
++
++BEGIN_KEY_NAME_TABLES(bb)
++  KEY_NAME_TABLE(routing),
++  KEY_NAME_TABLE(basicBraille),
++END_KEY_NAME_TABLES
++
+ typedef enum {
+   HT_BWK_Backward = 0X01,
+   HT_BWK_Forward = 0X08,
+@@ -205,6 +219,7 @@
+ DEFINE_KEY_TABLE(ab40)
+ DEFINE_KEY_TABLE(wave)
+ DEFINE_KEY_TABLE(easy)
++DEFINE_KEY_TABLE(bb)
+ DEFINE_KEY_TABLE(bkwm)
+ 
+ BEGIN_KEY_TABLE_LIST
+@@ -216,6 +231,7 @@
+   &KEY_TABLE_DEFINITION(ab40),
+   &KEY_TABLE_DEFINITION(wave),
+   &KEY_TABLE_DEFINITION(easy),
++  &KEY_TABLE_DEFINITION(bb),
+   &KEY_TABLE_DEFINITION(bkwm),
+ END_KEY_TABLE_LIST
+ 
+@@ -230,12 +246,10 @@
+ static CellWriter writeCells_Bookworm;
+ static CellWriter writeCells_Evolution;
+ 
+-typedef int (FirmnessSetter) (BrailleDisplay *brl, BrailleFirmness setting);
+-static FirmnessSetter setFirmness;
++static BrailleFirmnessSetter setFirmness;
+ 
+-typedef int (SensitivitySetter) (BrailleDisplay *brl, BrailleSensitivity setting);
+-static SensitivitySetter setSensitivity_Evolution;
+-static SensitivitySetter setSensitivity_ActiveBraille;
++static BrailleSensitivitySetter setSensitivity_Evolution;
++static BrailleSensitivitySetter setSensitivity_ActiveBraille;
+ 
+ typedef struct {
+   const char *name;
+@@ -243,8 +257,8 @@
+ 
+   ByteInterpreter *interpretByte;
+   CellWriter *writeCells;
+-  FirmnessSetter *setFirmness;
+-  SensitivitySetter *setSensitivity;
++  BrailleFirmnessSetter *setFirmness;
++  BrailleSensitivitySetter *setSensitivity;
+ 
+   const unsigned char *sessionEndAddress;
+ 
+@@ -375,6 +389,25 @@
+     .hasATC = 1
+   }
+   ,
++#define HT_BASIC_BRAILLE(cells)                     \
++  { .identifier = HT_MODEL_BasicBraille##cells,     \
++    .name = "Basic Braille " STRINGIFY(cells),      \
++    .textCells = cells,                             \
++    .statusCells = 0,                               \
++    .keyTableDefinition = &KEY_TABLE_DEFINITION(bb),\
++    .interpretByte = interpretByte_key,             \
++    .writeCells = writeCells_Evolution              \
++  }
++  HT_BASIC_BRAILLE(16),
++  HT_BASIC_BRAILLE(20),
++  HT_BASIC_BRAILLE(32),
++  HT_BASIC_BRAILLE(40),
++  HT_BASIC_BRAILLE(48),
++  HT_BASIC_BRAILLE(64),
++  HT_BASIC_BRAILLE(80),
++  HT_BASIC_BRAILLE(160)
++#undef HT_BASIC_BRAILLE
++  ,
+   { /* end of table */
+     .name = NULL
+   }
+@@ -829,6 +862,62 @@
+       .data=&usbOperations3
+     }
+     ,
++    { /* Basic Braille 16 */
++      .vendor=0X1FE4, .product=0X0081,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 20 */
++      .vendor=0X1FE4, .product=0X0082,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 32 */
++      .vendor=0X1FE4, .product=0X0083,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 40 */
++      .vendor=0X1FE4, .product=0X0084,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 48 */
++      .vendor=0X1FE4, .product=0X008A,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 64 */
++      .vendor=0X1FE4, .product=0X0086,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 80 */
++      .vendor=0X1FE4, .product=0X0087,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
++    { /* Basic Braille 160 */
++      .vendor=0X1FE4, .product=0X008B,
++      .configuration=1, .interface=0, .alternative=0,
++      .inputEndpoint=1, .outputEndpoint=1,
++      .data=&usbOperations3
++    }
++    ,
+     { .vendor=0 }
+   };
+ 
+@@ -1385,11 +1474,11 @@
+ static int
+ interpretByte_key (unsigned char byte) {
+   int release = (byte & HT_KEY_RELEASE) != 0;
+-  if (release) byte &= ~HT_KEY_RELEASE;
++  if (release) byte ^= HT_KEY_RELEASE;
+ 
+   if ((byte >= HT_KEY_ROUTING) &&
+       (byte < (HT_KEY_ROUTING + model->textCells))) {
+-    return enqueueKeyEvent(HT_SET_RoutingKeys, byte-HT_KEY_ROUTING, !release);
++    return enqueueKeyEvent(HT_SET_RoutingKeys, byte - HT_KEY_ROUTING, !release);
+   }
+ 
+   if ((byte >= HT_KEY_STATUS) &&
+--- a/Drivers/Braille/HandyTech/brldefs-ht.h
++++ b/Drivers/Braille/HandyTech/brldefs-ht.h
+@@ -27,6 +27,14 @@
+   HT_MODEL_ModularEvolution88  = 0X38,
+   HT_MODEL_EasyBraille         = 0X44,
+   HT_MODEL_ActiveBraille       = 0X54,
++  HT_MODEL_BasicBraille16      = 0X81,
++  HT_MODEL_BasicBraille20      = 0X82,
++  HT_MODEL_BasicBraille32      = 0X83,
++  HT_MODEL_BasicBraille40      = 0X84,
++  HT_MODEL_BasicBraille48      = 0X8A,
++  HT_MODEL_BasicBraille64      = 0X86,
++  HT_MODEL_BasicBraille80      = 0X87,
++  HT_MODEL_BasicBraille160     = 0X8B,
+   HT_MODEL_Braillino           = 0X72,
+   HT_MODEL_BrailleStar40       = 0X74,
+   HT_MODEL_BrailleStar80       = 0X78,
