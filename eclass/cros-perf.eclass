@@ -3,6 +3,8 @@
 
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
+CROS_WORKON_OUTOFTREE_BUILD=1
+
 inherit cros-workon eutils toolchain-funcs linux-info
 
 DESCRIPTION="Userland tools for Linux Performance Counters"
@@ -21,12 +23,17 @@ DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
 src_configure() {
+	mkdir -p "$(cros-workon_get_build_dir)"
+	# The version script likes to try & grab locks in here.
+	addpredict "${S}"/.git
+
 	clang-setup-env
 	cros-workon_src_configure
 }
 
 src_compile() {
 	local makeargs=(
+		O="$(cros-workon_get_build_dir)"
 		ARCH="${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}"
 		CC="$(tc-getCC)"
 		AR="$(tc-getAR)"
@@ -47,13 +54,14 @@ src_compile() {
 
 src_install() {
 	cd tools/perf
+	dodoc CREDITS
 
+	cd "$(cros-workon_get_build_dir)"
 	dosbin perf{,-archive}
 
-	dodoc CREDITS
 	if use doc; then
-		dodoc Documentation/*.txt
-		dohtml Documentation/*.html
-		doman Documentation/*.1
+		dodoc *.txt
+		dohtml *.html
+		doman *.1
 	fi
 }
