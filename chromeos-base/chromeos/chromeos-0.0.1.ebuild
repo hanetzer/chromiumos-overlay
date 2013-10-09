@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="+alsa bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
-	+fonts gdmwimax mtd opengles X"
+	+fonts gdmwimax mtd opengles pam X"
 
 ################################################################################
 #
@@ -91,6 +91,7 @@ CROS_COMMON_RDEPEND="
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
 	chromeos-base/bootstat
+	pam? ( chromeos-base/chromeos-auth-config )
 	chromeos-base/chromeos-base
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-init
@@ -111,8 +112,10 @@ CROS_COMMON_RDEPEND="
 	sys-apps/mawk
 	sys-apps/net-tools
 	sys-apps/sed
+	sys-apps/shadow
 	sys-apps/util-linux
 	sys-apps/which
+	pam? ( sys-auth/pam_pwdfile )
 	sys-libs/gcc-libs
 	sys-libs/timezone-data
 	mtd? ( sys-fs/mtd-utils )
@@ -205,7 +208,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
-	chromeos-base/chromeos-auth-config
 	chromeos-base/chromeos-debugd
 	chromeos-base/chromeos-imageburner
 	chromeos-base/chromeos-init
@@ -233,10 +235,8 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/mosys
 	sys-apps/pv
 	sys-apps/rootdev
-	sys-apps/shadow
 	sys-apps/upstart
 	sys-apps/ureadahead
-	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
 "
@@ -251,7 +251,6 @@ CROS_DEPEND="${CROS_RDEPEND}
 ################################################################################
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
-	sys-apps/shadow
 	sys-apps/util-linux
 "
 

@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE="32bit_au embedded_sudo cros_host"
+IUSE="32bit_au cros_host pam"
 
 DEPEND="
 	chromeos-base/verity
@@ -26,7 +26,7 @@ DEPEND="
 
 # TODO(adlr): remove coreutils dep if we move to busybox
 RDEPEND="
-	!embedded_sudo? ( app-admin/sudo )
+	pam? ( app-admin/sudo )
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	dev-util/shflags

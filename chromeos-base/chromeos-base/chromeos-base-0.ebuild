@@ -1,6 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+EAPI="4"
+
 inherit useradd pam
 
 DESCRIPTION="ChromeOS specific system setup"
@@ -10,7 +12,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_embedded cros_host embedded_sudo pam"
+IUSE="cros_embedded cros_host pam"
 
 # We need to make sure timezone-data is merged before us.
 # See pkg_setup below as well as http://crosbug.com/27413
@@ -29,8 +31,10 @@ DEPEND=">=sys-apps/baselayout-2
 	!<app-shells/dash-0.5.5
 	!<net-misc/openssh-5.2_p1-r8
 	!<chromeos-base/chromeos-init-0.0.1-r630
-	embedded_sudo? ( !app-admin/sudo )
 	!cros_host? (
+		!pam? (
+			!app-admin/sudo
+		)
 		!app-misc/editor-wrapper
 		!cros_embedded? (
 			app-shells/bash
@@ -38,6 +42,8 @@ DEPEND=">=sys-apps/baselayout-2
 		sys-libs/timezone-data
 	)"
 RDEPEND="${DEPEND}"
+
+S="${WORKDIR}"
 
 # Remove entry from /etc/group
 #
@@ -115,8 +121,6 @@ src_install() {
 	insinto /etc/avahi
 	doins "${FILESDIR}"/avahi-daemon.conf || die
 
-	use embedded_sudo && dobin "${FILESDIR}"/sudo
-
 	# target-specific fun
 	if ! use cros_host ; then
 		dodir /bin /usr/bin
@@ -142,6 +146,7 @@ src_install() {
 		fperms 600 /etc/ssh/sshd_config
 
 		if ! use pam ; then
+			dobin "${FILESDIR}"/sudo
 			sed -i -e '/^UsePAM/d' "${D}"/etc/ssh/sshd_config || die
 		fi
 
