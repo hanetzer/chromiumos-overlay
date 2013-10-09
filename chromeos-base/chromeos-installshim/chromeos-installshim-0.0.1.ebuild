@@ -58,6 +58,7 @@ RDEPEND="
 	sys-process/lsof
 	sys-process/procps
 	virtual/chromeos-bsp
+	virtual/chromeos-factoryinstall-bsp
 "
 
 S=${WORKDIR}
