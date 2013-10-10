@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-7.5.1.ebuild,v 1.13 2013/02/21 16:08:27 ago Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-7.6.1.ebuild,v 1.3 2013/09/29 04:00:43 vapier Exp $
 
 EAPI="3"
 
@@ -29,11 +29,11 @@ case ${PV} in
 	# weekly snapshots
 	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.bz2"
 	;;
-7.5.1 | 9999*)
+7.6.1 | 9999*)
 	# live git tree
 	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/gdb.git"
-	EGIT_BRANCH="chromeos_master"
-	EGIT_COMMIT=d84c423433280ff67d602c52b51c725b2fbcbe48
+	EGIT_BRANCH="master"
+	EGIT_COMMIT=4dcb84e2112f2fd7ce3a22e4ba567a43ec44940d
 	inherit git-2
 	SRC_URI=""
 	;;
@@ -44,7 +44,7 @@ case ${PV} in
 	;;
 esac
 
-PATCH_VER=""
+PATCH_VER="2"
 DESCRIPTION="GNU debugger"
 HOMEPAGE="http://sourceware.org/gdb/"
 SRC_URI="${SRC_URI} ${PATCH_VER:+mirror://gentoo/${P}-patches-${PATCH_VER}.tar.xz}"
@@ -54,7 +54,7 @@ SLOT="0"
 if [[ ${PV} != 9999* ]] ; then
 	KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86 ~ppc-aix ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~amd64-linux ~arm-linux ~x86-linux ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 fi
-IUSE="+client expat multitarget nls +python +server test vanilla zlib mounted_sources"
+IUSE="+client expat mounted_sources multitarget nls +python +server test vanilla zlib"
 
 RDEPEND="!dev-util/gdbserver
 	>=sys-libs/ncurses-5.2-r2
@@ -67,13 +67,12 @@ DEPEND="${RDEPEND}
 	virtual/yacc
 	test? ( dev-util/dejagnu )
 	nls? ( sys-devel/gettext )"
-is_cross && DEPEND+=" =${CATEGORY}/gdb-7.2-r99:${CTARGET}"
 
 S=${WORKDIR}/${PN}-${MY_PV}
 
 src_unpack () {
 	if use mounted_sources ; then
-		${GDBDIR:=/usr/local/toolchain_root/gdb/gdb-7.5.x}
+		${GDBDIR:=/usr/local/toolchain_root/gdb}
 		if [[ ! -d ${GDBDIR} ]] ; then
 			die "gdb dir not mounted/present at: ${GDBDIR}"
 		fi
@@ -87,6 +86,17 @@ src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
 	use vanilla || [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
 	strip-linguas -u bfd/po opcodes/po
+	if [[ ${CHOST} == *-darwin* ]] ; then
+		# make sure we have a python-config that matches our install,
+		# such that the python check doesn't fail just because the
+		# gdb-provided copy isn't quite what our python installed
+		# version is
+		rm -f "${S}"/gdb/python/python-config.py || die
+		pushd "${S}"/gdb/python > /dev/null || die
+		ln -s "${EROOT}"/usr/bin/$(eselect python show --python2)-config \
+			python-config.py || die
+		popd > /dev/null || die
+	fi
 }
 
 gdb_branding() {
