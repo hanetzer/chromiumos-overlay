@@ -7,7 +7,7 @@ PYTHON_DEPEND="2"
 SUPPORT_PYTHON_ABIS="1"
 RESTRICT_PYTHON_ABIS="3.*"
 
-inherit distutils
+inherit distutils eutils
 
 DESCRIPTION="Fast, simple packet creation / parsing, with definitions for the basic TCP/IP protocols."
 HOMEPAGE="http://code.google.com/p/dpkt/"
@@ -22,6 +22,11 @@ DEPEND=""
 RDEPEND=""
 
 DOCS="AUTHORS CHANGES HACKING"
+
+src_prepare() {
+	epatch "${FILESDIR}/dpkt-1.8-fix-ip-import.patch"
+	distutils_src_prepare
+}
 
 src_test() {
 	testing() {

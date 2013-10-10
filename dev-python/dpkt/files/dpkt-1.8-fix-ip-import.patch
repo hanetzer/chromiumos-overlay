@@ -1,0 +1,29 @@
+# Fix import dpkt.ip.
+#
+# When dpkt.ip is imported on a python script, it will try to import
+# all the IP protocols implemented on dpkt, but, if a package with the
+# same name as the desired protocol is found on the path it could pick
+# that one and fail instead of using the one provided with dpkt.
+#
+# This patch adds a fix that forces the import to search only on the
+# same directory as dpkt.ip.
+# Bug filed and patch proposed upstream:
+#  * https://code.google.com/p/dpkt/issues/detail?id=115
+Index: dpkt/ip.py
+===================================================================
+--- dpkt/ip.py	(revision 89)
++++ dpkt/ip.py	(working copy)
+@@ -249,9 +249,12 @@
+         if k.startswith('IP_PROTO_'):
+             name = k[9:].lower()
+             try:
+-                mod = __import__(name, g)
++                # Only search for protocols from the same directory.
++                mod = __import__(name, g, level=0)
+             except ImportError:
+                 continue
++            if not hasattr(mod, name.upper()):
++                continue
+             IP.set_proto(v, getattr(mod, name.upper()))
+ 
+ if not IP._protosw:
