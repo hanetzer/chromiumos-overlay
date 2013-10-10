@@ -1,0 +1,31 @@
+From 82288299944a1b38471aadea686030d579b424a8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Thu, 10 Oct 2013 13:20:51 -0700
+Subject: [PATCH] i965: Disable HiZ on SNB
+
+It causes crashes with WebGL on SNB, including with WebGL maps,
+so let's disable it until it's stable.
+
+Interestingly enough, it's fine on IVB, so we keep it there.
+
+Change-Id: I95a79ed769c7736ad46d51ee0bdd7ce124ebf3e2
+---
+ src/mesa/drivers/dri/i965/intel_context.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/intel_context.c b/src/mesa/drivers/dri/i965/intel_context.c
+index e4d7bd5..dbc24f1 100644
+--- a/src/mesa/drivers/dri/i965/intel_context.c
++++ b/src/mesa/drivers/dri/i965/intel_context.c
+@@ -501,7 +501,7 @@ intelInitContext(struct intel_context *intel,
+ 
+    intel->has_separate_stencil = intel->intelScreen->hw_has_separate_stencil;
+    intel->must_use_separate_stencil = intel->intelScreen->hw_must_use_separate_stencil;
+-   intel->has_hiz = intel->gen >= 6;
++   intel->has_hiz = intel->gen >= 7;
+    intel->has_llc = intel->intelScreen->hw_has_llc;
+    intel->has_swizzling = intel->intelScreen->hw_has_swizzling;
+ 
+-- 
+1.8.4
+
