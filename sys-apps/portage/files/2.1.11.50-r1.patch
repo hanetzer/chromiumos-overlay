@@ -1,5 +1,5 @@
 diff --git a/bin/ebuild-helpers/prepstrip b/bin/ebuild-helpers/prepstrip
-index fb20777..c7b1607 100755
+index fb20777..8b96621 100755
 --- a/bin/ebuild-helpers/prepstrip
 +++ b/bin/ebuild-helpers/prepstrip
 @@ -342,7 +342,12 @@ do
@@ -29,7 +29,7 @@ index f751381..a110bf8 100644
                             "protect-owned", "python-trace", "sandbox",
                             "selinux", "sesandbox", "sfperms",
 diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
-index bbcf61c..ac73b06 100644
+index bbcf61c..336d770 100644
 --- a/pym/portage/dbapi/vartree.py
 +++ b/pym/portage/dbapi/vartree.py
 @@ -69,6 +69,7 @@ from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
@@ -58,7 +58,38 @@ index bbcf61c..ac73b06 100644
  			if self._lock is None:
  				raise AssertionError("not locked")
  			self._lock_count = 0
-@@ -4203,6 +4204,19 @@ class dblink(object):
+@@ -1006,12 +1007,24 @@ class vardbapi(dbapi):
+ 				removed += 1
+ 
+ 		if removed:
+-			self._bump_mtime(pkg.mycpv)
+-			f = atomic_ofstream(os.path.join(pkg.dbdir, "CONTENTS"))
+-			write_contents(new_contents, root, f)
+-			f.close()
+-			self._bump_mtime(pkg.mycpv)
+-			pkg._clear_contents_cache()
++			self.writeContentsToContentsFile(pkg, new_contents)
++
++	def writeContentsToContentsFile(self, pkg, new_contents):
++		"""
++		@param pkg: package to write contents file for
++		@type pkg: dbapi
++		@param new_contents: contents to write to CONTENTS file
++		@type new_contents: contents dictionary of the form
++		                    {u'/path/to/file' : (contents_attribute 1, ...),
++		                    ...}
++		"""
++		root = self.settings['ROOT']
++		self._bump_mtime(pkg.mycpv)
++		f = atomic_ofstream(os.path.join(pkg.dbdir, "CONTENTS"))
++		write_contents(new_contents, root, f)
++		f.close()
++		self._bump_mtime(pkg.mycpv)
++		pkg._clear_contents_cache()
+ 
+ 	class _owners_cache(object):
+ 		"""
+@@ -4203,6 +4216,19 @@ class dblink(object):
  			contents=contents, env=self.settings,
  			writemsg_level=self._display_merge, vardbapi=self.vartree.dbapi)
  
