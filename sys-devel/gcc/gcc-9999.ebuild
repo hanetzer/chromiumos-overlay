@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-devel/gcc/gcc-4.4.3-r3.ebuild,v 1.1 2010/06/19 01:53:09 zorry Exp $
 
-EAPI=1
+EAPI="4"
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
 NEXT_GCC="origin/svn-mirror/google/gcc-4_9"
@@ -118,16 +118,90 @@ src_unpack() {
 	COST_PKG_VERSION+="_${PVR}"
 }
 
-src_compile()
-{
-	src_configure
-	cd $(get_gcc_build_dir) || "Build dir $(get_gcc_build_dir) not found"
+src_configure() {
+	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]] ; then
+		return
+	fi
+
+	# Set configuration based on path variables
+	local DATAPATH=$(get_data_dir)
+	local confgcc="$(use_enable multilib)
+		--prefix=${PREFIX} \
+		--bindir=$(get_bin_dir) \
+		--datadir=${DATAPATH} \
+		--disable-canonical-system-headers \
+		--mandir=${DATAPATH}/man \
+		--infodir=${DATAPATH}/info \
+		--includedir=$(get_lib_dir)/include \
+		--with-gxx-include-dir=$(get_stdcxx_incdir) \
+		$(use_enable go libatomic) \
+		--with-python-dir=${DATAPATH#${PREFIX}}/python"
+	confgcc="${confgcc} --host=${CHOST}"
+	confgcc="${confgcc} --target=${CTARGET}"
+	confgcc="${confgcc} --build=${CBUILD}"
+
+	# Language options for stage1/stage2.
+	if ! use cxx ; then
+		GCC_LANG="c"
+	else
+		GCC_LANG="c,c++"
+	fi
+	use go && GCC_LANG+=",go"
+	confgcc="${confgcc} --enable-languages=${GCC_LANG}"
+
+	if use hardfp && [[ ${CTARGET} == arm* ]] ; then
+		confgcc="${confgcc} --with-float=hard"
+	fi
+
+	if use thumb && [[ ${CTARGET} == arm* ]] ; then
+		confgcc="${confgcc} --with-mode=thumb"
+	fi
+
+	if use vtable_verify ; then
+		confgcc="${confgcc} --enable-cxx-flags=-Wl,-L../libsupc++/.libs --enable-vtable-verify"
+	fi
+
+	if is_crosscompile ; then
+		local needed_libc="glibc"
+		if [[ -n ${needed_libc} ]] ; then
+			if ! has_version ${CATEGORY}/${needed_libc} ; then
+				confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
+			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
+				confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
+			else
+				confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
+			fi
+		fi
+	else
+		confgcc="${confgcc} --enable-shared --enable-threads=posix"
+	fi
+
+	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
+
+	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
+	--with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
+	confgcc="${confgcc} ${EXTRA_ECONF}"
+
+	# Build in a separate build tree
+	mkdir -p $(get_gcc_build_dir) || \
+		die "Could not create build dir $(get_gcc_build_dir)"
+	cd $(get_gcc_build_dir) || die "Build dir $(get_gcc_build_dir) not found"
+
+	# and now to do the actual configuration
+	addwrite /dev/zero
+	echo "Running this:"
+	echo "configure ${confgcc}"
+	echo "$(get_gcc_dir)"/configure "$@"
+	"$(get_gcc_dir)"/configure ${confgcc} || die "failed to run configure"
+}
+
+src_compile() {
+	cd "$(get_gcc_build_dir)"
 	GCC_CFLAGS="$(portageq envvar CFLAGS)"
 	TARGET_FLAGS=""
 	TARGET_GO_FLAGS=""
 
-	if use hardened
-	then
+	if use hardened ; then
 		TARGET_FLAGS="${TARGET_FLAGS} -fstack-protector-strong -D_FORTIFY_SOURCE=2"
 	fi
 
@@ -157,7 +231,7 @@ src_compile()
 		CXXFLAGS_FOR_TARGET="$(get_make_var CXXFLAGS_FOR_TARGET) ${EXTRA_CXXFLAGS_FOR_TARGET}" \
 		GOCFLAGS_FOR_TARGET="$(get_make_var GOCFLAGS_FOR_TARGET) ${EXTRA_GOCFLAGS_FOR_TARGET}" \
 		LD_FOR_TARGET="${LD_NON_GOLD}" \
-		all || die
+		all
 }
 
 # Logic copied from Gentoo's toolchain.eclass.
@@ -191,10 +265,9 @@ toolchain_src_install() {
 	done
 }
 
-src_install()
-{
-	cd $(get_gcc_build_dir) || "Build dir $(get_gcc_build_dir) not found"
-	emake DESTDIR="${D}" install || die "Could not install gcc"
+src_install() {
+	cd "$(get_gcc_build_dir)"
+	emake DESTDIR="${D}" install
 
 	find "${D}" -name libiberty.a -exec rm -f "{}" \;
 
@@ -287,8 +360,7 @@ EOF
 	fi
 }
 
-pkg_preinst()
-{
+pkg_preinst() {
 	# We handle ccache ourselves in the sysroot wrapper.
 	rm -f /usr/lib/ccache/bin/*-*
 
@@ -316,13 +388,11 @@ pkg_preinst()
 	chown -R ${PORTAGE_USERNAME}:portage "${ccache_dir}"
 }
 
-pkg_postinst()
-{
+pkg_postinst() {
 	gcc-config $(get_gcc_config_file)
 }
 
-pkg_postrm()
-{
+pkg_postrm() {
 	if is_crosscompile ; then
 		if [[ -z $(ls "${ROOT}"/etc/env.d/gcc/${CTARGET}* 2>/dev/null) ]] ; then
 			rm -f "${ROOT}"/etc/env.d/gcc/config-${CTARGET}
@@ -332,89 +402,7 @@ pkg_postrm()
 	fi
 }
 
-src_configure()
-{
-	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]] ; then
-		return
-	fi
-
-	# Set configuration based on path variables
-	local DATAPATH=$(get_data_dir)
-	local confgcc="$(use_enable multilib)
-		--prefix=${PREFIX} \
-		--bindir=$(get_bin_dir) \
-		--datadir=${DATAPATH} \
-		--disable-canonical-system-headers \
-		--mandir=${DATAPATH}/man \
-		--infodir=${DATAPATH}/info \
-		--includedir=$(get_lib_dir)/include \
-		--with-gxx-include-dir=$(get_stdcxx_incdir) \
-		$(use_enable go libatomic) \
-		--with-python-dir=${DATAPATH#${PREFIX}}/python"
-	confgcc="${confgcc} --host=${CHOST}"
-	confgcc="${confgcc} --target=${CTARGET}"
-	confgcc="${confgcc} --build=${CBUILD}"
-
-	# Language options for stage1/stage2.
-	if ! use cxx
-	then
-		GCC_LANG="c"
-	else
-		GCC_LANG="c,c++"
-	fi
-	use go && GCC_LANG+=",go"
-	confgcc="${confgcc} --enable-languages=${GCC_LANG}"
-
-	if use hardfp && [[ ${CTARGET} == arm* ]] ;
-	then
-		confgcc="${confgcc} --with-float=hard"
-	fi
-
-	if use thumb && [[ ${CTARGET} == arm* ]] ;
-	then
-		confgcc="${confgcc} --with-mode=thumb"
-	fi
-
-	if use vtable_verify ; then
-		confgcc="${confgcc} --enable-cxx-flags=-Wl,-L../libsupc++/.libs --enable-vtable-verify"
-	fi
-
-	if is_crosscompile ; then
-		local needed_libc="glibc"
-		if [[ -n ${needed_libc} ]] ; then
-			if ! has_version ${CATEGORY}/${needed_libc} ; then
-				confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
-			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
-				confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
-			else
-				confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
-			fi
-		fi
-	else
-		confgcc="${confgcc} --enable-shared --enable-threads=posix"
-	fi
-
-	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
-
-	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
-	--with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
-	confgcc="${confgcc} ${EXTRA_ECONF}"
-
-	# Build in a separate build tree
-	mkdir -p $(get_gcc_build_dir) || \
-		die "Could not create build dir $(get_gcc_build_dir)"
-	cd $(get_gcc_build_dir) || die "Build dir $(get_gcc_build_dir) not found"
-
-	# and now to do the actual configuration
-	addwrite /dev/zero
-	echo "Running this:"
-	echo "configure ${confgcc}"
-	echo "$(get_gcc_dir)"/configure "$@"
-	"$(get_gcc_dir)"/configure ${confgcc} || die "failed to run configure"
-}
-
-get_gcc_configure_options()
-{
+get_gcc_configure_options() {
 	local CTARGET=$1; shift
 	local confgcc=$(get_gcc_common_options)
 	case ${CTARGET} in
@@ -444,8 +432,7 @@ get_gcc_configure_options()
 	echo ${confgcc}
 }
 
-get_gcc_common_options()
-{
+get_gcc_common_options() {
 	local confgcc
 	confgcc="${confgcc} --disable-libmudflap"
 	confgcc="${confgcc} --disable-libssp"
@@ -461,8 +448,7 @@ get_gcc_common_options()
 	echo ${confgcc}
 }
 
-get_gcc_dir()
-{
+get_gcc_dir() {
 	local GCCDIR
 	if use mounted_gcc ; then
 		GCCDIR=${GCC_SOURCE_PATH:=/usr/local/toolchain_root/gcc}
@@ -474,28 +460,23 @@ get_gcc_dir()
 	echo "${GCCDIR}"
 }
 
-get_gcc_build_dir()
-{
+get_gcc_build_dir() {
 	echo "$(get_gcc_dir)-build-${CTARGET}"
 }
 
-get_gcc_base_ver()
-{
+get_gcc_base_ver() {
 	cat "$(get_gcc_dir)/gcc/BASE-VER"
 }
 
-get_stdcxx_incdir()
-{
+get_stdcxx_incdir() {
 	echo "$(get_lib_dir)/include/g++-v4"
 }
 
-get_lib_dir()
-{
+get_lib_dir() {
 	echo "${PREFIX}/lib/gcc/${CTARGET}/$(get_gcc_base_ver)"
 }
 
-get_bin_dir()
-{
+get_bin_dir() {
 	if is_crosscompile ; then
 		echo ${PREFIX}/${CHOST}/${CTARGET}/gcc-bin/$(get_gcc_base_ver)
 	else
@@ -503,13 +484,11 @@ get_bin_dir()
 	fi
 }
 
-get_data_dir()
-{
+get_data_dir() {
 	echo "${PREFIX}/share/gcc-data/${CTARGET}/$(get_gcc_base_ver)"
 }
 
-get_gcc_config_file()
-{
+get_gcc_config_file() {
 	echo ${CTARGET}-${PV}
 }
 
