@@ -125,20 +125,22 @@ src_configure() {
 
 	# Set configuration based on path variables
 	local DATAPATH=$(get_data_dir)
-	local confgcc="$(use_enable multilib)
-		--prefix=${PREFIX} \
-		--bindir=$(get_bin_dir) \
-		--datadir=${DATAPATH} \
-		--disable-canonical-system-headers \
-		--mandir=${DATAPATH}/man \
-		--infodir=${DATAPATH}/info \
-		--includedir=$(get_lib_dir)/include \
-		--with-gxx-include-dir=$(get_stdcxx_incdir) \
-		$(use_enable go libatomic) \
-		--with-python-dir=${DATAPATH#${PREFIX}}/python"
-	confgcc="${confgcc} --host=${CHOST}"
-	confgcc="${confgcc} --target=${CTARGET}"
-	confgcc="${confgcc} --build=${CBUILD}"
+	local confgcc=(
+		$(use_enable multilib)
+		--prefix=${PREFIX}
+		--bindir=$(get_bin_dir)
+		--datadir=${DATAPATH}
+		--disable-canonical-system-headers
+		--mandir=${DATAPATH}/man
+		--infodir=${DATAPATH}/info
+		--includedir=$(get_lib_dir)/include
+		--with-gxx-include-dir=$(get_stdcxx_incdir)
+		$(use_enable go libatomic)
+		--with-python-dir=${DATAPATH#${PREFIX}}/python
+		--host=${CHOST}
+		--target=${CTARGET}
+		--build=${CBUILD}
+	)
 
 	# Language options for stage1/stage2.
 	if ! use cxx ; then
@@ -147,40 +149,43 @@ src_configure() {
 		GCC_LANG="c,c++"
 	fi
 	use go && GCC_LANG+=",go"
-	confgcc="${confgcc} --enable-languages=${GCC_LANG}"
+	confgcc+=( --enable-languages=${GCC_LANG} )
 
 	if use hardfp && [[ ${CTARGET} == arm* ]] ; then
-		confgcc="${confgcc} --with-float=hard"
+		confgcc+=( --with-float=hard )
 	fi
 
 	if use thumb && [[ ${CTARGET} == arm* ]] ; then
-		confgcc="${confgcc} --with-mode=thumb"
+		confgcc+=( --with-mode=thumb )
 	fi
 
 	if use vtable_verify ; then
-		confgcc="${confgcc} --enable-cxx-flags=-Wl,-L../libsupc++/.libs --enable-vtable-verify"
+		confgcc+=( --enable-cxx-flags=-Wl,-L../libsupc++/.libs --enable-vtable-verify )
 	fi
 
 	if is_crosscompile ; then
 		local needed_libc="glibc"
 		if [[ -n ${needed_libc} ]] ; then
 			if ! has_version ${CATEGORY}/${needed_libc} ; then
-				confgcc="${confgcc} --disable-shared --disable-threads --without-headers"
+				confgcc+=( --disable-shared --disable-threads --without-headers )
 			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
-				confgcc="${confgcc} --disable-shared --with-sysroot=/usr/${CTARGET}"
+				confgcc+=( --disable-shared --with-sysroot=/usr/${CTARGET} )
 			else
-				confgcc="${confgcc} --with-sysroot=/usr/${CTARGET}"
+				confgcc+=( --with-sysroot=/usr/${CTARGET} )
 			fi
 		fi
 	else
-		confgcc="${confgcc} --enable-shared --enable-threads=posix"
+		confgcc+=( --enable-shared --enable-threads=posix )
 	fi
 
-	confgcc="${confgcc} $(get_gcc_configure_options ${CTARGET})"
+	get_gcc_configure_options ${CTARGET}
 
-	EXTRA_ECONF="--with-bugurl=http://code.google.com/p/chromium-os/issues/entry\
-	--with-pkgversion=${COST_PKG_VERSION} --enable-linker-build-id"
-	confgcc="${confgcc} ${EXTRA_ECONF}"
+	confgcc+=(
+		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry
+		--with-pkgversion"=${COST_PKG_VERSION}"
+		--enable-linker-build-id
+	)
+	confgcc+=( ${EXTRA_ECONF} )
 
 	# Build in a separate build tree
 	mkdir -p $(get_gcc_build_dir) || \
@@ -190,9 +195,8 @@ src_configure() {
 	# and now to do the actual configuration
 	addwrite /dev/zero
 	echo "Running this:"
-	echo "configure ${confgcc}"
-	echo "$(get_gcc_dir)"/configure "$@"
-	"$(get_gcc_dir)"/configure ${confgcc} || die "failed to run configure"
+	echo "$(get_gcc_dir)"/configure "${confgcc[@]}"
+	"$(get_gcc_dir)"/configure "${confgcc[@]}" || die
 }
 
 src_compile() {
@@ -404,7 +408,7 @@ pkg_postrm() {
 
 get_gcc_configure_options() {
 	local CTARGET=$1; shift
-	local confgcc=$(get_gcc_common_options)
+	get_gcc_common_options
 	case ${CTARGET} in
 		arm*)	#264534
 			local arm_arch="${CTARGET%%-*}"
@@ -415,37 +419,40 @@ get_gcc_configure_options() {
 				# Remove endian ('l' / 'eb')
 				[[ ${arm_arch} == *l ]] && arm_arch=${arm_arch%l}
 				[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
-				confgcc="${confgcc} --with-arch=${arm_arch}"
-				confgcc="${confgcc} --disable-esp"
+				confgcc+=(
+					--with-arch=${arm_arch}
+					--disable-esp
+				)
 			fi
 			;;
 		i?86*)
 			# Hardened is enabled for x86, but disabled for ARM.
-			confgcc="${confgcc} --enable-esp"
-			confgcc="${confgcc} --with-arch=atom"
-			confgcc="${confgcc} --with-tune=atom"
+			confgcc+=(
+				--enable-esp
+				--with-arch=atom
+				--with-tune=atom
+			)
 			;;
 		x86_64*-gnux32)
-			confgcc="${confgcc} --with-abi=x32 --with-multilib-list=mx32"
+			confgcc+=( --with-abi=x32 --with-multilib-list=mx32 )
 			;;
 	esac
-	echo ${confgcc}
 }
 
 get_gcc_common_options() {
-	local confgcc
-	confgcc="${confgcc} --disable-libmudflap"
-	confgcc="${confgcc} --disable-libssp"
-	confgcc+=" $(use_enable openmp libgomp)"
-	confgcc="${confgcc} --enable-__cxa_atexit"
-	confgcc="${confgcc} --enable-checking=release"
-	confgcc="${confgcc} --disable-libquadmath"
-	confgcc="${confgcc} --disable-libitm"
-	confgcc="${confgcc} --disable-libcilkrts"
-	# Enable frame pointer by default for all the boards.
-	# originally only enabled for i686 for chromium-os:23321.
-	confgcc="${confgcc} --enable-frame-pointer"
-	echo ${confgcc}
+	confgcc+=(
+		--disable-libmudflap
+		--disable-libssp
+		$(use_enable openmp libgomp)
+		--enable-__cxa_atexit
+		--enable-checking=release
+		--disable-libquadmath
+		--disable-libitm
+		--disable-libcilkrts
+		# Enable frame pointer by default for all the boards.
+		# originally only enabled for i686 for chromium-os:23321.
+		--enable-frame-pointer
+	)
 }
 
 get_gcc_dir() {
