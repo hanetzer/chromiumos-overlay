@@ -950,8 +950,12 @@ install_telemetry_dep_resources() {
                     tools/perf/run_measurement \
 		    tools/perf/run_multipage_benchmarks \
 		    tools/perf/run_tests \
+		    tools/perf/run_benchmark \
 		    chrome/test/telemetry
 	fi
+	# When copying only a portion of the Chrome source that telemetry needs,
+	# some symlinks can end up broken. Thus clean these up before packaging.
+	find -L "${test_dir}" -type l -delete
 }
 
 move_and_symlink_files() {
