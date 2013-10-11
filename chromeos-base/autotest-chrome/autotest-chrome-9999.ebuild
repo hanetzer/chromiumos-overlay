@@ -38,6 +38,7 @@ IUSE_TESTS=(
 
 	# Tests that depend on telemetry.
 	+tests_bluetooth_RegressionClient
+	+tests_desktopui_AudioFeedback
 	+tests_desktopui_EchoExtension
 	+tests_login_ChromeProfileSanitaryTelemetry
 	+tests_login_CryptohomeIncognitoTelemetry
@@ -54,6 +55,10 @@ IUSE_TESTS=(
 	+tests_video_VideoDecodeMemoryUsage
 	+tests_video_VideoSanity
 	+tests_video_VideoSeek
+	+tests_video_YouTubePage
+	+tests_video_YouTubeFlash
+	+tests_video_YouTubeHTML5
+	+tests_video_YouTubeMseEme
 
 	# Inherits from cros_ui_test.
 	+tests_desktopui_BrowserTest
@@ -63,7 +68,6 @@ IUSE_TESTS=(
 	+tests_desktopui_PyAutoPerfTests
 	+tests_desktopui_SyncIntegrationTests
 	+tests_audiovideo_PlaybackRecordSemiAuto
-	+tests_desktopui_AudioFeedback
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
@@ -77,10 +81,6 @@ IUSE_TESTS=(
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_WebRTC
 	+tests_desktopui_WebRtcBrowserTest
-	+tests_video_YouTubePage
-	+tests_video_YouTubeFlash
-	+tests_video_YouTubeHTML5
-	+tests_video_YouTubeMseEme
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_DevicePolicy
 	+tests_enterprise_InstallAttributes
