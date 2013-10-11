@@ -105,12 +105,12 @@ src_unpack() {
 	fi
 
 	COST_PKG_VERSION="$("${FILESDIR}"/chromeos-version.sh "${S}")_cos_gg"
-
 	if [[ -d ${S}/.git ]]; then
 		COST_PKG_VERSION+="_$(cd ${S}; git describe --always)"
 	elif [[ -n ${VCSID} ]]; then
 		COST_PKG_VERSION+="_${VCSID}"
 	fi
+	COST_PKG_VERSION+="_${PVR}"
 }
 
 src_compile()
