@@ -179,7 +179,6 @@ src_install() {
 	cd "$(get_gcc_build_dir)"
 	emake -C "${CTARGET}"/libstdc++-v3/src DESTDIR="${D}" install
 	emake -C "${CTARGET}"/libgcc DESTDIR="${D}" install-shared
-	tree "${D}"
 
 	# Delete everything we don't care about (headers/etc...).
 	rm -rf "${D}"/delete-me "${D}"/usr/$(get_libdir)/gcc/${CTARGET}/
