@@ -21,7 +21,7 @@ dev-libs/glib		-doc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
 dev-libs/opensc		ssl -pcsc-lite
-dev-libs/openssl	pkcs11
+dev-libs/openssl	pkcs11 -tls-heartbeat
 dev-libs/protobuf	python
 dev-python/pyudev	pygobject
 dev-util/dialog		-unicode minimal

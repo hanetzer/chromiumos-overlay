@@ -15,7 +15,7 @@ HOMEPAGE="http://www.openssl.org/"
 LICENSE="openssl"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~sparc-fbsd ~x86-fbsd"
-IUSE="bindist gmp kerberos rfc3779 sse2 static-libs test vanilla zlib heartbeat"
+IUSE="bindist gmp kerberos rfc3779 sse2 static-libs test +tls-heartbeat vanilla zlib"
 
 # Have the sub-libs in RDEPEND with [static-libs] since, logically,
 # our libssl.a depends on libz.a/etc... at runtime.
@@ -122,7 +122,7 @@ src_configure() {
 		$(use_ssl kerberos krb5 --with-krb5-flavor=${krb5}) \
 		$(use_ssl rfc3779) \
 		$(use_ssl zlib) \
-		$(use_ssl heartbeats) \
+		$(use_ssl tls-heartbeat heartbeats) \
 		--prefix=/usr \
 		--openssldir=${SSL_CNF_DIR} \
 		--libdir=$(get_libdir) \
