@@ -3,14 +3,15 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1c.ebuild,v 1.2 2012/05/20 14:01:08 vapier Exp $
 
 EAPI="4"
-
-inherit eutils flag-o-matic toolchain-funcs cros-workon
-
 CROS_WORKON_PROJECT="chromiumos/third_party/openssl"
+
+inherit eutils flag-o-matic toolchain-funcs multilib cros-workon
 
 REV="1.7"
 DESCRIPTION="full-strength general purpose cryptography library (including SSL v2/v3 and TLS v1)"
 HOMEPAGE="http://www.openssl.org/"
+SRC_URI="
+	http://cvs.pld-linux.org/cgi-bin/cvsweb.cgi/packages/${PN}/${PN}-c_rehash.sh?rev=${REV} -> ${PN}-c_rehash.sh.${REV}"
 
 LICENSE="openssl"
 SLOT="0"
@@ -38,7 +39,7 @@ src_unpack() {
 	SSL_CNF_DIR="/etc/ssl"
 	sed \
 		-e "/^DIR=/s:=.*:=${SSL_CNF_DIR}:" \
-		"${FILESDIR}"/c_rehash.sh \
+		"${DISTDIR}"/${PN}-c_rehash.sh.${REV} \
 		> "${WORKDIR}"/c_rehash || die #416717
 }
 
@@ -90,7 +91,7 @@ src_configure() {
 	unset SCRIPTS #312551
 	unset CROSS_COMPILE #311473
 
-	tc-export CC AR RANLIB # RC
+	tc-export CC AR RANLIB RC
 
 	# Clean out patent-or-otherwise-encumbered code
 	# Camellia: Royalty Free            http://en.wikipedia.org/wiki/Camellia_(cipher)
@@ -121,8 +122,8 @@ src_configure() {
 		$(use_ssl gmp gmp -lgmp) \
 		$(use_ssl kerberos krb5 --with-krb5-flavor=${krb5}) \
 		$(use_ssl rfc3779) \
-		$(use_ssl zlib) \
 		$(use_ssl tls-heartbeat heartbeats) \
+		$(use_ssl zlib) \
 		--prefix=/usr \
 		--openssldir=${SSL_CNF_DIR} \
 		--libdir=$(get_libdir) \
@@ -161,7 +162,7 @@ src_compile() {
 
 src_install() {
 	emake INSTALL_PREFIX="${D}" install
-	dobin "${S}"/tools/c_rehash #333117
+	dobin "${WORKDIR}"/c_rehash #333117
 	dodoc CHANGES* FAQ NEWS README doc/*.txt doc/c-indentation.el
 	dohtml -r doc/*
 	use rfc3779 && dodoc engines/ccgost/README.gost
