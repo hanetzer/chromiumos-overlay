@@ -109,7 +109,7 @@ index bbcf61c..336d770 100644
  		# the library path has been updated.
  		self._prune_plib_registry()
 diff --git a/pym/portage/package/ebuild/doebuild.py b/pym/portage/package/ebuild/doebuild.py
-index 71a6f15..4b8feb3 100644
+index 71a6f15..e113df2 100644
 --- a/pym/portage/package/ebuild/doebuild.py
 +++ b/pym/portage/package/ebuild/doebuild.py
 @@ -5,6 +5,7 @@ from __future__ import unicode_literals
@@ -120,7 +120,19 @@ index 71a6f15..4b8feb3 100644
  import grp
  import gzip
  import errno
-@@ -1835,6 +1836,7 @@ def _post_src_install_uid_fix(mysettings, out):
+@@ -1514,9 +1515,10 @@ def spawnebuild(mydo, actionmap, mysettings, debug, alwaysdep=0,
+ _post_phase_cmds = {
+ 
+ 	"install" : [
++		"install_hooks",
+ 		"install_qa_check",
+ 		"install_symlink_html_docs",
+-		"install_hooks"],
++	],
+ 
+ 	"preinst" : [
+ 		"preinst_sfperms",
+@@ -1835,6 +1837,7 @@ def _post_src_install_uid_fix(mysettings, out):
  	destdir = mysettings["D"]
  	ed_len = len(mysettings["ED"])
  	unicode_errors = []
@@ -128,7 +140,7 @@ index 71a6f15..4b8feb3 100644
  	desktop_file_validate = \
  		portage.process.find_binary("desktop-file-validate") is not None
  	xdg_dirs = mysettings.get('XDG_DATA_DIRS', '/usr/share').split(':')
-@@ -1961,10 +1963,12 @@ def _post_src_install_uid_fix(mysettings, out):
+@@ -1961,10 +1964,12 @@ def _post_src_install_uid_fix(mysettings, out):
  							new_contents, mode='wb')
  
  				mystat = os.lstat(fpath)
@@ -145,7 +157,7 @@ index 71a6f15..4b8feb3 100644
  				if mystat.st_uid != portage_uid and \
  					mystat.st_gid != portage_gid:
  					continue
-@@ -2005,6 +2009,14 @@ def _post_src_install_uid_fix(mysettings, out):
+@@ -2005,6 +2010,14 @@ def _post_src_install_uid_fix(mysettings, out):
  	f.write('%d\n' % size)
  	f.close()
  
