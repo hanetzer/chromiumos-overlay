@@ -79,7 +79,6 @@ src_install() {
 		insinto /etc/init
 		doins *.conf
 
-		dosbin date-proxy-watcher
 		dosbin chromeos-boot-alert
 		dosbin display_low_battery_alert
 
