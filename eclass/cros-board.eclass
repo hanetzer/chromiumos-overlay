@@ -66,6 +66,7 @@ ALL_BOARDS=(
 	lumpy
 	nyan
 	panda
+	panther
 	parrot
 	parrot32
 	parrot64
