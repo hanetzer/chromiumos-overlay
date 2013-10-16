@@ -1072,6 +1072,13 @@ src_install() {
 		# is safer to just move all of the files.
 		move_and_symlink_files "${CHROME_DIR}" "/usr/local/${CHROME_DIR}"
 	fi
+
+	if use build_tests; then
+		# Install Chrome Driver to test image.
+		local chromedriver_dir='/usr/local/chromedriver'
+		dodir "${chromedriver_dir}"
+		cp -pPR "${FROM}"/chromedriver "${D}/${chromedriver_dir}" || die
+	fi
 }
 
 
