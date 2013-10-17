@@ -996,7 +996,8 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
 		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		autotest-deponly_src_install
-		env -uRESTRICT prepstrip "${D}/usr/local/autotest"
+		# This is needed when deploy_chrome is doing the stripping.
+		#env -uRESTRICT prepstrip "${D}/usr/local/autotest"
 	fi
 
 	# Fix some perms.
@@ -1045,6 +1046,8 @@ src_install() {
 		--board="${BOARD}"
 		--build-dir="${FROM}"
 		--gyp-defines="${GYP_DEFINES}"
+		# If this is enabled, we need to re-enable `prepstrip` above for autotests.
+		# You'll also have to re-add "strip" to the RESTRICT at the top of the file.
 		--nostrip
 		--staging-dir="${D_CHROME_DIR}"
 		--staging-flags="${USE}"
