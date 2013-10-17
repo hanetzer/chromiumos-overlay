@@ -81,6 +81,7 @@ ALL_BOARDS=(
 	samus
 	slippy
 	sonic
+	squawks
 	stout
 	stout32
 	stumpy
