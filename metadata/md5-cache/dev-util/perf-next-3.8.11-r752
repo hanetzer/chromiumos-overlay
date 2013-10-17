@@ -3,11 +3,11 @@ DEPEND=!dev-util/perf dev-vcs/git dev-vcs/git demangle? ( sys-devel/binutils ) d
 DESCRIPTION=Userland tools for Linux Performance Counters
 EAPI=4
 HOMEPAGE=http://perf.wiki.kernel.org/
-IUSE=cros_host cros_workon_tree_b6a0d44ade38f0daf44673e1220a34813b7331ec profiling cros_host cros_workon_tree_b6a0d44ade38f0daf44673e1220a34813b7331ec profiling -asan -clang +demangle +doc perl python ncurses
+IUSE=cros_host cros_workon_tree_b4e964bdd3d9cf9bd9e15c7377a950dc6eeabcde profiling cros_host cros_workon_tree_b4e964bdd3d9cf9bd9e15c7377a950dc6eeabcde profiling -asan -clang +demangle +doc perl python ncurses
 KEYWORDS=amd64 arm x86
 LICENSE=GPL-2
 RDEPEND=!dev-util/perf demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) )
 REQUIRED_USE=asan? ( clang )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	417aca45c487d76465be460ece177719	cros-perf	8ecb18af3c7b3fe4600bda530d5c302e	cros-workon	37b5397aa3b2a3ac2759ec4405974c90	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
-_md5_=4907a07ad180a503b50f52be18ebf1c2
+_md5_=51fc2c73130685606b454137c034a86c
