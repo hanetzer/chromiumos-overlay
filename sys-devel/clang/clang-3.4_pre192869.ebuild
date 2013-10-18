@@ -20,19 +20,19 @@ EGIT_REPO_URIS=(
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"f62372f6a30373e976831bf4905a7c2fe45a9030"	# EGIT_COMMIT
+		"49af380e3b007c678a7e4354efff601fd30a6681"	# EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"369ffffa48cb611a63dc5c7926e5c00181b14ba1"	# EGIT_COMMIT
+		"782cbdca4e926cb7b640d194531a07c431990ee3"	# EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"5774e390199a572d10b22c78a80ed2cdde94304d"	# EGIT_COMMIT
+		"251b18d74231763a1d3f52236aeee9cc5c98f397"	# EGIT_COMMIT
 )
 inherit git-2
 
@@ -82,7 +82,9 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
 	epatch "${FILESDIR}"/${PN}-3.4-gentoo-install.patch
 
+	# Change the default asan output path
 	epatch "${FILESDIR}"/${PN}-3.4-asan-default-path.patch
+
 	# multilib-strict
 	sed -e "/PROJ_headers\|HeaderDir/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/lib/Headers/Makefile \
