@@ -1,36 +1,26 @@
-From 130d14c6d2282ac6649ce1eae808eaf0f0be88b0 Mon Sep 17 00:00:00 2001
-From: Chris Wolfe <cwolfe@chromium.org>
-Date: Fri, 22 Feb 2013 12:41:01 -0800
-Subject: [PATCH 2/4] xf86-video-intel: Split framebuffer and flip crtcs.
+From 130d14c6d2282ac6649ce1eae808eaf0f0be88b0 Mon Sep 17 00:00:00 2001    
+From: Chris Wolfe <cwolfe@chromium.org>   
+Date: Fri, 22 Feb 2013 12:41:01 -0800   
+Subject: [PATCH 2/4] xf86-video-intel: Split framebuffer and flip crtcs.    
 
-Try to allocate a separate framebuffer for each CRTC and flip those
-directly with the back-buffer of updated drawables. This avoids
-blitting content when the drawable size matches the crtc size.
+Try to allocate a separate framebuffer for each CRTC and flip those   
+directly with the back-buffer of updated drawables. This avoids   
+blitting content when the drawable size matches the crtc size.    
 
-When CopyRegion is used top copy content into or out of the screen
-buffer, it may be redirected to exactly one scanout buffer. This is
-enough to support our one-drawable-per-crtc case, but not sufficient
-in general.
+When CopyRegion is used top copy content into or out of the screen    
+buffer, it may be redirected to exactly one scanout buffer. This is   
+enough to support our one-drawable-per-crtc case, but not sufficient    
+in general.   
 
-This change also moves page flip state that was previously centralized
-in the intel_mode structure into the intel_crtc structure associated
-with the reference crtc for a flip. This allows flips to pending on
-multiple pipes simultaneously.
+This change also moves page flip state that was previously centralized    
+in the intel_mode structure into the intel_crtc structure associated    
+with the reference crtc for a flip. This allows flips to pending on   
+multiple pipes simultaneously.    
 
-Tested with the WebGL aquarium and space rocks demos, a Youtube
-video and WebKit poster circle demo. Added and removed displays while
+Tested with the WebGL aquarium and space rocks demos, a Youtube   
+video and WebKit poster circle demo. Added and removed displays while   
 active and while suspended.
 ---
- src/intel.h         |  55 ++++-
- src/intel_display.c | 700 ++++++++++++++++++++++++++++++++++++++++++----------
- src/intel_dri.c     | 179 ++++++++++++--
- src/intel_driver.c  |  10 +
- src/intel_options.c |   1 +
- src/intel_options.h |   1 +
- src/intel_uxa.c     |  50 ++++
- src/intel_video.c   |  11 +-
- 8 files changed, 846 insertions(+), 161 deletions(-)
-
 diff --git a/src/intel.h b/src/intel.h
 index d4c9aff..a5aae31 100644
 --- a/src/intel.h
@@ -146,7 +136,7 @@ index d4c9aff..a5aae31 100644
  {
  	struct intel_pixmap *priv = intel_get_pixmap_private(pixmap);
 diff --git a/src/intel_display.c b/src/intel_display.c
-index 9d7c754..4ade59a 100644
+index d7896bf..e8def20 100644
 --- a/src/intel_display.c
 +++ b/src/intel_display.c
 @@ -55,27 +55,33 @@
@@ -223,7 +213,7 @@ index 9d7c754..4ade59a 100644
  intel_output_dpms(xf86OutputPtr output, int mode);
  
  static void
-@@ -381,16 +400,97 @@ intel_mode_disable_unused_functions(ScrnInfoPtr scrn)
+@@ -442,16 +461,97 @@ intel_mode_disable_unused_functions(ScrnInfoPtr scrn)
  	}
  }
  
@@ -323,7 +313,7 @@ index 9d7c754..4ade59a 100644
  	int i, ret = FALSE;
  
  	output_ids = calloc(sizeof(uint32_t), xf86_config->num_output);
-@@ -425,9 +525,21 @@ intel_crtc_apply(xf86CrtcPtr crtc)
+@@ -486,9 +586,21 @@ intel_crtc_apply(xf86CrtcPtr crtc)
  			       crtc->gamma_blue, crtc->gamma_size);
  #endif
  
@@ -346,7 +336,7 @@ index 9d7c754..4ade59a 100644
  	if (intel_crtc->rotate_fb_id) {
  		fb_id = intel_crtc->rotate_fb_id;
  		x = 0;
-@@ -453,7 +565,6 @@ intel_crtc_apply(xf86CrtcPtr crtc)
+@@ -514,7 +626,6 @@ intel_crtc_apply(xf86CrtcPtr crtc)
  		for (i = 0; i < xf86_config->num_output; i++) {
  		    xf86OutputPtr output = xf86_config->output[i];
  		    struct intel_output *intel_output;
@@ -354,7 +344,7 @@ index 9d7c754..4ade59a 100644
  		    if (output->crtc != crtc)
  			continue;
  
-@@ -476,20 +587,20 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
+@@ -537,20 +648,20 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
  {
  	ScrnInfoPtr scrn = crtc->scrn;
  	intel_screen_private *intel = intel_get_screen_private(scrn);
@@ -381,7 +371,7 @@ index 9d7c754..4ade59a 100644
  		if (ret < 0) {
  			ErrorF("failed to add fb\n");
  			return FALSE;
-@@ -512,14 +623,17 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
+@@ -573,14 +684,17 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
  	intel_batch_submit(crtc->scrn);
  
  	mode_to_kmode(crtc->scrn, &intel_crtc->kmode, mode);
@@ -407,7 +397,7 @@ index 9d7c754..4ade59a 100644
  }
  
  static void
-@@ -1439,33 +1553,53 @@ intel_output_init(ScrnInfoPtr scrn, struct intel_mode *mode, int num)
+@@ -1501,33 +1615,53 @@ intel_output_init(ScrnInfoPtr scrn, struct intel_mode *mode, int num)
  	list_add(&intel_output->link, &mode->outputs);
  }
  
@@ -466,7 +456,7 @@ index 9d7c754..4ade59a 100644
  	if (intel->back_pixmap) {
  		screen = intel->back_pixmap->drawable.pScreen;
  		screen->DestroyPixmap(intel->back_pixmap);
-@@ -1488,7 +1622,7 @@ intel_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
+@@ -1550,7 +1684,7 @@ intel_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
  	ret = drmModeAddFB(mode->fd, width, height, scrn->depth,
  			   scrn->bitsPerPixel, pitch,
  			   intel->front_buffer->handle,
@@ -475,7 +465,7 @@ index 9d7c754..4ade59a 100644
  	if (ret)
  		goto fail;
  
-@@ -1525,102 +1659,415 @@ fail:
+@@ -1587,102 +1721,415 @@ fail:
  	scrn->virtualX = old_width;
  	scrn->virtualY = old_height;
  	scrn->displayWidth = old_pitch;
@@ -951,7 +941,7 @@ index 9d7c754..4ade59a 100644
  static const xf86CrtcConfigFuncsRec intel_xf86crtc_config_funcs = {
  	intel_xf86crtc_resize
  };
-@@ -1637,31 +2084,33 @@ intel_page_flip_handler(int fd, unsigned int frame, unsigned int tv_sec,
+@@ -1699,31 +2146,33 @@ intel_page_flip_handler(int fd, unsigned int frame, unsigned int tv_sec,
  			  unsigned int tv_usec, void *event_data)
  {
  	struct intel_pageflip *flip = event_data;
@@ -1002,7 +992,7 @@ index 9d7c754..4ade59a 100644
  }
  
  static void
-@@ -1768,6 +2217,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
+@@ -1830,6 +2279,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
  
  	for (i = 0; i < mode->mode_res->count_connectors; i++)
  		intel_output_init(scrn, mode, i);
@@ -1010,7 +1000,7 @@ index 9d7c754..4ade59a 100644
  
  	intel_compute_possible_clones(scrn, mode);
  
-@@ -1805,7 +2255,6 @@ intel_mode_init(struct intel_screen_private *intel)
+@@ -1867,7 +2317,6 @@ intel_mode_init(struct intel_screen_private *intel)
  	 * feedback on every server generation, so perform the
  	 * registration within ScreenInit and not PreInit.
  	 */
@@ -1018,7 +1008,7 @@ index 9d7c754..4ade59a 100644
  	AddGeneralSocket(mode->fd);
  	RegisterBlockAndWakeupHandlers((BlockHandlerProcPtr)NoopDDA,
  				       drm_wakeup_handler, mode);
-@@ -1816,9 +2265,9 @@ intel_mode_remove_fb(intel_screen_private *intel)
+@@ -1878,9 +2327,9 @@ intel_mode_remove_fb(intel_screen_private *intel)
  {
  	struct intel_mode *mode = intel->modes;
  
@@ -1031,7 +1021,7 @@ index 9d7c754..4ade59a 100644
  	}
  }
  
-@@ -1846,6 +2295,7 @@ void
+@@ -1912,6 +2361,7 @@ void
  intel_mode_fini(intel_screen_private *intel)
  {
  	struct intel_mode *mode = intel->modes;
@@ -1039,7 +1029,7 @@ index 9d7c754..4ade59a 100644
  
  	if (mode == NULL)
  		return;
-@@ -1862,8 +2312,9 @@ intel_mode_fini(intel_screen_private *intel)
+@@ -1928,8 +2378,9 @@ intel_mode_fini(intel_screen_private *intel)
  						   link)->output);
  	}
  
@@ -1051,7 +1041,7 @@ index 9d7c754..4ade59a 100644
  
  	/* mode->rotate_fb_id should have been destroyed already */
  
-@@ -1901,23 +2352,10 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
+@@ -1967,23 +2418,10 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
  		xf86OutputPtr output = xf86_config->output[i];
  		if (output->crtc == crtc &&
  		    intel_output_dpms_status(output) == DPMSModeOn) {
@@ -1078,7 +1068,7 @@ index 9d7c754..4ade59a 100644
  
  static PixmapPtr
 diff --git a/src/intel_dri.c b/src/intel_dri.c
-index f351203..48bd682 100644
+index 8f27921..e250aa7 100644
 --- a/src/intel_dri.c
 +++ b/src/intel_dri.c
 @@ -438,6 +438,12 @@ I830DRI2CopyRegion(DrawablePtr drawable, RegionPtr pRegion,
@@ -1355,11 +1345,29 @@ index f351203..48bd682 100644
  	 * Do it early, so handling of different timing constraints
  	 * for divisor, remainder and msc vs. target_msc works.
  	 */
+@@ -1318,6 +1447,17 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
+ 	return TRUE;
+ 
+ blit_fallback:
++	/*
++	 * If per-CRTC flips are enabled, I830DRI2CopyRegion will substitute a
++	   destination Drawable with its origin at (0,0).  This means the blit
++	   will get clipped away on the second display in an extended desktop
++	   configuration, since the clip region begins where the drawable lies
++	   in the screen rather than at y=0.  Since the common situation where
++	   this happens is where the second display is powered off, just turn
++	   off per-CRTC flips.  They will be re-enabled again when the screen
++	   is powered back on.
++	*/
++	intel_merge_fb(intel);
+ 	I830DRI2FallbackBlitSwap(draw, front, back);
+ 	DRI2SwapComplete(client, draw, 0, 0, 0, DRI2_BLIT_COMPLETE, func, data);
+ 	if (swap_info)
 diff --git a/src/intel_driver.c b/src/intel_driver.c
-index 7807106..e790cf0 100644
+index 7f01091..ff9d131 100644
 --- a/src/intel_driver.c
 +++ b/src/intel_driver.c
-@@ -611,6 +611,14 @@ static Bool I830PreInit(ScrnInfoPtr scrn, int flags)
+@@ -612,6 +612,14 @@ static Bool I830PreInit(ScrnInfoPtr scrn, int flags)
  	xf86DrvMsg(scrn->scrnIndex, X_CONFIG, "Triple buffering? %s\n",
  		   intel->use_triple_buffer ? "enabled" : "disabled");
  
@@ -1374,7 +1382,7 @@ index 7807106..e790cf0 100644
  	xf86DrvMsg(scrn->scrnIndex, X_CONFIG, "Framebuffer %s\n",
  		   intel->tiling & INTEL_TILING_FB ? "tiled" : "linear");
  	xf86DrvMsg(scrn->scrnIndex, X_CONFIG, "Pixmaps %s\n",
-@@ -917,6 +925,7 @@ I830ScreenInit(SCREEN_INIT_ARGS_DECL)
+@@ -918,6 +926,7 @@ I830ScreenInit(SCREEN_INIT_ARGS_DECL)
  #endif
  	struct pci_device *const device = intel->PciInfo;
  	int fb_bar = IS_GEN2(intel) ? 0 : 2;
@@ -1382,7 +1390,7 @@ index 7807106..e790cf0 100644
  
  	scrn->videoRam = device->regions[fb_bar].size / 1024;
  
-@@ -1081,6 +1090,7 @@ I830ScreenInit(SCREEN_INIT_ARGS_DECL)
+@@ -1082,6 +1091,7 @@ I830ScreenInit(SCREEN_INIT_ARGS_DECL)
  	 * later memory should be bound when allocating, e.g rotate_mem */
  	scrn->vtSema = TRUE;
  
@@ -1555,6 +1563,3 @@ index 6cce182..92948f7 100644
  static int intel_box_area(BoxPtr box)
  {
  	return (int)(box->x2 - box->x1) * (int)(box->y2 - box->y1);
--- 
-1.8.1.3
-
