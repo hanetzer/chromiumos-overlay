@@ -19,7 +19,7 @@ SRC_URI="mirror://kernel/linux/bluetooth/${P}.tar.xz
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64 arm ~hppa ~ppc ~ppc64 x86"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="cups debug test-programs usb readline"
 
 CDEPEND="

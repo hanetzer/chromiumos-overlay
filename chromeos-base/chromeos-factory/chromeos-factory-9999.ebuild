@@ -18,7 +18,7 @@ SRC_URI="${CLOSURE_LIB_URI}
 	${WEBGL_AQUARIUM_URI}"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="+autotest +build_tests"
 
 DEPEND="chromeos-base/chromeos-chrome

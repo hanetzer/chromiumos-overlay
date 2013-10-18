@@ -11,7 +11,7 @@ HOMEPAGE="http://code.google.com/p/o3d/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="opengl opengles"
 DEPEND="dev-libs/nss
 	media-libs/fontconfig

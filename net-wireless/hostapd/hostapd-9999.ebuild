@@ -14,7 +14,7 @@ HOMEPAGE="http://hostap.epitest.fi"
 
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="-asan -clang ipv6 logwatch madwifi +ssl +wps
 	weak_urandom_low_security spectrum_mgmt"
 REQUIRED_USE="asan? ( clang )"

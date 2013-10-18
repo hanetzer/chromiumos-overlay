@@ -51,7 +51,7 @@
 =sys-auth/polkit-0.100		amd64 x86 arm
 # This should be kept in sync with package.mask.
 # Here we keyword the version we want for the board.
-~sys-devel/llvm-3.2		amd64 x86 arm
+~sys-devel/llvm-3.2		*
 =sys-fs/squashfs-4.2            amd64 arm x86
 =x11-apps/xinput_calibrator-0.7.5	arm
 =x11-libs/gtk+-2.20.1	amd64 arm x86

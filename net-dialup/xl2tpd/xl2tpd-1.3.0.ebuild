@@ -12,7 +12,7 @@ SRC_URI="ftp://ftp.xelerance.com/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="dnsretry"
 
 DEPEND="net-libs/libpcap"

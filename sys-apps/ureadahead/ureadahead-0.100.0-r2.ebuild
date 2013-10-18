@@ -11,7 +11,7 @@ SRC_URI="http://launchpad.net/ureadahead/trunk/${PV}/+download/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86 amd64 arm"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 
 RDEPEND="sys-apps/util-linux
 	>=sys-fs/e2fsprogs-1.41

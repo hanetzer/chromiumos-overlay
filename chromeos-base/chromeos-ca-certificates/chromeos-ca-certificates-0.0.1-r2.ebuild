@@ -3,12 +3,13 @@
 
 EAPI=2
 
-DESCRIPTION="Chrome OS restricted set of certificates."
+DESCRIPTION="Chrome OS restricted set of certificates"
 HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 
 src_install() {
 	CA_CERT_DIR=/usr/share/chromeos-ca-certificates

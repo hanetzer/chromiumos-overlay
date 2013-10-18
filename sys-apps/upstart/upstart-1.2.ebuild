@@ -9,7 +9,7 @@ HOMEPAGE="http://upstart.ubuntu.com/"
 SRC_URI="http://upstart.at/download/1.x/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="examples nls upstartdebug"
 
 DEPEND=">=dev-libs/expat-2.0.0

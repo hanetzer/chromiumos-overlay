@@ -10,7 +10,7 @@ HOMEPAGE="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=padauk"
 
 LICENSE="OFL-1.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sh x86 ~x86-fbsd"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE=""
 
 FONT_SUFFIX="ttf"

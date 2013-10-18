@@ -5,7 +5,7 @@ CROS_WORKON_PROJECT=chromiumos/third_party/binutils
 
 inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-workon
 
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 
 BVER=${PV}
 

@@ -12,7 +12,7 @@ SRC_URI=""
 
 LICENSE="LGPL-2"
 SLOT="1"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="debug doc +glib"
 
 RDEPEND="

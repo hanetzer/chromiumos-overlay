@@ -11,7 +11,7 @@ CROS_WORKON_LOCALNAME="kernel/files"
 inherit cros-workon cros-kernel2
 
 DESCRIPTION="Chrome OS Kernel"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 
 RDEPEND="!sys-kernel/chromeos-kernel-next
 	!sys-kernel/chromeos-kernel-exynos"

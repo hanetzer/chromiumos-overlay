@@ -14,7 +14,7 @@ LICENSE="linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_iwlwifi-7260? ( LICENCE.iwlwifi_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE_LINUX_FIRMWARE=(
 	ibt-hw
 	iwlwifi-7260

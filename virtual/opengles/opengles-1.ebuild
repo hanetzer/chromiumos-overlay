@@ -5,7 +5,7 @@ DESCRIPTION="Virtual for OpenGLES implementations"
 SRC_URI=""
 
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 mips ppc ppc64 sh sparc x86 ~x86-fbsd"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86 ~x86-fbsd"
 IUSE=""
 
 RDEPEND="x11-drivers/opengles"

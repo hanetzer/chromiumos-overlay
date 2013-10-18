@@ -10,7 +10,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 S="${WORKDIR}/${PN}"
 
 src_prepare() {

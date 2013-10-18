@@ -13,7 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="-legacy_power_button test -lockvt -is_desktop -als -mosys_eventlog"
 IUSE="${IUSE} -asan -clang -has_keyboard_backlight"
 REQUIRED_USE="asan? ( clang )"
