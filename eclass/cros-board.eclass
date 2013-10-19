@@ -66,6 +66,12 @@ ALL_BOARDS=(
 	leon
 	link
 	lumpy
+	mipseb-o32-generic
+	mipseb-n32-generic
+	mipseb-n64-generic
+	mipsel-o32-generic
+	mipsel-n32-generic
+	mipsel-n64-generic
 	monroe
 	nyan
 	optimus
@@ -79,6 +85,10 @@ ALL_BOARDS=(
 	peach_kirby
 	peach_pit
 	peppy
+	ppcbe-32-generic
+	ppcbe-64-generic
+	ppcle-32-generic
+	ppcle-64-generic
 	puppy
 	rambi
 	raspberrypi
