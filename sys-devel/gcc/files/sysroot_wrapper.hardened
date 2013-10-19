@@ -144,6 +144,7 @@ else:
       '-Wno-unused-but-set-variable': '-Wno-unused-variable',
       '-Wunused-but-set-variable': '-Wunused-variable',
       '-fstack-protector-strong': '-fstack-protector-all',
+      '-Wno-error=cpp': '-Wno-#warnings',
   }
 
   # If these options are specified, do not run clang, even if -clang-syntax is
