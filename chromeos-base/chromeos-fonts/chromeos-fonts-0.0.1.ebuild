@@ -45,6 +45,7 @@ JA_FONTS="
 # `qemu` (e.g. when we do `ROOT=/build/amd64-host/ emerge chromeos-fonts`).
 RDEPEND="
 	${JA_FONTS}
+	internal? ( chromeos-base/ascender_to_license )
 	!cros_host? ( chromeos-base/chromeos-assets )
 	media-fonts/croscorefonts
 	media-fonts/crosextrafonts
