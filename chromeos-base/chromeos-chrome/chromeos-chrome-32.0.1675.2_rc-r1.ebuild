@@ -950,8 +950,12 @@ install_telemetry_dep_resources() {
                     tools/perf/run_measurement \
 		    tools/perf/run_multipage_benchmarks \
 		    tools/perf/run_tests \
+		    tools/perf/run_benchmark \
 		    chrome/test/telemetry
 	fi
+	# When copying only a portion of the Chrome source that telemetry needs,
+	# some symlinks can end up broken. Thus clean these up before packaging.
+	find -L "${test_dir}" -type l -delete
 }
 
 move_and_symlink_files() {
@@ -996,7 +1000,8 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
 		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		autotest-deponly_src_install
-		env -uRESTRICT prepstrip "${D}/usr/local/autotest"
+		# This is needed when deploy_chrome is doing the stripping.
+		#env -uRESTRICT prepstrip "${D}/usr/local/autotest"
 	fi
 
 	# Fix some perms.
@@ -1045,6 +1050,8 @@ src_install() {
 		--board="${BOARD}"
 		--build-dir="${FROM}"
 		--gyp-defines="${GYP_DEFINES}"
+		# If this is enabled, we need to re-enable `prepstrip` above for autotests.
+		# You'll also have to re-add "strip" to the RESTRICT at the top of the file.
 		--nostrip
 		--staging-dir="${D_CHROME_DIR}"
 		--staging-flags="${USE}"
@@ -1064,6 +1071,13 @@ src_install() {
 		# move just the Chrome binary becauses it needs .pak files so it
 		# is safer to just move all of the files.
 		move_and_symlink_files "${CHROME_DIR}" "/usr/local/${CHROME_DIR}"
+	fi
+
+	if use build_tests; then
+		# Install Chrome Driver to test image.
+		local chromedriver_dir='/usr/local/chromedriver'
+		dodir "${chromedriver_dir}"
+		cp -pPR "${FROM}"/chromedriver "${D}/${chromedriver_dir}" || die
 	fi
 }
 
