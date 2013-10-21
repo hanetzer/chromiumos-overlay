@@ -19,7 +19,7 @@ Index: dpkt/ip.py
              try:
 -                mod = __import__(name, g)
 +                # Only search for protocols from the same directory.
-+                mod = __import__(name, g, level=0)
++                mod = __import__(name, g, level=1)
              except ImportError:
                  continue
 +            if not hasattr(mod, name.upper()):
