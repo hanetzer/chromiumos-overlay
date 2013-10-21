@@ -102,7 +102,9 @@ src_install() {
 	# Install udev rule to set usb hid devices to wake the system.
 	exeinto /lib/udev
 	doexe udev/usb-hid-wake.sh
+	doexe udev/usb-persistence-enable.sh
 
 	insinto /lib/udev/rules.d
 	doins udev/99-usb-hid-wake.rules
+	doins udev/99-usb-persistence-enable.rules
 }
