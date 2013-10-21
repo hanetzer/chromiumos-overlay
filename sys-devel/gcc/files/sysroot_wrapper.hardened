@@ -45,7 +45,7 @@ import sys
 # other flags.
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
                     '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
-disable_flags = set(['-mno-movbe', '-mno-ssse3'])
+x86_disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
 clang_flags = set(['-Qunused-arguments', '-D_FORTIFY_SOURCE=2', '-fPIE'])
@@ -82,7 +82,7 @@ if fPIE.intersection(myargs):
 if pie.intersection(myargs):
   flags_to_add.remove('-pie')
 if sse.intersection(myargs):
-  disable_flags.remove('-mno-ssse3')
+  x86_disable_flags.remove('-mno-ssse3')
 print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = list(clang_flags)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
@@ -116,6 +116,9 @@ if '-noccache' in myargs or clang_codegen and not link_with_asan:
   use_ccache = False
 cmdline = [x for x in myargs if x not in wrapper_only_options]
 
+if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
+  cmdline.extend(x86_disable_flags)
+
 if not invoke_clang:
   gcc_cmdline = cmdline
 else:
@@ -130,7 +133,8 @@ else:
                            '-fvisibility=internal', '-Woverride-init',
                            '-Wunsafe-loop-optimizations', '-Wlogical-op',
                            '-Wmissing-parameter-type',
-                           '-Wold-style-declaration', '-Wno-psabi'])
+                           '-Wold-style-declaration', '-Wno-psabi',
+                           '-mno-movbe',])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=')
 
   # Clang may use different options for the same or similar functionality.
@@ -139,6 +143,7 @@ else:
       '-Wno-error=maybe-uninitialized': '-Wno-error=uninitialized',
       '-Wno-unused-but-set-variable': '-Wno-unused-variable',
       '-Wunused-but-set-variable': '-Wunused-variable',
+      '-fstack-protector-strong': '-fstack-protector-all',
   }
 
   # If these options are specified, do not run clang, even if -clang-syntax is
@@ -171,10 +176,6 @@ else:
       else:
         clang_cmdline.append(flag)
     gcc_cmdline.append(flag)
-
-if re.match(r'i.86|x86_64', os.path.basename(sys.argv[0])):
-  gcc_cmdline.extend(disable_flags)
-  clang_cmdline.extend(disable_flags)
 
 
 def get_proc_cmdline(pid):
