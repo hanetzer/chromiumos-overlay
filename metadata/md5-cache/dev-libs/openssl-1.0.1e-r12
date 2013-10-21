@@ -1,14 +1,14 @@
 DEFINED_PHASES=compile configure info install postinst preinst prepare setup unpack
 DEPEND=static-libs? ( gmp? ( dev-libs/gmp[static-libs(+)] ) zlib? ( sys-libs/zlib[static-libs(+)] ) kerberos? ( app-crypt/mit-krb5 ) ) !static-libs? ( gmp? ( dev-libs/gmp ) zlib? ( sys-libs/zlib ) kerberos? ( app-crypt/mit-krb5 ) ) sys-apps/diffutils >=dev-lang/perl-5 test? ( sys-devel/bc ) dev-vcs/git
-DESCRIPTION=full-strength general purpose cryptography library (including SSL v2/v3 and TLS v1)
+DESCRIPTION=full-strength general purpose cryptography library (including SSL and TLS)
 EAPI=4
 HOMEPAGE=http://www.openssl.org/
-IUSE=bindist gmp kerberos rfc3779 sse2 static-libs test +tls-heartbeat vanilla zlib cros_host cros_workon_tree_2639d1271598a4e56988c6f9119da00a7334ef6d profiling
-KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86 amd64-fbsd sparc-fbsd x86-fbsd
+IUSE=bindist gmp kerberos rfc3779 sse2 static-libs test +tls-heartbeat vanilla zlib cros_host cros_workon_tree_9e76d95f850bfabd41ef8eea3de7252f9051c227 profiling
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86 amd64-fbsd sparc-fbsd x86-fbsd arm-linux x86-linux
 LICENSE=openssl
 PDEPEND=app-misc/ca-certificates
 RDEPEND=static-libs? ( gmp? ( dev-libs/gmp[static-libs(+)] ) zlib? ( sys-libs/zlib[static-libs(+)] ) kerberos? ( app-crypt/mit-krb5 ) ) !static-libs? ( gmp? ( dev-libs/gmp ) zlib? ( sys-libs/zlib ) kerberos? ( app-crypt/mit-krb5 ) )
 SLOT=0
 SRC_URI=http://cvs.pld-linux.org/cgi-bin/cvsweb.cgi/packages/openssl/openssl-c_rehash.sh?rev=1.7 -> openssl-c_rehash.sh.1.7
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	417aca45c487d76465be460ece177719	cros-workon	37b5397aa3b2a3ac2759ec4405974c90	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=978a0598c8921b4f7f3b64618d42d24b
+_md5_=35046f8b47566699847e6c82a3ba6fef
