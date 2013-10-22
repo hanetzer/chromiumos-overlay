@@ -46,6 +46,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-remap-f15-as-mod2mask.patch
 	"${FILESDIR}"/${P}-canadian-french-international-backslash-fix.patch
 	"${FILESDIR}"/${P}-ch-brokenbar.patch
+	"${FILESDIR}"/${P}-br-euro-degree.patch
 )
 
 use parrot && PATCHES+=( "${FILESDIR}"/${P}-parrot-euro-sign.patch )
