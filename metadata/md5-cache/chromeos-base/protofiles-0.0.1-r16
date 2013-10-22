@@ -6,5 +6,5 @@ HOMEPAGE=http://chromium.org
 KEYWORDS=amd64 arm x86
 LICENSE=BSD
 SLOT=0
-_eclasses_=cros-constants	417aca45c487d76465be460ece177719	git-2	da60d6e85fa94cef4d510cab24e01e36
+_eclasses_=cros-constants	1c9419bde0abf3c31458b88410265d36	git-2	da60d6e85fa94cef4d510cab24e01e36
 _md5_=2df9f1b91966a42394d4b00fba0da67f
