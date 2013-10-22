@@ -48,7 +48,11 @@ src_compile() {
 src_test() {
 	tc-export CXX CC OBJCOPY PKG_CONFIG STRIP
 	emake unittest_runner
-	"${S}/unittest_runner" || die "imageburner unittests failed."
+	if ! use x86 && ! use amd64 ; then
+		einfo Skipping unit tests on non-x86 platform
+	else
+		"${S}/unittest_runner" || die "imageburner unittests failed."
+	fi
 }
 
 src_install() {

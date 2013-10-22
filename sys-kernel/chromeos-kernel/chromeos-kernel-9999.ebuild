@@ -18,6 +18,10 @@ RDEPEND="!sys-kernel/chromeos-kernel-next
 DEPEND="${RDEPEND}"
 
 src_test() {
-	# Needed for `cros_run_unit_tests`.
-	cros-kernel2_src_test
+	if ! use x86 && ! use amd64 ; then
+		einfo "Skipping tests on non-x86 platform..."
+	else
+		# Needed for `cros_run_unit_tests`.
+		cros-kernel2_src_test
+	fi
 }

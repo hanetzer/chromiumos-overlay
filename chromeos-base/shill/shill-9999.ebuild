@@ -75,13 +75,13 @@ src_test() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 
-	# Build tests
-	emake $(make_flags) shill_unittest
-
 	# Run tests if we're on x86
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping tests on non-x86/amd64 platform...
 	else
+		# Build tests
+		emake $(make_flags) shill_unittest
+
 		for ut in shill ; do
 			"${S}/${ut}_unittest" \
 				${GTEST_ARGS} || die "${ut}_unittest failed"

@@ -36,7 +36,11 @@ src_compile() {
 }
 
 src_test() {
-	cros-workon_src_test
+	if ! use x86 && ! use amd64 ; then
+		einfo Skipping unit tests on non-x86 platform
+	else
+		cros-workon_src_test
+	fi
 }
 
 src_install() {

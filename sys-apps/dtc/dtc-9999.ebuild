@@ -30,7 +30,11 @@ src_compile() {
 }
 
 src_test() {
-	emake check
+	if ! use x86 && ! use amd64 ; then
+		einfo "Skipping tests on non-x86 platform..."
+	else
+		emake check
+	fi
 }
 
 src_install() {

@@ -70,7 +70,11 @@ src_compile() {
 }
 
 src_test() {
-	emake -C build check
+	if ! use x86 && ! use amd64 ; then
+		einfo Skipping unit tests on non-x86 platform
+	else
+		emake -C build check
+	fi
 }
 
 src_install() {

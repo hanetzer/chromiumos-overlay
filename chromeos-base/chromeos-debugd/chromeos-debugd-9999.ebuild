@@ -46,7 +46,11 @@ src_compile() {
 
 src_test() {
 	use platform2 && return 0
-	emake tests BASE_VER=${LIBCHROME_VERS}
+	if ! use x86 && ! use amd64 ; then
+		einfo Skipping unit tests on non-x86 platform
+	else
+		emake tests BASE_VER=${LIBCHROME_VERS}
+	fi
 }
 
 src_install() {
