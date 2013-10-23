@@ -1000,8 +1000,7 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
 		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
 		autotest-deponly_src_install
-		# This is needed when deploy_chrome is doing the stripping.
-		#env -uRESTRICT prepstrip "${D}/usr/local/autotest"
+		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
 	fi
 
 	# Fix some perms.
@@ -1082,29 +1081,3 @@ src_install() {
 }
 
 
-# The following two functions are temporary, will be removed when
-# https://chromium-review.googlesource.com/#/c/62880/ has
-# made it through the chrome pfq builder.
-pkg_preinst() {
-	local ov_path=/mnt/host/source/src/third_party/chromiumos-overlay
-	local sfile="${ov_path}/${CATEGORY}/${PN}/files/pkg_preinst_script"
-	elog "Checking for existence of migration script ${sfile}"
-	if [ -e "${sfile}" ]; then
-		elog "Detected preinst migration script ${sfile}, running it."
-		(. "${sfile}") || die
-		elog "Done running preinst migration script."
-	fi
-}
-
-pkg_postinst() {
-	local ov_path=/mnt/host/source/src/third_party/chromiumos-overlay
-	local sfile="${ov_path}/${CATEGORY}/${PN}/files/pkg_postinst_script"
-	elog "Checking for existence of migration script ${sfile}"
-	if [ -e "${sfile}" ]; then
-		elog "Detected postinst migration script ${sfile}, running it."
-		(. "${sfile}") || die
-		elog "Done running postinst migration script."
-	else
-		autotest_pkg_postinst
-	fi
-}
