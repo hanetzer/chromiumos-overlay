@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=app-crypt/trousers !minimal? ( dev-libs/libyaml ) dev-libs/openssl sys-apps/util-linux dev-vcs/git
+DESCRIPTION=Chrome OS verified boot tools
+EAPI=4
+IUSE=32bit_au minimal tpmtests cros_host cros-debug cros_host cros_workon_tree_f25471d88379056071aa16aed01368c3f05f5ae8 profiling
+KEYWORDS=amd64 arm x86
+LICENSE=BSD
+RDEPEND=!minimal? ( dev-libs/libyaml ) dev-libs/openssl sys-apps/util-linux
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-au	f9ae34f03ddcc4a8450e4f603ffef8f8	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	37b5397aa3b2a3ac2759ec4405974c90	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=653b4a6abafc1c5878ed5882dc9aca7e
