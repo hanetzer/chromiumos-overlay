@@ -39,6 +39,7 @@
 
 from __future__ import print_function
 
+import errno
 import os
 import re
 import sys
@@ -432,4 +433,10 @@ if print_cmdline:
   print('[%s] %s' % (argv0, ' '.join(execargs)))
 
 sys.stdout.flush()
-os.execv(argv0, execargs)
+try:
+  os.execv(argv0, execargs)
+except OSError as e:
+  if use_ccache and e.errno == errno.ENOENT:
+    print('error: make sure you install ccache\n', file=sys.stderr)
+  print('error: os.execv(%s, %s) failed' % (argv0, execargs), file=sys.stderr)
+  raise
