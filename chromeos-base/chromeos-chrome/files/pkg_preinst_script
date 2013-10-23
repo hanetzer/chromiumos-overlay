@@ -1,8 +1,0 @@
-if [ -d "${D}usr/local/autotest" ]; then
-    elog "Migrating chromeos-chrome autotest artifacts to their new location."
-    mkdir -p "${D}usr/local/build/autotest/" || exit 1
-    rsync -a "${D}usr/local/autotest/" "${D}usr/local/build/autotest/" || exit 1
-    elog "Done. Now removing stale autotest artifact directory."
-    rm -rf "${D}usr/local/autotest" || exit 1
-    elog "Done."
-fi
