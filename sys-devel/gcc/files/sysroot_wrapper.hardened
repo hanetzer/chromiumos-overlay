@@ -37,9 +37,12 @@
 #   mv <tool> <tool>.real
 #   ln -s <path_to_sysroot_wrapper> <tool>
 
+from __future__ import print_function
+
 import os
 import re
 import sys
+
 
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
@@ -277,17 +280,17 @@ def link_asan():
 
   if errorcode != 0 and found_clang_undef:
     if print_cmdline:
-      print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
+      print('%s %s\n' % (clang_comp, ' '.join(clang_cmdline)))
     clang_execargs = [clang_comp] + clang_cmdline
     sys.stdout.flush()
     os.execv(clang_comp, clang_execargs)
   else:
     if print_cmdline:
-      print '[%s] %s' % (argv0, ' '.join(gcc_execargs))
+      print('[%s] %s' % (argv0, ' '.join(gcc_execargs)))
     if out:
-      print out
+      print(out)
     if err:
-      print >> sys.stderr, err
+      print(err, file=sys.stderr)
     sys.exit(errorcode)
 
 sysroot = os.environ.get('SYSROOT', '')
@@ -352,7 +355,7 @@ if invoke_clang and not skip_clang:
 
   if not clang_codegen:
     if print_cmdline:
-      print '%s %s\n' % (clang_comp, ' '.join(clang_cmdline))
+      print('%s %s\n' % (clang_comp, ' '.join(clang_cmdline)))
     p = subprocess.Popen([clang_comp] + clang_cmdline)
     p.wait()
     if p.returncode != 0:
@@ -426,7 +429,7 @@ else:
   execargs += [real_gcc] + list(flags_to_add) + gcc_cmdline
 
 if print_cmdline:
-  print '[%s] %s' % (argv0, ' '.join(execargs))
+  print('[%s] %s' % (argv0, ' '.join(execargs)))
 
 sys.stdout.flush()
 os.execv(argv0, execargs)
