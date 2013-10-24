@@ -39,6 +39,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-Check-return-value-of-ECDSA_Verify.patch"
 	epatch "${FILESDIR}/${P}-is_asn1.patch"
 	epatch "${FILESDIR}/${P}-compare_dn.patch"
+	epatch "${FILESDIR}/${P}-handle_fragment.patch"
 }
 
 pkg_setup() {
