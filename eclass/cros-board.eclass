@@ -64,6 +64,7 @@ ALL_BOARDS=(
 	leon
 	link
 	lumpy
+	monroe
 	nyan
 	panda
 	panther
