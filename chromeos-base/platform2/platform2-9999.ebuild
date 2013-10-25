@@ -629,7 +629,10 @@ src_unpack() {
 }
 
 src_configure() {
-	use platform2 && platform2 "configure"
+	if use platform2; then
+		cros-debug-add-NDEBUG
+		platform2 "configure"
+	fi
 }
 
 src_compile() {
