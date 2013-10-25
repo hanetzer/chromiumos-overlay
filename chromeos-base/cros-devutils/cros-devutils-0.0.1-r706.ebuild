@@ -17,6 +17,9 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE="cros_host test"
 
+# Avoid copying any devserver data created outside the chroot.
+CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
+
 RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 	app-portage/gentoolkit
 	cros_host? ( app-shells/bash )

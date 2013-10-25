@@ -76,14 +76,21 @@ src_test() {
 		# We need to set PATH so that the `openssl` in the target
 		# sysroot gets executed instead of the host one (which is
 		# compiled differently). http://crosbug.com/27683
-		PATH="$SYSROOT/usr/bin:$PATH" \
-		"./${UNITTESTS_BINARY}" --gtest_filter='-*.RunAsRoot*' \
-			&& einfo "./${UNITTESTS_BINARY} (unprivileged) succeeded" \
-			|| die "./${UNITTESTS_BINARY} (unprivileged) failed, retval=$?"
-		sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
-			"./${UNITTESTS_BINARY}" --gtest_filter='*.RunAsRoot*' \
-			&& einfo "./${UNITTESTS_BINARY} (root) succeeded" \
-			|| die "./${UNITTESTS_BINARY} (root) failed, retval=$?"
+		if [ -n "${GTEST_ARGS}" ]; then
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
+				"$./{UNITTESTS_BINARY}" ${GTEST_ARGS} \
+				info "./${UNITTESTS_BINARY} (root) succeeded" \
+				|| die "./${UNITTESTS_BINARY} (root) failed, retval=$?"
+		else
+			PATH="$SYSROOT/usr/bin:$PATH" \
+			"./${UNITTESTS_BINARY}" --gtest_filter='-*.RunAsRoot*' \
+				&& einfo "./${UNITTESTS_BINARY} (unprivileged) succeeded" \
+				|| die "./${UNITTESTS_BINARY} (unprivileged) failed, retval=$?"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
+				"./${UNITTESTS_BINARY}" --gtest_filter='*.RunAsRoot*' \
+				&& einfo "./${UNITTESTS_BINARY} (root) succeeded" \
+				|| die "./${UNITTESTS_BINARY} (root) failed, retval=$?"
+		fi
 	fi
 }
 
