@@ -355,10 +355,6 @@ set_build_defines() {
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
-	# Chrome's build overrides the Chrome OS build wrapper's addition
-	# of -fstack-protector-strong, so re-add it to the end of the
-	# command-line, since gcc uses "last flag wins" for stack protector.
-	CXXFLAGS+=" -fstack-protector-strong"
 	# Enable std::vector []-operator bounds checking.
 	CXXFLAGS+=" -D__google_stl_debug_vector=1"
 }
