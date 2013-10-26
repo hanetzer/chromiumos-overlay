@@ -180,6 +180,8 @@ platform2_test() {
 		--bin="${bin}" \
 		$(platform2_get_target_args) \
 		--gtest_filter="${gtest_filter}" \
+		--user_gtest_filter="${P2_TEST_FILTER}" \
+		--package="${pkg}" \
 		--use_flags="${USE}" \
 		${run_as_root_flag} \
 		|| die
