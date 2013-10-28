@@ -10,7 +10,7 @@ S="${WORKDIR}"
 SRC_URI="!internal? ( http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nacl-mozc-${PV}.tgz )
 internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.11.1503.4.tgz )"
 
-LICENSE="BSD"
+LICENSE="BSD-google"
 IUSE="internal"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
