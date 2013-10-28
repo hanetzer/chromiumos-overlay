@@ -3,9 +3,9 @@ DEPEND=chromeos-base/cromo chromeos-base/libchrome:180609[cros-debug=] dev-cpp/g
 DESCRIPTION=Cromo plugin to control Qualcomm Gobi modems
 EAPI=2
 IUSE=install_tests internal cros-debug cros_host cros_workon_tree_ profiling
-KEYWORDS=~amd64 ~arm ~x86
+KEYWORDS=~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86
 LICENSE=BSD
 RDEPEND=chromeos-base/cromo chromeos-base/libchrome:180609[cros-debug=] dev-cpp/glog dev-libs/dbus-c++ chromeos-base/metrics chromeos-base/platform2 chromeos-base/gobi3k-sdk || ( !internal? ( chromeos-base/gobi3k-lib-bin ) chromeos-base/gobi3k-lib ) install_tests? ( dev-cpp/gmock dev-cpp/gtest )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	37b5397aa3b2a3ac2759ec4405974c90	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=4da174b91c8c63d0d0709a57796191af
+_md5_=b7db285f506bcf3dda3fcb7f80122674

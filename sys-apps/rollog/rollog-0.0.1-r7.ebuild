@@ -1,0 +1,36 @@
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI="4"
+CROS_WORKON_COMMIT="05b32937528f68cfa52996c382c03678f3a5026a"
+CROS_WORKON_TREE="fbded7e062128871183f996506fbc9251ac4f344"
+CROS_WORKON_PROJECT="chromiumos/platform/rollog"
+CROS_WORKON_LOCALNAME="../platform/rollog"
+CROS_WORKON_OUTOFTREE_BUILD=1
+
+inherit cros-workon
+
+DESCRIPTION="Utility for implementing rolling logs for bug regression"
+HOMEPAGE="http://www.chromium.org/"
+
+LICENSE="BSD"
+SLOT="0"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+IUSE=""
+
+src_prepare() {
+	cros-workon_src_prepare
+}
+
+src_configure() {
+	cros-workon_src_configure
+}
+
+src_compile() {
+	cros-workon_src_compile
+}
+
+src_install() {
+	cros-workon_src_install
+	dobin "${OUT}"/rollog
+}

@@ -1,5 +1,5 @@
 DEFINED_PHASES=-
 DESCRIPTION=dummy upgrade ebuild for SLOT=
-KEYWORDS=amd64 arm x86
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
 SLOT=0
-_md5_=140c42e27fc43b7d85c8af21e7c6f20e
+_md5_=0ccd978d9887f22d10aaede60d66dfc5
