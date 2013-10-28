@@ -141,7 +141,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-i965-128bpp-xtiling.patch
 	epatch "${FILESDIR}"/9.1-max_array_access.patch
 	epatch "${FILESDIR}"/9.1-i965-Disable-HiZ-on-SNB.patch
-	epatch "${FILESDIR}"/9.1-i965-Disable-ctx-gen6.patch
+	epatch "${FILESDIR}"/9.1-i965-Disable-ctx.patch
 
 	base_src_prepare
 
