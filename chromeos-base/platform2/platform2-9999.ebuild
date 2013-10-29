@@ -32,7 +32,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="+cellular cros_host gdmwimax platform2 test +tpm +vpn"
+IUSE="+cellular +cros_disks cros_host gdmwimax platform2 test +tpm +vpn"
 
 LIBCHROME_VERS=( 180609 )
 
@@ -45,15 +45,17 @@ LIBCHROME_DEPEND=$(
 RDEPEND_chaps="app-crypt/trousers"
 
 RDEPEND_cros_disks="
-	app-arch/unrar
-	sys-apps/eject
-	sys-apps/util-linux
-	sys-block/parted
-	sys-fs/avfs
-	sys-fs/exfat-utils
-	sys-fs/fuse-exfat
-	sys-fs/ntfs3g
-	sys-fs/udev
+	cros_disks? (
+		app-arch/unrar
+		sys-apps/eject
+		sys-apps/util-linux
+		sys-block/parted
+		sys-fs/avfs
+		sys-fs/exfat-utils
+		sys-fs/fuse-exfat
+		sys-fs/ntfs3g
+		sys-fs/udev
+	)
 "
 
 RDEPEND_debugd="
@@ -280,6 +282,7 @@ platform2_install_cromo() {
 }
 
 platform2_install_cros-disks() {
+	use cros_disks || return 0
 	use cros_host && return 0
 
 	exeinto /opt/google/cros-disks
@@ -520,6 +523,7 @@ platform2_test_cromo() {
 }
 
 platform2_test_cros-disks() {
+	use cros_disks || return 0
 	use cros_host && return 0
 
 	local gtest_filter_qemu_common=""
