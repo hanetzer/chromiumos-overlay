@@ -103,7 +103,6 @@ RDEPEND="${RDEPEND}
 	>=media-libs/freetype-2.2.1
 	media-libs/mesa
 	net-misc/gsutil
-	sys-apps/module-init-tools
 	sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
 	=sys-devel/automake-1.10*
@@ -113,6 +112,7 @@ RDEPEND="${RDEPEND}
 	sys-fs/udev
 	sys-libs/libnih
 	sys-power/iasl
+	virtual/modutils
 	x11-apps/mkfontdir
 	x11-apps/xcursorgen
 	x11-apps/xkbcomp

@@ -42,7 +42,6 @@ RDEPEND="
 	sys-apps/flashrom
 	sys-apps/grep
 	sys-apps/mawk
-	sys-apps/module-init-tools
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pv
@@ -59,6 +58,7 @@ RDEPEND="
 	sys-process/procps
 	virtual/chromeos-bsp
 	virtual/chromeos-factoryinstall-bsp
+	virtual/modutils
 "
 
 S=${WORKDIR}

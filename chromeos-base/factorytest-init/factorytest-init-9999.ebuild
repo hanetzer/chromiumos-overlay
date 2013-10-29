@@ -9,18 +9,18 @@ inherit cros-workon
 DESCRIPTION="Upstart jobs for the Chrome OS factory test image"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE=""
 
 DEPEND=""
-
 RDEPEND="chromeos-base/chromeos-init
 	sys-apps/coreutils
-	sys-apps/module-init-tools
 	sys-apps/upstart
 	sys-process/procps
+	virtual/modutils
 	"
 
 CROS_WORKON_LOCALNAME="factory_test_init"
