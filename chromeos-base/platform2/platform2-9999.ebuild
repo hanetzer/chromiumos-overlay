@@ -23,7 +23,7 @@ CROS_WORKON_LOCALNAME=(
 CROS_WORKON_PROJECT=("${CROS_WORKON_LOCALNAME[@]/#/chromiumos/platform/}")
 CROS_WORKON_DESTDIR=("${CROS_WORKON_LOCALNAME[@]/#/${S}/}")
 
-inherit cros-board cros-debug cros-workon eutils multilib udev
+inherit cros-board cros-debug cros-workon eutils multilib toolchain-funcs udev
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
@@ -32,8 +32,11 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="+cellular +cros_disks cros_host gdmwimax platform2 test +tpm +vpn +wimax"
-REQUIRED_USE="gdmwimax? ( wimax )"
+IUSE="-asan +cellular -clang +cros_disks cros_host gdmwimax platform2 test +tpm +vpn +wimax"
+REQUIRED_USE="
+	asan? ( clang )
+	gdmwimax? ( wimax )
+"
 
 LIBCHROME_VERS=( 180609 )
 
@@ -644,6 +647,7 @@ src_unpack() {
 src_configure() {
 	if use platform2; then
 		cros-debug-add-NDEBUG
+		clang-setup-env
 		platform2 "configure"
 	fi
 }
