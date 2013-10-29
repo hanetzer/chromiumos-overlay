@@ -135,6 +135,11 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # disable this feature, set this to "0".
 : ${CROS_WORKON_CLANG:=1}
 
+# @ECLASS-VARIABLE: CROS_WORKON_MAKE_COMPILE_ARGS
+# @DESCRIPTION:
+# Args to pass to `make` when running src_compile. Not intended for ebuilds
+# to set, just to respect. Used by `cros_workon_make` and friends.
+
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_host cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
@@ -557,7 +562,7 @@ cw_emake() {
 
 cros-workon_src_compile() {
 	if using_common_mk ; then
-		cw_emake
+		cw_emake ${CROS_WORKON_MAKE_COMPILE_ARGS}
 	else
 		default
 	fi
