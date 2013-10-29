@@ -259,6 +259,9 @@ set_vcsid() {
 	if [ "${CROS_WORKON_USE_VCSID}" = "1" ]; then
 		append-flags -DVCSID=\\\"${VCSID}\\\"
 		MAKEOPTS+=" VCSID=${VCSID}"
+		# When working with multiple projects, keep from adding the same
+		# flags many many times.
+		CROS_WORKON_USE_VCSID="2"
 	fi
 }
 
