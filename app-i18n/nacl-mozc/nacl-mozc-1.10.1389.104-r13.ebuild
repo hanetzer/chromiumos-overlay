@@ -8,7 +8,7 @@ DESCRIPTION="The Mozc engine for IME extension API"
 HOMEPAGE="http://code.google.com/p/mozc"
 S="${WORKDIR}"
 SRC_URI="!internal? ( http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nacl-mozc-${PV}.tgz )
-internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.11.1503.4.tgz )"
+internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.12.1577.4.tgz )"
 
 LICENSE="BSD-google"
 IUSE="internal"
@@ -34,10 +34,8 @@ src_prepare() {
 	# The key is used to execute NaCl Mozc as a component extension.
 	if use internal; then
 		# NaCl Mozc is handled as id:fpfbhcjppmaeaijcidgiibchfbnhbelj.
-		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-insert-internal-public-key.patch
-		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-call-startIme.patch
-		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-disable-clear-history-button.patch
-		epatch "${FILESDIR}"/nacl-mozc-1.11.1503.4-do-not-handle-hankaku-key.patch
+		epatch "${FILESDIR}"/nacl-mozc-1.12.1577.4-insert-internal-public-key.patch
+		epatch "${FILESDIR}"/nacl-mozc-1.12.1577.4-call-startIme.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
