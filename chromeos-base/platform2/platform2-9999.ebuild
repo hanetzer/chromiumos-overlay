@@ -51,8 +51,8 @@ RDEPEND_chaps="tpm? ( app-crypt/trousers )"
 RDEPEND_cros_disks="
 	cros_disks? (
 		app-arch/unrar
-		sys-apps/eject
 		sys-apps/util-linux
+		sys-block/eject
 		sys-block/parted
 		sys-fs/avfs
 		sys-fs/exfat-utils

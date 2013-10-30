@@ -26,9 +26,9 @@ RDEPEND="
 	chromeos-base/metrics
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
-	sys-apps/eject
 	sys-apps/rootdev
 	sys-apps/util-linux
+	sys-block/eject
 	sys-block/parted
 	sys-fs/avfs
 	sys-fs/exfat-utils
