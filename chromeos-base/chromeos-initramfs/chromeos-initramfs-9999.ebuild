@@ -16,6 +16,25 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="netboot_ramfs"
 
+# Dependencies used to build the netboot initramfs.
+# Look for the `idobin` and such calls.
+DEPEND_netboot="
+	app-arch/sharutils
+	app-shells/bash
+	chromeos-base/chromeos-factoryinstall
+	chromeos-base/chromeos-init
+	chromeos-base/chromeos-installer
+	chromeos-base/chromeos-installshim
+	chromeos-base/memento_softwareupdate
+	dev-libs/openssl
+	dev-util/shflags
+	net-misc/wget
+	sys-apps/coreutils
+	sys-apps/util-linux
+	sys-block/parted
+	sys-fs/dosfstools
+	sys-fs/e2fsprogs
+"
 DEPEND="chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/vboot_reference
@@ -25,7 +44,7 @@ DEPEND="chromeos-base/chromeos-assets
 	sys-apps/flashrom
 	sys-apps/pv
 	sys-fs/lvm2
-	netboot_ramfs? ( chromeos-base/chromeos-installshim )"
+	netboot_ramfs? ( ${DEPEND_netboot} )"
 RDEPEND=""
 
 src_prepare() {
@@ -159,12 +178,19 @@ pull_netboot_ramfs_binary() {
 		ln -s busybox "${INITRAMFS_TMP_S}/bin/${bin_name}" || die
 	done
 
+	#
+	# Any new files added here must include dependencies in RDEPEND above.
+	#
+
 	# Factory installer
+	# chromeos-base/chromeos-factoryinstall
 	idobin /usr/sbin/factory_install.sh
-	idobin /usr/sbin/chromeos-common.sh
 	idobin /usr/sbin/netboot_postinst.sh
-	idobin /usr/sbin/chromeos-install
 	idobin /usr/sbin/ping_shopfloor.sh
+	# chromeos-base/chromeos-installer
+	idobin /usr/sbin/chromeos-common.sh
+	idobin /usr/sbin/chromeos-install
+	# dev-util/shflags
 	cp "${SYSROOT}"/usr/share/misc/shflags "${INITRAMFS_TMP_S}"/usr/share/misc
 
 	# Binaries used by factory installer

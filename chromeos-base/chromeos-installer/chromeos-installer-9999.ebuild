@@ -23,21 +23,14 @@ DEPEND="
 	!cros_host? (
 		chromeos-base/vboot_reference
 	)"
-
-# TODO(adlr): remove coreutils dep if we move to busybox
 RDEPEND="
 	pam? ( app-admin/sudo )
 	chromeos-base/vboot_reference
-	chromeos-base/vpd
 	dev-util/shflags
-	sys-apps/coreutils
-	sys-apps/flashrom
-	sys-apps/hdparm
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-apps/which
 	sys-block/parted
-	sys-fs/dosfstools
 	sys-fs/e2fsprogs"
 
 src_prepare() {
