@@ -98,6 +98,7 @@ src_install() {
 			\( -name 'libmm-plugin-samsung.so' -o \
 			   -name 'libmm-plugin-generic.so' -o \
 			   -name 'libmm-plugin-huawei.so' -o \
+			   -name 'libmm-plugin-longcheer.so' -o \
 			   -name 'libmm-plugin-zte.so' -o \
 			   -name 'libmm-plugin-altair-lte.so' -o \
 			   -name 'libmm-plugin-novatel-lte.so' \) \
