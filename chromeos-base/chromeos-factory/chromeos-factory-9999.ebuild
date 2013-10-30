@@ -39,8 +39,10 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	chromeos-base/memento_softwareupdate
 	>=chromeos-base/vpd-0.0.1-r11"
 
-TARGET_DIR="/usr/local/factory"
+# Binaries from other packages (ex, chrome).
+STRIP_MASK="*/chromedriver */selenium/*"
 
+TARGET_DIR="/usr/local/factory"
 
 src_unpack() {
 	default
