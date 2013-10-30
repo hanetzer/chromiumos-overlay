@@ -13,7 +13,7 @@ SRC_URI="http://downloads.xiph.org/releases/speex/${MY_P}.tar.gz"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 sh sparc x86 ~x86-fbsd"
-IUSE="ogg sse neon"
+IUSE="ogg sse"
 
 RDEPEND="ogg? ( media-libs/libogg )"
 DEPEND="${RDEPEND}"
@@ -25,7 +25,6 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-configure.patch
 	epatch "${FILESDIR}"/${P}-backup-input-length.patch
-	epatch "${FILESDIR}"/${P}-add-neon-optimization.patch
 
 	sed -i -e 's:noinst_PROGRAMS:check_PROGRAMS:' \
 		"${S}"/libspeex/Makefile.am \
@@ -34,9 +33,9 @@ src_unpack() {
 }
 
 src_compile() {
-	append-flags -D_FILE_OFFSET_BITS=64 -DRESAMPLE_FORCE_FULL_SINC_TABLE
+	append-flags -D_FILE_OFFSET_BITS=64
 
-	econf $(use_enable sse) $(use_enable neon) $(use_enable ogg)
+	econf $(use_enable sse) $(use_enable ogg)
 	emake || die "emake failed."
 }
 
