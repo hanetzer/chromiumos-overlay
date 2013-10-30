@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("e22c768232c5e43841645966d1acd669fac01214" "e188261f28ea756fa2b07ca1202b94fe5a38bd11")
-CROS_WORKON_TREE=("94273d930ae0d8d05a397a061dd3f46c1b80929e" "5c38c424c37252c4b535ad0af20603f2a54ecf7a")
+CROS_WORKON_COMMIT=("199a65f09d6659a17dce05eb26c49274391e2675" "e188261f28ea756fa2b07ca1202b94fe5a38bd11")
+CROS_WORKON_TREE=("dc881270df131c76fcd17eca9c14bbe3472c76d8" "5c38c424c37252c4b535ad0af20603f2a54ecf7a")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
@@ -41,8 +41,10 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	chromeos-base/memento_softwareupdate
 	>=chromeos-base/vpd-0.0.1-r11"
 
-TARGET_DIR="/usr/local/factory"
+# Binaries from other packages (ex, chrome).
+STRIP_MASK="*/chromedriver */selenium/*"
 
+TARGET_DIR="/usr/local/factory"
 
 src_unpack() {
 	default
