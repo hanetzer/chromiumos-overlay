@@ -14,7 +14,7 @@ DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="em100-mode memmaps"
+IUSE="em100-mode memmaps quiet-cb"
 
 
 RDEPEND="!sys-boot/chromeos-coreboot"
@@ -86,6 +86,16 @@ cros-coreboot_src_compile() {
 	fi
 
 	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
+
+	if use quiet-cb; then
+		# Suppress console spew if requested.
+		cat >> .config <<EOF
+CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
+# CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8 is not set
+CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
+EOF
+	fi
+
 	yes "" | emake obj="${build_root}" oldconfig
 	emake obj="${build_root}"
 
