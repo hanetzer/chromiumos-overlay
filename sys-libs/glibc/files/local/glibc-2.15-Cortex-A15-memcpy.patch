@@ -1,98 +1,8 @@
-This patch is from http://sourceware.org/ml/libc-ports/2013-05/msg00018.html
-
-Add a high performance memcpy routine optimized for Cortex-A15 with
-variants for use in the presence of NEON and VFP hardware selected
-at runtime using indirect function support. This requires binutils
-2.21 on armv7 to ensure the code is assembled correctly.
-
-This was tested on armv7l-unknown-linux-gnueabihf. One new testsuite
-failure was introduced (elf/ifuncmain5picstatic) which was caused by
-a bug in ld. A fix for that ld issue has been committed to binutils
-on 2012-04-29.
-
-ports/ChangeLog.arm:
-
-2013-05-01  Will Newton  <will.newton@linaro.org>
-
-	* sysdeps/arm/armv7/multiarch/Makefile: New file.
-	* sysdeps/arm/armv7/multiarch/aeabi_memcpy.c: Likewise.
-	* sysdeps/arm/armv7/multiarch/ifunc-impl-list.c: Likewise.
-	* sysdeps/arm/armv7/multiarch/memcpy.S: Likewise.
-	* sysdeps/arm/armv7/multiarch/memcpy_impl.S: Likewise.
-	* sysdeps/arm/armv7/multiarch/memcpy_neon.S: Likewise.
-	* sysdeps/arm/armv7/multiarch/memcpy_vfp.S: Likewise.
-	* sysdeps/arm/armv7/configure.in: Likewise.
-	* sysdeps/arm/armv7/configure: Generated.
-
-Changes in v6:
- - Move binutils configure check into armv7 subdirectory.
- - Fix binutils version glob.
- - Move __aeabi_memcpy aliases into memcpy.S
- - Add comments to NO_THUMB #defines.
- - Other minor fixes.
-
----
- ports/sysdeps/arm/armv7/configure.in               |  12 +
- ports/sysdeps/arm/armv7/multiarch/Makefile         |   3 +
- ports/sysdeps/arm/armv7/multiarch/aeabi_memcpy.c   |   2 +
- .../sysdeps/arm/armv7/multiarch/ifunc-impl-list.c  |  44 ++
- ports/sysdeps/arm/armv7/multiarch/memcpy.S         |  73 +++
- ports/sysdeps/arm/armv7/multiarch/memcpy_impl.S    | 642 +++++++++++++++++++++
- ports/sysdeps/arm/armv7/multiarch/memcpy_neon.S    |   3 +
- ports/sysdeps/arm/armv7/multiarch/memcpy_vfp.S     |   3 +
- 8 files changed, 782 insertions(+)
- create mode 100644 ports/sysdeps/arm/armv7/configure.in
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/Makefile
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/aeabi_memcpy.c
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/ifunc-impl-list.c
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/memcpy.S
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/memcpy_impl.S
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/memcpy_neon.S
- create mode 100644 ports/sysdeps/arm/armv7/multiarch/memcpy_vfp.S
-
-diff --git a/ports/sysdeps/arm/armv7/configure.in b/ports/sysdeps/arm/armv7/configure.in
-new file mode 100644
-index 0000000..01e93ec
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/configure.in
-@@ -0,0 +1,12 @@
-+GLIBC_PROVIDES dnl See aclocal.m4 in the top level source directory.
-+# Local configure fragment for sysdeps/arm/armv7.
-+
-+# We need binutils 2.21 to ensure that NEON alignments are assembled correctly.
-+libc_cv_arm_as_version_ok=yes
-+AC_CHECK_PROG_VER(AS, $AS, --version,
-+                  [GNU assembler.* \([0-9]*\.[0-9.]*\)],
-+                  [2.1[0-9][0-9]*|2.2[1-9]*|2.[3-9][0-9]*|[3-9].*|[1-9][0-9]*], libc_cv_arm_as_version_ok=no)
-+
-+if test $libc_cv_arm_as_version_ok != yes; then
-+  AC_MSG_ERROR([as version too old, at least 2.21 is required])
-+fi
-diff --git a/ports/sysdeps/arm/armv7/multiarch/Makefile b/ports/sysdeps/arm/armv7/multiarch/Makefile
-new file mode 100644
-index 0000000..e834cc9
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/Makefile
-@@ -0,0 +1,3 @@
-+ifeq ($(subdir),string)
-+sysdep_routines += memcpy_neon memcpy_vfp
-+endif
-diff --git a/ports/sysdeps/arm/armv7/multiarch/aeabi_memcpy.c b/ports/sysdeps/arm/armv7/multiarch/aeabi_memcpy.c
-new file mode 100644
-index 0000000..c6a2a98
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/aeabi_memcpy.c
-@@ -0,0 +1,2 @@
-+/* Empty file to override sysdeps/arm version. See memcpy.S for definitions
-+   of these functions.  */
-diff --git a/ports/sysdeps/arm/armv7/multiarch/ifunc-impl-list.c b/ports/sysdeps/arm/armv7/multiarch/ifunc-impl-list.c
-new file mode 100644
-index 0000000..0dcdcd6
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/ifunc-impl-list.c
-@@ -0,0 +1,44 @@
-+/* Enumerate available IFUNC implementations of a function.  ARM version.
-+   Copyright (C) 2013 Free Software Foundation, Inc.
+--- /dev/null	2013-10-23 09:34:06.260111032 -0700
++++ ports/sysdeps/arm/arm-features.h	2013-10-30 13:52:27.000000000 -0700
+@@ -0,0 +1,67 @@
++/* Macros to test for CPU features on ARM.  Generic ARM version.
++   Copyright (C) 2012-2013 Free Software Foundation, Inc.
 +   This file is part of the GNU C Library.
 +
 +   The GNU C Library is free software; you can redistribute it and/or
@@ -106,120 +16,64 @@ index 0000000..0dcdcd6
 +   Lesser General Public License for more details.
 +
 +   You should have received a copy of the GNU Lesser General Public
-+   License along with the GNU C Library; if not, see
++   License along with the GNU C Library.  If not, see
 +   <http://www.gnu.org/licenses/>.  */
 +
-+#include <string.h>
-+#include <ldsodefs.h>
-+#include <sysdep.h>
-+#include <ifunc-impl-list.h>
++#ifndef _ARM_ARM_FEATURES_H
++#define _ARM_ARM_FEATURES_H 1
 +
-+/* Fill ARRAY of MAX elements with IFUNC implementations for function
-+   NAME and return the number of valid entries.  */
++/* An OS-specific arm-features.h file should define ARM_HAVE_VFP to
++   an appropriate expression for testing at runtime whether the VFP
++   hardware is present.  We'll then redefine it to a constant if we
++   know at compile time that we can assume VFP.  */
 +
-+size_t
-+__libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
-+			size_t max)
-+{
-+  size_t i = 0;
-+  int hwcap;
-+
-+  hwcap = GLRO(dl_hwcap);
-+
-+  IFUNC_IMPL (i, name, memcpy,
-+	      IFUNC_IMPL_ADD (array, i, memcpy, hwcap & HWCAP_ARM_NEON,
-+			      __memcpy_neon)
-+	      IFUNC_IMPL_ADD (array, i, memcpy, hwcap & HWCAP_ARM_VFP,
-+			      __memcpy_vfp)
-+	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_arm));
-+
-+  return i;
-+}
-diff --git a/ports/sysdeps/arm/armv7/multiarch/memcpy.S b/ports/sysdeps/arm/armv7/multiarch/memcpy.S
-new file mode 100644
-index 0000000..1b12465
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/memcpy.S
-@@ -0,0 +1,73 @@
-+/* Multiple versions of memcpy
-+   All versions must be listed in ifunc-impl-list.c.
-+   Copyright (C) 2013 Free Software Foundation, Inc.
-+   This file is part of the GNU C Library.
-+
-+   The GNU C Library is free software; you can redistribute it and/or
-+   modify it under the terms of the GNU Lesser General Public
-+   License as published by the Free Software Foundation; either
-+   version 2.1 of the License, or (at your option) any later version.
-+
-+   The GNU C Library is distributed in the hope that it will be useful,
-+   but WITHOUT ANY WARRANTY; without even the implied warranty of
-+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+   Lesser General Public License for more details.
-+
-+   You should have received a copy of the GNU Lesser General Public
-+   License along with the GNU C Library; if not, see
-+   <http://www.gnu.org/licenses/>.  */
-+
-+/* Thumb requires excess IT instructions here.  */
-+#define NO_THUMB
-+#include <sysdep.h>
-+#include <rtld-global-offsets.h>
-+
-+#if !defined NOT_IN_libc
-+	.text
-+ENTRY(memcpy)
-+	.type	memcpy, %gnu_indirect_function
-+#ifdef __SOFTFP__
-+	ldr	r1, .Lmemcpy_arm
-+	tst	r0, #HWCAP_ARM_VFP
-+	ldrne	r1, .Lmemcpy_vfp
-+#else
-+	ldr	r1, .Lmemcpy_vfp
++#ifndef __SOFTFP__
++/* The compiler is generating VFP instructions, so we're already
++   assuming the hardware exists.  */
++# undef ARM_HAVE_VFP
++# define ARM_HAVE_VFP	1
 +#endif
-+	tst	r0, #HWCAP_ARM_NEON
-+	ldrne	r1, .Lmemcpy_neon
-+1:
-+	add	r0, r1, pc
-+	DO_RET(lr)
 +
-+#ifdef __SOFTFP__
-+.Lmemcpy_arm:
-+	.long	C_SYMBOL_NAME(__memcpy_arm) - 1b - PC_OFS
++/* An OS-specific arm-features.h file may define ARM_ASSUME_NO_IWMMXT
++   to indicate at compile time that iWMMXt hardware is never present
++   at runtime (or that we never care about its state) and so need not
++   be checked for.  */
++
++/* A more-specific arm-features.h file may define ARM_ALWAYS_BX to indicate
++   that instructions using pc as a destination register must never be used,
++   so a "bx" (or "blx") instruction is always required.  */
++
++/* The log2 of the minimum alignment required for an address that
++   is the target of a computed branch (i.e. a "bx" instruction).
++   A more-specific arm-features.h file may define this to set a more
++   stringent requirement.
++
++   Using this only makes sense for code in ARM mode (where instructions
++   always have a fixed size of four bytes), or for Thumb-mode code that is
++   specifically aligning all the related branch targets to match (since
++   Thumb instructions might be either two or four bytes).  */
++#ifndef ARM_BX_ALIGN_LOG2
++# define ARM_BX_ALIGN_LOG2	2
 +#endif
-+.Lmemcpy_neon:
-+	.long	C_SYMBOL_NAME(__memcpy_neon) - 1b - PC_OFS
-+.Lmemcpy_vfp:
-+	.long	C_SYMBOL_NAME(__memcpy_vfp) - 1b - PC_OFS
 +
-+END(memcpy)
++/* The number of instructions that 'bx' expands to.  A more-specific
++   arm-features.h that defines 'bx' as a macro should define this to the
++   number instructions it expands to.  This is used only in a context
++   where the 'bx' expansion won't cross an ARM_BX_ALIGN_LOG2 boundary.  */
++#ifndef ARM_BX_NINSNS
++# define ARM_BX_NINSNS		1
++#endif
 +
++/* An OS-specific arm-features.h file may define ARM_NO_INDEX_REGISTER to
++   indicate that the two-register addressing modes must never be used.  */
++
++#endif  /* arm-features.h */
+--- /dev/null	2013-10-23 09:34:06.260111032 -0700
++++ ports/sysdeps/arm/eabi/memcpy.S	2013-10-30 14:00:12.000000000 -0700
+@@ -0,0 +1,970 @@
 +libc_hidden_builtin_def (memcpy)
++#define MEMCPY_NEON
 +
-+/* These versions of memcpy are defined not to clobber any VFP or NEON
-+   registers so they must always call the ARM variant of the memcpy code.  */
-+strong_alias (__memcpy_arm, __aeabi_memcpy)
-+strong_alias (__memcpy_arm, __aeabi_memcpy4)
-+strong_alias (__memcpy_arm, __aeabi_memcpy8)
-+libc_hidden_def (__memcpy_arm)
-+
-+#undef libc_hidden_builtin_def
-+#define libc_hidden_builtin_def(name)
-+#undef weak_alias
-+#define weak_alias(x, y)
-+#undef libc_hidden_def
-+#define libc_hidden_def(name)
-+
-+#define memcpy __memcpy_arm
-+
-+#endif
-+
-+#include "memcpy_impl.S"
-diff --git a/ports/sysdeps/arm/armv7/multiarch/memcpy_impl.S b/ports/sysdeps/arm/armv7/multiarch/memcpy_impl.S
-new file mode 100644
-index 0000000..f83276a
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/memcpy_impl.S
-@@ -0,0 +1,642 @@
 +/* NEON/VFP/ARM version of memcpy optimized for Cortex-A15.
 +   Copyright (C) 2013 Free Software Foundation, Inc.
 +   This file is part of the GNU C Library.
@@ -255,7 +109,58 @@ index 0000000..f83276a
 +#define NO_THUMB
 +#endif
 +#include <sysdep.h>
++#define PC_OFS  8
 +
++# ifndef ARM_SFI_MACROS
++# define ARM_SFI_MACROS 1
++/* This assembly macro is prepended to any load/store instruction,
++   pulling the base register out of the addressing mode syntax and
++   making it the first operand of the macro.  For example:
++        ldr r0, [r1]
++   becomes:
++        sfi_breg r1, ldr r0, [\B]
++   The \B stands in for the base register that is the first operand
++   to the macro, so we can avoid error-prone repetition of the base
++   register in two places on the line.
++
++   This is used for all memory access through a base register other
++   than PC or SP.  It's intended to support SFI schemes such as
++   Native Client, where the OS will enforce that all load/store
++   instructions use a special form.  In any such configuration,
++   another sysdep.h file will have defined ARM_SFI_MACROS and
++   provided its own assembly macros with the same interface.  */
++
++        .macro sfi_breg basereg, insn, operands:vararg
++                .macro _sfi_breg_doit B
++                \insn \operands
++                .endm
++                _sfi_breg_doit \basereg
++                .purgem _sfi_breg_doit
++        .endm
++
++/* This assembly macro replaces the "pld" instruction.
++   The syntax:
++        sfi_pld REGISTER, #OFFSET
++   is exactly equivalent to:
++        sfi_breg REGISTER, pld [\B, #OFFSET]
++   (and ", #OFFSET" is optional).  We have a separate macro
++   only to work around a bug in GAS versions prior to 2.23.2,
++   that misparses the sfi_breg macro expansion in this case.  */
++
++        .macro sfi_pld basereg, offset=#0
++                pld [\basereg, \offset]
++        .endm
++
++/* This macro precedes any instruction that directly changes the SP.
++   It's not needed for push/pop or for any kind of load or store that
++   implicitly changes the SP via the ! syntax.  */
++# define sfi_sp /* Nothing to do.  */
++
++# endif
++
++
++#include <arm-features.h>
++	.text
 +	.syntax unified
 +	/* This implementation requires ARM state.  */
 +	.arm
@@ -293,7 +198,139 @@ index 0000000..f83276a
 +/* Locals.  */
 +#define tmp1	r3
 +#define dst	ip
-+#define tmp2	r10
++#define tmp2	r8
++
++/* These two macros both work by repeated invocation of the macro
++   dispatch_step (not defined here).  That macro performs one "step",
++   doing one load instruction and one store instruction to copy one
++   "unit".  On entry, TMP1 contains the number of bytes to be copied,
++   a multiple of the unit size.  The macro clobbers TMP1 in the
++   process of doing a computed jump to the tail containing the
++   appropriate number of steps.
++
++   In dispatch_7_dword, dispatch_step is invoked seven times, with an
++   argument that is 7 for the first and 1 for the last.  Units are
++   double-words (8 bytes).  TMP1 is at most 56.
++
++   In dispatch_15_word, dispatch_step is invoked fifteen times,
++   with an argument that is 15 for the first and 1 for the last.
++   Units are words (4 bytes).  TMP1 is at most 60.  */
++
++#ifndef ARM_ALWAYS_BX
++# if ARM_BX_ALIGN_LOG2 != 2
++#  error case not handled
++# endif
++	.macro dispatch_7_dword
++	rsb	tmp1, tmp1, #((7 * 8) - PC_OFS + INSN_SIZE)
++	add	pc, pc, tmp1
++	dispatch_step 7
++	dispatch_step 6
++	dispatch_step 5
++	dispatch_step 4
++	dispatch_step 3
++	dispatch_step 2
++	dispatch_step 1
++	.purgem dispatch_step
++	.endm
++
++	.macro dispatch_15_word
++	rsb	tmp1, tmp1, #((15 * 4) - PC_OFS/2 + INSN_SIZE/2)
++	add	pc, pc, tmp1, lsl #1
++	dispatch_step 15
++	dispatch_step 14
++	dispatch_step 13
++	dispatch_step 12
++	dispatch_step 11
++	dispatch_step 10
++	dispatch_step 9
++	dispatch_step 8
++	dispatch_step 7
++	dispatch_step 6
++	dispatch_step 5
++	dispatch_step 4
++	dispatch_step 3
++	dispatch_step 2
++	dispatch_step 1
++	.purgem dispatch_step
++	.endm
++#else
++# if ARM_BX_ALIGN_LOG2 < 4
++#  error case not handled
++# endif
++	.macro dispatch_helper steps, log2_bytes_per_step
++	.p2align ARM_BX_ALIGN_LOG2
++	/* TMP1 gets (max_bytes - bytes_to_copy), where max_bytes is
++	   (STEPS << LOG2_BYTES_PER_STEP).
++	   So this is (steps_to_skip << LOG2_BYTES_PER_STEP).  */
++	rsb	tmp1, tmp1, #(\steps << \log2_bytes_per_step)
++	/* Pad so that the add;bx pair immediately precedes an alignment
++	   boundary.  Hence, TMP1=0 will run all the steps.  */
++	.rept (1 << (ARM_BX_ALIGN_LOG2 - 2)) - (2 + ARM_BX_NINSNS)
++	nop
++	.endr
++	/* Shifting down LOG2_BYTES_PER_STEP gives us the number of
++	   steps to skip, then shifting up ARM_BX_ALIGN_LOG2 gives us
++	   the (byte) distance to add to the PC.  */
++	add	tmp1, pc, tmp1, lsl #(ARM_BX_ALIGN_LOG2 - \log2_bytes_per_step)
++	bx	tmp1
++	.endm
++
++	.macro dispatch_7_dword
++	dispatch_helper 7, 3
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 7
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 6
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 5
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 4
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 3
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 2
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 1
++	.p2align ARM_BX_ALIGN_LOG2
++	.purgem dispatch_step
++	.endm
++
++	.macro dispatch_15_word
++	dispatch_helper 15, 2
++	dispatch_step 15
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 14
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 13
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 12
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 11
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 10
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 9
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 8
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 7
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 6
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 5
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 4
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 3
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 2
++	.p2align ARM_BX_ALIGN_LOG2
++	dispatch_step 1
++	.p2align ARM_BX_ALIGN_LOG2
++	.purgem dispatch_step
++	.endm
++
++#endif
 +
 +#ifndef USE_NEON
 +/* For bulk copies using GP registers.  */
@@ -303,8 +340,9 @@ index 0000000..f83276a
 +#define	B_h	r5
 +#define	C_l	r6
 +#define	C_h	r7
-+#define	D_l	r8
-+#define	D_h	r9
++/* Don't use the pair r8,r9 because in some EABI variants r9 is reserved.  */
++#define	D_l	r10
++#define	D_h	r11
 +#endif
 +
 +/* Number of lines ahead to pre-fetch data.  If you change this the code
@@ -314,40 +352,71 @@ index 0000000..f83276a
 +
 +#ifdef USE_VFP
 +	.macro	cpy_line_vfp vreg, base
-+	vstr	\vreg, [dst, #\base]
-+	vldr	\vreg, [src, #\base]
-+	vstr	d0, [dst, #\base + 8]
-+	vldr	d0, [src, #\base + 8]
-+	vstr	d1, [dst, #\base + 16]
-+	vldr	d1, [src, #\base + 16]
-+	vstr	d2, [dst, #\base + 24]
-+	vldr	d2, [src, #\base + 24]
-+	vstr	\vreg, [dst, #\base + 32]
-+	vldr	\vreg, [src, #\base + prefetch_lines * 64 - 32]
-+	vstr	d0, [dst, #\base + 40]
-+	vldr	d0, [src, #\base + 40]
-+	vstr	d1, [dst, #\base + 48]
-+	vldr	d1, [src, #\base + 48]
-+	vstr	d2, [dst, #\base + 56]
-+	vldr	d2, [src, #\base + 56]
++	sfi_breg dst, \
++	vstr	\vreg, [\B, #\base]
++	sfi_breg src, \
++	vldr	\vreg, [\B, #\base]
++	sfi_breg dst, \
++	vstr	d0, [\B, #\base + 8]
++	sfi_breg src, \
++	vldr	d0, [\B, #\base + 8]
++	sfi_breg dst, \
++	vstr	d1, [\B, #\base + 16]
++	sfi_breg src, \
++	vldr	d1, [\B, #\base + 16]
++	sfi_breg dst, \
++	vstr	d2, [\B, #\base + 24]
++	sfi_breg src, \
++	vldr	d2, [\B, #\base + 24]
++	sfi_breg dst, \
++	vstr	\vreg, [\B, #\base + 32]
++	sfi_breg src, \
++	vldr	\vreg, [\B, #\base + prefetch_lines * 64 - 32]
++	sfi_breg dst, \
++	vstr	d0, [\B, #\base + 40]
++	sfi_breg src, \
++	vldr	d0, [\B, #\base + 40]
++	sfi_breg dst, \
++	vstr	d1, [\B, #\base + 48]
++	sfi_breg src, \
++	vldr	d1, [\B, #\base + 48]
++	sfi_breg dst, \
++	vstr	d2, [\B, #\base + 56]
++	sfi_breg src, \
++	vldr	d2, [\B, #\base + 56]
 +	.endm
 +
 +	.macro	cpy_tail_vfp vreg, base
-+	vstr	\vreg, [dst, #\base]
-+	vldr	\vreg, [src, #\base]
-+	vstr	d0, [dst, #\base + 8]
-+	vldr	d0, [src, #\base + 8]
-+	vstr	d1, [dst, #\base + 16]
-+	vldr	d1, [src, #\base + 16]
-+	vstr	d2, [dst, #\base + 24]
-+	vldr	d2, [src, #\base + 24]
-+	vstr	\vreg, [dst, #\base + 32]
-+	vstr	d0, [dst, #\base + 40]
-+	vldr	d0, [src, #\base + 40]
-+	vstr	d1, [dst, #\base + 48]
-+	vldr	d1, [src, #\base + 48]
-+	vstr	d2, [dst, #\base + 56]
-+	vldr	d2, [src, #\base + 56]
++	sfi_breg dst, \
++	vstr	\vreg, [\B, #\base]
++	sfi_breg src, \
++	vldr	\vreg, [\B, #\base]
++	sfi_breg dst, \
++	vstr	d0, [\B, #\base + 8]
++	sfi_breg src, \
++	vldr	d0, [\B, #\base + 8]
++	sfi_breg dst, \
++	vstr	d1, [\B, #\base + 16]
++	sfi_breg src, \
++	vldr	d1, [\B, #\base + 16]
++	sfi_breg dst, \
++	vstr	d2, [\B, #\base + 24]
++	sfi_breg src, \
++	vldr	d2, [\B, #\base + 24]
++	sfi_breg dst, \
++	vstr	\vreg, [\B, #\base + 32]
++	sfi_breg dst, \
++	vstr	d0, [\B, #\base + 40]
++	sfi_breg src, \
++	vldr	d0, [\B, #\base + 40]
++	sfi_breg dst, \
++	vstr	d1, [\B, #\base + 48]
++	sfi_breg src, \
++	vldr	d1, [\B, #\base + 48]
++	sfi_breg dst, \
++	vstr	d2, [\B, #\base + 56]
++	sfi_breg src, \
++	vldr	d2, [\B, #\base + 56]
 +	.endm
 +#endif
 +
@@ -362,81 +431,62 @@ index 0000000..f83276a
 +
 +.Ltail63unaligned:
 +#ifdef USE_NEON
++	/* These need an extra layer of macro just to work around a
++	   bug in the assembler's parser when an operand starts with
++	   a {...}.  http://sourceware.org/bugzilla/show_bug.cgi?id=15647
++	   tracks that bug; it was not fixed as of binutils-2.23.2.  */
++	.macro neon_load_d0 reg
++	vld1.8	{d0}, [\reg]!
++	.endm
++	.macro neon_store_d0 reg
++	vst1.8	{d0}, [\reg]!
++	.endm
++
++	/* These are used by the NaCl sfi_breg macro.  */
++	.macro _sfi_breg_dmask_neon_load_d0 reg
++	_sfi_dmask \reg
++	.endm
++	.macro _sfi_breg_dmask_neon_store_d0 reg
++	_sfi_dmask \reg
++	.endm
++
 +	and	tmp1, count, #0x38
-+	rsb	tmp1, tmp1, #(56 - PC_OFS + INSN_SIZE)
-+	add	pc, pc, tmp1
-+	vld1.8	{d0}, [src]!	/* 14 words to go.  */
-+	vst1.8	{d0}, [dst]!
-+	vld1.8	{d0}, [src]!	/* 12 words to go.  */
-+	vst1.8	{d0}, [dst]!
-+	vld1.8	{d0}, [src]!	/* 10 words to go.  */
-+	vst1.8	{d0}, [dst]!
-+	vld1.8	{d0}, [src]!	/* 8 words to go.  */
-+	vst1.8	{d0}, [dst]!
-+	vld1.8	{d0}, [src]!	/* 6 words to go.  */
-+	vst1.8	{d0}, [dst]!
-+	vld1.8	{d0}, [src]!	/* 4 words to go.  */
-+	vst1.8	{d0}, [dst]!
-+	vld1.8	{d0}, [src]!	/* 2 words to go.  */
-+	vst1.8	{d0}, [dst]!
++	.macro dispatch_step i
++	sfi_breg src, neon_load_d0 \B
++	sfi_breg dst, neon_store_d0 \B
++	.endm
++	dispatch_7_dword
 +
 +	tst	count, #4
-+	ldrne	tmp1, [src], #4
-+	strne	tmp1, [dst], #4
++	sfi_breg src, \
++	ldrne	tmp1, [\B], #4
++	sfi_breg dst, \
++	strne	tmp1, [\B], #4
 +#else
 +	/* Copy up to 15 full words of data.  May not be aligned.  */
 +	/* Cannot use VFP for unaligned data.  */
 +	and	tmp1, count, #0x3c
 +	add	dst, dst, tmp1
 +	add	src, src, tmp1
-+	rsb	tmp1, tmp1, #(60 - PC_OFS/2 + INSN_SIZE/2)
 +	/* Jump directly into the sequence below at the correct offset.  */
-+	add	pc, pc, tmp1, lsl #1
-+
-+	ldr	tmp1, [src, #-60]	/* 15 words to go.  */
-+	str	tmp1, [dst, #-60]
-+
-+	ldr	tmp1, [src, #-56]	/* 14 words to go.  */
-+	str	tmp1, [dst, #-56]
-+	ldr	tmp1, [src, #-52]
-+	str	tmp1, [dst, #-52]
-+
-+	ldr	tmp1, [src, #-48]	/* 12 words to go.  */
-+	str	tmp1, [dst, #-48]
-+	ldr	tmp1, [src, #-44]
-+	str	tmp1, [dst, #-44]
-+
-+	ldr	tmp1, [src, #-40]	/* 10 words to go.  */
-+	str	tmp1, [dst, #-40]
-+	ldr	tmp1, [src, #-36]
-+	str	tmp1, [dst, #-36]
-+
-+	ldr	tmp1, [src, #-32]	/* 8 words to go.  */
-+	str	tmp1, [dst, #-32]
-+	ldr	tmp1, [src, #-28]
-+	str	tmp1, [dst, #-28]
-+
-+	ldr	tmp1, [src, #-24]	/* 6 words to go.  */
-+	str	tmp1, [dst, #-24]
-+	ldr	tmp1, [src, #-20]
-+	str	tmp1, [dst, #-20]
-+
-+	ldr	tmp1, [src, #-16]	/* 4 words to go.  */
-+	str	tmp1, [dst, #-16]
-+	ldr	tmp1, [src, #-12]
-+	str	tmp1, [dst, #-12]
-+
-+	ldr	tmp1, [src, #-8]	/* 2 words to go.  */
-+	str	tmp1, [dst, #-8]
-+	ldr	tmp1, [src, #-4]
-+	str	tmp1, [dst, #-4]
++	.macro dispatch_step i
++	sfi_breg src, \
++	ldr	tmp1, [\B, #-(\i * 4)]
++	sfi_breg dst, \
++	str	tmp1, [\B, #-(\i * 4)]
++	.endm
++	dispatch_15_word
 +#endif
 +
 +	lsls	count, count, #31
-+	ldrhcs	tmp1, [src], #2
-+	ldrbne	src, [src]		/* Src is dead, use as a scratch.  */
-+	strhcs	tmp1, [dst], #2
-+	strbne	src, [dst]
++	sfi_breg src, \
++	ldrhcs	tmp1, [\B], #2
++	sfi_breg src, \
++	ldrbne	src, [\B]		/* Src is dead, use as a scratch.  */
++	sfi_breg dst, \
++	strhcs	tmp1, [\B], #2
++	sfi_breg dst, \
++	strbne	src, [\B]
 +	bx	lr
 +
 +.Lcpy_not_short:
@@ -464,13 +514,19 @@ index 0000000..f83276a
 +	beq	1f
 +	rsbs	tmp2, tmp2, #0
 +	sub	count, count, tmp2, lsr #29
-+	ldrmi	tmp1, [src], #4
-+	strmi	tmp1, [dst], #4
++	sfi_breg src, \
++	ldrmi	tmp1, [\B], #4
++	sfi_breg dst, \
++	strmi	tmp1, [\B], #4
 +	lsls	tmp2, tmp2, #2
-+	ldrhcs	tmp1, [src], #2
-+	ldrbne	tmp2, [src], #1
-+	strhcs	tmp1, [dst], #2
-+	strbne	tmp2, [dst], #1
++	sfi_breg src, \
++	ldrhcs	tmp1, [\B], #2
++	sfi_breg src, \
++	ldrbne	tmp2, [\B], #1
++	sfi_breg dst, \
++	strhcs	tmp1, [\B], #2
++	sfi_breg dst, \
++	strbne	tmp2, [\B], #1
 +
 +1:
 +	subs	tmp2, count, #64	/* Use tmp2 for count.  */
@@ -482,24 +538,40 @@ index 0000000..f83276a
 +.Lcpy_body_medium:			/* Count in tmp2.  */
 +#ifdef USE_VFP
 +1:
-+	vldr	d0, [src, #0]
++	sfi_breg src, \
++	vldr	d0, [\B, #0]
 +	subs	tmp2, tmp2, #64
-+	vldr	d1, [src, #8]
-+	vstr	d0, [dst, #0]
-+	vldr	d0, [src, #16]
-+	vstr	d1, [dst, #8]
-+	vldr	d1, [src, #24]
-+	vstr	d0, [dst, #16]
-+	vldr	d0, [src, #32]
-+	vstr	d1, [dst, #24]
-+	vldr	d1, [src, #40]
-+	vstr	d0, [dst, #32]
-+	vldr	d0, [src, #48]
-+	vstr	d1, [dst, #40]
-+	vldr	d1, [src, #56]
-+	vstr	d0, [dst, #48]
++	sfi_breg src, \
++	vldr	d1, [\B, #8]
++	sfi_breg dst, \
++	vstr	d0, [\B, #0]
++	sfi_breg src, \
++	vldr	d0, [\B, #16]
++	sfi_breg dst, \
++	vstr	d1, [\B, #8]
++	sfi_breg src, \
++	vldr	d1, [\B, #24]
++	sfi_breg dst, \
++	vstr	d0, [\B, #16]
++	sfi_breg src, \
++	vldr	d0, [\B, #32]
++	sfi_breg dst, \
++	vstr	d1, [\B, #24]
++	sfi_breg src, \
++	vldr	d1, [\B, #40]
++	sfi_breg dst, \
++	vstr	d0, [\B, #32]
++	sfi_breg src, \
++	vldr	d0, [\B, #48]
++	sfi_breg dst, \
++	vstr	d1, [\B, #40]
++	sfi_breg src, \
++	vldr	d1, [\B, #56]
++	sfi_breg dst, \
++	vstr	d0, [\B, #48]
 +	add	src, src, #64
-+	vstr	d1, [dst, #56]
++	sfi_breg dst, \
++	vstr	d1, [\B, #56]
 +	add	dst, dst, #64
 +	bge	1b
 +	tst	tmp2, #0x3f
@@ -509,43 +581,49 @@ index 0000000..f83276a
 +	and	tmp1, tmp2, #0x38
 +	add	dst, dst, tmp1
 +	add	src, src, tmp1
-+	rsb	tmp1, tmp1, #(56 - PC_OFS + INSN_SIZE)
-+	add	pc, pc, tmp1
-+
-+	vldr	d0, [src, #-56]	/* 14 words to go.  */
-+	vstr	d0, [dst, #-56]
-+	vldr	d0, [src, #-48]	/* 12 words to go.  */
-+	vstr	d0, [dst, #-48]
-+	vldr	d0, [src, #-40]	/* 10 words to go.  */
-+	vstr	d0, [dst, #-40]
-+	vldr	d0, [src, #-32]	/* 8 words to go.  */
-+	vstr	d0, [dst, #-32]
-+	vldr	d0, [src, #-24]	/* 6 words to go.  */
-+	vstr	d0, [dst, #-24]
-+	vldr	d0, [src, #-16]	/* 4 words to go.  */
-+	vstr	d0, [dst, #-16]
-+	vldr	d0, [src, #-8]	/* 2 words to go.  */
-+	vstr	d0, [dst, #-8]
++	.macro dispatch_step i
++	sfi_breg src, \
++	vldr	d0, [\B, #-(\i * 8)]
++	sfi_breg dst, \
++	vstr	d0, [\B, #-(\i * 8)]
++	.endm
++	dispatch_7_dword
 +#else
 +	sub	src, src, #8
 +	sub	dst, dst, #8
 +1:
-+	ldrd	A_l, A_h, [src, #8]
-+	strd	A_l, A_h, [dst, #8]
-+	ldrd	A_l, A_h, [src, #16]
-+	strd	A_l, A_h, [dst, #16]
-+	ldrd	A_l, A_h, [src, #24]
-+	strd	A_l, A_h, [dst, #24]
-+	ldrd	A_l, A_h, [src, #32]
-+	strd	A_l, A_h, [dst, #32]
-+	ldrd	A_l, A_h, [src, #40]
-+	strd	A_l, A_h, [dst, #40]
-+	ldrd	A_l, A_h, [src, #48]
-+	strd	A_l, A_h, [dst, #48]
-+	ldrd	A_l, A_h, [src, #56]
-+	strd	A_l, A_h, [dst, #56]
-+	ldrd	A_l, A_h, [src, #64]!
-+	strd	A_l, A_h, [dst, #64]!
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #8]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #8]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #16]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #16]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #24]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #24]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #32]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #32]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #40]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #40]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #48]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #48]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #56]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #56]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #64]!
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #64]!
 +	subs	tmp2, tmp2, #64
 +	bge	1b
 +	tst	tmp2, #0x3f
@@ -571,32 +649,29 @@ index 0000000..f83276a
 +	and	tmp1, tmp2, #0x38
 +	add	dst, dst, tmp1
 +	add	src, src, tmp1
-+	rsb	tmp1, tmp1, #(56 - PC_OFS + INSN_SIZE)
-+	add	pc, pc, tmp1
-+	ldrd	A_l, A_h, [src, #-56]	/* 14 words to go.  */
-+	strd	A_l, A_h, [dst, #-56]
-+	ldrd	A_l, A_h, [src, #-48]	/* 12 words to go.  */
-+	strd	A_l, A_h, [dst, #-48]
-+	ldrd	A_l, A_h, [src, #-40]	/* 10 words to go.  */
-+	strd	A_l, A_h, [dst, #-40]
-+	ldrd	A_l, A_h, [src, #-32]	/* 8 words to go.  */
-+	strd	A_l, A_h, [dst, #-32]
-+	ldrd	A_l, A_h, [src, #-24]	/* 6 words to go.  */
-+	strd	A_l, A_h, [dst, #-24]
-+	ldrd	A_l, A_h, [src, #-16]	/* 4 words to go.  */
-+	strd	A_l, A_h, [dst, #-16]
-+	ldrd	A_l, A_h, [src, #-8]	/* 2 words to go.  */
-+	strd	A_l, A_h, [dst, #-8]
-+
++	.macro dispatch_step i
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #-(\i * 8)]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #-(\i * 8)]
++	.endm
++	dispatch_7_dword
 +#endif
++
 +	tst	tmp2, #4
-+	ldrne	tmp1, [src], #4
-+	strne	tmp1, [dst], #4
++	sfi_breg src, \
++	ldrne	tmp1, [\B], #4
++	sfi_breg dst, \
++	strne	tmp1, [\B], #4
 +	lsls	tmp2, tmp2, #31		/* Count (tmp2) now dead. */
-+	ldrhcs	tmp1, [src], #2
-+	ldrbne	tmp2, [src]
-+	strhcs	tmp1, [dst], #2
-+	strbne	tmp2, [dst]
++	sfi_breg src, \
++	ldrhcs	tmp1, [\B], #2
++	sfi_breg src, \
++	ldrbne	tmp2, [\B]
++	sfi_breg dst, \
++	strhcs	tmp1, [\B], #2
++	sfi_breg dst, \
++	strbne	tmp2, [\B]
 +
 +.Ldone:
 +	ldr	tmp2, [sp], #FRAME_SIZE
@@ -616,15 +691,23 @@ index 0000000..f83276a
 +	   copy position into a register.  This should act like a PLD
 +	   operation but we won't have to repeat the transfer.  */
 +
-+	vldr	d3, [src, #0]
-+	vldr	d4, [src, #64]
-+	vldr	d5, [src, #128]
-+	vldr	d6, [src, #192]
-+	vldr	d7, [src, #256]
++	sfi_breg src, \
++	vldr	d3, [\B, #0]
++	sfi_breg src, \
++	vldr	d4, [\B, #64]
++	sfi_breg src, \
++	vldr	d5, [\B, #128]
++	sfi_breg src, \
++	vldr	d6, [\B, #192]
++	sfi_breg src, \
++	vldr	d7, [\B, #256]
 +
-+	vldr	d0, [src, #8]
-+	vldr	d1, [src, #16]
-+	vldr	d2, [src, #24]
++	sfi_breg src, \
++	vldr	d0, [\B, #8]
++	sfi_breg src, \
++	vldr	d1, [\B, #16]
++	sfi_breg src, \
++	vldr	d2, [\B, #24]
 +	add	src, src, #32
 +
 +	subs	tmp2, tmp2, #prefetch_lines * 64 * 2
@@ -649,19 +732,31 @@ index 0000000..f83276a
 +	add	src, src, #3 * 64
 +	add	dst, dst, #3 * 64
 +	cpy_tail_vfp	d6, 0
-+	vstr	d7, [dst, #64]
-+	vldr	d7, [src, #64]
-+	vstr	d0, [dst, #64 + 8]
-+	vldr	d0, [src, #64 + 8]
-+	vstr	d1, [dst, #64 + 16]
-+	vldr	d1, [src, #64 + 16]
-+	vstr	d2, [dst, #64 + 24]
-+	vldr	d2, [src, #64 + 24]
-+	vstr	d7, [dst, #64 + 32]
++	sfi_breg dst, \
++	vstr	d7, [\B, #64]
++	sfi_breg src, \
++	vldr	d7, [\B, #64]
++	sfi_breg dst, \
++	vstr	d0, [\B, #64 + 8]
++	sfi_breg src, \
++	vldr	d0, [\B, #64 + 8]
++	sfi_breg dst, \
++	vstr	d1, [\B, #64 + 16]
++	sfi_breg src, \
++	vldr	d1, [\B, #64 + 16]
++	sfi_breg dst, \
++	vstr	d2, [\B, #64 + 24]
++	sfi_breg src, \
++	vldr	d2, [\B, #64 + 24]
++	sfi_breg dst, \
++	vstr	d7, [\B, #64 + 32]
 +	add	src, src, #96
-+	vstr	d0, [dst, #64 + 40]
-+	vstr	d1, [dst, #64 + 48]
-+	vstr	d2, [dst, #64 + 56]
++	sfi_breg dst, \
++	vstr	d0, [\B, #64 + 40]
++	sfi_breg dst, \
++	vstr	d1, [\B, #64 + 48]
++	sfi_breg dst, \
++	vstr	d2, [\B, #64 + 56]
 +	add	dst, dst, #128
 +	add	tmp2, tmp2, #prefetch_lines * 64
 +	b	.Lcpy_body_medium
@@ -672,59 +767,83 @@ index 0000000..f83276a
 +	/* Pre-bias src and dst.  */
 +	sub	src, src, #8
 +	sub	dst, dst, #8
-+	pld	[src, #8]
-+	pld	[src, #72]
++	sfi_pld	src, #8
++	sfi_pld	src, #72
 +	subs	tmp2, tmp2, #64
-+	pld	[src, #136]
-+	ldrd	A_l, A_h, [src, #8]
++	sfi_pld	src, #136
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #8]
 +	strd	B_l, B_h, [sp, #8]
 +	cfi_rel_offset (B_l, 8)
 +	cfi_rel_offset (B_h, 12)
-+	ldrd	B_l, B_h, [src, #16]
++	sfi_breg src, \
++	ldrd	B_l, B_h, [\B, #16]
 +	strd	C_l, C_h, [sp, #16]
 +	cfi_rel_offset (C_l, 16)
 +	cfi_rel_offset (C_h, 20)
-+	ldrd	C_l, C_h, [src, #24]
++	sfi_breg src, \
++	ldrd	C_l, C_h, [\B, #24]
 +	strd	D_l, D_h, [sp, #24]
 +	cfi_rel_offset (D_l, 24)
 +	cfi_rel_offset (D_h, 28)
-+	pld	[src, #200]
-+	ldrd	D_l, D_h, [src, #32]!
++	sfi_pld	src, #200
++	sfi_breg src, \
++	ldrd	D_l, D_h, [\B, #32]!
 +	b	1f
 +	.p2align	6
 +2:
-+	pld	[src, #232]
-+	strd	A_l, A_h, [dst, #40]
-+	ldrd	A_l, A_h, [src, #40]
-+	strd	B_l, B_h, [dst, #48]
-+	ldrd	B_l, B_h, [src, #48]
-+	strd	C_l, C_h, [dst, #56]
-+	ldrd	C_l, C_h, [src, #56]
-+	strd	D_l, D_h, [dst, #64]!
-+	ldrd	D_l, D_h, [src, #64]!
++	sfi_pld	src, #232
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #40]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #40]
++	sfi_breg dst, \
++	strd	B_l, B_h, [\B, #48]
++	sfi_breg src, \
++	ldrd	B_l, B_h, [\B, #48]
++	sfi_breg dst, \
++	strd	C_l, C_h, [\B, #56]
++	sfi_breg src, \
++	ldrd	C_l, C_h, [\B, #56]
++	sfi_breg dst, \
++	strd	D_l, D_h, [\B, #64]!
++	sfi_breg src, \
++	ldrd	D_l, D_h, [\B, #64]!
 +	subs	tmp2, tmp2, #64
 +1:
-+	strd	A_l, A_h, [dst, #8]
-+	ldrd	A_l, A_h, [src, #8]
-+	strd	B_l, B_h, [dst, #16]
-+	ldrd	B_l, B_h, [src, #16]
-+	strd	C_l, C_h, [dst, #24]
-+	ldrd	C_l, C_h, [src, #24]
-+	strd	D_l, D_h, [dst, #32]
-+	ldrd	D_l, D_h, [src, #32]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #8]
++	sfi_breg src, \
++	ldrd	A_l, A_h, [\B, #8]
++	sfi_breg dst, \
++	strd	B_l, B_h, [\B, #16]
++	sfi_breg src, \
++	ldrd	B_l, B_h, [\B, #16]
++	sfi_breg dst, \
++	strd	C_l, C_h, [\B, #24]
++	sfi_breg src, \
++	ldrd	C_l, C_h, [\B, #24]
++	sfi_breg dst, \
++	strd	D_l, D_h, [\B, #32]
++	sfi_breg src, \
++	ldrd	D_l, D_h, [\B, #32]
 +	bcs	2b
 +	/* Save the remaining bytes and restore the callee-saved regs.  */
-+	strd	A_l, A_h, [dst, #40]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #40]
 +	add	src, src, #40
-+	strd	B_l, B_h, [dst, #48]
++	sfi_breg dst, \
++	strd	B_l, B_h, [\B, #48]
 +	ldrd	B_l, B_h, [sp, #8]
 +	cfi_restore (B_l)
 +	cfi_restore (B_h)
-+	strd	C_l, C_h, [dst, #56]
++	sfi_breg dst, \
++	strd	C_l, C_h, [\B, #56]
 +	ldrd	C_l, C_h, [sp, #16]
 +	cfi_restore (C_l)
 +	cfi_restore (C_h)
-+	strd	D_l, D_h, [dst, #64]
++	sfi_breg dst, \
++	strd	D_l, D_h, [\B, #64]
 +	ldrd	D_l, D_h, [sp, #24]
 +	cfi_restore (D_l)
 +	cfi_restore (D_h)
@@ -741,113 +860,173 @@ index 0000000..f83276a
 +	cfi_remember_state
 +
 +.Lcpy_notaligned:
-+	pld	[src]
-+	pld	[src, #64]
++	sfi_pld	src
++	sfi_pld	src, #64
 +	/* There's at least 64 bytes to copy, but there is no mutual
 +	   alignment.  */
 +	/* Bring DST to 64-bit alignment.  */
 +	lsls	tmp2, dst, #29
-+	pld	[src, #(2 * 64)]
++	sfi_pld	src, #(2 * 64)
 +	beq	1f
 +	rsbs	tmp2, tmp2, #0
 +	sub	count, count, tmp2, lsr #29
-+	ldrmi	tmp1, [src], #4
-+	strmi	tmp1, [dst], #4
++	sfi_breg src, \
++	ldrmi	tmp1, [\B], #4
++	sfi_breg dst, \
++	strmi	tmp1, [\B], #4
 +	lsls	tmp2, tmp2, #2
-+	ldrbne	tmp1, [src], #1
-+	ldrhcs	tmp2, [src], #2
-+	strbne	tmp1, [dst], #1
-+	strhcs	tmp2, [dst], #2
++	sfi_breg src, \
++	ldrbne	tmp1, [\B], #1
++	sfi_breg src, \
++	ldrhcs	tmp2, [\B], #2
++	sfi_breg dst, \
++	strbne	tmp1, [\B], #1
++	sfi_breg dst, \
++	strhcs	tmp2, [\B], #2
 +1:
-+	pld	[src, #(3 * 64)]
++	sfi_pld	src, #(3 * 64)
 +	subs	count, count, #64
 +	ldrmi	tmp2, [sp], #FRAME_SIZE
 +	bmi	.Ltail63unaligned
-+	pld	[src, #(4 * 64)]
++	sfi_pld	src, #(4 * 64)
 +
 +#ifdef USE_NEON
-+	vld1.8	{d0-d3}, [src]!
-+	vld1.8	{d4-d7}, [src]!
++	/* These need an extra layer of macro just to work around a
++	   bug in the assembler's parser when an operand starts with
++	   a {...}.  */
++	.macro neon_load_multi reglist, basereg
++	vld1.8	{\reglist}, [\basereg]!
++	.endm
++	.macro neon_store_multi reglist, basereg
++	vst1.8	{\reglist}, [ALIGN (\basereg, 64)]!
++	.endm
++
++	/* These are used by the NaCl sfi_breg macro.  */
++	.macro _sfi_breg_dmask_neon_load_multi reg
++	_sfi_dmask \reg
++	.endm
++	.macro _sfi_breg_dmask_neon_store_multi reg
++	_sfi_dmask \reg
++	.endm
++
++	sfi_breg src, neon_load_multi d0-d3, \B
++	sfi_breg src, neon_load_multi d4-d7, \B
 +	subs	count, count, #64
 +	bmi	2f
 +1:
-+	pld	[src, #(4 * 64)]
-+	vst1.8	{d0-d3}, [ALIGN (dst, 64)]!
-+	vld1.8	{d0-d3}, [src]!
-+	vst1.8	{d4-d7}, [ALIGN (dst, 64)]!
-+	vld1.8	{d4-d7}, [src]!
++	sfi_pld	src, #(4 * 64)
++	sfi_breg dst, neon_store_multi d0-d3, \B
++	sfi_breg src, neon_load_multi d0-d3, \B
++	sfi_breg dst, neon_store_multi d4-d7, \B
++	sfi_breg src, neon_load_multi d4-d7, \B
 +	subs	count, count, #64
 +	bpl	1b
 +2:
-+	vst1.8	{d0-d3}, [ALIGN (dst, 64)]!
-+	vst1.8	{d4-d7}, [ALIGN (dst, 64)]!
++	sfi_breg dst, neon_store_multi d0-d3, \B
++	sfi_breg dst, neon_store_multi d4-d7, \B
 +	ands	count, count, #0x3f
 +#else
 +	/* Use an SMS style loop to maximize the I/O bandwidth.  */
 +	sub	src, src, #4
 +	sub	dst, dst, #8
 +	subs	tmp2, count, #64	/* Use tmp2 for count.  */
-+	ldr	A_l, [src, #4]
-+	ldr	A_h, [src, #8]
++	sfi_breg src, \
++	ldr	A_l, [\B, #4]
++	sfi_breg src, \
++	ldr	A_h, [\B, #8]
 +	strd	B_l, B_h, [sp, #8]
 +	cfi_rel_offset (B_l, 8)
 +	cfi_rel_offset (B_h, 12)
-+	ldr	B_l, [src, #12]
-+	ldr	B_h, [src, #16]
++	sfi_breg src, \
++	ldr	B_l, [\B, #12]
++	sfi_breg src, \
++	ldr	B_h, [\B, #16]
 +	strd	C_l, C_h, [sp, #16]
 +	cfi_rel_offset (C_l, 16)
 +	cfi_rel_offset (C_h, 20)
-+	ldr	C_l, [src, #20]
-+	ldr	C_h, [src, #24]
++	sfi_breg src, \
++	ldr	C_l, [\B, #20]
++	sfi_breg src, \
++	ldr	C_h, [\B, #24]
 +	strd	D_l, D_h, [sp, #24]
 +	cfi_rel_offset (D_l, 24)
 +	cfi_rel_offset (D_h, 28)
-+	ldr	D_l, [src, #28]
-+	ldr	D_h, [src, #32]!
++	sfi_breg src, \
++	ldr	D_l, [\B, #28]
++	sfi_breg src, \
++	ldr	D_h, [\B, #32]!
 +	b	1f
 +	.p2align	6
 +2:
-+	pld	[src, #(5 * 64) - (32 - 4)]
-+	strd	A_l, A_h, [dst, #40]
-+	ldr	A_l, [src, #36]
-+	ldr	A_h, [src, #40]
-+	strd	B_l, B_h, [dst, #48]
-+	ldr	B_l, [src, #44]
-+	ldr	B_h, [src, #48]
-+	strd	C_l, C_h, [dst, #56]
-+	ldr	C_l, [src, #52]
-+	ldr	C_h, [src, #56]
-+	strd	D_l, D_h, [dst, #64]!
-+	ldr	D_l, [src, #60]
-+	ldr	D_h, [src, #64]!
++	sfi_pld	src, #(5 * 64) - (32 - 4)
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #40]
++	sfi_breg src, \
++	ldr	A_l, [\B, #36]
++	sfi_breg src, \
++	ldr	A_h, [\B, #40]
++	sfi_breg dst, \
++	strd	B_l, B_h, [\B, #48]
++	sfi_breg src, \
++	ldr	B_l, [\B, #44]
++	sfi_breg src, \
++	ldr	B_h, [\B, #48]
++	sfi_breg dst, \
++	strd	C_l, C_h, [\B, #56]
++	sfi_breg src, \
++	ldr	C_l, [\B, #52]
++	sfi_breg src, \
++	ldr	C_h, [\B, #56]
++	sfi_breg dst, \
++	strd	D_l, D_h, [\B, #64]!
++	sfi_breg src, \
++	ldr	D_l, [\B, #60]
++	sfi_breg src, \
++	ldr	D_h, [\B, #64]!
 +	subs	tmp2, tmp2, #64
 +1:
-+	strd	A_l, A_h, [dst, #8]
-+	ldr	A_l, [src, #4]
-+	ldr	A_h, [src, #8]
-+	strd	B_l, B_h, [dst, #16]
-+	ldr	B_l, [src, #12]
-+	ldr	B_h, [src, #16]
-+	strd	C_l, C_h, [dst, #24]
-+	ldr	C_l, [src, #20]
-+	ldr	C_h, [src, #24]
-+	strd	D_l, D_h, [dst, #32]
-+	ldr	D_l, [src, #28]
-+	ldr	D_h, [src, #32]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #8]
++	sfi_breg src, \
++	ldr	A_l, [\B, #4]
++	sfi_breg src, \
++	ldr	A_h, [\B, #8]
++	sfi_breg dst, \
++	strd	B_l, B_h, [\B, #16]
++	sfi_breg src, \
++	ldr	B_l, [\B, #12]
++	sfi_breg src, \
++	ldr	B_h, [\B, #16]
++	sfi_breg dst, \
++	strd	C_l, C_h, [\B, #24]
++	sfi_breg src, \
++	ldr	C_l, [\B, #20]
++	sfi_breg src, \
++	ldr	C_h, [\B, #24]
++	sfi_breg dst, \
++	strd	D_l, D_h, [\B, #32]
++	sfi_breg src, \
++	ldr	D_l, [\B, #28]
++	sfi_breg src, \
++	ldr	D_h, [\B, #32]
 +	bcs	2b
 +
 +	/* Save the remaining bytes and restore the callee-saved regs.  */
-+	strd	A_l, A_h, [dst, #40]
++	sfi_breg dst, \
++	strd	A_l, A_h, [\B, #40]
 +	add	src, src, #36
-+	strd	B_l, B_h, [dst, #48]
++	sfi_breg dst, \
++	strd	B_l, B_h, [\B, #48]
 +	ldrd	B_l, B_h, [sp, #8]
 +	cfi_restore (B_l)
 +	cfi_restore (B_h)
-+	strd	C_l, C_h, [dst, #56]
++	sfi_breg dst, \
++	strd	C_l, C_h, [\B, #56]
 +	ldrd	C_l, C_h, [sp, #16]
 +	cfi_restore (C_l)
 +	cfi_restore (C_h)
-+	strd	D_l, D_h, [dst, #64]
++	sfi_breg dst, \
++	strd	D_l, D_h, [\B, #64]
 +	ldrd	D_l, D_h, [sp, #24]
 +	cfi_restore (D_l)
 +	cfi_restore (D_h)
@@ -862,23 +1041,3 @@ index 0000000..f83276a
 +
 +END(memcpy)
 +libc_hidden_builtin_def (memcpy)
-diff --git a/ports/sysdeps/arm/armv7/multiarch/memcpy_neon.S b/ports/sysdeps/arm/armv7/multiarch/memcpy_neon.S
-new file mode 100644
-index 0000000..c0ef1f8
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/memcpy_neon.S
-@@ -0,0 +1,3 @@
-+#define MEMCPY_NEON
-+#define memcpy __memcpy_neon
-+#include "memcpy_impl.S"
-diff --git a/ports/sysdeps/arm/armv7/multiarch/memcpy_vfp.S b/ports/sysdeps/arm/armv7/multiarch/memcpy_vfp.S
-new file mode 100644
-index 0000000..d21b702
---- /dev/null
-+++ b/ports/sysdeps/arm/armv7/multiarch/memcpy_vfp.S
-@@ -0,0 +1,3 @@
-+#define MEMCPY_VFP
-+#define memcpy __memcpy_vfp
-+#include "memcpy_impl.S"
--- 
-1.8.1.4

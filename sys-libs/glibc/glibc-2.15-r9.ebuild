@@ -202,7 +202,6 @@ eblit-src_unpack-post() {
 	epatch "${FILESDIR}"/2.11/glibc-2.11-disable-memset-warning.patch
 	epatch "${FILESDIR}"/2.11/glibc-2.11-resolv-milliseconds.patch
 	epatch "${FILESDIR}"/local/glibc-2.15-Cortex-A15-memcpy.patch
-	epatch "${FILESDIR}"/local/glibc-2.15-disable-neon-ifunc.patch
 	epatch "${FILESDIR}"/local/glibc-2.15-fix-strtod-buffer-overflow.patch
 	epatch "${FILESDIR}"/local/glibc-2.15-vfprintf-security.patch
 	if use hardened ; then
