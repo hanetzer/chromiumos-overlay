@@ -10,7 +10,7 @@ DESCRIPTION="A library for configuring and customizing font access"
 HOMEPAGE="http://fontconfig.org/"
 SRC_URI="http://fontconfig.org/release/${P}.tar.gz"
 
-LICENSE="fontconfig"
+LICENSE="MIT"
 SLOT="1.0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86 ~sparc-fbsd ~x86-fbsd"
 IUSE="cros_host doc -highdpi -is_desktop"
