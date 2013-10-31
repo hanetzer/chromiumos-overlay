@@ -54,6 +54,7 @@ cros_stack_bashrc() {
 
 	# New location.
 	cfgd="/mnt/host/source/src/third_party/chromiumos-overlay/${CATEGORY}/${PN}"
+	export BASHRC_FILESDIR="${cfgd}/files"
 	for cfg in ${PN} ${P} ${PF} ; do
 		cfg="${cfgd}/${cfg}.bashrc"
 		[[ -f ${cfg} ]] && . "${cfg}"

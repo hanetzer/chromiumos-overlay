@@ -40,9 +40,13 @@ cross-armv7a-cros-linux-gnueabi/glibc hardened
 
 # Han Shen <shenhan@chromium.org> (21 Mar 2012)
 #
-# Disable hardened for arm-none-eabi toolchain.
+# Disable hardened for bare-metal toolchains.
 cross-arm-none-eabi/gcc hardened
 cross-arm-none-eabi/newlib hardened
+cross-nds32le-cros-elf/nds32-gcc hardened
+cross-nds32le-cros-elf/gcc hardened
+cross-nds32le-cros-elf/nds32-newlib hardened
+cross-nds32le-cros-elf/newlib hardened
 
 # yasm-python is blocked until we upgrade to python 2.7.
 dev-lang/yasm python
