@@ -132,6 +132,7 @@ RDEPEND="${RDEPEND}
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
 	sys-fs/udev
+	sys-libs/libcap
 	sys-libs/zlib
 	X? (
 		x11-apps/setxkbmap
