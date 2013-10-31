@@ -42,7 +42,7 @@ LIBCHROME_DEPEND=$(
 		${LIBCHROME_VERS[@]}
 )
 
-RDEPEND_chaps="app-crypt/trousers"
+RDEPEND_chaps="tpm? ( app-crypt/trousers )"
 
 RDEPEND_cros_disks="
 	cros_disks? (
@@ -90,7 +90,7 @@ RDEPEND_vpn_manager="
 	net-misc/strongswan
 "
 
-DEPEND_chaps="dev-db/leveldb"
+DEPEND_chaps="tpm? ( dev-db/leveldb )"
 
 DEPEND_wimax_manager="gdmwimax? ( virtual/gdmwimax )"
 
@@ -217,6 +217,7 @@ platform2_multiplex() {
 #
 
 platform2_install_chaps() {
+	use tpm || return 0
 	use cros_host && return 0
 
 	dosbin "${OUT}"/chapsd
@@ -472,6 +473,7 @@ platform2_install_wimax_manager() {
 #
 
 platform2_test_chaps() {
+	use tpm || return 0
 	use cros_host && return 0
 
 	local tests=(
