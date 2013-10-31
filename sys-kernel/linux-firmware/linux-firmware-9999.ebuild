@@ -10,20 +10,53 @@ inherit cros-workon
 DESCRIPTION="Firmware images from the upstream linux-fimware package"
 HOMEPAGE="https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/"
 
-LICENSE="linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
-	linux_firmware_iwlwifi-7260? ( LICENCE.iwlwifi_firmware )
-	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+
+IUSE_IWLWIFI=(
+	iwlwifi-all
+	iwlwifi-100
+	iwlwifi-105
+	iwlwifi-135
+	iwlwifi-1000
+	iwlwifi-1000
+	iwlwifi-2000
+	iwlwifi-2030
+	iwlwifi-3160
+	iwlwifi-3945
+	iwlwifi-4965
+	iwlwifi-5000
+	iwlwifi-5150
+	iwlwifi-6000
+	iwlwifi-6005
+	iwlwifi-6030
+	iwlwifi-6050
+	iwlwifi-7260
+)
 IUSE_LINUX_FIRMWARE=(
 	ibt-hw
-	iwlwifi-7260
+	"${IUSE_IWLWIFI[@]}"
 	marvell-pcie8897
 )
-
-DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )"
-
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_}"
+LICENSE="linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
+	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
+	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
+"
+
+DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
+	!net-wireless/iwl1000-ucode
+	!net-wireless/iwl2000-ucode
+	!net-wireless/iwl2030-ucode
+	!net-wireless/iwl3945-ucode
+	!net-wireless/iwl4965-ucode
+	!net-wireless/iwl5000-ucode
+	!net-wireless/iwl6000-ucode
+	!net-wireless/iwl6005-ucode
+	!net-wireless/iwl6030-ucode
+	!net-wireless/iwl6050-ucode
+"
+RDEPEND="${DEPEND}"
 
 RESTRICT="binchecks strip test"
 
@@ -45,8 +78,19 @@ doins_subdir() {
 }
 
 src_install() {
+	local x
 	insinto "${FIRMWARE_INSTALL_ROOT}"
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
-	use_fw iwlwifi-7260 && doins iwlwifi-7260-*.ucode
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
+
+	# The Intel wireless firmware is mostly standard.
+	for x in ${IUSE_IWLWIFI}; do
+		use_fw ${x} || continue
+		case ${x} in
+		iwlwifi-all)  doins iwlwifi-*.ucode ;;
+		iwlwifi-6005) doins iwlwifi-6000g2a-*.ucode ;;
+		iwlwifi-6030) doins iwlwifi-6000g2b-*.ucode ;;
+		iwlwifi-*)    doins ${x}-*.ucode ;;
+		esac
+	done
 }
