@@ -35,6 +35,9 @@ DEPEND="${RDEPEND}
 	sys-apps/dbus
 	virtual/modemmanager"
 
+RDEPEND="!platform2? ( ${RDEPEND} )"
+DEPEND="!platform2? ( ${DEPEND} )"
+
 src_compile() {
 	use platform2 && return 0
 

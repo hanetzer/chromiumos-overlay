@@ -33,6 +33,9 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	cros_host? ( dev-util/scons )"
 
+RDEPEND="!platform2? ( ${RDEPEND} )"
+DEPEND="!platform2? ( ${DEPEND} )"
+
 cr_scons() {
 	local v=$1; shift
 	BASE_VER=${v} escons -C ${v} -Y "${S}" "$@"

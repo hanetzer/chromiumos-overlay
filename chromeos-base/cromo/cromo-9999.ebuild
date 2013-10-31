@@ -36,6 +36,9 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	virtual/modemmanager"
 
+RDEPEND="!platform2? ( ${RDEPEND} )"
+DEPEND="!platform2? ( ${DEPEND} )"
+
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)" BASE_VER=${LIBCHROME_VERS}
 	use install_tests && echo INSTALL_TESTS=1

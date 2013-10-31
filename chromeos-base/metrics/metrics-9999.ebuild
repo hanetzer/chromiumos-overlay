@@ -31,6 +31,9 @@ DEPEND="${RDEPEND}
 	dev-cpp/gtest
 	"
 
+RDEPEND="!platform2? ( ${RDEPEND} )"
+DEPEND="!platform2? ( ${DEPEND} )"
+
 src_configure() {
 	use platform2 && return 0
 	cros-workon_src_configure

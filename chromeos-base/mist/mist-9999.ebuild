@@ -34,6 +34,9 @@ DEPEND="
 	test? ( dev-cpp/gtest )
 "
 
+RDEPEND="!platform2? ( ${RDEPEND} )"
+DEPEND="!platform2? ( ${DEPEND} )"
+
 src_prepare() {
 	use platform2 && return 0
 	cros-workon_src_prepare

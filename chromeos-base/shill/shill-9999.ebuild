@@ -48,6 +48,9 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
 
+RDEPEND="!platform2? ( ${RDEPEND} )"
+DEPEND="!platform2? ( ${DEPEND} )"
+
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)"
 	use cellular || echo SHILL_CELLULAR=0
