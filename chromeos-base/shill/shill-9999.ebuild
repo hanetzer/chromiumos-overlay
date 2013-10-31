@@ -10,7 +10,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
-IUSE="-asan -clang +cellular platform2 test +tpm +vpn"
+IUSE="-asan -clang +cellular gdmwimax platform2 test +tpm +vpn"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 REQUIRED_USE="asan? ( clang )"
 
@@ -25,7 +25,7 @@ RDEPEND="chromeos-base/bootstat
 	cellular? ( chromeos-base/mist )
 	chromeos-base/platform2
 	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
-	chromeos-base/wimax_manager
+	gdmwimax? ( chromeos-base/wimax_manager )
 	vpn? ( chromeos-base/vpn-manager )
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
@@ -54,6 +54,7 @@ DEPEND="!platform2? ( ${DEPEND} )"
 make_flags() {
 	echo LIBDIR="/usr/$(get_libdir)"
 	use cellular || echo SHILL_CELLULAR=0
+	use gdmwimax || echo SHILL_WIMAX=0
 	use vpn || echo SHILL_VPN=0
 }
 
