@@ -50,6 +50,7 @@ IUSE_TESTS=(
 	+tests_network_ChromeCellularSmokeTest
 	+tests_network_ChromeWifiConfigure
 	+tests_security_ProfilePermissionsTelemetry
+	+tests_security_SandboxStatusTelemetry
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_video_VideoDecodeAcceleration
