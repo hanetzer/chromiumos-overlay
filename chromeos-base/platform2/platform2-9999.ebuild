@@ -32,7 +32,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="+cellular +cros_disks cros_host gdmwimax platform2 test +tpm +vpn"
+IUSE="+cellular +cros_disks cros_host gdmwimax platform2 test +tpm +vpn wimax"
+REQUIRED_USE="gdmwimax? ( wimax )"
 
 LIBCHROME_VERS=( 180609 )
 
@@ -445,6 +446,7 @@ platform2_install_vpn-manager() {
 
 platform2_install_wimax_manager() {
 	use cros_host && return 0
+	use wimax || return 0
 
 	# Install D-Bus introspection XML files.
 	insinto /usr/share/dbus-1/interfaces
@@ -621,6 +623,7 @@ platform2_test_vpn-manager() {
 
 platform2_test_wimax_manager() {
 	use cros_host && return 0
+	use wimax || return 0
 	use gdmwimax || return 0
 
 	platform2_test "run" "${OUT}/wimax_manager_testrunner"
