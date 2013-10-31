@@ -86,8 +86,10 @@ RDEPEND_shill="
 "
 
 RDEPEND_vpn_manager="
-	net-dialup/xl2tpd
-	net-misc/strongswan
+	vpn? (
+		net-dialup/xl2tpd
+		net-misc/strongswan
+	)
 "
 
 DEPEND_chaps="tpm? ( dev-db/leveldb )"
