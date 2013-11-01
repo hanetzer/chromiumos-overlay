@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=atahpt? ( sys-apps/pciutils ) dediprog? ( virtual/libusb:0 ) drkaiser? ( sys-apps/pciutils ) fdtmap? ( sys-apps/dtc ) ft2232_spi? ( dev-embedded/libftdi ) gfxnvidia? ( sys-apps/pciutils ) internal? ( sys-apps/pciutils ) nic3com? ( sys-apps/pciutils ) nicintel? ( sys-apps/pciutils ) nicintel_spi? ( sys-apps/pciutils ) nicnatsemi? ( sys-apps/pciutils ) nicrealtek? ( sys-apps/pciutils ) rayer_spi? ( sys-apps/pciutils ) satasii? ( sys-apps/pciutils ) satamv? ( sys-apps/pciutils ) ogp_spi? ( sys-apps/pciutils ) internal? ( sys-apps/dmidecode )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=a2385fc546de5b960c8aa2e386ff950b
+_md5_=2c585b516f9a96709dd3350530dd55ea
