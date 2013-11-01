@@ -12,7 +12,7 @@ inherit cros-constants git-2
 
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/policy/proto.git"
 EGIT_PROJECT="proto"
-EGIT_COMMIT="c2f336d4dc9af16cb65446e215c62b7515fa1375"
+EGIT_COMMIT="0a56adea5511d8cf2b679add73fc682ee8e95aaf"
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
 HOMEPAGE="http://chromium.org"
