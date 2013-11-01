@@ -50,6 +50,7 @@ ALL_BOARDS=(
 	daisy-drm
 	daisy_spring
 	daisy_snow
+	daisy_winter
 	dalmore
 	#emeraldlake2
 	falco
