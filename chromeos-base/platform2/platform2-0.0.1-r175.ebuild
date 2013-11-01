@@ -34,7 +34,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
-IUSE="+cellular +cros_disks cros_host gdmwimax platform2 test +tpm +vpn wimax"
+IUSE="+cellular +cros_disks cros_host gdmwimax platform2 test +tpm +vpn +wimax"
 REQUIRED_USE="gdmwimax? ( wimax )"
 
 LIBCHROME_VERS=( 180609 )

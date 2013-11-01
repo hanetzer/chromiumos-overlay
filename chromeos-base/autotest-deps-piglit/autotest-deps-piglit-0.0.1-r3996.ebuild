@@ -40,6 +40,7 @@ RDEPEND="
 	x11-libs/libXext
 	x11-libs/libXi
 	x11-libs/libXpm
+	x11-libs/libXrender
 	x11-proto/glproto
 	"
 # NOTE: For deps, we need to keep *.a
