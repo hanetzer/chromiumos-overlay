@@ -32,7 +32,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan +cellular -clang +cros_disks cros_host gdmwimax platform2 test +tpm +vpn +wimax"
+IUSE="-asan +cellular -clang +cros_disks cros_host gdmwimax platform2 test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	gdmwimax? ( wimax )
