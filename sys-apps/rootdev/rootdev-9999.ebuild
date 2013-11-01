@@ -1,8 +1,9 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/rootdev"
+CROS_WORKON_OUTOFTREE_BUILD="1"
 
 inherit toolchain-funcs cros-workon
 
@@ -17,22 +18,17 @@ IUSE=""
 
 src_configure() {
 	cros-workon_src_configure
+	tc-export CC
 }
 
 src_compile() {
-	tc-getCC
-	emake || die
+	emake OUT="${WORKDIR}"
 }
 
 src_install() {
-	dodir /usr/bin
-	exeinto /usr/bin
-	doexe ${S}/rootdev
-
-	dodir /usr/lib
+	cd "${WORKDIR}"
+	dobin rootdev
 	dolib.so librootdev.so*
-
-	dodir /usr/include/rootdev
 	insinto /usr/include/rootdev
-	doins rootdev.h
+	doins "${S}"/rootdev.h
 }
