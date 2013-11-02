@@ -4,6 +4,8 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
+# Locked due to http://crbug.com/314326
+CROS_WORKON_BLACKLIST="1"
 
 inherit eutils autotools cros-workon flag-o-matic
 
