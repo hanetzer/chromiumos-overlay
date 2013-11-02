@@ -270,7 +270,7 @@ usage(char *fmt, ...)
     fprintf(stderr, "usage:  %s option ...\n", progName);
     fprintf(stderr, "    To set mouse acceleration and threshold:\n");
     fprintf(stderr, "\t m [acc_mult[/acc_div] [thr]]    m default\n");
-    fprintf(stderr, "    To set pixel colors:\n");
+    fprintf(stderr, "    To turn auto-repeat off or on:\n");
     fprintf(stderr, "\t-r [keycode]        r off\n");
     fprintf(stderr, "\t r [keycode]        r on\n");
     fprintf(stderr, "\t r rate [delay [rate]]\n");
@@ -280,30 +280,7 @@ usage(char *fmt, ...)
 static int
 local_xerror(Display *dpy, XErrorEvent *rep)
 {
-    if (rep->request_code == X_SetFontPath && rep->error_code == BadValue) {
-	fprintf(stderr,
-		"%s:  bad font path element (#%ld), possible causes are:\n",
-		progName, rep->resourceid);
-	fprintf(stderr,
-		"    Directory does not exist or has wrong permissions\n");
-	fprintf(stderr, "    Directory missing fonts.dir\n");
-	fprintf(stderr, "    Incorrect font server address or syntax\n");
-    } else if (rep->request_code == X_StoreColors) {
-	switch (rep->error_code) {
-	  case BadAccess:
-	    fprintf(stderr,
-		    "%s:  pixel not allocated read/write\n", progName);
-	    break;
-	  case BadValue:
-	    fprintf(stderr,
-		    "%s:  cannot store in pixel 0x%lx, invalid pixel number\n",
-		    progName, rep->resourceid);
-	    break;
-	  default:
-	    XmuPrintDefaultErrorMessage(dpy, rep, stderr);
-	}
-    } else
-	XmuPrintDefaultErrorMessage(dpy, rep, stderr);
+    XmuPrintDefaultErrorMessage(dpy, rep, stderr);
 
     error_status = -1;
 
