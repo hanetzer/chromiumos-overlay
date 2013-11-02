@@ -87,6 +87,7 @@ RDEPEND_shill="
 	net-misc/dhcpcd
 	vpn? ( net-misc/openvpn )
 	net-wireless/wpa_supplicant[dbus]
+	cellular? ( virtual/modemmanager )
 "
 
 RDEPEND_vpn_manager="
@@ -133,7 +134,6 @@ DEPEND="${RDEPEND}
 	platform2? (
 		!cros_host? (
 			$(for v in ${!DEPEND_*}; do echo "${!v}"; done)
-			virtual/modemmanager
 		)
 
 		chromeos-base/protofiles
