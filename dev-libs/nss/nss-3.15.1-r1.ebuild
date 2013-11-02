@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/nss/nss-3.15.1-r1.ebuild,v 1.6 2013/08/26 16:58:41 ago Exp $
 
-EAPI=4
+EAPI=5
 inherit eutils flag-o-matic multilib toolchain-funcs
 
 NSPR_VER="4.10"
@@ -14,7 +14,8 @@ SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ppc ppc64 ~s390 ~sh ~sparc x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="alpha amd64 arm hppa ia64 mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd ~amd64-linux ~x86-linux ~x86-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+IUSE="utils"
 
 DEPEND="virtual/pkgconfig
 	>=dev-libs/nspr-${NSPR_VER}"
@@ -65,7 +66,7 @@ src_prepare() {
 	# use host shlibsign if need be #436216
 	if tc-is-cross-compiler ; then
 		sed -i \
-			-e 's:"${2}"/shlibsign:nssshlibsign:' \
+			-e 's:"${2}"/shlibsign:shlibsign:' \
 			"${S}"/cmd/shlibsign/sign.sh
 	fi
 
@@ -235,7 +236,7 @@ src_install() {
 	for f in ${nssutils}; do
 		# TODO(cmasone): switch to normal nss tool names
 		dobin ${f}
-		dosym ${f} /usr/bin/nssshlibsign
+		dosym ${f} /usr/bin/nss${f}
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run
@@ -252,11 +253,11 @@ src_install() {
 
 pkg_postinst() {
 	# We must re-sign the libraries AFTER they are stripped.
-	local shlibsign="${EROOT}/usr/bin/nssshlibsign"
+	local shlibsign="${EROOT}/usr/bin/shlibsign"
 	# See if we can execute it (cross-compiling & such). #436216
 	"${shlibsign}" -h >&/dev/null
 	if [[ $? -gt 1 ]] ; then
-		shlibsign="nssshlibsign"
+		shlibsign="shlibsign"
 	fi
 	generate_chk "${shlibsign}" "${EROOT}"/usr/$(get_libdir)
 }
