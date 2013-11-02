@@ -22,7 +22,7 @@ else
 	${BACKPORTS:+
 		http://dev.gentoo.org/~flameeyes/${PN}/${P}-backports-${BACKPORTS}.tar.bz2
 		http://dev.gentoo.org/~cardoe/distfiles/${P}-backports-${BACKPORTS}.tar.bz2}"
-	KEYWORDS="~amd64 ~ppc ~ppc64 ~x86"
+	KEYWORDS="amd64 ppc ppc64 x86"
 fi
 
 DESCRIPTION="QEMU + Kernel-based Virtual Machine userland tools"
@@ -68,8 +68,8 @@ RDEPEND="
 	sys-apps/pciutils
 	>=sys-apps/util-linux-2.16.0
 	sys-libs/zlib
-	amd64? ( sys-apps/seabios )
-	x86? ( sys-apps/seabios )
+	amd64? ( sys-firmware/seabios )
+	x86? ( sys-firmware/seabios )
 	aio? (
 		static? ( dev-libs/libaio[static-libs] )
 		!static? ( dev-libs/libaio )
