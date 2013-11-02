@@ -4,23 +4,25 @@
 
 EAPI="1"
 
+MY_PN="icedtea6-bin"
+
 inherit java-vm-2
 
 dist="mirror://gentoo/"
 DESCRIPTION="A Gentoo-made binary build of the icedtea6 JDK"
 TARBALL_VERSION="${PV}-r2"
-SRC_URI="amd64? ( ${dist}/${PN}-core-${TARBALL_VERSION}-amd64.tar.bz2 )
-	x86? ( ${dist}/${PN}-core-${TARBALL_VERSION}-x86.tar.bz2 )
-	doc? ( ${dist}/${PN}-doc-${TARBALL_VERSION}.tar.bz2 )
+SRC_URI="amd64? ( ${dist}/${MY_PN}-core-${TARBALL_VERSION}-amd64.tar.bz2 )
+	x86? ( ${dist}/${MY_PN}-core-${TARBALL_VERSION}-x86.tar.bz2 )
+	doc? ( ${dist}/${MY_PN}-doc-${TARBALL_VERSION}.tar.bz2 )
 	examples? (
-		amd64? ( ${dist}/${PN}-examples-${TARBALL_VERSION}-amd64.tar.bz2 )
-		x86? ( ${dist}/${PN}-examples-${TARBALL_VERSION}-x86.tar.bz2 )
+		amd64? ( ${dist}/${MY_PN}-examples-${TARBALL_VERSION}-amd64.tar.bz2 )
+		x86? ( ${dist}/${MY_PN}-examples-${TARBALL_VERSION}-x86.tar.bz2 )
 	)
 	nsplugin? (
-		amd64? ( ${dist}/${PN}-nsplugin-${TARBALL_VERSION}-amd64.tar.bz2 )
-		x86? ( ${dist}/${PN}-nsplugin-${TARBALL_VERSION}-x86.tar.bz2 )
+		amd64? ( ${dist}/${MY_PN}-nsplugin-${TARBALL_VERSION}-amd64.tar.bz2 )
+		x86? ( ${dist}/${MY_PN}-nsplugin-${TARBALL_VERSION}-x86.tar.bz2 )
 	)
-	source? ( ${dist}/${PN}-src-${TARBALL_VERSION}.tar.bz2 )"
+	source? ( ${dist}/${MY_PN}-src-${TARBALL_VERSION}.tar.bz2 )"
 HOMEPAGE="http://icedtea.classpath.org"
 
 IUSE="X alsa doc examples nsplugin source"
@@ -30,7 +32,7 @@ LICENSE="GPL-2-with-linking-exception"
 SLOT="0"
 KEYWORDS="amd64 x86"
 
-S="${WORKDIR}/${PN}-${TARBALL_VERSION}"
+S="${WORKDIR}/${MY_PN}-${TARBALL_VERSION}"
 
 RDEPEND=">=sys-devel/gcc-4.3
 	>=sys-libs/glibc-2.9
@@ -55,8 +57,9 @@ RDEPEND=">=sys-devel/gcc-4.3
 		>=x11-libs/cairo-1.8.8
 		>=x11-libs/gtk+-2.16.6:2
 		>=x11-libs/pango-1.24.5
-	)"
-DEPEND=""
+	)
+	!dev-java/icedtea6-bin"
+DEPEND="!dev-java/icedtea6-bin"
 
 QA_EXECSTACK_amd64="opt/${P}/jre/lib/amd64/server/libjvm.so"
 QA_EXECSTACK_x86="opt/${P}/jre/lib/i386/server/libjvm.so
