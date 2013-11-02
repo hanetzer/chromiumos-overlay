@@ -4,8 +4,6 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
-# Locked due to http://crbug.com/314326
-CROS_WORKON_BLACKLIST="1"
 
 inherit eutils autotools cros-workon flag-o-matic
 
@@ -59,7 +57,9 @@ src_configure() {
 
 src_test() {
 	# TODO(benchan): Run unit tests for arm via qemu-arm.
-	[[ "${ARCH}" != "arm" ]] && emake check
+	if [[ "${ARCH}" != "arm" ]]; then
+		emake GCONV_PATH="${SYSROOT}"/usr/$(get_libdir)/gconv check
+	fi
 }
 
 src_install() {
