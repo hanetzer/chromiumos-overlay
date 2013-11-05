@@ -14,7 +14,7 @@ LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan -clang dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline smartcard ssl wps kernel_linux kernel_FreeBSD"
+IUSE="-asan -clang dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline smartcard ssl -tdls wps kernel_linux kernel_FreeBSD"
 REQUIRED_USE="smartcard? ( ssl ) asan? ( clang )"
 
 DEPEND="dev-libs/libnl:0
@@ -172,6 +172,11 @@ src_configure() {
 	# Wi-Fi Protected Setup (WPS)
 	if use wps ; then
 		echo "CONFIG_WPS=y" >> ${CFGFILE}
+	fi
+
+	# Wi-Fi Tunneled Direct Link Setup (WPS)
+	if use tdls ; then
+		echo "CONFIG_TDLS=y" >> ${CFGFILE}
 	fi
 
 	# Enable mitigation against certain attacks against TKIP
