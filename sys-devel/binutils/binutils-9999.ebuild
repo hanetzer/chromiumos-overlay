@@ -243,37 +243,50 @@ src_install() {
 	exeinto "${BINPATH}"
 	newexe "${FILESDIR}/${LDWRAPPER}" "ld.bfd" || die
 
-	mv "${D}/${BINPATH}/ld.gold" "${D}/${BINPATH}/ld.gold.real" || die
-	exeinto "${BINPATH}"
-	newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
-
 	# Set default to be ld.bfd in regular installation
 	dosym ld.bfd "${BINPATH}/ld"
 
-	# Make a fake installation for gold with gold as the default linker
-	# so we can turn gold on/off with binutils-config
-	LASTDIR=${LIBPATH##/*/}
-	dosym "${LASTDIR}" "${LIBPATH}-gold"
-	LASTDIR=${DATAPATH##/*/}
-	dosym "${LASTDIR}" "${DATAPATH}-gold"
+	# Require gold for targets we know support gold, but auto-detect others.
+	local gold=false
+	case ${CTARGET} in
+	arm*|i?86-*|powerpc*|sparc*|x86_64-*)
+		gold=true
+		;;
+	*)
+		[[ -e ${D}/${BINPATH}/ld.gold ]] && gold=true
+		;;
+	esac
 
-	mkdir "${D}/${BINPATH}-gold"
-	cd "${D}"/${BINPATH}
-	LASTDIR=${BINPATH##/*/}
-	for x in * ; do
-		dosym "../${LASTDIR}/${x}" "${BINPATH}-gold/${x}"
-	done
-	dosym ld.gold "${BINPATH}-gold/ld"
+	if ${gold} ; then
+		mv "${D}/${BINPATH}/ld.gold" "${D}/${BINPATH}/ld.gold.real" || die
+		exeinto "${BINPATH}"
+		newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
 
-	# Install gold binutils-config configuration file
-	insinto /etc/env.d/binutils
-	cat <<-EOF > "${T}"/env.d
-	TARGET="${CTARGET}"
-	VER="${BVER}-gold"
-	LIBPATH="${LIBPATH}-gold"
-	FAKE_TARGETS="${FAKE_TARGETS}"
-	EOF
-	newins "${T}"/env.d ${CTARGET}-${BVER}-gold
+		# Make a fake installation for gold with gold as the default linker
+		# so we can turn gold on/off with binutils-config
+		LASTDIR=${LIBPATH##/*/}
+		dosym "${LASTDIR}" "${LIBPATH}-gold"
+		LASTDIR=${DATAPATH##/*/}
+		dosym "${LASTDIR}" "${DATAPATH}-gold"
+
+		mkdir "${D}/${BINPATH}-gold"
+		cd "${D}"/${BINPATH}
+		LASTDIR=${BINPATH##/*/}
+		for x in * ; do
+			dosym "../${LASTDIR}/${x}" "${BINPATH}-gold/${x}"
+		done
+		dosym ld.gold "${BINPATH}-gold/ld"
+
+		# Install gold binutils-config configuration file
+		insinto /etc/env.d/binutils
+		cat <<-EOF > "${T}"/env.d
+		TARGET="${CTARGET}"
+		VER="${BVER}-gold"
+		LIBPATH="${LIBPATH}-gold"
+		FAKE_TARGETS="${FAKE_TARGETS}"
+		EOF
+		newins "${T}"/env.d ${CTARGET}-${BVER}-gold
+	fi
 
 	# Move the locale directory to where it is supposed to be
 	mv "${D}/usr/share/locale" "${D}/${DATAPATH}/"
