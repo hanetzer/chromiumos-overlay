@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/nss/nss-3.15.1-r1.ebuild,v 1.6 2013/08/26 16:58:41 ago Exp $
 
-EAPI=5
+# This needs to be locked to 4 until we upgrade stage3 to a newer portage.
+# Just run against chromiumos-sdk bot before changing.
+EAPI="4"
 inherit eutils flag-o-matic multilib toolchain-funcs
 
 NSPR_VER="4.10"
