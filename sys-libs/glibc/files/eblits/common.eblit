@@ -46,13 +46,11 @@ setup_target_flags() {
 	# http://code.google.com/p/chromium-os/issues/detail?id=20792
 	append-cflags "-ggdb"
 
-	if ! use cros_host ; then
-		# ChromiumOS: Need to unset the SYSROOT value so that the
-		# compiler uses the default sysroot when building glibc. This
-		# is because the glibc startup objects are needed to configure
-		# glibc. We don't want to bootstrap libc again.
-		export SYSROOT=""
-	fi
+	# ChromiumOS: Need to unset the SYSROOT value so that the
+	# compiler uses the default sysroot when building glibc. This
+	# is because the glibc startup objects are needed to configure
+	# glibc. We don't want to bootstrap libc again.
+	export SYSROOT=""
 
 	# Never use gold to build glibc. Manually force GNU ld, whatever the actual settings are.
 	# Glibc does not link with gold because of missing features. It also doesn't pass the
