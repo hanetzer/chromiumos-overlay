@@ -242,6 +242,12 @@ src_install() {
 	mv "${D}/${BINPATH}/ld.bfd" "${D}/${BINPATH}/ld.bfd.real" || die
 	exeinto "${BINPATH}"
 	newexe "${FILESDIR}/${LDWRAPPER}" "ld.bfd" || die
+	if [[ ${CTARGET} == mips* ]] ; then
+		# For mips targets, GNU hash cannot work due to ABI constraints.
+		sed -i \
+			-e 's:--hash-style=gnu:--hash-style=sysv:' \
+			"${D}/${BINPATH}/ld.bfd" || die
+	fi
 
 	# Set default to be ld.bfd in regular installation
 	dosym ld.bfd "${BINPATH}/ld"
