@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=chromeos-base/autotest-deps-ibus dev-python/pygtk ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	9117ab36f4a7fa417ddbe7a0fb3aedcc	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
-_md5_=5060c2aa7c9438bdf07c0a291c6809cb
+_md5_=44b078c82da2d780f5751ca68cb7634a
