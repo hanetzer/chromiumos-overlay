@@ -32,7 +32,9 @@ RDEPEND="
 	dev-util/shflags
 	sys-apps/coreutils
 	sys-apps/flashrom
+	sys-apps/grep
 	sys-apps/hdparm
+	sys-apps/mawk
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-apps/which
