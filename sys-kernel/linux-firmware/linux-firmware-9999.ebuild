@@ -84,7 +84,7 @@ src_install() {
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 
 	# The Intel wireless firmware is mostly standard.
-	for x in ${IUSE_IWLWIFI}; do
+	for x in "${IUSE_IWLWIFI[@]}"; do
 		use_fw ${x} || continue
 		case ${x} in
 		iwlwifi-all)  doins iwlwifi-*.ucode ;;
