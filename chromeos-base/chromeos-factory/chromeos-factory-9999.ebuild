@@ -38,7 +38,8 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-util/stressapptest
 	chromeos-base/chromeos-factory-board
 	chromeos-base/memento_softwareupdate
-	>=chromeos-base/vpd-0.0.1-r11"
+	>=chromeos-base/vpd-0.0.1-r11
+	media-gfx/zbar"
 
 # Binaries from other packages (ex, chrome).
 STRIP_MASK="*/chromedriver */selenium/*"
