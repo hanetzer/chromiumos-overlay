@@ -134,9 +134,8 @@ else:
   # Use of -Qunused-arguments allows this set to be small, just those
   # that clang still warns about.
   clang_unsupported = set(['-pass-exit-codes', '-Ofast', '-Wclobbered',
-                           '-fvisibility=internal', '-Woverride-init',
                            '-Wunsafe-loop-optimizations', '-Wlogical-op',
-                           '-Wmissing-parameter-type',
+                           '-Wmissing-parameter-type', '-Woverride-init',
                            '-Wold-style-declaration', '-Wno-psabi',
                            '-mno-movbe',])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=')
@@ -148,6 +147,7 @@ else:
       '-Wno-unused-but-set-variable': '-Wno-unused-variable',
       '-Wunused-but-set-variable': '-Wunused-variable',
       '-fstack-protector-strong': '-fstack-protector-all',
+      '-fvisibility=internal': '-fvisibility=hidden',
       '-Wno-error=cpp': '-Wno-#warnings',
   }
 
