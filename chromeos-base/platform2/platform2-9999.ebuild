@@ -32,7 +32,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics platform2 test +tpm +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics platform2 tcmalloc test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
@@ -167,6 +167,7 @@ RDEPEND="
 		${LIBCHROME_DEPEND}
 		chromeos-base/chromeos-minijail
 		>=dev-libs/glib-2.30
+		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
 
 		!chromeos-base/chaps[-platform2]
