@@ -81,6 +81,7 @@ IUSE_TESTS=(
 	+tests_desktopui_SimpleLogin
 	 tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
+	+tests_desktopui_UrlFetchWithChromeDriver
 	+tests_desktopui_WebRTC
 	+tests_desktopui_WebRtcBrowserTest
 	+tests_dummy_IdleSuspend
