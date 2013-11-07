@@ -265,11 +265,12 @@ RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
 	"
 
-# Host dependencies for testing factory software
+# Host dependencies for building/testing factory software
 RDEPEND="${RDEPEND}
 	dev-python/django
 	dev-python/flup
 	dev-python/jsonrpclib
+	dev-python/sphinx
 	dev-python/twisted
 	"
 
