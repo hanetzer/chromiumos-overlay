@@ -176,6 +176,8 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-python/btsocket
 	dev-util/dejagnu
+	sys-apps/iproute2
+	sys-apps/net-tools
 	"
 
 # Host dependencies that are needed for media applications (ex, mplayer) used in
