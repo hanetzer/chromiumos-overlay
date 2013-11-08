@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install postinst postrm preinst prerm pretend setup test unpack
+DEPEND=dev-embedded/nds32-binutils sys-devel/gnuconfig >=sys-apps/sed-4
+DESCRIPTION=The GNU Compiler Collection for Andes cores
+EAPI=4
+HOMEPAGE=http://gcc.gnu.org/
+IUSE=multislot nptl test altivec build fortran nls nocxx bootstrap doc gcj gtk hardened libffi multilib objc vanilla objc-gc mudflap objc++ openmp fixed-point graphite
+KEYWORDS=amd64 x86
+LICENSE=GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2
+RESTRICT=strip
+SLOT=4.9
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nds32-gcc-cf268d08.tar.gz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	fixheadtails	059c47dd86229aa6382393274677acfe	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	toolchain	1c3df4971e5d5d5ec3574143cb65f815	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=ad382e55b854226d32a02f7fa82ef462
