@@ -1,0 +1,33 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is modified from 80-mm-candidates.rules provided by ModemManager
+# and used to overrides the ModemManager version when modemmanager-next is
+# built with USE=gobi.
+#
+# cromo uses udev rules (77-cromo-gobi-device-blacklist.rules) to blacklist
+# several Gobi modems from being picked up by ModemManager. However, there is a
+# race condition where ModemManager picks up a tty port of a Gobi modem before
+# cromo sets ID_MM_DEVICE_IGNORE=1 on the USB device associated with the Gobi
+# modem. As a workaround, we do not set ID_MM_CANDIDATE=1 on those tty and net
+# ports of a Gobi modem, so that ModemManager ignores these ports.
+#
+# TODO(benchan): Remove this file when cromo is deprecated (crbug.com/316744).
+
+# Tag any devices that MM might be interested in; if ModemManager is started
+# up right after udev, when MM explicitly requests devices on startup it may
+# get devices that haven't had all rules run yet.  Thus, we tag devices we're
+# interested in and when handling devices during MM startup we ignore any
+# that don't have this tag.  MM will still get the udev 'add' event for the
+# device a short while later and then process it as normal.
+
+ACTION!="add|change|move", GOTO="mm_candidate_end"
+
+SUBSYSTEM=="tty", ENV{ID_USB_DRIVER}!="qcserial", ENV{ID_MM_CANDIDATE}="1"
+SUBSYSTEM=="net", ENV{ID_USB_DRIVER}!="gobi", ENV{ID_MM_CANDIDATE}="1"
+
+KERNEL=="cdc-wdm*", SUBSYSTEM=="usb", ENV{ID_MM_CANDIDATE}="1"
+KERNEL=="cdc-wdm*", SUBSYSTEM=="usbmisc", ENV{ID_MM_CANDIDATE}="1"
+
+LABEL="mm_candidate_end"
