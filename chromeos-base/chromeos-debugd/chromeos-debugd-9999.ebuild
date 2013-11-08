@@ -38,6 +38,17 @@ DEPEND="${RDEPEND}
 RDEPEND="!platform2? ( ${RDEPEND} )"
 DEPEND="!platform2? ( ${DEPEND} )"
 
+src_prepare() {
+	if use platform2; then
+		printf '\n\n\n'
+		ewarn "This package doesn't install anything with USE=platform2."
+		ewarn "You want to use the new chromeos-base/platform2 package."
+		printf '\n\n\n'
+		return 0
+	fi
+	cros-workon_src_prepare
+}
+
 src_compile() {
 	use platform2 && return 0
 

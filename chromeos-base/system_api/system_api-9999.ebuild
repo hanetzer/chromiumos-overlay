@@ -13,6 +13,17 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="platform2"
 
+src_prepare() {
+	if use platform2; then
+		printf '\n\n\n'
+		ewarn "This package doesn't install anything with USE=platform2."
+		ewarn "You want to use the new chromeos-base/platform2 package."
+		printf '\n\n\n'
+		return 0
+	fi
+	cros-workon_src_prepare
+}
+
 src_install() {
 	use platform2 && return 0
 	insinto /usr/include/chromeos
