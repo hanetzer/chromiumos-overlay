@@ -156,14 +156,15 @@ RDEPEND="${RDEPEND}
 # Useful utilities for developers.
 RDEPEND="${RDEPEND}
 	app-arch/zip
+	app-editors/qemacs
+	app-editors/vim
 	app-portage/eclass-manpages
 	app-portage/gentoolkit
 	app-portage/portage-utils
-	app-editors/qemacs
-	app-editors/vim
-	dev-util/perf
-	sys-apps/pv
 	app-shells/bash-completion
+	dev-util/perf
+	sys-apps/less
+	sys-apps/pv
 	sys-devel/smatch
 	"
 
