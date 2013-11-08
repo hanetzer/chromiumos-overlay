@@ -25,6 +25,7 @@ src_unpack() {
 	cd "${S}"
 	epatch "${FILESDIR}"/${P}-configure.patch
 	epatch "${FILESDIR}"/${P}-backup-input-length.patch
+	epatch "${FILESDIR}"/${P}-fix-sse-inner-product.patch
 
 	sed -i -e 's:noinst_PROGRAMS:check_PROGRAMS:' \
 		"${S}"/libspeex/Makefile.am \
