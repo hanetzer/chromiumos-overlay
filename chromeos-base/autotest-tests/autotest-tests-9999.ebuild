@@ -233,6 +233,7 @@ IUSE_TESTS="
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
 	+tests_p2p_ConsumeFiles
+	+tests_p2p_ServeFiles
 	+tests_p2p_ShareFiles
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
