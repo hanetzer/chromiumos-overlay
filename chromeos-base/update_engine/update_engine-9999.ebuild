@@ -24,6 +24,7 @@ COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/platform2
+	chromeos-base/vboot_reference
 	chromeos-base/verity
 	cros_p2p? ( chromeos-base/p2p )
 	dev-cpp/gflags
