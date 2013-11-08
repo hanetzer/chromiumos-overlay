@@ -32,9 +32,11 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan +cellular -clang +cros_disks cros_host gdmwimax platform2 test +tpm +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill platform2 test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
+	cellular? ( shill )
+	debugd? ( shill cellular )
 	gdmwimax? ( wimax )
 "
 
@@ -46,11 +48,32 @@ LIBCHROME_DEPEND=$(
 		${LIBCHROME_VERS[@]}
 )
 
-RDEPEND_chaps="tpm? ( app-crypt/trousers )"
+RDEPEND_chaps="
+	tpm? (
+		app-crypt/trousers
+		dev-libs/dbus-c++
+		dev-libs/openssl
+		dev-libs/protobuf
+	)
+"
+
+RDEPEND_cromo="
+	cellular? (
+		>=chromeos-base/mobile-providers-0.0.1-r12
+		dev-cpp/gflags
+		dev-cpp/glog
+		dev-libs/dbus-c++
+		net-dialup/ppp
+		virtual/modemmanager
+	)
+"
 
 RDEPEND_cros_disks="
 	cros_disks? (
 		app-arch/unrar
+		dev-cpp/gflags
+		dev-libs/dbus-c++
+		sys-apps/rootdev
 		sys-apps/util-linux
 		sys-block/eject
 		sys-block/parted
@@ -63,41 +86,75 @@ RDEPEND_cros_disks="
 "
 
 RDEPEND_debugd="
-	dev-libs/libpcre
-	net-libs/libpcap
-	sys-apps/memtester
-	sys-apps/smartmontools
+	debugd? (
+		dev-cpp/gflags
+		dev-libs/dbus-c++
+		dev-libs/libpcre
+		net-libs/libpcap
+		sys-apps/memtester
+		sys-apps/smartmontools
+	)
 "
 
-RDEPEND_cromo="cellular? ( dev-cpp/glog )"
+RDEPEND_libchromeos="dev-libs/dbus-c++
+	dev-libs/dbus-glib
+	dev-libs/openssl
+	dev-libs/protobuf
+"
+
+RDEPEND_metrics="dev-cpp/gflags
+	dev-libs/dbus-glib
+	sys-apps/rootdev
+"
+
+RDEPEND_mist="
+	cellular? (
+		>=chromeos-base/mobile-providers-0.0.1-r12
+		dev-libs/libusb
+		dev-libs/protobuf
+		net-dialup/ppp
+		sys-fs/udev
+	)
+"
 
 RDEPEND_shill="
-	chromeos-base/bootstat
-	chromeos-base/chromeos-minijail
-	!<chromeos-base/flimflam-0.0.1-r530
-	cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
-	dev-libs/libnl:3
-	dev-libs/nss
-	cellular? ( net-dialup/ppp )
-	vpn? ( net-dialup/ppp )
-	net-dns/c-ares
-	net-libs/libmnl
-	net-libs/libnetfilter_queue
-	net-libs/libnfnetlink
-	net-misc/dhcpcd
-	vpn? ( net-misc/openvpn )
-	net-wireless/wpa_supplicant[dbus]
-	cellular? ( virtual/modemmanager )
+	shill? (
+		chromeos-base/bootstat
+		chromeos-base/chromeos-minijail
+		!<chromeos-base/flimflam-0.0.1-r530
+		cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
+		dev-libs/dbus-c++
+		dev-libs/libnl:3
+		dev-libs/nss
+		cellular? ( net-dialup/ppp )
+		vpn? ( net-dialup/ppp )
+		net-dns/c-ares
+		net-libs/libmnl
+		net-libs/libnetfilter_queue
+		net-libs/libnfnetlink
+		net-misc/dhcpcd
+		vpn? ( net-misc/openvpn )
+		net-wireless/wpa_supplicant[dbus]
+		cellular? ( virtual/modemmanager )
+	)
 "
 
 RDEPEND_vpn_manager="
 	vpn? (
+		dev-cpp/gflags
+		net-dialup/ppp
 		net-dialup/xl2tpd
 		net-misc/strongswan
 	)
 "
 
-RDEPEND_wimax_manager="gdmwimax? ( virtual/gdmwimax )"
+RDEPEND_wimax_manager="
+	wimax? (
+		dev-libs/dbus-c++
+		dev-libs/protobuf
+	)
+	gdmwimax? ( virtual/gdmwimax )
+"
 
 DEPEND_chaps="tpm? ( dev-db/leveldb )"
 
@@ -107,14 +164,8 @@ RDEPEND="
 
 		${LIBCHROME_DEPEND}
 		chromeos-base/chromeos-minijail
-		dev-cpp/gflags
-		dev-libs/dbus-c++
-		dev-libs/dbus-glib
 		>=dev-libs/glib-2.30
-		dev-libs/openssl
-		dev-libs/protobuf
 		sys-apps/dbus
-		sys-apps/rootdev
 
 		!chromeos-base/chaps[-platform2]
 		!chromeos-base/cromo[-platform2]
@@ -312,6 +363,7 @@ platform2_install_cros-disks() {
 }
 
 platform2_install_debugd() {
+	use debugd || return 0
 	use cros_host && return 0
 
 	into /
@@ -377,6 +429,7 @@ platform2_install_mist() {
 }
 
 platform2_install_shill() {
+	use shill || return 0
 	use cros_host && return 0
 
 	dobin "bin/ff_debug"
@@ -556,6 +609,7 @@ platform2_test_cros-disks() {
 
 platform2_test_debugd() {
 	use cros_host && return 0
+	use debugd || return 0
 	! use x86 && ! use amd64 && return 0
 
 	pushd "${SRC}/src" >/dev/null
@@ -597,6 +651,7 @@ platform2_test_mist() {
 
 platform2_test_shill() {
 	use cros_host && return 0
+	use shill || return 0
 	! use x86 && ! use amd64 && return 0
 
 	platform2_test "run" "${OUT}/shill_unittest"
