@@ -298,7 +298,7 @@ set_build_defines() {
 	fi
 
 	if use reorder && ! use clang; then
-		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile" )
+		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile-32.0.1665.2" )
 	fi
 
 	if use clang; then
@@ -532,7 +532,7 @@ src_unpack() {
 
 	if use reorder && ! use clang; then
 		EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/profile/chromium.git"
-		EGIT_COMMIT="88c20da2d91098449373f2e2f5cef35c193b8add"
+		EGIT_COMMIT="067dd0d802bc815703c7908c72659f2483be0e3a"
 		EGIT_PROJECT="${PN}-reorder"
 		if grep -qs ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
 			einfo "Reorder profile repo is up to date."
