@@ -161,6 +161,7 @@ RDEPEND="${RDEPEND}
 	net-misc/gsutil
 	sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
+	sys-devel/autofdo
 	=sys-devel/automake-1.10*
 	sys-devel/bc
 	sys-devel/clang

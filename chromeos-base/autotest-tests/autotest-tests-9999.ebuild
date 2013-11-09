@@ -57,6 +57,7 @@ X86_IUSE_TESTS="
 CLIENT_IUSE_TESTS="
 	x86? ( ${X86_IUSE_TESTS} )
 	amd64? ( ${X86_IUSE_TESTS} )
+	+tests_profiler_sync
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench
