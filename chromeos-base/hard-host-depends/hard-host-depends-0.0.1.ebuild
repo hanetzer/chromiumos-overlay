@@ -281,7 +281,8 @@ RDEPEND="${RDEPEND}
 	dev-python/flup
 	dev-python/jsonrpclib
 	dev-python/sphinx
-	dev-python/twisted
+	!dev-python/twisted
+	dev-python/twisted-core
 	"
 
 # Host dependencies for building harfbuzz
