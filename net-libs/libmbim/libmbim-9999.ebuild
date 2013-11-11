@@ -14,7 +14,9 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="doc static-libs"
 
-RDEPEND=">=dev-libs/glib-2.32"
+RDEPEND=">=dev-libs/glib-2.32
+	>=sys-fs/udev-147[gudev]"
+
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )
 	virtual/pkgconfig"
