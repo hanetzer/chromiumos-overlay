@@ -34,4 +34,8 @@ src_install() {
 	# udev rule.
 	insinto /lib/udev/rules.d
 	newins "${FILESDIR}/${PN}"-udev.rules 42-nfc.rules
+
+	# neard configuration.
+	insinto /etc/neard
+	newins "${FILESDIR}/${PN}"-main.conf main.conf
 }
