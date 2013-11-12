@@ -1,7 +1,7 @@
-diff -urN nacl-mozc-1.10.1389.104_org/nacl_mozc.js nacl-mozc-1.10.1389.104/nacl_mozc.js
---- nacl-mozc-1.10.1389.104_org/nacl_mozc.js	2013-10-30 13:18:04.183641000 +0900
-+++ nacl-mozc-1.10.1389.104/nacl_mozc.js	2013-10-30 13:22:36.676907000 +0900
-@@ -939,9 +939,9 @@
+diff -urN nacl-mozc-1.12.1599.104_org/nacl_mozc.js nacl-mozc-1.12.1599.104/nacl_mozc.js
+--- nacl-mozc-1.12.1599.104_org/nacl_mozc.js	2013-11-11 11:40:40.403294246 +0900
++++ nacl-mozc-1.12.1599.104/nacl_mozc.js	2013-11-11 11:44:59.641681182 +0900
+@@ -931,9 +931,9 @@
  mozc.NaclMozc.prototype.onActivate_ = function(engineID) {
    this.engine_id_ = engineID;
    // Sets keyboardLayout_.
