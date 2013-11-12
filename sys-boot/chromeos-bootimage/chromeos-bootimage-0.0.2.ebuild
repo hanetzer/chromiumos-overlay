@@ -243,6 +243,11 @@ src_compile_depthcharge() {
 			--add-blob ramstage "${ramstage_file}"
 		)
 	fi
+	if use arm && use depthcharge; then
+		common+=(
+			--add-blob ramstage "${ramstage_file}"
+		)
+	fi
 
 	if use cros_ec; then
 		common+=( --ec "${ec_file}" )
