@@ -97,9 +97,9 @@ RDEPEND_vpn_manager="
 	)
 "
 
-DEPEND_chaps="tpm? ( dev-db/leveldb )"
+RDEPEND_wimax_manager="gdmwimax? ( virtual/gdmwimax )"
 
-DEPEND_wimax_manager="gdmwimax? ( virtual/gdmwimax )"
+DEPEND_chaps="tpm? ( dev-db/leveldb )"
 
 RDEPEND="
 	platform2? (
