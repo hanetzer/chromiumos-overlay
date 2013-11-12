@@ -67,6 +67,19 @@ src_install() {
 	# Remove useless .la files
 	find "${D}" -name '*.la' -delete
 
+	# Only install plugins for supported modems to conserve space on the
+	# root filesystem.
+	find "${D}" -name 'libmm-plugin-*.so' ! \( \
+		-name 'libmm-plugin-altair-lte.so' -o \
+		-name 'libmm-plugin-generic.so' -o \
+		-name 'libmm-plugin-gobi.so' -o \
+		-name 'libmm-plugin-huawei.so' -o \
+		-name 'libmm-plugin-longcheer.so' -o \
+		-name 'libmm-plugin-novatel-lte.so' -o \
+		-name 'libmm-plugin-samsung.so' -o \
+		-name 'libmm-plugin-zte.so' \
+		\) -delete
+
 	insinto /etc/init
 	doins "${FILESDIR}/modemmanager.conf"
 
