@@ -53,7 +53,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD xlib-glx"
 
-LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.42"
+LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.49"
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
 RDEPEND="
@@ -111,17 +111,14 @@ src_prepare() {
 			configure.ac || die
 	fi
 
-	epatch "${FILESDIR}"/9.0-cross-compile.patch
+	epatch "${FILESDIR}"/10.0-cross-compile.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/9.1-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
-	epatch "${FILESDIR}"/9.0-force_s3tc_enable.patch
+	epatch "${FILESDIR}"/10.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
-	epatch "${FILESDIR}"/9.1-builtin_function.patch
-	epatch "${FILESDIR}"/9.1-Add-builtin-function-cpp.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
 	epatch "${FILESDIR}"/9.1-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
-	epatch "${FILESDIR}"/9.1-gen_matypes-cross.patch
 	epatch "${FILESDIR}"/9.1-fix-compile-disable-asm.patch
 	epatch "${FILESDIR}"/9.1-0001-gallivm-one-code-memory-pool-with-deferred-free.patch
 	epatch "${FILESDIR}"/9.1-0002-gallivm-separate-LLVM-teardown-from-freeing-code.patch
@@ -130,15 +127,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-0005-draw-cache-LLVM-compilation.patch
 	epatch "${FILESDIR}"/9.1-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
 	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
-	epatch "${FILESDIR}"/9.1-Fix-webgl-regression.patch
-	epatch "${FILESDIR}"/9.1-no-fail-hwctx.patch
-	epatch "${FILESDIR}"/9.1-mesa-Workaround-corruption-on-i915g.patch
+	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
-	epatch "${FILESDIR}"/9.1-i965-128bpp-xtiling.patch
-	epatch "${FILESDIR}"/9.1-max_array_access.patch
-	epatch "${FILESDIR}"/9.1-i965-Disable-ctx-gen6.patch
-	epatch "${FILESDIR}"/9.1-i965-hsw-Apply-non-msrt-fast-color-clear-w-a-to-all-.patch
-	epatch "${FILESDIR}"/9.1-i965-Add-workaround-for-HIZ-resolves.patch
+	epatch "${FILESDIR}"/10.0-i965-Add-workaround-for-HIZ-resolves.patch
+	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
 
 	base_src_prepare
 
@@ -194,6 +186,7 @@ src_configure() {
 		--without-demos \
 		--enable-texture-float \
 		--enable-xcb \
+		--disable-dri3 \
 		$(use_enable llvm llvm-gallium) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
