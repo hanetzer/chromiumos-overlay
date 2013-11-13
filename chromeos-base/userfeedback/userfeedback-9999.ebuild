@@ -18,6 +18,7 @@ RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/modem-utilities
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
+	media-sound/alsa-utils
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pciutils

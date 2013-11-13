@@ -18,6 +18,8 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~spar
 IUSE=""
 
 RDEPEND=">=media-libs/alsa-lib-1.0.24.1
+	media-sound/alsa-utils
+	media-plugins/alsa-plugins
 	media-libs/sbc
 	media-libs/speex
 	dev-libs/iniparser

@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
-IUSE="+alsa bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
+IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
 	+fonts gdmwimax mtd nfc opengles pam X"
 
 ################################################################################
@@ -85,7 +85,6 @@ IUSE="+alsa bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
 ################################################################################
 
 CROS_COMMON_RDEPEND="
-	alsa? ( media-sound/alsa-utils )
 	app-admin/rsyslog
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
@@ -225,7 +224,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/vboot_reference
 	dev-util/quipper
 	media-gfx/ply-image
-	media-plugins/alsa-plugins
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
