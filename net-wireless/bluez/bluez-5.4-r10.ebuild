@@ -175,7 +175,8 @@ src_install() {
 	insinto /usr/share/misc
 	newins "${WORKDIR}/oui-${OUIDATE}.txt" oui.txt
 
-	fowners bluetooth:bluetooth /var/lib/bluetooth
+	# We don't preserve /var/lib in images, so nuke anything we preseed.
+	rm -rf "${D}"/var/lib/bluetooth
 
 	rm "${D}/lib/udev/rules.d/97-bluetooth.rules"
 
