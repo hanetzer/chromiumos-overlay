@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
-	+fonts gdmwimax mtd nfc opengles pam X"
+	+fonts gdmwimax mtd nfc opengles pam +syslog X"
 
 ################################################################################
 #
@@ -85,7 +85,7 @@ IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
 ################################################################################
 
 CROS_COMMON_RDEPEND="
-	app-admin/rsyslog
+	syslog? ( app-admin/rsyslog )
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
