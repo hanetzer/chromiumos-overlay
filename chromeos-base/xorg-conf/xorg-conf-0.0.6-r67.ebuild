@@ -62,7 +62,7 @@ src_install() {
 		doins 50-touchpad-cmt-lumpy.conf
 	elif [ "${board}" = "link" ]; then
 		doins 50-touchpad-cmt-link.conf
-	elif [ "${board}" = "daisy" && "${board_variant}" = "${board}" ]; then
+	elif [[ "${board}" = "daisy" && "${board_variant}" = "${board}" ]]; then
 		doins 50-touchpad-cmt-daisy.conf
 	elif [ "${board_variant}" = "daisy_spring" ]; then
 		doins 50-touchpad-cmt-spring.conf
