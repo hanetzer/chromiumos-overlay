@@ -40,7 +40,8 @@ FULL_BINHOST="https://commondatastorage.googleapis.com/chromeos-prebuilt/host/am
 PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
 # expat needed for XML parsing in GDB, but enable globally as overhead is tiny.
-USE="${USE} -cups hardened cros_host multilib pic pie -introspection expat platform2"
+USE="${USE} -cups hardened cros_host multilib pic pie -introspection expat"
+USE="${USE} -cracklib platform2"
 
 GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
 GENTOO_MIRRORS="$GENTOO_MIRRORS https://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
