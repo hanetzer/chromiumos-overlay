@@ -25,6 +25,11 @@ RDEPEND="${DEPEND}
 	net-dns/dnsmasq
 	sys-apps/iproute2"
 
+src_compile() {
+	# We only install scripts here, so no need to compile.
+	:
+}
+
 src_install() {
 	exeinto /usr/lib/flimflam/test
 	doexe test-scripts/*
