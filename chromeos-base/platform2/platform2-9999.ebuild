@@ -301,6 +301,7 @@ platform2_install_chaps() {
 	# Install headers for use by clients.
 	insinto /usr/include/chaps
 	doins token_manager_client.h
+	doins token_manager_client_mock.h
 	doins token_manager_interface.h
 	doins isolate.h
 	doins chaps_proxy_mock.h
