@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="af9085e6b77f3f53a2d824b720414e0b1ab2e8a0"
-CROS_WORKON_TREE="64e08c52dc3701af3f1e6c921b31cedfabefb1a9"
+CROS_WORKON_COMMIT="83692e4fd17b5669eeb3edb24b8c4cd8152c7283"
+CROS_WORKON_TREE="4a27ce4694a467353c85b843d89e112b27462d6a"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
@@ -26,6 +26,7 @@ COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/platform2
+	chromeos-base/vboot_reference
 	chromeos-base/verity
 	cros_p2p? ( chromeos-base/p2p )
 	dev-cpp/gflags
