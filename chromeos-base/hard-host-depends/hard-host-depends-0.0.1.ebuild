@@ -156,6 +156,7 @@ RDEPEND="${RDEPEND}
 # Useful utilities for developers.
 RDEPEND="${RDEPEND}
 	app-arch/zip
+	app-editors/nano
 	app-editors/qemacs
 	app-editors/vim
 	app-portage/eclass-manpages
