@@ -78,6 +78,7 @@ RDEPEND_cros_disks="
 		sys-block/eject
 		sys-block/parted
 		sys-fs/avfs
+		sys-fs/dosfstools
 		sys-fs/exfat-utils
 		sys-fs/fuse-exfat
 		sys-fs/ntfs3g
