@@ -80,7 +80,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/platform2
 	chromeos-base/protofiles
 	chromeos-base/recover-duts
-	chromeos-base/system_api
 	chromeos-base/telemetry
 	chromeos-base/touchbot
 	dev-lang/python

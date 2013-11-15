@@ -17,11 +17,9 @@ IUSE="install_tests internal"
 
 LIBCHROME_VERS="180609"
 
-RDEPEND="chromeos-base/cromo
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-cpp/glog
 	dev-libs/dbus-c++
-	chromeos-base/metrics
 	chromeos-base/platform2
 	chromeos-base/gobi3k-sdk
 	|| (

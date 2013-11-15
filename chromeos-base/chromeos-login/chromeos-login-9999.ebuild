@@ -26,7 +26,6 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	!<chromeos-base/chromeos-init-0.0.2-r674
 	chromeos-base/chromeos-minijail
 	chromeos-base/platform2
-	chromeos-base/system_api
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss

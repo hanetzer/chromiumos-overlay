@@ -21,14 +21,12 @@ LIBCHROME_VERS="180609"
 
 RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/metrics
 	chromeos-base/platform2
 	dev-libs/dbus-glib
 	dev-libs/glib
 	sys-apps/rootdev
 "
 DEPEND="${RDEPEND}
-	chromeos-base/system_api
 	test? (
 		dev-cpp/gmock
 		dev-cpp/gtest
