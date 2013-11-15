@@ -29,6 +29,3 @@
 # It is actually for clang and ASAN that we want to have edge versions.
 # This should be kept in sync with package.keywords.
 =sys-devel/llvm-3.4_pre*
-
-# This pins Chrome to the version below by masking more recent versions.
->chromeos-base/chromeos-chrome-33.0.1709.3_rc-r1

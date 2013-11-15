@@ -13,3 +13,5 @@
 # Custom patches
 >=sys-boot/syslinux-3.84
 
+# This pins Chrome to the version below by masking more recent versions.
+>chromeos-base/chromeos-chrome-33.0.1709.3_rc-r1
