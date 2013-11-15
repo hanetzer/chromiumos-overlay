@@ -89,7 +89,6 @@ CROS_COMMON_RDEPEND="
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
 	app-shells/dash
-	chromeos-base/bootstat
 	pam? ( chromeos-base/chromeos-auth-config )
 	chromeos-base/chromeos-base
 	fonts? ( chromeos-base/chromeos-fonts )

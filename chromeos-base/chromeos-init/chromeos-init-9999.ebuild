@@ -22,6 +22,7 @@ DEPEND=""
 # vpd for vpd-log.conf of upstart
 # vboot_reference for crossystem
 RDEPEND="
+	chromeos-base/bootstat
 	chromeos-base/crash-reporter
 	!<chromeos-base/shill-0.0.1-r805
 	chromeos-base/vboot_reference
