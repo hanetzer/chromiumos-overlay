@@ -88,38 +88,24 @@ CROS_COMMON_RDEPEND="
 	syslog? ( app-admin/rsyslog )
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
-	app-shells/dash
 	pam? ( chromeos-base/chromeos-auth-config )
-	chromeos-base/chromeos-base
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
 	chromeos-base/crash-reporter
 	chromeos-base/platform2
-	chromeos-base/root-certificates
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	net-firewall/iptables
 	net-misc/tlsdate
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )
-	sys-apps/baselayout
-	sys-apps/coreutils
-	sys-apps/grep
-	sys-apps/mawk
-	sys-apps/net-tools
-	sys-apps/sed
-	sys-apps/shadow
-	sys-apps/util-linux
-	sys-apps/which
 	pam? ( sys-auth/pam_pwdfile )
-	sys-libs/gcc-libs
-	sys-libs/timezone-data
 	mtd? ( sys-fs/mtd-utils )
-	sys-process/procps
 	virtual/chromeos-bsp
 	virtual/chromeos-firmware
 	virtual/chromeos-interface
+	virtual/implicit-system
 	virtual/linux-sources
 	virtual/modutils
 "
