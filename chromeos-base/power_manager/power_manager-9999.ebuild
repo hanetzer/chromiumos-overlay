@@ -44,13 +44,6 @@ src_prepare() {
 src_configure() {
 	clang-setup-env
 	cros-workon_src_configure
-
-	export USE_ALS=$(usex als y "")
-	export USE_HAS_KEYBOARD_BACKLIGHT=$(usex has_keyboard_backlight y "")
-	export USE_IS_DESKTOP=$(usex is_desktop y "")
-	export USE_LEGACY_POWER_BUTTON=$(usex legacy_power_button y "")
-	export USE_LOCKVT=$(usex lockvt y "")
-	export USE_MOSYS_EVENTLOG=$(usex mosys_eventlog y "")
 }
 
 src_compile() {
@@ -68,6 +61,7 @@ src_test() {
 
 src_install() {
 	cros-workon_src_install
+
 	# Built binaries
 	pushd "${OUT}" >/dev/null
 	dobin powerd/powerd
@@ -93,8 +87,15 @@ src_install() {
 	dobin tools/set_short_powerd_timeouts
 	dobin tools/suspend_stress_test
 
+	# Preferences
 	insinto /usr/share/power_manager
-	doins config/*
+	doins default_prefs/*
+	use als && doins optional_prefs/has_ambient_light_sensor
+	use has_keyboard_backlight && doins optional_prefs/has_keyboard_backlight
+	use is_desktop && doins optional_prefs/external_display_only
+	use legacy_power_button && doins optional_prefs/legacy_power_button
+	use lockvt && doins optional_prefs/lock_vt_before_suspend
+	use mosys_eventlog && doins optional_prefs/mosys_eventlog
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
