@@ -3,22 +3,20 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/xf86-input-cmt"
-
-XORG_EAUTORECONF="yes"
-BASE_INDIVIDUAL_URI=""
-inherit autotools-utils cros-workon
-
-DESCRIPTION="Chromium OS multitouch input driver for Xorg X server."
 CROS_WORKON_LOCALNAME="../platform/xf86-input-cmt"
 
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+inherit autotools-utils cros-workon
+
+DESCRIPTION="Chromium OS multitouch input driver for Xorg X server"
+
 LICENSE="BSD"
 SLOT="0"
+KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE=""
 
 RDEPEND="chromeos-base/gestures
-	 chromeos-base/libevdev
-	 x11-base/xorg-server"
+	chromeos-base/libevdev
+	x11-base/xorg-server"
 DEPEND="${RDEPEND}
 	x11-proto/inputproto"
 
@@ -29,7 +27,7 @@ src_prepare() {
 }
 
 src_configure() {
-	cros-workon_src_configure
+	autotools-utils_src_configure
 }
 
 src_install() {
