@@ -99,8 +99,6 @@ IUSE_TESTS=(
 	 tests_logging_AsanCrash
 	+tests_logging_UncleanShutdown
 	+tests_login_ChromeProfileSanitary
-	+tests_login_CryptohomeIncognitoMounted
-	+tests_login_CryptohomeIncognitoUnmounted
 	+tests_login_CryptohomeMounted
 	+tests_login_CryptohomeUnmounted
 	+tests_login_LoginSuccess
