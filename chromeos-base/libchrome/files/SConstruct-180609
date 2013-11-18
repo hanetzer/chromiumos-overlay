@@ -120,6 +120,8 @@ base_libs = [
   {
     'name' : 'event',
     'sources' : """
+                files/file_path_watcher.cc
+                files/file_path_watcher_linux.cc
                 message_loop.cc
                 message_loop_proxy.cc
                 message_loop_proxy_impl.cc
@@ -130,6 +132,7 @@ base_libs = [
                 thread_task_runner_handle.cc
                 threading/post_task_and_reply_impl.cc
                 threading/thread.cc
+                timer.cc
                 tracking_info.cc
                 """,
     'libs' : 'event base-glib-${bslot}',

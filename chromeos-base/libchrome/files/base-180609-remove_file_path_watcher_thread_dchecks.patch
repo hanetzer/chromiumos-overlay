@@ -1,0 +1,23 @@
+Remove DCHECKs so FilePathWatcher can be used from MessageLoopForUI, which is
+currently needed by powerd so that dbus-glib can be used
+(http://crbug.com/320340).
+
+--- a/files/file_path_watcher_linux.cc
++++ b/files/file_path_watcher_linux.cc
+@@ -311,8 +311,6 @@ void FilePathWatcherImpl::OnFilePathChanged(InotifyReader::Watch fired_watch,
+     return;
+   }
+ 
+-  DCHECK(MessageLoopForIO::current());
+-
+   // Find the entry in |watches_| that corresponds to |fired_watch|.
+   WatchVector::const_iterator watch_entry(watches_.begin());
+   for ( ; watch_entry != watches_.end(); ++watch_entry) {
+@@ -363,7 +361,6 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
+                                 bool recursive,
+                                 const FilePathWatcher::Callback& callback) {
+   DCHECK(target_.empty());
+-  DCHECK(MessageLoopForIO::current());
+   if (recursive) {
+     // Recursive watch is not supported on this platform.
+     NOTIMPLEMENTED();
