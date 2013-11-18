@@ -32,7 +32,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill platform2 test +tpm +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics platform2 test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
@@ -407,7 +407,8 @@ platform2_install_libchromeos() {
 }
 
 platform2_install_metrics() {
-	dobin "${OUT}"/metrics_{client,daemon} syslog_parser.sh
+	dobin "${OUT}"/metrics_client syslog_parser.sh
+	use passive_metrics && dobin "${OUT}"/metrics_daemon
 
 	dolib.so "${OUT}/lib/libmetrics.so"
 
@@ -632,7 +633,7 @@ platform2_test_libchromeos() {
 platform2_test_metrics() {
 	local tests=(
 		metrics_library_test
-		metrics_daemon_test
+		$(usex passive_metrics 'metrics_daemon_test' '')
 		counter_test
 		timer_test
 	)
