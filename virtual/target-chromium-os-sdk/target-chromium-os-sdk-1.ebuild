@@ -43,7 +43,8 @@ RDEPEND="${RDEPEND}
 	sys-apps/util-linux
 	sys-apps/which
 	sys-devel/autoconf
-	sys-devel/automake
+	sys-devel/automake:1.10
+	sys-devel/automake:1.11
 	sys-devel/binutils
 	sys-devel/bison
 	sys-devel/flex
@@ -160,7 +161,6 @@ RDEPEND="${RDEPEND}
 	sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
 	sys-devel/autofdo
-	=sys-devel/automake-1.10*
 	sys-devel/bc
 	sys-devel/clang
 	sys-fs/sshfs-fuse
