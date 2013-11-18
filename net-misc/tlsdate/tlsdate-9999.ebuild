@@ -18,7 +18,9 @@ REQUIRED_USE="asan? ( clang )"
 DEPEND="dev-libs/openssl
 	dev-libs/libevent
 	dbus? ( sys-apps/dbus )"
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+	chromeos-base/chromeos-ca-certificates
+"
 
 src_prepare() {
 	eautoreconf
