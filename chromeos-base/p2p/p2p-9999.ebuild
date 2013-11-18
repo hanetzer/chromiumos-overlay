@@ -21,7 +21,8 @@ LIBCHROME_VERS="180609"
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/platform2
 	dev-libs/glib
-	net-dns/avahi"
+	net-dns/avahi
+	net-firewall/iptables"
 
 DEPEND="test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )

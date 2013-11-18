@@ -130,6 +130,7 @@ RDEPEND_shill="
 		cellular? ( net-dialup/ppp )
 		vpn? ( net-dialup/ppp )
 		net-dns/c-ares
+		net-firewall/iptables
 		net-libs/libmnl
 		net-libs/libnetfilter_queue
 		net-libs/libnfnetlink

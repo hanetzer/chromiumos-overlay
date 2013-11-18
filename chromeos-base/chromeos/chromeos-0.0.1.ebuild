@@ -9,8 +9,9 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
-IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec cros_embedded
-	+fonts gdmwimax mtd nfc opengles pam +syslog X"
+IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
+	cros_embedded +fonts gdmwimax mtd nfc opengles pam
+	+network_time +syslog X"
 
 ################################################################################
 #
@@ -90,15 +91,13 @@ CROS_COMMON_RDEPEND="
 	bootchart? ( app-benchmarks/bootchart )
 	pam? ( chromeos-base/chromeos-auth-config )
 	fonts? ( chromeos-base/chromeos-fonts )
-	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installer
-	chromeos-base/crash-reporter
+	crash_reporting? ( chromeos-base/crash-reporter )
 	chromeos-base/platform2
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
-	net-firewall/iptables
-	net-misc/tlsdate
+	network_time? ( net-misc/tlsdate )
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )
 	pam? ( sys-auth/pam_pwdfile )
 	mtd? ( sys-fs/mtd-utils )
@@ -108,6 +107,7 @@ CROS_COMMON_RDEPEND="
 	virtual/implicit-system
 	virtual/linux-sources
 	virtual/modutils
+	virtual/service-manager
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 	bootimage? ( sys-boot/chromeos-bootimage )
@@ -192,7 +192,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/chromeos-imageburner
-	chromeos-base/chromeos-init
 	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
 	chromeos-base/dev-install
