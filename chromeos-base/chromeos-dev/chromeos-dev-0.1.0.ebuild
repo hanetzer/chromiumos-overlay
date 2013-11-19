@@ -103,6 +103,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/platform2
 	chromeos-base/protofiles
 	dev-lang/python
+	dev-python/cherrypy
 	dev-python/dbus-python
 	dev-util/hdctools
 	dev-util/libc-bench
