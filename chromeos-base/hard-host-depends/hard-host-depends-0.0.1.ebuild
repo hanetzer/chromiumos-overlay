@@ -36,6 +36,11 @@ RDEPEND="${RDEPEND}
 	sys-fs/dosfstools
 	"
 
+# Needed to run 'repo selfupdate'
+RDEPEND="${RDEPEND}
+	app-crypt/gnupg
+	"
+
 # Host dependencies for building cross-compiled packages.
 RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
