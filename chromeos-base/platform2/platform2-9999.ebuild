@@ -372,7 +372,7 @@ platform2_install_debugd() {
 	dodir /debugd
 
 	exeinto /usr/libexec/debugd/helpers
-	doexe "${OUT}"/{capture_packets,icmp,netif,modem_status,network_status}
+	doexe "${OUT}"/{capture_packets,icmp,netif,modem_status,network_status,wimax_status}
 
 	doexe src/helpers/{minijail-setuid-hack,send_at_command,systrace,capture_utility}.sh
 
