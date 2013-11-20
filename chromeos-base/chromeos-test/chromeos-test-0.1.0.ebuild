@@ -41,7 +41,7 @@ IUSE="cros_ec cros_embedded"
 ################################################################################
 
 CROS_COMMON_RDEPEND="
-	chromeos-base/chromeos-test-init
+	chromeos-base/chromeos-test-root
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
 	net-misc/rsync
