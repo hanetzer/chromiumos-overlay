@@ -102,6 +102,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/audiotest
 	chromeos-base/platform2
 	chromeos-base/protofiles
+	chromeos-base/wireless_automation
 	dev-lang/python
 	dev-python/cherrypy
 	dev-python/dbus-python
