@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/chromeos-init
+DESCRIPTION=Generic ebuild which satisifies virtual/service-manager. This is a direct dependency of chromeos-base/chromeos, but can be overridden in an overlay for specialized boards. To satisfy this virtual, a package should cause to be installed everything required to bring the system up and start managing system services.
+EAPI=5
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+RDEPEND=chromeos-base/chromeos-init
+SLOT=0
+_md5_=2920dd8675b2a7fec83725c28c366ba3
