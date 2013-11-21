@@ -8,5 +8,5 @@ LICENSE=BSD-3
 RDEPEND=>=app-admin/eselect-python-20091230 =dev-lang/python-2*
 SLOT=0
 SRC_URI=https://github.com/gvalkov/python-evdev/archive/v0.3.1.tar.gz -> python-evdev-0.3.1.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils	b4c334e216d998c4ce4b750cb091e42e	eutils	d40dc948067bd3db1c8ebf7d51897313	multilib	ded93e450747134a079e647d888aa80b	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils	c2658824b3debc637c77b58e1d658fab	eutils	d40dc948067bd3db1c8ebf7d51897313	multilib	ded93e450747134a079e647d888aa80b	python	6bbd984910e27780e5d0ea543d83ef84	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
 _md5_=d512fea7dc6e86a1feffc1df7580d467
