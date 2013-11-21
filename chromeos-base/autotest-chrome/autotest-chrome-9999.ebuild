@@ -49,6 +49,7 @@ IUSE_TESTS=(
 	+tests_network_ChromeCellularNetworkProperties
 	+tests_network_ChromeCellularSmokeTest
 	+tests_network_ChromeWifiConfigure
+	+tests_security_BundledExtensionsTelemetry
 	+tests_security_ProfilePermissionsTelemetry
 	+tests_security_SandboxStatusTelemetry
 	+tests_telemetry_LoginTest
@@ -124,7 +125,6 @@ IUSE_TESTS=(
 	+tests_power_VideoSuspend
 	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkPlayground
-	+tests_security_BundledExtensions
 	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
