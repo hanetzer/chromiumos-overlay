@@ -17,7 +17,16 @@ DEPEND="sys-apps/debianutils
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
 "
 
-IUSE="-device_tree -kernel_sources nfc -wireless34 -wifi_testbed_ap"
+WIRELESS_VERSIONS=( 3.4 3.8 )
+WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
+
+IUSE="
+	-device_tree
+	-kernel_sources
+	nfc
+	${WIRELESS_SUFFIXES[@]/#/-wireless}
+	-wifi_testbed_ap
+"
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
@@ -446,9 +455,16 @@ kmake() {
 
 	local cross=${CHOST}-
 
-	if use wireless34 ; then
-		set -- "$@" WIFIVERSION="-3.4"
-	fi
+	local wifi_version
+	local v
+	for v in ${WIRELESS_VERSIONS[@]}; do
+		if use wireless${v/.} ; then
+			[ -n "${wifi_version}" ] &&
+				die "Wireless ${v} AND ${wifi_version} both set"
+			wifi_version=${v}
+			set -- "$@" WIFIVERSION="-${v}"
+		fi
+	done
 
 	# TODO(raymes): Force GNU ld over gold. There are still some
 	# gold issues to iron out. See: 13209.
