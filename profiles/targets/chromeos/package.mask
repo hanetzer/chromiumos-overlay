@@ -10,9 +10,6 @@
 # version of these packages even if a newer stable version becomes
 # available in portage:
 
-# Required patch; pending work to upstream.
->net-dialup/ppp-2.4.5-r3
-
 # Cross compile fix in the ebuild (Icedtea -> cups -> libgcrypt).
 >dev-libs/libgcrypt-1.4.6
 
