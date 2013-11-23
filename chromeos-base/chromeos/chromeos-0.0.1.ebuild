@@ -202,7 +202,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/power_manager
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
-	dev-util/quipper
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda

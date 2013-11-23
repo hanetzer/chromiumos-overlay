@@ -9,6 +9,7 @@ CROS_WORKON_USE_VCSID=1
 CROS_WORKON_LOCALNAME=(
 	"common-mk"
 	"chaps"
+	"chromiumos-wide-profiling"
 	"cromo"
 	"cros-disks"
 	"debugd"
@@ -32,7 +33,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics platform2 tcmalloc test +tpm +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics +profile platform2 tcmalloc test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
@@ -118,6 +119,12 @@ RDEPEND_mist="
 	)
 "
 
+RDEPEND_quipper="
+	profile? (
+		virtual/perf
+	)
+"
+
 RDEPEND_shill="
 	shill? (
 		chromeos-base/bootstat
@@ -181,6 +188,7 @@ RDEPEND="
 		!chromeos-base/system_api[-platform2]
 		!chromeos-base/vpn-manager[-platform2]
 		!chromeos-base/wimax_manager[-platform2]
+		!dev-util/quipper
 	)
 "
 
@@ -317,6 +325,12 @@ platform2_install_chaps() {
 
 	insinto /usr/include/chaps/pkcs11
 	doins pkcs11/*.h
+}
+
+platform2_install_chromiumos-wide-profiling() {
+	use cros_host && return 0
+	use profile || return 0
+	dobin "${OUT}"/quipper
 }
 
 platform2_install_common-mk() {
@@ -571,6 +585,26 @@ platform2_test_chaps() {
 	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform2_test "run" "${OUT}/${test_bin}" "" "${gtest_filter_qemu}"
+	done
+}
+
+platform2_test_chromiumos-wide-profiling() {
+	use cros_host && return 0
+	use profile || return 0
+
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86 platform: chromiumos-wide-profiling" && return 0
+
+	local tests=(
+		address_mapper_test
+		perf_parser_test
+		perf_reader_test
+		perf_recorder_test
+		perf_serializer_test
+		utils_test
+	)
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform2_test "run" "${OUT}/${test_bin}"
 	done
 }
 
