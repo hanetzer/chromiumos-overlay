@@ -65,7 +65,4 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins etc/Cryptohome.conf
-
-	insinto /usr/share/dbus-1/services/
-	doins share/org.chromium.Cryptohome.service
 }
