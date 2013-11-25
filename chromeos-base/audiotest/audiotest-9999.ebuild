@@ -10,7 +10,7 @@ inherit cros-workon
 DESCRIPTION="Audio test tools"
 HOMEPAGE="http://src.chromium.org"
 
-LICENSE="BSD-3"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="-asan -clang"

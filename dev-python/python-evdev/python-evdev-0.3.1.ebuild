@@ -11,7 +11,7 @@ DESCRIPTION="Python library for evdev bindings"
 HOMEPAGE="http://gvalkov.github.com/python-evdev/"
 SRC_URI="https://github.com/gvalkov/python-evdev/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
-LICENSE="BSD-3"
+LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""

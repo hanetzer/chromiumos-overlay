@@ -11,7 +11,7 @@ inherit cros-workon distutils python
 DESCRIPTION="Bluetooth Socket support module"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-3"
+LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="-asan -clang"

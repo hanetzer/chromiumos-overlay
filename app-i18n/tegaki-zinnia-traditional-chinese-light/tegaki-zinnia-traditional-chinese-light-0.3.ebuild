@@ -6,7 +6,7 @@ DESCRIPTION="Zinnia learning data for traditional Chinese"
 HOMEPAGE="http://tegaki.org/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.zip"
 
-LICENSE="LGPL"
+LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 

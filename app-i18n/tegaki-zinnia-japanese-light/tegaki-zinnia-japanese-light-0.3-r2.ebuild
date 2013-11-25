@@ -1,0 +1,1 @@
+tegaki-zinnia-japanese-light-0.3.ebuild

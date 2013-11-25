@@ -12,7 +12,7 @@ inherit autotools
 DESCRIPTION="Utility for signing Tegra2 boot images"
 HOMEPAGE="http://nv-tegra.nvidia.com/gitweb/?p=tools/cbootimage.git"
 
-LICENSE="GPLv2"
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
