@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/nss/nss-3.15.3.ebuild,v 1.1 2013/11/14 11:45:36 polynomial-c Exp $
 
-EAPI=5
+# This needs to be locked to 4 until we upgrade stage3 to a newer portage.
+# Just run against chromiumos-sdk bot before changing.
+EAPI="4"
 inherit eutils flag-o-matic multilib toolchain-funcs
 
 NSPR_VER="4.10"
@@ -10,9 +12,7 @@ RTM_NAME="NSS_${PV//./_}_RTM"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="http://www.mozilla.org/projects/security/pki/nss/"
-SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
-	http://dev.gentoo.org/~anarchy/patches/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch
-	http://dev.gentoo.org/~anarchy/patches/${PN}-3.15-pem-support-20130617.patch.xz"
+SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
@@ -24,7 +24,8 @@ DEPEND="virtual/pkgconfig
 
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
 	>=dev-db/sqlite-3.5
-	sys-libs/zlib"
+	sys-libs/zlib
+  !<app-crypt/nss-${PV}"
 
 RESTRICT="test"
 
@@ -38,10 +39,17 @@ src_prepare() {
 	# Custom changes for gentoo
 	epatch "${FILESDIR}/${PN}-3.15-gentoo-fixups.patch"
 	epatch "${FILESDIR}/${PN}-3.15-gentoo-fixup-warnings.patch"
-	epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
-	epatch "${DISTDIR}/${PN}-3.15-pem-support-20130617.patch.xz"
 	epatch "${FILESDIR}/${PN}-3.15-x32.patch"
 	epatch "${FILESDIR}/${PN}-3.15.1-fipstest-warnings.patch"
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+
+
 	cd coreconf
 	# hack nspr paths
 	echo 'INCLUDES += -I$(DIST)/include/dbm' \
@@ -60,8 +68,6 @@ src_prepare() {
 	# Fix pkgconfig file for Prefix
 	sed -i -e "/^PREFIX =/s:= /usr:= ${EPREFIX}/usr:" \
 		"${S}"/config/Makefile
-
-	epatch "${FILESDIR}/nss-3.14.2-solaris-gcc.patch"
 
 	# use host shlibsign if need be #436216
 	if tc-is-cross-compiler ; then
@@ -234,7 +240,9 @@ src_install() {
 	fi
 	cd "${S}"/dist/*/bin/
 	for f in ${nssutils}; do
+		# TODO(cmasone): switch to normal nss tool names
 		dobin ${f}
+		dosym ${f} /usr/bin/nss${f}
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run
