@@ -208,12 +208,15 @@ platform2() {
 
 	local action="$1"
 
-	"${platform2_py}" \
-		$(platform2_get_target_args) \
-		--libdir="/usr/$(get_libdir)" \
-		--use_flags="${USE}" \
-		--action="${action}" \
-		|| die
+	local cmd=(
+		"${platform2_py}"
+		$(platform2_get_target_args)
+		--libdir="/usr/$(get_libdir)"
+		--use_flags="${USE}"
+		--action="${action}"
+	)
+	echo "${cmd[@]}"
+	"${cmd[@]}" || die
 }
 
 platform2_get_target_args() {
@@ -237,17 +240,19 @@ platform2_test() {
 		run_as_root_flag="--run_as_root"
 	fi
 
-	"${platform2_test_py}" \
-		--action="${action}" \
-		--bin="${bin}" \
-		$(platform2_get_target_args) \
-		--gtest_filter="${gtest_filter}" \
-		--user_gtest_filter="${P2_TEST_FILTER}" \
-		--package="${pkg}" \
-		--use_flags="${USE}" \
-		${run_as_root_flag} \
-		|| die
-
+	local cmd=(
+		"${platform2_test_py}"
+		--action="${action}"
+		--bin="${bin}"
+		$(platform2_get_target_args)
+		--gtest_filter="${gtest_filter}"
+		--user_gtest_filter="${P2_TEST_FILTER}"
+		--package="${pkg}"
+		--use_flags="${USE}"
+		${run_as_root_flag}
+	)
+	echo "${cmd[@]}"
+	"${cmd[@]}" || die
 }
 
 platform2_multiplex() {
@@ -615,7 +620,7 @@ platform2_test_cros-disks() {
 platform2_test_debugd() {
 	use cros_host && return 0
 	use debugd || return 0
-	! use x86 && ! use amd64 && return 0
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: debugd" && return 0
 
 	pushd "${SRC}/src" >/dev/null
 	platform2_test "run" "${OUT}/debugd_testrunner"
@@ -624,7 +629,7 @@ platform2_test_debugd() {
 }
 
 platform2_test_libchromeos() {
-	! use x86 && ! use amd64 && return 0
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: libchromeos" && return 0
 
 	local v
 	for v in "${LIBCHROME_VERS[@]}"; do
@@ -657,7 +662,7 @@ platform2_test_mist() {
 platform2_test_shill() {
 	use cros_host && return 0
 	use shill || return 0
-	! use x86 && ! use amd64 && return 0
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: shill" && return 0
 
 	platform2_test "run" "${OUT}/shill_unittest"
 }
@@ -669,7 +674,7 @@ platform2_test_system_api() {
 platform2_test_vpn-manager() {
 	use cros_host && return 0
 	use vpn || return 0
-	! use x86 && ! use amd64 && return 0
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: vpn-manager" && return 0
 
 	local tests=(
 		daemon_test
