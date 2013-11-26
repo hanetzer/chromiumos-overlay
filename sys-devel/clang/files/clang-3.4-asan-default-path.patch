@@ -1,0 +1,14 @@
+By default, the ASAN message goes to STDERR. This causes problem if we cannot
+log the ASAN message, and we can not figure out why the ASAN check fails.
+This change set the ASAN message goes to /va/log/asan${pid} by default.
+--- llvm/projects/compiler-rt/lib/asan/asan_rtl.cc	2013-11-25 16:13:15.000000000 -0800
++++ llvm/projects/compiler-rt/lib/asan/asan_rtl.cc	2013-11-25 16:13:56.000000000 -0800
+@@ -135,7 +135,7 @@
+   cf->fast_unwind_on_malloc = true;
+   cf->strip_path_prefix = "";
+   cf->handle_ioctl = false;
+-  cf->log_path = 0;
++  cf->log_path = "/var/log/asan";
+   cf->detect_leaks = false;
+   cf->leak_check_at_exit = true;
+ 

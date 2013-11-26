@@ -82,6 +82,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
 	epatch "${FILESDIR}"/${PN}-3.4-gentoo-install.patch
 
+	epatch "${FILESDIR}"/${PN}-3.4-asan-default-path.patch
 	# multilib-strict
 	sed -e "/PROJ_headers\|HeaderDir/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/lib/Headers/Makefile \
