@@ -14,7 +14,7 @@ DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="em100-mode memmaps quiet-cb"
+IUSE="em100-mode memmaps quiet-cb rmt"
 
 
 RDEPEND="!sys-boot/chromeos-coreboot"
@@ -57,6 +57,10 @@ cros-coreboot_pre_src_prepare() {
 	elif [[ -s "configs/config.${COREBOOT_BOARD}" ]]; then
 		# Otherwise use config from coreboot tree
 		cp -v "configs/config.${COREBOOT_BOARD}" .config
+	fi
+
+	if use rmt; then
+		echo "CONFIG_MRC_RMT=y" >> .config
 	fi
 
 	if [[ -d "${FILESDIR}"/3rdparty ]]; then
