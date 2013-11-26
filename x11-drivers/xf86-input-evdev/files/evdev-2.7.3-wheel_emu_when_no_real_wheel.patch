@@ -1,0 +1,32 @@
+From e10c4f9b2743e04af4ab0f5416831de9a923ae66 Mon Sep 17 00:00:00 2001
+From: Andrew de los Reyes <adlr@chromium.org>
+Date: Tue, 26 Nov 2013 15:21:15 -0800
+Subject: [PATCH] emuWheel.c: Set wheel emulation if REL_WHEEL missing,
+ BTN_MIDDLE present.
+
+This is mostly for trackpoint-style devices, but it's just as useful
+for mice that lack a middle-button.
+---
+ src/emuWheel.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/emuWheel.c b/src/emuWheel.c
+index dae4031..a094e81 100644
+--- a/src/emuWheel.c
++++ b/src/emuWheel.c
+@@ -228,6 +228,12 @@ EvdevWheelEmuPreInit(InputInfoPtr pInfo)
+     } else
+         pEvdev->emulateWheel.enabled = FALSE;
+ 
++    if (!pEvdev->emulateWheel.enabled &&
++        !EvdevBitIsSet(pEvdev->rel_bitmask, REL_WHEEL) &&
++        EvdevBitIsSet(pEvdev->key_bitmask, BTN_MIDDLE)) {
++        pEvdev->emulateWheel.enabled = TRUE;
++    }
++
+     wheelButton = xf86SetIntOption(pInfo->options, "EmulateWheelButton", 4);
+ 
+     if ((wheelButton < 0) || (wheelButton > EVDEV_MAXBUTTONS)) {
+-- 
+1.8.4.1
+

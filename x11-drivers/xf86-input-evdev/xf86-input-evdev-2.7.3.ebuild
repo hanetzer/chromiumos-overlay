@@ -29,4 +29,5 @@ PATCHES=(
 	"${FILESDIR}"/evdev-2.7.0-fix-emulated-wheel.patch
 	"${FILESDIR}"/evdev-2.7.0-add-block-reading-support.patch
 	"${FILESDIR}"/evdev-2.7.3-Filer-touch-noise.patch
+	"${FILESDIR}"/evdev-2.7.3-wheel_emu_when_no_real_wheel.patch
 )
