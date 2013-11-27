@@ -70,6 +70,7 @@ ALL_BOARDS=(
 	panda
 	panther
 	parrot
+	parrot_ivb
 	parrot32
 	parrot64
 	peach
