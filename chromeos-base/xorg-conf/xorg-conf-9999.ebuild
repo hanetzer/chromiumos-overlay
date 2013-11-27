@@ -62,6 +62,7 @@ src_install() {
 		doins 50-touchpad-cmt-link.conf
 	elif [[ "${board}" = "daisy" && "${board_variant}" = "${board}" ]]; then
 		doins 50-touchpad-cmt-daisy.conf
+		doins 50-touchpad-cmt-pit.conf # Some Lucas's use Pit Touchpad module
 	elif [ "${board_variant}" = "daisy_spring" ]; then
 		doins 50-touchpad-cmt-spring.conf
 	elif [ "${board}" = "parrot" ]; then
