@@ -52,6 +52,7 @@ ALL_BOARDS=(
 	daisy_snow
 	daisy_winter
 	dalmore
+	duck
 	#emeraldlake2
 	falco
 	fb1
