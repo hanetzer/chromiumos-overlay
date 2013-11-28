@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install postinst prepare setup unpack
+DEPEND=virtual/glut virtual/opengl dev-python/mako dev-python/numpy media-libs/tiff media-libs/libpng sys-libs/zlib x11-libs/libICE x11-libs/libSM x11-libs/libX11 x11-libs/libXtst x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext x11-libs/libXi x11-libs/libXpm x11-libs/libXrender x11-proto/glproto dev-vcs/git
+DESCRIPTION=dependencies for Piglit (collection of automated tests for OpenGl based on glean and mesa)
+EAPI=2
+HOMEPAGE=http://cgit.freedesktop.org/piglit
+IUSE=+autotest cros_host cros_workon_tree_626b91847994dede423bbf36704aa8d8c12a255b profiling +buildcheck autotest opengles
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+LICENSE=GPL-2 LGPL-3
+RDEPEND=virtual/glut virtual/opengl dev-python/mako dev-python/numpy media-libs/tiff media-libs/libpng sys-libs/zlib x11-libs/libICE x11-libs/libSM x11-libs/libX11 x11-libs/libXtst x11-libs/libXau x11-libs/libXdmcp x11-libs/libXext x11-libs/libXi x11-libs/libXpm x11-libs/libXrender x11-proto/glproto ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	9117ab36f4a7fa417ddbe7a0fb3aedcc	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
+_md5_=3f31358ffb5481a3ef531093b9c136c6
