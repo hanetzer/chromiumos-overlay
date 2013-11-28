@@ -5,12 +5,12 @@ Subject: [PATCH] evdev-2.7.3-Filer-touch-noise
 ---
  src/Makefile.am |  2 +-
  src/debug.c     |  4 ++++
- src/evdev.c     | 62 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- src/evdev.h     | 12 +++++++++--
- 4 files changed, 77 insertions(+), 3 deletions(-)
+ src/evdev.c     | 68 ++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ src/evdev.h     | 12 ++++++++--
+ 4 files changed, 80 insertions(+), 6 deletions(-)
 
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 804ef73..5e7d195 100644
+index 0108bc9..f4d8e50 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -30,7 +30,7 @@ AM_CPPFLAGS =-I$(top_srcdir)/include
@@ -38,18 +38,29 @@ index 89e31f6..05cdabf 100644
              continue;
          fprintf(fp, "E: %ld.%06ld %04x %04x %d %d\n",
 diff --git a/src/evdev.c b/src/evdev.c
-index 59fa9bd..7da2ec5 100644
+index dc4b6b1..67d26d2 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -933,6 +933,7 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
-         if (ev->code == ABS_MT_TRACKING_ID) {
-             pEvdev->cached_tid[slot_index] = ev->value;
+@@ -938,14 +938,15 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
+                 pEvdev->cached_tid[slot_index] = ev->value;
              if (ev->value >= 0) {
-+                pEvdev->last_valid_tracking_ids[slot_index] = ev->value;
                  pEvdev->slot_state = SLOTSTATE_OPEN;
- 
-                 if (slot_index >= 0)
-@@ -1106,6 +1107,14 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+-
+-                if (slot_index >= 0)
++                if (slot_index >= 0) {
++                    pEvdev->last_valid_tracking_ids[slot_index] = ev->value;
+                     valuator_mask_copy(pEvdev->mt_mask,
+                                        pEvdev->last_mt_vals[slot_index]);
+-                else
++                } else {
+                     xf86IDrvMsg(pInfo, X_WARNING,
+                                 "Attempted to copy values from out-of-range "
+                                 "slot, touch events may be incorrect.\n");
++                }
+             } else
+                 pEvdev->slot_state = SLOTSTATE_CLOSE;
+         } else {
+@@ -1110,6 +1111,14 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
  {
      int i;
      EvdevPtr pEvdev = pInfo->private;
@@ -64,7 +75,7 @@ index 59fa9bd..7da2ec5 100644
  
      for (i = 0; i < pEvdev->num_queue; i++) {
          switch (pEvdev->queue[i].type) {
-@@ -1136,6 +1145,27 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -1140,6 +1149,27 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
              valuator_mask_set_double(pEvdev->queue[i].touchMask,
                                       pEvdev->touch_time_valuator_index,
                                       TimevalToDouble(&ev->time));
@@ -92,7 +103,7 @@ index 59fa9bd..7da2ec5 100644
              xf86PostTouchEvent(pInfo->dev, pEvdev->queue[i].detail.touch,
                                 pEvdev->queue[i].val, 0,
                                 pEvdev->queue[i].touchMask);
-@@ -1204,6 +1234,8 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1208,6 +1238,8 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      BOOL syn_dropped = FALSE;
      EvdevPtr pEvdev = pInfo->private;
@@ -101,7 +112,7 @@ index 59fa9bd..7da2ec5 100644
      switch (ev->type) {
          case EV_REL:
              EvdevProcessRelativeMotionEvent(pInfo, ev);
-@@ -2977,6 +3009,11 @@ EvdevCloseDevice(InputInfoPtr pInfo)
+@@ -2981,6 +3013,11 @@ EvdevCloseDevice(InputInfoPtr pInfo)
          mtdev_close_delete(pEvdev->mtdev);
          pEvdev->mtdev = NULL;
      }
@@ -113,7 +124,7 @@ index 59fa9bd..7da2ec5 100644
  #endif
  
  }
-@@ -3049,6 +3086,19 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
+@@ -3053,6 +3090,19 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
          goto error;
      }
  
@@ -133,7 +144,7 @@ index 59fa9bd..7da2ec5 100644
      EvdevAddDevice(pInfo);
  
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -3572,3 +3622,15 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -3576,3 +3626,15 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
      return Success;
  }
@@ -194,5 +205,5 @@ index 6ce774e..d744ed5 100644
      size_t debug_buf_tail;
  
 -- 
-1.8.3
+1.8.4.1
 

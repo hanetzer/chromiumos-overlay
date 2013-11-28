@@ -175,7 +175,7 @@ index 0000000..f79934d
 +        EvdevDebugGetProperty, NULL);
 +}
 diff --git a/src/evdev.c b/src/evdev.c
-index cc809e8..db2758c 100644
+index 2856e3b..84f5be6 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -219,7 +219,7 @@ static size_t EvdevCountBits(unsigned long *array, size_t nlongs)
@@ -187,7 +187,7 @@ index cc809e8..db2758c 100644
  {
      return !!(array[bit / LONG_BITS] & (1LL << (bit % LONG_BITS)));
  }
-@@ -1194,6 +1194,7 @@ static BOOL
+@@ -1198,6 +1198,7 @@ static BOOL
  EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      BOOL syn_dropped = FALSE;
@@ -195,7 +195,7 @@ index cc809e8..db2758c 100644
      switch (ev->type) {
          case EV_REL:
              EvdevProcessRelativeMotionEvent(pInfo, ev);
-@@ -1208,6 +1209,15 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1212,6 +1213,15 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
              syn_dropped = EvdevProcessSyncEvent(pInfo, ev);
              break;
      }
@@ -211,7 +211,7 @@ index cc809e8..db2758c 100644
      return syn_dropped;
  }
  
-@@ -2308,6 +2318,8 @@ EvdevInit(DeviceIntPtr device)
+@@ -2312,6 +2322,8 @@ EvdevInit(DeviceIntPtr device)
      EvdevWheelEmuInitProperty(device);
      EvdevDragLockInitProperty(device);
      EvdevAppleInitProperty(device);
@@ -220,7 +220,7 @@ index cc809e8..db2758c 100644
  
      return Success;
  }
-@@ -2391,6 +2403,7 @@ EvdevProc(DeviceIntPtr device, int what)
+@@ -2395,6 +2407,7 @@ EvdevProc(DeviceIntPtr device, int what)
      case DEVICE_CLOSE:
  	xf86IDrvMsg(pInfo, X_INFO, "Close\n");
          EvdevCloseDevice(pInfo);
@@ -271,5 +271,5 @@ index 5d6045d..6f87326 100644
 +
  #endif
 -- 
-1.8.1.3
+1.8.4.1
 

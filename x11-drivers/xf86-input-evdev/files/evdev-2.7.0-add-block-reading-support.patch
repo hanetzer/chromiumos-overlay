@@ -68,10 +68,10 @@ index f79934d..89e31f6 100644
 +    XIRegisterPropertyHandler(dev, EvdevBlockSetProperty, NULL, NULL);
 +}
 diff --git a/src/evdev.c b/src/evdev.c
-index 5360dfa..59fa9bd 100644
+index f2cba5e..dc4b6b1 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
-@@ -1569,11 +1569,14 @@ EvdevReadInput(InputInfoPtr pInfo)
+@@ -1573,11 +1573,14 @@ EvdevReadInput(InputInfoPtr pInfo)
      struct input_event ev[NUM_EVENTS];
      int i, len = sizeof(ev);
      BOOL sync_evdev_state = FALSE;
@@ -87,7 +87,7 @@ index 5360dfa..59fa9bd 100644
  
          if (pEvdev->mtdev)
              len = mtdev_get(pEvdev->mtdev, pInfo->fd, ev, NUM_EVENTS) *
-@@ -2362,6 +2365,7 @@ EvdevInit(DeviceIntPtr device)
+@@ -2366,6 +2369,7 @@ EvdevInit(DeviceIntPtr device)
      EvdevAppleInitProperty(device);
      EvdevDebugAllocateBuffer(pEvdev);
      EvdevDebugInitProperty(device);
@@ -121,5 +121,5 @@ index 38beb98..6ce774e 100644
  
  #endif
 -- 
-1.8.1.3
+1.8.4.1
 

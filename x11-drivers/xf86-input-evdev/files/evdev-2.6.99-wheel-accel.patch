@@ -3,12 +3,13 @@ Date: Thu, 15 Nov 2012 15:38:44 +0800
 Subject: [PATCH] Accelerate wheel scrolling
 
 ---
- include/evdev-properties.h |    4 +
- src/evdev.c                |  198 +++++++++++++++++++++++++++++++++++++++----
- src/evdev.h                |   13 +++
+ include/evdev-properties.h |   4 +
+ src/evdev.c                | 198 ++++++++++++++++++++++++++++++++++++++++-----
+ src/evdev.h                |  13 +++
  3 files changed, 196 insertions(+), 19 deletions(-)
 
 diff --git a/include/evdev-properties.h b/include/evdev-properties.h
+index 745a1ba..66e8a75 100644
 --- a/include/evdev-properties.h
 +++ b/include/evdev-properties.h
 @@ -87,4 +87,8 @@
@@ -21,6 +22,7 @@ diff --git a/include/evdev-properties.h b/include/evdev-properties.h
 +
  #endif
 diff --git a/src/evdev.c b/src/evdev.c
+index 6cc7f2e..2856e3b 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -99,6 +99,9 @@
@@ -170,7 +172,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      /* Get the signed value, earlier kernels had this as unsigned */
      value = ev->value;
  
-@@ -1894,12 +2007,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1898,12 +2011,6 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  
  #ifndef HAVE_SMOOTH_SCROLLING
@@ -183,7 +185,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      if (EvdevBitIsSet(pEvdev->rel_bitmask, REL_DIAL))
          num_axes--;
  
-@@ -1907,17 +2014,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1911,17 +2018,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          goto out;
  #endif
  
@@ -213,7 +215,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      atoms = malloc(pEvdev->num_vals * sizeof(Atom));
  
      for (axis = REL_X; i < MAX_VALUATORS && axis <= REL_MAX; axis++)
-@@ -1925,7 +2035,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1929,7 +2039,7 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          pEvdev->axis_map[axis] = -1;
  #ifndef HAVE_SMOOTH_SCROLLING
          /* We don't post wheel events, so ignore them here too */
@@ -222,7 +224,7 @@ diff --git a/src/evdev.c b/src/evdev.c
              continue;
  #endif
          if (!EvdevBitIsSet(pEvdev->rel_bitmask, axis))
-@@ -1934,9 +2044,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1938,9 +2048,20 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
          i++;
      }
  
@@ -245,7 +247,7 @@ diff --git a/src/evdev.c b/src/evdev.c
                                         GetMotionHistorySize(), Relative)) {
          xf86IDrvMsg(pInfo, X_ERROR, "failed to initialize valuator class device.\n");
          goto out;
-@@ -1951,11 +2072,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1955,11 +2076,18 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
      for (axis = REL_X; axis <= REL_MAX; axis++)
      {
          int axnum = pEvdev->axis_map[axis];
@@ -265,7 +267,7 @@ diff --git a/src/evdev.c b/src/evdev.c
          xf86InitValuatorDefaults(device, axnum);
  #ifdef HAVE_SMOOTH_SCROLLING
          if (axis == REL_WHEEL)
-@@ -1967,6 +2095,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -1971,6 +2099,17 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
  #endif
      }
  
@@ -283,7 +285,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      free(atoms);
  
      return Success;
-@@ -2128,6 +2267,9 @@ EvdevInit(DeviceIntPtr device)
+@@ -2132,6 +2271,9 @@ EvdevInit(DeviceIntPtr device)
      for(i = 0; i < max(ABS_CNT,REL_CNT); i++)
        pEvdev->axis_map[i]=-1;
  
@@ -293,7 +295,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      if (pEvdev->flags & EVDEV_KEYBOARD_EVENTS)
  	EvdevAddKeyClass(device);
      if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-@@ -3218,6 +3360,7 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -3222,6 +3364,7 @@ EvdevInitProperty(DeviceIntPtr dev)
      if (pEvdev->flags & (EVDEV_RELATIVE_EVENTS | EVDEV_ABSOLUTE_EVENTS))
      {
          BOOL invert[2];
@@ -301,7 +303,7 @@ diff --git a/src/evdev.c b/src/evdev.c
          invert[0] = pEvdev->invert_x;
          invert[1] = pEvdev->invert_y;
  
-@@ -3264,6 +3407,16 @@ EvdevInitProperty(DeviceIntPtr dev)
+@@ -3268,6 +3411,16 @@ EvdevInitProperty(DeviceIntPtr dev)
  
          XISetDevicePropertyDeletable(dev, prop_swap, FALSE);
  
@@ -318,7 +320,7 @@ diff --git a/src/evdev.c b/src/evdev.c
          /* Axis labelling */
          if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
          {
-@@ -3333,6 +3486,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
+@@ -3337,6 +3490,13 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
  
          if (!checkonly)
              pEvdev->swap_axes = *((BOOL*)val->data);
@@ -333,6 +335,7 @@ diff --git a/src/evdev.c b/src/evdev.c
                 atom == prop_product_id || atom == prop_device ||
                 atom == prop_virtual)
 diff --git a/src/evdev.h b/src/evdev.h
+index 33f0ea5..5d6045d 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -155,6 +155,12 @@ typedef struct {
@@ -370,5 +373,5 @@ diff --git a/src/evdev.h b/src/evdev.h
  
  typedef struct {
 -- 
-1.7.7.3
+1.8.4.1
 

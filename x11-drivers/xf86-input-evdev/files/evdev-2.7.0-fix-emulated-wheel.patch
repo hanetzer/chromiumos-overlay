@@ -88,7 +88,7 @@ index db989c5..dae4031 100644
  returns true if a button mapping was found. */
  static BOOL
 diff --git a/src/evdev.c b/src/evdev.c
-index b6409dd..5360dfa 100644
+index 986519c..f2cba5e 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -131,6 +131,7 @@ static BOOL EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab);
@@ -117,7 +117,7 @@ index b6409dd..5360dfa 100644
  EvdevProcessRelativeMotionEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      int value;
-@@ -2048,6 +2051,8 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
+@@ -2052,6 +2055,8 @@ EvdevAddRelValuatorClass(DeviceIntPtr device)
      if (!EvdevBitIsSet(pEvdev->bitmask, EV_REL))
          goto out;
  
@@ -126,7 +126,7 @@ index b6409dd..5360dfa 100644
      num_axes = EvdevCountBits(pEvdev->rel_bitmask, NLONGS(REL_MAX));
      if (num_axes < 1)
          goto out;
-@@ -2585,6 +2590,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
+@@ -2589,6 +2594,19 @@ EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab)
  }
  
  /**
@@ -162,5 +162,5 @@ index 7b7ca8d..38beb98 100644
  int  EvdevMBEmuTimer(InputInfoPtr);
  BOOL EvdevMBEmuFilterEvent(InputInfoPtr, int, BOOL);
 -- 
-1.8.1.3
+1.8.4.1
 

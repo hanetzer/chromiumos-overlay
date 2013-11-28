@@ -10,10 +10,11 @@ scrollwheel being unusable.
 BUG=chromium:118608
 TEST=manual: we scroll 106 pixels for each scrollwheel click on stumpy
 ---
- src/evdev.h |    4 ++++
- 1 files changed, 4 insertions(+), 0 deletions(-)
+ src/evdev.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/src/evdev.h b/src/evdev.h
+index fae7c72..33f0ea5 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -67,6 +67,10 @@
@@ -28,5 +29,5 @@ diff --git a/src/evdev.h b/src/evdev.h
  #define EVDEV_MAXQUEUE 32
  
 -- 
-1.7.7.3
+1.8.4.1
 

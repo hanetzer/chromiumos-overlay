@@ -12,11 +12,12 @@ a simple before and after time stamping approach to deal with the race
 condition between partially syncing state and any potentially stale events that
 arrive during synchronization.
 ---
- src/evdev.c |  371 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- src/evdev.h |   17 +++
- 2 files changed, 381 insertions(+), 7 deletions(-)
+ src/evdev.c | 379 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ src/evdev.h |  17 +++
+ 2 files changed, 387 insertions(+), 9 deletions(-)
 
 diff --git a/src/evdev.c b/src/evdev.c
+index 41043dc..6cc7f2e 100644
 --- a/src/evdev.c
 +++ b/src/evdev.c
 @@ -127,11 +127,27 @@ static void EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int cal
@@ -71,15 +72,37 @@ diff --git a/src/evdev.c b/src/evdev.c
      /* Handle drag lock */
      if (EvdevDragLockFilterEvent(pInfo, button, value))
          return;
-@@ -787,6 +813,7 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -758,7 +784,9 @@ num_slots(EvdevPtr pEvdev)
+ {
+     int value = pEvdev->absinfo[ABS_MT_SLOT].maximum -
+                 pEvdev->absinfo[ABS_MT_SLOT].minimum + 1;
+-
++    /* Disable MT reporting if the minimum of slot id is less than 0 */
++    if (pEvdev->absinfo[ABS_MT_SLOT].minimum < 0)
++        return 0;
+     /* If we don't know how many slots there are, assume at least 10 */
+     return value > 1 ? value : 10;
+ }
+@@ -767,7 +795,8 @@ static int
+ last_mt_vals_slot(EvdevPtr pEvdev)
+ {
+     int value = pEvdev->cur_slot - pEvdev->absinfo[ABS_MT_SLOT].minimum;
+-
++    if (pEvdev->absinfo[ABS_MT_SLOT].minimum < 0)
++        return -1;
+     return value < num_slots(pEvdev) ? value : -1;
+ }
+ 
+@@ -787,6 +816,8 @@ EvdevProcessTouchEvent(InputInfoPtr pInfo, struct input_event *ev)
          if (pEvdev->slot_state == SLOTSTATE_EMPTY)
              pEvdev->slot_state = SLOTSTATE_UPDATE;
          if (ev->code == ABS_MT_TRACKING_ID) {
-+            pEvdev->cached_tid[slot_index] = ev->value;
++            if (slot_index >= 0)
++                pEvdev->cached_tid[slot_index] = ev->value;
              if (ev->value >= 0) {
                  pEvdev->slot_state = SLOTSTATE_OPEN;
  
-@@ -1000,7 +1027,7 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+@@ -1000,7 +1031,7 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
   * Take the synchronization input event and process it accordingly; the motion
   * notify events are sent first, then any button/key press/release events.
   */
@@ -88,7 +111,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
  {
      int i;
-@@ -1008,6 +1035,11 @@ EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1008,6 +1039,11 @@ EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
      int v[MAX_VALUATORS] = {};
      EvdevPtr pEvdev = pInfo->private;
  
@@ -100,7 +123,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      EvdevProcessProximityState(pInfo);
  
      EvdevProcessValuators(pInfo);
-@@ -1035,16 +1067,20 @@ EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1035,16 +1071,20 @@ EvdevProcessSyncEvent(InputInfoPtr pInfo, struct input_event *ev)
      pEvdev->abs_queued = 0;
      pEvdev->rel_queued = 0;
      pEvdev->prox_queued = 0;
@@ -124,7 +147,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      switch (ev->type) {
          case EV_REL:
              EvdevProcessRelativeMotionEvent(pInfo, ev);
-@@ -1056,9 +1092,10 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+@@ -1056,9 +1096,10 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
              EvdevProcessKeyEvent(pInfo, ev);
              break;
          case EV_SYN:
@@ -136,7 +159,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  }
  
  #undef ABS_X_VALUE
-@@ -1089,6 +1126,308 @@ EvdevFreeMasks(EvdevPtr pEvdev)
+@@ -1089,6 +1130,308 @@ EvdevFreeMasks(EvdevPtr pEvdev)
  #endif
  }
  
@@ -445,7 +468,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  /* just a magic number to reduce the number of reads */
  #define NUM_EVENTS 16
  
-@@ -1097,6 +1436,7 @@ EvdevReadInput(InputInfoPtr pInfo)
+@@ -1097,6 +1440,7 @@ EvdevReadInput(InputInfoPtr pInfo)
  {
      struct input_event ev[NUM_EVENTS];
      int i, len = sizeof(ev);
@@ -453,7 +476,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  
      while (len == sizeof(ev))
      {
-@@ -1131,9 +1471,23 @@ EvdevReadInput(InputInfoPtr pInfo)
+@@ -1131,9 +1475,23 @@ EvdevReadInput(InputInfoPtr pInfo)
              break;
          }
  
@@ -479,7 +502,7 @@ diff --git a/src/evdev.c b/src/evdev.c
  }
  
  static void
-@@ -1325,6 +1679,7 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
+@@ -1325,6 +1683,7 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device)
          }
  
          for (i = 0; i < num_slots(pEvdev); i++) {
@@ -487,7 +510,7 @@ diff --git a/src/evdev.c b/src/evdev.c
              pEvdev->last_mt_vals[i] = valuator_mask_new(num_mt_axes_total);
              if (!pEvdev->last_mt_vals[i]) {
                  xf86IDrvMsg(pInfo, X_ERROR,
-@@ -1850,6 +2205,8 @@ EvdevOn(DeviceIntPtr device)
+@@ -1850,6 +2209,8 @@ EvdevOn(DeviceIntPtr device)
      Evdev3BEmuOn(pInfo);
      pEvdev->flags |= EVDEV_INITIALIZED;
      device->public.on = TRUE;
@@ -497,6 +520,7 @@ diff --git a/src/evdev.c b/src/evdev.c
      return Success;
  }
 diff --git a/src/evdev.h b/src/evdev.h
+index 913561e..fae7c72 100644
 --- a/src/evdev.h
 +++ b/src/evdev.h
 @@ -97,6 +97,12 @@
@@ -533,5 +557,5 @@ diff --git a/src/evdev.h b/src/evdev.h
  void EvdevQueueKbdEvent(InputInfoPtr pInfo, struct input_event *ev, int value);
  void EvdevQueueButtonEvent(InputInfoPtr pInfo, int button, int value);
 -- 
-1.7.7.3
+1.8.4.1
 
