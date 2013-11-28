@@ -32,18 +32,21 @@ src_configure() {
 }
 
 src_compile() {
-	emake \
-		CXX="$(tc-getCXX)" \
-		CCFLAGS="${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+	tc-export AR CC CXX RANLIB AS
+	emake WARNERROR=no || die
 }
 
 src_install() {
 	exeinto /opt/google/memento_updater
+	# Install shell scripts.
 	doexe \
 		find_omaha.sh \
 		memento_updater.sh \
 		memento_updater_logging.sh \
 		ping_omaha.sh \
-		software_update.sh \
-		split_write
+		software_update.sh
+	# Install binary programs from src folder.
+	doexe \
+		src/split_write \
+		src/memento_updater
 }
