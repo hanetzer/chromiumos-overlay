@@ -67,6 +67,7 @@ ALL_BOARDS=(
 	lumpy
 	monroe
 	nyan
+	optimus
 	panda
 	panther
 	parrot
