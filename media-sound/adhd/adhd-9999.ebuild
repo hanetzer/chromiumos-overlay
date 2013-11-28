@@ -56,12 +56,34 @@ src_test() {
 src_install() {
 	local board=$(get_current_board_with_variant)
 	local board_no_variant=$(get_current_board_no_variant)
+	local board_all=( ${board} ${board_no_variant} )
 	emake BOARD=${board} DESTDIR="${D}" install
+
+	# install alsa config files
+	insinto /etc/modprobe.d
+	local b
+	for b in "${board_all[@]}" ; do
+		local alsa_conf=alsa-module-config/alsa-${b}.conf
+		if [[ -f ${alsa_conf} ]] ; then
+			doins ${alsa_conf}
+			break
+		fi
+	done
+
+	# install alsa patch files
+	insinto /lib/firmware
+	for b in "${board_all[@]}" ; do
+		local alsa_patch=alsa-module-config/${b}_alsa.fw
+		if [[ -f ${alsa_patch} ]] ; then
+			doins ${alsa_patch}
+			break
+		fi
+	done
 
 	# install ucm config files
 	insinto /usr/share/alsa/ucm
 	local board_dir
-	for board_dir in ${board} ${board_no_variant} ; do
+	for board_dir in "${board_all[@]}" ; do
 		if [[ -d ucm-config/${board_dir} ]] ; then
 			doins -r ucm-config/${board_dir}/*
 			break
