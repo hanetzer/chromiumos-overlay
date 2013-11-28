@@ -82,6 +82,7 @@ ALL_BOARDS=(
 	rambi
 	raspberrypi
 	#ricochet
+	rizer
 	samus
 	slippy
 	sonic
