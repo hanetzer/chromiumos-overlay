@@ -492,7 +492,7 @@ platform2_install_shill() {
 }
 
 platform2_install_system_api() {
-	local dir dirs=( dbus switches )
+	local dir dirs=( dbus switches constants )
 	for dir in "${dirs[@]}"; do
 		insinto /usr/include/chromeos/${dir}
 		doins -r ${dir}/*

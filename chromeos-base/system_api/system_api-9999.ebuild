@@ -27,5 +27,5 @@ src_prepare() {
 src_install() {
 	use platform2 && return 0
 	insinto /usr/include/chromeos
-	doins -r dbus switches
+	doins -r dbus switches constants
 }
