@@ -84,14 +84,15 @@ src_install() {
 	doins "${FILESDIR}/modemmanager.conf"
 
 	# ModemManager by default installs udev rules to /lib/udev/rules.d.
+	insinto /lib/udev/rules.d
+	# Install Chrome OS specific rules.
+	doins "${FILESDIR}/77-mm-huawei-configuration.rules"
+
 	# When built with USE=gobi, override 80-mm-candidate.rules provided by
 	# ModemManager with files/80-mm-candidate.rules to work around a race
 	# condition between cromo and ModemManager. See
 	# files/80-mm_candidate.rules for details.
 	#
 	# TODO(benchan): Revert it when cromo is deprecated (crbug.com/316744).
-	if use gobi; then
-		insinto /lib/udev/rules.d
-		doins "${FILESDIR}/80-mm-candidate.rules"
-	fi
+	use gobi && doins "${FILESDIR}/80-mm-candidate.rules"
 }
