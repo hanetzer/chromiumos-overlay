@@ -72,4 +72,11 @@ src_configure() {
 	cros-workon_src_configure
 }
 
+src_prepare() {
+	autotest-deponly_src_prepare
 
+	# To avoid a file collision with autotest.ebuild, remove
+	# one particular __init__.py file from working directory.
+	# See crbug.com/324963 for context.
+	rm "${AUTOTEST_WORKDIR}/client/profilers/__init__.py"
+}
