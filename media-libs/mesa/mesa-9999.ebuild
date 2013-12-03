@@ -132,13 +132,13 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
 	epatch "${FILESDIR}"/9.1-Fix-webgl-regression.patch
 	epatch "${FILESDIR}"/9.1-no-fail-hwctx.patch
-	epatch "${FILESDIR}"/9.1-Disable-fast-clears.patch
 	epatch "${FILESDIR}"/9.1-mesa-Workaround-corruption-on-i915g.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/9.1-i965-128bpp-xtiling.patch
 	epatch "${FILESDIR}"/9.1-max_array_access.patch
 	epatch "${FILESDIR}"/9.1-i965-Disable-HiZ-on-SNB.patch
 	epatch "${FILESDIR}"/9.1-i965-Disable-ctx-gen6.patch
+	epatch "${FILESDIR}"/9.1-i965-hsw-Apply-non-msrt-fast-color-clear-w-a-to-all-.patch
 
 	base_src_prepare
 
