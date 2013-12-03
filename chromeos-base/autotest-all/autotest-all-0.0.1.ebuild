@@ -44,8 +44,7 @@ src_install() {
 	doins "${SUITE_TO_CONTROL_MAP}"
 }
 
-# Pre-processes control files and installs DEPENDENCIES info,
-# and creates client-autotest.tar.bz2
+# Pre-processes control files and installs DEPENDENCIES info.
 pkg_postinst() {
 	local root_autotest_dir="${ROOT}${AUTOTEST_BASE}"
 	python -B "${root_autotest_dir}/site_utils/suite_preprocessor.py" \
@@ -54,7 +53,4 @@ pkg_postinst() {
 	python -B "${root_autotest_dir}/site_utils/control_file_preprocessor.py" \
 		-a "${root_autotest_dir}" \
 		-o "${root_autotest_dir}/test_suites/${SUITE_TO_CONTROL_MAP}"
-        flock "${root_autotest_dir}/packages" \
-		-c "python -B ${root_autotest_dir}/utils/packager.py \
-			-r ${root_autotest_dir}/packages --client upload"
 }
