@@ -21,7 +21,7 @@ DEPEND="!!chromeos-base/flimflam-test
 	dev-python/pygobject"
 
 RDEPEND="${DEPEND}
-	chromeos-base/shill
+	chromeos-base/platform2
 	net-dns/dnsmasq
 	sys-apps/iproute2"
 
