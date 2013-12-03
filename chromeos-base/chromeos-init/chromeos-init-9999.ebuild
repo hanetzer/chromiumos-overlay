@@ -31,10 +31,8 @@ RDEPEND="
 	sys-apps/upstart
 	sys-process/lsof
 	!cros_embedded? (
-		chromeos-base/chromeos-assets
 		chromeos-base/chromeos-disableecho
 		chromeos-base/vpd
-		media-gfx/ply-image
 		sys-apps/chvt
 		sys-apps/smartmontools
 	)

@@ -14,10 +14,10 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE="alex lumpy lumpy64 mario tegra2-ldk"
 
-DEPEND=""
-# display_boot_message calls ply-image directly.
-RDEPEND="chromeos-base/chromeos-fonts
-	media-gfx/ply-image"
+DEPEND="media-fonts/croscorefonts
+	media-fonts/droidfonts-cros
+	x11-apps/xcursorgen"
+RDEPEND=""
 
 REAL_CURSOR_NAMES="
 	fleur

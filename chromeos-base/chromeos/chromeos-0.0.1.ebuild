@@ -203,6 +203,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	dev-util/quipper
+	media-gfx/ply-image
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda

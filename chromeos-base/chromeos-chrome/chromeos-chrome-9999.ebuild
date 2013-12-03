@@ -115,7 +115,6 @@ RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	>=app-i18n/ibus-1.4.99
 	arm? ( virtual/opengles )
-	chromeos-base/chromeos-fonts
 	dev-libs/atk
 	dev-libs/glib
 	dev-libs/nspr
