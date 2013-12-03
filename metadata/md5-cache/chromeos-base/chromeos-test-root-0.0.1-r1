@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Install packages that must live in the rootfs in test images
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-test-init chromeos-base/chromeos-test-testauthkeys
+SLOT=0
+_md5_=67423554b0440009ee764002d16bc909
