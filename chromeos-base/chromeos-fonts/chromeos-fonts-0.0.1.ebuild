@@ -46,7 +46,6 @@ JA_FONTS="
 RDEPEND="
 	${JA_FONTS}
 	internal? ( chromeos-base/ascender_to_license )
-	!cros_host? ( chromeos-base/chromeos-assets )
 	media-fonts/croscorefonts
 	media-fonts/crosextrafonts
 	media-fonts/crosextrafonts-carlito
