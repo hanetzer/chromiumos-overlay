@@ -16,8 +16,9 @@ KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~spar
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-DEPEND=""
-RDEPEND="app-arch/gzip
+DEPEND="dev-cpp/gtest"
+RDEPEND="${DEPEND}
+	app-arch/gzip
 	app-shells/bash
 	dev-libs/openssl
 	dev-util/shflags
