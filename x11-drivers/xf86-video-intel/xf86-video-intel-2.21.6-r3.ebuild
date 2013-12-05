@@ -48,6 +48,8 @@ PATCHES=(
 	# Disable triple buffering since we need double buffering
 	# to implement partial updates on top of flips
 	"${FILESDIR}/2.16.0-no-triple.patch"
+	# keep EDID for lifetime of an output
+	"${FILESDIR}/2.21.6-keep-edid.patch"
 )
 
 src_prepare() {
