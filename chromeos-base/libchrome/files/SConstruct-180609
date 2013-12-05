@@ -102,6 +102,7 @@ base_libs = [
                 values.cc
                 vlog.cc
                 """,
+    'prefix' : 'base',
     'libs' : 'pthread rt',
     'pc_libs' : 'glib-2.0',
   },
@@ -114,6 +115,7 @@ base_libs = [
                 rand_util.cc
                 rand_util_posix.cc
                 """,
+    'prefix' : 'base',
     'libs' : '',
     'pc_libs' : 'glib-2.0',
   },
@@ -135,6 +137,7 @@ base_libs = [
                 timer.cc
                 tracking_info.cc
                 """,
+    'prefix' : 'base',
     'libs' : 'event base-glib-${bslot}',
     'pc_libs' : 'glib-2.0',
   },
@@ -143,8 +146,27 @@ base_libs = [
     'sources' : """
                 native_library_posix.cc
                 """,
+    'prefix' : 'base',
     'libs' : 'dl',
     'pc_libs' : '',
+  },
+  {
+    'name' : 'dbus',
+    'sources' : """
+                bus.cc
+                dbus_statistics.cc
+                exported_object.cc
+                file_descriptor.cc
+                message.cc
+                object_path.cc
+                object_proxy.cc
+                property.cc
+                string_util.cc
+                values_util.cc
+                """,
+    'prefix' : 'dbus',
+    'libs' : 'base-event-${bslot}',
+    'pc_libs' : 'dbus-1 protobuf',
   },
 ]
 
@@ -152,6 +174,7 @@ env = Environment()
 
 BASE_VER = os.environ.get('BASE_VER', '0')
 PKG_CONFIG = os.environ.get('PKG_CONFIG', 'pkg-config')
+CHROME_INCLUDE_PATH = os.environ.get('CHROME_INCLUDE_PATH', '.')
 
 env.Append(
   CPPPATH=['files'],
@@ -170,7 +193,7 @@ env['CCFLAGS'] += ['-fPIC',
                    '-DOS_CHROMEOS=1',
                    '-DTOOLKIT_VIEWS=1',
                    '-DUSE_AURA=1',
-                   '-I..']
+                   '-I%s' % CHROME_INCLUDE_PATH]
 
 # Flags for clang taken from build/common.gypi in the clang==1 section.
 CLANG_FLAGS = (
@@ -216,7 +239,11 @@ for lib in base_libs:
   )
   if pc_libs:
     e.ParseConfig(PKG_CONFIG + ' --cflags --libs %s' % pc_libs)
-  all_scons_libs += [ e.SharedLibrary(name, Split(lib['sources'])) ]
+
+  # Prepend prefix to source filenames.
+  sources = [os.path.join(lib['prefix'], x) for x in Split(lib['sources'])]
+
+  all_scons_libs += [ e.SharedLibrary(name, sources) ]
 
 
 # Build the random text files (pkg-config and linker script).

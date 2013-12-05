@@ -3,8 +3,8 @@ define with OS_CHROMEOS, so we have to check the compiler define.
 
 https://codereview.chromium.org/12180007/
 
---- a/atomicops.h
-+++ b/atomicops.h
+--- a/base/atomicops.h
++++ b/base/atomicops.h
 @@ -39,7 +39,7 @@
  #ifdef ARCH_CPU_64_BITS
  // We need to be able to go between Atomic64 and AtomicWord implicitly.  This
@@ -19,8 +19,8 @@ this is in upstream nspr already
 
 https://codereview.chromium.org/12186005/
 
---- a/third_party/nspr/prcpucfg_linux.h
-+++ b/third_party/nspr/prcpucfg_linux.h
+--- a/base/third_party/nspr/prcpucfg_linux.h
++++ b/base/third_party/nspr/prcpucfg_linux.h
 @@ -233,6 +233,53 @@
  
  #elif defined(__x86_64__)
