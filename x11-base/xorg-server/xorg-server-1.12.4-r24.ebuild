@@ -175,6 +175,8 @@ PATCHES=(
 	# Sandy Bridge and later, but it's actually faster on other Intel
 	# chipsets as well.
 	"${FILESDIR}/1.12.0-emulate-partial-flips.patch"
+	# CVE-2013-4396
+	"${FILESDIR}/1.12.4-Avoid-use-after-free-in-dix-dixfonts.patch"
 )
 
 src_prepare() {
