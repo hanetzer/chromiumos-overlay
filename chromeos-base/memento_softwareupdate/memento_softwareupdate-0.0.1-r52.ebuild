@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="6a45ebf88ca1bb4f728be87f9835355c67518a56"
-CROS_WORKON_TREE="54666e3a4581db450ed9efa66700ebd5ba5c7346"
+CROS_WORKON_COMMIT="bda2f40b0069752bd2be54ed037e5520ee7f2e9d"
+CROS_WORKON_TREE="29e29acb1036e6c7d990b15489b25bf2d43b0277"
 CROS_WORKON_PROJECT="chromiumos/platform/memento_softwareupdate"
 
 inherit cros-workon toolchain-funcs
