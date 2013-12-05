@@ -18,7 +18,7 @@ KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-DEPEND=""
+DEPEND="dev-cpp/gtest"
 RDEPEND="app-arch/gzip
 	app-shells/bash
 	dev-libs/openssl

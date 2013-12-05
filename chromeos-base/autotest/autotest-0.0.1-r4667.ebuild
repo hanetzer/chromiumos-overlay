@@ -18,6 +18,7 @@ KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 RDEPEND="
 	!<chromeos-base/autotest-chrome-0.0.1-r1788
 	!<chromeos-base/autotest-tests-0.0.1-r3291
+	!<chromeos-base/autotest-deps-0.0.2
 "
 
 # We don't want Python on the base image, however, there're several base
@@ -62,6 +63,7 @@ src_prepare() {
 		mkdir "${AUTOTEST_WORK}/${dir}"
 		touch "${AUTOTEST_WORK}/${dir}"/.keep
 	done
+	touch "${AUTOTEST_WORK}/client/profilers/__init__.py"
 
 	sed "/^enable_server_prebuild/d" "${S}/global_config.ini" > \
 		"${AUTOTEST_WORK}/global_config.ini"
