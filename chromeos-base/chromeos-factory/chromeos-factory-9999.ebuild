@@ -19,9 +19,9 @@ SRC_URI="${CLOSURE_LIB_URI}
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="+autotest +build_tests"
+IUSE="+autotest +build_tests -content_shell -chromeless_tty"
 
-DEPEND="chromeos-base/chromeos-chrome
+DEPEND="virtual/chromeos-interface
 	dev-python/pyyaml
 	dev-python/unittest2
 	chromeos-base/chromeos-factory-board"
@@ -85,7 +85,7 @@ src_install() {
 	cp --remove-destination "${S}/py/gooftool/fmap.py" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/" || die
 
-	if use autotest && use build_tests; then
+	if use autotest && use build_tests && ! use content_shell && ! use chromeless_tty; then
 		# We need to preserve the chromedriver and selenium library
 		# (from chromeos-chrome pyauto test folder which is stripped by default)
 		# for factory test images.
