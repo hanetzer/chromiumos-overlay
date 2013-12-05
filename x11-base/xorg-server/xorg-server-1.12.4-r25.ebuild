@@ -177,6 +177,7 @@ PATCHES=(
 	"${FILESDIR}/1.12.0-emulate-partial-flips.patch"
 	# CVE-2013-4396
 	"${FILESDIR}/1.12.4-Avoid-use-after-free-in-dix-dixfonts.patch"
+	"${FILESDIR}/0001-xfree86-Use-the-TMDS-maximum-frequency-to-prune-mode.patch"
 )
 
 src_prepare() {
