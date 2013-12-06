@@ -48,6 +48,7 @@ app-emulation/qemu-kvm	static qemu_user_targets_arm qemu_user_targets_i386 qemu_
 dev-libs/libaio		static-libs
 cross-armv7a-cros-linux-gnueabi/gcc   hardfp
 cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
+sys-devel/gcc go
 # pciutils is required by flashrom / mosys which is required to be statically
 # compiled to reduce dependency during auto update.
 sys-apps/pciutils	static-libs
