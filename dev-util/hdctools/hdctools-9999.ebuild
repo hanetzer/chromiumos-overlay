@@ -14,7 +14,7 @@ HOMEPAGE=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE=""
+IUSE="cros_host"
 
 RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-libs/libusb
@@ -31,11 +31,17 @@ src_configure() {
 
 src_compile() {
 	tc-export CC PKG_CONFIG
-	emake || die
+	local makeargs=( $(usex cros_host '' EXTRA_DIRS=chromeos) )
+	emake "${makeargs[@]}" || die
 	distutils_src_compile
 }
 
 src_install() {
-	emake DESTDIR="${D}" LIBDIR=/usr/$(get_libdir) install || die
+	local makeargs=(
+		$(usex cros_host '' EXTRA_DIRS=chromeos)
+		DESTDIR="${D}" LIBDIR=/usr/$(get_libdir)
+		install
+	)
+	emake "${makeargs[@]}" || die
 	distutils_src_install
 }
