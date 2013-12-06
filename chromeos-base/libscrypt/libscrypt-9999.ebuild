@@ -1,7 +1,7 @@
 # Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/libscrypt"
 
 inherit cros-workon autotools
@@ -13,7 +13,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="static-libs"
+IUSE="-asan -clang static-libs"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="dev-libs/openssl"
 DEPEND="${RDEPEND}"
@@ -27,14 +28,15 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure \
 		$(use_enable static-libs static)
 }
 
 src_install() {
-	emake install DESTDIR="${D}" || die
+	emake install DESTDIR="${D}"
 
 	insinto /usr/include/scrypt
-	doins src/lib/scryptenc/scryptenc.h || die
-	doins src/lib/crypto/crypto_scrypt.h || die
+	doins src/lib/scryptenc/scryptenc.h
+	doins src/lib/crypto/crypto_scrypt.h
 }
