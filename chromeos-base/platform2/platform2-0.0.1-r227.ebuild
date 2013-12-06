@@ -3,14 +3,15 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("16e98730240ebd3e79ee55902fadb8583147f95f" "44c9bc2b52beaeb6a30342c75fa1ea1392a33314" "9900adce2c17b436b3f3bcbfef0453bd72619036" "30735adae5508d7a7f7c860dc1cb9976e5b3fd18" "a291900dbd2ac500c69fac08c17ffe55ab2b2349" "242ab24db5d3ebb95f965afe7bdafaf8e5a77d26" "434a3bc512ed19fb5f5fa7198317fc9caaf12a8e" "c013ae9044f5c4ee6a0f3e63ace80c8a8526e533" "eb63b86894961c6fa72e6c35e7b5953e0826ccb5" "cfa23a554dcb262bfac10f9f5ac624d26c8c4e38" "cec39e1291db95ac5cd8132a6d391a04d87877d5" "d6228dfa7d39fae9b1abac8dc910bbcbff4a98a8")
-CROS_WORKON_TREE=("02e94343a6e4d95070af8dcd718e92a8b30d4d80" "5771158ef386ddb67d8115d4989f8620dec0cac0" "84f1ce11b42f20f62763c02a577e595ec589ae2e" "7df426b6e6a76dc53077a33ee5e310df5af2aa25" "d59953b45e1cdf8332cadcfcbc0c50a9552eca36" "b628d88a03d118c44187980f5ee7e2f0e932ae86" "244d7c5a06effd94591db17a9cb9998cdc483725" "46e3705a01431c3d116948546bff15585021891d" "2e2ccf23abc2de2d51f3d159a25878078e8bd102" "902ffa12eb834f4c5da5c0b5fe9faf77bfeece5f" "9b80d284fbaffb7db1fa957c5197a88acae4384d" "a04abd4e180b80b51588b7d128201531f50cdc4b")
+CROS_WORKON_COMMIT=("16e98730240ebd3e79ee55902fadb8583147f95f" "44c9bc2b52beaeb6a30342c75fa1ea1392a33314" "cce507baf56246f4317b36b74f6304a7677ad675" "9900adce2c17b436b3f3bcbfef0453bd72619036" "30735adae5508d7a7f7c860dc1cb9976e5b3fd18" "a291900dbd2ac500c69fac08c17ffe55ab2b2349" "242ab24db5d3ebb95f965afe7bdafaf8e5a77d26" "434a3bc512ed19fb5f5fa7198317fc9caaf12a8e" "c013ae9044f5c4ee6a0f3e63ace80c8a8526e533" "eb63b86894961c6fa72e6c35e7b5953e0826ccb5" "cfa23a554dcb262bfac10f9f5ac624d26c8c4e38" "cec39e1291db95ac5cd8132a6d391a04d87877d5" "d6228dfa7d39fae9b1abac8dc910bbcbff4a98a8")
+CROS_WORKON_TREE=("02e94343a6e4d95070af8dcd718e92a8b30d4d80" "5771158ef386ddb67d8115d4989f8620dec0cac0" "ba0cc70e09273f1cd60d4b2572f6db5a25f7ff7a" "84f1ce11b42f20f62763c02a577e595ec589ae2e" "7df426b6e6a76dc53077a33ee5e310df5af2aa25" "d59953b45e1cdf8332cadcfcbc0c50a9552eca36" "b628d88a03d118c44187980f5ee7e2f0e932ae86" "244d7c5a06effd94591db17a9cb9998cdc483725" "46e3705a01431c3d116948546bff15585021891d" "2e2ccf23abc2de2d51f3d159a25878078e8bd102" "902ffa12eb834f4c5da5c0b5fe9faf77bfeece5f" "9b80d284fbaffb7db1fa957c5197a88acae4384d" "a04abd4e180b80b51588b7d128201531f50cdc4b")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
 
 CROS_WORKON_LOCALNAME=(
 	"common-mk"
 	"chaps"
+	"chromiumos-wide-profiling"
 	"cromo"
 	"cros-disks"
 	"debugd"
@@ -34,7 +35,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
-IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics platform2 tcmalloc test +tpm +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics +profile platform2 tcmalloc test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
@@ -120,6 +121,12 @@ RDEPEND_mist="
 	)
 "
 
+RDEPEND_quipper="
+	profile? (
+		virtual/perf
+	)
+"
+
 RDEPEND_shill="
 	shill? (
 		chromeos-base/bootstat
@@ -183,6 +190,7 @@ RDEPEND="
 		!chromeos-base/system_api[-platform2]
 		!chromeos-base/vpn-manager[-platform2]
 		!chromeos-base/wimax_manager[-platform2]
+		!dev-util/quipper
 	)
 "
 
@@ -319,6 +327,12 @@ platform2_install_chaps() {
 
 	insinto /usr/include/chaps/pkcs11
 	doins pkcs11/*.h
+}
+
+platform2_install_chromiumos-wide-profiling() {
+	use cros_host && return 0
+	use profile || return 0
+	dobin "${OUT}"/quipper
 }
 
 platform2_install_common-mk() {
@@ -573,6 +587,26 @@ platform2_test_chaps() {
 	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform2_test "run" "${OUT}/${test_bin}" "" "${gtest_filter_qemu}"
+	done
+}
+
+platform2_test_chromiumos-wide-profiling() {
+	use cros_host && return 0
+	use profile || return 0
+
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86 platform: chromiumos-wide-profiling" && return 0
+
+	local tests=(
+		address_mapper_test
+		perf_parser_test
+		perf_reader_test
+		perf_recorder_test
+		perf_serializer_test
+		utils_test
+	)
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform2_test "run" "${OUT}/${test_bin}"
 	done
 }
 
