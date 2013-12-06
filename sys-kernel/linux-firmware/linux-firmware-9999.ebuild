@@ -34,12 +34,14 @@ IUSE_IWLWIFI=(
 	iwlwifi-7260
 )
 IUSE_LINUX_FIRMWARE=(
+	fw_sst
 	ibt-hw
 	"${IUSE_IWLWIFI[@]}"
 	marvell-pcie8897
 )
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_}"
-LICENSE="linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
+LICENSE="linux_firmware_fw_sst? ( LICENCE.fw_sst )
+	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
 "
@@ -80,6 +82,7 @@ doins_subdir() {
 src_install() {
 	local x
 	insinto "${FIRMWARE_INSTALL_ROOT}"
+	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 
