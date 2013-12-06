@@ -54,6 +54,7 @@ RDEPEND="
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
 	sys-fs/udev
+	sys-libs/gcc-libs
 	sys-process/lsof
 	sys-process/procps
 	virtual/chromeos-bsp

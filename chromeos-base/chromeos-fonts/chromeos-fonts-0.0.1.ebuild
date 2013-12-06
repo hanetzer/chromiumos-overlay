@@ -43,6 +43,9 @@ JA_FONTS="
 # these in parallel and the chroot logic for font generation fails.  We can
 # drop this when we stop executing the helper in the $ROOT via `chroot` and/or
 # `qemu` (e.g. when we do `ROOT=/build/amd64-host/ emerge chromeos-fonts`).
+#
+# The gcc-libs requirement is a similar situation.  Ultimately this comes down
+# to fixing http://crbug.com/205424.
 RDEPEND="
 	${JA_FONTS}
 	internal? ( chromeos-base/ascender_to_license )
@@ -59,6 +62,7 @@ RDEPEND="
 	media-fonts/sil-abyssinica
 	media-fonts/tibt-jomolhari
 	media-libs/fontconfig
+	!cros_host? ( sys-libs/gcc-libs )
 	cros_host? ( sys-libs/glibc )
 	"
 
