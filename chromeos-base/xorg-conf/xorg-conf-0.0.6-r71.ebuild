@@ -5,8 +5,8 @@
 # board-specific xorg.conf as necessary.
 
 EAPI=4
-CROS_WORKON_COMMIT="20fe6a26d868e797803c709b1ac25d76ddae39e6"
-CROS_WORKON_TREE="9e7e521cd5d1dce3450412af3c310b772e2e06c5"
+CROS_WORKON_COMMIT="d8babda47fddfaf5fbaeaab652b64d613a099da5"
+CROS_WORKON_TREE="10d7e800af5255debbfa2ff9f1537c97c1d37da5"
 CROS_WORKON_PROJECT="chromiumos/platform/xorg-conf"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
