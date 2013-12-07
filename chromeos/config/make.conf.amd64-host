@@ -62,4 +62,8 @@ PKG_INSTALL_MASK="${INSTALL_MASK}"
 # be utilized nowhere else!
 CROS_SDK_HOST="cros-sdk-host"
 
+# Qemu targets we care about.
+QEMU_SOFTMMU_TARGETS="arm i386 x86_64"
+QEMU_USER_TARGETS="arm i386 x86_64"
+
 source make.conf.host_setup
