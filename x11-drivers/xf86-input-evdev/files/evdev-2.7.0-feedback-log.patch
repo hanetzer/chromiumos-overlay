@@ -1,3 +1,4 @@
+From b443a1863fb3349d8d1e599fdd5b5b4cefcb69f1 Mon Sep 17 00:00:00 2001
 From: Michael Spang <spang@google.com>
 Date: Mon, 13 Aug 2012 11:35:32 -0400
 Subject: [PATCH] Add events debug log support
@@ -27,7 +28,7 @@ index 804ef73..0108bc9 100644
  
 diff --git a/src/debug.c b/src/debug.c
 new file mode 100644
-index 0000000..f79934d
+index 0000000..493dec8
 --- /dev/null
 +++ b/src/debug.c
 @@ -0,0 +1,143 @@
@@ -54,7 +55,7 @@ index 0000000..f79934d
 +
 +#define XI_PROP_DUMP_DEBUG_LOG "Dump Debug Log"
 +
-+#define INPUT_EVENTS_LOG_FILE "/var/log/evdev_input_events.dat"
++#define INPUT_EVENTS_LOG_FILE "/var/log/xorg/evdev_input_events.dat"
 +
 +static Atom dump_debug_log_prop;
 +
@@ -271,5 +272,5 @@ index 5d6045d..6f87326 100644
 +
  #endif
 -- 
-1.8.4.1
+1.8.1.5
 
