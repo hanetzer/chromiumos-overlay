@@ -96,9 +96,6 @@ src_install() {
 
 	use delta_generator && dobin delta_generator
 
-	insinto /usr/share/dbus-1/services
-	doins org.chromium.UpdateEngine.service
-
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
 
