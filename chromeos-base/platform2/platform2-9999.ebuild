@@ -304,10 +304,6 @@ platform2_install_chaps() {
 		"org.chromium.Chaps.conf.in" \
 		> "${D}/etc/dbus-1/system.d/org.chromium.Chaps.conf"
 
-	# Install D-Bus service file.
-	insinto /usr/share/dbus-1/services
-	doins org.chromium.Chaps.service
-
 	# Install upstart config file.
 	insinto /etc/init
 	doins chapsd.conf
