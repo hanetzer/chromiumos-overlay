@@ -88,9 +88,6 @@ src_install() {
 	doins login.conf logout.conf machine-info.conf ui.conf
 	doins ui-respawn.conf
 
-	insinto /usr/share/dbus-1/services
-	doins org.chromium.SessionManager.service
-
 	insinto /usr/share/misc
 	doins recovery_ui.html
 
