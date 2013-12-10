@@ -21,7 +21,5 @@ src_install() {
 	doins "scripts/chromeos-touch-update.conf"
 
 	exeinto "/opt/google/touch/scripts"
-	doexe "scripts/chromeos-touch-config-update.sh"
-	doexe "scripts/chromeos-touch-firmware-update.sh"
-	doexe "scripts/chromeos-touch-common.sh"
+	doexe scripts/*.sh
 }
