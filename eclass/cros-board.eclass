@@ -46,6 +46,7 @@ ALL_BOARDS=(
 	butterfly
 	cardhu
 	#chronos
+	clapper
 	daisy
 	daisy-drm
 	daisy_spring
