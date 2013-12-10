@@ -83,6 +83,7 @@ ALL_BOARDS=(
 	parrot64
 	peach
 	peach_kirby
+	peach_pi
 	peach_pit
 	peppy
 	ppcbe-32-generic
