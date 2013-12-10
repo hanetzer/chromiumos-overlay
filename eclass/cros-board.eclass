@@ -102,6 +102,7 @@ ALL_BOARDS=(
 	stout
 	stout32
 	stumpy
+	stumpy_moblab
 	stumpy_pico
 	#tegra2
 	#tegra2_aebl
