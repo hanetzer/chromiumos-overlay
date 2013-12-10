@@ -25,10 +25,6 @@ src_prepare() {
 }
 
 src_configure() {
-	#TODO(raymes): Uprev breakpad so this isn't necessary. See
-	# (crosbug.com/14275).
-	[[ "${ARCH}" = "arm" ]] && append-flags "-marm"
-
 	append-flags -g
 
 	tc-export CC CXX LD PKG_CONFIG
