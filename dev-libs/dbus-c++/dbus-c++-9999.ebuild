@@ -13,7 +13,8 @@ SRC_URI=""
 LICENSE="LGPL-2"
 SLOT="1"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="debug doc +glib"
+IUSE="-asan -clang debug doc +glib"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	glib? ( >=dev-libs/dbus-glib-0.76 )
@@ -30,6 +31,7 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure \
 		$(use_enable debug) \
 		$(use_enable doc doxygen-docs) \
