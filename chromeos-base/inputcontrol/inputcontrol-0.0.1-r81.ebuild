@@ -1,0 +1,28 @@
+# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI="4"
+
+CROS_WORKON_COMMIT="346ecb1d4968dddf954eb9cacc76ae98c06d6087"
+CROS_WORKON_TREE="2cc4431a7e3272b9e85ebe9d8f790a3f1b982bd7"
+CROS_WORKON_PROJECT="chromiumos/platform/inputcontrol"
+
+inherit cros-workon
+
+DESCRIPTION="A collection of utilities for configuring input devices"
+HOMEPAGE="http://www.chromium.org/"
+
+LICENSE="BSD"
+SLOT="0"
+KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+IUSE="+X"
+
+RDEPEND="app-arch/gzip
+	 x11-apps/xinput"
+DEPEND="${RDEPEND}"
+
+src_prepare() {
+	if ! use X; then
+		epatch "${FILESDIR}"/0001-chgrp-dev-input-devices-to-chronos-for-DRM.patch
+	fi
+}
