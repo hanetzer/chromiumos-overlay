@@ -61,7 +61,7 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj git_gcc graphite gtk hardened hardfp mounted_gcc multilib multislot
+IUSE="gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot
       nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
@@ -312,7 +312,7 @@ src_configure()
 		--infodir=${DATAPATH}/info \
 		--includedir=$(get_lib_dir)/include \
 		--with-gxx-include-dir=$(get_stdcxx_incdir) \
-		--disable-libatomic \
+		$(use_enable go libatomic) \
 		--with-python-dir=${DATAPATH#${PREFIX}}/python"
 	confgcc="${confgcc} --host=${CHOST}"
 	confgcc="${confgcc} --target=${CTARGET}"
@@ -325,6 +325,7 @@ src_configure()
 	else
 		GCC_LANG="c,c++"
 	fi
+	use go && GCC_LANG+=",go"
 	confgcc="${confgcc} --enable-languages=${GCC_LANG}"
 
 	if use hardfp && [[ ${CTARGET} == arm* ]] ;
