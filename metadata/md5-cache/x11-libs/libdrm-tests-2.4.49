@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
+DEPEND=dev-libs/libpthread-stubs sys-fs/udev video_cards_intel? ( >=x11-libs/libpciaccess-0.10 ) ~x11-libs/libdrm-2.4.49 x86-interix? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 ) ppc-aix? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 ) x86-winnt? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 ) >=dev-util/pkgconfig-0.23
+DESCRIPTION=X.Org libdrm library
+EAPI=4
+HOMEPAGE=http://dri.freedesktop.org/
+IUSE=video_cards_exynos video_cards_intel video_cards_nouveau video_cards_omap video_cards_radeon video_cards_vmware libkms static-libs
+KEYWORDS=~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~amd64-fbsd ~x86-fbsd ~x64-freebsd ~x86-freebsd ~amd64-linux ~x86-linux ~sparc-solaris ~x64-solaris ~x86-solaris
+LICENSE=MIT
+RDEPEND=dev-libs/libpthread-stubs sys-fs/udev video_cards_intel? ( >=x11-libs/libpciaccess-0.10 ) ~x11-libs/libdrm-2.4.49
+RESTRICT=test
+SLOT=0
+SRC_URI=http://dri.freedesktop.org/libdrm-tests/libdrm-2.4.49.tar.bz2
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	b65ac5ba56a20f3d7a01c67b7b3c9b01	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	libtool	0fd90d183673bf1107465ec45849d1ea	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29	xorg-2	b83efc910bb3ac2c64f89e2623f181f5
+_md5_=a39302dc6251f406fdf336d67ef7a85e
