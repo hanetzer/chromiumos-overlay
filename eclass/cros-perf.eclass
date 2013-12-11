@@ -12,13 +12,15 @@ HOMEPAGE="http://perf.wiki.kernel.org/"
 LICENSE="GPL-2"
 
 SLOT="0"
-IUSE="-asan -clang +demangle +doc perl python ncurses"
+IUSE="-asan audit -clang +demangle +doc perl python ncurses unwind"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND="demangle? ( sys-devel/binutils )
+RDEPEND="audit? ( sys-process/audit )
+	demangle? ( sys-devel/binutils )
 	dev-libs/elfutils
 	ncurses? ( dev-libs/newt )
-	perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) )"
+	perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) )
+	unwind? ( sys-libs/libunwind )"
 DEPEND="${RDEPEND}
 	doc? ( app-text/asciidoc app-text/xmlto )"
 
@@ -31,22 +33,26 @@ src_configure() {
 	cros-workon_src_configure
 }
 
+puse() { usex $1 "" no; }
 src_compile() {
+	# Perf Makefile uses old naming for x86: i386 and x86_64
+	local arch=$(KV=2.6.23 tc-arch-kernel)
 	local makeargs=(
 		O="$(cros-workon_get_build_dir)"
-		ARCH="${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}"
+		ARCH="${arch}"
 		CC="$(tc-getCC)"
 		AR="$(tc-getAR)"
 		prefix="/usr"
 		bindir_relative="sbin"
 		CFLAGS="${CFLAGS} ${CPPFLAGS}"
 		LDFLAGS="${LDFLAGS}"
+		NO_DEMANGLE=$(puse demangle)
+		NO_LIBAUDIT=$(puse audit)
+		NO_LIBPERL=$(puse perl)
+		NO_LIBPYTHON=$(puse python)
+		NO_LIBUNWIND=$(puse unwind)
+		NO_NEWT=$(puse ncurses)
 	)
-
-	use demangle || makeargs+=( NO_DEMANGLE=1 )
-	use perl || makeargs+=( NO_LIBPERL=1 )
-	use python || makeargs+=( NO_LIBPYTHON=1 )
-	use ncurses || makeargs+=( NO_NEWT=1 )
 
 	emake -C tools/perf "${makeargs[@]}"
 	use doc && emake -C tools/perf/Documentation "${makeargs[@]}"
