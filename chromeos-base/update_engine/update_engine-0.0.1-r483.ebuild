@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="69bc273dceb74407b5b051676c67da8640d27e20"
-CROS_WORKON_TREE="df779480cf3c30556ad3986d47502b9ec495b899"
+CROS_WORKON_COMMIT="da8f6f117e514f9af59e8ce1fb9b27694216f569"
+CROS_WORKON_TREE="4b87175a1dad68dac526e31e58f053a6a4dd09f3"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
 
 inherit toolchain-funcs cros-debug cros-workon scons-utils
@@ -97,9 +97,6 @@ src_install() {
 	dobin update_engine_client
 
 	use delta_generator && dobin delta_generator
-
-	insinto /usr/share/dbus-1/services
-	doins org.chromium.UpdateEngine.service
 
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf

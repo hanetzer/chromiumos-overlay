@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="86168eb34d65514d3caeeaf6f90bc36173cee863"
-CROS_WORKON_TREE="fdf17867789c432ab1cec50012b1f23e13b94a1f"
+CROS_WORKON_COMMIT="17e69b806c56969672c1392e3d9241d71dd8a4a9"
+CROS_WORKON_TREE="1fabefeb6a343f4eb64b363e91c7ccae53084449"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
@@ -89,9 +89,6 @@ src_install() {
 	insinto /etc/init
 	doins login.conf logout.conf machine-info.conf ui.conf
 	doins ui-respawn.conf
-
-	insinto /usr/share/dbus-1/services
-	doins org.chromium.SessionManager.service
 
 	insinto /usr/share/misc
 	doins recovery_ui.html
