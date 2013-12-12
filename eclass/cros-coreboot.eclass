@@ -118,6 +118,11 @@ EOF
 		-n "fallback/coreboot_ram" \
 		-f "${build_root}/coreboot_ram.stage" || die
 
+	# Extract the reference code stage into the build_root if present.
+	cbfstool "${build_root}/coreboot.rom" extract \
+		-n "fallback/refcode" \
+		-f "${build_root}/refcode.stage" || true
+
 	# Build cbmem for the target
 	cd util/cbmem
 	emake clean
@@ -130,6 +135,9 @@ cros-coreboot_src_install() {
 	insinto /firmware
 	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
 	newins "${COREBOOT_BUILD_ROOT}/coreboot_ram.stage" coreboot_ram.stage
+	if [[ -f "${COREBOOT_BUILD_ROOT}/refcode.stage" ]]; then
+		newins "${COREBOOT_BUILD_ROOT}/refcode.stage" refcode.stage
+	fi
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
 		configs/config.${COREBOOT_BOARD} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
