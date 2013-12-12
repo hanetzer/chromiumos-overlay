@@ -137,10 +137,6 @@ src_install() {
 	insinto /usr/share/chromeos-assets/connectivity_diagnostics
 	doins -r "${S}"/connectivity_diagnostics_deploy/*
 
-	unzip "${S}"/accessibility/extensions/access_chromevox.zip
-	insinto /usr/share/chromeos-assets/accessibility/extensions/access_chromevox
-	doins -r "${S}"/chromevox_deploy/*
-
 	insinto /usr/share/chromeos-assets/crosh_builtin/
 	unzip -d crosh_builtin_deploy/ "${S}"/chromeapps/crosh_builtin/crosh_builtin.zip
 
