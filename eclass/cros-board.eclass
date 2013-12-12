@@ -61,6 +61,7 @@ ALL_BOARDS=(
 	fox_baskingridge
 	fox_wtm1
 	fox_wtm2
+	glimmer
 	ironhide
 	#kiev
 	klang
