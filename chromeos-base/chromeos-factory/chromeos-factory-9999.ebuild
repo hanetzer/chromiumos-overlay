@@ -34,6 +34,7 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/pyyaml
 	dev-python/setproctitle
 	dev-python/unittest2
+	dev-python/ws4py
 	dev-util/stressapptest
 	chromeos-base/chromeos-factory-board
 	chromeos-base/memento_softwareupdate
