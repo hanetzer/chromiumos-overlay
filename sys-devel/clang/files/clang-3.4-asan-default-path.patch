@@ -8,7 +8,7 @@ This change set the ASAN message goes to /va/log/asan${pid} by default.
    cf->strip_path_prefix = "";
    cf->handle_ioctl = false;
 -  cf->log_path = 0;
-+  cf->log_path = "/var/log/asan";
++  cf->log_path = "/var/log/asan_log";
    cf->detect_leaks = false;
    cf->leak_check_at_exit = true;
  
