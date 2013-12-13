@@ -34,6 +34,7 @@ PORTDIR="/usr/local/portage/stable"
 
 PORTDIR_OVERLAY="
   /usr/local/portage/chromiumos
+  /usr/local/portage/eclass-overlay
   ${BOARD_OVERLAY}
 "
 

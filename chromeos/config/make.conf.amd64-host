@@ -19,6 +19,7 @@ PORTDIR="/usr/local/portage/stable"
 PORTDIR_OVERLAY="
   /usr/local/portage/crossdev
   /usr/local/portage/chromiumos
+  /usr/local/portage/eclass-overlay
 "
 
 # Adding packages to the @world set causes people more trouble than it's
