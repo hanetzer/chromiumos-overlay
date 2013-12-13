@@ -3,8 +3,8 @@
 # Based on gentoo's modemmanager ebuild
 
 EAPI="4"
-CROS_WORKON_COMMIT="219cc882c9e8d42f7ef9c2c3e2b28a7576d571c5"
-CROS_WORKON_TREE="f1c866981065763e258279d793e76e551bf59143"
+CROS_WORKON_COMMIT="726ba6fea1b749db1c747138b2a5e221754b9aa3"
+CROS_WORKON_TREE="5de88fb3adfbecfc2984a310f1eb8ce4a544191a"
 CROS_WORKON_PROJECT="chromiumos/third_party/libqmi"
 
 inherit eutils autotools cros-workon
