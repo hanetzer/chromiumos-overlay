@@ -14,26 +14,17 @@ KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 
 DEPEND="
 	chromeos-base/autotest-client
-	chromeos-base/autotest-factory
 	chromeos-base/autotest-tests
 "
 
 S=${WORKDIR}
 
 IUSE_TESTS="
-	+tests_factory_AudioLoop
-	+tests_factory_AudioQuality
-	+tests_factory_BasicWifi
-	+tests_factory_CameraPerformanceAls
 	+tests_hardware_SAT
 "
 
 src_install() {
 	local test_list=(
-		factory_AudioLoop
-		factory_AudioQuality
-		factory_BasicWifi
-		factory_CameraPerformanceAls
 		hardware_SAT
 	)
 	local package_path="${SYSROOT}/${AUTOTEST_BASE}/packages"
