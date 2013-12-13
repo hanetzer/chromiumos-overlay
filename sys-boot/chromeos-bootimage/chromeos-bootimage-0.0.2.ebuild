@@ -215,6 +215,7 @@ src_compile_depthcharge() {
 	local bmpblk_file="${froot}/bmpblk.bin"
 	local coreboot_file="${froot}/coreboot.rom"
 	local ramstage_file="${froot}/coreboot_ram.stage"
+	local refcode_file="${froot}/refcode.stage"
 
 	local uboot_file
 	if use unified_depthcharge; then
@@ -242,6 +243,11 @@ src_compile_depthcharge() {
 			--seabios "${CROS_FIRMWARE_ROOT}/seabios.cbfs"
 			--add-blob ramstage "${ramstage_file}"
 		)
+		if [ -f "${refcode_file}" ]; then
+			common+=(
+				--add-blob refcode "${refcode_file}"
+			)
+		fi
 	fi
 	if use arm && use depthcharge; then
 		common+=(
