@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/crash-reporter"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon
+inherit cros-debug cros-workon udev
 
 DESCRIPTION="Build chromeos crash handler"
 HOMEPAGE="http://www.chromium.org/"
@@ -60,17 +60,18 @@ src_test() {
 
 src_install() {
 	cros-workon_src_install
+
 	into /
 	dosbin "${OUT}"/crash_reporter
 	dosbin crash_sender
+
 	into /usr
 	dobin "${OUT}"/list_proxies
 	dobin "${OUT}"/warn_collector
+	dosbin kernel_log_collector.sh
+
 	insinto /etc
 	doins crash_reporter_logs.conf
 
-	insinto /lib/udev/rules.d
-	doins 99-crash-reporter.rules
-
-	dosbin kernel_log_collector.sh
+	udev_dorules 99-crash-reporter.rules
 }
