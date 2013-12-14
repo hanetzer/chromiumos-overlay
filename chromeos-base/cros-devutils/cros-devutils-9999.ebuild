@@ -18,7 +18,7 @@ IUSE="cros_host test"
 # Avoid copying any devserver data created outside the chroot.
 CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
 
-RDEPEND="cros_host? ( app-emulation/qemu-kvm )
+RDEPEND="cros_host? ( app-emulation/qemu )
 	app-portage/gentoolkit
 	cros_host? ( app-shells/bash )
 	>=chromeos-base/devserver-0.0.2
