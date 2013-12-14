@@ -8,7 +8,7 @@
 
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
-inherit toolchain-funcs
+inherit cros-board toolchain-funcs
 
 DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
@@ -35,28 +35,16 @@ DEPEND="x86? ($DEPEND_X86)
 	arm? ($DEPEND_ARM)
 	"
 
-# @ECLASS-VARIABLE: COREBOOT_BOARD
-# @DESCRIPTION:
-# Coreboot Configuration name.
-: ${COREBOOT_BOARD:=}
-
-# @ECLASS-VARIABLE: COREBOOT_BUILD_ROOT
-# @DESCRIPTION:
-# Build directory root
-: ${COREBOOT_BUILD_ROOT:=}
-
-[[ -z ${COREBOOT_BOARD} ]] && die "COREBOOT_BOARD must be set"
-[[ -z ${COREBOOT_BUILD_ROOT} ]] && die "COREBOOT_BUILD_ROOT must be set"
-
 cros-coreboot_pre_src_prepare() {
 	rm -rf 3rdparty
+	local board=$(get_current_board_with_variant)
 
 	if [[ -s "${FILESDIR}"/config ]]; then
 		# Attempt to get config from overlay first
 		cp -v "${FILESDIR}"/config .config
-	elif [[ -s "configs/config.${COREBOOT_BOARD}" ]]; then
+	elif [[ -s "configs/config.${board}" ]]; then
 		# Otherwise use config from coreboot tree
-		cp -v "configs/config.${COREBOOT_BOARD}" .config
+		cp -v "configs/config.${board}" .config
 	fi
 
 	if use rmt; then
@@ -64,7 +52,7 @@ cros-coreboot_pre_src_prepare() {
 	fi
 	if use fwserial; then
 		elog "   - enabling firmware serial console"
-		cat "configs/fwserial.${COREBOOT_BOARD}" >> .config || die
+		cat "configs/fwserial.${board}" >> .config || die
 	fi
 
 	if [[ -d "${FILESDIR}"/3rdparty ]]; then
@@ -74,8 +62,6 @@ cros-coreboot_pre_src_prepare() {
 
 cros-coreboot_src_compile() {
 	tc-export CC
-	local board="${COREBOOT_BOARD}"
-	local build_root="${COREBOOT_BUILD_ROOT}"
 
 	# Set KERNELREVISION (really coreboot revision) to the ebuild revision
 	# number followed by a dot and the first seven characters of the git
@@ -104,24 +90,24 @@ CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
 	fi
 
-	yes "" | emake obj="${build_root}" oldconfig
-	emake obj="${build_root}"
+	yes "" | emake oldconfig
+	emake
 
 	# Modify firmware descriptor if building for the EM100 emulator.
 	if use em100-mode; then
-		ifdtool --em100 "${build_root}/coreboot.rom" || die
-		mv "${build_root}/coreboot.rom"{.new,} || die
+		ifdtool --em100 "build/coreboot.rom" || die
+		mv "build/coreboot.rom"{.new,} || die
 	fi
 
-	# Extract the coreboot ramstage file into the build_root.
-	cbfstool "${build_root}/coreboot.rom" extract \
+	# Extract the coreboot ramstage file into the build dir.
+	cbfstool "build/coreboot.rom" extract \
 		-n "fallback/coreboot_ram" \
-		-f "${build_root}/coreboot_ram.stage" || die
+		-f "build/coreboot_ram.stage" || die
 
-	# Extract the reference code stage into the build_root if present.
-	cbfstool "${build_root}/coreboot.rom" extract \
+	# Extract the reference code stage into the build dir if present.
+	cbfstool "build/coreboot.rom" extract \
 		-n "fallback/refcode" \
-		-f "${build_root}/refcode.stage" || true
+		-f "build/refcode.stage" || true
 
 	# Build cbmem for the target
 	cd util/cbmem
@@ -131,22 +117,23 @@ EOF
 
 cros-coreboot_src_install() {
 	local mapfile
+	local board=$(get_current_board_with_variant)
 	dobin util/cbmem/cbmem
 	insinto /firmware
-	newins "${COREBOOT_BUILD_ROOT}/coreboot.rom" coreboot.rom
-	newins "${COREBOOT_BUILD_ROOT}/coreboot_ram.stage" coreboot_ram.stage
-	if [[ -f "${COREBOOT_BUILD_ROOT}/refcode.stage" ]]; then
-		newins "${COREBOOT_BUILD_ROOT}/refcode.stage" refcode.stage
+	newins "build/coreboot.rom" coreboot.rom
+	newins "build/coreboot_ram.stage" coreboot_ram.stage
+	if [[ -f "build/refcode.stage" ]]; then
+		newins "build/refcode.stage" refcode.stage
 	fi
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
-		configs/config.${COREBOOT_BOARD} )
+		configs/config.${board} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
-		configs/config.${COREBOOT_BOARD} ).rom
+		configs/config.${board} ).rom
 	if [[ -n "${OPROM}" ]]; then
 		newins ${OPROM} ${CBFSOPROM}
 	fi
 	if use memmaps; then
-		for mapfile in ${COREBOOT_BUILD_ROOT}/cbfs/fallback/*.map
+		for mapfile in build/cbfs/fallback/*.map
 		do
 			doins $mapfile
 		done
