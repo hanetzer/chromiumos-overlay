@@ -5,7 +5,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 
-inherit eutils autotools cros-workon flag-o-matic
+inherit eutils autotools cros-workon flag-o-matic udev
 
 # ModemManager likes itself with capital letters
 MY_P=${P/modemmanager/ModemManager}
@@ -83,10 +83,8 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/modemmanager.conf"
 
-	# ModemManager by default installs udev rules to /lib/udev/rules.d.
-	insinto /lib/udev/rules.d
-	# Install Chrome OS specific rules.
-	doins "${FILESDIR}/77-mm-huawei-configuration.rules"
+	# Install Chrome OS specific udev rules.
+	udev_dorules "${FILESDIR}/77-mm-huawei-configuration.rules"
 
 	# When built with USE=gobi, override 80-mm-candidate.rules provided by
 	# ModemManager with files/80-mm-candidate.rules to work around a race
@@ -94,5 +92,5 @@ src_install() {
 	# files/80-mm_candidate.rules for details.
 	#
 	# TODO(benchan): Revert it when cromo is deprecated (crbug.com/316744).
-	use gobi && doins "${FILESDIR}/80-mm-candidate.rules"
+	use gobi && udev_dorules "${FILESDIR}/80-mm-candidate.rules"
 }
