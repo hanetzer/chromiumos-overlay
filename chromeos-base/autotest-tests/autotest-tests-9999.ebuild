@@ -228,6 +228,8 @@ IUSE_TESTS="
 	+tests_network_VPNConnect
 	+tests_network_WiFiCaps
 	+tests_network_WiFiInvalidParameters
+	+tests_network_WiMaxPresent
+	+tests_network_WiMaxSmoke
 	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
