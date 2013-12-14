@@ -1,0 +1,91 @@
+From f1f9424211d186757884f0e8cbcb8ec7c9342c4b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Fri, 13 Dec 2013 18:36:46 -0800
+Subject: [PATCH] i965: Add workaround for HIZ resolves
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+It seems like we need to flush depth before doing a blorp HiZ
+resolve. This patch fixes HiZ issues with google maps in
+particular.
+
+This is based on Chad Versace's patch:
+"HACK i965/gen6: Emit depth workarounds at top of each packet"
+
+Signed-off-by: Chad Versace <chad.versace@linux.intel.com>
+Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
+
+Change-Id: I18c7219ae4ef980eaf112603278f087e24bde264
+---
+ src/mesa/drivers/dri/i965/gen6_blorp.cpp | 46 ++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+
+diff --git a/src/mesa/drivers/dri/i965/gen6_blorp.cpp b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+index d900734..452dac8 100644
+--- a/src/mesa/drivers/dri/i965/gen6_blorp.cpp
++++ b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+@@ -1033,7 +1033,48 @@ gen6_blorp_emit_primitive(struct brw_context *brw,
+    ADVANCE_BATCH();
+ }
+ 
++static void
++gen6_emit_hiz_workaround(struct intel_context *intel)
++{
++   assert(intel->gen == 6);
++
++   BEGIN_BATCH(4);
++   OUT_BATCH(_3DSTATE_PIPE_CONTROL | (4 - 2));
++   OUT_BATCH(PIPE_CONTROL_CS_STALL | PIPE_CONTROL_STALL_AT_SCOREBOARD);
++   OUT_BATCH(0); /* address */
++   OUT_BATCH(0); /* write data */
++   ADVANCE_BATCH();
+ 
++   BEGIN_BATCH(4);
++   OUT_BATCH(_3DSTATE_PIPE_CONTROL | (4 - 2));
++   OUT_BATCH(PIPE_CONTROL_WRITE_IMMEDIATE);
++   OUT_RELOC(intel->batch.workaround_bo,
++	     I915_GEM_DOMAIN_INSTRUCTION,
++             I915_GEM_DOMAIN_INSTRUCTION, 0);
++   OUT_BATCH(0); /* write data */
++   ADVANCE_BATCH();
++
++   BEGIN_BATCH(4);
++   OUT_BATCH(_3DSTATE_PIPE_CONTROL | (4 - 2));
++   OUT_BATCH(PIPE_CONTROL_DEPTH_STALL);
++   OUT_BATCH(0); /* address */
++   OUT_BATCH(0); /* write data */
++   ADVANCE_BATCH();
++
++   BEGIN_BATCH(4);
++   OUT_BATCH(_3DSTATE_PIPE_CONTROL | (4 - 2));
++   OUT_BATCH(PIPE_CONTROL_DEPTH_CACHE_FLUSH);
++   OUT_BATCH(0); /* address */
++   OUT_BATCH(0); /* write data */
++   ADVANCE_BATCH();
++
++   BEGIN_BATCH(4);
++   OUT_BATCH(_3DSTATE_PIPE_CONTROL | (4 - 2));
++   OUT_BATCH(PIPE_CONTROL_DEPTH_STALL);
++   OUT_BATCH(0); /* address */
++   OUT_BATCH(0); /* write data */
++   ADVANCE_BATCH();
++}
+ /**
+  * \brief Execute a blit or render pass operation.
+  *
+@@ -1057,6 +1098,11 @@ gen6_blorp_exec(struct intel_context *intel,
+    uint32_t wm_bind_bo_offset = 0;
+ 
+    uint32_t prog_offset = params->get_wm_prog(brw, &prog_data);
++
++   if (params->hiz_op == GEN6_HIZ_OP_DEPTH_RESOLVE ||
++       params->hiz_op == GEN6_HIZ_OP_HIZ_RESOLVE)
++      gen6_emit_hiz_workaround(intel);
++
+    gen6_blorp_emit_batch_head(brw, params);
+    gen6_emit_3dstate_multisample(brw, params->num_samples);
+    gen6_emit_3dstate_sample_mask(brw, params->num_samples, 1.0, false, ~0u);
+-- 
+1.8.5.1
+
