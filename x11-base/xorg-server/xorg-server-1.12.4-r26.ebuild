@@ -252,7 +252,11 @@ pkg_setup() {
 	if use tegra || use xlib-glx ; then
 		XORG_CONFIGURE_OPTIONS+=(--disable-dri --disable-dri2)
 	else
-		XORG_CONFIGURE_OPTIONS+=(--enable-dri --enable-dri2)
+		if use arm ; then
+			XORG_CONFIGURE_OPTIONS+=(--disable-dri --enable-dri2)
+		else
+			XORG_CONFIGURE_OPTIONS+=(--enable-dri --enable-dri2)
+		fi
 	fi
 
 	if use amd64 || use x86 ; then
