@@ -199,7 +199,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/internal
 	chromeos-base/mtpd
 	chromeos-base/permission_broker
-	chromeos-base/power_manager
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	net-wireless/ath3k

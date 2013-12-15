@@ -16,6 +16,7 @@ CROS_WORKON_LOCALNAME=(
 	"libchromeos"
 	"metrics"
 	"mist"
+	"power_manager"
 	"shill"
 	"system_api"
 	"vpn-manager"
@@ -33,7 +34,9 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +shill +passive_metrics +profile platform2 tcmalloc test +tpm +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
+IUSE_POWER_MANAGER="-als -has_keyboard_backlight -is_desktop -legacy_power_button -lockvt -mosys_eventlog"
+IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
@@ -119,6 +122,14 @@ RDEPEND_mist="
 	)
 "
 
+RDEPEND_power_manager="
+	dev-cpp/gflags
+	dev-cpp/glog
+	dev-libs/protobuf
+	media-sound/adhd
+	sys-fs/udev
+"
+
 RDEPEND_quipper="
 	profile? (
 		virtual/perf
@@ -184,6 +195,7 @@ RDEPEND="
 		!chromeos-base/libchromeos[-platform2]
 		!chromeos-base/metrics[-platform2]
 		!chromeos-base/mist[-platform2]
+		!chromeos-base/power_manager
 		!chromeos-base/shill[-platform2]
 		!chromeos-base/system_api[-platform2]
 		!chromeos-base/vpn-manager[-platform2]
@@ -448,6 +460,49 @@ platform2_install_mist() {
 	udev_dorules 51-mist.rules
 }
 
+platform2_install_power_manager() {
+	# Built binaries
+	dobin "${OUT}"/powerd
+	dobin "${OUT}"/powerd_setuid_helper
+	dobin "${OUT}"/backlight_dbus_tool
+	dobin "${OUT}"/backlight_tool
+	dobin "${OUT}"/get_powerd_initial_backlight_level
+	dobin "${OUT}"/memory_suspend_test
+	dobin "${OUT}"/powerd_dbus_suspend
+	dobin "${OUT}"/power_supply_info
+	dobin "${OUT}"/set_power_policy
+	dobin "${OUT}"/suspend_delay_sample
+
+	fowners root:power /usr/bin/powerd_setuid_helper
+	fperms 4750 /usr/bin/powerd_setuid_helper
+
+	# Scripts
+	dobin powerd/powerd_suspend
+	dobin tools/activate_short_dark_resume
+	dobin tools/debug_sleep_quickly
+	dobin tools/send_metrics_on_resume
+	dobin tools/set_short_powerd_timeouts
+	dobin tools/suspend_stress_test
+
+	# Preferences
+	insinto /usr/share/power_manager
+	doins default_prefs/*
+	use als && doins optional_prefs/has_ambient_light_sensor
+	use has_keyboard_backlight && doins optional_prefs/has_keyboard_backlight
+	use is_desktop && doins optional_prefs/external_display_only
+	use legacy_power_button && doins optional_prefs/legacy_power_button
+	use lockvt && doins optional_prefs/lock_vt_before_suspend
+	use mosys_eventlog && doins optional_prefs/mosys_eventlog
+
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.PowerManager.conf
+
+	exeinto $(udev_get_udevdir)
+	doexe udev/*.sh
+
+	udev_dorules udev/*.rules
+}
+
 platform2_install_shill() {
 	use shill || return 0
 	use cros_host && return 0
@@ -689,6 +744,22 @@ platform2_test_mist() {
 	use cellular || return 0;
 
 	platform2_test "run" "${OUT}/mist_testrunner"
+}
+
+platform2_test_power_manager() {
+	use cros_host && return 0
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: power_manager" && return 0
+	local tests=(
+		power_manager_daemon_test
+		power_manager_policy_test
+		power_manager_system_test
+		power_manager_util_test
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform2_test "run" "${OUT}/${test_bin}"
+	done
 }
 
 platform2_test_shill() {
