@@ -19,11 +19,9 @@ RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
 	media-sound/alsa-utils
-	sys-apps/hdparm
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pciutils
-	sys-apps/smartmontools
 	sys-apps/usbutils
 	X? ( x11-apps/setxkbmap )"
 
