@@ -197,6 +197,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_network_3GNoGobi
 	+tests_network_3GRecoverFromGobiDesync
 	+tests_network_3GSafetyDance
+	+tests_network_3GScanningProperty
 	+tests_network_3GSmokeTest
 	+tests_network_3GStressEnable
 	+tests_network_BasicProfileProperties
