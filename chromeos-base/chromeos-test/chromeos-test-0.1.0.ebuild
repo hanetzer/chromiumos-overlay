@@ -88,12 +88,18 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/btsocket
 	dev-python/dbus-python
 	dev-python/dpkt
+	dev-python/jsonrpclib
+	dev-python/netifaces
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyserial
+	dev-python/python-evdev
 	dev-python/pyudev
 	dev-python/pyyaml
 	dev-python/selenium
+	dev-python/setproctitle
+	dev-python/ws4py
+	dev-util/stressapptest
 	games-util/joystick
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
