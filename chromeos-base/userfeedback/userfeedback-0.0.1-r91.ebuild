@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
-CROS_WORKON_COMMIT="91e3e06ad5c5a24890174b5c2bd301973da4cebc"
-CROS_WORKON_TREE="77bf8d9e8af3b2524adcdd72ab8127d2aea3d044"
+CROS_WORKON_COMMIT="ff56d7cbfc76df98b5fd12691aa1da2cd6252e4c"
+CROS_WORKON_TREE="cad9f0e4723290553aa7354bbb469611b818c875"
 CROS_WORKON_PROJECT="chromiumos/platform/userfeedback"
 
 inherit cros-workon
@@ -21,11 +21,9 @@ RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
 	media-sound/alsa-utils
-	sys-apps/hdparm
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pciutils
-	sys-apps/smartmontools
 	sys-apps/usbutils
 	X? ( x11-apps/setxkbmap )"
 
