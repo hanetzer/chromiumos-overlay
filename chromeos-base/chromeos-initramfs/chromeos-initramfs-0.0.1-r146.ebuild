@@ -32,6 +32,7 @@ DEPEND_netboot="
 	dev-util/shflags
 	net-misc/wget
 	sys-apps/coreutils
+	sys-apps/iproute2
 	sys-apps/util-linux
 	sys-block/parted
 	sys-fs/dosfstools
@@ -155,6 +156,7 @@ pull_netboot_ramfs_binary() {
 		head
 		id
 		ifconfig
+		ip
 		mkdir
 		mkfs.vfat
 		mktemp

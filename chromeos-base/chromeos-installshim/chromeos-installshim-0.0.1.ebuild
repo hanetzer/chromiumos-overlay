@@ -41,6 +41,7 @@ RDEPEND="
 	sys-apps/dbus
 	sys-apps/flashrom
 	sys-apps/grep
+	sys-apps/iproute2
 	sys-apps/mawk
 	sys-apps/mosys
 	sys-apps/net-tools
