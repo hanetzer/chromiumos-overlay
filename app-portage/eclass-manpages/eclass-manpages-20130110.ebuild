@@ -17,6 +17,7 @@ S=${WORKDIR}
 
 genit() {
 	local e=${1:-${ECLASSDIR}}
+	[[ -d ${e} ]] || return 0
 	einfo "Generating man pages from: ${e}"
 	env ECLASSDIR=${e} "${FILESDIR}"/eclass-to-manpage.sh || die
 }
@@ -25,11 +26,9 @@ src_compile() {
 	# First process any eclasses found in overlays.  Then process
 	# the main eclassdir last so that its output will clobber anything
 	# that might have come from overlays.  Main tree wins!
-	local o e
+	local o
 	for o in ${PORTDIR_OVERLAY} ; do
-		e="${o}/eclass"
-		[[ -d ${e} ]] || continue
-		genit "${e}"
+		genit "${o}/eclass"
 	done
 	genit
 }
