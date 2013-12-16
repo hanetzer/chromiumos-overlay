@@ -1,39 +1,42 @@
-From 516a815514072dbd2be4d3e3af99e119c3b892c1 Mon Sep 17 00:00:00 2001
-From: Damien Lespiau <damien.lespiau@intel.com>
-Date: Wed, 31 Jul 2013 19:11:45 +0100
-Subject: [PATCH] xfree86: Use the TMDS maximum frequency to prune modes
+The HDMI CEA vendor specific block has some interesting information,
+such as the maximum TMDS dot clock.
 
-Instead of only relying on the Range section, we can do better on
-HDMI to find out what is the max dot clock the monitor supports. The
-HDMI CEA vendor block adds a TMDS max freq we can use.
+v2: Don't parse CEA blocks with invalid offsets, remove spurious
+    brackets (Chris Wilson)
 
-This makes X not prune 4k resolutions on HDMI.
+v3: Fix the looping through the CEA data blocks, it had a typo using the
+    wrong variable coming from the code it was ported from.
+    Replace x << 16 + y << 8 + z by x << 16 | y << 8 | z
+    (Chris Wilson)
 
-Signed-off-by: Damien Lespiau <damien.lespiau@intel.com>
+v4: Remove the stray ';' at the end of "if (*end == 0)".
+    (Dominik Behr on IRC)
+
+Signed-off-by: Damien Lespiau <damien.lespiau at intel.com>
 ---
- hw/xfree86/ddc/interpret_edid.c | 88 +++++++++++++++++++++++++++++++++++++++++
+ hw/xfree86/ddc/interpret_edid.c | 91 +++++++++++++++++++++++++++++++++++++++++
  hw/xfree86/ddc/xf86DDC.h        |  2 +
- hw/xfree86/modes/xf86Crtc.c     | 11 ++++++
- 3 files changed, 101 insertions(+)
+ 2 files changed, 93 insertions(+)
 
 diff --git a/hw/xfree86/ddc/interpret_edid.c b/hw/xfree86/ddc/interpret_edid.c
-index e6b4d5b..10c1c3a 100644
+index e6b4d5b..71c605b 100644
 --- a/hw/xfree86/ddc/interpret_edid.c
 +++ b/hw/xfree86/ddc/interpret_edid.c
-@@ -332,6 +332,94 @@ xf86ForEachVideoBlock(xf86MonPtr mon, handle_video_fn fn, void *data)
+@@ -332,6 +332,97 @@ xf86ForEachVideoBlock(xf86MonPtr mon, handle_video_fn fn, void *data)
      }
  }
  
-+static void
++static Bool
 +cea_db_offsets(Uchar *cea, int *start, int *end)
 +{
 +    /* Data block offset in CEA extension block */
 +    *start = CEA_EXT_MIN_DATA_OFFSET;
 +    *end = cea[2];
-+    if (*end == 0 || *end > CEA_EXT_MAX_DATA_OFFSET)
++    if (*end == 0)
 +        *end = CEA_EXT_MAX_DATA_OFFSET;
-+    if (*end < CEA_EXT_MIN_DATA_OFFSET)
-+        *end = CEA_EXT_MIN_DATA_OFFSET;
++    if (*end < CEA_EXT_MIN_DATA_OFFSET || *end > CEA_EXT_MAX_DATA_OFFSET)
++        return FALSE;
++    return TRUE;
 +}
 +
 +static int
@@ -75,9 +78,11 @@ index e6b4d5b..10c1c3a 100644
 +        if (ext[EXT_TAG] != CEA_EXT)
 +            continue;
 +
-+        cea_db_offsets(ext, &start, &end);
++        if (!cea_db_offsets(ext, &start, &end))
++            continue;
++
 +        for (offset = start;
-+             offset < end && offset + cea_db_len(&(ext)[(i)]) < end;
++             offset < end && offset + cea_db_len(&ext[offset]) < end;
 +             offset += cea_db_len(&ext[offset]) + 1)
 +                fn(&ext[offset], data);
 +    }
@@ -98,7 +103,7 @@ index e6b4d5b..10c1c3a 100644
 +    if (cea_db_len(db) < 5)
 +        return;
 +
-+    oui = (db[3] << 16) + (db[2] << 8) + db[1];
++    oui = (db[3] << 16) | (db[2] << 8) | db[1];
 +    if (oui == IEEE_ID_HDMI)
 +        result->hdmi = (struct cea_data_block *)db;
 +}
@@ -127,7 +132,7 @@ index bdc7648..de8e718 100644
 +
  #endif
 diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index 35845e8..9f30019 100644
+index a441fd1..42fdad9 100644
 --- a/hw/xfree86/modes/xf86Crtc.c
 +++ b/hw/xfree86/modes/xf86Crtc.c
 @@ -1676,6 +1676,7 @@ xf86ProbeOutputModes(ScrnInfoPtr scrn, int maxX, int maxY)
@@ -147,8 +152,8 @@ index 35845e8..9f30019 100644
 +            hdmi_db = xf86MonitorFindHDMIBlock(edid_monitor);
 +            if (hdmi_db && hdmi_db->len >= 7) {
 +                int tmds_freq = hdmi_db->u.vendor.hdmi.max_tmds_clock * 5000;
-+                xf86DrvMsg(scrn->scrnIndex, X_INFO, "HDMI TMDS Freq %d/%d\n",
-+                           max_clock, tmds_freq);
++                xf86DrvMsg(scrn->scrnIndex, X_PROBED,
++                           "HDMI max TMDS frequency %dKHz\n", tmds_freq);
 +                if (tmds_freq > max_clock)
 +                    max_clock = tmds_freq;
 +            }
