@@ -41,10 +41,6 @@ IUSE_TESTS="
 	+tests_dummy_Fail
 	+tests_dummy_Pass
 	+tests_factory_Antenna
-	+tests_factory_Audio
-	+tests_factory_AudioInternalLoopback
-	+tests_factory_AudioLoop
-	+tests_factory_AudioQuality
 	+tests_factory_BasicCellular
 	+tests_factory_BasicGPS
 	+tests_factory_BasicWifi
