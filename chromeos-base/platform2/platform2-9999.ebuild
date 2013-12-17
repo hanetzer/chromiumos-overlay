@@ -602,7 +602,7 @@ platform2_test_chromiumos-wide-profiling() {
 	)
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}"
+		platform2_test "run" "${OUT}/${test_bin}" "1"
 	done
 }
 
