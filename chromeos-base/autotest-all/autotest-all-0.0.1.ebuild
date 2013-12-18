@@ -18,7 +18,6 @@ RDEPEND="
 	chromeos-base/autotest-client
 	chromeos-base/autotest-tests
 	chromeos-base/autotest-tests-ltp
-	chromeos-base/autotest-factory
 	chromeos-base/autotest-factory-install
 	chromeos-base/autotest-private-all
 	!chromeless_tty? (
