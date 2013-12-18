@@ -588,15 +588,17 @@ platform2_test_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
 
-	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86 platform: chromiumos-wide-profiling" && return 0
-
 	local tests=(
 		address_mapper_test
+		utils_test
+	)
+	# These tests don't work quite right when there is a mismatch between
+	# the active running kernel and the test target (bitwise).
+	use amd64 && tests+=(
 		perf_parser_test
 		perf_reader_test
 		perf_recorder_test
 		perf_serializer_test
-		utils_test
 	)
 	local test_bin
 	for test_bin in "${tests[@]}"; do
