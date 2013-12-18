@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="5f4ea694baee4b339d8f84d08aa282da3e7e0439"
-CROS_WORKON_TREE="82b5aee36e04405967bbb4c7d64ca05928648e9f"
+CROS_WORKON_COMMIT="3bfe95c1434b626b56e7fc5d6b9fee7b6f0684ac"
+CROS_WORKON_TREE="1a44f6b35bd086becad0a4ebdce97e14bbe7301e"
 CROS_WORKON_PROJECT="chromiumos/platform/power_manager"
 CROS_WORKON_USE_VCSID="1"
 CROS_WORKON_OUTOFTREE_BUILD=1
