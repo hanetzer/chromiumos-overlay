@@ -40,6 +40,7 @@ ALL_BOARDS=(
 	arm-generic
 	bayleybay
 	beaglebone
+	beaglebone_servo
 	beltino
 	blackwall
 	bolt
