@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="0ff22c39c66a2a6f28d27d6026a954f4324f81c0"
-CROS_WORKON_TREE="aa9da2b3a2f4a67c51dd96d30bec90dd23b4cf77"
+CROS_WORKON_COMMIT="85ca8a5e66827e07ab467ba844fb70e943bd74dd"
+CROS_WORKON_TREE="97da2e289c7fb0928ae4673a2069ef08cae0a2eb"
 CROS_WORKON_PROJECT="chromiumos/platform/libchromeos"
 
 LIBCHROME_VERS=( 180609 )
