@@ -8,13 +8,59 @@ HOMEPAGE="http://src.chromium.org"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="*"
 IUSE="internal"
 
 # Pull in any site-specific or private-overlay-specific packages needed on the
 # host.
 RDEPEND="${RDEPEND}
 	virtual/hard-host-depends-bsp
+	"
+
+# Basic utilities
+RDEPEND="${RDEPEND}
+	app-arch/bzip2
+	app-arch/cpio
+	app-arch/gzip
+	app-arch/tar
+	app-shells/bash
+	net-misc/iputils
+	net-misc/rsync
+	sys-apps/baselayout
+	sys-apps/coreutils
+	sys-apps/diffutils
+	sys-apps/file
+	sys-apps/findutils
+	sys-apps/gawk
+	sys-apps/grep
+	sys-apps/sed
+	sys-apps/shadow
+	sys-apps/texinfo
+	sys-apps/util-linux
+	sys-apps/which
+	sys-devel/autoconf
+	sys-devel/automake
+	sys-devel/binutils
+	sys-devel/bison
+	sys-devel/flex
+	sys-devel/gcc
+	sys-devel/gnuconfig
+	sys-devel/libtool
+	sys-devel/m4
+	sys-devel/make
+	sys-devel/patch
+	sys-fs/e2fsprogs
+	sys-libs/ncurses
+	sys-libs/readline
+	sys-libs/zlib
+	sys-process/procps
+	sys-process/psmisc
+	virtual/editor
+	virtual/libc
+	virtual/man
+	virtual/os-headers
+	virtual/pager
+	virtual/portage
 	"
 
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
@@ -172,6 +218,7 @@ RDEPEND="${RDEPEND}
 	dev-python/ipython
 	dev-util/perf
 	sys-apps/less
+	sys-apps/man-pages
 	sys-apps/pv
 	sys-devel/smatch
 	"
