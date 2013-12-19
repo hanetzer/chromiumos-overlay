@@ -1,3 +1,4 @@
+
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
@@ -9,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
-IUSE="cros_embedded opengl X"
+IUSE="cras pam opengl profile tpm usb X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -28,30 +29,7 @@ IUSE="cros_embedded opengl X"
 
 ################################################################################
 #
-# CROS_COMMON_* : Dependencies common to all CrOS flavors (embedded, regular)
-#
-################################################################################
-
-CROS_COMMON_RDEPEND="
-	app-arch/tar
-	app-crypt/nss
-	app-editors/qemacs
-	app-editors/vim
-	app-shells/bash
-	chromeos-base/chromeos-dev-root
-	chromeos-base/gmerge
-	chromeos-base/shill-test-scripts
-	dev-util/strace
-	net-dialup/lrzsz
-	net-misc/openssh
-	sys-devel/gdb
-"
-CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
-"
-
-################################################################################
-#
-# CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
+# CROS_* : Dependencies for CrOS devices (coreutils, X etc)
 #
 ################################################################################
 CROS_X86_RDEPEND="
@@ -85,41 +63,57 @@ CROS_X_RDEPEND="
 	x11-misc/xdotool
 "
 
-CROS_RDEPEND="
+RDEPEND="
 	x86? ( ${CROS_X86_RDEPEND} )
 	amd64? ( ${CROS_X86_RDEPEND} )
 	X? ( ${CROS_X_RDEPEND} )
 "
 
-CROS_RDEPEND="${CROS_RDEPEND}
-	app-admin/sudo
+RDEPEND="${RDEPEND}
+	pam? ( app-admin/sudo )
 	app-admin/sysstat
 	app-arch/gzip
-	app-benchmarks/punybench
+	app-arch/tar
+	profile? (
+		app-benchmarks/punybench
+		dev-util/libc-bench
+		net-analyzer/netperf
+		virtual/perf
+	)
 	app-crypt/nss
-	app-crypt/tpm-tools
+	tpm? ( app-crypt/tpm-tools )
+	app-editors/qemacs
+	app-editors/vim
 	app-misc/evtest
 	app-misc/screen
-	chromeos-base/audiotest
+	app-shells/bash
+	cras? (
+		chromeos-base/audiotest
+		media-sound/sox
+	)
+	chromeos-base/chromeos-dev-root
+	chromeos-base/gmerge
 	chromeos-base/platform2
 	chromeos-base/protofiles
+	chromeos-base/shill-test-scripts
 	chromeos-base/wireless_automation
-	dev-lang/python
-	dev-python/cherrypy
-	dev-python/dbus-python
-	dev-util/hdctools
-	dev-util/libc-bench
-	dev-util/mem
-	media-sound/sox
-	net-analyzer/netperf
 	net-analyzer/tcpdump
 	net-dialup/minicom
 	net-misc/dhcp
 	net-misc/iperf
 	net-misc/iputils
+	net-misc/openssh
 	net-misc/rsync
 	net-wireless/iw
 	net-wireless/wireless-tools
+	dev-lang/python
+	dev-python/cherrypy
+	dev-python/dbus-python
+	dev-util/hdctools
+	dev-util/mem
+	dev-util/strace
+	media-sound/sox
+	net-dialup/lrzsz
 	sys-apps/coreutils
 	sys-apps/diffutils
 	sys-apps/file
@@ -128,7 +122,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/kbd
 	sys-apps/less
 	sys-apps/smartmontools
-	sys-apps/usbutils
+	usb? ( sys-apps/usbutils )
 	sys-apps/which
 	sys-devel/gdb
 	sys-fs/fuse
@@ -140,27 +134,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-process/psmisc
 	sys-process/time
 	virtual/chromeos-bsp-dev
-	virtual/perf
-	"
-
-################################################################################
-# CROS_E_* : Dependencies for embedded CrOS devices (busybox, no X etc)
-#
-################################################################################
-
-#CROS_E_RDEPEND="${CROS_E_RDEPEND}
-#"
-
-# Build time dependencies
-#CROS_E_DEPEND="${CROS_E_RDEPEND}
-#"
-
-################################################################################
-# Assemble the final RDEPEND and DEPEND variables for portage
-################################################################################
-RDEPEND="${CROS_COMMON_RDEPEND}
-	!cros_embedded? ( ${CROS_RDEPEND} )
 "
 
-DEPEND="${CROS_COMMON_DEPEND}
-"
+DEPEND="${RDEPEND}"
