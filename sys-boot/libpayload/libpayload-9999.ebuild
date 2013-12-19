@@ -33,9 +33,7 @@ src_compile() {
 
 	local extra_flags=""
 	if use x86 || use amd64 ; then
-		extra_flags="-mpreferred-stack-boundary=2 \
-					 -mregparm=3 \
-					 -ffunction-sections"
+		extra_flags="-mpreferred-stack-boundary=2 -ffunction-sections"
 	elif use arm ; then
 		extra_flags="-ffunction-sections"
 	fi
