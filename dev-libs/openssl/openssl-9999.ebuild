@@ -57,6 +57,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-1.0.1-x32.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1e-ipv6.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1e-bad-mac-aes-ni.patch #463444
+		epatch "${FILESDIR}"/${PN}-1.0.1e-disable-rdrand.patch
 		epatch_user #332661
 	fi
 
