@@ -57,6 +57,8 @@ net-proxy/tsocks	tordns
 net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
 sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 sys-apps/busybox	-pam -selinux
+# flashrom's libraries must be static
+sys-apps/dtc		static-libs
 sys-apps/dbus		-X
 sys-apps/iproute2	ipv6
 # mosys: crosbug.com/p/11630
