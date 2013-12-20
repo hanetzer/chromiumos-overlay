@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
 
-inherit toolchain-funcs cros-workon
+inherit scons-utils toolchain-funcs cros-workon
 
 DESCRIPTION="OpenGL|ES mock library"
 HOMEPAGE="http://www.khronos.org/opengles/2_X/"
@@ -23,7 +23,7 @@ CROS_WORKON_LOCALNAME="khronos"
 
 src_compile() {
 	tc-export AR CC CXX LD NM RANLIB
-	scons || die
+	escons
 }
 
 src_install() {
