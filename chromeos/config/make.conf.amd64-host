@@ -37,7 +37,7 @@ PKGDIR="/var/lib/portage/pkgs"
 PORT_LOGDIR="/var/log/portage"
 
 source /usr/local/portage/chromiumos/chromeos/binhost/host/amd64-PREFLIGHT_BINHOST.conf
-FULL_BINHOST="https://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/amd64-host/chroot-2013.12.21.041446/packages/"
+FULL_BINHOST="https://commondatastorage.googleapis.com/chromeos-prebuilt/host/amd64/amd64-host/chroot-2013.12.21.105226/packages/"
 PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
 # expat needed for XML parsing in GDB, but enable globally as overhead is tiny.
