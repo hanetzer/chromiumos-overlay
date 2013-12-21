@@ -50,8 +50,9 @@ ALL_BOARDS=(
 	clapper
 	daisy
 	daisy-drm
-	daisy_spring
 	daisy_snow
+	daisy_skate
+	daisy_spring
 	daisy_winter
 	dalmore
 	duck
