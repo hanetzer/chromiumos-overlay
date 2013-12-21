@@ -78,6 +78,7 @@ ALL_BOARDS=(
 	mipsel-n64-generic
 	monroe
 	nyan
+	nyan_big
 	optimus
 	panda
 	panther
