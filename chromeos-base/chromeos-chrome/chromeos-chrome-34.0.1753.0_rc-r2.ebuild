@@ -620,8 +620,13 @@ src_prepare() {
 
 src_configure() {
 	tc-export CXX CC AR AS RANLIB STRIP
-	export CC_host=$(tc-getBUILD_CC)
-	export CXX_host=$(tc-getBUILD_CXX)
+	if use clang; then
+		export CC_host="clang"
+		export CXX_host="clang++"
+	else
+		export CC_host=$(tc-getBUILD_CC)
+		export CXX_host=$(tc-getBUILD_CXX)
+	fi
 	export AR_host=$(tc-getBUILD_AR)
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
