@@ -18,21 +18,25 @@ KEYWORDS="x86 arm amd64"
 
 IUSE="+xset hardened"
 # Enable autotest by default.
-IUSE="${IUSE} +autotest"
+IUSE="${IUSE} +autotest -content_shell -chromeless_tty"
 
 # Factory tests require locally installed deps, which are called out in
 # autotest-factory-deps.
 RDEPEND="
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
-  chromeos-base/autotest-deps-glbench
+  !chromeless_tty? (
+    !content_shell? (
+      chromeos-base/autotest-deps-glbench
+      dev-python/pygtk
+    )
+  )
   chromeos-base/autotest-private-board
   chromeos-base/chromeos-factory
   chromeos-base/shill-test-scripts
   >=chromeos-base/vpd-0.0.1-r11
   dev-python/jsonrpclib
   dev-python/pygobject
-  dev-python/pygtk
   dev-python/ws4py
   xset? ( x11-apps/xset )
 "

@@ -15,7 +15,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="x86 arm amd64"
 
-IUSE="+autox +xset +tpmtools hardened"
+IUSE="+autox +xset +tpmtools hardened -content_shell -chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -39,11 +39,15 @@ LIBCHROME_VERS="180609"
 #   network_3GStressEnable
 RDEPEND="
   chromeos-base/autotest-deps
-  chromeos-base/autotest-deps-glbench
-  chromeos-base/autotest-deps-glmark2
+  !chromeless_tty? (
+    !content_shell? (
+      chromeos-base/autotest-deps-glbench
+      chromeos-base/autotest-deps-glmark2
+      chromeos-base/autotest-deps-piglit
+    )
+  )
   chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
-  chromeos-base/autotest-deps-piglit
   chromeos-base/shill-test-scripts
   autox? ( chromeos-base/autox )
   dev-python/numpy
@@ -61,7 +65,7 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${RDEPEND}"
 
-IUSE_TESTS="
+IUSE_TESTS="${IUSE_TESTS}
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench

@@ -40,11 +40,6 @@ RDEPEND="${RDEPEND}
   chromeos-base/autotest-deps-libaio
 "
 
-# deps/chrome_test
-#RDEPEND="${RDEPEND}
-#  chromeos-base/chromeos-chrome
-#"
-
 # deps/lansim
 RDEPEND="${RDEPEND}
   dev-python/dpkt
