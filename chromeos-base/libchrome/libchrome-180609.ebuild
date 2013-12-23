@@ -45,10 +45,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/base-125070-no-X.patch
 	epatch "${FILESDIR}"/base-125070-x32.patch
 
-	# TODO(derat): Remove this patch once powerd has switched to
-	# MessageLoopForIO instead of MessageLoopForUI (http://crbug.com/320340).
-	epatch "${FILESDIR}"/base-180609-remove_file_path_watcher_thread_dchecks.patch
-
 	# Add stub headers for a few files that are usually checked out to Chrome's
 	# toplevel third_party/ directory.
 	mkdir -p third_party/libevent
