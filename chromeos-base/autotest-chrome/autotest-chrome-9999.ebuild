@@ -24,7 +24,7 @@ RDEPEND="
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts
 	chromeos-base/telemetry
-	tests_audiovideo_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
+	tests_audio_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
 
 DEPEND="${RDEPEND}"
@@ -34,8 +34,8 @@ IUSE_TESTS=(
 	+tests_desktopui_EnterprisePolicy
 
 	# Uses chrome_test dependency.
-	+tests_audiovideo_VDA
-	+tests_audiovideo_VDAPerf
+	+tests_video_VideoDecodeAccelerator
+	+tests_video_VDAPerf
 
 	# Tests that depend on telemetry.
 	+tests_bluetooth_RegressionClient
@@ -55,7 +55,7 @@ IUSE_TESTS=(
 	+tests_security_SandboxStatusTelemetry
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
-	+tests_video_VideoDecodeAcceleration
+	+tests_video_ChromeHWDecodeUsed
 	+tests_video_VideoDecodeMemoryUsage
 	+tests_video_VideoSanity
 	+tests_video_VideoSeek
@@ -73,7 +73,7 @@ IUSE_TESTS=(
 	+tests_desktopui_PyAutoInstall
 	+tests_desktopui_PyAutoPerfTests
 	+tests_desktopui_SyncIntegrationTests
-	+tests_audiovideo_PlaybackRecordSemiAuto
+	+tests_audio_PlaybackRecordSemiAuto
 	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest

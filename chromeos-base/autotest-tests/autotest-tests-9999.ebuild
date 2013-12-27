@@ -80,12 +80,12 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_sound_infrastructure
 	+tests_sleeptest
 	+tests_unixbench
-	+tests_audiovideo_Aplay
-	+tests_audiovideo_CRASFormatConversion
-	+tests_audiovideo_LineOutToMicInLoopback
-	+tests_audiovideo_LoopbackLatency
-	+tests_audiovideo_Microphone
-	+tests_audiovideo_V4L2
+	+tests_audio_Aplay
+	+tests_audio_CRASFormatConversion
+	+tests_audio_LineOutToMicInLoopback
+	+tests_audio_LoopbackLatency
+	+tests_audio_Microphone
+	+tests_camera_V4L2
 	+tests_autoupdate_CannedOmahaUpdate
 	+tests_bluetooth_Sanity_AdapterPresent
 	+tests_bluetooth_Sanity_DefaultState
