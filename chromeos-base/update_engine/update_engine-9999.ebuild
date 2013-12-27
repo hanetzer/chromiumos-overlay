@@ -62,9 +62,9 @@ src_compile() {
 }
 
 src_test() {
-	UNITTESTS_BINARY=update_engine_unittests
-	TARGETS="${UNITTESTS_BINARY} test_http_server delta_generator"
-	escons ${TARGETS}
+	local unittests_binary=update_engine_unittests
+	local targets=("${unittests_binary}" test_http_server delta_generator)
+	escons "${targets[@]}"
 
 	if ! use x86 && ! use amd64 ; then
 		einfo "Skipping tests on non-x86 platform..."
@@ -72,20 +72,32 @@ src_test() {
 		# We need to set PATH so that the `openssl` in the target
 		# sysroot gets executed instead of the host one (which is
 		# compiled differently). http://crosbug.com/27683
-		if [ -n "${GTEST_ARGS}" ]; then
-			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
-				"$./{UNITTESTS_BINARY}" ${GTEST_ARGS} \
-				info "./${UNITTESTS_BINARY} (root) succeeded" \
-				|| die "./${UNITTESTS_BINARY} (root) failed, retval=$?"
+		local testpath="${SYSROOT}/usr/bin:$PATH"
+
+		# If neither GTEST_ARGS nor GTEST_FILTER is provided, we run
+		# two subsets of tests separately: the set of non-privileged
+		# tests (run normally) followed by the set of privileged tests
+		# (run as root). Otherwise, we delegate GTEST_FILTER (as
+		# environment variable) and pass GTEST_ARGS as argument to a
+		# single, privileged invocation of the unit tests binary; while
+		# this might lead to tests running with excess privileges, it
+		# is necessary in order to be able to run every test, including
+		# those that need to be run with root privileges.
+		if [[ -z ${GTEST_ARGS} && -z ${GTEST_FILTER} ]]; then
+			PATH="${testpath}" \
+				"./${unittests_binary}" --gtest_filter='-*.RunAsRoot*' \
+				&& einfo "./${unittests_binary} (unprivileged) succeeded" \
+				|| die "./${unittests_binary} (unprivileged) failed, retval=$?"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="${testpath}" \
+				"./${unittests_binary}" --gtest_filter='*.RunAsRoot*' \
+				&& einfo "./${unittests_binary} (root) succeeded" \
+				|| die "./${unittests_binary} (root) failed, retval=$?"
 		else
-			PATH="$SYSROOT/usr/bin:$PATH" \
-			"./${UNITTESTS_BINARY}" --gtest_filter='-*.RunAsRoot*' \
-				&& einfo "./${UNITTESTS_BINARY} (unprivileged) succeeded" \
-				|| die "./${UNITTESTS_BINARY} (unprivileged) failed, retval=$?"
-			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="$SYSROOT/usr/bin:$PATH" \
-				"./${UNITTESTS_BINARY}" --gtest_filter='*.RunAsRoot*' \
-				&& einfo "./${UNITTESTS_BINARY} (root) succeeded" \
-				|| die "./${UNITTESTS_BINARY} (root) failed, retval=$?"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="${testpath}" \
+				GTEST_FILTER="${GTEST_FILTER}" \
+				"./${unittests_binary}" ${GTEST_ARGS} \
+				&& einfo "./${unittests_binary} succeeded" \
+				|| die "./${unittests_binary} failed, retval=$?"
 		fi
 	fi
 }
