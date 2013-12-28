@@ -13,12 +13,18 @@ SRC_URI="http://people.freedesktop.org/~chadversary/waffle/files/release/${P}/${
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="doc egl gbm test wayland"
+IUSE="doc egl gbm opengl opengles test wayland"
+
+REQUIRED_USE="
+	opengles? ( egl )
+	"
 
 RDEPEND="
-	media-libs/mesa[egl?,gbm?]
-	virtual/opengl
+	opengl? ( virtual/opengl )
+	opengles? ( virtual/opengles )
 	wayland? ( >=dev-libs/wayland-1.0 )
+	egl? ( || ( virtual/opengles media-libs/mesa[egl] ) )
+	gbm? ( media-libs/mesa[gbm] )
 	gbm? ( virtual/udev )
 	x11-libs/libX11
 	x11-libs/libxcb"
