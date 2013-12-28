@@ -20,32 +20,33 @@ KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
 +dummy +fdtmap ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com
 +nicintel +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
-+satasii +satamv +serprog +wiki static -use_os_timer cros_host"
++satasii +satamv +serprog static use_os_timer +wiki cros_host"
 
-COMMON_DEPEND="atahpt? ( sys-apps/pciutils )
-	dediprog? ( virtual/libusb:0 )
-	drkaiser? ( sys-apps/pciutils )
-	fdtmap? ( sys-apps/dtc )
-	ft2232_spi? ( dev-embedded/libftdi )
-	gfxnvidia? ( sys-apps/pciutils )
-	internal? ( sys-apps/pciutils )
-	nic3com? ( sys-apps/pciutils )
-	nicintel? ( sys-apps/pciutils )
-	nicintel_spi? ( sys-apps/pciutils )
-	nicnatsemi? ( sys-apps/pciutils )
-	nicrealtek? ( sys-apps/pciutils )
-	rayer_spi? ( sys-apps/pciutils )
-	satasii? ( sys-apps/pciutils )
-	satamv? ( sys-apps/pciutils )
-	ogp_spi? ( sys-apps/pciutils )"
-RDEPEND="${COMMON_DEPEND}
-	internal? ( sys-apps/dmidecode )"
-DEPEND="${COMMON_DEPEND}
+LIB_DEPEND="atahpt? ( sys-apps/pciutils[static-libs(+)] )
+	dediprog? ( virtual/libusb:0[static-libs(+)] )
+	drkaiser? ( sys-apps/pciutils[static-libs(+)] )
+	fdtmap? ( sys-apps/dtc[static-libs(+)] )
+	ft2232_spi? ( dev-embedded/libftdi[static-libs(+)] )
+	gfxnvidia? ( sys-apps/pciutils[static-libs(+)] )
+	internal? ( sys-apps/pciutils[static-libs(+)] )
+	nic3com? ( sys-apps/pciutils[static-libs(+)] )
+	nicintel? ( sys-apps/pciutils[static-libs(+)] )
+	nicintel_spi? ( sys-apps/pciutils[static-libs(+)] )
+	nicnatsemi? ( sys-apps/pciutils[static-libs(+)] )
+	nicrealtek? ( sys-apps/pciutils[static-libs(+)] )
+	rayer_spi? ( sys-apps/pciutils[static-libs(+)] )
+	satasii? ( sys-apps/pciutils[static-libs(+)] )
+	satamv? ( sys-apps/pciutils[static-libs(+)] )
+	ogp_spi? ( sys-apps/pciutils[static-libs(+)] )"
+RDEPEND="!static? ( ${LIB_DEPEND//\[static-libs(+)]} )"
+DEPEND="${RDEPEND}
+	static? ( ${LIB_DEPEND} )
 	sys-apps/diffutils"
+RDEPEND+=" internal? ( sys-apps/dmidecode )"
 
 _flashrom_enable() {
 	local c="CONFIG_${2:-$(echo $1 | tr [:lower:] [:upper:])}"
-	args+=" $c=`use $1 && echo yes || echo no`"
+	args+=" $c=$(usex $1 yes no)"
 }
 flashrom_enable() {
 	local u
@@ -79,7 +80,7 @@ src_compile() {
 
 		use ${prog} && : $(( progs++ ))
 	done
-	if [ $progs -ne 1 ] ; then
+	if [[ ${progs} -ne 1 ]] ; then
 		if ! use internal && ! use dummy ; then
 			ewarn "You have to specify at least one programmer, and if you specify"
 			ewarn "more than one programmer, you have to enable either dummy or"
@@ -88,35 +89,32 @@ src_compile() {
 		fi
 	fi
 
-	tc-export AR CC RANLIB
-
 	# Configure Flashrom to use OS timer instead of calibrated delay loop
 	# if USE flag is specified or if a certain board requires it.
 	if use use_os_timer ; then
 		einfo "Configuring Flashrom to use OS timer"
-		args="$args CONFIG_USE_OS_TIMER=yes"
+		args+=" CONFIG_USE_OS_TIMER=yes"
 	else
 		einfo "Configuring Flashrom to use delay loop"
-		args="$args CONFIG_USE_OS_TIMER=no"
+		args+=" CONFIG_USE_OS_TIMER=no"
 	fi
 
 	# WARNERROR=no, bug 347879
-	emake WARNERROR=no ${args} || die
-}
-
-src_install() {
-	dosbin flashrom || die
-	doman flashrom.8
-	dodoc README
+	tc-export AR CC RANLIB
+	emake WARNERROR=no ${args}
 }
 
 src_test() {
-	# Setup FDT test file
-	if use cros_host && [ -d tests ]; then
-		elog Running flashrom unit tests
-
+	use cros_host || return
+	if [[ -d tests ]] ; then
 		pushd tests >/dev/null
 		./tests.py || die
 		popd >/dev/null
 	fi
+}
+
+src_install() {
+	dosbin flashrom
+	doman flashrom.8
+	dodoc README Documentation/*.txt
 }
