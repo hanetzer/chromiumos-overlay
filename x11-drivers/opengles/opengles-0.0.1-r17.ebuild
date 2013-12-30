@@ -6,7 +6,7 @@ CROS_WORKON_COMMIT="b0f9be2cdea655b75d9cadab22f04333ebaf5e9e"
 CROS_WORKON_TREE="a1f4a45aa1aa25719f5c9a76396d5ba2b3e2b67b"
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
 
-inherit toolchain-funcs cros-workon
+inherit scons-utils toolchain-funcs cros-workon
 
 DESCRIPTION="OpenGL|ES mock library"
 HOMEPAGE="http://www.khronos.org/opengles/2_X/"
@@ -25,7 +25,7 @@ CROS_WORKON_LOCALNAME="khronos"
 
 src_compile() {
 	tc-export AR CC CXX LD NM RANLIB
-	scons || die
+	escons
 }
 
 src_install() {
