@@ -1,0 +1,278 @@
+# -*- python -*-
+
+# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import os
+
+# This block will need updating whenever libchrome gets updated. The order of
+# the libs below doesn't matter (as scons will take care of building things in
+# the required order).  The split between them is purely to reduce excess
+# linking of third-party libraries, i.e. 'core' should require only a minimal
+# set of libraries, and other third-party libraries should get a unique 'xxx'
+# name.
+base_name = 'base'
+base_libs = [
+  {
+    'name' : 'core',
+    'sources' : """
+                allocator/type_profiler_control.cc
+                at_exit.cc
+                atomicops_internals_x86_gcc.cc
+                base_switches.cc
+                callback_internal.cc
+                command_line.cc
+                cpu.cc
+                debug/alias.cc
+                debug/debugger.cc
+                debug/debugger_posix.cc
+                debug/stack_trace.cc
+                debug/stack_trace_posix.cc
+                debug/trace_event_impl.cc
+                debug/trace_event_impl_constants.cc
+                debug/trace_event_memory.cc
+                environment.cc
+                files/file_enumerator.cc
+                files/file_enumerator_posix.cc
+                files/file_path.cc
+                files/file_path_constants.cc
+                files/file_path_watcher.cc
+                files/file_path_watcher_linux.cc
+                files/scoped_temp_dir.cc
+                file_util.cc
+                file_util_posix.cc
+                json/json_parser.cc
+                json/json_reader.cc
+                json/json_string_value_serializer.cc
+                json/json_writer.cc
+                json/string_escape.cc
+                lazy_instance.cc
+                location.cc
+                logging.cc
+                memory/ref_counted.cc
+                memory/ref_counted_memory.cc
+                memory/singleton.cc
+                memory/weak_ptr.cc
+                message_loop/incoming_task_queue.cc
+                message_loop/message_loop.cc
+                message_loop/message_loop_proxy.cc
+                message_loop/message_loop_proxy_impl.cc
+                message_loop/message_pump.cc
+                message_loop/message_pump_default.cc
+                message_loop/message_pump_libevent.cc
+                message_loop/message_pump_ozone.cc
+                metrics/bucket_ranges.cc
+                metrics/histogram_base.cc
+                metrics/histogram.cc
+                metrics/histogram_samples.cc
+                metrics/sample_map.cc
+                metrics/sample_vector.cc
+                metrics/sparse_histogram.cc
+                metrics/statistics_recorder.cc
+                pending_task.cc
+                pickle.cc
+                platform_file.cc
+                platform_file_posix.cc
+                posix/file_descriptor_shuffle.cc
+                process/internal_linux.cc
+                process/process_handle_linux.cc
+                process/process_handle_posix.cc
+                profiler/alternate_timer.cc
+                profiler/tracked_time.cc
+                rand_util.cc
+                rand_util_posix.cc
+                run_loop.cc
+                safe_strerror_posix.cc
+                sequence_checker_impl.cc
+                sequenced_task_runner.cc
+                sha1_portable.cc
+                strings/string16.cc
+                strings/string_number_conversions.cc
+                strings/string_piece.cc
+                strings/stringprintf.cc
+                strings/string_split.cc
+                strings/string_util.cc
+                strings/string_util_constants.cc
+                strings/sys_string_conversions_posix.cc
+                strings/utf_string_conversions.cc
+                strings/utf_string_conversion_utils.cc
+                synchronization/cancellation_flag.cc
+                synchronization/condition_variable_posix.cc
+                synchronization/lock.cc
+                synchronization/lock_impl_posix.cc
+                synchronization/waitable_event_posix.cc
+                sync_socket_posix.cc
+                sys_info.cc
+                sys_info_chromeos.cc
+                sys_info_posix.cc
+                task_runner.cc
+                third_party/dmg_fp/dtoa.cc
+                third_party/dmg_fp/g_fmt.cc
+                third_party/dynamic_annotations/dynamic_annotations.c
+                third_party/icu/icu_utf.cc
+                third_party/nspr/prtime.cc
+                threading/non_thread_safe_impl.cc
+                threading/platform_thread_linux.cc
+                threading/platform_thread_posix.cc
+                threading/post_task_and_reply_impl.cc
+                threading/sequenced_worker_pool.cc
+                threading/simple_thread.cc
+                threading/thread.cc
+                threading/thread_checker_impl.cc
+                threading/thread_collision_warner.cc
+                threading/thread_id_name_manager.cc
+                threading/thread_local_posix.cc
+                threading/thread_local_storage_posix.cc
+                threading/thread_restrictions.cc
+                thread_task_runner_handle.cc
+                timer/timer.cc
+                time/time.cc
+                time/time_posix.cc
+                tracked_objects.cc
+                tracking_info.cc
+                values.cc
+                vlog.cc
+                """,
+    'prefix' : 'base',
+    'libs' : 'event pthread rt',
+    'pc_libs' : '',
+  },
+  {
+    'name' : 'dl',
+    'sources' : """
+                native_library_posix.cc
+                """,
+    'prefix' : 'base',
+    'libs' : 'dl',
+    'pc_libs' : '',
+  },
+  {
+    'name' : 'dbus',
+    'sources' : """
+                bus.cc
+                dbus_statistics.cc
+                exported_object.cc
+                file_descriptor.cc
+                message.cc
+                object_manager.cc
+                object_path.cc
+                object_proxy.cc
+                property.cc
+                string_util.cc
+                values_util.cc
+                """,
+    'prefix' : 'dbus',
+    'libs' : '',
+    'pc_libs' : 'dbus-1 protobuf',
+  },
+]
+
+env = Environment()
+
+BASE_VER = os.environ.get('BASE_VER', '0')
+PKG_CONFIG = os.environ.get('PKG_CONFIG', 'pkg-config')
+CHROME_INCLUDE_PATH = os.environ.get('CHROME_INCLUDE_PATH', '.')
+
+env.Append(
+  CPPPATH=['files'],
+  CCFLAGS=['-g']
+)
+for key in Split('CC CXX AR RANLIB LD NM CFLAGS CCFLAGS'):
+  value = os.environ.get(key)
+  if value:
+    env[key] = Split(value)
+
+env['CCFLAGS'] += ['-fPIC',
+                   '-fno-exceptions',
+                   '-Wall',
+                   '-Werror',
+                   '-Wno-psabi',
+                   # Various #defines are hardcoded near the top of
+                   # build_config.h to ensure that they'll be set both when
+                   # libchrome is built and when other packages include
+                   # libchrome's headers.
+                   '-I%s' % CHROME_INCLUDE_PATH]
+
+# Flags for clang taken from build/common.gypi in the clang==1 section.
+CLANG_FLAGS = (
+  '-Wno-c++11-extensions',
+  '-Wno-char-subscripts',
+)
+
+env['CCFLAGS'] += ['-Xclang-only=%s' % x for x in CLANG_FLAGS]
+
+# Fix issue with scons not passing some vars through the environment.
+for key in Split('PKG_CONFIG SYSROOT'):
+  if os.environ.has_key(key):
+    env['ENV'][key] = os.environ[key]
+
+all_base_libs = []
+all_pc_libs = ''
+all_libs = []
+all_scons_libs = []
+
+# Build all the shared libraries.
+for lib in base_libs:
+  pc_libs = lib['pc_libs'].replace('${bslot}', BASE_VER)
+  all_pc_libs += ' ' + pc_libs
+
+  libs = Split(lib['libs'].replace('${bslot}', BASE_VER))
+  all_libs += libs
+
+  name = '%s-%s-%s' % (base_name, lib['name'], BASE_VER)
+  all_base_libs += [name]
+  corename = '%s-core-%s' % (base_name, BASE_VER)
+  # Automatically link the sub-libs against the main core lib.
+  # This is to keep from having to explicitly mention it in the
+  # table above (i.e. lazy).
+  if name != corename:
+    libs += [corename]
+
+  e = env.Clone()
+  e.Append(
+    LIBS = Split(libs),
+    LIBPATH = ['.'],
+    LINKFLAGS = ['-Wl,--as-needed', '-Wl,-z,defs',
+                 '-Wl,-soname,lib%s.so' % name],
+  )
+  if pc_libs:
+    e.ParseConfig(PKG_CONFIG + ' --cflags --libs %s' % pc_libs)
+
+  # Prepend prefix to source filenames.
+  sources = [os.path.join(lib['prefix'], x) for x in Split(lib['sources'])]
+
+  all_scons_libs += [ e.SharedLibrary(name, sources) ]
+
+
+# Build the random text files (pkg-config and linker script).
+
+def lib_list(libs):
+  return ' '.join(['-l' + l for l in libs])
+
+subst_dict = {
+  '@BSLOT@' : BASE_VER,
+  '@PRIVATE_PC@' : all_pc_libs,
+  '@BASE_LIBS@' : lib_list(all_base_libs),
+  '@LIBS@' : lib_list(all_libs),
+}
+env = Environment(tools = ['textfile'], SUBST_DICT = subst_dict)
+
+env.Substfile('libchrome-%s.pc' % BASE_VER,
+              [Value("""
+prefix=/usr
+includedir=${prefix}/include
+bslot=@BSLOT@
+
+Name: libchrome
+Description: chrome base library
+Version: ${bslot}
+Requires:
+Requires.private: glib-2.0 @PRIVATE_PC@
+Libs: -lbase-${bslot}
+Libs.private: @BASE_LIBS@ @LIBS@
+Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions
+""")])
+
+env.Substfile('libbase-%s.so' % BASE_VER,
+              [Value('GROUP ( AS_NEEDED ( @BASE_LIBS@ ) )')])
