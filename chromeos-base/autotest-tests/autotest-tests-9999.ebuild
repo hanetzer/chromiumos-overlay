@@ -80,9 +80,10 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_sound_infrastructure
 	+tests_sleeptest
 	+tests_unixbench
+	+tests_audio_AlsaLoopback
 	+tests_audio_Aplay
 	+tests_audio_CRASFormatConversion
-	+tests_audio_LineOutToMicInLoopback
+	+tests_audio_CrasLoopback
 	+tests_audio_LoopbackLatency
 	+tests_audio_Microphone
 	+tests_camera_V4L2
