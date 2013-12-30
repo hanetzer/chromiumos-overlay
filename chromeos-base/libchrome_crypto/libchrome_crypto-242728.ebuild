@@ -3,11 +3,11 @@
 
 # See logic for ${PV} behavior in the libchrome ebuild.
 
-# XXX: Yes, this hits svn rev 180245 instead of rev 180609, but
+# XXX: Yes, this hits svn rev 242277 instead of rev 242728, but
 #      that is correct.  See above note.
 
 EAPI="4"
-CROS_WORKON_COMMIT="001e5e97d7b300a1b68e7baee0187ab6a535b085"
+CROS_WORKON_COMMIT="6860633530e108f702904900ceb9b17093f2e4db"
 CROS_WORKON_PROJECT="chromium/src/crypto"
 CROS_WORKON_BLACKLIST="1"
 
@@ -17,7 +17,7 @@ DESCRIPTION="Chrome crypto/ library extracted for use on Chrome OS"
 HOMEPAGE="http://dev.chromium.org/chromium-os/packages/libchrome"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
@@ -31,11 +31,10 @@ src_prepare() {
 	ln -s "${S}" "${WORKDIR}/crypto" &> /dev/null
 	cp -p "${FILESDIR}/SConstruct-${PV}" "${S}/SConstruct" || die
 	epatch "${FILESDIR}/memory_annotation.patch"
-	epatch "${FILESDIR}/rsa_private_key_add_create_from_keypair.patch"
 }
 
 src_compile() {
-	tc-export AR CXX PKG_CONFIG RANLIB
+	tc-export AR CC CXX PKG_CONFIG RANLIB
 	cros-debug-add-NDEBUG
 
 	BASE_VER=${PV} escons || die
