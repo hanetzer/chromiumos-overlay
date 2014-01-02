@@ -11,7 +11,7 @@ DESCRIPTION="Chrome OS command-line shell"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 IUSE=""
@@ -27,10 +27,18 @@ RDEPEND="app-admin/sudo
 "
 DEPEND=""
 
+src_compile() {
+	# File order is important here.
+	sed \
+		-e '/^#/d' \
+		-e '/^$/d' \
+		inputrc.safe inputrc.extra \
+		> "${WORKDIR}"/inputrc.crosh || die
+}
+
 src_install() {
-	dobin crosh
-	dobin crosh-dev
-	dobin crosh-usb
-	dobin inputrc.crosh
+	dobin crosh crosh-{dev,usb}
 	dobin network_diagnostics
+	insinto /usr/share/misc
+	doins "${WORKDIR}"/inputrc.crosh
 }
