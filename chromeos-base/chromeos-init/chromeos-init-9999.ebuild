@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 
 # NOTE: vt can only be turned off for embedded currently.
-IUSE="cros_embedded nfs vt"
+IUSE="cros_embedded +encrypted_stateful nfs vt"
 
 DEPEND=""
 # vpd for vpd-log.conf of upstart
@@ -73,20 +73,12 @@ src_install() {
 		doins update-engine.conf wpasupplicant.conf
 
 		use vt && doins tty2.conf
-
-		# TODO(petkov): Consider a separate USE flag for mounting encrypted
-		# vs. unencrypted /var and /home/chronos (crbug.com/242840).
-		insinto /usr/share/cros
-		doins embedded-init/startup_utils.sh
 	else
 		insinto /etc/init
 		doins *.conf
 
 		dosbin chromeos-boot-alert
 		dosbin display_low_battery_alert
-
-		insinto /usr/share/cros
-		doins startup_utils.sh
 
 		into /usr
 		dosbin lightup_screen
@@ -101,4 +93,8 @@ src_install() {
 				"${D}/sbin/chromeos_startup" || die
 		fi
 	fi
+
+	insinto /usr/share/cros
+	doins $(usex encrypted_stateful encrypted_stateful \
+		unencrypted_stateful)/startup_utils.sh
 }
