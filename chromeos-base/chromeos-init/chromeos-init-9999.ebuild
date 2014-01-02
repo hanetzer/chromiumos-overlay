@@ -49,6 +49,9 @@ src_install() {
 	insinto /etc
 	doins issue rsyslog.chromeos
 
+	insinto /usr/share/cros
+	doins factory_utils.sh
+
 	into /	# We want /sbin, not /usr/sbin, etc.
 
 	# Install various utility files.
