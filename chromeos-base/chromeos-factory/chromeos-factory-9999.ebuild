@@ -99,8 +99,11 @@ src_install() {
 	# Directories used by Goofy.
 	keepdir /var/factory/{,log,state,tests}
 
-        # Make sure everything is group- and world-readable.
-        chmod -R go=rX "${D}${TARGET_DIR}"
+	# Install factory test enabled tag
+	touch "${D}${TARGET_DIR}/enabled"
+
+	# Make sure everything is group- and world-readable.
+	chmod -R go=rX "${D}${TARGET_DIR}"
 }
 
 pkg_postinst() {
