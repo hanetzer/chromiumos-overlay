@@ -44,7 +44,7 @@ REQUIRED_USE="
 	gdmwimax? ( wimax )
 "
 
-LIBCHROME_VERS=( 180609 )
+LIBCHROME_VERS=( 180609 242728 )
 
 LIBCHROME_DEPEND=$(
 	printf \
@@ -417,11 +417,10 @@ platform2_install_debugd() {
 }
 
 platform2_install_libchromeos() {
-	./platform2_preinstall.sh "${OUT}" "${LIBCHROME_VERS}"
-
 	local v
 	insinto /usr/$(get_libdir)/pkgconfig
 	for v in "${LIBCHROME_VERS[@]}"; do
+		./platform2_preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}"/lib/lib{chromeos,policy}*-${v}.so
 		doins "${OUT}"/lib/libchromeos-${v}.pc
 	done
