@@ -14,7 +14,8 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
 
@@ -27,6 +28,7 @@ DEPEND="dev-cpp/gtest
 	${RDEPEND}"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 }
 
