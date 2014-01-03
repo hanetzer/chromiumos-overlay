@@ -69,8 +69,8 @@
 +
 +#endif  /* arm-features.h */
 --- /dev/null	2013-10-23 09:34:06.260111032 -0700
-+++ ports/sysdeps/arm/eabi/memcpy.S	2013-10-30 14:00:12.000000000 -0700
-@@ -0,0 +1,970 @@
++++ ports/sysdeps/arm/eabi/memcpy.S     2014-01-13 08:39:48.259558891 -0800
+@@ -0,0 +1,974 @@
 +libc_hidden_builtin_def (memcpy)
 +#define MEMCPY_NEON
 +
@@ -499,6 +499,10 @@
 +	and	tmp1, dst, #3
 +	cmp	tmp1, tmp2
 +	bne	.Lcpy_notaligned
++
++	/* Use the non-aligned code for >=16K; faster on A7/A15 (A9 too?) */
++	cmp	count, #0x4000
++	bge	.Lcpy_notaligned
 +
 +#ifdef USE_VFP
 +	/* Magic dust alert!  Force VFP on Cortex-A9.  Experiments show
