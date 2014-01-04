@@ -20,7 +20,7 @@ REQUIRED_USE="
 	"
 
 RDEPEND="
-	opengl? ( virtual/opengl )
+	virtual/opengl
 	opengles? ( virtual/opengles )
 	wayland? ( >=dev-libs/wayland-1.0 )
 	egl? ( || ( virtual/opengles media-libs/mesa[egl] ) )
