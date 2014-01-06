@@ -73,7 +73,7 @@ src_install() {
 		PYTHON_SITEDIR="${EROOT}/$(python_get_sitedir)" \
 		PYTHON="$(PYTHON)" \
 		MAKE_PAR_ARGS="$make_par_args" \
-		par install
+		par install bundle
 
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
 
