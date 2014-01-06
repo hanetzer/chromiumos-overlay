@@ -69,6 +69,8 @@ src_install() {
 		doins 50-touchpad-cmt-parrot.conf
 	elif [ "${board_variant}" = "peach_pit" ]; then
 		doins 50-touchpad-cmt-pit.conf
+	elif [ "${board_variant}" = "peach_pi" ]; then
+		doins 50-touchpad-cmt-pi.conf
 	elif [ "${board}" = "peppy" ]; then
 		doins 50-touchpad-cmt-peppy.conf
 	elif [ "${board}" = "falco" ]; then
