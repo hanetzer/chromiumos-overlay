@@ -37,6 +37,7 @@ LIBCHROME_VERS="180609"
 #   network_3GStressEnable
 RDEPEND="
   chromeos-base/autotest-deps
+  !<=chromeos-base/autotest-factory-0.0.1-r4445
   !chromeless_tty? (
     !content_shell? (
       chromeos-base/autotest-deps-glbench
@@ -110,6 +111,8 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_desktopui_KillRestart
 	+tests_desktopui_Respawn
 	+tests_desktopui_SpeechSynthesisSemiAuto
+	+tests_dummy_Pass
+	+tests_dummy_Fail
 	tests_example_UnitTest
 	+tests_example_CrosTest
 	+tests_firmware_TouchMTB

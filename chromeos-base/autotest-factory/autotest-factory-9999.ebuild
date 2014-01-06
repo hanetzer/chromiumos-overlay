@@ -42,8 +42,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS="
-	+tests_dummy_Fail
-	+tests_dummy_Pass
 	+tests_factory_Antenna
 	+tests_factory_BasicCellular
 	+tests_factory_BasicGPS
