@@ -41,6 +41,14 @@ src_prepare() {
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
 		epatch "${FILESDIR}"/${P}-getmanifest.patch
 	fi
+
+	# Fix keycode to handle "Backquote" and "Escape" key correctly.
+	# TODO(hsumita): Remove this if next version of NaCl-Mozc is released.
+	if use_internal; then
+		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-fix-keycode.patch
+	else
+		epatch "${FILESDIR}"/${P}-fix-keycode.patch
+	fi
 }
 
 src_install() {
