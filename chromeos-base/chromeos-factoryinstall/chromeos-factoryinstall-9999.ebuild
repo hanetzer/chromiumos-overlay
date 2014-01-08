@@ -78,13 +78,13 @@ src_compile() {
 src_install() {
 	insinto /etc/init
 	doins factory_install.conf
-	doins factory_ui.conf
 
 	exeinto /usr/sbin
 	doexe factory_install.sh
 	doexe factory_reset.sh
 	doexe netboot_postinst.sh
 	doexe ping_shopfloor.sh
+	doexe secure_less.sh
 
 	insinto /root
 	newins $FILESDIR/dot.factory_installer .factory_installer

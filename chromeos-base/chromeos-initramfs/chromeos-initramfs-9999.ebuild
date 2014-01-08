@@ -189,6 +189,7 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/factory_install.sh
 	idobin /usr/sbin/netboot_postinst.sh
 	idobin /usr/sbin/ping_shopfloor.sh
+	idobin /usr/sbin/secure_less.sh
 	# chromeos-base/chromeos-installer
 	idobin /usr/sbin/chromeos-common.sh
 	idobin /usr/sbin/chromeos-install
@@ -231,6 +232,15 @@ pull_netboot_ramfs_binary() {
 	# Network support
 	cp "${FILESDIR}"/udhcpc.script "${INITRAMFS_TMP_S}/etc" || die
 	chmod +x "${INITRAMFS_TMP_S}/etc/udhcpc.script"
+
+	# Create a dummy /etc/passwd with root and nobody.  This is
+	# necessary to let processes drop privileges and become
+	# nobody.  We use the same settings as in the root fs.
+	cp "${FILESDIR}"/passwd "${INITRAMFS_TMP_S}/etc" || die
+	chmod 400 "${INITRAMFS_TMP_S}/etc/passwd"
+
+        # Create /var/empty as home directory for nobody user.
+	mkdir -p "${INITRAMFS_TMP_S}/var/empty"
 
 	# USB Ethernet kernel module
 	USBNET_MOD_PATH=$(find "${SYSROOT}"/lib/modules/ -name usbnet.ko)
