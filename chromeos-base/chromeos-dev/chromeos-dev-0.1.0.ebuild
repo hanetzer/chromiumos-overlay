@@ -38,7 +38,7 @@ CROS_COMMON_RDEPEND="
 	app-editors/qemacs
 	app-editors/vim
 	app-shells/bash
-	chromeos-base/chromeos-dev-init
+	chromeos-base/chromeos-dev-root
 	chromeos-base/gmerge
 	chromeos-base/shill-test-scripts
 	dev-util/strace
