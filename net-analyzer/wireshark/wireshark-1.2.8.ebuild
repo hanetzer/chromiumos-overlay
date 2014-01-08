@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/net-analyzer/wireshark/wireshark-1.2.6.ebuild,v 1.6 2010/01/30 15:07:41 pva Exp $
 
 EAPI=2
-inherit autotools libtool flag-o-matic eutils toolchain-funcs
+inherit autotools libtool flag-o-matic eutils toolchain-funcs user
 
 DESCRIPTION="A network protocol analyzer formerly known as ethereal"
 HOMEPAGE="http://www.wireshark.org/"

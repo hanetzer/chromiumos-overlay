@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit eutils multilib versionator linux-mod flag-o-matic nvidia-driver
+inherit eutils multilib versionator linux-mod flag-o-matic nvidia-driver user
 
 X86_NV_PACKAGE="NVIDIA-Linux-x86-${PV}"
 AMD64_NV_PACKAGE="NVIDIA-Linux-x86_64-${PV}"

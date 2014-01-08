@@ -4,7 +4,7 @@
 
 EAPI=4
 
-inherit eutils multilib toolchain-funcs autotools flag-o-matic
+inherit eutils multilib toolchain-funcs autotools flag-o-matic user
 
 DESCRIPTION="Robust and highly flexible tunneling application compatible with many OSes."
 SRC_URI="http://swupdate.openvpn.org/community/releases/${P}.tar.gz"

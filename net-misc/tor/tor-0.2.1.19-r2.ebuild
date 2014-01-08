@@ -4,7 +4,7 @@
 
 EAPI=2
 
-inherit eutils
+inherit eutils user
 
 DESCRIPTION="Anonymizing overlay network for TCP"
 HOMEPAGE="http://www.torproject.org/"

@@ -12,7 +12,7 @@ if [[ ${PV} = *9999* ]]; then
 	GIT_ECLASS="git-2"
 fi
 
-inherit eutils flag-o-matic ${GIT_ECLASS} linux-info toolchain-funcs multilib python
+inherit eutils flag-o-matic ${GIT_ECLASS} linux-info toolchain-funcs multilib python user
 
 if [[ ${PV} = *9999* ]]; then
 	SRC_URI=""

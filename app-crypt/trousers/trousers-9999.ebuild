@@ -6,7 +6,7 @@
 EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
 
-inherit autotools base cros-workon eutils linux-info
+inherit autotools base cros-workon eutils linux-info user
 
 DESCRIPTION="An open-source TCG Software Stack (TSS) v1.1 implementation"
 HOMEPAGE="http://trousers.sf.net"
