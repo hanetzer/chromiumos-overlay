@@ -131,6 +131,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Add-workaround-for-HIZ-resolves.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
+	epatch "${FILESDIR}"/9.1-disable-vs-workaround.patch
 
 	base_src_prepare
 

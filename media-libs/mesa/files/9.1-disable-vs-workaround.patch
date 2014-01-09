@@ -1,0 +1,13 @@
+diff --git a/src/mesa/drivers/dri/i965/gen7_vs_state.c b/src/mesa/drivers/dri/i965/gen7_vs_state.c
+index 1b97e8c..92288d9 100644
+--- a/src/mesa/drivers/dri/i965/gen7_vs_state.c
++++ b/src/mesa/drivers/dri/i965/gen7_vs_state.c
+@@ -37,8 +37,6 @@ upload_vs_state(struct brw_context *brw)
+    const int max_threads_shift = brw->intel.is_haswell ?
+       HSW_VS_MAX_THREADS_SHIFT : GEN6_VS_MAX_THREADS_SHIFT;
+ 
+-   gen7_emit_vs_workaround_flush(intel);
+-
+    /* BRW_NEW_VS_BINDING_TABLE */
+    BEGIN_BATCH(2);
+    OUT_BATCH(_3DSTATE_BINDING_TABLE_POINTERS_VS << 16 | (2 - 2));

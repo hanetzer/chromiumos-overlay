@@ -142,6 +142,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-i965-Disable-ctx-gen6.patch
 	epatch "${FILESDIR}"/9.1-i965-hsw-Apply-non-msrt-fast-color-clear-w-a-to-all-.patch
 	epatch "${FILESDIR}"/9.1-i965-Add-workaround-for-HIZ-resolves.patch
+	epatch "${FILESDIR}"/9.1-disable-vs-workaround.patch
 
 	base_src_prepare
 
