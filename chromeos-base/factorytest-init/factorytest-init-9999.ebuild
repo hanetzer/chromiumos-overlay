@@ -25,13 +25,6 @@ RDEPEND="chromeos-base/chromeos-init
 
 CROS_WORKON_LOCALNAME="factory_test_init"
 
-src_install() {
-	dodir /etc/init
-	insinto /etc/init
-	doins factory.conf
-	doins factorylog.conf
-}
-
 modify_upstart() {
 	local upstart_file="$1"
 	local new_rules="$2"
