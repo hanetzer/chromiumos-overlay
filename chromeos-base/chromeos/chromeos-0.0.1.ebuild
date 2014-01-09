@@ -183,7 +183,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/chromeos-hangul
 	app-laptop/laptop-mode-tools
 	app-shells/bash
-	chromeos-base/board-devices
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
 	chromeos-base/chromeos-imageburner

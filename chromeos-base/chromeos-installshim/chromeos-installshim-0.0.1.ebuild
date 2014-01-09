@@ -25,7 +25,6 @@ RDEPEND="
 	app-crypt/trousers
 	app-shells/bash
 	app-shells/dash
-	chromeos-base/board-devices
 	chromeos-base/chromeos-auth-config
 	chromeos-base/chromeos-base
 	chromeos-base/chromeos-factoryinstall
