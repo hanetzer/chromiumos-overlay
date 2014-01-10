@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Install packages that must live in the rootfs in dev images.
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/openssh-server-init
+SLOT=0
+_md5_=6daf80f18aea1cb1c148353d701a8bd7
