@@ -96,7 +96,10 @@ add_pgo_arches() {
 }
 
 RESTRICT="mirror"
-add_pgo_arches x86 amd64 arm
+# This logic doesn't work with Manifest files.  We'll need to fetch this data
+# in a different way (that doesn't involve SRC_URI).  Or we'll need to update
+# the bots to also generate the Manifest on the fly.
+#add_pgo_arches x86 amd64 arm
 
 TEST_FILES=("video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=(
