@@ -88,7 +88,13 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/modemmanager.conf"
 
+	# Override the ModemManager DBus configuration file to constrain how
+	# ModemManager exposes its DBus service on Chrome OS.
+	insinto /etc/dbus-1/system.d
+	doins "${FILESDIR}/org.freedesktop.ModemManager1.conf"
+
 	# Install Chrome OS specific udev rules.
+	udev_dorules "${FILESDIR}/52-mm-modem-permissions.rules"
 	udev_dorules "${FILESDIR}/77-mm-huawei-configuration.rules"
 
 	# When built with USE=gobi, override 80-mm-candidate.rules provided by
