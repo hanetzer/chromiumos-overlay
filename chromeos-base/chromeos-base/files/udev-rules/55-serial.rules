@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-KERNEL=="tty[A-Z]*[0-9]", GROUP="serial"
-# Don't allow access to serial interfaces on Gobi modems.
-KERNEL=="tty[A-Z]*[0-9]", DRIVERS=="qcserial", GROUP="root"
-# Don't allow access to serial interfaces on Novatel modems.
-KERNEL=="tty[A-Z]*[0-9]", DRIVERS=="option", GROUP="root"
+# 'ID_MM_DEVICE_IS_MODEM' is set by 52-mm-modem-permissions.rules from the
+# modemmanager-next package. If 'ID_MM_DEVICE_IS_MODEM' is set to 1, the tty
+# device is associated with a modem and should not be accessible by the
+# 'serial' group.
+KERNEL=="tty[A-Z]*[0-9]", ENV{ID_MM_DEVICE_IS_MODEM}!="1", GROUP="serial"
