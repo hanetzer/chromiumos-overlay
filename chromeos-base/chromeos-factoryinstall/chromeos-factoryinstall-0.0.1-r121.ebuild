@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="4bd848d135206f0babcbf6c21a09476f57de6b57"
-CROS_WORKON_TREE="3ce347f84b5e3afeebd0ffc26401afbefa0cced5"
+CROS_WORKON_COMMIT="3d1d507f5952e060c273d41828e4b68246d648ea"
+CROS_WORKON_TREE="d6d509853bbbda6b3ed6f3029943dcbef54208c4"
 CROS_WORKON_PROJECT="chromiumos/platform/factory_installer"
 
 inherit cros-workon toolchain-funcs
@@ -80,13 +80,13 @@ src_compile() {
 src_install() {
 	insinto /etc/init
 	doins factory_install.conf
-	doins factory_ui.conf
 
 	exeinto /usr/sbin
 	doexe factory_install.sh
 	doexe factory_reset.sh
 	doexe netboot_postinst.sh
 	doexe ping_shopfloor.sh
+	doexe secure_less.sh
 
 	insinto /root
 	newins $FILESDIR/dot.factory_installer .factory_installer

@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="74b0711d3cc6f551c27fee71638db4435dd7139d"
-CROS_WORKON_TREE="192ebf8baee9302f043136350dd9df6ae97ee29e"
+CROS_WORKON_COMMIT="c4e5f6ee9b00afd2c629511ccd099a1141051fd0"
+CROS_WORKON_TREE="32a336f9af7e09b4e22dd5e4fa338b8e659ff854"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 CROS_WORKON_LOCALNAME="initramfs"
 CROS_WORKON_OUTOFTREE_BUILD="1"
@@ -191,6 +191,7 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/factory_install.sh
 	idobin /usr/sbin/netboot_postinst.sh
 	idobin /usr/sbin/ping_shopfloor.sh
+	idobin /usr/sbin/secure_less.sh
 	# chromeos-base/chromeos-installer
 	idobin /usr/sbin/chromeos-common.sh
 	idobin /usr/sbin/chromeos-install
@@ -233,6 +234,15 @@ pull_netboot_ramfs_binary() {
 	# Network support
 	cp "${FILESDIR}"/udhcpc.script "${INITRAMFS_TMP_S}/etc" || die
 	chmod +x "${INITRAMFS_TMP_S}/etc/udhcpc.script"
+
+	# Create a dummy /etc/passwd with root and nobody.  This is
+	# necessary to let processes drop privileges and become
+	# nobody.  We use the same settings as in the root fs.
+	cp "${FILESDIR}"/passwd "${INITRAMFS_TMP_S}/etc" || die
+	chmod 400 "${INITRAMFS_TMP_S}/etc/passwd"
+
+        # Create /var/empty as home directory for nobody user.
+	mkdir -p "${INITRAMFS_TMP_S}/var/empty"
 
 	# USB Ethernet kernel module
 	USBNET_MOD_PATH=$(find "${SYSROOT}"/lib/modules/ -name usbnet.ko)
