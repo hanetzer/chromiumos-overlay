@@ -75,6 +75,11 @@ src_install() {
 		MAKE_PAR_ARGS="$make_par_args" \
 		par install bundle
 
+	# Sanity check: make sure we can import stuff with only the
+	# .par file.
+	PYTHONPATH="${D}${TARGET_DIR}/bundle/shopfloor/factory.par" \
+		"$(PYTHON)" -c "import cros.factory.test.state" || die
+
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
 
 	# Replace chromeos-common.sh symlink with the real file
@@ -108,8 +113,4 @@ src_install() {
 
 pkg_postinst() {
 	python_mod_optimize ${TARGET_DIR}/py
-	# Sanity check: make sure we can import stuff with only the
-	# .par file.
-	PYTHONPATH="${EROOT}/${TARGET_DIR}/bundle/shopfloor/factory.par" \
-		"$(PYTHON)" -c "import cros.factory.test.state" || die
 }
