@@ -6,5 +6,5 @@ HOMEPAGE=https://github.com/bradfa/flashbench
 KEYWORDS=~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86
 LICENSE=GPL-2
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	d40dc948067bd3db1c8ebf7d51897313	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=e97a9ae708bafc387ea810a0f4dd09fc

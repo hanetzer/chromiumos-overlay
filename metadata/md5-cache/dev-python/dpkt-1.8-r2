@@ -9,5 +9,5 @@ LICENSE=BSD
 RDEPEND==dev-lang/python-2*
 SLOT=0
 SRC_URI=http://dpkt.googlecode.com/files/dpkt-1.8.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils	c2658824b3debc637c77b58e1d658fab	eutils	d40dc948067bd3db1c8ebf7d51897313	multilib	ded93e450747134a079e647d888aa80b	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	9e552f935106ff0bc92af16da64b4b29
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils	c2658824b3debc637c77b58e1d658fab	eutils	a108f00cccac414097bcbbbb5de01762	multilib	ded93e450747134a079e647d888aa80b	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=109c91b0f27d624864e64cc7a632ea50
