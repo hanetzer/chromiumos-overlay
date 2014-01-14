@@ -108,6 +108,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/dbus-python
 	dev-util/hdctools
 	dev-util/libc-bench
+	dev-util/mem
 	media-sound/sox
 	net-analyzer/netperf
 	net-analyzer/tcpdump
