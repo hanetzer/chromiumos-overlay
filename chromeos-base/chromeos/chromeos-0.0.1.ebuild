@@ -38,11 +38,9 @@ IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
 # direct dependency of the ebuilds for all packages that actually use it -- in
 # time, this ensures correct builds and allows easier cleanup of obsolete
 # packages. For example, if a utility will be invoked by the session manager,
-# its package should be added as a dependency in the chromeos-login ebuild. Or
-# if the package adds a daemon that will be started through an upstart job, it
-# should be added as a dependency in the chromeos-init ebuild. If the package
-# really needs to be a direct dependency of the chromeos ebuild, consider adding
-# a comment why the package is needed and how it's used.
+# its package should be added as a dependency in the chromeos-login ebuild. If
+# the package really needs to be a direct dependency of the chromeos ebuild,
+# consider adding a comment why the package is needed and how it's used.
 #
 # 3. Are all default package features and dependent packages needed?
 #
@@ -102,6 +100,7 @@ CROS_COMMON_RDEPEND="
 	pam? ( sys-auth/pam_pwdfile )
 	mtd? ( sys-fs/mtd-utils )
 	virtual/chromeos-bsp
+	virtual/chromeos-firewall
 	virtual/chromeos-firmware
 	virtual/chromeos-interface
 	virtual/implicit-system

@@ -4,7 +4,6 @@
 <use>
 	<flag name='cros_embedded'>Build for cros embedded devices.</flag>
 	<flag name='encrypted_stateful'>Encrypted /var and /home/chronos</flag>
-	<flag name='nfs'>Allow mounting of root device using NFS.</flag>
 	<flag name='vt'>Add upstart job for starting up VT2 terminal.</flag>
 </use>
 </pkgmetadata>
