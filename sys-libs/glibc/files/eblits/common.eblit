@@ -52,11 +52,6 @@ setup_target_flags() {
 	# glibc. We don't want to bootstrap libc again.
 	export SYSROOT=""
 
-	# Never use gold to build glibc. Manually force GNU ld, whatever the actual settings are.
-	# Glibc does not link with gold because of missing features. It also doesn't pass the
-	# configure check.
-	export CC="$(tc-getCC ${CTARGET}) -B$(get_binutils_path_ld ${CTARGET})"
-
 	case $(tc-arch) in
 		x86)
 			# -march needed for #185404 #199334

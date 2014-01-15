@@ -120,6 +120,7 @@ toolchain-glibc_src_compile() {
 	for v in ABI CBUILD CHOST CTARGET CBUILD_OPT CTARGET_OPT CC {AS,C,CPP,CXX,LD}FLAGS ; do
 		einfo " $(printf '%15s' ${v}:)   ${!v}"
 	done
+
 	export CC=$(tc-getCC ${CTARGET})
 	# At this stage, gcc adds hardened options regardless of "use hardened"
 	# or not. So for arm glibc compile, currently manually disable stack
@@ -133,6 +134,13 @@ toolchain-glibc_src_compile() {
 		# and hardened gcc (has option -nopie).
 		CC="$CC $(test-flags-CC -nopie)"
 		CC="$CC $(test-flags-CC -fno-pie)"
+	fi
+	# Glibc does not work with gold (for various reasons) #269274.
+	if $(tc-getLD ${CTARGET}) --version | grep -q 'GNU gold' ; then
+		local d="${T}/bfd-linker"
+		mkdir -p "${d}"
+		ln -sf $(which ${CTARGET}-ld.bfd) "${d}"/ld
+		CC+=" -B${d}"
 	fi
 	einfo " $(printf '%15s' 'Manual CC:')   ${CC}"
 	echo
