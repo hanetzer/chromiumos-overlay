@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
 	cros_embedded +fonts gdmwimax mtd nfc opengles pam
-	+network_time +syslog X"
+	+network_time +syslog watchdog X"
 
 ################################################################################
 #
@@ -206,6 +206,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/crda
 	net-wireless/marvell_sd8787
 	net-wireless/realtek-rt2800-firmware
+	watchdog? ( sys-apps/daisydog )
 	sys-apps/dbus
 	sys-apps/flashrom
 	sys-apps/mosys
