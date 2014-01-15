@@ -122,6 +122,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/i2c-tools
 	sys-apps/kbd
 	sys-apps/less
+	sys-apps/mmc-utils
 	sys-apps/smartmontools
 	usb? ( sys-apps/usbutils )
 	sys-apps/which
