@@ -93,6 +93,7 @@ CROS_RDEPEND="
 
 CROS_RDEPEND="${CROS_RDEPEND}
 	app-admin/sudo
+	app-admin/sysstat
 	app-arch/gzip
 	app-benchmarks/punybench
 	app-crypt/nss
