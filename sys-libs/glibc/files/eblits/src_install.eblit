@@ -174,23 +174,6 @@ toolchain-glibc_src_install() {
 		fi
 	done
 
-	if ! has noinfo ${FEATURES} && [[ -n ${INFOPAGE_VER} ]] ; then
-		einfo "Installing info pages..."
-
-		emake \
-			-C "${GBUILDDIR}" \
-			install_root="${install_root}" \
-			info -i || die
-	fi
-
-	if [[ -n ${MANPAGE_VER} ]] ; then
-		einfo "Installing man pages..."
-
-		# Install linuxthreads man pages even if nptl is enabled
-		cd "${WORKDIR}"/man
-		doman *.3thr
-	fi
-
 	cd "${S}"
 
 	# Install misc network config files
