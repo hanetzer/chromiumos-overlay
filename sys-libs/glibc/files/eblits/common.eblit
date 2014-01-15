@@ -306,3 +306,11 @@ setup_env() {
 just_headers() {
 	is_crosscompile && use crosscompile_opts_headers-only
 }
+
+glibc_banner() {
+	local b="Gentoo ${PVR}"
+	[[ -n ${SNAP_VER} ]] && b+=" snapshot ${SNAP_VER}"
+	[[ -n ${BRANCH_UPDATE} ]] && b+=" branch ${BRANCH_UPDATE}"
+	[[ -n ${PATCH_VER} ]] && ! use vanilla && b+=" p${PATCH_VER}"
+	echo "${b}"
+}

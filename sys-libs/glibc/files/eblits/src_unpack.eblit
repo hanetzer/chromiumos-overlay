@@ -134,9 +134,10 @@ toolchain-glibc_src_unpack() {
 
 	# tag, glibc is it
 	cd "${S}"
-	[[ -e csu/Banner ]] && die "need new banner location"
-	[[ -n ${SNAP_VER} ]] && echo "Gentoo snapshot ${SNAP_VER}" >> csu/Banner
-	[[ -n ${BRANCH_UPDATE} ]] && echo "Gentoo branch ${BRANCH_UPDATE}" >> csu/Banner
+	if ! version_is_at_least 2.17 ; then
+		[[ -e csu/Banner ]] && die "need new banner location"
+		glibc_banner > csu/Banner
+	fi
 	if [[ -n ${PATCH_VER} ]] && ! use vanilla ; then
 		cd "${S}"
 		EPATCH_MULTI_MSG="Applying Gentoo Glibc Patchset ${RELEASE_VER}-${PATCH_VER} ..." \
@@ -144,7 +145,6 @@ toolchain-glibc_src_unpack() {
 		EPATCH_SUFFIX="patch" \
 		ARCH=$(tc-arch) \
 		epatch "${WORKDIR}"/patches
-		echo "Gentoo patchset ${PATCH_VER}" >> csu/Banner
 	fi
 
 	if just_headers ; then
@@ -169,7 +169,7 @@ eblit-glibc-src_unpack() {
 
 	# Glibc is stupid sometimes, and doesn't realize that with a
 	# static C-Only gcc, -lgcc_eh doesn't exist.
-	# http://sources.redhat.com/ml/libc-alpha/2003-09/msg00100.html
+	# http://sourceware.org/ml/libc-alpha/2003-09/msg00100.html
 	# http://sourceware.org/ml/libc-alpha/2005-02/msg00042.html
 	# But! Finally fixed in recent versions:
 	# http://sourceware.org/ml/libc-alpha/2012-05/msg01865.html
