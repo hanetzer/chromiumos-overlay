@@ -1,0 +1,57 @@
+From 46cd66557179dd0fe3bde0a746d0388579fde4a6 Mon Sep 17 00:00:00 2001
+From: Chad Versace <chad.versace@linux.intel.com>
+Date: Mon, 23 Dec 2013 17:46:51 -0800
+Subject: [PATCH 1/2] i965/gen6/blorp: Set need_workaround_flush immediately
+ after primitive
+
+This patch makes the workaround code in gen6 blorp follow the pattern
+established in the regular draw path. It shouldn't result in any
+behavioral change.
+
+On gen6, there are two places where we emit 3D_CMD_PRIM: brw_emit_prim()
+and gen6_blorp_emit_primitive().  brw_emit_prim() sets
+need_workaround_flush immediately after emitting the primitive, but
+blorp does not. Blorp sets need_workaround_flush at the bottom of
+brw_blorp_exec().
+
+This patch moves the need_workaround_flush from brw_blorp_exec() to
+gen6_blorp_emit_primitive().  There is no need to set
+need_workaround_flush in gen7_blorp_emit_primitive() because the
+workaround applies only to gen6.
+
+Reviewed-by: Paul Berry <stereotype441@gmail.com>
+Signed-off-by: Chad Versace <chad.versace@linux.intel.com>
+---
+ src/mesa/drivers/dri/i965/brw_blorp.cpp  | 1 -
+ src/mesa/drivers/dri/i965/gen6_blorp.cpp | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_blorp.cpp b/src/mesa/drivers/dri/i965/brw_blorp.cpp
+index ab3e75c..0939a31 100644
+--- a/src/mesa/drivers/dri/i965/brw_blorp.cpp
++++ b/src/mesa/drivers/dri/i965/brw_blorp.cpp
+@@ -274,7 +274,6 @@ retry:
+     */
+    brw->state.dirty.brw = ~0;
+    brw->state.dirty.cache = ~0;
+-   brw->batch.need_workaround_flush = true;
+    brw->ib.type = -1;
+    intel_batchbuffer_clear_cache(brw);
+ 
+diff --git a/src/mesa/drivers/dri/i965/gen6_blorp.cpp b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+index 6a5841f..1e69a86 100644
+--- a/src/mesa/drivers/dri/i965/gen6_blorp.cpp
++++ b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+@@ -1010,6 +1010,9 @@ gen6_blorp_emit_primitive(struct brw_context *brw,
+    OUT_BATCH(0);
+    OUT_BATCH(0);
+    ADVANCE_BATCH();
++
++   /* Only used on Sandybridge; harmless to set elsewhere. */
++   brw->batch.need_workaround_flush = true;
+ }
+ 
+ 
+-- 
+1.8.5.2
+

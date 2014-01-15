@@ -129,10 +129,11 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
 	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
-	epatch "${FILESDIR}"/10.0-i965-Add-workaround-for-HIZ-resolves.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
 	epatch "${FILESDIR}"/10.0-disable-vs-workaround.patch
 	epatch "${FILESDIR}"/10.0-out-of-aperture.patch
+	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-at-top-of-.patch
+	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-immediatel.patch
 
 	base_src_prepare
 
