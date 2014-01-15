@@ -29,6 +29,10 @@ RDEPEND="chromeos-base/chromeos-init
 
 DEPEND=""
 
+src_test() {
+        test/storage_info_unit_test || die "Unit test failed"
+}
+
 src_install() {
 	exeinto /usr/share/userfeedback/scripts
 	doexe scripts/* || die "Could not copy scripts"
