@@ -35,7 +35,7 @@ PATCH_VER="22"                                 # Gentoo patchset
 PORTS_VER=${RELEASE_VER}                       # version of glibc ports addon
 NPTL_KERN_VER=${NPTL_KERN_VER:-"2.6.9"}        # min kernel version nptl requires
 
-IUSE="debug gd hardened multilib nscd selinux profile vanilla crosscompile_opts_headers-only"
+IUSE="debug gd hardened multilib nscd selinux profile suid vanilla crosscompile_opts_headers-only"
 [[ -n ${RELEASE_VER} ]] && S=${WORKDIR}/glibc-${RELEASE_VER}${SNAP_VER:+-${SNAP_VER}}
 
 # Here's how the cross-compile logic breaks down ...

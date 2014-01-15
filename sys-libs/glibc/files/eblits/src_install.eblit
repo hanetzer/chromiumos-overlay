@@ -131,6 +131,13 @@ toolchain-glibc_src_install() {
 		fi
 	done
 
+	# With devpts under Linux mounted properly, we do not need the pt_chown
+	# binary to be setuid.  This is because the default owners/perms will be
+	# exactly what we want.
+	if in_iuse suid && ! use suid ; then
+		find "${D}" -name pt_chown -exec chmod -s {} +
+	fi
+
 	#################################################################
 	# EVERYTHING AFTER THIS POINT IS FOR NATIVE GLIBC INSTALLS ONLY #
 	# Make sure we install some symlink hacks so that when we build
