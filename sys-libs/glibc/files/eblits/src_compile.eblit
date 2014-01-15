@@ -83,6 +83,7 @@ glibc_do_configure() {
 		$(use_multiarch || echo --disable-multi-arch)
 		--enable-obsolete-rpc
 		$(in_iuse systemtap && use_enable systemtap)
+		$(in_iuse nscd && use_enable nscd)
 		${EXTRA_ECONF}"
 
 	# There is no configure option for this and we need to export it

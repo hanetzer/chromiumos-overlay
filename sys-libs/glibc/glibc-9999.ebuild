@@ -28,7 +28,7 @@ PATCH_VER=""                                   # Gentoo patchset
 PORTS_VER=${RELEASE_VER}                       # version of glibc ports addon
 NPTL_KERN_VER=${NPTL_KERN_VER:-"2.6.9"}        # min kernel version nptl requires
 
-IUSE="debug gd hardened multilib selinux systemtap profile vanilla crosscompile_opts_headers-only"
+IUSE="debug gd hardened multilib nscd selinux systemtap profile vanilla crosscompile_opts_headers-only"
 
 # Here's how the cross-compile logic breaks down ...
 #  CTARGET - machine that will target the binaries
@@ -187,4 +187,11 @@ eblit-src_unpack-post() {
 			nscd/Makefile \
 			|| die "Failed to ensure nscd builds with ssp-all"
 	fi
+}
+
+eblit-src_compile-pre() {
+	# Undefine USE_NSCD to disable of the use of nscd implementation
+	# in glibc functions (crosbug.com/21924).
+	# We can drop this once we move to glibc-2.18+ as those have configure flags.
+	append-cppflags -UUSE_NSCD
 }

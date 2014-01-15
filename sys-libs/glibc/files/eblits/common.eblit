@@ -191,10 +191,6 @@ setup_flags() {
 	# this flag for us, so no need to do it manually.
 	version_is_at_least 2.16 ${PV} || append-cppflags -U_FORTIFY_SOURCE
 
-	# Undefine USE_NSCD to disable of the use of nscd implementation
-	# in glibc functions (crosbug.com/21924).
-	append-cppflags -UUSE_NSCD
-
 	# building glibc with SSP is fraught with difficulty, especially
 	# due to __stack_chk_fail_local which would mean significant changes
 	# to the glibc build process. See bug #94325 #293721

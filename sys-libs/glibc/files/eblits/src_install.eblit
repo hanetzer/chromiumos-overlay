@@ -197,13 +197,19 @@ toolchain-glibc_src_install() {
 	insinto /etc
 	doins nscd/nscd.conf posix/gai.conf nss/nsswitch.conf || die
 	doins "${WORKDIR}"/extra/etc/*.conf || die
-	doinitd "${WORKDIR}"/extra/etc/nscd || die
 
-	local nscd_args=(
-		-e "s:@PIDFILE@:$(strings "${D}"/usr/sbin/nscd | grep nscd.pid):"
-	)
-	version_is_at_least 2.16 || nscd_args+=( -e 's: --foreground : :' )
-	sed -i "${nscd_args[@]}" "${D}"/etc/init.d/nscd
+	if ! in_iuse nscd || use nscd ; then
+		doinitd "${WORKDIR}"/extra/etc/nscd || die
+
+		local nscd_args=(
+			-e "s:@PIDFILE@:$(strings "${D}"/usr/sbin/nscd | grep nscd.pid):"
+		)
+		version_is_at_least 2.16 || nscd_args+=( -e 's: --foreground : :' )
+		sed -i "${nscd_args[@]}" "${D}"/etc/init.d/nscd
+	else
+		# Do this since extra/etc/*.conf above might have nscd.conf.
+		rm -f "${D}"/etc/nscd.conf
+	fi
 
 	echo 'LDPATH="include ld.so.conf.d/*.conf"' > "${T}"/00glibc
 	doenvd "${T}"/00glibc || die
