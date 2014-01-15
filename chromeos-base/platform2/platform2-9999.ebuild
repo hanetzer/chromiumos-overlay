@@ -79,7 +79,6 @@ RDEPEND_cros_disks="
 		dev-libs/dbus-c++
 		sys-apps/rootdev
 		sys-apps/util-linux
-		sys-block/eject
 		sys-block/parted
 		sys-fs/avfs
 		sys-fs/dosfstools
