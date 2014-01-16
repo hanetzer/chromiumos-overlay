@@ -190,6 +190,7 @@ env['CCFLAGS'] += ['-fPIC',
                    '-Wall',
                    '-Werror',
                    '-Wno-psabi',
+                   '-Wno-unused-local-typedefs',
                    '-DOS_CHROMEOS=1',
                    '-DTOOLKIT_VIEWS=1',
                    '-DUSE_AURA=1',
@@ -272,7 +273,7 @@ Requires:
 Requires.private: glib-2.0 @PRIVATE_PC@
 Libs: -lbase-${bslot}
 Libs.private: @BASE_LIBS@ @LIBS@
-Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions
+Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions -Wno-unused-local-typedefs
 """)])
 
 env.Substfile('libbase-%s.so' % BASE_VER,

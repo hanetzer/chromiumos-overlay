@@ -188,6 +188,7 @@ env['CCFLAGS'] += ['-fPIC',
                    '-Wall',
                    '-Werror',
                    '-Wno-psabi',
+                   '-Wno-unused-local-typedefs',
                    # Various #defines are hardcoded near the top of
                    # build_config.h to ensure that they'll be set both when
                    # libchrome is built and when other packages include
@@ -271,7 +272,7 @@ Requires:
 Requires.private: glib-2.0 @PRIVATE_PC@
 Libs: -lbase-${bslot}
 Libs.private: @BASE_LIBS@ @LIBS@
-Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions
+Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions -Wno-unused-local-typedefs
 """)])
 
 env.Substfile('libbase-%s.so' % BASE_VER,
