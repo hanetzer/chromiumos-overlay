@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
 IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
-	cros_embedded +fonts gdmwimax mtd nfc opengles pam
+	cros_embedded +fonts gdmwimax mtd nfc pam
 	+network_time +syslog watchdog X"
 
 ################################################################################
@@ -129,9 +129,6 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 # We depend on dash for the /bin/sh shell for runtime speeds, but we also
 # depend on bash to make the dev mode experience better.  We do not enable
 # things like line editing in dash, so its interactive mode is very bare.
-# media-plugins/o3d:
-# Note that o3d works with opengl on x86 and opengles on ARM, but not ARM
-# opengl.
 #
 # dev-util/quipper:
 # This is needed to support profiling live ChromiumOS systems.
@@ -156,11 +153,9 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 
 CROS_X86_RDEPEND="
 	sys-boot/syslinux
-	media-plugins/o3d
 "
 CROS_ARM_RDEPEND="
 	chromeos-base/u-boot-scripts
-	opengles? ( media-plugins/o3d )
 "
 
 CROS_X_RDEPEND="
