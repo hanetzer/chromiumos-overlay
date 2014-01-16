@@ -48,6 +48,11 @@ RDEPEND="${CDEPEND}
 
 DOCS=( AUTHORS ChangeLog README )
 
+# Version of the Chrome OS Bluetooth stack when this ebuild is used;
+# CHROMEOS_BLUETOOTH_VENDORID and CHROMEOS_BLUETOOTH_PRODUCTID must be
+# defined elsewhere for this to be used instead of the BlueZ version.
+CHROMEOS_BLUETOOTH_VERSION="0400"
+
 pkg_setup() {
 	if use test-programs; then
 		python_pkg_setup
@@ -161,6 +166,12 @@ src_install() {
 	fi
 
 	dobin attrib/gatttool
+
+	# Change the Bluetooth Device ID of official products
+	if [[ -n "${CHROMEOS_BLUETOOTH_VENDORID}" && -n "${CHROMEOS_BLUETOOTH_PRODUCTID}" ]]; then
+		sed -i -e "/^#DeviceID/c\
+			DeviceID = bluetooth:${CHROMEOS_BLUETOOTH_VENDORID}:${CHROMEOS_BLUETOOTH_PRODUCTID}:${CHROMEOS_BLUETOOTH_VERSION}" src/main.conf || die
+	fi
 
 	insinto /etc/bluetooth
 	doins src/main.conf
