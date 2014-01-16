@@ -22,6 +22,12 @@ diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-hda-powersave.conf
  
  # Handle power savings for Intel HDA under specific circumstances
  BATT_INTEL_HDA_POWERSAVE=1
+@@ -36,4 +36,4 @@
+ # "click" sound when the device wakes up again
+ #
+ # Set this to 1 to enable power savings for the controller also
+-INTEL_HDA_DEVICE_CONTROLLER=0
++INTEL_HDA_DEVICE_CONTROLLER=1
 diff -ruN laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
 --- laptop-mode-tools-1.59/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
 +++ laptop-mode-tools-1.59.new/etc/laptop-mode/conf.d/intel-sata-powermgmt.conf
