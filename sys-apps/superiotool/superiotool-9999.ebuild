@@ -2,27 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit eutils toolchain-funcs
+EAPI=4
+
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Superiotool allows you to detect which Super I/O you have on your mainboard, and it can provide detailed information about the register contents of the Super I/O."
 HOMEPAGE="http://www.coreboot.org/Superiotool"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-svn-${PV}.tar.bz2"
 
-S=${PN}
+CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
+CROS_WORKON_LOCALNAME="coreboot"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="x86"
+KEYWORDS="~amd64 ~x86"
 
 RDEPEND="sys-apps/pciutils"
 DEPEND="${RDEPEND}"
 
 src_compile() {
-	cd ${S}
-	emake CC="$(tc-getCC)" || die "emake failed"
+	emake -C util/superiotool CC="$(tc-getCC)"
 }
 
 src_install() {
-	cd ${S}
-	emake DESTDIR="${D}" install || die
+	emake -C util/superiotool DESTDIR="${D}" install
 }
