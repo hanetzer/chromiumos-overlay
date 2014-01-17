@@ -262,7 +262,8 @@ use_multiarch() {
 	arm)       nver="2.22" ;;
 	hppa)      nver="2.23" ;;
 	ppc|ppc64) nver="2.20" ;;
-	s390)      nver="2.23" ;;
+	# ifunc was added in 2.23, but glibc also needs machinemode which is in 2.24.
+	s390)      nver="2.24" ;;
 	sparc)     nver="2.21" ;;
 	*)         return 1 ;;
 	esac
