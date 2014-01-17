@@ -1,0 +1,11 @@
+DEFINED_PHASES=compile configure info install postinst postrm prepare setup unpack
+DEPEND=>=dev-embedded/libftdi-0.18 dev-libs/libusb dev-python/numpy dev-python/pexpect dev-python/pyserial dev-python/pyusb app-text/htmltidy dev-vcs/git dev-lang/python
+DESCRIPTION=Software to communicate with servo/miniservo debug boards
+EAPI=2
+IUSE=cros_host cros_host cros_workon_tree_e8aa5a96a564df3441c153776f6666c2f736d94c profiling
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+LICENSE=BSD
+RDEPEND=>=dev-embedded/libftdi-0.18 dev-libs/libusb dev-python/numpy dev-python/pexpect dev-python/pyserial dev-python/pyusb dev-lang/python
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	distutils	c2658824b3debc637c77b58e1d658fab	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	ded93e450747134a079e647d888aa80b	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=ad0ad0f38646b8aa71e44dc22d2e4bd1
