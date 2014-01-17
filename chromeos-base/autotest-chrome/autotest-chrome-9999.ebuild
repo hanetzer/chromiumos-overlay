@@ -38,6 +38,7 @@ IUSE_TESTS=(
 	+tests_video_VDAPerf
 
 	# Tests that depend on telemetry.
+	+tests_audio_AudioCorruption
 	+tests_bluetooth_RegressionClient
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_EchoExtension
