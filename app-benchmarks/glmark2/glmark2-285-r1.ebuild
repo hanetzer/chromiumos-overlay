@@ -32,6 +32,10 @@ RDEPEND="media-libs/libpng
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
 
+PATCHES=(
+	"${FILESDIR}/0001-native-state-x11-Don-t-terminate-fullscreen-if-EWMH-.patch"
+)
+
 src_configure() {
 	local myconf=""
 	local flavors=()
