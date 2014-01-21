@@ -137,6 +137,7 @@ else:
                            '-Wunsafe-loop-optimizations', '-Wlogical-op',
                            '-Wmissing-parameter-type', '-Woverride-init',
                            '-Wold-style-declaration', '-Wno-psabi',
+                           '-Wno-unused-local-typedefs',
                            '-mno-movbe',])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=')
 
