@@ -2,10 +2,10 @@ DEFINED_PHASES=compile install test unpack
 DEPEND=>=app-misc/pax-utils-0.1.10 !<sys-apps/sandbox-1.6 !<sys-apps/portage-2.1.2 selinux? ( sys-libs/libselinux ) >=sys-devel/binutils-2.20 >=sys-devel/gcc-4.3 virtual/os-headers !vanilla? ( >=sys-libs/timezone-data-2012c ) sys-devel/gnuconfig dev-vcs/git
 DESCRIPTION=GNU libc6 (also called glibc2) C library
 HOMEPAGE=http://www.gnu.org/software/libc/libc.html
-IUSE=debug gd hardened multilib nscd selinux systemtap profile vanilla crosscompile_opts_headers-only
+IUSE=debug gd hardened multilib nscd selinux systemtap profile suid vanilla crosscompile_opts_headers-only
 LICENSE=LGPL-2
 RDEPEND=!sys-kernel/ps3-sources selinux? ( sys-libs/libselinux ) !sys-libs/nss-db vanilla? ( !sys-libs/timezone-data ) !vanilla? ( sys-libs/timezone-data )
 RESTRICT=strip
 SLOT=2.2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	multilib	ded93e450747134a079e647d888aa80b	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	unpacker	50e1227854e96469a19a63f053496328	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
-_md5_=b957bbb6a545fa9ef0f62428b0ff96d8
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	multilib	fac675dcccf94392371a6abee62d909f	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	unpacker	50e1227854e96469a19a63f053496328	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=b1a9092fb9981717356477f4303d3d3b

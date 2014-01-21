@@ -8,5 +8,5 @@ LICENSE=as-is
 RDEPEND=dev-libs/libgcrypt dev-libs/libnl:0 net-wireless/wireless-regdb
 SLOT=0
 SRC_URI=http://wireless.kernel.org/download/crda/crda-1.1.1.tar.bz2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	ded93e450747134a079e647d888aa80b	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=669be43bc09b1e2fe2fff571c48754d4
