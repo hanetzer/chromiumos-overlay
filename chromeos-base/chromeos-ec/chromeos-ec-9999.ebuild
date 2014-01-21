@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="cros_host test bds nyan_big peach_pit skate snow spring"
+IUSE="cros_host test bds nyan_big peach_pit peach_pi skate snow spring"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -55,7 +55,7 @@ set_build_env() {
 	if use spring || use skate; then
 		EC_BOARD=spring
 	fi
-	if use peach_pit; then
+	if use peach_pit || use peach_pi; then
 		EC_BOARD=pit
 	fi
 	if use nyan_big; then
