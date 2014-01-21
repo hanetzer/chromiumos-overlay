@@ -55,9 +55,6 @@ dev-util/gtk-doc-1.13-r3
 dev-util/gtk-doc-am-1.13-r2
 dev-util/pkgconfig-0.23
 
-dev-vcs/git-1.6.4.4
-dev-vcs/subversion-1.6.9
-
 perl-core/digest-base-1.16
 perl-core/MIME-Base64-3.08
 
