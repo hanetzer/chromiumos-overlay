@@ -120,6 +120,7 @@ ALL_BOARDS=(
 	#tegra2_wario
 	tegra3-generic
 	#waluigi
+	winky
 	wolf
 	x32-generic
 	x86-agz
