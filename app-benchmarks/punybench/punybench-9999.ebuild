@@ -4,7 +4,7 @@
 # $Header:$
 #
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/punybench"
 CROS_WORKON_LOCALNAME="../platform/punybench"
 inherit cros-constants cros-workon toolchain-funcs
