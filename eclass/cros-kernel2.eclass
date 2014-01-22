@@ -605,6 +605,12 @@ cros-kernel2_src_compile() {
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 	SMATCH_ERROR_FILE="${src_dir}/chromeos/check/smatch_errors.log"
 
+	# If a .dts file is deleted from the source code it won't disappear
+	# from the output in the next incremental build.  Nuke all dtbs so we
+	# don't include stale files.  We use 'find' to handle old and new
+	# locations (see comments in install below).
+	find "$(cros-workon_get_build_dir)/arch" -name '*.dtb' -delete
+
 	if use test && [[ -e "${SMATCH_ERROR_FILE}" ]]; then
 		local make_check_cmd="smatch -p=kernel"
 		local test_options=(
