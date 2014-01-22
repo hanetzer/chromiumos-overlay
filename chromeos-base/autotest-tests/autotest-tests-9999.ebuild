@@ -66,7 +66,13 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${RDEPEND}"
 
+X86_IUSE_TESTS="
+	+tests_security_SMMLocked
+"
+
 IUSE_TESTS="${IUSE_TESTS}
+	x86? ( ${X86_IUSE_TESTS} )
+	amd64? ( ${X86_IUSE_TESTS} )
 	+tests_compilebench
 	+tests_crashme
 	+tests_dbench
@@ -121,17 +127,21 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_firmware_RomSize
 	tests_firmware_VbootCrypto
 	+tests_flaky_test
-	+tests_graphics_GLAPICheck
-	+tests_graphics_GLBench
-	+tests_graphics_GLMark2
-	+tests_graphics_GpuReset
-	+tests_graphics_KernelMemory
-	+tests_graphics_LibDRM
-	+tests_graphics_Piglit
-	+tests_graphics_SanAngeles
-	+tests_graphics_Sanity
-	+tests_graphics_SyncControlTest
-	+tests_graphics_VTSwitch
+	!chromeless_tty? (
+		!content_shell? (
+			+tests_graphics_GLAPICheck
+			+tests_graphics_GLBench
+			+tests_graphics_GLMark2
+			+tests_graphics_GpuReset
+			+tests_graphics_KernelMemory
+			+tests_graphics_LibDRM
+			+tests_graphics_Piglit
+			+tests_graphics_SanAngeles
+			+tests_graphics_Sanity
+			+tests_graphics_SyncControlTest
+			+tests_graphics_VTSwitch
+		)
+	)
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_Badblocks
@@ -361,7 +371,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_security_RuntimeExecStack
 	+tests_security_SandboxedServices
 	+tests_security_SeccompSyscallFilters
-	+tests_security_SMMLocked
 	+tests_security_StatefulPermissions
 	+tests_security_SuidBinaries
 	+tests_security_SymlinkRestrictions
