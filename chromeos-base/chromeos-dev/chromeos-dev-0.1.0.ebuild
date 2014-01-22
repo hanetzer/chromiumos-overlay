@@ -87,6 +87,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-misc/evtest
 	app-misc/screen
+	app-portage/portage-utils
 	app-shells/bash
 	cras? (
 		chromeos-base/audiotest
