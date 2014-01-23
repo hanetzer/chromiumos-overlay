@@ -13,7 +13,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 
 # NOTE: vt can only be turned off for embedded currently.
 IUSE="cros_embedded +encrypted_stateful vt"

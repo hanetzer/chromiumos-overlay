@@ -8,7 +8,7 @@ CROS_WORKON_LOCALNAME="kernel-next"
 
 inherit cros-workon cros-perf
 
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 RDEPEND="!dev-util/perf"
 DEPEND="${RDEPEND}
 	${DEPEND}"

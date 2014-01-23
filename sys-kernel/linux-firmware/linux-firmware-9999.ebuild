@@ -11,7 +11,7 @@ DESCRIPTION="Firmware images from the upstream linux-fimware package"
 HOMEPAGE="https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/"
 
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 
 IUSE_IWLWIFI=(
 	iwlwifi-all

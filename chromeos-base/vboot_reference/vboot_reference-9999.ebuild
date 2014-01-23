@@ -10,7 +10,7 @@ DESCRIPTION="Chrome OS verified boot tools"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 IUSE="32bit_au minimal tpmtests cros_host"
 
 RDEPEND="!minimal? ( dev-libs/libyaml )

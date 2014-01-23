@@ -11,7 +11,7 @@ inherit autotools base cros-workon eutils linux-info user
 DESCRIPTION="An open-source TCG Software Stack (TSS) v1.1 implementation"
 HOMEPAGE="http://trousers.sf.net"
 LICENSE="CPL-1.0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 SLOT="0"
 IUSE="doc tss_trace"
 

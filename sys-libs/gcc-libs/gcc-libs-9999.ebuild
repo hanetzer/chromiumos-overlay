@@ -19,7 +19,7 @@ DESCRIPTION="The GNU Compiler Collection.  This builds and installs the libgcc a
 
 LICENSE="GPL-3 LGPL-3 FDL-1.2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 IUSE="hardened hardfp mounted_gcc +thumb vtable_verify"
 
 : ${CTARGET:=${CHOST}}

@@ -13,7 +13,7 @@ LICENSE="BSD"
 SLOT="0"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 
 RDEPEND=""
 DEPEND="${RDEPEND}

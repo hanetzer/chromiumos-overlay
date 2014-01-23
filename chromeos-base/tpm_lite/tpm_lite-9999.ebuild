@@ -13,7 +13,7 @@ DESCRIPTION="TPM Light Command Library testsuite"
 LICENSE="GPL-2"
 HOMEPAGE="http://www.chromium.org/"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 
 DEPEND="app-crypt/trousers"
 

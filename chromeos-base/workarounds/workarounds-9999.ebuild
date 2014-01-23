@@ -10,7 +10,7 @@ DESCRIPTION="Chrome OS workarounds utilities."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 SLOT="0"
 IUSE=""
 

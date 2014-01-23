@@ -11,7 +11,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 IUSE="-asan -clang +cellular gdmwimax platform2 test +tpm +vpn"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="chromeos-base/bootstat

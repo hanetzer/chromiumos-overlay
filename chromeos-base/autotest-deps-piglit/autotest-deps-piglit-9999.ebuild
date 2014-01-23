@@ -12,7 +12,7 @@ HOMEPAGE="http://cgit.freedesktop.org/piglit"
 SRC_URI=""
 LICENSE="GPL-2 LGPL-3"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 
 # Autotest enabled by default.
 IUSE="+autotest"

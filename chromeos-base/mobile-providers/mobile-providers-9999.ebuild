@@ -11,7 +11,7 @@ HOMEPAGE="http://live.gnome.org/NetworkManager/MobileBroadband/ServiceProviders"
 
 LICENSE="CC-PD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 IUSE="-asan -clang tools"
 REQUIRED_USE="asan? ( clang )"
 

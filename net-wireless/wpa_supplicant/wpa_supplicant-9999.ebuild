@@ -13,7 +13,7 @@ HOMEPAGE="http://hostap.epitest.fi/wpa_supplicant/"
 LICENSE="|| ( GPL-2 BSD )"
 
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 IUSE="-asan -clang dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline smartcard ssl +tdls wps kernel_linux kernel_FreeBSD"
 REQUIRED_USE="smartcard? ( ssl ) asan? ( clang )"
 

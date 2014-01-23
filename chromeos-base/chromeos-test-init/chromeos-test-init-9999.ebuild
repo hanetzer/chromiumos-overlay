@@ -11,7 +11,7 @@ DESCRIPTION="Additional upstart jobs that will be installed on test images"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 
 # TODO(victoryang): Remove factorytest-init package entirely after Feb 2014.
 #                   crosbug.com/p/24798.

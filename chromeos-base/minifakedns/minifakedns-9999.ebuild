@@ -14,7 +14,7 @@ HOMEPAGE="http://code.activestate.com/recipes/491264-mini-fake-dns-server/"
 
 LICENSE="PSF"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 IUSE=""
 
 pkg_setup() {

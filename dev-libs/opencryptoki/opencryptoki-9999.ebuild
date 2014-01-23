@@ -9,7 +9,7 @@ DESCRIPTION="PKCS#11 provider for IBM cryptographic hardware"
 HOMEPAGE="http://sourceforge.net/projects/opencryptoki"
 LICENSE="CPL-0.5"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
+KEYWORDS="~*"
 IUSE="tpmtok"
 CROS_WORKON_PROJECT="chromiumos/third_party/opencryptoki"
 
