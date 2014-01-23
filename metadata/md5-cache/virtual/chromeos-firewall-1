@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Chrome OS Firewall virtual package. This package will RDEPEND on the actual package that installs the upstart scripts to configure the firewall. Any board overlays that wish to change the firewall settings can do so with their own virtual package and corresponding ebuild.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-firewall-init
+SLOT=0
+_md5_=879e06dd4e37b7a210aa94200660d308

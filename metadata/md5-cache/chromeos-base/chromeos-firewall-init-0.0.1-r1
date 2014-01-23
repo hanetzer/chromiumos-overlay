@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Install the upstart jobs that configure the firewall.
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+LICENSE=BSD-Google
+RDEPEND=!<chromeos-base/chromeos-init-0.0.3 chromeos-base/chromeos-init net-firewall/iptables[ipv6]
+SLOT=0
+_md5_=370e2d7fedef674996c922cbda37542f
