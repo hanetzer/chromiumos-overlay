@@ -36,10 +36,12 @@ RDEPEND="!chromeos-base/chromeos-factorytools
 	dev-python/unittest2
 	dev-python/ws4py
 	dev-util/stressapptest
+	chromeos-base/audiotest
 	chromeos-base/chromeos-factory-board
 	chromeos-base/memento_softwareupdate
 	>=chromeos-base/vpd-0.0.1-r11
-	media-gfx/zbar"
+	media-gfx/zbar
+	media-sound/sox"
 
 # Binaries from other packages (ex, chrome).
 STRIP_MASK="*/chromedriver */selenium/*"
