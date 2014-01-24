@@ -259,6 +259,13 @@ platform2_test() {
 		run_as_root_flag="--run_as_root"
 	fi
 
+	case " ${P2_TEST_FILTER:-${pkg}::} " in
+	*" ${pkg}::"*) ;;
+	*)	einfo "src_test: ${pkg}: ${bin##*/}: skipping due to P2_TEST_FILTER"
+		return 0
+		;;
+	esac
+
 	local cmd=(
 		"${platform2_test_py}"
 		--action="${action}"
