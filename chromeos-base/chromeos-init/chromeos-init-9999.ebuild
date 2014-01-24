@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # NOTE: vt can only be turned off for embedded currently.
-IUSE="cros_embedded +encrypted_stateful vt"
+IUSE="cros_embedded +encrypted_stateful +udev vt"
 
 DEPEND=""
 # vpd for vpd-log.conf of upstart
@@ -73,6 +73,7 @@ src_install() {
 		doins shill_respawn.conf syslog.conf system-services.conf tlsdated.conf
 		doins update-engine.conf wpasupplicant.conf
 
+		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
 		use vt && doins tty2.conf
 	else
 		insinto /etc/init
