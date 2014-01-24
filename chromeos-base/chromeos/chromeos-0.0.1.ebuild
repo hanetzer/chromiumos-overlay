@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
-IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
+IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec
 	cros_embedded +fonts gdmwimax mtd nfc pam
 	+network_time +syslog watchdog X"
 
@@ -90,7 +90,6 @@ CROS_COMMON_RDEPEND="
 	pam? ( chromeos-base/chromeos-auth-config )
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-installer
-	crash_reporting? ( chromeos-base/crash-reporter )
 	chromeos-base/platform2
 	chromeos-base/update_engine
 	coreboot? ( virtual/chromeos-coreboot )

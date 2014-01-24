@@ -10,6 +10,7 @@ CROS_WORKON_LOCALNAME=(
 	"common-mk"
 	"chaps"
 	"chromiumos-wide-profiling"
+	"crash-reporter"
 	"cromo"
 	"cros-disks"
 	"debugd"
@@ -34,7 +35,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan +cellular +crash_reporting -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als -has_keyboard_backlight -is_desktop -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -58,6 +59,16 @@ RDEPEND_chaps="
 		dev-libs/dbus-c++
 		dev-libs/openssl
 		dev-libs/protobuf
+	)
+"
+
+RDEPEND_crash_reporter="
+	crash_reporting? (
+		chromeos-base/google-breakpad
+		chromeos-base/chromeos-ca-certificates
+		dev-cpp/gflags
+		dev-libs/libpcre
+		net-misc/curl
 	)
 "
 
@@ -177,6 +188,8 @@ RDEPEND_wimax_manager="
 
 DEPEND_chaps="tpm? ( dev-db/leveldb )"
 
+DEPEND_crash_reporter="crash_reporting? ( sys-devel/flex )"
+
 RDEPEND="
 	platform2? (
 		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
@@ -188,6 +201,7 @@ RDEPEND="
 		sys-apps/dbus
 
 		!chromeos-base/chaps[-platform2]
+		!chromeos-base/crash-reporter
 		!chromeos-base/cromo[-platform2]
 		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
@@ -349,6 +363,25 @@ platform2_install_chromiumos-wide-profiling() {
 
 platform2_install_common-mk() {
 	return 0
+}
+
+platform2_install_crash-reporter() {
+	use cros_host && return 0
+	use crash_reporting || return 0
+
+	into /
+	dosbin "${OUT}"/crash_reporter
+	dosbin crash_sender
+
+	into /usr
+	dobin "${OUT}"/list_proxies
+	dobin "${OUT}"/warn_collector
+	dosbin kernel_log_collector.sh
+
+	insinto /etc
+	doins crash_reporter_logs.conf
+
+	udev_dorules 99-crash-reporter.rules
 }
 
 platform2_install_cromo() {
@@ -668,6 +701,28 @@ platform2_test_chromiumos-wide-profiling() {
 
 platform2_test_common-mk() {
 	return 0
+}
+
+platform2_test_crash-reporter() {
+	use cros_host && return 0
+	use crash_reporting || return 0
+
+	# TODO(mkrebs): The tests are not currently thread-safe, so
+	# running them in the default parallel mode results in
+	# failures.
+	local tests=(
+		chrome_collector_test
+		crash_collector_test
+		kernel_collector_test
+		udev_collector_test
+		unclean_shutdown_collector_test
+		user_collector_test
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform2_test "run" "${OUT}/${test_bin}"
+	done
 }
 
 platform2_test_cromo() {
