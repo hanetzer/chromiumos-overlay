@@ -64,23 +64,22 @@ src_install() {
 	local destdir="/firmware/depthcharge"
 	local dtsdir="/firmware/dts"
 	local board=$(get_current_board_with_variant)
-
-	insinto "${destdir}"
-	doins "${build_root}"/depthcharge.elf
-	doins "${build_root}"/depthcharge.ro.elf
-	doins "${build_root}"/depthcharge.ro.bin
-	doins "${build_root}"/depthcharge.rw.elf
-	doins "${build_root}"/depthcharge.rw.bin
-	doins "${build_root}"/netboot.elf
-	doins "${build_root}"/netboot.bin
-
-	# Install the depthcharge.payload file into the firmware
-	# directory for downstream use if it is produced.
-	if [[ -r "${build_root}"/depthcharge.payload ]]; then
-		doins "${build_root}"/depthcharge.payload
-		doins "${build_root}"/netboot.payload
-	fi
+	local files_to_copy=(
+		depthcharge.elf{,.map}
+		depthcharge.{ro,rw}.{bin,elf{,.map}}
+		netboot.{bin,elf{,.map}}
+	)
 
 	insinto "${dtsdir}"
 	doins "board/${board}/fmap.dts"
+
+	cd "${build_root}"
+	insinto "${destdir}"
+	doins "${files_to_copy[@]}"
+
+	# Install the depthcharge.payload file into the firmware
+	# directory for downstream use if it is produced.
+	if [[ -r depthcharge.payload ]]; then
+		doins {depthcharge,netboot}.payload
+	fi
 }
