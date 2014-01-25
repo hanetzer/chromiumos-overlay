@@ -7,13 +7,10 @@ inherit eutils flag-o-matic multilib toolchain-funcs
 
 NSPR_VER="4.10"
 RTM_NAME="NSS_${PV//./_}_RTM"
-PEM_PATCH="${PN}-3.15.4-pem-support-20140109.patch.xz"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="http://www.mozilla.org/projects/security/pki/nss/"
-SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
-	http://dev.gentoo.org/~anarchy/patches/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch
-	http://dev.gentoo.org/~polynomial-c/mozilla/${PEM_PATCH}"
+SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
@@ -25,7 +22,8 @@ DEPEND="virtual/pkgconfig
 
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
 	>=dev-db/sqlite-3.5
-	sys-libs/zlib"
+	sys-libs/zlib
+	!<app-crypt/nss-${PV}"
 
 RESTRICT="test"
 
@@ -39,9 +37,15 @@ src_prepare() {
 	# Custom changes for gentoo
 	epatch "${FILESDIR}/${PN}-3.15-gentoo-fixups.patch"
 	epatch "${FILESDIR}/${PN}-3.15-gentoo-fixup-warnings.patch"
-	epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
-	epatch "${DISTDIR}/${PEM_PATCH}"
 	epatch "${FILESDIR}/${PN}-3.15-x32.patch"
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+
 	cd coreconf
 	# hack nspr paths
 	echo 'INCLUDES += -I$(DIST)/include/dbm' \
@@ -235,7 +239,9 @@ src_install() {
 	fi
 	cd "${S}"/dist/*/bin/
 	for f in ${nssutils}; do
+		# TODO(cmasone): switch to normal nss tool names
 		dobin ${f}
+		dosym ${f} /usr/bin/nss${f}
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run

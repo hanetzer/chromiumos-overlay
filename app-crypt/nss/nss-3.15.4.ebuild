@@ -2,18 +2,20 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/nss/nss-3.15.4.ebuild,v 1.10 2014/01/23 01:02:11 vapier Exp $
 
+# This is a clone of dev-libs/nss, but with the IUSE="utils" functionality
+# moved into a separate package. This is because we want the util binaries as
+# part of the dev/test images (for autotests), but do not want them as part of
+# the release image. Because we cannot flip USE flags between dev/release
+# images, separate packages are used instead.
 EAPI=5
 inherit eutils flag-o-matic multilib toolchain-funcs
 
 NSPR_VER="4.10"
 RTM_NAME="NSS_${PV//./_}_RTM"
-PEM_PATCH="${PN}-3.15.4-pem-support-20140109.patch.xz"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="http://www.mozilla.org/projects/security/pki/nss/"
-SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
-	http://dev.gentoo.org/~anarchy/patches/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch
-	http://dev.gentoo.org/~polynomial-c/mozilla/${PEM_PATCH}"
+SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
@@ -21,9 +23,11 @@ KEYWORDS="*"
 IUSE="utils"
 
 DEPEND="virtual/pkgconfig
-	>=dev-libs/nspr-${NSPR_VER}"
+	>=dev-libs/nspr-${NSPR_VER}
+	>=dev-libs/nss-${PV}"
 
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
+	>=dev-libs/nss-${PV}
 	>=dev-db/sqlite-3.5
 	sys-libs/zlib"
 
@@ -39,9 +43,15 @@ src_prepare() {
 	# Custom changes for gentoo
 	epatch "${FILESDIR}/${PN}-3.15-gentoo-fixups.patch"
 	epatch "${FILESDIR}/${PN}-3.15-gentoo-fixup-warnings.patch"
-	epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
-	epatch "${DISTDIR}/${PEM_PATCH}"
 	epatch "${FILESDIR}/${PN}-3.15-x32.patch"
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+
 	cd coreconf
 	# hack nspr paths
 	echo 'INCLUDES += -I$(DIST)/include/dbm' \
@@ -154,112 +164,22 @@ src_compile() {
 	done
 }
 
-# Altering these 3 libraries breaks the CHK verification.
-# All of the following cause it to break:
-# - stripping
-# - prelink
-# - ELF signing
-# http://www.mozilla.org/projects/security/pki/nss/tech-notes/tn6.html
-# Either we have to NOT strip them, or we have to forcibly resign after
-# stripping.
-#local_libdir="$(get_libdir)"
-#export STRIP_MASK="
-#	*/${local_libdir}/libfreebl3.so*
-#	*/${local_libdir}/libnssdbm3.so*
-#	*/${local_libdir}/libsoftokn3.so*"
-
-export NSS_CHK_SIGN_LIBS="freebl3 nssdbm3 softokn3"
-
-generate_chk() {
-	local shlibsign="$1"
-	local libdir="$2"
-	einfo "Resigning core NSS libraries for FIPS validation"
-	shift 2
-	local i
-	for i in ${NSS_CHK_SIGN_LIBS} ; do
-		local libname=lib${i}.so
-		local chkname=lib${i}.chk
-		"${shlibsign}" \
-			-i "${libdir}"/${libname} \
-			-o "${libdir}"/${chkname}.tmp \
-		&& mv -f \
-			"${libdir}"/${chkname}.tmp \
-			"${libdir}"/${chkname} \
-		|| die "Failed to sign ${libname}"
-	done
-}
-
-cleanup_chk() {
-	local libdir="$1"
-	shift 1
-	local i
-	for i in ${NSS_CHK_SIGN_LIBS} ; do
-		local libfname="${libdir}/lib${i}.so"
-		# If the major version has changed, then we have old chk files.
-		[ ! -f "${libfname}" -a -f "${libfname}.chk" ] \
-			&& rm -f "${libfname}.chk"
-	done
-}
-
 src_install() {
-	cd "${S}"/dist
-
-	dodir /usr/$(get_libdir)
-	cp -L */lib/*$(get_libname) "${ED}"/usr/$(get_libdir) || die "copying shared libs failed"
-	# We generate these after stripping the libraries, else they don't match.
-	#cp -L */lib/*.chk "${ED}"/usr/$(get_libdir) || die "copying chk files failed"
-	cp -L */lib/libcrmf.a "${ED}"/usr/$(get_libdir) || die "copying libs failed"
-
-	# Install nss-config and pkgconfig file
-	dodir /usr/bin
-	cp -L */bin/nss-config "${ED}"/usr/bin
-	dodir /usr/$(get_libdir)/pkgconfig
-	cp -L */lib/pkgconfig/nss.pc "${ED}"/usr/$(get_libdir)/pkgconfig
-
-	# all the include files
-	insinto /usr/include/nss
-	doins public/nss/*.h
-
 	local f nssutils
-	# Always enabled because we need it for chk generation.
-	nssutils="shlibsign"
-	if use utils; then
-		# The tests we do not need to install.
-		#nssutils_test="bltest crmftest dbtest dertimetest
-		#fipstest remtest sdrtest"
-		nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
-		cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
-		nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
-		pk12util pp rsaperf selfserv shlibsign signtool signver ssltap strsclnt
-		symkeyutil tstclnt vfychain vfyserv"
-	fi
+	# The tests we do not need to install.
+	#nssutils_test="bltest crmftest dbtest dertimetest
+	#fipstest remtest sdrtest"
+	nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
+	cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
+	nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
+	pk12util pp rsaperf selfserv signtool signver ssltap strsclnt
+	symkeyutil tstclnt vfychain vfyserv"
 	cd "${S}"/dist/*/bin/
+	into /usr/local
 	for f in ${nssutils}; do
+		# TODO(cmasone): switch to normal nss tool names
 		dobin ${f}
+		dosym ${f} /usr/local/bin/nss${f}
 	done
-
-	# Prelink breaks the CHK files. We don't have any reliable way to run
-	# shlibsign after prelink.
-	local l libs=() liblist
-	for l in ${NSS_CHK_SIGN_LIBS} ; do
-		libs+=("${EPREFIX}/usr/$(get_libdir)/lib${l}.so")
-	done
-	liblist=$(printf '%s:' "${libs[@]}")
-	echo -e "PRELINK_PATH_MASK=${liblist%:}" > "${T}/90nss"
-	doenvd "${T}/90nss"
 }
 
-pkg_postinst() {
-	# We must re-sign the libraries AFTER they are stripped.
-	local shlibsign="${EROOT}/usr/bin/shlibsign"
-	# See if we can execute it (cross-compiling & such). #436216
-	"${shlibsign}" -h >&/dev/null
-	if [[ $? -gt 1 ]] ; then
-		shlibsign="shlibsign"
-	fi
-	generate_chk "${shlibsign}" "${EROOT}"/usr/$(get_libdir)
-}
-
-pkg_postrm() {
-	cleanup_chk "${EROOT}"/usr/$(get_libdir)
-}
