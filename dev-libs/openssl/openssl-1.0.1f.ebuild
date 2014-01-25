@@ -1,23 +1,20 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1e-r1.ebuild,v 1.14 2013/10/14 23:06:56 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1f.ebuild,v 1.10 2014/01/21 00:01:22 phajdan.jr Exp $
 
 EAPI="4"
-CROS_WORKON_COMMIT="35ae2093b3be78810b48681e3f06d46433f68877"
-CROS_WORKON_TREE="9e76d95f850bfabd41ef8eea3de7252f9051c227"
-CROS_WORKON_PROJECT="chromiumos/third_party/openssl"
 
-inherit eutils flag-o-matic toolchain-funcs multilib cros-workon
+inherit eutils flag-o-matic toolchain-funcs multilib
 
 REV="1.7"
 DESCRIPTION="full-strength general purpose cryptography library (including SSL and TLS)"
 HOMEPAGE="http://www.openssl.org/"
-SRC_URI="
+SRC_URI="mirror://openssl/source/${P}.tar.gz
 	http://cvs.pld-linux.org/cgi-bin/cvsweb.cgi/packages/${PN}/${PN}-c_rehash.sh?rev=${REV} -> ${PN}-c_rehash.sh.${REV}"
 
 LICENSE="openssl"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86 amd64-fbsd sparc-fbsd x86-fbsd arm-linux x86-linux"
+KEYWORDS="*"
 IUSE="bindist gmp kerberos rfc3779 sse2 static-libs test +tls-heartbeat vanilla zlib"
 
 # Have the sub-libs in RDEPEND with [static-libs] since, logically,
@@ -37,7 +34,7 @@ DEPEND="${RDEPEND}
 PDEPEND="app-misc/ca-certificates"
 
 src_unpack() {
-	cros-workon_src_unpack
+	unpack ${P}.tar.gz
 	SSL_CNF_DIR="/etc/ssl"
 	sed \
 		-e "/^DIR=/s:=.*:=${EPREFIX}${SSL_CNF_DIR}:" \
@@ -58,8 +55,9 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-1.0.1-parallel-build.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1-x32.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1e-ipv6.patch
-		epatch "${FILESDIR}"/${PN}-1.0.1e-bad-mac-aes-ni.patch #463444
-		epatch "${FILESDIR}"/${PN}-1.0.1e-disable-rdrand.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1f-perl-5.18.patch #497286
+		epatch "${FILESDIR}"/${PN}-1.0.1e-s_client-verify.patch #472584
+		epatch "${FILESDIR}"/${PN}-1.0.1f-blacklist-by-sha1.patch
 		epatch_user #332661
 	fi
 
@@ -86,11 +84,12 @@ src_prepare() {
 	append-flags $(test-flags-CC -Wa,--noexecstack)
 
 	sed -i '1s,^:$,#!'${EPREFIX}'/usr/bin/perl,' Configure #141906
+	# The config script does stupid stuff to prompt the user.  Kill it.
+	sed -i '/stty -icanon min 0 time 50; read waste/d' config || die
 	./config --test-sanity || die "I AM NOT SANE"
 }
 
 src_configure() {
-	cros-workon_src_configure
 	unset APPS #197996
 	unset SCRIPTS #312551
 	unset CROSS_COMPILE #311473
@@ -112,12 +111,13 @@ src_configure() {
 	# See if our toolchain supports __uint128_t.  If so, it's 64bit
 	# friendly and can use the nicely optimized code paths. #460790
 	local ec_nistp_64_gcc_128
-	if ! use bindist ; then
-		echo "__uint128_t i;" > "${T}"/128.c
-		if ${CC} ${CFLAGS} -c "${T}"/128.c -o /dev/null >&/dev/null ; then
-			ec_nistp_64_gcc_128="enable-ec_nistp_64_gcc_128"
-		fi
-	fi
+	# Disable it for now though #469976
+	#if ! use bindist ; then
+	#	echo "__uint128_t i;" > "${T}"/128.c
+	#	if ${CC} ${CFLAGS} -c "${T}"/128.c -o /dev/null >&/dev/null ; then
+	#		ec_nistp_64_gcc_128="enable-ec_nistp_64_gcc_128"
+	#	fi
+	#fi
 
 	local sslout=$(./gentoo.config)
 	einfo "Use configuration ${sslout:-(openssl knows best)}"
@@ -170,10 +170,9 @@ src_compile() {
 	emake rehash
 }
 
-# TODO(ellyjones): these are broken even in upstream
-# src_test() {
-# 	emake -j1 test
-# }
+src_test() {
+	emake -j1 test
+}
 
 src_install() {
 	emake INSTALL_PREFIX="${D}" install
