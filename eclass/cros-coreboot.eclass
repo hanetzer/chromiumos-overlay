@@ -36,7 +36,6 @@ DEPEND="x86? ($DEPEND_X86)
 	"
 
 cros-coreboot_pre_src_prepare() {
-	rm -rf 3rdparty
 	local board=$(get_current_board_with_variant)
 
 	if [[ -s "${FILESDIR}"/config ]]; then
