@@ -46,7 +46,7 @@ CROS_X_RDEPEND="
 	x11-apps/mtplot
 	x11-apps/xauth
 	x11-apps/xdpyinfo
-	x11-apps/xdriinfo
+	opengl? ( x11-apps/xdriinfo )
 	x11-apps/xev
 	x11-apps/xhost
 	x11-apps/xinput
