@@ -18,7 +18,6 @@ IUSE="${IUSE} +autotest"
 
 RDEPEND="
 	!chromeos-base/autotest-telemetry
-	chromeos-base/autotest-deps-piglit
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
