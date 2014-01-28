@@ -42,7 +42,7 @@ RDEPEND="
   !chromeless_tty? (
     !content_shell? (
       chromeos-base/autotest-deps-glbench
-      tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
+      tests_graphics_GLMark2? ( app-benchmarks/glmark2 )
       tests_graphics_Piglit? ( chromeos-base/autotest-deps-piglit )
     )
   )
