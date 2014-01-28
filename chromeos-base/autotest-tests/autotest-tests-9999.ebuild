@@ -295,6 +295,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_platform_FileSize
 	+tests_platform_HighResTimers
 	+tests_platform_KernelVersion
+	+tests_platform_KernelVersionByBoard
 	+tests_platform_LibCBench
 	+tests_platform_MemCheck
 	+tests_platform_NetParms
