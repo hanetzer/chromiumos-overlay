@@ -49,6 +49,7 @@ src_compile() {
 		export MOCK_TPM=1
 	fi
 
+	emake distclean
 	emake defconfig \
 		LIBPAYLOAD_DIR="${ROOT}/firmware/libpayload/" \
 		BOARD="${board}" \
