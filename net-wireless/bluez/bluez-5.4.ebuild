@@ -10,12 +10,10 @@ inherit autotools multilib eutils systemd python
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
 
-# Because of oui.txt changing from time to time without noticement, we need to supply it
-# ourselves instead of using http://standards.ieee.org/regauth/oui/oui.txt directly.
-# See bugs #345263 and #349473 for reference.
-OUIDATE="20120308"
-SRC_URI="mirror://kernel/linux/bluetooth/${P}.tar.xz
-	http://dev.gentoo.org/~pacho/bluez/oui-${OUIDATE}.txt.xz"
+# bluez used to supply its own oui.txt because it's used by
+# org.bluez.Adapter.GetRemoteCompany, but this file now comes from
+# sys-apps/hwids instead.
+SRC_URI="mirror://kernel/linux/bluetooth/${P}.tar.xz"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
@@ -25,6 +23,7 @@ IUSE="cups debug test-programs usb readline"
 CDEPEND="
 	>=dev-libs/glib-2.14:2
 	sys-apps/dbus
+	>=sys-apps/hwids-20130915.1
 	>=sys-fs/udev-169
 	cups? ( net-print/cups )
 	usb? ( virtual/libusb:0 )
@@ -181,10 +180,6 @@ src_install() {
 
 	#insinto /lib/udev/rules.d
 	#newins "${FILESDIR}/${PN}-ps3-gamepad.rules" "99-ps3-gamepad.rules"
-
-	# Install oui.txt as requested in bug #283791 and approved by upstream
-	insinto /usr/share/misc
-	newins "${WORKDIR}/oui-${OUIDATE}.txt" oui.txt
 
 	# We don't preserve /var/lib in images, so nuke anything we preseed.
 	rm -rf "${D}"/var/lib/bluetooth

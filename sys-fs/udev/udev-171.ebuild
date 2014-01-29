@@ -61,11 +61,6 @@ DEPEND="${COMMON_DEPEND}
 	test? ( app-text/tree )"
 
 RDEPEND="${COMMON_DEPEND}
-	hwdb?
-	(
-		>=sys-apps/usbutils-0.82
-		sys-apps/pciutils
-	)
 	extras?
 	(
 		>=sys-apps/usbutils-0.82
@@ -75,6 +70,8 @@ RDEPEND="${COMMON_DEPEND}
 	!<sys-fs/lvm2-2.02.45
 	!sys-fs/device-mapper
 	>=sys-apps/baselayout-1.12.5"
+
+PDEPEND=" hwdb?  ( >=sys-apps/hwids-20130915.1 )"
 
 if [[ ${PV} == "9999" ]]
 then
