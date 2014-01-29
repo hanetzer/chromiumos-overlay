@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=app-i18n/ibus dev-libs/glib sys-apps/dbus ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	7664bbf06e0027bb43d94018b3b23a9e	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=2a11c0bae320d05e32a62e00be227030
+_md5_=cd84dd985c9e3bad67fca16c358a2a31
