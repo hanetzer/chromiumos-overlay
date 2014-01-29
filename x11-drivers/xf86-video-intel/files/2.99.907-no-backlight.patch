@@ -1,0 +1,34 @@
+diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
+index 9bda006..9beecf5 100644
+--- a/src/uxa/intel_display.c
++++ b/src/uxa/intel_display.c
+@@ -526,7 +526,6 @@ intel_crtc_apply(xf86CrtcPtr crtc)
+ 			continue;
+ 
+ 		    intel_output = output->driver_private;
+-		    intel_output_dpms_backlight(output, intel_output->dpms_mode, DPMSModeOn);
+ 		    intel_output->dpms_mode = DPMSModeOn;
+ 		}
+ 	}
+@@ -1118,10 +1117,6 @@ intel_output_dpms(xf86OutputPtr output, int dpms)
+ 
+ 		if (!strcmp(props->name, "DPMS")) {
+ 			/* Make sure to reverse the order between on and off. */
+-			if (dpms == DPMSModeOff)
+-				intel_output_dpms_backlight(output,
+-							    intel_output->dpms_mode,
+-							    dpms);
+ 
+ 			if (output->crtc)
+ 				drmModeConnectorSetProperty(mode->fd,
+@@ -1129,10 +1124,6 @@ intel_output_dpms(xf86OutputPtr output, int dpms)
+ 							    props->prop_id,
+ 							    dpms);
+ 
+-			if (dpms != DPMSModeOff)
+-				intel_output_dpms_backlight(output,
+-							    intel_output->dpms_mode,
+-							    dpms);
+ 			intel_output->dpms_mode = dpms;
+ 			drmModeFreeProperty(props);
+ 			return;

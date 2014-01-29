@@ -1,4 +1,4 @@
-From 765150d6b243ad1d8acb8d3f881764b7bcb0bf78 Mon Sep 17 00:00:00 2001
+From 6cf3158411fbfee1d52115f3616cb64a0c75fd07 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Wed, 6 Mar 2013 18:23:08 -0800
 Subject: [PATCH] Fix fbcon copy on xf86-video-intel.
@@ -14,15 +14,15 @@ copy scheme.
 
 See chromium-os:39659 for switching to pScreen->canDoBGNoneRoot.
 ---
- src/intel_display.c | 168 +++++++++++++++++++++++-----------------------------
- src/intel_driver.c  |   3 +-
- 2 files changed, 75 insertions(+), 96 deletions(-)
+ src/uxa/intel_display.c | 172 +++++++++++++++++++++---------------------------
+ src/uxa/intel_driver.c  |   3 +-
+ 2 files changed, 77 insertions(+), 98 deletions(-)
 
-diff --git a/src/intel_display.c b/src/intel_display.c
-index 4ade59a..3c72402 100644
---- a/src/intel_display.c
-+++ b/src/intel_display.c
-@@ -2359,127 +2359,105 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
+diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
+index 9bda006..3e4cec7 100644
+--- a/src/uxa/intel_display.c
++++ b/src/uxa/intel_display.c
+@@ -2004,129 +2004,107 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
  }
  
  static PixmapPtr
@@ -211,7 +211,9 @@ index 4ade59a..3c72402 100644
 +	intel->uxa_driver->copy(dst, 0, 0, 0, 0,
 +			pScrn->virtualX, pScrn->virtualY);
  	intel->uxa_driver->done_copy(dst);
+-#if ABI_VIDEODRV_VERSION >= SET_ABI_VERSION(10, 0)
 -	pScreen->canDoBGNoneRoot = TRUE;
+-#endif
  
 -cleanup_dst:
 -	(*pScreen->DestroyPixmap)(dst);
@@ -221,13 +223,15 @@ index 4ade59a..3c72402 100644
  	(*pScreen->DestroyPixmap)(src);
 +	(*pScreen->DestroyPixmap)(dst);
 +
++#if ABI_VIDEODRV_VERSION >= SET_ABI_VERSION(10, 0)
 +	pScrn->canDoBGNoneRoot = TRUE;
++#endif
  }
-diff --git a/src/intel_driver.c b/src/intel_driver.c
-index e790cf0..6f57e27 100644
---- a/src/intel_driver.c
-+++ b/src/intel_driver.c
-@@ -169,7 +169,6 @@ static Bool i830CreateScreenResources(ScreenPtr screen)
+diff --git a/src/uxa/intel_driver.c b/src/uxa/intel_driver.c
+index 46e06df..a06120a 100644
+--- a/src/uxa/intel_driver.c
++++ b/src/uxa/intel_driver.c
+@@ -165,7 +165,6 @@ static Bool i830CreateScreenResources(ScreenPtr screen)
  	if (!intel_uxa_create_screen_resources(screen))
  		return FALSE;
  
@@ -235,7 +239,7 @@ index e790cf0..6f57e27 100644
  	return TRUE;
  }
  
-@@ -1145,6 +1144,8 @@ static Bool I830EnterVT(VT_FUNC_ARGS_DECL)
+@@ -1133,6 +1132,8 @@ static Bool I830EnterVT(VT_FUNC_ARGS_DECL)
  			   strerror(errno));
  	}
  
@@ -245,5 +249,5 @@ index e790cf0..6f57e27 100644
  		return FALSE;
  
 -- 
-1.8.1.3
+1.8.5.3
 

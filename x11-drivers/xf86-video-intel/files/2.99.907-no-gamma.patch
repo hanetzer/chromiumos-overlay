@@ -1,0 +1,12 @@
+diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
+index 9bda006..6613ba6 100644
+--- a/src/uxa/intel_display.c
++++ b/src/uxa/intel_display.c
+@@ -750,6 +750,7 @@ intel_crtc_gamma_set(xf86CrtcPtr crtc,
+ 	struct intel_crtc *intel_crtc = crtc->driver_private;
+ 	struct intel_mode *mode = intel_crtc->mode;
+ 
++	return;
+ 	drmModeCrtcSetGamma(mode->fd, crtc_id(intel_crtc),
+ 			    size, red, green, blue);
+ }

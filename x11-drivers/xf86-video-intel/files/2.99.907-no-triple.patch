@@ -1,8 +1,8 @@
-diff --git a/src/intel_driver.c b/src/intel_driver.c
-index 9d1c4e8..3e4f664 100644
---- a/src/intel_driver.c
-+++ b/src/intel_driver.c
-@@ -677,6 +677,7 @@ static Bool I830PreInit(ScrnInfoPtr scrn, int flags)
+diff --git a/src/uxa/intel_driver.c b/src/uxa/intel_driver.c
+index 46e06df..b62a139 100644
+--- a/src/uxa/intel_driver.c
++++ b/src/uxa/intel_driver.c
+@@ -608,6 +608,7 @@ static Bool I830PreInit(ScrnInfoPtr scrn, int flags)
  		xf86ReturnOptValBool(intel->Options,
  				     OPTION_TRIPLE_BUFFER,
  				     TRUE);
