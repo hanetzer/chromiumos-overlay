@@ -135,6 +135,7 @@ RDEPEND="${RDEPEND}
 	media-libs/mesa
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
+	sys-apps/pciutils
 	sys-fs/udev
 	sys-libs/libcap
 	sys-libs/zlib
