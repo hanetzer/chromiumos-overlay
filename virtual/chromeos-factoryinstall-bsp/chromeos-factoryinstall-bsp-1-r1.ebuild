@@ -1,0 +1,1 @@
+chromeos-factoryinstall-bsp-1.ebuild

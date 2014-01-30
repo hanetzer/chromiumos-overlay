@@ -1,0 +1,1 @@
+chromeos-coreboot-1.ebuild

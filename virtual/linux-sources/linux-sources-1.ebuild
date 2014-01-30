@@ -8,7 +8,7 @@ HOMEPAGE="http://src.chromium.org"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 
 IUSE_KERNEL_VERS=( kernel_next kernel-3_4 kernel-3_8 kernel-3_10 )
 IUSE="${IUSE_KERNEL_VERS[*]} kernel_sources"
