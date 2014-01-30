@@ -46,7 +46,7 @@ src_compile() {
 	fi
 
 	if use mocktpm ; then
-		export MOCK_TPM=1
+		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
 	fi
 
 	emake distclean
