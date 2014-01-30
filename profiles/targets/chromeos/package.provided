@@ -29,8 +29,6 @@ app-arch/zip-3.0
 # from chromeos-base/root-certificates.
 app-misc/ca-certificates-20090709-r6
 
-app-portage/portage-utils-0.1.29
-
 app-text/build-docbook-catalog-1.4
 app-text/docbook-xsl-stylesheets-1.75.2
 app-text/texi2html-1.76
