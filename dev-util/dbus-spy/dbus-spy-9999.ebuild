@@ -9,7 +9,7 @@ inherit cros-workon
 DESCRIPTION="python dbus sniffer"
 HOMEPAGE="http://vidner.net/martin/software/dbus-spy/"
 
-LICENSE="CCPL-Attribution-3.0"
+LICENSE="CC-BY-3.0"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""

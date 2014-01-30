@@ -12,7 +12,7 @@ inherit python cros-workon
 DESCRIPTION="Minimal python dns server"
 HOMEPAGE="http://code.activestate.com/recipes/491264-mini-fake-dns-server/"
 
-LICENSE="PSF"
+LICENSE="PSF-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
