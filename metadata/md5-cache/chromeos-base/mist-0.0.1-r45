@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=!platform2? ( chromeos-base/libchrome:180609[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics chromeos-base/platform2 dev-libs/protobuf sys-fs/udev virtual/libusb:1 test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) ) dev-vcs/git virtual/pkgconfig
+DESCRIPTION=Chromium OS Modem Interface Switching Tool
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang platform2 test cros-debug cros_host cros_workon_tree_b7ecae701de72b5700a786f94808b633ab4bef6d profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=!platform2? ( chromeos-base/libchrome:180609[cros-debug=] chromeos-base/libchromeos chromeos-base/metrics chromeos-base/platform2 dev-libs/protobuf sys-fs/udev virtual/libusb:1 )
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	udev	f7490675e06a5e4db55adf394f078b7b
+_md5_=d4c390481e6c92406f56443e6fa842ea
