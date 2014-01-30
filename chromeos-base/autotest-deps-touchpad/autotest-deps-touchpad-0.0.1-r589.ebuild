@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=2
-CROS_WORKON_COMMIT="89712bcf20fa5ec5c5b135bbaf93f3de553ce1d0"
-CROS_WORKON_TREE="1b4ef809b317fa740b6608d4edfe8d3de2be1c9a"
+CROS_WORKON_COMMIT="599f9ccc6217cba1eaeff35f5396946a090363d5"
+CROS_WORKON_TREE="15311217ad46e1a5344aff89836bcbecbf3a5189"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit cros-workon autotest-deponly
 
-DESCRIPTION="Autotest ibusclient deps"
+DESCRIPTION="Autotest touchpad deps"
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
@@ -20,18 +20,17 @@ IUSE="+autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-AUTOTEST_DEPS_LIST="ibusclient"
+AUTOTEST_DEPS_LIST="touchpad-tests"
 AUTOTEST_CONFIG_LIST=
 AUTOTEST_PROFILERS_LIST=
 
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
-# deps/ibusclient
+# deps/touchpad-tests
 RDEPEND="
-	app-i18n/ibus
-	dev-libs/glib
-	sys-apps/dbus
+	x11-drivers/touchpad-tests
+	chromeos-base/mttools
 "
 
 DEPEND="${RDEPEND}"
