@@ -19,8 +19,6 @@
 
 =app-admin/eselect-opengl-1.2.4	amd64 arm x86
 =app-text/xmlto-0.0.24-r1	amd64 arm x86
-=dev-lang/nasm-2.09.10		amd64 x86
-=net-libs/libpcap-1.1.1-r1	amd64 arm x86
 =sys-apps/findutils-4.4.2-r1	amd64 arm x86
 =sys-devel/gettext-0.18.1.1-r3     amd64 arm x86
 =x11-proto/glproto-1.4.14-r1	amd64 arm x86
@@ -33,8 +31,6 @@
 =cross-arm-none-eabi/newlib-1.18.0	arm
 
 =sys-fs/squashfs-tools-4.2  amd64 x86
-
-=dev-util/intltool-0.41.0   amd64 x86
 
 # Needed for factory autotest.
 =dev-python/pyudev-0.12		amd64 x86
