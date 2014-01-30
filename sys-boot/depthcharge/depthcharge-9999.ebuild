@@ -9,7 +9,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="mocktpm"
+IUSE="mocktpm fwconsole"
 
 X86_DEPEND="
 	sys-apps/coreboot-utils
@@ -47,6 +47,11 @@ src_compile() {
 
 	if use mocktpm ; then
 		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
+	fi
+	if use fwconsole ; then
+		echo "CONFIG_CONSOLE=y" >> "board/${board}/defconfig"
+		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
+		  "board/${board}/defconfig"
 	fi
 
 	emake distclean
