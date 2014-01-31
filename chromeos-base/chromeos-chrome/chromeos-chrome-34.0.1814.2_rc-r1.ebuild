@@ -23,7 +23,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 IUSE="-asan +accessibility bluetooth +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
 # Don't strip NaCl executables. These are not linux executables and the
@@ -135,6 +135,7 @@ RDEPEND="${RDEPEND}
 	media-libs/mesa
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
+	sys-apps/pciutils
 	sys-fs/udev
 	sys-libs/libcap
 	sys-libs/zlib
