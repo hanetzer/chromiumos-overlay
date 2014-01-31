@@ -1,11 +1,12 @@
-DEFINED_PHASES=info setup test unpack
+DEFINED_PHASES=info install setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Wrapper for running chromite unit tests
+DESCRIPTION=Test tool that recovers bricked Chromium OS test devices
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_ae2ab42caa2cf42d9eb17f668a2c0ec4bdd9b81b profiling
+IUSE=cros_host cros_workon_tree_2340347666724e93520007bd9a9d8aa6674cfe8c profiling
 KEYWORDS=*
-LICENSE=BSD
+LICENSE=GPL-2
+RDEPEND=chromeos-base/chromeos-init dev-lang/python
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	8d32c1e1e4b82dd42e1272f76bd582ad	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=b44aa2f5cfe110a1dbc03a90a7aaa3e8
+_md5_=885666eac65a96f3f01611c47933594f
