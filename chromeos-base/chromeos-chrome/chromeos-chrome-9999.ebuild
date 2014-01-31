@@ -1004,6 +1004,34 @@ src_install() {
 	DBUS="${CHROME_ROOT}"/src/chrome/browser/chromeos/dbus
 	doins "${DBUS}"/org.chromium.LibCrosService.conf
 
+	# Copy Quickoffice resources for official build.
+	if use chrome_internal; then
+		insinto /usr/share/chromeos-assets/quickoffice
+		QUICKOFFICE="${CHROME_ROOT}"/src/chrome/browser/resources/chromeos/quickoffice
+		doins -r "${QUICKOFFICE}"/_locales
+		doins -r "${QUICKOFFICE}"/css
+		doins -r "${QUICKOFFICE}"/img
+		doins -r "${QUICKOFFICE}"/plugin
+		doins -r "${QUICKOFFICE}"/scripts
+		doins -r "${QUICKOFFICE}"/views
+
+		insinto /usr/share/chromeos-assets/quickoffice/_platform_specific
+		case "${ARCH}" in
+		arm)
+			doins -r "${QUICKOFFICE}"/_platform_specific/arm
+			;;
+		x86)
+			doins -r "${QUICKOFFICE}"/_platform_specific/x86_32
+			;;
+		amd64)
+			doins -r "${QUICKOFFICE}"/_platform_specific/x86_64
+			;;
+		*)
+			die "Unsupported architecture: ${ARCH}"
+			;;
+		esac
+	fi
+
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
 	if use build_tests && [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ||
