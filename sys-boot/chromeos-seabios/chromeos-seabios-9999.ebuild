@@ -1,27 +1,24 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/seabios"
+CROS_WORKON_LOCALNAME="seabios"
 
-inherit toolchain-funcs
+inherit toolchain-funcs cros-workon
 
 DESCRIPTION="Open Source implementation of X86 BIOS"
 HOMEPAGE="http://www.coreboot.org/SeaBIOS"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE=""
+IUSE="fwserial"
 
 RDEPEND=""
 DEPEND="
 	       virtual/chromeos-coreboot
 	       sys-apps/coreboot-utils
 "
-CROS_WORKON_LOCALNAME="seabios"
-
-# This must be inherited *after* EGIT/CROS_WORKON variables defined
-inherit cros-workon
 
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
@@ -44,8 +41,11 @@ create_seabios_cbfs() {
 	# Add VGA option rom to CBFS
 	cbfstool ${seabios_cbfs} add -f $oprom -n $( basename $oprom ) -t optionrom
 	# Add additional configuration
-	cbfstool ${seabios_cbfs} add -f bootorder -n bootorder -t raw
-	cbfstool ${seabios_cbfs} add -f boot-menu-wait -n boot-menu-wait -t raw
+	cbfstool ${seabios_cbfs} add -f chromeos/links -n links -t raw
+	cbfstool ${seabios_cbfs} add -f chromeos/bootorder -n bootorder -t raw
+	cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-key -n etc/boot-menu-key -t raw
+	cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-message -n etc/boot-menu-message -t raw
+	cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-wait -n etc/boot-menu-wait -t raw
 	# Print CBFS inventory
 	cbfstool ${seabios_cbfs} print
 	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
@@ -63,14 +63,15 @@ create_seabios_cbfs() {
 src_compile() {
 	export LD="$(tc-getLD).bfd"
 	export CC="$(tc-getCC) -fuse-ld=bfd"
-	emake defconfig || die "${P}: configuration failed"
-	emake || die "${P}: compilation failed"
+	if use fwserial; then
+	    echo "CONFIG_DEBUG_SERIAL=y" >> chromeos/default.config
+	fi
+	emake defconfig KCONFIG_DEFCONFIG=chromeos/default.config
+	emake
 	create_seabios_cbfs
 }
 
 src_install() {
-	dodir /firmware
 	insinto /firmware
-	doins out/bios.bin.elf || die
-	doins seabios.cbfs || die
+	doins out/bios.bin.elf seabios.cbfs
 }
