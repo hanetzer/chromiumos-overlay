@@ -16,7 +16,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 IUSE="drm opengles opengl"
 
 REQUIRED_USE="
@@ -34,6 +34,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}/0001-native-state-x11-Don-t-terminate-fullscreen-if-EWMH-.patch"
+	"${FILESDIR}/0002-Add-data-path-command-line-option.patch"
 )
 
 src_configure() {
