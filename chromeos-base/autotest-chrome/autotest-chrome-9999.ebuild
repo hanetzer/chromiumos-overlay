@@ -109,6 +109,7 @@ IUSE_TESTS=(
 	+tests_hardware_USB20
 	+tests_hardware_UsbPlugIn
 	 tests_logging_AsanCrash
+	 tests_logging_AsanCrashTelemetry
 	+tests_logging_UncleanShutdown
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeMounted
