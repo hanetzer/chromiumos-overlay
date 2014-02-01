@@ -1,0 +1,106 @@
+From ebcddad7fda401f412919078b8b7fe7af45cbeaf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Mon, 8 Jul 2013 18:24:11 -0700
+Subject: [PATCH] Avoid crash on surface destruction when the context is gone
+
+Signed-off-by: Dominik Behr <dbehr@chromium.org>
+---
+ src/gallium/auxiliary/util/u_inlines.h       | 2 +-
+ src/gallium/drivers/i915/i915_surface.c      | 1 +
+ src/gallium/drivers/llvmpipe/lp_surface.c    | 1 +
+ src/gallium/drivers/r300/r300_texture.c      | 1 +
+ src/gallium/drivers/r600/r600_state_common.c | 1 +
+ src/gallium/drivers/radeonsi/si_state.c      | 1 +
+ src/gallium/include/pipe/p_state.h           | 3 +++
+ 7 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/auxiliary/util/u_inlines.h b/src/gallium/auxiliary/util/u_inlines.h
+index 7a82f05..25c2638 100644
+--- a/src/gallium/auxiliary/util/u_inlines.h
++++ b/src/gallium/auxiliary/util/u_inlines.h
+@@ -110,7 +110,7 @@ pipe_surface_reference(struct pipe_surface **ptr, struct pipe_surface *surf)
+ 
+    if (pipe_reference_described(&(*ptr)->reference, &surf->reference, 
+                                 (debug_reference_descriptor)debug_describe_surface))
+-      old_surf->context->surface_destroy(old_surf->context, old_surf);
++      old_surf->surface_destroy(old_surf->context, old_surf);
+    *ptr = surf;
+ }
+ 
+diff --git a/src/gallium/drivers/i915/i915_surface.c b/src/gallium/drivers/i915/i915_surface.c
+index a4c1f39..5552648 100644
+--- a/src/gallium/drivers/i915/i915_surface.c
++++ b/src/gallium/drivers/i915/i915_surface.c
+@@ -337,6 +337,7 @@ i915_create_surface(struct pipe_context *ctx,
+       ps->u.tex.first_layer = surf_tmpl->u.tex.first_layer;
+       ps->u.tex.last_layer = surf_tmpl->u.tex.last_layer;
+       ps->context = ctx;
++      ps->surface_destroy = ctx->surface_destroy;
+    }
+    return ps;
+ }
+diff --git a/src/gallium/drivers/llvmpipe/lp_surface.c b/src/gallium/drivers/llvmpipe/lp_surface.c
+index f033c46..061f28e 100644
+--- a/src/gallium/drivers/llvmpipe/lp_surface.c
++++ b/src/gallium/drivers/llvmpipe/lp_surface.c
+@@ -255,6 +255,7 @@ llvmpipe_create_surface(struct pipe_context *pipe,
+       pipe_resource_reference(&ps->texture, pt);
+       ps->context = pipe;
+       ps->format = surf_tmpl->format;
++      ps->surface_destroy = pipe->surface_destroy;
+       if (llvmpipe_resource_is_texture(pt)) {
+          assert(surf_tmpl->u.tex.level <= pt->last_level);
+          assert(surf_tmpl->u.tex.first_layer <= surf_tmpl->u.tex.last_layer);
+diff --git a/src/gallium/drivers/r300/r300_texture.c b/src/gallium/drivers/r300/r300_texture.c
+index 4ea69dc..b56cfc8 100644
+--- a/src/gallium/drivers/r300/r300_texture.c
++++ b/src/gallium/drivers/r300/r300_texture.c
+@@ -1157,6 +1157,7 @@ struct pipe_surface* r300_create_surface_custom(struct pipe_context * ctx,
+         pipe_reference_init(&surface->base.reference, 1);
+         pipe_resource_reference(&surface->base.texture, texture);
+         surface->base.context = ctx;
++        surface->base.surface_destroy = ctx->surface_destroy;
+         surface->base.format = surf_tmpl->format;
+         surface->base.width = u_minify(width0_override, level);
+         surface->base.height = u_minify(height0_override, level);
+diff --git a/src/gallium/drivers/r600/r600_state_common.c b/src/gallium/drivers/r600/r600_state_common.c
+index 3dc7991..c08e5d0 100644
+--- a/src/gallium/drivers/r600/r600_state_common.c
++++ b/src/gallium/drivers/r600/r600_state_common.c
+@@ -1639,6 +1639,7 @@ struct pipe_surface *r600_create_surface_custom(struct pipe_context *pipe,
+ 	pipe_reference_init(&surface->base.reference, 1);
+ 	pipe_resource_reference(&surface->base.texture, texture);
+ 	surface->base.context = pipe;
++	surface->base.surface_destroy = pipe->surface_destroy;
+ 	surface->base.format = templ->format;
+ 	surface->base.width = width;
+ 	surface->base.height = height;
+diff --git a/src/gallium/drivers/radeonsi/si_state.c b/src/gallium/drivers/radeonsi/si_state.c
+index 5274eff..f402c6c 100644
+--- a/src/gallium/drivers/radeonsi/si_state.c
++++ b/src/gallium/drivers/radeonsi/si_state.c
+@@ -2990,6 +2990,7 @@ static struct pipe_surface *r600_create_surface(struct pipe_context *pipe,
+ 	pipe_reference_init(&surface->base.reference, 1);
+ 	pipe_resource_reference(&surface->base.texture, texture);
+ 	surface->base.context = pipe;
++	surface->base.surface_destroy = pipe->surface_destroy;
+ 	surface->base.format = surf_tmpl->format;
+ 	surface->base.width = rtex->surface.level[level].npix_x;
+ 	surface->base.height = rtex->surface.level[level].npix_y;
+diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
+index 1b5f88e..52f2c25 100644
+--- a/src/gallium/include/pipe/p_state.h
++++ b/src/gallium/include/pipe/p_state.h
+@@ -350,6 +350,9 @@ struct pipe_surface
+          unsigned last_element;
+       } buf;
+    } u;
++
++   void (*surface_destroy)(struct pipe_context *ctx,
++                           struct pipe_surface *);
+ };
+ 
+ 
+-- 
+1.8.3.2
+

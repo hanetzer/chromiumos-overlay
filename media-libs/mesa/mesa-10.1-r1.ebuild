@@ -43,7 +43,7 @@ fi
 # GLES[2]/gl[2]{,ext,platform}.h are SGI-B-2.0
 LICENSE="MIT LGPL-3 SGI-B-2.0"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 mips ppc ppc64 sh sparc x86 x86-fbsd"
+KEYWORDS="*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="radeon"
@@ -116,7 +116,7 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/10.0-cross-compile.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
-	epatch "${FILESDIR}"/9.1-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
+	epatch "${FILESDIR}"/10.0-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
