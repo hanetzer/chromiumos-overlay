@@ -135,8 +135,8 @@ base_libs = [
                 vlog.cc
                 """,
     'prefix' : 'base',
-    'libs' : 'event pthread rt',
-    'pc_libs' : '',
+    'libs' : 'pthread rt',
+    'pc_libs' : 'libevent',
   },
   {
     'name' : 'dl',
@@ -269,7 +269,7 @@ Name: libchrome
 Description: chrome base library
 Version: ${bslot}
 Requires:
-Requires.private: glib-2.0 @PRIVATE_PC@
+Requires.private: @PRIVATE_PC@
 Libs: -lbase-${bslot}
 Libs.private: @BASE_LIBS@ @LIBS@
 Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions -Wno-unused-local-typedefs
