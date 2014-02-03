@@ -25,4 +25,4 @@
 # This is unloved by mesa, and should never be pulled into the targets.
 # It is actually for clang and ASAN that we want to have edge versions.
 # This should be kept in sync with package.keywords.
-=sys-devel/llvm-3.4_pre*
+=sys-devel/llvm-3.5_pre*

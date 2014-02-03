@@ -11,7 +11,7 @@ inherit cros-constants subversion eutils flag-o-matic multilib toolchain-funcs p
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 EGIT_MASTER=""
 # Set to the corresponding commit.
-EGIT_COMMIT="817987350442e9349dbcf3416abaadc1796036a4"
+EGIT_COMMIT="30c0f722370210d746c3bf4c3104952b78e5e498"
 inherit git-2
 
 SVN_COMMIT=${PV#*_pre}
@@ -23,7 +23,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/llvm/trunk@${SVN_COMMIT}"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="-* amd64"
 IUSE="debug doc gold +libffi multitarget ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl
@@ -80,11 +80,15 @@ pkg_setup() {
 	 fi
 }
 
+src_unpack() {
+	git-2_src_unpack
+}
+
 src_prepare() {
 	# unfortunately ./configure won't listen to --mandir and the-like, so take
 	# care of this.
 	epatch "${FILESDIR}"/${PN}-3.2-nodoctargz.patch
-	epatch "${FILESDIR}"/${PN}-3.4-gentoo-install.patch
+	epatch "${FILESDIR}"/${PN}-3.5-gentoo-install.patch
 	einfo "Fixing install dirs"
 	sed -e 's,^PROJ_docsdir.*,PROJ_docsdir := $(PROJ_prefix)/share/doc/'${PF}, \
 		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \

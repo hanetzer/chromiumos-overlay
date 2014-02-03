@@ -20,19 +20,19 @@ EGIT_REPO_URIS=(
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"817987350442e9349dbcf3416abaadc1796036a4"	# EGIT_COMMIT
+		"30c0f722370210d746c3bf4c3104952b78e5e498"  # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"48ed0580871e66c61e856a2281280929f6f77593"	# EGIT_COMMIT
+		"2d25e54a03cbde0015a56bdbabc4bcf667182c0d"  # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"8f2cb42e1aa5dbdd6fa651a5da7ab8a3a0d4dece"	# EGIT_COMMIT
+		"8bc7719d6beb8a553d0d73b923774d4724b05fee"  # EGIT_COMMIT
 )
 inherit git-2
 
@@ -45,7 +45,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 
 LICENSE="UoI-NCSA"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="-* amd64"
 IUSE="debug multitarget +static-analyzer test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
@@ -72,18 +72,17 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [ "/usr/x86_64-pc-linux-gnu/gcc-bin/4.7.x-google" != $(gcc-config -B) ]; then
-		ewarn "Beware sheriff: gcc's binaries are not in '/usr/x86_64-pc-linux-gnu/gcc-bin/4.7.x-google'"
+	if [ "/usr/x86_64-pc-linux-gnu/gcc-bin/4.8.x-google" != $(gcc-config -B) ]; then
+		ewarn "Beware sheriff: gcc's binaries are not in '/usr/x86_64-pc-linux-gnu/gcc-bin/4.8.x-google'"
 		ewarn "and are instead in $(gcc-config -B). This may lead to an unusable clang."
 		ewarn "Please test clang with a simple hello_world.cc file and update this message."
 	fi
 
+	epatch "${FILESDIR}"/${PN}-3.5-gentoo-install.patch
+	# Change the default asan output path
+	epatch "${FILESDIR}"/${PN}-3.5-asan-default-path.patch
 	# Same as llvm doc patches
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
-	epatch "${FILESDIR}"/${PN}-3.4-gentoo-install.patch
-
-	# Change the default asan output path
-	epatch "${FILESDIR}"/${PN}-3.4-asan-default-path.patch
 
 	# multilib-strict
 	sed -e "/PROJ_headers\|HeaderDir/s#lib/clang#$(get_libdir)/clang#" \
@@ -118,24 +117,25 @@ src_prepare() {
 	einfo "Fixing rpath and CFLAGS"
 	sed -e 's,\$(RPATH) -Wl\,\$(\(ToolDir\|LibDir\)),$(RPATH) -Wl\,'"${EPREFIX}"/usr/$(get_libdir)/llvm, \
 		-e '/OmitFramePointer/s/-fomit-frame-pointer//' \
+		-e 's%\x27$$ORIGIN/../lib\x27%& $(RPATH) -Wl,\x27$(PROJ_libdir)\x27%g' \
 		-i Makefile.rules || die "rpath sed failed"
 
 	# Use system llc (from llvm ebuild) for tests
 	sed -e "/^llc_props =/s/os.path.join(llvm_tools_dir, 'llc')/'llc'/" \
 		-i tools/clang/test/lit.cfg  || die "test path sed failed"
 
-
 	# User patches
 	epatch_user
 }
 
 src_configure() {
+	# Update resource dir version after first RC
 	local CONF_FLAGS="--enable-shared
 		--with-optimize-option=
 		$(use_enable !debug optimized)
 		$(use_enable debug assertions)
 		$(use_enable debug expensive-checks)
-		--with-clang-resource-dir=../$(get_libdir)/clang/3.4"
+		--with-clang-resource-dir=../$(get_libdir)/clang/3.5"
 
 	# Setup the search path to include the Prefix includes
 	if use prefix ; then
@@ -158,6 +158,7 @@ src_configure() {
 
 	# clang prefers clang over gcc, so we may need to force that
 	tc-export CC CXX
+
 	econf ${CONF_FLAGS}
 }
 
@@ -170,13 +171,10 @@ src_test() {
 
 	echo ">>> Test phase [test]: ${CATEGORY}/${PF}"
 
-	testing() {
-		if ! emake -j1 VERBOSE=1 test; then
-			has test $FEATURES && die "Make test failed. See above for details."
-			has test $FEATURES || eerror "Make test failed. See above for details."
-		fi
-	}
-	python_execute_function testing
+	if ! emake -j1 VERBOSE=1 test; then
+		has test $FEATURES && die "Make test failed. See above for details."
+		has test $FEATURES || eerror "Make test failed. See above for details."
+	fi
 }
 
 src_install() {
@@ -191,19 +189,34 @@ src_install() {
 		insinto /usr/share/${PN}
 		doins tools/scan-build/scanview.css
 		doins tools/scan-build/sorttable.js
-
-		cd tools/scan-view || die "cd scan-view failed"
-		dobin scan-view
-		install-scan-view() {
-			insinto "$(python_get_sitedir)"/clang
-			doins Reporter.py Resources ScanView.py startfile.py
-			touch "${ED}"/"$(python_get_sitedir)"/clang/__init__.py
-		}
-		python_execute_function install-scan-view
 	fi
 
-	# AddressSanitizer symbolizer (currently separate)
-	dobin "${S}"/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
+	python_inst() {
+		if use static-analyzer ; then
+			pushd tools/scan-view >/dev/null || die
+
+			python_doscript scan-view
+
+			touch __init__.py || die
+			python_moduleinto clang
+			python_domodule __init__.py Reporter.py Resources ScanView.py startfile.py
+
+			popd >/dev/null || die
+		fi
+
+		if use python ; then
+			pushd bindings/python/clang >/dev/null || die
+
+			python_moduleinto clang
+			python_domodule __init__.py cindex.py enumerations.py
+
+			popd >/dev/null || die
+		fi
+
+		# AddressSanitizer symbolizer (currently separate)
+		python_doscript "${S}"/projects/compiler-rt/lib/asan/scripts/asan_symbolize.py
+	}
+	python_foreach_impl python_inst
 
 	# Fix install_names on Darwin.  The build system is too complicated
 	# to just fix this, so we correct it post-install
@@ -227,12 +240,4 @@ src_install() {
 			eend $?
 		done
 	fi
-}
-
-pkg_postinst() {
-	python_mod_optimize clang
-}
-
-pkg_postrm() {
-	python_mod_cleanup clang
 }
