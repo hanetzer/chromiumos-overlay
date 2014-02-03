@@ -279,7 +279,10 @@ cros-firmware_src_compile() {
 	elif use cros_ec; then
 		# TODO(hungte) Deal with a platform that has only EC and no
 		# BIOS, which is usually incorrect configuration.
-		die "Sorry, platform without local BIOS EC is not supported."
+		# We only warn here to allow for BCS based firmware to still generate
+		# a proper chromeos-firmwareupdate update script.
+		ewarn "WARNING: platform has no local BIOS, EC only is not supported."
+		ewarn "Not generating a locally built firmware update script."
 	fi
 }
 
