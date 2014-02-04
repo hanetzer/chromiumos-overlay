@@ -44,10 +44,18 @@ src_prepare() {
 
 	# Fix keycode to handle "Backquote" and "Escape" key correctly.
 	# TODO(hsumita): Remove this if next version of NaCl-Mozc is released.
-	if use_internal; then
+	if use internal; then
 		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-fix-keycode.patch
 	else
 		epatch "${FILESDIR}"/${P}-fix-keycode.patch
+	fi
+
+	# Fix keycode to handle "Backquote" and "Escape" key correctly.
+	# TODO(hsumita): Remove this if next version of NaCl-Mozc is released.
+	if use internal; then
+		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-dont-handle-some-keys.patch
+	else
+		epatch "${FILESDIR}"/${P}-dont-handle-some-keys.patch
 	fi
 }
 
