@@ -36,31 +36,30 @@ LIBCHROME_VERS="180609"
 #   network_3GSmokeTest
 #   network_3GStressEnable
 RDEPEND="
-  tpmtools? ( app-crypt/tpm-tools )
-  chromeos-base/autotest-deps
-  !<=chromeos-base/autotest-factory-0.0.1-r4445
-  !chromeless_tty? (
-    !content_shell? (
-      chromeos-base/autotest-deps-glbench
-      tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
-      tests_graphics_Piglit? ( chromeos-base/autotest-deps-piglit )
-    )
-  )
-  chromeos-base/audiotest
-  chromeos-base/autotest-deps-libaio
-  chromeos-base/shill-test-scripts
-  autox? ( chromeos-base/autox )
-  dev-python/numpy
-  dev-python/pygobject
-  media-sound/sox
-  xset? ( x11-apps/xset )
+	tpmtools? ( app-crypt/tpm-tools )
+	chromeos-base/autotest-deps
+	!<=chromeos-base/autotest-factory-0.0.1-r4445
+	!chromeless_tty? (
+		!content_shell? (
+			chromeos-base/autotest-deps-glbench
+			tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
+			tests_graphics_Piglit? ( chromeos-base/autotest-deps-piglit )
+		)
+	)
+	chromeos-base/audiotest
+	chromeos-base/shill-test-scripts
+	autox? ( chromeos-base/autox )
+	dev-python/numpy
+	dev-python/pygobject
+	media-sound/sox
+	xset? ( x11-apps/xset )
 "
 
 RDEPEND="${RDEPEND}
-  tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
-  tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
-  tests_hardware_MemoryThroughput? ( chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=] )
-  tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
+	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
+	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
+	tests_hardware_MemoryThroughput? ( chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=] )
+	tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
 "
 
 DEPEND="${RDEPEND}"
