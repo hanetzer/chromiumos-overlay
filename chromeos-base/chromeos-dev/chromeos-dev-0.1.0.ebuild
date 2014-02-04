@@ -127,6 +127,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/smartmontools
 	usb? ( sys-apps/usbutils )
 	sys-apps/which
+	sys-block/fio
 	sys-devel/gdb
 	sys-fs/fuse
 	sys-fs/lvm2
