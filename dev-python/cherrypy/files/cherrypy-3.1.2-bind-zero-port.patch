@@ -1,0 +1,71 @@
+Allow the application server to bind to an arbitrary available port (zero).
+--- cherrypy/process/servers.py
++++ cherrypy/process/servers.py
+@@ -34,14 +34,15 @@
+     
+     def start(self):
+         """Start the HTTP server."""
+-        if isinstance(self.bind_addr, tuple):
+-            host, port = self.bind_addr
+-            on_what = "%s:%s" % (host, port)
+-        else:
+-            on_what = "socket file: %s" % self.bind_addr
++        def on_what():
++            if isinstance(self.bind_addr, tuple):
++                host, port = self.bind_addr
++                return "%s:%s" % (host, port)
++            else:
++                return "socket file: %s" % self.bind_addr
+         
+         if self.running:
+-            self.bus.log("Already serving on %s" % on_what)
++            self.bus.log("Already serving on %s" % on_what())
+             return
+         
+         self.interrupt = None
+@@ -59,7 +60,7 @@
+         
+         self.wait()
+         self.running = True
+-        self.bus.log("Serving on %s" % on_what)
++        self.bus.log("Serving on %s" % on_what())
+     start.priority = 75
+     
+     def _start_http_thread(self):
+@@ -97,7 +98,8 @@
+         
+         # Wait for port to be occupied
+         if isinstance(self.bind_addr, tuple):
+-            host, port = self.bind_addr
++            self.orig_bind_addr = self.bind_addr
++            host, port = self.bind_addr = self.httpserver.bind_addr[0:2]
+             wait_for_occupied_port(host, port)
+     
+     def stop(self):
+@@ -110,6 +112,7 @@
+                 wait_for_free_port(*self.bind_addr)
+             self.running = False
+             self.bus.log("HTTP Server %s shut down" % self.httpserver)
++            self.bind_addr = self.orig_bind_addr
+         else:
+             self.bus.log("HTTP Server %s already shut down" % self.httpserver)
+     stop.priority = 25
+@@ -237,6 +240,8 @@
+     """Wait for the specified port to become free (drop requests)."""
+     if not host:
+         raise ValueError("Host values of '' or None are not allowed.")
++    if port == 0:
++      return
+     
+     for trial in xrange(50):
+         try:
+--- cherrypy/wsgiserver/__init__.py
++++ cherrypy/wsgiserver/__init__.py
+@@ -1642,6 +1642,7 @@
+                     pass
+         
+         self.socket.bind(self.bind_addr)
++        self.bind_addr = self.socket.getsockname()
+     
+     def tick(self):
+         """Accept a new connection and put it on the Queue."""

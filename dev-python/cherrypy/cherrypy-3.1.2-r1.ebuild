@@ -7,7 +7,7 @@ PYTHON_DEPEND="2"
 SUPPORT_PYTHON_ABIS="1"
 RESTRICT_PYTHON_ABIS="3.*"
 
-inherit distutils
+inherit distutils eutils
 
 MY_P="CherryPy-${PV}"
 
@@ -30,6 +30,7 @@ src_prepare() {
 		-e 's/"cherrypy.tutorial",//' \
 		-e "/('cherrypy\/tutorial',/, /),/d" \
 		setup.py || die "sed failed"
+	epatch "${FILESDIR}"/${P}-bind-zero-port.patch
 }
 
 src_test() {
