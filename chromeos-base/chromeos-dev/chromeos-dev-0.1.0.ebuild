@@ -36,7 +36,6 @@ CROS_X86_RDEPEND="
 	app-benchmarks/i7z
 	dev-util/turbostat
 	sys-apps/dmidecode
-	sys-apps/iotools
 	sys-apps/pciutils
 	x11-apps/intel-gpu-tools
 "
@@ -121,6 +120,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/i2c-tools
+	sys-apps/iotools
 	sys-apps/kbd
 	sys-apps/less
 	sys-apps/mmc-utils

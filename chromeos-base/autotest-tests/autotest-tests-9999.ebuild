@@ -47,7 +47,6 @@ RDEPEND="
     )
   )
   chromeos-base/audiotest
-  chromeos-base/autotest-deps-iotools
   chromeos-base/autotest-deps-libaio
   chromeos-base/shill-test-scripts
   autox? ( chromeos-base/autox )
