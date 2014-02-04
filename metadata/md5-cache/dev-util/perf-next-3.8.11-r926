@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup unpack
+DEPEND=!dev-util/perf dev-vcs/git dev-vcs/git audit? ( sys-process/audit ) demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) unwind? ( sys-libs/libunwind ) doc? ( app-text/asciidoc app-text/xmlto )
+DESCRIPTION=Userland tools for Linux Performance Counters
+EAPI=4
+HOMEPAGE=http://perf.wiki.kernel.org/
+IUSE=cros_host cros_workon_tree_b14dade73cd13940058a6081a386a370ff7c736b profiling cros_host cros_workon_tree_b14dade73cd13940058a6081a386a370ff7c736b profiling -asan audit -clang +demangle +doc perl python ncurses unwind
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!dev-util/perf audit? ( sys-process/audit ) demangle? ( sys-devel/binutils ) dev-libs/elfutils ncurses? ( dev-libs/newt ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) unwind? ( sys-libs/libunwind )
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-perf	85283f6fe6af230a9069d463e94aa52d	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=068fea9593629332f7198c034c6b0de0
