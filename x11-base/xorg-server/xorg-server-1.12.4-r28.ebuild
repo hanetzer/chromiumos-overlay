@@ -10,7 +10,7 @@ inherit flag-o-matic xorg-2 multilib versionator
 EGIT_REPO_URI="git://anongit.freedesktop.org/git/xorg/xserver"
 
 DESCRIPTION="X.Org X servers"
-KEYWORDS="~alpha amd64 arm hppa ~ia64 ~mips ppc ppc64 ~sh ~sparc x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="*"
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
 # +suid needed because sparcs default off
@@ -178,6 +178,7 @@ PATCHES=(
 	# CVE-2013-4396
 	"${FILESDIR}/1.12.4-Avoid-use-after-free-in-dix-dixfonts.patch"
 	"${FILESDIR}/0001-xfree86-Use-the-TMDS-maximum-frequency-to-prune-mode.patch"
+	"${FILESDIR}/0001-Add-check-for-link-from-output-to-crtc-before-optimi.patch"
 )
 
 src_prepare() {
