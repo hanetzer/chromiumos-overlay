@@ -25,7 +25,7 @@ LIBCHROME_VERS="180609"
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	virtual/opengl
+	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )
 	x11-apps/xwd
 "
