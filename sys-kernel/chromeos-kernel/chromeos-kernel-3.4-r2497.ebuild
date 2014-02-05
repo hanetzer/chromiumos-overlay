@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="8c3bddd21459605bd3b74db634ddf9fb086977c3"
-CROS_WORKON_TREE="cd0d0f0a13b964827e93c5823a73d6c53e33adff"
+CROS_WORKON_COMMIT="22a97d99aca8bd2dfeb313292b1fe2c7883243c5"
+CROS_WORKON_TREE="b6330fd3a8f2d25044c7685d440db3b088715478"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 
 # TODO(jglasgow) Need to fix DEPS file to get rid of "files"
@@ -16,7 +16,8 @@ DESCRIPTION="Chrome OS Kernel"
 KEYWORDS="*"
 
 RDEPEND="!sys-kernel/chromeos-kernel-next
-	!sys-kernel/chromeos-kernel-exynos"
+	!sys-kernel/chromeos-kernel-exynos
+	!sys-kernel/chromeos-kernel-3_10"
 DEPEND="${RDEPEND}"
 
 src_test() {
