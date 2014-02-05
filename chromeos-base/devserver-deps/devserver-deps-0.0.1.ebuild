@@ -13,9 +13,10 @@ IUSE=""
 # These packages are meant to provide a basic enviornment for running the
 # ChromiumOS Devsever code.
 RDEPEND="
+	dev-lang/python
+	dev-libs/protobuf
 	dev-python/lockfile
 	dev-python/cherrypy
-	dev-libs/protobuf
 "
 
 DEPEND=""

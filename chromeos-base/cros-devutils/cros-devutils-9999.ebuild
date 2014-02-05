@@ -21,6 +21,7 @@ CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
 RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 	app-portage/gentoolkit
 	cros_host? ( app-shells/bash )
+	chromeos-base/devserver
 	!cros_host? ( !chromeos-base/gmerge )
 	dev-lang/python
 	dev-util/shflags
@@ -30,9 +31,6 @@ RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 DEPEND=""
 
 src_install() {
-	# Run the devserver Makefile.
-	emake install DESTDIR="$D"
-
 	dosym /build /var/lib/devserver/static/pkgroot
 	dosym /var/lib/devserver/static /usr/lib/devserver/static
 
@@ -76,13 +74,6 @@ src_install() {
 		for f in git{,-prompt} repo; do
 			dosym /usr/share/bash-completion/${f} /etc/bash_completion.d/${f}
 		done
-
-		insinto "$(python_get_sitedir)"
-		doins host/lib/*.py
-
-		insinto "$(python_get_sitedir)/update_payload"
-		doins $(printf '%s\n' host/lib/update_payload/*.py | grep -v unittest)
-		doins host/lib/update_payload/update-payload-key.pub.pem
 	fi
 }
 
@@ -126,7 +117,6 @@ src_test() {
 	else
 		TESTS+=( autoupdate_unittest.py )
 		TESTS+=( builder_test.py )
-		TESTS+=( devserver_unittest.py )
 		TESTS+=( common_util_unittest.py )
 		#FIXME(zbehan): update_test.py doesn't seem to work right now.
 	fi
