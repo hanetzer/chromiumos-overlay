@@ -39,11 +39,12 @@ IUSE_LINUX_FIRMWARE=(
 	"${IUSE_IWLWIFI[@]}"
 	marvell-pcie8897
 )
-IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_}"
+IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon"
 LICENSE="linux_firmware_fw_sst? ( LICENCE.fw_sst )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
+	video_cards_radeon? ( LICENSE.radeon )
 "
 
 DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
@@ -85,6 +86,7 @@ src_install() {
 	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
+	use video_cards_radeon && doins_subdir radeon/*
 
 	# The Intel wireless firmware is mostly standard.
 	for x in "${IUSE_IWLWIFI[@]}"; do
