@@ -63,6 +63,7 @@ ALL_BOARDS=(
 	fox_baskingridge
 	fox_wtm1
 	fox_wtm2
+	gizmo
 	glimmer
 	ironhide
 	#kiev
