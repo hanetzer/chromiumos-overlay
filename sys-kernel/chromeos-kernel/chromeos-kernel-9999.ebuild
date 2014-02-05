@@ -14,7 +14,8 @@ DESCRIPTION="Chrome OS Kernel"
 KEYWORDS="~*"
 
 RDEPEND="!sys-kernel/chromeos-kernel-next
-	!sys-kernel/chromeos-kernel-exynos"
+	!sys-kernel/chromeos-kernel-exynos
+	!sys-kernel/chromeos-kernel-3_10"
 DEPEND="${RDEPEND}"
 
 src_test() {
