@@ -137,7 +137,7 @@ _add_source() {
 		bcs)
 			SRC_URI+=" ${bcs_url}/${CATEGORY}/${PN}/${uri}"
 			;;
-		http|https)
+		http|https|gs)
 			SRC_URI+=" ${input}"
 			;;
 	esac
