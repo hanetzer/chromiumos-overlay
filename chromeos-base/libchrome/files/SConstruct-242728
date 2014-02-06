@@ -272,7 +272,7 @@ Requires:
 Requires.private: @PRIVATE_PC@
 Libs: -lbase-${bslot}
 Libs.private: @BASE_LIBS@ @LIBS@
-Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions -Wno-unused-local-typedefs
+Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions -Wno-unused-local-typedefs -DBASE_VER=${bslot}
 """)])
 
 env.Substfile('libbase-%s.so' % BASE_VER,
