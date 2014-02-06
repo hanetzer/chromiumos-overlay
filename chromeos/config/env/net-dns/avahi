@@ -12,6 +12,3 @@ INSTALL_MASK+=" /etc/avahi/avahi-daemon.conf"
 
 # We don't use avahi-dnsconfd, so no need for its action script
 INSTALL_MASK+=" /etc/avahi/avahi-dnsconfd.action"
-
-# Insist on D-Bus support, otherwise libavahi-client.so won't get built
-USE+=" dbus"

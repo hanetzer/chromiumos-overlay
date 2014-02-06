@@ -36,6 +36,7 @@ sys-apps/util-linux	-perl static-libs
 sys-boot/grub       grub_platforms_pc grub_platforms_efi-64 grub_platforms_coreboot static
 sys-devel/gettext	-git
 x11-libs/cairo		X
+net-dns/avahi		dbus
 # Build emulation statically so that we can execute it within a chroot and
 # still find the shared libraries.
 net-misc/dhcpcd -crash
