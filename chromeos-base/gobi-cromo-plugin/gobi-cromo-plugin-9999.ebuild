@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
 CROS_WORKON_USE_VCSID="1"
 
@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="install_tests internal"
 
-LIBCHROME_VERS="180609"
+LIBCHROME_VERS="242728"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-cpp/glog
@@ -39,7 +39,7 @@ cr_make() {
 		LIBDIR=/usr/$(get_libdir) \
 		BASE_VER=${LIBCHROME_VERS} \
 		$(use install_tests && echo INSTALL_TESTS=1) \
-		"$@" || die
+		"$@"
 }
 
 src_configure() {
