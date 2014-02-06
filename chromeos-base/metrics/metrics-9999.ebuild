@@ -18,7 +18,6 @@ IUSE="platform2"
 LIBCHROME_VERS="180609"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.0

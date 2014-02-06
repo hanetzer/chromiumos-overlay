@@ -19,7 +19,6 @@ REQUIRED_USE="asan? ( clang )"
 LIBCHROME_VERS="180609"
 
 RDEPEND="gdmwimax? (
-	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/platform2
 	dev-libs/dbus-c++
