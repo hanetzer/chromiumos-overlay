@@ -58,6 +58,7 @@ ALL_BOARDS=(
 	duck
 	#emeraldlake2
 	falco
+	falco_li
 	fb1
 	fox
 	fox_baskingridge
