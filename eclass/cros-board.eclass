@@ -81,6 +81,7 @@ ALL_BOARDS=(
 	monroe
 	nyan
 	nyan_big
+	nyan_blaze
 	optimus
 	panda
 	panther
