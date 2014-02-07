@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-1.2.1.ebuild,v 1.1 2013/10/12 07:52:25 aballier Exp $
 
-EAPI="3"
+EAPI="4"
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
@@ -25,7 +25,7 @@ fi
 LICENSE="MIT"
 SLOT="0"
 if [ "${PV%9999}" = "${PV}" ] ; then
-	KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="-* amd64 x86"
 else
 	KEYWORDS=""
 fi
@@ -54,7 +54,6 @@ src_configure() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
-	dodoc AUTHORS NEWS README || die
+	default
 	find "${D}" -name '*.la' -delete
 }
