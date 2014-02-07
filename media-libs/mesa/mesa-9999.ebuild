@@ -137,6 +137,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.0-draw-fix-incorrect-vertex-size-computation-in-LLVM-d.patch
 	epatch "${FILESDIR}"/10.0-mesa-use-signed-temporary-variable-to-store-_ColorDr.patch
 	epatch "${FILESDIR}"/10.0-mesa-Increment-the-list-pointer-while-freeing-instru.patch
+	epatch "${FILESDIR}"/10.0-glsl-Add-locking-to-builtin_builder-singleton.patch
 
 	base_src_prepare
 
