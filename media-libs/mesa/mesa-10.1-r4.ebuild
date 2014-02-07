@@ -139,6 +139,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-immediatel.patch
 	epatch "${FILESDIR}"/10.0-draw-fix-incorrect-vertex-size-computation-in-LLVM-d.patch
 	epatch "${FILESDIR}"/10.0-mesa-use-signed-temporary-variable-to-store-_ColorDr.patch
+	epatch "${FILESDIR}"/10.0-mesa-Increment-the-list-pointer-while-freeing-instru.patch
 
 	epatch "${FILESDIR}"/10.1-mesa-format_has_color_component-helper.patch
 	epatch "${FILESDIR}"/10.1-mesa-handle-GL_NONE-draw-buffers-correctly-in-glClea.patch

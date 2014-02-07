@@ -1,0 +1,35 @@
+From 258eee3ebef74c5cf5e33b48c6ec633e4cd5547f Mon Sep 17 00:00:00 2001
+From: Ian Romanick <ian.d.romanick@intel.com>
+Date: Tue, 21 Jan 2014 16:52:42 -0800
+Subject: [PATCH 3/4] mesa: Increment the list pointer while freeing
+ instruction data
+
+Since the list pointer was never incremented when a OPCODE_PIXEL_MAP
+opcode was encountered, the data for the instruction would get freed
+over and over and over... resulting in a crash.
+
+Fixes gl-1.0-beginend-coverage.
+
+Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=72214
+Reviewed-by: Brian Paul <brianp@vmware.com>
+Cc: Lu Ha <huax.lu@intel.com>
+---
+ src/mesa/main/dlist.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/mesa/main/dlist.c b/src/mesa/main/dlist.c
+index cb40ff4..08943c9 100644
+--- a/src/mesa/main/dlist.c
++++ b/src/mesa/main/dlist.c
+@@ -767,6 +767,7 @@ _mesa_delete_list(struct gl_context *ctx, struct gl_display_list *dlist)
+             break;
+          case OPCODE_PIXEL_MAP:
+             free(get_pointer(&n[3]));
++            n += InstSize[n[0].opcode];
+             break;
+ 
+          case OPCODE_CONTINUE:
+-- 
+1.9.0.rc1.175.g0b1dcb5
+
