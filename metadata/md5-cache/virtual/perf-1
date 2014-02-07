@@ -1,9 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Chrome OS perf virtual package
-HOMEPAGE=http://src.chromium.org
-IUSE=kernel_next
-KEYWORDS=*
-LICENSE=GPL-2
-RDEPEND=kernel_next? ( dev-util/perf-next ) !kernel_next? ( dev-util/perf )
-SLOT=0
-_md5_=4e9dbe36a8edc7a78401857434f071b7

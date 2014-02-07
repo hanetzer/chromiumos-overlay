@@ -16,8 +16,7 @@ dev-libs/dbus-glib	tools
 dev-libs/protobuf 	-python
 dev-perl/GD             png
 dev-python/pyudev	pygobject
-dev-util/perf		tui -doc
-dev-util/perf-next		audit tui unwind -doc
+dev-util/perf		audit tui unwind -doc
 dev-vcs/git		bash-completion curl cvs -gpg subversion webdav
 dev-vcs/subversion	-dso webdav-serf
 games-emulation/zsnes	ao -debug
