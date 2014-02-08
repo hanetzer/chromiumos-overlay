@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=!platform2? ( chromeos-base/chromeos-minijail chromeos-base/libchrome:180609[cros-debug=] chromeos-base/platform2 chromeos-base/system_api dev-libs/dbus-c++ dev-libs/glib:2 dev-libs/libpcre net-libs/libpcap sys-apps/memtester sys-apps/smartmontools chromeos-base/shill sys-apps/dbus virtual/modemmanager ) dev-vcs/git
+DESCRIPTION=Chrome OS debugging service
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang platform2 cros-debug cros_host cros_workon_tree_1f8c0435531ca62006377969fb27393d4377bea3 profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=!platform2? ( chromeos-base/chromeos-minijail chromeos-base/libchrome:180609[cros-debug=] chromeos-base/platform2 chromeos-base/system_api dev-libs/dbus-c++ dev-libs/glib:2 dev-libs/libpcre net-libs/libpcap sys-apps/memtester sys-apps/smartmontools )
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=b7973c4e9f8a764b8866ad3eadcd48d1
