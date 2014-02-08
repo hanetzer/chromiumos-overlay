@@ -86,7 +86,6 @@ RDEPEND_cromo="
 RDEPEND_cros_disks="
 	cros_disks? (
 		app-arch/unrar
-		dev-cpp/gflags
 		dev-libs/dbus-c++
 		sys-apps/rootdev
 		sys-apps/util-linux
