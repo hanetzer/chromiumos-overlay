@@ -38,6 +38,7 @@ ALL_BOARDS=(
 	amd64-host
 	aries
 	arm-generic
+	arm64-generic
 	bayleybay
 	beaglebone
 	beaglebone_servo
@@ -103,6 +104,7 @@ ALL_BOARDS=(
 	raspberrypi
 	#ricochet
 	rizer
+	rush
 	samus
 	slippy
 	sonic
