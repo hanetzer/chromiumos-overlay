@@ -75,10 +75,7 @@ RDEPEND_crash_reporter="
 RDEPEND_cromo="
 	cellular? (
 		>=chromeos-base/mobile-providers-0.0.1-r12
-		dev-cpp/gflags
-		dev-cpp/glog
 		dev-libs/dbus-c++
-		net-dialup/ppp
 		virtual/modemmanager
 	)
 "
