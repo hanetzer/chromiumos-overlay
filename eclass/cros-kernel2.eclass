@@ -450,11 +450,6 @@ emit_its_script() {
 }
 
 kmake() {
-	# Allow override of kernel arch.
-	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
-
-	local cross=${CHOST}-
-
 	local wifi_version
 	local v
 	for v in ${WIRELESS_VERSIONS[@]}; do
@@ -466,24 +461,22 @@ kmake() {
 		fi
 	done
 
-	# TODO(raymes): Force GNU ld over gold. There are still some
-	# gold issues to iron out. See: 13209.
-	tc-export LD CC CXX
+	# Allow override of kernel arch.
+	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 
-	local binutils_path=$(get_binutils_path_ld)
+	# Support 64bit kernels w/32bit userlands.
+	local cross=${CHOST}
+	case ${ARCH}:${kernel_arch} in
+		x86:x86_64)
+			cross="x86_64-cros-linux-gnu"
+			;;
+		arm:arm64)
+			cross="aarch64-cros-linux-gnu"
+			;;
+	esac
 
-	# Hack for using 64-bit kernel with 32-bit user-space
-	if [[ "${ARCH}" == "x86" && "${kernel_arch}" == "x86_64" ]]; then
-		cross=x86_64-cros-linux-gnu-
-		binutils_path=$(echo "$binutils_path" | sed -e \
-				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
-		LD=$(echo "$LD" | sed -e \
-				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
-		CC=$(echo "$CC" | sed -e \
-				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
-		CXX=$(echo "$CXX" | sed -e \
-				's/i686-pc-linux-gnu/x86_64-cros-linux-gnu/g')
-	fi
+	CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
+	local binutils_path=$(LD=${cross}-ld get_binutils_path_ld)
 
 	set -- \
 		LD="${binutils_path}/ld $(usex x32 '-m elf_x86_64' '')" \
@@ -494,7 +487,7 @@ kmake() {
 	cw_emake \
 		ARCH=${kernel_arch} \
 		LDFLAGS="$(raw-ldflags)" \
-		CROSS_COMPILE="${cross}" \
+		CROSS_COMPILE="${cross}-" \
 		O="$(cros-workon_get_build_dir)" \
 		"$@"
 }
