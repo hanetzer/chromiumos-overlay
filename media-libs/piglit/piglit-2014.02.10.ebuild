@@ -42,7 +42,10 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
-	"${FILESDIR}/0001-tests-util-Link-with-rt-if-PIGLIT_HAS_POSIX_CLOCK_MO.patch"
+	"${FILESDIR}/0001-glx_oml_sync_control-report-FAIL-if-glXGetMscRateOML.patch"
+	"${FILESDIR}/0002-texturing-s3rc-errors-double-check-GL_TEXTURE-parame.patch"
+	# Chrome OS graphics_Piglit have some additional checks
+	"${FILESDIR}/monitor_tests_for_GPU_hang_and_SW_rasterization.patch"
 	)
 
 src_configure() {
@@ -65,9 +68,9 @@ src_configure() {
 		-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
 		-DCMAKE_INSTALL_PREFIX=/usr/local/piglit
 
-		# Setup RPATH so piglit binaries can find privately installed libs
+		# Set RPATH so piglit binaries can find piglit libs
 		-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE
-		-DCMAKE_INSTALL_RPATH=/usr/local/piglit/lib
+		-DCMAKE_INSTALL_RPATH='$ORIGIN/../lib'
 		-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=lib
 	)
 
@@ -76,4 +79,12 @@ src_configure() {
 	tc-export CC
 
 	cmake-utils_src_configure
+}
+
+src_install() {
+	cmake-utils_src_install
+
+	# Chrome OS graphics_Piglit autotest tests, derived from tests/gpu.py
+	insinto "/usr/local/piglit/tests"
+	doins "${FILESDIR}/cros-driver.py"
 }

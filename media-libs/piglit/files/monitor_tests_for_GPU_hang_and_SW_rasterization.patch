@@ -1,0 +1,96 @@
+From b665896dbe8a01d309e16536ded4d7750d339dd8 Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Mon, 10 Feb 2014 16:34:24 +0800
+Subject: [PATCH] monitor tests for GPU hang and SW rasterization
+
+Checks for GPU hangs and software rendering after each test.
+
+Signed-off-by: Ilja H. Friedel <ihf@chromium.org>
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+---
+ framework/exectest.py | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+
+diff --git a/framework/exectest.py b/framework/exectest.py
+index 4f88dbc..4d03369 100644
+--- a/framework/exectest.py
++++ b/framework/exectest.py
+@@ -37,6 +37,13 @@ else:
+ 
+ # ExecTest: A shared base class for tests that simply runs an executable.
+ class ExecTest(Test):
++
++    # Variables for tracking hangs and hardware acceleration status.
++    software = False
++    glxinfo = ''
++    hangs = {}
++    _HANGCHECK = 'drm:i915_hangcheck_elapsed'
++
+     def __init__(self, command):
+         Test.__init__(self)
+         self.command = command
+@@ -71,6 +78,39 @@ class ExecTest(Test):
+         * For 'returncode', the value will be the numeric exit code/value.
+         * For 'command', the value will be command line program and arguments.
+         """
++        print "Command: "
++        print self.command
++        # Check if we are on software rendering (considered unrecoverable).
++        if not self.software:
++            cmd = 'DISPLAY=:0 glxinfo | grep "OpenGL renderer string"'
++            proc = subprocess.Popen(
++                cmd,
++                stdout=subprocess.PIPE,
++                shell=True
++                )
++            self.glxinfo = proc.communicate()[0]
++            if 'llvmpipe' in self.glxinfo.lower() or 'soft' in self.glxinfo.lower():
++                self.software = True
++        # Don't run test if we are on software rendering.
++        if self.software:
++            results = {}
++            results['result'] = 'skip'
++            results['note'] = self.glxinfo
++            print "Results:"
++            print results
++            return results
++        # Make a dictionary of all hangs we have seen so far.
++        cmd = 'dmesg | grep "' + self._HANGCHECK + '"'
++        proc = subprocess.Popen(
++            cmd,
++            stdout=subprocess.PIPE,
++            shell=True
++            )
++        dmesg = proc.communicate()[0]
++        for line in dmesg.split('\n'):
++            if self._HANGCHECK in line:
++                self.hangs[line] = line
++
+         fullenv = os.environ.copy()
+         for e in self.env:
+             fullenv[e] = str(self.env[e])
+@@ -175,6 +215,21 @@ class ExecTest(Test):
+             if 'result' not in results:
+                 results['result'] = 'skip'
+ 
++        # Check for GPU hangs again and report the new ones.
++        cmd = 'dmesg | grep "' + self._HANGCHECK + '"'
++        proc = subprocess.Popen(
++            cmd,
++            stdout=subprocess.PIPE,
++            shell=True
++            )
++        dmesg = proc.communicate()[0]
++        for line in dmesg.split('\n'):
++            if self._HANGCHECK in line:
++                if not line in self.hangs.keys():
++                    results['note'] = 'Saw GPU hang during test. ' + line
++
++        print "Results:"
++        print results
+         return results
+ 
+     def check_for_skip_scenario(self, command):
+-- 
+1.9.0.rc1.175.g0b1dcb5
+
