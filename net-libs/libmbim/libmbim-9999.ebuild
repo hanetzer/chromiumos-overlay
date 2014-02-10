@@ -12,7 +12,8 @@ HOMEPAGE="http://cgit.freedesktop.org/libmbim/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="doc static-libs"
+IUSE="-asan -clang doc static-libs"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND=">=dev-libs/glib-2.32
 	>=sys-fs/udev-147[gudev]"
@@ -27,6 +28,11 @@ src_prepare() {
 }
 
 src_configure() {
+	clang-setup-env
+
+	# Disable the unused function check as libmbim has auto-generated
+	# functions that may not be used.
+	append-flags -Xclang-only=-Wno-unused-function
 	econf \
 		$(use_enable static{-libs,}) \
 		$(use_enable {,gtk-}doc)
