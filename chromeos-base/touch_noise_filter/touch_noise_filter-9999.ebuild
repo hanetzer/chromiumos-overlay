@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-LIBCHROME_VERS="180609"
+LIBCHROME_VERS="242728"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]"
 DEPEND="${RDEPEND}"
