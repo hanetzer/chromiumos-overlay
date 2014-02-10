@@ -59,6 +59,7 @@ IUSE_TESTS=(
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_video_ChromeHWDecodeUsed
+	+tests_video_MultiplePlayback
 	+tests_video_VideoCorruption
 	+tests_video_VideoDecodeMemoryUsage
 	+tests_video_VideoSanity
