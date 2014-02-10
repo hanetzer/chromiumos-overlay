@@ -101,7 +101,7 @@ copy_or_add_user() {
 		return
 	fi
 
-	local entry=$(grep -e "^$1\:" /etc/passwd)
+	local entry=$(grep -e "^$1\:" -m1 /etc/passwd)
 	if [ -n "$entry" ]; then
 		elog "Copying existing passwd entry from root: '$entry'"
 		echo "$entry" >> "${ROOT}/etc/passwd"
@@ -122,7 +122,7 @@ copy_or_add_group() {
 		return
 	fi
 
-	local entry=$(grep -e "^$1\:" /etc/group)
+	local entry=$(grep -e "^$1\:" -m1 /etc/group)
 	if [ -n "$entry" ]; then
 		elog "Copying existing group entry from root: '$entry'"
 		echo "$entry" >> "${ROOT}/etc/group"
