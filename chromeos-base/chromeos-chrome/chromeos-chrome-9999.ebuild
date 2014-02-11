@@ -223,6 +223,7 @@ set_build_defines() {
 	BUILD_DEFINES+=(
 		swig_defines=-DOS_CHROMEOS
 		chromeos=1
+		icu_use_data_file_flag=1
 	)
 
 	if use pgo_generate ; then
