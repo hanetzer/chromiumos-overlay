@@ -563,7 +563,9 @@ cros-kernel2_src_configure() {
 	done
 
 	# Use default for any options not explitly set in splitconfig
-	yes "" | kmake oldconfig
+	# Note: oldnoconfig is a misleading name -- it picks the default
+	# value for new options, not 'n'.
+	kmake oldnoconfig
 
 	# Restore the old config if it is unchanged.
 	if cmp -s "$(get_build_cfg)" "${temp_config}" ; then
