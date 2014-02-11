@@ -681,7 +681,8 @@ cros-kernel2_src_install() {
 
 	local version=$(kernelrelease)
 	if use arm; then
-		local boot_dir="$(cros-workon_get_build_dir)/arch/${ARCH}/boot"
+		local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+		local boot_dir="$(cros-workon_get_build_dir)/arch/${kernel_arch}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
 		local dtb_dir="${boot_dir}"
