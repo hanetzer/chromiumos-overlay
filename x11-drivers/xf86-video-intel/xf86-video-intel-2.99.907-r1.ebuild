@@ -43,6 +43,7 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}"/${P}-invalidation.patch
 	"${FILESDIR}"/2.99.907-no-triple.patch
+	"${FILESDIR}"/2.99.907-revert-uxa-dpms.patch
 	"${FILESDIR}"/2.99.907-no-backlight.patch
 	"${FILESDIR}"/2.99.907-no-gamma.patch
 	"${FILESDIR}"/2.99.907-copy-fb.patch

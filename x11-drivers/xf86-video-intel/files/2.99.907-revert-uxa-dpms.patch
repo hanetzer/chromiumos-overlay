@@ -1,0 +1,40 @@
+From 5a9b97103ff9decbb9e8ec8313149da2b5e322d4 Mon Sep 17 00:00:00 2001
+From: Dominik Behr <dbehr@google.com>
+Date: Mon, 10 Feb 2014 19:51:19 -0800
+Subject: [PATCH 1/2] Revert "uxa: Do not change DPMS mode on unconnected
+ outputs"
+
+This reverts commit 4497212307dee5e35bc6836201738a2fdb559020.
+This reverted commit breaks XRandR switching off display using
+DPMS when video mode is set to none.
+
+Signed-off-by: Dominik Behr <dbehr@chromium.org>
+---
+ src/uxa/intel_display.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
+index 9bda006..bb2ea77 100644
+--- a/src/uxa/intel_display.c
++++ b/src/uxa/intel_display.c
+@@ -1122,13 +1122,10 @@ intel_output_dpms(xf86OutputPtr output, int dpms)
+ 				intel_output_dpms_backlight(output,
+ 							    intel_output->dpms_mode,
+ 							    dpms);
+-
+-			if (output->crtc)
+-				drmModeConnectorSetProperty(mode->fd,
+-							    intel_output->output_id,
+-							    props->prop_id,
+-							    dpms);
+-
++			drmModeConnectorSetProperty(mode->fd,
++						    intel_output->output_id,
++						    props->prop_id,
++						    dpms);
+ 			if (dpms != DPMSModeOff)
+ 				intel_output_dpms_backlight(output,
+ 							    intel_output->dpms_mode,
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

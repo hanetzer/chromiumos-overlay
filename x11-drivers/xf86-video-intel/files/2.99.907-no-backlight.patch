@@ -1,5 +1,16 @@
+From d654f4c8be72c16ed616a33515efd828a4e403eb Mon Sep 17 00:00:00 2001
+From: Dominik Behr <dbehr@google.com>
+Date: Mon, 10 Feb 2014 19:53:00 -0800
+Subject: [PATCH 2/2] CHROMIUM: remove calls that control backlight In Chromium
+ OS backlight is controled by powerd, not X.
+
+Signed-off-by: Dominik Behr <dbehr@chromium.org>
+---
+ src/uxa/intel_display.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
 diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
-index 9bda006..9beecf5 100644
+index bb2ea77..04fb0f9 100644
 --- a/src/uxa/intel_display.c
 +++ b/src/uxa/intel_display.c
 @@ -526,7 +526,6 @@ intel_crtc_apply(xf86CrtcPtr crtc)
@@ -10,7 +21,7 @@ index 9bda006..9beecf5 100644
  		    intel_output->dpms_mode = DPMSModeOn;
  		}
  	}
-@@ -1118,10 +1117,6 @@ intel_output_dpms(xf86OutputPtr output, int dpms)
+@@ -1118,18 +1117,10 @@ intel_output_dpms(xf86OutputPtr output, int dpms)
  
  		if (!strcmp(props->name, "DPMS")) {
  			/* Make sure to reverse the order between on and off. */
@@ -18,13 +29,10 @@ index 9bda006..9beecf5 100644
 -				intel_output_dpms_backlight(output,
 -							    intel_output->dpms_mode,
 -							    dpms);
- 
- 			if (output->crtc)
- 				drmModeConnectorSetProperty(mode->fd,
-@@ -1129,10 +1124,6 @@ intel_output_dpms(xf86OutputPtr output, int dpms)
- 							    props->prop_id,
- 							    dpms);
- 
+ 			drmModeConnectorSetProperty(mode->fd,
+ 						    intel_output->output_id,
+ 						    props->prop_id,
+ 						    dpms);
 -			if (dpms != DPMSModeOff)
 -				intel_output_dpms_backlight(output,
 -							    intel_output->dpms_mode,
@@ -32,3 +40,6 @@ index 9bda006..9beecf5 100644
  			intel_output->dpms_mode = dpms;
  			drmModeFreeProperty(props);
  			return;
+-- 
+1.9.0.rc1.175.g0b1dcb5
+
