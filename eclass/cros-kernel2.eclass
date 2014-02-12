@@ -26,6 +26,7 @@ IUSE="
 	nfc
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
 	-wifi_testbed_ap
+	-boot_dts_device_tree
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -591,7 +592,7 @@ cros-kernel2_src_compile() {
 	if use arm; then
 		build_targets=(
 			$(usex device_tree 'zImage dtbs' uImage)
-			$(usex board_use_beaglebone dtbs '')
+			$(usex boot_dts_device_tree dtbs '')
 			$(cros_chkconfig_present MODULES && echo "modules")
 		)
 	fi
@@ -697,16 +698,17 @@ cros-kernel2_src_install() {
 			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
 		else
 			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
-			if use board_use_beaglebone; then
-				# On beaglebone, the device tree .dtb file is stored
+			if use boot_dts_device_tree; then
+				# For boards where the device tree .dtb file is stored
 				# under /boot/dts, loaded into memory, and then
-				# passed on the 'bootm' command line.
+				# passed on the 'bootm' command line, make sure they're
+				# all installed.
 				#
 				# We install more .dtb files than we need, but it's
 				# less work than a hard-coded list that gets out of
 				# date.
 				#
-				# TODO(jrbarnette):  Really, beaglebone should use a
+				# TODO(jrbarnette):  Really, this should use a
 				# FIT image, same as other boards.
 				insinto /boot/dts
 				doins "${dtb_dir}"/*.dtb
