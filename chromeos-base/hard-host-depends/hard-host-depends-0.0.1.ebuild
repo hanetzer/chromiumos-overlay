@@ -228,6 +228,11 @@ RDEPEND="${RDEPEND}
 	x11-misc/xkeyboard-config
 	"
 
+# Host dependencies that are needed to build the autotest server components.
+RDEPEND="${RDEPEND}
+	dev-util/google-web-toolkit
+	"
+
 # Host dependencies that are needed for autotests.
 RDEPEND="${RDEPEND}
 	dev-python/btsocket
