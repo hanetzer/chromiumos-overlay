@@ -474,7 +474,15 @@ platform2_install_metrics() {
 	dobin "${OUT}"/metrics_client syslog_parser.sh
 	use passive_metrics && dobin "${OUT}"/metrics_daemon
 
-	dolib.so "${OUT}/lib/libmetrics.so"
+	for v in "${LIBCHROME_VERS[@]}"; do
+		dolib.so "${OUT}/lib/libmetrics-${v}.so"
+	done
+
+	# To avoid breaking existing packages that link against libmetrics,
+	# temporarily make libmetrics.so a symlink to libmetrics-180609.so.
+	# TODO(benchan): Remove this hack once all packages are migrated to use
+	# the slotted libmetrics.
+	dosym libmetrics-180609.so /usr/$(get_libdir)/libmetrics.so
 
 	insinto /usr/include/metrics
 	doins c_metrics_library.h \
