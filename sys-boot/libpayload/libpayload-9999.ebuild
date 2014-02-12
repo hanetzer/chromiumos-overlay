@@ -8,7 +8,7 @@ DESCRIPTION="coreboot's libpayload library"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="-* ~amd64 ~arm ~arm64 ~x86"
 IUSE=""
 
 RDEPEND=""
@@ -34,7 +34,7 @@ src_compile() {
 	local extra_flags=""
 	if use x86 || use amd64 ; then
 		extra_flags="-mpreferred-stack-boundary=2 -ffunction-sections"
-	elif use arm ; then
+	elif use arm || use arm64 ; then
 		extra_flags="-ffunction-sections"
 	fi
 
@@ -57,6 +57,8 @@ src_install() {
 		archdir="x86"
 	elif use arm ; then
 		archdir="arm"
+	elif use arm64 ; then
+		archdir="arm64"
 	fi
 
 	insinto "${destdir}"/lib
