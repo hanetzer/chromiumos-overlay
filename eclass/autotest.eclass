@@ -359,8 +359,14 @@ autotest_src_install() {
 
 		insinto ${AUTOTEST_BASE}/client/${dir}
 
+		# Capitalize the string dir (e.g. profilers -> PROFILERS)
+		# then pull out the value of e.g. AUTOTEST_PROFILERS_LIST
+		# into provided.
 		eval provided=\${AUTOTEST_${dir^^*}_LIST}
-		# * means provided all, figure out the list from ${S}
+
+		# If provided is *, we evaluate the wildcard outselves
+		# by running `ls` inside of the approriate subdirectory
+		# of the ebuild workdir.
 		if [ "${provided}" = "*" ]; then
 			if eval pushd "${WORKDIR}/${P}/\${AUTOTEST_${dir^^*}}" &> /dev/null; then
 				provided=$(ls)
@@ -371,7 +377,14 @@ autotest_src_install() {
 		fi
 
 		for item in ${provided}; do
-			doins -r "${AUTOTEST_WORKDIR}/client/${dir}/${item}"
+			local item_path="${AUTOTEST_WORKDIR}/client/${dir}/${item}"
+			# Warn on files that do not exist, rather than failing. See
+			# crbug.com/342512 for context.
+			if [[ -e "${item_path}" ]]; then
+				doins -r "${item_path}"
+			else
+				ewarn "No file ${item_path}, skipping."
+			fi
 		done
 	done
 
