@@ -13,7 +13,7 @@ SRC_URI="http://wireless.kernel.org/download/wireless-regdb/${MY_P}.tar.bz2"
 LICENSE="as-is"
 SLOT="0"
 
-KEYWORDS="amd64 arm ppc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="*"
 IUSE=""
 
 S="${WORKDIR}/${MY_P}"
@@ -28,8 +28,10 @@ src_compile() {
 }
 
 src_install() {
-	insinto /usr/$(get_libdir)/crda/; doins regulatory.bin
-	insinto /usr/$(get_libdir)/crda/pubkeys; doins chromium.key.pub.pem
+	# Install into /usr/lib instead of $(get_libdir), since the
+	# crda source code has a hard-coded reference to it.
+	insinto /usr/lib/crda/; doins regulatory.bin
+	insinto /usr/lib/crda/pubkeys; doins chromium.key.pub.pem
 	doman regulatory.bin.5
 	dodoc README db.txt
 }
