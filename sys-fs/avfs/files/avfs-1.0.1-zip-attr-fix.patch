@@ -1,0 +1,28 @@
+From 6ffe47e4876bbce83a9e955cc6ce4cf991c77f6f Mon Sep 17 00:00:00 2001
+From: Ben Chan <benchan@chromium.org>
+Date: Thu, 13 Feb 2014 00:02:03 -0800
+Subject: [PATCH] treat zip entry without file type as regular file
+
+---
+ modules/uzip.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/modules/uzip.c b/modules/uzip.c
+index 36cee0e..d259e5a 100644
+--- a/modules/uzip.c
++++ b/modules/uzip.c
+@@ -225,6 +225,11 @@ static avmode_t zip_get_mode(struct cdirentry *cent, const char *path,
+     if(path[0] && path[strlen(path)-1] == '/')
+         mode = (mode & 07777) | AV_IFDIR;
+ 
++    /* If a malformed zip file doesn't set any file type on an entry,
++       simply treat the entry as a regular file. */
++    if ((mode & AV_IFMT) == 0)
++        mode |= AV_IFREG;
++
+     return mode;
+ }
+ 
+-- 
+1.9.0.rc1.175.g0b1dcb5
+
