@@ -41,7 +41,7 @@ IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
-	debugd? ( shill cellular )
+	debugd? ( shill )
 	gdmwimax? ( wimax )
 "
 
@@ -437,9 +437,12 @@ platform2_install_debugd() {
 	dodir /debugd
 
 	exeinto /usr/libexec/debugd/helpers
-	doexe "${OUT}"/{capture_packets,icmp,netif,modem_status,network_status,wimax_status}
+	doexe "${OUT}"/{capture_packets,icmp,netif,network_status}
+	use cellular && doexe "${OUT}"/modem_status
+	use wimax && doexe "${OUT}"/wimax_status
 
-	doexe src/helpers/{minijail-setuid-hack,send_at_command,systrace,capture_utility}.sh
+	doexe src/helpers/{minijail-setuid-hack,systrace,capture_utility}.sh
+	use cellular && doexe src/helpers/send_at_command.sh
 
 	insinto /etc/dbus-1/system.d
 	doins share/org.chromium.debugd.conf
