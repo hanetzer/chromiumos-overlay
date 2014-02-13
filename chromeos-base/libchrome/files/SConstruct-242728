@@ -42,6 +42,7 @@ base_libs = [
                 files/scoped_temp_dir.cc
                 file_util.cc
                 file_util_posix.cc
+                hash.cc
                 json/json_parser.cc
                 json/json_reader.cc
                 json/json_string_value_serializer.cc
