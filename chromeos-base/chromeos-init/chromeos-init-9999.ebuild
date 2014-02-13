@@ -59,6 +59,8 @@ src_install() {
 	dosbin chromeos_startup chromeos_shutdown
 	dosbin clobber-state
 	dosbin clobber-log
+	dosbin chromeos-boot-alert
+
 
 	if use cros_embedded; then
 		insinto /etc/init
@@ -79,7 +81,6 @@ src_install() {
 		insinto /etc/init
 		doins *.conf
 
-		dosbin chromeos-boot-alert
 		dosbin display_low_battery_alert
 
 		into /usr
