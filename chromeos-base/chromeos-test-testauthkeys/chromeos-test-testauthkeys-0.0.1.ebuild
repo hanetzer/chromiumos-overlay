@@ -5,7 +5,7 @@ EAPI="4"
 
 DESCRIPTION="Install Chromium OS test public keys for ssh clients on test image"
 HOMEPAGE="http://www.chromium.org/"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 LICENSE="BSD"
 SLOT="0"
 S="${WORKDIR}"

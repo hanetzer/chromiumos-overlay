@@ -12,7 +12,7 @@ SRC_URI="http://linuxwireless.org/download/${PN}/${P}.tar.bz2"
 
 LICENSE="as-is"
 SLOT="0"
-KEYWORDS="amd64 arm ~ppc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="*"
 IUSE=""
 
 RDEPEND=">=dev-libs/libnl-1.1"

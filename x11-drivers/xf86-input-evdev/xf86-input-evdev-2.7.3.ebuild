@@ -8,7 +8,7 @@ XORG_EAUTORECONF=yes
 inherit xorg-2
 
 DESCRIPTION="Generic Linux input driver"
-KEYWORDS="alpha amd64 arm hppa ia64 mips ppc ppc64 sh sparc x86"
+KEYWORDS="*"
 IUSE=""
 RDEPEND="chromeos-base/touch_noise_filter
 	>=x11-base/xorg-server-1.10[udev]

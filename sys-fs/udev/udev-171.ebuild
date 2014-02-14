@@ -21,7 +21,7 @@ inherit ${vcs} eutils flag-o-matic multilib toolchain-funcs linux-info systemd l
 
 if [[ ${PV} != "9999" ]]
 then
-	KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~x86-linux"
+	KEYWORDS="*"
 	# please update testsys-tarball whenever udev-xxx/test/sys/ is changed
 	SRC_URI="mirror://kernel/linux/utils/kernel/hotplug/${P}.tar.bz2
 			 test? ( mirror://gentoo/${PN}-171-testsys.tar.bz2 )"

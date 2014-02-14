@@ -10,7 +10,7 @@ SRC_URI="ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/shadow-${PV}.tar.bz2"
 
 LICENSE="BSD GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 IUSE="audit cracklib nls pam selinux skey"
 
 RDEPEND="audit? ( sys-process/audit )

@@ -11,7 +11,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="BSD GPL-2+ GPL-3 LGPL-2+ MIT"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 IUSE="dma_buf gbm opencl opengl opengles waffle"
 
 # USE flags:

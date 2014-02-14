@@ -10,7 +10,7 @@ SRC_URI="http://www.clevervest.com/htp/archive/c/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm hppa ~mips ppc ~ppc64 s390 sh x86"
+KEYWORDS="*"
 IUSE=""
 
 DEPEND=""

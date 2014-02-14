@@ -13,7 +13,7 @@ internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.12.1600.4.tg
 LICENSE="BSD-Google"
 IUSE="internal"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 RESTRICT="mirror"
 
 src_prepare() {

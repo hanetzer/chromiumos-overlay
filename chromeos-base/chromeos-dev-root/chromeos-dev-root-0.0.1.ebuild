@@ -5,7 +5,7 @@ EAPI="4"
 
 DESCRIPTION="Install packages that must live in the rootfs in dev images."
 HOMEPAGE="http://www.chromium.org/"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 LICENSE="BSD-Google"
 SLOT="0"
 

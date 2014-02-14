@@ -12,7 +12,7 @@ SRC_URI="mirror://sourceforge/nfs/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86"
+KEYWORDS="*"
 IUSE="caps ipv6 kerberos +nfsv3 +nfsv4 tcpd elibc_glibc"
 RESTRICT="test" #315573
 

@@ -9,7 +9,7 @@ HOMEPAGE="http://cpbotha.net/pam_pwdfile.html"
 SRC_URI="http://cpbotha.net/files/${PN}/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 IUSE=""
 DEPEND="sys-libs/pam"
 

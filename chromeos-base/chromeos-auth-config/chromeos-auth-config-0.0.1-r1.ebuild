@@ -8,7 +8,7 @@ HOMEPAGE="http://www.chromium.org"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 
 RDEPEND="
 	>=sys-auth/pambase-20090620.1-r7

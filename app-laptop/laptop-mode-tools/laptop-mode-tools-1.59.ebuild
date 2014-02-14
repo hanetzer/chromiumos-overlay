@@ -11,7 +11,7 @@ SRC_URI="http://samwel.tk/laptop_mode/tools/downloads/laptop-mode-tools_1.59.tar
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 
 IUSE="-acpi -apm bluetooth -hal -scsi"
 

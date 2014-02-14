@@ -12,7 +12,7 @@ DESCRIPTION="Install packages that must live in the rootfs in test images"
 #    package into the root before merging the remaining test packages
 #    into stateful.
 HOMEPAGE="http://www.chromium.org/"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 LICENSE="BSD"
 SLOT="0"
 

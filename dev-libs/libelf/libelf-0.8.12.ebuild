@@ -12,7 +12,7 @@ SRC_URI="http://www.mr511.de/software/${P}.tar.gz"
 
 LICENSE="LGPL-2"
 SLOT="0"
-KEYWORDS="arm ~alpha amd64 ~hppa ~ppc ~sparc x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="*"
 IUSE="debug nls elibc_FreeBSD"
 
 DEPEND="!dev-libs/elfutils

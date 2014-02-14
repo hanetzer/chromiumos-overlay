@@ -11,7 +11,7 @@ SRC_URI="${SRC_URI/${PV}./${PV}}"
 
 LICENSE="CC-PD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~x86"
+KEYWORDS="*"
 IUSE=""
 
 RDEPEND=""

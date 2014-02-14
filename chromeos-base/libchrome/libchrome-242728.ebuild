@@ -23,7 +23,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="${PV}"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 IUSE="cros_host"
 
 RDEPEND="dev-libs/libevent

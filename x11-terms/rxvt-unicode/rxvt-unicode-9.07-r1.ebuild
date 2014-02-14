@@ -12,7 +12,7 @@ SRC_URI="http://dist.schmorp.de/rxvt-unicode/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~ppc ~ppc64 ~sparc x86 ~x86-fbsd"
+KEYWORDS="*"
 IUSE="minimal +truetype perl iso14755 afterimage xterm-color wcwidth +vanilla"
 
 # see bug #115992 for modular x deps

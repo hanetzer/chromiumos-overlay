@@ -15,7 +15,7 @@ SRC_URI="http://googlemock.googlecode.com/files/${MY_P}.zip"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm ~mips ppc ~ppc64 x86"
+KEYWORDS="*"
 IUSE="32bit_au"
 REQUIRED_USE="32bit_au"
 RESTRICT="test"

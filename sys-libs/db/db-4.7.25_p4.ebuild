@@ -23,7 +23,7 @@ SRC_URI="http://download.oracle.com/berkeley-db/${MY_P}.tar.gz"
 
 LICENSE="Sleepycat"
 SLOT="4.7"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k ppc ppc64 s390 sh sparc x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="*"
 IUSE="doc java nocxx tcl test"
 
 # the entire testsuite needs the TCL functionality

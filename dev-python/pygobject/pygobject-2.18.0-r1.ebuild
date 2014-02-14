@@ -20,7 +20,7 @@ HOMEPAGE="http://www.pygtk.org/"
 
 LICENSE="LGPL-2.1"
 SLOT="2"
-KEYWORDS="alpha amd64 arm hppa ia64 ~mips ppc ppc64 s390 sh sparc x86 ~x86-fbsd"
+KEYWORDS="*"
 IUSE="doc examples libffi test"
 
 COMMON_DEPEND=">=dev-libs/glib-2.24.0:2

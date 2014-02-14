@@ -14,7 +14,7 @@ SRC_URI="http://tuxera.com/opensource/${MY_P}.tgz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 ~arm ppc ppc64 ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="*"
 IUSE="acl crypt debug +external-fuse extras +ntfsprogs static-libs suid +udev xattr"
 
 RDEPEND="!<sys-apps/util-linux-2.19

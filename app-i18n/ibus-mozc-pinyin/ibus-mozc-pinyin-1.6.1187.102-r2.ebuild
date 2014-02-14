@@ -14,7 +14,7 @@ RDEPEND=">=app-i18n/ibus-1.3.99
 	>=dev-libs/pyzy-0.1.0"
 DEPEND="${RDEPEND}"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86"
+KEYWORDS="*"
 BUILDTYPE="${BUILDTYPE:-Release}"
 
 src_configure() {

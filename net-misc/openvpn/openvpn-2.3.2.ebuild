@@ -12,7 +12,7 @@ HOMEPAGE="http://openvpn.net/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="alpha amd64 arm hppa ~mips ppc ppc64 s390 sh sparc x86 ~sparc-fbsd ~x86-fbsd"
+KEYWORDS="*"
 IUSE="down-root eurephia examples iproute2 ipv6 +lzo minimal pam passwordsave pkcs11 selinux ssl static userland_BSD"
 
 DEPEND="kernel_linux? (

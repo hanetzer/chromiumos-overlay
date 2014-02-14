@@ -8,7 +8,7 @@ SRC_URI="http://dev.gentoo.org/~dagger/files/${P}.tar.bz2"
 
 LICENSE="CC-PD"
 SLOT="0"
-KEYWORDS="~arm ~amd64 ~x86"
+KEYWORDS="*"
 IUSE=""
 RDEPEND=""
 

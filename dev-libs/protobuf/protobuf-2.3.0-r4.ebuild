@@ -15,7 +15,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 arm ppc ppc64 x86 ~x64-macos"
+KEYWORDS="*"
 
 IUSE="emacs examples java python python-runtime static-libs vim-syntax"
 
