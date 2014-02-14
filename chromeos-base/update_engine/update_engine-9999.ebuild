@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
 
-inherit toolchain-funcs cros-debug cros-workon scons-utils
+inherit toolchain-funcs cros-debug cros-workon flag-o-matic scons-utils
 
 DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang cros_host cros_p2p -delta_generator"
+IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="180609"
@@ -55,6 +55,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	clang-setup-env
+	append-flags -DUSE_HWID_OVERRIDE=$(usex hwid_override 0 1)
 	export CCFLAGS="$CFLAGS"
 	export BASE_VER=${LIBCHROME_VERS}
 
