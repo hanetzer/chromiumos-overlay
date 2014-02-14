@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="769aef475caeddaa74a6ab42d59a91778e1f8cae"
-CROS_WORKON_TREE="75d8c3ffea4702af4eda9aa01ac30ba0ac56f426"
+CROS_WORKON_COMMIT="da1dd23395d9693db17339ba71cafead04527edb"
+CROS_WORKON_TREE="38ccf6ea3992ab774f5bda4ba021b08a7e02b7e8"
 CROS_WORKON_PROJECT="chromiumos/third_party/mobile-broadband-provider-info"
 
 inherit autotools cros-workon
