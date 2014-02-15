@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/assets"
 
 inherit cros-workon toolchain-funcs
@@ -189,24 +189,39 @@ src_install() {
 	doins "${S}"/speech_synthesis/patts/tts_service.nmf
 
 	# Speech synthesis voice data
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE.zip
-	doins -r "${S}"/voice_data_hmm_de-DE
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB.zip
-	doins -r "${S}"/voice_data_hmm_en-GB
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-US.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-US.zip
-	doins -r "${S}"/voice_data_hmm_en-US
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES.zip
-	doins -r "${S}"/voice_data_hmm_es-ES
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR.zip
-	doins -r "${S}"/voice_data_hmm_fr-FR
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT.zip
-	doins -r "${S}"/voice_data_hmm_it-IT
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE_2.zip
+	doins -r "${S}"/voice_data_hmm_de-DE_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB_2.zip
+	doins -r "${S}"/voice_data_hmm_en-GB_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-IN_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-IN_2.zip
+	doins -r "${S}"/voice_data_hmm_en-IN_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-US_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-US_2.zip
+	doins -r "${S}"/voice_data_hmm_en-US_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES_2.zip
+	doins -r "${S}"/voice_data_hmm_es-ES_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_es-US_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_es-US_2.zip
+	doins -r "${S}"/voice_data_hmm_es-US_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR_2.zip
+	doins -r "${S}"/voice_data_hmm_fr-FR_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT_2.zip
+	doins -r "${S}"/voice_data_hmm_it-IT_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_ko-KR_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_ko-KR_2.zip
+	doins -r "${S}"/voice_data_hmm_ko-KR_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_nl-NL_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_nl-NL_2.zip
+	doins -r "${S}"/voice_data_hmm_nl-NL_2
+	doins "${S}"/speech_synthesis/patts/voice_data_hmm_pt-BR_2.js
+	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_pt-BR_2.zip
+	doins -r "${S}"/voice_data_hmm_pt-BR_2
 
 	# Speech synthesis engine (platform-specific native client module)
 	if use arm ; then
