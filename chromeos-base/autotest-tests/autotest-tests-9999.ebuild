@@ -147,6 +147,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_hardware_ch7036
 	+tests_hardware_Components
 	+tests_hardware_DeveloperRecovery
+	+tests_hardware_DiskFirmwareUpgrade
 	+tests_hardware_DiskSize
 	+tests_hardware_EC
 	+tests_hardware_EepromWriteProtect
