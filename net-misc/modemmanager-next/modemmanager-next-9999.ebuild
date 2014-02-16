@@ -57,9 +57,7 @@ src_configure() {
 
 src_test() {
 	# TODO(benchan): Run unit tests for arm via qemu-arm.
-	if [[ "${ARCH}" != "arm" ]]; then
-		emake GCONV_PATH="${SYSROOT}"/usr/$(get_libdir)/gconv check
-	fi
+	[[ "${ARCH}" != "arm" ]] && emake check
 }
 
 src_install() {
