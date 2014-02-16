@@ -48,3 +48,11 @@ function cros_pre_src_test_ldpaths() {
     fi
   fi
 }
+
+cros_pre_src_test_gconv_path() {
+	# Set GCONV_PATH to point to gconv modules in $SYSROOT, so that tests
+	# will load gconv modules from there instead
+	if [[ ${SYSROOT:-/} != "/" ]]; then
+		export GCONV_PATH="${SYSROOT}/usr/lib/gconv"
+	fi
+}
