@@ -13,10 +13,6 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
 
-# TODO(victoryang): Remove factorytest-init package entirely after Feb 2014.
-#                   crosbug.com/p/24798.
-DEPEND=">=chromeos-base/factorytest-init-0.0.1-r32"
-
 src_install() {
 	insinto /etc/init
 	doins test-init/*.conf
