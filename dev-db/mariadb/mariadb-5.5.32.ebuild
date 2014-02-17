@@ -137,3 +137,9 @@ src_configure() {
 	mysql-v2_src_configure
 }
 
+mysql-v2_pkg_setup() {
+	# Override mysql-v2_pkg_setup so that we use the GID/UID as defined in
+	# the profile rather than the eclass.
+	enewgroup mysql 245 || die "problem adding 'mysql' group"
+	enewuser mysql 245 -1 /dev/null mysql || die "problem adding 'mysql' user"
+}
