@@ -1,0 +1,19 @@
+diff --git a/src/evdev.c b/src/evdev.c
+old mode 100644
+new mode 100755
+index 67d26d2..1e3de89
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -905,6 +905,12 @@ num_slots(EvdevPtr pEvdev)
+     /* Disable MT reporting if the minimum of slot id is less than 0 */
+     if (pEvdev->absinfo[ABS_MT_SLOT].minimum < 0)
+         return 0;
++    /* Disable MT reporting for devices reporting more than MAX_SLOT_COUNT
++       slots. */
++    if (value > MAX_SLOT_COUNT) {
++        xf86Msg(X_ERROR, "Slot count exceeds MAX_SLOT_COUNT");
++        return 0;
++    }
+     /* If we don't know how many slots there are, assume at least 10 */
+     return value > 1 ? value : 10;
+ }
