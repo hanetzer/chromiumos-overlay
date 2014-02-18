@@ -5,6 +5,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 CROS_WORKON_LOCALNAME="kernel-next"
+CROS_WORKON_BLACKLIST=1
 
 inherit cros-workon cros-perf
 
