@@ -147,6 +147,7 @@ IUSE_TESTS=(
 	+tests_security_RendererSandbox
 	+tests_security_SandboxLinuxUnittests
 	+tests_security_SandboxStatusBrowserTest
+	+tests_telemetry_AFDOGenerateClient
 )
 
 IUSE="${IUSE} ${IUSE_TESTS[*]}"

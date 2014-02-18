@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("521452e58a60b148cfa3bb08219b624676272fcd" "4ff446b493e8a74804fd00082119681f768d366a")
-CROS_WORKON_TREE=("63f907f996203ec30b9f4f70b6b662a793ca750a" "b281140056b5518723b0553778c0f409d1c3b010")
+CROS_WORKON_COMMIT=("977b95e1f3438193090b3cf86122ae712fa73b18" "4ff446b493e8a74804fd00082119681f768d366a")
+CROS_WORKON_TREE=("e58751befdb3074ea06381a8201e99a3313ce101" "b281140056b5518723b0553778c0f409d1c3b010")
 CROS_WORKON_PROJECT=("chromiumos/platform/depthcharge" "chromiumos/platform/vboot_reference")
 
 DESCRIPTION="coreboot's depthcharge payload"
@@ -48,7 +48,7 @@ src_compile() {
 	fi
 
 	if use mocktpm ; then
-		export MOCK_TPM=1
+		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
 	fi
 
 	emake distclean
