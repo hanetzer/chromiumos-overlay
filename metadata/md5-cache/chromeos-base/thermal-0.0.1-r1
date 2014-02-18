@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Simple thermal throttling script
+EAPI=4
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!<chromeos-base/chromeos-bsp-daisy-0.0.1-r52 !<chromeos-base/chromeos-bsp-pit-private-0.0.1-r15 chromeos-base/chromeos-init
+SLOT=0
+_md5_=c7e2106bf87800e7dab34cadc1cba639
