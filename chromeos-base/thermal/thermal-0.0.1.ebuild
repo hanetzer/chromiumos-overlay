@@ -11,7 +11,7 @@ KEYWORDS="*"
 
 DEPEND=""
 RDEPEND="
-	!<chromeos-base/chromeos-bsp-daisy-0.0.1-r52
+	!<chromeos-base/chromeos-bsp-daisy-0.0.1-r53
 	!<chromeos-base/chromeos-bsp-pit-private-0.0.1-r15
 	chromeos-base/chromeos-init
 "
