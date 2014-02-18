@@ -3,8 +3,8 @@ DEPEND=>=sys-auth/pambase-20090620.1-r7 chromeos-base/vboot_reference
 DESCRIPTION=ChromiumOS-specific configuration files for pambase
 EAPI=2
 HOMEPAGE=http://www.chromium.org
-KEYWORDS=alpha amd64 arm hppa ia64 m68k mips ppc ppc64 s390 sh sparc x86
+KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=>=sys-auth/pambase-20090620.1-r7 chromeos-base/vboot_reference
 SLOT=0
-_md5_=e692d27d0b0ab551ba1159e6ccba5340
+_md5_=b019f0dadb9cbff335a337106d491b82
