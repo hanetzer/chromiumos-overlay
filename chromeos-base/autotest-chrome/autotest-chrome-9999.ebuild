@@ -30,6 +30,7 @@ RDEPEND="
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts
 	chromeos-base/telemetry
+	tests_graphics_Stress? ( x11-apps/xsendevt )
 "
 
 DEPEND="${RDEPEND}"
@@ -62,6 +63,7 @@ IUSE_TESTS=(
 	+tests_graphics_WebGLAquarium
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
+	+tests_graphics_Stress
 	 tests_logging_AsanCrash
 	+tests_logging_CrashServices
 	+tests_login_ChromeProfileSanitary
