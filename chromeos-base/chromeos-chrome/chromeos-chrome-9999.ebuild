@@ -848,6 +848,7 @@ install_chrome_test_resources() {
 		chrome/test/functional \
 		chrome/third_party/mock4js/mock4js.js  \
 		content/common/gpu/testdata \
+		media/test/data \
 		content/test/data \
 		net/data/ssl/certificates \
 		ppapi/tests/test_case.html \
