@@ -55,7 +55,7 @@ src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
 	clang-setup-env
-	append-flags -DUSE_HWID_OVERRIDE=$(usex hwid_override 0 1)
+	append-flags -DUSE_HWID_OVERRIDE=$(usex hwid_override 1 0)
 	export CCFLAGS="$CFLAGS"
 	export BASE_VER=${LIBCHROME_VERS}
 
