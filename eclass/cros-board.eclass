@@ -115,6 +115,7 @@ ALL_BOARDS=(
 	stumpy
 	stumpy_moblab
 	stumpy_pico
+	tails
 	#tegra2
 	#tegra2_aebl
 	#tegra2_arthur
