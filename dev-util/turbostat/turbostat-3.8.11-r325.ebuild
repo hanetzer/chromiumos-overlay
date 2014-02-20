@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="a422e27cd0f076d04ca336a6f9dc3a71774f73ad"
-CROS_WORKON_TREE="5a267b755cd8216ad5fc0f54742c50781493bbdf"
+CROS_WORKON_COMMIT="ac32915252a1fe6f887509c28996f1bb5e9cdbf9"
+CROS_WORKON_TREE="ac713e7e28bcf75379ccca4b09d895fbaba9fc2f"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
 CROS_WORKON_LOCALNAME="kernel-next"
 CROS_WORKON_INCREMENTAL_BUILD=1
