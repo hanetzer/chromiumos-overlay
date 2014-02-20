@@ -1,0 +1,74 @@
+From a3eed95ccc6a7663a3cba42e7c238795f6b64412 Mon Sep 17 00:00:00 2001
+From: Ben Chan <benchan@chromium.org>
+Date: Wed, 19 Feb 2014 20:22:34 -0800
+Subject: [PATCH] handle extra bytes at the beginning of a zip file
+
+---
+ modules/uzip.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/modules/uzip.c b/modules/uzip.c
+index 36cee0e..7ab9dca 100644
+--- a/modules/uzip.c
++++ b/modules/uzip.c
+@@ -235,7 +235,7 @@ static void zipnode_delete(struct zipnode *nod)
+ 
+ static void fill_zipentry(struct archive *arch, const char *path, 
+                           struct entry *ent, struct cdirentry *cent,
+-                          struct ecrec *ecrec)
++                          struct ecrec *ecrec, avoff_t extra_bytes)
+ {
+     struct archnode *nod;
+     struct zipnode *info;
+@@ -264,12 +264,13 @@ static void fill_zipentry(struct archive *arch, const char *path,
+     if(cent->start_disk != 0 || ecrec->cdir_disk != 0)
+         info->headeroff = -1;
+     else
+-        info->headeroff = cent->file_off;
++        info->headeroff = cent->file_off + extra_bytes;
+ 
+ }
+ 
+ static void insert_zipentry(struct archive *arch, char *path, 
+-                            struct cdirentry *cent, struct ecrec *ecrec)
++                            struct cdirentry *cent, struct ecrec *ecrec,
++                            avoff_t extra_bytes)
+ {
+     struct entry *ent;
+     int entflags = 0;
+@@ -297,12 +298,12 @@ static void insert_zipentry(struct archive *arch, char *path,
+     if(ent == NULL)
+         return;
+ 
+-    fill_zipentry(arch, path, ent, cent, ecrec);
++    fill_zipentry(arch, path, ent, cent, ecrec, extra_bytes);
+     av_unref_obj(ent);
+ }
+ 
+ static avoff_t read_entry(vfile *vf, struct archive *arch, avoff_t pos,
+-                          struct ecrec *ecrec)
++                          struct ecrec *ecrec, avoff_t extra_bytes)
+ {
+     int res;
+     char buf[CDIRENT_SIZE];
+@@ -342,7 +343,7 @@ static avoff_t read_entry(vfile *vf, struct archive *arch, avoff_t pos,
+     }
+     filename[ent.fname_len] = '\0';
+ 
+-    insert_zipentry(arch, filename, &ent, ecrec);
++    insert_zipentry(arch, filename, &ent, ecrec, extra_bytes);
+     av_free(filename);
+ 
+     return pos + CDIRENT_SIZE + ent.fname_len + ent.extra_len +
+@@ -388,7 +389,7 @@ static int read_zipfile(vfile *vf, struct archive *arch)
+             av_log(AVLOG_ERROR, "UZIP: Broken archive");
+             return -EIO;
+ 	}
+-	cdir_pos = read_entry(vf, arch, cdir_pos, &ecrec);
++	cdir_pos = read_entry(vf, arch, cdir_pos, &ecrec, extra_bytes);
+ 	if(cdir_pos < 0) 
+             return cdir_pos;
+     }
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

@@ -25,6 +25,10 @@ src_prepare() {
 	# Work around a malformed zip file that doesn't set any file type on
 	# a zip entry (crbug.com/173383).
 	epatch "${FILESDIR}"/${P}-zip-attr-fix.patch
+
+	# Work around a zip file with extra bytes at the beginning of the file
+	# (crbug.com/336690).
+	epatch "${FILESDIR}"/${P}-zip-handle-extra-bytes.patch
 }
 
 src_configure() {
