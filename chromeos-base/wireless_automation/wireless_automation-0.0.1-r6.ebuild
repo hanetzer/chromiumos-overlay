@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="435c7d9540f2e9c6b8ce2eea6e237bafc7eea483"
-CROS_WORKON_TREE="5911895751f89762930e5897b6fd0bc7840fac62"
+CROS_WORKON_COMMIT="fbe3562122b9165ce3d961ca25a1c8eb5ab7ed18"
+CROS_WORKON_TREE="92d0aaf8a2f062dbdda6dbe78cf509a0972fd03f"
 CROS_WORKON_PROJECT="chromiumos/platform/wireless_automation"
 
 inherit cros-workon python
