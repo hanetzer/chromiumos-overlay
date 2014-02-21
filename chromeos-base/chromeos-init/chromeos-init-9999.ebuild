@@ -23,7 +23,6 @@ DEPEND=""
 # vboot_reference for crossystem
 RDEPEND="
 	chromeos-base/bootstat
-	!<chromeos-base/shill-0.0.1-r805
 	chromeos-base/vboot_reference
 	sys-apps/rootdev
 	sys-apps/upstart
@@ -42,7 +41,6 @@ src_install() {
 	# Install log cleaning script and run it daily.
 	dosbin chromeos-cleanup-logs
 	dosbin simple-rotate
-	dosbin netfilter-common
 
 	insinto /etc
 	doins issue rsyslog.chromeos
@@ -71,8 +69,8 @@ src_install() {
 		doins boot-complete.conf cgroups.conf crash-reporter.conf cron-lite.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins install-completed.conf
-		doins pre-shutdown.conf pstore.conf reboot.conf shill.conf
-		doins shill_respawn.conf syslog.conf system-services.conf tlsdated.conf
+		doins pre-shutdown.conf pstore.conf reboot.conf
+		doins syslog.conf system-services.conf tlsdated.conf
 		doins update-engine.conf wpasupplicant.conf
 
 		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf

@@ -146,6 +146,7 @@ RDEPEND_shill="
 		chromeos-base/bootstat
 		chromeos-base/chromeos-minijail
 		!<chromeos-base/flimflam-0.0.1-r530
+		!<chromeos-base/chromeos-init-0.0.4
 		cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 		dev-libs/dbus-c++
 		dev-libs/libnl:3
@@ -567,6 +568,7 @@ platform2_install_shill() {
 
 	# Netfilter queue helper is run directly from init, so install in sbin.
 	dosbin "${OUT}/netfilter-queue-helper"
+	dosbin init/netfilter-common
 
 	# Install Netfilter queue helper syscall filter policy file.
 	insinto /usr/share/policy
@@ -598,6 +600,10 @@ platform2_install_shill() {
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
+
+	# Install init scripts
+	insinto /etc/init
+	doins init/*.conf
 }
 
 platform2_install_system_api() {
