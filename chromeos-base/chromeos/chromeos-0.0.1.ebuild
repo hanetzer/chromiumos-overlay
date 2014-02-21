@@ -182,6 +182,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/chinese-input
 	app-i18n/nacl-mozc
 	app-i18n/chromeos-hangul
+	app-i18n/chromeos-xkb
 	app-laptop/laptop-mode-tools
 	app-shells/bash
 	chromeos-base/chromeos-assets
