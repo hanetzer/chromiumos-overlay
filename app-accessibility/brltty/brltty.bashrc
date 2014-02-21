@@ -10,6 +10,7 @@ cros_pre_src_prepare_brltty_config() {
 	epatch "${FILESDIR}"/${P}-updusbdevs.patch
 	epatch "${FILESDIR}"/${P}-hims.patch
 	epatch "${FILESDIR}"/${P}-handytech.patch
+	epatch "${FILESDIR}"/${P}-api-socket-path.patch
 }
 
 cros_post_src_prepare_brltty_config() {

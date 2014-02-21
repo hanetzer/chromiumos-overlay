@@ -7,7 +7,7 @@
 # This script starts brltty in a minijail sandbox.
 
 BRLTTY_RUNDIR=/var/run/brltty
-BRLAPI_SOCKETDIR=/var/lib/BrlAPI
+BRLAPI_SOCKETDIR="${BRLTTY_RUNDIR}"/BrlAPI
 # The number (0) must be kept in sync with the Host api parameter in
 # brltty.conf.
 BRLAPI_SOCKETFILE="${BRLAPI_SOCKETDIR}/0"
@@ -38,15 +38,21 @@ kill_stale_brltty() {
 kill_stale_brltty
 
 # Ensure that the directories exist and have the right permissions.
-mkdir -p -m 0750 "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
+# NOTE: Chrome is observing ${BRLAPI_SOCKETDIR} for changes.
+# It is important to only remove world-readability *after* setting the
+# group ownership so that the browser doesn't lose read access.
+# This is a race that would cause chrome to stop observing the directory
+# and therefore not get notified when a braille display is connected.
+mkdir -p -m 0755 "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
 chown -R brltty:brltty "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
-chmod 755 "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
+chmod 750 "${BRLTTY_RUNDIR}" "${BRLAPI_SOCKETDIR}"
 
 # Files created by the daemon shouldn't be accessible by users not in the
 # brltty group.
 umask 0007
 
-log "Starting brltty, device: ${BRLTTY_DEVICE}, driver: ${BRLTTY_DRIVER}"
+log "Starting brltty, device: ${BRLTTY_BRAILLE_DEVICE}, " \
+    "driver: ${BRLTTY_BRAILLE_DRIVER}"
 
 # Start brltty in the jail.
 # The options are:

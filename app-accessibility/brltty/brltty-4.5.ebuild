@@ -61,12 +61,16 @@ src_configure() {
 	# Also override localstatedir so that the lib/brltty directory is installed
 	# correctly.
 	# Disable stripping since we do that ourselves.
+	# Change the directory for the api unix socket from its default
+	# (under /var/lib) to a location under /var/run because the latter
+	# is backed by tmpfs.
 	econf \
 		--prefix=/ \
 		--includedir=/usr/include \
 		--localstatedir=/var \
 		--disable-stripping \
 		--with-install-root="${D}" \
+		--with-api-socket-path=/var/run/brltty/BrlAPI \
 		$(use_enable api) \
 		$(use_enable beeper beeper-support) \
 		$(use_enable contracted-braille) \
