@@ -29,6 +29,11 @@ done
 # Log the platform
 logger -t "${PROG}" "Platform ${PLATFORM}"
 
+# Use the same thermal settings for Skate and Spring
+if [[ "${PLATFORM}" == "Skate" ]]; then
+  PLATFORM="Spring"
+fi
+
 # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
 # 1700000 1600000 1500000 ...
 if [[ "${PLATFORM}" == "Pit" ]]; then
