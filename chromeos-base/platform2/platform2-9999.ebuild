@@ -112,7 +112,9 @@ RDEPEND_libchromeos="dev-libs/dbus-c++
 	dev-libs/protobuf
 "
 
-RDEPEND_metrics="dev-cpp/gflags
+RDEPEND_metrics="
+	!<chromeos-base/chromeos-init-0.0.5
+	dev-cpp/gflags
 	dev-libs/dbus-glib
 	sys-apps/rootdev
 "
@@ -475,7 +477,12 @@ platform2_install_libchromeos() {
 
 platform2_install_metrics() {
 	dobin "${OUT}"/metrics_client syslog_parser.sh
-	use passive_metrics && dobin "${OUT}"/metrics_daemon
+
+	if use passive_metrics; then
+		dobin "${OUT}"/metrics_daemon
+		insinto /etc/init
+		doins init/metrics_daemon.conf
+	fi
 
 	for v in "${LIBCHROME_VERS[@]}"; do
 		dolib.so "${OUT}/lib/libmetrics-${v}.so"
