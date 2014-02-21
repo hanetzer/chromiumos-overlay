@@ -85,7 +85,7 @@ src_install() {
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
 
 	# Replace chromeos-common.sh symlink with the real file
-	cp --remove-destination "${S}/installer/chromeos-common.sh" \
+	cp --remove-destination "${S}/installer/share/chromeos-common.sh" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/lib/chromeos-common.sh" || die
 
 	# Replace fmap.py symlink with the real file
