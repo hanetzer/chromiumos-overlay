@@ -13,7 +13,7 @@ def GetAllDeps(chrome_root):
   if not os.path.exists(run_measurement):
     raise IOError('run_measurement script does not exist.')
   print_bootstrap = subprocess.Popen([run_measurement,
-                                      '--print-bootstrap-deps'],
+                                      '--print-bootstrap-deps-cros'],
                                      stdout=subprocess.PIPE)
   # STDOUT will have the deps list.
   deps_list = print_bootstrap.communicate()[0]
