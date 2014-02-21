@@ -15,6 +15,7 @@ SLOT="0"
 DEPEND="sys-apps/debianutils
 	initramfs? ( chromeos-base/chromeos-initramfs )
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
+	t124_xusb_fw? ( sys-kernel/xhci-firmware )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 )
@@ -63,6 +64,7 @@ CONFIG_FRAGMENTS=(
 	realtekpstor
 	samsung_serial
 	systemtap
+	t124_xusb_fw
 	tpm
 	vfat
 	wifi_testbed_ap
@@ -246,6 +248,12 @@ systemtap_desc="systemtap support"
 systemtap_config="
 CONFIG_KPROBES=y
 CONFIG_DEBUG_INFO=y
+"
+
+t124_xusb_fw_desc="Embed Tegra 5 XHCI controller firmware in kernel binary"
+t124_xusb_fw_config="
+CONFIG_EXTRA_FIRMWARE=\"tegra12x/xusb_sil_rel_fw\"
+CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
 "
 
 wifi_testbed_ap_desc="Defer ath9k EEPROM regulatory"
