@@ -78,7 +78,7 @@ RDEPEND="${RDEPEND}
 		app-benchmarks/punybench
 		dev-util/libc-bench
 		net-analyzer/netperf
-		virtual/perf
+		dev-util/perf
 	)
 	app-crypt/nss
 	tpm? ( app-crypt/tpm-tools )

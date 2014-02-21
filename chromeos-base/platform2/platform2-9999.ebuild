@@ -137,7 +137,7 @@ RDEPEND_power_manager="
 
 RDEPEND_quipper="
 	profile? (
-		virtual/perf
+		dev-util/perf
 	)
 "
 
