@@ -79,10 +79,6 @@ src_install() {
 		doins *.conf
 
 		dosbin display_low_battery_alert
-
-		into /usr
-		dosbin lightup_screen
-
 	fi
 
 	insinto /usr/share/cros

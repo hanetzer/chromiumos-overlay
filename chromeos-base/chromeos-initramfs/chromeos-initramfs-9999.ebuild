@@ -26,6 +26,7 @@ DEPEND_netboot="
 	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-installshim
 	chromeos-base/memento_softwareupdate
+	chromeos-base/platform2
 	dev-libs/openssl
 	dev-util/shflags
 	net-misc/wget
@@ -207,6 +208,7 @@ pull_netboot_ramfs_binary() {
 	idobin /sbin/sfdisk
 	idofutility /usr/bin/old_bins/cgpt
 	idofutility /usr/bin/old_bins/crossystem
+	idobin /usr/bin/backlight_tool
 	idobin /usr/bin/futility
 	idobin /usr/bin/getopt
 	idobin /usr/bin/openssl
@@ -214,7 +216,6 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/bin/wget
 	idobin /usr/sbin/flashrom
 	idobin /usr/sbin/htpdate
-	idobin /usr/sbin/lightup_screen
 	idobin /usr/sbin/partprobe
 	ln -s "/bin/cgpt" "${INITRAMFS_TMP_S}/usr/bin/cgpt" || die
 

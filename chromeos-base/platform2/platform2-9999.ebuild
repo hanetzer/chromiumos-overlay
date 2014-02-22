@@ -131,6 +131,7 @@ RDEPEND_mist="
 "
 
 RDEPEND_power_manager="
+	!<chromeos-base/chromeos-init-0.0.11
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/protobuf
@@ -560,6 +561,9 @@ platform2_install_power_manager() {
 	doexe udev/*.sh
 
 	udev_dorules udev/*.rules
+
+	insinto /etc/init
+	doins init/*.conf
 }
 
 platform2_install_shill() {
