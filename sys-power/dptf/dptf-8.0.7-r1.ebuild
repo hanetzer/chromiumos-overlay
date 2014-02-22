@@ -8,7 +8,7 @@ inherit cmake-utils
 
 DESCRIPTION="Intel(R) Dynamic Platform & Thermal Framework"
 HOMEPAGE="https://01.org/dptf/"
-SRC_URI="https://github.com/01org/dptf/archive/${Pv}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/01org/dptf/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="Apache-2.0 GPL-2 BSD"
 SLOT="0"
@@ -27,6 +27,10 @@ src_configure() {
 }
 
 src_compile() {
+	# TODO Brad Geltz: Remove this once -O2 is functional again
+	# Bug URL - https://github.com/01org/dptf/issues/6
+	append-flags -O0
+
 	# Build ESIF daemon
 	local extra_cflags=""
 	use debug && extra_cflags="-DESIF_ATTR_DEBUG -DESIF_ATTR_MEMTRACE"
