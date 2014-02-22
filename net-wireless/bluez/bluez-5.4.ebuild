@@ -50,7 +50,7 @@ DOCS=( AUTHORS ChangeLog README )
 # Version of the Chrome OS Bluetooth stack when this ebuild is used;
 # CHROMEOS_BLUETOOTH_VENDORID and CHROMEOS_BLUETOOTH_PRODUCTID must be
 # defined elsewhere for this to be used instead of the BlueZ version.
-CHROMEOS_BLUETOOTH_VERSION="0400"
+: ${CHROMEOS_BLUETOOTH_VERSION:="0400"}
 
 pkg_setup() {
 	if use test-programs; then
