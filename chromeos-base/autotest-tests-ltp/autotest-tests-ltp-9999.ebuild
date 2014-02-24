@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r596"
@@ -22,7 +22,7 @@ IUSE="${IUSE} +autotest"
 RDEPEND="${RDEPEND}
 	chromeos-base/autotest-deps-ltp
 	chromeos-base/protofiles
-	dev-libs/protobuf
+	dev-libs/protobuf-python
 	dev-python/pygobject
 	!<chromeos-base/autotest-tests-0.0.1-r1723
 "

@@ -43,3 +43,6 @@ dev-lang/yasm python
 
 # We don't care about pam support in developer-only tool.
 app-misc/screen pam
+
+# We split out the protobuf python bindings into the protobuf-python package.
+dev-libs/protobuf python

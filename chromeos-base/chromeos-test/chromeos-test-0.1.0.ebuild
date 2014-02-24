@@ -86,6 +86,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/touchbot
 	dev-lang/python
 	dev-libs/opensc
+	dev-libs/protobuf-python
 	dev-python/btsocket
 	dev-python/dbus-python
 	dev-python/dpkt
