@@ -20,13 +20,12 @@ IUSE="-asan -clang -deep_memory_profiler -disable_login_animations
 	-natural_scroll_default test +X"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="180609"
+LIBCHROME_VERS="242728"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	!<chromeos-base/chromeos-init-0.0.2-r674
 	chromeos-base/chromeos-minijail
 	chromeos-base/platform2
-	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/nss
 	dev-libs/protobuf
