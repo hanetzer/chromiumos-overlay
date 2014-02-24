@@ -36,6 +36,7 @@ ALL_BOARDS=(
 	amd64-corei7
 	amd64-drm
 	amd64-host
+	anglar
 	aries
 	arm-generic
 	arm64-generic
