@@ -88,9 +88,6 @@ src_install() {
 	doins login.conf logout.conf machine-info.conf ui.conf
 	doins ui-respawn.conf
 
-	insinto /usr/share/misc
-	doins recovery_ui.html
-
 	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
 	insinto /usr/$(get_libdir)/locale
 	doins "${T}/usr/lib64/locale/locale-archive"
