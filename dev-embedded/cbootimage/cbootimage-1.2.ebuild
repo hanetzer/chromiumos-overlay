@@ -3,14 +3,12 @@
 
 EAPI=4
 
-EGIT_COMMIT="v${PV}"
-SRC_URI="http://nv-tegra.nvidia.com/gitweb/?p=tools/cbootimage.git;a=snapshot;hb=${EGIT_COMMIT};sf=tgz -> ${PN}-${EGIT_COMMIT}.tar.gz"
-S=${WORKDIR}/${PN}
+SRC_URI="http://github.com/NVIDIA/cbootimage/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 inherit autotools
 
-DESCRIPTION="Utility for signing Tegra2 boot images"
-HOMEPAGE="http://nv-tegra.nvidia.com/gitweb/?p=tools/cbootimage.git"
+DESCRIPTION="Utility for signing Tegra boot images"
+HOMEPAGE="http://github.com/NVIDIA/cbootimage/"
 
 LICENSE="GPL-2"
 SLOT="0"
