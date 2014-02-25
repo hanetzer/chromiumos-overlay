@@ -101,6 +101,7 @@ ALL_BOARDS=(
 	ppcle-32-generic
 	ppcle-64-generic
 	puppy
+	quawks
 	rambi
 	raspberrypi
 	#ricochet
