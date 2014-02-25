@@ -44,10 +44,11 @@ IUSE_TESTS=(
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_EchoExtension
 	+tests_desktopui_ScreenLocker
-	+tests_login_ChromeProfileSanitaryTelemetry
+	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognito
 	+tests_login_Cryptohome
-	+tests_login_LogoutProcessCleanupTelemetry
+	+tests_login_LoginSuccess
+	+tests_login_LogoutProcessCleanup
 	+tests_network_ChromeCellularNetworkPresent
 	+tests_network_ChromeCellularNetworkProperties
 	+tests_network_ChromeCellularSmokeTest
@@ -113,13 +114,6 @@ IUSE_TESTS=(
 	 tests_logging_AsanCrash
 	 tests_logging_AsanCrashTelemetry
 	+tests_logging_UncleanShutdown
-	+tests_login_ChromeProfileSanitary
-	+tests_login_CryptohomeMounted
-	+tests_login_CryptohomeUnmounted
-	+tests_login_LoginSuccess
-	+tests_login_LoginSuccessTelemetry
-	+tests_login_LogoutProcessCleanup
-	+tests_login_RemoteLogin
 	+tests_network_MobileSuspendResume
 	+tests_network_NavigateToUrl
 	+tests_network_ONC
