@@ -70,6 +70,7 @@ ALL_BOARDS=(
 	glimmer
 	ironhide
 	#kiev
+	kip
 	klang
 	leon
 	link
