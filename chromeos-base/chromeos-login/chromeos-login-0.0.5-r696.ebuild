@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="329bc70683f215fafab0830e438511793db3cf9d"
-CROS_WORKON_TREE="a47716865f55754cb7a0bbb0197bc322e5d6bf00"
+CROS_WORKON_COMMIT="aa1c07aaf905f653e198b5b0100f8a11b4134e88"
+CROS_WORKON_TREE="9c6f47fe94fb3e8cb60eed89061a3b54b56dbdcd"
 CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
 
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
@@ -89,9 +89,6 @@ src_install() {
 	insinto /etc/init
 	doins login.conf logout.conf machine-info.conf ui.conf
 	doins ui-respawn.conf
-
-	insinto /usr/share/misc
-	doins recovery_ui.html
 
 	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
 	insinto /usr/$(get_libdir)/locale
