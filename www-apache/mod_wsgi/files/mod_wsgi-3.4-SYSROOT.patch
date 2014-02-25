@@ -1,0 +1,41 @@
+Fix configure.ac variables to point to SYSROOT rather than the build host's root.
+
+Without these changes, mod_wsgi will fail to compile as it will incorrectly
+try to use the host's python binary and include directories.
+
+crbug.com/345821
+--- a/configure.ac
++++ b/configure.ac
+@@ -41,8 +41,8 @@ AC_SUBST(APXS)
+ 
+ AC_MSG_CHECKING(Apache version)
+ HTTPD="`${APXS} -q SBINDIR`/`${APXS} -q TARGET`"
+-HTTPD_INCLUDEDIR="`${APXS} -q INCLUDEDIR`"
+-if test -x ${HTTPD}; then
++HTTPD_INCLUDEDIR="${SYSROOT}`${APXS} -q INCLUDEDIR`"
++if false; then
+     HTTPD_VERSION=`${HTTPD} -v | awk '/version/ {print $3}' \
+      | awk -F/ '{print $2}'`
+ else
+@@ -77,9 +77,9 @@ PYTHON_VERSION=`${PYTHON} -c 'from sys import stdout; \
+     from distutils import sysconfig; \
+     stdout.write((sysconfig.get_config_var("VERSION")))'`
+ 
+-CPPFLAGS1=`${PYTHON} -c 'from sys import stdout; \
++CPPFLAGS1="-I${SYSROOT}"`${PYTHON} -c 'from sys import stdout; \
+     from distutils import sysconfig; \
+-    stdout.write("-I" + sysconfig.get_config_var("INCLUDEPY"))'`
++    stdout.write(sysconfig.get_config_var("INCLUDEPY"))'`
+ 
+ CPPFLAGS2=`${PYTHON} -c 'from sys import stdout; \
+     from distutils import sysconfig; \
+@@ -96,7 +96,7 @@ CPPFLAGS="${CPPFLAGS} ${CPPFLAGS1} ${CPPFLAGS2} ${CPPFLAGS3}"
+ 
+ AC_SUBST(CPPFLAGS)
+ 
+-PYTHONLIBDIR=`${PYTHON} -c 'from sys import stdout; \
++PYTHONLIBDIR="${SYSROOT}"`${PYTHON} -c 'from sys import stdout; \
+     from distutils import sysconfig; \
+     stdout.write(sysconfig.get_config_var("LIBDIR"))'`
+ PYTHONCFGDIR=`${PYTHON} -c 'from sys import stdout; \
+
