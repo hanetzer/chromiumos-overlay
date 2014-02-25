@@ -46,7 +46,7 @@ IUSE_TESTS=(
 	+tests_desktopui_EchoExtension
 	+tests_desktopui_ScreenLockerTelemetry
 	+tests_login_ChromeProfileSanitaryTelemetry
-	+tests_login_CryptohomeIncognitoTelemetry
+	+tests_login_CryptohomeIncognito
 	+tests_login_CryptohomeTelemetry
 	+tests_login_LogoutProcessCleanupTelemetry
 	+tests_network_ChromeCellularNetworkPresent
