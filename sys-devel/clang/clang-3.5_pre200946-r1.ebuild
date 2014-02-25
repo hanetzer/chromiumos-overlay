@@ -7,12 +7,11 @@
 # Note that we use downloading sources from SVN because llvm.org has
 # not released this version yet.
 
-EAPI=4
+EAPI=5
 
-RESTRICT_PYTHON_ABIS="3.*"
-SUPPORT_PYTHON_ABIS="1"
+PYTHON_COMPAT=( python{2_6,2_7} pypy2_0 )
 
-inherit cros-constants subversion eutils multilib python
+inherit cros-constants subversion eutils multilib python-r1
 
 EGIT_REPO_URIS=(
 	"llvm"
@@ -46,7 +45,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/cfe/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="-* amd64"
-IUSE="debug multitarget +static-analyzer test"
+IUSE="debug multitarget python +static-analyzer test"
 
 DEPEND="static-analyzer? ( dev-lang/perl )"
 RDEPEND="~sys-devel/llvm-${PV}[multitarget=]"

@@ -4,9 +4,11 @@
 # This package is originated from
 # http://sources.gentoo.org/sys-devel/llvm/llvm-9999.ebuild
 
-EAPI="4"
-PYTHON_DEPEND="2"
-inherit cros-constants subversion eutils flag-o-matic multilib toolchain-funcs python pax-utils
+EAPI=5
+
+PYTHON_COMPAT=( python{2_5,2_6,2_7} pypy{1_9,2_0} )
+
+inherit cros-constants subversion eutils flag-o-matic multilib toolchain-funcs python-r1 pax-utils check-reqs
 
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 EGIT_MASTER=""
@@ -24,7 +26,7 @@ ESVN_REPO_URI="http://llvm.org/svn/llvm-project/llvm/trunk@${SVN_COMMIT}"
 LICENSE="UoI-NCSA"
 SLOT="0"
 KEYWORDS="-* amd64"
-IUSE="debug doc gold +libffi multitarget ocaml test udis86 vim-syntax"
+IUSE="clang debug doc gold +libffi multitarget ocaml test udis86 vim-syntax"
 
 DEPEND="dev-lang/perl
 	>=sys-devel/make-3.79
@@ -42,10 +44,40 @@ RDEPEND="dev-lang/perl
 	libffi? ( virtual/libffi )
 	vim-syntax? ( || ( app-editors/vim app-editors/gvim ) )"
 
+pkg_pretend() {
+	# in megs
+	# !clang !debug !multitarget -O2       400
+	# !clang !debug  multitarget -O2       550
+	#  clang !debug !multitarget -O2       950
+	#  clang !debug  multitarget -O2      1200
+	# !clang  debug  multitarget -O2      5G
+	#  clang !debug  multitarget -O0 -g  12G
+	#  clang  debug  multitarget -O2     16G
+	#  clang  debug  multitarget -O0 -g  14G
+
+	local build_size=550
+	use clang && build_size=1200
+
+	if use debug; then
+		ewarn "USE=debug is known to increase the size of package considerably"
+		ewarn "and cause the tests to fail."
+		ewarn
+
+		(( build_size *= 14 ))
+	elif is-flagq -g || is-flagq -ggdb; then
+		ewarn "The C++ compiler -g option is known to increase the size of the package"
+		ewarn "considerably. If you run out of space, please consider removing it."
+		ewarn
+
+		(( build_size *= 10 ))
+	fi
+
+	local CHECKREQS_DISK_BUILD=${build_size}M
+	check-reqs_pkg_pretend
+}
+
 pkg_setup() {
-	# Required for test and build
-	python_set_active_version 2
-	python_pkg_setup
+	pkg_pretend
 
 	# need to check if the active compiler is ok
 
