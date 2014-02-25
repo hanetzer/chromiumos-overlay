@@ -44,7 +44,7 @@ IUSE_TESTS=(
 	+tests_bluetooth_RegressionClient
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_EchoExtension
-	+tests_desktopui_ScreenLockerTelemetry
+	+tests_desktopui_ScreenLocker
 	+tests_login_ChromeProfileSanitaryTelemetry
 	+tests_login_CryptohomeIncognito
 	+tests_login_CryptohomeTelemetry
