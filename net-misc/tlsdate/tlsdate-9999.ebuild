@@ -20,6 +20,7 @@ DEPEND="dev-libs/openssl
 	dbus? ( sys-apps/dbus )"
 RDEPEND="${DEPEND}
 	chromeos-base/chromeos-ca-certificates
+	!<chromeos-base/chromeos-init-0.0.6
 "
 
 src_prepare() {
@@ -52,4 +53,6 @@ src_install() {
 	doins "${S}/dbus/org.torproject.tlsdate.xml"
 	insinto /usr/share/dbus-1/services
 	doins "${S}/dbus/org.torproject.tlsdate.service"
+	insinto /etc/init
+	doins init/tlsdated.conf
 }

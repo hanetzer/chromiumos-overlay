@@ -70,7 +70,7 @@ src_install() {
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins install-completed.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
-		doins syslog.conf system-services.conf tlsdated.conf
+		doins syslog.conf system-services.conf
 		doins update-engine.conf wpasupplicant.conf
 
 		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
