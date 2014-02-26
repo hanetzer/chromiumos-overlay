@@ -27,10 +27,6 @@ src_configure() {
 }
 
 src_compile() {
-	# TODO Brad Geltz: Remove this once -O2 is functional again
-	# Bug URL - https://github.com/01org/dptf/issues/6
-	append-flags -O0
-
 	# Build ESIF daemon
 	local extra_cflags=""
 	use debug && extra_cflags="-DESIF_ATTR_DEBUG -DESIF_ATTR_MEMTRACE"
