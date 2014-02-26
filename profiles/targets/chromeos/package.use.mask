@@ -26,3 +26,7 @@ app-laptop/laptop-mode-tools acpi
 
 # Allow hardened glibc on the target.
 sys-libs/glibc -hardened
+
+# Disable asan for these two packages.
+chromeos-base/libevdev asan
+chromeos-base/gestures asan
