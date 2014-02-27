@@ -574,6 +574,7 @@ platform2_install_shill() {
 		dobin "bin/set_cellular_ppp"
 	fi
 
+	dosbin "bin/reload_network_device"
 	dobin "bin/set_arpgw"
 	dobin "bin/shill_login_user"
 	dobin "bin/shill_logout_user"
@@ -618,6 +619,8 @@ platform2_install_shill() {
 	# Install init scripts
 	insinto /etc/init
 	doins init/*.conf
+
+	udev_dorules udev/*.rules
 }
 
 platform2_install_system_api() {
