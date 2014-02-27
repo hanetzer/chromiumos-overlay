@@ -19,7 +19,6 @@ KEYWORDS="~*"
 IUSE="cros_embedded +encrypted_stateful +udev vt"
 
 DEPEND=""
-# vpd for vpd-log.conf of upstart
 # vboot_reference for crossystem
 RDEPEND="
 	chromeos-base/bootstat
@@ -30,7 +29,6 @@ RDEPEND="
 	!cros_embedded? (
 		chromeos-base/chromeos-assets
 		chromeos-base/chromeos-disableecho
-		chromeos-base/vpd
 		media-gfx/ply-image
 		sys-apps/chvt
 		sys-apps/smartmontools

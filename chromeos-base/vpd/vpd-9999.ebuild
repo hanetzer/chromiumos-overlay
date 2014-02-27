@@ -19,9 +19,12 @@ IUSE=""
 DEPEND="sys-apps/util-linux"
 # shflags for dump_vpd_log.
 # chromeos-activate-date for ActivateDate upstart and script.
-RDEPEND="sys-apps/flashrom
+RDEPEND="
+	!<chromeos-base/chromeos-init-0.0.19
+	sys-apps/flashrom
 	dev-util/shflags
-	virtual/chromeos-activate-date"
+	virtual/chromeos-activate-date
+	"
 
 src_configure() {
 	cros-workon_src_configure
@@ -36,6 +39,10 @@ src_install() {
 	# This target list should be architecture specific
 	# (no ACPI stuff on ARM for instance)
 	dosbin vpd vpd_s util/dump_vpd_log
+
+	# install the init script
+	insinto /etc/init
+	doins init/vpd-log.conf
 }
 
 # disabled due to buildbot failure
