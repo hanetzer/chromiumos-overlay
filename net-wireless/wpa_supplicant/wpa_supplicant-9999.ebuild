@@ -18,6 +18,8 @@ IUSE="-asan -clang dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline smartc
 REQUIRED_USE="smartcard? ( ssl ) asan? ( clang )"
 
 DEPEND="dev-libs/libnl:0
+	chromeos-base/chromeos-minijail
+	!<chromeos-base/chromeos-init-0.0.7
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
 		eap-sim? ( sys-apps/pcsc-lite )
@@ -240,6 +242,11 @@ src_install() {
 		newins dbus/fi.w1.wpa_supplicant1.service 'fi.w1.wpa_supplicant1.service' || die
 		keepdir /var/run/wpa_supplicant
 	fi
+
+	# install wpa_supplicant's init script
+	cd "${S}"
+	insinto /etc/init
+	doins init/wpasupplicant.conf
 }
 
 pkg_postinst() {
