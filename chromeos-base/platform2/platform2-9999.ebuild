@@ -6,7 +6,7 @@ EAPI="4"
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
 
-CROS_WORKON_LOCALNAME=(
+OLD_PLATFORM_LOCALNAME=(
 	"common-mk"
 	"chaps"
 	"chromiumos-wide-profiling"
@@ -23,8 +23,21 @@ CROS_WORKON_LOCALNAME=(
 	"vpn-manager"
 	"wimax_manager"
 )
-CROS_WORKON_PROJECT=("${CROS_WORKON_LOCALNAME[@]/#/chromiumos/platform/}")
-CROS_WORKON_DESTDIR=("${CROS_WORKON_LOCALNAME[@]/#/${S}/}")
+NEW_PLATFORM2_LOCALNAME=(
+	"attestation"
+)
+CROS_WORKON_LOCALNAME=(
+	"${OLD_PLATFORM_LOCALNAME[@]}"
+	"../platform2"  # With all platform2 subdirs
+)
+CROS_WORKON_PROJECT=(
+	"${OLD_PLATFORM_LOCALNAME[@]/#/chromiumos/platform/}"
+	"chromiumos/platform2"
+)
+CROS_WORKON_DESTDIR=(
+	"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/}"
+	"${S}/platform2"
+)
 
 inherit cros-board cros-debug cros-workon eutils multilib toolchain-funcs udev
 
@@ -306,12 +319,17 @@ platform2_multiplex() {
 	local phase="$1"
 	local OUT="$(cros-workon_get_build_dir)/out/Default"
 	local pkg
-	for pkg in "${CROS_WORKON_LOCALNAME[@]}"; do
+	local multiplex_names=(
+		"${OLD_PLATFORM_LOCALNAME[@]}"
+		"${NEW_PLATFORM2_LOCALNAME[@]/#/platform2/}"
+	)
+	for pkg in "${multiplex_names[@]}"; do
 		local SRC="${S}/${pkg}"
 		pushd "${SRC}" >/dev/null
 
 		# Subshell so that funcs that change the env (like `into` and
 		# `insinto`) don't affect the next pkg.
+		pkg="${pkg##*/}"
 		( "platform2_${phase}_${pkg}" ) || die
 
 		popd >/dev/null
@@ -322,6 +340,21 @@ platform2_multiplex() {
 # These are all the repo-specific install functions.
 # Keep them sorted by name!
 #
+
+platform2_install_attestation() {
+	use tpm || return 0
+	use cros_host && return 0
+
+	insinto /etc/dbus-1/system.d
+	doins server/org.chromium.Attestation.conf
+
+	insinto /etc/init
+	doins server/attestationd.conf
+
+	insinto /usr
+	dosbin "${OUT}"/attestationd
+	dobin "${OUT}"/attestation
+}
 
 platform2_install_chaps() {
 	use tpm || return 0
@@ -679,6 +712,10 @@ platform2_install_wimax_manager() {
 # These are all the repo-specific test functions.
 # Keep them sorted by name!
 #
+
+platform2_test_attestation() {
+	return 0
+}
 
 platform2_test_chaps() {
 	use tpm || return 0
