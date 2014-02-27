@@ -68,9 +68,15 @@ src_compile() {
 src_test() {
 	if ! use x86 && ! use amd64 ; then
 		einfo Skipping unit tests on non-x86 platform
-	else
-		emake -C build check
+		return
 	fi
+
+	# Disable dumper_unittest as the kernels are broken on some of our bots.
+	# See http://crbug.com/343442
+	emake -C build src/common/dumper_unittest
+	printf '#!/bin/sh\nexit 77\n' > build/src/common/dumper_unittest || die
+
+	emake -C build check
 }
 
 src_install() {
