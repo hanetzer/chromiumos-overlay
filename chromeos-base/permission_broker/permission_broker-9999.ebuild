@@ -15,6 +15,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
+RESTRICT="test"
 
 LIBCHROME_VERS="242728"
 
@@ -41,14 +42,6 @@ src_configure() {
 
 src_compile() {
 	cros-workon_src_compile
-}
-
-src_test() {
-	if use arm ; then
-		echo Skipping tests on non-x86 platform...
-	else
-		cros-workon_src_test
-	fi
 }
 
 src_install() {
