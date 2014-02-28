@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="22074a59ff0c214818befe64208359445b2b2a85"
-CROS_WORKON_TREE="aaf695b4f39606d662c8f69e7b1ca1c08dc920b2"
+CROS_WORKON_COMMIT="7efd9d0143c594d7f708c02c41a87645c5185d08"
+CROS_WORKON_TREE="bcaebdfe51756ad521817d67062003f403c96ae6"
 CROS_WORKON_PROJECT="chromiumos/platform/salsa"
 
 inherit cros-workon toolchain-funcs
