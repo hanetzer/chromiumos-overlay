@@ -64,6 +64,7 @@ IUSE_TESTS=(
 	+tests_video_VideoDecodeMemoryUsage
 	+tests_video_VideoSanity
 	+tests_video_VideoSeek
+	+tests_video_VimeoVideo
 	+tests_video_WebRtcPerf
 	+tests_video_YouTubePage
 	+tests_video_YouTubeFlash
