@@ -26,6 +26,7 @@ RDEPEND="sys-apps/ethtool
 				net-wireless/bluez-utils
 			)
 		)
+		!<chromeos-base/chromeos-init-0.0.10
 		hal? ( sys-apps/hal )
 		net-wireless/iw
 		scsi? ( sys-apps/sdparm )
@@ -92,6 +93,10 @@ src_install() {
 
 	insinto /etc/laptop-mode/conf.d/board-specific
 	doins "${FILESDIR}/usb-autosuspend-cros.conf"
+
+	insinto /etc/init
+	doins "${FILESDIR}"/laptop-mode-boot.conf
+	doins "${FILESDIR}"/laptop-mode-resume.conf
 }
 
 pkg_postinst() {
