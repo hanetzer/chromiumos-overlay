@@ -1,9 +1,8 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-block/fio/fio-2.1.2.ebuild,v 1.2 2013/08/29 09:05:18 pinkbyte Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-block/fio/fio-2.1.5.ebuild,v 1.1 2014/02/27 05:05:34 radhermit Exp $
 
 EAPI="5"
-
 PYTHON_COMPAT=( python2_7 )
 inherit eutils flag-o-matic python-r1 toolchain-funcs
 
@@ -21,21 +20,13 @@ IUSE="gtk"
 
 DEPEND="dev-libs/libaio
 	gtk? ( x11-libs/gtk+:2 )"
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+	${PYTHON_DEPS}"
 
 S="${WORKDIR}/${MY_P}"
 
 src_prepare() {
-	sed -i \
-		-e '/^DEBUGFLAGS/s, -D_FORTIFY_SOURCE=2,,g' \
-		-e '/-o gfio/s/$(LIBS)/$(LDFLAGS) $(LIBS)/' \
-		Makefile || die
-
-	epatch "${FILESDIR}/${P}-add-check-for-numberio.patch"
-	epatch "${FILESDIR}/${P}-add-check-for-rand_seed.patch"
-	epatch "${FILESDIR}/${P}-add-condition-to-stop-issuing-io.patch"
-	epatch "${FILESDIR}/${P}-add-verifyonly-option.patch"
-
+	sed -i '/^DEBUGFLAGS/s, -D_FORTIFY_SOURCE=2,,g' Makefile || die
 	epatch_user
 }
 
@@ -44,16 +35,18 @@ src_configure() {
 	./configure \
 		--extra-cflags="${CFLAGS}" --cc="$(tc-getCC)" \
 		$(use gtk && echo "--enable-gfio") || die 'configure failed'
+
+	epatch "${FILESDIR}/${P}-fix-verify_only-option.patch"
 }
 
 src_compile() {
 	append-flags -W
-	emake V=1
+	emake V=1 OPTFLAGS=
 }
 
 src_install() {
 	emake install DESTDIR="${D}" prefix="/usr" mandir="/usr/share/man"
-	python_replicate_script "${ED}/usr/bin/fio2gnuplot.py"
+	python_replicate_script "${ED}/usr/bin/fio2gnuplot"
 	dodoc README REPORTING-BUGS HOWTO
 	docinto examples
 	dodoc examples/*
