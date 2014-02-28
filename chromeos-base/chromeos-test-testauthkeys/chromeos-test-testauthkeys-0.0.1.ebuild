@@ -13,4 +13,9 @@ S="${WORKDIR}"
 src_install() {
 	dodir /root/.ssh
 	cat "${FILESDIR}"/*.pub > "${D}"/root/.ssh/authorized_keys || die
+
+	insinto /root/.ssh
+	newins "${FILESDIR}/testing_rsa" id_rsa
+	newins "${FILESDIR}/testing_rsa.pub" id_rsa.pub
+	fperms 600 /root/.ssh/id_rsa
 }
