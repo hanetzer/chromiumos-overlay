@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/openssh/openssh-5.2_p1-r3.ebuild,v 1.7 2009/10/11 20:21:40 nixnut Exp $
 
-inherit eutils flag-o-matic multilib autotools pam useradd
+inherit eutils flag-o-matic multilib autotools pam user
 
 # Make it more portable between straight releases
 # and _p? releases.
@@ -230,8 +230,8 @@ src_test() {
 }
 
 pkg_postinst() {
-	add_group sshd 22
-	add_user "sshd" "*" 22 22 "sshd_user" /dev/null /bin/false
+	enewgroup sshd
+	enewuser sshd -1 -1 /dev/null sshd
 
 	# help fix broken perms caused by older ebuilds.
 	# can probably cut this after the next stage release.
