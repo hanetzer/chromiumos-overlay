@@ -9,7 +9,11 @@ inherit cros-workon
 DESCRIPTION="Chrontel CH7036 User Space Driver"
 HOMEPAGE="http://www.chrontel.com"
 SRC_URI=""
-LICENSE="BSD"
+
+# TODO: Once the licensing script stops clobbering chromeos-base/* projects
+# from BSD to BSD-Google, we can use normal BSD here.  See this CL for info:
+# https://chromium-review.googlesource.com/188206
+LICENSE="BSD-chrontel"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="-asan -bogus_screen_resizes -clang -use_alsa_control"
