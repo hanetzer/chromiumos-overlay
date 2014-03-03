@@ -3,6 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/chrontel"
+CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
 inherit cros-workon
 
@@ -15,18 +16,15 @@ SRC_URI=""
 # https://chromium-review.googlesource.com/188206
 LICENSE="BSD-chrontel"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="~*"
 IUSE="-asan -bogus_screen_resizes -clang -use_alsa_control"
 REQUIRED_USE="asan? ( clang )"
-
-CROS_WORKON_LOCALNAME="../third_party/chrontel"
 
 RDEPEND="x11-libs/libX11
 	x11-libs/libXdmcp
 	x11-libs/libXrandr
 	media-libs/alsa-lib
 	media-sound/adhd"
-
 DEPEND="${RDEPEND}"
 
 src_configure() {
@@ -36,10 +34,10 @@ src_configure() {
 
 src_compile() {
 	tc-export CC PKG_CONFIG
-        append-flags -DUSE_AURA
-        use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
-        use use_alsa_control && append-flags -DUSE_ALSA_CONTROL
-        export CCFLAGS="$CFLAGS"
+	append-flags -DUSE_AURA
+	use bogus_screen_resizes && append-flags -DBOGUS_SCREEN_RESIZES
+	use use_alsa_control && append-flags -DUSE_ALSA_CONTROL
+	export CCFLAGS="${CFLAGS}"
 	emake
 }
 
