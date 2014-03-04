@@ -43,7 +43,9 @@ DEPEND="dev-cpp/gmock
 	cros_host? ( dev-util/scons )
 	${COMMON_DEPEND}"
 
-RDEPEND="chromeos-base/chromeos-installer
+RDEPEND="
+	!<chromeos-base/chromeos-init-0.0.8
+	chromeos-base/chromeos-installer
 	${COMMON_DEPEND}"
 
 
@@ -118,4 +120,7 @@ src_install() {
 	insinto /usr/include/chromeos/update_engine
 	doins update_engine.dbusserver.h
 	doins update_engine.dbusclient.h
+
+	insinto /etc/init
+	doins init/update-engine.conf
 }

@@ -71,7 +71,6 @@ src_install() {
 		doins install-completed.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
-		doins update-engine.conf
 
 		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
 		use vt && doins tty2.conf
