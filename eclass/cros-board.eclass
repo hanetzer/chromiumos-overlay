@@ -47,6 +47,7 @@ ALL_BOARDS=(
 	blackwall
 	bolt
 	butterfly
+	bwtm2
 	cardhu
 	#chronos
 	clapper
