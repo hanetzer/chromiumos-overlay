@@ -73,6 +73,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/tmux
 	app-misc/utouch-evemu
 	chromeos-base/autotest-client
+	chromeos-base/audiotest
 	chromeos-base/autox
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/shill-test-scripts
