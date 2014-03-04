@@ -63,6 +63,7 @@ CONFIG_FRAGMENTS=(
 	qmi
 	realtekpstor
 	samsung_serial
+	socketmon
 	systemtap
 	t124_xusb_fw
 	tpm
@@ -233,15 +234,22 @@ qmi_config="
 CONFIG_USB_NET_QMI_WWAN=m
 "
 
+realtekpstor_desc="Realtek PCI card reader"
+realtekpstor_config="
+CONFIG_RTS_PSTOR=m
+"
+
 samsung_serial_desc="Samsung serialport"
 samsung_serial_config="
 CONFIG_SERIAL_SAMSUNG=y
 CONFIG_SERIAL_SAMSUNG_CONSOLE=y
 "
 
-realtekpstor_desc="Realtek PCI card reader"
-realtekpstor_config="
-CONFIG_RTS_PSTOR=m
+socketmon_desc="INET socket monitoring interface (for iproute2 ss)"
+socketmon_config="
+CONFIG_INET_DIAG=y
+CONFIG_INET_TCP_DIAG=y
+CONFIG_INET_UDP_DIAG=y
 "
 
 systemtap_desc="systemtap support"
