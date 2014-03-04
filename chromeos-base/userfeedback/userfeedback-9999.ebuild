@@ -20,6 +20,7 @@ RDEPEND="chromeos-base/chromeos-init
 	media-libs/fontconfig
 	media-sound/alsa-utils
 	sys-apps/hdparm
+	sys-apps/mmc-utils
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pciutils
