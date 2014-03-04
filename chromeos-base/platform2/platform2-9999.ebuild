@@ -78,6 +78,7 @@ RDEPEND_cromo="
 		dev-libs/dbus-c++
 		virtual/modemmanager
 	)
+	!<chromeos-base/chromeos-init-0.0.9
 "
 
 RDEPEND_cros_disks="
@@ -405,6 +406,9 @@ platform2_install_cromo() {
 	doins "${OUT}"/gen/include/cromo/dbus_adaptors/org.freedesktop.DBus.Properties.h
 
 	dodir /usr/$(get_libdir)/cromo/plugins
+
+	insinto /etc/init
+	doins init/cromo.conf
 }
 
 platform2_install_cros-disks() {
