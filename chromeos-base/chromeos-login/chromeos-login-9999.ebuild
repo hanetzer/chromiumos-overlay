@@ -78,7 +78,7 @@ src_install() {
 	dobin cros-xauth
 
 	insinto /usr/share/dbus-1/interfaces
-	doins session_manager.xml
+	doins org.chromium.SessionManagerInterface.xml
 
 	insinto /etc/dbus-1/system.d
 	doins SessionManager.conf
