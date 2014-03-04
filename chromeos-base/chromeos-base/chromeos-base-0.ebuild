@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit useradd pam
+inherit pam useradd user
 
 DESCRIPTION="ChromeOS specific system setup"
 HOMEPAGE="http://src.chromium.org/"
@@ -171,7 +171,12 @@ src_install() {
 }
 
 pkg_postinst() {
-	local x
+	local x group_lock passwd_lock
+	# This is temporary until we complete http://crbug.com/343369
+	group_lock=$(readlink -e "${ROOT}/etc/group").lock
+	passwd_lock=$(readlink -e "${ROOT}/etc/passwd").lock
+	_portable_grab_lock "${group_lock}"
+	_portable_grab_lock "${passwd_lock}"
 
 	# We explicitly add all of the users needed in the system here. The
 	# build of Chromium OS uses a single build chroot environment to build
@@ -325,6 +330,9 @@ pkg_postinst() {
 
 	# The system_user needs to access braille displays.
 	add_users_to_group brltty ${system_user}
+
+	rm "${group_lock}" || die "Failed to release lock on ${group_lock}"
+	rm "${passwd_lock}"  || die "Failed to release lock on ${passwd_lock}"
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
