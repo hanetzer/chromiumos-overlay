@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="b2cdff4a75ad79df08ec4a7d82c3046f79624136"
-CROS_WORKON_TREE="f6acc480ce97927d59da32b2016dd132769d9d71"
+CROS_WORKON_COMMIT="e73165e14d13e4c4b8150e077fa0e2cef188682e"
+CROS_WORKON_TREE="cf6f3551f11c26c11ce00cb0e85f3a9b6797e973"
 CROS_WORKON_PROJECT="chromiumos/third_party/libmbim"
 
 inherit autotools cros-workon multilib
