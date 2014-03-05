@@ -36,7 +36,7 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan +cellular +crash_reporting -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
-IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -is_desktop -legacy_power_button -lockvt -mosys_eventlog"
+IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
 	asan? ( clang )
@@ -544,9 +544,7 @@ platform2_install_power_manager() {
 	insinto /usr/share/power_manager
 	doins default_prefs/*
 	use als && doins optional_prefs/has_ambient_light_sensor
-	# TODO(derat): Remove is_desktop after switching boards to unset display_backlight.
-	(! use display_backlight || use is_desktop) && \
-		doins optional_prefs/external_display_only
+	use display_backlight || doins optional_prefs/external_display_only
 	use has_keyboard_backlight && doins optional_prefs/has_keyboard_backlight
 	use legacy_power_button && doins optional_prefs/legacy_power_button
 	use lockvt && doins optional_prefs/lock_vt_before_suspend

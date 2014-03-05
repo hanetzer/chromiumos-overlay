@@ -13,7 +13,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.gz"
 LICENSE="MIT"
 SLOT="1.0"
 KEYWORDS="*"
-IUSE="cros_host doc -highdpi -is_desktop +subpixel_rendering"
+IUSE="cros_host doc -highdpi +subpixel_rendering"
 
 # Purposefully dropped the xml USE flag and libxml2 support. Having this is
 # silly since expat is the preferred way to go per upstream and libxml2 support
@@ -100,10 +100,7 @@ src_install() {
 	# (http://crbug.com/125066#c8). Additionally, disable it when installing to
 	# the host sysroot so the images in the initramfs package won't use subpixel
 	# rendering (http://crosbug.com/27872).
-	# TODO(derat): Remove is_desktop after updating boards to unset
-	# subpixel_rendering instead.
-	if ! use subpixel_rendering || use is_desktop || use highdpi || \
-		use cros_host; then
+	if ! use subpixel_rendering || use highdpi || use cros_host; then
 		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
 		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/.
 		check_fontconfig_default 10-no-sub-pixel.conf
