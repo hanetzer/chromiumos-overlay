@@ -59,7 +59,7 @@ set_build_env() {
 		EC_BOARD=pit
 	fi
 	if use nyan_big; then
-		EC_BOARD=nyan
+		EC_BOARD=big
 	fi
 	if [[ ! -d board/${EC_BOARD} ]] ; then
 		ewarn "Sorry, ${EC_BOARD} not supported; doing build-test with BOARD=bds"
