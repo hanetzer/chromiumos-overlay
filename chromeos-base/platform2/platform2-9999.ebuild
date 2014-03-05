@@ -247,6 +247,9 @@ platform2() {
 		--use_flags="${USE}"
 		--action="${action}"
 	)
+	if [[ ${CROS_WORKON_INCREMENTAL_BUILD} != "1" ]]; then
+		cmd+=( --disable_incremental )
+	fi
 	echo "${cmd[@]}"
 	"${cmd[@]}" || die
 }
