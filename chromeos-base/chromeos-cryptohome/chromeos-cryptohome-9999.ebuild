@@ -20,6 +20,7 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	app-crypt/trousers
+	!<chromeos-base/chromeos-init-0.0.13
 	chromeos-base/platform2
 	chromeos-base/libscrypt
 	dev-libs/dbus-glib
@@ -65,4 +66,7 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins etc/Cryptohome.conf
+
+	insinto /etc/init
+	doins init/*.conf
 }
