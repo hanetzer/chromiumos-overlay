@@ -5,7 +5,11 @@
 EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 
-inherit autotools multilib eutils systemd python
+# Inherit from cros-board so that bluez is built for each board, rather than
+# shared; this is because it uses overlay-defined CHROMEOS_BLUETOOTH_VENDORID,
+# CHROMEOS_BLUETOOTH_PRODUCTID and CHROMEOS_BLUETOOTH_VERSION variables to
+# define the exported Device ID.
+inherit autotools multilib eutils systemd python cros-board
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
