@@ -69,6 +69,7 @@ CONFIG_FRAGMENTS=(
 	t124_xusb_fw
 	tpm
 	vfat
+	vlan
 	wifi_testbed_ap
 	wifi_debug
 	wireless34
@@ -264,6 +265,11 @@ t124_xusb_fw_desc="Embed Tegra 5 XHCI controller firmware in kernel binary"
 t124_xusb_fw_config="
 CONFIG_EXTRA_FIRMWARE=\"tegra12x/tegra_xusb_firmware\"
 CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
+"
+
+vlan_desc="802.1Q VLAN"
+vlan_config="
+CONFIG_VLAN_8021Q=m
 "
 
 wifi_testbed_ap_desc="Defer ath9k EEPROM regulatory"
