@@ -13,7 +13,7 @@ inherit cros-constants subversion eutils flag-o-matic multilib toolchain-funcs p
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 EGIT_MASTER=""
 # Set to the corresponding commit.
-EGIT_COMMIT="30c0f722370210d746c3bf4c3104952b78e5e498"
+EGIT_COMMIT="306c04c2184ae524c03c2797b7c944d5ab8f938e"
 inherit git-2
 
 SVN_COMMIT=${PV#*_pre}
