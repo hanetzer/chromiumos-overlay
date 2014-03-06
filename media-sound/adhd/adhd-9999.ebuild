@@ -12,7 +12,7 @@ DESCRIPTION="Google A/V Daemon"
 HOMEPAGE="http://www.chromium.org"
 SRC_URI=""
 
-LICENSE="GPL-2"
+LICENSE="BSD,BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
