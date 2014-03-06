@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host"
+IUSE="-alltests cros_host"
 
 RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
@@ -71,10 +71,18 @@ src_test() {
 		return
 	fi
 
-	# Disable dumper_unittest as the kernels are broken on some of our bots.
+	# Disable some unittests as the kernels are broken on some of our bots.
 	# See http://crbug.com/343442
-	emake -C build src/common/dumper_unittest
-	printf '#!/bin/sh\nexit 77\n' > build/src/common/dumper_unittest || die
+	if ! use alltests ; then
+		local b broken=(
+			src/common/dumper_unittest
+			src/client/linux/linux_client_unittest
+		)
+		emake -C build "${broken[@]}"
+		for b in "${broken[@]}" ; do
+			printf '#!/bin/sh\nexit 77\n' > "build/${b}" || die
+		done
+	fi
 
 	emake -C build check
 }
