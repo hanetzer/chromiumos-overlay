@@ -31,6 +31,7 @@ DISTUTILS_SRC_TEST="setup.py"
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-asneeded-2.patch
 	epatch "${FILESDIR}"/${P}-crosscompile.patch
+	epatch "${FILESDIR}"/${P}-protoc_redirect_io.patch
 	eautoreconf
 
 	if use python; then
