@@ -17,5 +17,5 @@ fi
 
 cd "$1" || exit
 
-git describe --match "${PATTERN}" --abbrev=0 HEAD 2>&1 | egrep "${PATTERN}" |
+git describe --match "${PATTERN}" --abbrev=0 HEAD | egrep "${PATTERN}" |
   sed s/v\\.*//g | sed s/-/_/g
