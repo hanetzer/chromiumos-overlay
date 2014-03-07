@@ -91,6 +91,48 @@ idofutility() {
 	done
 }
 
+idoko() {
+	local module_root_path="${SYSROOT}/lib/modules"
+
+	local module_list=()
+	local module_queue=("$@")
+
+	# Parses module dependencies.
+	local missing_module=false
+	while [[ ${#module_queue[@]} -gt 0 ]]; do
+		local module="${module_queue[0]}"
+		module_queue=("${module_queue[@]:1}")
+		if has "${module}" "${module_list[@]}"; then
+			continue
+		else
+			module_list+=("${module}")
+		fi
+
+		local module_depends=($(modinfo -F depends "${module}" | tr ',' ' '))
+		local depend
+		for depend in "${module_depends[@]}"; do
+			local module_depend_path=$(find "${module_root_path}" -name "${depend}.ko")
+			if [[ -z "${module_depend_path}" ]]; then
+				missing_module=true
+				eerror "Can't find ${depend}.ko in ${module_root_path}"
+				continue
+			fi
+			module_queue+=("${module_depend_path}")
+		done
+	done
+	${missing_module} && die "Some modules are missing, see messages above"
+
+	# Copies modules.
+	for module in "${module_list[@]}"; do
+		local module_install_path="${module#${SYSROOT}}"
+		local dst_path="${INITRAMFS_TMP_S}/${module_install_path}"
+		mkdir -p "${dst_path%/*}"
+		cp -p "${module}" "${dst_path}" ||
+			die "Can't copy ${module} to ${dst_path}"
+		einfo "Copied: ${module_install_path}"
+	done
+}
+
 # install a list of images (presumably .png files) in /etc/screens
 insimage() {
 	cp "$@" "${INITRAMFS_TMP_S}"/etc/screens || die
@@ -240,19 +282,18 @@ pull_netboot_ramfs_binary() {
 	cp "${FILESDIR}"/passwd "${INITRAMFS_TMP_S}/etc" || die
 	chmod 400 "${INITRAMFS_TMP_S}/etc/passwd"
 
-        # Create /var/empty as home directory for nobody user.
+	# Create /var/empty as home directory for nobody user.
 	mkdir -p "${INITRAMFS_TMP_S}/var/empty"
 
-	# USB Ethernet kernel module
-	USBNET_MOD_PATH=$(find "${SYSROOT}"/lib/modules/ -name usbnet.ko)
-	[ -n "$USBNET_MOD_PATH" ] || die
-	USBNET_DIR_PATH=$(dirname "${USBNET_MOD_PATH}")
-	USBNET_INSTALL_PATH="${USBNET_DIR_PATH#${SYSROOT}}"
-	mkdir -p "${INITRAMFS_TMP_S}/${USBNET_INSTALL_PATH}"
-	while read module ; do
-		cp -p "${module}" "${INITRAMFS_TMP_S}/${USBNET_INSTALL_PATH}/"
-		einfo "Copied: ${module#${SYSROOT}}"
-	done < <(find "${USBNET_DIR_PATH}" -name '*.ko')
+	# USB Ethernet kernel modules.
+	MODULE_ROOT_PATH="${SYSROOT}/lib/modules"
+	local module_path=$(find "${MODULE_ROOT_PATH}" -name "usbnet.ko" -printf "%h")
+	[[ -n "${module_path}" ]] || die "Can't find usbnet.ko"
+	local module_list=()
+	while read -d $'\0' -r module; do
+		module_list+=("${module}")
+	done < <(find "${module_path}" -name "*.ko" -print0)
+	idoko "${module_list[@]}"
 
 	# Generates lsb-factory
 	LSBDIR="mnt/stateful_partition/dev_image/etc"
