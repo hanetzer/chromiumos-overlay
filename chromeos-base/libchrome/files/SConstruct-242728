@@ -165,7 +165,7 @@ base_libs = [
                 """,
     'prefix' : 'dbus',
     'libs' : '',
-    'pc_libs' : 'dbus-1 protobuf',
+    'pc_libs' : 'dbus-1 protobuf-lite',
   },
 ]
 
