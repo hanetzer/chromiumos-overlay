@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="X"
+IUSE="+mmc X"
 
 RDEPEND="chromeos-base/chromeos-init
 	chromeos-base/modem-utilities
@@ -20,7 +20,7 @@ RDEPEND="chromeos-base/chromeos-init
 	media-libs/fontconfig
 	media-sound/alsa-utils
 	sys-apps/hdparm
-	sys-apps/mmc-utils
+	mmc? ( sys-apps/mmc-utils )
 	sys-apps/mosys
 	sys-apps/net-tools
 	sys-apps/pciutils
