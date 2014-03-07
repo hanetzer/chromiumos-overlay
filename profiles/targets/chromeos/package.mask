@@ -22,6 +22,9 @@
 # Custom patches
 >=sys-boot/syslinux-3.84
 
+# We want to pin to the libpng version Chromium itself is using on targets.
+>=media-libs/libpng-1.3
+
 # This is unloved by mesa, and should never be pulled into the targets.
 # It is actually for clang and ASAN that we want to have edge versions.
 # This should be kept in sync with package.keywords.
