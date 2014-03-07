@@ -77,7 +77,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/autox
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/shill-test-scripts
-	chromeos-base/ixchariot
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/platform2
