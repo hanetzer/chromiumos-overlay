@@ -17,7 +17,10 @@ SLOT="0"
 IUSE="em100-mode fwserial memmaps quiet-cb rmt"
 
 
-RDEPEND="!sys-boot/chromeos-coreboot"
+RDEPEND="
+	!sys-boot/chromeos-coreboot
+	virtual/coreboot-private-files
+	"
 
 # Dependency shared by x86 and amd64.
 DEPEND_X86="
@@ -38,8 +41,18 @@ DEPEND="x86? ($DEPEND_X86)
 cros-coreboot_pre_src_prepare() {
 	local board=$(get_current_board_with_variant)
 
-	if [[ -s "${FILESDIR}"/config ]]; then
-		# Attempt to get config from overlay first
+	local privdir="${SYSROOT}/firmware/coreboot-private"
+	local file
+	while read -d $'\0' -r file; do
+		rsync --recursive --links --executability --ignore-existing \
+		      "${file}" ./ || die
+	done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
+
+	if [[ -s config ]]; then
+		# First try to use a config from coreboot-private
+		cp -v config .config
+	elif [[ -s "${FILESDIR}"/config ]]; then
+		# Then attempt to get config from overlay
 		cp -v "${FILESDIR}"/config .config
 	elif [[ -s "configs/config.${board}" ]]; then
 		# Otherwise use config from coreboot tree
