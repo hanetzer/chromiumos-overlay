@@ -824,7 +824,6 @@ platform2_test_metrics() {
 	local tests=(
 		metrics_library_test
 		$(usex passive_metrics 'metrics_daemon_test' '')
-		counter_test
 		timer_test
 	)
 
