@@ -23,7 +23,7 @@ REQUIRED_USE="asan? ( clang )"
 LIBCHROME_VERS="242728"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
-	!<chromeos-base/chromeos-init-0.0.2-r674
+	!<chromeos-base/chromeos-init-0.0.14
 	chromeos-base/chromeos-minijail
 	chromeos-base/platform2
 	dev-libs/glib
@@ -83,9 +83,9 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins SessionManager.conf
 
+	# Adding init scripts
 	insinto /etc/init
-	doins login.conf logout.conf machine-info.conf ui.conf
-	doins ui-respawn.conf
+	doins init/*.conf
 
 	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
 	insinto /usr/$(get_libdir)/locale
