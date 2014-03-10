@@ -1,0 +1,75 @@
+From bfac0969e6f8856daf087a0cb765af472413607e Mon Sep 17 00:00:00 2001
+From: Ander Conselvan de Oliveira <conselvan2@gmail.com>
+Date: Fri, 27 Jul 2012 13:30:51 +0300
+Subject: [PATCH 3/8] libdrm: Fix bogus increment of a property set object
+ count
+
+If drmModePropertySetAdd() is called with the following property pairs
+it will mistakenly increase the object count:
+
+  (4, 1), (5,1), (4, 2).
+
+When adding the third pair, the new_obj variable would be set when prev
+points to (4, 1) since it disregarded the value of the previous item.
+
+This patch changes the logic so that the obj count is incresed only if
+both the previous and next items have differing object ids.
+
+Signed-off-by: Sean Paul <seanpaul@chromium.org>
+---
+ xf86drmMode.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/xf86drmMode.c b/xf86drmMode.c
+index b9464a5..3693031 100644
+--- a/xf86drmMode.c
++++ b/xf86drmMode.c
+@@ -1139,10 +1139,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
+ 
+ 	/* keep it sorted by object_id and property_id */
+ 	while (prev->next) {
+-		if (prev->next->object_id > object_id) {
+-			new_obj = true;
++		if (prev->next->object_id > object_id)
+ 			break;
+-		}
+ 
+ 		if (prev->next->object_id == object_id &&
+ 		    prev->next->property_id >= property_id)
+@@ -1151,8 +1149,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
+ 		prev = prev->next;
+ 	}
+ 
+-	if (!prev->next &&
+-	    (prev == &set->list || prev->object_id != object_id))
++	if ((prev == &set->list || prev->object_id != object_id) &&
++	    (!prev->next || prev->next->object_id != object_id))
+ 		new_obj = true;
+ 
+ 	/* replace or add? */
+@@ -1201,10 +1199,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
+ 
+ 	/* keep it sorted by object_id and property_id */
+ 	while (prev->next) {
+-		if (prev->next->object_id > object_id) {
+-			new_obj = true;
++		if (prev->next->object_id > object_id)
+ 			break;
+-		}
+ 
+ 		if (prev->next->object_id == object_id &&
+ 		    prev->next->property_id >= property_id)
+@@ -1213,8 +1209,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
+ 		prev = prev->next;
+ 	}
+ 
+-	if (!prev->next &&
+-	    (prev == &set->list || prev->object_id != object_id))
++	if ((prev == &set->list || prev->object_id != object_id) &&
++	    (!prev->next || prev->next->object_id != object_id))
+ 		new_obj = true;
+ 
+ 	/* replace or add? */
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

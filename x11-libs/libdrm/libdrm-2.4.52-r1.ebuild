@@ -25,7 +25,7 @@ for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
-IUSE="${IUSE_VIDEO_CARDS} libkms manpages"
+IUSE="${IUSE_VIDEO_CARDS} libkms manpages drm_atomic"
 REQUIRED_USE="video_cards_exynos? ( libkms )"
 RESTRICT="test" # see bug #236845
 
@@ -42,6 +42,9 @@ src_prepare() {
 		sed -ie 's/tests //' "${S}"/Makefile.am
 	fi
 	xorg-2_src_prepare
+	if use drm_atomic; then
+		epatch ${FILESDIR}/drm_atomic-*.patch
+	fi
 }
 
 src_configure() {

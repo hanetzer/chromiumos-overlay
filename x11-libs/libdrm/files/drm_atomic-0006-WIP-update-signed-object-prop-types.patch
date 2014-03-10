@@ -1,0 +1,83 @@
+From 8cce771d97d9746f9e52e1841a0ee470a1f6c098 Mon Sep 17 00:00:00 2001
+From: Rob Clark <robclark@freedesktop.org>
+Date: Sat, 12 Oct 2013 12:16:44 -0400
+Subject: [PATCH 6/8] WIP: update signed/object prop types
+
+Signed-off-by: Sean Paul <seanpaul@chromium.org>
+---
+ include/drm/drm_mode.h    | 12 ++++++++++++
+ tests/modetest/modetest.c | 17 +++++++++++++++--
+ 2 files changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/include/drm/drm_mode.h b/include/drm/drm_mode.h
+index 747eecc..fc8dd3b 100644
+--- a/include/drm/drm_mode.h
++++ b/include/drm/drm_mode.h
+@@ -238,6 +238,18 @@ struct drm_mode_get_connector {
+ #define DRM_MODE_PROP_ENUM	(1<<3) /* enumerated type with text strings */
+ #define DRM_MODE_PROP_BLOB	(1<<4)
+ #define DRM_MODE_PROP_BITMASK	(1<<5) /* bitmask of enumerated types */
++#define DRM_MODE_PROP_OBJECT	(1<<6) /* drm mode object */
++/* Properties that are not dynamic cannot safely be changed without a
++ * atomic-modeset / atomic-pageflip test step.  But if userspace is
++ * only changing dynamic properties, it is guaranteed that the change
++ * will not exceed hw limits, so no test step is required.
++ *
++ * Note that fb_id properties are a bit ambiguous.. they of course can
++ * be changed dynamically, assuming the pixel format does not change.
++ */
++#define DRM_MODE_PROP_DYNAMIC	(1<<24)
++/* Indicates that numeric property values are signed rather than unsigned: */
++#define DRM_MODE_PROP_SIGNED   (1<<25)
+ 
+ struct drm_mode_property_enum {
+ 	__u64 value;
+diff --git a/tests/modetest/modetest.c b/tests/modetest/modetest.c
+index e6d2ec8..e490da6 100644
+--- a/tests/modetest/modetest.c
++++ b/tests/modetest/modetest.c
+@@ -113,6 +113,10 @@ struct device {
+ };
+ 
+ #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
++static inline int64_t U642I64(uint64_t val)
++{
++	return (int64_t)*((int64_t *)&val);
++}
+ 
+ struct type_name {
+ 	int type;
+@@ -293,6 +297,8 @@ static void dump_prop(struct device *dev, drmModePropertyPtr prop,
+ 	printf("\t\tflags:");
+ 	if (prop->flags & DRM_MODE_PROP_PENDING)
+ 		printf(" pending");
++	if (prop->flags & DRM_MODE_PROP_SIGNED)
++		printf(" signed");
+ 	if (prop->flags & DRM_MODE_PROP_RANGE)
+ 		printf(" range");
+ 	if (prop->flags & DRM_MODE_PROP_IMMUTABLE)
+@@ -303,12 +309,19 @@ static void dump_prop(struct device *dev, drmModePropertyPtr prop,
+ 		printf(" bitmask");
+ 	if (prop->flags & DRM_MODE_PROP_BLOB)
+ 		printf(" blob");
++	if (prop->flags & DRM_MODE_PROP_OBJECT)
++		printf(" object");
+ 	printf("\n");
+ 
+ 	if (prop->flags & DRM_MODE_PROP_RANGE) {
+ 		printf("\t\tvalues:");
+-		for (i = 0; i < prop->count_values; i++)
+-			printf(" %"PRIu64, prop->values[i]);
++		if (prop->flags & DRM_MODE_PROP_SIGNED) {
++			for (i = 0; i < prop->count_values; i++)
++				printf(" %"PRId64, U642I64(prop->values[i]));
++		} else {
++			for (i = 0; i < prop->count_values; i++)
++				printf(" %"PRIu64, prop->values[i]);
++		}
+ 		printf("\n");
+ 	}
+ 
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

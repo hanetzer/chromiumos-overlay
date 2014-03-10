@@ -1,0 +1,33 @@
+From 935f9b96d636779a6ae956df57eff36e495668e9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>
+Date: Fri, 8 Jun 2012 13:28:16 +0300
+Subject: [PATCH 2/8] modetest: Print newline for empty blobs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Signed-off-by: Sean Paul <seanpaul@chromium.org>
+---
+ tests/modetest/modetest.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/tests/modetest/modetest.c b/tests/modetest/modetest.c
+index bc9c998..e6d2ec8 100644
+--- a/tests/modetest/modetest.c
++++ b/tests/modetest/modetest.c
+@@ -261,8 +261,10 @@ static void dump_blob(struct device *dev, uint32_t blob_id)
+ 	drmModePropertyBlobPtr blob;
+ 
+ 	blob = drmModeGetPropertyBlob(dev->fd, blob_id);
+-	if (!blob)
++	if (!blob) {
++		printf("\n");
+ 		return;
++	}
+ 
+ 	blob_data = blob->data;
+ 
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

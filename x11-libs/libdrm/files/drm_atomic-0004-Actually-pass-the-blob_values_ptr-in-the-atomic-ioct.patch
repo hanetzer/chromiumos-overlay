@@ -1,0 +1,26 @@
+From 7b5e02e0b0ffc218482da7783c13ac4b47e432d4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>
+Date: Mon, 1 Oct 2012 17:50:06 +0300
+Subject: [PATCH 4/8] Actually pass the blob_values_ptr in the atomic ioctl
+
+Signed-off-by: Sean Paul <seanpaul@chromium.org>
+---
+ xf86drmMode.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/xf86drmMode.c b/xf86drmMode.c
+index 3693031..92411c4 100644
+--- a/xf86drmMode.c
++++ b/xf86drmMode.c
+@@ -1349,6 +1349,8 @@ int drmModePropertySetCommit(int fd, uint32_t flags, drmModePropertySetPtr set)
+ 	atomic.count_props_ptr = VOID2U64(count_props_ptr);
+ 	atomic.props_ptr = VOID2U64(props_ptr);
+ 	atomic.prop_values_ptr = VOID2U64(prop_values_ptr);
++	atomic.blob_values_ptr = VOID2U64(blob_values_ptr);
++	atomic.user_data = VOID2U64(user_data);
+ 
+ 	ret = DRM_IOCTL(fd, DRM_IOCTL_MODE_ATOMIC, &atomic);
+ 
+-- 
+1.9.0.rc1.175.g0b1dcb5
+
