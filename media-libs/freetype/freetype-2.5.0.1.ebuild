@@ -4,7 +4,7 @@
 
 EAPI=5
 
-inherit autotools-multilib flag-o-matic multilib
+inherit autotools-multilib flag-o-matic multilib toolchain-funcs
 
 MY_PV="${PV%.*}"
 
@@ -102,7 +102,7 @@ src_prepare() {
 	autotools-utils_src_prepare
 }
 
-src_configure() {
+multilib_src_configure() {
 	append-flags -fno-strict-aliasing
 	type -P gmake &> /dev/null && export GNUMAKE=gmake
 
@@ -110,39 +110,42 @@ src_configure() {
 		--enable-biarch-config
 		$(use_with bzip2) \
 		$(use_with png)
+
+		# avoid using libpng-config
+		LIBPNG_CFLAGS="$($(tc-getPKG_CONFIG) --cflags libpng)"
+		LIBPNG_LDFLAGS="$($(tc-getPKG_CONFIG) --libs libpng)"
 	)
 
-	autotools-multilib_src_configure
+	autotools-utils_src_configure
 }
 
-src_compile() {
-	autotools-multilib_src_compile
+multilib_src_compile() {
+	default
 
-	if use utils; then
+	if multilib_build_binaries && use utils; then
 		einfo "Building utils"
 		# fix for Prefix, bug #339334
-		multilib_for_best_abi autotools-utils_src_compile \
+		emake \
 			X11_PATH="${EPREFIX}/usr/$(get_libdir)" \
 			FT2DEMOS=1 TOP_DIR_2="${WORKDIR}/ft2demos-${MY_PV}"
 	fi
 }
 
-src_install() {
-	autotools-multilib_src_install
+multilib_src_install() {
+	default
 
-	if use utils; then
-		install_utils() {
-			einfo "Installing utils"
-			rm "${WORKDIR}"/ft2demos-${MY_PV}/bin/README || die
-			local ft2demo
-			for ft2demo in ../ft2demos-${MY_PV}/bin/*; do
-				"${BUILD_DIR}"/libtool --mode=install $(type -P install) -m 755 "$ft2demo" \
-					"${ED}"/usr/bin || die
-			done
-		}
-		multilib_for_best_abi install_utils
+	if multilib_build_binaries && use utils; then
+		einfo "Installing utils"
+		rm "${WORKDIR}"/ft2demos-${MY_PV}/bin/README || die
+		local ft2demo
+		for ft2demo in ../ft2demos-${MY_PV}/bin/*; do
+			./libtool --mode=install $(type -P install) -m 755 "$ft2demo" \
+				"${ED}"/usr/bin || die
+		done
 	fi
+}
 
+multilib_src_install_all() {
 	if use fontforge; then
 		# Probably fontforge needs less but this way makes things simplier...
 		einfo "Installing internal headers required for fontforge"
@@ -156,4 +159,6 @@ src_install() {
 
 	dodoc docs/{CHANGES,CUSTOMIZE,DEBUG,*.txt,PROBLEMS,TODO}
 	use doc && dohtml -r docs/*
+
+	prune_libtool_files --all
 }
