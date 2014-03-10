@@ -2,20 +2,23 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/init"
-CROS_WORKON_LOCALNAME="init"
-
-inherit cros-workon
 
 DESCRIPTION="Install the upstart job that launches the openssh-server."
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="~*"
 
-RDEPEND="!chromeos-base/chromeos-dev-init"
+KEYWORDS="*"
+
+# depend on platform2 because openssh-server waits for shill to be started to
+# start.
+RDEPEND="
+	chromeos-base/platform2
+	"
+
+S=${WORKDIR}
 
 src_install() {
 	insinto /etc/init
-	doins openssh-server-init/*.conf
+	doins "${FILESDIR}"/init/*.conf
 }
