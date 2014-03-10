@@ -15,3 +15,7 @@
 
 # This pins Chrome to the version below by masking more recent versions.
 #>chromeos-base/chromeos-chrome-33.0.1709.3_rc-r1
+
+# TODO(jshin) : Make FreeType 2.5.0.1 until a local patch is applied.
+>=media-libs/freetype-2.5.0.1
+
