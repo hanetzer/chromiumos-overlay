@@ -60,6 +60,7 @@ ALL_BOARDS=(
 	dalmore
 	duck
 	#emeraldlake2
+	enguarde
 	falco
 	falco_li
 	fb1
