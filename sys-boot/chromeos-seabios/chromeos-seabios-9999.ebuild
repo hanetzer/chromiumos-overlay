@@ -22,7 +22,7 @@ DEPEND="
 
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
-CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
+CROS_FIRMWARE_ROOT="${SYSROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 
 create_seabios_cbfs() {
 	local oprom=${CROS_FIRMWARE_ROOT}/pci????,????.rom
@@ -60,14 +60,24 @@ create_seabios_cbfs() {
 			seek=$(( ${cbfs_size} - 2 )) bs=1 conv=notrunc
 }
 
-src_compile() {
-	export LD="$(tc-getLD).bfd"
-	export CC="$(tc-getCC) -fuse-ld=bfd"
+_emake() {
+	emake \
+		CROSS_PREFIX="${CHOST}-" \
+		LD="$(tc-getLD).bfd" \
+		CC="$(tc-getCC) -fuse-ld=bfd" \
+		"$@"
+}
+
+src_configure() {
+	local config="chromeos/default.config"
 	if use fwserial; then
-	    echo "CONFIG_DEBUG_SERIAL=y" >> chromeos/default.config
+	    echo "CONFIG_DEBUG_SERIAL=y" >> "${config}"
 	fi
-	emake defconfig KCONFIG_DEFCONFIG=chromeos/default.config
-	emake
+	_emake defconfig KCONFIG_DEFCONFIG="${config}"
+}
+
+src_compile() {
+	_emake
 	create_seabios_cbfs
 }
 
