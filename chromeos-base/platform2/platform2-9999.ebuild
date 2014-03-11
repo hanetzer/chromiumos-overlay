@@ -40,7 +40,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}/platform2"
 )
 
-inherit cros-board cros-debug cros-workon eutils multilib toolchain-funcs udev
+inherit cros-board cros-debug cros-workon eutils multilib toolchain-funcs udev user
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
@@ -956,6 +956,12 @@ platform2_test_wimax_manager() {
 #
 # These are the ebuild <-> Platform2 glue functions.
 #
+
+pkg_setup() {
+	enewuser "power"   # For power_manager
+	enewgroup "power"  # For power_manager
+	cros-workon_pkg_setup
+}
 
 src_unpack() {
 	# If we don't create the source directory when Platform2 is disabled

@@ -39,64 +39,21 @@ DEPEND=">=sys-apps/baselayout-2
 		!cros_embedded? (
 			app-shells/bash
 		)
+		cros_embedded? (
+			app-shells/dash
+		)
 		sys-libs/timezone-data
 	)"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}"
 
-# Remove entry from /etc/group
-#
-# $1 - Group name
-remove_group() {
-	[ -e "${ROOT}/etc/group" ] && sed -i -e /^${1}:.\*$/d "${ROOT}/etc/group"
-}
-
 # Adds a "daemon"-type user with no login or shell.
-copy_or_add_daemon_user() {
-	local username="$1"
-	local uid="$2"
-	if user_exists "${username}"; then
-		elog "Removing existing user '$1' for copy_or_add_daemon_user"
-		remove_user "${username}"
-	fi
-	copy_or_add_user "${username}" "*" $uid $uid "" /dev/null /bin/false
-
-	if group_exists "${username}"; then
-		elog "Removing existing group '$1' for copy_or_add_daemon_user"
-		elog "Any existing group memberships will be lost"
-		remove_group "${username}"
-	fi
-	copy_or_add_group "${username}" $uid
-}
-
-# Removes all users from a group in /etc/group.
-# No changes if the group does not exist.
-remove_all_users_from_group() {
-	local group="$1"
-	sed -i "/^${group}:/s/:[^:]*$/:/" "${ROOT}/etc/group"
-}
-
-# Removes a list of users from a group in /etc/group.
-# No changes if the group does not exist or the user is not in the group.
-remove_users_from_group() {
-	local group="$1"; shift
-	local username
-	for username in "$@"; do
-		sed -i -r "/^${group}:/{s/([,:])${username}(,|$)/\1/; s/,$//}" \
-			"${ROOT}/etc/group"
-	done
-}
-
-# Adds a list of users to a group in /etc/group.
-# No changes if the group does not exist.
-add_users_to_group() {
-	local group="$1"; shift
-	local username
-	remove_users_from_group "${group}" "$@"
-	for username in "$@"; do
-		sed -i "/^${group}:/{ s/$/,${username}/ ; s/:,/:/ }" "${ROOT}/etc/group"
-	done
+add_daemon_user() {
+       local username="$1"
+       local uid="$2"
+       enewuser "${username}" "${uid}"
+       enewgroup "${username}" "${uid}"
 }
 
 pkg_setup() {
@@ -106,6 +63,35 @@ pkg_setup() {
 		local etc_tz="${ROOT}etc/localtime"
 		[[ -L ${etc_tz} ]] || rm -f "${etc_tz}"
 	fi
+
+	# Standard system users/groups. Allow them to get default IDs.
+	add_daemon_user "root"
+	add_daemon_user "bin"
+	add_daemon_user "daemon"
+	enewgroup "sys"
+	add_daemon_user "adm"
+	enewgroup "tty"
+	enewgroup "disk"
+	add_daemon_user "lp"
+	enewuser "sync"
+	enewgroup "mem"
+	enewgroup "kmem"
+	enewgroup "wheel"
+	enewgroup "floppy"
+	add_daemon_user "news"
+	add_daemon_user "uucp"
+	enewgroup "console"
+	enewgroup "audio"
+	enewgroup "cdrom"
+	enewgroup "tape"
+	enewgroup "video"
+	enewgroup "cdrw"
+	enewgroup "usb"
+	enewgroup "users"
+	add_daemon_user "portage"
+	enewgroup "utmp"
+	enewgroup "nogroup"
+	add_daemon_user "nobody"
 }
 
 src_install() {
@@ -135,6 +121,11 @@ src_install() {
 
 		# We want dash as our main shell.
 		dosym dash /bin/sh
+
+		# Ensure /etc/shadow exists in the target with correct perms.
+		# http://bugs.gentoo.org/260993
+		touch "${D}/etc/shadow" || die
+		chmod 0600 "${D}/etc/shadow" || die
 
 		# Avoid the wrapper and just link to the only editor we have.
 		dodir /usr/libexec
@@ -172,23 +163,16 @@ src_install() {
 }
 
 pkg_postinst() {
-	local x group_lock passwd_lock
-	# This is temporary until we complete http://crbug.com/343369
-	group_lock=$(readlink -e "${ROOT}/etc/group").lock
-	passwd_lock=$(readlink -e "${ROOT}/etc/passwd").lock
-	_portable_grab_lock "${group_lock}"
-	_portable_grab_lock "${passwd_lock}"
-
 	# We explicitly add all of the users needed in the system here. The
 	# build of Chromium OS uses a single build chroot environment to build
-	# for various targets with distinct ${ROOT}. This causes two problems:
-	#   1. The target rootfs needs to have the same UIDs as the build
-	#      chroot so that chmod operations work.
-	#   2. The portage tools to add a new user in an ebuild don't work when
-	#      $ROOT != /
-	# We solve this by having baselayout install in both the build and
+	# for various targets with distinct ${ROOT}. This means that
+	# the target rootfs needs to have the same UIDs as the build
+	# chroot so that chmod operations work.
+	#
+	# We solve this by having this package install in both the build and
 	# target and pre-create all needed users. In order to support existing
 	# build roots we copy over the user entries if they already exist.
+
 	local system_user="chronos"
 	local system_id="1000"
 	local system_home="/home/${system_user}/user"
@@ -201,139 +185,67 @@ pkg_postinst() {
 	local crypted_password='*'
 	[ -r "${SHARED_USER_PASSWD_FILE}" ] &&
 		crypted_password=$(cat "${SHARED_USER_PASSWD_FILE}")
-	remove_user "${system_user}"
-	add_user "${system_user}" "x" "${system_id}" \
-		"${system_id}" "system_user" "${system_home}" /bin/bash
+
 	remove_shadow "${system_user}"
 	add_shadow "${system_user}" "${crypted_password}"
 
-	copy_or_add_group "${system_user}" "${system_id}"
-	copy_or_add_daemon_user "${system_access_user}" "${system_access_id}"
-	copy_or_add_daemon_user "messagebus" 201  # For dbus
-	copy_or_add_daemon_user "syslog" 202      # For rsyslog
-	copy_or_add_daemon_user "ntp" 203
-	copy_or_add_daemon_user "sshd" 204
-	copy_or_add_daemon_user "polkituser" 206  # For policykit
-	copy_or_add_daemon_user "tss" 207         # For trousers (TSS/TPM)
-	copy_or_add_daemon_user "pkcs11" 208      # For pkcs11 clients
-	copy_or_add_daemon_user "qdlservice" 209  # for QDLService
-	copy_or_add_daemon_user "cromo" 210       # For cromo (modem manager)
-#	copy_or_add_daemon_user "cashew" 211      # Deprecated, do not reuse
-	copy_or_add_daemon_user "ipsec" 212       # For strongswan/ipsec VPN
-	copy_or_add_daemon_user "cros-disks" 213  # For cros-disks
-	copy_or_add_daemon_user "tor" 214         # For tor (anonymity service)
-	copy_or_add_daemon_user "tcpdump" 215     # For tcpdump --with-user
-	copy_or_add_daemon_user "debugd" 216      # For debugd
-	copy_or_add_daemon_user "openvpn" 217     # For openvpn
-	copy_or_add_daemon_user "bluetooth" 218   # For bluez
-	copy_or_add_daemon_user "wpa" 219         # For wpa_supplicant
-	copy_or_add_daemon_user "cras" 220        # For cras (audio)
-#	copy_or_add_daemon_user "gavd" 221        # For gavd (audio) (deprecated)
-	copy_or_add_daemon_user "input" 222       # For /dev/input/event access
-	copy_or_add_daemon_user "chaps" 223       # For chaps (pkcs11)
-	copy_or_add_daemon_user "dhcp" 224        # For dhcpcd (DHCP client)
-	copy_or_add_daemon_user "tpmd" 225        # For tpmd
-	copy_or_add_daemon_user "mtp" 226         # For libmtp
-	copy_or_add_daemon_user "proxystate" 227  # For proxy monitoring
-	copy_or_add_daemon_user "power" 228       # For powerd
-	copy_or_add_daemon_user "watchdog" 229    # For daisydog
-	copy_or_add_daemon_user "devbroker" 230   # For permission_broker
-	copy_or_add_daemon_user "xorg" 231        # For Xorg
-	copy_or_add_daemon_user "nfqueue" 232     # For netfilter-queue
-	copy_or_add_daemon_user "tlsdate-dbus" 233 # For tlsdate-dbus-announce
-	copy_or_add_daemon_user "tlsdate" 234
-	copy_or_add_daemon_user "debugd-logs" 235 # For debugd's unprivileged logs
-	copy_or_add_daemon_user "debugfs-access" 236 # Access to debugfs
-	copy_or_add_daemon_user "shill-crypto" 237 # For shill's crypto-util
-	copy_or_add_daemon_user "avahi" 238       # For avahi-daemon
-	copy_or_add_daemon_user "p2p" 239         # For p2p
-	copy_or_add_daemon_user "brltty" 240      # For braille displays
-	copy_or_add_daemon_user "modem" 241       # For modem manager
+	enewgroup "${system_user}" "${system_id}"
+	add_daemon_user "${system_user}"
+	add_daemon_user "${system_access_user}" "${system_access_id}"
+	add_daemon_user "messagebus" 201     # For dbus
+	add_daemon_user "syslog" 202         # For rsyslog
+	add_daemon_user "ntp" 203
+	add_daemon_user "sshd" 204
+	add_daemon_user "polkituser" 206     # For policykit
+	add_daemon_user "tss" 207            # For trousers (TSS/TPM)
+	add_daemon_user "pkcs11" 208         # For pkcs11 clients
+	add_daemon_user "qdlservice" 209     # For QDLService
+	add_daemon_user "cromo" 210          # For cromo (modem manager)
+#	add_daemon_user "cashew" 211         # Deprecated, do not reuse
+	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
+	add_daemon_user "cros-disks" 213     # For cros-disks
+	add_daemon_user "tor" 214            # For tor (anonymity service)
+	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
+	add_daemon_user "debugd" 216         # For debugd
+	add_daemon_user "openvpn" 217        # For openvpn
+	add_daemon_user "bluetooth" 218      # For bluez
+	add_daemon_user "wpa" 219            # For wpa_supplicant
+	add_daemon_user "cras" 220           # For cras (audio)
+#	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
+	add_daemon_user "input" 222          # For /dev/input/event access
+	add_daemon_user "chaps" 223          # For chaps (pkcs11)
+	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
+	add_daemon_user "tpmd" 225           # For tpmd
+	add_daemon_user "mtp" 226            # For libmtp
+	add_daemon_user "proxystate" 227     # For proxy monitoring
+#	add_daemon_user "power" 228          # For powerd. In platform2.
+	add_daemon_user "watchdog" 229       # For daisydog
+	add_daemon_user "devbroker" 230      # For permission_broker
+	add_daemon_user "xorg" 231           # For Xorg
+	add_daemon_user "nfqueue" 232        # For netfilter-queue
+	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
+	add_daemon_user "tlsdate" 234
+	add_daemon_user "debugd-logs" 235    # For debugd's unprivileged logs
+	add_daemon_user "debugfs-access" 236 # Access to debugfs
+	add_daemon_user "shill-crypto" 237   # For shill's crypto-util
+	add_daemon_user "avahi" 238          # For avahi-daemon
+	add_daemon_user "p2p" 239            # For p2p
+	add_daemon_user "brltty" 240         # For braille displays
+	add_daemon_user "modem" 241          # For modem manager
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
-	copy_or_add_daemon_user "ntfs-3g" 300     # For ntfs-3g prcoess
-	copy_or_add_daemon_user "avfs" 301        # For avfs process
-	copy_or_add_daemon_user "fuse-exfat" 302  # For exfat-fuse prcoess
+	add_daemon_user "ntfs-3g" 300        # For ntfs-3g prcoess
+	add_daemon_user "avfs" 301           # For avfs process
+	add_daemon_user "fuse-exfat" 302     # For exfat-fuse prcoess
 
 	# Group that is allowed to create directories under /home/root/<hash>.
-	copy_or_add_group "daemon-store" 400
-	copy_or_add_group "logs-access" 401
+	enewgroup "daemon-store" 400
+	enewgroup "logs-access" 401
+	enewgroup "serial" 402        # For owning access to serial devices.
 
-	# All audio interfacing will go through the audio server.
-	add_users_to_group audio "cras"
-	add_users_to_group input "cras"           # For /dev/input/event* access
-
-	# The system user is part of the audio server group to play sounds.  The
-	# power manager user needs to check whether audio is playing.
-	add_users_to_group cras "${system_user}" power
-
-	# The system_user needs to be part of the audio and video groups.
-	add_users_to_group audio "${system_user}"
-	add_users_to_group video "${system_user}"
-
-	# The Xorg user needs to be part of the input, video and tty groups.
-	add_users_to_group input "xorg"
-	add_users_to_group video "xorg"
-	add_users_to_group tty "xorg"
-
-	# Users which require access to PKCS #11 cryptographic services must be
-	# in the pkcs11 group.
-	remove_all_users_from_group pkcs11
-	add_users_to_group pkcs11 root ipsec "${system_user}" chaps wpa
-
-	# All users accessing opencryptoki database files and all users for
-	# sandboxing FUSE-based filesystem daemons need to be in the
-	# ${system_access_user} group.
-	remove_all_users_from_group "${system_access_user}"
-	add_users_to_group "${system_access_user}" root ipsec "${system_user}" \
-		ntfs-3g avfs fuse-exfat chaps
-
-	# Dedicated group for owning access to serial devices.
-	copy_or_add_group "serial" 402
-	add_users_to_group "serial" "${system_user}"
-	add_users_to_group "serial" "uucp"
-
-	# debugd-logs has logs access
-	add_users_to_group "logs-access" "debugd-logs"
-
-	# The root user must be in the wpa group for wpa_cli.
-	add_users_to_group wpa root
-
-	# Restrict tcsd access to root and chaps.
-	add_users_to_group tss root chaps
-
-	# Add mtp user to usb group for USB device access.
-	add_users_to_group usb mtp
-
-	# Create a group for device access via permission_broker
-	copy_or_add_group "devbroker-access" 403
-	add_users_to_group devbroker-access "${system_user}"
-
-	# Give the power manager access to I2C devices so it can adjust external
-	# displays' brightness via DDC.
-	copy_or_add_group i2c 404
-	add_users_to_group i2c power
-
-	# Give the power manager access to /dev/tty* so it can disable VT switching
-	# before suspending the system.
-	add_users_to_group tty power
-
-	# The power manager needs to read from /dev/input/event* to observe power
-	# button and lid events.
-	add_users_to_group input power
-
-	# Chaps needs access to the daemon-store.
-	add_users_to_group "daemon-store" chaps
-
-	# brltty needs access to usb and tty devices.
-	add_users_to_group usb brltty
-	add_users_to_group tty brltty
-
-	# The system_user needs to access braille displays.
-	add_users_to_group brltty ${system_user}
-
-	rm "${group_lock}" || die "Failed to release lock on ${group_lock}"
-	rm "${passwd_lock}"  || die "Failed to release lock on ${passwd_lock}"
+	# Create a group for device access via permission_broker.
+	enewgroup "devbroker-access" 403
+	enewgroup "i2c" 404           # For I2C device node access.
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
