@@ -119,6 +119,7 @@ ALL_BOARDS=(
 	stumpy
 	stumpy_moblab
 	stumpy_pico
+	swanky
 	tails
 	#tegra2
 	#tegra2_aebl
