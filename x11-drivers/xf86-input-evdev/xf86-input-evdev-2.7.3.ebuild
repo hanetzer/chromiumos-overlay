@@ -31,4 +31,6 @@ PATCHES=(
 	"${FILESDIR}"/evdev-2.7.3-Filer-touch-noise.patch
 	"${FILESDIR}"/evdev-2.7.3-wheel_emu_when_no_real_wheel.patch
 	"${FILESDIR}"/evdev-2.7.3-limit_num_slots.patch
+        # crbug.com/343983
+	"${FILESDIR}"/evdev-2.7.3-add-property-Enable-Debug-Log.patch
 )

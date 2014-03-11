@@ -1,0 +1,130 @@
+From 5fd553cf1843111dcb2236db3d2c3a05a78bd5b0 Mon Sep 17 00:00:00 2001
+From: Yufeng Shen <miletus@chromium.org>
+Date: Mon, 10 Mar 2014 17:53:55 -0400
+Subject: [PATCH] Add property "Enable Debug Log" for turning on/off collecting
+ touch event log
+
+---
+ src/debug.c | 43 +++++++++++++++++++++++++++++++++++++++++++
+ src/evdev.c |  5 +++--
+ src/evdev.h |  1 +
+ 3 files changed, 47 insertions(+), 2 deletions(-)
+
+diff --git a/src/debug.c b/src/debug.c
+index 7857a0b..1cf1ae5 100644
+--- a/src/debug.c
++++ b/src/debug.c
+@@ -21,11 +21,13 @@
+ 
+ #define XI_PROP_BLOCK_READ_INPUT "Block Event Reading"
+ #define XI_PROP_DUMP_DEBUG_LOG "Dump Debug Log"
++#define XI_PROP_ENABLE_DEBUG_LOG "Enable Debug Log"
+ 
+ #define INPUT_EVENTS_LOG_FILE "/var/log/xorg/evdev_input_events.dat"
+ 
+ static Atom block_read_prop;
+ static Atom dump_debug_log_prop;
++static Atom enable_debug_log_prop;
+ 
+ static void
+ EvdevDumpLog(InputInfoPtr pInfo) {
+@@ -107,6 +109,36 @@ EvdevDebugSetProperty(DeviceIntPtr dev, Atom atom,
+     return Success;
+ }
+ 
++static int
++EvdevEnableDebugGetProperty(DeviceIntPtr dev, Atom property)
++{
++    return Success;
++}
++
++static int
++EvdevEnableDebugSetProperty(DeviceIntPtr dev, Atom atom,
++                            XIPropertyValuePtr val, BOOL checkonly)
++{
++    InputInfoPtr pInfo = dev->public.devicePrivate;
++    EvdevPtr pEvdev = pInfo->private;
++    CARD32 data;
++
++    if (atom == enable_debug_log_prop) {
++        if (val->type != XA_INTEGER || val->format != 32 || val->size != 1)
++            return BadMatch;
++
++        data = *(CARD32 *)val->data;
++
++        if (data != 1 && data != 0)
++            return BadValue;
++
++        if (!checkonly)
++          pEvdev->debug_log_enabled = (data == 1);
++    }
++
++    return Success;
++}
++
+ void
+ EvdevDebugFreeBuffer(EvdevPtr pEvdev)
+ {
+@@ -122,6 +154,7 @@ EvdevDebugAllocateBuffer(EvdevPtr pEvdev)
+     if (pEvdev->flags & EVDEV_TOUCHSCREEN) {
+         pEvdev->debug_buf = (struct debug_event *)
+             malloc(sizeof(struct debug_event) * DEBUG_BUF_SIZE);
++        pEvdev->debug_log_enabled = TRUE;
+     } else {
+         pEvdev->debug_buf = NULL;
+     }
+@@ -146,6 +179,16 @@ EvdevDebugInitProperty(DeviceIntPtr dev)
+     XISetDevicePropertyDeletable(dev, dump_debug_log_prop, FALSE);
+     XIRegisterPropertyHandler(dev, EvdevDebugSetProperty,
+         EvdevDebugGetProperty, NULL);
++
++    enable_debug_log_prop = MakeAtom(XI_PROP_ENABLE_DEBUG_LOG,
++        strlen(XI_PROP_ENABLE_DEBUG_LOG), TRUE);
++    CARD32 prop_enable_debug_log_init = 1;
++    XIChangeDeviceProperty(dev, enable_debug_log_prop, XA_INTEGER,
++        /* format */ 32, PropModeReplace, /* size */ 1,
++        &prop_enable_debug_log_init, FALSE);
++    XISetDevicePropertyDeletable(dev, enable_debug_log_prop, FALSE);
++    XIRegisterPropertyHandler(dev, EvdevEnableDebugSetProperty,
++        EvdevEnableDebugGetProperty, NULL);
+ }
+ 
+ static int
+diff --git a/src/evdev.c b/src/evdev.c
+index 1e3de89..f3cb870 100755
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -1167,7 +1167,7 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
+                     pEvdev->axis_map[ABS_MT_PRESSURE], pEvdev->absinfo[ABS_MT_PRESSURE].maximum);
+ 
+                 /* Log the fact that we're canceling a touch. */
+-                if (pEvdev->debug_buf) {
++                if (pEvdev->debug_buf && pEvdev->debug_log_enabled) {
+                     pEvdev->debug_buf[pEvdev->debug_buf_tail].canceled_id =
+                         pEvdev->last_valid_tracking_ids[
+                             pEvdev->queue[i].detail.touch];
+@@ -1262,7 +1262,8 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
+     }
+ 
+     // Add touch events to the debug log. Keypresses are not included.
+-    if (pEvdev->debug_buf && (ev->type == EV_ABS || ev->type == EV_SYN ||
++    if (pEvdev->debug_log_enabled && pEvdev->debug_buf &&
++        (ev->type == EV_ABS || ev->type == EV_SYN ||
+         (ev->type == EV_KEY && ev->code == BTN_TOUCH))) {
+       pEvdev->debug_buf[pEvdev->debug_buf_tail].ev = *ev;
+       pEvdev->debug_buf[pEvdev->debug_buf_tail].slot = pEvdev->cur_slot;
+diff --git a/src/evdev.h b/src/evdev.h
+index d744ed5..be2c572 100644
+--- a/src/evdev.h
++++ b/src/evdev.h
+@@ -287,6 +287,7 @@ typedef struct {
+       int slot;  // if slot is SLOT_CANCELED, cancelled_id has the tracking ID
+     } *debug_buf;
+     size_t debug_buf_tail;
++    BOOL debug_log_enabled;
+ 
+     enum fkeymode           fkeymode;
+ 
+-- 
+1.9.0.279.gdc9e3eb
+
