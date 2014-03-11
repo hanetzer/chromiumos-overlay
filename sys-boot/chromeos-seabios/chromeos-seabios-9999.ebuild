@@ -16,8 +16,8 @@ IUSE="fwserial"
 
 RDEPEND=""
 DEPEND="
-	       sys-apps/coreboot-utils
-	       sys-boot/coreboot
+	sys-apps/coreboot-utils
+	sys-boot/coreboot
 "
 
 # Directory where the generated files are looked for and placed.
@@ -25,29 +25,29 @@ CROS_FIRMWARE_IMAGE_DIR="/firmware"
 CROS_FIRMWARE_ROOT="${SYSROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 
 create_seabios_cbfs() {
-	local oprom=${CROS_FIRMWARE_ROOT}/pci????,????.rom
+	local oprom=$(echo "${CROS_FIRMWARE_ROOT}"/pci????,????.rom)
 	local seabios_cbfs=seabios.cbfs
-	local cbfs_size=$(( 2*1024*1024 ))
-	local bootblock=$( mktemp )
+	local cbfs_size=$(( 2 * 1024 * 1024 ))
+	local bootblock="${T}/bootblock"
+
+	_cbfstool() { set -- cbfstool "$@"; echo "$@"; "$@" || die "'$*' failed"; }
 
 	# Create a dummy bootblock to make cbfstool happy
-	dd if=/dev/zero of=$bootblock count=1 bs=64
+	truncate -s 64 "${bootblock}"
 	# Create empty CBFS
-	cbfstool ${seabios_cbfs} create -s ${cbfs_size} -B $bootblock -m x86
-	# Clean up
-	rm $bootblock
+	_cbfstool ${seabios_cbfs} create -s ${cbfs_size} -B "${bootblock}" -m x86
 	# Add SeaBIOS binary to CBFS
-	cbfstool ${seabios_cbfs} add-payload -f out/bios.bin.elf -n payload -c lzma
+	_cbfstool ${seabios_cbfs} add-payload -f out/bios.bin.elf -n payload -c lzma
 	# Add VGA option rom to CBFS
-	cbfstool ${seabios_cbfs} add -f $oprom -n $( basename $oprom ) -t optionrom
+	_cbfstool ${seabios_cbfs} add -f "${oprom}" -n $(basename "${oprom}") -t optionrom
 	# Add additional configuration
-	cbfstool ${seabios_cbfs} add -f chromeos/links -n links -t raw
-	cbfstool ${seabios_cbfs} add -f chromeos/bootorder -n bootorder -t raw
-	cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-key -n etc/boot-menu-key -t raw
-	cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-message -n etc/boot-menu-message -t raw
-	cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-wait -n etc/boot-menu-wait -t raw
+	_cbfstool ${seabios_cbfs} add -f chromeos/links -n links -t raw
+	_cbfstool ${seabios_cbfs} add -f chromeos/bootorder -n bootorder -t raw
+	_cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-key -n etc/boot-menu-key -t raw
+	_cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-message -n etc/boot-menu-message -t raw
+	_cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-wait -n etc/boot-menu-wait -t raw
 	# Print CBFS inventory
-	cbfstool ${seabios_cbfs} print
+	_cbfstool ${seabios_cbfs} print
 	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
 	# image are a pointer to the CBFS master header. Per default a CBFS
 	# lives at 4G - rom size, and the CBFS master header ends up at
@@ -56,8 +56,8 @@ create_seabios_cbfs() {
 	# below correct the according byte in that pointer to make all CBFS
 	# parsing code happy. In the long run we should fix cbfstool and
 	# remove this workaround.
-	/bin/echo -ne \\0737 | dd of=${seabios_cbfs} \
-			seek=$(( ${cbfs_size} - 2 )) bs=1 conv=notrunc
+	echo -ne \\0737 | dd of=${seabios_cbfs} \
+			seek=$(( cbfs_size - 2 )) bs=1 conv=notrunc
 }
 
 _emake() {
