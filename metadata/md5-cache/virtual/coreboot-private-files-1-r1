@@ -1,0 +1,7 @@
+DEFINED_PHASES=-
+DESCRIPTION=Coreboot private files virtual package
+EAPI=4
+KEYWORDS=*
+RDEPEND=sys-boot/coreboot-private-files-null
+SLOT=0
+_md5_=3c899bceba56a7b269a252d19ce89ce8
