@@ -9,7 +9,7 @@ inherit flag-o-matic toolchain-funcs cros-workon
 
 DESCRIPTION="Utility for obtaining various bits of low-level system info"
 HOMEPAGE="http://mosys.googlecode.com/"
-LICENSE="GPL-2"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="static"
