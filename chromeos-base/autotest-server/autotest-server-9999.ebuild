@@ -33,6 +33,7 @@ src_prepare() {
 	# Compile the frontend elements.
 	"${AUTOTEST_WORK}"/utils/compile_gwt_clients.py -a -e"-Djava.util.prefs.userRoot=/tmp"
 
+
 	# Remove the shadow_config.ini file.
 	rm "${AUTOTEST_WORK}"/shadow_config.ini
 }
