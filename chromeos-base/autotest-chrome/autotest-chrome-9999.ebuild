@@ -54,6 +54,7 @@ IUSE_TESTS=(
 	+tests_network_ChromeCellularNetworkProperties
 	+tests_network_ChromeCellularSmokeTest
 	+tests_network_ChromeWifiConfigure
+	+tests_network_ChromeWifiTDLS
 	+tests_security_BundledExtensionsTelemetry
 	+tests_security_ProfilePermissionsTelemetry
 	+tests_security_SandboxStatusTelemetry
