@@ -17,7 +17,6 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="app-admin/sudo
-	chromeos-base/salsa
 	chromeos-base/vboot_reference
 	chromeos-base/workarounds
 	net-misc/iputils
