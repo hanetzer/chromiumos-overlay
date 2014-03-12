@@ -5,6 +5,7 @@
 EAPI=1
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
+NEXT_GCC="gcc.gnu.org/branches/google/gcc-4_9-mobile"
 
 inherit eutils cros-workon binutils-funcs
 
@@ -60,7 +61,8 @@ fi
 RESTRICT="mirror strip"
 
 IUSE="gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot
-      nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache"
+      nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
+      next_gcc"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -89,8 +91,11 @@ src_unpack() {
 		GCC_TARBALL=${GCC_MIRROR}/${P}/${P}.tar.bz2
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
-	elif use git_gcc ; then
+	elif use git_gcc || use next_gcc ; then
 		git clone "${CROS_WORKON_REPO}/${CROS_WORKON_PROJECT}.git" "${S}"
+		if use next_gcc ; then
+		    GCC_GITHASH=${NEXT_GCC}
+		fi
 		if [[ -n ${GCC_GITHASH} ]] ; then
 			einfo "Checking out: ${GCC_GITHASH}"
 			pushd "$(get_gcc_dir)" >/dev/null
