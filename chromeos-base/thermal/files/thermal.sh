@@ -50,7 +50,7 @@ if [[ "${PLATFORM}" == "Pit" ]]; then
   cpu_tpath="/sys/class/thermal/thermal_zone[0-4]"
 
 elif [[ "${PLATFORM}" == "Pi" ]]; then
-  EXYNOS5_CPU_FREQ=(2100000 1500000 1400000 1200000 1100000 900000 800000
+  EXYNOS5_CPU_FREQ=(2000000 1500000 1400000 1200000 1100000 900000 800000
       750000 300000)
   # Ares2 has also 5 tmu sensors for cpu and gpu
   cpu_tpath="/sys/class/thermal/thermal_zone[0-4]"
