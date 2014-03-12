@@ -4,21 +4,22 @@
 EAPI="4"
 inherit eutils
 
-DESCRIPTION="The Chinese Cangjie input engine for IME extension API."
+DESCRIPTION="The Chinese Cangjie input engine for IME extension API"
 HOMEPAGE="https://code.google.com/p/google-input-tools/"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
+
 S="${WORKDIR}/${PN}"
 
 src_prepare() {
-  epatch "${FILESDIR}"/${P}-insert-public-key.patch
-  epatch "${FILESDIR}"/${P}-fix-permission.patch
+	epatch "${FILESDIR}"/${P}-insert-public-key.patch
+	epatch "${FILESDIR}"/${P}-fix-permission.patch
 }
 
 src_install() {
-  insinto /usr/share/chromeos-assets/input_methods/cangjie
-  doins -r *
+	insinto /usr/share/chromeos-assets/input_methods/cangjie
+	doins -r *
 }

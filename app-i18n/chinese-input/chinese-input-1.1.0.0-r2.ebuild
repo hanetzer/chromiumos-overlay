@@ -11,10 +11,15 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="internal"
 
-RDEPEND="internal? ( app-i18n/GoogleChineseInput-pinyin )
-         internal? ( app-i18n/GoogleChineseInput-zhuyin )
-         internal? ( app-i18n/GoogleChineseInput-cangjie )
-         !internal? ( app-i18n/chromeos-cangjie )
-         !internal? ( app-i18n/chromeos-pinyin )
-         !internal? ( app-i18n/chromeos-zhuyin )"
+RDEPEND="
+	internal? (
+		app-i18n/GoogleChineseInput-cangjie
+		app-i18n/GoogleChineseInput-pinyin
+		app-i18n/GoogleChineseInput-zhuyin
+	)
+	!internal? (
+		app-i18n/chromeos-cangjie
+		app-i18n/chromeos-pinyin
+		app-i18n/chromeos-zhuyin
+	)"
 DEPEND="${RDEPEND}"
