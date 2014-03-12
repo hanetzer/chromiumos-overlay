@@ -13,7 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="sys-apps/util-linux
+RDEPEND="
+	!<chromeos-base/chromeos-init-0.0.12
+	sys-apps/util-linux
 	>=sys-fs/e2fsprogs-1.41
 	sys-libs/libnih"
 
@@ -33,4 +35,8 @@ src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 	rm -r "${D}/etc/init"
 	keepdir /var/lib/ureadahead
+
+	# install init script
+	insinto /etc/init
+	doins "${FILESDIR}"/init/*.conf
 }
