@@ -20,8 +20,8 @@ IUSE="${IUSE} depthcharge unified_depthcharge spring"
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
 COREBOOT_DEPEND="
-	virtual/chromeos-coreboot
 	sys-apps/coreboot-utils
+	sys-boot/coreboot
 "
 X86_DEPEND="
 	${COREBOOT_DEPEND}

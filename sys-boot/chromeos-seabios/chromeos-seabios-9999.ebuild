@@ -16,8 +16,8 @@ IUSE="fwserial"
 
 RDEPEND=""
 DEPEND="
-	       virtual/chromeos-coreboot
 	       sys-apps/coreboot-utils
+	       sys-boot/coreboot
 "
 
 # Directory where the generated files are looked for and placed.

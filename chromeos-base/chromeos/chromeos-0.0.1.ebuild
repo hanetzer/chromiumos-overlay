@@ -92,11 +92,11 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-installer
 	chromeos-base/platform2
 	chromeos-base/update_engine
-	coreboot? ( virtual/chromeos-coreboot )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )
 	pam? ( sys-auth/pam_pwdfile )
+	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
 	virtual/chromeos-bsp
 	virtual/chromeos-firewall

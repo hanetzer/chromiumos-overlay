@@ -1,24 +1,32 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-# @ECLASS: cros-coreboot.eclass
-# @MAINTAINER:
-# The Chromium OS Authors
-# @BLURB: Unifies logic for building coreboot images for Chromium OS.
+EAPI=4
+CROS_WORKON_PROJECT=("chromiumos/third_party/coreboot" "chromiumos/platform/vboot_reference" "chromiumos/third_party/coreboot/blobs")
+CROS_WORKON_LOCALNAME=("coreboot" "../platform/vboot_reference" "coreboot/3rdparty")
+CROS_WORKON_DESTDIR=("${S}" "${S}/vboot_reference" "${S}/3rdparty")
 
-[[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
-
-inherit cros-board toolchain-funcs
+inherit cros-board cros-workon toolchain-funcs
 
 DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="em100-mode fwserial memmaps quiet-cb rmt"
+KEYWORDS="~*"
+IUSE="em100-mode fwserial memmaps quiet-cb rmt vmx"
 
+PER_BOARD_BOARDS=(
+	bayleybay beltino bolt butterfly falco fox link lumpy panther parrot
+	peppy rambi samus slippy stout stout32 stumpy variant-peach-pit
+	daisy gizmo nyan
+)
+
+DEPEND_BLOCKERS="${PER_BOARD_BOARDS[@]/#/!sys-boot/chromeos-coreboot-}"
 
 RDEPEND="
-	!sys-boot/chromeos-coreboot
+	chromeos-base/vboot_reference
+	${DEPEND_BLOCKERS}
+	!virtual/chromeos-coreboot
 	virtual/coreboot-private-files
 	"
 
@@ -33,12 +41,14 @@ DEPEND_ARM="
 	sys-apps/coreboot-utils
 	"
 
-DEPEND="x86? ($DEPEND_X86)
+DEPEND="
+	${DEPEND_BLOCKERS}
+	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	arm? ($DEPEND_ARM)
 	"
 
-cros-coreboot_pre_src_prepare() {
+src_prepare() {
 	local board=$(get_current_board_with_variant)
 
 	local privdir="${SYSROOT}/firmware/coreboot-private"
@@ -51,9 +61,6 @@ cros-coreboot_pre_src_prepare() {
 	if [[ -s config ]]; then
 		# First try to use a config from coreboot-private
 		cp -v config .config
-	elif [[ -s "${FILESDIR}"/config ]]; then
-		# Then attempt to get config from overlay
-		cp -v "${FILESDIR}"/config .config
 	elif [[ -s "configs/config.${board}" ]]; then
 		# Otherwise use config from coreboot tree
 		cp -v "configs/config.${board}" .config
@@ -66,13 +73,13 @@ cros-coreboot_pre_src_prepare() {
 		elog "   - enabling firmware serial console"
 		cat "configs/fwserial.${board}" >> .config || die
 	fi
-
-	if [[ -d "${FILESDIR}"/3rdparty ]]; then
-		cp -pPR "${FILESDIR}"/3rdparty ./ || die
+	if use vmx; then
+		elog "   - enabling VMX"
+		echo "CONFIG_ENABLE_VMX=y" >> .config
 	fi
 }
 
-cros-coreboot_src_compile() {
+src_compile() {
 	tc-export CC
 
 	# Set KERNELREVISION (really coreboot revision) to the ebuild revision
@@ -127,7 +134,7 @@ EOF
 	CROSS_COMPILE="${CHOST}-" emake
 }
 
-cros-coreboot_src_install() {
+src_install() {
 	local mapfile
 	local board=$(get_current_board_with_variant)
 	dobin util/cbmem/cbmem
@@ -152,5 +159,3 @@ cros-coreboot_src_install() {
 	fi
 	newins .config coreboot.config
 }
-
-EXPORT_FUNCTIONS src_compile src_install pre_src_prepare
