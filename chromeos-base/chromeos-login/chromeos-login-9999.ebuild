@@ -15,9 +15,10 @@ SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
 IUSE="-asan -clang -deep_memory_profiler -disable_login_animations
 	-disable_webaudio -egl -exynos -fade_boot_splash_screen
-	-gpu_sandbox_allow_sysv_shm -has_diamond_key -has_hdd -highdpi
-	-legacy_keyboard -legacy_power_button -natural_scroll_default
-	test +X"
+	-gpu_sandbox_allow_sysv_shm
+	-gpu_sandbox_start_after_initialization
+	-has_diamond_key -has_hdd -highdpi -legacy_keyboard
+	-legacy_power_button -natural_scroll_default test +X"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="242728"
