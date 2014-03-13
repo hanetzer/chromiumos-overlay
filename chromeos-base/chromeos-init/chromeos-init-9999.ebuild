@@ -64,7 +64,8 @@ src_install() {
 		doins embedded-init/boot-services.conf
 		doins embedded-init/login-prompt-visible.conf
 
-		doins boot-complete.conf cgroups.conf crash-reporter.conf cron-lite.conf
+		doins boot-complete.conf report-boot-complete.conf
+		doins cgroups.conf crash-reporter.conf cron-lite.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
