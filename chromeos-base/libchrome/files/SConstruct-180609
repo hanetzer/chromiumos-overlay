@@ -166,7 +166,7 @@ base_libs = [
                 """,
     'prefix' : 'dbus',
     'libs' : 'base-event-${bslot}',
-    'pc_libs' : 'dbus-1 protobuf',
+    'pc_libs' : 'dbus-1 protobuf-lite',
   },
 ]
 
