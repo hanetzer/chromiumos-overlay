@@ -45,7 +45,7 @@ src_compile() {
 		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
 	fi
 	if use fwconsole ; then
-		echo "CONFIG_CONSOLE=y" >> "board/${board}/defconfig"
+		echo "CONFIG_CLI=y" >> "board/${board}/defconfig"
 		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
 		  "board/${board}/defconfig"
 	fi
