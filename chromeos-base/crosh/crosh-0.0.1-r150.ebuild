@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="adf11927032d1a11d8dc401263695f5740b540eb"
-CROS_WORKON_TREE="4be1024f260fcf86bf1083ef432a76b65a9c1e18"
+CROS_WORKON_COMMIT="fc53dcba3ef19b3be959a3dfe0608514f2eef88b"
+CROS_WORKON_TREE="59d2b104da47b82d8665fb12e1086ecacb2edd9b"
 CROS_WORKON_PROJECT="chromiumos/platform/crosh"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -19,7 +19,6 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="app-admin/sudo
-	chromeos-base/salsa
 	chromeos-base/vboot_reference
 	chromeos-base/workarounds
 	net-misc/iputils
