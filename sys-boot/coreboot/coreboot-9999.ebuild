@@ -58,11 +58,7 @@ src_prepare() {
 		      "${file}" ./ || die
 	done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
 
-	if [[ -s config ]]; then
-		# First try to use a config from coreboot-private
-		cp -v config .config
-	elif [[ -s "configs/config.${board}" ]]; then
-		# Otherwise use config from coreboot tree
+	if [[ -s "configs/config.${board}" ]]; then
 		cp -v "configs/config.${board}" .config
 	fi
 
