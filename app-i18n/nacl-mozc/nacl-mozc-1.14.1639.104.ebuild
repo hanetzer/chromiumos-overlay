@@ -4,11 +4,13 @@
 EAPI="4"
 inherit eutils
 
+INTERNAL_NACL_MOZC_P="nacl-mozc-1.14.1640.4"
+
 DESCRIPTION="The Mozc engine for IME extension API"
 HOMEPAGE="http://code.google.com/p/mozc"
 S="${WORKDIR}"
 SRC_URI="!internal? ( http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nacl-mozc-${PV}.tgz )
-internal? ( gs://chromeos-localmirror-private/distfiles/nacl-mozc-1.12.1600.4.tgz )"
+internal? ( gs://chromeos-localmirror-private/distfiles/${INTERNAL_NACL_MOZC_P}.tgz )"
 
 LICENSE="BSD-Google"
 IUSE="internal"
@@ -34,28 +36,11 @@ src_prepare() {
 	# The key is used to execute NaCl Mozc as a component extension.
 	if use internal; then
 		# NaCl Mozc is handled as id:fpfbhcjppmaeaijcidgiibchfbnhbelj.
-		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-insert-internal-public-key.patch
-		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-call-startIme.patch
+		epatch "${FILESDIR}"/${INTERNAL_NACL_MOZC_P}-insert-internal-public-key.patch
+		epatch "${FILESDIR}"/${INTERNAL_NACL_MOZC_P}-call-startIme.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
-		epatch "${FILESDIR}"/${P}-getmanifest.patch
-	fi
-
-	# Fix keycode to handle "Backquote" and "Escape" key correctly.
-	# TODO(hsumita): Remove this if next version of NaCl-Mozc is released.
-	if use internal; then
-		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-fix-keycode.patch
-	else
-		epatch "${FILESDIR}"/${P}-fix-keycode.patch
-	fi
-
-	# Fix keycode to handle "Backquote" and "Escape" key correctly.
-	# TODO(hsumita): Remove this if next version of NaCl-Mozc is released.
-	if use internal; then
-		epatch "${FILESDIR}"/nacl-mozc-1.12.1600.4-dont-handle-some-keys.patch
-	else
-		epatch "${FILESDIR}"/${P}-dont-handle-some-keys.patch
 	fi
 }
 
