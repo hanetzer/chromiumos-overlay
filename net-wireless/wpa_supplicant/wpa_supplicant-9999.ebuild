@@ -106,6 +106,9 @@ src_configure() {
 	echo "CONFIG_BGSCAN_DELTA=y" >> ${CFGFILE}
 	echo "CONFIG_IEEE80211W=y" >> ${CFGFILE}
 
+	# Allow VHT parameters to be overridden; required by ChromiumOS
+	echo "CONFIG_VHT_OVERRIDES=1" >> ${CFGFILE}
+
 	if use dbus ; then
 		echo "CONFIG_CTRL_IFACE_DBUS_NEW=y" >> ${CFGFILE}
 		echo "CONFIG_CTRL_IFACE_DBUS_INTRO=y" >> ${CFGFILE}
