@@ -16,7 +16,8 @@ DESCRIPTION="X.Org driver for ARM devices"
 
 KEYWORDS="-* arm"
 
-RDEPEND=">=x11-base/xorg-server-1.9"
+RDEPEND=">=x11-base/xorg-server-1.9
+	x11-libs/libdrm[video_cards_exynos]"
 DEPEND="${RDEPEND}"
 
 src_unpack() {
