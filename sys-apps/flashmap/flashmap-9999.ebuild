@@ -11,7 +11,7 @@ DESCRIPTION="Utility for manipulating firmware ROM mapping data structure"
 HOMEPAGE="http://flashmap.googlecode.com"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
