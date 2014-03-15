@@ -304,7 +304,7 @@ platform2_multiplex() {
 	#   OUT = the build output directory, contains binaries/libs
 	#   SRC = the path to subdir we're running the step for
 
-	local phase=$1
+	local phase="$1"
 	local OUT="$(cros-workon_get_build_dir)/out/Default"
 	local pkg
 	for pkg in "${CROS_WORKON_LOCALNAME[@]}"; do
@@ -313,7 +313,7 @@ platform2_multiplex() {
 
 		# Subshell so that funcs that change the env (like `into` and
 		# `insinto`) don't affect the next pkg.
-		( platform2_${phase}_${pkg} ) || die
+		( "platform2_${phase}_${pkg}" ) || die
 
 		popd >/dev/null
 	done
@@ -468,15 +468,15 @@ platform2_install_libchromeos() {
 	local v
 	insinto /usr/$(get_libdir)/pkgconfig
 	for v in "${LIBCHROME_VERS[@]}"; do
-		./platform2_preinstall.sh "${OUT}" "${v}"
+		./platform2_preinstall.sh "${OUT}" ${v}
 		dolib.so "${OUT}"/lib/lib{chromeos,policy}*-${v}.so
 		doins "${OUT}"/lib/libchromeos-${v}.pc
 	done
 
 	local dir dirs=( . dbus glib )
 	for dir in "${dirs[@]}"; do
-		insinto /usr/include/chromeos/${dir}
-		doins chromeos/${dir}/*.h
+		insinto "/usr/include/chromeos/${dir}"
+		doins "chromeos/${dir}"/*.h
 	done
 
 	insinto /usr/include/policy
@@ -557,7 +557,7 @@ platform2_install_power_manager() {
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
 
-	exeinto $(udev_get_udevdir)
+	exeinto "$(udev_get_udevdir)"
 	doexe udev/*.sh
 
 	udev_dorules udev/*.rules
@@ -570,44 +570,47 @@ platform2_install_shill() {
 	use shill || return 0
 	use cros_host && return 0
 
-	dobin "bin/ff_debug"
+	dobin bin/ff_debug
 
 	if use cellular; then
-		dobin "bin/mm_debug"
-		dobin "bin/set_apn"
-		dobin "bin/set_cellular_ppp"
+		dobin bin/mm_debug
+		dobin bin/set_apn
+		dobin bin/set_cellular_ppp
 	fi
 
-	dosbin "bin/reload_network_device"
-	dobin "bin/set_arpgw"
-	dobin "bin/shill_login_user"
-	dobin "bin/shill_logout_user"
-	dobin "bin/wpa_debug"
-	dobin "${OUT}/shill"
+	dosbin bin/reload_network_device
+	dobin bin/set_arpgw
+	dobin bin/shill_login_user
+	dobin bin/shill_logout_user
+	dobin bin/wpa_debug
+	dobin "${OUT}"/shill
 
 	# Netfilter queue helper is run directly from init, so install in sbin.
-	dosbin "${OUT}/netfilter-queue-helper"
+	dosbin "${OUT}"/netfilter-queue-helper
 	dosbin init/netfilter-common
 
 	# Install Netfilter queue helper syscall filter policy file.
 	insinto /usr/share/policy
-	newins "shims/nfqueue-seccomp-${ARCH}.policy" nfqueue-seccomp.policy
+	newins shims/nfqueue-seccomp-${ARCH}.policy nfqueue-seccomp.policy
 
-	local shims_dir="/usr/$(get_libdir)/shill/shims"
+	local shims_dir=/usr/$(get_libdir)/shill/shims
 	exeinto "${shims_dir}"
-	doexe "${OUT}/net-diags-upload"
-	doexe "${OUT}/nss-get-cert"
-	doexe "${OUT}/crypto-util"
+	doexe "${OUT}"/net-diags-upload
+	doexe "${OUT}"/nss-get-cert
+	doexe "${OUT}"/crypto-util
 
 	if use vpn; then
-		doexe "${OUT}/openvpn-script"
-		newexe "${OUT}/lib/libshill-pppd-plugin.so" "shill-pppd-plugin.so"
+		doexe "${OUT}"/openvpn-script
+		newexe "${OUT}"/lib/libshill-pppd-plugin.so shill-pppd-plugin.so
 	fi
 
-	use cellular && doexe "${OUT}/set-apn-helper"
+	use cellular && doexe "${OUT}"/set-apn-helper
 
-	sed s,@libdir@,"/usr/$(get_libdir)", "shims/wpa_supplicant.conf.in" \
+	sed \
+		"s,@libdir@,/usr/$(get_libdir)", \
+		shims/wpa_supplicant.conf.in \
 		> "${D}/${shims_dir}/wpa_supplicant.conf"
+
 	insinto /etc
 	doins shims/nsswitch.conf
 	dosym /var/run/shill/resolv.conf /etc/resolv.conf
@@ -630,8 +633,8 @@ platform2_install_shill() {
 platform2_install_system_api() {
 	local dir dirs=( dbus switches constants )
 	for dir in "${dirs[@]}"; do
-		insinto /usr/include/chromeos/${dir}
-		doins -r ${dir}/*
+		insinto "/usr/include/chromeos/${dir}"
+		doins -r "${dir}"/*
 	done
 }
 
@@ -643,7 +646,7 @@ platform2_install_vpn-manager() {
 	doins service_error.h
 	dosbin "${OUT}"/l2tpipsec_vpn
 	exeinto /usr/libexec/l2tpipsec_vpn
-	doexe "bin/pluto_updown"
+	doexe bin/pluto_updown
 }
 
 platform2_install_wimax_manager() {
