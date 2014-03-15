@@ -10,7 +10,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE_KERNEL_VERS=( kernel_next kernel-3_4 kernel-3_8 kernel-3_10 )
+IUSE_KERNEL_VERS=( kernel_next kernel-3_4 kernel-3_8 kernel-3_10 kernel-3_14 )
 IUSE="${IUSE_KERNEL_VERS[*]} kernel_sources"
 REQUIRED_USE="?? ( ${IUSE_KERNEL_VERS[*]} )"
 
@@ -19,6 +19,7 @@ RDEPEND="
 	kernel-3_4? ( sys-kernel/chromeos-kernel[kernel_sources=] )
 	kernel-3_8? ( sys-kernel/chromeos-kernel-next[kernel_sources=] )
 	kernel-3_10? ( sys-kernel/chromeos-kernel-3_10[kernel_sources=] )
+	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14[kernel_sources=] )
 "
 
 # Default to the 3.4 kernel if none has been selected. In the future,
