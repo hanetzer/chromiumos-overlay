@@ -11,8 +11,13 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="internal"
 
-RDEPEND="app-i18n/chromeos-xkb
-         app-i18n/chromeos-keyboards
-         internal? ( app-i18n/GoogleKeyboardInput-xkb )
-         internal? ( app-i18n/GoogleKeyboardInput-keyboards )"
+RDEPEND="
+        !internal? (
+                app-i18n/chromeos-keyboards
+                app-i18n/chromeos-xkb
+        )
+        internal? (
+                app-i18n/GoogleKeyboardInput-keyboards
+                app-i18n/GoogleKeyboardInput-xkb
+        )"
 DEPEND="${RDEPEND}"
