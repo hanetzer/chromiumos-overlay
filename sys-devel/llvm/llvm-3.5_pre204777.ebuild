@@ -13,7 +13,7 @@ inherit cros-constants subversion eutils flag-o-matic multilib toolchain-funcs p
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 EGIT_MASTER=""
 # Set to the corresponding commit.
-EGIT_COMMIT="306c04c2184ae524c03c2797b7c944d5ab8f938e"
+EGIT_COMMIT="577708be42f58f7f3042bbab50537ecdea20acad"
 inherit git-2
 
 SVN_COMMIT=${PV#*_pre}
@@ -120,7 +120,7 @@ src_prepare() {
 	# unfortunately ./configure won't listen to --mandir and the-like, so take
 	# care of this.
 	epatch "${FILESDIR}"/${PN}-3.2-nodoctargz.patch
-	epatch "${FILESDIR}"/${PN}-3.5-gentoo-install.patch
+	#epatch "${FILESDIR}"/${PN}-3.5-gentoo-install.patch
 	einfo "Fixing install dirs"
 	sed -e 's,^PROJ_docsdir.*,PROJ_docsdir := $(PROJ_prefix)/share/doc/'${PF}, \
 		-e 's,^PROJ_etcdir.*,PROJ_etcdir := '"${EPREFIX}"'/etc/llvm,' \
@@ -128,15 +128,6 @@ src_prepare() {
 		-i Makefile.config.in || die "Makefile.config sed failed"
 	sed -e "/ActiveLibDir = ActivePrefix/s/lib/$(get_libdir)\/${PN}/" \
 		-i tools/llvm-config/llvm-config.cpp || die "llvm-config sed failed"
-
-	einfo "Fixing rpath and CFLAGS"
-	sed -e 's,\$(RPATH) -Wl\,\$(\(ToolDir\|LibDir\)),$(RPATH) -Wl\,'"${EPREFIX}"/usr/$(get_libdir)/${PN}, \
-		-e '/OmitFramePointer/s/-fomit-frame-pointer//' \
-		-i Makefile.rules || die "rpath sed failed"
-	if use gold; then
-		sed -e 's,\$(SharedLibDir),'"${EPREFIX}"/usr/$(get_libdir)/${PN}, \
-			-i tools/gold/Makefile || die "gold rpath sed failed"
-	fi
 
 	# User patches
 	epatch_user

@@ -19,19 +19,19 @@ EGIT_REPO_URIS=(
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"306c04c2184ae524c03c2797b7c944d5ab8f938e"  # EGIT_COMMIT
+		"577708be42f58f7f3042bbab50537ecdea20acad" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"50702a2deea493c681f05198f0a39d11a1bd0491"  # EGIT_COMMIT
+		"827d16929789e0c1b7aab200e1422dea655d2955" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"aa81229216b3b19c0bf51d6e63a2752d4fc6c54d"  # EGIT_COMMIT
+		"99db70b1fcb45e2e3e901d5df9611ee28fa79839"  # EGIT_COMMIT
 )
 inherit git-2
 
@@ -77,34 +77,19 @@ src_prepare() {
 		ewarn "Please test clang with a simple hello_world.cc file and update this message."
 	fi
 
-	epatch "${FILESDIR}"/${PN}-3.5-gentoo-install.patch
 	# Change the default asan output path
 	epatch "${FILESDIR}"/${PN}-3.5-asan-default-path.patch
+
 	# Same as llvm doc patches
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
 
 	# multilib-strict
-	sed -e "/PROJ_headers\|HeaderDir/s#lib/clang#$(get_libdir)/clang#" \
-		-i tools/clang/lib/Headers/Makefile \
-		|| die "clang Makefile sed failed"
 	sed -e "/PROJ_resources\|ResourceDir/s#lib/clang#$(get_libdir)/clang#" \
 		-i tools/clang/runtime/compiler-rt/Makefile \
 		|| die "compiler-rt Makefile sed failed"
 	sed -e "s#/lib/#/lib{{(32|64)?}}/#" \
 		-i tools/clang/test/Preprocessor/iwithprefix.c \
 		|| die "clang test sed failed"
-	# fix the static analyzer for in-tree install
-	sed -e 's/import ScanView/from clang \0/'  \
-		-i tools/clang/tools/scan-view/scan-view \
-		|| die "scan-view sed failed"
-	sed -e "/scanview.css\|sorttable.js/s#\$RealBin#${EPREFIX}/usr/share/${PN}#" \
-		-i tools/clang/tools/scan-build/scan-build \
-		|| die "scan-build sed failed"
-	# Set correct path for gold plugin and coverage lib
-	sed -e "/LLVMgold.so/s#lib/#$(get_libdir)/llvm/#" \
-		-e "s#lib\(/libprofile_rt.a\)#$(get_libdir)/llvm\1#" \
-		-i  tools/clang/lib/Driver/Tools.cpp \
-		|| die "driver tools paths sed failed"
 
 	# From llvm src_prepare
 	einfo "Fixing install dirs"
@@ -133,8 +118,7 @@ src_configure() {
 		--with-optimize-option=
 		$(use_enable !debug optimized)
 		$(use_enable debug assertions)
-		$(use_enable debug expensive-checks)
-		--with-clang-resource-dir=../$(get_libdir)/clang/3.5"
+		$(use_enable debug expensive-checks)"
 
 	# Setup the search path to include the Prefix includes
 	if use prefix ; then
