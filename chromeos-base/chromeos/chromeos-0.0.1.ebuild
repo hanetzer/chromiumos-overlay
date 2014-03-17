@@ -144,6 +144,9 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 #
 # app-i18n/chinese-input:
 # A suite of Chinese input methods based on IME extension APIs.
+
+# app-i18n/keyboard-input:
+# A suite of keyboard input methods based on IME extension APIs.
 #
 # app-i18n/chromeos-hangul
 # A Hangul input processor based on extension APIs.
@@ -180,9 +183,9 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-crypt/trousers
 	app-editors/vim
 	app-i18n/chinese-input
+	app-i18n/keyboard-input
 	app-i18n/nacl-mozc
 	app-i18n/chromeos-hangul
-	app-i18n/chromeos-xkb
 	app-laptop/laptop-mode-tools
 	app-shells/bash
 	chromeos-base/chromeos-assets
