@@ -24,6 +24,7 @@ RDEPEND="
 	sys-apps/rootdev
 	sys-apps/upstart
 	sys-process/lsof
+	virtual/chromeos-bootcomplete
 	!cros_embedded? (
 		chromeos-base/chromeos-assets
 		chromeos-base/chromeos-disableecho
@@ -67,9 +68,8 @@ src_install() {
 		insinto /etc/init
 		doins startup.conf
 		doins embedded-init/boot-services.conf
-		doins embedded-init/login-prompt-visible.conf
 
-		doins boot-complete.conf report-boot-complete.conf
+		doins report-boot-complete.conf
 		doins cgroups.conf crash-reporter.conf cron-lite.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
