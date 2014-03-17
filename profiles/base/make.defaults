@@ -131,10 +131,11 @@ PYTHON_SINGLE_TARGET="python2_7"
 # Michał Górny <mgorny@gentoo.org> (10 Aug 2013)
 # Moved from portage's make.globals.
 # 1) do not uninstall kernel modules and therefore allow replacing them,
+#    Note: Disabled for CrOS.
 # 2) allow replacing unowned compiled Python modules (python-r1 migration),
 # 3) allow replacing unowned dropin.cache files (twisted-r1 migration).
-COLLISION_IGNORE="/lib/modules/* *.py[co] *\$py.class */dropin.cache"
-UNINSTALL_IGNORE="/lib/modules/*"
+COLLISION_IGNORE="*.py[co] *\$py.class */dropin.cache"
+UNINSTALL_IGNORE=""
 
 # Andreas K. Hüttel <dilfridge@gentoo.org> (23 Aug 2013)
 # Make emerge messages default to English as per Council decision
