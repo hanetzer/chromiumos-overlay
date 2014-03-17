@@ -92,13 +92,6 @@ IUSE_TESTS=(
 	 tests_desktopui_TouchScreen
 	+tests_desktopui_UrlFetch
 	+tests_desktopui_UrlFetchWithChromeDriver
-	+tests_video_VideoDecodeAcceleration
-	+tests_video_VideoSanity
-	+tests_video_VideoSeek
-	+tests_video_YouTubePage
-	+tests_video_YouTubeFlash
-	+tests_video_YouTubeHTML5
-	+tests_video_YouTubeMseEme
 	+tests_dummy_IdleSuspend
 	+tests_enterprise_DevicePolicy
 	+tests_enterprise_InstallAttributes
