@@ -15,7 +15,8 @@ KEYWORDS="~*"
 SLOT="0"
 IUSE="doc tss_trace"
 
-RDEPEND=">=dev-libs/openssl-0.9.7"
+RDEPEND=">=dev-libs/openssl-0.9.7
+	!<chromeos-base/chromeos-init-0.0.18"
 
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
@@ -62,6 +63,10 @@ src_install() {
 	dodir /etc/trousers
 	insinto /etc/trousers
 	doins "${S}"/dist/system.data.*
+
+	# Install the init scripts
+	insinto /etc/init
+	doins init/*.conf
 }
 
 pkg_postinst() {
