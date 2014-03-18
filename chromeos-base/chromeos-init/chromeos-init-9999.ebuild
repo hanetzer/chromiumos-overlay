@@ -68,7 +68,6 @@ src_install() {
 
 		doins boot-complete.conf cgroups.conf crash-reporter.conf cron-lite.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
-		doins install-completed.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
 

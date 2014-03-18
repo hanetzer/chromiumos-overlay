@@ -31,7 +31,8 @@ RDEPEND="
 	sys-apps/util-linux
 	sys-apps/which
 	sys-block/parted
-	sys-fs/e2fsprogs"
+	sys-fs/e2fsprogs
+	!<chromeos-base/chromeos-init-0.0.15"
 
 src_prepare() {
 	cros-workon_src_prepare
@@ -76,5 +77,5 @@ src_install() {
 	doexe chromeos-* encrypted_import
 
 	insinto /etc/init
-	doins crx-import.conf
+	doins init/*.conf
 }
