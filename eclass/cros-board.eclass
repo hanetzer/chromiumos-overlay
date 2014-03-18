@@ -114,6 +114,7 @@ ALL_BOARDS=(
 	slippy
 	sonic
 	squawks
+	storm
 	stout
 	stout32
 	stumpy
