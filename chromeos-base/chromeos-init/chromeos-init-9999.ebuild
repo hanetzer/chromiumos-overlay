@@ -43,7 +43,7 @@ src_install() {
 	dosbin simple-rotate
 
 	insinto /etc
-	doins issue rsyslog.chromeos
+	doins rsyslog.chromeos
 
 	insinto /usr/share/cros
 	doins factory_utils.sh
