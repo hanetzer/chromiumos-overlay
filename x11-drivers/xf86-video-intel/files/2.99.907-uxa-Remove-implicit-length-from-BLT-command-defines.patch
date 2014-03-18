@@ -1,0 +1,90 @@
+From 972b88da2696c93851d9f601bd7cf83af4446124 Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Thu, 6 Mar 2014 13:12:31 -0800
+Subject: [PATCH 1/2] uxa: Remove implicit length from BLT command #defines.
+
+These command packets grew on Gen8.
+
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+---
+ src/uxa/i830_reg.h  | 12 ++++++------
+ src/uxa/intel_uxa.c |  6 +++---
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/uxa/i830_reg.h b/src/uxa/i830_reg.h
+index 93d03cf..d8306bc 100644
+--- a/src/uxa/i830_reg.h
++++ b/src/uxa/i830_reg.h
+@@ -70,32 +70,32 @@
+ #define COLOR_BLT_WRITE_ALPHA	(1<<21)
+ #define COLOR_BLT_WRITE_RGB	(1<<20)
+ 
+-#define XY_COLOR_BLT_CMD		((2<<29)|(0x50<<22)|(0x4))
++#define XY_COLOR_BLT_CMD		((2<<29)|(0x50<<22))
+ #define XY_COLOR_BLT_WRITE_ALPHA	(1<<21)
+ #define XY_COLOR_BLT_WRITE_RGB		(1<<20)
+ #define XY_COLOR_BLT_TILED		(1<<11)
+ 
+-#define XY_SETUP_CLIP_BLT_CMD		((2<<29)|(3<<22)|1)
++#define XY_SETUP_CLIP_BLT_CMD		((2<<29)|(3<<22))
+ 
+-#define XY_SRC_COPY_BLT_CMD		((2<<29)|(0x53<<22)|6)
++#define XY_SRC_COPY_BLT_CMD		((2<<29)|(0x53<<22))
+ #define XY_SRC_COPY_BLT_WRITE_ALPHA	(1<<21)
+ #define XY_SRC_COPY_BLT_WRITE_RGB	(1<<20)
+ #define XY_SRC_COPY_BLT_SRC_TILED	(1<<15)
+ #define XY_SRC_COPY_BLT_DST_TILED	(1<<11)
+ 
+-#define SRC_COPY_BLT_CMD		((2<<29)|(0x43<<22)|0x4)
++#define SRC_COPY_BLT_CMD		((2<<29)|(0x43<<22))
+ #define SRC_COPY_BLT_WRITE_ALPHA	(1<<21)
+ #define SRC_COPY_BLT_WRITE_RGB		(1<<20)
+ 
+ #define XY_PAT_BLT_IMMEDIATE		((2<<29)|(0x72<<22))
+ 
+-#define XY_MONO_PAT_BLT_CMD		((0x2<<29)|(0x52<<22)|0x7)
++#define XY_MONO_PAT_BLT_CMD		((0x2<<29)|(0x52<<22))
+ #define XY_MONO_PAT_VERT_SEED		((1<<10)|(1<<9)|(1<<8))
+ #define XY_MONO_PAT_HORT_SEED		((1<<14)|(1<<13)|(1<<12))
+ #define XY_MONO_PAT_BLT_WRITE_ALPHA	(1<<21)
+ #define XY_MONO_PAT_BLT_WRITE_RGB	(1<<20)
+ 
+-#define XY_MONO_SRC_BLT_CMD		((0x2<<29)|(0x54<<22)|(0x6))
++#define XY_MONO_SRC_BLT_CMD		((0x2<<29)|(0x54<<22))
+ #define XY_MONO_SRC_BLT_WRITE_ALPHA	(1<<21)
+ #define XY_MONO_SRC_BLT_WRITE_RGB	(1<<20)
+ 
+diff --git a/src/uxa/intel_uxa.c b/src/uxa/intel_uxa.c
+index d4ba7fc..5314855 100644
+--- a/src/uxa/intel_uxa.c
++++ b/src/uxa/intel_uxa.c
+@@ -326,7 +326,7 @@ static void intel_uxa_solid(PixmapPtr pixmap, int x1, int y1, int x2, int y2)
+ 	{
+ 		BEGIN_BATCH_BLT(6);
+ 
+-		cmd = XY_COLOR_BLT_CMD;
++		cmd = XY_COLOR_BLT_CMD | (6 - 2);
+ 
+ 		if (pixmap->drawable.bitsPerPixel == 32)
+ 			cmd |=
+@@ -464,7 +464,7 @@ intel_uxa_copy(PixmapPtr dest, int src_x1, int src_y1, int dst_x1,
+ 	{
+ 		BEGIN_BATCH_BLT(8);
+ 
+-		cmd = XY_SRC_COPY_BLT_CMD;
++		cmd = XY_SRC_COPY_BLT_CMD | (8 - 2);
+ 
+ 		if (dest->drawable.bitsPerPixel == 32)
+ 			cmd |=
+@@ -512,7 +512,7 @@ static void intel_uxa_done(PixmapPtr pixmap)
+ 	if (IS_GEN6(intel) || IS_GEN7(intel)) {
+ 		/* workaround a random BLT hang */
+ 		BEGIN_BATCH_BLT(3);
+-		OUT_BATCH(XY_SETUP_CLIP_BLT_CMD);
++		OUT_BATCH(XY_SETUP_CLIP_BLT_CMD | (3 - 2));
+ 		OUT_BATCH(0);
+ 		OUT_BATCH(0);
+ 		ADVANCE_BATCH();
+-- 
+1.9.0.279.gdc9e3eb
+

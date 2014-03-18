@@ -1,0 +1,57 @@
+From 15be6b7c9a89bfdac923d2a27649f539c430366f Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Tue, 18 Mar 2014 16:31:07 +0000
+Subject: [PATCH] uxa: Implement minimal flushing for bdw+
+
+Based on the patch by Kenneth Graunke,
+"Several places (such as intel_cache_expire) call intel_emit_batch_flush,
+so it needs to work on Broadwell.  Sometimes the batch is empty, in
+which case current_batch may not yet be BLT_RING.
+
+The PIPE_CONTROL code has not been ported to work on Broadwell, so
+trying to do a render ring flush will hang the GPU.  It also doesn't
+make any sense to do a render ring flush, given that we never use the
+render ring for UXA on Broadwell."
+
+Cc: Kenneth Graunke <kenneth@whitecape.org>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+---
+ src/uxa/intel_batchbuffer.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/src/uxa/intel_batchbuffer.c b/src/uxa/intel_batchbuffer.c
+index 4aabe48..dedf7f8 100644
+--- a/src/uxa/intel_batchbuffer.c
++++ b/src/uxa/intel_batchbuffer.c
+@@ -183,16 +183,23 @@ void intel_batch_emit_flush(ScrnInfoPtr scrn)
+ 	int flags;
+ 
+ 	assert (!intel->in_batch_atomic);
+-	assert (INTEL_INFO(intel)->gen < 0100);
+ 
+ 	/* Big hammer, look to the pipelined flushes in future. */
+-	if ((INTEL_INFO(intel)->gen >= 060)) {
++	if ((INTEL_INFO(intel)->gen >= 0100)) {
++		/* Only BLT supported */
++		BEGIN_BATCH_BLT(4);
++		OUT_BATCH(MI_FLUSH_DW | 2);
++		OUT_BATCH(0); /* address low */
++		OUT_BATCH(0); /* address high */
++		OUT_BATCH(0); /* dword data */
++		ADVANCE_BATCH();
++	} else if ((INTEL_INFO(intel)->gen >= 060)) {
+ 		if (intel->current_batch == BLT_BATCH) {
+ 			BEGIN_BATCH_BLT(4);
+ 			OUT_BATCH(MI_FLUSH_DW | 2);
+-			OUT_BATCH(0);
+-			OUT_BATCH(0);
+-			OUT_BATCH(0);
++			OUT_BATCH(0); /* address */
++			OUT_BATCH(0); /* qword low */
++			OUT_BATCH(0); /* qword high */
+ 			ADVANCE_BATCH();
+ 		} else  {
+ 			if ((INTEL_INFO(intel)->gen == 060)) {
+-- 
+1.8.4
+

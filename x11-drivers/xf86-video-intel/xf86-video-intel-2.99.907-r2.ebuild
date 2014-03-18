@@ -20,7 +20,7 @@ REQUIRED_USE="
 RDEPEND="x11-libs/libXext
 	x11-libs/libXfixes
 	>=x11-libs/pixman-0.27.1
-	>=x11-libs/libdrm-2.4.29[video_cards_intel]
+	>=x11-libs/libdrm-2.4.52[video_cards_intel]
 	glamor? (
 		x11-libs/glamor
 	)
@@ -49,6 +49,9 @@ PATCHES=(
 	"${FILESDIR}"/2.99.907-copy-fb.patch
 	"${FILESDIR}"/2.99.907-per-crtc-flip.patch
 	"${FILESDIR}"/2.99.907-fix-blt-damage.patch
+	"${FILESDIR}"/2.99.907-uxa-Remove-implicit-length-from-BLT-command-defines.patch
+	"${FILESDIR}"/2.99.907-uxa-Enable-BLT-acceleration-on-Broadwell.patch
+	"${FILESDIR}"/2.99.907-uxa-Implement-minimal-flushing-for-bdw.patch
 )
 
 src_configure() {

@@ -1,0 +1,183 @@
+From cbcc1b6190ab733c9ab11543af4a4eb1890225e4 Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Thu, 6 Mar 2014 13:12:32 -0800
+Subject: [PATCH 2/2] uxa: Enable BLT acceleration on Broadwell.
+
+This supports solid, copy, put_image, and get_image acceleration via the
+BLT engine.  RENDER acceleration (composite) and Xv would be piles of work,
+which is not worth doing since SNA exists, and Glamor is coming.
+
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+---
+ src/uxa/intel_batchbuffer.c |  1 +
+ src/uxa/intel_batchbuffer.h |  8 +++++++-
+ src/uxa/intel_driver.c      |  7 ++-----
+ src/uxa/intel_uxa.c         | 22 ++++++++++++----------
+ src/uxa/intel_video.c       |  3 ++-
+ 6 files changed, 28 insertions(+), 20 deletions(-)
+
+diff --git a/src/uxa/intel_batchbuffer.c b/src/uxa/intel_batchbuffer.c
+index 579a63a..4aabe48 100644
+--- a/src/uxa/intel_batchbuffer.c
++++ b/src/uxa/intel_batchbuffer.c
+@@ -183,6 +183,7 @@ void intel_batch_emit_flush(ScrnInfoPtr scrn)
+ 	int flags;
+ 
+ 	assert (!intel->in_batch_atomic);
++	assert (INTEL_INFO(intel)->gen < 0100);
+ 
+ 	/* Big hammer, look to the pipelined flushes in future. */
+ 	if ((INTEL_INFO(intel)->gen >= 060)) {
+diff --git a/src/uxa/intel_batchbuffer.h b/src/uxa/intel_batchbuffer.h
+index b2bb390..79e2ab0 100644
+--- a/src/uxa/intel_batchbuffer.h
++++ b/src/uxa/intel_batchbuffer.h
+@@ -108,6 +108,8 @@ intel_batch_emit_reloc(intel_screen_private *intel,
+ 		       uint32_t read_domains,
+ 		       uint32_t write_domains, uint32_t delta, int needs_fence)
+ {
++	uint64_t offset;
++
+ 	if (needs_fence)
+ 		drm_intel_bo_emit_reloc_fence(intel->batch_bo,
+ 					      intel->batch_used * 4,
+@@ -118,7 +120,11 @@ intel_batch_emit_reloc(intel_screen_private *intel,
+ 					bo, delta,
+ 					read_domains, write_domains);
+ 
+-	intel_batch_emit_dword(intel, bo->offset + delta);
++	offset = bo->offset64 + delta;
++
++	intel_batch_emit_dword(intel, offset);
++	if (INTEL_INFO(intel)->gen >= 0100)
++		intel_batch_emit_dword(intel, offset >> 32);
+ }
+ 
+ static inline void
+diff --git a/src/uxa/intel_driver.c b/src/uxa/intel_driver.c
+index 717b633..d0b1442 100644
+--- a/src/uxa/intel_driver.c
++++ b/src/uxa/intel_driver.c
+@@ -405,9 +405,6 @@ static Bool can_accelerate_blt(struct intel_screen_private *intel)
+ 	if (INTEL_INFO(intel)->gen == -1)
+ 		return FALSE;
+ 
+-	if (INTEL_INFO(intel)->gen >= 0100)
+-		return FALSE;
+-
+ 	if (xf86ReturnOptValBool(intel->Options, OPTION_ACCEL_DISABLE, FALSE) ||
+ 	    !intel_option_cast_string_to_bool(intel, OPTION_ACCEL_METHOD, TRUE)) {
+ 		xf86DrvMsg(intel->scrn->scrnIndex, X_CONFIG,
+@@ -947,7 +944,7 @@ I830ScreenInit(SCREEN_INIT_ARGS_DECL)
+ 
+ 	intel_batch_init(scrn);
+ 
+-	if (INTEL_INFO(intel)->gen >= 040)
++	if (INTEL_INFO(intel)->gen >= 040 && INTEL_INFO(intel)->gen < 0100)
+ 		gen4_render_state_init(scrn);
+ 
+ 	miClearVisualTypes();
+@@ -1203,7 +1200,7 @@ static Bool I830CloseScreen(CLOSE_SCREEN_ARGS_DECL)
+ 
+ 	intel_batch_teardown(scrn);
+ 
+-	if (INTEL_INFO(intel)->gen >= 040)
++	if (INTEL_INFO(intel)->gen >= 040 && INTEL_INFO(intel)->gen < 0100)
+ 		gen4_render_state_cleanup(scrn);
+ 
+ 	xf86_cursors_fini(screen);
+diff --git a/src/uxa/intel_uxa.c b/src/uxa/intel_uxa.c
+index e399a93..7dd363d 100644
+--- a/src/uxa/intel_uxa.c
++++ b/src/uxa/intel_uxa.c
+@@ -324,9 +324,10 @@ static void intel_uxa_solid(PixmapPtr pixmap, int x1, int y1, int x2, int y2)
+ 	pitch = intel_pixmap_pitch(pixmap);
+ 
+ 	{
+-		BEGIN_BATCH_BLT(6);
++		int len = INTEL_INFO(intel)->gen >= 0100 ? 7 : 6;
++		BEGIN_BATCH_BLT(len);
+ 
+-		cmd = XY_COLOR_BLT_CMD | (6 - 2);
++		cmd = XY_COLOR_BLT_CMD | (len - 2);
+ 
+ 		if (pixmap->drawable.bitsPerPixel == 32)
+ 			cmd |=
+@@ -462,9 +463,10 @@ intel_uxa_copy(PixmapPtr dest, int src_x1, int src_y1, int dst_x1,
+ 	src_pitch = intel_pixmap_pitch(intel->render_source);
+ 
+ 	{
+-		BEGIN_BATCH_BLT(8);
++		int len = INTEL_INFO(intel)->gen >= 0100 ? 10 : 8;
++		BEGIN_BATCH_BLT(len);
+ 
+-		cmd = XY_SRC_COPY_BLT_CMD | (8 - 2);
++		cmd = XY_SRC_COPY_BLT_CMD | (len - 2);
+ 
+ 		if (dest->drawable.bitsPerPixel == 32)
+ 			cmd |=
+@@ -509,7 +511,7 @@ static void intel_uxa_done(PixmapPtr pixmap)
+ 	ScrnInfoPtr scrn = xf86ScreenToScrn(pixmap->drawable.pScreen);
+ 	intel_screen_private *intel = intel_get_screen_private(scrn);
+ 
+-	if (IS_GEN6(intel) || IS_GEN7(intel)) {
++	if (INTEL_INFO(intel)->gen >= 060) {
+ 		/* workaround a random BLT hang */
+ 		BEGIN_BATCH_BLT(3);
+ 		OUT_BATCH(XY_SETUP_CLIP_BLT_CMD | (3 - 2));
+@@ -1404,7 +1406,7 @@ Bool intel_uxa_init(ScreenPtr screen)
+ 
+ 	/* Composite */
+ 	if (intel_option_accel_blt(intel)) {
+-	} else if (IS_GEN2(intel)) {
++	} else if (INTEL_INFO(intel)->gen < 030) {
+ 		intel->uxa_driver->check_composite = i830_check_composite;
+ 		intel->uxa_driver->check_composite_target = i830_check_composite_target;
+ 		intel->uxa_driver->check_composite_texture = i830_check_composite_texture;
+@@ -1414,7 +1416,7 @@ Bool intel_uxa_init(ScreenPtr screen)
+ 
+ 		intel->vertex_flush = i830_vertex_flush;
+ 		intel->batch_commit_notify = i830_batch_commit_notify;
+-	} else if (IS_GEN3(intel)) {
++	} else if (INTEL_INFO(intel)->gen < 040) {
+ 		intel->uxa_driver->check_composite = i915_check_composite;
+ 		intel->uxa_driver->check_composite_target = i915_check_composite_target;
+ 		intel->uxa_driver->check_composite_texture = i915_check_composite_texture;
+@@ -1424,7 +1426,7 @@ Bool intel_uxa_init(ScreenPtr screen)
+ 
+ 		intel->vertex_flush = i915_vertex_flush;
+ 		intel->batch_commit_notify = i915_batch_commit_notify;
+-	} else {
++	} else if (INTEL_INFO(intel)->gen < 0100) {
+ 		intel->uxa_driver->check_composite = i965_check_composite;
+ 		intel->uxa_driver->check_composite_texture = i965_check_composite_texture;
+ 		intel->uxa_driver->prepare_composite = i965_prepare_composite;
+@@ -1435,9 +1437,9 @@ Bool intel_uxa_init(ScreenPtr screen)
+ 		intel->batch_flush = i965_batch_flush;
+ 		intel->batch_commit_notify = i965_batch_commit_notify;
+ 
+-		if (IS_GEN4(intel)) {
++		if (INTEL_INFO(intel)->gen < 050) {
+ 			intel->context_switch = gen4_context_switch;
+-		} else if (IS_GEN5(intel)) {
++		} else if (INTEL_INFO(intel)->gen < 060) {
+ 			intel->context_switch = gen5_context_switch;
+ 		} else {
+ 			intel->context_switch = gen6_context_switch;
+diff --git a/src/uxa/intel_video.c b/src/uxa/intel_video.c
+index 3249da9..3c9472c 100644
+--- a/src/uxa/intel_video.c
++++ b/src/uxa/intel_video.c
+@@ -354,7 +354,8 @@ void I830InitVideo(ScreenPtr screen)
+ 	 * supported hardware.
+ 	 */
+ 	if (scrn->bitsPerPixel >= 16 &&
+-	    INTEL_INFO(intel)->gen >= 030) {
++	    INTEL_INFO(intel)->gen >= 030 &&
++	    INTEL_INFO(intel)->gen < 0100) {
+ 		texturedAdaptor = I830SetupImageVideoTextured(screen);
+ 		if (texturedAdaptor != NULL) {
+ 			xf86DrvMsg(scrn->scrnIndex, X_INFO,
+-- 
+1.9.0.279.gdc9e3eb
+
