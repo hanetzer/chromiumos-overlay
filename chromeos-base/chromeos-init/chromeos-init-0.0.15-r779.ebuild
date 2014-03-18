@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="04bb97f1a0d1a8750c66cfc38951fa537647ddc7"
-CROS_WORKON_TREE="de3a6088eb492a49d58ccac7837935f1c41cc27e"
+CROS_WORKON_COMMIT="2b5128253e424a26b2e5b81d25ce85a5f2d2094e"
+CROS_WORKON_TREE="be4ff2b3b2d54d29de74009a0d3ec3b3cc792d0e"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
@@ -70,7 +70,6 @@ src_install() {
 
 		doins boot-complete.conf cgroups.conf crash-reporter.conf cron-lite.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
-		doins install-completed.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
 

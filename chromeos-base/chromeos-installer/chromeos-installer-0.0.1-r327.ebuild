@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="453330da8a7352b84a6f2db13a7f265d9ae54c52"
-CROS_WORKON_TREE="56b4345c38276a54ae49ab173c4bb46d566000ab"
+CROS_WORKON_COMMIT="dd1caafd79a51b02e7bb93d3e76ffdd032626480"
+CROS_WORKON_TREE="bce1116bb3261c4b1189c4def3dec4176430e898"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -33,7 +33,8 @@ RDEPEND="
 	sys-apps/util-linux
 	sys-apps/which
 	sys-block/parted
-	sys-fs/e2fsprogs"
+	sys-fs/e2fsprogs
+	!<chromeos-base/chromeos-init-0.0.15"
 
 src_prepare() {
 	cros-workon_src_prepare
@@ -78,5 +79,5 @@ src_install() {
 	doexe chromeos-* encrypted_import
 
 	insinto /etc/init
-	doins crx-import.conf
+	doins init/*.conf
 }
