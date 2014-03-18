@@ -26,7 +26,7 @@ LICENSE="BSD-Google
 	chrome_pdf? ( Google-TOS )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
+IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
 # Don't strip NaCl executables. These are not linux executables and the
 # linux host's strip command doesn't know how to handle them correctly.
@@ -728,6 +728,10 @@ src_compile() {
 			chrome_targets+=( aura_demo ash_shell )
 		else
 			chrome_targets+=( libosmesa.so )
+		fi
+
+		if use app_shell; then
+			chrome_targets+=( app_shell )
 		fi
 	fi
 
