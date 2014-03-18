@@ -108,6 +108,7 @@ RDEPEND="${RDEPEND}
 	net-wireless/iw
 	net-wireless/wireless-tools
 	dev-lang/python
+	dev-libs/protobuf-python
 	dev-python/cherrypy
 	dev-python/dbus-python
 	dev-util/hdctools
