@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI="4"
 
 DESCRIPTION="ChromiumOS-specific configuration files for pambase"
 HOMEPAGE="http://www.chromium.org"
@@ -12,8 +12,11 @@ KEYWORDS="*"
 
 RDEPEND="
 	>=sys-auth/pambase-20090620.1-r7
-	chromeos-base/vboot_reference"
+	chromeos-base/vboot_reference
+	!<chromeos-base/chromeos-init-0.0.20"
 DEPEND="${RDEPEND}"
+
+S="${WORKDIR}"
 
 src_install() {
 	# Chrome OS: sudo and vt2 are important for system debugging both in
@@ -32,9 +35,12 @@ src_install() {
 	# - Cases #1 and #2 will apply but failure will fall through to the
 	#   inserted password.
 	insinto /etc/pam.d
-	doins "${FILESDIR}/chromeos-auth" || die
+	doins "${FILESDIR}/chromeos-auth"
 
-	dosbin "${FILESDIR}/is_developer_end_user" || die
+	dosbin "${FILESDIR}/is_developer_end_user"
+
+	insinto /etc/init
+	doins "${FILESDIR}"/hotkey-access.conf
 }
 
 pkg_postinst() {
