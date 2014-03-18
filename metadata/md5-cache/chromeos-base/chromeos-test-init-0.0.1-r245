@@ -1,12 +1,11 @@
 DEFINED_PHASES=info install setup unpack
-DEPEND=dev-lang/python dev-vcs/git
-DESCRIPTION=Chameleon bundle for Autotest lab deployment
+DEPEND=dev-vcs/git
+DESCRIPTION=Additional upstart jobs that will be installed on test images
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_5ce47e9b3e27c3318fae5115c26d2469ab1cd08f profiling
+IUSE=cros_host cros_workon_tree_2537d9ba400057b6ef2ba9aaa94738185ef1baea profiling
 KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=dev-lang/python
+LICENSE=BSD
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=57ecda0df68b012f8ecd0fc6d013e7dd
+_md5_=ce3d3cf520c19c2886632e827003ab5c
