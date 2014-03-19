@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/baselayout/baselayout-2.0.1.ebuild,v 1.1 2009/05/24 19:47:02 vapier Exp $
 
+EAPI="1"
+
 inherit multilib
 
 DESCRIPTION="Filesystem baselayout and init scripts (Modified for Chromium OS)"
@@ -12,7 +14,7 @@ SRC_URI="mirror://gentoo/${P}.tar.bz2
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="+auto_seed_etc_files"
 
 src_install() {
 	emake \
@@ -53,9 +55,13 @@ pkg_postinst() {
 	# (3) accidentally packaging up personal files with quickpkg
 	# If they don't exist then we install them
 	for x in master.passwd passwd shadow group fstab ; do
-		[ -e "${ROOT}etc/${x}" ] && continue
-		[ -e "${ROOT}usr/share/baselayout/${x}" ] || continue
-		cp -p "${ROOT}usr/share/baselayout/${x}" "${ROOT}"etc
+		if use auto_seed_etc_files ; then
+			[ -e "${ROOT}etc/${x}" ] && continue
+			[ -e "${ROOT}usr/share/baselayout/${x}" ] || continue
+			cp -p "${ROOT}usr/share/baselayout/${x}" "${ROOT}"etc
+		else
+			touch "${ROOT}etc/${x}" && continue
+		fi
 	done
 
 	# Force shadow permissions to not be world-readable #260993
