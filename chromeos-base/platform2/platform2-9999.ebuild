@@ -725,11 +725,10 @@ platform2_test_chromiumos-wide-profiling() {
 	# the active running kernel and the test target (bitwise).
 	# Also, below tests are temporarily disabled, see crbug.com/340543
 	use amd64 && tests+=(
-		# TODO(sque): Re-enable the other tests.
-		#perf_parser_test
-		#perf_reader_test
+		perf_parser_test
+		perf_reader_test
 		perf_recorder_test
-		#perf_serializer_test
+		perf_serializer_test
 	)
 	local test_bin
 	for test_bin in "${tests[@]}"; do
