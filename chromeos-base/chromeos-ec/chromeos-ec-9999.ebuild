@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="cros_host test bds nyan_big peach_pit peach_pi skate snow spring"
+IUSE="cros_host test bds nyan_big nyan_blaze peach_pit peach_pi skate snow spring"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -60,6 +60,9 @@ set_build_env() {
 	fi
 	if use nyan_big; then
 		EC_BOARD=big
+	fi
+	if use nyan_blaze; then
+		EC_BOARD=blaze
 	fi
 	if [[ ! -d board/${EC_BOARD} ]] ; then
 		ewarn "Sorry, ${EC_BOARD} not supported; doing build-test with BOARD=bds"
