@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cras pam opengl profile tpm usb X"
+IUSE="cras pam opengl +profile tpm usb X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
