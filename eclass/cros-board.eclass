@@ -61,6 +61,7 @@ ALL_BOARDS=(
 	duck
 	#emeraldlake2
 	enguarde
+	expresso
 	falco
 	falco_li
 	fb1
