@@ -260,7 +260,7 @@ CONFIG_DEBUG_INFO=y
 
 t124_xusb_fw_desc="Embed Tegra 5 XHCI controller firmware in kernel binary"
 t124_xusb_fw_config="
-CONFIG_EXTRA_FIRMWARE=\"tegra_xusb_firmware\"
+CONFIG_EXTRA_FIRMWARE=\"tegra12x/tegra_xusb_firmware\"
 CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
 "
 
