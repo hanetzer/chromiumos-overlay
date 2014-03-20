@@ -74,6 +74,7 @@ ALL_BOARDS=(
 	#kiev
 	kip
 	klang
+	lemmings
 	leon
 	link
 	lumpy
