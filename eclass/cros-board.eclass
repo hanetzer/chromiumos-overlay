@@ -70,6 +70,7 @@ ALL_BOARDS=(
 	fox_wtm2
 	gizmo
 	glimmer
+	gnawty
 	ironhide
 	#kiev
 	kip
