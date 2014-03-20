@@ -68,20 +68,12 @@ DEPEND="
 		doc-pdf? ( dev-java/fop )
 		www-client/lynx
 	)
-	>=virtual/perl-Pod-Simple-3.170.0
 	sys-devel/bison
 	sys-devel/flex
-	virtual/perl-Getopt-Long
-	virtual/perl-Time-Local
 	virtual/pkgconfig
 "
 
 S=${WORKDIR}/${MY_P}
-
-pkg_setup() {
-	# Add group for users allowed to sniff.
-	enewgroup wireshark
-}
 
 src_prepare() {
 	epatch \
@@ -92,6 +84,10 @@ src_prepare() {
 	epatch_user
 
 	eautoreconf
+
+	# Fix hard-coded cross-compile flag that enables dladdr.
+	# https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=9912
+	sed -i '/ac_cv_dladdr_finds_executable_path=yes/s:=yes:=no:' configure
 }
 
 src_configure() {
@@ -209,16 +205,9 @@ src_install() {
 }
 
 pkg_postinst() {
-	# Add group for users allowed to sniff.
-	enewgroup wireshark
-
 	if use pcap; then
 		fcaps -o 0 -g wireshark -m 4710 -M 0710 \
 			cap_dac_read_search,cap_net_raw,cap_net_admin \
 			"${EROOT}"/usr/bin/dumpcap
 	fi
-
-	ewarn "NOTE: To run wireshark as normal user you have to add yourself to"
-	ewarn "the wireshark group. This security measure ensures that only trusted"
-	ewarn "users are allowed to sniff your traffic."
 }
