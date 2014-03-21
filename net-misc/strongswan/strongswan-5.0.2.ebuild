@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-misc/strongswan/strongswan-5.0.2.ebuild,v 1.1 2013/02/02 17:34:50 gurligebis Exp $
 
-EAPI=2
+EAPI=4
 inherit eutils linux-info user
 
 DESCRIPTION="IPsec-based VPN solution focused on security and ease of use, supporting IKEv1/IKEv2 and MOBIKE"
@@ -11,7 +11,7 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 
 LICENSE="GPL-2 RSA DES"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86"
+KEYWORDS="*"
 IUSE="+caps curl debug dhcp eap farp gcrypt ldap mysql +non-root +openssl sqlite pam"
 
 COMMON_DEPEND="!net-misc/openswan
@@ -20,7 +20,7 @@ COMMON_DEPEND="!net-misc/openswan
 	caps? ( sys-libs/libcap )
 	curl? ( net-misc/curl )
 	ldap? ( net-nds/openldap )
-	openssl? ( >=dev-libs/openssl-0.9.8[-bindist] )
+	openssl? ( >=dev-libs/openssl-0.9.8 )
 	mysql? ( virtual/mysql )
 	sqlite? ( >=dev-db/sqlite-3.3.1 )
 	pam? ( sys-libs/pam )"
@@ -28,10 +28,19 @@ DEPEND="${COMMON_DEPEND}
 	virtual/linux-sources
 	sys-kernel/linux-headers"
 RDEPEND="${COMMON_DEPEND}
-	virtual/logger
-	sys-apps/iproute2"
+	virtual/logger"
 
 UGID="ipsec"
+
+src_prepare() {
+	epatch "${FILESDIR}/${P}-initgroups.patch"
+	epatch "${FILESDIR}/${P}-quick-mode-select-proposal-subset.patch"
+	epatch "${FILESDIR}/${P}-ignore-spurious-quick-mode.patch"
+	epatch "${FILESDIR}/${P}-Check-return-value-of-ECDSA_Verify.patch"
+	epatch "${FILESDIR}/${P}-is_asn1.patch"
+	epatch "${FILESDIR}/${P}-compare_dn.patch"
+	epatch "${FILESDIR}/${P}-handle_fragment.patch"
+}
 
 pkg_setup() {
 	linux-info_pkg_setup
@@ -75,11 +84,6 @@ pkg_setup() {
 			ewarn
 		fi
 	fi
-
-	if use non-root; then
-		enewgroup ${UGID}
-		enewuser ${UGID} -1 -1 -1 ${UGID}
-	fi
 }
 
 src_configure() {
@@ -108,6 +112,7 @@ src_configure() {
 		--disable-static \
 		--enable-ikev1 \
 		--enable-ikev2 \
+		--enable-pkcs11 \
 		$(use_with caps capabilities libcap) \
 		$(use_enable curl) \
 		$(use_enable ldap) \
@@ -158,6 +163,18 @@ src_install() {
 		/etc/ipsec.d/ocspcerts \
 		/etc/ipsec.d/private \
 		/etc/ipsec.d/reqs
+
+	# Replace various IPsec files with symbolic links to runtime generated
+	# files (by l2tpipsec_vpn) in /var/run on Chromium OS.
+	local link_path=/var/run/l2tpipsec_vpn/current
+	for cfg_file in \
+		/etc/ipsec.conf \
+		/etc/ipsec.secrets \
+		/etc/ipsec.d/cacerts/cacert.der \
+		/etc/strongswan.conf; do
+		rm -f "${D}${cfg_file}"
+		dosym "${link_path}/$(basename $cfg_file)" "${cfg_file}"
+	done
 
 	dodoc NEWS README TODO || die
 
