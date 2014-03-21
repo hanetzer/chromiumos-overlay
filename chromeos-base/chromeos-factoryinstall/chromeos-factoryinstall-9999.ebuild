@@ -56,8 +56,12 @@ RDEPEND="$COMMON_DEPEND
 	net-misc/htpdate
 	net-wireless/iw
 	sys-apps/flashrom
+	sys-apps/hdparm
+	sys-apps/mmc-utils
 	sys-apps/net-tools
 	sys-apps/upstart
+	sys-apps/util-linux
+	sys-block/fio
 	sys-block/parted
 	sys-fs/e2fsprogs"
 
@@ -75,6 +79,10 @@ src_compile() {
 	emake
 }
 
+src_test() {
+	tests/factory_verify_test.sh || die "unittest failed"
+}
+
 src_install() {
 	insinto /etc/init
 	doins factory_install.conf
@@ -82,11 +90,13 @@ src_install() {
 	exeinto /usr/sbin
 	doexe factory_install.sh
 	doexe factory_reset.sh
+	doexe factory_verify.sh
 	doexe netboot_postinst.sh
 	doexe ping_shopfloor.sh
 	doexe secure_less.sh
 
 	insinto /root
+	doins factory_verify.fio
 	newins $FILESDIR/dot.factory_installer .factory_installer
 	newins $FILESDIR/dot.gpt_layout .gpt_layout
 	# install PMBR code
