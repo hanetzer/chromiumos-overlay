@@ -53,7 +53,8 @@ sys-apps/pciutils	static-libs
 app-arch/xz-utils	static-libs
 sys-apps/util-linux	-suid
 # We don't have any font with graphite table. Drop graphite from harfbuzz.
-media-libs/harfbuzz	-graphite
+# We don't need instrospection either.
+media-libs/harfbuzz	-graphite -introspection
 dev-java/icedtea-bin -alsa -cups -X
 # Need png for color font support. bzip2 is not used. It's only for X11 *pcf.bz2
 # that we don't have.
