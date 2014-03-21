@@ -238,21 +238,22 @@ src_compile_depthcharge() {
 		--dt "${fdt_file}"
 	)
 
+	# If unified depthcharge is being used always include ramstage_file.
+	if use unified_depthcharge; then
+		common+=(
+			--add-blob ramstage "${ramstage_file}"
+		)
+	fi
+
 	if use x86 || use amd64; then
 		common+=(
 			--seabios "${CROS_FIRMWARE_ROOT}/seabios.cbfs"
-			--add-blob ramstage "${ramstage_file}"
 		)
 		if [ -f "${refcode_file}" ]; then
 			common+=(
 				--add-blob refcode "${refcode_file}"
 			)
 		fi
-	fi
-	if use arm && use depthcharge; then
-		common+=(
-			--add-blob ramstage "${ramstage_file}"
-		)
 	fi
 
 	if use cros_ec; then
