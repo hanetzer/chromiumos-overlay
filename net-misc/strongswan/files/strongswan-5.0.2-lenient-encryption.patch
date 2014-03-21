@@ -1,0 +1,32 @@
+Be lenient about incoming ID_PROT responses with unencrypted
+ID_V1 and HASH_V1.  Some endpoints do not encrypt these
+responses.
+
+diff -ur strongswan-5.0.2.orig/src/libcharon/encoding/message.c strongswan-5.0.2/src/libcharon/encoding/message.c
+--- strongswan-5.0.2.orig/src/libcharon/encoding/message.c	2013-01-25 02:24:15.000000000 -0800
++++ strongswan-5.0.2/src/libcharon/encoding/message.c	2014-03-21 14:14:08.421003575 -0700
+@@ -1939,8 +1939,21 @@
+ 			{
+ 				DBG1(DBG_ENC, "payload type %N was not encrypted",
+ 					 payload_type_names, type);
+-				status = FAILED;
+-				break;
++				/**
++				 * Special case for some broken endpoints
++				 * that fail to encrypt, here.  We are not
++				 * giving away much in these messages, however.
++				 */
++				if (this->exchange_type == ID_PROT &&
++				    !this->is_request &&
++				    (type == ID_V1 || type == HASH_V1)) {
++					DBG1(DBG_ENC,
++					     "white-listing this unencrypted "
++					     "payload");
++				} else {
++					status = FAILED;
++					break;
++				}
+ 			}
+ 		}
+ 		previous = payload;
+Only in strongswan-5.0.2/src/libcharon/encoding: .message.c.swp

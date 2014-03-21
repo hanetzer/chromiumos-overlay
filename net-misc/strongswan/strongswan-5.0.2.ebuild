@@ -41,6 +41,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-compare_dn.patch"
 	epatch "${FILESDIR}/${P}-handle_fragment.patch"
 	epatch "${FILESDIR}/${P}-reject-create-child-sa-exchange.patch"
+	epatch "${FILESDIR}/${P}-lenient-encryption.patch"
 }
 
 pkg_setup() {
