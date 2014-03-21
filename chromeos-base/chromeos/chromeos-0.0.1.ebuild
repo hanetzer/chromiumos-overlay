@@ -91,6 +91,7 @@ CROS_COMMON_RDEPEND="
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-installer
 	chromeos-base/platform2
+	chromeos-base/tty
 	chromeos-base/update_engine
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )

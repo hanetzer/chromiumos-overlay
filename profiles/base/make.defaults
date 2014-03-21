@@ -144,13 +144,17 @@ LC_MESSAGES=C
 # ChromeOS-specific: BOARD_USE for accessing board value in cros-board.eclass
 #                    CROS_WORKON_TREE for cros-workon
 #                    TESTS USE_EXPAND for autotest
+#                    TTY_CONSOLE for enabling tty consoles
 #                    U_BOOT_CONFIG_USE for selecting U-Boot config
 #                    U_BOOT_FDT_USE for selecting U-Boot device tree
 #                    LINUX_FIRMARE for selecting upstream firmware components
-USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS U_BOOT_CONFIG_USE U_BOOT_FDT_USE LINUX_FIRMWARE"
+USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS TTY_CONSOLE U_BOOT_CONFIG_USE U_BOOT_FDT_USE LINUX_FIRMWARE"
 USE_EXPAND_HIDDEN="${USE_EXPAND_HIDDEN} CROS_WORKON_TREE"
 
 # Default licenses that are accepted for ChromiumOS builds.
 # If you want to accept more, use the --accept_licenses flag
 # when running setup_board.
 ACCEPT_LICENSE="* -@EULA -@CHROMEOS"
+
+# By default, we only start a console on tty2.
+TTY_CONSOLE="tty2"

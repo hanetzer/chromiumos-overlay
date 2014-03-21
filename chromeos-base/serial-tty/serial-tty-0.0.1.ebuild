@@ -40,4 +40,7 @@ src_compile() {
 src_install() {
 	insinto /etc/init
 	doins tty-serial.conf
+
+	ewarn "This package is getting deprecated. Please use the"
+	ewarn "chromeos-base/tty package instead."
 }

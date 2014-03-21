@@ -11,12 +11,10 @@ DESCRIPTION="Upstart init scripts for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-
-# NOTE: vt can only be turned off for embedded currently.
-IUSE="cros_embedded +encrypted_stateful +udev vt"
+IUSE="cros_embedded +encrypted_stateful +udev"
 
 DEPEND=""
 # vboot_reference for crossystem
@@ -72,7 +70,6 @@ src_install() {
 		doins syslog.conf system-services.conf
 
 		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
-		use vt && doins tty2.conf
 	else
 		insinto /etc/init
 		doins *.conf
