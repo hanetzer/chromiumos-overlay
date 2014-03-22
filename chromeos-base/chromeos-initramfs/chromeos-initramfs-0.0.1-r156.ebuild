@@ -247,7 +247,7 @@ pull_netboot_ramfs_binary() {
 	idobin /bin/sh
 	idobin /bin/xxd
 	idobin /sbin/blockdev
-	idobin /sbin/fsck.vfat
+	idobin /usr/sbin/fsck.vfat
 	idobin /sbin/resize2fs
 	idobin /sbin/sfdisk
 	idofutility /usr/bin/old_bins/cgpt
