@@ -39,6 +39,7 @@ base_libs = [
                 files/file_path_constants.cc
                 files/file_path_watcher.cc
                 files/file_path_watcher_linux.cc
+                files/important_file_writer.cc
                 files/scoped_temp_dir.cc
                 file_util.cc
                 file_util_posix.cc
