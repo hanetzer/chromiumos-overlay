@@ -1,0 +1,12 @@
+DEFINED_PHASES=info install setup unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Upstart init scripts for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_embedded +encrypted_stateful +udev vt cros_host cros_workon_tree_734581448a550114e4a30ada3ef0ee47cfa961f7 profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=chromeos-base/bootstat chromeos-base/vboot_reference sys-apps/rootdev sys-apps/upstart sys-process/lsof !cros_embedded? ( chromeos-base/chromeos-assets chromeos-base/chromeos-disableecho chromeos-base/vpd media-gfx/ply-image sys-apps/chvt sys-apps/smartmontools )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=1a323977b45c9a51b9b6f1b7f1beefff
