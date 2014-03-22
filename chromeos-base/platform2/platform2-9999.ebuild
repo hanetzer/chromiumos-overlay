@@ -25,6 +25,7 @@ OLD_PLATFORM_LOCALNAME=(
 )
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
+	"buffet"
 )
 CROS_WORKON_LOCALNAME=(
 	"${OLD_PLATFORM_LOCALNAME[@]}"
@@ -48,7 +49,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular +crash_reporting -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -354,6 +355,21 @@ platform2_install_attestation() {
 	insinto /usr
 	dosbin "${OUT}"/attestationd
 	dobin "${OUT}"/attestation
+}
+
+platform2_install_buffet() {
+	use buffet || return 0
+
+	dobin "${OUT}"/buffet
+	dobin "${OUT}"/buffet_client
+
+	# DBus configuration.
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.Buffet.conf
+
+	# Upstart script.
+	insinto /etc/init
+	doins buffet.conf
 }
 
 platform2_install_chaps() {
@@ -715,6 +731,11 @@ platform2_install_wimax_manager() {
 
 platform2_test_attestation() {
 	return 0
+}
+
+platform2_test_buffet() {
+	use buffet || return 0
+	platform2_test "run" "${OUT}/buffet_testrunner"
 }
 
 platform2_test_chaps() {
