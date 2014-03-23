@@ -5,8 +5,8 @@
 # board-specific xorg.conf as necessary.
 
 EAPI=4
-CROS_WORKON_COMMIT="eedf2b46c4ca99e66cbed1f11385681aa8bb0a03"
-CROS_WORKON_TREE="e60ebdbbc7f0a50ff34e08268c3fc0ed9c23fd53"
+CROS_WORKON_COMMIT="ed6413ffdd0bd606cf2bec585a825b519ea70810"
+CROS_WORKON_TREE="c4560c86abd50b78711bcff697dfea0b1f965a0a"
 CROS_WORKON_PROJECT="chromiumos/platform/xorg-conf"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -62,6 +62,8 @@ src_install() {
 		doins 50-touchpad-cmt-lumpy.conf
 	elif [ "${board}" = "link" ]; then
 		doins 50-touchpad-cmt-link.conf
+	elif [[ "${board}" = "clapper" ]]; then
+		doins 50-touchpad-cmt-clapper.conf
 	elif [[ "${board}" = "daisy" && "${board_variant}" = "${board}" ]]; then
 		doins 50-touchpad-cmt-daisy.conf
 		doins 50-touchpad-cmt-pit.conf # Some Lucas's use Pit Touchpad module
