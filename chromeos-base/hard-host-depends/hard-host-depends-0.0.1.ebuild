@@ -91,6 +91,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	app-admin/eselect-opengl
 	app-admin/eselect-mesa
+	app-admin/python-updater
 	app-arch/cabextract
 	app-arch/makeself
 	>=app-arch/pbzip2-1.1.1-r1
