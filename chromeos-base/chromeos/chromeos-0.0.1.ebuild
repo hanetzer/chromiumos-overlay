@@ -200,6 +200,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/permission_broker
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
+	chromeos-base/vpd
 	net-wireless/ath3k
 	net-wireless/ath6k
 	net-wireless/crda
