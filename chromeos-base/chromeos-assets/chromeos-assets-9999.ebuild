@@ -225,8 +225,8 @@ src_install() {
 
 	# Speech synthesis engine (platform-specific native client module)
 	if use arm ; then
-		unzip "${S}"/speech_synthesis/patts/tts_service_pexe_arm.nexe.zip
-		doins "${S}"/tts_service_pexe_arm.nexe
+		unzip "${S}"/speech_synthesis/patts/tts_service_arm.nexe.zip
+		doins "${S}"/tts_service_arm.nexe
 	elif use x86 ; then
 		unzip "${S}"/speech_synthesis/patts/tts_service_x86-32.nexe.zip
 		doins "${S}"/tts_service_x86-32.nexe
