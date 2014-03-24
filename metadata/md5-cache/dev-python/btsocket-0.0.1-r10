@@ -1,5 +1,5 @@
 DEFINED_PHASES=compile configure info install postinst postrm prepare setup unpack
-DEPEND=dev-vcs/git =dev-lang/python-2*
+DEPEND=dev-python/setuptools dev-vcs/git =dev-lang/python-2*
 DESCRIPTION=Bluetooth Socket support module
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
@@ -10,4 +10,4 @@ RDEPEND==dev-lang/python-2*
 REQUIRED_USE=asan? ( clang )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	distutils	c2658824b3debc637c77b58e1d658fab	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=428ef2f1cc9da3f2a4284b19ef16d39d
+_md5_=fe25d60e17a340a2d0d15a9e50bb1dba
