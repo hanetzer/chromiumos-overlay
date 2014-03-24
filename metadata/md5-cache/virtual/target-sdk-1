@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/hard-host-depends
+DESCRIPTION=List of packages that are needed inside the sdk to build everything
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/hard-host-depends
+SLOT=0
+_md5_=ffeb303ece666b9f0a547639ee2ff8d6
