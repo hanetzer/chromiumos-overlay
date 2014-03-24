@@ -98,7 +98,6 @@ RDEPEND_cros_disks="
 
 RDEPEND_debugd="
 	debugd? (
-		dev-cpp/gflags
 		dev-libs/dbus-c++
 		dev-libs/libpcre
 		net-libs/libpcap
