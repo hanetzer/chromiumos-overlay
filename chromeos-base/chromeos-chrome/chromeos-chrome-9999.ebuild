@@ -103,10 +103,7 @@ RESTRICT="mirror"
 # the bots to also generate the Manifest on the fly.
 #add_pgo_arches x86 amd64 arm
 
-TEST_FILES=(
-	"ppapi_example_video_decode"
-	"video_decode_accelerator_unittest"
-	"video_encode_accelerator_unittest" )
+TEST_FILES=("video_decode_accelerator_unittest" "ppapi_example_video_decode")
 PPAPI_TEST_FILES=(
 	lib{32,64}
 	mock_nacl_gdb
@@ -823,8 +820,7 @@ install_chrome_test_resources() {
 		"peerconnection_server"
 		"sync_integration_tests"
 		"sandbox_linux_unittests"
-		"video_decode_accelerator_unittest"
-		"video_encode_accelerator_unittest" )
+		"video_decode_accelerator_unittest" )
 
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
 		$(tc-getSTRIP) --strip-debug \
