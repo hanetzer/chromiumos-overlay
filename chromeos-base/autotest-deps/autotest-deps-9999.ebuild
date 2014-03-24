@@ -52,6 +52,7 @@ RDEPEND="${RDEPEND}
 # deps/fakemodem
 RDEPEND="${RDEPEND}
 	chromeos-base/autotest-fakemodem-conf
+	dev-libs/dbus-glib
 "
 
 RDEPEND="${RDEPEND}
