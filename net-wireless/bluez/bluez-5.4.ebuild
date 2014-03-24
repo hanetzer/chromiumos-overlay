@@ -124,6 +124,9 @@ src_prepare() {
 	# by the chromebook. This patch can be removed on bluez-5.6.
 	epatch "${FILESDIR}/${P}-audio-Disable-AVRCP-profiles.patch"
 
+	# Fix an issue with checking size of partial SDP response
+	epatch "${FILESDIR}/${P}-sdp-AttrList-size-check.patch"
+
 	eautoreconf
 
 	if use cups; then
