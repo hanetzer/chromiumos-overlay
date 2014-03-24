@@ -75,7 +75,7 @@ src_prepare() {
 	# Change the default SDP Server socket path to a sub-directory
 	# under /var/run, since /var/run is not writeable by the bluetooth
 	# user.
-	epatch "${FILESDIR}/${PN}-sdp-path.patch"
+	epatch "${FILESDIR}/${P}-sdp-path.patch"
 
 	# Playstation3 Controller pairing plugin, retrieved from
 	# linux-bluetooth mailing list (posted 2012-04-18).
