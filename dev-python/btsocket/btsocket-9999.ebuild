@@ -17,6 +17,9 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
+DEPEND="dev-python/setuptools"
+RDEPEND=""
+
 src_configure() {
 	clang-setup-env
 	cros-workon_src_configure
