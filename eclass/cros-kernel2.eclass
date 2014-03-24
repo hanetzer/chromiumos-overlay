@@ -28,6 +28,7 @@ IUSE="
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
 	-wifi_testbed_ap
 	-boot_dts_device_tree
+	-wifi_debug
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -69,6 +70,7 @@ CONFIG_FRAGMENTS=(
 	tpm
 	vfat
 	wifi_testbed_ap
+	wifi_debug
 	wireless34
 	x32
 )
@@ -272,6 +274,11 @@ sealed RF chamber!
 "
 wifi_testbed_ap_config="
 CONFIG_ATH_DEFER_EEPROM_REGULATORY=y
+"
+
+wifi_debug_desc="Enable extra debug flags for WiFi"
+wifi_debug_config="
+CONFIG_IWL7000_XVT=m
 "
 
 x32_desc="x32 ABI support"
