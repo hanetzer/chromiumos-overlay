@@ -67,12 +67,6 @@ src_prepare() {
 	# user.
 	epatch "${FILESDIR}/${P}-sdp-path.patch"
 
-	# Playstation3 Controller pairing plugin, retrieved from
-	# linux-bluetooth mailing list (posted 2012-04-18).
-	#epatch "${FILESDIR}/${P}-ps3-0001.patch"
-	#epatch "${FILESDIR}/${P}-ps3-0002.patch"
-	#epatch "${FILESDIR}/${P}-ps3-0003.patch"
-
 	# Make the Powered property persistent across reboots, this
 	# was removed from upstream BlueZ in favor of using a connection
 	# manager to deal with powering up/down the adapter. We restore
@@ -118,7 +112,8 @@ src_configure() {
 		$(use_enable test-programs test) \
 		--enable-library \
 		--disable-systemd \
-		--disable-obex
+		--disable-obex \
+		--enable-sixaxis
 }
 
 src_install() {
@@ -155,9 +150,7 @@ src_install() {
 	newins "${FILESDIR}/${P}-upstart.conf" bluetoothd.conf
 
 	udev_dorules "${FILESDIR}/99-uhid.rules"
-
-	#insinto /lib/udev/rules.d
-	#newins "${FILESDIR}/${PN}-ps3-gamepad.rules" "99-ps3-gamepad.rules"
+	udev_dorules "${FILESDIR}/99-ps3-gamepad.rules"
 
 	# We don't preserve /var/lib in images, so nuke anything we preseed.
 	rm -rf "${D}"/var/lib/bluetooth
