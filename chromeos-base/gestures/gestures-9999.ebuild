@@ -17,7 +17,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="180609"
+LIBCHROME_VERS="242728"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libevdev
