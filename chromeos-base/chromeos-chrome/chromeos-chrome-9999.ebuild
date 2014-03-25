@@ -28,10 +28,6 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
-# Don't strip NaCl executables. These are not linux executables and the
-# linux host's strip command doesn't know how to handle them correctly.
-STRIP_MASK="*.nexe"
-
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
 # TODO(mcgrathr,vapier): This should be removed after portage's prepstrip

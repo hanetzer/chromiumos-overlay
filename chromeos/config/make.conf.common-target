@@ -98,3 +98,7 @@ INSTALL_MASK="
   /usr/share/bash-completion
 "
 PKG_INSTALL_MASK="${INSTALL_MASK}"
+
+# Don't strip NaCl executables. These are not linux executables and the
+# linux host's strip command doesn't know how to handle them correctly.
+STRIP_MASK="*.nexe"
