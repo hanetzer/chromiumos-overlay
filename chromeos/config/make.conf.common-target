@@ -102,3 +102,9 @@ PKG_INSTALL_MASK="${INSTALL_MASK}"
 # Don't strip NaCl executables. These are not linux executables and the
 # linux host's strip command doesn't know how to handle them correctly.
 STRIP_MASK="*.nexe"
+
+# Don't strip ELF files that land in the firmware directory. The symbols
+# of firmware ELF files are needed, but the tools don't support splitdebug.
+# Therefore, stripping should not be done. It's OK not to strip the ELF
+# files because these files are not installed into the image.
+STRIP_MASK="${STRIP_MASK} /firmware/*.elf"
