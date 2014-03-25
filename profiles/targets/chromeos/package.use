@@ -31,6 +31,7 @@ media-gfx/imagemagick   png
 media-gfx/zbar		-gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
 media-libs/freeimage	png
 media-libs/libdvdread   -css
+media-libs/libpng	pnm2png
 media-libs/libsndfile	minimal
 # disabled in profiles/default/linux/package.use
 media-libs/mesa		llvm gallium classic
