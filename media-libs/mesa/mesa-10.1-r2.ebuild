@@ -139,7 +139,12 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-immediatel.patch
 	epatch "${FILESDIR}"/10.0-draw-fix-incorrect-vertex-size-computation-in-LLVM-d.patch
 
-	base_src_prepare
+	epatch "${FILESDIR}"/10.1-mesa-format_has_color_component-helper.patch
+	epatch "${FILESDIR}"/10.1-mesa-handle-GL_NONE-draw-buffers-correctly-in-glClea.patch
+	epatch "${FILESDIR}"/10.1-mesa-skip-clearing-color-buffers-when-color-writes-are-disabled.patch
+	epatch "${FILESDIR}"/10.1-i965-for-color-clears-only-disable-writes-to-components-that-exist.patch
+
+    base_src_prepare
 
 	eautoreconf
 }

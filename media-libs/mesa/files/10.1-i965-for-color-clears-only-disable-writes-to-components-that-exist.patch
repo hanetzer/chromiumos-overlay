@@ -1,0 +1,48 @@
+From 1fd61835f3df1baf9bd7d3f6beed46cd0d154dd3 Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Fri, 21 Mar 2014 03:47:16 -0700
+Subject: [PATCH 4/4] i965: For color clears, only disable writes to components
+ that exist.
+
+The SIMD16 replicated FB write message only works if we don't need the
+color calculator to mask our framebuffer writes.  Previously, we bailed
+on it if color_mask wasn't <true, true, true, true>.  However, this was
+needlessly strict for formats with fewer than four components - only the
+components that actually exist matter.
+
+WebGL Aquarium attempts to clear a BGRX texture with the ColorMask set
+to <true, true, true, false>.  This will work perfectly fine with the
+replicated data message; we just bailed unnecessarily.
+
+Improves performance of WebGL Aquarium on Iris Pro (at 1920x1080) by
+abound 50%, and Bay Trail (at 1366x768) by over 70% (using Chrome 24).
+
+v2: Use _mesa_format_has_color_component() to properly handle ALPHA
+    formats (and generally be less fragile).
+
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Reviewed-by: Ian Romanick <ian.d.romanick@intel.com>
+Tested-by: Dylan Baker <baker.dylan.c@gmail.com>
+(cherry picked from commit eccad18bd89556608092278cf46a9aaa4605f163)
+---
+ src/mesa/drivers/dri/i965/brw_blorp_clear.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_blorp_clear.cpp b/src/mesa/drivers/dri/i965/brw_blorp_clear.cpp
+index 072ad55..dbea41b 100644
+--- a/src/mesa/drivers/dri/i965/brw_blorp_clear.cpp
++++ b/src/mesa/drivers/dri/i965/brw_blorp_clear.cpp
+@@ -232,7 +232,8 @@ brw_blorp_clear_params::brw_blorp_clear_params(struct brw_context *brw,
+     * state.  This is not documented.
+     */
+    for (int i = 0; i < 4; i++) {
+-      if (!color_mask[i]) {
++      if (_mesa_format_has_color_component(irb->mt->format, i) &&
++          !color_mask[i]) {
+          color_write_disable[i] = true;
+          wm_prog_key.use_simd16_replicated_data = false;
+       }
+-- 
+1.8.4
+

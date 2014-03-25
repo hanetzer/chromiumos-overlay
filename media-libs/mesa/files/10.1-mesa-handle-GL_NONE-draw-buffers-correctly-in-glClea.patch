@@ -1,0 +1,31 @@
+From eceb090e7db5772b74c1570f152b3c57ed4d1c5c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>
+Date: Wed, 8 Jan 2014 01:23:43 +0100
+Subject: [PATCH 2/4] mesa: handle GL_NONE draw buffers correctly in glClear
+
+Reviewed-by: Brian Paul <brianp@vmware.com>
+(cherry picked from commit 9bf9578c1b79e5622a2325f1a2bb80fcf0e22a6d)
+---
+ src/mesa/main/clear.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/main/clear.c b/src/mesa/main/clear.c
+index f0b525f..fd5bb35 100644
+--- a/src/mesa/main/clear.c
++++ b/src/mesa/main/clear.c
+@@ -179,7 +179,11 @@ _mesa_Clear( GLbitfield mask )
+       if (mask & GL_COLOR_BUFFER_BIT) {
+          GLuint i;
+          for (i = 0; i < ctx->DrawBuffer->_NumColorDrawBuffers; i++) {
+-            bufferMask |= (1 << ctx->DrawBuffer->_ColorDrawBufferIndexes[i]);
++            GLint buf = ctx->DrawBuffer->_ColorDrawBufferIndexes[i];
++
++            if (buf >= 0) {
++               bufferMask |= 1 << buf;
++            }
+          }
+       }
+ 
+-- 
+1.8.4
+
