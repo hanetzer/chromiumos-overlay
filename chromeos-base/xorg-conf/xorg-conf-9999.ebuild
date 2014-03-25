@@ -62,6 +62,8 @@ src_install() {
 		doins 50-touchpad-cmt-link.conf
 	elif [[ "${board}" = "clapper" ]]; then
 		doins 50-touchpad-cmt-clapper.conf
+	elif [[ "${board}" = "glimmer" ]]; then
+		doins 50-touchpad-cmt-glimmer.conf
 	elif [[ "${board}" = "daisy" && "${board_variant}" = "${board}" ]]; then
 		doins 50-touchpad-cmt-daisy.conf
 		doins 50-touchpad-cmt-pit.conf # Some Lucas's use Pit Touchpad module
