@@ -29,6 +29,7 @@ RDEPEND="
 	!cros_embedded? (
 		chromeos-base/chromeos-assets
 		chromeos-base/chromeos-disableecho
+		chromeos-base/swap-init
 		media-gfx/ply-image
 		sys-apps/chvt
 		sys-apps/smartmontools
