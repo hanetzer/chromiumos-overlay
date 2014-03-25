@@ -33,7 +33,7 @@ RDEPEND="
 
 DEPEND="
 	test? ( dev-cpp/gtest )
-	chromeos-base/libchrome:180609[cros-debug=]
+	chromeos-base/libchrome:242728[cros-debug=]
 	chromeos-base/vboot_reference
 	${RDEPEND}"
 
