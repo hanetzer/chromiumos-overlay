@@ -124,6 +124,7 @@ base_libs = [
     'sources' : """
                 files/file_path_watcher.cc
                 files/file_path_watcher_linux.cc
+                files/important_file_writer.cc
                 message_loop.cc
                 message_loop_proxy.cc
                 message_loop_proxy_impl.cc
