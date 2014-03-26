@@ -14,6 +14,7 @@ OLD_PLATFORM_LOCALNAME=(
 	"cros-disks"
 	"debugd"
 	"libchromeos"
+	"lorgnette"
 	"metrics"
 	"mist"
 	"power_manager"
@@ -51,7 +52,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -127,6 +128,15 @@ RDEPEND_libchromeos="dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/openssl
 	dev-libs/protobuf
+"
+
+RDEPEND_lorgnette="
+	lorgnette? (
+		chromeos-base/chromeos-minijail
+		dev-libs/dbus-c++
+		media-gfx/sane-backends
+		media-libs/libpng[pnm2png]
+	)
 "
 
 RDEPEND_metrics="
@@ -539,6 +549,15 @@ platform2_install_libchromeos() {
 	doins chromeos/policy/*.h
 }
 
+platform2_install_lorgnette() {
+	use lorgnette || return 0
+	dobin "${OUT}"/lorgnette
+	insinto /etc/dbus-1/system.d
+	doins dbus_permissions/org.chromium.lorgnette.conf
+	insinto /usr/share/dbus-1/system-services
+	doins dbus_service/org.chromium.lorgnette.service
+}
+
 platform2_install_metrics() {
 	dobin "${OUT}"/metrics_client syslog_parser.sh
 
@@ -882,6 +901,12 @@ platform2_test_libchromeos() {
 		platform2_test "run" "${OUT}/libchromeos-${v}_unittests"
 		platform2_test "run" "${OUT}/libpolicy-${v}_unittests"
 	done
+}
+
+platform2_test_lorgnette() {
+	use lorgnette || return 0
+	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
+	platform2_test "run" "${OUT}/lorgnette_unittest"
 }
 
 platform2_test_metrics() {
