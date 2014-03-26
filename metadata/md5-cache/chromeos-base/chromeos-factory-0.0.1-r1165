@@ -3,11 +3,11 @@ DEPEND=virtual/chromeos-interface dev-python/pyyaml dev-python/unittest2 chromeo
 DESCRIPTION=Chrome OS Factory Tools and Data
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +build_tests -content_shell -chromeless_tty cros_host cros_workon_tree_ccf989d1bf47caa04d760d6cf533f46604de23db_bce1116bb3261c4b1189c4def3dec4176430e898 profiling
+IUSE=+autotest +build_tests -content_shell -chromeless_tty cros_host cros_workon_tree_80048694d0f799ea740c9ea6dc114d999ca0c4e2_bce1116bb3261c4b1189c4def3dec4176430e898 profiling
 KEYWORDS=*
 LICENSE=BSD
 RDEPEND=!chromeos-base/chromeos-factorytools dev-lang/python dev-python/argparse dev-python/jsonrpclib dev-python/netifaces dev-python/python-evdev dev-python/pyyaml dev-python/setproctitle dev-python/unittest2 dev-python/ws4py dev-util/stressapptest chromeos-base/audiotest chromeos-base/chromeos-factory-board chromeos-base/memento_softwareupdate >=chromeos-base/vpd-0.0.1-r11 media-gfx/zbar media-sound/sox
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=18f8210bc33a8ced77c74d53262092ea
+_md5_=b5029e3b6ad6cac196287a4fb69099d0
