@@ -10,7 +10,7 @@ DESCRIPTION="X.Org xset application stripped down for just 'r' and 'm' commands"
 HOMEPAGE="http://xorg.freedesktop.org/"
 SRC_URI=""
 
-LICENSE="MIT"
+LICENSE="X"
 SLOT="0"
 KEYWORDS="*"
 IUSE="+minimal"
