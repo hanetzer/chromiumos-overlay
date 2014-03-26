@@ -9,7 +9,7 @@ inherit cros-workon cros-constants
 
 DESCRIPTION="Chromium OS multitouch driver regression tests"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
