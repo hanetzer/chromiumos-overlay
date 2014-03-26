@@ -1,0 +1,12 @@
+DEFINED_PHASES=install postinst postrm setup
+DEPEND=X? ( x11-apps/mkfontdir media-fonts/encodings ) >=media-libs/fontconfig-2.4.0
+DESCRIPTION=Noto fonts developed by Monotype
+EAPI=5
+IUSE=X
+KEYWORDS=*
+LICENSE=Apache-2.0
+RESTRICT=strip binchecks
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/notofonts-20140130.tar.gz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=d7e4310e8ef0885aa9d5e0bda1be27a6
