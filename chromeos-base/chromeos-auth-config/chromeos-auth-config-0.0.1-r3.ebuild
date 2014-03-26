@@ -38,6 +38,7 @@ src_install() {
 	doins "${FILESDIR}/chromeos-auth"
 
 	dosbin "${FILESDIR}/is_developer_end_user"
+	dosbin "${FILESDIR}/is_login_enabled"
 
 	insinto /etc/init
 	doins "${FILESDIR}"/hotkey-access.conf

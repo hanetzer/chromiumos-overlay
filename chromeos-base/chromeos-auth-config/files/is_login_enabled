@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Exit status is 0 if login should be allowed, non-zero if not.
+# This file is used by PAM to disable VT2 while reenrollment check is pending.
+# This check is done in order to prevent logging in the terminal while the
+# forced enrollment check is pending.
+# We need to store this check in a separate script because PAM has trouble
+# calling the shell directly.
+
+# When not in debug mode, disallow logging in on VT2 during OOBE.
+# The definition of debug mode for now is: The chronos user has a password set,
+#     or this is a developer build, or the write-protect switch is off.
+[ -f /home/chronos/.oobe_completed ] ||
+    grep -q '^chronos:[^*]' /etc/shadow ||
+    crossystem 'debug_build?1' ||
+    crossystem 'wpsw_boot?0'
