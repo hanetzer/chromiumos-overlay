@@ -1015,4 +1015,8 @@ pkg_preinst() {
 			enewgroup "${ug}"
 		done
 	fi
+	if use tpm; then
+		enewgroup "attestation"
+		enewuser "attestation"
+	fi
 }
