@@ -13,6 +13,7 @@
 	<flag name='clang'>Build with CC and C++ set to clang</flag>
 	<flag name='component_build'>Build components as shared libraries (faster link)</flag>
 	<flag name='content_shell'>Build content_shell(chrome not built)</flag>
+	<flag name='ecs'>Build embedded content_shell</flag>
 	<flag name='gold'>Use gold linker</flag>
 	<flag name='highdpi'>Add high DPI resources</flag>
 	<flag name='nacl'>Build Native Client (NaCL) support</flag>

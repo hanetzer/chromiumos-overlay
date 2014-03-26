@@ -26,7 +26,7 @@ LICENSE="BSD-Google
 	chrome_pdf? ( Google-TOS )"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
+IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm -ecs +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -213,15 +213,25 @@ set_build_defines() {
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
+		"use_cups=0"
+		"use_gnome_keyring=0"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
 	)
 
-	BUILD_DEFINES+=(
-		swig_defines=-DOS_CHROMEOS
-		chromeos=1
-		icu_use_data_file_flag=1
-	)
+	if use ecs ; then
+		BUILD_DEFINES+=(
+			"embedded=1"
+			"ozone_platform_dri=0"
+			"ozone_platform_eglmarzone=0"
+		)
+	else
+		BUILD_DEFINES+=(
+			swig_defines=-DOS_CHROMEOS
+			chromeos=1
+			icu_use_data_file_flag=1
+		)
+	fi
 
 	if use pgo_generate ; then
 		BUILD_DEFINES+=(
@@ -672,6 +682,9 @@ src_compile() {
 	elif use content_shell; then
 		chrome_targets=( content_shell chrome_sandbox )
 		einfo "Building content_shell"
+	elif use ecs; then
+		chrome_targets=( content_shell chrome_sandbox )
+		einfo "Building embedded content_shell"
 	else
 		chrome_targets=( chrome chrome_sandbox )
 		if use build_tests; then
@@ -1078,7 +1091,7 @@ src_install() {
 		move_and_symlink_files "${CHROME_DIR}" "/usr/local/${CHROME_DIR}"
 	fi
 
-	if use build_tests; then
+	if use build_tests && ! use ecs; then
 		# Install Chrome Driver to test image.
 		local chromedriver_dir='/usr/local/chromedriver'
 		dodir "${chromedriver_dir}"
