@@ -9,7 +9,6 @@
 # - If you want to use different versions in the cros_sdk chroot and the target
 #   boards, then use package.mask to control visibility.
 
-=dev-cpp/gflags-1.2             amd64 x86
 =dev-util/gdbus-codegen-2.30.2	amd64 x86
 
 # Get a newer version of pylint
