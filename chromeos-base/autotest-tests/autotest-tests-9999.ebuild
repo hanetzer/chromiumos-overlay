@@ -104,6 +104,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_cellular_Dummy
 	+tests_cellular_ModemControl
 	+tests_cellular_OutOfCreditsSubscriptionState
+	+tests_cellular_ServiceName
 	+tests_cellular_Signal
 	+tests_cellular_Smoke
 	+tests_cellular_ThroughputController
