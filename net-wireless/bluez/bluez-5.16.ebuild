@@ -80,6 +80,10 @@ src_prepare() {
 	# the patch rather than deal with Shill ;)
 	epatch "${FILESDIR}/${P}-persist-powered.patch"
 
+	# Move the btmgmt tool out from behind the --enable-experimental
+	# flag so that we can install it.
+	epatch "${FILESDIR}/${P}-btmgmt.patch"
+
 	eautoreconf
 
 	if use cups; then
@@ -124,7 +128,7 @@ src_install() {
 		cd "${S}"
 	fi
 
-	dobin attrib/gatttool
+	dobin attrib/gatttool tools/btmgmt
 
 	# Change the Bluetooth Device ID of official products
 	if [[ -n "${CHROMEOS_BLUETOOTH_VENDORID}" && -n "${CHROMEOS_BLUETOOTH_PRODUCTID}" ]]; then
