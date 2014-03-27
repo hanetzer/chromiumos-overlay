@@ -621,7 +621,6 @@ platform2_install_shill() {
 	dobin bin/ff_debug
 
 	if use cellular; then
-		dobin bin/mm_debug
 		dobin bin/set_apn
 		dobin bin/set_cellular_ppp
 	fi
