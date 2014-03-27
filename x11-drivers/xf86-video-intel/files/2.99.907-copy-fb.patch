@@ -1,4 +1,4 @@
-From 6cf3158411fbfee1d52115f3616cb64a0c75fd07 Mon Sep 17 00:00:00 2001
+From 5eec45f19d2a94310fd8931fed2fed99612aa8b9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
 Date: Wed, 6 Mar 2013 18:23:08 -0800
 Subject: [PATCH] Fix fbcon copy on xf86-video-intel.
@@ -11,18 +11,35 @@ copy scheme.
   is the way our X server is currently patched)
 - Flush the batchbuffer to make sure the copy landed before we
   display anything
+- fbcon is copied only on first EnterVT, later fbos in X server
+  already contain valid contents
 
 See chromium-os:39659 for switching to pScreen->canDoBGNoneRoot.
----
- src/uxa/intel_display.c | 172 +++++++++++++++++++++---------------------------
- src/uxa/intel_driver.c  |   3 +-
- 2 files changed, 77 insertions(+), 98 deletions(-)
 
+Signed-off-by: Dominik Behr <dbehr@chromium.org>
+---
+ src/uxa/intel.h         |   1 +
+ src/uxa/intel_display.c | 174 ++++++++++++++++++++++--------------------------
+ src/uxa/intel_driver.c  |   3 +-
+ 3 files changed, 81 insertions(+), 97 deletions(-)
+
+diff --git a/src/uxa/intel.h b/src/uxa/intel.h
+index 6ac770e..0cbe68a 100644
+--- a/src/uxa/intel.h
++++ b/src/uxa/intel.h
+@@ -201,6 +201,7 @@ typedef struct intel_screen_private {
+ 	/* For XvMC */
+ 	Bool XvMCEnabled;
+ #endif
++	Bool fb_copied;
+ 
+ 	CreateScreenResourcesProcPtr CreateScreenResources;
+ 
 diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
-index 9bda006..3e4cec7 100644
+index 18f41f0..d7fb9a2 100644
 --- a/src/uxa/intel_display.c
 +++ b/src/uxa/intel_display.c
-@@ -2004,129 +2004,107 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
+@@ -1993,129 +1993,111 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
  }
  
  static PixmapPtr
@@ -155,18 +172,7 @@ index 9bda006..3e4cec7 100644
 +	int pixmap_size;
  
 -	if (intel->force_fallback)
-+	/* Ugly: this runs before CreateScratchPixmap() which normally calculates
-+	   this number :(
-+	 */
-+	pixmap_size = sizeof(PixmapRec) + dixPrivatesSize(PRIVATE_PIXMAP);
-+	savePMSize = pScreen->totalPixmapSize;
-+	pScreen->totalPixmapSize = BitmapBytePad(pixmap_size * 8);
-+
-+	src = intel_create_pixmap_for_fbcon(pScrn);
-+	if (src == NULL) {
-+		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-+				"Couldn't create pixmap for fbcon\n");
-+		pScreen->totalPixmapSize = savePMSize;
++	if (intel->fb_copied) {
  		return;
 -
 -	fbcon_id = 0;
@@ -180,7 +186,20 @@ index 9bda006..3e4cec7 100644
 -
 -	src = intel_create_pixmap_for_fbcon(scrn, fbcon_id);
 -	if (src == NULL)
--		return;
++	/* Ugly: this runs before CreateScratchPixmap() which normally calculates
++	   this number :(
++	 */
++	pixmap_size = sizeof(PixmapRec) + dixPrivatesSize(PRIVATE_PIXMAP);
++	savePMSize = pScreen->totalPixmapSize;
++	pScreen->totalPixmapSize = BitmapBytePad(pixmap_size * 8);
++
++	src = intel_create_pixmap_for_fbcon(pScrn);
++	if (src == NULL) {
++		xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
++				"Couldn't create pixmap for fbcon\n");
++		pScreen->totalPixmapSize = savePMSize;
+ 		return;
++	}
  
  	/* We dont have a screen Pixmap yet */
 -	dst = intel_create_pixmap_for_bo(pScreen, intel->front_buffer,
@@ -226,9 +245,10 @@ index 9bda006..3e4cec7 100644
 +#if ABI_VIDEODRV_VERSION >= SET_ABI_VERSION(10, 0)
 +	pScrn->canDoBGNoneRoot = TRUE;
 +#endif
++	intel->fb_copied = TRUE;
  }
 diff --git a/src/uxa/intel_driver.c b/src/uxa/intel_driver.c
-index 46e06df..a06120a 100644
+index b62a139..f3758f9 100644
 --- a/src/uxa/intel_driver.c
 +++ b/src/uxa/intel_driver.c
 @@ -165,7 +165,6 @@ static Bool i830CreateScreenResources(ScreenPtr screen)
@@ -239,7 +259,7 @@ index 46e06df..a06120a 100644
  	return TRUE;
  }
  
-@@ -1133,6 +1132,8 @@ static Bool I830EnterVT(VT_FUNC_ARGS_DECL)
+@@ -1134,6 +1133,8 @@ static Bool I830EnterVT(VT_FUNC_ARGS_DECL)
  			   strerror(errno));
  	}
  
@@ -249,5 +269,5 @@ index 46e06df..a06120a 100644
  		return FALSE;
  
 -- 
-1.8.5.3
+1.9.1.423.g4596e3a
 
