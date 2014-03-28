@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Install the upstart job that creates the swap and zram.
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!<chromeos-base/chromeos-init-0.0.21 sys-apps/util-linux
+SLOT=0
+_md5_=ac49f02f1d795a1603d3d49c17341617
