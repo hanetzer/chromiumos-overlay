@@ -84,6 +84,11 @@ src_prepare() {
 	# flag so that we can install it.
 	epatch "${FILESDIR}/${P}-btmgmt.patch"
 
+	# Apply patch to build the Chromium plugin and copy the source of
+	# that plugin into the expected location.
+	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
+	cp "${FILESDIR}/chromium.c" "plugins/chromium.c" || die
+
 	eautoreconf
 
 	if use cups; then

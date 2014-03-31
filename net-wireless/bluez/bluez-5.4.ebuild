@@ -93,6 +93,11 @@ src_prepare() {
 	# flag so that we can install it.
 	epatch "${FILESDIR}/${P}-btmgmt.patch"
 
+	# Apply patch to build the Chromium plugin and copy the source of
+	# that plugin into the expected location.
+	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
+	cp "${FILESDIR}/chromium.c" "plugins/chromium.c" || die
+
 	# Connectability properties exported on the new Input1 interface.
 	# Accepted upstream, can be removed on bluez-5.5
 	epatch "${FILESDIR}/${P}-hid-0001-input-Documentation-for-new-Input1-interface.patch"

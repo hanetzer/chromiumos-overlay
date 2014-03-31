@@ -1,0 +1,12 @@
+diff --git a/Makefile.plugins b/Makefile.plugins
+index 6a1ddbf..13af931 100644
+--- a/Makefile.plugins
++++ b/Makefile.plugins
+@@ -1,4 +1,7 @@
+ 
++builtin_modules += chromium
++builtin_sources += plugins/chromium.c
++
+ builtin_modules += hostname
+ builtin_sources += plugins/hostname.c
+ 
