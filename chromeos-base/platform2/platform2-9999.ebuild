@@ -7,7 +7,6 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
 
 OLD_PLATFORM_LOCALNAME=(
-	"common-mk"
 	"chaps"
 	"chromiumos-wide-profiling"
 	"crash-reporter"
@@ -28,15 +27,18 @@ NEW_PLATFORM2_LOCALNAME=(
 	"buffet"
 )
 CROS_WORKON_LOCALNAME=(
-	"${OLD_PLATFORM_LOCALNAME[@]}"
-	"../platform2"  # With all platform2 subdirs
+	"platform/common-mk"
+	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
+	"platform2"  # With all platform2 subdirs
 )
 CROS_WORKON_PROJECT=(
+	"chromiumos/platform/common-mk"
 	"${OLD_PLATFORM_LOCALNAME[@]/#/chromiumos/platform/}"
 	"chromiumos/platform2"
 )
 CROS_WORKON_DESTDIR=(
-	"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/}"
+	"${S}/platform/common-mk"
+	"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/platform/}"
 	"${S}/platform2"
 )
 
@@ -252,7 +254,7 @@ DEPEND="${RDEPEND}
 #
 
 platform2() {
-	local platform2_py="${S}/common-mk/platform2.py"
+	local platform2_py="${S}/platform2/common-mk/platform2.py"
 
 	local action="$1"
 
@@ -279,7 +281,7 @@ platform2_get_target_args() {
 }
 
 platform2_test() {
-	local platform2_test_py="${S}/common-mk/platform2_test.py"
+	local platform2_test_py="${S}/platform2/common-mk/platform2_test.py"
 
 	local action="$1"
 	local bin="$2"
@@ -319,20 +321,19 @@ platform2_multiplex() {
 	#   OUT = the build output directory, contains binaries/libs
 	#   SRC = the path to subdir we're running the step for
 
+	local SRC
 	local phase="$1"
 	local OUT="$(cros-workon_get_build_dir)/out/Default"
-	local pkg
 	local multiplex_names=(
-		"${OLD_PLATFORM_LOCALNAME[@]}"
-		"${NEW_PLATFORM2_LOCALNAME[@]/#/platform2/}"
+		"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/platform/}"
+		"${NEW_PLATFORM2_LOCALNAME[@]/#/${S}/platform2/}"
 	)
-	for pkg in "${multiplex_names[@]}"; do
-		local SRC="${S}/${pkg}"
+	for SRC in "${multiplex_names[@]}"; do
 		pushd "${SRC}" >/dev/null
 
 		# Subshell so that funcs that change the env (like `into` and
 		# `insinto`) don't affect the next pkg.
-		pkg="${pkg##*/}"
+		local pkg="${SRC##*/}"
 		( "platform2_${phase}_${pkg}" ) || die
 
 		popd >/dev/null
@@ -413,10 +414,6 @@ platform2_install_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
 	dobin "${OUT}"/quipper
-}
-
-platform2_install_common-mk() {
-	return 0
 }
 
 platform2_install_crash-reporter() {
@@ -795,10 +792,6 @@ platform2_test_chromiumos-wide-profiling() {
 	for test_bin in "${tests[@]}"; do
 		platform2_test "run" "${OUT}/${test_bin}" "1"
 	done
-}
-
-platform2_test_common-mk() {
-	return 0
 }
 
 platform2_test_crash-reporter() {

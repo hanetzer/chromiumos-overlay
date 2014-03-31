@@ -196,7 +196,7 @@ get_paths() {
 	fi
 
 	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
-		pathbase+=/src/platform
+		pathbase+=/src
 	else
 		pathbase+=/src/third_party
 	fi
@@ -205,6 +205,9 @@ get_paths() {
 	local pathelement i
 	for (( i = 0; i < project_count; ++i )); do
 		pathelement="${pathbase}/${CROS_WORKON_LOCALNAME[i]}"
+		if [[ ! -d "${pathelement}" ]]; then
+			pathelement="${pathbase}/platform/${CROS_WORKON_LOCALNAME[i]}"
+		fi
 		if [[ -n "${CROS_WORKON_SUBDIR[i]}" ]]; then
 			pathelement+="/${CROS_WORKON_SUBDIR[i]}"
 		fi
@@ -239,7 +242,7 @@ symlink_in_place() {
 		ewarn "For inplace build you need to modify the sandbox"
 		ewarn "Set SANDBOX_WRITE=${CROS_WORKON_SRCROOT} in your env."
 	fi
-
+	mkdir -p "${dst%/*}"
 	ln -sf "${src}" "${dst}"
 }
 
