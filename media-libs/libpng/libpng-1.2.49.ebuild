@@ -38,11 +38,20 @@ src_configure() {
 
 src_compile() {
 	emake
-	use pnm2png &&
-		emake -C contrib/pngminus -f makefile.std pnm2png CC=$(tc-getCC)
+	if use pnm2png; then
+		pushd contrib/pngminus > /dev/null
+		../../libtool --mode=compile $(tc-getCC) ${CFLAGS} ${CPPFLAGS} \
+			-I../.. -c pnm2png.c || die
+		../../libtool --mode=link $(tc-getCC) ${CFLAGS} ${LDFLAGS} \
+			pnm2png.lo -o pnm2png ../../libpng.la || die
+		popd > /dev/null
+	fi
 }
 
 src_install() {
 	emake DESTDIR="${D}" install
-	use pnm2png && dobin contrib/pngminus/pnm2png
+	if use pnm2png; then
+		./libtool --mode=install install -D contrib/pngminus/pnm2png \
+			"${ED}/usr/bin/pnm2png" || die
+	fi
 }
