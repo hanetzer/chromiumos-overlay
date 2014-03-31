@@ -9,7 +9,7 @@ PYTHON_DEPEND="test-programs? 2"
 # shared; this is because it uses overlay-defined CHROMEOS_BLUETOOTH_VENDORID,
 # CHROMEOS_BLUETOOTH_PRODUCTID and CHROMEOS_BLUETOOTH_VERSION variables to
 # define the exported Device ID.
-inherit autotools multilib eutils systemd python cros-board
+inherit autotools multilib eutils systemd python cros-board udev
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -188,6 +188,8 @@ src_install() {
 
 	insinto /etc/init
 	newins "${FILESDIR}/${P}-upstart.conf" bluetoothd.conf
+
+	udev_dorules "${FILESDIR}/99-uhid.rules"
 
 	#insinto /lib/udev/rules.d
 	#newins "${FILESDIR}/${PN}-ps3-gamepad.rules" "99-ps3-gamepad.rules"
