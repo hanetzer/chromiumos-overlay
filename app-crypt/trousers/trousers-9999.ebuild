@@ -3,10 +3,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header$
 
-EAPI="2"
+EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
 
-inherit autotools base cros-workon eutils linux-info user
+inherit autotools base cros-workon user
 
 DESCRIPTION="An open-source TCG Software Stack (TSS) v1.1 implementation"
 HOMEPAGE="http://trousers.sf.net"
@@ -45,19 +45,10 @@ src_configure() {
 	cros-workon_src_configure
 }
 
-src_compile() {
-	tc-export CC CXX AR RANLIB LD NM
-	export CCFLAGS="$CFLAGS"
-	emake
-}
-
 src_install() {
-	keepdir /var/lib/tpm
-	emake DESTDIR="${D}" install || die
-	dodoc AUTHORS ChangeLog NICETOHAVES README TODO
+	default
+	dodoc NICETOHAVES
 	use doc && dodoc doc/*
-	newinitd "${FILESDIR}/tcsd.initd" tcsd
-	newconfd "${FILESDIR}/tcsd.confd" tcsd
 
 	# Install the empty system.data files
 	dodir /etc/trousers
