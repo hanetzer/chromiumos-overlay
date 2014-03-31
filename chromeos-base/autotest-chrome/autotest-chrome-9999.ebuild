@@ -48,6 +48,7 @@ IUSE_TESTS=(
 	+tests_login_ChromeProfileSanitary
 	+tests_login_CryptohomeIncognito
 	+tests_login_Cryptohome
+	+tests_login_GaiaLogin
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
 	+tests_network_ChromeCellularNetworkPresent
