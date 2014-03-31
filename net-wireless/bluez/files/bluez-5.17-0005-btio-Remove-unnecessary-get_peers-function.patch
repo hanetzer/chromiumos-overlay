@@ -1,0 +1,58 @@
+From 0c7626713b84d2afea856f3ef779902f1c23a857 Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Wed, 2 Apr 2014 14:04:39 +0300
+Subject: [PATCH 5/5] btio: Remove unnecessary get_peers() function
+
+---
+ btio/btio.c | 28 ++++------------------------
+ 1 file changed, 4 insertions(+), 24 deletions(-)
+
+diff --git a/btio/btio.c b/btio/btio.c
+index 7cacaf0..5f91171 100644
+--- a/btio/btio.c
++++ b/btio/btio.c
+@@ -886,28 +886,6 @@ static gboolean parse_set_opts(struct set_opts *opts, GError **err,
+ 	return TRUE;
+ }
+ 
+-static gboolean get_peers(int sock, struct sockaddr *src, struct sockaddr *dst,
+-				socklen_t len, GError **err)
+-{
+-	socklen_t olen;
+-
+-	memset(src, 0, len);
+-	olen = len;
+-	if (getsockname(sock, src, &olen) < 0) {
+-		ERROR_FAILED(err, "getsockname", errno);
+-		return FALSE;
+-	}
+-
+-	memset(dst, 0, len);
+-	olen = len;
+-	if (getpeername(sock, dst, &olen) < 0) {
+-		ERROR_FAILED(err, "getpeername", errno);
+-		return FALSE;
+-	}
+-
+-	return TRUE;
+-}
+-
+ static gboolean get_src(int sock, void *src, socklen_t len, GError **err)
+ {
+ 	socklen_t olen;
+@@ -1340,8 +1318,10 @@ static gboolean sco_get(int sock, GError **err, BtIOOption opt1, va_list args)
+ 		return FALSE;
+ 	}
+ 
+-	if (!get_peers(sock, (struct sockaddr *) &src,
+-				(struct sockaddr *) &dst, sizeof(src), err))
++	if (!get_src(sock, &src, sizeof(src), err))
++		return FALSE;
++
++	if (!get_dst(sock, &dst, sizeof(dst), err))
+ 		return FALSE;
+ 
+ 	while (opt != BT_IO_OPT_INVALID) {
+-- 
+1.9.1.423.g4596e3a
+

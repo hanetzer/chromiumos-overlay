@@ -9,7 +9,7 @@ PYTHON_DEPEND="test-programs? 2"
 # shared; this is because it uses overlay-defined CHROMEOS_BLUETOOTH_VENDORID,
 # CHROMEOS_BLUETOOTH_PRODUCTID and CHROMEOS_BLUETOOTH_VERSION variables to
 # define the exported Device ID.
-inherit autotools multilib eutils systemd python udev cros-board
+inherit autotools multilib eutils systemd python udev user cros-board
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -17,15 +17,14 @@ SRC_URI="mirror://kernel/linux/bluetooth/${P}.tar.xz"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~*"
-IUSE="cups debug test-programs usb readline"
+KEYWORDS="*"
+IUSE="cups debug test-programs readline"
 
 CDEPEND="
 	>=dev-libs/glib-2.14:2
 	sys-apps/dbus
 	>=sys-fs/udev-169
 	cups? ( net-print/cups )
-	usb? ( virtual/libusb:0 )
 	readline? ( sys-libs/readline )
 "
 DEPEND="${CDEPEND}
@@ -84,6 +83,15 @@ src_prepare() {
 	# flag so that we can install it.
 	epatch "${FILESDIR}/${P}-btmgmt.patch"
 
+	# chromium:359751, submitted upstream 04/03/2014
+	epatch "${FILESDIR}/${P}-0001-core-don-t-set-BR-EDR-support-when-no-flags-present.patch"
+	epatch "${FILESDIR}/${P}-0002-core-don-t-try-BR-EDR-for-LE-only-devices.patch"
+
+	# chromium:359755, cherry-picked from GIT HEAD 04/03/2014
+	epatch "${FILESDIR}/${P}-0003-btio-Do-L2CAP-peer-address-lookup-only-when-really-n.patch"
+	epatch "${FILESDIR}/${P}-0004-btio-Do-RFCOMM-peer-address-lookup-only-when-really-.patch"
+	epatch "${FILESDIR}/${P}-0005-btio-Remove-unnecessary-get_peers-function.patch"
+
 	# Apply patch to build the Chromium plugin and copy the source of
 	# that plugin into the expected location.
 	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
@@ -108,7 +116,6 @@ src_configure() {
 		--enable-datafiles \
 		$(use_enable debug) \
 		$(use_enable test-programs test) \
-		$(use_enable usb) \
 		--enable-library \
 		--disable-systemd \
 		--disable-obex
@@ -161,6 +168,9 @@ src_install() {
 }
 
 pkg_postinst() {
+	enewuser "bluetooth" "218"
+	enewgroup "bluetooth" "218"
+
 	udevadm control --reload-rules && udevadm trigger --subsystem-match=bluetooth
 
 	if ! has_version "net-dialup/ppp"; then
