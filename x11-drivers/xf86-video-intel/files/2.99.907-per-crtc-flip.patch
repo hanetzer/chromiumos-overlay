@@ -1,7 +1,7 @@
-From 03aaf89701098460660df492a023e077933f3b1a Mon Sep 17 00:00:00 2001
+From 37570b3d441cb05129fd1a10bfe17fbbeeeb15d4 Mon Sep 17 00:00:00 2001
 From: Chris Wolfe <cwolfe@chromium.org>
 Date: Fri, 22 Feb 2013 12:41:01 -0800
-Subject: [PATCH 1/2] xf86-video-intel: Split framebuffer and flip crtcs.
+Subject: [PATCH] xf86-video-intel: Split framebuffer and flip crtcs.
 
 Try to allocate a separate framebuffer for each CRTC and flip those
 directly with the back-buffer of updated drawables. This avoids
@@ -21,6 +21,8 @@ Tested with the WebGL aquarium and space rocks demos, a Youtube
 video and WebKit poster circle demo. Added and removed displays while
 active and while suspended.
 
+Signed-off-by: Dominik Behr <dbehr@chromium.org>
+
 Conflicts:
 	src/intel_options.c
 	src/intel_options.h
@@ -28,13 +30,13 @@ Conflicts:
 ---
  src/intel_options.c     |   1 +
  src/intel_options.h     |   1 +
- src/uxa/intel.h         |  54 +++-
- src/uxa/intel_display.c | 700 +++++++++++++++++++++++++++++++++++++++---------
- src/uxa/intel_dri.c     | 190 +++++++++++--
+ src/uxa/intel.h         |  55 +++-
+ src/uxa/intel_display.c | 707 +++++++++++++++++++++++++++++++++++++++---------
+ src/uxa/intel_dri.c     | 191 +++++++++++--
  src/uxa/intel_driver.c  |  10 +
  src/uxa/intel_uxa.c     |  50 ++++
  src/uxa/intel_video.c   |  11 +-
- 8 files changed, 856 insertions(+), 161 deletions(-)
+ 8 files changed, 865 insertions(+), 161 deletions(-)
 
 diff --git a/src/intel_options.c b/src/intel_options.c
 index 02a4ae1..92a3bac 100644
@@ -61,7 +63,7 @@ index 77f0c45..d8e6fc0 100644
  	OPTION_XVMC,
  #define INTEL_XVMC 1
 diff --git a/src/uxa/intel.h b/src/uxa/intel.h
-index 6ac770e..cf3e1f6 100644
+index 0cbe68a..f5594a7 100644
 --- a/src/uxa/intel.h
 +++ b/src/uxa/intel.h
 @@ -103,6 +103,7 @@ struct intel_pixmap {
@@ -72,7 +74,7 @@ index 6ac770e..cf3e1f6 100644
  };
  
  #if HAS_DEVPRIVATEKEYREC
-@@ -333,6 +334,7 @@ typedef struct intel_screen_private {
+@@ -334,6 +335,7 @@ typedef struct intel_screen_private {
  	Bool force_fallback;
  	Bool has_kernel_flush;
  	Bool needs_flush;
@@ -80,11 +82,12 @@ index 6ac770e..cf3e1f6 100644
  
  	struct _DRI2FrameEvent *pending_flip[2];
  
-@@ -398,15 +400,43 @@ extern void intel_mode_remove_fb(intel_screen_private *intel);
+@@ -399,15 +401,44 @@ extern void intel_mode_remove_fb(intel_screen_private *intel);
  extern void intel_mode_close(intel_screen_private *intel);
  extern void intel_mode_fini(intel_screen_private *intel);
  
 +extern void intel_pixmap_remove_fb(intel_screen_private *intel, PixmapPtr pixmap);
++extern void intel_set_front_fb_id(intel_screen_private *intel, PixmapPtr new_front_pixmap);
 +
  extern int intel_get_pipe_from_crtc_id(drm_intel_bufmgr *bufmgr, xf86CrtcPtr crtc);
  extern int intel_crtc_id(xf86CrtcPtr crtc);
@@ -125,7 +128,7 @@ index 6ac770e..cf3e1f6 100644
  	DRI2_WAITMSC,
  };
  
-@@ -431,13 +461,14 @@ typedef struct _DRI2FrameEvent {
+@@ -432,13 +463,14 @@ typedef struct _DRI2FrameEvent {
  	void *event_data;
  	DRI2BufferPtr front;
  	DRI2BufferPtr back;
@@ -142,7 +145,7 @@ index 6ac770e..cf3e1f6 100644
  
  static inline intel_screen_private *
  intel_get_screen_private(ScrnInfoPtr scrn)
-@@ -473,6 +504,11 @@ extern void I915EmitInvarientState(ScrnInfoPtr scrn);
+@@ -474,6 +506,11 @@ extern void I915EmitInvarientState(ScrnInfoPtr scrn);
  extern void I830EmitFlush(ScrnInfoPtr scrn);
  
  extern void I830InitVideo(ScreenPtr pScreen);
@@ -154,7 +157,7 @@ index 6ac770e..cf3e1f6 100644
  extern xf86CrtcPtr intel_covering_crtc(ScrnInfoPtr scrn, BoxPtr box,
  				      xf86CrtcPtr desired, BoxPtr crtc_box_ret);
  
-@@ -683,6 +719,18 @@ void intel_uxa_block_handler(intel_screen_private *intel);
+@@ -684,6 +721,18 @@ void intel_uxa_block_handler(intel_screen_private *intel);
  Bool intel_get_aperture_space(ScrnInfoPtr scrn, drm_intel_bo ** bo_table,
  			      int num_bos);
  
@@ -174,7 +177,7 @@ index 6ac770e..cf3e1f6 100644
  {
  	struct intel_pixmap *priv = intel_get_pixmap_private(pixmap);
 diff --git a/src/uxa/intel_display.c b/src/uxa/intel_display.c
-index 9bda006..ab805b1 100644
+index d7fb9a2..58ea487 100644
 --- a/src/uxa/intel_display.c
 +++ b/src/uxa/intel_display.c
 @@ -60,27 +60,33 @@
@@ -382,7 +385,7 @@ index 9bda006..ab805b1 100644
  		    if (output->crtc != crtc)
  			continue;
  
-@@ -545,20 +656,20 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
+@@ -544,20 +655,20 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
  {
  	ScrnInfoPtr scrn = crtc->scrn;
  	intel_screen_private *intel = intel_get_screen_private(scrn);
@@ -409,7 +412,7 @@ index 9bda006..ab805b1 100644
  		if (ret < 0) {
  			ErrorF("failed to add fb\n");
  			return FALSE;
-@@ -581,14 +692,17 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
+@@ -580,14 +691,17 @@ intel_crtc_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
  	intel_batch_submit(crtc->scrn);
  
  	mode_to_kmode(crtc->scrn, &intel_crtc->kmode, mode);
@@ -435,7 +438,7 @@ index 9bda006..ab805b1 100644
  }
  
  static void
-@@ -1518,33 +1632,53 @@ intel_output_init(ScrnInfoPtr scrn, struct intel_mode *mode, int num)
+@@ -1507,33 +1621,53 @@ intel_output_init(ScrnInfoPtr scrn, struct intel_mode *mode, int num)
  	list_add(&intel_output->link, &mode->outputs);
  }
  
@@ -494,7 +497,7 @@ index 9bda006..ab805b1 100644
  	if (intel->back_pixmap) {
  		screen = intel->back_pixmap->drawable.pScreen;
  		screen->DestroyPixmap(intel->back_pixmap);
-@@ -1567,7 +1701,7 @@ intel_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
+@@ -1556,7 +1690,7 @@ intel_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
  	ret = drmModeAddFB(mode->fd, width, height, scrn->depth,
  			   scrn->bitsPerPixel, pitch,
  			   intel->front_buffer->handle,
@@ -503,7 +506,7 @@ index 9bda006..ab805b1 100644
  	if (ret)
  		goto fail;
  
-@@ -1604,102 +1738,415 @@ fail:
+@@ -1593,102 +1727,415 @@ fail:
  	scrn->virtualX = old_width;
  	scrn->virtualY = old_height;
  	scrn->displayWidth = old_pitch;
@@ -779,7 +782,7 @@ index 9bda006..ab805b1 100644
 +		struct intel_scanout *scanout = &mode->scanouts[i];
 +		if (scanout->pixmap == NULL)
 +			continue;
- 
++
 +		if (scanout->area.x1 <= area->x1 &&
 +		    scanout->area.y1 <= area->y1 &&
 +		    scanout->area.x2 >= area->x2 &&
@@ -823,7 +826,7 @@ index 9bda006..ab805b1 100644
 +	new_front_fb_id = intel_pixmap_ensure_fb(intel, new_front);
 +	if (new_front_fb_id == 0)
 +		goto error_undo;
-+
+ 
 +	flip_data = calloc(config->num_crtc, sizeof(*flip_data));
 +	if (!flip_data) {
 +		xf86DrvMsg(scrn->scrnIndex, X_WARNING,
@@ -844,13 +847,11 @@ index 9bda006..ab805b1 100644
 -		mode->flip_count++;
 +		if (flip_info->pipe == intel_crtc->pipe)
 +			reference_crtc = intel_crtc;
- 
--		crtc = config->crtc[i]->driver_private;
++
 +		intel_crtc_box(crtc, &crtc_box);
 +		intel_box_intersect(&intersect_box, &crtc_box, &flip_info->area);
  
--		flip = calloc(1, sizeof(struct intel_pageflip));
--		if (flip == NULL) {
+-		crtc = config->crtc[i]->driver_private;
 +		if (intersect_box.x1 == intersect_box.x2 ||
 +		    intersect_box.y1 == intersect_box.y2) {
 +			/* Skip crtcs unaffected by this update. */
@@ -862,24 +863,26 @@ index 9bda006..ab805b1 100644
 +			}
 +			continue;
 +		}
-+
+ 
+-		flip = calloc(1, sizeof(struct intel_pageflip));
+-		if (flip == NULL) {
 +		if (intersect_box.x1 != crtc_box.x1 ||
 +		    intersect_box.y1 != crtc_box.y1 ||
 +		    intersect_box.x2 != crtc_box.x2 ||
 +		    intersect_box.y2 != crtc_box.y2) {
- 			xf86DrvMsg(scrn->scrnIndex, X_WARNING,
--				   "flip queue: carrier alloc failed.\n");
++			xf86DrvMsg(scrn->scrnIndex, X_WARNING,
 +				"flip queue failed: updated area partially "
 +				"intersects crtc %d.\n",
 +				crtc_id(intel_crtc));
- 			goto error_undo;
- 		}
-+		flip_data[i] = calloc(1, sizeof(**flip_data));
-+		if (!flip_data[i]) {
-+			xf86DrvMsg(scrn->scrnIndex, X_WARNING,
-+				"flip queue failed: memory allocation error.\n");
 +			goto error_undo;
 +		}
++		flip_data[i] = calloc(1, sizeof(**flip_data));
++		if (!flip_data[i]) {
+ 			xf86DrvMsg(scrn->scrnIndex, X_WARNING,
+-				   "flip queue: carrier alloc failed.\n");
++				"flip queue failed: memory allocation error.\n");
+ 			goto error_undo;
+ 		}
 +	}
 +	if (reference_crtc == NULL) {
 +		xf86DrvMsg(scrn->scrnIndex, X_WARNING,
@@ -907,7 +910,11 @@ index 9bda006..ab805b1 100644
 +	reference_crtc->flip.frame = 0;
 +	reference_crtc->flip.tv_sec = 0;
 +	reference_crtc->flip.tv_usec = 0;
-+
+ 
+-		if (drmModePageFlip(mode->fd,
+-				    crtc_id(crtc),
+-				    new_fb_id,
+-				    DRM_MODE_PAGE_FLIP_EVENT, flip)) {
 +	/* Defer storing the flip info until we have successfully queued all of
 +	 * the flips. If this function returns FALSE, the caller will free the
 +	 * flip_info structure, so any successful flips must not access it.
@@ -924,11 +931,7 @@ index 9bda006..ab805b1 100644
 +		struct intel_crtc *intel_crtc = config->crtc[i]->driver_private;
 +		if (!flip_data[i])
 +			continue;
- 
--		if (drmModePageFlip(mode->fd,
--				    crtc_id(crtc),
--				    new_fb_id,
--				    DRM_MODE_PAGE_FLIP_EVENT, flip)) {
++
 +		flip_data[i]->reference_crtc = reference_crtc;
 +		flip_data[i]->flipped_crtc = intel_crtc;
 +		ret = drmModePageFlip(mode->fd,
@@ -979,7 +982,7 @@ index 9bda006..ab805b1 100644
  static const xf86CrtcConfigFuncsRec intel_xf86crtc_config_funcs = {
  	intel_xf86crtc_resize
  };
-@@ -1716,31 +2163,33 @@ intel_page_flip_handler(int fd, unsigned int frame, unsigned int tv_sec,
+@@ -1705,31 +2152,33 @@ intel_page_flip_handler(int fd, unsigned int frame, unsigned int tv_sec,
  			  unsigned int tv_usec, void *event_data)
  {
  	struct intel_pageflip *flip = event_data;
@@ -1030,7 +1033,7 @@ index 9bda006..ab805b1 100644
  }
  
  static void
-@@ -1847,6 +2296,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
+@@ -1836,6 +2285,7 @@ Bool intel_mode_pre_init(ScrnInfoPtr scrn, int fd, int cpp)
  
  	for (i = 0; i < mode->mode_res->count_connectors; i++)
  		intel_output_init(scrn, mode, i);
@@ -1038,7 +1041,7 @@ index 9bda006..ab805b1 100644
  
  	intel_compute_possible_clones(scrn, mode);
  
-@@ -1884,7 +2334,6 @@ intel_mode_init(struct intel_screen_private *intel)
+@@ -1873,7 +2323,6 @@ intel_mode_init(struct intel_screen_private *intel)
  	 * feedback on every server generation, so perform the
  	 * registration within ScreenInit and not PreInit.
  	 */
@@ -1046,7 +1049,7 @@ index 9bda006..ab805b1 100644
  	AddGeneralSocket(mode->fd);
  	RegisterBlockAndWakeupHandlers((BlockHandlerProcPtr)NoopDDA,
  				       drm_wakeup_handler, mode);
-@@ -1895,9 +2344,9 @@ intel_mode_remove_fb(intel_screen_private *intel)
+@@ -1884,9 +2333,9 @@ intel_mode_remove_fb(intel_screen_private *intel)
  {
  	struct intel_mode *mode = intel->modes;
  
@@ -1059,7 +1062,7 @@ index 9bda006..ab805b1 100644
  	}
  }
  
-@@ -1929,6 +2378,7 @@ void
+@@ -1918,6 +2367,7 @@ void
  intel_mode_fini(intel_screen_private *intel)
  {
  	struct intel_mode *mode = intel->modes;
@@ -1067,7 +1070,7 @@ index 9bda006..ab805b1 100644
  
  	if (mode == NULL)
  		return;
-@@ -1945,8 +2395,9 @@ intel_mode_fini(intel_screen_private *intel)
+@@ -1934,8 +2384,9 @@ intel_mode_fini(intel_screen_private *intel)
  						   link)->output);
  	}
  
@@ -1079,7 +1082,7 @@ index 9bda006..ab805b1 100644
  
  	/* mode->rotate_fb_id should have been destroyed already */
  
-@@ -1984,23 +2435,10 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
+@@ -1973,23 +2424,10 @@ Bool intel_crtc_on(xf86CrtcPtr crtc)
  		xf86OutputPtr output = xf86_config->output[i];
  		if (output->crtc == crtc &&
  		    intel_output_dpms_status(output) == DPMSModeOn) {
@@ -1105,8 +1108,22 @@ index 9bda006..ab805b1 100644
  }
  
  static PixmapPtr
+@@ -2050,6 +2488,13 @@ intel_create_pixmap_for_fbcon(ScrnInfoPtr pScrn)
+ 	return pixmap;
+ }
+ 
++void intel_set_front_fb_id(intel_screen_private *intel, PixmapPtr new_front_pixmap)
++{
++	struct intel_mode *mode = intel->modes;
++	mode->front_fb_id = intel_pixmap_ensure_fb(intel, new_front_pixmap);
++}
++
++
+ void intel_copy_fb(ScrnInfoPtr pScrn)
+ {
+ 	ScreenPtr pScreen = screenInfo.screens[pScrn->scrnIndex];
 diff --git a/src/uxa/intel_dri.c b/src/uxa/intel_dri.c
-index 08a0bd4..a627bb6 100644
+index 08a0bd4..b4c1a13 100644
 --- a/src/uxa/intel_dri.c
 +++ b/src/uxa/intel_dri.c
 @@ -439,6 +439,12 @@ I830DRI2CopyRegion(DrawablePtr drawable, RegionPtr pRegion,
@@ -1145,7 +1162,11 @@ index 08a0bd4..a627bb6 100644
  	/* It's important that this copy gets submitted before the
  	 * direct rendering client submits rendering for the next
  	 * frame, but we don't actually need to submit right now.  The
-@@ -793,6 +815,32 @@ I830DRI2ExchangeBuffers(struct intel_screen_private *intel, DRI2BufferPtr front,
+@@ -790,9 +812,36 @@ I830DRI2ExchangeBuffers(struct intel_screen_private *intel, DRI2BufferPtr front,
+ 						  back_priv->pixmap);
+ 	dri_bo_unreference (intel->front_buffer);
+ 	intel->front_buffer = new_front->bo;
++	intel_set_front_fb_id(intel, front_priv->pixmap);
  	dri_bo_reference (intel->front_buffer);
  }
  
@@ -1178,7 +1199,7 @@ index 08a0bd4..a627bb6 100644
  static PixmapPtr
  intel_glamor_create_back_pixmap(ScreenPtr screen,
  				PixmapPtr front_pixmap,
-@@ -825,13 +873,6 @@ intel_glamor_create_back_pixmap(ScreenPtr screen,
+@@ -825,13 +874,6 @@ intel_glamor_create_back_pixmap(ScreenPtr screen,
  	return back_pixmap;
  }
  
@@ -1192,7 +1213,7 @@ index 08a0bd4..a627bb6 100644
  /*
   * Our internal swap routine takes care of actually exchanging, blitting, or
   * flipping buffers as necessary.
-@@ -842,17 +883,20 @@ I830DRI2ScheduleFlip(struct intel_screen_private *intel,
+@@ -842,17 +884,20 @@ I830DRI2ScheduleFlip(struct intel_screen_private *intel,
  		     DRI2FrameEventPtr info)
  {
  	I830DRI2BufferPrivatePtr priv = info->back->driverPrivate;
@@ -1219,7 +1240,7 @@ index 08a0bd4..a627bb6 100644
  		return TRUE;
  	}
  
-@@ -903,8 +947,7 @@ I830DRI2ScheduleFlip(struct intel_screen_private *intel,
+@@ -903,8 +948,7 @@ I830DRI2ScheduleFlip(struct intel_screen_private *intel,
  		intel->back_buffer = NULL;
  	}
  
@@ -1229,7 +1250,7 @@ index 08a0bd4..a627bb6 100644
  		intel->back_buffer = new_back;
  		return FALSE;
  	}
-@@ -990,6 +1033,79 @@ can_exchange(DrawablePtr drawable, DRI2BufferPtr front, DRI2BufferPtr back)
+@@ -990,6 +1034,79 @@ can_exchange(DrawablePtr drawable, DRI2BufferPtr front, DRI2BufferPtr back)
  	return TRUE;
  }
  
@@ -1309,7 +1330,7 @@ index 08a0bd4..a627bb6 100644
  void I830DRI2FrameEventHandler(unsigned int frame, unsigned int tv_sec,
  			       unsigned int tv_usec, DRI2FrameEventPtr swap_info)
  {
-@@ -1007,13 +1123,19 @@ void I830DRI2FrameEventHandler(unsigned int frame, unsigned int tv_sec,
+@@ -1007,13 +1124,19 @@ void I830DRI2FrameEventHandler(unsigned int frame, unsigned int tv_sec,
  		return;
  	}
  
@@ -1334,7 +1355,7 @@ index 08a0bd4..a627bb6 100644
  
  		/* else fall through to exchange/blit */
  	case DRI2_SWAP: {
-@@ -1032,7 +1154,7 @@ void I830DRI2FrameEventHandler(unsigned int frame, unsigned int tv_sec,
+@@ -1032,7 +1155,7 @@ void I830DRI2FrameEventHandler(unsigned int frame, unsigned int tv_sec,
  		break;
  	default:
  		xf86DrvMsg(intel->scrn->scrnIndex, X_WARNING,
@@ -1343,7 +1364,7 @@ index 08a0bd4..a627bb6 100644
  		/* Unknown type */
  		break;
  	}
-@@ -1116,7 +1238,7 @@ void I830DRI2FlipEventHandler(unsigned int frame, unsigned int tv_sec,
+@@ -1116,7 +1239,7 @@ void I830DRI2FlipEventHandler(unsigned int frame, unsigned int tv_sec,
  
  	default:
  		xf86DrvMsg(intel->scrn->scrnIndex, X_WARNING,
@@ -1352,7 +1373,7 @@ index 08a0bd4..a627bb6 100644
  		/* Unknown type */
  		break;
  	}
-@@ -1190,6 +1312,7 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
+@@ -1190,6 +1313,7 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
  	swap_info->front = front;
  	swap_info->back = back;
  	swap_info->pipe = pipe;
@@ -1360,7 +1381,7 @@ index 08a0bd4..a627bb6 100644
  
  	if (!i830_dri2_add_frame_event(swap_info)) {
  	    free(swap_info);
-@@ -1215,13 +1338,19 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
+@@ -1215,13 +1339,19 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
  
  	/* Flips need to be submitted one frame before */
  	if (can_exchange(draw, front, back)) {
@@ -1383,7 +1404,7 @@ index 08a0bd4..a627bb6 100644
  	 * Do it early, so handling of different timing constraints
  	 * for divisor, remainder and msc vs. target_msc works.
  	 */
-@@ -1322,6 +1451,17 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
+@@ -1322,6 +1452,17 @@ I830DRI2ScheduleSwap(ClientPtr client, DrawablePtr draw, DRI2BufferPtr front,
  	return TRUE;
  
  blit_fallback:
@@ -1402,7 +1423,7 @@ index 08a0bd4..a627bb6 100644
  	DRI2SwapComplete(client, draw, 0, 0, 0, DRI2_BLIT_COMPLETE, func, data);
  	if (swap_info)
 diff --git a/src/uxa/intel_driver.c b/src/uxa/intel_driver.c
-index 46e06df..717b633 100644
+index f3758f9..6a18839 100644
 --- a/src/uxa/intel_driver.c
 +++ b/src/uxa/intel_driver.c
 @@ -611,6 +611,14 @@ static Bool I830PreInit(ScrnInfoPtr scrn, int flags)
@@ -1578,5 +1599,5 @@ index 238cd47..3249da9 100644
  {
  	return (int)(box->x2 - box->x1) * (int)(box->y2 - box->y1);
 -- 
-1.8.5.3
+1.9.1.423.g4596e3a
 
