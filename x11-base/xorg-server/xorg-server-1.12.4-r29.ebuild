@@ -179,6 +179,8 @@ PATCHES=(
 	"${FILESDIR}/1.12.4-Avoid-use-after-free-in-dix-dixfonts.patch"
 	"${FILESDIR}/0001-xfree86-Use-the-TMDS-maximum-frequency-to-prune-mode.patch"
 	"${FILESDIR}/0001-Add-check-for-link-from-output-to-crtc-before-optimi.patch"
+	# crosbug.com/p/26503
+	"${FILESDIR}/1.12.4-fb-fix-fast-path-detection.patch"
 )
 
 src_prepare() {
