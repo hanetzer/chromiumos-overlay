@@ -19,12 +19,12 @@ RDEPEND="net-misc/curl"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
-	[[ ${ABI} == "x32" ]] && epatch "${FILESDIR}"/lss-x32.patch
-
 	find "${S}" -type f -exec touch -r "${S}"/configure {} +
 }
 
 src_configure() {
+	# Disable clang for mips until it's fixed. http://crbug.com/358415
+	use mips && CROS_WORKON_CLANG=0
 	append-flags -g
 
 	tc-export CC CXX LD PKG_CONFIG
