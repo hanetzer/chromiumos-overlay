@@ -7,7 +7,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/libc-bench"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Time and memory-efficiency tests of various C/POSIX standard library functions"
-HOMEPAGE="http://www.etalabs.net/libc-bench.html"
+HOMEPAGE="http://www.etalabs.net/libc-bench.html http://git.musl-libc.org/cgit/libc-bench/"
 SRC_URI=""
 
 LICENSE="MIT"
