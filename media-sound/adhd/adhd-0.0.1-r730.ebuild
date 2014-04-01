@@ -13,8 +13,7 @@ inherit toolchain-funcs autotools cros-workon cros-board
 DESCRIPTION="Google A/V Daemon"
 HOMEPAGE="http://www.chromium.org"
 SRC_URI=""
-
-LICENSE="BSD,BSD-Google"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
