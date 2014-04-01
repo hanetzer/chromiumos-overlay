@@ -1,7 +1,7 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 
 inherit base
 
@@ -10,7 +10,7 @@ HOMEPAGE="http://bitmath.org/code/evemu/"
 SRC_URI="http://launchpad.net/utouch-evemu/trunk/v${PV}/+download/${P}.tar.gz"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="amd64 x86 arm"
+KEYWORDS="*"
 IUSE="X"
 
 RDEPEND="X? ( >=x11-base/xorg-server-1.8 )"
@@ -27,7 +27,3 @@ PATCHES=(
         "${FILESDIR}/1.0.5-raw_access_api.patch"
         "${FILESDIR}/1.0.5-read_dev_name.patch"
 )
-
-src_install() {
-        emake DESTDIR="${D}" install || die "install failed"
-}
