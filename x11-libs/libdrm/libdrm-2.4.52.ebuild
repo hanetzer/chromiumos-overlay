@@ -15,6 +15,10 @@ else
 	SRC_URI="http://dri.freedesktop.org/${PN}/${P}.tar.bz2"
 fi
 
+# This package uses the MIT license inherited from Xorg but fails to provide
+# any license file in its source, so we add X as a license, which lists all
+# the Xorg copyright holders and allows license generation to pick them up.
+LICENSE="|| ( MIT X )"
 KEYWORDS="*"
 VIDEO_CARDS="exynos freedreno intel nouveau omap radeon vmware"
 for card in ${VIDEO_CARDS}; do
