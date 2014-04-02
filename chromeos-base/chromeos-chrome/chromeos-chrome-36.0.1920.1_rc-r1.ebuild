@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
@@ -26,7 +26,7 @@ LICENSE="BSD-Google
 	chrome_pdf? ( Google-TOS )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
+IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm -ecs +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -213,15 +213,25 @@ set_build_defines() {
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
+		"use_cups=0"
+		"use_gnome_keyring=0"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
 	)
 
-	BUILD_DEFINES+=(
-		swig_defines=-DOS_CHROMEOS
-		chromeos=1
-		icu_use_data_file_flag=1
-	)
+	if use ecs ; then
+		BUILD_DEFINES+=(
+			"embedded=1"
+			"ozone_platform_dri=0"
+			"ozone_platform_eglmarzone=0"
+		)
+	else
+		BUILD_DEFINES+=(
+			swig_defines=-DOS_CHROMEOS
+			chromeos=1
+			icu_use_data_file_flag=1
+		)
+	fi
 
 	if use pgo_generate ; then
 		BUILD_DEFINES+=(
@@ -441,11 +451,11 @@ src_unpack() {
 	decide_chrome_origin
 
 	case "${CHROME_ORIGIN}" in
-	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY|GERRIT_SOURCE)
+	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY)
 		elog "CHROME_ORIGIN VALUE is ${CHROME_ORIGIN}"
 		;;
 	*)
-	die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE, LOCAL_BINARY, GERRIT_SOURCE"
+		die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE, LOCAL_BINARY"
 		;;
 	esac
 
@@ -466,29 +476,6 @@ src_unpack() {
 			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
 		CHROME_ROOT=${CHROME_DISTDIR}
 		;;
-	(GERRIT_SOURCE)
-		CHROME_ROOT="/home/${WHOAMI}/trunk/chromium"
-		# TODO(rcui): Remove all these addwrite hacks once we start
-		# building off a copy of the source
-		addwrite "${CHROME_ROOT}"
-		# Addwrite to .repo because each project's .git directory links
-		# to the .repo directory.
-		addwrite "/home/${WHOAMI}/trunk/.repo/"
-		# - Make the symlinks from chromium src tree to CrOS source tree
-		# writeable so we can run hooks and reset the checkout.
-		# - We need to explicitly do this because the symlink points to
-		# outside of the CHROME_ROOT.
-		# - We don't know which one is a symlink so do it for
-		#   all files/directories in src/third_party
-		# - chrome_set_ver creates symlinks in src/third_party to simulate
-		#   the cros_deps checkout gclient does.  For details, see
-		#   https://chromium-review.googlesource.com/#/c/5692/.
-		THIRD_PARTY_DIR="${CHROME_ROOT}/src/third_party"
-		for f in `ls -1 ${THIRD_PARTY_DIR}`
-		do
-			addwrite "${THIRD_PARTY_DIR}/${f}"
-		done
-		;;
 	(LOCAL_SOURCE)
 		: ${CHROME_ROOT:=/home/${WHOAMI}/chrome_root}
 		if [[ ! -d "${CHROME_ROOT}/src" ]]; then
@@ -499,7 +486,7 @@ src_unpack() {
 	esac
 
 	case "${CHROME_ORIGIN}" in
-	LOCAL_SOURCE|SERVER_SOURCE|GERRIT_SOURCE)
+	LOCAL_SOURCE|SERVER_SOURCE)
 		set_build_defines
 		;;
 	esac
@@ -550,8 +537,7 @@ src_unpack() {
 
 src_prepare() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
-	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" &&
-	      "${CHROME_ORIGIN}" != "GERRIT_SOURCE" ]]; then
+	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -659,11 +645,7 @@ src_configure() {
 	# TODO(rcui): crosbug.com/20435. Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
-		if [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
-			# Set the dependency repos to the revision specified in the
-			# .DEPS.git file, and run the hooks in that file.
-			"${ECHROME_SET_VER}" --runhooks || die
-		elif [[ ! -f .gclient ]]; then
+		if [[ ! -f .gclient ]]; then
 			# Probably a git submodules checkout
 			git runhooks --force || die "Failed to run git runhooks"
 		else
@@ -671,8 +653,6 @@ src_configure() {
 			[[ -f "${EGCLIENT}" ]] || die EGCLIENT at "${EGCLIENT}" does not exist
 			"${EGCLIENT}" runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
 		fi
-	elif [[ "${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
-		"${ECHROME_SET_VER}" || die
 	fi
 	use vtable_verify && append-ldflags -fvtable-verify=preinit
 }
@@ -688,8 +668,7 @@ chrome_make() {
 
 src_compile() {
 	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
-	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" &&
-	      "${CHROME_ORIGIN}" != "GERRIT_SOURCE" ]]; then
+	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
@@ -703,6 +682,9 @@ src_compile() {
 	elif use content_shell; then
 		chrome_targets=( content_shell chrome_sandbox )
 		einfo "Building content_shell"
+	elif use ecs; then
+		chrome_targets=( content_shell chrome_sandbox )
+		einfo "Building embedded content_shell"
 	else
 		chrome_targets=( chrome chrome_sandbox )
 		if use build_tests; then
@@ -1035,8 +1017,7 @@ src_install() {
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
 	if use build_tests && [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ||
-		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ||
-		"${CHROME_ORIGIN}" == "GERRIT_SOURCE" ]]; then
+		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
 		autotest-deponly_src_install
 		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
 	fi
@@ -1110,12 +1091,10 @@ src_install() {
 		move_and_symlink_files "${CHROME_DIR}" "/usr/local/${CHROME_DIR}"
 	fi
 
-	if use build_tests; then
+	if use build_tests && ! use ecs; then
 		# Install Chrome Driver to test image.
 		local chromedriver_dir='/usr/local/chromedriver'
 		dodir "${chromedriver_dir}"
 		cp -pPR "${FROM}"/chromedriver "${D}/${chromedriver_dir}" || die
 	fi
 }
-
-
