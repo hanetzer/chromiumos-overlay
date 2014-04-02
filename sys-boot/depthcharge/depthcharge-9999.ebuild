@@ -11,13 +11,9 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="mocktpm fwconsole"
 
-X86_DEPEND="
-	sys-apps/coreboot-utils
-	"
 RDEPEND="
+	sys-apps/coreboot-utils
 	sys-boot/libpayload
-	x86? ( ${X86_DEPEND} )
-	amd64? ( ${X86_DEPEND} )
 	chromeos-base/vboot_reference
 	"
 DEPEND=${RDEPEND}
