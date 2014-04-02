@@ -101,6 +101,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_bluetooth_Sanity_Discovery
 	+tests_bluetooth_Sanity_ValidAddress
 	+tests_cellular_CdmaConfig
+	+tests_cellular_DeferredRegistration
 	+tests_cellular_Dummy
 	+tests_cellular_ModemControl
 	+tests_cellular_OutOfCreditsSubscriptionState
