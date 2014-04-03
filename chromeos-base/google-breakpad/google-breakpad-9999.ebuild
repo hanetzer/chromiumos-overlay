@@ -75,20 +75,6 @@ src_test() {
 		einfo Skipping unit tests on non-x86 platform
 		return
 	fi
-
-	# Disable some unittests as the kernels are broken on some of our bots.
-	# See http://crbug.com/343442
-	if ! use alltests ; then
-		local b broken=(
-			src/common/dumper_unittest
-			src/client/linux/linux_client_unittest
-		)
-		emake -C build "${broken[@]}"
-		for b in "${broken[@]}" ; do
-			printf '#!/bin/sh\nexit 77\n' > "build/${b}" || die
-		done
-	fi
-
 	emake -C build check
 }
 
