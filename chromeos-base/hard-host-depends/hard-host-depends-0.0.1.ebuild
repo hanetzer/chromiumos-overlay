@@ -59,8 +59,8 @@ RDEPEND="${RDEPEND}
 	virtual/libc
 	virtual/man
 	virtual/os-headers
+	virtual/package-manager
 	virtual/pager
-	virtual/portage
 	"
 
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
