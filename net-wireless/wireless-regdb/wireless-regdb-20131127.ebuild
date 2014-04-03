@@ -19,6 +19,7 @@ S="${WORKDIR}/${MY_P}"
 
 src_prepare() {
 	epatch "${FILESDIR}"/regdb-ar-5ghz.patch
+	epatch "${FILESDIR}"/regdb-80mhz-5ghz.patch
 }
 
 src_compile() {
