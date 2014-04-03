@@ -230,6 +230,8 @@ RDEPEND="
 	)
 "
 
+# The gtest dep is required even when USE=-test because of the gtest_prod.h
+# header.  Non-test code is allowed to include that.  http://crbug.com/359322
 DEPEND="${RDEPEND}
 	platform2? (
 		!cros_host? (
@@ -240,8 +242,8 @@ DEPEND="${RDEPEND}
 		test? (
 			app-shells/dash
 			dev-cpp/gmock
-			dev-cpp/gtest
 		)
+		dev-cpp/gtest
 	)
 "
 
