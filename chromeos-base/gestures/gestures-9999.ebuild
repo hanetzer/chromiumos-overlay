@@ -19,9 +19,9 @@ REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="242728"
 
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/libevdev
+RDEPEND="chromeos-base/libevdev
 	dev-cpp/gflags
+	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest
 	x11-libs/libXi
