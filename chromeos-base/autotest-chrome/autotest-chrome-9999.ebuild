@@ -99,7 +99,6 @@ IUSE_TESTS=(
 	# TODO(ihf): Move TearTest to autotest-tests and unify WebGL* with
 	# Chromium waterfall once we have hardware there.
 	+tests_graphics_TearTest
-	+tests_graphics_WebGLConformance
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
 	+tests_hardware_BluetoothSemiAuto
