@@ -32,6 +32,7 @@ RDEPEND="dev-libs/glib
 	sys-apps/dbus"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest
+	dev-cpp/gmock
 	cros_host? ( dev-util/scons )"
 
 src_prepare() {
@@ -56,6 +57,10 @@ src_prepare() {
 	mkdir -p testing/gtest/include/gtest
 	echo '#include <gtest/gtest_prod.h>' > \
 		testing/gtest/include/gtest/gtest_prod.h
+
+	mkdir -p testing/gmock/include/gmock
+	echo '#include <gmock/gmock.h>' > \
+		testing/gmock/include/gmock/gmock.h
 }
 
 src_configure() {
@@ -70,6 +75,7 @@ src_compile() {
 
 src_install() {
 	dolib.so libbase*-${SLOT}.so
+	dolib.a libbase*-${SLOT}.a
 
 	local d header_dirs=(
 		base/third_party/icu
@@ -93,6 +99,7 @@ src_install() {
 		base/timer
 		build
 		dbus
+		testing/gmock/include/gmock
 		testing/gtest/include/gtest
 	)
 	for d in "${header_dirs[@]}" ; do
@@ -101,5 +108,5 @@ src_install() {
 	done
 
 	insinto /usr/$(get_libdir)/pkgconfig
-	doins libchrome-${SLOT}.pc
+	doins libchrome*-${SLOT}.pc
 }

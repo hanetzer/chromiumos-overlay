@@ -253,34 +253,98 @@ for lib in base_libs:
   all_scons_libs += [ e.SharedLibrary(name, sources) ]
 
 
+# Build a static library of mocks for unittests to link against.
+# Being static allows us to mask this library out of the image.
+
+all_base_test_libs = []
+all_test_pc_libs = ''
+all_test_libs = []
+
+test_libs = [
+  {
+    'name': 'dbus_test_support',
+    'sources': """
+               mock_bus.cc
+               mock_exported_object.cc
+               mock_object_manager.cc
+               mock_object_proxy.cc
+               """,
+    'prefix': 'dbus',
+    'libs': '',  # TODO(wiley) what should go here?
+    'pc_libs': 'dbus-1 protobuf-lite',
+  }
+]
+
+for lib in test_libs:
+  pc_libs = lib['pc_libs'].replace('${bslot}', BASE_VER)
+  all_test_pc_libs += ' ' + pc_libs
+
+  libs = Split(lib['libs'].replace('${bslot}', BASE_VER))
+  all_test_libs += libs
+
+  name = '%s-%s-%s' % (base_name, lib['name'], BASE_VER)
+  all_base_test_libs += [name]
+
+  static_env = env.Clone()
+  if pc_libs:
+    static_env.ParseConfig(PKG_CONFIG + ' --cflags --libs %s' % pc_libs)
+  sources = [os.path.join(lib['prefix'], x)
+             for x in Split(lib['sources'])]
+  static_env.StaticLibrary(name, sources)
+
 # Build the random text files (pkg-config and linker script).
 
 def lib_list(libs):
   return ' '.join(['-l' + l for l in libs])
 
-subst_dict = {
-  '@BSLOT@' : BASE_VER,
-  '@PRIVATE_PC@' : all_pc_libs,
-  '@BASE_LIBS@' : lib_list(all_base_libs),
-  '@LIBS@' : lib_list(all_libs),
+prod_subst_dict = {
+  '@BSLOT@': BASE_VER,
+  '@PRIVATE_PC@': all_pc_libs,
+  '@BASE_LIBS@': lib_list(all_base_libs),
+  '@LIBS@': lib_list(all_libs),
+  '@NAME@': 'libchrome',
+  '@PKG_CFG_NAME@': 'libchrome-%s.pc' % BASE_VER,
+  '@LIB_NAME@': 'libbase-%s.so' % BASE_VER,
+  '@DESCRIPTION@': 'chrome base library',
+  # scons, in its infinite wisdom sees fit to expand this string if
+  # if we don't escape the $.
+  '@TARGET_LIB@': 'base-$${bslot}',
 }
-env = Environment(tools = ['textfile'], SUBST_DICT = subst_dict)
 
-env.Substfile('libchrome-%s.pc' % BASE_VER,
-              [Value("""
+# Similarly, build text files related to the test libraries.
+test_subst_dict = {
+  '@BSLOT@': BASE_VER,
+  '@PRIVATE_PC@': all_test_pc_libs,
+  '@BASE_LIBS@': lib_list(all_base_test_libs),
+  '@LIBS@': lib_list(all_test_libs),
+  '@NAME@': 'libchrome-test',
+  '@PKG_CFG_NAME@': 'libchrome-test-%s.pc' % BASE_VER,
+  '@LIB_NAME@': 'libbase-test-%s.a' % BASE_VER,
+  '@DESCRIPTION@': 'chrome base test library',
+  # scons, in its infinite wisdom sees fit to expand this string if
+  # if we don't escape the $.
+  '@TARGET_LIB@': 'base-test-$${bslot}',
+}
+
+pc_file_contents = """
 prefix=/usr
 includedir=${prefix}/include
 bslot=@BSLOT@
 
-Name: libchrome
-Description: chrome base library
+Name: @NAME@
+Description: @DESCRIPTION@
 Version: ${bslot}
 Requires:
 Requires.private: @PRIVATE_PC@
-Libs: -lbase-${bslot}
+Libs: -l@TARGET_LIB@
 Libs.private: @BASE_LIBS@ @LIBS@
-Cflags: -I${includedir}/base-${bslot} -Wno-c++11-extensions -Wno-unused-local-typedefs -DBASE_VER=${bslot}
-""")])
+Cflags: -I${includedir}/@TARGET_LIB@ -Wno-c++11-extensions -Wno-unused-local-typedefs -DBASE_VER=${bslot}
+"""
 
-env.Substfile('libbase-%s.so' % BASE_VER,
-              [Value('GROUP ( AS_NEEDED ( @BASE_LIBS@ ) )')])
+# https://sourceware.org/binutils/docs/ld/Scripts.html
+so_file_contents = """GROUP ( AS_NEEDED ( @BASE_LIBS@ ) )"""
+
+for subst_dict in (test_subst_dict, prod_subst_dict):
+  env = Environment(tools=['textfile'], SUBST_DICT=subst_dict)
+  env.Substfile(subst_dict['@LIB_NAME@'], [Value(so_file_contents)])
+  env.Substfile(subst_dict['@PKG_CFG_NAME@'], [Value(pc_file_contents)])
