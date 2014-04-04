@@ -71,7 +71,7 @@ pkg_setup() {
 }
 
 src_unpack() {
-	local paths=( tools/perf tools/scripts tools/lib include lib "arch/*/include" "arch/*/lib" )
+	local paths=( tools/perf tools/scripts tools/lib tools/include include lib "arch/*/include" "arch/*/lib" )
 
 	# We expect the tar implementation to support the -j option (both
 	# GNU tar and libarchive's tar support that).
@@ -114,7 +114,6 @@ src_prepare() {
 		-e '/^ALL_LDFLAGS =/s:$: $(LDFLAGS_OPTIMIZE):' \
 		-e 's:$(sysconfdir_SQ)/bash_completion.d:/usr/share/bash-completion:' \
 		"${S}"/Makefile || die
-	sed -i -e 's:-Werror::' "${S_K}"/tools/lib/lk/Makefile || die
 	sed -i \
 		-e '/.FORCE-PERF-VERSION-FILE/s,.FORCE-PERF-VERSION-FILE,,g' \
 		"${S}"/Makefile \
