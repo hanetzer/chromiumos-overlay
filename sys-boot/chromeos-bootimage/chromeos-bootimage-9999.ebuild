@@ -3,13 +3,17 @@
 
 EAPI=4
 
-inherit cros-debug
+# need to check out factory source for update_firmware_settings.py for now
+CROS_WORKON_PROJECT="chromiumos/platform/factory"
+CROS_WORKON_LOCALNAME="../platform/factory"
+
+inherit cros-debug cros-workon
 
 DESCRIPTION="ChromeOS firmware image builder"
 HOMEPAGE="http://www.chromium.org"
 LICENSE=""
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="~*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex bayleybay beltino bolt butterfly emeraldlake2 falco fox gizmo link"
 BOARDS="${BOARDS} lumpy lumpy64 mario panther parrot peppy rambi samus slippy"
@@ -39,8 +43,6 @@ DEPEND="
 	memtest? ( sys-boot/chromeos-memtest )
 	depthcharge? ( ${COREBOOT_DEPEND} sys-boot/depthcharge )
 	"
-
-S=${WORKDIR}
 
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
@@ -284,7 +286,7 @@ src_compile_depthcharge() {
 	#
 	# The readonly payload is usually depthcharge and the read/write
 	# payload is usually netboot. This way the netboot image can be used
-	# to boot a normal image if necessary.
+	# to boot from USB through recovery mode if necessary.
 	#
 	# This doesn't work on systems which optionally run the video BIOS
 	# and don't use early firmware selection, specifically link and lumpy,
@@ -305,6 +307,15 @@ src_compile_depthcharge() {
 		--outdir "out.net" --output "image.net.bin" \
 		--uboot "${netboot_file}" ||
 		die "failed to build netboot image."
+
+	# Set convenient netboot parameter defaults for developers.
+	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
+	local argsfile="${PORTAGE_USERNAME}/${BOARD_USE}/cmdline"
+	${S}/setup/update_firmware_settings.py -i "image.net.bin" \
+		--bootfile="${bootfile}" --argsfile="${argsfile}" ||
+		die "failed to preset netboot parameter defaults."
+	einfo "Netboot configured to boot ${bootfile}, fetch kernel command" \
+		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
 }
 
 src_compile() {
