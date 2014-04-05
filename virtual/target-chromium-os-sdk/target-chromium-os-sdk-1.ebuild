@@ -9,7 +9,8 @@ HOMEPAGE="http://dev.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="internal"
+# Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-sdk.
+IUSE=""
 
 # Pull in any site-specific or private-overlay-specific packages needed on the
 # host.
@@ -73,7 +74,6 @@ RDEPEND="${RDEPEND}
 	dev-embedded/u-boot-tools
 	dev-util/ccache
 	dev-util/crosutils
-	internal? ( dev-embedded/embedded-build-tools )
 	>=sys-apps/dtc-1.3.0-r5
 	sys-boot/bootstub
 	sys-boot/grub
