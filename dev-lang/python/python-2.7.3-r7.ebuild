@@ -104,6 +104,11 @@ src_prepare() {
 		sed -i 's:^python$EXE:${HOSTPYTHON}:' Lib/*/regen || die
 	fi
 	epatch "${FILESDIR}"/python-2.7.3-cross-distutils.patch
+	# Undo the @libdir@ change for portage's pym folder as it is always
+	# installed into /usr/lib/ and not the abi libdir.
+	sed -i \
+		-e '/portage.*pym/s:@@GENTOO_LIBDIR@@:lib:g' \
+		Lib/site.py || die
 
 	sed -i -e "s:sys.exec_prefix]:sys.exec_prefix, '/usr/local']:g" \
 		Lib/site.py || die "sed failed to add /usr/local to prefixes"
