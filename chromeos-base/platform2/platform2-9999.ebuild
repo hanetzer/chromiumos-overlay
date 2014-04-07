@@ -960,6 +960,9 @@ platform2_test_wimax_manager() {
 #
 
 pkg_setup() {
+	# Create the 'power' user and group here in pkg_setup as
+	# platform2_install_power_manager needs them to change the ownership
+	# of power manager files.
 	enewuser "power"   # For power_manager
 	enewgroup "power"  # For power_manager
 	cros-workon_pkg_setup
@@ -995,4 +998,18 @@ src_test() {
 
 src_install() {
 	use platform2 && platform2_multiplex install
+}
+
+pkg_preinst() {
+	# Create users and groups that are used by system daemons at runtime.
+	# Users and groups, which are needed during build time, should be
+	# created in pkg_setup instead.
+	local ug
+
+	if use cros_disks; then
+		for ug in cros-disks ntfs-3g avfs fuse-exfat; do
+			enewuser "${ug}"
+			enewgroup "${ug}"
+		done
+	fi
 }

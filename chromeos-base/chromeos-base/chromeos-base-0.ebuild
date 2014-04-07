@@ -198,7 +198,7 @@ pkg_postinst() {
 	add_daemon_user "cromo" 210          # For cromo (modem manager)
 #	add_daemon_user "cashew" 211         # Deprecated, do not reuse
 	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
-	add_daemon_user "cros-disks" 213     # For cros-disks
+#	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
 	add_daemon_user "tor" 214            # For tor (anonymity service)
 	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
 	add_daemon_user "debugd" 216         # For debugd
@@ -229,9 +229,9 @@ pkg_postinst() {
 	add_daemon_user "modem" 241          # For modem manager
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
-	add_daemon_user "ntfs-3g" 300        # For ntfs-3g prcoess
-	add_daemon_user "avfs" 301           # For avfs process
-	add_daemon_user "fuse-exfat" 302     # For exfat-fuse prcoess
+#	add_daemon_user "ntfs-3g" 300        # For ntfs-3g prcoess. Now in sys-fs/ntfs-3g.
+#	add_daemon_user "avfs" 301           # For avfs process. Now in platform2.
+#	add_daemon_user "fuse-exfat" 302     # For exfat-fuse prcoess. Now in platform2.
 
 	# Group that is allowed to create directories under /home/root/<hash>.
 	enewgroup "daemon-store" 400
