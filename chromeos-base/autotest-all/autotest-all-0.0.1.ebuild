@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="*"
-IUSE="-content_shell -chromeless_tty"
+IUSE="-content_shell -chromeless_tty -ecs"
 
 RDEPEND="
 	chromeos-base/autotest-client
@@ -22,10 +22,12 @@ RDEPEND="
 	chromeos-base/autotest-private-all
 	!chromeless_tty? (
 		!content_shell? (
-			chromeos-base/autotest-tests-ibus
-			chromeos-base/autotest-tests-ownershipapi
-			chromeos-base/autotest-tests-touchpad
-			chromeos-base/autotest-chrome
+			!ecs? (
+				chromeos-base/autotest-tests-ibus
+				chromeos-base/autotest-tests-ownershipapi
+				chromeos-base/autotest-tests-touchpad
+				chromeos-base/autotest-chrome
+			)
 		)
 	)
 "
