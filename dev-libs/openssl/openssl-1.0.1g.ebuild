@@ -1,6 +1,6 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1f.ebuild,v 1.10 2014/01/21 00:01:22 phajdan.jr Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1g.ebuild,v 1.1 2014/04/07 18:10:03 vapier Exp $
 
 EAPI="4"
 
@@ -26,7 +26,8 @@ LIB_DEPEND="gmp? ( dev-libs/gmp[static-libs(+)] )
 # version that lack runtime version checking.  We'll drop them in
 # the future.
 RDEPEND="static-libs? ( ${LIB_DEPEND} )
-	!static-libs? ( ${LIB_DEPEND//\[static-libs(+)]} )"
+	!static-libs? ( ${LIB_DEPEND//\[static-libs(+)]} )
+	!<net-misc/openssh-5.9_p1-r4"
 DEPEND="${RDEPEND}
 	sys-apps/diffutils
 	>=dev-lang/perl-5
@@ -57,6 +58,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-1.0.1e-ipv6.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1f-perl-5.18.patch #497286
 		epatch "${FILESDIR}"/${PN}-1.0.1e-s_client-verify.patch #472584
+		epatch "${FILESDIR}"/${PN}-1.0.1f-revert-alpha-perl-generation.patch #499086
 		epatch "${FILESDIR}"/${PN}-1.0.1f-blacklist-by-sha1.patch
 		epatch_user #332661
 	fi
