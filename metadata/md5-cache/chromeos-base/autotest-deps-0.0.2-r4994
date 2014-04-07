@@ -3,10 +3,10 @@ DEPEND=dev-cpp/gtest dev-python/dpkt dev-libs/libnl:0 sys-fs/udev[gudev] chromeo
 DESCRIPTION=Autotest common deps
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest cros_host cros_workon_tree_766d6538d87eed72daeacb436b3c8c04e96ea4e8 profiling +buildcheck autotest opengles
+IUSE=+autotest cros_host cros_workon_tree_ebeb38acefc2c74122efbc5bcfb8a3ce07bb3ded profiling +buildcheck autotest opengles
 KEYWORDS=x86 arm amd64
 LICENSE=GPL-2
 RDEPEND=dev-cpp/gtest dev-python/dpkt dev-libs/libnl:0 sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf dev-libs/dbus-glib sys-devel/binutils ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	3dcf07c3f3a34fadc9f7eeaebe60276c	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=4bcf843c7f4ded12eb194cc4cc968811
+_md5_=2c7f12dcf1a7f1b83f7d39bf2581b620
