@@ -1,0 +1,6 @@
+cros_pre_src_configure_cairo_flags() {
+  # gcc 4.9 needs this to compile it.
+  # upstream bug is at
+  # https://bugs.freedesktop.org/show_bug.cgi?id=77060
+  append-flags -ffat-lto-objects
+}
