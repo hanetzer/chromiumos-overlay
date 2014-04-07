@@ -7,9 +7,9 @@
 # from other locations (like libchrome_crypto) can be coordinated.
 
 EAPI="4"
-CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus")
-CROS_WORKON_COMMIT=("a3027e7de45d1a575d66f20ae79aa30dccd2af3d" "4629b538b25843b3e03f8621c2aac0b19b3d63e2")
-CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus")
+CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/components/feedback")
+CROS_WORKON_COMMIT=("a3027e7de45d1a575d66f20ae79aa30dccd2af3d" "4629b538b25843b3e03f8621c2aac0b19b3d63e2" "79207b2d7fc8fd19c7929fbc9b3b0c907117a47d")
+CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/components/feedback")
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug toolchain-funcs scons-utils
@@ -102,6 +102,7 @@ src_install() {
 		base/time
 		base/timer
 		build
+		components/feedback
 		dbus
 		testing/gmock/include/gmock
 		testing/gtest/include/gtest
