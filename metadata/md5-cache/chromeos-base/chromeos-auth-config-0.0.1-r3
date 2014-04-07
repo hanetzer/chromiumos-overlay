@@ -7,4 +7,4 @@ KEYWORDS=*
 LICENSE=GPL-2
 RDEPEND=>=sys-auth/pambase-20090620.1-r7 chromeos-base/vboot_reference !<chromeos-base/chromeos-init-0.0.20
 SLOT=0
-_md5_=3b4f4d4c97c1ed40d1ef51ad6ccda683
+_md5_=ee457afe1209fca9c05ed7205d54c781
