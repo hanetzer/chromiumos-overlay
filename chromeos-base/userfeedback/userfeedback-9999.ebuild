@@ -1,7 +1,7 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="2"
 CROS_WORKON_PROJECT="chromiumos/platform/userfeedback"
 
 inherit cros-workon
@@ -9,13 +9,12 @@ inherit cros-workon
 DESCRIPTION="Log scripts used by userfeedback to report cros system information"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="+mmc X"
 
 RDEPEND="chromeos-base/chromeos-init
-	chromeos-base/chromeos-installer
 	chromeos-base/modem-utilities
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
@@ -32,16 +31,16 @@ RDEPEND="chromeos-base/chromeos-init
 DEPEND=""
 
 src_test() {
-	test/storage_info_unit_test || die "Unit test failed"
+        test/storage_info_unit_test || die "Unit test failed"
 }
 
 src_install() {
 	exeinto /usr/share/userfeedback/scripts
-	doexe scripts/*
+	doexe scripts/* || die "Could not copy scripts"
 
 	insinto /usr/share/userfeedback/etc
-	doins etc/*
+	doins etc/* || die "Could not copy etc"
 
-	insinto /etc/init
-	doins init/*
+        insinto /etc/init
+        doins init/* || die "Could not copy init"
 }
