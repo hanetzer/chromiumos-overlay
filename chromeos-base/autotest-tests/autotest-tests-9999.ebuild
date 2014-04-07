@@ -68,7 +68,7 @@ X86_IUSE_TESTS="
 	+tests_security_SMMLocked
 "
 
-IUSE_TESTS="${IUSE_TESTS}
+CLIENT_IUSE_TESTS="
 	x86? ( ${X86_IUSE_TESTS} )
 	amd64? ( ${X86_IUSE_TESTS} )
 	+tests_compilebench
@@ -95,11 +95,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_audio_Microphone
 	+tests_camera_V4L2
 	+tests_autoupdate_CannedOmahaUpdate
-	+tests_bluetooth_Sanity_AdapterPresent
-	+tests_bluetooth_Sanity_DefaultState
-	+tests_bluetooth_Sanity_Discoverable
-	+tests_bluetooth_Sanity_Discovery
-	+tests_bluetooth_Sanity_ValidAddress
 	+tests_cellular_CdmaConfig
 	+tests_cellular_DeferredRegistration
 	+tests_cellular_Dummy
@@ -113,7 +108,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_cellular_ZeroSignal
 	+tests_build_RootFilesystemSize
 	+tests_desktopui_CrashyReboot
-	+tests_desktopui_CrashyRebootServer
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
 	+tests_desktopui_HangDetector
@@ -126,7 +120,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_example_CrosTest
 	+tests_firmware_TouchMTB
 	+tests_firmware_RomSize
-	tests_firmware_VbootCrypto
+	+tests_firmware_VbootCrypto
 	+tests_flaky_test
 	!chromeless_tty? (
 		!content_shell? (
@@ -192,7 +186,7 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_kernel_TPMPing
 	+tests_kernel_HdParm
 	+tests_kernel_ProtocolCheck
-        +tests_kernel_CrosECSysfs
+	+tests_kernel_CrosECSysfs
 	+tests_logging_CrashSender
 	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
@@ -321,7 +315,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_platform_ToolchainOptions
 	+tests_platform_TouchpadSynDrop
 	+tests_platform_TPMEvict
-	+tests_platform_UReadAheadServer
 	+tests_power_ARMSettings
 	+tests_power_Backlight
 	+tests_power_BacklightControl
@@ -331,7 +324,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_power_CheckAfterSuspend
 	+tests_power_CPUFreq
 	+tests_power_CPUIdle
-	+tests_power_DarkResumeShutdownServer
 	+tests_power_Draw
 	+tests_power_HotCPUSuspend
 	+tests_power_KernelSuspend
@@ -344,7 +336,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
 	+tests_power_Status
-	+tests_power_SuspendShutdown
 	+tests_power_WakeupRTC
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
@@ -359,7 +350,6 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
 	+tests_security_HtpdateHTTP
-	+tests_security_kASLR
 	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
 	+tests_security_ModuleLocking
@@ -385,6 +375,10 @@ IUSE_TESTS="${IUSE_TESTS}
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
 	+tests_test_Recall
+"
+
+IUSE_TESTS="${IUSE_TESTS}
+	${CLIENT_IUSE_TESTS}
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
