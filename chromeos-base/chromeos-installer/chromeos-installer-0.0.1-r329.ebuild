@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="f3636e13edcbe8e6f3e1622bc45ea57c9eb7a641"
-CROS_WORKON_TREE="7138119fbac6549792f50b88eb26e7de1671c19f"
+CROS_WORKON_COMMIT="dcd9ab93ada0340d0eb2f4990bf6829b268a7ba0"
+CROS_WORKON_TREE="bce1116bb3261c4b1189c4def3dec4176430e898"
 CROS_WORKON_PROJECT="chromiumos/platform/installer"
 CROS_WORKON_LOCALNAME="installer"
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -77,9 +77,6 @@ src_install() {
 
 	exeinto /${path}
 	doexe chromeos-* encrypted_import
-
-	insinto /usr/share/misc
-	doins share/chromeos-common.sh
 
 	insinto /etc/init
 	doins init/*.conf

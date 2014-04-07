@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("ee0d57a41c7cee61d863e335cfa69eec559e4370" "f3636e13edcbe8e6f3e1622bc45ea57c9eb7a641")
-CROS_WORKON_TREE=("d1c1b90d25f456c76e4b2e835ab91b4eec302a61" "7138119fbac6549792f50b88eb26e7de1671c19f")
+CROS_WORKON_COMMIT=("7f443057aced5286ea00e6a1fddf5a1ba0ee2e75" "dcd9ab93ada0340d0eb2f4990bf6829b268a7ba0")
+CROS_WORKON_TREE=("93cf5f777934e58a18ae29dd3510145e7c97ab42" "bce1116bb3261c4b1189c4def3dec4176430e898")
 CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
 CROS_WORKON_LOCALNAME=("factory" "installer")
 CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
@@ -87,7 +87,7 @@ src_install() {
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
 
 	# Replace chromeos-common.sh symlink with the real file
-	cp --remove-destination "${S}/installer/share/chromeos-common.sh" \
+	cp --remove-destination "${S}/installer/chromeos-common.sh" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/lib/chromeos-common.sh" || die
 
 	# Replace fmap.py symlink with the real file

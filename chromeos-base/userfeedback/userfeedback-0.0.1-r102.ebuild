@@ -1,9 +1,9 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
-CROS_WORKON_COMMIT="5aeb98a7f58cfcde3c2950c5272d206deb855aef"
-CROS_WORKON_TREE="b68994751eafaa6945512d076b7e42804087d4dd"
+EAPI="2"
+CROS_WORKON_COMMIT="c8491d05465c438d1cd3140060d36252240995c5"
+CROS_WORKON_TREE="6a0491baeeddb826839a9964554095721d943cae"
 CROS_WORKON_PROJECT="chromiumos/platform/userfeedback"
 
 inherit cros-workon
@@ -11,13 +11,12 @@ inherit cros-workon
 DESCRIPTION="Log scripts used by userfeedback to report cros system information"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 IUSE="+mmc X"
 
 RDEPEND="chromeos-base/chromeos-init
-	chromeos-base/chromeos-installer
 	chromeos-base/modem-utilities
 	chromeos-base/vboot_reference
 	media-libs/fontconfig
@@ -34,16 +33,16 @@ RDEPEND="chromeos-base/chromeos-init
 DEPEND=""
 
 src_test() {
-	test/storage_info_unit_test || die "Unit test failed"
+        test/storage_info_unit_test || die "Unit test failed"
 }
 
 src_install() {
 	exeinto /usr/share/userfeedback/scripts
-	doexe scripts/*
+	doexe scripts/* || die "Could not copy scripts"
 
 	insinto /usr/share/userfeedback/etc
-	doins etc/*
+	doins etc/* || die "Could not copy etc"
 
-	insinto /etc/init
-	doins init/*
+        insinto /etc/init
+        doins init/* || die "Could not copy init"
 }

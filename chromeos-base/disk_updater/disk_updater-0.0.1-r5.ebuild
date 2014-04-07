@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="c057c2eb6cebb54b99e311c801b231a481d2e8d2"
-CROS_WORKON_TREE="57778ebc918a096225a09f0441a755b8c592925f"
+CROS_WORKON_COMMIT="a25acc76489408f9ed0ab65e4320698284fa1f33"
+CROS_WORKON_TREE="0ed07da05f5d390508d6a8a2c0af58eaedd3eb26"
 CROS_WORKON_PROJECT="chromiumos/platform/disk_updater"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -20,8 +20,7 @@ IUSE=""
 
 DEPEND=""
 
-RDEPEND="chromeos-base/chromeos-installer
-	sys-apps/hdparm"
+RDEPEND="sys-apps/hdparm"
 
 src_test() {
 	tests/chromeos-disk-firmware-test.sh || die "unittest failed"

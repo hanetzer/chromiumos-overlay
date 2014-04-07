@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="dba1f6745762043463468297e674e8eb7ea550f3"
-CROS_WORKON_TREE="39f0aa5f1d1d4e4cd52f02aed29c1a22a7794927"
+CROS_WORKON_COMMIT="201ba38be09507b97b31304cc4a43a1df7f15199"
+CROS_WORKON_TREE="e0f6b2bf47218d9cfd33ecfd760ae33e76d2d76a"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 CROS_WORKON_LOCALNAME="initramfs"
 CROS_WORKON_OUTOFTREE_BUILD="1"
@@ -25,6 +25,7 @@ DEPEND_netboot="
 	app-shells/bash
 	chromeos-base/chromeos-factoryinstall
 	chromeos-base/chromeos-init
+	chromeos-base/chromeos-installer
 	chromeos-base/chromeos-installshim
 	chromeos-base/memento_softwareupdate
 	chromeos-base/platform2
@@ -40,7 +41,6 @@ DEPEND_netboot="
 "
 DEPEND="chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
-	chromeos-base/chromeos-installer
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
 	media-gfx/ply-image
@@ -235,6 +235,8 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/netboot_postinst.sh
 	idobin /usr/sbin/ping_shopfloor.sh
 	idobin /usr/sbin/secure_less.sh
+	# chromeos-base/chromeos-installer
+	idobin /usr/sbin/chromeos-common.sh
 	idobin /usr/sbin/chromeos-install
 	# dev-util/shflags
 	cp "${SYSROOT}"/usr/share/misc/shflags "${INITRAMFS_TMP_S}"/usr/share/misc
@@ -299,6 +301,7 @@ pull_netboot_ramfs_binary() {
 	LSBDIR="mnt/stateful_partition/dev_image/etc"
 	GENERATED_LSB_FACTORY="${INITRAMFS_TMP_S}/${LSBDIR}/lsb-factory"
 	SERVER_ADDR="${SERVER_ADDR-10.0.0.1}"
+	BOARD="$(get_current_board_with_variant)"
 	mkdir -p "${INITRAMFS_TMP_S}/${LSBDIR}"
 	cat "${FILESDIR}"/lsb-factory.template | \
 		sed "s/%BOARD%/${BOARD}/g" |
@@ -309,6 +312,12 @@ pull_netboot_ramfs_binary() {
 	# Partition table
 	cp "${SYSROOT}"/root/.gpt_layout "${INITRAMFS_TMP_S}"/root/
 	cp "${SYSROOT}"/root/.pmbr_code "${INITRAMFS_TMP_S}"/root/
+
+	# Generates write_gpt.sh
+	INSTALLED_SCRIPT="${INITRAMFS_TMP_S}"/usr/sbin/write_gpt.sh
+	BOARD=$(get_current_board_with_variant)
+	. "${BUILD_LIBRARY_DIR}"/disk_layout_util.sh || die
+	write_partition_script usb "${INSTALLED_SCRIPT}" || die
 
 	# Install Memento updater
 	idoexe '/opt/google/memento_updater/*'
@@ -354,13 +363,6 @@ build_initramfs_file() {
 	cp "${S}"/init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 	cp "${S}"/*.sh "${INITRAMFS_TMP_S}/lib" || die
-
-	# Copy partition information: write_gpt.sh
-	idoexe "/usr/share/misc/chromeos-common.sh"
-	BOARD="$(get_current_board_with_variant)"
-	INSTALLED_SCRIPT="${INITRAMFS_TMP_S}"/usr/sbin/write_gpt.sh
-	. "${BUILD_LIBRARY_DIR}"/disk_layout_util.sh || die
-	write_partition_script usb "${INSTALLED_SCRIPT}" || die
 
 	if use netboot_ramfs; then
 		pull_netboot_ramfs_binary
