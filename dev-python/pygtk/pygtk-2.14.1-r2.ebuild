@@ -52,6 +52,11 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${PN}-2.14.1-libdir-pc.patch
 
+	# Locate the codegen in the SYSROOT.
+	sed -i \
+		-e '/^CODEGENDIR=/s:=:=${SYSROOT}:' \
+		configure.ac || die
+
 	# Disable pyc compiling
 	mv "${S}"/py-compile "${S}"/py-compile.orig
 	ln -s $(type -P true) "${S}"/py-compile
