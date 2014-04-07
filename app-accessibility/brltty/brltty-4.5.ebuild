@@ -48,6 +48,12 @@ src_prepare() {
 
 	java-pkg-opt-2_src_prepare
 
+	# The code runs `pkg-config` directly instead of locating a suitable
+	# pkg-config wrapper (or respecting $PKG_CONFIG).
+	sed -i \
+		-e 's/\<pkg-config\>/${PKG_CONFIG:-pkg-config}/' \
+		aclocal.m4 configure.ac || die
+
 	# We run eautoconf instead of using eautoreconf because brltty uses
 	# a custom build system that uses autoconf without the rest of the
 	# autotools.
@@ -55,6 +61,7 @@ src_prepare() {
 }
 
 src_configure() {
+	tc-export AR LD PKG_CONFIG
 	# override prefix in order to install into /
 	# braille terminal needs to be available as soon in the boot process as
 	# possible
