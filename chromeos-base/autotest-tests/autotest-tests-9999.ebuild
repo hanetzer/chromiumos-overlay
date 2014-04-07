@@ -156,7 +156,6 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Keyboard
 	+tests_hardware_LightSensor
 	+tests_hardware_Memtester
-	+tests_hardware_MemoryIntegrity
 	+tests_hardware_MemoryLatency
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize

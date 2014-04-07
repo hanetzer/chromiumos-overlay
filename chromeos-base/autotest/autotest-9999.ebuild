@@ -29,10 +29,7 @@ export CONFIG_SITE=/usr/share/config.site
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 # Block AFE runtime data and test data that is not useful here.
-
-# Note - we specifically copy over all server-side tests until crosbug.com/35194
-# is resolved.
-CROS_WORKON_SUBDIR_BLACKLIST=( "packages" "results" "site-packages" "frontend/client/www" client/{tests,site_tests} )
+CROS_WORKON_SUBDIR_BLACKLIST=( "packages" "results" "site-packages" "frontend/client/www" {client,server}/{tests,site_tests} )
 
 AUTOTEST_WORK="${WORKDIR}/autotest-work"
 
@@ -42,8 +39,7 @@ src_prepare() {
 	cp -fpu "${S}"/client/* "${AUTOTEST_WORK}/client" &>/dev/null
 	cp -fpru "${S}"/client/{bin,common_lib,tools} "${AUTOTEST_WORK}/client"
 	cp -fpu "${S}"/server/* "${AUTOTEST_WORK}/server" &>/dev/null
-	cp -fpru "${S}"/server/{bin,control_segments,hosts,site_tests,tests} \
-    "${AUTOTEST_WORK}/server"
+	cp -fpru "${S}"/server/{bin,control_segments,hosts} "${AUTOTEST_WORK}/server"
 	cp -fpru "${S}"/{conmux,tko,utils,site_utils,test_suites,frontend} "${AUTOTEST_WORK}"
 
 	# cros directory is not from autotest upstream but cros project specific.
@@ -55,7 +51,7 @@ src_prepare() {
 	local test_dirs="
 		client/tests client/site_tests
 		client/config client/deps client/profilers
-		packages"
+		server/tests server/site_tests packages"
 	local dir
 	for dir in ${test_dirs}; do
 		mkdir "${AUTOTEST_WORK}/${dir}"
