@@ -48,7 +48,7 @@ RDEPEND="${DEPEND}"
 
 S="${WORKDIR}"
 
-# Adds a "daemon"-type user with no login or shell.
+# Adds a "daemon"-type user/group pair.
 add_daemon_user() {
        local username="$1"
        local uid="$2"
@@ -163,16 +163,7 @@ src_install() {
 }
 
 pkg_postinst() {
-	# We explicitly add all of the users needed in the system here. The
-	# build of Chromium OS uses a single build chroot environment to build
-	# for various targets with distinct ${ROOT}. This means that
-	# the target rootfs needs to have the same UIDs as the build
-	# chroot so that chmod operations work.
-	#
-	# We solve this by having this package install in both the build and
-	# target and pre-create all needed users. In order to support existing
-	# build roots we copy over the user entries if they already exist.
-
+	# The user that all user-facing processes will run as.
 	local system_user="chronos"
 	local system_id="1000"
 	local system_home="/home/${system_user}/user"
@@ -192,12 +183,16 @@ pkg_postinst() {
 	enewgroup "${system_user}" "${system_id}"
 	add_daemon_user "${system_user}"
 	add_daemon_user "${system_access_user}" "${system_access_id}"
-	add_daemon_user "messagebus" 201     # For dbus
+
+	# The following users and groups should mostly be created by
+	# ebuilds that actually need them: http://crbug.com/360815
+
+#	add_daemon_user "messagebus" 201     # For dbus. Now in sys-apps/dbus.
 	add_daemon_user "syslog" 202         # For rsyslog
 	add_daemon_user "ntp" 203
-	add_daemon_user "sshd" 204
+#	add_daemon_user "sshd" 204           # For sshd. Now in net-misc/openssh.
 	add_daemon_user "polkituser" 206     # For policykit
-	add_daemon_user "tss" 207            # For trousers (TSS/TPM)
+#	add_daemon_user "tss" 207            # For trousers (TSS/TPM). Now in app-crypt/trousers.
 	add_daemon_user "pkcs11" 208         # For pkcs11 clients
 	add_daemon_user "qdlservice" 209     # For QDLService
 	add_daemon_user "cromo" 210          # For cromo (modem manager)
