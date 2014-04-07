@@ -18,7 +18,8 @@ IUSE=""
 
 DEPEND=""
 
-RDEPEND="sys-apps/hdparm"
+RDEPEND="chromeos-base/chromeos-installer
+	sys-apps/hdparm"
 
 src_test() {
 	tests/chromeos-disk-firmware-test.sh || die "unittest failed"

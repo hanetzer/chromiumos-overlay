@@ -76,6 +76,9 @@ src_install() {
 	exeinto /${path}
 	doexe chromeos-* encrypted_import
 
+	insinto /usr/share/misc
+	doins share/chromeos-common.sh
+
 	insinto /etc/init
 	doins init/*.conf
 }
