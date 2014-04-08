@@ -325,6 +325,8 @@ set_build_defines() {
 		else
 			die "Clang is not yet supported for ${ARCH}"
 		fi
+	else
+		BUILD_DEFINES+=( clang=0 )
 	fi
 
 	if use asan; then
