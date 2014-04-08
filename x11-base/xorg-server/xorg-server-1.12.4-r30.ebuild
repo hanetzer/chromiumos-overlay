@@ -57,7 +57,6 @@ RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	)
 	tslib? ( >=x11-libs/tslib-1.0 )
 	udev? ( >=sys-fs/udev-150 )
-	>=x11-apps/xinit-1.3
 	selinux? ( sec-policy/selinux-xserver )"
 
 DEPEND="${RDEPEND}
