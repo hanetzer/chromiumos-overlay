@@ -32,6 +32,9 @@ IUSE="
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
+# Ignore files under /lib/modules/ as we like to install vdso objects in there.
+MULTILIB_STRICT_EXEMPT+="|modules"
+
 # Build out-of-tree and incremental by default, but allow an ebuild inheriting
 # this eclass to explicitly build in-tree.
 : ${CROS_WORKON_OUTOFTREE_BUILD:=1}
