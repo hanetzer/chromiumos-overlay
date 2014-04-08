@@ -1,0 +1,27 @@
+none of the consumers in our tree want a GUI message pump (gtk or X or anything
+else), but rather just want a glib message pump.  so change the UI define to go
+straight to glib.  this lets us avoid gtk/X completely in our packages.
+
+diff --git a/base/message_loop/message_loop.cc b/base/message_loop/message_loop.cc
+index 52948e0..f8a194f 100644
+--- a/base/message_loop/message_loop.cc
++++ b/base/message_loop/message_loop.cc
+@@ -32,6 +32,9 @@
+ #if defined(OS_ANDROID)
+ #include "base/message_loop/message_pump_android.h"
+ #endif
++#if defined(OS_POSIX)
++#include "base/message_loop/message_pump_glib.h"
++#endif
+ 
+ #if defined(TOOLKIT_GTK)
+ #include <gdk/gdk.h>
+@@ -242,7 +245,7 @@ MessagePump* MessageLoop::CreateMessagePumpForType(Type type) {
+ // doesn't require extra support for watching file descriptors.
+ #define MESSAGE_PUMP_IO new MessagePumpDefault()
+ #elif defined(OS_POSIX)  // POSIX but not MACOSX.
+-#define MESSAGE_PUMP_UI new MessagePumpForUI()
++#define MESSAGE_PUMP_UI new MessagePumpGlib()
+ #define MESSAGE_PUMP_IO new MessagePumpLibevent()
+ #else
+ #error Not implemented

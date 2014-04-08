@@ -26,7 +26,8 @@ SLOT="${PV}"
 KEYWORDS="*"
 IUSE="cros_host"
 
-RDEPEND="dev-libs/libevent
+RDEPEND="dev-libs/glib
+	dev-libs/libevent
 	dev-libs/protobuf
 	sys-apps/dbus"
 DEPEND="${RDEPEND}
@@ -37,6 +38,11 @@ src_prepare() {
 	mkdir -p build
 	cp -p "${FILESDIR}/build_config.h-${SLOT}" build/build_config.h || die
 	cp -p "${FILESDIR}/SConstruct-${SLOT}" SConstruct || die
+
+	# Temporarily patch base::MessageLoopForUI to use base::MessagePumpGlib
+	# so that daemons like shill can be upgraded to libchrome:242728.
+	# TODO(benchan): Remove this workaround (crbug.com/361635).
+	epatch "${FILESDIR}"/base-${SLOT}-no-X.patch
 
 	# Add stub headers for a few files that are usually checked out to locations
 	# outside of base/ in the Chrome repository.
