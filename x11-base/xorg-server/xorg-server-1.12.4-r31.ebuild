@@ -180,6 +180,7 @@ PATCHES=(
 	"${FILESDIR}/0001-Add-check-for-link-from-output-to-crtc-before-optimi.patch"
 	# crosbug.com/p/26503
 	"${FILESDIR}/1.12.4-fb-fix-fast-path-detection.patch"
+	"${FILESDIR}/1.12.4-xf86RandR12-use-correct-gamma-size-when-allocating-g.patch"
 )
 
 src_prepare() {
