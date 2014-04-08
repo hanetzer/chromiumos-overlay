@@ -8,7 +8,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/xorg-conf"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-board cros-workon
+inherit cros-board cros-workon user
 
 DESCRIPTION="Board specific xorg configuration file."
 HOMEPAGE="http://www.chromium.org/"
@@ -98,4 +98,9 @@ src_install() {
 	daisy)
 		doins "files/daisy_linearity.dat" ;;
 	esac
+}
+
+pkg_preinst() {
+	enewuser "xorg"
+	enewgroup "xorg"
 }

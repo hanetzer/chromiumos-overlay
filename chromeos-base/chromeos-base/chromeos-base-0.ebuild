@@ -221,7 +221,7 @@ pkg_postinst() {
 #	add_daemon_user "power" 228          # For powerd. In platform2.
 	add_daemon_user "watchdog" 229       # For daisydog
 	add_daemon_user "devbroker" 230      # For permission_broker
-	add_daemon_user "xorg" 231           # For Xorg
+#	add_daemon_user "xorg" 231           # For Xorg. In xorg-conf
 	add_daemon_user "nfqueue" 232        # For netfilter-queue
 	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
 	add_daemon_user "tlsdate" 234
