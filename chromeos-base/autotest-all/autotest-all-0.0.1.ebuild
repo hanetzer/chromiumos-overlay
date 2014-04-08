@@ -16,7 +16,6 @@ IUSE="-content_shell -chromeless_tty"
 
 RDEPEND="
 	chromeos-base/autotest-client
-	chromeos-base/autotest-testdata-display
 	chromeos-base/autotest-tests
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-factory-install
