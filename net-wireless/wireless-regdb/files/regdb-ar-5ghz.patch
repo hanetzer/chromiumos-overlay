@@ -7,7 +7,7 @@
 -	(5490 - 5730 @ 80), (24), DFS
 +	# Ref. http://www.productcompliancespecialists.eu/wp-content/uploads/2013/10/Regulatory_Update_Argentina_01-Oct-2013_Rev1.pdf
 +	(5490 - 5600 @ 80), (24), DFS
-+	(5650 - 5710 @ 80), (24), DFS
++	(5650 - 5710 @ 40), (24), DFS
  	(5735 - 5835 @ 80), (30)
  
  country AT: DFS-ETSI
