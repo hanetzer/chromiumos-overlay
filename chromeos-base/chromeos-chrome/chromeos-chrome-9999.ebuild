@@ -100,8 +100,9 @@ RESTRICT="mirror"
 #add_pgo_arches x86 amd64 arm
 
 TEST_FILES=(
-	"video_decode_accelerator_unittest"
-	"ppapi_example_video_decode"
+	sandbox_linux_unittests
+	ppapi_example_video_decode
+	video_decode_accelerator_unittest
 )
 
 # TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
@@ -171,8 +172,7 @@ PATCHES=()
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
 AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
-AUTOTEST_DEPS_LIST="chrome_test pyauto_dep page_cycler_dep perf_data_dep \
-telemetry_dep"
+AUTOTEST_DEPS_LIST="chrome_test page_cycler_dep perf_data_dep telemetry_dep"
 
 IUSE="${IUSE} +autotest"
 
@@ -700,13 +700,8 @@ src_compile() {
 		chrome_targets=( chrome chrome_sandbox )
 		if use build_tests; then
 			chrome_targets+=( "${TEST_FILES[@]}"
-				pyautolib
-				peerconnection_server
-				chromedriver
-				browser_tests
-				sync_integration_tests
-				sandbox_linux_unittests )
-			einfo "Building test targets: ${TEST_TARGETS[@]}"
+				chromedriver )
+			einfo "Building test targets: ${TEST_FILES[@]}"
 		fi
 
 		if use_nacl; then
@@ -728,7 +723,6 @@ src_compile() {
 
 	if use build_tests; then
 		install_chrome_test_resources "${WORKDIR}/test_src"
-		install_pyauto_dep_resources "${WORKDIR}/pyauto_src"
 		install_page_cycler_dep_resources "${WORKDIR}/page_cycler_src"
 		install_perf_data_dep_resources "${WORKDIR}/perf_data_src"
 		install_telemetry_dep_resources "${WORKDIR}/telemetry_src"
@@ -740,9 +734,6 @@ src_compile() {
 
 		rm -rf "${deps}/chrome_test/test_src"
 		mv "${WORKDIR}/test_src" "${deps}/chrome_test/"
-
-		rm -rf "${deps}/pyauto_dep/test_src"
-		mv "${WORKDIR}/pyauto_src" "${deps}/pyauto_dep/test_src"
 
 		rm -rf "${deps}/page_cycler_dep/test_src"
 		mv "${WORKDIR}/page_cycler_src" "${deps}/page_cycler_dep/test_src"
@@ -802,14 +793,10 @@ install_chrome_test_resources() {
 	# everything but the symbol names. Developers who need more detailed debug
 	# info on the tests can use the original unstripped tests from the ${from}
 	# directory.
-	TEST_INSTALL_TARGETS=(
+	TEST_INSTALL_TARGETS=( "${TEST_FILES[@]}"
 		"libppapi_tests.so"
-		"browser_tests"
-		"chrome_sandbox"
-		"peerconnection_server"
-		"sync_integration_tests"
-		"sandbox_linux_unittests"
-		"video_decode_accelerator_unittest" )
+		"chrome_sandbox" )
+	einfo "Installing test targets: ${TEST_INSTALL_TARGETS[@]}"
 
 	if [[ ${ARCH} == "arm" ]]; then
 		TEST_INSTALL_TARGETS+=( "video_encode_accelerator_unittest" )
@@ -854,7 +841,7 @@ install_chrome_test_resources() {
 		third_party/bidichecker/bidichecker_packaged.js \
 		third_party/WebKit/Tools/Scripts \
 		third_party/WebKit/LayoutTests/http/tests/websocket/tests \
-                third_party/accessibility-developer-tools/gen/axs_testing.js
+		third_party/accessibility-developer-tools/gen/axs_testing.js
 
 	# Add the pdf test data if needed.
 	if use chrome_pdf; then
@@ -871,58 +858,6 @@ install_chrome_test_resources() {
 
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
 		"${test_dir}"/out/Release
-	# Symlinks to resources in pyauto_dep will be created at runtime.
-}
-
-# Set up the PyAuto files also by copying out the files needed for that.
-# We create a separate dependency because the chrome_test one is about 350MB
-# and PyAuto is a svelte 30MB.
-install_pyauto_dep_resources() {
-	# NOTE: This is a duplicate from src_install, because it's required here.
-	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
-	local test_dir="${1}"
-
-	echo "Copying PyAuto framework into ${test_dir}"
-
-	mkdir -p "${test_dir}/out/Release"
-
-	cp -al "${from}"/pyproto "${test_dir}"/out/Release
-	cp -al "${from}"/pyautolib.py "${test_dir}"/out/Release
-
-	# Even if chrome_debug_tests is enabled, we don't need to include
-	# detailed debug info for tests in the binary package, so save some
-	# time by stripping everything but the symbol names. Developers who
-	# need more detailed debug info on the tests can use the original
-	# unstripped tests from the ${from} directory.
-	$(tc-getSTRIP) --strip-debug \
-		--keep-file-symbols "${from}"/_pyautolib.so \
-		-o "${test_dir}"/out/Release/_pyautolib.so
-	$(tc-getSTRIP) --strip-debug \
-		--keep-file-symbols "${from}"/chromedriver \
-		-o "${test_dir}"/out/Release/chromedriver
-	if use component_build; then
-		mkdir -p "${test_dir}/out/Release/lib.target"
-		local src dst
-		for src in "${from}"/lib.target/* ; do
-			dst="${test_dir}/out/Release/${src#${from}}"
-			$(tc-getSTRIP) --strip-debug --keep-file-symbols \
-				"${src}" -o "${dst}"
-		done
-	fi
-
-	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/pyauto_dep/setup_test_links.sh \
-		"${test_dir}"/out/Release
-
-	# Copy PyAuto scripts and suppport libs.
-	install_test_resources "${test_dir}" \
-		chrome/browser/resources/gaia_auth \
-		chrome/test/pyautolib \
-		net/tools/testserver \
-		third_party/pyftpdlib \
-		third_party/pywebsocket \
-		third_party/simplejson \
-		third_party/tlslite \
-		third_party/webdriver
 }
 
 install_page_cycler_dep_resources() {
