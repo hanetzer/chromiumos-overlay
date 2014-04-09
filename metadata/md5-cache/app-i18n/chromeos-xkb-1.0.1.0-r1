@@ -1,0 +1,10 @@
+DEFINED_PHASES=install prepare
+DESCRIPTION=The wrapping IME extension for xkb-based input methods
+EAPI=4
+HOMEPAGE=https://code.google.com/p/google-input-tools
+KEYWORDS=*
+LICENSE=Apache-2.0
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/chromeos-xkb-1.0.1.0.tar.gz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=a7ecad8a08942e4d457a7be2cd222136
