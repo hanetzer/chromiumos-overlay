@@ -1,7 +1,3 @@
-# Only allow logins if forced reenrollment state is known or when running a
-# build with debug features turned on.
-auth [success=ignore default=4] pam_exec.so quiet /usr/sbin/is_login_enabled
-
 # If we're not in dev-mode, skip to the system password stack.
 auth [success=ignore default=3] pam_exec.so \
   quiet /usr/bin/crossystem cros_debug?1
