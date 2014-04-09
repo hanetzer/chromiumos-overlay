@@ -42,6 +42,9 @@ pkg_preinst() {
 }
 
 src_install() {
+	# Install helper to run periodic tasks.
+	dobin periodic_scheduler
+
 	# Install log cleaning script and run it daily.
 	dosbin chromeos-cleanup-logs
 	dosbin simple-rotate
@@ -70,8 +73,9 @@ src_install() {
 		doins embedded-init/boot-services.conf
 
 		doins report-boot-complete.conf
-		doins cgroups.conf cron-lite.conf
+		doins cgroups.conf crash-sender.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
+		doins log-rotate.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
 
