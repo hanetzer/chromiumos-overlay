@@ -132,7 +132,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-process/time
 	virtual/glut
 	x11-apps/setxkbmap
-	x11-apps/xauth
 	x11-apps/xinput
 	x11-apps/xset
 	x11-libs/libdrm-tests

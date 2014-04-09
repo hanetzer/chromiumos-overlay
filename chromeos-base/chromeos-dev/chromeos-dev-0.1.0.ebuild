@@ -43,7 +43,6 @@ CROS_X86_RDEPEND="
 CROS_X_RDEPEND="
 	opengl? ( x11-apps/mesa-progs )
 	x11-apps/mtplot
-	x11-apps/xauth
 	x11-apps/xdpyinfo
 	opengl? ( x11-apps/xdriinfo )
 	x11-apps/xev
