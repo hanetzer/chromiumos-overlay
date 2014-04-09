@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=5
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
@@ -15,12 +15,12 @@ SRC_URI=""
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm ~amd64"
+KEYWORDS="~*"
 
 # Autotest enabled by default.
 IUSE="+autotest"
 
-LIBCHROME_VERS="180609"
+LIBCHROME_VERS="242728"
 
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
@@ -47,4 +47,3 @@ src_prepare() {
 src_configure() {
 	cros-workon_src_configure
 }
-
