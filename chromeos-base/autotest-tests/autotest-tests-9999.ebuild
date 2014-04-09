@@ -17,7 +17,7 @@ IUSE="+autox +xset +tpmtools hardened -content_shell -chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
-LIBCHROME_VERS="180609"
+LIBCHROME_VERS="242728"
 
 # TODO(snanda): Remove xset dependence once power_LoadTest is switched over
 # to use power manager
