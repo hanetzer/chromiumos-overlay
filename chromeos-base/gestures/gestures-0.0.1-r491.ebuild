@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="eed7396520c68d991fe790eeff8a8fb572165a68"
-CROS_WORKON_TREE="f79920121415583e2140045abc8ed6cdfc3523d6"
+CROS_WORKON_COMMIT="ffeae345598771967398e94511b13dfaba0cad80"
+CROS_WORKON_TREE="1c4177b4c55e634ba470c1f7712ae15e47bec638"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
 
@@ -21,9 +21,9 @@ REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="242728"
 
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/libevdev
+RDEPEND="chromeos-base/libevdev
 	dev-cpp/gflags
+	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest
 	x11-libs/libXi

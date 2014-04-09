@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=!chromeos-base/autotest-telemetry chromeos-base/autotest-deps-graphics chromeos-base/autotest-deps-webgl-mpd chromeos-base/autotest-deps-webgl-perf chromeos-base/autotest-tests chromeos-base/chromeos-chrome chromeos-base/shill-test-scripts chromeos-base/telemetry tests_audio_PlaybackRecordSemiAuto? ( media-sound/alsa-utils ) ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	3dcf07c3f3a34fadc9f7eeaebe60276c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=b38b5c35a3ce4e7842731204701a9a94
+_md5_=d8fd28a7f203d28630a52f98f4a80538

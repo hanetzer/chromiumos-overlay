@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="7b8f3e66282ad1f83b990fb3d2489c43da75654d"
-CROS_WORKON_TREE="f16a7807ced050ee31b1a2564b392067be355cd8"
+CROS_WORKON_COMMIT="74b8bf143771cf2978eba5a7bd460ed932fe3e21"
+CROS_WORKON_TREE="53ee2d46b35c8698168f05186c9008f2dc44dca2"
 CROS_WORKON_PROJECT="chromiumos/platform/mttools"
 
 inherit cros-workon cros-constants
