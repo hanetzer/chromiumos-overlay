@@ -360,6 +360,7 @@ platform2_install_attestation() {
 }
 
 platform2_install_buffet() {
+	use cros_host && return 0
 	use buffet || return 0
 
 	dobin "${OUT}"/buffet
