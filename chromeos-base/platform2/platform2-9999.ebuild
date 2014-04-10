@@ -51,7 +51,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -82,6 +82,7 @@ RDEPEND_crash_reporter="
 	crash_reporting? (
 		chromeos-base/google-breakpad
 		chromeos-base/chromeos-ca-certificates
+		!<chromeos-base/chromeos-init-0.0.24
 		dev-cpp/gflags
 		dev-libs/libpcre
 		net-misc/curl
@@ -428,6 +429,10 @@ platform2_install_crash-reporter() {
 	dobin "${OUT}"/list_proxies
 	dobin "${OUT}"/warn_collector
 	dosbin kernel_log_collector.sh
+
+	insinto /etc/init
+	doins init/crash-reporter.conf
+	use cros_embedded || doins init/warn-collector.conf
 
 	insinto /etc
 	doins crash_reporter_logs.conf
