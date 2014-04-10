@@ -1002,6 +1002,13 @@ pkg_preinst() {
 	# created in pkg_setup instead.
 	local ug
 
+	if use cellular; then
+		for ug in cromo qdlservice; do
+			enewuser "${ug}"
+			enewgroup "${ug}"
+		done
+	fi
+
 	if use cros_disks; then
 		for ug in cros-disks ntfs-3g avfs fuse-exfat; do
 			enewuser "${ug}"

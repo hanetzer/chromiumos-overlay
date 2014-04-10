@@ -194,8 +194,8 @@ pkg_postinst() {
 	add_daemon_user "polkituser" 206     # For policykit
 #	add_daemon_user "tss" 207            # For trousers (TSS/TPM). Now in app-crypt/trousers.
 	add_daemon_user "pkcs11" 208         # For pkcs11 clients
-	add_daemon_user "qdlservice" 209     # For QDLService
-	add_daemon_user "cromo" 210          # For cromo (modem manager)
+#	add_daemon_user "qdlservice" 209     # For QDLService. Now in platform2.
+#	add_daemon_user "cromo" 210          # For cromo (modem manager). Now in platform2.
 #	add_daemon_user "cashew" 211         # Deprecated, do not reuse
 	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
 #	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
