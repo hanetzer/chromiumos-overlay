@@ -5,7 +5,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/modemmanager-next"
 
-inherit eutils autotools cros-workon flag-o-matic udev
+inherit eutils autotools cros-workon flag-o-matic udev user
 
 # ModemManager likes itself with capital letters
 MY_P=${P/modemmanager/ModemManager}
@@ -102,4 +102,10 @@ src_install() {
 	#
 	# TODO(benchan): Revert it when cromo is deprecated (crbug.com/316744).
 	use gobi && udev_dorules "${FILESDIR}/80-mm-candidate.rules"
+}
+
+pkg_preinst() {
+	# ModemManager is run under the 'modem' user and group on Chrome OS.
+	enewuser "modem"
+	enewgroup "modem"
 }
