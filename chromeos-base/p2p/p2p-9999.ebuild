@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/p2p"
 
-inherit autotools cros-debug cros-workon
+inherit autotools cros-debug cros-workon user
 
 DESCRIPTION="Chrome OS P2P"
 HOMEPAGE="http://www.chromium.org/"
@@ -27,6 +27,12 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 DEPEND="test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 	${RDEPEND}"
+
+pkg_preinst() {
+	# Groups are managed in the central account database.
+	enewgroup p2p
+	enewuser p2p
+}
 
 src_prepare() {
 	eautoreconf
