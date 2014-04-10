@@ -7,16 +7,17 @@ inherit autotools
 
 DESCRIPTION="Utility for downloading code to tegra system in recovery mode"
 HOMEPAGE="http://github.com/NVIDIA/tegrarcm/"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PN}-v${PV}.tar.gz"
+SRC_URI="https://github.com/NVIDIA/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="*"
 IUSE=""
 
 RDEPEND=">=dev-libs/crypto++-5.6
 	virtual/libusb:1"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	virtual/pkgconfig"
 
 src_prepare() {
 	eautoreconf
