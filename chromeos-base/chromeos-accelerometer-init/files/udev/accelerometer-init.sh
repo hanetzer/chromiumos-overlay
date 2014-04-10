@@ -9,6 +9,16 @@ DEVICE=$1
 IIO_DEVICES=/sys/bus/iio/devices
 IIO_DEVICE_PATH=${IIO_DEVICES}/${DEVICE}
 
+# Sets pre-determined calibration values for the accelerometers.
+# The calibration values are fetched from the VPD.
+dump_vpd_log --full --stdout | \
+  egrep "\"in_accel_[xyz]_(lid|base)_calib(bias|scale)\"=" | sed 's/\"//g' | \
+  while read key_value; do
+    CALIBRATION_NAME=$(echo ${key_value} | cut -d= -f1)
+    CALIBRATION_VALUE=$(echo ${key_value} | cut -d= -f2)
+    echo ${CALIBRATION_VALUE} > ${IIO_DEVICE_PATH}/${CALIBRATION_NAME}
+  done
+
 echo 0 > ${IIO_DEVICES}/iio_sysfs_trigger/add_trigger
 cat ${IIO_DEVICES}/iio_sysfs_trigger/trigger0/name > \
     ${IIO_DEVICE_PATH}/trigger/current_trigger
