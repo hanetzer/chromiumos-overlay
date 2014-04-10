@@ -18,10 +18,13 @@ sources = env.Split("""
                     nss_util.cc
                     rsa_private_key.cc
                     rsa_private_key_nss.cc
+                    secure_hash_default.cc
+                    sha2.cc
                     signature_creator_nss.cc
                     signature_verifier_nss.cc
                     symmetric_key_nss.cc
                     third_party/nss/rsawrapr.c
+                    third_party/nss/sha512.cc
                     """)
 
 env.Append(

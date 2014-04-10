@@ -44,6 +44,14 @@ src_install() {
 	dolib.a libchrome_crypto.a
 
 	insinto /usr/include/crypto
-	doins crypto_export.h nss_util{,_internal}.h rsa_private_key.h \
-		signature_{creator,verifier}.h scoped_nss_types.h
+	doins \
+		crypto_export.h \
+		nss_util.h \
+		nss_util_internal.h \
+		rsa_private_key.h \
+		scoped_nss_types.h \
+		secure_hash.h \
+		sha2.h \
+		signature_creator.h \
+		signature_verifier.h
 }
