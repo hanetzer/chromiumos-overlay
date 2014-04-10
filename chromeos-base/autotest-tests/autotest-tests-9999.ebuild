@@ -184,9 +184,11 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_Bootcache
 	+tests_kernel_ConfigVerify
 	+tests_kernel_CpufreqMinMax
+	+tests_kernel_Delay
 	+tests_kernel_fs_Inplace
 	+tests_kernel_fs_Punybench
 	+tests_kernel_IgnoreGptOptionServer
+	+tests_kernel_Ktime
 	+tests_kernel_Lmbench
 	+tests_kernel_LowMemNotify
 	+tests_kernel_Memory_Ramoop
