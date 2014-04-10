@@ -27,6 +27,11 @@ src_configure() {
 	use mips && CROS_WORKON_CLANG=0
 	append-flags -g
 
+	# Disable flaky tests by default.  Do it here because the CPPFLAGS
+	# are recorded at configure time and not read on the fly.
+	# http://crbug.com/359999
+	use alltests && append-cppflags -DENABLE_FLAKY_TESTS
+
 	tc-export CC CXX LD PKG_CONFIG
 
 	multijob_init
