@@ -808,40 +808,40 @@ install_chrome_test_resources() {
 	TEST_INSTALL_TARGETS=( "${TEST_FILES[@]}"
 		"libppapi_tests.so"
 		"chrome_sandbox" )
-	einfo "Installing test targets: ${TEST_INSTALL_TARGETS[@]}"
 
 	if [[ ${ARCH} == "arm" ]]; then
 		TEST_INSTALL_TARGETS+=( "video_encode_accelerator_unittest" )
 	fi
 
+	einfo "Installing test targets: ${TEST_INSTALL_TARGETS[@]}"
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
 		$(tc-getSTRIP) --strip-debug \
 			--keep-file-symbols "${from}"/${f} \
 			-o "${test_dir}/out/Release/$(basename ${f})"
 	done
 
-	# Copy over the test data directory; eventually 'all' non-static
-	# Chrome test data will go in here.
+	# Copy Chrome test data.
 	mkdir "${test_dir}"/out/Release/test_data
-	cp -al "${from}"/test_data "${test_dir}"/out/Release/
+	# WARNING: Only copy subdirectories of |test_data|.
+	# The full |test_data| directory is huge and kills our VMs.
+	# Example:
+	# cp -al "${from}"/test_data/<subdir> "${test_dir}"/out/Release/<subdir>
 
-	# Add the fake bidi locale
+	# Add the fake bidi locale.
 	mkdir "${test_dir}"/out/Release/pseudo_locales
 	cp -al "${from}"/pseudo_locales/fake-bidi.pak \
 		"${test_dir}"/out/Release/pseudo_locales
-
-	for f in "${TEST_FILES[@]}"; do
-		cp -al "${from}/${f}" "${test_dir}"
-	done
 
 	for f in "${PPAPI_TEST_FILES[@]}"; do
 		cp -al "${from}/${f}" "${test_dir}/out/Release"
 	done
 
 	# Install Chrome test resources.
+	# WARNING: Only install subdirectories of |chrome/test|.
+	# The full |chrome/test| directory is huge and kills our VMs.
 	install_test_resources "${test_dir}" \
 		base/base_paths_posix.cc \
-		chrome/test/data \
+		chrome/test/data/chromeos \
 		chrome/test/functional \
 		chrome/third_party/mock4js/mock4js.js  \
 		content/common/gpu/testdata \
@@ -851,8 +851,6 @@ install_chrome_test_resources() {
 		ppapi/tests/test_case.html \
 		ppapi/tests/test_url_loader_data \
 		third_party/bidichecker/bidichecker_packaged.js \
-		third_party/WebKit/Tools/Scripts \
-		third_party/WebKit/LayoutTests/http/tests/websocket/tests \
 		third_party/accessibility-developer-tools/gen/axs_testing.js
 
 	# Add the pdf test data if needed.
