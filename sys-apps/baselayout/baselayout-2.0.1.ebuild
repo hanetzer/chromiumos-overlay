@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-apps/baselayout/baselayout-2.0.1.ebuild,v 1.1 2009/05/24 19:47:02 vapier Exp $
 
-EAPI="1"
+EAPI="4"
 
-inherit multilib
+inherit eutils multilib
 
 DESCRIPTION="Filesystem baselayout and init scripts (Modified for Chromium OS)"
 HOMEPAGE="http://src.chromium.org/"
@@ -16,11 +16,15 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="+auto_seed_etc_files"
 
+src_prepare() {
+	epatch "${FILESDIR}"/add-dash-shell.patch
+}
+
 src_install() {
 	emake \
 		OS=$(use kernel_FreeBSD && echo BSD || echo Linux) \
 		DESTDIR="${D}" \
-		install || die
+		install
 
 	# handle multilib paths.  do it here because we want this behavior
 	# regardless of the C library that you're using.  we do explicitly
@@ -32,7 +36,7 @@ src_install() {
 	for libdir in $(get_all_libdirs) ; do
 		ldpaths+=":/${libdir}:/usr/${libdir}:/usr/local/${libdir}"
 	done
-	dosed '/^LDPATH/d' /etc/env.d/00basic || die
+	sed -i -e '/^LDPATH/d' "${D}"/etc/env.d/00basic || die
 	echo "LDPATH='${ldpaths#:}'" >> "${D}"/etc/env.d/00basic
 
 	# Remove files that don't make sense for Chromium OS
@@ -43,7 +47,7 @@ src_install() {
 	# This file has moved to openrc, but we don't want that.
 	# https://bugs.gentoo.org/373219
 	insinto /etc/init.d
-	doins "${FILESDIR}"/functions.sh || die
+	doins "${FILESDIR}"/functions.sh
 }
 
 pkg_postinst() {
