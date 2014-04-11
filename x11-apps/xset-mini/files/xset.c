@@ -35,7 +35,6 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/keysym.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
-#include <X11/Xmu/Error.h>
 #include <X11/XKBlib.h>
 
 #define ON 1
@@ -280,8 +279,6 @@ usage(char *fmt, ...)
 static int
 local_xerror(Display *dpy, XErrorEvent *rep)
 {
-    XmuPrintDefaultErrorMessage(dpy, rep, stderr);
-
     error_status = -1;
 
     return (0);

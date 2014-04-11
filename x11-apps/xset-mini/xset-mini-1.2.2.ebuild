@@ -13,11 +13,11 @@ SRC_URI=""
 LICENSE="X"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+minimal"
+IUSE=""
 
-RDEPEND="x11-libs/libXmu
-	x11-libs/libX11"
-DEPEND="${RDEPEND}"
+RDEPEND="x11-libs/libX11"
+DEPEND="${RDEPEND}
+	x11-proto/xproto"
 
 S=${WORKDIR}
 

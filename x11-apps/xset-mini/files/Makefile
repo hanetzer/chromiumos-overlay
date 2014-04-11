@@ -1,4 +1,4 @@
-LDLIBS = -lXmuu -lX11
+LDLIBS = -lX11
 CFLAGS += -Wall
 all: xset
 install:
