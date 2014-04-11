@@ -94,18 +94,6 @@ src_install() {
 	cp --remove-destination "${S}/py/gooftool/fmap.py" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/" || die
 
-	if use autotest && use build_tests && ! use content_shell && ! use chromeless_tty \
-			&& ! use ecs; then
-		# We need to preserve the chromedriver and selenium library
-		# (from chromeos-chrome pyauto test folder which is stripped by default)
-		# for factory test images.
-		local pyauto_path="${AUTOTEST_BASE}/client/deps/pyauto_dep"
-		exeinto "$TARGET_DIR/bin/"
-		doexe "${ROOT}$pyauto_path/test_src/out/Release/chromedriver"
-		insinto "$TARGET_DIR/py/automation"
-		doins -r "${ROOT}$pyauto_path/test_src/third_party/webdriver/pylib/selenium"
-	fi
-
 	# Directories used by Goofy.
 	keepdir /var/factory/{,log,state,tests}
 
