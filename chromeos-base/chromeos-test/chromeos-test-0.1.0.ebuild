@@ -105,6 +105,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	games-util/joystick
 	media-gfx/imagemagick[png]
 	media-gfx/perceptualdiff
+	media-gfx/zbar
 	media-libs/opencv
 	media-libs/tiff
 	media-sound/sox
