@@ -99,7 +99,16 @@ RESTRICT="mirror"
 # the bots to also generate the Manifest on the fly.
 #add_pgo_arches x86 amd64 arm
 
-TEST_FILES=("video_decode_accelerator_unittest" "ppapi_example_video_decode")
+TEST_FILES=(
+	"video_decode_accelerator_unittest"
+	"ppapi_example_video_decode"
+)
+
+# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
+if [[ ${ARCH} == "arm" ]]; then
+	TEST_FILES+=( "video_encode_accelerator_unittest" )
+fi
+
 PPAPI_TEST_FILES=(
 	lib{32,64}
 	mock_nacl_gdb
@@ -325,6 +334,8 @@ set_build_defines() {
 		else
 			die "Clang is not yet supported for ${ARCH}"
 		fi
+	else
+		BUILD_DEFINES+=( clang=0 )
 	fi
 
 	if use asan; then
@@ -799,6 +810,10 @@ install_chrome_test_resources() {
 		"sync_integration_tests"
 		"sandbox_linux_unittests"
 		"video_decode_accelerator_unittest" )
+
+	if [[ ${ARCH} == "arm" ]]; then
+		TEST_INSTALL_TARGETS+=( "video_encode_accelerator_unittest" )
+	fi
 
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
 		$(tc-getSTRIP) --strip-debug \
