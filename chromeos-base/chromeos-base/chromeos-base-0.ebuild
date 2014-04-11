@@ -211,7 +211,7 @@ pkg_postinst() {
 	add_daemon_user "chaps" 223          # For chaps (pkcs11)
 	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
 	add_daemon_user "tpmd" 225           # For tpmd
-	add_daemon_user "mtp" 226            # For libmtp
+#	add_daemon_user "mtp" 226            # For mtpd. In mtpd.
 	add_daemon_user "proxystate" 227     # For proxy monitoring
 #	add_daemon_user "power" 228          # For powerd. In platform2.
 	add_daemon_user "watchdog" 229       # For daisydog

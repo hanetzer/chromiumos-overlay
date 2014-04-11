@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon
+inherit cros-debug cros-workon user
 
 DESCRIPTION="MTP daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -71,4 +71,9 @@ src_install() {
 	# Install D-Bus config file.
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.Mtpd.conf
+}
+
+pkg_preinst() {
+	enewuser "mtp"
+	enewgroup "mtp"
 }
