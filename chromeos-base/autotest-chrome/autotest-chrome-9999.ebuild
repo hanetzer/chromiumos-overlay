@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
-DESCRIPTION="Autotest tests that require chrome_test, pyauto, or telemetry deps"
+DESCRIPTION="Autotest tests that require chrome_test, or telemetry deps"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -74,48 +74,26 @@ IUSE_TESTS=(
 	+tests_video_YouTubeMseEme
 
 	# Inherits from cros_ui_test.
-	+tests_desktopui_BrowserTest
 	+tests_desktopui_CameraApp
-	+tests_desktopui_DocViewing
-	+tests_desktopui_PyAutoFunctionalTests
-	+tests_desktopui_PyAutoInstall
-	+tests_desktopui_PyAutoPerfTests
-	+tests_desktopui_SyncIntegrationTests
 	+tests_audio_PlaybackRecordSemiAuto
-	+tests_desktopui_ChromeSemiAuto
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_IBusTest
 	+tests_desktopui_ImeTest
-	+tests_desktopui_LoadBigFile
 	+tests_desktopui_MediaAudioFeedback
-	+tests_desktopui_NaClSanity
 	+tests_desktopui_SimpleLogin
 	 tests_desktopui_TouchScreen
-	+tests_desktopui_UrlFetch
 	+tests_desktopui_UrlFetchWithChromeDriver
 	+tests_dummy_IdleSuspend
-	+tests_enterprise_DevicePolicy
-	+tests_enterprise_InstallAttributes
 	+tests_enterprise_Policies
 	# TODO(ihf): Move TearTest to autotest-tests and unify WebGL* with
 	# Chromium waterfall once we have hardware there.
 	+tests_graphics_TearTest
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
-	+tests_hardware_BluetoothSemiAuto
-	+tests_hardware_ExternalDrives
-	+tests_hardware_USB20
-	+tests_hardware_UsbPlugIn
 	 tests_logging_AsanCrash
 	 tests_logging_AsanCrashTelemetry
-	+tests_logging_UncleanShutdown
 	+tests_network_MobileSuspendResume
-	+tests_network_NavigateToUrl
-	+tests_network_ONC
 	+tests_platform_ChromeCgroups
-	+tests_platform_Pkcs11InitOnLogin
-	+tests_platform_Pkcs11Persistence
-	+tests_platform_ProcessPrivileges
 	+tests_power_AudioDetector
 	+tests_power_Consumption
 	+tests_power_FlashVideoSuspend
@@ -129,10 +107,8 @@ IUSE_TESTS=(
 	+tests_realtimecomm_GTalkAudioPlayground
 	+tests_realtimecomm_GTalkPlayground
 	+tests_security_NetworkListeners
-	+tests_security_ProfilePermissions
 	+tests_security_RendererSandbox
 	+tests_security_SandboxLinuxUnittests
-	+tests_security_SandboxStatusBrowserTest
 	+tests_telemetry_AFDOGenerateClient
 )
 
