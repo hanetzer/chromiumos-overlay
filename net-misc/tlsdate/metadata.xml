@@ -5,4 +5,10 @@
  <email>vapier@gentoo.org</email>
  <description>feel free to fix things</description>
 </maintainer>
+<use>
+  <flag name="asan">Build with asan support.</flag>
+  <flag name="clang">Build using clang.</flag>
+  <flag name="dbus">Enable DBus support.</flag>
+  <flag name="seccomp">Enable seccomp filter support.</flag>
+</use>
 </pkgmetadata>

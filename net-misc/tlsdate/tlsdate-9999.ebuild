@@ -12,7 +12,7 @@ HOMEPAGE="https://github.com/ioerror/tlsdate"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="asan clang +dbus"
+IUSE="asan clang +dbus +seccomp"
 REQUIRED_USE="asan? ( clang )"
 
 DEPEND="dev-libs/openssl
@@ -31,6 +31,7 @@ src_configure() {
 	# TODO(wad) Migrate off of proxystate by updating libCrosService
 	cros-workon_src_configure \
 		$(use_enable dbus) \
+		$(use_enable seccomp seccomp-filter) \
 		$(use_enable cros-debug seccomp-debugging) \
 		--enable-cros \
 		--with-dbus-client-group=chronos \
