@@ -79,6 +79,7 @@ ALL_BOARDS=(
 	lemmings
 	leon
 	link
+	link_freon
 	lumpy
 	mipseb-o32-generic
 	mipseb-n32-generic
