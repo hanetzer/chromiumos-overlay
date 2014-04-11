@@ -11,11 +11,11 @@ inherit toolchain-funcs flag-o-matic cros-workon autotest conflict
 DESCRIPTION="login_OwnershipApi autotest"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm ~amd64"
-
-IUSE="+autox +xset +tpmtools hardened"
+KEYWORDS="~*"
+IUSE="+autox +xset +tpmtools"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -67,5 +67,3 @@ src_prepare() {
 	export PYTHONPATH="${TMP_DIR}/telemetry/src/tools/telemetry"
 	autotest_src_prepare
 }
-
-

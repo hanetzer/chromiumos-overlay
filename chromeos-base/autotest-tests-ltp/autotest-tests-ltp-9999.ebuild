@@ -11,13 +11,12 @@ inherit toolchain-funcs flag-o-matic cros-workon autotest conflict
 DESCRIPTION="ltp autotest"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-
-IUSE="hardened"
 # Enable autotest by default.
-IUSE="${IUSE} +autotest"
+IUSE="+autotest"
 
 RDEPEND="${RDEPEND}
 	chromeos-base/autotest-deps-ltp
@@ -47,5 +46,3 @@ AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 src_configure() {
 	cros-workon_src_configure
 }
-
-

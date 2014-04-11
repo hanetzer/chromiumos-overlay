@@ -9,11 +9,11 @@ inherit toolchain-funcs flag-o-matic cros-debug cros-workon autotest
 DESCRIPTION="Autotest tests"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm ~amd64"
-
-IUSE="+autox +xset +tpmtools hardened -content_shell -chromeless_tty"
+KEYWORDS="~*"
+IUSE="+autox +xset +tpmtools -content_shell -chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -396,5 +396,3 @@ AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 src_configure() {
 	cros-workon_src_configure
 }
-
-
