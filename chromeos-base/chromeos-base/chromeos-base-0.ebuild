@@ -188,7 +188,7 @@ pkg_postinst() {
 	# ebuilds that actually need them: http://crbug.com/360815
 
 #	add_daemon_user "messagebus" 201     # For dbus. Now in sys-apps/dbus.
-	add_daemon_user "syslog" 202         # For rsyslog
+#	add_daemon_user "syslog" 202         # For rsyslog. Now installed by chromeos-init
 	add_daemon_user "ntp" 203
 #	add_daemon_user "sshd" 204           # For sshd. Now in net-misc/openssh.
 	add_daemon_user "polkituser" 206     # For policykit

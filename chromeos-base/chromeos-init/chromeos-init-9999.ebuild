@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
-inherit cros-workon
+inherit cros-workon user
 
 DESCRIPTION="Upstart init scripts for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -33,6 +33,12 @@ RDEPEND="
 		sys-apps/smartmontools
 	)
 "
+
+pkg_preinst() {
+	# Add the syslog user
+	enewuser syslog
+	enewgroup syslog
+}
 
 src_install() {
 	# Install log cleaning script and run it daily.
