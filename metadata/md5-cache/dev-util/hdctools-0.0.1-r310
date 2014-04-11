@@ -8,4 +8,4 @@ LICENSE=BSD-Google
 RDEPEND=>=dev-embedded/libftdi-0.18 dev-python/numpy dev-python/pexpect dev-python/pyserial dev-python/pyusb virtual/libusb:0 python_targets_python2_6? ( >=dev-lang/python-2.6.8-r3:2.6 ) python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) dev-lang/python-exec:2[python_targets_python2_6(-)?,python_targets_python2_7(-)?,-python_single_target_python2_6(-),-python_single_target_python2_7(-)]
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	053de4890281dc5f3344639b10ea1f03	distutils-r1	52a35bc5600044dfdf1a3f1fa258dc93	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multibuild	c2f33b0eedd7bcfd5bc226baa8da7837	multilib	fac675dcccf94392371a6abee62d909f	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	python-r1	cd956d5a4bac2209a64d0f4851cc115d	python-utils-r1	4fc11614abf37ede29a4eb8aaae8a22a	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	udev	a9a8d051efb42bfe884c1db82ce161de
-_md5_=e90917e94362d2d15998e69c7f081d6a
+_md5_=27220bac873e6e16fb3540f231f9a592
