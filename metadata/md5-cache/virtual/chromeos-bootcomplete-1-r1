@@ -1,0 +1,11 @@
+DEFINED_PHASES=-
+DEPEND=|| ( !cros_embedded? ( chromeos-base/bootcomplete-login ) chromeos-base/bootcomplete-embedded )
+DESCRIPTION=Virtual package installing the boot-complete boot marker that represents the system being operationnal and ready to use. Boards should override it to define their own boot-complete.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+IUSE=cros_embedded
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=|| ( !cros_embedded? ( chromeos-base/bootcomplete-login ) chromeos-base/bootcomplete-embedded )
+SLOT=0
+_md5_=eae1772e1fe7969a0d001f9ec94b718f

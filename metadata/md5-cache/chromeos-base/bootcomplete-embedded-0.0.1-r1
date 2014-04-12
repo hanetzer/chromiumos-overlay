@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Define the boot-complete boot marker for embedded systems (boot-services up and running)
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!<chromeos-base/chromeos-init-0.0.23
+SLOT=0
+_md5_=11939c48ddcd2341ab97bbe6e422491e
