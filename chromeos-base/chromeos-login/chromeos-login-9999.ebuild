@@ -18,7 +18,7 @@ IUSE="-asan -clang -deep_memory_profiler -disable_login_animations
 	-gpu_sandbox_allow_sysv_shm
 	-gpu_sandbox_start_after_initialization
 	-has_diamond_key -has_hdd -highdpi -legacy_keyboard
-	-legacy_power_button -natural_scroll_default test +X"
+	-legacy_power_button -natural_scroll_default -ozone test +X"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="242728"
