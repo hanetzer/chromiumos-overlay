@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-fs/ntfs3g/ntfs3g-2012.1.15-r1.ebuild,v 1.11 2012/04/16 17:51:58 ssuominen Exp $
 
 EAPI=4
-inherit linux-info
+inherit linux-info eutils user
 
 MY_PN=${PN/3g/-3g}
 MY_P=${MY_PN}_ntfsprogs-${PV}
@@ -41,6 +41,16 @@ pkg_setup() {
 		FUSE_FS_WARNING="You need to have FUSE module built to use ntfs-3g"
 		linux-info_pkg_setup
 	fi
+
+	# Chrome OS runs the ntfs-3g process under the 'ntfs-3g' user and group,
+	# which are created here in pkg_setup such that src_install can change
+	# the ntfs-3g binary to be owned by the 'ntfs-3g' group.
+	enewuser "ntfs-3g"
+	enewgroup "ntfs-3g"
+}
+
+src_prepare() {
+	epatch "${FILESDIR}"/${PN}-2014.2.15-no-split-usr.patch
 }
 
 src_configure() {
@@ -62,7 +72,12 @@ src_configure() {
 src_install() {
 	default
 
-	use suid && fperms u+s /usr/bin/${MY_PN}
+	# If suid is used, change the ntfs-3g binary to "root:ntfs-3g rws--x---"
+	# See crosbug.com/19887 for details.
+	if use suid; then
+		fowners root:ntfs-3g /usr/bin/${MY_PN}
+		fperms u=rwxs,g=x,o= /usr/bin/${MY_PN}
+	fi
 
 	if use udev; then
 		insinto /lib/udev/rules.d
