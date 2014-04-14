@@ -5,7 +5,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/hostap"
 
-inherit eutils toolchain-funcs qt3 qt4 cros-workon
+inherit eutils toolchain-funcs qt3 qt4 cros-workon user
 
 DESCRIPTION="IEEE 802.1X/WPA supplicant for secure wireless transfers"
 HOMEPAGE="http://hostap.epitest.fi/wpa_supplicant/"
@@ -250,6 +250,11 @@ src_install() {
 	cd "${S}"
 	insinto /etc/init
 	doins init/wpasupplicant.conf
+}
+
+pkg_preinst() {
+	enewuser "wpa"
+	enewgroup "wpa"
 }
 
 pkg_postinst() {

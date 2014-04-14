@@ -192,14 +192,14 @@ pkg_postinst() {
 #	add_daemon_user "qdlservice" 209     # For QDLService. Now in platform2.
 #	add_daemon_user "cromo" 210          # For cromo (modem manager). Now in platform2.
 #	add_daemon_user "cashew" 211         # Deprecated, do not reuse
-	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
+#	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
 #	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
 #	add_daemon_user "tor" 214            # For tor (anonymity service)
 	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
 	add_daemon_user "debugd" 216         # For debugd
-	add_daemon_user "openvpn" 217        # For openvpn
+#	add_daemon_user "openvpn" 217        # For openvpn
 	add_daemon_user "bluetooth" 218      # For bluez
-	add_daemon_user "wpa" 219            # For wpa_supplicant
+#	add_daemon_user "wpa" 219            # For wpa_supplicant
 	add_daemon_user "cras" 220           # For cras (audio)
 #	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
 	add_daemon_user "input" 222          # For /dev/input/event access
@@ -217,7 +217,7 @@ pkg_postinst() {
 	add_daemon_user "tlsdate" 234
 	add_daemon_user "debugd-logs" 235    # For debugd's unprivileged logs
 	add_daemon_user "debugfs-access" 236 # Access to debugfs
-	add_daemon_user "shill-crypto" 237   # For shill's crypto-util
+#	add_daemon_user "shill-crypto" 237   # For shill's crypto-util
 #	add_daemon_user "avahi" 238          # For avahi-daemon
 #	add_daemon_user "p2p" 239            # For p2p
 	add_daemon_user "brltty" 240         # For braille displays

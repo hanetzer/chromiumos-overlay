@@ -191,6 +191,9 @@ pkg_preinst() {
 
 	has_version "<net-misc/strongswan-4.3.6-r1[-caps]"
 	previous_4_3_6_with_caps=$(( !$? ))
+
+	enewuser "ipsec"
+	enewgroup "ipsec"
 }
 
 pkg_postinst() {

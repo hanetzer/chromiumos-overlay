@@ -1054,4 +1054,8 @@ pkg_preinst() {
 		enewgroup "attestation"
 		enewuser "attestation"
 	fi
+	if use shill; then
+		enewgroup "shill-crypto"
+		enewuser "shill-crypto"
+	fi
 }
