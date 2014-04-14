@@ -155,9 +155,12 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Interrupt
 	+tests_hardware_Keyboard
 	+tests_hardware_LightSensor
+	+tests_hardware_Memtester
+	+tests_hardware_MemoryIntegrity
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_MultiReader
+	+tests_hardware_RamFio
 	+tests_hardware_RealtekCardReader
 	+tests_hardware_Resolution
 	+tests_hardware_SAT
@@ -181,6 +184,7 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_IgnoreGptOptionServer
 	+tests_kernel_Lmbench
 	+tests_kernel_LowMemNotify
+	+tests_kernel_Memory_Ramoop
 	+tests_kernel_PerfEventRename
 	+tests_kernel_SchedBandwith
 	+tests_kernel_TPMPing
