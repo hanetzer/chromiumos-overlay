@@ -11,21 +11,24 @@ inherit flag-o-matic toolchain-funcs cros-workon
 
 DESCRIPTION="Utility for obtaining various bits of low-level system info"
 HOMEPAGE="http://mosys.googlecode.com/"
+
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="static"
+
+# We need util-linux for libuuid.
 RDEPEND="sys-apps/util-linux
-         >=sys-apps/flashmap-0.3-r4"
+	>=sys-apps/flashmap-0.3-r4"
 DEPEND="${RDEPEND}"
 
-src_compile() {
+src_configure() {
 	# Generate a default .config for our target architecture. This will
 	# likely become more sophisticated as we broaden board support.
 	einfo "using default configuration for $(tc-arch)"
-	ARCH=$(tc-arch) make defconfig || die
+	ARCH=$(tc-arch) emake defconfig
 
-	tc-export AR AS CC CXX LD NM STRIP OBJCOPY PKG_CONFIG
+	tc-export AR CC LD PKG_CONFIG
 	export FMAP_LINKOPT="$(${PKG_CONFIG} --libs-only-l fmap)"
 	append-ldflags "$(${PKG_CONFIG} --libs-only-L fmap)"
 	export LDFLAGS="$(raw-ldflags)"
@@ -38,10 +41,9 @@ src_compile() {
 		#  http://code.google.com/p/mosys/issues/detail?id=3
 		append-flags "-static"
 	fi
-
-	emake || die
 }
 
 src_install() {
-	dosbin mosys || die
+	dosbin mosys
+	dodoc README TODO
 }
