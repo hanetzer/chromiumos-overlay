@@ -100,29 +100,6 @@ RESTRICT="mirror"
 # the bots to also generate the Manifest on the fly.
 #add_pgo_arches x86 amd64 arm
 
-TEST_FILES=(
-	sandbox_linux_unittests
-	ppapi_example_video_decode
-	video_decode_accelerator_unittest
-)
-
-# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
-if [[ ${ARCH} == "arm" ]]; then
-	TEST_FILES+=( "video_encode_accelerator_unittest" )
-fi
-
-PPAPI_TEST_FILES=(
-	lib{32,64}
-	mock_nacl_gdb
-	nacl_test_data
-	ppapi_nacl_tests_{newlib,glibc}.nmf
-	ppapi_nacl_tests_{newlib,glibc}_{x32,x64,arm}.nexe
-	test_case.html
-	test_case.html.mock-http-headers
-	test_page.css
-	test_url_loader_data
-)
-
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
 	>=app-i18n/ibus-1.4.99
@@ -619,6 +596,37 @@ src_prepare() {
 	fi
 }
 
+setup_test_lists() {
+	TEST_FILES=(
+		sandbox_linux_unittests
+		ppapi_example_video_decode
+	)
+
+	# TODO(spang): video tests don't build with ozone - crbug.com/363302
+	if ! use ozone; then
+		TEST_FILES+=(
+			video_decode_accelerator_unittest
+		)
+
+		# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
+		if [[ ${ARCH} == "arm" ]]; then
+			TEST_FILES+=( "video_encode_accelerator_unittest" )
+		fi
+	fi
+
+	PPAPI_TEST_FILES=(
+		lib{32,64}
+		mock_nacl_gdb
+		nacl_test_data
+		ppapi_nacl_tests_{newlib,glibc}.nmf
+		ppapi_nacl_tests_{newlib,glibc}_{x32,x64,arm}.nexe
+		test_case.html
+		test_case.html.mock-http-headers
+		test_page.css
+		test_url_loader_data
+	)
+}
+
 src_configure() {
 	tc-export CXX CC AR AS RANLIB STRIP
 	if use clang; then
@@ -668,6 +676,8 @@ src_configure() {
 		fi
 	fi
 	use vtable_verify && append-ldflags -fvtable-verify=preinit
+
+	setup_test_lists
 }
 
 chrome_make() {
