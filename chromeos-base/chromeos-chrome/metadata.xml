@@ -14,10 +14,12 @@
 	<flag name='component_build'>Build components as shared libraries (faster link)</flag>
 	<flag name='content_shell'>Build content_shell(chrome not built)</flag>
 	<flag name='ecs'>Build embedded content_shell</flag>
+	<flag name='evdev_gestures'>Build Chrome with ChromeOS touchpad gestures support.</flag>
 	<flag name='gold'>Use gold linker</flag>
 	<flag name='highdpi'>Add high DPI resources</flag>
 	<flag name='nacl'>Build Native Client (NaCL) support</flag>
 	<flag name='neon'>Use neon instructions (ARM only)</flag>
+	<flag name='ozone'>Build Chrome for the Ozone metaplatform.</flag>
 	<flag name='pgo_generate'>Generate profile-guided optimization data</flag>
 	<flag name='pgo_use'>Use profile data for profile-guided optimization</flag>
 	<flag name='reorder'>Re-order symbols using profile data</flag>

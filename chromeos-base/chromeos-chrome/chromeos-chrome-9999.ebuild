@@ -26,7 +26,39 @@ LICENSE="BSD-Google
 	chrome_pdf? ( Google-TOS )"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm -ecs +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X ozone"
+IUSE="
+	+accessibility
+	app_shell
+	asan
+	+build_tests
+	+chrome_debug
+	chrome_debug_tests
+	chrome_internal
+	chrome_media
+	chrome_pdf
+	+chrome_remoting
+	clang
+	component_build
+	content_shell
+	deep_memory_profiler
+	drm
+	ecs
+	evdev_gestures
+	+gold
+	hardfp
+	+highdpi
+	+nacl
+	neon
+	+ninja
+	ozone
+	pgo_generate
+	pgo_use
+	+reorder
+	+runhooks
+	+verbose
+	vtable_verify
+	X
+	"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -136,6 +168,10 @@ RDEPEND="${RDEPEND}
 		!arm? ( x11-libs/libva )
 		chrome_remoting? ( x11-libs/libXtst )
 	)
+	evdev_gestures? (
+		chromeos-base/gestures
+		chromeos-base/libevdev
+	)
 	accessibility? ( app-accessibility/brltty ) "
 
 
@@ -205,6 +241,7 @@ set_build_defines() {
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
+		"use_evdev_gestures=$(use10 evdev_gestures)"
 	)
 
 	if use ecs ; then
