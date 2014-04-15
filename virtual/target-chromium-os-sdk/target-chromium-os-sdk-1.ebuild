@@ -12,6 +12,9 @@ KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-sdk.
 IUSE=""
 
+# Block the old package to force people to clean up.
+RDEPEND="!chromeos-base/hard-host-depends"
+
 # Pull in any site-specific or private-overlay-specific packages needed on the
 # host.
 RDEPEND="${RDEPEND}
