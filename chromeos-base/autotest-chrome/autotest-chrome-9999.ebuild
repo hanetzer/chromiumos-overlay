@@ -41,13 +41,23 @@ IUSE_TESTS=(
 
 	# Tests that depend on telemetry.
 	+tests_audio_AudioCorruption
+	+tests_audio_PlaybackRecordSemiAuto
 	+tests_bluetooth_RegressionClient
 	+tests_desktopui_AudioFeedback
+	+tests_desktopui_CameraApp
 	+tests_desktopui_EchoExtension
+	+tests_desktopui_FlashSanityCheck
+	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_ScreenLocker
+	+tests_desktopui_SimpleLogin
+	+tests_desktopui_UrlFetchWithChromeDriver
+	+tests_dummy_IdleSuspend
+	+tests_graphics_WebGLManyPlanetsDeep
+	+tests_graphics_WebGLPerformance
+	 tests_logging_AsanCrash
 	+tests_login_ChromeProfileSanitary
-	+tests_login_CryptohomeIncognito
 	+tests_login_Cryptohome
+	+tests_login_CryptohomeIncognito
 	+tests_login_GaiaLogin
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
@@ -56,9 +66,23 @@ IUSE_TESTS=(
 	+tests_network_ChromeCellularSmokeTest
 	+tests_network_ChromeWifiConfigure
 	+tests_network_ChromeWifiTDLS
+	+tests_network_MobileSuspendResume
+	+tests_platform_ChromeCgroups
+	+tests_power_AudioDetector
+	+tests_power_Consumption
+	+tests_power_FlashVideoSuspend
+	+tests_power_Idle
+	+tests_power_IdleSuspend
+	+tests_power_LoadTest
+	+tests_power_UiResume
+	+tests_power_VideoDetector
+	+tests_power_VideoSuspend
 	+tests_security_BundledExtensionsTelemetry
+	+tests_security_NetworkListeners
 	+tests_security_ProfilePermissionsTelemetry
+	+tests_security_SandboxLinuxUnittests
 	+tests_security_SandboxStatusTelemetry
+	+tests_telemetry_AFDOGenerateClient
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_video_ChromeHWDecodeUsed
@@ -69,48 +93,20 @@ IUSE_TESTS=(
 	+tests_video_VideoSeek
 	+tests_video_VimeoVideo
 	+tests_video_WebRtcPerf
-	+tests_video_YouTubePage
 	+tests_video_YouTubeFlash
 	+tests_video_YouTubeHTML5
 	+tests_video_YouTubeMseEme
+	+tests_video_YouTubePage
 
-	# Inherits from cros_ui_test.
-	+tests_desktopui_CameraApp
-	+tests_audio_PlaybackRecordSemiAuto
-	+tests_desktopui_FlashSanityCheck
-	+tests_desktopui_IBusTest
-	+tests_desktopui_ImeTest
-	+tests_desktopui_MediaAudioFeedback
-	+tests_desktopui_SimpleLogin
-	 tests_desktopui_TouchScreen
-	+tests_desktopui_UrlFetchWithChromeDriver
-	+tests_dummy_IdleSuspend
-	+tests_enterprise_Policies
+	# Inherits from cros_ui_test. TODO(achuith): Delete or migrate these.
+        tests_desktopui_IBusTest
+        tests_desktopui_ImeTest
+        tests_desktopui_TouchScreen
 	# TODO(ihf): Move TearTest to autotest-tests and unify WebGL* with
 	# Chromium waterfall once we have hardware there.
-	+tests_graphics_TearTest
-	+tests_graphics_WebGLManyPlanetsDeep
-	+tests_graphics_WebGLPerformance
-	 tests_logging_AsanCrash
-	 tests_logging_AsanCrashTelemetry
-	+tests_network_MobileSuspendResume
-	+tests_platform_ChromeCgroups
-	+tests_power_AudioDetector
-	+tests_power_Consumption
-	+tests_power_FlashVideoSuspend
-	+tests_power_Idle
-	+tests_power_IdleSuspend
-	+tests_power_LoadTest
-	+tests_power_SuspendStress
-	+tests_power_UiResume
-	+tests_power_VideoDetector
-	+tests_power_VideoSuspend
-	+tests_realtimecomm_GTalkAudioPlayground
-	+tests_realtimecomm_GTalkPlayground
-	+tests_security_NetworkListeners
-	+tests_security_RendererSandbox
-	+tests_security_SandboxLinuxUnittests
-	+tests_telemetry_AFDOGenerateClient
+	tests_graphics_TearTest
+	tests_realtimecomm_GTalkAudioPlayground
+	tests_realtimecomm_GTalkPlayground
 )
 
 IUSE="${IUSE} ${IUSE_TESTS[*]}"
@@ -126,7 +122,7 @@ AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 src_prepare() {
 	# Telemetry tests require the path to telemetry source to exist in order to
-	# build.  Copy the telemetry source to a temporary directory that is writable,
+	# build. Copy the telemetry source to a temporary directory that is writable,
 	# so that file removals in Telemetry source can be performed properly.
 	export TMP_DIR="$(mktemp -d)"
 	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"

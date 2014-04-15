@@ -343,6 +343,7 @@ CLIENT_IUSE_TESTS="
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
 	+tests_power_Status
+	+tests_power_SuspendStress
 	+tests_power_WakeupRTC
 	+tests_power_x86Settings
 	+tests_realtimecomm_GTalkAudioBench
@@ -365,6 +366,7 @@ CLIENT_IUSE_TESTS="
 	+tests_security_OpenSSLRegressions
 	+tests_security_ProtocolFamilies
 	+tests_security_ptraceRestrictions
+	+tests_security_RendererSandbox
 	+tests_security_ReservedPrivileges
 	+tests_security_RestartJob
 	+tests_security_RootCA
