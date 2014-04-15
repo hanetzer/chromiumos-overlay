@@ -228,6 +228,7 @@ CLIENT_IUSE_TESTS="
 	+tests_network_DefaultProfileServices
 	+tests_network_DestinationVerification
 	+tests_network_DhcpClasslessStaticRoute
+	+tests_network_DhcpNak
 	+tests_network_DhcpNegotiationSuccess
 	+tests_network_DhcpNegotiationTimeout
 	+tests_network_DhcpNonAsciiParameter
@@ -248,6 +249,7 @@ CLIENT_IUSE_TESTS="
 	+tests_network_ShillInitScripts
 	+tests_network_SIMLocking
 	+tests_network_SwitchCarrier
+	+tests_network_TwoShills
 	+tests_network_UdevRename
 	+tests_network_VPNConnect
 	+tests_network_WiFiCaps
