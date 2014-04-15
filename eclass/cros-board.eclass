@@ -77,6 +77,7 @@ ALL_BOARDS=(
 	kip
 	klang
 	lemmings
+	lemmings_external
 	leon
 	link
 	link_freon
