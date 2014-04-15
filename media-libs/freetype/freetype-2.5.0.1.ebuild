@@ -24,12 +24,16 @@ IUSE="X +adobe-cff auto-hinter bindist bzip2 debug doc fontforge infinality png
 DEPEND="sys-libs/zlib[${MULTILIB_USEDEP}]
 	bzip2? ( app-arch/bzip2[${MULTILIB_USEDEP}] )
 	png? ( media-libs/libpng[${MULTILIB_USEDEP}] )
-	X?	( x11-libs/libX11[${MULTILIB_USEDEP}]
-		  x11-libs/libXau[${MULTILIB_USEDEP}]
-		  x11-libs/libXdmcp[${MULTILIB_USEDEP}] )"
+	utils? (
+		X? (
+			x11-libs/libX11[${MULTILIB_USEDEP}]
+			x11-libs/libXau[${MULTILIB_USEDEP}]
+			x11-libs/libXdmcp[${MULTILIB_USEDEP}]
+		)
+	)"
 RDEPEND="${DEPEND}
 	infinality? ( media-libs/fontconfig-infinality )
-	abi_x86_32? ( !app-emulation/emul-linux-x86-xlibs[-abi_x86_32(-)] )"
+	abi_x86_32? ( utils? ( !app-emulation/emul-linux-x86-xlibs[-abi_x86_32(-)] ) )"
 
 src_prepare() {
 	enable_option() {
