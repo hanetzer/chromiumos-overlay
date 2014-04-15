@@ -9,5 +9,5 @@ LICENSE=BSD
 RDEPEND=chromeos-base/libchrome:242728[cros-debug=] chromeos-base/platform2 dev-cpp/gflags dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/protobuf media-libs/libmtp sys-fs/udev sys-apps/baselayout
 REQUIRED_USE=asan? ( clang )
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	053de4890281dc5f3344639b10ea1f03	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	eb0834b2da7879ba66662d8486953a5b
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	ff68d8a7ffbac2ad087a198e23626fb2	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	eb0834b2da7879ba66662d8486953a5b
 _md5_=4d066c6b614998e50775a044fa4ab119
