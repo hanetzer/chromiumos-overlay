@@ -39,6 +39,14 @@ src_install() {
 	fi
 
 	# Enable exactly one evdev-compatible X input touchpad driver.
+	#
+	# Note: If possible, use the following xorg config names to allow
+	# this ebuild to install them automatically:
+	#    - 50-touchpad-cmt-$BOARD.conf
+	#    - 60-touchpad-cmt-$BOARD_VARIANT.conf
+	# e.g. daisy_skate will include the files:
+	#    - 50-touchpad-cmt-daisy.conf
+	#    - 60-touchpad-cmt-daisy_skate.conf
 	doins 40-touchpad-cmt.conf
 	if use elan; then
 		doins 50-touchpad-cmt-elan.conf
@@ -58,35 +66,22 @@ src_install() {
 		doins 50-touchpad-cmt-kaen.conf
 	elif [[ "${board}" = "lumpy" || "${board}" = "lumpy64" ]]; then
 		doins 50-touchpad-cmt-lumpy.conf
-	elif [ "${board}" = "link" ]; then
-		doins 50-touchpad-cmt-link.conf
-	elif [[ "${board}" = "clapper" ]]; then
-		doins 50-touchpad-cmt-clapper.conf
-	elif [[ "${board}" = "glimmer" ]]; then
-		doins 50-touchpad-cmt-glimmer.conf
 	elif [[ "${board}" = "daisy" && "${board_variant}" = "${board}" ]]; then
 		doins 50-touchpad-cmt-daisy.conf
 		doins 50-touchpad-cmt-pit.conf # Some Lucas's use Pit Touchpad module
 	elif [ "${board_variant}" = "daisy_spring" ]; then
 		doins 50-touchpad-cmt-spring.conf
-	elif [ "${board}" = "parrot" ]; then
-		doins 50-touchpad-cmt-parrot.conf
 	elif [ "${board_variant}" = "peach_pit" ]; then
 		doins 50-touchpad-cmt-pit.conf
 	elif [ "${board_variant}" = "peach_pi" ]; then
 		doins 50-touchpad-cmt-pi.conf
-	elif [ "${board}" = "peppy" ]; then
-		doins 50-touchpad-cmt-peppy.conf
-	elif [ "${board}" = "falco" ]; then
-		doins 50-touchpad-cmt-falco.conf
-	elif [ "${board}" = "puppy" ]; then
-		doins 50-touchpad-cmt-puppy.conf
-	elif [ "${board}" = "squawks" ]; then
-		doins 50-touchpad-cmt-squawks.conf
-	elif [ "${board}" = "wolf" ]; then
-		doins 50-touchpad-cmt-wolf.conf
-	elif [ -f "50-touchpad-cmt-${board}.conf" ]; then
-		doins "50-touchpad-cmt-${board}.conf"
+	else
+		if [ -f "50-touchpad-cmt-${board}.conf" ]; then
+			doins "50-touchpad-cmt-${board}.conf"
+		fi
+		if [ -f "60-touchpad-cmt-${board_variant}.conf" ]; then
+			doins "60-touchpad-cmt-${board_variant}.conf"
+		fi
 	fi
 	doins 20-mouse.conf
 	doins 20-touchscreen.conf
