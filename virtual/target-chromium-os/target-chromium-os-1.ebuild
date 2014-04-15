@@ -9,6 +9,7 @@ HOMEPAGE="http://dev.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+# Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec
 	cros_embedded dptf +fonts gdmwimax mtd nfc pam
 	+network_time +syslog watchdog X"
@@ -195,7 +196,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/crosh
 	chromeos-base/dev-install
 	chromeos-base/inputcontrol
-	chromeos-base/internal
 	chromeos-base/mtpd
 	chromeos-base/permission_broker
 	chromeos-base/userfeedback
