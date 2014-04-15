@@ -52,3 +52,9 @@ sys-apps/kmod python
 
 # We don't care about the ssl lib.
 dev-libs/libevent ssl
+
+# Don't inject CACert/SPI certs into NSS. They are not trusted CAs
+# Don't include the NSS PEM parsing routines. They are experimental and not
+#   yet upstreamed.
+dev-libs/nss cacert nss-pem
+app-crypt/nss cacert nss-pem

@@ -26,7 +26,8 @@ DEPEND="virtual/pkgconfig
 	>=dev-libs/nspr-${NSPR_VER}"
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}
 	>=dev-db/sqlite-3.5
-	sys-libs/zlib"
+	sys-libs/zlib
+	!<app-crypt/nss-${PV}"
 
 RESTRICT="test"
 
@@ -50,6 +51,18 @@ src_prepare() {
 	use cacert && epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
 	use nss-pem && epatch "${FILESDIR}/${PN}-3.15.4-enable-pem.patch"
 	epatch "${FILESDIR}/nss-3.14.2-solaris-gcc.patch"
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+
+	# Backport NSS 3.16.2's RSA-OAEP enabling, along with the consistency
+	# checks for AES-KW data and RSA private keys
+	epatch "${FILESDIR}"/${PN}-3.16-chromeos-oaep-and-aeskw.patch
+
 	cd coreconf
 	# hack nspr paths
 	echo 'INCLUDES += -I$(DIST)/include/dbm' \
@@ -240,7 +253,9 @@ src_install() {
 	fi
 	cd "${S}"/dist/*/bin/
 	for f in ${nssutils}; do
+		# TODO(cmasone): switch to normal nss tool names
 		dobin ${f}
+		dosym ${f} /usr/bin/nss${f}
 	done
 
 	# Prelink breaks the CHK files. We don't have any reliable way to run
