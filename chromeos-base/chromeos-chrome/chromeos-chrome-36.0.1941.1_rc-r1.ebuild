@@ -26,7 +26,7 @@ LICENSE="BSD-Google
 	chrome_pdf? ( Google-TOS )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm -ecs +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X"
+IUSE="-app_shell -asan +accessibility +build_tests +chrome_remoting chrome_internal chrome_pdf +chrome_debug -chrome_debug_tests -chrome_media -clang -component_build -content_shell -deep_memory_profiler -drm -ecs +gold hardfp +highdpi +nacl neon +ninja -pgo_use -pgo_generate +reorder +runhooks +verbose vtable_verify X ozone"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -39,6 +39,7 @@ STRIP_MASK+=" */nacl_helper_bootstrap"
 REQUIRED_USE="
 	pgo_generate? ( !pgo_use )
 	pgo_use? ( !pgo_generate )
+	ecs? ( ozone )
 "
 REORDER_SUBDIR="reorder"
 
@@ -98,29 +99,6 @@ RESTRICT="mirror"
 # in a different way (that doesn't involve SRC_URI).  Or we'll need to update
 # the bots to also generate the Manifest on the fly.
 #add_pgo_arches x86 amd64 arm
-
-TEST_FILES=(
-	sandbox_linux_unittests
-	ppapi_example_video_decode
-	video_decode_accelerator_unittest
-)
-
-# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
-if [[ ${ARCH} == "arm" ]]; then
-	TEST_FILES+=( "video_encode_accelerator_unittest" )
-fi
-
-PPAPI_TEST_FILES=(
-	lib{32,64}
-	mock_nacl_gdb
-	nacl_test_data
-	ppapi_nacl_tests_{newlib,glibc}.nmf
-	ppapi_nacl_tests_{newlib,glibc}_{x32,x64,arm}.nexe
-	test_case.html
-	test_case.html.mock-http-headers
-	test_page.css
-	test_url_loader_data
-)
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
@@ -226,6 +204,7 @@ set_build_defines() {
 		"use_gnome_keyring=0"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
+		"use_ozone=$(use10 ozone)"
 	)
 
 	if use ecs ; then
@@ -617,6 +596,37 @@ src_prepare() {
 	fi
 }
 
+setup_test_lists() {
+	TEST_FILES=(
+		sandbox_linux_unittests
+		ppapi_example_video_decode
+	)
+
+	# TODO(spang): video tests don't build with ozone - crbug.com/363302
+	if ! use ozone; then
+		TEST_FILES+=(
+			video_decode_accelerator_unittest
+		)
+
+		# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
+		if [[ ${ARCH} == "arm" ]]; then
+			TEST_FILES+=( "video_encode_accelerator_unittest" )
+		fi
+	fi
+
+	PPAPI_TEST_FILES=(
+		lib{32,64}
+		mock_nacl_gdb
+		nacl_test_data
+		ppapi_nacl_tests_{newlib,glibc}.nmf
+		ppapi_nacl_tests_{newlib,glibc}_{x32,x64,arm}.nexe
+		test_case.html
+		test_case.html.mock-http-headers
+		test_page.css
+		test_url_loader_data
+	)
+}
+
 src_configure() {
 	tc-export CXX CC AR AS RANLIB STRIP
 	if use clang; then
@@ -666,6 +676,8 @@ src_configure() {
 		fi
 	fi
 	use vtable_verify && append-ldflags -fvtable-verify=preinit
+
+	setup_test_lists
 }
 
 chrome_make() {
