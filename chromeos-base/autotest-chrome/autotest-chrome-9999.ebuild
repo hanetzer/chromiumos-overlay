@@ -21,7 +21,6 @@ RDEPEND="
 	chromeos-base/autotest-deps-graphics
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
-	chromeos-base/autotest-tests
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts
 	chromeos-base/telemetry
