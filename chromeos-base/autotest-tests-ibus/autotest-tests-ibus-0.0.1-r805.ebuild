@@ -1,0 +1,45 @@
+# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=2
+CROS_WORKON_COMMIT="a473b52a57becd0651ca72bf92b5868d2ff85c93"
+CROS_WORKON_TREE="3cd35d9d65590f55e6819fd2b217485bfb5595f2"
+CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+
+inherit cros-workon autotest
+
+DESCRIPTION="ibus autotest"
+HOMEPAGE="http://www.chromium.org/"
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="*"
+
+IUSE="${IUSE} +autotest"
+
+RDEPEND="
+	chromeos-base/autotest-deps-ibus
+	dev-python/pygtk
+"
+
+DEPEND="${RDEPEND}"
+
+IUSE_TESTS="
+	+tests_desktopui_ImeLogin
+"
+
+IUSE="${IUSE} ${IUSE_TESTS}"
+
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
+
+AUTOTEST_DEPS_LIST=""
+AUTOTEST_CONFIG_LIST=""
+AUTOTEST_PROFILERS_LIST=""
+
+AUTOTEST_FILE_MASK="*.a *.tar.bz2 *.tbz2 *.tgz *.tar.gz"
+
+src_configure() {
+	cros-workon_src_configure
+}
+
+
