@@ -216,7 +216,7 @@ src_compile_depthcharge() {
 	local fdt_file="${froot}/dts/fmap.dts"
 	local bmpblk_file="${froot}/bmpblk.bin"
 	local coreboot_file="${froot}/coreboot.rom"
-	local ramstage_file="${froot}/coreboot_ram.stage"
+	local ramstage_file="${froot}/ramstage.stage"
 	local refcode_file="${froot}/refcode.stage"
 
 	local uboot_file

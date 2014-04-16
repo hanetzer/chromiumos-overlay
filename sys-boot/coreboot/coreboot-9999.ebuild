@@ -128,8 +128,8 @@ EOF
 
 	# Extract the coreboot ramstage file into the build dir.
 	cbfstool "build/coreboot.rom" extract \
-		-n "fallback/coreboot_ram" \
-		-f "build/coreboot_ram.stage" || die
+		-n "fallback/ramstage" \
+		-f "build/ramstage.stage" || die
 
 	# Extract the reference code stage into the build dir if present.
 	cbfstool "build/coreboot.rom" extract \
@@ -148,7 +148,7 @@ src_install() {
 	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "build/coreboot.rom" coreboot.rom
-	newins "build/coreboot_ram.stage" coreboot_ram.stage
+	newins "build/ramstage.stage" ramstage.stage
 	if [[ -f "build/refcode.stage" ]]; then
 		newins "build/refcode.stage" refcode.stage
 	fi
