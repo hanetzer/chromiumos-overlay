@@ -242,6 +242,10 @@ set_build_defines() {
 		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
 		"use_evdev_gestures=$(use10 evdev_gestures)"
+		# Use the ChromeOS toolchain and not the one bundled with Chromium.
+		"linux_use_bundled_binutils=0"
+		"linux_use_bundled_gold=0"
+		"linux_use_gold_flags=$(use10 gold)"
 	)
 
 	if use ecs ; then
