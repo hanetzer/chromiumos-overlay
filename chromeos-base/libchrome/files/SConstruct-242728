@@ -83,8 +83,18 @@ base_libs = [
                 platform_file_posix.cc
                 posix/file_descriptor_shuffle.cc
                 process/internal_linux.cc
+                process/kill.cc
+                process/kill_posix.cc
+                process/launch.cc
+                process/launch_posix.cc
                 process/process_handle_linux.cc
+                process/process_iterator.cc
+                process/process_iterator_linux.cc
                 process/process_handle_posix.cc
+                process/process_metrics.cc
+                process/process_metrics_linux.cc
+                process/process_metrics_posix.cc
+                process/process_posix.cc
                 profiler/alternate_timer.cc
                 profiler/tracked_time.cc
                 rand_util.cc

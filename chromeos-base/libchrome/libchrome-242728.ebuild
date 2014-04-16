@@ -92,6 +92,7 @@ src_install() {
 		base/metrics
 		base/posix
 		base/profiler
+		base/process
 		base/strings
 		base/synchronization
 		base/threading
