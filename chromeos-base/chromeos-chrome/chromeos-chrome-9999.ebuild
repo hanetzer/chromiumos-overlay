@@ -218,18 +218,10 @@ set_build_defines() {
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
 	USE_TCMALLOC="linux_use_tcmalloc=$([[ ${CHOST} != armv6* ]]; echo10)"
 
-	# Ideally this should always work.  There's a minor bug that sometimes
-	# shows up https://bugs.gentoo.org/380569 so work around it if need be.
-	local pyver=$(eselect python show --ABI)
-	if [[ -z ${pyver} ]]; then
-		pyver=$(readlink "${SYSROOT}"/usr/bin/python2 | sed s:python::)
-	fi
-
 	# General build defines.
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
 		"sysroot=${ROOT}"
-		python_ver=${pyver}
 		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"linux_link_libbrlapi=$(use10 accessibility)"
 		"use_brlapi=$(use10 accessibility)"
@@ -265,10 +257,6 @@ set_build_defines() {
 		RELEASE_EXTRA_CFLAGS+=(
 			-DPGO_GENERATE
 			-fprofile-generate
-			# TODO(asharif): Remove these -fno-* flags after fixing:
-			# https://code.google.com/p/chromium/issues/detail?id=239059
-			-fno-vpt
-			-fno-profile-values
 			-fprofile-dir=/tmp/pgo/chrome
 			-Wno-error=maybe-uninitialized
 		)
