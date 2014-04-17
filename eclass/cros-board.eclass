@@ -63,6 +63,7 @@ ALL_BOARDS=(
 	enguarde
 	expresso
 	falco
+	falco_gles
 	falco_li
 	fb1
 	fox
