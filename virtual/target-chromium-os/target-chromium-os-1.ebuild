@@ -84,7 +84,10 @@ IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec
 #
 ################################################################################
 
-CROS_COMMON_RDEPEND="
+# Block the old package to force people to clean up.
+CROS_COMMON_RDEPEND="!chromeos-base/chromeos"
+
+CROS_COMMON_RDEPEND+="
 	syslog? ( app-admin/rsyslog )
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
