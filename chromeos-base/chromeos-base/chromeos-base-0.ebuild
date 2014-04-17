@@ -3,13 +3,13 @@
 
 EAPI="4"
 
-inherit pam useradd user
+inherit pam user
 
 DESCRIPTION="ChromeOS specific system setup"
 HOMEPAGE="http://src.chromium.org/"
 SRC_URI=""
 
-LICENSE="GPL-2"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="cros_embedded cros_host pam"
@@ -174,13 +174,6 @@ pkg_postinst() {
 	# to access files/directories owned by chronos.
 	local system_access_user="chronos-access"
 	local system_access_id="1001"
-
-	local crypted_password='*'
-	[ -r "${SHARED_USER_PASSWD_FILE}" ] &&
-		crypted_password=$(cat "${SHARED_USER_PASSWD_FILE}")
-
-	remove_shadow "${system_user}"
-	add_shadow "${system_user}" "${crypted_password}"
 
 	enewgroup "${system_user}" "${system_id}"
 	add_daemon_user "${system_user}"
