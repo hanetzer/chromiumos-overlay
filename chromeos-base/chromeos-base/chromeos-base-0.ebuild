@@ -199,7 +199,7 @@ pkg_postinst() {
 #	add_daemon_user "cashew" 211         # Deprecated, do not reuse
 	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
 #	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
-	add_daemon_user "tor" 214            # For tor (anonymity service)
+#	add_daemon_user "tor" 214            # For tor (anonymity service)
 	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
 	add_daemon_user "debugd" 216         # For debugd
 	add_daemon_user "openvpn" 217        # For openvpn
