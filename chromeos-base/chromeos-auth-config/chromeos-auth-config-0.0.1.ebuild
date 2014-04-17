@@ -6,12 +6,11 @@ EAPI="4"
 DESCRIPTION="ChromiumOS-specific configuration files for pambase"
 HOMEPAGE="http://www.chromium.org"
 
-LICENSE="GPL-2"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="
-	>=sys-auth/pambase-20090620.1-r7
+RDEPEND=">=sys-auth/pambase-20090620.1-r7
 	chromeos-base/vboot_reference
 	!<chromeos-base/chromeos-init-0.0.20"
 DEPEND="${RDEPEND}"
@@ -41,19 +40,4 @@ src_install() {
 
 	insinto /etc/init
 	doins "${FILESDIR}"/hotkey-access.conf
-}
-
-pkg_postinst() {
-	# If there's a shared user password or if the build target is the host,
-	# reset chromeos-auth to an empty file. We don't transition from empty to
-	# populated because binary packages lose FILESDIR.
-	local crypted_password='*'
-	if [ "${ROOT}" = "/" ]; then
-		crypted_password='host'
-	elif [ -r "${SHARED_USER_PASSWD_FILE}" ]; then
-		crypted_password=$(cat "${SHARED_USER_PASSWD_FILE}")
-	fi
-	if [ "${crypted_password}" != '*' ]; then
-		echo -n '' > "${ROOT}/etc/pam.d/chromeos-auth" || die
-	fi
 }
