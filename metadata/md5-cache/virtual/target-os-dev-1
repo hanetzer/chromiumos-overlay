@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/chromeos-dev
+DESCRIPTION=List of packages that make up the developer OS image; by default, we build a Chromium OS dev image
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-dev
+SLOT=0
+_md5_=b479d5776a488efacadd211866e5fdac

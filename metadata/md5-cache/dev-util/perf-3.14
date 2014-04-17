@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install postinst prepare setup test unpack
+DEPEND=audit? ( sys-process/audit ) demangle? ( sys-devel/binutils ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) slang? ( dev-libs/newt ) unwind? ( sys-libs/libunwind ) gtk? ( x11-libs/gtk+:2 ) dev-libs/elfutils sys-devel/bison sys-devel/flex doc? ( app-text/asciidoc app-text/sgml-common app-text/xmlto sys-process/time ) python? ( python_single_target_python2_6? ( >=dev-lang/python-2.6.8-r3:2.6 ) python_single_target_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) dev-lang/python-exec:=[python_targets_python2_6(-)?,python_targets_python2_7(-)?,python_single_target_python2_6(+)?,python_single_target_python2_7(+)?] )
+DESCRIPTION=Userland tools for Linux Performance Counters
+EAPI=5
+HOMEPAGE=http://perf.wiki.kernel.org/
+IUSE=audit +demangle +doc gtk perl python slang unwind python_targets_python2_6 python_targets_python2_7 python_single_target_python2_6 python_single_target_python2_7
+KEYWORDS=-* amd64 arm ppc x86
+LICENSE=GPL-2
+RDEPEND=audit? ( sys-process/audit ) demangle? ( sys-devel/binutils ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) slang? ( dev-libs/newt ) unwind? ( sys-libs/libunwind ) gtk? ( x11-libs/gtk+:2 ) dev-libs/elfutils
+SLOT=0
+SRC_URI=mirror://kernel/linux/kernel/v3.x/linux-3.14.tar.xz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	fac675dcccf94392371a6abee62d909f	python-single-r1	82a55861314bbcedaf1e08ed4dd651b3	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=afef8c21f54d87011c66e8d23f662ec1
