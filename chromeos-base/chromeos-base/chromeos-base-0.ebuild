@@ -48,6 +48,9 @@ RDEPEND="${DEPEND}"
 
 S="${WORKDIR}"
 
+# The user that all user-facing processes will run as.
+SHARED_USER_NAME="chronos"
+
 # Adds a "daemon"-type user/group pair.
 add_daemon_user() {
        local username="$1"
@@ -154,17 +157,16 @@ src_install() {
 	newpamd "${FILESDIR}"/include-chromeos-auth sudo
 	# This one line comes from the sudo ebuild.
 	pamd_mimic system-auth sudo auth account session
-	if [[ -n ${SHARED_USER_NAME} ]] ; then
-		insinto /etc/sudoers.d
-		echo "${SHARED_USER_NAME} ALL=(ALL) ALL" > 95_cros_base
-		insopts -m 440
-		doins 95_cros_base || die
-	fi
+
+	insinto /etc/sudoers.d
+	echo "${SHARED_USER_NAME} ALL=(ALL) ALL" > 95_cros_base
+	insopts -m 440
+	doins 95_cros_base || die
 }
 
 pkg_postinst() {
 	# The user that all user-facing processes will run as.
-	local system_user="chronos"
+	local system_user="${SHARED_USER_NAME}"
 	local system_id="1000"
 	local system_home="/home/${system_user}/user"
 	# Add a chronos-access group to provide non-chronos users,
