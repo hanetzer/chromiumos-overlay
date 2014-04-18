@@ -32,9 +32,10 @@ BOARD_USE_PREFIX="board_use_"
 # Obsolete boards' names are commented-out but retained in this list so
 # they won't be accidentally recycled in the future.
 ALL_BOARDS=(
-	amd64-generic
 	amd64-corei7
-	amd64-drm
+	#amd64-drm
+	amd64-generic
+	amd64-generic_embedded
 	amd64-host
 	anglar
 	aries
@@ -52,7 +53,8 @@ ALL_BOARDS=(
 	#chronos
 	clapper
 	daisy
-	daisy-drm
+	#daisy-drm
+	daisy_embedded
 	daisy_snow
 	daisy_skate
 	daisy_spring
@@ -149,9 +151,10 @@ ALL_BOARDS=(
 	x86-alex32
 	x86-alex32_he
 	x86-dogfood
-	x86-drm
+	#x86-drm
 	#x86-fruitloop
 	x86-generic
+	x86-generic_embedded
 	x86-mario
 	x86-mario64
 	#x86-pineview
