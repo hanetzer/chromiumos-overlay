@@ -189,6 +189,7 @@ RDEPEND_shill="
 		net-libs/libnetfilter_queue
 		net-libs/libnfnetlink
 		net-misc/dhcpcd
+		sys-apps/rootdev
 		vpn? ( net-misc/openvpn )
 		net-wireless/wpa_supplicant[dbus]
 		cellular? ( virtual/modemmanager )
