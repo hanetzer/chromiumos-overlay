@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install setup unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Intel processor C-state and P-state reporting tool
+EAPI=4
+HOMEPAGE=https://www.kernel.org/
+IUSE=-asan -clang cros_host cros_workon_tree_b606c659f0b50d4e797f927a7d844498429a3556 profiling
+KEYWORDS=amd64 x86
+LICENSE=GPL-2
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	ff68d8a7ffbac2ad087a198e23626fb2	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=068b77207e5485bc4e9ed9d827b64050
