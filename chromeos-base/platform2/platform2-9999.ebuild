@@ -359,6 +359,9 @@ platform2_install_attestation() {
 	insinto /usr
 	dosbin "${OUT}"/attestationd
 	dobin "${OUT}"/attestation
+
+	insinto /usr/share/policy
+	newins server/attestationd-seccomp-${ARCH}.policy attestationd-seccomp.policy
 }
 
 platform2_install_buffet() {
@@ -1020,6 +1023,7 @@ pkg_preinst() {
 			enewgroup "${ug}"
 		done
 	fi
+
 	if use tpm; then
 		enewgroup "attestation"
 		enewuser "attestation"
