@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/mttools"
 
-inherit cros-workon cros-constants
+inherit cros-workon cros-constants cros-debug
 
 DESCRIPTION="Chromium OS multitouch utilities"
 
@@ -14,7 +14,10 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
+LIBCHROME_VERS="242728"
+
 RDEPEND="chromeos-base/gestures
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	app-misc/utouch-evemu
 	chromeos-base/libevdev"
 
