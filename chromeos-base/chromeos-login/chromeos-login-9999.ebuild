@@ -102,7 +102,7 @@ src_install() {
 	dodir /etc/skel/.pki
 	dodir /etc/skel/.pki/nssdb
 	# Yes, the created (empty) DB does work on ARM, x86 and x86_64.
-	nsscertutil -N -d "sql:${D}/etc/skel/.pki/nssdb" -f <(echo '') || die
+	certutil -N -d "sql:${D}/etc/skel/.pki/nssdb" -f <(echo '') || die
 
 	# Write a list of currently-set USE flags that session_manager_setup.sh can
 	# read at runtime while constructing Chrome's command line.  If you need to
