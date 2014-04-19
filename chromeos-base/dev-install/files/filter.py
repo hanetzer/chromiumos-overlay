@@ -20,8 +20,8 @@ f.write(''.join(prov_pkgs))
 f.close()
 
 # Make a list of the packages that can be installed.  Those packages
-# are in chromeos-dev or chromeos-test and not chromeos.
-dev_pkgs = set(open('chromeos-dev.packages', 'r').readlines())
+# are in taget-os-dev or chromeos-test and not chromeos.
+dev_pkgs = set(open('target-os-dev.packages', 'r').readlines())
 test_pkgs = set(open('chromeos-test.packages', 'r').readlines())
 inst_pkgs = (dev_pkgs | test_pkgs) - cros_pkgs
 

@@ -59,7 +59,7 @@ src_compile() {
 		portage
 
 		# Get the list of dev and test packages.
-		chromeos-dev
+		virtual/target-os-dev
 		chromeos-test
 	)
 	einfo "Ignore warnings below related to LD_PRELOAD/libsandbox.so"
@@ -97,8 +97,8 @@ src_compile() {
 	# Add dhcp to the list of packages installed since its installation will not
 	# complete (can not add dhcp group since /etc is not writeable). Bootstrap it
 	# instead.
-	grep "net-misc/dhcp-" chromeos-dev.packages >> chromeos-base.packages
-	grep "net-misc/dhcp-" chromeos-dev.packages >> bootstrap.packages
+	grep "net-misc/dhcp-" target-os-dev.packages >> chromeos-base.packages
+	grep "net-misc/dhcp-" target-os-dev.packages >> bootstrap.packages
 }
 
 src_install() {

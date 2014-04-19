@@ -28,9 +28,9 @@ IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec
 # 1. Does the package really need to be part of the release image?
 #
 # Some packages can be included only in the developer or test images, i.e., the
-# chromeos-dev or chromeos-test ebuilds. If the package will eventually be used
+# target-os-dev or chromeos-test ebuilds. If the package will eventually be used
 # in the release but it's still under development, consider adding it to
-# chromeos-dev initially until it's ready for production.
+# target-os-dev initially until it's ready for production.
 #
 # 2. Why is the package a direct dependency of the chromeos ebuild?
 #
