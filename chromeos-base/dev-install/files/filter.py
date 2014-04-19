@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # Filter out all the packages that are already in chromeos.
-cros_pkgs = set(open('chromeos.packages', 'r').readlines())
+cros_pkgs = set(open('target-os.packages', 'r').readlines())
 port_pkgs = set(open('portage.packages', 'r').readlines())
 
 boot_pkgs = port_pkgs - cros_pkgs

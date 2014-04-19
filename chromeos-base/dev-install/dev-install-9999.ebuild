@@ -53,7 +53,7 @@ src_compile() {
 	pkgs=(
 		# Generate a list of packages that go into the base image. These
 		# packages will be assumed to be installed by emerge in the target.
-		chromeos
+		virtual/target-os
 
 		# Get the list of the packages needed to bootstrap emerge.
 		portage
@@ -77,7 +77,7 @@ src_compile() {
 			--root-deps=rdeps ${pkg} | \
 			egrep -o ' [[:alnum:]-]+/[^[:space:]/]+\b' | \
 			tr -d ' ' | \
-			sort > ${pkg}.packages
+			sort > ${pkg##*/}.packages
 		_pipestatus=${PIPESTATUS[*]}
 		[[ ${_pipestatus// } -eq 0 ]] || die "\`emerge-${BOARD} ${pkg}\` failed"
 		) &
@@ -87,7 +87,7 @@ src_compile() {
 	# No virtual packages in package.provided. We store packages for
 	# package.provided in file chromeos-base.packages as package.provided is a
 	# directory.
-	grep -v "virtual/" chromeos.packages > chromeos-base.packages
+	grep -v "virtual/" target-os.packages > chromeos-base.packages
 
 	python "${FILESDIR}"/filter.py || die
 
