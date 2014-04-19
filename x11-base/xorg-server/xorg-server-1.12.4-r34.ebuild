@@ -20,7 +20,6 @@ IUSE="${IUSE_SERVERS} dga -doc ipv6 minimal nptl selinux
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
 	media-libs/freetype
-	>=x11-apps/rgb-1.0.3
 	>=x11-libs/libpciaccess-0.12.901
 	>=x11-libs/libXau-1.0.4
 	>=x11-libs/libXdmcp-1.0.2
