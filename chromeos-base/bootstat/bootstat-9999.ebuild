@@ -46,4 +46,7 @@ src_install() {
 
 	insinto /usr/include/metrics
 	doins bootstat.h
+
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins bootstat.pc
 }
