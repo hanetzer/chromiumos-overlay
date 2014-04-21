@@ -164,14 +164,19 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_RealtekCardReader
 	+tests_hardware_Resolution
 	+tests_hardware_SAT
+	+tests_hardware_Smartctl
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
+	+tests_hardware_StorageStress
+	+tests_hardware_StorageTrim
+	+tests_hardware_StorageWearoutDetect
 	+tests_hardware_TouchScreenPowerCycles
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TPMCheck
 	tests_hardware_TPMFirmware
 	+tests_hardware_Trackpad
 	+tests_hardware_TrackpadFunction
+	+tests_hardware_TrimIntegrity
 	+tests_hardware_VideoDecodeCapable
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_Xrandr
