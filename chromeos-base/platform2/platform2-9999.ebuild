@@ -52,7 +52,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +profile platform2 +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -494,7 +494,7 @@ platform2_install_cros-disks() {
 	doins usb-device-info
 
 	# Install seccomp policy file.
-	newins avfsd-seccomp-${ARCH}.policy avfsd-seccomp.policy
+	use seccomp && newins avfsd-seccomp-${ARCH}.policy avfsd-seccomp.policy
 
 	# Install upstart config file.
 	insinto /etc/init
@@ -669,7 +669,7 @@ platform2_install_shill() {
 
 	# Install Netfilter queue helper syscall filter policy file.
 	insinto /usr/share/policy
-	newins shims/nfqueue-seccomp-${ARCH}.policy nfqueue-seccomp.policy
+	use seccomp && newins shims/nfqueue-seccomp-${ARCH}.policy nfqueue-seccomp.policy
 
 	local shims_dir=/usr/$(get_libdir)/shill/shims
 	exeinto "${shims_dir}"
