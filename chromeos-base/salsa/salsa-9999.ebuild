@@ -10,7 +10,7 @@ DESCRIPTION="Touchpad Experimentation Framework"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang"
@@ -19,8 +19,11 @@ REQUIRED_USE="asan? ( clang )"
 LIBCHROME_VERS="242728"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}
-	sys-libs/ncurses"
-DEPEND="${RDEPEND}"
+	sys-libs/ncurses
+	x11-libs/libX11
+	x11-libs/libXi"
+DEPEND="${RDEPEND}
+	x11-proto/xproto"
 
 src_configure() {
 	cros-workon_src_configure
