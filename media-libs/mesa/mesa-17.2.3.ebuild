@@ -213,13 +213,7 @@ src_configure() {
 src_install() {
 	base_src_install
 
-	# Remove redundant headers
-	# GLU and GLUT
-	rm -f "${D}"/usr/include/GL/glu*.h || die "Removing GLU and GLUT headers failed."
-	# Glew includes
-	rm -f "${D}"/usr/include/GL/{glew,glxew,wglew}.h \
-		|| die "Removing glew includes failed."
-	# GLES headers
+	# Remove redundant GLES headers
 	rm -f "${D}"/usr/include/{EGL,GLES2,GLES3,KHR}/*.h || die "Removing GLES headers failed."
 
 	# Move libGL and others from /usr/lib to /usr/lib/opengl/blah/lib
