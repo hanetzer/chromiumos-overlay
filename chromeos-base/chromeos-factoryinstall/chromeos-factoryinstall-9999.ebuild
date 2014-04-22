@@ -130,10 +130,6 @@ EOF
 	echo 'start on never' >> "${ROOT}/etc/init/ui.conf" ||
 		die "Failed to disable UI"
 
-	# Disable TTY2 console
-	echo 'start on never' >> "${ROOT}/etc/init/tty2.conf" ||
-		die "Failed to disable console"
-
 	# Set network to start up another way
 	sed -i 's/login-prompt-visible/started boot-services/' \
 		"${ROOT}/etc/init/boot-complete.conf" ||
