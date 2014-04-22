@@ -198,7 +198,6 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_CrosECSysfs
 	+tests_kernel_CrosECSysfsAccel
 	+tests_logging_CrashSender
-	+tests_logging_CrashServices
 	+tests_logging_KernelCrash
 	+tests_logging_UdevCrash
 	+tests_logging_UserCrash
