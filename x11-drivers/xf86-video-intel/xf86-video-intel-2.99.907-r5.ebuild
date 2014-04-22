@@ -52,6 +52,7 @@ PATCHES=(
 	"${FILESDIR}"/2.99.907-uxa-Remove-implicit-length-from-BLT-command-defines.patch
 	"${FILESDIR}"/2.99.907-uxa-Enable-BLT-acceleration-on-Broadwell.patch
 	"${FILESDIR}"/2.99.907-uxa-Implement-minimal-flushing-for-bdw.patch
+	"${FILESDIR}"/2.99.907-Revert-uxa-Prevent-laggy-applications-by-throttling-.patch
 )
 
 src_configure() {
