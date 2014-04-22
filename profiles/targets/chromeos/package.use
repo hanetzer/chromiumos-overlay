@@ -3,9 +3,9 @@
 
 app-accessibility/brltty	-beeper -contracted-braille -doc -fm -gpm -java -learn-mode -midi -ncurses -ocaml -pcm -speech -tcl -X
 app-admin/rsyslog	-ssl
-app-benchmarks/i7z      -X
-app-crypt/tpm-tools     pkcs11
-app-i18n/zinnia	    	-perl
+app-benchmarks/i7z	-X
+app-crypt/tpm-tools	pkcs11
+app-i18n/zinnia		-perl
 app-editors/qemacs	-X
 app-editors/vim		-X minimal
 # We don't use network functionality in bash, and since we ship it in a release
@@ -13,7 +13,7 @@ app-editors/vim		-X minimal
 app-shells/bash		-net
 dev-cpp/glog		gflags
 # flashrom's libraries must be static
-dev-embedded/libftdi    static-libs
+dev-embedded/libftdi	static-libs
 dev-lang/python		-berkdb gdbm -sqlite
 dev-libs/dbus-glib	tools
 dev-libs/elfutils	-utils
@@ -27,10 +27,10 @@ dev-util/dialog		-unicode minimal
 dev-util/perf		-audit -doc -demangle -tui -ncurses -perl -python -slang -unwind
 chromeos-base/chromeos-chrome   build_tests
 chromeos-base/vboot_reference minimal
-media-gfx/imagemagick   png
+media-gfx/imagemagick	png
 media-gfx/zbar		-gtk -imagemagick jpeg python -qt4 threads -v4l -X -xv
 media-libs/freeimage	png
-media-libs/libdvdread   -css
+media-libs/libdvdread	-css
 media-libs/libpng	pnm2png
 media-libs/libsndfile	minimal
 # disabled in profiles/default/linux/package.use
@@ -43,18 +43,18 @@ net-firewall/iptables	ipv6
 net-libs/libsoup	-ssl
 # for curl-7.19.6 turning on ipv6 use flag will turn off ares
 net-misc/curl		ares
-net-misc/dhcpcd crash
+net-misc/dhcpcd		crash
 net-misc/dhcp		ipv6 -server
 net-misc/iperf		threads
 net-misc/iputils	ipv6
-net-misc/ntp            caps
+net-misc/ntp		caps
 net-misc/openssh	-X
 net-misc/openvpn	pkcs11
 net-misc/strongswan	cisco nat-transport
 net-nds/openldap	minimal
 net-proxy/tsocks	tordns
 net-wireless/wpa_supplicant	dbus debug -readline smartcard ssl
-sci-geosciences/gpsd -python -ntp -X dbus garmin minimal ocean tntc usb -sockets
+sci-geosciences/gpsd	-python -ntp -X dbus garmin minimal ocean tntc usb -sockets
 sys-apps/busybox	-pam -selinux
 sys-apps/baselayout	-auto_seed_etc_files
 # flashrom's libraries must be static
@@ -62,26 +62,26 @@ sys-apps/dtc		static-libs
 sys-apps/dbus		-X
 sys-apps/iproute2	ipv6
 # mosys: crosbug.com/p/11630
-sys-apps/mosys          static
-sys-apps/flashrom       static
+sys-apps/mosys		static
+sys-apps/flashrom	static
 sys-apps/smartmontools	minimal
 sys-auth/consolekit	policykit
-sys-auth/polkit         -introspection
-sys-block/parted        device-mapper
+sys-auth/polkit		-introspection
+sys-block/parted	device-mapper
 sys-fs/lvm2		-lvm1 -readline -static
 sys-fs/mtools		-X
 sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
 sys-fs/udev		-devfs-compat -rule_generator hwdb acl gudev
-sys-fs/squashfs         lzo
+sys-fs/squashfs		lzo
 sys-libs/gdbm		-berkdb
 sys-libs/ncurses	minimal
-sys-libs/pam        -berkdb
+sys-libs/pam		-berkdb
 sys-libs/zlib		static-libs
-x11-apps/xinit          minimal
-x11-base/xorg-server -suid
+x11-apps/xinit		minimal
+x11-base/xorg-server	-suid
 x11-libs/libdrm		libkms
 x11-libs/libdrm-tests	libkms
-x11-libs/cairo          -opengl
+x11-libs/cairo		-opengl
 # Need png for color font support. bzip2 is not used. It's only for X11 *pcf.bz2
 # that we don't have.
-media-libs/freetype     png -bzip2
+media-libs/freetype	png -bzip2
