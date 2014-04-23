@@ -54,6 +54,7 @@ IUSE_TESTS=(
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
 	 tests_logging_AsanCrash
+	+tests_logging_CrashServices
 	+tests_login_ChromeProfileSanitary
 	+tests_login_Cryptohome
 	+tests_login_CryptohomeIncognito
