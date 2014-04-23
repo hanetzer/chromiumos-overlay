@@ -10,17 +10,19 @@ inherit cros-workon
 DESCRIPTION="Chrome OS Boot Time Statistics Utilities"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
+
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="-asan -clang"
+REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="sys-apps/rootdev"
-
 DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
 src_configure() {
+	clang-setup-env
 	cros-workon_src_configure
 	tc-export CC CXX AR PKG_CONFIG
 }
