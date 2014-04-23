@@ -23,7 +23,6 @@ RDEPEND="
 		)
 		chromeos-base/chromeos-chrome
 	)
-	chromeless_tty? ( chromeos-base/tty1 )
 "
 
 DEPEND="${RDEPEND}"
