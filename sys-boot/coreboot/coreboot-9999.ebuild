@@ -13,7 +13,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode fwserial memmaps pre-boot-blob quiet-cb rmt vmx"
+IUSE="em100-mode fwserial memmaps quiet-cb rmt vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly falco fox link lumpy panther parrot
@@ -46,7 +46,6 @@ DEPEND="
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	arm? ($DEPEND_ARM)
-	pre-boot-blob? ( sys-boot/pre-boot-blob )
 	"
 
 src_prepare() {
