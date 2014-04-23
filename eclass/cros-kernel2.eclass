@@ -131,6 +131,7 @@ CONFIG_I2C_CHARDEV=y
 
 kgdb_desc="Enable kgdb"
 kgdb_config="
+# CONFIG_WATCHDOG is not set
 CONFIG_KGDB=y
 CONFIG_KGDB_KDB=y
 """
