@@ -19,7 +19,7 @@ SRC_URI="${CLOSURE_LIB_URI}
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+autotest +build_tests -content_shell -chromeless_tty -ecs"
+IUSE="+autotest +build_tests -chromeless_tty -ecs"
 
 DEPEND="virtual/chromeos-interface
 	dev-python/pyyaml

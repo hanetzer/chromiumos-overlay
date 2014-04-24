@@ -12,7 +12,6 @@
 	<flag name='chrome_remoting'>Build chrome remoting feature</flag>
 	<flag name='clang'>Build with CC and C++ set to clang</flag>
 	<flag name='component_build'>Build components as shared libraries (faster link)</flag>
-	<flag name='content_shell'>Build content_shell(chrome not built)</flag>
 	<flag name='ecs'>Build embedded content_shell</flag>
 	<flag name='evdev_gestures'>Build Chrome with ChromeOS touchpad gestures support.</flag>
 	<flag name='gold'>Use gold linker</flag>

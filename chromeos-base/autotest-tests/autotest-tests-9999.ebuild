@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+autox +xset +tpmtools -content_shell -chromeless_tty"
+IUSE="+autox +xset +tpmtools -chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -40,11 +40,9 @@ RDEPEND="
 	chromeos-base/autotest-deps
 	!<=chromeos-base/autotest-factory-0.0.1-r4445
 	!chromeless_tty? (
-		!content_shell? (
-			chromeos-base/autotest-deps-glbench
-			tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
-			tests_graphics_Piglit? ( chromeos-base/autotest-deps-piglit )
-		)
+		chromeos-base/autotest-deps-glbench
+		tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
+		tests_graphics_Piglit? ( chromeos-base/autotest-deps-piglit )
 	)
 	chromeos-base/audiotest
 	chromeos-base/shill-test-scripts
@@ -123,20 +121,18 @@ CLIENT_IUSE_TESTS="
 	+tests_firmware_VbootCrypto
 	+tests_flaky_test
 	!chromeless_tty? (
-		!content_shell? (
-			+tests_graphics_GLAPICheck
-			+tests_graphics_GLBench
-			+tests_graphics_GLMark2
-			+tests_graphics_GpuReset
-			+tests_graphics_KernelMemory
-			+tests_graphics_LibDRM
-			+tests_graphics_PerfControl
-			+tests_graphics_Piglit
-			+tests_graphics_SanAngeles
-			+tests_graphics_Sanity
-			+tests_graphics_SyncControlTest
-			+tests_graphics_VTSwitch
-		)
+		+tests_graphics_GLAPICheck
+		+tests_graphics_GLBench
+		+tests_graphics_GLMark2
+		+tests_graphics_GpuReset
+		+tests_graphics_KernelMemory
+		+tests_graphics_LibDRM
+		+tests_graphics_PerfControl
+		+tests_graphics_Piglit
+		+tests_graphics_SanAngeles
+		+tests_graphics_Sanity
+		+tests_graphics_SyncControlTest
+		+tests_graphics_VTSwitch
 	)
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight

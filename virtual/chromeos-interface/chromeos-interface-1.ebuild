@@ -14,17 +14,14 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-content_shell -chromeless_tty -ecs"
+IUSE="-chromeless_tty -ecs"
 
 RDEPEND="
 	!chromeless_tty? (
-		content_shell? ( chromeos-base/content_shell )
-		!content_shell? (
-			!ecs? (
-				chromeos-base/chromeos-login
-			)
-			chromeos-base/chromeos-chrome
+		!ecs? (
+			chromeos-base/chromeos-login
 		)
+		chromeos-base/chromeos-chrome
 	)
 	chromeless_tty? ( chromeos-base/tty1 )
 "

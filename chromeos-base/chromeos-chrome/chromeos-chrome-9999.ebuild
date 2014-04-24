@@ -39,7 +39,6 @@ IUSE="
 	+chrome_remoting
 	clang
 	component_build
-	content_shell
 	deep_memory_profiler
 	drm
 	ecs
@@ -732,9 +731,6 @@ src_compile() {
 	if [[ -n "${CHROME_TARGET_OVERRIDE}" ]]; then
 		chrome_targets=( ${CHROME_TARGET_OVERRIDE} )
 		einfo "Building custom targets: ${chrome_targets[*]}"
-	elif use content_shell; then
-		chrome_targets=( content_shell chrome_sandbox )
-		einfo "Building content_shell"
 	elif use ecs; then
 		chrome_targets=( content_shell chrome_sandbox )
 		einfo "Building embedded content_shell"
