@@ -4,7 +4,7 @@
 EAPI="4"
 inherit eutils
 
-INTERNAL_NACL_MOZC_P="nacl-mozc-1.14.1640.4"
+INTERNAL_NACL_MOZC_P="nacl-mozc-1.15.1795.4"
 
 DESCRIPTION="The Mozc engine for IME extension API"
 HOMEPAGE="http://code.google.com/p/mozc"
