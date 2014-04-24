@@ -38,6 +38,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-ignore-spurious-quick-mode.patch"
 	epatch "${FILESDIR}/${P}-Check-return-value-of-ECDSA_Verify.patch"
 	epatch "${FILESDIR}/${P}-is_asn1.patch"
+	epatch "${FILESDIR}/${P}-asn1_unwrap.patch"
 	epatch "${FILESDIR}/${P}-compare_dn.patch"
 	epatch "${FILESDIR}/${P}-handle_fragment.patch"
 	epatch "${FILESDIR}/${P}-reject-create-child-sa-exchange.patch"
