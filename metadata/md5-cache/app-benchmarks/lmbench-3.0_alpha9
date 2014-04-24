@@ -1,0 +1,10 @@
+DEFINED_PHASES=compile install prepare
+DESCRIPTION=Suite of simple, portable benchmarks
+EAPI=4
+HOMEPAGE=http://www.bitmover.com/lmbench/whatis_lmbench.html
+KEYWORDS=*
+LICENSE=GPL-2
+SLOT=0
+SRC_URI=mirror://sourceforge/lmbench/development/lmbench-3.0-a9/lmbench-3.0-a9.tgz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=756e8ffaed71a08d872f37a064487d39
