@@ -123,4 +123,7 @@ src_install() {
 
 	insinto /etc/init
 	doins init/update-engine.conf
+
+	insinto /etc
+	doins policy_manager/policy_manager.conf
 }
