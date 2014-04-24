@@ -232,17 +232,21 @@ CLIENT_IUSE_TESTS="
 	+tests_network_DefaultProfileServices
 	+tests_network_DestinationVerification
 	+tests_network_DhcpClasslessStaticRoute
+	+tests_network_DhcpFailureWithStaticIP
 	+tests_network_DhcpNak
 	+tests_network_DhcpNegotiationSuccess
 	+tests_network_DhcpNegotiationTimeout
 	+tests_network_DhcpNonAsciiParameter
 	+tests_network_DhcpRenew
+	+tests_network_DhcpRenewWithOptionSubset
 	+tests_network_DhcpStaticIP
+	+tests_network_DhcpVendorEncapsulatedOptions
 	+tests_network_DhcpWpadNegotiation
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
 	+tests_network_EthernetStressPlug
 	+tests_network_GobiUncleanDisconnect
+	+tests_network_Ipv6SimpleNegotiation
 	+tests_network_LockedSIM
 	+tests_network_LTEActivate
 	+tests_network_ModemManagerSMS
