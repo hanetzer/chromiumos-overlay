@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="61f92ca846e68fa9264ca3ddd3ac569b4a09864b"
-CROS_WORKON_TREE="b788166ec03cd89844971439aeb40405cd0f353c"
+CROS_WORKON_COMMIT="46c9cb748c3819f56e46c32ef1ac852542cf1395"
+CROS_WORKON_TREE="2743b949d7912c7705301d721a64e8bed7260b45"
 CROS_WORKON_PROJECT="chromiumos/platform/bootstat"
 inherit cros-workon
 
@@ -28,6 +28,7 @@ src_configure() {
 }
 
 src_test() {
+	export ASAN_OPTIONS="log_path=${T}/asan"
 	emake tests
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform
