@@ -68,6 +68,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-admin/sudo
 	app-arch/gzip
 	app-arch/tar
+	app-benchmarks/lmbench
 	app-crypt/tpm-tools
 	app-misc/ckermit
 	app-misc/tmux
