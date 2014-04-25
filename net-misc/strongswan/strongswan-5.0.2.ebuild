@@ -87,6 +87,11 @@ pkg_setup() {
 			ewarn
 		fi
 	fi
+
+	# The ebuild chowns files to these accounts, so we need them in
+	# this func so they are created in the sdk chroot.
+	enewuser "ipsec"
+	enewgroup "ipsec"
 }
 
 src_configure() {
@@ -192,9 +197,6 @@ pkg_preinst() {
 
 	has_version "<net-misc/strongswan-4.3.6-r1[-caps]"
 	previous_4_3_6_with_caps=$(( !$? ))
-
-	enewuser "ipsec"
-	enewgroup "ipsec"
 }
 
 pkg_postinst() {
