@@ -4,6 +4,9 @@
 # Chrome cannot compile WebKit with gperf 3.0.4
 >dev-util/gperf-3.0.3
 
+# TODO(wiley): Masked for testing!
+=net-wireless/hostapd-2.1-r1
+
 # The following are here because we override the ebuilds from the
 # portage tree for a reason other than adding an ebuild from upstream
 # that wasn't yet in our portage tree. We want to keep using our
