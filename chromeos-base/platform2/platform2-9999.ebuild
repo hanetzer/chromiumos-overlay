@@ -575,12 +575,6 @@ platform2_install_metrics() {
 		doins "${OUT}/lib/libmetrics-${v}.pc"
 	done
 
-	# To avoid breaking existing packages that link against libmetrics,
-	# temporarily make libmetrics.so a symlink to libmetrics-242728.so
-	# TODO(benchan): Remove this hack once all packages are migrated to use
-	# the slotted libmetrics.
-	dosym libmetrics-242728.so /usr/$(get_libdir)/libmetrics.so
-
 	insinto /usr/include/metrics
 	doins c_metrics_library.h \
 		metrics_library{,_mock}.h \
