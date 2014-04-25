@@ -58,6 +58,7 @@ RDEPEND="${RDEPEND}
 	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
 	tests_hardware_MemoryThroughput? ( chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=] )
 	tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
+	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
 "
 
 DEPEND="${RDEPEND}"
