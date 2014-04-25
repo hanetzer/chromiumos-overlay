@@ -568,8 +568,11 @@ platform2_install_metrics() {
 		doins init/metrics_daemon.conf
 	fi
 
+	insinto /usr/$(get_libdir)/pkgconfig
 	for v in "${LIBCHROME_VERS[@]}"; do
+		./platform2_preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}/lib/libmetrics-${v}.so"
+		doins "${OUT}/lib/libmetrics-${v}.pc"
 	done
 
 	# To avoid breaking existing packages that link against libmetrics,
