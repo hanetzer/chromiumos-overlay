@@ -75,6 +75,7 @@ ALL_BOARDS=(
 	gizmo
 	glimmer
 	gnawty
+	hsb
 	ironhide
 	#kiev
 	kip
@@ -144,6 +145,7 @@ ALL_BOARDS=(
 	#waluigi
 	winky
 	wolf
+	wsb
 	x32-generic
 	x86-agz
 	x86-alex
