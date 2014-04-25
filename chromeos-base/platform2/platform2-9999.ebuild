@@ -124,7 +124,8 @@ RDEPEND_debugd="
 	)
 "
 
-RDEPEND_libchromeos="dev-libs/dbus-c++
+RDEPEND_libchromeos="
+	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/openssl
 	dev-libs/protobuf
@@ -220,6 +221,9 @@ DEPEND_crash_reporter="crash_reporting? ( sys-devel/flex )"
 RDEPEND="
 	platform2? (
 		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
+		cros_host? (
+			${RDEPEND_libchromeos}
+		)
 
 		${LIBCHROME_DEPEND}
 		chromeos-base/chromeos-minijail
