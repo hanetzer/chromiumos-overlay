@@ -1,0 +1,29 @@
+From a097f7a2b8fd781c34bb41163b440f166aa2988f Mon Sep 17 00:00:00 2001
+From: Christopher Wiley <wiley@chromium.org>
+Date: Tue, 29 Apr 2014 15:11:07 -0700
+Subject: [PATCH] Remove absolute reference to libnl3 headers
+
+We'll add this include hack back in a sysroot friendly way later.
+
+TEST=hostapd no longer crashes during startup at the first entry point
+to libnl when patched to look for libnl3 headers in the right location.
+---
+ src/drivers/drivers.mak | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/drivers/drivers.mak b/src/drivers/drivers.mak
+index 68ff910..1f38f57 100644
+--- a/src/drivers/drivers.mak
++++ b/src/drivers/drivers.mak
+@@ -30,7 +30,7 @@ NEED_RFKILL=y
+ ifdef CONFIG_LIBNL32
+   DRV_LIBS += -lnl-3
+   DRV_LIBS += -lnl-genl-3
+-  DRV_CFLAGS += -DCONFIG_LIBNL20 -I/usr/include/libnl3
++  DRV_CFLAGS += -DCONFIG_LIBNL20
+ else
+   ifdef CONFIG_LIBNL_TINY
+     DRV_LIBS += -lnl-tiny
+-- 
+1.9.1.423.g4596e3a
+
