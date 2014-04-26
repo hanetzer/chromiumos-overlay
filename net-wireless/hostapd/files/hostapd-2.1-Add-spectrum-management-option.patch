@@ -1,0 +1,68 @@
+From fe5c2699a15e989ca7f905678242b5c53fdc80ab Mon Sep 17 00:00:00 2001
+From: Paul Stewart <pstew@chromium.org>
+Date: Wed, 12 Jun 2013 10:37:24 -0700
+Subject: [PATCH 3/3] CHROMIUM: hostapd: Add spectrum management option
+
+Add the Spectrum Management capability flag.  Although hostapd
+does not support this feature, we use this flag in testing to
+cause clients to enable sensitivity to other 802.11h traffic.
+
+BUG=chrome-os-partner:19953
+TEST=Run WiFi autotests
+
+Change-Id: If9185a40640333e93bd3d38da253b0e7e89c14a2
+Reviewed-on: https://gerrit.chromium.org/gerrit/58377
+Reviewed-by: Christopher Wiley <wiley@chromium.org>
+Commit-Queue: Paul Stewart <pstew@chromium.org>
+Tested-by: Paul Stewart <pstew@chromium.org>
+---
+ hostapd/Makefile    | 4 ++++
+ hostapd/defconfig   | 5 +++++
+ src/ap/ieee802_11.c | 3 +++
+ 3 files changed, 12 insertions(+)
+
+diff --git a/hostapd/Makefile b/hostapd/Makefile
+index dd417e4..4cc8948 100644
+--- a/hostapd/Makefile
++++ b/hostapd/Makefile
+@@ -867,6 +867,10 @@ ifdef CONFIG_WEAK_URANDOM_LOW_SECURITY
+ CFLAGS += -DCONFIG_WEAK_URANDOM_LOW_SECURITY
+ endif
+ 
++ifdef CONFIG_SPECTRUM_MANAGEMENT_CAPABILITY
++CFLAGS += -DCONFIG_SPECTRUM_MANAGEMENT_CAPABILITY
++endif
++
+ ALL=hostapd hostapd_cli
+ 
+ all: verify_config $(ALL)
+diff --git a/hostapd/defconfig b/hostapd/defconfig
+index 6996322..a74394b 100644
+--- a/hostapd/defconfig
++++ b/hostapd/defconfig
+@@ -328,3 +328,8 @@ CONFIG_IPV6=y
+ # where security is not actually necessary.  Never use this if you want your
+ # network to be secure!
+ #CONFIG_WEAK_URANDOM_LOW_SECURITY=n
++
++# Provide the Spectrum Management capability flag in 802.11 headers, although
++# it isn't really supported.  This allows testing of 802.11h features in
++# connected clients.
++#CONFIG_SPECTRUM_MANAGEMENT_CAPABILITY=n
+diff --git a/src/ap/ieee802_11.c b/src/ap/ieee802_11.c
+index dee3c7a..55b9367 100644
+--- a/src/ap/ieee802_11.c
++++ b/src/ap/ieee802_11.c
+@@ -168,6 +168,9 @@ u16 hostapd_own_capab_info(struct hostapd_data *hapd, struct sta_info *sta,
+ 
+ 	if (privacy)
+ 		capab |= WLAN_CAPABILITY_PRIVACY;
++#ifdef CONFIG_SPECTRUM_MANAGEMENT_CAPABILITY
++	capab |= WLAN_CAPABILITY_SPECTRUM_MGMT;
++#endif
+ 
+ 	if (hapd->iface->current_mode &&
+ 	    hapd->iface->current_mode->mode == HOSTAPD_MODE_IEEE80211G &&
+-- 
+1.9.1.423.g4596e3a
+

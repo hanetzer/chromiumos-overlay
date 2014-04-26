@@ -13,7 +13,7 @@ SRC_URI="http://hostap.epitest.fi/releases/${P}.tar.gz"
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="ipv6 logwatch madwifi +ssl +wps +crda"
+IUSE="ipv6 logwatch madwifi +ssl +wps +crda weak_urandom_low_security spectrum_mgmt"
 
 DEPEND="ssl? ( dev-libs/openssl )
 	kernel_linux? (
@@ -33,6 +33,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-Fix-nt_password_hash-build.patch
 	pushd .. >/dev/null
 	epatch "${FILESDIR}"/${P}-Remove-absolute-reference-to-libnl3-headers.patch
+	epatch "${FILESDIR}"/${P}-Provide-compile-option-for-weak-ran.patch
+	epatch "${FILESDIR}"/${P}-Add-spectrum-management-option.patch
 	popd >/dev/null
 }
 
@@ -123,6 +125,16 @@ src_configure() {
 		# CFLAGS for the drivers. Do not be alarmed.
 		echo "CONFIG_LIBNL32=y" >> ${CONFIG}
 		echo "CFLAGS += $($(tc-getPKG_CONFIG) --cflags libnl-3.0 libnl-genl-3.0)" >> ${CONFIG}
+	fi
+
+	if use weak_urandom_low_security; then
+		ewarn "hostapd is being configured to use a weak random"
+		ewarn "number generator.  You should not use this in a"
+		ewarn "production environment!"
+		echo "CONFIG_WEAK_URANDOM_LOW_SECURITY=y" >> ${CONFIG}
+	fi
+	if use spectrum_mgmt; then
+		echo "CONFIG_SPECTRUM_MANAGEMENT_CAPABILITY=y" >> ${CONFIG}
 	fi
 
 	# TODO: Add support for BSD drivers
