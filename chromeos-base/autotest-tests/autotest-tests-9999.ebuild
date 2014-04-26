@@ -43,6 +43,7 @@ RDEPEND="
 		chromeos-base/autotest-deps-glbench
 		tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
 		tests_graphics_Piglit? ( chromeos-base/autotest-deps-piglit )
+		tests_graphics_PiglitBVT? ( chromeos-base/autotest-deps-piglit )
 	)
 	chromeos-base/audiotest
 	chromeos-base/shill-test-scripts
@@ -131,6 +132,7 @@ CLIENT_IUSE_TESTS="
 		+tests_graphics_LibDRM
 		+tests_graphics_PerfControl
 		+tests_graphics_Piglit
+		+tests_graphics_PiglitBVT
 		+tests_graphics_SanAngeles
 		+tests_graphics_Sanity
 		+tests_graphics_SyncControlTest
