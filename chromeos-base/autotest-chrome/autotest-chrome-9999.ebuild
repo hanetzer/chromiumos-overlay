@@ -77,11 +77,11 @@ IUSE_TESTS=(
 	+tests_power_UiResume
 	+tests_power_VideoDetector
 	+tests_power_VideoSuspend
-	+tests_security_BundledExtensionsTelemetry
+	+tests_security_BundledExtensions
 	+tests_security_NetworkListeners
-	+tests_security_ProfilePermissionsTelemetry
+	+tests_security_ProfilePermissions
 	+tests_security_SandboxLinuxUnittests
-	+tests_security_SandboxStatusTelemetry
+	+tests_security_SandboxStatus
 	+tests_telemetry_AFDOGenerateClient
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
