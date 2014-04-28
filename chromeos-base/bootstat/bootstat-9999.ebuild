@@ -26,7 +26,6 @@ src_configure() {
 }
 
 src_test() {
-	export ASAN_OPTIONS="log_path=${T}/asan"
 	emake tests
 	if ! use x86 && ! use amd64 ; then
 		echo Skipping unit tests on non-x86 platform

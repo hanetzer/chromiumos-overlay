@@ -121,3 +121,34 @@ cros_pre_src_unpack_python_multilib_setup() {
 cros_pre_pkg_setup_sysroot_build_bin_dir() {
 	PATH+=":${CROS_BUILD_BOARD_BIN}"
 }
+
+# Set ASAN settings so they'll work for unittests. http://crbug.com/367879
+# We run at src_unpack time so that the hooks have time to get registered
+# and saved in the environment.  Portage has a bug where hooks registered
+# in the same phase that fails are not run.  http://bugs.gentoo.org/509024
+cros_pre_src_unpack_asan_init() {
+	local log_path="${T}/asan_logs/asan"
+	mkdir -p "${log_path%/*}"
+	export ASAN_OPTIONS="log_path=${log_path}"
+
+	has asan_death_hook ${EBUILD_DEATH_HOOKS} || EBUILD_DEATH_HOOKS+=" asan_death_hook"
+}
+
+# Check for & show ASAN failures when dying.
+asan_death_hook() {
+	local l
+
+	for l in "${T}"/asan_logs/asan*; do
+		[[ ! -e ${l} ]] && return 0
+		echo
+		eerror "ASAN error detected:"
+		eerror "$(<"${l}")"
+		echo
+	done
+	return 1
+}
+
+# Check for any ASAN failures that were missed while testing.
+cros_post_src_test_asan_check() {
+	rmdir "${T}/asan_logs" 2>/dev/null || die "asan error not caught"
+}
