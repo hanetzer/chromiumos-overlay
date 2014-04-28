@@ -51,6 +51,7 @@ IUSE_TESTS=(
 	+tests_desktopui_SimpleLogin
 	+tests_desktopui_UrlFetchWithChromeDriver
 	+tests_dummy_IdleSuspend
+	+tests_graphics_Idle
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
 	 tests_logging_AsanCrash
