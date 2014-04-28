@@ -140,6 +140,7 @@ ALL_BOARDS=(
 	#tegra2_seaboard
 	#tegra2_wario
 	tegra3-generic
+	tricky
 	#waluigi
 	winky
 	wolf
