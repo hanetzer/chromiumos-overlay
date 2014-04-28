@@ -129,7 +129,7 @@ ALL_BOARDS=(
 	squawks
 	storm
 	stout
-	stout32
+	#stout32
 	stumpy
 	stumpy_moblab
 	stumpy_pico
