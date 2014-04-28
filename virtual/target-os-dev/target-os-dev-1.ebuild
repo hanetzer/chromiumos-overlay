@@ -12,8 +12,5 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-# We still depend on chromeos-base/chromeos-dev for migration.
-# It'll be cleaned up in a follow up commit.
-RDEPEND="virtual/target-chromium-os-dev
-	chromeos-base/chromeos-dev"
+RDEPEND="virtual/target-chromium-os-dev"
 DEPEND="${RDEPEND}"
