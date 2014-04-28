@@ -39,19 +39,19 @@ fi
 if [[ "${PLATFORM}" == "Pit" ]]; then
   PIT_MAX_FREQ=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq)
   if [[ ${PIT_MAX_FREQ} -gt 1800000 ]]; then
-    EXYNOS5_CPU_FREQ=(1900000 1500000 1400000 1200000 1100000 900000 800000
-      750000 300000)
+    EXYNOS5_CPU_FREQ=(1900000 1600000 1400000 1200000 1100000 900000 800000
+      650000 300000)
   else
-    EXYNOS5_CPU_FREQ=(1800000 1500000 1400000 1200000 1100000 900000 800000
-      750000 300000)
+    EXYNOS5_CPU_FREQ=(1800000 1600000 1400000 1200000 1100000 900000 800000
+      650000 300000)
   fi
 
   # Ares has 5 tmu sensors for cpu and gpu
   cpu_tpath="/sys/class/thermal/thermal_zone[0-4]"
 
 elif [[ "${PLATFORM}" == "Pi" ]]; then
-  EXYNOS5_CPU_FREQ=(2000000 1500000 1400000 1200000 1100000 900000 800000
-      750000 300000)
+  EXYNOS5_CPU_FREQ=(2000000 1800000 1400000 1200000 1100000 900000 800000
+      650000 300000)
   # Ares2 has also 5 tmu sensors for cpu and gpu
   cpu_tpath="/sys/class/thermal/thermal_zone[0-4]"
 
@@ -72,14 +72,14 @@ if [[ "${PLATFORM}" == "Spring" ]]; then
       ${t1})
   HWMON_TEMP_MAP=(${t0} ${t0} ${t0} ${t0} ${t0} ${t0} ${t0} ${t0} ${t0} ${t1})
 elif [[ "${PLATFORM}" == "Pit" ]]; then
-  # 62 -> 1.5Ghz(A15), 64 -> 1.2 Ghz(A15)
-  CPU_TEMP_MAP=(61 62 63 64 65 66 80 90 100)
-  # 50 -> 1.5Ghz(A15), 52 -> 1.2 Ghz(A15)
+  # Just relying on thermistors under 80 dgree C
+  CPU_TEMP_MAP=(80 81 82 83 84 85 86 90 100)
+  # 50 -> 1.6Ghz(A15), 52 -> 1.2 Ghz(A15)
   HWMON_TEMP_MAP=(49 50 51 52 53 54 70 80 90)
 elif [[ "${PLATFORM}" == "Pi" ]]; then
-  # 62 -> 1.5Ghz(A15), 64 -> 1.2 Ghz(A15)
-  CPU_TEMP_MAP=(61 62 63 64 65 66 80 90 100)
-  # 50 -> 1.5Ghz(A15), 52 -> 1.2 Ghz(A15)
+  # Just relying on thermistors under 80 dgree C
+  CPU_TEMP_MAP=(80 81 82 83 84 85 86 90 100)
+  # 50 -> 1.8Ghz(A15), 52 -> 1.2 Ghz(A15)
   HWMON_TEMP_MAP=(49 50 51 52 53 54 70 80 90)
 else
   # 63 -> 1.4Ghz, 69 -> 1.1 Ghz, 75 -> 800Mhz
