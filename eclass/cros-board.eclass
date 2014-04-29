@@ -86,6 +86,7 @@ ALL_BOARDS=(
 	link
 	link_freon
 	lumpy
+	marble
 	mccloud
 	mipseb-o32-generic
 	mipseb-n32-generic
