@@ -2,7 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT=("chromiumos/platform/depthcharge" "chromiumos/platform/vboot_reference")
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/depthcharge"
+	"chromiumos/platform/vboot_reference"
+)
 
 DESCRIPTION="coreboot's depthcharge payload"
 HOMEPAGE="http://www.coreboot.org"
