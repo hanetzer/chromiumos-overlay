@@ -56,6 +56,7 @@ RDEPEND="
 RDEPEND="${RDEPEND}
 	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
 	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
+	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
 	tests_hardware_MemoryThroughput? ( chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=] )
 	tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
@@ -154,6 +155,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_LightSensor
 	+tests_hardware_Memtester
 	+tests_hardware_MemoryIntegrity
+	+tests_hardware_MemoryLatency
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
 	+tests_hardware_MultiReader
