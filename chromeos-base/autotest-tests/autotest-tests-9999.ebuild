@@ -253,7 +253,6 @@ CLIENT_IUSE_TESTS="
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
 	+tests_network_NegotiatedLANSpeed
-	+tests_network_Ping
 	+tests_network_Portal
 	+tests_network_ShillInitScripts
 	+tests_network_SIMLocking
