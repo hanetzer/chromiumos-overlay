@@ -47,7 +47,6 @@ CROS_COMMON_RDEPEND="
 	net-misc/rsync
 "
 CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
-	chromeos-base/chromite
 "
 
 ################################################################################
