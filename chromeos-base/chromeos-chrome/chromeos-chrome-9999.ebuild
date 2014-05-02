@@ -740,6 +740,9 @@ src_compile() {
 	elif use ecs; then
 		chrome_targets=( content_shell chrome_sandbox )
 		einfo "Building embedded content_shell"
+	elif use app_shell; then
+		chrome_targets=( app_shell chrome_sandbox libosmesa.so )
+		einfo "Building app_shell"
 	else
 		chrome_targets=( chrome chrome_sandbox )
 		if use build_tests; then
@@ -756,10 +759,6 @@ src_compile() {
 			chrome_targets+=( aura_demo ash_shell )
 		else
 			chrome_targets+=( libosmesa.so )
-		fi
-
-		if use app_shell; then
-			chrome_targets+=( app_shell )
 		fi
 	fi
 
