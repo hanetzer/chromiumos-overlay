@@ -103,8 +103,6 @@ IUSE_TESTS=(
 	+tests_video_YouTubePage
 
 	# Inherits from cros_ui_test. TODO(achuith): Delete or migrate these.
-        tests_desktopui_IBusTest
-        tests_desktopui_ImeTest
         tests_desktopui_TouchScreen
 	# TODO(ihf): Move TearTest to autotest-tests and unify WebGL* with
 	# Chromium waterfall once we have hardware there.

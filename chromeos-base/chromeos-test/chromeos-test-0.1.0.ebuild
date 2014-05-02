@@ -61,7 +61,6 @@ CROS_X86_RDEPEND="
 "
 
 CROS_X_RDEPEND="
-	chromeos-base/autox
 	dev-python/pygtk
 	virtual/glut
 	x11-apps/setxkbmap

@@ -23,7 +23,6 @@ RDEPEND="
 	chromeos-base/autotest-private-all
 	!chromeless_tty? (
 		!ecs? (
-			chromeos-base/autotest-tests-ibus
 			chromeos-base/autotest-tests-ownershipapi
 			chromeos-base/autotest-tests-touchpad
 			chromeos-base/autotest-chrome

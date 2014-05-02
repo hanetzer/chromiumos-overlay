@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+autox +xset +tpmtools"
+IUSE="+xset +tpmtools"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -26,7 +26,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/telemetry
 	dev-libs/protobuf-python
 	dev-python/pygobject
-	autox? ( chromeos-base/autox )
 "
 
 DEPEND="${RDEPEND}"

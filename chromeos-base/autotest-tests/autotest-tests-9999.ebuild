@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+autox +xset +tpmtools -chromeless_tty"
+IUSE="+xset +tpmtools -chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -47,7 +47,6 @@ RDEPEND="
 	)
 	chromeos-base/audiotest
 	chromeos-base/shill-test-scripts
-	autox? ( chromeos-base/autox )
 	dev-python/numpy
 	dev-python/pygobject
 	media-sound/sox
