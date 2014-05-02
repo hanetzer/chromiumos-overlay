@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile info install postinst postrm preinst setup unpack
+DEPEND=>=sys-libs/zlib-1.1.4 >=sys-devel/gcc-config-1.6 virtual/libiconv >=dev-libs/gmp-4.2.1 >=dev-libs/mpc-0.8.1 >=dev-libs/mpfr-2.3.2 graphite? ( >=dev-libs/ppl-0.10 >=dev-libs/cloog-ppl-0.15.4 ) !build? ( gcj? ( gtk? ( x11-libs/libXt x11-libs/libX11 x11-libs/libXtst x11-proto/xproto x11-proto/xextproto >=x11-libs/gtk+-2.2 x11-libs/pango ) >=media-libs/libart_lgpl-2.1 app-arch/zip app-arch/unzip ) >=sys-libs/ncurses-5.2-r2 nls? ( sys-devel/gettext ) ) test? ( >=dev-util/dejagnu-1.4.4 >=sys-devel/autogen-5.5.4 ) >=sys-apps/texinfo-4.8 >=sys-devel/bison-1.875 elibc_glibc? ( >=sys-libs/glibc-2.8 ) amd64? ( multilib? ( gcj? ( app-emulation/emul-linux-x86-xlibs ) ) ) ppc? ( >=sys-devel/binutils-2.17 ) ppc64? ( >=sys-devel/binutils-2.17 ) >=sys-devel/binutils-2.15.94 dev-vcs/git
+DESCRIPTION=The GNU Compiler Collection. Includes C/C++, java compilers, pie+ssp extensions, Haj Ten Brugge runtime bounds checking. This Compiler is based off of Crosstoolv14.
+EAPI=1
+IUSE=gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache next_gcc cros_host cros_workon_tree_2ad5f604eb25a99a4adcce7409833c2b0e014a36 profiling
+KEYWORDS=*
+LICENSE=GPL-3 LGPL-3 || ( GPL-3 libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.2
+PDEPEND=>=sys-devel/gcc-config-1.4 elibc_glibc? ( >=sys-libs/glibc-2.8 )
+RDEPEND=>=sys-libs/zlib-1.1.4 >=sys-devel/gcc-config-1.6 virtual/libiconv >=dev-libs/gmp-4.2.1 >=dev-libs/mpc-0.8.1 >=dev-libs/mpfr-2.3.2 graphite? ( >=dev-libs/ppl-0.10 >=dev-libs/cloog-ppl-0.15.4 ) !build? ( gcj? ( gtk? ( x11-libs/libXt x11-libs/libX11 x11-libs/libXtst x11-proto/xproto x11-proto/xextproto >=x11-libs/gtk+-2.2 x11-libs/pango ) >=media-libs/libart_lgpl-2.1 app-arch/zip app-arch/unzip ) >=sys-libs/ncurses-5.2-r2 nls? ( sys-devel/gettext ) )
+RESTRICT=mirror strip
+SLOT=x86_64-pc-linux-gnu
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	ff68d8a7ffbac2ad087a198e23626fb2	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=974ac5e07996747f7082881ae0d68628
