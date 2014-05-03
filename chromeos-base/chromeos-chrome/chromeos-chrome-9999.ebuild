@@ -214,9 +214,6 @@ echotf() { echox ${1:-$?} true false ; }
 use10()  { usex $1 1 0 ; }
 usetf()  { usex $1 true false ; }
 set_build_defines() {
-	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
-	USE_TCMALLOC="linux_use_tcmalloc=$([[ ${CHOST} != armv6* ]]; echo10)"
-
 	# General build defines.
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
@@ -238,6 +235,9 @@ set_build_defines() {
 		"linux_use_bundled_gold=0"
 		"linux_use_gold_flags=$(use10 gold)"
 	)
+
+	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
+	[[ ${CHOST} == armv6* ]] && BUILD_DEFINES+=( use_allocator=none )
 
 	if use ecs ; then
 		BUILD_DEFINES+=(
@@ -332,8 +332,12 @@ set_build_defines() {
 
 	if use clang; then
 		if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
-			BUILD_DEFINES+=( clang=1 clang_use_chrome_plugins=0 werror= )
-			USE_TCMALLOC="linux_use_tcmalloc=0"
+			BUILD_DEFINES+=(
+				clang=1
+				clang_use_chrome_plugins=0
+				werror=
+				use_allocator=none
+			)
 
 			# The chrome build system will add -m32 for 32bit arches, and
 			# clang defaults to 64bit because our cros_sdk is 64bit default.
@@ -357,7 +361,6 @@ set_build_defines() {
 		BUILD_DEFINES+=( component=shared_library )
 	fi
 
-	BUILD_DEFINES+=( "${USE_TCMALLOC}" )
 	BUILD_DEFINES+=( "use_cras=1" )
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
