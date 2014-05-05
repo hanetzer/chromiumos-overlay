@@ -38,6 +38,7 @@ ALL_BOARDS=(
 	amd64-generic_embedded
 	amd64-host
 	anglar
+	app-shell-panther
 	aries
 	arm-generic
 	arm64-generic
