@@ -101,6 +101,7 @@ ALL_BOARDS=(
 	optimus
 	panda
 	panther
+	panther_embedded
 	parrot
 	parrot_ivb
 	parrot32
