@@ -39,7 +39,11 @@ src_compile() {
 	fi
 
 	local libpayloaddir="payloads/libpayload"
-	cp "${libpayloaddir}"/configs/config.${board} "${libpayloaddir}"/.config
+	local board_config="${libpayloaddir}/configs/config.${board}"
+
+	[ -f "${board_config}" ] || die "${board_config} does not exist"
+
+	cp "${board_config}" "${libpayloaddir}"/.config
 	emake -C "${libpayloaddir}" oldconfig || \
 		die "libpayload make oldconfig failed"
 	emake -C "${libpayloaddir}" \
