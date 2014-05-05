@@ -97,6 +97,14 @@ pkg_setup() {
 	add_daemon_user "nobody"
 }
 
+pkg_preinst() {
+	# Create users and groups that are used by system daemons at runtime.
+	# Users and groups that are also needed at build time should be
+	# created in pkg_setup instead.
+	add_daemon_user "input"  # For /dev/input/event access
+	enewgroup "i2c"          # For I2C device node access.
+}
+
 src_install() {
 	insinto /etc
 	doins "${FILESDIR}"/sysctl.conf || die
@@ -165,6 +173,10 @@ src_install() {
 }
 
 pkg_postinst() {
+	# TODO(cmasone): Once http://crbug.com/360815 is sorted, move as much
+	# remaining user/group creation as possible to pkg_preinst(). Failures
+	# there are fatal, while those in pkg_postinst() are not.
+
 	# The user that all user-facing processes will run as.
 	local system_user="${SHARED_USER_NAME}"
 	local system_id="1000"
@@ -202,7 +214,7 @@ pkg_postinst() {
 #	add_daemon_user "wpa" 219            # For wpa_supplicant
 	add_daemon_user "cras" 220           # For cras (audio)
 #	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
-	add_daemon_user "input" 222          # For /dev/input/event access
+#	add_daemon_user "input" 222          # For /dev/input/event access
 	add_daemon_user "chaps" 223          # For chaps (pkcs11)
 	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
 	add_daemon_user "tpmd" 225           # For tpmd
@@ -235,7 +247,7 @@ pkg_postinst() {
 
 	# Create a group for device access via permission_broker.
 	enewgroup "devbroker-access" 403
-	enewgroup "i2c" 404           # For I2C device node access.
+#	enewgroup "i2c" 404           # For I2C device node access.
 
 	# Some default directories. These are created here rather than at
 	# install because some of them may already exist and have mounts.
