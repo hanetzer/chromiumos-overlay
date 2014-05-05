@@ -198,7 +198,7 @@ pkg_postinst() {
 #	add_daemon_user "syslog" 202         # For rsyslog. Now installed by chromeos-init
 	add_daemon_user "ntp" 203
 #	add_daemon_user "sshd" 204           # For sshd. Now in net-misc/openssh.
-	add_daemon_user "polkituser" 206     # For policykit
+#	add_daemon_user "polkituser" 206     # For policykit
 #	add_daemon_user "tss" 207            # For trousers (TSS/TPM). Now in app-crypt/trousers.
 	add_daemon_user "pkcs11" 208         # For pkcs11 clients
 #	add_daemon_user "qdlservice" 209     # For QDLService. Now in platform2.

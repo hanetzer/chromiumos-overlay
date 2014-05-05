@@ -65,8 +65,6 @@ sys-apps/iproute2	ipv6
 sys-apps/mosys		static
 sys-apps/flashrom	static
 sys-apps/smartmontools	minimal
-sys-auth/consolekit	policykit
-sys-auth/polkit		-introspection
 sys-block/fio		aio
 sys-block/parted	device-mapper
 sys-fs/lvm2		-lvm1 -readline -static
