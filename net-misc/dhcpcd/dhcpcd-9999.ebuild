@@ -5,7 +5,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/dhcpcd"
 
-inherit cros-workon
+inherit cros-workon user
 
 DESCRIPTION="A fully featured, yet light weight RFC2131 compliant DHCP client"
 HOMEPAGE="http://roy.marples.name/projects/dhcpcd/"
@@ -29,6 +29,11 @@ src_configure() {
 
 src_compile() {
 	emake
+}
+
+pkg_setup() {
+	enewuser "dhcp"
+	enewgroup "dhcp"
 }
 
 src_install() {

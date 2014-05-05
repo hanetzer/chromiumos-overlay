@@ -1054,5 +1054,7 @@ pkg_preinst() {
 	if use shill; then
 		enewgroup "shill-crypto"
 		enewuser "shill-crypto"
+		enewgroup "nfqueue"
+		enewuser "nfqueue"
 	fi
 }

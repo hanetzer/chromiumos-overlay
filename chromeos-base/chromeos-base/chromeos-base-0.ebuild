@@ -207,7 +207,7 @@ pkg_postinst() {
 #	add_daemon_user "ipsec" 212          # For strongswan/ipsec VPN
 #	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
 #	add_daemon_user "tor" 214            # For tor (anonymity service)
-	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
+#	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
 	add_daemon_user "debugd" 216         # For debugd
 #	add_daemon_user "openvpn" 217        # For openvpn
 	add_daemon_user "bluetooth" 218      # For bluez
@@ -216,7 +216,7 @@ pkg_postinst() {
 #	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
 #	add_daemon_user "input" 222          # For /dev/input/event access
 	add_daemon_user "chaps" 223          # For chaps (pkcs11)
-	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
+#	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
 	add_daemon_user "tpmd" 225           # For tpmd
 #	add_daemon_user "mtp" 226            # For mtpd. In mtpd.
 	add_daemon_user "proxystate" 227     # For proxy monitoring
@@ -224,7 +224,7 @@ pkg_postinst() {
 #	add_daemon_user "watchdog" 229       # For daisydog
 	add_daemon_user "devbroker" 230      # For permission_broker
 #	add_daemon_user "xorg" 231           # For Xorg. In xorg-conf
-	add_daemon_user "nfqueue" 232        # For netfilter-queue
+#	add_daemon_user "nfqueue" 232        # For netfilter-queue
 	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
 	add_daemon_user "tlsdate" 234
 	add_daemon_user "debugd-logs" 235    # For debugd's unprivileged logs
