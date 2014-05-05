@@ -201,7 +201,7 @@ pkg_postinst() {
 #	add_daemon_user "sshd" 204           # For sshd. Now in net-misc/openssh.
 #	add_daemon_user "polkituser" 206     # For policykit
 #	add_daemon_user "tss" 207            # For trousers (TSS/TPM). Now in app-crypt/trousers.
-	add_daemon_user "pkcs11" 208         # For pkcs11 clients
+#	add_daemon_user "pkcs11" 208         # For pkcs11 clients
 #	add_daemon_user "qdlservice" 209     # For QDLService. Now in platform2.
 #	add_daemon_user "cromo" 210          # For cromo (modem manager). Now in platform2.
 #	add_daemon_user "cashew" 211         # Deprecated, do not reuse
@@ -216,7 +216,7 @@ pkg_postinst() {
 	add_daemon_user "cras" 220           # For cras (audio)
 #	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
 #	add_daemon_user "input" 222          # For /dev/input/event access
-	add_daemon_user "chaps" 223          # For chaps (pkcs11)
+#	add_daemon_user "chaps" 223          # For chaps (pkcs11)
 #	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
 	add_daemon_user "tpmd" 225           # For tpmd
 #	add_daemon_user "mtp" 226            # For mtpd. In mtpd.

@@ -1051,9 +1051,12 @@ pkg_preinst() {
 	fi
 
 	if use tpm; then
-		enewgroup "attestation"
-		enewuser "attestation"
+		for ug in attestation pkcs11 chaps; do
+			enewuser "${ug}"
+			enewgroup "${ug}"
+		done
 	fi
+
 	if use shill; then
 		enewgroup "shill-crypto"
 		enewuser "shill-crypto"
