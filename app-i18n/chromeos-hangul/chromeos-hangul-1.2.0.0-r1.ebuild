@@ -7,7 +7,7 @@ inherit eutils
 DESCRIPTION="The Korean Hangul input engine for IME extension API"
 HOMEPAGE="https://code.google.com/p/google-input-tools/"
 # TODO: Change the $PF to $P.
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${PF}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
