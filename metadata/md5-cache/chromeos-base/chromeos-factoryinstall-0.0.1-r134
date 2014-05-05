@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install postinst setup unpack
+DEPEND=chromeos-base/chromeos-init x86? ( sys-boot/syslinux ) dev-vcs/git
+DESCRIPTION=Chrome OS Factory Installer
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang cros_host cros_workon_tree_bdeaf916f1a13baa476d13a7eb82792816b182d0 profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-init app-arch/gzip app-arch/sharutils app-arch/tar chromeos-base/vboot_reference sys-apps/mosys sys-apps/util-linux x86? ( chromeos-base/chromeos-initramfs ) chromeos-base/chromeos-installer chromeos-base/memento_softwareupdate net-misc/htpdate net-wireless/iw sys-apps/flashrom sys-apps/net-tools sys-apps/upstart sys-block/parted sys-fs/e2fsprogs
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	ff68d8a7ffbac2ad087a198e23626fb2	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=896938b0704947bab9a0375205abf5b4
