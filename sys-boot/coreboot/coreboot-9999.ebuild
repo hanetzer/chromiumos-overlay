@@ -61,14 +61,17 @@ DEPEND="
 	"
 
 src_prepare() {
-	local board=$(get_current_board_with_variant)
-
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
 	while read -d $'\0' -r file; do
 		rsync --recursive --links --executability --ignore-existing \
 		      "${file}" ./ || die
 	done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
+
+	local board=$(get_current_board_with_variant)
+	if [[ ! -s "configs/config.${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
 
 	if [[ -s "configs/config.${board}" ]]; then
 		cp -v "configs/config.${board}" .config
@@ -78,6 +81,8 @@ src_prepare() {
 		echo "CONFIG_MRC_RMT=y" >> .config
 	fi
 	if use fwserial; then
+		# Use fwserial file that matches config file, so if a variant
+		# config is added, a variant fwserial file must also be added
 		elog "   - enabling firmware serial console"
 		cat "configs/fwserial.${board}" >> .config || die
 	fi
@@ -145,6 +150,10 @@ EOF
 src_install() {
 	local mapfile
 	local board=$(get_current_board_with_variant)
+	if [[ ! -s "configs/config.${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+
 	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "build/coreboot.rom" coreboot.rom

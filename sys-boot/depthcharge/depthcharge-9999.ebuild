@@ -33,6 +33,10 @@ src_configure() {
 
 src_compile() {
 	local board=$(get_current_board_with_variant)
+	if [[ ! -d "board/${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+
 	tc-getCC
 
 	# Firmware related binaries are compiled with a 32-bit toolchain
@@ -69,6 +73,9 @@ src_install() {
 	local destdir="/firmware/depthcharge"
 	local dtsdir="/firmware/dts"
 	local board=$(get_current_board_with_variant)
+	if [[ ! -d "board/${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
 	local files_to_copy=(netboot.{bin,elf{,.map}})
 	if use unified_depthcharge ; then
 		files_to_copy+=(depthcharge.elf{,.map})

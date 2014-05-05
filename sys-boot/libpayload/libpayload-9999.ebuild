@@ -39,6 +39,10 @@ src_compile() {
 	fi
 
 	local libpayloaddir="payloads/libpayload"
+	if [[ ! -s "${libpayloaddir}/configs/config.${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+
 	local board_config="${libpayloaddir}/configs/config.${board}"
 
 	[ -f "${board_config}" ] || die "${board_config} does not exist"
