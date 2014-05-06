@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
+NEXT_BINUTILS=cros/mobile_toolchain_v18_release_branch
 
 inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-workon
 
@@ -30,7 +31,8 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="http://sources.redhat.com/binutils/"
 LICENSE="|| ( GPL-3 LGPL-3 )"
-IUSE="hardened mounted_binutils multislot multitarget nls test vanilla"
+IUSE="hardened mounted_binutils multislot multitarget nls test vanilla
+      next_binutils"
 if use multislot ; then
 	SLOT="${CTARGET}-${BVER}"
 elif is_cross ; then
@@ -62,6 +64,18 @@ else
 	BINPATH=/usr/${CTARGET}/binutils-bin/${BVER}
 fi
 
+# It is not convenient that cros_workon.eclass does not accept a branch name in
+# CROS_WORKON_COMMIT/TREE, because sometimes the git repository is cloned via
+# '--shared', which hides all remote refs. So we manually calculate the hashes
+# here.
+githash_for_branch() {
+	local pathbase
+	local branch=$1
+	pathbase=/mnt/host/source/src/third_party/binutils
+	CROS_WORKON_COMMIT=$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%H" "${branch}")
+	CROS_WORKON_TREE=$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%T" "${branch}")
+}
+
 src_unpack() {
 	if use mounted_binutils ; then
 		BINUTILS_DIR="/usr/local/toolchain_root/binutils"
@@ -69,6 +83,12 @@ src_unpack() {
 			die "binutils dirs not mounted at: ${BINUTILS_DIR}"
 		fi
 	else
+		if use next_binutils ; then
+			githash_for_branch ${NEXT_BINUTILS}
+			einfo "Using next binutils: \"${NEXT_BINUTILS}\""
+			einfo "  GITHASH= \"${CROS_WORKON_COMMIT}\""
+			einfo "  TREEHASH= \"${CROS_WORKON_TREE}\""
+		fi
 		cros-workon_src_unpack
 		mv "${S}" "${GITDIR}"
 		BINUTILS_DIR="${GITDIR}"
@@ -299,7 +319,28 @@ src_install() {
 }
 
 pkg_postinst() {
-	binutils-config ${CTARGET}-${BVER}
+	# cros_setup_toolchains takes care of selecting gold/bfd correctly. For
+	# next_binutils, the typical usage is installing via "sudo emerge",
+	# which does not invoke cros_setup_toolchains, and this usually results
+	# in a failure later subtle to root cause. So we have to properly setup
+	# bgd/gold here.
+	# TODO(shenhan): later move function code in cros_setup_toolchain here.
+	if use next_binutils ; then
+		local config_gold=false
+		if is_cross; then
+			case ${CTARGET} in
+				i?86-*|x86_64-*) config_gold=true;;
+				*) ;;
+			esac
+		fi
+		if ${config_gold} ; then
+			binutils-config ${CTARGET}-${BVER}-gold
+		else
+			binutils-config ${CTARGET}-${BVER}
+		fi
+	else
+		binutils-config ${CTARGET}-${BVER}
+	fi
 }
 
 pkg_postrm() {
