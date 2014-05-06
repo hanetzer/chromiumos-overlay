@@ -83,7 +83,7 @@ RDEPEND_crash_reporter="
 	crash_reporting? (
 		chromeos-base/google-breakpad
 		chromeos-base/chromeos-ca-certificates
-		!<chromeos-base/chromeos-init-0.0.24
+		!<chromeos-base/chromeos-init-0.0.25
 		dev-cpp/gflags
 		dev-libs/libpcre
 		net-misc/curl
@@ -445,7 +445,7 @@ platform2_install_crash-reporter() {
 	dosbin kernel_log_collector.sh
 
 	insinto /etc/init
-	doins init/crash-reporter.conf
+	doins init/crash-reporter.conf init/crash-sender.conf
 	use cros_embedded || doins init/warn-collector.conf
 
 	insinto /etc

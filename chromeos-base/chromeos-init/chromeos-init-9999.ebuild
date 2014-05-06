@@ -73,7 +73,7 @@ src_install() {
 		doins embedded-init/boot-services.conf
 
 		doins report-boot-complete.conf
-		doins cgroups.conf crash-sender.conf
+		doins cgroups.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins log-rotate.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
