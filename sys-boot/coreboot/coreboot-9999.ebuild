@@ -53,11 +53,16 @@ DEPEND_ARM="
 	sys-apps/coreboot-utils
 	"
 
+DEPEND_ARM64="
+	sys-apps/coreboot-utils
+	"
+
 DEPEND="
 	${DEPEND_BLOCKERS}
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	arm? ($DEPEND_ARM)
+	arm64? ($DEPEND_ARM64)
 	"
 
 src_prepare() {
