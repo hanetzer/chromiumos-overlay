@@ -6,7 +6,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 
-inherit toolchain-funcs autotools cros-workon cros-board
+inherit toolchain-funcs autotools cros-workon cros-board user
 
 DESCRIPTION="Google A/V Daemon"
 HOMEPAGE="http://www.chromium.org"
@@ -92,4 +92,9 @@ src_install() {
 	# install dbus config allowing cras access
 	insinto /etc/dbus-1/system.d
 	doins dbus-config/org.chromium.cras.conf
+}
+
+pkg_preinst() {
+	enewuser "cras"
+	enewgroup "cras"
 }

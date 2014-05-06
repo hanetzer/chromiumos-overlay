@@ -213,7 +213,7 @@ pkg_postinst() {
 #	add_daemon_user "openvpn" 217        # For openvpn
 	add_daemon_user "bluetooth" 218      # For bluez
 #	add_daemon_user "wpa" 219            # For wpa_supplicant
-	add_daemon_user "cras" 220           # For cras (audio)
+#	add_daemon_user "cras" 220           # For cras (audio)
 #	add_daemon_user "gavd" 221           # For gavd (audio) (deprecated)
 #	add_daemon_user "input" 222          # For /dev/input/event access
 #	add_daemon_user "chaps" 223          # For chaps (pkcs11)
