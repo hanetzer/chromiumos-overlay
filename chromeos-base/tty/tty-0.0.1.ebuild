@@ -13,6 +13,7 @@ USE_PREFIX="tty_console_"
 
 ALL_PORTS=(
 	ttyAMA{0..5}
+	ttyHSL{0..2}
 	ttyO{0..5}
 	ttyS{0..5}
 	ttySAC{0..5}
