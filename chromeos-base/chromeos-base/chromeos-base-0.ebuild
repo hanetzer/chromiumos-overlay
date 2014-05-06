@@ -103,6 +103,7 @@ pkg_preinst() {
 	# created in pkg_setup instead.
 	add_daemon_user "input"  # For /dev/input/event access
 	enewgroup "i2c"          # For I2C device node access.
+	enewgroup "serial"       # For owning access to serial devices.
 }
 
 src_install() {
@@ -222,7 +223,7 @@ pkg_postinst() {
 	add_daemon_user "proxystate" 227     # For proxy monitoring
 #	add_daemon_user "power" 228          # For powerd. In platform2.
 #	add_daemon_user "watchdog" 229       # For daisydog
-	add_daemon_user "devbroker" 230      # For permission_broker
+#	add_daemon_user "devbroker" 230      # For permission_broker
 #	add_daemon_user "xorg" 231           # For Xorg. In xorg-conf
 #	add_daemon_user "nfqueue" 232        # For netfilter-queue
 	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
@@ -243,10 +244,10 @@ pkg_postinst() {
 	# Group that is allowed to create directories under /home/root/<hash>.
 	enewgroup "daemon-store" 400
 	enewgroup "logs-access" 401
-	enewgroup "serial" 402        # For owning access to serial devices.
+#	enewgroup "serial" 402        # For owning access to serial devices.
 
 	# Create a group for device access via permission_broker.
-	enewgroup "devbroker-access" 403
+#	enewgroup "devbroker-access" 403
 #	enewgroup "i2c" 404           # For I2C device node access.
 
 	# Some default directories. These are created here rather than at

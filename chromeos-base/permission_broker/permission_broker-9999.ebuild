@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/permission_broker"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon
+inherit cros-debug cros-workon user
 
 DESCRIPTION="Permission Broker for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -42,6 +42,12 @@ src_configure() {
 
 src_compile() {
 	cros-workon_src_compile
+}
+
+pkg_preinst() {
+	enewuser "devbroker"
+	enewgroup "devbroker"
+	enewgroup "devbroker-access"
 }
 
 src_install() {
