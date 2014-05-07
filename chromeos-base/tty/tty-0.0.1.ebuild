@@ -25,11 +25,9 @@ IUSE="${IUSE_PORTS}"
 RDEPEND="
 	sys-apps/upstart
 	tty_console_tty2? ( !<chromeos-base/chromeos-init-0.0.22 )
-	tty_console_tty1? ( !chromeos-base/tty1 )
+	!chromeos-base/tty1
+	!chromeos-base/serial-tty
 "
-RDEPEND+="$(for t in ${IUSE_PORTS}; do
-	echo " ${t}? ( !chromeos-base/serial-tty[${t}] )"
-	done)"
 
 S="${WORKDIR}"
 
