@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="655189a755d09e3071a3ba41f8fecf92ffef5a8c"
-CROS_WORKON_TREE="12f0240c80679887c608f7ec9c8b1bef1e1492bb"
+CROS_WORKON_COMMIT="b3dc2815501fafcbcff9b12131547ae20e6bfb5b"
+CROS_WORKON_TREE="28013a6def8b12301d323f114dc857c979914ea4"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
 
@@ -75,7 +75,7 @@ src_install() {
 		doins embedded-init/boot-services.conf
 
 		doins report-boot-complete.conf
-		doins cgroups.conf crash-sender.conf
+		doins cgroups.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins log-rotate.conf
 		doins pre-shutdown.conf pstore.conf reboot.conf
