@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="mocktpm fwconsole"
+IUSE="mocktpm fwconsole unified_depthcharge"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -69,11 +69,12 @@ src_install() {
 	local destdir="/firmware/depthcharge"
 	local dtsdir="/firmware/dts"
 	local board=$(get_current_board_with_variant)
-	local files_to_copy=(
-		depthcharge.elf{,.map}
-		depthcharge.{ro,rw}.{bin,elf{,.map}}
-		netboot.{bin,elf{,.map}}
-	)
+	local files_to_copy=(netboot.{bin,elf{,.map}})
+	if use unified_depthcharge ; then
+		files_to_copy+=(depthcharge.elf{,.map})
+	else
+		files_to_copy+=(depthcharge.{ro,rw}.{bin,elf{,.map}})
+	fi
 
 	insinto "${dtsdir}"
 	doins "board/${board}/fmap.dts"
