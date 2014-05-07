@@ -90,6 +90,7 @@ RDEPEND="${RDEPEND}
 		chromeos-base/audiotest
 		media-sound/sox
 	)
+	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-dev-root
 	chromeos-base/gmerge
 	chromeos-base/platform2
