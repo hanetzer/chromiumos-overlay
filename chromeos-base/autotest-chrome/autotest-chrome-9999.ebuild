@@ -24,7 +24,6 @@ RDEPEND="
 	chromeos-base/chromeos-chrome
 	chromeos-base/shill-test-scripts
 	chromeos-base/telemetry
-	tests_audio_PlaybackRecordSemiAuto? ( media-sound/alsa-utils )
 "
 
 DEPEND="${RDEPEND}"
@@ -42,7 +41,6 @@ IUSE_TESTS=(
 	# Tests that depend on telemetry.
 	+tests_accessibility_Sanity
 	+tests_audio_AudioCorruption
-	+tests_audio_PlaybackRecordSemiAuto
 	+tests_bluetooth_RegressionClient
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_CameraApp
