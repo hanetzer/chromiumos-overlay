@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DEPEND=chromeos-base/chromeos-test
+DESCRIPTION=List of packages that make up the test OS image; by default, we build a Chromium OS test image. Note: test images are a superset of dev images.
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-test
+SLOT=0
+_md5_=a974b40bfcb0a69cb7c23480f6d65d88
