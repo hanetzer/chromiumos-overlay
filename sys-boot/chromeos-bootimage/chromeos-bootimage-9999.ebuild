@@ -11,7 +11,7 @@ inherit cros-debug cros-workon
 
 DESCRIPTION="ChromeOS firmware image builder"
 HOMEPAGE="http://www.chromium.org"
-LICENSE=""
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
