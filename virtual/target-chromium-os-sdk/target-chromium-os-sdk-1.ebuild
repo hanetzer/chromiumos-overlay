@@ -337,6 +337,8 @@ RDEPEND="${RDEPEND}
 	dev-python/django
 	dev-python/flup
 	dev-python/jsonrpclib
+	dev-python/paramiko
+	dev-python/pycrypto
 	dev-python/sphinx
 	!dev-python/twisted
 	dev-python/twisted-core
