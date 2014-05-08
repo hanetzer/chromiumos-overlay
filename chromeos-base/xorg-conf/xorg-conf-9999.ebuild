@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="alex butterfly -egl elan -exynos mario stout -tegra"
+IUSE="alex butterfly -egl elan -exynos mario stout -tegra -rk32"
 
 RDEPEND="!chromeos-base/touchpad-linearity"
 DEPEND="x11-base/xorg-server"
@@ -36,6 +36,8 @@ src_install() {
 		doins tegra.conf
 	elif use exynos && use egl; then
 		doins exynos.conf
+	elif use rk32 && use egl; then
+		doins rk32.conf
 	fi
 
 	# Enable exactly one evdev-compatible X input touchpad driver.
