@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile install postinst
+DEPEND=sys-fs/fuse dev-util/scons
+DESCRIPTION=exFAT filesystem FUSE module
+EAPI=5
+HOMEPAGE=http://code.google.com/p/exfat/
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=sys-fs/fuse
+SLOT=0
+SRC_URI=http://exfat.googlecode.com/files/fuse-exfat-1.0.2_pre401.tar.gz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	fac675dcccf94392371a6abee62d909f	scons-utils	988e24b9e2e4642189b4e97c03e5ae71	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=d6ad8af3b11a294f8101aa35e753c115
