@@ -13,14 +13,12 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+xset +tpmtools -chromeless_tty"
+IUSE="+tpmtools -chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
 LIBCHROME_VERS="271506"
 
-# TODO(snanda): Remove xset dependence once power_LoadTest is switched over
-# to use power manager
 # TODO(semenzato): tpm-tools is included for hardware_TpmFirmware (and at this
 # time only one binary is used, tpm_takeownership).  Once we have a testing
 # image, a better way would be to add tpm-tools to the image.
@@ -50,10 +48,11 @@ RDEPEND="
 	dev-python/numpy
 	dev-python/pygobject
 	media-sound/sox
-	xset? ( x11-apps/xset )
+	x11-libs/libX11
 "
 
 RDEPEND="${RDEPEND}
+	tests_dbench? ( dev-libs/libaio )
 	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
 	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
