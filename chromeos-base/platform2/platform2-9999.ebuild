@@ -52,7 +52,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -358,7 +358,7 @@ platform2_multiplex() {
 #
 
 platform2_install_attestation() {
-	use tpm || return 0
+	use attestation || return 0
 	use cros_host && return 0
 
 	insinto /etc/dbus-1/system.d
