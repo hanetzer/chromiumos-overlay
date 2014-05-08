@@ -38,6 +38,7 @@ src_prepare() {
 		# NaCl Mozc is handled as id:fpfbhcjppmaeaijcidgiibchfbnhbelj.
 		epatch "${FILESDIR}"/${INTERNAL_NACL_MOZC_P}-insert-internal-public-key.patch
 		epatch "${FILESDIR}"/${INTERNAL_NACL_MOZC_P}-call-startIme.patch
+                epatch "${FILESDIR}"/${INTERNAL_NACL_MOZC_P}-fix-software-keyboard-bug.patch
 	else
 		# NaCl Mozc is handled as id:bbaiamgfapehflhememkfglaehiobjnk.
 		epatch "${FILESDIR}"/${P}-insert-oss-public-key.patch
