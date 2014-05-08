@@ -7,7 +7,7 @@ EAPI=4
 FINDLIB_USE="ocaml"
 
 inherit findlib eutils multilib toolchain-funcs java-pkg-opt-2 flag-o-matic \
-	autotools udev
+	autotools udev user
 
 DESCRIPTION="Daemon that provides access to the Linux/Unix console for a blind person"
 HOMEPAGE="http://mielke.cc/brltty/"
@@ -146,6 +146,11 @@ src_install() {
 		dohtml -r Manual-BrlAPI
 		dodoc BrlAPI-*.txt
 	fi
+}
+
+pkg_preinst() {
+	enewgroup brltty
+	enewuser brltty
 }
 
 pkg_postinst() {

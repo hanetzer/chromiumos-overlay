@@ -233,7 +233,7 @@ pkg_postinst() {
 #	add_daemon_user "shill-crypto" 237   # For shill's crypto-util
 #	add_daemon_user "avahi" 238          # For avahi-daemon
 #	add_daemon_user "p2p" 239            # For p2p
-	add_daemon_user "brltty" 240         # For braille displays
+#	add_daemon_user "brltty" 240         # For braille displays
 #	add_daemon_user "modem" 241          # For modem manager. Now in net-misc/modemmanager-next.
 	# Reserve some UIDs/GIDs between 300 and 349 for sandboxing FUSE-based
 	# filesystem daemons.
