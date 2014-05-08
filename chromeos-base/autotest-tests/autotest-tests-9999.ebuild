@@ -13,16 +13,12 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+tpmtools -chromeless_tty"
+IUSE="-chromeless_tty"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
 LIBCHROME_VERS="271506"
 
-# TODO(semenzato): tpm-tools is included for hardware_TpmFirmware (and at this
-# time only one binary is used, tpm_takeownership).  Once we have a testing
-# image, a better way would be to add tpm-tools to the image.
-#
 # pygobject is used only in the following:
 #   desktopui_ScreenLocker
 #   hardware_BluetoothSemiAuto
@@ -34,7 +30,6 @@ LIBCHROME_VERS="271506"
 #   network_3GSmokeTest
 #   network_3GStressEnable
 RDEPEND="
-	tpmtools? ( app-crypt/tpm-tools )
 	chromeos-base/autotest-deps
 	!<=chromeos-base/autotest-factory-0.0.1-r4445
 	!chromeless_tty? (
@@ -57,7 +52,6 @@ RDEPEND="${RDEPEND}
 	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
 	tests_hardware_MemoryThroughput? ( app-benchmarks/lmbench )
-	tests_hardware_TPMFirmware? ( chromeos-base/tpm_lite )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
 "
 
