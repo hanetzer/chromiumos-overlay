@@ -1,12 +1,11 @@
-DEFINED_PHASES=info install setup unpack
+DEFINED_PHASES=info install prepare setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Chrome OS assets (images, sounds, etc.)
+DESCRIPTION=Chrome OS system API (D-Bus service names, etc.)
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=alex lumpy lumpy64 mario tegra2-ldk cros_host cros_workon_tree_12070bb10c6c7b7b01ae9d50991319808723b68c profiling
+IUSE=platform2 cros_host cros_workon_tree_7f129783b2189270f193d48cc5ce17122cba1236 profiling
 KEYWORDS=*
 LICENSE=BSD
-RDEPEND=chromeos-base/chromeos-fonts media-gfx/ply-image
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	ff68d8a7ffbac2ad087a198e23626fb2	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=e6317182c0e1c00e617c57bdc523d1b5
+_md5_=ab389cf61eb9578d0eec5901e2dfe898
