@@ -18,9 +18,3 @@ IUSE="+X"
 RDEPEND="app-arch/gzip
 	 x11-apps/xinput"
 DEPEND="${RDEPEND}"
-
-src_prepare() {
-	if ! use X; then
-		epatch "${FILESDIR}"/0001-chgrp-dev-input-devices-to-chronos-for-DRM.patch
-	fi
-}
