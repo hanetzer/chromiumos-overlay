@@ -15,6 +15,13 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="+X"
 
-RDEPEND="app-arch/gzip
-	 x11-apps/xinput"
+RDEPEND="
+	app-arch/gzip
+	X? ( x11-apps/xinput )
+"
 DEPEND="${RDEPEND}"
+
+src_configure() {
+	export HAVE_XINPUT=$(usex X 1 0)
+	cros-workon_src_configure
+}
