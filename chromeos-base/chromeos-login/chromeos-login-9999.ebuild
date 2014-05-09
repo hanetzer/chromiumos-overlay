@@ -12,7 +12,7 @@ SRC_URI=""
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~arm ~amd64 ~x86"
+KEYWORDS="~*"
 IUSE="-asan -clang -deep_memory_profiler -disable_login_animations
 	-disable_webaudio -egl -exynos -fade_boot_splash_screen
 	-gpu_sandbox_allow_sysv_shm
