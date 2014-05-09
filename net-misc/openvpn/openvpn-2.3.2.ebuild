@@ -28,6 +28,7 @@ RDEPEND="${DEPEND}"
 src_prepare() {
 	epatch "${FILESDIR}"/openvpn-2.3.2-pkcs11-slot.patch
 	epatch "${FILESDIR}"/openvpn-2.3.2-iv_plat.patch
+	epatch "${FILESDIR}"/openvpn-2.3.2-redirect-gateway.patch
 	eautoreconf
 }
 
