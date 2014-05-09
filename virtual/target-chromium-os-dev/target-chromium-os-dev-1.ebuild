@@ -10,7 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
-IUSE="cras pam opengl +profile tpm usb X"
+IUSE="cras pam opengl +power_management +profile tpm usb X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -34,7 +34,7 @@ IUSE="cras pam opengl +profile tpm usb X"
 ################################################################################
 CROS_X86_RDEPEND="
 	app-benchmarks/i7z
-	dev-util/turbostat
+	power_management? ( dev-util/turbostat )
 	sys-apps/dmidecode
 	sys-apps/pciutils
 	x11-apps/intel-gpu-tools
@@ -132,7 +132,7 @@ RDEPEND="${RDEPEND}
 	sys-fs/fuse
 	sys-fs/lvm2
 	sys-fs/sshfs-fuse
-	sys-power/powertop
+	power_management? ( sys-power/powertop )
 	sys-process/ktop
 	sys-process/procps
 	sys-process/psmisc

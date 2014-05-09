@@ -52,7 +52,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -156,12 +156,14 @@ RDEPEND_mist="
 "
 
 RDEPEND_power_manager="
-	!<chromeos-base/chromeos-init-0.0.11
-	dev-cpp/gflags
-	dev-cpp/glog
-	dev-libs/protobuf
-	media-sound/adhd
-	sys-fs/udev
+	power_management? (
+		!<chromeos-base/chromeos-init-0.0.11
+		dev-cpp/gflags
+		dev-cpp/glog
+		dev-libs/protobuf
+		media-sound/adhd
+		sys-fs/udev
+	)
 "
 
 RDEPEND_quipper="
@@ -596,6 +598,8 @@ platform2_install_mist() {
 }
 
 platform2_install_power_manager() {
+	use power_management || return 0
+
 	# Built binaries
 	dobin "${OUT}"/powerd
 	dobin "${OUT}"/powerd_setuid_helper
@@ -931,6 +935,7 @@ platform2_test_mist() {
 }
 
 platform2_test_power_manager() {
+	use power_management || return 0
 	use cros_host && return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: power_manager" && return 0
 	local tests=(
@@ -992,8 +997,10 @@ pkg_setup() {
 	# Create the 'power' user and group here in pkg_setup as
 	# platform2_install_power_manager needs them to change the ownership
 	# of power manager files.
-	enewuser "power"   # For power_manager
-	enewgroup "power"  # For power_manager
+	if use power_management; then
+		enewuser "power"   # For power_manager
+		enewgroup "power"  # For power_manager
+	fi
 	cros-workon_pkg_setup
 }
 

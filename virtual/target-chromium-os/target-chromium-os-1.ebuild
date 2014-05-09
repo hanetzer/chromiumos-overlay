@@ -11,8 +11,8 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage coreboot +cras cros_ec
-	cros_embedded dptf +fonts gdmwimax mtd nfc pam
-	+network_time +syslog watchdog X"
+	cros_embedded dptf +fonts gdmwimax mtd +network_time nfc pam
+	+power_management +syslog watchdog X"
 
 ################################################################################
 #
@@ -159,9 +159,7 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 
 CROS_X86_RDEPEND="
 	sys-boot/syslinux
-	dptf? (
-		sys-power/dptf
-	)
+	dptf? ( sys-power/dptf )
 "
 CROS_ARM_RDEPEND="
 	chromeos-base/u-boot-scripts
@@ -190,7 +188,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/keyboard-input
 	app-i18n/nacl-mozc
 	app-i18n/chromeos-hangul
-	app-laptop/laptop-mode-tools
+	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash
 	chromeos-base/chromeos-assets
 	chromeos-base/chromeos-assets-split
