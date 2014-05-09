@@ -15,7 +15,24 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~arm ~amd64 ~x86"
-IUSE="cros_host test bds nyan_big nyan_blaze peach_pit peach_pi skate snow spring"
+
+USE_PREFIX="ec_firmware_"
+
+# EC firmware board names for overlay with special configuration
+EC_BOARD_NAMES=(
+	bds
+	big
+	blaze
+	firefly
+	pit
+	samus
+	snow
+	spring
+	zinger
+)
+
+IUSE_FIRMWARES="${EC_BOARD_NAMES[@]/#/${USE_PREFIX}}"
+IUSE="cros_host test ${IUSE_FIRMWARES}"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -35,7 +52,16 @@ set_build_env() {
 	export HOSTCC=${CC}
 	export BUILDCC=${BUILD_CC}
 
+	local ov_board=$(get_current_board_with_variant)
+
 	EC_BOARDS=()
+
+	# Add board names requested by ec_firmware_* USE flags
+	local ec_board
+	for ec_board in ${ov_board/#/${USE_PREFIX}} ${IUSE_FIRMWARES}; do
+		use ${ec_board} && EC_BOARDS+=(${ec_board#${USE_PREFIX}})
+	done
+
 	# Allow building for boards that don't have an EC
 	# (so we can compile test on bots for testing).
 	# Also, it is possible that we are building this package for
@@ -43,34 +69,15 @@ set_build_env() {
 	# assume EC_BOARDS=(bds) for purposes of this build.
 	if use cros_host; then
 		EC_BOARDS=(bds)
-	else
-		EC_BOARDS=($(usev bds || get_current_board_with_variant))
+	elif [[ ${#EC_BOARDS[@]} -eq 0 ]]; then
+		# No explicit board name declared, try the overlay name
+		if [[ ! -d board/${ov_board} ]] ; then
+			ewarn "Sorry, ${ov_board} not supported; doing build-test with BOARD=bds"
+			ov_board=bds
+		fi
+		EC_BOARDS=(${ov_board})
 	fi
-	# FIXME: hack to separate BOARD= used by EC Makefile and Portage,
-	# crosbug.com/p/10377
-	if use snow; then
-		EC_BOARDS=(snow)
-	fi
-	# If building for spring hack in spring, must happen after snow due
-	# to hirearchy of current overlays.
-	if use spring || use skate; then
-		EC_BOARDS=(spring)
-	fi
-	if use peach_pit || use peach_pi; then
-		EC_BOARDS=(pit)
-	fi
-	if use nyan_big; then
-		EC_BOARDS=(big)
-	fi
-	if use nyan_blaze; then
-		EC_BOARDS=(blaze)
-	fi
-	if [[ ! -d board/${EC_BOARDS[0]} ]] ; then
-		ewarn "Sorry, ${EC_BOARDS[0]} not supported; doing build-test with BOARD=bds"
-		EC_BOARDS=(bds)
-	else
-		elog "Building for board ${EC_BOARDS[*]}"
-	fi
+	einfo "Building for boards: ${EC_BOARDS[*]}"
 }
 
 src_compile() {
