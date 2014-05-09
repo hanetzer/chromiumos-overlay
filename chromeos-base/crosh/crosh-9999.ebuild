@@ -14,10 +14,10 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="X"
 
 RDEPEND="app-admin/sudo
-	chromeos-base/salsa
+	X? ( chromeos-base/salsa )
 	chromeos-base/vboot_reference
 	chromeos-base/workarounds
 	net-misc/iputils
