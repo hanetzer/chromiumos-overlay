@@ -9,7 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm x86"
-IUSE="cros_ec cros_embedded"
+IUSE="cros_ec cros_embedded X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -59,9 +59,22 @@ CROS_X86_RDEPEND="
 	x11-misc/read-edid
 "
 
+CROS_X_RDEPEND="
+	chromeos-base/autox
+	dev-python/pygtk
+	virtual/glut
+	x11-apps/setxkbmap
+	x11-apps/xinput
+	x11-apps/xset
+	x11-misc/x11vnc
+	x11-misc/xdotool
+	x11-terms/rxvt-unicode
+"
+
 CROS_RDEPEND="
 	x86? ( ${CROS_X86_RDEPEND} )
 	amd64? ( ${CROS_X86_RDEPEND} )
+	X? ( ${CROS_X_RDEPEND} )
 "
 
 CROS_RDEPEND="${CROS_RDEPEND}
@@ -75,7 +88,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/utouch-evemu
 	chromeos-base/autotest-client
 	chromeos-base/audiotest
-	chromeos-base/autox
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/shill-test-scripts
 	chromeos-base/minifakedns
@@ -94,7 +106,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/jsonrpclib
 	dev-python/netifaces
 	dev-python/pygobject
-	dev-python/pygtk
 	dev-python/pyserial
 	dev-python/python-evdev
 	dev-python/pyudev
@@ -131,14 +142,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
-	virtual/glut
-	x11-apps/setxkbmap
-	x11-apps/xinput
-	x11-apps/xset
 	x11-libs/libdrm-tests
-	x11-misc/x11vnc
-	x11-misc/xdotool
-	x11-terms/rxvt-unicode
 	"
 
 ################################################################################
