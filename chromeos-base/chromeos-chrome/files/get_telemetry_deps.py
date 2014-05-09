@@ -19,7 +19,7 @@ def GetAllDeps(chrome_root):
   deps_list = print_bootstrap.communicate()[0]
   deps_list = ast.literal_eval(deps_list)
   # Remove the 'src/' at the front of each dep.
-  return [dep.split('src/')[1] for dep in deps_list]
+  return [dep.split('src/', 1)[1] for dep in deps_list]
 
 
 def MakeFilterPathPrefixes(filter_prefix_list):
