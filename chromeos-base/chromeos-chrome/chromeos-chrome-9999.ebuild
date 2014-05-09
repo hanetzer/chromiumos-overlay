@@ -46,6 +46,7 @@ IUSE="
 	+gold
 	hardfp
 	+highdpi
+	+ibus
 	+nacl
 	neon
 	+ninja
@@ -133,7 +134,6 @@ RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
-	>=app-i18n/ibus-1.4.99
 	arm? ( virtual/opengles )
 	chromeos-base/chromeos-fonts
 	dev-libs/atk
@@ -156,6 +156,9 @@ RDEPEND="${RDEPEND}
 	sys-fs/udev
 	sys-libs/libcap
 	sys-libs/zlib
+	ibus? (
+		>=app-i18n/ibus-1.4.99
+	)
 	X? (
 		x11-apps/setxkbmap
 		x11-libs/libXcomposite
