@@ -54,20 +54,22 @@ done
 
 IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
-	shared-glapi kernel_FreeBSD xlib-glx"
+	shared-glapi kernel_FreeBSD xlib-glx X"
 
 LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.50"
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
 RDEPEND="
-	!<x11-base/xorg-server-1.7
-	!<=x11-proto/xf86driproto-2.0.3
+	X? (
+		!<x11-base/xorg-server-1.7
+		!<=x11-proto/xf86driproto-2.0.3
+		>=x11-libs/libX11-1.3.99.901
+		x11-libs/libXdamage
+		x11-libs/libXext
+		x11-libs/libXxf86vm
+	)
 	dev-libs/expat
 	gbm? ( sys-fs/udev )
-	>=x11-libs/libX11-1.3.99.901
-	x11-libs/libXdamage
-	x11-libs/libXext
-	x11-libs/libXxf86vm
 	${LIBDRM_DEPSTRING}
 "
 
@@ -77,11 +79,13 @@ DEPEND="${RDEPEND}
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
-	>=x11-proto/dri2proto-2.6
-	>=x11-proto/glproto-1.4.11
-	>=x11-proto/xextproto-7.0.99.1
-	x11-proto/xf86driproto
-	x11-proto/xf86vidmodeproto
+	X? (
+		>=x11-proto/dri2proto-2.6
+		>=x11-proto/glproto-1.4.11
+		>=x11-proto/xextproto-7.0.99.1
+		x11-proto/xf86driproto
+		x11-proto/xf86vidmodeproto
+	)
 	!arm? ( sys-devel/llvm )
 "
 
@@ -200,8 +204,8 @@ src_configure() {
 		--disable-glut \
 		--without-demos \
 		--enable-texture-float \
-		--enable-xcb \
 		--disable-dri3 \
+		$(use_enable X glx) \
 		$(use_enable llvm llvm-gallium) \
 		$(use_enable egl) \
 		$(use_enable gbm) \
