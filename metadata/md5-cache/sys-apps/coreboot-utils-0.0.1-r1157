@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=sys-apps/pciutils
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	87639779e0d5eda0b9aec2fef908d4df	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=01249ef07f4f5e7818253e2b389c3dad
+_md5_=a79c063638328d8673abaffa640cf5b1
