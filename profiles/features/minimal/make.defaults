@@ -1,0 +1,21 @@
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+# Remove embedded controller firmware code for official devices.
+USE="{$USE} -cros_ec"
+
+# Disable audio related services.
+USE="-alsa -cras"
+
+# Disable non-essential networking services.
+USE="${USE} -bluetooth -network_time -nfc"
+
+# No graphics related support by default.
+USE="${USE} -egl -opengl -opengles -fonts -X"
+
+# Remove unnecessary cruft.
+USE="${USE} -doc -profile -profiling -python"
+
+# Make stuff small.
+USE="${USE} chromeless_tty cros_embedded"
+USE="${USE} -pam -tpm"

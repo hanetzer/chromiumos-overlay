@@ -1,0 +1,6 @@
+chromeos-base/chromeos-chrome	-accessibility -autotest -build_tests -chrome_remoting -nacl -reorder
+chromeos-base/chromeos-init	vt
+chromeos-base/platform2		-attestation -buffet -cellular -crash_reporting -cros_disks -debugd -gdmwimax -lorgnette -passive_metrics -power_manager -profile -vpn -wimax
+chromeos-base/update_engine	-cros_p2p
+net-wireless/wpa_supplicant	-smartcard
+sys-libs/uuid			static-libs
