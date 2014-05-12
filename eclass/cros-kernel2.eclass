@@ -30,6 +30,7 @@ IUSE="
 	-boot_dts_device_tree
 	-wifi_debug
 	-nowerror
+	-ppp
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -66,6 +67,7 @@ CONFIG_FRAGMENTS=(
 	nfs
 	nowerror
 	pcserial
+	ppp
 	qmi
 	realtekpstor
 	samsung_serial
@@ -239,6 +241,16 @@ CONFIG_SERIAL_8250_PCI=y
 CONFIG_PARPORT=y
 CONFIG_PARPORT_PC=y
 CONFIG_PARPORT_SERIAL=y
+"
+
+ppp_desc="PPPoE and ppp support"
+ppp_config="
+CONFIG_PPPOE=m
+CONFIG_PPP=m
+CONFIG_PPP_BSDCOMP=m
+CONFIG_PPP_DEFLATE=m
+CONFIG_PPP_MPPE=m
+CONFIG_PPP_SYNC_TTY=m
 "
 
 qmi_desc="QMI WWAN driver"
