@@ -46,7 +46,9 @@ DEPEND="dev-cpp/gmock
 RDEPEND="
 	!<chromeos-base/chromeos-init-0.0.8
 	chromeos-base/chromeos-installer
-	${COMMON_DEPEND}"
+	${COMMON_DEPEND}
+	virtual/update-policy
+"
 
 
 src_configure() {
@@ -123,7 +125,4 @@ src_install() {
 
 	insinto /etc/init
 	doins init/update-engine.conf
-
-	insinto /etc
-	doins policy_manager/policy_manager.conf
 }
