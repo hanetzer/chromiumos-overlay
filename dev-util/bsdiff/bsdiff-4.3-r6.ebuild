@@ -24,6 +24,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PV}_bspatch-extent-files.patch
 	epatch "${FILESDIR}"/${PV}_bsdiff-divsufsort.patch
 	epatch "${FILESDIR}"/${PV}_makefile.patch
+	epatch "${FILESDIR}"/${PV}_sanity_check.patch
 }
 
 src_configure() {
