@@ -1,12 +1,11 @@
-DEFINED_PHASES=info install setup unpack
-DEPEND=dev-lang/python dev-vcs/git
-DESCRIPTION=Chameleon bundle for Autotest lab deployment
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=chromeos-base/chromeos-factory dev-vcs/git
+DESCRIPTION=ChromeOS Regions
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_e3277fa0d613221adebb72e8cabc9d633fc1e947 profiling
+IUSE=cros_host cros_workon_tree_7402b6f69e3059995096e500a936e9941d28ea74 profiling
 KEYWORDS=*
 LICENSE=BSD-Google
-RDEPEND=dev-lang/python
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	87639779e0d5eda0b9aec2fef908d4df	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=9708502c4ab6e7c80d7bfa25e5bd2d5c
+_md5_=7ee09a7b90786e42c3886280773fb14a
