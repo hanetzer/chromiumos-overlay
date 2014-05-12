@@ -13,5 +13,5 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-RDEPEND="chromeos-base/chromeos-test"
+RDEPEND="virtual/target-chromium-os-test"
 DEPEND="${RDEPEND}"
