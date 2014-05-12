@@ -22,7 +22,7 @@ f.close()
 # Make a list of the packages that can be installed.  Those packages
 # are in taget-os-dev or chromeos-test and not chromeos.
 dev_pkgs = set(open('target-os-dev.packages', 'r').readlines())
-test_pkgs = set(open('chromeos-test.packages', 'r').readlines())
+test_pkgs = set(open('target-os-test.packages', 'r').readlines())
 inst_pkgs = (dev_pkgs | test_pkgs) - cros_pkgs
 
 # We have to keep virtuals because portage will complain if we list

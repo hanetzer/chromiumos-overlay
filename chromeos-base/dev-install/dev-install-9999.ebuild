@@ -60,7 +60,7 @@ src_compile() {
 
 		# Get the list of dev and test packages.
 		virtual/target-os-dev
-		chromeos-test
+		virtual/target-os-test
 	)
 	einfo "Ignore warnings below related to LD_PRELOAD/libsandbox.so"
 	multijob_init
