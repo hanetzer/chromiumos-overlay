@@ -20,6 +20,7 @@ BOARDS="${BOARDS} lumpy lumpy64 mario panther parrot peppy rambi samus slippy"
 BOARDS="${BOARDS} squawks stout stumpy"
 IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs"
 IUSE="${IUSE} depthcharge unified_depthcharge spring"
+IUSE="${IUSE} cb_legacy_seabios cb_legacy_uboot"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -29,7 +30,6 @@ COREBOOT_DEPEND="
 "
 X86_DEPEND="
 	${COREBOOT_DEPEND}
-	sys-boot/chromeos-seabios
 "
 DEPEND="
 	exynos? ( sys-boot/exynos-pre-boot )
@@ -42,6 +42,8 @@ DEPEND="
 	sys-boot/chromeos-bmpblk
 	memtest? ( sys-boot/chromeos-memtest )
 	depthcharge? ( ${COREBOOT_DEPEND} sys-boot/depthcharge )
+	cb_legacy_uboot? ( virtual/u-boot )
+	cb_legacy_seabios? ( sys-boot/chromeos-seabios )
 	"
 
 # Directory where the generated files are looked for and placed.
@@ -135,6 +137,17 @@ build_image() {
 		--outdir "out-${board}.nv" \
 		--output "nv_image-${board}.bin" ||
 		die "failed to build legacy image: ${cmdline}"
+}
+
+prepare_legacy_image() {
+	local legacy_var="$1"
+	if use cb_legacy_seabios; then
+		eval "${legacy_var}='${CROS_FIRMWARE_ROOT}/seabios.cbfs'"
+	elif use cb_legacy_uboot; then
+		die "Not implemented yet."
+	else
+		einfo "No legacy boot payloads specified."
+	fi
 }
 
 src_compile_uboot() {
@@ -263,11 +276,16 @@ src_compile_depthcharge() {
 			--add-blob ramstage "${ramstage_file}"
 		)
 	fi
+	local legacy_file=""
+	prepare_legacy_image legacy_file
+	if [ -n "${legacy_file}" ]; then
+		einfo "Using legacy boot payload: ${legacy_file}"
+		common+=(
+			--seabios "${legacy_file}"
+		)
+	fi
 
 	if use x86 || use amd64; then
-		common+=(
-			--seabios "${CROS_FIRMWARE_ROOT}/seabios.cbfs"
-		)
 		if [ -f "${refcode_file}" ]; then
 			common+=(
 				--add-blob refcode "${refcode_file}"
