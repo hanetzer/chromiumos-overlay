@@ -1,5 +1,8 @@
 # See "man make.conf" for the available options.
 
+# Common settings across all sdks.
+source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-sdk
+
 ACCEPT_KEYWORDS="amd64"
 CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"

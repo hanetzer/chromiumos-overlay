@@ -1,0 +1,8 @@
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Settings that are common to all targets and the host sdk.  Do not place any
+# settings in here that are specific to the sdk or cross-compiling for boards.
+#
+# See "man make.conf" for the available options.

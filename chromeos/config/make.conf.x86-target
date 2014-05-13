@@ -9,7 +9,7 @@ source make.conf.board_setup
 ARCH=x86
 
 # Common settings across all board targets.
-source make.conf.common
+source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-target
 
 # Recommended x86-specific USE flags.
 USE="${USE} mmx sse sse2 dri hardened"

@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Settings that are common to all target boards.  Do not place any board
+# specific settings in here, or settings for the sdk.
+#
+# See "man make.conf" for the available options.
+
 # NOTE: This assumes that the following have already been defined:
 #  { ROOT, ARCH, CHOST, [BOARD_OVERLAY] }
 
@@ -103,3 +108,5 @@ STRIP_MASK="*.nexe"
 # Therefore, stripping should not be done. It's OK not to strip the ELF
 # files because these files are not installed into the image.
 STRIP_MASK="${STRIP_MASK} /firmware/*.elf"
+
+source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common

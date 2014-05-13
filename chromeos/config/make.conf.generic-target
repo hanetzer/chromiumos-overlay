@@ -6,7 +6,7 @@
 source make.conf.board_setup
 
 # Common settings across all board targets.
-source make.conf.common
+source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-target
 
 # Recommended arm-specific USE flags.
 USE="${USE} hardened"
