@@ -88,6 +88,7 @@ ALL_BOARDS=(
 	lumpy
 	marble
 	mccloud
+	minnowboard
 	mipseb-o32-generic
 	mipseb-n32-generic
 	mipseb-n64-generic
