@@ -135,6 +135,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-at-top-of-.patch
 	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-immediatel.patch
 	epatch "${FILESDIR}"/10.0-draw-fix-incorrect-vertex-size-computation-in-LLVM-d.patch
+	epatch "${FILESDIR}"/10.0-mesa-use-signed-temporary-variable-to-store-_ColorDr.patch
 
 	base_src_prepare
 
