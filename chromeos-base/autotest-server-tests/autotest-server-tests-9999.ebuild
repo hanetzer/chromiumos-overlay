@@ -151,6 +151,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_UReadAheadServer
 	+tests_platform_Vpd
 	+tests_power_DarkResumeShutdownServer
+	+tests_power_RPMTest
 	+tests_power_SuspendShutdown
 	+tests_security_kASLR
 	+tests_suites
