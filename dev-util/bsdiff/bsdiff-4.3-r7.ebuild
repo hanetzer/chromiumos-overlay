@@ -15,9 +15,10 @@ SRC_URI="http://www.daemonology.net/bsdiff/${P}.tar.gz"
 SLOT="0"
 LICENSE="BSD-2"
 KEYWORDS="*"
+IUSE="cros_host"
 
 RDEPEND="app-arch/bzip2
-	dev-libs/libdivsufsort"
+	cros_host? ( dev-libs/libdivsufsort )"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
@@ -25,9 +26,19 @@ src_prepare() {
 	epatch "${FILESDIR}"/${PV}_bsdiff-divsufsort.patch
 	epatch "${FILESDIR}"/${PV}_makefile.patch
 	epatch "${FILESDIR}"/${PV}_sanity_check.patch
+	epatch "${FILESDIR}"/${PV}_makefile_without_bsdiff.patch
 }
 
 src_configure() {
 	append-lfs-flags
-        tc-export CC
+	tc-export CC
+	makeargs=( USE_BSDIFF=$(usex cros_host y n) )
+}
+
+src_compile() {
+	emake "${makeargs[@]}"
+}
+
+src_install() {
+	emake install DESTDIR="${D}" "${makeargs[@]}"
 }
