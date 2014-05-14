@@ -148,7 +148,8 @@ LC_MESSAGES=C
 #                    U_BOOT_CONFIG_USE for selecting U-Boot config
 #                    U_BOOT_FDT_USE for selecting U-Boot device tree
 #                    LINUX_FIRMARE for selecting upstream firmware components
-USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS TTY_CONSOLE U_BOOT_CONFIG_USE U_BOOT_FDT_USE LINUX_FIRMWARE"
+#                    OZONE_PLATFORM for platforms to build into chrome
+USE_EXPAND="${USE_EXPAND} BOARD_USE CROS_WORKON_TREE TESTS TTY_CONSOLE U_BOOT_CONFIG_USE U_BOOT_FDT_USE LINUX_FIRMWARE OZONE_PLATFORM"
 USE_EXPAND_HIDDEN="${USE_EXPAND_HIDDEN} CROS_WORKON_TREE"
 
 # Default licenses that are accepted for ChromiumOS builds.

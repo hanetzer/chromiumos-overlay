@@ -60,6 +60,11 @@ IUSE="
 	X
 	"
 
+OZONE_PLATFORM_PREFIX=ozone_platform_
+OZONE_PLATFORMS=(dri test egltest caca eglmarzone)
+IUSE_OZONE_PLATFORMS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_PREFIX}}"
+IUSE+=" ${IUSE_OZONE_PLATFORMS}"
+
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
 # TODO(mcgrathr,vapier): This should be removed after portage's prepstrip
@@ -245,8 +250,6 @@ set_build_defines() {
 	if use ecs ; then
 		BUILD_DEFINES+=(
 			"embedded=1"
-			"ozone_platform_dri=0"
-			"ozone_platform_eglmarzone=0"
 		)
 	else
 		BUILD_DEFINES+=(
@@ -254,6 +257,13 @@ set_build_defines() {
 			chromeos=1
 			icu_use_data_file_flag=1
 		)
+	fi
+
+	if use ozone; then
+		local platform
+		for platform in ${IUSE_OZONE_PLATFORMS}; do
+			BUILD_DEFINES+=("${platform}=$(use10 ${platform})")
+		done
 	fi
 
 	if use pgo_generate ; then
