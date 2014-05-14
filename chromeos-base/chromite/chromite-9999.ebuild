@@ -32,7 +32,6 @@ src_test() {
 	# one using a sudo invocation. Currently the tests assume they run from a
 	# repo checkout, so they need to be run from the real source dir.
 	# TODO(davidjames): Fix that, and run the tests from ${S} instead.
-	cd "${S}"/buildbot && sudo -u "${PORTAGE_USERNAME}" \
-		PATH="${CROS_WORKON_SRCROOT}/../depot_tools:${PATH}" \
-		/mnt/host/source/chromite/buildbot/run_tests || die
+	cd /mnt/host/source/chromite/buildbot && sudo -u "${PORTAGE_USERNAME}" \
+		PATH="${CROS_WORKON_SRCROOT}/../depot_tools:${PATH}" ./run_tests || die
 }
