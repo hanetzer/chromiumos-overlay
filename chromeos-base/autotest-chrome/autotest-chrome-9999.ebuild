@@ -93,6 +93,7 @@ IUSE_TESTS=(
 	+tests_video_MultiplePlayback
 	+tests_video_VideoCorruption
 	+tests_video_VideoDecodeMemoryUsage
+	+tests_video_VideoReload
 	+tests_video_VideoSanity
 	+tests_video_VideoSeek
 	+tests_video_VimeoVideo
