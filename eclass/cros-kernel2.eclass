@@ -29,6 +29,7 @@ IUSE="
 	-wifi_testbed_ap
 	-boot_dts_device_tree
 	-wifi_debug
+	-nowerror
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -63,6 +64,7 @@ CONFIG_FRAGMENTS=(
 	netboot_ramfs
 	nfc
 	nfs
+	nowerror
 	pcserial
 	qmi
 	realtekpstor
@@ -304,6 +306,11 @@ wireless34_config="
 CONFIG_ATH9K_BTCOEX=m
 CONFIG_ATH9K_BTCOEX_COMMON=m
 CONFIG_ATH9K_BTCOEX_HW=m
+"
+
+nowerror_desc="Don't build with -Werror (warnings aren't fatal)."
+nowerror_config="
+CONFIG_ERROR_ON_WARNING=n
 "
 
 # Add all config fragments as off by default
