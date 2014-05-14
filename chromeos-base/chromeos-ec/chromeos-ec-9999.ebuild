@@ -26,6 +26,7 @@ EC_BOARD_NAMES=(
 	firefly
 	pit
 	samus
+	samus_pd
 	snow
 	spring
 	zinger
