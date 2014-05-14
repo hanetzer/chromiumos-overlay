@@ -35,8 +35,7 @@ COMMON_DEPEND="app-arch/bzip2
 	dev-util/bsdiff
 	net-misc/curl
 	sys-apps/rootdev
-	sys-fs/e2fsprogs
-	sys-fs/udev"
+	sys-fs/e2fsprogs"
 
 DEPEND="dev-cpp/gmock
 	dev-cpp/gtest
@@ -115,9 +114,6 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
-
-	insinto /lib/udev/rules.d
-	doins 99-gpio-dutflag.rules
 
 	insinto /usr/include/chromeos/update_engine
 	doins update_engine.dbusserver.h
