@@ -1,0 +1,11 @@
+DEFINED_PHASES=-
+DEPEND=|| ( !cros_embedded? ( chromeos-base/update-policy-chromeos ) chromeos-base/update-policy-embedded )
+DESCRIPTION=Virtual package installing the update engine's policy manager configuration. Boards can override it to install their own configuration.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+IUSE=cros_embedded
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=|| ( !cros_embedded? ( chromeos-base/update-policy-chromeos ) chromeos-base/update-policy-embedded )
+SLOT=0
+_md5_=c2965495b0104871ea9fe6e36431dee3
