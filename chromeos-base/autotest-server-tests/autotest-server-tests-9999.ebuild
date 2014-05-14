@@ -103,7 +103,9 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_BeaconInterval
 	+tests_network_WiFi_BgscanBackoff
 	+tests_network_WiFi_ChannelScanDwellTime
+	+tests_network_WiFi_ChaosConfigFailure
 	+tests_network_WiFi_ChaosConnectDisconnect
+	+tests_network_WiFi_ChaosLongConnect
 	+tests_network_WiFi_ConnectionIdentifier
 	+tests_network_WiFi_DisableEnable
 	+tests_network_WiFi_DisconnectClearsIP
