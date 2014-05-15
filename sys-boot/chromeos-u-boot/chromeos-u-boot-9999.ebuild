@@ -210,6 +210,7 @@ src_install() {
 	local inst_dir="/firmware"
 	local files_to_copy=(
 		System.map
+		u-boot
 		u-boot.bin
 		u-boot.img
 		$(usex u_boot_config_use_beaglebone MLO)
