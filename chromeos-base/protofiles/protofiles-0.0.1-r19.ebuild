@@ -27,6 +27,10 @@ EGIT_REPO_URIS=(
 	"chromeos"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
 	"57e0fc6de99544437428fd450b190fb273bb0053"
+
+	"feedback"
+	"${CROS_GIT_HOST_URL}/chromium/src/components/feedback.git"
+	"816eae2847ab38581db5a457eeb42db995b98b35"
 )
 
 DESCRIPTION="Protobuf installer for the device policy proto definitions."
@@ -52,7 +56,7 @@ src_unpack() {
 
 src_install() {
 	insinto /usr/include/proto
-	doins "${S}"/{chromeos,cloud}/*.proto
+	doins "${S}"/{chromeos,cloud,feedback/proto}/*.proto
 	insinto /usr/share/protofiles
 	doins "${S}"/chromeos/chrome_device_policy.proto
 	doins "${S}"/cloud/device_management_backend.proto
