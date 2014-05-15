@@ -149,6 +149,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_PowerStatusStress
 	+tests_platform_Powerwash
 	+tests_platform_RebootAfterUpdate
+	+tests_platform_ServoPowerStateController
 	+tests_platform_SyncCrash
 	+tests_platform_UReadAheadServer
 	+tests_platform_Vpd
