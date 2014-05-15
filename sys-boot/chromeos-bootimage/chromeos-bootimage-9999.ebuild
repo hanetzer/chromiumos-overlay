@@ -144,7 +144,13 @@ prepare_legacy_image() {
 	if use cb_legacy_seabios; then
 		eval "${legacy_var}='${CROS_FIRMWARE_ROOT}/seabios.cbfs'"
 	elif use cb_legacy_uboot; then
-		die "Not implemented yet."
+		local output="${T}/_u-boot.cbfs"
+		"${FILESDIR}/build_cb_legacy_uboot.sh" \
+			"${CROS_FIRMWARE_ROOT}/u-boot" \
+			"${CROS_FIRMWARE_ROOT}/dtb/${U_BOOT_FDT_USE}.dtb" \
+			"${T}" "${output}" ||
+			die "Failed to build legacy U-Boot."
+		eval "${legacy_var}='${output}'"
 	else
 		einfo "No legacy boot payloads specified."
 	fi
