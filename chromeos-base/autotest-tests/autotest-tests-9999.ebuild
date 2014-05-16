@@ -314,6 +314,7 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_LibCBench
 	+tests_platform_LogDupSuppression
 	+tests_platform_MemCheck
+	+tests_platform_MemoryMonitor
 	+tests_platform_NetParms
 	+tests_platform_OpenSSLActual
 	+tests_platform_OSLimits
