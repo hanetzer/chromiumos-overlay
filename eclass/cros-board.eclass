@@ -146,6 +146,7 @@ ALL_BOARDS=(
 	#tegra2_wario
 	tegra3-generic
 	tricky
+	veyron
 	#waluigi
 	winky
 	wolf
