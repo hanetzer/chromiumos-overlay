@@ -930,12 +930,14 @@ install_telemetry_dep_resources() {
 		mkdir -p "${test_dir}"
 		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROME_ROOT})
 		install_test_resources "${test_dir}" $DEPS_LIST \
-                    tools/perf/run_measurement \
-		    tools/perf/run_multipage_benchmarks \
-		    tools/perf/run_tests \
-		    tools/perf/run_benchmark \
-                    content/test/gpu/run_gpu_test.py \
-		    chrome/test/telemetry
+			content/test/data/gpu \
+			content/test/data/media \
+			content/test/gpu/run_gpu_test.py \
+			tools/perf/run_benchmark \
+			tools/perf/run_measurement \
+			tools/perf/run_multipage_benchmarks \
+			tools/perf/run_tests \
+			chrome/test/telemetry
 	fi
 	# When copying only a portion of the Chrome source that telemetry needs,
 	# some symlinks can end up broken. Thus clean these up before packaging.
