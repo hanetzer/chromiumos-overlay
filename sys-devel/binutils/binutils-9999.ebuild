@@ -133,6 +133,7 @@ src_compile() {
 		--enable-gold \
 		--enable-threads \
 		--enable-shared \
+                --enable-install-libiberty \
 		--disable-werror \
 		--enable-secureplt \
 		--enable-plugins \
