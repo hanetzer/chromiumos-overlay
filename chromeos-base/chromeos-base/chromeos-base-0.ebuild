@@ -257,11 +257,4 @@ pkg_postinst() {
 		[ -d "${ROOT}/$x" ] && continue
 		install -d --mode=0755 --owner=root --group=root "${ROOT}/$x"
 	done
-
-	# On embedded systems, we don't have bash.  So use /bin/sh.
-	if use cros_embedded; then
-		sed -i \
-			-e '/:\/bin\/bash$/s:bash$:sh:' \
-			"${ROOT}"/etc/passwd || die
-	fi
 }
