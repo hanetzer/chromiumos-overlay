@@ -5,8 +5,8 @@
 # board-specific xorg.conf as necessary.
 
 EAPI=4
-CROS_WORKON_COMMIT="96cd3927cc4a1e2c1ef69840d30215b2b957241e"
-CROS_WORKON_TREE="ecf45dfd2573a73c1c1205bd4443f75f0628f772"
+CROS_WORKON_COMMIT="aa27f52b9e49fd8b438fa383d400b960d4b3791c"
+CROS_WORKON_TREE="02f08cf1bad3a5100c925e9088c9e727626584f4"
 CROS_WORKON_PROJECT="chromiumos/platform/xorg-conf"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -19,7 +19,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
-IUSE="alex butterfly -egl elan -exynos mario stout -tegra"
+IUSE="alex butterfly -egl elan -exynos mario stout -tegra -rk32"
 
 RDEPEND="!chromeos-base/touchpad-linearity"
 DEPEND="x11-base/xorg-server"
@@ -38,6 +38,8 @@ src_install() {
 		doins tegra.conf
 	elif use exynos && use egl; then
 		doins exynos.conf
+	elif use rk32 && use egl; then
+		doins rk32.conf
 	fi
 
 	# Enable exactly one evdev-compatible X input touchpad driver.
