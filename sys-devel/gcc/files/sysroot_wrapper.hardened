@@ -49,7 +49,7 @@ import sys
 # other flags.
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
                     '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
-x86_disable_flags = set(['-mno-movbe'])
+x86_disable_flags = set(['-mno-movbe', '-mno-ssse3'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
 clang_flags = set(['-Qunused-arguments', '-D_FORTIFY_SOURCE=2', '-fPIE'])
@@ -85,6 +85,8 @@ if fPIE.intersection(myargs):
   clang_flags.remove('-fPIE')
 if pie.intersection(myargs):
   flags_to_add.remove('-pie')
+if sse.intersection(myargs):
+  x86_disable_flags.remove('-mno-ssse3')
 print_cmdline = '-print-cmdline' in myargs
 clang_cmdline = list(clang_flags)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
