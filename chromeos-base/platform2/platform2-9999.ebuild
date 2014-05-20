@@ -62,7 +62,7 @@ REQUIRED_USE="
 	gdmwimax? ( wimax )
 "
 
-LIBCHROME_VERS=( 242728 )
+LIBCHROME_VERS=( 242728 271506 )
 
 LIBCHROME_DEPEND=$(
 	printf \
