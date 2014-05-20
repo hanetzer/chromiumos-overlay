@@ -139,5 +139,3 @@ RDEPEND="${RDEPEND}
 	sys-process/time
 	virtual/chromeos-bsp-dev
 "
-
-DEPEND="${RDEPEND}"

@@ -24,5 +24,3 @@ RDEPEND="
 		chromeos-base/chromeos-chrome
 	)
 "
-
-DEPEND="${RDEPEND}"

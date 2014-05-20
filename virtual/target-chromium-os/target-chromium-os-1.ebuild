@@ -245,8 +245,3 @@ RDEPEND="${CROS_COMMON_RDEPEND}
 	cros_embedded? ( ${CROS_E_RDEPEND} )
 	!cros_embedded? ( ${CROS_RDEPEND} )
 "
-
-DEPEND="${CROS_COMMON_DEPEND}
-	cros_embedded? ( ${CROS_E_DEPEND} )
-	!cros_embedded? ( ${CROS_DEPEND} )
-"

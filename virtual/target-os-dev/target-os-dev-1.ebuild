@@ -13,4 +13,3 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="virtual/target-chromium-os-dev"
-DEPEND="${RDEPEND}"
