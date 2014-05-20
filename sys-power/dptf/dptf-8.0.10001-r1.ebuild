@@ -15,8 +15,8 @@ SLOT="0"
 KEYWORDS="-* amd64 x86"
 IUSE="debug"
 
-CMAKE_USE_DIR="${S}/Products/DPTF/Linux"
-ESIF_BUILD_DIR="Products/ESIF_UF/Chrome"
+CMAKE_USE_DIR="${S}/DPTF/Linux"
+ESIF_BUILD_DIR="ESIF/Products/ESIF_UF/Chrome"
 
 src_configure() {
 	# cmake configuration for DPTF policy shared libraries
@@ -41,12 +41,10 @@ src_compile() {
 
 src_install() {
 	# Install ESIF daemon and configuration files
-	local startcmd_src_dir="Packages/Installers/chrome"
+	local startcmd_src_dir="ESIF/Packages/Installers/chrome"
 	dobin "${ESIF_BUILD_DIR}/esif_ufd"
-	insinto "/usr/share/dptf/dsp"
-	doins Packages/DSP/*.edp
-	insinto "/usr/share/dptf/cmd"
-	doins "${startcmd_src_dir}/start"
+	insinto "/etc/dptf"
+	doins ESIF/Packages/DSP/dsp.dv
 	insinto "/etc/init"
 	doins "${startcmd_src_dir}/dptf.conf"
 
@@ -55,5 +53,5 @@ src_install() {
 	dolib.so "${policy_build_dir}/Dptf.so"
 	insinto "/usr/share/dptf"
 	doins ${policy_build_dir}/DptfPolicy*.so
-	doins "Products/DPTF/Sources/Resources/combined.xsl"
+	doins "DPTF/Sources/combined.xsl"
 }
