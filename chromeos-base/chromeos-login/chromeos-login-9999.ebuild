@@ -22,7 +22,7 @@ IUSE="-asan -clang -deep_memory_profiler -disable_login_animations
 	-ozone -ozone_platform_dri"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
 	!<chromeos-base/chromeos-init-0.0.14
