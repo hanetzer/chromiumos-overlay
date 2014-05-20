@@ -11,7 +11,3 @@ inherit cros-workon cros-kernel2
 DESCRIPTION="Chrome OS Linux Kernel 3.10"
 KEYWORDS="~*"
 
-DEPEND="!sys-kernel/chromeos-kernel-baytrail
-	!sys-kernel/chromeos-kernel-next
-	!sys-kernel/chromeos-kernel"
-RDEPEND="${DEPEND}"
