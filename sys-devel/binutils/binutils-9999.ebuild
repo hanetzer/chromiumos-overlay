@@ -72,8 +72,9 @@ githash_for_branch() {
 	local pathbase
 	local branch=$1
 	pathbase=/mnt/host/source/src/third_party/binutils
-	CROS_WORKON_COMMIT=$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%H" "${branch}")
-	CROS_WORKON_TREE=$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%T" "${branch}")
+	# Workaround uprev deleting these settings. http://crbug.com/375546
+	eval CROS_WORKON_COMMIT"='$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%H" "${branch}")'"
+	eval CROS_WORKON_TREE"='$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%T" "${branch}")'"
 }
 
 src_unpack() {
