@@ -77,15 +77,6 @@ src_prepare() {
 	# flag so that we can install it.
 	epatch "${FILESDIR}/${P}-btmgmt.patch"
 
-	# chromium:359751, submitted upstream 04/03/2014
-	epatch "${FILESDIR}/${P}-0001-core-don-t-set-BR-EDR-support-when-no-flags-present.patch"
-	epatch "${FILESDIR}/${P}-0002-core-don-t-try-BR-EDR-for-LE-only-devices.patch"
-
-	# chromium:359755, cherry-picked from GIT HEAD 04/03/2014
-	epatch "${FILESDIR}/${P}-0003-btio-Do-L2CAP-peer-address-lookup-only-when-really-n.patch"
-	epatch "${FILESDIR}/${P}-0004-btio-Do-RFCOMM-peer-address-lookup-only-when-really-.patch"
-	epatch "${FILESDIR}/${P}-0005-btio-Remove-unnecessary-get_peers-function.patch"
-
 	# Apply patch to build the Chromium plugin and copy the source of
 	# that plugin into the expected location.
 	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
