@@ -59,9 +59,7 @@ src_configure() {
 src_compile() {
 	cros-workon_src_compile
 
-	# Build locale-archive for Chrome. This is a temporary workaround for
-	# crbug.com/116999.
-	# TODO(yusukes): Fix Chrome and remove the file.
+	# Build locale-archive for Chrome.
 	mkdir -p "${T}/usr/lib64/locale"
 	localedef --prefix="${T}" -c -f UTF-8 -i en_US en_US.UTF-8 || die
 }
@@ -90,7 +88,6 @@ src_install() {
 	insinto /etc/init
 	doins init/*.conf
 
-	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
 	insinto /usr/$(get_libdir)/locale
 	doins "${T}/usr/lib64/locale/locale-archive"
 
