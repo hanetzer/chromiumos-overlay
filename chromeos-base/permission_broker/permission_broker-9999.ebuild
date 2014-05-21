@@ -17,7 +17,7 @@ IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 RESTRICT="test"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/platform2
 	dev-cpp/gflags
