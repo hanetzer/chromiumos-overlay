@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="install_tests internal"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	dev-cpp/glog
