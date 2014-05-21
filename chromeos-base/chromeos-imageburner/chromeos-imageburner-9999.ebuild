@@ -17,7 +17,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang test"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
@@ -40,6 +40,7 @@ src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	clang-setup-env
+	export BASE_VER=${LIBCHROME_VERS}
 	emake image_burner
 }
 
