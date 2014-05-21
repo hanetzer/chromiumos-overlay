@@ -17,7 +17,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libevdev
 	dev-cpp/gflags
