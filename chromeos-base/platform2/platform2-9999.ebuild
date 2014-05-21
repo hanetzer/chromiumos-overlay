@@ -636,12 +636,13 @@ platform2_test_chromiumos-wide-profiling() {
 	# These tests don't work quite right when there is a mismatch between
 	# the active running kernel and the test target (bitwise).
 	# Also, below tests are temporarily disabled, see crbug.com/340543
-	use amd64 && tests+=(
-		perf_parser_test
-		perf_reader_test
-		perf_recorder_test
-		perf_serializer_test
-	)
+	## Temporarily disable perf test till we upgraded to binutils-2.24.
+	## use amd64 && tests+=(
+	## 	perf_parser_test
+	## 	perf_reader_test
+	## 	perf_recorder_test
+	## 	perf_serializer_test
+	## )
 	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
