@@ -16,7 +16,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
