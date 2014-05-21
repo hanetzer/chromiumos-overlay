@@ -15,11 +15,6 @@ inherit cros-workon cros-kernel2
 DESCRIPTION="Chrome OS Kernel 3.4"
 KEYWORDS="*"
 
-RDEPEND="!sys-kernel/chromeos-kernel-next
-	!sys-kernel/chromeos-kernel-exynos
-	!sys-kernel/chromeos-kernel-3_10"
-DEPEND="${RDEPEND}"
-
 src_test() {
 	if ! use x86 && ! use amd64 ; then
 		einfo "Skipping tests on non-x86 platform..."
