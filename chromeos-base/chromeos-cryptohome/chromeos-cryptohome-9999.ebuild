@@ -18,6 +18,8 @@ KEYWORDS="~*"
 IUSE="-asan -clang test"
 REQUIRED_USE="asan? ( clang )"
 
+LIBCHROME_VERS="271506"
+
 RDEPEND="
 	app-crypt/trousers
 	!<chromeos-base/chromeos-init-0.0.13
@@ -33,7 +35,7 @@ RDEPEND="
 
 DEPEND="
 	test? ( dev-cpp/gtest )
-	chromeos-base/libchrome:242728[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/vboot_reference
 	${RDEPEND}"
 
