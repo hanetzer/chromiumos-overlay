@@ -20,7 +20,7 @@ KEYWORDS="~*"
 # Autotest enabled by default.
 IUSE="+autotest"
 
-LIBCHROME_VERS="242728"
+LIBCHROME_VERS="271506"
 
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
