@@ -39,6 +39,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	>=chromeos-base/libchrome_crypto-${LIBCHROME_VERS}
 	chromeos-base/protofiles
+	chromeos-base/vboot_reference
 	dev-cpp/gmock
 	sys-libs/glibc
 	test? ( dev-cpp/gtest )"
