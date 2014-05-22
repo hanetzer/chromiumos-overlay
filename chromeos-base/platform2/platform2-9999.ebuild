@@ -1048,6 +1048,15 @@ pkg_preinst() {
 		done
 	fi
 
+	if use debugd; then
+		for ug in debugd debugd-logs debugfs-access; do
+			enewuser "${ug}"
+			enewgroup "${ug}"
+		done
+		enewgroup "daemon-store"
+		enewgroup "logs-access"
+	fi
+
 	if use tpm; then
 		for ug in attestation pkcs11 chaps; do
 			enewuser "${ug}"

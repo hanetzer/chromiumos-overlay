@@ -197,7 +197,7 @@ pkg_postinst() {
 
 #	add_daemon_user "messagebus" 201     # For dbus. Now in sys-apps/dbus.
 #	add_daemon_user "syslog" 202         # For rsyslog. Now installed by chromeos-init
-	add_daemon_user "ntp" 203
+#	add_daemon_user "ntp" 203
 #	add_daemon_user "sshd" 204           # For sshd. Now in net-misc/openssh.
 #	add_daemon_user "polkituser" 206     # For policykit
 #	add_daemon_user "tss" 207            # For trousers (TSS/TPM). Now in app-crypt/trousers.
@@ -209,7 +209,7 @@ pkg_postinst() {
 #	add_daemon_user "cros-disks" 213     # For cros-disks. Now in platform2.
 #	add_daemon_user "tor" 214            # For tor (anonymity service)
 #	add_daemon_user "tcpdump" 215        # For tcpdump --with-user
-	add_daemon_user "debugd" 216         # For debugd
+#	add_daemon_user "debugd" 216         # For debugd
 #	add_daemon_user "openvpn" 217        # For openvpn
 	add_daemon_user "bluetooth" 218      # For bluez
 #	add_daemon_user "wpa" 219            # For wpa_supplicant
@@ -218,18 +218,18 @@ pkg_postinst() {
 #	add_daemon_user "input" 222          # For /dev/input/event access
 #	add_daemon_user "chaps" 223          # For chaps (pkcs11)
 #	add_daemon_user "dhcp" 224           # For dhcpcd (DHCP client)
-	add_daemon_user "tpmd" 225           # For tpmd
+#	add_daemon_user "tpmd" 225           # For tpmd
 #	add_daemon_user "mtp" 226            # For mtpd. In mtpd.
-	add_daemon_user "proxystate" 227     # For proxy monitoring
+#	add_daemon_user "proxystate" 227     # For proxy monitoring
 #	add_daemon_user "power" 228          # For powerd. In platform2.
 #	add_daemon_user "watchdog" 229       # For daisydog
 #	add_daemon_user "devbroker" 230      # For permission_broker
 #	add_daemon_user "xorg" 231           # For Xorg. In xorg-conf
 #	add_daemon_user "nfqueue" 232        # For netfilter-queue
-	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
-	add_daemon_user "tlsdate" 234
-	add_daemon_user "debugd-logs" 235    # For debugd's unprivileged logs
-	add_daemon_user "debugfs-access" 236 # Access to debugfs
+#	add_daemon_user "tlsdate-dbus" 233   # For tlsdate-dbus-announce
+#	add_daemon_user "tlsdate" 234
+#	add_daemon_user "debugd-logs" 235    # For debugd's unprivileged logs
+#	add_daemon_user "debugfs-access" 236 # Access to debugfs
 #	add_daemon_user "shill-crypto" 237   # For shill's crypto-util
 #	add_daemon_user "avahi" 238          # For avahi-daemon
 #	add_daemon_user "p2p" 239            # For p2p
@@ -242,8 +242,8 @@ pkg_postinst() {
 #	add_daemon_user "fuse-exfat" 302     # For exfat-fuse prcoess. Now in platform2.
 
 	# Group that is allowed to create directories under /home/root/<hash>.
-	enewgroup "daemon-store" 400
-	enewgroup "logs-access" 401
+#	enewgroup "daemon-store" 400
+#	enewgroup "logs-access" 401
 #	enewgroup "serial" 402        # For owning access to serial devices.
 
 	# Create a group for device access via permission_broker.

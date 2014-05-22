@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/tlsdate"
 
-inherit autotools flag-o-matic toolchain-funcs cros-workon cros-debug
+inherit autotools flag-o-matic toolchain-funcs cros-workon cros-debug user
 
 DESCRIPTION="Update local time over HTTPS"
 HOMEPAGE="https://github.com/ioerror/tlsdate"
@@ -28,7 +28,7 @@ src_prepare() {
 }
 
 src_configure() {
-	# TODO(wad) Migrate off of proxystate by updating libCrosService
+	# TODO(wad) Migrate off of proxystate by updating LibCrosService.conf
 	cros-workon_src_configure \
 		$(use_enable dbus) \
 		$(use_enable seccomp seccomp-filter) \
@@ -56,4 +56,13 @@ src_install() {
 	doins "${S}/dbus/org.torproject.tlsdate.service"
 	insinto /etc/init
 	doins init/tlsdated.conf
+}
+
+pkg_preinst() {
+	enewuser "proxystate"   # TODO(cmasone): Switch LibCrosService.conf to use
+	enewgroup "proxystate"  # tlsdate user instead, then remove.
+	enewuser "tlsdate"
+	enewgroup "tlsdate"
+	enewuser "tlsdate-dbus"   # For tlsdate-dbus-announce.
+	enewgroup "tlsdate-dbus"  # For tlsdate-dbus-announce.
 }
