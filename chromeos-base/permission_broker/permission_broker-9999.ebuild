@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/permission_broker"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon user
+inherit cros-debug cros-workon udev user
 
 DESCRIPTION="Permission Broker for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -64,4 +64,7 @@ src_install() {
 	# DBus configuration
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PermissionBroker.conf
+
+	# Udev rules for hidraw nodes
+	udev_dorules "${FILESDIR}/99-hidraw.rules"
 }
