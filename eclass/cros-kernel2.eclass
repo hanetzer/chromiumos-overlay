@@ -644,7 +644,7 @@ get_dtb_name() {
 
 cros-kernel2_src_compile() {
 	local build_targets=()  # use make default target
-	if use arm; then
+	if use arm || use mips; then
 		build_targets=(
 			$(usex device_tree 'zImage dtbs' uImage)
 			$(usex boot_dts_device_tree dtbs '')
@@ -731,7 +731,7 @@ cros-kernel2_src_install() {
 		"${build_targets[@]}"
 
 	local version=$(kernelrelease)
-	if use arm; then
+	if use arm || use mips; then
 		local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 		local boot_dir="$(cros-workon_get_build_dir)/arch/${kernel_arch}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
@@ -752,7 +752,7 @@ cros-kernel2_src_install() {
 				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
 			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
 		else
-			cp -a "${boot_dir}/uImage" "${kernel_bin}" || die
+			cp "${boot_dir}/uImage" "${kernel_bin}" || die
 			if use boot_dts_device_tree; then
 				# For boards where the device tree .dtb file is stored
 				# under /boot/dts, loaded into memory, and then
@@ -769,7 +769,9 @@ cros-kernel2_src_install() {
 				doins "${dtb_dir}"/*.dtb
 			fi
 		fi
-		cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
+		if use arm; then
+			cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
+		fi
 
 		# TODO(vbendeb): remove the below .uimg link creation code
 		# after the build scripts have been modified to use the base
