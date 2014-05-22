@@ -92,7 +92,6 @@ RDEPEND_crash_reporter="
 
 RDEPEND_cromo="
 	cellular? (
-		>=chromeos-base/mobile-providers-0.0.1-r12
 		dev-libs/dbus-c++
 		virtual/modemmanager
 	)
@@ -149,7 +148,6 @@ RDEPEND_metrics="
 
 RDEPEND_mist="
 	cellular? (
-		>=chromeos-base/mobile-providers-0.0.1-r12
 		dev-libs/libusb
 		dev-libs/protobuf
 		net-dialup/ppp
@@ -178,7 +176,6 @@ RDEPEND_shill="
 		chromeos-base/chromeos-minijail
 		!<chromeos-base/flimflam-0.0.1-r530
 		!<chromeos-base/chromeos-init-0.0.4
-		cellular? ( >=chromeos-base/mobile-providers-0.0.1-r12 )
 		dev-libs/dbus-c++
 		dev-libs/libnl:3
 		dev-libs/nss
