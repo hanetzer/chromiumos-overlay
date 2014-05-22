@@ -42,12 +42,6 @@ src_prepare() {
 	# TODO(benchan): Remove this workaround (crbug.com/361635).
 	epatch "${FILESDIR}"/base-${SLOT}-message-loop-for-ui.patch
 
-	# Temporarily patch base to be backward compatible with
-	# libchrome:242728.
-	# TODO(benchan): Remove this compatibility patch after migrating other
-	# Chrome OS daemons to be compatible with libchrome:271506.
-	epatch "${FILESDIR}"/base-${SLOT}-compat.patch
-
 	# Add stub headers for a few files that are usually checked out to locations
 	# outside of base/ in the Chrome repository.
 	mkdir -p third_party/libevent
