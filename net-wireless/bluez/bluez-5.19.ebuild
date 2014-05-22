@@ -132,10 +132,10 @@ src_install() {
 	if [[ -n "${CHROMEOS_BLUETOOTH_VENDORID}" && -n "${CHROMEOS_BLUETOOTH_PRODUCTID}" ]]; then
 		sed -i -e "/^#DeviceID/c\
 			DeviceID = bluetooth:${CHROMEOS_BLUETOOTH_VENDORID}:${CHROMEOS_BLUETOOTH_PRODUCTID}:${CHROMEOS_BLUETOOTH_VERSION}" src/main.conf || die
-	fi
 
-	insinto /etc/bluetooth
-	doins src/main.conf
+		insinto /etc/bluetooth
+		doins src/main.conf
+	fi
 
 	insinto /etc/init
 	newins "${FILESDIR}/${P}-upstart.conf" bluetoothd.conf
