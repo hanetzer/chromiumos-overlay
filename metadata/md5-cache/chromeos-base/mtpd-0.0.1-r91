@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install preinst prepare setup test unpack
+DEPEND=chromeos-base/libchrome:271506[cros-debug=] chromeos-base/platform2 dev-cpp/gflags dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/protobuf media-libs/libmtp sys-fs/udev test? ( dev-cpp/gtest ) dev-vcs/git sys-apps/baselayout
+DESCRIPTION=MTP daemon for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang test cros-debug cros_host cros_workon_tree_e1ee9e49e9b554cea69c4b159cf92e367807a918 profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=chromeos-base/libchrome:271506[cros-debug=] chromeos-base/platform2 dev-cpp/gflags dev-libs/dbus-c++ >=dev-libs/glib-2.30 dev-libs/protobuf media-libs/libmtp sys-fs/udev sys-apps/baselayout
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	87639779e0d5eda0b9aec2fef908d4df	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	user	1e9a1f5eb7c68eea197d4fbdb5063683
+_md5_=1ee77f3ca1b358a2b5a5bfa9bb401d7c
