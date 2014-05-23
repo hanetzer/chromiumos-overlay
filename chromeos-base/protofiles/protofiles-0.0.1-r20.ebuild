@@ -22,11 +22,11 @@ inherit cros-constants git-2
 EGIT_REPO_URIS=(
 	"cloud"
 	"${CROS_GIT_HOST_URL}/chromium/src/components/policy/proto.git"
-	"2a78b9679f04bc67c4274cc18ae5ae33c9659b48"
+	"81bc842e60543c9bd8eaf2beee60b7aa61250d33"
 
 	"chromeos"
 	"${CROS_GIT_HOST_URL}/chromium/src/chrome/browser/chromeos/policy/proto.git"
-	"57e0fc6de99544437428fd450b190fb273bb0053"
+	"da5ae4f722a91e02737341d2b4f2295298d04675"
 
 	"feedback"
 	"${CROS_GIT_HOST_URL}/chromium/src/components/feedback.git"
