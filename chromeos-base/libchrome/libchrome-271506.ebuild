@@ -42,6 +42,10 @@ src_prepare() {
 	# TODO(benchan): Remove this workaround (crbug.com/361635).
 	epatch "${FILESDIR}"/base-${SLOT}-message-loop-for-ui.patch
 
+	# Patch md5.cc to avoid a compiler warning on unsafe conversion.
+	# (crbug.com/377085)
+	epatch "${FILESDIR}"/base-${SLOT}-md5-compile-warning.patch
+
 	# Add stub headers for a few files that are usually checked out to locations
 	# outside of base/ in the Chrome repository.
 	mkdir -p third_party/libevent

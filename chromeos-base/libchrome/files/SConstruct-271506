@@ -59,6 +59,7 @@ base_libs = [
                 lazy_instance.cc
                 location.cc
                 logging.cc
+                md5.cc
                 memory/ref_counted.cc
                 memory/ref_counted_memory.cc
                 memory/singleton.cc
@@ -75,6 +76,7 @@ base_libs = [
                 metrics/histogram_base.cc
                 metrics/histogram.cc
                 metrics/histogram_samples.cc
+                metrics/histogram_snapshot_manager.cc
                 metrics/sample_map.cc
                 metrics/sample_vector.cc
                 metrics/sparse_histogram.cc
