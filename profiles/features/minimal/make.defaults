@@ -13,6 +13,9 @@ USE="${USE} -bluetooth -network_time -nfc"
 # No graphics related support by default.
 USE="${USE} -egl -opengl -opengles -fonts -X"
 
+# No support for device mapper userland tools.
+USE="${USE} -device-mapper"
+
 # Remove unnecessary cruft.
 USE="${USE} -doc -profile -profiling -python"
 
