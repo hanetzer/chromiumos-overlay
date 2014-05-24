@@ -566,6 +566,7 @@ platform2_install_metrics() {
 	if use passive_metrics; then
 		dobin "${OUT}"/metrics_daemon
 		insinto /etc/init
+		doins init/metrics_library.conf
 		doins init/metrics_daemon.conf
 	fi
 
