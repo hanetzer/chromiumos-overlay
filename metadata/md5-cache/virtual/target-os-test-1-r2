@@ -1,5 +1,4 @@
 DEFINED_PHASES=-
-DEPEND=virtual/target-chromium-os-test
 DESCRIPTION=List of packages that make up the test OS image; by default, we build a Chromium OS test image. Note: test images are a superset of dev images.
 EAPI=4
 HOMEPAGE=http://dev.chromium.org/
@@ -7,4 +6,4 @@ KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=virtual/target-chromium-os-test
 SLOT=0
-_md5_=ded8373175d793009e95c2d7bee1487e
+_md5_=ba6aa718553d8e88b9267ff15aafe649

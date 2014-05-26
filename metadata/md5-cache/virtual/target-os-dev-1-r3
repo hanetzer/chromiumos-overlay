@@ -1,5 +1,4 @@
 DEFINED_PHASES=-
-DEPEND=virtual/target-chromium-os-dev
 DESCRIPTION=List of packages that make up the developer OS image; by default, we build a Chromium OS dev image
 EAPI=4
 HOMEPAGE=http://dev.chromium.org/
@@ -7,4 +6,4 @@ KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=virtual/target-chromium-os-dev
 SLOT=0
-_md5_=9c36bf7ce651f8c41ea164d6c40c2d6b
+_md5_=9364f4e3c918b37676ede2ba02658c7b

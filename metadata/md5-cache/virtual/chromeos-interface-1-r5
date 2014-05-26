@@ -1,5 +1,4 @@
 DEFINED_PHASES=-
-DEPEND=!chromeless_tty? ( !ecs? ( chromeos-base/chromeos-login ) chromeos-base/chromeos-chrome )
 DESCRIPTION=Generic ebuild which satisifies virtual/chromeos-interface. This is a direct dependency of chromeos-base/chromeos, but can be overridden in an overlay for specialized boards. To satisfy this virtual, a package should cause to be installed everything a user would need to interact with the system locally.
 EAPI=4
 HOMEPAGE=http://src.chromium.org
@@ -8,4 +7,4 @@ KEYWORDS=*
 LICENSE=BSD
 RDEPEND=!chromeless_tty? ( !ecs? ( chromeos-base/chromeos-login ) chromeos-base/chromeos-chrome )
 SLOT=0
-_md5_=99f1577d661cff3899d0f024b98e2e81
+_md5_=1a52c4b5c226ecc9602c6a1424d91641
