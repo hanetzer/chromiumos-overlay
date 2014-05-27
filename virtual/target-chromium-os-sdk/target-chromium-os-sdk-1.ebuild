@@ -334,6 +334,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies for building/testing factory software
 RDEPEND="${RDEPEND}
+	dev-python/autopep8
 	dev-python/django
 	dev-python/flup
 	dev-python/jsonrpclib
