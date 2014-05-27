@@ -35,10 +35,8 @@ RDEPEND="
 	)
 "
 
-pkg_preinst() {
-	# Add the syslog user
-	enewuser syslog
-	enewgroup syslog
+src_test() {
+	./periodic_scheduler_unittest || die
 }
 
 src_install() {
@@ -90,4 +88,10 @@ src_install() {
 	insinto /usr/share/cros
 	doins $(usex encrypted_stateful encrypted_stateful \
 		unencrypted_stateful)/startup_utils.sh
+}
+
+pkg_preinst() {
+	# Add the syslog user
+	enewuser syslog
+	enewgroup syslog
 }
