@@ -22,8 +22,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
 LICENSE="BSD-Google
-	chrome_internal? ( Google-TOS )
-	chrome_pdf? ( Google-TOS )"
+	chrome_internal? ( Google-TOS )"
 SLOT="0"
 KEYWORDS="*"
 IUSE="
@@ -35,7 +34,6 @@ IUSE="
 	chrome_debug_tests
 	chrome_internal
 	chrome_media
-	chrome_pdf
 	+chrome_remoting
 	clang
 	component_build
@@ -384,10 +382,6 @@ set_build_defines() {
 		)
 	fi
 
-	if ! use chrome_pdf; then
-		BUILD_DEFINES+=( internal_pdf=0 )
-	fi
-
 	if use deep_memory_profiler; then
 		BUILD_DEFINES+=(
 			profiling=1
@@ -410,7 +404,6 @@ set_build_defines() {
 unpack_chrome() {
 	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/sync_chrome )
 	use chrome_internal && cmd+=( --internal )
-	use chrome_pdf && cmd+=( --pdf )
 	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
 		cmd+=( --revision="${CROS_SVN_COMMIT}" )
 	elif [[ "${CHROME_VERSION}" != "9999" ]]; then
@@ -895,7 +888,7 @@ install_chrome_test_resources() {
 		third_party/accessibility-developer-tools/gen/axs_testing.js
 
 	# Add the pdf test data if needed.
-	if use chrome_pdf; then
+	if use chrome_internal; then
 		install_test_resources "${test_dir}" pdf/test
 	fi
 
