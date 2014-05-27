@@ -279,7 +279,7 @@ set_build_defines() {
 	# Set proper BUILD_DEFINES for the arch
 	case "${ARCH}" in
 	x86)
-		BUILD_DEFINES+=( target_arch=ia32 enable_smooth_scrolling=1 )
+		BUILD_DEFINES+=( target_arch=ia32 )
 		;;
 	arm)
 		BUILD_DEFINES+=(
@@ -296,7 +296,7 @@ set_build_defines() {
 		fi
 		;;
 	amd64)
-		BUILD_DEFINES+=( target_arch=x64 enable_smooth_scrolling=1 )
+		BUILD_DEFINES+=( target_arch=x64 )
 		;;
 	*)
 		die "Unsupported architecture: ${ARCH}"
