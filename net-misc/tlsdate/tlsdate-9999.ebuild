@@ -28,15 +28,14 @@ src_prepare() {
 }
 
 src_configure() {
-	# TODO(wad) Migrate off of proxystate by updating LibCrosService.conf
 	cros-workon_src_configure \
 		$(use_enable dbus) \
 		$(use_enable seccomp seccomp-filter) \
 		$(use_enable cros-debug seccomp-debugging) \
 		--enable-cros \
 		--with-dbus-client-group=chronos \
-		--with-unpriv-user=proxystate \
-		--with-unpriv-group=proxystate
+		--with-unpriv-user=tlsdate \
+		--with-unpriv-group=tlsdate
 }
 
 src_compile() {
@@ -59,8 +58,6 @@ src_install() {
 }
 
 pkg_preinst() {
-	enewuser "proxystate"   # TODO(cmasone): Switch LibCrosService.conf to use
-	enewgroup "proxystate"  # tlsdate user instead, then remove.
 	enewuser "tlsdate"
 	enewgroup "tlsdate"
 	enewuser "tlsdate-dbus"   # For tlsdate-dbus-announce.
