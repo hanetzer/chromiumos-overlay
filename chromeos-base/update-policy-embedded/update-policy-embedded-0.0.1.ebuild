@@ -18,5 +18,5 @@ S=${WORKDIR}
 
 src_install() {
 	insinto /etc
-	doins "${FILESDIR}"/policy_manager.conf
+	doins "${FILESDIR}"/update_manager.conf
 }
