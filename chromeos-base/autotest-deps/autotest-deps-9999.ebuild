@@ -11,7 +11,7 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm ~amd64"
+KEYWORDS="~*"
 
 # Autotest enabled by default.
 IUSE="+autotest"
@@ -22,7 +22,7 @@ CROS_WORKON_SUBDIR=files
 # following deps don't compile: boottool, mysql, pgpool, pgsql, systemtap, # dejagnu, libcap, libnet
 # following deps are not deps: factory
 # following tests are going to be moved: chrome_test
-AUTOTEST_DEPS_LIST="gfxtest gtest iwcap lansim realtimecomm_playground fakegudev fakemodem pyxinput example_cros_dep"
+AUTOTEST_DEPS_LIST="gfxtest gtest iwcap lansim realtimecomm_playground pyxinput example_cros_dep"
 AUTOTEST_CONFIG_LIST=*
 AUTOTEST_PROFILERS_LIST=*
 
@@ -42,17 +42,6 @@ RDEPEND="${RDEPEND}
 # deps/iwcap
 RDEPEND="${RDEPEND}
 	dev-libs/libnl:0
-"
-
-# deps/fakegudev
-RDEPEND="${RDEPEND}
-	sys-fs/udev[gudev]
-"
-
-# deps/fakemodem
-RDEPEND="${RDEPEND}
-	chromeos-base/autotest-fakemodem-conf
-	dev-libs/dbus-glib
 "
 
 RDEPEND="${RDEPEND}

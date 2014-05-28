@@ -11,10 +11,10 @@ HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~arm ~amd64"
+KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="${IUSE} +autotest"
+IUSE="${IUSE} +autotest +cellular"
 
 RDEPEND="
 	!chromeos-base/autotest-telemetry
@@ -62,12 +62,8 @@ IUSE_TESTS=(
 	+tests_login_GaiaLogin
 	+tests_login_LoginSuccess
 	+tests_login_LogoutProcessCleanup
-	+tests_network_ChromeCellularNetworkPresent
-	+tests_network_ChromeCellularNetworkProperties
-	+tests_network_ChromeCellularSmokeTest
 	+tests_network_ChromeWifiConfigure
 	+tests_network_ChromeWifiTDLS
-	+tests_network_MobileSuspendResume
 	+tests_platform_ChromeCgroups
 	+tests_platform_SessionManagerBlockDevmodeSetting
 	+tests_power_AudioDetector
@@ -114,7 +110,16 @@ IUSE_TESTS=(
 	tests_realtimecomm_GTalkPlayground
 )
 
-IUSE="${IUSE} ${IUSE_TESTS[*]}"
+IUSE_TESTS_CELLULAR="
+	cellular? (
+		+tests_network_ChromeCellularNetworkPresent
+		+tests_network_ChromeCellularNetworkProperties
+		+tests_network_ChromeCellularSmokeTest
+		+tests_network_MobileSuspendResume
+	)
+"
+
+IUSE="${IUSE} ${IUSE_TESTS[*]} ${IUSE_TESTS_CELLULAR}"
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files

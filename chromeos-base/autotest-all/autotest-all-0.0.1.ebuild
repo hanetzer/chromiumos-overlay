@@ -12,7 +12,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="*"
-IUSE="-chromeless_tty -ecs"
+IUSE="+cellular -chromeless_tty -ecs wimax"
 
 RDEPEND="
 	chromeos-base/autotest-client
@@ -21,12 +21,18 @@ RDEPEND="
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-factory-install
 	chromeos-base/autotest-private-all
+	cellular? (
+		chromeos-base/autotest-tests-cellular
+	)
 	!chromeless_tty? (
 		!ecs? (
 			chromeos-base/autotest-tests-ownershipapi
 			chromeos-base/autotest-tests-touchpad
 			chromeos-base/autotest-chrome
 		)
+	)
+	wimax? (
+		chromeos-base/autotest-tests-wimax
 	)
 "
 

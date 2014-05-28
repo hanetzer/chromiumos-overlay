@@ -19,18 +19,11 @@ IUSE="${IUSE} +autotest"
 
 LIBCHROME_VERS="271506"
 
-# pygobject is used only in the following:
-#   desktopui_ScreenLocker
-#   hardware_BluetoothSemiAuto
-#   network_3GActivate
-#   network_3GDormancyDance
-#   network_3GFailedConnect
-#   network_3GRecoverFromGobiDesync
-#   network_3GSafetyDance
-#   network_3GSmokeTest
-#   network_3GStressEnable
+# pygobject is used in the following tests:
+#   firmware_TouchMTB
+#   platform_CrosDisks*
 RDEPEND="
-	chromeos-base/autotest-deps
+	>=chromeos-base/autotest-deps-0.0.3
 	!<=chromeos-base/autotest-factory-0.0.1-r4445
 	!chromeless_tty? (
 		chromeos-base/autotest-deps-glbench
@@ -88,17 +81,6 @@ CLIENT_IUSE_TESTS="
 	+tests_audio_Microphone
 	+tests_camera_V4L2
 	+tests_autoupdate_CannedOmahaUpdate
-	+tests_cellular_CdmaConfig
-	+tests_cellular_DeferredRegistration
-	+tests_cellular_Dummy
-	+tests_cellular_ModemControl
-	+tests_cellular_OutOfCreditsSubscriptionState
-	+tests_cellular_ServiceName
-	+tests_cellular_Signal
-	+tests_cellular_Smoke
-	+tests_cellular_ThroughputController
-	+tests_cellular_Throughput
-	+tests_cellular_ZeroSignal
 	+tests_build_RootFilesystemSize
 	+tests_desktopui_CrashyReboot
 	+tests_desktopui_FontCache
@@ -200,27 +182,7 @@ CLIENT_IUSE_TESTS="
 	+tests_login_RetrieveActiveSessions
 	+tests_login_SameSessionTwice
 	+tests_login_SecondFactor
-	+tests_network_3GActivate
-	+tests_network_3GAssociation
-	+tests_network_3GDisableWhileConnecting
-	+tests_network_3GDisableGobiWhileConnecting
-	+tests_network_3GDisconnectFailure
-	+tests_network_3GDormancyDance
-	+tests_network_3GFailedConnect
-	+tests_network_3GGobiPorts
-	+tests_network_3GIdentifiers
-	+tests_network_3GModemControl
-	+tests_network_3GModemPresent
-	+tests_network_3GNoGobi
-	+tests_network_3GRecoverFromGobiDesync
-	+tests_network_3GSafetyDance
-	+tests_network_3GScanningProperty
-	+tests_network_3GSmokeTest
-	+tests_network_3GStressEnable
-	+tests_network_BasicProfileProperties
-	+tests_network_CDMAActivate
 	+tests_network_CheckCriticalProcesses
-	+tests_network_ConnmanCromoCrash
 	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_ConnmanPowerStateTracking
 	+tests_network_DefaultProfileCreation
@@ -240,24 +202,15 @@ CLIENT_IUSE_TESTS="
 	+tests_network_DisableInterface
 	+tests_network_EthCaps
 	+tests_network_EthernetStressPlug
-	+tests_network_GobiUncleanDisconnect
 	+tests_network_Ipv6SimpleNegotiation
-	+tests_network_LockedSIM
-	+tests_network_LTEActivate
-	+tests_network_ModemManagerSMS
-	+tests_network_ModemManagerSMSSignal
 	+tests_network_NegotiatedLANSpeed
 	+tests_network_Portal
 	+tests_network_ShillInitScripts
-	+tests_network_SIMLocking
-	+tests_network_SwitchCarrier
 	+tests_network_TwoShills
 	+tests_network_UdevRename
 	+tests_network_VPNConnect
 	+tests_network_WiFiCaps
 	+tests_network_WiFiInvalidParameters
-	+tests_network_WiMaxPresent
-	+tests_network_WiMaxSmoke
 	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
 	+tests_network_netperf2
