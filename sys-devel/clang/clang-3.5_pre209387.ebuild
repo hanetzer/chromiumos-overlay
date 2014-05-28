@@ -19,19 +19,19 @@ EGIT_REPO_URIS=(
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"262f39ed3a8969f07ca7cb4a53bf34d46c1d4351" # EGIT_COMMIT
+		"f4f930c7955fa1c58197dd89d4c6cbb7a9ed45ba" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"a915ac3430a267bb2984787acc5b096c6c3be879" # EGIT_COMMIT
+		"f230cdc3051b3fca5848cd03d73c9e23407e6747" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"e2f48e941c2faecd1154ee8dec9458377b99aa4f"  # EGIT_COMMIT
+		"b1ac4f7de9ec8256bbf5d371addd849fb9596ca1"  # EGIT_COMMIT
 )
 inherit git-2
 
@@ -79,7 +79,7 @@ src_prepare() {
 
 	# Change the default asan output path
 	epatch "${FILESDIR}"/${PN}-3.5-asan-default-path.patch
-
+	epatch "${FILESDIR}"/${PN}-3.5-diasble-lsan.patch
 	# Same as llvm doc patches
 	epatch "${FILESDIR}"/${PN}-2.7-fixdoc.patch
 

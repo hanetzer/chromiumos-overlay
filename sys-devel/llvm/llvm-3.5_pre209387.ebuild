@@ -18,7 +18,7 @@ EGIT_REPO_URI="http://llvm.org/git/llvm.git
 EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
 EGIT_MASTER=""
 # Set to the corresponding commit.
-EGIT_COMMIT="262f39ed3a8969f07ca7cb4a53bf34d46c1d4351"
+EGIT_COMMIT="f4f930c7955fa1c58197dd89d4c6cbb7a9ed45ba"
 
 LICENSE="UoI-NCSA"
 SLOT="0/${PV}"

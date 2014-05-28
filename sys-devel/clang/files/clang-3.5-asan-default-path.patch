@@ -1,15 +1,14 @@
 By default, the ASAN message goes to STDERR. This causes problem if we cannot
 log the ASAN message, and we can not figure out why the ASAN check fails.
 This change set the ASAN message goes to /va/log/asan${pid} by default.
---- llvm/projects/compiler-rt/lib/asan/asan_rtl.cc	2014-02-07 10:39:32.691683530 -0800
-+++ llvm/projects/compiler-rt/lib/asan/asan_rtl.cc	2014-02-07 10:41:01.652390800 -0800
-@@ -79,6 +79,9 @@
- }
- 
- static const char *MaybeUseAsanDefaultOptionsCompileDefiniton() {
-+#ifndef ASAN_DEFAULT_OPTIONS
-+#define ASAN_DEFAULT_OPTIONS log_path=/var/log/asan
-+#endif
- #ifdef ASAN_DEFAULT_OPTIONS
- // Stringize the macro value.
- # define ASAN_STRINGIZE(x) #x
+--- a/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.cc
++++ b/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.cc
+@@ -38,7 +38,7 @@ void SetCommonFlagsDefaults(CommonFlags *f) {
+   f->fast_unwind_on_malloc = true;
+   f->handle_ioctl = false;
+   f->malloc_context_size = 1;
+-  f->log_path = "stderr";
++  f->log_path = "/var/log/asan";
+   f->verbosity = 0;
+   f->detect_leaks = true;
+   f->leak_check_at_exit = true;
