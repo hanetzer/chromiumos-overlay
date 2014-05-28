@@ -13,7 +13,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"cromo"
 	"cros-disks"
 	"debugd"
-	"libchromeos"
 	"lorgnette"
 	"metrics"
 	"mist"
@@ -26,6 +25,7 @@ OLD_PLATFORM_LOCALNAME=(
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
+	"libchromeos"
 )
 CROS_WORKON_LOCALNAME=(
 	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
