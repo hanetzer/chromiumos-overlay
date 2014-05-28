@@ -28,17 +28,14 @@ NEW_PLATFORM2_LOCALNAME=(
 	"buffet"
 )
 CROS_WORKON_LOCALNAME=(
-	"platform/common-mk"
 	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
 	"platform2"  # With all platform2 subdirs
 )
 CROS_WORKON_PROJECT=(
-	"chromiumos/platform/common-mk"
 	"${OLD_PLATFORM_LOCALNAME[@]/#/chromiumos/platform/}"
 	"chromiumos/platform2"
 )
 CROS_WORKON_DESTDIR=(
-	"${S}/platform/common-mk"
 	"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/platform/}"
 	"${S}/platform2"
 )
