@@ -6,7 +6,7 @@ EAPI="5"
 inherit cmake-utils
 
 DESCRIPTION="A collection of automated tests for OpenGL implementations"
-HOMEPAGE="http://people.freedesktop.org/~nh/piglit/"
+HOMEPAGE="http://piglit.freedesktop.org"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 LICENSE="BSD GPL-2+ GPL-3 LGPL-2+ MIT"
