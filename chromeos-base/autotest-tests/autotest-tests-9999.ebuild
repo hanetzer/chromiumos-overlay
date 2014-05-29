@@ -176,6 +176,11 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_ProtocolCheck
 	+tests_kernel_CrosECSysfs
 	+tests_kernel_CrosECSysfsAccel
+	+tests_kernel_SchedCgroups
+	+tests_kernel_TPMStress
+	+tests_kernel_PerfEventRename
+	+tests_kernel_CpufreqMinMax
+	+tests_kernel_VbootContextEC
 	+tests_logging_CrashSender
 	+tests_logging_KernelCrash
 	+tests_logging_UdevCrash
