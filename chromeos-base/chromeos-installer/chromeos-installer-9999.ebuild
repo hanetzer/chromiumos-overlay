@@ -15,11 +15,14 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host pam"
+IUSE="32bit_au cros_host pam test"
 
 DEPEND="
 	chromeos-base/verity
-	dev-cpp/gmock
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)
 	!cros_host? (
 		chromeos-base/vboot_reference
 	)"
