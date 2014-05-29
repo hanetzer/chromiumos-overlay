@@ -90,6 +90,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-misc/utouch-evemu
 	chromeos-base/autotest-client
 	chromeos-base/audiotest
+	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/shill-test-scripts
 	chromeos-base/minifakedns
