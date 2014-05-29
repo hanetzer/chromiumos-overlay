@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-chromeless_tty"
+IUSE="-chromeless_tty -ppp"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -159,6 +159,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_bma150
 	+tests_kernel_Bootcache
 	+tests_kernel_ConfigVerify
+	ppp? ( +tests_kernel_ConfigVerifyPPP )
 	+tests_kernel_CpufreqMinMax
 	+tests_kernel_Delay
 	+tests_kernel_fs_Inplace
