@@ -1,9 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Install the update_engine policy for embedded boards
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=!<chromeos-base/update_engine-0.0.2
-SLOT=0
-_md5_=7ede430526fb8f7b9b24d9c3da1e7021
