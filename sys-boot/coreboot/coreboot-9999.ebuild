@@ -25,7 +25,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode fwserial memmaps quiet-cb rmt vmx"
+IUSE="em100-mode memmaps quiet-cb rmt vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly falco fox link lumpy panther parrot
@@ -85,16 +85,44 @@ src_prepare() {
 	if use rmt; then
 		echo "CONFIG_MRC_RMT=y" >> .config
 	fi
-	if use fwserial; then
-		# Use fwserial file that matches config file, so if a variant
-		# config is added, a variant fwserial file must also be added
-		elog "   - enabling firmware serial console"
-		cat "configs/fwserial.${board}" >> .config || die
-	fi
 	if use vmx; then
 		elog "   - enabling VMX"
 		echo "CONFIG_ENABLE_VMX=y" >> .config
 	fi
+	if use quiet-cb; then
+		# Suppress console spew if requested.
+		cat >> .config <<EOF
+CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
+# CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8 is not set
+CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
+EOF
+	fi
+
+	cp .config .config_serial
+	cat "configs/fwserial.${board}" >> .config_serial || die
+}
+
+make_coreboot() {
+	local builddir="$1"
+
+	yes "" | emake oldconfig
+	emake obj="${builddir}"
+
+	# Modify firmware descriptor if building for the EM100 emulator.
+	if use em100-mode; then
+		ifdtool --em100 "${builddir}/coreboot.rom" || die
+		mv "${builddir}/coreboot.rom"{.new,} || die
+	fi
+
+	# Extract the coreboot ramstage file into the build dir.
+	cbfstool "${builddir}/coreboot.rom" extract \
+		-n "fallback/ramstage" \
+		-f "${builddir}/ramstage.stage" || die
+
+	# Extract the reference code stage into the build dir if present.
+	cbfstool "${builddir}/coreboot.rom" extract \
+		-n "fallback/refcode" \
+		-f "${builddir}/refcode.stage" || true
 }
 
 src_compile() {
@@ -118,33 +146,11 @@ src_compile() {
 
 	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
-	if use quiet-cb; then
-		# Suppress console spew if requested.
-		cat >> .config <<EOF
-CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
-# CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8 is not set
-CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
-EOF
-	fi
+	make_coreboot "build"
 
-	yes "" | emake oldconfig
-	emake
-
-	# Modify firmware descriptor if building for the EM100 emulator.
-	if use em100-mode; then
-		ifdtool --em100 "build/coreboot.rom" || die
-		mv "build/coreboot.rom"{.new,} || die
-	fi
-
-	# Extract the coreboot ramstage file into the build dir.
-	cbfstool "build/coreboot.rom" extract \
-		-n "fallback/ramstage" \
-		-f "build/ramstage.stage" || die
-
-	# Extract the reference code stage into the build dir if present.
-	cbfstool "build/coreboot.rom" extract \
-		-n "fallback/refcode" \
-		-f "build/refcode.stage" || true
+	# Build a second ROM with serial support for developers
+	mv .config_serial .config
+	make_coreboot "build_serial"
 
 	# Build cbmem for the target
 	cd util/cbmem
@@ -162,9 +168,12 @@ src_install() {
 	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "build/coreboot.rom" coreboot.rom
+	newins "build_serial/coreboot.rom" coreboot.rom.serial
 	newins "build/ramstage.stage" ramstage.stage
+	newins "build_serial/ramstage.stage" ramstage.stage.serial
 	if [[ -f "build/refcode.stage" ]]; then
 		newins "build/refcode.stage" refcode.stage
+		newins "build_serial/refcode.stage" refcode.stage.serial
 	fi
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
 		configs/config.${board} )

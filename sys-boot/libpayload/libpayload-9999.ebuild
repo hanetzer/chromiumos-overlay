@@ -16,6 +16,9 @@ DEPEND=""
 
 CROS_WORKON_LOCALNAME="coreboot"
 
+# Don't strip to ease remote GDB use (cbfstool strips final binaries anyway)
+STRIP_MASK="*"
+
 inherit cros-workon cros-board toolchain-funcs
 
 src_compile() {
@@ -48,17 +51,22 @@ src_compile() {
 	[ -f "${board_config}" ] || die "${board_config} does not exist"
 
 	cp "${board_config}" "${libpayloaddir}"/.config
-	emake -C "${libpayloaddir}" oldconfig || \
-		die "libpayload make oldconfig failed"
-	emake -C "${libpayloaddir}" \
-		EXTRA_CFLAGS="${extra_flags}" || \
-		die "libpayload build failed"
+	echo "# CONFIG_LP_REMOTEGDB is not set" >> "${libpayloaddir}"/.config
+	emake -C "${libpayloaddir}" oldconfig
+	emake -C "${libpayloaddir}" obj="build" EXTRA_CFLAGS="${extra_flags}"
+
+	# Build a second set of libraries with GDB support for developers
+	cp "${board_config}" "${libpayloaddir}"/.config
+	echo "CONFIG_LP_REMOTEGDB=y" >> "${libpayloaddir}"/.config
+	emake -C "${libpayloaddir}" oldconfig
+	emake -C "${libpayloaddir}" obj="build_gdb" EXTRA_CFLAGS="${extra_flags}"
 }
 
-src_install() {
+install_libpayload() {
+	local suffix="$1"
 	local src_root="payloads/libpayload/"
-	local build_root="${src_root}/build"
-	local destdir="/firmware/libpayload"
+	local build_root="${src_root}/build${suffix}"
+	local destdir="/firmware/libpayload${suffix}"
 
 	local archdir=""
 	if use x86 || use amd64 ; then
@@ -96,4 +104,9 @@ src_install() {
 
 	insinto "${destdir}"
 	newins "${src_root}"/.config libpayload.config
+}
+
+src_install() {
+	install_libpayload ""
+	install_libpayload "_gdb"
 }

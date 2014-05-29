@@ -25,10 +25,24 @@ CROS_WORKON_LOCALNAME=("../platform/depthcharge" "../platform/vboot_reference")
 VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
 CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
 
+# Don't strip to ease remote GDB use (cbfstool strips final binaries anyway)
+STRIP_MASK="*"
+
 inherit cros-workon cros-board toolchain-funcs
 
 src_configure() {
 	cros-workon_src_configure
+}
+
+make_depthcharge() {
+	local suffix="$1"
+	local broot="${S}/build${suffix}"
+
+	emake obj="${broot}" distclean
+	emake obj="${broot}" defconfig BOARD="${board}"
+	emake obj=${broot} \
+		LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload${suffix}/" \
+		VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}"
 }
 
 src_compile() {
@@ -57,25 +71,16 @@ src_compile() {
 		  "board/${board}/defconfig"
 	fi
 
-	emake distclean
-	emake defconfig \
-		LIBPAYLOAD_DIR="${ROOT}/firmware/libpayload/" \
-		BOARD="${board}" \
-		|| die "depthcharge make defconfig failed"
-	emake \
-		LIBPAYLOAD_DIR="${ROOT}/firmware/libpayload/" \
-		VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
-		|| die "depthcharge build failed"
+	make_depthcharge ""
+	make_depthcharge "_gdb"
 }
 
-src_install() {
-	local build_root="build"
-	local destdir="/firmware/depthcharge"
-	local dtsdir="/firmware/dts"
-	local board=$(get_current_board_with_variant)
-	if [[ ! -d "board/${board}" ]]; then
-		board=$(get_current_board_no_variant)
-	fi
+install_depthcharge() {
+	local suffix="$1"
+	local build_root="build${suffix}"
+	local destdir="/firmware/depthcharge${suffix}"
+	pushd "${build_root}" || die "couldn't access ${build_root}"
+
 	local files_to_copy=(netboot.{bin,elf{,.map}})
 	if use unified_depthcharge ; then
 		files_to_copy+=(depthcharge.elf{,.map})
@@ -83,10 +88,6 @@ src_install() {
 		files_to_copy+=(depthcharge.{ro,rw}.{bin,elf{,.map}})
 	fi
 
-	insinto "${dtsdir}"
-	doins "board/${board}/fmap.dts"
-
-	cd "${build_root}"
 	insinto "${destdir}"
 	doins "${files_to_copy[@]}"
 
@@ -95,4 +96,20 @@ src_install() {
 	if [[ -r depthcharge.payload ]]; then
 		doins {depthcharge,netboot}.payload
 	fi
+
+	popd
+}
+
+src_install() {
+	local dtsdir="/firmware/dts"
+	local board=$(get_current_board_with_variant)
+	if [[ ! -d "board/${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+
+	insinto "${dtsdir}"
+	doins "board/${board}/fmap.dts"
+
+	install_depthcharge ""
+	install_depthcharge "_gdb"
 }

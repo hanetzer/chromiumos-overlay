@@ -238,7 +238,8 @@ src_compile_depthcharge() {
 	local ramstage_file="${froot}/ramstage.stage"
 	local refcode_file="${froot}/refcode.stage"
 
-	local uboot_file
+	local depthcharge_ro_basename
+	local depthcharge_rw_basename
 
 	if [ "${BOARD_USE}" == "storm" ]; then
 		local dest_file="image.bin"
@@ -257,71 +258,73 @@ src_compile_depthcharge() {
 	fi
 
 	if use unified_depthcharge; then
-		uboot_file="${froot}/depthcharge/depthcharge.payload"
+		depthcharge_ro_basename="depthcharge.elf"
+		depthcharge_rw_basename="depthcharge.payload"
 	else
-		uboot_file="${froot}/depthcharge/depthcharge.rw.bin"
-	fi
-	local netboot_file
-	if use unified_depthcharge; then
-		netboot_file="${froot}/depthcharge/netboot.payload"
-	else
-		netboot_file="${froot}/depthcharge/netboot.bin"
+		depthcharge_ro_basename="depthcharge.ro.elf"
+		depthcharge_basename="depthcharge.rw.bin"
 	fi
 
 	local common=(
 		--board "${BOARD_USE}"
 		--key "${devkeys_file}"
 		--bmpblk "${bmpblk_file}"
-		--coreboot "${coreboot_file}"
 		--dt "${fdt_file}"
 	)
 
+	local serial=( --coreboot "${coreboot_file}.serial" )
+	local silent=( --coreboot "${coreboot_file}" )
+
 	# If unified depthcharge is being used always include ramstage_file.
 	if use unified_depthcharge; then
-		common+=(
-			--add-blob ramstage "${ramstage_file}"
-		)
+		serial+=( --add-blob ramstage "${ramstage_file}.serial" )
+		silent+=( --add-blob ramstage "${ramstage_file}" )
 	fi
+
 	local legacy_file=""
 	prepare_legacy_image legacy_file
 	if [ -n "${legacy_file}" ]; then
 		einfo "Using legacy boot payload: ${legacy_file}"
-		common+=(
-			--seabios "${legacy_file}"
-		)
+		if [ -f "${legacy_file}.serial" ]; then
+			serial+=( --seabios "${legacy_file}.serial" )
+			silent+=( --seabios "${legacy_file}" )
+		else
+			common+=( --seabios "${legacy_file}" )
+		fi
 	fi
 
-	if use x86 || use amd64; then
-		if [ -f "${refcode_file}" ]; then
-			common+=(
-				--add-blob refcode "${refcode_file}"
-			)
-		fi
+	if ( use x86 || use amd64 ) && [ -f "${refcode_file}" ]; then
+		common+=( --add-blob refcode "${refcode_file}" )
 	fi
 
 	if use cros_ec; then
 		common+=( --ec "${ec_file}" )
 	fi
 
-	local depthcharge_elf
-	if use unified_depthcharge; then
-		depthcharge_elf="${froot}/depthcharge/depthcharge.elf"
-	else
-		depthcharge_elf="${froot}/depthcharge/depthcharge.ro.elf"
-	fi
-
-	einfo "Building RO image."
-	cros_bundle_firmware ${common[@]} \
-		--coreboot-elf="${depthcharge_elf}" \
+	einfo "Building production image."
+	cros_bundle_firmware ${common[@]} ${silent[@]} \
+		--coreboot-elf="${froot}/depthcharge/${depthcharge_ro_basename}" \
 		--outdir "out.ro" --output "image.bin" \
-		--uboot "${uboot_file}" ||
-		die "failed to build RO image."
-	einfo "Building RW image."
-	cros_bundle_firmware "${common[@]}" --force-rw \
-		--coreboot-elf="${depthcharge_elf}" \
+		--uboot "${froot}/depthcharge/${depthcharge_rw_basename}" ||
+		die "failed to build production image."
+	einfo "Building forced RW image."
+	cros_bundle_firmware "${common[@]}" ${silent[@]} --force-rw \
+		--coreboot-elf="${froot}/depthcharge/${depthcharge_ro_basename}" \
 		--outdir "out.rw" --output "image.rw.bin" \
-		--uboot "${uboot_file}" ||
-		die "failed to build RW image."
+		--uboot "${froot}/depthcharge/${depthcharge_rw_basename}" ||
+		die "failed to build forced RW image."
+	einfo "Building serial image."
+	cros_bundle_firmware ${common[@]} ${serial[@]} \
+		--coreboot-elf="${froot}/depthcharge/${depthcharge_ro_basename}" \
+		--outdir "out.serial" --output "image.serial.bin" \
+		--uboot "${froot}/depthcharge/${depthcharge_rw_basename}" ||
+		die "failed to build serial image."
+	einfo "Building developer image."
+	cros_bundle_firmware ${common[@]} ${serial[@]} \
+		--coreboot-elf="${froot}/depthcharge_gdb/${depthcharge_ro_basename}" \
+		--outdir "out.dev" --output "image.dev.bin" \
+		--uboot "${froot}/depthcharge_gdb/${depthcharge_rw_basename}" ||
+		die "failed to build developer image."
 
 	# Build a netboot image.
 	#
@@ -335,18 +338,23 @@ src_compile_depthcharge() {
 	# continuously reboot the machine to alternatively enable and disable
 	# graphics. On those systems, netboot is used for both payloads.
 	einfo "Building netboot image."
-	local netboot_elf="${froot}/depthcharge/netboot.elf"
+	local netboot_rw
+	if use unified_depthcharge; then
+		netboot_rw="${froot}/depthcharge/netboot.payload"
+	else
+		netboot_rw="${froot}/depthcharge/netboot.bin"
+	fi
 	local netboot_ro
 	if ! use unified_depthcharge && ( use lumpy || use link ); then
-		netboot_ro="${netboot_elf}"
+		netboot_ro="${froot}/depthcharge/netboot.elf"
 	else
-		netboot_ro="${depthcharge_elf}"
+		netboot_ro="${froot}/depthcharge/${depthcharge_ro_basename}"
 	fi
-	cros_bundle_firmware "${common[@]}" \
+	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
 		--force-rw \
 		--coreboot-elf="${netboot_ro}" \
 		--outdir "out.net" --output "image.net.bin" \
-		--uboot "${netboot_file}" ||
+		--uboot "${netboot_rw}" ||
 		die "failed to build netboot image."
 
 	# Set convenient netboot parameter defaults for developers.

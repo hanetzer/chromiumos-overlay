@@ -12,7 +12,6 @@ HOMEPAGE="http://www.coreboot.org/SeaBIOS"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="fwserial"
 
 RDEPEND=""
 DEPEND="
@@ -25,8 +24,9 @@ CROS_FIRMWARE_IMAGE_DIR="/firmware"
 CROS_FIRMWARE_ROOT="${SYSROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 
 create_seabios_cbfs() {
+	local suffix="$1"
 	local oprom=$(echo "${CROS_FIRMWARE_ROOT}"/pci????,????.rom)
-	local seabios_cbfs=seabios.cbfs
+	local seabios_cbfs="seabios.cbfs${suffix}"
 	local cbfs_size=$(( 2 * 1024 * 1024 ))
 	local bootblock="${T}/bootblock"
 
@@ -68,20 +68,21 @@ _emake() {
 		"$@"
 }
 
-src_configure() {
-	local config="chromeos/default.config"
-	if use fwserial; then
-	    echo "CONFIG_DEBUG_SERIAL=y" >> "${config}"
-	fi
-	_emake defconfig KCONFIG_DEFCONFIG="${config}"
-}
-
 src_compile() {
+	local config="chromeos/default.config"
+
+	_emake defconfig KCONFIG_DEFCONFIG="${config}"
 	_emake
-	create_seabios_cbfs
+	create_seabios_cbfs ""
+	_emake clean
+
+	echo "CONFIG_DEBUG_SERIAL=y" >> "${config}"
+	_emake defconfig KCONFIG_DEFCONFIG="${config}"
+	_emake
+	create_seabios_cbfs ".serial"
 }
 
 src_install() {
 	insinto /firmware
-	doins out/bios.bin.elf seabios.cbfs
+	doins out/bios.bin.elf seabios.cbfs seabios.cbfs.serial
 }
