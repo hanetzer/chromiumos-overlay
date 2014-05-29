@@ -4,6 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/init"
 CROS_WORKON_LOCALNAME="init"
+CROS_WORKON_OUTOFTREE_BUILD="1"
 
 inherit cros-workon user
 
