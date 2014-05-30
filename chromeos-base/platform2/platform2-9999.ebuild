@@ -596,6 +596,7 @@ platform2_install_mist() {
 
 platform2_install_power_manager() {
 	use power_management || return 0
+	use cros_host && return 0
 
 	# Built binaries
 	dobin "${OUT}"/powerd
