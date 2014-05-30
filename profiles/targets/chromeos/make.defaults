@@ -5,3 +5,4 @@ USE="acpi bluetooth cairo cros_p2p mbim opengl usb vlan X pam"
 
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -cups -poppler-data -nls -openrc"
+USE="${USE} -mime"

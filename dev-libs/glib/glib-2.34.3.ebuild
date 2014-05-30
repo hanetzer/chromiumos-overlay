@@ -14,7 +14,7 @@ SRC_URI="${SRC_URI}
 
 LICENSE="LGPL-2+"
 SLOT="2"
-IUSE="debug fam kernel_linux selinux static-libs systemtap test utils xattr"
+IUSE="debug fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
 KEYWORDS="*"
 
 RDEPEND="virtual/libiconv
@@ -38,7 +38,7 @@ DEPEND="${RDEPEND}
 		>=dev-util/gdbus-codegen-${PV}
 		>=sys-apps/dbus-1.2.14 )
 	!<dev-util/gtk-doc-1.15-r2"
-PDEPEND="x11-misc/shared-mime-info
+PDEPEND="mime? ( x11-misc/shared-mime-info )
 	!<gnome-base/gvfs-1.6.4-r990"
 # shared-mime-info needed for gio/xdgmime, bug #409481
 # Earlier versions of gvfs do not work with glib
