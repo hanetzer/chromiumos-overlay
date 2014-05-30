@@ -6,7 +6,7 @@
 # Since we use CHROMEOS_KERNEL_CONFIG and CHROMEOS_KERNEL_SPLITCONFIG here,
 # it is not safe to reuse the kernel prebuilts across different boards. Inherit
 # the cros-board eclass to make sure that doesn't happen.
-inherit binutils-funcs cros-board linux-info toolchain-funcs
+inherit binutils-funcs cros-board linux-info toolchain-funcs versionator
 
 HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
@@ -790,10 +790,20 @@ cros-kernel2_src_install() {
 	if use netboot_ramfs; then
 		# No need to check kernel image size.
 		true
-	elif [[ ${kernel_image_size} -gt $((8 * 1024 * 1024)) ]]; then
-		die "Kernel image is larger than 8 MB."
-	elif [[ ${kernel_image_size} -gt $((7 * 1024 * 1024)) ]]; then
-		ewarn "Kernel image is larger than 7 MB. Limit is 8 MB."
+	else
+		if version_is_at_least 3.14 ; then
+			kern_max=16
+			kern_warn=12
+		else
+			kern_max=8
+			kern_warn=7
+		fi
+
+		if [[ ${kernel_image_size} -gt $((kern_max * 1024 * 1024)) ]]; then
+			die "Kernel image is larger than ${kern_max} MB."
+		elif [[ ${kernel_image_size} -gt $((kern_warn * 1024 * 1024)) ]]; then
+			ewarn "Kernel image is larger than ${kern_warn} MB. Limit is ${kern_max} MB."
+		fi
 	fi
 
 	# Install uncompressed kernel for debugging purposes.
