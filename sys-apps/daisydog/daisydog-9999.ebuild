@@ -3,6 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/daisydog"
+CROS_WORKON_OUTOFTREE_BUILD="1"
 
 inherit cros-constants cros-workon toolchain-funcs user
 
@@ -15,9 +16,26 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
+src_prepare() {
+	cros-workon_src_prepare
+}
+
 src_configure() {
 	cros-workon_src_configure
 	tc-export CC
+}
+
+_emake() {
+	emake -C "$(cros-workon_get_build_dir)" \
+		top_srcdir="${S}" -f "${S}"/Makefile "$@"
+}
+
+src_compile() {
+	_emake
+}
+
+src_install() {
+	_emake DESTDIR="${D}" install
 }
 
 pkg_preinst() {
