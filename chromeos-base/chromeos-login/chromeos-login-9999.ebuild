@@ -14,6 +14,9 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
 # NB: Flags listed here are off by default unless prefixed with a '+'.
+# This list is lengthy since it determines the USE flags that will be written to
+# the /etc/session_manager_use_flags.txt file that's used to generate Chrome's
+# command line.
 IUSE="asan clang deep_memory_profiler disable_login_animations
 	disable_webaudio egl exynos fade_boot_splash_screen
 	gpu_sandbox_allow_sysv_shm
@@ -46,12 +49,6 @@ DEPEND="${RDEPEND}
 
 CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
 
-src_prepare() {
-	if ! use X; then
-		epatch "${FILESDIR}"/0001-Remove-X-from-session_manager_setup.sh.patch
-	fi
-}
-
 src_configure() {
 	clang-setup-env
 	cros-workon_src_configure
@@ -74,10 +71,9 @@ src_install() {
 	cros-workon_src_install
 	into /
 	dosbin keygen
-	dosbin session_manager_setup.sh
 	dosbin session_manager
-	dosbin xstart.sh
-	dobin cros-xauth
+	# TODO(derat): Remove this stub after 20140801.
+	dosbin session_manager_setup.sh
 
 	insinto /usr/share/dbus-1/interfaces
 	doins org.chromium.SessionManagerInterface.xml
@@ -106,10 +102,13 @@ src_install() {
 	# Write a list of currently-set USE flags that session_manager_setup.sh can
 	# read at runtime while constructing Chrome's command line.  If you need to
 	# use a new flag, add it to $IUSE at the top of the file and list it here.
-	local use_flag_file="${D}"/etc/session_manager_use_flags.txt
+	local use_flag_file="${D}/etc/session_manager_use_flags.txt"
 	local flags=( ${IUSE} )
 	local flag
 	for flag in ${flags[@]/#[-+]} ; do
 		usev ${flag}
 	done > "${use_flag_file}"
+
+	insinto /etc
+	doins chrome_dev.conf
 }
