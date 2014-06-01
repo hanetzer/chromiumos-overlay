@@ -6,3 +6,16 @@
 # settings in here that are specific to the sdk or cross-compiling for boards.
 #
 # See "man make.conf" for the available options.
+
+LDFLAGS="-Wl,-O2 -Wl,--as-needed"
+
+PORTDIR="/usr/local/portage/stable"
+
+# Adding packages to the @world set causes people more trouble than it's
+# worth in our setup -- we rarely have people add custom packages outside
+# of the ChromiumOS set.  You can use "--select" to override this.
+EMERGE_DEFAULT_OPTS="--oneshot"
+
+# Use parallel bzip2 for portage if available
+PORTAGE_BZIP2_COMMAND="pbzip2"
+PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"

@@ -15,8 +15,6 @@
 CBUILD=x86_64-pc-linux-gnu
 HOSTCC=x86_64-pc-linux-gnu-gcc
 
-LDFLAGS="-Wl,-O2 -Wl,--as-needed"
-
 ACCEPT_KEYWORDS="${ARCH}"
 USE="${ARCH} zlib bindist cros-debug -introspection platform2"
 
@@ -35,22 +33,11 @@ PORTAGE_WORKDIR_MODE="0755"
 PKG_CONFIG_PATH="${ROOT}usr/lib/pkgconfig/:${ROOT}usr/share/pkgconfig/"
 ELIBC="glibc"
 
-PORTDIR="/usr/local/portage/stable"
-
 PORTDIR_OVERLAY="
   /usr/local/portage/chromiumos
   /usr/local/portage/eclass-overlay
   ${BOARD_OVERLAY}
 "
-
-# Adding packages to the @world set causes people more trouble than it's
-# worth in our setup -- we rarely have people add custom packages outside
-# of the ChromiumOS set.  You can use "--select" to override this.
-EMERGE_DEFAULT_OPTS="--oneshot"
-
-# Use parallel bzip2 for portage if available
-PORTAGE_BZIP2_COMMAND="pbzip2"
-PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 
 FETCHCOMMAND_GS="bash -c 'BOTO_CONFIG=/home/\${PORTAGE_USERNAME}/.boto /mnt/host/source/chromite/bin/gs_fetch_binpkg \"${URI}\" \"${DISTDIR}/${FILE}\"'"
 RESUMECOMMAND_GS="${FETCHCOMMAND_GS}"

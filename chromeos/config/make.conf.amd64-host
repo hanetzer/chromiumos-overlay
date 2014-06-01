@@ -6,15 +6,12 @@ source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.
 ACCEPT_KEYWORDS="amd64"
 CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"
-LDFLAGS="-Wl,-O2 -Wl,--as-needed"
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
           -ebuild-locks -merge-sync parallel-install -preserve-libs sandbox
           -strict userfetch userpriv usersandbox -unknown-features-warn"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
-
-PORTDIR="/usr/local/portage/stable"
 
 # We initialize PORTDIR_OVERLAY here to clobber any redefinitions elsewhere.
 # This has to be the first overlay so crossdev finds the correct gcc and 
@@ -24,15 +21,6 @@ PORTDIR_OVERLAY="
   /usr/local/portage/chromiumos
   /usr/local/portage/eclass-overlay
 "
-
-# Adding packages to the @world set causes people more trouble than it's
-# worth in our setup -- we rarely have people add custom packages outside
-# of the ChromiumOS set.  You can use "--select" to override this.
-EMERGE_DEFAULT_OPTS="--oneshot"
-
-# Use parallel bzip2 for portage if available
-PORTAGE_BZIP2_COMMAND="pbzip2"
-PORTAGE_BUNZIP2_COMMAND="pbunzip2 --ignore-trailing-garbage=1"
 
 # Where to store built packages.
 PKGDIR="/var/lib/portage/pkgs"
