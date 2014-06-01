@@ -1,7 +1,6 @@
-# Note: Additions to this file affect not only the cros sdk
-# chroot, but also any amd64 boards.  So if you enable flags
-# in here for the chroot, you needed to disable them in the
-# cros profile: default/linux/amd64/10.0/chromeos/package.use
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 # Since we execute pbzip2 outside of the chroot, we need to statically
 # link this to avoid library mismatch errors.  http://crosbug.com/32519
