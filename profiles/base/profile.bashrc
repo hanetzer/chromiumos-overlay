@@ -129,7 +129,7 @@ cros_pre_pkg_setup_sysroot_build_bin_dir() {
 cros_pre_src_unpack_asan_init() {
 	local log_path="${T}/asan_logs/asan"
 	mkdir -p "${log_path%/*}"
-	export ASAN_OPTIONS="log_path=${log_path}"
+	export ASAN_OPTIONS+=" log_path=${log_path}"
 
 	has asan_death_hook ${EBUILD_DEATH_HOOKS} || EBUILD_DEATH_HOOKS+=" asan_death_hook"
 }
