@@ -325,6 +325,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies for building Platform2
 RDEPEND="${RDEPEND}
 	dev-util/gyp
+	dev-util/ninja
 	"
 
 # Uninstall these packages.
