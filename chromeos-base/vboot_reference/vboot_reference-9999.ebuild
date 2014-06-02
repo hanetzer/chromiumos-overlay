@@ -11,7 +11,7 @@ DESCRIPTION="Chrome OS verified boot tools"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au minimal tpmtests cros_host"
+IUSE="32bit_au minimal tpmtests cros_host vboot2"
 
 RDEPEND="!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
@@ -31,6 +31,7 @@ _src_compile_main() {
 	unset CFLAGS
 	emake BUILD="${S}"/build-main \
 	      ARCH=$(tc-arch) \
+	      VBOOT2=$(usev vboot2) \
 	      MINIMAL=$(usev minimal) all
 	unset CC AR CXX PKG_CONFIG
 }
@@ -42,6 +43,7 @@ _src_compile_au() {
 	tc-export CC AR CXX PKG_CONFIG
 	emake BUILD="${S}"/build-au/ \
 	      ARCH=$(tc-arch) \
+	      VBOOT2=$(usev vboot2) \
 	      MINIMAL=$(usev minimal) tinyhostlib
 	unset CC AR CXX PKG_CONFIG
 	board_teardown_32bit_au_env
@@ -55,6 +57,7 @@ src_compile() {
 src_test() {
 	emake BUILD="${S}"/build-main \
 	      ARCH=$(tc-arch) \
+	      VBOOT2=$(usev vboot2) \
 	      MINIMAL=$(usev minimal) runtests
 }
 
@@ -62,10 +65,14 @@ src_install() {
 	einfo "Installing programs"
 	if use minimal ; then
 		# Installing on the target
-		emake BUILD="${S}"/build-main DESTDIR="${D}" MINIMAL=1 install
+		emake BUILD="${S}"/build-main DESTDIR="${D}" \
+		      VBOOT2=$(usev vboot2) \
+		      MINIMAL=1 install
 	else
 		# Installing on the host
-		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" install
+		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" \
+		       VBOOT2=$(usev vboot2) \
+		      install
 	fi
 
 	if use tpmtests; then
