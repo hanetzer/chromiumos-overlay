@@ -1,0 +1,229 @@
+From 818592d1932e25e665e35a7102133f01613188af Mon Sep 17 00:00:00 2001
+From: Arman Uguray <armansito@chromium.org>
+Date: Thu, 22 May 2014 17:11:29 -0700
+Subject: [PATCH 01/12] src/gatt-client: Introduce btd_gatt_client.
+
+This patch introduces struct btd_gatt_client, which intends to
+encapsulate the GATT database of a btd_device. btd_gatt_client tracks
+attributes of a remote device and exposes them to external applications
+via the D-Bus API defined in doc/gatt.
+
+The ultimate goal is to have a single instance of btd_gatt_client for
+each btd_device and allow profiles to access attributes through it,
+instead of using attio. This is the first of several stages in removing
+GAttrib from bluetoothd.
+---
+ Makefile.am       |   1 +
+ src/device.c      |  12 ++++++
+ src/gatt-client.c | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/gatt-client.h |  27 ++++++++++++++
+ 4 files changed, 148 insertions(+)
+ create mode 100644 src/gatt-client.c
+ create mode 100644 src/gatt-client.h
+
+diff --git a/Makefile.am b/Makefile.am
+index dc88816..68fd8f6 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -149,6 +149,7 @@ src_bluetoothd_SOURCES = $(builtin_sources) \
+ 			src/service.h src/service.c \
+ 			src/gatt-dbus.h src/gatt-dbus.c \
+ 			src/gatt.h src/gatt.c \
++			src/gatt-client.h src/gatt-client.c \
+ 			src/device.h src/device.c src/attio.h \
+ 			src/dbus-common.c src/dbus-common.h \
+ 			src/eir.h src/eir.c \
+diff --git a/src/device.c b/src/device.c
+index 8222610..5ae8407 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -65,6 +65,7 @@
+ #include "textfile.h"
+ #include "storage.h"
+ #include "attrib-server.h"
++#include "gatt-client.h"
+ 
+ #define IO_CAPABILITY_NOINPUTNOOUTPUT	0x03
+ 
+@@ -186,6 +187,9 @@ struct btd_device {
+ 	GSList		*uuids;
+ 	GSList		*primaries;		/* List of primary services */
+ 	GSList		*services;		/* List of btd_service */
++
++	struct btd_gatt_client *gatt_client;	/* GATT client implementation */
++
+ 	GSList		*pending;		/* Pending services */
+ 	GSList		*watches;		/* List of disconnect_data */
+ 	gboolean	temporary;
+@@ -515,6 +519,8 @@ static void device_free(gpointer user_data)
+ {
+ 	struct btd_device *device = user_data;
+ 
++	btd_gatt_client_destroy(device->gatt_client);
++
+ 	g_slist_free_full(device->uuids, g_free);
+ 	g_slist_free_full(device->primaries, g_free);
+ 	g_slist_free_full(device->attios, g_free);
+@@ -2298,6 +2304,12 @@ static struct btd_device *device_new(struct btd_adapter *adapter,
+ 	g_strdelimit(device->path, ":", '_');
+ 	g_free(address_up);
+ 
++	device->gatt_client = btd_gatt_client_new(device);
++	if (!device->gatt_client) {
++		device_free(device);
++		return NULL;
++	}
++
+ 	DBG("Creating device %s", device->path);
+ 
+ 	if (g_dbus_register_interface(dbus_conn,
+diff --git a/src/gatt-client.c b/src/gatt-client.c
+new file mode 100644
+index 0000000..4339b82
+--- /dev/null
++++ b/src/gatt-client.c
+@@ -0,0 +1,108 @@
++/*
++ *
++ *  BlueZ - Bluetooth protocol stack for Linux
++ *
++ *  Copyright (C) 2014  Google Inc.
++ *
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to the Free Software
++ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++ *
++ */
++
++#include <stdbool.h>
++
++#include "adapter.h"
++#include "device.h"
++#include "gatt-client.h"
++#include "attrib/gattrib.h"
++#include "log.h"
++
++struct btd_gatt_client {
++	struct btd_device *device;
++	GAttrib *attrib;
++	guint attioid;
++	guint request;
++
++	bool initialized;
++};
++
++static void attio_cleanup(struct btd_gatt_client *client)
++{
++	if (!client->attrib)
++		return;
++
++	if (client->request) {
++		g_attrib_cancel(client->attrib, client->request);
++		client->request = 0;
++	}
++
++	g_attrib_unref(client->attrib);
++	client->attrib = NULL;
++}
++
++static void attio_connect_cb(GAttrib *attrib, gpointer user_data)
++{
++	struct btd_gatt_client *client = user_data;
++
++	client->attrib = g_attrib_ref(attrib);
++
++	/* TODO: Discover remote GATT services here and mark as "initialized".
++	 * Once initialized, we will only re-discover all services here if the
++	 * device is not bonded. Otherwise, we will only rediscover when we
++	 * receive an indication from the Service Changed Characteristic.
++	 */
++	DBG("btd_gatt_client: device connected\n");
++}
++
++static void attio_disconnect_cb(gpointer user_data)
++{
++	struct btd_gatt_client *client = user_data;
++	attio_cleanup(client);
++
++	DBG("btd_gatt_client: device disconnected\n");
++}
++
++struct btd_gatt_client *btd_gatt_client_new(struct btd_device *device)
++{
++	struct btd_gatt_client *client;
++
++	if (!device)
++		return NULL;
++
++	client = g_try_new0(struct btd_gatt_client, 1);
++	if (!client)
++		return NULL;
++
++	client->device = device;
++
++	client->attioid = btd_device_add_attio_callback(device,
++							attio_connect_cb,
++							attio_disconnect_cb,
++							client);
++
++	DBG("btd_gatt_client constructed\n");
++
++	return client;
++}
++
++void btd_gatt_client_destroy(struct btd_gatt_client *client)
++{
++	if (client->attioid)
++		btd_device_remove_attio_callback(client->device,
++							client->attioid);
++
++	attio_cleanup(client);
++	g_free(client);
++}
+diff --git a/src/gatt-client.h b/src/gatt-client.h
+new file mode 100644
+index 0000000..e5661d9
+--- /dev/null
++++ b/src/gatt-client.h
+@@ -0,0 +1,27 @@
++/*
++ *
++ *  BlueZ - Bluetooth protocol stack for Linux
++ *
++ *  Copyright (C) 2014  Google Inc.
++ *
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to the Free Software
++ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++ *
++ */
++
++struct btd_gatt_client;
++
++struct btd_gatt_client *btd_gatt_client_new(struct btd_device *device);
++void btd_gatt_client_destroy(struct btd_gatt_client *client);
+-- 
+1.9.1.423.g4596e3a
+

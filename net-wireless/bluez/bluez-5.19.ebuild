@@ -57,6 +57,21 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# GATT D-Bus client implementation which has not been sent upstream
+	# yet for review.
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0001-src-gatt-client-Introduce-btd_gatt_client.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0002-src-gatt-client-Create-GattService1-objects-for-disc.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0003-src-gatt-client-Added-GattCharacteristic1-objects.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0004-src-gatt-client-Implemented-the-GattCharacteristic1-.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0005-src-gatt-client-Implement-GattCharacteristic1.ReadVa.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0006-src-gatt-client-Implement-GattCharacteristic1.WriteV.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0007-src-gatt-client-Added-GattDescriptor1-objects.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0008-src-gatt-client-Implement-the-GattCharacteristic1.Va.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0009-src-gatt-client-Implement-GattDescriptor1.ReadValue-.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0010-src-gatt-client-Implement-GattDescriptor1.WriteValue.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0011-src-gatt-client-Handle-Service-Changed-events.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0012-CHROMIUM-Make-GATT-D-Bus-client-API-non-experimental.patch"
+
 	# Change the default D-Bus configuration; the daemon is run as
 	# bluetooth, not root; we don't use the lp user, and we use the
 	# chronos user instead of at_console

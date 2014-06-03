@@ -1,0 +1,81 @@
+From 5fa0bed4c00fb629357b13215acdfaf8f65dfd17 Mon Sep 17 00:00:00 2001
+From: Arman Uguray <armansito@chromium.org>
+Date: Tue, 27 May 2014 14:11:54 -0700
+Subject: [PATCH 04/12] src/gatt-client: Implemented the GattCharacteristic1
+ "Flags" property.
+
+This patch exposes characteristic properties under the "Flags" D-Bus
+property of GattCharacteristic1. Properties provided by the
+Characteristic Extended Properties descriptor are not yet handled.
+---
+ src/gatt-client.c | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/src/gatt-client.c b/src/gatt-client.c
+index eb96999..fd97224 100644
+--- a/src/gatt-client.c
++++ b/src/gatt-client.c
+@@ -109,11 +109,60 @@ static gboolean characteristic_property_get_service(
+ 	return TRUE;
+ }
+ 
++static gboolean characteristic_property_get_flags(
++					const GDBusPropertyTable *property,
++					DBusMessageIter *iter, void *data)
++{
++	struct gatt_dbus_characteristic *characteristic = data;
++	DBusMessageIter array;
++	const int num_flags = 8;
++	int i;
++	const uint8_t props[] = {
++		GATT_CHR_PROP_BROADCAST,
++		GATT_CHR_PROP_READ,
++		GATT_CHR_PROP_WRITE_WITHOUT_RESP,
++		GATT_CHR_PROP_WRITE,
++		GATT_CHR_PROP_NOTIFY,
++		GATT_CHR_PROP_INDICATE,
++		GATT_CHR_PROP_AUTH,
++		GATT_CHR_PROP_EXT_PROP
++	};
++	const char *flags[] = {
++		"broadcast",
++		"read",
++		"write-without-response",
++		"write",
++		"notify",
++		"indicate",
++		"authenticated-signed-writes",
++		"extended-properties"
++	};
++
++	dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, "s", &array);
++
++	for (i = 0; i < num_flags; i++) {
++		if (characteristic->properties & props[i])
++			dbus_message_iter_append_basic(&array, DBUS_TYPE_STRING,
++								&flags[i]);
++	}
++
++	/*
++	 * TODO: include the extended properties here if the descriptor is
++	 * present.
++	 */
++
++	dbus_message_iter_close_container(iter, &array);
++
++	return TRUE;
++}
++
+ static const GDBusPropertyTable characteristic_properties[] = {
+ 	{ "UUID", "s", characteristic_property_get_uuid, NULL, NULL,
+ 					G_DBUS_PROPERTY_FLAG_EXPERIMENTAL },
+ 	{ "Service", "o", characteristic_property_get_service, NULL, NULL,
+ 					G_DBUS_PROPERTY_FLAG_EXPERIMENTAL },
++	{ "Flags", "as", characteristic_property_get_flags, NULL, NULL,
++					G_DBUS_PROPERTY_FLAG_EXPERIMENTAL },
+ 	{}
+ };
+ 
+-- 
+1.9.1.423.g4596e3a
+
