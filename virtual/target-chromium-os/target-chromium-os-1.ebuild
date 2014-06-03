@@ -186,7 +186,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-editors/vim
 	app-i18n/chinese-input
 	app-i18n/keyboard-input
-	app-i18n/nacl-mozc
+	app-i18n/japanese-input
 	app-i18n/chromeos-hangul
 	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash

@@ -1,10 +1,10 @@
-# Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
 
 DESCRIPTION="This is a meta package for installing Chinese IME packages"
-HOMEPAGE="http://www.google.com/inputtools/"
+HOMEPAGE="http://code.google.com/p/mozc"
 
 LICENSE="Apache-2.0"
 SLOT="0"
@@ -13,8 +13,6 @@ IUSE="internal"
 
 RDEPEND="
 	!internal? (
-		app-i18n/chromeos-cangjie
-		app-i18n/chromeos-pinyin
-		app-i18n/chromeos-zhuyin
+		app-i18n/nacl-mozc
 	)"
 DEPEND="${RDEPEND}"
