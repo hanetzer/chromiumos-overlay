@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile info install postinst setup unpack
+DEPEND=virtual/chromeos-interface dev-python/pyyaml dev-python/unittest2 chromeos-base/chromeos-factory-board dev-vcs/git
+DESCRIPTION=Chrome OS Factory Tools and Data
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +build_tests -chromeless_tty -ecs cros_host cros_workon_tree_0bd944937b0d7cb9f3f72dd383797a07ce0d36a4_52bec00df152a7b58d2c1c14659189e0d4d9bb14 profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=!chromeos-base/chromeos-factorytools dev-lang/python dev-python/argparse dev-python/jsonrpclib dev-python/netifaces dev-python/python-evdev dev-python/pyyaml dev-python/setproctitle dev-python/unittest2 dev-python/ws4py dev-util/stressapptest chromeos-base/audiotest chromeos-base/chromeos-factory-board chromeos-base/memento_softwareupdate >=chromeos-base/vpd-0.0.1-r11 media-gfx/zbar media-sound/sox
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	87639779e0d5eda0b9aec2fef908d4df	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=682f022aca888da87092162ed19640cd
