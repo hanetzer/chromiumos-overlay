@@ -1,7 +1,7 @@
-From 29dba221c6eb035ba476a195cb91fe9e1d5b983c Mon Sep 17 00:00:00 2001
+From 1747764ad9cf2729c947fb5770f8619aecd39768 Mon Sep 17 00:00:00 2001
 From: Jon TURNEY <jon.turney@dronecode.org.uk>
-Date: Wed, 21 Nov 2012 18:36:03 +0000
-Subject: Fix compilation when ./configure'd with --disable-asm
+Date: Mon, 9 Jun 2014 16:11:23 -0700
+Subject: [PATCH] Subject: Fix compilation when ./configure'd with --disable-asm
 
 In file included from glapi_dispatch.c:90:0:
 ../../../src/mapi/glapi/glapitemp.h:1640:45: error: no previous prototype for 'glReadBufferNV' [-Wmissing-prototypes]
@@ -18,17 +18,20 @@ reverted the fix to fix it somewhere else [1])
 
 [1] http://lists.freedesktop.org/archives/mesa-dev/2012-July/023899.html
 
+Change-Id: I66b5f480eff46ec513c5ad6b9704c96dd202b15e
 Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
 ---
+ src/mapi/glapi/glapi_dispatch.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
 diff --git a/src/mapi/glapi/glapi_dispatch.c b/src/mapi/glapi/glapi_dispatch.c
-index be65ebe..e73ead5 100644
+index d2dd965..a64ad46 100644
 --- a/src/mapi/glapi/glapi_dispatch.c
 +++ b/src/mapi/glapi/glapi_dispatch.c
-@@ -87,6 +87,14 @@
- /* those link to libglapi.a should provide the entry points */
+@@ -88,6 +88,13 @@
  #define _GLAPI_SKIP_PROTO_ENTRY_POINTS
  #endif
-+
+ 
 +#undef GL_COVERAGE_SAMPLES_NV
 +#define __gl3_h_
 +#define GL_EXT_multisampled_render_to_texture 1
@@ -36,8 +39,9 @@ index be65ebe..e73ead5 100644
 +#include "GLES2/gl2platform.h"
 +#include "GLES2/gl2ext.h"
 +
- #include "glapi/glapitemp.h"
- 
- #endif /* USE_X86_ASM */
---
-cgit v0.9.0.2-2-gbebe
+ /* These prototypes are necessary because GLES1 library builds will create
+  * dispatch functions for them.  We can't directly include GLES/gl.h because
+  * it would conflict the previously-included GL/gl.h.  Since GLES1 ABI is not
+-- 
+2.0.0.526.g5318336
+

@@ -4,7 +4,7 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="22bf0f3eb4668044042cdf326ccee29fa44f850a"
+CROS_WORKON_COMMIT="1751a9ba2656b1a716b04b8eb870de8e7f10af24"
 CROS_WORKON_TREE="9fac2f50764a0dd604f1d1c3458343cedc871d1d"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
@@ -120,36 +120,22 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/10.0-cross-compile.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
-	epatch "${FILESDIR}"/10.0-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
+	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
-	epatch "${FILESDIR}"/9.1-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
-	epatch "${FILESDIR}"/9.1-fix-compile-disable-asm.patch
-	epatch "${FILESDIR}"/9.1-0001-gallivm-one-code-memory-pool-with-deferred-free.patch
-	epatch "${FILESDIR}"/9.1-0002-gallivm-separate-LLVM-teardown-from-freeing-code.patch
-	epatch "${FILESDIR}"/9.1-0003-draw-delete-unneeded-LLVM-stuff-earlier.patch
-	epatch "${FILESDIR}"/9.1-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
-	epatch "${FILESDIR}"/9.1-0005-draw-cache-LLVM-compilation.patch
-	epatch "${FILESDIR}"/9.1-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
+	epatch "${FILESDIR}"/10.3-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
+	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
+	epatch "${FILESDIR}"/10.3-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
+	epatch "${FILESDIR}"/10.3-0005-draw-cache-LLVM-compilation.patch
+	epatch "${FILESDIR}"/10.3-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
 	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
 	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
-	epatch "${FILESDIR}"/10.0-disable-vs-workaround.patch
-	epatch "${FILESDIR}"/10.0-out-of-aperture.patch
-	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-at-top-of-.patch
-	epatch "${FILESDIR}"/10.0-i965-gen6-blorp-Set-need_workaround_flush-immediatel.patch
-	epatch "${FILESDIR}"/10.0-draw-fix-incorrect-vertex-size-computation-in-LLVM-d.patch
-	epatch "${FILESDIR}"/10.0-mesa-use-signed-temporary-variable-to-store-_ColorDr.patch
-	epatch "${FILESDIR}"/10.0-mesa-Increment-the-list-pointer-while-freeing-instru.patch
-	epatch "${FILESDIR}"/10.0-glsl-Add-locking-to-builtin_builder-singleton.patch
-
-	epatch "${FILESDIR}"/10.1-mesa-format_has_color_component-helper.patch
-	epatch "${FILESDIR}"/10.1-mesa-handle-GL_NONE-draw-buffers-correctly-in-glClea.patch
-	epatch "${FILESDIR}"/10.1-mesa-skip-clearing-color-buffers-when-color-writes-are-disabled.patch
-	epatch "${FILESDIR}"/10.1-i965-for-color-clears-only-disable-writes-to-components-that-exist.patch
+	epatch "${FILESDIR}"/10.3-disable-vs-workaround.patch
+	epatch "${FILESDIR}"/10.3-i965-initialize-brw_reg-struct-when-generating-code.patch
 
 	base_src_prepare
 
@@ -205,6 +191,7 @@ src_configure() {
 		--without-demos \
 		--enable-texture-float \
 		--disable-dri3 \
+		--disable-llvm-shared-libs \
 		$(use_enable X glx) \
 		$(use_enable llvm llvm-gallium) \
 		$(use_enable egl) \

@@ -1,22 +1,29 @@
-From 9976c26a1cbe3c722f417199f2ac177fb4964a2a Mon Sep 17 00:00:00 2001
+From 76ef7b2439757eb6c6785fb110474abce8c5c52f Mon Sep 17 00:00:00 2001
 From: Frank Henigman <fjhenigman@chromium.org>
-Date: Fri, 15 Mar 2013 11:12:09 -0400
-Subject: [PATCH 5/6] draw: cache LLVM compilation
+Date: Wed, 28 May 2014 20:24:47 -0700
+Subject: [PATCH 2/3] draw: cache LLVM compilation
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Shader variants now get their LLVM-made code from a cache if possible
 instead of compiling every time.  The cache key consists of the TGSI
 tokens plus the variant key.  Cache items are deleted when no longer
 used by any variant.
+
+Change-Id: Ib8b31497b7fc634a677a67145e9a21f15ae39480
+Signed-off-by: Frank Henigman <fjhenigman@chromium.org>
+Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
 ---
  src/gallium/auxiliary/draw/draw_llvm.c | 126 +++++++++++++++++++++++++++++++--
  src/gallium/auxiliary/draw/draw_llvm.h |  15 ++++
  2 files changed, 137 insertions(+), 4 deletions(-)
 
 diff --git a/src/gallium/auxiliary/draw/draw_llvm.c b/src/gallium/auxiliary/draw/draw_llvm.c
-index b9be671..bedd723 100644
+index 753d53b..706f56c 100644
 --- a/src/gallium/auxiliary/draw/draw_llvm.c
 +++ b/src/gallium/auxiliary/draw/draw_llvm.c
-@@ -48,7 +48,10 @@
+@@ -50,7 +50,10 @@
  
  #include "tgsi/tgsi_exec.h"
  #include "tgsi/tgsi_dump.h"
@@ -27,7 +34,7 @@ index b9be671..bedd723 100644
  #include "util/u_math.h"
  #include "util/u_pointer.h"
  #include "util/u_string.h"
-@@ -58,6 +61,16 @@
+@@ -60,6 +63,16 @@
  #define DEBUG_STORE 0
  
  
@@ -44,7 +51,7 @@ index b9be671..bedd723 100644
  static void
  draw_llvm_generate(struct draw_llvm *llvm, struct draw_llvm_variant *var,
                     boolean elts);
-@@ -415,15 +428,117 @@ draw_llvm_destroy(struct draw_llvm *llvm)
+@@ -513,16 +526,118 @@ draw_llvm_destroy(struct draw_llvm *llvm)
  }
  
  
@@ -154,6 +161,7 @@ index b9be671..bedd723 100644
  {
     struct llvm_cache_item *item;
     LLVMTypeRef vertex_header;
+    char module_name[64];
  
     item = MALLOC(sizeof *item);
 -   if (item == NULL)
@@ -164,16 +172,16 @@ index b9be671..bedd723 100644
  
     variant->llvm_item = item;
  
-@@ -454,6 +569,8 @@ llvm_cache_item_create(struct draw_llvm_variant *variant, unsigned num_inputs)
+@@ -550,6 +665,8 @@ llvm_cache_item_create(struct draw_llvm_variant *variant, unsigned num_inputs)
  
-    gallivm_teardown(item->gallivm);
+    gallivm_free_ir(variant->llvm_item->gallivm);
  
 +   memcpy(&item->key, key, sizeof(*key));
 +
     return item;
  }
  
-@@ -481,7 +598,7 @@ draw_llvm_create_variant(struct draw_llvm *llvm,
+@@ -577,7 +694,7 @@ draw_llvm_create_variant(struct draw_llvm *llvm,
  
     memcpy(&variant->key, key, shader->variant_key_size);
  
@@ -182,15 +190,14 @@ index b9be671..bedd723 100644
     if (variant->llvm_item == NULL) {
        FREE(variant);
        return NULL;
-@@ -1590,6 +1707,7 @@ llvm_cache_item_destroy(struct llvm_cache_item *item)
+@@ -1987,13 +2104,14 @@ llvm_cache_item_destroy(struct llvm_cache_item *item)
  {
-    gallivm_free_code(item->gallivm);
+    gallivm_destroy(item->gallivm);
     FREE(item->gallivm);
 +   llvm_cache_key_free(&item->key);
     FREE(item);
  }
  
-@@ -1597,7 +1715,7 @@ llvm_cache_item_destroy(struct llvm_cache_item *item)
  void
  draw_llvm_destroy_variant(struct draw_llvm_variant *variant)
  {
@@ -200,12 +207,12 @@ index b9be671..bedd723 100644
     remove_from_list(&variant->list_item_local);
     variant->shader->variants_cached--;
 diff --git a/src/gallium/auxiliary/draw/draw_llvm.h b/src/gallium/auxiliary/draw/draw_llvm.h
-index 6c02aad..e36efa8 100644
+index ae6802f..6b91e60 100644
 --- a/src/gallium/auxiliary/draw/draw_llvm.h
 +++ b/src/gallium/auxiliary/draw/draw_llvm.h
-@@ -253,12 +253,27 @@ struct draw_llvm_variant_list_item
-    struct draw_llvm_variant_list_item *next, *prev;
+@@ -386,12 +386,27 @@ struct draw_gs_llvm_variant_list_item
  };
+ 
  
 +struct llvm_cache
 +{
@@ -232,5 +239,5 @@ index 6c02aad..e36efa8 100644
  
  struct draw_llvm_variant
 -- 
-1.8.1.3
+2.0.0.526.g5318336
 
