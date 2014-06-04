@@ -25,7 +25,6 @@ OLD_PLATFORM_LOCALNAME=(
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
-	"libchromeos"
 )
 CROS_WORKON_LOCALNAME=(
 	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
@@ -39,8 +38,10 @@ CROS_WORKON_DESTDIR=(
 	"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/platform/}"
 	"${S}/platform2"
 )
+PLATFORM_SUBDIR="common-mk"
+PLATFORM_TOOLDIR="${S}/platform2/common-mk"
 
-inherit cros-board cros-debug cros-workon eutils multilib toolchain-funcs udev user
+inherit cros-board cros-debug cros-workon eutils multilib platform toolchain-funcs udev user
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
@@ -58,14 +59,6 @@ REQUIRED_USE="
 	debugd? ( shill )
 	gdmwimax? ( wimax )
 "
-
-LIBCHROME_VERS=( 271506 )
-
-LIBCHROME_DEPEND=$(
-	printf \
-		'chromeos-base/libchrome:%s[cros-debug=] ' \
-		${LIBCHROME_VERS[@]}
-)
 
 RDEPEND_chaps="
 	tpm? (
@@ -118,14 +111,6 @@ RDEPEND_debugd="
 		sys-apps/memtester
 		sys-apps/smartmontools
 	)
-"
-
-RDEPEND_libchromeos="
-	chromeos-base/bootstat
-	dev-libs/dbus-c++
-	dev-libs/dbus-glib
-	dev-libs/openssl
-	dev-libs/protobuf
 "
 
 RDEPEND_lorgnette="
@@ -218,22 +203,18 @@ DEPEND_crash_reporter="crash_reporting? ( sys-devel/flex )"
 RDEPEND="
 	platform2? (
 		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
-		cros_host? (
-			${RDEPEND_libchromeos}
-		)
 
 		${LIBCHROME_DEPEND}
 		chromeos-base/chromeos-minijail
 		>=dev-libs/glib-2.30
 		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
-
 		!chromeos-base/chaps[-platform2]
 		!chromeos-base/crash-reporter
 		!chromeos-base/cromo[-platform2]
 		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
-		!chromeos-base/libchromeos[-platform2]
+		chromeos-base/libchromeos
 		!chromeos-base/metrics[-platform2]
 		!chromeos-base/mist[-platform2]
 		!chromeos-base/power_manager
@@ -252,7 +233,6 @@ DEPEND="${RDEPEND}
 		!cros_host? (
 			$(for v in ${!DEPEND_*}; do echo "${!v}"; done)
 		)
-
 		chromeos-base/protofiles
 		test? (
 			app-shells/dash
@@ -265,68 +245,6 @@ DEPEND="${RDEPEND}
 #
 # Platform2 common helper functions
 #
-
-platform2() {
-	local platform2_py="${S}/platform2/common-mk/platform2.py"
-
-	local action="$1"
-
-	local cmd=(
-		"${platform2_py}"
-		$(platform2_get_target_args)
-		--libdir="/usr/$(get_libdir)"
-		--use_flags="${USE}"
-		--action="${action}"
-	)
-	if [[ ${CROS_WORKON_INCREMENTAL_BUILD} != "1" ]]; then
-		cmd+=( --disable_incremental )
-	fi
-	echo "${cmd[@]}"
-	"${cmd[@]}" || die
-}
-
-platform2_get_target_args() {
-	if use cros_host; then
-		echo "--host"
-	else
-		echo "--board=$(get_current_board_with_variant)"
-	fi
-}
-
-platform2_test() {
-	local platform2_test_py="${S}/platform2/common-mk/platform2_test.py"
-
-	local action="$1"
-	local bin="$2"
-	local run_as_root="$3"
-	local gtest_filter="$4"
-
-	local run_as_root_flag=""
-	if [[ "${run_as_root}" == "1" ]]; then
-		run_as_root_flag="--run_as_root"
-	fi
-
-	case " ${P2_TEST_FILTER:-${pkg}::} " in
-	*" ${pkg}::"*) ;;
-	*)	einfo "src_test: ${pkg}: ${bin##*/}: skipping due to P2_TEST_FILTER"
-		return 0
-		;;
-	esac
-
-	local cmd=(
-		"${platform2_test_py}"
-		--action="${action}"
-		--bin="${bin}"
-		$(platform2_get_target_args)
-		--gtest_filter="${gtest_filter}"
-		--user_gtest_filter="${P2_TEST_FILTER}"
-		--package="${pkg}"
-		--use_flags="${USE}"
-		${run_as_root_flag}
-	)
-	echo "${cmd[@]}"
-	"${cmd[@]}" || die
-}
 
 platform2_multiplex() {
 	# Runs a step (ie platform2_{test,install}) for a given subdir.
@@ -530,25 +448,6 @@ platform2_install_debugd() {
 
 	insinto /etc/perf_commands
 	doins share/perf_commands/{arm,core,unknown}.txt
-}
-
-platform2_install_libchromeos() {
-	local v
-	insinto /usr/$(get_libdir)/pkgconfig
-	for v in "${LIBCHROME_VERS[@]}"; do
-		./platform2_preinstall.sh "${OUT}" ${v}
-		dolib.so "${OUT}"/lib/lib{chromeos,policy}*-${v}.so
-		doins "${OUT}"/lib/libchromeos-${v}.pc
-	done
-
-	local dir dirs=( . dbus glib ui )
-	for dir in "${dirs[@]}"; do
-		insinto "/usr/include/chromeos/${dir}"
-		doins "chromeos/${dir}"/*.h
-	done
-
-	insinto /usr/include/policy
-	doins chromeos/policy/*.h
 }
 
 platform2_install_lorgnette() {
@@ -766,7 +665,7 @@ platform2_test_attestation() {
 
 platform2_test_buffet() {
 	use buffet || return 0
-	platform2_test "run" "${OUT}/buffet_testrunner"
+	platform_test "run" "${OUT}/buffet_testrunner"
 }
 
 platform2_test_chaps() {
@@ -797,7 +696,7 @@ platform2_test_chaps() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}" "" "${gtest_filter_qemu}"
+		platform_test "run" "${OUT}/${test_bin}" "" "${gtest_filter_qemu}"
 	done
 }
 
@@ -820,7 +719,7 @@ platform2_test_chromiumos-wide-profiling() {
 	)
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}" "1"
+		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
 }
 
@@ -842,7 +741,7 @@ platform2_test_crash-reporter() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}"
 	done
 }
 
@@ -858,7 +757,7 @@ platform2_test_cromo() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}"
 	done
 }
 
@@ -879,9 +778,9 @@ platform2_test_cros-disks() {
 	local gtest_filter_root_tests="*.RunAsRoot*-"
 	use arm && gtest_filter_root_tests+="${gtest_filter_qemu_common}"
 
-	platform2_test "run" "${OUT}/disks_testrunner" "1" \
+	platform_test "run" "${OUT}/disks_testrunner" "1" \
 		"${gtest_filter_root_tests}"
-	platform2_test "run" "${OUT}/disks_testrunner" "0" \
+	platform_test "run" "${OUT}/disks_testrunner" "0" \
 		"${gtest_filter_user_tests}"
 }
 
@@ -891,25 +790,15 @@ platform2_test_debugd() {
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: debugd" && return 0
 
 	pushd "${SRC}/src" >/dev/null
-	platform2_test "run" "${OUT}/debugd_testrunner"
+	platform_test "run" "${OUT}/debugd_testrunner"
 	./helpers/capture_utility_test.sh || die
 	popd >/dev/null
-}
-
-platform2_test_libchromeos() {
-	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: libchromeos" && return 0
-
-	local v
-	for v in "${LIBCHROME_VERS[@]}"; do
-		platform2_test "run" "${OUT}/libchromeos-${v}_unittests"
-		platform2_test "run" "${OUT}/libpolicy-${v}_unittests"
-	done
 }
 
 platform2_test_lorgnette() {
 	use lorgnette || return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
-	platform2_test "run" "${OUT}/lorgnette_unittest"
+	platform_test "run" "${OUT}/lorgnette_unittest"
 }
 
 platform2_test_metrics() {
@@ -922,7 +811,7 @@ platform2_test_metrics() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}"
 	done
 }
 
@@ -930,7 +819,7 @@ platform2_test_mist() {
 	use cros_host && return 0
 	use cellular || return 0;
 
-	platform2_test "run" "${OUT}/mist_testrunner"
+	platform_test "run" "${OUT}/mist_testrunner"
 }
 
 platform2_test_power_manager() {
@@ -946,7 +835,7 @@ platform2_test_power_manager() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}"
 	done
 }
 
@@ -955,7 +844,7 @@ platform2_test_shill() {
 	use shill || return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: shill" && return 0
 
-	platform2_test "run" "${OUT}/shill_unittest"
+	platform_test "run" "${OUT}/shill_unittest"
 }
 
 platform2_test_system_api() {
@@ -976,7 +865,7 @@ platform2_test_vpn-manager() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform2_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}"
 	done
 }
 
@@ -985,7 +874,7 @@ platform2_test_wimax_manager() {
 	use wimax || return 0
 	use gdmwimax || return 0
 
-	platform2_test "run" "${OUT}/wimax_manager_testrunner"
+	platform_test "run" "${OUT}/wimax_manager_testrunner"
 }
 
 #
@@ -1015,20 +904,20 @@ src_configure() {
 	if use platform2; then
 		cros-debug-add-NDEBUG
 		clang-setup-env
-		platform2 "configure"
+		platform_configure
 	fi
 }
 
 src_compile() {
-	use platform2 && platform2 "compile"
+	use platform2 && platform "compile"
 }
 
 src_test() {
 	use platform2 || return 0
 
-	platform2_test "pre_test"
+	platform_test "pre_test"
 	platform2_multiplex test
-	platform2_test "post_test"
+	platform_test "post_test"
 }
 
 src_install() {
