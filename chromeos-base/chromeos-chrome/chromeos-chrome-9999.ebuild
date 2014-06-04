@@ -732,13 +732,8 @@ setup_test_lists() {
 
 src_configure() {
 	tc-export CXX CC AR AS RANLIB STRIP
-	if use clang; then
-		export CC_host="clang"
-		export CXX_host="clang++"
-	else
-		export CC_host=$(tc-getBUILD_CC)
-		export CXX_host=$(tc-getBUILD_CXX)
-	fi
+	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
+	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
