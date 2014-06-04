@@ -23,7 +23,6 @@ COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/platform2
 	chromeos-base/vboot_reference
-	chromeos-base/verity
 	cros_p2p? ( chromeos-base/p2p )
 	dev-cpp/gflags
 	dev-libs/dbus-glib
