@@ -540,7 +540,7 @@ platform2_install_libchromeos() {
 		doins "${OUT}"/lib/libchromeos-${v}.pc
 	done
 
-	local dir dirs=( . dbus glib )
+	local dir dirs=( . dbus glib ui )
 	for dir in "${dirs[@]}"; do
 		insinto "/usr/include/chromeos/${dir}"
 		doins "chromeos/${dir}"/*.h
