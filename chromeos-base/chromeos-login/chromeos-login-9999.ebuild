@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/platform/login_manager"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
 
 inherit cros-debug cros-workon cros-board multilib toolchain-funcs
 
@@ -47,7 +48,10 @@ DEPEND="${RDEPEND}
 	sys-libs/glibc
 	test? ( dev-cpp/gtest )"
 
-CROS_WORKON_LOCALNAME="$(basename ${CROS_WORKON_PROJECT})"
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/login_manager"
+}
 
 src_configure() {
 	clang-setup-env
