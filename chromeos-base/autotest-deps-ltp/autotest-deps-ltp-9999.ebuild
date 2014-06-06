@@ -6,8 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/ltp"
 CROS_WORKON_LOCALNAME=../third_party/ltp
 CROS_WORKON_SUBDIR=
 
-CONFLICT_LIST="chromeos-base/autotest-tests-ltp-0.0.1-r2064"
-inherit cros-workon conflict cros-constants
+inherit cros-workon cros-constants
 
 DESCRIPTION="Autotest kernel ltp dep"
 HOMEPAGE="http://www.chromium.org/"

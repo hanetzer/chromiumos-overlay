@@ -4,9 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
-CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r596"
-
-inherit toolchain-funcs flag-o-matic cros-workon autotest conflict
+inherit toolchain-funcs flag-o-matic cros-workon autotest
 
 DESCRIPTION="ltp autotest"
 HOMEPAGE="http://www.chromium.org/"
