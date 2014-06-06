@@ -1,10 +1,10 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1h.ebuild,v 1.1 2014/06/05 12:53:23 polynomial-c Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1g.ebuild,v 1.1 2014/04/07 18:10:03 vapier Exp $
 
 EAPI="4"
 
-inherit eutils flag-o-matic toolchain-funcs multilib multilib-minimal
+inherit eutils flag-o-matic toolchain-funcs multilib
 
 REV="1.7"
 DESCRIPTION="full-strength general purpose cryptography library (including SSL and TLS)"
@@ -17,16 +17,16 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="bindist gmp kerberos rfc3779 sse2 static-libs test +tls-heartbeat vanilla zlib"
 
+# Have the sub-libs in RDEPEND with [static-libs] since, logically,
+# our libssl.a depends on libz.a/etc... at runtime.
+LIB_DEPEND="gmp? ( dev-libs/gmp[static-libs(+)] )
+	zlib? ( sys-libs/zlib[static-libs(+)] )
+	kerberos? ( app-crypt/mit-krb5 )"
 # The blocks are temporary just to make sure people upgrade to a
 # version that lack runtime version checking.  We'll drop them in
 # the future.
-RDEPEND="gmp? ( dev-libs/gmp[static-libs(+)?,${MULTILIB_USEDEP}] )
-	zlib? ( sys-libs/zlib[static-libs(+)?,${MULTILIB_USEDEP}] )
-	kerberos? ( app-crypt/mit-krb5[${MULTILIB_USEDEP}] )
-	abi_x86_32? (
-		!<=app-emulation/emul-linux-x86-baselibs-20140406-r3
-		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
-	)
+RDEPEND="static-libs? ( ${LIB_DEPEND} )
+	!static-libs? ( ${LIB_DEPEND//\[static-libs(+)]} )
 	!<net-misc/openssh-5.9_p1-r4"
 DEPEND="${RDEPEND}
 	sys-apps/diffutils
@@ -44,10 +44,6 @@ src_unpack() {
 		> "${WORKDIR}"/c_rehash || die #416717
 }
 
-MULTILIB_WRAPPED_HEADERS=(
-	usr/include/openssl/opensslconf.h
-)
-
 src_prepare() {
 	# Make sure we only ever touch Makefile.org and avoid patching a file
 	# that gets blown away anyways by the Configure script in src_configure
@@ -59,10 +55,11 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-1.0.0h-pkg-config.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1-parallel-build.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1-x32.patch
-		epatch "${FILESDIR}"/${PN}-1.0.1h-ipv6.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1e-ipv6.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1f-perl-5.18.patch #497286
 		epatch "${FILESDIR}"/${PN}-1.0.1e-s_client-verify.patch #472584
 		epatch "${FILESDIR}"/${PN}-1.0.1f-revert-alpha-perl-generation.patch #499086
-		epatch "${FILESDIR}"/${PN}-1.0.1h-blacklist-by-sha1.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1f-blacklist-by-sha1.patch
 		epatch_user #332661
 	fi
 
@@ -92,11 +89,9 @@ src_prepare() {
 	# The config script does stupid stuff to prompt the user.  Kill it.
 	sed -i '/stty -icanon min 0 time 50; read waste/d' config || die
 	./config --test-sanity || die "I AM NOT SANE"
-
-	multilib_copy_sources
 }
 
-multilib_src_configure() {
+src_configure() {
 	unset APPS #197996
 	unset SCRIPTS #312551
 	unset CROSS_COMPILE #311473
@@ -130,7 +125,6 @@ multilib_src_configure() {
 	einfo "Use configuration ${sslout:-(openssl knows best)}"
 	local config="Configure"
 	[[ -z ${sslout} ]] && config="config"
-
 	echoit \
 	./${config} \
 		${sslout} \
@@ -168,7 +162,7 @@ multilib_src_configure() {
 		Makefile || die
 }
 
-multilib_src_compile() {
+src_compile() {
 	# depend is needed to use $confopts; it also doesn't matter
 	# that it's -j1 as the code itself serializes subdirs
 	emake -j1 depend
@@ -178,15 +172,12 @@ multilib_src_compile() {
 	emake rehash
 }
 
-multilib_src_test() {
+src_test() {
 	emake -j1 test
 }
 
-multilib_src_install() {
+src_install() {
 	emake INSTALL_PREFIX="${D}" install
-}
-
-multilib_src_install_all() {
 	dobin "${WORKDIR}"/c_rehash #333117
 	dodoc CHANGES* FAQ NEWS README doc/*.txt doc/c-indentation.el
 	dohtml -r doc/*
