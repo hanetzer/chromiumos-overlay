@@ -95,6 +95,7 @@ gdb_branding() {
 	else
 		printf "vanilla"
 	fi
+	[[ -n ${EGIT_COMMIT} ]] && printf " ${EGIT_COMMIT}"
 }
 
 src_configure() {
