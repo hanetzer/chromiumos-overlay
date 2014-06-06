@@ -135,12 +135,13 @@ CONFIG_I2C_CHARDEV=y
 
 kgdb_desc="Enable kgdb"
 kgdb_config="
-# CONFIG_WATCHDOG is not set
 CONFIG_DEBUG_KERNEL=y
 CONFIG_DEBUG_INFO=y
 CONFIG_FRAME_POINTER=y
 CONFIG_KGDB=y
 CONFIG_KGDB_KDB=y
+# CONFIG_RANDOMIZE_BASE is not set
+# CONFIG_WATCHDOG is not set
 """
 
 nfc_desc="Enable NFC support"
