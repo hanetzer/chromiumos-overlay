@@ -53,30 +53,31 @@ set_build_env() {
 	export HOSTCC=${CC}
 	export BUILDCC=${BUILD_CC}
 
-	local ov_board=$(get_current_board_with_variant)
-
-	EC_BOARDS=()
-
-	# Add board names requested by ec_firmware_* USE flags
-	local ec_board
-	for ec_board in ${ov_board/#/${USE_PREFIX}} ${IUSE_FIRMWARES}; do
-		use ${ec_board} && EC_BOARDS+=(${ec_board#${USE_PREFIX}})
-	done
-
-	# Allow building for boards that don't have an EC
-	# (so we can compile test on bots for testing).
-	# Also, it is possible that we are building this package for
-	# purposes of emitting the host-side tools, in which case let's
-	# assume EC_BOARDS=(bds) for purposes of this build.
 	if use cros_host; then
+		# If we are building for the purpose of emitting host-side tools, assume
+		# EC_BOARDS=(bds) for the build.
 		EC_BOARDS=(bds)
-	elif [[ ${#EC_BOARDS[@]} -eq 0 ]]; then
-		# No explicit board name declared, try the overlay name
-		if [[ ! -d board/${ov_board} ]] ; then
-			ewarn "Sorry, ${ov_board} not supported; doing build-test with BOARD=bds"
-			ov_board=bds
+	else
+		local ov_board=$(get_current_board_with_variant)
+
+		EC_BOARDS=()
+
+		# Add board names requested by ec_firmware_* USE flags
+		local ec_board
+		for ec_board in ${ov_board/#/${USE_PREFIX}} ${IUSE_FIRMWARES}; do
+			use ${ec_board} && EC_BOARDS+=(${ec_board#${USE_PREFIX}})
+		done
+
+		# Allow building for boards that don't have an EC
+		# (so we can compile test on bots for testing).
+		if [[ ${#EC_BOARDS[@]} -eq 0 ]]; then
+			# No explicit board name declared, try the overlay name
+			if [[ ! -d board/${ov_board} ]] ; then
+				ewarn "Sorry, ${ov_board} not supported; doing build-test with BOARD=bds"
+				ov_board=bds
+			fi
+			EC_BOARDS=(${ov_board})
 		fi
-		EC_BOARDS=(${ov_board})
 	fi
 	einfo "Building for boards: ${EC_BOARDS[*]}"
 }
