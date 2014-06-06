@@ -19,13 +19,9 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Location of RW system firmware image
 : ${CROS_FIRMWARE_MAIN_RW_IMAGE:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_MP_MAIN_VERSION
-# @DESCRIPTION: (Optional) Version name of MP system firmware
-: ${CROS_FIRMWARE_MP_MAIN_VERSION:=}
-
-# @ECLASS-VARIABLE: CROS_FIRMWARE_EARLY_MP_FULLUPDATE
-# @DESCRIPTION: (Optional) Full update early MP devices
-: ${CROS_FIRMWARE_EARLY_MP_FULLUPDATE:=}
+# @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_MAIN_VERSION
+# @DESCRIPTION: (Optional) Version name of stabled system firmware
+: ${CROS_FIRMWARE_STABLE_MAIN_VERSION:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE
 # @DESCRIPTION: (Optional) Re-sign and generate a RW system firmware image.
@@ -39,9 +35,9 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Version name of EC firmware
 : ${CROS_FIRMWARE_EC_VERSION:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_MP_EC_VERSION
-# @DESCRIPTION: (Optional) Version name of MP EC firmware
-: ${CROS_FIRMWARE_MP_EC_VERSION:=}
+# @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_EC_VERSION
+# @DESCRIPTION: (Optional) Version name of stabled EC firmware
+: ${CROS_FIRMWARE_STABLE_EC_VERSION:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
 # @DESCRIPTION: (Optional) Platform name of firmware
@@ -50,10 +46,6 @@ inherit cros-workon
 # @ECLASS-VARIABLE: CROS_FIRMWARE_SCRIPT
 # @DESCRIPTION: (Optional) Entry script file name of updater
 : ${CROS_FIRMWARE_SCRIPT:=}
-
-# @ECLASS-VARIABLE: CROS_FIRMWARE_UNSTABLE
-# @DESCRIPTION: (Optional) Mark firmware as unstable (always RO+RW update)
-: ${CROS_FIRMWARE_UNSTABLE:=}
 
 # @ECLASS-VARIABLE: CROS_FIRMWARE_BINARY
 # @DESCRIPTION: (Optional) location of custom flashrom tool
@@ -221,19 +213,16 @@ cros-firmware_src_compile() {
 		      "${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}")"
 
 	# Prepare extra commands
-	ext_cmd+="$(_add_bool_param --unstable "${CROS_FIRMWARE_UNSTABLE}")"
 	ext_cmd+="$(_add_param --extra "$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")")"
 	ext_cmd+="$(_add_param --script "${CROS_FIRMWARE_SCRIPT}")"
 	ext_cmd+="$(_add_param --platform "${CROS_FIRMWARE_PLATFORM}")"
 	ext_cmd+="$(_add_param --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}")"
 	ext_cmd+="$(_add_param --tool_base \
 	            "$root/firmware/utils:$root/usr/sbin:$root/usr/bin")"
-	ext_cmd+="$(_add_param --mp_main_version \
-			"${CROS_FIRMWARE_MP_MAIN_VERSION}")"
-	ext_cmd+="$(_add_param --mp_ec_version \
-			"${CROS_FIRMWARE_MP_EC_VERSION}")"
-	ext_cmd+="$(_add_bool_param --early_mp_fullupdate \
-			"${CROS_FIRMWARE_EARLY_MP_FULLUPDATE}")"
+	ext_cmd+="$(_add_param --stable_main_version \
+			"${CROS_FIRMWARE_STABLE_MAIN_VERSION}")"
+	ext_cmd+="$(_add_param --stable_ec_version \
+			"${CROS_FIRMWARE_STABLE_EC_VERSION}")"
 
 	# Pack firmware update script!
 	if [ -z "$image_cmd" ]; then
