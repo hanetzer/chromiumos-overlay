@@ -6,7 +6,8 @@
 # the USB configuration expected by Chrome OS.
 
 # Huawei ME936: Select the MBIM configuration
-ACTION=="add|change", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", \
-  ATTR{idVendor}=="12d1", ATTR{idProduct}=="15bb", \
-  ATTR{bNumConfigurations}=="3", ATTR{bConfigurationValue}!="3", \
-  RUN+="/bin/sh -c 'echo 3 > %S%p/bConfigurationValue'"
+ACTION=="add|change", SUBSYSTEM=="usb", \
+  ENV{DEVTYPE}=="usb_device|usb_interface", \
+  ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="15bb", \
+  ATTRS{bNumConfigurations}=="3", ATTRS{bConfigurationValue}!="3", \
+  RUN+="/lib/udev/mm-huawei-configuration-switch.sh %E{DEVTYPE} %S%p"
