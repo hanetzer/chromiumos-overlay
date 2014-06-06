@@ -12,13 +12,6 @@ KEYWORDS="~*"
 
 BVER=${PV}
 
-# Version names
-if [[ "${PV}" == "9999" ]] ; then
-	BINUTILS_VERSION="binutils-2.22"
-else
-	BINUTILS_VERSION="${P}"
-fi
-
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
 	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
@@ -46,8 +39,6 @@ DEPEND="${RDEPEND}
 	test? ( dev-util/dejagnu )
 	nls? ( sys-devel/gettext )
 	sys-devel/flex"
-
-S_BINUTILS="${WORKDIR}/${BINUTILS_VERSION}"
 
 RESTRICT="fetch strip"
 
@@ -78,10 +69,12 @@ githash_for_branch() {
 
 src_unpack() {
 	if use mounted_binutils ; then
-		BINUTILS_DIR="/usr/local/toolchain_root/binutils"
-		if [[ ! -d ${BINUTILS_DIR} ]] ; then
-			die "binutils dirs not mounted at: ${BINUTILS_DIR}"
+		local dir="/usr/local/toolchain_root/binutils"
+		if [[ ! -d ${dir} ]] ; then
+			die "binutils dirs not mounted at: ${dir}"
 		fi
+		export VCSID=$(get_rev "${dir}")
+		ln -s "${dir}" "${S}"
 	else
 		if use next_binutils ; then
 			githash_for_branch ${NEXT_BINUTILS}
@@ -90,10 +83,7 @@ src_unpack() {
 			einfo "  TREEHASH= \"${CROS_WORKON_TREE}\""
 		fi
 		cros-workon_src_unpack
-		mv "${S}" "${GITDIR}"
-		BINUTILS_DIR="${GITDIR}"
 	fi
-	ln -s ${BINUTILS_DIR} ${S_BINUTILS}
 
 	mkdir -p "${MY_BUILDDIR}"
 }
@@ -139,7 +129,7 @@ src_configure() {
 	binutils_conf="${myconf} --with-pkgversion=${pkgver}"
 
 	echo ./configure ${binutils_conf}
-	"${S_BINUTILS}"/configure ${binutils_conf} || die "configure failed"
+	"${S}"/configure ${binutils_conf} || die "configure failed"
 }
 
 src_compile() {
@@ -192,7 +182,7 @@ src_install() {
 		fi
 	fi
 	insinto ${INCPATH}
-	doins "${S_BINUTILS}/include/libiberty.h"
+	doins "${S}/include/libiberty.h"
 	if [[ -d ${D}/${LIBPATH}/lib ]] ; then
 		mv "${D}"/${LIBPATH}/lib/* "${D}"/${LIBPATH}/
 		rm -r "${D}"/${LIBPATH}/lib
@@ -229,7 +219,7 @@ src_install() {
 
 	# Handle documentation
 	if ! is_cross ; then
-		cd "${S_BINUTILS}"
+		cd "${S}"
 		dodoc README
 		docinto bfd
 		dodoc bfd/ChangeLog* bfd/README bfd/PORTING bfd/TODO
