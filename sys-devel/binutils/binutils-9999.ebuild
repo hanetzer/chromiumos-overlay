@@ -1,6 +1,8 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+EAPI="4"
+
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
 NEXT_BINUTILS=cros/mobile_toolchain_v18_release_branch
 
@@ -49,13 +51,12 @@ S_BINUTILS="${WORKDIR}/${BINUTILS_VERSION}"
 
 RESTRICT="fetch strip"
 
-MY_BUILDDIR_BINUTILS="${WORKDIR}/build"
-
 GITDIR=${WORKDIR}/gitdir
 
 LIBPATH=/usr/$(get_libdir)/binutils/${CTARGET}/${BVER}
 INCPATH=${LIBPATH}/include
 DATAPATH=/usr/share/binutils-data/${CTARGET}/${BVER}
+MY_BUILDDIR=${WORKDIR}/build
 if is_cross ; then
 	BINPATH=/usr/${CHOST}/${CTARGET}/binutils-bin/${BVER}
 else
@@ -94,11 +95,10 @@ src_unpack() {
 	fi
 	ln -s ${BINUTILS_DIR} ${S_BINUTILS}
 
-	mkdir -p "${MY_BUILDDIR_BINUTILS}"
+	mkdir -p "${MY_BUILDDIR}"
 }
 
-
-src_compile() {
+src_configure() {
 	# keep things sane
 	strip-flags
 
@@ -109,7 +109,7 @@ src_compile() {
 	done
 	echo
 
-	cd "${MY_BUILDDIR_BINUTILS}"
+	cd "${MY_BUILDDIR}"
 	local myconf=""
 	is_cross && myconf="${myconf} --with-sysroot=/usr/${CTARGET}"
 	myconf="--prefix=/usr \
@@ -126,7 +126,7 @@ src_compile() {
 		--enable-gold \
 		--enable-threads \
 		--enable-shared \
-                --enable-install-libiberty \
+		--enable-install-libiberty \
 		--disable-werror \
 		--enable-secureplt \
 		--enable-plugins \
@@ -140,29 +140,32 @@ src_compile() {
 
 	echo ./configure ${binutils_conf}
 	"${S_BINUTILS}"/configure ${binutils_conf} || die "configure failed"
+}
 
-	emake all || die "emake failed"
+src_compile() {
+	cd "${MY_BUILDDIR}"
+	emake all
 
 	# only build info pages if we user wants them, and if
 	# we have makeinfo (may not exist when we bootstrap)
 	if type -p makeinfo > /dev/null ; then
-		emake info || die "make info failed"
+		emake info
 	fi
 	# we nuke the manpages when we're left with junk
 	# (like when we bootstrap, no perl -> no manpages)
-	find . -name '*.1' -a -size 0 | xargs rm -f
+	find . -name '*.1' -a -size 0 -delete
 }
 
 src_test() {
-	cd "${MY_BUILDDIR_BINUTILS}"
-	make check || die "check failed :("
+	cd "${MY_BUILDDIR}"
+	emake -k check
 }
 
 src_install() {
 	local x d
 
-	cd "${MY_BUILDDIR_BINUTILS}"
-	emake DESTDIR="${D}" tooldir="${LIBPATH}" install || die
+	cd "${MY_BUILDDIR}"
+	emake DESTDIR="${D}" tooldir="${LIBPATH}" install
 	rm -rf "${D}"/${LIBPATH}/bin
 
 	# Newer versions of binutils get fancy with ${LIBPATH} #171905
