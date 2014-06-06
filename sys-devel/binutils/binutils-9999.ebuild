@@ -17,8 +17,6 @@ else
 	BINUTILS_VERSION="${P}"
 fi
 
-BINUTILS_PKG_VERSION="${BINUTILS_VERSION}_cos_gg"
-
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
 	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
@@ -93,12 +91,6 @@ src_unpack() {
 		cros-workon_src_unpack
 		mv "${S}" "${GITDIR}"
 		BINUTILS_DIR="${GITDIR}"
-		if [ -d "${GITDIR}/.git" ]; then
-			CL=$(cd "${BINUTILS_DIR}"; git log --pretty=format:%s -n1 | egrep -o '[0-9]+')
-		fi
-	fi
-	if [[ ! -z ${CL} ]] ; then
-		BINUTILS_PKG_VERSION="${BINUTILS_PKG_VERSION}_${CL}"
 	fi
 	ln -s ${BINUTILS_DIR} ${S_BINUTILS}
 
@@ -143,7 +135,8 @@ src_compile() {
 		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry \
 		${myconf} ${EXTRA_ECONF}"
 
-	binutils_conf="${myconf} --with-pkgversion=${BINUTILS_PKG_VERSION}"
+	local pkgver="binutils-${VCSID}_cos_gg"
+	binutils_conf="${myconf} --with-pkgversion=${pkgver}"
 
 	echo ./configure ${binutils_conf}
 	"${S_BINUTILS}"/configure ${binutils_conf} || die "configure failed"
