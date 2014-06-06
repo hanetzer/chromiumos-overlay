@@ -33,7 +33,7 @@ EC_BOARD_NAMES=(
 )
 
 IUSE_FIRMWARES="${EC_BOARD_NAMES[@]/#/${USE_PREFIX}}"
-IUSE="cros_host test ${IUSE_FIRMWARES}"
+IUSE="cros_host test utils ${IUSE_FIRMWARES}"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -121,12 +121,14 @@ src_install() {
 	# The first board should be the main EC
 	local ec="${EC_BOARDS[0]}"
 
-	# If we are building host-side tools, install flash_ec and stm32mon
-	# rather than target-specific binaries.
-	if use cros_host; then
+	# If we are building host-side tools, install flash_ec and stm32mon.
+	if use cros_host || use utils; then
 		dobin util/flash_ec
 		dobin build/${ec}/util/stm32mon
-	else
+	fi
+
+	# Only install target binaries if not building for host
+	if ! use cros_host; then
 		# EC firmware binaries
 		board_install ${ec} /firmware
 
