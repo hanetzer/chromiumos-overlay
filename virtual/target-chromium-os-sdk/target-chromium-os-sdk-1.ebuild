@@ -228,6 +228,11 @@ RDEPEND="${RDEPEND}
 	sys-devel/smatch
 	"
 
+# Host dependencies used by chromite on build servers
+RDEPEND="${RDEPEND}
+	dev-python/mysql-python
+	"
+
 # Host dependencies that are needed for unit tests
 RDEPEND="${RDEPEND}
 	x11-misc/xkeyboard-config
