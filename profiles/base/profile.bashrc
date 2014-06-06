@@ -131,9 +131,12 @@ cros_pre_src_unpack_asan_init() {
 	mkdir -p "${log_path%/*}"
 	export ASAN_OPTIONS+=" log_path=${log_path}"
 
-	local lsan_suppression="${FILESDIR}/lsan_suppressions"
+	local lsan_suppression="${S}/lsan_suppressions"
+	local lsan_suppression_ebuild="${FILESDIR}/lsan_suppressions"
 	if [[ -f ${lsan_suppression} ]]; then
 		export LSAN_OPTIONS+=" print_suppressions=0 suppressions=${lsan_suppression}"
+	elif [[ -f ${lsan_suppression_ebuild} ]]; then
+		export LSAN_OPTIONS+=" print_suppressions=0 suppressions=${lsan_suppression_ebuild}"
 	fi
 
 	has asan_death_hook ${EBUILD_DEATH_HOOKS} || EBUILD_DEATH_HOOKS+=" asan_death_hook"
