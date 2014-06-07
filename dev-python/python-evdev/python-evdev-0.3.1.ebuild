@@ -13,7 +13,7 @@ SRC_URI="https://github.com/gvalkov/python-evdev/archive/v${PV}.tar.gz -> ${P}.t
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="*"
 IUSE=""
 
 DEPEND="dev-python/setuptools"
