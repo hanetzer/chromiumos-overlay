@@ -8,8 +8,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
-CONFLICT_LIST="chromeos-base/autotest-deps-0.0.1-r321"
-inherit cros-workon autotest-deponly conflict cros-debug
+inherit cros-workon autotest-deponly cros-debug
 
 DESCRIPTION="Autotest glbench dep"
 HOMEPAGE="http://www.chromium.org/"

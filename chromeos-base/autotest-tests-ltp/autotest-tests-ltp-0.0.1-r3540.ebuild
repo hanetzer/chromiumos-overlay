@@ -6,9 +6,7 @@ CROS_WORKON_COMMIT="985c33cbe8aaa27ef15566b1ef1ff2de3e37f98e"
 CROS_WORKON_TREE="52a6d06842529130b319216a2c6b04b307ff5108"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
-CONFLICT_LIST="chromeos-base/autotest-tests-0.0.1-r596"
-
-inherit toolchain-funcs flag-o-matic cros-workon autotest conflict
+inherit toolchain-funcs flag-o-matic cros-workon autotest
 
 DESCRIPTION="ltp autotest"
 HOMEPAGE="http://www.chromium.org/"
