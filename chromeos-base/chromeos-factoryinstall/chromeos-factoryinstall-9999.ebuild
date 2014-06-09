@@ -53,6 +53,7 @@ RDEPEND="$COMMON_DEPEND
 	x86? ( chromeos-base/chromeos-initramfs )
 	chromeos-base/chromeos-installer
 	chromeos-base/memento_softwareupdate
+	chromeos-base/vpd
 	net-misc/htpdate
 	net-wireless/iw
 	sys-apps/flashrom
