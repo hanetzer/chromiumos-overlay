@@ -257,6 +257,7 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/flashrom
 	idobin /usr/sbin/htpdate
 	idobin /usr/sbin/partprobe
+	idobin /usr/sbin/vpd
 	ln -s "/bin/cgpt" "${INITRAMFS_TMP_S}/usr/bin/cgpt" || die
 
 	# Install ectool if there is one
