@@ -191,7 +191,6 @@ CLIENT_IUSE_TESTS="
 	+tests_login_SecondFactor
 	+tests_network_CheckCriticalProcesses
 	+tests_network_ConnmanIncludeExcludeMultiple
-	+tests_network_ConnmanPowerStateTracking
 	+tests_network_DefaultProfileCreation
 	+tests_network_DefaultProfileServices
 	+tests_network_DestinationVerification
