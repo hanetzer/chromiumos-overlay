@@ -347,7 +347,6 @@ CLIENT_IUSE_TESTS="
 	+tests_security_x86Registers
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
-	+tests_test_Recall
 "
 
 IUSE_TESTS="${IUSE_TESTS}
