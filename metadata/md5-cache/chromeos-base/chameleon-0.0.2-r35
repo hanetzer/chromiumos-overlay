@@ -1,12 +1,12 @@
-DEFINED_PHASES=configure info install setup unpack
-DEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4 dev-vcs/git
-DESCRIPTION=Utility for obtaining various bits of low-level system info
+DEFINED_PHASES=info install setup unpack
+DEPEND=dev-lang/python dev-vcs/git
+DESCRIPTION=Chameleon bundle for Autotest lab deployment
 EAPI=4
-HOMEPAGE=http://mosys.googlecode.com/
-IUSE=static cros_host cros_workon_tree_259b4b7587e455198917702fad6f9e607d34203d profiling
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_workon_tree_db7c9e0d26bdfe074ef2dc58015ed5fe378f24ba profiling
 KEYWORDS=*
 LICENSE=BSD-Google
-RDEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
+RDEPEND=dev-lang/python
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	87639779e0d5eda0b9aec2fef908d4df	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=d76e57979b2263fcca971290f4346350
+_md5_=77a6353d74f7d8ba260cd98042828214
