@@ -21,6 +21,7 @@ DEPEND=""
 # vboot_reference for crossystem
 RDEPEND="
 	chromeos-base/bootstat
+	!chromeos-base/chromeos-disableecho
 	chromeos-base/vboot_reference
 	sys-apps/rootdev
 	sys-apps/upstart
@@ -28,7 +29,6 @@ RDEPEND="
 	virtual/chromeos-bootcomplete
 	!cros_embedded? (
 		chromeos-base/chromeos-assets
-		chromeos-base/chromeos-disableecho
 		chromeos-base/swap-init
 		media-gfx/ply-image
 		sys-apps/chvt
