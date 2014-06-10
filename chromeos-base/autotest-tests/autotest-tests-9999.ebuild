@@ -80,9 +80,9 @@ CLIENT_IUSE_TESTS="
 	+tests_audio_CrasLoopback
 	+tests_audio_LoopbackLatency
 	+tests_audio_Microphone
-	+tests_camera_V4L2
 	+tests_autoupdate_CannedOmahaUpdate
 	+tests_build_RootFilesystemSize
+	+tests_camera_V4L2
 	+tests_desktopui_CrashyReboot
 	+tests_desktopui_FontCache
 	+tests_desktopui_GTK2Config
@@ -90,13 +90,13 @@ CLIENT_IUSE_TESTS="
 	+tests_desktopui_KillRestart
 	+tests_desktopui_Respawn
 	+tests_desktopui_SpeechSynthesisSemiAuto
-	+tests_dummy_Pass
 	+tests_dummy_Fail
-	tests_example_UnitTest
+	+tests_dummy_Pass
 	+tests_example_CrosTest
+	tests_example_UnitTest
 	+tests_firmware_FMap
-	+tests_firmware_TouchMTB
 	+tests_firmware_RomSize
+	+tests_firmware_TouchMTB
 	+tests_firmware_VbootCrypto
 	+tests_flaky_test
 	!chromeless_tty? (
@@ -117,6 +117,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Ath3k
 	+tests_hardware_Backlight
 	+tests_hardware_Badblocks
+	+tests_hardware_bma150
 	+tests_hardware_ch7036
 	+tests_hardware_Components
 	+tests_hardware_DeveloperRecovery
@@ -131,10 +132,10 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Interrupt
 	+tests_hardware_Keyboard
 	+tests_hardware_LightSensor
-	+tests_hardware_Memtester
 	+tests_hardware_MemoryLatency
 	+tests_hardware_MemoryThroughput
 	+tests_hardware_MemoryTotalSize
+	+tests_hardware_Memtester
 	+tests_hardware_MultiReader
 	+tests_hardware_RamFio
 	+tests_hardware_RealtekCardReader
@@ -156,30 +157,28 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_VideoDecodeCapable
 	+tests_hardware_VideoOutSemiAuto
 	+tests_hardware_Xrandr
-	+tests_hardware_bma150
 	+tests_kernel_Bootcache
 	+tests_kernel_ConfigVerify
 	ppp? ( +tests_kernel_ConfigVerifyPPP )
 	+tests_kernel_CpufreqMinMax
+	+tests_kernel_CrosECSysfs
+	+tests_kernel_CrosECSysfsAccel
 	+tests_kernel_Delay
 	+tests_kernel_fs_Inplace
 	+tests_kernel_fs_Punybench
+	+tests_kernel_HdParm
 	+tests_kernel_IgnoreGptOptionServer
 	+tests_kernel_Ktime
 	+tests_kernel_Lmbench
 	+tests_kernel_LowMemNotify
 	+tests_kernel_Memory_Ramoop
 	+tests_kernel_PerfEventRename
-	+tests_kernel_SchedBandwith
-	+tests_kernel_TPMPing
-	+tests_kernel_HdParm
-	+tests_kernel_ProtocolCheck
-	+tests_kernel_CrosECSysfs
-	+tests_kernel_CrosECSysfsAccel
-	+tests_kernel_SchedCgroups
-	+tests_kernel_TPMStress
 	+tests_kernel_PerfEventRename
-	+tests_kernel_CpufreqMinMax
+	+tests_kernel_ProtocolCheck
+	+tests_kernel_SchedBandwith
+	+tests_kernel_SchedCgroups
+	+tests_kernel_TPMPing
+	+tests_kernel_TPMStress
 	+tests_kernel_VbootContextEC
 	+tests_logging_CrashSender
 	+tests_logging_KernelCrash
@@ -210,6 +209,7 @@ CLIENT_IUSE_TESTS="
 	+tests_network_EthernetStressPlug
 	+tests_network_Ipv6SimpleNegotiation
 	+tests_network_NegotiatedLANSpeed
+	+tests_network_netperf2
 	+tests_network_Portal
 	+tests_network_ShillInitScripts
 	+tests_network_TwoShills
@@ -219,7 +219,6 @@ CLIENT_IUSE_TESTS="
 	+tests_network_WiFiInvalidParameters
 	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
-	+tests_network_netperf2
 	+tests_p2p_ConsumeFiles
 	+tests_p2p_ServeFiles
 	+tests_p2p_ShareFiles
@@ -271,9 +270,9 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_OpenSSLActual
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
-	+tests_platform_Pkcs11InitUnderErrors
 	+tests_platform_Pkcs11ChangeAuthData
 	+tests_platform_Pkcs11Events
+	+tests_platform_Pkcs11InitUnderErrors
 	+tests_platform_Pkcs11LoadPerf
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
@@ -323,8 +322,8 @@ CLIENT_IUSE_TESTS="
 	+tests_security_Firewall
 	+tests_security_HardlinkRestrictions
 	+tests_security_HtpdateHTTP
-	+tests_security_Minijail_seccomp
 	+tests_security_Minijail0
+	+tests_security_Minijail_seccomp
 	+tests_security_ModuleLocking
 	+tests_security_OpenFDs
 	+tests_security_OpenSSLBlacklist
