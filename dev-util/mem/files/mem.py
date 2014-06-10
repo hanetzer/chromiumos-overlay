@@ -52,8 +52,8 @@ def rm(addr, nbytes):
     The string that was read.
   """
   with open('/dev/mem', 'r+b') as mem:
-    offset = addr & 0xffff
-    mem_map = mmap.mmap(mem.fileno(), nbytes + offset, offset=addr & ~0xffff)
+    offset = addr & 0xfff
+    mem_map = mmap.mmap(mem.fileno(), nbytes + offset, offset=addr & ~0xfff)
     return mem_map[offset:offset + nbytes]
 
 
@@ -66,8 +66,8 @@ def wm(addr, val):
   """
   with open('/dev/mem', 'r+b') as mem:
     nbytes = len(val)
-    offset = addr & 0xffff
-    mem_map = mmap.mmap(mem.fileno(), nbytes + offset, offset=addr & ~0xffff)
+    offset = addr & 0xfff
+    mem_map = mmap.mmap(mem.fileno(), nbytes + offset, offset=addr & ~0xfff)
     mem_map[offset:offset + nbytes] = val
 
 
