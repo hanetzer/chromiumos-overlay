@@ -123,6 +123,14 @@ src_prepare() {
 	# einfo "#define PERF_VERSION \"${MY_PV}\""
 	# echo "#define PERF_VERSION \"${MY_PV}\"" > PERF-VERSION-FILE
 
+	PATCHES=(
+		"${FILESDIR}/3.14-get-kernel-start-address-by-symbol-name.patch"
+	)
+
+	for patch_file in ${PATCHES}; do
+		epatch ${patch_file}
+	done
+
 	# The code likes to compile local assembly files which lack ELF markings.
 	find -name '*.S' -exec sed -i '$a.section .note.GNU-stack,"",%progbits' {} +
 }
