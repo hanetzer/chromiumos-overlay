@@ -1,4 +1,4 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-USE="-alsa -bluetooth chromeless_tty cros_embedded -encrypted_stateful -fonts mtd -pam -profile -X"
+USE="-alsa -bluetooth chromeless_tty cros_embedded -encrypted_stateful -fonts mtd -pam -profile -vaapi -X"

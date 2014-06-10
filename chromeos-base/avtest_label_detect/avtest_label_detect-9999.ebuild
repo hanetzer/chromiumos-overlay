@@ -14,8 +14,15 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
+IUSE="-asan -clang vaapi"
 REQUIRED_USE="asan? ( clang )"
+
+RDEPEND="
+	vaapi? (
+		x11-libs/libva
+		x11-libs/libX11
+	)"
+DEPEND="${RDEPEND}"
 
 src_prepare() {
 	cros-workon_src_prepare
