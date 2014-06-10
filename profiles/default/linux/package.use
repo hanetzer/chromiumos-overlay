@@ -16,6 +16,8 @@ dev-libs/dbus-glib	tools
 dev-libs/libevent	-ssl -threads
 dev-perl/GD             png
 dev-python/pyudev	pygobject
+sci-libs/libsigrokdecode python_targets_python3_3 python_single_target_python3_3
+sci-electronics/sigrok-cli python_targets_python3_3 python_single_target_python3_3
 dev-util/perf		audit tui unwind -doc
 dev-vcs/git		bash-completion curl cvs -gpg subversion webdav
 dev-vcs/subversion	-dso webdav-serf
