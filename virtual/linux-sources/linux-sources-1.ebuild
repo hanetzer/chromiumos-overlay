@@ -21,6 +21,12 @@ RDEPEND="
 	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14[kernel_sources=] )
 "
 
+# Add blockers so when migrating between USE flags, the old version gets
+# unmerged automatically.
+RDEPEND+="
+	$(for v in "${IUSE_KERNEL_VERS[@]}"; do echo "!${v}? ( !sys-kernel/chromeos-${v} )"; done)
+"
+
 # Default to the 3.4 kernel if none has been selected. In the future,
 # this should point to the latest kernel.
 RDEPEND_DEFAULT="sys-kernel/chromeos-kernel"
