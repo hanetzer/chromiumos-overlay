@@ -157,7 +157,6 @@ RDEPEND="${RDEPEND}
 	>=dev-vcs/git-1.7.2
 	dev-vcs/subversion[-dso]
 	>=media-libs/freetype-2.2.1
-	media-libs/mesa
 	net-misc/gsutil
 	sys-apps/usbutils
 	!sys-apps/nih-dbus-tool
