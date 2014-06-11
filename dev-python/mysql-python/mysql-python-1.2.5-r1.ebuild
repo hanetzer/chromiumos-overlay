@@ -1,39 +1,40 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-python/mysql-python/mysql-python-1.2.3-r1.ebuild,v 1.12 2014/02/06 09:27:32 jer Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-python/mysql-python/mysql-python-1.2.5.ebuild,v 1.4 2014/03/18 15:26:44 idella4 Exp $
 
 EAPI=5
+
 PYTHON_COMPAT=( python{2_6,2_7} )
 
 inherit distutils-r1 flag-o-matic
 
-MY_P="MySQL-python-${PV}"
+MY_PN="MySQL-python"
+MY_P="${MY_PN}-${PV}"
 
 DESCRIPTION="Python interface to MySQL"
 HOMEPAGE="http://sourceforge.net/projects/mysql-python/ http://pypi.python.org/pypi/MySQL-python"
-SRC_URI="mirror://sourceforge/mysql-python/${MY_P}.tar.gz"
+SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.zip"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="doc"
 
-# RDEPEND on sys-devel/binutils to ensure libbfd is available.
-RDEPEND="virtual/mysql
-	sys-devel/binutils
-"
+RDEPEND="virtual/mysql"
 DEPEND="${RDEPEND}
-	dev-python/setuptools[${PYTHON_USEDEP}]"
+	app-arch/unzip
+	dev-python/setuptools[${PYTHON_USEDEP}]
+	doc? ( dev-python/sphinx[${PYTHON_USEDEP}] )"
 
 S="${WORKDIR}/${MY_P}"
 
-DOCS=( HISTORY README doc/{FAQ,MySQLdb}.txt )
+DOCS=( HISTORY README.md doc/{FAQ,MySQLdb}.rst )
 
 src_configure() {
 	# Append the SYSROOT Library Path in order for the linker to find
-        # libbfd when cross-compiling. 
+	# libbfd when cross-compiling.
 	append-ldflags "-L${SYSROOT}/usr/${CHOST}/lib"
-	
+
 	# Update the site configuration options to search for mysql_config in the SYSROOT.
 	sed -i -r \
 		-e "s:#mysql_config = /usr/local/bin:mysql_config = ${SYSROOT}/usr/bin:" \
@@ -43,4 +44,13 @@ src_configure() {
 
 python_configure_all() {
 	append-flags -fno-strict-aliasing
+}
+
+python_compile_all() {
+	use doc && sphinx-build -b html doc doc/_build/
+}
+
+python_install_all() {
+	use doc && local HTML_DOCS=( doc/_build/. )
+	distutils-r1_python_install_all
 }
