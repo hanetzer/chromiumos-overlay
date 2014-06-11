@@ -1,8 +1,8 @@
 diff --git a/dix/getevents.c b/dix/getevents.c
-index fade40c..f2bf2ee 100644
+index 2a3acfa..ecb7ff2 100644
 --- a/dix/getevents.c
 +++ b/dix/getevents.c
-@@ -1329,7 +1329,7 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
+@@ -1484,7 +1484,7 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
      case ButtonRelease:
          if (!pDev->button || !buttons)
              return 0;

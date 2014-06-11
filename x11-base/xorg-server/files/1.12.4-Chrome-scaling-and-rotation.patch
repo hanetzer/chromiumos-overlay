@@ -1,5 +1,17 @@
+From 08b2f14bf234bad2443a6e3a8e237e31b97960e9 Mon Sep 17 00:00:00 2001
+From: Andrew de los Reyes <adlr@chromium.org>
+Date: Thu, 14 Mar 2013 17:36:23 -0700
+Subject: [PATCH] x11-base/xorg-conf: Support screen rotation.
+
+This patch uses properties set on the window from Chrome to see if a
+display is internal/external, hi-resolution, and now rotated; it
+scales the X cursor movement as appropriate.
+---
+ dix/getevents.c | 157 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 157 insertions(+)
+
 diff --git a/dix/getevents.c b/dix/getevents.c
-index f1e7491..05dd9bc 100644
+index f1e7491..2a3acfa 100644
 --- a/dix/getevents.c
 +++ b/dix/getevents.c
 @@ -33,6 +33,7 @@
@@ -26,7 +38,7 @@ index f1e7491..05dd9bc 100644
  #include <X11/extensions/XI.h>
  #include <X11/extensions/XI2.h>
  #include <X11/extensions/XIproto.h>
-@@ -1262,6 +1265,144 @@ QueuePointerEvents(DeviceIntPtr device, int type,
+@@ -1262,6 +1265,158 @@ QueuePointerEvents(DeviceIntPtr device, int type,
      queueEventList(device, InputEventList, nevents);
  }
  
@@ -46,13 +58,26 @@ index f1e7491..05dd9bc 100644
 + * Returns FALSE on error.
 + */
 +static int
-+getRootWindowProps(ScreenPtr pScreen, DeviceIntPtr dev,
++getSpriteChromeProps(ScreenPtr pScreen, DeviceIntPtr dev,
 +                     int *scaleFactor, int *isInternal, int *rotation)
 +{
 +    PropertyPtr pProp;
 +    SpriteInfoPtr spriteInfo;
 +    SpritePtr sprite;
 +    WindowPtr spriteWin;
++    int i;
++    const char kDisplayRotationPropName[] = "_CHROME_DISPLAY_ROTATION";
++    const char kDisplayScaleFactorPropName[] = "_CHROME_DISPLAY_SCALE_FACTOR";
++    const char kDisplayInternalPropName[] = "_CHROME_DISPLAY_INTERNAL";
++    Atom atomRotation = MakeAtom(kDisplayRotationPropName,
++                                 sizeof(kDisplayRotationPropName) - 1,
++                                 FALSE  /* FALSE == do not malloc */);
++    Atom atomScaleFactor = MakeAtom(kDisplayScaleFactorPropName,
++                                    sizeof(kDisplayScaleFactorPropName) - 1,
++                                    FALSE  /* FALSE == do not malloc */);
++    Atom atomDisplayInternal = MakeAtom(kDisplayInternalPropName,
++                                        sizeof(kDisplayInternalPropName) - 1,
++                                        FALSE  /* FALSE == do not malloc */);
 +
 +    spriteInfo = dev->spriteInfo;
 +    if (!spriteInfo)
@@ -60,21 +85,22 @@ index f1e7491..05dd9bc 100644
 +    sprite = spriteInfo->sprite;
 +    if (!sprite)
 +        return FALSE;
-+    spriteWin = DeepestSpriteWin(sprite);
-+    if (!spriteWin || !spriteWin->optional)
++
++    if (sprite->spriteTraceGood <= 0)
 +        return FALSE;
 +
-+    pProp = spriteWin->optional->userProps;
-+    for (pProp = spriteWin->optional->userProps; pProp; pProp = pProp->next) {
-+        if ((pProp->format / 8) * pProp->size == 4) {
-+            if (!strcmp(NameForAtom(pProp->propertyName),
-+                        "_CHROME_DISPLAY_ROTATION")) {
++    for (i = 0; i < sprite->spriteTraceGood; ++i) {
++        spriteWin = sprite->spriteTrace[i];
++        for (pProp = wUserProps(spriteWin); pProp; pProp = pProp->next) {
++            if ((pProp->format / 8) * pProp->size != 4)
++                continue;
++            if (pProp->propertyName == atomRotation && atomRotation != None) {
 +                *rotation = *(int*)pProp->data;
-+            } else if (!strcmp(NameForAtom(pProp->propertyName),
-+                        "_CHROME_DISPLAY_SCALE_FACTOR")) {
++            } else if (pProp->propertyName == atomScaleFactor &&
++                       atomScaleFactor != None) {
 +                *scaleFactor = *(int*)pProp->data;
-+            } else if (!strcmp(NameForAtom(pProp->propertyName),
-+                        "_CHROME_DISPLAY_INTERNAL")) {
++            } else if (pProp->propertyName == atomDisplayInternal &&
++                       atomDisplayInternal != None) {
 +                *isInternal = *(int*)pProp->data;
 +            }
 +        }
@@ -125,7 +151,7 @@ index f1e7491..05dd9bc 100644
 +    int rotation = RR_Rotate_0;
 +    int isInternal = FALSE;
 +
-+    if (!getRootWindowProps(pScreen, dev, &scaleFactor, &isInternal, &rotation))
++    if (!getSpriteChromeProps(pScreen, dev, &scaleFactor, &isInternal, &rotation))
 +        return;
 +
 +    scale = (double)scaleFactor / 100.0;
@@ -171,7 +197,7 @@ index f1e7491..05dd9bc 100644
  /**
   * Helper function for GetPointerEvents, which only generates motion and
   * raw motion events for the slave device: does not update the master device.
-@@ -1368,6 +1509,8 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
+@@ -1368,6 +1523,8 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
          if ((flags & POINTER_NORAW) == 0)
              set_raw_valuators(raw, &mask, raw->valuators.data);
  
