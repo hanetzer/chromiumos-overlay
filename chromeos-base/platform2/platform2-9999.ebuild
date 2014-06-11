@@ -121,6 +121,7 @@ RDEPEND_debugd="
 "
 
 RDEPEND_libchromeos="
+	chromeos-base/bootstat
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/openssl
