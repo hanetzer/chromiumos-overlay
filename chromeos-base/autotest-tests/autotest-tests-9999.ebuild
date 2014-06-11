@@ -264,6 +264,7 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_KernelVersionByBoard
 	+tests_platform_LibCBench
 	+tests_platform_LogDupSuppression
+	+tests_platform_LogNonKernelKmsg
 	+tests_platform_MemCheck
 	+tests_platform_MemoryMonitor
 	+tests_platform_NetParms
