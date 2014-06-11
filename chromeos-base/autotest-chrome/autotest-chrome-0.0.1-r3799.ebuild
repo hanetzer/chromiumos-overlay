@@ -43,6 +43,7 @@ IUSE_TESTS=(
 	# Tests that depend on telemetry.
 	+tests_accessibility_Sanity
 	+tests_audio_AudioCorruption
+	+tests_audio_SeekAudioFeedback
 	+tests_bluetooth_RegressionClient
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_CameraApp
