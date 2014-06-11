@@ -96,6 +96,7 @@ ALL_BOARDS=(
 	mipsel-n32-generic
 	mipsel-n64-generic
 	monroe
+	moose
 	nyan
 	nyan_big
 	nyan_blaze
