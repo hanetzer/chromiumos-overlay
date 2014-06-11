@@ -21,8 +21,9 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="cros_host"
 
-RDEPEND="
+COMMON_DEPEND="
 	chromeos-base/bootstat
 	!<chromeos-base/platform2-0.0.2
 	dev-libs/dbus-c++
@@ -30,9 +31,12 @@ RDEPEND="
 	dev-libs/openssl
 	dev-libs/protobuf
 "
-
+RDEPEND="
+	${COMMON_DEPEND}
+	!cros_host? ( chromeos-base/libchromeos-use-flags )
+"
 DEPEND="
-	${RDEPEND}
+	${COMMON_DEPEND}
 	dev-cpp/gtest
 	test? (
 		app-shells/dash

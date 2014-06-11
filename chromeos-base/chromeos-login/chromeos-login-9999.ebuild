@@ -14,17 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-# NB: Flags listed here are off by default unless prefixed with a '+'.
-# This list is lengthy since it determines the USE flags that will be written to
-# the /etc/session_manager_use_flags.txt file that's used to generate Chrome's
-# command line.
-IUSE="asan clang deep_memory_profiler disable_login_animations
-	disable_webaudio egl exynos fade_boot_splash_screen
-	gpu_sandbox_allow_sysv_shm
-	gpu_sandbox_start_after_initialization
-	has_diamond_key has_hdd highdpi legacy_keyboard
-	legacy_power_button moblab natural_scroll_default ozone
-	ozone_platform_dri test +X"
+IUSE="asan clang test"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="271506"
@@ -102,16 +92,6 @@ src_install() {
 	dodir /etc/skel/.pki/nssdb
 	# Yes, the created (empty) DB does work on ARM, x86 and x86_64.
 	certutil -N -d "sql:${D}/etc/skel/.pki/nssdb" -f <(echo '') || die
-
-	# Write a list of currently-set USE flags that session_manager_setup.sh can
-	# read at runtime while constructing Chrome's command line.  If you need to
-	# use a new flag, add it to $IUSE at the top of the file and list it here.
-	local use_flag_file="${D}/etc/session_manager_use_flags.txt"
-	local flags=( ${IUSE} )
-	local flag
-	for flag in ${flags[@]/#[-+]} ; do
-		usev ${flag}
-	done > "${use_flag_file}"
 
 	insinto /etc
 	doins chrome_dev.conf
