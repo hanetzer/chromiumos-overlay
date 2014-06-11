@@ -29,7 +29,4 @@ src_install() {
 
 	insinto /etc/udev/rules.d
 	doins 99-jabra.rules
-
-	insinto /etc/init
-	doins jabra-vold.conf
 }
