@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=A broad, well-tested, modular, and cross-browser JavaScript library
+EAPI=4
+HOMEPAGE=https://developers.google.com/closure/library/
+KEYWORDS=*
+LICENSE=Apache-2.0
+SLOT=0
+SRC_URI=https://github.com/google/closure-library/archive/95c19e7f0f5f66b005408c2de27db82a30fc4316.tar.gz -> closure-library-201302.tar.gz
+_md5_=0e1f21c0eb09143b9d8266e5edd08096
