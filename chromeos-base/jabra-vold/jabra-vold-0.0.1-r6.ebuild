@@ -3,8 +3,8 @@
 # $Header: $
 
 EAPI="4"
-CROS_WORKON_COMMIT="291ace21ab80bc562e7c572342229b29ac18996d"
-CROS_WORKON_TREE="f9383a507eed0ba980300d89def54738ec65c4b4"
+CROS_WORKON_COMMIT="8078f19f2863f048f5f83a4b0b2d28886282e81b"
+CROS_WORKON_TREE="670b5047b2c73d91688b892c177baf3bb91b80b5"
 CROS_WORKON_PROJECT="chromiumos/platform/jabra_vold"
 CROS_WORKON_LOCALNAME="jabra_vold"
 
@@ -31,7 +31,4 @@ src_install() {
 
 	insinto /etc/udev/rules.d
 	doins 99-jabra.rules
-
-	insinto /etc/init
-	doins jabra-vold.conf
 }
