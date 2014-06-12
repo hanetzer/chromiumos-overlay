@@ -173,7 +173,6 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_LowMemNotify
 	+tests_kernel_Memory_Ramoop
 	+tests_kernel_PerfEventRename
-	+tests_kernel_PerfEventRename
 	+tests_kernel_ProtocolCheck
 	+tests_kernel_SchedBandwith
 	+tests_kernel_SchedCgroups
