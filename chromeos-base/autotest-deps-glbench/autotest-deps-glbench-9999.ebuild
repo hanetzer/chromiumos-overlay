@@ -29,8 +29,7 @@ RDEPEND="${RDEPEND}
 	x11-apps/xwd
 "
 
-DEPEND="${RDEPEND}
-	opengles? ( x11-drivers/opengles-headers )"
+DEPEND="${RDEPEND}"
 
 AUTOTEST_DEPS_LIST="glbench"
 
