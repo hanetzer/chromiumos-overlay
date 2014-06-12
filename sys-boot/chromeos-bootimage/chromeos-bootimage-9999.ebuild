@@ -241,22 +241,6 @@ src_compile_depthcharge() {
 	local depthcharge_ro_basename
 	local depthcharge_rw_basename
 
-	if [ "${BOARD_USE}" == "storm" ]; then
-		local dest_file="image.bin"
-
-		eerror "Temp bootimage building code, needs to be fixed!!"
-
-		cp "${coreboot_file}" "${dest_file}.tmp" || \
-		  die "failed to create ${dest_file}.tmp"
-		cbfstool "${dest_file}.tmp"  add-payload \
-		  -f "${froot}/depthcharge/depthcharge.elf" \
-		  -n "fallback/payload" -c lzma || \
-		  die "failed to add to ${dest_file}.tmp"
-		mv "${dest_file}.tmp" "${dest_file}" || \
-		  die "failed to create ${dest_file}"
-		return 0
-	fi
-
 	if use unified_depthcharge; then
 		depthcharge_ro_basename="depthcharge.elf"
 		depthcharge_rw_basename="depthcharge.payload"
