@@ -341,7 +341,7 @@ RDEPEND="${RDEPEND}
 
 # Host dependencies for building/testing factory software
 RDEPEND="${RDEPEND}
-	dev-lang/closure-library
+	dev-libs/closure-library
 	dev-python/autopep8
 	dev-python/django
 	dev-python/flup
