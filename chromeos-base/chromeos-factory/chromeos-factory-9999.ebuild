@@ -23,25 +23,12 @@ IUSE="+autotest +build_tests -chromeless_tty -ecs"
 
 DEPEND="virtual/chromeos-interface
 	dev-python/pyyaml
-	dev-python/unittest2
 	chromeos-base/chromeos-factory-board"
-RDEPEND="!chromeos-base/chromeos-factorytools
-	dev-lang/python
-	dev-python/argparse
-	dev-python/jsonrpclib
-	dev-python/netifaces
-	dev-python/python-evdev
-	dev-python/pyyaml
-	dev-python/setproctitle
-	dev-python/unittest2
-	dev-python/ws4py
-	dev-util/stressapptest
-	chromeos-base/audiotest
-	chromeos-base/chromeos-factory-board
-	chromeos-base/memento_softwareupdate
-	>=chromeos-base/vpd-0.0.1-r11
-	media-gfx/zbar
-	media-sound/sox"
+
+# The runtime dependency for factory test are satisfied in the test image
+# because of the need of factory toolkit, which simply runs on top of a
+# test image. Therefore, we only need chromeos-factory-board here.
+RDEPEND="chromeos-base/chromeos-factory-board"
 
 # Binaries from other packages (ex, chrome).
 STRIP_MASK="*/chromedriver */selenium/*"
