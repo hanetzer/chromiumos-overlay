@@ -13,9 +13,11 @@ inherit xorg-2 cros-workon
 DESCRIPTION="X.Org driver for ARM devices"
 
 KEYWORDS="-* ~arm"
+IUSE="video_cards_exynos video_cards_rockchip"
 
 RDEPEND=">=x11-base/xorg-server-1.9
-	x11-libs/libdrm[video_cards_exynos]"
+	video_cards_exynos? ( x11-libs/libdrm[video_cards_exynos] )
+	video_cards_rockchip? ( x11-libs/libdrm[video_cards_rockchip] )"
 DEPEND="${RDEPEND}"
 
 src_unpack() {
@@ -23,3 +25,11 @@ src_unpack() {
 	mkdir -p "${S}"/m4
 }
 
+src_configure() {
+	if use video_cards_exynos ; then
+		XORG_CONFIGURE_OPTIONS=( --with-driver=exynos )
+	elif use video_cards_rockchip ; then
+		XORG_CONFIGURE_OPTIONS=( --with-driver=rockchip )
+	fi
+	xorg-2_src_configure
+}
