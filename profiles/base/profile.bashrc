@@ -126,7 +126,9 @@ cros_pre_pkg_setup_sysroot_build_bin_dir() {
 # We run at src_unpack time so that the hooks have time to get registered
 # and saved in the environment.  Portage has a bug where hooks registered
 # in the same phase that fails are not run.  http://bugs.gentoo.org/509024
-cros_pre_src_unpack_asan_init() {
+# We run at the _end_ of src_unpack time so that ebuilds which munge ${S}
+# (packages which live in the platform2 repo) can do so before we do work.
+cros_post_src_unpack_asan_init() {
 	local log_path="${T}/asan_logs/asan"
 	mkdir -p "${log_path%/*}"
 	export ASAN_OPTIONS+=" log_path=${log_path}"
