@@ -21,6 +21,7 @@ RDEPEND="
 	chromeos-base/autotest-deps-cellular
 	chromeos-base/shill-test-scripts
 	dev-python/pygobject
+	dev-python/pyusb
 "
 DEPEND="${RDEPEND}"
 
