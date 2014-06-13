@@ -80,6 +80,7 @@ ALL_BOARDS=(
 	#kiev
 	kip
 	klang
+	laser
 	lemmings
 	lemmings_external
 	leon
