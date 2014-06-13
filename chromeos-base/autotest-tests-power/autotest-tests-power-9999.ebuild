@@ -16,13 +16,15 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 # Enable autotest by default.
-IUSE="+autotest"
+IUSE="+autotest +shill"
 
 RDEPEND="
+	shill? ( chromeos-base/shill-test-scripts )
 	!<chromeos-base/autotest-tests-0.0.3
 "
 DEPEND="${RDEPEND}"
 
+# cros/power_suspend depends on shill-test-scripts.
 IUSE_TESTS="
 	+tests_hardware_Backlight
 	+tests_platform_SuspendStress
@@ -42,13 +44,13 @@ IUSE_TESTS="
 	+tests_power_MemorySuspend
 	+tests_power_NoConsoleSuspend
 	+tests_power_ProbeDriver
-	+tests_power_Resume
+	shill? ( +tests_power_Resume )
 	+tests_power_Standby
 	+tests_power_StatsCPUFreq
 	+tests_power_StatsCPUIdle
 	+tests_power_StatsUSB
 	+tests_power_Status
-	+tests_power_SuspendStress
+	shill? ( +tests_power_SuspendStress )
 	+tests_power_WakeupRTC
 	+tests_power_x86Settings
 "
