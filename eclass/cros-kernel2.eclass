@@ -645,16 +645,18 @@ get_dtb_name() {
 
 cros-kernel2_src_compile() {
 	local build_targets=()  # use make default target
-	if use arm || use mips; then
-		build_targets=(
-			$(usex device_tree 'zImage dtbs' uImage)
-			$(usex boot_dts_device_tree dtbs '')
-			$(cros_chkconfig_present MODULES && echo "modules")
-		)
-	fi
+	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+	case ${kernel_arch} in
+		arm|mips)
+			build_targets=(
+				$(usex device_tree 'zImage dtbs' uImage)
+				$(usex boot_dts_device_tree dtbs '')
+				$(cros_chkconfig_present MODULES && echo "modules")
+			)
+			;;
+	esac
 
 	local src_dir="$(cros-workon_get_build_dir)/source"
-	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 	SMATCH_ERROR_FILE="${src_dir}/chromeos/check/smatch_errors.log"
 
 	# If a .dts file is deleted from the source code it won't disappear
@@ -737,6 +739,7 @@ cros-kernel2_src_install() {
 		local boot_dir="$(cros-workon_get_build_dir)/arch/${kernel_arch}/boot"
 		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
+		local image_bin="${D}/boot/Image-${version}"
 		local dtb_dir="${boot_dir}"
 
 		# Newer kernels (after linux-next 12/3/12) put dtbs in the dts
@@ -752,7 +755,7 @@ cros-kernel2_src_install() {
 			emit_its_script "${its_script}" "${boot_dir}" \
 				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
 			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
-		else
+		elif [[ "${kernel_arch}" != "arm64" ]]; then
 			cp "${boot_dir}/uImage" "${kernel_bin}" || die
 			if use boot_dts_device_tree; then
 				# For boards where the device tree .dtb file is stored
@@ -770,9 +773,14 @@ cros-kernel2_src_install() {
 				doins "${dtb_dir}"/*.dtb
 			fi
 		fi
-		if use arm; then
-			cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
-		fi
+		case ${kernel_arch} in
+			arm)
+				cp -a "${boot_dir}/zImage" "${zimage_bin}" || die
+				;;
+			arm64)
+				cp -a "${boot_dir}/Image" "${image_bin}" || die
+				;;
+		esac
 
 		# TODO(vbendeb): remove the below .uimg link creation code
 		# after the build scripts have been modified to use the base
