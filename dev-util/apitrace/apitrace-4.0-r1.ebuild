@@ -19,11 +19,8 @@ IUSE="+cli egl qt4"
 RDEPEND="${PYTHON_DEPS}
 	app-arch/snappy[${MULTILIB_USEDEP}]
 	sys-libs/zlib[${MULTILIB_USEDEP}]
-	egl? ( || (
-		>=media-libs/mesa-8.0[gles1,gles2]
-		<media-libs/mesa-8.0[gles]
-		media-libs/mali-drivers
-	) )
+	!egl? ( virtual/opengl )
+	egl? ( virtual/opengles )
 	media-libs/libpng:0=
 	sys-process/procps
 	x11-libs/libX11
