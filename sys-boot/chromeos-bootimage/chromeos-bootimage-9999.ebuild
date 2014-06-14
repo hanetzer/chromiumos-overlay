@@ -246,7 +246,7 @@ src_compile_depthcharge() {
 		depthcharge_rw_basename="depthcharge.payload"
 	else
 		depthcharge_ro_basename="depthcharge.ro.elf"
-		depthcharge_basename="depthcharge.rw.bin"
+		depthcharge_rw_basename="depthcharge.rw.bin"
 	fi
 
 	local common=(
