@@ -6,6 +6,7 @@ app-admin/rsyslog	-ssl
 app-benchmarks/i7z	-X
 app-crypt/tpm-tools	pkcs11
 app-i18n/zinnia		-perl
+app-editors/nano	-unicode
 app-editors/qemacs	-X
 app-editors/vim		-X minimal
 # We don't use network functionality in bash, and since we ship it in a release
@@ -17,6 +18,7 @@ dev-embedded/libftdi	static-libs
 dev-lang/python		-berkdb gdbm -sqlite
 dev-libs/dbus-glib	tools
 dev-libs/elfutils	-utils
+dev-libs/expat		-unicode
 dev-libs/glib		-doc
 dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
@@ -73,9 +75,11 @@ sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
 sys-fs/udev		-devfs-compat -rule_generator hwdb acl gudev
 sys-fs/squashfs		lzo
 sys-libs/gdbm		-berkdb
-sys-libs/ncurses	minimal
+sys-libs/ncurses	-cxx -unicode minimal
 sys-libs/pam		-berkdb
 sys-libs/zlib		static-libs
+sys-power/powertop	-unicode
+sys-process/procps	-unicode
 x11-apps/xinit		minimal
 x11-base/xorg-server	-suid
 x11-libs/libdrm		libkms
