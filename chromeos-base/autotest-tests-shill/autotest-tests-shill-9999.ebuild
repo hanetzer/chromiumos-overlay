@@ -40,8 +40,6 @@ IUSE_TESTS="
 	+tests_network_DhcpStaticIP
 	+tests_network_DhcpVendorEncapsulatedOptions
 	+tests_network_DhcpWpadNegotiation
-	+tests_network_DisableInterface
-	+tests_network_Portal
 	+tests_network_ShillInitScripts
 	+tests_network_TwoShills
 	+tests_network_WiFiInvalidParameters

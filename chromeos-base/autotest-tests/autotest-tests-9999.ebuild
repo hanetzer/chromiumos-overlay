@@ -60,7 +60,6 @@ CLIENT_IUSE_TESTS="
 	+tests_iperf
 	+tests_bonnie
 	+tests_iozone
-	+tests_netperf2
 	+tests_netpipe
 	+tests_scrashme
 	+tests_sleeptest
@@ -71,7 +70,6 @@ CLIENT_IUSE_TESTS="
 	!chromeless_tty? (
 		+tests_desktopui_CrashyReboot
 		+tests_desktopui_FontCache
-		+tests_desktopui_GTK2Config
 		+tests_desktopui_HangDetector
 		+tests_desktopui_KillRestart
 		+tests_desktopui_Respawn
@@ -86,12 +84,8 @@ CLIENT_IUSE_TESTS="
 	+tests_firmware_TouchMTB
 	+tests_firmware_VbootCrypto
 	+tests_flaky_test
-	+tests_hardware_Ath3k
 	+tests_hardware_Badblocks
-	+tests_hardware_bma150
 	+tests_hardware_ch7036
-	+tests_hardware_Components
-	+tests_hardware_DeveloperRecovery
 	+tests_hardware_DiskFirmwareUpgrade
 	+tests_hardware_DiskSize
 	+tests_hardware_EC
@@ -156,12 +150,10 @@ CLIENT_IUSE_TESTS="
 		+tests_login_RetrieveActiveSessions
 		+tests_login_SameSessionTwice
 	)
-	+tests_network_ConnmanIncludeExcludeMultiple
 	+tests_network_EthCaps
 	+tests_network_EthernetStressPlug
 	+tests_network_Ipv6SimpleNegotiation
 	+tests_network_NegotiatedLANSpeed
-	+tests_network_netperf2
 	+tests_network_UdevRename
 	+tests_network_WiFiCaps
 	+tests_platform_AccurateTime
