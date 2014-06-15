@@ -190,7 +190,6 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${DEPEND}
 	${RDEPEND}
-	arm? ( x11-drivers/opengles-headers )
 	chromeos-base/protofiles
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23"
