@@ -49,7 +49,6 @@ IUSE="
 	+nacl
 	neon
 	+ninja
-	opengles
 	ozone
 	+reorder
 	+runhooks
@@ -143,6 +142,7 @@ RESTRICT="mirror"
 
 RDEPEND="${RDEPEND}
 	app-arch/bzip2
+	arm? ( virtual/opengles )
 	chromeos-base/chromeos-fonts
 	dev-libs/atk
 	dev-libs/glib
@@ -157,8 +157,7 @@ RDEPEND="${RDEPEND}
 	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/libpng
-	opengles? ( virtual/opengles )
-	!opengles? ( virtual/opengl )
+	media-libs/mesa
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
 	sys-apps/pciutils
@@ -191,6 +190,7 @@ RDEPEND="${RDEPEND}
 
 DEPEND="${DEPEND}
 	${RDEPEND}
+	arm? ( x11-drivers/opengles-headers )
 	chromeos-base/protofiles
 	>=dev-util/gperf-3.0.3
 	>=dev-util/pkgconfig-0.23"
