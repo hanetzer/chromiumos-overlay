@@ -2,10 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # Remove embedded controller firmware code for official devices.
-USE="{$USE} -cros_ec"
+USE="-cros_ec"
 
 # Disable audio related services.
-USE="-alsa -cras"
+USE="${USE} -alsa -cras"
+
+# Disable power management.
+USE="${USE} -power_management"
 
 # Disable non-essential networking services.
 USE="${USE} -bluetooth -network_time -nfc"
