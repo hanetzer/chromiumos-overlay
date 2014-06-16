@@ -48,9 +48,6 @@ CROS_COMMON_RDEPEND="
 	dev-util/dbus-spy
 	net-misc/rsync
 "
-CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
-	chromeos-base/chromite
-"
 
 ################################################################################
 #
@@ -165,4 +162,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 ################################################################################
 RDEPEND="${CROS_COMMON_RDEPEND}
 	!cros_embedded? ( ${CROS_RDEPEND} )
+"
+
+# Packages that are only installed into the sysroot and are needed for running
+# unit tests
+DEPEND="
+	chromeos-base/chromite
 "
