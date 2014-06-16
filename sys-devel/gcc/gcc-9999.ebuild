@@ -311,6 +311,7 @@ src_configure()
 		--prefix=${PREFIX} \
 		--bindir=$(get_bin_dir) \
 		--datadir=${DATAPATH} \
+		--disable-canonical-system-headers \
 		--mandir=${DATAPATH}/man \
 		--infodir=${DATAPATH}/info \
 		--includedir=$(get_lib_dir)/include \
