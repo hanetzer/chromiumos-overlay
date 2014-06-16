@@ -31,11 +31,7 @@ src_compile() {
 	emake
 }
 
-pkg_setup() {
+pkg_preinst() {
 	enewuser "dhcp"
 	enewgroup "dhcp"
-}
-
-src_install() {
-	emake DESTDIR="${D}" install
 }
