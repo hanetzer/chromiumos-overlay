@@ -76,7 +76,6 @@ pkg_setup() {
 	enewgroup "tty"
 	enewgroup "disk"
 	add_daemon_user "lp"
-	enewuser "sync"
 	enewgroup "mem"
 	enewgroup "kmem"
 	enewgroup "wheel"
