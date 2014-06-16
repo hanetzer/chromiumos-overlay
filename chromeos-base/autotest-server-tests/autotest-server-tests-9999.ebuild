@@ -95,6 +95,9 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_UserRequestRecovery
 	+tests_hardware_DiskFirmwareUpgrade
 	+tests_hardware_MemoryIntegrity
+	+tests_hardware_StorageQualBase
+	+tests_hardware_StorageQualSuspendStress
+	+tests_hardware_StorageQualTrimStress
 	+tests_hardware_StorageStress
 	+tests_kernel_EmptyLines
 	+tests_kernel_MemoryRamoop
