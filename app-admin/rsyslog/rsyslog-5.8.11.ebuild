@@ -52,6 +52,8 @@ src_prepare() {
 		cp -r ${ZEROPATH}/{i,o}mzeromq "${S}/plugins"
 	fi
 
+	epatch "${FILESDIR}"/5-stable/${PN}-imuxsock-shrink.patch
+
 	# Don't force '-g' CFLAG
 	sed -i 's/CFLAGS="\(.*\) -g"/CFLAGS="\1"/g' configure.ac || die
 	autotools-utils_src_prepare
