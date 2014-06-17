@@ -12,7 +12,6 @@ app-arch/pigz static
 sys-libs/zlib static-libs
 
 chromeos-base/update_engine delta_generator
-dev-embedded/openocd  ftdi
 net-misc/openssh kerberos
 sys-apps/flashrom dediprog ft2232_spi serprog
 dev-lang/python gdbm

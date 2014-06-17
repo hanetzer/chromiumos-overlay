@@ -59,3 +59,4 @@ dev-java/icedtea-bin -alsa -cups -X
 # Need png for color font support. bzip2 is not used. It's only for X11 *pcf.bz2
 # that we don't have.
 media-libs/freetype     png -bzip2
+dev-embedded/openocd  ftdi
