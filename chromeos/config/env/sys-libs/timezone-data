@@ -1,0 +1,11 @@
+# These are only used at build time.
+if [[ $(cros_target) != "cros_host" ]] ; then
+	timezone_mask="
+		/usr/bin/tzselect
+		/usr/sbin/zdump
+		/usr/sbin/zic
+	"
+	PKG_INSTALL_MASK+=" ${timezone_mask}"
+	INSTALL_MASK+=" ${timezone_mask}"
+	unset timezone_mask
+fi
