@@ -10,15 +10,15 @@ diff -uNr xkeyboard-config-1.7.orig/symbols/gb xkeyboard-config-1.7/symbols/gb
      key <BKSL> { [ numbersign,	asciitilde	] };
      key <LSGT> { [  backslash,	bar		] };
 -    key <TLDE> { [	grave,	notsign,   bar,           bar		] };
-+    key <TLDE> { [  deadgrave, notsign,   brokenbar,     brokenbar     ] };
-+    key <AC01> { [         a,        A,   aacute,        Aacute        ] };
-+    key <AC02> { [         o,        O,   oacute,        Oacute        ] };
-+    key <AC03> { [         e,        E,   eacute,        Eacute        ] };
-+    key <AC04> { [         u,        U,   uacute,        Uacute        ] };
-+    key <AC05> { [         i,        I,   iacute,        Iacute        ] };
-+    key <AD05> { [         y,        Y,   yacute,        Yacute        ] };
-+    key <AD08> { [         c,        C, ccedilla,        Ccedilla      ] };
-+    key <AB08> { [         w,        W,   wacute,        Wacute        ] };
++    key <TLDE> { [     grave,  notsign, brokenbar,    dead_grave        ] };
++    key <AC01> { [         a,        A,    aacute,        Aacute        ] };
++    key <AC02> { [         o,        O,    oacute,        Oacute        ] };
++    key <AC03> { [         e,        E,    eacute,        Eacute        ] };
++    key <AC04> { [         u,        U,    uacute,        Uacute        ] };
++    key <AC05> { [         i,        I,    iacute,        Iacute        ] };
++    key <AD05> { [         y,        Y,    yacute,        Yacute        ] };
++    key <AD08> { [         c,        C,  ccedilla,        Ccedilla      ] };
++    key <AB08> { [         w,        W,    wacute,        Wacute        ] };
  };
- 
+
  // Dvorak letter positions, but punctuation all in the normal UK positions.
