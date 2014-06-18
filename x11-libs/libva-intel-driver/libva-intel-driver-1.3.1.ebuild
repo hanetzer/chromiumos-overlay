@@ -1,8 +1,8 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-1.2.1.ebuild,v 1.1 2013/10/12 07:52:25 aballier Exp $
+# $Header: /var/cvsroot/gentoo-x86/x11-libs/libva-intel-driver/libva-intel-driver-1.3.0.ebuild,v 1.2 2014/04/04 18:01:07 aballier Exp $
 
-EAPI="4"
+EAPI=5
 
 SCM=""
 if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
@@ -11,7 +11,8 @@ if [ "${PV%9999}" != "${PV}" ] ; then # Live ebuild
 	EGIT_REPO_URI="git://anongit.freedesktop.org/git/vaapi/intel-driver"
 fi
 
-inherit autotools ${SCM} multilib eutils
+AUTOTOOLS_AUTORECONF="yes"
+inherit autotools-multilib ${SCM}
 
 DESCRIPTION="HW video decode support for Intel integrated graphics"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/vaapi"
@@ -25,16 +26,16 @@ fi
 LICENSE="MIT"
 SLOT="0"
 if [ "${PV%9999}" = "${PV}" ] ; then
-	KEYWORDS="-* amd64 x86"
+	KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
 else
 	KEYWORDS=""
 fi
 IUSE="+drm wayland X"
 
-RDEPEND=">=x11-libs/libva-1.2.0[X?,wayland?,drm?]
+RDEPEND=">=x11-libs/libva-1.3.0[X?,wayland?,drm?,${MULTILIB_USEDEP}]
 	!<x11-libs/libva-1.0.15[video_cards_intel]
-	>=x11-libs/libdrm-2.4.45[video_cards_intel]
-	wayland? ( media-libs/mesa[egl] >=dev-libs/wayland-1 )"
+	>=x11-libs/libdrm-2.4.45[video_cards_intel,${MULTILIB_USEDEP}]
+	wayland? ( media-libs/mesa[egl,${MULTILIB_USEDEP}] >=dev-libs/wayland-1[${MULTILIB_USEDEP}] )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -42,18 +43,17 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
+	epatch "${FILESDIR}"/Encoding-Reinitialize-CBR-bit-rate-control-parameter.patch
 	eautoreconf
 }
 
-src_configure() {
-	econf \
-		--disable-silent-rules \
-		$(use_enable drm) \
-		$(use_enable wayland) \
-		$(use_enable X x11)
-}
+DOCS=( AUTHORS NEWS README )
 
-src_install() {
-	default
-	find "${D}" -name '*.la' -delete
+multilib_src_configure() {
+	local myeconfargs=(
+		$(use_enable drm)
+		$(use_enable wayland)
+		$(use_enable X x11)
+	)
+	autotools-utils_src_configure
 }
