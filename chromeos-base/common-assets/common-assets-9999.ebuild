@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform/assets"
 
 inherit cros-workon toolchain-funcs
 
-DESCRIPTION="Chrome OS assets (images, sounds, etc.)"
+DESCRIPTION="Common Chromium OS assets (images, sounds, etc.)"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="BSD"
@@ -16,7 +16,11 @@ IUSE="alex lumpy lumpy64 mario tegra2-ldk"
 
 DEPEND=""
 # display_boot_message calls ply-image directly.
-RDEPEND="chromeos-base/chromeos-fonts
+
+RDEPEND="!<chromeos-base/chromeos-assets-0.0.2"
+
+RDEPEND+="
+	chromeos-base/chromeos-fonts
 	media-gfx/ply-image"
 
 REAL_CURSOR_NAMES="

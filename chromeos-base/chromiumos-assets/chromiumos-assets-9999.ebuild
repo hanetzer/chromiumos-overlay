@@ -1,8 +1,9 @@
-# Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/chromiumos-assets"
+CROS_WORKON_LOCALNAME="chromiumos-assets"
 
 inherit cros-workon toolchain-funcs
 
@@ -14,11 +15,10 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-PDEPEND=">chromeos-base/chromeos-assets-0.0.1-r47"
-DEPEND=""
-RDEPEND=""
+# Force devs to uninstall assets-split first.
+RDEPEND="!chromeos-base/chromeos-assets-split"
 
-CROS_WORKON_LOCALNAME="chromiumos-assets"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	insinto /usr/share/chromeos-assets/images

@@ -36,8 +36,7 @@ DEPEND_netboot="
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs
 "
-DEPEND="chromeos-base/chromeos-assets
-	chromeos-base/chromeos-assets-split
+DEPEND="chromeos-base/common-assets
 	chromeos-base/chromeos-installer
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
@@ -46,7 +45,8 @@ DEPEND="chromeos-base/chromeos-assets
 	sys-apps/flashrom
 	sys-apps/pv
 	sys-fs/lvm2
-	netboot_ramfs? ( ${DEPEND_netboot} )"
+	netboot_ramfs? ( ${DEPEND_netboot} )
+	virtual/assets"
 RDEPEND=""
 
 src_prepare() {

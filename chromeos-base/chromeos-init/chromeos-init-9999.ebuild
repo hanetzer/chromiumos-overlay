@@ -28,7 +28,7 @@ RDEPEND="
 	sys-process/lsof
 	virtual/chromeos-bootcomplete
 	!cros_embedded? (
-		chromeos-base/chromeos-assets
+		chromeos-base/common-assets
 		chromeos-base/swap-init
 		media-gfx/ply-image
 		sys-apps/chvt

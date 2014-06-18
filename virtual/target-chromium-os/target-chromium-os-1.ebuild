@@ -190,8 +190,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-i18n/chromeos-hangul
 	power_management? ( app-laptop/laptop-mode-tools )
 	app-shells/bash
-	chromeos-base/chromeos-assets
-	chromeos-base/chromeos-assets-split
+	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner
 	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
@@ -217,6 +216,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/ureadahead
 	sys-fs/e2fsprogs
 	sys-fs/udev
+	virtual/assets
 "
 
 # Build time dependencies
