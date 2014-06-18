@@ -134,6 +134,10 @@ src_configure() {
 	# Append the SYSROOT Library Path in order for the linker to find
 	# libbfd when cross-compiling. See crbug.com/336580 for more details.
 	append-ldflags "-L${SYSROOT}/usr/${CHOST}/lib"
+
+	# Use -levent_core instead of -levent as upstream is splitting the libs.
+	sed -i '/FIND_LIBRARY.EVENT_LIBRARY/s:event):event_core):' tests/CMakeLists.txt
+
 	mysql-v2_src_configure
 }
 
