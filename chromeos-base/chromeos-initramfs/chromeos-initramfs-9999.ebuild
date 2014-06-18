@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="netboot_ramfs"
+IUSE="netboot_ramfs +power_management"
 
 # Dependencies used to build the netboot initramfs.
 # Look for the `idobin` and such calls.
@@ -248,7 +248,7 @@ pull_netboot_ramfs_binary() {
 	idobin /sbin/sfdisk
 	idofutility /usr/bin/old_bins/cgpt
 	idofutility /usr/bin/old_bins/crossystem
-	idobin /usr/bin/backlight_tool
+	use power_management && idobin /usr/bin/backlight_tool
 	idobin /usr/bin/futility
 	idobin /usr/bin/getopt
 	idobin /usr/bin/openssl
