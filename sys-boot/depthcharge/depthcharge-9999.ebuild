@@ -101,13 +101,16 @@ install_depthcharge() {
 }
 
 src_install() {
-	local dtsdir="/firmware/dts"
+	local dstdir="/firmware"
 	local board=$(get_current_board_with_variant)
 	if [[ ! -d "board/${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
 
-	insinto "${dtsdir}"
+	insinto "${dstdir}"
+	newins .config depthcharge.config
+
+	insinto "${dstdir}/dts"
 	doins "board/${board}/fmap.dts"
 
 	install_depthcharge ""
