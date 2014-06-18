@@ -634,13 +634,11 @@ setup_test_lists() {
 
 	# TODO(spang): video tests don't build with ozone - crbug.com/363302
 	if ! use ozone; then
-		TEST_FILES+=(
-			video_decode_accelerator_unittest
-		)
+		TEST_FILES+=( video_decode_accelerator_unittest )
 
 		# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
 		if [[ ${ARCH} == "arm" ]]; then
-			TEST_FILES+=( "video_encode_accelerator_unittest" )
+			TEST_FILES+=( video_encode_accelerator_unittest )
 		fi
 	fi
 
@@ -833,10 +831,6 @@ install_chrome_test_resources() {
 	TEST_INSTALL_TARGETS=( "${TEST_FILES[@]}"
 		"libppapi_tests.so"
 		"chrome_sandbox" )
-
-	if [[ ${ARCH} == "arm" ]]; then
-		TEST_INSTALL_TARGETS+=( "video_encode_accelerator_unittest" )
-	fi
 
 	einfo "Installing test targets: ${TEST_INSTALL_TARGETS[@]}"
 	for f in "${TEST_INSTALL_TARGETS[@]}"; do
