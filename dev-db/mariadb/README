@@ -1,0 +1,18 @@
+This is the Chromium OS copy of the MariaDB ebuild. The primary user
+is currently the Moblab Project therefore there has been a series of
+Moblab specific changes to this ebuild.
+
+General Changes:
+* The original upstream ebuild had a lot of difficulties finding the
+  correct libbfd libraries therefore the ebuild was modified to find
+  the correct libbfd libaries at build time and ensures that libaio
+  and libbfd are included in the built image.
+  https://chromium-review.googlesource.com/#/c/184014/4
+* Overrode mysql-v2_pkg_setup so that it uses the GID/UID defined in
+  the profile. https://chromium-review.googlesource.com/#/c/186924/
+
+Moblab Specific Changes:
+* Updated my.cnf to remove the max size on the InnoDB datafile.
+  https://chromium-review.googlesource.com/#/c/202318/
+* Updated my.cnf to disable binary logging.
+  https://chromium-review.googlesource.com/#/c/204543/
