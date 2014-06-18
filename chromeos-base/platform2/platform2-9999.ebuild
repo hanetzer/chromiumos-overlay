@@ -18,7 +18,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"mist"
 	"power_manager"
 	"shill"
-	"system_api"
 	"vpn-manager"
 	"wimax_manager"
 )
@@ -218,7 +217,7 @@ RDEPEND="
 		!chromeos-base/mist[-platform2]
 		!chromeos-base/power_manager
 		!chromeos-base/shill[-platform2]
-		!chromeos-base/system_api[-platform2]
+		chromeos-base/system_api
 		!chromeos-base/vpn-manager[-platform2]
 		!chromeos-base/wimax_manager[-platform2]
 		!dev-util/quipper
@@ -607,14 +606,6 @@ platform2_install_shill() {
 	udev_dorules udev/*.rules
 }
 
-platform2_install_system_api() {
-	local dir dirs=( dbus switches constants )
-	for dir in "${dirs[@]}"; do
-		insinto "/usr/include/chromeos/${dir}"
-		doins -r "${dir}"/*
-	done
-}
-
 platform2_install_vpn-manager() {
 	use cros_host && return 0
 	use vpn || return 0
@@ -844,10 +835,6 @@ platform2_test_shill() {
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: shill" && return 0
 
 	platform_test "run" "${OUT}/shill_unittest"
-}
-
-platform2_test_system_api() {
-	return 0
 }
 
 platform2_test_vpn-manager() {
