@@ -110,6 +110,7 @@ install_libpayload() {
 	doins "${src_root}"/bin/lp.functions
 
 	insinto "${destdir}"
+	newins "${src_root}"/.xcompile libpayload.xcompile
 	newins "${src_root}"/.config libpayload.config
 }
 
