@@ -1,7 +1,7 @@
 From 9c735a1093c2cd99368875341d09c25ba89d070a Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Wed, 28 May 2014 15:53:19 -0700
-Subject: [PATCH 07/12] src/gatt-client: Added GattDescriptor1 objects.
+Subject: [PATCH 07/14] src/gatt-client: Added GattDescriptor1 objects.
 
 This patch exposes objects with interface GattDescriptor1 for discovered
 characteristic descriptors.
@@ -364,5 +364,5 @@ index 6a6adef..f0ed94b 100644
  }
  
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

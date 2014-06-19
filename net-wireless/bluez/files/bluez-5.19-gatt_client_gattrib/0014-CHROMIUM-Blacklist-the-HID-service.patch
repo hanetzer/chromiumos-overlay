@@ -1,7 +1,7 @@
-From 47bbaedc75f8cfeae4c02de8373a45a91f27b0c2 Mon Sep 17 00:00:00 2001
+From 2f03f2f2913939389b11ccbf90bc39f982af8af5 Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Wed, 18 Jun 2014 17:47:02 -0700
-Subject: [PATCH] CHROMIUM: Blacklist the HID service.
+Subject: [PATCH 14/14] CHROMIUM: Blacklist the HID service.
 
 The HID service generates a lot of noise on D-Bus due to its real time
 nature and since we currently don't have an API to explicitly enable or
@@ -16,19 +16,19 @@ TEST=Tested on a HP BLE Mouse.
  1 file changed, 15 insertions(+)
 
 diff --git a/src/gatt-client.c b/src/gatt-client.c
-index 84ab4e4..118804a 100644
+index db198e4..5e56e52 100644
 --- a/src/gatt-client.c
 +++ b/src/gatt-client.c
-@@ -48,6 +48,8 @@
- #define GATT_CHARACTERISTIC_IFACE	"org.bluez.GattCharacteristic1"
- #define GATT_DESCRIPTOR_IFACE		"org.bluez.GattDescriptor1"
+@@ -51,6 +51,8 @@
+ #define GATT_CHR_EXT_PROP_RELIABLE_WRITE	0x01
+ #define GATT_CHR_EXT_PROP_WRITABLE_AUX		0x02
  
 +#define HOG_UUID	0x1812
 +
  struct btd_gatt_client {
  	struct btd_device *device;
  	GAttrib *attrib;
-@@ -1244,6 +1246,7 @@ static struct gatt_dbus_service *gatt_dbus_service_create(
+@@ -1307,6 +1309,7 @@ static struct gatt_dbus_service *gatt_dbus_service_create(
  {
  	struct gatt_dbus_service *service;
  	bt_uuid_t uuid;
@@ -36,7 +36,7 @@ index 84ab4e4..118804a 100644
  	const char *device_path = device_get_path(client->device);
  
  	service = g_try_new0(struct gatt_dbus_service, 1);
-@@ -1262,6 +1265,18 @@ static struct gatt_dbus_service *gatt_dbus_service_create(
+@@ -1325,6 +1328,18 @@ static struct gatt_dbus_service *gatt_dbus_service_create(
  
  	bt_uuid_to_uuid128(&uuid, &service->uuid);
  

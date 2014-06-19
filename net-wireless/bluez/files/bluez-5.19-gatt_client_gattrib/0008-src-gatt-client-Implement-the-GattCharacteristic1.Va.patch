@@ -1,7 +1,7 @@
-From dab15c184ed14dc948510ec0ce9aa016f0d42015 Mon Sep 17 00:00:00 2001
+From f5aca70c6c36f82b05bd6c114e0585fe362573ec Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Wed, 28 May 2014 18:42:39 -0700
-Subject: [PATCH 08/12] src/gatt-client: Implement the
+Subject: [PATCH 08/14] src/gatt-client: Implement the
  GattCharacteristic1.ValueUpdated signal.
 
 This patch implements the ValueUpdated signal for characteristics, so
@@ -11,11 +11,11 @@ automatically based on the presence of the "notify" and "indicate"
 properties and the "Client Characteristic Configuration" descriptor of a
 characteristic.
 ---
- src/gatt-client.c | 130 ++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 127 insertions(+), 3 deletions(-)
+ src/gatt-client.c | 133 ++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 130 insertions(+), 3 deletions(-)
 
 diff --git a/src/gatt-client.c b/src/gatt-client.c
-index f0ed94b..3684663 100644
+index f0ed94b..c30abba 100644
 --- a/src/gatt-client.c
 +++ b/src/gatt-client.c
 @@ -26,7 +26,6 @@
@@ -44,7 +44,7 @@ index f0ed94b..3684663 100644
  	GSList *descriptors;
  };
  
-@@ -296,6 +299,81 @@ fail:
+@@ -296,6 +299,84 @@ fail:
  }
  
  /* ====== Characteristic properties/methods ====== */
@@ -97,7 +97,10 @@ index f0ed94b..3684663 100644
 +static void ccc_written_cb(guint8 status, const guint8 *pdu, guint16 plen,
 +							gpointer user_data)
 +{
-+	struct gatt_dbus_characteristic *chrc = user_data;
++	struct gatt_dbus_descriptor *descr = user_data;
++	struct gatt_dbus_characteristic *chrc = descr->chrc;
++
++	descr->write_request = 0;
 +
 +	if (status) {
 +		error("Failed to enable notifications/indications for "
@@ -126,7 +129,7 @@ index f0ed94b..3684663 100644
  static void gatt_discover_desc_cb(uint8_t status, GSList *descs,
  								void *user_data)
  {
-@@ -316,6 +394,40 @@ static void gatt_discover_desc_cb(uint8_t status, GSList *descs,
+@@ -316,6 +397,40 @@ static void gatt_discover_desc_cb(uint8_t status, GSList *descs,
  			continue;
  
  		chrc->descriptors = g_slist_append(chrc->descriptors, descr);
@@ -149,12 +152,12 @@ index f0ed94b..3684663 100644
 +
 +			if (value) {
 +				put_le16(value, value_buf);
-+				chrc->write_request = gatt_write_char(
++				descr->write_request = gatt_write_char(
 +						chrc->service->client->attrib,
 +						descr->handle,
 +						value_buf,
 +						sizeof(value_buf),
-+						ccc_written_cb, chrc);
++						ccc_written_cb, descr);
 +
 +				if (!chrc->write_request)
 +					error("Failed to enable notifications/"
@@ -167,7 +170,7 @@ index f0ed94b..3684663 100644
  	}
  }
  
-@@ -638,6 +750,20 @@ static void cancel_pending_chrc_requests(struct gatt_dbus_characteristic *chrc)
+@@ -638,6 +753,20 @@ static void cancel_pending_chrc_requests(struct gatt_dbus_characteristic *chrc)
  							chrc->desc_request);
  		chrc->desc_request = 0;
  	}
@@ -188,7 +191,7 @@ index f0ed94b..3684663 100644
  }
  
  static void destroy_characteristic(gpointer user_data)
-@@ -1031,8 +1157,6 @@ static void attio_disconnect_cb(gpointer user_data)
+@@ -1031,8 +1160,6 @@ static void attio_disconnect_cb(gpointer user_data)
  
  	attio_cleanup(client);
  
@@ -198,5 +201,5 @@ index f0ed94b..3684663 100644
  }
  
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

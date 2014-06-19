@@ -1,7 +1,7 @@
-From e63980470298f8efb13614e397a978dd9d0e6906 Mon Sep 17 00:00:00 2001
+From a9de07bb3c4bef84d48a75bdacae21229dc8dd81 Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Thu, 29 May 2014 16:21:57 -0700
-Subject: [PATCH 09/12] src/gatt-client: Implement GattDescriptor1.ReadValue
+Subject: [PATCH 09/14] src/gatt-client: Implement GattDescriptor1.ReadValue
  method.
 
 This patch implements the ReadValue method of the GattDescriptor1
@@ -11,7 +11,7 @@ interface.
  1 file changed, 76 insertions(+), 1 deletion(-)
 
 diff --git a/src/gatt-client.c b/src/gatt-client.c
-index 3684663..53f40a2 100644
+index c30abba..9a807c7 100644
 --- a/src/gatt-client.c
 +++ b/src/gatt-client.c
 @@ -180,10 +180,85 @@ static gboolean descriptor_property_get_chrc(const GDBusPropertyTable *property,
@@ -102,5 +102,5 @@ index 3684663..53f40a2 100644
  
  static DBusMessage *descriptor_write_value(DBusConnection *conn,
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

@@ -1,7 +1,7 @@
 From a11c3d5c2a5c7e0c1d96902a3646699acf492c28 Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Fri, 23 May 2014 14:10:49 -0700
-Subject: [PATCH 02/12] src/gatt-client: Create GattService1 objects for
+Subject: [PATCH 02/14] src/gatt-client: Create GattService1 objects for
  discovered services.
 
 This patch makes btd_gatt_client perform a primary service discovery and
@@ -287,5 +287,5 @@ index 4339b82..62cea96 100644
  	g_free(client);
  }
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

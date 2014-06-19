@@ -1,7 +1,7 @@
 From c88be6d55fc62f938b8bd53d17ca0481a3ac7929 Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Tue, 27 May 2014 21:34:18 -0700
-Subject: [PATCH 05/12] src/gatt-client: Implement
+Subject: [PATCH 05/14] src/gatt-client: Implement
  GattCharacteristic1.ReadValue.
 
 This patch implements the ReadValue method of the
@@ -229,5 +229,5 @@ index fd97224..b2a7b5b 100644
  
  static void service_discover_characteristics(struct gatt_dbus_service *service)
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

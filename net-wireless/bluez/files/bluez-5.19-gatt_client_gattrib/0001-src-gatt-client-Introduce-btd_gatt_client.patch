@@ -1,7 +1,7 @@
 From 818592d1932e25e665e35a7102133f01613188af Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Thu, 22 May 2014 17:11:29 -0700
-Subject: [PATCH 01/12] src/gatt-client: Introduce btd_gatt_client.
+Subject: [PATCH 01/14] src/gatt-client: Introduce btd_gatt_client.
 
 This patch introduces struct btd_gatt_client, which intends to
 encapsulate the GATT database of a btd_device. btd_gatt_client tracks
@@ -225,5 +225,5 @@ index 0000000..e5661d9
 +struct btd_gatt_client *btd_gatt_client_new(struct btd_device *device);
 +void btd_gatt_client_destroy(struct btd_gatt_client *client);
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

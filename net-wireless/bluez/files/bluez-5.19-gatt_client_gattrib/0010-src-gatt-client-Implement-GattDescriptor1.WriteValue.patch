@@ -1,7 +1,7 @@
-From 4aa7cd0fc094360099a45c57020da645f0eeb84f Mon Sep 17 00:00:00 2001
+From f07c3bb1aaa3ffe6363cf40e86fec6da1e46d88b Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Thu, 29 May 2014 17:51:45 -0700
-Subject: [PATCH 10/12] src/gatt-client: Implement GattDescriptor1.WriteValue.
+Subject: [PATCH 10/14] src/gatt-client: Implement GattDescriptor1.WriteValue.
 
 This patch implements the WriteValue method of the GattDescriptor1
 interface.
@@ -10,7 +10,7 @@ interface.
  1 file changed, 85 insertions(+), 1 deletion(-)
 
 diff --git a/src/gatt-client.c b/src/gatt-client.c
-index 53f40a2..aea1c43 100644
+index 9a807c7..5409f31 100644
 --- a/src/gatt-client.c
 +++ b/src/gatt-client.c
 @@ -261,10 +261,94 @@ static DBusMessage *descriptor_read_value(DBusConnection *conn,
@@ -110,5 +110,5 @@ index 53f40a2..aea1c43 100644
  
  static const GDBusMethodTable descriptor_methods[] = {
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

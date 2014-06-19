@@ -1,7 +1,7 @@
 From 2c13fef30fcbfd7687ada8c6a7ad174270d9a1c2 Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Wed, 28 May 2014 14:14:19 -0700
-Subject: [PATCH 06/12] src/gatt-client: Implement
+Subject: [PATCH 06/14] src/gatt-client: Implement
  GattCharacteristic1.WriteValue
 
 This patch implements the WriteValue method of the
@@ -187,5 +187,5 @@ index b2a7b5b..6a6adef 100644
  
  static void destroy_characteristic(gpointer user_data)
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

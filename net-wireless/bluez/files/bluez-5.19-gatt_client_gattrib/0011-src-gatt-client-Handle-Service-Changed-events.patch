@@ -1,7 +1,7 @@
-From b96a855abf7ecfbf744180d72183000d2f7b52ef Mon Sep 17 00:00:00 2001
+From 02c087aeee2f62e201489777e6b2649617268c1c Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Mon, 2 Jun 2014 19:37:21 -0700
-Subject: [PATCH 11/12] src/gatt-client: Handle Service Changed events.
+Subject: [PATCH 11/14] src/gatt-client: Handle Service Changed events.
 
 This patch adds handling for indications from the Service Changed
 characteristic. For now, the code rediscovers all attributes if the
@@ -11,7 +11,7 @@ device that send the indications was bonded with.
  1 file changed, 83 insertions(+), 32 deletions(-)
 
 diff --git a/src/gatt-client.c b/src/gatt-client.c
-index aea1c43..5f238a9 100644
+index 5409f31..1054773 100644
 --- a/src/gatt-client.c
 +++ b/src/gatt-client.c
 @@ -155,6 +155,40 @@ static DBusMessage *error_from_att_ecode(DBusMessage *msg, guint8 ecode)
@@ -117,7 +117,7 @@ index aea1c43..5f238a9 100644
  }
  
  static void ccc_written_cb(guint8 status, const guint8 *pdu, guint16 plen,
-@@ -1277,24 +1352,18 @@ static void attio_connect_cb(GAttrib *attrib, gpointer user_data)
+@@ -1280,24 +1355,18 @@ static void attio_connect_cb(GAttrib *attrib, gpointer user_data)
  
  	client->attrib = g_attrib_ref(attrib);
  
@@ -148,7 +148,7 @@ index aea1c43..5f238a9 100644
  }
  
  static void attio_disconnect_cb(gpointer user_data)
-@@ -1304,19 +1373,9 @@ static void attio_disconnect_cb(gpointer user_data)
+@@ -1307,19 +1376,9 @@ static void attio_disconnect_cb(gpointer user_data)
  	info("btd_gatt_client: device disconnected. Cleaning up GATT "
  								"services\n");
  
@@ -169,7 +169,7 @@ index aea1c43..5f238a9 100644
  }
  
  struct btd_gatt_client *btd_gatt_client_new(struct btd_device *device)
-@@ -1348,15 +1407,7 @@ void btd_gatt_client_destroy(struct btd_gatt_client *client)
+@@ -1351,15 +1410,7 @@ void btd_gatt_client_destroy(struct btd_gatt_client *client)
  		btd_device_remove_attio_callback(client->device,
  							client->attioid);
  
@@ -187,5 +187,5 @@ index aea1c43..5f238a9 100644
  	attio_cleanup(client);
  
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

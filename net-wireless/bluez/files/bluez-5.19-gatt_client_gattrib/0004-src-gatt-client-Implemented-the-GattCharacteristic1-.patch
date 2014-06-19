@@ -1,7 +1,7 @@
 From 5fa0bed4c00fb629357b13215acdfaf8f65dfd17 Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Tue, 27 May 2014 14:11:54 -0700
-Subject: [PATCH 04/12] src/gatt-client: Implemented the GattCharacteristic1
+Subject: [PATCH 04/14] src/gatt-client: Implemented the GattCharacteristic1
  "Flags" property.
 
 This patch exposes characteristic properties under the "Flags" D-Bus
@@ -77,5 +77,5 @@ index eb96999..fd97224 100644
  };
  
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 

@@ -1,7 +1,7 @@
-From 2a93a8f71a22645e643fb388aae91a00337c2988 Mon Sep 17 00:00:00 2001
+From 007f1090928aac8b8b8913401a389d2e136091ed Mon Sep 17 00:00:00 2001
 From: Arman Uguray <armansito@chromium.org>
 Date: Mon, 2 Jun 2014 20:15:09 -0700
-Subject: [PATCH 12/12] CHROMIUM: Make GATT D-Bus client API non-experimental.
+Subject: [PATCH 13/14] CHROMIUM: Make GATT D-Bus client API non-experimental.
 
 This patch marks the methods and properties exposed by the GATT client
 API as non-experimental.
@@ -10,10 +10,10 @@ API as non-experimental.
  1 file changed, 12 insertions(+), 24 deletions(-)
 
 diff --git a/src/gatt-client.c b/src/gatt-client.c
-index 5f238a9..84ab4e4 100644
+index c52b842..db198e4 100644
 --- a/src/gatt-client.c
 +++ b/src/gatt-client.c
-@@ -386,21 +386,17 @@ static DBusMessage *descriptor_write_value(DBusConnection *conn,
+@@ -390,21 +390,17 @@ static DBusMessage *descriptor_write_value(DBusConnection *conn,
  }
  
  static const GDBusMethodTable descriptor_methods[] = {
@@ -39,7 +39,7 @@ index 5f238a9..84ab4e4 100644
  	{ }
  };
  
-@@ -937,11 +933,9 @@ static DBusMessage *characteristic_write_value(DBusConnection *conn,
+@@ -1000,11 +996,9 @@ static DBusMessage *characteristic_write_value(DBusConnection *conn,
  }
  
  static const GDBusMethodTable characteristic_methods[] = {
@@ -53,7 +53,7 @@ index 5f238a9..84ab4e4 100644
  						NULL,
  						characteristic_write_value) },
  	{ }
-@@ -953,12 +947,9 @@ static const GDBusSignalTable characteristic_signals[] = {
+@@ -1016,12 +1010,9 @@ static const GDBusSignalTable characteristic_signals[] = {
  };
  
  static const GDBusPropertyTable characteristic_properties[] = {
@@ -69,7 +69,7 @@ index 5f238a9..84ab4e4 100644
  	{ }
  };
  
-@@ -1193,12 +1184,9 @@ static gboolean service_property_get_is_primary(
+@@ -1256,12 +1247,9 @@ static gboolean service_property_get_is_primary(
  }
  
  static const GDBusPropertyTable service_properties[] = {
@@ -86,5 +86,5 @@ index 5f238a9..84ab4e4 100644
  };
  
 -- 
-1.9.1.423.g4596e3a
+1.8.3.2
 
