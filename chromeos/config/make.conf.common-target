@@ -15,6 +15,13 @@
 CBUILD=x86_64-pc-linux-gnu
 HOSTCC=x86_64-pc-linux-gnu-gcc
 
+# C++ exception support disabled by default. This can be re-enabled by reseting
+# the CXXEXCEPTIONS_FLAGS for a whole board or, package by package, by calling
+# cros_enable_cxx_exceptions().
+CXXEXCEPTIONS=0
+CXXEXCEPTIONS_FLAGS="-fno-exceptions -fno-unwind-tables
+  -fno-asynchronous-unwind-tables "
+
 ACCEPT_KEYWORDS="${ARCH}"
 USE="${ARCH} zlib bindist cros-debug -introspection platform2"
 

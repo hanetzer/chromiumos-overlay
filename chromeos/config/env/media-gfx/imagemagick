@@ -13,6 +13,11 @@ cros_pre_src_configure_imagemagick_local() {
 	fi
 }
 
+# Enable C++ exceptions.
+cros_pre_src_prepare_enable_cxx_exceptions() {
+	cros_enable_cxx_exceptions
+}
+
 # Force install to use -j1 since it can flake.
 # http://crosbug.com/34617
 cros_pre_src_install_imagemagick_single_install() {

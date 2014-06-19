@@ -163,3 +163,17 @@ cros_post_src_test_asan_check() {
 	rmdir "${T}/asan_logs" 2>/dev/null || die "asan error not caught"
 	mkdir -p "${T}/asan_logs"
 }
+
+# Enables C++ exceptions. We normally disable these by default in
+#   chromiumos-overlay/chromeos/config/make.conf.common-target
+cros_enable_cxx_exceptions() {
+	CXXFLAGS=${CXXFLAGS/ -fno-exceptions/ }
+	CXXFLAGS=${CXXFLAGS/ -fno-unwind-tables/ }
+	CXXFLAGS=${CXXFLAGS/ -fno-asynchronous-unwind-tables/ }
+	CFLAGS=${CFLAGS/ -fno-exceptions/ }
+	CFLAGS=${CFLAGS/ -fno-unwind-tables/ }
+	CFLAGS=${CFLAGS/ -fno-asynchronous-unwind-tables/ }
+	# Set the CXXEXCEPTIONS variable to 1 so packages based on common.mk or
+	# platform2 gyp inherit this value by default.
+	CXXEXCEPTIONS=1
+}
