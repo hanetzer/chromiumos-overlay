@@ -18,7 +18,7 @@ SRC_URI="mirror://gnu/${PN}/${P}.tar.xz
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="*"
-IUSE="acl caps gmp nls selinux static userland_BSD vanilla xattr"
+IUSE="acl caps gmp multicall nls selinux static userland_BSD vanilla xattr"
 
 LIB_DEPEND="acl? ( sys-apps/acl[static-libs] )
 	caps? ( sys-libs/libcap )
@@ -46,6 +46,27 @@ src_prepare() {
 		PATCHDIR="${WORKDIR}/patch" \
 		EPATCH_EXCLUDE="001_all_coreutils-gen-progress-bar.patch" \
 		epatch
+
+		# Single-binary patches.
+		epatch "${FILESDIR}/${P}-single-binary.patch"
+
+		# Since we modified configure.ac and some .mk we need to rerun autoreconf,
+		# but can't do this on a system where coreutils is not installed yet, since
+		# autoconf and some of the files we need to generate rely on these tools.
+		# Instead, we patch the files with the output of an autoreconf run and
+		# touch some dependencies in order to avoid the Makefile to attempt
+		# regenerating them.
+		epatch "${FILESDIR}/${P}-single-binary-autoreconf.patch"
+
+		# coreutils Makefile includes dependencies used by developpers to rerun
+		# autoconf, automake or configure when the required files change. Avoid
+		# running autoreconf by touching the dependencies in order.
+		touch config.status
+		touch m4/cu-progs.m4
+		touch aclocal.m4
+		touch src/cu-progs.mk
+		touch src/single-binary.mk
+		touch Makefile.in
 	fi
 
 	# Since we've patched many .c files, the make process will try to
@@ -85,6 +106,7 @@ src_configure() {
 		--enable-no-install-program="groups,hostname,kill,su,uptime" \
 		--enable-largefile \
 		$(use caps || echo --disable-libcap) \
+		$(use_enable multicall single-binary shebangs) \
 		$(use_enable nls) \
 		$(use_enable acl) \
 		$(use_enable xattr) \
@@ -132,6 +154,12 @@ src_install() {
 	if [[ ${USERLAND} == "GNU" ]] ; then
 		cd "${ED}"/usr/bin
 		dodir /bin
+		if use multicall; then
+			# move the coreutils single binary to /bin but keep a
+			# symlink from here.
+			mv coreutils ../../bin/ || die "could not move coreutils bin"
+			ln -s ../../bin/coreutils coreutils || die "could not symlink coreutils bin"
+		fi
 		# move critical binaries into /bin (required by FHS)
 		local fhs="cat chgrp chmod chown cp date dd df echo false ln ls
 		           mkdir mknod mv pwd rm rmdir stty sync true uname"
