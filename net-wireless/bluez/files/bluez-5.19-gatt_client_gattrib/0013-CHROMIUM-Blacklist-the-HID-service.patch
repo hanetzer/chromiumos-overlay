@@ -1,0 +1,60 @@
+From 47bbaedc75f8cfeae4c02de8373a45a91f27b0c2 Mon Sep 17 00:00:00 2001
+From: Arman Uguray <armansito@chromium.org>
+Date: Wed, 18 Jun 2014 17:47:02 -0700
+Subject: [PATCH] CHROMIUM: Blacklist the HID service.
+
+The HID service generates a lot of noise on D-Bus due to its real time
+nature and since we currently don't have an API to explicitly enable or
+disable notifications, all paired HoG devices will flood D-Bus with
+unwanted signals. Until we have that API, we don't expose the HID GATT
+service on D-Bus.
+
+BUG=chromium:386423
+TEST=Tested on a HP BLE Mouse.
+---
+ src/gatt-client.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/src/gatt-client.c b/src/gatt-client.c
+index 84ab4e4..118804a 100644
+--- a/src/gatt-client.c
++++ b/src/gatt-client.c
+@@ -48,6 +48,8 @@
+ #define GATT_CHARACTERISTIC_IFACE	"org.bluez.GattCharacteristic1"
+ #define GATT_DESCRIPTOR_IFACE		"org.bluez.GattDescriptor1"
+ 
++#define HOG_UUID	0x1812
++
+ struct btd_gatt_client {
+ 	struct btd_device *device;
+ 	GAttrib *attrib;
+@@ -1244,6 +1246,7 @@ static struct gatt_dbus_service *gatt_dbus_service_create(
+ {
+ 	struct gatt_dbus_service *service;
+ 	bt_uuid_t uuid;
++	bt_uuid_t hid_uuid;
+ 	const char *device_path = device_get_path(client->device);
+ 
+ 	service = g_try_new0(struct gatt_dbus_service, 1);
+@@ -1262,6 +1265,18 @@ static struct gatt_dbus_service *gatt_dbus_service_create(
+ 
+ 	bt_uuid_to_uuid128(&uuid, &service->uuid);
+ 
++	/* Don't expose the HID service, since it generates too much
++	 * noise.
++	 *
++	 * TODO(armansito): Remove this once we have an API for enabling
++	 * notifications
++	 */
++	bt_uuid16_create(&hid_uuid, HOG_UUID);
++	if (bt_uuid_cmp(&hid_uuid, &service->uuid) == 0) {
++		error("HID GATT service blacklisted");
++		goto fail;
++	}
++
+ 	if (!g_dbus_register_interface(btd_get_dbus_connection(), service->path,
+ 						GATT_SERVICE_IFACE,
+ 						NULL, NULL,
+-- 
+1.8.3.2
+
