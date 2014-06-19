@@ -6,5 +6,6 @@ EAPI=4
 DESCRIPTION="Coreboot private files placeholder"
 # Empty (null) ebuild which satisifies virtual/coreboot-private-files.
 
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
