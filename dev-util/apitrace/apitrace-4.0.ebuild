@@ -14,13 +14,13 @@ SRC_URI="https://github.com/${PN}/${PN}/tarball/${PV} -> ${P}.tar.gz"
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+cli egl qt4"
+IUSE="+cli opengl opengles qt4"
 
 RDEPEND="${PYTHON_DEPS}
 	app-arch/snappy[${MULTILIB_USEDEP}]
 	sys-libs/zlib[${MULTILIB_USEDEP}]
-	!egl? ( virtual/opengl )
-	egl? ( virtual/opengles )
+	opengl? ( virtual/opengl )
+	opengles? ( virtual/opengles )
 	media-libs/libpng:0=
 	sys-process/procps
 	x11-libs/libX11
@@ -58,7 +58,7 @@ src_configure() {
 	my_configure() {
 		mycmakeargs=(
 			-DARCH_SUBDIR=
-			$(cmake-utils_use_enable egl EGL)
+			$(cmake-utils_use_enable opengles EGL)
 		)
 		if multilib_build_binaries ; then
 			mycmakeargs+=(
