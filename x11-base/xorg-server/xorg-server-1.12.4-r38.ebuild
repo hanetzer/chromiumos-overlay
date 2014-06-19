@@ -14,8 +14,8 @@ KEYWORDS="*"
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
 # +suid needed because sparcs default off
-IUSE="${IUSE_SERVERS} dga -doc ipv6 minimal nptl selinux
-+suid tslib +udev xinerama"
+IUSE="${IUSE_SERVERS} dga -doc ipv6 minimal nptl selinux +suid tslib +udev
+	xinerama xlib-glx"
 
 RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	dev-libs/openssl
@@ -208,8 +208,6 @@ pkg_setup() {
 		$(use_enable !minimal record)
 		$(use_enable !minimal xfree86-utils)
 		$(use_enable !minimal install-libxf86config)
-		$(use_enable !minimal dri)
-		$(use_enable !minimal dri2)
 		$(use_enable !arm vgahw)
 		$(use_enable !arm vbe)
 		$(use_enable xnest)
@@ -249,6 +247,12 @@ pkg_setup() {
 		--enable-null-root-cursor
 		--with-default-font-path=built-ins
 	)
+
+	if use xlib-glx ; then
+		XORG_CONFIGURE_OPTIONS+=(--disable-dri --disable-dri2)
+	else
+		XORG_CONFIGURE_OPTIONS+=(--enable-dri --enable-dri2)
+	fi
 
 	if use amd64 || use x86 ; then
 		XORG_CONFIGURE_OPTIONS+=( --enable-xaa)
