@@ -46,3 +46,6 @@ app-misc/screen pam
 
 # We split out the protobuf python bindings into the protobuf-python package.
 dev-libs/protobuf python
+
+# We don't care about python bindings with the module tools.
+sys-apps/kmod python
