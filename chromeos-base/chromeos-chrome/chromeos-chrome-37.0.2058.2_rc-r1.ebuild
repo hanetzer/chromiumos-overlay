@@ -52,7 +52,7 @@ IUSE="
 	ozone
 	+reorder
 	+runhooks
-	+verbose
+	verbose
 	vtable_verify
 	X
 	"
