@@ -168,7 +168,6 @@ RDEPEND_shill="
 		vpn? ( net-dialup/ppp )
 		net-dns/c-ares
 		net-firewall/iptables
-		net-libs/libmnl
 		net-libs/libnetfilter_queue
 		net-libs/libnfnetlink
 		net-misc/dhcpcd
