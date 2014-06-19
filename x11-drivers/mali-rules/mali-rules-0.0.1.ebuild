@@ -5,7 +5,7 @@ EAPI=4
 
 DESCRIPTION="Rules for setting permissions right on /dev/mali0"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="arm"
 IUSE=""
