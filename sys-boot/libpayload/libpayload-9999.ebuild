@@ -39,6 +39,13 @@ src_compile() {
 		extra_flags="-mpreferred-stack-boundary=2 -ffunction-sections"
 	elif use arm || use arm64 ; then
 		extra_flags="-ffunction-sections"
+		# Export the known cross compilers for ARM systems. Include
+		# both v7a and 64-bit armv8 compilers so there isn't a reliance
+		# on what the default profile is for exporting a compiler. The
+		# reasoning is that the firmware may need both to build and
+		# and boot.
+		export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
+		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu-"
 	fi
 
 	local libpayloaddir="payloads/libpayload"
