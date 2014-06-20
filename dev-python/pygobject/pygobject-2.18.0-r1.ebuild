@@ -67,9 +67,6 @@ src_prepare() {
 	# needed to build on a libtool-1 system, bug #255542
 	rm m4/lt* m4/libtool.m4 ltmain.sh
 
-	# disable pyc compiling
-	ln -sfn $(type -P true) py-compile
-
 	# Workaround upstream Gentoo bug #232820
 	find "${S}" -name .elibtoolized -delete
 	eautoreconf
