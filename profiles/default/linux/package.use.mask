@@ -49,3 +49,6 @@ dev-libs/protobuf python
 
 # We don't care about python bindings with the module tools.
 sys-apps/kmod python
+
+# We don't care about the ssl lib.
+dev-libs/libevent ssl
