@@ -22,7 +22,7 @@ COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
-	chromeos-base/platform2
+	chromeos-base/metrics
 	chromeos-base/vboot_reference
 	cros_p2p? ( chromeos-base/p2p )
 	dev-cpp/gflags
@@ -44,7 +44,6 @@ DEPEND="chromeos-base/system_api
 	${COMMON_DEPEND}"
 
 RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.8
 	chromeos-base/chromeos-installer
 	${COMMON_DEPEND}
 	virtual/update-policy

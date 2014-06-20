@@ -19,7 +19,7 @@ REQUIRED_USE="asan? ( clang )"
 LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/platform2
+	chromeos-base/metrics
 	dev-libs/glib
 	net-dns/avahi-daemon
 	net-firewall/iptables"

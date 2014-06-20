@@ -14,7 +14,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"cros-disks"
 	"debugd"
 	"lorgnette"
-	"metrics"
 	"power_manager"
 	"shill"
 	"vpn-manager"
@@ -49,7 +48,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +passive_metrics +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -119,13 +118,6 @@ RDEPEND_lorgnette="
 		media-gfx/sane-backends
 		media-libs/libpng[pnm2png]
 	)
-"
-
-RDEPEND_metrics="
-	!<chromeos-base/chromeos-init-0.0.5
-	dev-cpp/gflags
-	dev-libs/dbus-glib
-	sys-apps/rootdev
 "
 
 RDEPEND_mist="
@@ -212,7 +204,7 @@ RDEPEND="
 		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
 		chromeos-base/libchromeos
-		!chromeos-base/metrics[-platform2]
+		chromeos-base/metrics
 		!chromeos-base/mist[-platform2]
 		!chromeos-base/power_manager
 		!chromeos-base/shill[-platform2]
@@ -454,29 +446,6 @@ platform2_install_lorgnette() {
 	doins dbus_permissions/org.chromium.lorgnette.conf
 	insinto /usr/share/dbus-1/system-services
 	doins dbus_service/org.chromium.lorgnette.service
-}
-
-platform2_install_metrics() {
-	dobin "${OUT}"/metrics_client syslog_parser.sh
-
-	if use passive_metrics; then
-		dobin "${OUT}"/metrics_daemon
-		insinto /etc/init
-		doins init/metrics_library.conf
-		doins init/metrics_daemon.conf
-	fi
-
-	insinto /usr/$(get_libdir)/pkgconfig
-	for v in "${LIBCHROME_VERS[@]}"; do
-		./platform2_preinstall.sh "${OUT}" "${v}"
-		dolib.so "${OUT}/lib/libmetrics-${v}.so"
-		doins "${OUT}/lib/libmetrics-${v}.pc"
-	done
-
-	insinto /usr/include/metrics
-	doins c_metrics_library.h \
-		metrics_library{,_mock}.h \
-		timer{,_mock}.h
 }
 
 platform2_install_mist() {
@@ -787,20 +756,6 @@ platform2_test_lorgnette() {
 	use lorgnette || return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
 	platform_test "run" "${OUT}/lorgnette_unittest"
-}
-
-platform2_test_metrics() {
-	local tests=(
-		metrics_library_test
-		$(usex passive_metrics 'metrics_daemon_test' '')
-                persistent_integer_test
-		timer_test
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
-	done
 }
 
 platform2_test_mist() {

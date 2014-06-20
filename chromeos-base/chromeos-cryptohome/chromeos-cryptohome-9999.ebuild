@@ -23,9 +23,11 @@ LIBCHROME_VERS="271506"
 
 RDEPEND="
 	app-crypt/trousers
-	!<chromeos-base/chromeos-init-0.0.13
-	chromeos-base/platform2
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libchromeos
 	chromeos-base/libscrypt
+	chromeos-base/metrics
+	chromeos-base/platform2
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/openssl
@@ -36,7 +38,7 @@ RDEPEND="
 
 DEPEND="
 	test? ( dev-cpp/gtest )
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	${RDEPEND}"
 

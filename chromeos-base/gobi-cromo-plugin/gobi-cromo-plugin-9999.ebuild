@@ -26,6 +26,8 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 		!internal? ( chromeos-base/gobi3k-lib-bin )
 		chromeos-base/gobi3k-lib
 	)
+	chromeos-base/libchromeos
+	chromeos-base/metrics
 	install_tests? ( dev-cpp/gmock dev-cpp/gtest )
 "
 DEPEND="${RDEPEND}

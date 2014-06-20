@@ -20,9 +20,10 @@ REQUIRED_USE="asan? ( clang )"
 LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/chromeos-cryptohome
-	!<chromeos-base/chromeos-init-0.0.14
 	chromeos-base/chromeos-minijail
-	chromeos-base/platform2
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libchromeos
+	chromeos-base/metrics
 	dev-libs/glib
 	dev-libs/nss
 	dev-libs/protobuf
@@ -30,9 +31,9 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 
 DEPEND="${RDEPEND}
 	chromeos-base/bootstat
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	>=chromeos-base/libchrome_crypto-${LIBCHROME_VERS}
 	chromeos-base/protofiles
+	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-cpp/gmock
 	sys-libs/glibc
