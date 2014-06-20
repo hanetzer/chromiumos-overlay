@@ -76,12 +76,17 @@ install_libpayload() {
 	local destdir="/firmware/libpayload${suffix}"
 
 	local archdir=""
-	if use x86 || use amd64 ; then
-		archdir="x86"
-	elif use arm ; then
-		archdir="arm"
-	elif use arm64 ; then
-		archdir="arm64"
+
+	if [[ -n "${CHROMEOS_LIBPAYLOAD_ARCH_DIR}" ]] ; then
+	      	archdir="${CHROMEOS_LIBPAYLOAD_ARCH_DIR}"
+	else
+		if use x86 || use amd64 ; then
+			archdir="x86"
+		elif use arm ; then
+		     archdir="arm"
+		elif use arm64 ; then
+		     archdir="arm64"
+		fi
 	fi
 
 	insinto "${destdir}"/lib
