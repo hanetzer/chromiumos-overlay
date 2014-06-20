@@ -20,7 +20,6 @@ IUSE="
 	deep_memory_profiler
 	disable_login_animations
 	disable_webaudio
-	egl
 	fade_boot_splash_screen
 	gpu_sandbox_allow_sysv_shm
 	gpu_sandbox_start_after_initialization
@@ -32,6 +31,7 @@ IUSE="
 	moblab
 	natural_scroll_default
 	neon
+	opengles
 	ozone
 	ozone_platform_dri
 	test
