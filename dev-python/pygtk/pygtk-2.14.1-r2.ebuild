@@ -57,10 +57,6 @@ src_prepare() {
 		-e '/^CODEGENDIR=/s:=:=${SYSROOT}:' \
 		configure.ac || die
 
-	# Disable pyc compiling
-	mv "${S}"/py-compile "${S}"/py-compile.orig
-	ln -s $(type -P true) "${S}"/py-compile
-
 	AT_M4DIR="m4" eautoreconf
 
 	python_copy_sources
