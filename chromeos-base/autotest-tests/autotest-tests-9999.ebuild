@@ -86,7 +86,6 @@ CLIENT_IUSE_TESTS="
 	+tests_flaky_test
 	+tests_hardware_Badblocks
 	+tests_hardware_ch7036
-	+tests_hardware_DiskFirmwareUpgrade
 	+tests_hardware_DiskSize
 	+tests_hardware_EC
 	+tests_hardware_EepromWriteProtect
@@ -109,7 +108,6 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Smartctl
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
-	+tests_hardware_StorageStress
 	+tests_hardware_StorageTrim
 	+tests_hardware_StorageWearoutDetect
 	+tests_hardware_TouchScreenPowerCycles
