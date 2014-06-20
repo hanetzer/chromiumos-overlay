@@ -45,7 +45,6 @@ IUSE="
 	+gold
 	hardfp
 	+highdpi
-	+ibus
 	+nacl
 	neon
 	+ninja
@@ -164,9 +163,6 @@ RDEPEND="${RDEPEND}
 	sys-fs/udev
 	sys-libs/libcap
 	sys-libs/zlib
-	ibus? (
-		>=app-i18n/ibus-1.4.99
-	)
 	X? (
 		x11-apps/setxkbmap
 		x11-libs/libX11
@@ -945,12 +941,6 @@ src_install() {
 	else
 		export PORTAGE_STRIP_FLAGS="--strip-debug --keep-file-symbols"
 	fi
-
-	# Copy input_methods.txt so that ibus-m17n can exclude unnnecessary
-	# input methods based on the file.
-	insinto /usr/share/chromeos-assets/input_methods
-	INPUT_METHOD="${CHROME_ROOT}"/src/chromeos/ime
-	doins "${INPUT_METHOD}"/input_methods.txt
 
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
