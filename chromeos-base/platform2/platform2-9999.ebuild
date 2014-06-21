@@ -162,7 +162,6 @@ RDEPEND_shill="
 		!<chromeos-base/chromeos-init-0.0.4
 		dev-libs/dbus-c++
 		dev-libs/libnl:3
-		dev-libs/nss
 		cellular? ( net-dialup/ppp )
 		vpn? ( net-dialup/ppp )
 		net-dns/c-ares
