@@ -570,7 +570,6 @@ platform2_install_shill() {
 	local shims_dir=/usr/$(get_libdir)/shill/shims
 	exeinto "${shims_dir}"
 	doexe "${OUT}"/net-diags-upload
-	doexe "${OUT}"/nss-get-cert
 	doexe "${OUT}"/crypto-util
 
 	if use vpn; then
