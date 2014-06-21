@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("281490e6c59496b59b77f90ddba0f73d8fa27702" "7b3862871d3a29f582681db22b3e520012d67ed5" "04d602c9c6b490bdcdc81d6b9dd5cafb787dee09" "725a6287e07e6ac3b70ce684ec6508699a289361" "e53d10a0f31e92b53c1bc12638a8196ec333a1a1" "4bcc2526ba1489370008f55f49ac79d4edab5ca6" "6d1bdfcb2c666e4c949b23575520a25336c62277" "a58da7352ef106a8217078238c0608804ad580b8" "b9445e605ce23c7d04114552644d8a53e347d771" "c3ec233f432bd02d2f232e2ae413e537459f0cf1" "08a8b58c85b401f33331efd171595d1222d5b3b0" "795c7f30df3dcde767764d69e7d1c6dda0e41076" "a53e84dadb5d7bc097ec2c5353e4320bc8ee2119" "93428b5212fdf8f570ceabee1cf4c07f63040994" "457a88828018a9c7f8077c7dfed4259c167dd1b3")
-CROS_WORKON_TREE=("74bb21cbae0eef26528ccc36a74e6e39b9eb0c62" "3c54954a0a60e386f790c9aafb6cd3427afc1dd4" "5563d9b38e78819aae6d530e9c6b403a869a1a27" "e765964d5ad88bf78f3d1a1b03e9004e1b5fd2bb" "f8b9b6429055fcc8b230035f0471a0528129b7bb" "69d0bdef381c3d593296f4980ed004a1f0307a32" "e1aa7528e3af5fc265a2858c73d9bad2e07cf775" "01dd5a426795a4b735a76f4e53a7ac1523063c3b" "a00e55a6c1392d6812ffe63f674943a15ffedcd7" "d32b3b15cfbf8e2d2d61060a42d4b25638f2ad87" "29091c76e2b6cbf204bea5cdb7d8afc5e3ef0cdd" "df828c4bd40735c09fc862a9d2cae2f84febcb46" "f861bb0f4f667dbb6f7128a3027f400fae1132e4" "d93fdc7afd5b1df32d9821363bcd0cc982212a47" "146f7625b00b7a4dcc3dad0e95a40013dc302da3")
+CROS_WORKON_COMMIT=("281490e6c59496b59b77f90ddba0f73d8fa27702" "7b3862871d3a29f582681db22b3e520012d67ed5" "6dcfa3180daba630783c6a85fbfe9cfd353f02be" "af0821848179f95740d6abb7a82b91ca28746c08" "bc75986066dd49e8739974648bba013d11802e16" "41f7ffc7cefaa494e8f00e5c41d42b565cab60e2" "350e389513e65faa6639e362e49a15eb24a34e4a" "aeb3adfafbe6570028733db242c759620a20e052" "b9445e605ce23c7d04114552644d8a53e347d771" "aba5f714821dc823b867af5e8466d4abb160f087" "71442b9253dd04919c32bc9ec2896dac22c5bcb1" "a53e84dadb5d7bc097ec2c5353e4320bc8ee2119" "290fd1d32dd444e441ee0575ac10242eb61d7eea" "26d2e17fccba6b695a8f1f1c43d8cc29bf6de43b")
+CROS_WORKON_TREE=("74bb21cbae0eef26528ccc36a74e6e39b9eb0c62" "3c54954a0a60e386f790c9aafb6cd3427afc1dd4" "3a906040fc8041a503e673601fadeea1ca4d9ac9" "d603be33a5993ba60cc5df005ea19186acf480d1" "c64f08b0cbd1eb3ec662190f388293e22388863c" "7d746dee6ac87a520cf4a34b88c0aeb71e588f9a" "2d49937e26fbd01543eb3b984a232ec051836a8a" "3d73539808bc299abaaa8089024ac405863dbd10" "a00e55a6c1392d6812ffe63f674943a15ffedcd7" "ff95dfd266deddb2ec9c1f2831920650693998fa" "c02de9ee390549481570fe80406371fe68eb35a7" "f861bb0f4f667dbb6f7128a3027f400fae1132e4" "69ddc0404a178453d4d07078b7ff9c76005078ea" "a0730c8a9f7b174853d6cb796c386af2f0c511b7")
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
 
@@ -20,7 +20,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"mist"
 	"power_manager"
 	"shill"
-	"system_api"
 	"vpn-manager"
 	"wimax_manager"
 )
@@ -220,7 +219,7 @@ RDEPEND="
 		!chromeos-base/mist[-platform2]
 		!chromeos-base/power_manager
 		!chromeos-base/shill[-platform2]
-		!chromeos-base/system_api[-platform2]
+		chromeos-base/system_api
 		!chromeos-base/vpn-manager[-platform2]
 		!chromeos-base/wimax_manager[-platform2]
 		!dev-util/quipper
@@ -609,14 +608,6 @@ platform2_install_shill() {
 	udev_dorules udev/*.rules
 }
 
-platform2_install_system_api() {
-	local dir dirs=( dbus switches constants )
-	for dir in "${dirs[@]}"; do
-		insinto "/usr/include/chromeos/${dir}"
-		doins -r "${dir}"/*
-	done
-}
-
 platform2_install_vpn-manager() {
 	use cros_host && return 0
 	use vpn || return 0
@@ -846,10 +837,6 @@ platform2_test_shill() {
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: shill" && return 0
 
 	platform_test "run" "${OUT}/shill_unittest"
-}
-
-platform2_test_system_api() {
-	return 0
 }
 
 platform2_test_vpn-manager() {
