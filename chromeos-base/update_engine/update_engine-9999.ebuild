@@ -21,6 +21,7 @@ LIBCHROME_VERS="271506"
 COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+	chromeos-base/libchromeos
 	chromeos-base/platform2
 	chromeos-base/vboot_reference
 	cros_p2p? ( chromeos-base/p2p )
@@ -36,7 +37,8 @@ COMMON_DEPEND="app-arch/bzip2
 	sys-apps/rootdev
 	sys-fs/e2fsprogs"
 
-DEPEND="dev-cpp/gmock
+DEPEND="chromeos-base/system_api
+	dev-cpp/gmock
 	dev-cpp/gtest
 	cros_host? ( dev-util/scons )
 	${COMMON_DEPEND}"
