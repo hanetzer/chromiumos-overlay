@@ -15,7 +15,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"debugd"
 	"lorgnette"
 	"metrics"
-	"mist"
 	"power_manager"
 	"shill"
 	"vpn-manager"
@@ -24,6 +23,7 @@ OLD_PLATFORM_LOCALNAME=(
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
+	"mist"
 )
 CROS_WORKON_LOCALNAME=(
 	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
