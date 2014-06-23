@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="${IUSE} +autotest +cellular"
+IUSE="${IUSE} +autotest +cellular +shill"
 
 RDEPEND="
 	!chromeos-base/autotest-telemetry
@@ -123,7 +123,11 @@ IUSE_TESTS_CELLULAR="
 	)
 "
 
-IUSE="${IUSE} ${IUSE_TESTS[*]} ${IUSE_TESTS_CELLULAR}"
+IUSE_TESTS_SHILL="
+	shill? ( +tests_network_ChromeWifiEndToEnd )
+"
+
+IUSE="${IUSE} ${IUSE_TESTS[*]} ${IUSE_TESTS_CELLULAR} ${IUSE_TESTS_SHILL}"
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files

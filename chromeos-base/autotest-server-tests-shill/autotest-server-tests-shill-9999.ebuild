@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="+autotest"
+IUSE="+autotest -chromeless_tty"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -31,6 +31,9 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_ChaosConfigFailure
 	+tests_network_WiFi_ChaosConnectDisconnect
 	+tests_network_WiFi_ChaosLongConnect
+	!chromeless_tty (
+		+tests_network_WiFi_ChromeEndToEnd
+	)
 	+tests_network_WiFi_ConnectionIdentifier
 	+tests_network_WiFi_DisableEnable
 	+tests_network_WiFi_DisconnectClearsIP
