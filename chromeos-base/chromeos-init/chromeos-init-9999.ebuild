@@ -75,7 +75,7 @@ src_install() {
 		doins cgroups.conf
 		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
 		doins log-rotate.conf
-		doins pre-shutdown.conf pstore.conf reboot.conf
+		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
 
 		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
