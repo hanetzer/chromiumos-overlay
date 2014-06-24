@@ -73,6 +73,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0012-src-gatt-client-Add-Characteristic-Extended-Properti.patch"
 	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0013-CHROMIUM-Make-GATT-D-Bus-client-API-non-experimental.patch"
 	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0014-CHROMIUM-Blacklist-the-HID-service.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0015-src-gatt-client-Add-GattCharacteristic1-StartNotify-.patch"
 
 	# Change the default D-Bus configuration; the daemon is run as
 	# bluetooth, not root; we don't use the lp user, and we use the
