@@ -278,7 +278,7 @@ get_rev() {
 }
 
 using_common_mk() {
-	[[ -n $(find -H "${S}" -name common.mk -exec grep -l common-mk.git {} +) ]]
+	[[ -n $(find -H "${S}" -name common.mk -exec grep -l 'The authoritative common.mk is located in' {} +) ]]
 }
 
 cros-workon_src_unpack() {
