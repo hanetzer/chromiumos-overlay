@@ -18,12 +18,12 @@ OLD_PLATFORM_LOCALNAME=(
 	"power_manager"
 	"shill"
 	"vpn-manager"
-	"wimax_manager"
 )
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
 	"mist"
+	"wimax_manager"
 )
 CROS_WORKON_LOCALNAME=(
 	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
