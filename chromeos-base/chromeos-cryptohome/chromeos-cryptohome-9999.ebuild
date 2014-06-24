@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/cryptohome"
-CROS_WORKON_LOCALNAME="cryptohome"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-debug cros-workon
@@ -38,6 +39,11 @@ DEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/vboot_reference
 	${RDEPEND}"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/cryptohome"
+}
 
 src_prepare() {
 	cros-workon_src_prepare
