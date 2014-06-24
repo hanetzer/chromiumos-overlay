@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/update_engine"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 
 inherit toolchain-funcs cros-debug cros-workon flag-o-matic scons-utils
 
@@ -10,7 +12,7 @@ DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override"
@@ -49,6 +51,10 @@ RDEPEND="
 	virtual/update-policy
 "
 
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/update_engine"
+}
 
 src_configure() {
 	cros-workon_src_configure
