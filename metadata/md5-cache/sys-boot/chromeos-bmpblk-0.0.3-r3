@@ -1,0 +1,9 @@
+DEFINED_PHASES=install
+DESCRIPTION=Chrome OS Firmware Bitmap Block
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=amd64 arm x86
+LICENSE=BSD-Google
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/chromeos-bmpblk-0.0.3.tbz2
+_md5_=dda533a75411c51d0c9719132e884d4f

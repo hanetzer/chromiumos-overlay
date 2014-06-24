@@ -9,5 +9,5 @@ LICENSE=linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware ) linux_firmware_fw
 RDEPEND=linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] ) !net-wireless/iwl1000-ucode !net-wireless/iwl2000-ucode !net-wireless/iwl2030-ucode !net-wireless/iwl3945-ucode !net-wireless/iwl4965-ucode !net-wireless/iwl5000-ucode !net-wireless/iwl6000-ucode !net-wireless/iwl6005-ucode !net-wireless/iwl6030-ucode !net-wireless/iwl6050-ucode
 RESTRICT=binchecks strip test
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	87639779e0d5eda0b9aec2fef908d4df	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=ca833ce7eca7dfd921746fa8f78f01ad
