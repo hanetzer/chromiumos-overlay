@@ -91,7 +91,10 @@ src_install() {
 	# Install public headers to /build/${BOARD}/usr/include/vboot
 	einfo "Installing header files"
 	insinto /usr/include/vboot
-	doins firmware/include/* host/include/*
+	doins host/include/* \
+	      firmware/include/gpt.h \
+	      firmware/include/tlcl.h \
+	      firmware/include/tss_constants.h
 
 	einfo "Installing host library"
 	dolib.a build-main/libvboot_host.a
