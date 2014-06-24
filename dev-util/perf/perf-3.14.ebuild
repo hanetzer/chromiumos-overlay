@@ -38,7 +38,7 @@ SRC_URI+=" mirror://kernel/linux/kernel/v${LINUX_V}/${LINUX_SOURCES}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="-* amd64 arm ppc x86"
+KEYWORDS="-* amd64 arm arm64 ppc x86"
 IUSE="audit +demangle +doc gtk perl python slang unwind"
 
 RDEPEND="audit? ( sys-process/audit )
