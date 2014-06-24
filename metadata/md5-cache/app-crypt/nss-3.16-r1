@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile install prepare unpack
+DEPEND=virtual/pkgconfig >=dev-libs/nspr-4.10 >=dev-libs/nss-3.16
+DESCRIPTION=Mozilla's Network Security Services library that implements PKI support
+EAPI=5
+HOMEPAGE=http://www.mozilla.org/projects/security/pki/nss/
+IUSE=+cacert +nss-pem
+KEYWORDS=*
+LICENSE=|| ( MPL-2.0 GPL-2 LGPL-2.1 )
+RDEPEND=>=dev-libs/nspr-4.10 >=dev-libs/nss-3.16 >=dev-db/sqlite-3.5 sys-libs/zlib
+RESTRICT=test
+SLOT=0
+SRC_URI=ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_16_RTM/src/nss-3.16.tar.gz cacert? ( http://dev.gentoo.org/~anarchy/patches/nss-3.14.1-add_spi+cacerts_ca_certs.patch ) nss-pem? ( https://git.fedorahosted.org/cgit/nss-pem.git/snapshot/nss-pem-3ade37c5c4ca5a6094e3f4b2e4591405db1867dd.tar.bz2 )
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=106605316374e4d641ce4c542c82a138
