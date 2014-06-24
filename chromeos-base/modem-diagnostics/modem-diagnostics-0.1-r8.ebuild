@@ -8,7 +8,7 @@ DESCRIPTION="Convenience script for testing attached cell modems"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="*"
 IUSE=""
 
 RDEPEND="dev-util/shflags
