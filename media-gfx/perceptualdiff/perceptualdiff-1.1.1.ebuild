@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI="3"
+EAPI="4"
 inherit eutils multilib
 
 DESCRIPTION="An image comparison utility"
@@ -11,13 +11,15 @@ SRC_URI="mirror://sourceforge/pdiff/${P}-src.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="*"
 IUSE=""
 
 DEPEND="media-libs/freeimage"
 RDEPEND="${DEPEND}"
 
 DOCS="gpl.txt README.txt"
+
+S=${WORKDIR}
 
 src_prepare() {
 	epatch "${FILESDIR}"/CMakeFiles-search-in-SYSROOT.patch
