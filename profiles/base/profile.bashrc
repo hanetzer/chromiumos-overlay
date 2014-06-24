@@ -161,4 +161,5 @@ asan_death_hook() {
 # Check for any ASAN failures that were missed while testing.
 cros_post_src_test_asan_check() {
 	rmdir "${T}/asan_logs" 2>/dev/null || die "asan error not caught"
+	mkdir -p "${T}/asan_logs"
 }
