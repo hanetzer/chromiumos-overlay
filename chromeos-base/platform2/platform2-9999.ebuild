@@ -12,7 +12,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"crash-reporter"
 	"cromo"
 	"cros-disks"
-	"debugd"
 	"lorgnette"
 	"power_manager"
 	"shill"
@@ -20,6 +19,7 @@ OLD_PLATFORM_LOCALNAME=(
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
+	"debugd"
 	"mist"
 	"vpn-manager"
 	"wimax_manager"
