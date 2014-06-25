@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="mocktpm fwconsole unified_depthcharge"
+IUSE="mocktpm fwconsole unified_depthcharge vboot2"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -70,9 +70,14 @@ src_compile() {
 		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
 		  "board/${board}/defconfig"
 	fi
+	if use vboot2; then
+		echo "CONFIG_VBOOT2_VERIFY_FIRMWARE=y" >> \
+		  "board/${board}/defconfig"
+	fi
 
 	make_depthcharge ""
 	make_depthcharge "_gdb"
+	emake obj="build" dts BOARD="${board}"
 }
 
 install_depthcharge() {
@@ -111,7 +116,7 @@ src_install() {
 	newins .config depthcharge.config
 
 	insinto "${dstdir}/dts"
-	doins "board/${board}/fmap.dts"
+	doins "build/fmap.dts"
 
 	install_depthcharge ""
 	install_depthcharge "_gdb"

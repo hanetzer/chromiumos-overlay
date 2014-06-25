@@ -25,7 +25,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode memmaps quiet-cb rmt vmx"
+IUSE="em100-mode memmaps quiet-cb rmt vmx vboot2"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly falco fox link lumpy panther parrot
@@ -103,6 +103,11 @@ CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
 CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
 	fi
+	if use vboot2 && [ "${board}" = "nyan_blaze" ]; then
+		elog "   - enabling vboot2"
+		echo "CONFIG_VBOOT_VERIFY_FIRMWARE=n" >> .config
+		echo "CONFIG_VBOOT2_VERIFY_FIRMWARE=y" >> .config
+	fi
 
 	cp .config .config_serial
 	cat "configs/fwserial.${board}" >> .config_serial || die
@@ -119,6 +124,11 @@ make_coreboot() {
 		ifdtool --em100 "${builddir}/coreboot.rom" || die
 		mv "${builddir}/coreboot.rom"{.new,} || die
 	fi
+
+	# Extract the coreboot romstage file into the build dir.
+	cbfstool "${builddir}/coreboot.rom" extract \
+		-n "fallback/romstage" \
+		-f "${builddir}/romstage.stage" || die
 
 	# Extract the coreboot ramstage file into the build dir.
 	cbfstool "${builddir}/coreboot.rom" extract \
@@ -186,6 +196,8 @@ src_install() {
 	insinto /firmware
 	newins "build/coreboot.rom" coreboot.rom
 	newins "build_serial/coreboot.rom" coreboot.rom.serial
+	newins "build/romstage.stage" romstage.stage
+	newins "build_serial/romstage.stage" romstage.stage.serial
 	newins "build/ramstage.stage" ramstage.stage
 	newins "build_serial/ramstage.stage" ramstage.stage.serial
 	if [[ -f "build/refcode.stage" ]]; then

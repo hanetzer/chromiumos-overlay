@@ -18,7 +18,7 @@ KEYWORDS="~*"
 BOARDS="alex bayleybay beltino bolt butterfly emeraldlake2 falco fox gizmo link"
 BOARDS="${BOARDS} lumpy lumpy64 mario panther parrot peppy rambi samus slippy"
 BOARDS="${BOARDS} squawks stout stumpy"
-IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs"
+IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs vboot2"
 IUSE="${IUSE} depthcharge unified_depthcharge spring"
 IUSE="${IUSE} cb_legacy_seabios cb_legacy_uboot"
 
@@ -235,6 +235,7 @@ src_compile_depthcharge() {
 	local fdt_file="${froot}/dts/fmap.dts"
 	local bmpblk_file="${froot}/bmpblk.bin"
 	local coreboot_file="${froot}/coreboot.rom"
+	local romstage_file="${froot}/romstage.stage"
 	local ramstage_file="${froot}/ramstage.stage"
 	local refcode_file="${froot}/refcode.stage"
 
@@ -261,6 +262,10 @@ src_compile_depthcharge() {
 
 	# If unified depthcharge is being used always include ramstage_file.
 	if use unified_depthcharge; then
+		if use vboot2 && [ "${board}" = "nyan_blaze" ]; then
+			serial+=( --add-blob romstage "${romstage_file}.serial" )
+			silent+=( --add-blob romstage "${romstage_file}" )
+		fi
 		serial+=( --add-blob ramstage "${ramstage_file}.serial" )
 		silent+=( --add-blob ramstage "${ramstage_file}" )
 	fi
