@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit python
+inherit python eutils
 
 DESCRIPTION="GYP, a tool to generates native build files."
 HOMEPAGE="http://code.google.com/p/gyp/"
@@ -13,6 +13,10 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="amd64 x86"
 IUSE=""
+
+src_prepare() {
+	epatch "${FILESDIR}"/${P}-shlex-split-fix.patch
+}
 
 src_install() {
 	dobin gyp
