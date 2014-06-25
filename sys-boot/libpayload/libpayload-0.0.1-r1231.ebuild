@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="5aa825ffd2a5065d56332f7aee05d26214cdedce"
-CROS_WORKON_TREE="56ab3a89f8635b7ce6c63e7fd8f831948cedc1a2"
+CROS_WORKON_COMMIT="296fe6732c6125296859a2c01fc439bf7d58902b"
+CROS_WORKON_TREE="19aca8f283315c5bbfd435b2d083101e91398706"
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
 
 DESCRIPTION="coreboot's libpayload library"
@@ -55,20 +55,28 @@ src_compile() {
 		board=$(get_current_board_no_variant)
 	fi
 
-	local board_config="${libpayloaddir}/configs/config.${board}"
+	local board_config="$(realpath "${libpayloaddir}/configs/config.${board}")"
 
 	[ -f "${board_config}" ] || die "${board_config} does not exist"
 
-	cp "${board_config}" "${libpayloaddir}"/.config
-	echo "# CONFIG_LP_REMOTEGDB is not set" >> "${libpayloaddir}"/.config
-	emake -C "${libpayloaddir}" oldconfig
-	emake -C "${libpayloaddir}" obj="build" EXTRA_CFLAGS="${extra_flags}"
+	# get into the source directory
+	pushd "${libpayloaddir}"
+
+	# nuke build artifacts potentially present in the source directory
+	emake distclean
+	cp "${board_config}" .config
+	emake oldconfig
+	emake obj="build" EXTRA_CFLAGS="${extra_flags}"
+	cp .config build
 
 	# Build a second set of libraries with GDB support for developers
-	cp "${board_config}" "${libpayloaddir}"/.config
-	echo "CONFIG_LP_REMOTEGDB=y" >> "${libpayloaddir}"/.config
-	emake -C "${libpayloaddir}" oldconfig
-	emake -C "${libpayloaddir}" obj="build_gdb" EXTRA_CFLAGS="${extra_flags}"
+	cp "${board_config}" .config
+	sed -i "s/# CONFIG_LP_REMOTEGDB is not set/CONFIG_LP_REMOTEGDB=y/" .config
+	emake oldconfig
+	emake obj="build_gdb" EXTRA_CFLAGS="${extra_flags}"
+	cp .config build_gdb
+
+	popd
 }
 
 install_libpayload() {
@@ -118,7 +126,7 @@ install_libpayload() {
 
 	insinto "${destdir}"
 	newins "${src_root}"/.xcompile libpayload.xcompile
-	newins "${src_root}"/.config libpayload.config
+	newins "${build_root}"/.config libpayload.config
 }
 
 src_install() {
