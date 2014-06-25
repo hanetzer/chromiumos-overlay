@@ -1,0 +1,120 @@
+# Copyright 2012 The Chromium OS Authors.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+CROS_WORKON_COMMIT=("9d7e0a5a1d23923e496b772db0a5bea1bc147dbb" "8de992c441e36453a5a08bcf7c2462835007f81e")
+CROS_WORKON_TREE=("83b85c65635e44d63dbd60078c6fbe3e7c498a59" "375fa264bd1b48cd3bd45cfd4da69a5519af9f4a")
+CROS_WORKON_PROJECT=(
+	"chromiumos/platform/depthcharge"
+	"chromiumos/platform/vboot_reference"
+)
+
+DESCRIPTION="coreboot's depthcharge payload"
+HOMEPAGE="http://www.coreboot.org"
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="*"
+IUSE="mocktpm fwconsole unified_depthcharge"
+
+RDEPEND="
+	sys-apps/coreboot-utils
+	sys-boot/libpayload
+	chromeos-base/vboot_reference
+	"
+DEPEND=${RDEPEND}
+
+CROS_WORKON_LOCALNAME=("../platform/depthcharge" "../platform/vboot_reference")
+VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
+CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
+
+# Don't strip to ease remote GDB use (cbfstool strips final binaries anyway)
+STRIP_MASK="*"
+
+inherit cros-workon cros-board toolchain-funcs
+
+src_configure() {
+	cros-workon_src_configure
+}
+
+make_depthcharge() {
+	local suffix="$1"
+	local broot="${S}/build${suffix}"
+
+	emake obj="${broot}" distclean
+	emake obj="${broot}" defconfig BOARD="${board}"
+	emake obj=${broot} \
+		LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload${suffix}/" \
+		VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}"
+}
+
+src_compile() {
+	local board=$(get_current_board_with_variant)
+	if [[ ! -d "board/${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+
+	tc-getCC
+
+	# Firmware related binaries are compiled with a 32-bit toolchain
+	# on 64-bit platforms
+	if use amd64 ; then
+		export CROSS_COMPILE="i686-pc-linux-gnu-"
+		export CC="${CROSS_COMPILE}gcc"
+	else
+		export CROSS_COMPILE=${CHOST}-
+	fi
+
+	if use mocktpm ; then
+		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
+	fi
+	if use fwconsole ; then
+		echo "CONFIG_CLI=y" >> "board/${board}/defconfig"
+		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
+		  "board/${board}/defconfig"
+	fi
+
+	make_depthcharge ""
+	make_depthcharge "_gdb"
+}
+
+install_depthcharge() {
+	local suffix="$1"
+	local build_root="build${suffix}"
+	local destdir="/firmware/depthcharge${suffix}"
+	pushd "${build_root}" || die "couldn't access ${build_root}"
+
+	local files_to_copy=(netboot.{bin,elf{,.map}})
+	if use unified_depthcharge ; then
+		files_to_copy+=(depthcharge.elf{,.map})
+	else
+		files_to_copy+=(depthcharge.{ro,rw}.{bin,elf{,.map}})
+	fi
+
+	insinto "${destdir}"
+	doins "${files_to_copy[@]}"
+
+	# Install the depthcharge.payload file into the firmware
+	# directory for downstream use if it is produced.
+	if [[ -r depthcharge.payload ]]; then
+		doins {depthcharge,netboot}.payload
+	fi
+
+	popd
+}
+
+src_install() {
+	local dstdir="/firmware"
+	local board=$(get_current_board_with_variant)
+	if [[ ! -d "board/${board}" ]]; then
+		board=$(get_current_board_no_variant)
+	fi
+
+	insinto "${dstdir}"
+	newins .config depthcharge.config
+
+	insinto "${dstdir}/dts"
+	doins "board/${board}/fmap.dts"
+
+	install_depthcharge ""
+	install_depthcharge "_gdb"
+}
