@@ -82,6 +82,12 @@ src_prepare() {
 		cp -v "configs/config.${board}" .config
 	fi
 
+	# Replace the hard coded /build/<board>/ in the config with the actual
+	# sysroot.
+	# TODO: crbug.com/388888 coreboot configs should not hardcode the
+	# sysroot path.
+	sed -i 's#/build/[^/]*#${SYSROOT}#' .config || die
+
 	if use rmt; then
 		echo "CONFIG_MRC_RMT=y" >> .config
 	fi
