@@ -69,7 +69,7 @@ RDEPEND="
 		x11-libs/libXxf86vm
 	)
 	dev-libs/expat
-	gbm? ( sys-fs/udev )
+	sys-fs/udev
 	${LIBDRM_DEPSTRING}
 "
 
