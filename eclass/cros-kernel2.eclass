@@ -647,10 +647,16 @@ cros-kernel2_src_compile() {
 	local build_targets=()  # use make default target
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 	case ${kernel_arch} in
-		arm|mips)
+		arm)
 			build_targets=(
 				$(usex device_tree 'zImage dtbs' uImage)
 				$(usex boot_dts_device_tree dtbs '')
+				$(cros_chkconfig_present MODULES && echo "modules")
+			)
+			;;
+		mips)
+			build_targets=(
+				vmlinuz
 				$(cros_chkconfig_present MODULES && echo "modules")
 			)
 			;;
@@ -734,10 +740,10 @@ cros-kernel2_src_install() {
 		"${build_targets[@]}"
 
 	local version=$(kernelrelease)
-	if use arm || use mips; then
-		local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+	local kernel_bin="${D}/boot/vmlinuz-${version}"
+	if use arm; then
 		local boot_dir="$(cros-workon_get_build_dir)/arch/${kernel_arch}/boot"
-		local kernel_bin="${D}/boot/vmlinuz-${version}"
 		local zimage_bin="${D}/boot/zImage-${version}"
 		local image_bin="${D}/boot/Image-${version}"
 		local dtb_dir="${boot_dir}"
@@ -781,13 +787,16 @@ cros-kernel2_src_install() {
 				cp -a "${boot_dir}/Image" "${image_bin}" || die
 				;;
 		esac
-
+	fi
+	if use arm || use mips; then
 		# TODO(vbendeb): remove the below .uimg link creation code
 		# after the build scripts have been modified to use the base
 		# image name.
 		cd $(dirname "${kernel_bin}")
 		ln -sf $(basename "${kernel_bin}") vmlinux.uimg || die
-		ln -sf $(basename "${zimage_bin}") zImage || die
+		if use arm; then
+			ln -sf $(basename "${zimage_bin}") zImage || die
+		fi
 	fi
 	if [ ! -e "${D}/boot/vmlinuz" ]; then
 		ln -sf "vmlinuz-${version}" "${D}/boot/vmlinuz" || die
