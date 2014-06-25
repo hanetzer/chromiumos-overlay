@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/image-burner"
-CROS_WORKON_LOCALNAME=${CROS_WORKON_PROJECT##*/}
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-debug cros-workon
 
@@ -11,7 +12,7 @@ DESCRIPTION="Image-burning service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang test"
@@ -32,8 +33,13 @@ DEPEND="${RDEPEND}
 		dev-cpp/gtest
 	)"
 
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/image-burner"
+}
+
 src_configure() {
-        cros-workon_src_configure
+	cros-workon_src_configure
 }
 
 src_compile() {
