@@ -10,7 +10,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"chaps"
 	"chromiumos-wide-profiling"
 	"crash-reporter"
-	"cromo"
 	"cros-disks"
 	"lorgnette"
 	"power_manager"
@@ -19,6 +18,7 @@ OLD_PLATFORM_LOCALNAME=(
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
+	"cromo"
 	"debugd"
 	"mist"
 	"vpn-manager"
