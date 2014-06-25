@@ -16,12 +16,12 @@ OLD_PLATFORM_LOCALNAME=(
 	"lorgnette"
 	"power_manager"
 	"shill"
-	"vpn-manager"
 )
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
 	"mist"
+	"vpn-manager"
 	"wimax_manager"
 )
 CROS_WORKON_LOCALNAME=(
@@ -45,7 +45,7 @@ DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
