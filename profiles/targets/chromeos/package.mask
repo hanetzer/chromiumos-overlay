@@ -29,3 +29,6 @@
 # It is actually for clang and ASAN that we want to have edge versions.
 # This should be kept in sync with package.keywords.
 =sys-devel/llvm-3.5_pre*
+
+# We only support python-2.x for cross-compiling atm.
+>=dev-lang/python-3
