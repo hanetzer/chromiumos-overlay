@@ -29,6 +29,7 @@ need_apache2
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}"-SYSROOT.patch
+	epatch "${FILESDIR}/${P}"-sbh-pointer-fix.patch
 	cp "${SYSROOT}/usr/sbin/apxs" "${T}/apxs"
 	# Update apxs to point to the installbuilddir and includedir in the
 	# SYSROOT rather than on the build host.
