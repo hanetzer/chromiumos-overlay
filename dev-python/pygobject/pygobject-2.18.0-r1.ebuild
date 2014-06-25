@@ -2,18 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-python/pygobject/pygobject-2.18.0.ebuild,v 1.10 2009/08/19 16:30:10 jer Exp $
 
-EAPI="3"
+EAPI="4"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
-SUPPORT_PYTHON_ABIS="1"
-# pygobject is partially incompatible with Python 3.
-# PYTHON_DEPEND="2:2.6 3:3.1"
-# RESTRICT_PYTHON_ABIS="2.4 2.5 3.0 *-jython"
-PYTHON_DEPEND="2:2.6"
-RESTRICT_PYTHON_ABIS="2.4 2.5 3.* *-jython"
+GNOME_TARBALL_SUFFIX="bz2"
+PYTHON_COMPAT=( python2_7 )
 
-# XXX: Is the alternatives stuff needed anymore?
-inherit alternatives autotools gnome2 python virtualx
+inherit autotools gnome2 python-r1 virtualx
 
 DESCRIPTION="GLib's GObject library bindings for Python"
 HOMEPAGE="http://www.pygtk.org/"
@@ -22,9 +17,11 @@ LICENSE="LGPL-2.1"
 SLOT="2"
 KEYWORDS="*"
 IUSE="doc examples libffi test"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 COMMON_DEPEND=">=dev-libs/glib-2.24.0:2
-	libffi? ( virtual/libffi )"
+	libffi? ( virtual/libffi )
+	${PYTHON_DEPS}"
 DEPEND="${COMMON_DEPEND}
 	doc? (
 		dev-libs/libxslt
@@ -35,14 +32,6 @@ DEPEND="${COMMON_DEPEND}
 	>=dev-util/pkgconfig-0.12"
 RDEPEND="${COMMON_DEPEND}
 	!<dev-python/pygtk-2.13"
-
-pkg_setup() {
-	DOCS="AUTHORS ChangeLog* NEWS README"
-	G2CONF="${G2CONF}
-		--disable-dependency-tracking
-		$(use_enable doc docs)
-		$(use_with libffi ffi)"
-}
 
 src_prepare() {
 	gnome2_src_prepare
@@ -63,10 +52,6 @@ src_prepare() {
 		epatch "${FILESDIR}/${P}-cross-generate-constants.patch"
 	fi
 
-
-	# needed to build on a libtool-1 system, bug #255542
-	rm m4/lt* m4/libtool.m4 ltmain.sh
-
 	# Workaround upstream Gentoo bug #232820
 	find "${S}" -name .elibtoolized -delete
 	eautoreconf
@@ -75,34 +60,20 @@ src_prepare() {
 }
 
 src_configure() {
-	python_execute_function -s gnome2_src_configure
+	python_foreach_impl run_in_build_dir \
+		gnome2_src_configure \
+			$(use_enable cairo) \
+			$(use_enable threads thread)
 }
 
 src_compile() {
-	python_execute_function -d -s
-}
-
-# FIXME: With python multiple ABI support, tests return 1 even when they pass
-src_test() {
-	unset DBUS_SESSION_BUS_ADDRESS
-
-	testing() {
-		XDG_CACHE_HOME="${T}/$(PYTHON --ABI)"
-		Xemake check PYTHON=$(PYTHON -a)
-	}
-	python_execute_function -s testing
+	python_foreach_impl run_in_build_dir gnome2_src_compile
 }
 
 src_install() {
-	[[ -z ${ED} ]] && local ED="${D}"
-	installation() {
-		gnome2_src_install
-		mv "${ED}$(python_get_sitedir)/pygtk.py" "${ED}$(python_get_sitedir)/pygtk.py-2.0"
-		mv "${ED}$(python_get_sitedir)/pygtk.pth" "${ED}$(python_get_sitedir)/pygtk.pth-2.0"
-	}
-	python_execute_function -s installation
+	DOCS="AUTHORS ChangeLog* NEWS README"
 
-	python_clean_installation_image
+	python_foreach_impl run_in_build_dir gnome2_src_install
 
 	sed "s:/usr/bin/python:/usr/bin/python2:" \
 		-i "${ED}"/usr/bin/pygobject-codegen-2.0 \
@@ -110,26 +81,6 @@ src_install() {
 
 	if use examples; then
 		insinto /usr/share/doc/${P}
-		doins -r examples || die "doins failed"
+		doins -r examples
 	fi
-}
-
-pkg_postinst() {
-	create_symlinks() {
-		alternatives_auto_makesym "$(python_get_sitedir)/pygtk.py" pygtk.py-[0-9].[0-9]
-		alternatives_auto_makesym "$(python_get_sitedir)/pygtk.pth" pygtk.pth-[0-9].[0-9]
-	}
-	python_execute_function create_symlinks
-
-	python_mod_optimize gtk-2.0 pygtk.py
-}
-
-pkg_postrm() {
-	python_mod_cleanup gtk-2.0 pygtk.py
-
-	create_symlinks() {
-		alternatives_auto_makesym "$(python_get_sitedir)/pygtk.py" pygtk.py-[0-9].[0-9]
-		alternatives_auto_makesym "$(python_get_sitedir)/pygtk.pth" pygtk.pth-[0-9].[0-9]
-	}
-	python_execute_function create_symlinks
 }
