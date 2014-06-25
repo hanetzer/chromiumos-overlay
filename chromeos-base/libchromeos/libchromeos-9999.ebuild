@@ -24,7 +24,7 @@ KEYWORDS="~*"
 IUSE="cros_host"
 
 COMMON_DEPEND="
-	chromeos-base/bootstat
+	!<chromeos-base/bootstat-0.0.2
 	!<chromeos-base/platform2-0.0.2
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
@@ -62,6 +62,9 @@ src_install() {
 
 	insinto /usr/include/policy
 	doins chromeos/policy/*.h
+
+	insinto /usr/include/metrics
+	doins chromeos/bootstat/bootstat.h
 }
 
 platform_pkg_test() {
@@ -69,5 +72,6 @@ platform_pkg_test() {
 	for v in "${LIBCHROME_VERS[@]}"; do
 		platform_test "run" "${OUT}/libchromeos-${v}_unittests"
 		platform_test "run" "${OUT}/libpolicy-${v}_unittests"
+		platform_test "run" "${OUT}/libbootstat_unittests"
 	done
 }

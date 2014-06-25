@@ -34,30 +34,10 @@ src_configure() {
 	tc-export CC CXX AR PKG_CONFIG
 }
 
-src_test() {
-	emake tests
-	if ! use x86 && ! use amd64 ; then
-		echo Skipping unit tests on non-x86 platform
-	else
-		for test in ./*_test; do
-			"${test}" ${GTEST_ARGS} || die "${test} failed"
-		done
-	fi
-}
-
 src_install() {
 	into /
 	dosbin bootstat
 	dosbin bootstat_archive
 	dosbin bootstat_get_last
 	dobin bootstat_summary
-
-	into /usr
-	dolib.a libbootstat.a
-
-	insinto /usr/include/metrics
-	doins bootstat.h
-
-	insinto /usr/$(get_libdir)/pkgconfig
-	doins bootstat.pc
 }
