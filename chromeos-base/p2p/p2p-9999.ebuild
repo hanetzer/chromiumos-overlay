@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/p2p"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 
 inherit autotools cros-debug cros-workon user
 
@@ -10,7 +12,7 @@ DESCRIPTION="Chrome OS P2P"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang"
@@ -27,6 +29,11 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 DEPEND="test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 	${RDEPEND}"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/p2p"
+}
 
 pkg_preinst() {
 	# Groups are managed in the central account database.

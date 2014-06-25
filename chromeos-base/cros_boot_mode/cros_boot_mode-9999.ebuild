@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/cros_boot_mode"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit toolchain-funcs cros-debug cros-workon
@@ -11,7 +13,7 @@ DESCRIPTION="Chrome OS platform boot mode utility"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang test valgrind"
@@ -27,6 +29,11 @@ DEPEND="${RDEPEND}
 	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )
 	valgrind? ( dev-util/valgrind )"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/cros_boot_mode"
+}
 
 src_prepare() {
 	cros-workon_src_prepare
