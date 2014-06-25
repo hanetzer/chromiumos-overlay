@@ -11,7 +11,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="metrics"
 
-inherit cros-workon platform
+inherit cros-constants cros-workon git-2 platform
 
 DESCRIPTION="Metrics aggregation service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -31,9 +31,20 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	chromeos-base/vboot_reference
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
+
+src_unpack() {
+	platform_src_unpack
+
+	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/components/metrics.git" \
+	EGIT_SOURCEDIR="${S}/components/metrics" \
+	EGIT_PROJECT="metrics" \
+	EGIT_COMMIT="98a769a9a70b2ff0dbcf4962c5d79b29a60c8860" \
+	git-2_src_unpack
+}
 
 src_install() {
 	dobin "${OUT}"/metrics_client syslog_parser.sh
@@ -64,6 +75,7 @@ platform_pkg_test() {
 		$(usex passive_metrics 'metrics_daemon_test' '')
                 persistent_integer_test
 		timer_test
+		upload_service_test
 	)
 
 	local test_bin
