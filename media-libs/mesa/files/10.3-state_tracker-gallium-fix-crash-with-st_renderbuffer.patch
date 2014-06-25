@@ -1,25 +1,19 @@
-From 3ffa2b05b90a425082e0ae46bc9bb79b38ab83f0 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
-Date: Tue, 27 May 2014 18:21:26 -0700
-Subject: [PATCH] Avoid crash on surface destruction when the context is gone
+commit b518be6e9b5b73fbf0f090d94b3c4ce939b0b004
+Author: Stéphane Marchesin <marcheu@chromium.org>
+Date:   Tue Jun 24 18:05:56 2014 -0700
 
-When we delete the context, sometimes there are pending surfaces.
-Until mesa is fixed to properly refcount all the surfaces, let's just
-carry the destroy function on the surface itself, which gives us a way
-to free it.
-
-Change-Id: I216505452def6c528aa1db53ab22c472d662f190
----
- src/gallium/auxiliary/util/u_inlines.h    | 2 +-
- src/gallium/drivers/i915/i915_surface.c   | 1 +
- src/gallium/drivers/llvmpipe/lp_surface.c | 1 +
- src/gallium/drivers/r300/r300_texture.c   | 1 +
- src/gallium/drivers/radeon/r600_texture.c | 1 +
- src/gallium/include/pipe/p_state.h        | 3 +++
- 6 files changed, 8 insertions(+), 1 deletion(-)
+    Avoid crash on surface/sampler_view destruction when the context is gone
+    
+    When we delete the context, sometimes there are pending surfaces and
+    sampler view left. Since mesa doesn't properly refcount them, the
+    context can go away before its resources. Until mesa is fixed to
+    properly refcount all these resources, let's just carry the destroy
+    function on the resource itself, which gives us a way to free it.
+    
+    Change-Id: I0b860dee8e1dfbbd8e2a69a0bb8dc6da7b52f884
 
 diff --git a/src/gallium/auxiliary/util/u_inlines.h b/src/gallium/auxiliary/util/u_inlines.h
-index e952615..9ac32d1 100644
+index e952615..cf9d7e6 100644
 --- a/src/gallium/auxiliary/util/u_inlines.h
 +++ b/src/gallium/auxiliary/util/u_inlines.h
 @@ -110,7 +110,7 @@ pipe_surface_reference(struct pipe_surface **ptr, struct pipe_surface *surf)
@@ -31,11 +25,51 @@ index e952615..9ac32d1 100644
     *ptr = surf;
  }
  
+@@ -148,7 +148,7 @@ pipe_sampler_view_reference(struct pipe_sampler_view **ptr, struct pipe_sampler_
+ 
+    if (pipe_reference_described(&(*ptr)->reference, &view->reference,
+                                 (debug_reference_descriptor)debug_describe_sampler_view))
+-      old_view->context->sampler_view_destroy(old_view->context, old_view);
++      old_view->sampler_view_destroy(old_view->context, old_view);
+    *ptr = view;
+ }
+ 
+diff --git a/src/gallium/drivers/i915/i915_state.c b/src/gallium/drivers/i915/i915_state.c
+index c90fcfd..686986f 100644
+--- a/src/gallium/drivers/i915/i915_state.c
++++ b/src/gallium/drivers/i915/i915_state.c
+@@ -44,6 +44,10 @@
+ #include "i915_resource.h"
+ #include "i915_state.h"
+ 
++static void
++i915_sampler_view_destroy(struct pipe_context *pipe,
++                          struct pipe_sampler_view *view);
++
+ /* The i915 (and related graphics cores) do not support GL_CLAMP.  The
+  * Intel drivers for "other operating systems" implement GL_CLAMP as
+  * GL_CLAMP_TO_EDGE, so the same is done here.
+@@ -828,6 +832,7 @@ i915_create_sampler_view_custom(struct pipe_context *pipe,
+       view->texture = NULL;
+       pipe_resource_reference(&view->texture, texture);
+       view->context = pipe;
++      view->sampler_view_destroy = i915_sampler_view_destroy;
+    }
+ 
+    return view;
+@@ -846,6 +851,7 @@ i915_create_sampler_view(struct pipe_context *pipe,
+       view->texture = NULL;
+       pipe_resource_reference(&view->texture, texture);
+       view->context = pipe;
++      view->sampler_view_destroy = i915_sampler_view_destroy;
+    }
+ 
+    return view;
 diff --git a/src/gallium/drivers/i915/i915_surface.c b/src/gallium/drivers/i915/i915_surface.c
-index 8afe8d0..1f96121 100644
+index 61c5441..df45527 100644
 --- a/src/gallium/drivers/i915/i915_surface.c
 +++ b/src/gallium/drivers/i915/i915_surface.c
-@@ -382,6 +382,7 @@ i915_create_surface_custom(struct pipe_context *ctx,
+@@ -362,6 +362,7 @@ i915_create_surface_custom(struct pipe_context *ctx,
        ps->u.tex.first_layer = surf_tmpl->u.tex.first_layer;
        ps->u.tex.last_layer = surf_tmpl->u.tex.last_layer;
        ps->context = ctx;
@@ -43,11 +77,33 @@ index 8afe8d0..1f96121 100644
     }
     return ps;
  }
+diff --git a/src/gallium/drivers/llvmpipe/lp_state_sampler.c b/src/gallium/drivers/llvmpipe/lp_state_sampler.c
+index 09bc928..d415879 100644
+--- a/src/gallium/drivers/llvmpipe/lp_state_sampler.c
++++ b/src/gallium/drivers/llvmpipe/lp_state_sampler.c
+@@ -40,6 +40,9 @@
+ #include "lp_debug.h"
+ #include "state_tracker/sw_winsys.h"
+ 
++static void
++llvmpipe_sampler_view_destroy(struct pipe_context *pipe,
++                              struct pipe_sampler_view *view);
+ 
+ static void *
+ llvmpipe_create_sampler_state(struct pipe_context *pipe,
+@@ -170,6 +173,7 @@ llvmpipe_create_sampler_view(struct pipe_context *pipe,
+       view->texture = NULL;
+       pipe_resource_reference(&view->texture, texture);
+       view->context = pipe;
++      view->sampler_view_destroy = llvmpipe_sampler_view_destroy;
+    }
+ 
+    return view;
 diff --git a/src/gallium/drivers/llvmpipe/lp_surface.c b/src/gallium/drivers/llvmpipe/lp_surface.c
-index ac8ee26..70fe24c 100644
+index 09ca39d..ab6bbed 100644
 --- a/src/gallium/drivers/llvmpipe/lp_surface.c
 +++ b/src/gallium/drivers/llvmpipe/lp_surface.c
-@@ -255,6 +255,7 @@ llvmpipe_create_surface(struct pipe_context *pipe,
+@@ -258,6 +258,7 @@ llvmpipe_create_surface(struct pipe_context *pipe,
        pipe_resource_reference(&ps->texture, pt);
        ps->context = pipe;
        ps->format = surf_tmpl->format;
@@ -55,6 +111,29 @@ index ac8ee26..70fe24c 100644
        if (llvmpipe_resource_is_texture(pt)) {
           assert(surf_tmpl->u.tex.level <= pt->last_level);
           assert(surf_tmpl->u.tex.first_layer <= surf_tmpl->u.tex.last_layer);
+diff --git a/src/gallium/drivers/r300/r300_state.c b/src/gallium/drivers/r300/r300_state.c
+index 7d83576..27c79d0 100644
+--- a/src/gallium/drivers/r300/r300_state.c
++++ b/src/gallium/drivers/r300/r300_state.c
+@@ -47,6 +47,10 @@
+ #include "r300_texture.h"
+ #include "r300_vs.h"
+ 
++static void
++r300_sampler_view_destroy(struct pipe_context *pipe,
++                          struct pipe_sampler_view *view);
++
+ /* r300_state: Functions used to intialize state context by translating
+  * Gallium state objects into semi-native r300 state objects. */
+ 
+@@ -1673,6 +1677,7 @@ r300_create_sampler_view_custom(struct pipe_context *pipe,
+         view->base.reference.count = 1;
+         view->base.context = pipe;
+         view->base.texture = NULL;
++        view->base.sampler_view_destroy = r300_sampler_view_destroy;
+         pipe_resource_reference(&view->base.texture, texture);
+ 
+ 	view->width0_override = width0_override;
 diff --git a/src/gallium/drivers/r300/r300_texture.c b/src/gallium/drivers/r300/r300_texture.c
 index 4ea69dc..b56cfc8 100644
 --- a/src/gallium/drivers/r300/r300_texture.c
@@ -67,8 +146,48 @@ index 4ea69dc..b56cfc8 100644
          surface->base.format = surf_tmpl->format;
          surface->base.width = u_minify(width0_override, level);
          surface->base.height = u_minify(height0_override, level);
+diff --git a/src/gallium/drivers/r600/r600_pipe.h b/src/gallium/drivers/r600/r600_pipe.h
+index 4585ace..d920695 100644
+--- a/src/gallium/drivers/r600/r600_pipe.h
++++ b/src/gallium/drivers/r600/r600_pipe.h
+@@ -631,6 +631,8 @@ void r600_sampler_views_dirty(struct r600_context *rctx,
+ 			      struct r600_samplerview_state *state);
+ void r600_sampler_states_dirty(struct r600_context *rctx,
+ 			       struct r600_sampler_states *state);
++void r600_sampler_view_destroy(struct pipe_context *ctx,
++			       struct pipe_sampler_view *state);
+ void r600_constant_buffers_dirty(struct r600_context *rctx, struct r600_constbuf_state *state);
+ void r600_draw_rectangle(struct blitter_context *blitter,
+ 			 int x1, int y1, int x2, int y2, float depth,
+diff --git a/src/gallium/drivers/r600/r600_state.c b/src/gallium/drivers/r600/r600_state.c
+index 9e7a8e9..aeca723 100644
+--- a/src/gallium/drivers/r600/r600_state.c
++++ b/src/gallium/drivers/r600/r600_state.c
+@@ -655,6 +655,7 @@ r600_create_sampler_view_custom(struct pipe_context *ctx,
+ 	view->base.texture = texture;
+ 	view->base.reference.count = 1;
+ 	view->base.context = ctx;
++	view->base.sampler_view_destroy = r600_sampler_view_destroy;
+ 
+ 	if (texture->target == PIPE_BUFFER)
+ 		return texture_buffer_sampler_view(view, texture->width0, 1);
+diff --git a/src/gallium/drivers/r600/r600_state_common.c b/src/gallium/drivers/r600/r600_state_common.c
+index 8c37d0d..0b041db 100644
+--- a/src/gallium/drivers/r600/r600_state_common.c
++++ b/src/gallium/drivers/r600/r600_state_common.c
+@@ -351,8 +351,8 @@ static void r600_delete_rs_state(struct pipe_context *ctx, void *state)
+ 	FREE(rs);
+ }
+ 
+-static void r600_sampler_view_destroy(struct pipe_context *ctx,
+-				      struct pipe_sampler_view *state)
++void r600_sampler_view_destroy(struct pipe_context *ctx,
++			       struct pipe_sampler_view *state)
+ {
+ 	struct r600_pipe_sampler_view *resource = (struct r600_pipe_sampler_view *)state;
+ 
 diff --git a/src/gallium/drivers/radeon/r600_texture.c b/src/gallium/drivers/radeon/r600_texture.c
-index e30d933..612ae8d 100644
+index 3a37465..8bbaec7 100644
 --- a/src/gallium/drivers/radeon/r600_texture.c
 +++ b/src/gallium/drivers/radeon/r600_texture.c
 @@ -1126,6 +1126,7 @@ struct pipe_surface *r600_create_surface_custom(struct pipe_context *pipe,
@@ -80,7 +199,7 @@ index e30d933..612ae8d 100644
  	surface->base.width = width;
  	surface->base.height = height;
 diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
-index 07ce88e..ea265e0 100644
+index 7257604..db7e1b3 100644
 --- a/src/gallium/include/pipe/p_state.h
 +++ b/src/gallium/include/pipe/p_state.h
 @@ -351,6 +351,9 @@ struct pipe_surface
@@ -93,6 +212,13 @@ index 07ce88e..ea265e0 100644
  };
  
  
--- 
-1.9.1.423.g4596e3a
-
+@@ -379,6 +382,9 @@ struct pipe_sampler_view
+    unsigned swizzle_g:3;         /**< PIPE_SWIZZLE_x for green component */
+    unsigned swizzle_b:3;         /**< PIPE_SWIZZLE_x for blue component */
+    unsigned swizzle_a:3;         /**< PIPE_SWIZZLE_x for alpha component */
++
++   void (*sampler_view_destroy)(struct pipe_context *ctx,
++                                struct pipe_sampler_view *view);
+ };
+ 
+ 
