@@ -108,6 +108,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/pygobject
 	dev-python/pyserial
 	dev-python/python-evdev
+	dev-python/python-xlib
 	dev-python/pyudev
 	dev-python/pyyaml
 	dev-python/selenium
