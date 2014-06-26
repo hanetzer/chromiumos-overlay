@@ -45,6 +45,7 @@ IUSE="
 	+gold
 	hardfp
 	+highdpi
+	internal_gles_conform
 	+nacl
 	neon
 	+ninja
@@ -239,6 +240,7 @@ set_build_defines() {
 		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
 		"use_evdev_gestures=$(use10 evdev_gestures)"
+		"internal_gles2_conform_tests=$(use10 internal_gles_conform)"
 		# Use the ChromeOS toolchain and not the one bundled with Chromium.
 		"linux_use_bundled_binutils=0"
 		"linux_use_bundled_gold=0"
@@ -638,6 +640,12 @@ setup_test_lists() {
 		fi
 	fi
 
+	if use internal_gles_conform; then
+		TEST_FILES+=(
+			gles2_conform_test{,_windowless}
+		)
+	fi
+
 	PPAPI_TEST_FILES=(
 		lib{32,64}
 		mock_nacl_gdb
@@ -871,6 +879,11 @@ install_chrome_test_resources() {
 	# Add the pdf test data if needed.
 	if use chrome_internal; then
 		install_test_resources "${test_dir}" pdf/test
+	fi
+
+	# Add the gles_conform test data if needed.
+	if use internal_gles_conform; then
+		install_test_resources "${test_dir}" gpu/gles2_conform_support/gles2_conform_test_expectations.txt
 	fi
 
 	# Remove test binaries from other platforms.
