@@ -39,6 +39,7 @@ RDEPEND="
 "
 DEPEND="
 	${COMMON_DEPEND}
+	chromeos-base/protofiles
 	dev-cpp/gtest
 	test? (
 		app-shells/dash
