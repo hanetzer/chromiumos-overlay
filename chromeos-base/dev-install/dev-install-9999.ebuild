@@ -18,7 +18,7 @@ inherit cros-workon cros-board multiprocessing
 DESCRIPTION="Chromium OS Developer Packages installer"
 HOMEPAGE="http://www.chromium.org/chromium-os"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="cros-debug"
