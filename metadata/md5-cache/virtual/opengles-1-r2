@@ -1,6 +1,7 @@
 DEFINED_PHASES=-
 DESCRIPTION=Virtual for OpenGLES implementations
+EAPI=5
 KEYWORDS=*
-RDEPEND=x11-drivers/opengles
+RDEPEND=media-libs/mesa[egl,gles2]
 SLOT=0
-_md5_=c08080d2c0c48ce62d6defb685a0d5b6
+_md5_=2f7cc9ca461ad7e78bf248c6447bea66
