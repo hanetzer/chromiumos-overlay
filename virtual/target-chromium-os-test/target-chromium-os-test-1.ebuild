@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="cros_ec cros_embedded X"
+IUSE="cros_ec cros_embedded opengl X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -61,7 +61,7 @@ CROS_X86_RDEPEND="
 
 CROS_X_RDEPEND="
 	dev-python/pygtk
-	virtual/glut
+	opengl? ( virtual/glut )
 	x11-apps/setxkbmap
 	x11-apps/xinput
 	x11-apps/xset

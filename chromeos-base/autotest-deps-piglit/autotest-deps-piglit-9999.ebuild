@@ -1,9 +1,8 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
-
 
 inherit cros-workon autotest-deponly
 
@@ -15,15 +14,15 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Autotest enabled by default.
-IUSE="+autotest"
+IUSE="+autotest opengl"
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 
 AUTOTEST_DEPS_LIST="piglit"
 RDEPEND="
-	virtual/glut
-	virtual/opengl
+	opengl? ( virtual/glut )
+	opengl? ( virtual/opengl )
 	dev-python/mako
 	dev-python/numpy
 	media-libs/tiff
@@ -39,7 +38,7 @@ RDEPEND="
 	x11-libs/libXi
 	x11-libs/libXpm
 	x11-libs/libXrender
-	x11-proto/glproto
+	opengl? ( x11-proto/glproto )
 	"
 # NOTE: For deps, we need to keep *.a
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
@@ -52,5 +51,3 @@ export GLUT_LIBDIR=/usr/$(get_libdir)
 src_configure() {
 	cros-workon_src_configure
 }
-
-
