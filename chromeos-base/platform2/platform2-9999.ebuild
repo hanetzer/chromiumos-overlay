@@ -9,7 +9,6 @@ CROS_WORKON_USE_VCSID=1
 OLD_PLATFORM_LOCALNAME=(
 	"chaps"
 	"chromiumos-wide-profiling"
-	"crash-reporter"
 	"lorgnette"
 	"power_manager"
 	"shill"
@@ -17,6 +16,7 @@ OLD_PLATFORM_LOCALNAME=(
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
+	"crash-reporter"
 	"cromo"
 	"cros-disks"
 	"debugd"
