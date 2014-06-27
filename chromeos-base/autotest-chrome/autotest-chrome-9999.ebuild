@@ -164,8 +164,9 @@ src_prepare() {
 	# build. Copy the telemetry source to a temporary directory that is writable,
 	# so that file removals in Telemetry source can be performed properly.
 	export TMP_DIR="$(mktemp -d)"
-	cp -r "${SYSROOT}/usr/local/telemetry" "${TMP_DIR}"
-	export PYTHONPATH="${TMP_DIR}/telemetry/src/tools/telemetry"
+	rsync -a --exclude=third_party/trace-viewer/test_data/ \
+		"${SYSROOT}"/usr/local/telemetry/src/ "${TMP_DIR}"
+	export PYTHONPATH="${TMP_DIR}/tools/telemetry"
 	autotest_src_prepare
 }
 
