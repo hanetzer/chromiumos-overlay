@@ -333,6 +333,12 @@ RDEPEND="${RDEPEND}
 	dev-util/ninja
 	"
 
+# Host dependencies for building Chromium code (libmojo)
+RDEPEND="${RDEPEND}
+	dev-python/ply
+	dev-util/gn
+	"
+
 # Uninstall these packages.
 RDEPEND="${RDEPEND}
 	!net-misc/dhcpcd
