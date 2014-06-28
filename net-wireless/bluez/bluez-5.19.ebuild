@@ -85,6 +85,10 @@ src_prepare() {
 	# user.
 	epatch "${FILESDIR}/${P}-sdp-path.patch"
 
+	# Fix the bug in processing SDP requests with invalid PDU size.
+	# Will not need this patch when we update BlueZ to 5.21 or later version.
+	epatch "${FILESDIR}/${P}-sdp-requests-invalid-size.patch"
+
 	# Make the Powered property persistent across reboots, this
 	# was removed from upstream BlueZ in favor of using a connection
 	# manager to deal with powering up/down the adapter. We restore
