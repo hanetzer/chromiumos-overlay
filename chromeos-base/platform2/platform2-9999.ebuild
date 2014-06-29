@@ -560,7 +560,6 @@ platform2_install_shill() {
 	insinto /usr/share/shill
 	use cellular && doins data/cellular_operator_info
 	use cellular && doins "${OUT}"/serviceproviders.pbf
-	use cellular && doins "${OUT}"/additional_providers.pbf
 
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
