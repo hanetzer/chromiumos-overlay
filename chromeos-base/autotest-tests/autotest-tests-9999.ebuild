@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-chromeless_tty +crash_reporting +encrypted_stateful -ppp"
+IUSE="-chromeless_tty +crash_reporting +encrypted_stateful -ppp +profile"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -183,6 +183,10 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_OpenSSLActual
 	+tests_platform_OSLimits
 	+tests_platform_PartitionCheck
+	profile? (
+		+tests_platform_Perf
+		+tests_platform_Quipper
+	)
 	+tests_platform_Rootdev
 	+tests_platform_RootPartitionsNotMounted
 	!chromeless_tty? ( +tests_platform_SessionManagerStateKeyGeneration )
