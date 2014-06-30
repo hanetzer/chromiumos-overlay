@@ -138,13 +138,16 @@ IUSE_TESTS_GLES_CONFORM="
 IUSE_TESTS_SHILL="
 	shill? ( +tests_network_ChromeWifiEndToEnd )
 "
-
-IUSE="
-	${IUSE}
+IUSE_TESTS="
 	${IUSE_TESTS[*]}
 	${IUSE_TESTS_CELLULAR}
 	${IUSE_TESTS_GLES_CONFORM}
 	${IUSE_TESTS_SHILL}
+"
+
+IUSE="
+	${IUSE}
+	${IUSE_TESTS}
 "
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
