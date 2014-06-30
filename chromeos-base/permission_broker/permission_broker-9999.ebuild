@@ -19,7 +19,7 @@ RESTRICT="test"
 
 LIBCHROME_VERS="271506"
 
-RDEPEND="chromeos-base/platform2
+RDEPEND="chromeos-base/libchromeos
 	dev-cpp/gflags
 	dev-cpp/glog
 	dev-libs/glib
@@ -27,9 +27,9 @@ RDEPEND="chromeos-base/platform2
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )"
+	chromeos-base/system_api
+	dev-cpp/gmock
+	dev-cpp/gtest"
 
 src_prepare() {
 	cros-workon_src_prepare
