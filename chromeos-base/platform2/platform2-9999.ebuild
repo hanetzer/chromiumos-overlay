@@ -42,7 +42,8 @@ inherit cros-board cros-debug cros-workon eutils multilib platform toolchain-fun
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI=""
+TEST_DATA_SOURCE="platform2-20140722.tar.gz"
+SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -783,6 +784,12 @@ src_unpack() {
 	mkdir -p "${S}"
 
 	use platform2 && cros-workon_src_unpack
+	# Unpack the test data into the right path, where the unit tests will look for
+	# them.
+	# TODO(crbug.com/388351): Eventually it will all be under ${S}/platform2.
+	# Change this to match that when chromiumos-wide-profiling is moved to
+	# platform2.
+	use profile && ( cd "${S}/platform/" && unpack "${A}" )
 }
 
 src_configure() {
