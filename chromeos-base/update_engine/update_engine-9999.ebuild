@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override"
+IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override +power_management"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="271506"
@@ -48,6 +48,9 @@ DEPEND="chromeos-base/system_api
 RDEPEND="
 	chromeos-base/chromeos-installer
 	${COMMON_DEPEND}
+	!cros_host? (
+		power_management? ( chromeos-base/platform2[power_management] )
+	)
 	virtual/update-policy
 "
 
@@ -65,6 +68,7 @@ src_compile() {
 	cros-debug-add-NDEBUG
 	clang-setup-env
 	append-flags -DUSE_HWID_OVERRIDE=$(usex hwid_override 1 0)
+	append-flags -DUSE_POWER_MANAGEMENT=$(usex power_management 1 0)
 	export CCFLAGS="$CFLAGS"
 	export BASE_VER=${LIBCHROME_VERS}
 
