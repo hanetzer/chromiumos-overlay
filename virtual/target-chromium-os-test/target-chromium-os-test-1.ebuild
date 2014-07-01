@@ -136,6 +136,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
+	sys-apps/lshw
 	sys-apps/memtester
 	sys-apps/shadow
 	sys-devel/binutils
