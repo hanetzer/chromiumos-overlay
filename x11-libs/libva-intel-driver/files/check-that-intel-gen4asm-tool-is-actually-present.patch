@@ -1,0 +1,35 @@
+From c7906816fff531e71cf1bf709c4b0ea319e0b59d Mon Sep 17 00:00:00 2001
+From: Daniel Charles <daniel.charles@intel.com>
+Date: Thu, 3 Jul 2014 12:50:39 -0700
+Subject: [PATCH] check that intel-gen4asm tool is actually present
+
+intel-gen4asm tool has to be present on the host tools so that
+it can actually be used. Cross compiling shows problems when the
+gpu-tools version is met but the tool is not available on the PATH
+
+So, first check that the tool is available and later check for version
+before defining HAVE_GEN4ASM.
+
+Signed-off-by: Daniel Charles <daniel.charles@intel.com>
+---
+ configure.ac | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 86c2b40..a588106 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -77,8 +77,9 @@ AC_SUBST(LIBDRM_VERSION)
+ 
+ dnl Check for gen4asm
+ PKG_CHECK_MODULES(GEN4ASM, [intel-gen4asm >= 1.5], [gen4asm=yes], [gen4asm=no])
+-AM_CONDITIONAL(HAVE_GEN4ASM, test x$gen4asm = xyes)
+ AC_PATH_PROG([GEN4ASM], [intel-gen4asm])
++AS_IF([test "x$GEN4ASM" = "x" ], [AM_CONDITIONAL(HAVE_GEN4ASM, false)],
++    [AM_CONDITIONAL(HAVE_GEN4ASM, [test x$gen4asm = xyes])])
+ 
+ dnl Check for VA-API
+ PKG_CHECK_MODULES(LIBVA_DEPS,     [libva >= va_api_version])
+-- 
+1.9.3
+

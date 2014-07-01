@@ -1,0 +1,51 @@
+From b45539f34804fa1428e0a968a392aee889ed46f9 Mon Sep 17 00:00:00 2001
+From: Daniel Charles <daniel.charles@intel.com>
+Date: Mon, 30 Jun 2014 14:57:36 -0700
+Subject: [PATCH 1/2] remove fixed uses of intel-gen4asm tool
+
+In the gen7 and gen8 post processing Makefiles the GEN4ASM
+variable is not honored when calling intel-gen4asm. This causes
+build errors when GEN4ASM is set to a different value
+
+This was discovered when using intel-gpu-tools version 1.7 where
+the shaders are actually compiled.
+
+Signed-off-by: Daniel Charles <daniel.charles@intel.com>
+---
+ src/shaders/post_processing/gen7/Makefile.am | 4 ++--
+ src/shaders/post_processing/gen8/Makefile.am | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/shaders/post_processing/gen7/Makefile.am b/src/shaders/post_processing/gen7/Makefile.am
+index 0bb572d..1ffc1cd 100644
+--- a/src/shaders/post_processing/gen7/Makefile.am
++++ b/src/shaders/post_processing/gen7/Makefile.am
+@@ -88,10 +88,10 @@ $(INTEL_PP_GEN7_ASM): $(INTEL_PP_ASM) $(INTEL_PP_G4A)
+ 	../../gpp.py _pp0.$@ $@;	\
+ 	rm _pp0.$@
+ .g7s.g7b:
+-	$(AM_V_GEN)intel-gen4asm -a -o $@ -g 7 $<
++	$(AM_V_GEN)$(GEN4ASM) -a -o $@ -g 7 $<
+ 
+ .g7s.g75b:
+-	$(AM_V_GEN)intel-gen4asm -a -o $@ -g 7.5 $<
++	$(AM_V_GEN)$(GEN4ASM) -a -o $@ -g 7.5 $<
+ 
+ CLEANFILES = $(INTEL_PP_GEN7_ASM)
+ 
+diff --git a/src/shaders/post_processing/gen8/Makefile.am b/src/shaders/post_processing/gen8/Makefile.am
+index b41ab46..9898a45 100644
+--- a/src/shaders/post_processing/gen8/Makefile.am
++++ b/src/shaders/post_processing/gen8/Makefile.am
+@@ -63,7 +63,7 @@ $(INTEL_PP_GEN8_ASM): $(INTEL_PP_ASM) $(INTEL_PP_G8A)
+ 	../../gpp.py _pp0.$@ $@;	\
+ 	rm _pp0.$@
+ .g8s.g8b:
+-	$(AM_V_GEN)intel-gen4asm -a -o $@ -g 8 $<
++	$(AM_V_GEN)$(GEN4ASM) -a -o $@ -g 8 $<
+ 
+ CLEANFILES = $(INTEL_PP_GEN7_ASM)
+ 
+-- 
+1.9.3
+

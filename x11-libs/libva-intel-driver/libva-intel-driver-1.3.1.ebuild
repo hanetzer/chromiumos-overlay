@@ -46,6 +46,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/Encoding-Reinitialize-CBR-bit-rate-control-parameter.patch
 	epatch "${FILESDIR}"/Disable-encoding-on-Gen75.patch
 	epatch "${FILESDIR}"/Only-allow-H264-HW-encode-on-BYT.patch
+	epatch "${FILESDIR}"/remove-fixed-uses-of-intel-gen4asm-tool.patch
+	epatch "${FILESDIR}"/check-that-intel-gen4asm-tool-is-actually-present.patch
 	eautoreconf
 }
 
