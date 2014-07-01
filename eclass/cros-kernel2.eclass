@@ -402,11 +402,14 @@ get_build_cfg() {
 get_build_arch() {
 	if [ "${ARCH}" = "arm" ] ; then
 		case "${CHROMEOS_KERNEL_SPLITCONFIG}" in
-			*tegra*)
-				echo "tegra"
-				;;
 			*exynos*)
 				echo "exynos5"
+				;;
+			*rockchip*)
+				echo "rockchip"
+				;;
+			*tegra*)
+				echo "tegra"
 				;;
 			*)
 				echo "arm"
