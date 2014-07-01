@@ -134,6 +134,7 @@ ALL_BOARDS=(
 	storm
 	stout
 	#stout32
+	strago
 	stumpy
 	stumpy_moblab
 	stumpy_pico
