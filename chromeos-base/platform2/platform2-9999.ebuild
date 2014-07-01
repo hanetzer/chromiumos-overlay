@@ -11,7 +11,6 @@ OLD_PLATFORM_LOCALNAME=(
 	"chromiumos-wide-profiling"
 	"lorgnette"
 	"power_manager"
-	"shill"
 )
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
@@ -21,6 +20,7 @@ NEW_PLATFORM2_LOCALNAME=(
 	"cros-disks"
 	"debugd"
 	"mist"
+	"shill"
 	"vpn-manager"
 	"wimax_manager"
 )
