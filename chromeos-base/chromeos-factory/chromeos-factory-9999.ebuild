@@ -23,6 +23,7 @@ IUSE="+autotest +build_tests -chromeless_tty -ecs"
 
 DEPEND="virtual/chromeos-interface
 	dev-python/pyyaml
+	dev-libs/protobuf-python
 	chromeos-base/chromeos-factory-board"
 
 # The runtime dependency for factory test are satisfied in the test image
