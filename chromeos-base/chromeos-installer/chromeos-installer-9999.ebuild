@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/installer"
-CROS_WORKON_LOCALNAME="installer"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-workon cros-debug cros-au
@@ -36,6 +37,11 @@ RDEPEND="
 	sys-block/parted
 	sys-fs/e2fsprogs
 	!<chromeos-base/chromeos-init-0.0.15"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/installer"
+}
 
 src_prepare() {
 	cros-workon_src_prepare
