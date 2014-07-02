@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/userfeedback"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-workon
 
@@ -30,6 +32,11 @@ RDEPEND="chromeos-base/chromeos-init
 	X? ( x11-apps/setxkbmap )"
 
 DEPEND=""
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/userfeedback"
+}
 
 src_test() {
 	test/storage_info_unit_test || die "Unit test failed"
