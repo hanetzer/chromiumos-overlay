@@ -3,7 +3,10 @@
 
 EAPI=4
 
-CROS_WORKON_PROJECT="chromiumos/platform/smogcheck"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
+
 inherit toolchain-funcs cros-debug cros-workon
 
 DESCRIPTION="TPM SmogCheck library"
@@ -18,6 +21,11 @@ KEYWORDS="~*"
 RDEPEND=""
 DEPEND="${RDEPEND}
 	sys-kernel/linux-headers"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/smogcheck"
+}
 
 src_configure() {
 	clang-setup-env
