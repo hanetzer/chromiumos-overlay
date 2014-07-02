@@ -12,24 +12,30 @@ SRC_URI="http://people.freedesktop.org/~chadversary/waffle/files/release/${P}/${
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS="amd64 arm x86"
-IUSE="doc egl gbm opengl opengles test wayland"
+KEYWORDS="*"
+IUSE="doc examples gbm opengl opengles test wayland"
+
+# Note: Chrome OS currently uses the following USE flags:
+#   opengl   => GLX and OpenGL
+#   opengles => EGL and OpenGL ES
+# TODO: sync USE flags with upstream gentoo: crbug.com/375298
 
 REQUIRED_USE="
-	opengles? ( egl )
+	|| ( gbm opengl opengles wayland )
 	"
 
 RDEPEND="
-	virtual/opengl
-	opengles? ( virtual/opengles )
+	opengl? ( virtual/opengl )
 	wayland? ( >=dev-libs/wayland-1.0 )
-	egl? ( || ( virtual/opengles media-libs/mesa[egl] ) )
+	opengles? ( virtual/opengles )
 	gbm? ( media-libs/mesa[gbm] )
 	gbm? ( virtual/udev )
 	x11-libs/libX11
 	x11-libs/libxcb"
+
 DEPEND="${RDEPEND}
 	x11-proto/xcb-proto
+	opengl? ( x11-libs/glproto )
 	doc? (
 		dev-libs/libxslt
 		app-text/docbook-xml-dtd:4.2
@@ -37,13 +43,14 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	local mycmakeargs=(
-		-Dwaffle_has_glx=ON
-		-Dwaffle_build_examples=OFF
-		$(cmake-utils_use doc waffle_build_manpages)
-		$(cmake-utils_use egl waffle_has_x11_egl)
+		$(cmake-utils_use opengles waffle_has_x11_egl)
 		$(cmake-utils_use gbm waffle_has_gbm)
-		$(cmake-utils_use test waffle_build_tests)
 		$(cmake-utils_use wayland waffle_has_wayland)
+		$(cmake-utils_use opengl waffle_has_glx)
+
+		$(cmake-utils_use doc waffle_build_manpages)
+		$(cmake-utils_use examples waffle_build_examples)
+		$(cmake-utils_use test waffle_build_tests)
 	)
 
 	cmake-utils_src_configure
