@@ -124,9 +124,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-38.0.2073.1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-38.0.2073.1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-38.0.2073.1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-38.0.2079.1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-38.0.2079.1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-38.0.2079.1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -191,7 +191,9 @@ DEPEND="${DEPEND}
 	${RDEPEND}
 	chromeos-base/protofiles
 	>=dev-util/gperf-3.0.3
-	>=dev-util/pkgconfig-0.23"
+	>=dev-util/pkgconfig-0.23
+	arm? ( x11-libs/libdrm )
+"
 
 PATCHES=()
 
