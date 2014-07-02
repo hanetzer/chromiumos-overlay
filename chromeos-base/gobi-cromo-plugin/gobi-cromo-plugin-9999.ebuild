@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/platform/gobi-cromo-plugin"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_USE_VCSID="1"
 
 inherit cros-debug cros-workon toolchain-funcs multilib
@@ -42,6 +44,11 @@ cr_make() {
 		BASE_VER=${LIBCHROME_VERS} \
 		$(use install_tests && echo INSTALL_TESTS=1) \
 		"$@"
+}
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/gobi-cromo-plugin"
 }
 
 src_configure() {
