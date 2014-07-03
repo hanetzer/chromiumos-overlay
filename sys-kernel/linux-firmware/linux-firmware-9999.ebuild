@@ -33,11 +33,17 @@ IUSE_IWLWIFI=(
 	iwlwifi-6050
 	iwlwifi-7260
 )
+IUSE_BRCMWIFI=(
+	brcmfmac-all
+	brcmfmac4354-sdio
+	brcmfmac4356-pcie
+)
 IUSE_LINUX_FIRMWARE=(
 	ath9k_htc
 	fw_sst
 	ibt-hw
 	"${IUSE_IWLWIFI[@]}"
+	"${IUSE_BRCMWIFI[@]}"
 	marvell-pcie8897
 )
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon"
@@ -46,6 +52,7 @@ LICENSE="linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
+	$(printf 'linux_firmware_%s? ( LICENCE.broadcom_bcm43xx ) ' "${IUSE_BRCMWIFI[@]}")
 	video_cards_radeon? ( LICENSE.radeon )
 "
 
@@ -99,6 +106,15 @@ src_install() {
 		iwlwifi-6005) doins iwlwifi-6000g2a-*.ucode ;;
 		iwlwifi-6030) doins iwlwifi-6000g2b-*.ucode ;;
 		iwlwifi-*)    doins ${x}-*.ucode ;;
+		esac
+	done
+
+	for x in "${IUSE_BRCMWIFI[@]}"; do
+		use_fw ${x} || continue
+		case ${x} in
+		brcmfmac-all)      doins_subdir brcm/brcmfmac* ;;
+		brcmfmac4354-sdio) doins_subdir brcm/brcmfmac4354-sdio.* ;;
+		brcmfmac4356-pcie) doins_subdir brcm/brcmfmac4356-pcie.* ;;
 		esac
 	done
 }
