@@ -40,8 +40,9 @@ media-libs/mesa		llvm gallium classic
 media-libs/opencv	-gtk python png jpeg -tiff v4l
 media-sound/sox		alsa
 media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -dvd -dvdnav -enca -faac -faad -live -quicktime -mp3 -rar -real -speex -schroedinger -theora -tremor -toolame -twolame -vorbis -xscreensaver -x264 -xv -xvid
-net-analyzer/tcpdump	-chroot
+net-analyzer/tcpdump	-chroot ipv6
 net-firewall/iptables	ipv6
+net-libs/libpcap	ipv6
 net-libs/libsoup	-ssl
 # for curl-7.19.6 turning on ipv6 use flag will turn off ares
 net-misc/curl		ares
