@@ -27,7 +27,7 @@ COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
 	cros_p2p? ( chromeos-base/p2p )
-	dev-cpp/gflags
+	>=dev-cpp/gflags-2.0
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/libpcre
