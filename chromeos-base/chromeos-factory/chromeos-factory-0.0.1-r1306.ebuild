@@ -2,22 +2,19 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("b734a5680ccbcf6d92f1effb16d5dbb543d1dd5e" "bcdc8d51f00fa43fab720fc33ab79c40577bbcb9")
-CROS_WORKON_TREE=("6f09bcde9cc11f9734eabd33ce3d7d00f6a2d453" "e37b58cd9c91fcf6ef9f2cce5ca5b4bd08d0013b")
-CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
-CROS_WORKON_LOCALNAME=("factory" "installer")
-CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
-CROS_WORKON_LOCALNAME="factory"
+CROS_WORKON_COMMIT=("caafbb139524b57513e96598b777388dc9257985" "57a99e709715f27a5205570beaab82225ad6c40b")
+CROS_WORKON_TREE=("4332d20d4e3b888cd483d350127fdb88391b0cee" "0b0f9775447f2d8da635adda9d6c4368b1d78c3f")
+CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform2")
+CROS_WORKON_LOCALNAME=("factory" "platform2")
+CROS_WORKON_DESTDIR=("${S}" "${S}/platform2")
 
 inherit cros-workon python cros-constants
 
-CLOSURE_LIB_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
 WEBGL_AQUARIUM_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2"
 
 DESCRIPTION="Chrome OS Factory Tools and Data"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI="${CLOSURE_LIB_URI}
-	${WEBGL_AQUARIUM_URI}"
+SRC_URI="${WEBGL_AQUARIUM_URI}"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
@@ -49,10 +46,6 @@ src_unpack() {
 	mv "${WORKDIR}/webgl_aquarium_static" "${webgl_aquarium_path%/*}" || die
 }
 
-src_compile() {
-	emake CLOSURE_LIB_ARCHIVE="${DISTDIR}/${CLOSURE_LIB_URI##*/}"
-}
-
 src_install() {
 	overlay_zip="${EROOT}usr/local/factory/bundle/shopfloor/overlay.zip"
 	if [ -e "$overlay_zip" ]; then
@@ -75,7 +68,8 @@ src_install() {
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
 
 	# Replace chromeos-common.sh symlink with the real file
-	cp --remove-destination "${S}/installer/share/chromeos-common.sh" \
+	cp --remove-destination \
+		"${S}/platform2/installer/share/chromeos-common.sh" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/lib/chromeos-common.sh" || die
 
 	# Replace fmap.py symlink with the real file
