@@ -2,10 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform/installer")
-CROS_WORKON_LOCALNAME=("factory" "installer")
-CROS_WORKON_DESTDIR=("${S}" "${S}/installer")
-CROS_WORKON_LOCALNAME="factory"
+CROS_WORKON_PROJECT=("chromiumos/platform/factory" "chromiumos/platform2")
+CROS_WORKON_LOCALNAME=("factory" "platform2")
+CROS_WORKON_DESTDIR=("${S}" "${S}/platform2")
 
 inherit cros-workon python cros-constants
 
@@ -73,7 +72,8 @@ src_install() {
 	dosym ../../../../local/factory/py $(python_get_sitedir)/cros/factory
 
 	# Replace chromeos-common.sh symlink with the real file
-	cp --remove-destination "${S}/installer/share/chromeos-common.sh" \
+	cp --remove-destination \
+		"${S}/platform2/installer/share/chromeos-common.sh" \
 		"${D}${TARGET_DIR}/bundle/factory_setup/lib/chromeos-common.sh" || die
 
 	# Replace fmap.py symlink with the real file
