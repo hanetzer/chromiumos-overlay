@@ -8,13 +8,11 @@ CROS_WORKON_DESTDIR=("${S}" "${S}/platform2")
 
 inherit cros-workon python cros-constants
 
-CLOSURE_LIB_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/closure-library-20130212-95c19e7f0f5f.zip"
 WEBGL_AQUARIUM_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2"
 
 DESCRIPTION="Chrome OS Factory Tools and Data"
 HOMEPAGE="http://www.chromium.org/"
-SRC_URI="${CLOSURE_LIB_URI}
-	${WEBGL_AQUARIUM_URI}"
+SRC_URI="${WEBGL_AQUARIUM_URI}"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
@@ -44,10 +42,6 @@ src_unpack() {
 	local webgl_aquarium_path="${S}/py/test/pytests/webgl_aquarium_static"
 	rm -rf ${webgl_aquarium_path}
 	mv "${WORKDIR}/webgl_aquarium_static" "${webgl_aquarium_path%/*}" || die
-}
-
-src_compile() {
-	emake CLOSURE_LIB_ARCHIVE="${DISTDIR}/${CLOSURE_LIB_URI##*/}"
 }
 
 src_install() {
