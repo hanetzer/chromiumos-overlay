@@ -2,8 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/platform/shill"
-CROS_WORKON_LOCALNAME="shill"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-workon
 
@@ -24,6 +25,11 @@ RDEPEND="${DEPEND}
 	chromeos-base/platform2
 	net-dns/dnsmasq
 	sys-apps/iproute2"
+
+src_unpack() {
+  cros-workon_src_unpack
+  S+="/shill"
+}
 
 src_compile() {
 	# We only install scripts here, so no need to compile.
