@@ -13,7 +13,6 @@ NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
 	"buffet"
 	"chaps"
-	"crash-reporter"
 	"cromo"
 	"cros-disks"
 	"debugd"
@@ -48,7 +47,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation buffet +cellular -clang +cros_disks cros_embedded +debugd cros_host gdmwimax gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -64,17 +63,6 @@ RDEPEND_chaps="
 		dev-libs/dbus-c++
 		dev-libs/openssl
 		dev-libs/protobuf
-	)
-"
-
-RDEPEND_crash_reporter="
-	crash_reporting? (
-		chromeos-base/google-breakpad
-		chromeos-base/chromeos-ca-certificates
-		!<chromeos-base/chromeos-init-0.0.25
-		>=dev-cpp/gflags-2.0
-		dev-libs/libpcre
-		net-misc/curl
 	)
 "
 
@@ -189,8 +177,6 @@ RDEPEND_wimax_manager="
 
 DEPEND_chaps="tpm? ( dev-db/leveldb )"
 
-DEPEND_crash_reporter="crash_reporting? ( sys-devel/flex )"
-
 RDEPEND="
 	platform2? (
 		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
@@ -201,7 +187,6 @@ RDEPEND="
 		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
 		!chromeos-base/chaps[-platform2]
-		!chromeos-base/crash-reporter
 		!chromeos-base/cromo[-platform2]
 		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
@@ -339,29 +324,6 @@ platform2_install_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
 	dobin "${OUT}"/quipper
-}
-
-platform2_install_crash-reporter() {
-	use cros_host && return 0
-	use crash_reporting || return 0
-
-	into /
-	dosbin "${OUT}"/crash_reporter
-	dosbin crash_sender
-
-	into /usr
-	dobin "${OUT}"/list_proxies
-	dobin "${OUT}"/warn_collector
-	dosbin kernel_log_collector.sh
-
-	insinto /etc/init
-	doins init/crash-reporter.conf init/crash-sender.conf
-	use cros_embedded || doins init/warn-collector.conf
-
-	insinto /etc
-	doins crash_reporter_logs.conf
-
-	udev_dorules 99-crash-reporter.rules
 }
 
 platform2_install_cromo() {
@@ -679,28 +641,6 @@ platform2_test_chromiumos-wide-profiling() {
 	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
-	done
-}
-
-platform2_test_crash-reporter() {
-	use cros_host && return 0
-	use crash_reporting || return 0
-
-	# TODO(mkrebs): The tests are not currently thread-safe, so
-	# running them in the default parallel mode results in
-	# failures.
-	local tests=(
-		chrome_collector_test
-		crash_collector_test
-		kernel_collector_test
-		udev_collector_test
-		unclean_shutdown_collector_test
-		user_collector_test
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
 	done
 }
 
