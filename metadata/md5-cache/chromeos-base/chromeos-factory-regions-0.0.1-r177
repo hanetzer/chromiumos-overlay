@@ -1,12 +1,11 @@
-DEFINED_PHASES=configure info install setup unpack
-DEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4 dev-vcs/git
-DESCRIPTION=Utility for obtaining various bits of low-level system info
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=chromeos-base/chromeos-factory dev-vcs/git
+DESCRIPTION=ChromeOS Regions
 EAPI=4
-HOMEPAGE=http://mosys.googlecode.com/
-IUSE=static cros_host cros_workon_tree_b009ea30cfd98fead9f18f82456f1a4772d89231 profiling
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_workon_tree_00e97bc95d3e6e65fbef13260517f22e3bbc0cb0 profiling
 KEYWORDS=*
 LICENSE=BSD-Google
-RDEPEND=sys-apps/util-linux >=sys-apps/flashmap-0.3-r4
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=367cc34fbf4dc37b663967d9cb2f2acf
+_md5_=94f10e0bdd440db58f1a33d28c671643
