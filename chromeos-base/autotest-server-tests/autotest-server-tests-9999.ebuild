@@ -120,6 +120,7 @@ SERVER_IUSE_TESTS="
 	+tests_power_RPMTest
 	+tests_security_kASLR
 	+tests_suites
+	+tests_video_PowerConsumption
 "
 
 IUSE_TESTS="${IUSE_TESTS}
