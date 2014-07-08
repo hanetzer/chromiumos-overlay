@@ -20,7 +20,7 @@ RESTRICT="test"
 LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libchromeos
-	dev-cpp/gflags
+	>=dev-cpp/gflags-2.0
 	dev-cpp/glog
 	dev-libs/glib
 	dev-libs/libusb

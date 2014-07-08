@@ -20,7 +20,7 @@ REQUIRED_USE="asan? ( clang )"
 LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libevdev
-	dev-cpp/gflags
+	>=dev-cpp/gflags-2.0
 	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest

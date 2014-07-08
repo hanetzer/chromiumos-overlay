@@ -22,7 +22,7 @@ IUSE="+autotest"
 LIBCHROME_VERS="271506"
 
 RDEPEND="${RDEPEND}
-	dev-cpp/gflags
+	>=dev-cpp/gflags-2.0
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )

@@ -22,7 +22,7 @@ LIBCHROME_VERS="271506"
 RDEPEND="
 	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
-	dev-cpp/gflags
+	>=dev-cpp/gflags-2.0
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/protobuf

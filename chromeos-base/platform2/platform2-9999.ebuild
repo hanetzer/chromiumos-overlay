@@ -72,7 +72,7 @@ RDEPEND_crash_reporter="
 		chromeos-base/google-breakpad
 		chromeos-base/chromeos-ca-certificates
 		!<chromeos-base/chromeos-init-0.0.25
-		dev-cpp/gflags
+		>=dev-cpp/gflags-2.0
 		dev-libs/libpcre
 		net-misc/curl
 	)
@@ -132,7 +132,7 @@ RDEPEND_mist="
 RDEPEND_power_manager="
 	power_management? (
 		!<chromeos-base/chromeos-init-0.0.11
-		dev-cpp/gflags
+		>=dev-cpp/gflags-2.0
 		dev-cpp/glog
 		dev-libs/protobuf
 		media-sound/adhd
@@ -170,7 +170,7 @@ RDEPEND_shill="
 
 RDEPEND_vpn_manager="
 	vpn? (
-		dev-cpp/gflags
+		>=dev-cpp/gflags-2.0
 		net-dialup/ppp
 		net-dialup/xl2tpd
 		net-misc/strongswan
