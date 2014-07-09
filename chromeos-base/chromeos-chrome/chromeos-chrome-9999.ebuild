@@ -314,6 +314,8 @@ set_build_defines() {
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
+		# This test can only be build from internal sources
+		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -644,7 +646,7 @@ setup_test_lists() {
 		fi
 	fi
 
-	if use internal_gles_conform; then
+	if use chrome_internal || use internal_gles_conform; then
 		TEST_FILES+=(
 			gles2_conform_test{,_windowless}
 		)
@@ -884,9 +886,8 @@ install_chrome_test_resources() {
 	if use chrome_internal; then
 		install_test_resources "${test_dir}" pdf/test
 	fi
-
 	# Add the gles_conform test data if needed.
-	if use internal_gles_conform; then
+	if use chrome_internal || use internal_gles_conform; then
 		install_test_resources "${test_dir}" gpu/gles2_conform_support/gles2_conform_test_expectations.txt
 	fi
 
