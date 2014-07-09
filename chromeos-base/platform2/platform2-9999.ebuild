@@ -8,7 +8,6 @@ CROS_WORKON_USE_VCSID=1
 
 OLD_PLATFORM_LOCALNAME=(
 	"chromiumos-wide-profiling"
-	"power_manager"
 )
 NEW_PLATFORM2_LOCALNAME=(
 	"attestation"
@@ -20,6 +19,7 @@ NEW_PLATFORM2_LOCALNAME=(
 	"debugd"
 	"lorgnette"
 	"mist"
+	"power_manager"
 	"shill"
 	"vpn-manager"
 	"wimax_manager"
