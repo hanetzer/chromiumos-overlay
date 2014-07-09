@@ -8,7 +8,6 @@ CROS_WORKON_USE_VCSID=1
 
 OLD_PLATFORM_LOCALNAME=(
 	"chromiumos-wide-profiling"
-	"lorgnette"
 	"power_manager"
 )
 NEW_PLATFORM2_LOCALNAME=(
@@ -19,6 +18,7 @@ NEW_PLATFORM2_LOCALNAME=(
 	"cromo"
 	"cros-disks"
 	"debugd"
+	"lorgnette"
 	"mist"
 	"shill"
 	"vpn-manager"
