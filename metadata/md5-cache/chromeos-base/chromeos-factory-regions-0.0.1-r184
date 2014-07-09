@@ -1,11 +1,11 @@
-DEFINED_PHASES=info install setup unpack
-DEPEND=dev-vcs/git
-DESCRIPTION=Chromium OS build utilities
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=chromeos-base/chromeos-factory dev-vcs/git
+DESCRIPTION=ChromeOS Regions
 EAPI=4
-HOMEPAGE=http://www.chromium.org/chromium-os
-IUSE=cros_host cros_workon_tree_f2a77859d07a17ff68594c2cab381ebf1c5272ed profiling
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_workon_tree_a45decec35a775ab4f6fbb214ad8ea3f36a9205b profiling
 KEYWORDS=*
 LICENSE=BSD-Google
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=7204e84d92bcc46e842678a8b7186514
+_md5_=84e117049ea9af1c875e8dfbe3fb71f1
