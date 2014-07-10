@@ -46,6 +46,7 @@ IUSE="
 	hardfp
 	+highdpi
 	internal_gles_conform
+	mojo
 	+nacl
 	neon
 	+ninja
@@ -762,6 +763,9 @@ src_compile() {
 		else
 			chrome_targets+=( libosmesa.so )
 		fi
+	fi
+	if use mojo; then
+		chrome_targets+=( mojo_shell )
 	fi
 
 	chrome_make "${chrome_targets[@]}"
