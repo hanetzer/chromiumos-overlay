@@ -45,7 +45,7 @@ src_compile() {
 
 src_install() {
 	dobin crosh crosh-{dev,usb}
-	dobin network_diagnostics
+	dobin network_diag
 	insinto /usr/share/misc
 	doins "${WORKDIR}"/inputrc.crosh
 }
