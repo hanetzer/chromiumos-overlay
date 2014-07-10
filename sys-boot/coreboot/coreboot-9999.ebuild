@@ -25,7 +25,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode memmaps quiet-cb rmt vmx vboot2"
+IUSE="ap148-mode em100-mode memmaps quiet-cb rmt vboot2 vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly falco fox link lumpy panther parrot
@@ -107,6 +107,11 @@ EOF
 		elog "   - enabling vboot2"
 		echo "CONFIG_VBOOT_VERIFY_FIRMWARE=n" >> .config
 		echo "CONFIG_VBOOT2_VERIFY_FIRMWARE=y" >> .config
+	fi
+
+	if use ap148-mode; then
+		elog  "  - building for AP148"
+		echo "CONFIG_BOARD_VARIANT_AP148=y" >> .config
 	fi
 
 	cp .config .config_serial
