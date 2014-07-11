@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/permission_broker"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-debug cros-workon udev user
@@ -30,6 +32,11 @@ DEPEND="${RDEPEND}
 	chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/permission_broker"
+}
 
 src_prepare() {
 	cros-workon_src_prepare
