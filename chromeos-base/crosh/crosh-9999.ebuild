@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/crosh"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-workon
@@ -26,6 +28,11 @@ RDEPEND="app-admin/sudo
 	sys-apps/net-tools
 "
 DEPEND=""
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/crosh"
+}
 
 src_compile() {
 	# File order is important here.
