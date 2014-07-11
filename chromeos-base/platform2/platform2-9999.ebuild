@@ -48,7 +48,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation buffet +cellular +crash_reporting -clang +cros_disks cros_embedded +debugd cros_host gdmwimax gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
@@ -80,10 +80,12 @@ RDEPEND_crash_reporter="
 
 RDEPEND_cromo="
 	cellular? (
-		dev-libs/dbus-c++
-		virtual/modemmanager
+		gobi? (
+			!<chromeos-base/chromeos-init-0.0.9
+			dev-libs/dbus-c++
+			virtual/modemmanager
+		)
 	)
-	!<chromeos-base/chromeos-init-0.0.9
 "
 
 RDEPEND_cros_disks="
@@ -365,6 +367,7 @@ platform2_install_crash-reporter() {
 platform2_install_cromo() {
 	use cros_host && return 0
 	use cellular || return 0
+	use gobi || return 0
 
 	dosbin "${OUT}"/cromo
 	dolib.so "${OUT}"/libcromo.a
@@ -704,6 +707,7 @@ platform2_test_crash-reporter() {
 platform2_test_cromo() {
 	use cros_host && return 0
 	use cellular || return 0
+	use gobi || return 0
 
 	local tests=(
 		sms_message_unittest
@@ -868,7 +872,7 @@ pkg_preinst() {
 	# created in pkg_setup instead.
 	local ug
 
-	if use cellular; then
+	if use cellular && use gobi; then
 		for ug in cromo qdlservice; do
 			enewuser "${ug}"
 			enewgroup "${ug}"
