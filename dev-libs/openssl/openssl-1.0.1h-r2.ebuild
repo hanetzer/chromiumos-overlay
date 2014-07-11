@@ -106,7 +106,6 @@ multilib_src_configure() {
 	# Clean out patent-or-otherwise-encumbered code
 	# Camellia: Royalty Free            http://en.wikipedia.org/wiki/Camellia_(cipher)
 	# IDEA:     Expired                 http://en.wikipedia.org/wiki/International_Data_Encryption_Algorithm
-	# EC:       ????????? ??/??/2015    http://en.wikipedia.org/wiki/Elliptic_Curve_Cryptography
 	# MDC2:     Expired                 http://en.wikipedia.org/wiki/MDC-2
 	# RC5:      5,724,428 03/03/2015    http://en.wikipedia.org/wiki/RC5
 
@@ -136,7 +135,6 @@ multilib_src_configure() {
 		${sslout} \
 		$(use sse2 || echo "no-sse2") \
 		enable-camellia \
-		$(use_ssl !bindist ec) \
 		${ec_nistp_64_gcc_128} \
 		enable-idea \
 		enable-mdc2 \
