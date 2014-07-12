@@ -177,6 +177,10 @@ PATCHES=(
 	# crosbug.com/p/26503
 	"${FILESDIR}/1.12.4-fb-fix-fast-path-detection.patch"
 	"${FILESDIR}/1.12.4-xf86RandR12-use-correct-gamma-size-when-allocating-g.patch"
+
+	# crosbug.com/p/29492
+	"${FILESDIR}/1.12.4-fix-copypasta-crtc-confinement.patch"
+	"${FILESDIR}/1.12.4-fix-snap-to-nearest-crtc.patch"
 )
 
 src_prepare() {
