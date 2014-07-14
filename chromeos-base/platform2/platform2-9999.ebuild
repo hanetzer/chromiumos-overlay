@@ -523,7 +523,6 @@ platform2_install_shill() {
 	insinto /etc/dbus-1/system.d
 	doins shims/org.chromium.flimflam.conf
 	insinto /usr/share/shill
-	use cellular && doins data/cellular_operator_info
 	use cellular && doins "${OUT}"/serviceproviders.pbf
 
 	# Install introspection XML
