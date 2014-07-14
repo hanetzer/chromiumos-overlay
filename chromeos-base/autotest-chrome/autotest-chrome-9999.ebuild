@@ -18,7 +18,6 @@ IUSE="
 	${IUSE}
 	+autotest
 	+cellular
-	internal_gles_conform
 	+shill
 "
 
@@ -131,19 +130,12 @@ IUSE_TESTS_CELLULAR="
 	)
 "
 
-IUSE_TESTS_GLES_CONFORM="
-	internal_gles_conform? (
-		+tests_graphics_GLES2ConformChrome
-	)
-"
-
 IUSE_TESTS_SHILL="
 	shill? ( +tests_network_ChromeWifiEndToEnd )
 "
 IUSE_TESTS="
 	${IUSE_TESTS[*]}
 	${IUSE_TESTS_CELLULAR}
-	${IUSE_TESTS_GLES_CONFORM}
 	${IUSE_TESTS_SHILL}
 "
 
