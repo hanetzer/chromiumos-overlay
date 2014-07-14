@@ -127,6 +127,7 @@ ALL_BOARDS=(
 	#ricochet
 	rizer
 	rush
+	rush_ryu
 	samus
 	slippy
 	sonic
