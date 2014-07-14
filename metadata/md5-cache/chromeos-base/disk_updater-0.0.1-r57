@@ -1,11 +1,12 @@
-DEFINED_PHASES=info install setup unpack
+DEFINED_PHASES=info install setup test unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Additional upstart jobs that will be installed on test images
+DESCRIPTION=Root disk firmware updater
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_ profiling
-KEYWORDS=~*
+IUSE=cros_host cros_workon_tree_3bc7d3c3a40018894f6f2f132503b6de5d49db4b profiling
+KEYWORDS=*
 LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-installer sys-apps/hdparm
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=6b05f2791dabbe2453675675472523ed
+_md5_=535f2ef419110f528a0c0ad2ce74e944
