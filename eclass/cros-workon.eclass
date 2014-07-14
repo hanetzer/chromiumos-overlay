@@ -140,6 +140,21 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # Args to pass to `make` when running src_compile. Not intended for ebuilds
 # to set, just to respect. Used by `cros_workon_make` and friends.
 
+# @ECLASS-VARIABLE: CROS_WORKON_EGIT_BRANCH
+# @DESCRIPTION:
+# This branch is used as EGIT_BRANCH when falling back to git-2. Leaving this
+# as the default value of space will cause git-2 to fetch all branches with
+# the special refspec ":". Since we don't know which branch CROS_WORKON_COMMIT
+# is in, fetching all branches is a safe bet. However, if the git branch being
+# updated can't be fast-forwarded (e.g. linux-next master), the branch needs to
+# be specified because the special refspec excludes non-FF branches in fetches.
+: ${CROS_WORKON_EGIT_BRANCH:=" "}
+
+# @ECLASS-VARIABLE: CROS_WORKON_ALWAYS_LIVE
+# @DESCRIPTION:
+# If set to "1", don't try to do a local fetch for 9999 ebuilds.
+: ${CROS_WORKON_ALWAYS_LIVE:=}
+
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_host cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
@@ -305,9 +320,11 @@ cros-workon_src_unpack() {
 	# Fix array variables
 	array_vars_autocomplete
 
-	if [[ "${PV}" == "9999" ]]; then
+	if [[ "${PV}" == "9999" && "${CROS_WORKON_ALWAYS_LIVE}" != "1" ]]; then
 		# Live packages
 		fetch_method=local
+	elif [[ "${PV}" != "9999" && "${CROS_WORKON_ALWAYS_LIVE}" == "1" ]]; then
+		die "CROS_WORKON_ALWAYS_LIVE is set for non-9999 ebuild"
 	else
 		fetch_method=git
 	fi
@@ -425,13 +442,7 @@ cros-workon_src_unpack() {
 			fi
 		fi
 
-		# Since we have no indication of being on a branch, it would
-		# default to 'master', and that might not contain our commit, as
-		# minilayout can have git checkouts independent of the repo tree.
-		# Hack around this by using empty branch. This will cause git fetch to
-		# pull all branches instead. Note that the branch has to be a space,
-		# rather than empty, for this trick to work.
-		EGIT_BRANCH=" "
+		EGIT_BRANCH="${CROS_WORKON_EGIT_BRANCH}"
 		for (( i = 0; i < project_count; ++i )); do
 			EGIT_REPO_URI="${repo[i]}/${project[i]}.git"
 			EGIT_PROJECT="${project[i]}${CROS_WORKON_GIT_SUFFIX}"

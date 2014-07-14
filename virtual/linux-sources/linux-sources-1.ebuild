@@ -10,7 +10,14 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE_KERNEL_VERS=( kernel-3_4 kernel-3_8 kernel-3_10 kernel-3_14 )
+IUSE_KERNEL_VERS=(
+	kernel-3_4
+	kernel-3_8
+	kernel-3_10
+	kernel-3_14
+	kernel-upstream-mainline
+	kernel-upstream-next
+)
 IUSE="${IUSE_KERNEL_VERS[*]} kernel_sources"
 REQUIRED_USE="?? ( ${IUSE_KERNEL_VERS[*]} )"
 
@@ -19,6 +26,8 @@ RDEPEND="
 	kernel-3_8? ( sys-kernel/chromeos-kernel-3_8[kernel_sources=] )
 	kernel-3_10? ( sys-kernel/chromeos-kernel-3_10[kernel_sources=] )
 	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14[kernel_sources=] )
+	kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline[kernel_sources=] )
+	kernel-upstream-next? ( sys-kernel/upstream-kernel-next[kernel_sources=] )
 "
 
 # Add blockers so when migrating between USE flags, the old version gets
