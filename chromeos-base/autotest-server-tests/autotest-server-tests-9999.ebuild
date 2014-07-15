@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="+autotest +cellular -chromeless_tty power_management +tpm"
+IUSE="+autotest +cellular -chromeless_tty +power_management +tpm"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -27,7 +27,7 @@ SERVER_IUSE_TESTS="
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
 	cellular? ( +tests_cellular_StaleModemReboot )
-	!chromeless_tty (
+	!chromeless_tty? (
 		+tests_chromeperf_PGOPageCycler
 		+tests_desktopui_CrashyRebootServer
 		+tests_desktopui_EnterprisePolicyServer
