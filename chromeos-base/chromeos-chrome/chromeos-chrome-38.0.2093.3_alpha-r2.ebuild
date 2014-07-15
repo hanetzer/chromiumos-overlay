@@ -523,6 +523,19 @@ src_unpack() {
 	# a symlink here to add compatibility with autotest eclass which uses this.
 	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 
+	if use internal_gles_conform; then
+		local CHROME_GLES2_CONFORM=${CHROME_ROOT}/src/third_party/gles2_conform
+		local CROS_GLES2_CONFORM=/home/${WHOAMI}/trunk/src/third_party/gles2_conform
+		if [[ ! -d "${CHROME_GLES2_CONFORM}" ]]; then
+			if [[ -d "${CROS_GLES2_CONFORM}" ]]; then
+				ln -s "${CROS_GLES2_CONFORM}" "${CHROME_GLES2_CONFORM}"
+				einfo "Using GLES2 conformance test suite from ${CROS_GLES2_CONFORM}"
+			else
+				die "Trying to build GLES2 conformance test suite without ${CHROME_GLES2_CONFORM} or ${CROS_GLES2_CONFORM}"
+			fi
+		fi
+	fi
+
 	if use afdo_use && ! use clang; then
 		local PROFILE_DIR="${WORKDIR}/afdo"
 		mkdir "${PROFILE_DIR}"
