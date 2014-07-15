@@ -14,10 +14,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="271506"
-
 RDEPEND="chromeos-base/gestures
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	app-misc/utouch-evemu
 	chromeos-base/libevdev"
 
