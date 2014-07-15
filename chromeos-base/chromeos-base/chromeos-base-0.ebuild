@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="cros_embedded cros_host pam"
+IUSE="chromeless_tty cros_embedded cros_host pam"
 
 # We need to make sure timezone-data is merged before us.
 # See pkg_setup below as well as http://crosbug.com/27413
@@ -107,28 +107,33 @@ pkg_preinst() {
 
 src_install() {
 	insinto /etc
-	doins "${FILESDIR}"/sysctl.conf || die
+	doins "${FILESDIR}"/sysctl.conf
 	doins "${FILESDIR}"/issue
 
 	insinto /etc/profile.d
-	doins "${FILESDIR}"/xauthority.sh || die
+	doins "${FILESDIR}"/xauthority.sh
 
 	insinto /lib/udev/rules.d
-	doins "${FILESDIR}"/udev-rules/*.rules || die
+	doins "${FILESDIR}"/udev-rules/*.rules
 
 	insinto /etc/avahi
-	doins "${FILESDIR}"/avahi-daemon.conf || die
+	doins "${FILESDIR}"/avahi-daemon.conf
 
 	# target-specific fun
 	if ! use cros_host ; then
 		dodir /bin /usr/bin
 
-		# Symlink /etc/localtime to something on the stateful partition, which we
-		# can then change around at runtime.
-		dosym /var/lib/timezone/localtime /etc/localtime || die
-
+		# If we are running Chrome (or its app_shell variants), symlink
+                # /etc/localtime to something on the stateful partition, which
+                # we can then change around at runtime.
+                # Otherwise, default to Pacific time zone.
+		if ! use chromeless_tty ; then
+			dosym /var/lib/timezone/localtime /etc/localtime
+		else
+			dosym /usr/share/zoneinfo/US/Pacific /etc/localtime
+                fi
 		# We use mawk in the target boards, not gawk.
-		dosym mawk /usr/bin/awk || die
+		dosym mawk /usr/bin/awk
 
 		# We want dash as our main shell.
 		dosym dash /bin/sh
@@ -140,8 +145,8 @@ src_install() {
 
 		# Avoid the wrapper and just link to the only editor we have.
 		dodir /usr/libexec
-		dosym /usr/bin/$(usex cros_embedded vi vim) /usr/libexec/editor || die
-		dosym /bin/more /usr/libexec/pager || die
+		dosym /usr/bin/$(usex cros_embedded vi vim) /usr/libexec/editor
+		dosym /bin/more /usr/libexec/pager
 
 		# Install our custom ssh config settings.
 		insinto /etc/ssh
@@ -159,7 +164,7 @@ src_install() {
 	fi
 
 	# Some daemons and utilities access the mounts through /etc/mtab.
-	dosym /proc/mounts /etc/mtab || die
+	dosym /proc/mounts /etc/mtab
 
 	# Add our little bit of sudo glue.
 	newpamd "${FILESDIR}"/include-chromeos-auth sudo
@@ -169,7 +174,7 @@ src_install() {
 	insinto /etc/sudoers.d
 	echo "${SHARED_USER_NAME} ALL=(ALL) ALL" > 95_cros_base
 	insopts -m 440
-	doins 95_cros_base || die
+	doins 95_cros_base
 }
 
 pkg_postinst() {
