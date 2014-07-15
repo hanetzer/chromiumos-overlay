@@ -239,6 +239,7 @@ pull_netboot_ramfs_binary() {
 
 	# Binaries used by factory installer
 	idobin /bin/bash
+	idobin /bin/coreutils
 	idobin /bin/dd
 	idobin /bin/sh
 	idobin /bin/xxd
@@ -259,6 +260,10 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/partprobe
 	idobin /usr/sbin/vpd
 	ln -s "/bin/cgpt" "${INITRAMFS_TMP_S}/usr/bin/cgpt" || die
+
+	# Create a symlink of coreutils from /bin to /usr/bin. This is needed by
+	# /bin/dd.
+	ln -s "/bin/coreutils" "${INITRAMFS_TMP_S}/usr/bin/coreutils" || die
 
 	# Install ectool if there is one
 	if [ -e "${SYSROOT}"/usr/sbin/ectool ]; then
