@@ -15,7 +15,8 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="x11-libs/libX11
-	x11-libs/libXt"
+	x11-libs/libXt
+	x11-libs/libXtst"
 DEPEND="${RDEPEND}"
 
 src_prepare() {
