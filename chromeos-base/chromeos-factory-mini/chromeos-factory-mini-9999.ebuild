@@ -23,6 +23,8 @@ KEYWORDS="~*"
 IUSE=""
 DESCRIPTION="Subset of factory software to be installed in test images"
 
+DEPEND="dev-lang/python"
+
 src_compile() {
 	emake par MAKE_PAR_ARGS=--mini PAR_NAME=factory-mini.par
 }
