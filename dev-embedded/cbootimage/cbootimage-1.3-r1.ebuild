@@ -1,1 +1,0 @@
-cbootimage-1.3.ebuild
