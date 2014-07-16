@@ -26,6 +26,7 @@ EC_BOARD_NAMES=(
 	firefly
 	nyan
 	pit
+	ryu
 	samus
 	samus_pd
 	snow
