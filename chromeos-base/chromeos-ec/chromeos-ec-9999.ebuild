@@ -24,6 +24,7 @@ EC_BOARD_NAMES=(
 	big
 	blaze
 	firefly
+	nyan
 	pit
 	samus
 	samus_pd
