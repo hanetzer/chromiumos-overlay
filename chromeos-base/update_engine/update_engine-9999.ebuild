@@ -2,16 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}/platform2"
-CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_USE_VCSID=1
+CROS_WORKON_DESTDIR="${S}"
 
-PLATFORM_SUBDIR="update_engine"
-
-inherit toolchain-funcs cros-debug cros-workon platform
+inherit toolchain-funcs cros-debug cros-workon flag-o-matic scons-utils
 
 DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
@@ -23,9 +18,11 @@ KEYWORDS="~*"
 IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override +power_management"
 REQUIRED_USE="asan? ( clang )"
 
+LIBCHROME_VERS="271506"
+
 COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/libchrome[cros-debug=]
+	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
@@ -57,52 +54,73 @@ RDEPEND="
 	virtual/update-policy
 "
 
-platform_pkg_test() {
-	local unittests_binary="${OUT}"/update_engine_unittests
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/update_engine"
+}
 
-	# The test expects the binaries and testing keys to be in the current
-	# directory.
-	# TODO(deymo): Change the tests to find these files on the same directory
-	# where update_engine_unittests is.
-	for f in delta_generator test_http_server; do
-		rm -f $f
-		ln -s "${OUT}"/$f $f || die "Error creating the symlink for $f."
-	done
-	# .pub.pem files are generated on the "gen" directory.
-	for f in unittest_key.pub.pem unittest_key2.pub.pem; do
-		rm -f $f
-		ln -s "${OUT}"/gen/include/update_engine/$f $f  \
-			|| die "Error creating the symlink for $f."
-	done
+src_configure() {
+	cros-workon_src_configure
+}
+
+src_compile() {
+	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
+	cros-debug-add-NDEBUG
+	clang-setup-env
+	append-flags -DUSE_HWID_OVERRIDE=$(usex hwid_override 1 0)
+	append-flags -DUSE_POWER_MANAGEMENT=$(usex power_management 1 0)
+	export CCFLAGS="$CFLAGS"
+	export BASE_VER=${LIBCHROME_VERS}
+
+	escons
+}
+
+src_test() {
+	local unittests_binary=update_engine_unittests
+	local targets=("${unittests_binary}" test_http_server delta_generator)
+	escons "${targets[@]}"
 
 	if ! use x86 && ! use amd64 ; then
 		einfo "Skipping tests on non-x86 platform..."
 	else
-		# If GTEST_FILTER isn't provided, we run two subsets of tests
-		# separately: the set of non-privileged  tests (run normally)
-		# followed by the set of privileged tests (run as root).
-		# Otherwise, we pass the GTEST_FILTER environment variable as
-		# an argument and run all the tests as root; while this might
-		# lead to tests running with excess privileges, it is necessary
-		# in order to be able to run every test, including those that
-		# need to be run with root privileges.
-		if [[ -z ${GTEST_FILTER} ]]; then
-			platform_test "run" "${unittests_binary}" 0 '-*.RunAsRoot*' \
-			|| die "${unittests_binary} (unprivileged) failed, retval=$?"
-			platform_test "run" "${unittests_binary}" 1 '*.RunAsRoot*' \
-			|| die "${unittests_binary} (root) failed, retval=$?"
+		# We need to set PATH so that the `openssl` in the target
+		# sysroot gets executed instead of the host one (which is
+		# compiled differently). http://crosbug.com/27683
+		local testpath="${SYSROOT}/usr/bin:$PATH"
+
+		# If neither GTEST_ARGS nor GTEST_FILTER is provided, we run
+		# two subsets of tests separately: the set of non-privileged
+		# tests (run normally) followed by the set of privileged tests
+		# (run as root). Otherwise, we delegate GTEST_FILTER (as
+		# environment variable) and pass GTEST_ARGS as argument to a
+		# single, privileged invocation of the unit tests binary; while
+		# this might lead to tests running with excess privileges, it
+		# is necessary in order to be able to run every test, including
+		# those that need to be run with root privileges.
+		if [[ -z ${GTEST_ARGS} && -z ${GTEST_FILTER} ]]; then
+			PATH="${testpath}" \
+				"./${unittests_binary}" --gtest_filter='-*.RunAsRoot*' \
+				&& einfo "./${unittests_binary} (unprivileged) succeeded" \
+				|| die "./${unittests_binary} (unprivileged) failed, retval=$?"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="${testpath}" \
+				"./${unittests_binary}" --gtest_filter='*.RunAsRoot*' \
+				&& einfo "./${unittests_binary} (root) succeeded" \
+				|| die "./${unittests_binary} (root) failed, retval=$?"
 		else
-			platform_test "run" "${unittests_binary}" 1 "${GTEST_FILTER}" \
-			|| die "${unittests_binary} (root) failed, retval=$?"
+			sudo LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" PATH="${testpath}" \
+				GTEST_FILTER="${GTEST_FILTER}" \
+				"./${unittests_binary}" ${GTEST_ARGS} \
+				&& einfo "./${unittests_binary} succeeded" \
+				|| die "./${unittests_binary} failed, retval=$?"
 		fi
 	fi
 }
 
 src_install() {
-	dosbin "${OUT}"/update_engine
-	dobin "${OUT}"/update_engine_client
+	dosbin update_engine
+	dobin update_engine_client
 
-	use delta_generator && dobin "${OUT}"/delta_generator
+	use delta_generator && dobin delta_generator
 
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
