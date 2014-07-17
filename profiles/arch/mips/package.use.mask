@@ -1,0 +1,4 @@
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+sys-apps/flashrom atahpt nic3com nicnatsemi nicrealtek rayer_spi satamv
