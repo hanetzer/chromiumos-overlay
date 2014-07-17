@@ -21,6 +21,7 @@ base_libs = [
                 at_exit.cc
                 atomicops_internals_x86_gcc.cc
                 base_switches.cc
+                callback_helpers.cc
                 callback_internal.cc
                 command_line.cc
                 cpu.cc
