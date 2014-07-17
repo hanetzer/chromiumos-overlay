@@ -652,12 +652,10 @@ setup_test_lists() {
 
 	# TODO(spang): video tests don't build with ozone - crbug.com/363302
 	if ! use ozone; then
-		TEST_FILES+=( video_decode_accelerator_unittest )
-
-		# TODO(owenlin): Remove the test once VEA is ready on x86 platforms.
-		if [[ ${ARCH} == "arm" ]]; then
-			TEST_FILES+=( video_encode_accelerator_unittest )
-		fi
+		TEST_FILES+=(
+			video_decode_accelerator_unittest
+			video_encode_accelerator_unittest
+		)
 	fi
 
 	if use chrome_internal || use internal_gles_conform; then
