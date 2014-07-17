@@ -78,6 +78,9 @@ qemu_run() {
 		arm)
 			qemu="qemu-arm"
 			;;
+		mips)
+			qemu="qemu-mipsel"
+			;;
 		x86)
 			qemu="qemu-i386"
 			;;
