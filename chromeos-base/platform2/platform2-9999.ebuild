@@ -279,11 +279,15 @@ platform2_install_buffet() {
 
 	# DBus configuration.
 	insinto /etc/dbus-1/system.d
-	doins dbus/org.chromium.Buffet.conf
+	doins etc/dbus-1/org.chromium.Buffet.conf
+
+	# Base GCD command definitions.
+	insinto /etc/buffet
+	doins etc/buffet/gcd.json
 
 	# Upstart script.
 	insinto /etc/init
-	doins buffet.conf
+	doins etc/init/buffet.conf
 }
 
 platform2_install_chaps() {
