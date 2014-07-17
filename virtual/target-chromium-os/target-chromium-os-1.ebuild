@@ -11,8 +11,8 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
-	cros_embedded dptf +fonts gdmwimax mtd +network_time nfc pam
-	+power_management +syslog watchdog X"
+	cros_embedded dptf +fonts mtd +network_time nfc pam
+	+power_management +syslog watchdog wimax X"
 
 ################################################################################
 #
@@ -98,6 +98,7 @@ CROS_COMMON_RDEPEND+="
 	chromeos-base/platform2
 	chromeos-base/tty
 	chromeos-base/update_engine
+	wimax? ( chromeos-base/wimax_manager )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )

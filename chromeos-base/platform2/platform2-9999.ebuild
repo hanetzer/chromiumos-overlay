@@ -19,7 +19,6 @@ PLATFORM2_PROJECTS=(
 	"power_manager"
 	"shill"
 	"vpn-manager"
-	"wimax_manager"
 )
 CROS_WORKON_LOCALNAME="platform2"  # With all platform2 subdirs
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -37,14 +36,13 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation buffet +cellular -clang +cros_disks cros_embedded +debugd cros_host gdmwimax gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation buffet +cellular -clang +cros_disks cros_embedded +debugd cros_host gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 IUSE_POWER_MANAGER="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog"
 IUSE+=" ${IUSE_POWER_MANAGER}"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
 	debugd? ( shill )
-	gdmwimax? ( wimax )
 "
 
 RDEPEND_chaps="
@@ -132,6 +130,7 @@ RDEPEND_shill="
 		chromeos-base/chromeos-minijail
 		!<chromeos-base/flimflam-0.0.1-r530
 		!<chromeos-base/chromeos-init-0.0.4
+		wimax? ( chromeos-base/wimax_manager )
 		dev-libs/dbus-c++
 		dev-libs/libnl:3
 		cellular? ( net-dialup/ppp )
@@ -157,14 +156,6 @@ RDEPEND_vpn_manager="
 	)
 "
 
-RDEPEND_wimax_manager="
-	wimax? (
-		dev-libs/dbus-c++
-		dev-libs/protobuf
-	)
-	gdmwimax? ( virtual/gdmwimax )
-"
-
 DEPEND_chaps="tpm? ( dev-db/leveldb )"
 
 RDEPEND="
@@ -187,7 +178,6 @@ RDEPEND="
 		!chromeos-base/shill[-platform2]
 		chromeos-base/system_api
 		!chromeos-base/vpn-manager[-platform2]
-		!chromeos-base/wimax_manager[-platform2]
 		!dev-util/quipper
 	)
 "
@@ -540,33 +530,6 @@ platform2_install_vpn-manager() {
 	doexe bin/pluto_updown
 }
 
-platform2_install_wimax_manager() {
-	use cros_host && return 0
-	use wimax || return 0
-
-	# Install D-Bus introspection XML files.
-	insinto /usr/share/dbus-1/interfaces
-	doins dbus_bindings/org.chromium.WiMaxManager*.xml
-
-	# Skip the rest of the files unless USE=gdmwimax is specified.
-	use gdmwimax || return 0
-
-	# Install daemon executable.
-	dosbin "${OUT}"/wimax-manager
-
-	# Install WiMAX Manager default config file.
-	insinto /usr/share/wimax-manager
-	doins default.conf
-
-	# Install upstart config file.
-	insinto /etc/init
-	doins wimax_manager.conf
-
-	# Install D-Bus config file.
-	insinto /etc/dbus-1/system.d
-	doins dbus_bindings/org.chromium.WiMaxManager.conf
-}
-
 #
 # These are all the repo-specific test functions.
 # Keep them sorted by name!
@@ -742,14 +705,6 @@ platform2_test_vpn-manager() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}"
 	done
-}
-
-platform2_test_wimax_manager() {
-	use cros_host && return 0
-	use wimax || return 0
-	use gdmwimax || return 0
-
-	platform_test "run" "${OUT}/wimax_manager_testrunner"
 }
 
 #
