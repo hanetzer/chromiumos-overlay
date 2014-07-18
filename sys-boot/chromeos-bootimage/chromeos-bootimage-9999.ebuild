@@ -20,7 +20,7 @@ BOARDS="${BOARDS} lumpy lumpy64 mario panther parrot peppy rambi samus slippy"
 BOARDS="${BOARDS} squawks stout stumpy"
 IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs vboot2"
 IUSE="${IUSE} depthcharge unified_depthcharge spring"
-IUSE="${IUSE} cb_legacy_seabios cb_legacy_uboot"
+IUSE="${IUSE} cb_legacy_seabios cb_legacy_uboot pd_sync"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm )"
 
@@ -38,6 +38,7 @@ DEPEND="
 	amd64? ( ${X86_DEPEND} )
 	!depthcharge? ( virtual/u-boot )
 	cros_ec? ( chromeos-base/chromeos-ec )
+	pd_sync? ( chromeos-base/chromeos-ec )
 	chromeos-base/vboot_reference
 	sys-boot/chromeos-bmpblk
 	memtest? ( sys-boot/chromeos-memtest )
@@ -49,6 +50,7 @@ DEPEND="
 # Directory where the generated files are looked for and placed.
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
 CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
+PD_FIRMWARE_DIR="${CROS_FIRMWARE_ROOT}/${PD_FIRMWARE}"
 
 netboot_required() {
 	! use memtest && ( use factory-mode || use link || use spring)
@@ -78,6 +80,10 @@ build_image() {
 		common_flags+=" --ecro ${CROS_FIRMWARE_ROOT}/ec.RO.bin"
 		common_flags+=" --ec ${CROS_FIRMWARE_ROOT}/ec.RW.bin"
 	fi
+	if use pd_sync; then
+		common_flags+=" --pd ${PD_FIRMWARE_DIR}/ec.RW.bin"
+	fi
+
 	einfo "Building images for ${fdt_file}"
 
 	# Bash stuff to turn '/path/to/exynos5250-snow.dtb' into 'snow' and
@@ -288,6 +294,10 @@ src_compile_depthcharge() {
 
 	if use cros_ec; then
 		common+=( --ec "${ec_file}" )
+	fi
+
+	if use pd_sync; then
+		common+=( --pd "${froot}/${PD_FIRMWARE}/ec.RW.bin")
 	fi
 
 	einfo "Building production image."
