@@ -95,7 +95,6 @@ IUSE_TESTS=(
 	+tests_security_SandboxStatus
 	+tests_telemetry_AFDOGenerateClient
 	+tests_telemetry_LoginTest
-	+tests_telemetry_UnitTests
 	+tests_ui_SystemTray
 	+tests_video_ChromeHWDecodeUsed
 	+tests_video_ChromeRTCHWDecodeUsed
