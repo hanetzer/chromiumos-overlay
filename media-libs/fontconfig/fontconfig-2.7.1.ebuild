@@ -92,6 +92,10 @@ src_install() {
 	check_fontconfig_default 10-hinting-slight.conf
 	check_fontconfig_default 10-sub-pixel-rgb.conf
 
+	# Enable antialiasing by default.
+	dosym ../conf.avail/10-antialias.conf /etc/fonts/conf.d/.
+	check_fontconfig_default 10-antialias.conf
+
 	# There's a lot of variability across different displays with subpixel
 	# rendering. Until we have a better solution, turn it off and use grayscale
 	# instead on boards that don't have internal displays. Also disable it on
