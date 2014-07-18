@@ -38,13 +38,12 @@ COMMON_DEPEND="app-arch/bzip2
 	dev-libs/protobuf
 	dev-util/bsdiff
 	net-misc/curl
-	sys-apps/rootdev
-	sys-fs/e2fsprogs"
+	sys-apps/rootdev"
 
 DEPEND="chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
-	cros_host? ( dev-util/scons )
+	sys-fs/e2fsprogs
 	${COMMON_DEPEND}"
 
 RDEPEND="
@@ -53,6 +52,7 @@ RDEPEND="
 	!cros_host? (
 		power_management? ( chromeos-base/platform2[power_management] )
 	)
+	delta_generator? ( sys-fs/e2fsprogs )
 	virtual/update-policy
 "
 
