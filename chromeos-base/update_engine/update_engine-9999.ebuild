@@ -25,7 +25,6 @@ REQUIRED_USE="asan? ( clang )"
 
 COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
-	chromeos-base/libchrome[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	chromeos-base/vboot_reference
