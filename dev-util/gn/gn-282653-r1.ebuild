@@ -5,12 +5,8 @@ EAPI="5"
 
 # When the time comes to roll to a new version, look up the SHA1 of the new
 # gn binary at https://chromium.googlesource.com/chromium/buildtools/+/master/linux64/gn.sha1
-# You can pull it down from gs://chromium-gn/
-# and run `gn --version` to get the right version number for the ebuild.
-# Once you do so, push the gn binary to gs://chromeos-localmirror/distfiles
-# and be sure to mark it publicly visible.
-# Once you've updated the ebuild, run "ebuild gn-<SVN>-r1 manifest" to generate
-# the Manifest file.
+# You can pull it down and run `gn --version` to get the right version number
+# for the ebuild.
 GN_X64_SHA1="22319bb20a6c99cddf49cf0b7c4cba567da4d423"
 
 DESCRIPTION="GN (generate ninja) meta-build system"
