@@ -26,26 +26,12 @@
 # If set to yes, run the test only for amd64 and x86.
 : ${PLATFORM_NATIVE_TEST:="no"}
 
-# @ECLASS-VARIABLE: LIBCHROMEOS_VERS
-# @DESCRIPTION:
-# Array of libchrome versions supported.
-
 inherit cros-board cros-debug cros-workon toolchain-funcs
 
-[[ -z ${LIBCHROME_VERS} ]] && LIBCHROME_VERS=( 271506 )
+[[ "${WANT_LIBCHROME}" == "yes" ]] && inherit libchrome
 
 IUSE="asan clang cros_host"
 REQUIRED_USE="asan? ( clang )"
-
-LIBCHROME_DEPEND=$(
-	printf \
-		'chromeos-base/libchrome:%s[cros-debug=] ' \
-		"${LIBCHROME_VERS[@]}"
-)
-
-[[ "${WANT_LIBCHROME}" == "yes" ]] && RDEPEND+=" ${LIBCHROME_DEPEND}"
-
-DEPEND="${RDEPEND}"
 
 platform() {
 	local platform2_py="${PLATFORM_TOOLDIR}/platform2.py"

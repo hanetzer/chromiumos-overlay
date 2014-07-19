@@ -8,7 +8,7 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_USE_VCSID="1"
 
-inherit cros-debug cros-workon toolchain-funcs multilib
+inherit cros-debug cros-workon libchrome toolchain-funcs multilib
 
 DESCRIPTION="Cromo plugin to control Qualcomm Gobi modems"
 
@@ -17,9 +17,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="install_tests internal"
 
-LIBCHROME_VERS="271506"
 
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
+RDEPEND="
 	dev-cpp/glog
 	dev-libs/dbus-c++
 	chromeos-base/platform2
@@ -41,7 +40,6 @@ DEPEND="${RDEPEND}
 cr_make() {
 	emake \
 		LIBDIR=/usr/$(get_libdir) \
-		BASE_VER=${LIBCHROME_VERS} \
 		$(use install_tests && echo INSTALL_TESTS=1) \
 		"$@"
 }

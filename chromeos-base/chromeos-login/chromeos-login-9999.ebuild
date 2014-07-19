@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 
-inherit cros-debug cros-workon cros-board multilib toolchain-funcs
+inherit cros-debug cros-workon cros-board libchrome multilib toolchain-funcs
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
@@ -17,11 +17,8 @@ KEYWORDS="~*"
 IUSE="asan clang test"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="271506"
-
 RDEPEND="chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	dev-libs/glib

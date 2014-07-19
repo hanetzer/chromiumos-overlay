@@ -4,7 +4,7 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
-inherit toolchain-funcs flag-o-matic cros-debug cros-workon autotest
+inherit toolchain-funcs flag-o-matic libchrome cros-debug cros-workon autotest
 
 DESCRIPTION="Autotest tests"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,8 +16,6 @@ KEYWORDS="~*"
 IUSE="-chromeless_tty +crash_reporting +encrypted_stateful -ppp +profile vaapi"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
-
-LIBCHROME_VERS="271506"
 
 # pygobject is used in the following tests:
 #   firmware_TouchMTB

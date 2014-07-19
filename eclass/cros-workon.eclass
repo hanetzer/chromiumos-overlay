@@ -521,10 +521,6 @@ cros-workon_src_configure() {
 		# Portage takes care of this for us.
 		export SPLITDEBUG=0
 		export MODE=$(usex profiling profiling opt)
-		if [[ ${LIBCHROME_VERS:+set} == "set" ]] ; then
-			# For packages that use libchromeos, set it up automatically.
-			export BASE_VER=${LIBCHROME_VERS}
-		fi
 	elif [[ -x ${ECONF_SOURCE:-.}/configure ]]; then
 		econf "$@"
 	else

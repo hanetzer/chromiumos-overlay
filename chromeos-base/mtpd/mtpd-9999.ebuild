@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon user
+inherit cros-debug cros-workon libchrome user
 
 DESCRIPTION="MTP daemon for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -17,10 +17,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang test"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="271506"
-
 RDEPEND="
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/libchromeos
 	>=dev-cpp/gflags-2.0
 	dev-libs/dbus-c++

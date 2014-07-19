@@ -7,7 +7,7 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-debug cros-workon udev user
+inherit cros-debug cros-workon libchrome udev user
 
 DESCRIPTION="Permission Broker for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -18,8 +18,6 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 RESTRICT="test"
-
-LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libchromeos
 	>=dev-cpp/gflags-2.0

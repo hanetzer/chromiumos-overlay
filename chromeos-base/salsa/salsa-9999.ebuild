@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 
-inherit cros-workon toolchain-funcs
+inherit cros-debug cros-workon libchrome toolchain-funcs
 
 DESCRIPTION="Touchpad Experimentation Framework"
 HOMEPAGE="http://www.chromium.org/"
@@ -18,9 +18,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="271506"
-
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}
+RDEPEND="
 	sys-libs/ncurses
 	x11-libs/libX11
 	x11-libs/libXi"
@@ -40,7 +38,6 @@ src_compile() {
 	cd try_touch_experiment
 	tc-export CXX PKG_CONFIG
 	clang-setup-env
-	export BASE_VER=${LIBCHROME_VERS}
 	emake
 }
 

@@ -11,7 +11,7 @@ CROS_WORKON_USE_VCSID=1
 
 PLATFORM_SUBDIR="p2p"
 
-inherit cros-debug cros-workon platform user
+inherit cros-debug cros-workon libchrome platform user
 
 DESCRIPTION="Chromium OS P2P"
 HOMEPAGE="http://www.chromium.org/"

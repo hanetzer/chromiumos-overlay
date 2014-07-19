@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 
-inherit cros-debug cros-workon
+inherit cros-debug cros-workon libchrome
 
 DESCRIPTION="Image-burning service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -18,10 +18,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang test"
 REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="271506"
-
 RDEPEND="
-	chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
 	chromeos-base/platform2
 	dev-libs/dbus-glib
 	dev-libs/glib
@@ -46,7 +43,6 @@ src_compile() {
 	tc-export CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	clang-setup-env
-	export BASE_VER=${LIBCHROME_VERS}
 	emake image_burner
 }
 

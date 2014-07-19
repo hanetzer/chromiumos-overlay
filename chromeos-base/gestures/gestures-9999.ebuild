@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
 
-inherit toolchain-funcs multilib cros-debug cros-workon
+inherit toolchain-funcs multilib cros-debug cros-workon libchrome
 
 DESCRIPTION="Gesture recognizer library"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,8 +16,6 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang +X"
 REQUIRED_USE="asan? ( clang )"
-
-LIBCHROME_VERS="271506"
 
 RDEPEND="chromeos-base/libevdev
 	>=dev-cpp/gflags-2.0
@@ -36,7 +34,6 @@ src_configure() {
 src_compile() {
 	tc-export CXX
 	cros-debug-add-NDEBUG
-	export BASE_VER=${LIBCHROME_VERS}
 
 	emake clean  # TODO(adlr): remove when a better solution exists
 	emake
