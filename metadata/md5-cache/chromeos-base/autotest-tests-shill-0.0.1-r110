@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=!<chromeos-base/autotest-tests-0.0.3 chromeos-base/shill-test-scripts ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=526aa9a28fecbf7ec1c4c5f8fb74c90f
+_md5_=494c8a4c621100ff2fba40e736876954
