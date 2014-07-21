@@ -95,6 +95,7 @@ IUSE_TESTS=(
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
 	+tests_ui_SystemTray
+	+tests_ui_SettingsPage
 	+tests_video_ChromeHWDecodeUsed
 	+tests_video_ChromeRTCHWDecodeUsed
 	+tests_video_ChromeRTCHWEncodeUsed
