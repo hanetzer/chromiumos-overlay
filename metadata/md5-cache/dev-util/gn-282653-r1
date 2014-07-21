@@ -9,4 +9,4 @@ RDEPEND=dev-libs/libpcre dev-libs/glib
 RESTRICT=mirror
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/gn-22319bb20a6c99cddf49cf0b7c4cba567da4d423.bin
-_md5_=0305c7c9c96f99e4e1a3e8e7f2ff086f
+_md5_=cab69a8d3ce58497a6019f6105652616
