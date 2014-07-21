@@ -23,5 +23,6 @@ USE="${USE} -device-mapper"
 USE="${USE} -doc -profile -profiling -python"
 
 # Make stuff small.
-USE="${USE} chromeless_tty cros_embedded"
-USE="${USE} -pam -tpm"
+USE="${USE} -attestation -buffet -cellular chromeless_tty -crash_reporting"
+USE="${USE} -cros_disks cros_embedded -debugd -gdmwimax -lorgnette"
+USE="${USE} -pam -passive_metrics -power_management -tpm -vpn -wimax"
