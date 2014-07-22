@@ -61,7 +61,7 @@ CLIENT_IUSE_TESTS="
 	+tests_bonnie
 	+tests_iozone
 	+tests_netpipe
-	+tests_scrashme
+	!mips? ( +tests_scrashme )
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_autoupdate_CannedOmahaUpdate
@@ -105,7 +105,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_RamFio
 	+tests_hardware_RealtekCardReader
 	+tests_hardware_Resolution
-	+tests_hardware_SAT
+	!mips? ( +tests_hardware_SAT )
 	+tests_hardware_Smartctl
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
