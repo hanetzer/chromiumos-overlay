@@ -296,8 +296,21 @@ cros-firmware_src_install() {
 	# install the main updater program
 	dosbin $UPDATE_SCRIPT || die "Failed to install update script."
 
-	# install factory wipe script
-	dosbin firmware-factory-wipe
+	# install additional scripts ( sbin/firmware-*.${version} ).
+	local main_script="${CROS_FIRMWARE_SCRIPT##*updater}"
+	local version="${main_script%.sh}"
+	for script in "${S}"/sbin/firmware-*; do
+		local script_base="$(basename "${script}")"
+		if [[ "${script#*.}" == "${script}" ]] &&
+		   [[ ! -f "${script}.${version}" ]]; then
+			# A general script to be installed on all systems, if no
+			# version-specific script exists.
+			dosbin "${script}"
+		elif [[ "${script#*.}" == "${version}" ]]; then
+			# A script only installed if version matches.
+			newsbin "${script}" "${script_base%.*}"
+		fi
+	done
 
 	# install updaters for firmware-from-source archive.
 	if use bootimage; then
