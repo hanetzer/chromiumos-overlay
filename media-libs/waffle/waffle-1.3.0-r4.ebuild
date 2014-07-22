@@ -35,7 +35,7 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	x11-proto/xcb-proto
-	opengl? ( x11-libs/glproto )
+	opengl? ( x11-proto/glproto )
 	doc? (
 		dev-libs/libxslt
 		app-text/docbook-xml-dtd:4.2
