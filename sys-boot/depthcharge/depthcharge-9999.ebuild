@@ -34,17 +34,6 @@ src_configure() {
 	cros-workon_src_configure
 }
 
-make_depthcharge() {
-	local suffix="$1"
-	local broot="${S}/build${suffix}"
-
-	emake obj="${broot}" distclean
-	emake obj="${broot}" defconfig BOARD="${board}"
-	emake obj=${broot} \
-		LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload${suffix}/" \
-		VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}"
-}
-
 src_compile() {
 	local board=$(get_current_board_with_variant)
 	if [[ ! -d "board/${board}" ]]; then
@@ -75,34 +64,24 @@ src_compile() {
 		  "board/${board}/defconfig"
 	fi
 
-	make_depthcharge ""
-	make_depthcharge "_gdb"
-	emake obj="build" dts BOARD="${board}"
-}
+	emake distclean
+	emake defconfig BOARD="${board}"
+	emake dts BOARD="${board}"
 
-install_depthcharge() {
-	local suffix="$1"
-	local build_root="build${suffix}"
-	local destdir="/firmware/depthcharge${suffix}"
-	pushd "${build_root}" || die "couldn't access ${build_root}"
-
-	local files_to_copy=(netboot.{bin,elf{,.map}})
-	if use unified_depthcharge ; then
-		files_to_copy+=(depthcharge.elf{,.map})
+	if use unified_depthcharge; then
+		emake depthcharge_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
+		emake dev_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 	else
-		files_to_copy+=(depthcharge.{ro,rw}.{bin,elf{,.map}})
+		emake depthcharge_ro_rw VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
+		emake dev_ro_rw VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 	fi
 
-	insinto "${destdir}"
-	doins "${files_to_copy[@]}"
-
-	# Install the depthcharge.payload file into the firmware
-	# directory for downstream use if it is produced.
-	if [[ -r depthcharge.payload ]]; then
-		doins {depthcharge,netboot}.payload
-	fi
-
-	popd
+	emake netboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 }
 
 src_install() {
@@ -115,9 +94,20 @@ src_install() {
 	insinto "${dstdir}"
 	newins .config depthcharge.config
 
-	insinto "${dstdir}/dts"
-	doins "build/fmap.dts"
+	pushd "build" >/dev/null || die "couldn't access build/ directory"
 
-	install_depthcharge ""
-	install_depthcharge "_gdb"
+	insinto "${dstdir}/dts"
+	doins "fmap.dts"
+
+	local files_to_copy=(netboot.{bin,elf{,.map},payload})
+	if use unified_depthcharge ; then
+		files_to_copy+=({depthcharge,dev}.{elf{,.map},payload})
+	else
+		files_to_copy+=({depthcharge,dev}.{ro,rw}.{bin,elf{,.map}})
+	fi
+
+	insinto "${dstdir}/depthcharge"
+	doins "${files_to_copy[@]}"
+
+	popd >/dev/null
 }

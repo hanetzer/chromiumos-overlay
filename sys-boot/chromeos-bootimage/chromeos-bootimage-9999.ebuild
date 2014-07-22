@@ -245,15 +245,15 @@ src_compile_depthcharge() {
 	local ramstage_file="${froot}/ramstage.stage"
 	local refcode_file="${froot}/refcode.stage"
 
-	local depthcharge_ro_basename
-	local depthcharge_rw_basename
+	local ro_suffix
+	local rw_suffix
 
 	if use unified_depthcharge; then
-		depthcharge_ro_basename="depthcharge.elf"
-		depthcharge_rw_basename="depthcharge.payload"
+		ro_suffix="elf"
+		rw_suffix="payload"
 	else
-		depthcharge_ro_basename="depthcharge.ro.elf"
-		depthcharge_rw_basename="depthcharge.rw.bin"
+		ro_suffix="ro.elf"
+		rw_suffix="rw.bin"
 	fi
 
 	local common=(
@@ -302,27 +302,27 @@ src_compile_depthcharge() {
 
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
-		--coreboot-elf="${froot}/depthcharge/${depthcharge_ro_basename}" \
+		--coreboot-elf="${froot}/depthcharge/depthcharge.${ro_suffix}" \
 		--outdir "out.ro" --output "image.bin" \
-		--uboot "${froot}/depthcharge/${depthcharge_rw_basename}" ||
+		--uboot "${froot}/depthcharge/depthcharge.${rw_suffix}" ||
 		die "failed to build production image."
 	einfo "Building forced RW image."
 	cros_bundle_firmware "${common[@]}" ${silent[@]} --force-rw \
-		--coreboot-elf="${froot}/depthcharge/${depthcharge_ro_basename}" \
+		--coreboot-elf="${froot}/depthcharge/depthcharge.${ro_suffix}" \
 		--outdir "out.rw" --output "image.rw.bin" \
-		--uboot "${froot}/depthcharge/${depthcharge_rw_basename}" ||
+		--uboot "${froot}/depthcharge/depthcharge.${rw_suffix}" ||
 		die "failed to build forced RW image."
 	einfo "Building serial image."
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
-		--coreboot-elf="${froot}/depthcharge/${depthcharge_ro_basename}" \
+		--coreboot-elf="${froot}/depthcharge/depthcharge.${ro_suffix}" \
 		--outdir "out.serial" --output "image.serial.bin" \
-		--uboot "${froot}/depthcharge/${depthcharge_rw_basename}" ||
+		--uboot "${froot}/depthcharge/depthcharge.${rw_suffix}" ||
 		die "failed to build serial image."
 	einfo "Building developer image."
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
-		--coreboot-elf="${froot}/depthcharge_gdb/${depthcharge_ro_basename}" \
+		--coreboot-elf="${froot}/depthcharge/dev.${ro_suffix}" \
 		--outdir "out.dev" --output "image.dev.bin" \
-		--uboot "${froot}/depthcharge_gdb/${depthcharge_rw_basename}" ||
+		--uboot "${froot}/depthcharge/dev.${rw_suffix}" ||
 		die "failed to build developer image."
 
 	# Build a netboot image.
@@ -347,7 +347,7 @@ src_compile_depthcharge() {
 	if ! use unified_depthcharge && ( use lumpy || use link ); then
 		netboot_ro="${froot}/depthcharge/netboot.elf"
 	else
-		netboot_ro="${froot}/depthcharge/${depthcharge_ro_basename}"
+		netboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
 	fi
 	cros_bundle_firmware "${common[@]}" "${serial[@]}" \
 		--force-rw \
@@ -359,8 +359,10 @@ src_compile_depthcharge() {
 	# Set convenient netboot parameter defaults for developers.
 	local bootfile="${PORTAGE_USERNAME}/${BOARD_USE}/vmlinuz"
 	local argsfile="${PORTAGE_USERNAME}/${BOARD_USE}/cmdline"
-	${S}/setup/update_firmware_settings.py -i "image.net.bin" \
-		--bootfile="${bootfile}" --argsfile="${argsfile}" ||
+	"${S}"/setup/update_firmware_settings.py -i "image.net.bin" \
+		--bootfile="${bootfile}" --argsfile="${argsfile}" &&
+		"${S}"/setup/update_firmware_settings.py -i "image.dev.bin" \
+			--bootfile="${bootfile}" --argsfile="${argsfile}" ||
 		die "failed to preset netboot parameter defaults."
 	einfo "Netboot configured to boot ${bootfile}, fetch kernel command" \
 		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
