@@ -131,7 +131,7 @@ cros_pre_pkg_setup_sysroot_build_bin_dir() {
 cros_post_src_unpack_asan_init() {
 	local log_path="${T}/asan_logs/asan"
 	mkdir -p "${log_path%/*}"
-	export ASAN_OPTIONS+=" log_path=${log_path}"
+	export ASAN_OPTIONS+=" log_path=${log_path} detect_leaks=1"
 
 	local lsan_suppression="${S}/lsan_suppressions"
 	local lsan_suppression_ebuild="${FILESDIR}/lsan_suppressions"
