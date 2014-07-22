@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="mocktpm fwconsole unified_depthcharge vboot2"
+IUSE="ap148-mode fwconsole mocktpm unified_depthcharge vboot2"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -62,7 +62,7 @@ src_compile() {
 		export CROSS_COMPILE=${CHOST}-
 	fi
 
-	if use mocktpm ; then
+	if use mocktpm || use ap148-mode; then
 		echo "CONFIG_MOCK_TPM=y" >> "board/${board}/defconfig"
 	fi
 	if use fwconsole ; then
