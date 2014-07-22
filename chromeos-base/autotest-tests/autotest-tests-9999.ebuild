@@ -102,6 +102,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_Memtester
 	+tests_hardware_MultiReader
 	+tests_hardware_PerfCounterVerification
+	+tests_hardware_ProbeComponents
 	+tests_hardware_RamFio
 	+tests_hardware_RealtekCardReader
 	+tests_hardware_Resolution
