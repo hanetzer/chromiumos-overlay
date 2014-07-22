@@ -32,6 +32,7 @@ IUSE_IWLWIFI=(
 	iwlwifi-6030
 	iwlwifi-6050
 	iwlwifi-7260
+	iwlwifi-7265
 )
 IUSE_BRCMWIFI=(
 	brcmfmac-all
