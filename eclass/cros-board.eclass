@@ -38,7 +38,7 @@ ALL_BOARDS=(
 	amd64-generic_embedded
 	amd64-host
 	anglar
-	app-shell-panther
+	#app-shell-panther
 	aries
 	arm-generic
 	arm64-generic
@@ -88,6 +88,7 @@ ALL_BOARDS=(
 	link
 	link_freon
 	lumpy
+	mappy
 	marble
 	mccloud
 	minnowboard
