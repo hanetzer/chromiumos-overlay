@@ -21,7 +21,7 @@ CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
 RDEPEND="cros_host? ( app-emulation/qemu-kvm )
 	app-portage/gentoolkit
 	cros_host? ( app-shells/bash )
-	chromeos-base/devserver
+	>=chromeos-base/devserver-0.0.2
 	!cros_host? ( !chromeos-base/gmerge )
 	dev-lang/python
 	dev-util/shflags
@@ -74,6 +74,10 @@ src_install() {
 		for f in git{,-prompt} repo; do
 			dosym /usr/share/bash-completion/${f} /etc/bash_completion.d/${f}
 		done
+
+		insinto "$(python_get_sitedir)"
+		# Copy the python files in this directory except __init__.py
+		doins $(find host/lib/ -name '*.py' | grep -v __init__)
 	fi
 }
 

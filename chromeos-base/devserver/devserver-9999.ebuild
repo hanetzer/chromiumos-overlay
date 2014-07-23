@@ -21,9 +21,6 @@ DEPEND=""
 
 src_install() {
 	emake install DESTDIR="${D}"
-	insinto "$(python_get_sitedir)"
-	# Copy the python files in this directory except __init__.py
-	doins $(find host/lib/ -name '*.py' | grep -v __init__)
 
 	insinto "$(python_get_sitedir)/update_payload"
 	doins $(printf '%s\n' host/lib/update_payload/*.py | grep -v unittest)
