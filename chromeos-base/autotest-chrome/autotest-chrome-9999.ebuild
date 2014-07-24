@@ -24,6 +24,7 @@ IUSE="
 RDEPEND="
 	!chromeos-base/autotest-telemetry
 	chromeos-base/autotest-deps-graphics
+	chromeos-base/autotest-deps-webgl-clear
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
 	chromeos-base/chromeos-chrome
@@ -61,6 +62,7 @@ IUSE_TESTS=(
 	+tests_graphics_GLES2ConformChrome
 	+tests_graphics_Idle
 	+tests_graphics_WebGLAquarium
+	+tests_graphics_WebGLClear
 	+tests_graphics_WebGLManyPlanetsDeep
 	+tests_graphics_WebGLPerformance
 	+tests_graphics_Stress
