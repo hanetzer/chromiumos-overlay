@@ -1,12 +1,12 @@
-DEFINED_PHASES=info setup unpack
+DEFINED_PHASES=info install setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Host test utilities for ChromiumOS
+DESCRIPTION=Test tool that recovers bricked Chromium OS test devices
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_bea8ce9cce03a14c1c7ff32a221c15c91b68dd1a profiling
+IUSE=cros_host cros_workon_tree_b5b00dd2fc9fb1b535a1a4f9f9f220a1c8db9c15 profiling
 KEYWORDS=*
 LICENSE=GPL-2
-RDEPEND=app-emulation/qemu-kvm app-portage/gentoolkit app-shells/bash chromeos-base/cros-devutils dev-util/crosutils dev-python/django
+RDEPEND=chromeos-base/chromeos-init dev-lang/python
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=e0718448d0b05d186b51d50dc7393537
+_md5_=df11382b6181aa1742debbeda7cf770c
