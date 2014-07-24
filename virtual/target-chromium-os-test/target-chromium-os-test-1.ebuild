@@ -104,6 +104,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/btsocket
 	dev-python/dbus-python
 	dev-python/dpkt
+	dev-python/imaging
 	dev-python/jsonrpclib
 	dev-python/netifaces
 	dev-python/pygobject
