@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform/salsa"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-workon toolchain-funcs
 
@@ -24,6 +26,11 @@ RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}
 	x11-libs/libXi"
 DEPEND="${RDEPEND}
 	x11-proto/xproto"
+
+src_unpack() {
+	cros-workon_src_unpack
+	S+="/salsa"
+}
 
 src_configure() {
 	cros-workon_src_configure
