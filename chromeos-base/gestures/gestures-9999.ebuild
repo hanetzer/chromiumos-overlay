@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
+IUSE="-asan -clang +X"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="271506"
@@ -24,12 +24,13 @@ RDEPEND="chromeos-base/libevdev
 	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest
-	x11-libs/libXi
+	X? ( x11-libs/libXi )
 	${RDEPEND}"
 
 src_configure() {
 	clang-setup-env
 	cros-workon_src_configure
+	export USE_X11=$(usex X 1 0)
 }
 
 src_compile() {
