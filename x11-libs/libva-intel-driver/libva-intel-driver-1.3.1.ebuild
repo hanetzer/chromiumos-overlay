@@ -44,6 +44,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	epatch "${FILESDIR}"/Encoding-Reinitialize-CBR-bit-rate-control-parameter.patch
+	epatch "${FILESDIR}"/Disable-encoding-on-Gen75.patch
 	eautoreconf
 }
 

@@ -1,0 +1,27 @@
+From d697267eb592452f098e5893234a7e3474afc60e Mon Sep 17 00:00:00 2001
+From: Pawel Osciak <posciak@chromium.org>
+Date: Wed, 23 Jul 2014 17:44:19 +0900
+Subject: [PATCH] Disable encoding on Gen75.
+
+Some of the HSW CPUs have encode disabled, but there is no way to detect
+it, so for now just disable it for the whole family by removing it from
+capabilities.
+---
+ src/i965_drv_video.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/i965_drv_video.c b/src/i965_drv_video.c
+index 4315324..264d39d 100755
+--- a/src/i965_drv_video.c
++++ b/src/i965_drv_video.c
+@@ -308,7 +308,6 @@ static struct hw_codec_info gen75_hw_codec_info = {
+     .has_mpeg2_decoding = 1,
+     .has_mpeg2_encoding = 1,
+     .has_h264_decoding = 1,
+-    .has_h264_encoding = 1,
+     .has_vc1_decoding = 1,
+     .has_jpeg_decoding = 1,
+     .has_vpp = 1,
+-- 
+2.0.0.526.g5318336
+
