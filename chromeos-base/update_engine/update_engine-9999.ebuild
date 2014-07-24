@@ -31,9 +31,9 @@ COMMON_DEPEND="app-arch/bzip2
 	cros_p2p? ( chromeos-base/p2p )
 	>=dev-cpp/gflags-2.0
 	dev-libs/dbus-glib
+	dev-libs/expat
 	dev-libs/glib
 	dev-libs/libpcre
-	dev-libs/libxml2
 	dev-libs/openssl
 	dev-libs/protobuf
 	dev-util/bsdiff
