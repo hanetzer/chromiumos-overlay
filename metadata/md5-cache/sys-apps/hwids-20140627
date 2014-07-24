@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install postinst prepare
+DEPEND=udev? ( dev-lang/perl >=virtual/udev-206 ) virtual/pkgconfig
+DESCRIPTION=Hardware (PCI, USB, OUI, IAB) IDs databases
+EAPI=5
+HOMEPAGE=https://github.com/gentoo/hwids
+IUSE=+net +pci +udev +usb
+KEYWORDS=*
+LICENSE=|| ( GPL-2 BSD ) public-domain
+RDEPEND=!<sys-apps/pciutils-3.1.9-r2 !<sys-apps/usbutils-005-r1
+SLOT=0
+SRC_URI=https://github.com/gentoo/hwids/archive/hwids-20140627.tar.gz
+_eclasses_=eutils	a108f00cccac414097bcbbbb5de01762	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	48b38a216afb92db6314d6c3187abea3	udev	a9a8d051efb42bfe884c1db82ce161de
+_md5_=1cc7179db41c491087686fe7f5f1767b
