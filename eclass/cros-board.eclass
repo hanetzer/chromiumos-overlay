@@ -53,6 +53,7 @@ ALL_BOARDS=(
 	cardhu
 	#chronos
 	clapper
+	cranky
 	daisy
 	#daisy-drm
 	daisy_embedded
