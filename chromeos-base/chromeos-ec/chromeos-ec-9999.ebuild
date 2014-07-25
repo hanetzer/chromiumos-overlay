@@ -129,6 +129,9 @@ src_install() {
 	if use cros_host || use utils; then
 		dobin util/flash_ec
 		dobin build/${ec}/util/stm32mon
+
+		insinto /usr/bin/lib
+		doins chip/lm4/openocd/*
 	fi
 
 	# Only install target binaries if not building for host
