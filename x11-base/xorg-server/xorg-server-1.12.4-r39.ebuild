@@ -14,10 +14,11 @@ KEYWORDS="*"
 
 IUSE_SERVERS="dmx kdrive xnest xorg xvfb"
 # +suid needed because sparcs default off
-IUSE="${IUSE_SERVERS} dga -doc ipv6 minimal nptl selinux +suid tslib +udev
-	xinerama xlib-glx"
+IUSE="${IUSE_SERVERS} dga -doc ipv6 minimal nptl opengl opengles selinux +suid
+	tslib +udev xinerama"
 
-RDEPEND=">=app-admin/eselect-opengl-1.0.8
+RDEPEND="
+	opengl? ( >=app-admin/eselect-opengl-1.0.8 )
 	dev-libs/openssl
 	media-libs/freetype
 	>=x11-libs/libpciaccess-0.12.901
@@ -49,7 +50,7 @@ RDEPEND=">=app-admin/eselect-opengl-1.0.8
 	!minimal? (
 		>=x11-libs/libX11-1.1.5
 		>=x11-libs/libXext-1.0.5
-		>=media-libs/mesa-7.8_rc[nptl=]
+		opengl? ( >=media-libs/mesa-7.8_rc[nptl=] )
 	)
 	tslib? ( >=x11-libs/tslib-1.0 )
 	udev? ( >=sys-fs/udev-150 )
@@ -62,7 +63,7 @@ DEPEND="${RDEPEND}
 	>=x11-proto/damageproto-1.1
 	>=x11-proto/fixesproto-5.0
 	>=x11-proto/fontsproto-2.0.2
-	>=x11-proto/glproto-1.4.14
+	opengl? ( >=x11-proto/glproto-1.4.14 )
 	>=x11-proto/inputproto-2.1.99.3
 	>=x11-proto/kbproto-1.0.3
 	>=x11-proto/randrproto-1.2.99.3
@@ -252,18 +253,19 @@ pkg_setup() {
 		--with-default-font-path=built-ins
 	)
 
-	if use xlib-glx ; then
-		XORG_CONFIGURE_OPTIONS+=(--disable-dri --disable-dri2)
-	else
-		XORG_CONFIGURE_OPTIONS+=(--enable-dri --enable-dri2)
+	# opengl USE is used to select GLX+OpenGL, and enables DRI1 DRI2 and GLX.
+	# opengles USE is used to select EGL+OpenGLES, and only enables DRI2.
+	# if both are present, we use opengl, and build DRI1, DRI2, and GLX.
+	if use opengl ; then
+		XORG_CONFIGURE_OPTIONS+=(--enable-dri --enable-dri2 --enable-glx)
+	elif use opengles ; then
+		XORG_CONFIGURE_OPTIONS+=(--disable-dri --enable-dri2 --disable-glx)
 	fi
 
 	if use amd64 || use x86 ; then
 		XORG_CONFIGURE_OPTIONS+=( --enable-xaa)
-		XORG_CONFIGURE_OPTIONS+=( --enable-glx)
 	else
 		XORG_CONFIGURE_OPTIONS+=( --disable-xaa)
-		XORG_CONFIGURE_OPTIONS+=( --disable-glx)
 	fi
 
 	# Things we may want to remove later:
@@ -275,14 +277,16 @@ pkg_setup() {
 
 	# Xorg-server requires includes from OS mesa which are not visible for
 	# users of binary drivers.
-	mkdir -p "${T}/mesa-symlinks/GL"
-	for i in gl glx glxmd glxproto glxtokens; do
-		ln -s "${EROOT}usr/$(get_libdir)/opengl/xorg-x11/include/$i.h" "${T}/mesa-symlinks/GL/$i.h" || die
-	done
-	for i in glext glxext; do
-		ln -s "${EROOT}usr/$(get_libdir)/opengl/global/include/$i.h" "${T}/mesa-symlinks/GL/$i.h" || die
-	done
-	append-cppflags "-I${T}/mesa-symlinks"
+	if use opengl ; then
+		mkdir -p "${T}/mesa-symlinks/GL"
+		for i in gl glx glxmd glxproto glxtokens; do
+			ln -s "${EROOT}usr/$(get_libdir)/opengl/xorg-x11/include/$i.h" "${T}/mesa-symlinks/GL/$i.h" || die
+		done
+		for i in glext glxext; do
+			ln -s "${EROOT}usr/$(get_libdir)/opengl/global/include/$i.h" "${T}/mesa-symlinks/GL/$i.h" || die
+		done
+		append-cppflags "-I${T}/mesa-symlinks"
+	fi
 
 	# Make breakage less obvious, bug #402285.
 	replace-flags -O3 -O2
@@ -313,8 +317,10 @@ src_install() {
 }
 
 pkg_postinst() {
-	# sets up libGL and DRI2 symlinks if needed (ie, on a fresh install)
-	eselect opengl set xorg-x11 --use-old
+	if use opengl ; then
+		# sets up libGL and DRI2 symlinks if needed (ie, on a fresh install)
+		eselect opengl set xorg-x11 --use-old
+	fi
 
 	if [[ ${PV} != 9999 && $(get_version_component_range 2 ${REPLACING_VERSIONS}) != $(get_version_component_range 2 ${PV}) ]]; then
 		ewarn "You must rebuild all drivers if upgrading from <xorg-server-$(get_version_component_range 1-2)"
@@ -345,13 +351,18 @@ pkg_postrm() {
 dynamic_libgl_install() {
 	# next section is to setup the dynamic libGL stuff
 	ebegin "Moving GL files for dynamic switching"
-		dodir /usr/$(get_libdir)/opengl/xorg-x11/extensions
-		local x=""
-		for x in "${D}"/usr/$(get_libdir)/xorg/modules/extensions/lib{glx,dri,dri2}*; do
-			if [ -f ${x} -o -L ${x} ]; then
-				mv -f ${x} "${D}"/usr/$(get_libdir)/opengl/xorg-x11/extensions
-			fi
-		done
+		# If not USE=opengl, there is no libGL which confuses
+		# eselect-opengl. So, we just leave libdri2.so in
+		#   /usr/lib/xorg/modules/extensions
+		if use opengl ; then
+			dodir /usr/$(get_libdir)/opengl/xorg-x11/extensions
+			local x=""
+			for x in "${D}"/usr/$(get_libdir)/xorg/modules/extensions/lib{glx,dri,dri2}*; do
+				if [ -f ${x} -o -L ${x} ]; then
+					mv -f ${x} "${D}"/usr/$(get_libdir)/opengl/xorg-x11/extensions
+				fi
+			done
+		fi
 	eend 0
 }
 
