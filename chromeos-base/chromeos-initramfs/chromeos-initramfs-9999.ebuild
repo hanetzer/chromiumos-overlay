@@ -75,22 +75,6 @@ idobin() {
 	idoexe --bindir='/bin' "$@"
 }
 
-# Special handling for futility wrapper. This will go away once futility is
-# converted to a single binary.
-idofutility() {
-	local src base
-	idobin "$@"
-	for src in "$@"; do
-		base=$(basename "${src}")
-		mv -f "${INITRAMFS_TMP_S}/bin/${base}" \
-			"${INITRAMFS_TMP_S}/bin/old_bins/${base}" ||
-			die "Cannot mv: ${src}"
-		ln -sf futility "${INITRAMFS_TMP_S}/bin/${base}" ||
-			die "Cannot symlink: ${src}"
-		einfo "Symlinked: /bin/${base} -> futility"
-	done
-}
-
 idoko() {
 	local module_root_path="${SYSROOT}/lib/modules"
 
@@ -156,11 +140,11 @@ pull_initramfs_binary() {
 
 	# For recovery behavior
 	idobin /usr/bin/futility
-	idofutility /usr/bin/old_bins/cgpt
-	idofutility /usr/bin/old_bins/crossystem
-	idofutility /usr/bin/old_bins/dump_kernel_config
-	idofutility /usr/bin/old_bins/tpmc
-	idofutility /usr/bin/old_bins/vbutil_kernel
+	ln -s futility "${INITRAMFS_TMP_S}/bin/dump_kernel_config"
+	ln -s futility "${INITRAMFS_TMP_S}/bin/vbutil_kernel"
+	idobin /usr/bin/cgpt
+	idobin /usr/bin/crossystem
+	idobin /usr/bin/tpmc
 
 	# PNG image assets
 	local shared_assets="${SYSROOT}"/usr/share/chromeos-assets
@@ -247,8 +231,8 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/sbin/fsck.vfat
 	idobin /sbin/resize2fs
 	idobin /sbin/sfdisk
-	idofutility /usr/bin/old_bins/cgpt
-	idofutility /usr/bin/old_bins/crossystem
+	idobin /usr/bin/cgpt
+	idobin /usr/bin/crossystem
 	use power_management && idobin /usr/bin/backlight_tool
 	idobin /usr/bin/futility
 	idobin /usr/bin/getopt
@@ -323,7 +307,6 @@ build_initramfs_file() {
 
 	local subdirs=(
 		bin
-		bin/old_bins
 		dev
 		etc
 		etc/screens
