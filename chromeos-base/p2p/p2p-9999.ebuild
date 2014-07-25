@@ -2,37 +2,48 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
+
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
+CROS_WORKON_DESTDIR="${S}/platform2"
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_USE_VCSID=1
 
-inherit autotools cros-debug cros-workon user
+PLATFORM_SUBDIR="p2p"
 
-DESCRIPTION="Chrome OS P2P"
+inherit cros-debug cros-workon platform user
+
+DESCRIPTION="Chromium OS P2P"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
 
-LIBCHROME_VERS="271506"
-
-RDEPEND="chromeos-base/libchrome:${LIBCHROME_VERS}[cros-debug=]
-	chromeos-base/metrics
+RDEPEND="chromeos-base/metrics
 	dev-libs/glib
 	net-dns/avahi-daemon
 	net-firewall/iptables"
 
-DEPEND="test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )
+DEPEND="test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)
 	${RDEPEND}"
 
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/p2p"
+platform_pkg_test() {
+	local tests=(
+		p2p-client-unittests
+		p2p-server-unittests
+		p2p-http-server-unittests
+		p2p-common-unittests
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${OUT}/${test_bin}"
+	done
 }
 
 pkg_preinst() {
@@ -41,20 +52,12 @@ pkg_preinst() {
 	enewuser p2p
 }
 
-src_prepare() {
-	eautoreconf
+src_install() {
+	dosbin "${OUT}"/p2p-client
+	dosbin "${OUT}"/p2p-server
+	dosbin "${OUT}"/p2p-http-server
+
+	insinto /etc/init
+	doins data/p2p.conf
 }
 
-src_configure() {
-	clang-setup-env
-	cros-workon_src_configure $(use_enable test tests)
-}
-
-src_test() {
-	if ! use x86 && ! use amd64 ; then
-		einfo "Skipping tests on non-x86 platform..."
-	else
-		# Needed for `cros_run_unit_tests`.
-		cros-workon_src_test
-	fi
-}
