@@ -16,6 +16,7 @@ IUSE=""
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-shlex-split-fix.patch
+	epatch "${FILESDIR}"/${P}-Avoid-gypd-infinite-recursion.patch
 }
 
 src_install() {

@@ -1,0 +1,54 @@
+https://code.google.com/p/gyp/issues/detail?id=141
+https://codereview.chromium.org/417113009/
+
+Rebased to r1590.
+
+--- a/pylib/gyp/input.py
++++ b/pylib/gyp/input.py
+@@ -954,23 +954,27 @@ def ExpandVariables(input, phase, variables, build_file):
+     # Prepare for the next match iteration.
+     input_str = output
+ 
+-  # Look for more matches now that we've replaced some, to deal with
+-  # expanding local variables (variables defined in the same
+-  # variables block as this one).
+-  gyp.DebugOutput(gyp.DEBUG_VARIABLES, "Found output %r, recursing.", output)
+-  if isinstance(output, list):
+-    if output and isinstance(output[0], list):
+-      # Leave output alone if it's a list of lists.
+-      # We don't want such lists to be stringified.
+-      pass
+-    else:
+-      new_output = []
+-      for item in output:
+-        new_output.append(
+-            ExpandVariables(item, phase, variables, build_file))
+-      output = new_output
++  if output == input:
++    gyp.DebugOutput(gyp.DEBUG_VARIABLES,
++                    "Found only identity matches on %r, avoiding infinite "
++                    "recursion.",
++                    output)
+   else:
+-    output = ExpandVariables(output, phase, variables, build_file)
++    # Look for more matches now that we've replaced some, to deal with
++    # expanding local variables (variables defined in the same
++    # variables block as this one).
++    gyp.DebugOutput(gyp.DEBUG_VARIABLES, "Found output %r, recursing.", output)
++    if isinstance(output, list):
++      if output and isinstance(output[0], list):
++        # Leave output alone if it's a list of lists.
++        # We don't want such lists to be stringified.
++        pass
++      else:
++        new_output = []
++        for item in output:
++          new_output.append(
++              ExpandVariables(item, phase, variables, build_file))
++        output = new_output
+ 
+   # Convert all strings that are canonically-represented integers into integers.
+   if isinstance(output, list):
+-- 
+2.0.0.526.g5318336
+
