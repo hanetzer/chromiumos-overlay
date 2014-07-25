@@ -16,5 +16,3 @@
 # This pins Chrome to the version below by masking more recent versions.
 #>chromeos-base/chromeos-chrome-37.0.2034.1_rc-r1
 
-# TODO(jshin) : Make libpng 1.2.51 until a local patch is applied.
->=media-libs/libpng-1.2.51
