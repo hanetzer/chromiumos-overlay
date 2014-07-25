@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="2c46b1c6fe6729333602fa369e281c6b5252c469"
-CROS_WORKON_TREE="bb75fb422943dfb5d901fb1db3cd9d3423ceebb8"
+CROS_WORKON_COMMIT="414771453db184690c8dcb6ffe2ce2e0688f972f"
+CROS_WORKON_TREE="d3ae62019a520afdf54425661122f2721b3bd40d"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
 
@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan -clang"
+IUSE="-asan -clang +X"
 REQUIRED_USE="asan? ( clang )"
 
 LIBCHROME_VERS="271506"
@@ -26,12 +26,13 @@ RDEPEND="chromeos-base/libevdev
 	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest
-	x11-libs/libXi
+	X? ( x11-libs/libXi )
 	${RDEPEND}"
 
 src_configure() {
 	clang-setup-env
 	cros-workon_src_configure
+	export USE_X11=$(usex X 1 0)
 }
 
 src_compile() {
