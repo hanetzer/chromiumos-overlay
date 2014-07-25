@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ap148-mode fwconsole mocktpm unified_depthcharge vboot2"
+IUSE="ap148-mode fwconsole mocktpm pd_sync unified_depthcharge vboot2"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -70,17 +70,22 @@ src_compile() {
 
 	if use unified_depthcharge; then
 		emake depthcharge_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		          PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
 		emake dev_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		          PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 	else
 		emake depthcharge_ro_rw VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		          PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
 		emake dev_ro_rw VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+		          PD_SYNC=$(usev pd_sync) \
 			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 	fi
 
 	emake netboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+	          PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
 }
 
