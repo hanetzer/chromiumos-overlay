@@ -489,7 +489,7 @@ emit_its_script() {
 		((++iter))
 	done
 
-	cat <<-EOF >>"${its_script}"
+	cat <<-EOF >>"${its_out}"
 		};
 		configurations {
 			default = "conf@1";
