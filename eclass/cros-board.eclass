@@ -154,6 +154,7 @@ ALL_BOARDS=(
 	quawks
 	rambi
 	raspberrypi
+	reptile
 	#ricochet
 	rizer
 	rush
