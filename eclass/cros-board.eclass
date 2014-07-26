@@ -47,6 +47,7 @@ ALL_BOARDS=(
 	beaglebone_servo
 	beltino
 	blackwall
+	bobcat
 	bolt
 	butterfly
 	bwtm2
