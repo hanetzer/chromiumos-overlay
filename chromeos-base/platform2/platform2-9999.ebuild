@@ -790,7 +790,11 @@ src_unpack() {
 	# TODO(crbug.com/388351): Eventually it will all be under ${S}/platform2.
 	# Change this to match that when chromiumos-wide-profiling is moved to
 	# platform2.
-	use profile && ( cd "${S}/platform/" && unpack "${A}" )
+	if use profile; then
+		pushd "${S}"/platform >/dev/null
+		unpack ${TEST_DATA_SOURCE}
+		popd >/dev/null
+	fi
 }
 
 src_configure() {
