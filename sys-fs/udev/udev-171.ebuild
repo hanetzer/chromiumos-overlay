@@ -69,7 +69,6 @@ RDEPEND="${COMMON_DEPEND}
 	!sys-apps/coldplug
 	!<sys-fs/lvm2-2.02.45
 	!sys-fs/device-mapper
-	sys-fs/udev:0
 	!<sys-fs/udev-171-r7:0
 	>=sys-apps/baselayout-1.12.5"
 
