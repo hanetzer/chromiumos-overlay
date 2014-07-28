@@ -11,4 +11,4 @@ cros_pre_src_configure_ncurses_config() {
 }
 
 # Remove .wav test files used by `speaker-test -t wav` from the image.
-INSTALL_MASK+="/usr/share/sounds/alsa/*.wav"
+INSTALL_MASK+=" /usr/share/sounds/alsa/*.wav"
