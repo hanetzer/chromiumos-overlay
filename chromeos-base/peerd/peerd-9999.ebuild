@@ -10,7 +10,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="peerd"
 
-inherit platform
+inherit cros-workon platform
 
 DESCRIPTION="Local peer discovery services for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -29,7 +29,6 @@ DEPEND="
 "
 
 src_install() {
-	insinto "/usr/bin"
 	dobin "${OUT}/peerd"
 }
 
