@@ -30,6 +30,12 @@ DEPEND="
 
 src_install() {
 	dobin "${OUT}/peerd"
+	# Install init scripts.
+	insinto /etc/init
+	doins init/peerd.conf
+	# Install DBus configuration files.
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.peerd.conf
 }
 
 platform_pkg_test() {
