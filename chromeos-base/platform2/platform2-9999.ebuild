@@ -6,13 +6,11 @@ EAPI="4"
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
 
-OLD_PLATFORM_LOCALNAME=(
-	"chromiumos-wide-profiling"
-)
-NEW_PLATFORM2_LOCALNAME=(
+PLATFORM2_PROJECTS=(
 	"attestation"
 	"buffet"
 	"chaps"
+	"chromiumos-wide-profiling"
 	"cromo"
 	"cros-disks"
 	"debugd"
@@ -23,19 +21,10 @@ NEW_PLATFORM2_LOCALNAME=(
 	"vpn-manager"
 	"wimax_manager"
 )
-CROS_WORKON_LOCALNAME=(
-	"${OLD_PLATFORM_LOCALNAME[@]/#/platform/}"
-	"platform2"  # With all platform2 subdirs
-)
-CROS_WORKON_PROJECT=(
-	"${OLD_PLATFORM_LOCALNAME[@]/#/chromiumos/platform/}"
-	"chromiumos/platform2"
-)
-CROS_WORKON_DESTDIR=(
-	"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/platform/}"
-	"${S}/platform2"
-)
-PLATFORM_SUBDIR="common-mk"
+CROS_WORKON_LOCALNAME="platform2"  # With all platform2 subdirs
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_DESTDIR="${S}/platform2"
+
 PLATFORM_TOOLDIR="${S}/platform2/common-mk"
 
 inherit cros-board cros-debug cros-workon eutils multilib platform toolchain-funcs udev user
@@ -233,8 +222,7 @@ platform2_multiplex() {
 	local phase="$1"
 	local OUT="$(cros-workon_get_build_dir)/out/Default"
 	local multiplex_names=(
-		"${OLD_PLATFORM_LOCALNAME[@]/#/${S}/platform/}"
-		"${NEW_PLATFORM2_LOCALNAME[@]/#/${S}/platform2/}"
+		"${PLATFORM2_PROJECTS[@]/#/${S}/platform2/}"
 	)
 	for SRC in "${multiplex_names[@]}"; do
 		pushd "${SRC}" >/dev/null
@@ -785,13 +773,8 @@ src_unpack() {
 	mkdir -p "${S}"
 
 	use platform2 && cros-workon_src_unpack
-	# Unpack the test data into the right path, where the unit tests will look for
-	# them.
-	# TODO(crbug.com/388351): Eventually it will all be under ${S}/platform2.
-	# Change this to match that when chromiumos-wide-profiling is moved to
-	# platform2.
 	if use profile; then
-		pushd "${S}"/platform >/dev/null
+		pushd "${S}/platform2" >/dev/null
 		unpack ${TEST_DATA_SOURCE}
 		popd >/dev/null
 	fi
