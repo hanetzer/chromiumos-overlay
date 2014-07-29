@@ -3,7 +3,7 @@
 
 EAPI="5"
 
-inherit cmake-utils
+inherit cmake-utils multilib
 
 DESCRIPTION="A collection of automated tests for OpenGL implementations"
 HOMEPAGE="http://piglit.freedesktop.org"
@@ -41,12 +41,10 @@ DEPEND="${RDEPEND}
 	opengl? ( x11-proto/glproto )
 	"
 
-PATCHES=(
-	"${FILESDIR}/0001-glx_oml_sync_control-report-FAIL-if-glXGetMscRateOML.patch"
-	"${FILESDIR}/0002-texturing-s3rc-errors-double-check-GL_TEXTURE-parame.patch"
-	# Chrome OS graphics_Piglit have some additional checks
-	"${FILESDIR}/monitor_tests_for_GPU_hang_and_SW_rasterization.patch"
-	)
+src_prepare() {
+	epatch "${FILESDIR}/0001-Replace-hard-coded-lib-with-LIBDIR.patch"
+	sed -i "s/@LIBDIR@/$(get_libdir)/" piglit || die "Sed failed!"
+}
 
 src_configure() {
 	mycmakeargs=(
@@ -67,11 +65,6 @@ src_configure() {
 		-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
 		-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY
 		-DCMAKE_INSTALL_PREFIX=/usr/local/piglit
-
-		# Set RPATH so piglit binaries can find piglit libs
-		-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE
-		-DCMAKE_INSTALL_RPATH='$ORIGIN/../lib'
-		-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=lib
 	)
 
 	# piglit CMakeLists.txt requires that CMAKE_C_COMPILER_ID be set.
@@ -84,7 +77,7 @@ src_configure() {
 src_install() {
 	cmake-utils_src_install
 
-	# Chrome OS graphics_Piglit autotest tests, derived from tests/gpu.py
-	insinto "/usr/local/piglit/tests"
+	# Chrome OS graphics_Piglit tests, derived from tests/all.py.
+	insinto "/usr/local/piglit/$(get_libdir)/piglit/tests"
 	doins "${FILESDIR}/cros-driver.py"
 }
