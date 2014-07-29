@@ -14,23 +14,29 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang test"
+IUSE="-asan -clang snappy"
 REQUIRED_USE="asan? ( clang )"
+
+DEPEND="snappy? ( app-arch/snappy )"
+RDEPEND="${DEPEND}"
 
 src_configure() {
 	clang-setup-env
 	cros-workon_src_configure
+
+	# These vars all get picked up by build_detect_platform
+	# which the Makefile runs for us automatically.
+	tc-export AR CC CXX
+	export OPT="-DNDEBUG ${CPPFLAGS}"
 }
 
 src_compile() {
-	tc-export CXX OBJCOPY PKG_CONFIG STRIP
-	cros-debug-add-NDEBUG
-	emake all libmemenv.a
+	emake SNAPPY=$(usex snappy) all libmemenv.a
 }
 
 src_install() {
 	insinto /usr/include/leveldb
 	doins include/leveldb/*.h helpers/memenv/memenv.h
-	dolib.a libleveldb.a  libmemenv.a
+	dolib.a libleveldb.a libmemenv.a
 }
 
