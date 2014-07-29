@@ -26,6 +26,7 @@ IUSE="cros_host"
 COMMON_DEPEND="
 	!<chromeos-base/bootstat-0.0.2
 	!<chromeos-base/platform2-0.0.2
+	chromeos-base/chromeos-minijail
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib
 	dev-libs/openssl
@@ -54,7 +55,7 @@ src_install() {
 		doins "${OUT}"/lib/libchromeos-"${v}".pc
 	done
 
-	local dir dirs=( . dbus glib ui )
+	local dir dirs=( . dbus glib minijail ui )
 	for dir in "${dirs[@]}"; do
 		insinto "/usr/include/chromeos/${dir}"
 		doins "chromeos/${dir}"/*.h
@@ -65,6 +66,8 @@ src_install() {
 
 	insinto /usr/include/metrics
 	doins chromeos/bootstat/bootstat.h
+
+	dolib.so "${OUT}"/lib/libchromeos-minijail.so
 }
 
 platform_pkg_test() {
