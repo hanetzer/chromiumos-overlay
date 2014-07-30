@@ -83,6 +83,7 @@ sys-libs/pam		-berkdb
 sys-libs/zlib		static-libs
 sys-power/powertop	-unicode
 sys-process/procps	-unicode
+x11-apps/intel-gpu-tools	-python
 x11-apps/xinit		minimal
 x11-base/xorg-server	-suid
 x11-libs/libdrm		libkms
