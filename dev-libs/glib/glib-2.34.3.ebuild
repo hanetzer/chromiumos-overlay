@@ -14,15 +14,16 @@ SRC_URI="${SRC_URI}
 
 LICENSE="LGPL-2+"
 SLOT="2"
-IUSE="debug fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
+IUSE="cros_host debug fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
 KEYWORDS="*"
 
 RDEPEND="virtual/libiconv
 	virtual/libffi
 	sys-libs/zlib
-	|| (
-		>=dev-libs/elfutils-0.142
-		>=dev-libs/libelf-0.8.12 )
+	cros_host? (
+		|| (
+			>=dev-libs/elfutils-0.142
+			>=dev-libs/libelf-0.8.12 ) )
 	xattr? ( sys-apps/attr )
 	fam? ( virtual/fam )
 	utils? ( >=dev-util/gdbus-codegen-${PV} )"
