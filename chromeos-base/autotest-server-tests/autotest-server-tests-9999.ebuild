@@ -42,6 +42,7 @@ SERVER_IUSE_TESTS="
 	+tests_factory_Basic
 	+tests_firmware_CgptState
 	+tests_firmware_CgptStress
+	+tests_firmware_CompareInstalledToShellBall
 	+tests_firmware_ConsecutiveBoot
 	+tests_firmware_CorruptBothFwBodyAB
 	+tests_firmware_CorruptBothFwSigAB
