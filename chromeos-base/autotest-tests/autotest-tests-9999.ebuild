@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-chromeless_tty +crash_reporting +encrypted_stateful -ppp +profile"
+IUSE="-chromeless_tty +crash_reporting +encrypted_stateful -ppp +profile vaapi"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -28,6 +28,7 @@ RDEPEND="
 	dev-python/numpy
 	dev-python/pygobject
 	media-sound/sox
+	vaapi? ( x11-libs/libva )
 	x11-libs/libX11
 "
 
