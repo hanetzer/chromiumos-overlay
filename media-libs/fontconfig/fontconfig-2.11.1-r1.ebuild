@@ -1,11 +1,11 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-libs/fontconfig/fontconfig-2.11.0-r1.ebuild,v 1.1 2014/01/16 14:43:34 polynomial-c Exp $
+# $Header: /var/cvsroot/gentoo-x86/media-libs/fontconfig/fontconfig-2.11.1-r1.ebuild,v 1.2 2014/06/10 00:44:36 vapier Exp $
 
 EAPI=5
 AUTOTOOLS_AUTORECONF=yes
 
-inherit autotools-multilib readme.gentoo
+inherit eutils readme.gentoo autotools-multilib
 
 DESCRIPTION="A library for configuring and customizing font access"
 HOMEPAGE="http://fontconfig.org/"
@@ -13,7 +13,7 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="1.0"
-KEYWORDS="~*"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~ppc-aix ~amd64-fbsd ~sparc-fbsd ~x86-fbsd ~x64-freebsd ~x86-freebsd ~x86-interix ~amd64-linux ~arm-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~m68k-mint ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
 IUSE="doc static-libs"
 
 # Purposefully dropped the xml USE flag and libxml2 support.  Expat is the
@@ -34,9 +34,10 @@ PDEPEND="!x86-winnt? ( app-admin/eselect-fontconfig )
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.7.1-latin-reorder.patch	# 130466
 	"${FILESDIR}"/${PN}-2.10.2-docbook.patch	# 310157
-	"${FILESDIR}"/${PN}-2.11.0-solaris.patch    # from fc git
-	"${FILESDIR}"/${PN}-2.11.0-solaris10.patch  # from fc git
-	"${FILESDIR}"/${PN}-2.11.0-baseconfigdir_fix.patch # 498246
+)
+
+MULTILIB_CHOST_TOOLS=(
+	/usr/bin/fc-cache
 )
 
 pkg_setup() {
@@ -79,19 +80,22 @@ src_configure() {
 	autotools-multilib_src_configure
 }
 
-src_install() {
-	autotools-multilib_src_install
+multilib_src_install() {
+	default
 
 	# XXX: avoid calling this multiple times, bug #459210
-	install_others() {
+	if multilib_is_native_abi; then
 		# stuff installed from build-dir
-		autotools-utils_src_compile \
-			DESTDIR="${D}" -C doc install-man
+		emake -C doc DESTDIR="${D}" install-man
 
 		insinto /etc/fonts
-		doins "${BUILD_DIR}"/fonts.conf
-	}
-	multilib_foreach_abi install_others
+		doins fonts.conf
+	fi
+}
+
+multilib_src_install_all() {
+	einstalldocs
+	prune_libtool_files --all
 
 	#fc-lang directory contains language coverage datafiles
 	#which are needed to test the coverage of fonts.
@@ -101,7 +105,7 @@ src_install() {
 	dodoc doc/fontconfig-user.{txt,pdf}
 
 	if [[ -e ${ED}usr/share/doc/fontconfig/ ]];  then
-		mv "${ED}"usr/share/doc/fontconfig/* "${ED}"/usr/share/doc/${P}
+		mv "${ED}"usr/share/doc/fontconfig/* "${ED}"/usr/share/doc/${P} || die
 		rm -rf "${ED}"usr/share/doc/fontconfig
 	fi
 
@@ -144,8 +148,12 @@ pkg_postinst() {
 	readme.gentoo_print_elog
 
 	if [[ ${ROOT} = / ]]; then
-		ebegin "Creating global font cache"
-		"${EPREFIX}"/usr/bin/fc-cache -srf
-		eend $?
+		multilib_pkg_postinst() {
+			ebegin "Creating global font cache for ${ABI}"
+			"${EPREFIX}"/usr/bin/${CHOST}-fc-cache -srf
+			eend $?
+		}
+
+		multilib_parallel_foreach_abi multilib_pkg_postinst
 	fi
 }
