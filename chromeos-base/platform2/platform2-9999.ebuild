@@ -384,7 +384,7 @@ platform2_install_debugd() {
 	doins share/{debugd,trace_marker-test}.conf
 
 	insinto /etc/perf_commands
-	doins share/perf_commands/{arm,core,unknown}.txt
+	doins share/perf_commands/{arm,celeron-2955u,core,unknown}.txt
 }
 
 platform2_install_lorgnette() {
