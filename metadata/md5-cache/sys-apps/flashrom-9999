@@ -8,5 +8,5 @@ KEYWORDS=~*
 LICENSE=GPL-2
 RDEPEND=!static? ( atahpt? ( sys-apps/pciutils ) dediprog? ( virtual/libusb:0 ) drkaiser? ( sys-apps/pciutils ) fdtmap? ( sys-apps/dtc ) ft2232_spi? ( dev-embedded/libftdi ) gfxnvidia? ( sys-apps/pciutils ) internal? ( sys-apps/pciutils ) nic3com? ( sys-apps/pciutils ) nicintel? ( sys-apps/pciutils ) nicintel_spi? ( sys-apps/pciutils ) nicnatsemi? ( sys-apps/pciutils ) nicrealtek? ( sys-apps/pciutils ) rayer_spi? ( sys-apps/pciutils ) satasii? ( sys-apps/pciutils ) satamv? ( sys-apps/pciutils ) ogp_spi? ( sys-apps/pciutils ) ) internal? ( sys-apps/dmidecode )
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	825ce8625ad154f3fb17dc7639e5bd88	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=628da33b07ae9089ff224250e5bbf81f
