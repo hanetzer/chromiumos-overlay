@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("6cb663f85df5ac7893a5a6f7db5cf5079949aad4" "b52d7b7acb14743747489ed7323b416bc001503b")
-CROS_WORKON_TREE=("11b45b93d766257b81c9cf30ae106e0dc545fab1" "0775b366a2e9e54585d2fbd1ef1f9e022202c4a2")
+CROS_WORKON_COMMIT=("d8c9d4a4dfa95a1b5a2ddc2d5611177ae1c4b8f9" "b52d7b7acb14743747489ed7323b416bc001503b")
+CROS_WORKON_TREE=("46370f302f22ab6447013853d2764272eb73b106" "0775b366a2e9e54585d2fbd1ef1f9e022202c4a2")
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform/depthcharge"
 	"chromiumos/platform/vboot_reference"
