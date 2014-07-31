@@ -9,7 +9,6 @@ CROS_WORKON_USE_VCSID=1
 PLATFORM2_PROJECTS=(
 	"attestation"
 	"buffet"
-	"chaps"
 	"chromiumos-wide-profiling"
 	"cromo"
 	"cros-disks"
@@ -43,15 +42,6 @@ REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
 	debugd? ( shill )
-"
-
-RDEPEND_chaps="
-	tpm? (
-		app-crypt/trousers
-		dev-libs/dbus-c++
-		dev-libs/openssl
-		dev-libs/protobuf
-	)
 "
 
 RDEPEND_cromo="
@@ -127,9 +117,8 @@ RDEPEND_quipper="
 RDEPEND_shill="
 	shill? (
 		chromeos-base/bootstat
+		tpm? ( chromeos-base/chaps )
 		chromeos-base/chromeos-minijail
-		!<chromeos-base/flimflam-0.0.1-r530
-		!<chromeos-base/chromeos-init-0.0.4
 		wimax? ( chromeos-base/wimax_manager )
 		dev-libs/dbus-c++
 		dev-libs/libnl:3
@@ -156,8 +145,6 @@ RDEPEND_vpn_manager="
 	)
 "
 
-DEPEND_chaps="tpm? ( dev-db/leveldb )"
-
 RDEPEND="
 	platform2? (
 		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
@@ -167,7 +154,6 @@ RDEPEND="
 		>=dev-libs/glib-2.30
 		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
-		!chromeos-base/chaps[-platform2]
 		!chromeos-base/cromo[-platform2]
 		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
@@ -186,9 +172,6 @@ RDEPEND="
 # header.  Non-test code is allowed to include that.  http://crbug.com/359322
 DEPEND="${RDEPEND}
 	platform2? (
-		!cros_host? (
-			$(for v in ${!DEPEND_*}; do echo "${!v}"; done)
-		)
 		chromeos-base/protofiles
 		test? (
 			app-shells/dash
@@ -267,40 +250,6 @@ platform2_install_buffet() {
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/buffet.conf
-}
-
-platform2_install_chaps() {
-	use tpm || return 0
-	use cros_host && return 0
-
-	dosbin "${OUT}"/chapsd
-	dobin "${OUT}"/chaps_client
-	dobin "${OUT}"/p11_replay
-	dolib.so "${OUT}"/lib/libchaps.so
-
-	# Install D-Bus config file.
-	dodir /etc/dbus-1/system.d
-	sed 's,@POLICY_PERMISSIONS@,group="pkcs11",' \
-		"org.chromium.Chaps.conf.in" \
-		> "${D}/etc/dbus-1/system.d/org.chromium.Chaps.conf"
-
-	# Install upstart config file.
-	insinto /etc/init
-	doins chapsd.conf
-
-	# Install headers for use by clients.
-	insinto /usr/include/chaps
-	doins token_manager_client.h
-	doins token_manager_client_mock.h
-	doins token_manager_interface.h
-	doins isolate.h
-	doins chaps_proxy_mock.h
-	doins chaps_interface.h
-	doins chaps.h
-	doins attributes.h
-
-	insinto /usr/include/chaps/pkcs11
-	doins pkcs11/*.h
 }
 
 platform2_install_chromiumos-wide-profiling() {
@@ -544,38 +493,6 @@ platform2_test_buffet() {
 	platform_test "run" "${OUT}/buffet_testrunner"
 }
 
-platform2_test_chaps() {
-	use tpm || return 0
-	use cros_host && return 0
-
-	local tests=(
-		chaps_test
-		chaps_service_test
-		slot_manager_test
-		session_test
-		object_test
-		object_policy_test
-		object_pool_test
-		object_store_test
-		opencryptoki_importer_test
-		isolate_login_client_test
-	)
-
-	local gtest_filter_qemu=""
-	gtest_filter_qemu+="-*DeathTest*"
-	gtest_filter_qemu+=":*ImportSample*"
-	gtest_filter_qemu+=":TestSession.RSA*"
-	gtest_filter_qemu+=":TestSession.KeyTypeMismatch"
-	gtest_filter_qemu+=":TestSession.KeyFunctionPermission"
-	gtest_filter_qemu+=":TestSession.BadKeySize"
-	gtest_filter_qemu+=":TestSession.BadSignature.*"
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}" "" "${gtest_filter_qemu}"
-	done
-}
-
 platform2_test_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
@@ -786,13 +703,6 @@ pkg_preinst() {
 		done
 		enewgroup "daemon-store"
 		enewgroup "logs-access"
-	fi
-
-	if use tpm; then
-		for ug in attestation pkcs11 chaps; do
-			enewuser "${ug}"
-			enewgroup "${ug}"
-		done
 	fi
 
 	if use shill; then

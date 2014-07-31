@@ -21,6 +21,7 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	app-crypt/trousers
+	chromeos-base/chaps
 	chromeos-base/libchromeos
 	chromeos-base/libscrypt
 	chromeos-base/metrics

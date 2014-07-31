@@ -12,7 +12,7 @@ KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage coreboot +cras +crash_reporting cros_ec
 	cros_embedded dptf +fonts mtd +network_time nfc pam
-	+power_management +syslog watchdog wimax X"
+	+power_management +syslog +tpm watchdog wimax X"
 
 ################################################################################
 #
@@ -91,6 +91,7 @@ CROS_COMMON_RDEPEND+="
 	syslog? ( app-admin/rsyslog )
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
+	tpm? ( chromeos-base/chaps )
 	pam? ( chromeos-base/chromeos-auth-config )
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-installer
