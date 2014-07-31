@@ -1,0 +1,41 @@
+Uses Py_ssize_t instead of "size_t" when parsing the length of a string.
+
+--- ahocorasick-0.9.org/py_wrapper.c	2014-08-11 12:58:01.621421445 -0700
++++ ahocorasick-0.9/py_wrapper.c	2014-08-11 13:00:21.394519080 -0700
+@@ -6,6 +6,9 @@
+ 
+  */
+ 
++/* Use Py_ssize_t for the length parameter of "s#" when parsing
++ * arguments. */
++#define PY_SSIZE_T_CLEAN
+ 
+ #include <Python.h>
+ #include "structmember.h"
+@@ -98,7 +101,7 @@
+ 			    PyObject *args,
+ 			    PyObject *kwargs) {
+ 	unsigned char *newKeyword;
+-	size_t n;
++	Py_ssize_t n;
+ 	static char *kwlist[] = {"keyword", NULL};
+ 	if (! PyArg_ParseTupleAndKeywords
+ 	    (args, kwargs, "s#", kwlist, &newKeyword, &n)) {
+@@ -109,7 +112,7 @@
+ 	/* Check for empty string: the underlying C implementation function
+ 	   aho_corasick_addstring() crashes on empty string input, so let's
+ 	   catch that before we enter. */
+-	if (n == 0) {
++	if (n <= 0) {
+ 		PyErr_SetString(PyExc_AssertionError,
+ 				"add() cannot take the empty string");
+ 		return NULL;
+@@ -150,7 +153,7 @@
+ 	size_t start, end;
+ 	static char *kwlist[] = {"query", "startpos", NULL};
+ 	int startpos = 0;
+-	size_t n;		/* length of queryString */
++	Py_ssize_t n;		/* length of queryString */
+ 	if (! PyArg_ParseTupleAndKeywords
+ 	    (args, kwargs, "s#|i", kwlist, &queryString, &n, &startpos)) {
+ 		return NULL;

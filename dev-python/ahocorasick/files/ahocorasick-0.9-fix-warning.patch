@@ -1,0 +1,11 @@
+--- ahocorasick-0.9.org/aho-corasick.c	2014-07-31 14:51:21.976189638 -0700
++++ ahocorasick-0.9/aho-corasick.c	2014-07-31 14:50:53.315999497 -0700
+@@ -156,7 +156,7 @@
+ 		if (state->_transitions.data.array == NULL)
+ 			return -1;
+ 		memset(state->_transitions.data.array,
+-		       (int) FAIL,
++		       (intptr_t) FAIL,
+ 		       AHO_CORASICK_CHARACTERS*sizeof(aho_corasick_state_t *));
+ 		return 0;
+ 	case AHO_CORASICK_SPARSE_TRANSITIONS:

@@ -1,0 +1,38 @@
+Run memory leak tests for a finite number of iterations.
+diff -u ahocorasick-0.9.org/test_memleak2.py ahocorasick-0.9/test_memleak2.py
+--- ahocorasick-0.9.org/test_memleak2.py	2005-05-01 19:45:02.000000000 -0700
++++ ahocorasick-0.9/test_memleak2.py	2014-07-31 14:39:30.195465617 -0700
+@@ -13,6 +13,6 @@
+     tree.make()
+     return tree.zerostate()
+ 
+-
+-while True:
++ITERATIONS=5
++for n in range(ITERATIONS):
+     getZerostate()
+diff -u ahocorasick-0.9.org/test_memleak3.py ahocorasick-0.9/test_memleak3.py
+--- ahocorasick-0.9.org/test_memleak3.py	2005-05-01 19:45:02.000000000 -0700
++++ ahocorasick-0.9/test_memleak3.py	2014-07-31 14:39:25.031431635 -0700
+@@ -17,5 +17,6 @@
+     return tree.zerostate().labels()
+ 
+ 
+-while True:
++ITERATIONS=5
++for n in range(ITERATIONS):
+     getLabels()
+diff -u ahocorasick-0.9.org/test_memleak.py ahocorasick-0.9/test_memleak.py
+--- ahocorasick-0.9.org/test_memleak.py	2005-05-01 19:45:02.000000000 -0700
++++ ahocorasick-0.9/test_memleak.py	2014-07-31 14:39:10.323334845 -0700
+@@ -7,8 +7,8 @@
+ 
+ """We just want to exercise the code and monitor its memory usage."""
+ 
+-n = 0
+-while True:
++ITERATIONS=5
++for n in range(ITERATIONS):
+     sys.stdout.write("iteration %s\n" % n)
+     sys.stdout.flush()
+     tree = ahocorasick.KeywordTree()
