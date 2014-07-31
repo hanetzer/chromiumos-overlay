@@ -1,3 +1,7 @@
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 # chromeos-factory-mini is a subset of the factory software that can
 # be used to run utilities like gooftool, hwid, and regcode, which may
 # be useful in the CrOS test environment.  For instance, this would
@@ -14,16 +18,16 @@ EAPI=5
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 CROS_WORKON_DESTDIR="${S}"
+PYTHON_COMPAT=( python2_7 )
 
-inherit cros-workon
+inherit cros-workon python-any-r1
+
+DESCRIPTION="Subset of factory software to be installed in test images"
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
-DESCRIPTION="Subset of factory software to be installed in test images"
-
-DEPEND="dev-lang/python"
 
 src_compile() {
 	emake par MAKE_PAR_ARGS=--mini PAR_NAME=factory-mini.par
