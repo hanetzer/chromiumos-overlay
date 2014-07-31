@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 
 inherit toolchain-funcs flag-o-matic cros-workon autotest
 
-DESCRIPTION="Autotest tests that require chrome_test, or telemetry deps"
+DESCRIPTION="Autotest tests that require chrome_binary_test, or telemetry deps"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 LICENSE="GPL-2"
@@ -36,10 +36,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 IUSE_TESTS=(
-	# Inherits from enterprise_ui_test.
-	+tests_desktopui_EnterprisePolicy
-
-	# Uses chrome_test dependency.
+	# Uses chrome_binary_test dependency.
 	+tests_video_MediaUnittests
 	+tests_video_VideoDecodeAccelerator
 	+tests_video_VideoEncodeAccelerator
@@ -119,14 +116,6 @@ IUSE_TESTS=(
 	+tests_video_YouTubeHTML5
 	+tests_video_YouTubeMseEme
 	+tests_video_YouTubePage
-
-	# Inherits from cros_ui_test. TODO(achuith): Delete or migrate these.
-        tests_desktopui_TouchScreen
-	# TODO(ihf): Move TearTest to autotest-tests and unify WebGL* with
-	# Chromium waterfall once we have hardware there.
-	tests_graphics_TearTest
-	tests_realtimecomm_GTalkAudioPlayground
-	tests_realtimecomm_GTalkPlayground
 )
 
 IUSE_TESTS_CELLULAR="
@@ -175,5 +164,3 @@ src_prepare() {
 src_configure() {
 	cros-workon_src_configure
 }
-
-

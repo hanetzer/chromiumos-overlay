@@ -28,10 +28,7 @@ SERVER_IUSE_TESTS="
 	+tests_autoupdate_Rollback
 	cellular? ( +tests_cellular_StaleModemReboot )
 	!chromeless_tty? (
-		+tests_chromeperf_PGOPageCycler
 		+tests_desktopui_CrashyRebootServer
-		+tests_desktopui_EnterprisePolicyServer
-		+tests_desktopui_PyAutoPerf
 	)
 	+tests_display_EdidStress
 	+tests_display_HotPlugAtBoot
