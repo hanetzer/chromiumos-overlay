@@ -34,7 +34,6 @@ RDEPEND="
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-apps/which
-	sys-block/parted
 	sys-fs/e2fsprogs
 	!<chromeos-base/chromeos-init-0.0.15"
 
