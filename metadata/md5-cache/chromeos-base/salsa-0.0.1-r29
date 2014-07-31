@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup unpack
+DEPEND=chromeos-base/libchrome:271506 sys-libs/ncurses x11-libs/libX11 x11-libs/libXi x11-proto/xproto dev-vcs/git
+DESCRIPTION=Touchpad Experimentation Framework
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang cros_host cros_workon_tree_a5fc5fb02174bd05a4263df1b06dc2cdab9d0b11 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/libchrome:271506 sys-libs/ncurses x11-libs/libX11 x11-libs/libXi
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	2c632777da23568eef305b1da087dabf	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=0a0b9cfe9f680ab541e4e4de569e39e3
