@@ -91,6 +91,7 @@ ALL_BOARDS=(
 	link_freon
 	lumpy
 	mappy
+	mappy_flashstation
 	marble
 	mccloud
 	minnowboard
