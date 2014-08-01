@@ -4,10 +4,10 @@ non-PIC code as normal, which on the hardened compiler generates
 PIC and PIE.
 
 Patch by Kevin F. Quinn <kevquinn@gentoo.org>
-Fixed for glibc 2.10 by Magnus Granberg <zorry@ume.nu>
+Fixed for glibc 2.19 by Magnus Granberg <zorry@ume.nu>
 
---- configure.in
-+++ configure.in
+--- configure.ac
++++ configure.ac
 @@ -2145,7 +2145,7 @@
  # error PIC is default.
  #endif

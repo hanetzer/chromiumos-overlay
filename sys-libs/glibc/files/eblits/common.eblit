@@ -1,10 +1,13 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/files/eblits/common.eblit,v 1.28 2012/08/10 19:44:47 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/files/eblits/common.eblit,v 1.36 2014/07/28 05:46:16 vapier Exp $
 
 alt_prefix() {
 	is_crosscompile && echo /usr/${CTARGET}
 }
+
+: ${ED:=${D}}
+: ${EROOT:=${ROOT}}
 
 # We need to be able to set alternative headers for
 # compiling for non-native platform
@@ -165,6 +168,9 @@ setup_flags() {
 	strip-unsupported-flags
 	filter-flags -m32 -m64 -mabi=*
 
+	# Bug 492892.
+	filter-flags -frecord-gcc-switches
+
 	unset CBUILD_OPT CTARGET_OPT
 	if has_multilib_profile ; then
 		CTARGET_OPT=$(get_abi_CTARGET)
@@ -189,9 +195,14 @@ setup_flags() {
 	# building glibc with SSP is fraught with difficulty, especially
 	# due to __stack_chk_fail_local which would mean significant changes
 	# to the glibc build process. See bug #94325 #293721
-	use hardened && gcc-ssp && append-cflags $(test-flags-CC -fno-stack-protector)
+	# Note we have to handle both user-given CFLAGS and gcc defaults via
+	# spec rules here.  We can't simply add -fno-stack-protector as it gets
+	# added before user flags, and we can't just filter-flags because
+	# _filter_hardened doesn't support globs.
+	filter-flags -fstack-protector*
+	use hardened && gcc-ssp && append-flags $(test-flags -fno-stack-protector)
 
-	if use hardened && gcc-pie; then
+	if use hardened && gcc-pie ; then
 		# Force PIC macro definition for all compilations since they're all
 		# either -fPIC or -fPIE with the default-PIE compiler.
 		append-cppflags -DPIC
@@ -207,15 +218,8 @@ want_nptl() {
 	want_tls || return 1
 	use nptl || return 1
 
-	# Only list the arches that cannot do NPTL
-	case $(tc-arch) in
-		m68k) return 1;;
-		sparc)
-			# >= v9 is needed for nptl.
-			[[ ${PROFILE_ARCH} == "sparc" ]] && return 1
-		;;
-	esac
-
+	# Older versions of glibc had incomplete arch support for nptl.
+	# But if you're building those now, you can handle USE=nptl yourself.
 	return 0
 }
 

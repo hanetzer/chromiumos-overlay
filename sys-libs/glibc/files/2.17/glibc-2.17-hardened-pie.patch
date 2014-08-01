@@ -1,8 +1,8 @@
-2010-08-11  Magnus Granberg  <zorry@ume.nu>
+2012-11-11  Magnus Granberg  <zorry@gentoo.org>
 
-	#332331
+	#442712
 	* Makeconfig (+link): Set to +link-pie.
-	(+link-static): Change $(static-start-installed-name) to
+	(+link-static-before-libc): Change $(static-start-installed-name) to
 	S$(static-start-installed-name).
 	(+prector): Set to +prectorS.
 	(+postctor): Set to +postctorS.
@@ -16,11 +16,11 @@
 ++link = $(+link-pie)
  # Command for statically linking programs with the C library.
  ifndef +link-static
- +link-static = $(CC) -nostdlib -nostartfiles -static -o $@ \
+ +link-static-before-libc = $(CC) -nostdlib -nostartfiles -static -o $@ \
  	      $(sysdep-LDFLAGS) $(LDFLAGS) $(LDFLAGS-$(@F))  \
 -	      $(addprefix $(csu-objpfx),$(static-start-installed-name)) \
 +	      $(addprefix $(csu-objpfx),S$(static-start-installed-name)) \
- 	      $(+preinit) $(+prector) \
+ 	      $(+preinit) $(+prectorT) \
  	      $(filter-out $(addprefix $(csu-objpfx),start.o \
  						     $(start-installed-name))\
 @@ -549,11 +550,10 @@
@@ -34,6 +34,9 @@
  +postctorS = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtendS.o`
 ++prector = $(+prectorS)
 ++postctor = $(+postctorS)
+ # Variants of the two previous definitions for statically linking programs.
+ +prectorT = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtbeginT.o`
+ +postctorT = `$(CC) $(sysdep-LDFLAGS) --print-file-name=crtend.o`
  +interp = $(addprefix $(elf-objpfx),interp.os)
  endif
  csu-objpfx = $(common-objpfx)csu/

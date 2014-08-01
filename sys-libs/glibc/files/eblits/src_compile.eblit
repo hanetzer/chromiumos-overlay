@@ -1,6 +1,6 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/files/eblits/src_compile.eblit,v 1.29 2012/11/18 08:06:49 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-libs/glibc/files/eblits/src_compile.eblit,v 1.38 2014/03/29 05:31:59 vapier Exp $
 
 glibc_do_configure() {
 	local myconf=()
@@ -24,7 +24,7 @@ glibc_do_configure() {
 		myconf+=( --enable-old-ssp-compat )
 	fi
 
-	[[ ${CTARGET//_/-} == *-softfloat-* ]] && myconf+=( --without-fp )
+	[[ $(tc-is-softfloat) == "yes" ]] && myconf+=( --without-fp )
 
 	if [[ $1 == "linuxthreads" ]] ; then
 		if want_tls ; then
@@ -121,6 +121,20 @@ glibc_do_configure() {
 	if is_crosscompile && [[ ${CTARGET} == ia64* ]] ; then
 		sed -i '1i+link-static = touch $@' config.make
 	fi
+
+	# If we're trying to migrate between ABI sets, we need
+	# to lie and use a local copy of gcc.  Like if the system
+	# is built with MULTILIB_ABIS="amd64 x86" but we want to
+	# add x32 to it, gcc/glibc don't yet support x32.
+	if [[ -n ${GCC_BOOTSTRAP_VER} ]] && use multilib ; then
+		echo 'main(){}' > "${T}"/test.c
+		if ! $(tc-getCC ${CTARGET}) ${CFLAGS} ${LDFLAGS} "${T}"/test.c -Wl,-emain -lgcc 2>/dev/null ; then
+			sed -i -e '/^CC = /s:$: -B$(objdir)/../'"gcc-${GCC_BOOTSTRAP_VER}/${ABI}:" config.make || die
+			mkdir -p sunrpc
+			cp $(which rpcgen) sunrpc/cross-rpcgen || die
+			touch -t 202001010101 sunrpc/cross-rpcgen || die
+		fi
+	fi
 }
 
 toolchain-glibc_src_compile() {
@@ -131,19 +145,6 @@ toolchain-glibc_src_compile() {
 	done
 
 	export CC=$(tc-getCC ${CTARGET})
-	# At this stage, gcc adds hardened options regardless of "use hardened"
-	# or not. So for arm glibc compile, currently manually disable stack
-	# protector and pie for every c and assembly file.
-	# Note - change to CFLAGS is not enough - at configuring time, $(CC)
-	# will be tested whether "PIC" by default is enabled, we have to disable
-	# this at first time (configuration time).
-	if [[ "$CTARGET" == arm* ]]; then
-		CC="$CC -fno-stack-protector"
-		# We have to live with both vanilla gcc (has no option -nopie)
-		# and hardened gcc (has option -nopie).
-		CC="$CC $(test-flags-CC -nopie)"
-		CC="$CC $(test-flags-CC -fno-pie)"
-	fi
 	# Glibc does not work with gold (for various reasons) #269274.
 	if $(tc-getLD ${CTARGET}) --version | grep -q 'GNU gold' ; then
 		local d="${T}/bfd-linker"
