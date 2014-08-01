@@ -13,8 +13,8 @@ SRC_URI="http://fontconfig.org/release/${P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="1.0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~ppc-aix ~amd64-fbsd ~sparc-fbsd ~x86-fbsd ~x64-freebsd ~x86-freebsd ~x86-interix ~amd64-linux ~arm-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~m68k-mint ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
-IUSE="doc static-libs"
+KEYWORDS="*"
+IUSE="cros_host doc static-libs -highdpi +subpixel_rendering"
 
 # Purposefully dropped the xml USE flag and libxml2 support.  Expat is the
 # default and used by every distro.  See bug #283191.
@@ -32,13 +32,24 @@ PDEPEND="!x86-winnt? ( app-admin/eselect-fontconfig )
 	virtual/ttf-fonts"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.7.1-latin-reorder.patch	# 130466
 	"${FILESDIR}"/${PN}-2.10.2-docbook.patch	# 310157
+	"${FILESDIR}"/${P}-fonts-config.patch
+	"${FILESDIR}"/${P}-conf-d.patch
+	"${FILESDIR}"/${P}-fclang.patch
 )
 
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/fc-cache
 )
+
+# Checks that a passed-in fontconfig default symlink (e.g. "10-autohint.conf")
+# is present and dies if it isn't.
+check_fontconfig_default() {
+	local path="${D}"/etc/fonts/conf.d/"$1"
+	if [[ ! -L ${path} ]]; then
+		die "Didn't find $1 among default fontconfig settings (at ${path})."
+	fi
+}
 
 pkg_setup() {
 	DOC_CONTENTS="Please make fontconfig configuration changes using
@@ -71,7 +82,9 @@ src_configure() {
 		$(use_enable doc docbook)
 		# always enable docs to install manpages
 		--enable-docs
-		--localstatedir="${EPREFIX}"/var
+		# Font cache should be in /usr/share/cache instead of /var/cache
+		# because the latter is not in the read-only partition.
+		--localstatedir="${EPREFIX}"/usr/share
 		--with-default-fonts="${EPREFIX}"/usr/share/fonts
 		--with-add-fonts="${EPREFIX}/usr/local/share/fonts${addfonts}" \
 		--with-templatedir="${EPREFIX}"/etc/fonts/conf.avail
@@ -85,9 +98,6 @@ multilib_src_install() {
 
 	# XXX: avoid calling this multiple times, bug #459210
 	if multilib_is_native_abi; then
-		# stuff installed from build-dir
-		emake -C doc DESTDIR="${D}" install-man
-
 		insinto /etc/fonts
 		doins fonts.conf
 	fi
@@ -97,16 +107,38 @@ multilib_src_install_all() {
 	einstalldocs
 	prune_libtool_files --all
 
-	#fc-lang directory contains language coverage datafiles
-	#which are needed to test the coverage of fonts.
-	insinto /usr/share/fc-lang
-	doins fc-lang/*.orth
+	doins "${FILESDIR}"/local.conf
+	# Test that fontconfig's defaults for basic rendering settings
+	# match what we want to use.
+	check_fontconfig_default 10-autohint.conf
+	check_fontconfig_default 10-hinting.conf
+	check_fontconfig_default 10-hinting-slight.conf
+	check_fontconfig_default 10-sub-pixel-rgb.conf
 
-	dodoc doc/fontconfig-user.{txt,pdf}
+	# Enable antialiasing by default.
+	dosym ../conf.avail/10-antialias.conf /etc/fonts/conf.d/
+	check_fontconfig_default 10-antialias.conf
 
-	if [[ -e ${ED}usr/share/doc/fontconfig/ ]];  then
-		mv "${ED}"usr/share/doc/fontconfig/* "${ED}"/usr/share/doc/${P} || die
-		rm -rf "${ED}"usr/share/doc/fontconfig
+	# There's a lot of variability across different displays with subpixel
+	# rendering. Until we have a better solution, turn it off and use grayscale
+	# instead on boards that don't have internal displays. Also disable it on
+	# high-DPI displays, since they have little need for it and use subpixel
+	# positioning, which can interact poorly with it
+	# (http://crbug.com/125066#c8). Additionally, disable it when installing to
+	# the host sysroot so the images in the initramfs package won't use subpixel
+	# rendering (http://crosbug.com/27872).
+	if ! use subpixel_rendering || use highdpi || use cros_host; then
+		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
+		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/
+		check_fontconfig_default 10-no-sub-pixel.conf
+	fi
+
+	# Disable hinting on high-DPI displays, where we're already
+	# using subpixel positioning.
+	if use highdpi; then
+		rm "${D}"/etc/fonts/conf.d/10-hinting.conf
+		dosym ../conf.avail/10-unhinted.conf /etc/fonts/conf.d/
+		check_fontconfig_default 10-unhinted.conf
 	fi
 
 	# Changes should be made to /etc/fonts/local.conf, and as we had
@@ -115,30 +147,11 @@ multilib_src_install_all() {
 	doenvd "${T}"/37fontconfig
 
 	# As of fontconfig 2.7, everything sticks their noses in here.
+	# Replace /var/cache with /usr/share/cache for CrOS.
 	dodir /etc/sandbox.d
-	echo 'SANDBOX_PREDICT="/var/cache/fontconfig"' > "${ED}"/etc/sandbox.d/37fontconfig
+	echo 'SANDBOX_PREDICT="/usr/share/cache/fontconfig"' > "${ED}"/etc/sandbox.d/37fontconfig
 
 	readme.gentoo_create_doc
-}
-
-pkg_preinst() {
-	# Bug #193476
-	# /etc/fonts/conf.d/ contains symlinks to ../conf.avail/ to include various
-	# config files.  If we install as-is, we'll blow away user settings.
-	ebegin "Syncing fontconfig configuration to system"
-	if [[ -e ${EROOT}/etc/fonts/conf.d ]]; then
-		for file in "${EROOT}"/etc/fonts/conf.avail/*; do
-			f=${file##*/}
-			if [[ -L ${EROOT}/etc/fonts/conf.d/${f} ]]; then
-				[[ -f ${ED}etc/fonts/conf.avail/${f} ]] \
-					&& ln -sf ../conf.avail/"${f}" "${ED}"etc/fonts/conf.d/ &>/dev/null
-			else
-				[[ -f ${ED}etc/fonts/conf.avail/${f} ]] \
-					&& rm "${ED}"etc/fonts/conf.d/"${f}" &>/dev/null
-			fi
-		done
-	fi
-	eend $?
 }
 
 pkg_postinst() {

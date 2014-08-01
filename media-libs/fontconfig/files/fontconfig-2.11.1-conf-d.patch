@@ -1,0 +1,108 @@
+Add conf files to control rendering and adjust what's on by default.
+
+Four conf files are added to the template directory (conf.avail) to 
+make it easy to control the rendering for testing and production.
+
+  10-antialias.conf
+  10-hinting.conf
+  10-hint-full.conf
+  10-hint-slight.conf
+
+Activate the following four configurations by default
+
+  10-autohint.conf
+  10-hinting.conf
+  10-hinting-slight.conf
+  10-sub-pixel-rgb.conf
+
+Drop the following configurations from conf.d:
+
+  60-latin.conf
+  65-fonts-persian.conf
+  65-nonlatin.conf
+
+diff -urN fontconfig-2.11.1.orig/conf.d/10-antialias.conf fontconfig-2.11.1/conf.d/10-antialias.conf
+--- fontconfig-2.11.1.orig/conf.d/10-antialias.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.11.1/conf.d/10-antialias.conf	2014-07-31 14:47:58.749148580 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use the Antialiasing --> 
++  <match target="font">
++    <edit name="antialias" mode="assign"><bool>true</bool></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.11.1.orig/conf.d/10-hinting.conf fontconfig-2.11.1/conf.d/10-hinting.conf
+--- fontconfig-2.11.1.orig/conf.d/10-hinting.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.11.1/conf.d/10-hinting.conf	2014-07-31 14:48:37.637789416 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use Hinting --> 
++  <match target="font">
++    <edit name="hinting" mode="assign"><bool>true</bool></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.11.1.orig/conf.d/10-hinting-full.conf fontconfig-2.11.1/conf.d/10-hinting-full.conf
+--- fontconfig-2.11.1.orig/conf.d/10-hinting-full.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.11.1/conf.d/10-hinting-full.conf	2014-07-31 14:49:11.230342979 -0700
+@@ -0,0 +1,9 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use Full Hinting --> 
++  <match target="font">
++    <edit name="hintstyle" mode="assign"><const>hintfull</const></edit>
++  </match>
++</fontconfig>
++
+diff -urN fontconfig-2.11.1.orig/conf.d/10-hinting-slight.conf fontconfig-2.11.1/conf.d/10-hinting-slight.conf
+--- fontconfig-2.11.1.orig/conf.d/10-hinting-slight.conf	1969-12-31 16:00:00.000000000 -0800
++++ fontconfig-2.11.1/conf.d/10-hinting-slight.conf	2014-07-31 14:49:38.130786258 -0700
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<fontconfig>
++<!--  Use Slight Hinting --> 
++  <match target="font">
++    <edit name="hintstyle" mode="assign"><const>hintslight</const></edit>
++  </match>
++</fontconfig>
+diff -urN fontconfig-2.11.1.orig/conf.d/Makefile.am fontconfig-2.11.1/conf.d/Makefile.am
+--- fontconfig-2.11.1.orig/conf.d/Makefile.am	2014-03-24 06:03:12.000000000 -0700
++++ fontconfig-2.11.1/conf.d/Makefile.am	2014-08-05 17:18:55.267305927 -0700
+@@ -26,6 +26,10 @@
+ DOC_FILES = $(DOC_SOURCES:.in=)
+ 
+ CONF_LINKS = \
++	10-autohint.conf \
++	10-hinting.conf \
++	10-hinting-slight.conf \
++	10-sub-pixel-rgb.conf \
+ 	10-scale-bitmap-fonts.conf \
+ 	20-unhint-small-vera.conf \
+ 	30-urw-aliases.conf \
+@@ -35,9 +39,6 @@
+ 	49-sansserif.conf \
+ 	50-user.conf \
+ 	51-local.conf \
+-	60-latin.conf \
+-	65-fonts-persian.conf \
+-	65-nonlatin.conf \
+ 	69-unifont.conf \
+ 	80-delicious.conf \
+ 	90-synthetic.conf
+@@ -50,7 +51,11 @@
+ 
+ templatedir = $(TEMPLATEDIR)
+ template_DATA =				\
++	10-antialias.conf		\
+ 	10-autohint.conf		\
++	10-hinting.conf			\
++	10-hinting-slight.conf		\
++	10-hinting-full.conf		\
+ 	10-no-sub-pixel.conf		\
+ 	10-scale-bitmap-fonts.conf	\
+ 	10-sub-pixel-bgr.conf		\

@@ -1,0 +1,15 @@
+Remove U+3164 from ko.orth 
+
+U+3164 is not required by Korean orthography. The upstream ToT at
+freedesktop.org has already dropped it.
+diff -u fontconfig-2.11.1.orig/fc-lang/ko.orth fontconfig-2.11.1/fc-lang/ko.orth
+--- fontconfig-2.11.1.orig/fc-lang/ko.orth	2014-03-24 06:03:12.000000000 -0700
++++ fontconfig-2.11.1/fc-lang/ko.orth	2014-07-31 17:09:03.123516137 -0700
+@@ -86,7 +86,6 @@
+ 0x3161  # HANGUL LETTER EU
+ 0x3162  # HANGUL LETTER YI
+ 0x3163  # HANGUL LETTER I
+-0x3164  # HANGUL FILLER
+ 0x3165  # HANGUL LETTER SSANGNIEUN
+ 0x3166  # HANGUL LETTER NIEUN-TIKEUT
+ 0x3167  # HANGUL LETTER NIEUN-SIOS

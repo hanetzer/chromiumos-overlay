@@ -92,6 +92,10 @@ src_configure() {
 	use iso14755 || myconf='--disable-iso14755'
 	use xterm-color && myconf="$myconf --enable-xterm-colors=256"
 
+	# Explicitly disable Xft. configure script is broken in this version
+	# and does not add an '-lXft' linker flag after detecting and enabling Xft.
+	# We always disabled Xft implicitly anyway. See vapier's comment on
+	# PS #13 at https://chromium-review.googlesource.com/#/c/210758/
 	econf \
 		$(use_enable truetype xft) \
 		$(use_enable afterimage) \
@@ -106,6 +110,7 @@ src_configure() {
 		--disable-next-scroll \
 		--disable-xterm-scroll \
 		--disable-smart-resize \
+		--disable-xft \
 		--with-x \
 		${myconf}
 }

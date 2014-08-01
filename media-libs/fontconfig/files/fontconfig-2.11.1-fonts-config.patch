@@ -1,0 +1,50 @@
+Chromium OS has different needs for fontconfig than is typical. Our list of
+fonts is the same for every user (there is only one linux user anyway).
+Also, the list can never change.
+
+Get only one directory to be searched for fonts (/usr/share/fonts in
+a read-only partition). This also enhances the security by preventing
+potentially malcious fonts from being installed in writable
+directories such as ~/.fonts that is not subject to the verification.
+By excluding FC_FONTPATH, we also make sure that nonexistent directories
+added in ebuild (/usr/local/share/fonts) are not looked into.
+
+In addition, we remove the rescan directive because the font list won't
+change.
+
+--- fontconfig-2.11.1.orig/fonts.conf.in	2014-03-24 06:03:12.000000000 -0700
++++ fontconfig-2.11.1/fonts.conf.in	2014-07-31 16:43:24.334425448 -0700
+@@ -24,10 +24,6 @@
+ <!-- Font directory list -->
+ 
+ 	<dir>@FC_DEFAULT_FONTS@</dir>
+-	@FC_FONTPATH@
+-	<dir prefix="xdg">fonts</dir>
+-	<!-- the following element will be removed in the future -->
+-	<dir>~/.fonts</dir>
+ 
+ <!--
+   Accept deprecated 'mono' alias, replacing it with 'monospace'
+@@ -73,9 +69,6 @@
+ <!-- Font cache directory list -->
+ 
+ 	<cachedir>@FC_CACHEDIR@</cachedir>
+-	<cachedir prefix="xdg">fontconfig</cachedir>
+-	<!-- the following element will be removed in the future -->
+-	<cachedir>~/.fontconfig</cachedir>
+ 
+ 	<config>
+ <!--
+@@ -144,12 +137,6 @@
+ 			<int>0xFFFA</int>	<!-- INTERLINEAR ANNOTATION SEPARATOR -->
+ 			<int>0xFFFB</int>	<!-- INTERLINEAR ANNOTATION TERMINATOR -->
+ 		</blank>
+-<!--
+-  Rescan configuration every 30 seconds when FcFontSetList is called
+- -->
+-		<rescan>
+-			<int>30</int>
+-		</rescan>
+ 	</config>
+ 
+ </fontconfig>
