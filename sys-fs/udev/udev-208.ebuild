@@ -60,7 +60,6 @@ RDEPEND="${COMMON_DEPEND}
 	!sys-apps/coldplug
 	!<sys-fs/lvm2-2.02.97-r1
 	!sys-fs/device-mapper
-	sys-fs/udev:1
 	!<sys-fs/udev-171-r7
 	!<sys-fs/udev-init-scripts-22
 	!<sys-kernel/dracut-017-r1
