@@ -10,7 +10,7 @@ inherit linux-info xorg-2
 DESCRIPTION="X.Org driver for Intel cards"
 
 KEYWORDS="-* x86 amd64"
-IUSE="glamor sna +udev +uxa xvmc dga"
+IUSE="dga glamor +kms-only sna +udev +uxa xvmc"
 
 REQUIRED_USE="
 	|| ( sna uxa )
@@ -64,6 +64,7 @@ src_configure() {
 		$(use_enable udev)
 		$(use_enable xvmc)
 		$(use_enable dga)
+		$(use_enable kms-only)
 	)
 	xorg-2_src_configure
 }
