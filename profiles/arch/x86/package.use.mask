@@ -4,6 +4,10 @@
 
 # This file requires >=portage-2.1.1
 
+# Mike Frysinger <vapier@gentoo.org> (04 Aug 2014)
+# Unmask flashrom drivers that only work on x86 due to in/out asm insns #454024
+sys-apps/flashrom -atahpt -nic3com -nicnatsemi -nicrealtek -rayer_spi -satamv
+
 # Jean-Noël Rivasseau <elvanor@gentoo.org> (23 Sep 2009)
 # X use flag only for amd64/x86, bug 285951.
 media-gfx/iscan -X

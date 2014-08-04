@@ -5,6 +5,10 @@
 # This file requires >=portage-2.1.1
 # New entries go on top.
 
+# Mike Frysinger <vapier@gentoo.org> (04 Aug 2014)
+# Mask flashrom drivers that only work on x86 due to in/out asm insns #454024
+sys-apps/flashrom atahpt nic3com nicnatsemi nicrealtek rayer_spi satamv
+
 # Samuli Suominen <ssuominen@gentoo.org> (10 Oct 2009)
 # Not ready for stable. Remove this mask when KDE 4.3.2 is stable.
 <kde-base/kdeadmin-meta-4.3.2 cups

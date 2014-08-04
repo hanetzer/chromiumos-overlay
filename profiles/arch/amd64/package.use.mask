@@ -18,6 +18,10 @@
 
 #--- END OF EXAMPLES ---
 
+# Mike Frysinger <vapier@gentoo.org> (04 Aug 2014)
+# Unmask flashrom drivers that only work on x86 due to in/out asm insns #454024
+sys-apps/flashrom -atahpt -nic3com -nicnatsemi -nicrealtek -rayer_spi -satamv
+
 # Samuli Suominen <ssuominen@gentoo.org> (01 Oct 2009)
 # No support in emul-linux-x86-sdl, bug 286625
 app-emulation/wine openal
