@@ -1,0 +1,14 @@
+If >=2, detect violation of One-Definition-Rule (ODR);
+If ==1, detect ODR-violation only if the two variables "have different sizes");
+We modify the level from 2 to 1.
+--- a/llvm/projects/compiler-rt/lib/asan/asan_rtl.cc
++++ b/llvm/projects/compiler-rt/lib/asan/asan_rtl.cc
+@@ -279,7 +279,7 @@ void InitializeFlags(Flags *f, const char *env) {
+   f->start_deactivated = false;
+   f->detect_invalid_pointer_pairs = 0;
+   f->detect_container_overflow = true;
+-  f->detect_odr_violation = 2;
++  f->detect_odr_violation = 1;
+ 
+   // Override from compile definition.
+   ParseFlagsFromString(f, MaybeUseAsanDefaultOptionsCompileDefinition());
