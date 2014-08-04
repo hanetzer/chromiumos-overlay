@@ -1,7 +1,7 @@
-From ebdf2f64b74b6fd4897808fe8a4a3dbe5b4b4a89 Mon Sep 17 00:00:00 2001
+From a9242832823752c7156f99e1dd823d9fc5bad24c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Tapani=20P=C3=A4lli?= <tapani.palli@intel.com>
 Date: Mon, 9 Jun 2014 20:12:44 -0700
-Subject: [PATCH] i965: initialize brw_reg struct when generating code
+Subject: [PATCH 18/19] i965: initialize brw_reg struct when generating code
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -14,22 +14,21 @@ Change-Id: I7fff64cdaa57b4f5e7795e01b60a648ba7754647
 Signed-off-by: Tapani Pälli <tapani.palli@intel.com>
 Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=79534
 ---
- src/mesa/drivers/dri/i965/brw_fs_generator.cpp | 2 +-
+ src/mesa/drivers/dri/i965/brw_fs_generator.cpp |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/mesa/drivers/dri/i965/brw_fs_generator.cpp b/src/mesa/drivers/dri/i965/brw_fs_generator.cpp
-index 3ff7682..396c8bc 100644
+index bdac2a2..ca2f559 100644
 --- a/src/mesa/drivers/dri/i965/brw_fs_generator.cpp
 +++ b/src/mesa/drivers/dri/i965/brw_fs_generator.cpp
-@@ -1335,7 +1335,7 @@ fs_generator::generate_code(exec_list *instructions)
+@@ -1338,6 +1338,6 @@ fs_generator::generate_code(exec_list *instructions)
  
-    foreach_list(node, instructions) {
-       fs_inst *inst = (fs_inst *)node;
+    foreach_in_list(fs_inst, inst, instructions) {
 -      struct brw_reg src[3], dst;
-+      struct brw_reg src[3] = {0}, dst;
++      struct brw_reg src[3] = {}, dst;
        unsigned int last_insn_offset = p->next_insn_offset;
  
        if (unlikely(debug_flag))
 -- 
-2.0.0.526.g5318336
+1.7.9.5
 

@@ -4,8 +4,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="1751a9ba2656b1a716b04b8eb870de8e7f10af24"
-CROS_WORKON_TREE="9fac2f50764a0dd604f1d1c3458343cedc871d1d"
+CROS_WORKON_COMMIT="9548ba6e7bb8e631f6ef6236f7425725239742fe"
+CROS_WORKON_TREE="eae32bfb0d15e04a165f2eea7d2aba97b26c3264"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
@@ -140,6 +140,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-mesa-fix-workaround-when-there-is-depth-but-not-sten.patch
 	epatch "${FILESDIR}"/10.3-glsl-allow-precision-qualifier-on-sampler-arrays
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
+	epatch "${FILESDIR}"/10.3-i965-Fix-1D-Array-Shadow-miptree.patch
 
 	base_src_prepare
 

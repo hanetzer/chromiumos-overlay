@@ -2,7 +2,7 @@ diff --git a/src/gallium/drivers/llvmpipe/lp_texture.c b/src/gallium/drivers/llv
 index f601181..6fd7790 100644
 --- a/src/gallium/drivers/llvmpipe/lp_texture.c
 +++ b/src/gallium/drivers/llvmpipe/lp_texture.c
-@@ -114,12 +114,6 @@ llvmpipe_texture_layout(struct llvmpipe_screen *screen,
+@@ 117,12 +114,6 @@ llvmpipe_texture_layout(struct llvmpipe_screen *screen,
           else
              lpr->row_stride[level] = align(nblocksx * block_size, util_cpu_caps.cacheline);
  
@@ -15,7 +15,7 @@ index f601181..6fd7790 100644
           lpr->img_stride[level] = lpr->row_stride[level] * nblocksy;
        }
  
-@@ -140,13 +134,6 @@ llvmpipe_texture_layout(struct llvmpipe_screen *screen,
+@@ -142,13 +134,6 @@ llvmpipe_texture_layout(struct llvmpipe_screen *screen,
           lpr->num_slices_faces[level] = num_slices;
        }
  
