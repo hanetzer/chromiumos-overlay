@@ -343,6 +343,32 @@ index 71a6f15..e113df2 100644
  	_reapply_bsdflags_to_image(mysettings)
  
  def _reapply_bsdflags_to_image(mysettings):
+diff --git a/pym/portage/repository/config.py b/pym/portage/repository/config.py
+index 5aef4f7..32fb9fb 100644
+--- a/pym/portage/repository/config.py
++++ b/pym/portage/repository/config.py
+@@ -180,6 +180,12 @@ class RepoConfig(object):
+ 				# them the ability to do incremental overrides
+ 				self.aliases = layout_data['aliases'] + tuple(aliases)
+ 
++			if layout_data['repo-name']:
++				# allow layout.conf to override repository name
++				# useful when having two copies of the same repo enabled
++				# to avoid modifying profiles/repo_name in one of them
++				self.name = layout_data['repo-name']
++
+ 			for value in ('allow-missing-manifest',
+ 				'allow-provide-virtual', 'cache-formats',
+ 				'create-manifest', 'disable-manifest', 'manifest-hashes',
+@@ -736,6 +742,8 @@ def parse_layout_conf(repo_location, repo_name=None):
+ 	data['thin-manifest'] = layout_data.get('thin-manifests', 'false').lower() \
+ 		== 'true'
+ 
++	data['repo-name'] = _gen_valid_repo(layout_data.get('repo-name', ''))
++
+ 	manifest_policy = layout_data.get('use-manifests', 'strict').lower()
+ 	data['allow-missing-manifest'] = manifest_policy != 'strict'
+ 	data['create-manifest'] = manifest_policy != 'false'
 diff --git a/pym/portage/tests/emerge/test_simple.py b/pym/portage/tests/emerge/test_simple.py
 index 282a045..4fad72e 100644
 --- a/pym/portage/tests/emerge/test_simple.py
