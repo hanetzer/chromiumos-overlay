@@ -51,6 +51,7 @@ ALL_BOARDS=(
 	bolt
 	butterfly
 	bwtm2
+	candy
 	cardhu
 	#chronos
 	clapper
