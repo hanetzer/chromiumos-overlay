@@ -143,6 +143,7 @@ RDEPEND="${RDEPEND}
 	dev-python/pyudev
 	dev-python/pyusb
 	dev-python/setproctitle
+	dev-python/tempita
 	dev-python/ws4py
 	dev-util/cmake
 	dev-util/gob
