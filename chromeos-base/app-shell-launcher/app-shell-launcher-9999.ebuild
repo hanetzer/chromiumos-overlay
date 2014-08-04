@@ -25,7 +25,7 @@ src_install() {
 	# If the first argument is non-empty, echo it to the path contained in the
 	# second argument.
 	echo_to_file() {
-		[ -n "$1" ] && (echo "$1" >"$2")
+		[[ -n "$1" ]] && (echo "$1" >"$2")
 	}
 
 	# Install data configured via environment variables. The app_shell_launcher
@@ -36,10 +36,10 @@ src_install() {
 	echo_to_file "${APP_ID}" "${data_dir}/app_id"
 	echo_to_file "${PREFERRED_NETWORK}" "${data_dir}/preferred_network"
 
-	if [ -n "${APP_PATH}" ]; then
-		[ -n "${APP_ID}" ] && die "Both APP_ID and APP_PATH are set"
+	if [[ -n "${APP_PATH}" ]]; then
+		[[ -n "${APP_ID}" ]] && die "Both APP_ID and APP_PATH are set"
 		local manifest_file="${APP_PATH}/manifest.json"
-		[ -f "${manifest_file}" ] || die "${manifest_file} doesn't exist"
+		[[ -f "${manifest_file}" ]] || die "${manifest_file} doesn't exist"
 		mkdir -p "${data_dir}/app"
 		cp -r "${APP_PATH}"/* "${data_dir}/app"
 	fi
