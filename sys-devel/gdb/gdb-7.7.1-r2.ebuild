@@ -130,6 +130,7 @@ src_configure() {
 	is_cross && myconf+=(
 		--with-sysroot="${sysroot}"
 		--includedir="${sysroot}/usr/include"
+		--with-gdb-datadir="\${datadir}/gdb/${CTARGET}"
 	)
 
 	if use server && ! use client ; then
@@ -182,7 +183,13 @@ src_install() {
 
 	# Don't install docs when building a cross-gdb
 	if [[ ${CTARGET} != ${CHOST} ]] ; then
-		rm -r "${ED}"/usr/share
+		rm -r "${ED}"/usr/share/{doc,info,locale}
+		local f
+		for f in "${ED}"/usr/share/man/*/* ; do
+			if [[ ${f##*/} != ${CTARGET}-* ]] ; then
+				mv "${f}" "${f%/*}/${CTARGET}-${f##*/}" || die
+			fi
+		done
 		return 0
 	fi
 	# Install it by hand for now:
