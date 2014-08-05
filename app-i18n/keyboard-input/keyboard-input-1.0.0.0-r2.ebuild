@@ -15,8 +15,5 @@ RDEPEND="
         !internal? (
                 app-i18n/chromeos-keyboards
                 app-i18n/chromeos-xkb
-        )
-        internal? (
-                app-i18n/GoogleKeyboardInput-xkb
         )"
 DEPEND="${RDEPEND}"
