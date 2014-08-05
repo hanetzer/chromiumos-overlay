@@ -20,7 +20,7 @@ CROS_WORKON_LOCALNAME="factory"
 CROS_WORKON_DESTDIR="${S}"
 PYTHON_COMPAT=( python2_7 )
 
-inherit cros-workon python-any-r1
+inherit cros-workon python-r1
 
 DESCRIPTION="Subset of factory software to be installed in test images"
 
@@ -28,6 +28,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
+
+DEPEND="${PYTHON_DEPS}"
 
 src_compile() {
 	emake par MAKE_PAR_ARGS=--mini PAR_NAME=factory-mini.par
