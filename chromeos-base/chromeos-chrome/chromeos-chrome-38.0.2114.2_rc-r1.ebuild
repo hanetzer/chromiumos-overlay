@@ -233,6 +233,7 @@ set_build_defines() {
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
 		"sysroot=${ROOT}"
+		"host_clang=0"
 		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"linux_link_libbrlapi=$(use10 accessibility)"
 		"use_brlapi=$(use10 accessibility)"
@@ -250,6 +251,7 @@ set_build_defines() {
 		"linux_use_bundled_binutils=0"
 		"linux_use_bundled_gold=0"
 		"linux_use_gold_flags=$(use10 gold)"
+		"linux_use_debug_fission=0"
 	)
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
