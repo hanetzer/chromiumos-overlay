@@ -15,14 +15,14 @@
 # from /usr/local/bin to that file.
 
 EAPI=5
-CROS_WORKON_COMMIT="c8635d6a3c9cdd519486cd3957ba440973c6d016"
-CROS_WORKON_TREE="d368781bde02f8602e3d5643ae893b5fceee19df"
+CROS_WORKON_COMMIT="8e942a29c0a30cc0ac252fd2b9c21011cf90b604"
+CROS_WORKON_TREE="caf0beb005f2644760ddaf6ff916263874bed59b"
 CROS_WORKON_PROJECT="chromiumos/platform/factory"
 CROS_WORKON_LOCALNAME="factory"
 CROS_WORKON_DESTDIR="${S}"
 PYTHON_COMPAT=( python2_7 )
 
-inherit cros-workon python-any-r1
+inherit cros-workon python-r1
 
 DESCRIPTION="Subset of factory software to be installed in test images"
 
@@ -30,6 +30,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
+
+DEPEND="${PYTHON_DEPS}"
 
 src_compile() {
 	emake par MAKE_PAR_ARGS=--mini PAR_NAME=factory-mini.par
