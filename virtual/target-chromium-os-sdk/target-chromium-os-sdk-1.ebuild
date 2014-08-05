@@ -105,6 +105,7 @@ RDEPEND="${RDEPEND}
 	app-crypt/nss
 	app-emulation/qemu
 	app-emulation/qemu-binfmt-wrapper
+	!app-emulation/qemu-kvm
 	!app-emulation/qemu-user
 	app-text/texi2html
 	chromeos-base/google-breakpad
