@@ -60,7 +60,6 @@ CROS_X86_RDEPEND="
 "
 
 CROS_X_RDEPEND="
-	dev-python/pygtk
 	opengl? ( virtual/glut )
 	x11-apps/setxkbmap
 	x11-apps/xinput
