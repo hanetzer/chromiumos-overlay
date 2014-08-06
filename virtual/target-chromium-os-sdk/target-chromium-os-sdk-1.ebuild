@@ -137,7 +137,6 @@ RDEPEND="${RDEPEND}
 	dev-python/netifaces
 	dev-python/pycairo
 	dev-python/pygobject
-	dev-python/pygtk
 	dev-python/pyinotify
 	dev-python/pyopenssl
 	dev-python/python-daemon
@@ -173,7 +172,6 @@ RDEPEND="${RDEPEND}
 	x11-apps/mkfontdir
 	x11-apps/xcursorgen
 	x11-apps/xkbcomp
-	x11-libs/gtk+
 	>=x11-misc/util-macros-1.2
 	"
 
