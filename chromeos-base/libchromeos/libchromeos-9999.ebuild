@@ -66,8 +66,6 @@ src_install() {
 
 	insinto /usr/include/metrics
 	doins chromeos/bootstat/bootstat.h
-
-	dolib.so "${OUT}"/lib/libchromeos-minijail.so
 }
 
 platform_pkg_test() {
