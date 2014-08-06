@@ -31,6 +31,10 @@ src_install() {
 	# Install data configured via environment variables. The app_shell_launcher
 	# Upstart job copies these files to the stateful partition so they can be
 	# modified later.
+	#
+	# These are just intended for use by developers doing one-off builds with
+	# custom apps. Boards that are intended to include a specific app should
+	# instead use a BSP to install the app to /usr/share/app_shell/app.
 	local data_dir="${WORKDIR}/app_shell"
 	mkdir -p "${data_dir}"
 	echo_to_file "${APP_ID}" "${data_dir}/app_id"
