@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DEPEND=app-emulation/qemu
+EAPI=4
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=app-emulation/qemu
+SLOT=0
+_md5_=63dd1002568c9a2739098108fab9e159
