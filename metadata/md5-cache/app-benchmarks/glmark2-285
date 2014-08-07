@@ -1,14 +1,14 @@
 DEFINED_PHASES=compile configure install prepare unpack
-DEPEND=media-libs/libpng opengles? ( virtual/opengles x11-drivers/opengles-headers ) opengl? ( virtual/opengl ) x11-libs/libX11 drm? ( media-libs/mesa[gbm] ) virtual/jpeg dev-util/pkgconfig dev-lang/python !dev-lang/python[-threads]
+DEPEND=media-libs/libpng opengles? ( virtual/opengles ) opengl? ( virtual/opengl ) x11-libs/libX11 drm? ( media-libs/mesa[gbm] ) virtual/jpeg dev-util/pkgconfig dev-lang/python !dev-lang/python[-threads]
 DESCRIPTION=OpenGL (ES) 2.0 benchmark
 EAPI=5
 HOMEPAGE=https://launchpad.net/glmark2
 IUSE=drm opengles opengl
 KEYWORDS=*
 LICENSE=GPL-3
-RDEPEND=media-libs/libpng opengles? ( virtual/opengles x11-drivers/opengles-headers ) opengl? ( virtual/opengl ) x11-libs/libX11 drm? ( media-libs/mesa[gbm] ) virtual/jpeg
+RDEPEND=media-libs/libpng opengles? ( virtual/opengles ) opengl? ( virtual/opengl ) x11-libs/libX11 drm? ( media-libs/mesa[gbm] ) virtual/jpeg
 REQUIRED_USE=|| ( opengl opengles )
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/glmark2-bzr-285.tar.gz
 _eclasses_=base	ec46b36a6f6fd1d0b505a33e0b74e413	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	fac675dcccf94392371a6abee62d909f	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	waf-utils	ea5e8ddb08ce6b8d48b76ad71b4548f1
-_md5_=40f159ba8d9eaa6541d4502d571c2676
+_md5_=774b03e3f01b164fadb5954c6007dfa5
