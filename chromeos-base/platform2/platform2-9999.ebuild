@@ -419,6 +419,7 @@ platform2_install_shill() {
 
 	dosbin bin/reload_network_device
 	dobin bin/set_arpgw
+	dobin bin/set_wake_on_lan
 	dobin bin/shill_login_user
 	dobin bin/shill_logout_user
 	dobin bin/wpa_debug
