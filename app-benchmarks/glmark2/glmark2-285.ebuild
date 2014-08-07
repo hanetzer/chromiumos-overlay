@@ -24,7 +24,7 @@ REQUIRED_USE="
 	"
 
 RDEPEND="media-libs/libpng
-	opengles? ( virtual/opengles x11-drivers/opengles-headers )
+	opengles? ( virtual/opengles )
 	opengl? ( virtual/opengl )
 	x11-libs/libX11
 	drm? ( media-libs/mesa[gbm] )
