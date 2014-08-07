@@ -1,6 +1,6 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1h.ebuild,v 1.1 2014/06/05 12:53:23 polynomial-c Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1i.ebuild,v 1.1 2014/08/07 00:17:31 vapier Exp $
 
 EAPI="4"
 
@@ -20,9 +20,9 @@ IUSE="bindist gmp kerberos rfc3779 sse2 static-libs test +tls-heartbeat vanilla 
 # The blocks are temporary just to make sure people upgrade to a
 # version that lack runtime version checking.  We'll drop them in
 # the future.
-RDEPEND="gmp? ( dev-libs/gmp[static-libs(+)?,${MULTILIB_USEDEP}] )
-	zlib? ( sys-libs/zlib[static-libs(+)?,${MULTILIB_USEDEP}] )
-	kerberos? ( app-crypt/mit-krb5[${MULTILIB_USEDEP}] )
+RDEPEND="gmp? ( >=dev-libs/gmp-5.1.3-r1[static-libs(+)?,${MULTILIB_USEDEP}] )
+	zlib? ( >=sys-libs/zlib-1.2.8-r1[static-libs(+)?,${MULTILIB_USEDEP}] )
+	kerberos? ( >=app-crypt/mit-krb5-1.11.4[${MULTILIB_USEDEP}] )
 	abi_x86_32? (
 		!<=app-emulation/emul-linux-x86-baselibs-20140406-r3
 		!app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
