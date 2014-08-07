@@ -22,7 +22,7 @@ IUSE="+autotest"
 RDEPEND="${RDEPEND}
 	>=dev-cpp/gflags-2.0
 	!opengles? ( virtual/opengl )
-	opengles? ( virtual/opengles )
+	opengles? ( virtual/opengles x11-drivers/opengles-headers )
 	x11-apps/xwd
 "
 
