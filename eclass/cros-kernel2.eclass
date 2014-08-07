@@ -446,13 +446,20 @@ cros-kernel2_pkg_setup() {
 # it.
 
 emit_its_script() {
+	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
+	local image_name="zImage"
 	local iter=1
 	local its_out=${1}
 	shift
-	local boot_dir=${1}
+	local kernel_path=${1}
 	shift
 	local dtb_dir=${1}
 	shift
+
+	if [ "${kernel_arch}" = "arm64" ] ; then
+		image_name="Image"
+	fi
+
 	cat > "${its_out}" <<-EOF || die
 	/dts-v1/;
 
@@ -462,9 +469,9 @@ emit_its_script() {
 
 		images {
 			kernel@1 {
-				data = /incbin/("${boot_dir}/zImage");
+				data = /incbin/("${kernel_path}/${image_name}");
 				type = "kernel_noload";
-				arch = "arm";
+				arch = "${kernel_arch}";
 				os = "linux";
 				compression = "none";
 				load = <0>;
@@ -479,7 +486,7 @@ emit_its_script() {
 				description = "$(basename ${dtb})";
 				data = /incbin/("${dtb_dir}/${dtb}");
 				type = "flat_dt";
-				arch = "arm";
+				arch = "${kernel_arch}";
 				compression = "none";
 				hash@1 {
 					algo = "sha1";
