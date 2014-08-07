@@ -12,7 +12,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 PLATFORM_SUBDIR="libchromeos"
 PLATFORM_NATIVE_TEST="yes"
 
-inherit cros-workon multilib platform
+inherit cros-workon libchrome multilib platform
 
 DESCRIPTION="Base library for Chromium OS"
 HOMEPAGE="http://dev.chromium.org/chromium-os/platform"
