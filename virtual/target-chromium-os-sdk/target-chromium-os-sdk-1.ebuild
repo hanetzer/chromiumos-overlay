@@ -135,6 +135,7 @@ RDEPEND="${RDEPEND}
 	dev-python/m2crypto
 	dev-python/mako
 	dev-python/netifaces
+	dev-python/pycairo
 	dev-python/pygobject
 	dev-python/pygtk
 	dev-python/pyinotify
