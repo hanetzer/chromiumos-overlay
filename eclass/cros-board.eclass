@@ -108,6 +108,7 @@ ALL_BOARDS=(
 	nyan_big
 	nyan_blaze
 	nyan_freon
+	nyan_kitty
 	optimus
 	panda
 	panther
