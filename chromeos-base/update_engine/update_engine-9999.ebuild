@@ -59,18 +59,14 @@ RDEPEND="
 platform_pkg_test() {
 	local unittests_binary="${OUT}"/update_engine_unittests
 
-	# The test expects the binaries and testing keys to be in the current
-	# directory.
-	# TODO(deymo): Change the tests to find these files on the same directory
-	# where update_engine_unittests is.
-	for f in delta_generator test_http_server; do
-		rm -f $f
-		ln -s "${OUT}"/$f $f || die "Error creating the symlink for $f."
-	done
+	# The unittests will try to exec `./helpers`, so make sure we're in
+	# the right dir to execute things.
+	cd "${OUT}"
+	# The tests also want keys to be in the current dir.
 	# .pub.pem files are generated on the "gen" directory.
 	for f in unittest_key.pub.pem unittest_key2.pub.pem; do
-		rm -f $f
-		ln -s "${OUT}"/gen/include/update_engine/$f $f  \
+		cp "${S}"/${f/.pub} ./ || die
+		ln -fs gen/include/update_engine/$f $f  \
 			|| die "Error creating the symlink for $f."
 	done
 
