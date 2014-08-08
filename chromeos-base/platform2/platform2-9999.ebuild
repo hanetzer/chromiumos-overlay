@@ -14,7 +14,6 @@ PLATFORM2_PROJECTS=(
 	"cros-disks"
 	"debugd"
 	"lorgnette"
-	"mist"
 	"shill"
 	"vpn-manager"
 )
@@ -85,15 +84,6 @@ RDEPEND_lorgnette="
 	)
 "
 
-RDEPEND_mist="
-	cellular? (
-		dev-libs/libusb
-		dev-libs/protobuf
-		net-dialup/ppp
-		sys-fs/udev
-	)
-"
-
 RDEPEND_quipper="
 	profile? (
 		dev-util/perf
@@ -145,7 +135,6 @@ RDEPEND="
 		!chromeos-base/chromeos-debugd[-platform2]
 		chromeos-base/libchromeos
 		chromeos-base/metrics
-		!chromeos-base/mist[-platform2]
 		!chromeos-base/shill[-platform2]
 		chromeos-base/system_api
 		!chromeos-base/vpn-manager[-platform2]
@@ -330,18 +319,6 @@ platform2_install_lorgnette() {
 	doins dbus_service/org.chromium.lorgnette.service
 }
 
-platform2_install_mist() {
-	use cros_host && return 0
-	use cellular || return 0;
-
-	dobin "${OUT}"/mist
-
-	insinto /usr/share/mist
-	doins default.conf
-
-	udev_dorules 51-mist.rules
-}
-
 platform2_install_shill() {
 	use shill || return 0
 	use cros_host && return 0
@@ -508,13 +485,6 @@ platform2_test_lorgnette() {
 	use lorgnette || return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
 	platform_test "run" "${OUT}/lorgnette_unittest"
-}
-
-platform2_test_mist() {
-	use cros_host && return 0
-	use cellular || return 0;
-
-	platform_test "run" "${OUT}/mist_testrunner"
 }
 
 platform2_test_shill() {
