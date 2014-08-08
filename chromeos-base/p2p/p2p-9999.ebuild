@@ -41,8 +41,9 @@ platform_pkg_test() {
 	)
 
 	local test_bin
+	cd "${OUT}"
 	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "./${test_bin}"
 	done
 }
 
