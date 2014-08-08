@@ -7,4 +7,6 @@
 #
 # See "man make.conf" for the available options.
 
+USE="${USE} -power_management"
+
 source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common

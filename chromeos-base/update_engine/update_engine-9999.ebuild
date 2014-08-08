@@ -20,8 +20,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang cros_host cros_p2p -delta_generator -hwid_override +power_management"
-REQUIRED_USE="asan? ( clang )"
+IUSE="cros_p2p -delta_generator -hwid_override +power_management"
 
 COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
@@ -49,9 +48,7 @@ DEPEND="chromeos-base/system_api
 RDEPEND="
 	chromeos-base/chromeos-installer
 	${COMMON_DEPEND}
-	!cros_host? (
-		power_management? ( chromeos-base/platform2[power_management] )
-	)
+	power_management? ( chromeos-base/power_manager )
 	delta_generator? ( sys-fs/e2fsprogs )
 	virtual/update-policy
 "

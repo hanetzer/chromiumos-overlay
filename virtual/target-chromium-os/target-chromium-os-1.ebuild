@@ -97,6 +97,7 @@ CROS_COMMON_RDEPEND+="
 	chromeos-base/chromeos-installer
 	crash_reporting? ( chromeos-base/crash-reporter )
 	chromeos-base/platform2
+	power_management? ( chromeos-base/power_manager )
 	chromeos-base/tty
 	chromeos-base/update_engine
 	wimax? ( chromeos-base/wimax_manager )
