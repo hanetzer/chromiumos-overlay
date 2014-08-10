@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install postinst prepare setup
+DEPEND=activefilter? ( net-libs/libpcap ) atm? ( net-dialup/linux-atm ) pam? ( virtual/pam ) gtk? ( x11-libs/gtk+:2 ) eap-tls? ( net-misc/curl dev-libs/openssl )
+DESCRIPTION=Point-to-Point Protocol (PPP)
+EAPI=5
+HOMEPAGE=http://www.samba.org/ppp
+IUSE=activefilter atm dhcp eap-tls gtk ipv6 pam radius
+KEYWORDS=*
+LICENSE=BSD GPL-2
+RDEPEND=activefilter? ( net-libs/libpcap ) atm? ( net-dialup/linux-atm ) pam? ( virtual/pam ) gtk? ( x11-libs/gtk+:2 ) eap-tls? ( net-misc/curl dev-libs/openssl )
+SLOT=0/2.4.6
+SRC_URI=ftp://ftp.samba.org/pub/ppp/ppp-2.4.6.tar.gz http://dev.gentoo.org/~pinkbyte/distfiles/patches/ppp-2.4.6-patches-4.tar.xz http://www.netservers.net.uk/gpl/ppp-dhcpc.tgz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	fac675dcccf94392371a6abee62d909f	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=d35e76441d45926a8b5f7340d1b209f2
