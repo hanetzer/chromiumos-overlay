@@ -35,6 +35,8 @@ src_prepare() {
 	# See https://chromium-review.googlesource.com/#/c/7751/ and
 	# http://crosbug.com/17185 for details.
 	epatch "${FILESDIR}/${P}-systemconfig.patch"
+	# Upstream fix for parsing options in config file (crbug.com/390709).
+	epatch "${FILESDIR}/${P}-options-fix.patch"
 
 	if use atm ; then
 		einfo "Enabling PPPoATM support"
