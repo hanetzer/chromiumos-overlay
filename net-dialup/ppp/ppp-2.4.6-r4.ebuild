@@ -1,20 +1,20 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/net-dialup/ppp/ppp-2.4.5-r3.ebuild,v 1.10 2013/03/24 17:58:01 pinkbyte Exp $
+# $Header: /var/cvsroot/gentoo-x86/net-dialup/ppp/ppp-2.4.6-r3.ebuild,v 1.1 2014/06/18 18:51:54 pinkbyte Exp $
 
-EAPI="4"
+EAPI=5
 
-inherit eutils multilib toolchain-funcs linux-info pam
+inherit eutils linux-info multilib pam toolchain-funcs
 
-PATCH_VER="3"
+PATCH_VER="4"
 DESCRIPTION="Point-to-Point Protocol (PPP)"
 HOMEPAGE="http://www.samba.org/ppp"
 SRC_URI="ftp://ftp.samba.org/pub/ppp/${P}.tar.gz
-	http://dev.gentoo.org/~floppym/dist/${P}-patches-${PATCH_VER}.tar.xz
-	http://www.netservers.co.uk/gpl/ppp-dhcpc.tgz"
+	http://dev.gentoo.org/~pinkbyte/distfiles/patches/${P}-patches-${PATCH_VER}.tar.xz
+	http://www.netservers.net.uk/gpl/ppp-dhcpc.tgz"
 
 LICENSE="BSD GPL-2"
-SLOT="0"
+SLOT="0/${PV}"
 KEYWORDS="*"
 IUSE="activefilter atm dhcp eap-tls gtk ipv6 pam radius"
 
@@ -26,21 +26,20 @@ DEPEND="activefilter? ( net-libs/libpcap )
 RDEPEND="${DEPEND}"
 
 src_prepare() {
-	# Use the headers from the kernel #427684
-	rm include/linux/if_pppol2tp.h || die
-
 	mv "${WORKDIR}/dhcp" "${S}/pppd/plugins" || die
 
 	use eap-tls || EPATCH_EXCLUDE+=" 8?_all_eaptls-*"
-	EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
+	EPATCH_SUFFIX="patch" \
+	epatch "${WORKDIR}"/patch
 	# Apply Chromium OS specific patch regarding the nosystemconfig option
 	# See https://chromium-review.googlesource.com/#/c/7751/ and
 	# http://crosbug.com/17185 for details.
-	epatch "${FILESDIR}/${PN}-2.4.5-systemconfig.patch"
+	epatch "${FILESDIR}/${P}-systemconfig.patch"
 
 	if use atm ; then
 		einfo "Enabling PPPoATM support"
-		sed -i '/^#HAVE_LIBATM=yes/s:#::' pppd/plugins/pppoatm/Makefile.linux || die
+		sed -i '/^#HAVE_LIBATM=yes/s:#::' \
+			pppd/plugins/pppoatm/Makefile.linux || die
 	fi
 
 	if ! use activefilter ; then
@@ -65,24 +64,25 @@ src_prepare() {
 		einfo "Adding ppp-dhcp plugin files"
 		sed -i \
 			-e '/^SUBDIRS :=/s:$: dhcp:' \
-			pppd/plugins/Makefile.linux || die
+				pppd/plugins/Makefile.linux || die
 	fi
 
 	# Set correct libdir
 	sed -i -e "s:/lib/pppd:/$(get_libdir)/pppd:" \
-		pppd/{pathnames.h,pppd.8}
+		pppd/{pathnames.h,pppd.8} || die
 
 	if use radius ; then
 		#set the right paths in radiusclient.conf
 		sed -i -e "s:/usr/local/etc:/etc:" \
-			-e "s:/usr/local/sbin:/usr/sbin:" pppd/plugins/radius/etc/radiusclient.conf
+			-e "s:/usr/local/sbin:/usr/sbin:" \
+				pppd/plugins/radius/etc/radiusclient.conf || die
 		#set config dir to /etc/ppp/radius
 		sed -i -e "s:/etc/radiusclient:/etc/ppp/radius:g" \
 			pppd/plugins/radius/{*.8,*.c,*.h} \
-			pppd/plugins/radius/etc/*
+			pppd/plugins/radius/etc/* || die
 	else
 		einfo "Disabling radius"
-		sed -i -e '/+= radius/s:^:#:' pppd/plugins/Makefile.linux
+		sed -i -e '/+= radius/s:^:#:' pppd/plugins/Makefile.linux || die
 	fi
 }
 
@@ -91,7 +91,7 @@ src_compile() {
 	emake COPTS="${CFLAGS} -D_GNU_SOURCE"
 
 	# build pppgetpass
-	cd contrib/pppgetpass
+	cd contrib/pppgetpass || die
 	if use gtk ; then
 		emake -f Makefile.linux
 	else
@@ -135,7 +135,7 @@ src_install() {
 
 	pamd_mimic_system ppp auth account session
 
-	local PLUGINS_DIR=/usr/$(get_libdir)/pppd/$(awk -F '"' '/VERSION/ {print $2}' pppd/patchlevel.h)
+	local PLUGINS_DIR="/usr/$(get_libdir)/pppd/${PV}"
 	# closing " for syntax coloring
 	insinto "${PLUGINS_DIR}"
 	insopts -m0755
@@ -222,7 +222,7 @@ pkg_postinst() {
 		cp -pP "${ROOT}/etc/ppp/chap-secrets.example" "${ROOT}/etc/ppp/chap-secrets"
 
 	# lib name has changed
-	sed -i -e "s:^pppoe.so:rp-pppoe.so:" "${ROOT}/etc/ppp/options"
+	sed -i -e "s:^pppoe.so:rp-pppoe.so:" "${ROOT}/etc/ppp/options" || die
 
 	echo
 	elog "Pon, poff and plog scripts have been supplied for experienced users."
