@@ -19,6 +19,7 @@ IUSE="
 	+autotest
 	+cellular
 	+shill
+	vaapi
 "
 
 RDEPEND="
@@ -31,6 +32,7 @@ RDEPEND="
 	chromeos-base/shill-test-scripts
 	chromeos-base/telemetry
 	tests_graphics_Stress? ( x11-apps/xsendevt )
+	vaapi? ( x11-libs/libva )
 "
 
 DEPEND="${RDEPEND}"
