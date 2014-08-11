@@ -7,7 +7,7 @@ CROS_WORKON_COMMIT="38c6bf0e11e5b987cd0a3cdd00089ffae86c32e0"
 CROS_WORKON_TREE="2ad5f604eb25a99a4adcce7409833c2b0e014a36"
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
-NEXT_GCC="gcc.gnu.org/branches/google/gcc-4_9-mobile"
+NEXT_GCC="origin/svn-mirror/google/gcc-4_9-mobile"
 
 inherit eutils cros-workon binutils-funcs
 
