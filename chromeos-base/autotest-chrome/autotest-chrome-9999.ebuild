@@ -94,7 +94,7 @@ IUSE_TESTS=(
 	+tests_security_SandboxStatus
 	+tests_telemetry_AFDOGenerateClient
 	+tests_telemetry_LoginTest
-	tests_telemetry_UnitTests
+	+tests_telemetry_UnitTests
 	+tests_touch_ScrollDirection
 	+tests_ui_SystemTray
 	+tests_ui_SettingsPage
