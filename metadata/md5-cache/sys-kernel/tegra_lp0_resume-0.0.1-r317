@@ -1,12 +1,11 @@
 DEFINED_PHASES=compile info install setup unpack
-DEPEND=sys-boot/libpayload dev-vcs/git
-DESCRIPTION=coreboot's coreinfo payload
+DEPEND=dev-vcs/git
+DESCRIPTION=lp0 resume blob for Tegra
 EAPI=4
 HOMEPAGE=http://www.coreboot.org
-IUSE=cros_host cros_workon_tree_68c432ddcf6b8f8c7eef26d1cbb977c6c65b5a17 profiling
-KEYWORDS=amd64 x86
+IUSE=cros_host cros_workon_tree_8e758990f3b0bf13784f1008dd04b9596b70d9ec profiling
+KEYWORDS=arm
 LICENSE=GPL-2
-RDEPEND=sys-boot/libpayload
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	825ce8625ad154f3fb17dc7639e5bd88	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=16872bf7107cdfd38e06b887332d4012
+_md5_=b55eb85e862a731fbe5c5a7c8e0e6ba5
