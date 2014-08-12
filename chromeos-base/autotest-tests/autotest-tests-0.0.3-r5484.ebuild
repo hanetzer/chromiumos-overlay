@@ -107,7 +107,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_RamFio
 	+tests_hardware_RealtekCardReader
 	+tests_hardware_Resolution
-	!mips? ( +tests_hardware_SAT )
+	+tests_hardware_SAT
 	+tests_hardware_Smartctl
 	+tests_hardware_SsdDetection
 	+tests_hardware_StorageFio
