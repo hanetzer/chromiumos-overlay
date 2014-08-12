@@ -35,6 +35,7 @@ SERVER_IUSE_TESTS="
 	+tests_display_HotPlugAtSuspend
 	+tests_display_Resolution
 	+tests_display_ResolutionList
+	+tests_display_SuspendStress
 	+tests_dummy_FailServer
 	+tests_dummy_FlakyTestServer
 	+tests_factory_Basic
