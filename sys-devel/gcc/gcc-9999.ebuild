@@ -5,7 +5,7 @@
 EAPI=1
 CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
-NEXT_GCC="gcc.gnu.org/branches/google/gcc-4_9-mobile"
+NEXT_GCC="origin/svn-mirror/google/gcc-4_9-mobile"
 
 inherit eutils cros-workon binutils-funcs
 
