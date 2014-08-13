@@ -60,7 +60,6 @@ CLIENT_IUSE_TESTS="
 	+tests_bonnie
 	+tests_iozone
 	+tests_netpipe
-	!mips? ( +tests_scrashme )
 	+tests_sleeptest
 	+tests_unixbench
 	+tests_autoupdate_CannedOmahaUpdate
