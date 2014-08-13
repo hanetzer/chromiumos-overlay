@@ -40,7 +40,6 @@ IUSE="
 	component_build
 	deep_memory_profiler
 	drm
-	ecs
 	evdev_gestures
 	+gold
 	hardfp
@@ -71,10 +70,6 @@ IUSE+=" ${IUSE_OZONE_PLATFORMS}"
 # script is changed to use eu-strip instead of objcopy and strip.
 STRIP_MASK+=" */nacl_helper_bootstrap"
 
-
-REQUIRED_USE="
-	ecs? ( ozone )
-"
 REORDER_SUBDIR="reorder"
 
 # Portage version without optional portage suffix.
@@ -252,22 +247,13 @@ set_build_defines() {
 		"linux_use_bundled_gold=0"
 		"linux_use_gold_flags=$(use10 gold)"
 		"linux_use_debug_fission=0"
+		"swig_defines=-DOS_CHROMEOS"
+		"chromeos=1"
+		"icu_use_data_file_flag=1"
 	)
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
 	[[ ${CHOST} == armv6* ]] && BUILD_DEFINES+=( use_allocator=none )
-
-	if use ecs ; then
-		BUILD_DEFINES+=(
-			"embedded=1"
-		)
-	else
-		BUILD_DEFINES+=(
-			swig_defines=-DOS_CHROMEOS
-			chromeos=1
-			icu_use_data_file_flag=1
-		)
-	fi
 
 	if use ozone; then
 		local platform
@@ -760,9 +746,6 @@ src_compile() {
 	if [[ -n "${CHROME_TARGET_OVERRIDE}" ]]; then
 		chrome_targets=( ${CHROME_TARGET_OVERRIDE} )
 		einfo "Building custom targets: ${chrome_targets[*]}"
-	elif use ecs; then
-		chrome_targets=( content_shell chrome_sandbox )
-		einfo "Building embedded content_shell"
 	elif use app_shell; then
 		chrome_targets=( app_shell chrome_sandbox libosmesa.so )
 		einfo "Building app_shell"
@@ -1097,7 +1080,7 @@ src_install() {
 	einfo "${cmd[*]}"
 	"${cmd[@]}" || die
 
-	if use build_tests && ! use ecs; then
+	if use build_tests && ! use app_shell; then
 		# Install Chrome Driver to test image.
 		local chromedriver_dir='/usr/local/chromedriver'
 		dodir "${chromedriver_dir}"

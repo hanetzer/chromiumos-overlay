@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="cros_ec cros_embedded opengl X"
+IUSE="-app_shell cros_ec cros_embedded opengl X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -95,7 +95,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/platform2
 	chromeos-base/protofiles
 	chromeos-base/recover-duts
-	chromeos-base/telemetry
+	!app_shell? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
 	dev-lang/python
 	dev-libs/opensc

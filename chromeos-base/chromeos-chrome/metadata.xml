@@ -2,6 +2,7 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 <use>
+	<flag name='app_shell'>Build app_shell</flag>
 	<flag name='asan'>Build with Address Sanitizer support</flag>
 	<flag name='build_tests'>Build test targets</flag>
 	<flag name='chrome_debug'>Build with debug symbols (-g)</flag>
@@ -12,7 +13,6 @@
 	<flag name='chrome_remoting'>Build chrome remoting feature</flag>
 	<flag name='clang'>Build with CC and C++ set to clang</flag>
 	<flag name='component_build'>Build components as shared libraries (faster link)</flag>
-	<flag name='ecs'>Build embedded content_shell</flag>
 	<flag name='evdev_gestures'>Build Chrome with ChromeOS touchpad gestures support.</flag>
 	<flag name='gold'>Use gold linker</flag>
 	<flag name='highdpi'>Add high DPI resources</flag>

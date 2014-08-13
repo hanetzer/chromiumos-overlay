@@ -11,7 +11,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="*"
-IUSE="+bluetooth +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty -ecs +power_management +shill wimax +tpm"
+IUSE="-app_shell +bluetooth +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty +power_management +shill wimax +tpm"
 
 RDEPEND="
 	chromeos-base/autotest-client
@@ -37,7 +37,7 @@ RDEPEND="
 		chromeos-base/autotest-tests-p2p
 	)
 	!chromeless_tty? (
-		!ecs? (
+		!app_shell? (
 			chromeos-base/autotest-tests-graphics
 			chromeos-base/autotest-tests-ownershipapi
 			chromeos-base/autotest-server-tests-telemetry

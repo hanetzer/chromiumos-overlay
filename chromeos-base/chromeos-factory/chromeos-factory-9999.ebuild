@@ -16,7 +16,7 @@ SRC_URI="${WEBGL_AQUARIUM_URI}"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+autotest +build_tests -chromeless_tty -ecs"
+IUSE="+autotest +build_tests"
 
 DEPEND="virtual/chromeos-interface
 	dev-python/pyyaml
