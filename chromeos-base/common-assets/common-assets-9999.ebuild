@@ -152,9 +152,6 @@ src_install() {
 
 	doins -r "${S}"/crosh_builtin_deploy/*
 
-	insinto /usr/share/fonts/chrome-droid
-	doins "${S}"/fonts/ChromeDroid*.ttf
-
 	insinto /usr/share/color/bin
 	if use mario; then
 		newins "${S}"/color_profiles/mario.bin internal_display.bin
