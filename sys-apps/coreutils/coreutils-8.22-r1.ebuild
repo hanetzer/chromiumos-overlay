@@ -1,1 +1,0 @@
-coreutils-8.22.ebuild
