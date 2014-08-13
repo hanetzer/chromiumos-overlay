@@ -6,20 +6,19 @@ EAPI=4
 
 inherit eutils toolchain-funcs flag-o-matic
 
-IUSE=""
-
 DESCRIPTION="bsdiff: Binary Differencer using a suffix alg"
 HOMEPAGE="http://www.daemonology.net/bsdiff/"
 SRC_URI="http://www.daemonology.net/bsdiff/${P}.tar.gz"
 
-SLOT="0"
 LICENSE="BSD-2"
+SLOT="0"
 KEYWORDS="*"
 IUSE="cros_host"
 
 RDEPEND="app-arch/bzip2
 	cros_host? ( dev-libs/libdivsufsort )"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	dev-libs/libdivsufsort"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${PV}_bspatch-extent-files.patch
@@ -32,7 +31,7 @@ src_prepare() {
 src_configure() {
 	append-lfs-flags
 	tc-export CC
-	makeargs=( USE_BSDIFF=$(usex cros_host y n) )
+	makeargs=( USE_BSDIFF=y )
 }
 
 src_compile() {
@@ -41,4 +40,12 @@ src_compile() {
 
 src_install() {
 	emake install DESTDIR="${D}" "${makeargs[@]}"
+}
+
+pkg_preinst() {
+	# We want bsdiff in the sdk and in the sysroot (for testing), but
+	# we don't want it in the target image as it isn't used.
+	if [[ $(cros_target) == "target_image" ]]; then
+		rm "${D}"/usr/bin/bsdiff || die
+	fi
 }
