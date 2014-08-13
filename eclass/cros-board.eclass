@@ -42,6 +42,7 @@ ALL_BOARDS=(
 	aries
 	arm-generic
 	arm64-generic
+	auron
 	bayleybay
 	beaglebone
 	beaglebone_servo
