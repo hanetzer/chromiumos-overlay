@@ -1,0 +1,26 @@
+From 8c9c6196e5309b761b54c8398f34a79c22028472 Mon Sep 17 00:00:00 2001
+From: Pawel Osciak <posciak@chromium.org>
+Date: Wed, 13 Aug 2014 19:37:23 +0900
+Subject: [PATCH] Only allow H264 HW encode on BYT.
+
+---
+ src/i965_drv_video.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/i965_drv_video.c b/src/i965_drv_video.c
+index 264d39d..9662ebb 100755
+--- a/src/i965_drv_video.c
++++ b/src/i965_drv_video.c
+@@ -5150,6 +5150,9 @@ i965_driver_data_init(VADriverContextP ctx)
+     else
+         return false;
+ 
++    if (!IS_BAYTRAIL(i965->intel.device_id))
++        i965->codec_info->has_h264_encoding = 0;
++
+     if (object_heap_init(&i965->config_heap,
+                          sizeof(struct object_config),
+                          CONFIG_ID_OFFSET))
+-- 
+2.1.0.rc2.206.gedb03e5
+

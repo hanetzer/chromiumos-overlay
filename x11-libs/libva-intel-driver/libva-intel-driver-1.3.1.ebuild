@@ -45,6 +45,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
 	epatch "${FILESDIR}"/Encoding-Reinitialize-CBR-bit-rate-control-parameter.patch
 	epatch "${FILESDIR}"/Disable-encoding-on-Gen75.patch
+	epatch "${FILESDIR}"/Only-allow-H264-HW-encode-on-BYT.patch
 	eautoreconf
 }
 
