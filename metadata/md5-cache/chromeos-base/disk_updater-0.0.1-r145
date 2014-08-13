@@ -9,4 +9,4 @@ LICENSE=BSD-Google
 RDEPEND=chromeos-base/chromeos-installer sys-apps/hdparm
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	505836a6bd5ebdcb0bd643c0ce889457	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=a2ff93b9a1cb285f495d2c35e3ddbeb5
+_md5_=3189368de1a5ddb2ab627032c0305214
