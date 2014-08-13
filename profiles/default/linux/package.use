@@ -41,7 +41,7 @@ net-dns/avahi		dbus
 net-misc/dhcpcd -crash
 # Build qemu's userland helpers statically so we can copy them into sysroots
 # and run unittests standalone.
-app-emulation/qemu	-libseccomp static-user
+app-emulation/qemu	-seccomp static-user
 dev-libs/libaio		static-libs
 cross-armv7a-cros-linux-gnueabi/gcc   hardfp
 cross-armv6j-cros-linux-gnueabi/gcc   hardfp -thumb
