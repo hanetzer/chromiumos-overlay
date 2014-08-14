@@ -53,6 +53,3 @@ dev-libs/libevent ssl
 #   yet upstreamed.
 dev-libs/nss cacert nss-pem
 app-crypt/nss cacert nss-pem
-
-# Don't enable zlib support to reduce dependency.
-gnome-base/librsvg zlib

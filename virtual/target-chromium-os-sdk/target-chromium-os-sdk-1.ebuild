@@ -361,11 +361,6 @@ RDEPEND="${RDEPEND}
 	dev-python/twisted-web
 	"
 
-# Host dependencies for building firmware bitmaps (chromeos-bmpblk)
-RDEPEND="${RDEPEND}
-	gnome-base/librsvg
-	"
-
 # Host dependencies for building harfbuzz
 RDEPEND="${RDEPEND}
 	dev-util/ragel
