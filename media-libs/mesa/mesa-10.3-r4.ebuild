@@ -137,6 +137,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-disable-vs-workaround.patch
 	epatch "${FILESDIR}"/10.3-i965-initialize-brw_reg-struct-when-generating-code.patch
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
+	epatch "${FILESDIR}"/10.3-mesa-fix-workaround-when-there-is-depth-but-not-sten.patch
 
 	base_src_prepare
 

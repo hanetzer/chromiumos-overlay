@@ -1,0 +1,55 @@
+From 4b6da8f448f4afcba7e4dbeb5d0bdf2e47576d96 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Mon, 11 Aug 2014 21:01:32 -0700
+Subject: [PATCH] mesa: fix workaround when there is depth but not stencil
+
+If the format includes stencil but no stencil attachment is used we shouldn't crash.
+
+Change-Id: Ia713f153cad4da189e54f122cd555c5cfb48de86
+---
+ src/mesa/drivers/dri/i965/brw_misc_state.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_misc_state.c b/src/mesa/drivers/dri/i965/brw_misc_state.c
+index 76e22bd..1e2402d 100644
+--- a/src/mesa/drivers/dri/i965/brw_misc_state.c
++++ b/src/mesa/drivers/dri/i965/brw_misc_state.c
+@@ -258,7 +258,7 @@ brw_workaround_depthstencil_alignment(struct brw_context *brw,
+    brw->depthstencil.stencil_mt = NULL;
+    if (depth_irb)
+       brw->depthstencil.depth_mt = depth_mt;
+-   if (stencil_irb)
++   if (stencil_irb && stencil_irb->mt)
+       brw->depthstencil.stencil_mt = get_stencil_miptree(stencil_irb);
+ 
+    /* Gen7+ doesn't require the workarounds, since we always program the
+@@ -332,7 +332,7 @@ brw_workaround_depthstencil_alignment(struct brw_context *brw,
+          tile_y = depth_irb->draw_y & tile_mask_y;
+       }
+ 
+-      if (stencil_irb) {
++      if (stencil_irb && stencil_irb->mt) {
+          stencil_mt = get_stencil_miptree(stencil_irb);
+          intel_miptree_get_image_offset(stencil_mt,
+                                         stencil_irb->mt_level,
+@@ -354,7 +354,7 @@ brw_workaround_depthstencil_alignment(struct brw_context *brw,
+    }
+ 
+    /* If we have (just) stencil, check it for ignored low bits as well */
+-   if (stencil_irb) {
++   if (stencil_irb && stencil_irb->mt) {
+       intel_miptree_get_image_offset(stencil_mt,
+                                      stencil_irb->mt_level,
+                                      stencil_irb->mt_layer,
+@@ -457,7 +457,7 @@ brw_workaround_depthstencil_alignment(struct brw_context *brw,
+                                              false);
+       }
+    }
+-   if (stencil_irb) {
++   if (stencil_irb && stencil_irb->mt) {
+       stencil_mt = get_stencil_miptree(stencil_irb);
+ 
+       brw->depthstencil.stencil_mt = stencil_mt;
+-- 
+2.1.0.rc2.206.gedb03e5
+
