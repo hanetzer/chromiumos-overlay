@@ -86,6 +86,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/autotest-client
 	chromeos-base/audiotest
 	chromeos-base/avtest_label_detect
+	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/chromeos-factory-mini
 	chromeos-base/shill-test-scripts
@@ -108,7 +109,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	dev-python/pygobject
 	dev-python/pyserial
 	dev-python/python-evdev
-	dev-python/python-xlib
 	dev-python/pyudev
 	dev-python/pyyaml
 	dev-python/selenium
@@ -139,7 +139,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
-	sys-apps/lshw
 	sys-apps/memtester
 	sys-apps/shadow
 	sys-devel/binutils
