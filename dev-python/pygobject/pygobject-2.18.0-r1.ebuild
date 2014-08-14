@@ -16,7 +16,7 @@ HOMEPAGE="http://www.pygtk.org/"
 LICENSE="LGPL-2.1"
 SLOT="2"
 KEYWORDS="*"
-IUSE="doc examples libffi test"
+IUSE="doc examples libffi test +threads"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 COMMON_DEPEND=">=dev-libs/glib-2.24.0:2
