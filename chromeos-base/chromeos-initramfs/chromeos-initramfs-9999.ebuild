@@ -223,7 +223,7 @@ pull_netboot_ramfs_binary() {
 
 	# Binaries used by factory installer
 	idobin /bin/bash
-	idobin /bin/coreutils
+	idobin /usr/bin/coreutils
 	idobin /bin/dd
 	idobin /bin/sh
 	idobin /bin/xxd
