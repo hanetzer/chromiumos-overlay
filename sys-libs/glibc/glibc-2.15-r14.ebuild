@@ -215,7 +215,8 @@ eblit-src_unpack-post() {
 		cp -f "${FILESDIR}"/2.10/glibc-2.10-gentoo-chk_fail.c \
 			debug/chk_fail.c || die
 
-		if use debug ; then
+ 		# Use SIGABRT instead of SIGKILL for check handler for all cases. crbug://389360
+		if true ; then
 			# When using Hardened Gentoo stack handler, have smashes dump core for
 			# analysis - debug only, as core could be an information leak
 			# (paranoia).
