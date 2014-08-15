@@ -21,7 +21,6 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/libchromeos
-	>=dev-cpp/gflags-2.0
 	dev-libs/glib
 	sys-apps/dbus
 	dev-libs/dbus-glib
