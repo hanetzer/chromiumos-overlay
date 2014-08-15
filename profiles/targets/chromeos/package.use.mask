@@ -18,6 +18,11 @@ media-fonts/ja-ipafonts X
 media-fonts/ko-nanumfonts X
 media-fonts/ml-anjalioldlipi X
 media-fonts/notofonts X
+media-fonts/noto-cjk X
+media-fonts/my-padauk X
+media-fonts/dejavu X
+media-fonts/sil-abyssinica X
+media-fonts/tlbt-jomohari X
 
 # David James <davidjames@chromium.org> (14 Feb 2011)
 # ACPI support is currently disabled in laptop-mode-tools.

@@ -6,7 +6,7 @@ EAPI="5"
 inherit font
 
 DESCRIPTION="Noto fonts developed by Monotype"
-SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.gz"
+SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 LICENSE="Apache-2.0"
 SLOT="0"

@@ -52,6 +52,7 @@ RDEPEND="
 	media-fonts/croscorefonts
 	media-fonts/crosextrafonts
 	media-fonts/crosextrafonts-carlito
+	media-fonts/noto-cjk
 	media-fonts/notofonts
 	media-fonts/dejavu
 	media-fonts/droidfonts-cros
