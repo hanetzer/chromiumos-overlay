@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="-app_shell cros_ec cros_embedded opengl X"
+IUSE="-app_shell cros_ec cros_embedded opengl opengles X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -60,7 +60,6 @@ CROS_X86_RDEPEND="
 "
 
 CROS_X_RDEPEND="
-	opengl? ( virtual/glut )
 	x11-apps/setxkbmap
 	x11-apps/xinput
 	x11-apps/xset
@@ -121,6 +120,8 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/perceptualdiff
 	media-gfx/zbar
 	media-libs/opencv
+	opengl? ( media-libs/piglit )
+	opengles? ( media-libs/piglit[waffle] )
 	media-libs/tiff
 	media-sound/sox
 	net-analyzer/netperf
