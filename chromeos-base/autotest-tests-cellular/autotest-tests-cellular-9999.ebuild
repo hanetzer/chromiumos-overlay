@@ -57,7 +57,6 @@ IUSE_TESTS="
 	+tests_network_CDMAActivate
 	+tests_network_ConnmanCromoCrash
 	+tests_network_GobiUncleanDisconnect
-	+tests_network_LockedSIM
 	+tests_network_LTEActivate
 	+tests_network_ModemManagerSMS
 	+tests_network_ModemManagerSMSSignal
