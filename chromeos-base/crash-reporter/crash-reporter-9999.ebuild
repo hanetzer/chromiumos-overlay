@@ -30,7 +30,6 @@ RDEPEND="
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	!<chromeos-base/platform2-0.0.5
-	dev-cpp/gflags
 	>=dev-libs/glib-2.30
 	dev-libs/libpcre
 	net-misc/curl
