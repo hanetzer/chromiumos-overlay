@@ -11,7 +11,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="app_shell_launcher"
 
-inherit cros-workon platform
+inherit cros-workon libchrome platform
 
 DESCRIPTION="Launcher for the app_shell binary"
 SRC_URI=""
@@ -19,7 +19,10 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-RDEPEND="chromeos-base/chromeos-chrome[app_shell]"
+
+DEPEND="chromeos-base/libchromeos"
+RDEPEND="${DEPEND}
+	chromeos-base/chromeos-chrome[app_shell]"
 
 src_install() {
 	# If the first argument is non-empty, echo it to the path contained in the
