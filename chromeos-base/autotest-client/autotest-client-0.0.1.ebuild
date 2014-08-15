@@ -11,6 +11,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
+IUSE="-moblab"
 
 DEPEND="
 	chromeos-base/autotest
@@ -19,7 +20,10 @@ DEPEND="
 S=${WORKDIR}
 
 src_install() {
-	dodir /usr/local/autotest
+	AUTOTEST_INSTALL_DIR="/usr/local/autotest"
+	use moblab && AUTOTEST_INSTALL_DIR="/usr/local/autodir"
+
+	dodir "${AUTOTEST_INSTALL_DIR}"
 	tar xvf "${SYSROOT}/${AUTOTEST_BASE}/packages/client-autotest.tar.bz2" \
-		-C "${D}"/usr/local/autotest || die
+		-C "${D}/${AUTOTEST_INSTALL_DIR}" || die
 }
