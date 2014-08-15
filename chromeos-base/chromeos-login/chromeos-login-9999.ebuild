@@ -2,22 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="platform2"
 
-inherit cros-debug cros-workon cros-board libchrome multilib toolchain-funcs
+CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_DESTDIR="${S}/platform2"
+
+PLATFORM_SUBDIR="login_manager"
+
+inherit cros-workon libchrome platform
 
 DESCRIPTION="Login manager for Chromium OS."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="asan clang test"
-REQUIRED_USE="asan? ( clang )"
+IUSE="test"
 
-RDEPEND="chromeos-base/chromeos-cryptohome
+RDEPEND="chromeos-base/bootstat
+	chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	chromeos-base/metrics
@@ -27,45 +32,37 @@ RDEPEND="chromeos-base/chromeos-cryptohome
 	sys-apps/util-linux"
 
 DEPEND="${RDEPEND}
-	chromeos-base/bootstat
 	>=chromeos-base/libchrome_crypto-${LIBCHROME_VERS}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
-	dev-cpp/gmock
 	sys-libs/glibc
+	test? ( dev-cpp/gmock )
 	test? ( dev-cpp/gtest )"
 
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/login_manager"
-}
-
-src_configure() {
-	clang-setup-env
-	cros-workon_src_configure
-}
-
 src_compile() {
-	cros-workon_src_compile
+	platform_src_compile
 
-	# Build locale-archive for Chrome.
+	# Build locale-archive for Chrome. This is a temporary workaround for
+	# crbug.com/116999.
+	# TODO(yusukes): Fix Chrome and remove the file.
 	mkdir -p "${T}/usr/lib64/locale"
 	localedef --prefix="${T}" -c -f UTF-8 -i en_US en_US.UTF-8 || die
 }
 
-src_test() {
-	append-cppflags -DUNIT_TEST
-	cros-workon_src_test
+platform_pkg_test() {
+	local tests=( session_manager_test )
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${OUT}/${test_bin}"
+	done
 }
 
 src_install() {
-	cros-workon_src_install
 	into /
-	dosbin keygen
-	dosbin session_manager
-	# TODO(derat): Remove this stub after 20140801.
-	dosbin session_manager_setup.sh
+	dosbin "${OUT}/keygen"
+	dosbin "${OUT}/session_manager"
 
 	insinto /usr/share/dbus-1/interfaces
 	doins org.chromium.SessionManagerInterface.xml
@@ -77,6 +74,7 @@ src_install() {
 	insinto /etc/init
 	doins init/*.conf
 
+	# TODO(yusukes): Fix Chrome and remove the file. See my comment above.
 	insinto /usr/$(get_libdir)/locale
 	doins "${T}/usr/lib64/locale/locale-archive"
 
