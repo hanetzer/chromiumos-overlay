@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile install test unpack
+DEPEND=>=sys-devel/gcc-3.4.4 arm? ( >=sys-devel/binutils-2.16.90 >=sys-devel/gcc-4.1.0 ) x86? ( >=sys-devel/gcc-4.3 ) amd64? ( >=sys-devel/binutils-2.19 >=sys-devel/gcc-4.3 ) ppc? ( >=sys-devel/gcc-4.1.0 ) ppc64? ( >=sys-devel/gcc-4.1.0 ) >=sys-devel/binutils-2.15.94 >=app-misc/pax-utils-0.1.10 virtual/os-headers !<sys-apps/sandbox-1.2.18.1-r2 !<sys-apps/portage-2.1.2 >=sys-devel/patch-2.6.1 selinux? ( sys-libs/libselinux ) !vanilla? ( >=sys-libs/timezone-data-2007c ) sys-devel/gnuconfig
+DESCRIPTION=GNU libc6 (also called glibc2) C library
+HOMEPAGE=http://www.gnu.org/software/libc/libc.html
+IUSE=debug gd hardened multilib nscd selinux profile suid vanilla crosscompile_opts_headers-only
+KEYWORDS=*
+LICENSE=LGPL-2
+RDEPEND=!sys-kernel/ps3-sources selinux? ( sys-libs/libselinux ) !sys-libs/nss-db vanilla? ( !sys-libs/timezone-data ) !vanilla? ( sys-libs/timezone-data )
+RESTRICT=strip
+SLOT=2.2
+SRC_URI=mirror://gnu/glibc/glibc-2.15.tar.xz ftp://sources.redhat.com/pub/glibc/releases/glibc-2.15.tar.xz ftp://sources.redhat.com/pub/glibc/snapshots/glibc-2.15.tar.xz mirror://gentoo/glibc-2.15.tar.xz mirror://gnu/glibc/glibc-ports-2.15.tar.xz ftp://sources.redhat.com/pub/glibc/releases/glibc-ports-2.15.tar.xz ftp://sources.redhat.com/pub/glibc/snapshots/glibc-ports-2.15.tar.xz mirror://gentoo/glibc-ports-2.15.tar.xz mirror://gentoo/glibc-2.15-patches-22.tar.bz2 http://dev.gentoo.org/~vapier/dist/glibc-2.15-patches-22.tar.bz2 http://dev.gentoo.org/~azarah/glibc/glibc-2.15-patches-22.tar.bz2
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	multilib	fac675dcccf94392371a6abee62d909f	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	unpacker	04385b0f181c42fa9c18ec0e31729d1f	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=335821bdc1adfc13cfe7b7d36b2e852a
