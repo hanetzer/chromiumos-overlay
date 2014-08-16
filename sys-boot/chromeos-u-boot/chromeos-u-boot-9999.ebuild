@@ -97,7 +97,8 @@ netboot_required() {
 	local board=$(get_current_board_with_variant)
 
 	use factory-mode || [[ "${board}" == "link" ]] || \
-		[[ "${board}" == "daisy_spring" ]]
+		[[ "${board}" == "daisy_spring" ]] ||
+		[[ "${board}" == "link_freon" ]]
 }
 
 # @FUNCTION: get_config_var
