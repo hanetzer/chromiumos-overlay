@@ -51,7 +51,6 @@ IUSE_TESTS="
 	+tests_network_3GStressEnable
 	+tests_network_BasicProfileProperties
 	+tests_network_CDMAActivate
-	+tests_network_ConnmanCromoCrash
 	+tests_network_GobiUncleanDisconnect
 	+tests_network_LTEActivate
 	+tests_network_ModemManagerSMS
