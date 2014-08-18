@@ -39,6 +39,18 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Version name of stabled EC firmware
 : ${CROS_FIRMWARE_STABLE_EC_VERSION:=}
 
+# @ECLASS-VARIABLE: CROS_FIRMWARE_PD_IMAGE
+# @DESCRIPTION: (Optional) Location of PD firmware image
+: ${CROS_FIRMWARE_PD_IMAGE:=}
+
+# @ECLASS-VARIABLE: CROS_FIRMWARE_PD_VERSION
+# @DESCRIPTION: (Optional) Version name of PD firmware
+: ${CROS_FIRMWARE_PD_VERSION:=}
+
+# @ECLASS-VARIABLE: CROS_FIRMWARE_STABLE_PD_VERSION
+# @DESCRIPTION: (Optional) Version name of stabled PD firmware
+: ${CROS_FIRMWARE_STABLE_PD_VERSION:=}
+
 # @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
 # @DESCRIPTION: (Optional) Platform name of firmware
 : ${CROS_FIRMWARE_PLATFORM:=}
@@ -111,6 +123,7 @@ UPDATE_SCRIPT="chromeos-firmwareupdate"
 FW_IMAGE_LOCATION=""
 FW_RW_IMAGE_LOCATION=""
 EC_IMAGE_LOCATION=""
+PD_IMAGE_LOCATION=""
 EXTRA_LOCATIONS=()
 
 # New SRC_URI based approach.
@@ -173,7 +186,7 @@ cros-firmware_src_unpack() {
 	cros-workon_src_unpack
 	local i
 
-	for i in {FW,FW_RW,EC}_IMAGE_LOCATION; do
+	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
 		_unpack_archive ${i}
 	done
 
@@ -207,8 +220,10 @@ cros-firmware_src_compile() {
 	# Prepare images
 	image_cmd+="$(_add_param -b "${FW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -e "${EC_IMAGE_LOCATION}")"
+	image_cmd+="$(_add_param -p "${PD_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param -w "${FW_RW_IMAGE_LOCATION}")"
 	image_cmd+="$(_add_param --ec_version "${CROS_FIRMWARE_EC_VERSION}")"
+	image_cmd+="$(_add_param --pd_version "${CROS_FIRMWARE_PD_VERSION}")"
 	image_cmd+="$(_add_bool_param --create_bios_rw_image \
 		      "${CROS_FIRMWARE_BUILD_MAIN_RW_IMAGE}")"
 
@@ -223,6 +238,8 @@ cros-firmware_src_compile() {
 			"${CROS_FIRMWARE_STABLE_MAIN_VERSION}")"
 	ext_cmd+="$(_add_param --stable_ec_version \
 			"${CROS_FIRMWARE_STABLE_EC_VERSION}")"
+	ext_cmd+="$(_add_param --stable_pd_version \
+			"${CROS_FIRMWARE_STABLE_PD_VERSION}")"
 
 	# Pack firmware update script!
 	if [ -z "$image_cmd" ]; then
@@ -316,9 +333,10 @@ cros-firmware_setup_source() {
 	FW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_IMAGE}"
 	FW_RW_IMAGE_LOCATION="${CROS_FIRMWARE_MAIN_RW_IMAGE}"
 	EC_IMAGE_LOCATION="${CROS_FIRMWARE_EC_IMAGE}"
+	PD_IMAGE_LOCATION="${CROS_FIRMWARE_PD_IMAGE}"
 	_expand_list EXTRA_LOCATIONS ";" "${CROS_FIRMWARE_EXTRA_LIST}"
 
-	for i in {FW,FW_RW,EC}_IMAGE_LOCATION; do
+	for i in {FW,FW_RW,EC,PD}_IMAGE_LOCATION; do
 		_add_source ${i}
 	done
 
