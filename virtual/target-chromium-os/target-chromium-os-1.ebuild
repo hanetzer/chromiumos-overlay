@@ -204,8 +204,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/userfeedback
 	chromeos-base/vboot_reference
 	chromeos-base/vpd
-	net-wireless/ath3k
-	net-wireless/ath6k
 	net-wireless/crda
 	net-wireless/marvell_sd8787
 	net-wireless/realtek-rt2800-firmware
