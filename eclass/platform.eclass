@@ -62,6 +62,10 @@ platform_get_target_args() {
 	fi
 }
 
+platform_is_native() {
+	use amd64 || use x86
+}
+
 platform_src_unpack() {
 	cros-workon_src_unpack
 	PLATFORM_TOOLDIR="${S}/platform2/common-mk"
@@ -75,12 +79,18 @@ platform_test() {
 	local action="$1"
 	local bin="$2"
 	local run_as_root="$3"
-	local gtest_filter="$4"
+	local native_gtest_filter="$4"
+	local qemu_gtest_filter="$5"
 
 	local run_as_root_flag=""
 	if [[ "${run_as_root}" == "1" ]]; then
 		run_as_root_flag="--run_as_root"
 	fi
+
+	local gtest_filter
+	platform_is_native \
+		&& gtest_filter=${native_gtest_filter} \
+		|| gtest_filter=${qemu_gtest_filter:-${native_gtest_filter}}
 
 	case " ${P2_TEST_FILTER:-${pkg}::} " in
 	*" ${pkg}::"*) ;;
@@ -123,7 +133,7 @@ platform_src_test() {
 	local pkg="${PN}"
 
 	platform_test "pre_test"
-	[[ "${PLATFORM_NATIVE_TEST}" == "yes" ]] && ! use x86 && ! use amd64 &&
+	[[ "${PLATFORM_NATIVE_TEST}" == "yes" ]] && ! platform_is_native &&
 		ewarn "Skipping unittests for non-x86: ${pkg}" && return 0
 
 	platform_pkg_test
