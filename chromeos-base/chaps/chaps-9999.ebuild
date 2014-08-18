@@ -95,7 +95,7 @@ platform_pkg_test() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}" "" "${gtest_filter_qemu}"
+		platform_test "run" "${OUT}/${test_bin}" "" "" "${gtest_filter_qemu}"
 	done
 }
 
