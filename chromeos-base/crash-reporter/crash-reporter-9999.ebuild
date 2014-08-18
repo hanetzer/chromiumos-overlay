@@ -78,8 +78,14 @@ platform_pkg_test() {
 		user_collector_test
 	)
 
+	# TODO: QEMU mishandles readlink(/proc/self/exe) symlink, so filter out
+	# tests that rely on that.  Once we update to a newer version though, we
+	# can drop this filter.
+	# https://lists.nongnu.org/archive/html/qemu-devel/2014-08/msg01210.html
+	local qemu_gtest_filter="-UserCollectorTest.GetExecutableBaseNameFromPid"
+
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}" "" "" "${qemu_gtest_filter}"
 	done
 }
