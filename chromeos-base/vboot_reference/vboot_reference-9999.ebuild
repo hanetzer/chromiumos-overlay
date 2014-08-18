@@ -57,6 +57,7 @@ src_compile() {
 }
 
 src_test() {
+	! use amd64 && ! use x86 && ewarn "Skipping unittests for non-x86" && return 0
 	emake BUILD="${S}"/build-main \
 	      ARCH=$(tc-arch) \
 	      VBOOT2=$(usev vboot2) \
