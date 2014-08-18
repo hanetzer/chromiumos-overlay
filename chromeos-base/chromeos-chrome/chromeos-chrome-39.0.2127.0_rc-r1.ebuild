@@ -120,9 +120,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-39.0.2126.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-39.0.2126.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-39.0.2126.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-39.0.2127.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-39.0.2127.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-39.0.2127.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -283,6 +283,28 @@ set_build_defines() {
 		;;
 	amd64)
 		BUILD_DEFINES+=( target_arch=x64 )
+		;;
+	mips)
+		local mips_arch target_arch
+
+		mips_arch="$($(tc-getCPP) ${CFLAGS} ${CPPFLAGS} -E -P - <<<_MIPS_ARCH)"
+		# Strip away any enclosing quotes.
+		mips_arch="${mips_arch//\"}"
+		# TODO(benchan): Use tc-endian from toolchain-func to determine endianess
+		# when Chrome later cares about big-endian.
+		case "${mips_arch}" in
+		mips64*)
+			target_arch=mips64el
+			;;
+		*)
+			target_arch=mipsel
+			;;
+		esac
+
+		BUILD_DEFINES+=(
+			target_arch="${target_arch}"
+			mips_arch_variant="${mips_arch}"
+		)
 		;;
 	*)
 		die "Unsupported architecture: ${ARCH}"
