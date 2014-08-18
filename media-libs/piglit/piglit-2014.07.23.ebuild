@@ -43,6 +43,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}/0001-piglit-Fix-tegra-build-break.patch"
+	epatch "${FILESDIR}/0001-egl-util-remove-GL-header.patch"
 	epatch "${FILESDIR}/0001-Replace-hard-coded-lib-with-LIBDIR.patch"
 	sed -i "s/@LIBDIR@/$(get_libdir)/" piglit || die "Sed failed!"
 }
