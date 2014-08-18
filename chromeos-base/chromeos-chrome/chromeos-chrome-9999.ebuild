@@ -763,37 +763,24 @@ src_compile() {
 
 	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
-	local chrome_targets=()
-
-	if [[ -n "${CHROME_TARGET_OVERRIDE}" ]]; then
-		chrome_targets=( ${CHROME_TARGET_OVERRIDE} )
-		einfo "Building custom targets: ${chrome_targets[*]}"
-	elif use app_shell; then
-		chrome_targets=( app_shell chrome_sandbox libosmesa.so )
-		einfo "Building app_shell"
-	else
-		chrome_targets=( chrome chrome_sandbox )
-		if use build_tests; then
-			TARGETS=(
-				"${TEST_FILES[@]}"
-				"${TOOLS_TELEMETRY_BIN[@]}"
-				chromedriver )
-			chrome_targets+=( "${TARGETS[@]}" )
-			einfo "Building test targets: ${TARGETS[@]}"
-		fi
-
-		if use_nacl; then
-			chrome_targets+=( nacl_helper_bootstrap nacl_helper )
-		fi
-
-		if use drm; then
-			chrome_targets+=( aura_demo ash_shell )
-		else
-			chrome_targets+=( libosmesa.so )
-		fi
+	local chrome_targets=(
+		chrome_sandbox
+		$(usex app_shell "app_shell" "chrome")
+		$(usex nacl "nacl_helper_bootstrap nacl_helper" "")
+		$(usex drm "" "libosmesa.so")
+		$(usex mojo "mojo_shell" "")
+	)
+	if use build_tests; then
+		chrome_targets+=(
+			"${TEST_FILES[@]}"
+			"${TOOLS_TELEMETRY_BIN[@]}"
+			chromedriver
+		)
 	fi
-	if use mojo; then
-		chrome_targets+=( mojo_shell )
+	if ! use app_shell; then
+		chrome_targets+=(
+			$(usex drm "aura_demo ash_shell" "")
+		)
 	fi
 
 	chrome_make "${chrome_targets[@]}"
@@ -1102,7 +1089,7 @@ src_install() {
 	einfo "${cmd[*]}"
 	"${cmd[@]}" || die
 
-	if use build_tests && ! use app_shell; then
+	if use build_tests; then
 		# Install Chrome Driver to test image.
 		local chromedriver_dir='/usr/local/chromedriver'
 		dodir "${chromedriver_dir}"
