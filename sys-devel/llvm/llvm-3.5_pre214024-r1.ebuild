@@ -255,6 +255,8 @@ multilib_src_configure() {
 
 	# llvm prefers clang over gcc, so we may need to force that
 	tc-export CC CXX
+	# work around for crbug://404784
+	append-flags -fno-devirtualize
 
 	ECONF_SOURCE=${S} \
 	econf "${conf_flags[@]}"
