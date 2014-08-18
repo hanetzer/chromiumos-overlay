@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon eutils toolchain-funcs
 
 DESCRIPTION="Chrome OS helper binary for restricting privs of services."
 HOMEPAGE="http://www.chromium.org/"
@@ -15,7 +15,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE="+seccomp test"
 
 RDEPEND="sys-libs/libcap"
 DEPEND="test? ( dev-cpp/gtest )
@@ -33,7 +33,7 @@ src_compile() {
 	export CCFLAGS="$CFLAGS"
 
 	# Only build the tools
-	emake LIBDIR=$(get_libdir)
+	emake LIBDIR=$(get_libdir) USE_seccomp=$(usex seccomp)
 }
 
 src_test() {
