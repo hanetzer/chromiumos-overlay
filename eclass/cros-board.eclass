@@ -161,6 +161,7 @@ ALL_BOARDS=(
 	tricky
 	urara
 	veyron
+	veyron_pinky
 	#waluigi
 	winky
 	wolf
