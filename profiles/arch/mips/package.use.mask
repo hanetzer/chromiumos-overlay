@@ -1,0 +1,3 @@
+# binutils doesn't include gold for MIPS yet.
+# TODO(benchan): Re-enable gold when it's available for MIPS.
+chromeos-base/chromeos-chrome gold
