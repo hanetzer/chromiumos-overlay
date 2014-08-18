@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-fs/avfs/avfs-1.0.1.ebuild,v 1.1 2012/06/13 07:58:44 radhermit Exp $
 
 EAPI=4
-inherit eutils
+inherit autotools eutils
 
 DESCRIPTION="AVFS is a virtual filesystem that allows browsing of compressed files."
 HOMEPAGE="http://sourceforge.net/projects/avf"
@@ -29,6 +29,12 @@ src_prepare() {
 	# Work around a zip file with extra bytes at the beginning of the file
 	# (crbug.com/336690).
 	epatch "${FILESDIR}"/${P}-zip-handle-extra-bytes.patch
+
+	# Add support to disable dynamic module loading since it is not used. All
+	# the modules are compiled in statically.
+	epatch "${FILESDIR}"/${P}-disable-dynamic-modules.patch
+
+	eautoreconf
 }
 
 src_configure() {
@@ -36,6 +42,7 @@ src_configure() {
 		--enable-fuse \
 		--enable-library \
 		--enable-shared \
+		--disable-dynamic-modules \
 		--with-system-zlib \
 		--with-system-bzlib \
 		$(use_enable static-libs static) \
