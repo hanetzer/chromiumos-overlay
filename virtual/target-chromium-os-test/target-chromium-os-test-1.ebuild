@@ -46,6 +46,7 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-test-root
 	chromeos-base/verity
+	chromeos-base/vpd
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
 	net-misc/rsync

@@ -38,7 +38,11 @@ FACTORY_X_RDEPEND="
 "
 
 # Packages shared by several pytests inside factory.
+# TODO(itspeter): Might remove the chromeos-cryptohome once a conclusion
+#                 comes in http://crosbug.com/p/31800.
 FACTORY_TEST_RDEPEND="
+	app-arch/xz-utils
+	chromeos-base/chromeos-cryptohome
 	dev-python/numpy
 	dev-python/pyserial
 	dev-python/python-evdev
