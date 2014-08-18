@@ -26,6 +26,7 @@ EC_BOARD_NAMES=(
 	big
 	blaze
 	firefly
+	kitty
 	nyan
 	pit
 	ryu
