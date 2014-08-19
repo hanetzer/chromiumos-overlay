@@ -107,6 +107,7 @@ CROS_COMMON_RDEPEND+="
 	pam? ( sys-auth/pam_pwdfile )
 	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
+	sys-kernel/linux-firmware
 	virtual/chromeos-bsp
 	virtual/chromeos-firewall
 	virtual/chromeos-firmware
