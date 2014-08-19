@@ -13,6 +13,11 @@ HOMEPAGE="https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.g
 SLOT="0"
 KEYWORDS="~*"
 
+IUSE_ATH3K=(
+	ath3k-all
+	ath3k-ar3011
+	ath3k-ar3012
+)
 IUSE_IWLWIFI=(
 	iwlwifi-all
 	iwlwifi-100
@@ -43,12 +48,17 @@ IUSE_LINUX_FIRMWARE=(
 	ath9k_htc
 	fw_sst
 	ibt-hw
+	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
 	"${IUSE_BRCMWIFI[@]}"
 	marvell-pcie8897
 )
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon"
-LICENSE="linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
+LICENSE="
+	linux_firmware_ath3k-all? ( LICENCE.atheros_firmware )
+	linux_firmware_ath3k-ar3011? ( LICENCE.atheros_firmware )
+	linux_firmware_ath3k-ar3012? ( LICENCE.atheros_firmware )
+	linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
@@ -58,6 +68,10 @@ LICENSE="linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
 "
 
 DEPEND="linux_firmware_marvell-pcie8897? ( !net-wireless/marvell_sd8787[pcie] )
+	linux_firmware_ath3k-all? ( !net-wireless/ath3k )
+	linux_firmware_ath3k-ar3011? ( !net-wireless/ath3k )
+	linux_firmware_ath3k-ar3012? ( !net-wireless/ath3k )
+	!net-wireless/ath6k
 	!net-wireless/iwl1000-ucode
 	!net-wireless/iwl2000-ucode
 	!net-wireless/iwl2030-ucode
@@ -98,6 +112,17 @@ src_install() {
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use video_cards_radeon && doins_subdir radeon/*
+
+	# The firmware here is a mess; install specific files by hand.
+	if use linux_firmware_ath3k-all || use linux_firmware_ath3k-ar3011; then
+		doins ath3k-1.fw
+	fi
+	if use linux_firmware_ath3k-all || use linux_firmware_ath3k-ar3012; then
+		(
+		insinto "${FIRMWARE_INSTALL_ROOT}/ar3k"
+		doins ar3k/*.dfu
+		)
+	fi
 
 	# The Intel wireless firmware is mostly standard.
 	for x in "${IUSE_IWLWIFI[@]}"; do
