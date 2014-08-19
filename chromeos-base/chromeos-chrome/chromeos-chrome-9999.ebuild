@@ -56,6 +56,7 @@ IUSE="
 	+runhooks
 	verbose
 	vtable_verify
+	xkbcommon
 	X
 	"
 
@@ -148,7 +149,6 @@ RDEPEND="${RDEPEND}
 	dev-libs/libxml2
 	dev-libs/dbus-glib
 	x11-libs/cairo
-	drm? ( x11-libs/libxkbcommon )
 	x11-libs/pango
 	>=media-libs/alsa-lib-1.0.19
 	media-libs/fontconfig
@@ -175,6 +175,9 @@ RDEPEND="${RDEPEND}
 		x11-libs/libXrender
 		!arm? ( x11-libs/libva )
 		chrome_remoting? ( x11-libs/libXtst )
+	)
+	xkbcommon? (
+		x11-libs/libxkbcommon
 	)
 	evdev_gestures? (
 		chromeos-base/gestures
@@ -241,6 +244,7 @@ set_build_defines() {
 		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
 		"use_evdev_gestures=$(use10 evdev_gestures)"
+		"use_xkbcommon=$(use10 xkbcommon)"
 		"internal_gles2_conform_tests=$(use10 internal_gles_conform)"
 		# Use the ChromeOS toolchain and not the one bundled with Chromium.
 		"linux_use_bundled_binutils=0"
