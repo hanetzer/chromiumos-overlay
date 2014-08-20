@@ -513,12 +513,7 @@ cros-workon_src_prepare() {
 }
 
 cros-workon_src_configure() {
-	if ! use cros_host && [[ ${CROS_WORKON_CLANG} == "1" ]]; then
-		# For target board packages, build with -clang-syntax.  This is a flag our
-		# compiler wrapper uses, not the real gcc.
-		append-flags -clang-syntax
-	fi
-
+	cros-workon_check_clang_syntax
 	if [[ $(type -t cros-debug-add-NDEBUG) == "function" ]] ; then
 		# Only run this if we've inherited cros-debug.eclass.
 		cros-debug-add-NDEBUG
@@ -536,6 +531,14 @@ cros-workon_src_configure() {
 		econf "$@"
 	else
 		default
+	fi
+}
+
+cros-workon_check_clang_syntax() {
+	if ! use cros_host && [[ ${CROS_WORKON_CLANG} == "1" ]]; then
+		# For target board packages, build with -clang-syntax.  This is a flag our
+		# compiler wrapper uses, not the real gcc.
+		append-flags -clang-syntax
 	fi
 }
 
