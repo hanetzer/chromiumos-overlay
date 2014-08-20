@@ -22,7 +22,9 @@ RDEPEND="
 # Dependencies required for running factory_flow tool.
 RDEPEND+="
 	chromeos-base/autotest-server
+	chromeos-base/chromeos-ec[utils]
 	chromeos-base/chromite
+	dev-embedded/openocd[ftdi]
 	dev-libs/libusb[static-libs]
 	net-ftp/tftp-hpa
 	net-misc/dhcp
