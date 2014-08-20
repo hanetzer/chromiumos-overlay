@@ -115,6 +115,7 @@ ALL_BOARDS=(
 	panda
 	panther
 	panther_embedded
+	panther_goofy
 	parrot
 	parrot_ivb
 	parrot32
