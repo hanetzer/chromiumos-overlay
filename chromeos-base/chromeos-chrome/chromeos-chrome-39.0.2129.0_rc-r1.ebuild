@@ -766,7 +766,6 @@ src_compile() {
 	local chrome_targets=(
 		chrome_sandbox
 		$(usex app_shell "app_shell" "chrome")
-		$(usex nacl "nacl_helper_bootstrap nacl_helper" "")
 		$(usex drm "" "libosmesa.so")
 		$(usex mojo "mojo_shell" "")
 	)
@@ -782,6 +781,7 @@ src_compile() {
 			$(usex drm "aura_demo ash_shell" "")
 		)
 	fi
+	use_nacl && chrome_targets+=( nacl_helper_bootstrap nacl_helper )
 
 	chrome_make "${chrome_targets[@]}"
 
