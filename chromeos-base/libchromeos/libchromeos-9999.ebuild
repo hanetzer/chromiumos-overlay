@@ -53,7 +53,9 @@ src_install() {
 	for v in "${LIBCHROME_VERS[@]}"; do
 		./platform2_preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}"/lib/lib{chromeos,policy}*-"${v}".so
+		dolib.a "${OUT}"/libchromeos-test-"${v}".a
 		doins "${OUT}"/lib/libchromeos-"${v}".pc
+		doins "${OUT}"/lib/libchromeos-test-"${v}".pc
 	done
 
 	local dir dirs=( . dbus glib minijail ui )
