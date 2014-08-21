@@ -76,8 +76,11 @@ src_prepare() {
 	# array. (chromium:240540)
 	epatch "${FILESDIR}"/${P}-send-allow-escaped-commas-in-argument-strings.patch
 
-	# required for asneeded patch but also for bug 263909, cross-compile so
-	# don't remove eautoreconf
+	# Dynamically link the binaries to save some space.
+	epatch "${FILESDIR}"/${P}-dynamically-link-libdbus.patch
+
+	# required for asneeded and dynamically-link-libdbus patches but also for
+	# bug 263909, cross-compile so don't remove eautoreconf
 	eautoreconf
 }
 
