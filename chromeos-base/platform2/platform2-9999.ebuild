@@ -9,7 +9,6 @@ CROS_WORKON_USE_VCSID=1
 PLATFORM2_PROJECTS=(
 	"attestation"
 	"chromiumos-wide-profiling"
-	"cromo"
 	"cros-disks"
 	"debugd"
 	"lorgnette"
@@ -32,21 +31,11 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation +cellular -clang +cros_disks cros_embedded +debugd cros_host gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation +cellular -clang +cros_disks cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
 	debugd? ( shill )
-"
-
-RDEPEND_cromo="
-	cellular? (
-		gobi? (
-			!<chromeos-base/chromeos-init-0.0.9
-			dev-libs/dbus-c++
-			virtual/modemmanager
-		)
-	)
 "
 
 RDEPEND_cros_disks="
@@ -129,7 +118,6 @@ RDEPEND="
 		>=dev-libs/glib-2.30
 		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
-		!chromeos-base/cromo[-platform2]
 		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
 		chromeos-base/libchromeos
@@ -209,35 +197,6 @@ platform2_install_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
 	dobin "${OUT}"/quipper
-}
-
-platform2_install_cromo() {
-	use cros_host && return 0
-	use cellular || return 0
-	use gobi || return 0
-
-	dosbin "${OUT}"/cromo
-	dolib.so "${OUT}"/libcromo.a
-
-	dobin mm-cromo-command
-
-	insinto /etc/dbus-1/system.d
-	doins org.chromium.ModemManager.conf
-
-	insinto /usr/include/cromo
-	doins modem_handler.h cromo_server.h plugin.h \
-		hooktable.h carrier.h utilities.h modem.h \
-		sms_message.h sms_cache.h
-
-	insinto /usr/include/cromo/dbus_adaptors
-	doins "${OUT}"/gen/include/dbus_adaptors/mm-{mobile,serial}-error.h
-	doins "${OUT}"/gen/include/dbus_adaptors/org.freedesktop.ModemManager.*.h
-	doins "${OUT}"/gen/include/cromo/dbus_adaptors/org.freedesktop.DBus.Properties.h
-
-	dodir /usr/$(get_libdir)/cromo/plugins
-
-	insinto /etc/init
-	doins init/cromo.conf
 }
 
 platform2_install_cros-disks() {
@@ -404,23 +363,6 @@ platform2_test_chromiumos-wide-profiling() {
 	done
 }
 
-platform2_test_cromo() {
-	use cros_host && return 0
-	use cellular || return 0
-	use gobi || return 0
-
-	local tests=(
-		sms_message_unittest
-		sms_cache_unittest
-		utilities_unittest
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
-	done
-}
-
 platform2_test_cros-disks() {
 	use cros_disks || return 0
 	use cros_host && return 0
@@ -535,13 +477,6 @@ pkg_preinst() {
 	# Users and groups, which are needed during build time, should be
 	# created in pkg_setup instead.
 	local ug
-
-	if use cellular && use gobi; then
-		for ug in cromo qdlservice; do
-			enewuser "${ug}"
-			enewgroup "${ug}"
-		done
-	fi
 
 	if use cros_disks; then
 		for ug in cros-disks ntfs-3g avfs fuse-exfat; do
