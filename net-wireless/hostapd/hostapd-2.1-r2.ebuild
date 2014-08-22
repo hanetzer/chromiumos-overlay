@@ -107,6 +107,7 @@ src_configure() {
 	echo "CONFIG_IEEE80211R=y" >> ${CONFIG}
 	echo "CONFIG_IEEE80211W=y" >> ${CONFIG}
 	echo "CONFIG_IEEE80211N=y" >> ${CONFIG}
+	echo "CONFIG_IEEE80211AC=y" >> ${CONFIG}
 	echo "CONFIG_PEERKEY=y" >> ${CONFIG}
 	echo "CONFIG_RSN_PREAUTH=y" >> ${CONFIG}
 	echo "CONFIG_INTERWORKING=y" >> ${CONFIG}
