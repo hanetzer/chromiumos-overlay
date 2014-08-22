@@ -10,7 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
-IUSE="cras pam opengl +power_management +profile tpm usb X"
+IUSE="cras pam opengl +power_management +profile +shill tpm usb X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -95,7 +95,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/gmerge
 	chromeos-base/platform2
 	chromeos-base/protofiles
-	chromeos-base/shill-test-scripts
+	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/wireless_automation
 	net-analyzer/tcpdump
 	net-dialup/minicom

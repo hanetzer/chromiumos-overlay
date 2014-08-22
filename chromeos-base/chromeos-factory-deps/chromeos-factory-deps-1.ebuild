@@ -9,13 +9,13 @@ HOMEPAGE="http://dev.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="X"
+IUSE="+shill X"
 
 ################################################################################
 
 # Packages for factory framework ("Goofy"):
 FACTORY_FRAMEWORK_RDEPEND="
-	chromeos-base/shill-test-scripts
+	shill? ( chromeos-base/shill-test-scripts )
 	dev-lang/python
 	dev-python/dbus-python
 	dev-python/jsonrpclib

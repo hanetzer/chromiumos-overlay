@@ -10,10 +10,8 @@ SLOT="0"
 
 KEYWORDS="*"
 
-# depend on platform2 because openssh-server waits for shill to be started to
-# start.
 RDEPEND="
-	chromeos-base/platform2
+	virtual/chromeos-firewall
 	"
 
 S=${WORKDIR}

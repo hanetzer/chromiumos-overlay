@@ -18,7 +18,6 @@ IUSE="+xset +tpmtools"
 IUSE="${IUSE} +autotest"
 
 RDEPEND="${RDEPEND}
-	chromeos-base/shill-test-scripts
 	chromeos-base/chromeos-chrome
 	chromeos-base/protofiles
 	chromeos-base/telemetry

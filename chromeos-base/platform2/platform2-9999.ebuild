@@ -12,7 +12,6 @@ PLATFORM2_PROJECTS=(
 	"cros-disks"
 	"debugd"
 	"lorgnette"
-	"shill"
 	"vpn-manager"
 )
 CROS_WORKON_LOCALNAME="platform2"  # With all platform2 subdirs
@@ -31,11 +30,9 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation +cellular -clang +cros_disks cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation +cellular -clang +cros_disks cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
-	cellular? ( shill )
-	debugd? ( shill )
 "
 
 RDEPEND_cros_disks="
@@ -78,28 +75,6 @@ RDEPEND_quipper="
 	)
 "
 
-RDEPEND_shill="
-	shill? (
-		chromeos-base/bootstat
-		tpm? ( chromeos-base/chaps )
-		chromeos-base/chromeos-minijail
-		wimax? ( chromeos-base/wimax_manager )
-		dev-libs/dbus-c++
-		dev-libs/libnl:3
-		cellular? ( net-dialup/ppp )
-		vpn? ( net-dialup/ppp )
-		net-dns/c-ares
-		net-firewall/iptables
-		net-libs/libnetfilter_queue
-		net-libs/libnfnetlink
-		net-misc/dhcpcd
-		sys-apps/rootdev
-		vpn? ( net-misc/openvpn )
-		net-wireless/wpa_supplicant[dbus]
-		cellular? ( virtual/modemmanager )
-	)
-"
-
 RDEPEND_vpn_manager="
 	vpn? (
 		>=dev-cpp/gflags-2.0
@@ -122,7 +97,6 @@ RDEPEND="
 		!chromeos-base/chromeos-debugd[-platform2]
 		chromeos-base/libchromeos
 		chromeos-base/metrics
-		!chromeos-base/shill[-platform2]
 		chromeos-base/system_api
 		!chromeos-base/vpn-manager[-platform2]
 		!dev-util/quipper
@@ -257,69 +231,6 @@ platform2_install_lorgnette() {
 	doins dbus_service/org.chromium.lorgnette.service
 }
 
-platform2_install_shill() {
-	use shill || return 0
-	use cros_host && return 0
-
-	dobin bin/ff_debug
-
-	if use cellular; then
-		dobin bin/set_apn
-		dobin bin/set_cellular_ppp
-	fi
-
-	dosbin bin/reload_network_device
-	dobin bin/set_arpgw
-	dobin bin/set_wake_on_lan
-	dobin bin/shill_login_user
-	dobin bin/shill_logout_user
-	dobin bin/wpa_debug
-	dobin "${OUT}"/shill
-
-	# Netfilter queue helper is run directly from init, so install in sbin.
-	dosbin "${OUT}"/netfilter-queue-helper
-	dosbin init/netfilter-common
-
-	# Install Netfilter queue helper syscall filter policy file.
-	insinto /usr/share/policy
-	use seccomp && newins shims/nfqueue-seccomp-${ARCH}.policy nfqueue-seccomp.policy
-
-	local shims_dir=/usr/$(get_libdir)/shill/shims
-	exeinto "${shims_dir}"
-	doexe "${OUT}"/net-diags-upload
-	doexe "${OUT}"/crypto-util
-
-	if use vpn; then
-		doexe "${OUT}"/openvpn-script
-		newexe "${OUT}"/lib/libshill-pppd-plugin.so shill-pppd-plugin.so
-	fi
-
-	use cellular && doexe "${OUT}"/set-apn-helper
-
-	sed \
-		"s,@libdir@,/usr/$(get_libdir)", \
-		shims/wpa_supplicant.conf.in \
-		> "${D}/${shims_dir}/wpa_supplicant.conf"
-
-	insinto /etc
-	doins shims/nsswitch.conf
-	dosym /var/run/shill/resolv.conf /etc/resolv.conf
-	insinto /etc/dbus-1/system.d
-	doins shims/org.chromium.flimflam.conf
-	insinto /usr/share/shill
-	use cellular && doins "${OUT}"/serviceproviders.pbf
-
-	# Install introspection XML
-	insinto /usr/share/dbus-1/interfaces
-	doins dbus_bindings/org.chromium.flimflam.*.xml
-
-	# Install init scripts
-	insinto /etc/init
-	doins init/*.conf
-
-	udev_dorules udev/*.rules
-}
-
 platform2_install_vpn-manager() {
 	use cros_host && return 0
 	use vpn || return 0
@@ -401,14 +312,6 @@ platform2_test_lorgnette() {
 	use lorgnette || return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
 	platform_test "run" "${OUT}/lorgnette_unittest"
-}
-
-platform2_test_shill() {
-	use cros_host && return 0
-	use shill || return 0
-	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: shill" && return 0
-
-	platform_test "run" "${OUT}/shill_unittest"
 }
 
 platform2_test_vpn-manager() {
@@ -499,12 +402,5 @@ pkg_preinst() {
 		done
 		enewgroup "daemon-store"
 		enewgroup "logs-access"
-	fi
-
-	if use shill; then
-		enewgroup "shill-crypto"
-		enewuser "shill-crypto"
-		enewgroup "nfqueue"
-		enewuser "nfqueue"
 	fi
 }

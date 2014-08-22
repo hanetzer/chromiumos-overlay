@@ -22,13 +22,13 @@ DEPEND="!!chromeos-base/flimflam-test
 	dev-python/pygobject"
 
 RDEPEND="${DEPEND}
-	chromeos-base/platform2
+	chromeos-base/shill
 	net-dns/dnsmasq
 	sys-apps/iproute2"
 
 src_unpack() {
-  cros-workon_src_unpack
-  S+="/shill"
+	cros-workon_src_unpack
+	S+="/shill"
 }
 
 src_compile() {

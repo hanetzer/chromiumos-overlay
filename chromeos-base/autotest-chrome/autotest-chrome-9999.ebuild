@@ -30,7 +30,7 @@ RDEPEND="
 	chromeos-base/autotest-deps-webgl-mpd
 	chromeos-base/autotest-deps-webgl-perf
 	chromeos-base/chromeos-chrome
-	chromeos-base/shill-test-scripts
+	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/telemetry
 	tests_graphics_Stress? ( x11-apps/xsendevt )
 	vaapi? ( x11-libs/libva )

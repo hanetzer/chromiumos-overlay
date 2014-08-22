@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="-app_shell cros_ec cros_embedded opengl opengles X"
+IUSE="-app_shell cros_ec cros_embedded opengl opengles +shill X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -92,7 +92,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/chromeos-factory-mini
-	chromeos-base/shill-test-scripts
+	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/platform2
