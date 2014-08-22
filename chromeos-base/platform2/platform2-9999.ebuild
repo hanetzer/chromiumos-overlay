@@ -565,6 +565,7 @@ src_configure() {
 	if use platform2; then
 		cros-debug-add-NDEBUG
 		clang-setup-env
+		cros-workon_check_clang_syntax
 		platform_configure
 	fi
 }
