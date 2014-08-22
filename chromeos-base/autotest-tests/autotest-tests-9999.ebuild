@@ -75,6 +75,7 @@ CLIENT_IUSE_TESTS="
 			+tests_desktopui_SpeechSynthesisSemiAuto
 		)
 	)
+	+tests_display_ClientChameleonConnection
 	+tests_dummy_Fail
 	+tests_dummy_Pass
 	+tests_example_CrosTest
