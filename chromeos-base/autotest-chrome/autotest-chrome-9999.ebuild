@@ -48,6 +48,7 @@ IUSE_TESTS=(
 	+tests_accessibility_Sanity
 	+tests_audio_AudioCorruption
 	+tests_audio_SeekAudioFeedback
+	+tests_bluetooth_AdapterSanity
 	+tests_bluetooth_RegressionClient
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_CameraApp
