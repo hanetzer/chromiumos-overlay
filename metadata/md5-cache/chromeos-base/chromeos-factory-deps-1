@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=List of packages that are needed for Chrome OS factory software.
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/
+IUSE=X
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/shill-test-scripts dev-lang/python dev-python/dbus-python dev-python/jsonrpclib dev-python/netifaces dev-python/pygobject dev-python/pyyaml dev-python/setproctitle dev-python/ws4py dev-python/numpy dev-python/pyserial dev-python/python-evdev dev-python/pyudev dev-util/stressapptest sys-apps/lshw chromeos-base/audiotest media-sound/sox media-gfx/zbar media-libs/opencv dev-python/pexpect dev-libs/protobuf-python chromeos-base/autotest-client X? ( dev-python/python-xlib x11-apps/xinput x11-apps/xrandr x11-misc/xdotool )
+SLOT=0
+_md5_=36742643ab9a9cbe00e2f2ab4520c312
