@@ -58,6 +58,7 @@ ALL_BOARDS=(
 	clapper
 	cranky
 	daisy
+	daisy_freon
 	#daisy-drm
 	daisy_embedded
 	daisy_snow
