@@ -105,7 +105,6 @@ IUSE_TESTS=(
 	+tests_video_GlitchDetection
 	+tests_video_MultiplePlayback
 	+tests_video_PlaybackPerf
-	+tests_video_PlaybackPower
 	+tests_video_VideoCorruption
 	+tests_video_VideoDecodeMemoryUsage
 	+tests_video_VideoReload
