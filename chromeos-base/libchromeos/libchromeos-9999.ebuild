@@ -31,6 +31,7 @@ COMMON_DEPEND="
 	dev-libs/dbus-glib
 	dev-libs/openssl
 	dev-libs/protobuf
+	sys-apps/rootdev
 "
 RDEPEND="
 	${COMMON_DEPEND}
