@@ -46,6 +46,11 @@ src_prepare() {
 	# (crbug.com/377085)
 	epatch "${FILESDIR}"/base-${SLOT}-md5-compile-warning.patch
 
+	# Temporarily patch dbus::MessageReader to add a GetSignature method
+	# (https://codereview.chromium.org/502793002/).
+	# TODO(benchan): Remove this patch after we roll a new libchrome.
+	epatch "${FILESDIR}"/base-${SLOT}-dbus-get-signature.patch
+
 	# Add stub headers for a few files that are usually checked out to locations
 	# outside of base/ in the Chrome repository.
 	mkdir -p third_party/libevent
