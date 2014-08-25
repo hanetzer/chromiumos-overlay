@@ -19,6 +19,7 @@ IUSE="
 	+autotest
 	+cellular
 	+shill
+	+tpm
 	vaapi
 "
 
@@ -132,10 +133,18 @@ IUSE_TESTS_CELLULAR="
 IUSE_TESTS_SHILL="
 	shill? ( +tests_network_ChromeWifiEndToEnd )
 "
+
+# This is here instead of in autotest-tests-tpm because it would be far more
+# work and duplication to add telemetry dependencies there.
+IUSE_TESTS_TPM="
+	tpm? ( +tests_platform_Pkcs11InitOnLogin )
+"
+
 IUSE_TESTS="
 	${IUSE_TESTS[*]}
 	${IUSE_TESTS_CELLULAR}
 	${IUSE_TESTS_SHILL}
+	${IUSE_TESTS_TPM}
 "
 
 IUSE="
