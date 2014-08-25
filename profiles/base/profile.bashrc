@@ -131,14 +131,15 @@ cros_pre_pkg_setup_sysroot_build_bin_dir() {
 cros_post_src_unpack_asan_init() {
 	local log_path="${T}/asan_logs/asan"
 	mkdir -p "${log_path%/*}"
-	export ASAN_OPTIONS+=" log_path=${log_path} detect_leaks=1"
+	export ASAN_OPTIONS+=" log_path=${log_path#${SYSROOT}} detect_leaks=1"
 
 	local lsan_suppression="${S}/lsan_suppressions"
 	local lsan_suppression_ebuild="${FILESDIR}/lsan_suppressions"
+	export LSAN_OPTIONS+=" print_suppressions=0"
 	if [[ -f ${lsan_suppression} ]]; then
-		export LSAN_OPTIONS+=" print_suppressions=0 suppressions=${lsan_suppression}"
+		export LSAN_OPTIONS+=" suppressions=${lsan_suppression#${SYSROOT}}"
 	elif [[ -f ${lsan_suppression_ebuild} ]]; then
-		export LSAN_OPTIONS+=" print_suppressions=0 suppressions=${lsan_suppression_ebuild}"
+		export LSAN_OPTIONS+=" suppressions=${lsan_suppression_ebuild}"
 	fi
 
 	has asan_death_hook ${EBUILD_DEATH_HOOKS} || EBUILD_DEATH_HOOKS+=" asan_death_hook"
