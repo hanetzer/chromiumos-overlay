@@ -23,6 +23,7 @@ RDEPEND="
 "
 
 IUSE_TESTS="
+	+tests_platform_CheckDebugdProcesses
 	+tests_platform_DebugDaemonGetModemStatus
 	+tests_platform_DebugDaemonGetNetworkStatus
 	+tests_platform_DebugDaemonGetPerfData

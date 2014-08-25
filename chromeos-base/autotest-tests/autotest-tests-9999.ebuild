@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-app_shell -chromeless_tty +crash_reporting +encrypted_stateful -ppp +profile vaapi"
+IUSE="-app_shell -chromeless_tty +crash_reporting +encrypted_stateful +network_time -ppp +passive_metrics +profile vaapi"
 # Enable autotest by default.
 IUSE="${IUSE} +autotest"
 
@@ -161,6 +161,9 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_AesThroughput
 	+tests_platform_BootPerf
 	+tests_platform_CheckErrorsInLog
+	+tests_platform_CheckCriticalProcesses
+	passive_metrics? ( +tests_platform_CheckMetricsProcesses )
+	network_time? ( +tests_platform_CheckTLSDateProcesses )
 	+tests_platform_CleanShutdown
 	+tests_platform_CompressedSwap
 	+tests_platform_CompressedSwapPerf
@@ -195,8 +198,10 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_RootPartitionsNotMounted
 	!chromeless_tty? ( +tests_platform_SessionManagerStateKeyGeneration )
 	+tests_platform_TempFS
-	+tests_platform_TLSDate
-	+tests_platform_TLSDateActual
+	network_time? (
+		+tests_platform_TLSDate
+		+tests_platform_TLSDateActual
+	)
 	+tests_platform_ToolchainOptions
 	+tests_platform_TouchpadSynDrop
         +tests_platform_UdevVars
