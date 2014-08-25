@@ -43,6 +43,7 @@ IUSE="-app_shell cros_ec cros_embedded opengl opengles X"
 ################################################################################
 
 CROS_COMMON_RDEPEND="
+	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-test-root
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
@@ -86,7 +87,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/autotest-client
 	chromeos-base/audiotest
 	chromeos-base/avtest_label_detect
-	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-factory-regions
 	chromeos-base/chromeos-factory-mini
 	chromeos-base/shill-test-scripts
