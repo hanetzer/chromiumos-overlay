@@ -7,5 +7,5 @@ diff -urN chromeos-hangul-1.1.0.0/manifest.json release/manifest.json
  {
 +  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcH+iGhcthZAC7BdquejweZ0ww0UFcKGrzou8qTBSOZcyql2groTUcpTEciMD2O0g2rc/DiS3T3r9TNvtDS9u8paaZKiT0xZC7IT9GB9cVDVNgdJpob9oUYTol/NFOdnqOyFDlNlH6SH+Z3BhOevtaKUARVK8OWrcoEhMaJEuWdwIDAQAB",
    "name": "Chrome OS Hangul IME",
-   "version": "1.2.0.4",
+   "version": "1.2.0.5",
    "permissions": [
