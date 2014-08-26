@@ -111,17 +111,6 @@
 # define ENABLE_SSP_SMASH_DUMPS_CORE 0
 #endif
 
-/* Define DO_SIGACTION - default to newer rt signal interface but
- * fallback to old as needed.
- */
-#ifdef __NR_rt_sigaction
-# define DO_SIGACTION(signum, act, oldact) \
-	INLINE_SYSCALL(rt_sigaction, 4, signum, act, oldact, _SSP_NSIG/8)
-#else
-# define DO_SIGACTION(signum, act, oldact) \
-	INLINE_SYSCALL(sigaction, 3, signum, act, oldact)
-#endif
-
 /* Define DO_SOCKET/DO_CONNECT functions to deal with socketcall vs socket/connect */
 #if defined(__NR_socket) && defined(__NR_connect)
 # define USE_OLD_SOCKETCALL 0
@@ -286,14 +275,8 @@ __hardened_gentoo_chk_fail(char func[], int damaged)
 	pid = INLINE_SYSCALL(getpid, 0);
 
 	if (ENABLE_SSP_SMASH_DUMPS_CORE) {
-		static struct sigaction default_abort_act;
-		/* Remove any user-supplied handler for SIGABRT, before using it */
-		default_abort_act.sa_handler = SIG_DFL;
-		default_abort_act.sa_sigaction = NULL;
-		__sigfillset(&default_abort_act.sa_mask);
-		default_abort_act.sa_flags = 0;
-		if (DO_SIGACTION(SIGABRT, &default_abort_act, NULL) == 0)
-			INLINE_SYSCALL(kill, 2, pid, SIGABRT);
+		/* remove the DO_SIGACTION part. See crbug://406598 */
+		INLINE_SYSCALL(kill, 2, pid, SIGABRT);
 	}
 
 	/* Note; actions cannot be added to SIGKILL */
