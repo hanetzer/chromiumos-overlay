@@ -10,8 +10,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
-IUSE="bluetooth bootchart bootimage +cellular coreboot +cras +crash_reporting cros_ec
-	cros_embedded dptf +fonts mtd +network_time nfc pam
+IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
+	+crash_reporting cros_ec cros_embedded dptf +fonts mtd +network_time nfc pam
 	+power_management +syslog +tpm watchdog wimax X"
 
 ################################################################################
@@ -98,6 +98,7 @@ CROS_COMMON_RDEPEND+="
 	crash_reporting? ( chromeos-base/crash-reporter )
 	cellular? ( chromeos-base/mist )
 	chromeos-base/platform2
+	buffet? ( chromeos-base/buffet )
 	power_management? ( chromeos-base/power_manager )
 	chromeos-base/tty
 	chromeos-base/update_engine

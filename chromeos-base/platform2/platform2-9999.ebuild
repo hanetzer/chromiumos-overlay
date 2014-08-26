@@ -8,7 +8,6 @@ CROS_WORKON_USE_VCSID=1
 
 PLATFORM2_PROJECTS=(
 	"attestation"
-	"buffet"
 	"chromiumos-wide-profiling"
 	"cromo"
 	"cros-disks"
@@ -33,7 +32,7 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation buffet +cellular -clang +cros_disks cros_embedded +debugd cros_host gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
+IUSE="-asan -attestation +cellular -clang +cros_disks cros_embedded +debugd cros_host gobi lorgnette +power_management +profile platform2 +seccomp +shill tcmalloc test +tpm +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 	cellular? ( shill )
@@ -204,26 +203,6 @@ platform2_install_attestation() {
 
 	insinto /usr/share/policy
 	newins server/attestationd-seccomp-${ARCH}.policy attestationd-seccomp.policy
-}
-
-platform2_install_buffet() {
-	use cros_host && return 0
-	use buffet || return 0
-
-	dobin "${OUT}"/buffet
-	dobin "${OUT}"/buffet_client
-
-	# DBus configuration.
-	insinto /etc/dbus-1/system.d
-	doins etc/dbus-1/org.chromium.Buffet.conf
-
-	# Base GCD command definitions.
-	insinto /etc/buffet
-	doins etc/buffet/gcd.json
-
-	# Upstart script.
-	insinto /etc/init
-	doins etc/init/buffet.conf
 }
 
 platform2_install_chromiumos-wide-profiling() {
@@ -400,11 +379,6 @@ platform2_install_vpn-manager() {
 
 platform2_test_attestation() {
 	return 0
-}
-
-platform2_test_buffet() {
-	use buffet || return 0
-	platform_test "run" "${OUT}/buffet_testrunner"
 }
 
 platform2_test_chromiumos-wide-profiling() {
