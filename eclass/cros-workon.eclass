@@ -280,7 +280,7 @@ set_vcsid() {
 	export VCSID="${PVR}-${1}"
 
 	if [ "${CROS_WORKON_USE_VCSID}" = "1" ]; then
-		append-flags -DVCSID=\\\"${VCSID}\\\"
+		append-cppflags -DVCSID=\\\"${VCSID}\\\"
 		MAKEOPTS+=" VCSID=${VCSID}"
 		# When working with multiple projects, keep from adding the same
 		# flags many many times.
