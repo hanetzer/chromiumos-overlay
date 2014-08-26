@@ -18,6 +18,7 @@ ALL_PORTS=(
 	ttyS{0..5}
 	ttySAC{0..5}
 	tty{0..5}
+	ttymxc{0..5}
 )
 
 IUSE_PORTS="${ALL_PORTS[@]/#/${USE_PREFIX}}"
