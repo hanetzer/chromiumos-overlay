@@ -19,17 +19,23 @@ KEYWORDS="~*"
 IUSE="32bit_au cros_host pam test"
 
 DEPEND="
-	chromeos-base/verity
+	chromeos-base/verity[32bit_au=]
 	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
+		32bit_au? (
+			dev-cpp/gmock32[32bit_au]
+			dev-cpp/gtest32[32bit_au]
+		)
+		!32bit_au? (
+			dev-cpp/gmock
+			dev-cpp/gtest
+		)
 	)
 	!cros_host? (
-		chromeos-base/vboot_reference
+		chromeos-base/vboot_reference[32bit_au=]
 	)"
 RDEPEND="
 	pam? ( app-admin/sudo )
-	chromeos-base/vboot_reference
+	chromeos-base/vboot_reference[32bit_au=]
 	dev-util/shflags
 	sys-apps/rootdev
 	sys-apps/util-linux
