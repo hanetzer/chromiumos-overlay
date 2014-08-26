@@ -23,10 +23,6 @@ IUSE="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lock
 RDEPEND="
 	chromeos-base/metrics
 	!<chromeos-base/platform2-0.0.8
-	dev-cpp/gflags
-	dev-cpp/glog
-	dev-libs/dbus-glib
-	dev-libs/glib
 	dev-libs/protobuf
 	media-sound/adhd
 	sys-fs/udev"
