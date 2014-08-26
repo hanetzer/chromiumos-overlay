@@ -11,5 +11,5 @@ inherit flag-o-matic
 IUSE="cros-debug"
 
 cros-debug-add-NDEBUG() {
-  use cros-debug || append-flags -DNDEBUG
+	use cros-debug || append-cppflags -DNDEBUG
 }
