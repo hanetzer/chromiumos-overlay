@@ -18,7 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+passive_metrics"
+IUSE="metrics_uploader +passive_metrics"
 
 RDEPEND="
 	chromeos-base/libchromeos
@@ -52,8 +52,12 @@ src_install() {
 	if use passive_metrics; then
 		dobin "${OUT}"/metrics_daemon
 		insinto /etc/init
-		doins init/metrics_library.conf
-		doins init/metrics_daemon.conf
+		doins init/metrics_library.conf init/metrics_daemon.conf
+
+		if use metrics_uploader; then
+			sed -i '/DAEMON_FLAGS=/s:=.*:="-uploader":' \
+				"${D}"/etc/init/metrics_daemon.conf || die
+		fi
 	fi
 
 	insinto /usr/$(get_libdir)/pkgconfig
