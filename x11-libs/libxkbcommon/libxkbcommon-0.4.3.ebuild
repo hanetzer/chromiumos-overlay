@@ -1,4 +1,4 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -6,8 +6,8 @@ EAPI=4
 
 inherit cros-constants
 
-EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/${PN}.git"
-EGIT_COMMIT="f91afe4f3ebcac3fb65a402c6c85cf1df5e2b52a"
+EGIT_REPO_URI="https://github.com/xkbcommon/libxkbcommon.git"
+EGIT_COMMIT="527bf96f9b0a25928432edba4bab27ac808a2fe2"
 XORG_EAUTORECONF="yes"
 
 inherit xorg-2 git-2
@@ -27,7 +27,7 @@ DEPEND="${RDEPEND}
 pkg_setup() {
 	xorg-2_pkg_setup
 	XORG_CONFIGURE_OPTIONS=(
-		--with-xkb-config-root=/usr/share/X11/xkb
+		--disable-x11
 	)
 }
 
