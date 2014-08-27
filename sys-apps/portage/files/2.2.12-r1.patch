@@ -1,0 +1,229 @@
+Contains all the patches committed to portage_tool on top of 2.2.12:
+
+* Remove warning when repo_name is only defined in layout.conf
+* Remove repos.conf
+* Add a new portageq helper to reduce a string containing use conditionals
+* re-order install hooks execution
+* suppress splitdebug for .o files
+* Commit fast-build patch to portage_tool repository.
+* support suppressing env-update
+* support fixing *.la
+
+diff --git a/Makefile b/Makefile
+index 92ea195..babbda2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -27,7 +27,7 @@ INSMODE = 0644
+ EXEMODE = 0755
+ DIRMODE = 0755
+ SYSCONFDIR_FILES = etc-update.conf dispatch-conf.conf
+-PORTAGE_CONFDIR_FILES = make.conf.example make.globals repos.conf
++PORTAGE_CONFDIR_FILES = make.conf.example make.globals
+ LOGROTATE_FILES = elog-save-summary
+ BINDIR_FILES = ebuild egencache emerge emerge-webrsync \
+ 	emirrordist portageq quickpkg repoman
+diff --git a/bin/ebuild-helpers/prepstrip b/bin/ebuild-helpers/prepstrip
+index 2ef8a1a..f37ddae 100755
+--- a/bin/ebuild-helpers/prepstrip
++++ b/bin/ebuild-helpers/prepstrip
+@@ -350,7 +350,12 @@ do
+ 	elif [[ ${f} == *"SB executable"* || ${f} == *"SB shared object"* ]] ; then
+ 		process_elf "${x}" "${inode_link}" ${PORTAGE_STRIP_FLAGS}
+ 	elif [[ ${f} == *"SB relocatable"* ]] ; then
++		# Disable splitdebug for object files as breakpad fails atm w/them.
++		# http://crosbug.com/204974
++		FEATURES_splitdebug_save=${FEATURES_splitdebug}
++		[[ ${x} != *.ko ]] && FEATURES_splitdebug=false
+ 		process_elf "${x}" "${inode_link}" ${SAFE_STRIP_FLAGS}
++		FEATURES_splitdebug=${FEATURES_splitdebug_save}
+ 	fi
+ 
+ 	if ${was_not_writable} ; then
+diff --git a/bin/portageq b/bin/portageq
+index 79818f6..332122f 100755
+--- a/bin/portageq
++++ b/bin/portageq
+@@ -1117,6 +1117,17 @@ def pquery(parser, opts, args):
+ 	return os.EX_OK
+ 
+ 
++def use_reduce(argv):
++	"""<depend_string>
++	Reduce a dependency string possibly containing use conditionals.
++	"""
++
++	if len(argv) != 1:
++		print("ERROR: wrong number of arguments")
++		return 2
++	from portage.dep import use_reduce as use_internal
++	print(' '.join(use_internal(argv[0], uselist=os.environ['USE'].split(' '))))
++
+ #-----------------------------------------------------------------------------
+ #
+ # DO NOT CHANGE CODE BEYOND THIS POINT - IT'S NOT NEEDED!
+diff --git a/pym/portage/const.py b/pym/portage/const.py
+index aab6e8a..f2e69e0 100644
+--- a/pym/portage/const.py
++++ b/pym/portage/const.py
+@@ -157,6 +157,7 @@ SUPPORTED_FEATURES       = frozenset([
+ 	"multilib-strict",
+ 	"network-sandbox",
+ 	"news",
++	"no-env-update",
+ 	"noauto",
+ 	"noclean",
+ 	"nodoc",
+diff --git a/pym/portage/dbapi/vartree.py b/pym/portage/dbapi/vartree.py
+index 5b947dd..0222ae5 100644
+--- a/pym/portage/dbapi/vartree.py
++++ b/pym/portage/dbapi/vartree.py
+@@ -70,6 +70,7 @@ from _emerge.MiscFunctionsProcess import MiscFunctionsProcess
+ from _emerge.SpawnProcess import SpawnProcess
+ 
+ import errno
++import fileinput
+ import fnmatch
+ import gc
+ import grp
+@@ -214,7 +215,7 @@ class vardbapi(dbapi):
+ 		"""
+ 		if self._lock_count:
+ 			self._lock_count += 1
+-		else:
++		elif os.environ.get("PORTAGE_LOCKS") != "false":
+ 			if self._lock is not None:
+ 				raise AssertionError("already locked")
+ 			# At least the parent needs to exist for the lock file.
+@@ -230,7 +231,7 @@ class vardbapi(dbapi):
+ 		"""
+ 		if self._lock_count > 1:
+ 			self._lock_count -= 1
+-		else:
++		elif os.environ.get("PORTAGE_LOCKS") != "false":
+ 			if self._lock is None:
+ 				raise AssertionError("not locked")
+ 			self._lock_count = 0
+@@ -3723,7 +3724,7 @@ class dblink(object):
+ 					break
+ 
+ 				relative_path = parent[srcroot_len:]
+-				dirlist.append(os.path.join("/", relative_path))
++				dirlist.append(os.path.join(destroot, relative_path))
+ 
+ 				for fname in files:
+ 					try:
+@@ -4301,6 +4302,19 @@ class dblink(object):
+ 			contents=contents, env=self.settings,
+ 			writemsg_level=self._display_merge, vardbapi=self.vartree.dbapi)
+ 
++		# Fix *.la files to point to libs in target_root, if they
++		# don't do so already.
++		re_root = self.settings["ROOT"].strip("/")
++		if re_root:
++			fix_files = []
++			for path in contents:
++				if path.endswith(".la"):
++					if os.path.exists(path): fix_files.append(path)
++			if fix_files:
++				pat = re.compile(r"([' =](?:-[IL])?/)(usr|lib|opt)")
++				for line in fileinput.input(fix_files, inplace=1):
++					sys.stdout.write(pat.sub(r"\1%s/\2" % re_root, line))
++
+ 		# For gcc upgrades, preserved libs have to be removed after the
+ 		# the library path has been updated.
+ 		self._prune_plib_registry()
+diff --git a/pym/portage/package/ebuild/doebuild.py b/pym/portage/package/ebuild/doebuild.py
+index 01707ae..c642c67 100644
+--- a/pym/portage/package/ebuild/doebuild.py
++++ b/pym/portage/package/ebuild/doebuild.py
+@@ -5,6 +5,7 @@ from __future__ import unicode_literals
+ 
+ __all__ = ['doebuild', 'doebuild_environment', 'spawn', 'spawnebuild']
+ 
++import fileinput
+ import grp
+ import gzip
+ import errno
+@@ -1628,9 +1629,10 @@ def spawnebuild(mydo, actionmap, mysettings, debug, alwaysdep=0,
+ _post_phase_cmds = {
+ 
+ 	"install" : [
++		"install_hooks",
+ 		"install_qa_check",
+ 		"install_symlink_html_docs",
+-		"install_hooks"],
++	],
+ 
+ 	"preinst" : [
+ 		"preinst_sfperms",
+@@ -1949,6 +1951,7 @@ def _post_src_install_uid_fix(mysettings, out):
+ 	destdir = mysettings["D"]
+ 	ed_len = len(mysettings["ED"])
+ 	unicode_errors = []
++	fix_files = []
+ 	desktop_file_validate = \
+ 		portage.process.find_binary("desktop-file-validate") is not None
+ 	xdg_dirs = mysettings.get('XDG_DATA_DIRS', '/usr/share').split(':')
+@@ -2075,10 +2078,12 @@ def _post_src_install_uid_fix(mysettings, out):
+ 							new_contents, mode='wb')
+ 
+ 				mystat = os.lstat(fpath)
+-				if stat.S_ISREG(mystat.st_mode) and \
+-					mystat.st_ino not in counted_inodes:
+-					counted_inodes.add(mystat.st_ino)
+-					size += mystat.st_size
++				if stat.S_ISREG(mystat.st_mode):
++					if fname.endswith(".la"):
++						fix_files.append(fpath)
++					if mystat.st_ino not in counted_inodes:
++						counted_inodes.add(mystat.st_ino)
++						size += mystat.st_size
+ 				if mystat.st_uid != portage_uid and \
+ 					mystat.st_gid != portage_gid:
+ 					continue
+@@ -2119,6 +2124,14 @@ def _post_src_install_uid_fix(mysettings, out):
+ 	f.write('%d\n' % size)
+ 	f.close()
+ 
++	re_root = mysettings["ROOT"].strip("/")
++	if fix_files and re_root:
++		# Replace references to our sysroot with references to "/" in binpkg.
++		# Sysroot will be re-appended when the package is installed.
++		pat = re.compile(r"([' =](-[IL])?/)%s/" % re.escape(re_root))
++		for line in fileinput.input(fix_files, inplace=1):
++			sys.stdout.write(pat.sub(r"\1", line))
++
+ 	_reapply_bsdflags_to_image(mysettings)
+ 
+ def _reapply_bsdflags_to_image(mysettings):
+diff --git a/pym/portage/repository/config.py b/pym/portage/repository/config.py
+index 5e0d055..24c3112 100644
+--- a/pym/portage/repository/config.py
++++ b/pym/portage/repository/config.py
+@@ -233,6 +233,7 @@ class RepoConfig(object):
+ 				# useful when having two copies of the same repo enabled
+ 				# to avoid modifying profiles/repo_name in one of them
+ 				self.name = layout_data['repo-name']
++				self.missing_repo_name = False
+ 
+ 			for value in ('allow-missing-manifest',
+ 				'allow-provide-virtual', 'cache-formats',
+diff --git a/pym/portage/util/env_update.py b/pym/portage/util/env_update.py
+index c0a93a8..f4cccc9 100644
+--- a/pym/portage/util/env_update.py
++++ b/pym/portage/util/env_update.py
+@@ -43,6 +43,14 @@ def env_update(makelinks=1, target_root=None, prev_mtimes=None, contents=None,
+ 		defaults to portage.settings["ROOT"].
+ 	@type target_root: String (Path)
+ 	"""
++	settings = getattr(portage, 'settings', None)
++	if settings is None:
++		settings = config(config_root=target_root,
++			target_root=target_root)
++
++	if 'no-env-update' in settings.features:
++		return
++
+ 	if vardbapi is None:
+ 		if isinstance(env, config):
+ 			vardbapi = vartree(settings=env).dbapi
