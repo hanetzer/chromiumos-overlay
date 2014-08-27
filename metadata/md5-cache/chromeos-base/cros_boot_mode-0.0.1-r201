@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=test? ( chromeos-base/libchrome:271506[cros-debug=] ) test? ( dev-cpp/gmock ) test? ( dev-cpp/gtest ) valgrind? ( dev-util/valgrind ) dev-vcs/git
+DESCRIPTION=Chrome OS platform boot mode utility
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang test valgrind cros-debug cros_host cros_workon_tree_2a3fc4ce271d9798ef9b41481a29d68e8c248aa9 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=test? ( chromeos-base/libchrome:271506[cros-debug=] )
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	deb4c0b1259db4d092692c4c46fe072b	cros-workon	8906026dd53d00ebaa93c3afe1273f8e	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=d46897970ff3715461d9ee47c4c6458d
