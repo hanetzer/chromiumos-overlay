@@ -510,7 +510,13 @@ src_unpack() {
 	case "${CHROME_ORIGIN}" in
 	(SERVER_SOURCE)
 		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
-		unpack_chrome
+		if [[ ${WHOAMI} == "chrome-bot" ]]; then
+			# TODO: Should add a sanity check that the version checked out is
+			# what we actually want.  Not sure how to do that though.
+			elog "Skipping syncing as cbuildbot ran SyncChrome for us."
+		else
+			unpack_chrome
+		fi
 
 		elog "set the chrome source root to ${CHROME_DISTDIR}"
 		elog "From this point onwards there is no difference between \
