@@ -18,8 +18,10 @@ LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
 
+# util-linux is for libuuid.  Perverse.
 RDEPEND="
 	chromeos-base/libchromeos
+	sys-apps/util-linux
 "
 
 DEPEND="
