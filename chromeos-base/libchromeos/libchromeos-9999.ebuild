@@ -53,16 +53,20 @@ src_install() {
 	for v in "${LIBCHROME_VERS[@]}"; do
 		./platform2_preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}"/lib/lib{chromeos,policy}*-"${v}".so
-		dolib.a "${OUT}"/libchromeos-test-"${v}".a
-		doins "${OUT}"/lib/libchromeos-"${v}".pc
-		doins "${OUT}"/lib/libchromeos-test-"${v}".pc
+		dolib.a "${OUT}"/libchromeos*-"${v}".a
+		doins "${OUT}"/lib/libchromeos*-"${v}".pc
 	done
 
-	local dir dirs=( . dbus errors glib http minijail strings ui )
-	for dir in "${dirs[@]}"; do
-		insinto "/usr/include/chromeos/${dir}"
-		doins "chromeos/${dir}"/*.h
-	done
+	# Install all the header files from libchromeos/chromeos/*.h into
+	# /usr/include/chromeos (recursively, with sub-directories).
+	# Exclude the following sub-directories though (they are handled separately):
+	#   chromeos/bootstat
+	#   chromeos/policy
+	local dir
+	while read -d $'\0' -r dir; do
+		insinto "/usr/include/${dir}"
+		doins "${dir}"/*.h
+	done < <(find chromeos -type d -not -path "chromeos/bootstat*" -not -path "chromeos/policy*" -print0)
 
 	insinto /usr/include/policy
 	doins chromeos/policy/*.h
