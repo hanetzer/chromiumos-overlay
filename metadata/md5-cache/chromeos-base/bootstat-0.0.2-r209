@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure info install setup unpack
+DEPEND=sys-apps/rootdev dev-cpp/gtest dev-vcs/git
+DESCRIPTION=Chrome OS Boot Time Statistics Utilities
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-asan -clang cros_host cros_workon_tree_01b1e53b33207088b7aecff33fa873d6e988ea35 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=sys-apps/rootdev
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	c7f8686f20801fead451dd0f701f309b	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=bb9e8e3e9b289939d4551a275f5f0944
