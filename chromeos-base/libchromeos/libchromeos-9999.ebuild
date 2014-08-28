@@ -58,7 +58,7 @@ src_install() {
 		doins "${OUT}"/lib/libchromeos-test-"${v}".pc
 	done
 
-	local dir dirs=( . dbus glib minijail ui )
+	local dir dirs=( . dbus errors glib http minijail strings ui )
 	for dir in "${dirs[@]}"; do
 		insinto "/usr/include/chromeos/${dir}"
 		doins "chromeos/${dir}"/*.h
