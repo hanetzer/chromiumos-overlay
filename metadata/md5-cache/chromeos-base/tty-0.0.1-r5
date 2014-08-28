@@ -1,9 +1,0 @@
-DEFINED_PHASES=compile install
-DESCRIPTION=Init script to run agetty on selected terminals.
-EAPI=4
-IUSE=tty_console_ttyAMA0 tty_console_ttyAMA1 tty_console_ttyAMA2 tty_console_ttyAMA3 tty_console_ttyAMA4 tty_console_ttyAMA5 tty_console_ttyHSL0 tty_console_ttyHSL1 tty_console_ttyHSL2 tty_console_ttyO0 tty_console_ttyO1 tty_console_ttyO2 tty_console_ttyO3 tty_console_ttyO4 tty_console_ttyO5 tty_console_ttyS0 tty_console_ttyS1 tty_console_ttyS2 tty_console_ttyS3 tty_console_ttyS4 tty_console_ttyS5 tty_console_ttySAC0 tty_console_ttySAC1 tty_console_ttySAC2 tty_console_ttySAC3 tty_console_ttySAC4 tty_console_ttySAC5 tty_console_tty0 tty_console_tty1 tty_console_tty2 tty_console_tty3 tty_console_tty4 tty_console_tty5 tty_console_ttymxc0 tty_console_ttymxc1 tty_console_ttymxc2 tty_console_ttymxc3 tty_console_ttymxc4 tty_console_ttymxc5
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=sys-apps/upstart tty_console_tty2? ( !<chromeos-base/chromeos-init-0.0.22 ) !chromeos-base/tty1 !chromeos-base/serial-tty
-SLOT=0
-_md5_=b35b2e6929fbd91f84303229658cd9ee
