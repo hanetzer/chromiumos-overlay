@@ -26,7 +26,7 @@
 # If set to yes, run the test only for amd64 and x86.
 : ${PLATFORM_NATIVE_TEST:="no"}
 
-inherit cros-board cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon toolchain-funcs
 
 [[ "${WANT_LIBCHROME}" == "yes" ]] && inherit libchrome
 
@@ -58,7 +58,8 @@ platform_get_target_args() {
 	if use cros_host; then
 		echo "--host"
 	else
-		echo "--board=$(get_current_board_with_variant)"
+		# Avoid --board as we have all the vars we need in the env.
+		:
 	fi
 }
 
@@ -109,6 +110,7 @@ platform_test() {
 		--package="${pkg}"
 		--use_flags="${USE}"
 		--cache_dir="$(cros-workon_get_build_dir)"
+		--sysroot="${SYSROOT}"
 		${run_as_root_flag}
 	)
 	echo "${cmd[@]}"
