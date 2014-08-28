@@ -13,12 +13,14 @@ USE_PREFIX="tty_console_"
 
 ALL_PORTS=(
 	ttyAMA{0..5}
-	ttyHSL{0..2}
+	ttyHSL{0..5}
+	ttyMSM{0..5}
+	ttymxc{0..5}
 	ttyO{0..5}
 	ttyS{0..5}
 	ttySAC{0..5}
+	ttyUSB{0..5}
 	tty{0..5}
-	ttymxc{0..5}
 )
 
 IUSE_PORTS="${ALL_PORTS[@]/#/${USE_PREFIX}}"
