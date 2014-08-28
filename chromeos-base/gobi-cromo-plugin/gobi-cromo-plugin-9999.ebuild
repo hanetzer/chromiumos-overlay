@@ -21,7 +21,7 @@ IUSE="install_tests internal"
 RDEPEND="
 	dev-cpp/glog
 	dev-libs/dbus-c++
-	chromeos-base/platform2
+	chromeos-base/cromo
 	chromeos-base/gobi3k-sdk
 	|| (
 		!internal? ( chromeos-base/gobi3k-lib-bin )
