@@ -261,8 +261,14 @@ set_build_defines() {
 
 	if use ozone; then
 		local platform
+		if [[ -n "${OZONE_PLATFORM_DEFAULT}" ]]; then
+			BUILD_DEFINES+=("ozone_platform=${OZONE_PLATFORM_DEFAULT}")
+		fi
+		BUILD_DEFINES+=("ozone_auto_platforms=0")
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
-			BUILD_DEFINES+=("${platform}=$(use10 ${platform})")
+			if use "${platform}"; then
+				BUILD_DEFINES+=("${platform}=1")
+			fi
 		done
 	fi
 
