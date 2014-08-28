@@ -28,6 +28,7 @@ EC_BOARD_NAMES=(
 	nyan
 	pit
 	ryu
+	ryu_sh
 	samus
 	samus_pd
 	snow
