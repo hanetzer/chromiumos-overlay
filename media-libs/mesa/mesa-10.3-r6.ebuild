@@ -139,6 +139,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
 	epatch "${FILESDIR}"/10.3-mesa-fix-workaround-when-there-is-depth-but-not-sten.patch
 	epatch "${FILESDIR}"/10.3-glsl-allow-precision-qualifier-on-sampler-arrays
+	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
 
 	base_src_prepare
 
