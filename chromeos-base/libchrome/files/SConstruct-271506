@@ -192,16 +192,6 @@ base_libs = [
     'libs' : '',
     'pc_libs' : 'dbus-1 protobuf-lite',
   },
-  {
-    'name' : 'components',
-    'sources' : """
-                feedback/feedback_report.cc
-                feedback/feedback_uploader.cc
-                """,
-    'prefix' : 'components',
-    'libs' : '',
-    'pc_libs' : '',
-  },
 ]
 
 env = Environment()

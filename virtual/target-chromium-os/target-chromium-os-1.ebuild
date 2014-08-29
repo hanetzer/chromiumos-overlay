@@ -11,8 +11,8 @@ SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
-	+crash_reporting cros_ec cros_embedded dptf +fonts gobi mtd +network_time
-	nfc pam	+power_management +syslog +tpm watchdog wimax X"
+	+crash_reporting cros_ec cros_embedded dptf feedback +fonts gobi mtd
+	+network_time nfc pam +power_management +syslog +tpm watchdog wimax X"
 
 ################################################################################
 #
@@ -240,6 +240,7 @@ CROS_DEPEND="${CROS_RDEPEND}
 
 CROS_E_RDEPEND="${CROS_E_RDEPEND}
 	sys-apps/util-linux
+	feedback? ( chromeos-base/feedback )
 "
 
 # Build time dependencies
