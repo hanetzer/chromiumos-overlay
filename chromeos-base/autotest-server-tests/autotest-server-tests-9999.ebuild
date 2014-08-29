@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="-app_shell +autotest +cellular -chromeless_tty -moblab +power_management +tpm"
+IUSE="-app_shell +autotest +cellular -chromeless_tty cros_p2p -moblab +power_management +tpm"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -105,6 +105,7 @@ SERVER_IUSE_TESTS="
 	+tests_kernel_EmptyLines
 	+tests_kernel_MemoryRamoop
 	moblab? ( +tests_moblab_RunSuite )
+	cros_p2p? ( +tests_p2p_EndToEndTest )
 	+tests_platform_BootDevice
 	+tests_platform_BootPerfServer
 	+tests_platform_CorruptRootfs
