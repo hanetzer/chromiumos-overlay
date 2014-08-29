@@ -41,6 +41,7 @@ src_install() {
 
 	dosbin "${OUT}"/trunks_client
 	dosbin "${OUT}"/trunksd
+	dolib.so "${OUT}"/lib/libtrunks.so
 
 	insinto /usr/share/policy
 	newins trunksd-seccomp-${ARCH}.policy trunksd-seccomp.policy
