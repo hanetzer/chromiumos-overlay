@@ -13,6 +13,9 @@
 	<flag name='linux_firmware_ath3k-ar3012'>
 		Install all patch/sysconfig files for the Atheros AR3012 Bluetooth chipsets
 	</flag>
+	<flag name='linux_firmware_cros-pd'>
+		Install firmware files for Chrome OS EC power delivery devices
+	</flag>
 	<flag name='linux_firmware_iwlwifi-all'>
 		Install ALL the iwlwifi driver firmware files;
 		otherwise see the individual iwlwifi-xxx flags
