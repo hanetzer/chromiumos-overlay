@@ -121,9 +121,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-39.0.2139.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-39.0.2139.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-39.0.2139.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-39.0.2140.2_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-39.0.2140.2_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-39.0.2140.2_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -261,8 +261,14 @@ set_build_defines() {
 
 	if use ozone; then
 		local platform
+		if [[ -n "${OZONE_PLATFORM_DEFAULT}" ]]; then
+			BUILD_DEFINES+=("ozone_platform=${OZONE_PLATFORM_DEFAULT}")
+		fi
+		BUILD_DEFINES+=("ozone_auto_platforms=0")
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
-			BUILD_DEFINES+=("${platform}=$(use10 ${platform})")
+			if use "${platform}"; then
+				BUILD_DEFINES+=("${platform}=1")
+			fi
 		done
 	fi
 
