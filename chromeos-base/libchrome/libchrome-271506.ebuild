@@ -72,7 +72,6 @@ src_prepare() {
 src_configure() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
 	cros-debug-add-NDEBUG
-	export CCFLAGS="$CFLAGS"
 }
 
 src_compile() {

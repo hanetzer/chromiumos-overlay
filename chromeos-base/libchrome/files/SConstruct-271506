@@ -214,10 +214,12 @@ env.Append(
   CPPPATH=['files'],
   CCFLAGS=['-g']
 )
-for key in Split('CC CXX AR RANLIB LD NM CFLAGS CCFLAGS'):
+for key in Split('CC CXX AR RANLIB LD NM CFLAGS CXXFLAGS LDFLAGS'):
   value = os.environ.get(key)
   if value:
     env[key] = Split(value)
+if os.environ.has_key('CPPFLAGS'):
+  env['CCFLAGS'] += Split(os.environ['CPPFLAGS'])
 
 env['CCFLAGS'] += ['-fPIC',
                    '-fno-exceptions',
