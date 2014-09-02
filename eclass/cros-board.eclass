@@ -83,6 +83,7 @@ ALL_BOARDS=(
 	gnawty
 	hsb
 	ironhide
+	kayle
 	#kiev
 	kip
 	klang
