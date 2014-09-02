@@ -21,7 +21,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_TOOLDIR="${S}/platform2/common-mk"
 
-inherit cros-board cros-debug cros-workon eutils multilib platform toolchain-funcs udev user
+inherit cros-debug cros-workon eutils multilib platform toolchain-funcs udev user
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
