@@ -202,7 +202,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-shells/bash
 	chromeos-base/common-assets
 	chromeos-base/chromeos-imageburner
-	chromeos-base/cros_boot_mode
 	chromeos-base/crosh
 	chromeos-base/dev-install
 	chromeos-base/inputcontrol
