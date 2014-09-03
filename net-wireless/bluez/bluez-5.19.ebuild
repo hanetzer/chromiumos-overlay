@@ -100,6 +100,10 @@ src_prepare() {
 	# flag so that we can install it.
 	epatch "${FILESDIR}/${P}-btmgmt.patch"
 
+	# Apply patch to fix incoming connections from Audio devices (issue 313050).
+	# This patch disables Defer Setup feature of L2CAP connections for AVDTP.
+	epatch "${FILESDIR}/${P}-avdtp-incoming-connections-fix.patch"
+
 	# Apply patch to build the Chromium plugin and copy the source of
 	# that plugin into the expected location.
 	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
@@ -164,7 +168,6 @@ src_install() {
 	newins "${FILESDIR}/${P}-upstart.conf" bluetoothd.conf
 
 	udev_dorules "${FILESDIR}/99-uhid.rules"
-	udev_dorules "${FILESDIR}/99-uinput.rules"
 	udev_dorules "${FILESDIR}/99-ps3-gamepad.rules"
 
 	# We don't preserve /var/lib in images, so nuke anything we preseed.

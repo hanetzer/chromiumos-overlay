@@ -1,0 +1,24 @@
+From e7b3ed8db55cae6ee2ecc3b0c5898570af72bbc7 Mon Sep 17 00:00:00 2001
+From: Artem Rakhov <arakhov@chromium.org>
+Date: Tue, 2 Sep 2014 21:05:18 -0700
+Subject: [PATCH] CHROMIUM: AVDTP incoming connections fix
+
+---
+ profiles/audio/avdtp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/profiles/audio/avdtp.c b/profiles/audio/avdtp.c
+index 8a7d1c0..dbfc558 100644
+--- a/profiles/audio/avdtp.c
++++ b/profiles/audio/avdtp.c
+@@ -3663,6 +3663,7 @@ static GIOChannel *avdtp_server_socket(const bdaddr_t *src, gboolean master)
+ 				BT_IO_OPT_PSM, AVDTP_PSM,
+ 				BT_IO_OPT_SEC_LEVEL, BT_IO_SEC_MEDIUM,
+ 				BT_IO_OPT_MASTER, master,
++				BT_IO_OPT_DEFER_TIMEOUT, 0,
+ 				BT_IO_OPT_INVALID);
+ 	if (!io) {
+ 		error("%s", err->message);
+-- 
+2.1.0.rc2.206.gedb03e5
+
