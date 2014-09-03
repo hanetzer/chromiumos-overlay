@@ -45,6 +45,7 @@ IUSE="-app_shell cros_ec cros_embedded opengl opengles X"
 CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-test-root
+	chromeos-base/verity
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
 	net-misc/rsync
