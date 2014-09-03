@@ -10,4 +10,4 @@ RDEPEND=ssl? ( dev-libs/openssl ) kernel_linux? ( dev-libs/libnl:3 crda? ( net-w
 SLOT=0
 SRC_URI=http://hostap.epitest.fi/releases/hostapd-2.1.tar.gz
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	fac675dcccf94392371a6abee62d909f	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=b15864f7b4f7aa71540d668ac1e8f76f
+_md5_=fa16887a1882f4fe9635b2aba13b9c78
