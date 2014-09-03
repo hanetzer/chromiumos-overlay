@@ -18,7 +18,7 @@ DEPEND="sys-apps/debianutils
 	t124_xusb_fw? ( sys-kernel/xhci-firmware )
 "
 
-WIRELESS_VERSIONS=( 3.4 3.8 )
+WIRELESS_VERSIONS=( 3.4 3.8 3.16 )
 WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
 
 IUSE="
