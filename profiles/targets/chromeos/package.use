@@ -92,3 +92,6 @@ x11-libs/cairo		-opengl
 # Need png for color font support. bzip2 is not used. It's only for X11 *pcf.bz2
 # that we don't have.
 media-libs/freetype	png -bzip2
+# The installer package statically links the libs it uses.
+dev-cpp/gmock		static-libs
+dev-cpp/gtest		static-libs
