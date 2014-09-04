@@ -1,0 +1,29 @@
+From a4bec4749fb0e0f402fd6c2e0bb6774ea857a388 Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Tue, 2 Sep 2014 10:52:37 +0300
+Subject: [PATCH] audio/avrcp: Fix not handling errors for GetCapabilities
+
+According to the spec GetCapabilities is mandatory for both TG and CT but
+some devices reject it anyway which can lead to a crash if not handled
+properly.
+---
+ profiles/audio/avrcp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 4dbad1a..5c3c4f9 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -3227,7 +3227,8 @@ static gboolean avrcp_get_capabilities_resp(struct avctp *conn,
+ 	uint16_t events = 0;
+ 	uint8_t count;
+ 
+-	if (pdu == NULL || pdu->params[0] != CAP_EVENTS_SUPPORTED)
++	if (code == AVC_CTYPE_REJECTED || code == AVC_CTYPE_NOT_IMPLEMENTED ||
++			pdu == NULL || pdu->params[0] != CAP_EVENTS_SUPPORTED)
+ 		return FALSE;
+ 
+ 	/* Connect browsing if pending */
+-- 
+2.1.0.rc2.206.gedb03e5
+

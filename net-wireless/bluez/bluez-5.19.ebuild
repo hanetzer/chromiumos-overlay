@@ -109,6 +109,11 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
 	cp "${FILESDIR}/chromium.c" "plugins/chromium.c" || die
 
+	# Fix bug in the AVRCP profile that causes audio devices to disconnect
+	# as soon as they get paired due to bluetoothd crash. This patch has
+	# been merged to BlueZ upstream on 09/02/2014.
+	epatch "${FILESDIR}/${P}-avrcp-fix.patch"
+
 	eautoreconf
 
 	if use cups; then
