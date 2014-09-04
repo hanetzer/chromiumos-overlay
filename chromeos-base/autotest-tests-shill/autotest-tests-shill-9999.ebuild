@@ -16,7 +16,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 # Enable autotest by default.
-IUSE="+autotest tpm"
+IUSE="+autotest +tpm"
 
 RDEPEND="
 	!<chromeos-base/autotest-tests-0.0.3
