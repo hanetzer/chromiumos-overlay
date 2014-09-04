@@ -8,4 +8,4 @@ LICENSE=BSD
 RDEPEND=dev-cpp/glog dev-libs/dbus-c++ chromeos-base/cromo chromeos-base/gobi3k-sdk || ( !internal? ( chromeos-base/gobi3k-lib-bin ) chromeos-base/gobi3k-lib ) chromeos-base/libchromeos chromeos-base/metrics install_tests? ( dev-cpp/gmock dev-cpp/gtest ) chromeos-base/libchrome:271506[cros-debug=]
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e1e36806191d4feb7d047c1a63d9e924	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	29bea42273e57f582be127aad88b2008	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=645640336ce53a65dee57ae135d92f93
+_md5_=b76a22086becd04724411f2b99da83b3
