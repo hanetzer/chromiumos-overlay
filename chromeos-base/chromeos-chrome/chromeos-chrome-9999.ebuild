@@ -2,20 +2,20 @@
 # Distributed under the terms of the GNU General Public License v2
 
 # Usage: by default, downloads chromium browser from the build server.
-# If CHROMIUM_SOURCE_ORIGIN is set to one of {SERVER_SOURCE, LOCAL_SOURCE},
+# If CHROME_ORIGIN is set to one of {SERVER_SOURCE, LOCAL_SOURCE, LOCAL_BINARY},
 # the build comes from the chromimum source repository (gclient sync),
-# build server, or locally provided source.
+# build server, locally provided source, or locally provided binary.
 # If you are using SERVER_SOURCE, a gclient template file that is in the files
 # directory which will be copied automatically during the build and used as
 # the .gclient for 'gclient sync'.
-# If building from LOCAL_SOURCE specifying BUILDTYPE
+# If building from LOCAL_SOURCE or LOCAL_BINARY specifying BUILDTYPE
 # will allow you to specify "Debug" or another build type; "Release" is
 # the default.
 # gclient is expected to be in ~/depot_tools if EGCLIENT is not set
 # to gclient path.
 
 EAPI="4"
-inherit autotest-deponly binutils-funcs cros-constants eutils flag-o-matic git-2 multilib toolchain-funcs chromium-source
+inherit autotest-deponly binutils-funcs cros-constants eutils flag-o-matic git-2 multilib toolchain-funcs
 
 DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
@@ -89,6 +89,15 @@ if [[ -z ${CHROME_CACHE_DIR} ]] ; then
 fi
 addwrite "${CHROME_CACHE_DIR}"
 
+# CHROME_DISTDIR is used for storing the source code, if any source code
+# needs to be unpacked at build time (e.g. in the SERVER_SOURCE scenario.)
+# It will be mounted into the chroot, so it is never safe to use cp -al
+# for these files.
+if [[ -z ${CHROME_DISTDIR} ]] ; then
+	CHROME_DISTDIR="${PORTAGE_ACTUAL_DISTDIR:-${DISTDIR}}/${CHROME_SRC}"
+fi
+addwrite "${CHROME_DISTDIR}"
+
 # chrome destination directory
 CHROME_DIR=/opt/google/chrome
 D_CHROME_DIR="${D}/${CHROME_DIR}"
@@ -112,9 +121,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-39.0.2145.3_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-39.0.2145.3_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-39.0.2145.3_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-39.0.2144.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-39.0.2144.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-39.0.2144.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -349,7 +358,7 @@ set_build_defines() {
 	fi
 
 	if use reorder && ! use clang; then
-		BUILD_DEFINES+=( "order_text_section=${CHROMIUM_SOURCE_DIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile-32.0.1665.2" )
+		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile-32.0.1665.2" )
 	fi
 
 	if use clang; then
@@ -412,6 +421,41 @@ set_build_defines() {
 	CXXFLAGS+=" -D__google_stl_debug_vector=1"
 }
 
+unpack_chrome() {
+	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/sync_chrome )
+	use chrome_internal && cmd+=( --internal )
+	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
+		cmd+=( --revision="${CROS_SVN_COMMIT}" )
+	elif [[ "${CHROME_VERSION}" != "9999" ]]; then
+		cmd+=( --tag="${CHROME_VERSION}" )
+	fi
+	# --reset tells sync_chrome to blow away local changes and to feel
+	# free to delete any directories that get in the way of syncing. This
+	# is needed for unattended operation.
+	cmd+=( --reset --gclient="${EGCLIENT}" "${CHROME_DISTDIR}" )
+	elog "${cmd[*]}"
+	"${cmd[@]}" || die
+}
+
+decide_chrome_origin() {
+	local chrome_workon="=chromeos-base/chromeos-chrome-9999"
+	local cros_workon_file="${ROOT}etc/portage/package.keywords/cros-workon"
+	if [[ -e "${cros_workon_file}" ]] && grep -q "${chrome_workon}" "${cros_workon_file}"; then
+		# LOCAL_SOURCE is the default for cros_workon
+		# Warn the user if CHROME_ORIGIN is already set
+		if [[ -n "${CHROME_ORIGIN}" && "${CHROME_ORIGIN}" != LOCAL_SOURCE ]]; then
+			ewarn "CHROME_ORIGIN is already set to ${CHROME_ORIGIN}."
+			ewarn "This will prevent you from building from your local checkout."
+			ewarn "Please run 'unset CHROME_ORIGIN' to reset Chrome"
+			ewarn "to the default source location."
+		fi
+		: ${CHROME_ORIGIN:=LOCAL_SOURCE}
+	else
+		# By default, pull from server
+		: ${CHROME_ORIGIN:=SERVER_SOURCE}
+	fi
+}
+
 sandboxless_ensure_directory() {
 	local dir
 	for dir in "$@"; do
@@ -426,8 +470,6 @@ sandboxless_ensure_directory() {
 }
 
 src_unpack() {
-	chromium-source_src_unpack
-
 	tc-export CC CXX
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
@@ -435,17 +477,80 @@ src_unpack() {
 	export DEPOT_TOOLS_UPDATE=0
 
 	# Create storage directories.
-	sandboxless_ensure_directory "${CHROME_CACHE_DIR}"
+	sandboxless_ensure_directory "${CHROME_DISTDIR}" "${CHROME_CACHE_DIR}"
 
-	set_build_defines
+	# Copy in credentials to fake home directory so that build process
+	# can access svn and ssh if needed.
+	mkdir -p ${HOME}
+	SUBVERSION_CONFIG_DIR=/home/${WHOAMI}/.subversion
+	if [[ -d ${SUBVERSION_CONFIG_DIR} ]]; then
+		cp -rfp ${SUBVERSION_CONFIG_DIR} ${HOME} || die
+	fi
+	SSH_CONFIG_DIR=/home/${WHOAMI}/.ssh
+	if [[ -d ${SSH_CONFIG_DIR} ]]; then
+		cp -rfp ${SSH_CONFIG_DIR} ${HOME} || die
+	fi
+	NET_CONFIG=/home/${WHOAMI}/.netrc
+	if [[ -f ${NET_CONFIG} ]]; then
+		cp -fp ${NET_CONFIG} ${HOME} || die
+	fi
+
+	decide_chrome_origin
+
+	case "${CHROME_ORIGIN}" in
+	LOCAL_SOURCE|SERVER_SOURCE|LOCAL_BINARY)
+		elog "CHROME_ORIGIN VALUE is ${CHROME_ORIGIN}"
+		;;
+	*)
+		die "CHROME_ORIGIN not one of LOCAL_SOURCE, SERVER_SOURCE, LOCAL_BINARY"
+		;;
+	esac
+
+	# Prepare and set CHROME_ROOT based on CHROME_ORIGIN.
+	# CHROME_ROOT is the location where the source code is used for compilation.
+	# If we're in SERVER_SOURCE mode, CHROME_ROOT is CHROME_DISTDIR. In LOCAL_SOURCE
+	# mode, this directory may be set manually to any directory. It may be mounted
+	# into the chroot, so it is not safe to use cp -al for these files.
+	# These are set here because $(whoami) returns the proper user here,
+	# but 'root' at the root level of the file
+	case "${CHROME_ORIGIN}" in
+	(SERVER_SOURCE)
+		elog "Using CHROME_VERSION = ${CHROME_VERSION}"
+		if [[ ${WHOAMI} == "chrome-bot" ]]; then
+			# TODO: Should add a sanity check that the version checked out is
+			# what we actually want.  Not sure how to do that though.
+			elog "Skipping syncing as cbuildbot ran SyncChrome for us."
+		else
+			unpack_chrome
+		fi
+
+		elog "set the chrome source root to ${CHROME_DISTDIR}"
+		elog "From this point onwards there is no difference between \
+			SERVER_SOURCE and LOCAL_SOURCE, since the fetch is done"
+		CHROME_ROOT=${CHROME_DISTDIR}
+		;;
+	(LOCAL_SOURCE)
+		: ${CHROME_ROOT:=/home/${WHOAMI}/chrome_root}
+		if [[ ! -d "${CHROME_ROOT}/src" ]]; then
+			die "${CHROME_ROOT} does not contain a valid chromium checkout!"
+		fi
+		addwrite "${CHROME_ROOT}"
+		;;
+	esac
+
+	case "${CHROME_ORIGIN}" in
+	LOCAL_SOURCE|SERVER_SOURCE)
+		set_build_defines
+		;;
+	esac
 
 	# FIXME: This is the normal path where ebuild stores its working data.
 	# Chrome builds inside distfiles because of speed, so we at least make
 	# a symlink here to add compatibility with autotest eclass which uses this.
-	ln -sf "${CHROMIUM_SOURCE_DIR}" "${WORKDIR}/${P}"
+	ln -sf "${CHROME_ROOT}" "${WORKDIR}/${P}"
 
 	if use internal_gles_conform; then
-		local CHROME_GLES2_CONFORM=${CHROMIUM_SOURCE_DIR}/src/third_party/gles2_conform
+		local CHROME_GLES2_CONFORM=${CHROME_ROOT}/src/third_party/gles2_conform
 		local CROS_GLES2_CONFORM=/home/${WHOAMI}/trunk/src/third_party/gles2_conform
 		if [[ ! -d "${CHROME_GLES2_CONFORM}" ]]; then
 			if [[ -d "${CROS_GLES2_CONFORM}" ]]; then
@@ -481,12 +586,11 @@ src_unpack() {
 		EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/profile/chromium.git"
 		EGIT_COMMIT="067dd0d802bc815703c7908c72659f2483be0e3a"
 		EGIT_PROJECT="${PN}-reorder"
-		if grep -qs ${EGIT_COMMIT} "${CHROMIUM_SOURCE_DIR}/${REORDER_SUBDIR}/.git/HEAD"; then
+		if grep -qs ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
 			einfo "Reorder profile repo is up to date."
 		else
-			addwrite "${CHROMIUM_SOURCE_DIR}"
 			einfo "Reorder profile repo not up-to-date. Fetching..."
-			EGIT_SOURCEDIR="${CHROMIUM_SOURCE_DIR}/${REORDER_SUBDIR}"
+			EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
 			rm -rf "${EGIT_SOURCEDIR}"
 			git-2_src_unpack
 		fi
@@ -494,18 +598,17 @@ src_unpack() {
 }
 
 src_prepare() {
-	if [[ "${CHROMIUM_SOURCE_ORIGIN}" != "LOCAL_SOURCE" &&
-	      "${CHROMIUM_SOURCE_ORIGIN}" != "SERVER_SOURCE" ]]; then
+	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
+	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
-	elog "${CHROMIUM_SOURCE_DIR} should be set here properly"
-	cd "${CHROMIUM_SOURCE_DIR}/src" || die "Cannot chdir to ${CHROMIUM_SOURCE_DIR}"
+	elog "${CHROME_ROOT} should be set here properly"
+	cd "${CHROME_ROOT}/src" || die "Cannot chdir to ${CHROME_ROOT}"
 
 	# We do symlink creation here if appropriate.
 	mkdir -p "${CHROME_CACHE_DIR}/src/${BUILD_OUT}"
 	if [[ ! -z "${BUILD_OUT_SYM}" ]]; then
-		addwrite "${CHROMIUM_SOURCE_DIR}"
 		rm -rf "${BUILD_OUT_SYM}" || die "Could not remove symlink"
 		ln -sfT "${CHROME_CACHE_DIR}/src/${BUILD_OUT}" "${BUILD_OUT_SYM}" ||
 			die "Could not create symlink for output directory"
@@ -514,8 +617,7 @@ src_prepare() {
 
 
 	# Apply patches for non-localsource builds.
-	if [[ "${CHROMIUM_SOURCE_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
-		addwrite "${CHROMIUM_SOURCE_DIR}"
+	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
 		epatch "${PATCHES[@]}"
 	fi
 
@@ -670,12 +772,12 @@ chrome_make() {
 }
 
 src_compile() {
-	if [[ "${CHROMIUM_SOURCE_ORIGIN}" != "LOCAL_SOURCE" &&
-	      "${CHROMIUM_SOURCE_ORIGIN}" != "SERVER_SOURCE" ]]; then
+	if [[ "${CHROME_ORIGIN}" != "LOCAL_SOURCE" &&
+	      "${CHROME_ORIGIN}" != "SERVER_SOURCE" ]]; then
 		return
 	fi
 
-	cd "${CHROMIUM_SOURCE_DIR}"/src || die "Cannot chdir to ${CHROMIUM_SOURCE_DIR}/src"
+	cd "${CHROME_ROOT}"/src || die "Cannot chdir to ${CHROME_ROOT}/src"
 
 	local chrome_targets=(
 		chrome_sandbox
@@ -753,7 +855,7 @@ install_test_resources() {
 		dest=$(dirname "${test_dir}/${resource}")
 		mkdir -p "${cache}" "${dest}"
 		rsync -a --delete --exclude=.svn --exclude=.git \
-			"${CHROMIUM_SOURCE_DIR}/src/${resource}" "${cache}"
+			"${CHROME_ROOT}/src/${resource}" "${cache}"
 		cp -al "${CHROME_CACHE_DIR}/src/${resource}" "${dest}"
 	done
 }
@@ -841,14 +943,14 @@ install_chrome_test_resources() {
 		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
 
-	cp -a "${CHROMIUM_SOURCE_DIR}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
+	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
 		"${dest}"
 }
 
 install_page_cycler_dep_resources() {
 	local test_dir="${1}"
 
-	if [[ -r "${CHROMIUM_SOURCE_DIR}/src/data/page_cycler" ]]; then
+	if [[ -r "${CHROME_ROOT}/src/data/page_cycler" ]]; then
 		echo "Copying Page Cycler Data into ${test_dir}"
 		mkdir -p "${test_dir}"
 		install_test_resources "${test_dir}" \
@@ -859,7 +961,7 @@ install_page_cycler_dep_resources() {
 install_perf_data_dep_resources() {
 	local test_dir="${1}"
 
-	if [[ -r "${CHROMIUM_SOURCE_DIR}/src/tools/perf/data" ]]; then
+	if [[ -r "${CHROME_ROOT}/src/tools/perf/data" ]]; then
 		echo "Copying Perf Data into ${test_dir}"
 		mkdir -p "${test_dir}"
 		install_test_resources "${test_dir}" tools/perf/data
@@ -869,10 +971,10 @@ install_perf_data_dep_resources() {
 install_telemetry_dep_resources() {
 	local test_dir="${1}"
 
-	if [[ -r "${CHROMIUM_SOURCE_DIR}/src/tools/telemetry" ]]; then
+	if [[ -r "${CHROME_ROOT}/src/tools/telemetry" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
-		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROMIUM_SOURCE_DIR})
+		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROME_ROOT})
 		install_test_resources "${test_dir}" $DEPS_LIST \
 			content/test/data/gpu \
 			content/test/data/media \
@@ -910,13 +1012,13 @@ src_install() {
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
 	insinto /etc/dbus-1/system.d
-	DBUS="${CHROMIUM_SOURCE_DIR}"/src/chrome/browser/chromeos/dbus
+	DBUS="${CHROME_ROOT}"/src/chrome/browser/chromeos/dbus
 	doins "${DBUS}"/org.chromium.LibCrosService.conf
 
 	# Copy Quickoffice resources for official build.
 	if use chrome_internal; then
 		insinto /usr/share/chromeos-assets/quickoffice
-		QUICKOFFICE="${CHROMIUM_SOURCE_DIR}"/src/chrome/browser/resources/chromeos/quickoffice
+		QUICKOFFICE="${CHROME_ROOT}"/src/chrome/browser/resources/chromeos/quickoffice
 		doins -r "${QUICKOFFICE}"/_locales
 		doins -r "${QUICKOFFICE}"/css
 		doins -r "${QUICKOFFICE}"/img
@@ -943,8 +1045,8 @@ src_install() {
 
 	# Chrome test resources
 	# Test binaries are only available when building chrome from source
-	if use build_tests && [[ "${CHROMIUM_SOURCE_ORIGIN}" == "LOCAL_SOURCE" ||
-		"${CHROMIUM_SOURCE_ORIGIN}" == "SERVER_SOURCE" ]]; then
+	if use build_tests && [[ "${CHROME_ORIGIN}" == "LOCAL_SOURCE" ||
+		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
 		autotest-deponly_src_install
 		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
 	fi
@@ -983,7 +1085,7 @@ src_install() {
 	#
 	# Another benefit is each version of Chrome will have the right
 	# corresponding version of deploy_chrome.
-	local cmd=( "${CHROMIUM_SOURCE_DIR}"/src/third_party/chromite/bin/deploy_chrome )
+	local cmd=( "${CHROME_ROOT}"/src/third_party/chromite/bin/deploy_chrome )
 	# Disable stripping for now, as deploy_chrome doesn't generate splitdebug files.
 	cmd+=(
 		--board="${BOARD}"
