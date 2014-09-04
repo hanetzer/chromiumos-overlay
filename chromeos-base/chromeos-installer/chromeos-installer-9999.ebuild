@@ -13,7 +13,7 @@ DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="32bit_au cros_host pam test"
@@ -25,10 +25,8 @@ DEPEND="
 			dev-cpp/gmock32[32bit_au]
 			dev-cpp/gtest32[32bit_au]
 		)
-		!32bit_au? (
-			dev-cpp/gmock
-			dev-cpp/gtest
-		)
+		dev-cpp/gmock[static-libs(+)]
+		dev-cpp/gtest[static-libs(+)]
 	)
 	!cros_host? (
 		chromeos-base/vboot_reference[32bit_au=]
