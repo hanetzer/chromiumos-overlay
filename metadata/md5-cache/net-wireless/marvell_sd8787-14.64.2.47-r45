@@ -9,4 +9,4 @@ LICENSE=Marvell-sd8787
 RESTRICT=binchecks strip test
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	c7f8686f20801fead451dd0f701f309b	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=7888aec8ab5da92fddb564711685487e
+_md5_=9eb110c64e9a70853240a9e863df3837
