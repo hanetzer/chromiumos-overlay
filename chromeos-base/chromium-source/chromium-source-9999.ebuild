@@ -32,11 +32,6 @@ src_unpack() {
 		ewarn "Only CHROMIUM_SOURCE_ORIGIN=SERVER_SOURCE makes sense"
 		ewarn "with this ebuild. Gracefully exiting."
 		return
-	elif [[ ${WHOAMI} == "chrome-bot" ]]; then
-		# TODO: Should add a sanity check that the version checked out is
-		# what we actually want.  Not sure how to do that though.
-		elog "Skipping syncing as cbuildbot ran SyncChrome for us."
-		return
 	fi
 
 	# Portage version without optional portage suffix.
