@@ -1,0 +1,16 @@
+Temporarily work around an issue with the compiler failing to handle an
+arraysize() call in base/cpu.cc on arm (crbug.com/411508).
+
+diff --git a/base/cpu.cc b/base/cpu.cc
+index ef3309d..3be7124 100644
+--- a/base/cpu.cc
++++ b/base/cpu.cc
+@@ -135,7 +135,7 @@ class LazyCpuInfoValue {
+         brand_.assign(line.substr(strlen(kModelNamePrefix)));
+       }
+ 
+-      for (size_t i = 0; i < arraysize(kUnsignedValues); i++) {
++      for (size_t i = 0; i < ARRAYSIZE_UNSAFE(kUnsignedValues); i++) {
+         const char *key = kUnsignedValues[i].key;
+         const size_t len = strlen(key);
+ 
