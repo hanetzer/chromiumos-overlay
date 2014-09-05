@@ -9,4 +9,4 @@ LICENSE=GPL-2
 REQUIRED_USE=^^ ( alex auron bayleybay beltino bolt butterfly emeraldlake2 falco fox gizmo link lumpy lumpy64 mario panther parrot peppy rambi samus slippy squawks stout stumpy arm )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e1e36806191d4feb7d047c1a63d9e924	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=e9a1d5349c47a1f793fd72777401ccdb
+_md5_=716ce31994da043e2352b27a8c95e3a3
