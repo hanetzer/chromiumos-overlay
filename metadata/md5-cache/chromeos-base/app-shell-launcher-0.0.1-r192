@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/libchromeos dev-vcs/git chromeos-base/libchrome:271506[cros-debug=] dev-vcs/git chromeos-base/libchrome:271506[cros-debug=]
+DESCRIPTION=Launcher for the app_shell binary
+EAPI=4
+IUSE=cros_host cros_workon_tree_889c074db51fd33a4b9627115ecff8e0ee35d653 profiling cros-debug cros_host cros_workon_tree_889c074db51fd33a4b9627115ecff8e0ee35d653 profiling asan clang cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/libchromeos chromeos-base/chromeos-chrome[app_shell] chromeos-base/libchrome:271506[cros-debug=] chromeos-base/libchrome:271506[cros-debug=]
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e1e36806191d4feb7d047c1a63d9e924	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	29bea42273e57f582be127aad88b2008	multilib	fac675dcccf94392371a6abee62d909f	platform	b43f651dcaae16025a75b7c0f1afe566	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=93ad7286d509a7a95ede3677124e1563
