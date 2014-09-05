@@ -44,6 +44,7 @@ FACTORY_TEST_RDEPEND="
 	dev-python/python-evdev
 	dev-python/pyudev
 	dev-util/stressapptest
+	net-ftp/pybootd
 	sys-apps/lshw
 "
 
