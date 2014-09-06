@@ -223,3 +223,17 @@ i6fork
 # Samuli Suominen <ssuominen@gentoo.org> (01 Aug 2009)
 # RealMagic Hollywood+/Creative DXR3 support
 dxr3
+
+# Michał Górny <mgorny@gentoo.org> (26 Jan 2013)
+# Mask the multilib flags globally. Unmasked in specific arches.
+abi_x86_32
+abi_x86_64
+abi_x86_x32
+# Matt Turner <mattst88@gentoo.org> (29 Jul 2013)
+abi_mips_o32
+abi_mips_n32
+abi_mips_n64
+abi_ppc_32
+abi_ppc_64
+abi_s390_32
+abi_s390_64
