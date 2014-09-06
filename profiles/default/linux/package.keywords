@@ -14,25 +14,16 @@
 # Get a newer version of pylint
 =dev-python/astng-0.21.1           amd64
 =dev-python/logilab-common-0.53.0  amd64
-=dev-python/pyusb-0.4.3            amd64
 
-=app-admin/eselect-opengl-1.2.4	amd64 arm x86
 =app-text/xmlto-0.0.24-r1	amd64 arm x86
 =sys-apps/findutils-4.4.2-r1	amd64 arm x86
-=sys-devel/gettext-0.18.1.1-r3     amd64 arm x86
 =x11-proto/glproto-1.4.14-r1	amd64 arm x86
-
-# Needed for curl >= 7.2.1.4
-=net-dns/c-ares-1.7.4		amd64 x86
 
 # Once we update past these versions, we should move the
 # keywords to the ebuild itself and drop these.
 =cross-arm-none-eabi/newlib-1.18.0	arm
 
 =sys-fs/squashfs-tools-4.2  amd64 x86
-
-# Needed for factory autotest.
-=dev-python/pyudev-0.12		amd64 x86
 
 # Required by dev-util/cmake-2.8.4-r1
 =app-arch/libarchive-2.8.1      amd64 x86
