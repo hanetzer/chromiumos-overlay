@@ -2,65 +2,40 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_DESTDIR="${S}/platform2"
 
-inherit cros-debug cros-workon libchrome udev user
+PLATFORM_NATIVE_TEST="yes"
+PLATFORM_SUBDIR="${PN}"
+
+inherit cros-workon platform udev user
 
 DESCRIPTION="Permission Broker for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
-REQUIRED_USE="asan? ( clang )"
-RESTRICT="test"
+IUSE=""
 
-RDEPEND="chromeos-base/libchromeos
+RDEPEND="
+	chromeos-base/libchromeos
 	>=dev-cpp/gflags-2.0
-	dev-cpp/glog
 	dev-libs/glib
-	dev-libs/libusb
+	sys-apps/dbus
+	dev-libs/dbus-glib
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api
-	dev-cpp/gmock
-	dev-cpp/gtest"
-
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/permission_broker"
-}
-
-src_prepare() {
-	cros-workon_src_prepare
-}
-
-src_configure() {
-	clang-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cros-workon_src_compile
-}
-
-pkg_preinst() {
-	enewuser "devbroker"
-	enewgroup "devbroker"
-	enewgroup "devbroker-access"
-}
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)"
 
 src_install() {
-	cros-workon_src_install
-	# Built binaries
-	pushd "${OUT}" >/dev/null
-	dobin permission_broker
-	popd >/dev/null
+	dobin "${OUT}"/permission_broker
 
 	# Install upstart configuration
 	insinto /etc/init
@@ -72,4 +47,21 @@ src_install() {
 
 	# Udev rules for hidraw nodes
 	udev_dorules "${FILESDIR}/99-hidraw.rules"
+}
+
+platform_pkg_test() {
+	local tests=(
+		permission_broker_unittest
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${OUT}/${test_bin}"
+	done
+}
+
+pkg_preinst() {
+	enewuser "devbroker"
+	enewgroup "devbroker"
+	enewgroup "devbroker-access"
 }
