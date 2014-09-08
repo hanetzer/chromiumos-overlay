@@ -26,7 +26,7 @@
 # If set to yes, run the test only for amd64 and x86.
 : ${PLATFORM_NATIVE_TEST:="no"}
 
-inherit cros-debug cros-workon toolchain-funcs
+inherit cros-debug cros-workon flag-o-matic toolchain-funcs
 
 [[ "${WANT_LIBCHROME}" == "yes" ]] && inherit libchrome
 
@@ -128,6 +128,7 @@ platform_configure() {
 
 platform_src_configure() {
 	cros-debug-add-NDEBUG
+	append-lfs-flags
 	clang-setup-env
 	platform_configure "${S}/${PLATFORM_SUBDIR}.gyp"
 }

@@ -450,6 +450,7 @@ src_unpack() {
 src_configure() {
 	if use platform2; then
 		cros-debug-add-NDEBUG
+		append-lfs-flags
 		clang-setup-env
 		cros-workon_check_clang_syntax
 		platform_configure
