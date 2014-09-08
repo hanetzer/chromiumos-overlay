@@ -21,6 +21,7 @@ LICENSE="GPL-3 LGPL-3 FDL-1.2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="hardened hardfp mounted_gcc +thumb vtable_verify"
+RESTRICT="strip"
 
 : ${CTARGET:=${CHOST}}
 
@@ -189,6 +190,7 @@ src_install() {
 	# they're being cross-compiled.
 	dolib.so "${D}"/usr/${CTARGET}/$(get_libdir)/lib*.so*
 	rm -rf "${D}"/usr/${CTARGET}
+	env RESTRICT="" CHOST=${CTARGET} prepstrip "${D}"
 }
 
 get_gcc_dir() {
