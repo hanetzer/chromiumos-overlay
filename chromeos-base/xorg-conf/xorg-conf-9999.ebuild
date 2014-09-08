@@ -17,10 +17,10 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="alex butterfly elan -exynos mario stout -tegra -rk32"
+IUSE="alex butterfly elan -exynos mario stout -tegra -rk32 X"
 
 RDEPEND="!chromeos-base/touchpad-linearity"
-DEPEND="x11-base/xorg-server"
+DEPEND="X? ( x11-base/xorg-server )"
 
 src_install() {
 	local board=$(get_current_board_no_variant)
