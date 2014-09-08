@@ -478,6 +478,12 @@ pkg_preinst() {
 	# created in pkg_setup instead.
 	local ug
 
+	# Create debugfs-access user and group, which is needed by the
+	# chromeos_startup script to mount /sys/kernel/debug.  This is needed
+	# by bootstat and ureadahead.
+	enewuser "debugfs-access"
+	enewgroup "debugfs-access"
+
 	if use cros_disks; then
 		for ug in cros-disks ntfs-3g avfs fuse-exfat; do
 			enewuser "${ug}"
@@ -486,7 +492,7 @@ pkg_preinst() {
 	fi
 
 	if use debugd; then
-		for ug in debugd debugd-logs debugfs-access; do
+		for ug in debugd debugd-logs; do
 			enewuser "${ug}"
 			enewgroup "${ug}"
 		done
