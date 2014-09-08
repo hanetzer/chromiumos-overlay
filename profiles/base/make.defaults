@@ -159,3 +159,7 @@ ACCEPT_LICENSE="* -@EULA -@CHROMEOS"
 
 # By default, we only start a console on tty2.
 TTY_CONSOLE="tty2"
+
+# Explicitly set the default value to "" otherwise portage will default it to
+# "*".
+CROS_WORKON_TREE=""
