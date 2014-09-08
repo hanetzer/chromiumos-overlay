@@ -36,11 +36,13 @@ ALL_BOARDS=(
 	#amd64-drm
 	amd64-generic
 	amd64-generic_embedded
+	amd64-generic_freon
 	amd64-host
 	anglar
 	#app-shell-panther
 	aries
 	arm-generic
+	arm-generic_freon
 	arm64-generic
 	auron
 	bayleybay
