@@ -20,6 +20,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libchromeos
+	net-dns/avahi-daemon
 "
 
 DEPEND="
