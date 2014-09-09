@@ -45,6 +45,8 @@ ALL_BOARDS=(
 	arm-generic_freon
 	arm64-generic
 	auron
+	auron_paine
+	auron_yuna
 	bayleybay
 	beaglebone
 	beaglebone_servo
