@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="netboot_ramfs +power_management"
+IUSE="frecon netboot_ramfs +power_management"
 
 # Dependencies used to build the netboot initramfs.
 # Look for the `idobin` and such calls.
@@ -43,6 +43,9 @@ DEPEND="chromeos-base/common-assets
 	media-gfx/ply-image
 	sys-apps/busybox[-make-symlinks]
 	sys-apps/flashrom
+	frecon? (
+		sys-apps/frecon
+	)
 	sys-apps/pv
 	sys-fs/lvm2
 	netboot_ramfs? ( ${DEPEND_netboot} )
@@ -132,6 +135,7 @@ pull_initramfs_binary() {
 
 	# For message screen display and progress bars
 	idobin /usr/bin/ply-image
+	use frecon && idobin /sbin/frecon
 	idobin /usr/bin/pv
 	idobin /usr/sbin/vpd
 

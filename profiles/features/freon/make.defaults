@@ -24,3 +24,6 @@ USE="${USE} -tty_console_tty2"
 
 # Disable VTs and framebuffer console in kernel.
 USE="${USE} -fbconsole -vtconsole"
+
+# Enable the freon console
+USE="${USE} frecon"

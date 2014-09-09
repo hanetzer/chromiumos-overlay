@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded +encrypted_stateful +udev"
+IUSE="cros_embedded +encrypted_stateful frecon +udev"
 
 DEPEND="chromeos-base/libchromeos"
 # vboot_reference for crossystem
@@ -35,6 +35,9 @@ RDEPEND="${DEPEND}
 		media-gfx/ply-image
 		sys-apps/chvt
 		sys-apps/smartmontools
+	)
+	frecon? (
+		sys-apps/frecon
 	)
 "
 

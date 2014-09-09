@@ -20,12 +20,13 @@ IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="virtual/udev
-	sys-apps/dbus"
+	sys-apps/dbus
+	media-libs/libpng
+	sys-apps/libtsm"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
-	x11-libs/libdrm
-	sys-apps/libtsm"
+	x11-libs/libdrm"
 
 src_prepare() {
 	cros-workon_src_prepare
