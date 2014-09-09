@@ -60,6 +60,11 @@ FACTORY_TEST_RDEPEND+="
 	media-libs/opencv
 "
 
+# Packages used by removable storage test.
+FACTORY_TEST_RDEPEND+="
+	sys-block/parted
+"
+
 # Packages used by network related tests.
 FACTORY_TEST_RDEPEND+="
 	dev-python/pexpect
