@@ -10,4 +10,4 @@ RDEPEND=chromeos-base/libchromeos dev-libs/dbus-glib chromeos-base/libchrome:271
 REQUIRED_USE=asan? ( clang )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e1e36806191d4feb7d047c1a63d9e924	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	29bea42273e57f582be127aad88b2008	multilib	fac675dcccf94392371a6abee62d909f	platform	b43f651dcaae16025a75b7c0f1afe566	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=af4cde357b53588b3b5754a93dad66da
+_md5_=3d80a0e5afcf9f73b61da020414fcb6e
