@@ -138,6 +138,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-glsl-allow-precision-qualifier-on-sampler-arrays
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
 	epatch "${FILESDIR}"/10.3-i965-Fix-1D-Array-Shadow-miptree.patch
+	epatch "${FILESDIR}"/10.3-configure-enable-the-gallium-loader-only-when-needed.patch
 
 	base_src_prepare
 
