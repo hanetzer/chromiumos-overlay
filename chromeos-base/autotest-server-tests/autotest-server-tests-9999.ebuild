@@ -103,6 +103,7 @@ SERVER_IUSE_TESTS="
 	+tests_hardware_StorageQualTrimStress
 	+tests_hardware_StorageStress
 	+tests_kernel_EmptyLines
+	+tests_kernel_ExternalUsbPeripheralsDetectionTest
 	+tests_kernel_MemoryRamoop
 	moblab? ( +tests_moblab_RunSuite )
 	cros_p2p? ( +tests_p2p_EndToEndTest )
