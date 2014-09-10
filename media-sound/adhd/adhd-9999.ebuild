@@ -5,6 +5,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
+CROS_WORKON_USE_VCSID=1
 
 inherit toolchain-funcs autotools cros-workon cros-board user
 
