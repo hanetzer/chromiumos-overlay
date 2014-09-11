@@ -212,6 +212,7 @@ CLIENT_IUSE_TESTS="
 	)
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
+	+tests_touch_WakeupSource
 "
 
 IUSE_TESTS="${IUSE_TESTS}
