@@ -49,6 +49,7 @@ CROS_COMMON_RDEPEND="
 	cros_ec? ( chromeos-base/ec-utils )
 	dev-util/dbus-spy
 	net-misc/rsync
+	virtual/chromeos-bsp-test
 "
 
 ################################################################################
@@ -146,7 +147,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
-	virtual/chromeos-bsp-test
 	x11-libs/libdrm-tests
 	"
 
