@@ -75,7 +75,7 @@ src_install() {
 		      MINIMAL=1 install
 	else
 		# Installing on the host
-		emake BUILD="${S}"/build-main DESTDIR="${D}/usr/bin" \
+		emake BUILD="${S}"/build-main DESTDIR="${D}/usr" \
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
 		      install
