@@ -169,9 +169,9 @@ eblit-src_unpack-post() {
 		epatch "${FILESDIR}"/2.18/glibc-2.18-hardened-inittls-nosysenter.patch
 
 		einfo "Installing Hardened Gentoo SSP and FORTIFY_SOURCE handler"
-		cp -f "${FILESDIR}"/2.18/glibc-2.18-gentoo-stack_chk_fail.c \
+		cp -f "${FILESDIR}"/2.20/glibc-2.20-gentoo-stack_chk_fail.c \
 			debug/stack_chk_fail.c || die
-		cp -f "${FILESDIR}"/2.18/glibc-2.18-gentoo-chk_fail.c \
+		cp -f "${FILESDIR}"/2.20/glibc-2.20-gentoo-chk_fail.c \
 			debug/chk_fail.c || die
 
 		# Use SIGABRT instead of SIGKILL for check handler for all cases. crbug://389360
