@@ -7,5 +7,5 @@ LICENSE=GPL-2
 RDEPEND=sys-libs/pam
 SLOT=0
 SRC_URI=http://cpbotha.net/files/pam_pwdfile/pam_pwdfile-0.99.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	multilib	fac675dcccf94392371a6abee62d909f	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	pam	3f746974e1cc47cabe3bd488c08cdc8e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=89d56a757206c9b4bbcd6c5906e42907

@@ -10,5 +10,5 @@ RDEPEND=>=sys-devel/gcc-4.3 >=sys-libs/glibc-2.9 >=media-libs/giflib-4.1.6-r1 vi
 RESTRICT=strip
 SLOT=0
 SRC_URI=amd64? ( mirror://gentoo//icedtea6-bin-core-1.6.2-r2-amd64.tar.bz2 ) x86? ( mirror://gentoo//icedtea6-bin-core-1.6.2-r2-x86.tar.bz2 ) doc? ( mirror://gentoo//icedtea6-bin-doc-1.6.2-r2.tar.bz2 ) examples? ( amd64? ( mirror://gentoo//icedtea6-bin-examples-1.6.2-r2-amd64.tar.bz2 ) x86? ( mirror://gentoo//icedtea6-bin-examples-1.6.2-r2-x86.tar.bz2 ) ) nsplugin? ( amd64? ( mirror://gentoo//icedtea6-bin-nsplugin-1.6.2-r2-amd64.tar.bz2 ) x86? ( mirror://gentoo//icedtea6-bin-nsplugin-1.6.2-r2-x86.tar.bz2 ) ) source? ( mirror://gentoo//icedtea6-bin-src-1.6.2-r2.tar.bz2 )
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	fdo-mime	9c46e30acd923ff12e325dbe96bb98b9	java-vm-2	1f212b8a508fe54444797b761bf17527	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	fdo-mime	9c46e30acd923ff12e325dbe96bb98b9	java-vm-2	1f212b8a508fe54444797b761bf17527	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=f3a00fb45638e42e88bd383c4cad5363

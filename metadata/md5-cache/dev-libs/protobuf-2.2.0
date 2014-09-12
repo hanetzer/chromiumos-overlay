@@ -9,5 +9,5 @@ LICENSE=Apache-2.0
 RDEPEND=java? ( >=virtual/jre-1.5 ) emacs? ( virtual/emacs ) java? ( >=dev-java/java-config-2.1.9-r1 source? ( app-arch/zip ) )
 SLOT=0
 SRC_URI=http://protobuf.googlecode.com/files/protobuf-2.2.0.tar.bz2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	elisp-common	3322f14f031ddc95feccd9089c9adc59	eutils	a108f00cccac414097bcbbbb5de01762	java-pkg-opt-2	31a1663247652448431dcc8c194e2752	java-utils-2	6beafc7c3d1dbae83a4478182b158f66	multilib	fac675dcccf94392371a6abee62d909f	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	elisp-common	3322f14f031ddc95feccd9089c9adc59	eutils	a108f00cccac414097bcbbbb5de01762	java-pkg-opt-2	31a1663247652448431dcc8c194e2752	java-utils-2	6beafc7c3d1dbae83a4478182b158f66	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=590e10243fc72000dba115a62388f153

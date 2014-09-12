@@ -1,13 +1,13 @@
 DEFINED_PHASES=compile configure install prepare test
-DEPEND=ssl? ( dev-libs/openssl[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?] )
+DEPEND=ssl? ( dev-libs/openssl[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?] )
 DESCRIPTION=A library to execute a function when a specific event occurs on a file descriptor
 EAPI=5
 HOMEPAGE=http://libevent.org/
-IUSE=debug +ssl static-libs test +threads abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32
+IUSE=debug +ssl static-libs test +threads abi_x86_32 abi_x86_64 abi_x86_x32 abi_mips_n32 abi_mips_n64 abi_mips_o32 abi_ppc_32 abi_ppc_64 abi_s390_32 abi_s390_64
 KEYWORDS=*
 LICENSE=BSD
-RDEPEND=ssl? ( dev-libs/openssl[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?] ) !<=dev-libs/9libs-1.0
+RDEPEND=ssl? ( dev-libs/openssl[abi_x86_32(-)?,abi_x86_64(-)?,abi_x86_x32(-)?,abi_mips_n32(-)?,abi_mips_n64(-)?,abi_mips_o32(-)?,abi_ppc_32(-)?,abi_ppc_64(-)?,abi_s390_32(-)?,abi_s390_64(-)?] ) !<=dev-libs/9libs-1.0
 SLOT=0
 SRC_URI=mirror://github/libevent/libevent/libevent-2.0.21-stable.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	libtool	eba09ed440f2692f73024ff3621a1f4b	multibuild	c2f33b0eedd7bcfd5bc226baa8da7837	multilib	fac675dcccf94392371a6abee62d909f	multilib-build	77b596a6efa6ef0ffcec9152ed239121	multilib-minimal	a481090a413ba6970bd9643494ef982f	multiprocessing	1512bdfe7004902b8cd2c466fc3df772	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	libtool	eba09ed440f2692f73024ff3621a1f4b	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multilib-build	9eb4b5fb858228316d8bb32ada51f6a5	multilib-minimal	5bbdc77877c1aa3c6bd89ca3f9196d11	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=b20ba374cb1c03a28736d668e0a51455

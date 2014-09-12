@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=net-libs/libpcap net-dialup/ppp
 SLOT=0
 SRC_URI=ftp://ftp.xelerance.com/xl2tpd/xl2tpd-1.3.0.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	fac675dcccf94392371a6abee62d909f	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=170b0feceac8f129fcf6289fc681e35c
