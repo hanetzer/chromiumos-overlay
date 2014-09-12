@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=!chromeos-base/autotest-telemetry chromeos-base/autotest-deps-graphics chromeos-base/autotest-deps-webgl-clear chromeos-base/autotest-deps-webgl-mpd chromeos-base/autotest-deps-webgl-perf chromeos-base/chromeos-chrome chromeos-base/shill-test-scripts chromeos-base/telemetry tests_graphics_Stress? ( x11-apps/xsendevt ) vaapi? ( x11-libs/libva ) ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	e1e36806191d4feb7d047c1a63d9e924	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=a67f129e80706619ec4b8e320ba25cbb
+_md5_=3077285c0ea8c8094cd36faf5f4b7530
