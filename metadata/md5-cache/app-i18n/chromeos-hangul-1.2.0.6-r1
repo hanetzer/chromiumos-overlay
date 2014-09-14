@@ -1,0 +1,10 @@
+DEFINED_PHASES=install prepare
+DESCRIPTION=The Korean Hangul input engine for IME extension API
+EAPI=4
+HOMEPAGE=https://code.google.com/p/google-input-tools/
+KEYWORDS=*
+LICENSE=Apache-2.0
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/chromeos-hangul-1.2.0.6.tar.gz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=18f985ac0502cfbba9e711c29fbbfdcf
