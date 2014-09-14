@@ -79,6 +79,7 @@ src_configure() {
 		--disable-lto
 		--disable-multilib
 		--disable-openmp
+		--disable-libcilkrts
 		--with-system-zlib
 	)
 
