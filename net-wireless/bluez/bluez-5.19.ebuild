@@ -173,6 +173,7 @@ src_install() {
 	newins "${FILESDIR}/${P}-upstart.conf" bluetoothd.conf
 
 	udev_dorules "${FILESDIR}/99-uhid.rules"
+	udev_dorules "${FILESDIR}/99-uinput.rules"
 	udev_dorules "${FILESDIR}/99-ps3-gamepad.rules"
 
 	# We don't preserve /var/lib in images, so nuke anything we preseed.
