@@ -6,12 +6,12 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/jabra_vold"
 CROS_WORKON_LOCALNAME="jabra_vold"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon toolchain-funcs udev user
 
 DESCRIPTION="A simple daemon to handle Jabra speakerphone volume change"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
@@ -27,6 +27,10 @@ src_compile() {
 src_install() {
 	dosbin jabra_vold
 
-	insinto /etc/udev/rules.d
-	doins 99-jabra.rules
+	udev_dorules 99-jabra{,-usbmon}.rules
+}
+
+pkg_postinst() {
+	enewuser "volume"
+	enewgroup "volume"
 }

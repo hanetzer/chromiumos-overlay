@@ -1,2 +1,0 @@
-# Make the /dev/uinput device only accessible by the Bluetooth daemon.
-SUBSYSTEM=="misc", KERNEL=="uinput", OWNER="bluetooth", MODE="0600"

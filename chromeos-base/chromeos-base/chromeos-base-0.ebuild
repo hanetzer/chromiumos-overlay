@@ -94,6 +94,7 @@ pkg_setup() {
 	enewgroup "utmp"
 	enewgroup "nogroup"
 	add_daemon_user "nobody"
+	enewgroup "uinput"
 }
 
 pkg_preinst() {
