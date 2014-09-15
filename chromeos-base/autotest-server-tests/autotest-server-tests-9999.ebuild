@@ -118,6 +118,7 @@ SERVER_IUSE_TESTS="
 	power_management? (
 		+tests_platform_PowerStatusStress
 		+tests_power_DarkResumeShutdownServer
+		+tests_power_DeferForFlashrom
 		+tests_power_SuspendShutdown
 	)
 	+tests_platform_Powerwash
