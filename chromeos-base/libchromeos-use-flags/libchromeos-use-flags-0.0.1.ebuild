@@ -37,6 +37,7 @@ IUSE="
 	ozone_platform_dri
 	ozone_platform_gbm
 	test
+	touchview
 	+X
 "
 
