@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-auth/pam_pwdfile/pam_pwdfile-0.99.ebuild,v 1.5 2007/11/04 15:38:35 flameeyes Exp $
 
+EAPI=4
+
 inherit flag-o-matic pam
 
 DESCRIPTION="PAM module for authenticating against passwd-like files."
@@ -13,9 +15,7 @@ KEYWORDS="*"
 IUSE=""
 DEPEND="sys-libs/pam"
 
-src_compile() {
-	append-flags -DNDEBUG
-	tc-export CC
+src_prepare() {
 	# Make upstream Makefile respect the environment.
 	# In addition, it needs to use gcc for -shared not ld.
 	sed -i -e 's/CFLAGS =/CFLAGS +=/' \
@@ -24,7 +24,16 @@ src_compile() {
 	       -e 's/CC =/CC ?=/' \
 	       -e 's/$(LD)/$(CC)/' \
 	   contrib/Makefile.standalone
-	emake -f contrib/Makefile.standalone || die "emake failed"
+	epatch "${FILESDIR}"/${P}-no-min-pwd-length.patch
+}
+
+src_configure() {
+	append-cflags -DNDEBUG
+	tc-export CC
+}
+
+src_compile() {
+	emake -f contrib/Makefile.standalone
 }
 
 src_install() {
