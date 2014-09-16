@@ -4,7 +4,8 @@
 
 EAPI=4
 
-inherit eutils toolchain-funcs flag-o-matic
+# TODO(deymo): Remove "cros-board" once crbug.com/404018 is fixed.
+inherit cros-board eutils toolchain-funcs flag-o-matic
 
 DESCRIPTION="bsdiff: Binary Differencer using a suffix alg"
 HOMEPAGE="http://www.daemonology.net/bsdiff/"
