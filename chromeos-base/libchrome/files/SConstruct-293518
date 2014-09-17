@@ -186,6 +186,7 @@ base_libs = [
                 object_proxy.cc
                 property.cc
                 string_util.cc
+                util.cc
                 values_util.cc
                 """,
     'prefix' : 'dbus',
