@@ -33,7 +33,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	local v
 	for v in "${LIBCHROME_VERS[@]}"; do
-		./preinstall.sh "${OUT}" "${v}"
+		./libbuffet/preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}/lib/libbuffet-${v}.so"
 		doins "${OUT}/lib/libbuffet-${v}.pc"
 	done
