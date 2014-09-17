@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst postrm prepare setup unpack
+DEPEND=dev-python/setuptools dev-vcs/git =dev-lang/python-2*
+DESCRIPTION=Patman tool (from U-Boot) for sending patches upstream
+EAPI=4
+HOMEPAGE=http://www.denx.de/wiki/U-Boot
+IUSE=cros_host cros_workon_tree_b0cb14129f04712ff37acc7d1216caa0227b3f76 profiling
+KEYWORDS=amd64 x86
+LICENSE=GPL-2
+RDEPEND==dev-lang/python-2*
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	distutils	c2658824b3debc637c77b58e1d658fab	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=02c9daf9e9b5a339a921a4ab1e5f0769
