@@ -19,9 +19,9 @@ In developer mode, it is possible to
 chromeos-setdevpasswd
 
 If you are having trouble booting a self-signed kernel, you may need to
-install the developer firmware.  To do so, run the following as root:
+enable USB booting.  To do so, run the following as root:
 
-chromeos-firmwareupdate --mode=todev
+enable_dev_usb_boot
 
 Have fun and send patches!
 
