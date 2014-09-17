@@ -1,0 +1,12 @@
+DEFINED_PHASES=info install preinst setup test unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Development utilities for ChromiumOS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host test cros_host cros_workon_tree_d91c91251d18d1004c41fbd0b3a6383901975e25 profiling
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=cros_host? ( app-emulation/qemu ) app-portage/gentoolkit cros_host? ( app-shells/bash ) >=chromeos-base/devserver-0.0.2 !cros_host? ( !chromeos-base/gmerge ) dev-lang/python dev-util/shflags cros_host? ( dev-util/crosutils )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python	305197b0aa1194fa3ef67ca21f6faa7e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=4752fd2d2101f0f1dcbba599ccfbbd26
