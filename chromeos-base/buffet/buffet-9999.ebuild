@@ -49,9 +49,9 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins etc/dbus-1/org.chromium.Buffet.conf
 
-	# Base GCD command definitions.
+	# Base GCD command and state definitions.
 	insinto /etc/buffet
-	doins etc/buffet/gcd.json
+	doins etc/buffet/*
 
 	# Upstart script.
 	insinto /etc/init
