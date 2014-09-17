@@ -49,6 +49,7 @@ src_install() {
 		scoped_nss_types.h \
 		scoped_test_nss_db.h \
 		secure_hash.h \
+		secure_util.h \
 		sha2.h \
 		signature_creator.h \
 		signature_verifier.h

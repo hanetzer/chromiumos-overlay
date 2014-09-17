@@ -20,6 +20,7 @@ sources = env.Split("""
                     rsa_private_key_nss.cc
                     scoped_test_nss_db.cc
                     secure_hash_default.cc
+                    secure_util.cc
                     sha2.cc
                     signature_creator_nss.cc
                     signature_verifier_nss.cc
