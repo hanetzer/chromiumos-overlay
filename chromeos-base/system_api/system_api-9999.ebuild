@@ -24,7 +24,7 @@ inherit cros-workon toolchain-funcs platform
 
 DESCRIPTION="Chrome OS system API (D-Bus service names, etc.)"
 HOMEPAGE="http://www.chromium.org/"
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
