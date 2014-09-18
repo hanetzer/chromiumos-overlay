@@ -39,8 +39,6 @@ src_install() {
 	dosbin "${OUT}"/cromo
 	dolib.so "${OUT}"/libcromo.a
 
-	dobin mm-cromo-command
-
 	insinto /etc/dbus-1/system.d
 	doins org.chromium.ModemManager.conf
 
