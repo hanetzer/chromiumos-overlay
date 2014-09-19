@@ -47,6 +47,7 @@ IUSE_TESTS=(
 
 	# Tests that depend on telemetry.
 	+tests_accessibility_Sanity
+	+tests_accessibility_ChromeVoxSound
 	+tests_audio_AudioCorruption
 	+tests_audio_SeekAudioFeedback
 	+tests_bluetooth_AdapterSanity
