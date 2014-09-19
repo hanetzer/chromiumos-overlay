@@ -157,6 +157,10 @@ eblit-src_unpack-pre() {
 	[[ -n ${GCC_BOOTSTRAP_VER} ]] && use multilib && unpack gcc-${GCC_BOOTSTRAP_VER}-multilib-bootstrap.tar.bz2
 }
 
+eblit-src_compile-pre() {
+	EXTRA_ECONF+=" --with-bugurl=http://crbug.com/new"
+}
+
 eblit-src_unpack-post() {
 	cd "${S}"
 	epatch "${FILESDIR}"/local/glibc-2.19-file-mangle.patch
