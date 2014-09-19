@@ -268,7 +268,7 @@ src_compile_depthcharge() {
 
 	# If unified depthcharge is being used always include ramstage_file.
 	if use unified_depthcharge; then
-		if use vboot2 && [ "${BOARD_USE}" = "nyan_blaze" ]; then
+		if use vboot2; then
 			serial+=( --add-blob romstage "${romstage_file}.serial" )
 			silent+=( --add-blob romstage "${romstage_file}" )
 		fi
