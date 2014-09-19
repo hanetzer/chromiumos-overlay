@@ -11,4 +11,5 @@ SLOT="0"
 
 RDEPEND="
 	chromeos-base/openssh-server-init
+	virtual/chromeos-bsp-dev-root
 "
