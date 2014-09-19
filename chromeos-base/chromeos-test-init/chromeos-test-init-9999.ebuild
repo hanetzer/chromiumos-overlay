@@ -13,6 +13,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="X"
 
 src_unpack() {
 	cros-workon_src_unpack
@@ -22,5 +23,7 @@ src_unpack() {
 src_install() {
 	insinto /etc/init
 	doins test-init/*.conf
+
+	use X || rm -f "${D}"/etc/init/vnc.conf
 }
 
