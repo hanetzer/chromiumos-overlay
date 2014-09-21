@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="-app_shell +autotest +cellular -chromeless_tty cros_p2p -moblab +power_management +tpm"
+IUSE="-app_shell +autotest +cellular -chromeless_tty cros_p2p -moblab +power_management +readahead +tpm"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -125,7 +125,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_RebootAfterUpdate
 	+tests_platform_ServoPowerStateController
 	+tests_platform_SyncCrash
-	+tests_platform_UReadAheadServer
+	readahead? ( +tests_platform_UReadAheadServer )
 	+tests_platform_Vpd
 	+tests_power_RPMTest
 	+tests_security_kASLR

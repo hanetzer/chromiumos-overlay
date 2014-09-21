@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 USE="-alsa -bluetooth chromeless_tty cros_embedded -encrypted_stateful"
-USE="${USE} -fonts mtd -pam -profile -vaapi -vpn -X"
+USE="${USE} -fonts mtd -pam -profile -readahead -vaapi -vpn -X"
 
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""

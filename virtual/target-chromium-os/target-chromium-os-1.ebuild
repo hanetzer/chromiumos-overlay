@@ -12,8 +12,8 @@ KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
 	+crash_reporting cros_ec cros_embedded dptf feedback +fonts gobi mtd
-	+network_time nfc pam peerd +power_management +shill +syslog +tpm
-	watchdog wimax X"
+	+network_time nfc pam peerd +power_management +readahead +shill +syslog
+	+tpm watchdog wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
 
@@ -114,6 +114,7 @@ CROS_COMMON_RDEPEND+="
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )
+	readahead? ( sys-apps/ureadahead )
 	pam? ( sys-auth/pam_pwdfile )
 	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
@@ -226,7 +227,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/pv
 	sys-apps/rootdev
 	sys-apps/upstart
-	sys-apps/ureadahead
 	sys-fs/e2fsprogs
 	sys-fs/udev
 	virtual/assets
