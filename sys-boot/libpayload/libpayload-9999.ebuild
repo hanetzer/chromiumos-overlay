@@ -8,7 +8,7 @@ DESCRIPTION="coreboot's libpayload library"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="-* ~amd64 ~arm ~arm64 ~x86"
+KEYWORDS="~*"
 IUSE=""
 
 RDEPEND=""
