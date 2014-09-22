@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/libchromeos dev-libs/dbus-glib chromeos-base/system_api test? ( dev-cpp/gmock ) dev-cpp/gtest dev-vcs/git dev-vcs/git dev-vcs/git chromeos-base/libchrome:293518[cros-debug=]
+DESCRIPTION=Feedback service for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_workon_tree_1fdca3453039497eed419ab94e2206989b8028c9 profiling cros-debug cros_host cros_workon_tree_1fdca3453039497eed419ab94e2206989b8028c9 profiling asan clang cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/libchromeos dev-libs/dbus-glib chromeos-base/libchrome:293518[cros-debug=]
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	9ed698ac7057dcddb376e0320502d1af	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	platform	6c65c61d968aab6e3e2db7c82b68456d	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=a3bbb3eb97c9eb23d97749f87347eaa9
