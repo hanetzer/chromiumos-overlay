@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit eutils
+inherit eutils udev
 
 DESCRIPTION="Linux kernel laptop_mode user-space utilities"
 HOMEPAGE="http://www.samwel.tk/laptop_mode/"
@@ -84,8 +84,8 @@ src_install() {
 
 	dodoc Documentation/laptop-mode.txt README
 
-	insinto /lib/udev/rules.d
-	doins etc/rules/99-laptop-mode.rules
+	udev_dorules etc/rules/99-laptop-mode.rules
+	rm "${D}"/etc/udev/rules.d/99-laptop-mode.rules || die
 
 	insinto /etc/laptop-mode/conf.d/board-specific
 	doins "${FILESDIR}/usb-autosuspend-cros.conf"
