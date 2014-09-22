@@ -1,7 +1,7 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="2"
+EAPI="4"
 
 inherit eutils
 
@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="-acpi -apm bluetooth -hal -scsi"
+IUSE="-acpi -apm bluetooth -hal -pmu -scsi"
 
 DEPEND=""
 
@@ -58,10 +58,10 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0028-usb-autosuspend-on-ac.patch" \
         )
 
-src_unpack() {
-	unpack ${A}
-	for PATCH in "${PATCHES[@]}"; do
-		epatch "${FILESDIR}/$PATCH"
+src_prepare() {
+	cd "${WORKDIR}"
+	for p in "${PATCHES[@]}"; do
+		epatch "${FILESDIR}/${p}"
 	done
 }
 
@@ -83,10 +83,6 @@ src_install() {
 		./install.sh || die "Install failed."
 
 	dodoc Documentation/laptop-mode.txt README
-	newinitd "${FILESDIR}"/laptop_mode.init-1.4 laptop_mode
-
-	exeinto /etc/pm/power.d
-	newexe "${FILESDIR}"/laptop_mode_tools.pmutils laptop_mode_tools
 
 	insinto /lib/udev/rules.d
 	doins etc/rules/99-laptop-mode.rules
