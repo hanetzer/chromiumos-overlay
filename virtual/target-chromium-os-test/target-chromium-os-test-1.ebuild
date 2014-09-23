@@ -54,6 +54,7 @@ CROS_COMMON_RDEPEND="
 	peerd? ( dev-python/dpkt )
 	dev-util/dbus-spy
 	net-misc/rsync
+	sys-apps/memtester
 	virtual/chromeos-bsp-test
 "
 
@@ -144,7 +145,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/file
 	sys-apps/findutils
 	sys-apps/kbd
-	sys-apps/memtester
 	sys-apps/shadow
 	sys-devel/binutils
 	sys-process/procps
