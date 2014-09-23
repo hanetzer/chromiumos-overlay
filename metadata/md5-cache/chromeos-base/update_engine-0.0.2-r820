@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/system_api dev-cpp/gmock dev-cpp/gtest sys-fs/e2fsprogs app-arch/bzip2 chromeos-base/chromeos-ca-certificates chromeos-base/libchromeos chromeos-base/metrics chromeos-base/vboot_reference cros_p2p? ( chromeos-base/p2p ) >=dev-cpp/gflags-2.0 dev-libs/dbus-glib dev-libs/expat dev-libs/glib dev-libs/libpcre dev-libs/openssl dev-libs/protobuf dev-util/bsdiff net-misc/curl sys-apps/rootdev dev-vcs/git dev-vcs/git chromeos-base/libchrome:293518[cros-debug=]
+DESCRIPTION=Chrome OS Update Engine
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_p2p -delta_generator -hwid_override +power_management cros-debug cros_host cros_workon_tree_dde0efe9d494a5aea8c81e5a220370363cb30f97 profiling cros-debug cros_host cros_workon_tree_dde0efe9d494a5aea8c81e5a220370363cb30f97 profiling asan clang cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-installer app-arch/bzip2 chromeos-base/chromeos-ca-certificates chromeos-base/libchromeos chromeos-base/metrics chromeos-base/vboot_reference cros_p2p? ( chromeos-base/p2p ) >=dev-cpp/gflags-2.0 dev-libs/dbus-glib dev-libs/expat dev-libs/glib dev-libs/libpcre dev-libs/openssl dev-libs/protobuf dev-util/bsdiff net-misc/curl sys-apps/rootdev power_management? ( chromeos-base/power_manager ) delta_generator? ( sys-fs/e2fsprogs ) virtual/update-policy chromeos-base/libchrome:293518[cros-debug=]
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	9ed698ac7057dcddb376e0320502d1af	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	platform	6c65c61d968aab6e3e2db7c82b68456d	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=6d4e1d57ed5a4b333cccc058c7044b01
