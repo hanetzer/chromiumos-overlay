@@ -1,9 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Install the upstart job that launches the openssh-server.
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=chromeos-base/platform2
-SLOT=0
-_md5_=dfcf56b375ef9f0e0f75bb1b9095e0ca
