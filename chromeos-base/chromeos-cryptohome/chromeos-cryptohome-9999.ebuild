@@ -13,7 +13,7 @@ DESCRIPTION="Encrypted home directories for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang test"
