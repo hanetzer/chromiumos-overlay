@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure info prepare setup unpack
+DEPEND=doc? ( dev-libs/libxslt ) doc? ( app-doc/doxygen ) virtual/pkgconfig >=dev-cpp/ctemplate-1.0 dev-vcs/git || ( >=sys-devel/automake-1.11.1:1.11 >=sys-devel/automake-1.12:1.12 ) >=sys-devel/autoconf-2.68 sys-devel/libtool
+DESCRIPTION=C++ D-Bus bindings
+EAPI=4
+HOMEPAGE=http://www.freedesktop.org/wiki/Software/dbus-c%2B%2B
+IUSE=-asan -clang debug doc +glib cros_host cros_workon_tree_04ad60f8ab34992d8b0ef8927f83c6200e4c7470 profiling
+KEYWORDS=*
+LICENSE=LGPL-2
+RDEPEND=glib? ( >=dev-libs/dbus-glib-0.76 ) glib? ( >=dev-libs/glib-2.19:2 ) >=sys-apps/dbus-1.0
+REQUIRED_USE=asan? ( clang )
+SLOT=1
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=79abb623f4864cf60f585114b215609a
