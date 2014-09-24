@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install postinst prepare setup unpack
+DEPEND=!<chromeos-base/autotest-deps-0.0.3 sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf dev-libs/dbus-glib dev-vcs/git
+DESCRIPTION=Autotest cellular deps
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest cros_host cros_workon_tree_655ec24b6f4c4a86749db0699e8308d5493ab67d profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!<chromeos-base/autotest-deps-0.0.3 sys-fs/udev[gudev] chromeos-base/autotest-fakemodem-conf dev-libs/dbus-glib ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	autotest-deponly	9b1e5d19c437abea0e7c0fa90c192abd	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=ebdf0519f51909b1bff7ebaa23999088
