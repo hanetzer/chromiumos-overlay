@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-fs/avfs/avfs-1.0.1.ebuild,v 1.1 2012/06/13 07:58:44 radhermit Exp $
 
 EAPI=4
-inherit autotools eutils
+inherit autotools eutils multilib
 
 DESCRIPTION="AVFS is a virtual filesystem that allows browsing of compressed files."
 HOMEPAGE="http://sourceforge.net/projects/avf"
@@ -12,7 +12,7 @@ SRC_URI="mirror://sourceforge/avf/${P}.tar.bz2"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="static-libs +lzma"
+IUSE="extfs static-libs +lzma"
 
 RDEPEND=">=sys-fs/fuse-2.4
 	sys-libs/zlib
@@ -55,9 +55,16 @@ src_install() {
 	# remove cruft
 	rm "${D}"/usr/bin/{davpass,ftppass} || die
 
+	if use extfs; then
+		# install extfs docs
+		dosym /usr/$(get_libdir)/avfs/extfs/README /usr/share/doc/${PF}/README.extfs
+	else
+		# remove all the extfs modules
+		rm -r "${D}"/usr/$(get_libdir)/avfs/extfs/ || die
+	fi
+
 	# install docs
 	dodoc doc/{api-overview,background,FORMAT,INSTALL.*,README.avfs-fuse}
-	dosym /usr/lib/avfs/extfs/README /usr/share/doc/${PF}/README.extfs
 
 	docinto scripts
 	dodoc scripts/{avfscoda*,*pass}
