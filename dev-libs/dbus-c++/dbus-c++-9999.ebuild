@@ -13,13 +13,14 @@ SRC_URI=""
 LICENSE="LGPL-2"
 SLOT="1"
 KEYWORDS="~*"
-IUSE="-asan -clang debug doc +glib"
+IUSE="-asan -clang cros_host debug doc +glib"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	glib? ( >=dev-libs/dbus-glib-0.76 )
 	glib? ( >=dev-libs/glib-2.19:2 )
-	>=sys-apps/dbus-1.0"
+	>=sys-apps/dbus-1.0
+	cros_host? ( >=dev-cpp/ctemplate-1.0 )"
 DEPEND="${DEPEND}
 	doc? ( dev-libs/libxslt )
 	doc? ( app-doc/doxygen )
