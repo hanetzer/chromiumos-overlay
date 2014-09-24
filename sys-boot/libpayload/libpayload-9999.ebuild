@@ -34,11 +34,10 @@ src_compile() {
 		export CROSS_COMPILE=${CHOST}-
 	fi
 
-	local extra_flags=""
+	local extra_flags="-ffunction-sections"
 	if use x86 || use amd64 ; then
-		extra_flags="-mpreferred-stack-boundary=2 -ffunction-sections"
+		extra_flags+=" -mpreferred-stack-boundary=2"
 	elif use arm || use arm64 ; then
-		extra_flags="-ffunction-sections"
 		# Export the known cross compilers for ARM systems. Include
 		# both v7a and 64-bit armv8 compilers so there isn't a reliance
 		# on what the default profile is for exporting a compiler. The
@@ -88,13 +87,10 @@ install_libpayload() {
 	if [[ -n "${CHROMEOS_LIBPAYLOAD_ARCH_DIR}" ]] ; then
 	      	archdir="${CHROMEOS_LIBPAYLOAD_ARCH_DIR}"
 	else
-		if use x86 || use amd64 ; then
-			archdir="x86"
-		elif use arm ; then
-		     archdir="arm"
-		elif use arm64 ; then
-		     archdir="arm64"
-		fi
+		case ${ARCH} in
+		amd64) archdir="x86";;
+		*) archdir=${ARCH};;
+		esac
 	fi
 
 	insinto "${destdir}"/lib
