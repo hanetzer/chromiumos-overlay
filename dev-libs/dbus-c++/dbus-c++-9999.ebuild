@@ -19,12 +19,12 @@ REQUIRED_USE="asan? ( clang )"
 RDEPEND="
 	glib? ( >=dev-libs/dbus-glib-0.76 )
 	glib? ( >=dev-libs/glib-2.19:2 )
-	>=sys-apps/dbus-1.0
-	>=dev-cpp/ctemplate-1.0"
+	>=sys-apps/dbus-1.0"
 DEPEND="${DEPEND}
 	doc? ( dev-libs/libxslt )
 	doc? ( app-doc/doxygen )
-	virtual/pkgconfig"
+	virtual/pkgconfig
+	>=dev-cpp/ctemplate-1.0"
 
 src_prepare() {
 	eautoreconf
