@@ -1,7 +1,8 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-USE="-alsa -bluetooth chromeless_tty cros_embedded -encrypted_stateful -fonts mtd -pam -profile -vaapi -X"
+USE="-alsa -bluetooth chromeless_tty cros_embedded -encrypted_stateful"
+USE="${USE} -fonts mtd -pam -profile -vaapi -vpn -X"
 
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""
