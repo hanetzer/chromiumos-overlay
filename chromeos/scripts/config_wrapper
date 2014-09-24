@@ -14,7 +14,7 @@
 
 wrap=${0##*/}
 
-if [[ -z ${CHOST} ]] ; then
+if [[ -z ${CHOST} ]]; then
   # Let's figure out the answer from $0.  Do it piece by piece as
   # we cannot assume the number of components in the target tuple
   # or in the config script name.  Tuples can have 1, 2, 3, or 4
@@ -23,9 +23,9 @@ if [[ -z ${CHOST} ]] ; then
   parts=( ${wrap//-/ } )
   i=$(( ${#parts[@]} - 1 ))
   cfg=${parts[${i}]}
-  while [[ $(( --i )) -ge 0 ]] ; do
+  while [[ $(( --i )) -ge 0 ]]; do
     cfg="${parts[${i}]}-${cfg}"
-    if [[ -e ${SYSROOT}/usr/bin/${cfg} ]] ; then
+    if [[ -e ${SYSROOT}/usr/bin/${cfg} ]]; then
       CHOST=${wrap%-${cfg}}
       type -P ${CHOST}-gcc >/dev/null && break
       unset CHOST
@@ -35,7 +35,7 @@ else
   cfg=${wrap#${CHOST}-}
 fi
 
-if [[ -z ${CHOST} ]] || [[ -z ${SYSROOT} ]] ; then
+if [[ -z ${CHOST} ]] || [[ -z ${SYSROOT} ]]; then
   echo "${wrap}: please set CHOST/SYSROOT in the env" 1>&2
   exit 1
 fi

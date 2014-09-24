@@ -1,5 +1,5 @@
 # These are only used at build time.
-if [[ $(cros_target) != "cros_host" ]] ; then
+if [[ $(cros_target) != "cros_host" ]]; then
 	timezone_mask="
 		/usr/bin/tzselect
 		/usr/sbin/zdump

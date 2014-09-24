@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # We install these with our chromeos-base package.
-if [[ $(cros_target) != "cros_host" ]] ; then
+if [[ $(cros_target) != "cros_host" ]]; then
   protobuf_mask="
     /usr/bin/protoc
     /usr/lib*/libprotoc.so*

@@ -9,7 +9,7 @@ cros_pre_src_prepare_enable_cxx_exceptions() {
 # dbusxx-* tools are used to generate XML files from a running dbus interface
 # and generate C++ code from that XML files. They are only interesting while
 # developing a dbus service. Install it only on the host.
-if [[ $(cros_target) != "cros_host" ]] ; then
+if [[ $(cros_target) != "cros_host" ]]; then
 	dbus_cxx_mask="
 		/usr/bin/dbusxx-xml2cpp
 		/usr/bin/dbusxx-introspect

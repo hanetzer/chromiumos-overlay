@@ -4,7 +4,7 @@
 # are now in /usr/local/etc and /usr/local/lib.  So set the prefix
 # to /usr/local so it works in those images.
 cros_pre_src_configure_imagemagick_local() {
-	if [[ $(cros_target) != "cros_host" ]] ; then
+	if [[ $(cros_target) != "cros_host" ]]; then
 		EXTRA_ECONF+="
 			--prefix=/usr/local
 			--libdir=/usr/local/$(get_libdir)

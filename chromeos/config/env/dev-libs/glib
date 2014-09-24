@@ -13,7 +13,7 @@ export ac_cv_alignof_unsigned_long=8
 
 # gresource tool is used to debug ELF files that use GResource to store blobs
 # in the binary file. Install it only on the host.
-if [[ $(cros_target) != "cros_host" ]] ; then
+if [[ $(cros_target) != "cros_host" ]]; then
 	glib_mask="
 		/usr/bin/gresource
 	"
