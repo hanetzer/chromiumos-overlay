@@ -11,7 +11,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 PLATFORM_SUBDIR="chromeos-dbus-bindings"
 PLATFORM_NATIVE_TEST="yes"
 
-inherit cros-workon platform
+inherit cros-workon platform libchrome
 
 DESCRIPTION="Utility for building Chrome D-Bus bindings from an XML description"
 HOMEPAGE="http://dev.chromium.org/chromium-os/platform"
@@ -22,7 +22,9 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="test"
 
-RDEPEND=""
+RDEPEND="chromeos-base/libchromeos
+	dev-libs/expat
+	sys-apps/dbus"
 DEPEND="
 	${RDEPEND}
 	dev-cpp/gtest
