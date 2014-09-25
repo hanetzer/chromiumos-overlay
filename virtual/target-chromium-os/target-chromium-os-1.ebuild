@@ -173,7 +173,6 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 ################################################################################
 
 CROS_X86_RDEPEND="
-	sys-boot/syslinux
 	dptf? ( sys-power/dptf )
 "
 CROS_ARM_RDEPEND="
@@ -234,7 +233,13 @@ CROS_RDEPEND="${CROS_RDEPEND}
 "
 
 # Build time dependencies
+CROS_X86_DEPEND="
+	sys-boot/syslinux
+"
+
 CROS_DEPEND="${CROS_RDEPEND}
+	x86? ( ${CROS_X86_DEPEND} )
+	amd64? ( ${CROS_X86_DEPEND} )
 "
 
 ################################################################################

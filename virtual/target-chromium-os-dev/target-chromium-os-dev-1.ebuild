@@ -37,6 +37,7 @@ CROS_X86_RDEPEND="
 	power_management? ( dev-util/turbostat )
 	sys-apps/dmidecode
 	sys-apps/pciutils
+	sys-boot/syslinux
 	x11-apps/intel-gpu-tools
 "
 
