@@ -72,6 +72,7 @@ sys-apps/flashrom	static
 sys-apps/smartmontools	minimal
 sys-block/fio		aio
 sys-block/parted	device-mapper
+sys-fs/avfs		-extfs
 sys-fs/lvm2		-lvm1 -readline -static device-mapper-only
 sys-fs/mtools		-X
 sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
