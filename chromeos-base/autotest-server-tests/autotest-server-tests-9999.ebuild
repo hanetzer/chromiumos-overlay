@@ -81,6 +81,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_FwScreenPressPower
 	+tests_firmware_InvalidUSB
 	+tests_firmware_LegacyRecovery
+	+tests_firmware_Mosys
 	+tests_firmware_RecoveryButton
 	+tests_firmware_RollbackFirmware
 	+tests_firmware_RollbackKernel
