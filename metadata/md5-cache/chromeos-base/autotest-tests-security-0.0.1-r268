@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare setup unpack
+DEPEND=!<chromeos-base/autotest-tests-0.0.3 dev-vcs/git
+DESCRIPTION=Security autotests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=-app_shell +autotest -chromeless_tty +seccomp !chromeless_tty? ( !app_shell? ( +tests_security_EnableChromeTesting +tests_security_RendererSandbox +tests_security_RestartJob ) ) seccomp? ( +tests_security_Minijail_seccomp +tests_security_SeccompSyscallFilters ) +tests_security_AccountsBaseline +tests_security_ASLR +tests_security_ChromiumOSLSM +tests_security_DbusMap +tests_security_DbusOwners +tests_security_Firewall +tests_security_HardlinkRestrictions +tests_security_HtpdateHTTP +tests_security_Minijail0 +tests_security_ModuleLocking +tests_security_OpenFDs +tests_security_OpenSSLBlacklist +tests_security_OpenSSLRegressions +tests_security_ProtocolFamilies +tests_security_ptraceRestrictions +tests_security_ReservedPrivileges +tests_security_RootCA +tests_security_RootfsOwners +tests_security_RootfsStatefulSymlinks +tests_security_RuntimeExecStack +tests_security_SandboxedServices +tests_security_StatefulPermissions +tests_security_SuidBinaries +tests_security_SymlinkRestrictions +tests_security_SysLogPermissions +tests_security_SysVIPC x86? ( +tests_security_x86Registers ) amd64? ( +tests_security_x86Registers ) cros_host cros_workon_tree_468fc9a3d4a3bf54c90766d84b2bc647b2e5df5a profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!<chromeos-base/autotest-tests-0.0.3 ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=0829e21ca68e6f0790bdafef5133269e
