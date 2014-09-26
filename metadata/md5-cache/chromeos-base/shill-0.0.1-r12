@@ -3,11 +3,11 @@ DEPEND=chromeos-base/bootstat tpm? ( chromeos-base/chaps ) chromeos-base/chromeo
 DESCRIPTION=Shill Connection Manager for Chromium OS
 EAPI=4
 HOMEPAGE=http://src.chromium.org
-IUSE=+cellular +seccomp test +tpm +vpn wimax cros_host cros_workon_tree_ profiling cros-debug cros_host cros_workon_tree_ profiling asan clang cros_host
-KEYWORDS=~*
+IUSE=+cellular +seccomp test +tpm +vpn wimax cros_host cros_workon_tree_154f6759284c9e79840b1fa0245d79201650d4a2 profiling cros-debug cros_host cros_workon_tree_154f6759284c9e79840b1fa0245d79201650d4a2 profiling asan clang cros_host
+KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=chromeos-base/bootstat tpm? ( chromeos-base/chaps ) chromeos-base/chromeos-minijail chromeos-base/libchromeos chromeos-base/metrics !<chromeos-base/platform2-0.0.12 wimax? ( chromeos-base/wimax_manager ) dev-libs/dbus-c++ dev-libs/libnl:3 cellular? ( net-dialup/ppp ) vpn? ( net-dialup/ppp ) net-dns/c-ares net-firewall/iptables net-libs/libnetfilter_queue net-libs/libnfnetlink net-misc/dhcpcd sys-apps/rootdev vpn? ( net-misc/openvpn ) net-wireless/wpa_supplicant[dbus] cellular? ( virtual/modemmanager ) chromeos-base/libchrome:293518[cros-debug=] chromeos-base/libchrome:293518[cros-debug=] sys-apps/baselayout
 REQUIRED_USE=asan? ( clang )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	9ed698ac7057dcddb376e0320502d1af	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	platform	6c65c61d968aab6e3e2db7c82b68456d	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	udev	a9a8d051efb42bfe884c1db82ce161de	user	428413d4784b5a07274949c8354647d8
-_md5_=92b607b3e88092f5ba86a52df98c94e2
+_md5_=f931f8d4ec1808889c7f63b5acac3707
