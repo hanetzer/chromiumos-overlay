@@ -1,0 +1,29 @@
+From 950e21df4d484498a518364d00e9b1229c373d7a Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Fri, 26 Sep 2014 09:18:25 +0800
+Subject: [PATCH 7/8] [Libva] [PATCH V3 3/3] Check the value returned by strstr
+ to avoid NULL pointer
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+---
+ src/i965_device_info.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index f21f52d..bf5e11e 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -429,7 +429,9 @@ static void hsw_hw_codec_preinit(VADriverContextP ctx, struct hw_codec_info *cod
+     /* strip the cpufreq info */
+     model_ptr = model_string;
+     tmp_ptr = strstr(model_ptr, "@");
+-    *tmp_ptr = '\0';
++   
++    if (tmp_ptr)
++        *tmp_ptr = '\0';
+ 
+     /* strip the space character and convert to the lower case */
+     model_ptr = model_string;
+-- 
+2.1.0.rc2.206.gedb03e5
+

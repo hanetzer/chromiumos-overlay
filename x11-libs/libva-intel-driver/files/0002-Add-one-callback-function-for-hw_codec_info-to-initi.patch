@@ -1,0 +1,45 @@
+From e7741935c9a3b84c23fca1c82d05f9008a273023 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Fri, 12 Sep 2014 10:13:56 +0800
+Subject: [PATCH 2/8] Add one callback function for hw_codec_info to initialize
+ hw_codec_info
+
+V1->V2: Refine the call back function name from hw_codec_hook to preinit_hw_codec
+And it is called after VADriverContext is fully initialized. This is based on the comment
+from Gwenole Beauchesne.
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+---
+ src/i965_drv_video.c | 3 +++
+ src/i965_drv_video.h | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/src/i965_drv_video.c b/src/i965_drv_video.c
+index 00479cf..9b7a1f1 100755
+--- a/src/i965_drv_video.c
++++ b/src/i965_drv_video.c
+@@ -5269,6 +5269,9 @@ i965_Init(VADriverContextP ctx)
+             break;
+     }
+ 
++    if (i965->codec_info->preinit_hw_codec)
++        i965->codec_info->preinit_hw_codec(ctx, i965->codec_info);
++
+     if (i == ARRAY_ELEMS(i965_sub_ops)) {
+         switch (i965->intel.device_id) {
+ #undef CHIPSET
+diff --git a/src/i965_drv_video.h b/src/i965_drv_video.h
+index e8bbf87..9290b53 100644
+--- a/src/i965_drv_video.h
++++ b/src/i965_drv_video.h
+@@ -296,6 +296,7 @@ struct hw_codec_info
+     struct hw_context *(*proc_hw_context_init)(VADriverContextP, struct object_config *);
+     bool (*render_init)(VADriverContextP);
+     void (*post_processing_context_init)(VADriverContextP, void *, struct intel_batchbuffer *);
++    void (*preinit_hw_codec)(VADriverContextP, struct hw_codec_info *);
+ 
+     int max_width;
+     int max_height;
+-- 
+2.1.0.rc2.206.gedb03e5
+

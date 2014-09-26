@@ -1,0 +1,143 @@
+From 96e89e58b09d6f5d87fb07d27485595787d9ac62 Mon Sep 17 00:00:00 2001
+From: Pawel Osciak <posciak@chromium.org>
+Date: Fri, 26 Sep 2014 11:00:28 +0900
+Subject: [PATCH 8/8] Compilation fixes
+
+---
+ src/gen75_vpp_gpe.c        | 30 ++----------------------------
+ src/gen8_mfc.c             |  2 --
+ src/gen8_post_processing.c |  1 -
+ src/i965_gpe_utils.c       |  5 +----
+ src/i965_post_processing.c |  1 -
+ 5 files changed, 3 insertions(+), 36 deletions(-)
+
+diff --git a/src/gen75_vpp_gpe.c b/src/gen75_vpp_gpe.c
+index 2e3b104..86ccbc9 100644
+--- a/src/gen75_vpp_gpe.c
++++ b/src/gen75_vpp_gpe.c
+@@ -216,20 +216,6 @@ gen75_gpe_process_interface_setup(VADriverContextP ctx,
+ }
+ 
+ static VAStatus 
+-gen75_gpe_process_constant_fill(VADriverContextP ctx,
+-                   struct vpp_gpe_context *vpp_gpe_ctx)
+-{
+-    dri_bo_map(vpp_gpe_ctx->gpe_ctx.curbe.bo, 1);
+-    assert(vpp_gpe_ctx->gpe_ctx.curbe.bo->virtual);
+-    unsigned char* constant_buffer = vpp_gpe_ctx->gpe_ctx.curbe.bo->virtual;	
+-    memcpy(constant_buffer, vpp_gpe_ctx->kernel_param, 
+-                            vpp_gpe_ctx->kernel_param_size);
+-    dri_bo_unmap(vpp_gpe_ctx->gpe_ctx.curbe.bo);
+-
+-    return VA_STATUS_SUCCESS;
+-}
+-
+-static VAStatus 
+ gen75_gpe_process_parameters_fill(VADriverContextP ctx,
+                            struct vpp_gpe_context *vpp_gpe_ctx)
+ {
+@@ -454,20 +440,6 @@ gen8_gpe_process_interface_setup(VADriverContextP ctx,
+ }
+ 
+ static VAStatus
+-gen8_gpe_process_constant_fill(VADriverContextP ctx,
+-                   struct vpp_gpe_context *vpp_gpe_ctx)
+-{
+-    dri_bo_map(vpp_gpe_ctx->gpe_ctx.dynamic_state.bo, 1);
+-    assert(vpp_gpe_ctx->gpe_ctx.dynamic_state.bo->virtual);
+-    unsigned char* constant_buffer = vpp_gpe_ctx->gpe_ctx.dynamic_state.bo->virtual;
+-    memcpy(constant_buffer, vpp_gpe_ctx->kernel_param,
+-                            vpp_gpe_ctx->kernel_param_size);
+-    dri_bo_unmap(vpp_gpe_ctx->gpe_ctx.dynamic_state.bo);
+-
+-    return VA_STATUS_SUCCESS;
+-}
+-
+-static VAStatus
+ gen8_gpe_process_parameters_fill(VADriverContextP ctx,
+                            struct vpp_gpe_context *vpp_gpe_ctx)
+ {
+@@ -661,6 +633,8 @@ vpp_gpe_process_sharpening(VADriverContextP ctx,
+              vpp_kernels = gen75_vpp_sharpening_kernels;
+          else if (IS_GEN8(i965->intel.device_info))
+              vpp_kernels = gen8_vpp_sharpening_kernels;
++         else
++             return VA_STATUS_ERROR_UNIMPLEMENTED;
+ 
+          vpp_gpe_ctx->gpe_load_kernels(ctx,
+                                &vpp_gpe_ctx->gpe_ctx,
+diff --git a/src/gen8_mfc.c b/src/gen8_mfc.c
+index ac421bd..10f242a 100644
+--- a/src/gen8_mfc.c
++++ b/src/gen8_mfc.c
+@@ -1118,7 +1118,6 @@ gen8_mfc_avc_software_batchbuffer(VADriverContextP ctx,
+                                   struct intel_encoder_context *encoder_context)
+ {
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+-    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch;
+     dri_bo *batch_bo;
+     int i;
+@@ -2196,7 +2195,6 @@ gen8_mfc_mpeg2_software_slice_batchbuffer(VADriverContextP ctx,
+                                           struct intel_encoder_context *encoder_context)
+ {
+     struct gen6_mfc_context *mfc_context = encoder_context->mfc_context;
+-    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     struct intel_batchbuffer *batch;
+     VAEncSliceParameterBufferMPEG2 *next_slice_group_param = NULL;
+     dri_bo *batch_bo;
+diff --git a/src/gen8_post_processing.c b/src/gen8_post_processing.c
+index 1e6068d..587c1af 100644
+--- a/src/gen8_post_processing.c
++++ b/src/gen8_post_processing.c
+@@ -1213,7 +1213,6 @@ gen8_pp_curbe_load(VADriverContextP ctx,
+                    struct i965_post_processing_context *pp_context)
+ {
+     struct intel_batchbuffer *batch = pp_context->batch;
+-    struct i965_driver_data *i965 = i965_driver_data(ctx);
+     int param_size = 64;
+ 
+     param_size = sizeof(struct gen7_pp_static_parameter);
+diff --git a/src/i965_gpe_utils.c b/src/i965_gpe_utils.c
+index 3386b09..f8eb706 100644
+--- a/src/i965_gpe_utils.c
++++ b/src/i965_gpe_utils.c
+@@ -808,13 +808,12 @@ gen8_gpe_set_media_chroma_surface_state(VADriverContextP ctx,
+                                     struct object_surface *obj_surface,
+                                     struct gen8_surface_state *ss)
+ {
+-    int w, h, w_pitch;
++    int w, w_pitch;
+     unsigned int tiling, swizzle;
+     int cbcr_offset;
+ 
+     dri_bo_get_tiling(obj_surface->bo, &tiling, &swizzle);
+     w = obj_surface->orig_width;
+-    h = obj_surface->orig_height;
+     w_pitch = obj_surface->width;
+ 
+     cbcr_offset = obj_surface->height * obj_surface->width;
+@@ -1131,8 +1130,6 @@ gen8_gpe_context_init(VADriverContextP ctx,
+ void
+ gen8_gpe_context_destroy(struct i965_gpe_context *gpe_context)
+ {
+-    int i;
+-
+     dri_bo_unreference(gpe_context->surface_state_binding_table.bo);
+     gpe_context->surface_state_binding_table.bo = NULL;
+ 
+diff --git a/src/i965_post_processing.c b/src/i965_post_processing.c
+index 3ee3f07..ee1e553 100755
+--- a/src/i965_post_processing.c
++++ b/src/i965_post_processing.c
+@@ -4574,7 +4574,6 @@ i965_post_processing_internal(
+ )
+ {
+     VAStatus va_status;
+-    struct i965_driver_data *i965 = i965_driver_data(ctx);
+ 
+     if (pp_context && pp_context->intel_post_processing) {
+         va_status = (pp_context->intel_post_processing)(ctx, pp_context,
+-- 
+2.1.0.rc2.206.gedb03e5
+

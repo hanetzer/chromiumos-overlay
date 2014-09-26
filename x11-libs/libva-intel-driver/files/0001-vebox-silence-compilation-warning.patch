@@ -1,0 +1,66 @@
+From 45d3cb245c476bd4e8bcb082c9511f68006e9890 Mon Sep 17 00:00:00 2001
+From: Gwenole Beauchesne <gwenole.beauchesne@intel.com>
+Date: Fri, 8 Aug 2014 11:30:25 +0200
+Subject: [PATCH 1/8] vebox: silence compilation warning.
+
+Silence the following compilation warning:
+  CC     i965_drv_video_la-gen75_vpp_vebox.lo
+gen75_vpp_vebox.c: In function 'bdw_veb_dndi_iecp_command':
+gen75_vpp_vebox.c:1537:5: warning: suggest parentheses around arithmetic in operand of '|' [-Wparentheses]
+
+Also simplify the calculation of the VEB_DI_IECP::endingX variable
+with existing helper macros.
+
+v2: renamed endingX to width64, which represents the width aligned
+  on to 64 columns, dropped obsolete startingX [Yakui]
+
+Signed-off-by: Gwenole Beauchesne <gwenole.beauchesne@intel.com>
+---
+ src/gen75_vpp_vebox.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/src/gen75_vpp_vebox.c b/src/gen75_vpp_vebox.c
+index d63729e..fdfb8dc 100644
+--- a/src/gen75_vpp_vebox.c
++++ b/src/gen75_vpp_vebox.c
+@@ -813,8 +813,7 @@ void hsw_veb_dndi_iecp_command(VADriverContextP ctx, struct intel_vebox_context
+ {
+     struct intel_batchbuffer *batch = proc_ctx->batch;
+     unsigned char frame_ctrl_bits = 0;
+-    unsigned int startingX = 0;
+-    unsigned int endingX = (proc_ctx->width_input + 63 ) / 64 * 64;
++    const unsigned int width64 = ALIGN(proc_ctx->width_input, 64);
+ 
+     /* s1:update the previous and current input */
+ /*    tempFrame = proc_ctx->frame_store[FRAME_IN_PREVIOUS];
+@@ -837,9 +836,7 @@ void hsw_veb_dndi_iecp_command(VADriverContextP ctx, struct intel_vebox_context
+     /*s3:set reloc buffer address */
+     BEGIN_VEB_BATCH(batch, 10);
+     OUT_VEB_BATCH(batch, VEB_DNDI_IECP_STATE | (10 - 2));
+-    OUT_VEB_BATCH(batch,
+-                  startingX << 16 |
+-                  (endingX-1));
++    OUT_VEB_BATCH(batch, (width64 - 1));
+     OUT_RELOC(batch,
+               proc_ctx->frame_store[FRAME_IN_CURRENT].obj_surface->bo,
+               I915_GEM_DOMAIN_RENDER, 0, frame_ctrl_bits);
+@@ -1540,14 +1537,11 @@ void bdw_veb_dndi_iecp_command(VADriverContextP ctx, struct intel_vebox_context
+ {
+     struct intel_batchbuffer *batch = proc_ctx->batch;
+     unsigned char frame_ctrl_bits = 0;
+-    unsigned int startingX = 0;
+-    unsigned int endingX = (proc_ctx->width_input + 63 ) / 64 * 64;
++    const unsigned int width64 = ALIGN(proc_ctx->width_input, 64);
+ 
+     BEGIN_VEB_BATCH(batch, 0x14);
+     OUT_VEB_BATCH(batch, VEB_DNDI_IECP_STATE | (0x14 - 2));//DWord 0
+-    OUT_VEB_BATCH(batch,
+-                  startingX << 16 |
+-                  endingX -1);//DWord 1
++    OUT_VEB_BATCH(batch, (width64 - 1));
+ 
+     OUT_RELOC(batch,
+               proc_ctx->frame_store[FRAME_IN_CURRENT].obj_surface->bo,
+-- 
+2.1.0.rc2.206.gedb03e5
+

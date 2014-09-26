@@ -1,0 +1,131 @@
+From b4a0dfc31c9ee20e5fc07c891e386af802ee45a2 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Fri, 26 Sep 2014 09:18:23 +0800
+Subject: [PATCH 5/8] [Libva] [PATCH V3 1/3] Use the inline CPUID assembly to
+ obtain CPUID string instead of /proc/cpuinfo
+
+On some systems there is no access to /proc/cpuinfo. So the inline assembly
+is used directly to detect the CPUID string.
+
+V2->V3: Follow the suggestion from Google engineer to remove the unused code
+of "if 0". And the "unsigned int" data type is updated to "uint32_t".
+
+V1->V2: Based on the Matt Turner's suggestion the __cpuid defined in GCC
+cpuid.h is called directly, which is helpful to handle the PIC issue on
+32-bit.
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+---
+ src/i965_device_info.c | 64 +++++++++++++++++++++++++++-----------------------
+ 1 file changed, 35 insertions(+), 29 deletions(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index bec8d2a..a7ea66c 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -30,6 +30,7 @@
+ #include <string.h>
+ #include <strings.h>
+ #include <errno.h>
++#include <cpuid.h>
+ 
+ /* Extra set of chroma formats supported for H.264 decoding (beyond YUV 4:2:0) */
+ #define EXTRA_H264_DEC_CHROMA_FORMATS \
+@@ -363,43 +364,40 @@ i965_get_device_info(int devid)
+     }
+ }
+ 
++static void cpuid(unsigned int op,
++                         uint32_t *eax, uint32_t *ebx,
++                         uint32_t *ecx, uint32_t *edx)
++{
++	__cpuid_count(op, 0, *eax, *ebx, *ecx, *edx);
++}
++
++/*
++ * This function doesn't check the length. And the caller should
++ * assure that the length of input string should be greater than 48.
++ */
+ static int intel_driver_detect_cpustring(char *model_id)
+ {
+-    FILE *fp;
+-    size_t line_length;
+-    ssize_t read_length;
+-    char *line_string, *model_ptr;
+-    bool found;
++    uint32_t *rdata;
+ 
+     if (model_id == NULL)
+         return -EINVAL;
+ 
+-    fp = fopen("/proc/cpuinfo", "r");
+-    if (fp == NULL) {
+-        fprintf(stderr, "no permission to access /proc/cpuinfo\n");
+-        return -EACCES;
+-    }
+-    line_string = NULL;
+-    found = false;
++    rdata = (uint32_t *)model_id;
+ 
+-    while((read_length = getline(&line_string, &line_length, fp)) != -1) {
+-        if (strstr(line_string, "model name")) {
+-            model_ptr = strstr(line_string, ": ");
+-            model_ptr += 2;
+-            found = true;
+-            strncpy(model_id, model_ptr, strlen(model_ptr));
+-            break;
+-        }
+-    }
+-    fclose(fp);
++    /* obtain the max supported extended CPUID info */
++    cpuid(0x80000000, &rdata[0], &rdata[1], &rdata[2], &rdata[3]);
+ 
+-    if (line_string)
+-        free(line_string);
++    /* If the max extended CPUID info is less than 0x80000004, fail */
++    if (rdata[0] < 0x80000004)
++	return -EINVAL;
+ 
+-    if (found)
+-        return 0;
+-    else
+-        return -EINVAL;
++    /* obtain the CPUID string */
++    cpuid(0x80000002, &rdata[0], &rdata[1], &rdata[2], &rdata[3]);
++    cpuid(0x80000003, &rdata[4], &rdata[5], &rdata[6], &rdata[7]);
++    cpuid(0x80000004, &rdata[8], &rdata[9], &rdata[10], &rdata[11]);
++
++    *(model_id + 48) = '\0';
++    return 0;
+ }
+ 
+ /*
+@@ -432,6 +430,9 @@ static void hsw_hw_codec_preinit(VADriverContextP ctx, struct hw_codec_info *cod
+     /* strip the cpufreq info */
+     model_ptr = model_string;
+     tmp_ptr = strstr(model_ptr, "@");
++    if (!tmp_ptr)
++	    return;
++
+     *tmp_ptr = '\0';
+ 
+     /* strip the space character and convert to the lower case */
+@@ -447,9 +448,14 @@ static void hsw_hw_codec_preinit(VADriverContextP ctx, struct hw_codec_info *cod
+ 
+     found = false;
+     list_len = sizeof(hsw_cpu_hook_list) / sizeof(char *);
++    model_len = strlen(model_id);
+     for (i = 0; i < list_len; i++) {
+         model_ptr = (char *)hsw_cpu_hook_list[i];
+-        if (strcasecmp(model_id, model_ptr) == 0) {
++
++        if (strlen(model_ptr) != model_len)
++	    continue;
++
++        if (strncasecmp(model_id, model_ptr, model_len) == 0) {
+             found = true;
+             break;
+ 	}
+-- 
+2.1.0.rc2.206.gedb03e5
+

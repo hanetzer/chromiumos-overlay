@@ -1,0 +1,109 @@
+From f58694c24c390eae396ca3b7a1a646a16ea0f666 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Fri, 12 Sep 2014 10:14:00 +0800
+Subject: [PATCH 3/8] change the attribute of hw_codec_info so that it can be
+ updated dynamically
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+---
+ src/i965_device_info.c | 14 +++++++-------
+ src/i965_drv_video.c   |  2 +-
+ src/i965_drv_video.h   |  2 +-
+ 3 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index 6fad106..55f585f 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -40,7 +40,7 @@ extern struct hw_context *i965_proc_context_init(VADriverContextP, struct object
+ extern struct hw_context *g4x_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern bool genx_render_init(VADriverContextP);
+ 
+-static const struct hw_codec_info g4x_hw_codec_info = {
++static struct hw_codec_info g4x_hw_codec_info = {
+     .dec_hw_context_init = g4x_dec_hw_context_init,
+     .enc_hw_context_init = NULL,
+     .proc_hw_context_init = NULL,
+@@ -60,7 +60,7 @@ static const struct hw_codec_info g4x_hw_codec_info = {
+ extern struct hw_context *ironlake_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern void i965_post_processing_context_init(VADriverContextP, void *, struct intel_batchbuffer *);
+ 
+-static const struct hw_codec_info ilk_hw_codec_info = {
++static struct hw_codec_info ilk_hw_codec_info = {
+     .dec_hw_context_init = ironlake_dec_hw_context_init,
+     .enc_hw_context_init = NULL,
+     .proc_hw_context_init = i965_proc_context_init,
+@@ -82,7 +82,7 @@ static const struct hw_codec_info ilk_hw_codec_info = {
+ 
+ extern struct hw_context *gen6_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern struct hw_context *gen6_enc_hw_context_init(VADriverContextP, struct object_config *);
+-static const struct hw_codec_info snb_hw_codec_info = {
++static struct hw_codec_info snb_hw_codec_info = {
+     .dec_hw_context_init = gen6_dec_hw_context_init,
+     .enc_hw_context_init = gen6_enc_hw_context_init,
+     .proc_hw_context_init = i965_proc_context_init,
+@@ -115,7 +115,7 @@ static const struct hw_codec_info snb_hw_codec_info = {
+ 
+ extern struct hw_context *gen7_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern struct hw_context *gen7_enc_hw_context_init(VADriverContextP, struct object_config *);
+-static const struct hw_codec_info ivb_hw_codec_info = {
++static struct hw_codec_info ivb_hw_codec_info = {
+     .dec_hw_context_init = gen7_dec_hw_context_init,
+     .enc_hw_context_init = gen7_enc_hw_context_init,
+     .proc_hw_context_init = i965_proc_context_init,
+@@ -152,7 +152,7 @@ static const struct hw_codec_info ivb_hw_codec_info = {
+ extern struct hw_context *gen75_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern struct hw_context *gen75_enc_hw_context_init(VADriverContextP, struct object_config *);
+ extern struct hw_context *gen75_proc_context_init(VADriverContextP, struct object_config *);
+-static const struct hw_codec_info hsw_hw_codec_info = {
++static struct hw_codec_info hsw_hw_codec_info = {
+     .dec_hw_context_init = gen75_dec_hw_context_init,
+     .enc_hw_context_init = gen75_enc_hw_context_init,
+     .proc_hw_context_init = gen75_proc_context_init,
+@@ -193,7 +193,7 @@ static const struct hw_codec_info hsw_hw_codec_info = {
+ extern struct hw_context *gen8_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern struct hw_context *gen8_enc_hw_context_init(VADriverContextP, struct object_config *);
+ extern void gen8_post_processing_context_init(VADriverContextP, void *, struct intel_batchbuffer *);
+-static const struct hw_codec_info bdw_hw_codec_info = {
++static struct hw_codec_info bdw_hw_codec_info = {
+     .dec_hw_context_init = gen8_dec_hw_context_init,
+     .enc_hw_context_init = gen8_enc_hw_context_init,
+     .proc_hw_context_init = gen75_proc_context_init,
+@@ -232,7 +232,7 @@ static const struct hw_codec_info bdw_hw_codec_info = {
+     },
+ };
+ 
+-const struct hw_codec_info *
++struct hw_codec_info *
+ i965_get_codec_info(int devid)
+ {
+     switch (devid) {
+diff --git a/src/i965_drv_video.c b/src/i965_drv_video.c
+index 9b7a1f1..7280f0b 100755
+--- a/src/i965_drv_video.c
++++ b/src/i965_drv_video.c
+@@ -5121,7 +5121,7 @@ VAStatus i965_QueryVideoProcPipelineCaps(
+     return VA_STATUS_SUCCESS;
+ }
+ 
+-extern const struct hw_codec_info *i965_get_codec_info(int devid);
++extern struct hw_codec_info *i965_get_codec_info(int devid);
+ 
+ static bool
+ i965_driver_data_init(VADriverContextP ctx)
+diff --git a/src/i965_drv_video.h b/src/i965_drv_video.h
+index 9290b53..89c4b16 100644
+--- a/src/i965_drv_video.h
++++ b/src/i965_drv_video.h
+@@ -339,7 +339,7 @@ struct i965_driver_data
+     struct object_heap buffer_heap;
+     struct object_heap image_heap;
+     struct object_heap subpic_heap;
+-    const struct hw_codec_info *codec_info;
++    struct hw_codec_info *codec_info;
+ 
+     _I965Mutex render_mutex;
+     _I965Mutex pp_mutex;
+-- 
+2.1.0.rc2.206.gedb03e5
+
