@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=chromeos-base/verity[32bit_au=] test? ( 32bit_au? ( dev-cpp/gmock32[32bit_au] dev-cpp/gtest32[32bit_au] ) dev-cpp/gmock[static-libs(+)] dev-cpp/gtest[static-libs(+)] ) !cros_host? ( chromeos-base/vboot_reference[32bit_au=] ) dev-vcs/git
+DESCRIPTION=Chrome OS Installer
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=32bit_au cros_host pam test cros_host cros_workon_tree_5aca5bad6fae427596c5597492015c0834a6e24b profiling cros-debug
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=pam? ( app-admin/sudo ) chromeos-base/vboot_reference[32bit_au=] dev-util/shflags sys-apps/rootdev sys-apps/util-linux sys-apps/which sys-fs/e2fsprogs !<chromeos-base/chromeos-init-0.0.15
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-au	70ee169a3ed2f6755f5bd4c0e7af1ea2	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=9487d2ad509f3b9048b73d2577ccd8f6
