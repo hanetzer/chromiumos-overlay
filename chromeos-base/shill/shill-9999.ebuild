@@ -25,7 +25,6 @@ RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	chromeos-base/mist
 	!<chromeos-base/platform2-0.0.12
 	wimax? ( chromeos-base/wimax_manager )
 	dev-libs/dbus-c++
