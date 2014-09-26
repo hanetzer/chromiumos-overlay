@@ -1,5 +1,6 @@
 Contains all the patches committed to portage_tool on top of 2.2.12:
 
+* Do not interrupt on SIGCONT
 * Remove warning when repo_name is only defined in layout.conf
 * Remove repos.conf
 * Add a new portageq helper to reduce a string containing use conditionals
@@ -61,6 +62,18 @@ index 79818f6..332122f 100755
  #-----------------------------------------------------------------------------
  #
  # DO NOT CHANGE CODE BEYOND THIS POINT - IT'S NOT NEEDED!
+diff --git a/pym/_emerge/Scheduler.py b/pym/_emerge/Scheduler.py
+index d6db311..6e3bf1a 100644
+--- a/pym/_emerge/Scheduler.py
++++ b/pym/_emerge/Scheduler.py
+@@ -1017,6 +1017,7 @@ class Scheduler(PollScheduler):
+ 			earlier_sigterm_handler = signal.signal(signal.SIGTERM, sighandler)
+ 			earlier_sigcont_handler = \
+ 				signal.signal(signal.SIGCONT, self._sigcont_handler)
++			signal.siginterrupt(signal.SIGCONT, False)
+ 
+ 			try:
+ 				rval = self._merge()
 diff --git a/pym/portage/const.py b/pym/portage/const.py
 index aab6e8a..f2e69e0 100644
 --- a/pym/portage/const.py
