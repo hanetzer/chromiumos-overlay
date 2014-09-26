@@ -77,6 +77,7 @@ ALL_BOARDS=(
 	enguarde
 	expresso
 	falco
+	falco_freon
 	falco_gles
 	falco_li
 	fb1
