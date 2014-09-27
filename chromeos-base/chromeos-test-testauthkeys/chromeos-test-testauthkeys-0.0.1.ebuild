@@ -5,9 +5,11 @@ EAPI="4"
 
 DESCRIPTION="Install Chromium OS test public keys for ssh clients on test image"
 HOMEPAGE="http://www.chromium.org/"
-KEYWORDS="*"
-LICENSE="BSD"
+
+LICENSE="BSD-Google"
 SLOT="0"
+KEYWORDS="*"
+
 S="${WORKDIR}"
 
 src_install() {
