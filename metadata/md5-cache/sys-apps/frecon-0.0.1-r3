@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install prepare setup unpack
+DEPEND=virtual/udev sys-apps/dbus virtual/pkgconfig x11-libs/libdrm sys-apps/libtsm dev-vcs/git
+DESCRIPTION=Chrome OS KMS console
+EAPI=4
+HOMEPAGE=https://chromium.googlesource.com/chromiumos/platform/frecon
+IUSE=-asan -clang cros_host cros_workon_tree_21a7d0a6c8c9820d09b1a29ba03baa3a0d884a1f profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=virtual/udev sys-apps/dbus
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=630a57d4321ebce1ec0728423c99d229
