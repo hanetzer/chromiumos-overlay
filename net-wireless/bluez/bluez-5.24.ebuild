@@ -106,6 +106,14 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
 	cp "${FILESDIR}/chromium.c" "plugins/chromium.c" || die
 
+	# Reduce the RSSI delta threshold for updates to the RSSI property of
+	# org.bluez.Device1 (crbug.com/417107). Upstream rejected this patch
+	# since they believe this change would cause noise on systems that use
+	# the raw RSSI property directly to sort found devices lists in system
+	# UI. This is not a problem for us. It's also very easy to do this kind
+	# of filtering in UI code directly.
+	epatch "${FILESDIR}/${P}-rssi-delta.patch"
+
 	eautoreconf
 
 	if use cups; then
