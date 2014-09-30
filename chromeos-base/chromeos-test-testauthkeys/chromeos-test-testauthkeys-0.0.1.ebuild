@@ -12,12 +12,20 @@ KEYWORDS="*"
 
 S="${WORKDIR}"
 
-src_install() {
-	dodir /root/.ssh
-	cat "${FILESDIR}"/*.pub > "${D}"/root/.ssh/authorized_keys || die
+RDEPEND="
+	chromeos-base/chromeos-ssh-testkeys
+"
 
-	insinto /root/.ssh
-	newins "${FILESDIR}/testing_rsa" id_rsa
-	newins "${FILESDIR}/testing_rsa.pub" id_rsa.pub
-	fperms 600 /root/.ssh/id_rsa
+src_install() {
+	local filenames=(
+		authorized_keys
+		id_rsa
+		id_rsa.pub
+	)
+	local filename
+
+	for filename in "${filenames[@]}"; do
+		dosym /usr/share/chromeos-ssh-config/keys/"${filename}" \
+		      /root/.ssh/"${filename}"
+	done
 }
