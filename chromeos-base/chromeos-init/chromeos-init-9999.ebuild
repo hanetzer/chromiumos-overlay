@@ -4,10 +4,11 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
-CROS_WORKON_OUTOFTREE_BUILD="1"
+CROS_WORKON_DESTDIR="${S}/platform2"
 
-inherit cros-workon user
+PLATFORM_SUBDIR="init"
+
+inherit cros-workon libchrome platform user
 
 DESCRIPTION="Upstart init scripts for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -18,9 +19,9 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="cros_embedded +encrypted_stateful +udev"
 
-DEPEND=""
+DEPEND="chromeos-base/libchromeos"
 # vboot_reference for crossystem
-RDEPEND="
+RDEPEND="${DEPEND}
 	chromeos-base/bootstat
 	!chromeos-base/chromeos-disableecho
 	chromeos-base/vboot_reference
@@ -36,11 +37,6 @@ RDEPEND="
 		sys-apps/smartmontools
 	)
 "
-
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/init"
-}
 
 src_test() {
 	./periodic_scheduler_unittest || die
@@ -64,6 +60,9 @@ src_install() {
 
 	# Install various utility files.
 	dosbin killers
+
+	# Install static node tool.
+	dosbin "${OUT}"/static_node_tool
 
 	# Install startup/shutdown scripts.
 	dosbin chromeos_startup chromeos_shutdown
