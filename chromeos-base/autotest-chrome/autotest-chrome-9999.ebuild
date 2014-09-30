@@ -99,8 +99,9 @@ IUSE_TESTS=(
 	+tests_telemetry_AFDOGenerateClient
 	+tests_telemetry_LoginTest
 	+tests_telemetry_UnitTests
-	+tests_touch_ScrollDirection
 	+tests_touch_MouseScroll
+	+tests_touch_ScrollDirection
+	+tests_touch_TapSettings
 	+tests_ui_SystemTray
 	+tests_ui_SettingsPage
 	+tests_video_ChromeHWDecodeUsed
