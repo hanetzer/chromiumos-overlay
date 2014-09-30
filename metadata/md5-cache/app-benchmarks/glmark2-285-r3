@@ -10,5 +10,5 @@ RDEPEND=media-libs/libpng opengles? ( virtual/opengles ) opengl? ( virtual/openg
 REQUIRED_USE=|| ( opengl opengles )
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/glmark2-bzr-285.tar.gz
-_eclasses_=base	ec46b36a6f6fd1d0b505a33e0b74e413	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	waf-utils	ea5e8ddb08ce6b8d48b76ad71b4548f1
+_eclasses_=base	ec46b36a6f6fd1d0b505a33e0b74e413	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	waf-utils	ea5e8ddb08ce6b8d48b76ad71b4548f1
 _md5_=774b03e3f01b164fadb5954c6007dfa5

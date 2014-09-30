@@ -8,5 +8,5 @@ LICENSE=|| ( GPL-3 LGPL-3 )
 RDEPEND=>=sys-devel/binutils-config-3-r2 >=sys-devel/binutils-config-1.9 zlib? ( sys-libs/zlib )
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/nds32-binutils-6a663c8.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-binutils	78b0710908c44237d38f8aa0880f4de0	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	unpacker	04385b0f181c42fa9c18ec0e31729d1f	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	gnuconfig	9200bfc8e0184357abfb86a08edd4fc3	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-binutils	78b0710908c44237d38f8aa0880f4de0	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	unpacker	04385b0f181c42fa9c18ec0e31729d1f	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=0643e5d08bc2fadd0f24f6bd3739f6e9

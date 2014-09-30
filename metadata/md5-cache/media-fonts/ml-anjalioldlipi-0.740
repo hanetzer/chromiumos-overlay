@@ -8,5 +8,5 @@ LICENSE=OFL-1.1
 RESTRICT=strip binchecks
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/ml-anjalioldlipi-0.740.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	a108f00cccac414097bcbbbb5de01762	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
 _md5_=4629eb75d24865fef3705b53fe9db0f9
