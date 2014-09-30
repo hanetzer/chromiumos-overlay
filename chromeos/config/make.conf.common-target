@@ -97,4 +97,8 @@ STRIP_MASK="*.nexe"
 # files because these files are not installed into the image.
 STRIP_MASK="${STRIP_MASK} /firmware/*.elf"
 
+# Enable license processing during our emerge hook:
+#   src/scripts/hooks/install/gen-package-licenses.sh.
+ENABLE_LICENSING="Y"
+
 source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common
