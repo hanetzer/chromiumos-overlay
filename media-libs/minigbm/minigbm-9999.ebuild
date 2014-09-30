@@ -34,10 +34,10 @@ src_prepare() {
 
 src_configure() {
 	export LIBDIR="/usr/$(get_libdir)"
-	use video_cards_exynos && append-cppflags -DGBM_EXYNOS
-	use video_cards_intel && append-cppflags -DGBM_I915
-	use video_cards_rockchip && append-cppflags -DGBM_ROCKCHIP
-	use video_cards_tegra && append-cppflags -DGBM_TEGRA
+	use video_cards_exynos && append-cppflags -DGBM_EXYNOS && export GBM_EXYNOS=1
+	use video_cards_intel && append-cppflags -DGBM_I915 && export GBM_I915=1
+	use video_cards_rockchip && append-cppflags -DGBM_ROCKCHIP && export GBM_ROCKCHIP=1
+	use video_cards_tegra && append-cppflags -DGBM_TEGRA && export GBM_TEGRA=1
 	cros-workon_src_configure
 }
 
