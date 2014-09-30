@@ -6,16 +6,13 @@ EAPI=4
 
 inherit cros-constants
 
-EGIT_REPO_URI="https://github.com/xkbcommon/libxkbcommon.git"
-EGIT_COMMIT="527bf96f9b0a25928432edba4bab27ac808a2fe2"
+SRC_URI="https://github.com/xkbcommon/libxkbcommon/archive/${P}.tar.bz2"
 XORG_EAUTORECONF="yes"
 
-inherit xorg-2 git-2
-
-SRC_URI=""
+inherit xorg-2
 
 DESCRIPTION="X.Org xkbcommon library"
-KEYWORDS="amd64 arm x86"
+KEYWORDS="*"
 IUSE=""
 
 RDEPEND="x11-proto/xproto
