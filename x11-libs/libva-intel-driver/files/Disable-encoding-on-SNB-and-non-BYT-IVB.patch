@@ -1,0 +1,76 @@
+From 325a54d64e9d775b182de85b7dcdd0a2a9f0a626 Mon Sep 17 00:00:00 2001
+From: Pawel Osciak <posciak@chromium.org>
+Date: Wed, 1 Oct 2014 20:06:26 +0900
+Subject: [PATCH] libva-intel-driver: Disable encoding on SNB and IVB, unless
+ HD4000 or BYT.
+
+We have no reliable detection for HW encoding availability on SNB and
+IVB devices. Disable it for SNB and IVB, but keeping BYT and HD4000
+(PCI ID 0x166) on.
+---
+ src/i965_device_info.c | 15 ++++++++++++++-
+ src/intel_driver.h     |  1 +
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/i965_device_info.c b/src/i965_device_info.c
+index bf5e11e..21224d2 100644
+--- a/src/i965_device_info.c
++++ b/src/i965_device_info.c
+@@ -103,7 +103,6 @@ static struct hw_codec_info snb_hw_codec_info = {
+ 
+     .has_mpeg2_decoding = 1,
+     .has_h264_decoding = 1,
+-    .has_h264_encoding = 1,
+     .has_vc1_decoding = 1,
+     .has_vpp = 1,
+     .has_accelerated_getimage = 1,
+@@ -118,6 +117,8 @@ static struct hw_codec_info snb_hw_codec_info = {
+     },
+ };
+ 
++static void ivb_hw_codec_preinit(VADriverContextP ctx, struct hw_codec_info *codec_info);
++
+ extern struct hw_context *gen7_dec_hw_context_init(VADriverContextP, struct object_config *);
+ extern struct hw_context *gen7_enc_hw_context_init(VADriverContextP, struct object_config *);
+ static struct hw_codec_info ivb_hw_codec_info = {
+@@ -126,6 +127,7 @@ static struct hw_codec_info ivb_hw_codec_info = {
+     .proc_hw_context_init = i965_proc_context_init,
+     .render_init = genx_render_init,
+     .post_processing_context_init = i965_post_processing_context_init,
++    .preinit_hw_codec = ivb_hw_codec_preinit,
+ 
+     .max_width = 4096,
+     .max_height = 4096,
+@@ -413,6 +415,17 @@ const static char *hsw_cpu_hook_list[] =  {
+ "Intel(R)Celeron(R)2950M",
+ };
+ 
++static void ivb_hw_codec_preinit(VADriverContextP ctx, struct hw_codec_info *codec_info)
++{
++    struct intel_driver_data *intel = intel_driver_data(ctx);
++
++    /* 0x166 is IVB i5 */
++    if (!IS_BAYTRAIL(intel->device_info) && intel->device_id != 0x166) {
++        codec_info->has_mpeg2_encoding = 0;
++        codec_info->has_h264_encoding = 0;
++    }
++}
++
+ static void hsw_hw_codec_preinit(VADriverContextP ctx, struct hw_codec_info *codec_info)
+ {
+     char model_string[64];
+diff --git a/src/intel_driver.h b/src/intel_driver.h
+index 7a726e3..46373e5 100644
+--- a/src/intel_driver.h
++++ b/src/intel_driver.h
+@@ -186,6 +186,7 @@ struct intel_region
+ #define IS_GEN6(device_info)            (device_info->gen == 6)
+ 
+ #define IS_HASWELL(device_info)         (device_info->is_haswell)
++#define IS_BAYTRAIL(device_info)        (device_info->is_baytrail)
+ #define IS_GEN7(device_info)            (device_info->gen == 7)
+ 
+ #define IS_GEN8(device_info)            (device_info->gen == 8)
+-- 
+2.1.0.rc2.206.gedb03e5
+

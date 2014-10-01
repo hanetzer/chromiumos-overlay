@@ -54,6 +54,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0006-Libva-PATCH-V3-2-3-Use-the-strncasecmp-instead-of-st.patch
 	epatch "${FILESDIR}"/0007-Libva-PATCH-V3-3-3-Check-the-value-returned-by-strst.patch
 	epatch "${FILESDIR}"/0008-Compilation-fixes.patch
+	epatch "${FILESDIR}"/Disable-encoding-on-SNB-and-non-BYT-IVB.patch
 	eautoreconf
 }
 
