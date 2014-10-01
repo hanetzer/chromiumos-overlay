@@ -77,7 +77,6 @@ RDEPEND_quipper="
 
 RDEPEND_vpn_manager="
 	vpn? (
-		>=dev-cpp/gflags-2.0
 		net-dialup/ppp
 		net-dialup/xl2tpd
 		net-misc/strongswan
