@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install postinst prepare setup unpack
+DEPEND=shill? ( chromeos-base/shill-test-scripts ) !<chromeos-base/autotest-tests-0.0.3 dev-vcs/git
+DESCRIPTION=power autotests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +shill +tests_hardware_Backlight +tests_platform_CheckPowerdProcesses +tests_platform_SuspendStress +tests_power_ARMSettings +tests_power_Backlight +tests_power_BacklightControl +tests_power_BacklightSuspend +tests_power_BatteryCharge +tests_power_CameraSuspend +tests_power_CheckAC +tests_power_CheckAfterSuspend +tests_power_CPUFreq +tests_power_CPUIdle +tests_power_Draw +tests_power_HotCPUSuspend +tests_power_KernelSuspend +tests_power_MemorySuspend +tests_power_NoConsoleSuspend +tests_power_ProbeDriver shill? ( +tests_power_Resume ) +tests_power_Standby +tests_power_StatsCPUFreq +tests_power_StatsCPUIdle +tests_power_StatsUSB +tests_power_Status shill? ( +tests_power_SuspendStress ) +tests_power_WakeupRTC +tests_power_x86Settings cros_host cros_workon_tree_dba76f75b52526977351ec56ab42715e11ccbe97 profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=shill? ( chromeos-base/shill-test-scripts ) !<chromeos-base/autotest-tests-0.0.3 ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_md5_=8a876177997bc67babc2d3301a26891a
