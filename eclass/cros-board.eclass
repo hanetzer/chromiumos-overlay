@@ -60,6 +60,7 @@ ALL_BOARDS=(
 	cardhu
 	#chronos
 	clapper
+	cosmos
 	cranky
 	daisy
 	daisy_freon
