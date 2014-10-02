@@ -46,6 +46,7 @@ IUSE="
 	hardfp
 	+highdpi
 	internal_gles_conform
+	internal_khronos_glcts
 	mojo
 	+nacl
 	neon
@@ -248,6 +249,7 @@ set_build_defines() {
 		"use_evdev_gestures=$(use10 evdev_gestures)"
 		"use_xkbcommon=$(use10 xkbcommon)"
 		"internal_gles2_conform_tests=$(use10 internal_gles_conform)"
+		"internal_khronos_glcts_tests=$(use10 internal_khronos_glcts)"
 		# Use the ChromeOS toolchain and not the one bundled with Chromium.
 		"linux_use_bundled_binutils=0"
 		"linux_use_bundled_gold=0"
@@ -339,6 +341,7 @@ set_build_defines() {
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
 		# This test can only be build from internal sources
 		BUILD_DEFINES+=( internal_gles2_conform_tests=1 )
+		BUILD_DEFINES+=( internal_khronos_glcts_tests=1 )
 		export CHROMIUM_BUILD='_google_Chrome'
 		export OFFICIAL_BUILD='1'
 		export CHROME_BUILD_TYPE='_official'
@@ -564,6 +567,19 @@ src_unpack() {
 		fi
 	fi
 
+	if use internal_khronos_glcts; then
+		local CHROME_KHRONOS_GLCTS=${CHROME_ROOT}/src/third_party/khronos_glcts
+		local CROS_KHRONOS_GLCTS=/home/${WHOAMI}/trunk/src/third_party/khronos_glcts
+		if [[ ! -d "${CHROME_KHRONOS_GLCTS}" ]]; then
+			if [[ -d "${CROS_KHRONOS_GLCTS}" ]]; then
+				ln -s "${CROS_KHRONOS_GLCTS}" "${CHROME_KHRONOS_GLCTS}"
+				einfo "Using Khronos GL-CTS test suite from ${CROS_KHRONOS_GLCTS}"
+			else
+				die "Trying to build Khronos GL-CTS test suite without ${CHROME_KHRONOS_GLCTS} or ${CROS_KHRONOS_GLCTS}"
+			fi
+		fi
+	fi
+
 	if use afdo_use && ! use clang; then
 		local PROFILE_DIR="${WORKDIR}/afdo"
 		mkdir "${PROFILE_DIR}"
@@ -689,6 +705,12 @@ setup_test_lists() {
 	if use chrome_internal || use internal_gles_conform; then
 		TEST_FILES+=(
 			gles2_conform_test{,_windowless}
+		)
+	fi
+
+	if use chrome_internal || use internal_khronos_glcts; then
+		TEST_FILES+=(
+			khronos_glcts_test{,_windowless}
 		)
 	fi
 
@@ -935,6 +957,14 @@ install_chrome_test_resources() {
 	# Add the gles_conform test data if needed.
 	if use chrome_internal || use internal_gles_conform; then
 		install_test_resources "${test_dir}" gpu/gles2_conform_support/gles2_conform_test_expectations.txt
+	fi
+
+	# Add the khronos_glcts test data if needed.
+	if use chrome_internal || use internal_khronos_glcts; then
+		install_test_resources "${test_dir}" gpu/khronos_glcts_support/khronos_glcts_test_expectations.txt
+		# These are all the .test, .frag, .vert, .run files needed by
+		# the GL-CTS test cases.
+		cp -al "${from}"/khronos_glcts_data "${dest}"/.
 	fi
 
 	# Remove test binaries from other platforms.

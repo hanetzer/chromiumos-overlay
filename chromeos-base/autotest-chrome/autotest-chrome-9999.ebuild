@@ -63,6 +63,7 @@ IUSE_TESTS=(
 	+tests_dummy_IdleSuspend
 	+tests_graphics_GLES2ConformChrome
 	+tests_graphics_Idle
+	+tests_graphics_KhronosGLCTSChrome
 	+tests_graphics_WebGLAquarium
 	+tests_graphics_WebGLClear
 	+tests_graphics_WebGLManyPlanetsDeep
