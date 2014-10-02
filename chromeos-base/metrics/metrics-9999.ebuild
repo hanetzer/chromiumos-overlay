@@ -39,11 +39,14 @@ DEPEND="
 src_unpack() {
 	platform_src_unpack
 
+	EGIT_SOURCEDIR="${S}/components/metrics"
 	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/components/metrics.git" \
-	EGIT_SOURCEDIR="${S}/components/metrics" \
 	EGIT_PROJECT="metrics" \
 	EGIT_COMMIT="98a769a9a70b2ff0dbcf4962c5d79b29a60c8860" \
 	git-2_src_unpack
+
+	cd "${EGIT_SOURCEDIR}"
+	epatch "${FILESDIR}"/metrics-protobuf-product-field.patch
 }
 
 src_install() {
