@@ -109,6 +109,9 @@ src_configure() {
 	# Allow VHT parameters to be overridden; required by ChromiumOS
 	echo "CONFIG_VHT_OVERRIDES=1" >> ${CFGFILE}
 
+	# Allow HT parameters to be overridden; required by ChromiumOS
+	echo "CONFIG_HT_OVERRIDES=1" >> ${CFGFILE}
+
 	if use dbus ; then
 		echo "CONFIG_CTRL_IFACE_DBUS_NEW=y" >> ${CFGFILE}
 		echo "CONFIG_CTRL_IFACE_DBUS_INTRO=y" >> ${CFGFILE}
