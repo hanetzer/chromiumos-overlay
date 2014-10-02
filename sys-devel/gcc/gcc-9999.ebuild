@@ -235,6 +235,8 @@ EOF
 		if use hardened
 		then
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper.hardened
+			insinto "$(get_bin_dir)"
+			doins "${FILESDIR}/bisect.py" || die
 		else
 			SYSROOT_WRAPPER_FILE=sysroot_wrapper
 		fi

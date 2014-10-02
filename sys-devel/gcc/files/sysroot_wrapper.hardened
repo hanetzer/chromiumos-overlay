@@ -321,6 +321,31 @@ def syntax_check_with_clang(clang_comp, clang_cmdline):
     sys.exit(p.returncode)
 
 
+def handle_exec_exception(exc):
+  """Analyze compiler execution errors."""
+  if use_ccache and exc.errno == errno.ENOENT:
+    print('error: make sure you install ccache\n', file=sys.stderr)
+  print('error: execution of (%s, %s) failed' % (argv0, execargs), file=sys.stderr)
+  raise
+
+
+def exec_and_bisect(execargs, bisect_stage):
+  """Execute compiler, return and invoke bisection driver."""
+  import bisect
+
+  try:
+    retval = bisect.exec_and_return(execargs)
+  except OSError as e:
+    handle_exec_exception(e)
+
+  if retval != 0:
+    sys.exit(retval)
+
+  bisect.bisect_driver(bisect_stage, execargs)
+
+  sys.exit(0)
+
+
 sysroot = os.environ.get('SYSROOT', '')
 if sysroot:
   clang_cmdline.insert(0, '--sysroot=%s' % sysroot)
@@ -459,10 +484,13 @@ if print_cmdline:
   print('[%s] %s' % (argv0, ' '.join(execargs)))
 
 sys.stdout.flush()
-try:
-  os.execv(argv0, execargs)
-except OSError as e:
-  if use_ccache and e.errno == errno.ENOENT:
-    print('error: make sure you install ccache\n', file=sys.stderr)
-  print('error: os.execv(%s, %s) failed' % (argv0, execargs), file=sys.stderr)
-  raise
+
+bisect_stage = os.environ.get('BISECT_STAGE')
+if not bisect_stage:
+  try:
+    os.execv(argv0, execargs)
+  except OSError as e:
+    handle_exec_exception(e)
+
+# Only comes here if doing bisection.
+exec_and_bisect(execargs, bisect_stage)
