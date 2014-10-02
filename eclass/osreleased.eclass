@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 # $Header: $
 
+inherit eutils
+
 # @ECLASS: osreleased.eclass
 # @MAINTAINER:
 # Chromium OS build team;
@@ -40,4 +42,24 @@ do_osrelease_field() {
 	[[ -e ${field_file} ]] && die "The field ${field_name} has already been set!"
 	echo "${field_value}" > "${field_file}" || \
 		die "creating ${os_release} failed!"
+}
+
+# @FUNCTION: dometricsproductid
+# @USAGE: <product_id>
+# @DESCRIPTION:
+# Sets the GOOGLE_METRICS_PRODUCT_ID field in /etc/os-release.d/;
+# GOOGLE_METRICS_PRODUCT_ID should be a positive integer, matching the product
+# id defined by the UMA backend protobuf (chrome_user_metrics_extension.proto).
+# This product id will be used by chromeos-base/metrics to report metrics when
+# the metrics_uploader USE flag is set.
+# @CODE
+# dometricsproductid 12
+# @CODE
+# will write 12 in /etc/os-release.d/GOOGLE_METRICS_PRODUCT_ID.
+dometricsproductid() {
+	[[ $# -eq 1 && -n $1 ]] || die "Usage: ${FUNCNAME} <product_id>"
+	local product_id="$1"
+	isdigit "${product_id}" || die "The product id must be a number."
+
+	do_osrelease_field "GOOGLE_METRICS_PRODUCT_ID" "${product_id}"
 }
