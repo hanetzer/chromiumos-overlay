@@ -139,6 +139,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
 	epatch "${FILESDIR}"/10.3-i965-Fix-1D-Array-Shadow-miptree.patch
 	epatch "${FILESDIR}"/10.3-configure-enable-the-gallium-loader-only-when-needed.patch
+	epatch "${FILESDIR}"/10.3-Revert-i965-enable-image-external-sampling-for-impor.patch
+	epatch "${FILESDIR}"/10.3-Revert-intel-restrict-dma-buf-import-images-to-exter.patch
 
 	base_src_prepare
 
