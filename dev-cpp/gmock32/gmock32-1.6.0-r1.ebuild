@@ -43,10 +43,17 @@ src_prepare() {
 src_configure() {
 	board_setup_32bit_au_env
 	econf --disable-shared --enable-static
+	board_teardown_32bit_au_env
+}
+
+src_compile() {
+	board_setup_32bit_au_env
+	default
+	board_teardown_32bit_au_env
 }
 
 src_install() {
+	board_setup_32bit_au_env
 	dolib.a lib/.libs/libgmock{,_main}.a
-	# See http://crbug.com/231769
 	board_teardown_32bit_au_env
 }

@@ -1,5 +1,6 @@
 Contains all the patches committed to portage_tool on top of 2.2.12:
 
+* Make SYSROOT a portage variable
 * Do not interrupt on SIGCONT
 * Remove warning when repo_name is only defined in layout.conf
 * Remove repos.conf
@@ -62,6 +63,19 @@ index 79818f6..332122f 100755
  #-----------------------------------------------------------------------------
  #
  # DO NOT CHANGE CODE BEYOND THIS POINT - IT'S NOT NEEDED!
+diff --git a/bin/save-ebuild-env.sh b/bin/save-ebuild-env.sh
+index 98cff83..3702afa 100644
+--- a/bin/save-ebuild-env.sh
++++ b/bin/save-ebuild-env.sh
+@@ -106,7 +106,7 @@ __save_ebuild_env() {
+ 		PORTAGE_SANDBOX_READ PORTAGE_SANDBOX_WRITE PREROOTPATH \
+ 		QA_INTERCEPTORS \
+ 		RC_DEFAULT_INDENT RC_DOT_PATTERN RC_ENDCOL RC_INDENTATION  \
+-		ROOT ROOTPATH RPMDIR TEMP TMP TMPDIR USE_EXPAND \
++		ROOT ROOTPATH RPMDIR SYSROOT TEMP TMP TMPDIR USE_EXPAND \
+ 		WARN XARGS _RC_GET_KV_CACHE
+ 
+ 	# user config variables
 diff --git a/pym/_emerge/Scheduler.py b/pym/_emerge/Scheduler.py
 index d6db311..6e3bf1a 100644
 --- a/pym/_emerge/Scheduler.py
@@ -145,6 +159,19 @@ index 5b947dd..0222ae5 100644
  		# For gcc upgrades, preserved libs have to be removed after the
  		# the library path has been updated.
  		self._prune_plib_registry()
+diff --git a/pym/portage/package/ebuild/_config/special_env_vars.py b/pym/portage/package/ebuild/_config/special_env_vars.py
+index 74fedd6..06f3484 100644
+--- a/pym/portage/package/ebuild/_config/special_env_vars.py
++++ b/pym/portage/package/ebuild/_config/special_env_vars.py
+@@ -76,7 +76,7 @@ environ_whitelist += [
+ 	"PORTAGE_VERBOSE", "PORTAGE_WORKDIR_MODE", "PORTAGE_XATTR_EXCLUDE",
+ 	"PORTDIR", "PORTDIR_OVERLAY", "PREROOTPATH", "PROFILE_PATHS",
+ 	"REPLACING_VERSIONS", "REPLACED_BY_VERSION",
+-	"ROOT", "ROOTPATH", "T", "TMP", "TMPDIR",
++	"ROOT", "ROOTPATH", "SYSROOT", "T", "TMP", "TMPDIR",
+ 	"USE_EXPAND", "USE_ORDER", "WORKDIR",
+ 	"XARGS", "__PORTAGE_TEST_HARDLINK_LOCKS",
+ ]
 diff --git a/pym/portage/package/ebuild/doebuild.py b/pym/portage/package/ebuild/doebuild.py
 index 01707ae..c642c67 100644
 --- a/pym/portage/package/ebuild/doebuild.py

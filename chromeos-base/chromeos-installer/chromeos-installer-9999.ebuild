@@ -57,20 +57,24 @@ src_configure() {
 	append-ldflags -L"${SYSROOT}"/usr/lib/vboot32
 
 	use 32bit_au && board_setup_32bit_au_env
-
 	cros-workon_src_configure
+	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_compile() {
 	# We don't need the installer in the sdk, just helper scripts.
 	use cros_host && return 0
 
+	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_compile
+	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_test() {
+	use 32bit_au && board_setup_32bit_au_env
 	# Needed for `cros_run_unit_tests`.
 	cros-workon_src_test
+	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_install() {

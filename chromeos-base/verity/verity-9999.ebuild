@@ -36,18 +36,24 @@ src_prepare() {
 src_configure() {
 	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_configure
+	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_compile() {
+	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_compile
+	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_test() {
 	! use amd64 && ! use x86 && ewarn "Skipping unittests for non-x86" && return 0
+	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_test
+	use 32bit_au && board_teardown_32bit_au_env
 }
 
 src_install() {
+	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_install
 	dolib.a "${OUT}"/libdm-bht.a
 	insinto /usr/include/verity
@@ -59,4 +65,5 @@ src_install() {
 	into /
 	dobin "${OUT}"/verity-static
 	dosym verity-static bin/verity
+	use 32bit_au && board_teardown_32bit_au_env
 }

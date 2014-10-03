@@ -44,15 +44,24 @@ src_prepare() {
 src_configure() {
 	board_setup_32bit_au_env
 	econf --disable-shared --enable-static
+	board_teardown_32bit_au_env
+}
+
+src_compile() {
+	board_setup_32bit_au_env
+	emake
+	board_teardown_32bit_au_env
 }
 
 src_test() {
+	board_setup_32bit_au_env
 	# explicitly use parallel make
 	emake check || die
+	board_teardown_32bit_au_env
 }
 
 src_install() {
+	board_setup_32bit_au_env
 	dolib.a lib/.libs/libgtest{,_main}.a
-	# See http://crbug.com/231769
 	board_teardown_32bit_au_env
 }
