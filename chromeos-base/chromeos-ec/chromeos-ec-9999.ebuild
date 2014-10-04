@@ -26,6 +26,7 @@ EC_BOARD_NAMES=(
 	firefly
 	kitty
 	nyan
+	pinky
 	pit
 	ryu
 	ryu_sh
