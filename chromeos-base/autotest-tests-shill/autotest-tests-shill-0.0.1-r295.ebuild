@@ -47,7 +47,7 @@ IUSE_TESTS="
 	+tests_network_WiFiInvalidParameters
 	+tests_network_WlanDriver
 	+tests_network_WlanHasIP
-	tpm? ( tests_network_VPNConnect )
+	tpm? ( +tests_network_VPNConnect )
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
