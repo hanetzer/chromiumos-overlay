@@ -12,10 +12,10 @@ SRC_URI="http://download.strongswan.org/${P}.tar.bz2"
 LICENSE="GPL-2 RSA DES"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+caps curl debug dhcp eap farp gcrypt ldap mysql +non-root +openssl sqlite pam -gmp"
+IUSE="+caps curl debug dhcp eap farp gcrypt ldap mysql +non-root +openssl sqlite pam"
 
 COMMON_DEPEND="!net-misc/openswan
-	gmp? ( >=dev-libs/gmp-4.1.5 )
+	>=dev-libs/gmp-4.1.5
 	gcrypt? ( dev-libs/libgcrypt )
 	caps? ( sys-libs/libcap )
 	curl? ( net-misc/curl )
@@ -142,7 +142,6 @@ src_configure() {
 		$(use_enable sqlite) \
 		$(use_enable dhcp) \
 		$(use_enable farp) \
-		$(use_enable gmp) \
 		${myconf}
 }
 
