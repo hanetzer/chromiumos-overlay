@@ -11,13 +11,9 @@
 
 =app-benchmarks/i7z-0.27-r1	amd64 x86
 =dev-libs/atk-1.32.0-r1		amd64 arm x86
-=dev-libs/check-0.9.8		amd64 arm x86
-=dev-libs/libgpg-error-1.10-r1	amd64 arm x86
 =dev-python/python-xlib-0.14    amd64 arm x86
 =dev-python/pyyaml-3.09         amd64 arm x86
 =dev-util/gdbus-codegen-2.30.2	amd64 arm x86
-=sys-auth/pam_pwdfile-0.99-r1	amd64 arm x86
-=sys-apps/i2c-tools-3.0.2       amd64 arm x86
 # This should be kept in sync with package.mask.
 # Here we keyword the version we want for the board.
 ~sys-devel/llvm-3.2		*
