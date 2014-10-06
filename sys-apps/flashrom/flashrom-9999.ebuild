@@ -17,8 +17,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="+atahpt +bitbang_spi +buspirate_spi dediprog +drkaiser
 +dummy +fdtmap ft2232_spi +gfxnvidia +internal +linux_i2c +linux_spi +nic3com
-+nicintel +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +rayer_spi
-+satasii +satamv +serprog static use_os_timer +wiki cros_host"
++nicintel +nicintel_spi +nicnatsemi +nicrealtek +ogp_spi +raiden_debug_spi
++rayer_spi +satasii +satamv +serprog static use_os_timer +wiki cros_host"
 
 LIB_DEPEND="atahpt? ( sys-apps/pciutils[static-libs(+)] )
 	dediprog? ( virtual/libusb:0[static-libs(+)] )
@@ -32,6 +32,7 @@ LIB_DEPEND="atahpt? ( sys-apps/pciutils[static-libs(+)] )
 	nicintel_spi? ( sys-apps/pciutils[static-libs(+)] )
 	nicnatsemi? ( sys-apps/pciutils[static-libs(+)] )
 	nicrealtek? ( sys-apps/pciutils[static-libs(+)] )
+	raiden_debug_spi? ( virtual/libusb:1[static-libs(+)] )
 	rayer_spi? ( sys-apps/pciutils[static-libs(+)] )
 	satasii? ( sys-apps/pciutils[static-libs(+)] )
 	satamv? ( sys-apps/pciutils[static-libs(+)] )
@@ -63,8 +64,8 @@ src_compile() {
 	flashrom_enable \
 		atahpt bitbang_spi buspirate_spi dediprog drkaiser fdtmap \
 		ft2232_spi gfxnvidia linux_i2c linux_spi nic3com nicintel \
-		nicintel_spi nicnatsemi nicrealtek ogp_spi rayer_spi \
-		satasii satamv serprog \
+		nicintel_spi nicnatsemi nicrealtek ogp_spi raiden_debug_spi \
+		rayer_spi  satasii satamv serprog \
 		internal dummy
 	_flashrom_enable wiki PRINT_WIKI
 	_flashrom_enable static STATIC

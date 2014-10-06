@@ -24,6 +24,8 @@ dev-libs/nss		-utils
 dev-libs/opencryptoki	tpmtok
 dev-libs/opensc		ssl -pcsc-lite
 dev-libs/openssl	pkcs11 -tls-heartbeat
+# flashrom's libraries must be static
+dev-libs/libusb		static-libs
 dev-python/pyudev	pygobject
 dev-util/dialog		-unicode minimal
 dev-util/perf		-audit -doc -demangle -tui -ncurses -perl -python -slang -unwind
