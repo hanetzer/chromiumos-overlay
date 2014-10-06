@@ -29,9 +29,13 @@
 docrashid() {
 	[[ $# -eq 2 && -n $1 && -n $2 ]] || die "Usage: ${FUNCNAME} <crash_id> <crash_version_id"
 	local validregex="[-._a-zA-Z]+"
-	local crash_id=$(echo "$1" | LC_ALL=C sed -r "s:${validregex}::")
-	local crash_version_id=$(echo "$2" | LC_ALL=C sed -r "s:${validregex}::")
-	if [[ -n ${crash_id} || -n ${crash_version_id} ]]; then
+	local crash_id="$1"
+	local crash_version_id="$2"
+	local filtered_id=$(echo "${crash_id}" | \
+		LC_ALL=C sed -r "s:${validregex}::")
+	local filtered_version_id=$(echo "${crash_version_id}" | \
+		LC_ALL=C sed -r "s:${validregex}::")
+	if [[ -n ${filtered_id} || -n ${filtered_version_id} ]]; then
 		die "Invalid input. Must satisfy: ${validregex}"
 	fi
 	dodir /etc
