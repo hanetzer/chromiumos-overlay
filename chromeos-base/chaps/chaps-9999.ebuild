@@ -25,7 +25,6 @@ RDEPEND="
 	app-crypt/trousers
 	chromeos-base/metrics
 	!<chromeos-base/platform2-0.0.7
-	dev-cpp/gflags
 	dev-libs/dbus-c++
 	dev-libs/openssl
 	dev-libs/protobuf
