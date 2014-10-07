@@ -73,6 +73,10 @@ src_install() {
 	doins c_metrics_library.h \
 		metrics_library{,_mock}.h \
 		timer{,_mock}.h
+
+	# Install the protobuf so that autotests can have access to it.
+	insinto /usr/include/metrics/proto
+	doins components/metrics/proto/*.proto
 }
 
 platform_pkg_test() {
