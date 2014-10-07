@@ -6,8 +6,10 @@ Additionally patch allows caller to set the USB serialname from the
 command line (-s).
 
 See crbug.com/242980 for details
---- libftdi1-1.0/ftdi_eeprom/main.c	2013-01-29 05:21:38.000000000 -0800
-+++ libftdi1-1.0_work/ftdi_eeprom/main.c	2013-10-04 16:21:41.460380604 -0700
+diff --git a/ftdi_eeprom/main.c b/ftdi_eeprom/main.c
+index 5e28034..9fac7e4 100644
+--- a/ftdi_eeprom/main.c
++++ b/ftdi_eeprom/main.c
 @@ -35,6 +35,7 @@
  #include <stdlib.h>
  #include <stdio.h>
@@ -16,15 +18,6 @@ See crbug.com/242980 for details
  
  #include <confuse.h>
  #include <libusb.h>
-@@ -113,7 +114,7 @@ int main(int argc, char *argv[])
-         CFG_BOOL("use_serial", cfg_false, 0),
-         CFG_BOOL("change_usb_version", cfg_false, 0),
-         CFG_INT("usb_version", 0, 0),
--        CFG_INT("default_pid", 0x6001, 0),
-+        CFG_INT("default_pid", 0x6014, 0),
-         CFG_INT("max_power", 0, 0),
-         CFG_STR("manufacturer", "Acme Inc.", 0),
-         CFG_STR("product", "USB Serial Converter", 0),
 @@ -143,8 +144,10 @@ int main(int argc, char *argv[])
      normal variables
      */
@@ -132,7 +125,7 @@ See crbug.com/242980 for details
          exit (-1);
      }
      fclose (fp);
-@@ -217,22 +248,27 @@ int main(int argc, char *argv[])
+@@ -217,22 +248,26 @@ int main(int argc, char *argv[])
  
          if (i != 0)
          {
@@ -145,7 +138,6 @@ See crbug.com/242980 for details
 -
 -            i = ftdi_usb_open(ftdi, 0x0403, default_pid);
 +            printf("Retrying with id:0x%04x/0x%04x\n", _vendor, _product);
-+            i = ftdi_usb_open(ftdi, _vendor, _product);
 +            i = ftdi_usb_open(ftdi, _vendor, _product);
              if (i != 0)
              {
@@ -166,7 +158,7 @@ See crbug.com/242980 for details
  
      printf("FTDI read eeprom: %d\n", ftdi_read_eeprom(ftdi));
      eeprom_get_value(ftdi, CHIP_SIZE, &my_eeprom_size);
-@@ -276,7 +312,8 @@ int main(int argc, char *argv[])
+@@ -276,7 +311,8 @@ int main(int argc, char *argv[])
      eeprom_set_value(ftdi, OUT_IS_ISOCHRONOUS, cfg_getbool(cfg, "out_is_isochronous"));
      eeprom_set_value(ftdi, SUSPEND_PULL_DOWNS, cfg_getbool(cfg, "suspend_pull_downs"));
  
