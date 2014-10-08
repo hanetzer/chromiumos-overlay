@@ -735,6 +735,7 @@ setup_test_lists() {
 }
 
 src_configure() {
+	clang-setup-env
 	tc-export CXX CC AR AS RANLIB STRIP
 	if use clang; then
 		export CC_host="clang"
