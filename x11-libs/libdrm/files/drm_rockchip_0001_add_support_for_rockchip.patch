@@ -1,6 +1,6 @@
-From b22aa433dd1ad625da36a8215c5b37b228ff3829 Mon Sep 17 00:00:00 2001
+From fd76e89bd3b0657f06d44ddbaebbbfbfcc025837 Mon Sep 17 00:00:00 2001
 From: yzq <yzq@rock-chips.com>
-Date: Tue, 3 Jun 2014 15:22:22 +0800
+Date: Wed, 8 Oct 2014 14:38:23 +0800
 Subject: [PATCH] add rockchip drm api
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] add rockchip drm api
  configure.ac                   |   13 ++
  rockchip/Makefile.am           |   20 +++
  rockchip/libdrm_rockchip.pc.in |   11 ++
- rockchip/rockchip_drm.c        |  304 ++++++++++++++++++++++++++++++++++++++++
- rockchip/rockchip_drm.h        |  130 +++++++++++++++++
- rockchip/rockchip_drmif.h      |   77 ++++++++++
- 7 files changed, 560 insertions(+), 1 deletion(-)
+ rockchip/rockchip_drm.c        |  274 ++++++++++++++++++++++++++++++++++++++++
+ rockchip/rockchip_drm.h        |   72 +++++++++++
+ rockchip/rockchip_drmif.h      |   76 +++++++++++
+ 7 files changed, 471 insertions(+), 1 deletion(-)
  create mode 100644 rockchip/Makefile.am
  create mode 100644 rockchip/libdrm_rockchip.pc.in
  create mode 100644 rockchip/rockchip_drm.c
@@ -123,10 +123,10 @@ index 0000000..13f22ac
 +Requires.private: libdrm
 diff --git a/rockchip/rockchip_drm.c b/rockchip/rockchip_drm.c
 new file mode 100644
-index 0000000..c3000be
+index 0000000..a1403d2
 --- /dev/null
 +++ b/rockchip/rockchip_drm.c
-@@ -0,0 +1,304 @@
+@@ -0,0 +1,274 @@
 +/*
 + * Copyright (C) ROCKCHIP, Inc.
 + * Author:yzq<yzq@rock-chips.com>
@@ -153,7 +153,6 @@ index 0000000..c3000be
 + * SOFTWARE.
 + *
 + */
-+
 +
 +#ifdef HAVE_CONFIG_H
 +#include "config.h"
@@ -257,40 +256,6 @@ index 0000000..c3000be
 +	free(bo);
 +fail:
 +	return NULL;
-+}
-+
-+/*
-+ * Get information to gem region allocated.
-+ *
-+ * @dev: rockchip drm device object.
-+ * @handle: gem handle to request gem info.
-+ * @size: size to gem object and returned by kernel side.
-+ * @flags: gem flags to gem object and returned by kernel side.
-+ *
-+ * with this function call, you can get flags and size to gem handle
-+ * through bo object.
-+ *
-+ * if true, return 0 else negative.
-+ */
-+int rockchip_bo_get_info(struct rockchip_device *dev, uint32_t handle,
-+				size_t *size, uint32_t *flags)
-+{
-+	int ret;
-+	struct drm_rockchip_gem_info req = {
-+		.handle = handle,
-+	};
-+
-+	ret = drmIoctl(dev->fd, DRM_IOCTL_ROCKCHIP_GEM_GET, &req);
-+	if (ret < 0) {
-+		fprintf(stderr, "failed to get gem object information[%s].\n",
-+				strerror(errno));
-+		return ret;
-+	}
-+
-+	*size = req.size;
-+	*flags = req.flags;
-+
-+	return 0;
 +}
 +
 +/*
@@ -413,33 +378,39 @@ index 0000000..c3000be
 +{
 +	if (!bo->vaddr) {
 +		struct rockchip_device *dev = bo->dev;
-+		struct drm_rockchip_gem_mmap req = {
++		struct drm_rockchip_gem_map_off req = {
 +			.handle = bo->handle,
-+			.size = bo->size,
 +		};
 +		int ret;
 +
-+		ret = drmIoctl(dev->fd, DRM_IOCTL_ROCKCHIP_GEM_MMAP, &req);
++		ret = drmIoctl(dev->fd, DRM_IOCTL_ROCKCHIP_GEM_MAP_OFFSET, &req);
 +		if (ret) {
-+			fprintf(stderr, "failed to mmap[%s].\n",
++			fprintf(stderr, "failed to ioctl gem map offset[%s].\n",
 +				strerror(errno));
 +			return NULL;
 +		}
 +
-+		bo->vaddr = (void *)(uintptr_t)req.mapped;
++		bo->vaddr = mmap(0, bo->size, PROT_READ | PROT_WRITE,
++			   MAP_SHARED, dev->fd, req.offset);
++		if (bo->vaddr == MAP_FAILED) {
++			fprintf(stderr, "failed to mmap buffer[%s].\n",
++				strerror(errno));
++			return NULL;
++		}
 +	}
 +
 +	return bo->vaddr;
 +}
 diff --git a/rockchip/rockchip_drm.h b/rockchip/rockchip_drm.h
 new file mode 100644
-index 0000000..223821e
+index 0000000..627081e
 --- /dev/null
 +++ b/rockchip/rockchip_drm.h
-@@ -0,0 +1,130 @@
-+/* rockchip_drm.h
-+ * Copyright (C) ROCKCHIP, Inc.
-+ * Author:yzq<yzq@rock-chips.com>
+@@ -0,0 +1,73 @@
++/*
++ * Copyright (c) Fuzhou Rockchip Electronics Co.Ltd
++ * Authors:
++ *       Mark Yao <yzq@rock-chips.com>
 + *
 + * based on exynos_drm.h
 + *
@@ -463,8 +434,6 @@ index 0000000..223821e
 + * SOFTWARE.
 + *
 + */
-+
-+
 +
 +#ifndef _ROCKCHIP_DRM_H_
 +#define _ROCKCHIP_DRM_H_
@@ -501,59 +470,8 @@ index 0000000..223821e
 +	uint64_t offset;
 +};
 +
-+/**
-+ * A structure for mapping buffer.
-+ *
-+ * @handle: a handle to gem object created.
-+ * @pad: just padding to be 64-bit aligned.
-+ * @size: memory size to be mapped.
-+ * @mapped: having user virtual address mmaped.
-+ *	- this variable would be filled by rockchip gem module
-+ *	of kernel side with user virtual address which is allocated
-+ *	by do_mmap().
-+ */
-+struct drm_rockchip_gem_mmap {
-+	uint32_t handle;
-+	uint32_t pad;
-+	uint64_t size;
-+	uint64_t mapped;
-+};
-+
-+/**
-+ * A structure to gem information.
-+ *
-+ * @handle: a handle to gem object created.
-+ * @flags: flag value including memory type and cache attribute and
-+ *	this value would be set by driver.
-+ * @size: size to memory region allocated by gem and this size would
-+ *	be set by driver.
-+ */
-+struct drm_rockchip_gem_info {
-+	uint32_t handle;
-+	uint32_t flags;
-+	uint64_t size;
-+};
-+
-+/* memory type definitions. */
-+enum e_drm_rockchip_gem_mem_type {
-+	/* Physically Continuous memory and used as default. */
-+	ROCKCHIP_BO_CONTIG = 0 << 0,
-+	/* Physically Non-Continuous memory. */
-+	ROCKCHIP_BO_NONCONTIG = 1 << 0,
-+	/* non-cachable mapping and used as default. */
-+	ROCKCHIP_BO_NONCACHABLE = 0 << 1,
-+	/* cachable mapping. */
-+	ROCKCHIP_BO_CACHABLE = 1 << 1,
-+	/* write-combine mapping. */
-+	ROCKCHIP_BO_WC = 1 << 2,
-+	ROCKCHIP_BO_MASK = ROCKCHIP_BO_NONCONTIG | ROCKCHIP_BO_CACHABLE
-+	       			| ROCKCHIP_BO_WC
-+};
-+
-+#define DRM_ROCKCHIP_GEM_CREATE 	0x00
++#define DRM_ROCKCHIP_GEM_CREATE	0x00
 +#define DRM_ROCKCHIP_GEM_MAP_OFFSET	0x01
-+#define DRM_ROCKCHIP_GEM_MMAP		0x02
-+#define DRM_ROCKCHIP_GEM_GET		0x04
 +
 +#define DRM_IOCTL_ROCKCHIP_GEM_CREATE DRM_IOWR(DRM_COMMAND_BASE + \
 +		DRM_ROCKCHIP_GEM_CREATE, struct drm_rockchip_gem_create)
@@ -561,11 +479,6 @@ index 0000000..223821e
 +#define DRM_IOCTL_ROCKCHIP_GEM_MAP_OFFSET DRM_IOWR(DRM_COMMAND_BASE + \
 +		DRM_ROCKCHIP_GEM_MAP_OFFSET, struct drm_rockchip_gem_map_off)
 +
-+#define DRM_IOCTL_ROCKCHIP_GEM_MMAP DRM_IOWR(DRM_COMMAND_BASE + \
-+		DRM_ROCKCHIP_GEM_MMAP, struct drm_rockchip_gem_mmap)
-+
-+#define DRM_IOCTL_ROCKCHIP_GEM_GET DRM_IOWR(DRM_COMMAND_BASE + \
-+		DRM_ROCKCHIP_GEM_GET, struct drm_rockchip_gem_info)
 +#endif
 diff --git a/rockchip/rockchip_drmif.h b/rockchip/rockchip_drmif.h
 new file mode 100644
