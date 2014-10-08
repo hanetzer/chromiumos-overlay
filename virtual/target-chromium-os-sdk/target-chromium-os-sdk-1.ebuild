@@ -129,6 +129,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/libyaml
 	dev-libs/m17n-lib
 	dev-libs/protobuf
+	dev-python/cffi
 	dev-python/cherrypy
 	dev-python/ctypesgen
 	dev-python/dbus-python
@@ -137,12 +138,16 @@ RDEPEND="${RDEPEND}
 	dev-python/m2crypto
 	dev-python/mako
 	dev-python/netifaces
+	dev-python/py
 	dev-python/pycairo
+	dev-python/pycparser
 	dev-python/pygobject
 	dev-python/pyinotify
 	dev-python/pyopenssl
+	dev-python/pytest
 	dev-python/python-daemon
 	dev-python/python-evdev
+	dev-python/python-uinput
 	dev-python/pyudev
 	dev-python/pyusb
 	dev-python/setproctitle
