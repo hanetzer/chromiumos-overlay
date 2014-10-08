@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Install Chromium OS sshd Upstart file to a shared location.
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=ee586014819cfafd2c4bcb5a2a5527e9

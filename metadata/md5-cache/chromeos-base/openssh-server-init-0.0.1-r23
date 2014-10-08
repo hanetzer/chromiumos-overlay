@@ -1,9 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Install the upstart job that launches the openssh-server.
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=virtual/chromeos-firewall
-SLOT=0
-_md5_=c8f2962c261a1ac62d7afa96b5b66e1f
