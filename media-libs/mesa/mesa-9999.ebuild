@@ -76,8 +76,8 @@ DEPEND="${RDEPEND}
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
+	>=x11-proto/dri2proto-2.6
 	X? (
-		>=x11-proto/dri2proto-2.6
 		>=x11-proto/glproto-1.4.11
 		>=x11-proto/xextproto-7.0.99.1
 		x11-proto/xf86driproto
@@ -122,7 +122,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
 	epatch "${FILESDIR}"/8.1-array-overflow.patch
-	epatch "${FILESDIR}"/10.3-Revert-llvmpipe-fix-overflow-bug-in-total-texture-si.patch
 	epatch "${FILESDIR}"/10.3-fix-compile-disable-asm.patch
 	epatch "${FILESDIR}"/10.3-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
 	epatch "${FILESDIR}"/10.3-0005-draw-cache-LLVM-compilation.patch
@@ -135,12 +134,10 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-i965-initialize-brw_reg-struct-when-generating-code.patch
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
 	epatch "${FILESDIR}"/10.3-Fix-workaround-corner-cases.patch
-	epatch "${FILESDIR}"/10.3-glsl-allow-precision-qualifier-on-sampler-arrays
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
-	epatch "${FILESDIR}"/10.3-i965-Fix-1D-Array-Shadow-miptree.patch
-	epatch "${FILESDIR}"/10.3-configure-enable-the-gallium-loader-only-when-needed.patch
 	epatch "${FILESDIR}"/10.3-gbm-dlopen-libglapi-so-gbm_create_device-works.patch
 	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
+	epatch "${FILESDIR}"/10.3-Revert-patches-which-caused-compilation-error-when-u.patch
 
 	base_src_prepare
 

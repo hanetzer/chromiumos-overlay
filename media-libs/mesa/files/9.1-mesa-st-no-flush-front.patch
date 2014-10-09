@@ -1,8 +1,8 @@
 diff --git a/src/mesa/state_tracker/st_manager.c b/src/mesa/state_tracker/st_manager.c
-index a3a6771..7d9c6df 100644
+index df6de73..0e75023 100644
 --- a/src/mesa/state_tracker/st_manager.c
 +++ b/src/mesa/state_tracker/st_manager.c
-@@ -462,8 +462,6 @@ st_context_flush(struct st_context_iface *stctxi, unsigned flags,
+@@ -500,8 +500,6 @@ st_context_flush(struct st_context_iface *stctxi, unsigned flags,
     }
  
     st_flush(st, fence, pipe_flags);

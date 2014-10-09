@@ -1,13 +1,13 @@
 diff --git a/configure.ac b/configure.ac
-index f701ccc..5437a61 100644
+index c030c56..64523df 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -441,15 +441,6 @@ AC_ARG_ENABLE([asm],
+@@ -473,15 +473,6 @@ AC_ARG_ENABLE([asm],
  asm_arch=""
  AC_MSG_CHECKING([whether to enable assembly])
  test "x$enable_asm" = xno && AC_MSG_RESULT([no])
 -# disable if cross compiling on x86/x86_64 since we must run gen_matypes
--if test "x$enable_asm" = xyes && test "x$cross_compiling" = xyes; then
+-if test "x$enable_asm" = xyes -a "x$cross_compiling" = xyes; then
 -    case "$host_cpu" in
 -    i?86 | x86_64 | amd64)
 -        enable_asm=no
