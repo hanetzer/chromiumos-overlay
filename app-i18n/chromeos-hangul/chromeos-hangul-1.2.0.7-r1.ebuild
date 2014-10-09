@@ -2,7 +2,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-inherit eutils
 
 DESCRIPTION="The Korean Hangul input engine for IME extension API"
 HOMEPAGE="https://code.google.com/p/google-input-tools/"
@@ -14,7 +13,6 @@ SLOT="0"
 KEYWORDS="*"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-insert-public-key.patch
 	# Removes unused NaCl binaries.
 	if ! use arm ; then
 		rm hangul_arm.nexe || die
