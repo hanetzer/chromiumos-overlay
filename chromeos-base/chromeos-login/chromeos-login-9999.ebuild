@@ -22,8 +22,8 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="chromeos-base/bootstat
-	chromeos-base/chromeos-cryptohome
 	chromeos-base/chromeos-minijail
+	chromeos-base/cryptohome
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	dev-libs/glib
