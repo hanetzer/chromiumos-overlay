@@ -2,12 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_DESTDIR="${S}/platform2"
 
-inherit cros-debug cros-workon libchrome
+PLATFORM_NATIVE_TEST="yes"
+PLATFORM_SUBDIR="cryptohome"
+
+inherit cros-workon platform udev user
 
 DESCRIPTION="Encrypted home directories for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -16,8 +18,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang test"
-REQUIRED_USE="asan? ( clang )"
+IUSE="test"
 
 RDEPEND="
 	app-crypt/trousers
@@ -32,39 +33,15 @@ RDEPEND="
 	dev-libs/protobuf
 	sys-apps/keyutils
 	sys-fs/ecryptfs-utils
-	sys-fs/lvm2"
-
-DEPEND="
+	sys-fs/lvm2
+"
+DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
-	${RDEPEND}"
-
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/cryptohome"
-}
-
-src_prepare() {
-	cros-workon_src_prepare
-}
-
-src_configure() {
-	clang-setup-env
-	cros-workon_src_configure
-}
-
-src_compile() {
-	cros-workon_src_compile
-}
-
-src_test() {
-	# Needed for `cros_run_unit_tests`.
-	cros-workon_src_test
-}
+"
 
 src_install() {
-	cros-workon_src_install
 	pushd "${OUT}" >/dev/null
 	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache
 	dosbin mount-encrypted
@@ -77,4 +54,8 @@ src_install() {
 
 	insinto /etc/init
 	doins init/*.conf
+}
+
+platform_pkg_test() {
+	platform_test "run" "${OUT}/cryptohome_testrunner"
 }
