@@ -37,6 +37,7 @@ ALL_BOARDS=(
 	amd64-generic
 	amd64-generic_embedded
 	amd64-generic_freon
+	amd64-generic_mobbuild
 	amd64-host
 	anglar
 	#app-shell-panther
