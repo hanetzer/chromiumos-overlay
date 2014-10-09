@@ -32,6 +32,10 @@ RDEPEND="
 
 RDEPEND="${RDEPEND}
 	tests_dbench? ( dev-libs/libaio )
+	tests_platform_MetricsUploader? (
+		chromeos-base/metrics
+		dev-libs/protobuf-python
+	)
 	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
 	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
