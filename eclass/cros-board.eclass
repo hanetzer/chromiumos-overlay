@@ -123,6 +123,7 @@ ALL_BOARDS=(
 	panther
 	panther_embedded
 	panther_goofy
+	panther_moblab
 	parrot
 	parrot_ivb
 	parrot32
