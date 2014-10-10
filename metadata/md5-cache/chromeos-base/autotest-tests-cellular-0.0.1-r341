@@ -9,4 +9,4 @@ LICENSE=GPL-2
 RDEPEND=!<chromeos-base/autotest-tests-0.0.2 chromeos-base/autotest-deps-cellular chromeos-base/shill-test-scripts dev-python/pygobject dev-python/pyusb ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	77734dd207a9df215d7ba1faa98c6da5	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
-_md5_=92cb873397d6d9caa21204f7453719da
+_md5_=79b37048c4e96b8fa9b57c99355fc931
