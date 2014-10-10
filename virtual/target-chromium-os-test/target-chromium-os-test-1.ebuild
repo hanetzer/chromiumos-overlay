@@ -126,8 +126,9 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/perceptualdiff
 	media-gfx/zbar
 	media-libs/opencv
-	opengl? ( media-libs/piglit )
+	opengles? ( app-misc/eglinfo )
 	opengles? ( media-libs/piglit[waffle] )
+	opengl? ( media-libs/piglit )
 	media-libs/tiff
 	media-sound/sox
 	net-analyzer/netperf
