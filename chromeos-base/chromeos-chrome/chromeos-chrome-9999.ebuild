@@ -708,7 +708,8 @@ setup_test_lists() {
 		)
 	fi
 
-	if use chrome_internal || use internal_khronos_glcts; then
+	# TODO(ihf): add "use chrome_internal ||" back.
+	if use internal_khronos_glcts; then
 		TEST_FILES+=(
 			khronos_glcts_test{,_windowless}
 		)
@@ -960,7 +961,8 @@ install_chrome_test_resources() {
 	fi
 
 	# Add the khronos_glcts test data if needed.
-	if use chrome_internal || use internal_khronos_glcts; then
+	# TODO(ihf): add "use chrome_internal ||" back.
+	if use internal_khronos_glcts; then
 		install_test_resources "${test_dir}" gpu/khronos_glcts_support/khronos_glcts_test_expectations.txt
 		# These are all the .test, .frag, .vert, .run files needed by
 		# the GL-CTS test cases.
