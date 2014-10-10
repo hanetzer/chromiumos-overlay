@@ -124,15 +124,10 @@ src_install() {
 	if ! use cros_host ; then
 		dodir /bin /usr/bin
 
-		# If we are running Chrome (or its app_shell variants), symlink
-		# /etc/localtime to something on the stateful partition, which
-		# we can then change around at runtime.
-		# Otherwise, default to Pacific time zone.
-		if ! use chromeless_tty ; then
-			dosym /var/lib/timezone/localtime /etc/localtime
-		else
-			dosym /usr/share/zoneinfo/US/Pacific /etc/localtime
-		fi
+		# Symlink /etc/localtime to something on the stateful
+		# partition. At runtime, the system will take care of
+		# initializing the path in /var.
+		dosym /var/lib/timezone/localtime /etc/localtime
 		# We use mawk in the target boards, not gawk.
 		dosym mawk /usr/bin/awk
 
