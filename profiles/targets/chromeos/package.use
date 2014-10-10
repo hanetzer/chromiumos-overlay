@@ -44,6 +44,12 @@ media-sound/sox		alsa
 media-video/mplayer	cpudetection fbcon -encode -ass -a52 -cdio -dirac -dts -dv -dvd -dvdnav -enca -faac -faad -live -quicktime -mp3 -rar -real -speex -schroedinger -theora -tremor -toolame -twolame -vorbis -xscreensaver -x264 -xv -xvid
 net-analyzer/tcpdump	-chroot ipv6
 net-firewall/iptables	ipv6
+# C++ library of gnutls uses exceptions, which breaks with -fno-exceptions flag.
+# Clients don't need the C++ library anyway, so disabling it...
+net-libs/gnutls	-cxx
+# We want HTTPS support in web server based on libmicrohttpd.
+# Also |messages| is for enabling POST processor in the library.
+net-libs/libmicrohttpd	ssl messages
 net-libs/libpcap	ipv6
 net-libs/libsoup	-ssl
 # for curl-7.19.6 turning on ipv6 use flag will turn off ares
