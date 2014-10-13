@@ -33,6 +33,7 @@ SERVER_IUSE_TESTS="
 		)
 	)
 	+tests_display_EdidStress
+	+tests_display_EndToEnd
 	+tests_display_HotPlugAtBoot
 	+tests_display_HotPlugAtSuspend
 	+tests_display_HotPlugNoisy
