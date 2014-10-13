@@ -46,6 +46,7 @@ ALL_BOARDS=(
 	arm64-generic
 	auron
 	auron_paine
+	auron_pearlvalley
 	auron_yuna
 	bayleybay
 	beaglebone
