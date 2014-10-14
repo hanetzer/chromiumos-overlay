@@ -42,7 +42,9 @@ MULTILIB_STRICT_EXEMPT+="|modules"
 : ${CROS_WORKON_OUTOFTREE_BUILD:=1}
 : ${CROS_WORKON_INCREMENTAL_BUILD:=1}
 
-# Config fragments selected by USE flags
+# Config fragments selected by USE flags. _config fragments are mandatory,
+# _config_disable fragments are optional and will be appended to kernel config
+# if use flag is not set.
 # ...fragments will have the following variables substitutions
 # applied later (needs to be done later since these values
 # aren't reliable when used in a global context like this):
@@ -77,6 +79,7 @@ CONFIG_FRAGMENTS=(
 	tpm
 	vfat
 	vlan
+	vtconsole
 	wifi_testbed_ap
 	wifi_debug
 	wireless34
@@ -109,6 +112,9 @@ CONFIG_DYNAMIC_DEBUG=y
 fbconsole_desc="framebuffer console"
 fbconsole_config="
 CONFIG_FRAMEBUFFER_CONSOLE=y
+"
+fbconsole_config_disable="
+CONFIG_FRAMEBUFFER_CONSOLE=n
 "
 
 gdmwimax_desc="GCT GDM72xx WiMAX support"
@@ -319,6 +325,16 @@ wireless34_config="
 CONFIG_ATH9K_BTCOEX=m
 CONFIG_ATH9K_BTCOEX_COMMON=m
 CONFIG_ATH9K_BTCOEX_HW=m
+"
+
+vtconsole_desc="VT console"
+vtconsole_config="
+CONFIG_VT=y
+CONFIG_VT_CONSOLE=y
+"
+vtconsole_config_disable="
+CONFIG_VT=n
+CONFIG_VT_CONSOLE=n
 "
 
 nowerror_desc="Don't build with -Werror (warnings aren't fatal)."
@@ -613,11 +629,25 @@ cros-kernel2_src_configure() {
 
 	local fragment
 	for fragment in ${CONFIG_FRAGMENTS[@]}; do
-		use ${fragment} || continue
+		local config="${fragment}_config"
+		local status
+
+		if [[ ${!config+set} != "set" ]]; then
+			die "'${fragment}' listed in CONFIG_FRAGMENTS, but ${config} is not set up"
+		fi
+
+		if use ${fragment}; then
+			status="enabling"
+		else
+			config="${fragment}_config_disable"
+			status="disabling"
+			if [[ -z "${!config}" ]]; then
+				continue
+			fi
+		fi
 
 		local msg="${fragment}_desc"
-		local config="${fragment}_config"
-		elog "   - adding ${!msg} config"
+		elog "   - ${status} ${!msg} config"
 		local warning="${fragment}_warning"
 		local warning_msg="${!warning}"
 		if [[ -n "${warning_msg}" ]] ; then

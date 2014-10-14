@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-USE="acpi bluetooth cairo cros_p2p mbim opengl usb vlan X pam"
+USE="acpi bluetooth cairo cros_p2p fbconsole mbim opengl pam usb vlan vtconsole X"
 
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -cups -poppler-data -nls -openrc"

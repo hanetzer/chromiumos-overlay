@@ -16,6 +16,9 @@ USE="${USE} -bluetooth -network_time -nfc"
 # No graphics related support by default.
 USE="${USE} -egl -opengl -opengles -fonts -X"
 
+# Disable VTs and framebuffer console in kernel.
+USE="${USE} -fbconsole -vtconsole"
+
 # No support for device mapper userland tools.
 USE="${USE} -device-mapper"
 
