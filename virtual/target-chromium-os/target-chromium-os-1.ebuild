@@ -116,6 +116,7 @@ CROS_COMMON_RDEPEND+="
 	nfc? ( net-wireless/neard chromeos-base/neard-configs )
 	readahead? ( sys-apps/ureadahead )
 	pam? ( sys-auth/pam_pwdfile )
+	watchdog? ( sys-apps/daisydog )
 	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
 	sys-kernel/linux-firmware
@@ -218,7 +219,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-wireless/crda
 	net-wireless/marvell_sd8787
 	net-wireless/realtek-rt2800-firmware
-	watchdog? ( sys-apps/daisydog )
 	sys-apps/dbus
 	sys-apps/flashrom
 	sys-apps/iproute2
