@@ -14,5 +14,5 @@
 >=sys-boot/syslinux-3.84
 
 # This pins Chrome to the version below by masking more recent versions.
-# >chromeos-base/chromeos-chrome-39.0.2152.0_rc-r1
-# >chromeos-base/chromium-source-39.0.2152.0_rc-r1
+>chromeos-base/chromeos-chrome-40.0.2183.0_rc-r2
+>chromeos-base/chromium-source-40.0.2183.0_rc-r2
