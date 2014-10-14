@@ -55,6 +55,7 @@ IUSE_TESTS=(
 	+tests_desktopui_AudioFeedback
 	+tests_desktopui_CameraApp
 	+tests_desktopui_EchoExtension
+	+tests_desktopui_ExitOnSupervisedUserCrash
 	+tests_desktopui_FlashSanityCheck
 	+tests_desktopui_MediaAudioFeedback
 	+tests_desktopui_ScreenLocker
