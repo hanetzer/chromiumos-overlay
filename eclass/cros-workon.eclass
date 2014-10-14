@@ -234,7 +234,7 @@ local_copy_cp() {
 	local src="${1}"
 	local dst="${2}"
 	einfo "Copying sources from ${src}"
-	local blacklist=( "${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}" )
+	local blacklist=( "${CROS_WORKON_SUBDIR_BLACKLIST[@]/#/--exclude=}" "--exclude=*.pyc" )
 
 	local sl
 	for sl in "${CROS_WORKON_SUBDIRS_TO_COPY[@]}"; do
