@@ -195,7 +195,6 @@ CROS_RDEPEND="
 "
 
 CROS_RDEPEND="${CROS_RDEPEND}
-	app-arch/sharutils
 	app-arch/tar
 	app-crypt/trousers
 	app-editors/vim
