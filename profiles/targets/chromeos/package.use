@@ -80,6 +80,8 @@ sys-apps/flashrom	static
 sys-apps/smartmontools	minimal
 sys-block/fio		aio
 sys-block/parted	device-mapper
+sys-devel/clang		-multitarget
+sys-devel/llvm		-multitarget
 sys-fs/avfs		-extfs
 sys-fs/lvm2		-lvm1 -readline -static device-mapper-only
 sys-fs/mtools		-X
