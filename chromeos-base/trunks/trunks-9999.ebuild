@@ -48,6 +48,8 @@ src_install() {
 }
 
 platform_pkg_test() {
+	"${S}/generator/generator_test.py" || die
+
 	local tests=(
 		trunks_testrunner
 	)
