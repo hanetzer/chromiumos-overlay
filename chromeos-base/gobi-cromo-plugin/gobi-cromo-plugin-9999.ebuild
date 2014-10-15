@@ -12,7 +12,7 @@ inherit cros-debug cros-workon libchrome toolchain-funcs multilib
 
 DESCRIPTION="Cromo plugin to control Qualcomm Gobi modems"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="install_tests internal"
