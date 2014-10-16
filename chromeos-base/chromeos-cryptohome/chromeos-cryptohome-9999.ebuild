@@ -47,8 +47,6 @@ src_install() {
 	dosbin mount-encrypted
 	popd >/dev/null
 
-	dobin email_to_image
-
 	insinto /etc/dbus-1/system.d
 	doins etc/Cryptohome.conf
 
