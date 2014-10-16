@@ -367,20 +367,16 @@ set_build_defines() {
 	fi
 
 	if use clang; then
-		if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
-			BUILD_DEFINES+=(
-				clang=1
-				clang_use_chrome_plugins=0
-				werror=
-				use_allocator=none
-			)
+		BUILD_DEFINES+=(
+			clang=1
+			clang_use_chrome_plugins=0
+			werror=
+			use_allocator=none
+		)
 
-			# The chrome build system will add -m32 for 32bit arches, and
-			# clang defaults to 64bit because our cros_sdk is 64bit default.
-			export CC="clang" CXX="clang++"
-		else
-			die "Clang is not yet supported for ${ARCH}"
-		fi
+		# The chrome build system will add -m32 for 32bit arches, and
+		# clang defaults to 64bit because our cros_sdk is 64bit default.
+		export CC="clang" CXX="clang++"
 	else
 		BUILD_DEFINES+=( clang=0 )
 	fi
