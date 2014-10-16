@@ -115,6 +115,8 @@ EOF
 	fi
 
 	cp .config .config_serial
+	# handle the case when .config does not have a newline in the end.
+	echo >> .config_serial
 	cat "configs/fwserial.${board}" >> .config_serial || die
 }
 
