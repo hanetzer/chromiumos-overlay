@@ -37,7 +37,7 @@ src_install() {
 	doins "${S}/include/GLES2/gl2platform.h"
 	insinto /usr/include/GLES3
 	doins "${S}/include/GLES3/gl3.h"
-	doins "${S}/include/GLES3/gl3ext.h"
+	doins "${S}/include/GLES3/gl31.h"
 	doins "${S}/include/GLES3/gl3platform.h"
 	insinto /usr/include/CL
 	doins "${S}/include/CL/cl.h"
