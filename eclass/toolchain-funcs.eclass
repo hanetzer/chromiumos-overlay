@@ -762,7 +762,7 @@ gcc-ssp() {
 clang-setup-env() {
 	use clang || return 0
 	case ${ARCH} in
-	amd64|x86)
+	amd64|x86|arm)
 		export CC="${CHOST}-clang" CXX="${CHOST}-clang++"
 		;;
 	*) die "Clang is not yet supported for ${ARCH}"
