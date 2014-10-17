@@ -10,12 +10,6 @@
 # version of these packages even if a newer stable version becomes
 # available in portage:
 
-# Masked all upstream ebuilds, unupstreamable work in local copy
->=net-misc/dhcpcd-5.1.5
-
-# Masked all upstream ebuilds
->=net-wireless/wpa_supplicant-0.7.3
-
 # Custom patches
 >=sys-boot/syslinux-3.84
 
