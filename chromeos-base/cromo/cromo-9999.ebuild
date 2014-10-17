@@ -27,7 +27,6 @@ RDEPEND="
 	!<chromeos-base/platform2-0.0.11
 	>=dev-libs/glib-2.0
 	dev-libs/dbus-c++
-	dev-cpp/gflags
 	virtual/modemmanager
 "
 
