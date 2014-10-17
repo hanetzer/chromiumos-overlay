@@ -17,7 +17,8 @@ KEYWORDS="~*"
 IUSE="-asan -clang +X"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND="chromeos-base/libevdev
+RDEPEND="chromeos-base/gestures-conf
+	chromeos-base/libevdev
 	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest
