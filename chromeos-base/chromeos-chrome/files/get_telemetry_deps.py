@@ -8,16 +8,14 @@ import sys
 
 
 def GetAllDeps(chrome_root):
-  run_measurement = os.path.join(
-      chrome_root, 'src/tools/perf/run_measurement')
-  if not os.path.exists(run_measurement):
-    raise IOError('run_measurement script does not exist.')
-  print_bootstrap = subprocess.Popen([run_measurement,
-                                      '--print-bootstrap-deps-cros'],
+  run_benchmark = os.path.join(
+      chrome_root, 'src/tools/perf/run_benchmark')
+  if not os.path.exists(run_benchmark):
+    raise IOError('run_benchmark script does not exist.')
+  print_bootstrap = subprocess.Popen([run_benchmark, 'deps'],
                                      stdout=subprocess.PIPE)
   # STDOUT will have the deps list.
-  deps_list = print_bootstrap.communicate()[0]
-  deps_list = ast.literal_eval(deps_list)
+  deps_list = print_bootstrap.communicate()[0].splitlines(False)
   # Remove the 'src/' at the front of each dep.
   return [dep.split('src/', 1)[1] for dep in deps_list]
 
