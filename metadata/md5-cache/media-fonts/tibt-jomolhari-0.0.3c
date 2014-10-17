@@ -8,5 +8,5 @@ LICENSE=OFL-1.1
 RESTRICT=strip binchecks
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/tibt-jomolhari-0.0.3c.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	font	bc3df4ed373e09f86a90e8fad39034d6	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=086e5da2896d57d7229dd511c66a92d7

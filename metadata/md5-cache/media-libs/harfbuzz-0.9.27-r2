@@ -10,5 +10,5 @@ RDEPEND=cairo? ( x11-libs/cairo:= ) glib? ( dev-libs/glib:2[abi_x86_32(-)?,abi_x
 REQUIRED_USE=introspection? ( glib )
 SLOT=0/0.9.18
 SRC_URI=http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-0.9.27.tar.bz2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	libtool	eba09ed440f2692f73024ff3621a1f4b	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multilib-build	9eb4b5fb858228316d8bb32ada51f6a5	multilib-minimal	5bbdc77877c1aa3c6bd89ca3f9196d11	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-any-r1	08d3455b23110d650f173ab0a090818b	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	libtool	eba09ed440f2692f73024ff3621a1f4b	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multilib-build	9eb4b5fb858228316d8bb32ada51f6a5	multilib-minimal	5bbdc77877c1aa3c6bd89ca3f9196d11	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-any-r1	08d3455b23110d650f173ab0a090818b	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=c13f8f9e3f3baa77d0ed00e95a633cbf

@@ -9,5 +9,5 @@ LICENSE=SGI-B-2.0
 RDEPEND=virtual/opengl multilib? ( !app-emulation/emul-linux-x86-opengl )
 SLOT=0
 SRC_URI=ftp://ftp.freedesktop.org/pub/mesa/glu/glu-9.0.0.tar.bz2
-_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	559ed17194292ec42d68145dcca2fa32	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	559ed17194292ec42d68145dcca2fa32	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=7f0b2cb0e893505f4c0b00fadbe16f8d

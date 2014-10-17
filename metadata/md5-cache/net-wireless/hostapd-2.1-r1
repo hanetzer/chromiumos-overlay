@@ -9,5 +9,5 @@ LICENSE=|| ( GPL-2 BSD )
 RDEPEND=ssl? ( dev-libs/openssl ) kernel_linux? ( dev-libs/libnl:3 crda? ( net-wireless/crda ) ) madwifi? ( || ( >net-wireless/madwifi-ng-tools-0.9.3 net-wireless/madwifi-old ) )
 SLOT=0
 SRC_URI=http://hostap.epitest.fi/releases/hostapd-2.1.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=2841d21299fae8ce4bf18c20bfc33627

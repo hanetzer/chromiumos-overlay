@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=audit? ( sys-process/audit ) demangle? ( sys-devel/binutils ) perl? ( || ( >=dev-lang/perl-5.10 sys-devel/libperl ) ) slang? ( dev-libs/newt ) unwind? ( sys-libs/libunwind ) gtk? ( x11-libs/gtk+:2 ) dev-libs/elfutils
 SLOT=0
 SRC_URI=mirror://kernel/linux/kernel/v3.x/linux-3.14.tar.xz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python-single-r1	82a55861314bbcedaf1e08ed4dd651b3	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	d261ee3803856c0bd4ce4b53f1c111bf	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python-single-r1	82a55861314bbcedaf1e08ed4dd651b3	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=920b09151c929b46538270e6922f7982
