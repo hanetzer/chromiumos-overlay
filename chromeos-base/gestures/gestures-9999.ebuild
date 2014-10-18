@@ -18,7 +18,6 @@ IUSE="-asan -clang +X"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="chromeos-base/libevdev
-	>=dev-cpp/gflags-2.0
 	dev-libs/jsoncpp
 	sys-fs/udev"
 DEPEND="dev-cpp/gtest
