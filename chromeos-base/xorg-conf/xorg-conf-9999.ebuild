@@ -14,7 +14,7 @@ DESCRIPTION="Board specific xorg configuration file."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="alex butterfly elan -exynos mario stout -tegra -rk32 X"
