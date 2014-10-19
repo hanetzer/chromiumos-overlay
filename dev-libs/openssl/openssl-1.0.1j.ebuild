@@ -1,6 +1,6 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1i.ebuild,v 1.1 2014/08/07 00:17:31 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.1j.ebuild,v 1.3 2014/10/15 19:03:06 ago Exp $
 
 EAPI="4"
 
@@ -62,7 +62,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-1.0.1h-ipv6.patch
 		epatch "${FILESDIR}"/${PN}-1.0.1e-s_client-verify.patch #472584
 		epatch "${FILESDIR}"/${PN}-1.0.1f-revert-alpha-perl-generation.patch #499086
-		epatch "${FILESDIR}"/${PN}-1.0.1h-blacklist-by-sha1.patch
+		epatch "${FILESDIR}"/${PN}-1.0.1j-blacklist-by-sha1.patch
 		epatch_user #332661
 	fi
 
@@ -80,6 +80,16 @@ src_prepare() {
 		|| die
 	# show the actual commands in the log
 	sed -i '/^SET_X/s:=.*:=set -x:' Makefile.shared
+
+	# since we're forcing $(CC) as makedep anyway, just fix
+	# the conditional as always-on
+	# helps clang (#417795), and versioned gcc (#499818)
+	sed -i 's/expr.*MAKEDEPEND.*;/true;/' util/domd || die
+
+	# quiet out unknown driver argument warnings since openssl
+	# doesn't have well-split CFLAGS and we're making it even worse
+	# and 'make depend' uses -Werror for added fun (#417795 again)
+	[[ ${CC} == *clang* ]] && append-flags -Qunused-arguments
 
 	# allow openssl to be cross-compiled
 	cp "${FILESDIR}"/gentoo.config-1.0.1 gentoo.config || die
