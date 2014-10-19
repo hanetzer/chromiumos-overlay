@@ -3,11 +3,11 @@ DEPEND=>=dev-libs/glib-2.24.0 python_single_target_python3_2? ( >=dev-lang/pytho
 DESCRIPTION=provide (streaming) protocol decoding functionality
 EAPI=5
 HOMEPAGE=http://sigrok.org/wiki/Libsigrokdecode
-IUSE=static-libs cros_host cros_workon_tree_7582e28d8cb8eda5fd82a5067bb57969ef648a4c profiling python_targets_python3_2 python_targets_python3_3 python_targets_python3_4 python_single_target_python3_2 python_single_target_python3_3 python_single_target_python3_4
+IUSE=static-libs cros_host cros_workon_tree_4da78120c79e3092c0dc0db79ea24f8350f345f4 profiling python_targets_python3_2 python_targets_python3_3 python_targets_python3_4 python_single_target_python3_2 python_single_target_python3_3 python_single_target_python3_4
 KEYWORDS=*
 LICENSE=GPL-3
 RDEPEND=>=dev-libs/glib-2.24.0 python_single_target_python3_2? ( >=dev-lang/python-3.2.5-r2:3.2 ) python_single_target_python3_3? ( >=dev-lang/python-3.3.2-r2:3.3 ) python_single_target_python3_4? ( dev-lang/python:3.4 ) dev-lang/python-exec:=[python_targets_python3_2(-)?,python_targets_python3_3(-)?,python_targets_python3_4(-)?,python_single_target_python3_2(+)?,python_single_target_python3_3(+)?,python_single_target_python3_4(+)?]
 REQUIRED_USE=python_single_target_python3_2? ( python_targets_python3_2 ) python_single_target_python3_3? ( python_targets_python3_3 ) python_single_target_python3_4? ( python_targets_python3_4 ) ^^ ( python_single_target_python3_2 python_single_target_python3_3 python_single_target_python3_4 )
 SLOT=0
 _eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	95f983755f60a281d223dd9bf6e94dbd	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-single-r1	82a55861314bbcedaf1e08ed4dd651b3	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=fe687e3b94cf78f522cba20966e68f8c
+_md5_=d4b0021a4bb30c183e97db21cbb4136f

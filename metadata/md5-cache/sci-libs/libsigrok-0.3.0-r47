@@ -3,10 +3,10 @@ DEPEND=>=dev-libs/glib-2.32.0 >=dev-libs/libzip-0.8 ftdi? ( >=dev-embedded/libft
 DESCRIPTION=provide basic hardware drivers for logic analyzers and input/output file format support
 EAPI=5
 HOMEPAGE=http://sigrok.org/wiki/Libsigrok
-IUSE=ftdi serial static-libs test usb cros_host cros_workon_tree_cde42caeb0a856a381b55fecfb9561d40e7aad46 profiling
+IUSE=ftdi serial static-libs test usb cros_host cros_workon_tree_e4b4d974dbf2ca2d9492accc6ef99e497a7768ea profiling
 KEYWORDS=*
 LICENSE=GPL-3
 RDEPEND=!static-libs? ( >=dev-libs/glib-2.32.0 >=dev-libs/libzip-0.8 ftdi? ( >=dev-embedded/libftdi-0.16 ) serial? ( dev-libs/libserialport ) usb? ( virtual/libusb:1 ) ) static-libs? ( >=dev-libs/glib-2.32.0[static-libs(+)] >=dev-libs/libzip-0.8[static-libs(+)] ftdi? ( >=dev-embedded/libftdi-0.16[static-libs(+)] ) serial? ( dev-libs/libserialport[static-libs(+)] ) usb? ( virtual/libusb:1[static-libs(+)] ) )
 SLOT=0
 _eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	95f983755f60a281d223dd9bf6e94dbd	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=206f76211d95a9dfbe1e69e4c4ac341a
+_md5_=1735e7f80922c5577bf778bde63db590
