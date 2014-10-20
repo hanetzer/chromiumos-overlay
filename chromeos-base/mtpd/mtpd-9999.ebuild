@@ -19,7 +19,6 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
 	chromeos-base/libchromeos
-	>=dev-cpp/gflags-2.0
 	dev-libs/dbus-c++
 	>=dev-libs/glib-2.30
 	dev-libs/protobuf
