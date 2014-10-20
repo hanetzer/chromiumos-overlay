@@ -30,6 +30,7 @@ SERVER_IUSE_TESTS="
 	+tests_bluetooth_Sanity_Discovery
 	+tests_bluetooth_Sanity_ValidAddress
 	+tests_bluetooth_SDP_ServiceAttributeRequest
+	+tests_bluetooth_SDP_ServiceSearchAttributeRequest
 	+tests_bluetooth_SDP_ServiceSearchRequestBasic
 "
 
