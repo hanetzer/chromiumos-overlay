@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2183.0_rc-r2.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2183.0_rc-r2.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2183.0_rc-r2.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2194.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2194.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2194.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -367,20 +367,16 @@ set_build_defines() {
 	fi
 
 	if use clang; then
-		if [[ "${ARCH}" == "x86" || "${ARCH}" == "amd64" ]]; then
-			BUILD_DEFINES+=(
-				clang=1
-				clang_use_chrome_plugins=0
-				werror=
-				use_allocator=none
-			)
+		BUILD_DEFINES+=(
+			clang=1
+			clang_use_chrome_plugins=0
+			werror=
+			use_allocator=none
+		)
 
-			# The chrome build system will add -m32 for 32bit arches, and
-			# clang defaults to 64bit because our cros_sdk is 64bit default.
-			export CC="clang" CXX="clang++"
-		else
-			die "Clang is not yet supported for ${ARCH}"
-		fi
+		# The chrome build system will add -m32 for 32bit arches, and
+		# clang defaults to 64bit because our cros_sdk is 64bit default.
+		export CC="clang" CXX="clang++"
 	else
 		BUILD_DEFINES+=( clang=0 )
 	fi
@@ -735,6 +731,7 @@ setup_test_lists() {
 }
 
 src_configure() {
+	clang-setup-env
 	tc-export CXX CC AR AS RANLIB STRIP
 	if use clang; then
 		export CC_host="clang"
@@ -1014,8 +1011,6 @@ install_telemetry_dep_resources() {
 			content/test/data/media \
 			content/test/gpu/run_gpu_test.py \
 			tools/perf/run_benchmark \
-			tools/perf/run_measurement \
-			tools/perf/run_multipage_benchmarks \
 			tools/perf/run_tests \
 			chrome/test/telemetry
 	fi
