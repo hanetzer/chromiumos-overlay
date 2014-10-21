@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2196.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2196.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2196.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2196.0_rc-r2.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2196.0_rc-r2.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2196.0_rc-r2.afdo"
 
 add_afdo_files() {
 	local a f
@@ -1005,8 +1005,12 @@ install_telemetry_dep_resources() {
 	if [[ -r "${CHROME_ROOT}/src/tools/telemetry" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
-		DEPS_LIST=$(python ${FILESDIR}/get_telemetry_deps.py ${CHROME_ROOT})
-		install_test_resources "${test_dir}" $DEPS_LIST \
+		# Get deps from Chrome (and convert paths to relative).
+		# TODO(ihf): delete files/get_telemetry_deps.py once Chrome PFQ
+		# successfully completes.
+		DEPS_LIST=$(python ${CHROME_ROOT}/src/tools/perf/run_benchmark deps | \
+			sed -e 's|^'${CHROME_ROOT}/src/'||')
+		install_test_resources "${test_dir}" ${DEPS_LIST} \
 			content/test/data/gpu \
 			content/test/data/media \
 			content/test/gpu/run_gpu_test.py \
