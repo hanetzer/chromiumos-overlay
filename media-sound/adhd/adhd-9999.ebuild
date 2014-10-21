@@ -17,7 +17,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-RDEPEND=">=media-libs/alsa-lib-1.0.24.1
+RDEPEND=">=media-libs/alsa-lib-1.0.27
 	media-sound/alsa-utils
 	media-plugins/alsa-plugins
 	media-libs/sbc
