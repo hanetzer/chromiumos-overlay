@@ -182,6 +182,9 @@ PATCHES=(
 	# crosbug.com/p/29492
 	"${FILESDIR}/1.12.4-fix-copypasta-crtc-confinement.patch"
 	"${FILESDIR}/1.12.4-fix-snap-to-nearest-crtc.patch"
+
+	# crosbug.com/p/32488
+	"${FILESDIR}/1.12.4-Skip-SetCursor-when-vtSema.patch"
 )
 
 src_prepare() {
