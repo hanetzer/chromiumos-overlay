@@ -1,27 +1,30 @@
 # Copyright (c) 2010 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
 
-DESCRIPTION="Tegra2 boot scripts"
+DESCRIPTION="Das U-Boot boot scripts"
 
-LICENSE="BCD"
+LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="arm"
+KEYWORDS="-* arm"
 IUSE=""
 
-src_compile() {
-	BASE="${FILESDIR}"/boot.scr
-	sed 's/\${KERNEL_PART}/2/g;s/\${ROOT_PART}/3/g' "$BASE" >boot-A.scr || die
-	sed 's/\${KERNEL_PART}/4/g;s/\${ROOT_PART}/5/g' "$BASE" >boot-B.scr || die
+S=${WORKDIR}
 
+src_compile() {
+	local base="${FILESDIR}"/boot.scr
+	sed 's/\${KERNEL_PART}/2/g;s/\${ROOT_PART}/3/g' "${base}" >boot-A.scr || die
+	sed 's/\${KERNEL_PART}/4/g;s/\${ROOT_PART}/5/g' "${base}" >boot-B.scr || die
+
+	local script
 	for script in boot-{A,B}.scr; do
 		mkimage -A arm -O linux -T script -C none -a 0 -e 0 \
-			-n $script -d $script $script.uimg >/dev/null || die
+			-n "${script}" -d "${script}" "${script}.uimg" >/dev/null || die
 	done
 }
 
 src_install() {
 	insinto /boot
-	doins boot-{A,B}.scr.uimg || die
+	doins boot-{A,B}.scr.uimg
 }
