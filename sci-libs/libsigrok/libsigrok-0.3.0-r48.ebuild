@@ -4,8 +4,8 @@
 
 EAPI="5"
 
-CROS_WORKON_COMMIT="160691b9008b2e13f981f6b8876cbbeb247c773d"
-CROS_WORKON_TREE="e4b4d974dbf2ca2d9492accc6ef99e497a7768ea"
+CROS_WORKON_COMMIT="a42a39ac378534782d44f166b879e84cefa66ed6"
+CROS_WORKON_TREE="ec428226e90c2e1c7f1835fcf79715124465cd0b"
 CROS_WORKON_PROJECT="chromiumos/third_party/libsigrok"
 
 inherit cros-workon eutils autotools
