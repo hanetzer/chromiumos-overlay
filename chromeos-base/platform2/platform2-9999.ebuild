@@ -7,7 +7,6 @@ CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
 
 PLATFORM2_PROJECTS=(
-	"attestation"
 	"chromiumos-wide-profiling"
 	"cros-disks"
 	"debugd"
@@ -30,7 +29,7 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -attestation +cellular -clang +cros_disks cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test +vpn wimax"
+IUSE="-asan +cellular -clang +cros_disks cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
 "
@@ -151,24 +150,6 @@ platform2_multiplex() {
 # Keep them sorted by name!
 #
 
-platform2_install_attestation() {
-	use attestation || return 0
-	use cros_host && return 0
-
-	insinto /etc/dbus-1/system.d
-	doins server/org.chromium.Attestation.conf
-
-	insinto /etc/init
-	doins server/attestationd.conf
-
-	insinto /usr
-	dosbin "${OUT}"/attestationd
-	dobin "${OUT}"/attestation
-
-	insinto /usr/share/policy
-	newins server/attestationd-seccomp-${ARCH}.policy attestationd-seccomp.policy
-}
-
 platform2_install_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
@@ -248,10 +229,6 @@ platform2_install_vpn-manager() {
 # These are all the repo-specific test functions.
 # Keep them sorted by name!
 #
-
-platform2_test_attestation() {
-	return 0
-}
 
 platform2_test_chromiumos-wide-profiling() {
 	use cros_host && return 0
