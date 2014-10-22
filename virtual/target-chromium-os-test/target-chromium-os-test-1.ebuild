@@ -11,7 +11,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="-app_shell cros_ec cros_embedded opengl opengles p2p peerd +shill +tpm X"
+IUSE="-app_shell chromeless_tty cros_ec cros_embedded opengl opengles p2p peerd
+     +shill +tpm X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -49,6 +50,11 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/verity
 	chromeos-base/vpd
 	cros_ec? ( chromeos-base/ec-utils )
+	!chromeless_tty? (
+		!app_shell? (
+			>=dev-cpp/gflags-2.0
+		)
+	)
 	dev-lang/python
 	p2p? ( dev-python/dpkt )
 	peerd? ( dev-python/dpkt )
