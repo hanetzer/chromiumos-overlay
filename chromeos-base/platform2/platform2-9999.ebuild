@@ -8,7 +8,6 @@ CROS_WORKON_USE_VCSID=1
 
 PLATFORM2_PROJECTS=(
 	"chromiumos-wide-profiling"
-	"cros-disks"
 	"debugd"
 	"lorgnette"
 	"vpn-manager"
@@ -29,24 +28,9 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular -clang +cros_disks cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test +vpn wimax"
+IUSE="-asan +cellular -clang cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test +vpn wimax"
 REQUIRED_USE="
 	asan? ( clang )
-"
-
-RDEPEND_cros_disks="
-	cros_disks? (
-		app-arch/unrar
-		dev-libs/dbus-c++
-		sys-apps/rootdev
-		sys-apps/util-linux
-		sys-fs/avfs
-		sys-fs/dosfstools
-		sys-fs/exfat-utils
-		sys-fs/fuse-exfat
-		sys-fs/ntfs3g
-		sys-fs/udev
-	)
 "
 
 RDEPEND_debugd="
@@ -94,7 +78,6 @@ RDEPEND="
 		>=dev-libs/glib-2.30
 		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
-		!chromeos-base/cros-disks[-platform2]
 		!chromeos-base/chromeos-debugd[-platform2]
 		chromeos-base/libchromeos
 		chromeos-base/metrics
@@ -154,29 +137,6 @@ platform2_install_chromiumos-wide-profiling() {
 	use cros_host && return 0
 	use profile || return 0
 	dobin "${OUT}"/quipper
-}
-
-platform2_install_cros-disks() {
-	use cros_disks || return 0
-	use cros_host && return 0
-
-	exeinto /opt/google/cros-disks
-	doexe "${OUT}"/disks
-
-	# Install USB device IDs file.
-	insinto /opt/google/cros-disks
-	doins usb-device-info
-
-	# Install seccomp policy file.
-	use seccomp && newins avfsd-seccomp-${ARCH}.policy avfsd-seccomp.policy
-
-	# Install upstart config file.
-	insinto /etc/init
-	doins cros-disks.conf
-
-	# Install D-Bus config file.
-	insinto /etc/dbus-1/system.d
-	doins org.chromium.CrosDisks.conf
 }
 
 platform2_install_debugd() {
@@ -251,29 +211,6 @@ platform2_test_chromiumos-wide-profiling() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
-}
-
-platform2_test_cros-disks() {
-	use cros_disks || return 0
-	use cros_host && return 0
-
-	local gtest_filter_qemu_common=""
-	gtest_filter_qemu_common+="DiskManagerTest.*"
-	gtest_filter_qemu_common+=":ExternalMounterTest.*"
-	gtest_filter_qemu_common+=":UdevDeviceTest.*"
-	gtest_filter_qemu_common+=":MountInfoTest.RetrieveFromCurrentProcess"
-	gtest_filter_qemu_common+=":GlibProcessTest.*"
-
-	local gtest_filter_user_tests="-*.RunAsRoot*:"
-	use arm && gtest_filter_user_tests+="${gtest_filter_qemu_common}"
-
-	local gtest_filter_root_tests="*.RunAsRoot*-"
-	use arm && gtest_filter_root_tests+="${gtest_filter_qemu_common}"
-
-	platform_test "run" "${OUT}/disks_testrunner" "1" \
-		"${gtest_filter_root_tests}"
-	platform_test "run" "${OUT}/disks_testrunner" "0" \
-		"${gtest_filter_user_tests}"
 }
 
 platform2_test_debugd() {
@@ -366,13 +303,6 @@ pkg_preinst() {
 	# by bootstat and ureadahead.
 	enewuser "debugfs-access"
 	enewgroup "debugfs-access"
-
-	if use cros_disks; then
-		for ug in cros-disks ntfs-3g avfs fuse-exfat; do
-			enewuser "${ug}"
-			enewgroup "${ug}"
-		done
-	fi
 
 	if use debugd; then
 		for ug in debugd debugd-logs; do
