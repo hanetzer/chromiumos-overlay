@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2196.0_rc-r2.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2196.0_rc-r2.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2196.0_rc-r2.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2196.0_rc-r3.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2196.0_rc-r3.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2196.0_rc-r3.afdo"
 
 add_afdo_files() {
 	local a f
@@ -731,7 +731,6 @@ setup_test_lists() {
 }
 
 src_configure() {
-	clang-setup-env
 	tc-export CXX CC AR AS RANLIB STRIP
 	if use clang; then
 		export CC_host="clang"
