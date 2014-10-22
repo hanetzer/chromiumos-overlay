@@ -10,6 +10,8 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
+IUSE="+shill"
+
 X86_DEPEND="
 	sys-boot/syslinux
 "
@@ -30,7 +32,8 @@ RDEPEND="
 	chromeos-base/chromeos-factoryinstall
 	chromeos-base/chromeos-init
 	chromeos-base/dev-install
-	chromeos-base/platform2
+	shill? ( chromeos-base/shill )
+	!shill? ( net-misc/dhcpcd )
 	chromeos-base/vboot_reference
 	media-gfx/ply-image
 	net-firewall/iptables
