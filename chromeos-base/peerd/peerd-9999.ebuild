@@ -10,7 +10,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="peerd"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="Local peer discovery services for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -28,6 +28,12 @@ DEPEND="
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 "
+
+pkg_preinst() {
+	# Create user and group for peerd.
+	enewuser "peerd"
+	enewgroup "peerd"
+}
 
 src_install() {
 	dobin "${OUT}/peerd"
