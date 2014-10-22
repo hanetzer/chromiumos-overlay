@@ -16,7 +16,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular +seccomp test +tpm +vpn wimax"
+IUSE="+cellular +seccomp test +tpm +vpn wake_on_wifi wimax"
 KEYWORDS="~*"
 
 RDEPEND="
