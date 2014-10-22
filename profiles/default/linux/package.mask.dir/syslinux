@@ -1,0 +1,7 @@
+# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+# This is here so that we keep using our version with custom patches, not the
+# latest stable version from upstream.
+
+>=sys-boot/syslinux-3.84
