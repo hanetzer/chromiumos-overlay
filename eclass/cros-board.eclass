@@ -173,7 +173,12 @@ ALL_BOARDS=(
 	tricky
 	urara
 	veyron
+	veyron_jerry
+	veyron_mighty
+	veyron_minnie
 	veyron_pinky
+	veyron_remy
+	veyron_speedy
 	#waluigi
 	whirlwind
 	winky
