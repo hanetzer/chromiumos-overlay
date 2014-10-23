@@ -175,6 +175,7 @@ ALL_BOARDS=(
 	veyron
 	veyron_pinky
 	#waluigi
+	whirlwind
 	winky
 	wolf
 	wsb
