@@ -25,8 +25,11 @@ EC_BOARD_NAMES=(
 	bds
 	big
 	blaze
+	dingdong
 	firefly
+	hoho
 	kitty
+	minimuffin
 	nyan
 	pinky
 	pit
@@ -36,6 +39,7 @@ EC_BOARD_NAMES=(
 	samus_pd
 	snow
 	spring
+	twinkie
 	zinger
 )
 
