@@ -8,7 +8,6 @@ CROS_WORKON_USE_VCSID=1
 
 PLATFORM2_PROJECTS=(
 	"chromiumos-wide-profiling"
-	"debugd"
 	"lorgnette"
 )
 CROS_WORKON_LOCALNAME="platform2"  # With all platform2 subdirs
@@ -27,22 +26,9 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular -clang cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test wimax"
+IUSE="-asan +cellular -clang cros_embedded cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test wimax"
 REQUIRED_USE="
 	asan? ( clang )
-"
-
-RDEPEND_debugd="
-	debugd? (
-		cellular? (
-			virtual/modemmanager
-		)
-		dev-libs/dbus-c++
-		dev-libs/libpcre
-		net-libs/libpcap
-		sys-apps/memtester
-		sys-apps/smartmontools
-	)
 "
 
 RDEPEND_lorgnette="
@@ -69,7 +55,6 @@ RDEPEND="
 		>=dev-libs/glib-2.30
 		tcmalloc? ( dev-util/google-perftools )
 		sys-apps/dbus
-		!chromeos-base/chromeos-debugd[-platform2]
 		chromeos-base/libchromeos
 		chromeos-base/metrics
 		chromeos-base/system_api
@@ -129,32 +114,6 @@ platform2_install_chromiumos-wide-profiling() {
 	dobin "${OUT}"/quipper
 }
 
-platform2_install_debugd() {
-	use debugd || return 0
-	use cros_host && return 0
-
-	into /
-	dosbin "${OUT}"/debugd
-	dodir /debugd
-
-	exeinto /usr/libexec/debugd/helpers
-	doexe "${OUT}"/{capture_packets,icmp,netif,network_status}
-	use cellular && doexe "${OUT}"/modem_status
-	use wimax && doexe "${OUT}"/wimax_status
-
-	doexe src/helpers/{minijail-setuid-hack,systrace,capture_utility}.sh
-	use cellular && doexe src/helpers/send_at_command.sh
-
-	insinto /etc/dbus-1/system.d
-	doins share/org.chromium.debugd.conf
-
-	insinto /etc/init
-	doins share/{debugd,trace_marker-test}.conf
-
-	insinto /etc/perf_commands
-	doins share/perf_commands/{arm,celeron-2955u,core,unknown}.txt
-}
-
 platform2_install_lorgnette() {
 	use lorgnette || return 0
 	dobin "${OUT}"/lorgnette
@@ -190,17 +149,6 @@ platform2_test_chromiumos-wide-profiling() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
-}
-
-platform2_test_debugd() {
-	use cros_host && return 0
-	use debugd || return 0
-	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: debugd" && return 0
-
-	pushd "${SRC}/src" >/dev/null
-	platform_test "run" "${OUT}/debugd_testrunner"
-	./helpers/capture_utility_test.sh || die
-	popd >/dev/null
 }
 
 platform2_test_lorgnette() {
@@ -254,23 +202,9 @@ src_install() {
 }
 
 pkg_preinst() {
-	# Create users and groups that are used by system daemons at runtime.
-	# Users and groups, which are needed during build time, should be
-	# created in pkg_setup instead.
-	local ug
-
 	# Create debugfs-access user and group, which is needed by the
 	# chromeos_startup script to mount /sys/kernel/debug.  This is needed
 	# by bootstat and ureadahead.
 	enewuser "debugfs-access"
 	enewgroup "debugfs-access"
-
-	if use debugd; then
-		for ug in debugd debugd-logs; do
-			enewuser "${ug}"
-			enewgroup "${ug}"
-		done
-		enewgroup "daemon-store"
-		enewgroup "logs-access"
-	fi
 }
