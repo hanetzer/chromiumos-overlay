@@ -13,7 +13,7 @@ KEYWORDS="*"
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
 	+crash_reporting +cros_disks cros_ec cros_embedded dptf feedback +fonts
 	gobi mtd +network_time nfc pam peerd +power_management +readahead +shill
-	+syslog +tpm watchdog wimax X"
+	+syslog +tpm +vpn watchdog wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
 
@@ -111,6 +111,7 @@ CROS_COMMON_RDEPEND+="
 	shill? ( chromeos-base/shill )
 	chromeos-base/tty
 	chromeos-base/update_engine
+	vpn? ( chromeos-base/vpn-manager )
 	wimax? ( chromeos-base/wimax_manager )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )

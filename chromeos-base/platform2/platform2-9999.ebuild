@@ -10,7 +10,6 @@ PLATFORM2_PROJECTS=(
 	"chromiumos-wide-profiling"
 	"debugd"
 	"lorgnette"
-	"vpn-manager"
 )
 CROS_WORKON_LOCALNAME="platform2"  # With all platform2 subdirs
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -28,7 +27,7 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular -clang cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test +vpn wimax"
+IUSE="-asan +cellular -clang cros_embedded +debugd cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test wimax"
 REQUIRED_USE="
 	asan? ( clang )
 "
@@ -61,14 +60,6 @@ RDEPEND_quipper="
 	)
 "
 
-RDEPEND_vpn_manager="
-	vpn? (
-		net-dialup/ppp
-		net-dialup/xl2tpd
-		net-misc/strongswan
-	)
-"
-
 RDEPEND="
 	platform2? (
 		!cros_host? ( $(for v in ${!RDEPEND_*}; do echo "${!v}"; done) )
@@ -82,7 +73,6 @@ RDEPEND="
 		chromeos-base/libchromeos
 		chromeos-base/metrics
 		chromeos-base/system_api
-		!chromeos-base/vpn-manager[-platform2]
 		!dev-util/quipper
 	)
 "
@@ -174,17 +164,6 @@ platform2_install_lorgnette() {
 	doins dbus_service/org.chromium.lorgnette.service
 }
 
-platform2_install_vpn-manager() {
-	use cros_host && return 0
-	use vpn || return 0
-
-	insinto /usr/include/chromeos/vpn-manager
-	doins service_error.h
-	dosbin "${OUT}"/l2tpipsec_vpn
-	exeinto /usr/libexec/l2tpipsec_vpn
-	doexe bin/pluto_updown
-}
-
 #
 # These are all the repo-specific test functions.
 # Keep them sorted by name!
@@ -228,24 +207,6 @@ platform2_test_lorgnette() {
 	use lorgnette || return 0
 	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
 	platform_test "run" "${OUT}/lorgnette_unittest"
-}
-
-platform2_test_vpn-manager() {
-	use cros_host && return 0
-	use vpn || return 0
-	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: vpn-manager" && return 0
-
-	local tests=(
-		daemon_test
-		ipsec_manager_test
-		l2tp_manager_test
-		service_manager_test
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
-	done
 }
 
 #
