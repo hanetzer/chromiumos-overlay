@@ -431,6 +431,18 @@ get_build_arch() {
 				echo "arm"
 				;;
 		esac
+	elif [ "${ARCH}" = "x86" ] ; then
+		case "${CHROMEOS_KERNEL_SPLITCONFIG}" in
+			*i386*)
+				echo "i386"
+				;;
+			*x86_64*)
+				echo "x86_64"
+				;;
+			*)
+				echo "x86"
+				;;
+		esac
 	else
 		tc-arch-kernel
 	fi
