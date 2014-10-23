@@ -51,6 +51,7 @@ MULTILIB_STRICT_EXEMPT+="|modules"
 #   %ROOT% => ${ROOT}
 
 CONFIG_FRAGMENTS=(
+	acpi_ac_off
 	blkdevram
 	ca0132
 	cifs
@@ -85,6 +86,11 @@ CONFIG_FRAGMENTS=(
 	wireless34
 	x32
 )
+
+acpi_ac_off_desc="Turn off ACPI AC"
+acpi_ac_off_config="
+# CONFIG_ACPI_AC is not set
+"
 
 blkdevram_desc="ram block device"
 blkdevram_config="
