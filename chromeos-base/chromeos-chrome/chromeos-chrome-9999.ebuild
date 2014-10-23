@@ -731,6 +731,10 @@ setup_test_lists() {
 }
 
 src_configure() {
+	clang-setup-env
+	# Chrome handles asan flags by itself; so the '-fsanitize=address' flag added
+	# by clang-setup-env is not needed. -- crbug.com/425390
+	filter-flags -fsanitize=address
 	tc-export CXX CC AR AS RANLIB STRIP
 	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
 	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
