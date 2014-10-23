@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="c4cd9aa9d278a3dc99a4cfcf8b1993bcf7e0817c"
-CROS_WORKON_TREE="a9550c974ae12c1e5c491bbb7459571f068ec765"
+CROS_WORKON_COMMIT="57508fa62600aa1c8dc96c05746c73449673d820"
+CROS_WORKON_TREE="2cafddff4b6d51136d04b6ee3af1dd26459ebf07"
 CROS_WORKON_PROJECT="chromiumos/third_party/seabios"
 CROS_WORKON_LOCALNAME="seabios"
 
