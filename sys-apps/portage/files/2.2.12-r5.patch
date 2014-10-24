@@ -1,5 +1,6 @@
 Contains all the patches committed to portage_tool on top of 2.2.12:
 
+* Set "url" before marking the index as up to date.
 * If a binhost file sets a TTL header, honor it.
 * Make SYSROOT a portage variable
 * Do not interrupt on SIGCONT
@@ -102,7 +103,7 @@ index aab6e8a..f2e69e0 100644
  	"noclean",
  	"nodoc",
 diff --git a/pym/portage/dbapi/bintree.py b/pym/portage/dbapi/bintree.py
-index 229ce3b..e6eae33 100644
+index 229ce3b..844d015 100644
 --- a/pym/portage/dbapi/bintree.py
 +++ b/pym/portage/dbapi/bintree.py
 @@ -43,6 +43,7 @@ import subprocess
@@ -113,7 +114,7 @@ index 229ce3b..e6eae33 100644
  import traceback
  import warnings
  from gzip import GzipFile
-@@ -879,11 +880,16 @@ class binarytree(object):
+@@ -879,6 +880,7 @@ class binarytree(object):
  				if e.errno != errno.ENOENT:
  					raise
  			local_timestamp = pkgindex.header.get("TIMESTAMP", None)
@@ -121,15 +122,17 @@ index 229ce3b..e6eae33 100644
  			remote_timestamp = None
  			rmt_idx = self._new_pkgindex()
  			proc = None
- 			tmp_filename = None
- 			try:
+@@ -890,6 +892,10 @@ class binarytree(object):
+ 				url = base_url.rstrip("/") + "/Packages"
+ 				f = None
+ 
 +				ttl = float(pkgindex.header.get("TTL", 0))
 +				if download_timestamp and ttl and download_timestamp + ttl > time.time():
 +					raise UseCachedCopyOfRemoteIndex()
 +
- 				# urlparse.urljoin() only works correctly with recognized
- 				# protocols and requires the base url to have a trailing
- 				# slash, so join manually...
+ 				# Don't use urlopen for https, since it doesn't support
+ 				# certificate/hostname verification (bug #469888).
+ 				if parsed_url.scheme not in ('https',):
 @@ -1022,6 +1028,7 @@ class binarytree(object):
  					pass
  			if pkgindex is rmt_idx:
