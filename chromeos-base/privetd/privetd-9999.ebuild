@@ -20,6 +20,7 @@ KEYWORDS="~*"
 
 COMMON_DEPEND="
 	chromeos-base/libchromeos
+	chromeos-base/libwebserv
 "
 
 RDEPEND="
