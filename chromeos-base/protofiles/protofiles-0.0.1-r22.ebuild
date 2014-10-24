@@ -56,5 +56,6 @@ src_install() {
 	insinto /usr/share/protofiles
 	doins "${S}"/chromeos/chrome_device_policy.proto
 	doins "${S}"/cloud/device_management_backend.proto
+	doins "${S}"/cloud/chrome_extension_policy.proto
 	dobin "${FILESDIR}"/policy_reader
 }

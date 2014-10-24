@@ -1079,6 +1079,11 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
 		autotest-deponly_src_install
 		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
+
+		# Copy generated cloud_policy.proto. We can't do this in the
+                # protofiles ebuild since this is a generated proto.
+		insinto /usr/share/protofiles
+		doins "${FROM}"/gen/policy/policy/cloud_policy.proto
 	fi
 
 	# Fix some perms.
