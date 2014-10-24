@@ -12,8 +12,8 @@ KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
 	+crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf feedback
-	+fonts gobi mtd +network_time nfc pam peerd +power_management +readahead
-	+shill +syslog +tpm +vpn watchdog wimax X"
+	+fonts gobi lorgnette mtd +network_time nfc pam peerd +power_management
+	+readahead +shill +syslog +tpm +vpn watchdog wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
 
@@ -112,6 +112,7 @@ CROS_COMMON_RDEPEND+="
 	shill? ( chromeos-base/shill )
 	chromeos-base/tty
 	chromeos-base/update_engine
+	lorgnette? ( chromeos-base/lorgnette )
 	vpn? ( chromeos-base/vpn-manager )
 	wimax? ( chromeos-base/wimax_manager )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )

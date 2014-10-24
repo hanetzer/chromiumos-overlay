@@ -8,7 +8,6 @@ CROS_WORKON_USE_VCSID=1
 
 PLATFORM2_PROJECTS=(
 	"chromiumos-wide-profiling"
-	"lorgnette"
 )
 CROS_WORKON_LOCALNAME="platform2"  # With all platform2 subdirs
 CROS_WORKON_PROJECT="chromiumos/platform2"
@@ -26,18 +25,9 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular -clang cros_embedded cros_host lorgnette +power_management +profile platform2 +seccomp tcmalloc test wimax"
+IUSE="-asan +cellular -clang cros_embedded cros_host +power_management +profile platform2 +seccomp tcmalloc test wimax"
 REQUIRED_USE="
 	asan? ( clang )
-"
-
-RDEPEND_lorgnette="
-	lorgnette? (
-		chromeos-base/chromeos-minijail
-		dev-libs/dbus-c++
-		media-gfx/sane-backends
-		media-libs/libpng[pnm2png]
-	)
 "
 
 RDEPEND_quipper="
@@ -114,15 +104,6 @@ platform2_install_chromiumos-wide-profiling() {
 	dobin "${OUT}"/quipper
 }
 
-platform2_install_lorgnette() {
-	use lorgnette || return 0
-	dobin "${OUT}"/lorgnette
-	insinto /etc/dbus-1/system.d
-	doins dbus_permissions/org.chromium.lorgnette.conf
-	insinto /usr/share/dbus-1/system-services
-	doins dbus_service/org.chromium.lorgnette.service
-}
-
 #
 # These are all the repo-specific test functions.
 # Keep them sorted by name!
@@ -149,12 +130,6 @@ platform2_test_chromiumos-wide-profiling() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
-}
-
-platform2_test_lorgnette() {
-	use lorgnette || return 0
-	! use x86 && ! use amd64 && ewarn "Skipping unittests for non-x86: lorgnette" && return 0
-	platform_test "run" "${OUT}/lorgnette_unittest"
 }
 
 #
