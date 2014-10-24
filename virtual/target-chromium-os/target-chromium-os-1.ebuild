@@ -13,7 +13,7 @@ KEYWORDS="*"
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
 	+crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf feedback
 	+fonts gobi lorgnette mtd +network_time nfc pam peerd +power_management
-	+readahead +shill +syslog +tpm +vpn watchdog wimax X"
+	+readahead +shill +syslog +tpm +vpn watchdog wifi_bootstrapping wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
 
@@ -114,6 +114,7 @@ CROS_COMMON_RDEPEND+="
 	chromeos-base/update_engine
 	lorgnette? ( chromeos-base/lorgnette )
 	vpn? ( chromeos-base/vpn-manager )
+	wifi_bootstrapping? ( chromeos-base/privetd )
 	wimax? ( chromeos-base/wimax_manager )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )
