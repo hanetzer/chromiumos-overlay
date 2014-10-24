@@ -57,7 +57,7 @@ IUSE="
 	opengl
 	opengles
 	ozone
-	+reorder
+	reorder
 	+runhooks
 	verbose
 	vtable_verify
