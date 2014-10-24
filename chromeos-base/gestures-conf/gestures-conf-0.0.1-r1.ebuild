@@ -1,45 +1,39 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright 2014 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
-
-# NOTE: This ebuild could be overridden in an overlay to provide a
-# board-specific xorg.conf as necessary.
 
 EAPI=4
 CROS_WORKON_COMMIT="58b5ddb26650d6ab50d6110ca11df02bc1aaee5b"
 CROS_WORKON_TREE="c7bf00497e841f93a13418cce03fdfc24f83da4c"
+CROS_WORKON_LOCALNAME="xorg-conf"
 CROS_WORKON_PROJECT="chromiumos/platform/xorg-conf"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit cros-board cros-workon user
 
-DESCRIPTION="Board specific xorg configuration file."
+DESCRIPTION="Board specific gestures library configuration file."
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="alex butterfly elan -exynos mario stout -tegra -rk32 X"
+IUSE="alex butterfly elan mario stout ozone"
 
-RDEPEND="!chromeos-base/touchpad-linearity"
-DEPEND="X? ( x11-base/xorg-server )"
+RDEPEND="!chromeos-base/touchpad-linearity
+	!<=chromeos-base/xorg-conf-0.0.6-r128"
+DEPEND=""
 
 src_install() {
 	local board=$(get_current_board_no_variant)
 	local board_variant=$(get_current_board_with_variant)
 
-	insinto /etc/X11
-	if ! use tegra; then
-		doins xorg.conf
-	fi
-
-	insinto /etc/X11/xorg.conf.d
-	if use tegra; then
-		doins tegra.conf
-	elif use exynos; then
-		doins exynos.conf
-	elif use rk32; then
-		doins rk32.conf
+	# Install to different directories depending on whether this is a
+	# freon build or not. We use the same gesture library conf files
+	# for freon builds so they are still needed there.
+	if ! use ozone; then
+		insinto /etc/X11/xorg.conf.d
+	else
+		insinto /etc/gesture
 	fi
 
 	# Enable exactly one evdev-compatible X input touchpad driver.
@@ -88,7 +82,6 @@ src_install() {
 		fi
 	fi
 	doins 20-mouse.conf
-	doins 20-touchscreen.conf
 
 	insinto "/usr/share/gestures"
 	case ${board} in
@@ -99,7 +92,3 @@ src_install() {
 	esac
 }
 
-pkg_preinst() {
-	enewuser "xorg"
-	enewgroup "xorg"
-}
