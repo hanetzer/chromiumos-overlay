@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="app_shell_launcher"
 
-inherit cros-workon libchrome platform
+inherit cros-workon platform
 
 DESCRIPTION="Launcher for the app_shell binary"
 SRC_URI=""

@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 PLATFORM_SUBDIR="chromeos-dbus-bindings"
 PLATFORM_NATIVE_TEST="yes"
 
-inherit cros-workon platform libchrome
+inherit cros-workon platform
 
 DESCRIPTION="Utility for building Chrome D-Bus bindings from an XML description"
 HOMEPAGE="http://dev.chromium.org/chromium-os/platform"

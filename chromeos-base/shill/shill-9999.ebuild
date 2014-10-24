@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 PLATFORM_SUBDIR="shill"
 PLATFORM_NATIVE_TEST="yes"
 
-inherit cros-workon libchrome platform udev user
+inherit cros-workon platform udev user
 
 DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"

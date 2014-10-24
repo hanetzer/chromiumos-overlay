@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="chaps"
 
-inherit cros-workon libchrome platform user
+inherit cros-workon platform user
 
 DESCRIPTION="PKCS #11 layer over TrouSerS"
 HOMEPAGE="http://www.chromium.org/developers/design-documents/chaps-technical-design"

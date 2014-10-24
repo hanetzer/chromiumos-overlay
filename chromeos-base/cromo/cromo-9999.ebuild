@@ -9,7 +9,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="cromo"
 
-inherit cros-workon libchrome platform user
+inherit cros-workon platform user
 
 DESCRIPTION="Chromium OS modem manager"
 HOMEPAGE="http://www.chromium.org/"

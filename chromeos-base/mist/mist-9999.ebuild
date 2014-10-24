@@ -9,7 +9,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="mist"
 
-inherit cros-workon libchrome platform udev
+inherit cros-workon platform udev
 
 DESCRIPTION="Chromium OS Modem Interface Switching Tool"
 HOMEPAGE="http://www.chromium.org/"

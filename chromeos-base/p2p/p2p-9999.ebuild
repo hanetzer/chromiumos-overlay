@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="p2p"
 
-inherit cros-debug cros-workon libchrome platform user
+inherit cros-debug cros-workon platform user
 
 DESCRIPTION="Chromium OS P2P"
 HOMEPAGE="http://www.chromium.org/"
