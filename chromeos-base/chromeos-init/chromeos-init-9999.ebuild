@@ -104,4 +104,10 @@ pkg_preinst() {
 	# Add the syslog user
 	enewuser syslog
 	enewgroup syslog
+
+	# Create debugfs-access user and group, which is needed by the
+	# chromeos_startup script to mount /sys/kernel/debug.  This is needed
+	# by bootstat and ureadahead.
+	enewuser "debugfs-access"
+	enewgroup "debugfs-access"
 }
