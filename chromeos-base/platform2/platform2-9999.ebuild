@@ -25,7 +25,7 @@ SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan +cellular -clang cros_embedded cros_host +power_management +profile platform2 +seccomp tcmalloc test wimax"
+IUSE="-asan -clang cros_host +profile platform2 tcmalloc test"
 REQUIRED_USE="
 	asan? ( clang )
 "
