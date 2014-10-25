@@ -19,7 +19,7 @@ inherit cros-debug cros-workon eutils multilib platform toolchain-funcs udev
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
-TEST_DATA_SOURCE="platform2-20140722.tar.gz"
+TEST_DATA_SOURCE="platform2-20141027.tar.gz"
 SRC_URI="profile? ( gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE} )"
 
 LICENSE="BSD-Google"
