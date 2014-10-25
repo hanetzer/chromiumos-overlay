@@ -19,7 +19,9 @@ RDEPEND="
 	bluetooth? ( chromeos-base/autotest-server-tests-bluetooth )
 	shill? ( chromeos-base/autotest-server-tests-shill )
 	chromeos-base/autotest-tests
-	chromeos-base/autotest-tests-cryptohome
+	!chromeless_tty? (
+		chromeos-base/autotest-tests-cryptohome
+	)
 	chromeos-base/autotest-tests-ltp
 	chromeos-base/autotest-tests-security
 	chromeos-base/autotest-factory-install
