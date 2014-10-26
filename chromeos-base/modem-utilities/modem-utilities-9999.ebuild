@@ -12,7 +12,7 @@ inherit cros-workon
 DESCRIPTION="Chromium OS modem utilities"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
