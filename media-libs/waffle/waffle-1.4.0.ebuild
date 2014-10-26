@@ -7,9 +7,8 @@ EAPI=5
 inherit cmake-utils
 
 DESCRIPTION="Library that allows selection of GL API and of window system at runtime"
-HOMEPAGE="http://people.freedesktop.org/~chadversary/waffle/"
-SRC_URI="http://people.freedesktop.org/~chadversary/waffle/files/release/${P}/${P}.tar.xz"
-
+HOMEPAGE="http://www.waffle-gl.org"
+SRC_URI="http://www.waffle-gl.org/files/release/${P}/${P}.tar.xz"
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="*"
@@ -40,6 +39,10 @@ DEPEND="${RDEPEND}
 		dev-libs/libxslt
 		app-text/docbook-xml-dtd:4.2
 	)"
+
+src_prepare() {
+	epatch "${FILESDIR}"/${P}-Do-not-use-the-PRIVATE-annotation.patch
+}
 
 src_configure() {
 	local mycmakeargs=(

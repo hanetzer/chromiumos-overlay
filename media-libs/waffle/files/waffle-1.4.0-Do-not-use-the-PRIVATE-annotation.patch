@@ -1,0 +1,23 @@
+From: Frank Henigman <fjhenigman@chromium.org>
+Date: Tue, 28 Oct 2014 10:38:14 -0400
+Subject: [PATCH] Do not use the PRIVATE annotation.
+
+Cmake in chrome os is too old and to understand the PRIVATE annotation.
+This patch should be removed when
+https://code.google.com/p/chromium/issues/detail?id=427915
+is resolved to update cmake to 2.8.12 or higher.
+---
+ src/waffle/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- waffle-1.4.0/src/waffle/CMakeLists.txt
++++ waffle-1.4.0/src/waffle/CMakeLists.txt
+@@ -180,7 +180,7 @@ include_directories(
+     )
+ 
+ add_library(${waffle_libname} SHARED ${waffle_sources})
+-target_link_libraries(${waffle_libname} PRIVATE ${waffle_libdeps})
++target_link_libraries(${waffle_libname} ${waffle_libdeps})
+ 
+ set_target_properties(${waffle_libname}
+     PROPERTIES
