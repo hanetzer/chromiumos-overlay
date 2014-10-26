@@ -1,0 +1,8 @@
+DEFINED_PHASES=install
+DESCRIPTION=Convenience script for testing attached cell modems
+EAPI=4
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=dev-util/shflags net-misc/socat
+SLOT=0
+_md5_=55e0a14d5485e5c33516d520b904755d
