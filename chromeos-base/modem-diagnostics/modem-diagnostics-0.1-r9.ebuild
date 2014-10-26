@@ -6,7 +6,7 @@ EAPI="4"
 
 DESCRIPTION="Convenience script for testing attached cell modems"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
