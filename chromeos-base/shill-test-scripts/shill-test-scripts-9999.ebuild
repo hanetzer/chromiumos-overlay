@@ -11,7 +11,7 @@ inherit cros-workon
 DESCRIPTION="shill's test scripts"
 HOMEPAGE="http://src.chromium.org"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
