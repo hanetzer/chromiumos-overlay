@@ -1004,10 +1004,12 @@ install_telemetry_dep_resources() {
 	if [[ -r "${CHROME_ROOT}/src/tools/telemetry" ]]; then
 		echo "Copying Telemetry Framework into ${test_dir}"
 		mkdir -p "${test_dir}"
-		# Get deps from Chrome (and convert paths to relative).
-		# TODO(ihf): delete files/get_telemetry_deps.py once Chrome PFQ
-		# successfully completes.
-		DEPS_LIST=$(python ${CHROME_ROOT}/src/tools/perf/run_benchmark deps | \
+		# Get deps from Chrome.
+		FIND_DEPS=${CHROME_ROOT}/src/tools/telemetry/find_dependencies
+		RUN_BENCHMARK=${CHROME_ROOT}/src/tools/perf/run_benchmark
+		CROS_DEPS=${CHROME_ROOT}/src/tools/cros/bootstrap_deps
+		# sed removes the leading path including src/ converting it to relative.
+		DEPS_LIST=$(python ${FIND_DEPS} ${RUN_BENCHMARK} ${CROS_DEPS} | \
 			sed -e 's|^'${CHROME_ROOT}/src/'||')
 		install_test_resources "${test_dir}" ${DEPS_LIST} \
 			content/test/data/gpu \
