@@ -66,6 +66,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_SecChange
 	+tests_network_WiFi_SimpleConnect
 	+tests_network_WiFi_TDLSPing
+	+tests_network_WiFi_UpdateRouter
 	+tests_network_WiFi_VerifyRouter
 	+tests_network_WiFi_VisibleScan
 	+tests_network_WiFi_WMM
