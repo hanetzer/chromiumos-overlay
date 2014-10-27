@@ -189,7 +189,6 @@ CROS_ARM_RDEPEND="
 CROS_X_RDEPEND="
 	chromeos-base/xorg-conf
 	x11-apps/xrandr
-	x11-apps/xset-mini
 	x11-base/xorg-server
 "
 
