@@ -17,7 +17,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_TOOLDIR="${S}/platform2/common-mk"
 
-inherit cros-debug cros-workon eutils multilib platform toolchain-funcs udev user
+inherit cros-debug cros-workon eutils multilib platform toolchain-funcs udev
 
 DESCRIPTION="Platform2 for Chromium OS: a GYP-based incremental build system"
 HOMEPAGE="http://www.chromium.org/"
@@ -176,12 +176,4 @@ src_test() {
 
 src_install() {
 	use platform2 && platform2_multiplex install
-}
-
-pkg_preinst() {
-	# Create debugfs-access user and group, which is needed by the
-	# chromeos_startup script to mount /sys/kernel/debug.  This is needed
-	# by bootstat and ureadahead.
-	enewuser "debugfs-access"
-	enewgroup "debugfs-access"
 }
