@@ -42,6 +42,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-Do-not-use-the-PRIVATE-annotation.patch
+	epatch "${FILESDIR}"/${P}-wflinfo-use-waffle_dl_sym-to-get-glGetStringi.patch
 }
 
 src_configure() {
