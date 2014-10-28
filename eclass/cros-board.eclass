@@ -135,6 +135,7 @@ ALL_BOARDS=(
 	peach_pi
 	peach_pit
 	peppy
+	peppy_freon
 	ppcbe-32-generic
 	ppcbe-64-generic
 	ppcle-32-generic
