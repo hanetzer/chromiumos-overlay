@@ -86,10 +86,6 @@ src_prepare() {
 	# user.
 	epatch "${FILESDIR}/${P}-sdp-path.patch"
 
-	# Fix the bug in processing SDP requests with invalid PDU size.
-	# Will not need this patch when we update BlueZ to 5.21 or later version.
-	epatch "${FILESDIR}/${P}-sdp-requests-invalid-size.patch"
-
 	# Make the Powered property persistent across reboots, this
 	# was removed from upstream BlueZ in favor of using a connection
 	# manager to deal with powering up/down the adapter. We restore
@@ -98,7 +94,7 @@ src_prepare() {
 
 	# Move the btmgmt tool out from behind the --enable-experimental
 	# flag so that we can install it.
-	epatch "${FILESDIR}/${P}-btmgmt.patch"
+	epatch "${FILESDIR}/${P}-tools.patch"
 
 	# Apply patch to fix incoming connections from Audio devices (issue 313050).
 	# This patch disables Defer Setup feature of L2CAP connections for AVDTP.
@@ -108,11 +104,6 @@ src_prepare() {
 	# that plugin into the expected location.
 	epatch "${FILESDIR}/${P}-chromium-plugin.patch"
 	cp "${FILESDIR}/chromium.c" "plugins/chromium.c" || die
-
-	# Fix bug in the AVRCP profile that causes audio devices to disconnect
-	# as soon as they get paired due to bluetoothd crash. This patch has
-	# been merged to BlueZ upstream on 09/02/2014.
-	epatch "${FILESDIR}/${P}-avrcp-fix.patch"
 
 	eautoreconf
 
@@ -158,7 +149,7 @@ src_install() {
 		cd "${S}"
 	fi
 
-	dobin attrib/gatttool tools/btmgmt
+	dobin attrib/gatttool tools/btmgmt tools/btgatt-client
 
 	# Change the Bluetooth Device ID of official products
 	if [[ -n "${CHROMEOS_BLUETOOTH_VENDORID}" && -n "${CHROMEOS_BLUETOOTH_PRODUCTID}" ]]; then
