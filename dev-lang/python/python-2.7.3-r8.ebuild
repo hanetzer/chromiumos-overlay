@@ -45,7 +45,7 @@ RDEPEND="app-arch/bzip2
 			>=sys-libs/ncurses-5.2
 			readline? ( >=sys-libs/readline-4.1 )
 		)
-		sqlite? ( >=dev-db/sqlite-3.3.8:3[extensions] )
+		sqlite? ( >=dev-db/sqlite-3.3.8:3 )
 		ssl? ( dev-libs/openssl )
 		tk? (
 			>=dev-lang/tk-8.0
