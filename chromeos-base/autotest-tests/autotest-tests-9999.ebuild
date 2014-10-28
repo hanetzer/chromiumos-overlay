@@ -25,6 +25,8 @@ RDEPEND="
 	!<=chromeos-base/autotest-factory-0.0.1-r4445
 	dev-python/numpy
 	dev-python/pygobject
+	dev-python/pytest
+	dev-python/python-uinput
 	media-sound/sox
 	vaapi? ( x11-libs/libva )
 	x11-libs/libX11
