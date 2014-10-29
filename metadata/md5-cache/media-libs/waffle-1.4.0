@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure install prepare test
+DEPEND=opengl? ( virtual/opengl ) wayland? ( >=dev-libs/wayland-1.0 ) opengles? ( virtual/opengles ) gbm? ( media-libs/mesa[gbm] ) gbm? ( virtual/udev ) x11-libs/libX11 x11-libs/libxcb x11-proto/xcb-proto opengl? ( x11-proto/glproto ) doc? ( dev-libs/libxslt app-text/docbook-xml-dtd:4.2 ) sys-devel/make >=dev-util/cmake-2.8.9 userland_GNU? ( >=sys-apps/findutils-4.4.0 )
+DESCRIPTION=Library that allows selection of GL API and of window system at runtime
+EAPI=5
+HOMEPAGE=http://www.waffle-gl.org
+IUSE=doc examples gbm opengl opengles test wayland
+KEYWORDS=*
+LICENSE=BSD-2
+RDEPEND=opengl? ( virtual/opengl ) wayland? ( >=dev-libs/wayland-1.0 ) opengles? ( virtual/opengles ) gbm? ( media-libs/mesa[gbm] ) gbm? ( virtual/udev ) x11-libs/libX11 x11-libs/libxcb
+REQUIRED_USE=|| ( gbm opengl opengles wayland )
+SLOT=0
+SRC_URI=http://www.waffle-gl.org/files/release/waffle-1.4.0/waffle-1.4.0.tar.xz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cmake-utils	92319f03251f1235bc887cc84e5aef21	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=a820c8b46e259f05ce6aabeaa5edf9af
