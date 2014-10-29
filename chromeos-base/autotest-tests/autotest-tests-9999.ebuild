@@ -165,7 +165,9 @@ CLIENT_IUSE_TESTS="
 	+tests_network_WiFiCaps
 	+tests_platform_AccurateTime
 	+tests_platform_AesThroughput
-	+tests_platform_BootPerf
+	!chromeless_tty? (
+		+tests_platform_BootPerf
+	)
 	+tests_platform_CheckErrorsInLog
 	+tests_platform_CheckCriticalProcesses
 	passive_metrics? ( +tests_platform_CheckMetricsProcesses )
