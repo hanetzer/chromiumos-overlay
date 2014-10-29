@@ -53,6 +53,12 @@ src_prepare() {
 	# TODO(benchan): Remove this workaround (crbug.com/412057).
 	epatch "${FILESDIR}"/base-${SLOT}-revert-writefile-permissions.patch
 
+	# Temporarily backport crrev.com/26436e402e6e1b780f6565539ae0acb3e2976fb9
+	# and its dependencies until the next time we uprev libchrome.
+	epatch "${FILESDIR}"/base-${SLOT}-timer-getter-setters.patch
+	epatch "${FILESDIR}"/base-${SLOT}-message-loop-task-annotator.patch
+	cp -r "${FILESDIR}"/components .
+
 	# Add stub headers for a few files that are usually checked out to locations
 	# outside of base/ in the Chrome repository.
 	mkdir -p third_party/libevent
@@ -110,6 +116,7 @@ src_install() {
 		base/time
 		base/timer
 		build
+		components/timers
 		dbus
 		testing/gmock/include/gmock
 		testing/gtest/include/gtest
