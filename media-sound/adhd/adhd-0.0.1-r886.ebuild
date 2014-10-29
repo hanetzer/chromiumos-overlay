@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="084401521b297857987b2b3ece787c16cacdbbcc"
-CROS_WORKON_TREE="e1ebf2c0d471e61d1897d9588a8be999b9530c5d"
+CROS_WORKON_COMMIT="02150e3c82c11e2b28f1e1993b37316f59a6cc31"
+CROS_WORKON_TREE="b969928d7b383a547fc61fce049b4652ba2b4c81"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 CROS_WORKON_USE_VCSID=1
@@ -19,7 +19,7 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-RDEPEND=">=media-libs/alsa-lib-1.0.24.1
+RDEPEND=">=media-libs/alsa-lib-1.0.27
 	media-sound/alsa-utils
 	media-plugins/alsa-plugins
 	media-libs/sbc
