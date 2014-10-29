@@ -1,0 +1,30 @@
+From 766e03a438fcb9a66ef84c46047ceb18b2781b01 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Wed, 29 Oct 2014 09:03:05 -0700
+Subject: [PATCH] Remove sarea header
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This isn't needed any longer (DRI1 is gone) so let's remove this as
+well.
+
+Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
+---
+ src/nv_include.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/nv_include.h b/src/nv_include.h
+index de55570..eee8c5d 100644
+--- a/src/nv_include.h
++++ b/src/nv_include.h
+@@ -69,6 +69,5 @@
+ #include "nv_type.h"
+ #include "nv_proto.h"
+ #include "nv_dma.h"
+-#include "sarea.h"
+ 
+ #endif /* __NV_INCLUDE_H__ */
+-- 
+2.1.0.rc2.206.gedb03e5
+

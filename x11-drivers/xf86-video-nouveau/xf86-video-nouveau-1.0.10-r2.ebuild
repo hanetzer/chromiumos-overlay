@@ -21,6 +21,10 @@ RDEPEND="udev? ( virtual/udev )
 	>=x11-libs/libdrm-2.4.34[video_cards_nouveau]"
 DEPEND="${RDEPEND}"
 
+PATCHES=(
+        "${FILESDIR}"/0001-Remove-sarea-header.patch
+)
+
 src_prepare() {
 	xorg-2_src_prepare
 
