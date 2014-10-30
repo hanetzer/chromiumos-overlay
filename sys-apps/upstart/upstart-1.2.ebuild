@@ -2,29 +2,27 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+EAPI="4"
+
 inherit autotools eutils flag-o-matic
 
 DESCRIPTION="Upstart is an event-based replacement for the init daemon"
 HOMEPAGE="http://upstart.ubuntu.com/"
-SRC_URI="http://upstart.at/download/1.x/${P}.tar.gz"
+SRC_URI="http://upstart.ubuntu.com/download/${PV}/${P}.tar.gz"
+
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="examples nls upstartdebug"
+IUSE="debug examples nls"
 
 DEPEND=">=dev-libs/expat-2.0.0
 	>=sys-apps/dbus-1.2.16
 	nls? ( sys-devel/gettext )
 	>=sys-libs/libnih-1.0.2"
-
 RDEPEND=">=sys-apps/dbus-1.2.16
 	>=sys-libs/libnih-1.0.2"
 
-
-src_unpack() {
-	unpack ${A}
-	cd "${S}"
-
+src_prepare() {
 	# 1.3+ has scary user and chroot session support that we just
 	# don't want to adopt yet, so we're sticking with 1.2 for the
 	# near future. Backport some bug fixes from lp:upstart
@@ -39,7 +37,6 @@ src_unpack() {
 	# -r 1282 - add "kill signal" stanza (may be useful for us)
 	epatch "${FILESDIR}"/upstart-1.2-kill-signal.patch
 
-	# chromium-os:16450, prevent OOM killer by default
 	epatch "${FILESDIR}"/upstart-1.2-default-oom_score_adj.patch
 
 	# chromium-os:33165, make EXIT_STATUS!=* possible
@@ -48,30 +45,31 @@ src_unpack() {
 	# issue EXIT_* in events when exit status is zero for daemons
 	epatch "${FILESDIR}"/upstart-1.2-fail-on-zero-exit.patch
 
+	epatch "${FILESDIR}"/${P}-override.patch
+
 	# Patch to use kmsg at higher verbosity for logging; this is
 	# our own patch because we can't just add --verbose to the
 	# kernel command-line when we need to.
-	if use upstartdebug; then
-		epatch "${FILESDIR}"/upstart-1.2-log-verbosity.patch
-	fi
+	use debug && epatch "${FILESDIR}"/upstart-1.2-log-verbosity.patch
 }
 
-src_compile() {
+src_configure() {
 	# Rearrange PATH so that /usr/local does not override /usr.
 	append-cppflags '-DPATH="\"/usr/bin:/usr/sbin:/sbin:/bin:/usr/local/sbin:/usr/local/bin\""'
 
-	econf --prefix=/ --exec-prefix= --includedir='${prefix}/usr/include' \
-		$(use_enable nls) || die "econf failed"
+	econf \
+		--prefix=/ \
+		--exec-prefix= \
+		--includedir='${prefix}/usr/include' \
+		--disable-rpath \
+		$(use_enable nls)
+}
 
-	emake NIH_DBUS_TOOL=$(which nih-dbus-tool) \
-		|| die "emake failed"
+src_compile() {
+	emake NIH_DBUS_TOOL=$(which nih-dbus-tool)
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die "make install failed"
-
-	if ! use examples ; then
-		elog "Removing example .conf files."
-		rm "${D}"/etc/init/*.conf
-	fi
+	default
+	use examples || rm "${D}"/etc/init/*.conf
 }

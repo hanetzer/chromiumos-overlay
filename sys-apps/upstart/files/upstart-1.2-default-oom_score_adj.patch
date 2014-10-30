@@ -1,6 +1,9 @@
-=== modified file 'init/job_class.h'
---- init/job_class.h	2011-08-11 21:02:51 +0000
-+++ init/job_class.h	2011-08-11 21:03:25 +0000
+http://crosbug.com/16450
+
+prevent OOM killer by default
+
+--- a/init/job_class.h
++++ b/init/job_class.h
 @@ -108,7 +108,7 @@
   *
   * The default OOM score adjustment for processes.
@@ -10,4 +13,14 @@
  
  /**
   * JOB_DEFAULT_ENVIRONMENT:
-
+--- a/init/tests/test_job_class.c
++++ b/init/tests/test_job_class.c
+@@ -134,7 +134,7 @@ test_new (void)
+ 
+ 		TEST_EQ (class->umask, 022);
+ 		TEST_EQ (class->nice, 0);
+-		TEST_EQ (class->oom_score_adj, 0);
++		TEST_EQ (class->oom_score_adj, -1000);
+ 
+ 		for (i = 0; i < RLIMIT_NLIMITS; i++)
+ 			TEST_EQ_P (class->limits[i], NULL);
