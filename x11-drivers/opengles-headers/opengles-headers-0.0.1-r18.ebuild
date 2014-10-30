@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="19e486a8b4a25d23e19b694271026d0dcf543efd"
-CROS_WORKON_TREE="4ee90b26d1416104de3a47066d9c78de4a9a02c2"
+CROS_WORKON_COMMIT="507ea5cf5ea4c77624d954f11ee9bb0a32005353"
+CROS_WORKON_TREE="b10f36c8b83879543140bd02a0b0dac870bebd6c"
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
 
 inherit cros-workon
@@ -39,7 +39,7 @@ src_install() {
 	doins "${S}/include/GLES2/gl2platform.h"
 	insinto /usr/include/GLES3
 	doins "${S}/include/GLES3/gl3.h"
-	doins "${S}/include/GLES3/gl3ext.h"
+	doins "${S}/include/GLES3/gl31.h"
 	doins "${S}/include/GLES3/gl3platform.h"
 	insinto /usr/include/CL
 	doins "${S}/include/CL/cl.h"
