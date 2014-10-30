@@ -20,13 +20,18 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
+	chromeos-base/chromeos-ssh-testkeys
+	chromeos-base/chromeos-sshd-init
 	chromeos-base/libchromeos
 	chromeos-base/system_api
+	chromeos-base/vboot_reference
 	dev-libs/dbus-c++
 	dev-libs/glib
 	dev-libs/libpcre
+	dev-libs/protobuf
 	net-libs/libpcap
 	sys-apps/memtester
+	sys-apps/rootdev
 	sys-apps/smartmontools
 	cellular? ( virtual/modemmanager )
 "
@@ -51,11 +56,18 @@ src_install() {
 	dodir /debugd
 
 	exeinto /usr/libexec/debugd/helpers
-	doexe "${OUT}"/{capture_packets,icmp,netif,network_status}
+	doexe "${OUT}"/capture_packets
+	doexe "${OUT}"/dev_features_password
+	doexe "${OUT}"/dev_features_rootfs_verification
+	doexe "${OUT}"/dev_features_ssh
+	doexe "${OUT}"/dev_features_usb_boot
+	doexe "${OUT}"/icmp
+	doexe "${OUT}"/netif
+	doexe "${OUT}"/network_status
 	use cellular && doexe "${OUT}"/modem_status
 	use wimax && doexe "${OUT}"/wimax_status
 
-	doexe src/helpers/{minijail-setuid-hack,systrace,capture_utility}.sh
+	doexe src/helpers/{capture_utility,minijail-setuid-hack,systrace}.sh
 	use cellular && doexe src/helpers/send_at_command.sh
 
 	insinto /etc/dbus-1/system.d
