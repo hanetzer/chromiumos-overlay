@@ -26,6 +26,7 @@ EC_BOARD_NAMES=(
 	dingdong
 	firefly
 	hoho
+	jerry
 	kitty
 	minimuffin
 	nyan
