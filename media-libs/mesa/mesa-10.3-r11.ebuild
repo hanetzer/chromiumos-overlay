@@ -144,6 +144,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-configure-enable-the-gallium-loader-only-when-needed.patch
 	epatch "${FILESDIR}"/10.3-Revert-i965-enable-image-external-sampling-for-impor.patch
 	epatch "${FILESDIR}"/10.3-Revert-intel-restrict-dma-buf-import-images-to-exter.patch
+	epatch "${FILESDIR}"/10.3-gbm-dlopen-libglapi-so-gbm_create_device-works.patch
 
 	base_src_prepare
 
