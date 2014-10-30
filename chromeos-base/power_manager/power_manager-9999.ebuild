@@ -49,6 +49,7 @@ src_install() {
 	dobin "${OUT}"/memory_suspend_test
 	dobin "${OUT}"/powerd_dbus_suspend
 	dobin "${OUT}"/power_supply_info
+	dobin "${OUT}"/send_debug_power_status
 	dobin "${OUT}"/set_power_policy
 	dobin "${OUT}"/suspend_delay_sample
 
