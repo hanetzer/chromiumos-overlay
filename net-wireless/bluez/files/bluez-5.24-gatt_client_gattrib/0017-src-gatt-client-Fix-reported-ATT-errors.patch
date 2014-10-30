@@ -1,0 +1,65 @@
+From db0e5872e3932a2aece30a0067db1dcde73e8010 Mon Sep 17 00:00:00 2001
+From: Arman Uguray <armansito@chromium.org>
+Date: Thu, 30 Oct 2014 11:38:18 -0700
+Subject: [PATCH] src/gatt-client: Fix reported ATT errors.
+
+---
+ src/gatt-client.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/src/gatt-client.c b/src/gatt-client.c
+index 19988b5..2188ca3 100644
+--- a/src/gatt-client.c
++++ b/src/gatt-client.c
+@@ -127,22 +127,22 @@ static DBusMessage *gatt_error_write_not_permitted(DBusMessage *msg)
+ 				"Writing of this value is not allowed");
+ }
+ 
+-static DBusMessage *gatt_error_authentication(DBusMessage *msg)
++static DBusMessage *gatt_error_invalid_length(DBusMessage *msg)
+ {
+-	return g_dbus_create_error(msg, ERROR_INTERFACE ".Authentication",
+-						"Insufficient authentication");
++	return g_dbus_create_error(msg, ERROR_INTERFACE ".InvalidValueLength",
++					"Invalid attribute value length");
+ }
+ 
+ static DBusMessage *gatt_error_authorization(DBusMessage *msg)
+ {
+-	return g_dbus_create_error(msg, ERROR_INTERFACE ".Authorization",
++	return g_dbus_create_error(msg, ERROR_INTERFACE ".NotAuthorized",
+ 						"Insufficient authorization");
+ }
+ 
+-static DBusMessage *gatt_error_encryption(DBusMessage *msg)
++static DBusMessage *gatt_error_not_paired(DBusMessage *msg)
+ {
+-	return g_dbus_create_error(msg, ERROR_INTERFACE ".Encryption",
+-						"Insufficient encryption");
++	return g_dbus_create_error(msg, ERROR_INTERFACE ".NotPaired",
++							"Device not paired");
+ }
+ 
+ static DBusMessage *error_from_att_ecode(DBusMessage *msg, guint8 ecode)
+@@ -152,13 +152,14 @@ static DBusMessage *error_from_att_ecode(DBusMessage *msg, guint8 ecode)
+ 		return gatt_error_read_not_permitted(msg);
+ 	case ATT_ECODE_WRITE_NOT_PERM:
+ 		return gatt_error_write_not_permitted(msg);
+-	case ATT_ECODE_AUTHENTICATION:
+-		return gatt_error_authentication(msg);
++	case ATT_ECODE_INVAL_ATTR_VALUE_LEN:
++		return gatt_error_invalid_length(msg);
+ 	case ATT_ECODE_AUTHORIZATION:
+-		return gatt_error_authentication(msg);
++		return gatt_error_authorization(msg);
++	case ATT_ECODE_AUTHENTICATION:
+ 	case ATT_ECODE_INSUFF_ENC:
+ 	case ATT_ECODE_INSUFF_ENCR_KEY_SIZE:
+-		return gatt_error_authentication(msg);
++		return gatt_error_not_paired(msg);
+ 	default:
+ 		return g_dbus_create_error(msg, ERROR_INTERFACE,
+ 				"Operation failed with ATT error code: 0x%02x",
+-- 
+2.1.0.rc2.206.gedb03e5
+

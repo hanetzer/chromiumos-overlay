@@ -75,6 +75,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0014-CHROMIUM-Blacklist-the-HID-service.patch"
 	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0015-src-gatt-client-Add-GattCharacteristic1-StartNotify-.patch"
 	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0016-src-gatt-client-Implement-Characteristics-and-Descri.patch"
+	epatch "${FILESDIR}/${P}-gatt_client_gattrib/0017-src-gatt-client-Fix-reported-ATT-errors.patch"
 
 	# Change the default D-Bus configuration; the daemon is run as
 	# bluetooth, not root; we don't use the lp user, and we use the
