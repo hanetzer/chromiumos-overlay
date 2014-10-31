@@ -6,7 +6,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
-inherit toolchain-funcs cros-board cros-workon
+inherit toolchain-funcs cros-board cros-ec-board cros-workon
 
 DESCRIPTION="Embedded Controller firmware code"
 HOMEPAGE="http://www.chromium.org/"
@@ -15,37 +15,6 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-
-USE_PREFIX="ec_firmware_"
-
-# EC firmware board names for overlay with special configuration
-EC_BOARD_NAMES=(
-	bds
-	big
-	blaze
-	dingdong
-	firefly
-	hoho
-	jerry
-	kitty
-	mighty
-	minimuffin
-	nyan
-	pinky
-	pit
-	ryu
-	ryu_p1
-	ryu_sh
-	samus
-	samus_pd
-	snow
-	spring
-	twinkie
-	zinger
-)
-
-IUSE_FIRMWARES="${EC_BOARD_NAMES[@]/#/${USE_PREFIX}}"
-IUSE="cros_host test utils ${IUSE_FIRMWARES}"
 
 RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
@@ -65,33 +34,7 @@ set_build_env() {
 	export HOSTCC=${CC}
 	export BUILDCC=${BUILD_CC}
 
-	if use cros_host; then
-		# If we are building for the purpose of emitting host-side tools, assume
-		# EC_BOARDS=(bds) for the build.
-		EC_BOARDS=(bds)
-	else
-		local ov_board=$(get_current_board_with_variant)
-
-		EC_BOARDS=()
-
-		# Add board names requested by ec_firmware_* USE flags
-		local ec_board
-		for ec_board in ${ov_board/#/${USE_PREFIX}} ${IUSE_FIRMWARES}; do
-			use ${ec_board} && EC_BOARDS+=(${ec_board#${USE_PREFIX}})
-		done
-
-		# Allow building for boards that don't have an EC
-		# (so we can compile test on bots for testing).
-		if [[ ${#EC_BOARDS[@]} -eq 0 ]]; then
-			# No explicit board name declared, try the overlay name
-			if [[ ! -d board/${ov_board} ]] ; then
-				ewarn "Sorry, ${ov_board} not supported; doing build-test with BOARD=bds"
-				ov_board=bds
-			fi
-			EC_BOARDS=(${ov_board})
-		fi
-	fi
-	einfo "Building for boards: ${EC_BOARDS[*]}"
+	get_ec_boards
 }
 
 src_compile() {
@@ -133,29 +76,14 @@ src_install() {
 	# The first board should be the main EC
 	local ec="${EC_BOARDS[0]}"
 
-	# If we are building host-side tools, install flash_ec and stm32mon.
-	if use cros_host || use utils; then
-		dobin util/flash_ec
-		dobin build/${ec}/util/stm32mon
+	# EC firmware binaries
+	board_install ${ec} /firmware
 
-		insinto /usr/bin/lib
-		doins chip/lm4/openocd/*
-	fi
-
-	# Only install target binaries if not building for host
-	if ! use cros_host; then
-		# EC firmware binaries
-		board_install ${ec} /firmware
-
-		# Utilities
-		dobin build/${ec}/util/ectool
-
-		# Install additional firmwares
-		local board
-		for board in "${EC_BOARDS[@]}"; do
-			board_install ${board} /firmware/${board}
-		done
-	fi
+	# Install additional firmwares
+	local board
+	for board in "${EC_BOARDS[@]}"; do
+		board_install ${board} /firmware/${board}
+	done
 }
 
 src_test() {

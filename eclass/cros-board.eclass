@@ -6,17 +6,15 @@
 # Purpose: Library for handling building of ChromiumOS packages
 #
 #
-#  This class sets the BOARD environment variable.  It is intended to
-#  be used by ebuild packages that need to have the board information
-#  for various reasons -- for example, to differentiate various
-#  hardware attributes at build time; see 'adhd' for an example of
+#  This class provides an easy way to retrieve the BOARD variable.
+#  It is intended to be used by ebuild packages that need to have the
+#  board information for various reasons -- for example, to differentiate
+#  various hardware attributes at build time; see 'adhd' for an example of
 #  this.
 #
-#  When set, the BOARD environment variable should conform to the
-#  syntax used by the CROS utilities.
-#
-#  If an unknown board is encountered, this class deliberately fails
-#  the build; this provides an easy method of identifying a change to
+#  If an unknown board is encountered, or multiple boards are defined,
+#  this class deliberately fails the build.
+#  This provides an easy method of identifying a change to
 #  the build which might affect inheriting packages.
 #
 #  For example, the ADHD (Google A/V daemon) package relies on the
