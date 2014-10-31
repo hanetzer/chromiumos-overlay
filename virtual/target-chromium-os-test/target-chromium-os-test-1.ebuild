@@ -49,7 +49,10 @@ CROS_COMMON_RDEPEND="
 	chromeos-base/chromeos-test-root
 	chromeos-base/verity
 	chromeos-base/vpd
-	cros_ec? ( chromeos-base/ec-utils )
+	cros_ec? (
+		chromeos-base/ec-devutils
+		chromeos-base/ec-utils
+	)
 	!chromeless_tty? (
 		!app_shell? (
 			>=dev-cpp/gflags-2.0

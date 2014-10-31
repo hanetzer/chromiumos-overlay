@@ -115,6 +115,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-installer
 	chromeos-base/cros-devutils[cros_host]
 	chromeos-base/cros-testutils
+	chromeos-base/ec-devutils
 	dev-lang/python:2.7
 	dev-lang/python:3.3
 	dev-db/m17n-contrib
