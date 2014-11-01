@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2205.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2205.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2205.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2207.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2207.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2207.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -1006,18 +1006,15 @@ install_telemetry_dep_resources() {
 		mkdir -p "${test_dir}"
 		# Get deps from Chrome.
 		FIND_DEPS=${CHROME_ROOT}/src/tools/telemetry/find_dependencies
-		RUN_BENCHMARK=${CHROME_ROOT}/src/tools/perf/run_benchmark
+		PERF_DEPS=${CHROME_ROOT}/src/tools/perf/bootstrap_deps
 		CROS_DEPS=${CHROME_ROOT}/src/tools/cros/bootstrap_deps
 		# sed removes the leading path including src/ converting it to relative.
-		DEPS_LIST=$(python ${FIND_DEPS} ${RUN_BENCHMARK} ${CROS_DEPS} | \
+		DEPS_LIST=$(python ${FIND_DEPS} ${PERF_DEPS} ${CROS_DEPS} | \
 			sed -e 's|^'${CHROME_ROOT}/src/'||')
 		install_test_resources "${test_dir}" ${DEPS_LIST} \
 			content/test/data/gpu \
 			content/test/data/media \
-			content/test/gpu/run_gpu_test.py \
-			tools/perf/run_benchmark \
-			tools/perf/run_tests \
-			chrome/test/telemetry
+			content/test/gpu/run_gpu_test.py
 	fi
 
 	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
