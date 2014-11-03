@@ -28,6 +28,7 @@ IUSE_TESTS="
 	+tests_platform_CryptohomeBadPerms
 	+tests_platform_CryptohomeChangePassword
 	+tests_platform_CryptohomeFio
+	+tests_platform_CryptohomeKeyEviction
 	+tests_platform_CryptohomeMount
 	+tests_platform_CryptohomeMultiple
 	+tests_platform_CryptohomeNonDirs
