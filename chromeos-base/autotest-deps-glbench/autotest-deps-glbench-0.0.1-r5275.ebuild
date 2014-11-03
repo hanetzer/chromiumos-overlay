@@ -23,6 +23,7 @@ IUSE="+autotest"
 
 RDEPEND="${RDEPEND}
 	>=dev-cpp/gflags-2.0
+	media-libs/libpng
 	!opengles? ( virtual/opengl )
 	opengles? ( virtual/opengles )
 	x11-apps/xwd
