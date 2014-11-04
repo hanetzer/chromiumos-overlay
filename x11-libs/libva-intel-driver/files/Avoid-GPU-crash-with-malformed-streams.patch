@@ -1,31 +1,27 @@
-From ad823591fed4fd5ac0b795b07515d04c1ea32026 Mon Sep 17 00:00:00 2001
+From b55d24267025d7dba9dbd59792e486426e70c905 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
-Date: Fri, 28 Jun 2013 14:47:29 -0700
+Date: Mon, 3 Nov 2014 20:07:42 -0800
 Subject: [PATCH] Avoid GPU crash with malformed streams
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
 When streams are malformed, we can get p-frames without any reference
 picture. However the code still assumes 1 reference picture at least,
 which leads to a GPU crash. To protect against GPU crashes, we force 0
-when we have no pictures.
+when we have no pictures. Do this on gen6, 7, 7.5 and 8.
 
-BUG=chromium:252389
+BUG=chromium:252389,chroimum:418024
 TEST=go to youtube and play http://www.youtube.com/watch?v=6v2L2UGZJAM ; it doesn't crash
-
-Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
 ---
  src/gen6_mfd.c  | 11 +++++++++++
  src/gen75_mfd.c | 11 +++++++++++
  src/gen7_mfd.c  | 11 +++++++++++
- 3 files changed, 33 insertions(+)
+ src/gen8_mfd.c  | 11 +++++++++++
+ 4 files changed, 44 insertions(+)
 
 diff --git a/src/gen6_mfd.c b/src/gen6_mfd.c
-index 68e1900..330ab06 100755
+index b6d19e8..6933639 100755
 --- a/src/gen6_mfd.c
 +++ b/src/gen6_mfd.c
-@@ -645,6 +645,8 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -514,6 +514,8 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
      int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
      unsigned int chroma_log2_weight_denom, luma_log2_weight_denom;
      int slice_type;
@@ -34,7 +30,7 @@ index 68e1900..330ab06 100755
  
      if (slice_param->slice_type == SLICE_TYPE_I ||
          slice_param->slice_type == SLICE_TYPE_SI) {
-@@ -682,6 +684,15 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -551,6 +553,15 @@ gen6_mfd_avc_slice_state(VADriverContextP ctx,
          }
      }
  
@@ -51,10 +47,10 @@ index 68e1900..330ab06 100755
      slice_hor_pos = first_mb_in_slice % width_in_mbs; 
      slice_ver_pos = first_mb_in_slice / width_in_mbs;
 diff --git a/src/gen75_mfd.c b/src/gen75_mfd.c
-index 9ca32cb..ccee971 100644
+index 299f2b5..52269b8 100644
 --- a/src/gen75_mfd.c
 +++ b/src/gen75_mfd.c
-@@ -982,6 +982,8 @@ gen75_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -836,6 +836,8 @@ gen75_mfd_avc_slice_state(VADriverContextP ctx,
                           pic_param->seq_fields.bits.mb_adaptive_frame_field_flag);
      int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
      int slice_type;
@@ -63,7 +59,7 @@ index 9ca32cb..ccee971 100644
  
      if (slice_param->slice_type == SLICE_TYPE_I ||
          slice_param->slice_type == SLICE_TYPE_SI) {
-@@ -1008,6 +1010,15 @@ gen75_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -862,6 +864,15 @@ gen75_mfd_avc_slice_state(VADriverContextP ctx,
          num_ref_idx_l1 = slice_param->num_ref_idx_l1_active_minus1 + 1;
      }
  
@@ -80,10 +76,10 @@ index 9ca32cb..ccee971 100644
      slice_hor_pos = first_mb_in_slice % width_in_mbs; 
      slice_ver_pos = first_mb_in_slice / width_in_mbs;
 diff --git a/src/gen7_mfd.c b/src/gen7_mfd.c
-index ff8ef11..9979753 100755
+index bfb95bf..07de00f 100755
 --- a/src/gen7_mfd.c
 +++ b/src/gen7_mfd.c
-@@ -648,6 +648,8 @@ gen7_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -530,6 +530,8 @@ gen7_mfd_avc_slice_state(VADriverContextP ctx,
                           pic_param->seq_fields.bits.mb_adaptive_frame_field_flag);
      int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
      int slice_type;
@@ -92,7 +88,36 @@ index ff8ef11..9979753 100755
  
      if (slice_param->slice_type == SLICE_TYPE_I ||
          slice_param->slice_type == SLICE_TYPE_SI) {
-@@ -674,6 +676,15 @@ gen7_mfd_avc_slice_state(VADriverContextP ctx,
+@@ -556,6 +558,15 @@ gen7_mfd_avc_slice_state(VADriverContextP ctx,
+         num_ref_idx_l1 = slice_param->num_ref_idx_l1_active_minus1 + 1;
+     }
+ 
++    /* Don't bind a surface which doesn't exist, that crashes the GPU */
++    for (i = 0; i < ARRAY_ELEMS(gen7_mfd_context->reference_surface); i++)
++        if (gen7_mfd_context->reference_surface[i].surface_id != VA_INVALID_ID)
++            num_surfaces ++;
++    if (num_surfaces == 0) {
++        num_ref_idx_l0 = 0;
++        num_ref_idx_l1 = 0;
++    }
++
+     first_mb_in_slice = slice_param->first_mb_in_slice << mbaff_picture;
+     slice_hor_pos = first_mb_in_slice % width_in_mbs; 
+     slice_ver_pos = first_mb_in_slice / width_in_mbs;
+diff --git a/src/gen8_mfd.c b/src/gen8_mfd.c
+index b482846..7a297c9 100644
+--- a/src/gen8_mfd.c
++++ b/src/gen8_mfd.c
+@@ -599,6 +599,8 @@ gen8_mfd_avc_slice_state(VADriverContextP ctx,
+                          pic_param->seq_fields.bits.mb_adaptive_frame_field_flag);
+     int first_mb_in_slice = 0, first_mb_in_next_slice = 0;
+     int slice_type;
++    int num_surfaces = 0;
++    int i;
+ 
+     if (slice_param->slice_type == SLICE_TYPE_I ||
+         slice_param->slice_type == SLICE_TYPE_SI) {
+@@ -625,6 +627,15 @@ gen8_mfd_avc_slice_state(VADriverContextP ctx,
          num_ref_idx_l1 = slice_param->num_ref_idx_l1_active_minus1 + 1;
      }
  
@@ -109,5 +134,5 @@ index ff8ef11..9979753 100755
      slice_hor_pos = first_mb_in_slice % width_in_mbs; 
      slice_ver_pos = first_mb_in_slice / width_in_mbs;
 -- 
-1.8.3
+2.1.0.rc2.206.gedb03e5
 
