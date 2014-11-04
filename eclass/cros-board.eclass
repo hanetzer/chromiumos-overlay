@@ -103,6 +103,7 @@ ALL_BOARDS=(
 	link_freon
 	lumpy
 	mappy
+	mappy-envoy
 	mappy_flashstation
 	marble
 	mccloud
