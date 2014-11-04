@@ -84,6 +84,7 @@ RDEPEND="${RDEPEND}
 	sys-boot/syslinux
 	sys-devel/crossdev
 	sys-fs/dosfstools
+	sys-fs/squashfs-tools
 	"
 
 # Needed to run 'repo selfupdate'
