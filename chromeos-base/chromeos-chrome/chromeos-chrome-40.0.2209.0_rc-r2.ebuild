@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2209.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2209.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2209.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2209.0_rc-r2.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2209.0_rc-r2.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2209.0_rc-r2.afdo"
 
 add_afdo_files() {
 	local a f
@@ -731,14 +731,13 @@ setup_test_lists() {
 }
 
 src_configure() {
+	clang-setup-env
+	# Chrome handles asan flags by itself; so the '-fsanitize=address' flag added
+	# by clang-setup-env is not needed. -- crbug.com/425390
+	filter-flags -fsanitize=address
 	tc-export CXX CC AR AS RANLIB STRIP
-	if use clang; then
-		export CC_host="clang"
-		export CXX_host="clang++"
-	else
-		export CC_host=$(tc-getBUILD_CC)
-		export CXX_host=$(tc-getBUILD_CXX)
-	fi
+	export CC_host=$(usex clang "clang" "$(tc-getBUILD_CC)")
+	export CXX_host=$(usex clang "clang++" "$(tc-getBUILD_CXX)")
 	export AR_host=$(tc-getBUILD_AR)
 	if use gold ; then
 		if [[ "${GOLD_SET}" != "yes" ]]; then
