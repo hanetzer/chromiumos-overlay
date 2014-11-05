@@ -5,4 +5,4 @@ USE="acpi bluetooth cairo cros_p2p fbconsole mbim opengl pam usb vlan vtconsole 
 
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -cups -poppler-data -nls -openrc"
-USE="${USE} -mime -peerd"
+USE="${USE} -mime -peerd scanner"
