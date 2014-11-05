@@ -45,7 +45,7 @@ else
 fi
 
 # Major version for Chrome.
-export CHROME_BRANCH=41
+export CHROME_BRANCH=40
 # Set CHROME values (Used for releases) to pass to chromeos-chrome-bin ebuild
 # URL to chrome archive
 export CHROME_BASE=
