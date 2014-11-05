@@ -304,6 +304,15 @@ test_libs = [
     'prefix': 'dbus',
     'libs': '',  # TODO(wiley) what should go here?
     'pc_libs': 'dbus-1 protobuf-lite',
+  },
+  {
+    'name': 'timer_test_support',
+    'sources': """
+               mock_timer.cc
+               """,
+    'prefix': 'base/timer',
+    'libs': '',
+    'pc_libs': '',
   }
 ]
 
