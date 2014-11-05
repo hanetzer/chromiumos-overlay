@@ -62,7 +62,7 @@ src_compile() {
 		virtual/target-os-dev
 		virtual/target-os-test
 	)
-	einfo "Ignore warnings below related to LD_PRELOAD/libsandbox.so"
+	ebegin "Building depgraphs for: ${pkgs[*]}"
 	multijob_init
 	for pkg in ${pkgs[@]} ; do
 		# The ebuild env will modify certain variables in ways that we
@@ -73,6 +73,7 @@ src_compile() {
 		multijob_child_init
 		env -i PATH="${PATH}" PORTAGE_USERNAME="${PORTAGE_USERNAME}" USE="${useflags}" \
 		emerge-${BOARD} \
+			--root "${T}" --buildpkg=n \
 			--pretend --quiet --emptytree --ignore-default-opts \
 			--root-deps=rdeps ${pkg} | \
 			egrep -o ' [[:alnum:]-]+/[^[:space:]/]+\b' | \
@@ -84,6 +85,7 @@ src_compile() {
 		multijob_post_fork
 	done
 	multijob_finish
+	eend
 	# No virtual packages in package.provided. We store packages for
 	# package.provided in file chromeos-base.packages as package.provided is a
 	# directory.
