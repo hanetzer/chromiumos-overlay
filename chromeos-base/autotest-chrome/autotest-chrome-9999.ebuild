@@ -61,6 +61,7 @@ IUSE_TESTS=(
 	+tests_desktopui_ScreenLocker
 	+tests_desktopui_SimpleLogin
 	+tests_desktopui_UrlFetchWithChromeDriver
+	+tests_display_ClientChameleonConnection
 	+tests_dummy_IdleSuspend
 	+tests_graphics_GLES2ConformChrome
 	+tests_graphics_Idle
