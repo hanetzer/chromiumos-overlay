@@ -1107,10 +1107,10 @@ src_install() {
 		doins "${T}/localaccount"
 	fi
 
-	# Use the deploy_chrome from the *Chrome* checkout.  The
-	# benefit of doing this is if a new buildspec of Chrome requires a
-	# non-backwards compatible change to deploy_chrome, we can commit the
-	# fix to deploy_chrome without breaking existing Chrome OS release builds,
+	# Use the deploy_chrome from the *Chrome* checkout.  The benefit of
+	# doing this is if a new buildspec of Chrome requires a non-backwards
+	# compatible change to deploy_chrome, we can commit the fix to
+	# deploy_chrome without breaking existing Chrome OS release builds,
 	# and then roll the DEPS for chromite in the Chrome checkout.
 	#
 	# Another benefit is each version of Chrome will have the right
