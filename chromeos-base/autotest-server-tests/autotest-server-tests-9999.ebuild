@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 # Enable autotest by default.
-IUSE="-app_shell +autotest +cellular -chromeless_tty cros_p2p -moblab +power_management +readahead +tpm"
+IUSE="-app_shell +autotest +cellular -chromeless_tty cros_p2p debugd -moblab +power_management +readahead +tpm"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -27,6 +27,7 @@ SERVER_IUSE_TESTS="
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
 	cellular? ( +tests_cellular_StaleModemReboot )
+	debugd? ( +tests_debugd_DevTools )
 	!chromeless_tty? (
 		!app_shell? (
 			+tests_desktopui_CrashyRebootServer
