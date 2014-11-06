@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2210.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2210.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2210.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-40.0.2211.0_rc-r2.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-40.0.2211.0_rc-r2.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-40.0.2211.0_rc-r2.afdo"
 
 add_afdo_files() {
 	local a f
@@ -1107,10 +1107,10 @@ src_install() {
 		doins "${T}/localaccount"
 	fi
 
-	# Use the deploy_chrome from the *Chrome* checkout.  The
-	# benefit of doing this is if a new buildspec of Chrome requires a
-	# non-backwards compatible change to deploy_chrome, we can commit the
-	# fix to deploy_chrome without breaking existing Chrome OS release builds,
+	# Use the deploy_chrome from the *Chrome* checkout.  The benefit of
+	# doing this is if a new buildspec of Chrome requires a non-backwards
+	# compatible change to deploy_chrome, we can commit the fix to
+	# deploy_chrome without breaking existing Chrome OS release builds,
 	# and then roll the DEPS for chromite in the Chrome checkout.
 	#
 	# Another benefit is each version of Chrome will have the right
