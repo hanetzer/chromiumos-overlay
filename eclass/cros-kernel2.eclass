@@ -78,6 +78,9 @@ CONFIG_FRAGMENTS=(
 	systemtap
 	t124_xusb_fw
 	tpm
+	usb_gadget
+	usb_gadget_acm
+	usb_gadget_ncm
 	vfat
 	vlan
 	vtconsole
@@ -299,6 +302,24 @@ t124_xusb_fw_desc="Embed Tegra 5 XHCI controller firmware in kernel binary"
 t124_xusb_fw_config="
 CONFIG_EXTRA_FIRMWARE=\"nvidia/tegra124/xusb.bin\"
 CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
+"
+
+usb_gadget_desc="USB gadget support with ConfigFS/FunctionFS"
+usb_gadget_config="
+CONFIG_USB_CONFIGFS=m
+CONFIG_USB_CONFIGFS_F_FS=y
+CONFIG_USB_FUNCTIONFS=m
+CONFIG_USB_GADGET=m
+"
+
+usb_gadget_acm_desc="USB ACM gadget support"
+usb_gadget_acm_config="
+CONFIG_USB_CONFIGFS_ACM=y
+"
+
+usb_gadget_ncm_desc="USB NCM gadget support"
+usb_gadget_ncm_config="
+CONFIG_USB_CONFIGFS_NCM=y
 "
 
 vlan_desc="802.1Q VLAN"
