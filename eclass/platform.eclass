@@ -103,8 +103,7 @@ platform_test() {
 	local cmd=(
 		"${platform2_test_py}"
 		--action="${action}"
-		--bin="${bin}"
-		"$(platform_get_target_args)"
+		$(platform_get_target_args)
 		--gtest_filter="${gtest_filter}"
 		--user_gtest_filter="${P2_TEST_FILTER}"
 		--package="${pkg}"
@@ -112,6 +111,9 @@ platform_test() {
 		--cache_dir="$(cros-workon_get_build_dir)"
 		--sysroot="${SYSROOT}"
 		${run_as_root_flag}
+		--
+		"${bin}"
+		--vmodule="${P2_VMODULE}"
 	)
 	echo "${cmd[@]}"
 	"${cmd[@]}" || die
