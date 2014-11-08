@@ -88,7 +88,18 @@ src_unpack() {
 	mkdir -p "${MY_BUILDDIR}"
 }
 
+toolchain-binutils_bugurl() {
+	printf "http://code.google.com/p/chromium-os/issues/entry"
+}
+toolchain-binutils_pkgversion() {
+	printf "binutils-${VCSID}_cos_gg"
+}
+
 src_configure() {
+	# make sure we filter $LINGUAS so that only ones that
+	# actually work make it through #42033
+	strip-linguas -u */po
+
 	# keep things sane
 	strip-flags
 
@@ -100,36 +111,53 @@ src_configure() {
 	echo
 
 	cd "${MY_BUILDDIR}"
-	local myconf=""
-	is_cross && myconf="${myconf} --with-sysroot=/usr/${CTARGET}"
-	myconf="--prefix=/usr \
-		--host=${CHOST} \
-		--target=${CTARGET} \
-		--datadir=${DATAPATH} \
-		--infodir=${DATAPATH}/info \
-		--mandir=${DATAPATH}/man \
-		--bindir=${BINPATH} \
-		--libdir=${LIBPATH} \
-		--libexecdir=${LIBPATH} \
-		--includedir=${INCPATH} \
-		--enable-64-bit-bfd \
-		--enable-gold \
-		--enable-threads \
-		--enable-shared \
-		--enable-install-libiberty \
-		--disable-werror \
-		--enable-secureplt \
-		--enable-plugins \
-		--without-included-gettext \
-		--build=${CBUILD} \
-		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry \
-		${myconf} ${EXTRA_ECONF}"
+	local myconf=()
 
-	local pkgver="binutils-${VCSID}_cos_gg"
-	binutils_conf="${myconf} --with-pkgversion=${pkgver}"
+	# enable gold if available (installed as ld.gold)
+	myconf+=( --enable-gold --enable-plugins )
 
-	echo ./configure ${binutils_conf}
-	"${S}"/configure ${binutils_conf} || die "configure failed"
+	use nls \
+		&& myconf+=( --without-included-gettext ) \
+		|| myconf+=( --disable-nls )
+
+	myconf+=( --enable-64-bit-bfd )
+
+	[[ -n ${CBUILD} ]] && myconf+=( --build=${CBUILD} )
+	is_cross && myconf+=( --with-sysroot="${EPREFIX}"/usr/${CTARGET} )
+
+	# glibc-2.3.6 lacks support for this ... so rather than force glibc-2.5+
+	# on everyone in alpha (for now), we'll just enable it when possible
+	has_version ">=${CATEGORY}/glibc-2.5" && myconf+=( --enable-secureplt )
+	has_version ">=sys-libs/glibc-2.5" && myconf+=( --enable-secureplt )
+
+	myconf+=(
+		--prefix="${EPREFIX}"/usr
+		--host=${CHOST}
+		--target=${CTARGET}
+		--datadir="${EPREFIX}"${DATAPATH}
+		--infodir="${EPREFIX}"${DATAPATH}/info
+		--mandir="${EPREFIX}"${DATAPATH}/man
+		--bindir="${EPREFIX}"${BINPATH}
+		--libdir="${EPREFIX}"${LIBPATH}
+		--libexecdir="${EPREFIX}"${LIBPATH}
+		--includedir="${EPREFIX}"${INCPATH}
+		--enable-threads
+		--enable-shared
+		# Newer versions (>=2.24) make this an explicit option. #497268
+		--enable-install-libiberty
+		--disable-werror
+		--with-bugurl="$(toolchain-binutils_bugurl)"
+		--with-pkgversion="$(toolchain-binutils_pkgversion)"
+		${EXTRA_ECONF}
+		# Disable modules that are in a combined binutils/gdb tree. #490566
+		--disable-{gdb,libdecnumber,readline,sim}
+		# Strip out broken static link flags.
+		# https://gcc.gnu.org/PR56750
+		--without-stage1-ldflags
+	)
+
+	echo ./configure "${myconf[@]}"
+	"${S}"/configure "${myconf[@]}" || die
 }
 
 src_compile() {
