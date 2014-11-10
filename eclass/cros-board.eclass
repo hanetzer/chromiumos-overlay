@@ -58,6 +58,7 @@ ALL_BOARDS=(
 	bolt
 	butterfly
 	bwtm2
+	bxt-rvp
 	candy
 	cardhu
 	#chronos
