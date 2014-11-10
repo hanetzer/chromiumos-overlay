@@ -20,7 +20,6 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libchromeos
-	!<chromeos-base/platform2-0.0.14
 	net-dialup/ppp
 	net-dialup/xl2tpd
 	net-misc/strongswan

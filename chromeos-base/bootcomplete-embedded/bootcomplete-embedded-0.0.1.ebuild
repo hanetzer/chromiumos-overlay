@@ -11,9 +11,7 @@ SLOT="0"
 
 KEYWORDS="*"
 
-RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.23
-	"
+RDEPEND=""
 
 S=${WORKDIR}
 

@@ -26,7 +26,6 @@ RDEPEND="sys-apps/ethtool
 				net-wireless/bluez-utils
 			)
 		)
-		!<chromeos-base/chromeos-init-0.0.10
 		hal? ( sys-apps/hal )
 		net-wireless/iw
 		scsi? ( sys-apps/sdparm )

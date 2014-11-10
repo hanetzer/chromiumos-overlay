@@ -15,8 +15,7 @@ KEYWORDS="~*"
 SLOT="0"
 IUSE="doc tss_trace"
 
-RDEPEND=">=dev-libs/openssl-0.9.7
-	!<chromeos-base/chromeos-init-0.0.18"
+RDEPEND=">=dev-libs/openssl-0.9.7"
 
 DEPEND="${RDEPEND}
 	dev-util/pkgconfig"

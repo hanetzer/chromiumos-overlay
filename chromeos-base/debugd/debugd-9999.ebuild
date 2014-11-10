@@ -21,7 +21,6 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
-	!<chromeos-base/platform2-0.0.15
 	chromeos-base/system_api
 	dev-libs/dbus-c++
 	dev-libs/glib

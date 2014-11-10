@@ -28,7 +28,6 @@ IUSE="${IUSE_PORTS}"
 
 RDEPEND="
 	sys-apps/upstart
-	tty_console_tty2? ( !<chromeos-base/chromeos-init-0.0.22 )
 	!chromeos-base/tty1
 	!chromeos-base/serial-tty
 "

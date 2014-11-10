@@ -23,7 +23,6 @@ RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	!<chromeos-base/platform2-0.0.13
 	dev-libs/dbus-c++
 	dev-libs/glib
 	sys-apps/rootdev

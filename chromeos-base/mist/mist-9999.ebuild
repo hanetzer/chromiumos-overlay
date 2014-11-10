@@ -22,7 +22,6 @@ IUSE="test"
 RDEPEND="
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	!<chromeos-base/platform2-0.0.9
 	dev-libs/protobuf
 	net-dialup/ppp
 	virtual/libusb:1

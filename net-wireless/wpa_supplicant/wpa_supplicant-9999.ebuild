@@ -19,7 +19,6 @@ REQUIRED_USE="smartcard? ( ssl ) asan? ( clang )"
 
 DEPEND="dev-libs/libnl:0
 	chromeos-base/chromeos-minijail
-	!<chromeos-base/chromeos-init-0.0.7
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
 		eap-sim? ( sys-apps/pcsc-lite )

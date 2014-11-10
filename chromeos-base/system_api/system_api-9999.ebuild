@@ -29,8 +29,6 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-RDEPEND="!<chromeos-base/platform2-0.0.3"
-DEPEND="${RDEPEND}"
 
 src_unpack() {
 	local s="${S}"

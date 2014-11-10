@@ -11,7 +11,6 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.21
 	sys-apps/util-linux
 	"
 

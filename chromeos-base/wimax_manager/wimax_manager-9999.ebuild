@@ -23,7 +23,6 @@ KEYWORDS="~*"
 IUSE="gdmwimax test"
 
 RDEPEND="
-	!<chromeos-base/platform2-0.0.6
 	dev-libs/dbus-c++
 	gdmwimax? (
 		chromeos-base/libchromeos

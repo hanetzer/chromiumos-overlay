@@ -20,7 +20,6 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libchromeos
-	!<chromeos-base/platform2-0.0.10
 "
 
 DEPEND="

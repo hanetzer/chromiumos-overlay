@@ -38,8 +38,7 @@ RDEPEND="
 	sys-apps/rootdev
 	sys-apps/util-linux
 	sys-apps/which
-	sys-fs/e2fsprogs
-	!<chromeos-base/chromeos-init-0.0.15"
+	sys-fs/e2fsprogs"
 
 src_unpack() {
 	cros-workon_src_unpack

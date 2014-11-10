@@ -12,7 +12,6 @@ KEYWORDS="*"
 S=${WORKDIR}
 
 RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.3
 	chromeos-base/chromeos-init
 	net-firewall/iptables[ipv6]
 "

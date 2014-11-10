@@ -25,7 +25,6 @@ IUSE="cros_host"
 
 COMMON_DEPEND="
 	!<chromeos-base/bootstat-0.0.2
-	!<chromeos-base/platform2-0.0.2
 	chromeos-base/chromeos-minijail
 	dev-libs/dbus-c++
 	dev-libs/dbus-glib

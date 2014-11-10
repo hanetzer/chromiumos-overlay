@@ -22,7 +22,6 @@ IUSE="metrics_uploader +passive_metrics"
 
 RDEPEND="
 	chromeos-base/libchromeos
-	!<chromeos-base/platform2-0.0.4
 	chromeos-base/system_api
 	dev-libs/dbus-glib
 	sys-apps/rootdev

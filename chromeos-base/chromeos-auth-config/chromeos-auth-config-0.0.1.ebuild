@@ -11,8 +11,7 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND=">=sys-auth/pambase-20090620.1-r7
-	chromeos-base/vboot_reference
-	!<chromeos-base/chromeos-init-0.0.20"
+	chromeos-base/vboot_reference"
 DEPEND="${RDEPEND}"
 
 S="${WORKDIR}"

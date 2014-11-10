@@ -14,7 +14,6 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.12
 	sys-apps/util-linux
 	>=sys-fs/e2fsprogs-1.41
 	sys-libs/libnih"

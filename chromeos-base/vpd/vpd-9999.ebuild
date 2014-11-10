@@ -20,7 +20,6 @@ DEPEND="sys-apps/util-linux"
 # shflags for dump_vpd_log.
 # chromeos-activate-date for ActivateDate upstart and script.
 RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.19
 	sys-apps/flashrom
 	dev-util/shflags
 	virtual/chromeos-activate-date

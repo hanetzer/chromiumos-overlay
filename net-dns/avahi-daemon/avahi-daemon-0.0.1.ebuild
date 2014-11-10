@@ -10,7 +10,6 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
-	!<chromeos-base/chromeos-init-0.0.16
 	net-dns/avahi
 "
 
