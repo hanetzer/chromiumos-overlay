@@ -91,6 +91,7 @@ ALL_BOARDS=(
 	gnawty
 	hsb
 	ironhide
+	jecht
 	kayle
 	#kiev
 	kip
