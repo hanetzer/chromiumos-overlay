@@ -23,6 +23,7 @@ RDEPEND="
 	chromeos-base/autotest-deps-glbench
 	chromeos-base/autotest-deps-graphics
 	tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
+	tests_graphics_SanAngeles? ( media-libs/waffle )
 "
 DEPEND="${RDEPEND}"
 
