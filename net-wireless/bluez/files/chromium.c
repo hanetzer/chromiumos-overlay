@@ -1,4 +1,5 @@
-/* Copyright 2014 The Chromium Authors. All rights reserved.
+/*
+ * Copyright 2014 The Chromium OS Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -81,16 +82,16 @@ static void find_by_path_device_cb(struct btd_device *device, void *data) {
 }
 
 static void find_by_path_adapter_cb(struct btd_adapter *adapter,
-			gpointer user_data) {
+							gpointer user_data) {
 	struct find_device_context *context = user_data;
 
 	context->adapter = adapter;
 	btd_adapter_for_each_device(adapter, find_by_path_device_cb, context);
 }
 
-gboolean find_device_by_path(const char *device_path,
-		struct btd_adapter **out_adapter,
-		struct btd_device **out_device) {
+static gboolean find_device_by_path(const char *device_path,
+					struct btd_adapter **out_adapter,
+					struct btd_device **out_device) {
 	struct find_device_context context;
 
 	context.device_path = device_path;
@@ -113,6 +114,8 @@ static void get_conn_info_complete(uint8_t status, uint16_t length,
 	int16_t rssi, tx_power, max_tx_power;
 
 	if (status == 0) {
+		DBusMessageIter iter;
+
 		reply = dbus_message_new_method_return(msg);
 		if (reply == NULL) {
 			dbus_message_unref(msg);
@@ -125,7 +128,6 @@ static void get_conn_info_complete(uint8_t status, uint16_t length,
 		tx_power = rp->tx_power;
 		max_tx_power = rp->max_tx_power;
 
-		DBusMessageIter iter;
 		dbus_message_iter_init_append(reply, &iter);
 		dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT16, &rssi);
 		dbus_message_iter_append_basic(
@@ -146,8 +148,8 @@ static void get_conn_info_complete(uint8_t status, uint16_t length,
 	dbus_message_unref(msg);
 }
 
-static DBusMessage *get_conn_info(DBusConnection *conn,
-	        DBusMessage *msg, void *user_data)
+static DBusMessage *get_conn_info(DBusConnection *conn, DBusMessage *msg,
+								void *user_data)
 {
 	const char *device_path = dbus_message_get_path(msg);
 	struct btd_adapter *adapter = NULL;
@@ -182,8 +184,8 @@ static DBusMessage *get_conn_info(DBusConnection *conn,
 static const GDBusMethodTable device_methods[] = {
 	/* GetConnInfo is a simple DBus wrapper over the get_conn_info mgmt API.
 	 */
-	{ GDBUS_ASYNC_METHOD("GetConnInfo", NULL,
-		GDBUS_ARGS({"TXPower", "y"}, {"MaximumTXPower", "y"}, {"RSSI", "y"}),
+	{ GDBUS_ASYNC_METHOD("GetConnInfo", NULL, GDBUS_ARGS({"TXPower", "y"},
+					{"MaximumTXPower", "y"}, {"RSSI", "y"}),
 		get_conn_info) },
 	{ }
 };
@@ -253,7 +255,7 @@ static const char *get_device_path_from_interface_msg(DBusMessage *msg) {
 }
 
 static gboolean interfaces_added(DBusConnection *conn, DBusMessage *msg,
-		void *user_data)
+								void *user_data)
 {
 	const char *device_path = get_device_path_from_interface_msg(msg);
 
@@ -268,7 +270,7 @@ static gboolean interfaces_added(DBusConnection *conn, DBusMessage *msg,
 }
 
 static gboolean interfaces_removed(DBusConnection *conn, DBusMessage *msg,
-		void *user_data)
+								void *user_data)
 {
 	const char *device_path = get_device_path_from_interface_msg(msg);
 
@@ -283,12 +285,12 @@ static gboolean interfaces_removed(DBusConnection *conn, DBusMessage *msg,
 
 static void remove_dbus_watches() {
 	if (interfaces_added_watch_id)
-		g_dbus_remove_watch(
-			btd_get_dbus_connection(), interfaces_added_watch_id);
+		g_dbus_remove_watch(btd_get_dbus_connection(),
+						interfaces_added_watch_id);
 
 	if (interfaces_removed_watch_id)
-		g_dbus_remove_watch(
-			btd_get_dbus_connection(), interfaces_removed_watch_id);
+		g_dbus_remove_watch(btd_get_dbus_connection(),
+						interfaces_removed_watch_id);
 }
 
 static const GDBusPropertyTable chromium_properties[] = {
