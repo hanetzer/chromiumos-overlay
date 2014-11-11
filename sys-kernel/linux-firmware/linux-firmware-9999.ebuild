@@ -48,6 +48,7 @@ IUSE_LINUX_FIRMWARE=(
 	ath9k_htc
 	cros-pd
 	fw_sst
+	fw_sst2
 	ibt-hw
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
@@ -62,6 +63,7 @@ LICENSE="
 	linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
 	linux_firmware_cros-pd? ( BSD-Google )
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
+	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
@@ -112,6 +114,7 @@ src_install() {
 	use_fw ath9k_htc && doins htc_*.fw
 	use_fw cros-pd && doins_subdir cros-pd/*
 	use_fw fw_sst && doins_subdir intel/fw_sst*
+	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use video_cards_radeon && doins_subdir radeon/*
