@@ -36,10 +36,8 @@ PER_BOARD_BOARDS=(
 DEPEND_BLOCKERS="${PER_BOARD_BOARDS[@]/#/!sys-boot/chromeos-coreboot-}"
 
 RDEPEND="
-	chromeos-base/vboot_reference
 	${DEPEND_BLOCKERS}
 	!virtual/chromeos-coreboot
-	virtual/coreboot-private-files
 	"
 
 # Dependency shared by x86 and amd64.
@@ -58,7 +56,9 @@ DEPEND_ARM64="
 	"
 
 DEPEND="
+	chromeos-base/vboot_reference
 	${DEPEND_BLOCKERS}
+	virtual/coreboot-private-files
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
 	arm? ($DEPEND_ARM)
