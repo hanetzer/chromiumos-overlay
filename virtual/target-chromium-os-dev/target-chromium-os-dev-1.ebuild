@@ -101,7 +101,7 @@ RDEPEND="${RDEPEND}
 	net-analyzer/tcpdump
 	net-dialup/minicom
 	net-misc/dhcp
-	net-misc/iperf
+	net-misc/iperf:2
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync

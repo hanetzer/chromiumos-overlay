@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="amd64 arm x86"
 IUSE=""
 
-RDEPEND="net-misc/iperf"
+RDEPEND="net-misc/iperf:2"
 DEPEND=""
 
 S=${WORKDIR}

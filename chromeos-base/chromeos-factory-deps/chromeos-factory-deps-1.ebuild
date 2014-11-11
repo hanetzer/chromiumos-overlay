@@ -73,6 +73,7 @@ FACTORY_TEST_RDEPEND+="
 # Packages used by network related tests.
 FACTORY_TEST_RDEPEND+="
 	dev-python/pexpect
+	net-misc/iperf:3
 "
 
 # Packages used by registration code tests.

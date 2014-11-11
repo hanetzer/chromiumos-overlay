@@ -143,7 +143,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	net-dialup/minicom
 	net-dns/dnsmasq
 	net-misc/dhcp
-	net-misc/iperf
+	net-misc/iperf:2
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/radvd
