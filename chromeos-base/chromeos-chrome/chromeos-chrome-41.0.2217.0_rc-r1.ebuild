@@ -123,9 +123,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2216.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2216.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2216.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2217.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2217.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2217.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -1079,6 +1079,11 @@ src_install() {
 		"${CHROME_ORIGIN}" == "SERVER_SOURCE" ]]; then
 		autotest-deponly_src_install
 		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
+
+		# Copy generated cloud_policy.proto. We can't do this in the
+                # protofiles ebuild since this is a generated proto.
+		insinto /usr/share/protofiles
+		doins "${FROM}"/gen/policy/policy/cloud_policy.proto
 	fi
 
 	# Fix some perms.
