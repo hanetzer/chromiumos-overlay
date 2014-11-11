@@ -51,10 +51,6 @@ inherit cros-workon
 # @DESCRIPTION: (Optional) Version name of stabled PD firmware
 : ${CROS_FIRMWARE_STABLE_PD_VERSION:=}
 
-# @ECLASS-VARIABLE: CROS_FIRMWARE_PLATFORM
-# @DESCRIPTION: (Optional) Platform name of firmware
-: ${CROS_FIRMWARE_PLATFORM:=}
-
 # @ECLASS-VARIABLE: CROS_FIRMWARE_SCRIPT
 # @DESCRIPTION: (Optional) Entry script file name of updater
 : ${CROS_FIRMWARE_SCRIPT:=}
@@ -230,7 +226,6 @@ cros-firmware_src_compile() {
 	# Prepare extra commands
 	ext_cmd+="$(_add_param --extra "$(IFS=:; echo "${EXTRA_LOCATIONS[*]}")")"
 	ext_cmd+="$(_add_param --script "${CROS_FIRMWARE_SCRIPT}")"
-	ext_cmd+="$(_add_param --platform "${CROS_FIRMWARE_PLATFORM}")"
 	ext_cmd+="$(_add_param --flashrom "${CROS_FIRMWARE_FLASHROM_BINARY}")"
 	ext_cmd+="$(_add_param --tool_base \
 	            "$root/firmware/utils:$root/usr/sbin:$root/usr/bin")"
