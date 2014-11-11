@@ -1,9 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Install the upstart job that launches avahi.
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=!<chromeos-base/chromeos-init-0.0.16 net-dns/avahi
-SLOT=0
-_md5_=8d68983b9e5bf6a07d0919d072b23ff8
