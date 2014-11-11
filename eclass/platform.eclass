@@ -69,8 +69,11 @@ platform_is_native() {
 
 platform_src_unpack() {
 	cros-workon_src_unpack
-	PLATFORM_TOOLDIR="${S}/platform2/common-mk"
-	S+="/platform2/${PLATFORM_SUBDIR}"
+	if [[ ${#CROS_WORKON_DESTDIR[@]} -gt 1 || "${CROS_WORKON_OUTOFTREE_BUILD}" != "1" ]]; then
+		S+="/platform2"
+	fi
+	PLATFORM_TOOLDIR="${S}/common-mk"
+	S+="/${PLATFORM_SUBDIR}"
 	export OUT="$(cros-workon_get_build_dir)/out/Default"
 }
 
