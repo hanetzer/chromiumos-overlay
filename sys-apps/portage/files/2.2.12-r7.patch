@@ -1,5 +1,6 @@
 Contains all the patches committed to portage_tool on top of 2.2.12:
 
+* Add separatedebug feature
 * package.bashrc: per profile, per-package bashrc mechanism
 * Add profile-formats to profile_complex
 * Refactor bashrc scripts sourcing
@@ -151,6 +152,28 @@ index be044e0..50909e1 100755
  # === === === === === === === === === === === === === === === === === ===
  # === === === === === functions end, main part begins === === === === ===
  # === === === === === === === === === === === === === === === === === ===
+diff --git a/bin/misc-functions.sh b/bin/misc-functions.sh
+index 961738f..b0d8b18 100755
+--- a/bin/misc-functions.sh
++++ b/bin/misc-functions.sh
+@@ -1215,6 +1215,17 @@ __dyn_package() {
+ 	[ -z "${PORTAGE_BINPKG_TMPFILE}" ] && \
+ 		die "PORTAGE_BINPKG_TMPFILE is unset"
+ 	mkdir -p "${PORTAGE_BINPKG_TMPFILE%/*}" || die "mkdir failed"
++
++	if has separatedebug ${FEATURES} && [[ -d "${PROOT%/}${EPREFIX}/usr/lib/debug" ]]; then
++		[[ -z "${PORTAGE_DEBUGSYMBOLS_TMPFILE}" ]] && \
++			die "PORTAGE_DEBUGSYMBOLS_TMPFILE is unset"
++		mkdir -p "${PORTAGE_DEBUGSYMBOLS_TMPFILE%/*}" || die "mkdir failed"
++		tar $tar_options -cf - $PORTAGE_BINPKG_TAR_OPTS \
++			-C "${PROOT}" ".${EPREFIX}/usr/lib/debug/" | \
++		$PORTAGE_BZIP2_COMMAND -c > "$PORTAGE_DEBUGSYMBOLS_TMPFILE"
++		tar_options+=" --anchored --exclude=.${EPREFIX}/usr/lib/debug"
++	fi
++
+ 	tar $tar_options -cf - $PORTAGE_BINPKG_TAR_OPTS -C "${PROOT}" . | \
+ 		$PORTAGE_BZIP2_COMMAND -c > "$PORTAGE_BINPKG_TMPFILE"
+ 	assert "failed to pack binary package: '$PORTAGE_BINPKG_TMPFILE'"
 diff --git a/bin/phase-functions.sh b/bin/phase-functions.sh
 index f39a024..5dff3bb 100644
 --- a/bin/phase-functions.sh
@@ -216,6 +239,22 @@ index 98cff83..8b32bc4 100644
  		WARN XARGS _RC_GET_KV_CACHE
  
  	# user config variables
+diff --git a/man/make.conf.5 b/man/make.conf.5
+index 84e894b..9050ee7 100644
+--- a/man/make.conf.5
++++ b/man/make.conf.5
+@@ -506,6 +506,11 @@ Output a verbose trace of python execution to stderr when a command's
+ .B sandbox
+ Enable sandbox\-ing when running \fBemerge\fR(1) and \fBebuild\fR(1).
+ .TP
++.B separatedebug
++When splitdebug is enabled, produces a separate tarball containing the debug
++symbols in \fBPKGDIR\fR.
++The debug symbols tarball has the name ${CATEGORY}/${PF}.debug.tbz2.
++.TP
+ .B sesandbox
+ Enable SELinux sandbox\-ing.  Do not toggle this \fBFEATURE\fR yourself.
+ .TP
 diff --git a/man/portage.5 b/man/portage.5
 index e399f0f..309e259 100644
 --- a/man/portage.5
@@ -275,6 +314,66 @@ index e399f0f..309e259 100644
  .RE
  .RE
  
+diff --git a/pym/_emerge/EbuildBinpkg.py b/pym/_emerge/EbuildBinpkg.py
+index 34a6aef..902639c 100644
+--- a/pym/_emerge/EbuildBinpkg.py
++++ b/pym/_emerge/EbuildBinpkg.py
+@@ -3,14 +3,14 @@
+ 
+ from _emerge.CompositeTask import CompositeTask
+ from _emerge.EbuildPhase import EbuildPhase
+-from portage import os
++from portage import os, xpak
+ 
+ class EbuildBinpkg(CompositeTask):
+ 	"""
+ 	This assumes that src_install() has successfully completed.
+ 	"""
+ 	__slots__ = ('pkg', 'settings') + \
+-		('_binpkg_tmpfile',)
++		('_binpkg_tmpfile', '_symbols_tmpfile')
+ 
+ 	def _start(self):
+ 		pkg = self.pkg
+@@ -24,6 +24,12 @@ class EbuildBinpkg(CompositeTask):
+ 		self._binpkg_tmpfile = binpkg_tmpfile
+ 		self.settings["PORTAGE_BINPKG_TMPFILE"] = self._binpkg_tmpfile
+ 
++		if 'separatedebug' in self.settings.features:
++			self._symbols_tmpfile = os.path.join(bintree.pkgdir, pkg.cpv \
++										+ '.debug.tbz2')
++			self.settings["PORTAGE_DEBUGSYMBOLS_TMPFILE"] = \
++					self._symbols_tmpfile
++
+ 		package_phase = EbuildPhase(background=self.background,
+ 			phase='package', scheduler=self.scheduler,
+ 			settings=self.settings)
+@@ -33,15 +39,25 @@ class EbuildBinpkg(CompositeTask):
+ 	def _package_phase_exit(self, package_phase):
+ 
+ 		self.settings.pop("PORTAGE_BINPKG_TMPFILE", None)
++		self.settings.pop("PORTAGE_DEBUGSYMBOLS_TMPFILE", None)
+ 		if self._default_exit(package_phase) != os.EX_OK:
+ 			try:
+ 				os.unlink(self._binpkg_tmpfile)
+ 			except OSError:
+ 				pass
++			try:
++				os.unlink(self._symbols_tmpfile)
++			except OSError:
++				pass
+ 			self.wait()
+ 			return
+ 
+ 		pkg = self.pkg
++		if self._symbols_tmpfile and os.path.isfile(self._symbols_tmpfile):
++			xpak_data = xpak.xpak_mem({ "CATEGORY": pkg.category,
++							  "PF": pkg.pf + "-debug",
++							  "SLOT": pkg._metadata['SLOT'] })
++			xpak.tbz2(self._symbols_tmpfile).recompose_mem(xpak_data)
+ 		bintree = pkg.root_config.trees["bintree"]
+ 		bintree.inject(pkg.cpv, filename=self._binpkg_tmpfile)
+ 
 diff --git a/pym/_emerge/Scheduler.py b/pym/_emerge/Scheduler.py
 index d6db311..6e3bf1a 100644
 --- a/pym/_emerge/Scheduler.py
@@ -288,7 +387,7 @@ index d6db311..6e3bf1a 100644
  			try:
  				rval = self._merge()
 diff --git a/pym/portage/const.py b/pym/portage/const.py
-index aab6e8a..f2e69e0 100644
+index aab6e8a..fa7bd66 100644
 --- a/pym/portage/const.py
 +++ b/pym/portage/const.py
 @@ -157,6 +157,7 @@ SUPPORTED_FEATURES       = frozenset([
@@ -299,6 +398,14 @@ index aab6e8a..f2e69e0 100644
  	"noauto",
  	"noclean",
  	"nodoc",
+@@ -172,6 +173,7 @@ SUPPORTED_FEATURES       = frozenset([
+ 	"python-trace",
+ 	"sandbox",
+ 	"selinux",
++	"separatedebug",
+ 	"sesandbox",
+ 	"sfperms",
+ 	"sign",
 diff --git a/pym/portage/dbapi/bintree.py b/pym/portage/dbapi/bintree.py
 index 229ce3b..844d015 100644
 --- a/pym/portage/dbapi/bintree.py
@@ -474,10 +581,10 @@ index 4427f1d..8bf321c 100644
  	def _expand_parent_colon(self, parentsFile, parentPath,
  		repo_loc, repositories):
 diff --git a/pym/portage/package/ebuild/_config/special_env_vars.py b/pym/portage/package/ebuild/_config/special_env_vars.py
-index 74fedd6..8803491 100644
+index 74fedd6..55754d9 100644
 --- a/pym/portage/package/ebuild/_config/special_env_vars.py
 +++ b/pym/portage/package/ebuild/_config/special_env_vars.py
-@@ -49,7 +49,7 @@ environ_whitelist += [
+@@ -49,10 +49,10 @@ environ_whitelist += [
  	"FEATURES", "FILESDIR", "HOME", "MERGE_TYPE", "NOCOLOR", "PATH",
  	"PKGDIR",
  	"PKGUSE", "PKG_LOGDIR", "PKG_TMPDIR",
@@ -485,7 +592,11 @@ index 74fedd6..8803491 100644
 +	"PORTAGE_ACTUAL_DISTDIR", "PORTAGE_ARCHLIST", "PORTAGE_BASHRC_FILES",
  	"PORTAGE_BASHRC", "PM_EBUILD_HOOK_DIR",
  	"PORTAGE_BINPKG_FILE", "PORTAGE_BINPKG_TAR_OPTS",
- 	"PORTAGE_BINPKG_TMPFILE",
+-	"PORTAGE_BINPKG_TMPFILE",
++	"PORTAGE_BINPKG_TMPFILE", "PORTAGE_DEBUGSYMBOLS_TMPFILE",
+ 	"PORTAGE_BIN_PATH",
+ 	"PORTAGE_BUILDDIR", "PORTAGE_BUILD_GROUP", "PORTAGE_BUILD_USER",
+ 	"PORTAGE_BUNZIP2_COMMAND", "PORTAGE_BZIP2_COMMAND",
 @@ -74,9 +74,9 @@ environ_whitelist += [
  	"PORTAGE_SIGPIPE_STATUS",
  	"PORTAGE_TMPDIR", "PORTAGE_UPDATE_ENV", "PORTAGE_USERNAME",
