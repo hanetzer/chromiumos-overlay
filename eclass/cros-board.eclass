@@ -63,6 +63,7 @@ ALL_BOARDS=(
 	candy
 	cardhu
 	#chronos
+	cid
 	clapper
 	cosmos
 	cranky
