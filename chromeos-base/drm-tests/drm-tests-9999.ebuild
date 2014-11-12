@@ -26,5 +26,5 @@ src_compile() {
 
 src_install() {
 	cd build-opt-local
-	dobin egl_{clear,chromesim_modified}
+	dobin null_platform_test
 }
