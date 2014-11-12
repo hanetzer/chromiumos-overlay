@@ -9,11 +9,12 @@
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
 coreboot-private-files_src_install() {
+	local srcdir="${1:-${FILESDIR}}"
 	insinto /firmware/coreboot-private
 	local file
 	while read -d $'\0' -r file; do
 		doins -r "${file}"
-	done < <(find "${FILESDIR}" -maxdepth 1 -mindepth 1 -print0)
+	done < <(find "${srcdir}" -maxdepth 1 -mindepth 1 -print0)
 }
 
 EXPORT_FUNCTIONS src_install
