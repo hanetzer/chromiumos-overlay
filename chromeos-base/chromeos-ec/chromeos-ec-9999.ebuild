@@ -14,7 +14,7 @@ SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="~arm ~amd64 ~x86"
+KEYWORDS="~*"
 
 USE_PREFIX="ec_firmware_"
 
@@ -33,6 +33,7 @@ EC_BOARD_NAMES=(
 	pinky
 	pit
 	ryu
+	ryu_p1
 	ryu_sh
 	samus
 	samus_pd
