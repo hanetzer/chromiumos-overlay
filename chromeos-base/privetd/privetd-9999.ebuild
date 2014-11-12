@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="privetd"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="Privet protocol handler for Chrome OS Core"
 HOMEPAGE="http://www.chromium.org/"
@@ -36,6 +36,12 @@ DEPEND="
 		dev-cpp/gtest
 	)
 "
+
+pkg_preinst() {
+	# Create user and group for privetd.
+	enewuser "privetd"
+	enewgroup "privetd"
+}
 
 src_install() {
 	dobin "${OUT}/privetd"
