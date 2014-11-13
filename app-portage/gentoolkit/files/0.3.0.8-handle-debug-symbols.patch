@@ -1,0 +1,36 @@
+From edf85975c38a3c3c460b4a8eb44e1f1ab454c99d Mon Sep 17 00:00:00 2001
+From: Bertrand SIMONNET <bsimonnet@chromium.org>
+Date: Thu, 13 Nov 2014 15:04:30 -0800
+Subject: [PATCH] eclean: handle debug symbols
+
+When cleaning the package directory, remove the debug symbols only if the
+matching binary package is being removed.
+---
+ pym/gentoolkit/eclean/search.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/pym/gentoolkit/eclean/search.py b/pym/gentoolkit/eclean/search.py
+index 5fcb6bc..096886a 100644
+--- a/pym/gentoolkit/eclean/search.py
++++ b/pym/gentoolkit/eclean/search.py
+@@ -546,12 +546,16 @@ def findPackages(
+ 			path = os.path.join(root, file)
+ 			category = os.path.split(root)[-1]
+ 			cpv = category+"/"+file[:-5]
++			if cpv.endswith('.debug'):
++				cpv = cpv[:-6]
+ 			st = os.lstat(path)
+ 			if time_limit and (st[stat.ST_MTIME] >= time_limit):
+ 				# time-limit exclusion
+ 				continue
+ 			# dict is cpv->[files] (2 files in general, because of symlink)
+-			clean_me[cpv] = [path]
++			# clean_me[cpv] will already be set if the debug symbols
++			# are separated from the binpkg.
++			clean_me.setdefault(cpv, []).append(path)
+ 			#if os.path.islink(path):
+ 			if stat.S_ISLNK(st[stat.ST_MODE]):
+ 				clean_me[cpv].append(os.path.realpath(path))
+-- 
+2.1.0.rc2.206.gedb03e5
+
