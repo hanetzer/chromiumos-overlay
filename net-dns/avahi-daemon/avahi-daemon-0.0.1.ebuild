@@ -8,6 +8,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="wifi_bootstrapping"
 
 RDEPEND="
 	net-dns/avahi
@@ -17,5 +18,9 @@ S=${WORKDIR}
 
 src_install() {
 	insinto /etc/init
-	doins "${FILESDIR}"/init/*.conf
+	if use wifi_bootstrapping ; then
+		newins "${FILESDIR}"/init/auto.conf avahi.conf
+	else
+		newins "${FILESDIR}"/init/manual.conf avahi.conf
+	fi
 }
