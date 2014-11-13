@@ -212,6 +212,7 @@ CLIENT_IUSE_TESTS="
 		+tests_platform_TLSDateActual
 	)
 	+tests_platform_ToolchainOptions
+	+tests_platform_TotalMemory
 	+tests_platform_TouchpadSynDrop
         +tests_platform_UdevVars
 	!chromeless_tty? (
