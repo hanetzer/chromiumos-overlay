@@ -25,6 +25,7 @@ COMMON_DEPEND="
 
 RDEPEND="
 	${COMMON_DEPEND}
+	chromeos-base/apmanager
 	chromeos-base/peerd
 	net-firewall/iptables
 "

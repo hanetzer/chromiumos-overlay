@@ -22,6 +22,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libchromeos
+	net-wireless/hostapd
 "
 
 DEPEND="
