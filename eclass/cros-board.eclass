@@ -211,6 +211,7 @@ ALL_BOARDS=(
 	x86-zgb32
 	x86-zgb32_he
 	zako
+	zako_freon
 )
 
 # Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create IUSE.
