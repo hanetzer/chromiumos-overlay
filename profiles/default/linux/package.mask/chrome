@@ -1,6 +1,0 @@
-# Copyright (c) 2009 The Chromium OS Authors. All rights reserved.
-# Distributed under the terms of the GNU General Public License v2
-
-# This pins Chrome to the version below by masking more recent versions.
-# >chromeos-base/chromeos-chrome-40.0.2183.0_rc-r2
-# >chromeos-base/chromium-source-40.0.2183.0_rc-r2
