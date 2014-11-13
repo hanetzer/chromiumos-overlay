@@ -52,6 +52,7 @@ ALL_BOARDS=(
 	bayleybay
 	beaglebone
 	beaglebone_servo
+	beaglebone_vv1
 	beltino
 	blackwall
 	bobcat
