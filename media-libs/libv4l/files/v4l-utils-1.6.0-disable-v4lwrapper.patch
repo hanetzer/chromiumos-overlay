@@ -1,0 +1,39 @@
+There are compile errors with libv4l wrappers.
+The wrappers are used to emulate libv4l1 call via libv4l2 api.
+But chromeos doesn't have libv4l1 applications.
+Therefore, we can remove libv4l wrappers.
+
+--- lib/libv4l2/Makefile.am.orig	2014-11-07 15:26:52.215650154 +0800
++++ lib/libv4l2/Makefile.am	2014-11-13 16:35:13.362231582 +0800
+@@ -3,14 +3,6 @@
+ include_HEADERS = ../include/libv4l2.h ../include/libv4l-plugin.h
+ pkgconfig_DATA = libv4l2.pc
+ LIBV4L2_VERSION = -version-info 0
+-if WITH_V4L_WRAPPERS
+-libv4l2priv_LTLIBRARIES = v4l2convert.la
+-
+-install-exec-hook:
+-	$(MKDIR_P) $(DESTDIR)/$(libdir)
+-	(cd $(DESTDIR)/$(libdir) && rm -f v4l2convert.so && $(LN_S) $(libv4l2subdir)/v4l2convert.so v4l2convert.so)
+-
+-endif
+ else
+ noinst_LTLIBRARIES = libv4l2.la
+ endif
+--- lib/libv4l1/Makefile.am.orig	2014-11-13 16:39:57.967217545 +0800
++++ lib/libv4l1/Makefile.am	2014-11-13 16:40:05.887133671 +0800
+@@ -3,14 +3,6 @@
+ include_HEADERS = ../include/libv4l1.h ../include/libv4l1-videodev.h
+ pkgconfig_DATA = libv4l1.pc
+ LIBV4L1_VERSION = -version-info 0
+-if WITH_V4L_WRAPPERS
+-libv4l1priv_LTLIBRARIES = v4l1compat.la
+-
+-install-exec-hook:
+-	$(MKDIR_P) $(DESTDIR)/$(libdir)
+-	(cd $(DESTDIR)/$(libdir) && rm -f v4l1compat.so && $(LN_S) $(libv4l1subdir)/v4l1compat.so v4l1compat.so)
+-
+-endif
+ else
+ noinst_LTLIBRARIES = libv4l1.la
+ endif

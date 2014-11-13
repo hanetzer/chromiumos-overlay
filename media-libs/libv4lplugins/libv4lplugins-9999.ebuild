@@ -19,7 +19,7 @@ PLUGIN_IUSE="rockchip"
 IUSE="${PLUGIN_IUSE}"
 REQUIRED_USE="^^ ( ${PLUGIN_IUSE} )"
 
-RDEPEND=""
+RDEPEND="media-libs/libv4l"
 DEPEND="${RDEPEND}"
 
 S=${WORKDIR}/${MY_P}
@@ -31,11 +31,14 @@ src_unpack() {
 
 src_prepare() {
 	if use rockchip; then
-		PLUGIN_NAME="libv4l-rockchip"
+		PLUGIN_DIR="libv4l-rockchip"
 	fi
-	mv ${PLUGIN_NAME} lib || die
-	sed -i -e "s/libv4l-mplane/${PLUGIN_NAME}/g" \
-		configure.ac lib/Makefile.am || die
+	mv ${PLUGIN_DIR} lib || die
+	# Append "SUBDIRS += ${PLUGIN_DIR}" at the end of lib/Makefile.am
+	sed -i -e "\$aSUBDIRS += ${PLUGIN_DIR}" lib/Makefile.am || die
+	# Add "lib/${PLUGIN_DIR}/Makefile" after lib/libv4l2rds/Makefile
+	sed -i -e "s:libv4l2rds/Makefile:&\n\tlib/${PLUGIN_DIR}/Makefile:" \
+		configure.ac || die
 	eautoreconf
 }
 
@@ -48,9 +51,9 @@ src_configure() {
 }
 
 src_compile() {
-	emake -C lib/${PLUGIN_NAME}
+	emake -C lib/${PLUGIN_DIR}
 }
 
 src_install() {
-	emake -C lib/${PLUGIN_NAME} DESTDIR="${D}" install
+	emake -C lib/${PLUGIN_DIR} DESTDIR="${D}" install
 }
