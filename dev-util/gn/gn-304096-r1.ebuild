@@ -14,7 +14,7 @@ EAPI="5"
 #
 # Once you've updated the ebuild, run `ebuild gn-<SVN>-r1 manifest` to generate
 # the Manifest file.
-GN_X64_SHA1="56e78e1927e12e5c122631b7f5a46768e527f1d2"
+GN_X64_SHA1="21f8eb38dc42f5deeb0f9fa7dc83f340ae2f2851"
 
 DESCRIPTION="GN (generate ninja) meta-build system"
 HOMEPAGE="https://code.google.com/p/chromium/wiki/gn"
