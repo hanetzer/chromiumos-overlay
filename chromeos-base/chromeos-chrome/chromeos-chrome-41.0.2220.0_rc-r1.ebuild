@@ -21,8 +21,10 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD-Google
-	chrome_internal? ( Google-TOS )"
+LICENSE="BSD-Google"
+if use chrome_internal; then
+	LICENSE+=" ( Google-TOS )"
+fi
 SLOT="0"
 KEYWORDS="*"
 IUSE="
@@ -124,9 +126,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2219.0_rc-r2.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2219.0_rc-r2.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2219.0_rc-r2.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2220.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2220.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2220.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -1082,8 +1084,12 @@ src_install() {
 		autotest-deponly_src_install
 		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
 
+		# Copy input_methods.txt for auto-test.
+		insinto /usr/share/chromeos-assets/input_methods
+		doins "${CHROME_ROOT}"/src/chromeos/ime/input_methods.txt
+
 		# Copy generated cloud_policy.proto. We can't do this in the
-                # protofiles ebuild since this is a generated proto.
+		# protofiles ebuild since this is a generated proto.
 		insinto /usr/share/protofiles
 		doins "${FROM}"/gen/policy/policy/cloud_policy.proto
 	fi
