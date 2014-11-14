@@ -37,10 +37,7 @@ create_legacy_boot_image() {
     local cbfs_size=$((2 * 1024 * 1024))
   fi
 
-  # Create a dummy bootblock to make cbfstool happy
-  truncate -s 64 "${bootblock}"
-  _cbfstool "${cbfs_file}" create -s ${cbfs_size} -B "${bootblock}" \
-    -m "${arch}"
+  _cbfstool "${cbfs_file}" create -s ${cbfs_size} -m "${arch}"
   _cbfstool "${cbfs_file}" add-payload -f "$elf_file" -n payload -c lzma
 }
 

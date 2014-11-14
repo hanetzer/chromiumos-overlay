@@ -32,10 +32,8 @@ create_seabios_cbfs() {
 
 	_cbfstool() { set -- cbfstool "$@"; echo "$@"; "$@" || die "'$*' failed"; }
 
-	# Create a dummy bootblock to make cbfstool happy
-	truncate -s 64 "${bootblock}"
 	# Create empty CBFS
-	_cbfstool ${seabios_cbfs} create -s ${cbfs_size} -B "${bootblock}" -m x86
+	_cbfstool ${seabios_cbfs} create -s ${cbfs_size} -m x86
 	# Add SeaBIOS binary to CBFS
 	_cbfstool ${seabios_cbfs} add-payload -f out/bios.bin.elf -n payload -c lzma
 	# Add VGA option rom to CBFS
@@ -48,16 +46,6 @@ create_seabios_cbfs() {
 	_cbfstool ${seabios_cbfs} add -f chromeos/etc/boot-menu-wait -n etc/boot-menu-wait -t raw
 	# Print CBFS inventory
 	_cbfstool ${seabios_cbfs} print
-	# Fix up CBFS to live at 0xffc00000. The last four bytes of a CBFS
-	# image are a pointer to the CBFS master header. Per default a CBFS
-	# lives at 4G - rom size, and the CBFS master header ends up at
-	# 0xffffffa0. However our CBFS lives at 4G-4M and is 2M in size, so
-	# the CBFS master header is at 0xffdfffa0 instead. The two lines
-	# below correct the according byte in that pointer to make all CBFS
-	# parsing code happy. In the long run we should fix cbfstool and
-	# remove this workaround.
-	echo -ne \\0737 | dd of=${seabios_cbfs} \
-			seek=$(( cbfs_size - 2 )) bs=1 conv=notrunc
 }
 
 _emake() {
