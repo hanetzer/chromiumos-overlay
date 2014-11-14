@@ -239,6 +239,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-python/mysql-python
 	dev-python/sqlalchemy
+	dev-python/python-statsd
 	"
 
 # Host dependencies that are needed for unit tests
