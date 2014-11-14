@@ -41,6 +41,7 @@ IUSE="
 	component_build
 	deep_memory_profiler
 	drm
+	envoy
 	evdev_gestures
 	+gold
 	hardfp
@@ -123,9 +124,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2219.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2219.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2219.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2219.0_rc-r2.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2219.0_rc-r2.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2219.0_rc-r2.afdo"
 
 add_afdo_files() {
 	local a f
@@ -258,6 +259,7 @@ set_build_defines() {
 		"swig_defines=-DOS_CHROMEOS"
 		"chromeos=1"
 		"icu_use_data_file_flag=1"
+		"use_cras=1"
 	)
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
@@ -358,9 +360,7 @@ set_build_defines() {
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
 	fi
 
-	if ! use chrome_debug_tests; then
-		BUILD_DEFINES+=( strip_tests=1 )
-	fi
+	use chrome_debug_tests || BUILD_DEFINES+=( strip_tests=1 )
 
 	if use reorder && ! use clang; then
 		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile-32.0.1665.2" )
@@ -389,19 +389,11 @@ set_build_defines() {
 		BUILD_DEFINES+=( asan=1 )
 	fi
 
-	if use component_build; then
-		BUILD_DEFINES+=( component=shared_library )
-	fi
-
-	BUILD_DEFINES+=( "use_cras=1" )
+	use component_build && BUILD_DEFINES+=( component=shared_library )
 
 	# TODO(davidjames): Pass in all CFLAGS this way, once gyp is smart enough
 	# to accept cflags that only apply to the target.
-	if use chrome_debug; then
-		RELEASE_EXTRA_CFLAGS+=(
-			-g
-		)
-	fi
+	use chrome_debug && RELEASE_EXTRA_CFLAGS+=( -g )
 
 	if use deep_memory_profiler; then
 		BUILD_DEFINES+=(
@@ -410,6 +402,8 @@ set_build_defines() {
 			linux_dump_symbols=1
 		)
 	fi
+
+	use envoy && BUILD_DEFINES+=( envoy=1 )
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
@@ -801,10 +795,18 @@ src_compile() {
 
 	local chrome_targets=(
 		chrome_sandbox
-		$(usex app_shell "app_shell" "chrome")
 		$(usex drm "" "libosmesa.so")
 		$(usex mojo "mojo_shell" "")
 	)
+	# Envoy builds set both the envoy and app_shell USE flags; only build the
+	# envoy_shell binary in this case.
+	if use envoy; then
+		chrome_targets+=( envoy_shell )
+	elif use app_shell; then
+		chrome_targets+=( app_shell )
+	else
+		chrome_targets+=( chrome )
+	fi
 	if use build_tests; then
 		chrome_targets+=(
 			"${TEST_FILES[@]}"
