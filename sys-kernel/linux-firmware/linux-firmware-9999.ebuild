@@ -54,6 +54,7 @@ IUSE_LINUX_FIRMWARE=(
 	"${IUSE_IWLWIFI[@]}"
 	"${IUSE_BRCMWIFI[@]}"
 	marvell-pcie8897
+	rt2870
 )
 IUSE="${IUSE_LINUX_FIRMWARE[@]/#/linux_firmware_} video_cards_radeon"
 LICENSE="
@@ -66,6 +67,7 @@ LICENSE="
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
+	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
 	$(printf 'linux_firmware_%s? ( LICENCE.broadcom_bcm43xx ) ' "${IUSE_BRCMWIFI[@]}")
 	video_cards_radeon? ( LICENSE.radeon )
@@ -118,6 +120,9 @@ src_install() {
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use video_cards_radeon && doins_subdir radeon/*
+
+	# The extra file rt3070.bin is a symlink.
+	use_fw rt2870 && doins rt2870.bin rt3070.bin
 
 	# The firmware here is a mess; install specific files by hand.
 	if use linux_firmware_ath3k-all || use linux_firmware_ath3k-ar3011; then
