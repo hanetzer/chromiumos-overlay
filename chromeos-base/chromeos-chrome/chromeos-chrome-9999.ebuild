@@ -21,8 +21,10 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD-Google
-	chrome_internal? ( Google-TOS )"
+LICENSE="BSD-Google"
+if use chrome_internal; then
+	LICENSE+=" ( Google-TOS )"
+fi
 SLOT="0"
 KEYWORDS="~*"
 IUSE="
@@ -1082,8 +1084,12 @@ src_install() {
 		autotest-deponly_src_install
 		#env -uRESTRICT prepstrip "${D}${AUTOTEST_BASE}"
 
+		# Copy input_methods.txt for auto-test.
+		insinto /usr/share/chromeos-assets/input_methods
+		doins "${CHROME_ROOT}"/src/chromeos/ime/input_methods.txt
+
 		# Copy generated cloud_policy.proto. We can't do this in the
-                # protofiles ebuild since this is a generated proto.
+		# protofiles ebuild since this is a generated proto.
 		insinto /usr/share/protofiles
 		doins "${FROM}"/gen/policy/policy/cloud_policy.proto
 	fi
