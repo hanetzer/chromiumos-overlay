@@ -112,6 +112,7 @@ SERVER_IUSE_TESTS="
 	cros_p2p? ( +tests_p2p_EndToEndTest )
 	+tests_platform_BootDevice
 	+tests_platform_BootPerfServer
+	+tests_platform_CompromisedStatefulPartition
 	+tests_platform_CorruptRootfs
 	+tests_platform_CrashStateful
 	+tests_platform_ExternalUsbPeripherals
