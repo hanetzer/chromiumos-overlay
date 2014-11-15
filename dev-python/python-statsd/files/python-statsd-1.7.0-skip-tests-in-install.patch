@@ -1,0 +1,19 @@
+Exclude tests from install targets.
+
+Installing tests can lead to file collisions. As a result, portage complains
+loudly.
+Upstream bug: https://github.com/WoLpH/python-statsd/issues/37
+Proposed solution: This is the proposed solution.
+
+Patch by pprabhu@chromium.org
+--- setup.py
++++ setup.py
+@@ -15,7 +15,7 @@
+     description=statsd.__description__,
+     url=statsd.__url__,
+     license='BSD',
+-    packages=setuptools.find_packages(),
++    packages=setuptools.find_packages(exclude=('tests',)),
+     long_description=long_description,
+     test_suite='nose.collector',
+     tests_require=['nose', 'mock', 'coverage'],
