@@ -11,7 +11,7 @@ HOMEPAGE="http://www.chromium.org"
 LICENSE="GPL-2"
 SLOT=0
 KEYWORDS="*"
-IUSE="-app_shell +bluetooth +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty peerd +power_management +shill wimax +tpm"
+IUSE="-app_shell +bluetooth +cellular +cras +cros_disks +cros_p2p +debugd -chromeless_tty peerd +power_management +shill wifi_bootstrapping wimax +tpm"
 
 RDEPEND="
 	chromeos-base/autotest-client
@@ -64,6 +64,9 @@ RDEPEND="
 	)
 	peerd? (
 		chromeos-base/autotest-tests-peerd
+	)
+	wifi_bootstrapping? (
+		chromeos-base/autotest-tests-wifi-bootstrapping
 	)
 "
 
