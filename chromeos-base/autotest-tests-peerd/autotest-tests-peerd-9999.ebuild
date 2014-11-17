@@ -32,6 +32,8 @@ DEPEND="
 
 IUSE_TESTS="
 	+tests_peerd_AdvertiseServices
+	+tests_peerd_DiscoverServices
+	+tests_peerd_HandlesNameConflicts
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
