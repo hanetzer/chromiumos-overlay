@@ -58,6 +58,7 @@ IUSE="
 	ozone
 	reorder
 	+runhooks
+	v4lplugin
 	verbose
 	vtable_verify
 	xkbcommon
@@ -158,6 +159,7 @@ RDEPEND="${RDEPEND}
 	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/libpng
+	v4lplugin? ( media-libs/libv4lplugins )
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
 	opengl? ( virtual/opengl )
@@ -245,6 +247,7 @@ set_build_defines() {
 		"pkg-config=$(tc-getPKG_CONFIG)"
 		"use_cups=0"
 		"use_gnome_keyring=0"
+		"use_v4lplugin=$(use10 v4lplugin)"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
