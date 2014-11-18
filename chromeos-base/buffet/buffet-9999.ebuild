@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="buffet"
 
-inherit cros-workon libchrome platform
+inherit cros-workon libchrome platform user
 
 DESCRIPTION="Local and cloud communication services for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -27,6 +27,12 @@ DEPEND="
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 "
+
+pkg_preinst() {
+	# Create user and group for buffet.
+	enewuser "buffet"
+	enewgroup "buffet"
+}
 
 src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
