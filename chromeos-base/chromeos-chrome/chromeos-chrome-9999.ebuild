@@ -178,7 +178,8 @@ RDEPEND="${RDEPEND}
 		x11-libs/libXi
 		x11-libs/libXrandr
 		x11-libs/libXrender
-		!arm? ( x11-libs/libva )
+		amd64? ( x11-libs/libva )
+		x86? ( x11-libs/libva )
 		chrome_remoting? ( x11-libs/libXtst )
 	)
 	xkbcommon? (
