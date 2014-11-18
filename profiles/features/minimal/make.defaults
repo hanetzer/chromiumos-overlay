@@ -28,7 +28,8 @@ USE="${USE} -doc -profile -profiling -python"
 # Make stuff small.
 USE="${USE} -attestation -buffet -cellular chromeless_tty -crash_reporting"
 USE="${USE} -cros_disks cros_embedded -debugd -encrypted_stateful -gdmwimax"
-USE="${USE} -lorgnette -pam -passive_metrics -power_management -tpm -vpn -wimax"
+USE="${USE} -lorgnette -pam -passive_metrics -power_management -scanner"
+USE="${USE} -tpm -vpn -wimax"
 
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""
