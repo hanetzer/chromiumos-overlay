@@ -1,6 +1,5 @@
 chromeos-base/chromeos-chrome	-accessibility -autotest -build_tests -chrome_remoting -nacl -reorder
 chromeos-base/chromeos-init	vt
-chromeos-base/platform2     -profile
-chromeos-base/update_engine	-cros_p2p
+chromeos-base/update_engine -cros_p2p
 net-wireless/wpa_supplicant	-smartcard
 sys-libs/uuid			static-libs

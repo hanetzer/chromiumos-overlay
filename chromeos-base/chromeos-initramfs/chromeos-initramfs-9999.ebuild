@@ -25,7 +25,6 @@ DEPEND_netboot="
 	chromeos-base/chromeos-init
 	chromeos-base/chromeos-installshim
 	chromeos-base/memento_softwareupdate
-	chromeos-base/platform2
 	dev-libs/openssl
 	dev-util/shflags
 	net-misc/wget
