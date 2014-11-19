@@ -35,6 +35,7 @@ DEPEND_netboot="
 	sys-block/parted
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs
+	sys-libs/ncurses
 "
 DEPEND="chromeos-base/common-assets
 	chromeos-base/chromeos-installer
@@ -241,6 +242,7 @@ pull_netboot_ramfs_binary() {
 	idobin /usr/bin/futility
 	idobin /usr/bin/getopt
 	idobin /usr/bin/openssl
+	idobin /usr/bin/setterm
 	idobin /usr/bin/uudecode
 	idobin /usr/bin/wget
 	idobin /usr/sbin/flashrom
@@ -304,6 +306,8 @@ pull_netboot_ramfs_binary() {
 
 	# Install Memento updater
 	idoexe '/opt/google/memento_updater/*'
+
+	cp -r /etc/terminfo "${INITRAMFS_TMP_S}"/etc/
 }
 
 build_initramfs_file() {
