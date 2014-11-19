@@ -1,11 +1,15 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-cpp/gtest/gtest-1.6.0-r1.ebuild,v 1.13 2013/02/28 15:47:14 jer Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-cpp/gtest/gtest-1.7.0.ebuild,v 1.6 2014/08/21 11:29:34 armin76 Exp $
 
-EAPI="4"
-PYTHON_DEPEND="2"
+EAPI="5"
 
-inherit eutils python autotools cros-au
+AUTOTOOLS_AUTORECONF=1
+AUTOTOOLS_IN_SOURCE_BUILD=1
+# Python is required for tests and some build tasks.
+PYTHON_COMPAT=( python{2_6,2_7} )
+
+inherit eutils python-any-r1 cros-au
 
 MY_PN=${PN%32}
 MY_P="${MY_PN}-${PV}"
@@ -20,25 +24,21 @@ KEYWORDS="*"
 IUSE="32bit_au"
 RESTRICT="test"
 
-DEPEND="app-arch/unzip"
+DEPEND="app-arch/unzip
+	${PYTHON_DEPS}"
 RDEPEND=""
 
 S="${WORKDIR}/${MY_P}"
 
-pkg_setup() {
-	python_pkg_setup
-	python_set_active_version 2
-}
+PATCHES=(
+	"${FILESDIR}/configure-fix-pthread-linking.patch" #371647
+)
 
 src_prepare() {
 	sed -i -e "s|/tmp|${T}|g" test/gtest-filepath_test.cc || die
 	sed -i -r \
 		-e '/^install-(data|exec)-local:/s|^.*$|&\ndisabled-&|' \
 		Makefile.am || die
-	epatch "${FILESDIR}"/configure-fix-pthread-linking.patch || die
-	eautoreconf
-
-	python_convert_shebangs -r 2 .
 }
 
 src_configure() {
@@ -49,7 +49,7 @@ src_configure() {
 
 src_compile() {
 	board_setup_32bit_au_env
-	emake
+	default
 	board_teardown_32bit_au_env
 }
 

@@ -1,10 +1,12 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-cpp/gmock/gmock-1.6.0.ebuild,v 1.6 2012/08/24 09:23:27 xmw Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-cpp/gmock/gmock-1.7.0-r1.ebuild,v 1.5 2014/10/25 14:07:06 maekke Exp $
 
 EAPI="4"
 
-inherit eutils libtool cros-au
+PYTHON_COMPAT=( python2_7 )
+
+inherit eutils libtool python-any-r1 cros-au
 
 MY_PN=${PN%32}
 MY_P="${MY_PN}-${PV}"
@@ -21,10 +23,17 @@ REQUIRED_USE="32bit_au"
 RESTRICT="test"
 
 RDEPEND="=dev-cpp/gtest32-${PV}*"
-DEPEND="app-arch/unzip
-	${RDEPEND}"
+DEPEND="${RDEPEND}
+	test? ( ${PYTHON_DEPS} )
+	app-arch/unzip"
 
 S="${WORKDIR}/${MY_P}"
+
+pkg_setup() {
+	# Stub to disable python_setup running when USE=-test.
+	# We'll handle it down in src_test ourselves.
+	:
+}
 
 src_unpack() {
 	default
@@ -36,13 +45,19 @@ src_prepare() {
 	sed -i -r \
 		-e '/^install-(data|exec)-local:/s|^.*$|&\ndisabled-&|' \
 		Makefile.in
-        epatch "${FILESDIR}/1.6.0-fix_mutex.patch" || die
 	elibtoolize
 }
 
 src_configure() {
 	board_setup_32bit_au_env
-	econf --disable-shared --enable-static
+	ECONF_SOURCE=${S} econf --disable-shared --enable-static
+	board_teardown_32bit_au_env
+}
+
+src_test() {
+	board_setup_32bit_au_env
+	python_setup
+	emake check
 	board_teardown_32bit_au_env
 }
 
