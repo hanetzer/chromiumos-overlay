@@ -126,9 +126,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2223.2_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2223.2_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2223.2_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2224.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2224.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2224.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -1046,7 +1046,7 @@ src_install() {
 	# Copy org.chromium.LibCrosService.conf, the D-Bus config file for the
 	# D-Bus service exported by Chrome.
 	insinto /etc/dbus-1/system.d
-	DBUS="${CHROME_ROOT}"/src/chrome/browser/chromeos/dbus
+	DBUS="${CHROME_ROOT}"/src/chromeos/dbus/services
 	doins "${DBUS}"/org.chromium.LibCrosService.conf
 
 	# Copy Quickoffice resources for official build.
