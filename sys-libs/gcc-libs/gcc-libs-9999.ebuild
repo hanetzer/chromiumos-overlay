@@ -15,12 +15,12 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 inherit eutils cros-workon binutils-funcs multilib
 
-DESCRIPTION="The GNU Compiler Collection.  This builds and installs the libgcc and libstdc++ libraries.  It it board-specific."
+DESCRIPTION="The GNU Compiler Collection.  This builds and installs the libgcc, libstdc++, and libgo libraries.  It is board-specific."
 
 LICENSE="GPL-3 LGPL-3 FDL-1.2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="hardened hardfp mounted_gcc +thumb vtable_verify"
+IUSE="go hardened hardfp mounted_gcc +thumb vtable_verify"
 RESTRICT="strip"
 
 : ${CTARGET:=${CHOST}}
@@ -61,7 +61,6 @@ src_configure() {
 		--build=${CBUILD}
 		--host=${CBUILD}
 		--target=${CHOST}
-		--enable-languages=c,c++
 		--with-sysroot=/usr/${CTARGET}
 		--enable-__cxa_atexit
 		--disable-bootstrap
@@ -69,9 +68,9 @@ src_configure() {
 		--enable-linker-build-id
 		--disable-libstdcxx-pch
 		--enable-libgomp
+		$(use_enable go libatomic)
 
-		# Disable libs we don't care about.
-		--disable-libatomic
+		# Disable libs we do not care about.
 		--disable-libitm
 		--disable-libmudflap
 		--disable-libquadmath
@@ -82,6 +81,10 @@ src_configure() {
 		--disable-libcilkrts
 		--with-system-zlib
 	)
+
+	GCC_LANG="c,c++"
+	use go && GCC_LANG+=",go"
+	confgcc+=( --enable-languages=${GCC_LANG} )
 
 	if use vtable_verify; then
 		confgcc+=(
@@ -181,6 +184,9 @@ src_install() {
 	cd "$(get_gcc_build_dir)"
 	emake -C "${CTARGET}"/libstdc++-v3/src DESTDIR="${D}" install
 	emake -C "${CTARGET}"/libgcc DESTDIR="${D}" install-shared
+	if use go; then
+		emake -C "${CTARGET}"/libgo DESTDIR="${D}" install
+	fi
 
 	# Delete everything we don't care about (headers/etc...).
 	rm -rf "${D}"/delete-me "${D}"/usr/$(get_libdir)/gcc/${CTARGET}/
