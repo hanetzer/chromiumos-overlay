@@ -28,6 +28,7 @@ EC_BOARD_NAMES=(
 	hoho
 	jerry
 	kitty
+	mighty
 	minimuffin
 	nyan
 	pinky
