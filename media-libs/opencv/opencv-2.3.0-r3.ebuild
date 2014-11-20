@@ -61,6 +61,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.3.0-numpy.patch"
 	"${FILESDIR}/${PN}-2.3.0-symlink.patch"
 	"${FILESDIR}/${PN}-2.3.0-libpng15.patch"
+	"${FILESDIR}/${PN}-2.3.0-manual-change-fps.patch"
 )
 
 CMAKE_BUILD_TYPE="Release"

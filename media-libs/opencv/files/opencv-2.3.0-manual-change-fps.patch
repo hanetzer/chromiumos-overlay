@@ -1,0 +1,52 @@
+From e35681861e734b998c05a404fe1cd50372a44390 Mon Sep 17 00:00:00 2001
+From: Johny Lin <johnylin@google.com>
+Date: Thu, 13 Nov 2014 17:06:50 +0800
+Subject: [PATCH] Set V4L FPS manually by setting CV_CAP_PROP_FPS
+
+Set V4L FPS manually by setting CV_CAP_PROP_FPS
+---
+ modules/highgui/src/cap_libv4l.cpp | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/modules/highgui/src/cap_libv4l.cpp b/modules/highgui/src/cap_libv4l.cpp
+index 4e05d79..1859390 100644
+--- a/modules/highgui/src/cap_libv4l.cpp
++++ b/modules/highgui/src/cap_libv4l.cpp
+@@ -1402,6 +1402,8 @@ static double icvGetPropertyCAM_V4L (CvCaptureCAM_V4L* capture,
+   }
+ }
+ 
++static int factory_test_hack_fps = 30; // Hack by johnylin@google.com
++
+ static int icvSetVideoSize( CvCaptureCAM_V4L* capture, int w, int h) {
+ 
+   if (capture->is_v4l2_device == 1)
+@@ -1447,7 +1449,9 @@ static int icvSetVideoSize( CvCaptureCAM_V4L* capture, int w, int h) {
+     memset (&setfps, 0, sizeof(struct v4l2_streamparm));
+     setfps.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+     setfps.parm.capture.timeperframe.numerator = 1;
+-    setfps.parm.capture.timeperframe.denominator = 30;
++    //setfps.parm.capture.timeperframe.denominator = 30; // Hack by johnylin@google.com
++    setfps.parm.capture.timeperframe.denominator = factory_test_hack_fps; // Hack by johnylin@google.com
++    fprintf(stderr, "set framerate to %d FPS\n", factory_test_hack_fps); // Hack by johnylin@google.com
+     xioctl (capture->deviceHandle, VIDIOC_S_PARM, &setfps);
+ 
+     /* we need to re-initialize some things, like buffers, because the size has
+@@ -1511,6 +1515,14 @@ static int icvSetControl (CvCaptureCAM_V4L* capture, int property_id, double val
+ 
+   CLEAR (capture->control);
+   CLEAR (capture->queryctrl);
++
++  /* Hack by johnylin@google.com */
++  /* try to set framerate. CV_CAP_PROP_FPS needs to set before WIDTH and HEIGHT */
++  if (property_id == CV_CAP_PROP_FPS) {
++    factory_test_hack_fps = (int)value;
++    return 0;
++  }
++  /* End of Hack */
+   
+   /* get current values */
+   switch (property_id) {
+-- 
+2.1.0.rc2.206.gedb03e5
+
