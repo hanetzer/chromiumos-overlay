@@ -47,8 +47,10 @@ import sys
 
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
+# Temporarily disable function splitting because of chromium:434751.
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
-                    '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches'])
+                    '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches',
+                    '-fno-reorder-blocks-and-partition'])
 x86_disable_flags = set(['-mno-movbe'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
