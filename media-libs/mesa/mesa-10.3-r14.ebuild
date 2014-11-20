@@ -142,6 +142,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-gbm-dlopen-libglapi-so-gbm_create_device-works.patch
 	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
 	epatch "${FILESDIR}"/10.3-Revert-patches-which-caused-compilation-error-when-u.patch
+	epatch "${FILESDIR}"/10.3-egl-dri2-implement-platform_null.patch
 
 	base_src_prepare
 
