@@ -38,7 +38,7 @@ DEPEND="${RDEPEND}
 	chromeos-base/vboot_reference
 	sys-libs/glibc
 	test? ( dev-cpp/gmock )
-	test? ( dev-cpp/gtest )"
+	dev-cpp/gtest"
 
 src_compile() {
 	platform_src_compile
