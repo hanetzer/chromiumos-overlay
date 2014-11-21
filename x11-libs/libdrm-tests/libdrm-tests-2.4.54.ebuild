@@ -43,6 +43,7 @@ XORG_EAUTORECONF=yes
 S=${WORKDIR}/${UPSTREAM_PKG}
 PATCHES=(
 	"${FILESDIR}"/drm_rockchip_0001_add_support_for_rockchip.patch
+	"${FILESDIR}"/drm_rockchip_0002-modetest-add-rockchip.patch
 )
 
 src_prepare() {
