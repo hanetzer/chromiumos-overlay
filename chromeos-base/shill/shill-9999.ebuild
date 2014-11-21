@@ -60,7 +60,9 @@ src_install() {
 	for v in "${LIBCHROME_VERS[@]}"; do
 		./net/preinstall.sh "${OUT}" "${v}"
 		dolib.so "${OUT}/lib/libshill-net-${v}.so"
+		dolib.a "${OUT}/libshill-net-test-${v}.a"
 		doins "${OUT}/lib/libshill-net-${v}.pc"
+		doins "${OUT}/lib/libshill-net-test-${v}.pc"
 	done
 
 	# Install header files from libshill-net.
