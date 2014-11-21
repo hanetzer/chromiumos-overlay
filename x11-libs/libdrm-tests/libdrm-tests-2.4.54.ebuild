@@ -22,12 +22,14 @@ fi
 # the Xorg copyright holders and allows license generation to pick them up.
 LICENSE="|| ( MIT X )"
 KEYWORDS="*"
-VIDEO_CARDS="exynos freedreno intel nouveau omap radeon vmware"
+VIDEO_CARDS="exynos freedreno intel nouveau omap radeon vmware rockchip"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
 IUSE="${IUSE_VIDEO_CARDS} libkms"
+REQUIRED_USE="video_cards_exynos? ( libkms )
+	video_cards_rockchip? ( libkms )"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
@@ -36,7 +38,16 @@ RDEPEND="dev-libs/libpthread-stubs
 	~x11-libs/libdrm-${PV}"
 DEPEND="${RDEPEND}"
 
+XORG_EAUTORECONF=yes
+
 S=${WORKDIR}/${UPSTREAM_PKG}
+PATCHES=(
+	"${FILESDIR}"/drm_rockchip_0001_add_support_for_rockchip.patch
+)
+
+src_prepare() {
+	xorg-2_src_prepare
+}
 
 pkg_setup() {
 	XORG_CONFIGURE_OPTIONS=(
@@ -48,6 +59,7 @@ pkg_setup() {
 		$(use_enable video_cards_omap omap-experimental-api)
 		$(use_enable video_cards_radeon radeon)
 		$(use_enable video_cards_vmware vmwgfx)
+		$(use_enable video_cards_rockchip rockchip-experimental-api)
 		$(use_enable libkms)
 	)
 
