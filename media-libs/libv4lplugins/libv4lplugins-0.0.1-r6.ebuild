@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT="6c7bf613f9c009ae941c42d24ad159199675bf3f"
-CROS_WORKON_TREE="cd777e2183b3fc842fbfa9a9de82aee776c79692"
+CROS_WORKON_COMMIT="adc8ec850cac410d1d876110a3a5d376a9174cf5"
+CROS_WORKON_TREE="b99bf6b2b518cf58f8fa92e4ff776c8c813baa49"
 CROS_WORKON_PROJECT="chromiumos/third_party/libv4lplugins"
 inherit autotools cros-workon eutils
 

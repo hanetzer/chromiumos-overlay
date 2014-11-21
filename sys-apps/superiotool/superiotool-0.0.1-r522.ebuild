@@ -4,8 +4,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="9ec25b9cf2985786e55f0b85c3849ccbd42bddd4"
-CROS_WORKON_TREE="74cfe532cdd76bc3bc6fc5cfb580af3580cf03a3"
+CROS_WORKON_COMMIT="06ab6afc996cf92c45d4cd6850e31167c2946a95"
+CROS_WORKON_TREE="f819ed4e7f7861b19a3880a0f338445d53534953"
 inherit cros-workon toolchain-funcs
 
 DESCRIPTION="Superiotool allows you to detect which Super I/O you have on your mainboard, and it can provide detailed information about the register contents of the Super I/O."
