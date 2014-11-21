@@ -245,6 +245,16 @@ EOF
 		for x in clang clang++; do
 			dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
 		done
+	else
+		SYSROOT_WRAPPER_FILE=host_wrapper
+		exeinto "$(get_bin_dir)"
+		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+		for x in c++ cpp g++ gcc; do
+			if [[ -f "${x}" ]]; then
+				mv "${x}" "${x}.real" || die
+				dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${x}" || die
+		fi
+		done
 	fi
 
 	if use tests
