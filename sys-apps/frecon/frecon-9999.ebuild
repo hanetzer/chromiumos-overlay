@@ -25,6 +25,7 @@ RDEPEND="virtual/udev
 	sys-apps/libtsm"
 
 DEPEND="${RDEPEND}
+	media-sound/adhd
 	virtual/pkgconfig
 	x11-libs/libdrm"
 
