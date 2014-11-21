@@ -35,20 +35,18 @@ src_install() {
 	# Upstart job copies these files to the stateful partition so they can be
 	# modified later.
 	#
-	# These are just intended for use by developers doing one-off builds with
-	# custom apps. Boards that are intended to include a specific app should
-	# instead use a BSP to install the app to /usr/share/app_shell/app.
+	# These are just intended for use by developers doing a one-off build with
+	# a custom app. Boards that are intended to include specific apps should
+	# instead use a BSP to install the apps to /usr/share/app_shell/apps.
 	local data_dir="${WORKDIR}/app_shell"
 	mkdir -p "${data_dir}"
-	echo_to_file "${APP_ID}" "${data_dir}/app_id"
 	echo_to_file "${PREFERRED_NETWORK}" "${data_dir}/preferred_network"
 
 	if [[ -n "${APP_PATH}" ]]; then
-		[[ -n "${APP_ID}" ]] && die "Both APP_ID and APP_PATH are set"
 		local manifest_file="${APP_PATH}/manifest.json"
 		[[ -f "${manifest_file}" ]] || die "${manifest_file} doesn't exist"
-		mkdir -p "${data_dir}/app"
-		cp -r "${APP_PATH}"/* "${data_dir}/app"
+		mkdir -p "${data_dir}/apps/app"
+		cp -r "${APP_PATH}"/* "${data_dir}/apps/app"
 	fi
 
 	insinto /usr/share
