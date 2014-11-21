@@ -89,6 +89,7 @@ ALL_BOARDS=(
 	fox_wtm1
 	fox_wtm2
 	gizmo
+	glados
 	glimmer
 	gnawty
 	hsb
