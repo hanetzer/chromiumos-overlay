@@ -95,6 +95,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	app-arch/tar
 	app-benchmarks/lmbench
 	app-misc/ckermit
+	opengles? ( app-misc/eglinfo )
 	app-misc/tmux
 	app-misc/utouch-evemu
 	chromeos-base/autotest-client
@@ -133,10 +134,11 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/perceptualdiff
 	media-gfx/zbar
 	media-libs/opencv
-	opengles? ( app-misc/eglinfo )
 	opengles? ( media-libs/piglit[waffle] )
 	opengl? ( media-libs/piglit )
 	media-libs/tiff
+	opengles? ( media-libs/waffle )
+	opengl? ( media-libs/waffle )
 	media-sound/sox
 	net-analyzer/netperf
 	net-dialup/minicom
