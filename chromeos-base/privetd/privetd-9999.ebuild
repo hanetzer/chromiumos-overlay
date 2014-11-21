@@ -39,9 +39,10 @@ DEPEND="
 "
 
 pkg_preinst() {
-	# Create user and group for privetd.
+	# Create user and groups for privetd.
 	enewuser "privetd"
 	enewgroup "privetd"
+	enewgroup "buffet"
 }
 
 src_install() {
