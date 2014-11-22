@@ -134,7 +134,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_Vpd
 	+tests_power_RPMTest
 	+tests_security_kASLR
-	+tests_suites
+	+tests_sequences
 	+tests_video_PowerConsumption
 "
 
