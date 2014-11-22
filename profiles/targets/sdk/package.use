@@ -19,3 +19,6 @@ dev-lang/python gdbm
 # and thus requires glib to be compiled with static-libs.
 # See http://crosbug.com/35162 for details.
 dev-libs/glib static-libs
+
+# mksquashfs used in build_image requires lzo support.
+sys-fs/squashfs-tools lzo xattr

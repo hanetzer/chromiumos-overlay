@@ -87,7 +87,6 @@ sys-fs/lvm2		-lvm1 -readline -static device-mapper-only
 sys-fs/mtools		-X
 sys-fs/ntfs3g		-crypt -external-fuse ntfsprogs suid
 sys-fs/udev		-devfs-compat -rule_generator hwdb acl gudev
-sys-fs/squashfs		lzo
 sys-libs/gdbm		-berkdb
 sys-libs/ncurses	-cxx -unicode minimal
 sys-libs/pam		-berkdb
