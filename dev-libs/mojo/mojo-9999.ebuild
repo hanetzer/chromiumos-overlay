@@ -28,6 +28,11 @@ pkg_setup() {
 	gn-chromium_pkg_setup
 }
 
+pkg_preinst() {
+	enewuser mojo
+	enewgroup mojo
+}
+
 src_unpack() {
 	export EGCLIENT="${EGCLIENT:-/mnt/host/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0  # Prevents gclient from self-updating.
@@ -64,6 +69,10 @@ src_install() {
 	# Mojo runtime.
 	dosbin "$(gn-chromium_get_build_dir)/mojo_launcher"
 	dosbin "$(gn-chromium_get_build_dir)/mojo_shell"
+
+        # Init script.
+        insinto /etc/init
+        doins "${FILESDIR}"/*.conf
 
 	# Mojo SDK library and headers.
 	local d header_dirs=(
