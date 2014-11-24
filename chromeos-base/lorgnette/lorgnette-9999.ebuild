@@ -19,6 +19,7 @@ IUSE="test"
 KEYWORDS="~*"
 
 RDEPEND="
+	!<chromeos-base/platform2-0.0.16
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	media-gfx/sane-backends

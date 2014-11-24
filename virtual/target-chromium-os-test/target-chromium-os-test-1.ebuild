@@ -105,6 +105,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
+	chromeos-base/platform2
 	chromeos-base/protofiles
 	chromeos-base/recover-duts
 	!app_shell? ( chromeos-base/telemetry )

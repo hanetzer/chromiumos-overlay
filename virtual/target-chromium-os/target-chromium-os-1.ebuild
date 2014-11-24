@@ -12,9 +12,8 @@ KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
 IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
 	+crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf feedback
-	+fonts gobi mtd +network_time nfc pam peerd +power_management +profile
-	+readahead scanner +shill +syslog +tpm +vpn watchdog wifi_bootstrapping
-	wimax X"
+	+fonts gobi mtd +network_time nfc pam peerd +power_management +readahead
+	scanner +shill +syslog +tpm +vpn watchdog wifi_bootstrapping wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
 
@@ -104,13 +103,13 @@ CROS_COMMON_RDEPEND+="
 		gobi? ( chromeos-base/cromo )
 		chromeos-base/mist
 	)
+	chromeos-base/platform2
 	buffet? ( chromeos-base/buffet )
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
 	scanner? ( chromeos-base/lorgnette )
 	peerd? ( chromeos-base/peerd )
 	power_management? ( chromeos-base/power_manager )
-	profile? ( chromeos-base/quipper )
 	shill? ( chromeos-base/shill )
 	chromeos-base/tty
 	chromeos-base/update_engine
@@ -155,6 +154,9 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 # We depend on dash for the /bin/sh shell for runtime speeds, but we also
 # depend on bash to make the dev mode experience better.  We do not enable
 # things like line editing in dash, so its interactive mode is very bare.
+#
+# dev-util/quipper:
+# This is needed to support profiling live ChromiumOS systems.
 #
 # sys-apps/which:
 # In gentoo, the 'which' command is part of 'system' and certain packages
