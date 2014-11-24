@@ -32,7 +32,6 @@ IUSE="
 	+accessibility
 	app_shell
 	asan
-	athena
 	+build_tests
 	+chrome_debug
 	chrome_debug_tests
@@ -244,7 +243,6 @@ set_build_defines() {
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
-		"use_athena=$(use10 athena)"
 		"use_cups=0"
 		"use_gnome_keyring=0"
 		"use_vtable_verify=$(use10 vtable_verify)"
