@@ -21,12 +21,13 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="
-	chromeos-base/platform2
 	dev-libs/dbus-glib
 	dev-libs/glib
 	sys-apps/rootdev
 "
 DEPEND="${RDEPEND}
+	chromeos-base/libchromeos
+	chromeos-base/system_api
 	test? (
 		dev-cpp/gmock
 		dev-cpp/gtest

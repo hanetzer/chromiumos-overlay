@@ -75,6 +75,7 @@ RDEPEND="${RDEPEND}
 	app-arch/tar
 	profile? (
 		app-benchmarks/punybench
+		chromeos-base/quipper
 		dev-util/libc-bench
 		net-analyzer/netperf
 		dev-util/perf
@@ -94,7 +95,6 @@ RDEPEND="${RDEPEND}
 	chromeos-base/avtest_label_detect
 	chromeos-base/chromeos-dev-root
 	chromeos-base/gmerge
-	chromeos-base/platform2
 	chromeos-base/protofiles
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/wireless_automation

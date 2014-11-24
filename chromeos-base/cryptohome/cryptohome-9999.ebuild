@@ -27,7 +27,6 @@ RDEPEND="
 	chromeos-base/libchromeos
 	chromeos-base/libscrypt
 	chromeos-base/metrics
-	chromeos-base/platform2
 	dev-libs/dbus-glib
 	dev-libs/glib
 	dev-libs/openssl
@@ -37,9 +36,9 @@ RDEPEND="
 	sys-fs/lvm2
 "
 DEPEND="${RDEPEND}
-	test? ( dev-cpp/gtest )
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
+	dev-cpp/gtest
 "
 
 src_install() {
