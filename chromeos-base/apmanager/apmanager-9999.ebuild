@@ -21,12 +21,14 @@ IUSE="test"
 KEYWORDS="~*"
 
 RDEPEND="
+	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	net-wireless/hostapd
 "
 
 DEPEND="
 	${RDEPEND}
+	chromeos-base/shill
 	test? (
 		dev-cpp/gmock
 		dev-cpp/gtest
