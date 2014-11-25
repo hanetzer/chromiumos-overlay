@@ -43,6 +43,8 @@ src_install() {
 	insinto /usr/include/crypto
 	doins \
 		crypto_export.h \
+		p224.h \
+		p224_spake.h \
 		nss_util.h \
 		nss_util_internal.h \
 		rsa_private_key.h \

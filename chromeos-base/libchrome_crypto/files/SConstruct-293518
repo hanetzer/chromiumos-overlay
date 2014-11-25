@@ -16,6 +16,7 @@ env = Environment()
 # out how to get scons to handle header installation as well.
 sources = env.Split("""
                     nss_util.cc
+                    random.cc
                     rsa_private_key.cc
                     rsa_private_key_nss.cc
                     scoped_test_nss_db.cc
