@@ -58,6 +58,7 @@ IUSE="
 	ozone
 	reorder
 	+runhooks
+	v4lplugin
 	verbose
 	vtable_verify
 	xkbcommon
@@ -125,9 +126,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2229.2_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2229.2_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2229.2_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2230.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2230.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2230.0_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -158,6 +159,7 @@ RDEPEND="${RDEPEND}
 	media-libs/fontconfig
 	media-libs/freetype
 	media-libs/libpng
+	v4lplugin? ( media-libs/libv4lplugins )
 	>=media-sound/adhd-0.0.1-r310
 	net-misc/wget
 	opengl? ( virtual/opengl )
@@ -245,6 +247,7 @@ set_build_defines() {
 		"pkg-config=$(tc-getPKG_CONFIG)"
 		"use_cups=0"
 		"use_gnome_keyring=0"
+		"use_v4lplugin=$(use10 v4lplugin)"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
