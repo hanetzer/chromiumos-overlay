@@ -25,7 +25,6 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="
-	!<chromeos-base/platform2-0.0.17
 	>=dev-libs/glib-2.30
 	dev-util/perf
 "

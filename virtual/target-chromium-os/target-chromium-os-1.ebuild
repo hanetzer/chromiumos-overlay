@@ -110,6 +110,7 @@ CROS_COMMON_RDEPEND+="
 	scanner? ( chromeos-base/lorgnette )
 	peerd? ( chromeos-base/peerd )
 	power_management? ( chromeos-base/power_manager )
+	!chromeos-base/platform2
 	profile? ( chromeos-base/quipper )
 	shill? ( chromeos-base/shill )
 	chromeos-base/tty
