@@ -1,0 +1,29 @@
+configure: fix ggc version detection
+
+Configure script breaks on gcc version number "4.8.x-google"
+
+--- configure	2014-10-23 19:45:12.000000000 +0200
++++ configure	2014-11-10 13:36:40.238345776 +0100
+@@ -425,6 +425,13 @@
+   return matchup.get(arch, 'ia32')
+ 
+ 
++def int_lenient(n):
++  try:
++    return int(n)
++  except ValueError:
++    return 0
++
++
+ def compiler_version():
+   try:
+     proc = subprocess.Popen(shlex.split(CC) + ['--version'], stdout=subprocess.PIPE)
+@@ -434,7 +441,7 @@
+   is_clang = 'clang' in proc.communicate()[0].split('\n')[0]
+ 
+   proc = subprocess.Popen(shlex.split(CC) + ['-dumpversion'], stdout=subprocess.PIPE)
+-  version = tuple(map(int, proc.communicate()[0].split('.')))
++  version = tuple(map(int_lenient, proc.communicate()[0].split('.')))
+ 
+   return (version, is_clang)
+ 
