@@ -5,7 +5,6 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
-CROS_WORKON_BLACKLIST="1"
 
 inherit autotools base cros-workon user
 

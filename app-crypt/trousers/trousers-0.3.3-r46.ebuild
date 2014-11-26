@@ -7,7 +7,6 @@ EAPI="4"
 CROS_WORKON_COMMIT="4a0ed36489bdfadfecebc43994e4d831f78d842b"
 CROS_WORKON_TREE="9603e6d75af065978f1242de3477e4df6a2fcc61"
 CROS_WORKON_PROJECT="chromiumos/third_party/trousers"
-CROS_WORKON_BLACKLIST="1"
 
 inherit autotools base cros-workon user
 
