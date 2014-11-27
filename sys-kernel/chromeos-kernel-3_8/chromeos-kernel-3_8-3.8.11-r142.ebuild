@@ -2,14 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="829557bb8b68e8ec1499af6949a21c9e39c67214"
-CROS_WORKON_TREE="4e69f68a155bcc6c976e20eee6b6b8b8f460ed25"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel-next"
-CROS_WORKON_LOCALNAME="kernel/3.10"
+CROS_WORKON_COMMIT="75a4dd7fcb391bf40871760193d7c4b793d0b10e"
+CROS_WORKON_TREE="2427b3d56ed5193fc0040d5e9a5dc05b1e6cd5bb"
+CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
+CROS_WORKON_LOCALNAME="kernel/3.8"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
-DESCRIPTION="Chrome OS Linux Kernel 3.10"
+DESCRIPTION="Chrome OS Linux Kernel 3.8"
 KEYWORDS="*"
-
