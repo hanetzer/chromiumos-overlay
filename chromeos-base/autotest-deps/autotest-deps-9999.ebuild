@@ -39,6 +39,11 @@ RDEPEND="${RDEPEND}
 	dev-libs/libnl:0
 "
 
+# FAFT deps
+RDEPEND="${RDEPEND}
+	sys-apps/hdparm
+"
+
 RDEPEND="${RDEPEND}
 	sys-devel/binutils
 "
