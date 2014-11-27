@@ -17,6 +17,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
+IUSE="examples"
 
 RDEPEND="
 	chromeos-base/libchromeos
@@ -32,6 +33,14 @@ pkg_preinst() {
 	# Create user and group for buffet.
 	enewuser "buffet"
 	enewgroup "buffet"
+}
+
+src_install_test_daemon() {
+	dobin "${OUT}"/buffet_test_daemon
+
+	# Base GCD command and state definitions.
+	insinto /etc/buffet/commands
+	doins etc/buffet/commands/test.json
 }
 
 src_install() {
@@ -61,6 +70,10 @@ src_install() {
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/buffet.conf
+
+	if use examples ; then
+		src_install_test_daemon
+	fi
 }
 
 platform_pkg_test() {
