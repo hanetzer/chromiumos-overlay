@@ -22,7 +22,7 @@ IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs vboot
 IUSE="${IUSE} depthcharge unified_depthcharge spring"
 IUSE="${IUSE} cb_legacy_seabios cb_legacy_uboot pd_sync"
 
-REQUIRED_USE="^^ ( ${BOARDS} arm )"
+REQUIRED_USE="^^ ( ${BOARDS} arm mips )"
 
 COREBOOT_DEPEND="
 	sys-apps/coreboot-utils
