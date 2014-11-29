@@ -18,9 +18,9 @@ KEYWORDS="~*"
 BOARDS="alex auron bayleybay beltino bolt butterfly emeraldlake2 falco fox"
 BOARDS="${BOARDS} gizmo link lumpy lumpy64 mario panther parrot peppy rambi"
 BOARDS="${BOARDS} samus slippy squawks stout stumpy"
-IUSE="${BOARDS} build-all-fw exynos factory-mode memtest tegra cros_ec efs vboot2"
-IUSE="${IUSE} depthcharge unified_depthcharge spring"
-IUSE="${IUSE} cb_legacy_seabios cb_legacy_uboot pd_sync"
+IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
+IUSE="${IUSE} cros_ec depthcharge efs exynos factory-mode"
+IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm mips )"
 
@@ -40,7 +40,7 @@ DEPEND="
 	cros_ec? ( chromeos-base/chromeos-ec )
 	pd_sync? ( chromeos-base/chromeos-ec )
 	chromeos-base/vboot_reference
-	sys-boot/chromeos-bmpblk
+	bmpblk? ( sys-boot/chromeos-bmpblk )
 	memtest? ( sys-boot/chromeos-memtest )
 	depthcharge? ( ${COREBOOT_DEPEND} sys-boot/depthcharge )
 	cb_legacy_uboot? ( virtual/u-boot )
@@ -239,7 +239,6 @@ src_compile_depthcharge() {
 	local ec_file="${froot}/ec.RW.bin"
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
-	local bmpblk_file="${froot}/bmpblk.bin"
 	local coreboot_file="${froot}/coreboot.rom"
 	local romstage_file="${froot}/romstage.stage"
 	local ramstage_file="${froot}/ramstage.stage"
@@ -259,7 +258,6 @@ src_compile_depthcharge() {
 	local common=(
 		--board "${BOARD_USE}"
 		--key "${devkeys_file}"
-		--bmpblk "${bmpblk_file}"
 		--dt "${fdt_file}"
 	)
 
@@ -298,6 +296,12 @@ src_compile_depthcharge() {
 
 	if use pd_sync; then
 		common+=( --pd "${froot}/${PD_FIRMWARE}/ec.RW.bin")
+	fi
+
+	if use bmpblk; then
+		common+=( --bmpblk "${froot}/bmpblk.bin" )
+	else
+		common+=( --skip-bmpblk )
 	fi
 
 	einfo "Building production image."
