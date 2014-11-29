@@ -9,9 +9,9 @@ sys-libs/glibc hardened
 # which will hang if output is redirected. This was stalling our buildbots.
 app-arch/dpkg nls
 
-# We don't need integration with cvs, perl, or subversion in git, so we can
+# We don't need integration with cvs, or subversion in git, so we can
 # disable these for faster builds.
-dev-vcs/git cvs perl subversion
+dev-vcs/git cvs subversion
 
 # We use asynchronous dns resolution instead of threaded dns resolution.
 net-misc/curl threads
