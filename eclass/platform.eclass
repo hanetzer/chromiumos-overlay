@@ -116,8 +116,8 @@ platform_test() {
 		${run_as_root_flag}
 		--
 		"${bin}"
-		--vmodule="${P2_VMODULE}"
 	)
+	[[ -n "${P2_VMODULE}" ]] && cmd+=( --vmodule="${P2_VMODULE}" )
 	echo "${cmd[@]}"
 	"${cmd[@]}" || die
 }
