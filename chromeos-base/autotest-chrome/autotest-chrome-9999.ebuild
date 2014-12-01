@@ -135,7 +135,10 @@ IUSE_TESTS_CELLULAR="
 "
 
 IUSE_TESTS_SHILL="
-	shill? ( +tests_network_ChromeWifiEndToEnd )
+	shill? (
+		+tests_network_ChromeWifiEndToEnd
+		+tests_network_RoamWifiEndToEnd
+	)
 "
 
 # This is here instead of in autotest-tests-tpm because it would be far more

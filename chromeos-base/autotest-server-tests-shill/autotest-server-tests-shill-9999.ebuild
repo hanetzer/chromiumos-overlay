@@ -34,6 +34,7 @@ SERVER_IUSE_TESTS="
 	!chromeless_tty (
 		!app_shell (
 			+tests_network_WiFi_ChromeEndToEnd
+			+tests_network_WiFi_RoamEndToEnd
 		)
 	)
 	+tests_network_WiFi_ConnectionIdentifier
