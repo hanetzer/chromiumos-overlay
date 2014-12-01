@@ -96,20 +96,12 @@ platform_test() {
 		&& gtest_filter=${native_gtest_filter} \
 		|| gtest_filter=${qemu_gtest_filter:-${native_gtest_filter}}
 
-	case " ${P2_TEST_FILTER:-${pkg}::} " in
-	*" ${pkg}::"*) ;;
-	*)	einfo "src_test: ${pkg}: ${bin##*/}: skipping due to P2_TEST_FILTER"
-		return 0
-		;;
-	esac
-
 	local cmd=(
 		"${platform2_test_py}"
 		--action="${action}"
 		$(platform_get_target_args)
 		--gtest_filter="${gtest_filter}"
 		--user_gtest_filter="${P2_TEST_FILTER}"
-		--package="${pkg}"
 		--use_flags="${USE}"
 		--cache_dir="$(cros-workon_get_build_dir)"
 		--sysroot="${SYSROOT}"
@@ -139,11 +131,9 @@ platform_src_configure() {
 }
 
 platform_src_test() {
-	local pkg="${PN}"
-
 	platform_test "pre_test"
 	[[ "${PLATFORM_NATIVE_TEST}" == "yes" ]] && ! platform_is_native &&
-		ewarn "Skipping unittests for non-x86: ${pkg}" && return 0
+		ewarn "Skipping unittests for non-x86: ${PN}" && return 0
 
 	platform_pkg_test
 	platform_test "post_test"
