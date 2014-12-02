@@ -44,25 +44,14 @@ RDEPEND="
 DEPEND_X86="
 	sys-power/iasl
 	sys-boot/chromeos-mrc
-	sys-apps/coreboot-utils
 	"
-
-DEPEND_ARM="
-	sys-apps/coreboot-utils
-	"
-
-DEPEND_ARM64="
-	sys-apps/coreboot-utils
-	"
-
 DEPEND="
 	chromeos-base/vboot_reference
 	${DEPEND_BLOCKERS}
 	virtual/coreboot-private-files
+	sys-apps/coreboot-utils
 	x86? ($DEPEND_X86)
 	amd64? ($DEPEND_X86)
-	arm? ($DEPEND_ARM)
-	arm64? ($DEPEND_ARM64)
 	"
 
 src_prepare() {
