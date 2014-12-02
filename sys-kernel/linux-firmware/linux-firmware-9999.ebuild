@@ -46,6 +46,7 @@ IUSE_BRCMWIFI=(
 )
 IUSE_LINUX_FIRMWARE=(
 	ath9k_htc
+	bcm4354-bt
 	cros-pd
 	fw_sst
 	fw_sst2
@@ -62,6 +63,7 @@ LICENSE="
 	linux_firmware_ath3k-ar3011? ( LICENCE.atheros_firmware )
 	linux_firmware_ath3k-ar3012? ( LICENCE.atheros_firmware )
 	linux_firmware_ath9k_htc? ( LICENCE.atheros_firmware )
+	linux_firmware_bcm4354-bt? ( LICENCE.broadcom_bcm43xx )
 	linux_firmware_cros-pd? ( BSD-Google )
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
@@ -114,6 +116,7 @@ src_install() {
 	local x
 	insinto "${FIRMWARE_INSTALL_ROOT}"
 	use_fw ath9k_htc && doins htc_*.fw
+	use_fw bcm4354-bt && doins_subdir brcm/bcm4354.hcd
 	use_fw cros-pd && doins_subdir cros-pd/*
 	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
