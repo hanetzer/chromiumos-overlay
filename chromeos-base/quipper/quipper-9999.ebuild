@@ -16,7 +16,7 @@ inherit cros-workon platform
 
 DESCRIPTION="quipper: chromiumos wide profiling"
 HOMEPAGE="http://www.chromium.org/chromium-os/profiling-in-chromeos"
-TEST_DATA_SOURCE="platform2-20141027-1.tar.gz"
+TEST_DATA_SOURCE="quipper-20141202.tar.gz"
 SRC_URI="gs://chromeos-localmirror/distfiles/${TEST_DATA_SOURCE}"
 
 LICENSE="BSD-Google"
@@ -41,7 +41,7 @@ DEPEND="${RDEPEND}
 src_unpack() {
 	platform_src_unpack
 
-	pushd "${S}/.." >/dev/null
+	pushd "${S}" >/dev/null
 	unpack ${TEST_DATA_SOURCE}
 	popd >/dev/null
 }
