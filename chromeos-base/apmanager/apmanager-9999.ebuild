@@ -23,6 +23,7 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
+	net-dns/dnsmasq
 	net-wireless/hostapd
 "
 
@@ -36,7 +37,7 @@ DEPEND="
 "
 
 src_install() {
-	dobin "${OUT}"/apmanagerd
+	dobin "${OUT}"/apmanager
 
 	# DBus configuration.
 	insinto /etc/dbus-1/system.d
