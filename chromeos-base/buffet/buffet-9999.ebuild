@@ -45,16 +45,6 @@ src_install_test_daemon() {
 
 src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
-	local v
-	for v in "${LIBCHROME_VERS[@]}"; do
-		./libbuffet/preinstall.sh "${OUT}" "${v}"
-		dolib.so "${OUT}/lib/libbuffet-${v}.so"
-		doins "${OUT}/lib/libbuffet-${v}.pc"
-	done
-
-	# Install header files from libbuffet
-	insinto /usr/include/libbuffet
-	doins libbuffet/*.h
 
 	dobin "${OUT}"/buffet
 	dobin "${OUT}"/buffet_client
