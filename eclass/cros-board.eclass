@@ -110,6 +110,7 @@ ALL_BOARDS=(
 	mappy_flashstation
 	marble
 	mccloud
+	mccloud_freon
 	minnowboard
 	mipseb-o32-generic
 	mipseb-n32-generic
@@ -118,6 +119,7 @@ ALL_BOARDS=(
 	mipsel-n32-generic
 	mipsel-n64-generic
 	monroe
+	monroe_freon
 	moose
 	nyan
 	nyan_big
@@ -178,6 +180,7 @@ ALL_BOARDS=(
 	#tegra2_wario
 	tegra3-generic
 	tricky
+	tricky_freon
 	urara
 	veyron
 	veyron_jerry
