@@ -18,7 +18,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog test"
+IUSE="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test"
 
 RDEPEND="
 	chromeos-base/metrics
@@ -73,6 +73,7 @@ src_install() {
 	use legacy_power_button && doins optional_prefs/legacy_power_button
 	use lockvt && doins optional_prefs/lock_vt_before_suspend
 	use mosys_eventlog && doins optional_prefs/mosys_eventlog
+	use ozone || doins optional_prefs/check_active_vt
 
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.PowerManager.conf
