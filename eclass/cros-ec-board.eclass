@@ -38,7 +38,7 @@ EC_BOARD_NAMES=(
 	pinky
 	pit
 	ryu
-	ryu_pl
+	ryu_p1
 	ryu_sh
 	samus
 	samus_pd
