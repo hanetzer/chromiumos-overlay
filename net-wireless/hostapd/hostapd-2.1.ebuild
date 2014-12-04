@@ -35,6 +35,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-Remove-absolute-reference-to-libnl3-headers.patch
 	epatch "${FILESDIR}"/${P}-Provide-compile-option-for-weak-ran.patch
 	epatch "${FILESDIR}"/${P}-Add-spectrum-management-option.patch
+	epatch "${FILESDIR}"/${P}-stdout-line-buffered.patch
 	popd >/dev/null
 }
 
