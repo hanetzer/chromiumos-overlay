@@ -32,6 +32,7 @@ src_configure() {
 	# functions that may not be used.
 	append-flags -Xclang-only=-Wno-unused-function
 	econf \
+		--enable-qmi-username='modem' \
 		$(use_enable static{-libs,}) \
 		$(use_enable {,gtk-}doc)
 }
