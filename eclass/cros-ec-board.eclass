@@ -50,6 +50,7 @@ EC_BOARD_NAMES=(
 	ryu
 	ryu_p1
 	ryu_sh
+	ryu_sh_loader
 	samus
 	samus_pd
 	snow

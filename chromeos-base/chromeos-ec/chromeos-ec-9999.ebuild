@@ -61,7 +61,7 @@ board_install() {
 	insinto $2
 	pushd build/$1 >/dev/null || die
 	doins ec{,.RW}.bin
-	newins ec.RO.flat ec.RO.bin
+	grep -q "^CONFIG_FW_INCLUDE_RO=y" .config && newins ec.RO.flat ec.RO.bin
 	# EC test binaries
 	nonfatal doins test-*.bin || ewarn "No test binaries found"
 	# Intermediate files for debugging
