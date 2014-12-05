@@ -221,6 +221,7 @@ EOF
 
 	toolchain_src_install
 
+	cd "${D}$(get_bin_dir)"
 	if is_crosscompile ; then
 		if use hardened
 		then
@@ -242,6 +243,21 @@ EOF
 		done
 		for x in clang clang++; do
 			dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
+		done
+	else
+		SYSROOT_WRAPPER_FILE=host_wrapper
+		exeinto "$(get_bin_dir)"
+		doexe "${FILESDIR}/${SYSROOT_WRAPPER_FILE}" || die
+		for x in c++ cpp g++ gcc; do
+			if [[ -f "${CTARGET}-${x}" ]]; then
+				mv "${CTARGET}-${x}" "${CTARGET}-${x}.real"
+				dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
+			fi
+			if [[ -f "${x}" ]]; then
+				ln "${CTARGET}-${x}.real" "${x}.real" || die
+				rm "${x}" || die
+				dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${x}" || die
+			fi
 		done
 	fi
 
