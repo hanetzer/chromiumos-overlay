@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
-inherit cros-workon
+inherit cros-workon cros-ec-board
 
 DESCRIPTION="Chrome OS EC Utility"
 
@@ -21,9 +21,13 @@ RDEPEND="dev-embedded/libftdi"
 DEPEND="${RDEPEND}"
 
 set_board() {
-	# Tools are board independant: bds compiled tools should work on
-	# any platform.
-	export BOARD="bds"
+	# bds should be fine for everyone, but for link board, we need to fetch
+	# .conf file.
+	# Given we only compile the host tootls, having an EC board specified does
+	# not change the generated binaries: the utils binaries are identical
+	# regardless of the board chosen.
+	get_ec_boards
+	export BOARD="${EC_BOARDS[0]}"
 }
 
 src_configure() {
@@ -41,13 +45,12 @@ src_compile() {
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
 	export HOSTCC="${CC}"
 	set_board
-	emake utils
+	emake utils-host
 }
 
 src_install() {
 	set_board
 	dosbin "build/$BOARD/util/ectool"
-	dosbin "build/$BOARD/util/stm32mon"
 	if [[ -d "board/${BOARD}/userspace/etc/init" ]] ; then
 		insinto /etc/init
 		doins board/${BOARD}/userspace/etc/init/*.conf

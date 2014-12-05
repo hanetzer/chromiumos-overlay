@@ -19,7 +19,8 @@ RDEPEND="sys-apps/flashrom"
 DEPEND=""
 
 set_board() {
-	# Pick a board that compile basic ec_tool.
+	# No need to be board specific, no tools below build code that is
+	# EC specific. bds works for forst side compilation.
 	export BOARD="bds"
 }
 
@@ -38,14 +39,14 @@ src_compile() {
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
 	export HOSTCC="${CC}"
 	set_board
-	emake utils
+	emake utils-host
 }
 
 src_install() {
 	set_board
-	dobin "util/flash_ec"
 	dobin "build/${BOARD}/util/stm32mon"
 
+	dobin "util/flash_ec"
 	insinto /usr/bin/lib
 	doins chip/lm4/openocd/*
 }
