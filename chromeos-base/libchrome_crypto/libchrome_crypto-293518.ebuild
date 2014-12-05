@@ -4,7 +4,7 @@
 # See logic for ${PV} behavior in the libchrome ebuild.
 
 EAPI="4"
-CROS_WORKON_COMMIT="44c406e8a6c9113de0e14d8c0b66a732ce925f7b"
+CROS_WORKON_COMMIT="6c86e2c6de535b061d695aacb254fa50e8abbee6"
 CROS_WORKON_PROJECT="chromium/src/crypto"
 CROS_WORKON_BLACKLIST="1"
 

@@ -16,6 +16,8 @@ env = Environment()
 # out how to get scons to handle header installation as well.
 sources = env.Split("""
                     nss_util.cc
+                    p224.cc
+                    p224_spake.cc
                     random.cc
                     rsa_private_key.cc
                     rsa_private_key_nss.cc
@@ -33,6 +35,7 @@ sources = env.Split("""
 env.Append(
     CCFLAGS=['-g']
 )
+
 for key in Split('CC CXX AR RANLIB LD NM CFLAGS CXXFLAGS CCFLAGS'):
   value = os.environ.get(key)
   if value:
@@ -51,6 +54,10 @@ env['CCFLAGS'] += ['-fPIC',
                    '-DUSE_NSS',
                    '-DUSE_SYSTEM_LIBEVENT',
                    '-I..']
+
+env.Append(
+    CXXFLAGS=['-std=c++11']
+)
 
 # Fix issue with scons not passing some vars through the environment.
 for key in Split('PKG_CONFIG_LIBDIR PKG_CONFIG_PATH SYSROOT'):
