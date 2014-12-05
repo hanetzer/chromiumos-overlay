@@ -59,7 +59,8 @@ PDEPEND="video_cards_nvidia? ( x11-libs/libva-vdpau-driver[${MULTILIB_USEDEP}] )
 REQUIRED_USE="opengl? ( X )"
 
 PATCHES=( "${FILESDIR}/${PN}-1.2.0-autotools-out-of-source-build.patch"
-          "${FILESDIR}/va-release-VADisplayContext-at-the-end-of-vaTerminat.patch" )
+          "${FILESDIR}/va-release-VADisplayContext-at-the-end-of-vaTerminat.patch"
+          "${FILESDIR}/x11-check-x-pixmap-is-still-alive-before-DRI2Destroy.patch" )
 DOCS=( NEWS )
 
 MULTILIB_WRAPPED_HEADERS=(
