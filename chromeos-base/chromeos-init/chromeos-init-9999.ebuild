@@ -24,6 +24,7 @@ DEPEND="chromeos-base/libchromeos"
 RDEPEND="${DEPEND}
 	chromeos-base/bootstat
 	!chromeos-base/chromeos-disableecho
+	chromeos-base/tty
 	chromeos-base/vboot_reference
 	sys-apps/rootdev
 	sys-apps/upstart

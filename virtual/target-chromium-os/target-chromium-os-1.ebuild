@@ -113,7 +113,6 @@ CROS_COMMON_RDEPEND+="
 	!chromeos-base/platform2
 	profile? ( chromeos-base/quipper )
 	shill? ( chromeos-base/shill )
-	chromeos-base/tty
 	chromeos-base/update_engine
 	vpn? ( chromeos-base/vpn-manager )
 	wifi_bootstrapping? ( chromeos-base/privetd )
