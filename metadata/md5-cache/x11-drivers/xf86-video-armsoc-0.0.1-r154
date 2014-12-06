@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install postinst postrm prepare setup test unpack
+DEPEND=>=x11-base/xorg-server-1.9 video_cards_exynos? ( x11-libs/libdrm[video_cards_exynos] ) video_cards_rockchip? ( x11-libs/libdrm[video_cards_rockchip] ) x86-interix? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 ) ppc-aix? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 ) x86-winnt? ( >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 ) >=sys-devel/libtool-2.2.6a sys-devel/m4 >=x11-misc/util-macros-1.14.0 >=media-fonts/font-util-1.2.0 >=dev-util/pkgconfig-0.23 x11-proto/xf86driproto opengl? ( x11-proto/glproto ) x11-proto/dri2proto x11-proto/fontsproto x11-proto/randrproto x11-proto/renderproto x11-proto/videoproto x11-proto/xextproto x11-proto/xineramaproto x11-proto/xproto x11-base/xorg-server[-minimal] x11-libs/libdrm x11-base/xorg-server[xorg] x11-libs/libpciaccess dev-vcs/git
+DESCRIPTION=X.Org driver for ARM devices
+EAPI=4
+HOMEPAGE=http://xorg.freedesktop.org/
+IUSE=video_cards_exynos video_cards_rockchip opengl cros_host cros_workon_tree_b7d70cfbd30939249a8eafc013fbc1fa3dccc49e profiling
+KEYWORDS=-* arm
+LICENSE=MIT
+RDEPEND=>=x11-base/xorg-server-1.9 video_cards_exynos? ( x11-libs/libdrm[video_cards_exynos] ) video_cards_rockchip? ( x11-libs/libdrm[video_cards_rockchip] ) x11-base/xorg-server[-minimal] x11-libs/libdrm x11-base/xorg-server[xorg] x11-libs/libpciaccess
+SLOT=0
+SRC_URI=http://xorg.freedesktop.org/releases/individual/driver/xf86-video-armsoc-0.0.1.tar.bz2
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	autotools-utils	559ed17194292ec42d68145dcca2fa32	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	95f983755f60a281d223dd9bf6e94dbd	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	xorg-2	c3bff7c41915c72ecd62b482c21849bf
+_md5_=fea639849bc2cfd99ce6d4d4fbdc6d88
