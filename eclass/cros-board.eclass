@@ -104,6 +104,7 @@ ALL_BOARDS=(
 	leon
 	link
 	link_freon
+	lulu
 	lumpy
 	mappy
 	mappy-envoy
