@@ -32,8 +32,8 @@ index 7d436b5..a0c3ba9 100644
  	int drop_master = 0;
  	int test_vsync = 0;
  	int test_cursor = 0;
--	const char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "exynos", "tilcdc", "msm" };
-+	const char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "exynos", "tilcdc", "msm", "rockchip" };
+-	const char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "exynos", "tilcdc", "msm", "sti" };
++	const char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "exynos", "tilcdc", "msm", "sti", "rockchip" };
  	char *device = NULL;
  	char *module = NULL;
  	unsigned int i;
