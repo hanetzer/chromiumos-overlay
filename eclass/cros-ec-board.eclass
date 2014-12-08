@@ -43,6 +43,7 @@ EC_BOARD_NAMES=(
 	samus
 	samus_pd
 	snow
+	speedy
 	spring
 	twinkie
 	zinger
