@@ -1,27 +1,30 @@
-# Copyright 2014 The Chromium OS Authors. All rights reserved.
+# Copyright 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
-CROS_WORKON_COMMIT="dd573030d2363fa6f6a98441ac0ed3dd73f3e0b9"
-CROS_WORKON_TREE="49a17c51df9764d2610abad4b1f98bc937e8703c"
+EAPI=4
+CROS_WORKON_COMMIT="3c780a915c6294fe5b3e9bde227585c562a65c85"
+CROS_WORKON_TREE="fff69e8203718f0fc4c858666faef2f57e1db387"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
 inherit cros-workon
 
-DESCRIPTION="Host development utilities for Chromium OS EC"
+DESCRIPTION="Chrome OS EC Utility"
+
 HOMEPAGE="http://www.chromium.org/"
+SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-ISUE=""
+IUSE=""
 
-RDEPEND="sys-apps/flashrom"
-DEPEND=""
+RDEPEND="dev-embedded/libftdi"
+DEPEND="${RDEPEND}"
 
 set_board() {
-	# Pick a board that compile basic ec_tool.
+	# Tools are board independant: bds compiled tools should work on
+	# any platform.
 	export BOARD="bds"
 }
 
@@ -45,9 +48,14 @@ src_compile() {
 
 src_install() {
 	set_board
-	dobin "util/flash_ec"
-	dobin "build/${BOARD}/util/stm32mon"
-
-	insinto /usr/bin/lib
-	doins chip/lm4/openocd/*
+	dosbin "build/$BOARD/util/ectool"
+	dosbin "build/$BOARD/util/stm32mon"
+	if [[ -d "board/${BOARD}/userspace/etc/init" ]] ; then
+		insinto /etc/init
+		doins board/${BOARD}/userspace/etc/init/*.conf
+	fi
+	if [[ -d "board/${BOARD}/userspace/usr/share/ec" ]] ; then
+		insinto /usr/share/ec
+		doins board/${BOARD}/userspace/usr/share/ec/*
+	fi
 }

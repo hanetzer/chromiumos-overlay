@@ -1,11 +1,12 @@
-DEFINED_PHASES=compile info install setup unpack
-DEPEND=chromeos-base/chromeos-factory dev-vcs/git
-DESCRIPTION=ChromeOS Regions
+DEFINED_PHASES=compile configure info install setup unpack
+DEPEND=dev-embedded/libftdi dev-vcs/git
+DESCRIPTION=Chrome OS EC Utility
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_1019d4b39679b964e76eb10d664c502cc200d4bd profiling
+IUSE=cros_host cros_workon_tree_fff69e8203718f0fc4c858666faef2f57e1db387 profiling
 KEYWORDS=*
 LICENSE=BSD-Google
+RDEPEND=dev-embedded/libftdi
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	95f983755f60a281d223dd9bf6e94dbd	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=4ada3469a53d61d6ac0d3d7ce47f7bad
+_md5_=e40a2213d5a567027b97d17c02e85742
