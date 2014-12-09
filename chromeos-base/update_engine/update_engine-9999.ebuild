@@ -20,7 +20,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_p2p -delta_generator -hwid_override +power_management"
+IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
 
 COMMON_DEPEND="app-arch/bzip2
 	chromeos-base/chromeos-ca-certificates
@@ -41,6 +41,7 @@ COMMON_DEPEND="app-arch/bzip2
 DEPEND="chromeos-base/system_api
 	dev-cpp/gmock
 	dev-cpp/gtest
+	mtd? ( dev-embedded/android_mtdutils )
 	sys-fs/e2fsprogs
 	${COMMON_DEPEND}"
 
