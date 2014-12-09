@@ -1,7 +1,6 @@
 #%PAM-1.0
 
 auth       include	chromeos-auth
-auth       required	pam_securetty.so
 auth       required	pam_tally.so file=/var/log/faillog onerr=succeed
 auth       required	pam_shells.so
 auth       required	pam_nologin.so
