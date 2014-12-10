@@ -185,6 +185,7 @@ RDEPEND="${RDEPEND}
 	)
 	xkbcommon? (
 		x11-libs/libxkbcommon
+                x11-misc/xkeyboard-config
 	)
 	evdev_gestures? (
 		chromeos-base/gestures
