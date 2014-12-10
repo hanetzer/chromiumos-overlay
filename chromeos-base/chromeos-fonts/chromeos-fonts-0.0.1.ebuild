@@ -60,6 +60,7 @@ RDEPEND="
 	media-fonts/lohitfonts-cros
 	media-fonts/ml-anjalioldlipi
 	media-fonts/my-padauk
+	media-fonts/robotofonts
 	media-fonts/sil-abyssinica
 	media-fonts/tibt-jomolhari
 	media-libs/fontconfig

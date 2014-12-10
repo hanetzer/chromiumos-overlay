@@ -23,6 +23,7 @@ media-fonts/my-padauk X
 media-fonts/dejavu X
 media-fonts/sil-abyssinica X
 media-fonts/tlbt-jomohari X
+media-fonts/robotofonts X
 
 # David James <davidjames@chromium.org> (14 Feb 2011)
 # ACPI support is currently disabled in laptop-mode-tools.
