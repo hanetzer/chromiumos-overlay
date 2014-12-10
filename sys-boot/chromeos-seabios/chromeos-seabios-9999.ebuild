@@ -29,6 +29,7 @@ create_seabios_cbfs() {
 	local seabios_cbfs="seabios.cbfs${suffix}"
 	local cbfs_size=$(( 2 * 1024 * 1024 ))
 	local bootblock="${T}/bootblock"
+	local vgabios="out/vgabios.bin"
 
 	_cbfstool() { set -- cbfstool "$@"; echo "$@"; "$@" || die "'$*' failed"; }
 
@@ -36,8 +37,11 @@ create_seabios_cbfs() {
 	_cbfstool ${seabios_cbfs} create -s ${cbfs_size} -m x86
 	# Add SeaBIOS binary to CBFS
 	_cbfstool ${seabios_cbfs} add-payload -f out/bios.bin.elf -n payload -c lzma
-	# Add VGA option rom to CBFS
-	_cbfstool ${seabios_cbfs} add -f "${oprom}" -n $(basename "${oprom}") -t optionrom
+	# Add VGA option rom to CBFS, prefer native VGABIOS if it exists
+	if [[ ! -f "${vgabios}" ]]; then
+		vgabios="${oprom}"
+	fi
+	_cbfstool ${seabios_cbfs} add -f "${vgabios}" -n $(basename "${oprom}") -t optionrom
 	# Add additional configuration
 	_cbfstool ${seabios_cbfs} add -f chromeos/links -n links -t raw
 	_cbfstool ${seabios_cbfs} add -f chromeos/bootorder -n bootorder -t raw
