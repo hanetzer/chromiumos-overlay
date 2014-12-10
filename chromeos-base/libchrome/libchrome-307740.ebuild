@@ -8,7 +8,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus")
-CROS_WORKON_COMMIT=("c683753f6613efa9a553ce4a9e2c159afbc9277e" "4141b1c78f98c14ce690ea59df3c104fbe719199")
+CROS_WORKON_COMMIT=("2dfe404711e15e24e79799516400c61b2719d7af" "ebbe3c7a8792ff385916b364d2ec9f6b9c3b4808")
 CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus")
 CROS_WORKON_BLACKLIST="1"
 
@@ -42,21 +42,12 @@ src_prepare() {
 	# TODO(benchan): Remove this workaround (crbug.com/361635).
 	epatch "${FILESDIR}"/base-${SLOT}-message-loop-for-ui.patch
 
-	# Temporarily work around an issue with the compiler failing to handle
-	# an arraysize() call in base/cpu.cc on arm.
-	# TODO(benchan): Remove this workaround (crbug.com/411508).
-	epatch "${FILESDIR}"/base-${SLOT}-arm-arraysize-fix.patch
-
 	# Temporarily revert base::WriteFile to the behavior in older revision
 	# of libchrome until we sort out the expected file permissions at all
 	# call sites of base::WriteFile in Chrome OS code.
 	# TODO(benchan): Remove this workaround (crbug.com/412057).
 	epatch "${FILESDIR}"/base-${SLOT}-revert-writefile-permissions.patch
 
-	# Temporarily backport crrev.com/26436e402e6e1b780f6565539ae0acb3e2976fb9
-	# and its dependencies until the next time we uprev libchrome.
-	epatch "${FILESDIR}"/base-${SLOT}-timer-getter-setters.patch
-	epatch "${FILESDIR}"/base-${SLOT}-message-loop-task-annotator.patch
 	cp -r "${FILESDIR}"/components .
 
 	# Add stub headers for a few files that are usually checked out to locations

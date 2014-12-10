@@ -38,13 +38,13 @@ class RtcAlarm : public AlarmTimer::Delegate,
   RtcAlarm();
 
   // AlarmTimer::Delegate overrides.
-  virtual bool Init(base::WeakPtr<AlarmTimer> timer) OVERRIDE;
-  virtual void Stop() OVERRIDE;
-  virtual void Reset(base::TimeDelta delay) OVERRIDE;
+  bool Init(base::WeakPtr<AlarmTimer> timer) override;
+  void Stop() override;
+  void Reset(base::TimeDelta delay) override;
 
   // base::MessageLoopForIO::Watcher overrides.
-  virtual void OnFileCanReadWithoutBlocking(int fd) OVERRIDE;
-  virtual void OnFileCanWriteWithoutBlocking(int fd) OVERRIDE;
+  void OnFileCanReadWithoutBlocking(int fd) override;
+  void OnFileCanWriteWithoutBlocking(int fd) override;
 
  protected:
   // Needs to be protected because AlarmTimer::Delegate is a refcounted class.

@@ -185,6 +185,7 @@ base_libs = [
                 object_path.cc
                 object_proxy.cc
                 property.cc
+                scoped_dbus_error.cc
                 string_util.cc
                 util.cc
                 values_util.cc
@@ -234,9 +235,12 @@ env['CCFLAGS'] += ['-fPIC',
                    # libchrome's headers.
                    '-I%s' % CHROME_INCLUDE_PATH]
 
+env.Append(
+  CXXFLAGS=['-std=c++11']
+)
+
 # Flags for clang taken from build/common.gypi in the clang==1 section.
 CLANG_FLAGS = (
-  '-Wno-c++11-extensions',
   '-Wno-char-subscripts',
 )
 

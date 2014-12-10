@@ -4,7 +4,7 @@
 # See logic for ${PV} behavior in the libchrome ebuild.
 
 EAPI="4"
-CROS_WORKON_COMMIT="6c86e2c6de535b061d695aacb254fa50e8abbee6"
+CROS_WORKON_COMMIT="fab9d08b29d938132d8f87572c9e4bd0f6693d69"
 CROS_WORKON_PROJECT="chromium/src/crypto"
 CROS_WORKON_BLACKLIST="1"
 
@@ -27,7 +27,6 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	ln -s "${S}" "${WORKDIR}/crypto" &> /dev/null
 	cp -p "${FILESDIR}/SConstruct-${PV}" "${S}/SConstruct" || die
-	epatch "${FILESDIR}/memory_annotation.patch"
 }
 
 src_compile() {
