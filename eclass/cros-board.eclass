@@ -184,6 +184,7 @@ ALL_BOARDS=(
 	tricky_freon
 	urara
 	veyron
+	veyron_brain
 	veyron_jerry
 	veyron_mighty
 	veyron_minnie
