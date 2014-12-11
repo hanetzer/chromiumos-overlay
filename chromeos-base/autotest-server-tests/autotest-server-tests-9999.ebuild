@@ -24,6 +24,8 @@ DEPEND="${RDEPEND}
 "
 
 SERVER_IUSE_TESTS="
+	+tests_audio_AudioBasicHDMI
+	+tests_audio_AudioBasicHeadphone
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
 	cellular? ( +tests_cellular_StaleModemReboot )
