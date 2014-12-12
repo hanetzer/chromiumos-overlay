@@ -44,6 +44,7 @@ pkg_preinst() {
 	enewuser "privetd"
 	enewgroup "privetd"
 	# Additional groups to put privetd into.
+	enewgroup "apmanager"
 	enewgroup "buffet"
 	enewgroup "peerd"
 }
