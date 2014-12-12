@@ -418,8 +418,6 @@ set_build_defines() {
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
 	export DEPOT_TOOLS_UPDATE=0
-	# Enable std::vector []-operator bounds checking.
-	CXXFLAGS+=" -D__google_stl_debug_vector=1"
 }
 
 unpack_chrome() {
@@ -586,14 +584,8 @@ src_unpack() {
 		unpack "${PROFILE_FILE}${AFDO_BZ_SUFFIX}"
 		popd > /dev/null
 
-		local PROFILE_LOC="${PROFILE_DIR}/${PROFILE_FILE}"
-		append-flags -fauto-profile=${PROFILE_LOC}
-
-		# This is required because gcc emits different warnings
-		# for AFDO vs. non-AFDO. AFDO may inline different
-		# functions from non-AFDO, leading to different warnings.
-		append-flags -Wno-error
-		einfo "Using AFDO data from ${PROFILE_LOC}"
+		AFDO_PROFILE_LOC="${PROFILE_DIR}/${PROFILE_FILE}"
+		einfo "Using AFDO data from ${AFDO_PROFILE_LOC}"
 	fi
 
 	if use reorder && ! use clang; then
@@ -634,10 +626,6 @@ src_prepare() {
 	if [[ "${CHROME_ORIGIN}" == "SERVER_SOURCE" && ${#PATCHES[@]} -gt 0 ]]; then
 		epatch "${PATCHES[@]}"
 	fi
-
-	# The chrome makefiles specify -O and -g flags already, so remove the
-	# portage flags.
-	filter-flags -g -O*
 
 	local WHOAMI=$(whoami)
 	# The hooks may depend on the environment variables we set in this
@@ -730,6 +718,41 @@ setup_test_lists() {
 	)
 }
 
+# Handle all CFLAGS/CXXFLAGS/etc... munging here.
+setup_compile_flags() {
+	# The chrome makefiles specify -O and -g flags already, so remove the
+	# portage flags.
+	filter-flags -g -O*
+
+	# There are some flags we want to only use in the ebuild.
+	# The rest will be exported to the simple chrome workflow.
+	EBUILD_CFLAGS=()
+	EBUILD_CXXFLAGS=()
+	if use afdo_use && ! use clang; then
+		local afdo_flags=(
+			-fauto-profile="${AFDO_PROFILE_LOC}"
+
+			# This is required because gcc emits different warnings
+			# for AFDO vs. non-AFDO. AFDO may inline different
+			# functions from non-AFDO, leading to different warnings.
+			-Wno-error
+		)
+		EBUILD_CFLAGS+=( "${afdo_flags[@]}" )
+		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
+	fi
+
+	# Enable std::vector []-operator bounds checking.
+	append-cxxflags -D__google_stl_debug_vector=1
+
+	use vtable_verify && append-ldflags -fvtable-verify=preinit
+
+	local flags
+	einfo "Building with the compiler settings:"
+	for flags in {C,CXX,CPP,LD}FLAGS; do
+		einfo "  ${flags} = ${!flags}"
+	done
+}
+
 src_configure() {
 	clang-setup-env
 	# Chrome handles asan flags by itself; so the '-fsanitize=address' flag added
@@ -754,6 +777,8 @@ src_configure() {
 	export LD="${CXX}"
 	export LD_host=$(tc-getBUILD_CXX)
 
+	setup_compile_flags
+
 	local build_tool_flags=()
 	if use ninja; then
 		build_tool_flags+=(
@@ -768,16 +793,13 @@ src_configure() {
 	# TODO(rcui): crosbug.com/20435. Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
-		if [[ ! -f .gclient ]]; then
-			# Probably a git submodules checkout
-			git runhooks --force || die "Failed to run git runhooks"
-		else
-			[[ -n "${EGCLIENT}" ]] || die EGCLIENT unset
-			[[ -f "${EGCLIENT}" ]] || die EGCLIENT at "${EGCLIENT}" does not exist
-			"${EGCLIENT}" runhooks --force || die  "Failed to run  ${EGCLIENT} runhooks"
-		fi
+		[[ -f "${EGCLIENT}" ]] || die "EGCLIENT at '${EGCLIENT}' does not exist"
+		local cmd=( "${EGCLIENT}" runhooks --force )
+		echo "${cmd[@]}"
+		CFLAGS="${CFLAGS} ${EBUILD_CFLAGS[*]}" \
+		CXXFLAGS="${CXXFLAGS} ${EBUILD_CXXFLAGS[*]}" \
+		"${cmd[@]}" || die
 	fi
-	use vtable_verify && append-ldflags -fvtable-verify=preinit
 
 	setup_test_lists
 }
