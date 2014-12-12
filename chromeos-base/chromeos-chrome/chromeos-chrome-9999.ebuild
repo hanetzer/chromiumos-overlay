@@ -167,6 +167,7 @@ RDEPEND="${RDEPEND}
 	sys-apps/pciutils
 	sys-fs/udev
 	sys-libs/libcap
+	chrome_remoting? ( sys-libs/pam )
 	sys-libs/zlib
 	X? (
 		x11-apps/setxkbmap
