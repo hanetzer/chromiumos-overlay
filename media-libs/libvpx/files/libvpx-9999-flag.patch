@@ -1,13 +1,13 @@
-diff --git build/make/configure.sh build/make/configure.sh
-index ab6687f..4738b2b 100644
---- build/make/configure.sh
-+++ build/make/configure.sh
-@@ -631,7 +631,7 @@ process_common_toolchain() {
-             armv6*)
-                 tgt_isa=armv6
-                 ;;
--            armv7*-hardfloat*)
-+            armv7*-hardfloat*|armv7a-cros*)
-                 tgt_isa=armv7
-                 float_abi=hard
-                 ;;
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index 7be583d..91ef96e 100644
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -615,7 +615,7 @@ process_common_toolchain() {
+       armv6*)
+         tgt_isa=armv6
+         ;;
+-      armv7*-hardfloat*)
++      armv7*-hardfloat*|armv7a-cros*)
+         tgt_isa=armv7
+         float_abi=hard
+         ;;
