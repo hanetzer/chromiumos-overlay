@@ -27,6 +27,11 @@ src_compile() {
 	emake OUT="${WORKDIR}"
 }
 
+src_test() {
+	sudo LD_LIBRARY_PATH=${WORKDIR} \
+		./rootdev_test.sh "${WORKDIR}/rootdev" || die
+}
+
 src_install() {
 	cd "${WORKDIR}"
 	dobin rootdev
