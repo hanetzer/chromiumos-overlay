@@ -1,11 +1,12 @@
-DEFINED_PHASES=compile info install setup unpack
-DEPEND=chromeos-base/chromeos-factory dev-vcs/git
-DESCRIPTION=ChromeOS Regions
+DEFINED_PHASES=info install setup test unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Root disk firmware updater
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_16bc1abe78c55662727e0d801ab25a5ac6999238 profiling
+IUSE=cros_host cros_workon_tree_79ebe0fe673434c582290e8cfc15ddcdac6ce7d8 profiling
 KEYWORDS=*
 LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-installer sys-apps/hdparm
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	95f983755f60a281d223dd9bf6e94dbd	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=b57a105b1f848346804e43d3de6ed2a3
+_md5_=c04899f1fd5780175d4eca4b5a9714b7
