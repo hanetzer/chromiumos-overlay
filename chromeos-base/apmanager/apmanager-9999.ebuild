@@ -38,7 +38,9 @@ DEPEND="
 
 src_install() {
 	dobin "${OUT}"/apmanager
-
+	# Install init scripts.
+	insinto /etc/init
+	doins init/apmanager.conf
 	# DBus configuration.
 	insinto /etc/dbus-1/system.d
 	doins dbus_permissions/org.chromium.apmanager.conf
