@@ -4,7 +4,7 @@
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/android_mtdutils"
 
-inherit cros-workon toolchain-funcs
+inherit cros-workon flag-o-matic toolchain-funcs
 
 DESCRIPTION="Library to read from and write to an MTD device"
 HOMEPAGE="https://android.googlesource.com/platform/bootable/recovery"
@@ -21,6 +21,8 @@ src_configure() {
 
 src_compile() {
 	cd mtdutils
+	append-cppflags -D_GNU_SOURCE
+	append-lfs-flags
 	${CC} ${CPPFLAGS} ${CFLAGS} -o libmtdutils.o -c mtdutils.c || die
 	${AR} rcs libmtdutils.a libmtdutils.o || die
 }
