@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="394192d71258df12c86d100f58f1d5521d133e82"
-CROS_WORKON_TREE="34992cffb8ea2e32a4f6ccf714798997a03bbd8b"
+CROS_WORKON_COMMIT="0777ebaef6ea1017b897cde65b2a9d1a39570089"
+CROS_WORKON_TREE="445f99e9dbc8fa917234b6a1ff874cd257f572d4"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
@@ -21,7 +21,8 @@ RDEPEND="sys-apps/flashrom"
 DEPEND=""
 
 set_board() {
-	# Pick a board that compile basic ec_tool.
+	# No need to be board specific, no tools below build code that is
+	# EC specific. bds works for forst side compilation.
 	export BOARD="bds"
 }
 
@@ -40,14 +41,14 @@ src_compile() {
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
 	export HOSTCC="${CC}"
 	set_board
-	emake utils
+	emake utils-host
 }
 
 src_install() {
 	set_board
-	dobin "util/flash_ec"
 	dobin "build/${BOARD}/util/stm32mon"
 
+	dobin "util/flash_ec"
 	insinto /usr/bin/lib
 	doins chip/lm4/openocd/*
 }
