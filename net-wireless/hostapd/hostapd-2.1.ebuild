@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit toolchain-funcs eutils systemd
+inherit fcaps toolchain-funcs eutils systemd
 
 DESCRIPTION="IEEE 802.11 wireless LAN Host AP daemon"
 HOMEPAGE="http://hostap.epitest.fi"
@@ -219,4 +219,5 @@ pkg_postinst() {
 		einfo "read the README-WPS file in /usr/share/doc/${P}"
 		einfo "for info on how to use WPS"
 	fi
+	fcaps cap_net_admin,cap_net_raw=ie usr/sbin/${PN}
 }
