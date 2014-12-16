@@ -42,8 +42,13 @@ RDEPEND="${DEPEND}
 	)
 "
 
-src_test() {
-	./periodic_scheduler_unittest || die
+platform_pkg_test() {
+	local tests=( periodic_scheduler_unittest )
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${test_bin}"
+	done
 }
 
 src_install() {
