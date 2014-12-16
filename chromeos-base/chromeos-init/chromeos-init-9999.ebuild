@@ -19,7 +19,11 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="cros_embedded +encrypted_stateful frecon +udev"
 
-DEPEND="chromeos-base/libchromeos"
+# shunit2 should be a dependency only if USE=test, but cros_run_unit_test
+# doesn't calculate dependencies when emerging packages.
+DEPEND="chromeos-base/libchromeos
+	dev-util/shunit2
+"
 # vboot_reference for crossystem
 RDEPEND="${DEPEND}
 	chromeos-base/bootstat
@@ -43,7 +47,7 @@ RDEPEND="${DEPEND}
 "
 
 platform_pkg_test() {
-	local tests=( periodic_scheduler_unittest )
+	local tests=( periodic_scheduler_unittest killers_unittest )
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
