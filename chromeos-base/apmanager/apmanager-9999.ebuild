@@ -44,6 +44,9 @@ src_install() {
 	# DBus configuration.
 	insinto /etc/dbus-1/system.d
 	doins dbus_permissions/org.chromium.apmanager.conf
+	# Install seccomp file.
+	insinto /usr/share/policy
+	newins init/apmanager-seccomp-${ARCH}.policy apmanager-seccomp.policy
 }
 
 pkg_preinst() {
