@@ -42,6 +42,7 @@ SERVER_IUSE_TESTS="
 	+tests_display_HotPlugAtSuspend
 	+tests_display_HotPlugNoisy
 	+tests_display_LidCloseOpen
+	+tests_display_NoEdid
 	+tests_display_Resolution
 	+tests_display_ResolutionList
 	+tests_display_ServerChameleonConnection
