@@ -38,6 +38,9 @@ src_prepare() {
 
 	epatch "${FILESDIR}"/${PN}-init.d-gentoo-r1.diff
 
+	# fix interaction with pid namespaces
+	epatch "${FILESDIR}"/${P}-pid-ns.patch
+
 	cp "${FILESDIR}"/zprofile-1 "${T}"/zprofile || die
 	eprefixify "${T}"/zprofile || die
 	if use prefix ; then
