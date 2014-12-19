@@ -163,6 +163,7 @@ ALL_BOARDS=(
 	sonic
 	squawks
 	storm
+	storm_nand
 	stout
 	#stout32
 	strago
