@@ -495,7 +495,7 @@ cros-kernel2_pkg_setup() {
 }
 
 # @FUNCTION: emit_its_script
-# @USAGE: <output file> <boot_dir> <dtb_dir> <device trees>
+# @USAGE: <output file> <kernel_dir> <dtb_dir> <device trees>
 # @DESCRIPTION:
 # Emits the its script used to build the u-boot fitImage kernel binary
 # that contains the kernel as well as device trees used when booting
@@ -503,7 +503,7 @@ cros-kernel2_pkg_setup() {
 
 emit_its_script() {
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
-	local image_name="zImage"
+	local image_name
 	local iter=1
 	local its_out=${1}
 	shift
@@ -512,9 +512,17 @@ emit_its_script() {
 	local dtb_dir=${1}
 	shift
 
-	if [ "${kernel_arch}" = "arm64" ] ; then
-		image_name="Image"
-	fi
+	case ${kernel_arch} in
+		arm64)
+			image_name="arch/${kernel_arch}/boot/Image"
+			;;
+		mips)
+			image_name="vmlinuz.bin"
+			;;
+		*)
+			image_name="arch/${kernel_arch}/boot/zImage"
+			;;
+	esac
 
 	cat > "${its_out}" <<-EOF || die
 	/dts-v1/;
@@ -736,7 +744,8 @@ cros-kernel2_src_compile() {
 			;;
 		mips)
 			build_targets=(
-				vmlinuz
+				vmlinuz.bin
+				$(usex device_tree 'dtbs' '')
 				$(cros_chkconfig_present MODULES && echo "modules")
 			)
 			;;
@@ -822,8 +831,9 @@ cros-kernel2_src_install() {
 	local version=$(kernelrelease)
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 	local kernel_bin="${D}/boot/vmlinuz-${version}"
-	if use arm; then
-		local boot_dir="$(cros-workon_get_build_dir)/arch/${kernel_arch}/boot"
+	if use arm || use mips; then
+		local kernel_dir="$(cros-workon_get_build_dir)"
+		local boot_dir="${kernel_dir}/arch/${kernel_arch}/boot"
 		local zimage_bin="${D}/boot/zImage-${version}"
 		local image_bin="${D}/boot/Image-${version}"
 		local dtb_dir="${boot_dir}"
@@ -837,11 +847,11 @@ cros-kernel2_src_install() {
 		fi
 
 		if use device_tree; then
-			local its_script="$(cros-workon_get_build_dir)/its_script"
-			emit_its_script "${its_script}" "${boot_dir}" \
+			local its_script="${kernel_dir}/its_script"
+			emit_its_script "${its_script}" "${kernel_dir}" \
 				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
 			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
-		elif [[ "${kernel_arch}" != "arm64" ]]; then
+		elif [[ "${kernel_arch}" == "arm" ]]; then
 			cp "${boot_dir}/uImage" "${kernel_bin}" || die
 			if use boot_dts_device_tree; then
 				# For boards where the device tree .dtb file is stored
