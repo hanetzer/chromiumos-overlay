@@ -47,6 +47,8 @@ pkg_setup() {
 }
 
 src_prepare() {
+    epatch "${FILESDIR}/${P}-gsubgpos.patch"
+
 	if [[ ${CHOST} == *-darwin* || ${CHOST} == *-solaris* ]] ; then
 		# on Darwin/Solaris we need to link with g++, like automake defaults
 		# to, but overridden by upstream because on Linux this is not
