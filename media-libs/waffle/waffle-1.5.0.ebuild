@@ -32,9 +32,10 @@ RDEPEND="
 		x11-libs/libX11
 		x11-libs/libxcb
 	)
-	gbm? (
-		media-libs/mesa[gbm]
-		virtual/udev
+	gbm? ( || ( (
+			media-libs/mesa[gbm]
+			virtual/udev
+		) media-libs/minigbm )
 	)
 	wayland? ( >=dev-libs/wayland-1.0 )
 "
@@ -47,11 +48,6 @@ DEPEND="${RDEPEND}
 		app-text/docbook-xml-dtd:4.2
 	)
 "
-
-src_prepare() {
-	epatch "${FILESDIR}"/${P}-Do-not-use-the-PRIVATE-annotation.patch
-	epatch "${FILESDIR}"/${P}-wflinfo-use-waffle_dl_sym-to-get-glGetStringi.patch
-}
 
 src_configure() {
 	if use opengles && use X; then
