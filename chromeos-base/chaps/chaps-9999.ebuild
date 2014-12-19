@@ -20,12 +20,15 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="-tpm2"
 
 RDEPEND="
-	test? (
-		dev-cpp/gtest
+	!tpm2? (
+		app-crypt/trousers
 	)
-	app-crypt/trousers
+	tpm2? (
+		chromeos-base/trunks
+	)
 	chromeos-base/libchromeos
 	chromeos-base/metrics
 	!dev-db/leveldb
@@ -72,9 +75,7 @@ src_install() {
 	# Install live tests
 	if use test; then
 		dosbin "${OUT}"/chapsd_test
-		if ! use tpm2; then
-			dosbin "${OUT}"/tpm_utility_test
-		fi
+		dosbin "${OUT}"/tpm_utility_test
 	fi
 
 	insinto /usr/include/chaps/pkcs11
@@ -93,6 +94,9 @@ platform_pkg_test() {
 		object_store_test
 		opencryptoki_importer_test
 		isolate_login_client_test
+	)
+	use tpm2 && tests+=(
+		tpm2_utility_test
 	)
 
 	local gtest_filter_qemu=""
