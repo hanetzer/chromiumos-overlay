@@ -91,6 +91,7 @@ ALL_BOARDS=(
 	glados
 	glimmer
 	gnawty
+	guado
 	hsb
 	ironhide
 	jecht
@@ -180,6 +181,7 @@ ALL_BOARDS=(
 	#tegra2_seaboard
 	#tegra2_wario
 	tegra3-generic
+	tidus
 	tricky
 	tricky_freon
 	urara
