@@ -58,6 +58,7 @@ multilib_src_compile() {
 
 multilib_src_install() {
 	emake -j1 -C lib DESTDIR="${D}" install
+	emake -j1 -C lib/libv4l-mplane DESTDIR="${D}" uninstall
 }
 
 multilib_src_install_all() {
