@@ -44,7 +44,7 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	pushd "${OUT}" >/dev/null
-	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache
+	dosbin cryptohomed cryptohome cryptohome-path lockbox-cache tpm-manager
 	dosbin mount-encrypted
 	popd >/dev/null
 
