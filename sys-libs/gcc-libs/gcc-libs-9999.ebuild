@@ -153,6 +153,7 @@ src_compile() {
 	cd "$(get_gcc_build_dir)"
 	GCC_CFLAGS="${CFLAGS}"
 	local target_flags=()
+	local target_go_flags=()
 
 	if use hardened; then
 		target_flags+=( -fstack-protector-strong -D_FORTIFY_SOURCE=2 )
@@ -165,6 +166,13 @@ src_compile() {
 		EXTRA_CXXFLAGS_FOR_TARGET+=" -fvtable-verify=std"
 	fi
 
+	# libgo on arm must be compiled with -marm. Go's panic/recover functionality
+	# is broken in thumb mode.
+	if [[ ${CTARGET} == arm* ]]; then
+		target_go_flags+=( -marm )
+	fi
+	EXTRA_GOCFLAGS_FOR_TARGET="${target_go_flags[*]} ${GOCFLAGS_FOR_TARGET}"
+
 	# Do not link libgcc with gold. That is known to fail on internal linker
 	# errors. See crosbug.com/16719
 	local LD_NON_GOLD="$(get_binutils_path_ld ${CTARGET})/ld"
@@ -176,6 +184,7 @@ src_compile() {
 		LDFLAGS="-Wl,-O1" \
 		CFLAGS_FOR_TARGET="$(get_make_var CFLAGS_FOR_TARGET) ${EXTRA_CFLAGS_FOR_TARGET}" \
 		CXXFLAGS_FOR_TARGET="$(get_make_var CXXFLAGS_FOR_TARGET) ${EXTRA_CXXFLAGS_FOR_TARGET}" \
+		GOCFLAGS_FOR_TARGET="$(get_make_var GOCFLAGS_FOR_TARGET) ${EXTRA_GOCFLAGS_FOR_TARGET}" \
 		LD_FOR_TARGET="${LD_NON_GOLD}" \
 		all-target
 }
