@@ -253,6 +253,12 @@ EOF
 		for x in clang clang++; do
 			dosym "${SYSROOT_WRAPPER_FILE}" "$(get_bin_dir)/${CTARGET}-${x}" || die
 		done
+		if use go; then
+			local wrapper="sysroot_wrapper.gccgo"
+			doexe "${FILESDIR}/${wrapper}" || die
+			mv "${CTARGET}-gccgo" "${CTARGET}-gccgo.real" || die
+			dosym "${wrapper}" "$(get_bin_dir)/${CTARGET}-gccgo" || die
+		fi
 	else
 		SYSROOT_WRAPPER_FILE=host_wrapper
 		exeinto "$(get_bin_dir)"
