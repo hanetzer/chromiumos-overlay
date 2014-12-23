@@ -18,12 +18,12 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test"
+IUSE="-als cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test"
 
 RDEPEND="
 	chromeos-base/metrics
 	dev-libs/protobuf
-	media-sound/adhd
+	cras? ( media-sound/adhd )
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}
@@ -68,6 +68,7 @@ src_install() {
 	insinto /usr/share/power_manager
 	doins default_prefs/*
 	use als && doins optional_prefs/has_ambient_light_sensor
+	use cras && doins optional_prefs/use_cras
 	use display_backlight || doins optional_prefs/external_display_only
 	use has_keyboard_backlight && doins optional_prefs/has_keyboard_backlight
 	use legacy_power_button && doins optional_prefs/legacy_power_button
