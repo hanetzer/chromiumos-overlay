@@ -48,6 +48,7 @@ src_install() {
 		nss_util_internal.h \
 		rsa_private_key.h \
 		scoped_nss_types.h \
+		scoped_openssl_types.h \
 		scoped_test_nss_db.h \
 		secure_hash.h \
 		secure_util.h \
