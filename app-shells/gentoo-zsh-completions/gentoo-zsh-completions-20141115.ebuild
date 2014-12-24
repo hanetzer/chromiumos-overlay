@@ -4,6 +4,8 @@
 
 EAPI=5
 
+inherit eutils
+
 DESCRIPTION="Gentoo specific zsh completion support (includes emerge and ebuild commands)"
 HOMEPAGE="https://github.com/radhermit/gentoo-zsh-completions"
 SRC_URI="http://dev.gentoo.org/~radhermit/dist/${P}.tar.xz"
@@ -13,6 +15,10 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND=">=app-shells/zsh-4.3.5"
+
+src_prepare() {
+	epatch "${FILESDIR}"/${P}-cros-completions.patch
+}
 
 src_install() {
 	insinto /usr/share/zsh/site-functions
