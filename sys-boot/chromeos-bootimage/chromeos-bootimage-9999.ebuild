@@ -243,7 +243,6 @@ src_compile_depthcharge() {
 	local romstage_file="${froot}/romstage.stage"
 	local ramstage_file="${froot}/ramstage.stage"
 	local refcode_file="${froot}/refcode.stage"
-
 	local ro_suffix
 	local rw_suffix
 
@@ -255,6 +254,13 @@ src_compile_depthcharge() {
 		rw_suffix="rw.bin"
 	fi
 
+	local depthcharge_binaries=( --coreboot-elf
+		"${froot}/depthcharge/depthcharge.${ro_suffix}" )
+	local dev_binaries=( --coreboot-elf
+		"${froot}/depthcharge/dev.${ro_suffix}" )
+
+	local multicbfs="$(grep 'CONFIG_MULTIPLE_CBFS_INSTANCES=y' \
+			"${froot}/coreboot.config")"
 	local common=(
 		--board "${BOARD_USE}"
 		--key "${devkeys_file}"
@@ -264,14 +270,34 @@ src_compile_depthcharge() {
 	local serial=( --coreboot "${coreboot_file}.serial" )
 	local silent=( --coreboot "${coreboot_file}" )
 
-	# If unified depthcharge is being used always include ramstage_file.
-	if use unified_depthcharge; then
-		if use vboot2; then
-			serial+=( --add-blob romstage "${romstage_file}.serial" )
-			silent+=( --add-blob romstage "${romstage_file}" )
+	if [ -z "${multicbfs}" ]; then
+		# If unified depthcharge is being used always include
+		# ramstage_file.
+		if use unified_depthcharge; then
+			if use vboot2; then
+				serial+=( --add-blob romstage )
+                                serial+=( "${romstage_file}.serial" )
+				silent+=( --add-blob romstage )
+                                silent+=( "${romstage_file}" )
+			fi
+			serial+=( --add-blob ramstage )
+                        serial+=( "${ramstage_file}.serial" )
+			silent+=( --add-blob ramstage "${ramstage_file}" )
 		fi
-		serial+=( --add-blob ramstage "${ramstage_file}.serial" )
-		silent+=( --add-blob ramstage "${ramstage_file}" )
+		depthcharge_binaries+=( --uboot )
+		depthcharge_binaries+=(
+			"${froot}/depthcharge/depthcharge.${rw_suffix}" )
+		dev_binaries+=( --uboot )
+		dev_binaries+=(
+			"${froot}/depthcharge/dev.${rw_suffix}" )
+	else
+		# cros_bundle_firmare was written with an assumption that
+		# u-boot is always a part of the image. So, unless -D is
+		# given, in case there is no explicit --uboot option in the
+		# command line, cros_bundle_firmware assumes implicit
+		# "--uboot /buils/<board>/fimrware/u-boot.bin"
+		# which messes up the multicbfs case.
+		common+=( -D ) # Do not bundle defaults.
 	fi
 
 	local legacy_file=""
@@ -306,28 +332,23 @@ src_compile_depthcharge() {
 
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
-		--coreboot-elf="${froot}/depthcharge/depthcharge.${ro_suffix}" \
 		--outdir "out.ro" --output "image.bin" \
-		--uboot "${froot}/depthcharge/depthcharge.${rw_suffix}" ||
-		die "failed to build production image."
+		${depthcharge_binaries[@]} || \
+	  die "failed to build production image."
 	einfo "Building forced RW image."
 	cros_bundle_firmware "${common[@]}" ${silent[@]} --force-rw \
-		--coreboot-elf="${froot}/depthcharge/depthcharge.${ro_suffix}" \
 		--outdir "out.rw" --output "image.rw.bin" \
-		--uboot "${froot}/depthcharge/depthcharge.${rw_suffix}" ||
-		die "failed to build forced RW image."
+		${depthcharge_binaries[@]} || \
+	  die "failed to build forced RW image."
 	einfo "Building serial image."
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
-		--coreboot-elf="${froot}/depthcharge/depthcharge.${ro_suffix}" \
 		--outdir "out.serial" --output "image.serial.bin" \
-		--uboot "${froot}/depthcharge/depthcharge.${rw_suffix}" ||
-		die "failed to build serial image."
+		${depthcharge_binaries[@]} || \
+	  die "failed to build serial image."
 	einfo "Building developer image."
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
-		--coreboot-elf="${froot}/depthcharge/dev.${ro_suffix}" \
 		--outdir "out.dev" --output "image.dev.bin" \
-		--uboot "${froot}/depthcharge/dev.${rw_suffix}" ||
-		die "failed to build developer image."
+		${dev_binaries[@]} || die "failed to build developer image."
 
 	# Build a netboot image.
 	#
@@ -343,7 +364,11 @@ src_compile_depthcharge() {
 	einfo "Building netboot image."
 	local netboot_rw
 	if use unified_depthcharge; then
-		netboot_rw="${froot}/depthcharge/netboot.payload"
+		if [ -z  "${multicbfs}" ]; then
+			netboot_rw="${froot}/depthcharge/netboot.payload"
+		else
+			netboot_rw="${froot}/depthcharge/netboot.elf"
+		fi
 	else
 		netboot_rw="${froot}/depthcharge/netboot.bin"
 	fi
