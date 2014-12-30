@@ -10,5 +10,5 @@ RDEPEND=python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) dev-lang/py
 REQUIRED_USE=|| ( python_targets_python2_7 )
 SLOT=0
 SRC_URI=mirror://pypi/p/python-statsd/python-statsd-1.7.0.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils-r1	364122897f9dc771167ee5ff362e54e1	eutils	06133990e861be0fe60c2b428fd025d9	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	cd956d5a4bac2209a64d0f4851cc115d	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils-r1	90e7008a7d21e3b1597bea444bb85827	eutils	06133990e861be0fe60c2b428fd025d9	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	fef838277e0f17df29d4951b7183d1b4	python-utils-r1	dcc9fbd541ee94173178e4f14dd3945c	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=18b25b078e5d4692a0b0b83e6f6aac7c

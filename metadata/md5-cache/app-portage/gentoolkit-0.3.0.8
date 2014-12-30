@@ -1,14 +1,14 @@
 DEFINED_PHASES=compile configure install postinst prepare test
-DEPEND=sys-apps/portage python_targets_python2_6? ( >=dev-lang/python-2.6.8-r3:2.6[xml(+)] ) python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7[xml(+)] ) python_targets_python3_2? ( >=dev-lang/python-3.2.5-r2:3.2[xml(+)] ) python_targets_python3_3? ( >=dev-lang/python-3.3.2-r2:3.3[xml(+)] ) dev-lang/python-exec:=[python_targets_python2_6(-)?,python_targets_python2_7(-)?,python_targets_python3_2(-)?,python_targets_python3_3(-)?,-python_single_target_python2_6(-),-python_single_target_python2_7(-),-python_single_target_python3_2(-),-python_single_target_python3_3(-)]
+DEPEND=sys-apps/portage python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7[xml(+)] ) python_targets_python3_2? ( >=dev-lang/python-3.2.5-r2:3.2[xml(+)] ) python_targets_python3_3? ( >=dev-lang/python-3.3.2-r2:3.3[xml(+)] ) dev-lang/python-exec:=[python_targets_python2_7(-)?,python_targets_python3_2(-)?,python_targets_python3_3(-)?,-python_single_target_python2_7(-),-python_single_target_python3_2(-),-python_single_target_python3_3(-)]
 DESCRIPTION=Collection of administration scripts for Gentoo
 EAPI=5
 HOMEPAGE=http://www.gentoo.org/proj/en/portage/tools/index.xml
-IUSE=python_targets_python2_6 python_targets_python2_7 python_targets_python3_2 python_targets_python3_3
+IUSE=python_targets_python2_7 python_targets_python3_2 python_targets_python3_3
 KEYWORDS=*
 LICENSE=GPL-2
-RDEPEND=sys-apps/portage !<=app-portage/gentoolkit-dev-0.2.7 || ( >=sys-apps/coreutils-8.15 app-misc/realpath sys-freebsd/freebsd-bin ) sys-apps/gawk sys-apps/grep python_targets_python2_6? ( >=dev-lang/python-2.6.8-r3:2.6[xml(+)] ) python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7[xml(+)] ) python_targets_python3_2? ( >=dev-lang/python-3.2.5-r2:3.2[xml(+)] ) python_targets_python3_3? ( >=dev-lang/python-3.3.2-r2:3.3[xml(+)] ) dev-lang/python-exec:=[python_targets_python2_6(-)?,python_targets_python2_7(-)?,python_targets_python3_2(-)?,python_targets_python3_3(-)?,-python_single_target_python2_6(-),-python_single_target_python2_7(-),-python_single_target_python3_2(-),-python_single_target_python3_3(-)]
-REQUIRED_USE=|| ( python_targets_python2_6 python_targets_python2_7 python_targets_python3_2 python_targets_python3_3 )
+RDEPEND=sys-apps/portage !<=app-portage/gentoolkit-dev-0.2.7 || ( >=sys-apps/coreutils-8.15 app-misc/realpath sys-freebsd/freebsd-bin ) sys-apps/gawk sys-apps/grep python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7[xml(+)] ) python_targets_python3_2? ( >=dev-lang/python-3.2.5-r2:3.2[xml(+)] ) python_targets_python3_3? ( >=dev-lang/python-3.3.2-r2:3.3[xml(+)] ) dev-lang/python-exec:=[python_targets_python2_7(-)?,python_targets_python3_2(-)?,python_targets_python3_3(-)?,-python_single_target_python2_7(-),-python_single_target_python3_2(-),-python_single_target_python3_3(-)]
+REQUIRED_USE=|| ( python_targets_python2_7 python_targets_python3_2 python_targets_python3_3 )
 SLOT=0
 SRC_URI=mirror://gentoo/gentoolkit-0.3.0.8.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils-r1	364122897f9dc771167ee5ff362e54e1	eutils	06133990e861be0fe60c2b428fd025d9	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	cd956d5a4bac2209a64d0f4851cc115d	python-utils-r1	3eaef07c45447158fad343dac1667938	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	distutils-r1	90e7008a7d21e3b1597bea444bb85827	eutils	06133990e861be0fe60c2b428fd025d9	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	fef838277e0f17df29d4951b7183d1b4	python-utils-r1	dcc9fbd541ee94173178e4f14dd3945c	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=126af20ed5553fd4272304aef0700e6a
