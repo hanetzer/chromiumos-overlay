@@ -16,7 +16,7 @@ CROS_WORKON_OUTOFTREE_BUILD="1"
 inherit cros-workon cros-board multiprocessing
 
 DESCRIPTION="Chromium OS Developer Packages installer"
-HOMEPAGE="http://dev.chromium.org/chromium-os/how-tos-and-troubleshooting/install-software-on-base-images"
+HOMEPAGE="http://www.chromium.org/chromium-os"
 
 LICENSE="BSD-Google"
 SLOT="0"
