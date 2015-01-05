@@ -84,6 +84,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_ECWakeSource
 	+tests_firmware_ECWatchdog
 	+tests_firmware_ECWriteProtect
+	+tests_firmware_EventLog
 	+tests_firmware_FAFTPrepare
 	+tests_firmware_FAFTSetup
 	+tests_firmware_FwScreenCloseLid
