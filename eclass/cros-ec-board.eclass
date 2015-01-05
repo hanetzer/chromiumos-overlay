@@ -38,6 +38,7 @@ EC_BOARD_NAMES=(
 	jerry
 	keyborg
 	link
+	llama
 	mccroskey
 	mighty
 	minimuffin
