@@ -18,7 +18,7 @@ HOMEPAGE="http://www.freedesktop.org/wiki/Software/HarfBuzz"
 LICENSE="Old-MIT ISC icu"
 SLOT="0/0.9.18" # 0.9.18 introduced the harfbuzz-icu split; bug #472416
 [[ ${PV} == 9999 ]] || \
-KEYWORDS="~*"
+KEYWORDS="*"
 IUSE="+cairo +glib +graphite icu +introspection static-libs test +truetype"
 REQUIRED_USE="introspection? ( glib )"
 
@@ -74,7 +74,6 @@ multilib_src_configure() {
 		$(use_enable static-libs static) \
 		$(multilib_native_use_with cairo) \
 		$(use_with glib) \
-		$(use_with glib gobject) \
 		$(use_with graphite graphite2) \
 		$(use_with icu) \
 		$(multilib_native_use_enable introspection) \
