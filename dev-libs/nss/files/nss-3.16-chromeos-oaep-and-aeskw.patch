@@ -1,0 +1,778 @@
+diff -aurN nss-3.16-prepared/lib/freebl/blapi.h nss-3.16/lib/freebl/blapi.h
+--- nss-3.16-prepared/lib/freebl/blapi.h	2014-06-19 16:49:48.660560669 -0700
++++ nss-3.16/lib/freebl/blapi.h	2014-06-19 16:52:32.172280122 -0700
+@@ -62,7 +62,7 @@
+ /*
+ ** Perform a check of private key parameters for consistency.
+ */
+-extern SECStatus RSA_PrivateKeyCheck(RSAPrivateKey *key);
++extern SECStatus RSA_PrivateKeyCheck(const RSAPrivateKey *key);
+ 
+ /*
+ ** Given only minimal private key parameters, fill in the rest of the
+diff -aurN nss-3.16-prepared/lib/freebl/loader.c nss-3.16/lib/freebl/loader.c
+--- nss-3.16-prepared/lib/freebl/loader.c	2014-06-19 16:49:48.660560669 -0700
++++ nss-3.16/lib/freebl/loader.c	2014-06-19 16:52:32.182280229 -0700
+@@ -214,7 +214,7 @@
+ }
+ 
+ SECStatus
+-RSA_PrivateKeyCheck(RSAPrivateKey *key)
++RSA_PrivateKeyCheck(const RSAPrivateKey *key)
+ {
+   if (!vector && PR_SUCCESS != freebl_RunLoaderOnce())
+       return SECFailure;
+diff -aurN nss-3.16-prepared/lib/freebl/loader.h nss-3.16/lib/freebl/loader.h
+--- nss-3.16-prepared/lib/freebl/loader.h	2014-06-19 16:49:48.670560773 -0700
++++ nss-3.16/lib/freebl/loader.h	2014-06-19 16:52:32.182280229 -0700
+@@ -229,7 +229,7 @@
+                               unsigned char *output,
+                               const unsigned char *input);
+ 
+-  SECStatus (* p_RSA_PrivateKeyCheck)(RSAPrivateKey *key);
++  SECStatus (* p_RSA_PrivateKeyCheck)(const RSAPrivateKey *key);
+ 
+   void (* p_BL_Cleanup)(void);
+ 
+diff -aurN nss-3.16-prepared/lib/freebl/rsa.c nss-3.16/lib/freebl/rsa.c
+--- nss-3.16-prepared/lib/freebl/rsa.c	2014-06-19 16:49:48.660560669 -0700
++++ nss-3.16/lib/freebl/rsa.c	2014-06-19 16:52:34.612305995 -0700
+@@ -1353,33 +1353,8 @@
+     return rsa_PrivateKeyOp(key, output, input, PR_TRUE);
+ }
+ 
+-static SECStatus
+-swap_in_key_value(PLArenaPool *arena, mp_int *mpval, SECItem *buffer)
+-{
+-    int len;
+-    mp_err err = MP_OKAY;
+-    memset(buffer->data, 0, buffer->len);
+-    len = mp_unsigned_octet_size(mpval);
+-    if (len <= 0) return SECFailure;
+-    if ((unsigned int)len <= buffer->len) {
+-	/* The new value is no longer than the old buffer, so use it */
+-	err = mp_to_unsigned_octets(mpval, buffer->data, len);
+-	if (err >= 0) err = MP_OKAY;
+-	buffer->len = len;
+-    } else if (arena) {
+-	/* The new value is longer, but working within an arena */
+-	(void)SECITEM_AllocItem(arena, buffer, len);
+-	err = mp_to_unsigned_octets(mpval, buffer->data, len);
+-	if (err >= 0) err = MP_OKAY;
+-    } else {
+-	/* The new value is longer, no arena, can't handle this key */
+-	return SECFailure;
+-    }
+-    return (err == MP_OKAY) ? SECSuccess : SECFailure;
+-}
+-
+ SECStatus
+-RSA_PrivateKeyCheck(RSAPrivateKey *key)
++RSA_PrivateKeyCheck(const RSAPrivateKey *key)
+ {
+     mp_int p, q, n, psub1, qsub1, e, d, d_p, d_q, qInv, res;
+     mp_err   err = MP_OKAY;
+@@ -1406,6 +1381,17 @@
+     CHECK_MPI_OK( mp_init(&d_q)  );
+     CHECK_MPI_OK( mp_init(&qInv) );
+     CHECK_MPI_OK( mp_init(&res)  );
++
++    if (!key->modulus.data || !key->prime1.data || !key->prime2.data ||
++        !key->publicExponent.data || !key->privateExponent.data ||
++        !key->exponent1.data || !key->exponent2.data ||
++        !key->coefficient.data) {
++        /*call RSA_PopulatePrivateKey first, if the application wishes to
++         * recover these parameters */
++        err = MP_BADARG;
++        goto cleanup;
++    }
++
+     SECITEM_TO_MPINT(key->modulus,         &n);
+     SECITEM_TO_MPINT(key->prime1,          &p);
+     SECITEM_TO_MPINT(key->prime2,          &q);
+@@ -1414,18 +1400,10 @@
+     SECITEM_TO_MPINT(key->exponent1,       &d_p);
+     SECITEM_TO_MPINT(key->exponent2,       &d_q);
+     SECITEM_TO_MPINT(key->coefficient,     &qInv);
+-    /* p > q  */
++    /* p > q */
+     if (mp_cmp(&p, &q) <= 0) {
+-	/* mind the p's and q's (and d_p's and d_q's) */
+-	SECItem tmp;
+-	mp_exch(&p, &q);
+-	mp_exch(&d_p,&d_q);
+-	tmp = key->prime1;
+-	key->prime1 = key->prime2;
+-	key->prime2 = tmp;
+-	tmp = key->exponent1;
+-	key->exponent1 = key->exponent2;
+-	key->exponent2 = tmp;
++	rv = SECFailure;
++	goto cleanup;
+     }
+ #define VERIFY_MPI_EQUAL(m1, m2) \
+     if (mp_cmp(m1, m2) != 0) {   \
+@@ -1458,27 +1436,19 @@
+     CHECK_MPI_OK( mp_mulmod(&d, &e, &qsub1, &res) );
+     VERIFY_MPI_EQUAL_1(&res);
+     /*
+-     * The following errors can be recovered from.
++     * The following errors can be recovered from. However, the purpose of this
++     * function is to check consistency, so they are not.
+      */
+     /* d_p == d mod p-1 */
+     CHECK_MPI_OK( mp_mod(&d, &psub1, &res) );
+-    if (mp_cmp(&d_p, &res) != 0) {
+-	/* swap in the correct value */
+-	CHECK_SEC_OK( swap_in_key_value(key->arena, &res, &key->exponent1) );
+-    }
++    VERIFY_MPI_EQUAL(&res, &d_p);
+     /* d_q == d mod q-1 */
+     CHECK_MPI_OK( mp_mod(&d, &qsub1, &res) );
+-    if (mp_cmp(&d_q, &res) != 0) {
+-	/* swap in the correct value */
+-	CHECK_SEC_OK( swap_in_key_value(key->arena, &res, &key->exponent2) );
+-    }
++    VERIFY_MPI_EQUAL(&res, &d_q);
+     /* q * q**-1 == 1 mod p */
+     CHECK_MPI_OK( mp_mulmod(&q, &qInv, &p, &res) );
+-    if (mp_cmp_d(&res, 1) != 0) {
+-	/* compute the correct value */
+-	CHECK_MPI_OK( mp_invmod(&q, &p, &qInv) );
+-	CHECK_SEC_OK( swap_in_key_value(key->arena, &qInv, &key->coefficient) );
+-    }
++    VERIFY_MPI_EQUAL_1(&res);
++
+ cleanup:
+     mp_clear(&n);
+     mp_clear(&p);
+diff -aurN nss-3.16-prepared/lib/nss/nss.def nss-3.16/lib/nss/nss.def
+--- nss-3.16-prepared/lib/nss/nss.def	2014-06-19 16:49:48.660560669 -0700
++++ nss-3.16/lib/nss/nss.def	2014-06-19 17:00:09.037122099 -0700
+@@ -1047,3 +1047,11 @@
+ ;+    local:
+ ;+       *;
+ ;+};
++;+NSS_3.16 { 	# NSS 3.16 release (Chromium patched)
++;+    global:
++PK11_PubEncrypt;
++PK11_PrivDecrypt;
++;+    local:
++;+       *;
++;+};
++
+diff -aurN nss-3.16-prepared/lib/pk11wrap/pk11obj.c nss-3.16/lib/pk11wrap/pk11obj.c
+--- nss-3.16-prepared/lib/pk11wrap/pk11obj.c	2014-06-19 16:49:48.640560464 -0700
++++ nss-3.16/lib/pk11wrap/pk11obj.c	2014-06-19 16:52:07.942023200 -0700
+@@ -911,17 +911,11 @@
+     return SECSuccess;
+ }
+ 
+-/*
+- * Now SSL 2.0 uses raw RSA stuff. These next to functions *must* use
+- * RSA keys, or they'll fail. We do the checks up front. If anyone comes
+- * up with a meaning for rawdecrypt for any other public key operation,
+- * then we need to move this check into some of PK11_PubDecrypt callers,
+- * (namely SSL 2.0).
+- */
+ static SECStatus
+-pk11_PrivDecryptRaw(SECKEYPrivateKey *key, unsigned char *data, 
+-	unsigned *outLen, unsigned int maxLen, unsigned char *enc,
+-				    unsigned encLen, CK_MECHANISM_PTR mech)
++pk11_PrivDecryptRaw(SECKEYPrivateKey *key,
++                    unsigned char *data,  unsigned *outLen, unsigned int maxLen,
++                    const unsigned char *enc, unsigned encLen,
++                    CK_MECHANISM_PTR mech)
+ {
+     PK11SlotInfo *slot = key->pkcs11Slot;
+     CK_ULONG out = maxLen;
+@@ -957,11 +951,12 @@
+      * do C_Login with CKU_CONTEXT_SPECIFIC 
+      * between C_DecryptInit and C_Decrypt
+      * ... But see note above about servers */
+-     if (SECKEY_HAS_ATTRIBUTE_SET_LOCK(key, CKA_ALWAYS_AUTHENTICATE, haslock)) {
++    if (SECKEY_HAS_ATTRIBUTE_SET_LOCK(key, CKA_ALWAYS_AUTHENTICATE, haslock)) {
+ 	PK11_DoPassword(slot, session, PR_FALSE, key->wincx, haslock, PR_TRUE);
+     }
+ 
+-    crv = PK11_GETTAB(slot)->C_Decrypt(session,enc, encLen, data, &out);
++    crv = PK11_GETTAB(slot)->C_Decrypt(session, (unsigned char *)enc, encLen,
++				       data, &out);
+     if (haslock) PK11_ExitSlotMonitor(slot);
+     pk11_CloseSession(slot,session,owner);
+     *outLen = out;
+@@ -973,41 +968,37 @@
+ }
+ 
+ SECStatus
+-PK11_PubDecryptRaw(SECKEYPrivateKey *key, unsigned char *data, 
+-	unsigned *outLen, unsigned int maxLen, unsigned char *enc,
+-				    unsigned encLen)
++PK11_PubDecryptRaw(SECKEYPrivateKey *key,
++                   unsigned char *data, unsigned *outLen, unsigned int maxLen,
++                   const unsigned char *enc, unsigned encLen)
+ {
+     CK_MECHANISM mech = {CKM_RSA_X_509, NULL, 0 };
+     return pk11_PrivDecryptRaw(key, data, outLen, maxLen, enc, encLen, &mech);
+ }
+ 
+ SECStatus
+-PK11_PrivDecryptPKCS1(SECKEYPrivateKey *key, unsigned char *data, 
+-	unsigned *outLen, unsigned int maxLen, unsigned char *enc,
+-				    unsigned encLen)
++PK11_PrivDecryptPKCS1(SECKEYPrivateKey *key,
++                      unsigned char *data, unsigned *outLen, unsigned int maxLen,
++                      const unsigned char *enc, unsigned encLen)
+ {
+     CK_MECHANISM mech = {CKM_RSA_PKCS, NULL, 0 };
+     return pk11_PrivDecryptRaw(key, data, outLen, maxLen, enc, encLen, &mech);
+ }
+ 
+ static SECStatus
+-pk11_PubEncryptRaw(SECKEYPublicKey *key, unsigned char *enc,
+-		    unsigned char *data, unsigned dataLen, 
+-		    CK_MECHANISM_PTR mech, void *wincx)
++pk11_PubEncryptRaw(SECKEYPublicKey *key,
++                   unsigned char *out, unsigned int *outLen,
++                   unsigned int maxLen,
++                   const unsigned char *data, unsigned dataLen,
++                   CK_MECHANISM_PTR mech, void *wincx)
+ {
+     PK11SlotInfo *slot;
+     CK_OBJECT_HANDLE id;
+-    CK_ULONG out;
++    CK_ULONG len = maxLen;
+     PRBool owner = PR_TRUE;
+     CK_SESSION_HANDLE session;
+     CK_RV crv;
+ 
+-    if (!key || key->keyType != rsaKey) {
+-	PORT_SetError( SEC_ERROR_BAD_KEY );
+-	return SECFailure;
+-    }
+-    out = SECKEY_PublicKeyStrength(key);
+-
+     slot = PK11_GetBestSlotWithAttributes(mech->mechanism,CKF_ENCRYPT,0,wincx);
+     if (slot == NULL) {
+ 	PORT_SetError( SEC_ERROR_NO_MODULE );
+@@ -1032,10 +1023,12 @@
+ 	PORT_SetError( PK11_MapError(crv) );
+ 	return SECFailure;
+     }
+-    crv = PK11_GETTAB(slot)->C_Encrypt(session,data,dataLen,enc,&out);
++    crv = PK11_GETTAB(slot)->C_Encrypt(session,(unsigned char *)data,dataLen,
++				       out,&len);
+     if (!owner || !(slot->isThreadSafe)) PK11_ExitSlotMonitor(slot);
+     pk11_CloseSession(slot,session,owner);
+     PK11_FreeSlot(slot);
++    *outLen = len;
+     if (crv != CKR_OK) {
+ 	PORT_SetError( PK11_MapError(crv) );
+ 	return SECFailure;
+@@ -1044,19 +1037,69 @@
+ }
+ 
+ SECStatus
+-PK11_PubEncryptRaw(SECKEYPublicKey *key, unsigned char *enc,
+-		unsigned char *data, unsigned dataLen, void *wincx)
++PK11_PubEncryptRaw(SECKEYPublicKey *key,
++                   unsigned char *enc,
++                   const unsigned char *data, unsigned dataLen,
++                   void *wincx)
+ {
+     CK_MECHANISM mech = {CKM_RSA_X_509, NULL, 0 };
+-    return pk11_PubEncryptRaw(key, enc, data, dataLen, &mech, wincx);
++    unsigned int outLen;
++    if (!key || key->keyType != rsaKey) {
++	PORT_SetError(SEC_ERROR_BAD_KEY);
++	return SECFailure;
++    }
++    outLen = SECKEY_PublicKeyStrength(key);
++    return pk11_PubEncryptRaw(key, enc, &outLen, outLen, data, dataLen, &mech,
++                              wincx);
+ }
+ 
+ SECStatus
+-PK11_PubEncryptPKCS1(SECKEYPublicKey *key, unsigned char *enc,
+-		unsigned char *data, unsigned dataLen, void *wincx)
++PK11_PubEncryptPKCS1(SECKEYPublicKey *key,
++                     unsigned char *enc,
++                     const unsigned char *data, unsigned dataLen,
++                     void *wincx)
+ {
+     CK_MECHANISM mech = {CKM_RSA_PKCS, NULL, 0 };
+-    return pk11_PubEncryptRaw(key, enc, data, dataLen, &mech, wincx);
++    unsigned int outLen;
++    if (!key || key->keyType != rsaKey) {
++	PORT_SetError(SEC_ERROR_BAD_KEY);
++	return SECFailure;
++    }
++    outLen = SECKEY_PublicKeyStrength(key);
++    return pk11_PubEncryptRaw(key, enc, &outLen, outLen, data, dataLen, &mech,
++                              wincx);
++}
++
++SECStatus
++PK11_PrivDecrypt(SECKEYPrivateKey *key,
++                 CK_MECHANISM_TYPE mechanism, SECItem *param,
++                 unsigned char *out, unsigned int *outLen,
++                 unsigned int maxLen,
++                 const unsigned char *enc, unsigned encLen)
++{
++    CK_MECHANISM mech = { mechanism, NULL, 0 };
++    if (param) {
++        mech.pParameter = param->data;
++        mech.ulParameterLen = param->len;
++    }
++    return pk11_PrivDecryptRaw(key, out, outLen, maxLen, enc, encLen, &mech);
++}
++
++SECStatus
++PK11_PubEncrypt(SECKEYPublicKey *key,
++                CK_MECHANISM_TYPE mechanism, SECItem *param,
++                unsigned char *out, unsigned int *outLen,
++                unsigned int maxLen,
++                const unsigned char *data, unsigned dataLen,
++                void *wincx)
++{
++    CK_MECHANISM mech = { mechanism, NULL, 0 };
++    if (param) {
++        mech.pParameter = param->data;
++        mech.ulParameterLen = param->len;
++    }
++    return pk11_PubEncryptRaw(key, out, outLen, maxLen, data, dataLen, &mech,
++                              wincx);
+ }
+ 
+ SECKEYPrivateKey *
+diff -aurN nss-3.16-prepared/lib/pk11wrap/pk11pub.h nss-3.16/lib/pk11wrap/pk11pub.h
+--- nss-3.16-prepared/lib/pk11wrap/pk11pub.h	2014-06-19 16:49:48.640560464 -0700
++++ nss-3.16/lib/pk11wrap/pk11pub.h	2014-06-19 16:52:00.031940143 -0700
+@@ -523,18 +523,38 @@
+ 		       const unsigned char *data, unsigned int dataLen);
+ 
+ /* note: despite the name, this function takes a private key. */
+-SECStatus PK11_PubDecryptRaw(SECKEYPrivateKey *key, unsigned char *data,
+-   unsigned *outLen, unsigned int maxLen, unsigned char *enc, unsigned encLen);
++SECStatus PK11_PubDecryptRaw(SECKEYPrivateKey *key,
++                             unsigned char *data, unsigned *outLen,
++                             unsigned int maxLen,
++                             const unsigned char *enc, unsigned encLen);
+ #define PK11_PrivDecryptRaw PK11_PubDecryptRaw
+ /* The encrypt function that complements the above decrypt function. */
+-SECStatus PK11_PubEncryptRaw(SECKEYPublicKey *key, unsigned char *enc,
+-                unsigned char *data, unsigned dataLen, void *wincx);
++SECStatus PK11_PubEncryptRaw(SECKEYPublicKey *key,
++                             unsigned char *enc,
++                             const unsigned char *data, unsigned dataLen,
++                             void *wincx);
+ 
+-SECStatus PK11_PrivDecryptPKCS1(SECKEYPrivateKey *key, unsigned char *data,
+-   unsigned *outLen, unsigned int maxLen, unsigned char *enc, unsigned encLen);
++SECStatus PK11_PrivDecryptPKCS1(SECKEYPrivateKey *key,
++                                unsigned char *data, unsigned *outLen,
++                                unsigned int maxLen,
++                                const unsigned char *enc, unsigned encLen);
+ /* The encrypt function that complements the above decrypt function. */
+-SECStatus PK11_PubEncryptPKCS1(SECKEYPublicKey *key, unsigned char *enc,
+-                unsigned char *data, unsigned dataLen, void *wincx);
++SECStatus PK11_PubEncryptPKCS1(SECKEYPublicKey *key,
++                               unsigned char *enc,
++                               const unsigned char *data, unsigned dataLen,
++                               void *wincx);
++
++SECStatus PK11_PrivDecrypt(SECKEYPrivateKey *key,
++                           CK_MECHANISM_TYPE mechanism, SECItem *param,
++                           unsigned char *out, unsigned int *outLen,
++                           unsigned int maxLen,
++                           const unsigned char *enc, unsigned int encLen);
++SECStatus PK11_PubEncrypt(SECKEYPublicKey *key,
++                          CK_MECHANISM_TYPE mechanism, SECItem *param,
++                          unsigned char *out, unsigned int *outLen,
++                          unsigned int maxLen,
++                          const unsigned char *data, unsigned int dataLen,
++                          void *wincx);
+ 
+ SECStatus PK11_ImportPrivateKeyInfo(PK11SlotInfo *slot, 
+ 		SECKEYPrivateKeyInfo *pki, SECItem *nickname,
+diff -aurN nss-3.16-prepared/lib/softoken/pkcs11.c nss-3.16/lib/softoken/pkcs11.c
+--- nss-3.16-prepared/lib/softoken/pkcs11.c	2014-06-19 16:49:48.630560358 -0700
++++ nss-3.16/lib/softoken/pkcs11.c	2014-06-19 16:52:25.892213533 -0700
+@@ -266,6 +266,8 @@
+ 				 CKF_DUZ_IT_ALL},       PR_TRUE},
+      {CKM_RSA_PKCS_PSS,         {RSA_MIN_MODULUS_BITS,CK_MAX,
+ 				 CKF_SN_VR},            PR_TRUE},
++     {CKM_RSA_PKCS_OAEP,        {RSA_MIN_MODULUS_BITS,CK_MAX,
++                                 CKF_EN_DE_WR_UN},       PR_TRUE},
+ #ifdef SFTK_RSA9796_SUPPORTED
+      {CKM_RSA_9796,		{RSA_MIN_MODULUS_BITS,CK_MAX,
+ 				 CKF_DUZ_IT_ALL},       PR_TRUE},
+@@ -987,7 +989,7 @@
+ sftk_mkPrivKey(SFTKObject *object,CK_KEY_TYPE key, CK_RV *rvp);
+ 
+ static SECStatus
+-sftk_fillRSAPrivateKey(SFTKObject *object);
++sftk_verifyRSAPrivateKey(SFTKObject *object, PRBool fillIfNeeded);
+ 
+ /*
+  * check the consistancy and initialize a Private Key Object 
+@@ -1003,12 +1005,14 @@
+     CK_BBOOL derive = CK_TRUE;
+     CK_BBOOL ckfalse = CK_FALSE;
+     PRBool createObjectInfo = PR_TRUE;
++    PRBool fillPrivateKey = PR_FALSE;
+     int missing_rsa_mod_component = 0;
+     int missing_rsa_exp_component = 0;
+     int missing_rsa_crt_component = 0;
+-    
++
+     SECItem mod;
+     CK_RV crv;
++    SECStatus rv;
+ 
+     switch (key_type) {
+     case CKK_RSA:
+@@ -1043,19 +1047,19 @@
+ 	    int have_exp = 2- missing_rsa_exp_component;
+ 	    int have_component = 5- 
+ 		(missing_rsa_exp_component+missing_rsa_mod_component);
+-	    SECStatus rv;
+ 
+ 	    if ((have_exp == 0) || (have_component < 3)) {
+ 		/* nope, not enough to reconstruct the private key */
+ 		return CKR_TEMPLATE_INCOMPLETE;
+ 	    }
+-	    /*fill in the missing parameters */
+-	    rv = sftk_fillRSAPrivateKey(object);
+-	    if (rv != SECSuccess) {
++	    fillPrivateKey = PR_TRUE;
++	}
++	/*verify the parameters for consistency*/
++	rv = sftk_verifyRSAPrivateKey(object, fillPrivateKey);
++	if (rv != SECSuccess) {
+ 		return CKR_TEMPLATE_INCOMPLETE;
+-	    }
+ 	}
+-		
++
+ 	/* make sure Netscape DB attribute is set correctly */
+ 	crv = sftk_Attribute2SSecItem(NULL, &mod, object, CKA_MODULUS);
+ 	if (crv != CKR_OK) return crv;
+@@ -1149,7 +1153,6 @@
+     if (sftk_isTrue(object,CKA_TOKEN)) {
+ 	SFTKSlot *slot = session->slot;
+ 	SFTKDBHandle *keyHandle = sftk_getKeyDB(slot);
+-	CK_RV crv;
+ 
+ 	if (keyHandle == NULL) {
+ 	    return CKR_TOKEN_WRITE_PROTECTED;
+@@ -1940,10 +1943,11 @@
+ }
+ 
+ /*
+- * we have a partial rsa private key, fill in the rest
++ * If a partial RSA private key is present, fill in the rest if necessary,
++ * and then verify the parameters are well-formed
+  */
+ static SECStatus
+-sftk_fillRSAPrivateKey(SFTKObject *object)
++sftk_verifyRSAPrivateKey(SFTKObject *object, PRBool fillIfNeeded)
+ {
+     RSAPrivateKey tmpKey = { 0 };
+     SFTKAttribute *modulus = NULL;
+@@ -1951,6 +1955,9 @@
+     SFTKAttribute *prime2 = NULL;
+     SFTKAttribute *privateExponent = NULL;
+     SFTKAttribute *publicExponent = NULL;
++    SFTKAttribute *exponent1 = NULL;
++    SFTKAttribute *exponent2 = NULL;
++    SFTKAttribute *coefficient = NULL;
+     SECStatus rv;
+     CK_RV crv;
+ 
+@@ -1981,44 +1988,82 @@
+     if (publicExponent) {
+ 	tmpKey.publicExponent.data = publicExponent->attrib.pValue;
+ 	tmpKey.publicExponent.len  = publicExponent->attrib.ulValueLen;
+-    } 
+-
+-    /*
+-     * populate requires one exponent plus 2 other components to work.
+-     * we expected our caller to check that first. If that didn't happen,
+-     * populate will simply return an error here.
+-     */
+-    rv = RSA_PopulatePrivateKey(&tmpKey);
++    }
++    exponent1 = sftk_FindAttribute(object, CKA_EXPONENT_1);
++    if (exponent1) {
++	tmpKey.exponent1.data = exponent1->attrib.pValue;
++	tmpKey.exponent1.len  = exponent1->attrib.ulValueLen;
++    }
++    exponent2 = sftk_FindAttribute(object, CKA_EXPONENT_2);
++    if (exponent2) {
++	tmpKey.exponent2.data = exponent2->attrib.pValue;
++	tmpKey.exponent2.len  = exponent2->attrib.ulValueLen;
++    }
++    coefficient = sftk_FindAttribute(object, CKA_COEFFICIENT);
++    if (coefficient) {
++	tmpKey.coefficient.data = coefficient->attrib.pValue;
++	tmpKey.coefficient.len  = coefficient->attrib.ulValueLen;
++    }
++
++    if (fillIfNeeded) {
++	/*
++	* populate requires one exponent plus 2 other components to work.
++	* we expected our caller to check that first. If that didn't happen,
++	* populate will simply return an error here.
++	*/
++	rv = RSA_PopulatePrivateKey(&tmpKey);
++	if (rv != SECSuccess) {
++		goto loser;
++	}
++    }
++    rv = RSA_PrivateKeyCheck(&tmpKey);
+     if (rv != SECSuccess) {
+ 	goto loser;
+     }
+-
+     /* now that we have a fully populated key, set all our attribute values */
+     rv = SECFailure;
+-    crv = sftk_forceAttribute(object,CKA_MODULUS,
+-                       sftk_item_expand(&tmpKey.modulus));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_PUBLIC_EXPONENT,
+-                       sftk_item_expand(&tmpKey.publicExponent));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_PRIVATE_EXPONENT,
+-                       sftk_item_expand(&tmpKey.privateExponent));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_PRIME_1,
+-                       sftk_item_expand(&tmpKey.prime1));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_PRIME_2,
+-                       sftk_item_expand(&tmpKey.prime2));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_EXPONENT_1,
+-                       sftk_item_expand(&tmpKey.exponent1));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_EXPONENT_2,
+-                       sftk_item_expand(&tmpKey.exponent2));
+-    if (crv != CKR_OK) goto loser;
+-    crv = sftk_forceAttribute(object,CKA_COEFFICIENT,
+-                       sftk_item_expand(&tmpKey.coefficient));
+-    if (crv != CKR_OK) goto loser;
++    if (!modulus || modulus->attrib.pValue != tmpKey.modulus.data) {
++        crv = sftk_forceAttribute(object,CKA_MODULUS,
++                                  sftk_item_expand(&tmpKey.modulus));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!publicExponent ||
++        publicExponent->attrib.pValue != tmpKey.publicExponent.data) {
++        crv = sftk_forceAttribute(object, CKA_PUBLIC_EXPONENT,
++                                  sftk_item_expand(&tmpKey.publicExponent));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!privateExponent ||
++        privateExponent->attrib.pValue != tmpKey.privateExponent.data) {
++        crv = sftk_forceAttribute(object, CKA_PRIVATE_EXPONENT,
++                                  sftk_item_expand(&tmpKey.privateExponent));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!prime1 || prime1->attrib.pValue != tmpKey.prime1.data) {
++        crv = sftk_forceAttribute(object, CKA_PRIME_1,
++                                  sftk_item_expand(&tmpKey.prime1));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!prime2 || prime2->attrib.pValue != tmpKey.prime2.data) {
++        crv = sftk_forceAttribute(object, CKA_PRIME_2,
++                                  sftk_item_expand(&tmpKey.prime2));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!exponent1 || exponent1->attrib.pValue != tmpKey.exponent1.data) {
++        crv = sftk_forceAttribute(object, CKA_EXPONENT_1,
++                                 sftk_item_expand(&tmpKey.exponent1));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!exponent2 || exponent2->attrib.pValue != tmpKey.exponent2.data) {
++        crv = sftk_forceAttribute(object, CKA_EXPONENT_2,
++                                  sftk_item_expand(&tmpKey.exponent2));
++        if (crv != CKR_OK) goto loser;
++    }
++    if (!coefficient || coefficient->attrib.pValue != tmpKey.coefficient.data) {
++        crv = sftk_forceAttribute(object, CKA_COEFFICIENT,
++                                  sftk_item_expand(&tmpKey.coefficient));
++        if (crv != CKR_OK) goto loser;
++    }
+     rv = SECSuccess;
+ 
+     /* we're done (one way or the other), clean up all our stuff */
+@@ -2041,15 +2086,18 @@
+     if (publicExponent) {
+ 	sftk_FreeAttribute(publicExponent);
+     }
++    if (exponent1) {
++	sftk_FreeAttribute(exponent1);
++    }
++    if (exponent2) {
++	sftk_FreeAttribute(exponent2);
++    }
++    if (coefficient) {
++	sftk_FreeAttribute(coefficient);
++    }
+     return rv;
+ }
+ 
+-
+-
+-
+-
+-
+-
+ /* Generate a low private key structure from an object */
+ NSSLOWKEYPrivateKey *
+ sftk_GetPrivKey(SFTKObject *object,CK_KEY_TYPE key_type, CK_RV *crvp)
+@@ -3128,9 +3176,6 @@
+ 
+     if (slot == NULL) return CKR_SLOT_ID_INVALID;
+ 
+-    pInfo->firmwareVersion.major = 0;
+-    pInfo->firmwareVersion.minor = 0;
+-
+     PORT_Memcpy(pInfo->manufacturerID,manufacturerID,
+ 		sizeof(pInfo->manufacturerID));
+     PORT_Memcpy(pInfo->slotDescription,slot->slotDescription,
+@@ -3157,6 +3202,8 @@
+     /* pInfo->hardwareVersion.major = NSSLOWKEY_DB_FILE_VERSION; */
+     pInfo->hardwareVersion.major = SOFTOKEN_VMAJOR;
+     pInfo->hardwareVersion.minor = SOFTOKEN_VMINOR;
++    pInfo->firmwareVersion.major = SOFTOKEN_VPATCH;
++    pInfo->firmwareVersion.minor = SOFTOKEN_VBUILD;
+     return CKR_OK;
+ }
+ 
+diff -aurN nss-3.16-prepared/lib/softoken/pkcs11c.c nss-3.16/lib/softoken/pkcs11c.c
+--- nss-3.16-prepared/lib/softoken/pkcs11c.c	2014-06-19 16:49:48.630560358 -0700
++++ nss-3.16/lib/softoken/pkcs11c.c	2014-06-19 16:51:57.181910216 -0700
+@@ -302,6 +302,46 @@
+     }
+ }
+ 
++/*
++ * Returns true if "params" contains a valid set of PSS parameters
++ */
++static PRBool
++sftk_ValidatePssParams(const CK_RSA_PKCS_PSS_PARAMS *params)
++{
++    if (!params) {
++        return PR_FALSE;
++    }
++    if (GetHashTypeFromMechanism(params->hashAlg) == HASH_AlgNULL ||
++        GetHashTypeFromMechanism(params->mgf) == HASH_AlgNULL) {
++        return PR_FALSE;
++    }
++    return PR_TRUE;
++}
++
++/*
++ * Returns true if "params" contains a valid set of OAEP parameters
++ */
++static PRBool
++sftk_ValidateOaepParams(const CK_RSA_PKCS_OAEP_PARAMS *params)
++{
++    if (!params) {
++        return PR_FALSE;
++    }
++    /* The requirements of ulSourceLen/pSourceData come from PKCS #11, which
++     * state:
++     *   If the parameter is empty, pSourceData must be NULL and
++     *   ulSourceDataLen must be zero.
++     */
++    if (params->source != CKZ_DATA_SPECIFIED ||
++        (GetHashTypeFromMechanism(params->hashAlg) == HASH_AlgNULL) ||
++        (GetHashTypeFromMechanism(params->mgf) == HASH_AlgNULL) ||
++        (params->ulSourceDataLen == 0 && params->pSourceData != NULL) ||
++        (params->ulSourceDataLen != 0 && params->pSourceData == NULL)) {
++        return PR_FALSE;
++    }
++    return PR_TRUE;
++}
++
+ /* 
+  * return a context based on the SFTKContext type.
+  */
+@@ -588,11 +628,6 @@
+     hashAlg = GetHashTypeFromMechanism(info->params->hashAlg);
+     maskHashAlg = GetHashTypeFromMechanism(info->params->mgf);
+ 
+-    if (info->params->source != CKZ_DATA_SPECIFIED) {
+-        PORT_SetError(SEC_ERROR_INVALID_ALGORITHM);
+-        return SECFailure;
+-    }
+-
+     return RSA_EncryptOAEP(&info->key->u.rsa, hashAlg, maskHashAlg,
+                            (const unsigned char*)info->params->pSourceData,
+                            info->params->ulSourceDataLen, NULL, 0,
+@@ -617,11 +652,6 @@
+     hashAlg = GetHashTypeFromMechanism(info->params->hashAlg);
+     maskHashAlg = GetHashTypeFromMechanism(info->params->mgf);
+ 
+-    if (info->params->source != CKZ_DATA_SPECIFIED) {
+-        PORT_SetError(SEC_ERROR_INVALID_ALGORITHM);
+-        return SECFailure;
+-    }
+-
+     rv = RSA_DecryptOAEP(&info->key->u.rsa, hashAlg, maskHashAlg,
+                          (const unsigned char*)info->params->pSourceData,
+                          info->params->ulSourceDataLen,
+@@ -710,19 +740,18 @@
+ 	}
+ 	context->destroy = sftk_Null;
+ 	break;
+-/* XXX: Disabled until unit tests land.
+     case CKM_RSA_PKCS_OAEP:
+ 	if (key_type != CKK_RSA) {
+ 	    crv = CKR_KEY_TYPE_INCONSISTENT;
+ 	    break;
+ 	}
+-	context->multi = PR_FALSE;
+-	context->rsa = PR_TRUE;
+-	if (pMechanism->ulParameterLen != sizeof(CK_RSA_PKCS_OAEP_PARAMS)) {
++	if (pMechanism->ulParameterLen != sizeof(CK_RSA_PKCS_OAEP_PARAMS) ||
++	    !sftk_ValidateOaepParams((CK_RSA_PKCS_OAEP_PARAMS*)pMechanism->pParameter)) {
+ 	    crv = CKR_MECHANISM_PARAM_INVALID;
+ 	    break;
+ 	}
+-	/\* XXX: Need Parameter validation here *\/
++	context->multi = PR_FALSE;
++	context->rsa = PR_TRUE;
+ 	if (isEncrypt) {
+ 	    SFTKOAEPEncryptInfo *info = PORT_New(SFTKOAEPEncryptInfo);
+ 	    if (info == NULL) {
+@@ -758,7 +787,6 @@
+ 	}
+ 	context->destroy = (SFTKDestroy) sftk_Space;
+ 	break;
+-*/
+     case CKM_RC2_CBC_PAD:
+ 	context->doPad = PR_TRUE;
+ 	/* fall thru */
+@@ -2386,7 +2414,8 @@
+ 	    break;
+ 	} 
+ 	context->rsa = PR_TRUE;
+-	if (pMechanism->ulParameterLen != sizeof(CK_RSA_PKCS_PSS_PARAMS)) {
++	if (pMechanism->ulParameterLen != sizeof(CK_RSA_PKCS_PSS_PARAMS) ||
++	    !sftk_ValidatePssParams((const CK_RSA_PKCS_PSS_PARAMS*)pMechanism->pParameter)) {
+ 	    crv = CKR_MECHANISM_PARAM_INVALID;
+ 	    break;
+ 	}
+@@ -3023,7 +3052,8 @@
+ 	    break;
+ 	} 
+ 	context->rsa = PR_TRUE;
+-	if (pMechanism->ulParameterLen != sizeof(CK_RSA_PKCS_PSS_PARAMS)) {
++	if (pMechanism->ulParameterLen != sizeof(CK_RSA_PKCS_PSS_PARAMS) ||
++	    !sftk_ValidatePssParams((const CK_RSA_PKCS_PSS_PARAMS*)pMechanism->pParameter)) {
+ 	    crv = CKR_MECHANISM_PARAM_INVALID;
+ 	    break;
+ 	}
