@@ -33,6 +33,10 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	dobin "${OUT}/firewalld"
+
+	# Install D-Bus configuration.
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.Firewalld.conf
 }
 
 platform_pkg_test() {
