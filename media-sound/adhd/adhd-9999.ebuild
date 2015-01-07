@@ -90,6 +90,15 @@ src_install() {
 		fi
 	done
 
+	# install cras config files
+	insinto /etc/cras
+	for board_dir in "${board_all[@]}" ; do
+		if [[ -d cras-config/${board_dir} ]] ; then
+			doins -r cras-config/${board_dir}/*
+			break
+		fi
+	done
+
 	# install dbus config allowing cras access
 	insinto /etc/dbus-1/system.d
 	doins dbus-config/org.chromium.cras.conf
