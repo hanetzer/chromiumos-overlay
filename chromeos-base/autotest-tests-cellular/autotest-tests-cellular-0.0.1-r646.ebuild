@@ -61,6 +61,15 @@ IUSE_TESTS="
 	+tests_network_SwitchCarrier
 "
 
+IUSE_MBIM_TESTS="
+	+tests_cellular_MbimComplianceControlRequest
+	+tests_cellular_MbimComplianceDataTransfer
+	+tests_cellular_MbimComplianceDescriptor
+	+tests_cellular_MbimComplianceError
+"
+
+IUSE_TESTS="${IUSE_TESTS} ${IUSE_MBIM_TESTS}"
+
 IUSE="${IUSE} ${IUSE_TESTS}"
 
 CROS_WORKON_LOCALNAME=../third_party/autotest
