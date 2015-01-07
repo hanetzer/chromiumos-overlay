@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 EAPI=4
-CROS_WORKON_COMMIT="b72619aef145c56c24ebc467918f574be74e0377"
-CROS_WORKON_TREE="f0ce84ba04402028921fdc995e2c089671fad548"
+CROS_WORKON_COMMIT="06a16ad51235ad9fbe2d45540880e778e94c35e4"
+CROS_WORKON_TREE="5aeb4eb7455ade553dfd54635008fdc1d1ae181f"
 CROS_WORKON_PROJECT="chromiumos/third_party/adhd"
 CROS_WORKON_LOCALNAME="adhd"
 CROS_WORKON_USE_VCSID=1
@@ -88,6 +88,15 @@ src_install() {
 	for board_dir in "${board_all[@]}" ; do
 		if [[ -d ucm-config/${board_dir} ]] ; then
 			doins -r ucm-config/${board_dir}/*
+			break
+		fi
+	done
+
+	# install cras config files
+	insinto /etc/cras
+	for board_dir in "${board_all[@]}" ; do
+		if [[ -d cras-config/${board_dir} ]] ; then
+			doins -r cras-config/${board_dir}/*
 			break
 		fi
 	done
