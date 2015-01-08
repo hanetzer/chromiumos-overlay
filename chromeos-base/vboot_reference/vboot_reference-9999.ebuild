@@ -8,12 +8,13 @@ inherit cros-debug cros-workon cros-au
 
 DESCRIPTION="Chrome OS verified boot tools"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host dev_debug_force minimal pd_sync tpmtests vboot2"
+IUSE="32bit_au cros_host dev_debug_force minimal -mtd pd_sync tpmtests vboot2"
 
 RDEPEND="!minimal? ( dev-libs/libyaml )
+	mtd? ( sys-apps/flashrom )
 	dev-libs/openssl
 	sys-apps/util-linux"
 DEPEND="app-crypt/trousers
@@ -73,7 +74,7 @@ src_install() {
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
                       DEV_DEBUG_FORCE=$(usev dev_debug_force) \
-		      MINIMAL=1 install
+		      MINIMAL=1 install$(usex mtd "_mtd" "")
 	else
 		# Installing on the host
 		emake BUILD="${S}"/build-main DESTDIR="${D}/usr" \
