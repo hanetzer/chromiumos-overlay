@@ -189,6 +189,8 @@ ALL_BOARDS=(
 	urara
 	veyron
 	veyron_brain
+	veyron_gus
+	veyron_jaq
 	veyron_jerry
 	veyron_mighty
 	veyron_minnie
