@@ -58,6 +58,7 @@ IUSE="
 	ozone
 	reorder
 	+runhooks
+	v4l2_codec
 	v4lplugin
 	verbose
 	vtable_verify
@@ -249,6 +250,7 @@ set_build_defines() {
 		"pkg-config=$(tc-getPKG_CONFIG)"
 		"use_cups=0"
 		"use_gnome_keyring=0"
+		"use_v4l2_codec=$(use10 v4l2_codec)"
 		"use_v4lplugin=$(use10 v4lplugin)"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
