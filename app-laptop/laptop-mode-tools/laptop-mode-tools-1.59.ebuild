@@ -55,6 +55,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0026-wait-lock-for-30-seconds.patch" \
           "0027-ac-supply-not-battery.patch" \
           "0028-usb-autosuspend-on-ac.patch" \
+          "0029-Enable-SATA-min_power-on-AC-mode.patch" \
         )
 
 src_prepare() {
