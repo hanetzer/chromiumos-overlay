@@ -1,0 +1,33 @@
+From 113318ad574a47d41dcb1f160d11500e2d140d7d Mon Sep 17 00:00:00 2001
+From: Sunil Dutt Undekari <usdutt@qti.qualcomm.com>
+Date: Tue, 25 Feb 2014 22:32:02 +0530
+Subject: [PATCH] Set the station to authorized on assoc event for open
+ authentication
+
+This was done in handle_assoc_cb() in ieee802_11.c for drivers that use
+hostapd SME/MLME. However, drivers that include SME/MLME implementation
+do not use that function and the STA flag needs to be set when
+processing the association notification. This is needed to get the STA
+entry into showing the proper authorized state and to get the
+AP-STA-CONNECTED/DISCONNECTED events on the control interface.
+
+Signed-off-by: Jouni Malinen <jouni@qca.qualcomm.com>
+---
+ src/ap/hostapd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/ap/hostapd.c b/src/ap/hostapd.c
+index 6ba6f98..e7ff04a 100644
+--- a/src/ap/hostapd.c
++++ b/src/ap/hostapd.c
+@@ -1974,6 +1974,7 @@ void hostapd_new_assoc_sta(struct hostapd_data *hapd, struct sta_info *sta,
+ 	 * IEEE 802.1X/WPA code will start accounting after the station has
+ 	 * been authorized. */
+ 	if (!hapd->conf->ieee802_1x && !hapd->conf->wpa) {
++		ap_sta_set_authorized(hapd, sta, 1);
+ 		os_get_reltime(&sta->connected_time);
+ 		accounting_sta_start(hapd, sta);
+ 	}
+--
+2.2.0.rc0.207.ga3a616c
+

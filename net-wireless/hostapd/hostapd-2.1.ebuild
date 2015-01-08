@@ -36,6 +36,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${P}-Provide-compile-option-for-weak-ran.patch
 	epatch "${FILESDIR}"/${P}-Add-spectrum-management-option.patch
 	epatch "${FILESDIR}"/${P}-stdout-line-buffered.patch
+	epatch "${FILESDIR}"/${P}-Set-the-station-to-authorized-on-assoc-event-for-ope.patch
 	popd >/dev/null
 }
 
