@@ -23,7 +23,8 @@ DEPEND=""
 
 RDEPEND="${DEPEND}
 	chromeos-base/chromeos-installer
-	sys-apps/hdparm"
+	sys-apps/hdparm
+	sys-apps/mmc-utils"
 
 platform_pkg_test() {
 	local tests=( 'ata' 'mmc' )
