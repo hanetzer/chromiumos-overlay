@@ -32,35 +32,39 @@ DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
 pkg_setup() {
-	# Create the 'power' user and group here in pkg_setup as src_install needs them to change the ownership
-	# of power manager files.
+	# Create the 'power' user and group here in pkg_setup as src_install needs
+	# them to change the ownership of power manager files.
 	enewuser "power"
 	enewgroup "power"
 	cros-workon_pkg_setup
 }
 
 src_install() {
-	# Built binaries
+	# Binaries for production
+	dobin "${OUT}"/backlight_tool  # boot-splash, chromeos-boot-alert
+	dobin "${OUT}"/dump_power_status  # crosh's battery_test command
 	dobin "${OUT}"/powerd
 	dobin "${OUT}"/powerd_setuid_helper
+	dobin "${OUT}"/power_supply_info  # feedback
+	fowners root:power /usr/bin/powerd_setuid_helper
+	fperms 4750 /usr/bin/powerd_setuid_helper
+
+	# Binaries for testing and debugging
 	dobin "${OUT}"/backlight_dbus_tool
-	dobin "${OUT}"/backlight_tool
 	dobin "${OUT}"/get_powerd_initial_backlight_level
 	dobin "${OUT}"/memory_suspend_test
 	dobin "${OUT}"/powerd_dbus_suspend
-	dobin "${OUT}"/power_supply_info
 	dobin "${OUT}"/send_debug_power_status
 	dobin "${OUT}"/set_power_policy
 	dobin "${OUT}"/suspend_delay_sample
 
-	fowners root:power /usr/bin/powerd_setuid_helper
-	fperms 4750 /usr/bin/powerd_setuid_helper
-
-	# Scripts
+	# Scripts for production
 	dobin powerd/powerd_suspend
+	dobin tools/send_metrics_on_resume
+
+	# Scripts for testing and debugging
 	dobin tools/activate_short_dark_resume
 	dobin tools/debug_sleep_quickly
-	dobin tools/send_metrics_on_resume
 	dobin tools/set_short_powerd_timeouts
 	dobin tools/suspend_stress_test
 
