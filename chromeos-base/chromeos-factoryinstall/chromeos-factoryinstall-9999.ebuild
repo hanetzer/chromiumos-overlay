@@ -52,6 +52,7 @@ RDEPEND="$COMMON_DEPEND
 	$PROVIDED_DEPEND
 	x86? ( chromeos-base/chromeos-initramfs )
 	chromeos-base/chromeos-installer
+	chromeos-base/ec-utils
 	chromeos-base/memento_softwareupdate
 	chromeos-base/vpd
 	net-misc/htpdate
