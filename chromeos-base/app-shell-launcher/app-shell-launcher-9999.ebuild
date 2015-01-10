@@ -55,4 +55,7 @@ src_install() {
 	dobin "${OUT}/app_shell_launcher"
 	insinto /etc/init
 	doins init/*.conf
+
+	insinto /etc
+	doins app_shell_dev.conf
 }
