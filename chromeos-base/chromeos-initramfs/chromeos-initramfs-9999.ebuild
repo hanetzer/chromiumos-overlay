@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="frecon netboot_ramfs +power_management"
+IUSE="frecon +interactive_recovery netboot_ramfs +power_management"
 
 # Dependencies used to build the netboot initramfs.
 # Look for the `idobin` and such calls.
@@ -348,6 +348,9 @@ build_initramfs_file() {
 	cp "${S}"/init "${INITRAMFS_TMP_S}/init" || die
 	chmod +x "${INITRAMFS_TMP_S}/init"
 	cp "${S}"/*.sh "${INITRAMFS_TMP_S}/lib" || die
+
+	echo "INTERACTIVE_COMPLETE=$(usex interactive_recovery true false)" \
+		>> "${INITRAMFS_TMP_S}/lib/completion_settings.sh"
 
 	# Copy partition information: write_gpt.sh
 	idoexe "/usr/share/misc/chromeos-common.sh"
