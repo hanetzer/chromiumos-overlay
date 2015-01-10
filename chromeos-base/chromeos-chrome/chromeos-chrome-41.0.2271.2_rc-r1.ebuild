@@ -58,6 +58,7 @@ IUSE="
 	ozone
 	reorder
 	+runhooks
+	v4l2_codec
 	v4lplugin
 	verbose
 	vtable_verify
@@ -126,9 +127,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2270.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2270.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2270.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-41.0.2271.2_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-41.0.2271.2_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-41.0.2271.2_rc-r1.afdo"
 
 add_afdo_files() {
 	local a f
@@ -249,6 +250,7 @@ set_build_defines() {
 		"pkg-config=$(tc-getPKG_CONFIG)"
 		"use_cups=0"
 		"use_gnome_keyring=0"
+		"use_v4l2_codec=$(use10 v4l2_codec)"
 		"use_v4lplugin=$(use10 v4lplugin)"
 		"use_vtable_verify=$(use10 vtable_verify)"
 		"use_xi2_mt=2"
@@ -676,15 +678,9 @@ setup_test_lists() {
 		media_unittests
 		sandbox_linux_unittests
 		ppapi_example_video_decode
+		video_decode_accelerator_unittest
+		video_encode_accelerator_unittest
 	)
-
-	# TODO(spang): video tests don't build with ozone - crbug.com/363302
-	if ! use ozone; then
-		TEST_FILES+=(
-			video_decode_accelerator_unittest
-			video_encode_accelerator_unittest
-		)
-	fi
 
 	if use chrome_internal || use internal_gles_conform; then
 		TEST_FILES+=(
