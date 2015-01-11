@@ -44,7 +44,7 @@ KEYWORDS="~*"
 
 INTEL_CARDS="intel"
 RADEON_CARDS="radeon"
-VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau r128 savage sis vmware tdfx via"
+VIDEO_CARDS="${INTEL_CARDS} ${RADEON_CARDS} mach64 mga nouveau r128 savage sis vmware tdfx via freedreno"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
@@ -118,6 +118,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.0-cross-compile.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
+	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
 	epatch "${FILESDIR}"/10.0-force_s3tc_enable.patch
 	epatch "${FILESDIR}"/9.0-i965-Allow-the-case-where-multiple-flush-types-are-e.patch
 	epatch "${FILESDIR}"/8.1-dead-code-local-hack.patch
@@ -183,6 +184,9 @@ src_configure() {
 
 		# ATI code
 		gallium_driver_enable video_cards_radeon r300 r600
+
+		# Freedreno code
+		gallium_driver_enable video_cards_freedreno freedreno
 	fi
 
 	export LLVM_CONFIG=${SYSROOT}/usr/bin/llvm-config-host
@@ -248,7 +252,7 @@ src_install() {
 	insinto "/usr/$(get_libdir)/dri/"
 	insopts -m0755
 	# install the gallium drivers we use
-	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so swrast_dri.so )
+	local gallium_drivers_files=( i915_dri.so nouveau_dri.so r300_dri.so r600_dri.so msm_dri.so swrast_dri.so )
 	for x in ${gallium_drivers_files[@]}; do
 		if [ -f "${S}/$(get_libdir)/gallium/${x}" ]; then
 			doins "${S}/$(get_libdir)/gallium/${x}"
