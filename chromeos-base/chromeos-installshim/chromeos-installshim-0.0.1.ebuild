@@ -32,6 +32,7 @@ RDEPEND="
 	chromeos-base/chromeos-factoryinstall
 	chromeos-base/chromeos-init
 	chromeos-base/dev-install
+	chromeos-base/power_manager
 	shill? ( chromeos-base/shill )
 	!shill? ( net-misc/dhcpcd )
 	chromeos-base/vboot_reference
