@@ -38,6 +38,7 @@ pkg_setup() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/${MY_P}-disable-v4lwrapper.patch
+	epatch "${FILESDIR}"/${MY_P}-remove-glob.patch
 	eautoreconf
 }
 
