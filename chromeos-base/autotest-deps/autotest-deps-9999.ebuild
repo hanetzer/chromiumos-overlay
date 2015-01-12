@@ -42,6 +42,7 @@ RDEPEND="${RDEPEND}
 # FAFT deps
 RDEPEND="${RDEPEND}
 	sys-apps/hdparm
+	sys-apps/mmc-utils
 "
 
 RDEPEND="${RDEPEND}
