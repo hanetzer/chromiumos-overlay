@@ -335,11 +335,6 @@ src_compile_depthcharge() {
 		--outdir "out.ro" --output "image.bin" \
 		${depthcharge_binaries[@]} || \
 	  die "failed to build production image."
-	einfo "Building forced RW image."
-	cros_bundle_firmware "${common[@]}" ${silent[@]} --force-rw \
-		--outdir "out.rw" --output "image.rw.bin" \
-		${depthcharge_binaries[@]} || \
-	  die "failed to build forced RW image."
 	einfo "Building serial image."
 	cros_bundle_firmware ${common[@]} ${serial[@]} \
 		--outdir "out.serial" --output "image.serial.bin" \
