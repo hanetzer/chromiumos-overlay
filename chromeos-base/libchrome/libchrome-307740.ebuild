@@ -103,6 +103,7 @@ src_install() {
 		base/process
 		base/strings
 		base/synchronization
+		base/task
 		base/threading
 		base/time
 		base/timer
