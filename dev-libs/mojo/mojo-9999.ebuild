@@ -62,7 +62,7 @@ src_configure() {
 
 src_compile() {
 	ninja -C "$(gn-chromium_get_build_dir)" \
-	    mojo_shell mojo_launcher libmojo_sdk || die
+	    mojo_shell mojo_launcher libmojo_sdk tracing examples/echo || die
 }
 
 src_install() {
@@ -77,8 +77,11 @@ src_install() {
 	# Mojo SDK library and headers.
 	local d header_dirs=(
 		mojo/public/cpp/application
+		mojo/public/cpp/application/lib
 		mojo/public/cpp/bindings
+		mojo/public/cpp/bindings/lib
 		mojo/public/cpp/environment
+		mojo/public/cpp/system
 		mojo/public/cpp/utility
 		mojo/public/c/environment
 		mojo/public/c/system
@@ -94,6 +97,12 @@ src_install() {
 		doins "$(gn-chromium_get_build_dir)/gen/${d}/"*.h
 	done
 	dolib.a "$(gn-chromium_get_build_dir)/obj/mojo/public/libmojo_sdk.a"
+
+	# Location for Mojo applications.
+	insinto /usr/lib/mojo
+	doins "$(gn-chromium_get_build_dir)/tracing.mojo"
+	doins "$(gn-chromium_get_build_dir)/echo_client.mojo"
+	doins "$(gn-chromium_get_build_dir)/echo_service.mojo"
 
 	# Code generation tools, including GYP rules for mojom files.
 	insinto /build/bin
