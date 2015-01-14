@@ -60,6 +60,7 @@ IUSE_TESTS="
 "
 
 IUSE_MBIM_TESTS="
+	+tests_cellular_MbimComplianceControlCommand
 	+tests_cellular_MbimComplianceControlRequest
 	+tests_cellular_MbimComplianceDataTransfer
 	+tests_cellular_MbimComplianceDescriptor
