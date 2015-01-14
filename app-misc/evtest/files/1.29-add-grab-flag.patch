@@ -1,0 +1,185 @@
+https://bugs.freedesktop.org/show_bug.cgi?id=88572
+
+From 6074a20cd8be0db82eb9425538c507075ff6fb61 Mon Sep 17 00:00:00 2001
+From: Joseph Hwang <josephsih@chromium.org>
+Date: Fri, 23 Jan 2015 16:22:16 +0800
+Subject: [PATCH] add grab flag
+
+If the --grab flag is given in capture mode, evtest keeps an EVIOCGRAB
+on the device. While this grab is active, other processes will not
+receive events from the kernel devices. The grab is released again
+when evtest quits.
+
+TEST=Check that the cursor is frozen when --grab option is specified.
+$ evtest --grab
+---
+ evtest.c   | 45 +++++++++++++++++++++++++++++++++++++--------
+ evtest.txt |  6 +++++-
+ 2 files changed, 42 insertions(+), 9 deletions(-)
+
+diff --git a/evtest.c b/evtest.c
+index 74230ea..7263bdb 100644
+--- a/evtest.c
++++ b/evtest.c
+@@ -55,6 +55,10 @@
+ #include <errno.h>
+ #include <getopt.h>
+ #include <ctype.h>
++#include <signal.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <unistd.h>
+ 
+ #define BITS_PER_LONG (sizeof(long) * 8)
+ #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
+@@ -93,6 +97,14 @@ static const struct query_mode {
+ 	{ "EV_SW",  EV_SW, SW_MAX, EVIOCGSW(SW_MAX) },
+ };
+ 
++static int grab_flag = 0;
++static volatile sig_atomic_t stop = 0;
++
++static void interrupt_handler(int sig)
++{
++	stop = 1;
++}
++
+ /**
+  * Look up an entry in the query_modes table by its textual name.
+  *
+@@ -675,8 +687,9 @@ static int version(void)
+ static int usage(void)
+ {
+ 	printf("USAGE:\n");
+-	printf(" Grab mode:\n");
+-	printf("   %s /dev/input/eventX\n", program_invocation_short_name);
++	printf(" Capture mode:\n");
++	printf("   %s [--grab] /dev/input/eventX\n", program_invocation_short_name);
++	printf("     --grab  grab the device for exclusive access\n");
+ 	printf("\n");
+ 	printf(" Query mode: (check exit code)\n");
+ 	printf("   %s --query /dev/input/eventX <type> <value>\n",
+@@ -768,8 +781,15 @@ static int print_events(int fd)
+ {
+ 	struct input_event ev[64];
+ 	int i, rd;
++	fd_set rdfs;
+ 
+-	while (1) {
++	FD_ZERO(&rdfs);
++	FD_SET(fd, &rdfs);
++
++	while (!stop) {
++		select(fd + 1, &rdfs, NULL, NULL, NULL);
++		if (stop)
++			break;
+ 		rd = read(fd, ev, sizeof(struct input_event) * 64);
+ 
+ 		if (rd < (int) sizeof(struct input_event)) {
+@@ -800,6 +820,9 @@ static int print_events(int fd)
+ 		}
+ 
+ 	}
++
++	ioctl(fd, EVIOCGRAB, (void*)0);
++	return EXIT_SUCCESS;
+ }
+ 
+ /**
+@@ -808,13 +831,13 @@ static int print_events(int fd)
+  * @param fd The file descriptor to the device.
+  * @return 0 if the grab was successful, or 1 otherwise.
+  */
+-static int test_grab(int fd)
++static int test_grab(int fd, int grab_flag)
+ {
+ 	int rc;
+ 
+ 	rc = ioctl(fd, EVIOCGRAB, (void*)1);
+ 
+-	if (!rc)
++	if (rc == 0 && !grab_flag)
+ 		ioctl(fd, EVIOCGRAB, (void*)0);
+ 
+ 	return rc;
+@@ -827,7 +850,7 @@ static int test_grab(int fd)
+  * @param device The device to monitor, or NULL if the user should be prompted.
+  * @return 0 on success, non-zero on error.
+  */
+-static int do_capture(const char *device)
++static int do_capture(const char *device, int grab_flag)
+ {
+ 	int fd;
+ 	char *filename;
+@@ -867,7 +890,7 @@ static int do_capture(const char *device)
+ 
+ 	printf("Testing ... (interrupt to exit)\n");
+ 
+-	if (test_grab(fd))
++	if (test_grab(fd, grab_flag))
+ 	{
+ 		printf("***********************************************\n");
+ 		printf("  This device is grabbed by another process.\n");
+@@ -878,6 +901,9 @@ static int do_capture(const char *device)
+ 		printf("***********************************************\n");
+ 	}
+ 
++	signal(SIGINT, interrupt_handler);
++	signal(SIGTERM, interrupt_handler);
++
+ 	return print_events(fd);
+ }
+ 
+@@ -954,6 +980,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
+ }
+ 
+ static const struct option long_options[] = {
++	{ "grab", no_argument, &grab_flag, 1 },
+ 	{ "query", no_argument, NULL, MODE_QUERY },
+ 	{ "version", no_argument, NULL, MODE_VERSION },
+ 	{ 0, },
+@@ -972,6 +999,8 @@ int main (int argc, char **argv)
+ 		if (c == -1)
+ 			break;
+ 		switch (c) {
++		case 0:
++			break;
+ 		case MODE_QUERY:
+ 			mode = c;
+ 			break;
+@@ -986,7 +1015,7 @@ int main (int argc, char **argv)
+ 		device = argv[optind++];
+ 
+ 	if (mode == MODE_CAPTURE)
+-		return do_capture(device);
++		return do_capture(device, grab_flag);
+ 
+ 	if ((argc - optind) < 2) {
+ 		fprintf(stderr, "Query mode requires device, type and key parameters\n");
+diff --git a/evtest.txt b/evtest.txt
+index b614482..f64b44b 100644
+--- a/evtest.txt
++++ b/evtest.txt
+@@ -8,7 +8,7 @@ NAME
+ 
+ SYNOPSIS
+ --------
+-     evtest /dev/input/eventX
++     evtest [--grab] /dev/input/eventX
+ 
+      evtest --query /dev/input/eventX <type> <value>
+ 
+@@ -19,6 +19,10 @@ display information about the specified input device, including all the events
+ supported by the device. It then monitors the device and displays all the
+ events layer events generated.
+ 
++If the --grab flag is given in capture mode, evtest keeps an EVIOCGRAB on the
++device. While this grab is active, other processes will not receive events
++from the kernel devices. The grab is released again when evtest quits.
++
+ In the second invocation type ("query mode"), evtest performs a one-shot query
+ of the state of a specific key *value* of an event *type*.
+ 
+-- 
+2.2.0.rc0.207.ga3a616c
+
