@@ -29,6 +29,7 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	chromeos-base/firewalld
 	chromeos-base/shill
 	test? (
 		dev-cpp/gmock

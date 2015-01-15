@@ -27,6 +27,7 @@ RDEPEND="
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}
+	chromeos-base/firewalld
 	chromeos-base/system_api
 	test? (
 		dev-cpp/gmock
