@@ -98,6 +98,7 @@ src_install() {
 		base/memory
 		base/message_loop
 		base/metrics
+		base/numerics
 		base/posix
 		base/profiler
 		base/process
