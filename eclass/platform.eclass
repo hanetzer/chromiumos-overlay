@@ -100,10 +100,16 @@ platform_test() {
 		"${platform2_test_py}"
 		--action="${action}"
 		$(platform_get_target_args)
-		--gtest_filter="${gtest_filter}"
-		--user_gtest_filter="${P2_TEST_FILTER}"
 		--sysroot="${SYSROOT}"
 		${run_as_root_flag}
+	)
+
+	# Only add these options if they're specified ... leads to cleaner output
+	# for developers to read.
+	[[ -n ${gtest_filter} ]] && cmd+=( --gtest_filter="${gtest_filter}" )
+	[[ -n ${P2_TEST_FILTER} ]] && cmd+=( --user_gtest_filter="${P2_TEST_FILTER}" )
+
+	cmd+=(
 		--
 		"${bin}"
 	)
