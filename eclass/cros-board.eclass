@@ -196,6 +196,7 @@ ALL_BOARDS=(
 	veyron_minnie
 	veyron_pinky
 	veyron_remy
+	veyron_rialto
 	veyron_speedy
 	#waluigi
 	whirlwind
