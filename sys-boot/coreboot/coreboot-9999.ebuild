@@ -25,7 +25,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ap148-mode em100-mode memmaps quiet-cb rmt vboot2 vmx"
+IUSE="ap148-mode em100-mode fsp memmaps quiet-cb rmt vboot2 vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly daisy falco fox gizmo link lumpy nyan
@@ -43,7 +43,7 @@ RDEPEND="
 # Dependency shared by x86 and amd64.
 DEPEND_X86="
 	sys-power/iasl
-	sys-boot/chromeos-mrc
+	!fsp? ( sys-boot/chromeos-mrc )
 	"
 DEPEND="
 	chromeos-base/vboot_reference
