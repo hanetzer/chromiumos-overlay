@@ -23,8 +23,6 @@ src_prepare() {
 }
 
 src_configure() {
-	# Disable clang for mips until it's fixed. http://crbug.com/358415
-	use mips && CROS_WORKON_CLANG=0
 	append-flags -g
 
 	# Disable flaky tests by default.  Do it here because the CPPFLAGS
