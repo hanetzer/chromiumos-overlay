@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure install prepare
+DEPEND=dev-libs/libnl:3
+DESCRIPTION=swconfig utility used to configure home switch devices
+EAPI=4
+HOMEPAGE=http://wiki.openwrt.org/doc/techref/swconfig
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=dev-libs/libnl:3
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/swconfig-14.07.tar.gz
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=e777fc52138bc2e8d1f56428b273883d
