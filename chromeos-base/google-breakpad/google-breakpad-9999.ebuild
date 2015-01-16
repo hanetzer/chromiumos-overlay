@@ -10,7 +10,7 @@ DESCRIPTION="Google crash reporting"
 HOMEPAGE="http://code.google.com/p/google-breakpad"
 SRC_URI=""
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-alltests cros_host"
