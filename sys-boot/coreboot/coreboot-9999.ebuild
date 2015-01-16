@@ -29,8 +29,8 @@ IUSE="ap148-mode em100-mode memmaps quiet-cb rmt vboot2 vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly daisy falco fox gizmo link lumpy nyan
-	panther parrot peppy rambi samus slippy stout stout32 stumpy urara
-	variant-peach-pit
+	panther parrot peppy rambi samus slippy stout stout32 strago stumpy
+	urara variant-peach-pit
 )
 
 DEPEND_BLOCKERS="${PER_BOARD_BOARDS[@]/#/!sys-boot/chromeos-coreboot-}"
@@ -204,6 +204,11 @@ src_install() {
 		configs/config.${board} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
 		configs/config.${board} ).rom
+	FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_FILE=/ { print $2 }' \
+		configs/config.${board} )
+	if [[ -n "${FSP}" ]]; then
+		newins ${FSP} fsp.bin
+	fi
 	if [[ -n "${OPROM}" ]]; then
 		newins ${OPROM} ${CBFSOPROM}
 	fi
