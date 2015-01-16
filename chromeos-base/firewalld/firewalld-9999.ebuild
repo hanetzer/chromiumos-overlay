@@ -37,6 +37,10 @@ src_install() {
 	# Install D-Bus configuration.
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.Firewalld.conf
+
+	# Install Upstart configuration.
+	insinto /etc/init
+	doins firewalld.conf
 }
 
 platform_pkg_test() {
