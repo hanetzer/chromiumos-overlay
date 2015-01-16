@@ -1,5 +1,29 @@
-diff --git a/lib/asan/asan_rtl.cc b/lib/asan/asan_rtl.cc
-index 3e21c87..957b73d 100644
+diff --git a/lib/lsan/lsan_common.cc b/lib/lsan/lsan_common.cc
+index 746244c..f99cee0 100644
+--- a/llvm/projects/compiler-rt/lib/lsan/lsan_common.cc
++++ b/llvm/projects/compiler-rt/lib/lsan/lsan_common.cc
+@@ -79,7 +79,7 @@ static void InitializeFlags(bool standalone) {
+     SetCommonFlagsDefaults(cf);
+     cf->external_symbolizer_path = GetEnv("LSAN_SYMBOLIZER_PATH");
+     cf->malloc_context_size = 30;
+-    cf->detect_leaks = true;
++    cf->detect_leaks = false;
+   }
+   ParseCommonFlagsFromString(cf, options);
+ }
+diff --git a/lib/sanitizer_common/sanitizer_flags.cc b/lib/sanitizer_common/sanitizer_flags.cc
+index 40b6ec0..1f0c9f2 100644
+--- a/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.cc
++++ b/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.cc
+@@ -46,7 +46,7 @@ void SetCommonFlagsDefaults(CommonFlags *f) {
+   f->malloc_context_size = 1;
+   f->log_path = "stderr";
+   f->verbosity = 0;
+-  f->detect_leaks = true;
++  f->detect_leaks = false;
+   f->leak_check_at_exit = true;
+   f->allocator_may_return_null = false;
+   f->print_summary = true;
 --- a/llvm/projects/compiler-rt/lib/asan/asan_rtl.cc
 +++ b/llvm/projects/compiler-rt/lib/asan/asan_rtl.cc
 @@ -233,7 +233,7 @@ static void ParseFlagsFromString(Flags *f, const char *str) {
@@ -11,29 +35,4 @@ index 3e21c87..957b73d 100644
    cf->external_symbolizer_path = GetEnv("ASAN_SYMBOLIZER_PATH");
    cf->malloc_context_size = kDefaultMallocContextSize;
    cf->intercept_tls_get_addr = true;
-diff --git a/lib/lsan/lsan.cc b/lib/lsan/lsan.cc
-index 1b30b4f..c17e490 100644
---- a/llvm/projects/compiler-rt/lib/lsan/lsan.cc
-+++ b/llvm/projects/compiler-rt/lib/lsan/lsan.cc
-@@ -30,7 +30,7 @@ static void InitializeCommonFlags() {
-   SetCommonFlagsDefaults(cf);
-   cf->external_symbolizer_path = GetEnv("LSAN_SYMBOLIZER_PATH");
-   cf->malloc_context_size = 30;
--  cf->detect_leaks = true;
-+  cf->detect_leaks = false;
- 
-   ParseCommonFlagsFromString(cf, GetEnv("LSAN_OPTIONS"));
- }
-diff --git a/lib/sanitizer_common/sanitizer_flags.cc b/lib/sanitizer_common/sanitizer_flags.cc
-index 406bb64..3abf0d6 100644
---- a/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.cc
-+++ b/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.cc
-@@ -40,7 +40,7 @@ void SetCommonFlagsDefaults(CommonFlags *f) {
-   f->malloc_context_size = 1;
-   f->log_path = "stderr";
-   f->verbosity = 0;
--  f->detect_leaks = true;
-+  f->detect_leaks = false;
-   f->leak_check_at_exit = true;
-   f->allocator_may_return_null = false;
-   f->print_summary = true;
+

@@ -19,19 +19,19 @@ EGIT_REPO_URIS=(
 		#"git://github.com/llvm-mirror/llvm.git"
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"44c3a982c2a1a9be004a79d7b62dc00904f6ebc6" # EGIT_COMMIT
+		"4b0964871de3bbb760ee07403d1b7abfd3d0694d" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		#"git://github.com/llvm-mirror/compiler-rt.git"
 		#"http://llvm.org/git/compiler-rt.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"76fb42c9757cf589c31965c5871945ec5ab9b6c4" # EGIT_COMMIT
+		"b3c6665a733a3523e908a72280dbb9dca648ea26" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"git://github.com/llvm-mirror/clang.git"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"82ab1c51c0cfeca6081667771771439a227919fe"  # EGIT_COMMIT
+		"95712cb319d3caa39ba00848046d6a2ed77aace1"  # EGIT_COMMIT
 )
 inherit git-2
 
