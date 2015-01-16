@@ -67,6 +67,7 @@ CLIENT_IUSE_TESTS="
 	+tests_iozone
 	+tests_netpipe
 	+tests_sleeptest
+	+tests_kernel_sysrq_info
 	+tests_unixbench
 	+tests_autoupdate_CannedOmahaUpdate
 	+tests_build_RootFilesystemSize
