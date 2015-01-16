@@ -51,7 +51,7 @@ platform_pkg_test() {
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${test_bin}"
+		platform_test "run" "./${test_bin}"
 	done
 }
 
