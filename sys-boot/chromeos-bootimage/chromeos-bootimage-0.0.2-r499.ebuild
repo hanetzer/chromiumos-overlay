@@ -19,9 +19,9 @@ KEYWORDS="*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex auron bayleybay beltino bolt butterfly emeraldlake2 falco fox"
 BOARDS="${BOARDS} gizmo jecht link lumpy lumpy64 mario panther parrot peppy"
-BOARDS="${BOARDS} rambi samus slippy squawks stout stumpy"
+BOARDS="${BOARDS} rambi samus slippy squawks stout strago stumpy"
 IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
-IUSE="${IUSE} cros_ec depthcharge efs exynos factory-mode"
+IUSE="${IUSE} cros_ec depthcharge efs exynos factory-mode fsp"
 IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2"
 
 REQUIRED_USE="^^ ( ${BOARDS} arm mips )"
@@ -247,6 +247,10 @@ src_compile_depthcharge() {
 	local refcode_file="${froot}/refcode.stage"
 	local ro_suffix
 	local rw_suffix
+
+	if use fsp ; then
+		refcode_file="${froot}/fsp.bin"
+	fi
 
 	if use unified_depthcharge; then
 		ro_suffix="elf"
