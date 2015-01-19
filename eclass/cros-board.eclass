@@ -156,6 +156,7 @@ ALL_BOARDS=(
 	raspberrypi
 	reptile
 	#ricochet
+	rikku
 	rizer
 	rush
 	rush_ryu
