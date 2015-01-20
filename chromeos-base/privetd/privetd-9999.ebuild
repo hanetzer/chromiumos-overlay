@@ -54,6 +54,9 @@ src_install() {
 	# Install init scripts.
 	insinto /etc/init
 	doins init/privetd.conf
+	# Install DBus configuration files.
+	insinto /etc/dbus-1/system.d
+	doins dbus_bindings/org.chromium.privetd.conf
 }
 
 platform_pkg_test() {
