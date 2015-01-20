@@ -151,6 +151,7 @@ ALL_BOARDS=(
 	ppcle-32-generic
 	ppcle-64-generic
 	puppy
+	purin
 	quawks
 	rambi
 	raspberrypi
