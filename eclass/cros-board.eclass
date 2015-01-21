@@ -9,20 +9,13 @@
 #  This class provides an easy way to retrieve the BOARD variable.
 #  It is intended to be used by ebuild packages that need to have the
 #  board information for various reasons -- for example, to differentiate
-#  various hardware attributes at build time; see 'adhd' for an example of
-#  this.
+#  various hardware attributes at build time.
 #
-#  If an unknown board is encountered, or multiple boards are defined,
-#  this class deliberately fails the build.
+#  If an unknown board is encountered and no default is provided, or multiple
+#  boards are defined, this class deliberately fails the build.
 #  This provides an easy method of identifying a change to
 #  the build which might affect inheriting packages.
-#
-#  For example, the ADHD (Google A/V daemon) package relies on the
-#  BOARD variable to determine which hardware should be monitored at
-#  runtime.  If the BOARD variable is not set, the daemon will not
-#  monitor any specific hardware; thus, when a new board is added, the
-#  ADHD project must be updated.
-#
+
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
 BOARD_USE_PREFIX="board_use_"
@@ -236,28 +229,34 @@ ALL_BOARDS=(
 # See REQUIRED_USE below.
 IUSE="${ALL_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host"
 
-# Require one, and only one, of the board_use flags to be set if this eclass
-# is used.  This effectively makes any ebuild that inherits this eclass require
-# a known valid board to be set.
-REQUIRED_USE="^^ ( ${IUSE} )"
-
 # Echo the current board, with variant.
 get_current_board_with_variant()
 {
+	[[ $# -gt 1 ]] && die "Usage: ${FUNCNAME} [default]"
+
 	local b
+	local current
+	local default_board=$1
 
 	for b in "${ALL_BOARDS[@]}"; do
 		if use ${BOARD_USE_PREFIX}${b}; then
-			echo ${b}
-			return
+			if [[ -n "${current}" ]]; then
+				die "More than one board is set: ${current} and ${b}"
+			fi
+			current="${b}"
 		fi
 	done
 
-	die "Unable to determine current board (with variant)."
+	if [[ -n "${current}" ]]; then
+		echo ${current}
+		return
+	fi
+
+	echo "${default_board}"
 }
 
 # Echo the current board, without variant.
 get_current_board_no_variant()
 {
-	get_current_board_with_variant | cut -d '_' -f 1
+	get_current_board_with_variant "$@" | cut -d '_' -f 1
 }
