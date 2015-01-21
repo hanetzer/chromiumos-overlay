@@ -71,6 +71,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_UpdateRouter
 	+tests_network_WiFi_VerifyRouter
 	+tests_network_WiFi_VisibleScan
+	+tests_network_WiFi_WakeOnDisconnect
 	+tests_network_WiFi_WMM
 "
 
