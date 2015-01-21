@@ -67,6 +67,12 @@ CROS_COMMON_RDEPEND="
 	virtual/chromeos-bsp-test
 "
 
+# Packages needed by FAFT.
+CROS_COMMON_RDEPEND+="
+	sys-apps/hdparm
+	sys-apps/mmc-utils
+"
+
 ################################################################################
 #
 # CROS_* : Dependencies for "regular" CrOS devices (coreutils, X etc)
