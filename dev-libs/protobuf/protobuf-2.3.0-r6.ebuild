@@ -2,12 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/protobuf/protobuf-2.3.0-r1.ebuild,v 1.5 2011/03/16 18:00:10 xarthisius Exp $
 
-EAPI="3"
+EAPI="4"
 
-PYTHON_DEPEND="python-runtime? 2"
 JAVA_PKG_IUSE="source"
+PYTHON_COMPAT=( python2_7 )
+DISTUTILS_OPTIONAL=1
 
-inherit autotools eutils distutils python-old-eapi3 java-pkg-opt-2 elisp-common toolchain-funcs
+inherit autotools eutils distutils-r1 java-pkg-opt-2 elisp-common toolchain-funcs
 
 DESCRIPTION="Google's Protocol Buffers -- an efficient method of encoding structured data"
 HOMEPAGE="http://code.google.com/p/protobuf/"
@@ -16,17 +17,16 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
+IUSE="emacs examples java python static-libs vim-syntax"
 
-IUSE="emacs examples java python python-runtime static-libs vim-syntax"
-
-DEPEND="${DEPEND} java? ( >=virtual/jdk-1.5 )
-	python? ( dev-lang/python dev-python/setuptools )
+CDEPEND="emacs? ( virtual/emacs )
+	python? ( ${PYTHON_DEPS} )"
+DEPEND="${CDEPEND}
+	java? ( >=virtual/jdk-1.5 )
+	python? ( dev-python/setuptools[${PYTHON_USEDEP}] )
 	emacs? ( virtual/emacs )"
-RDEPEND="${RDEPEND} java? ( >=virtual/jre-1.5 )
-	emacs? ( virtual/emacs )"
-
-PYTHON_MODNAME="google/protobuf"
-DISTUTILS_SRC_TEST="setup.py"
+RDEPEND="${CDEPEND}
+	java? ( >=virtual/jre-1.5 )"
 
 src_prepare() {
 	epatch "${FILESDIR}"/${P}-asneeded-2.patch
@@ -35,9 +35,7 @@ src_prepare() {
 	eautoreconf
 
 	if use python; then
-		python_set_active_version 2
-		python_convert_shebangs -r 2 .
-		distutils_src_prepare
+		cd python && distutils-r1_src_prepare
 	fi
 }
 
@@ -60,9 +58,9 @@ src_compile() {
 
 	if use python; then
 		einfo "Compiling Python library ..."
-		pushd python
-		distutils_src_compile
-		popd
+		pushd "${S}"/python >/dev/null
+		PROTOC="${BUILD_DIR}"/src/protoc distutils-r1_src_compile
+		popd >/dev/null
 	fi
 
 	if use java; then
@@ -84,9 +82,9 @@ src_test() {
 	emake check || die "emake check failed"
 
 	if use python; then
-		 pushd python
-		 distutils_src_test
-		 popd
+		 pushd python >/dev/null
+		 distutils-r1_src_test
+		 popd >/dev/null
 	fi
 }
 
@@ -97,16 +95,14 @@ src_install() {
 	use static-libs || rm -rf "${D}"/usr/lib*/*.la
 
 	if use python; then
-		pushd python
-		# distutils.eclass doesn't allow us to install into /usr/local, so we
-		# have to do this manually.
-		"${EPYTHON}" setup.py install --root="${D}" --prefix=/usr/local
-		popd
+		pushd python >/dev/null
+		distutils-r1_python_install --prefix=/usr/local
+		popd >/dev/null
 		# HACK ALERT: upstream setup.py forgets to install google/__init__.py,
 		# hack now, fix properly later.
-		pushd "${D}"
+		pushd "${D}" >/dev/null
 		local whereto="$(find . -name 'site-packages')"
-		popd
+		popd >/dev/null
 		insinto "${whereto/./}"/google/
 		doins "${S}"/python/google/__init__.py
 	fi
@@ -139,4 +135,3 @@ pkg_postinst() {
 pkg_postrm() {
 	use emacs && elisp-site-regen
 }
-
