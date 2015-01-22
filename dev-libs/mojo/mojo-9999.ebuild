@@ -4,7 +4,7 @@
 EAPI="4"
 PYTHON_COMPAT=( python2_7 )
 
-inherit cros-board cros-constants gn-chromium multiprocessing python-single-r1 user
+inherit cros-constants gn-chromium multiprocessing python-single-r1 user
 
 DESCRIPTION="mojo_shell, libraries, and codegen tools for use on CrOS"
 SRC_URI=""
