@@ -850,7 +850,7 @@ cros-kernel2_src_install() {
 			local its_script="${kernel_dir}/its_script"
 			emit_its_script "${its_script}" "${kernel_dir}" \
 				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
-			mkimage -D "-I dts -O dtb -p 1024" -f "${its_script}" "${kernel_bin}" || die
+			mkimage -D "-I dts -O dtb -p 2048" -f "${its_script}" "${kernel_bin}" || die
 		elif [[ "${kernel_arch}" == "arm" ]]; then
 			cp "${boot_dir}/uImage" "${kernel_bin}" || die
 			if use boot_dts_device_tree; then
