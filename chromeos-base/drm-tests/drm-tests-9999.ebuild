@@ -16,7 +16,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-RDEPEND="virtual/opengles"
+RDEPEND="virtual/opengles
+	|| ( media-libs/mesa[gbm] media-libs/minigbm )"
 DEPEND="${RDEPEND}"
 
 src_compile() {
