@@ -42,6 +42,8 @@ ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6872", GOTO="modem_change_mode"
 ATTRS{idVendor}=="04e8", ATTRS{idProduct}=="6906", GOTO="modem_change_mode"
 # Altair LTE ALT3100
 ATTRS{idVendor}=="216f", ATTRS{idProduct}=="0047", GOTO="modem_change_mode"
+# Telit HE910
+ATTRS{idVendor}=="1bc7", ATTRS{idProduct}=="0021", GOTO="modem_change_mode"
 
 #-------------------------------------------------------------------------------
 GOTO="modem_end"
