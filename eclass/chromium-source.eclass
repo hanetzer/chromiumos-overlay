@@ -10,10 +10,10 @@
 # @VCSURL: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/eclass/@ECLASS@
 # @BLURB: helper eclass for building packages using the Chromium source code.
 # @DESCRIPTION:
-# To use this eclass, call chromium-source_src_unpack() from
-# src_unpack() in your ebuild. This will set CHROMIUM_SOURCE_DIR to
-# where the Chromium source is stored and will also setup the right
-# credentials needed by the Chromium build scripts.
+# To use this eclass, simply inherit chromium-source in your ebuild.
+# This will set CHROMIUM_SOURCE_DIR to where the Chromium source is
+# stored and will also setup the right credentials needed by the
+# Chromium build scripts.
 #
 # Additionally, the CHROMIUM_SOURCE_ORIGIN variable will be set to
 # LOCAL_SOURCE if CHROMIUM_SOURCE_DIR points to a local checkout and
@@ -26,7 +26,7 @@
 # This eclass also adds a dependency on chromeos-base/chromium-source
 # which is the ebuild used for downloading the source code.
 
-IUSE="cros_internal"
+IUSE="chrome_internal"
 
 # If we're cros_workon'ing the ebuild, default to LOCAL_SOURCE,
 # otherwise use SERVER_SOURCE.
@@ -104,12 +104,45 @@ chromium_source_copy_credentials() {
 	fi
 }
 
+# Check out Chromium source code.
+chromium_source_check_out_source() {
+	local WHOAMI=$(whoami)
+	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
+	export DEPOT_TOOLS_UPDATE=0
+
+	# Portage version without optional portage suffix.
+	CHROMIUM_VERSION="${PV/_*/}"
+
+	# Ensure we can write to ${CHROMIUM_SOURCE_DIR} - this variable
+	# is set in chromium_source_compute_source_dir.
+	addwrite "${CHROMIUM_SOURCE_DIR}"
+
+	elog "Checking out CHROMIUM_VERSION = ${CHROMIUM_VERSION}"
+
+	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/sync_chrome )
+	use chrome_internal && cmd+=( --internal )
+	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
+		cmd+=( --revision="${CROS_SVN_COMMIT}" )
+	elif [[ "${CHROMIUM_VERSION}" != "9999" ]]; then
+		cmd+=( --tag="${CHROMIUM_VERSION}" )
+	fi
+	# --reset tells sync_chrome to blow away local changes and to feel
+	# free to delete any directories that get in the way of syncing. This
+	# is needed for unattended operation.
+	cmd+=( --reset --gclient="${EGCLIENT}" "${CHROMIUM_SOURCE_DIR}" )
+	elog "Running: ${cmd[*]}"
+	"${cmd[@]}" || die
+}
+
 chromium-source_src_unpack() {
 	chromium_source_compute_origin
 	chromium_source_compute_source_dir
 	chromium_source_copy_credentials
+	chromium_source_check_out_source
 }
 
 if [[ ${PN} != "chromium-source" ]]; then
 	DEPEND="~chromeos-base/chromium-source-${PV}"
 fi
+
+EXPORT_FUNCTIONS src_unpack
