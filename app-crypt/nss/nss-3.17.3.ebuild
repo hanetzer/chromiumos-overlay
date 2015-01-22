@@ -20,11 +20,13 @@ SRC_URI="ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${RTM_NAME}
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+cacert +nss-pem utils"
+IUSE="+cacert +nss-pem"
 
 DEPEND=">=virtual/pkgconfig-0-r1[${MULTILIB_USEDEP}]
-	>=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]"
+	>=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
+	>=dev-libs/nss-${PV}[${MULTILIB_USEDEP}]"
 RDEPEND=">=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
+	>=dev-libs/nss-${PV}[${MULTILIB_USEDEP}]
 	>=dev-db/sqlite-3.8.2[${MULTILIB_USEDEP}]
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]
 	abi_x86_32? (
@@ -35,10 +37,6 @@ RDEPEND=">=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
 RESTRICT="test"
 
 S="${WORKDIR}/${P}/${PN}"
-
-MULTILIB_CHOST_TOOLS=(
-	/usr/bin/nss-config
-)
 
 src_unpack() {
 	unpack ${A}
@@ -54,6 +52,17 @@ src_prepare() {
 	use cacert && epatch "${DISTDIR}/${PN}-3.14.1-add_spi+cacerts_ca_certs.patch"
 	use nss-pem && epatch "${FILESDIR}/${PN}-3.15.4-enable-pem.patch"
 	epatch "${FILESDIR}/nss-3.14.2-solaris-gcc.patch"
+	# Add a public API to set the certificate nickname (PKCS#11 CKA_LABEL
+	# attribute). See http://crosbug.com/19403 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-chromeos-cert-nicknames.patch
+
+	# Abort the process if /dev/urandom cannot be opened (eg: when sandboxed)
+	# See http://crosbug.com/29623 for details.
+	epatch "${FILESDIR}"/${PN}-3.15-abort-on-failed-urandom-access.patch
+
+	# Prefer more recent (stronger) intermediates. This is fixed upstream
+	# in 3.17.4, see https://bugzil.la/1112461
+	epatch "${FILESDIR}"/${PN}-3.17-chromeos-strong-chains.patch
 
 	pushd coreconf >/dev/null || die
 	# hack nspr paths
@@ -189,133 +198,23 @@ multilib_src_compile() {
 	done
 }
 
-# Altering these 3 libraries breaks the CHK verification.
-# All of the following cause it to break:
-# - stripping
-# - prelink
-# - ELF signing
-# http://www.mozilla.org/projects/security/pki/nss/tech-notes/tn6.html
-# Either we have to NOT strip them, or we have to forcibly resign after
-# stripping.
-#local_libdir="$(get_libdir)"
-#export STRIP_MASK="
-#	*/${local_libdir}/libfreebl3.so*
-#	*/${local_libdir}/libnssdbm3.so*
-#	*/${local_libdir}/libsoftokn3.so*"
-
-export NSS_CHK_SIGN_LIBS="freebl3 nssdbm3 softokn3"
-
-generate_chk() {
-	local shlibsign="$1"
-	local libdir="$2"
-	einfo "Resigning core NSS libraries for FIPS validation"
-	shift 2
-	local i
-	for i in ${NSS_CHK_SIGN_LIBS} ; do
-		local libname=lib${i}.so
-		local chkname=lib${i}.chk
-		"${shlibsign}" \
-			-i "${libdir}"/${libname} \
-			-o "${libdir}"/${chkname}.tmp \
-		&& mv -f \
-			"${libdir}"/${chkname}.tmp \
-			"${libdir}"/${chkname} \
-		|| die "Failed to sign ${libname}"
-	done
-}
-
-cleanup_chk() {
-	local libdir="$1"
-	shift 1
-	local i
-	for i in ${NSS_CHK_SIGN_LIBS} ; do
-		local libfname="${libdir}/lib${i}.so"
-		# If the major version has changed, then we have old chk files.
-		[ ! -f "${libfname}" -a -f "${libfname}.chk" ] \
-			&& rm -f "${libfname}.chk"
-	done
-}
-
 multilib_src_install() {
-	pushd dist >/dev/null || die
-
-	dodir /usr/$(get_libdir)
-	cp -L */lib/*$(get_libname) "${ED}"/usr/$(get_libdir) || die "copying shared libs failed"
-	cp -L -t "${ED}"/usr/$(get_libdir) */lib/{libcrmf,libfreebl}.a || die "copying libs failed"
-
-	# Install nss-config and pkgconfig file
-	dodir /usr/bin
-	cp -L */bin/nss-config "${ED}"/usr/bin || die
-	dodir /usr/$(get_libdir)/pkgconfig
-	cp -L */lib/pkgconfig/nss.pc "${ED}"/usr/$(get_libdir)/pkgconfig || die
-
-	# create an nss-softokn.pc from nss.pc for libfreebl and some private headers
-	# bug 517266
-	sed 	-e 's#Libs:#Libs: -lfreebl#' \
-		-e 's#Cflags:#Cflags: -I${includedir}/private#' \
-		*/lib/pkgconfig/nss.pc >"${ED}"/usr/$(get_libdir)/pkgconfig/nss-softokn.pc \
-		|| die "could not create nss-softokn.pc"
-
-	# all the include files
-	insinto /usr/include/nss
-	doins public/nss/*.h
-	insinto /usr/include/nss/private
-	doins private/nss/{blapi,alghmac}.h
-
-	popd >/dev/null || die
-
 	local f nssutils
-	# Always enabled because we need it for chk generation.
-	nssutils="shlibsign"
-
-	if multilib_is_native_abi ; then
-		if use utils; then
-			# The tests we do not need to install.
-			#nssutils_test="bltest crmftest dbtest dertimetest
-			#fipstest remtest sdrtest"
-			nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
-			cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
-			nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
-			pk12util pp rsaperf selfserv shlibsign signtool signver ssltap strsclnt
-			symkeyutil tstclnt vfychain vfyserv"
-		fi
-		pushd dist/*/bin >/dev/null || die
-		for f in ${nssutils}; do
-			dobin ${f}
-		done
-		popd >/dev/null || die
-	fi
-
-	# Prelink breaks the CHK files. We don't have any reliable way to run
-	# shlibsign after prelink.
-	local l libs=() liblist
-	for l in ${NSS_CHK_SIGN_LIBS} ; do
-		libs+=("${EPREFIX}/usr/$(get_libdir)/lib${l}.so")
+	# The tests we do not need to install.
+	#nssutils_test="bltest crmftest dbtest dertimetest
+	#fipstest remtest sdrtest"
+	nssutils="addbuiltin atob baddbdir btoa certcgi certutil checkcert
+	cmsutil conflict crlutil derdump digest makepqg mangle modutil multinit
+	nonspr10 ocspclnt oidcalc p7content p7env p7sign p7verify pk11mode
+	pk12util pp rsaperf selfserv signtool signver ssltap strsclnt
+	symkeyutil tstclnt vfychain vfyserv"
+	pushd dist/*/bin >/dev/null || die
+	into /usr/local
+	for f in ${nssutils}; do
+		# TODO(cmasone): switch to normal nss tool names
+		dobin ${f}
+		dosym ${f} /usr/local/bin/nss${f}
 	done
-	liblist=$(printf '%s:' "${libs[@]}")
-	echo -e "PRELINK_PATH_MASK=${liblist%:}" > "${T}/90nss-${ABI}"
-	doenvd "${T}/90nss-${ABI}"
+	popd >/dev/null || die
 }
 
-pkg_postinst() {
-	multilib_pkg_postinst() {
-		# We must re-sign the libraries AFTER they are stripped.
-		local shlibsign="${EROOT}/usr/bin/shlibsign"
-		# See if we can execute it (cross-compiling & such). #436216
-		"${shlibsign}" -h >&/dev/null
-		if [[ $? -gt 1 ]] ; then
-			shlibsign="shlibsign"
-		fi
-		generate_chk "${shlibsign}" "${EROOT}"/usr/$(get_libdir)
-	}
-
-	multilib_foreach_abi multilib_pkg_postinst
-}
-
-pkg_postrm() {
-	multilib_pkg_postrm() {
-		cleanup_chk "${EROOT}"/usr/$(get_libdir)
-	}
-
-	multilib_foreach_abi multilib_pkg_postrm
-}
