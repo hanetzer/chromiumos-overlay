@@ -155,6 +155,7 @@ ALL_BOARDS=(
 	rush
 	rush_ryu
 	samus
+	sklrvp
 	slippy
 	sonic
 	squawks
