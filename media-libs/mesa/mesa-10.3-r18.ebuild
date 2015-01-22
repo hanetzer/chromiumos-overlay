@@ -147,6 +147,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.5-Revert-i965-Delete-CACHE_NEW_BLORP_CONST_COLOR_PROG.patch
 	epatch "${FILESDIR}"/10.5-UPSTREAM-i965-Restore-brw_blorp_clear-for-gen6.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-try-to-use-render-node-if-available.patch
+	epatch "${FILESDIR}"/10.3-egl-dri2-report-EXT_image_dma_buf_import-extension.patch
 
 	base_src_prepare
 
