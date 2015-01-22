@@ -6,7 +6,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/ec"
 CROS_WORKON_LOCALNAME="ec"
 
-inherit toolchain-funcs cros-board cros-ec-board cros-workon
+inherit toolchain-funcs cros-ec-board cros-workon
 
 DESCRIPTION="Embedded Controller firmware code"
 HOMEPAGE="http://www.chromium.org/"
