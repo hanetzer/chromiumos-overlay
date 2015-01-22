@@ -20,11 +20,7 @@ KEYWORDS="~*"
 IUSE="-asan -clang vaapi"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND="
-	vaapi? (
-		x11-libs/libva
-		x11-libs/libX11
-	)"
+RDEPEND="vaapi? ( x11-libs/libva )"
 DEPEND="${RDEPEND}"
 
 src_unpack() {
