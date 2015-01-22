@@ -60,6 +60,7 @@ IUSE="
 	+runhooks
 	+v4l2_codec
 	v4lplugin
+	vaapi
 	verbose
 	vtable_verify
 	xkbcommon
@@ -199,8 +200,7 @@ RDEPEND="${RDEPEND}
 		x11-libs/libXi
 		x11-libs/libXrandr
 		x11-libs/libXrender
-		amd64? ( x11-libs/libva )
-		x86? ( x11-libs/libva )
+		vaapi? ( x11-libs/libva )
 		chrome_remoting? ( x11-libs/libXtst )
 	)
 	xkbcommon? (
