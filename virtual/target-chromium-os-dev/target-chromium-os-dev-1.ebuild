@@ -10,7 +10,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
-IUSE="cras pam opengl +power_management +profile +shill tpm usb X"
+IUSE="cras pam opengl +power_management +profile +shill tpm usb video_cards_intel X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -38,7 +38,7 @@ CROS_X86_RDEPEND="
 	sys-apps/dmidecode
 	sys-apps/pciutils
 	sys-boot/syslinux
-	x11-apps/intel-gpu-tools
+	video_cards_intel? ( x11-apps/intel-gpu-tools )
 "
 
 CROS_X_RDEPEND="
