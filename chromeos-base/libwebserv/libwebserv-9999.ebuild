@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="libwebserv"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="HTTP sever interface library"
 HOMEPAGE="http://www.chromium.org/"
@@ -31,6 +31,12 @@ DEPEND="
 	)
 "
 
+pkg_preinst() {
+	# Create user and group for webservd.
+	enewuser "webservd"
+	enewgroup "webservd"
+}
+
 src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
 	local v
@@ -43,6 +49,17 @@ src_install() {
 	# Install header files from libwebserv
 	insinto /usr/include/libwebserv
 	doins *.h
+
+	# Install init scripts.
+	insinto /etc/init
+	doins webservd/etc/init/webservd.conf
+
+	# Install DBus configuration files.
+	insinto /etc/dbus-1/system.d
+	doins webservd/etc/dbus-1/org.chromium.WebServer.conf
+
+	# Install web server daemon.
+	dobin "${OUT}"/webservd
 }
 
 platform_pkg_test() {
