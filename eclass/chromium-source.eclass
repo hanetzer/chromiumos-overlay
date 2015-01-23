@@ -26,6 +26,10 @@
 # This eclass also adds a dependency on chromeos-base/chromium-source
 # which is the ebuild used for downloading the source code.
 
+# @ECLASS-VARIABLE: CHROMIUM_GCLIENT_TEMPLATE
+# @DESCRIPTION: (Optional) Template gclient file passed to sync_chrome
+: ${CHROMIUM_GCLIENT_TEMPLATE:=}
+
 IUSE="chrome_internal"
 
 # If we're cros_workon'ing the ebuild, default to LOCAL_SOURCE,
@@ -125,6 +129,10 @@ chromium_source_check_out_source() {
 		cmd+=( --revision="${CROS_SVN_COMMIT}" )
 	elif [[ "${CHROMIUM_VERSION}" != "9999" ]]; then
 		cmd+=( --tag="${CHROMIUM_VERSION}" )
+	fi
+	if [[ -n "${CHROMIUM_GCLIENT_TEMPLATE}" ]]; then
+		elog "Using gclient template ${CHROMIUM_GCLIENT_TEMPLATE}"
+		cmd+=( --gclient_template="${CHROMIUM_GCLIENT_TEMPLATE}" )
 	fi
 	# --reset tells sync_chrome to blow away local changes and to feel
 	# free to delete any directories that get in the way of syncing. This
