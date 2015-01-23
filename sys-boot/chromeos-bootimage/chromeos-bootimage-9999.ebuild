@@ -19,10 +19,13 @@ BOARDS="alex auron bayleybay beltino bolt butterfly emeraldlake2 falco fox"
 BOARDS="${BOARDS} gizmo jecht link lumpy lumpy64 mario panther parrot peppy"
 BOARDS="${BOARDS} rambi samus slippy squawks stout strago stumpy"
 IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
-IUSE="${IUSE} cros_ec depthcharge efs exynos factory-mode fsp"
+IUSE="${IUSE} cros_ec depthcharge efs exynos u_boot_netboot fsp"
 IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2"
 
-REQUIRED_USE="^^ ( ${BOARDS} arm mips )"
+REQUIRED_USE="
+	^^ ( ${BOARDS} arm mips )
+	u_boot_netboot? ( !memtest )
+"
 
 COREBOOT_DEPEND="
 	sys-apps/coreboot-utils
@@ -51,10 +54,6 @@ DEPEND="
 CROS_FIRMWARE_IMAGE_DIR="/firmware"
 CROS_FIRMWARE_ROOT="${ROOT%/}${CROS_FIRMWARE_IMAGE_DIR}"
 PD_FIRMWARE_DIR="${CROS_FIRMWARE_ROOT}/${PD_FIRMWARE}"
-
-netboot_required() {
-	! use memtest && ( use factory-mode || use link || use spring)
-}
 
 # Build vboot and non-vboot images for the given device tree file
 # A vboot image performs a full verified boot, and this is the normal case.
@@ -131,7 +130,7 @@ build_image() {
 
 	# Make non-vboot image
 	nv_uboot_file="${uboot_file}"
-	if netboot_required; then
+	if use u_boot_netboot; then
 		nv_uboot_file="${CROS_FIRMWARE_ROOT}/u-boot_netboot.bin"
 	fi
 	cros_bundle_firmware \
