@@ -58,6 +58,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0001-BACKPORT-i965-render-Explicitly-disable-instancing-f.patch
 	epatch "${FILESDIR}"/0002-FROMLIST-BDW-disable-SGVS.patch
 	epatch "${FILESDIR}"/Disable-upper-bound-check-for-decoding-on-BDW.patch
+	epatch "${FILESDIR}"/Implement-max-width-and-height-in-QuerySurfaceAttributes.patch
 	eautoreconf
 }
 
