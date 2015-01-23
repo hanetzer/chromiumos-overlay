@@ -5,4 +5,4 @@
 
 # This files wraps host gcc and disables two bogus warnings.
 
-exec "$0".real "$@" -Wno-maybe-uninitialized -Wno-unused-local-typedefs
+exec "$0".real "$@" -Wno-maybe-uninitialized -Wno-unused-local-typedefs -Wno-deprecated-declarations

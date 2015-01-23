@@ -52,11 +52,12 @@ flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
                     '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches',
                     '-fno-reorder-blocks-and-partition',
                     '-Wno-unused-local-typedefs',
-                    '-Wno-maybe-uninitialized'])
+                    '-Wno-maybe-uninitialized',
+                    '-Wno-deprecated-declarations'])
 x86_disable_flags = set(['-mno-movbe'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
-clang_flags = set(['-Qunused-arguments', '-D_FORTIFY_SOURCE=2', '-fPIE'])
+clang_flags = set(['-Qunused-arguments', '-D_FORTIFY_SOURCE=2', '-fPIE', '-Wno-deprecated-declarations'])
 
 # If -clang-syntax is present or the command line uses clang instead of gcc.
 invoke_clang = False
