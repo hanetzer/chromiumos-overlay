@@ -22,14 +22,25 @@ RDEPEND="
 	glib? ( >=dev-libs/dbus-glib-0.76 )
 	glib? ( >=dev-libs/glib-2.19:2 )
 	>=sys-apps/dbus-1.0
-	cros_host? ( >=dev-cpp/ctemplate-1.0 )"
-DEPEND="${DEPEND}
+	cros_host? ( >=dev-cpp/ctemplate-2.0 )"
+DEPEND="${RDEPEND}
 	doc? ( dev-libs/libxslt )
 	doc? ( app-doc/doxygen )
-	virtual/pkgconfig
-	>=dev-cpp/ctemplate-1.0"
+	virtual/pkgconfig"
 
 src_prepare() {
+	if ! use cros_host; then
+		# dbusxx-* tools are used to generate XML files from a running dbus
+		# interface and generate C++ code from that XML files. They are only
+		# interesting while developing a dbus service. Install it only on the
+		# host.
+		sed -i \
+			-e '/^bin_PROGRAMS/s:=.*:=:' \
+			tools/Makefile.am || die
+	fi
+	sed -i \
+		-e '/^SUBDIRS/s:=.*:=:' \
+		examples/Makefile.am || die
 	eautoreconf
 }
 
