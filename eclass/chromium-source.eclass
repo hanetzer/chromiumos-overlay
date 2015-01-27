@@ -149,8 +149,4 @@ chromium-source_src_unpack() {
 	chromium_source_check_out_source
 }
 
-if [[ ${PN} != "chromium-source" ]]; then
-	DEPEND="~chromeos-base/chromium-source-${PV}"
-fi
-
 EXPORT_FUNCTIONS src_unpack
