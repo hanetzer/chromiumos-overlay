@@ -278,6 +278,7 @@ set_build_defines() {
 		if [[ -n "${OZONE_PLATFORM_DEFAULT}" ]]; then
 			BUILD_DEFINES+=("ozone_platform=${OZONE_PLATFORM_DEFAULT}")
 		fi
+		BUILD_DEFINES+=("use_mesa_platform_null=1")
 		BUILD_DEFINES+=("ozone_auto_platforms=0")
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
 			if use "${platform}"; then
