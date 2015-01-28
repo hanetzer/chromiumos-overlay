@@ -23,7 +23,9 @@ for card in ${VIDEO_CARDS}; do
 done
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND="x11-libs/libdrm"
+RDEPEND="
+	x11-libs/libdrm
+	!media-libs/mesa[gbm]"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"

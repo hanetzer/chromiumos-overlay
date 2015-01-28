@@ -220,7 +220,7 @@ src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
-	        $(use gbm && echo "--with-egl-platforms=drm")
+		$(use egl && echo "--with-egl-platforms=null")
 }
 
 src_install() {
