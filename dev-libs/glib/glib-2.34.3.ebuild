@@ -62,7 +62,7 @@ src_prepare() {
 
 	# Fix gmodule issues on fbsd; bug #184301
 	epatch "${FILESDIR}"/${PN}-2.12.12-fbsd.patch
-
+	epatch "${FILESDIR}"/${PN}-2.34.0-G_GNUC_UNUSED.patch
 	if use test; then
 		# Do not try to remove files on live filesystem, upstream bug #619274
 		sed 's:^\(.*"/desktop-app-info/delete".*\):/*\1*/:' \
