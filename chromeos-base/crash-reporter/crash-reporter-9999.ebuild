@@ -64,26 +64,11 @@ src_install() {
 }
 
 platform_pkg_test() {
-	# TODO(mkrebs): The tests are not currently thread-safe, so
-	# running them in the default parallel mode results in
-	# failures.
-	local tests=(
-		chrome_collector_test
-		crash_collector_test
-		kernel_collector_test
-		udev_collector_test
-		unclean_shutdown_collector_test
-		user_collector_test
-	)
-
 	# TODO: QEMU mishandles readlink(/proc/self/exe) symlink, so filter out
 	# tests that rely on that.  Once we update to a newer version though, we
 	# can drop this filter.
 	# https://lists.nongnu.org/archive/html/qemu-devel/2014-08/msg01210.html
 	local qemu_gtest_filter="-UserCollectorTest.GetExecutableBaseNameFromPid"
 
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}" "" "" "${qemu_gtest_filter}"
-	done
+	platform_test "run" "${OUT}/crash_reporter_test" "" "" "${qemu_gtest_filter}"
 }
