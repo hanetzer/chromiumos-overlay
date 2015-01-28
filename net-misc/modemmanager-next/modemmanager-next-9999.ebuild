@@ -80,7 +80,7 @@ src_install() {
 		-name 'libmm-plugin-longcheer.so' -o \
 		-name 'libmm-plugin-novatel-lte.so' -o \
 		-name 'libmm-plugin-samsung.so' -o \
-		-name 'libmm-plugin-telit' -o \
+		-name 'libmm-plugin-telit.so' -o \
 		-name 'libmm-plugin-zte.so' \
 		\) -delete
 
