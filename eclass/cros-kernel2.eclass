@@ -947,7 +947,10 @@ cros-kernel2_src_install() {
 		# No need to check kernel image size.
 		true
 	else
-		if version_is_at_least 3.10 ; then
+		if version_is_at_least 3.18 ; then
+			kern_max=32
+			kern_warn=12
+		elif version_is_at_least 3.10 ; then
 			kern_max=16
 			kern_warn=12
 		else
