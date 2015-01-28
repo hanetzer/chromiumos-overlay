@@ -71,6 +71,7 @@ ALL_BOARDS=(
 	duck
 	#emeraldlake2
 	enguarde
+	envoy-jerry
 	expresso
 	falco
 	falco_freon
