@@ -60,7 +60,7 @@ fi
 
 RESTRICT="mirror strip"
 
-IUSE="gcj git_gcc go graphite gtk hardened hardfp mounted_gcc multilib multislot
+IUSE="gcj git_gcc +go graphite gtk hardened hardfp mounted_gcc multilib multislot
       nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
       next_gcc"
 
