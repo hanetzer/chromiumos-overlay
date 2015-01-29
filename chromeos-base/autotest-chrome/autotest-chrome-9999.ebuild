@@ -111,6 +111,7 @@ IUSE_TESTS=(
 	+tests_video_ChromeRTCHWEncodeUsed
 	+tests_video_ChromeVidResChangeHWDecode
 	+tests_video_GlitchDetection
+	+tests_video_HangoutHardwarePerf
 	+tests_video_MultiplePlayback
 	+tests_video_PlaybackPerf
 	+tests_video_VideoCorruption
