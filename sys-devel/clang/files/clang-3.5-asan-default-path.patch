@@ -8,7 +8,7 @@ This change set the ASAN message goes to /va/log/asan${pid} by default.
    f->handle_ioctl = false;
    f->malloc_context_size = 1;
 -  f->log_path = "stderr";
-+  f->log_path = "/var/log/asan";
++  f->log_path = "/var/log/asan/asan";
    f->verbosity = 0;
    f->detect_leaks = true;
    f->leak_check_at_exit = true;
