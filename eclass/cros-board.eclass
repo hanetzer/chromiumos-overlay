@@ -77,10 +77,10 @@ ALL_BOARDS=(
 	falco_gles
 	falco_li
 	fb1
-	fox
-	fox_baskingridge
-	fox_wtm1
-	fox_wtm2
+	#fox
+	#fox_baskingridge
+	#fox_wtm1
+	#fox_wtm2
 	gizmo
 	glados
 	glimmer
