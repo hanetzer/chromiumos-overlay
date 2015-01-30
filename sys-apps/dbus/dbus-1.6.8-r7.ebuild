@@ -183,6 +183,12 @@ src_install() {
 	emake DESTDIR="${D}" install
 
 	prune_libtool_files --all
+
+	# cros-machine-id-regen - http://crbug.com/431337
+	dosbin "${FILESDIR}"/cros-machine-id-regen
+	insinto /etc/init
+	doins "${FILESDIR}"/cros-machine-id-regen-network.conf
+	doins "${FILESDIR}"/cros-machine-id-regen-periodic.conf
 }
 
 pkg_postinst() {
