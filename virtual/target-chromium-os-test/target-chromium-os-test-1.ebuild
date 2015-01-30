@@ -47,6 +47,7 @@ CROS_COMMON_RDEPEND="
 	tpm? ( app-crypt/tpm-tools )
 	chromeos-base/chromeos-factory-deps
 	chromeos-base/chromeos-test-root
+	chromeos-base/recover-duts
 	chromeos-base/verity
 	chromeos-base/vpd
 	cros_ec? (
@@ -116,7 +117,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/minifakedns
 	chromeos-base/modem-diagnostics
 	chromeos-base/protofiles
-	chromeos-base/recover-duts
 	!app_shell? ( chromeos-base/telemetry )
 	chromeos-base/touchbot
 	dev-libs/opensc
