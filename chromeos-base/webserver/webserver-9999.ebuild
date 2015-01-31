@@ -20,6 +20,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libchromeos
+	net-firewall/iptables
 	net-libs/libmicrohttpd
 	!chromeos-base/libwebserv
 "
