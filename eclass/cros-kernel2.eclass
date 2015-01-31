@@ -31,6 +31,7 @@ IUSE="
 	-wifi_debug
 	-nowerror
 	-ppp
+	-lxc
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -64,6 +65,7 @@ CONFIG_FRAGMENTS=(
 	initramfs
 	kgdb
 	kvm
+	lxc
 	mbim
 	netboot_ramfs
 	nfc
@@ -369,6 +371,17 @@ CONFIG_VT_CONSOLE=n
 nowerror_desc="Don't build with -Werror (warnings aren't fatal)."
 nowerror_config="
 CONFIG_ERROR_ON_WARNING=n
+"
+
+lxc_desc="LXC Support (Linux Containers)"
+lxc_config="
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CPUSETS=y
+CONFIG_CGROUP_CPUACCT=y
+CONFIG_RESOURCE_COUNTERS=y
+CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
+CONFIG_MACVLAN=y
+CONFIG_POSIX_MQUEUE=y
 "
 
 # Add all config fragments as off by default
