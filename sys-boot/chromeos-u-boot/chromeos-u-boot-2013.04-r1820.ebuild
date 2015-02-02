@@ -11,10 +11,7 @@ CROS_WORKON_SUBDIR=("files" "")
 VBOOT_REFERENCE_DESTDIR="${S}/vboot_reference"
 CROS_WORKON_DESTDIR=("${S}" "${VBOOT_REFERENCE_DESTDIR}")
 
-# TODO(sjg): Remove cros-board as it violates the idea of having no specific
-# board knowledge in the build system. At present it is only needed for the
-# netboot hack.
-inherit toolchain-funcs cros-board flag-o-matic cros-workon
+inherit toolchain-funcs flag-o-matic cros-workon
 
 DESCRIPTION="Das U-Boot boot loader"
 HOMEPAGE="http://www.denx.de/wiki/U-Boot"
@@ -22,7 +19,7 @@ HOMEPAGE="http://www.denx.de/wiki/U-Boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="dalmore dev efs factory-mode profiling smdk5420-u-boot"
+IUSE="dalmore dev efs u_boot_netboot profiling smdk5420-u-boot"
 
 DEPEND="!sys-boot/x86-firmware-fdts
 	!sys-boot/exynos-u-boot
@@ -86,21 +83,6 @@ get_current_u_boot_config() {
 		fi
 	done
 	die "Unable to determine current U-Boot config."
-}
-
-# @FUNCTION: netboot_required
-# @DESCRIPTION:
-# Checks if netboot image also needs to be generated.
-netboot_required() {
-	# Build netbootable image for Link unconditionally for now.
-	# TODO (vbendeb): come up with a better scheme of determining what
-	#                 platforms should always generate the netboot capable
-	#                 legacy image.
-	local board=$(get_current_board_with_variant)
-
-	use factory-mode || [[ "${board}" == "link" ]] || \
-		[[ "${board}" == "daisy_spring" ]] ||
-		[[ "${board}" == "link_freon" ]]
 }
 
 # @FUNCTION: get_config_var
@@ -178,7 +160,7 @@ src_configure() {
 	umake "${BUILD_FLAGS[@]}" distclean
 	umake "${BUILD_FLAGS[@]}" ${CROS_U_BOOT_CONFIG}
 
-	if netboot_required; then
+	if use u_boot_netboot; then
 		BUILD_NB_FLAGS=(
 			"O=${UB_BUILD_DIR_NB}"
 			BUILD_FACTORY_IMAGE=1
@@ -201,7 +183,7 @@ src_configure() {
 src_compile() {
 	umake "${BUILD_FLAGS[@]}" all
 
-	if netboot_required; then
+	if use u_boot_netboot; then
 		umake "${BUILD_NB_FLAGS[@]}" all
 	fi
 	if use efs; then
@@ -251,7 +233,7 @@ src_install() {
 		newins "${UB_BUILD_DIR}/u-boot-nodtb-tegra.bin" u-boot.bin
 	fi
 
-	if netboot_required; then
+	if use u_boot_netboot; then
 		newins "${UB_BUILD_DIR_NB}/u-boot.bin" u-boot_netboot.bin
 	fi
 
