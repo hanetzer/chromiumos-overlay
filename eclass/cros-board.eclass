@@ -50,13 +50,16 @@ ALL_BOARDS=(
 	bobcat
 	bolt
 	butterfly
+	butterfly_freon
 	bwtm2
 	bxt-rvp
 	candy
+	candy_freon
 	cardhu
 	#chronos
 	cid
 	clapper
+	clapper_freon
 	cosmos
 	cranky
 	daisy
@@ -71,8 +74,10 @@ ALL_BOARDS=(
 	duck
 	#emeraldlake2
 	enguarde
+	enguarde_freon
 	envoy-jerry
 	expresso
+	expresso_freon
 	falco
 	falco_freon
 	falco_gles
@@ -85,7 +90,9 @@ ALL_BOARDS=(
 	gizmo
 	glados
 	glimmer
+	glimmer_freon
 	gnawty
+	gnawty_freon
 	guado
 	hsb
 	ironhide
@@ -93,6 +100,7 @@ ALL_BOARDS=(
 	kayle
 	#kiev
 	kip
+	kip_freon
 	klang
 	laser
 	lemmings
@@ -102,6 +110,7 @@ ALL_BOARDS=(
 	link_freon
 	lulu
 	lumpy
+	lumpy_freon
 	mappy
 	mappy-envoy
 	mappy_flashstation
@@ -131,6 +140,7 @@ ALL_BOARDS=(
 	panther_goofy
 	panther_moblab
 	parrot
+	parrot_freon
 	parrot_ivb
 	parrot32
 	parrot64
@@ -148,7 +158,9 @@ ALL_BOARDS=(
 	puppy
 	purin
 	quawks
+	quawks_freon
 	rambi
+	rambi_freon
 	raspberrypi
 	reptile
 	#ricochet
@@ -161,15 +173,19 @@ ALL_BOARDS=(
 	slippy
 	sonic
 	squawks
+	squawks_freon
 	storm
 	storm_nand
 	stout
+	stout_froen
 	#stout32
 	strago
 	stumpy
+	stumpy_freon
 	stumpy_moblab
 	stumpy_pico
 	swanky
+	swanky_freon
 	tails
 	#tegra2
 	#tegra2_aebl
@@ -200,6 +216,7 @@ ALL_BOARDS=(
 	#waluigi
 	whirlwind
 	winky
+	winky_freon
 	wolf
 	wsb
 	x32-generic
