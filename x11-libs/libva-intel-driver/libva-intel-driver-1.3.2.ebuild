@@ -57,6 +57,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/Disable-encoding-on-SNB-and-non-BYT-IVB.patch
 	epatch "${FILESDIR}"/0001-BACKPORT-i965-render-Explicitly-disable-instancing-f.patch
 	epatch "${FILESDIR}"/0002-FROMLIST-BDW-disable-SGVS.patch
+	epatch "${FILESDIR}"/Disable-upper-bound-check-for-decoding-on-BDW.patch
 	eautoreconf
 }
 
