@@ -55,11 +55,6 @@ EOF
 	ln -s src "${S}"
 }
 
-src_configure() {
-	gn-chromium_set_args "ui_base_build_ime=false"
-	gn-chromium_src_configure
-}
-
 src_compile() {
 	ninja -C "$(gn-chromium_get_build_dir)" \
 	    mojo_shell mojo_launcher libmojo_sdk tracing examples/echo || die
@@ -70,9 +65,9 @@ src_install() {
 	dosbin "$(gn-chromium_get_build_dir)/mojo_launcher"
 	dosbin "$(gn-chromium_get_build_dir)/mojo_shell"
 
-        # Init script.
-        insinto /etc/init
-        doins "${FILESDIR}"/*.conf
+	# Init script.
+	insinto /etc/init
+	doins "${FILESDIR}"/*.conf
 
 	# Mojo SDK library and headers.
 	local d header_dirs=(
@@ -102,7 +97,7 @@ src_install() {
 	insinto /usr/lib/mojo
 	doins "$(gn-chromium_get_build_dir)/tracing.mojo"
 	doins "$(gn-chromium_get_build_dir)/echo_client.mojo"
-	doins "$(gn-chromium_get_build_dir)/echo_service.mojo"
+	doins "$(gn-chromium_get_build_dir)/echo_server.mojo"
 
 	# Code generation tools, including GYP rules for mojom files.
 	insinto /build/bin
