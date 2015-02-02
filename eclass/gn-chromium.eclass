@@ -24,12 +24,32 @@ _usetf()  { usex $1 true false ; }
 # @FUNCTION: _gn-chromium_friendly_arch
 # @INTERNAL
 # @USAGE: <arch>
-# @DESCRIPTION: TODO(cmasone) handle mips. Look at chromeos-chrome
+# @DESCRIPTION:
+# Returns the value of 'cpu_arch' argument that is passed to chromium GN.
 _gn-chromium_friendly_arch() {
 	local arch=${1:-${ARCH}}
-	if [[ "${arch}" == "amd64" ]] ; then
-		echo "x64"
-	fi
+	case "${arch}" in
+	amd64)
+		arch=x64
+		;;
+	mips)
+		local mips_arch mips_endian
+
+		[[ "$(tc-endian)" == big ]] && mips_endian=eb || mips_endian=el
+		mips_arch="$($(tc-getCPP) ${CFLAGS} ${CPPFLAGS} -E -P - <<<_MIPS_ARCH)"
+		# Strip away any enclosing quotes.
+		mips_arch="${mips_arch//\"}"
+		case "${mips_arch}" in
+		mips64*)
+			arch="mips64${mips_endian}"
+			;;
+		*)
+			arch="mips${mips_endian}"
+			;;
+		esac
+		;;
+	esac
+	echo "${arch}"
 }
 
 # @FUNCTION: gn-chromium_get_build_dir
