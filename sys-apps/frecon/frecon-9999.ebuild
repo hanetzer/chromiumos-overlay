@@ -43,5 +43,7 @@ src_compile() {
 
 src_install() {
 	cros-workon_src_install
+	insinto /etc/dbus-1/system.d
+	doins dbus/org.chromium.frecon.conf
 	default
 }
