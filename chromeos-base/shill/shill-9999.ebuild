@@ -16,7 +16,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular +seccomp test +tpm +vpn wake_on_wifi wimax"
+IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi wimax"
 KEYWORDS="~*"
 
 RDEPEND="
@@ -95,7 +95,7 @@ src_install() {
 	doexe "${OUT}"/net-diags-upload
 	doexe "${OUT}"/crypto-util
 
-	if use vpn; then
+	if use vpn || use pppoe; then
 		doexe "${OUT}"/openvpn-script
 		newexe "${OUT}"/lib/libshill-pppd-plugin.so shill-pppd-plugin.so
 	fi
