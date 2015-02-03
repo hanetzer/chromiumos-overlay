@@ -6,7 +6,7 @@ HOMEPAGE=http://clang.llvm.org/
 IUSE=debug multitarget python +static-analyzer test python_targets_python2_7
 KEYWORDS=-* amd64
 LICENSE=UoI-NCSA
-RDEPEND=~sys-devel/llvm-3.5_pre214024[multitarget=]
+RDEPEND=~sys-devel/llvm-3.5_pre223109[multitarget=]
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	eutils	06133990e861be0fe60c2b428fd025d9	git-2	da60d6e85fa94cef4d510cab24e01e36	multibuild	46527a4656956da3d58acff72c9b59b1	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	fef838277e0f17df29d4951b7183d1b4	python-utils-r1	dcc9fbd541ee94173178e4f14dd3945c	subversion	9c7c21460890d4af8d8ec4446112d0d6	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=e994590a7bb8f34ccbe897b0e700ca8c
+_md5_=64b47741f5a1364a1b1e4ec097222f3e
