@@ -117,7 +117,7 @@ src_install() {
 	local x
 	insinto "${FIRMWARE_INSTALL_ROOT}"
 	use_fw ath9k_htc && doins htc_*.fw
-	use_fw bcm4354-bt && doins_subdir brcm/bcm4354.hcd
+	use_fw bcm4354-bt && doins_subdir brcm/BCM4354_*.hcd
 	use_fw cros-pd && doins_subdir cros-pd/*
 	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
