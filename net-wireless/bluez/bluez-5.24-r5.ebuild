@@ -1,1 +1,0 @@
-bluez-5.24.ebuild
