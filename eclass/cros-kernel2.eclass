@@ -335,6 +335,7 @@ sealed RF chamber!
 "
 wifi_testbed_ap_config="
 CONFIG_ATH_DEFER_EEPROM_REGULATORY=y
+CONFIG_BRIDGE=y
 CONFIG_MAC80211_BEACON_FOOTER=y
 "
 
