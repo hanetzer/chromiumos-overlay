@@ -12,7 +12,7 @@ ARCH=arm
 source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-target
 
 # Recommended arm-specific USE flags.
-USE="${USE} hardened"
+USE="${USE} hardened v4l2_codec"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE=""
