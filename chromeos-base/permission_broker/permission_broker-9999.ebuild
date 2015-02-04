@@ -20,6 +20,7 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="
+	chromeos-base/firewalld
 	chromeos-base/libchromeos
 	dev-libs/glib
 	sys-apps/dbus
@@ -27,7 +28,6 @@ RDEPEND="
 	sys-fs/udev"
 
 DEPEND="${RDEPEND}
-	chromeos-base/firewalld
 	chromeos-base/system_api
 	test? (
 		dev-cpp/gmock

@@ -23,13 +23,13 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
+	chromeos-base/permission_broker
 	net-dns/dnsmasq
 	net-wireless/hostapd
 "
 
 DEPEND="
 	${RDEPEND}
-	chromeos-base/firewalld
 	chromeos-base/shill
 	test? (
 		dev-cpp/gmock
