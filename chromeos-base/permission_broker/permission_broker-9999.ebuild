@@ -51,7 +51,7 @@ src_install() {
 
 platform_pkg_test() {
 	local tests=(
-		rule_engine_unittest
+		permission_broker_unittest
 	)
 
 	local test_bin
