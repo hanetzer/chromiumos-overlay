@@ -21,6 +21,7 @@ KEYWORDS="~*"
 RDEPEND="
 	chromeos-base/libchromeos
 	net-libs/libmicrohttpd
+	!chromeos-base/libwebserv
 "
 
 DEPEND="

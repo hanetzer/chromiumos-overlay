@@ -21,7 +21,7 @@ KEYWORDS="~*"
 COMMON_DEPEND="
 	chromeos-base/libchrome_crypto
 	chromeos-base/libchromeos
-	chromeos-base/libwebserv
+	chromeos-base/webserver
 "
 
 RDEPEND="
