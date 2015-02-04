@@ -29,6 +29,7 @@ RDEPEND="
 	dev-libs/dbus-c++
 	dev-libs/libnl:3
 	cellular? ( net-dialup/ppp )
+	pppoe? ( net-dialup/ppp )
 	vpn? ( net-dialup/ppp )
 	net-dns/c-ares
 	net-firewall/iptables
