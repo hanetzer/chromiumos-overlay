@@ -52,6 +52,7 @@ IUSE_LINUX_FIRMWARE=(
 	fw_sst
 	fw_sst2
 	ibt-hw
+	img-uccp420wlan
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
 	"${IUSE_BRCMWIFI[@]}"
@@ -69,6 +70,7 @@ LICENSE="
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
+	linux_firmware_img-uccp420wlan? ( LICENSE.imagination )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
@@ -122,6 +124,7 @@ src_install() {
 	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
+	use_fw img-uccp420wlan && doins_subdir img/uccp420wlan/M{AC,CP}_LOADER.ldr
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use video_cards_radeon && doins_subdir radeon/*
 
