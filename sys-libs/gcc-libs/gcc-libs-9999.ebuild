@@ -138,8 +138,8 @@ src_configure() {
 	# This is necessary because the emerge-${BOARD} machinery sometimes
 	# adds machine-specific options to thsee flags that are not
 	# appropriate for configuring and building the compiler libraries.
-	export CFLAGS='-O2 -pipe'
-	export CXXFLAGS='-O2 -pipe'
+	export CFLAGS='-g -O2 -pipe'
+	export CXXFLAGS='-g -O2 -pipe'
 	export LDFLAGS="-Wl,-O2 -Wl,--as-needed"
 
 	# and now to do the actual configuration
