@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="32bit_au cros_host pam test"
+IUSE="32bit_au cros_host -mtd pam test"
 
 DEPEND="
 	chromeos-base/verity[32bit_au=]
@@ -66,6 +66,9 @@ src_compile() {
 
 	use 32bit_au && board_setup_32bit_au_env
 	cros-workon_src_compile
+	if use mtd; then
+		cw_emake -r nand_partition
+	fi
 	use 32bit_au && board_teardown_32bit_au_env
 }
 
@@ -86,6 +89,9 @@ src_install() {
 		path="usr/sbin"
 		dobin "${OUT}"/cros_installer
 		dosym ${path}/chromeos-postinst /postinst
+		if use mtd ; then
+			dobin "${OUT}"/nand_partition
+		fi
 	fi
 
 	exeinto /${path}
