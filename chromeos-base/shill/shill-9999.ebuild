@@ -96,8 +96,8 @@ src_install() {
 	doexe "${OUT}"/net-diags-upload
 	doexe "${OUT}"/crypto-util
 
-	if use vpn || use pppoe; then
-		doexe "${OUT}"/openvpn-script
+	use vpn && doexe "${OUT}"/openvpn-script
+	if use cellular || use pppoe || use vpn; then
 		newexe "${OUT}"/lib/libshill-pppd-plugin.so shill-pppd-plugin.so
 	fi
 
