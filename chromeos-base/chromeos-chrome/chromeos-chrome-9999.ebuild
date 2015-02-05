@@ -131,10 +131,27 @@ AFDO_FILE["amd64"]="chromeos-chrome-amd64-42.0.2296.0_rc-r1.afdo"
 AFDO_FILE["x86"]="chromeos-chrome-amd64-42.0.2296.0_rc-r1.afdo"
 AFDO_FILE["arm"]="chromeos-chrome-amd64-42.0.2296.0_rc-r1.afdo"
 
+# This dictionary can be used to manually override the setting for the
+# AFDO profile file. Any non-empty values in this array will take precedence
+# over the values in the AFDO_FILE dictionary.
+# Normally one would not set any value for the elements in the dictionary.
+# This is only used when there is some kind of problem with the AFDO profile
+# generation process and one needs to force the use of an older profile.
+declare -A AFDO_FROZEN_FILE
+AFDO_FROZEN_FILE["amd64"]=""
+AFDO_FROZEN_FILE["x86"]=""
+AFDO_FROZEN_FILE["arm"]=""
+
 add_afdo_files() {
 	local a f
 	for a in "${!AFDO_FILE[@]}" ; do
 		f=${AFDO_FILE[${a}]}
+		if [[ -n ${f} ]]; then
+			SRC_URI+=" afdo_use? ( ${a}? ( ${AFDO_LOCATION}${f}${AFDO_BZ_SUFFIX} ) )"
+		fi
+	done
+	for a in "${!AFDO_FROZEN_FILE[@]}" ; do
+		f=${AFDO_FROZEN_FILE[${a}]}
 		if [[ -n ${f} ]]; then
 			SRC_URI+=" afdo_use? ( ${a}? ( ${AFDO_LOCATION}${f}${AFDO_BZ_SUFFIX} ) )"
 		fi
@@ -582,13 +599,20 @@ src_unpack() {
 		mkdir "${PROFILE_DIR}"
 		pushd "${PROFILE_DIR}" > /dev/null
 
-		local PROFILE_FILE="${AFDO_FILE[${ARCH}]}"
+		# First check if there is a specified "frozen" AFDO profile.
+		# Otherwise use the current one.
+		local PROFILE_FILE="${AFDO_FROZEN_FILE[${ARCH}]}"
+		local PROFILE_STATE="FROZEN"
+		if [[ -z ${PROFILE_FILE} ]]; then
+			PROFILE_FILE="${AFDO_FILE[${ARCH}]}"
+			PROFILE_STATE="CURRENT"
+		fi
 		[[ -n ${PROFILE_FILE} ]] || die "Missing AFDO profile for ${ARCH}"
 		unpack "${PROFILE_FILE}${AFDO_BZ_SUFFIX}"
 		popd > /dev/null
 
 		AFDO_PROFILE_LOC="${PROFILE_DIR}/${PROFILE_FILE}"
-		einfo "Using AFDO data from ${AFDO_PROFILE_LOC}"
+		einfo "Using ${PROFILE_STATE} AFDO data from ${AFDO_PROFILE_LOC}"
 	fi
 
 	if use reorder && ! use clang; then
