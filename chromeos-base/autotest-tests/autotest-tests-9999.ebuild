@@ -225,6 +225,7 @@ CLIENT_IUSE_TESTS="
 	)
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
+	+tests_system_ColdBoot
 	+tests_touch_UpdateErrors
 	+tests_touch_WakeupSource
 "
