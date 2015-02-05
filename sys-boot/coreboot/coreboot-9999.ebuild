@@ -28,8 +28,8 @@ KEYWORDS="~*"
 IUSE="ap148-mode em100-mode fsp memmaps quiet-cb rmt vboot2 vmx"
 
 PER_BOARD_BOARDS=(
-	bayleybay beltino bolt butterfly daisy falco fox gizmo link lumpy nyan
-	panther parrot peppy rambi samus slippy stout stout32 strago stumpy
+	bayleybay beltino bolt butterfly daisy falco fox gizmo glados link lumpy
+	nyan panther parrot peppy rambi samus slippy stout stout32 strago stumpy
 	urara variant-peach-pit
 )
 
