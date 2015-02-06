@@ -45,11 +45,11 @@ emit_metrics() {
     reason_pretty="Periodic"
     ;;
   esac
-  metrics_client -s Cros.MachineIdRegen.Reason "${reason_enum_value}"
+  metrics_client -s ChromeOS.MachineIdRegen.Reason "${reason_enum_value}"
   if [ "${seconds_since_last_update}" != 0 ]; then
-    metrics_client Cros.MachineIdRegen.AgeSeconds \
+    metrics_client ChromeOS.MachineIdRegen.AgeSeconds \
       "${seconds_since_last_update}" 0 86400 50
-    metrics_client Cros.MachineIdRegen.AgeSeconds.${reason_pretty} \
+    metrics_client ChromeOS.MachineIdRegen.AgeSeconds_${reason_pretty} \
       "${seconds_since_last_update}" 0 86400 50
   fi
 }
