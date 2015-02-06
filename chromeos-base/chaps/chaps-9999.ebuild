@@ -22,6 +22,9 @@ SLOT="0"
 KEYWORDS="~*"
 
 RDEPEND="
+	test? (
+		dev-cpp/gtest
+	)
 	app-crypt/trousers
 	chromeos-base/metrics
 	dev-libs/dbus-c++
@@ -63,6 +66,14 @@ src_install() {
 	doins chaps_interface.h
 	doins chaps.h
 	doins attributes.h
+
+	# Install live tests
+	if use test; then
+		dosbin "${OUT}"/chapsd_test
+		if ! use tpm2; then
+			dosbin "${OUT}"/tpm_utility_test
+		fi
+	fi
 
 	insinto /usr/include/chaps/pkcs11
 	doins pkcs11/*.h
