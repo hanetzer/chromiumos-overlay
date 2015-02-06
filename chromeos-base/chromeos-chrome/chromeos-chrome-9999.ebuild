@@ -58,7 +58,7 @@ IUSE="
 	ozone
 	reorder
 	+runhooks
-	v4l2_codec
+	+v4l2_codec
 	v4lplugin
 	verbose
 	vtable_verify
