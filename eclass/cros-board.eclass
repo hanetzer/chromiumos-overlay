@@ -178,7 +178,7 @@ ALL_BOARDS=(
 	storm
 	storm_nand
 	stout
-	stout_froen
+	stout_freon
 	#stout32
 	strago
 	stumpy
