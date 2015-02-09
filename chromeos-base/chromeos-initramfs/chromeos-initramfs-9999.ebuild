@@ -232,6 +232,7 @@ pull_netboot_ramfs_binary() {
 	idobin /bin/sh
 	idobin /bin/xxd
 	idobin /sbin/blockdev
+	use frecon && idobin /sbin/frecon
 	idobin /usr/sbin/fsck.vfat
 	idobin /sbin/resize2fs
 	idobin /sbin/sfdisk
