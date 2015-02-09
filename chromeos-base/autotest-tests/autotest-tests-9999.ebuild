@@ -43,6 +43,7 @@ RDEPEND="${RDEPEND}
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
 	tests_hardware_MemoryThroughput? ( app-benchmarks/lmbench )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )
+	tests_security_SMMLocked? ( sys-apps/pciutils )
 "
 
 DEPEND="${RDEPEND}"
