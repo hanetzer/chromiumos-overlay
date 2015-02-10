@@ -91,6 +91,7 @@ src_install() {
 
 	exeinto /usr/sbin
 	doexe factory_install.sh
+	doexe factory_install_service.sh
 	doexe factory_reset.sh
 	doexe factory_verify.sh
 	doexe netboot_postinst.sh

@@ -218,6 +218,7 @@ pull_netboot_ramfs_binary() {
 	# Factory installer
 	# chromeos-base/chromeos-factoryinstall
 	idobin /usr/sbin/factory_install.sh
+	idobin /usr/sbin/factory_install_service.sh
 	idobin /usr/sbin/netboot_postinst.sh
 	idobin /usr/sbin/ping_shopfloor.sh
 	idobin /usr/sbin/secure_less.sh
