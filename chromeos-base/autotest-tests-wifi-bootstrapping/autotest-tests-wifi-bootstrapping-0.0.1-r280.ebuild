@@ -26,7 +26,6 @@ REQUIRED_USE="wifi_bootstrapping? ( peerd )"
 IUSE_TESTS="
 	+tests_platform_CheckWiFiBootstrappingProcesses
 	+tests_privetd_BasicDBusAPI
-	+tests_privetd_CanConnectToWiFi
 	+tests_privetd_PrivetInfo
 	+tests_privetd_PrivetSetupFlow
 	+tests_privetd_WebServerSanity
