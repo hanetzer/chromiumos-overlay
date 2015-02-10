@@ -67,6 +67,13 @@ src_prepare() {
 		board=$(get_current_board_no_variant)
 	fi
 
+	if use fsp; then
+		if [[ -s "configs/config.${board}.fsp" ]]; then
+			elog "   - using fsp config"
+			board=${board}.fsp
+		fi
+	fi
+
 	if [[ -s "configs/config.${board}" ]]; then
 		cp -v "configs/config.${board}" .config
 	fi
@@ -186,6 +193,13 @@ src_install() {
 	local board=$(get_current_board_with_variant)
 	if [[ ! -s "configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
+	fi
+
+	if use fsp; then
+		if [[ -s "configs/config.${board}.fsp" ]]; then
+			elog "   - using fsp config"
+			board=${board}.fsp
+		fi
 	fi
 
 	dobin util/cbmem/cbmem
