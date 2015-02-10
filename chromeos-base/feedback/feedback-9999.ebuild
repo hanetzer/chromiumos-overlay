@@ -21,7 +21,6 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/libchromeos
-	dev-libs/dbus-glib
 	"
 
 DEPEND="
