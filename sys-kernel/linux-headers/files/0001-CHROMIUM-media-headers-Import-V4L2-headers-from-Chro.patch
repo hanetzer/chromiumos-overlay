@@ -208,15 +208,15 @@ Tested-by: Tomasz Figa <tfiga@chromium.org>
  };
  
 @@ -1289,12 +1291,20 @@
- 		__u8 *p_u8;
- 		__u16 *p_u16;
- 		__u32 *p_u32;
+ 		__u8 __user *p_u8;
+ 		__u16 __user *p_u16;
+ 		__u32 __user *p_u32;
 +		struct v4l2_ctrl_h264_sps __user *p_h264_sps;
 +		struct v4l2_ctrl_h264_pps __user *p_h264_pps;
 +		struct v4l2_ctrl_h264_scaling_matrix __user *p_h264_scal_mtrx;
 +		struct v4l2_ctrl_h264_slice_param __user *p_h264_slice_param;
 +		struct v4l2_ctrl_h264_decode_param __user *p_h264_decode_param;
- 		void *ptr;
+ 		void __user *ptr;
  	};
  } __attribute__ ((packed));
  
