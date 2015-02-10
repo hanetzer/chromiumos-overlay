@@ -1,0 +1,27 @@
+# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+CROS_WORKON_COMMIT="92123e2d55e524210f576bcf7eb5a411724b4440"
+CROS_WORKON_TREE="68cb42d692b7204ee03be1035e804ed91dcae585"
+CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
+CROS_WORKON_LOCALNAME=../third_party/autotest
+CROS_WORKON_SUBDIR=files
+
+inherit cros-workon autotest
+
+DESCRIPTION="Tests for the leadership election service (leaderd)"
+HOMEPAGE="http://www.chromium.org/"
+SRC_URI=""
+
+LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="*"
+# Enable autotest by default.
+IUSE="+autotest"
+
+IUSE_TESTS="
+	+tests_leaderd_BasicDBusAPI
+"
+
+IUSE="${IUSE} ${IUSE_TESTS}"
