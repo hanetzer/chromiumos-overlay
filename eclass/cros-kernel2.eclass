@@ -15,6 +15,7 @@ SLOT="0"
 DEPEND="sys-apps/debianutils
 	initramfs? ( chromeos-base/chromeos-initramfs )
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
+	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs )
 	t124_xusb_fw? ( sys-kernel/xhci-firmware )
 "
 
@@ -61,6 +62,7 @@ CONFIG_FRAGMENTS=(
 	dwc2_dual_role
 	dyndebug
 	fbconsole
+	factory_shim_ramfs
 	gdmwimax
 	gobi
 	highmem
@@ -195,15 +197,21 @@ CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
 "
 
-initramfs_desc="Initramfs for factory install shim and recovery image"
+initramfs_desc="Initramfs for recovery image"
 initramfs_config='
 CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/initramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
-netboot_ramfs_desc="Network boot install initramfs"
+netboot_ramfs_desc="Initramfs for factory netboot installer"
 netboot_ramfs_config='
 CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/netboot_ramfs.cpio.xz"
+CONFIG_INITRAMFS_COMPRESSION_XZ=y
+'
+
+factory_shim_ramfs_desc="Initramfs for factory installer shim"
+factory_shim_ramfs_config='
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/factory_shim_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
@@ -409,10 +417,12 @@ CONFIG_POSIX_MQUEUE=y
 # Add all config fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]}"
 REQUIRED_USE="
-	initramfs? ( !netboot_ramfs )
-	netboot_ramfs? ( !initramfs )
+	initramfs? ( !netboot_ramfs !factory_shim_ramfs )
+	netboot_ramfs? ( !initramfs !factory_shim_ramfs )
+	factory_shim_ramfs? ( !initramfs !netboot_ramfs )
 	initramfs? ( i2cdev tpm )
 	netboot_ramfs? ( i2cdev tpm )
+	factory_shim_ramfs? ( i2cdev tpm )
 "
 
 # If an overlay has eclass overrides, but doesn't actually override this
