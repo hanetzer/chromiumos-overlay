@@ -29,7 +29,6 @@ RDEPEND="
 	chromeos-base/google-breakpad
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	>=dev-libs/glib-2.30
 	dev-libs/libpcre
 	net-misc/curl
 "
