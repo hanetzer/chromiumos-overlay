@@ -67,6 +67,7 @@ src_install() {
 platform_pkg_test() {
 	local tests=(
 		libwebserv_testrunner
+		webservd_testrunner
 	)
 
 	local test_bin
