@@ -6,11 +6,7 @@ EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 CROS_WORKON_PROJECT="chromiumos/third_party/bluez"
 
-# Inherit from cros-board so that bluez is built for each board, rather than
-# shared; this is because it uses overlay-defined CHROMEOS_BLUETOOTH_VENDORID,
-# CHROMEOS_BLUETOOTH_PRODUCTID and CHROMEOS_BLUETOOTH_VERSION variables to
-# define the exported Device ID.
-inherit autotools multilib eutils systemd python udev user cros-board cros-workon
+inherit autotools multilib eutils systemd python udev user cros-workon
 
 DESCRIPTION="Bluetooth Tools and System Daemons for Linux"
 HOMEPAGE="http://www.bluez.org/"
@@ -45,11 +41,6 @@ RDEPEND="${CDEPEND}
 "
 
 DOCS=( AUTHORS ChangeLog README )
-
-# Version of the Chrome OS Bluetooth stack when this ebuild is used;
-# CHROMEOS_BLUETOOTH_VENDORID and CHROMEOS_BLUETOOTH_PRODUCTID must be
-# defined elsewhere for this to be used instead of the BlueZ version.
-: ${CHROMEOS_BLUETOOTH_VERSION:="0400"}
 
 pkg_setup() {
 	if use test-programs; then
@@ -108,15 +99,6 @@ src_install() {
 	fi
 
 	dobin tools/btmgmt tools/btgatt-client tools/btgatt-server
-
-	# Change the Bluetooth Device ID of official products
-	if [[ -n "${CHROMEOS_BLUETOOTH_VENDORID}" && -n "${CHROMEOS_BLUETOOTH_PRODUCTID}" ]]; then
-		sed -i -e "/^#DeviceID/c\
-			DeviceID = bluetooth:${CHROMEOS_BLUETOOTH_VENDORID}:${CHROMEOS_BLUETOOTH_PRODUCTID}:${CHROMEOS_BLUETOOTH_VERSION}" src/main.conf || die
-
-		insinto /etc/bluetooth
-		doins src/main.conf
-	fi
 
 	insinto /etc/init
 	newins "${FILESDIR}/${PN}-upstart.conf" bluetoothd.conf
