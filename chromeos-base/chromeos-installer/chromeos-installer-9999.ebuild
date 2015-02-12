@@ -20,6 +20,7 @@ IUSE="32bit_au cros_host -mtd pam test"
 
 DEPEND="
 	chromeos-base/verity[32bit_au=]
+	mtd? ( dev-embedded/android_mtdutils )
 	test? (
 		32bit_au? (
 			dev-cpp/gmock32[32bit_au]
@@ -66,9 +67,9 @@ src_compile() {
 	use cros_host && return 0
 
 	use 32bit_au && board_setup_32bit_au_env
-	cros-workon_src_compile
+	USE_mtd=$(usev mtd) cros-workon_src_compile
 	if use mtd; then
-		cw_emake -r nand_partition
+		USE_mtd=$(usev mtd) cw_emake -r nand_partition
 	fi
 	use 32bit_au && board_teardown_32bit_au_env
 }
