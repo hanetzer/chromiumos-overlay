@@ -18,6 +18,7 @@ RDEPEND="!minimal? ( dev-libs/libyaml )
 	dev-libs/openssl
 	sys-apps/util-linux"
 DEPEND="app-crypt/trousers
+	mtd? ( dev-embedded/android_mtdutils )
 	${RDEPEND}"
 
 src_configure() {
@@ -34,6 +35,7 @@ _src_compile_main() {
 	      ARCH=$(tc-arch) \
 	      VBOOT2=$(usev vboot2) \
 	      PD_SYNC=$(usev pd_sync) \
+	      USE_MTD=$(usev mtd) \
 	      MINIMAL=$(usev minimal) all
 	unset CC AR CXX PKG_CONFIG
 }
@@ -47,6 +49,7 @@ _src_compile_au() {
 	      ARCH=$(tc-arch) \
 	      VBOOT2=$(usev vboot2) \
 	      PD_SYNC=$(usev pd_sync) \
+	      USE_MTD=$(usev mtd) \
 	      MINIMAL=$(usev minimal) tinyhostlib
 	unset CC AR CXX PKG_CONFIG
 	board_teardown_32bit_au_env
@@ -74,6 +77,7 @@ src_install() {
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
                       DEV_DEBUG_FORCE=$(usev dev_debug_force) \
+		      USE_MTD=$(usev mtd) \
 		      MINIMAL=1 install$(usex mtd "_mtd" "")
 	else
 		# Installing on the host
@@ -81,6 +85,7 @@ src_install() {
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
                       DEV_DEBUG_FORCE=$(usev dev_debug_force) \
+		      USE_MTD=$(usev mtd) \
 		      install
 	fi
 
