@@ -56,6 +56,7 @@ CONFIG_FRAGMENTS=(
 	blkdevram
 	ca0132
 	cifs
+	dwc2_dual_role
 	dyndebug
 	fbconsole
 	gdmwimax
@@ -113,6 +114,12 @@ CONFIG_SND_HDA_DSP_LOADER=y
 cifs_desc="Samba/CIFS Support"
 cifs_config="
 CONFIG_CIFS=m
+"
+
+dwc2_dual_role_desc="Dual Role support for DesignWare USB2.0 controller"
+dwc2_dual_role_config="
+CONFIG_USB_DWC2=m
+CONFIG_USB_DWC2_DUAL_ROLE=y
 "
 
 dyndebug_desc="Enable Dynamic Debug"
