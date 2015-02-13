@@ -83,6 +83,7 @@ CONFIG_FRAGMENTS=(
 	tpm
 	usb_gadget
 	usb_gadget_acm
+	usb_gadget_audio
 	usb_gadget_ncm
 	vfat
 	vlan
@@ -324,6 +325,12 @@ CONFIG_USB_GADGET=m
 usb_gadget_acm_desc="USB ACM gadget support"
 usb_gadget_acm_config="
 CONFIG_USB_CONFIGFS_ACM=y
+"
+
+usb_gadget_audio_desc="USB Audio gadget support"
+usb_gadget_audio_config="
+CONFIG_USB_CONFIGFS_F_UAC1=y
+CONFIG_USB_CONFIGFS_F_UAC2=y
 "
 
 usb_gadget_ncm_desc="USB NCM gadget support"
