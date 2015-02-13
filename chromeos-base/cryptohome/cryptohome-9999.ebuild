@@ -18,11 +18,16 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE="test -tpm2"
 
 RDEPEND="
 	!chromeos-base/chromeos-cryptohome
-	app-crypt/trousers
+	!tpm2? (
+		app-crypt/trousers
+	)
+	tpm2? (
+		chromeos-base/trunks
+	)
 	chromeos-base/chaps
 	chromeos-base/libchromeos
 	chromeos-base/libscrypt
