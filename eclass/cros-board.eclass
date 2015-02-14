@@ -33,6 +33,7 @@ ALL_BOARDS=(
 	anglar
 	#app-shell-panther
 	aries
+	arkham
 	arm-generic
 	arm-generic_freon
 	arm64-generic
