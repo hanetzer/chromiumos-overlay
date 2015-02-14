@@ -67,6 +67,11 @@ platform_pkg_test() {
 			|| die "Error creating the symlink for $f."
 	done
 
+	# The unit tests check to make sure the minor version value in
+	# update_engine.conf match the constants in update engine, so we need to be
+	# able to access this file.
+	cp "${S}/update_engine.conf" ./
+
 	if ! use x86 && ! use amd64 ; then
 		einfo "Skipping tests on non-x86 platform..."
 	else
@@ -78,7 +83,7 @@ platform_pkg_test() {
 		# lead to tests running with excess privileges, it is necessary
 		# in order to be able to run every test, including those that
 		# need to be run with root privileges.
-		if [[ -z ${GTEST_FILTER} ]]; then
+		if [[ -z "${GTEST_FILTER}" ]]; then
 			platform_test "run" "${unittests_binary}" 0 '-*.RunAsRoot*' \
 			|| die "${unittests_binary} (unprivileged) failed, retval=$?"
 			platform_test "run" "${unittests_binary}" 1 '*.RunAsRoot*' \
@@ -98,6 +103,9 @@ src_install() {
 
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
+
+	insinto /etc
+	doins update_engine.conf
 
 	insinto /usr/include/chromeos/update_engine
 	doins "${OUT}"/gen/include/update_engine/update_engine.dbus{client,server}.h
