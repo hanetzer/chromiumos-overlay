@@ -7,7 +7,7 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon cros-debug cros-au
+inherit cros-workon cros-debug cros-au libchrome
 
 DESCRIPTION="Chrome OS Installer"
 HOMEPAGE="http://www.chromium.org/"
@@ -33,6 +33,7 @@ DEPEND="
 	)"
 RDEPEND="
 	pam? ( app-admin/sudo )
+	chromeos-base/libchromeos
 	chromeos-base/vboot_reference[32bit_au=]
 	dev-util/shflags
 	sys-apps/rootdev
