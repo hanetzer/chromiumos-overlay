@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="285488eafe66684a71776d2a963fbd1cf84a9143"
-CROS_WORKON_TREE="d9856ddb083a8642e2ce8ba823078b9085cb3907"
+CROS_WORKON_COMMIT="0e6edcb104cb024d32fbcee052925ca98bde5bf8"
+CROS_WORKON_TREE="e744e0b1baf534081bcf01f586827ab506b51499"
 CROS_WORKON_PROJECT="chromiumos/platform/touchbot"
 CROS_WORKON_LOCALNAME="touchbot"
 
