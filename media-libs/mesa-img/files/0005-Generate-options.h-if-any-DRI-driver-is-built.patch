@@ -1,0 +1,37 @@
+From b761011904ec14e7db9e66f3a16ecb009152f65c Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 11 Mar 2014 09:34:32 +0000
+Subject: [PATCH 05/29] Generate options.h if any DRI driver is built.
+
+The xmlpool options.h file was no longer generated without changing the
+configure options to build DRI drivers other than swrast, or to build the
+Gallium swrast driver. Unfortunately, building the Gallium swrast driver
+adds some X dependencies which break the Wayland driver build.
+
+Modify configure.ac to generate options.h if DRI support is enabled.
+---
+ configure.ac | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index bd3c85b..275cabc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1140,6 +1140,14 @@ if test "x$enable_dri" = xyes; then
+         fi
+     fi
+ 
++    if test "x$enable_dri" = xyes; then
++        # ... libdrm is required
++        if test "x$have_libdrm" != xyes; then
++            AC_MSG_ERROR([DRI drivers requires libdrm >= $LIBDRM_REQUIRED])
++        fi
++        DRICOMMON_NEED_LIBDRM=yes
++    fi
++
+     # put all the necessary libs together
+     DRI_LIB_DEPS="$DRI_LIB_DEPS $SELINUX_LIBS $LIBDRM_LIBS $EXPAT_LIBS -lm $PTHREAD_LIBS $DLOPEN_LIBS"
+ fi
+-- 
+1.9.1
+

@@ -1,0 +1,63 @@
+From 577d32993af1d3cfee685889c8bbd57d3a2b3837 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Tue, 24 Feb 2015 12:03:27 +0000
+Subject: [PATCH 49/49] egl/dri: Add a bad access error code to the DRI
+ interface and hook this up in EGL
+
+The EGL_EXT_image_dma_buf_import extension allows eglCreateImageKHR to fail with
+an EGL_BAD_ACCESS error if a plane's pitch or offset is unsupported. As this is
+determined on a driver by driver basis, add a new __DRI_IMAGE_ERROR_BAD_ACCESS
+error for drivers to use and hook this up in EGL.
+---
+ include/GL/internal/dri_interface.h | 8 ++++++--
+ src/egl/drivers/dri2/egl_dri2.c     | 4 ++++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 927c579..1721207 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1134,7 +1134,8 @@ enum __DRIChromaSiting {
+ };
+ 
+ /**
+- * \name Reasons that __DRIimageExtensionRec::createImageFromTexture might fail
++ * \name Reasons that __DRIimageExtensionRec::createImageFromTexture or
++ * __DRIimageExtensionRec::createImageFromDmaBufs might fail
+  */
+ /*@{*/
+ /** Success! */
+@@ -1143,11 +1144,14 @@ enum __DRIChromaSiting {
+ /** Memory allocation failure */
+ #define __DRI_IMAGE_ERROR_BAD_ALLOC     1
+ 
+-/** Client requested an invalid attribute for a texture object  */
++/** Client requested an invalid attribute */
+ #define __DRI_IMAGE_ERROR_BAD_MATCH     2
+ 
+ /** Client requested an invalid texture object */
+ #define __DRI_IMAGE_ERROR_BAD_PARAMETER 3
++
++/** Client requested an invalid pitch and/or offset */
++#define __DRI_IMAGE_ERROR_BAD_ACCESS    4
+ /*@}*/
+ 
+ /**
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 0e8a46e..740766f 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -1491,6 +1491,10 @@ dri2_create_image_khr_error(int dri_error)
+       egl_error = EGL_BAD_PARAMETER;
+       break;
+ 
++   case __DRI_IMAGE_ERROR_BAD_ACCESS:
++      egl_error = EGL_BAD_ACCESS;
++      break;
++
+    default:
+       assert(0);
+       egl_error = EGL_BAD_MATCH;
+-- 
+1.8.5.4.gfdaaaa2
+

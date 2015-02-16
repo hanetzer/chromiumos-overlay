@@ -1,0 +1,69 @@
+From c9fb7f0e2f1d6c58ff2eaca4497b543c198a15d3 Mon Sep 17 00:00:00 2001
+From: Chad Versace <chad.versace@linux.intel.com>
+Date: Mon, 23 Dec 2013 17:48:45 -0800
+Subject: [PATCH 2/2] i965/gen6/blorp: Set need_workaround_flush at top of
+ blorp
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Unconditionally set brw->need_workaround_flush at the top of gen6 blorp
+state emission.
+
+The art of emitting workaround flushes on Sandybridge is mysterious and
+not fully understood. Ken and I believe that
+intel_emit_post_sync_nonzero_flush() may be required when switching from
+regular drawing to blorp.  This is an extra safety measure to prevent
+undiscovered difficult-to-diagnose gpu hangs.
+
+I verified that on ChromeOS, pre-patch, need_workaround_flush was not
+set at the top of blorp, as Paul expected. To verify, I inserted the
+following debug code at the top of gen6_blorp_exec(), restarted the ui,
+and inspected the logs in /var/log/ui. The abort gets triggered so early
+that the browser never appears on the display.
+
+    static void
+    gen6_blorp_exec(...)
+    {
+        if (!brw->need_workaround_flush) {
+            fprintf(stderr, "chadv: %s:%d\n", __FILE__, __LINE__);
+            abort();
+        }
+        ...
+    }
+
+Change-Id: I18fd0892f3bd03e38ccad1260f841019d96ab126
+CC: Kenneth Graunke <kenneth@whitecape.org>
+CC: Stéphane Marchesin <marcheu@chromium.org>
+Reviewed-by: Paul Berry <stereotype441@gmail.com>
+Signed-off-by: Chad Versace <chad.versace@linux.intel.com>
+---
+ src/mesa/drivers/dri/i965/gen6_blorp.cpp | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/gen6_blorp.cpp b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+index 1e69a86..2e8e8ab 100644
+--- a/src/mesa/drivers/dri/i965/gen6_blorp.cpp
++++ b/src/mesa/drivers/dri/i965/gen6_blorp.cpp
+@@ -1015,7 +1015,6 @@ gen6_blorp_emit_primitive(struct brw_context *brw,
+    brw->batch.need_workaround_flush = true;
+ }
+ 
+-
+ /**
+  * \brief Execute a blit or render pass operation.
+  *
+@@ -1037,6 +1036,10 @@ gen6_blorp_exec(struct brw_context *brw,
+    uint32_t wm_bind_bo_offset = 0;
+ 
+    uint32_t prog_offset = params->get_wm_prog(brw, &prog_data);
++
++   /* Emit workaround flushes when we switch from drawing to blorping. */
++   brw->batch.need_workaround_flush = true;
++
+    gen6_emit_3dstate_multisample(brw, params->dst.num_samples);
+    gen6_emit_3dstate_sample_mask(brw,
+                                  params->dst.num_samples > 1 ?
+-- 
+1.8.5.2
+

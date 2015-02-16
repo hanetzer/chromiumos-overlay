@@ -1,0 +1,13 @@
+diff --git a/src/mesa/drivers/dri/i965/brw_context.c b/src/mesa/drivers/dri/i965/brw_context.c
+index bee98e3..4d5891f 100644
+--- a/src/mesa/drivers/dri/i965/brw_context.c
++++ b/src/mesa/drivers/dri/i965/brw_context.c
+@@ -696,7 +696,7 @@ brwCreateContext(gl_api api,
+ 
+    intel_fbo_init(brw);
+ 
+-   if (brw->gen >= 6) {
++   if (brw->gen >= 7) {
+       /* Create a new hardware context.  Using a hardware context means that
+        * our GPU state will be saved/restored on context switch, allowing us
+        * to assume that the GPU is in the same state we left it in.

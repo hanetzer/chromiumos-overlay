@@ -1,0 +1,29 @@
+From 8da70f34db84ca5bb6600c60370356346c21e1ff Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Fri, 27 Jun 2014 12:04:03 +0100
+Subject: [PATCH 25/29] egl: clamp size to 0 in _eglFlattenArray
+
+In the case that a buffer was provided to _eglFlattenArray but the size
+was specified to be less than 0 then _eglFlattenArray would return a
+negative count. Avoid this by clamping the size to 0.
+---
+ src/egl/main/eglarray.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/egl/main/eglarray.c b/src/egl/main/eglarray.c
+index 3ccc8a6..d2f39af 100644
+--- a/src/egl/main/eglarray.c
++++ b/src/egl/main/eglarray.c
+@@ -197,6 +197,9 @@ _eglFlattenArray(_EGLArray *array, void *buffer, EGLint elem_size, EGLint size,
+ 
+    count = array->Size;
+    if (buffer) {
++      /* clamp size to 0 */
++      if (size < 0)
++         size = 0;
+       /* do not exceed buffer size */
+       if (count > size)
+          count = size;
+-- 
+1.9.1
+

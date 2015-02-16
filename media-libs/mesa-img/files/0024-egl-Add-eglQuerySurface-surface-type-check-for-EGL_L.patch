@@ -1,0 +1,38 @@
+From 129bfd839f912a094934acfed40a10f070aae08c Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 26 Jun 2014 16:25:11 +0100
+Subject: [PATCH 24/29] egl: Add eglQuerySurface surface type check for
+ EGL_LARGEST_PBUFFER attrib
+
+Calling eglQuerySurface on a window or pixmap with the EGL_LARGEST_PBUFFER
+attribute resulted in the contents of the 'value' parameter being modified.
+This is the wrong behaviour according to the EGL spec, which states:
+
+    "Querying EGL_LARGEST_PBUFFER for a pbuffer surface returns the
+     same attribute value specified when the surface was created with
+     eglCreatePbufferSurface. For a window or pixmap surface, the
+     contents of value are not modified."
+
+Avoid this from happening by checking that the surface type is
+EGL_PBUFFER_BIT before modifying the contents of the parameter.
+---
+ src/egl/main/eglsurface.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglsurface.c b/src/egl/main/eglsurface.c
+index e2cb73b..d2292fd 100644
+--- a/src/egl/main/eglsurface.c
++++ b/src/egl/main/eglsurface.c
+@@ -364,7 +364,8 @@ _eglQuerySurface(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSurface *surface,
+       *value = surface->Config->ConfigID;
+       break;
+    case EGL_LARGEST_PBUFFER:
+-      *value = surface->LargestPbuffer;
++      if (surface->Type == EGL_PBUFFER_BIT)
++         *value = surface->LargestPbuffer;
+       break;
+    case EGL_TEXTURE_FORMAT:
+       /* texture attributes: only for pbuffers, no error otherwise */
+-- 
+1.9.1
+

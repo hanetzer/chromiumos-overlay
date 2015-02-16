@@ -1,0 +1,333 @@
+From c1b5054177de0507de1ef5c973a91c8a80f93612 Mon Sep 17 00:00:00 2001
+From: Frank Henigman <fjhenigman@chromium.org>
+Date: Fri, 15 Mar 2013 12:13:20 -0400
+Subject: [PATCH 1/6] gallivm: one code memory pool with deferred free
+
+Provide a JITMemoryManager derivative which puts all generated code into
+one memory pool instead of creating a new one each time code is generated.
+This saves significant memory per shader as the pool size is 512K and
+a small shader occupies just several K.
+
+This memory manager also defers freeing generated code until you tell
+it to do so, making it possible to destroy the LLVM engine while keeping
+the code, thus enabling additional memory savings.
+---
+ src/gallium/auxiliary/gallivm/lp_bld_init.c   |   4 +
+ src/gallium/auxiliary/gallivm/lp_bld_init.h   |   1 +
+ src/gallium/auxiliary/gallivm/lp_bld_misc.cpp | 205 +++++++++++++++++++++++++-
+ src/gallium/auxiliary/gallivm/lp_bld_misc.h   |   7 +
+ 4 files changed, 216 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_init.c b/src/gallium/auxiliary/gallivm/lp_bld_init.c
+index 050eba7..b4a4340 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_init.c
++++ b/src/gallium/auxiliary/gallivm/lp_bld_init.c
+@@ -232,6 +232,8 @@ free_gallivm_state(struct gallivm_state *gallivm)
+    if (gallivm->builder)
+       LLVMDisposeBuilder(gallivm->builder);
+ 
++   lp_free_generated_code(gallivm->code);
++
+    gallivm->engine = NULL;
+    gallivm->target = NULL;
+    gallivm->module = NULL;
+@@ -239,6 +241,7 @@ free_gallivm_state(struct gallivm_state *gallivm)
+    gallivm->passmgr = NULL;
+    gallivm->context = NULL;
+    gallivm->builder = NULL;
++   gallivm->code = NULL;
+ }
+ 
+ 
+@@ -260,6 +263,7 @@ init_gallivm_engine(struct gallivm_state *gallivm)
+ 
+ #if HAVE_LLVM >= 0x0301
+       ret = lp_build_create_jit_compiler_for_module(&gallivm->engine,
++                                                    &gallivm->code,
+                                                     gallivm->module,
+                                                     (unsigned) optlevel,
+                                                     USE_MCJIT,
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_init.h b/src/gallium/auxiliary/gallivm/lp_bld_init.h
+index 7edea61..1e78d05 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_init.h
++++ b/src/gallium/auxiliary/gallivm/lp_bld_init.h
+@@ -45,6 +45,7 @@ struct gallivm_state
+    LLVMPassManagerRef passmgr;
+    LLVMContextRef context;
+    LLVMBuilderRef builder;
++   struct lp_generated_code *code;
+    unsigned compiled;
+ };
+ 
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+index 6a560df..ae31dae 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
++++ b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+@@ -231,6 +231,191 @@ lp_set_store_alignment(LLVMValueRef Inst,
+ 
+ #if HAVE_LLVM >= 0x301
+ 
++/*
++ * Delegate memory management to one shared manager for more efficient use
++ * of memory than creating a separate pool for each LLVM engine.
++ * Keep generated code until freeGeneratedCode() is called, instead of when
++ * memory manager is destroyed, which happens during engine destruction.
++ * This allows additional memory savings as we don't have to keep the engine
++ * around in order to use the code.
++ * All methods are delegated to the shared manager except destruction and
++ * deallocating code.  For the latter we just remember what needs to be
++ * deallocated later.  The shared manager is deleted once it is empty.
++ */
++class ShaderMemoryManager : public llvm::JITMemoryManager {
++
++   static llvm::JITMemoryManager *TheMM;
++   static unsigned NumUsers;
++
++   static void deallocateExceptionTableReally(void *ET) {
++      assert(TheMM);
++      TheMM->deallocateExceptionTable(ET);
++   }
++
++   static void deallocateFunctionBodyReally(void *Body) {
++      assert(TheMM);
++      TheMM->deallocateFunctionBody(Body);
++   }
++
++   llvm::JITMemoryManager *mgr() const {
++      if (!TheMM) {
++         TheMM = CreateDefaultMemManager();
++      }
++      return TheMM;
++   }
++
++   struct GeneratedCode {
++      std::vector<void *> FunctionBody;
++      std::vector<void *> ExceptionTable;
++
++      GeneratedCode() {
++         ++NumUsers;
++      }
++      ~GeneratedCode() {
++         /*
++          * Deallocate things as previously requested and
++          * free shared manager when no longer used.
++          */
++         for_each(FunctionBody.begin(), FunctionBody.end(),
++                  deallocateFunctionBodyReally);
++         for_each(ExceptionTable.begin(), ExceptionTable.end(),
++                  deallocateExceptionTableReally);
++         --NumUsers;
++         if (NumUsers == 0) {
++            delete TheMM;
++            TheMM = 0;
++         }
++      }
++   };
++
++   GeneratedCode *code;
++
++   public:
++
++      ShaderMemoryManager() {
++         code = new GeneratedCode;
++      }
++
++      virtual ~ShaderMemoryManager() {
++         /*
++          * 'code' is purposely not deleted.  It is the user's responsibility
++          * to call getGeneratedCode() and freeGeneratedCode().
++          */
++      }
++
++      struct lp_generated_code *getGeneratedCode() {
++         return (struct lp_generated_code *) code;
++      }
++
++      static void freeGeneratedCode(struct lp_generated_code *code) {
++         delete (GeneratedCode *) code;
++      }
++
++      virtual void deallocateExceptionTable(void *ET) {
++         // do not delegate but remember for later deallocation
++         code->ExceptionTable.push_back(ET);
++      }
++
++      virtual void deallocateFunctionBody(void *Body) {
++         // do not delegate but remember for later deallocation
++         code->FunctionBody.push_back(Body);
++      }
++
++      // just tedious delegation from here down
++
++      virtual void setMemoryWritable() {
++         return mgr()->setMemoryWritable();
++      }
++      virtual void setMemoryExecutable() {
++         return mgr()->setMemoryExecutable();
++      }
++      virtual void setPoisonMemory(bool poison) {
++         return mgr()->setPoisonMemory(poison);
++      }
++      virtual void AllocateGOT() {
++         return mgr()->AllocateGOT();
++      }
++      /*XXX not virtual in base class so can't override - potential problem
++      bool isManagingGOT() const {
++         return HasGOT;
++      }
++      */
++      virtual uint8_t *getGOTBase() const {
++         return mgr()->getGOTBase();
++      }
++      virtual uint8_t *startFunctionBody(const llvm::Function *F,
++                                         uintptr_t &ActualSize) {
++         return mgr()->startFunctionBody(F, ActualSize);
++      }
++      virtual uint8_t *allocateStub(const llvm::GlobalValue *F,
++                                    unsigned StubSize,
++                                    unsigned Alignment) {
++         return mgr()->allocateStub(F, StubSize, Alignment);
++      }
++      virtual void endFunctionBody(const llvm::Function *F,
++                                   uint8_t *FunctionStart,
++                                   uint8_t *FunctionEnd) {
++         return mgr()->endFunctionBody(F, FunctionStart, FunctionEnd);
++      }
++      virtual uint8_t *allocateSpace(intptr_t Size, unsigned Alignment) {
++         return mgr()->allocateSpace(Size, Alignment);
++      }
++      virtual uint8_t *allocateGlobal(uintptr_t Size, unsigned Alignment) {
++         return mgr()->allocateGlobal(Size, Alignment);
++      }
++      virtual uint8_t *startExceptionTable(const llvm::Function *F,
++                                           uintptr_t &ActualSize) {
++         return mgr()->startExceptionTable(F, ActualSize);
++      }
++      virtual void endExceptionTable(const llvm::Function *F,
++                                     uint8_t *TableStart,
++                                     uint8_t *TableEnd,
++                                     uint8_t *FrameRegister) {
++         return mgr()->endExceptionTable(F, TableStart, TableEnd,
++                                         FrameRegister);
++      }
++      virtual bool CheckInvariants(std::string &s) {
++         return mgr()->CheckInvariants(s);
++      }
++      virtual size_t GetDefaultCodeSlabSize() {
++         return mgr()->GetDefaultCodeSlabSize();
++      }
++      virtual size_t GetDefaultDataSlabSize() {
++         return mgr()->GetDefaultDataSlabSize();
++      }
++      virtual size_t GetDefaultStubSlabSize() {
++         return mgr()->GetDefaultStubSlabSize();
++      }
++      virtual unsigned GetNumCodeSlabs() {
++         return mgr()->GetNumCodeSlabs();
++      }
++      virtual unsigned GetNumDataSlabs() {
++         return mgr()->GetNumDataSlabs();
++      }
++      virtual unsigned GetNumStubSlabs() {
++         return mgr()->GetNumStubSlabs();
++      }
++
++      virtual uint8_t *allocateCodeSection(uintptr_t Size,
++                                           unsigned Alignment,
++                                           unsigned SectionID) {
++         return mgr()->allocateCodeSection(Size, Alignment, SectionID);
++      }
++      virtual uint8_t *allocateDataSection(uintptr_t Size,
++                                           unsigned Alignment,
++                                           unsigned SectionID) {
++         return mgr()->allocateDataSection(Size, Alignment, SectionID);
++      }
++      virtual void *getPointerToNamedFunction(const std::string &Name,
++                                              bool AbortOnFailure=true) {
++         return mgr()->getPointerToNamedFunction(Name, AbortOnFailure);
++      }
++};
++
++llvm::JITMemoryManager *ShaderMemoryManager::TheMM = 0;
++unsigned ShaderMemoryManager::NumUsers = 0;
++
++
+ /**
+  * Same as LLVMCreateJITCompilerForModule, but:
+  * - allows using MCJIT and enabling AVX feature where available.
+@@ -244,6 +429,7 @@ lp_set_store_alignment(LLVMValueRef Inst,
+ extern "C"
+ LLVMBool
+ lp_build_create_jit_compiler_for_module(LLVMExecutionEngineRef *OutJIT,
++                                        lp_generated_code **OutCode,
+                                         LLVMModuleRef M,
+                                         unsigned OptLevel,
+                                         int useMCJIT,
+@@ -293,7 +479,11 @@ lp_build_create_jit_compiler_for_module(LLVMExecutionEngineRef *OutJIT,
+       MAttrs.push_back("+avx");
+       builder.setMAttrs(MAttrs);
+    }
+-   builder.setJITMemoryManager(JITMemoryManager::CreateDefaultMemManager());
++
++   ShaderMemoryManager *MM = new ShaderMemoryManager();
++   *OutCode = MM->getGeneratedCode();
++
++   builder.setJITMemoryManager(MM);
+ 
+    ExecutionEngine *JIT;
+ #if 0
+@@ -311,8 +501,21 @@ lp_build_create_jit_compiler_for_module(LLVMExecutionEngineRef *OutJIT,
+       *OutJIT = wrap(JIT);
+       return 0;
+    }
++   lp_free_generated_code(*OutCode);
++   *OutCode = 0;
++   delete MM;
+    *OutError = strdup(Error.c_str());
+    return 1;
+ }
+ 
+ #endif /* HAVE_LLVM >= 0x301 */
++
++
++extern "C"
++void
++lp_free_generated_code(struct lp_generated_code *code)
++{
++#if HAVE_LLVM >= 0x301
++   ShaderMemoryManager::freeGeneratedCode(code);
++#endif
++}
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_misc.h b/src/gallium/auxiliary/gallivm/lp_bld_misc.h
+index 9ed7c34..610b4fd 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_misc.h
++++ b/src/gallium/auxiliary/gallivm/lp_bld_misc.h
+@@ -34,6 +34,9 @@
+ #include <llvm-c/ExecutionEngine.h>
+ 
+ 
++struct lp_generated_code;
++
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+@@ -57,11 +60,15 @@ lp_build_load_volatile(LLVMBuilderRef B, LLVMValueRef PointerVal,
+ 
+ extern int
+ lp_build_create_jit_compiler_for_module(LLVMExecutionEngineRef *OutJIT,
++                                        struct lp_generated_code **OutCode,
+                                         LLVMModuleRef M,
+                                         unsigned OptLevel,
+                                         int useMCJIT,
+                                         char **OutError);
+ 
++extern void
++lp_free_generated_code(struct lp_generated_code *code);
++
+ 
+ #ifdef __cplusplus
+ }
+-- 
+1.8.1.3
+

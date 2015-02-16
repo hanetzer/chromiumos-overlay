@@ -1,0 +1,53 @@
+From 786b469ed960d6e6f782adfb33d606ead774ab02 Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Thu, 30 Jan 2014 08:42:37 +0800
+Subject: [PATCH] mesa: use signed temporary variable to store
+ _ColorDrawBufferIndexes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+_ColorDrawBufferIndexes is defined as GLint* and using a GLuint*
+will result in the first part of the conditional to be evaluated to
+true always.
+
+Unintentionally introduced by the following commit, this will result
+in a driver segfault if one is using an old version of the piglit test
+
+    bin/clearbuffer-mixed-format -auto -fbo
+
+commit 03d848ea1003abefd8fe51a5b4a780527cd852af
+Author: Marek Olšák <marek.olsak@amd.com>
+Date:   Wed Dec 4 00:27:20 2013 +0100
+
+    mesa: fix interpretation of glClearBuffer(drawbuffer)
+
+    This corresponding piglit tests supported this incorrect behavior instead of
+    pointing at it.
+
+Cc: Marek Olšák <marek.olsak@amd.com>
+Cc: 10.0 9.2 9.1 <mesa-stable@lists.freedesktop.org>
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Signed-off-by: Emil Velikov <emil.l.velikov@gmail.com>
+(cherry picked from commit 10368e1446e3b537c1dc4cb536994a4d01cfd2f0)
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+---
+ src/mesa/main/clear.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mesa/main/clear.c b/src/mesa/main/clear.c
+index f0b525f..d568ed8 100644
+--- a/src/mesa/main/clear.c
++++ b/src/mesa/main/clear.c
+@@ -274,7 +274,7 @@ make_color_buffer_mask(struct gl_context *ctx, GLint drawbuffer)
+       break;
+    default:
+       {
+-         GLuint buf = ctx->DrawBuffer->_ColorDrawBufferIndexes[drawbuffer];
++         GLint buf = ctx->DrawBuffer->_ColorDrawBufferIndexes[drawbuffer];
+ 
+          if (buf >= 0 && att[buf].Renderbuffer) {
+             mask |= 1 << buf;
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

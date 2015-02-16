@@ -1,0 +1,74 @@
+From 003848d11e5137372e0b2dff70f51a21e768dc39 Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Fri, 21 Mar 2014 15:58:02 -0700
+Subject: [PATCH 3/4] mesa: Skip clearing color buffers when color writes are
+ disabled.
+
+WebGL Aquarium in Chrome 24 actually hits this.
+
+v2: Move to core Mesa (wisely suggested by Ian); only consider
+    components which actually exist.
+
+v3: Use _mesa_format_has_color_component to determine whether components
+    actually exist, fixing alpha format handling.
+
+v4: Add a comment, as requested by Brian.  No actual code changes.
+
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Brian Paul <brianp@vmware.com>
+Reviewed-by: Eric Anholt <eric@anholt.net>
+Reviewed-by: Ian Romanick <ian.d.romanick@intel.com>
+Tested-by: Dylan Baker <baker.dylan.c@gmail.com>
+(cherry picked from commit 630bf288de09e0fcf9734b297042cb751ec38376)
+---
+ src/mesa/main/clear.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/main/clear.c b/src/mesa/main/clear.c
+index fd5bb35..0d99736 100644
+--- a/src/mesa/main/clear.c
++++ b/src/mesa/main/clear.c
+@@ -107,6 +107,31 @@ _mesa_ClearColorIuiEXT(GLuint r, GLuint g, GLuint b, GLuint a)
+ 
+ 
+ /**
++ * Returns true if color writes are enabled for the given color attachment.
++ *
++ * Beyond checking ColorMask, this uses _mesa_format_has_color_component to
++ * ignore components that don't actually exist in the format (such as X in
++ * XRGB).
++ */
++static bool
++color_buffer_writes_enabled(const struct gl_context *ctx, unsigned idx)
++{
++   struct gl_renderbuffer *rb = ctx->DrawBuffer->_ColorDrawBuffers[idx];
++   GLuint c;
++   GLubyte colorMask = 0;
++
++   if (rb) {
++      for (c = 0; c < 4; c++) {
++         if (_mesa_format_has_color_component(rb->Format, c))
++            colorMask |= ctx->Color.ColorMask[idx][c];
++      }
++   }
++
++   return colorMask != 0;
++}
++
++
++/**
+  * Clear buffers.
+  * 
+  * \param mask bit-mask indicating the buffers to be cleared.
+@@ -181,7 +206,7 @@ _mesa_Clear( GLbitfield mask )
+          for (i = 0; i < ctx->DrawBuffer->_NumColorDrawBuffers; i++) {
+             GLint buf = ctx->DrawBuffer->_ColorDrawBufferIndexes[i];
+ 
+-            if (buf >= 0) {
++            if (buf >= 0 && color_buffer_writes_enabled(ctx, i)) {
+                bufferMask |= 1 << buf;
+             }
+          }
+-- 
+1.8.4
+

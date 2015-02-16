@@ -1,0 +1,16 @@
+diff --git a/src/mesa/swrast/s_texrender.c b/src/mesa/swrast/s_texrender.c
+index 751d776..d4d4684 100644
+--- a/src/mesa/swrast/s_texrender.c
++++ b/src/mesa/swrast/s_texrender.c
+@@ -53,7 +53,10 @@ update_wrapper(struct gl_context *ctx, struct gl_renderbuffer_attachment *att)
+    /* Want to store linear values, not sRGB */
+    rb->Format = _mesa_get_srgb_format_linear(format);
+ 
+-   srb->Buffer = swImage->ImageSlices[zOffset];
++   if (swImage->ImageSlices)
++      srb->Buffer = swImage->ImageSlices[zOffset];
++   else
++      srb->Buffer = NULL;
+ }
+ 
+ 

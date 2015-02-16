@@ -1,0 +1,69 @@
+From ee4d189489da730cc4778b7a50d950fae2816aed Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Thu, 15 Jan 2015 01:41:14 -0800
+Subject: [PATCH] [BACKPORT]i965: Prefer Meta over the BLT for
+ BlitFramebuffer.
+
+There's some debate about whether we should use Meta or BLORP,
+but either should run circles around the BLT engine.
+
+In particular, this means that Gen8+ will use the 3D engine for blits,
+like we do on Gen6-7.
+
+Improves performance in "copypixrate -blit -back" (from Mesa demos)
+by 232.037% +/- 3.15795% (n=10) on Broadwell GT3e.
+
+v2: Rebase on Laura's changes.
+
+BUG=chrome-os-partner:36184
+TEST=smooth rendering on auron, yuna
+
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Matt Turner <mattst88@gmail.com>
+Cc: "10.5" <mesa-stable@lists.freedesktop.org>
+
+Conflicts:
+
+	src/mesa/drivers/dri/i965/intel_fbo.c
+
+Change-Id: Ifb10923ee8938a24284407d1c33f592c5f2f6a71
+Signed-off-by: ravikira <ravi.k.yerraguntla@intel.com>
+---
+ src/mesa/drivers/dri/i965/intel_fbo.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i965/intel_fbo.c b/src/mesa/drivers/dri/i965/intel_fbo.c
+index 4a03b57..0a68f45 100644
+--- a/src/mesa/drivers/dri/i965/intel_fbo.c
++++ b/src/mesa/drivers/dri/i965/intel_fbo.c
+@@ -881,6 +881,13 @@ intel_blit_framebuffer(struct gl_context *ctx,
+    if (mask == 0x0)
+       return;
+ 
++   mask = _mesa_meta_BlitFramebuffer(ctx,
++                                     srcX0, srcY0, srcX1, srcY1,
++                                     dstX0, dstY0, dstX1, dstY1,
++                                     mask, filter);
++   if (mask == 0x0)
++      return;
++
+    if (brw->gen >= 8 && (mask & GL_STENCIL_BUFFER_BIT)) {
+       brw_meta_fbo_stencil_blit(brw_context(ctx),
+                                 srcX0, srcY0, srcX1, srcY1,
+@@ -898,13 +905,6 @@ intel_blit_framebuffer(struct gl_context *ctx,
+    if (mask == 0x0)
+       return;
+ 
+-   mask = _mesa_meta_BlitFramebuffer(ctx,
+-                                     srcX0, srcY0, srcX1, srcY1,
+-                                     dstX0, dstY0, dstX1, dstY1,
+-                                     mask, filter);
+-   if (mask == 0x0)
+-      return;
+-
+    _swrast_BlitFramebuffer(ctx,
+                            srcX0, srcY0, srcX1, srcY1,
+                            dstX0, dstY0, dstX1, dstY1,
+-- 
+1.7.9.5
+

@@ -1,0 +1,18 @@
+diff --git a/src/mesa/drivers/dri/i965/brw_context.c b/src/mesa/drivers/dri/i965/brw_context.c
+index bee98e3..3f14fb1 100644
+--- a/src/mesa/drivers/dri/i965/brw_context.c
++++ b/src/mesa/drivers/dri/i965/brw_context.c
+@@ -706,11 +706,11 @@ brwCreateContext(gl_api api,
+        */
+       brw->hw_ctx = drm_intel_gem_context_create(brw->bufmgr);
+ 
+-      if (!brw->hw_ctx) {
++/*      if (!brw->hw_ctx) {
+          fprintf(stderr, "Gen6+ requires Kernel 3.6 or later.\n");
+          intelDestroyContext(driContextPriv);
+          return false;
+-      }
++      }*/
+    }
+ 
+    /* Notification of GPU resets requires hardware contexts and a kernel new

@@ -1,0 +1,44 @@
+From 7fd17035a7f9c5b6219f1885a41c0385d861d159 Mon Sep 17 00:00:00 2001
+From: Frank Henigman <fjhenigman@gmail.com>
+Date: Thu, 19 Feb 2015 10:09:25 -0800
+Subject: [PATCH] intel: fix EGLImage renderbuffer _BaseFormat
+
+Correctly set _BaseFormat field when creating a gl_renderbuffer
+with EGLImage storage.
+
+Signed-off-by: Frank Henigman <fjhenigman@google.com>
+---
+ src/mesa/drivers/dri/i915/intel_fbo.c | 3 +--
+ src/mesa/drivers/dri/i965/intel_fbo.c | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i915/intel_fbo.c b/src/mesa/drivers/dri/i915/intel_fbo.c
+index ead1b17..6c2e181 100644
+--- a/src/mesa/drivers/dri/i915/intel_fbo.c
++++ b/src/mesa/drivers/dri/i915/intel_fbo.c
+@@ -287,8 +287,7 @@ intel_image_target_renderbuffer_storage(struct gl_context *ctx,
+    rb->Width = image->region->width;
+    rb->Height = image->region->height;
+    rb->Format = image->format;
+-   rb->_BaseFormat = _mesa_base_fbo_format(&intel->ctx,
+-					   image->internal_format);
++   rb->_BaseFormat = _mesa_get_format_base_format(image->format);
+    rb->NeedsFinishRenderTexture = true;
+ }
+ 
+diff --git a/src/mesa/drivers/dri/i965/intel_fbo.c b/src/mesa/drivers/dri/i965/intel_fbo.c
+index 174cea0..9394018 100644
+--- a/src/mesa/drivers/dri/i965/intel_fbo.c
++++ b/src/mesa/drivers/dri/i965/intel_fbo.c
+@@ -398,7 +398,7 @@ intel_image_target_renderbuffer_storage(struct gl_context *ctx,
+    rb->Width = image->width;
+    rb->Height = image->height;
+    rb->Format = image->format;
+-   rb->_BaseFormat = _mesa_base_fbo_format(ctx, image->internal_format);
++   rb->_BaseFormat = _mesa_get_format_base_format(image->format);
+    rb->NeedsFinishRenderTexture = true;
+    irb->layer_count = 1;
+ }
+-- 
+2.2.0.rc0.207.ga3a616c
+

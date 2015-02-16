@@ -1,0 +1,454 @@
+From 961979ab0a30ea8966659b3ad37df26fe16e81e4 Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Tue, 11 Mar 2014 11:41:07 +0000
+Subject: [PATCH] Extend EGL KHR sync object support.
+
+Extend EGL_KHR_fence_sync support in the DRI2 EGL driver.
+Add EGL_KHR_wait_sync support to EGL and the DRI2 EGL driver.
+---
+ include/GL/internal/dri_interface.h |  34 ++++++++
+ src/egl/drivers/dri2/egl_dri2.c     | 154 ++++++++++++++++++++++++++++++++++++
+ src/egl/drivers/dri2/egl_dri2.h     |  10 +++
+ src/egl/main/eglapi.c               |  26 +++++-
+ src/egl/main/eglapi.h               |   2 +
+ src/egl/main/egldisplay.c           |  13 ++-
+ src/egl/main/egldisplay.h           |   1 +
+ src/egl/main/eglfallbacks.c         |   1 +
+ src/egl/main/eglmisc.c              |   1 +
+ 9 files changed, 237 insertions(+), 5 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 8da1278..f7bb179 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1491,4 +1491,38 @@ struct __DRIpriorityExtensionRec {
+    __DRIextension base;
+ };
+ 
++/**
++ * Sync object driver extension.
++ */
++#define __DRI_SYNCOBJ "DRI_Sync_Obj"
++#define __DRI_SYNCOBJ_VERSION 1
++
++/**
++ * Sync object feature flags.
++ */
++#define __DRI_SYNCOBJ_FEAT_FENCE			0x0001
++
++/**
++ * Sync object type.
++ */
++#define	__DRI_SYNCOBJ_TYPE_FENCE			1
++
++typedef struct __DRIsyncObjRec __DRIsyncObj;
++typedef struct __DRIsyncObjExtensionRec __DRIsyncObjExtension;
++struct __DRIsyncObjExtensionRec {
++   __DRIextension base;
++  unsigned features;
++  __DRIsyncObj *(*createSyncObj)(__DRIcontext *context, unsigned type);
++   /**
++    * The context specified at sync object creation time may have been
++    * destroyed by the time the sync object itself is destroyed, and
++    * may be destroyed whilst a thread is blocked waiting on the sync
++    * object.
++    */
++  void (*destroySyncObj)(__DRIsyncObj *syncObj);
++  GLboolean (*clientWait)(__DRIsyncObj *syncObj, GLboolean with_timeout,
++                          uint64_t timeout);
++  GLboolean (*serverWait)(__DRIcontext *context, __DRIsyncObj *syncObj);
++};
++
+ #endif
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 2472291..1b577ac 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -518,6 +518,13 @@ dri2_setup_screen(_EGLDisplay *disp)
+ 
+       if (dri2_dpy->priority)
+          disp->Extensions.IMG_context_priority = EGL_TRUE;
++
++      if (dri2_dpy->syncobj && (dri2_dpy->syncobj->features & __DRI_SYNCOBJ_FEAT_FENCE)) {
++         disp->Extensions.KHR_fence_sync = EGL_TRUE;
++
++         if (dri2_dpy->syncobj->serverWait)
++            disp->Extensions.KHR_wait_sync = EGL_TRUE;
++      }
+    }
+ 
+    if (dri2_dpy->image) {
+@@ -618,6 +625,9 @@ dri2_create_screen(_EGLDisplay *disp)
+       if (strcmp(extensions[i]->name, __DRI_PRIORITY) == 0) {
+          dri2_dpy->priority = (__DRIpriorityExtension *) extensions[i];
+       }
++      if (strcmp(extensions[i]->name, __DRI_SYNCOBJ) == 0) {
++         dri2_dpy->syncobj = (__DRIsyncObjExtension *) extensions[i];
++      }
+    }
+ 
+    dri2_setup_screen(disp);
+@@ -2116,6 +2126,144 @@ dri2_query_wayland_buffer_wl(_EGLDriver *drv, _EGLDisplay *disp,
+ }
+ #endif
+ 
++static _EGLSync *
++dri2_create_sync(_EGLDriver *drv, _EGLDisplay *disp, EGLenum type, const EGLint *attrib_list)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_context *dri2_ctx;
++   struct dri2_egl_sync *dri2_sync;
++   unsigned dri_type;
++   _EGLContext *ctx = _eglGetCurrentContext();
++
++   if (ctx == NULL || ctx->Resource.Display != disp) {
++      _eglError(EGL_BAD_MATCH, "dri2_create_sync");
++      return NULL;
++   }
++   dri2_ctx = dri2_egl_context(ctx);
++
++   dri2_sync = calloc(1, sizeof(*dri2_ctx));
++   if (dri2_sync == NULL) {
++      _eglError(EGL_BAD_ALLOC, "dri2_create_sync");
++      return NULL;
++   }
++
++   if (!_eglInitSync(&dri2_sync->base, disp, type, attrib_list)) {
++      free(dri2_sync);
++      return NULL;
++   }
++
++   switch(dri2_sync->base.Type) {
++   case EGL_SYNC_FENCE_KHR:
++      dri_type = __DRI_SYNCOBJ_TYPE_FENCE;
++      break;
++   default:
++      _eglError(EGL_BAD_ATTRIBUTE,"dri2_create_sync");
++      free(dri2_sync);
++      return NULL;
++   }
++
++   dri2_sync->dri_sync = dri2_dpy->syncobj->createSyncObj(dri2_ctx->dri_context, dri_type);
++   if (dri2_sync->dri_sync == NULL) {
++      _eglError(EGL_BAD_ALLOC, "dri2_create_sync");
++      free(dri2_sync);
++      return NULL;
++   }
++
++   return &dri2_sync->base;
++}
++
++static EGLBoolean
++dri2_destroy_sync(_EGLDriver *drv, _EGLDisplay *disp, _EGLSync *sync)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_sync *dri2_sync = dri2_egl_sync(sync);
++
++   (void) drv;
++
++   if (_eglPutSync(sync))
++   {
++      dri2_dpy->syncobj->destroySyncObj(dri2_sync->dri_sync);
++      free(dri2_sync);
++   }
++
++   return EGL_TRUE;
++}
++
++static EGLint
++dri2_client_wait_sync(_EGLDriver *drv, _EGLDisplay *disp, _EGLSync *sync, EGLint flags, EGLTimeKHR timeout)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_sync *dri2_sync = dri2_egl_sync(sync);
++   GLboolean dri_status;
++   EGLint status;
++
++   (void) drv;
++
++   if (flags & EGL_SYNC_FLUSH_COMMANDS_BIT_KHR) {
++      _EGLContext *ctx = _eglGetCurrentContext();
++
++      if (ctx != NULL) {
++            struct dri2_egl_context *dri2_ctx;
++
++            if (ctx->Resource.Display != disp)
++               return _eglError(EGL_BAD_PARAMETER, "dri2_client_wait_sync");
++
++            dri2_ctx = dri2_egl_context(ctx);
++            if (dri2_dpy->flush != NULL && dri2_dpy->flush->base.version >= 4)
++               dri2_dpy->flush->flush_with_flags(dri2_ctx->dri_context, NULL, __DRI2_FLUSH_CONTEXT, 0);
++      }
++   }
++
++   _eglGetSync(sync);
++   _eglUnlockMutex(&disp->Mutex);
++
++   dri_status = dri2_dpy->syncobj->clientWait(dri2_sync->dri_sync, timeout != EGL_FOREVER_KHR, timeout);
++
++   _eglLockMutex(&disp->Mutex);
++   dri2_destroy_sync(drv, disp, sync);
++
++   status = dri_status ? EGL_CONDITION_SATISFIED_KHR : EGL_TIMEOUT_EXPIRED_KHR;
++
++   return status;
++}
++
++static EGLint
++dri2_wait_sync(_EGLDriver *drv, _EGLDisplay *disp, _EGLSync *sync, EGLint flags)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_sync *dri2_sync = dri2_egl_sync(sync);
++   struct dri2_egl_context *dri2_ctx;
++   _EGLContext *ctx = _eglGetCurrentContext();
++
++   (void) drv;
++
++   if (flags != 0)
++      return _eglError(EGL_BAD_PARAMETER, "dri2_wait_sync");
++
++   if (ctx == NULL || ctx->Resource.Display != disp)
++      return _eglError(EGL_BAD_MATCH, "dri2_wait_sync");
++
++   dri2_ctx = dri2_egl_context(ctx);
++
++   if (!dri2_dpy->syncobj->serverWait(dri2_ctx->dri_context, dri2_sync->dri_sync))
++      return _eglError(EGL_BAD_MATCH, "dri2_wait_sync");
++
++   return EGL_TRUE;
++}
++
++static EGLBoolean
++dri2_get_sync_attrib(_EGLDriver *drv, _EGLDisplay *disp, _EGLSync *sync, EGLint attribute, EGLint *value)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
++   struct dri2_egl_sync *dri2_sync = dri2_egl_sync(sync);
++   GLboolean dri_status;
++
++   dri_status = dri2_dpy->syncobj->clientWait(dri2_sync->dri_sync, GL_FALSE, 0);
++   sync->SyncStatus = dri_status ? EGL_SIGNALED_KHR : EGL_UNSIGNALED_KHR;
++
++   return _eglGetSyncAttribKHR(drv, disp, sync, attribute, value);
++}
++
+ static void
+ dri2_unload(_EGLDriver *drv)
+ {
+@@ -2227,6 +2375,12 @@ _eglBuiltInDriverDRI2(const char *args)
+ #endif
+    dri2_drv->base.API.GetSyncValuesCHROMIUM = dri2_get_sync_values_chromium;
+ 
++   dri2_drv->base.API.CreateSyncKHR = dri2_create_sync;
++   dri2_drv->base.API.DestroySyncKHR = dri2_destroy_sync;
++   dri2_drv->base.API.ClientWaitSyncKHR = dri2_client_wait_sync;
++   dri2_drv->base.API.WaitSyncKHR = dri2_wait_sync;
++   dri2_drv->base.API.GetSyncAttribKHR = dri2_get_sync_attrib;
++
+    dri2_drv->base.Name = "DRI2";
+    dri2_drv->base.Unload = dri2_unload;
+ 
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 79d9acb..e158d2c 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -72,6 +72,7 @@
+ #include "egllog.h"
+ #include "eglsurface.h"
+ #include "eglimage.h"
++#include "eglsync.h"
+ 
+ #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+ 
+@@ -163,6 +164,7 @@ struct dri2_egl_display
+    const __DRIrobustnessExtension *robustness;
+    const __DRI2configQueryExtension *config;
+    const __DRIpriorityExtension   *priority;
++   const __DRIsyncObjExtension    *syncobj;
+    int                       fd;
+ 
+    int                       own_device;
+@@ -288,9 +290,17 @@ struct dri2_egl_image
+ #define DRI_CONF_VBLANK_DEF_INTERVAL_1 2
+ #define DRI_CONF_VBLANK_ALWAYS_SYNC 3
+ 
++struct dri2_egl_sync
++{
++   _EGLSync              base;
++   __DRIsyncObjExtension *dri_sync_obj_ext;
++   __DRIsyncObj          *dri_sync;
++};
++
+ /* standard typecasts */
+ _EGL_DRIVER_STANDARD_TYPECASTS(dri2_egl)
+ _EGL_DRIVER_TYPECAST(dri2_egl_image, _EGLImage, obj)
++_EGL_DRIVER_TYPECAST(dri2_egl_sync, _EGLSync, obj)
+ 
+ extern const __DRIimageLookupExtension image_lookup_extension;
+ extern const __DRIuseInvalidateExtension use_invalidate;
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 096c3d8..fce3ecf 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1070,6 +1070,7 @@ eglGetProcAddress(const char *procname)
+       { "eglCreateSyncKHR", (_EGLProc) eglCreateSyncKHR },
+       { "eglDestroySyncKHR", (_EGLProc) eglDestroySyncKHR },
+       { "eglClientWaitSyncKHR", (_EGLProc) eglClientWaitSyncKHR },
++      { "eglWaitSyncKHR", (_EGLProc) eglWaitSyncKHR },
+       { "eglSignalSyncKHR", (_EGLProc) eglSignalSyncKHR },
+       { "eglGetSyncAttribKHR", (_EGLProc) eglGetSyncAttribKHR },
+ #ifdef EGL_NOK_swap_region
+@@ -1512,7 +1513,7 @@ eglCreateSyncKHR(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list)
+    EGLSyncKHR ret;
+ 
+    _EGL_CHECK_DISPLAY(disp, EGL_NO_SYNC_KHR, drv);
+-   if (!disp->Extensions.KHR_reusable_sync)
++   if (!disp->Extensions.KHR_reusable_sync && !disp->Extensions.KHR_fence_sync)
+       RETURN_EGL_EVAL(disp, EGL_NO_SYNC_KHR);
+ 
+    sync = drv->API.CreateSyncKHR(drv, disp, type, attrib_list);
+@@ -1531,7 +1532,7 @@ eglDestroySyncKHR(EGLDisplay dpy, EGLSyncKHR sync)
+    EGLBoolean ret;
+ 
+    _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
+-   assert(disp->Extensions.KHR_reusable_sync);
++   assert(disp->Extensions.KHR_reusable_sync || disp->Extensions.KHR_fence_sync);
+ 
+    _eglUnlinkSync(s);
+    ret = drv->API.DestroySyncKHR(drv, disp, s);
+@@ -1549,13 +1550,30 @@ eglClientWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR sync, EGLint flags, EGLTimeKHR t
+    EGLint ret;
+ 
+    _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
+-   assert(disp->Extensions.KHR_reusable_sync);
++   assert(disp->Extensions.KHR_reusable_sync || disp->Extensions.KHR_fence_sync);
+    ret = drv->API.ClientWaitSyncKHR(drv, disp, s, flags, timeout);
+ 
+    RETURN_EGL_EVAL(disp, ret);
+ }
+ 
+ 
++EGLint EGLAPIENTRY
++eglWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR sync, EGLint flags)
++{
++   _EGLDisplay *disp = _eglLockDisplay(dpy);
++   _EGLSync *s = _eglLookupSync(sync, disp);
++   _EGLDriver *drv;
++   EGLint ret;
++
++   _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
++   if (!disp->Extensions.KHR_wait_sync || !disp->Extensions.KHR_fence_sync)
++      RETURN_EGL_EVAL(disp, EGL_BAD_MATCH);
++
++   ret = drv->API.WaitSyncKHR(drv, disp, s, flags);
++
++   RETURN_EGL_EVAL(disp, ret);
++}
++
+ EGLBoolean EGLAPIENTRY
+ eglSignalSyncKHR(EGLDisplay dpy, EGLSyncKHR sync, EGLenum mode)
+ {
+@@ -1581,7 +1599,7 @@ eglGetSyncAttribKHR(EGLDisplay dpy, EGLSyncKHR sync, EGLint attribute, EGLint *v
+    EGLBoolean ret;
+ 
+    _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
+-   assert(disp->Extensions.KHR_reusable_sync);
++   assert(disp->Extensions.KHR_reusable_sync || disp->Extensions.KHR_fence_sync);
+    ret = drv->API.GetSyncAttribKHR(drv, disp, s, attribute, value);
+ 
+    RETURN_EGL_EVAL(disp, ret);
+diff --git a/src/egl/main/eglapi.h b/src/egl/main/eglapi.h
+index cb01cab..1fa6ee5 100644
+--- a/src/egl/main/eglapi.h
++++ b/src/egl/main/eglapi.h
+@@ -106,6 +106,7 @@ typedef EGLBoolean (*DestroyImageKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, _EGLI
+ typedef _EGLSync *(*CreateSyncKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, EGLenum type, const EGLint *attrib_list);
+ typedef EGLBoolean (*DestroySyncKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync);
+ typedef EGLint (*ClientWaitSyncKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync, EGLint flags, EGLTimeKHR timeout);
++typedef EGLint (*WaitSyncKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync, EGLint flags);
+ typedef EGLBoolean (*SignalSyncKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync, EGLenum mode);
+ typedef EGLBoolean (*GetSyncAttribKHR_t)(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync, EGLint attribute, EGLint *value);
+ 
+@@ -198,6 +199,7 @@ struct _egl_api
+    CreateSyncKHR_t CreateSyncKHR;
+    DestroySyncKHR_t DestroySyncKHR;
+    ClientWaitSyncKHR_t ClientWaitSyncKHR;
++   WaitSyncKHR_t WaitSyncKHR;
+    SignalSyncKHR_t SignalSyncKHR;
+    GetSyncAttribKHR_t GetSyncAttribKHR;
+ 
+diff --git a/src/egl/main/egldisplay.c b/src/egl/main/egldisplay.c
+index 76dfee7..e724653 100644
+--- a/src/egl/main/egldisplay.c
++++ b/src/egl/main/egldisplay.c
+@@ -38,6 +38,7 @@
+ #include "eglcontext.h"
+ #include "eglcurrent.h"
+ #include "eglsurface.h"
++#include "eglsync.h"
+ #include "egldisplay.h"
+ #include "egldriver.h"
+ #include "eglglobals.h"
+@@ -286,7 +287,7 @@ _eglFindDisplay(_EGLPlatformType plat, void *plat_dpy)
+ 
+ 
+ /**
+- * Destroy the contexts and surfaces that are linked to the display.
++ * Destroy the contexts, surfaces and syncs that are linked to the display.
+  */
+ void
+ _eglReleaseDisplayResources(_EGLDriver *drv, _EGLDisplay *display)
+@@ -312,6 +313,16 @@ _eglReleaseDisplayResources(_EGLDriver *drv, _EGLDisplay *display)
+       drv->API.DestroySurface(drv, display, surf);
+    }
+    assert(!display->ResourceLists[_EGL_RESOURCE_SURFACE]);
++
++   list = display->ResourceLists[_EGL_RESOURCE_SYNC];
++   while (list) {
++      _EGLSync *sync = (_EGLSync *) list;
++      list = list->Next;
++
++      _eglUnlinkSync(sync);
++      drv->API.DestroySyncKHR(drv, display, sync);
++   }
++   assert(!display->ResourceLists[_EGL_RESOURCE_SYNC]);
+ }
+ 
+ 
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index 0170416..ddde493 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -104,6 +104,7 @@ struct _egl_extensions
+ 
+    EGLBoolean KHR_reusable_sync;
+    EGLBoolean KHR_fence_sync;
++   EGLBoolean KHR_wait_sync;
+ 
+    EGLBoolean KHR_surfaceless_context;
+    EGLBoolean KHR_create_context;
+diff --git a/src/egl/main/eglfallbacks.c b/src/egl/main/eglfallbacks.c
+index 0b70e92..afffd93 100644
+--- a/src/egl/main/eglfallbacks.c
++++ b/src/egl/main/eglfallbacks.c
+@@ -109,6 +109,7 @@ _eglInitDriverFallbacks(_EGLDriver *drv)
+    drv->API.CreateSyncKHR = NULL;
+    drv->API.DestroySyncKHR = NULL;
+    drv->API.ClientWaitSyncKHR = NULL;
++   drv->API.WaitSyncKHR = NULL;
+    drv->API.SignalSyncKHR = NULL;
+    drv->API.GetSyncAttribKHR = _eglGetSyncAttribKHR;
+ 
+diff --git a/src/egl/main/eglmisc.c b/src/egl/main/eglmisc.c
+index 6b0f4d1..e8de991 100644
+--- a/src/egl/main/eglmisc.c
++++ b/src/egl/main/eglmisc.c
+@@ -108,6 +108,7 @@ _eglUpdateExtensionsString(_EGLDisplay *dpy)
+ 
+    _EGL_CHECK_EXTENSION(KHR_reusable_sync);
+    _EGL_CHECK_EXTENSION(KHR_fence_sync);
++   _EGL_CHECK_EXTENSION(KHR_wait_sync);
+ 
+    _EGL_CHECK_EXTENSION(KHR_surfaceless_context);
+    _EGL_CHECK_EXTENSION(KHR_create_context);
+-- 
+1.9.1
+

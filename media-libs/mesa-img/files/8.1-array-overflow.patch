@@ -1,0 +1,24 @@
+From b6b7474929432fa764827607d05d86b58be42f74 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
+Date: Mon, 8 Jul 2013 18:32:34 -0700
+Subject: [PATCH] Avoid crash when overflowing the samplers array
+
+---
+ src/glsl/link_uniforms.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/glsl/link_uniforms.cpp b/src/glsl/link_uniforms.cpp
+index 35ace1e..71e09d6 100644
+--- a/src/glsl/link_uniforms.cpp
++++ b/src/glsl/link_uniforms.cpp
+@@ -358,6 +358,7 @@ private:
+           */
+          this->next_sampler +=
+                MAX2(1, uniform->array_elements);
++         this->next_sampler = MIN2(this->next_sampler, MAX_SAMPLERS);
+ 
+          const gl_texture_index target = base_type->sampler_index();
+          const unsigned shadow = base_type->sampler_shadow;
+-- 
+1.8.3
+

@@ -1,0 +1,77 @@
+From 2707b4ab83ac2d7717c4e0a1fd31bb2928ef1506 Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Thu, 6 Feb 2014 19:05:35 +0800
+Subject: [PATCH 4/4] glsl: Add locking to builtin_builder singleton
+
+Consider a multithreaded program with two contexts A and B, and the
+following scenario:
+
+1. Context A calls initialize(), which allocates mem_ctx and starts
+   building built-ins.
+2. Context B calls initialize(), which sees mem_ctx != NULL and assumes
+   everything is already set up.  It returns.
+3. Context B calls find(), which fails to find the built-in since it
+   hasn't been created yet.
+4. Context A finally finishes initializing the built-ins.
+
+This will break at step 3.  Adding a lock ensures that subsequent
+callers of initialize() will wait until initialization is actually
+complete.
+
+Similarly, if any thread calls release while another thread is still
+initializing, or calling find(), the mem_ctx/shader would get free'd while
+from under it, leading to corruption or use-after-free crashes.
+
+Fixes sporadic failures in Piglit's glx-multithread-shader-compile.
+
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+---
+ src/glsl/builtin_functions.cpp | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/glsl/builtin_functions.cpp b/src/glsl/builtin_functions.cpp
+index 840a6c9..c64fa3b 100644
+--- a/src/glsl/builtin_functions.cpp
++++ b/src/glsl/builtin_functions.cpp
+@@ -3997,6 +3997,7 @@ builtin_builder::_atomic_op(const char *intrinsic,
+ 
+ /* The singleton instance of builtin_builder. */
+ static builtin_builder builtins;
++_glthread_DECLARE_STATIC_MUTEX(builtins_lock);
+ 
+ /**
+  * External API (exposing the built-in module to the rest of the compiler):
+@@ -4005,20 +4006,28 @@ static builtin_builder builtins;
+ void
+ _mesa_glsl_initialize_builtin_functions()
+ {
++   _glthread_LOCK_MUTEX(builtins_lock);
+    builtins.initialize();
++   _glthread_UNLOCK_MUTEX(builtins_lock);
+ }
+ 
+ void
+ _mesa_glsl_release_builtin_functions()
+ {
++   _glthread_LOCK_MUTEX(builtins_lock);
+    builtins.release();
++   _glthread_UNLOCK_MUTEX(builtins_lock);
+ }
+ 
+ ir_function_signature *
+ _mesa_glsl_find_builtin_function(_mesa_glsl_parse_state *state,
+                                  const char *name, exec_list *actual_parameters)
+ {
+-   return builtins.find(state, name, actual_parameters);
++   ir_function_signature * s;
++   _glthread_LOCK_MUTEX(builtins_lock);
++   s = builtins.find(state, name, actual_parameters);
++   _glthread_UNLOCK_MUTEX(builtins_lock);
++   return s;
+ }
+ 
+ gl_shader *
+-- 
+1.9.0.rc1.175.g0b1dcb5
+

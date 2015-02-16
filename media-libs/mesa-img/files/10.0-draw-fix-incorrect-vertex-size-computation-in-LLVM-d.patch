@@ -1,0 +1,94 @@
+From 3f0435054ca7fb8ece77a4459b15dd97366e3109 Mon Sep 17 00:00:00 2001
+From: Brian Paul <brianp@vmware.com>
+Date: Tue, 14 Jan 2014 18:19:21 -0800
+Subject: [PATCH] draw: fix incorrect vertex size computation in LLVM drawing
+ code
+
+We were calling draw_total_vs_outputs() too early.  The call to
+draw_pt_emit_prepare() could result in the vertex size changing.
+So call draw_total_vs_outputs() after draw_pt_emit_prepare().
+
+This fix would seem to be needed for the non-LLVM code as well,
+but it's not obvious.  Instead, I added an assertion there to
+try to catch this problem if it were to occur there.
+
+Change-Id: Iecd02d39af9c37ddf703260d64597ef328e2a2c2
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=72926
+Cc: 10.0 <mesa-stable@lists.freedesktop.org>
+---
+ .../auxiliary/draw/draw_pt_fetch_shade_pipeline.c  |  7 +++++--
+ .../draw/draw_pt_fetch_shade_pipeline_llvm.c       | 22 +++++++++++++---------
+ 2 files changed, 18 insertions(+), 11 deletions(-)
+
+diff --git a/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline.c b/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline.c
+index 8fcc170..2c5c4cd 100644
+--- a/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline.c
++++ b/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline.c
+@@ -72,8 +72,8 @@ static void fetch_pipeline_prepare( struct draw_pt_middle_end *middle,
+ 
+    const unsigned gs_out_prim = (gs ? gs->output_primitive :
+                                  u_assembled_prim(prim));
+-   unsigned nr = MAX2( vs->info.num_inputs,
+-		       draw_total_vs_outputs(draw) );
++   unsigned nr_vs_outputs = draw_total_vs_outputs(draw);
++   unsigned nr = MAX2(vs->info.num_inputs, nr_vs_outputs);
+ 
+    if (gs) {
+       nr = MAX2(nr, gs->info.num_outputs + 1);
+@@ -129,6 +129,9 @@ static void fetch_pipeline_prepare( struct draw_pt_middle_end *middle,
+    /* No need to prepare the shader.
+     */
+    vs->prepare(vs, draw);
++
++   /* Make sure that the vertex size didn't change at any point above */
++   assert(nr_vs_outputs == draw_total_vs_outputs(draw));
+ }
+ 
+ 
+diff --git a/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline_llvm.c b/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline_llvm.c
+index 9f17241..60ec528 100644
+--- a/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline_llvm.c
++++ b/src/gallium/auxiliary/draw/draw_pt_fetch_shade_pipeline_llvm.c
+@@ -141,19 +141,11 @@ llvm_middle_end_prepare( struct draw_pt_middle_end *middle,
+    struct draw_geometry_shader *gs = draw->gs.geometry_shader;
+    const unsigned out_prim = gs ? gs->output_primitive :
+       u_assembled_prim(in_prim);
+-   const unsigned nr = MAX2(vs->info.num_inputs,
+-                            draw_total_vs_outputs(draw));
++   unsigned nr;
+ 
+    fpme->input_prim = in_prim;
+    fpme->opt = opt;
+ 
+-   /* Always leave room for the vertex header whether we need it or
+-    * not.  It's hard to get rid of it in particular because of the
+-    * viewport code in draw_pt_post_vs.c.
+-    */
+-   fpme->vertex_size = sizeof(struct vertex_header) + nr * 4 * sizeof(float);
+-
+-
+    draw_pt_post_vs_prepare( fpme->post_vs,
+                             draw->clip_xy,
+                             draw->clip_z,
+@@ -177,6 +169,18 @@ llvm_middle_end_prepare( struct draw_pt_middle_end *middle,
+       *max_vertices = 4096;
+    }
+ 
++   /* Get the number of float[4] attributes per vertex.
++    * Note: this must be done after draw_pt_emit_prepare() since that
++    * can effect the vertex size.
++    */
++   nr = MAX2(vs->info.num_inputs, draw_total_vs_outputs(draw));
++
++   /* Always leave room for the vertex header whether we need it or
++    * not.  It's hard to get rid of it in particular because of the
++    * viewport code in draw_pt_post_vs.c.
++    */
++   fpme->vertex_size = sizeof(struct vertex_header) + nr * 4 * sizeof(float);
++
+    /* return even number */
+    *max_vertices = *max_vertices & ~1;
+ 
+-- 
+1.8.5.2
+
