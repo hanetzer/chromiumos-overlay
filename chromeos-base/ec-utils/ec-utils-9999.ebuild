@@ -51,6 +51,7 @@ src_compile() {
 src_install() {
 	set_board
 	dosbin "build/$BOARD/util/ectool"
+	dosbin "build/$BOARD/util/ec_sb_firmware_update"
 	if [[ -d "board/${BOARD}/userspace/etc/init" ]] ; then
 		insinto /etc/init
 		doins board/${BOARD}/userspace/etc/init/*.conf
