@@ -74,6 +74,7 @@ src_install() {
 	if use minimal ; then
 		# Installing on the target
 		emake BUILD="${S}"/build-main DESTDIR="${D}" \
+		      LIBDIR="$(get_libdir)" \
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
                       DEV_DEBUG_FORCE=$(usev dev_debug_force) \
@@ -82,6 +83,7 @@ src_install() {
 	else
 		# Installing on the host
 		emake BUILD="${S}"/build-main DESTDIR="${D}/usr" \
+		      LIBDIR="$(get_libdir)" \
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
                       DEV_DEBUG_FORCE=$(usev dev_debug_force) \
