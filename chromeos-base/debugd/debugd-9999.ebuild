@@ -36,6 +36,7 @@ RDEPEND="
 	cellular? ( virtual/modemmanager )
 "
 DEPEND="${RDEPEND}
+	chromeos-base/chromeos-login
 	chromeos-base/shill
 	sys-apps/dbus
 	virtual/modemmanager"
@@ -57,6 +58,7 @@ src_install() {
 
 	exeinto /usr/libexec/debugd/helpers
 	doexe "${OUT}"/capture_packets
+	doexe "${OUT}"/dev_features_chrome_remote_debugging
 	doexe "${OUT}"/dev_features_password
 	doexe "${OUT}"/dev_features_rootfs_verification
 	doexe "${OUT}"/dev_features_ssh
