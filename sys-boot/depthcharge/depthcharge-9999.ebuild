@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="ap148-mode fwconsole mocktpm pd_sync unified_depthcharge vboot2"
+IUSE="ap148-mode fwconsole mocktpm pd_sync unified_depthcharge vboot2 fastboot"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -87,6 +87,15 @@ src_compile() {
 	emake netboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
 	          PD_SYNC=$(usev pd_sync) \
 		  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload_gdb/"
+
+	if use fastboot; then
+		echo "CONFIG_FASTBOOT_MODE=y" >> "board/${board}/defconfig"
+		emake defconfig BOARD="${board}"
+
+		emake fastboot_unified VB_SOURCE="${VBOOT_REFERENCE_DESTDIR}" \
+			  PD_SYNC=$(usev pd_sync) \
+			  LIBPAYLOAD_DIR="${SYSROOT}/firmware/libpayload/"
+	fi
 }
 
 src_install() {
@@ -109,6 +118,10 @@ src_install() {
 		files_to_copy+=({depthcharge,dev}.{elf{,.map},payload})
 	else
 		files_to_copy+=({depthcharge,dev}.{ro,rw}.{bin,elf{,.map}})
+	fi
+
+	if use fastboot ; then
+		files_to_copy+=(fastboot.{bin,elf{,.map},payload})
 	fi
 
 	insinto "${dstdir}/depthcharge"
