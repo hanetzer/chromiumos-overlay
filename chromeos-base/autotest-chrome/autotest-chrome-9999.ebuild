@@ -104,8 +104,9 @@ IUSE_TESTS=(
 	+tests_touch_MouseScroll
 	+tests_touch_ScrollDirection
 	+tests_touch_TapSettings
-	+tests_ui_SystemTray
+	+tests_ui_AppLauncher
 	+tests_ui_SettingsPage
+	+tests_ui_SystemTray
 	+tests_video_ChromeHWDecodeUsed
 	+tests_video_ChromeRTCHWDecodeUsed
 	+tests_video_ChromeRTCHWEncodeUsed
