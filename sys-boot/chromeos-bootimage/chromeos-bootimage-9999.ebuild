@@ -20,7 +20,7 @@ BOARDS="${BOARDS} gizmo glados jecht link lumpy lumpy64 mario panther parrot"
 BOARDS="${BOARDS} peppy rambi samus slippy squawks stout strago stumpy"
 IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec depthcharge efs exynos u_boot_netboot fsp"
-IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2"
+IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2 fastboot"
 
 REQUIRED_USE="
 	^^ ( ${BOARDS} arm mips )
@@ -393,6 +393,37 @@ src_compile_depthcharge() {
 		die "failed to preset netboot parameter defaults."
 	einfo "Netboot configured to boot ${bootfile}, fetch kernel command" \
 		  "line from ${argsfile}, and use the DHCP-provided TFTP server IP."
+
+	# Build fastboot image
+	if use fastboot ; then
+
+		local fastboot_rw
+		if use unified_depthcharge; then
+			if [[ -z "${multicbfs}" ]]; then
+				fastboot_rw="${froot}/depthcharge/fastboot.payload"
+			else
+				fastboot_rw="${froot}/depthcharge/fastboot.elf"
+			fi
+		else
+			fastboot_rw="${froot}/depthcharge/fastboot.bin"
+		fi
+
+		local fastboot_ro
+		if use unified_depthcharge; then
+			fastboot_ro="${froot}/depthcharge/fastboot.elf"
+		else
+			fastboot_ro="${froot}/depthcharge/depthcharge.${ro_suffix}"
+		fi
+
+		einfo "Building fastboot image."
+		cros_bundle_firmware "${common[@]}" "${serial[@]}" \
+			--force-rw \
+			--coreboot-elf="${fastboot_ro}" \
+			--outdir "out.fastboot" --output "image.fastboot.bin" \
+			--uboot "${fastboot_rw}" \
+			|| die "failed to build fastboot image."
+
+	fi
 }
 
 src_compile() {
