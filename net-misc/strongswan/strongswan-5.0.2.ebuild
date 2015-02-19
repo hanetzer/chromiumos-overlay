@@ -43,6 +43,7 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-handle_fragment.patch"
 	epatch "${FILESDIR}/${P}-reject-create-child-sa-exchange.patch"
 	epatch "${FILESDIR}/${P}-lenient-encryption.patch"
+	epatch "${FILESDIR}/${P}-modp_custom.patch"
 }
 
 pkg_setup() {
