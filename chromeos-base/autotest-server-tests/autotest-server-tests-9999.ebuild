@@ -99,6 +99,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_RONormalBoot
 	+tests_firmware_SelfSignedBoot
 	+tests_firmware_SoftwareSync
+	tpm? ( +tests_firmware_TPMExtend )
 	tpm? ( +tests_firmware_TPMVersionCheck )
 	+tests_firmware_TryFwB
 	+tests_firmware_UpdateECBin
