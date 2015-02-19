@@ -34,6 +34,7 @@ IUSE_TESTS="
 	+tests_peerd_AdvertiseServices
 	+tests_peerd_DiscoverServices
 	+tests_peerd_HandlesNameConflicts
+	+tests_peerd_MonitorsDBusConnections
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
