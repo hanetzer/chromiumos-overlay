@@ -12,11 +12,10 @@
 # @BLURB: Eclass for setting up GOOGLE_CRASH_ID and GOOGLE_CRASH_VERSION_ID in /etc/os-release
 #
 # @FUNCTION: docrashid
-# @USAGE: <crash_id> <crash_version_id>
+# @USAGE: <crash_id> [<crash_version_id>]
 # @DESCRIPTION:
-# Initializes /etc/os-release with the crash id and crash version. Both
-# parameters are required to simplify the logic.
-# The inputs are restricted to [a-zA-Z.-_].
+# Initializes /etc/os-release with the crash id and crash version (optional).
+# Both the crash id and version are restricted to [a-zA-Z.-_].
 # @CODE
 # docrashid chromeos first_version
 # @CODE
@@ -27,7 +26,7 @@
 # @CODE
 # to /etc/os-release.
 docrashid() {
-	[[ $# -eq 2 && -n $1 && -n $2 ]] || die "Usage: ${FUNCNAME} <crash_id> <crash_version_id"
+	[[ $# -lt 3 && $# -gt 0 && -n $1 ]] || die "Usage: ${FUNCNAME} <crash_id> [<crash_version_id>]"
 	local validregex="[-._a-zA-Z]+"
 	local crash_id="$1"
 	local crash_version_id="$2"
@@ -42,8 +41,9 @@ docrashid() {
 
 	local os_release="${D}/etc/os-release"
 	[[ -e ${os_release} ]] && die "${os_release} already exists!"
-	cat <<-EOF > "${os_release}" || die "creating ${os_release} failed!"
-	GOOGLE_CRASH_ID=${crash_id}
-	GOOGLE_CRASH_VERSION_ID=${crash_version_id}
-	EOF
+
+	echo "GOOGLE_CRASH_ID=${crash_id}" > "${os_release}" || die "creating ${os_release} failed!"
+	if [[ -n "${crash_version_id}" ]]; then
+		echo "GOOGLE_CRASH_VERSION_ID=${crash_version_id}" >> "${os_release}"
+	fi
 }
