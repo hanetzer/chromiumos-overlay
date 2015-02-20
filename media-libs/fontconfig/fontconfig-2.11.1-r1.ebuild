@@ -36,6 +36,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-fonts-config.patch
 	"${FILESDIR}"/${P}-conf-d.patch
 	"${FILESDIR}"/${P}-fclang.patch
+	"${FILESDIR}"/${P}-symbolcmap.patch
 )
 
 MULTILIB_CHOST_TOOLS=(
