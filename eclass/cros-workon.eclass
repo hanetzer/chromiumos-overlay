@@ -210,7 +210,8 @@ get_paths() {
 		pathbase="/mnt/host/source"
 	fi
 
-	if [[ "${CATEGORY}" == "chromeos-base" ]] ; then
+	if [[ "${CATEGORY}" == "chromeos-base" ||
+		"${CATEGORY}" == "brillo-base" ]] ; then
 		pathbase+=/src
 	else
 		pathbase+=/src/third_party

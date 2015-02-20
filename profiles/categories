@@ -23,6 +23,7 @@ app-shells
 app-text
 app-vim
 app-xemacs
+brillo-base
 chromeos-base
 dev-ada
 dev-cpp
