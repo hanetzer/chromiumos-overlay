@@ -134,7 +134,6 @@ RDEPEND="${RDEPEND}
 	sys-fs/lvm2
 	sys-fs/sshfs-fuse
 	power_management? ( sys-power/powertop )
-	sys-process/ktop
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
