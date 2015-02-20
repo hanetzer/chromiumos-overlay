@@ -134,6 +134,10 @@ chromium_source_check_out_source() {
 		elog "Using gclient template ${CHROMIUM_GCLIENT_TEMPLATE}"
 		cmd+=( --gclient_template="${CHROMIUM_GCLIENT_TEMPLATE}" )
 	fi
+	# The git cache set up on continuous-integration builders can't be
+	# updated inside the CrOS chroot, so we need to tell sync_chrome not
+	# to use it.
+	cmd+=( --skip_cache )
 	# --reset tells sync_chrome to blow away local changes and to feel
 	# free to delete any directories that get in the way of syncing. This
 	# is needed for unattended operation.
