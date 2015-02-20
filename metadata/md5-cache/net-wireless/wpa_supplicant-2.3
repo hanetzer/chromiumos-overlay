@@ -1,0 +1,14 @@
+DEFINED_PHASES=compile configure install postinst preinst prepare unpack
+DEPEND=dev-libs/libnl:0 chromeos-base/chromeos-minijail dbus? ( sys-apps/dbus ) kernel_linux? ( eap-sim? ( sys-apps/pcsc-lite ) madwifi? ( || ( >net-wireless/madwifi-ng-tools-0.9.3 net-wireless/madwifi-old ) ) ) !kernel_linux? ( net-libs/libpcap ) qt4? ( x11-libs/qt-gui:4 x11-libs/qt-svg:4 ) !qt4? ( qt3? ( x11-libs/qt:3 ) ) readline? ( sys-libs/ncurses sys-libs/readline ) ssl? ( dev-libs/openssl ) smartcard? ( dev-libs/engine_pkcs11 ) !ssl? ( gnutls? ( net-libs/gnutls ) ) !ssl? ( !gnutls? ( dev-libs/libtommath ) ) sys-apps/baselayout
+DESCRIPTION=Linux WPA/WPA2/IEEE 802.1x Supplicant
+EAPI=4
+HOMEPAGE=http://w1.fi/wpa_supplicant
+IUSE=dbus debug gnutls eap-sim madwifi ps3 qt3 qt4 readline smartcard ssl +tdls wps kernel_linux kernel_FreeBSD
+KEYWORDS=*
+LICENSE=|| ( GPL-2 BSD )
+RDEPEND=dev-libs/libnl:0 chromeos-base/chromeos-minijail dbus? ( sys-apps/dbus ) kernel_linux? ( eap-sim? ( sys-apps/pcsc-lite ) madwifi? ( || ( >net-wireless/madwifi-ng-tools-0.9.3 net-wireless/madwifi-old ) ) ) !kernel_linux? ( net-libs/libpcap ) qt4? ( x11-libs/qt-gui:4 x11-libs/qt-svg:4 ) !qt4? ( qt3? ( x11-libs/qt:3 ) ) readline? ( sys-libs/ncurses sys-libs/readline ) ssl? ( dev-libs/openssl ) smartcard? ( dev-libs/engine_pkcs11 ) !ssl? ( gnutls? ( net-libs/gnutls ) ) !ssl? ( !gnutls? ( dev-libs/libtommath ) ) sys-apps/baselayout
+REQUIRED_USE=smartcard? ( ssl )
+SLOT=0
+SRC_URI=http://w1.fi/releases/wpa_supplicant-2.3.tar.gz
+_eclasses_=base	ec46b36a6f6fd1d0b505a33e0b74e413	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	qt3	823f11abd98cfc43cf92b8622e420f1f	qt4	83eabd1192f3f2c5a649ba2422a14d00	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	user	428413d4784b5a07274949c8354647d8	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_md5_=b06b0e269b511b22c648ab35a213e3b9
