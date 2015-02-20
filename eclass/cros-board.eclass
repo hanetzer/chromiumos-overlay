@@ -23,6 +23,7 @@ BOARD_USE_PREFIX="board_use_"
 # Obsolete boards' names are commented-out but retained in this list so
 # they won't be accidentally recycled in the future.
 ALL_BOARDS=(
+	acorn
 	amd64-corei7
 	#amd64-drm
 	amd64-generic
