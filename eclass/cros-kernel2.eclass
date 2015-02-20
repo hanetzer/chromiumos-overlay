@@ -32,6 +32,7 @@ IUSE="
 	-nowerror
 	-ppp
 	-lxc
+	-binder
 "
 STRIP_MASK="/usr/lib/debug/boot/vmlinux"
 
@@ -53,6 +54,7 @@ MULTILIB_STRICT_EXEMPT+="|modules"
 
 CONFIG_FRAGMENTS=(
 	acpi_ac_off
+	binder
 	blkdevram
 	ca0132
 	cifs
@@ -97,6 +99,12 @@ CONFIG_FRAGMENTS=(
 acpi_ac_off_desc="Turn off ACPI AC"
 acpi_ac_off_config="
 # CONFIG_ACPI_AC is not set
+"
+
+binder_desc="binder IPC"
+binder_config="
+CONFIG_ANDROID=y
+CONFIG_ANDROID_BINDER_IPC=y
 "
 
 blkdevram_desc="ram block device"
