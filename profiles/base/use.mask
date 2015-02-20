@@ -33,6 +33,14 @@ n32
 n64
 fixed-point
 
+# arm arch specific USE flags
+armvfp
+armv5te
+armv6
+armv6t2
+iwmmxt
+neon
+
 # ppc64 arch specific USE flags
 ibm
 

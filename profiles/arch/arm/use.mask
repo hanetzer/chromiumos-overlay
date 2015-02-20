@@ -1,6 +1,14 @@
 # Unmask the flag which corresponds to ARCH.
 -arm
 
+# Unmask arm flags.
+-armvfp
+-armv5te
+-armv6
+-armv6t2
+-iwmmxt
+-neon
+
 # Raúl Porcel <armin76@gentoo.org>
 # I've been told xfs is broken on ARM
 xfs
