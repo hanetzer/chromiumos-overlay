@@ -30,6 +30,7 @@ COMMON_DEPEND="
 	dev-libs/dbus-glib
 	dev-libs/openssl
 	dev-libs/protobuf
+	net-misc/curl
 	sys-apps/rootdev
 "
 RDEPEND="
