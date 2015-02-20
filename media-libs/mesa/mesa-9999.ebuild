@@ -147,6 +147,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-platform_drm-should-also-try-rende.patch
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
+	epatch "${FILESDIR}"/10.3-intel-fix-EGLImage-renderbuffer-_BaseFormat.patch
 
 	base_src_prepare
 
