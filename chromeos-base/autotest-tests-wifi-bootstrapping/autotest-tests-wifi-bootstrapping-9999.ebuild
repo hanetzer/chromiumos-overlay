@@ -22,6 +22,7 @@ IUSE="+autotest peerd wifi_bootstrapping"
 REQUIRED_USE="wifi_bootstrapping? ( peerd )"
 
 IUSE_TESTS="
+	+tests_apmanager_CheckAPProcesses
 	+tests_platform_CheckWiFiBootstrappingProcesses
 	+tests_privetd_BasicDBusAPI
 	+tests_privetd_PrivetInfo
