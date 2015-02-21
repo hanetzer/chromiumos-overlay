@@ -36,6 +36,7 @@ COMMON_DEPEND="
 RDEPEND="
 	${COMMON_DEPEND}
 	!cros_host? ( chromeos-base/libchromeos-use-flags )
+	chromeos-base/chromeos-ca-certificates
 "
 DEPEND="
 	${COMMON_DEPEND}
