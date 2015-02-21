@@ -55,6 +55,15 @@ EOF
 	ln -s src "${S}"
 }
 
+src_configure() {
+	# TODO(benchan): Remove the following workaround, which disables
+	# ccache to avoid running into a bug in gcc (crbug.com/450829).
+	tc-export CC
+	CC="${CC} -noccache"
+
+	gn-chromium_src_configure
+}
+
 src_compile() {
 	ninja -C "$(gn-chromium_get_build_dir)" \
 	    mojo_shell mojo_launcher libmojo_sdk tracing examples/echo || die
