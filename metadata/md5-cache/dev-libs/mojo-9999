@@ -2,11 +2,11 @@ DEFINED_PHASES=compile configure install preinst setup unpack
 DEPEND=>=dev-lang/python-2.7.3-r2:2.7 dev-lang/python-exec:2[python_targets_python2_7(-)?,-python_single_target_jython2_5(-),-python_single_target_jython2_7(-),-python_single_target_pypy(-),-python_single_target_pypy3(-),-python_single_target_python3_2(-),-python_single_target_python3_3(-),-python_single_target_python3_4(-),python_single_target_python2_7(+)] dev-libs/glib dev-libs/libevent dev-libs/nspr dev-libs/nss sys-apps/baselayout
 DESCRIPTION=mojo_shell, libraries, and codegen tools for use on CrOS
 EAPI=4
-IUSE=cros-debug asan clang neon hardfp python_targets_python2_7
+IUSE=cros-debug asan clang debug hardfp neon python_targets_python2_7
 KEYWORDS=~*
 LICENSE=BSD-Google
 RDEPEND=dev-libs/glib dev-libs/libevent dev-libs/nspr dev-libs/nss sys-apps/baselayout
 REQUIRED_USE=asan? ( clang )
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	gn-chromium	61db6dbec7e1fde567805502c53e7aec	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-single-r1	cc5b6367244dc2070b496eb9a92d5b87	python-utils-r1	dcc9fbd541ee94173178e4f14dd3945c	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	user	428413d4784b5a07274949c8354647d8
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	gn-chromium	c353ab0ec3b1386d952a4998e73d6e7c	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-single-r1	cc5b6367244dc2070b496eb9a92d5b87	python-utils-r1	dcc9fbd541ee94173178e4f14dd3945c	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	user	428413d4784b5a07274949c8354647d8
 _md5_=108fbec4e246ac64e363aab3e784b992
