@@ -14,7 +14,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="frecon +interactive_recovery netboot_ramfs +power_management"
+IUSE="frecon +interactive_recovery -mtd netboot_ramfs +power_management"
 
 # Dependencies used to build the netboot initramfs.
 # Look for the `idobin` and such calls.
@@ -147,6 +147,7 @@ pull_initramfs_binary() {
 	ln -s futility "${INITRAMFS_TMP_S}/bin/dump_kernel_config"
 	ln -s futility "${INITRAMFS_TMP_S}/bin/vbutil_kernel"
 	idobin /usr/bin/cgpt
+	use mtd && idobin /usr/bin/cgpt.bin
 	idobin /usr/bin/crossystem
 	idobin /usr/bin/tpmc
 
