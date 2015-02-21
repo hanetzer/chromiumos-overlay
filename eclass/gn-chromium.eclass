@@ -25,7 +25,8 @@ _usetf()  { usex $1 true false ; }
 # @INTERNAL
 # @USAGE: <arch>
 # @DESCRIPTION:
-# Returns the value of 'cpu_arch' argument that is passed to chromium GN.
+# Returns the value of 'host_cpu' / 'target_cpu' argument that is passed to
+# chromium GN.
 _gn-chromium_friendly_arch() {
 	local arch=${1:-${ARCH}}
 	case "${arch}" in
@@ -114,6 +115,9 @@ EOF
 # @USAGE:
 # @DESCRIPTION:
 # Prints all arguments required to properly run a GN build of Chromium code.
+#
+# TODO(benchan): Remove 'os', 'cpu_arch', 'build_cpu_arch', and 'build_os' after
+# mojo supports the new GN variables.
 _gn-chromium_print_standard_args() {
 	tc-export CC CXX AR PKG_CONFIG
 	cat <<EOF
@@ -123,7 +127,13 @@ cros_use_custom_toolchain=true
 cros_target_cc="${CC}"
 cros_target_cxx="${CXX}"
 cros_target_ar="${AR}"
-cpu_arch="$(_gn-chromium_friendly_arch ${ARCH})"
+cpu_arch="$(_gn-chromium_friendly_arch "${ARCH}")"
+target_cpu="$(_gn-chromium_friendly_arch "${ARCH}")"
+target_os="chromeos"
+build_cpu_arch="$(_gn-chromium_friendly_arch "$(tc-arch "${CBUILD}")")"
+build_os="linux"
+host_cpu="$(_gn-chromium_friendly_arch "$(tc-arch "${CBUILD}")")"
+host_os="linux"
 is_clang=$(_usetf clang)
 is_asan=$(_usetf asan)
 EOF
