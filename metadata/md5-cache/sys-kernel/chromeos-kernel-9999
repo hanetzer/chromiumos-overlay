@@ -8,5 +8,5 @@ KEYWORDS=~*
 LICENSE=GPL-2
 REQUIRED_USE=initramfs? ( !netboot_ramfs ) netboot_ramfs? ( !initramfs ) initramfs? ( i2cdev tpm ) netboot_ramfs? ( i2cdev tpm )
 SLOT=0
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-board	f5144b0e083c4ca1b4bfd53802da4d0c	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-kernel2	eed29d56cdf325722ce65b8f21709a4e	cros-workon	95f983755f60a281d223dd9bf6e94dbd	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-board	f5144b0e083c4ca1b4bfd53802da4d0c	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-kernel2	eed29d56cdf325722ce65b8f21709a4e	cros-workon	725f16704c120e85832569d6841a2240	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	linux-info	923a15fa2808bce496fb21a26482e53a	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=990f912b3356ae81e812fc8a9c001700
