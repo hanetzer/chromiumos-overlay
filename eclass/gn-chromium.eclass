@@ -13,7 +13,7 @@
 
 inherit cros-debug toolchain-funcs
 
-IUSE="asan clang neon hardfp"
+IUSE="asan clang debug hardfp neon"
 REQUIRED_USE="asan? ( clang )"
 
 # @FUNCTION: _usetf
@@ -136,6 +136,7 @@ host_cpu="$(_gn-chromium_friendly_arch "$(tc-arch "${CBUILD}")")"
 host_os="linux"
 is_clang=$(_usetf clang)
 is_asan=$(_usetf asan)
+is_debug=$(_usetf debug)
 EOF
 	use arm && _gn-chromium_print_arm_args
 }
