@@ -2,4 +2,5 @@ chromeos-base/chromeos-chrome	-accessibility -autotest -build_tests -chrome_remo
 chromeos-base/chromeos-init	vt
 chromeos-base/update_engine -cros_p2p
 net-wireless/wpa_supplicant	-smartcard
+sys-libs/gcc-libs		-go
 sys-libs/uuid			static-libs
