@@ -13,6 +13,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="examples"
 
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
@@ -65,8 +66,10 @@ src_configure() {
 }
 
 src_compile() {
-	ninja -C "$(gn-chromium_get_build_dir)" \
-	    mojo_shell mojo_launcher libmojo_sdk tracing examples/echo || die
+	local targets
+	targets=( mojo_shell mojo_launcher libmojo_sdk tracing )
+	use examples && targets+=( examples/echo )
+	ninja -C "$(gn-chromium_get_build_dir)" "${targets[@]}" || die
 }
 
 src_install() {
@@ -105,8 +108,7 @@ src_install() {
 	# Location for Mojo applications.
 	insinto /usr/lib/mojo
 	doins "$(gn-chromium_get_build_dir)/tracing.mojo"
-	doins "$(gn-chromium_get_build_dir)/echo_client.mojo"
-	doins "$(gn-chromium_get_build_dir)/echo_server.mojo"
+	use examples && doins "$(gn-chromium_get_build_dir)"/echo_{client,server}.mojo
 
 	# Code generation tools, including GYP rules for mojom files.
 	insinto /build/bin
