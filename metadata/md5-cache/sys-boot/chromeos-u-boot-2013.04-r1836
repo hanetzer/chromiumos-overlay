@@ -10,4 +10,4 @@ RDEPEND=!sys-boot/x86-firmware-fdts !sys-boot/exynos-u-boot !sys-boot/tegra2-pub
 REQUIRED_USE=^^ ( u_boot_config_use_beaglebone u_boot_config_use_coreboot u_boot_config_use_daisy u_boot_config_use_peach u_boot_config_use_seaboard u_boot_config_use_venice u_boot_config_use_venice2 u_boot_config_use_waluigi )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	725f16704c120e85832569d6841a2240	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=2ff73d579b55ec9a89177bc1a0732f96
+_md5_=bad1f23d319983ebb29e11e4f0b3febb
