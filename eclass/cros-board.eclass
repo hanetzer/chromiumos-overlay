@@ -144,6 +144,7 @@ ALL_BOARDS=(
 	parrot
 	parrot_freon
 	parrot_ivb
+	parrot_ivb-freon
 	parrot32
 	parrot64
 	parry
