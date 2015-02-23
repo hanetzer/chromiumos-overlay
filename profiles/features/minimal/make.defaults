@@ -31,5 +31,8 @@ USE="${USE} -cros_disks cros_embedded -debugd -encrypted_stateful -gdmwimax"
 USE="${USE} -lorgnette -pam -passive_metrics -power_management -scanner"
 USE="${USE} -tpm -vpn -wimax"
 
+# Remove most of the unused firmware in kernel build (see crbug.com/378877).
+USE="${USE} -firmware_install"
+
 # Make each board select the firmware it needs.
 LINUX_FIRMWARE=""
