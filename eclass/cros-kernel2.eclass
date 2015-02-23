@@ -24,6 +24,7 @@ WIRELESS_SUFFIXES=( ${WIRELESS_VERSIONS[@]/.} )
 
 IUSE="
 	-device_tree
+	+firmware_install
 	-kernel_sources
 	nfc
 	${WIRELESS_SUFFIXES[@]/#/-wireless}
@@ -866,7 +867,7 @@ cros-kernel2_src_test() {
 cros-kernel2_src_install() {
 	local build_targets=(
 		install
-		firmware_install
+		$(usev firmware_install)
 		$(cros_chkconfig_present MODULES && echo "modules_install")
 	)
 
