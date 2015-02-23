@@ -1,4 +1,4 @@
-From 95731ec838300746008a797f59d8a229ad5ae276 Mon Sep 17 00:00:00 2001
+From 384266b1fb283c83296b652eea3ac5784ea62c9b Mon Sep 17 00:00:00 2001
 From: Peter Qiu <zqiu@chromium.org>
 Date: Fri, 20 Feb 2015 14:19:31 -0800
 Subject: [PATCH] CHROMIUMOS: configure scheduled scan through DBus
@@ -9,13 +9,13 @@ for some special use cases and during testing.
 BUG=chromium:460552
 TEST=emerge-$BOARD wpa_supplicant
 ---
- wpa_supplicant/config.c                 |  3 ++-
- wpa_supplicant/config.h                 |  9 +++++++
+ wpa_supplicant/config.c                 |  3 +-
+ wpa_supplicant/config.h                 |  9 ++++++
  wpa_supplicant/dbus/dbus_new.c          |  4 +++
- wpa_supplicant/dbus/dbus_new_handlers.c | 48 +++++++++++++++++++++++++++++++++
+ wpa_supplicant/dbus/dbus_new_handlers.c | 50 +++++++++++++++++++++++++++++++++
  wpa_supplicant/dbus/dbus_new_handlers.h |  8 ++++++
- wpa_supplicant/scan.c                   |  6 +++++
- 6 files changed, 77 insertions(+), 1 deletion(-)
+ wpa_supplicant/scan.c                   |  6 ++++
+ 6 files changed, 79 insertions(+), 1 deletion(-)
 
 diff --git a/wpa_supplicant/config.c b/wpa_supplicant/config.c
 index e43f02c..84b4bc5 100644
@@ -67,10 +67,10 @@ index 22ea8db..e202f2a 100644
  	  wpas_dbus_getter_pkcs11_engine_path,
  	  NULL
 diff --git a/wpa_supplicant/dbus/dbus_new_handlers.c b/wpa_supplicant/dbus/dbus_new_handlers.c
-index 906e2c6..3c91246 100644
+index 906e2c6..8c40790 100644
 --- a/wpa_supplicant/dbus/dbus_new_handlers.c
 +++ b/wpa_supplicant/dbus/dbus_new_handlers.c
-@@ -3579,6 +3579,54 @@ out:
+@@ -3579,6 +3579,56 @@ out:
  
  
  /**
@@ -117,6 +117,8 @@ index 906e2c6..3c91246 100644
 +		return FALSE;
 +
 +	wpa_s->conf->disable_sched_scan = sched_scan ? 0 : 1;
++	if (wpa_s->conf->disable_sched_scan)
++		wpa_supplicant_cancel_sched_scan(wpa_s);
 +	return TRUE;
 +}
 +
