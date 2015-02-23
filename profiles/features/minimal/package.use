@@ -1,3 +1,4 @@
+app-editors/nano		-magic
 chromeos-base/chromeos-chrome	-accessibility -autotest -build_tests -chrome_remoting -nacl -reorder
 chromeos-base/chromeos-init	vt
 chromeos-base/update_engine -cros_p2p
