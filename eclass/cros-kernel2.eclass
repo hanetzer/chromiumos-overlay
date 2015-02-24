@@ -517,6 +517,15 @@ get_build_arch() {
 				echo "x86"
 				;;
 		esac
+	elif [ "${ARCH}" = "mips" ] ; then
+		case "${CHROMEOS_KERNEL_SPLITCONFIG}" in
+			*pistachio*)
+				echo "pistachio"
+				;;
+			*)
+				echo "maltasmvp"
+				;;
+		esac
 	else
 		tc-arch-kernel
 	fi
