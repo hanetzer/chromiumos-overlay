@@ -189,6 +189,7 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_FilePerms
 	+tests_platform_FileSize
 	+tests_platform_Firewall
+	+tests_platform_FullyChargedPowerStatus
 	+tests_platform_HighResTimers
 	+tests_platform_KernelVersion
 	+tests_platform_KernelVersionByBoard
