@@ -60,6 +60,7 @@ src_prepare() {
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-Ignore-driver-s-feature-flag-for-low-priority-scan.patch
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-Invoke-connect-work-done-for-all-connection-failure-cases.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-configure-scheduled-scan-through-DBus.patch
+        epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-configure-scan-through-DBus.patch
         popd >/dev/null
 }
 
