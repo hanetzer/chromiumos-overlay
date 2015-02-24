@@ -21,6 +21,7 @@
 [[ ${EAPI} != "4" ]] && die "Only EAPI=4 is supported"
 
 EC_BOARD_USE_PREFIX="ec_firmware_"
+EC_EXTRA_BOARD_USE_PREFIX="ec_firmware_extra_"
 
 # EC firmware board names for overlay with special configuration
 EC_BOARD_NAMES=(
@@ -64,7 +65,9 @@ EC_BOARD_NAMES=(
 )
 
 IUSE_FIRMWARES="${EC_BOARD_NAMES[@]/#/${EC_BOARD_USE_PREFIX}}"
-IUSE="${IUSE_FIRMWARES} cros_host"
+IUSE_EXTRA_FIRMWARES="${EC_BOARD_NAMES[@]/#/${EC_EXTRA_BOARD_USE_PREFIX}}"
+IUSE="${IUSE_FIRMWARES} ${IUSE_EXTRA_FIRMWARES} cros_host"
+
 
 # Echo the current boards
 get_ec_boards()
@@ -81,6 +84,9 @@ get_ec_boards()
 	local ec_board
 	for ec_board in ${IUSE_FIRMWARES}; do
 		use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_BOARD_USE_PREFIX}})
+	done
+	for ec_board in ${IUSE_EXTRA_FIRMWARES}; do
+		use ${ec_board} && EC_BOARDS+=(${ec_board#${EC_EXTRA_BOARD_USE_PREFIX}})
 	done
 
 	# Allow building for boards that don't have an EC
