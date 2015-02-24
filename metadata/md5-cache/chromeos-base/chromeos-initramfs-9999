@@ -1,5 +1,5 @@
 DEFINED_PHASES=compile info install prepare setup unpack
-DEPEND=chromeos-base/common-assets chromeos-base/chromeos-installer chromeos-base/vboot_reference chromeos-base/vpd media-gfx/ply-image sys-apps/busybox[-make-symlinks] sys-apps/flashrom frecon? ( sys-apps/frecon ) sys-apps/pv sys-fs/lvm2 netboot_ramfs? ( app-arch/sharutils app-shells/bash chromeos-base/chromeos-factoryinstall chromeos-base/chromeos-init chromeos-base/chromeos-installshim chromeos-base/memento_softwareupdate dev-libs/openssl dev-util/shflags net-misc/wget sys-apps/coreutils sys-apps/iproute2 sys-apps/util-linux sys-block/parted sys-fs/dosfstools sys-fs/e2fsprogs sys-libs/ncurses ) virtual/assets dev-vcs/git
+DEPEND=chromeos-base/chromeos-installer chromeos-base/common-assets chromeos-base/vboot_reference chromeos-base/vpd media-gfx/ply-image sys-apps/flashrom sys-apps/pv sys-fs/lvm2 virtual/assets chromeos-base/chromeos-installshim chromeos-base/vboot_reference netboot_ramfs? ( app-arch/sharutils app-shells/bash chromeos-base/chromeos-base chromeos-base/chromeos-factoryinstall chromeos-base/chromeos-installer chromeos-base/chromeos-installshim chromeos-base/ec-utils chromeos-base/memento_softwareupdate chromeos-base/vboot_reference chromeos-base/vpd dev-libs/openssl dev-util/shflags dev-util/xxd net-misc/htpdate net-misc/wget sys-apps/coreutils sys-apps/flashrom sys-apps/util-linux sys-block/parted sys-fs/dosfstools sys-fs/e2fsprogs sys-libs/ncurses sys-apps/iproute2 ) sys-apps/busybox[-make-symlinks] chromeos-base/chromeos-init frecon? ( sys-apps/frecon ) power_management? ( chromeos-base/power_manager ) dev-vcs/git
 DESCRIPTION=Create Chrome OS initramfs
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
@@ -8,4 +8,4 @@ KEYWORDS=~*
 LICENSE=GPL-2
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-board	5e3f193723fe4c960e2796066043f62a	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	725f16704c120e85832569d6841a2240	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=386ffc9934980a4a81517c1faa65d81c
+_md5_=9338bdfa97767a7afbdbf5077d54247d
