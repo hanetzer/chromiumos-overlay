@@ -89,6 +89,10 @@ src_install() {
                       DEV_DEBUG_FORCE=$(usev dev_debug_force) \
 		      USE_MTD=$(usev mtd) \
 		      install
+
+		insinto /usr/share/misc
+		doins scripts/image_signing/convert_recovery_to_ssd.sh
+		doins scripts/image_signing/common_minimal.sh
 	fi
 
 	if use tpmtests; then
