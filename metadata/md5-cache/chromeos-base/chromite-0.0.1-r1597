@@ -1,0 +1,11 @@
+DEFINED_PHASES=info install setup test unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Wrapper for running chromite unit tests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_host cros_workon_tree_2d895a4fa4f26bff21d0c3a6877505b228a5279b profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	725f16704c120e85832569d6841a2240	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python	be9965681d83c3980660a2660ac95e95	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=1069b65187312b50405d19ea5ad4bba7
