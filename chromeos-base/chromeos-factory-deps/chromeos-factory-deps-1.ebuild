@@ -18,6 +18,7 @@ FACTORY_FRAMEWORK_RDEPEND="
 	shill? ( chromeos-base/shill-test-scripts )
 	dev-lang/python
 	dev-python/dbus-python
+	dev-python/imaging
 	dev-python/jsonrpclib
 	dev-python/netifaces
 	dev-python/pygobject
