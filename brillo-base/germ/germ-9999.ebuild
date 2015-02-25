@@ -32,9 +32,9 @@ DEPEND="${RDEPEND}
 src_install() {
 	dobin "${OUT}/germ"
 
-	# Install Upstart configuration.
-	#insinto /etc/init
-	#doins germ.conf
+	# Install Upstart template.
+	insinto /etc/init
+	doins init/germ_template.conf
 }
 
 platform_pkg_test() {
