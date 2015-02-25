@@ -84,15 +84,21 @@ src_prepare() {
 
 src_compile() {
 	local deps=()
-	use frecon && deps+=(/sbin/frecon)
-	use power_management && deps+=(/usr/bin/backlight_tool)
+	# TODO(hungte) Enable frecon when it can really run inside initramfs.
+	# Currently it simply won't run and may exceed kernel size limit on some
+	# boards.
+	# use frecon && deps+=(/sbin/frecon)
 	use mtd && deps+=(/usr/bin/cgpt.bin)
+	if use netboot_ramfs; then
+		use power_management && deps+=(/usr/bin/backlight_tool)
+	fi
 
 	local targets=(factory_shim recovery)
 	use netboot_ramfs && targets+=(factory_netboot)
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
-		OUTPUT_DIR="${WORKDIR}" OPTIONAL_DEPS="${deps[*]}" ${targets[*]}
+		OUTPUT_DIR="${WORKDIR}" EXTRA_BIN_DEPS="${deps[*]}" \
+		${targets[*]}
 }
 
 src_install() {
