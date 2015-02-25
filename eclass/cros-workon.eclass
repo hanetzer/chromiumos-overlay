@@ -21,7 +21,8 @@ inherit cros-constants
 # - one item as default for all
 # - no items as the cros-workon default
 # The exception is CROS_WORKON_PROJECT which has to have all items specified.
-ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE} )
+ARRAY_VARIABLES=(
+	CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE,SRCPATH} )
 
 # @ECLASS-VARIABLE: CROS_WORKON_SUBDIR
 # @DESCRIPTION:
@@ -155,6 +156,13 @@ ARRAY_VARIABLES=( CROS_WORKON_{SUBDIR,REPO,PROJECT,LOCALNAME,DESTDIR,COMMIT,TREE
 # If set to "1", don't try to do a local fetch for 9999 ebuilds.
 : ${CROS_WORKON_ALWAYS_LIVE:=}
 
+# @ECLASS-VARIABLE: CROS_WORKON_SRCPATH
+# @DESCRIPTION:
+# Location of the source directory relative to the brick source root. This is
+# used for locally sourced packages and, if defined, takes precedence over
+# Chrome OS specific source locations.
+: ${CROS_WORKON_SRCPATH:=}
+
 # Join the tree commits to produce a unique identifier
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_host cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
@@ -199,7 +207,7 @@ array_vars_autocomplete() {
 # Calculate path where code should be checked out.
 # Result passed through global variable "path" to preserve proper array quoting.
 get_paths() {
-	local pathbase
+	local pathbase srcbase
 	if [[ -n "${CROS_WORKON_SRCROOT}" ]]; then
 		pathbase="${CROS_WORKON_SRCROOT}"
 	elif [[ -n "${CHROMEOS_ROOT}" ]]; then
@@ -217,12 +225,18 @@ get_paths() {
 		pathbase+=/src/third_party
 	fi
 
+	srcbase="$(dirname "$(dirname "$(dirname "$(dirname "${EBUILD}")")")")/src"
+
 	path=()
 	local pathelement i
 	for (( i = 0; i < project_count; ++i )); do
-		pathelement="${pathbase}/${CROS_WORKON_LOCALNAME[i]}"
-		if [[ ! -d "${pathelement}" ]]; then
-			pathelement="${pathbase}/platform/${CROS_WORKON_LOCALNAME[i]}"
+		if [[ -n "${CROS_WORKON_SRCPATH[i]}" ]]; then
+			pathelement="${srcbase}/${CROS_WORKON_SRCPATH[i]}"
+		else
+			pathelement="${pathbase}/${CROS_WORKON_LOCALNAME[i]}"
+			if [[ ! -d "${pathelement}" ]]; then
+				pathelement="${pathbase}/platform/${CROS_WORKON_LOCALNAME[i]}"
+			fi
 		fi
 		if [[ -n "${CROS_WORKON_SUBDIR[i]}" ]]; then
 			pathelement+="/${CROS_WORKON_SUBDIR[i]}"
