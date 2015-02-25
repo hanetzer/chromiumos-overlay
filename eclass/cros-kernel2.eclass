@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 
 DEPEND="sys-apps/debianutils
-	initramfs? ( chromeos-base/chromeos-initramfs )
+	recovery_ramfs? ( chromeos-base/chromeos-initramfs )
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
 	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs )
 	t124_xusb_fw? ( sys-kernel/xhci-firmware )
@@ -68,7 +68,6 @@ CONFIG_FRAGMENTS=(
 	gobi
 	highmem
 	i2cdev
-	initramfs
 	kgdb
 	kvm
 	lxc
@@ -81,6 +80,7 @@ CONFIG_FRAGMENTS=(
 	ppp
 	qmi
 	realtekpstor
+	recovery_ramfs
 	samsung_serial
 	socketmon
 	systemtap
@@ -198,9 +198,9 @@ CONFIG_TCG_TPM=y
 CONFIG_TCG_TIS=y
 "
 
-initramfs_desc="Initramfs for recovery image"
-initramfs_config='
-CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/initramfs.cpio.xz"
+recovery_ramfs_desc="Initramfs for recovery image"
+recovery_ramfs_config='
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/recovery_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
@@ -418,10 +418,10 @@ CONFIG_POSIX_MQUEUE=y
 # Add all config fragments as off by default
 IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]}"
 REQUIRED_USE="
-	initramfs? ( !netboot_ramfs !factory_shim_ramfs )
-	netboot_ramfs? ( !initramfs !factory_shim_ramfs )
-	factory_shim_ramfs? ( !initramfs !netboot_ramfs )
-	initramfs? ( i2cdev tpm )
+	recovery_ramfs? ( !netboot_ramfs !factory_shim_ramfs )
+	netboot_ramfs? ( !recovery_ramfs !factory_shim_ramfs )
+	factory_shim_ramfs? ( !recovery_ramfs !netboot_ramfs )
+	recovery_ramfs? ( i2cdev tpm )
 	netboot_ramfs? ( i2cdev tpm )
 	factory_shim_ramfs? ( i2cdev tpm )
 "
@@ -940,7 +940,7 @@ cros-kernel2_src_install() {
 	fi
 
 	# Check the size of kernel image and issue warning when image size is near
-	# the limit. For factory install initramfs, we don't care about kernel
+	# the limit. For netboot initramfs, we don't care about kernel
 	# size limit as the image is downloaded over network.
 	local kernel_image_size=$(stat -c '%s' -L "${D}"/boot/vmlinuz)
 	einfo "Kernel image size is ${kernel_image_size} bytes."

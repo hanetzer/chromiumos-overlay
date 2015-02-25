@@ -14,7 +14,10 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="frecon +interactive_recovery -mtd netboot_ramfs +power_management"
+IUSE="frecon +interactive_recovery -mtd +power_management"
+
+# Build Targets
+IUSE+=" recovery_ramfs netboot_ramfs factory_shim_ramfs"
 
 # Packages required for building recovery initramfs.
 RECOVERY_DEPENDS="
@@ -31,7 +34,6 @@ RECOVERY_DEPENDS="
 
 # Packages required for building factory installer shim initramfs.
 FACTORY_SHIM_DEPENDS="
-	chromeos-base/chromeos-installshim
 	chromeos-base/vboot_reference
 	"
 
@@ -62,8 +64,8 @@ FACTORY_NETBOOT_DEPENDS="
 	sys-apps/iproute2
 	"
 
-DEPEND="${RECOVERY_DEPENDS}
-	${FACTORY_SHIM_DEPENDS}
+DEPEND="recovery_ramfs? ( ${RECOVERY_DEPENDS} )
+	factory_shim_ramfs? ( ${FACTORY_SHIM_DEPENDS} )
 	netboot_ramfs? ( ${FACTORY_NETBOOT_DEPENDS} )
 	sys-apps/busybox[-make-symlinks]
 	chromeos-base/chromeos-init
@@ -93,8 +95,14 @@ src_compile() {
 		use power_management && deps+=(/usr/bin/backlight_tool)
 	fi
 
-	local targets=(factory_shim recovery)
+	local targets=()
+	use recovery_ramfs && targets+=(recovery)
+	use factory_shim_ramfs && targets+=(factory_shim)
 	use netboot_ramfs && targets+=(factory_netboot)
+	if [[ "${targets[*]}" = "" ]]; then
+		die "No targets specified."
+	fi
+	einfo "Building targets: ${targets[*]}"
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
 		OUTPUT_DIR="${WORKDIR}" EXTRA_BIN_DEPS="${deps[*]}" \
@@ -103,7 +111,10 @@ src_compile() {
 
 src_install() {
 	insinto /var/lib/misc
-	doins "${WORKDIR}"/initramfs.cpio.xz
-	doins "${WORKDIR}"/factory_shim_ramfs.cpio.xz
+	# TODO(hungte) Change the legacy name 'initramfs.cpio.xz' to correct new
+	# name (recovery_ramfs.cpio.xz).
+	use recovery_ramfs &&
+		newins "${WORKDIR}"/initramfs.cpio.xz recovery_ramfs.cpio.xz
+	use factory_shim_ramfs && doins "${WORKDIR}"/factory_shim_ramfs.cpio.xz
 	use netboot_ramfs && doins "${WORKDIR}"/netboot_ramfs.cpio.xz
 }
