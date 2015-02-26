@@ -54,6 +54,10 @@ EOF
 	"${EGCLIENT}" sync -j$(makeopts_jobs) --verbose --nohooks \
 	    --transitive --reset --force --delete_unversioned_trees ${revopt}
 	ln -s src "${S}"
+
+	# Need to override the build/module_args/mojo.gni to force building
+	# network service from source on Chrome OS.
+	cd src && epatch "${FILESDIR}/mojo-build-gni.patch"
 }
 
 src_configure() {

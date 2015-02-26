@@ -2,7 +2,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-MOJO_REVISION=fa9b098e0274eb5cee2b588b9dfd55ad4a520542
 PYTHON_COMPAT=( python2_7 )
 
 inherit cros-constants gn-chromium multiprocessing python-single-r1 user
@@ -24,6 +23,7 @@ DEPEND="${PYTHON_DEPS}
 
 # The git commit-id to build from. Use the special value "HEAD" to
 # build from tip-of-tree.
+MOJO_REVISION="f68e697e389943cd9bf9652397312280e96b127a"
 
 pkg_setup() {
 	gn-chromium_pkg_setup
@@ -54,6 +54,10 @@ EOF
 	"${EGCLIENT}" sync -j$(makeopts_jobs) --verbose --nohooks \
 	    --transitive --reset --force --delete_unversioned_trees ${revopt}
 	ln -s src "${S}"
+
+	# Need to override the build/module_args/mojo.gni to force building
+	# network service from source on Chrome OS.
+	cd src && epatch "${FILESDIR}/mojo-build-gni.patch"
 }
 
 src_configure() {
