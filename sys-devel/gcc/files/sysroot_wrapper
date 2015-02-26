@@ -9,14 +9,23 @@
 #   mv <tool> <tool>.real
 #   ln -s <path_to_sysroot_wrapper> <tool>
 
+# It can also be used to add compilation flags to all cros
+# non-hardened compilations.  Flags are added at the beginning of the
+# compilation command line so that the user can override them.
+FLAGS_TO_ADD=(
+  -Wno-maybe-uninitialized
+  -Wno-unused-local-typedefs
+  -Wno-deprecated-declarations
+)
+
 SYSROOT_WRAPPER_LOG=/tmp/sysroot_wrapper.error
 if [ -n "$SYSROOT" ] ; then
-  exec "${0}.real" --sysroot="$SYSROOT" "$@"
+  exec "${0}.real" --sysroot="$SYSROOT" ${FLAGS_TO_ADD[@]} "$@"
 else
   if [[ ! -f $SYSROOT_WRAPPER_LOG ]]; then
     touch $SYSROOT_WRAPPER_LOG
     chmod a+w $SYSROOT_WRAPPER_LOG
   fi
   echo "Invocation with missing SYSROOT: ${0} $@" >> $SYSROOT_WRAPPER_LOG
-  exec "${0}.real" "$@"
+  exec "${0}.real" ${FLAGS_TO_ADD[@]} "$@"
 fi
