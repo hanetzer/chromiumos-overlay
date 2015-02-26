@@ -61,6 +61,7 @@ src_prepare() {
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-Invoke-connect-work-done-for-all-connection-failure-cases.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-configure-scheduled-scan-through-DBus.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-configure-scan-through-DBus.patch
+        epatch ${FILESDIR}/patches/${P}-UPSTREAM-IBSS-Add-WPA_DRIVER_FLAG_HT_IBSS.patch
         popd >/dev/null
 }
 
