@@ -130,7 +130,6 @@ CONFIG_CIFS=m
 
 dwc2_dual_role_desc="Dual Role support for DesignWare USB2.0 controller"
 dwc2_dual_role_config="
-CONFIG_USB_DWC2=m
 CONFIG_USB_DWC2_DUAL_ROLE=y
 "
 
@@ -336,7 +335,7 @@ usb_gadget_config="
 CONFIG_USB_CONFIGFS=m
 CONFIG_USB_CONFIGFS_F_FS=y
 CONFIG_USB_FUNCTIONFS=m
-CONFIG_USB_GADGET=m
+CONFIG_USB_GADGET=y
 "
 
 usb_gadget_acm_desc="USB ACM gadget support"
