@@ -10,9 +10,9 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os.
-IUSE="bluetooth bootchart bootimage buffet +cellular coreboot +cras
-	+crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf feedback
-	+fonts gobi leadership_election mtd +network_time nfc pam peerd
+IUSE="bluetooth bootchart bootimage buffet brillo-framework +cellular coreboot
+	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
+	feedback +fonts gobi leadership_election mtd +network_time nfc pam peerd
 	+power_management +profile +readahead scanner +shill +syslog +tpm
 	+vpn watchdog wifi_bootstrapping
 	wimax X"
@@ -105,6 +105,8 @@ CROS_COMMON_RDEPEND+="
 		gobi? ( chromeos-base/cromo )
 		chromeos-base/mist
 	)
+	brillo-framework? ( brillo-base/germ brillo-base/psyche
+			    brillo-base/servicemanager brillo-base/soma )
 	buffet? ( chromeos-base/buffet )
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
