@@ -1,0 +1,19 @@
+Fix build by disabling the strict-overflow optimization.
+gcc 4.9.2 gives a false positive warning when compiling
+the Go compiler bootstrap code. '-Werror' converts this
+into an error and causes the build to fail.
+
+Upstream has already migrated the bootstrap code from C to Go.
+This issue is no longer relevant: http://golang.org/issue/9072
+
+More info: http://www.airs.com/blog/archives/120
+--- go-1.4.2/src/cmd/dist/build.c
++++ go-1.4.2/src/cmd/dist/build.c
+@@ -484,6 +484,7 @@ static char *proto_gccargs[] = {
+ 	"-Wno-missing-field-initializers",
+ 	"-Werror",
+ 	"-fno-common",
++	"-fno-strict-overflow",
+ 	"-ggdb",
+ 	"-pipe",
+ };
