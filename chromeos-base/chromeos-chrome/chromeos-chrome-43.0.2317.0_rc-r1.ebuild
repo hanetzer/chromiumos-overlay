@@ -71,6 +71,11 @@ OZONE_PLATFORM_PREFIX=ozone_platform_
 OZONE_PLATFORMS=(dri test egltest caca gbm eglmarzone)
 IUSE_OZONE_PLATFORMS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_PREFIX}}"
 IUSE+=" ${IUSE_OZONE_PLATFORMS}"
+OZONE_PLATFORM_DEFAULT_PREFIX=ozone_platform_default_
+IUSE_OZONE_PLATFORM_DEFAULTS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_DEFAULT_PREFIX}}"
+IUSE+=" ${IUSE_OZONE_PLATFORM_DEFAULTS}"
+# TODO(dbehr) enable after uprev
+# REQUIRED_USE+="ozone? ( ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} ) )"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -128,9 +133,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-43.0.2316.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-43.0.2316.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-43.0.2316.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-43.0.2317.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-43.0.2317.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-43.0.2317.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -293,9 +298,12 @@ set_build_defines() {
 
 	if use ozone; then
 		local platform
-		if [[ -n "${OZONE_PLATFORM_DEFAULT}" ]]; then
-			BUILD_DEFINES+=("ozone_platform=${OZONE_PLATFORM_DEFAULT}")
-		fi
+		for platform in ${OZONE_PLATFORMS}; do
+			local flag="${OZONE_PLATFORM_DEFAULT_PREFIX}${platform}"
+			if use "${!flag}"; then
+				BUILD_DEFINES+=("ozone_platform=${platform}")
+			fi
+		done
 		BUILD_DEFINES+=("use_mesa_platform_null=1")
 		BUILD_DEFINES+=("ozone_auto_platforms=0")
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
