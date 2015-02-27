@@ -68,14 +68,45 @@ RDEPEND="
 	cros_host? ( sys-libs/glibc )
 	"
 
+qemu_run() {
+	# Run the emulator to execute command. It needs to be copied
+	# temporarily into the sysroot because we chroot to it.
+	local qemu
+	case "${ARCH}" in
+		amd64)
+			# Note that qemu is not actually run below in this case.
+			qemu="qemu-x86_64"
+			;;
+		arm)
+			qemu="qemu-arm"
+			;;
+		mips)
+			qemu="qemu-mipsel"
+			;;
+		x86)
+			qemu="qemu-i386"
+			;;
+		*)
+			die "Unable to determine QEMU from ARCH."
+	esac
+
+	# If we're running directly on the target (e.g. gmerge), we don't need to
+	# chroot or use qemu.
+	if [ "${ROOT:-/}" = "/" ]; then
+		"$@" || die
+	elif [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "x86" ]; then
+		chroot "${ROOT}" "$@" || die
+	else
+		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
+		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
+		rm "${ROOT}/tmp/${qemu}" || die
+	fi
+}
+
 generate_font_cache() {
 	mkdir -p "${ROOT}/usr/share/fontconfig" || die
-	# Change to a simple location as we don't need the CWD to be propagated
-	# into the sysroot (as it might not exist).
-	cd /
 	# fc-cache needs the font files to be located in their final resting place.
-	/mnt/host/source/src/platform2/common-mk/platform2_test.py \
-		--sysroot "${ROOT}" --run_as_root -- /usr/bin/fc-cache -f -v
+	qemu_run /usr/bin/fc-cache -f
 }
 
 pkg_preinst() {
