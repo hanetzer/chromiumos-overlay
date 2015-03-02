@@ -62,6 +62,7 @@ src_prepare() {
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-configure-scheduled-scan-through-DBus.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-configure-scan-through-DBus.patch
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-IBSS-Add-WPA_DRIVER_FLAG_HT_IBSS.patch
+        epatch ${FILESDIR}/patches/${P}-UPSTREAM-Retry-scan-for-connect-if-driver-trigger-fails.patch
         popd >/dev/null
 }
 
