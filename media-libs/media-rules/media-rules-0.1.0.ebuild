@@ -9,7 +9,7 @@ DESCRIPTION="Rules for setting up multimedia /dev/ nodes"
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 
 DEPEND=""
 RDEPEND="virtual/udev"
