@@ -17,7 +17,7 @@ KEYWORDS="~*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
 BOARDS="alex auron bayleybay beltino bolt butterfly cyan emeraldlake2 falco fox"
 BOARDS="${BOARDS} gizmo glados jecht link lumpy lumpy64 mario panther parrot"
-BOARDS="${BOARDS} peppy rambi samus sklrvp slippy squawks stout strago stumpy"
+BOARDS="${BOARDS} peppy rambi samus sklrvp slippy squawks stout strago stumpy sumo"
 IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec depthcharge efs exynos u_boot_netboot fsp"
 IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2 fastboot"

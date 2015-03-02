@@ -202,6 +202,7 @@ ALL_BOARDS=(
 	stumpy_freon
 	stumpy_moblab
 	stumpy_pico
+	sumo
 	swanky
 	swanky_freon
 	tails
