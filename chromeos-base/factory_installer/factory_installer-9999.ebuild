@@ -9,11 +9,25 @@ inherit cros-workon toolchain-funcs
 DESCRIPTION="Chrome OS Factory Installer"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
+
+USE_PREFIX="tty_console_"
+ALL_PORTS=(
+	ttyAMA{0..5}
+	ttyHSL{0..5}
+	ttyMSM{0..5}
+	ttymxc{0..5}
+	ttyO{0..5}
+	ttyS{0..5}
+	ttySAC{0..5}
+	ttyUSB{0..5}
+	tty{0..5}
+)
+IUSE_PORTS="${ALL_PORTS[@]/#/${USE_PREFIX}}"
+IUSE="${IUSE_PORTS} -asan -clang"
 
 # Factory install images operate by downloading content from a
 # server.  In some cases, the downloaded content contains programs
@@ -88,17 +102,28 @@ src_test() {
 }
 
 src_install() {
+	local service_file="factory_install_service.sh"
+	local tmp_service_file="${T}/${service_file}"
+	local scripts=(*.sh)
+	scripts=(${scripts[@]#${service_file}})
+
+	if [[ -n "${TTY_CONSOLE}" ]]; then
+		local item ports=()
+		for item in ${IUSE_PORTS}; do
+			if use ${item}; then
+				ports+=("${item#${USE_PREFIX}}")
+			fi
+		done
+		sed -e "s/^TTY_CONSOLE=.*$/TTY_CONSOLE=\"${ports[*]}\"/" \
+			"${service_file}" >"${tmp_service_file}" || \
+			die "Failed to change TTY_CONSOLE"
+		service_file="${tmp_service_file}"
+		einfo "Changed TTY_CONSOLE to ${ports[*]}."
+	fi
+	dosbin "${scripts[@]}" "${service_file}"
+
 	insinto /etc/init
 	doins factory_install.conf
-
-	exeinto /usr/sbin
-	doexe factory_install.sh
-	doexe factory_install_service.sh
-	doexe factory_reset.sh
-	doexe factory_verify.sh
-	doexe netboot_postinst.sh
-	doexe ping_shopfloor.sh
-	doexe secure_less.sh
 
 	insinto /root
 	doins factory_verify.fio
