@@ -11,7 +11,7 @@ TEST=`FEATURES=test emerge openssl`
 --- a/crypto/x509/x509_vfy.c
 +++ b/crypto/x509/x509_vfy.c
 @@ -150,6 +150,126 @@ static int x509_subject_cmp(X509 **a, X509 **b)
- 	}
+     }
  #endif
  
 +/* A version of fgets() that returns the first sz - 1 characters of the next
@@ -135,11 +135,11 @@ TEST=`FEATURES=test emerge openssl`
 +}
 +
  int X509_verify_cert(X509_STORE_CTX *ctx)
- 	{
- 	X509 *x,*xtmp,*chain_ss=NULL;
+     {
+     X509 *x,*xtmp,*chain_ss=NULL;
 @@ -307,6 +427,13 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
  
- 	/* we now have our chain, lets check it... */
+     /* we now have our chain, lets check it... */
  
 +	ok = check_blacklist(ctx);
 +
@@ -148,28 +148,20 @@ TEST=`FEATURES=test emerge openssl`
 +		goto end;
 +	}
 +
- 	/* Is last certificate looked up self signed? */
- 	if (!ctx->check_issued(ctx,x,x))
- 		{
+     i = check_trust(ctx);
+ 
+     /* If explicitly rejected error */
 --- a/test/Makefile
 +++ b/test/Makefile
-@@ -137,7 +137,7 @@ alltests: \
- 	test_enc test_x509 test_rsa test_crl test_sid \
- 	test_gen test_req test_pkcs7 test_verify test_dh test_dsa \
- 	test_ss test_ca test_engine test_evp test_ssl test_tsa test_ige \
--	test_jpake test_srp test_cms test_heartbeat test_constant_time
-+	test_jpake test_srp test_cms test_heartbeat test_constant_time test_blacklist
- 
- test_evp:
- 	../util/shlib_wrap.sh ./$(EVPTEST) evptests.txt
-@@ -218,6 +218,9 @@ test_req:
+@@ -218,6 +218,10 @@
  	@sh ./treq 2>/dev/null
  	@sh ./treq testreq2.pem 2>/dev/null
  
++alltests: test_blacklist
 +test_blacklist:
 +	@sh ./tblacklist
 +
- test_pkcs7:
+ test_pkcs7: ../apps/openssl$(EXE_EXT) tpkcs7 tpkcs7d testp7.pem pkcs7-1.pem
  	@sh ./tpkcs7 2>/dev/null
  	@sh ./tpkcs7d 2>/dev/null
 --- /dev/null
