@@ -50,6 +50,7 @@ ALL_BOARDS=(
 	blackwall
 	bobcat
 	bolt
+	buranku
 	butterfly
 	butterfly_freon
 	bwtm2
@@ -72,6 +73,7 @@ ALL_BOARDS=(
 	daisy_spring
 	daisy_winter
 	dalmore
+	derwent
 	duck
 	#emeraldlake2
 	enguarde
@@ -97,8 +99,10 @@ ALL_BOARDS=(
 	guado
 	hsb
 	ironhide
+	jaguar
 	jecht
 	kayle
+	kennet
 	#kiev
 	kip
 	kip_freon
@@ -176,6 +180,7 @@ ALL_BOARDS=(
 	sklrvp
 	slippy
 	sonic
+	space
 	squawks
 	squawks_freon
 	storm
