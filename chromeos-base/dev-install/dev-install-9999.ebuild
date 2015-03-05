@@ -44,6 +44,10 @@ src_compile() {
 
 	local useflags pkg pkgs BOARD=$(get_current_board_with_variant)
 
+	if [[ -z "${BOARD}" ]]; then
+		die "Could not determine the current board using cros-board.eclass."
+	fi
+
 	# We need to pass down cros-debug automatically because this is often
 	# times toggled at the ./build_packages level.  This is a hack of sorts,
 	# but covers the most common case.
