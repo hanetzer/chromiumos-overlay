@@ -174,13 +174,33 @@ inherit git-2 flag-o-matic toolchain-funcs
 # provides a global project_count variable which contains the number of
 # projects.
 array_vars_autocomplete() {
-	# NOTE: This one variable has to have all values explicitly filled in.
+	# CROS_WORKON_{PROJECT,SRCPATH} must have all values explicitly filled in.
+	# They have to be of the same length, or one may be undefined (length <= 1
+	# and empty).
 	project_count=${#CROS_WORKON_PROJECT[@]}
+	local srcpath_count=${#CROS_WORKON_SRCPATH[@]}
+	if [[ ${project_count} -lt ${srcpath_count} ]]; then
+		if [[ ${project_count} -gt 1 ]] || [[ -n "${CROS_WORKON_PROJECT[@]}" ]]; then
+			die "CROS_WORKON_PROJECT has fewer values than _SRCPATH"
+		fi
+		project_count=${srcpath_count}
+	elif [[ ${project_count} -gt ${srcpath_count} ]]; then
+		if [[ ${srcpath_count} -gt 1 ]] || [[ -n "${CROS_WORKON_SRCPATH[@]}" ]]; then
+			die "CROS_WORKON_SRCPATH has fewer values than _PROJECT"
+		fi
+	fi
 
 	# No project_count is really bad.
-	[ ${project_count} -eq 0 ] && die "Must have at least one CROS_WORKON_PROJECT"
-	# For one project, defaults will suffice.
-	[ ${project_count} -eq 1 ] && return
+	if [[ ${project_count} -eq 0 ]]; then
+		die "Must have at least one value in CROS_WORKON_{PROJECT,SRCPATH}"
+	fi
+	# For one value, defaults will suffice, unless it's blank (likely undefined).
+	if [[ ${project_count} -eq 1 ]]; then
+		if [[ -z "${CROS_WORKON_SRCPATH[@]}" ]] && [[ -z "${CROS_WORKON_PROJECT[@]}" ]]; then
+			die "Undefined CROS_WORKON_{PROJECT,SRCPATH}"
+		fi
+		return
+	fi
 
 	[[ ${CROS_WORKON_OUTOFTREE_BUILD} == "1" ]] && die "Out of Tree Build not compatible with multi-project ebuilds"
 
