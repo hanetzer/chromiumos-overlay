@@ -57,6 +57,8 @@ src_configure() {
 	# Rearrange PATH so that /usr/local does not override /usr.
 	append-cppflags '-DPATH="\"/usr/bin:/usr/sbin:/sbin:/bin:/usr/local/sbin:/usr/local/bin\""'
 
+	append-lfs-flags
+
 	econf \
 		--prefix=/ \
 		--exec-prefix= \
