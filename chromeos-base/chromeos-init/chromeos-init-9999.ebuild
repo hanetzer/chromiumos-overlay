@@ -26,6 +26,7 @@ DEPEND="chromeos-base/libchromeos
 "
 # vboot_reference for crossystem
 RDEPEND="${DEPEND}
+	app-arch/tar
 	chromeos-base/bootstat
 	!chromeos-base/chromeos-disableecho
 	chromeos-base/tty
