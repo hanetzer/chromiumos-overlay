@@ -33,7 +33,8 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
-	dev-db/leveldb
+	!dev-db/leveldb
+	dev-libs/leveldb
 	dev-cpp/gtest
 	test? (
 		dev-cpp/gmock
