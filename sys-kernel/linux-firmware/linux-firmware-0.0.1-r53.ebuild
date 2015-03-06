@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="d08e8752a886c4379fc1d8265999a37261a0efe2"
-CROS_WORKON_TREE="8895bbb25f59d5f7709626f746ea2787b5cd9c15"
+CROS_WORKON_COMMIT="35b3f30b6cc1c45eaab58fe6b9a6121406e79697"
+CROS_WORKON_TREE="85017517d07eeadd6b16ee8bbd2ef68a432e0cbe"
 CROS_WORKON_PROJECT="chromiumos/third_party/linux-firmware"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -54,6 +54,7 @@ IUSE_LINUX_FIRMWARE=(
 	fw_sst
 	fw_sst2
 	ibt-hw
+	img-uccp420wlan
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
 	"${IUSE_BRCMWIFI[@]}"
@@ -71,6 +72,7 @@ LICENSE="
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
+	linux_firmware_img-uccp420wlan? ( LICENSE.imagination )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
 	$(printf 'linux_firmware_%s? ( LICENCE.iwlwifi_firmware ) ' "${IUSE_IWLWIFI[@]}")
@@ -124,6 +126,7 @@ src_install() {
 	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
+	use_fw img-uccp420wlan && doins_subdir img/uccp420wlan/M{AC,CP}_LOADER.ldr
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use video_cards_radeon && doins_subdir radeon/*
 
