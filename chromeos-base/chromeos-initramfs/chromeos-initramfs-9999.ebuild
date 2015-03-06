@@ -106,7 +106,7 @@ src_compile() {
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
 		OUTPUT_DIR="${WORKDIR}" EXTRA_BIN_DEPS="${deps[*]}" \
-		${targets[*]}
+		LOCALE_LIST="${RECOVERY_LOCALES}" ${targets[*]}
 }
 
 src_install() {
