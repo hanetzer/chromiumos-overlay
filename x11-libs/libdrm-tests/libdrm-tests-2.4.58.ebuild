@@ -81,7 +81,7 @@ src_compile() {
 }
 
 src_install() {
-	into /usr/local/
+	into /usr/
 	dobin "${AUTOTOOLS_BUILD_DIR}"/tests/*/.libs/*
 	dobin "${TESTS[@]/#/${AUTOTOOLS_BUILD_DIR}/tests/.libs/}"
 }
