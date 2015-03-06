@@ -132,6 +132,7 @@ ALL_BOARDS=(
 	monroe
 	monroe_freon
 	moose
+	ninja
 	nyan
 	nyan_big
 	nyan_blaze
