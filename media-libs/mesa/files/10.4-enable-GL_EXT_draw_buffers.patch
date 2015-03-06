@@ -1,0 +1,114 @@
+From f2dc3cefe81a02e2fbe47ffc1d4335c4a15923d1 Mon Sep 17 00:00:00 2001
+From: Tapani Pälli <tapani.palli@intel.com>
+Date: Tue, 25 Nov 2014 06:10:30 -0500
+Subject: [PATCH] mesa/glsl/glapi: enable GL_EXT_draw_buffers extension
+
+Patch enables ES2 extension that utilizes existing ES3 functionality.
+
+Changes make all the subtests to run and pass in WebGL conformance
+test 'webgl-draw-buffers' when running Chrome on OpenGL ES, also
+Piglit test 'draw_buffers_gles2' passes.
+
+v2: remove unused boolean (Ilia Mirkin)
+v3: proper error checking for invalid values (Chad Versace)
+v4: run error check explicitly for ES2 and ES3 (Kenneth Graunke)
+
+Change-Id: I432c87335155bf44249d710d678c3f3a9a2e36a1
+Signed-off-by: Tapani Pälli <tapani.palli@intel.com>
+Reviewed-by: Matt Turner <mattst88@gmail.com>
+Reviewed-by: Chad Versace <chad.versace@intel.com>
+---
+
+diff --git a/src/glsl/glcpp/glcpp-parse.y b/src/glsl/glcpp/glcpp-parse.y
+index f1119eb..3dd2ebc 100644
+--- a/src/glsl/glcpp/glcpp-parse.y
++++ b/src/glsl/glcpp/glcpp-parse.y
+@@ -2374,6 +2374,7 @@
+ 	if (parser->is_gles) {
+ 	   add_builtin_define(parser, "GL_ES", 1);
+            add_builtin_define(parser, "GL_EXT_separate_shader_objects", 1);
++           add_builtin_define(parser, "GL_EXT_draw_buffers", 1);
+ 
+ 	   if (extensions != NULL) {
+ 	      if (extensions->OES_EGL_image_external)
+diff --git a/src/glsl/glsl_parser_extras.cpp b/src/glsl/glsl_parser_extras.cpp
+index 27e3301..2d49c3e 100644
+--- a/src/glsl/glsl_parser_extras.cpp
++++ b/src/glsl/glsl_parser_extras.cpp
+@@ -556,6 +556,7 @@
+    EXT(AMD_shader_trinary_minmax,      true,  false,     dummy_true),
+    EXT(AMD_vertex_shader_layer,        true,  false,     AMD_vertex_shader_layer),
+    EXT(AMD_vertex_shader_viewport_index, true,  false,   AMD_vertex_shader_viewport_index),
++   EXT(EXT_draw_buffers,               false,  true,     dummy_true),
+    EXT(EXT_separate_shader_objects,    false, true,      dummy_true),
+    EXT(EXT_shader_integer_mix,         true,  true,      EXT_shader_integer_mix),
+    EXT(EXT_texture_array,              true,  false,     EXT_texture_array),
+diff --git a/src/glsl/glsl_parser_extras.h b/src/glsl/glsl_parser_extras.h
+index c14d74c..7a13875 100644
+--- a/src/glsl/glsl_parser_extras.h
++++ b/src/glsl/glsl_parser_extras.h
+@@ -470,6 +470,8 @@
+    bool AMD_vertex_shader_layer_warn;
+    bool AMD_vertex_shader_viewport_index_enable;
+    bool AMD_vertex_shader_viewport_index_warn;
++   bool EXT_draw_buffers_enable;
++   bool EXT_draw_buffers_warn;
+    bool EXT_separate_shader_objects_enable;
+    bool EXT_separate_shader_objects_warn;
+    bool EXT_shader_integer_mix_enable;
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index e2dc390..3a2adeb 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -837,4 +837,13 @@
+     </function>
+ </category>
+ 
++<!-- 151. GL_EXT_draw_buffers -->
++<category name="GL_EXT_draw_buffers" number="151">
++    <function name="DrawBuffersEXT" alias="DrawBuffers"
++              static_dispatch="false" es2="2.0">
++        <param name="n" type="GLsizei" counter="true"/>
++        <param name="bufs" type="const GLenum *" count="n"/>
++    </function>
++</category>
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/buffers.c b/src/mesa/main/buffers.c
+index 1ee2009..49157f7 100644
+--- a/src/mesa/main/buffers.c
++++ b/src/mesa/main/buffers.c
+@@ -326,8 +326,9 @@
+    /* From the ES 3.0 specification, page 180:
+     * "If the GL is bound to the default framebuffer, then n must be 1
+     *  and the constant must be BACK or NONE."
++    * (same restriction applies with GL_EXT_draw_buffers specification)
+     */
+-   if (_mesa_is_gles3(ctx) && _mesa_is_winsys_fbo(ctx->DrawBuffer) &&
++   if (ctx->API == API_OPENGLES2 && _mesa_is_winsys_fbo(ctx->DrawBuffer) &&
+        (n != 1 || (buffers[0] != GL_NONE && buffers[0] != GL_BACK))) {
+       _mesa_error(ctx, GL_INVALID_OPERATION, "glDrawBuffers(buffer)");
+       return;
+@@ -399,8 +400,9 @@
+          /* ES 3.0 is even more restrictive.  From the ES 3.0 spec, page 180:
+           * "If the GL is bound to a framebuffer object, the ith buffer listed
+           *  in bufs must be COLOR_ATTACHMENTi or NONE. [...] INVALID_OPERATION."
++          * (same restriction applies with GL_EXT_draw_buffers specification)
+           */
+-         if (_mesa_is_gles3(ctx) && _mesa_is_user_fbo(ctx->DrawBuffer) &&
++         if (ctx->API == API_OPENGLES2 && _mesa_is_user_fbo(ctx->DrawBuffer) &&
+              buffers[output] != GL_NONE &&
+              buffers[output] != GL_COLOR_ATTACHMENT0 + output) {
+             _mesa_error(ctx, GL_INVALID_OPERATION, "glDrawBuffers(buffer)");
+diff --git a/src/mesa/main/extensions.c b/src/mesa/main/extensions.c
+index 0df04c2..905a422 100644
+--- a/src/mesa/main/extensions.c
++++ b/src/mesa/main/extensions.c
+@@ -212,6 +212,7 @@
+    { "GL_EXT_compiled_vertex_array",               o(dummy_true),                              GLL,            1996 },
+    { "GL_EXT_copy_texture",                        o(dummy_true),                              GLL,            1995 },
+    { "GL_EXT_depth_bounds_test",                   o(EXT_depth_bounds_test),                   GL,             2002 },
++   { "GL_EXT_draw_buffers",                        o(dummy_true),                                         ES2, 2012 },
+    { "GL_EXT_draw_buffers2",                       o(EXT_draw_buffers2),                       GL,             2006 },
+    { "GL_EXT_draw_instanced",                      o(ARB_draw_instanced),                      GL,             2006 },
+    { "GL_EXT_draw_range_elements",                 o(dummy_true),                              GLL,            1997 },

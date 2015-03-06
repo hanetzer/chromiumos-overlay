@@ -148,6 +148,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-intel-fix-EGLImage-renderbuffer-_BaseFormat.patch
 	epatch "${FILESDIR}"/10.5-i965-Prefer-Meta-over-the-BLT-for-BlitFrame.patch
+	epatch "${FILESDIR}"/10.4-enable-GL_EXT_draw_buffers.patch
 
 	base_src_prepare
 
