@@ -28,6 +28,7 @@ AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 # deps/touchpad-tests
 RDEPEND="
 	x11-drivers/touchpad-tests
+	chromeos-base/touch_firmware_test
 	chromeos-base/mttools
 "
 

@@ -28,7 +28,7 @@ src_configure() {
 
 src_install() {
 	# install to autotest deps directory for dependency
-	DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touch_firmware_test"
+	DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests/touch_firmware_test"
 	mkdir -p "${DESTDIR}"
 	echo "CMD:" cp -Rp "${S}"/* "${DESTDIR}"
 	cp -Rp "${S}"/* "${DESTDIR}"
