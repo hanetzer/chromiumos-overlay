@@ -1,0 +1,43 @@
+From 5e11275cb6fb176c2cf8e5770c5f5b46c5b3b9da Mon Sep 17 00:00:00 2001
+From: Chad Versace <chad.versace@linux.intel.com>
+Date: Fri, 13 Mar 2015 14:41:58 -0700
+Subject: [PATCH 1/2] cmake: Use FindPNG instead of find_path/find_library
+
+dEQP's use of find_path() and find_library() failed to find the png
+paths if the paths contained a version suffix. For example, they failed
+to find /usr/include/libpng12/png.h and /usr/lib64/libpng12.so.
+
+CMake ships a standard FindPNG module that does not get confounded by
+version-suffixed paths.  The module also respects cross-compilation
+environments.
+
+Change-Id: I636be9430697a9d883040b53e79767466fbd2ad5
+Signed-off-by: Chad Versace <chad.versace@intel.com>
+---
+ CMakeLists.txt | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f04916c..f1c27d5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -69,8 +69,14 @@ endif ()
+ include_directories(${ZLIB_INCLUDE_PATH})
+ 
+ # libpng
+-find_path(PNG_INCLUDE_PATH	libpng.h)
+-find_library(PNG_LIBRARY	png)
++#
++# The FindPNG module defines PNG_INCLUDE_DIRS and PNG_LIBRARIES. But dEQP's
++# CMake files expect the non-standard PNG_INCLUDE_PATH and PNG_LIBRARY. Set the
++# non-standard variables here to retain compatibility with dEQP's existing
++# CMake files.
++include(FindPNG)
++set(PNG_INCLUDE_PATH ${PNG_INCLUDE_DIRS})
++set(PNG_LIBRARY ${PNG_LIBRARIES})
+ 
+ if (NOT PNG_INCLUDE_PATH OR NOT PNG_LIBRARY)
+ 	message(STATUS "System version of libpng not found, using external/libpng")
+-- 
+2.2.0
+
