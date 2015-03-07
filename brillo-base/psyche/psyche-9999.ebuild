@@ -21,7 +21,10 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="test"
 
-RDEPEND=""
+RDEPEND="
+	chromeos-base/libchromeos
+"
+
 DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
 
