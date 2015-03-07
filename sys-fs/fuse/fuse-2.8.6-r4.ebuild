@@ -36,6 +36,7 @@ src_prepare() {
 	# socket/connect syscalls, which allows Chromium OS daemons to
 	# put more restrictive seccomp filters on fusermount.
 	epatch "${FILESDIR}"/fuse-2.8.6-user-option.patch
+	epatch "${FILESDIR}"/fuse-2.8.6-kernel-types.patch
 
 	elibtoolize
 }
