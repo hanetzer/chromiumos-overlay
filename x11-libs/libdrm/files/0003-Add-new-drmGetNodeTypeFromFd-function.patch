@@ -1,0 +1,104 @@
+From 125aa87cd69ef9d2e643ab3d1f7d525d34963fbe Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Fri, 13 Feb 2015 09:28:48 +0000
+Subject: [PATCH 3/3] Add new drmGetNodeTypeFromFd function
+
+Add a helper function that returns the type of device node from an fd.
+---
+ xf86drm.c | 43 +++++++++++++++++++++++++++++++++++++++----
+ xf86drm.h |  4 ++++
+ 2 files changed, 43 insertions(+), 4 deletions(-)
+
+diff --git a/xf86drm.c b/xf86drm.c
+index 345325a..a30ed3a 100644
+--- a/xf86drm.c
++++ b/xf86drm.c
+@@ -85,10 +85,6 @@
+ 
+ #define DRM_MSG_VERBOSITY 3
+ 
+-#define DRM_NODE_CONTROL 0
+-#define DRM_NODE_PRIMARY 1
+-#define DRM_NODE_RENDER 2
+-
+ static drmServerInfoPtr drm_server_info;
+ 
+ void drmSetServerInfo(drmServerInfoPtr info)
+@@ -494,6 +490,23 @@ int drmAvailable(void)
+ }
+ 
+ 
++static int drmGetMinorType(int minor)
++{
++    int type = minor >> 6;
++
++    if (minor < 0)
++        return -1;
++
++    switch (type) {
++    case DRM_NODE_PRIMARY:
++    case DRM_NODE_CONTROL:
++    case DRM_NODE_RENDER:
++        return type;
++    default:
++        return -1;
++    }
++}
++
+ /**
+  * Open the device by bus ID.
+  *
+@@ -2577,6 +2590,28 @@ char *drmGetDeviceNameFromFd(int fd)
+ 	return strdup(name);
+ }
+ 
++int drmGetNodeTypeFromFd(int fd)
++{
++	struct stat sbuf;
++	int maj, min, type;
++
++	if (fstat(fd, &sbuf))
++		return -1;
++
++	maj = major(sbuf.st_rdev);
++	min = minor(sbuf.st_rdev);
++
++	if (maj != DRM_MAJOR || !S_ISCHR(sbuf.st_mode)) {
++		errno = EINVAL;
++		return -1;
++	}
++
++	type = drmGetMinorType(min);
++	if (type == -1)
++		errno = ENODEV;
++	return type;
++}
++
+ int drmPrimeHandleToFD(int fd, uint32_t handle, uint32_t flags, int *prime_fd)
+ {
+ 	struct drm_prime_handle args;
+diff --git a/xf86drm.h b/xf86drm.h
+index bfd0670..e8dab7f 100644
+--- a/xf86drm.h
++++ b/xf86drm.h
+@@ -548,6 +548,9 @@ do {	register unsigned int __old __asm("o0");		\
+ 	} while(0)
+ 
+ 
++#define DRM_NODE_PRIMARY 0
++#define DRM_NODE_CONTROL 1
++#define DRM_NODE_RENDER  2
+ 
+ /* General user-level programmer's API: unprivileged */
+ extern int           drmAvailable(void);
+@@ -736,6 +739,7 @@ typedef struct _drmEventContext {
+ extern int drmHandleEvent(int fd, drmEventContextPtr evctx);
+ 
+ extern char *drmGetDeviceNameFromFd(int fd);
++extern int drmGetNodeTypeFromFd(int fd);
+ 
+ extern int drmPrimeHandleToFD(int fd, uint32_t handle, uint32_t flags, int *prime_fd);
+ extern int drmPrimeFDToHandle(int fd, int prime_fd, uint32_t *handle);
+-- 
+1.9.1
+

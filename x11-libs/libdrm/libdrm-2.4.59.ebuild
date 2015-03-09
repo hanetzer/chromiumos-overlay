@@ -44,6 +44,9 @@ PATCHES=(
 	"${FILESDIR}"/0002-xf86drmMode.h-inline-__inline-for-use-with-gcc-std-c.patch
 	"${FILESDIR}"/drm_rockchip-0001-add-support-for-rockchip.patch
 	"${FILESDIR}"/drm_rockchip-0002-tests-add-rockchip-to-modetest-kmstest-and-vbltest.patch
+	"${FILESDIR}"/0001-Rename-DRM_NODE_RENDER-to-DRM_NODE_PRIMARY.patch
+	"${FILESDIR}"/0002-Add-new-drmOpenRender-function-to-open-render-nodes.patch
+	"${FILESDIR}"/0003-Add-new-drmGetNodeTypeFromFd-function.patch
 )
 
 src_prepare() {
