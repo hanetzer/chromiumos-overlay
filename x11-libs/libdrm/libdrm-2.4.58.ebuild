@@ -36,15 +36,12 @@ DEPEND="${RDEPEND}"
 
 XORG_EAUTORECONF=yes
 PATCHES=(
+	"${FILESDIR}"/0001-tests-install-test-programs.patch
 	"${FILESDIR}"/drm_rockchip_0001_add_support_for_rockchip.patch
 	"${FILESDIR}"/drm_rockchip_0002-tests-add-rockchip-to-modetest-kmstest-and-vbltest.patch
 )
 
 src_prepare() {
-	if [[ ${PV} = 9999* ]]; then
-		# tests are restricted, no point in building them
-		sed -ie 's/tests //' "${S}"/Makefile.am
-	fi
 	xorg-2_src_prepare
 	if use drm_atomic; then
 		epatch ${FILESDIR}/drm_atomic-*.patch
@@ -53,6 +50,7 @@ src_prepare() {
 
 src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
+		--enable-install-test-programs
 		--enable-udev
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno-experimental-api)

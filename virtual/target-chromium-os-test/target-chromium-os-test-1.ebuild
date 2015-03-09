@@ -169,7 +169,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-process/procps
 	sys-process/psmisc
 	sys-process/time
-	x11-libs/libdrm-tests
+	x11-libs/libdrm
 	"
 
 ################################################################################
