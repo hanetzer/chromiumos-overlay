@@ -24,6 +24,9 @@ AUTOTEST_DEPS_LIST=""
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 src_prepare() {
+	# Reset timetstamps since they might get out of sync with git.
+	find utils/ffsb-6.0-rc2 -exec touch -r . {} + || die
+	# Now rebuild autotools for dirs not checked in.
 	emake autotools
 }
 
