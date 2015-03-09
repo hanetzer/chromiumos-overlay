@@ -1,0 +1,51 @@
+Silence the "no mapping symbol" warnings in arm gold linker.
+
+What are mapping symbols - they are special symbols defined to mark
+attributes of a part of a section, the attributes could be "$a", "$t",
+"$d", for arm code, thumb code and data respectively.
+
+Why are mapping symbols needed in handling cortex-a8 erratum - because
+the erratum only applies to thumb and only to thumb code, mapping
+symbols are needed by the linker's eratum scanner.
+
+Why silence the warnings - to make gold behave the same as Gnu BFD
+linker, which silently ignores such "no mapping symbol" cases (and
+does nothing about the erratum).
+
+Why certain objects do not have mapping symbols - chromium:464017
+
+diff --git a/gold/arm.cc b/gold/arm.cc
+index 04ca5da..9429063 100644
+--- a/gold/arm.cc
++++ b/gold/arm.cc
+@@ -6250,26 +6250,21 @@ Arm_relobj<big_endian>::scan_section_for_cortex_a8_erratum(
+ {
+   // Look for the first mapping symbol in this section.  It should be
+   // at (shndx, 0).
+   Mapping_symbol_position section_start(shndx, 0);
+   typename Mapping_symbols_info::const_iterator p =
+     this->mapping_symbols_info_.lower_bound(section_start);
+ 
+   // There are no mapping symbols for this section.  Treat it as a data-only
+-  // section.  Issue a warning if section is marked as containing
+-  // instructions.
++  // section.  Note - we've changed the following code to silence the no mapping
++  // warning, making this consistent with Gnu BFD linker, which just ignores
++  // silently no-mapping symbol cases.
+   if (p == this->mapping_symbols_info_.end() || p->first.first != shndx)
+-    {
+-      if ((this->section_flags(shndx) & elfcpp::SHF_EXECINSTR) != 0)
+-	gold_warning(_("cannot scan executable section %u of %s for Cortex-A8 "
+-		       "erratum because it has no mapping symbols."),
+-		     shndx, this->name().c_str());
+-      return;
+-    }
++    return;
+ 
+   Arm_address output_address =
+     this->simple_input_section_output_address(shndx, os);
+ 
+   // Get the section contents.
+   section_size_type input_view_size = 0;
+   const unsigned char* input_view =
+     this->section_contents(shndx, &input_view_size, false);
