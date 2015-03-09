@@ -7,4 +7,6 @@
 # If it is necessary to add a new blocker or version dependency on this ebuild
 # at the same time as revving the ebuild to a known version value, editing this
 # version can be useful.
-exec cat "$1"/VERSION
+
+# Need to use a 0 prefix to avoid producing a version larger than 9999.
+echo "0.$(cat "$1"/VERSION)"
