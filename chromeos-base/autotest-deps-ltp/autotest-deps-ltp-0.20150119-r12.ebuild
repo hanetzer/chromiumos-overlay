@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="af9bd626e57abd698e239d1179dcd8db4a540ce0"
-CROS_WORKON_TREE="4a2657d9afe780fe3a6d0d21b56db9e286272342"
+CROS_WORKON_COMMIT="4290bd545748cae9e3abad8113dcf4f6dc82e840"
+CROS_WORKON_TREE="3a0b9a46bfba61e07213a58a6decfe147fd29cb6"
 CROS_WORKON_PROJECT="chromiumos/third_party/ltp"
 CROS_WORKON_LOCALNAME=../third_party/ltp
 CROS_WORKON_SUBDIR=
@@ -26,6 +26,9 @@ AUTOTEST_DEPS_LIST=""
 AUTOTEST_FILE_MASK="*.tar.bz2 *.tbz2 *.tgz *.tar.gz"
 
 src_prepare() {
+	# Reset timetstamps since they might get out of sync with git.
+	find utils/ffsb-6.0-rc2 -exec touch -r . {} + || die
+	# Now rebuild autotools for dirs not checked in.
 	emake autotools
 }
 
