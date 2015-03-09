@@ -107,9 +107,6 @@ src_install() {
 	insinto /etc
 	doins update_engine.conf
 
-	insinto /usr/include/chromeos/update_engine
-	doins "${OUT}"/gen/include/update_engine/update_engine.dbus{client,server}.h
-
 	insinto /etc/init
 	doins init/update-engine.conf
 }
