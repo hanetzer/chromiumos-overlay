@@ -106,7 +106,8 @@ CROS_COMMON_RDEPEND+="
 		chromeos-base/mist
 	)
 	brillo-framework? ( brillo-base/germ brillo-base/psyche
-			    brillo-base/servicemanager brillo-base/soma )
+			    brillo-base/servicemanager brillo-base/soma
+			    brillo-base/libbrillobinder )
 	buffet? ( chromeos-base/buffet )
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
