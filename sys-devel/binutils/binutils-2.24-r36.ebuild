@@ -90,6 +90,12 @@ src_unpack() {
 	mkdir -p "${MY_BUILDDIR}"
 }
 
+src_prepare() {
+	if ! use mounted_binutils && ! use next_binutils ; then
+		epatch "${FILESDIR}"/${PV}-silence_mapping_symbols.patch
+	fi
+}
+
 toolchain-binutils_bugurl() {
 	printf "http://code.google.com/p/chromium-os/issues/entry"
 }
