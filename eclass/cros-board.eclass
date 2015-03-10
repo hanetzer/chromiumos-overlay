@@ -86,6 +86,7 @@ ALL_BOARDS=(
 	falco_gles
 	falco_li
 	fb1
+	foster
 	#fox
 	#fox_baskingridge
 	#fox_wtm1
