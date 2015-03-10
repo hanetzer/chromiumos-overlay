@@ -29,6 +29,8 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
+DEPEND="dev-libs/protobuf"
+
 
 src_unpack() {
 	local s="${S}"
