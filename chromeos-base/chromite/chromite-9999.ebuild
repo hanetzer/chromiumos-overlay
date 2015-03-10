@@ -24,6 +24,7 @@ src_install() {
 	# to specify which files should be installed.
 	cd "${D}/$(python_get_sitedir)/chromite"
 	find '(' -name '*.pyc' -o -name '*unittest.py' ')' -delete
+	rm -rf lib/datafiles/
 	rm -rf third_party/pyelftools/test
 }
 
