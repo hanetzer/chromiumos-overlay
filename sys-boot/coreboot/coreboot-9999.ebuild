@@ -57,10 +57,12 @@ DEPEND="
 src_prepare() {
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
-	while read -d $'\0' -r file; do
-		rsync --recursive --links --executability --ignore-existing \
-		      "${file}" ./ || die
-	done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
+	if [[ -d "${privdir}" ]]; then
+		while read -d $'\0' -r file; do
+			rsync --recursive --links --executability --ignore-existing \
+			      "${file}" ./ || die
+		done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
+	fi
 
 	local board=$(get_current_board_with_variant)
 	if [[ ! -s "configs/config.${board}" ]]; then
