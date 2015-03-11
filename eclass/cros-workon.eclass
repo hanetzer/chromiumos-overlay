@@ -167,7 +167,13 @@ ARRAY_VARIABLES=(
 CROS_WORKON_TREE_COMPOSITE=$(IFS="_"; echo "${CROS_WORKON_TREE[*]}")
 IUSE="cros_host cros_workon_tree_$CROS_WORKON_TREE_COMPOSITE profiling"
 
-inherit git-2 flag-o-matic toolchain-funcs
+inherit flag-o-matic toolchain-funcs
+
+# We need git-2 only for packages that define CROS_WORKON_PROJECT. Otherwise,
+# there's no dependence on git and we don't want it pulled in.
+if [[ -n "${CROS_WORKON_PROJECT[*]}" ]]; then
+	inherit git-2
+fi
 
 # Sanitize all variables, autocomplete where necessary.
 # This function possibly modifies all CROS_WORKON_ variables inplace. It also
@@ -355,8 +361,8 @@ cros-workon_src_unpack() {
 	# Fix array variables
 	array_vars_autocomplete
 
-	if [[ "${PV}" == "9999" && "${CROS_WORKON_ALWAYS_LIVE}" != "1" ]]; then
-		# Live packages
+	if [[ "${PV}" == "9999" && "${CROS_WORKON_ALWAYS_LIVE}" != "1" ]] || [[ -z "${CROS_WORKON_PROJECT[*]}" ]]; then
+		# Live / non-repo packages
 		fetch_method=local
 	elif [[ "${PV}" != "9999" && "${CROS_WORKON_ALWAYS_LIVE}" == "1" ]]; then
 		die "CROS_WORKON_ALWAYS_LIVE is set for non-9999 ebuild"
@@ -513,8 +519,10 @@ cros-workon_src_unpack() {
 	for (( i = 0; i < project_count; ++i )); do
 		local_copy "${path[i]}" "${destdir[i]}" || \
 			die "Cannot create a local copy"
-		set_vcsid "$(get_rev "${path[0]}/.git")"
 	done
+	if [[ -n "${CROS_WORKON_PROJECT[*]}" ]]; then
+		set_vcsid "$(get_rev "${path[0]}/.git")"
+	fi
 }
 
 cros-workon_get_build_dir() {
