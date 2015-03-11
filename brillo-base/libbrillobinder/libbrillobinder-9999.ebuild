@@ -20,6 +20,10 @@ SLOT="0"
 KEYWORDS="~*"
 
 src_install() {
+	./preinstall.sh "${OUT}"
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins "${OUT}"/*.pc
+
 	dolib.so "${OUT}/lib/libbrillobinder.so"
 
 	insinto /usr/include/brillobinder
@@ -31,5 +35,4 @@ src_install() {
 	doins iservice_manager.h
 	doins binder_proxy_interface_base.h
 	doins iinterface.h
-
 }
