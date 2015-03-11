@@ -24,6 +24,7 @@ RDEPEND="
 	chromeos-base/libchromeos
 	chromeos-base/system_api
 	dev-libs/dbus-glib
+	dev-libs/protobuf
 	sys-apps/rootdev
 	"
 
