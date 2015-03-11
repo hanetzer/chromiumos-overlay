@@ -26,15 +26,16 @@ RDEPEND="
 		dev-cpp/gtest
 	)
 	app-crypt/trousers
+	chromeos-base/libchromeos
 	chromeos-base/metrics
+	!dev-db/leveldb
 	dev-libs/dbus-c++
+	dev-libs/leveldb
 	dev-libs/openssl
 	dev-libs/protobuf
 "
 
 DEPEND="${RDEPEND}
-	!dev-db/leveldb
-	dev-libs/leveldb
 	dev-cpp/gtest
 	test? (
 		dev-cpp/gmock
