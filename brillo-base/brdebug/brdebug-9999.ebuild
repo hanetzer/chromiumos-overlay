@@ -21,12 +21,18 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="test"
 
-RDEPEND=""
-DEPEND="${RDEPEND}
-	test? ( dev-cpp/gtest )"
+RDEPEND="
+	chromeos-base/libchromeos
+	chromeos-base/peerd
+"
+
+DEPEND="
+	${RDEPEND}
+	test? ( dev-cpp/gtest )
+"
 
 src_install() {
-	dosbin "${OUT}"/brdebugd
+	dobin "${OUT}"/brdebugd
 }
 
 platform_pkg_test() {
