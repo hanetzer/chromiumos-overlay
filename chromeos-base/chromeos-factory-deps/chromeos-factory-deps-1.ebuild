@@ -87,6 +87,10 @@ FACTORY_TEST_RDEPEND+="
 	chromeos-base/autotest-client
 "
 
+# Packages to support in-place factory wiping inside factory software.
+FACTORY_TEST_RDEPEND+="
+	sys-apps/busybox
+"
 ################################################################################
 # Assemble the final RDEPEND variable for portage
 ################################################################################
