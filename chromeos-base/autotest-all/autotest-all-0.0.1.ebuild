@@ -74,6 +74,7 @@ RDEPEND="
 	wifi_bootstrapping? (
 		chromeos-base/autotest-tests-wifi-bootstrapping
 	)
+	virtual/autotest-libs
 "
 
 DEPEND="${RDEPEND}"

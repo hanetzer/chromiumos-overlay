@@ -29,6 +29,7 @@ RDEPEND="
 	dev-python/python-uinput
 	media-sound/sox
 	vaapi? ( x11-libs/libva )
+	virtual/autotest-tests
 	x11-libs/libX11
 "
 
