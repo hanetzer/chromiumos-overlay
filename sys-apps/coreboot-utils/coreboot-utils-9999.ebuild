@@ -34,6 +34,7 @@ src_compile() {
 	fi
 
 	# And these are used in the image
+	emake -C util/cbmem CC="${CC}"
 	if is_x86; then
 		emake -C util/superiotool CC="${CC}"
 		emake -C util/inteltool CC="${CC}"
@@ -43,6 +44,7 @@ src_compile() {
 
 src_install() {
 	dobin util/cbfstool/cbfstool
+	dobin util/cbmem/cbmem
 	if is_x86; then
 		dobin util/ifdtool/ifdtool
 		dobin util/superiotool/superiotool
