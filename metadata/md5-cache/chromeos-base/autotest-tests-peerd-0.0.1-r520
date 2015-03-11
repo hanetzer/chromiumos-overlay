@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile info install postinst prepare setup unpack
-DEPEND=app-crypt/trousers chromeos-base/tpm dev-vcs/git
-DESCRIPTION=TPM firmware tests
+DEPEND=dev-python/dpkt dev-vcs/git
+DESCRIPTION=peerd autotests
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=+autotest +tests_hardware_TPMFirmware +tests_hardware_TPMFirmwareServer cros_host cros_workon_tree_33dacefd33271d0cb35a7f39d298e486c5387ce5 profiling +buildcheck autotest opengles
-KEYWORDS=x86 arm amd64
+IUSE=+autotest +tests_peerd_AdvertiseServices +tests_peerd_DiscoverServices +tests_peerd_HandlesNameConflicts +tests_peerd_MonitorsDBusConnections cros_host cros_workon_tree_c3f8cb13f4e997f9e122d40ad82e4dd9abc1f0cd profiling +buildcheck autotest opengles
+KEYWORDS=*
 LICENSE=GPL-2
-RDEPEND=( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+RDEPEND=dev-python/dpkt ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
 SLOT=0
 _eclasses_=autotest	5bd2cda625bf4a0111d0734f8e6347a9	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	b5fd34c8853085809e2f3b8b99472962	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=bd68e0a9bcef784a9474144c1ca18a45
+_md5_=b16c6752e2be8b8ae8181c81da8cb6a9
