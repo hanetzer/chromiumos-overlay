@@ -8,11 +8,11 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-PLATFORM_SUBDIR="psyche"
+PLATFORM_SUBDIR="psyche_demo"
 
 inherit cros-workon platform
 
-DESCRIPTION="Daemon for service registration and lookup"
+DESCRIPTION="Demonstration programs using psyche"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
@@ -23,35 +23,13 @@ IUSE="test"
 
 RDEPEND="
 	brillo-base/libprotobinder
+	brillo-base/libpsyche
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	dev-libs/protobuf
 "
-
-DEPEND="${RDEPEND}
-	test? ( dev-cpp/gtest )"
-
-src_compile() {
-	platform compile psyched
-	if use test; then
-		platform compile psyched_test
-	fi
-}
+DEPEND="${RDEPEND}"
 
 src_install() {
-	dosbin "${OUT}"/psyched
-
-	insinto /etc/init
-	doins psyched/psyched.conf
-}
-
-platform_pkg_test() {
-	local tests=(
-		psyched_test
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test run "${OUT}/${test_bin}"
-	done
+	dobin "${OUT}"/psyche_demo_{client,server}
 }

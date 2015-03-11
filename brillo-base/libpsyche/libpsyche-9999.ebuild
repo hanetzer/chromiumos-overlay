@@ -12,46 +12,32 @@ PLATFORM_SUBDIR="psyche"
 
 inherit cros-workon platform
 
-DESCRIPTION="Daemon for service registration and lookup"
+DESCRIPTION="Client library for service registration and lookup"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
 
 RDEPEND="
 	brillo-base/libprotobinder
 	chromeos-base/libchrome
-	chromeos-base/libchromeos
 	dev-libs/protobuf
 "
-
-DEPEND="${RDEPEND}
-	test? ( dev-cpp/gtest )"
+DEPEND="${RDEPEND}"
 
 src_compile() {
-	platform compile psyched
-	if use test; then
-		platform compile psyched_test
-	fi
+	platform compile libpsyche
 }
 
 src_install() {
-	dosbin "${OUT}"/psyched
+	./preinstall.sh "${OUT}"
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins "${OUT}"/*.pc
 
-	insinto /etc/init
-	doins psyched/psyched.conf
-}
+	dolib.so "${OUT}"/lib/libpsyche.so
 
-platform_pkg_test() {
-	local tests=(
-		psyched_test
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test run "${OUT}/${test_bin}"
-	done
+	insinto /usr/include/psyche
+	doins libpsyche/psyche_connection.h
 }
