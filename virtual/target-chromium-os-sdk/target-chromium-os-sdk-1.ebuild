@@ -50,6 +50,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/flex
 	sys-devel/gcc
 	sys-devel/gnuconfig
+	sys-devel/grit-i18n
 	sys-devel/libtool
 	sys-devel/m4
 	sys-devel/make
