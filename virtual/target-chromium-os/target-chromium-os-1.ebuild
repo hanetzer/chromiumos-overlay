@@ -105,9 +105,13 @@ CROS_COMMON_RDEPEND+="
 		gobi? ( chromeos-base/cromo )
 		chromeos-base/mist
 	)
-	brillo-framework? ( brillo-base/germ brillo-base/psyche
-			    brillo-base/servicemanager brillo-base/soma
-			    brillo-base/libbrillobinder )
+	brillo-framework? (
+		brillo-base/germ
+		brillo-base/libprotobinder
+		brillo-base/psyche
+		brillo-base/servicemanager
+		brillo-base/soma
+	)
 	buffet? ( chromeos-base/buffet )
 	cros_disks? ( chromeos-base/cros-disks )
 	debugd? ( chromeos-base/debugd )
