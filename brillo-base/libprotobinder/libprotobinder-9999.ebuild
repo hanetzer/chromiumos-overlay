@@ -29,6 +29,10 @@ DEPEND="${RDEPEND}
 "
 
 src_install() {
+	./preinstall.sh "${OUT}"
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins "${OUT}"/*.pc
+
 	dolib.so "${OUT}/lib/libprotobinder.so"
 
 	insinto /usr/include/protobinder
