@@ -31,7 +31,10 @@ REQUIRED_USE="video_cards_exynos? ( libkms )
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
-	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )"
+	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )
+	!<x11-libs/libdrm-tests-2.4.58-r3
+"
+
 DEPEND="${RDEPEND}"
 
 XORG_EAUTORECONF=yes
