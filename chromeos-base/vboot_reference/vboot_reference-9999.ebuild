@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
+
+CROS_WORKON_OUTOFTREE_BUILD=1
 CROS_WORKON_PROJECT="chromiumos/platform/vboot_reference"
 
 inherit cros-debug cros-workon cros-au
@@ -26,12 +28,12 @@ src_configure() {
 }
 
 _src_compile_main() {
-	mkdir "${S}"/build-main
+	mkdir "${WORKDIR}"/build-main
 	tc-export CC AR CXX PKG_CONFIG
 	cros-debug-add-NDEBUG
 	# Vboot reference knows the flags to use
 	unset CFLAGS
-	emake BUILD="${S}"/build-main \
+	emake BUILD="${WORKDIR}"/build-main \
 	      ARCH=$(tc-arch) \
 	      VBOOT2=$(usev vboot2) \
 	      PD_SYNC=$(usev pd_sync) \
@@ -42,10 +44,10 @@ _src_compile_main() {
 
 _src_compile_au() {
 	board_setup_32bit_au_env
-	mkdir "${S}"/build-au
+	mkdir "${WORKDIR}"/build-au
 	einfo "Building 32-bit library for installer to use"
 	tc-export CC AR CXX PKG_CONFIG
-	emake BUILD="${S}"/build-au/ \
+	emake BUILD="${WORKDIR}"/build-au/ \
 	      ARCH=$(tc-arch) \
 	      VBOOT2=$(usev vboot2) \
 	      PD_SYNC=$(usev pd_sync) \
@@ -62,7 +64,8 @@ src_compile() {
 
 src_test() {
 	! use amd64 && ! use x86 && ewarn "Skipping unittests for non-x86" && return 0
-	emake BUILD="${S}"/build-main \
+	emake BUILD="${WORKDIR}"/build-main \
+	      SRCDIR="${S}" \
 	      ARCH=$(tc-arch) \
 	      VBOOT2=$(usev vboot2) \
 	      PD_SYNC=$(usev pd_sync) \
@@ -73,20 +76,20 @@ src_install() {
 	einfo "Installing programs"
 	if use minimal ; then
 		# Installing on the target
-		emake BUILD="${S}"/build-main DESTDIR="${D}" \
+		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}" \
 		      LIBDIR="$(get_libdir)" \
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
-                      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
+		      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
 		      USE_MTD=$(usev mtd) \
 		      MINIMAL=1 install$(usex mtd "_mtd" "")
 	else
 		# Installing on the host
-		emake BUILD="${S}"/build-main DESTDIR="${D}/usr" \
+		emake BUILD="${WORKDIR}"/build-main DESTDIR="${D}/usr" \
 		      LIBDIR="$(get_libdir)" \
 		      VBOOT2=$(usev vboot2) \
 		      PD_SYNC=$(usev pd_sync) \
-                      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
+		      DEV_DEBUG_FORCE=$(usev dev_debug_force) \
 		      USE_MTD=$(usev mtd) \
 		      install
 
@@ -98,8 +101,8 @@ src_install() {
 	if use tpmtests; then
 		into /usr
 		# copy files starting with tpmtest, but skip .d files.
-		dobin "${S}"/build-main/tests/tpm_lite/tpmtest*[^.]?
-		dobin "${S}"/build-main/utility/tpm_set_readsrkpub
+		dobin "${WORKDIR}"/build-main/tests/tpm_lite/tpmtest*[^.]?
+		dobin "${WORKDIR}"/build-main/utility/tpm_set_readsrkpub
 	fi
 
 	# Install devkeys to /usr/share/vboot/devkeys
@@ -117,13 +120,13 @@ src_install() {
 	      firmware/include/tss_constants.h
 
 	einfo "Installing host library"
-	dolib.a build-main/libvboot_host.a
+	dolib.a "${WORKDIR}"/build-main/libvboot_host.a
 
 	# Install 32-bit library needed by installer programs.
 	if use 32bit_au; then
 		einfo "Installing 32-bit host library"
-                insopts -m0644
-                insinto /usr/lib/vboot32
-                doins build-au/libvboot_host.a
+		insopts -m0644
+		insinto /usr/lib/vboot32
+		doins "${WORKDIR}"/build-au/libvboot_host.a
 	fi
 }
