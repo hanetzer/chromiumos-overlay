@@ -182,6 +182,7 @@ ALL_BOARDS=(
 	sklrvp
 	slippy
 	sonic
+	sumo
 	space
 	squawks
 	squawks_freon
