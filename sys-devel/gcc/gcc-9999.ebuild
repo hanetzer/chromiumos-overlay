@@ -434,9 +434,6 @@ get_gcc_configure_options()
 			confgcc="${confgcc} --enable-esp"
 			confgcc="${confgcc} --with-arch=atom"
 			confgcc="${confgcc} --with-tune=atom"
-			# Remove this once crash2 supports larger symbols.
-			# http://code.google.com/p/chromium-os/issues/detail?id=23321
-			confgcc="${confgcc} --enable-frame-pointer"
 			;;
 		x86_64*-gnux32)
 			confgcc="${confgcc} --with-abi=x32 --with-multilib-list=mx32"
@@ -456,6 +453,9 @@ get_gcc_common_options()
 	confgcc="${confgcc} --disable-libquadmath"
 	confgcc="${confgcc} --disable-libitm"
 	confgcc="${confgcc} --disable-libcilkrts"
+	# Enable frame pointer by default for all the boards.
+	# originally only enabled for i686 for chromium-os:23321.
+	confgcc="${confgcc} --enable-frame-pointer"
 	echo ${confgcc}
 }
 
