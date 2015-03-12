@@ -16,6 +16,7 @@ HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="cros_host"
 
 src_configure() {
 	cros-workon_src_configure
@@ -27,38 +28,35 @@ is_x86() {
 
 src_compile() {
 	tc-export CC
-	# These two utilities are used on the host
-	tc-env_build emake -C util/cbfstool
-	if is_x86; then
-		tc-env_build emake -C util/ifdtool
+	if use cros_host; then
+		emake -C util/cbfstool
+	else
+		emake -C util/cbmem CC="${CC}"
 	fi
-
-	# And these are used in the image
-	emake -C util/cbmem CC="${CC}"
 	if is_x86; then
-		emake -C util/superiotool CC="${CC}"
-		emake -C util/inteltool CC="${CC}"
-		emake -C util/nvramtool CC="${CC}"
+		if use cros_host; then
+			emake -C util/ifdtool
+		else
+			emake -C util/superiotool CC="${CC}"
+			emake -C util/inteltool CC="${CC}"
+			emake -C util/nvramtool CC="${CC}"
+		fi
 	fi
 }
 
 src_install() {
-	dobin util/cbfstool/cbfstool
-	dobin util/cbmem/cbmem
-	if is_x86; then
-		dobin util/ifdtool/ifdtool
-		dobin util/superiotool/superiotool
-		dobin util/inteltool/inteltool
-		dobin util/nvramtool/nvramtool
+	if use cros_host; then
+		dobin util/cbfstool/cbfstool
+	else
+		dobin util/cbmem/cbmem
 	fi
-}
-
-pkg_preinst() {
-	# TODO(reinauer) This is an ugly workaround to have the utilities
-	# live outside the /build directory.
-	# The package will never be installed to the image.
-	mv $D/usr/bin/cbfstool /usr/bin
 	if is_x86; then
-		mv $D/usr/bin/ifdtool /usr/bin
+		if use cros_host; then
+			dobin util/ifdtool/ifdtool
+		else
+			dobin util/superiotool/superiotool
+			dobin util/inteltool/inteltool
+			dobin util/nvramtool/nvramtool
+		fi
 	fi
 }

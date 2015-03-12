@@ -380,3 +380,8 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-util/ragel
 	"
+
+# Host dependencies for building chromeos-bootimage
+RDEPEND="${RDEPEND}
+	sys-apps/coreboot-utils
+	"
