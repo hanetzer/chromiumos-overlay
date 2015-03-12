@@ -29,7 +29,7 @@ is_x86() {
 src_compile() {
 	tc-export CC
 	if use cros_host; then
-		emake -C util/cbfstool
+		emake -C util/cbfstool obj="${PWD}/util/cbfstool"
 	else
 		emake -C util/cbmem CC="${CC}"
 	fi
