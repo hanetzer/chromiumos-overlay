@@ -64,6 +64,7 @@ ALL_BOARDS=(
 	clapper_freon
 	cosmos
 	cranky
+	cyan
 	daisy
 	daisy_freon
 	#daisy-drm
