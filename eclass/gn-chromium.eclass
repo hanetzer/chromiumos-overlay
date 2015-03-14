@@ -11,6 +11,13 @@
 # system that generates Ninja files, in CrOS. Handles injecting toolchain
 # and build args expressed in the standard CrOS ways into the Chromium GN build.
 
+# @ECLASS-VARIABLE: GN_CHROMIUM_INCREMENTAL_BUILD
+# @DESCRIPTION:
+# If set to "1", store output objects in a location that is not wiped
+# between emerges.  If disabled, objects will be written to ${WORKDIR}
+# like normal.
+: ${GN_CHROMIUM_INCREMENTAL_BUILD:=}
+
 inherit cros-debug toolchain-funcs
 
 IUSE="asan clang debug hardfp neon"
@@ -58,9 +65,14 @@ _gn-chromium_friendly_arch() {
 # @DESCRIPTION:
 # Returns absolute path to the GN build output directory.
 gn-chromium_get_build_dir() {
-	# For now, just use WORKDIR. In the future, we can add
-	# incremental builds like in cros-workon.eclass.
-	echo "${WORKDIR}"
+	local dir
+	if [[ ${GN_CHROMIUM_INCREMENTAL_BUILD} == "1" ]]; then
+		dir="${SYSROOT}/var/cache/portage/${CATEGORY}/${PN}"
+		[[ ${SLOT:-0} != "0" ]] && dir+=":${SLOT}"
+	else
+		dir="${WORKDIR}"
+	fi
+	echo "${dir}"
 }
 
 # @FUNCTION: _gn-chromium_ensure_build_dir
@@ -79,6 +91,13 @@ _gn-chromium_ensure_build_dir() {
 gn-chromium_pkg_setup() {
 	# Verify that GN is available in the SDK
 	gn --version > /dev/null || die "GN not available in SDK!"
+
+	if [[ ${GN_CHROMIUM_INCREMENTAL_BUILD} == "1" ]]; then
+		local out="$(gn-chromium_get_build_dir)"
+		addwrite "${out}"
+		mkdir -p -m 755 "${out}"
+		chown ${PORTAGE_USERNAME}:${PORTAGE_GRPNAME} "${out}" "${out%/*}"
+	fi
 }
 
 # @FUNCTION: _gn-chromium_get_args_file
