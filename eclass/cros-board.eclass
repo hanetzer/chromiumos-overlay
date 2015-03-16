@@ -182,6 +182,7 @@ ALL_BOARDS=(
 	samus
 	sklrvp
 	slippy
+	smaug
 	sonic
 	sumo
 	space
