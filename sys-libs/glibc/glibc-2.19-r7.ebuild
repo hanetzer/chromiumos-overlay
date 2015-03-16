@@ -166,6 +166,7 @@ eblit-src_unpack-post() {
 	epatch "${FILESDIR}"/local/glibc-2.19-file-mangle.patch
 	epatch "${FILESDIR}"/local/glibc-2.19-arm-memcpy.patch
 	epatch "${FILESDIR}"/local/glibc-2.19-CVE-2014-7817.patch
+	epatch "${FILESDIR}"/local/glibc-2.19-CVE-2015-1472.patch
 	if use hardened ; then
 		cd "${S}"
 		einfo "Patching to get working PIE binaries on PIE (hardened) platforms"
