@@ -26,7 +26,7 @@
 # If set to yes, run the test only for amd64 and x86.
 : ${PLATFORM_NATIVE_TEST:="no"}
 
-inherit cros-debug cros-workon flag-o-matic toolchain-funcs
+inherit cros-debug cros-workon flag-o-matic toolchain-funcs multiprocessing
 
 [[ "${WANT_LIBCHROME}" == "yes" ]] && inherit libchrome
 
@@ -43,6 +43,7 @@ platform() {
 		$(platform_get_target_args)
 		--libdir="/usr/$(get_libdir)"
 		--use_flags="${USE}"
+		--jobs=$(makeopts_jobs)
 		--action="${action}"
 		--cache_dir="$(cros-workon_get_build_dir)"
 		"$@"
