@@ -79,7 +79,7 @@ src_install() {
 	doins share/{debugd,trace_marker-test}.conf
 
 	insinto /etc/perf_commands
-	doins share/perf_commands/{arm,celeron-2955u,core,unknown}.txt
+	doins -r share/perf_commands/*
 }
 
 platform_pkg_test() {
