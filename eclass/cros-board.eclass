@@ -71,7 +71,9 @@ ALL_BOARDS=(
 	daisy_embedded
 	daisy_snow
 	daisy_skate
+	daisy_skate-freon
 	daisy_spring
+	daisy_spring-freon
 	daisy_winter
 	dalmore
 	derwent
@@ -158,7 +160,9 @@ ALL_BOARDS=(
 	peach
 	peach_kirby
 	peach_pi
+	peach_pi-freon
 	peach_pit
+	peach_pit-freon
 	peppy
 	peppy_freon
 	ppcbe-32-generic
