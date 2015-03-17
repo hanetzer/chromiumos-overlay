@@ -65,19 +65,19 @@ src_prepare() {
 	fi
 
 	local board=$(get_current_board_with_variant)
-	if [[ ! -s "configs/config.${board}" ]]; then
+	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
 
 	if use fsp; then
-		if [[ -s "configs/config.${board}.fsp" ]]; then
+		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
 			elog "   - using fsp config"
 			board=${board}.fsp
 		fi
 	fi
 
-	if [[ -s "configs/config.${board}" ]]; then
-		cp -v "configs/config.${board}" .config
+	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
+		cp -v "${FILESDIR}/configs/config.${board}" .config
 	fi
 
 	# Replace the hard coded /build/<board>/ in the config with the actual
@@ -115,7 +115,7 @@ EOF
 	cp .config .config_serial
 	# handle the case when .config does not have a newline in the end.
 	echo >> .config_serial
-	cat "configs/fwserial.${board}" >> .config_serial || die
+	cat "${FILESDIR}/configs/fwserial.${board}" >> .config_serial || die
 }
 
 make_coreboot() {
@@ -188,12 +188,12 @@ src_compile() {
 src_install() {
 	local mapfile
 	local board=$(get_current_board_with_variant)
-	if [[ ! -s "configs/config.${board}" ]]; then
+	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
 
 	if use fsp; then
-		if [[ -s "configs/config.${board}.fsp" ]]; then
+		if [[ -s "${FILESDIR}/configs/config.${board}.fsp" ]]; then
 			elog "   - using fsp config"
 			board=${board}.fsp
 		fi
