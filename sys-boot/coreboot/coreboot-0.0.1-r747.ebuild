@@ -185,11 +185,6 @@ src_compile() {
 	# Build a second ROM with serial support for developers
 	mv .config_serial .config
 	make_coreboot "build_serial"
-
-	# Build cbmem for the target
-	cd util/cbmem
-	emake clean
-	CROSS_COMPILE="${CHOST}-" emake
 }
 
 src_install() {
@@ -206,7 +201,6 @@ src_install() {
 		fi
 	fi
 
-	dobin util/cbmem/cbmem
 	insinto /firmware
 	newins "build/coreboot.rom" coreboot.rom
 	newins "build_serial/coreboot.rom" coreboot.rom.serial
