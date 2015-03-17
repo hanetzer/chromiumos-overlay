@@ -21,6 +21,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	!brillo-base/libbrillobinder
+	chromeos-base/libchromeos
 "
 
 DEPEND="${RDEPEND}
@@ -35,7 +36,13 @@ src_install() {
 
 	dolib.so "${OUT}/lib/libprotobinder.so"
 
+	if use test ; then
+		dobin "${OUT}/ping-client"
+		dobin "${OUT}/ping-daemon"
+	fi
+
 	insinto /usr/include/protobinder
+	doins binder_daemon.h
 	doins binder_manager.h
 	doins parcel.h
 	doins binder_proxy.h
