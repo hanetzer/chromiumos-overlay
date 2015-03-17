@@ -15,7 +15,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 # TODO(sjg@chromium.org): Remove when x86 can build all boards
-BOARDS="alex auron bayleybay beltino bolt butterfly emeraldlake2 falco fox"
+BOARDS="alex auron bayleybay beltino bolt butterfly cyan emeraldlake2 falco fox"
 BOARDS="${BOARDS} gizmo glados jecht link lumpy lumpy64 mario panther parrot"
 BOARDS="${BOARDS} peppy rambi samus sklrvp slippy squawks stout strago stumpy"
 IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
