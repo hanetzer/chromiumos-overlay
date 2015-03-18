@@ -83,25 +83,20 @@ src_test() {
 
 src_install() {
 	cros-workon_src_install
-	local path
 	if use cros_host ; then
-		# Copy chromeos-* scripts to /usr/lib/installer/ on host.
-		path="usr/lib/installer"
+		dosbin chromeos-install
 	else
-		path="usr/sbin"
 		dobin "${OUT}"/cros_installer
-		dosym ${path}/chromeos-postinst /postinst
 		if use mtd ; then
 			dobin "${OUT}"/nand_partition
 		fi
-	fi
+		dosbin chromeos-* encrypted_import
+		dosym usr/sbin/chromeos-postinst /postinst
 
-	exeinto /${path}
-	doexe chromeos-* encrypted_import
+		insinto /etc/init
+		doins init/*.conf
+	fi
 
 	insinto /usr/share/misc
 	doins share/chromeos-common.sh
-
-	insinto /etc/init
-	doins init/*.conf
 }
