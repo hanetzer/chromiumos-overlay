@@ -49,6 +49,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+src_prepare() {
+	epatch "${FILESDIR}"/${P}-platform-null.patch
+}
+
 src_configure() {
 	if use opengles && use X; then
 		waffle_has_x11_egl=ON
