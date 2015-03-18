@@ -1,0 +1,34 @@
+From 1a65b6503293aeac33b6a24ffb2345c7dbad46aa Mon Sep 17 00:00:00 2001
+From: HC Yen <hc.yen@mediatek.com>
+Date: Wed, 11 Mar 2015 17:22:07 +0800
+Subject: [PATCH] Add AArch32 support for chromeos arm gold linker.
+
+The gold linker cannot support ARMv8's AArch32 because AArch32 uses
+TAG_CPU_ARCH_V8 which is not defined in the Tag_CPU_arch list. The bfd
+linker has such definition so add it to gold.
+
+BUG=chrome-os-partner:36669
+TEST=Build whole oak project and run on platform.
+
+Change-Id: I4d0f557dd7954e5ec3767c320c262b39f99b61f2
+---
+ elfcpp/arm.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/elfcpp/arm.h b/elfcpp/arm.h
+index 142ecb7..c1a3178 100644
+--- a/elfcpp/arm.h
++++ b/elfcpp/arm.h
+@@ -248,7 +248,8 @@ enum
+   TAG_CPU_ARCH_V6_M,
+   TAG_CPU_ARCH_V6S_M,
+   TAG_CPU_ARCH_V7E_M,
+-  MAX_TAG_CPU_ARCH = TAG_CPU_ARCH_V7E_M,
++  TAG_CPU_ARCH_V8,
++  MAX_TAG_CPU_ARCH = TAG_CPU_ARCH_V8,
+   // Pseudo-architecture to allow objects to be compatible with the subset of
+   // armv4t and armv6-m.  This value should never be stored in object files.
+   TAG_CPU_ARCH_V4T_PLUS_V6_M = (MAX_TAG_CPU_ARCH + 1)
+-- 
+2.2.0.rc0.207.ga3a616c
+
