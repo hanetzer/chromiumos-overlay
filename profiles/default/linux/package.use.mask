@@ -53,3 +53,6 @@ dev-libs/libevent ssl
 #   yet upstreamed.
 dev-libs/nss cacert nss-pem
 app-crypt/nss cacert nss-pem
+
+# librsvg does not really depend on GTK (which is prohibited in chromiumos).
+gnome-base/librsvg gtk

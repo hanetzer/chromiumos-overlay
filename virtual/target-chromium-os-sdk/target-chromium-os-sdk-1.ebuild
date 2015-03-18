@@ -193,6 +193,11 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-fonts
 	"
 
+# Host dependencies for bitmap block (chromeos-bmpblk) to to render messages.
+RDEPEND="${RDEPEND}
+	gnome-base/librsvg
+	"
+
 # Host dependencies for building chromium.
 # Intermediate executables built for the host, then run to generate data baked
 # into chromium, need these packages to be present in the host environment in
