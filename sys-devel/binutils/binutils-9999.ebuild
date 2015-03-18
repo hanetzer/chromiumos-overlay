@@ -90,7 +90,7 @@ src_unpack() {
 
 src_prepare() {
 	if ! use mounted_binutils && ! use next_binutils ; then
-		epatch "${FILESDIR}"/${PV}-silence_mapping_symbols.patch
+		epatch "${FILESDIR}"/2.24-silence_mapping_symbols.patch
 	fi
 }
 
