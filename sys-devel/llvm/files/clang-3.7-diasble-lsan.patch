@@ -1,0 +1,26 @@
+index 746244c..f99cee0 100644
+--- a/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.inc
++++ b/llvm/projects/compiler-rt/lib/sanitizer_common/sanitizer_flags.inc
+@@ -51,7 +51,7 @@ COMMON_FLAG(bool, handle_ioctl, false, "Intercept and handle ioctl requests.")
+ COMMON_FLAG(
+     int, verbosity, 0,
+     "Verbosity level (0 - silent, 1 - a bit of output, 2+ - more output).")
+-COMMON_FLAG(bool, detect_leaks, true, "Enable memory leak detection.")
++COMMON_FLAG(bool, detect_leaks, false, "Enable memory leak detection.")
+ COMMON_FLAG(
+     bool, leak_check_at_exit, true,
+     "Invoke leak checking in an atexit handler. Has no effect if "
+lines 1-20/20 (END)
+diff --git a/lib/asan/asan_flags.cc b/lib/asan/asan_flags.cc
+index efb7767..2a2f87c 100644
+--- a/llvm/projects/compiler-rt/lib/asan/asan_flags.cc
++++ b/llvm/projects/compiler-rt/lib/asan/asan_flags.cc
+@@ -59,7 +59,7 @@ void InitializeFlags() {
+   {
+     CommonFlags cf;
+     cf.CopyFrom(*common_flags());
+-    cf.detect_leaks = CAN_SANITIZE_LEAKS;
++    cf.detect_leaks = false;
+     cf.external_symbolizer_path = GetEnv("ASAN_SYMBOLIZER_PATH");
+     cf.malloc_context_size = kDefaultMallocContextSize;
+     cf.intercept_tls_get_addr = true;
