@@ -15,6 +15,7 @@ IUSE_KERNEL_VERS=(
 	kernel-3_8
 	kernel-3_10
 	kernel-3_14
+	kernel-3_18
 	kernel-upstream-mainline
 	kernel-upstream-next
 )
@@ -26,6 +27,7 @@ RDEPEND="
 	kernel-3_8? ( sys-kernel/chromeos-kernel-3_8[kernel_sources=] )
 	kernel-3_10? ( sys-kernel/chromeos-kernel-3_10[kernel_sources=] )
 	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14[kernel_sources=] )
+	kernel-3_18? ( sys-kernel/chromeos-kernel-3_18[kernel_sources=] )
 	kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline[kernel_sources=] )
 	kernel-upstream-next? ( sys-kernel/upstream-kernel-next[kernel_sources=] )
 "
