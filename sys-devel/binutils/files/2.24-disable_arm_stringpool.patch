@@ -1,0 +1,59 @@
+diff --git a/gold/stringpool.cc b/gold/stringpool.cc
+index 665fcc8..7c1c14a 100644
+--- a/gold/stringpool.cc
++++ b/gold/stringpool.cc
+@@ -362,10 +362,22 @@ Stringpool_template<Stringpool_char>::is_suffix(const Stringpool_char* s1,
+   if (len1 > len2)
+     return false;
+   return memcmp(s1, s2 + len2 - len1, len1 * sizeof(Stringpool_char)) == 0;
+ }
+ 
++// Return whether this string pool should be optimized.
++
++template<typename Stringpool_char>
++bool
++Stringpool_template<Stringpool_char>::is_optimize() const
++{
++  // Temporarily disable gold stringpool optimization for all arm platform.  Bug
++  // here - https://code.google.com/p/chromium/issues/detail?id=468473
++  return this->optimize_ && parameters->target_valid()
++    && (parameters->target().machine_code() != elfcpp::EM_ARM);
++}
++
+ // Turn the stringpool into an ELF strtab: determine the offsets of
+ // each string in the table.
+ 
+ template<typename Stringpool_char>
+ void
+@@ -385,11 +397,11 @@ Stringpool_template<Stringpool_char>::set_string_offsets()
+   // Sorting to find suffixes can take over 25% of the total CPU time
+   // used by the linker.  Since it's merely an optimization to reduce
+   // the strtab size, and gives a relatively small benefit (it's
+   // typically rare for a symbol to be a suffix of another), we only
+   // take the time to sort when the user asks for heavy optimization.
+-  if (!this->optimize_)
++  if (!this->is_optimize())
+     {
+       // If we are not optimizing, the offsets are already assigned.
+       offset = this->offset_;
+     }
+   else
+diff --git a/gold/stringpool.h b/gold/stringpool.h
+index b638329..99d04c4 100644
+--- a/gold/stringpool.h
++++ b/gold/stringpool.h
+@@ -210,10 +210,14 @@ class Stringpool_template
+   // running with -O2.
+   void
+   set_optimize()
+   { this->optimize_ = true; }
+ 
++  // Return whether this string pool should be optimized.
++  bool
++  is_optimize() const;
++
+   // Add the string S to the pool.  This returns a canonical permanent
+   // pointer to the string in the pool.  If COPY is true, the string
+   // is copied into permanent storage.  If PKEY is not NULL, this sets
+   // *PKEY to the key for the string.
+   const Stringpool_char*

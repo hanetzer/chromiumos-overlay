@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
@@ -92,6 +92,7 @@ src_prepare() {
 	if ! use mounted_binutils && ! use next_binutils ; then
 		epatch "${FILESDIR}"/2.24-silence_mapping_symbols.patch
 		epatch "${FILESDIR}"/2.24-Add-AArch32-support-for-chromeos-arm-gold-linker.patch
+		epatch "${FILESDIR}"/2.24-disable_arm_stringpool.patch
 	fi
 }
 
@@ -342,25 +343,23 @@ src_install() {
 }
 
 pkg_postinst() {
-	# cros_setup_toolchains takes care of selecting gold/bfd correctly. For
-	# next_binutils, the typical usage is installing via "sudo emerge",
-	# which does not invoke cros_setup_toolchains, and this usually results
-	# in a failure later subtle to root cause. So we have to properly setup
-	# bgd/gold here.
-	# TODO(shenhan): later move function code in cros_setup_toolchain here.
-	if use next_binutils ; then
-		local config_gold=false
-		if is_cross; then
-			case ${CTARGET} in
-				i?86-*|x86_64-*) config_gold=true;;
-				*) ;;
-			esac
-		fi
-		if ${config_gold} ; then
-			binutils-config ${CTARGET}-${BVER}-gold
-		else
-			binutils-config ${CTARGET}-${BVER}
-		fi
+	# Manual binutils installation (usually via "cros_workon --host
+	# xxx/binutls && sudo emerge xxx/binutils"), unlike setup_board and
+	# build_packages which invoke cros_setup_toolchains to properly config
+	# bfd/gold selection, does not config gold/bfd. When a developer
+	# cherry-picks a binutils CL, rebuilds it via 'emerge', he/she sometimes
+	# ends up using gold (or bfd) while he/she actually assumes bfd (or
+	# gold). This behavior is extremely confusing. Fix this by always
+	# PROPERLY configuring gold/bfd selection in postinst.
+	local config_gold=false
+	if is_cross; then
+		case ${CTARGET} in
+			armv7a-*|i?86-*|x86_64-*) config_gold=true;;
+			*) ;;
+		esac
+	fi
+	if ${config_gold} ; then
+		binutils-config ${CTARGET}-${BVER}-gold
 	else
 		binutils-config ${CTARGET}-${BVER}
 	fi
