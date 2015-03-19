@@ -56,3 +56,8 @@ app-crypt/nss cacert nss-pem
 
 # librsvg does not really depend on GTK (which is prohibited in chromiumos).
 gnome-base/librsvg gtk
+
+# USE=bindist only controls elliptic curve support now, and we want it.
+dev-libs/openssl bindist
+# openssh tracks USE=bindist only because openssl does.
+net-misc/openssh bindist

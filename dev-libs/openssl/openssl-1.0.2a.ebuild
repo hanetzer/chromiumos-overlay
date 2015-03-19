@@ -1,6 +1,6 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.2-r2.ebuild,v 1.1 2015/03/04 07:34:28 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/openssl/openssl-1.0.2a.ebuild,v 1.1 2015/03/19 20:47:26 polynomial-c Exp $
 
 EAPI="4"
 
@@ -17,6 +17,7 @@ LICENSE="openssl"
 SLOT="0"
 KEYWORDS="*"
 IUSE="bindist gmp kerberos rfc3779 sctp sse2 static-libs test +tls-heartbeat vanilla zlib"
+RESTRICT="!bindist? ( bindist )"
 
 # The blocks are temporary just to make sure people upgrade to a
 # version that lack runtime version checking.  We'll drop them in
@@ -33,7 +34,7 @@ RDEPEND="gmp? ( >=dev-libs/gmp-5.1.3-r1[static-libs(+)?,${MULTILIB_USEDEP}] )
 DEPEND="${RDEPEND}
 	sys-apps/diffutils
 	>=dev-lang/perl-5
-	sctp? ( net-misc/lksctp-tools )
+	sctp? ( >=net-misc/lksctp-tools-1.0.12 )
 	test? ( sys-devel/bc )"
 PDEPEND="app-misc/ca-certificates"
 
@@ -55,12 +56,10 @@ src_prepare() {
 	# that gets blown away anyways by the Configure script in src_configure
 	rm -f Makefile
 
-	epatch "${FILESDIR}"/${P}-CVE-2015-0209.patch #541502
-	epatch "${FILESDIR}"/${P}-CVE-2015-0288.patch #542038
 	if ! use vanilla ; then
 		epatch "${FILESDIR}"/${PN}-1.0.0a-ldflags.patch #327421
 		epatch "${FILESDIR}"/${PN}-1.0.0d-windres.patch #373743
-		epatch "${FILESDIR}"/${PN}-1.0.2-parallel-build.patch
+		epatch "${FILESDIR}"/${PN}-1.0.2a-parallel-build.patch
 		epatch "${FILESDIR}"/${PN}-1.0.2-ipv6.patch
 		epatch "${FILESDIR}"/${PN}-1.0.2-s_client-verify.patch #472584
 		epatch "${FILESDIR}"/${PN}-1.0.2-blacklist-by-sha1.patch
@@ -150,6 +149,7 @@ multilib_src_configure() {
 		$(use sctp && echo "sctp") \
 		$(use sse2 || echo "no-sse2") \
 		enable-camellia \
+		$(use_ssl !bindist ec) \
 		${ec_nistp_64_gcc_128} \
 		enable-idea \
 		enable-mdc2 \
