@@ -30,7 +30,6 @@ DEPEND="${RDEPEND}"
 IUSE_TESTS="
 	!ozone? (
 		+tests_graphics_GLAPICheck
-		+tests_graphics_GLBench
 		+tests_graphics_GLMark2
 		+tests_graphics_GpuReset
 		+tests_graphics_KernelMemory
@@ -41,6 +40,7 @@ IUSE_TESTS="
 		+tests_graphics_dEQP
 	)
 	+tests_graphics_LibDRM
+	+tests_graphics_GLBench
 	+tests_graphics_PerfControl
 	+tests_graphics_SanAngeles
 	+tests_graphics_Sanity
