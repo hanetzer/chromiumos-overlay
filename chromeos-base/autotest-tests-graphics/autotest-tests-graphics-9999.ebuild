@@ -36,13 +36,13 @@ IUSE_TESTS="
 		+tests_graphics_KernelMemory
 		+tests_graphics_Piglit
 		+tests_graphics_PiglitBVT
-		+tests_graphics_SanAngeles
 	)
 	ozone? (
 		+tests_graphics_dEQP
 	)
 	+tests_graphics_LibDRM
 	+tests_graphics_PerfControl
+	+tests_graphics_SanAngeles
 	+tests_graphics_Sanity
 	+tests_graphics_SyncControlTest
 	+tests_graphics_VTSwitch
