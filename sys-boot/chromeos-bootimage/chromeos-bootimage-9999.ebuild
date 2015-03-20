@@ -246,7 +246,11 @@ src_compile_depthcharge() {
 	local rw_suffix
 
 	if use fsp ; then
-		refcode_file="${froot}/fsp.bin"
+		if [ -f "${froot}/fsp.rw.bin" ]; then
+			refcode_file="${froot}/fsp.rw.bin"
+		else
+			refcode_file="${froot}/fsp.bin"
+		fi
 	fi
 
 	if use unified_depthcharge; then
@@ -316,7 +320,16 @@ src_compile_depthcharge() {
 	fi
 
 	if ( use x86 || use amd64 ) && [ -f "${refcode_file}" ]; then
-		common+=( --add-blob refcode "${refcode_file}" )
+		if use fsp ; then
+			if [ -f "${refcode_file}.serial" ]; then
+				serial+=( --add-blob refcode "${refcode_file}.serial" )
+			else
+				serial+=( --add-blob refcode "${refcode_file}" )
+			fi
+			silent+=( --add-blob refcode "${refcode_file}" )
+		else
+			common+=( --add-blob refcode "${refcode_file}" )
+		fi
 	fi
 
 	if use cros_ec; then
