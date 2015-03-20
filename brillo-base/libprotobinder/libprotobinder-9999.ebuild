@@ -43,12 +43,13 @@ src_install() {
 
 	insinto /usr/include/protobinder
 	doins binder_daemon.h
-	doins binder_manager.h
-	doins parcel.h
-	doins binder_proxy.h
 	doins binder_host.h
-	doins ibinder.h
-	doins iservice_manager.h
+	doins binder_manager.h
 	doins binder_proxy_interface_base.h
+	doins binder_proxy.h
+	doins ibinder.h
 	doins iinterface.h
+	doins iservice_manager.h
+	doins parcel.h
+	doins protobinder.h
 }
