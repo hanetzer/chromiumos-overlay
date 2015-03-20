@@ -262,11 +262,16 @@ ALL_BOARDS=(
 	zako_freon
 )
 
+# Use the CROS_BOARDS defined by ebuild, otherwise use ALL_BOARDS.
+if [[ ${#CROS_BOARDS[@]} -eq 0 ]]; then
+	CROS_BOARDS=( "${ALL_BOARDS[@]}" )
+fi
+
 # Add BOARD_USE_PREFIX to each board in ALL_BOARDS to create IUSE.
 # Also add cros_host so that we can inherit this eclass in ebuilds
 # that get emerged both in the cros-sdk and for target boards.
 # See REQUIRED_USE below.
-IUSE="${ALL_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host"
+IUSE="${CROS_BOARDS[@]/#/${BOARD_USE_PREFIX}} cros_host"
 
 # Echo the current board, with variant.
 get_current_board_with_variant()
@@ -277,7 +282,7 @@ get_current_board_with_variant()
 	local current
 	local default_board=$1
 
-	for b in "${ALL_BOARDS[@]}"; do
+	for b in "${CROS_BOARDS[@]}"; do
 		if use ${BOARD_USE_PREFIX}${b}; then
 			if [[ -n "${current}" ]]; then
 				die "More than one board is set: ${current} and ${b}"
