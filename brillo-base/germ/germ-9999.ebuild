@@ -20,6 +20,7 @@ SLOT=0
 KEYWORDS="~*"
 
 RDEPEND="
+	brillo-base/libprotobinder
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 "
@@ -31,6 +32,7 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	dobin "${OUT}/germ"
+	dobin "${OUT}/germd"
 
 	# Install Upstart template.
 	insinto /etc/init
