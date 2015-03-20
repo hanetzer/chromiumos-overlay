@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="50171444b80b9650ebdb0417285dc75c25d0a588"
-CROS_WORKON_TREE="e5c13f0dd685ba8afc0cec19cf4498e1e3575bd8"
+CROS_WORKON_COMMIT="173396cf8bffdf78b868b78370115b3f6eab3a08"
+CROS_WORKON_TREE="d63235b5cec802440862afe058e229a5ef600756"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_firmware_test"
 
 inherit cros-workon cros-constants cros-debug
