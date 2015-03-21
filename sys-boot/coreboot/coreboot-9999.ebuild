@@ -211,11 +211,11 @@ src_install() {
 		newins "build_serial/refcode.stage" refcode.stage.serial
 	fi
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
-		configs/config.${board} )
+		${FILESDIR}/configs/config.${board} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
-		configs/config.${board} ).rom
+		${FILESDIR}/configs/config.${board} ).rom
 	FSP=$( awk 'BEGIN{FS="\""} /CONFIG_FSP_FILE=/ { print $2 }' \
-		configs/config.${board} )
+		${FILESDIR}/configs/config.${board} )
 	if [[ -n "${FSP}" ]]; then
 		newins ${FSP} fsp.bin
 	fi
