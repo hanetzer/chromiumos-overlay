@@ -25,12 +25,13 @@ for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
-IUSE="${IUSE_VIDEO_CARDS} libkms manpages drm_atomic"
+IUSE="${IUSE_VIDEO_CARDS} drm_atomic libkms manpages +udev"
 REQUIRED_USE="video_cards_exynos? ( libkms )
 	video_cards_rockchip? ( libkms )"
 RESTRICT="test" # see bug #236845
 
 RDEPEND="dev-libs/libpthread-stubs
+	udev? ( sys-fs/udev )
 	video_cards_intel? ( >=x11-libs/libpciaccess-0.10 )
 	!<x11-libs/libdrm-tests-2.4.58-r3
 "
@@ -54,7 +55,6 @@ src_prepare() {
 src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
 		--enable-install-test-programs
-		--enable-udev
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno-experimental-api)
 		$(use_enable video_cards_intel intel)
@@ -65,6 +65,7 @@ src_configure() {
 		$(use_enable video_cards_rockchip rockchip-experimental-api)
 		$(use_enable libkms)
 		$(use_enable manpages)
+		$(use_enable udev)
 	)
 	xorg-2_src_configure
 }
