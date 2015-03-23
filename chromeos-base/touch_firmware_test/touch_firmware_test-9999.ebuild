@@ -1,14 +1,15 @@
-# Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
+# Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 CROS_WORKON_PROJECT="chromiumos/platform/touch_firmware_test"
 
-inherit cros-workon cros-constants cros-debug
+PYTHON_COMPAT=( python2_7 )
+inherit cros-workon cros-constants cros-debug distutils-r1
 
 DESCRIPTION="Chromium OS multitouch utilities"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang"
@@ -27,6 +28,9 @@ src_configure() {
 }
 
 src_install() {
+	# install the remote package
+	distutils-r1_src_install
+
 	# install to autotest deps directory for dependency
 	DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests/touch_firmware_test"
 	mkdir -p "${DESTDIR}"
