@@ -21,10 +21,18 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="test"
 
-RDEPEND=""
+RDEPEND="brillo-base/libprotobinder"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
+src_install() {
+	dosbin "${OUT}"/somad
+	dobin "${OUT}"/soma_client
+
+	# Adding init scripts
+	insinto /etc/init
+	doins init/*.conf
+}
 
 platform_pkg_test() {
 	local tests=( soma_test )
