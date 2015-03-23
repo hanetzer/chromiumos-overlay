@@ -26,7 +26,7 @@ fi
 LICENSE="MIT"
 SLOT="0"
 if [ "${PV%9999}" = "${PV}" ] ; then
-	KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="-* amd64 x86 ~amd64-linux ~x86-linux"
 else
 	KEYWORDS=""
 fi
@@ -43,22 +43,7 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
-	epatch "${FILESDIR}"/Encoding-Reinitialize-CBR-bit-rate-control-parameter.patch
-	epatch "${FILESDIR}"/remove-fixed-uses-of-intel-gen4asm-tool.patch
 	epatch "${FILESDIR}"/check-that-intel-gen4asm-tool-is-actually-present.patch
-	epatch "${FILESDIR}"/0001-vebox-silence-compilation-warning.patch
-	epatch "${FILESDIR}"/0002-Add-one-callback-function-for-hw_codec_info-to-initi.patch
-	epatch "${FILESDIR}"/0003-change-the-attribute-of-hw_codec_info-so-that-it-can.patch
-	epatch "${FILESDIR}"/0004-Encoding-Add-one-hook-callback-function-to-detect-en.patch
-	epatch "${FILESDIR}"/0005-Libva-PATCH-V3-1-3-Use-the-inline-CPUID-assembly-to-.patch
-	epatch "${FILESDIR}"/0006-Libva-PATCH-V3-2-3-Use-the-strncasecmp-instead-of-st.patch
-	epatch "${FILESDIR}"/0007-Libva-PATCH-V3-3-3-Check-the-value-returned-by-strst.patch
-	epatch "${FILESDIR}"/0008-Compilation-fixes.patch
-	epatch "${FILESDIR}"/Disable-encoding-on-SNB-and-non-BYT-IVB.patch
-	epatch "${FILESDIR}"/0001-BACKPORT-i965-render-Explicitly-disable-instancing-f.patch
-	epatch "${FILESDIR}"/0002-FROMLIST-BDW-disable-SGVS.patch
-	epatch "${FILESDIR}"/Disable-upper-bound-check-for-decoding-on-BDW.patch
-	epatch "${FILESDIR}"/Implement-max-width-and-height-in-QuerySurfaceAttributes.patch
 	eautoreconf
 }
 

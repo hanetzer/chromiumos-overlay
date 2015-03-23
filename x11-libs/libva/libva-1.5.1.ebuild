@@ -26,7 +26,7 @@ fi
 LICENSE="MIT"
 SLOT="0"
 if [ "${PV%9999}" = "${PV}" ] ; then
-	KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="-* amd64 x86 ~amd64-linux ~x86-linux"
 else
 	KEYWORDS=""
 fi
@@ -58,9 +58,7 @@ PDEPEND="video_cards_nvidia? ( x11-libs/libva-vdpau-driver[${MULTILIB_USEDEP}] )
 
 REQUIRED_USE="opengl? ( X )"
 
-PATCHES=( "${FILESDIR}/${PN}-1.2.0-autotools-out-of-source-build.patch"
-          "${FILESDIR}/va-release-VADisplayContext-at-the-end-of-vaTerminat.patch"
-          "${FILESDIR}/x11-check-x-pixmap-is-still-alive-before-DRI2Destroy.patch" )
+PATCHES=( )
 DOCS=( NEWS )
 
 MULTILIB_WRAPPED_HEADERS=(
