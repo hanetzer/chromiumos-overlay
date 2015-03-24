@@ -354,6 +354,11 @@ RDEPEND="${RDEPEND}
 	dev-util/ninja
 	"
 
+# Host dependencies for building the Brillo Services Framework.
+RDEPEND="${RDEPEND}
+	brillo-base/bidl
+	"
+
 # Host dependencies for building Chromium code (libmojo)
 RDEPEND="${RDEPEND}
 	dev-python/ply
