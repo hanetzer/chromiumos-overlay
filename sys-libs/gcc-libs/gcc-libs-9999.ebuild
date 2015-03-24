@@ -20,7 +20,7 @@ DESCRIPTION="The GNU Compiler Collection.  This builds and installs the libgcc, 
 LICENSE="GPL-3 LGPL-3 FDL-1.2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="+go hardened hardfp mounted_gcc +thumb vtable_verify"
+IUSE="go hardened hardfp mounted_gcc +thumb vtable_verify"
 RESTRICT="strip"
 
 : ${CTARGET:=${CHOST}}
