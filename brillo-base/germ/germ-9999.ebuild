@@ -34,8 +34,9 @@ src_install() {
 	dobin "${OUT}/germ"
 	dobin "${OUT}/germd"
 
-	# Install Upstart template.
+	# Install Upstart files.
 	insinto /etc/init
+	doins init/germd.conf
 	doins init/germ_template.conf
 }
 
