@@ -1,7 +1,8 @@
-From 639b602a74d9c4e4d5b79edeb10609af711cb757 Mon Sep 17 00:00:00 2001
+From 1b06d18cecebe99839b02658f25f1d6d7cf79f0c Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@chromium.org>
 Date: Fri, 23 Jan 2015 10:43:26 -0800
-Subject: dri: add swrast support on top of prime imported buffers
+Subject: [PATCH 25/27] dri: add swrast support on top of prime imported
+ buffers
 
 TEST=null_platform_test /dev/dri/card0
 BUG=chromium:394868
@@ -16,7 +17,7 @@ Change-Id: I89cc8b4ba8e7120a1a1e7ed8b76c34632488aa88
  4 files changed, 337 insertions(+), 15 deletions(-)
 
 diff --git a/src/gallium/state_trackers/dri/Makefile.am b/src/gallium/state_trackers/dri/Makefile.am
-index 5d701f7..865de78 100644
+index d2c7a82..a4041e8 100644
 --- a/src/gallium/state_trackers/dri/Makefile.am
 +++ b/src/gallium/state_trackers/dri/Makefile.am
 @@ -30,6 +30,7 @@ AM_CPPFLAGS = \
@@ -24,11 +25,11 @@ index 5d701f7..865de78 100644
  	-I$(top_srcdir)/src/mapi \
  	-I$(top_srcdir)/src/mesa \
 +	-I$(top_srcdir)/src/gallium/include/state_tracker \
- 	-I$(top_srcdir)/src/gallium/state_trackers/dri/common \
  	-I$(top_srcdir)/src/mesa/drivers/dri/common \
  	-I$(top_builddir)/src/mesa/drivers/dri/common \
+ 	$(GALLIUM_CFLAGS) \
 diff --git a/src/gallium/state_trackers/dri/drisw.c b/src/gallium/state_trackers/dri/drisw.c
-index 8d9acd6..c36fa8b 100644
+index 5f69a2d..9738e44 100644
 --- a/src/gallium/state_trackers/dri/drisw.c
 +++ b/src/gallium/state_trackers/dri/drisw.c
 @@ -47,6 +47,8 @@
@@ -517,5 +518,5 @@ index 6fed22b..4e8b4cb 100644
  
     ws->base.is_displaytarget_format_supported = dri_sw_is_displaytarget_format_supported;
 -- 
-2.1.2
+2.3.1
 

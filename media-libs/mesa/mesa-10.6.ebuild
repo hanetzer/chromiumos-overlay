@@ -4,8 +4,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="129178893b2260df22db96327c5ca9c2ce7db046"
-CROS_WORKON_TREE="eae32bfb0d15e04a165f2eea7d2aba97b26c3264"
+CROS_WORKON_COMMIT="c2a0600d5b0645533ba442b5ab879b23c2564a4d"
+CROS_WORKON_TREE="1a3cb3ffa016a1e453b5b5c7b6f93ad4050f1e96"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
@@ -56,7 +56,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD xlib-glx X"
 
-LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.59-r5"
+LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.60"
 
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
@@ -120,6 +120,7 @@ src_prepare() {
 	fi
 
 	epatch "${FILESDIR}"/10.0-cross-compile.patch
+	epatch "${FILESDIR}"/10.6-mapi-Adding-missing-string.h-include.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
@@ -138,23 +139,20 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
 	epatch "${FILESDIR}"/10.3-gbm-dlopen-libglapi-so-gbm_create_device-works.patch
 	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
-	epatch "${FILESDIR}"/10.3-Revert-patches-which-caused-compilation-error-when-u.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-implement-platform_null.patch
-	epatch "${FILESDIR}"/10.5-Revert-i965-Delete-CACHE_NEW_BLORP_CONST_COLOR_PROG.patch
-	epatch "${FILESDIR}"/10.5-UPSTREAM-i965-Restore-brw_blorp_clear-for-gen6.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-try-to-use-render-node-if-available.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-report-EXT_image_dma_buf_import-extension.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-platform_drm-should-also-try-rende.patch
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
-	epatch "${FILESDIR}"/10.3-intel-fix-EGLImage-renderbuffer-_BaseFormat.patch
-	epatch "${FILESDIR}"/10.5-i965-Prefer-Meta-over-the-BLT-for-BlitFrame.patch
-	epatch "${FILESDIR}"/10.4-enable-GL_EXT_draw_buffers.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
-	epatch "${FILESDIR}"/10.5-i915g-Implement-EGL_EXT_image_dma_buf_import.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/10.5-Mesa-Advertise-GL_OES_texture_-float-extensions-supp.patch
-	epatch "${FILESDIR}"/10.5-Mesa-Add-support-for-GL_OES_texture_-float-extension.patch
+	epatch "${FILESDIR}"/10.6-mesa-do-not-use-_glapi_new_nop_table-for-DRI-builds.patch	
+	epatch "${FILESDIR}"/10.6-i965-do-not-round-line-width-when-multisampling-or-a.patch
+	epatch "${FILESDIR}"/10.6-mesa-add-GL_RED-GL_RG-support-for-floating-point-tex.patch
+	epatch "${FILESDIR}"/10.6-mesa-teximage-use-correct-extension-for-accept-stenc.patch
+	epatch "${FILESDIR}"/10.6-i965-Momentarily-pretend-to-support-ARB_texture_sten.patch
+	epatch "${FILESDIR}"/10.6-Revert-i965-Advertise-a-line-width-of-40.0-on-Cherry.patch
 
 	base_src_prepare
 
