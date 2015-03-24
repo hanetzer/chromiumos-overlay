@@ -29,9 +29,15 @@ src_install() {
 	dosbin "${OUT}"/somad
 	dobin "${OUT}"/soma_client
 
-	# Adding headers.
-	insinto /usr/include/"${PN}"/common
-	doins common/constants.h
+	# Adding libsoma and headers.
+	./preinstall.sh "${OUT}"
+	insinto /usr/$(get_libdir)/pkgconfig
+	doins "${OUT}"/*.pc
+
+	dolib.so "${OUT}"/lib/libsoma.so
+
+	insinto /usr/include/"${PN}"
+	doins libsoma/*.h
 
 	# Adding init scripts.
 	insinto /etc/init
@@ -43,7 +49,7 @@ src_install() {
 }
 
 platform_pkg_test() {
-	local tests=( soma_test )
+	local tests=( somad_test )
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
