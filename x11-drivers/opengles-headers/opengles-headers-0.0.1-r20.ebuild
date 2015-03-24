@@ -17,7 +17,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND=""
-DEPEND=""
+DEPEND="x11-libs/libX11"
 
 CROS_WORKON_LOCALNAME="khronos"
 
