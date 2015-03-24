@@ -32,6 +32,10 @@ src_install() {
 	# Adding init scripts
 	insinto /etc/init
 	doins init/*.conf
+
+	# Adding proto files
+	insinto /usr/share/proto/"${PN}"
+	doins idl/container_spec.proto
 }
 
 platform_pkg_test() {
