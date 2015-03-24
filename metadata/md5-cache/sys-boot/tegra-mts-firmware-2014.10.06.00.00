@@ -6,5 +6,5 @@ KEYWORDS=-* arm
 LICENSE=NVIDIA-r2
 SLOT=0
 SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/tegra-mts-firmware-2014.10.06.00.00.tbz2
-_eclasses_=cros-board	474ffffb4c2dfb8469a58e3b4d6c9f0a
+_eclasses_=cros-board	b376c63aa38f322b08b33c45a4635674
 _md5_=eb11ae0e5953856a07c9fcde37d96229
