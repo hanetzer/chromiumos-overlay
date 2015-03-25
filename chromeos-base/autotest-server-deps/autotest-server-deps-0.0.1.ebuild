@@ -48,6 +48,7 @@ RDEPEND="
 	dev-python/numpy
 	dev-python/paramiko
 	dev-python/python-gflags
+	dev-python/pyshark
 	dev-python/pyudev
 	dev-python/requests
 	dev-util/hdctools

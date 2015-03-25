@@ -304,10 +304,11 @@ RDEPEND="${RDEPEND}
 	"
 # Host dependencies to run autotest's unit tests within the chroot.
 RDEPEND="${RDEPEND}
+	dev-python/dnspython
 	dev-python/httplib2
+	dev-python/pyshark
 	dev-python/python-dateutil
 	dev-python/six
-	dev-python/dnspython
 	"
 
 # Host dependencies for running pylint within the chroot
