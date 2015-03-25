@@ -1,0 +1,73 @@
+From e60901b81e2b6aa1ffa32488ab52895d3c79250d Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Wed, 25 Mar 2015 11:55:40 -0700
+Subject: [PATCH 3/3] tests: add mediatek to modetest, kmstest, vbltest and
+ proptest
+
+There is a mediatek drm kms driver.
+Add "mediatek" to the static lists of driver names in the the standard set
+of tests.
+
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+Signed-off-by: JB Tsai <jb.tsai@mediatek.com>
+---
+ tests/kmstest/main.c      | 1 +
+ tests/modetest/modetest.c | 2 +-
+ tests/proptest/proptest.c | 2 +-
+ tests/vbltest/vbltest.c   | 2 +-
+ 4 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/tests/kmstest/main.c b/tests/kmstest/main.c
+index 3f9a292..d232760 100644
+--- a/tests/kmstest/main.c
++++ b/tests/kmstest/main.c
+@@ -63,6 +63,7 @@ char *drivers[] = {
+ 	"vmwgfx",
+ 	"exynos",
+ 	"rockchip",
++	"mediatek",
+ 	NULL
+ };
+ 
+diff --git a/tests/modetest/modetest.c b/tests/modetest/modetest.c
+index 8949cef..ae83f9c 100644
+--- a/tests/modetest/modetest.c
++++ b/tests/modetest/modetest.c
+@@ -1453,7 +1453,7 @@ int main(int argc, char **argv)
+ 	int drop_master = 0;
+ 	int test_vsync = 0;
+ 	int test_cursor = 0;
+-	const char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "exynos", "tilcdc", "msm", "sti", "tegra", "rockchip" };
++	const char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "exynos", "tilcdc", "msm", "sti", "tegra", "rockchip", "mediatek" };
+ 	char *device = NULL;
+ 	char *module = NULL;
+ 	unsigned int i;
+diff --git a/tests/proptest/proptest.c b/tests/proptest/proptest.c
+index a6011bf..ad19e18 100644
+--- a/tests/proptest/proptest.c
++++ b/tests/proptest/proptest.c
+@@ -303,7 +303,7 @@ static void printUsage(void)
+ 
+ int main(int argc, char *argv[])
+ {
+-	char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "msm", "rockchip" };
++	char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "omapdrm", "msm", "rockchip", "mediatek" };
+ 	unsigned int i, ret = 0;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(modules); i++){
+diff --git a/tests/vbltest/vbltest.c b/tests/vbltest/vbltest.c
+index 605cfd2..17c42a8 100644
+--- a/tests/vbltest/vbltest.c
++++ b/tests/vbltest/vbltest.c
+@@ -105,7 +105,7 @@ static void usage(char *name)
+ int main(int argc, char **argv)
+ {
+ 	int i, c, fd, ret;
+-	char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "exynos", "omapdrm", "tilcdc", "msm", "tegra", "rockchip" };
++	char *modules[] = { "i915", "radeon", "nouveau", "vmwgfx", "exynos", "omapdrm", "tilcdc", "msm", "tegra", "rockchip", "mediatek" };
+ 	drmVBlank vbl;
+ 	drmEventContext evctx;
+ 	struct vbl_info handler_info;
+-- 
+1.9.1
+

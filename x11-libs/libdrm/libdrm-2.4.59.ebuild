@@ -20,13 +20,14 @@ fi
 # the Xorg copyright holders and allows license generation to pick them up.
 LICENSE="|| ( MIT X )"
 KEYWORDS="*"
-VIDEO_CARDS="exynos freedreno intel nouveau omap radeon vmware rockchip"
+VIDEO_CARDS="exynos freedreno intel mediatek nouveau omap radeon vmware rockchip"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
 IUSE="${IUSE_VIDEO_CARDS} drm_atomic libkms manpages +udev"
 REQUIRED_USE="video_cards_exynos? ( libkms )
+	video_cards_mediatek? ( libkms )
 	video_cards_rockchip? ( libkms )"
 RESTRICT="test" # see bug #236845
 
@@ -47,6 +48,8 @@ PATCHES=(
 	"${FILESDIR}"/0001-Rename-DRM_NODE_RENDER-to-DRM_NODE_PRIMARY.patch
 	"${FILESDIR}"/0002-Add-new-drmOpenRender-function-to-open-render-nodes.patch
 	"${FILESDIR}"/0003-Add-new-drmGetNodeTypeFromFd-function.patch
+	"${FILESDIR}"/drm_mediatek-0001-add-support-for-mediatek.patch
+	"${FILESDIR}"/drm_mediatek-0002-tests-add-mediatek-to-modetest-kmstest-vbltest-and-p.patch
 )
 
 src_prepare() {
@@ -62,6 +65,7 @@ src_configure() {
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno)
 		$(use_enable video_cards_intel intel)
+		$(use_enable video_cards_mediatek mediatek-experimental-api)
 		$(use_enable video_cards_nouveau nouveau)
 		$(use_enable video_cards_omap omap-experimental-api)
 		$(use_enable video_cards_radeon radeon)
