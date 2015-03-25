@@ -29,13 +29,17 @@ src_install() {
 	dosbin "${OUT}"/somad
 	dobin "${OUT}"/soma_client
 
-	# Adding init scripts
+	# Adding headers.
+	insinto /usr/include/"${PN}"/common
+	doins common/constants.h
+
+	# Adding init scripts.
 	insinto /etc/init
 	doins init/*.conf
 
-	# Adding proto files
+	# Adding proto files.
 	insinto /usr/share/proto/"${PN}"
-	doins idl/container_spec.proto
+	doins idl/*.proto
 }
 
 platform_pkg_test() {
