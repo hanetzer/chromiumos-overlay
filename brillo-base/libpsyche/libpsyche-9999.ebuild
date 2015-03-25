@@ -27,6 +27,11 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 
+# Daemons that use libpsyche need psyched to be running, but we can't use
+# RDEPEND since it'll cause a circular dependency. See
+# http://devmanual.gentoo.org/general-concepts/dependencies/.
+PDEPEND="brillo-base/psyche"
+
 src_compile() {
 	platform compile libpsyche
 }
