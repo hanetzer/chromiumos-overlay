@@ -50,6 +50,7 @@ PATCHES=(
 	"${FILESDIR}"/0003-Add-new-drmGetNodeTypeFromFd-function.patch
 	"${FILESDIR}"/drm_mediatek-0001-add-support-for-mediatek.patch
 	"${FILESDIR}"/drm_mediatek-0002-tests-add-mediatek-to-modetest-kmstest-vbltest-and-p.patch
+	"${FILESDIR}"/drm_mediatek-0003-Add-DRM_FORMAT_MT12-for-Mediatek-Proprietary-video-blo.patch
 	"${FILESDIR}"/drm_vgem-0001-add-vgem-ioctl-macro-definitions.patch
 )
 
