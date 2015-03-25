@@ -57,7 +57,7 @@ src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
 		--enable-install-test-programs
 		$(use_enable video_cards_exynos exynos-experimental-api)
-		$(use_enable video_cards_freedreno freedreno-experimental-api)
+		$(use_enable video_cards_freedreno freedreno)
 		$(use_enable video_cards_intel intel)
 		$(use_enable video_cards_nouveau nouveau)
 		$(use_enable video_cards_omap omap-experimental-api)
