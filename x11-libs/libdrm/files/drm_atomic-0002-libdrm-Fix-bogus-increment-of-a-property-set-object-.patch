@@ -1,7 +1,7 @@
-From bfac0969e6f8856daf087a0cb765af472413607e Mon Sep 17 00:00:00 2001
+From 3b6f6f623e39ff2cbe3d7f36bdcc5b6a24b43c25 Mon Sep 17 00:00:00 2001
 From: Ander Conselvan de Oliveira <conselvan2@gmail.com>
 Date: Fri, 27 Jul 2012 13:30:51 +0300
-Subject: [PATCH 3/8] libdrm: Fix bogus increment of a property set object
+Subject: [PATCH 2/3] libdrm: Fix bogus increment of a property set object
  count
 
 If drmModePropertySetAdd() is called with the following property pairs
@@ -14,17 +14,15 @@ points to (4, 1) since it disregarded the value of the previous item.
 
 This patch changes the logic so that the obj count is incresed only if
 both the previous and next items have differing object ids.
-
-Signed-off-by: Sean Paul <seanpaul@chromium.org>
 ---
  xf86drmMode.c | 16 ++++++----------
  1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/xf86drmMode.c b/xf86drmMode.c
-index b9464a5..3693031 100644
+index 5676221..7f3bc5e 100644
 --- a/xf86drmMode.c
 +++ b/xf86drmMode.c
-@@ -1139,10 +1139,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
+@@ -1174,10 +1174,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
  
  	/* keep it sorted by object_id and property_id */
  	while (prev->next) {
@@ -36,7 +34,7 @@ index b9464a5..3693031 100644
  
  		if (prev->next->object_id == object_id &&
  		    prev->next->property_id >= property_id)
-@@ -1151,8 +1149,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
+@@ -1186,8 +1184,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
  		prev = prev->next;
  	}
  
@@ -47,7 +45,7 @@ index b9464a5..3693031 100644
  		new_obj = true;
  
  	/* replace or add? */
-@@ -1201,10 +1199,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
+@@ -1236,10 +1234,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
  
  	/* keep it sorted by object_id and property_id */
  	while (prev->next) {
@@ -59,7 +57,7 @@ index b9464a5..3693031 100644
  
  		if (prev->next->object_id == object_id &&
  		    prev->next->property_id >= property_id)
-@@ -1213,8 +1209,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
+@@ -1248,8 +1244,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
  		prev = prev->next;
  	}
  
@@ -71,5 +69,5 @@ index b9464a5..3693031 100644
  
  	/* replace or add? */
 -- 
-1.9.0.rc1.175.g0b1dcb5
+2.2.0.rc0.207.ga3a616c
 

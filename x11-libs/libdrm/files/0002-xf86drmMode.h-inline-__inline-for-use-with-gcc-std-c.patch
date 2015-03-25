@@ -1,0 +1,32 @@
+From 8d18a553893f729545db294c13065f8f1ca88e8a Mon Sep 17 00:00:00 2001
+From: Daniel Kurtz <djkurtz@chromium.org>
+Date: Tue, 24 Mar 2015 17:52:19 -0700
+Subject: [PATCH] xf86drmMode.h: inline -> __inline for use with gcc -std=c89
+ -pedantic
+
+Unfortunately, there are some users of libdrm installed headers that like
+to be built with -std=c89 -pedantic, which does not like "inline".
+
+However, __inline works.
+
+Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+---
+ xf86drmMode.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xf86drmMode.h b/xf86drmMode.h
+index 856a6bb..2d30184 100644
+--- a/xf86drmMode.h
++++ b/xf86drmMode.h
+@@ -240,7 +240,7 @@ typedef struct _drmModeProperty {
+ 	uint32_t *blob_ids; /* store the blob IDs */
+ } drmModePropertyRes, *drmModePropertyPtr;
+ 
+-static inline int drm_property_type_is(drmModePropertyPtr property,
++static __inline int drm_property_type_is(drmModePropertyPtr property,
+ 		uint32_t type)
+ {
+ 	/* instanceof for props.. handles extended type vs original types: */
+-- 
+2.2.0.rc0.207.ga3a616c
+

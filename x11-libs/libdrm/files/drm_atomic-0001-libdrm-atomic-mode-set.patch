@@ -1,21 +1,20 @@
 From 260bde07a6d5c0c936c8e58d7dc6462d293ac5dd Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>
 Date: Fri, 18 May 2012 15:52:09 +0300
-Subject: [PATCH 1/8] libdrm: atomic mode set
+Subject: [PATCH 1/3] libdrm: atomic mode set
 
-Signed-off-by: Sean Paul <seanpaul@chromium.org>
 ---
  include/drm/drm.h      |   1 +
- include/drm/drm_mode.h |  13 +++
- xf86drmMode.c          | 270 +++++++++++++++++++++++++++++++++++++++++++++++++
- xf86drmMode.h          |  19 ++++
- 4 files changed, 303 insertions(+)
+ include/drm/drm_mode.h |  22 ++++
+ xf86drmMode.c          | 273 +++++++++++++++++++++++++++++++++++++++++++++++++
+ xf86drmMode.h          |  20 ++++
+ 4 files changed, 316 insertions(+)
 
 diff --git a/include/drm/drm.h b/include/drm/drm.h
 index f0b4c16..c3d6384 100644
 --- a/include/drm/drm.h
 +++ b/include/drm/drm.h
-@@ -750,6 +750,7 @@ struct drm_prime_handle {
+@@ -758,6 +758,7 @@ struct drm_prime_handle {
  #define DRM_IOCTL_MODE_OBJ_GETPROPERTIES	DRM_IOWR(0xB9, struct drm_mode_obj_get_properties)
  #define DRM_IOCTL_MODE_OBJ_SETPROPERTY	DRM_IOWR(0xBA, struct drm_mode_obj_set_property)
  #define DRM_IOCTL_MODE_CURSOR2		DRM_IOWR(0xBB, struct drm_mode_cursor2)
@@ -27,11 +26,19 @@ diff --git a/include/drm/drm_mode.h b/include/drm/drm_mode.h
 index 76fd76b..5bedc4a 100644
 --- a/include/drm/drm_mode.h
 +++ b/include/drm/drm_mode.h
-@@ -487,4 +487,17 @@ struct drm_mode_destroy_dumb {
+@@ -507,4 +507,26 @@ struct drm_mode_destroy_dumb {
  	__u32 handle;
  };
  
-+#define DRM_MODE_ATOMIC_TEST_ONLY (1<<0)
++/* page-flip flags are valid, plus: */
++#define DRM_MODE_ATOMIC_TEST_ONLY 0x0100
++#define DRM_MODE_ATOMIC_NONBLOCK  0x0200
++
++#define DRM_MODE_ATOMIC_FLAGS (\
++		DRM_MODE_PAGE_FLIP_EVENT |\
++		DRM_MODE_PAGE_FLIP_ASYNC |\
++		DRM_MODE_ATOMIC_TEST_ONLY |\
++		DRM_MODE_ATOMIC_NONBLOCK)
 +
 +/* FIXME come up with some sane error reporting mechanism? */
 +struct drm_mode_atomic {
@@ -42,6 +49,7 @@ index 76fd76b..5bedc4a 100644
 +	__u64 props_ptr;
 +	__u64 prop_values_ptr;
 +	__u64 blob_values_ptr;
++	__u64 user_data;
 +};
 +
  #endif
@@ -57,7 +65,7 @@ index dd7966e..b9464a5 100644
  
  #ifdef HAVE_CONFIG_H
  #include "config.h"
-@@ -1094,3 +1095,272 @@ int drmModeObjectSetProperty(int fd, uint32_t object_id, uint32_t object_type,
+@@ -1129,3 +1130,275 @@ int drmModeObjectSetProperty(int fd, uint32_t object_id, uint32_t object_type,
  
  	return DRM_IOCTL(fd, DRM_IOCTL_MODE_OBJ_SETPROPERTY, &prop);
  }
@@ -240,7 +248,8 @@ index dd7966e..b9464a5 100644
 +	drmFree(set);
 +}
 +
-+int drmModePropertySetCommit(int fd, uint32_t flags, drmModePropertySetPtr set)
++int drmModePropertySetCommit(int fd, uint32_t flags, void *user_data,
++			     drmModePropertySetPtr set)
 +{
 +	drmModePropertySetItemPtr item;
 +	uint32_t *objs_ptr = NULL;
@@ -319,6 +328,8 @@ index dd7966e..b9464a5 100644
 +	atomic.count_props_ptr = VOID2U64(count_props_ptr);
 +	atomic.props_ptr = VOID2U64(props_ptr);
 +	atomic.prop_values_ptr = VOID2U64(prop_values_ptr);
++	atomic.blob_values_ptr = VOID2U64(blob_values_ptr);
++	atomic.user_data = VOID2U64(user_data);
 +
 +	ret = DRM_IOCTL(fd, DRM_IOCTL_MODE_ATOMIC, &atomic);
 +
@@ -334,7 +345,7 @@ diff --git a/xf86drmMode.h b/xf86drmMode.h
 index 9bcb1d1..d57a0b3 100644
 --- a/xf86drmMode.h
 +++ b/xf86drmMode.h
-@@ -458,6 +458,25 @@ extern int drmModeObjectSetProperty(int fd, uint32_t object_id,
+@@ -471,6 +471,26 @@ extern int drmModeObjectSetProperty(int fd, uint32_t object_id,
  				    uint32_t object_type, uint32_t property_id,
  				    uint64_t value);
  
@@ -353,7 +364,8 @@ index 9bcb1d1..d57a0b3 100644
 +				     uint64_t length,
 +				     void *blob);
 +
-+extern int drmModePropertySetCommit(int fd, uint32_t flags, drmModePropertySetPtr set);
++extern int drmModePropertySetCommit(int fd, uint32_t flags,
++				    void *user_data, drmModePropertySetPtr set);
 +
 +extern void drmModePropertySetFree(drmModePropertySetPtr set);
 +

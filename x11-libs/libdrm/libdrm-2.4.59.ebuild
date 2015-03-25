@@ -41,8 +41,9 @@ DEPEND="${RDEPEND}"
 XORG_EAUTORECONF=yes
 PATCHES=(
 	"${FILESDIR}"/0001-tests-install-test-programs.patch
-	"${FILESDIR}"/drm_rockchip_0001_add_support_for_rockchip.patch
-	"${FILESDIR}"/drm_rockchip_0002-tests-add-rockchip-to-modetest-kmstest-and-vbltest.patch
+	"${FILESDIR}"/0002-xf86drmMode.h-inline-__inline-for-use-with-gcc-std-c.patch
+	"${FILESDIR}"/drm_rockchip-0001-add-support-for-rockchip.patch
+	"${FILESDIR}"/drm_rockchip-0002-tests-add-rockchip-to-modetest-kmstest-and-vbltest.patch
 )
 
 src_prepare() {

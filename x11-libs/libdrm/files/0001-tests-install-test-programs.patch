@@ -19,7 +19,7 @@ diff --git a/tests/Makefile.am b/tests/Makefile.am
 index cd11491..0c92175 100644
 --- a/tests/Makefile.am
 +++ b/tests/Makefile.am
-@@ -65,4 +65,8 @@ endif
+@@ -69,4 +69,8 @@ endif
  
  check_PROGRAMS += $(TESTS)
  
