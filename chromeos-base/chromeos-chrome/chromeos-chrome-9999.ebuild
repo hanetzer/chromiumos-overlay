@@ -74,8 +74,7 @@ IUSE+=" ${IUSE_OZONE_PLATFORMS}"
 OZONE_PLATFORM_DEFAULT_PREFIX=ozone_platform_default_
 IUSE_OZONE_PLATFORM_DEFAULTS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_DEFAULT_PREFIX}}"
 IUSE+=" ${IUSE_OZONE_PLATFORM_DEFAULTS}"
-# TODO(dbehr) enable after uprev
-# REQUIRED_USE+="ozone? ( ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} ) )"
+REQUIRED_USE+=" ozone? ( ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} ) )"
 
 # Do not strip the nacl_helper_bootstrap binary because the binutils
 # objcopy/strip mangles the ELF program headers.
@@ -299,9 +298,9 @@ set_build_defines() {
 
 	if use ozone; then
 		local platform
-		for platform in ${OZONE_PLATFORMS}; do
+		for platform in ${OZONE_PLATFORMS[@]}; do
 			local flag="${OZONE_PLATFORM_DEFAULT_PREFIX}${platform}"
-			if use "${!flag}"; then
+			if use "${flag}"; then
 				BUILD_DEFINES+=("ozone_platform=${platform}")
 			fi
 		done
