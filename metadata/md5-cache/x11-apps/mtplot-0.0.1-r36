@@ -1,0 +1,13 @@
+DEFINED_PHASES=configure info prepare setup unpack
+DEPEND=x11-libs/libX11 || ( >=sys-devel/automake-1.11.1:1.11 >=sys-devel/automake-1.12:1.12 ) >=sys-devel/autoconf-2.68 sys-devel/libtool dev-vcs/git
+DESCRIPTION=Multitouch Contact Plotter
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+IUSE=-asan -clang cros_host cros_workon_tree_6c16783afa179d7e5f0163355876233a78677b87 profiling
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=x11-libs/libX11
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	cb15df5e832207e6f2b575a9076bba49	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=e20e5afe64712b1070ee758083c8a74c
