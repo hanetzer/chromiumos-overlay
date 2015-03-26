@@ -44,7 +44,7 @@ src_install() {
 	doins init/*.conf
 
 	# Adding proto files.
-	insinto /usr/share/proto/"${PN}"
+	insinto /usr/share/proto
 	doins idl/*.proto
 }
 
