@@ -78,6 +78,14 @@ src_prepare() {
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
 		cp -v "${FILESDIR}/configs/config.${board}" .config
+
+		# In case config comes from a symlink we are likely building
+		# for an overlay not matching this config name. Enable adding
+		# a CBFS based board ID for coreboot.
+		if [[ -L "${FILESDIR}/configs/config.${board}" ]]; then
+			echo "CONFIG_BOARD_ID_MANUAL=y" >> .config
+			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> .config
+		fi
 	fi
 
 	# Replace the hard coded /build/<board>/ in the config with the actual
