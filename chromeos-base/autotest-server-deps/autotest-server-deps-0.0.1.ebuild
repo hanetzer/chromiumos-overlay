@@ -21,6 +21,7 @@ RDEPEND="
 	dev-db/mariadb
 	dev-python/imaging
 	dev-python/mysql-python
+	dev-python/netifaces
 	dev-python/pycrypto
 	dev-python/setuptools
 	dev-vcs/git
