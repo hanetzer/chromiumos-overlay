@@ -3,6 +3,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/crostestutils"
+CROS_WORKON_LOCALNAME="crostestutils"
 
 inherit cros-workon
 
@@ -12,9 +13,6 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-
-CROS_WORKON_LOCALNAME="crostestutils"
-
 
 RDEPEND="app-emulation/qemu
 	app-portage/gentoolkit

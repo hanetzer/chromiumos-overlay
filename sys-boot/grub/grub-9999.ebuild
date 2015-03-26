@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
+CROS_WORKON_PROJECT="chromiumos/third_party/grub2"
+CROS_WORKON_LOCALNAME="grub2"
 
 inherit eutils toolchain-funcs multiprocessing cros-workon
 
@@ -11,13 +13,10 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
-CROS_WORKON_PROJECT="chromiumos/third_party/grub2"
 
 PROVIDE="virtual/bootloader"
 
 export STRIP_MASK="*.img *.mod *.module"
-
-CROS_WORKON_LOCALNAME="grub2"
 
 src_configure() {
 	local target

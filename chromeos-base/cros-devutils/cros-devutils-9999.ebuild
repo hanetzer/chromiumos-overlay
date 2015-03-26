@@ -4,6 +4,8 @@
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/dev-util"
 CROS_WORKON_LOCALNAME="dev"
+# Avoid copying any devserver data created outside the chroot.
+CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
 
 inherit cros-workon multilib python
 
@@ -14,9 +16,6 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="cros_host test"
-
-# Avoid copying any devserver data created outside the chroot.
-CROS_WORKON_SUBDIR_BLACKLIST=( "static" )
 
 RDEPEND="cros_host? ( app-emulation/qemu )
 	app-portage/gentoolkit

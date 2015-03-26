@@ -4,6 +4,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/tpm_lite"
+CROS_WORKON_LOCALNAME="tpm_lite"
 
 inherit cros-workon autotools
 inherit cros-workon base
@@ -16,8 +17,6 @@ SLOT="0"
 KEYWORDS="~*"
 
 DEPEND="app-crypt/trousers"
-
-CROS_WORKON_LOCALNAME="tpm_lite"
 
 src_configure() {
 	cros-workon_src_configure

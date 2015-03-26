@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/bootstub"
 
 inherit eutils toolchain-funcs cros-workon
 
@@ -10,7 +11,6 @@ LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
-CROS_WORKON_PROJECT="chromiumos/third_party/bootstub"
 DEPEND="sys-boot/gnu-efi"
 
 src_configure() {

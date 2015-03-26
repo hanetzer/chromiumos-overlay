@@ -3,6 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/libscrypt"
+CROS_WORKON_LOCALNAME="../third_party/libscrypt"
 
 inherit cros-workon autotools
 
@@ -18,8 +19,6 @@ REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="dev-libs/openssl"
 DEPEND="${RDEPEND}"
-
-CROS_WORKON_LOCALNAME="../third_party/libscrypt"
 
 src_prepare() {
 	epatch function_visibility.patch

@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-libs/opencryptoki/opencryptoki-2.2.8.ebuild,v 1.1 2009/06/28 10:48:58 arfrever Exp $
 EAPI="2"
+CROS_WORKON_PROJECT="chromiumos/third_party/opencryptoki"
 
 inherit cros-workon autotools eutils multilib toolchain-funcs
 
@@ -11,7 +12,6 @@ LICENSE="CPL-0.5"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="tpmtok"
-CROS_WORKON_PROJECT="chromiumos/third_party/opencryptoki"
 
 RDEPEND="tpmtok? ( app-crypt/trousers )
 	 dev-libs/openssl"

@@ -3,6 +3,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/marvell"
+CROS_WORKON_LOCALNAME="marvell"
 
 inherit eutils cros-workon
 
@@ -18,8 +19,6 @@ RESTRICT="binchecks strip test"
 
 DEPEND=""
 RDEPEND=""
-
-CROS_WORKON_LOCALNAME="marvell"
 
 src_install() {
 	insinto /lib/firmware/mrvl

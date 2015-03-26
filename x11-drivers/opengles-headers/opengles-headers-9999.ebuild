@@ -3,6 +3,7 @@
 
 EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
+CROS_WORKON_LOCALNAME="khronos"
 
 inherit cros-workon
 
@@ -16,8 +17,6 @@ IUSE=""
 
 RDEPEND=""
 DEPEND="x11-libs/libX11"
-
-CROS_WORKON_LOCALNAME="khronos"
 
 src_install() {
 	# headers

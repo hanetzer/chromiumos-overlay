@@ -3,6 +3,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/khronos"
+CROS_WORKON_LOCALNAME="khronos"
 
 inherit scons-utils toolchain-funcs cros-workon
 
@@ -18,8 +19,6 @@ IUSE=""
 RDEPEND="x11-libs/libX11
 	x11-drivers/opengles-headers"
 DEPEND="${RDEPEND}"
-
-CROS_WORKON_LOCALNAME="khronos"
 
 src_compile() {
 	tc-export AR CC CXX LD NM RANLIB
