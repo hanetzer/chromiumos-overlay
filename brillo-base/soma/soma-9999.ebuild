@@ -55,7 +55,7 @@ src_install() {
 }
 
 platform_pkg_test() {
-	local tests=( somad_test )
+	local tests=( somad_test libsoma_test )
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
