@@ -6,5 +6,5 @@ IUSE=chrome_internal
 KEYWORDS=~*
 LICENSE=BSD-Google chrome_internal? ( Google-TOS )
 SLOT=0
-_eclasses_=chromium-source	75a960960835db0ca7110f4b16117585
+_eclasses_=chromium-source	74fde0eef24e544bd1b9844a32913298
 _md5_=36ca38631143d81d2f2434fe1cb99294
