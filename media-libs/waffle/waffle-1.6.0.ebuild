@@ -8,7 +8,10 @@ inherit cmake-utils
 
 DESCRIPTION="Library that allows selection of GL API and of window system at runtime"
 HOMEPAGE="http://www.waffle-gl.org"
-SRC_URI="http://www.waffle-gl.org/files/release/${P}/${P}.tar.xz"
+# TODO(fjhenigman): merge github fork into main project and change SRC_URI back to a release from there
+MY_V="null1"
+SRC_URI="https://github.com/fjhenigman/waffle/archive/${MY_V}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${PN}-${MY_V}"
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS="*"
@@ -49,10 +52,6 @@ DEPEND="${RDEPEND}
 	)
 "
 
-src_prepare() {
-	epatch "${FILESDIR}"/${P}-platform-null.patch
-}
-
 src_configure() {
 	if use opengles && use X; then
 		waffle_has_x11_egl=ON
@@ -69,6 +68,8 @@ src_configure() {
 		$(cmake-utils_use examples waffle_build_examples)
 		$(cmake-utils_use test waffle_build_tests)
 	)
+
+        tc-export CC CXX # crbug.com/471450
 
 	cmake-utils_src_configure
 }
