@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_DESTDIR="${S}"
 
-inherit cros-debug cros-workon libchrome toolchain-funcs
+inherit cros-debug cros-workon libchrome
 
 DESCRIPTION="Touchpad Experimentation Framework"
 HOMEPAGE="http://www.chromium.org/"
@@ -36,12 +36,11 @@ src_configure() {
 
 src_compile() {
 	cd try_touch_experiment
-	tc-export CXX PKG_CONFIG
-	clang-setup-env
-	emake
+	cros-workon_src_compile
 }
 
 src_install() {
 	cd try_touch_experiment
+	cros-workon_src_install
 	default
 }
