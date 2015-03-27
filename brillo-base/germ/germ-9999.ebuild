@@ -34,6 +34,10 @@ src_install() {
 	dobin "${OUT}/germ"
 	dobin "${OUT}/germd"
 
+	# Install proto files.
+	insinto /usr/share/proto
+	doins idl/*.proto
+
 	# Install Upstart files.
 	insinto /etc/init
 	doins init/germd.conf
