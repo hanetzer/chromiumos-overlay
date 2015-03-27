@@ -45,4 +45,5 @@ src_install() {
 
 	insinto /usr/include/psyche
 	doins libpsyche/psyche_connection.h
+	doins libpsyche/psyche_daemon.h
 }

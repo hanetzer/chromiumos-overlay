@@ -21,6 +21,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	brillo-base/libprotobinder
+	brillo-base/libpsyche
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 "

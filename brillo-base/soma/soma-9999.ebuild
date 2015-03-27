@@ -21,7 +21,10 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="test"
 
-RDEPEND="brillo-base/libprotobinder"
+RDEPEND="
+	brillo-base/libprotobinder
+	brillo-base/libpsyche
+"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
