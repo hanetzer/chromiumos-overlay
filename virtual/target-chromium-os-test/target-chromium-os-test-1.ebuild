@@ -11,8 +11,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-test.
-IUSE="-app_shell chromeless_tty cros_ec cros_embedded opengl opengles p2p peerd
-     +shill +tpm X"
+IUSE="-app_shell chromeless_tty cros_ec cros_embedded opengl opengles ozone p2p
+	peerd +shill +tpm X"
 
 # Packages required to support autotest images.  Dependencies here
 # are for packages that must be present on a local device and that
@@ -143,6 +143,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/perceptualdiff
 	media-gfx/zbar
 	media-libs/opencv
+	ozone? ( media-gfx/deqp )
 	opengles? ( media-libs/piglit[waffle] )
 	opengl? ( media-libs/piglit )
 	media-libs/tiff
