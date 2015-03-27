@@ -46,6 +46,9 @@ src_install() {
 	# Adding proto files.
 	insinto /usr/share/proto
 	doins idl/*.proto
+
+	# Adding directory for container specs.
+	dodir /etc/container_specs
 }
 
 platform_pkg_test() {
