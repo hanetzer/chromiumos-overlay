@@ -110,6 +110,8 @@ chromium_source_copy_credentials() {
 
 # Check out Chromium source code.
 chromium_source_check_out_source() {
+	[[ "${CHROMIUM_SOURCE_ORIGIN}" == LOCAL_SOURCE ]] && return
+
 	local WHOAMI=$(whoami)
 	export EGCLIENT="${EGCLIENT:-/home/${WHOAMI}/depot_tools/gclient}"
 	export DEPOT_TOOLS_UPDATE=0
