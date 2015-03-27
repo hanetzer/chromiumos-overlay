@@ -1,8 +1,0 @@
-DEFINED_PHASES=-
-DESCRIPTION=Autotest Server Codebase Dependencies. Thse packages are required to run the web frontend, database and other tools supplied by the Autotest Servers in the lab. Note these packages are not required to run Autotest in the chroot.
-EAPI=4
-KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=app-arch/pbzip2 app-arch/unzip app-arch/xz-utils dev-db/mariadb dev-python/imaging dev-python/mysql-python dev-python/pycrypto dev-python/setuptools dev-vcs/git dev-vcs/subversion sci-visualization/gnuplot www-servers/apache www-apache/mod_wsgi chromeos-base/chromite dev-python/btsocket dev-python/django dev-python/dnspython dev-python/gdata dev-python/google-api-python-client dev-python/httplib2 dev-python/jsonrpclib dev-python/matplotlib dev-python/mox dev-python/numpy dev-python/paramiko dev-python/python-gflags dev-python/pyudev dev-python/requests dev-util/hdctools
-SLOT=0
-_md5_=9ec26d126d010c4b0d73da49a37a25b7
