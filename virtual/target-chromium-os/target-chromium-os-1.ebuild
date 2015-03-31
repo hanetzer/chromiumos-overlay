@@ -139,6 +139,7 @@ CROS_COMMON_RDEPEND+="
 	virtual/chromeos-firewall
 	virtual/chromeos-firmware
 	virtual/chromeos-interface
+	virtual/chromeos-regions
 	virtual/implicit-system
 	virtual/linux-sources
 	virtual/modutils
