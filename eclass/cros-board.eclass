@@ -229,10 +229,12 @@ ALL_BOARDS=(
 	veyron_jerry
 	veyron_mighty
 	veyron_minnie
+	veyron_nicky
 	veyron_pinky
 	veyron_remy
 	veyron_rialto
 	veyron_speedy
+	veyron_thea
 	#waluigi
 	whirlwind
 	winky
