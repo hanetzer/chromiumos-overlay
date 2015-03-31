@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=This package can be overriden to bring in additional (e.g. board-specific) autotest infrastructure.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=ffe2ba5a458fbe60c7db03054b353c29

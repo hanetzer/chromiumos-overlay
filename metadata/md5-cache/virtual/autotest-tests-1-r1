@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=Autotest tests virtual package. This package can be overriden by an overlay to bring in Autotest tests.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=9a24d3fd0c699ddddb48a88e7d068b86
