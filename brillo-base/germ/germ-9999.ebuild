@@ -27,6 +27,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
+	brillo-base/soma
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 "
