@@ -21,6 +21,10 @@ IUSE="+autotest"
 IUSE_TESTS="
 	+tests_buffet_BasicDBusAPI
 	+tests_buffet_Registration
+	+tests_buffet_RestartWhenRegistered
+	+tests_buffet_RefreshAccessToken
+	+tests_buffet_InvalidCredentials
+	+tests_buffet_IntermittentConnectivity
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
