@@ -14,8 +14,11 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="input_devices_synaptics"
 
+RDEPEND="
+	input_devices_synaptics? ( chromeos-base/rmi4utils )
+"
 src_install() {
 	insinto "/etc/init"
 	doins "scripts/chromeos-touch-update.conf"
