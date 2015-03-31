@@ -141,6 +141,9 @@ video_cards_vesa
 video_cards_via
 video_cards_voodoo
 
+# Unmask synaptics for use on ARM
+-input_devices_synaptics
+
 # Diego Pettenò <flameeyes@gentoo.org> (6 Dec 2006)
 # Unmask the ARM-specific ALSA drivers
 -alsa_cards_pxa2xx-i2sound
