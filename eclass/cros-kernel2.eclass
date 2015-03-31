@@ -541,7 +541,7 @@ cros-kernel2_pkg_setup() {
 }
 
 # @FUNCTION: emit_its_script
-# @USAGE: <output file> <kernel_dir> <dtb_dir> <device trees>
+# @USAGE: <output file> <kernel_dir> <device trees>
 # @DESCRIPTION:
 # Emits the its script used to build the u-boot fitImage kernel binary
 # that contains the kernel as well as device trees used when booting
@@ -554,8 +554,6 @@ emit_its_script() {
 	local its_out=${1}
 	shift
 	local kernel_path=${1}
-	shift
-	local dtb_dir=${1}
 	shift
 
 	case ${kernel_arch} in
@@ -594,7 +592,7 @@ emit_its_script() {
 		cat >> "${its_out}" <<-EOF || die
 			fdt@${iter} {
 				description = "$(basename ${dtb})";
-				data = /incbin/("${dtb_dir}/${dtb}");
+				data = /incbin/("${dtb}");
 				type = "flat_dt";
 				arch = "${kernel_arch}";
 				compression = "none";
@@ -771,10 +769,7 @@ cros-kernel2_src_configure() {
 
 get_dtb_name() {
 	local dtb_dir=${1}
-	local f
-	for f in ${dtb_dir}/*.dtb ; do
-		basename ${f}
-	done
+	find ${dtb_dir} -name "*.dtb"
 }
 
 cros-kernel2_src_compile() {
@@ -895,7 +890,7 @@ cros-kernel2_src_install() {
 		if use device_tree; then
 			local its_script="${kernel_dir}/its_script"
 			emit_its_script "${its_script}" "${kernel_dir}" \
-				"${dtb_dir}" $(get_dtb_name "${dtb_dir}")
+				$(get_dtb_name "${dtb_dir}")
 			mkimage -D "-I dts -O dtb -p 2048" -f "${its_script}" "${kernel_bin}" || die
 		elif [[ "${kernel_arch}" == "arm" ]]; then
 			cp "${boot_dir}/uImage" "${kernel_bin}" || die
