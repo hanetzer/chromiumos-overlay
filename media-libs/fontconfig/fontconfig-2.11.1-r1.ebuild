@@ -122,24 +122,13 @@ multilib_src_install_all() {
 
 	# There's a lot of variability across different displays with subpixel
 	# rendering. Until we have a better solution, turn it off and use grayscale
-	# instead on boards that don't have internal displays. Also disable it on
-	# high-DPI displays, since they have little need for it and use subpixel
-	# positioning, which can interact poorly with it
-	# (http://crbug.com/125066#c8). Additionally, disable it when installing to
-	# the host sysroot so the images in the initramfs package won't use subpixel
-	# rendering (http://crosbug.com/27872).
-	if ! use subpixel_rendering || use highdpi || use cros_host; then
+	# instead on boards that don't have internal displays. Additionally, disable it
+        # when installing to the host sysroot so the images in the initramfs package
+        # won't use subpixel rendering (http://crosbug.com/27872).
+	if ! use subpixel_rendering || use cros_host; then
 		rm "${D}"/etc/fonts/conf.d/10-sub-pixel-rgb.conf
 		dosym ../conf.avail/10-no-sub-pixel.conf /etc/fonts/conf.d/
 		check_fontconfig_default 10-no-sub-pixel.conf
-	fi
-
-	# Disable hinting on high-DPI displays, where we're already
-	# using subpixel positioning.
-	if use highdpi; then
-		rm "${D}"/etc/fonts/conf.d/10-hinting.conf
-		dosym ../conf.avail/10-unhinted.conf /etc/fonts/conf.d/
-		check_fontconfig_default 10-unhinted.conf
 	fi
 
 	# Changes should be made to /etc/fonts/local.conf, and as we had
