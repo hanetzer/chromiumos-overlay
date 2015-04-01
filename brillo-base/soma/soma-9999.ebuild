@@ -33,14 +33,14 @@ src_install() {
 	dobin "${OUT}"/soma_client
 
 	# Adding libsoma and headers.
-	./preinstall.sh "${OUT}"
+	./preinstall.sh "${OUT}" || die
 	insinto /usr/$(get_libdir)/pkgconfig
 	doins "${OUT}"/*.pc
 
 	dolib.so "${OUT}"/lib/libsoma.so
 
 	insinto /usr/include/"${PN}"
-	doins libsoma/*.h
+	doins lib/soma/*.h
 
 	# Adding init scripts.
 	insinto /etc/init
