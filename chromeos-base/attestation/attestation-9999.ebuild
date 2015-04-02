@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="attestation"
 
-inherit cros-workon platform user
+inherit cros-workon libchrome platform user
 
 DESCRIPTION="Attestation service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -22,12 +22,19 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/libchromeos
-	chromeos-base/system_api
 	"
 
 DEPEND="
 	${RDEPEND}
+	test? ( dev-cpp/gmock )
+	dev-cpp/gtest
 	"
+
+pkg_preinst() {
+	# Create user and group for attestation.
+	enewuser "attestation"
+	enewgroup "attestation"
+}
 
 src_install() {
 	insinto /etc/dbus-1/system.d
@@ -37,12 +44,20 @@ src_install() {
 	doins server/attestationd.conf
 
 	dosbin "${OUT}"/attestationd
-	dobin "${OUT}"/attestation
+	dobin "${OUT}"/attestation_client
+	dolib.so "${OUT}"/lib/libattestation.so
 
 	insinto /usr/share/policy
 	newins server/attestationd-seccomp-${ARCH}.policy attestationd-seccomp.policy
 }
 
 platform_pkg_test() {
-	return 0
+	local tests=(
+		attestation_testrunner
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${OUT}/${test_bin}"
+	done
 }
