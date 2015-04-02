@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/platform/gestures"
 CROS_WORKON_USE_VCSID=1
 
-inherit toolchain-funcs multilib cros-debug cros-workon libchrome
+inherit toolchain-funcs multilib cros-debug cros-workon
 
 DESCRIPTION="Gesture recognizer library"
 HOMEPAGE="http://www.chromium.org/"
