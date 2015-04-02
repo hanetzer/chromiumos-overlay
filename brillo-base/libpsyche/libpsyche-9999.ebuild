@@ -41,6 +41,5 @@ src_install() {
 	dolib.so "${OUT}"/lib/libpsyche.so
 
 	insinto /usr/include/psyche
-	doins libpsyche/psyche_connection.h
-	doins libpsyche/psyche_daemon.h
+	doins lib/psyche/*.h
 }
