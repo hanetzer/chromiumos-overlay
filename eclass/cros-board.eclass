@@ -189,7 +189,6 @@ ALL_BOARDS=(
 	slippy
 	smaug
 	sonic
-	sumo
 	space
 	squawks
 	squawks_freon
