@@ -23,6 +23,7 @@ IUSE="test"
 
 RDEPEND="
 	brillo-base/libprotobinder
+	brillo-base/soma
 	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	dev-libs/protobuf
@@ -30,13 +31,6 @@ RDEPEND="
 
 DEPEND="${RDEPEND}
 	test? ( dev-cpp/gtest )"
-
-src_compile() {
-	platform compile psyched
-	if use test; then
-		platform compile psyched_test
-	fi
-}
 
 src_install() {
 	dosbin "${OUT}"/psyched

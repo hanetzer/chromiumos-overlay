@@ -26,6 +26,11 @@
 # If set to yes, run the test only for amd64 and x86.
 : ${PLATFORM_NATIVE_TEST:="no"}
 
+# @ECLASS-VARIABLE: PLATFORM_GYP_FILE
+# @DESCRIPTION:
+# Name of GYP file within PLATFORM_SUBDIR.
+: ${PLATFORM_GYP_FILE:="${PLATFORM_SUBDIR}.gyp"}
+
 inherit cros-debug cros-workon flag-o-matic toolchain-funcs multiprocessing
 
 [[ "${WANT_LIBCHROME}" == "yes" ]] && inherit libchrome
@@ -132,7 +137,7 @@ platform_src_configure() {
 	cros-debug-add-NDEBUG
 	append-lfs-flags
 	clang-setup-env
-	platform_configure "${S}/${PLATFORM_SUBDIR}.gyp"
+	platform_configure "${S}/${PLATFORM_GYP_FILE}"
 }
 
 platform_src_test() {

@@ -9,6 +9,7 @@ CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="psyche"
+PLATFORM_GYP_FILE="libpsyche.gyp"
 
 inherit cros-workon platform
 
@@ -31,10 +32,6 @@ DEPEND="${RDEPEND}"
 # RDEPEND since it'll cause a circular dependency. See
 # http://devmanual.gentoo.org/general-concepts/dependencies/.
 PDEPEND="brillo-base/psyche"
-
-src_compile() {
-	platform compile libpsyche
-}
 
 src_install() {
 	./preinstall.sh "${OUT}"
