@@ -248,6 +248,7 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	dev-python/mysql-python
 	dev-python/sqlalchemy
+	dev-python/pyparsing
 	dev-python/python-statsd
 	"
 
