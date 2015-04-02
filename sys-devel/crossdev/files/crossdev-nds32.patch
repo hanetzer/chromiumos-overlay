@@ -2,36 +2,21 @@ hack in nds32 support until they mainline their code
 
 --- a/crossdev
 +++ b/crossdev
-@@ -101,6 +101,7 @@
- 
- parse_target() {
- 	CTARGET=${1#cross-}
-+	LPKG_OVERRIDE="yes"
- 
- 	[[ -z ${CTARGET} ]] && usage 1
- 
-@@ -214,6 +216,15 @@
+@@ -214,6 +216,13 @@
  		      GUSE="-fortran -openmp";
  		      WITH_DEF_HEADERS="no";;
  
 +		nds32*)
 +		      BCAT="dev-embedded"; BPKG="nds32-binutils";
 +		      GCAT="dev-embedded"; GPKG="nds32-gcc";
-+		      LCAT="dev-embedded"; LPKG="nds32-newlib";
 +		      DCAT="dev-embedded"; DPKG="nds32-gdb";
-+		      LPKG_OVERRIDE="no";
 +		      GUSE="-fortran";
 +		      WITH_DEF_HEADERS="no";;
 +
  		nios2*)
  		      BPKG="binutils-nios2";
  		      GPKG="gcc-nios2";;
-@@ -263,11 +274,11 @@
- 
- 		# Bare metal targets
- 		*-newlib|*-elf|*-eabi)
--			LPKG="newlib"
-+			[[ ${LPKG_OVERRIDE} == "yes" ]] && LPKG="newlib"
+@@ -263,7 +274,7 @@
  			KPKG="[none]"
  			STAGE_DEFAULT=${STAGE_LIBC}
  			GUSE+=" -openmp" #489798
