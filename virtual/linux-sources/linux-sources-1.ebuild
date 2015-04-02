@@ -19,17 +19,17 @@ IUSE_KERNEL_VERS=(
 	kernel-upstream-mainline
 	kernel-upstream-next
 )
-IUSE="${IUSE_KERNEL_VERS[*]} kernel_sources"
+IUSE="${IUSE_KERNEL_VERS[*]}"
 REQUIRED_USE="?? ( ${IUSE_KERNEL_VERS[*]} )"
 
 RDEPEND="
-	kernel-3_4? ( sys-kernel/chromeos-kernel[kernel_sources=] )
-	kernel-3_8? ( sys-kernel/chromeos-kernel-3_8[kernel_sources=] )
-	kernel-3_10? ( sys-kernel/chromeos-kernel-3_10[kernel_sources=] )
-	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14[kernel_sources=] )
-	kernel-3_18? ( sys-kernel/chromeos-kernel-3_18[kernel_sources=] )
-	kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline[kernel_sources=] )
-	kernel-upstream-next? ( sys-kernel/upstream-kernel-next[kernel_sources=] )
+	kernel-3_4? ( sys-kernel/chromeos-kernel )
+	kernel-3_8? ( sys-kernel/chromeos-kernel-3_8 )
+	kernel-3_10? ( sys-kernel/chromeos-kernel-3_10 )
+	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14 )
+	kernel-3_18? ( sys-kernel/chromeos-kernel-3_18 )
+	kernel-upstream-mainline? ( sys-kernel/upstream-kernel-mainline )
+	kernel-upstream-next? ( sys-kernel/upstream-kernel-next )
 "
 
 # Add blockers so when migrating between USE flags, the old version gets
@@ -44,6 +44,6 @@ RDEPEND_DEFAULT="sys-kernel/chromeos-kernel"
 # Here be dragons!
 RDEPEND+="
 	$(printf '!%s? ( ' "${IUSE_KERNEL_VERS[@]}")
-	${RDEPEND_DEFAULT}[kernel_sources=]
+	${RDEPEND_DEFAULT}
 	$(printf '%0.s) ' "${IUSE_KERNEL_VERS[@]}")
 "
