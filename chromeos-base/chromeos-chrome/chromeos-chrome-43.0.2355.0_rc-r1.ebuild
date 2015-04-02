@@ -56,7 +56,6 @@ IUSE="
 	opengl
 	opengles
 	ozone
-	reorder
 	+runhooks
 	+v4l2_codec
 	v4lplugin
@@ -81,8 +80,6 @@ REQUIRED_USE+=" ozone? ( ^^ ( ${IUSE_OZONE_PLATFORM_DEFAULTS} ) )"
 # TODO(mcgrathr,vapier): This should be removed after portage's prepstrip
 # script is changed to use eu-strip instead of objcopy and strip.
 STRIP_MASK+=" */nacl_helper_bootstrap"
-
-REORDER_SUBDIR="reorder"
 
 # Portage version without optional portage suffix.
 CHROME_VERSION="${PV/_*/}"
@@ -132,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-43.0.2353.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-43.0.2353.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-43.0.2353.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-43.0.2355.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-43.0.2355.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-43.0.2355.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -397,10 +394,6 @@ set_build_defines() {
 
 	use chrome_debug_tests || BUILD_DEFINES+=( strip_tests=1 )
 
-	if use reorder && ! use clang; then
-		BUILD_DEFINES+=( "order_text_section=${CHROME_DISTDIR}/${REORDER_SUBDIR}/section-ordering-files/orderfile-32.0.1665.2" )
-	fi
-
 	if use clang; then
 		BUILD_DEFINES+=(
 			clang=1
@@ -622,20 +615,6 @@ src_unpack() {
 
 		AFDO_PROFILE_LOC="${PROFILE_DIR}/${PROFILE_FILE}"
 		einfo "Using ${PROFILE_STATE} AFDO data from ${AFDO_PROFILE_LOC}"
-	fi
-
-	if use reorder && ! use clang; then
-		EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/profile/chromium.git"
-		EGIT_COMMIT="067dd0d802bc815703c7908c72659f2483be0e3a"
-		EGIT_PROJECT="${PN}-reorder"
-		if grep -qs ${EGIT_COMMIT} "${CHROME_DISTDIR}/${REORDER_SUBDIR}/.git/HEAD"; then
-			einfo "Reorder profile repo is up to date."
-		else
-			einfo "Reorder profile repo not up-to-date. Fetching..."
-			EGIT_SOURCEDIR="${CHROME_DISTDIR}/${REORDER_SUBDIR}"
-			rm -rf "${EGIT_SOURCEDIR}"
-			git-2_src_unpack
-		fi
 	fi
 }
 
