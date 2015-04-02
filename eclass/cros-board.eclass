@@ -244,6 +244,7 @@ ALL_BOARDS=(
 	x32-generic
 	x86-agz
 	x86-alex
+	x86-alex_freon
 	x86-alex_he
 	x86-alex_hubble
 	x86-alex32
@@ -254,10 +255,12 @@ ALL_BOARDS=(
 	x86-generic
 	x86-generic_embedded
 	x86-mario
+	x86-mario_freon
 	x86-mario64
 	#x86-pineview
 	#x86-wayland
 	x86-zgb
+	x86-zgb_freon
 	x86-zgb_he
 	x86-zgb32
 	x86-zgb32_he
