@@ -475,8 +475,7 @@ install_kernel_sources() {
 
 	einfo "Installing kernel build tree"
 	dodir "${dest_build_dir}"
-	cp -pPR "$(cros-workon_get_build_dir)"/{.config,.version,Makefile,Module.symvers,include} \
-		"${D}/${dest_build_dir}" || die
+	cp -pPR "$(cros-workon_get_build_dir)"/. "${D}/${dest_build_dir}" || die
 
 	# Modify Makefile to use the ROOT environment variable if defined.
 	# This path needs to be absolute so that the build directory will
