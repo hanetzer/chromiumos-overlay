@@ -111,7 +111,9 @@ src_test() {
 	done
 	popd >/dev/null
 
-	local TESTS=()
+	# Run all the unittests from the "host" directory.
+	local TESTS=( $(find host -name '*_unittest.py' -type f) )
+
 	if ! use cros_host; then
 		TESTS+=( gmerge_test.py )
 		# FIXME(zbehan): import gmerge in gmerge_test.py won't work if we won't
