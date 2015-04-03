@@ -147,6 +147,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-intel-fix-EGLImage-renderbuffer-_BaseFormat.patch
 	epatch "${FILESDIR}"/10.5-i965-Prefer-Meta-over-the-BLT-for-BlitFrame.patch
 	epatch "${FILESDIR}"/10.4-enable-GL_EXT_draw_buffers.patch
+	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 
 	base_src_prepare
 
