@@ -76,6 +76,7 @@ src_prepare() {
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-WPS-Fix-HTTP-chunked-transfer-encoding-parser.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-bgscan-trigger-reasons-debug.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-bgscan-simple-priority-debug.patch
+        epatch ${FILESDIR}/patches/${P}-UPSTREAM-clear-blacklist-on-connect.patch
         popd >/dev/null
 }
 
