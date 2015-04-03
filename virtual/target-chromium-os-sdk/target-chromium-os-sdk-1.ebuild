@@ -397,3 +397,8 @@ RDEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	sys-apps/coreboot-utils
 	"
+
+# Host dependencies for virtualbox-guest-additions
+RDEPEND="${RDEPEND}
+	dev-util/kbuild
+	"
