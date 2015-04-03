@@ -55,7 +55,7 @@ src_install() {
 
 	# Installing an example until we have some real ones to test with.
 	insinto /etc/container_specs
-	doins com.android.embedded.ping_brick.ping_service.json
+	doins com.android.embedded.ping-brick.ping-service.json
 }
 
 platform_pkg_test() {
