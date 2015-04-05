@@ -15,7 +15,7 @@
 if [ -z "${FLAGS_version}" ]; then
   # Release Build number.
   # Increment by 1 for every release build.
-  export CHROMEOS_BUILD=6946
+  export CHROMEOS_BUILD=6947
 
   # Release Branch number.
   # Increment by 1 for every release build on a branch.
@@ -45,7 +45,7 @@ else
 fi
 
 # Major version for Chrome.
-export CHROME_BRANCH=43
+export CHROME_BRANCH=44
 # Set CHROME values (Used for releases) to pass to chromeos-chrome-bin ebuild
 # URL to chrome archive
 export CHROME_BASE=
