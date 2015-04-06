@@ -24,7 +24,6 @@ IUSE="test"
 RDEPEND="
 	brillo-base/libprotobinder
 	brillo-base/soma
-	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	dev-libs/protobuf
 "

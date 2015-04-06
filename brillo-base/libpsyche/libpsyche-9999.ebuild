@@ -23,7 +23,6 @@ KEYWORDS="~*"
 
 RDEPEND="
 	brillo-base/libprotobinder
-	chromeos-base/libchrome
 	dev-libs/protobuf
 "
 DEPEND="${RDEPEND}"

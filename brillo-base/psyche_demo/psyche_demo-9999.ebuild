@@ -23,7 +23,6 @@ KEYWORDS="~*"
 RDEPEND="
 	brillo-base/libprotobinder
 	brillo-base/libpsyche
-	chromeos-base/libchrome
 	chromeos-base/libchromeos
 	dev-libs/protobuf
 "
