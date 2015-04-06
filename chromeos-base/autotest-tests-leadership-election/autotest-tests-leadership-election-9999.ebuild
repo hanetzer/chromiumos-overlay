@@ -20,6 +20,7 @@ IUSE="+autotest"
 
 IUSE_TESTS="
 	+tests_leaderd_BasicDBusAPI
+	+tests_leaderd_Election
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
