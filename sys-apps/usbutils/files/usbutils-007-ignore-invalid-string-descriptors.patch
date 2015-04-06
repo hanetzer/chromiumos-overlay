@@ -1,0 +1,39 @@
+From 8e4ade500d01f59c21baf8e07d50f1c465df4328 Mon Sep 17 00:00:00 2001
+From: Peter Wu <lekensteyn@gmail.com>
+Date: Mon, 4 Nov 2013 19:08:49 +0100
+Subject: [PATCH] Ignore invalid string descriptors
+
+This Ralink Wi-Fi adapter reports bogus values for some string
+descriptors (iSerial and iInterface). As the current
+libusb_get_string_descriptor function from 1.0.17 does not validate the
+length or type and returns 254 even if the descriptor says 0, explicitly
+check the fields before proceeding.
+
+Fixes the following crash:
+
+    lsusb: gconv.c:74: __gconv: Assertion `outbuf != ((void *)0) && *outbuf != ((void *)0)' failed.
+
+libusbx bug: https://github.com/libusbx/libusbx/pull/156
+
+Signed-off-by: Peter Wu <lekensteyn@gmail.com>
+---
+ usbmisc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/usbmisc.c b/usbmisc.c
+index d5e7a31..f3577ea 100644
+--- a/usbmisc.c
++++ b/usbmisc.c
+@@ -229,6 +229,9 @@ char *get_dev_string(libusb_device_handle *dev, u_int8_t id)
+ 	                                   sizeof unicode_buf);
+ 	if (ret < 2) return strdup("(error)");
+ 
++	if (unicode_buf[0] < 2 || unicode_buf[1] != LIBUSB_DT_STRING)
++		return strdup("(error)");
++
+ 	buf = usb_string_to_native(unicode_buf + 2,
+ 	                           ((unsigned char) unicode_buf[0] - 2) / 2);
+ 
+-- 
+2.2.0.rc0.207.ga3a616c
+

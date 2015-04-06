@@ -25,7 +25,10 @@ DEPEND="${RDEPEND}
 RDEPEND="${RDEPEND}
 	sys-apps/hwids
 	python? ( ${PYTHON_DEPS} )"
-PATCHES=( "${FILESDIR}"/${PN}-006-stdint.patch )
+PATCHES=(
+	"${FILESDIR}"/${PN}-006-stdint.patch
+	"${FILESDIR}"/${PN}-007-ignore-invalid-string-descriptors.patch
+)
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
