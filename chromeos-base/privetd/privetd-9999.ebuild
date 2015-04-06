@@ -19,7 +19,6 @@ SLOT=0
 KEYWORDS="~*"
 
 COMMON_DEPEND="
-	chromeos-base/libchrome_crypto
 	chromeos-base/libchromeos
 	chromeos-base/webserver
 "

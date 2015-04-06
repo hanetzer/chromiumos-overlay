@@ -6,6 +6,12 @@
 
 import os
 
+env = Environment()
+
+BASE_VER = os.environ.get('BASE_VER', '0')
+PKG_CONFIG = os.environ.get('PKG_CONFIG', 'pkg-config')
+CHROME_INCLUDE_PATH = os.environ.get('CHROME_INCLUDE_PATH', '.')
+
 # This block will need updating whenever libchrome gets updated. The order of
 # the libs below doesn't matter (as scons will take care of building things in
 # the required order).  The split between them is purely to reduce excess
@@ -206,13 +212,32 @@ base_libs = [
     'libs' : '',
     'pc_libs' : '',
   },
+  {
+    'name' : 'crypto',
+    'sources' : """
+                hmac.cc
+                hmac_nss.cc
+                nss_util.cc
+                p224.cc
+                p224_spake.cc
+                random.cc
+                rsa_private_key.cc
+                rsa_private_key_nss.cc
+                scoped_test_nss_db.cc
+                secure_hash_default.cc
+                secure_util.cc
+                sha2.cc
+                signature_creator_nss.cc
+                signature_verifier_nss.cc
+                symmetric_key_nss.cc
+                third_party/nss/rsawrapr.c
+                third_party/nss/sha512.cc
+                """,
+    'prefix' : 'crypto',
+    'libs' : '%s-dl-%s' % (base_name, BASE_VER),
+    'pc_libs' : 'nss',
+  },
 ]
-
-env = Environment()
-
-BASE_VER = os.environ.get('BASE_VER', '0')
-PKG_CONFIG = os.environ.get('PKG_CONFIG', 'pkg-config')
-CHROME_INCLUDE_PATH = os.environ.get('CHROME_INCLUDE_PATH', '.')
 
 env.Append(
   CPPPATH=['files'],
@@ -231,6 +256,9 @@ env['CCFLAGS'] += ['-fPIC',
                    '-Werror',
                    '-Wno-psabi',
                    '-Wno-unused-local-typedefs',
+                   '-DOS_CHROMEOS',
+                   '-DUSE_NSS',
+                   '-DUSE_SYSTEM_LIBEVENT',
                    # Various #defines are hardcoded near the top of
                    # build_config.h to ensure that they'll be set both when
                    # libchrome is built and when other packages include

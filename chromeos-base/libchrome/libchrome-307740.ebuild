@@ -3,13 +3,12 @@
 
 # Note: the ${PV} should represent the overall svn rev number of the
 # chromium tree that we're extracting from rather than the svn rev of
-# the last change actually made to the base subdir.  This way packages
-# from other locations (like libchrome_crypto) can be coordinated.
+# the last change actually made to the base subdir.
 
 EAPI="4"
-CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus")
-CROS_WORKON_COMMIT=("2dfe404711e15e24e79799516400c61b2719d7af" "ebbe3c7a8792ff385916b364d2ec9f6b9c3b4808")
-CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus")
+CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto")
+CROS_WORKON_COMMIT=("2dfe404711e15e24e79799516400c61b2719d7af" "ebbe3c7a8792ff385916b364d2ec9f6b9c3b4808" "fab9d08b29d938132d8f87572c9e4bd0f6693d69")
+CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto")
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug flag-o-matic toolchain-funcs scons-utils
@@ -25,6 +24,7 @@ IUSE="cros_host"
 
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
+	dev-libs/nss
 	dev-libs/protobuf
 	sys-apps/dbus"
 DEPEND="${RDEPEND}
@@ -118,6 +118,24 @@ src_install() {
 		insinto /usr/include/base-${SLOT}/${d}
 		doins ${d}/*.h
 	done
+
+	insinto /usr/include/base-${SLOT}/crypto
+	doins \
+		crypto/crypto_export.h \
+		crypto/hmac.h \
+		crypto/nss_util.h \
+		crypto/nss_util_internal.h \
+		crypto/p224.h \
+		crypto/p224_spake.h \
+		crypto/rsa_private_key.h \
+		crypto/scoped_nss_types.h \
+		crypto/scoped_openssl_types.h \
+		crypto/scoped_test_nss_db.h \
+		crypto/secure_hash.h \
+		crypto/secure_util.h \
+		crypto/sha2.h \
+		crypto/signature_creator.h \
+		crypto/signature_verifier.h
 
 	insinto /usr/$(get_libdir)/pkgconfig
 	doins libchrome*-${SLOT}.pc

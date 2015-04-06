@@ -32,7 +32,6 @@ RDEPEND="chromeos-base/bootstat
 	sys-apps/util-linux"
 
 DEPEND="${RDEPEND}
-	>=chromeos-base/libchrome_crypto-${LIBCHROME_VERS}
 	chromeos-base/protofiles
 	chromeos-base/system_api
 	chromeos-base/vboot_reference

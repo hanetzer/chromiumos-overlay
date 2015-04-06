@@ -24,7 +24,6 @@ RDEPEND="
 	!chromeos-base/chromeos-cryptohome
 	app-crypt/trousers
 	chromeos-base/chaps
-	chromeos-base/libchrome_crypto
 	chromeos-base/libchromeos
 	chromeos-base/libscrypt
 	chromeos-base/metrics
