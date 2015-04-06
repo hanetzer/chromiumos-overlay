@@ -52,10 +52,6 @@ src_install() {
 
 	# Adding directory for container specs.
 	dodir /etc/container_specs
-
-	# Installing an example until we have some real ones to test with.
-	insinto /etc/container_specs
-	doins com.android.embedded.ping-brick.ping-service.json
 }
 
 platform_pkg_test() {

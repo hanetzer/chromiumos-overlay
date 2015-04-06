@@ -23,6 +23,7 @@ KEYWORDS="~*"
 RDEPEND="
 	brillo-base/libprotobinder
 	brillo-base/libpsyche
+	brillo-base/soma
 	chromeos-base/libchromeos
 	dev-libs/protobuf
 "
@@ -30,4 +31,8 @@ DEPEND="${RDEPEND}"
 
 src_install() {
 	dobin "${OUT}"/psyche_demo_{client,server}
+
+	insinto /etc/container_specs
+	doins com.android.embedded.*.json
+
 }
