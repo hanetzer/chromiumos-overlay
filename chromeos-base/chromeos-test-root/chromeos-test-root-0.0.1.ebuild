@@ -17,6 +17,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 
 RDEPEND="
+	chromeos-base/chromeos-test-dbus-config
 	chromeos-base/chromeos-test-init
 	chromeos-base/chromeos-test-testauthkeys
 	virtual/chromeos-bsp-test-root
