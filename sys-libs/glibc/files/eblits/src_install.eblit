@@ -254,6 +254,23 @@ src_strip() {
 	if ! has nostrip ${FEATURES} && ! has splitdebug ${FEATURES} ; then
 		${STRIP:-${CTARGET}-strip} --strip-debug "${ED}"/*/libpthread-*.so
 	fi
+	# Step above (prepallstrip) only conditionally deals with debug-info
+	# related sections. We strip .GCC.command.line section here because we
+	# use '-fno-stack-protector' while building glibc, and the crt/static
+	# libs get linked into other executables. When those get checked by our
+	# QA tools, they'll see the flag and think they were built with SSP
+	# disabled.
+	einfo 'Stripping .GCC.command.line for glibc libraries...'
+	# Only apply strip object and static archives; shared libraries are not
+	# linked directly into executables. Use objcopy here because 'strip -R
+	# xxx' discards all symbols besides section "xxx", while 'objcopy -R
+	# xxx' only removes the section 'xxx' while keeping the others
+	# untouched.
+	# 'objcopy' deals with 1 file at a time, so use '\;' instead of '+' in
+	# find-exec.
+	find . -type f \
+	    '(' -iname "?crt?.o" -o -iname "crt?.o" -o -iname "libc*.a" ')' \
+	    -exec ${CTARGET}-objcopy -R .GCC.command.line {} \;
 }
 
 eblit-glibc-src_install() {
