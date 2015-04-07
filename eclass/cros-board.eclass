@@ -145,6 +145,7 @@ ALL_BOARDS=(
 	nyan_kitty
 	oak
 	optimus
+	orco
 	panda
 	panther
 	panther_embedded
