@@ -20,12 +20,14 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="test"
 
 RDEPEND="
 	brillo-base/libprotobinder
 	dev-libs/protobuf
 "
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	test? ( dev-cpp/gtest )"
 
 # Daemons that use libpsyche need psyched to be running, but we can't use
 # RDEPEND since it'll cause a circular dependency. See
@@ -41,4 +43,15 @@ src_install() {
 
 	insinto /usr/include/psyche
 	doins lib/psyche/*.h
+}
+
+platform_pkg_test() {
+	local tests=(
+		libpsyche_test
+	)
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test run "${OUT}/${test_bin}"
+	done
 }
