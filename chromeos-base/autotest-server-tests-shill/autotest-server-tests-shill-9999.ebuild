@@ -46,6 +46,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_HiddenRemains
 	+tests_network_WiFi_HiddenScan
 	+tests_network_WiFi_IBSS
+	+tests_network_WiFi_LinkMonitorFailure
 	+tests_network_WiFi_LowInitialBitrates
 	+tests_network_WiFi_MaskedBSSID
 	+tests_network_WiFi_MissingBeacons
