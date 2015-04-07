@@ -6,9 +6,9 @@
 # the last change actually made to the base subdir.
 
 EAPI="4"
-CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto")
-CROS_WORKON_COMMIT=("527a20c667333befe9e996100c3b746e926ce4de" "242a92e8c5cede6e457dc5fa5731232ae15f8e64" "f48fa87d157ca2d017b21c5a39ecc29e58cc8d1f")
-CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto")
+CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto" "chromium/src/sandbox")
+CROS_WORKON_COMMIT=("527a20c667333befe9e996100c3b746e926ce4de" "242a92e8c5cede6e457dc5fa5731232ae15f8e64" "f48fa87d157ca2d017b21c5a39ecc29e58cc8d1f" "7fbff896d2c8752a29c7c93ab4cb014089bcc878")
+CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto" "${S}/sandbox")
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug flag-o-matic toolchain-funcs scons-utils
