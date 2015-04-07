@@ -22,6 +22,8 @@ SLOT="${PV}"
 KEYWORDS="*"
 IUSE="cros_host"
 
+# TODO(avakulenko): Put dev-libs/nss behind a USE flag to make sure NSS is
+# pulled only into the configurations that require it.
 RDEPEND="dev-libs/glib
 	dev-libs/libevent
 	dev-libs/nss
