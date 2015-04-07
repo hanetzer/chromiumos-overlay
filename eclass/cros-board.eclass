@@ -245,6 +245,7 @@ ALL_BOARDS=(
 	x86-alex
 	x86-alex_freon
 	x86-alex_he
+	x86-alex_he-freon
 	x86-alex_hubble
 	x86-alex32
 	x86-alex32_he
@@ -261,6 +262,7 @@ ALL_BOARDS=(
 	x86-zgb
 	x86-zgb_freon
 	x86-zgb_he
+	x86-zgb_he-freon
 	x86-zgb32
 	x86-zgb32_he
 	zako
