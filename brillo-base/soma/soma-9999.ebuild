@@ -30,7 +30,6 @@ DEPEND="${RDEPEND}
 
 src_install() {
 	dosbin "${OUT}"/somad
-	dobin "${OUT}"/soma_client
 
 	# Adding libsoma and headers.
 	./preinstall.sh "${OUT}" || die
