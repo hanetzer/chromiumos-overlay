@@ -30,6 +30,7 @@ RECOVERY_DEPENDS="
 	sys-apps/pv
 	sys-fs/lvm2
 	virtual/assets
+	virtual/chromeos-regions
 	"
 
 # Packages required for building factory installer shim initramfs.
