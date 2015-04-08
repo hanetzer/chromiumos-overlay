@@ -35,6 +35,8 @@ src_test() {
 }
 
 src_install() {
+	dobin cros_region_data
+
 	insinto /usr/share/misc
 	doins "${WORKDIR}/cros-regions.json"
 }
