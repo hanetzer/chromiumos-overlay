@@ -18,6 +18,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
+IUSE="test"
 
 RDEPEND="
 	!brillo-base/libbrillobinder
@@ -36,13 +37,17 @@ src_install() {
 
 	dolib.so "${OUT}/lib/libprotobinder.so"
 
-	if use test ; then
-		dobin "${OUT}/ping-client"
-		dobin "${OUT}/ping-daemon"
-	fi
-
 	insinto /usr/include/protobinder
 	doins *.h
 
 	udev_dorules udev/*.rules
+}
+
+platform_pkg_test() {
+	local tests=( libprotobinder_test )
+
+	local test_bin
+	for test_bin in "${tests[@]}"; do
+		platform_test "run" "${OUT}/${test_bin}"
+	done
 }
