@@ -3,30 +3,23 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/bsdiff/bsdiff-4.3-r2.ebuild,v 1.1 2010/12/13 00:35:03 flameeyes Exp $
 
 EAPI=4
+CROS_WORKON_PROJECT="chromiumos/third_party/bsdiff"
 
-inherit eutils toolchain-funcs flag-o-matic
+inherit cros-workon toolchain-funcs flag-o-matic
 
 DESCRIPTION="bsdiff: Binary Differencer using a suffix alg"
 HOMEPAGE="http://www.daemonology.net/bsdiff/"
-SRC_URI="http://www.daemonology.net/bsdiff/${P}.tar.gz"
+SRC_URI=""
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS="~*"
 IUSE="cros_host"
 
 RDEPEND="app-arch/bzip2
 	cros_host? ( dev-libs/libdivsufsort )"
 DEPEND="${RDEPEND}
 	dev-libs/libdivsufsort"
-
-src_prepare() {
-	epatch "${FILESDIR}"/${PV}_bspatch-extent-files.patch
-	epatch "${FILESDIR}"/${PV}_bsdiff-divsufsort.patch
-	epatch "${FILESDIR}"/${PV}_makefile.patch
-	epatch "${FILESDIR}"/${PV}_sanity_check.patch
-	epatch "${FILESDIR}"/${PV}_makefile_without_bsdiff.patch
-}
 
 src_configure() {
 	append-lfs-flags
