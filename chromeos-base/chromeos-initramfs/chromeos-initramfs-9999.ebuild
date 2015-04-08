@@ -69,6 +69,7 @@ DEPEND="recovery_ramfs? ( ${RECOVERY_DEPENDS} )
 	factory_shim_ramfs? ( ${FACTORY_SHIM_DEPENDS} )
 	netboot_ramfs? ( ${FACTORY_NETBOOT_DEPENDS} )
 	sys-apps/busybox[-make-symlinks]
+	virtual/chromeos-bsp-initramfs
 	chromeos-base/chromeos-init
 	frecon? ( sys-apps/frecon )
 	power_management? ( chromeos-base/power_manager ) "
