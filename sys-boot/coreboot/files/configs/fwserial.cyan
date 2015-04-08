@@ -1,5 +1,5 @@
 # Display debug messages from FSP
-CONFIG_FSP_FILE="3rdparty/mainboard/intel/cyan/fsp/BSWFSP.debug.fd"
+CONFIG_FSP_FILE="3rdparty/mainboard/google/cyan/fsp/BSWFSP.debug.fd"
 
 # Enable the serial output
 CONFIG_FATAL_ASSERTS=y
