@@ -5,11 +5,16 @@ EAPI=4
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_DESTDIR="${S}/platform2"
+CROS_WORKON_LOCALNAME=("platform2" "../chromium/src/components/metrics")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "chromium/src/components/metrics")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/components/metrics")
+CROS_WORKON_COMMIT=(master "9f8d4f96900b543e191234c04f182c6de5f9869d")
 
 PLATFORM_SUBDIR="metrics"
+
+# platform.eclass modifies S for the build system. Save the location of the
+# probufs now so that we don't have to guess where they are.
+PROTO_DIR="${S}/components/metrics/proto/"
 
 inherit cros-constants cros-workon git-2 platform
 
@@ -34,16 +39,6 @@ DEPEND="
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
-
-src_unpack() {
-	platform_src_unpack
-
-	EGIT_SOURCEDIR="${S}/components/metrics"
-	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/components/metrics.git" \
-	EGIT_PROJECT="metrics" \
-	EGIT_COMMIT="9f8d4f96900b543e191234c04f182c6de5f9869d" \
-	git-2_src_unpack
-}
 
 src_install() {
 	dobin "${OUT}"/metrics_client syslog_parser.sh
@@ -73,7 +68,7 @@ src_install() {
 
 	# Install the protobuf so that autotests can have access to it.
 	insinto /usr/include/metrics/proto
-	doins components/metrics/proto/*.proto
+	doins "${PROTO_DIR}"/*.proto
 }
 
 platform_pkg_test() {
