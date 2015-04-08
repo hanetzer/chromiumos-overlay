@@ -1,16 +1,17 @@
-# Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
+# Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 CROS_WORKON_COMMIT="dd5b5168293a497102c42f4ee4656ded6638cb00"
 CROS_WORKON_TREE="d9cce70d25c6ef77164d8268cffff7aba0ca67df"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_firmware_test"
 
-inherit cros-workon cros-constants cros-debug
+PYTHON_COMPAT=( python2_7 )
+inherit cros-workon cros-constants cros-debug distutils-r1
 
 DESCRIPTION="Chromium OS multitouch utilities"
 
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 IUSE="-asan -clang"
@@ -29,6 +30,13 @@ src_configure() {
 }
 
 src_install() {
+	# install the remote package
+	distutils-r1_src_install
+
+	# install the webplot script
+	exeinto /usr/local/bin
+	newexe webplot.sh webplot
+
 	# install to autotest deps directory for dependency
 	DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests/touch_firmware_test"
 	mkdir -p "${DESTDIR}"
