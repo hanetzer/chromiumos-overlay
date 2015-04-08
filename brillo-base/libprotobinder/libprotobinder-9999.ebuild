@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="libprotobinder"
 
-inherit cros-workon platform
+inherit cros-workon platform udev
 
 DESCRIPTION="Library to provide Binder IPC."
 HOMEPAGE="http://www.chromium.org/"
@@ -43,4 +43,6 @@ src_install() {
 
 	insinto /usr/include/protobinder
 	doins *.h
+
+	udev_dorules udev/*.rules
 }
