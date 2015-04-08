@@ -36,6 +36,9 @@ src_install() {
 	dobin "${OUT}/germ"
 	dobin "${OUT}/germd"
 
+	insinto /usr/include/"${PN}"
+	doins constants.h
+
 	# Install proto files.
 	insinto /usr/share/proto
 	doins idl/*.proto
