@@ -1,6 +1,6 @@
 diff -Naur a/configure.ac b/configure.ac
---- a/configure.ac	2014-09-19 18:23:33.000000000 +0000
-+++ b/configure.ac	2015-03-20 17:23:29.710795983 +0000
+--- a/configure.ac	2014-09-19 19:23:33.000000000 +0100
++++ b/configure.ac	2015-04-01 19:52:33.129338544 +0100
 @@ -30,6 +30,7 @@
  LIBDRM_REQUIRED=2.4.38
  LIBDRM_RADEON_REQUIRED=2.4.56
@@ -38,8 +38,8 @@ diff -Naur a/configure.ac b/configure.ac
  		src/mesa/drivers/osmesa/Makefile
  		src/mesa/drivers/osmesa/osmesa.pc
 diff -Naur a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
---- a/src/mesa/drivers/dri/Makefile.am	2014-09-19 18:06:52.000000000 +0000
-+++ b/src/mesa/drivers/dri/Makefile.am	2015-03-20 17:23:29.710795983 +0000
+--- a/src/mesa/drivers/dri/Makefile.am	2014-09-19 19:06:52.000000000 +0100
++++ b/src/mesa/drivers/dri/Makefile.am	2015-04-01 19:52:33.129338544 +0100
 @@ -36,6 +36,12 @@
  MEGADRIVERS += radeon_dri.so
  endif
@@ -53,54 +53,9 @@ diff -Naur a/src/mesa/drivers/dri/Makefile.am b/src/mesa/drivers/dri/Makefile.am
  if HAVE_SWRAST_DRI
  SUBDIRS += swrast
  MEGADRIVERS_DEPS += swrast/libswrast_dri.la
-diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Makefile.am
---- a/src/mesa/drivers/dri/pvr/Makefile.am	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/Makefile.am	2015-03-20 17:23:30.090794075 +0000
-@@ -0,0 +1,24 @@
-+
-+include Makefile.sources
-+
-+AM_CFLAGS = \
-+	-I$(top_srcdir)/include \
-+	-I$(top_srcdir)/src \
-+	-I$(top_srcdir)/src/mapi \
-+	-I$(top_srcdir)/src/mapi/glapi \
-+	-I$(top_srcdir)/src/mesa \
-+	-I$(top_srcdir)/src/mesa/main \
-+	-I$(top_srcdir)/src/mesa/drivers/dri/common \
-+	$(DEFINES) \
-+	$(VISIBILITY_CFLAGS) \
-+	$(PVR_CFLAGS)
-+
-+AM_CFLAGS += -DPVR_OGLES1_LIB=\"libGLESv1_CM.so\"
-+AM_CFLAGS += -DPVR_OGLES2_LIB=\"libGLESv2.so\"
-+
-+AM_CXXFLAGS = $(AM_CFLAGS)
-+
-+noinst_LTLIBRARIES = libpvr_dri.la
-+libpvr_dri_la_SOURCES = $(pvr_FILES)
-+libpvr_dri_la_LIBADD = $(INTEL_LIBS)
-+
-diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.sources b/src/mesa/drivers/dri/pvr/Makefile.sources
---- a/src/mesa/drivers/dri/pvr/Makefile.sources	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/Makefile.sources	2015-03-20 17:23:30.094794475 +0000
-@@ -0,0 +1,13 @@
-+pvr_INCLUDES = \
-+	$(MESA_TOP)/src \
-+	$(MESA_TOP)/src/mesa/drivers/dri/pvr
-+
-+pvr_FILES = \
-+ mesa_context.c \
-+ pvrdrawable.c \
-+ pvrdri.c \
-+ pvrext.c \
-+ pvrimage.c \
-+ pvrsyncobj.c \
-+ pvrutil.c \
-+ pvr_object_cache.c
 diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h
---- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h	2015-03-20 17:23:30.086794575 +0000
+--- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,1130 @@
 +#ifndef __g_pvrogl_set_mesa_dispatch_h_
 +#define __g_pvrogl_set_mesa_dispatch_h_
@@ -1233,8 +1188,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogl_dispatch.h b/src/mesa/drive
 +
 +#endif /* __g_pvrogl_set_mesa_dispatch_h_ */
 diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h
---- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h	2015-03-20 17:23:30.095796375 +0000
+--- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,364 @@
 +#ifndef __g_pvrogles1_set_mesa_dispatch_h_
 +#define __g_pvrogles1_set_mesa_dispatch_h_
@@ -1601,8 +1556,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles1_dispatch.h b/src/mesa/dr
 +
 +#endif /* __g_pvrogles1_set_mesa_dispatch_h_ */
 diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h
---- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h	2015-03-20 17:23:30.088795775 +0000
+--- a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h	2015-04-01 19:52:33.153338334 +0100
 @@ -0,0 +1,585 @@
 +#ifndef __g_pvrogles2_set_mesa_dispatch_h_
 +#define __g_pvrogles2_set_mesa_dispatch_h_
@@ -2190,8 +2145,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/g_set_mesa_ogles2_dispatch.h b/src/mesa/dr
 +
 +#endif /* __g_pvrogles2_set_mesa_dispatch_h_ */
 diff -Naur a/src/mesa/drivers/dri/pvr/imgpixfmts.h b/src/mesa/drivers/dri/pvr/imgpixfmts.h
---- a/src/mesa/drivers/dri/pvr/imgpixfmts.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/imgpixfmts.h	2015-03-20 17:23:30.082798075 +0000
+--- a/src/mesa/drivers/dri/pvr/imgpixfmts.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/imgpixfmts.h	2015-04-01 19:52:33.145338405 +0100
 @@ -0,0 +1,68 @@
 +/*************************************************************************/ /*!
 +@File
@@ -2262,8 +2217,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/imgpixfmts.h b/src/mesa/drivers/dri/pvr/im
 +
 +#endif /* _IMGPIXFMTS_KM_H_ */
 diff -Naur a/src/mesa/drivers/dri/pvr/imgyuv.h b/src/mesa/drivers/dri/pvr/imgyuv.h
---- a/src/mesa/drivers/dri/pvr/imgyuv.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/imgyuv.h	2015-03-20 17:23:30.081875075 +0000
+--- a/src/mesa/drivers/dri/pvr/imgyuv.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/imgyuv.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,50 @@
 +/*************************************************************************/ /*!
 +@File
@@ -2315,9 +2270,55 @@ diff -Naur a/src/mesa/drivers/dri/pvr/imgyuv.h b/src/mesa/drivers/dri/pvr/imgyuv
 +
 +
 +#endif /* _IMGYUV_H_ */
+diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.am b/src/mesa/drivers/dri/pvr/Makefile.am
+--- a/src/mesa/drivers/dri/pvr/Makefile.am	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/Makefile.am	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,25 @@
++
++include Makefile.sources
++
++AM_CFLAGS = \
++	-I$(top_srcdir)/include \
++	-I$(top_srcdir)/src \
++	-I$(top_srcdir)/src/mapi \
++	-I$(top_srcdir)/src/mapi/glapi \
++	-I$(top_srcdir)/src/mesa \
++	-I$(top_srcdir)/src/mesa/main \
++	-I$(top_srcdir)/src/mesa/drivers/dri/common \
++	$(DEFINES) \
++	$(VISIBILITY_CFLAGS) \
++	$(PVR_CFLAGS)
++
++AM_CFLAGS += -DPVR_OGLES1_LIB=\"libGLESv1_CM.so\"
++AM_CFLAGS += -DPVR_OGLES2_LIB=\"libGLESv2.so\"
++AM_CFLAGS += -DPVR_OGL_LIB=\"libPVROGL_MESA.so\"
++
++AM_CXXFLAGS = $(AM_CFLAGS)
++
++noinst_LTLIBRARIES = libpvr_dri.la
++libpvr_dri_la_SOURCES = $(pvr_FILES)
++libpvr_dri_la_LIBADD = $(INTEL_LIBS)
++
+diff -Naur a/src/mesa/drivers/dri/pvr/Makefile.sources b/src/mesa/drivers/dri/pvr/Makefile.sources
+--- a/src/mesa/drivers/dri/pvr/Makefile.sources	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/Makefile.sources	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,13 @@
++pvr_INCLUDES = \
++	$(MESA_TOP)/src \
++	$(MESA_TOP)/src/mesa/drivers/dri/pvr
++
++pvr_FILES = \
++ mesa_context.c \
++ pvrdrawable.c \
++ pvrdri.c \
++ pvrext.c \
++ pvrimage.c \
++ pvrsyncobj.c \
++ pvrutil.c \
++ pvr_object_cache.c
 diff -Naur a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/mesa_context.c
---- a/src/mesa/drivers/dri/pvr/mesa_context.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/mesa_context.c	2015-03-20 17:23:30.082798075 +0000
+--- a/src/mesa/drivers/dri/pvr/mesa_context.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/mesa_context.c	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,215 @@
 +/**
 + * \file context.c
@@ -2534,855 +2535,10 @@ diff -Naur a/src/mesa/drivers/dri/pvr/mesa_context.c b/src/mesa/drivers/dri/pvr/
 +
 +	_glapi_set_dispatch((struct _glapi_table *)psTable);
 +}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
---- a/src/mesa/drivers/dri/pvr/pvr_dri_support.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h	2015-03-20 17:23:30.091796475 +0000
-@@ -0,0 +1,348 @@
-+/*************************************************************************/ /*!
-+@File
-+@Title          PVR DRI interface definition
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#if !defined(__PVRDRIIFCE_H__)
-+#define __PVRDRIIFCE_H__
-+
-+#include <stdint.h>
-+#include <stdbool.h>
-+
-+#include "imgpixfmts.h"
-+
-+#if !defined(ARRAY_SIZE)
-+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-+#endif
-+
-+typedef enum
-+{
-+	PVRDRI_API_GL,
-+	PVRDRI_API_GLES1,
-+	PVRDRI_API_GLES2
-+} pvrdri_api_type;
-+
-+typedef enum
-+{
-+	PVRDRI_SURFACE_WINDOW,
-+	PVRDRI_SURFACE_PIXMAP,
-+	PVRDRI_SURFACE_PBUFFER
-+} pvrdri_surface_type;
-+
-+typedef enum
-+{
-+	PVRDRI_IMAGE = 1,
-+	PVRDRI_IMAGE_FROM_NAMES,
-+	PVRDRI_IMAGE_FROM_EGLIMAGE,
-+	PVRDRI_IMAGE_FROM_DMABUFS,
-+} PVRDRIImageType;
-+
-+typedef enum
-+{
-+	PVRDRI_IMAGE_ERROR_SUCCESS,
-+	PVRDRI_IMAGE_ERROR_BAD_PARAMETER,
-+	PVRDRI_IMAGE_ERROR_BAD_MATCH,
-+	PVRDRI_IMAGE_ERROR_BAD_ALLOC,
-+} PVRDRIImageError;
-+
-+/* The buffer flags should match the __DRI_IMAGE_USE_* flags */
-+#define PVDRI_BUFFER_USE_SHARE		0x0001
-+#define PVDRI_BUFFER_USE_SCANOUT	0x0002
-+#define PVDRI_BUFFER_USE_CURSOR		0x0004
-+#define PVDRI_BUFFER_USE_LINEAR		0x0008
-+
-+typedef struct 
-+{
-+	IMG_PIXFMT          ePixFormat;
-+	uint32_t            uiWidth;
-+	uint32_t            uiHeight;
-+	uint32_t            uiStrideInBytes;
-+} PVRDRIBufferAttribs;
-+
-+typedef struct
-+{
-+	int sampleBuffers;
-+	int samples;
-+
-+	int redBits;
-+	int greenBits;
-+	int blueBits;
-+	int alphaBits;
-+
-+	int rgbBits;
-+	int depthBits;
-+	int stencilBits;
-+
-+	bool doubleBufferMode;
-+
-+	int bindToTextureRgb;
-+	int bindToTextureRgba;
-+} PVRDRIConfigInfo;
-+
-+typedef struct EGLImageRec EGLImage;
-+typedef struct __DRIimageRec __DRIimage;
-+
-+/* PVRDRI interface opaque types */
-+typedef struct PVRDRIScreenImplRec PVRDRIScreenImpl;
-+typedef struct PVRDRIContextImplRec PVRDRIContextImpl;
-+typedef struct PVRDRIDrawableImplRec PVRDRIDrawableImpl;
-+typedef struct PVRDRIBufferImplRec PVRDRIBufferImpl;
-+typedef struct PVRSRV_CLIENT_SYNC_PRIM PVRSRV_CLIENT_SYNC_PRIM;
-+
-+typedef struct PVRDRIDrawable_TAG PVRDRIDrawable;
-+
-+bool PVRScreenGlobalInit(void);
-+void PVRScreenGlobalDeinit(void);
-+
-+uint32_t PVRScreenCountInc(void);
-+uint32_t PVRScreenCountDec(void);
-+
-+uint32_t PVRDRIPixFmtGetDepth(IMG_PIXFMT eFmt);
-+uint32_t PVRDRIPixFmtGetBPP(IMG_PIXFMT eFmt);
-+uint32_t PVRDRIPixFmtGetBlockSize(IMG_PIXFMT eFmt);
-+
-+/* ScreenImpl functions */
-+PVRDRIScreenImpl *PVRDRICreateScreenImpl(int iFd);
-+void PVRDRIDestroyScreenImpl(PVRDRIScreenImpl *psScreenImpl);
-+bool PVRDRIScreenImplInitRenderContext(PVRDRIScreenImpl *psScreenImpl, uint32_t uiPriority);
-+
-+/* EGL function table functions */
-+bool PVRDRIEGLGetPVROGLFunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+bool PVRDRIEGLGetOGLES2FunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+bool PVRDRIEGLGetOGLES1FunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+bool PVRDRIEGLGetOCLFunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
-+
-+typedef void (*pvrdri_glapi_proc)(void);
-+pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGL(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
-+pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGLES1(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
-+pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGLES2(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
-+
-+bool PVRDRIEGLFlushBuffers(pvrdri_api_type eAPI,
-+                           PVRDRIScreenImpl *psScreenImpl,
-+                           PVRDRIContextImpl *psContextImpl,
-+                           PVRDRIDrawableImpl *psDrawableImpl,
-+                           bool bFlushAllSurfaces,
-+                           bool bSwapBuffers,
-+                           bool bWaitForHW);
-+bool PVRDRIEGLFreeResources(PVRDRIScreenImpl *psPVRScreenImpl);
-+void PVRDRIEGLMarkRendersurfaceInvalid(pvrdri_api_type eAPI,
-+                                       PVRDRIScreenImpl *psScreenImpl,
-+                                       PVRDRIContextImpl *psContextImpl);
-+void PVRDRIEGLSetOGLFrontBufferCallback(pvrdri_api_type eAPI,
-+                                        PVRDRIScreenImpl *psScreenImpl,
-+                                        PVRDRIDrawableImpl *psDrawableImpl,
-+                                        void (*pfnCallback)(PVRDRIDrawable *));
-+
-+
-+bool
-+PVRDRICreateGC(pvrdri_api_type eAPI,
-+               PVRDRIScreenImpl *psScreenImpl,
-+               PVRDRIContextImpl *psContextImpl,
-+               PVRDRIContextImpl *psSharedContextImpl);
-+bool
-+PVRDRIDestroyGC(pvrdri_api_type eAPI,
-+                PVRDRIScreenImpl *psScreenImpl,
-+                PVRDRIContextImpl *psContextImpl);
-+bool
-+PVRDRIMakeCurrentGC(pvrdri_api_type eAPI,
-+                    PVRDRIScreenImpl *psScreenImpl,
-+                    PVRDRIContextImpl *psContextImpl,
-+                    PVRDRIDrawableImpl *psWriteImpl,
-+                    PVRDRIDrawableImpl *psReadImpl);
-+void
-+PVRDRIMakeUnCurrentGC(pvrdri_api_type eAPI,
-+                      PVRDRIScreenImpl *psScreenImpl);
-+
-+PVRDRIImageError
-+PVRDRIGetImageSource(pvrdri_api_type eAPI,
-+                     PVRDRIScreenImpl *psScreenImpl,
-+                     PVRDRIContextImpl *psContextImpl,
-+                     uint32_t  uiTarget,
-+                     uintptr_t uiBuffer,
-+                     uint32_t  uiLevel,
-+                     EGLImage *psEGLImage);
-+
-+PVRDRIImageError
-+PVRDRIGetImageSourceOCL(PVRDRIScreenImpl *psScreenImpl,
-+                        uint32_t uiTarget,
-+                        void *pBuffer,
-+                        EGLImage *psEGLImage);
-+
-+bool
-+PVRDRI2BindTexImage(pvrdri_api_type eAPI,
-+                    PVRDRIScreenImpl *psScreenImpl,
-+                    PVRDRIContextImpl *psContextImpl,
-+                    PVRDRIDrawableImpl *psDrawableImpl);
-+
-+void
-+PVRDRI2ReleaseTexImage(pvrdri_api_type eAPI,
-+                       PVRDRIScreenImpl *psScreenImpl,
-+                       PVRDRIContextImpl *psContextImpl,
-+                       PVRDRIDrawableImpl *psDrawableImpl);
-+
-+/* ContextImpl functions */
-+PVRDRIContextImpl *PVRDRICreateContextImpl(unsigned uMajorVersion,
-+                                           unsigned uMinorVersion,
-+                                           bool     bIsRobustContext,
-+                                           bool     bNotifyReset);
-+void PVRDRIDestroyContextImpl(PVRDRIContextImpl *psContextImpl);
-+void PVRDRIContextImplSetVersion(PVRDRIContextImpl *psContextImpl,
-+                                 unsigned uMajorVersion,
-+                                 unsigned uMinorVersion);
-+/* DrawableImpl functions */
-+PVRDRIDrawableImpl *PVRDRICreateDrawableImpl(PVRDRIDrawable *psPVRDrawable);
-+void PVRDRIDestroyDrawableImpl(PVRDRIDrawableImpl *psScreenImpl);
-+bool PVREGLDrawableCreate(PVRDRIScreenImpl *psScreenImpl,
-+                          PVRDRIDrawableImpl *psDrawableImpl);
-+bool PVREGLDrawableRecreate(PVRDRIScreenImpl *psScreenImpl,
-+                            PVRDRIDrawableImpl *psDrawableImpl);
-+bool PVREGLDrawableDestroy(PVRDRIScreenImpl *psScreenImpl,
-+                           PVRDRIDrawableImpl *psDrawableImpl);
-+void PVREGLDrawableDestroyConfig(PVRDRIDrawableImpl *psDrawableImpl);
-+
-+/* Buffer functions */
-+PVRDRIBufferImpl *PVRDRIBufferCreate(PVRDRIScreenImpl *psScreenImpl,
-+				     int iWidth,
-+				     int iHeight,
-+				     IMG_PIXFMT ePixFormat,
-+				     unsigned int uiUseFlags,
-+				     unsigned int *puiStride);
-+
-+PVRDRIBufferImpl *PVRDRIBufferCreateFromName(PVRDRIScreenImpl *psScreenImpl,
-+					     int iName,
-+					     int iWidth,
-+					     int iHeight,
-+					     unsigned int uiStride,
-+					     IMG_PIXFMT ePixFormat);
-+
-+PVRDRIBufferImpl *PVRDRIBufferCreateFromFd(PVRDRIScreenImpl *psScreenImpl,
-+					   int iFd,
-+					   int iWidth,
-+					   int iHeight,
-+					   unsigned int uiStride,
-+					   IMG_PIXFMT ePixFormat);
-+
-+void PVRDRIBufferDestroy(PVRDRIBufferImpl *psBuffer);
-+
-+int PVRDRIBufferGetFd(PVRDRIBufferImpl *psBuffer);
-+
-+int PVRDRIBufferGetHandle(PVRDRIBufferImpl *psBuffer);
-+
-+int PVRDRIBufferGetName(PVRDRIBufferImpl *psBuffer);
-+
-+bool PVRDRIBufferAttachNativeWriteSync(PVRDRIBufferImpl *psBuffer);
-+
-+bool PVRDRIBufferAttachNativeReadSync(PVRDRIBufferImpl *psBuffer);
-+
-+bool PVRDRIBufferCreateNativeWriteSync(PVRDRIBufferImpl *psBuffer);
-+
-+bool PVRDRIBufferCreateNativeReadSync(PVRDRIBufferImpl *psBuffer);
-+
-+/* Image functions */
-+EGLImage *PVRDRIEGLImageCreate(void);
-+EGLImage *PVRDRIEGLImageCreateFromBuffers(int iWidth,
-+					  int iHeight,
-+					  int iStride,
-+					  IMG_PIXFMT ePixelFormat,
-+					  IMG_YUV_COLORSPACE eColourSpace,
-+					  IMG_YUV_CHROMA_INTERP eChromaUInterp,
-+					  IMG_YUV_CHROMA_INTERP eChromaVInterp,
-+					  PVRDRIBufferImpl **apsBuffers,
-+					  int iNumBuffers);
-+EGLImage *PVRDRIEGLImageDup(EGLImage *psIn);
-+
-+void PVRDRIEGLImageSetCallbackData(EGLImage *psEGLImage, __DRIimage *image);
-+
-+void PVRDRIEGLImageDestroyExternal(PVRDRIScreenImpl *psScreenImpl,
-+                                   EGLImage *psEGLImage);
-+void PVRDRIEGLImageFree(EGLImage *psEGLImage);
-+
-+void PVRDRIEGLImageGetAttribs(EGLImage *psEGLImage, PVRDRIBufferAttribs *psAttribs);
-+
-+/* Sync functions */
-+bool PVRDRISyncPrimAlloc(PVRDRIScreenImpl *psScreenImpl,
-+                         PVRSRV_CLIENT_SYNC_PRIM **psTQSyncPrim);
-+
-+void PVRDRISyncPrimDelete(PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
-+
-+bool PVRDRIInsertClientFence(pvrdri_api_type eAPI,
-+                             PVRDRIContextImpl *psContextImpl,
-+                             PVRDRIScreenImpl *psScreenImpl,
-+                             PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
-+
-+bool PVRDRIInsertServerFence(pvrdri_api_type eAPI,
-+                             PVRDRIContextImpl *psContextImpl,
-+                             PVRDRIScreenImpl *psScreenImpl,
-+                             PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
-+
-+bool PVRDRIIsFenceSyncComplete(PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
-+
-+bool PVRDRIEventObjectWait(PVRDRIScreenImpl *psScreenImpl,
-+                           PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim,
-+                           bool with_timeout,
-+                           uint64_t timeout_ns);
-+
-+/* EGL/OGL interface functions */
-+void
-+InitialiseEGLModeInfo(PVRDRIContextImpl *psContextImpl,
-+                      const uint32_t uFlags,
-+                      const uint32_t uiPriority);
-+void
-+SetEGLModeInfoFromGLMode(PVRDRIContextImpl *psContextImpl,
-+                         PVRDRIConfigInfo *psConfigInfo);
-+bool
-+PVRDRIEGLDrawableConfigFromGLMode(PVRDRIDrawableImpl *psPVRDrawable,
-+                                  PVRDRIConfigInfo *psConfigInfo,
-+                                  int supportedAPIs,
-+                                  IMG_PIXFMT ePixFmt);
-+
-+/* Callbacks into non-impl layer */
-+typedef struct
-+{
-+	bool                 (*DrawableGetInfo)(PVRDRIDrawable *psPVRDrawable, bool bUpdate);
-+	PVRDRIBufferImpl    *(*DrawableGetDstBuffer)(PVRDRIDrawable *psPVRDrawable);
-+	PVRDRIBufferImpl    *(*DrawableGetAccumBuffer)(PVRDRIDrawable *psPVRDrawable);
-+	bool                 (*DrawableGetParameters)(PVRDRIDrawable *psPVRDrawable,
-+	                                              PVRDRIBufferImpl **psDstBuffer,
-+	                                              PVRDRIBufferImpl **psAccumBuffer,
-+	                                              PVRDRIBufferAttribs *psAttribs,
-+	                                              pvrdri_surface_type *eSurfaceType);
-+
-+	PVRDRIImageType      (*ImageGetSharedType)(__DRIimage *image);
-+	PVRDRIBufferImpl    *(*ImageGetSharedBuffer)(__DRIimage *image);
-+	EGLImage            *(*ImageGetSharedEGLImage)(__DRIimage *image);
-+	EGLImage            *(*ImageGetEGLImage)(__DRIimage *image);
-+	__DRIimage          *(*ScreenGetDRIImage)(void *hEGLImage);
-+	void                 (*RefImage)(__DRIimage *image);
-+	void                 (*UnrefImage)(__DRIimage *image);
-+
-+	bool                 (*BufferAttachNativeWriteSync)(PVRDRIBufferImpl *psBuffer);
-+	bool                 (*BufferAttachNativeReadSync)(PVRDRIBufferImpl *psBuffer);
-+
-+} PVRDRICallbacks;
-+
-+void PVRDRIRegisterCallbacks(PVRDRICallbacks *callbacks);
-+
-+#endif /* defined(__PVRDRIIFCE_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h
---- a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h	2015-03-20 17:23:30.082798075 +0000
-@@ -0,0 +1,37 @@
-+/*************************************************************************/ /*!
-+@File           pvr_mesa_version.h
-+@Title          Replacement Mesa version macros
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#if !defined(__PVR_MESA_VERSION_H__)
-+#define __PVR_MESA_VERSION_H__
-+
-+#include <main/version.h>
-+
-+#if !defined(MESA_VERSION)
-+#define	MESA_VERSION(x, y, z) (((((x) * 256) + (y)) * 256) + (z))
-+#endif
-+
-+#endif /* defined(__PVR_MESA_VERSION_H__) */
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
---- a/src/mesa/drivers/dri/pvr/pvr_object_cache.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.c	2015-03-20 17:23:30.083797075 +0000
-@@ -0,0 +1,309 @@
-+/*************************************************************************/ /*!
-+@File           pvr_object_cache.c
-+@Title          Cache for objects.
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#include <stdlib.h>
-+#include <search.h>
-+
-+#include "pvrqueue.h"
-+#include "pvr_object_cache.h"
-+
-+#define	FOR_QELEM_QOBJ(psCache, psQElem, psObj)				\
-+	for ((psQElem) = (psCache)->sQHead.pvForw;			\
-+	     (psQElem) != &(psCache)->sQHead &&				\
-+		     ((psObj) = PVRQ_CONTAINER_OF((psQElem),		\
-+						  struct PVRCachedObject, sQElem))->bValid; \
-+	     (psQElem) = (psQElem)->pvForw)
-+
-+struct PVRCachedObject
-+{
-+	PVRQElem sQElem;
-+
-+	void *pvObjectData;
-+
-+	bool bValid;
-+	unsigned uAge;
-+};
-+
-+struct _PVRObjectCache
-+{
-+	/* LRU queue of objects in cache */
-+	PVRQHead sQHead;
-+
-+	unsigned uNumObj;
-+	unsigned uMaxAge;
-+
-+	void *pvCreateData;
-+
-+	PVRObjectCacheInsertCB pfnInsertCB;
-+	PVRObjectCachePurgeCB pfnPurgeCB;
-+	PVRObjectCacheCompareCB pfnCompareCB;
-+};
-+
-+static inline void
-+PVRQueueRemove(struct PVRCachedObject *psObj)
-+{
-+	remque(&psObj->sQElem);
-+}
-+
-+static inline void
-+PVRQueueAddFront(struct _PVRObjectCache *psCache, struct PVRCachedObject *psObj)
-+{
-+	insque(&psObj->sQElem, &psCache->sQHead);
-+}
-+
-+static inline void
-+PVRQueueAddBack(struct _PVRObjectCache *psCache, struct PVRCachedObject *psObj)
-+{
-+	insque(&psObj->sQElem, psCache->sQHead.pvBack);
-+}
-+
-+static inline bool
-+PVRObjectInsert(struct _PVRObjectCache *psCache,
-+		struct PVRCachedObject *psObj,
-+		void *pvInsertData)
-+{
-+	psObj->pvObjectData = psCache->pfnInsertCB(psCache->pvCreateData,
-+						  pvInsertData);
-+
-+	return (psObj->pvObjectData != NULL);
-+}
-+
-+static inline void
-+PVRObjectPurge(struct _PVRObjectCache *psCache,
-+	       struct PVRCachedObject *psObj,
-+	       bool bRetired)
-+{
-+	if (psCache->pfnPurgeCB != NULL)
-+	{
-+		psCache->pfnPurgeCB(psCache->pvCreateData,
-+				    psObj->pvObjectData,
-+				    bRetired);
-+	}
-+}
-+
-+static inline bool
-+PVRObjectInCache(struct _PVRObjectCache *psCache,
-+		 struct PVRCachedObject *psObj,
-+		 void *pvInsertData)
-+{
-+	if (psCache->pfnCompareCB != NULL)
-+	{
-+		return psCache->pfnCompareCB(psCache->pvCreateData,
-+					     psObj->pvObjectData,
-+					     pvInsertData);
-+	}
-+
-+	return false;
-+}
-+
-+IMG_INTERNAL void
-+PVRObjectCachePurge(PVRObjectCache hObjectCache)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+	PVRQElem *psQElem;
-+	struct PVRCachedObject *psObj;
-+
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		PVRObjectPurge(psCache, psObj, false);
-+
-+		psObj->bValid = false;
-+	}
-+}
-+
-+
-+IMG_INTERNAL bool
-+PVRObjectCacheInsert(PVRObjectCache hObjectCache,
-+		     void *pvInsertData)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+	struct PVRCachedObject *psObj;
-+	bool bInserted = false;
-+	PVRQElem *psQElem;
-+
-+	/* Is the object already in the cache ? */
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		/* Cache hit? */
-+		if (PVRObjectInCache(psCache, psObj, pvInsertData))
-+		{
-+			/* The old object purge will bump the age to 1 */
-+			psObj->uAge = 0;
-+			bInserted = true;
-+
-+			/* Move the object to the front of the queue */
-+			PVRQueueRemove(psObj);
-+			PVRQueueAddFront(psCache, psObj);
-+
-+			break;
-+		}
-+	}
-+
-+	/* Purge old objects */
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		/* Age the object */
-+		psObj->uAge++;
-+
-+		/* Has the object been in the cache too long? */
-+		if (psCache->uMaxAge != 0 && psObj->uAge > psCache->uMaxAge)
-+		{
-+			PVRObjectPurge(psCache, psObj, true);
-+
-+			psObj->bValid = false;
-+
-+			/* Move the object to the back of the queue */
-+			PVRQueueRemove(psObj);
-+			PVRQueueAddBack(psCache, psObj);
-+		}
-+	}
-+
-+	/*
-+	 * If the object wasn't added to the cache above, add it using the
-+	 * last entry in the queue.
-+	 */
-+	if (!bInserted)
-+	{
-+		PVRQElem *psQElem = psCache->sQHead.pvBack;
-+		struct PVRCachedObject *psObj = PVRQ_CONTAINER_OF(psQElem,
-+								  struct PVRCachedObject,
-+								  sQElem);
-+
-+		if (psObj->bValid)
-+		{
-+			PVRObjectPurge(psCache, psObj, true);
-+
-+			psObj->bValid = false;
-+		}
-+
-+		psObj->uAge = 1;
-+
-+		if (PVRObjectInsert(psCache, psObj, pvInsertData))
-+		{
-+			psObj->bValid = true;
-+
-+			/* Move the object to the front of the queue */
-+			PVRQueueRemove(psObj);
-+			PVRQueueAddFront(psCache, psObj);
-+
-+			bInserted = true;
-+		}
-+	}
-+
-+	return bInserted;
-+}
-+
-+IMG_INTERNAL void *
-+PVRObjectCacheGetObject(PVRObjectCache hObjectCache, unsigned uObj)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+	unsigned uCount = uObj;
-+	PVRQElem *psQElem;
-+	struct PVRCachedObject *psObj;
-+
-+	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
-+	{
-+		if ((uCount--) == 0)
-+		{
-+			return psObj->pvObjectData;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+IMG_INTERNAL void
-+PVRObjectCacheDestroy(PVRObjectCache hObjectCache)
-+{
-+	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
-+
-+	PVRObjectCachePurge(psCache);
-+
-+	while (psCache->sQHead.pvForw != &psCache->sQHead)
-+	{
-+		struct PVRCachedObject *psObj = PVRQ_CONTAINER_OF(psCache->sQHead.pvForw,
-+								  struct PVRCachedObject,
-+								  sQElem);
-+
-+		PVRQueueRemove(psObj);
-+		free(psObj);
-+	}
-+
-+	free(psCache);
-+}
-+
-+IMG_INTERNAL PVRObjectCache
-+PVRObjectCacheCreate(unsigned uNumObj,
-+		     unsigned uMaxAge,
-+		     void *pvCreateData,
-+		     PVRObjectCacheInsertCB pfnInsertCB,
-+		     PVRObjectCachePurgeCB pfnPurgeCB,
-+		     PVRObjectCacheCompareCB pfnCompareCB)
-+{
-+	struct _PVRObjectCache *psCache;
-+	unsigned i;
-+
-+	if (uNumObj == 0 || pfnInsertCB == NULL)
-+	{
-+		return NULL;
-+	}
-+
-+	psCache = calloc(1, sizeof(*psCache));
-+	if (psCache == NULL)
-+	{
-+		return NULL;
-+	}
-+
-+	psCache->uNumObj = uNumObj;
-+	psCache->uMaxAge = uMaxAge;
-+	psCache->pvCreateData = pvCreateData;
-+	psCache->pfnInsertCB = pfnInsertCB;
-+	psCache->pfnPurgeCB = pfnPurgeCB;
-+	psCache->pfnCompareCB = pfnCompareCB;
-+
-+	INITIALISE_PVRQ_HEAD(&psCache->sQHead);
-+
-+	for (i = 0; i < uNumObj; i++)
-+	{
-+		struct PVRCachedObject *psObj;
-+
-+		psObj = calloc(1, sizeof(*psObj));
-+		if (psObj == NULL)
-+		{
-+			goto ExitError;
-+		}
-+
-+		PVRQueueAddBack(psCache, psObj);
-+	}
-+
-+	return psCache;
-+
-+ExitError:
-+	PVRObjectCacheDestroy(psCache);
-+
-+	return NULL;
-+}
-diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.h b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
---- a/src/mesa/drivers/dri/pvr/pvr_object_cache.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.h	2015-03-20 17:23:30.086794575 +0000
-@@ -0,0 +1,135 @@
-+/*************************************************************************/ /*!
-+@File           pvr_object_cache.h
-+@Title          Cache for objects.
-+@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
-+@License        MIT
-+
-+The contents of this file are subject to the MIT license as set out below.
-+
-+Permission is hereby granted, free of charge, to any person obtaining a copy
-+of this software and associated documentation files (the "Software"), to deal
-+in the Software without restriction, including without limitation the rights
-+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-+copies of the Software, and to permit persons to whom the Software is
-+furnished to do so, subject to the following conditions:
-+
-+The above copyright notice and this permission notice shall be included in
-+all copies or substantial portions of the Software.
-+
-+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-+THE SOFTWARE.
-+*/ /**************************************************************************/
-+
-+#if !defined(__PVR_OBJECT_CACHE_H__)
-+#define __PVR_OBJECT_CACHE_H__
-+
-+#include "stdbool.h"
-+#ifndef IMG_INTERNAL
-+#define IMG_INTERNAL	__attribute__((visibility("hidden")))
-+#endif
-+
-+typedef struct _PVRObjectCache *PVRObjectCache;
-+
-+/* Cache insert callback. Returns object data on success or NULL otherwise. */
-+typedef void *(*PVRObjectCacheInsertCB)(void *pvCreateData,
-+					void *pvInsertData);
-+
-+/*
-+ * Cache purge callback. The object data is the data returned by the insert
-+ * callback. The bRetired flag indicates an object has been retired due to
-+ * age, or lack of space in the cache, rather than an explicit purge.
-+ */
-+typedef void (*PVRObjectCachePurgeCB)(void *pvCreateData,
-+				      void *pvObjectData,
-+				      bool bRetired);
-+/*
-+ * Cache compare callback. The object data is the data returned by the insert
-+ * callback.
-+ */
-+typedef bool (*PVRObjectCacheCompareCB)(void *pvCreateData,
-+                                        void *pvObjectData,
-+                                        void *pvInsertData);
-+
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheCreate
-+@Description    Creates an object cache.
-+@Input          uNumObj             The maximum number of objects that can be
-+                                    stored in the cache.
-+@Input          uMaxAge             The maximum age of an object before it gets
-+                                    purged from the cache. If 0 then age related
-+                                    purging is disabled.
-+@Input          pvCreateData        Optional data to be passed to the provided
-+                                    callback functions.
-+@Input          pfnInsertCB         Callback used when data is inserted into
-+                                    the cache.
-+@Input          pfnPurgeCB          Optional callback used when an object is
-+                                    purged from the cache.
-+@Input          pfnCompareCB        Optional callback used when inserting a new
-+                                    object into the cache to determine whether
-+                                    or not the object already exists within the
-+                                    cache.
-+@Return         PVRObjectCache      Returns a handle to the newly created object
-+                                    cache on success or NULL otherwise.
-+*/ /***************************************************************************/
-+IMG_INTERNAL PVRObjectCache PVRObjectCacheCreate(unsigned uNumObj,
-+						 unsigned uMaxAge,
-+						 void *pvCreateData,
-+						 PVRObjectCacheInsertCB pfnInsertCB,
-+						 PVRObjectCachePurgeCB pfnPurgeCB,
-+						 PVRObjectCacheCompareCB pfnCompareCB);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheInsert
-+@Description    Insert an object into the cache, giving it a starting age of
-+                one. If the object was already contained within the cache then
-+                the insert callback will not be called and the existing cache
-+                object will have its age reset to one. All other objects in the
-+                cache will have their age increased by one. This may result in
-+                an object being purged from the cache if its age exceeds the
-+                maximum age specified when creating the cache or the cache is
-+                already full.
-+@Input          hObjectCache        Handle to an object cache.
-+@Input          pvInsertData        Data passed to the insert callback.
-+@Return         IMG_BOOL            Returns IMG_TRUE on success or IMG_FALSE
-+                                    otherwise.
-+*/ /***************************************************************************/
-+IMG_INTERNAL bool PVRObjectCacheInsert(PVRObjectCache hObjectCache,
-+                                       void *pvInsertData);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheGetObject
-+@Description    Returns object data from the cache based on the given object
-+                number, whereby the youngest object corresponds to zero.
-+@Input          hObjectCache        Handle to an object cache.
-+@Input          uObj                Number of the object to return.
-+@Return         void *              Returns object data (as returned by the
-+                                    insert callback) on success or NULL
-+                                    otherwise.
-+*/ /***************************************************************************/
-+IMG_INTERNAL void *PVRObjectCacheGetObject(PVRObjectCache hObjectCache,
-+					   unsigned uObj);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCachePurge
-+@Description    Purges the given cache of all objects.
-+@Input          hObjectCache        Handle to an object cache.
-+@Return         void
-+*/ /***************************************************************************/
-+IMG_INTERNAL void PVRObjectCachePurge(PVRObjectCache hObjectCache);
-+
-+/**************************************************************************/ /*!
-+@Function       PVRObjectCacheDestroy
-+@Description    Destroy the given object cache, purging all remaining objects
-+                in the cache.
-+@Input          hObjectCache        Handle to an object cache.
-+@Return         void
-+*/ /***************************************************************************/
-+IMG_INTERNAL void PVRObjectCacheDestroy(PVRObjectCache hObjectCache);
-+
-+#endif /* defined(__PVR_OBJECT_CACHE_H__) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/pvrdrawable.c
---- a/src/mesa/drivers/dri/pvr/pvrdrawable.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c	2015-03-20 17:23:30.092796575 +0000
-@@ -0,0 +1,677 @@
+--- a/src/mesa/drivers/dri/pvr/pvrdrawable.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrdrawable.c	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,678 @@
 +/*************************************************************************/ /*!
 +@File
 +@Title          PVR DRI Surface/Drawable code
@@ -3857,6 +3013,7 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/p
 +					   psDRIDrawable->w,
 +					   psDRIDrawable->h,
 +					   psDRIBuffer->pitch,
++					   0,
 +					   psPVRDrawable->ePixelFormat);
 +	if (!psPVRBuffer->uBacking.sDRI2.psBuffer)
 +	{
@@ -4061,8 +3218,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdrawable.c b/src/mesa/drivers/dri/pvr/p
 +	return true;
 +}
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri.c
---- a/src/mesa/drivers/dri/pvr/pvrdri.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrdri.c	2015-03-20 17:23:30.090794075 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrdri.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrdri.c	2015-04-01 19:52:33.153338334 +0100
 @@ -0,0 +1,1532 @@
 +/*************************************************************************/ /*!
 +@File
@@ -5597,8 +4754,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri
 +	return gpsPVRScreen;
 +}
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri.h
---- a/src/mesa/drivers/dri/pvr/pvrdri.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrdri.h	2015-03-20 17:23:30.083797075 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrdri.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrdri.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,272 @@
 +/*************************************************************************/ /*!
 +@File
@@ -5872,9 +5029,363 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.h b/src/mesa/drivers/dri/pvr/pvrdri
 +void PVRDRIUnrefImage(__DRIimage *image);
 +
 +#endif /* defined(__PVRDRI2_H__) */
+diff -Naur a/src/mesa/drivers/dri/pvr/pvr_dri_support.h b/src/mesa/drivers/dri/pvr/pvr_dri_support.h
+--- a/src/mesa/drivers/dri/pvr/pvr_dri_support.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvr_dri_support.h	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,350 @@
++/*************************************************************************/ /*!
++@File
++@Title          PVR DRI interface definition
++@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
++@License        MIT
++
++The contents of this file are subject to the MIT license as set out below.
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/ /**************************************************************************/
++
++#if !defined(__PVRDRIIFCE_H__)
++#define __PVRDRIIFCE_H__
++
++#include <stdint.h>
++#include <stdbool.h>
++
++#include "imgpixfmts.h"
++
++#if !defined(ARRAY_SIZE)
++#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
++#endif
++
++typedef enum
++{
++	PVRDRI_API_GL,
++	PVRDRI_API_GLES1,
++	PVRDRI_API_GLES2
++} pvrdri_api_type;
++
++typedef enum
++{
++	PVRDRI_SURFACE_WINDOW,
++	PVRDRI_SURFACE_PIXMAP,
++	PVRDRI_SURFACE_PBUFFER
++} pvrdri_surface_type;
++
++typedef enum
++{
++	PVRDRI_IMAGE = 1,
++	PVRDRI_IMAGE_FROM_NAMES,
++	PVRDRI_IMAGE_FROM_EGLIMAGE,
++	PVRDRI_IMAGE_FROM_DMABUFS,
++} PVRDRIImageType;
++
++typedef enum
++{
++	PVRDRI_IMAGE_ERROR_SUCCESS,
++	PVRDRI_IMAGE_ERROR_BAD_PARAMETER,
++	PVRDRI_IMAGE_ERROR_BAD_MATCH,
++	PVRDRI_IMAGE_ERROR_BAD_ALLOC,
++} PVRDRIImageError;
++
++/* The buffer flags should match the __DRI_IMAGE_USE_* flags */
++#define PVDRI_BUFFER_USE_SHARE		0x0001
++#define PVDRI_BUFFER_USE_SCANOUT	0x0002
++#define PVDRI_BUFFER_USE_CURSOR		0x0004
++#define PVDRI_BUFFER_USE_LINEAR		0x0008
++
++typedef struct 
++{
++	IMG_PIXFMT          ePixFormat;
++	uint32_t            uiWidth;
++	uint32_t            uiHeight;
++	uint32_t            uiStrideInBytes;
++} PVRDRIBufferAttribs;
++
++typedef struct
++{
++	int sampleBuffers;
++	int samples;
++
++	int redBits;
++	int greenBits;
++	int blueBits;
++	int alphaBits;
++
++	int rgbBits;
++	int depthBits;
++	int stencilBits;
++
++	bool doubleBufferMode;
++
++	int bindToTextureRgb;
++	int bindToTextureRgba;
++} PVRDRIConfigInfo;
++
++typedef struct EGLImageRec EGLImage;
++typedef struct __DRIimageRec __DRIimage;
++
++/* PVRDRI interface opaque types */
++typedef struct PVRDRIScreenImplRec PVRDRIScreenImpl;
++typedef struct PVRDRIContextImplRec PVRDRIContextImpl;
++typedef struct PVRDRIDrawableImplRec PVRDRIDrawableImpl;
++typedef struct PVRDRIBufferImplRec PVRDRIBufferImpl;
++typedef struct PVRSRV_CLIENT_SYNC_PRIM PVRSRV_CLIENT_SYNC_PRIM;
++
++typedef struct PVRDRIDrawable_TAG PVRDRIDrawable;
++
++bool PVRScreenGlobalInit(void);
++void PVRScreenGlobalDeinit(void);
++
++uint32_t PVRScreenCountInc(void);
++uint32_t PVRScreenCountDec(void);
++
++uint32_t PVRDRIPixFmtGetDepth(IMG_PIXFMT eFmt);
++uint32_t PVRDRIPixFmtGetBPP(IMG_PIXFMT eFmt);
++uint32_t PVRDRIPixFmtGetBlockSize(IMG_PIXFMT eFmt);
++
++/* ScreenImpl functions */
++PVRDRIScreenImpl *PVRDRICreateScreenImpl(int iFd);
++void PVRDRIDestroyScreenImpl(PVRDRIScreenImpl *psScreenImpl);
++bool PVRDRIScreenImplInitRenderContext(PVRDRIScreenImpl *psScreenImpl, uint32_t uiPriority);
++
++/* EGL function table functions */
++bool PVRDRIEGLGetPVROGLFunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
++bool PVRDRIEGLGetOGLES2FunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
++bool PVRDRIEGLGetOGLES1FunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
++bool PVRDRIEGLGetOCLFunctionTable(PVRDRIScreenImpl *psScreenImpl, void *pvLibHandle);
++
++typedef void (*pvrdri_glapi_proc)(void);
++pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGL(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
++pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGLES1(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
++pvrdri_glapi_proc PVRDRIEGLGetProcAddressOGLES2(PVRDRIScreenImpl *psScreenImpl, const char *psProcName);
++
++bool PVRDRIEGLFlushBuffers(pvrdri_api_type eAPI,
++                           PVRDRIScreenImpl *psScreenImpl,
++                           PVRDRIContextImpl *psContextImpl,
++                           PVRDRIDrawableImpl *psDrawableImpl,
++                           bool bFlushAllSurfaces,
++                           bool bSwapBuffers,
++                           bool bWaitForHW);
++bool PVRDRIEGLFreeResources(PVRDRIScreenImpl *psPVRScreenImpl);
++void PVRDRIEGLMarkRendersurfaceInvalid(pvrdri_api_type eAPI,
++                                       PVRDRIScreenImpl *psScreenImpl,
++                                       PVRDRIContextImpl *psContextImpl);
++void PVRDRIEGLSetOGLFrontBufferCallback(pvrdri_api_type eAPI,
++                                        PVRDRIScreenImpl *psScreenImpl,
++                                        PVRDRIDrawableImpl *psDrawableImpl,
++                                        void (*pfnCallback)(PVRDRIDrawable *));
++
++
++bool
++PVRDRICreateGC(pvrdri_api_type eAPI,
++               PVRDRIScreenImpl *psScreenImpl,
++               PVRDRIContextImpl *psContextImpl,
++               PVRDRIContextImpl *psSharedContextImpl);
++bool
++PVRDRIDestroyGC(pvrdri_api_type eAPI,
++                PVRDRIScreenImpl *psScreenImpl,
++                PVRDRIContextImpl *psContextImpl);
++bool
++PVRDRIMakeCurrentGC(pvrdri_api_type eAPI,
++                    PVRDRIScreenImpl *psScreenImpl,
++                    PVRDRIContextImpl *psContextImpl,
++                    PVRDRIDrawableImpl *psWriteImpl,
++                    PVRDRIDrawableImpl *psReadImpl);
++void
++PVRDRIMakeUnCurrentGC(pvrdri_api_type eAPI,
++                      PVRDRIScreenImpl *psScreenImpl);
++
++PVRDRIImageError
++PVRDRIGetImageSource(pvrdri_api_type eAPI,
++                     PVRDRIScreenImpl *psScreenImpl,
++                     PVRDRIContextImpl *psContextImpl,
++                     uint32_t  uiTarget,
++                     uintptr_t uiBuffer,
++                     uint32_t  uiLevel,
++                     EGLImage *psEGLImage);
++
++PVRDRIImageError
++PVRDRIGetImageSourceOCL(PVRDRIScreenImpl *psScreenImpl,
++                        uint32_t uiTarget,
++                        void *pBuffer,
++                        EGLImage *psEGLImage);
++
++bool
++PVRDRI2BindTexImage(pvrdri_api_type eAPI,
++                    PVRDRIScreenImpl *psScreenImpl,
++                    PVRDRIContextImpl *psContextImpl,
++                    PVRDRIDrawableImpl *psDrawableImpl);
++
++void
++PVRDRI2ReleaseTexImage(pvrdri_api_type eAPI,
++                       PVRDRIScreenImpl *psScreenImpl,
++                       PVRDRIContextImpl *psContextImpl,
++                       PVRDRIDrawableImpl *psDrawableImpl);
++
++/* ContextImpl functions */
++PVRDRIContextImpl *PVRDRICreateContextImpl(unsigned uMajorVersion,
++                                           unsigned uMinorVersion,
++                                           bool     bIsRobustContext,
++                                           bool     bNotifyReset);
++void PVRDRIDestroyContextImpl(PVRDRIContextImpl *psContextImpl);
++void PVRDRIContextImplSetVersion(PVRDRIContextImpl *psContextImpl,
++                                 unsigned uMajorVersion,
++                                 unsigned uMinorVersion);
++/* DrawableImpl functions */
++PVRDRIDrawableImpl *PVRDRICreateDrawableImpl(PVRDRIDrawable *psPVRDrawable);
++void PVRDRIDestroyDrawableImpl(PVRDRIDrawableImpl *psScreenImpl);
++bool PVREGLDrawableCreate(PVRDRIScreenImpl *psScreenImpl,
++                          PVRDRIDrawableImpl *psDrawableImpl);
++bool PVREGLDrawableRecreate(PVRDRIScreenImpl *psScreenImpl,
++                            PVRDRIDrawableImpl *psDrawableImpl);
++bool PVREGLDrawableDestroy(PVRDRIScreenImpl *psScreenImpl,
++                           PVRDRIDrawableImpl *psDrawableImpl);
++void PVREGLDrawableDestroyConfig(PVRDRIDrawableImpl *psDrawableImpl);
++
++/* Buffer functions */
++PVRDRIBufferImpl *PVRDRIBufferCreate(PVRDRIScreenImpl *psScreenImpl,
++				     int iWidth,
++				     int iHeight,
++				     IMG_PIXFMT ePixFormat,
++				     unsigned int uiUseFlags,
++				     unsigned int *puiStride);
++
++PVRDRIBufferImpl *PVRDRIBufferCreateFromName(PVRDRIScreenImpl *psScreenImpl,
++					     int iName,
++					     int iWidth,
++					     int iHeight,
++					     unsigned int uiStride,
++					     unsigned int uiOffset,
++					     IMG_PIXFMT ePixFormat);
++
++PVRDRIBufferImpl *PVRDRIBufferCreateFromFd(PVRDRIScreenImpl *psScreenImpl,
++					   int iFd,
++					   int iWidth,
++					   int iHeight,
++					   unsigned int uiStride,
++					   unsigned int uiOffset,
++					   IMG_PIXFMT ePixFormat);
++
++void PVRDRIBufferDestroy(PVRDRIBufferImpl *psBuffer);
++
++int PVRDRIBufferGetFd(PVRDRIBufferImpl *psBuffer);
++
++int PVRDRIBufferGetHandle(PVRDRIBufferImpl *psBuffer);
++
++int PVRDRIBufferGetName(PVRDRIBufferImpl *psBuffer);
++
++bool PVRDRIBufferAttachNativeWriteSync(PVRDRIBufferImpl *psBuffer);
++
++bool PVRDRIBufferAttachNativeReadSync(PVRDRIBufferImpl *psBuffer);
++
++bool PVRDRIBufferCreateNativeWriteSync(PVRDRIBufferImpl *psBuffer);
++
++bool PVRDRIBufferCreateNativeReadSync(PVRDRIBufferImpl *psBuffer);
++
++/* Image functions */
++EGLImage *PVRDRIEGLImageCreate(void);
++EGLImage *PVRDRIEGLImageCreateFromBuffers(int iWidth,
++					  int iHeight,
++					  int iStride,
++					  IMG_PIXFMT ePixelFormat,
++					  IMG_YUV_COLORSPACE eColourSpace,
++					  IMG_YUV_CHROMA_INTERP eChromaUInterp,
++					  IMG_YUV_CHROMA_INTERP eChromaVInterp,
++					  PVRDRIBufferImpl **apsBuffers,
++					  int iNumBuffers);
++EGLImage *PVRDRIEGLImageDup(EGLImage *psIn);
++
++void PVRDRIEGLImageSetCallbackData(EGLImage *psEGLImage, __DRIimage *image);
++
++void PVRDRIEGLImageDestroyExternal(PVRDRIScreenImpl *psScreenImpl,
++                                   EGLImage *psEGLImage);
++void PVRDRIEGLImageFree(EGLImage *psEGLImage);
++
++void PVRDRIEGLImageGetAttribs(EGLImage *psEGLImage, PVRDRIBufferAttribs *psAttribs);
++
++/* Sync functions */
++bool PVRDRISyncPrimAlloc(PVRDRIScreenImpl *psScreenImpl,
++                         PVRSRV_CLIENT_SYNC_PRIM **psTQSyncPrim);
++
++void PVRDRISyncPrimDelete(PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
++
++bool PVRDRIInsertClientFence(pvrdri_api_type eAPI,
++                             PVRDRIContextImpl *psContextImpl,
++                             PVRDRIScreenImpl *psScreenImpl,
++                             PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
++
++bool PVRDRIInsertServerFence(pvrdri_api_type eAPI,
++                             PVRDRIContextImpl *psContextImpl,
++                             PVRDRIScreenImpl *psScreenImpl,
++                             PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
++
++bool PVRDRIIsFenceSyncComplete(PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim);
++
++bool PVRDRIEventObjectWait(PVRDRIScreenImpl *psScreenImpl,
++                           PVRSRV_CLIENT_SYNC_PRIM *psTQSyncPrim,
++                           bool with_timeout,
++                           uint64_t timeout_ns);
++
++/* EGL/OGL interface functions */
++void
++InitialiseEGLModeInfo(PVRDRIContextImpl *psContextImpl,
++                      const uint32_t uFlags,
++                      const uint32_t uiPriority);
++void
++SetEGLModeInfoFromGLMode(PVRDRIContextImpl *psContextImpl,
++                         PVRDRIConfigInfo *psConfigInfo);
++bool
++PVRDRIEGLDrawableConfigFromGLMode(PVRDRIDrawableImpl *psPVRDrawable,
++                                  PVRDRIConfigInfo *psConfigInfo,
++                                  int supportedAPIs,
++                                  IMG_PIXFMT ePixFmt);
++
++/* Callbacks into non-impl layer */
++typedef struct
++{
++	bool                 (*DrawableGetInfo)(PVRDRIDrawable *psPVRDrawable, bool bUpdate);
++	PVRDRIBufferImpl    *(*DrawableGetDstBuffer)(PVRDRIDrawable *psPVRDrawable);
++	PVRDRIBufferImpl    *(*DrawableGetAccumBuffer)(PVRDRIDrawable *psPVRDrawable);
++	bool                 (*DrawableGetParameters)(PVRDRIDrawable *psPVRDrawable,
++	                                              PVRDRIBufferImpl **psDstBuffer,
++	                                              PVRDRIBufferImpl **psAccumBuffer,
++	                                              PVRDRIBufferAttribs *psAttribs,
++	                                              pvrdri_surface_type *eSurfaceType);
++
++	PVRDRIImageType      (*ImageGetSharedType)(__DRIimage *image);
++	PVRDRIBufferImpl    *(*ImageGetSharedBuffer)(__DRIimage *image);
++	EGLImage            *(*ImageGetSharedEGLImage)(__DRIimage *image);
++	EGLImage            *(*ImageGetEGLImage)(__DRIimage *image);
++	__DRIimage          *(*ScreenGetDRIImage)(void *hEGLImage);
++	void                 (*RefImage)(__DRIimage *image);
++	void                 (*UnrefImage)(__DRIimage *image);
++
++	bool                 (*BufferAttachNativeWriteSync)(PVRDRIBufferImpl *psBuffer);
++	bool                 (*BufferAttachNativeReadSync)(PVRDRIBufferImpl *psBuffer);
++
++} PVRDRICallbacks;
++
++void PVRDRIRegisterCallbacks(PVRDRICallbacks *callbacks);
++
++#endif /* defined(__PVRDRIIFCE_H__) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext.c
---- a/src/mesa/drivers/dri/pvr/pvrext.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrext.c	2015-03-20 17:23:30.094794475 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrext.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrext.c	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,284 @@
 +/*************************************************************************/ /*!
 +@File           
@@ -6161,9 +5672,9 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrext.c b/src/mesa/drivers/dri/pvr/pvrext
 +	{ .name = NULL, .version = 0 },
 +};
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvrimage.c
---- a/src/mesa/drivers/dri/pvr/pvrimage.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrimage.c	2015-03-20 17:23:30.093796375 +0000
-@@ -0,0 +1,1064 @@
+--- a/src/mesa/drivers/dri/pvr/pvrimage.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrimage.c	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,1066 @@
 +/*************************************************************************/ /*!
 +@File
 +@Title          DRI IMAGE extension
@@ -6350,7 +5861,7 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvri
 +
 +	for (i = 0; i < num_names; i++)
 +	{
-+		if (offsets[i] != 0)
++		if (offsets[i] < 0)
 +		{
 +			errorMessage("%s: Offset %d unsupported (value = %d)\n",
 +				     __func__, i, offsets[i]);
@@ -6372,6 +5883,7 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvri
 +						   width >> psFormat->sPlanes[i].uiWidthShift,
 +						   height >> psFormat->sPlanes[i].uiHeightShift,
 +						   strides[i],
++						   offsets[i],
 +						   psFormat->sPlanes[i].eIMGPixelFormat);
 +		if (!shared->apsBuffers[i])
 +		{
@@ -6435,7 +5947,7 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvri
 +
 +	for (i = 0; i < num_fds; i++)
 +	{
-+		if (offsets[i] != 0)
++		if (offsets[i] < 0)
 +		{
 +			errorMessage("%s: Offset %d unsupported (value = %d)\n",
 +				     __func__, i, offsets[i]);
@@ -6459,6 +5971,7 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvri
 +						 width >> psFormat->sPlanes[i].uiWidthShift,
 +						 height >> psFormat->sPlanes[i].uiHeightShift,
 +						 strides[i],
++						 offsets[i],
 +						 psFormat->sPlanes[i].eIMGPixelFormat);
 +		if (!shared->apsBuffers[i])
 +		{
@@ -7229,8 +6742,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.c b/src/mesa/drivers/dri/pvr/pvri
 +	      psPVRScreen->psDRIScreen->loaderPrivate);
 +}
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvrimage.h
---- a/src/mesa/drivers/dri/pvr/pvrimage.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrimage.h	2015-03-20 17:23:30.081875075 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrimage.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrimage.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,94 @@
 +/*************************************************************************/ /*!
 +@File           
@@ -7327,8 +6840,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrimage.h b/src/mesa/drivers/dri/pvr/pvri
 +
 +#endif /* !defined(__PVRIMAGE_H__) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrmesa.h b/src/mesa/drivers/dri/pvr/pvrmesa.h
---- a/src/mesa/drivers/dri/pvr/pvrmesa.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrmesa.h	2015-03-20 17:23:30.091796475 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrmesa.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrmesa.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,41 @@
 +/*************************************************************************/ /*!
 +@File           
@@ -7371,9 +6884,502 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrmesa.h b/src/mesa/drivers/dri/pvr/pvrme
 +void pvrdri_set_dispatch_table(PVRDRIContext *psPVRContext);
 +
 +#endif /* !defined(__PVRMESA_H__) */
+diff -Naur a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h
+--- a/src/mesa/drivers/dri/pvr/pvr_mesa_version.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvr_mesa_version.h	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,37 @@
++/*************************************************************************/ /*!
++@File           pvr_mesa_version.h
++@Title          Replacement Mesa version macros
++@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
++@License        MIT
++
++The contents of this file are subject to the MIT license as set out below.
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/ /**************************************************************************/
++
++#if !defined(__PVR_MESA_VERSION_H__)
++#define __PVR_MESA_VERSION_H__
++
++#include <main/version.h>
++
++#if !defined(MESA_VERSION)
++#define	MESA_VERSION(x, y, z) (((((x) * 256) + (y)) * 256) + (z))
++#endif
++
++#endif /* defined(__PVR_MESA_VERSION_H__) */
+diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.c b/src/mesa/drivers/dri/pvr/pvr_object_cache.c
+--- a/src/mesa/drivers/dri/pvr/pvr_object_cache.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.c	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,309 @@
++/*************************************************************************/ /*!
++@File           pvr_object_cache.c
++@Title          Cache for objects.
++@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
++@License        MIT
++
++The contents of this file are subject to the MIT license as set out below.
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/ /**************************************************************************/
++
++#include <stdlib.h>
++#include <search.h>
++
++#include "pvrqueue.h"
++#include "pvr_object_cache.h"
++
++#define	FOR_QELEM_QOBJ(psCache, psQElem, psObj)				\
++	for ((psQElem) = (psCache)->sQHead.pvForw;			\
++	     (psQElem) != &(psCache)->sQHead &&				\
++		     ((psObj) = PVRQ_CONTAINER_OF((psQElem),		\
++						  struct PVRCachedObject, sQElem))->bValid; \
++	     (psQElem) = (psQElem)->pvForw)
++
++struct PVRCachedObject
++{
++	PVRQElem sQElem;
++
++	void *pvObjectData;
++
++	bool bValid;
++	unsigned uAge;
++};
++
++struct _PVRObjectCache
++{
++	/* LRU queue of objects in cache */
++	PVRQHead sQHead;
++
++	unsigned uNumObj;
++	unsigned uMaxAge;
++
++	void *pvCreateData;
++
++	PVRObjectCacheInsertCB pfnInsertCB;
++	PVRObjectCachePurgeCB pfnPurgeCB;
++	PVRObjectCacheCompareCB pfnCompareCB;
++};
++
++static inline void
++PVRQueueRemove(struct PVRCachedObject *psObj)
++{
++	remque(&psObj->sQElem);
++}
++
++static inline void
++PVRQueueAddFront(struct _PVRObjectCache *psCache, struct PVRCachedObject *psObj)
++{
++	insque(&psObj->sQElem, &psCache->sQHead);
++}
++
++static inline void
++PVRQueueAddBack(struct _PVRObjectCache *psCache, struct PVRCachedObject *psObj)
++{
++	insque(&psObj->sQElem, psCache->sQHead.pvBack);
++}
++
++static inline bool
++PVRObjectInsert(struct _PVRObjectCache *psCache,
++		struct PVRCachedObject *psObj,
++		void *pvInsertData)
++{
++	psObj->pvObjectData = psCache->pfnInsertCB(psCache->pvCreateData,
++						  pvInsertData);
++
++	return (psObj->pvObjectData != NULL);
++}
++
++static inline void
++PVRObjectPurge(struct _PVRObjectCache *psCache,
++	       struct PVRCachedObject *psObj,
++	       bool bRetired)
++{
++	if (psCache->pfnPurgeCB != NULL)
++	{
++		psCache->pfnPurgeCB(psCache->pvCreateData,
++				    psObj->pvObjectData,
++				    bRetired);
++	}
++}
++
++static inline bool
++PVRObjectInCache(struct _PVRObjectCache *psCache,
++		 struct PVRCachedObject *psObj,
++		 void *pvInsertData)
++{
++	if (psCache->pfnCompareCB != NULL)
++	{
++		return psCache->pfnCompareCB(psCache->pvCreateData,
++					     psObj->pvObjectData,
++					     pvInsertData);
++	}
++
++	return false;
++}
++
++IMG_INTERNAL void
++PVRObjectCachePurge(PVRObjectCache hObjectCache)
++{
++	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
++	PVRQElem *psQElem;
++	struct PVRCachedObject *psObj;
++
++	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
++	{
++		PVRObjectPurge(psCache, psObj, false);
++
++		psObj->bValid = false;
++	}
++}
++
++
++IMG_INTERNAL bool
++PVRObjectCacheInsert(PVRObjectCache hObjectCache,
++		     void *pvInsertData)
++{
++	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
++	struct PVRCachedObject *psObj;
++	bool bInserted = false;
++	PVRQElem *psQElem;
++
++	/* Is the object already in the cache ? */
++	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
++	{
++		/* Cache hit? */
++		if (PVRObjectInCache(psCache, psObj, pvInsertData))
++		{
++			/* The old object purge will bump the age to 1 */
++			psObj->uAge = 0;
++			bInserted = true;
++
++			/* Move the object to the front of the queue */
++			PVRQueueRemove(psObj);
++			PVRQueueAddFront(psCache, psObj);
++
++			break;
++		}
++	}
++
++	/* Purge old objects */
++	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
++	{
++		/* Age the object */
++		psObj->uAge++;
++
++		/* Has the object been in the cache too long? */
++		if (psCache->uMaxAge != 0 && psObj->uAge > psCache->uMaxAge)
++		{
++			PVRObjectPurge(psCache, psObj, true);
++
++			psObj->bValid = false;
++
++			/* Move the object to the back of the queue */
++			PVRQueueRemove(psObj);
++			PVRQueueAddBack(psCache, psObj);
++		}
++	}
++
++	/*
++	 * If the object wasn't added to the cache above, add it using the
++	 * last entry in the queue.
++	 */
++	if (!bInserted)
++	{
++		PVRQElem *psQElem = psCache->sQHead.pvBack;
++		struct PVRCachedObject *psObj = PVRQ_CONTAINER_OF(psQElem,
++								  struct PVRCachedObject,
++								  sQElem);
++
++		if (psObj->bValid)
++		{
++			PVRObjectPurge(psCache, psObj, true);
++
++			psObj->bValid = false;
++		}
++
++		psObj->uAge = 1;
++
++		if (PVRObjectInsert(psCache, psObj, pvInsertData))
++		{
++			psObj->bValid = true;
++
++			/* Move the object to the front of the queue */
++			PVRQueueRemove(psObj);
++			PVRQueueAddFront(psCache, psObj);
++
++			bInserted = true;
++		}
++	}
++
++	return bInserted;
++}
++
++IMG_INTERNAL void *
++PVRObjectCacheGetObject(PVRObjectCache hObjectCache, unsigned uObj)
++{
++	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
++	unsigned uCount = uObj;
++	PVRQElem *psQElem;
++	struct PVRCachedObject *psObj;
++
++	FOR_QELEM_QOBJ(psCache, psQElem, psObj)
++	{
++		if ((uCount--) == 0)
++		{
++			return psObj->pvObjectData;
++		}
++	}
++
++	return NULL;
++}
++
++IMG_INTERNAL void
++PVRObjectCacheDestroy(PVRObjectCache hObjectCache)
++{
++	struct _PVRObjectCache *psCache = (struct _PVRObjectCache *)hObjectCache;
++
++	PVRObjectCachePurge(psCache);
++
++	while (psCache->sQHead.pvForw != &psCache->sQHead)
++	{
++		struct PVRCachedObject *psObj = PVRQ_CONTAINER_OF(psCache->sQHead.pvForw,
++								  struct PVRCachedObject,
++								  sQElem);
++
++		PVRQueueRemove(psObj);
++		free(psObj);
++	}
++
++	free(psCache);
++}
++
++IMG_INTERNAL PVRObjectCache
++PVRObjectCacheCreate(unsigned uNumObj,
++		     unsigned uMaxAge,
++		     void *pvCreateData,
++		     PVRObjectCacheInsertCB pfnInsertCB,
++		     PVRObjectCachePurgeCB pfnPurgeCB,
++		     PVRObjectCacheCompareCB pfnCompareCB)
++{
++	struct _PVRObjectCache *psCache;
++	unsigned i;
++
++	if (uNumObj == 0 || pfnInsertCB == NULL)
++	{
++		return NULL;
++	}
++
++	psCache = calloc(1, sizeof(*psCache));
++	if (psCache == NULL)
++	{
++		return NULL;
++	}
++
++	psCache->uNumObj = uNumObj;
++	psCache->uMaxAge = uMaxAge;
++	psCache->pvCreateData = pvCreateData;
++	psCache->pfnInsertCB = pfnInsertCB;
++	psCache->pfnPurgeCB = pfnPurgeCB;
++	psCache->pfnCompareCB = pfnCompareCB;
++
++	INITIALISE_PVRQ_HEAD(&psCache->sQHead);
++
++	for (i = 0; i < uNumObj; i++)
++	{
++		struct PVRCachedObject *psObj;
++
++		psObj = calloc(1, sizeof(*psObj));
++		if (psObj == NULL)
++		{
++			goto ExitError;
++		}
++
++		PVRQueueAddBack(psCache, psObj);
++	}
++
++	return psCache;
++
++ExitError:
++	PVRObjectCacheDestroy(psCache);
++
++	return NULL;
++}
+diff -Naur a/src/mesa/drivers/dri/pvr/pvr_object_cache.h b/src/mesa/drivers/dri/pvr/pvr_object_cache.h
+--- a/src/mesa/drivers/dri/pvr/pvr_object_cache.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvr_object_cache.h	2015-04-01 19:52:33.149338370 +0100
+@@ -0,0 +1,135 @@
++/*************************************************************************/ /*!
++@File           pvr_object_cache.h
++@Title          Cache for objects.
++@Copyright      Copyright (c) Imagination Technologies Ltd. All Rights Reserved
++@License        MIT
++
++The contents of this file are subject to the MIT license as set out below.
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/ /**************************************************************************/
++
++#if !defined(__PVR_OBJECT_CACHE_H__)
++#define __PVR_OBJECT_CACHE_H__
++
++#include "stdbool.h"
++#ifndef IMG_INTERNAL
++#define IMG_INTERNAL	__attribute__((visibility("hidden")))
++#endif
++
++typedef struct _PVRObjectCache *PVRObjectCache;
++
++/* Cache insert callback. Returns object data on success or NULL otherwise. */
++typedef void *(*PVRObjectCacheInsertCB)(void *pvCreateData,
++					void *pvInsertData);
++
++/*
++ * Cache purge callback. The object data is the data returned by the insert
++ * callback. The bRetired flag indicates an object has been retired due to
++ * age, or lack of space in the cache, rather than an explicit purge.
++ */
++typedef void (*PVRObjectCachePurgeCB)(void *pvCreateData,
++				      void *pvObjectData,
++				      bool bRetired);
++/*
++ * Cache compare callback. The object data is the data returned by the insert
++ * callback.
++ */
++typedef bool (*PVRObjectCacheCompareCB)(void *pvCreateData,
++                                        void *pvObjectData,
++                                        void *pvInsertData);
++
++
++/**************************************************************************/ /*!
++@Function       PVRObjectCacheCreate
++@Description    Creates an object cache.
++@Input          uNumObj             The maximum number of objects that can be
++                                    stored in the cache.
++@Input          uMaxAge             The maximum age of an object before it gets
++                                    purged from the cache. If 0 then age related
++                                    purging is disabled.
++@Input          pvCreateData        Optional data to be passed to the provided
++                                    callback functions.
++@Input          pfnInsertCB         Callback used when data is inserted into
++                                    the cache.
++@Input          pfnPurgeCB          Optional callback used when an object is
++                                    purged from the cache.
++@Input          pfnCompareCB        Optional callback used when inserting a new
++                                    object into the cache to determine whether
++                                    or not the object already exists within the
++                                    cache.
++@Return         PVRObjectCache      Returns a handle to the newly created object
++                                    cache on success or NULL otherwise.
++*/ /***************************************************************************/
++IMG_INTERNAL PVRObjectCache PVRObjectCacheCreate(unsigned uNumObj,
++						 unsigned uMaxAge,
++						 void *pvCreateData,
++						 PVRObjectCacheInsertCB pfnInsertCB,
++						 PVRObjectCachePurgeCB pfnPurgeCB,
++						 PVRObjectCacheCompareCB pfnCompareCB);
++
++/**************************************************************************/ /*!
++@Function       PVRObjectCacheInsert
++@Description    Insert an object into the cache, giving it a starting age of
++                one. If the object was already contained within the cache then
++                the insert callback will not be called and the existing cache
++                object will have its age reset to one. All other objects in the
++                cache will have their age increased by one. This may result in
++                an object being purged from the cache if its age exceeds the
++                maximum age specified when creating the cache or the cache is
++                already full.
++@Input          hObjectCache        Handle to an object cache.
++@Input          pvInsertData        Data passed to the insert callback.
++@Return         IMG_BOOL            Returns IMG_TRUE on success or IMG_FALSE
++                                    otherwise.
++*/ /***************************************************************************/
++IMG_INTERNAL bool PVRObjectCacheInsert(PVRObjectCache hObjectCache,
++                                       void *pvInsertData);
++
++/**************************************************************************/ /*!
++@Function       PVRObjectCacheGetObject
++@Description    Returns object data from the cache based on the given object
++                number, whereby the youngest object corresponds to zero.
++@Input          hObjectCache        Handle to an object cache.
++@Input          uObj                Number of the object to return.
++@Return         void *              Returns object data (as returned by the
++                                    insert callback) on success or NULL
++                                    otherwise.
++*/ /***************************************************************************/
++IMG_INTERNAL void *PVRObjectCacheGetObject(PVRObjectCache hObjectCache,
++					   unsigned uObj);
++
++/**************************************************************************/ /*!
++@Function       PVRObjectCachePurge
++@Description    Purges the given cache of all objects.
++@Input          hObjectCache        Handle to an object cache.
++@Return         void
++*/ /***************************************************************************/
++IMG_INTERNAL void PVRObjectCachePurge(PVRObjectCache hObjectCache);
++
++/**************************************************************************/ /*!
++@Function       PVRObjectCacheDestroy
++@Description    Destroy the given object cache, purging all remaining objects
++                in the cache.
++@Input          hObjectCache        Handle to an object cache.
++@Return         void
++*/ /***************************************************************************/
++IMG_INTERNAL void PVRObjectCacheDestroy(PVRObjectCache hObjectCache);
++
++#endif /* defined(__PVR_OBJECT_CACHE_H__) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrqueue.h b/src/mesa/drivers/dri/pvr/pvrqueue.h
---- a/src/mesa/drivers/dri/pvr/pvrqueue.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrqueue.h	2015-03-20 17:23:30.090794075 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrqueue.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrqueue.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,72 @@
 +/*************************************************************************/ /*!
 +@File           pvrqueue.h
@@ -7448,8 +7454,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrqueue.h b/src/mesa/drivers/dri/pvr/pvrq
 +
 +#endif /* defined(__PVRQUEUE_H__) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pvrsyncobj.c
---- a/src/mesa/drivers/dri/pvr/pvrsyncobj.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.c	2015-03-20 17:23:30.082798075 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrsyncobj.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.c	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,151 @@
 +/*************************************************************************/ /*!
 +@File
@@ -7603,8 +7609,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.c b/src/mesa/drivers/dri/pvr/pv
 +
 +#endif /* defined(__DRI_SYNCOBJ) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.h b/src/mesa/drivers/dri/pvr/pvrsyncobj.h
---- a/src/mesa/drivers/dri/pvr/pvrsyncobj.h	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.h	2015-03-20 17:23:30.094794475 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrsyncobj.h	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrsyncobj.h	2015-04-01 19:52:33.149338370 +0100
 @@ -0,0 +1,45 @@
 +/*************************************************************************/ /*!
 +@File
@@ -7652,8 +7658,8 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrsyncobj.h b/src/mesa/drivers/dri/pvr/pv
 +#endif /* defined(__DRI_SYNCOBJ) */
 +#endif /* !defined(__PVRSYNCOBJ_H__) */
 diff -Naur a/src/mesa/drivers/dri/pvr/pvrutil.c b/src/mesa/drivers/dri/pvr/pvrutil.c
---- a/src/mesa/drivers/dri/pvr/pvrutil.c	1970-01-01 00:00:00.000000000 +0000
-+++ b/src/mesa/drivers/dri/pvr/pvrutil.c	2015-03-20 17:23:30.087796575 +0000
+--- a/src/mesa/drivers/dri/pvr/pvrutil.c	1970-01-01 01:00:00.000000000 +0100
++++ b/src/mesa/drivers/dri/pvr/pvrutil.c	2015-04-01 19:52:33.153338334 +0100
 @@ -0,0 +1,496 @@
 +/*************************************************************************/ /*!
 +@File
