@@ -112,11 +112,8 @@ src_compile() {
 }
 
 src_install() {
-	insinto /var/lib/misc
-	# TODO(hungte) Change the legacy name 'initramfs.cpio.xz' to correct new
-	# name (recovery_ramfs.cpio.xz).
-	use recovery_ramfs &&
-		newins "${WORKDIR}"/initramfs.cpio.xz recovery_ramfs.cpio.xz
+	insinto /var/lib/initramfs
+	use recovery_ramfs && doins "${WORKDIR}"/recovery_ramfs.cpio.xz
 	use factory_shim_ramfs && doins "${WORKDIR}"/factory_shim_ramfs.cpio.xz
 	use netboot_ramfs && doins "${WORKDIR}"/netboot_ramfs.cpio.xz
 }

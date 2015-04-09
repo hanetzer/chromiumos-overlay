@@ -199,19 +199,19 @@ CONFIG_TCG_TIS=y
 
 recovery_ramfs_desc="Initramfs for recovery image"
 recovery_ramfs_config='
-CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/recovery_ramfs.cpio.xz"
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/recovery_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
 netboot_ramfs_desc="Initramfs for factory netboot installer"
 netboot_ramfs_config='
-CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/netboot_ramfs.cpio.xz"
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/netboot_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
 factory_shim_ramfs_desc="Initramfs for factory installer shim"
 factory_shim_ramfs_config='
-CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/misc/factory_shim_ramfs.cpio.xz"
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/factory_shim_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
 '
 
