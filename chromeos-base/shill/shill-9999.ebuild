@@ -16,7 +16,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi wimax"
+IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax"
 KEYWORDS="~*"
 
 RDEPEND="
@@ -38,7 +38,7 @@ RDEPEND="
 	net-misc/dhcpcd
 	sys-apps/rootdev
 	vpn? ( net-misc/openvpn )
-	net-wireless/wpa_supplicant[dbus]
+	wifi? ( net-wireless/wpa_supplicant[dbus] )
 	cellular? ( virtual/modemmanager )
 "
 
@@ -81,7 +81,7 @@ src_install() {
 	dobin bin/set_wake_on_lan
 	dobin bin/shill_login_user
 	dobin bin/shill_logout_user
-	dobin bin/wpa_debug
+	use wifi && dobin bin/wpa_debug
 	dobin "${OUT}"/shill
 
 	# Netfilter queue helper is run directly from init, so install in sbin.
@@ -104,10 +104,12 @@ src_install() {
 
 	use cellular && doexe "${OUT}"/set-apn-helper
 
-	sed \
-		"s,@libdir@,/usr/$(get_libdir)", \
-		shims/wpa_supplicant.conf.in \
-		> "${D}/${shims_dir}/wpa_supplicant.conf"
+	if use wifi ; then
+		sed \
+			"s,@libdir@,/usr/$(get_libdir)", \
+			shims/wpa_supplicant.conf.in \
+			> "${D}/${shims_dir}/wpa_supplicant.conf"
+	fi
 
 	insinto /etc
 	doins shims/nsswitch.conf
