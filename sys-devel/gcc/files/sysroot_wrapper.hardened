@@ -51,6 +51,7 @@ import sys
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
                     '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches',
                     '-fno-reorder-blocks-and-partition',
+                    '-fno-omit-frame-pointer',
                     '-Wno-unused-local-typedefs',
                     '-Wno-maybe-uninitialized',
                     '-Wno-deprecated-declarations'])
