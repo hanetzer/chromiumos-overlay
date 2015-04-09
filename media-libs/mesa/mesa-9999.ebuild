@@ -53,7 +53,7 @@ IUSE="${IUSE_VIDEO_CARDS}
 	+classic debug dri egl +gallium -gbm gles1 gles2 +llvm +nptl pic selinux
 	shared-glapi kernel_FreeBSD xlib-glx X"
 
-LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.50"
+LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.59-r5"
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
 RDEPEND="
