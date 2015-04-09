@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/chromeos-minijail chromeos-base/libchromeos media-gfx/sane-backends media-libs/libpng[pnm2png] chromeos-base/system_api test? ( dev-cpp/gmock ) dev-cpp/gtest dev-vcs/git dev-vcs/git chromeos-base/libchrome:323904[cros-debug=]
+DESCRIPTION=Document Scanning service for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=test cros_host cros_workon_tree_59f75ca8d7f04a751da56361224b41d2ce0e50b6 profiling cros-debug cros_host cros_workon_tree_59f75ca8d7f04a751da56361224b41d2ce0e50b6 profiling asan clang cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-minijail chromeos-base/libchromeos media-gfx/sane-backends media-libs/libpng[pnm2png] chromeos-base/libchrome:323904[cros-debug=]
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cb15df5e832207e6f2b575a9076bba49	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	libchrome	8f2ad4c14e82a70669694528435d1b5b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	platform	f0ba814d620d11e9efe0b501d224efe1	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=a090b74ffc3c8b26a4f892b58c375e50
