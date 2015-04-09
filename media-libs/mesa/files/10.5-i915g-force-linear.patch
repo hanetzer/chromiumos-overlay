@@ -1,16 +1,15 @@
-From e942dfa8f6f09c1d6f4501794e9616fc4a903e8f Mon Sep 17 00:00:00 2001
+From 02dd8803ce33abf171365b74a9e75845e0b7e7f2 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?St=C3=A9phane=20Marchesin?= <marcheu@chromium.org>
-Date: Mon, 8 Jul 2013 20:35:05 -0700
-Subject: [PATCH] i915: Force X-tiling
+Date: Thu, 9 Apr 2015 14:48:58 -0700
+Subject: [PATCH] i915g: use linear textures
 
-Y-tiling is faster in general, but for Chrome OS we favour upload
-speed (which is better with X-tiling).
+Change-Id: Iabb5b9a9d63f4a402c15a6c6c172f317520d53bd
 ---
  src/gallium/drivers/i915/i915_resource_texture.c | 5 +----
  1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/src/gallium/drivers/i915/i915_resource_texture.c b/src/gallium/drivers/i915/i915_resource_texture.c
-index 3d61794..0f2a874 100644
+index 36fb3e2..8f60ee2 100644
 --- a/src/gallium/drivers/i915/i915_resource_texture.c
 +++ b/src/gallium/drivers/i915/i915_resource_texture.c
 @@ -184,10 +184,7 @@ i915_texture_tiling(struct i915_screen *is, struct i915_texture *tex)
@@ -21,10 +20,10 @@ index 3d61794..0f2a874 100644
 -      return I915_TILE_X;
 -   else
 -      return I915_TILE_Y;
-+   return I915_TILE_X;
++   return I915_TILE_NONE;
  }
  
  
 -- 
-1.8.3
+2.2.0.rc0.207.ga3a616c
 

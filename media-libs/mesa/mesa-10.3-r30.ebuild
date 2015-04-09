@@ -130,7 +130,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-0004-draw-Move-llvm-stuff-to-be-cached-to-new-struct.patch
 	epatch "${FILESDIR}"/10.3-0005-draw-cache-LLVM-compilation.patch
 	epatch "${FILESDIR}"/10.3-0006-draw-keep-some-unused-items-in-the-llvm-cache.patch
-	epatch "${FILESDIR}"/9.1-i915g-force-xtiling.patch
 	epatch "${FILESDIR}"/10.0-no-fail-hwctx.patch
 	epatch "${FILESDIR}"/9.1-renderbuffer_0sized.patch
 	epatch "${FILESDIR}"/10.0-i965-Disable-ctx-gen6.patch
@@ -152,6 +151,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.5-i965-Prefer-Meta-over-the-BLT-for-BlitFrame.patch
 	epatch "${FILESDIR}"/10.4-enable-GL_EXT_draw_buffers.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
+	epatch "${FILESDIR}"/10.5-i915g-Implement-EGL_EXT_image_dma_buf_import.patch
+	epatch "${FILESDIR}"/10.5-i915g-force-linear.patch
 
 	base_src_prepare
 
