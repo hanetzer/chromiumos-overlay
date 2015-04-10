@@ -111,7 +111,6 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	chromeos-base/autotest-client
 	chromeos-base/audiotest
 	chromeos-base/avtest_label_detect
-	chromeos-base/chromeos-factory-regions
 	chromeos-base/chromeos-factory-mini
 	shill? ( chromeos-base/shill-test-scripts )
 	chromeos-base/minifakedns
