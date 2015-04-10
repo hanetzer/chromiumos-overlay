@@ -49,6 +49,7 @@ IUSE_TESTS=(
 	+tests_accessibility_ChromeVoxSound
 	+tests_audio_ActiveStreamStress
 	+tests_audio_AudioCorruption
+	+tests_audio_CrasSanity
 	+tests_audio_SeekAudioFeedback
 	+tests_bluetooth_AdapterSanity
 	+tests_bluetooth_IDCheck
