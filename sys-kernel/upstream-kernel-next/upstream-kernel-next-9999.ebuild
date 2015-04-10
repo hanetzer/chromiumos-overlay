@@ -12,4 +12,5 @@ CROS_WORKON_ALWAYS_LIVE="1"
 inherit cros-workon cros-kernel2
 
 DESCRIPTION="Linux Kernel Upstream (next)"
+HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 KEYWORDS="*"

@@ -11,6 +11,7 @@ CROS_WORKON_LOCALNAME="kernel/v3.4"
 inherit cros-workon cros-kernel2
 
 DESCRIPTION="Chrome OS Kernel 3.4"
+HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 KEYWORDS="~*"
 
 src_test() {

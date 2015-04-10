@@ -16,7 +16,6 @@ DEPEND="sys-apps/debianutils
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs )
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
 	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs )
-	t124_xusb_fw? ( sys-kernel/xhci-firmware )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 3.16 3.18 )

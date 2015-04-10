@@ -9,4 +9,5 @@ CROS_WORKON_LOCALNAME="kernel/v3.18-experiment"
 inherit cros-workon cros-kernel2
 
 DESCRIPTION="Chrome OS Linux Kernel 3.18"
+HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 KEYWORDS="~*"
