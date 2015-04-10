@@ -78,6 +78,7 @@ src_install() {
 	fi
 
 	dosbin bin/reload_network_device
+	dosbin bin/set_wifi_regulatory
 	dobin bin/set_arpgw
 	dobin bin/set_wake_on_lan
 	dobin bin/shill_login_user
