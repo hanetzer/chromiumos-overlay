@@ -1,0 +1,8 @@
+DEFINED_PHASES=-
+DESCRIPTION=This package can be overriden to bring in additional configurations for initramfs. See platform/initramfs/recovery/README for details.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+SLOT=0
+_md5_=7db7732a730dc0bd8edd7cc893ca4f41
