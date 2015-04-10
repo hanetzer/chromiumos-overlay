@@ -27,7 +27,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="ap148-mode em100-mode fsp memmaps mocktpm quiet-cb rmt vboot2 vmx"
+IUSE="ap148-mode em100-mode fsp memmaps mocktpm quiet-cb rmt vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly cyan daisy falco fox gizmo glados link
@@ -110,11 +110,6 @@ CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
 # CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8 is not set
 CONFIG_DEFAULT_CONSOLE_LOGLEVEL_3=y
 EOF
-	fi
-	if use vboot2 && [ "${board}" = "nyan_blaze" ]; then
-		elog "   - enabling vboot2"
-		echo "CONFIG_VBOOT_VERIFY_FIRMWARE=n" >> .config
-		echo "CONFIG_VBOOT2_VERIFY_FIRMWARE=y" >> .config
 	fi
 	if use mocktpm; then
 		echo "CONFIG_VBOOT2_MOCK_SECDATA=y" >> .config
