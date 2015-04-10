@@ -27,7 +27,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="ap148-mode em100-mode fsp memmaps quiet-cb rmt vboot2 vmx"
+IUSE="ap148-mode em100-mode fsp memmaps mocktpm quiet-cb rmt vboot2 vmx"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly cyan daisy falco fox gizmo glados link
@@ -116,7 +116,9 @@ EOF
 		echo "CONFIG_VBOOT_VERIFY_FIRMWARE=n" >> .config
 		echo "CONFIG_VBOOT2_VERIFY_FIRMWARE=y" >> .config
 	fi
-
+	if use mocktpm; then
+		echo "CONFIG_VBOOT2_MOCK_SECDATA=y" >> .config
+	fi
 	if use ap148-mode; then
 		elog  "  - building for AP148"
 		echo "CONFIG_BOARD_VARIANT_AP148=y" >> .config
