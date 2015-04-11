@@ -2,11 +2,11 @@ DEFINED_PHASES=compile configure info install prepare setup test unpack
 DEPEND=dev-vcs/git python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) >=dev-lang/python-exec-2:=[python_targets_python2_7(-)?,-python_single_target_python2_7(-)]
 DESCRIPTION=Chromium OS multitouch utilities
 EAPI=5
-IUSE=-asan -clang cros_host cros_workon_tree_6ce3f4e61dc18f1d043be9b6b36975546fd50bf0 profiling cros-debug python_targets_python2_7
+IUSE=-asan -clang cros_host cros_workon_tree_fbae8e865bc1da009f3a6ddc38f1936c2d73c9b4 profiling cros-debug python_targets_python2_7
 KEYWORDS=*
 LICENSE=BSD-Google
 RDEPEND=python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) >=dev-lang/python-exec-2:=[python_targets_python2_7(-)?,-python_single_target_python2_7(-)]
 REQUIRED_USE=asan? ( clang ) || ( python_targets_python2_7 )
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	cb15df5e832207e6f2b575a9076bba49	distutils-r1	c01d5c4af34f4a37a51fc9638299c222	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	da60d6e85fa94cef4d510cab24e01e36	multibuild	6d4858dc00f8bc51caf3f957f8430eb0	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	331701099758706863819fe3ff6ddc8a	python-utils-r1	42cc5b750abbcf9d4389848380bbef91	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=9a79e909213cabec48bceed20ffeedd9
+_md5_=4308b40aaf18ac7097ea68459920ef88
