@@ -35,12 +35,19 @@ src_install() {
 	insinto /usr/$(get_libdir)/pkgconfig
 	doins "${OUT}"/*.pc
 
+	# Add lib
 	dolib.so "${OUT}/lib/libprotobinder.so"
 
+	# Adding headers
 	insinto /usr/include/protobinder
 	doins *.h
 
+	# Adding udev rules
 	udev_dorules udev/*.rules
+
+	# Adding proto files
+	insinto /usr/share/proto
+	doins idl/*.proto
 }
 
 platform_pkg_test() {
