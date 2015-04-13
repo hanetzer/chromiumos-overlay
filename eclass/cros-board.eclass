@@ -57,12 +57,12 @@ ALL_BOARDS=(
 	bwtm2
 	bxt-rvp
 	candy
-	candy_freon
+	#candy_freon
 	cardhu
 	#chronos
 	cid
 	clapper
-	clapper_freon
+	#clapper_freon
 	cosmos
 	cranky
 	cyan
@@ -81,12 +81,12 @@ ALL_BOARDS=(
 	duck
 	#emeraldlake2
 	enguarde
-	enguarde_freon
+	#enguarde_freon
 	envoy-jerry
 	expresso
-	expresso_freon
+	#expresso_freon
 	falco
-	falco_freon
+	#falco_freon
 	falco_gles
 	falco_li
 	fb1
@@ -99,9 +99,9 @@ ALL_BOARDS=(
 	gizmo
 	glados
 	glimmer
-	glimmer_freon
+	#glimmer_freon
 	gnawty
-	gnawty_freon
+	#gnawty_freon
 	guado
 	hsb
 	ironhide
@@ -111,14 +111,14 @@ ALL_BOARDS=(
 	#kennet
 	#kiev
 	kip
-	kip_freon
+	#kip_freon
 	klang
 	laser
 	#lemmings
 	#lemmings_external
 	leon
 	link
-	link_freon
+	#link_freon
 	lulu
 	lumpy
 	lumpy_freon
@@ -127,7 +127,7 @@ ALL_BOARDS=(
 	mappy_flashstation
 	marble
 	mccloud
-	mccloud_freon
+	#mccloud_freon
 	minnowboard
 	mipseb-o32-generic
 	mipseb-n32-generic
@@ -136,7 +136,7 @@ ALL_BOARDS=(
 	mipsel-n32-generic
 	mipsel-n64-generic
 	monroe
-	monroe_freon
+	#monroe_freon
 	moose
 	ninja
 	nyan
@@ -150,13 +150,13 @@ ALL_BOARDS=(
 	panda
 	panther
 	panther_embedded
-	panther_freon
+	#panther_freon
 	panther_goofy
 	panther_moblab
 	parrot
 	parrot_freon
 	parrot_ivb
-	parrot_ivb-freon
+	#parrot_ivb-freon
 	parrot32
 	parrot64
 	parry
@@ -167,7 +167,7 @@ ALL_BOARDS=(
 	peach_pit
 	peach_pit-freon
 	peppy
-	peppy_freon
+	#peppy_freon
 	ppcbe-32-generic
 	ppcbe-64-generic
 	ppcle-32-generic
@@ -177,7 +177,7 @@ ALL_BOARDS=(
 	quawks
 	quawks_freon
 	rambi
-	rambi_freon
+	#rambi_freon
 	raspberrypi
 	reptile
 	#ricochet
@@ -193,7 +193,7 @@ ALL_BOARDS=(
 	sonic
 	#space
 	squawks
-	squawks_freon
+	#squawks_freon
 	storm
 	storm_nand
 	stout
@@ -206,7 +206,7 @@ ALL_BOARDS=(
 	stumpy_pico
 	sumo
 	swanky
-	swanky_freon
+	#swanky_freon
 	tails
 	#tegra2
 	#tegra2_aebl
@@ -220,7 +220,7 @@ ALL_BOARDS=(
 	tegra3-generic
 	tidus
 	tricky
-	tricky_freon
+	#tricky_freon
 	#urara
 	veyron
 	veyron_brain
@@ -239,7 +239,7 @@ ALL_BOARDS=(
 	#waluigi
 	whirlwind
 	winky
-	winky_freon
+	#winky_freon
 	wolf
 	wsb
 	x32-generic
@@ -268,7 +268,7 @@ ALL_BOARDS=(
 	x86-zgb32
 	x86-zgb32_he
 	zako
-	zako_freon
+	#zako_freon
 )
 
 # Use the CROS_BOARDS defined by ebuild, otherwise use ALL_BOARDS.
