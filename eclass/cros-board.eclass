@@ -51,7 +51,7 @@ ALL_BOARDS=(
 	blackwall
 	bobcat
 	bolt
-	buranku
+	#buranku
 	butterfly
 	butterfly_freon
 	bwtm2
@@ -77,7 +77,7 @@ ALL_BOARDS=(
 	daisy_spring-freon
 	daisy_winter
 	dalmore
-	derwent
+	#derwent
 	duck
 	#emeraldlake2
 	enguarde
@@ -105,17 +105,17 @@ ALL_BOARDS=(
 	guado
 	hsb
 	ironhide
-	jaguar
+	#jaguar
 	jecht
 	kayle
-	kennet
+	#kennet
 	#kiev
 	kip
 	kip_freon
 	klang
 	laser
-	lemmings
-	lemmings_external
+	#lemmings
+	#lemmings_external
 	leon
 	link
 	link_freon
@@ -191,7 +191,7 @@ ALL_BOARDS=(
 	slippy
 	smaug
 	sonic
-	space
+	#space
 	squawks
 	squawks_freon
 	storm
@@ -221,7 +221,7 @@ ALL_BOARDS=(
 	tidus
 	tricky
 	tricky_freon
-	urara
+	#urara
 	veyron
 	veyron_brain
 	veyron_danger
