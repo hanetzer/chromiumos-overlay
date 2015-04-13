@@ -15,6 +15,9 @@ SLOT="0"
 KEYWORDS="-* ~arm"
 IUSE=""
 
+RDEPEND="net-wireless/bluez"
+DEPEND="${RDEPEND}"
+
 RESTRICT="binchecks"
 
 src_compile() {
