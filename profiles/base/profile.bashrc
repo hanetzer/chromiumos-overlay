@@ -178,3 +178,12 @@ cros_enable_cxx_exceptions() {
 	# platform2 gyp inherit this value by default.
 	CXXEXCEPTIONS=1
 }
+
+# We still use gcc to build packages even the CC or CXX is set to
+# something else.
+cros_use_gcc() {
+	if [[ ${CC:-gcc} != *"gcc"* ]]; then
+		export CC=${CHOST}-gcc
+		export CXX=${CHOST}-g++
+	fi
+}
