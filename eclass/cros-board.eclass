@@ -77,6 +77,8 @@ ALL_BOARDS=(
 	daisy_spring-freon
 	daisy_winter
 	dalmore
+	danger
+	danger_embedded
 	#derwent
 	duck
 	#emeraldlake2
