@@ -18,7 +18,7 @@ HOMEPAGE="http://dev.chromium.org/chromium-os/packages/power_manager"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-als +cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test"
+IUSE="-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test"
 
 RDEPEND="
 	chromeos-base/metrics
@@ -90,6 +90,12 @@ src_install() {
 
 	insinto /etc/init
 	doins init/*.conf
+
+	if use buffet; then
+		# Buffet command handler definition
+		insinto /etc/buffet/commands
+		doins powerd/buffet/*.json
+	fi
 }
 
 platform_pkg_test() {
