@@ -16,10 +16,10 @@ DESCRIPTION="Overlord factory monitor"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="static"
 
-RDEPEND="dev-lang/go"
-DEPEND="${RDEPEND}"
+RDEPEND=""
+DEPEND="dev-lang/go"
 
 src_unpack() {
 	cros-workon_src_unpack
@@ -30,7 +30,7 @@ src_unpack() {
 }
 
 src_compile() {
-	emake -C go/src/overlord DEPS=false
+	emake -C go/src/overlord DEPS=false STATIC=$(usex static true false)
 }
 
 src_install() {
