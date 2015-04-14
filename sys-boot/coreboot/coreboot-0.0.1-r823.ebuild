@@ -79,6 +79,10 @@ src_prepare() {
 	fi
 
 	if [[ -s "${FILESDIR}/configs/config.${board}" ]]; then
+
+		emake clean  # in case someone tried a local make, ensure
+			     # there is no leftovers
+
 		cp -v "${FILESDIR}/configs/config.${board}" .config
 
 		# In case config comes from a symlink we are likely building
