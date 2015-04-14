@@ -113,6 +113,7 @@ ALL_BOARDS=(
 	kip
 	#kip_freon
 	klang
+	lakitu
 	laser
 	#lemmings
 	#lemmings_external
