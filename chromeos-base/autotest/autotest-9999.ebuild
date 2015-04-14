@@ -29,7 +29,7 @@ export CONFIG_SITE=/usr/share/config.site
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
 # Block AFE runtime data and test data that is not useful here.
-CROS_WORKON_SUBDIR_BLACKLIST=( "packages" "results" "site-packages" "frontend/client/www" {client,server}/{tests,site_tests} )
+CROS_WORKON_SUBDIR_BLACKLIST=( "packages" "results" "site-packages" "frontend/client/www" {client,server}/{tests,site_tests} "containers")
 
 AUTOTEST_WORK="${WORKDIR}/autotest-work"
 
