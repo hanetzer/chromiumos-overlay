@@ -50,6 +50,13 @@ src_prepare() {
 	# TODO(benchan): Remove this workaround (crbug.com/412057).
 	epatch "${FILESDIR}"/base-${SLOT}-revert-writefile-permissions.patch
 
+	# Temporarily patch dbus::ExportedObject to send signals synchronously
+	# when the DBus TaskRunner runs on the same MessageLoop as the caller.
+	# This patch has already landed in chrome:
+	# https://crrev.com/722c97737ea0ae7e76206c160983419395bca732 and can be
+	# removed the next time libchrome is uprevved.
+	epatch "${FILESDIR}"/base-${SLOT}-synchronous-dbus-signals.patch
+
 	cp -r "${FILESDIR}"/components .
 
 	# Add stub headers for a few files that are usually checked out to locations

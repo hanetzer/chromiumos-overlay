@@ -1,0 +1,64 @@
+Send DBus signals synchronously if called from the DBusTaskRunner
+
+The Chrome OS power manager (powerd) does not use a dedicated task
+runner for handling DBus messages and defaults to using the same
+MessageLoop as the one on which the dbus::Bus object was created.
+
+An unfortunate effect of this is that if powerd calls
+ExportedObject::SendSignal and then ObjectProxy::CallMethodAndBlock
+without returning to the top level of the MessageLoop, the method call
+will actually go out before the signal since SendSignal is
+asynchronous.  To deal with this, make ExportedObject::SendSignal
+synchronous when it is called from the same thread that hosts the
+DBusTaskRunner.
+
+This CL has already landed in chrome:
+https://crrev.com/722c97737ea0ae7e76206c160983419395bca732. We need to
+backport it for now until the next time libchrome is uprevved.
+
+diff --git a/dbus/exported_object.cc b/dbus/exported_object.cc
+index 107d2e5..669b871 100644
+--- a/dbus/exported_object.cc
++++ b/dbus/exported_object.cc
+@@ -91,12 +91,21 @@ void ExportedObject::SendSignal(Signal* signal) {
+   dbus_message_ref(signal_message);
+ 
+   const base::TimeTicks start_time = base::TimeTicks::Now();
+-  bus_->GetDBusTaskRunner()->PostTask(
+-      FROM_HERE,
+-      base::Bind(&ExportedObject::SendSignalInternal,
+-                 this,
+-                 start_time,
+-                 signal_message));
++  if (bus_->GetDBusTaskRunner()->RunsTasksOnCurrentThread()) {
++    // The Chrome OS power manager doesn't use a dedicated TaskRunner for
++    // sending DBus messages.  Sending signals asynchronously can cause an
++    // inversion in the message order if the power manager calls
++    // ObjectProxy::CallMethodAndBlock() before going back to the top level of
++    // the MessageLoop: crbug.com/472361.
++    SendSignalInternal(start_time, signal_message);
++  } else {
++    bus_->GetDBusTaskRunner()->PostTask(
++        FROM_HERE,
++        base::Bind(&ExportedObject::SendSignalInternal,
++                   this,
++                   start_time,
++                   signal_message));
++  }
+ }
+ 
+ void ExportedObject::Unregister() {
+diff --git a/dbus/exported_object.h b/dbus/exported_object.h
+index 5f74dc2..89de096 100644
+--- a/dbus/exported_object.h
++++ b/dbus/exported_object.h
+@@ -92,7 +92,8 @@ class CHROME_DBUS_EXPORT ExportedObject
+                             OnExportedCallback on_exported_callback);
+ 
+   // Requests to send the signal from this object. The signal will be sent
+-  // asynchronously from the message loop in the D-Bus thread.
++  // synchronously if this method is called from the message loop in the D-Bus
++  // thread and asynchronously otherwise.
+   virtual void SendSignal(Signal* signal);
+ 
+   // Unregisters the object from the bus. The Bus object will take care of
