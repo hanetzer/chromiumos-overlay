@@ -227,6 +227,7 @@ ALL_BOARDS=(
 	#urara
 	veyron
 	veyron_brain
+	veyron_caution
 	veyron_danger
 	veyron_gus
 	veyron_jaq
