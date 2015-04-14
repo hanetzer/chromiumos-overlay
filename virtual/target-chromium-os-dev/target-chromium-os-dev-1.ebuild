@@ -101,6 +101,7 @@ RDEPEND="${RDEPEND}
 	chromeos-base/gmerge
 	chromeos-base/protofiles
 	shill? ( chromeos-base/shill-test-scripts )
+	chromeos-base/touch_firmware_test
 	chromeos-base/wireless_automation
 	net-analyzer/tcpdump
 	net-dialup/minicom
