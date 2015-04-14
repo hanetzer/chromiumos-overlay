@@ -16,7 +16,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax"
+IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x"
 KEYWORDS="~*"
 
 RDEPEND="
@@ -39,6 +39,7 @@ RDEPEND="
 	sys-apps/rootdev
 	vpn? ( net-misc/openvpn )
 	wifi? ( net-wireless/wpa_supplicant[dbus] )
+	wired_8021x? ( net-wireless/wpa_supplicant[dbus] )
 	cellular? ( virtual/modemmanager )
 "
 
@@ -81,7 +82,9 @@ src_install() {
 	dobin bin/set_wake_on_lan
 	dobin bin/shill_login_user
 	dobin bin/shill_logout_user
-	use wifi && dobin bin/wpa_debug
+	if use wifi || use wired_8021x; then
+		dobin bin/wpa_debug
+	fi
 	dobin "${OUT}"/shill
 
 	# Netfilter queue helper is run directly from init, so install in sbin.
@@ -104,7 +107,7 @@ src_install() {
 
 	use cellular && doexe "${OUT}"/set-apn-helper
 
-	if use wifi ; then
+	if use wifi || use wired_8021x; then
 		sed \
 			"s,@libdir@,/usr/$(get_libdir)", \
 			shims/wpa_supplicant.conf.in \
