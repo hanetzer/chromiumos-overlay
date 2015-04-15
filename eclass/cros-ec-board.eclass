@@ -29,6 +29,7 @@ EC_BOARD_NAMES=(
 	bds
 	big
 	cr50
+	cyan
 	dingdong
 	falco
 	firefly
