@@ -19,6 +19,7 @@ KEYWORDS="~*"
 IUSE="+autotest +build_tests"
 
 DEPEND="virtual/chromeos-interface
+	virtual/chromeos-regions
 	dev-python/pyyaml
 	dev-libs/protobuf-python
 	chromeos-base/chromeos-factory-board"
@@ -42,6 +43,9 @@ src_unpack() {
 	local webgl_aquarium_path="${S}/py/test/pytests/webgl_aquarium_static"
 	rm -rf ${webgl_aquarium_path}
 	mv "${WORKDIR}/webgl_aquarium_static" "${webgl_aquarium_path%/*}" || die
+
+	# For factory.l10n.regions to find right region database.
+	export CROS_REGIONS_DATABASE="${EROOT}usr/share/misc/cros-regions.json"
 }
 
 src_install() {
