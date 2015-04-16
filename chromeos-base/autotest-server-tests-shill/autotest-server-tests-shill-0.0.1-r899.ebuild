@@ -41,6 +41,7 @@ SERVER_IUSE_TESTS="
 		)
 	)
 	+tests_network_WiFi_ConnectionIdentifier
+	+tests_network_WiFi_DarkResumeActiveScans
 	+tests_network_WiFi_DisableEnable
 	+tests_network_WiFi_DisconnectClearsIP
 	+tests_network_WiFi_DTIMPeriod
@@ -63,6 +64,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_PTK
 	+tests_network_WiFi_RateControl
 	+tests_network_WiFi_Reassociate
+	+tests_network_WiFi_ReconnectInDarkResume
 	+tests_network_WiFi_Regulatory
 	+tests_network_WiFi_Roam
 	+tests_network_WiFi_RoamSuspendTimeout
@@ -76,6 +78,8 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_VerifyRouter
 	+tests_network_WiFi_VisibleScan
 	+tests_network_WiFi_WakeOnDisconnect
+	+tests_network_WiFi_WakeOnSSID
+	+tests_network_WiFi_WoWLAN
 	+tests_network_WiFi_WMM
 "
 
