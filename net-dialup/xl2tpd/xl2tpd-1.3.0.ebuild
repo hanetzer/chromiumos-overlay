@@ -4,7 +4,7 @@
 
 EAPI="4"
 
-inherit eutils toolchain-funcs
+inherit eutils flag-o-matic toolchain-funcs
 
 DESCRIPTION="A modern version of the Layer 2 Tunneling Protocol (L2TP) daemon"
 HOMEPAGE="http://www.xelerance.com/services/software/xl2tpd/"
@@ -27,6 +27,8 @@ src_prepare() {
 }
 
 src_compile() {
+	# To make clang happy. See crosbug.com/476000.
+	append-flags -std=gnu89
 	emake CC=$(tc-getCC)
 }
 
