@@ -14,7 +14,7 @@ DESCRIPTION="Modem and mobile broadband management libraries"
 HOMEPAGE="http://mail.gnome.org/archives/networkmanager-list/2008-July/msg00274.html"
 #SRC_URI not defined because we get our source locally
 
-LICENSE="LGPL-2.1"
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="-asan -clang doc gobi mbim qmi"
