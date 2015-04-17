@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="02dfbb4ebfe9a01be464fb342277d198c59e86ce"
-CROS_WORKON_TREE="13acc08bf088953207f5813cc4c6d36c529419ef"
+CROS_WORKON_COMMIT="6cc86b6f8b67e827f3d50474d897df7fc2e1c1b3"
+CROS_WORKON_TREE="e6ac0a5d1fbd37324f7cd253cc5ea7e7a98689de"
 CROS_WORKON_PROJECT="chromiumos/platform/google-breakpad"
 
 inherit cros-workon toolchain-funcs flag-o-matic multiprocessing

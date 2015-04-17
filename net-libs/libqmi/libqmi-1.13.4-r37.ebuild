@@ -1,15 +1,15 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="116e1e258eff0616b2a4f72f1323ef28399e2bfb"
-CROS_WORKON_TREE="592689def977ed2336d5b1418b35c94e7a686cff"
-CROS_WORKON_PROJECT="chromiumos/third_party/libmbim"
+CROS_WORKON_COMMIT="a436c551cf226af66cdb3dd74ee3971d0b1dae04"
+CROS_WORKON_TREE="3758086ccb0a331595a2f4098e465ab2c053ee77"
+CROS_WORKON_PROJECT="chromiumos/third_party/libqmi"
 
-inherit autotools cros-workon multilib
+inherit autotools cros-workon
 
-DESCRIPTION="MBIM modem protocol helper library"
-HOMEPAGE="http://cgit.freedesktop.org/libmbim/"
+DESCRIPTION="QMI modem protocol helper library"
+HOMEPAGE="http://cgit.freedesktop.org/libqmi/"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -17,9 +17,7 @@ KEYWORDS="*"
 IUSE="-asan -clang doc static-libs"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND=">=dev-libs/glib-2.32
-	>=sys-fs/udev-147[gudev]"
-
+RDEPEND=">=dev-libs/glib-2.32"
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )
 	virtual/pkgconfig"
@@ -32,11 +30,11 @@ src_prepare() {
 src_configure() {
 	clang-setup-env
 
-	# Disable the unused function check as libmbim has auto-generated
+	# Disable the unused function check as libqmi has auto-generated
 	# functions that may not be used.
 	append-flags -Xclang-only=-Wno-unused-function
 	econf \
-		--enable-mbim-username='modem' \
+		--enable-qmi-username='modem' \
 		$(use_enable static{-libs,}) \
 		$(use_enable {,gtk-}doc)
 }
@@ -48,5 +46,5 @@ src_test() {
 
 src_install() {
 	default
-	use static-libs || rm -f "${ED}"/usr/$(get_libdir)/libmbim-glib.la
+	use static-libs || rm -f "${ED}"/usr/$(get_libdir)/libqmi-glib.la
 }
