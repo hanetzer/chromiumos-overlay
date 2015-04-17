@@ -35,6 +35,7 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}/0001-native-state-x11-Don-t-terminate-fullscreen-if-EWMH-.patch"
 	"${FILESDIR}/0002-Add-data-path-command-line-option.patch"
+	"${FILESDIR}/clang-syntax.patch"
 )
 
 src_configure() {
