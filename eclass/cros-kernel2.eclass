@@ -60,6 +60,7 @@ CONFIG_FRAGMENTS=(
 	blkdevram
 	ca0132
 	cifs
+	cros_ec_mec
 	dwc2_dual_role
 	dyndebug
 	fbconsole
@@ -126,6 +127,11 @@ CONFIG_SND_HDA_DSP_LOADER=y
 cifs_desc="Samba/CIFS Support"
 cifs_config="
 CONFIG_CIFS=m
+"
+
+cros_ec_mec="LPC Support for Microchip Embedded Controller"
+cros_ec_mec_config="
+CONFIG_MFD_CROS_EC_LPC_MEC=y
 "
 
 dwc2_dual_role_desc="Dual Role support for DesignWare USB2.0 controller"
