@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-CROS_WORKON_COMMIT="510a2b83b5a2122bce30f60f5e279ba31af4917c"
-CROS_WORKON_TREE="f2945aa1b7b86c26a48a88aede85653dfe294709"
+CROS_WORKON_COMMIT="1144c9b7a574fa49f6aba9b34162e3ec58fa33c5"
+CROS_WORKON_TREE="1bdef05f8565dfe1bd470e6c52bc9217a9c06153"
 CROS_WORKON_PROJECT="chromiumos/platform/touch_firmware_test"
 
 PYTHON_COMPAT=( python2_7 )
