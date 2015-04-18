@@ -17,7 +17,9 @@ KEYWORDS="~*"
 IUSE="frecon +interactive_recovery -mtd +power_management"
 
 # Build Targets
-IUSE+=" recovery_ramfs netboot_ramfs factory_shim_ramfs"
+TARGETS_IUSE="recovery_ramfs netboot_ramfs factory_shim_ramfs"
+IUSE+=" ${TARGETS_IUSE}"
+REQUIRED_USE="|| ( ${TARGETS_IUSE} )"
 
 # Packages required for building recovery initramfs.
 RECOVERY_DEPENDS="
@@ -101,9 +103,6 @@ src_compile() {
 	use recovery_ramfs && targets+=(recovery)
 	use factory_shim_ramfs && targets+=(factory_shim)
 	use netboot_ramfs && targets+=(factory_netboot)
-	if [[ "${targets[*]}" = "" ]]; then
-		die "No targets specified."
-	fi
 	einfo "Building targets: ${targets[*]}"
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
