@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="592649b679800a9eb923ba6d06036c1d324c5520"
-CROS_WORKON_TREE="8ccd520d44cee7c0357112c92ca737f0f019b4af"
+CROS_WORKON_COMMIT="f8fa955cab4e309900ecdd7570175119f31d1d5f"
+CROS_WORKON_TREE="f0c3ca8ec7d4bdd448fb9a20d04007df945027a7"
 CROS_WORKON_PROJECT="chromiumos/platform/initramfs"
 CROS_WORKON_LOCALNAME="initramfs"
 CROS_WORKON_OUTOFTREE_BUILD="1"
@@ -19,7 +19,9 @@ KEYWORDS="*"
 IUSE="frecon +interactive_recovery -mtd +power_management"
 
 # Build Targets
-IUSE+=" recovery_ramfs netboot_ramfs factory_shim_ramfs"
+TARGETS_IUSE="recovery_ramfs netboot_ramfs factory_shim_ramfs"
+IUSE+=" ${TARGETS_IUSE}"
+REQUIRED_USE="|| ( ${TARGETS_IUSE} )"
 
 # Packages required for building recovery initramfs.
 RECOVERY_DEPENDS="
@@ -103,9 +105,6 @@ src_compile() {
 	use recovery_ramfs && targets+=(recovery)
 	use factory_shim_ramfs && targets+=(factory_shim)
 	use netboot_ramfs && targets+=(factory_netboot)
-	if [[ "${targets[*]}" = "" ]]; then
-		die "No targets specified."
-	fi
 	einfo "Building targets: ${targets[*]}"
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
