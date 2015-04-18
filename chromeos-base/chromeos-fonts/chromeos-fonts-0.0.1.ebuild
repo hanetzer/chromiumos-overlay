@@ -80,6 +80,9 @@ qemu_run() {
 		arm)
 			qemu="qemu-arm"
 			;;
+		arm64)
+			qemu="qemu-aarch64"
+			;;
 		mips)
 			qemu="qemu-mipsel"
 			;;
