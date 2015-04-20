@@ -75,7 +75,6 @@ src_install() {
 	find "${D}" -name 'libmm-plugin-*.so' ! \( \
 		-name 'libmm-plugin-altair-lte.so' -o \
 		-name 'libmm-plugin-generic.so' -o \
-		-name 'libmm-plugin-gobi.so' -o \
 		-name 'libmm-plugin-huawei.so' -o \
 		-name 'libmm-plugin-longcheer.so' -o \
 		-name 'libmm-plugin-novatel-lte.so' -o \
