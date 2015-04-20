@@ -39,6 +39,7 @@ pkg_setup() {
 src_prepare() {
 	epatch "${FILESDIR}"/${MY_P}-disable-v4lwrapper.patch
 	epatch "${FILESDIR}"/${MY_P}-remove-glob.patch
+	epatch "${FILESDIR}"/${MY_P}-increase-v4l2-max-devices.patch
 	eautoreconf
 }
 
