@@ -1057,6 +1057,7 @@ install_telemetry_dep_resources() {
 		DEPS_LIST=$(python ${FIND_DEPS} ${PERF_DEPS} ${CROS_DEPS} | \
 			sed -e 's|^'${CHROME_ROOT}/src/'||')
 		install_test_resources "${test_dir}" ${DEPS_LIST} \
+			chrome/test/data/image_decoding \
 			content/test/data/gpu \
 			content/test/data/media \
 			content/test/gpu/run_gpu_test.py
