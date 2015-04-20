@@ -1,0 +1,27 @@
+From d870de94ac9d0206ab994a11fad447a69c771ff4 Mon Sep 17 00:00:00 2001
+From: Wu-Cheng Li <wuchengli@chromium.org>
+Date: Mon, 20 Apr 2015 22:35:34 +0800
+Subject: [PATCH] Change v4l2_fd_open to returns -1 if no plugin is registerd.
+
+---
+ lib/libv4l2/libv4l2.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/lib/libv4l2/libv4l2.c b/lib/libv4l2/libv4l2.c
+index 87066ae..e6584e8 100644
+--- a/lib/libv4l2/libv4l2.c
++++ b/lib/libv4l2/libv4l2.c
+@@ -675,6 +675,10 @@ int v4l2_fd_open(int fd, int v4l2_flags)
+ 	long page_size;
+ 
+ 	v4l2_plugin_init(fd, &plugin_library, &dev_ops_priv, &dev_ops);
++	if (plugin_library == NULL) {
++		V4L2_LOG("No plugin registered for fd %d.\n", fd);
++		return -1;
++	}
+ 
+ 	/* If no log file was set by the app, see if one was specified through the
+ 	   environment */
+-- 
+2.2.0.rc0.207.ga3a616c
+

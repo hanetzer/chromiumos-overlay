@@ -40,6 +40,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/${MY_P}-disable-v4lwrapper.patch
 	epatch "${FILESDIR}"/${MY_P}-remove-glob.patch
 	epatch "${FILESDIR}"/${MY_P}-increase-v4l2-max-devices.patch
+	epatch "${FILESDIR}"/${MY_P}-v4l2_fd_open-returns-1-if-no-plugin.patch
 	eautoreconf
 }
 
