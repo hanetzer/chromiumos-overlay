@@ -188,7 +188,7 @@ CROS_COMMON_DEPEND="${CROS_COMMON_RDEPEND}
 ################################################################################
 
 CROS_X86_RDEPEND="
-	dptf? ( sys-power/dptf )
+	dptf? ( virtual/dptf )
 "
 CROS_ARM_RDEPEND="
 	chromeos-base/u-boot-scripts

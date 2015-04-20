@@ -1,4 +1,4 @@
-# Copyright (c) 2014 The Chromium OS Authors. All rights reserved.
+# Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -16,7 +16,11 @@ KEYWORDS="-* amd64 x86"
 IUSE="debug"
 
 CMAKE_USE_DIR="${S}/DPTF/Linux"
-ESIF_BUILD_DIR="ESIF/Products/ESIF_UF/Chrome"
+ESIF_BUILD_DIR="ESIF/Products/ESIF_UF/Linux"
+
+DEPEND="sys-apps/dbus
+        sys-libs/ncurses sys-libs/readline"
+RDEPEND="${DEPEND}"
 
 src_configure() {
 	# cmake configuration for DPTF policy shared libraries
@@ -29,11 +33,12 @@ src_configure() {
 src_compile() {
 	# Build ESIF daemon
 	local extra_cflags=""
-	use debug && extra_cflags="-DESIF_ATTR_DEBUG -DESIF_ATTR_MEMTRACE"
+	use debug && extra_cflags="Debug"
 	emake \
 		-C "${ESIF_BUILD_DIR}" \
 		CC="$(tc-getCC)" \
-		EXTRA_CFLAGS="${extra_cflags}"
+		BUILD="${extra_cflags}" \
+		OS=Chrome
 
 	# Build DPTF policy shared libraries
 	cmake-utils_src_compile
@@ -51,7 +56,6 @@ src_install() {
 	# Install DPTF policy shared libraries
 	local policy_build_dir="${BUILD_DIR}"/$(usex amd64 x64 x32)
 	dolib.so "${policy_build_dir}/Dptf.so"
-	insinto "/usr/share/dptf"
-	doins ${policy_build_dir}/DptfPolicy*.so
-	doins "DPTF/Sources/combined.xsl"
+	dolib.so ${policy_build_dir}/DptfPolicyPassive.so
+	dolib.so ${policy_build_dir}/DptfPolicyCritical.so
 }
