@@ -92,6 +92,24 @@ FACTORY_TEST_RDEPEND+="
 FACTORY_TEST_RDEPEND+="
 	sys-apps/busybox
 "
+
+# Packages needed to unpack firmware updater (chromeos-firmware).
+# The related packages will be included if chromeos-firmware package
+# is enabled for a board. However, some new boards might be added
+# to an early created factory branch without package chromeos-firmware.
+# This will make unpacking firmware updater fail on the test image
+# generated from the factor branch due to lack of those packages.
+# Add them into test image to fix the failure.
+# The contents of FACTORY_TEST_RDEPEND below must also be present in the
+# chromeos-base/chromeos-factoryinstall ebuild in PROVIDED_DEPEND.
+# If you make any change to the list below, you may need to make a
+# matching change in the factory install ebuild.
+FACTORY_TEST_RDEPEND+="
+	app-arch/gzip
+	app-arch/sharutils
+	app-arch/tar
+	chromeos-base/vboot_reference
+"
 ################################################################################
 # Assemble the final RDEPEND variable for portage
 ################################################################################
