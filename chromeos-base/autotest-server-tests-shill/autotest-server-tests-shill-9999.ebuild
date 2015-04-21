@@ -64,6 +64,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_Reassociate
 	+tests_network_WiFi_ReconnectInDarkResume
 	+tests_network_WiFi_Regulatory
+	+tests_network_WiFi_RegDomain
 	+tests_network_WiFi_Roam
 	+tests_network_WiFi_RoamSuspendTimeout
 	+tests_network_WiFi_RxFrag
