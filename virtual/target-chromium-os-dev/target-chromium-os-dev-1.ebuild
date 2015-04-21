@@ -119,7 +119,6 @@ RDEPEND="${RDEPEND}
 	dev-util/hdctools
 	dev-util/mem
 	dev-util/strace
-	media-sound/sox
 	net-dialup/lrzsz
 	sys-apps/coreutils
 	sys-apps/diffutils
