@@ -37,6 +37,7 @@ IUSE_TESTS="
 	+tests_network_DhcpNonAsciiParameter
 	+tests_network_DhcpRenew
 	+tests_network_DhcpRenewWithOptionSubset
+	+tests_network_DhcpRequestHostName
 	+tests_network_DhcpStaticIP
 	+tests_network_DhcpVendorEncapsulatedOptions
 	+tests_network_DhcpWpadNegotiation
