@@ -13,9 +13,10 @@ LICENSE="GPL-2"
 SLOT="0"
 
 DEPEND="sys-apps/debianutils
-	recovery_ramfs? ( chromeos-base/chromeos-initramfs )
-	netboot_ramfs? ( chromeos-base/chromeos-initramfs )
-	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs )
+	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs[factory_shim_ramfs] )
+	loader_kernel_ramfs? ( chromeos-base/chromeos-initramfs[loader_kernel_ramfs] )
+	netboot_ramfs? ( chromeos-base/chromeos-initramfs[netboot_ramfs] )
+	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 3.16 3.18 )
@@ -70,6 +71,7 @@ CONFIG_FRAGMENTS=(
 	i2cdev
 	kgdb
 	kvm
+	loader_kernel_ramfs
 	lxc
 	mbim
 	netboot_ramfs
@@ -206,6 +208,13 @@ recovery_ramfs_desc="Initramfs for recovery image"
 recovery_ramfs_config='
 CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/recovery_ramfs.cpio.xz"
 CONFIG_INITRAMFS_COMPRESSION_XZ=y
+'
+
+loader_kernel_ramfs_desc="Initramfs for loader kernel"
+loader_kernel_ramfs_config='
+CONFIG_INITRAMFS_SOURCE="%ROOT%/var/lib/initramfs/loader_kernel_ramfs.cpio.xz"
+CONFIG_INITRAMFS_COMPRESSION_XZ=y
+CONFIG_KEXEC=y
 '
 
 netboot_ramfs_desc="Initramfs for factory netboot installer"

@@ -17,7 +17,12 @@ KEYWORDS="~*"
 IUSE="frecon +interactive_recovery -mtd +power_management"
 
 # Build Targets
-TARGETS_IUSE="recovery_ramfs netboot_ramfs factory_shim_ramfs"
+TARGETS_IUSE="
+	factory_shim_ramfs
+	loader_kernel_ramfs
+	netboot_ramfs
+	recovery_ramfs
+"
 IUSE+=" ${TARGETS_IUSE}"
 REQUIRED_USE="|| ( ${TARGETS_IUSE} )"
 
@@ -67,9 +72,17 @@ FACTORY_NETBOOT_DEPENDS="
 	sys-apps/iproute2
 	"
 
-DEPEND="recovery_ramfs? ( ${RECOVERY_DEPENDS} )
+# Packages required for building the loader kernel initramfs.
+LOADER_KERNEL_DEPENDS="
+	chromeos-base/vboot_reference
+	sys-apps/kexec-tools
+	"
+
+DEPEND="
 	factory_shim_ramfs? ( ${FACTORY_SHIM_DEPENDS} )
+	loader_kernel_ramfs? ( ${LOADER_KERNEL_DEPENDS} )
 	netboot_ramfs? ( ${FACTORY_NETBOOT_DEPENDS} )
+	recovery_ramfs? ( ${RECOVERY_DEPENDS} )
 	sys-apps/busybox[-make-symlinks]
 	virtual/chromeos-bsp-initramfs
 	chromeos-base/chromeos-init
@@ -100,9 +113,10 @@ src_compile() {
 	fi
 
 	local targets=()
-	use recovery_ramfs && targets+=(recovery)
 	use factory_shim_ramfs && targets+=(factory_shim)
+	use loader_kernel_ramfs && targets+=(loader_kernel)
 	use netboot_ramfs && targets+=(factory_netboot)
+	use recovery_ramfs && targets+=(recovery)
 	einfo "Building targets: ${targets[*]}"
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
@@ -112,7 +126,8 @@ src_compile() {
 
 src_install() {
 	insinto /var/lib/initramfs
-	use recovery_ramfs && doins "${WORKDIR}"/recovery_ramfs.cpio.xz
 	use factory_shim_ramfs && doins "${WORKDIR}"/factory_shim_ramfs.cpio.xz
+	use loader_kernel_ramfs && doins "${WORKDIR}"/loader_kernel_ramfs.cpio.xz
 	use netboot_ramfs && doins "${WORKDIR}"/netboot_ramfs.cpio.xz
+	use recovery_ramfs && doins "${WORKDIR}"/recovery_ramfs.cpio.xz
 }
