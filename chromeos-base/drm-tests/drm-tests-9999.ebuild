@@ -27,5 +27,5 @@ src_compile() {
 
 src_install() {
 	cd build-opt-local
-	dobin null_platform_test vgem_test vgem_fb_test swrast_test
+	dobin null_platform_test vgem_test vgem_fb_test swrast_test atomictest
 }
