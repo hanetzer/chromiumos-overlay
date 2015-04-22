@@ -45,7 +45,4 @@ CONFIG_SPI_FLASH_SMM=y
 CONFIG_USE_BLOBS=y
 CONFIG_VBT_FILE="3rdparty/mainboard/google/cyan/vbt.bin"
 CONFIG_VBOOT_VERIFY_FIRMWARE=y
-CONFIG_VGA_BIOS=y
-CONFIG_VGA_BIOS_FILE="3rdparty/mainboard/google/cyan/vgabios.bin"
-CONFIG_VGA_BIOS_ID="8086,22b0"
 
