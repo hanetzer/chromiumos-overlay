@@ -166,6 +166,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/clang-3.7-asan-default-path.patch
 	epatch "${FILESDIR}"/clang-3.7-diasble-lsan.patch
 	epatch "${FILESDIR}"/clang-3.7-odr-detection-level.patch
+	epatch "${FILESDIR}"/llvm-3.7-override-detect-leaks.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913

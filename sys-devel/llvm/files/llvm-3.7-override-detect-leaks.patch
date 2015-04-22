@@ -1,0 +1,16 @@
+We pass detect_leaks=1 to ASAN_OPTIONS at unittest stage on asan bots. This
+makes x86-asan-generic bot fail because it does not support leak_sanitizer. This
+patch sets detect_leaks to 0 if llvm finds the archtecture does not support
+leak sanitizer.
+
+--- a/llvm/projects/compiler-rt/lib/asan/asan_flags.cc.bak	2015-04-22 15:38:44.472684535 -0700
++++ b/llvm/projects/compiler-rt/lib/asan/asan_flags.cc	2015-04-22 15:39:34.269163837 -0700
+@@ -95,6 +95,8 @@
+   asan_parser.ParseString(GetEnv("ASAN_OPTIONS"));
+ #if CAN_SANITIZE_LEAKS
+   lsan_parser.ParseString(GetEnv("LSAN_OPTIONS"));
++#else
++  asan_parser.ParseString("detect_leaks=0");
+ #endif
+ 
+   // Let activation flags override current settings. On Android they come
