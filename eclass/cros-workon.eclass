@@ -149,7 +149,7 @@ ARRAY_VARIABLES=(
 # is in, fetching all branches is a safe bet. However, if the git branch being
 # updated can't be fast-forwarded (e.g. linux-next master), the branch needs to
 # be specified because the special refspec excludes non-FF branches in fetches.
-: ${CROS_WORKON_EGIT_BRANCH:=" "}
+: ${CROS_WORKON_EGIT_BRANCH:=}
 
 # @ECLASS-VARIABLE: CROS_WORKON_ALWAYS_LIVE
 # @DESCRIPTION:
@@ -484,6 +484,10 @@ cros-workon_src_unpack() {
 		fi
 
 		EGIT_BRANCH="${CROS_WORKON_EGIT_BRANCH}"
+
+		# Always pull all branches, if we are pulling source via git.
+		EGIT_ALL_BRANCH="1"
+
 		for (( i = 0; i < project_count; ++i )); do
 			EGIT_REPO_URI="${repo[i]}/${project[i]}.git"
 			EGIT_PROJECT="${project[i]}${CROS_WORKON_GIT_SUFFIX}"

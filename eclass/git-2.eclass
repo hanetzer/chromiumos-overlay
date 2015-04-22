@@ -85,6 +85,10 @@ DEPEND="dev-vcs/git"
 #
 # EGIT_BRANCH="${EGIT_MASTER}"
 
+# @ECLASS-VARIABLE: EGIT_ALL_BRANCH
+# @DESCRIPTION:
+# If non-empty this variable causes all remote branches to be fetched.
+
 # @ECLASS-VARIABLE: EGIT_COMMIT
 # @DESCRIPTION:
 # Variable containing commit hash/tag we want to check out.
@@ -148,6 +152,8 @@ git-2_init_variables() {
 	eval x="\$${PN//[-+]/_}_LIVE_BRANCH"
 	[[ -n ${x} ]] && ewarn "QA: using \"${PN//[-+]/_}_LIVE_BRANCH\" variable, you won't get any support"
 	EGIT_BRANCH=${x:-${EGIT_BRANCH:-${EGIT_MASTER}}}
+
+	: ${EGIT_ALL_BRANCH:=}
 
 	eval x="\$${PN//[-+]/_}_LIVE_COMMIT"
 	[[ -n ${x} ]] && ewarn "QA: using \"${PN//[-+]/_}_LIVE_COMMIT\" variable, you won't get any support"
@@ -450,7 +456,7 @@ git-2_bootstrap() {
 git-2_migrate_repository() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	local target returnstate
+	local target returnstate ref_mapping
 
 	# first find out if we have submodules
 	if [[ -z ${EGIT_HAS_SUBMODULES} ]]; then
@@ -504,7 +510,15 @@ git-2_migrate_repository() {
 		debug-print "${FUNCNAME}: working in bare repository for \"${EGIT_DIR}\""
 		EGIT_LOCAL_OPTIONS+="${EGIT_OPTIONS} --bare"
 		MOVE_COMMAND="git clone -l -s -n ${EGIT_DIR// /\\ }"
-		EGIT_UPDATE_CMD="git fetch -t -f -u origin ${EGIT_BRANCH}:${EGIT_BRANCH}"
+
+		# If requested, pull all remote changes from all remote branches.
+		if [[ -n "${EGIT_ALL_BRANCH}" ]]; then
+			ref_mapping="+refs/heads/*:refs/remotes/origin/*"
+		else
+			ref_mapping="${EGIT_BRANCH}:${EGIT_BRANCH}"
+		fi
+
+		EGIT_UPDATE_CMD="git fetch -t -f -u origin ${ref_mapping}"
 		UPSTREAM_BRANCH="${EGIT_BRANCH}"
 	else
 		debug-print "${FUNCNAME}: working in bare repository for non-bare \"${EGIT_DIR}\""
