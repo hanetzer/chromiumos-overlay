@@ -65,6 +65,7 @@ src_prepare() {
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-Retry-scan-for-connect-if-driver-trigger-fails.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-wpa_supplicant-use-critical-protocol.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-wpa_supplicant-dbus-signal-on-tdls-discover-response.patch
+        epatch ${FILESDIR}/patches/${P}-UPSTREAM-P2P-Validate-SSID-element-length-before-copying-it-C.patch
         popd >/dev/null
 }
 
