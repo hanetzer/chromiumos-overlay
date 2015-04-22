@@ -299,16 +299,17 @@ for key in Split('CC CXX AR RANLIB LD NM CFLAGS CXXFLAGS LDFLAGS'):
 if os.environ.has_key('CPPFLAGS'):
   env['CCFLAGS'] += Split(os.environ['CPPFLAGS'])
 
-env['CCFLAGS'] += ['-fPIC',
+env['CCFLAGS'] += ['-DOS_CHROMEOS',
+                   '-DUSE_NSS',
+                   '-DUSE_SYSTEM_LIBEVENT',
+                   '-fPIC',
                    '-fno-exceptions',
                    '-Wall',
                    '-Werror',
+                   '-Wno-deprecated-register',
+                   '-Wno-narrowing',
                    '-Wno-psabi',
                    '-Wno-unused-local-typedefs',
-                   '-Wno-narrowing',
-                   '-DOS_CHROMEOS',
-                   '-DUSE_NSS',
-                   '-DUSE_SYSTEM_LIBEVENT',
                    # Various #defines are hardcoded near the top of
                    # build_config.h to ensure that they'll be set both when
                    # libchrome is built and when other packages include
