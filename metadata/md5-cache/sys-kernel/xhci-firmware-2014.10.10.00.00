@@ -1,8 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Tegra XHCI firmware
-EAPI=4
-KEYWORDS=-* arm
-LICENSE=NVIDIA-r2
-SLOT=0
-SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/xhci-firmware-2014.10.10.00.00.tbz2
-_md5_=38e109949abb6c8bc4eecde97c3f73e6
