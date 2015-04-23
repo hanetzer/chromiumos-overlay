@@ -163,6 +163,10 @@ base_libs = [
                 thread_task_runner_handle.cc
                 timer/elapsed_timer.cc
                 timer/timer.cc
+                time/clock.cc
+                time/default_clock.cc
+                time/default_tick_clock.cc
+                time/tick_clock.cc
                 time/time.cc
                 time/time_posix.cc
                 trace_event/trace_event_impl.cc
@@ -379,6 +383,16 @@ all_test_libs = []
 
 test_libs = [
   {
+    'name': 'base_test_support',
+    'sources': """
+               simple_test_clock.cc
+               simple_test_tick_clock.cc
+               """,
+    'prefix': 'base/test',
+    'libs': '',
+    'pc_libs': '',
+  },
+  {
     'name': 'dbus_test_support',
     'sources': """
                mock_bus.cc
@@ -398,7 +412,7 @@ test_libs = [
     'prefix': 'base/timer',
     'libs': '',
     'pc_libs': '',
-  }
+  },
 ]
 
 for lib in test_libs:

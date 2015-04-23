@@ -128,6 +128,11 @@ src_install() {
 		doins ${d}/*.h
 	done
 
+	insinto /usr/include/base-${SLOT}/base/test
+	doins \
+		base/test/simple_test_clock.h \
+		base/test/simple_test_tick_clock.h \
+
 	insinto /usr/include/base-${SLOT}/crypto
 	doins \
 		crypto/crypto_export.h \
