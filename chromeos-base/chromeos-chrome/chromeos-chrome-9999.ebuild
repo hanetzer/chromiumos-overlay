@@ -736,13 +736,6 @@ setup_compile_flags() {
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
 	fi
 
-	case "${ARCH}" in
-	mips)
-		# TODO(rapati): Delete this once chromium:477749 is fixed.
-		append-flags -fomit-frame-pointer
-		;;
-	esac
-
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
 
