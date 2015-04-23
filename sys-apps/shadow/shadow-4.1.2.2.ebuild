@@ -70,7 +70,7 @@ src_compile() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" suidperms=711 install || die "install problem"
+	emake DESTDIR="${D}" suidperms=4711 install || die "install problem"
 	dosym useradd /usr/sbin/adduser
 
 	# Remove libshadow and libmisc; see bug 37725 and the following
