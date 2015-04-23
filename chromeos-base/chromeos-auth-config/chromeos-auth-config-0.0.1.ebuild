@@ -3,6 +3,8 @@
 
 EAPI="4"
 
+inherit pam
+
 DESCRIPTION="ChromiumOS-specific configuration files for pambase"
 HOMEPAGE="http://www.chromium.org"
 
@@ -10,7 +12,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND=">=sys-auth/pambase-20090620.1-r7
+RDEPEND="!<=sys-apps/shadow-4.1.2.2-r6
+	>=sys-auth/pambase-20090620.1-r7
 	chromeos-base/vboot_reference"
 DEPEND="${RDEPEND}"
 
@@ -34,6 +37,12 @@ src_install() {
 	#   inserted password.
 	insinto /etc/pam.d
 	doins "${FILESDIR}/chromeos-auth"
+
+	newpamd "${FILESDIR}"/include-chromeos-auth sudo
+	pamd_mimic system-auth sudo auth account session
+
+	newpamd "${FILESDIR}"/include-chromeos-auth login
+	pamd_mimic system-local-login login auth account password session
 
 	dosbin "${FILESDIR}/is_developer_end_user"
 

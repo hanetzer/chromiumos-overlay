@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit pam user
+inherit user
 
 DESCRIPTION="ChromeOS specific system setup"
 HOMEPAGE="http://src.chromium.org/"
@@ -160,11 +160,6 @@ src_install() {
 
 	# Some daemons and utilities access the mounts through /etc/mtab.
 	dosym /proc/mounts /etc/mtab
-
-	# Add our little bit of sudo glue.
-	newpamd "${FILESDIR}"/include-chromeos-auth sudo
-	# This one line comes from the sudo ebuild.
-	pamd_mimic system-auth sudo auth account session
 
 	insinto /etc/sudoers.d
 	echo "${SHARED_USER_NAME} ALL=(ALL) ALL" > 95_cros_base
