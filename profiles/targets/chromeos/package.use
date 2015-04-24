@@ -80,6 +80,8 @@ sys-apps/iproute2	ipv6
 sys-apps/mosys		static
 sys-apps/flashrom	static
 sys-apps/smartmontools	minimal
+# pam_unix: empty password is not OK
+sys-auth/pambase	-nullok
 sys-block/fio		aio
 sys-block/parted	device-mapper
 sys-devel/clang		-multitarget
