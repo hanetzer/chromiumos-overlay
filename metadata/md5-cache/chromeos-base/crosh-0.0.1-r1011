@@ -1,12 +1,12 @@
-DEFINED_PHASES=compile configure info install setup unpack
+DEFINED_PHASES=compile info install setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Host development utilities for Chromium OS EC
+DESCRIPTION=Chrome OS command-line shell
 EAPI=4
 HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_6500743c555cc3b10577c7eb051b305ae8c50ec6 profiling
+IUSE=X cros_host cros_workon_tree_31ef25fc245004382215a59b67e80494a65f6719 profiling
 KEYWORDS=*
 LICENSE=BSD-Google
-RDEPEND=sys-apps/flashrom
+RDEPEND=app-admin/sudo X? ( chromeos-base/salsa ) chromeos-base/vboot_reference chromeos-base/workarounds net-misc/iputils net-misc/openssh net-wireless/iw sys-apps/net-tools
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	d55eec092bd7f05b1b89014b82d410b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
-_md5_=b9b5e622ac97092d63e38f236bd4c535
+_md5_=a8bf086130b0191e0fae6235593c6dd7
