@@ -6,5 +6,5 @@ HOMEPAGE=http://chromium.org
 KEYWORDS=*
 LICENSE=BSD-Google
 SLOT=0
-_eclasses_=cros-constants	1c9419bde0abf3c31458b88410265d36	git-2	da60d6e85fa94cef4d510cab24e01e36
+_eclasses_=cros-constants	1c9419bde0abf3c31458b88410265d36	git-2	d8721ae80a433d74914c59b01337e601
 _md5_=35f99a04fba9c56092de8f9632805179
