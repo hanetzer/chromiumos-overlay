@@ -23,6 +23,7 @@ src_unpack() {
 src_install() {
 	insinto /etc/init
 	doins test-init/*.conf
+	dosbin test-init/job-filter
 
 	use X || rm -f "${D}"/etc/init/vnc.conf
 }
