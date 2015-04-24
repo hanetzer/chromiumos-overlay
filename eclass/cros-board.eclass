@@ -51,6 +51,7 @@ ALL_BOARDS=(
 	blackwall
 	bobcat
 	bolt
+	bruteus
 	#buranku
 	butterfly
 	butterfly_freon
