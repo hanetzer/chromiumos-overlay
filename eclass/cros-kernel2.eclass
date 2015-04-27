@@ -663,6 +663,11 @@ kmake() {
 			;;
 	esac
 
+	if [[ ${CC} == *clang ]]; then
+		ewarn "Resetting clang (${CC}) to gcc."
+		unset CC
+	fi
+
 	CHOST=${cross} tc-export CC CXX LD STRIP OBJCOPY
 	local binutils_path=$(LD=${cross}-ld get_binutils_path_ld)
 
@@ -681,6 +686,7 @@ kmake() {
 }
 
 cros-kernel2_src_prepare() {
+	cros_use_gcc
 	cros-workon_src_prepare
 }
 
