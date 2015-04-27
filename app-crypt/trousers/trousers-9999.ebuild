@@ -18,6 +18,7 @@ IUSE="doc tss_trace"
 RDEPEND=">=dev-libs/openssl-0.9.7"
 
 DEPEND="${RDEPEND}
+	chromeos-base/metrics
 	dev-util/pkgconfig"
 
 ## TODO: Check if this patch is useful for us.
