@@ -33,6 +33,9 @@ DEPEND="
 
 src_install() {
 	dobin "${OUT}"/brdebugd
+
+	insinto /etc/init
+	doins init/brdebugd.conf
 }
 
 platform_pkg_test() {
