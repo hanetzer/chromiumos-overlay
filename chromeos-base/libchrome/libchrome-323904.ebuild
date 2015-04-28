@@ -57,6 +57,10 @@ src_prepare() {
 	# removed the next time libchrome is uprevved.
 	epatch "${FILESDIR}"/base-${SLOT}-synchronous-dbus-signals.patch
 
+	# Add support for std::unique_ptr in base::Bind/base::Callback.
+	# TODO(avakulenko): Remove this when Chorme supports it (crbug.com/482079).
+	epatch "${FILESDIR}"/base-${SLOT}-bind-unique_ptr.patch
+
 	cp -r "${FILESDIR}"/components .
 
 	# Add stub headers for a few files that are usually checked out to locations
