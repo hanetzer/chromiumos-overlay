@@ -284,8 +284,10 @@ set_build_defines() {
 		"linux_use_bundled_gold=0"
 		"linux_use_gold_flags=$(use10 gold)"
 		"linux_use_debug_fission=0"
+		"remoting=$(use10 chrome_remoting)"
 		"swig_defines=-DOS_CHROMEOS"
 		"chromeos=1"
+		"disable_nacl=$(! use_nacl; echo10)"
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
 	)
@@ -359,16 +361,7 @@ set_build_defines() {
 		;;
 	esac
 
-	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
-
 	use drm && BUILD_DEFINES+=( use_drm=1 )
-
-	# Control inclusion of optional chrome features.
-	if use chrome_remoting; then
-		BUILD_DEFINES+=( remoting=1 )
-	else
-		BUILD_DEFINES+=( remoting=0 )
-	fi
 
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
