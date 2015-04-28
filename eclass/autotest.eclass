@@ -382,6 +382,12 @@ autotest_src_install() {
 		done
 	done
 
+	# Drop a file so that autotest_quickmerge can find the sources quickly.
+	insinto "${AUTOTEST_BASE}/quickmerge/${CATEGORY}"
+	get_paths
+	echo "${path}/${AUTOTEST_PATH}" > qm
+	newins qm "${PN}"
+
 	# TODO: Not all needs to be executable, but it's hard to pick selectively.
 	# The source repo should already contain stuff with the right permissions.
 	chmod -R a+x "${D}"${AUTOTEST_BASE}/*
