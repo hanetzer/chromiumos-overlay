@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=chromeos-base/metrics dev-libs/protobuf cras? ( media-sound/adhd ) sys-fs/udev chromeos-base/system_api test? ( dev-cpp/gmock ) dev-cpp/gtest dev-vcs/git dev-vcs/git chromeos-base/libchrome:323904[cros-debug=] virtual/pkgconfig sys-apps/baselayout
+DESCRIPTION=Power Manager for Chromium OS
+EAPI=4
+HOMEPAGE=http://dev.chromium.org/chromium-os/packages/power_manager
+IUSE=-als buffet +cras +display_backlight -has_keyboard_backlight -legacy_power_button -lockvt -mosys_eventlog -ozone test cros_host cros_workon_tree_f854f208ddb046e84102a1d67083ad001d19543d profiling cros-debug cros_host cros_workon_tree_f854f208ddb046e84102a1d67083ad001d19543d profiling asan clang cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/metrics dev-libs/protobuf cras? ( media-sound/adhd ) sys-fs/udev chromeos-base/libchrome:323904[cros-debug=] sys-apps/baselayout
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	d55eec092bd7f05b1b89014b82d410b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	d8721ae80a433d74914c59b01337e601	libchrome	8f2ad4c14e82a70669694528435d1b5b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	platform	f0ba814d620d11e9efe0b501d224efe1	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25	udev	a9a8d051efb42bfe884c1db82ce161de	user	428413d4784b5a07274949c8354647d8
+_md5_=22206018557a80a854cd8be3651c644a
