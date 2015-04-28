@@ -11,7 +11,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 PLATFORM_SUBDIR="brdebug"
 PLATFORM_NATIVE_TEST="yes"
 
-inherit cros-workon platform
+inherit cros-workon platform udev
 
 DESCRIPTION="Manage device properties for Brillo debug link."
 HOMEPAGE="http://www.chromium.org/"
@@ -33,9 +33,12 @@ DEPEND="
 
 src_install() {
 	dobin "${OUT}"/brdebugd
+	dosbin udev/setup-debug-link
 
 	insinto /etc/init
 	doins init/brdebugd.conf
+
+	udev_dorules udev/99-setup-debug-link.rules
 }
 
 platform_pkg_test() {
