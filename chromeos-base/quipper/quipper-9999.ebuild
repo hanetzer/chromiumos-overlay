@@ -53,6 +53,8 @@ src_install() {
 platform_pkg_test() {
 	local tests=(
 		address_mapper_test
+		buffer_reader_test
+		buffer_writer_test
 		run_command_test
 		scoped_temp_path_test
 		utils_test
