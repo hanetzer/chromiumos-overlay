@@ -8,7 +8,6 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="shill"
-PLATFORM_NATIVE_TEST="yes"
 
 inherit cros-workon platform udev user
 
