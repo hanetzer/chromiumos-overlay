@@ -1,5 +1,5 @@
 DEFINED_PHASES=compile install unpack
-DEPEND=ogg? ( media-libs/libogg ) || ( >=sys-devel/automake-1.11.1 >=sys-devel/automake-1.12 ) >=sys-devel/autoconf-2.68 sys-devel/libtool
+DEPEND=ogg? ( media-libs/libogg ) !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13 >=sys-devel/automake-1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
 DESCRIPTION=Audio compression format designed for speech.
 HOMEPAGE=http://www.speex.org
 IUSE=ogg sse neon
@@ -8,5 +8,5 @@ LICENSE=BSD
 RDEPEND=ogg? ( media-libs/libogg )
 SLOT=0
 SRC_URI=http://downloads.xiph.org/releases/speex/speex-1.2rc1.tar.gz
-_eclasses_=autotools	1b0fa473be98091220edff9f51d06153	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	libtool	eba09ed440f2692f73024ff3621a1f4b	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
 _md5_=66da38e61eefdf6926b0c1a4246afe6d
