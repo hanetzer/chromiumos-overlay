@@ -1,0 +1,13 @@
+DEFINED_PHASES=info install postinst setup unpack
+DEPEND=virtual/chromeos-interface virtual/chromeos-regions dev-python/pyyaml dev-libs/protobuf-python chromeos-base/chromeos-factory-board dev-vcs/git
+DESCRIPTION=Chrome OS Factory Tools and Data
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +build_tests cros_host cros_workon_tree_0e3dbcc6de5e449314dbce9b8517ca868b88c0a1_4dc9bc911a3d27bfb45c73c26915a52ae944c4a0 profiling
+KEYWORDS=*
+LICENSE=BSD
+RDEPEND=chromeos-base/chromeos-factory-board
+SLOT=0
+SRC_URI=http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/webgl-aquarium-20130524.tar.bz2
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	d55eec092bd7f05b1b89014b82d410b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python	cd022f89fef846d083fc994b9e3d8c04	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=81d2e2bd59c085b84ca0fefa0ba29ae8
