@@ -88,6 +88,7 @@ CONFIG_FRAGMENTS=(
 	socketmon
 	systemtap
 	t124_xusb_fw
+	t210_xusb_fw
 	tpm
 	usb_gadget
 	usb_gadget_acm
@@ -342,6 +343,12 @@ CONFIG_DEBUG_INFO=y
 t124_xusb_fw_desc="Embed Tegra 5 XHCI controller firmware in kernel binary"
 t124_xusb_fw_config="
 CONFIG_EXTRA_FIRMWARE=\"nvidia/tegra124/xusb.bin\"
+CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
+"
+
+t210_xusb_fw_desc="Embed Tegra 210 XHCI controller firmware in kernel binary"
+t210_xusb_fw_config="
+CONFIG_EXTRA_FIRMWARE=\"nvidia/tegra210/xusb.bin\"
 CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
 "
 
