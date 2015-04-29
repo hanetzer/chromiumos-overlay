@@ -129,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2382.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2382.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2382.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2385.3_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2385.3_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2385.3_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -284,8 +284,10 @@ set_build_defines() {
 		"linux_use_bundled_gold=0"
 		"linux_use_gold_flags=$(use10 gold)"
 		"linux_use_debug_fission=0"
+		"remoting=$(use10 chrome_remoting)"
 		"swig_defines=-DOS_CHROMEOS"
 		"chromeos=1"
+		"disable_nacl=$(! use_nacl; echo10)"
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
 	)
@@ -359,16 +361,7 @@ set_build_defines() {
 		;;
 	esac
 
-	use_nacl || BUILD_DEFINES+=( disable_nacl=1 )
-
 	use drm && BUILD_DEFINES+=( use_drm=1 )
-
-	# Control inclusion of optional chrome features.
-	if use chrome_remoting; then
-		BUILD_DEFINES+=( remoting=1 )
-	else
-		BUILD_DEFINES+=( remoting=0 )
-	fi
 
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
