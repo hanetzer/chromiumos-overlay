@@ -58,7 +58,10 @@ flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
 x86_disable_flags = set(['-mno-movbe'])
 
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
-clang_flags = set(['-Qunused-arguments', '-D_FORTIFY_SOURCE=2', '-fPIE', '-Wno-deprecated-declarations'])
+clang_flags = set(['-Qunused-arguments',
+                   '-D_FORTIFY_SOURCE=2',
+                   '-fPIE',
+                   '-Wno-deprecated-declarations'])
 
 # If -clang-syntax is present or the command line uses clang instead of gcc.
 invoke_clang = False
@@ -216,13 +219,23 @@ def log_parent_process_tree(log, ppid):
     ppid = int(ppid)
     depth += 2
 
-def get_cmd_path(cmd):
-  """Return the canonicalized dir for the cmd found via $PATH."""
+
+def get_linker_path(cmd):
+  """Return the a directory which contains an 'ld' that gcc is using.
+
+  We need to provide a directory that contains the right ld for clang.
+  If we use realpath for this function, it will return the dirctory that
+  the 'ld' inside it is a symbolic link to ld.bfd. By default, clang will
+  use the 'ld' inside the directory after '-B', So clang will use bfd
+  linker even gcc uses gold linker. To make clang use the same linker as gcc,
+  We use readlink so that we provide a directory that contains 'ld' which is
+  a symbolick link pointing to the real linker that gcc is using.
+  """
 
   for path in os.environ['PATH'].split(':'):
     cmd_path = os.path.join(path, cmd)
     if os.path.exists(cmd_path):
-      cmd_full = os.path.realpath(cmd_path)
+      cmd_full = os.readlink(cmd_path)
       return os.path.dirname(cmd_full)
   return None
 
@@ -349,7 +362,7 @@ if invoke_clang and not skip_clang:
   gcc_comp = os.path.basename(sys.argv[0])
   arch = '-'.join(gcc_comp.split('-')[0:-1])
   linker = arch + '-ld'
-  linker_path = get_cmd_path(linker)
+  linker_path = get_linker_path(linker)
   clang_cmdline += ['-B' + linker_path]
   if re.match(r'i.86', arch):
     # We can not set -target for x86 because our target is i686-pc-linux-gnu.
