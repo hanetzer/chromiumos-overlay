@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup unpack
+DEPEND=!sys-boot/x86-firmware-fdts !sys-boot/exynos-u-boot !sys-boot/tegra2-public-firmware-fdts dev-vcs/git
+DESCRIPTION=Das U-Boot boot loader
+EAPI=4
+HOMEPAGE=http://www.denx.de/wiki/U-Boot
+IUSE=dalmore dev efs u_boot_netboot profiling smdk5420-u-boot u_boot_config_use_beaglebone u_boot_config_use_coreboot u_boot_config_use_daisy u_boot_config_use_peach u_boot_config_use_seaboard u_boot_config_use_venice u_boot_config_use_venice2 u_boot_config_use_waluigi cros_host cros_workon_tree_fe6efe40c7b43edc87d542804eba06d59f277478_4fb4a73d67dc10a570842ea8479d3d108f26ef7a profiling
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!sys-boot/x86-firmware-fdts !sys-boot/exynos-u-boot !sys-boot/tegra2-public-firmware-fdts
+REQUIRED_USE=^^ ( u_boot_config_use_beaglebone u_boot_config_use_coreboot u_boot_config_use_daisy u_boot_config_use_peach u_boot_config_use_seaboard u_boot_config_use_venice u_boot_config_use_venice2 u_boot_config_use_waluigi )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	d55eec092bd7f05b1b89014b82d410b2	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	c3131dc67d3bd39f044e92b8280505e4	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=8496bfa3d8747766616775eb1d5c2b61
