@@ -19,8 +19,7 @@ RDEPEND="!minimal? ( dev-libs/libyaml )
 	mtd? ( sys-apps/flashrom )
 	dev-libs/openssl
 	sys-apps/util-linux"
-DEPEND="app-crypt/trousers
-	mtd? ( dev-embedded/android_mtdutils )
+DEPEND="mtd? ( dev-embedded/android_mtdutils )
 	${RDEPEND}"
 
 src_configure() {
