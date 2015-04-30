@@ -5,7 +5,7 @@ EAPI=4
 CROS_WORKON_PROJECT="chromiumos/third_party/autotest"
 CROS_WORKON_LOCALNAME=../third_party/autotest
 CROS_WORKON_SUBDIR=files
-CROS_WORKON_SUBDIR_BLACKLIST=( "Documentation" "ExternalSource" "logs" "manifest-versions" "packages" "results" "site-packages" )
+CROS_WORKON_SUBDIR_BLACKLIST=( "Documentation" "ExternalSource" "logs" "manifest-versions" "packages" "results" "site-packages" "frontend/client/www")
 
 inherit cros-workon cros-constants
 
@@ -18,6 +18,7 @@ KEYWORDS="~*"
 
 RDEPEND="
 	chromeos-base/autotest-server-deps
+	chromeos-base/autotest-web-frontend
 "
 
 DEPEND=""
@@ -29,9 +30,6 @@ src_prepare() {
 	mkdir -p "${AUTOTEST_WORK}"
 	cp -fpru "${S}"/* "${AUTOTEST_WORK}/" &>/dev/null
 	find "${AUTOTEST_WORK}" -name '*.pyc' -delete
-
-	# Compile the frontend elements.
-	"${AUTOTEST_WORK}"/utils/compile_gwt_clients.py -a -e"-Djava.util.prefs.userRoot=/tmp" || die
 
 	# Remove the shadow_config.ini file.
 	rm "${AUTOTEST_WORK}"/shadow_config.ini
