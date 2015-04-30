@@ -52,6 +52,7 @@ IUSE="
 	mojo
 	+nacl
 	neon
+	+ninja
 	opengl
 	opengles
 	ozone
@@ -421,7 +422,7 @@ set_build_defines() {
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
-	export GYP_GENERATORS="ninja"
+	export GYP_GENERATORS="$(usex ninja ninja make)"
 	export GYP_DEFINES="${BUILD_DEFINES[*]}"
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
@@ -774,10 +775,13 @@ src_configure() {
 
 	setup_compile_flags
 
-	local build_tool_flags=(
-		"config=${BUILDTYPE}"
-		"output_dir=${builddir_name}"
-	)
+	local build_tool_flags=()
+	if use ninja; then
+		build_tool_flags+=(
+			"config=${BUILDTYPE}"
+			"output_dir=${builddir_name}"
+		)
+	fi
 	export GYP_GENERATOR_FLAGS="${build_tool_flags[*]}"
 	export BOTO_CONFIG=/home/$(whoami)/.boto
 	export PATH=${PATH}:/home/$(whoami)/depot_tools
@@ -797,8 +801,12 @@ src_configure() {
 }
 
 chrome_make() {
-	PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
-		${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
+	if use ninja; then
+		PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
+			${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
+	else
+		emake -r $(usex verbose V=1 "") "BUILDTYPE=${BUILDTYPE}" "$@" || die
+	fi
 }
 
 src_compile() {
