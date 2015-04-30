@@ -35,6 +35,7 @@ IUSE="
 	opengles
 	ozone
 	ozone_platform_dri
+	ozone_platform_drm
 	ozone_platform_gbm
 	test
 	touchview
