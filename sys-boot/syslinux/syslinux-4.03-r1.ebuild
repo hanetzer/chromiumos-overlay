@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-boot/syslinux/syslinux-4.03.ebuild,v 1.3 2010/12/09 09:56:19 phajdan.jr Exp $
 
+EAPI=5
+
 inherit eutils toolchain-funcs
 
 DESCRIPTION="SYSLINUX, PXELINUX, ISOLINUX, EXTLINUX and MEMDISK bootloaders"
@@ -27,9 +29,7 @@ S=${WORKDIR}/${P/_/-}
 
 # removed all the unpack/patching stuff since we aren't rebuilding the core stuff anymore
 
-src_unpack() {
-	unpack ${A}
-	cd "${S}"
+src_prepare() {
 	# Fix building on hardened
 	epatch "${FILESDIR}"/${PN}-4.00-nopie.patch
 
@@ -38,23 +38,22 @@ src_unpack() {
 	# Don't prestrip or override user LDFLAGS, bug #305783
 	local SYSLINUX_MAKEFILES="extlinux/Makefile linux/Makefile mtools/Makefile \
 		sample/Makefile utils/Makefile"
-	sed -i ${SYSLINUX_MAKEFILES} -e '/^LDFLAGS/d' || die "sed failed"
+	sed -i ${SYSLINUX_MAKEFILES} -e '/^LDFLAGS/d'
 
 	if use custom-cflags; then
 		sed -i ${SYSLINUX_MAKEFILES} \
 			-e 's|-g -Os||g' \
 			-e 's|-Os||g' \
-			-e 's|CFLAGS[[:space:]]\+=|CFLAGS +=|g' \
-			|| die "sed custom-cflags failed"
+			-e 's|CFLAGS[[:space:]]\+=|CFLAGS +=|g'
 	fi
 
 }
 
 src_compile() {
-	emake CC=$(tc-getCC) installer || die
+	emake CC=$(tc-getCC) installer
 }
 
 src_install() {
-	emake INSTALLSUBDIRS=utils INSTALLROOT="${D}" MANDIR=/usr/share/man install || die
-	dodoc README NEWS doc/* || die
+	emake INSTALLSUBDIRS=utils INSTALLROOT="${D}" MANDIR=/usr/share/man install
+	dodoc README NEWS doc/*
 }

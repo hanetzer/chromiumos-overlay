@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/sys-boot/syslinux/syslinux-3.83.ebuild,v 1.3 2010/02/26 12:10:54 fauli Exp $
 
+EAPI=5
+
 inherit eutils flag-o-matic toolchain-funcs
 
 DESCRIPTION="SysLinux, IsoLinux and PXELinux bootloader"
@@ -19,9 +21,7 @@ RDEPEND="sys-fs/mtools
 DEPEND="${RDEPEND}
 	dev-lang/nasm"
 
-src_unpack() {
-	unpack ${A}
-	cd "${S}"
+src_prepare() {
 	epatch "${FILESDIR}"/${PN}-3.72-nopie.patch
 	# Don't prestrip, makes portage angry
 	epatch "${FILESDIR}"/${PN}-3.72-nostrip.patch
@@ -49,7 +49,7 @@ src_compile() {
 	# and only compile part of the package. Since we want to rebuild
 	# everything from scratch we need to remove the prebuilts or else
 	# some things don't get built with standard make.
-	emake spotless || die "make spotless failed"
+	emake spotless
 
 	# The syslinux build can't tolerate "-Wl,-O*"
 	export LDFLAGS=$(raw-ldflags)
@@ -61,14 +61,14 @@ src_compile() {
 			LD=${LD}.bfd
 		fi
 		emake CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LD="$LD" \
-			NM="$NM" || die "make failed"
+			NM="$NM"
 	else
-		emake || die "make failed"
+		emake
 	fi
 
 }
 
 src_install() {
-	emake INSTALLSUBDIRS=utils INSTALLROOT="${D}" MANDIR=/usr/share/man install || die
+	emake INSTALLSUBDIRS=utils INSTALLROOT="${D}" MANDIR=/usr/share/man install
 	dodoc README NEWS TODO doc/*
 }
