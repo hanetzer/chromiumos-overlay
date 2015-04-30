@@ -13,6 +13,7 @@ KEYWORDS="*"
 
 RDEPEND="
 	chromeos-base/chromeos-login
+	!chromeos-base/bootcomplete-embedded
 	"
 
 S=${WORKDIR}

@@ -11,7 +11,9 @@ SLOT="0"
 
 KEYWORDS="*"
 
-RDEPEND=""
+RDEPEND="
+	!chromeos-base/bootcomplete-login
+"
 
 S=${WORKDIR}
 

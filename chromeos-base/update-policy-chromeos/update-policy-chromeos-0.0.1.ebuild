@@ -12,6 +12,7 @@ KEYWORDS="*"
 
 RDEPEND="
 	!<chromeos-base/update_engine-0.0.2
+	!chromeos-base/update-policy-embedded
 "
 S=${WORKDIR}
 
