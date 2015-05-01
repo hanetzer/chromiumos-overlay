@@ -220,11 +220,6 @@ CLIENT_IUSE_TESTS="
 	+tests_platform_TotalMemory
 	+tests_platform_TouchpadSynDrop
 	+tests_platform_UdevVars
-	!chromeless_tty? (
-		+tests_realtimecomm_GTalkAudioBench
-		+tests_realtimecomm_GTalkLmiCamera
-		+tests_realtimecomm_GTalkunittest
-	)
 	+tests_suite_HWConfig
 	+tests_suite_HWQual
 	+tests_system_ColdBoot
