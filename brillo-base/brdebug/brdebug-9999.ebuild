@@ -35,9 +35,6 @@ src_install() {
 	dobin "${OUT}"/brdebugd
 	dosbin udev/setup-debug-link
 
-	insinto /etc/init
-	doins init/brdebugd.conf
-
 	udev_dorules udev/99-setup-debug-link.rules
 }
 

@@ -10,8 +10,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 # Note: Do not utilize USE=internal here.  Update virtual/target-chrome-os-dev.
-IUSE="brillo-framework cras pam opengl +power_management +profile +shill tpm
-	usb video_cards_intel X"
+IUSE="brillo-framework brillo-debug cras pam opengl +power_management +profile
+	+shill tpm usb video_cards_intel X"
 
 # The dependencies here are meant to capture "all the packages
 # developers want to use for development, test, or debug".  This
@@ -89,6 +89,9 @@ RDEPEND="${RDEPEND}
 	app-misc/screen
 	app-portage/portage-utils
 	app-shells/bash
+	brillo-debug? (
+		brillo-base/brdebug
+	)
 	brillo-framework? (
 		brillo-base/psyche_demo
 	)
