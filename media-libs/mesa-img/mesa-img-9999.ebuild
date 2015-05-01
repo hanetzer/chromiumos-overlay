@@ -153,8 +153,8 @@ src_prepare() {
 
 	# IMG patches
 	epatch "${FILESDIR}"/0000-Add-pvr-dri-driver-to-the-Mesa-build.patch
+	epatch "${FILESDIR}"/0001-Add-support-for-various-GLES-extensions.patch
 	epatch "${FILESDIR}"/0004-Ensure-x-creates-pbuffers-with-non-zero-size.patch
-	epatch "${FILESDIR}"/0005-Generate-options.h-if-any-DRI-driver-is-built.patch
 	epatch "${FILESDIR}"/0007-Add-EGL_IMG_context_priority-EGL-extension.patch
 	epatch "${FILESDIR}"/0008-Extend-EGL-KHR-sync-object-support.patch
 	epatch "${FILESDIR}"/0019-dri-Add-some-new-DRI-formats-and-fourccs.patch
