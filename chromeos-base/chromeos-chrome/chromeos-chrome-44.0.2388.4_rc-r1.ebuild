@@ -65,6 +65,7 @@ IUSE="
 	xkbcommon
 	X
 	"
+REQUIRED_USE="asan? ( clang )"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
 OZONE_PLATFORMS=(dri test egltest caca gbm eglmarzone)
@@ -129,9 +130,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2385.3_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2385.3_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2385.3_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2388.4_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2388.4_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2388.4_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -261,7 +262,6 @@ set_build_defines() {
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
 		"sysroot=${ROOT}"
-		"host_clang=0"
 		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"linux_link_libbrlapi=$(use10 accessibility)"
 		"use_brlapi=$(use10 accessibility)"
@@ -290,6 +290,12 @@ set_build_defines() {
 		"disable_nacl=$(! use_nacl; echo10)"
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
+
+		# Clang features.
+		asan=$(use10 asan)
+		clang=$(use10 clang)
+		clang_use_chrome_plugins=0
+		host_clang=0
 	)
 
 	# Disable tcmalloc on ARMv6 since it fails to build (crbug.com/181385)
@@ -389,8 +395,6 @@ set_build_defines() {
 
 	if use clang; then
 		BUILD_DEFINES+=(
-			clang=1
-			clang_use_chrome_plugins=0
 			werror=
 			use_allocator=none
 		)
@@ -398,16 +402,6 @@ set_build_defines() {
 		# The chrome build system will add -m32 for 32bit arches, and
 		# clang defaults to 64bit because our cros_sdk is 64bit default.
 		export CC="clang" CXX="clang++"
-	else
-		BUILD_DEFINES+=( clang=0 )
-	fi
-
-	if use asan; then
-		if ! use clang; then
-			eerror "Asan requires Clang to run."
-			die "Please set USE=\"${USE} clang\" to enable Clang"
-		fi
-		BUILD_DEFINES+=( asan=1 )
 	fi
 
 	use component_build && BUILD_DEFINES+=( component=shared_library )
@@ -742,13 +736,6 @@ setup_compile_flags() {
 		EBUILD_CFLAGS+=( "${afdo_flags[@]}" )
 		EBUILD_CXXFLAGS+=( "${afdo_flags[@]}" )
 	fi
-
-	case "${ARCH}" in
-	mips)
-		# TODO(rapati): Delete this once chromium:477749 is fixed.
-		append-flags -fomit-frame-pointer
-		;;
-	esac
 
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
