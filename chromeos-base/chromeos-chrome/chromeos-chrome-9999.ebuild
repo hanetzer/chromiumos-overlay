@@ -502,6 +502,12 @@ src_unpack() {
 	if [[ -f ${NET_CONFIG} ]]; then
 		cp -fp ${NET_CONFIG} ${HOME} || die
 	fi
+	GITCOOKIES_SRC=/home/${WHOAMI}/.gitcookies
+	GITCOOKIES_DST=${HOME}/.gitcookies
+	if [[ -f "${GITCOOKIES_SRC}" ]]; then
+		cp -fp "${GITCOOKIES_SRC}" "${GITCOOKIES_DST}" || die
+		git config --global http.cookiefile "${GITCOOKIES_DST}"
+	fi
 
 	decide_chrome_origin
 
