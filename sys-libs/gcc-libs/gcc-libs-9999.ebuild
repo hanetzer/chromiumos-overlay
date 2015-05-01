@@ -47,6 +47,11 @@ src_configure() {
 		return
 	fi
 
+	# Force to use gcc even CC=clang is set.
+	if [[ ${CC:-gcc} != *"gcc"* ]]; then
+		unset CC
+	fi
+
 	local confgcc=(
 		--prefix=/usr
 		--bindir=/delete-me
