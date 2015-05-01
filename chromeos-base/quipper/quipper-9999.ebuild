@@ -55,20 +55,14 @@ platform_pkg_test() {
 		address_mapper_test
 		buffer_reader_test
 		buffer_writer_test
-		run_command_test
-		scoped_temp_path_test
-		utils_test
-	)
-	# These tests don't work quite right when there is a mismatch between
-	# the active running kernel and the test target (bitwise).
-	# Also, below tests are temporarily disabled, see crbug.com/340543
-	use amd64 && tests+=(
 		perf_parser_test
 		perf_reader_test
 		perf_recorder_test
 		perf_serializer_test
+		run_command_test
+		scoped_temp_path_test
+		utils_test
 	)
-	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
