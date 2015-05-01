@@ -1,8 +1,0 @@
-DEFINED_PHASES=install
-DESCRIPTION=Define the boot-complete boot marker for embedded systems (boot-services up and running)
-EAPI=4
-HOMEPAGE=http://www.chromium.org/
-KEYWORDS=*
-LICENSE=BSD-Google
-SLOT=0
-_md5_=4fcdfc7e18d555824b055df1b3058e04
