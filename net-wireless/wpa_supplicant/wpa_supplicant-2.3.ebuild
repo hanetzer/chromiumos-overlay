@@ -66,6 +66,7 @@ src_prepare() {
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-wpa_supplicant-use-critical-protocol.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-wpa_supplicant-dbus-signal-on-tdls-discover-response.patch
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-P2P-Validate-SSID-element-length-before-copying-it-C.patch
+        epatch ${FILESDIR}/patches/${P}-UPSTREAM-Update-pending-connect-radio-work-BSS-pointer-on-scan-update.patch
         popd >/dev/null
 }
 
