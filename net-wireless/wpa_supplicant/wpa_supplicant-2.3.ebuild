@@ -67,6 +67,13 @@ src_prepare() {
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-wpa_supplicant-dbus-signal-on-tdls-discover-response.patch
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-P2P-Validate-SSID-element-length-before-copying-it-C.patch
         epatch ${FILESDIR}/patches/${P}-UPSTREAM-Update-pending-connect-radio-work-BSS-pointer-on-scan-update.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-pwd-peer-Fix-asymmetric-fragmentation-behavior.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-pwd-peer-Fix-payload-length-validation-for-Commi.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-pwd-peer-Fix-Total-Length-parsing-for-fragment-r.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-pwd-server-Fix-payload-length-validation-for-Com.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-pwd-server-Fix-Total-Length-parsing-for-fragment.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-AP-WMM-Fix-integer-underflow-in-WMM-Action-frame-par.patch
+	epatch ${FILESDIR}/patches/${P}-UPSTREAM-WPS-Fix-HTTP-chunked-transfer-encoding-parser.patch
         popd >/dev/null
 }
 
