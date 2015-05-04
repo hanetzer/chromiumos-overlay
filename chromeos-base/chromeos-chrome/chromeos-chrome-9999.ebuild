@@ -268,12 +268,9 @@ set_build_defines() {
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
-		"use_cups=0"
-		"use_gnome_keyring=0"
 		"use_v4l2_codec=$(use10 v4l2_codec)"
 		"use_v4lplugin=$(use10 v4lplugin)"
 		"use_vtable_verify=$(use10 vtable_verify)"
-		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
 		"use_evdev_gestures=$(use10 evdev_gestures)"
 		"use_xkbcommon=$(use10 xkbcommon)"
@@ -288,7 +285,6 @@ set_build_defines() {
 		"swig_defines=-DOS_CHROMEOS"
 		"chromeos=1"
 		"disable_nacl=$(! use_nacl; echo10)"
-		"icu_use_data_file_flag=1"
 		"use_cras=1"
 
 		# Clang features.
