@@ -72,3 +72,5 @@ CONFIG_VGA_BIOS_FILE="3rdparty/mainboard/intel/sklrvp/vgabios.bin"
 CONFIG_VGA_BIOS_ID="8086,0406"
 CONFIG_VGA_ROM_RUN=y
 
+CONFIG_HAVE_IFD_BIN=y
+CONFIG_HAVE_ME_BIN=y
