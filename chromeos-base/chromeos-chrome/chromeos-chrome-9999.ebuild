@@ -41,7 +41,6 @@ IUSE="
 	clang
 	component_build
 	deep_memory_profiler
-	drm
 	envoy
 	evdev_gestures
 	+gold
@@ -242,7 +241,7 @@ QA_PRESTRIPPED="*"
 use_nacl() {
 	# 32bit asan conflicts with nacl: crosbug.com/38980
 	! (use asan && [[ ${ARCH} == "x86" ]]) && \
-	! use component_build && ! use drm && use nacl
+	! use component_build && use nacl
 }
 
 # Like the `usex` helper:
@@ -262,7 +261,6 @@ set_build_defines() {
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
 		"sysroot=${ROOT}"
-		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"linux_link_libbrlapi=$(use10 accessibility)"
 		"use_brlapi=$(use10 accessibility)"
 		"${EXTRA_BUILD_ARGS}"
@@ -282,7 +280,6 @@ set_build_defines() {
 		"linux_use_gold_flags=$(use10 gold)"
 		"linux_use_debug_fission=0"
 		"remoting=$(use10 chrome_remoting)"
-		"swig_defines=-DOS_CHROMEOS"
 		"chromeos=1"
 		"disable_nacl=$(! use_nacl; echo10)"
 		"use_cras=1"
@@ -324,10 +321,6 @@ set_build_defines() {
 			target_arch=arm
 			arm_float_abi=$(usex hardfp hard softfp)
 			arm_neon=$(use10 neon)
-			armv7=$([[ ${CHOST} == armv7* ]]; echo10)
-			v8_can_use_unaligned_accesses=$([[ ${CHOST} == armv[67]* ]]; echotf)
-			v8_can_use_vfp3_instructions=$([[ ${ARM_FPU} == *vfpv[34]* ]]; echotf)
-			v8_use_arm_eabi_hardfloat=$(usetf hardfp)
 		)
 		if [[ -n "${ARM_FPU}" ]]; then
 			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
@@ -363,8 +356,6 @@ set_build_defines() {
 		;;
 	esac
 
-	use drm && BUILD_DEFINES+=( use_drm=1 )
-
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
@@ -386,8 +377,6 @@ set_build_defines() {
 	if [[ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" == "1" ]]; then
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
 	fi
-
-	use chrome_debug_tests || BUILD_DEFINES+=( strip_tests=1 )
 
 	if use clang; then
 		BUILD_DEFINES+=(
@@ -820,7 +809,7 @@ src_compile() {
 
 	local chrome_targets=(
 		chrome_sandbox
-		$(usex drm "" "libosmesa.so")
+		libosmesa.so
 		$(usex mojo "mojo_shell" "")
 	)
 	# Envoy builds set both the envoy and app_shell USE flags; only build the
@@ -837,11 +826,6 @@ src_compile() {
 			"${TEST_FILES[@]}"
 			"${TOOLS_TELEMETRY_BIN[@]}"
 			chromedriver
-		)
-	fi
-	if ! use app_shell; then
-		chrome_targets+=(
-			$(usex drm "aura_demo ash_shell" "")
 		)
 	fi
 	use_nacl && chrome_targets+=( nacl_helper_bootstrap nacl_helper )
