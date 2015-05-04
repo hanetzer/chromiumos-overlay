@@ -21,6 +21,7 @@ RDEPEND="
 	opengl? ( >=app-admin/eselect-opengl-1.0.8 )
 	dev-libs/openssl
 	media-libs/freetype
+	>=x11-apps/xkbcomp-1.2.1
 	>=x11-libs/libpciaccess-0.12.901
 	>=x11-libs/libXau-1.0.4
 	>=x11-libs/libXdmcp-1.0.2
