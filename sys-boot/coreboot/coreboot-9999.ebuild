@@ -166,19 +166,20 @@ src_compile() {
 	if use amd64 ; then
 		export CROSS_COMPILE="i686-pc-linux-gnu-"
 		export CC="${CROSS_COMPILE}gcc"
-	else
-		export CROSS_COMPILE=${CHOST}-
-	fi
-
-	if use arm || use arm64 ; then
+	elif use arm || use arm64 ; then
 		extra_flags="-ffunction-sections"
 		# Export the known cross compilers for ARM systems. Include
 		# both v7a and 64-bit armv8 compilers so there isn't a reliance
 		# on what the default profile is for exporting a compiler. The
 		# reasoning is that the firmware may need both to build and
 		# and boot.
+		# aarch64: used on chromeos-2013.04
 		export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
-		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu-"
+		# arm64: used on coreboot upstream
+		export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
+		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
+	else
+		export CROSS_COMPILE=${CHOST}-
 	fi
 
 	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
