@@ -49,6 +49,16 @@ src_install() {
 
 	insinto /usr/share/policy
 	newins server/attestationd-seccomp-${ARCH}.policy attestationd-seccomp.policy
+
+	insinto /usr/include/attestation/client
+	doins client/dbus_proxy.h
+	insinto /usr/include/attestation/common
+	doins common/attestation_interface.h
+	doins "${OUT}"/gen/include/attestation/common/interface.pb.h
+	doins "${OUT}"/gen/include/attestation/common/common.pb.h
+	insinto /usr/share/protofiles/attestation
+	doins common/common.proto
+	doins common/interface.proto
 }
 
 platform_pkg_test() {
