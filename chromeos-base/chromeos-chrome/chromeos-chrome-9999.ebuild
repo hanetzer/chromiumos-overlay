@@ -282,6 +282,7 @@ set_build_defines() {
 		"remoting=$(use10 chrome_remoting)"
 		"chromeos=1"
 		"disable_nacl=$(! use_nacl; echo10)"
+		"icu_use_data_file_flag=1"
 		"use_cras=1"
 
 		# Clang features.
