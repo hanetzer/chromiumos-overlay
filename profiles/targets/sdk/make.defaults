@@ -1,5 +1,13 @@
 # Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Dummy setting so we can use the same append form below.
+USE=""
+
 # Disable all x11 USE flags for packages within chroot.
-USE="-gtk2 -gtk3 -qt4"
+USE="${USE} -gtk2 -gtk3 -qt4"
+
+# Enable extended attributes support in our sdk tools.
+USE="${USE} xattr"
+# But disable using them in the sdk itself for now. http://crbug.com/483174
+USE="${USE} -filecaps"
