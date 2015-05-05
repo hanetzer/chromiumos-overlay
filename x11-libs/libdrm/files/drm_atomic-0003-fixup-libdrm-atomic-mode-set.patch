@@ -1,7 +1,7 @@
-From f6e369f2cf9a11f703546a13a693b34d7c943abc Mon Sep 17 00:00:00 2001
+From a3f592b3577f887b754651d3281b1627916ea859 Mon Sep 17 00:00:00 2001
 From: Rob Clark <robclark@freedesktop.org>
 Date: Thu, 18 Dec 2014 15:17:50 -0500
-Subject: [PATCH 3/3] fixup! libdrm: atomic mode set
+Subject: [PATCH 9/9] fixup! libdrm: atomic mode set
 
 ---
  include/drm/drm.h         | 13 ++++++++++---
@@ -81,10 +81,10 @@ index 1c3f620..abe7a9c 100644
  };
  
 diff --git a/tests/modetest/modetest.c b/tests/modetest/modetest.c
-index 4b9cf2f..89ca71a 100644
+index 26758d4..8e8b56b 100644
 --- a/tests/modetest/modetest.c
 +++ b/tests/modetest/modetest.c
-@@ -561,6 +561,7 @@ static struct resources *get_resources(struct device *dev)
+@@ -568,6 +568,7 @@ static struct resources *get_resources(struct device *dev)
  	memset(res, 0, sizeof *res);
  
  	drmSetClientCap(dev->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
@@ -93,10 +93,10 @@ index 4b9cf2f..89ca71a 100644
  	res->res = drmModeGetResources(dev->fd);
  	if (!res->res) {
 diff --git a/xf86drmMode.c b/xf86drmMode.c
-index 7f3bc5e..e373c4c 100644
+index d63f099..e205e1f 100644
 --- a/xf86drmMode.c
 +++ b/xf86drmMode.c
-@@ -1385,7 +1385,8 @@ int drmModePropertySetCommit(int fd, uint32_t flags, void *user_data,
+@@ -1403,7 +1403,8 @@ int drmModePropertySetCommit(int fd, uint32_t flags, void *user_data,
  	atomic.count_props_ptr = VOID2U64(count_props_ptr);
  	atomic.props_ptr = VOID2U64(props_ptr);
  	atomic.prop_values_ptr = VOID2U64(prop_values_ptr);
@@ -107,5 +107,5 @@ index 7f3bc5e..e373c4c 100644
  
  	ret = DRM_IOCTL(fd, DRM_IOCTL_MODE_ATOMIC, &atomic);
 -- 
-2.2.0.rc0.207.ga3a616c
+2.3.1
 

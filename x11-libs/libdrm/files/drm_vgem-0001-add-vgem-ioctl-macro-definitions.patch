@@ -1,27 +1,26 @@
-From 950e776a53f3dcbfc54d9b8456d5d5a50159eb79 Mon Sep 17 00:00:00 2001
+From 7f823d0748fbca8f4d530b1867b8b7861b6a87fa Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@google.com>
 Date: Mon, 6 Apr 2015 11:25:12 -0700
-Subject: add vgem ioctl macro definitions
+Subject: [PATCH 6/9] add vgem ioctl macro definitions
 
 ---
- Makefile.sources       |  1 ++
+ Makefile.sources       |  1 +
  include/drm/vgem_drm.h | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+), 0 deletion(-)
+ 2 files changed, 34 insertions(+)
  create mode 100644 include/drm/vgem_drm.h
 
 diff --git a/Makefile.sources b/Makefile.sources
-index 566f7b5..8198a4f 100644
+index 8b56329..06bdefc 100644
 --- a/Makefile.sources
 +++ b/Makefile.sources
-@@ -27,7 +27,8 @@ LIBDRM_INCLUDE_H_FILES := \
+@@ -29,6 +29,7 @@ LIBDRM_INCLUDE_H_FILES := \
  	include/drm/savage_drm.h \
  	include/drm/sis_drm.h \
  	include/drm/tegra_drm.h \
 +	include/drm/vgem_drm.h \
-	include/drm/via_drm.h
+ 	include/drm/via_drm.h
  
  LIBDRM_INCLUDE_VMWGFX_H_FILES := \
- 	include/drm/vmwgfx_drm.h
 diff --git a/include/drm/vgem_drm.h b/include/drm/vgem_drm.h
 new file mode 100644
 index 0000000..9be928f
@@ -62,5 +61,5 @@ index 0000000..9be928f
 +
 +#endif
 -- 
-2.1.2
+2.3.1
 

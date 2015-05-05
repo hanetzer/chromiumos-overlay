@@ -1,7 +1,7 @@
-From 3b6f6f623e39ff2cbe3d7f36bdcc5b6a24b43c25 Mon Sep 17 00:00:00 2001
+From f2d0c5a87da7a146f49a5c83ec1733990024e267 Mon Sep 17 00:00:00 2001
 From: Ander Conselvan de Oliveira <conselvan2@gmail.com>
 Date: Fri, 27 Jul 2012 13:30:51 +0300
-Subject: [PATCH 2/3] libdrm: Fix bogus increment of a property set object
+Subject: [PATCH 8/9] libdrm: Fix bogus increment of a property set object
  count
 
 If drmModePropertySetAdd() is called with the following property pairs
@@ -19,10 +19,10 @@ both the previous and next items have differing object ids.
  1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/xf86drmMode.c b/xf86drmMode.c
-index 5676221..7f3bc5e 100644
+index 0485113..d63f099 100644
 --- a/xf86drmMode.c
 +++ b/xf86drmMode.c
-@@ -1174,10 +1174,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
+@@ -1192,10 +1192,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
  
  	/* keep it sorted by object_id and property_id */
  	while (prev->next) {
@@ -34,7 +34,7 @@ index 5676221..7f3bc5e 100644
  
  		if (prev->next->object_id == object_id &&
  		    prev->next->property_id >= property_id)
-@@ -1186,8 +1184,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
+@@ -1204,8 +1202,8 @@ int drmModePropertySetAdd(drmModePropertySetPtr set,
  		prev = prev->next;
  	}
  
@@ -45,7 +45,7 @@ index 5676221..7f3bc5e 100644
  		new_obj = true;
  
  	/* replace or add? */
-@@ -1236,10 +1234,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
+@@ -1254,10 +1252,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
  
  	/* keep it sorted by object_id and property_id */
  	while (prev->next) {
@@ -57,7 +57,7 @@ index 5676221..7f3bc5e 100644
  
  		if (prev->next->object_id == object_id &&
  		    prev->next->property_id >= property_id)
-@@ -1248,8 +1244,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
+@@ -1266,8 +1262,8 @@ int drmModePropertySetAddBlob(drmModePropertySetPtr set,
  		prev = prev->next;
  	}
  
@@ -69,5 +69,5 @@ index 5676221..7f3bc5e 100644
  
  	/* replace or add? */
 -- 
-2.2.0.rc0.207.ga3a616c
+2.3.1
 

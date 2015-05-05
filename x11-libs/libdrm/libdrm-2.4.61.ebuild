@@ -30,6 +30,7 @@ REQUIRED_USE="video_cards_exynos? ( libkms )
 	video_cards_mediatek? ( libkms )
 	video_cards_rockchip? ( libkms )"
 RESTRICT="test" # see bug #236845
+RESTRICT="${RESTRICT} nomirror" #libdrm-2.4.61 not yet available on the Google mirror
 
 RDEPEND="dev-libs/libpthread-stubs
 	udev? ( sys-fs/udev )
@@ -42,12 +43,7 @@ DEPEND="${RDEPEND}"
 XORG_EAUTORECONF=yes
 PATCHES=(
 	"${FILESDIR}"/0001-tests-install-test-programs.patch
-	"${FILESDIR}"/0002-xf86drmMode.h-inline-__inline-for-use-with-gcc-std-c.patch
 	"${FILESDIR}"/drm_rockchip-0001-add-support-for-rockchip.patch
-	"${FILESDIR}"/drm_rockchip-0002-tests-add-rockchip-to-modetest-kmstest-and-vbltest.patch
-	"${FILESDIR}"/0001-Rename-DRM_NODE_RENDER-to-DRM_NODE_PRIMARY.patch
-	"${FILESDIR}"/0002-Add-new-drmOpenRender-function-to-open-render-nodes.patch
-	"${FILESDIR}"/0003-Add-new-drmGetNodeTypeFromFd-function.patch
 	"${FILESDIR}"/drm_mediatek-0001-add-support-for-mediatek.patch
 	"${FILESDIR}"/drm_mediatek-0002-tests-add-mediatek-to-modetest-kmstest-vbltest-and-p.patch
 	"${FILESDIR}"/drm_mediatek-0003-Add-DRM_FORMAT_MT12-for-Mediatek-Proprietary-video-blo.patch

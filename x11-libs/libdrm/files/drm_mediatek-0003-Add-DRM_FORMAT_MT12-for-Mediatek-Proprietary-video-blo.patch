@@ -1,7 +1,8 @@
-From cb5ec91ca1414867a516bea160457753e0b874cf Mon Sep 17 00:00:00 2001
+From eb476e2afd80effa40dc1dec6531a21cd2b46dca Mon Sep 17 00:00:00 2001
 From: Chiawen Lee <chiawen.lee@mediatek.com>
 Date: Wed, 18 Mar 2015 10:14:39 +0800
-Subject: [PATCH] Add DRM_FORMAT_MT12 for Mediatek Proprietary video block format
+Subject: [PATCH 5/9] Add DRM_FORMAT_MT12 for Mediatek Proprietary video block
+ format
 
 Signed-off-by: Chiawen Lee <chiawen.lee@mediatek.com>
 ---
@@ -22,5 +23,5 @@ index 85facb0..c789bd8 100644
   * 3 plane YCbCr
   * index 0: Y plane, [7:0] Y
 -- 
-1.8.1.1.dirty
+2.3.1
 
