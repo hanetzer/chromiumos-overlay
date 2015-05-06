@@ -23,3 +23,6 @@ sys-apps/attr static-libs
 
 # mksquashfs used in build_image requires lzo support.
 sys-fs/squashfs-tools lzo
+
+# some prebuilt binaries created on Ubuntu like to link against libtinfo.
+sys-libs/ncurses tinfo
