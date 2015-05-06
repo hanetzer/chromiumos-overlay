@@ -51,7 +51,7 @@ EC_BOARD_NAMES=(
 	plankton
 	rambi
 	ryu
-	ryu_p1
+	ryu_p4p5
 	ryu_sh
 	ryu_sh_loader
 	samus
