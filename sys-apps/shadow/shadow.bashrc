@@ -11,3 +11,9 @@ cros_post_src_install_unset_suid() {
 	# do present security risk.
 	find "${D}" -perm /4000 -exec chmod -s {} +
 }
+
+cros_pre_pkg_postinst_disable() {
+	# pkg_postinst() in upstream package will try to run grpconf thus
+	# splitting /etc/group into group and gshadow. Don't let it do that.
+	unset -f pkg_postinst
+}
