@@ -41,7 +41,6 @@ IUSE="
 	clang
 	component_build
 	deep_memory_profiler
-	drm
 	envoy
 	evdev_gestures
 	+gold
@@ -130,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2388.4_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2388.4_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2388.4_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2392.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2392.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2392.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -242,7 +241,7 @@ QA_PRESTRIPPED="*"
 use_nacl() {
 	# 32bit asan conflicts with nacl: crosbug.com/38980
 	! (use asan && [[ ${ARCH} == "x86" ]]) && \
-	! use component_build && ! use drm && use nacl
+	! use component_build && use nacl
 }
 
 # Like the `usex` helper:
@@ -262,18 +261,14 @@ set_build_defines() {
 	# TODO(vapier): Check that this should say SYSROOT not ROOT
 	BUILD_DEFINES=(
 		"sysroot=${ROOT}"
-		"linux_sandbox_path=${CHROME_DIR}/chrome-sandbox"
 		"linux_link_libbrlapi=$(use10 accessibility)"
 		"use_brlapi=$(use10 accessibility)"
 		"${EXTRA_BUILD_ARGS}"
 		"system_libdir=$(get_libdir)"
 		"pkg-config=$(tc-getPKG_CONFIG)"
-		"use_cups=0"
-		"use_gnome_keyring=0"
 		"use_v4l2_codec=$(use10 v4l2_codec)"
 		"use_v4lplugin=$(use10 v4lplugin)"
 		"use_vtable_verify=$(use10 vtable_verify)"
-		"use_xi2_mt=2"
 		"use_ozone=$(use10 ozone)"
 		"use_evdev_gestures=$(use10 evdev_gestures)"
 		"use_xkbcommon=$(use10 xkbcommon)"
@@ -285,7 +280,6 @@ set_build_defines() {
 		"linux_use_gold_flags=$(use10 gold)"
 		"linux_use_debug_fission=0"
 		"remoting=$(use10 chrome_remoting)"
-		"swig_defines=-DOS_CHROMEOS"
 		"chromeos=1"
 		"disable_nacl=$(! use_nacl; echo10)"
 		"icu_use_data_file_flag=1"
@@ -328,10 +322,6 @@ set_build_defines() {
 			target_arch=arm
 			arm_float_abi=$(usex hardfp hard softfp)
 			arm_neon=$(use10 neon)
-			armv7=$([[ ${CHOST} == armv7* ]]; echo10)
-			v8_can_use_unaligned_accesses=$([[ ${CHOST} == armv[67]* ]]; echotf)
-			v8_can_use_vfp3_instructions=$([[ ${ARM_FPU} == *vfpv[34]* ]]; echotf)
-			v8_use_arm_eabi_hardfloat=$(usetf hardfp)
 		)
 		if [[ -n "${ARM_FPU}" ]]; then
 			BUILD_DEFINES+=( arm_fpu="${ARM_FPU}" )
@@ -367,8 +357,6 @@ set_build_defines() {
 		;;
 	esac
 
-	use drm && BUILD_DEFINES+=( use_drm=1 )
-
 	if use chrome_internal; then
 		# Adding chrome branding specific variables and GYP_DEFINES.
 		BUILD_DEFINES+=( branding=Chrome buildtype=Official )
@@ -390,8 +378,6 @@ set_build_defines() {
 	if [[ "${REMOVE_WEBCORE_DEBUG_SYMBOLS:-1}" == "1" ]]; then
 		BUILD_DEFINES+=( remove_webcore_debug_symbols=1 )
 	fi
-
-	use chrome_debug_tests || BUILD_DEFINES+=( strip_tests=1 )
 
 	if use clang; then
 		BUILD_DEFINES+=(
@@ -501,6 +487,12 @@ src_unpack() {
 	NET_CONFIG=/home/${WHOAMI}/.netrc
 	if [[ -f ${NET_CONFIG} ]]; then
 		cp -fp ${NET_CONFIG} ${HOME} || die
+	fi
+	GITCOOKIES_SRC=/home/${WHOAMI}/.gitcookies
+	GITCOOKIES_DST=${HOME}/.gitcookies
+	if [[ -f "${GITCOOKIES_SRC}" ]]; then
+		cp -fp "${GITCOOKIES_SRC}" "${GITCOOKIES_DST}" || die
+		git config --global http.cookiefile "${GITCOOKIES_DST}"
 	fi
 
 	decide_chrome_origin
@@ -688,8 +680,7 @@ setup_test_lists() {
 		)
 	fi
 
-	# TODO(ihf): add "use chrome_internal ||" back.
-	if use internal_khronos_glcts; then
+	if use chrome_internal || use internal_khronos_glcts; then
 		TEST_FILES+=(
 			khronos_glcts_test{,_windowless}
 		)
@@ -819,7 +810,7 @@ src_compile() {
 
 	local chrome_targets=(
 		chrome_sandbox
-		$(usex drm "" "libosmesa.so")
+		libosmesa.so
 		$(usex mojo "mojo_shell" "")
 	)
 	# Envoy builds set both the envoy and app_shell USE flags; only build the
@@ -836,11 +827,6 @@ src_compile() {
 			"${TEST_FILES[@]}"
 			"${TOOLS_TELEMETRY_BIN[@]}"
 			chromedriver
-		)
-	fi
-	if ! use app_shell; then
-		chrome_targets+=(
-			$(usex drm "aura_demo ash_shell" "")
 		)
 	fi
 	use_nacl && chrome_targets+=( nacl_helper_bootstrap nacl_helper )
@@ -982,8 +968,7 @@ install_chrome_test_resources() {
 	fi
 
 	# Add the khronos_glcts test data if needed.
-	# TODO(ihf): add "use chrome_internal ||" back.
-	if use internal_khronos_glcts; then
+	if use chrome_internal || internal_khronos_glcts; then
 		install_test_resources "${test_dir}" gpu/khronos_glcts_support/khronos_glcts_test_expectations.txt
 		# These are all the .test, .frag, .vert, .run files needed by
 		# the GL-CTS test cases.
