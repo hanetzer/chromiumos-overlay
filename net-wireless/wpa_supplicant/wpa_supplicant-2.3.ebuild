@@ -75,6 +75,7 @@ src_prepare() {
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-AP-WMM-Fix-integer-underflow-in-WMM-Action-frame-par.patch
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-WPS-Fix-HTTP-chunked-transfer-encoding-parser.patch
         epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-bgscan-trigger-reasons-debug.patch
+        epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-bgscan-simple-priority-debug.patch
         popd >/dev/null
 }
 
