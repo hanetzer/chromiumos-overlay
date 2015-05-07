@@ -541,7 +541,7 @@ cros-workon_get_build_dir() {
 }
 
 cros-workon_pkg_setup() {
-	if [[ ${CROS_WORKON_INCREMENTAL_BUILD} == "1" ]]; then
+	if [[ ${MERGE_TYPE} != "binary" && ${CROS_WORKON_INCREMENTAL_BUILD} == "1" ]]; then
 		local out=$(cros-workon_get_build_dir)
 		addwrite "${out}"
 		mkdir -p -m 755 "${out}"
