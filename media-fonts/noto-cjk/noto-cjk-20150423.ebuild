@@ -8,7 +8,7 @@ inherit font
 DESCRIPTION="Noto Pan CJK fonts developed by Adobe"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
-LICENSE="Apache-2.0"
+LICENSE="OFL-1.1"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
