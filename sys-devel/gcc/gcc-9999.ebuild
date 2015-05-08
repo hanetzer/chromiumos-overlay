@@ -119,56 +119,100 @@ src_unpack() {
 }
 
 src_configure() {
-	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]] ; then
+	if use mounted_gcc && [[ -f $(get_gcc_build_dir)/Makefile ]]; then
+		ewarn "Skipping configure due to existing build output"
 		return
 	fi
+
+	local gcc_langs="c"
+	use cxx && gcc_langs+=",c++"
+	use go && gcc_langs+=",go"
 
 	# Set configuration based on path variables
 	local DATAPATH=$(get_data_dir)
 	local confgcc=(
-		$(use_enable multilib)
 		--prefix=${PREFIX}
 		--bindir=$(get_bin_dir)
 		--datadir=${DATAPATH}
-		--disable-canonical-system-headers
-		--mandir=${DATAPATH}/man
-		--infodir=${DATAPATH}/info
 		--includedir=$(get_lib_dir)/include
 		--with-gxx-include-dir=$(get_stdcxx_incdir)
-		$(use_enable go libatomic)
+		--mandir=${DATAPATH}/man
+		--infodir=${DATAPATH}/info
 		--with-python-dir=${DATAPATH#${PREFIX}}/python
+
+		--build=${CBUILD}
 		--host=${CHOST}
 		--target=${CTARGET}
-		--build=${CBUILD}
+		--enable-languages=${gcc_langs}
+		--enable-__cxa_atexit
+		--disable-canonical-system-headers
+		--enable-checking=release
+		--enable-linker-build-id
+
+		--with-bugurl='http://code.google.com/p/chromium-os/issues/entry'
+		--with-pkgversion="${COST_PKG_VERSION}"
+
+		$(use_enable go libatomic)
+		$(use_enable multilib)
+		$(use_enable openmp libgomp)
+
+		# Disable libs we don't care about.
+		--disable-libcilkrts
+		--disable-libitm
+		--disable-libmudflap
+		--disable-libquadmath
+		--disable-libssp
+
+		# Enable frame pointer by default for all the boards.
+		# originally only enabled for i686 for chromium-os:23321.
+		--enable-frame-pointer
 	)
 
-	# Language options for stage1/stage2.
-	if ! use cxx ; then
-		GCC_LANG="c"
-	else
-		GCC_LANG="c,c++"
-	fi
-	use go && GCC_LANG+=",go"
-	confgcc+=( --enable-languages=${GCC_LANG} )
-
-	if use hardfp && [[ ${CTARGET} == arm* ]] ; then
-		confgcc+=( --with-float=hard )
+	if use vtable_verify; then
+		confgcc+=(
+			--enable-cxx-flags=-Wl,-L../libsupc++/.libs
+			--enable-vtable-verify
+		)
 	fi
 
-	if use thumb && [[ ${CTARGET} == arm* ]] ; then
-		confgcc+=( --with-mode=thumb )
-	fi
+	# Handle target-specific options.
+	case ${CTARGET} in
+	arm*)	#264534
+		local arm_arch="${CTARGET%%-*}"
+		# Only do this if arm_arch is armv*
+		if [[ ${arm_arch} == armv* ]]; then
+			# Convert armv7{a,r,m} to armv7-{a,r,m}
+			[[ ${arm_arch} == armv7? ]] && arm_arch=${arm_arch/7/7-}
+			# Remove endian ('l' / 'eb')
+			[[ ${arm_arch} == *l ]] && arm_arch=${arm_arch%l}
+			[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
+			confgcc+=(
+				--with-arch=${arm_arch}
+				--disable-esp
+			)
+			use hardfp && confgcc+=( --with-float=hard )
+			use thumb && confgcc+=( --with-mode=thumb )
+		fi
+		;;
+	i?86*)
+		# Hardened is enabled for x86, but disabled for ARM.
+		confgcc+=(
+			--enable-esp
+			--with-arch=atom
+			--with-tune=atom
+		)
+		;;
+	x86_64*-gnux32)
+		confgcc+=( --with-abi=x32 --with-multilib-list=mx32 )
+		;;
+	esac
 
-	if use vtable_verify ; then
-		confgcc+=( --enable-cxx-flags=-Wl,-L../libsupc++/.libs --enable-vtable-verify )
-	fi
-
-	if is_crosscompile ; then
+	if is_crosscompile; then
 		local needed_libc="glibc"
-		if [[ -n ${needed_libc} ]] ; then
-			if ! has_version ${CATEGORY}/${needed_libc} ; then
+		if [[ -n ${needed_libc} ]]; then
+			if ! has_version ${CATEGORY}/${needed_libc}; then
 				confgcc+=( --disable-shared --disable-threads --without-headers )
-			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only ; then
+			elif built_with_use --hidden --missing false ${CATEGORY}/${needed_libc} crosscompile_opts_headers-only; then
 				confgcc+=( --disable-shared --with-sysroot=/usr/${CTARGET} )
 			else
 				confgcc+=( --with-sysroot=/usr/${CTARGET} )
@@ -178,19 +222,12 @@ src_configure() {
 		confgcc+=( --enable-shared --enable-threads=posix )
 	fi
 
-	get_gcc_configure_options ${CTARGET}
-
-	confgcc+=(
-		--with-bugurl=http://code.google.com/p/chromium-os/issues/entry
-		--with-pkgversion"=${COST_PKG_VERSION}"
-		--enable-linker-build-id
-	)
+	# Finally add the user options (if any).
 	confgcc+=( ${EXTRA_ECONF} )
 
 	# Build in a separate build tree
-	mkdir -p $(get_gcc_build_dir) || \
-		die "Could not create build dir $(get_gcc_build_dir)"
-	cd $(get_gcc_build_dir) || die "Build dir $(get_gcc_build_dir) not found"
+	mkdir -p $(get_gcc_build_dir) || die
+	cd $(get_gcc_build_dir) || die
 
 	# and now to do the actual configuration
 	addwrite /dev/zero
@@ -404,55 +441,6 @@ pkg_postrm() {
 			rm -f "${ROOT}"/usr/bin/${CTARGET}-{gcc,{g,c}++}{,32,64}
 		fi
 	fi
-}
-
-get_gcc_configure_options() {
-	local CTARGET=$1; shift
-	get_gcc_common_options
-	case ${CTARGET} in
-		arm*)	#264534
-			local arm_arch="${CTARGET%%-*}"
-			# Only do this if arm_arch is armv*
-			if [[ ${arm_arch} == armv* ]] ; then
-				# Convert armv7{a,r,m} to armv7-{a,r,m}
-				[[ ${arm_arch} == armv7? ]] && arm_arch=${arm_arch/7/7-}
-				# Remove endian ('l' / 'eb')
-				[[ ${arm_arch} == *l ]] && arm_arch=${arm_arch%l}
-				[[ ${arm_arch} == *eb ]] && arm_arch=${arm_arch%eb}
-				confgcc+=(
-					--with-arch=${arm_arch}
-					--disable-esp
-				)
-			fi
-			;;
-		i?86*)
-			# Hardened is enabled for x86, but disabled for ARM.
-			confgcc+=(
-				--enable-esp
-				--with-arch=atom
-				--with-tune=atom
-			)
-			;;
-		x86_64*-gnux32)
-			confgcc+=( --with-abi=x32 --with-multilib-list=mx32 )
-			;;
-	esac
-}
-
-get_gcc_common_options() {
-	confgcc+=(
-		--disable-libmudflap
-		--disable-libssp
-		$(use_enable openmp libgomp)
-		--enable-__cxa_atexit
-		--enable-checking=release
-		--disable-libquadmath
-		--disable-libitm
-		--disable-libcilkrts
-		# Enable frame pointer by default for all the boards.
-		# originally only enabled for i686 for chromium-os:23321.
-		--enable-frame-pointer
-	)
 }
 
 get_gcc_dir() {
