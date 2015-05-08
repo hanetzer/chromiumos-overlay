@@ -191,6 +191,7 @@ RDEPEND="${RDEPEND}
 	sys-libs/libcap
 	chrome_remoting? ( sys-libs/pam )
 	sys-libs/zlib
+	vaapi? ( x11-libs/libva )
 	X? (
 		x11-apps/setxkbmap
 		x11-libs/libX11
@@ -202,7 +203,6 @@ RDEPEND="${RDEPEND}
 		x11-libs/libXi
 		x11-libs/libXrandr
 		x11-libs/libXrender
-		vaapi? ( x11-libs/libva )
 		chrome_remoting? ( x11-libs/libXtst )
 	)
 	xkbcommon? (
@@ -213,7 +213,8 @@ RDEPEND="${RDEPEND}
 		chromeos-base/gestures
 		chromeos-base/libevdev
 	)
-	accessibility? ( app-accessibility/brltty ) "
+	accessibility? ( app-accessibility/brltty )
+	"
 
 
 DEPEND="${DEPEND}
