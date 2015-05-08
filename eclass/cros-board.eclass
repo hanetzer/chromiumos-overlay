@@ -233,11 +233,13 @@ ALL_BOARDS=(
 	veyron_gus
 	veyron_jaq
 	veyron_jerry
+	veyron_mickey
 	veyron_mighty
 	veyron_minnie
 	veyron_nicky
 	veyron_pinky
 	veyron_remy
+	veyron_romy
 	veyron_rialto
 	veyron_speedy
 	veyron_thea
