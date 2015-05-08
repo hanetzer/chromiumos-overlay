@@ -98,9 +98,9 @@ tmpdir 						= @GENTOO_PORTAGE_EPREFIX@/tmp/
 # the rest of the innodb config follows:
 # don't eat too much memory, we're trying to be safe on 64Mb boxes
 # you might want to bump this up a bit on boxes with more RAM
-innodb_buffer_pool_size = 16M
+innodb_buffer_pool_size = 8M
 # this is the default, increase it if you have lots of tables
-innodb_additional_mem_pool_size = 2M
+innodb_additional_mem_pool_size = 1M
 #
 # i'd like to use @GENTOO_PORTAGE_EPREFIX@/var/lib/mysql/innodb, but that is seen as a database :-(
 # and upstream wants things to be under @GENTOO_PORTAGE_EPREFIX@/var/lib/mysql/, so that's the route

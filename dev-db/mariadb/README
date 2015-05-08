@@ -16,3 +16,7 @@ Moblab Specific Changes:
   https://chromium-review.googlesource.com/#/c/202318/
 * Updated my.cnf to disable binary logging.
   https://chromium-review.googlesource.com/#/c/204543/
+* Reduced innodb_buffer_pool_size to 8M and
+  innodb_additional_mem_pool_size to 1M. These changes reduces mysqld's
+  memory footprint from 1.2GB to 750MB.
+
