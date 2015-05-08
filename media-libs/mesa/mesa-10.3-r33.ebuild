@@ -208,6 +208,10 @@ src_configure() {
 		--with-driver=dri \
 		--disable-glu \
 		--disable-glut \
+		--disable-omx \
+		--disable-va \
+		--disable-vdpau \
+		--disable-xvmc \
 		--without-demos \
 		--enable-texture-float \
 		--disable-dri3 \
