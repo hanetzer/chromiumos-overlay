@@ -9,8 +9,8 @@ inherit cmake-utils
 DESCRIPTION="Library that allows selection of GL API and of window system at runtime"
 HOMEPAGE="http://www.waffle-gl.org"
 # TODO(fjhenigman): merge github fork into main project and change SRC_URI back to a release from there
-MY_V="null1"
-SRC_URI="https://github.com/fjhenigman/waffle/archive/${MY_V}.tar.gz -> ${P}.tar.gz"
+MY_V="null2"
+SRC_URI="https://github.com/fjhenigman/waffle/archive/${MY_V}.tar.gz -> ${PF}.tar.gz"
 S="${WORKDIR}/${PN}-${MY_V}"
 LICENSE="BSD-2"
 SLOT="0"
