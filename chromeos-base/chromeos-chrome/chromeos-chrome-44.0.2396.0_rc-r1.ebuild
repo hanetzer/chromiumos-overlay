@@ -129,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2395.5_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2395.5_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2395.5_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2396.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2396.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2396.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -191,6 +191,7 @@ RDEPEND="${RDEPEND}
 	sys-libs/libcap
 	chrome_remoting? ( sys-libs/pam )
 	sys-libs/zlib
+	vaapi? ( x11-libs/libva )
 	X? (
 		x11-apps/setxkbmap
 		x11-libs/libX11
@@ -202,7 +203,6 @@ RDEPEND="${RDEPEND}
 		x11-libs/libXi
 		x11-libs/libXrandr
 		x11-libs/libXrender
-		vaapi? ( x11-libs/libva )
 		chrome_remoting? ( x11-libs/libXtst )
 	)
 	xkbcommon? (
@@ -213,7 +213,8 @@ RDEPEND="${RDEPEND}
 		chromeos-base/gestures
 		chromeos-base/libevdev
 	)
-	accessibility? ( app-accessibility/brltty ) "
+	accessibility? ( app-accessibility/brltty )
+	"
 
 
 DEPEND="${DEPEND}
