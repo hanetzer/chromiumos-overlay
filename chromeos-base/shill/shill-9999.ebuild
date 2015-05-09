@@ -55,6 +55,14 @@ pkg_preinst() {
 	enewuser "nfqueue"
 }
 
+get_dependent_services() {
+	local dependent_services=()
+	if use wifi || use wired_8021x; then
+		dependent_services+=(wpasupplicant)
+	fi
+	echo "started boot-services ${dependent_services[*]/#/and started }"
+}
+
 src_install() {
 	# Install libshill-net library.
 	insinto "/usr/$(get_libdir)/pkgconfig"
@@ -129,6 +137,10 @@ src_install() {
 	# Install init scripts
 	insinto /etc/init
 	doins init/*.conf
+	sed \
+		"s,@expected_started_services@,$(get_dependent_services)," \
+		init/shill.conf.in \
+		> "${D}/etc/init/shill.conf"
 
 	udev_dorules udev/*.rules
 }
