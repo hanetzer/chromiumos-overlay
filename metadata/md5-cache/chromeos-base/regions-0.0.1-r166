@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install setup test unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Chromium OS Region Data
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+IUSE=cros_host cros_workon_tree_bbfcadfcb69545c4876a4df2ca15d7dfabe339c2 profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=app-misc/jq
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	6bf321836dedc8d5b8ce25719f26835b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=fad4de5885493f2e25745f5548bad2bc
