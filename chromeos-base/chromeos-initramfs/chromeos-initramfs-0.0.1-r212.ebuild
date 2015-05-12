@@ -16,7 +16,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="frecon +interactive_recovery -mtd +power_management"
+IUSE="device_tree frecon +interactive_recovery -mtd +power_management"
 
 # Build Targets
 TARGETS_IUSE="
@@ -77,6 +77,7 @@ FACTORY_NETBOOT_DEPENDS="
 # Packages required for building the loader kernel initramfs.
 LOADER_KERNEL_DEPENDS="
 	chromeos-base/vboot_reference
+	device_tree? ( sys-apps/fitpicker )
 	sys-apps/kexec-tools
 	"
 
@@ -122,6 +123,7 @@ src_compile() {
 	einfo "Building targets: ${targets[*]}"
 
 	emake SYSROOT="${SYSROOT}" BOARD="$(get_current_board_with_variant)" \
+		INCLUDE_FIT_PICKER="$(usex device_tree 1 0)" \
 		OUTPUT_DIR="${WORKDIR}" EXTRA_BIN_DEPS="${deps[*]}" \
 		LOCALE_LIST="${RECOVERY_LOCALES}" ${targets[*]}
 }
