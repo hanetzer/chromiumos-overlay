@@ -1,10 +1,10 @@
-configure: fix ggc version detection
+configure: fix gcc version detection
 
-Configure script breaks on gcc version number "4.8.x-google"
+Configure script breaks on gcc version number "4.9.x-google"
 
---- configure	2014-10-23 19:45:12.000000000 +0200
-+++ configure	2014-11-10 13:36:40.238345776 +0100
-@@ -425,6 +425,13 @@
+--- configure	2015-05-01 15:09:04.313217659 -0700
++++ configure	2015-05-01 15:09:31.625469167 -0700
+@@ -466,6 +466,13 @@
    return matchup.get(arch, 'ia32')
  
  
@@ -17,11 +17,11 @@ Configure script breaks on gcc version number "4.8.x-google"
 +
  def compiler_version():
    try:
-     proc = subprocess.Popen(shlex.split(CC) + ['--version'], stdout=subprocess.PIPE)
-@@ -434,7 +441,7 @@
-   is_clang = 'clang' in proc.communicate()[0].split('\n')[0]
+     proc = subprocess.Popen(shlex.split(CC) + ['--version'],
+@@ -477,7 +484,7 @@
  
-   proc = subprocess.Popen(shlex.split(CC) + ['-dumpversion'], stdout=subprocess.PIPE)
+   proc = subprocess.Popen(shlex.split(CC) + ['-dumpversion'],
+                           stdout=subprocess.PIPE)
 -  version = tuple(map(int, proc.communicate()[0].split('.')))
 +  version = tuple(map(int_lenient, proc.communicate()[0].split('.')))
  
