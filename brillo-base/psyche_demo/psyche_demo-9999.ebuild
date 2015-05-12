@@ -10,7 +10,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="psyche_demo"
 
-inherit cros-workon platform
+inherit cros-workon platform brillo-sandbox
 
 DESCRIPTION="Demonstration programs using psyche"
 HOMEPAGE="http://www.chromium.org/"
@@ -32,7 +32,9 @@ DEPEND="${RDEPEND}"
 src_install() {
 	dobin "${OUT}"/psyche_demo_{client,server}
 
+	# TODO(cmasone) Remove JSON appc manifests from disk when somad no
+	#               longer makes use of them.
 	insinto /etc/container_specs
 	doins com.android.embedded.*.json
-
+	dobrsandbox com.android.embedded.demo-brick.json
 }
