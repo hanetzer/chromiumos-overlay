@@ -108,6 +108,10 @@ tc-getRC() { tc-getPROG RC windres "$@"; }
 # @USAGE: [toolchain prefix]
 # @RETURN: name of the Windows dllwrap utility
 tc-getDLLWRAP() { tc-getPROG DLLWRAP dllwrap "$@"; }
+# @FUNCTION: tc-getGO
+# @USAGE: [toolchain prefix]
+# @RETURN: name of the Go compiler
+tc-getGO() { tc-getPROG GO go "$@"; }
 
 # @FUNCTION: tc-getBUILD_AR
 # @USAGE: [toolchain prefix]
