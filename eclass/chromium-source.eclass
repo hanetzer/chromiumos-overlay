@@ -93,18 +93,24 @@ chromium_source_compute_source_dir() {
 # access svn and ssh if needed.
 chromium_source_copy_credentials() {
 	mkdir -p "${HOME}"
-	local WHOAMI=$(whoami)
-	SUBVERSION_CONFIG_DIR="/home/${WHOAMI}/.subversion"
-	if [[ -d "${SUBVERSION_CONFIG_DIR}" ]]; then
-		cp -rfp "${SUBVERSION_CONFIG_DIR}" "${HOME}" || die
+	local whoami=$(whoami)
+	local subversion_config_dir="/home/${whoami}/.subversion"
+	if [[ -d "${subversion_config_dir}" ]]; then
+		cp -rfp "${subversion_config_dir}" "${HOME}" || die
 	fi
-	SSH_CONFIG_DIR="/home/${WHOAMI}/.ssh"
-	if [[ -d "${SSH_CONFIG_DIR}" ]]; then
-		cp -rfp "${SSH_CONFIG_DIR}" "${HOME}" || die
+	local ssh_config_dir="/home/${whoami}/.ssh"
+	if [[ -d "${ssh_config_dir}" ]]; then
+		cp -rfp "${ssh_config_dir}" "${HOME}" || die
 	fi
-	NET_CONFIG="/home/${WHOAMI}/.netrc"
-	if [[ -f "${NET_CONFIG}" ]]; then
-		cp -fp "${NET_CONFIG}" "${HOME}" || die
+	local net_config="/home/${whoami}/.netrc"
+	if [[ -f "${net_config}" ]]; then
+		cp -fp "${net_config}" "${HOME}" || die
+	fi
+	local gitcookies_src="/home/${whoami}/.gitcookies"
+	local gitcookies_dst="${HOME}/.gitcookies"
+	if [[ -f "${gitcookies_src}" ]]; then
+		cp -fp "${gitcookies_src}" "${gitcookies_dst}" || die
+		git config --global http.cookiefile "${gitcookies_dst}"
 	fi
 }
 
