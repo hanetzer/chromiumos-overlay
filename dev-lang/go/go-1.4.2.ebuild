@@ -12,7 +12,7 @@ S="${WORKDIR}/${PN}"
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="-* amd64"
+KEYWORDS="-* amd64 x86 arm"
 IUSE=""
 RESTRICT="binchecks strip"
 
