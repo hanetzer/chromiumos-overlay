@@ -1,5 +1,7 @@
 Contains all the patches committed to portage_tool on top of 2.2.12:
 
+* fs_template._ensure_dirs: handle EEXIST (529120)
+* flat_hash: Fix race condition in _setitem.
 * Add separatedebug feature
 * package.bashrc: per profile, per-package bashrc mechanism
 * Add profile-formats to profile_complex
@@ -8,7 +10,8 @@ Contains all the patches committed to portage_tool on top of 2.2.12:
 * If a binhost file sets a TTL header, honor it.
 * Make SYSROOT a portage variable
 * Do not interrupt on SIGCONT
-* Remove warning when repo_name is only defined in layout.conf
+* Readonly detection logic should handle ROOT
+* Remove repo_name warning
 * Remove repos.conf
 * Add a new portageq helper to reduce a string containing use conditionals
 * re-order install hooks execution
@@ -386,6 +389,140 @@ index d6db311..6e3bf1a 100644
  
  			try:
  				rval = self._merge()
+diff --git a/pym/portage/cache/flat_hash.py b/pym/portage/cache/flat_hash.py
+index 5304296..4735c86 100644
+--- a/pym/portage/cache/flat_hash.py
++++ b/pym/portage/cache/flat_hash.py
+@@ -10,6 +10,7 @@ import errno
+ import io
+ import stat
+ import sys
++import tempfile
+ import os as _os
+ from portage import os
+ from portage import _encodings
+@@ -66,48 +67,39 @@ class database(fs_template.FsBased):
+ 			raise cache_errors.CacheCorruption(cpv, e)
+ 
+ 	def _setitem(self, cpv, values):
+-		s = cpv.rfind("/")
+-		fp = os.path.join(self.location,cpv[:s],".update.%i.%s" % (os.getpid(), cpv[s+1:]))
+-		try:
+-			myf = io.open(_unicode_encode(fp,
+-				encoding=_encodings['fs'], errors='strict'),
+-				mode='w', encoding=_encodings['repo.content'],
+-				errors='backslashreplace')
+-		except (IOError, OSError) as e:
+-			if errno.ENOENT == e.errno:
++		with tempfile.NamedTemporaryFile(delete=False, dir=self.location,
++			prefix=cpv.replace('/', '_')) as temp:
++			temp.close()
++			try:
++				with io.open(temp.name, mode='w',
++					encoding=_encodings['repo.content'],
++					errors='backslashreplace') as myf:
++					for k in self._write_keys:
++						v = values.get(k)
++						if not v:
++							continue
++						# NOTE: This format string requires unicode_literals, so that
++						# k and v are coerced to unicode, in order to prevent TypeError
++						# when writing raw bytes to TextIOWrapper with Python 2.
++						myf.write("%s=%s\n" % (k, v))
++
++				self._ensure_access(temp.name)
++
++				# Update written, we can move it.
++				new_fp = os.path.join(self.location, cpv)
+ 				try:
+-					self._ensure_dirs(cpv)
+-					myf = io.open(_unicode_encode(fp,
+-						encoding=_encodings['fs'], errors='strict'),
+-						mode='w', encoding=_encodings['repo.content'],
+-						errors='backslashreplace')
+-				except (OSError, IOError) as e:
+-					raise cache_errors.CacheCorruption(cpv, e)
+-			else:
++					os.rename(temp.name, new_fp)
++				except OSError as e:
++					if e.errno == errno.ENOENT:
++						self._ensure_dirs(cpv)
++						os.rename(temp.name, new_fp)
++					else:
++						raise cache_errors.CacheCorruption(cpv, e)
++
++			except EnvironmentError as e:
++				os.remove(temp.name)
+ 				raise cache_errors.CacheCorruption(cpv, e)
+ 
+-		try:
+-			for k in self._write_keys:
+-				v = values.get(k)
+-				if not v:
+-					continue
+-				# NOTE: This format string requires unicode_literals, so that
+-				# k and v are coerced to unicode, in order to prevent TypeError
+-				# when writing raw bytes to TextIOWrapper with Python 2.
+-				myf.write("%s=%s\n" % (k, v))
+-		finally:
+-			myf.close()
+-		self._ensure_access(fp)
+-
+-		#update written.  now we move it.
+-
+-		new_fp = os.path.join(self.location,cpv)
+-		try:
+-			os.rename(fp, new_fp)
+-		except (OSError, IOError) as e:
+-			os.remove(fp)
+-			raise cache_errors.CacheCorruption(cpv, e)
+-
+ 	def _delitem(self, cpv):
+ #		import pdb;pdb.set_trace()
+ 		try:
+diff --git a/pym/portage/cache/fs_template.py b/pym/portage/cache/fs_template.py
+index de4fe4b..fa44abc 100644
+--- a/pym/portage/cache/fs_template.py
++++ b/pym/portage/cache/fs_template.py
+@@ -10,7 +10,7 @@ from portage import os
+ from portage.proxy.lazyimport import lazyimport
+ lazyimport(globals(),
+ 	'portage.exception:PortageException',
+-	'portage.util:apply_permissions',
++	'portage.util:apply_permissions,ensure_dirs',
+ )
+ del lazyimport
+ 
+@@ -61,20 +61,15 @@ class FsBased(template.database):
+ 
+ 		for dir in path.lstrip(os.path.sep).rstrip(os.path.sep).split(os.path.sep):
+ 			base = os.path.join(base,dir)
+-			if not os.path.exists(base):
+-				if self._perms != -1:
+-					um = os.umask(0)
+-				try:
+-					perms = self._perms
+-					if perms == -1:
+-						perms = 0
+-					perms |= 0o755
+-					os.mkdir(base, perms)
+-					if self._gid != -1:
+-						os.chown(base, -1, self._gid)
+-				finally:
+-					if self._perms != -1:
+-						os.umask(um)
++			if ensure_dirs(base):
++				# We only call apply_permissions if ensure_dirs created
++				# a new directory, so as not to interfere with
++				# permissions of existing directories.
++				mode = self._perms
++				if mode == -1:
++					mode = 0
++				mode |= 0o755
++				apply_permissions(base, mode=mode, gid=self._gid)
+ 
+ 	def _prune_empty_dirs(self):
+ 		all_dirs = []
 diff --git a/pym/portage/const.py b/pym/portage/const.py
 index aab6e8a..fa7bd66 100644
 --- a/pym/portage/const.py
