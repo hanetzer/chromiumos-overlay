@@ -129,9 +129,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2399.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2399.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2399.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-44.0.2400.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-44.0.2400.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-44.0.2400.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -409,7 +409,7 @@ set_build_defines() {
 
 	BUILD_DEFINES+=( "release_extra_cflags='${RELEASE_EXTRA_CFLAGS[*]}'" )
 
-	export GYP_GENERATORS="$(usex ninja ninja make)"
+	export GYP_GENERATORS="ninja"
 	export GYP_DEFINES="${BUILD_DEFINES[*]}"
 	export builddir_name="${BUILD_OUT}"
 	# Prevents gclient from updating self.
@@ -767,13 +767,10 @@ src_configure() {
 
 	setup_compile_flags
 
-	local build_tool_flags=()
-	if use ninja; then
-		build_tool_flags+=(
-			"config=${BUILDTYPE}"
-			"output_dir=${builddir_name}"
-		)
-	fi
+	local build_tool_flags=(
+		"config=${BUILDTYPE}"
+		"output_dir=${builddir_name}"
+	)
 	export GYP_GENERATOR_FLAGS="${build_tool_flags[*]}"
 	export BOTO_CONFIG=/home/$(whoami)/.boto
 	export PATH=${PATH}:/home/$(whoami)/depot_tools
@@ -793,12 +790,8 @@ src_configure() {
 }
 
 chrome_make() {
-	if use ninja; then
-		PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
-			${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
-	else
-		emake -r $(usex verbose V=1 "") "BUILDTYPE=${BUILDTYPE}" "$@" || die
-	fi
+	PATH=${PATH}:/home/$(whoami)/depot_tools ${ENINJA} \
+		${MAKEOPTS} -C "${BUILD_OUT_SYM}/${BUILDTYPE}" $(usex verbose -v "") "$@" || die
 }
 
 src_compile() {
