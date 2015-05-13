@@ -46,7 +46,6 @@ src_install() {
 	# Install Upstart files.
 	insinto /etc/init
 	doins init/germd.conf
-	doins init/germ_template.conf
 }
 
 platform_pkg_test() {
