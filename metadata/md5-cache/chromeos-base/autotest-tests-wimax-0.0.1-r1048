@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install postinst prepare setup unpack
+DEPEND=!<chromeos-base/autotest-tests-0.0.2 chromeos-base/autotest-deps-cellular chromeos-base/shill-test-scripts dev-python/pygobject dev-vcs/git
+DESCRIPTION=Wimax autotests
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=+autotest +tests_network_WiMaxPresent +tests_network_WiMaxSmoke cros_host cros_workon_tree_758745a07092524df2a6f9f3e08da72eb02b3760 profiling +buildcheck autotest opengles
+KEYWORDS=*
+LICENSE=GPL-2
+RDEPEND=!<chromeos-base/autotest-tests-0.0.2 chromeos-base/autotest-deps-cellular chromeos-base/shill-test-scripts dev-python/pygobject ( autotest? ( >=chromeos-base/autotest-0.0.1-r3 ) )
+SLOT=0
+_eclasses_=autotest	2ca93402ccfa4ab94ef6e51f18a34f21	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	1c9419bde0abf3c31458b88410265d36	cros-workon	6bf321836dedc8d5b8ce25719f26835b	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	7e69a4700d631feaaa54fabf5c21be25
+_md5_=45f2ccf204d73a66b416c52832f1ae35
