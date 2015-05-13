@@ -22,6 +22,7 @@ SLOT=0
 KEYWORDS="*"
 
 RDEPEND="
+	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	sys-apps/dbus
 "
