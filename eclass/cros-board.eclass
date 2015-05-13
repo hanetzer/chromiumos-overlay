@@ -118,6 +118,7 @@ ALL_BOARDS=(
 	klang
 	kunimitsu
 	lakitu
+	lakitu_mobbuild
 	laser
 	#lemmings
 	#lemmings_external
