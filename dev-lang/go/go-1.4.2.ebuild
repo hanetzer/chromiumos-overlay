@@ -123,5 +123,6 @@ src_install() {
 	else
 		dosym "${goroot}/bin/go" /usr/bin/go
 		dosym "${goroot}/bin/gofmt" /usr/bin/gofmt
+		dosym go "/usr/bin/${CTARGET}-go"
 	fi
 }
