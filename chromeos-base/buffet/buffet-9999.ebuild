@@ -57,6 +57,10 @@ src_install() {
 	insinto /etc/buffet
 	doins etc/buffet/*
 
+	# GCD command implemented by buffet.
+	insinto /etc/buffet/commands
+	doins etc/buffet/commands/buffet.json
+
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/buffet.conf
