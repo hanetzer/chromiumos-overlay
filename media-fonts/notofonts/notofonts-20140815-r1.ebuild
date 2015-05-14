@@ -1,1 +1,0 @@
-notofonts-20140815.ebuild
