@@ -27,3 +27,17 @@ CROS_GIT_INT_HOST_URL="https://chrome-internal.googlesource.com"
 # Path to build-time destination of autotest (relative to sysroot).
 AUTOTEST_BASE="/usr/local/build/autotest"
 
+# @ECLASS-VARIABLE: CHROOT_SOURCE_ROOT
+# @DESCRIPTION:
+# Path to location of source code in the chroot.
+CHROOT_SOURCE_ROOT='/mnt/host/source'
+
+# @ECLASS-VARIABLE: CHROMITE_DIR
+# @DESCRIPTION:
+# Path to location of chromite source code in the chroot.
+CHROMITE_DIR="${CHROOT_SOURCE_ROOT}/chromite"
+
+# @ECLASS-VARIABLE: CHROMITE_BIN_DIR
+# @DESCRIPTION:
+# Path to location of chromite executable directory in the chroot.
+CHROMITE_BIN_DIR="${CHROMITE_DIR}/bin"
