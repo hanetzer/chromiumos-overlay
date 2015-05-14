@@ -13,6 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 
 DEPEND="sys-apps/debianutils
+	sys-kernel/linux-firmware
 	factory_shim_ramfs? ( chromeos-base/chromeos-initramfs[factory_shim_ramfs] )
 	loader_kernel_ramfs? ( chromeos-base/chromeos-initramfs[loader_kernel_ramfs] )
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs[netboot_ramfs] )
