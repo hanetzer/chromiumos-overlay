@@ -59,7 +59,7 @@ net-misc/curl		ares
 net-misc/dhcpcd		crash
 net-misc/dhcp		ipv6 -server
 net-misc/iperf		threads
-net-misc/iputils	ipv6
+net-misc/iputils	ipv6 arping
 net-misc/ntp		caps
 net-misc/openssh	-X
 net-misc/openvpn	pkcs11
