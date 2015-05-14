@@ -417,7 +417,7 @@ set_build_defines() {
 }
 
 unpack_chrome() {
-	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/sync_chrome )
+	local cmd=( "${CHROMITE_BIN_DIR}"/sync_chrome )
 	use chrome_internal && cmd+=( --internal )
 	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
 		cmd+=( --revision="${CROS_SVN_COMMIT}" )

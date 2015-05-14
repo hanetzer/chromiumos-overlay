@@ -6,7 +6,7 @@ CROS_WORKON_PROJECT="chromiumos/chromite"
 CROS_WORKON_LOCALNAME="../../chromite"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
-inherit cros-workon python
+inherit cros-constants cros-workon python
 
 DESCRIPTION="Wrapper for running chromite unit tests"
 HOMEPAGE="http://www.chromium.org/"
@@ -33,6 +33,6 @@ src_test() {
 	# one using a sudo invocation. Currently the tests assume they run from a
 	# repo checkout, so they need to be run from the real source dir.
 	# TODO(davidjames): Fix that, and run the tests from ${S} instead.
-	cd /mnt/host/source/chromite/cbuildbot && sudo -u "${PORTAGE_USERNAME}" \
+	cd "${CHROMITE_DIR}/cbuildbot" && sudo -u "${PORTAGE_USERNAME}" \
 		PATH="${CROS_WORKON_SRCROOT}/../depot_tools:${PATH}" ./run_tests || die
 }

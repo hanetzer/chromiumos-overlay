@@ -6,7 +6,7 @@ EAPI="4"
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
 NEXT_BINUTILS=cros/mobile_toolchain_v18_release_branch
 
-inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-workon
+inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-constants cros-workon
 
 KEYWORDS="~*"
 
@@ -61,7 +61,7 @@ fi
 githash_for_branch() {
 	local pathbase
 	local branch=$1
-	pathbase=/mnt/host/source/src/third_party/binutils
+	pathbase="${CHROOT_SOURCE_ROOT}/src/third_party/binutils"
 	# Workaround uprev deleting these settings. http://crbug.com/375546
 	eval CROS_WORKON_COMMIT"='$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%H" "${branch}")'"
 	eval CROS_WORKON_TREE"='$(git --no-pager --git-dir="${pathbase}/.git" log -1 --pretty="format:%T" "${branch}")'"

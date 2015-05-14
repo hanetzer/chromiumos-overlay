@@ -26,6 +26,8 @@
 # This eclass also adds a dependency on chromeos-base/chromium-source
 # which is the ebuild used for downloading the source code.
 
+inherit cros-constants
+
 # @ECLASS-VARIABLE: CHROMIUM_GCLIENT_TEMPLATE
 # @DESCRIPTION: (Optional) Template gclient file passed to sync_chrome
 : ${CHROMIUM_GCLIENT_TEMPLATE:=}
@@ -131,7 +133,7 @@ chromium_source_check_out_source() {
 
 	elog "Checking out CHROMIUM_VERSION = ${CHROMIUM_VERSION}"
 
-	local cmd=( "${CROS_WORKON_SRCROOT}"/chromite/bin/sync_chrome )
+	local cmd=( "${CHROMITE_BIN_DIR}"/sync_chrome )
 	use chrome_internal && cmd+=( --internal )
 	if [[ -n "${CROS_SVN_COMMIT}" ]]; then
 		cmd+=( --revision="${CROS_SVN_COMMIT}" )
