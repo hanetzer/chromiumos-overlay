@@ -82,7 +82,7 @@ ARRAY_VARIABLES=(
 # @ECLASS-VARIABLE: CROS_WORKON_SRCROOT
 # @DESCRIPTION:
 # Directory where chrome third party and platform sources are located (formerly CHROMEOS_ROOT)
-: ${CROS_WORKON_SRCROOT:=}
+: ${CROS_WORKON_SRCROOT:="${CHROOT_SOURCE_ROOT}"}
 
 # @ECLASS-VARIABLE: CROS_WORKON_INPLACE
 # @DESCRIPTION:
@@ -234,15 +234,7 @@ array_vars_autocomplete() {
 # Result passed through global variable "path" to preserve proper array quoting.
 get_paths() {
 	local pathbase srcbase
-	if [[ -n "${CROS_WORKON_SRCROOT}" ]]; then
-		pathbase="${CROS_WORKON_SRCROOT}"
-	elif [[ -n "${CHROMEOS_ROOT}" ]]; then
-		pathbase="${CHROMEOS_ROOT}"
-	else
-		# HACK: Figure out the missing legacy path for now
-		# this only happens in amd64 chroot with sudo emerge.
-		pathbase="/mnt/host/source"
-	fi
+	pathbase="${CROS_WORKON_SRCROOT}"
 
 	if [[ "${CATEGORY}" == "chromeos-base" ||
 		"${CATEGORY}" == "brillo-base" ]] ; then
