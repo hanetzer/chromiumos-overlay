@@ -1,0 +1,33 @@
+--- a/setupext.py
++++ b/setupext.py
+@@ -116,6 +116,7 @@ def has_include_file(include_dirs, filename):
+     Returns `True` if `filename` can be found in one of the
+     directories in `include_dirs`.
+     """
++    return True
+     for dir in include_dirs:
+         if os.path.exists(os.path.join(dir, filename)):
+             return True
+@@ -215,14 +216,6 @@ def make_extension(name, files, *args, **kwargs):
+     `distutils.core.Extension` constructor.
+     """
+     ext = DelayedExtension(name, files, *args, **kwargs)
+-    for dir in get_base_dirs():
+-        include_dir = os.path.join(dir, 'include')
+-        if os.path.exists(include_dir):
+-            ext.include_dirs.append(include_dir)
+-        for lib in ('lib', 'lib64'):
+-            lib_dir = os.path.join(dir, lib)
+-            if os.path.exists(lib_dir):
+-                ext.library_dirs.append(lib_dir)
+     ext.include_dirs.append('.')
+ 
+     return ext
+@@ -244,6 +237,7 @@ class PkgConfig(object):
+             self.has_pkgconfig = (status == 0)
+ 
+     def set_pkgconfig_path(self):
++        return
+         pkgconfig_path = sysconfig.get_config_var('LIBDIR')
+         if pkgconfig_path is None:
+             return
