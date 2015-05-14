@@ -2,6 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/dev-lang/python/python-2.7.3-r3.ebuild,v 1.5 2012/12/19 18:03:41 floppym Exp $
 
+# ******************************* README ***************************************
+# WARNING! ANY CHANGE TO THIS FILE *MUST* BE ACCOMPANIED BY A CHANGE TO
+# chromeos-base/dev-install's ebuild, which depends on python indirectly.
+# Otherwise, incremental builds will break.  See crbug.com/489895.
+# ******************************************************************************
+
 EAPI="2"
 WANT_AUTOMAKE="none"
 WANT_LIBTOOL="none"
@@ -104,6 +110,7 @@ src_prepare() {
 		sed -i 's:^python$EXE:${HOSTPYTHON}:' Lib/*/regen || die
 	fi
 	epatch "${FILESDIR}"/python-2.7.3-cross-distutils.patch
+	epatch "${FILESDIR}"/python-2.7.3-unique-semaphore-name.patch
 	# Undo the @libdir@ change for portage's pym folder as it is always
 	# installed into /usr/lib/ and not the abi libdir.
 	sed -i \

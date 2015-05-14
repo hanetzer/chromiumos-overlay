@@ -1,6 +1,12 @@
 # Copyright 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# TODO(phobbs) the output of this ebuild depends on what virtual/target-os-dev
+# depends on (except what is in virtual/target-os), but does NOT explicitly
+# depend on those packages. Therefore any change to the dependencies of
+# virtual/target-os-dev will result in a stale output of dev-install, breaking
+# incremental builds.  See crbug.com/489895.
+
 # This ebuild file installs the developer installer package. It:
 #  + Copies dev_install.
 #  + Copies some config files for emerge: make.defaults and make.conf.
