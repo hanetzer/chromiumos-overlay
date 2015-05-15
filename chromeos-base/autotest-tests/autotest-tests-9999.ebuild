@@ -86,7 +86,6 @@ CLIENT_IUSE_TESTS="
 	)
 	+tests_dummy_Fail
 	+tests_dummy_Pass
-	+tests_example_CrosTest
 	tests_example_UnitTest
 	+tests_firmware_FMap
 	+tests_firmware_RomSize
