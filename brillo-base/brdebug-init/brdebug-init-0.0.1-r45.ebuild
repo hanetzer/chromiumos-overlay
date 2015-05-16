@@ -1,0 +1,31 @@
+# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=4
+
+CROS_WORKON_COMMIT="2600a8d3c8ed24c33f33f88dde565eb29604fe38"
+CROS_WORKON_TREE="73ca4055c7c7bda6f391ffd6256030d21e1d5193"
+CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_PROJECT="chromiumos/platform2"
+CROS_WORKON_DESTDIR="${S}/platform2"
+
+PLATFORM_SUBDIR="brdebug"
+
+inherit cros-workon platform
+
+DESCRIPTION="Install upstart for debug link"
+HOMEPAGE="http://www.chromium.org/"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="*"
+
+RDEPEND="
+	brillo-base/brdebug
+	chromeos-base/chromeos-init
+"
+
+src_install() {
+	insinto /etc/init
+	doins init/brdebugd.conf
+}
