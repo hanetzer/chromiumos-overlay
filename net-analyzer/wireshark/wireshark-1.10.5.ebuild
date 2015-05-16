@@ -79,7 +79,8 @@ src_prepare() {
 	epatch \
 		"${FILESDIR}"/${PN}-1.6.13-ldflags.patch \
 		"${FILESDIR}"/${PN}-1.10.1-oldlibs.patch \
-		"${FILESDIR}"/${PN}-1.10.4-gtk-deprecated-warnings.patch
+		"${FILESDIR}"/${PN}-1.10.4-gtk-deprecated-warnings.patch \
+		"${FILESDIR}"/${PN}-1.10.5-cross-compile.patch
 
 	epatch_user
 
