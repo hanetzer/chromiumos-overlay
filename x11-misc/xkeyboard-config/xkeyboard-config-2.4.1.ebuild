@@ -14,12 +14,12 @@ HOMEPAGE="http://www.freedesktop.org/wiki/Software/XKeyboardConfig"
 [[ ${PV} == *9999* ]] || SRC_URI="${XORG_BASE_INDIVIDUAL_URI}/data/${P}.tar.bz2"
 
 KEYWORDS="*"
-IUSE="parrot"
+IUSE="cros_host parrot"
 
 LICENSE="MIT"
 SLOT="0"
 
-DEPEND="${RDEPEND}
+DEPEND="cros_host? ( >=x11-apps/xkbcomp-1.2.3 )
 	>=dev-util/intltool-0.30
 	dev-perl/XML-Parser"
 
