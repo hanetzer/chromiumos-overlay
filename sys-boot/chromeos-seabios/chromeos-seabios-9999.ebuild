@@ -55,6 +55,8 @@ create_seabios_cbfs() {
 _emake() {
 	emake \
 		CROSS_PREFIX="${CHOST}-" \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
+		HOSTCC="$(tc-getBUILD_CC)" \
 		LD="$(tc-getLD).bfd" \
 		CC="$(tc-getCC) -fuse-ld=bfd" \
 		"$@"
