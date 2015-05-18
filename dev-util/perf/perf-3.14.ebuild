@@ -125,9 +125,10 @@ src_prepare() {
 
 	PATCHES=(
 		"${FILESDIR}/3.14-get-kernel-start-address-by-symbol-name.patch"
+		"${FILESDIR}/3.14-separate-tools-and-tests.patch"
 	)
 
-	for patch_file in ${PATCHES}; do
+	for patch_file in "${PATCHES[@]}"; do
 		epatch ${patch_file}
 	done
 
@@ -171,7 +172,7 @@ src_test() {
 }
 
 src_install() {
-	perf_make install DESTDIR="${D}"
+	perf_make install-tools DESTDIR="${D}"
 
 	dodoc CREDITS
 
