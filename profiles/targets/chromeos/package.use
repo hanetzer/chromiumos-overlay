@@ -59,7 +59,9 @@ net-misc/curl		ares
 net-misc/dhcpcd		crash
 net-misc/dhcp		ipv6 -server
 net-misc/iperf		threads
-net-misc/iputils	ipv6 arping
+# arping is used by some wifi autotests.
+# tracepath is exposed to the user via crosh.
+net-misc/iputils	ipv6 arping tracepath
 net-misc/ntp		caps
 net-misc/openssh	-X
 net-misc/openvpn	pkcs11
