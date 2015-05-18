@@ -1,0 +1,107 @@
+From 8dda0650b55c467200c34ada127b5d9b54edea5c Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Tue, 5 May 2015 17:56:38 +0800
+Subject: [PATCH] Decode: Free the allocated internal surface used by JPEG to
+ avoid memory leak
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+Signed-off-by: Sean V Kelley <seanvk@posteo.de>
+Tested-by: Sean V Kelley <seanvk@posteo.de>
+---
+ src/gen75_mfd.c | 12 ++++++++++++
+ src/gen7_mfd.c  | 12 ++++++++++++
+ src/gen7_mfd.h  |  2 ++
+ 3 files changed, 26 insertions(+)
+
+diff --git a/src/gen75_mfd.c b/src/gen75_mfd.c
+index 971dcb0..5171bd9 100644
+--- a/src/gen75_mfd.c
++++ b/src/gen75_mfd.c
+@@ -3189,8 +3189,11 @@ out:
+ static void
+ gen75_mfd_context_destroy(void *hw_context)
+ {
++    VADriverContextP ctx;
+     struct gen7_mfd_context *gen7_mfd_context = (struct gen7_mfd_context *)hw_context;
+ 
++    ctx = (VADriverContextP)(gen7_mfd_context->driver_context);
++
+     dri_bo_unreference(gen7_mfd_context->post_deblocking_output.bo);
+     gen7_mfd_context->post_deblocking_output.bo = NULL;
+ 
+@@ -3214,6 +3217,13 @@ gen75_mfd_context_destroy(void *hw_context)
+ 
+     dri_bo_unreference(gen7_mfd_context->jpeg_wa_slice_data_bo);
+ 
++    if (gen7_mfd_context->jpeg_wa_surface_id != VA_INVALID_SURFACE) {
++        i965_DestroySurfaces(ctx,
++                             &gen7_mfd_context->jpeg_wa_surface_id,
++                             1);
++        gen7_mfd_context->jpeg_wa_surface_object = NULL;
++    }
++
+     intel_batchbuffer_free(gen7_mfd_context->base.batch);
+     free(gen7_mfd_context);
+ }
+@@ -3263,5 +3273,7 @@ gen75_dec_hw_context_init(VADriverContextP ctx, struct object_config *obj_config
+     default:
+         break;
+     }
++
++    gen7_mfd_context->driver_context = ctx;
+     return (struct hw_context *)gen7_mfd_context;
+ }
+diff --git a/src/gen7_mfd.c b/src/gen7_mfd.c
+index 4439c3c..40a6db4 100755
+--- a/src/gen7_mfd.c
++++ b/src/gen7_mfd.c
+@@ -2668,8 +2668,11 @@ out:
+ static void
+ gen7_mfd_context_destroy(void *hw_context)
+ {
++    VADriverContextP ctx;
+     struct gen7_mfd_context *gen7_mfd_context = (struct gen7_mfd_context *)hw_context;
+ 
++    ctx = (VADriverContextP)(gen7_mfd_context->driver_context);
++
+     dri_bo_unreference(gen7_mfd_context->post_deblocking_output.bo);
+     gen7_mfd_context->post_deblocking_output.bo = NULL;
+ 
+@@ -2693,6 +2696,13 @@ gen7_mfd_context_destroy(void *hw_context)
+ 
+     dri_bo_unreference(gen7_mfd_context->jpeg_wa_slice_data_bo);
+ 
++    if (gen7_mfd_context->jpeg_wa_surface_id != VA_INVALID_SURFACE) {
++        i965_DestroySurfaces(ctx,
++                             &gen7_mfd_context->jpeg_wa_surface_id,
++                             1);
++        gen7_mfd_context->jpeg_wa_surface_object = NULL;
++    }
++
+     intel_batchbuffer_free(gen7_mfd_context->base.batch);
+     free(gen7_mfd_context);
+ }
+@@ -2741,5 +2751,7 @@ gen7_dec_hw_context_init(VADriverContextP ctx, struct object_config *obj_config)
+     default:
+         break;
+     }
++
++    gen7_mfd_context->driver_context = ctx;
+     return (struct hw_context *)gen7_mfd_context;
+ }
+diff --git a/src/gen7_mfd.h b/src/gen7_mfd.h
+index af8e960..f268f5a 100644
+--- a/src/gen7_mfd.h
++++ b/src/gen7_mfd.h
+@@ -93,6 +93,8 @@ struct gen7_mfd_context
+     dri_bo *jpeg_wa_slice_data_bo;
+ 
+     int                 wa_mpeg2_slice_vertical_position;
++
++    void *driver_context;
+ };
+ 
+ #endif /* _GEN7_MFD_H_ */
+-- 
+1.9.3
+
