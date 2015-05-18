@@ -49,7 +49,7 @@ src_configure() {
 
 	# Force to use gcc even CC=clang is set.
 	if [[ ${CC:-gcc} != *"gcc"* ]]; then
-		unset CC
+		unset CC CXX
 	fi
 
 	local confgcc=(
