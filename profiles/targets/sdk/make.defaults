@@ -1,6 +1,11 @@
 # Copyright (c) 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Settings that are common to all host sdks.  Do not place any board specific
+# settings in here, or settings for cross-compiled targets.
+#
+# See "man 5 make.conf" and "man 5 portage" for the available options.
+
 # Dummy setting so we can use the same append form below.
 USE=""
 
@@ -11,3 +16,6 @@ USE="${USE} -gtk2 -gtk3 -qt4"
 USE="${USE} xattr"
 # But disable using them in the sdk itself for now. http://crbug.com/483174
 USE="${USE} -filecaps"
+
+# No need to track power in the sdk.
+USE="${USE} -power_management"
