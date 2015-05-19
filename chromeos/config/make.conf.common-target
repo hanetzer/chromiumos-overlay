@@ -23,7 +23,7 @@ CXXEXCEPTIONS_FLAGS="-fno-exceptions -fno-unwind-tables
   -fno-asynchronous-unwind-tables "
 
 ACCEPT_KEYWORDS="${ARCH}"
-USE="${ARCH} zlib bindist cros-debug -introspection platform2"
+USE="${ARCH} zlib bindist cros-debug -introspection"
 
 # Be sure we don't overwrite pkgs from another sysroot.
 PKGDIR=${ROOT}packages/
