@@ -1,8 +1,9 @@
 DEFINED_PHASES=-
 DESCRIPTION=Chrome OS Firmware (null template)
-EAPI=2
+EAPI=4
 HOMEPAGE=http://www.chromium.org/
 KEYWORDS=*
-LICENSE=BSD
+LICENSE=BSD-Google
+RDEPEND=app-arch/gzip app-arch/sharutils app-arch/tar chromeos-base/vboot_reference
 SLOT=0
-_md5_=a96dbd152e964a5b09a8fea5a1a710e7
+_md5_=a6aa04e424eee88da7382a9469f66482
