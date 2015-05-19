@@ -3,10 +3,6 @@
 # Common settings across all sdks.
 source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-sdk
 
-ACCEPT_KEYWORDS="amd64"
-CHOST="x86_64-pc-linux-gnu"
-CFLAGS="-O2 -pipe"
-
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
 
