@@ -161,6 +161,9 @@ src_install() {
 		newins "${S}"/color_profiles/lumpy.bin internal_display.bin
 	fi
 
+	insinto /usr/share/color/icc
+	doins "${S}"/color_profiles/*.icc
+
 	# Don't install cursors when building for Tegra, since the
 	# current ARGB cursor implementation is performing badly,
 	# and the fallback to 2-bit hardware cursor works better.
