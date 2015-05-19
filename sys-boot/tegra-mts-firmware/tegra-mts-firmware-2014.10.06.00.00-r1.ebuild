@@ -17,7 +17,7 @@ S=${WORKDIR}
 
 src_install() {
 	local board=$(get_current_board_with_variant)
-	insinto /firmware/coreboot-private/3rdparty/mainboard/google/${board}
+	insinto /firmware/coreboot-private/3rdparty/blobs/mainboard/google/${board}
 	doins mts_preboot_si
 	doins mts_si
 }
