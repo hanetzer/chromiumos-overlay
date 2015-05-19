@@ -971,14 +971,6 @@ install_chrome_test_resources() {
 		cp -al "${from}"/khronos_glcts_data "${dest}"/.
 	fi
 
-	# Remove test binaries from other platforms.
-	if [[ -z "${E_MACHINE}" ]]; then
-		echo E_MACHINE not defined!
-	else
-		cd "${test_dir}"/chrome/test
-		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
-	fi
-
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \
 		"${dest}"
 }

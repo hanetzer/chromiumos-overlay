@@ -251,10 +251,6 @@ autotest_src_prepare() {
 		popd > /dev/null
 	done
 	popd > /dev/null
-
-	# Cleanup checked-in binaries that don't support the target architecture
-	[[ ${E_MACHINE} == "" ]] && return 0;
-	rm -fv $( scanelf -RmyBF%a "${AUTOTEST_WORKDIR}" | grep -v -e ^${E_MACHINE} )
 }
 
 autotest_src_compile() {
