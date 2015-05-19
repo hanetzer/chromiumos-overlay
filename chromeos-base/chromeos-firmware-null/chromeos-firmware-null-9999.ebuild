@@ -1,7 +1,8 @@
 # Copyright (c) 2011 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=2
+EAPI=4
+CROS_WORKON_LOCALNAME="firmware"
 CROS_WORKON_PROJECT="chromiumos/platform/firmware"
 
 # THIS IS A TEMPLATE EBUILD FILE.
@@ -18,12 +19,32 @@ DESCRIPTION="Chrome OS Firmware (null template)"
 
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
-LICENSE="BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE=""
 
-CROS_WORKON_LOCALNAME="firmware"
+# The RDEPEND and description below should live in cros-firmware.eclass,
+# and is only required here because this template does not inherit
+# cros-firmware. Please remove this section when you're cloning this to
+# a board overlay.
+# Packages needed to unpack firmware updater (chromeos-firmware).
+# The related packages will be included if chromeos-firmware package
+# is enabled for a board. However, some new boards might be added
+# to an early created factory branch without package chromeos-firmware.
+# This will make unpacking firmware updater fail on the test image
+# generated from the factor branch due to lack of those packages.
+# Add them into test image to fix the failure.
+# The contents of RDEPEND below must also be present in the
+# chromeos-base/chromeos-factoryinstall ebuild in PROVIDED_DEPEND.
+# If you make any change to the list below, you may need to make a
+# matching change in the factory install ebuild.
+RDEPEND="
+	app-arch/gzip
+	app-arch/sharutils
+	app-arch/tar
+	chromeos-base/vboot_reference
+"
 
 # ---------------------------------------------------------------------------
 # CUSTOMIZATION SECTION
