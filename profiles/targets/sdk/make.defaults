@@ -9,6 +9,16 @@
 # Dummy setting so we can use the same append form below.
 USE=""
 
+# Various global settings.
+USE="${USE} hardened multilib pic pie -introspection -cracklib"
+
+# Custom USE flag ebuilds can use to determine whether it's going into the sdk
+# or into a target board.
+USE="${USE} cros_host"
+
+# expat needed for XML parsing in GDB, but enable globally as overhead is tiny.
+USE="${USE} expat"
+
 # Disable all x11 USE flags for packages within chroot.
 USE="${USE} -gtk2 -gtk3 -qt4"
 
@@ -19,3 +29,13 @@ USE="${USE} -filecaps"
 
 # No need to track power in the sdk.
 USE="${USE} -power_management"
+
+# Various runtime features that control emerge behavior.
+# See "man 5 make.conf" for details.
+FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
+          -ebuild-locks -merge-sync parallel-install -preserve-libs sandbox
+          -strict userfetch userpriv usersandbox -unknown-features-warn"
+
+# Qemu targets we care about.
+QEMU_SOFTMMU_TARGETS="aarch64 arm i386 mipsel x86_64"
+QEMU_USER_TARGETS="aarch64 arm i386 mipsel x86_64"

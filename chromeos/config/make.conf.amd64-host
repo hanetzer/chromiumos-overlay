@@ -6,9 +6,6 @@ source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.
 ACCEPT_KEYWORDS="amd64"
 CHOST="x86_64-pc-linux-gnu"
 CFLAGS="-O2 -pipe"
-FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
-          -ebuild-locks -merge-sync parallel-install -preserve-libs sandbox
-          -strict userfetch userpriv usersandbox -unknown-features-warn"
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
@@ -31,10 +28,6 @@ source /usr/local/portage/chromiumos/chromeos/binhost/host/amd64-PREFLIGHT_BINHO
 FULL_BINHOST="gs://chromeos-prebuilt/host/amd64/amd64-host/chroot-2015.05.29.084751/packages/"
 PORTAGE_BINHOST="$PREFLIGHT_BINHOST $FULL_BINHOST"
 
-# expat needed for XML parsing in GDB, but enable globally as overhead is tiny.
-USE="${USE} hardened cros_host multilib pic pie -introspection expat"
-USE="${USE} -cracklib"
-
 GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
 GENTOO_MIRRORS="$GENTOO_MIRRORS https://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
 
@@ -52,9 +45,5 @@ PKG_INSTALL_MASK="${INSTALL_MASK}"
 # are targeting the cros-sdk (in all its various modes).  It should
 # be utilized nowhere else!
 CROS_SDK_HOST="cros-sdk-host"
-
-# Qemu targets we care about.
-QEMU_SOFTMMU_TARGETS="aarch64 arm i386 mipsel x86_64"
-QEMU_USER_TARGETS="aarch64 arm i386 mipsel x86_64"
 
 source make.conf.host_setup
