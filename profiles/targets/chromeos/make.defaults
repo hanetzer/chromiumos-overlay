@@ -7,3 +7,6 @@ USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -cups -poppler-data -nls -openrc"
 USE="${USE} -mime -peerd scanner"
 USE="${USE} -gtk2 -gtk3 -qt4"
+
+# Enable general security hardening by default.
+USE="${USE} hardened"

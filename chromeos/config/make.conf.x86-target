@@ -12,7 +12,7 @@ ARCH=x86
 source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-target
 
 # Recommended x86-specific USE flags.
-USE="${USE} mmx sse sse2 dri hardened"
+USE="${USE} mmx sse sse2 dri"
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE="-march=atom -mtune=atom -mfpmath=sse"
