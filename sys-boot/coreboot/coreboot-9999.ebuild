@@ -74,6 +74,12 @@ src_prepare() {
 		done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
 	fi
 
+	for blob in mrc.bin mrc.elf efi.elf; do
+		if [[ -r "${SYSROOT}/firmware/${blob}" ]]; then
+			cp "${SYSROOT}/firmware/${blob}" 3rdparty/blobs/
+		fi
+	done
+
 	local board=$(get_current_board_with_variant)
 	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
@@ -101,12 +107,6 @@ src_prepare() {
 			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> .config
 		fi
 	fi
-
-	# Replace the hard coded /build/<board>/ in the config with the actual
-	# sysroot.
-	# TODO: crbug.com/388888 coreboot configs should not hardcode the
-	# sysroot path.
-	sed -i 's#/build/[^/]*#${SYSROOT}#' .config || die
 
 	if use rmt; then
 		echo "CONFIG_MRC_RMT=y" >> .config
