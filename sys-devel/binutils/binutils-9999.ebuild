@@ -129,7 +129,10 @@ src_configure() {
 	myconf+=( --enable-64-bit-bfd )
 
 	[[ -n ${CBUILD} ]] && myconf+=( --build=${CBUILD} )
-	is_cross && myconf+=( --with-sysroot="${EPREFIX}"/usr/${CTARGET} )
+	is_cross && myconf+=(
+		--with-sysroot="${EPREFIX}"/usr/${CTARGET}
+		--enable-poison-system-directories
+	)
 
 	# glibc-2.3.6 lacks support for this ... so rather than force glibc-2.5+
 	# on everyone in alpha (for now), we'll just enable it when possible

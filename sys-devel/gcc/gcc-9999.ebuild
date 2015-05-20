@@ -208,6 +208,8 @@ src_configure() {
 	esac
 
 	if is_crosscompile; then
+		confgcc+=( --enable-poison-system-directories )
+
 		local needed_libc="glibc"
 		if [[ -n ${needed_libc} ]]; then
 			if ! has_version ${CATEGORY}/${needed_libc}; then
