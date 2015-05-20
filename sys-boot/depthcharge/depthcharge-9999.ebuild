@@ -12,7 +12,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="fastboot fwconsole mocktpm pd_sync unified_depthcharge vboot2"
+IUSE="fastboot fwconsole mocktpm pd_sync unified_depthcharge"
 
 RDEPEND="
 	sys-apps/coreboot-utils
@@ -57,10 +57,6 @@ src_compile() {
 	if use fwconsole ; then
 		echo "CONFIG_CLI=y" >> "board/${board}/defconfig"
 		echo "CONFIG_SYS_PROMPT=\"${board}: \"" >>  \
-		  "board/${board}/defconfig"
-	fi
-	if use vboot2; then
-		echo "CONFIG_VBOOT2_VERIFY_FIRMWARE=y" >> \
 		  "board/${board}/defconfig"
 	fi
 

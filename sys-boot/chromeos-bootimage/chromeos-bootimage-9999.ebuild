@@ -239,8 +239,7 @@ src_compile_depthcharge() {
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
 	local coreboot_file="${froot}/coreboot.rom"
-	local romstage_file="${froot}/romstage.stage"
-	local ramstage_file="${froot}/ramstage.stage"
+	local verified_stages=( "ramstage" "romstage" "bl31" )
 	local refcode_file="${froot}/refcode.stage"
 	local ro_suffix
 	local rw_suffix
@@ -278,19 +277,15 @@ src_compile_depthcharge() {
 	local silent=( --coreboot "${coreboot_file}" )
 
 	if [ -z "${multicbfs}" ]; then
-		# If unified depthcharge is being used always include
-		# ramstage_file.
-		if use unified_depthcharge; then
-			if use vboot2; then
-				serial+=( --add-blob romstage )
-                                serial+=( "${romstage_file}.serial" )
-				silent+=( --add-blob romstage )
-                                silent+=( "${romstage_file}" )
+		# Add all stages we have, CBF will pick what it needs based on fmap.dts
+		for stage in ${verified_stages[@]}; do
+			if [ -f "${froot}/${stage}.stage.serial" ]; then
+				serial+=( --add-blob ${stage} "${froot}/${stage}.stage.serial" )
+				silent+=( --add-blob ${stage} "${froot}/${stage}.stage" )
+			elif [ -f "${froot}/${stage}.stage" ]; then
+				common+=( --add-blob ${stage} "${froot}/${stage}.stage" )
 			fi
-			serial+=( --add-blob ramstage )
-                        serial+=( "${ramstage_file}.serial" )
-			silent+=( --add-blob ramstage "${ramstage_file}" )
-		fi
+		done
 		depthcharge_binaries+=( --uboot )
 		depthcharge_binaries+=(
 			"${froot}/depthcharge/depthcharge.${rw_suffix}" )

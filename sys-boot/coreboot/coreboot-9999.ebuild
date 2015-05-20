@@ -54,6 +54,8 @@ DEPEND="
 	amd64? ($DEPEND_X86)
 	"
 
+VERIFIED_STAGES=( "ramstage" "romstage" "refcode" "bl31" )
+
 src_prepare() {
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
@@ -135,20 +137,12 @@ make_coreboot() {
 		mv "${builddir}/coreboot.rom"{.new,} || die
 	fi
 
-	# Extract the coreboot romstage file into the build dir.
-	cbfstool "${builddir}/coreboot.rom" extract \
-		-n "fallback/romstage" \
-		-f "${builddir}/romstage.stage" || die
-
-	# Extract the coreboot ramstage file into the build dir.
-	cbfstool "${builddir}/coreboot.rom" extract \
-		-n "fallback/ramstage" \
-		-f "${builddir}/ramstage.stage" || die
-
-	# Extract the reference code stage into the build dir if present.
-	cbfstool "${builddir}/coreboot.rom" extract \
-		-n "fallback/refcode" \
-		-f "${builddir}/refcode.stage" || true
+	# Extract stages which may need to be repackaged for vboot, if present.
+	for stage in ${VERIFIED_STAGES[@]}; do
+		cbfstool "${builddir}/coreboot.rom" extract \
+			-n "fallback/${stage}" \
+			-f "${builddir}/${stage}.stage" || true
+	done
 }
 
 src_compile() {
@@ -206,16 +200,16 @@ src_install() {
 	fi
 
 	insinto /firmware
+
 	newins "build/coreboot.rom" coreboot.rom
 	newins "build_serial/coreboot.rom" coreboot.rom.serial
-	newins "build/romstage.stage" romstage.stage
-	newins "build_serial/romstage.stage" romstage.stage.serial
-	newins "build/ramstage.stage" ramstage.stage
-	newins "build_serial/ramstage.stage" ramstage.stage.serial
-	if [[ -f "build/refcode.stage" ]]; then
-		newins "build/refcode.stage" refcode.stage
-		newins "build_serial/refcode.stage" refcode.stage.serial
-	fi
+	for stage in ${VERIFIED_STAGES[@]}; do
+		if [[ -f "build/${stage}.stage" ]]; then
+			newins "build/${stage}.stage" "${stage}.stage"
+			newins "build_serial/${stage}.stage" "${stage}.stage.serial"
+		fi
+	done
+
 	OPROM=$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_FILE=/ { print $2 }' \
 		${FILESDIR}/configs/config.${board} )
 	CBFSOPROM=pci$( awk 'BEGIN{FS="\""} /CONFIG_VGA_BIOS_ID=/ { print $2 }' \
