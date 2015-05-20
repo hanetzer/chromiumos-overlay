@@ -46,7 +46,7 @@ RDEPEND="
 # Dependency shared by x86 and amd64.
 DEPEND_X86="
 	sys-power/iasl
-	!fsp? ( sys-boot/chromeos-mrc )
+	sys-boot/chromeos-mrc
 	"
 DEPEND="
 	chromeos-base/vboot_reference
