@@ -190,9 +190,9 @@ src_configure() {
 				--with-arch=${arm_arch}
 				--disable-esp
 			)
-			use hardfp && confgcc+=( --with-float=hard )
-			use thumb && confgcc+=( --with-mode=thumb )
 		fi
+		use hardfp && confgcc+=( --with-float=hard )
+		use thumb && confgcc+=( --with-mode=thumb )
 		;;
 	i?86*)
 		# Hardened is enabled for x86, but disabled for ARM.
