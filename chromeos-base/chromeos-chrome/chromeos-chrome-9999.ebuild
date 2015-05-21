@@ -51,7 +51,6 @@ IUSE="
 	mojo
 	+nacl
 	neon
-	+ninja
 	opengl
 	opengles
 	ozone
