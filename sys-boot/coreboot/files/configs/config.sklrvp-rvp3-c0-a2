@@ -71,3 +71,4 @@ CONFIG_VGA_BIOS_FILE="3rdparty/blobs/mainboard/intel/sklrvp/vgabios.bin"
 CONFIG_VGA_BIOS_ID="8086,0406"
 CONFIG_VGA_ROM_RUN=y
 
+CONFIG_VBOOT_RAMSTAGE_INDEX=3
