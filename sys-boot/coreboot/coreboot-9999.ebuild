@@ -4,16 +4,19 @@
 EAPI=4
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
+	"chromiumos/third_party/arm-trusted-firmware"
 	"chromiumos/platform/vboot_reference"
 	"chromiumos/third_party/coreboot/blobs"
 )
 CROS_WORKON_LOCALNAME=(
 	"coreboot"
+	"arm-trusted-firmware"
 	"../platform/vboot_reference"
 	"coreboot/3rdparty"
 )
 CROS_WORKON_DESTDIR=(
 	"${S}"
+	"${S}/3rdparty/arm-trusted-firmware"
 	"${S}/3rdparty/vboot"
 	"${S}/3rdparty/blobs"
 )
