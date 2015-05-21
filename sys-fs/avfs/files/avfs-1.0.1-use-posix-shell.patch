@@ -1,0 +1,56 @@
+From 539320dbee4f74def507782b30c0be2cc36eaf15 Mon Sep 17 00:00:00 2001
+From: "Nam T. Nguyen" <namnguyen@chromium.org>
+Date: Fri, 22 May 2015 08:38:37 -0700
+Subject: [PATCH] scripts: Use POSIX shell instead of bash
+
+---
+ scripts/mountavfs  | 4 ++--
+ scripts/umountavfs | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/mountavfs b/scripts/mountavfs
+index 5722dcd..bae8b7d 100755
+--- a/scripts/mountavfs
++++ b/scripts/mountavfs
+@@ -1,10 +1,10 @@
+-#!/bin/bash
++#!/bin/sh
+ # mountavfs -- program to mount avfs file system
+ # and load avfsd daemon.
+ # companion program to umountavfs
+ # will check to see if avfs is mounted and then
+ # load the avfsd daemon which will mount avfs.
+-# last updated 2010-09-12
++# last updated 2015-05-22
+ 
+ # suggested use: in a login script or wm startup routine
+ 
+diff --git a/scripts/umountavfs b/scripts/umountavfs
+index 09dc629..4b6190b 100644
+--- a/scripts/umountavfs
++++ b/scripts/umountavfs
+@@ -1,10 +1,10 @@
+-#!/bin/bash
++#!/bin/sh
+ # umountavfs -- program to unmount avfs file system
+ # and unload avfsd daemon.
+ # companion program to mountavfs
+ # will check to see if avfsd is mounted and then
+ # unmount using fusermount.
+-# last updated 2010-09-12
++# last updated 2015-05-22
+ 
+ # suggested use: in a logout script or wm exit routine
+ 
+@@ -16,7 +16,7 @@ fi
+ 
+ grep -qE "${MntDir}.*avfsd" /proc/mounts && {
+    echo unMounting AVFS on $MntDir...
+-   if type -p fusermount > /dev/null 2>&1 ; then
++   if which fusermount > /dev/null 2>&1 ; then
+       fusermount -u -z "$MntDir"
+    else
+       umount -l "$MntDir"
+-- 
+2.2.0.rc0.207.ga3a616c
+

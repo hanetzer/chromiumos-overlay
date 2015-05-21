@@ -34,6 +34,8 @@ src_prepare() {
 	# the modules are compiled in statically.
 	epatch "${FILESDIR}"/${P}-disable-dynamic-modules.patch
 
+	epatch "${FILESDIR}"/${P}-use-posix-shell.patch
+
 	eautoreconf
 }
 
