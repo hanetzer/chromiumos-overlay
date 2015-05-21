@@ -78,8 +78,14 @@ src_compile() {
 
 src_test() {
 	use 32bit_au && board_setup_32bit_au_env
-	# Needed for `cros_run_unit_tests`.
-	cros-workon_src_test
+
+	if ! use x86 && ! use amd64 ; then
+		einfo Skipping unit tests on non-x86 platform
+	else
+		# Needed for `cros_run_unit_tests`.
+		cros-workon_src_test
+	fi
+
 	use 32bit_au && board_teardown_32bit_au_env
 }
 

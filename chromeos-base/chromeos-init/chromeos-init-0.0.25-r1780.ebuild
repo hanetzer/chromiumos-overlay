@@ -58,6 +58,15 @@ platform_pkg_test() {
 	done
 }
 
+src_test() {
+	if ! use x86 && ! use amd64 ; then
+		einfo Skipping unit tests on non-x86 platform
+	else
+		# Needed for `cros_run_unit_tests`.
+		cros-workon_src_test
+	fi
+}
+
 src_install() {
 	# Install helper to run periodic tasks.
 	dobin periodic_scheduler
