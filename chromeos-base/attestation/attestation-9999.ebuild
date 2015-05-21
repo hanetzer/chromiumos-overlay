@@ -21,6 +21,7 @@ KEYWORDS="~*"
 IUSE=""
 
 RDEPEND="
+	app-crypt/trousers
 	chromeos-base/libchromeos
 	"
 
