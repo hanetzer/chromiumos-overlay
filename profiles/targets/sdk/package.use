@@ -26,3 +26,10 @@ sys-fs/squashfs-tools lzo
 
 # some prebuilt binaries created on Ubuntu like to link against libtinfo.
 sys-libs/ncurses tinfo
+
+# Upstream hard requires cups for no good reason.
+# http://icedtea.classpath.org/bugzilla/show_bug.cgi?id=877
+# http://crbug.com/490393
+dev-java/icedtea-bin cups
+# And cups wants ghostscript-gpl built with cups support.
+app-text/ghostscript-gpl cups
