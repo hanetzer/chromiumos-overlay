@@ -21,6 +21,7 @@ IUSE="-app_shell +autotest -chromeless_tty"
 RDEPEND=""
 DEPEND="${RDEPEND}
 	!<chromeos-base/autotest-server-tests-0.0.2
+	>=net-wireless/hostapd-2.3
 "
 
 SERVER_IUSE_TESTS="
