@@ -8,7 +8,7 @@ MY_P="${P/_alpha/-alpha}"
 MY_P="${MY_P/_beta/-beta}"
 MY_P="${MY_P/_rc/-rc}"
 SRC_URI="http://roy.marples.name/downloads/${PN}/${MY_P}.tar.bz2"
-KEYWORDS="~*"
+KEYWORDS="*"
 S="${WORKDIR}/${MY_P}"
 
 inherit eutils systemd toolchain-funcs user
@@ -17,32 +17,49 @@ DESCRIPTION="A fully featured, yet light weight RFC2131 compliant DHCP client"
 HOMEPAGE="http://roy.marples.name/projects/dhcpcd/"
 LICENSE="BSD-2"
 SLOT="0"
-IUSE="elibc_glibc +embedded ipv6 kernel_linux +udev"
+IUSE="elibc_glibc +embedded ipv6 kernel_linux +udev +dbus"
 
-COMMON_DEPEND="udev? ( virtual/udev )"
+COMMON_DEPEND="udev? ( virtual/udev )
+	       dbus? ( sys-apps/dbus )"
 DEPEND="${COMMON_DEPEND}"
 RDEPEND="${COMMON_DEPEND}"
 
 src_prepare()
 {
-	epatch_user
+	epatch "${FILESDIR}"/patches/${P}-Optionally-ARP-for-gateway-IP-address.patch
+	epatch "${FILESDIR}"/patches/${P}-Teach-DHCP-client-to-do-unicast-ARP-for-gatew.patch
+	epatch "${FILESDIR}"/patches/${P}-Fix-dhcpcd-running-as-a-regular-user.patch
+	epatch "${FILESDIR}"/patches/${P}-Allow-lease-file-to-be-set-on-command-line.patch
+	epatch "${FILESDIR}"/patches/${P}-Be-more-permissive-on-NAKs.patch
+	epatch "${FILESDIR}"/patches/${P}-Accept-an-ACK-after-a-NAK.patch
+	epatch "${FILESDIR}"/patches/${P}-Track-and-validate-disputed-addresses.patch
+	epatch "${FILESDIR}"/patches/${P}-Fix-OOB-read-in-dhcpcd.patch
+	epatch "${FILESDIR}"/patches/${P}-Merge-in-DHCP-options-from-the-original-offer.patch
+	epatch "${FILESDIR}"/patches/${P}-Stop-ARP-probes-when-conflict-is-detected.patch
+	epatch "${FILESDIR}"/patches/${P}-Add-option-definition-for-Web-Proxy-Auto-Discovery.patch
+	epatch "${FILESDIR}"/patches/${P}-Add-RPC-support-for-DHCPv4-client.patch
+	epatch "${FILESDIR}"/patches/${P}-UPSTREAM-Fix-ARP-checking.patch
+	epatch "${FILESDIR}"/patches/${P}-Add-ability-to-disable-hook-scripts.patch
+	epatch "${FILESDIR}"/patches/${P}-Improve-debugability.patch
+	epatch "${FILESDIR}"/patches/${P}-Add-DBus-RPC-support.patch
 }
 
 src_configure()
 {
-	local dev hooks rundir
+	local dev hooks
 	use udev || dev="--without-dev --without-udev"
-	hooks="--with-hook=ntp.conf"
-	use elibc_glibc && hooks="${hooks} --with-hook=yp.conf"
-	use kernel_linux && rundir="--rundir=${EPREFIX}/run"
+	if ! use dbus ; then
+		hooks="--with-hook=ntp.conf"
+		use elibc_glibc && hooks="${hooks} --with-hook=yp.conf"
+	fi
 	econf \
-		--prefix="${EPREFIX}" \
-		--libexecdir="${EPREFIX}/lib/dhcpcd" \
-		--dbdir="${EPREFIX}/var/lib/dhcpcd" \
-		--localstatedir="${EPREFIX}/var" \
-		${rundir} \
+		--prefix= \
+		--libexecdir=/lib/dhcpcd \
+		--dbdir=/var/lib/dhcpcd \
+		--rundir=/var/run/dhcpcd \
 		$(use_enable embedded) \
 		$(use_enable ipv6) \
+		$(use_enable dbus) \
 		${dev} \
 		CC="$(tc-getCC)" \
 		${hooks}
