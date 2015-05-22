@@ -116,6 +116,7 @@ ALL_BOARDS=(
 	kip
 	#kip_freon
 	klang
+	kunimitsu
 	lakitu
 	laser
 	#lemmings
