@@ -1,0 +1,10 @@
+--- fuse-2.8.6.orig/util/fusermount.c	2014-07-25 16:51:07.255166348 +0100
++++ fuse-2.8.6/util/fusermount.c	2014-07-25 16:51:36.767409639 +0100
+@@ -7,6 +7,7 @@
+ */
+ /* This program does the mounting and unmounting of FUSE filesystems */
+
++#define _GNU_SOURCE /* for clone */
+ #include <config.h>
+
+ #include "mount_util.h"

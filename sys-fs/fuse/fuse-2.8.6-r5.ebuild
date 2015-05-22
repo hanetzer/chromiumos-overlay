@@ -37,6 +37,7 @@ src_prepare() {
 	# put more restrictive seccomp filters on fusermount.
 	epatch "${FILESDIR}"/fuse-2.8.6-user-option.patch
 	epatch "${FILESDIR}"/fuse-2.8.6-kernel-types.patch
+	epatch "${FILESDIR}"/fuse-2.8.6-fix-gnusource.patch
 
 	elibtoolize
 }
@@ -46,8 +47,7 @@ src_configure() {
 		INIT_D_PATH="${EPREFIX}/etc/init.d" \
 		MOUNT_FUSE_PATH="${EPREFIX}/sbin" \
 		UDEV_RULES_PATH="${EPREFIX}/lib/udev/rules.d" \
-		--disable-example \
-		--disable-mtab
+		--disable-example
 }
 
 src_install() {
