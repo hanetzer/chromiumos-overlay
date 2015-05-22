@@ -1,15 +1,16 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-9999.ebuild,v 1.13 2013/02/21 16:08:27 ago Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-9999.ebuild,v 1.37 2015/05/04 08:19:53 vapier Exp $
 
-EAPI="3"
+EAPI="5"
+PYTHON_COMPAT=( python{2_7,3_3,3_4} )
 
-inherit cros-constants flag-o-matic eutils
+inherit flag-o-matic eutils python-single-r1
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
-	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
-		export CTARGET=${CATEGORY/cross-}
+	if [[ ${CATEGORY} == cross-* ]] ; then
+		export CTARGET=${CATEGORY#cross-}
 	fi
 fi
 is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
@@ -17,20 +18,13 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 RPM=
 MY_PV=${PV}
 case ${PV} in
-*.*.*.*.*.*)
-	# fedora version: gdb-6.8.50.20090302-8.fc11.src.rpm
-	inherit versionator rpm
-	gvcr() { get_version_component_range "$@"; }
-	MY_PV=$(gvcr 1-4)
-	RPM="${PN}-${MY_PV}-$(gvcr 5).fc$(gvcr 6).src.rpm"
-	SRC_URI="mirror://fedora/development/source/SRPMS/${RPM}"
-	;;
-*.*.50.*)
+*.*.50.2???????)
 	# weekly snapshots
-	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.bz2"
+	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.xz"
 	;;
 9999*)
 	# live git tree
+	inherit cros-constants
 	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/gdb.git"
 	EGIT_BRANCH="chromeos_master"
 	EGIT_COMMIT=0ea2048212cc7769aeb9681b7f4e2df8163edd35
@@ -39,8 +33,8 @@ case ${PV} in
 	;;
 *)
 	# Normal upstream release
-	SRC_URI="mirror://gnu/gdb/${P}.tar.bz2
-		ftp://sourceware.org/pub/gdb/releases/${P}.tar.bz2"
+	SRC_URI="mirror://gnu/gdb/${P}.tar.xz
+		ftp://sourceware.org/pub/gdb/releases/${P}.tar.xz"
 	;;
 esac
 
@@ -54,42 +48,56 @@ SLOT="0"
 if [[ ${PV} != 9999* ]] ; then
 	KEYWORDS="*"
 fi
-IUSE="+client expat multitarget nls +python +server test vanilla zlib mounted_sources"
+IUSE="+client expat lzma multitarget nls +python +server test vanilla zlib mounted_sources"
+REQUIRED_USE="
+	python? ( ${PYTHON_REQUIRED_USE} )
+	|| ( client server )
+"
 
-RDEPEND="!dev-util/gdbserver
-	>=sys-libs/ncurses-5.2-r2
-	sys-libs/readline
-	expat? ( dev-libs/expat )
-	python? ( =dev-lang/python-2* )
-	zlib? ( sys-libs/zlib )"
+RDEPEND="server? ( !dev-util/gdbserver )
+	client? (
+		>=sys-libs/ncurses-5.2-r2
+		sys-libs/readline:0=
+		expat? ( dev-libs/expat )
+		lzma? ( app-arch/xz-utils )
+		python? ( ${PYTHON_DEPS} )
+		zlib? ( sys-libs/zlib )
+	)"
 DEPEND="${RDEPEND}
 	app-arch/xz-utils
-	virtual/yacc
-	test? ( dev-util/dejagnu )
-	nls? ( sys-devel/gettext )"
+	client? (
+		virtual/yacc
+		test? ( dev-util/dejagnu )
+		nls? ( sys-devel/gettext )
+	)"
 
 S=${WORKDIR}/${PN}-${MY_PV}
 
-src_unpack () {
+pkg_setup() {
+	use python && python-single-r1_pkg_setup
+}
+
+src_unpack() {
 	if use mounted_sources ; then
-		${GDBDIR:=/usr/local/toolchain_root/gdb/gdb-7.5.x}
+		: ${GDBDIR:=/usr/local/toolchain_root/gdb/gdb-7.5.x}
 		if [[ ! -d ${GDBDIR} ]] ; then
 			die "gdb dir not mounted/present at: ${GDBDIR}"
 		fi
-		cp -R ${GDBDIR} ${S}
-		else
-			git-2_src_unpack
-		fi
+		cp -R "${GDBDIR}" "${S}"
+	else
+		git-2_src_unpack
+	fi
 }
 
 src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
-	use vanilla || [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
+	! use vanilla && [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
+	epatch_user
 	strip-linguas -u bfd/po opcodes/po
 }
 
 gdb_branding() {
-	printf "Gentoo ${PV} "
+	printf "Chromium OS ${PV} "
 	if ! use vanilla && [[ -n ${PATCH_VER} ]] ; then
 		printf "p${PATCH_VER}"
 	else
@@ -101,14 +109,18 @@ gdb_branding() {
 src_configure() {
 	strip-unsupported-flags
 
-	local sysroot="${EPREFIX}"/usr/${CTARGET}
 	local myconf=(
 		--with-pkgversion="$(gdb_branding)"
-		--with-bugurl='http://bugs.gentoo.org/'
+		--with-bugurl='http://crbug.com/new'
 		--disable-werror
-		$(is_cross && echo \
-			--with-sysroot="${sysroot}" \
-			--includedir="${sysroot}/usr/include")
+		# Disable modules that are in a combined binutils/gdb tree. #490566
+		--disable-{binutils,etc,gas,gold,gprof,ld}
+	)
+	local sysroot="${EPREFIX}/usr/${CTARGET}"
+	is_cross && myconf+=(
+		--with-sysroot="${sysroot}"
+		--includedir="${sysroot}/usr/include"
+		--with-gdb-datadir="\${datadir}/gdb/${CTARGET}"
 	)
 
 	if use server && ! use client ; then
@@ -132,12 +144,16 @@ src_configure() {
 			--enable-64-bit-bfd
 			--disable-install-libbfd
 			--disable-install-libiberty
+			# This only disables building in the readline subdir.
+			# For gdb itself, it'll use the system version.
+			--disable-readline
 			--with-system-readline
 			--with-separate-debug-dir="${EPREFIX}"/usr/lib/debug
 			$(use_with expat)
+			$(use_with lzma)
 			$(use_enable nls)
 			$(use multitarget && echo --enable-targets=all)
-			$(use_with python python "${EPREFIX}/usr/bin/python2")
+			$(use_with python python "${EPYTHON}")
 			$(use_with zlib)
 		)
 	fi
@@ -146,27 +162,32 @@ src_configure() {
 }
 
 src_test() {
-	emake check || ewarn "tests failed"
+	nonfatal emake check || ewarn "tests failed"
 }
 
 src_install() {
 	use server && ! use client && cd gdb/gdbserver
-	emake DESTDIR="${D}" install || die
-	use client && { find "${ED}"/usr -name libiberty.a -delete || die ; }
+	default
+	use client && find "${ED}"/usr -name libiberty.a -delete
 	cd "${S}"
 
 	# Don't install docs when building a cross-gdb
 	if [[ ${CTARGET} != ${CHOST} ]] ; then
-		rm -r "${ED}"/usr/share
+		rm -r "${ED}"/usr/share/{doc,info,locale}
+		local f
+		for f in "${ED}"/usr/share/man/*/* ; do
+			if [[ ${f##*/} != ${CTARGET}-* ]] ; then
+				mv "${f}" "${f%/*}/${CTARGET}-${f##*/}" || die
+			fi
+		done
 		return 0
 	fi
 	# Install it by hand for now:
 	# http://sourceware.org/ml/gdb-patches/2011-12/msg00915.html
 	# Only install if it exists due to the twisted behavior (see
 	# notes in src_configure above).
-	[[ -e gdb/gdbserver/gdbreplay ]] && { dobin gdb/gdbserver/gdbreplay || die ; }
+	[[ -e gdb/gdbserver/gdbreplay ]] && dobin gdb/gdbserver/gdbreplay
 
-	dodoc README
 	if use client ; then
 		docinto gdb
 		dodoc gdb/CONTRIBUTE gdb/README gdb/MAINTAINERS \

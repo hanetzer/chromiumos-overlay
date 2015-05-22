@@ -1,16 +1,16 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-7.7.1.ebuild,v 1.2 2014/05/09 07:02:46 grobian Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-devel/gdb/gdb-7.7.1.ebuild,v 1.15 2015/05/04 08:19:53 vapier Exp $
 
-EAPI="4"
+EAPI="5"
 PYTHON_COMPAT=( python{2_7,3_3,3_4} )
 
-inherit cros-constants flag-o-matic eutils python-single-r1
+inherit flag-o-matic eutils python-single-r1
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
-	if [[ ${CATEGORY/cross-} != ${CATEGORY} ]] ; then
-		export CTARGET=${CATEGORY/cross-}
+	if [[ ${CATEGORY} == cross-* ]] ; then
+		export CTARGET=${CATEGORY#cross-}
 	fi
 fi
 is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
@@ -18,20 +18,13 @@ is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 RPM=
 MY_PV=${PV}
 case ${PV} in
-*.*.*.*.*.*)
-	# fedora version: gdb-6.8.50.20090302-8.fc11.src.rpm
-	inherit versionator rpm
-	gvcr() { get_version_component_range "$@"; }
-	MY_PV=$(gvcr 1-4)
-	RPM="${PN}-${MY_PV}-$(gvcr 5).fc$(gvcr 6).src.rpm"
-	SRC_URI="mirror://fedora/development/source/SRPMS/${RPM}"
-	;;
 *.*.50.*)
 	# weekly snapshots
 	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.bz2"
 	;;
 7.7.1 | 9999*)
 	# live git tree
+	inherit cros-constants
 	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/gdb.git"
 	EGIT_BRANCH="master"
 	EGIT_COMMIT=e02ddb0f2eea465662e99fee14e9c41f23769624
@@ -77,13 +70,13 @@ pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
-src_unpack () {
+src_unpack() {
 	if use mounted_sources ; then
-		${GDBDIR:=/usr/local/toolchain_root/gdb}
+		: ${GDBDIR:=/usr/local/toolchain_root/gdb/gdb-7.5.x}
 		if [[ ! -d ${GDBDIR} ]] ; then
 			die "gdb dir not mounted/present at: ${GDBDIR}"
 		fi
-		cp -R ${GDBDIR} ${S}
+		cp -R "${GDBDIR}" "${S}"
 	else
 		git-2_src_unpack
 	fi
@@ -91,7 +84,7 @@ src_unpack () {
 
 src_prepare() {
 	[[ -n ${RPM} ]] && rpm_spec_epatch "${WORKDIR}"/gdb.spec
-	use vanilla || [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
+	! use vanilla && [[ -n ${PATCH_VER} ]] && EPATCH_SUFFIX="patch" epatch "${WORKDIR}"/patch
 	epatch_user
 	strip-linguas -u bfd/po opcodes/po
 	if [[ ${CHOST} == *-darwin* ]] ; then
@@ -107,7 +100,7 @@ src_prepare() {
 }
 
 gdb_branding() {
-	printf "Gentoo ${PV} "
+	printf "Chromium OS ${PV} "
 	if ! use vanilla && [[ -n ${PATCH_VER} ]] ; then
 		printf "p${PATCH_VER}"
 	else
@@ -121,7 +114,7 @@ src_configure() {
 
 	local myconf=(
 		--with-pkgversion="$(gdb_branding)"
-		--with-bugurl='http://bugs.gentoo.org/'
+		--with-bugurl='http://crbug.com/new'
 		--disable-werror
 		# Disable modules that are in a combined binutils/gdb tree. #490566
 		--disable-{binutils,etc,gas,gold,gprof,ld}
