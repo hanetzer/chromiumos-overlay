@@ -24,9 +24,12 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	dev-libs/protobuf"
 
+# TODO(cmasone): Deprecate this ebuild and replace with sandbox-spec-gen
+# once all consumers are moved over to the new proto. http://brbug.com/1028
 src_install() {
 	local python_dir="$(python_get_sitedir)"
 	insinto "${python_dir}/generated"
 	doins "${OUT}/gen/protos/py/soma_container_spec_pb2.py"
+	doins "${OUT}/gen/protos/py/soma_sandbox_spec_pb2.py"
 	touch "${D}/${python_dir}/generated/__init__.py"
 }
