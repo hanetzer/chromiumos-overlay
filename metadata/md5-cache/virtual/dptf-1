@@ -1,0 +1,11 @@
+DEFINED_PHASES=-
+DESCRIPTION=Intel(R) Dynamic Platform & Thermal Framework
+EAPI=5
+HOMEPAGE=https://01.org/dptf/
+IUSE=kernel-3_10 kernel-3_18
+KEYWORDS=-* amd64 x86
+LICENSE=Apache-2.0 GPL-2 BSD
+RDEPEND=kernel-3_10? ( sys-power/dptf-3_10 ) kernel-3_18? ( sys-power/dptf ) !kernel-3_10? ( !sys-power/dptf-3_10 ) !kernel-3_18? ( !sys-power/dptf )
+REQUIRED_USE=?? ( kernel-3_10 kernel-3_18 )
+SLOT=0
+_md5_=5a46fb924e1855a967addc6790ae949f
