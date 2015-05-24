@@ -796,6 +796,12 @@ cros-kernel2_src_configure() {
 	if cmp -s "$(get_build_cfg)" "${temp_config}" ; then
 		touch -r "${temp_config}" "$(get_build_cfg)"
 	fi
+
+	# Create .scmversion file so that kernel release version
+	# doesn't include git hash for cros worked on builds.
+	if [[ "${PV}" == "9999" ]]; then
+		touch "$(cros-workon_get_build_dir)/.scmversion"
+	fi
 }
 
 # @FUNCTION: get_dtb_name
