@@ -14,8 +14,8 @@ CROS_WORKON_LOCALNAME=(
 )
 CROS_WORKON_DESTDIR=(
 	"${S}"
-	"${S}/vboot_reference"
-	"${S}/3rdparty"
+	"${S}/3rdparty/vboot"
+	"${S}/3rdparty/blobs"
 )
 
 inherit cros-board cros-workon toolchain-funcs
@@ -59,10 +59,6 @@ VERIFIED_STAGES=( "ramstage" "romstage" "refcode" "bl31" )
 src_prepare() {
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
-
-	# Temporary work-around for layout change
-    ln -s . 3rdparty/blobs
-    ln -s ../vboot_reference 3rdparty/vboot
 
 	if [[ -d "${privdir}" ]]; then
 		while read -d $'\0' -r file; do
