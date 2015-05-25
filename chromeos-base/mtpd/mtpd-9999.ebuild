@@ -14,7 +14,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="-asan -clang test"
+IUSE="-asan -clang +seccomp test"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
@@ -59,7 +59,7 @@ src_install() {
 
 	# Install seccomp policy file.
 	insinto /opt/google/mtpd
-	newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
+	use seccomp && newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
 
 	# Install upstart config file.
 	insinto /etc/init
