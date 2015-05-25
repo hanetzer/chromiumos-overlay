@@ -13,7 +13,10 @@ DEPEND="!<x11-base/xorg-server-1.5
 	zlib? ( sys-libs/zlib )"
 RDEPEND="${DEPEND}"
 
-PATCHES=( "${FILESDIR}/nodevport.patch" )
+PATCHES=(
+	"${FILESDIR}/nodevport.patch"
+	"${FILESDIR}/nodevport-2.patch"
+)
 
 pkg_setup() {
 	xorg-2_pkg_setup
