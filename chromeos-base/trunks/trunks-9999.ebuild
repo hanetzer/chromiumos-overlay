@@ -22,8 +22,8 @@ KEYWORDS="~*"
 IUSE="test"
 
 RDEPEND="
+	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
-	chromeos-base/system_api
 	"
 
 DEPEND="
