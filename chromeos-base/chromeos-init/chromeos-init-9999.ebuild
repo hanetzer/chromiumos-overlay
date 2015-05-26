@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded +encrypted_stateful frecon +udev"
+IUSE="cros_embedded +encrypted_stateful frecon +udev vtconsole"
 
 # shunit2 should be a dependency only if USE=test, but cros_run_unit_test
 # doesn't calculate dependencies when emerging packages.
@@ -57,11 +57,10 @@ platform_pkg_test() {
 }
 
 src_test() {
-	if ! use x86 && ! use amd64 ; then
-		einfo Skipping unit tests on non-x86 platform
-	else
-		# Needed for `cros_run_unit_tests`.
+	if use x86 || use amd64 ; then
 		cros-workon_src_test
+	else
+		einfo "Skipping unit tests on non-x86 platform"
 	fi
 }
 
@@ -93,9 +92,9 @@ src_install() {
 	dosbin clobber-log
 	dosbin chromeos-boot-alert
 
+	insinto /etc/init
 
 	if use cros_embedded; then
-		insinto /etc/init
 		doins startup.conf
 		doins embedded-init/boot-services.conf
 
@@ -109,11 +108,12 @@ src_install() {
 
 		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
 	else
-		insinto /etc/init
 		doins *.conf
 
 		dosbin display_low_battery_alert
 	fi
+
+	use vtconsole && doins vtconsole/*.conf
 
 	insinto /usr/share/cros
 	doins $(usex encrypted_stateful encrypted_stateful \
