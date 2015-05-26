@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="7aa0189ac0de2766dcfb7dd1044ebdca2a689a4a"
-CROS_WORKON_TREE="eefa531e5944884ce1ad2104283a85f720b40b75"
+CROS_WORKON_COMMIT="959c27c5019b2d52a499543c4bfde872f580ee5f"
+CROS_WORKON_TREE="3ed390c2db6f63e4155e592c3ac05c2bc5fb1326"
 CROS_WORKON_PROJECT="chromiumos/platform/mtpd"
 CROS_WORKON_OUTOFTREE_BUILD=1
 
@@ -16,7 +16,7 @@ SRC_URI=""
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan -clang test"
+IUSE="-asan -clang +seccomp test"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="
@@ -61,7 +61,7 @@ src_install() {
 
 	# Install seccomp policy file.
 	insinto /opt/google/mtpd
-	newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
+	use seccomp && newins "mtpd-seccomp-${ARCH}.policy" mtpd-seccomp.policy
 
 	# Install upstart config file.
 	insinto /etc/init
