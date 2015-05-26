@@ -13,28 +13,20 @@ DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="http://llvm.org/"
 
 EGIT_REPO_URIS=(
-        "llvm"
-                ""
-                "git://github.com/llvm-mirror/llvm.git"
-                #"http://llvm.org/git/llvm.git"
-                #"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-                "1df6d33c5eb998cc38707bb9a97f3fa6cbf0ca53" # EGIT_COMMIT
-        "compiler-rt"
-                "projects/compiler-rt"
-                #"git://github.com/llvm-mirror/compiler-rt.git"
-                #"http://llvm.org/git/compiler-rt.git"
-                "${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-                "70b3c4464a4067db2cd9862736611fdf6739f451" # EGIT_COMMIT
-        "clang"
-                "tools/clang"
-                #"git://github.com/llvm-mirror/clang.git"
-                #"http://llvm.org/git/clang.git"
-                "${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-                "6b7e300a9c14a2ff364d8ef8a0f7510378f38dbc"  # EGIT_COMMIT
-	"clang-tools-extra"
-		"tools/clang/tools/extra"
-		"http://llvm.org/git/clang-tools-extra.git"
-		"12abebdfa999392dd7369f218157f50c50f1ce97"
+	"llvm"
+		""
+		#"http://llvm.org/git/llvm.git"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
+		"25103832b272eaa009fd56d3fc9eb98ebb7c2f1a" # EGIT_COMMIT
+	"compiler-rt"
+		"projects/compiler-rt"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
+		"290c1b6df573851666f4887867f94c77996dcce0" # EGIT_COMMIT
+	"clang"
+		"tools/clang"
+		#"http://llvm.org/git/clang.git"
+		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
+		"8f0271771bd348fc5a8ebfd9a30d9f67e9d298ea"  # EGIT_COMMIT
 )
 
 EGIT_REPO_URI="http://llvm.org/git/llvm.git
