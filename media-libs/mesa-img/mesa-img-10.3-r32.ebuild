@@ -62,6 +62,7 @@ LIBDRM_DEPSTRING=">=x11-libs/libdrm-2.4.50"
 # keep correct libdrm and dri2proto dep
 # keep blocks in rdepend for binpkg
 RDEPEND="
+	!media-libs/mesa
 	X? (
 		!<x11-base/xorg-server-1.7
 		!<=x11-proto/xf86driproto-2.0.3
@@ -73,7 +74,6 @@ RDEPEND="
 	dev-libs/expat
 	sys-fs/udev
 	${LIBDRM_DEPSTRING}
-	video_cards_powervr? ( media-libs/img-ddk )
 "
 
 DEPEND="${RDEPEND}
@@ -90,6 +90,7 @@ DEPEND="${RDEPEND}
 		x11-proto/xf86vidmodeproto
 	)
 	!arm? ( sys-devel/llvm )
+	video_cards_powervr? ( virtual/img-ddk )
 "
 
 S="${WORKDIR}/${MY_P}"
