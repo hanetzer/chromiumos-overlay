@@ -1,0 +1,1 @@
+ath10k-firmware-20150525.ebuild
