@@ -110,6 +110,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_UpdateKernelSubkeyVersion
 	+tests_firmware_UpdateKernelVersion
 	+tests_firmware_UserRequestRecovery
+	+tests_graphics_PowerConsumption
 	+tests_hardware_DiskFirmwareUpgrade
 	+tests_hardware_MemoryIntegrity
 	+tests_hardware_StorageQualBase
