@@ -714,6 +714,12 @@ setup_compile_flags() {
 	# portage flags.
 	filter-flags -g -O*
 
+	# -clang-syntax is a flag that enable us to do clang syntax checking on
+	# top of building Chrome with gcc. Since Chrome itself is clang clean,
+	# there is no need to check it again in ChromeOS land. And this flag has
+	# nothing to do with USE=clang.
+	filter-flags -clang-syntax
+
 	# There are some flags we want to only use in the ebuild.
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
