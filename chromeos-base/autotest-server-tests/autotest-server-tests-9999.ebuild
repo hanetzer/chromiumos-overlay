@@ -122,6 +122,7 @@ SERVER_IUSE_TESTS="
 	+tests_kernel_MemoryRamoop
 	moblab? ( +tests_moblab_RunSuite )
 	cros_p2p? ( +tests_p2p_EndToEndTest )
+	+tests_network_FirewallHolePunchServer
 	+tests_platform_BootDevice
 	+tests_platform_BootPerfServer
 	+tests_platform_CompromisedStatefulPartition

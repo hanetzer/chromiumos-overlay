@@ -143,8 +143,9 @@ IUSE_TESTS_CELLULAR="
 IUSE_TESTS_SHILL="
 	shill? (
 		+tests_network_ChromeWifiEndToEnd
+		+tests_network_FirewallHolePunch
 		+tests_network_RoamWifiEndToEnd
-                +tests_network_RoamSuspendEndToEnd
+		+tests_network_RoamSuspendEndToEnd
 	)
 "
 
