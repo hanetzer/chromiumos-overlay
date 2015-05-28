@@ -6,3 +6,6 @@ chromeos-base/chromeos-chrome gold
 # TODO(vapier): Version based so we can roll into the Chrome PFQ.
 # In the future, drop the versioning part.
 <=chromeos-base/chromeos-chrome-45.0.2420.0 nacl
+
+# Need to add a seccomp file for mtpd first.
+chromeos-base/mtpd seccomp
