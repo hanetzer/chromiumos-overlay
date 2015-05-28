@@ -83,10 +83,10 @@ platform_pkg_test() {
 	gtest_filter_qemu_common+=":GlibProcessTest.*"
 
 	local gtest_filter_user_tests="-*.RunAsRoot*:"
-	use arm && gtest_filter_user_tests+="${gtest_filter_qemu_common}"
+	! use x86 && ! use amd64 && gtest_filter_user_tests+="${gtest_filter_qemu_common}"
 
 	local gtest_filter_root_tests="*.RunAsRoot*-"
-	use arm && gtest_filter_root_tests+="${gtest_filter_qemu_common}"
+	! use x86 && ! use amd64 && gtest_filter_root_tests+="${gtest_filter_qemu_common}"
 
 	platform_test "run" "${OUT}/disks_testrunner" "1" \
 		"${gtest_filter_root_tests}"
