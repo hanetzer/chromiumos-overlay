@@ -30,6 +30,7 @@ SERVER_IUSE_TESTS="
 	+tests_audio_AudioBasicExternalMicrophone
 	+tests_audio_AudioBasicInternalMicrophone
 	+tests_audio_AudioAfterSuspend
+	+tests_audio_PowerConsumption
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
 	cellular? ( +tests_cellular_StaleModemReboot )
