@@ -54,6 +54,13 @@ src_compile() {
 platform_pkg_test() {
 	local tests=( session_manager_test )
 
+	# Qemu doesn't support signalfd currently, and it's not clear how
+	# feasible it is to implement :(.
+	if ! use x86 && ! use amd64; then
+		ewarn "Unittests not supported under qemu currently"
+		return
+	fi
+
 	local test_bin
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}"
