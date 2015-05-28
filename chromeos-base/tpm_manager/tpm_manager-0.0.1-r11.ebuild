@@ -13,7 +13,7 @@ CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="tpm_manager"
 
-inherit cros-workon platform
+inherit cros-workon platform user
 
 DESCRIPTION="Daemon to manage TPM ownership."
 HOMEPAGE="http://www.chromium.org/"
@@ -24,6 +24,7 @@ KEYWORDS="*"
 IUSE="test"
 
 RDEPEND="
+	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	"
 
@@ -32,6 +33,11 @@ DEPEND="
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
+
+pkg_preinst() {
+	enewuser tpm_manager
+	enewgroup tpm_manager
+}
 
 src_install() {
 	# Install D-Bus configuration file.
@@ -48,7 +54,7 @@ src_install() {
 	dolib.so "${OUT}"/lib/libtpm_manager.so
 
 	# Install seccomp policy files.
-	insinto /use/share/policy
+	insinto /usr/share/policy
 	newins server/tpm_manager-seccomp-${ARCH}.policy tpm_managerd-seccomp.policy
 
 	# Install header files.
