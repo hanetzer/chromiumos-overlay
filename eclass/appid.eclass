@@ -9,17 +9,37 @@
 # @BUGREPORTS:
 # Please report bugs via http://crbug.com/new (with label Build)
 # @VCSURL: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/eclass/@ECLASS@
-# @BLURB: Eclass for setting up the omaha appid field in /etc/lsb-release
+# @BLURB: Eclass for setting up the omaha appid and devicetype fields in /etc/lsb-release
 
 # @FUNCTION: doappid
-# @USAGE: <appid>
+# @USAGE: <appid> <devicetype>
 # @DESCRIPTION:
-# Initializes /etc/lsb-release with the appid.  Note that appid is really
-# just a UUID in the canonical {8-4-4-4-12} format (all uppercase).  e.g.
-# {01234567-89AB-CDEF-0123-456789ABCDEF}
+# Initializes /etc/lsb-release with the appid and devicetype.  Note that appid
+# is really just a UUID in the canonical {8-4-4-4-12} format (all uppercase).
+# e.g. {01234567-89AB-CDEF-0123-456789ABCDEF}.
+#
+# This also adds the devicetype field, which can be one of the following values:
+# - CHROMEBIT
+# - CHROMEBASE
+# - CHROMEBOOK
+# - CHROMEBOX
+# - REFERENCE
 doappid() {
-	[[ $# -eq 1 && -n $1 ]] || die "Usage: ${FUNCNAME} <appid>"
+	# TODO(jdufault): Make the argument verification more strict once all of the
+	#                 doappid usage CLs land.
+	# Here are the changes to make the argument processing more strict:
+	# -The usage check should be replaced with:
+	#   [[ $# -eq 2 && -n $1 && -n $2 ]] ||
+	# -The devicetype check should have the -z $2 removed.
+
+	[[ ($# -eq 1 || $# -eq 2) && -n $1 ]] ||
+		die "Usage: ${FUNCNAME} <appid> <devicetype>"
+	[[ -z $2 || $2 == CHROMEBIT || $2 == CHROMEBASE || $2 == CHROMEBOOK ||
+		$2 == CHROMEBOX || $2 == REFERENCE ]] || die "Usage: ${FUNCNAME} \
+		<appid> <devicetype>, where <devicetype> is one of CHROMEBIT, \
+		CHROMEBASE, CHROMEBOOK, CHROMEBOX, REFERENCE (not $2)"
 	local appid=$1
+	local devicetype=$2
 
 	# Validate the UUID is formatted correctly.  Except for mario --
 	# it was created before we had strict rules, and so it violates :(.
@@ -44,5 +64,6 @@ doappid() {
 	CHROMEOS_RELEASE_APPID=${appid}
 	CHROMEOS_BOARD_APPID=${appid}
 	CHROMEOS_CANARY_APPID=${canary_appid}
+	DEVICETYPE=${devicetype}
 	EOF
 }
