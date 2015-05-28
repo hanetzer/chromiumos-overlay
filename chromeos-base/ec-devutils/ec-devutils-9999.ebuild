@@ -48,5 +48,5 @@ src_install() {
 
 	dobin "util/flash_ec"
 	insinto /usr/bin/lib
-	doins chip/lm4/openocd/*
+	doins util/openocd/*
 }
