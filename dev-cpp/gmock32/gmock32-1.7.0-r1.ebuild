@@ -25,6 +25,7 @@ RESTRICT="test"
 RDEPEND="=dev-cpp/gtest32-${PV}*"
 DEPEND="${RDEPEND}
 	test? ( ${PYTHON_DEPS} )
+	=dev-cpp/gtest-${PV}
 	app-arch/unzip"
 
 S="${WORKDIR}/${MY_P}"
@@ -50,6 +51,7 @@ src_prepare() {
 
 src_configure() {
 	board_setup_32bit_au_env
+	GTEST_CONFIG="${FILESDIR}/gtest-config" \
 	ECONF_SOURCE=${S} econf --disable-shared --enable-static
 	board_teardown_32bit_au_env
 }

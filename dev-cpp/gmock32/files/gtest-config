@@ -1,0 +1,25 @@
+#!/bin/sh
+# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Ugly hack to inject the right 32bit gtest flags since we only allowed the
+# static libs to be installed.
+case $1 in
+--cppflags)
+  echo ''
+  ;;
+--cxxflags)
+  echo '-pthread'
+  ;;
+--ldflags)
+  echo ''
+  ;;
+--libs)
+  echo '-lgmock -pthread -lpthread'
+  ;;
+--version)
+  # This doesn't really matter as gmock doesn't check the value.
+  echo "${PV:-1.7.0}"
+  ;;
+esac
