@@ -17,7 +17,9 @@ KEYWORDS="~*"
 
 RDEPEND="!<chromeos-base/cros-devutils-0.0.2
 	chromeos-base/devserver-deps"
-DEPEND=""
+DEPEND="
+	dev-python/psutil
+"
 
 src_install() {
 	emake install DESTDIR="${D}"
