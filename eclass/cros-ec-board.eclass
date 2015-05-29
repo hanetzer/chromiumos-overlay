@@ -31,23 +31,13 @@ EC_BOARD_NAMES=(
 	cr50
 	cyan
 	dingdong
-	falco
-	firefly
-	fruitpie
 	glados
 	glados_pd
 	hadoken
 	hoho
 	host
-	jerry
-	keyborg
-	link
 	llama
-	mccroskey
-	mighty
 	minimuffin
-	nyan
-	peppy
 	pinky
 	pit
 	plankton
@@ -58,10 +48,6 @@ EC_BOARD_NAMES=(
 	ryu_sh_loader
 	samus
 	samus_pd
-	snow
-	speedy
-	spring
-	squawks
 	strago
 	twinkie
 	zinger
