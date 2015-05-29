@@ -186,6 +186,9 @@ cros_use_gcc() {
 		export CC=${CHOST}-gcc
 		export CXX=${CHOST}-g++
 	fi
+}
+
+filter_clang_syntax() {
 	local var flag flags=()
 	for var in CFLAGS CXXFLAGS; do
 		for flag in ${!var}; do
