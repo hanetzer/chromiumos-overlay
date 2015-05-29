@@ -241,7 +241,7 @@ src_compile_depthcharge() {
 	local devkeys_file="${ROOT%/}/usr/share/vboot/devkeys"
 	local fdt_file="${froot}/dts/fmap.dts"
 	local coreboot_file="${froot}/coreboot.rom"
-	local verified_stages=( "ramstage" "romstage" "bl31" )
+	local verified_stages=( "ramstage" "romstage" "bl31" "secure_os" )
 	local refcode_file="${froot}/refcode.stage"
 	local ro_suffix
 	local rw_suffix

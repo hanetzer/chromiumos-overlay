@@ -56,7 +56,7 @@ DEPEND="
 	amd64? ($DEPEND_X86)
 	"
 
-VERIFIED_STAGES=( "ramstage" "romstage" "refcode" "bl31" )
+VERIFIED_STAGES=( "ramstage" "romstage" "refcode" "bl31" "secure_os" )
 
 src_prepare() {
 	local privdir="${SYSROOT}/firmware/coreboot-private"
