@@ -87,6 +87,7 @@ IUSE_TESTS=(
 	+tests_network_ChromeWifiTDLS
 	+tests_platform_ChromeCgroups
 	+tests_platform_SessionManagerBlockDevmodeSetting
+	+tests_policy_EditBookmarksEnabled
 	+tests_power_AudioDetector
 	+tests_power_Consumption
 	+tests_power_FlashVideoSuspend
