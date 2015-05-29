@@ -139,6 +139,9 @@ src_prepare() {
 	# chromium:265568
 	epatch "${FILESDIR}"/udev-208-no-probe-zram.patch
 	epatch "${FILESDIR}"/udev-208-disable-net-name-slot.patch
+	# better accelerometer support
+	# chromium:463043
+	epatch "${FILESDIR}"/accelerometer-Don-t-wait-for-new-data-from-the-senso.patch
 
 	# apply user patches
 	epatch_user
