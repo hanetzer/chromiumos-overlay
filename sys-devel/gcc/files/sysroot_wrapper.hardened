@@ -146,7 +146,7 @@ else:
                            '-Wold-style-declaration', '-Wno-psabi',
                            '-Wno-unused-local-typedefs',
                            '-mno-movbe',])
-  clang_unsupported_prefixes = ('-Wstrict-aliasing=')
+  clang_unsupported_prefixes = ('-Wstrict-aliasing=', '-finline-limit=')
 
   # Clang may use different options for the same or similar functionality.
   gcc_to_clang = {
