@@ -36,6 +36,11 @@ FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
           -ebuild-locks -merge-sync parallel-install -preserve-libs sandbox
           -strict userfetch userpriv usersandbox -unknown-features-warn"
 
+# This is used by profiles/base/profile.bashrc to figure out that we
+# are targeting the cros-sdk (in all its various modes).  It should
+# be utilized nowhere else!
+CROS_SDK_HOST="cros-sdk-host"
+
 # Qemu targets we care about.
 QEMU_SOFTMMU_TARGETS="aarch64 arm i386 mipsel x86_64"
 QEMU_USER_TARGETS="aarch64 arm i386 mipsel x86_64"

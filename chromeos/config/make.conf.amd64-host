@@ -41,9 +41,4 @@ INSTALL_MASK="
 "
 PKG_INSTALL_MASK="${INSTALL_MASK}"
 
-# This is used by profiles/base/profile.bashrc to figure out that we
-# are targeting the cros-sdk (in all its various modes).  It should
-# be utilized nowhere else!
-CROS_SDK_HOST="cros-sdk-host"
-
 source make.conf.host_setup
