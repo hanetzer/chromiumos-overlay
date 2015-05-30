@@ -5,8 +5,6 @@
 # Pull in definition of at least { ROOT, CHOST, [BOARD_OVERLAY] }
 source make.conf.board_setup
 
-ARCH=arm
-
 # Common settings across all board targets.
 source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-target
 
