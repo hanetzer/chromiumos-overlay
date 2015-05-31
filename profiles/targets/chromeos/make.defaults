@@ -14,6 +14,10 @@ USE="${USE} -gtk2 -gtk3 -qt4"
 # Enable general security hardening by default.
 USE="${USE} hardened"
 
+# Most targets will override these.
+VIDEO_CARDS="-* fbdev"
+INPUT_DEVICES="-* evdev cmt"
+
 # Various runtime features that control emerge behavior.
 # See "man 5 make.conf" for details.
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect

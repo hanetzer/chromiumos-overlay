@@ -11,9 +11,6 @@ source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE=""
 
-VIDEO_CARDS="intel fbdev"
-INPUT_DEVICES="evdev synaptics cmt"
-
 # Allow a board to override or define additional settings.
 source make.conf.board
 CFLAGS="-O2 -pipe ${MARCH_TUNE} -g ${CXXEXCEPTIONS_FLAGS}"
