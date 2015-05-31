@@ -2,11 +2,68 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Settings that are common to all target boards.  Do not place any board
+# specific settings in here, or settings for the sdk.
+#
+# See "man make.conf" for the available options.
+
 # Pull in definition of at least { ROOT, CHOST, [BOARD_OVERLAY] }
 source make.conf.board_setup
 
-# Common settings across all board targets.
-source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-target
+# TODO: This will have to come from somewhere else when we support a 32-bit
+# build host environment.
+CBUILD=x86_64-pc-linux-gnu
+HOSTCC=x86_64-pc-linux-gnu-gcc
+
+# We need a dummy setting here as make.conf files expect to expand ${USE}.
+# When we don't have this, they get the USE from the profile, and that has
+# a very different meaning when expanded at the make.conf level as it will
+# override all profile settings.
+USE=""
+
+# Be sure we don't overwrite pkgs from another sysroot.
+PKGDIR=${ROOT}packages/
+PORTAGE_TMPDIR=${ROOT}tmp/
+
+PORT_LOGDIR=${ROOT}tmp/portage/logs/
+
+PORTAGE_WORKDIR_MODE="0755"
+
+PORTDIR_OVERLAY="
+  /usr/local/portage/chromiumos
+  /usr/local/portage/eclass-overlay
+  ${BOARD_OVERLAY}
+"
+
+# Print a checkpoint message every 10MB while archiving.
+PORTAGE_BINPKG_TAR_OPTS="--checkpoint=1000"
+
+# Since our portage comes from version control, we redirect distfiles.
+DISTDIR="/var/lib/portage/distfiles-target"
+
+# Our chromium mirror should be more stable since we won't discard packages.
+GENTOO_MIRRORS="https://commondatastorage.googleapis.com/chromeos-localmirror"
+GENTOO_MIRRORS="$GENTOO_MIRRORS https://commondatastorage.googleapis.com/chromeos-mirror/gentoo"
+
+# When building packages for the target, we need to search the target's
+# sysroot for additional m4 files.  The autotools.eclass uses this.
+AT_SYS_M4DIR="\${SYSROOT}/usr/share/aclocal"
+
+# Remove all .la files for non-plugin libraries.
+# Remove Gentoo init files since we use upstart.
+# Remove logrotate.d files since we don't use logrotate.
+# Remove sandbox files since we don't use that in the sysroot.
+# Remove bash-completion files as we don't install bash-completion.
+INSTALL_MASK="
+  /usr/lib*/*.la
+  /etc/init.d /etc/conf.d
+  /etc/logrotate.d
+  /etc/sandbox.d
+  /usr/share/bash-completion
+"
+PKG_INSTALL_MASK="${INSTALL_MASK}"
+
+source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common
 
 # Recommended MARCH_TUNE, CFLAGS, etc.
 MARCH_TUNE=""
