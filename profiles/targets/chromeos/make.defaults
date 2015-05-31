@@ -1,8 +1,11 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-USE="acpi bluetooth cairo cros_p2p fbconsole mbim opengl pam usb vlan vtconsole X"
+# Dummy setting so we can use the same append form below.
+USE=""
 
+USE="${USE} acpi bluetooth cairo cros_p2p fbconsole mbim opengl pam usb vlan vtconsole X"
+USE="${USE} zlib bindist cros-debug -introspection"
 USE="${USE} -acl -cracklib -gpm -ipv6 -openmp -python -sha512"
 USE="${USE} -fortran -abiword -perl -cups -poppler-data -nls -openrc"
 USE="${USE} -mime -peerd scanner"
@@ -10,3 +13,38 @@ USE="${USE} -gtk2 -gtk3 -qt4"
 
 # Enable general security hardening by default.
 USE="${USE} hardened"
+
+# Various runtime features that control emerge behavior.
+# See "man 5 make.conf" for details.
+FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
+          -ebuild-locks force-mirror nodoc noinfo noman -merge-sync
+          parallel-install -preserve-libs sandbox splitdebug -strict userfetch
+          userpriv usersandbox -unknown-features-warn"
+
+# Native language support is handled inside Chrome itself.
+LINGUAS="en"
+
+# Enable license processing during our emerge hook:
+#   src/scripts/hooks/install/gen-package-licenses.sh.
+ENABLE_LICENSING="Y"
+
+# TODO(vapier): Delete these once we've upgraded to >=crossdev-20150601.
+ac_cv_func_wait3_rusage=yes
+ac_cv_func_mmap_fixed_mapped=yes
+
+# C++ exception support disabled by default. This can be re-enabled by reseting
+# the CXXEXCEPTIONS_FLAGS for a whole board or, package by package, by calling
+# cros_enable_cxx_exceptions().
+CXXEXCEPTIONS=0
+CXXEXCEPTIONS_FLAGS="-fno-exceptions -fno-unwind-tables
+  -fno-asynchronous-unwind-tables "
+
+# Don't strip NaCl executables. These are not linux executables and the
+# linux host's strip command doesn't know how to handle them correctly.
+STRIP_MASK="*.nexe"
+
+# Don't strip ELF files that land in the firmware directory. The symbols
+# of firmware ELF files are needed, but the tools don't support splitdebug.
+# Therefore, stripping should not be done. It's OK not to strip the ELF
+# files because these files are not installed into the image.
+STRIP_MASK="${STRIP_MASK} /firmware/*.elf"
