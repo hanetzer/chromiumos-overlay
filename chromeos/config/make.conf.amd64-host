@@ -1,7 +1,7 @@
 # See "man make.conf" for the available options.
 
 # Common settings across all sdks.
-source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common-sdk
+source /mnt/host/source/src/third_party/chromiumos-overlay/chromeos/config/make.conf.common
 
 # Since our portage comes from version control, we redirect distfiles
 DISTDIR="/var/lib/portage/distfiles"
