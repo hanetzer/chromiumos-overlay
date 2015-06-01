@@ -27,7 +27,7 @@ case ${PV} in
 	inherit cros-constants
 	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromiumos/third_party/gdb.git"
 	EGIT_BRANCH="master"
-	EGIT_COMMIT=e02ddb0f2eea465662e99fee14e9c41f23769624
+	EGIT_COMMIT=8711a68afaaa041728e5eaf58edeb68511a128d0
 	inherit git-2
 	SRC_URI=""
 	;;
