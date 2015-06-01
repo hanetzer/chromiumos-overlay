@@ -54,14 +54,18 @@ platform_pkg_test() {
 
 	# Qemu doesn't support signalfd currently, and it's not clear how
 	# feasible it is to implement :(.
+	# So, filter out the tests that rely on signalfd().
+	local gtest_qemu_filter=""
 	if ! use x86 && ! use amd64; then
-		ewarn "Unittests not supported under qemu currently"
-		return
+		gtest_qemu_filter+="-ChildExitHandlerTest.*"
+		gtest_qemu_filter+=":SessionManagerProcessTest.*"
 	fi
+
+
 
 	local test_bin
 	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
+		platform_test "run" "${OUT}/${test_bin}" "0" "" "${gtest_qemu_filter}"
 	done
 }
 
