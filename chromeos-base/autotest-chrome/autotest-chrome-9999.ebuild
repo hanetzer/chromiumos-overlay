@@ -130,6 +130,7 @@ IUSE_TESTS=(
 	+tests_video_YouTubeHTML5
 	+tests_video_YouTubeMseEme
 	+tests_video_YouTubePage
+        +tests_video_WebRtcPeerConnectionWithCamera
 )
 
 IUSE_TESTS_CELLULAR="
