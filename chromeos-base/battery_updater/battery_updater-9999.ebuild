@@ -17,5 +17,8 @@ KEYWORDS="~*"
 IUSE=""
 
 src_install() {
-	dosbin scripts/firmware-boot-update
+	insinto "/etc/init"
+	doins "scripts/chromeos-battery-update.conf"
+	exeinto "/opt/google/battery/scripts"
+	doexe scripts/chromeos-battery-update.sh
 }
