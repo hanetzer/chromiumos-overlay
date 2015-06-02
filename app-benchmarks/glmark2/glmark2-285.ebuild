@@ -17,7 +17,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="*"
-IUSE="drm opengles opengl"
+IUSE="drm opengles opengl X"
 
 REQUIRED_USE="
 	|| ( opengl opengles )
@@ -26,7 +26,8 @@ REQUIRED_USE="
 RDEPEND="media-libs/libpng
 	opengles? ( virtual/opengles )
 	opengl? ( virtual/opengl )
-	x11-libs/libX11
+	X? ( x11-libs/libX11 )
+	!X? ( media-libs/waffle )
 	drm? ( media-libs/mesa[gbm] )
 	virtual/jpeg"
 DEPEND="${RDEPEND}
@@ -35,6 +36,10 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}/0001-native-state-x11-Don-t-terminate-fullscreen-if-EWMH-.patch"
 	"${FILESDIR}/0002-Add-data-path-command-line-option.patch"
+	"${FILESDIR}/0003-MainLoop-do-before_scene_setup-in-right-context.patch"
+	"${FILESDIR}/0004-SceneDesktop-don-t-modify-framebuffer-zero.patch"
+	"${FILESDIR}/0005-GLState-change-native-config-type-to-intptr_t.patch"
+	"${FILESDIR}/0006-Add-waffle-backend.patch"
 	"${FILESDIR}/clang-syntax.patch"
 )
 
@@ -42,12 +47,16 @@ src_configure() {
 	local myconf=""
 	local flavors=()
 
-	if use opengl; then
-		flavors+=(x11-gl)
-	fi
+	if use X; then
+		if use opengl; then
+			flavors+=(x11-gl)
+		fi
 
-	if use opengles; then
-		flavors+=(x11-glesv2)
+		if use opengles; then
+			flavors+=(x11-glesv2)
+		fi
+	else
+		flavors+=(waffle)
 	fi
 
 	if use drm; then
