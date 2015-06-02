@@ -193,6 +193,7 @@ src_install() {
 
 	# Speech synthesis component extension code
 	doins "${S}"/speech_synthesis/patts/manifest.json
+	doins "${S}"/speech_synthesis/patts/manifest_guest.json
 	doins "${S}"/speech_synthesis/patts/tts_main.js
 	doins "${S}"/speech_synthesis/patts/tts_controller.js
 	doins "${S}"/speech_synthesis/patts/tts_service.nmf
