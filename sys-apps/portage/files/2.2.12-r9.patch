@@ -1,5 +1,6 @@
 Contains all the patches committed to portage_tool on top of 2.2.12:
 
+* make.defaults: negative incrementals in USE_EXPAND (530222)
 * fs_template._ensure_dirs: handle EEXIST (529120)
 * flat_hash: Fix race condition in _setitem.
 * Add separatedebug feature
@@ -19,7 +20,6 @@ Contains all the patches committed to portage_tool on top of 2.2.12:
 * Commit fast-build patch to portage_tool repository.
 * support suppressing env-update
 * support fixing *.la
-
 
 diff --git a/Makefile b/Makefile
 index 92ea195..babbda2 100644
@@ -747,7 +747,7 @@ index 74fedd6..55754d9 100644
  	"XARGS", "__PORTAGE_TEST_HARDLINK_LOCKS",
  ]
 diff --git a/pym/portage/package/ebuild/config.py b/pym/portage/package/ebuild/config.py
-index f639e14..5ede061 100644
+index f639e14..67f95de 100644
 --- a/pym/portage/package/ebuild/config.py
 +++ b/pym/portage/package/ebuild/config.py
 @@ -254,6 +254,7 @@ class config(object):
@@ -824,6 +824,38 @@ index f639e14..5ede061 100644
 +
  		protected_pkg_keys = set(pkg_configdict)
  		protected_pkg_keys.discard('USE')
+ 
+@@ -2273,22 +2313,22 @@ class config(object):
+ 					if v is None:
+ 						continue
+ 					prefix = k.lower() + '_'
+-					if k in myincrementals:
+-						for x in v.split():
+-							if x[:1] == '-':
+-								expand_use.append('-' + prefix + x[1:])
+-							else:
+-								expand_use.append(prefix + x)
+-					else:
+-						for x in v.split():
++					for x in v.split():
++						if x[:1] == '-':
++							expand_use.append('-' + prefix + x[1:])
++						else:
+ 							expand_use.append(prefix + x)
++
+ 				if expand_use:
+ 					expand_use.append(use)
+ 					use  = ' '.join(expand_use)
+ 				self.make_defaults_use.append(use)
+ 			self.make_defaults_use = tuple(self.make_defaults_use)
++			# Preserve both positive and negative flags here, since
++			# negative flags may later interact with other flags pulled
++			# in via USE_ORDER.
+ 			configdict_defaults['USE'] = ' '.join(
+-				stack_lists([x.split() for x in self.make_defaults_use]))
++				filter(None, self.make_defaults_use))
+ 			# Set to None so this code only runs once.
+ 			self._make_defaults = None
  
 diff --git a/pym/portage/package/ebuild/doebuild.py b/pym/portage/package/ebuild/doebuild.py
 index 01707ae..98e5903 100644
@@ -920,6 +952,165 @@ index 5e0d055..a3144b1 100644
  
  			for value in ('allow-missing-manifest',
  				'allow-provide-virtual', 'cache-formats',
+diff --git a/pym/portage/tests/ebuild/test_use_expand_incremental.py b/pym/portage/tests/ebuild/test_use_expand_incremental.py
+new file mode 100644
+index 0000000..a58f08c
+--- /dev/null
++++ b/pym/portage/tests/ebuild/test_use_expand_incremental.py
+@@ -0,0 +1,132 @@
++# Copyright 2014 Gentoo Foundation
++# Distributed under the terms of the GNU General Public License v2
++
++from __future__ import unicode_literals
++
++import io
++
++from portage import os, _encodings
++from portage.dep import Atom
++from portage.package.ebuild.config import config
++from portage.tests import TestCase
++from portage.tests.resolver.ResolverPlayground import ResolverPlayground
++from portage.util import ensure_dirs
++
++class UseExpandIncrementalTestCase(TestCase):
++
++	def testUseExpandIncremental(self):
++
++		profiles = (
++			(
++				'base',
++				{
++					"eapi": ("5",),
++					"parent": ("..",),
++					"make.defaults": (
++						"INPUT_DEVICES=\"keyboard mouse\"",
++						"PYTHON_TARGETS=\"python2_7 python3_3\"",
++						("USE_EXPAND=\"INPUT_DEVICES PYTHON_TARGETS "
++							"VIDEO_CARDS\""),
++					)
++				}
++			),
++			(
++				'default/linux',
++				{
++					"eapi": ("5",),
++					"make.defaults": (
++						"VIDEO_CARDS=\"dummy fbdev v4l\"",
++					)
++				}
++			),
++			(
++				'default/linux/x86',
++				{
++					"eapi": ("5",),
++					"make.defaults": (
++						# Test negative incremental for bug 530222.
++						"PYTHON_TARGETS=\"-python3_3\"",
++					),
++					"parent": ("../../../base",
++						"../../../mixins/python/3.4",
++						".."
++					)
++				}
++			),
++			(
++				'mixins/python/3.4',
++				{
++					"eapi": ("5",),
++					"make.defaults": (
++						"PYTHON_TARGETS=\"python3_4\"",
++					)
++				}
++			),
++		)
++
++		# USE_EXPAND variable settings in make.conf will cause
++		# profile settings for the same variable to be discarded
++		# (non-incremental behavior). PMS does not govern make.conf
++		# behavior.
++		user_config = {
++			"make.conf" : (
++				"VIDEO_CARDS=\"intel\"",
++			)
++		}
++
++		ebuilds = {
++			"x11-base/xorg-drivers-1.15": {
++				"EAPI": "5",
++				"IUSE": ("input_devices_keyboard input_devices_mouse "
++					"videos_cards_dummy video_cards_fbdev "
++					"video_cards_v4l video_cards_intel")
++			},
++			"sys-apps/portage-2.2.14": {
++				"EAPI": "5",
++				"IUSE": ("python_targets_python2_7 "
++					"python_targets_python3_3 python_targets_python3_4")
++			},
++		}
++
++		package_expected_use = (
++			("x11-base/xorg-drivers-1.15", ("input_devices_keyboard",
++				"input_devices_mouse", "video_cards_intel",)),
++			("sys-apps/portage-2.2.14", ("python_targets_python2_7",
++				"python_targets_python3_4"))
++		)
++
++		playground = ResolverPlayground(debug=False,
++			ebuilds=ebuilds, user_config=user_config)
++		try:
++			repo_dir = (playground.settings.repositories.
++				get_location_for_name("test_repo"))
++			profile_root = os.path.join(repo_dir, "profiles")
++
++			for p, data in profiles:
++				prof_path = os.path.join(profile_root, p)
++				ensure_dirs(prof_path)
++				for k, v in data.items():
++					with io.open(os.path.join(prof_path, k), mode="w",
++						encoding=_encodings["repo.content"]) as f:
++						for line in v:
++							f.write("%s\n" % line)
++
++			# The config must be reloaded in order to account
++			# for the above profile customizations.
++			playground.reload_config()
++
++			depgraph = playground.run(
++				["=x11-base/xorg-drivers-1.15"]).depgraph
++			settings = config(clone=playground.settings)
++
++			for cpv, expected_use in package_expected_use:
++				pkg, existing_node = depgraph._select_package(
++					playground.eroot, Atom("=" + cpv))
++				settings.setcpv(pkg)
++				expected = frozenset(expected_use)
++				got = frozenset(settings["PORTAGE_USE"].split())
++				self.assertEqual(got, expected,
++					"%s != %s" % (got, expected))
++
++		finally:
++			playground.cleanup()
+diff --git a/pym/portage/tests/resolver/ResolverPlayground.py b/pym/portage/tests/resolver/ResolverPlayground.py
+index 077e271..6fcef5c 100644
+--- a/pym/portage/tests/resolver/ResolverPlayground.py
++++ b/pym/portage/tests/resolver/ResolverPlayground.py
+@@ -99,6 +99,16 @@ class ResolverPlayground(object):
+ 
+ 		portage.util.noiselimit = 0
+ 
++	def reload_config(self):
++		"""
++		Reload configuration from disk, which is useful if it has
++		been modified after the constructor has been called.
++		"""
++		for eroot in self.trees:
++			portdb = self.trees[eroot]["porttree"].dbapi
++			portdb.close_caches()
++		self.settings, self.trees = self._load_config()
++
+ 	def _get_repo_dir(self, repo):
+ 		"""
+ 		Create the repo directory if needed.
 diff --git a/pym/portage/util/env_update.py b/pym/portage/util/env_update.py
 index c0a93a8..f4cccc9 100644
 --- a/pym/portage/util/env_update.py
