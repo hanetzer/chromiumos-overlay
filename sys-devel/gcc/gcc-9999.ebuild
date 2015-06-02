@@ -23,44 +23,21 @@ KEYWORDS="~*"
 RDEPEND=">=sys-libs/zlib-1.1.4
 	>=sys-devel/gcc-config-1.6
 	virtual/libiconv
-	>=dev-libs/gmp-4.2.1
+	>=dev-libs/gmp-4.3.2
 	>=dev-libs/mpc-0.8.1
-	>=dev-libs/mpfr-2.3.2
+	>=dev-libs/mpfr-2.4.2
 	graphite? (
-		>=dev-libs/ppl-0.10
-		>=dev-libs/cloog-ppl-0.15.4
-	)
-	!build? (
-		gcj? (
-			gtk? (
-				x11-libs/libXt
-				x11-libs/libX11
-				x11-libs/libXtst
-				x11-proto/xproto
-				x11-proto/xextproto
-				>=x11-libs/gtk+-2.2
-				x11-libs/pango
-			)
-			>=media-libs/libart_lgpl-2.1
-			app-arch/zip
-			app-arch/unzip
-		)
-		>=sys-libs/ncurses-5.2-r2
-		nls? ( sys-devel/gettext )
+		>=dev-libs/cloog-0.18.0
+		>=dev-libs/isl-0.11.1
 	)"
 DEPEND="${RDEPEND}
-	test? ( >=dev-util/dejagnu-1.4.4 >=sys-devel/autogen-5.5.4 )
+	test? (
+		>=dev-util/dejagnu-1.4.4
+		>=sys-devel/autogen-5.5.4
+	)
 	>=sys-apps/texinfo-4.8
-	>=sys-devel/bison-1.875
-	elibc_glibc? ( >=sys-libs/glibc-2.8 )
-	amd64? ( multilib? ( gcj? ( app-emulation/emul-linux-x86-xlibs ) ) )
-	ppc? ( >=${CATEGORY}/binutils-2.17 )
-	ppc64? ( >=${CATEGORY}/binutils-2.17 )
-	>=${CATEGORY}/binutils-2.15.94"
-PDEPEND=">=sys-devel/gcc-config-1.4"
-if [[ ${CATEGORY} != cross-* ]] ; then
-	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
-fi
+	>=sys-devel/bison-1.875"
+PDEPEND=">=sys-devel/gcc-config-1.7"
 
 RESTRICT="mirror strip"
 
