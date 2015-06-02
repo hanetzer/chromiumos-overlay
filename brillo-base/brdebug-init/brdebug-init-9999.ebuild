@@ -26,4 +26,5 @@ RDEPEND="
 src_install() {
 	insinto /etc/init
 	doins init/brdebugd.conf
+	doins init/setup-usb-link.conf
 }

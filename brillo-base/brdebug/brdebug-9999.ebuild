@@ -33,9 +33,7 @@ DEPEND="
 
 src_install() {
 	dobin "${OUT}"/brdebugd
-	dosbin udev/setup-debug-link
-
-	udev_dorules udev/99-setup-debug-link.rules
+	dosbin bin/setup-usb-link
 }
 
 platform_pkg_test() {
