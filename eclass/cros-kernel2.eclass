@@ -18,6 +18,7 @@ DEPEND="sys-apps/debianutils
 	loader_kernel_ramfs? ( chromeos-base/chromeos-initramfs[loader_kernel_ramfs] )
 	netboot_ramfs? ( chromeos-base/chromeos-initramfs[netboot_ramfs] )
 	recovery_ramfs? ( chromeos-base/chromeos-initramfs[recovery_ramfs] )
+	builtin_fw_t210_nouveau? ( sys-kernel/nouveau-firmware )
 "
 
 WIRELESS_VERSIONS=( 3.4 3.8 3.16 3.18 )
@@ -428,6 +429,7 @@ CONFIG_POSIX_MQUEUE=y
 FIRMWARE_BINARIES=(
 	builtin_fw_t124_xusb
 	builtin_fw_t210_xusb
+	builtin_fw_t210_nouveau
 )
 
 builtin_fw_t124_xusb_desc="Tegra124 XHCI controller"
@@ -438,6 +440,25 @@ builtin_fw_t124_xusb_files=(
 builtin_fw_t210_xusb_desc="Tegra210 XHCI controller"
 builtin_fw_t210_xusb_files=(
 	nvidia/tegra210/xusb.bin
+)
+
+builtin_fw_t210_nouveau_desc="Tegra210 Nouveau GPU"
+builtin_fw_t210_nouveau_files=(
+	nouveau/acr_ucode.bin
+	nouveau/fecs.bin
+	nouveau/fecs_sig.bin
+	nouveau/gpmu_ucode_desc.bin
+	nouveau/gpmu_ucode_image.bin
+	nouveau/nv12b_bundle
+	nouveau/nv12b_fuc409c
+	nouveau/nv12b_fuc409d
+	nouveau/nv12b_fuc41ac
+	nouveau/nv12b_fuc41ad
+	nouveau/nv12b_method
+	nouveau/nv12b_sw_ctx
+	nouveau/nv12b_sw_nonctx
+	nouveau/pmu_bl.bin
+	nouveau/pmu_sig.bin
 )
 
 extra_fw_config="
