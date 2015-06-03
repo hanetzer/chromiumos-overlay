@@ -34,6 +34,8 @@ EC_BOARD_NAMES=(
 	falco
 	firefly
 	fruitpie
+	glados
+	glados_pd
 	hadoken
 	hoho
 	host
