@@ -87,8 +87,6 @@ CONFIG_FRAGMENTS=(
 	samsung_serial
 	socketmon
 	systemtap
-	t124_xusb_fw
-	t210_xusb_fw
 	tpm
 	usb_gadget
 	usb_gadget_acm
@@ -340,18 +338,6 @@ CONFIG_KPROBES=y
 CONFIG_DEBUG_INFO=y
 "
 
-t124_xusb_fw_desc="Embed Tegra 5 XHCI controller firmware in kernel binary"
-t124_xusb_fw_config="
-CONFIG_EXTRA_FIRMWARE=\"nvidia/tegra124/xusb.bin\"
-CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
-"
-
-t210_xusb_fw_desc="Embed Tegra 210 XHCI controller firmware in kernel binary"
-t210_xusb_fw_config="
-CONFIG_EXTRA_FIRMWARE=\"nvidia/tegra210/xusb.bin\"
-CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
-"
-
 usb_gadget_desc="USB gadget support with ConfigFS/FunctionFS"
 usb_gadget_config="
 CONFIG_USB_CONFIGFS=m
@@ -436,8 +422,31 @@ CONFIG_MACVLAN=y
 CONFIG_POSIX_MQUEUE=y
 "
 
-# Add all config fragments as off by default
-IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]}"
+# Firmware binaries selected by USE flags.  Selected firmware binaries will
+# be built into the kernel using CONFIG_EXTRA_FIRMWARE.
+
+FIRMWARE_BINARIES=(
+	builtin_fw_t124_xusb
+	builtin_fw_t210_xusb
+)
+
+builtin_fw_t124_xusb_desc="Tegra124 XHCI controller"
+builtin_fw_t124_xusb_files=(
+	nvidia/tegra124/xusb.bin
+)
+
+builtin_fw_t210_xusb_desc="Tegra210 XHCI controller"
+builtin_fw_t210_xusb_files=(
+	nvidia/tegra210/xusb.bin
+)
+
+extra_fw_config="
+CONFIG_EXTRA_FIRMWARE=\"%FW%\"
+CONFIG_EXTRA_FIRMWARE_DIR=\"%ROOT%/lib/firmware\"
+"
+
+# Add all config and firmware fragments as off by default
+IUSE="${IUSE} ${CONFIG_FRAGMENTS[@]} ${FIRMWARE_BINARIES[@]}"
 REQUIRED_USE="
 	recovery_ramfs? ( !netboot_ramfs !factory_shim_ramfs )
 	netboot_ramfs? ( !recovery_ramfs !factory_shim_ramfs )
@@ -786,6 +795,25 @@ cros-kernel2_src_configure() {
 			sed -e "s|%ROOT%|${ROOT}|g" \
 			>> "$(get_build_cfg)" || die
 	done
+
+	local -a builtin_fw
+	for fragment in "${FIRMWARE_BINARIES[@]}"; do
+		local files="${fragment}_files[@]"
+
+		if [[ ${!files+set} != "set" ]]; then
+			die "'${fragment}' listed in FIRMWARE_BINARIES, but ${files} is not set up"
+		fi
+
+		if use ${fragment}; then
+			local msg="${fragment}_desc"
+			elog "   - Embedding ${!msg} firmware"
+			builtin_fw+=( "${!files}" )
+		fi
+	done
+
+	echo "${extra_fw_config}" | \
+		sed -e "s|%ROOT%|${ROOT}|g" -e "s|%FW%|${builtin_fw[*]}|g" \
+		>> "$(get_build_cfg)" || die
 
 	# Use default for any options not explitly set in splitconfig
 	# Note: oldnoconfig is a misleading name -- it picks the default
