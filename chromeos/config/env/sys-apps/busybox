@@ -3,3 +3,8 @@
 # so that every re-emerge will pick up the configs from
 # chromeos-base/busybox-config
 INSTALL_MASK+=" /etc/portage/savedconfig"
+
+# busybox cannot be built from clang. See crbug.com/496370
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+}
