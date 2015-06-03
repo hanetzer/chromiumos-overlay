@@ -48,7 +48,7 @@ src_install() {
 	dosbin crash_sender
 
 	into /usr
-	dobin "${OUT}"/list_proxies
+	use cros_embedded || dobin "${OUT}"/list_proxies
 	dobin "${OUT}"/warn_collector
 	dosbin kernel_log_collector.sh
 
