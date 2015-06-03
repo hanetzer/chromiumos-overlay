@@ -47,6 +47,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
 	epatch "${FILESDIR}"/vpp-add-support-for-low-power-mode.patch
 	epatch "${FILESDIR}"/free-surface-used-by-JPEG-decode.patch
+	epatch "${FILESDIR}"/dec-vp8-fix-segmentation-update.patch
 	eautoreconf
 }
 
