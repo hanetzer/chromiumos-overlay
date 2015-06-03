@@ -13,7 +13,6 @@ source make.conf.board_setup
 # TODO: This will have to come from somewhere else when we support a 32-bit
 # build host environment.
 CBUILD=x86_64-pc-linux-gnu
-HOSTCC=x86_64-pc-linux-gnu-gcc
 
 # We need a dummy setting here as make.conf files expect to expand ${USE}.
 # When we don't have this, they get the USE from the profile, and that has
