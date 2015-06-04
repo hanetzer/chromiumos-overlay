@@ -20,7 +20,8 @@ RDEPEND=">=dev-embedded/libftdi-0.18
 	dev-python/pexpect
 	dev-python/pyserial
 	dev-python/pyusb
-	virtual/libusb:1"
+	virtual/libusb:1
+	app-misc/screen"
 DEPEND="${RDEPEND}
 	app-text/htmltidy"
 
