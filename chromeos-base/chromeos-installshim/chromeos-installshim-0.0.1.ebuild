@@ -27,7 +27,6 @@ RDEPEND="
 	app-crypt/trousers
 	app-shells/bash
 	app-shells/dash
-	chromeos-base/chromeos-auth-config
 	chromeos-base/chromeos-base
 	chromeos-base/chromeos-factoryinstall
 	chromeos-base/chromeos-init
@@ -61,6 +60,7 @@ RDEPEND="
 	sys-libs/gcc-libs
 	sys-process/lsof
 	sys-process/procps
+	virtual/chromeos-auth-config
 	virtual/chromeos-bsp
 	virtual/chromeos-factoryinstall-bsp
 	virtual/modutils

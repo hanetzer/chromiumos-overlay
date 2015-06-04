@@ -97,7 +97,7 @@ CROS_COMMON_RDEPEND+="
 	bluetooth? ( net-wireless/bluez )
 	bootchart? ( app-benchmarks/bootchart )
 	tpm? ( chromeos-base/chaps )
-	pam? ( chromeos-base/chromeos-auth-config )
+	pam? ( virtual/chromeos-auth-config )
 	fonts? ( chromeos-base/chromeos-fonts )
 	chromeos-base/chromeos-installer
 	crash_reporting? ( chromeos-base/crash-reporter )
