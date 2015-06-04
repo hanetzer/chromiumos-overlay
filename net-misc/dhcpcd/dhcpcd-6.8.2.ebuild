@@ -65,17 +65,17 @@ src_configure()
 		${hooks}
 }
 
-src_preinst()
-{
-	enewuser "dhcp"
-	enewgroup "dhcp"
-}
-
 src_install()
 {
 	default
 	newinitd "${FILESDIR}"/${PN}.initd ${PN}
 	systemd_dounit "${FILESDIR}"/${PN}.service
+}
+
+pkg_preinst()
+{
+	enewuser "dhcp"
+	enewgroup "dhcp"
 }
 
 pkg_postinst()
