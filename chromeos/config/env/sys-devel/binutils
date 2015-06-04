@@ -1,0 +1,12 @@
+# Copyright 2015 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# binutils cannot be built from clang. See crbug.com/477433
+# binutils is the only package left to fix before we get a successful
+# amd64-generic-llvm build. There is a fix upstream it may take time to
+# bring it here, so force it to build with gcc for now.
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+	filter_clang_syntax
+}
