@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-45.0.2416.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-45.0.2416.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-45.0.2416.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-45.0.2422.6_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-45.0.2422.6_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-45.0.2422.6_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -714,6 +714,12 @@ setup_compile_flags() {
 	# portage flags.
 	filter-flags -g -O*
 
+	# -clang-syntax is a flag that enable us to do clang syntax checking on
+	# top of building Chrome with gcc. Since Chrome itself is clang clean,
+	# there is no need to check it again in ChromeOS land. And this flag has
+	# nothing to do with USE=clang.
+	filter-flags -clang-syntax
+
 	# There are some flags we want to only use in the ebuild.
 	# The rest will be exported to the simple chrome workflow.
 	EBUILD_CFLAGS=()
@@ -969,14 +975,6 @@ install_chrome_test_resources() {
 		# These are all the .test, .frag, .vert, .run files needed by
 		# the GL-CTS test cases.
 		cp -al "${from}"/khronos_glcts_data "${dest}"/.
-	fi
-
-	# Remove test binaries from other platforms.
-	if [[ -z "${E_MACHINE}" ]]; then
-		echo E_MACHINE not defined!
-	else
-		cd "${test_dir}"/chrome/test
-		rm -fv $( scanelf -RmyBF%a . | grep -v -e ^${E_MACHINE} )
 	fi
 
 	cp -a "${CHROME_ROOT}"/"${AUTOTEST_DEPS}"/chrome_test/setup_test_links.sh \

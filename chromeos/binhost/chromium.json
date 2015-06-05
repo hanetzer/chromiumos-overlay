@@ -185,6 +185,46 @@
   }, 
   {
     "compat_id": {
+      "arch": "amd64", 
+      "cflags": [
+        "-O2", 
+        "-pipe", 
+        "-march=x86-64", 
+        "-msse3", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "evdev_gestures", 
+        "gold", 
+        "highdpi", 
+        "nacl", 
+        "opengles", 
+        "ozone", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_dri", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "vaapi", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
+      "board": "amd64-generic_freon", 
+      "useflags": []
+    }
+  }, 
+  {
+    "compat_id": {
       "arch": "arm", 
       "cflags": [
         "-O2", 
@@ -226,46 +266,6 @@
       "useflags": [
         "-chrome_internal"
       ]
-    }
-  }, 
-  {
-    "compat_id": {
-      "arch": "amd64", 
-      "cflags": [
-        "-O2", 
-        "-pipe", 
-        "-march=x86-64", 
-        "-msse3", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "evdev_gestures", 
-        "gold", 
-        "highdpi", 
-        "nacl", 
-        "opengles", 
-        "ozone", 
-        "ozone_platform_default_gbm", 
-        "ozone_platform_dri", 
-        "ozone_platform_gbm", 
-        "runhooks", 
-        "v4l2_codec", 
-        "vaapi", 
-        "xkbcommon"
-      ]
-    }, 
-    "key": {
-      "board": "amd64-generic_freon", 
-      "useflags": []
     }
   }
 ]
