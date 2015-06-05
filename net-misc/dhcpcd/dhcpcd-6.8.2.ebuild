@@ -42,6 +42,7 @@ src_prepare()
 	epatch "${FILESDIR}"/patches/${P}-Add-ability-to-disable-hook-scripts.patch
 	epatch "${FILESDIR}"/patches/${P}-Improve-debugability.patch
 	epatch "${FILESDIR}"/patches/${P}-Add-DBus-RPC-support.patch
+	epatch "${FILESDIR}"/patches/${P}-ChromiumOS-DHCPv6-support.patch
 }
 
 src_configure()
