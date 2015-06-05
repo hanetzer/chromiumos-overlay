@@ -5,4 +5,5 @@
 # elfutils cannot be built from clang. See crosbug.com/217722
 cros_pre_src_prepare_use_gcc() {
 	cros_use_gcc
+	filter_clang_syntax
 }
