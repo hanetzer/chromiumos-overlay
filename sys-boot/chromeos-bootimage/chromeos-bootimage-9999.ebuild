@@ -406,15 +406,9 @@ src_compile_depthcharge() {
 	if use fastboot ; then
 
 		local fastboot_rw
-		if use unified_depthcharge; then
-			if [[ -z "${multicbfs}" ]]; then
-				fastboot_rw="${froot}/depthcharge/fastboot.payload"
-			else
-				fastboot_rw="${froot}/depthcharge/fastboot.elf"
-			fi
-		else
-			fastboot_rw="${froot}/depthcharge/fastboot.bin"
-		fi
+		# Currently, rw image does not need to have any fastboot functionality.
+		# Thus, use the normal depthcharge image compiled without fastboot mode.
+		fastboot_rw="${froot}/depthcharge/depthcharge.${rw_suffix}"
 
 		local fastboot_ro
 		if use unified_depthcharge; then
@@ -430,6 +424,13 @@ src_compile_depthcharge() {
 			--outdir "out.fastboot" --output "image.fastboot.bin" \
 			--uboot "${fastboot_rw}" \
 			|| die "failed to build fastboot image."
+
+		einfo "Building fastboot production image."
+		cros_bundle_firmware "${common[@]}" "${silent[@]}" \
+			--coreboot-elf "${fastboot_ro}" \
+			--outdir "out.ro.fastboot" --output "image.fastboot-prod.bin" \
+			--uboot "${fastboot_rw}" \
+			|| die "failed to build fastboot production image."
 
 	fi
 }
