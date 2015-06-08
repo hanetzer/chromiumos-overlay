@@ -669,7 +669,6 @@ src_prepare() {
 
 setup_test_lists() {
 	TEST_FILES=(
-		libffmpegsumo.so
 		media_unittests
 		sandbox_linux_unittests
 		ppapi_example_video_decode
