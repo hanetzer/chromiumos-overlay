@@ -31,7 +31,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx"
+IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly cyan daisy falco fox gizmo glados kunimitsu
@@ -52,6 +52,7 @@ DEPEND_X86="
 	sys-boot/chromeos-mrc
 	"
 DEPEND="
+	mtc? ( sys-boot/mtc )
 	chromeos-base/vboot_reference
 	${DEPEND_BLOCKERS}
 	virtual/coreboot-private-files
