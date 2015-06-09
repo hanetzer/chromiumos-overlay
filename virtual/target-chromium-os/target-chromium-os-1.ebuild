@@ -123,7 +123,7 @@ CROS_COMMON_RDEPEND+="
 	shill? ( chromeos-base/shill )
 	chromeos-base/update_engine
 	vpn? ( chromeos-base/vpn-manager )
-	wifi_bootstrapping? ( chromeos-base/privetd )
+	wifi_bootstrapping? ( chromeos-base/buffet )
 	wimax? ( chromeos-base/wimax_manager )
 	cras? ( chromeos-base/audioconfig media-sound/adhd )
 	network_time? ( net-misc/tlsdate )

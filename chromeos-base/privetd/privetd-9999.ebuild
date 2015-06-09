@@ -18,52 +18,9 @@ LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
 
-COMMON_DEPEND="
-	chromeos-base/libchromeos
-	chromeos-base/webserver
-"
+COMMON_DEPEND=""
 
-RDEPEND="
-	${COMMON_DEPEND}
-	chromeos-base/apmanager
-	chromeos-base/peerd
-"
+RDEPEND=""
 
-DEPEND="
-	${COMMON_DEPEND}
-	test? (
-		dev-cpp/gmock
-		dev-cpp/gtest
-	)
-"
+DEPEND=""
 
-pkg_preinst() {
-	# Create user and group for privetd.
-	enewuser "privetd"
-	enewgroup "privetd"
-	# Additional groups to put privetd into.
-	enewgroup "apmanager"
-	enewgroup "buffet"
-	enewgroup "peerd"
-}
-
-src_install() {
-	dobin "${OUT}/privetd"
-	# Install init scripts.
-	insinto /etc/init
-	doins init/privetd.conf
-	# Install DBus configuration files.
-	insinto /etc/dbus-1/system.d
-	doins dbus_bindings/org.chromium.privetd.conf
-}
-
-platform_pkg_test() {
-	local tests=(
-		privetd_testrunner
-	)
-
-	local test_bin
-	for test_bin in "${tests[@]}"; do
-		platform_test "run" "${OUT}/${test_bin}"
-	done
-}

@@ -17,22 +17,36 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
-IUSE="examples"
+IUSE="examples wifi_bootstrapping"
+
+COMMON_DEPEND="
+	chromeos-base/libchromeos
+	chromeos-base/webserver
+"
 
 RDEPEND="
-	chromeos-base/libchromeos
+	${COMMON_DEPEND}
+	wifi_bootstrapping? (
+		chromeos-base/apmanager
+		chromeos-base/peerd
+	)
 "
 
 DEPEND="
-	${RDEPEND}
-	test? ( dev-cpp/gmock )
-	dev-cpp/gtest
+	${COMMON_DEPEND}
+	test? (
+		dev-cpp/gmock
+		dev-cpp/gtest
+	)
 "
 
 pkg_preinst() {
 	# Create user and group for buffet.
 	enewuser "buffet"
 	enewgroup "buffet"
+	# Additional groups to put buffet into.
+	enewgroup "apmanager"
+	enewgroup "peerd"
 }
 
 src_install_test_daemon() {
@@ -64,6 +78,10 @@ src_install() {
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/buffet.conf
+	if ! use wifi_bootstrapping ; then
+		sed -i 's/\(BUFFET_DISABLE_PRIVET=\).*$/\1true/g' \
+			"${ED}"/etc/init/buffet.conf
+	fi
 
 	if use examples ; then
 		src_install_test_daemon
