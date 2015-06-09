@@ -243,6 +243,7 @@ ALL_BOARDS=(
 	veyron_remy
 	veyron_romy
 	veyron_rialto
+	veyron_shark
 	veyron_speedy
 	veyron_thea
 	#waluigi
