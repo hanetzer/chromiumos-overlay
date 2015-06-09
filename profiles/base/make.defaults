@@ -134,7 +134,10 @@ PYTHON_SINGLE_TARGET="python2_7"
 #    Note: Disabled for CrOS.
 # 2) allow replacing unowned compiled Python modules (python-r1 migration),
 # 3) allow replacing unowned dropin.cache files (twisted-r1 migration).
-COLLISION_IGNORE="*.py[co] *\$py.class */dropin.cache"
+# 4) ignore collisions in the build-id tree. These are colliding symlinks
+#    specifying where to get debug symbols for two identical executables
+#    installed at different paths.
+COLLISION_IGNORE="*.py[co] *\$py.class */dropin.cache /usr/lib/debug/.build-id"
 UNINSTALL_IGNORE=""
 
 # Andreas K. Hüttel <dilfridge@gentoo.org> (23 Aug 2013)
