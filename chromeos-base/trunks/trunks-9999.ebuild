@@ -24,6 +24,7 @@ IUSE="test"
 RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
+	cros_host? ( dev-embedded/libftdi )
 	"
 
 DEPEND="
