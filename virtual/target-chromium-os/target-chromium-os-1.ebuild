@@ -13,8 +13,8 @@ KEYWORDS="*"
 IUSE="bluetooth bootchart bootimage buffet brillo-framework +cellular coreboot
 	+cras +crash_reporting +cros_disks cros_ec cros_embedded +debugd dptf
 	feedback +fonts gobi mtd +network_time nfc pam peerd
-	+power_management +profile +readahead scanner +shill +syslog +tpm
-	+vpn watchdog wifi_bootstrapping
+	+power_management +profile +readahead scanner +shill +syslog touchview
+	+tpm +vpn watchdog wifi_bootstrapping
 	wimax X"
 
 REQUIRE_USE="cellular? ( shill )"
@@ -239,6 +239,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/upstart
 	sys-fs/e2fsprogs
 	sys-fs/udev
+	touchview? ( chromeos-base/chromeos-accelerometer-init )
 	virtual/assets
 "
 
