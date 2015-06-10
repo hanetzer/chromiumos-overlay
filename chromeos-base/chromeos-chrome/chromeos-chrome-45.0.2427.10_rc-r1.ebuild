@@ -66,7 +66,7 @@ IUSE="
 REQUIRED_USE="asan? ( clang )"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
-OZONE_PLATFORMS=(dri test egltest caca gbm eglmarzone)
+OZONE_PLATFORMS=(dri drm test egltest caca gbm eglmarzone)
 IUSE_OZONE_PLATFORMS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_PREFIX}}"
 IUSE+=" ${IUSE_OZONE_PLATFORMS}"
 OZONE_PLATFORM_DEFAULT_PREFIX=ozone_platform_default_
@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-45.0.2422.6_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-45.0.2422.6_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-45.0.2422.6_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-45.0.2427.10_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-45.0.2427.10_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-45.0.2427.10_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
