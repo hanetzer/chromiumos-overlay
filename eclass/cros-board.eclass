@@ -106,6 +106,7 @@ ALL_BOARDS=(
 	gnawty
 	#gnawty_freon
 	guado
+	heli
 	hsb
 	ironhide
 	#jaguar
