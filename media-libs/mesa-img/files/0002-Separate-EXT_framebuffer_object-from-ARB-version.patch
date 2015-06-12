@@ -1,0 +1,487 @@
+From 4e254f78c3782931dd91494c25272a03e8f71b6a Mon Sep 17 00:00:00 2001
+From: Brendan King <Brendan.King@imgtec.com>
+Date: Mon, 10 Mar 2014 13:43:45 +0000
+Subject: [PATCH 02/36] Separate EXT_framebuffer_object from ARB version.
+
+This patch separates the EXT_framebuffer_object entry points from the ARB
+equivalents.
+
+Probably not all this separation is necessary; it looks like only
+	BindRenderbuffer
+	BindFramebuffer
+	GetFramebufferAttachmentParameteriv
+take advantage of the split.
+
+Next time this patch is implemented, see if it can be trimmed down to
+just the above functions, as it may be more upstreamable.
+
+We may need to implement the EXT restrictions if we want to upstream.
+---
+ src/mapi/glapi/gen/EXT_framebuffer_object.xml | 30 +++++-----
+ src/mesa/main/fbobject.c                      | 81 ++++++++++++++++++++++++++-
+ src/mesa/main/fbobject.h                      | 51 +++++++++++++++++
+ src/mesa/main/genmipmap.c                     |  6 ++
+ src/mesa/main/genmipmap.h                     |  2 +
+ 5 files changed, 154 insertions(+), 16 deletions(-)
+
+diff --git a/src/mapi/glapi/gen/EXT_framebuffer_object.xml b/src/mapi/glapi/gen/EXT_framebuffer_object.xml
+index 2cf75bc..16efdfa 100644
+--- a/src/mapi/glapi/gen/EXT_framebuffer_object.xml
++++ b/src/mapi/glapi/gen/EXT_framebuffer_object.xml
+@@ -73,7 +73,7 @@
+     </enum>
+     <enum name="INVALID_FRAMEBUFFER_OPERATION_EXT"        value="0x0506"/>
+ 
+-    <function name="IsRenderbufferEXT" alias="IsRenderbuffer">
++    <function name="IsRenderbufferEXT" offset="assign">
+         <param name="renderbuffer" type="GLuint"/>
+ 	<return type="GLboolean"/>
+     </function>
+@@ -84,30 +84,30 @@
+         <glx rop="4316"/>
+     </function>
+ 
+-    <function name="DeleteRenderbuffersEXT" alias="DeleteRenderbuffers">
++    <function name="DeleteRenderbuffersEXT" offset="assign">
+         <param name="n" type="GLsizei"/>
+         <param name="renderbuffers" type="const GLuint *"/>
+     </function>
+ 
+-    <function name="GenRenderbuffersEXT" alias="GenRenderbuffers">
++    <function name="GenRenderbuffersEXT" offset="assign">
+         <param name="n" type="GLsizei"/>
+         <param name="renderbuffers" type="GLuint *"/>
+     </function>
+ 
+-    <function name="RenderbufferStorageEXT" alias="RenderbufferStorage">
++    <function name="RenderbufferStorageEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="internalformat" type="GLenum"/>
+         <param name="width" type="GLsizei"/>
+         <param name="height" type="GLsizei"/>
+     </function>
+ 
+-    <function name="GetRenderbufferParameterivEXT" alias="GetRenderbufferParameteriv">
++    <function name="GetRenderbufferParameterivEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="pname" type="GLenum"/>
+         <param name="params" type="GLint *"/>
+     </function>
+ 
+-    <function name="IsFramebufferEXT" alias="IsFramebuffer">
++    <function name="IsFramebufferEXT" offset="assign">
+         <param name="framebuffer" type="GLuint"/>
+ 	<return type="GLboolean"/>
+     </function>
+@@ -118,22 +118,22 @@
+         <glx rop="4319"/>
+     </function>
+ 
+-    <function name="DeleteFramebuffersEXT" alias="DeleteFramebuffers">
++    <function name="DeleteFramebuffersEXT" offset="assign">
+         <param name="n" type="GLsizei"/>
+         <param name="framebuffers" type="const GLuint *"/>
+     </function>
+ 
+-    <function name="GenFramebuffersEXT" alias="GenFramebuffers">
++    <function name="GenFramebuffersEXT" offset="assign">
+         <param name="n" type="GLsizei"/>
+         <param name="framebuffers" type="GLuint *"/>
+     </function>
+ 
+-    <function name="CheckFramebufferStatusEXT" alias="CheckFramebufferStatus">
++    <function name="CheckFramebufferStatusEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+ 	<return type="GLenum"/>
+     </function>
+ 
+-    <function name="FramebufferTexture1DEXT" alias="FramebufferTexture1D">
++    <function name="FramebufferTexture1DEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="attachment" type="GLenum"/>
+         <param name="textarget" type="GLenum"/>
+@@ -141,7 +141,7 @@
+         <param name="level" type="GLint"/>
+     </function>
+ 
+-    <function name="FramebufferTexture2DEXT" alias="FramebufferTexture2D">
++    <function name="FramebufferTexture2DEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="attachment" type="GLenum"/>
+         <param name="textarget" type="GLenum"/>
+@@ -149,7 +149,7 @@
+         <param name="level" type="GLint"/>
+     </function>
+ 
+-    <function name="FramebufferTexture3DEXT" alias="FramebufferTexture3D">
++    <function name="FramebufferTexture3DEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="attachment" type="GLenum"/>
+         <param name="textarget" type="GLenum"/>
+@@ -158,21 +158,21 @@
+         <param name="zoffset" type="GLint"/>
+     </function>
+ 
+-    <function name="FramebufferRenderbufferEXT" alias="FramebufferRenderbuffer">
++    <function name="FramebufferRenderbufferEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="attachment" type="GLenum"/>
+         <param name="renderbuffertarget" type="GLenum"/>
+         <param name="renderbuffer" type="GLuint"/>
+     </function>
+ 
+-    <function name="GetFramebufferAttachmentParameterivEXT" alias="GetFramebufferAttachmentParameteriv">
++    <function name="GetFramebufferAttachmentParameterivEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+         <param name="attachment" type="GLenum"/>
+         <param name="pname" type="GLenum"/>
+         <param name="params" type="GLint *"/>
+     </function>
+ 
+-    <function name="GenerateMipmapEXT" alias="GenerateMipmap">
++    <function name="GenerateMipmapEXT" offset="assign">
+         <param name="target" type="GLenum"/>
+     </function>
+ </category>
+diff --git a/src/mesa/main/fbobject.c b/src/mesa/main/fbobject.c
+index ae3a418..6665b59 100644
+--- a/src/mesa/main/fbobject.c
++++ b/src/mesa/main/fbobject.c
+@@ -1283,6 +1283,11 @@ _mesa_detach_renderbuffer(struct gl_context *ctx,
+    return progress;
+ }
+ 
++GLboolean GLAPIENTRY
++_mesa_IsRenderbufferEXT(GLuint renderbuffer)
++{
++   return _mesa_IsRenderbuffer(renderbuffer);
++}
+ 
+ void GLAPIENTRY
+ _mesa_DeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
+@@ -1372,7 +1377,6 @@ _mesa_GenRenderbuffers(GLsizei n, GLuint *renderbuffers)
+    }
+ }
+ 
+-
+ /**
+  * Given an internal format token for a render buffer, return the
+  * corresponding base format (one of GL_RGB, GL_RGBA, GL_STENCIL_INDEX,
+@@ -1825,6 +1829,11 @@ renderbuffer_storage(GLenum target, GLenum internalFormat,
+    }
+ }
+ 
++void GLAPIENTRY
++_mesa_DeleteRenderbuffersEXT(GLsizei n, const GLuint *renderbuffers)
++{
++   _mesa_DeleteRenderbuffers(n, renderbuffers);
++}
+ 
+ void GLAPIENTRY
+ _mesa_EGLImageTargetRenderbufferStorageOES(GLenum target, GLeglImageOES image)
+@@ -1856,6 +1865,11 @@ _mesa_EGLImageTargetRenderbufferStorageOES(GLenum target, GLeglImageOES image)
+    ctx->Driver.EGLImageTargetRenderbufferStorage(ctx, rb, image);
+ }
+ 
++void GLAPIENTRY
++_mesa_GenRenderbuffersEXT(GLsizei n, GLuint *renderbuffers)
++{
++   _mesa_GenRenderbuffers(n, renderbuffers);
++}
+ 
+ /**
+  * Helper function for _mesa_GetRenderbufferParameteriv() and
+@@ -1887,6 +1901,12 @@ _mesa_RenderbufferStorage(GLenum target, GLenum internalFormat,
+    renderbuffer_storage(target, internalFormat, width, height, NO_SAMPLES);
+ }
+ 
++void GLAPIENTRY
++_mesa_RenderbufferStorageEXT(GLenum target, GLenum internalFormat,
++                             GLsizei width, GLsizei height)
++{
++   _mesa_RenderbufferStorage(target, internalFormat, width, height);
++}
+ 
+ void GLAPIENTRY
+ _mesa_RenderbufferStorageMultisample(GLenum target, GLsizei samples,
+@@ -1973,6 +1993,11 @@ _mesa_GetRenderbufferParameteriv(GLenum target, GLenum pname, GLint *params)
+    }
+ }
+ 
++void GLAPIENTRY
++_mesa_GetRenderbufferParameterivEXT(GLenum target, GLenum pname, GLint *params)
++{
++   _mesa_GetRenderbufferParameteriv(target, pname, params);
++}
+ 
+ GLboolean GLAPIENTRY
+ _mesa_IsFramebuffer(GLuint framebuffer)
+@@ -1987,6 +2012,11 @@ _mesa_IsFramebuffer(GLuint framebuffer)
+    return GL_FALSE;
+ }
+ 
++GLboolean GLAPIENTRY
++_mesa_IsFramebufferEXT(GLuint framebuffer)
++{
++  return _mesa_IsFramebuffer(framebuffer);
++}
+ 
+ /**
+  * Check if any of the attachments of the given framebuffer are textures
+@@ -2211,6 +2241,11 @@ _mesa_DeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
+    }
+ }
+ 
++void GLAPIENTRY
++_mesa_DeleteFramebuffersEXT(GLsizei n, const GLuint *framebuffers)
++{
++   _mesa_DeleteFramebuffers(n, framebuffers);
++}
+ 
+ void GLAPIENTRY
+ _mesa_GenFramebuffers(GLsizei n, GLuint *framebuffers)
+@@ -2239,6 +2274,11 @@ _mesa_GenFramebuffers(GLsizei n, GLuint *framebuffers)
+    }
+ }
+ 
++void GLAPIENTRY
++_mesa_GenFramebuffersEXT(GLsizei n, GLuint *framebuffers)
++{
++   _mesa_GenFramebuffers(n, framebuffers);
++}
+ 
+ GLenum GLAPIENTRY
+ _mesa_CheckFramebufferStatus(GLenum target)
+@@ -2276,6 +2316,11 @@ _mesa_CheckFramebufferStatus(GLenum target)
+    return buffer->_Status;
+ }
+ 
++GLenum GLAPIENTRY
++_mesa_CheckFramebufferStatusEXT(GLenum target)
++{
++   return _mesa_CheckFramebufferStatus(target);
++}
+ 
+ /**
+  * Replicate the src attachment point. Used by framebuffer_texture() when
+@@ -2541,6 +2586,12 @@ _mesa_FramebufferTexture1D(GLenum target, GLenum attachment,
+                        level, 0, GL_FALSE);
+ }
+ 
++void GLAPIENTRY
++_mesa_FramebufferTexture1DEXT(GLenum target, GLenum attachment,
++                              GLenum textarget, GLuint texture, GLint level)
++{
++   _mesa_FramebufferTexture1D(target, attachment, textarget, texture, level);
++}
+ 
+ void GLAPIENTRY
+ _mesa_FramebufferTexture2D(GLenum target, GLenum attachment,
+@@ -2592,6 +2643,12 @@ _mesa_FramebufferTexture2D(GLenum target, GLenum attachment,
+                        level, 0, GL_FALSE);
+ }
+ 
++void GLAPIENTRY
++_mesa_FramebufferTexture2DEXT(GLenum target, GLenum attachment,
++                              GLenum textarget, GLuint texture, GLint level)
++{
++   _mesa_FramebufferTexture2D(target, attachment, textarget, texture, level);
++}
+ 
+ void GLAPIENTRY
+ _mesa_FramebufferTexture3D(GLenum target, GLenum attachment,
+@@ -2610,6 +2667,14 @@ _mesa_FramebufferTexture3D(GLenum target, GLenum attachment,
+                        level, zoffset, GL_FALSE);
+ }
+ 
++void GLAPIENTRY
++_mesa_FramebufferTexture3DEXT(GLenum target, GLenum attachment,
++                              GLenum textarget, GLuint texture,
++                              GLint level, GLint zoffset)
++{
++   _mesa_FramebufferTexture3D(target, attachment, textarget, texture,
++                              level, zoffset);
++}
+ 
+ void GLAPIENTRY
+ _mesa_FramebufferTextureLayer(GLenum target, GLenum attachment,
+@@ -2718,6 +2783,14 @@ _mesa_FramebufferRenderbuffer(GLenum target, GLenum attachment,
+    _mesa_update_framebuffer_visual(ctx, fb);
+ }
+ 
++void GLAPIENTRY
++_mesa_FramebufferRenderbufferEXT(GLenum target, GLenum attachment,
++                                 GLenum renderbufferTarget,
++                                 GLuint renderbuffer)
++{
++   _mesa_FramebufferRenderbuffer(target, attachment, renderbufferTarget,
++                                 renderbuffer);
++}
+ 
+ void GLAPIENTRY
+ _mesa_GetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment,
+@@ -3003,6 +3076,12 @@ invalid_pname_enum:
+    return;
+ }
+ 
++void GLAPIENTRY
++_mesa_GetFramebufferAttachmentParameterivEXT(GLenum target, GLenum attachment,
++                                             GLenum pname, GLint *params)
++{
++   _mesa_GetFramebufferAttachmentParameteriv(target, attachment, pname, params);
++}
+ 
+ static void
+ invalidate_framebuffer_storage(GLenum target, GLsizei numAttachments,
+diff --git a/src/mesa/main/fbobject.h b/src/mesa/main/fbobject.h
+index 77fdef4..79af659 100644
+--- a/src/mesa/main/fbobject.h
++++ b/src/mesa/main/fbobject.h
+@@ -102,6 +102,9 @@ _mesa_detach_renderbuffer(struct gl_context *ctx,
+ extern GLboolean GLAPIENTRY
+ _mesa_IsRenderbuffer(GLuint renderbuffer);
+ 
++extern GLboolean GLAPIENTRY
++_mesa_IsRenderbufferEXT(GLuint renderbuffer);
++
+ extern void GLAPIENTRY
+ _mesa_BindRenderbuffer(GLenum target, GLuint renderbuffer);
+ 
+@@ -112,13 +115,23 @@ extern void GLAPIENTRY
+ _mesa_DeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers);
+ 
+ extern void GLAPIENTRY
++_mesa_DeleteRenderbuffersEXT(GLsizei n, const GLuint *renderbuffers);
++
++extern void GLAPIENTRY
+ _mesa_GenRenderbuffers(GLsizei n, GLuint *renderbuffers);
+ 
+ extern void GLAPIENTRY
++_mesa_GenRenderbuffersEXT(GLsizei n, GLuint *renderbuffers);
++
++extern void GLAPIENTRY
+ _mesa_RenderbufferStorage(GLenum target, GLenum internalformat,
+                              GLsizei width, GLsizei height);
+ 
+ extern void GLAPIENTRY
++_mesa_RenderbufferStorageEXT(GLenum target, GLenum internalformat,
++                             GLsizei width, GLsizei height);
++
++extern void GLAPIENTRY
+ _mesa_RenderbufferStorageMultisample(GLenum target, GLsizei samples,
+                                      GLenum internalformat,
+                                      GLsizei width, GLsizei height);
+@@ -134,9 +147,16 @@ extern void GLAPIENTRY
+ _mesa_GetRenderbufferParameteriv(GLenum target, GLenum pname,
+                                     GLint *params);
+ 
++extern void GLAPIENTRY
++_mesa_GetRenderbufferParameterivEXT(GLenum target, GLenum pname,
++                                    GLint *params);
++
+ extern GLboolean GLAPIENTRY
+ _mesa_IsFramebuffer(GLuint framebuffer);
+ 
++extern GLboolean GLAPIENTRY
++_mesa_IsFramebufferEXT(GLuint framebuffer);
++
+ extern void GLAPIENTRY
+ _mesa_BindFramebuffer(GLenum target, GLuint framebuffer);
+ 
+@@ -147,25 +167,47 @@ extern void GLAPIENTRY
+ _mesa_DeleteFramebuffers(GLsizei n, const GLuint *framebuffers);
+ 
+ extern void GLAPIENTRY
++_mesa_DeleteFramebuffersEXT(GLsizei n, const GLuint *framebuffers);
++
++extern void GLAPIENTRY
+ _mesa_GenFramebuffers(GLsizei n, GLuint *framebuffers);
+ 
++extern void GLAPIENTRY
++_mesa_GenFramebuffersEXT(GLsizei n, GLuint *framebuffers);
++
+ extern GLenum GLAPIENTRY
+ _mesa_CheckFramebufferStatus(GLenum target);
+ 
++extern GLenum GLAPIENTRY
++_mesa_CheckFramebufferStatusEXT(GLenum target);
++
+ extern void GLAPIENTRY
+ _mesa_FramebufferTexture1D(GLenum target, GLenum attachment,
+                               GLenum textarget, GLuint texture, GLint level);
+ 
+ extern void GLAPIENTRY
++_mesa_FramebufferTexture1DEXT(GLenum target, GLenum attachment,
++                              GLenum textarget, GLuint texture, GLint level);
++
++extern void GLAPIENTRY
+ _mesa_FramebufferTexture2D(GLenum target, GLenum attachment,
+                               GLenum textarget, GLuint texture, GLint level);
+ 
+ extern void GLAPIENTRY
++_mesa_FramebufferTexture2DEXT(GLenum target, GLenum attachment,
++                              GLenum textarget, GLuint texture, GLint level);
++
++extern void GLAPIENTRY
+ _mesa_FramebufferTexture3D(GLenum target, GLenum attachment,
+                               GLenum textarget, GLuint texture,
+                               GLint level, GLint zoffset);
+ 
+ extern void GLAPIENTRY
++_mesa_FramebufferTexture3DEXT(GLenum target, GLenum attachment,
++                              GLenum textarget, GLuint texture,
++                              GLint level, GLint zoffset);
++
++extern void GLAPIENTRY
+ _mesa_FramebufferTextureLayer(GLenum target, GLenum attachment,
+                                  GLuint texture, GLint level, GLint layer);
+ 
+@@ -179,10 +221,19 @@ _mesa_FramebufferRenderbuffer(GLenum target, GLenum attachment,
+                                  GLuint renderbuffer);
+ 
+ extern void GLAPIENTRY
++_mesa_FramebufferRenderbufferEXT(GLenum target, GLenum attachment,
++                                 GLenum renderbuffertarget,
++                                 GLuint renderbuffer);
++
++extern void GLAPIENTRY
+ _mesa_GetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment,
+                                              GLenum pname, GLint *params);
+ 
+ extern void GLAPIENTRY
++_mesa_GetFramebufferAttachmentParameterivEXT(GLenum target, GLenum attachment,
++                                             GLenum pname, GLint *params);
++
++extern void GLAPIENTRY
+ _mesa_InvalidateSubFramebuffer(GLenum target, GLsizei numAttachments,
+                                const GLenum *attachments, GLint x, GLint y,
+                                GLsizei width, GLsizei height);
+diff --git a/src/mesa/main/genmipmap.c b/src/mesa/main/genmipmap.c
+index 9d111ca..6be7b50 100644
+--- a/src/mesa/main/genmipmap.c
++++ b/src/mesa/main/genmipmap.c
+@@ -133,3 +133,9 @@ _mesa_GenerateMipmap(GLenum target)
+    }
+    _mesa_unlock_texture(ctx, texObj);
+ }
++
++void GLAPIENTRY
++_mesa_GenerateMipmapEXT(GLenum target)
++{
++   _mesa_GenerateMipmap(target);
++}
+diff --git a/src/mesa/main/genmipmap.h b/src/mesa/main/genmipmap.h
+index d546a8d..cd18dbd 100644
+--- a/src/mesa/main/genmipmap.h
++++ b/src/mesa/main/genmipmap.h
+@@ -32,5 +32,7 @@
+ extern void GLAPIENTRY
+ _mesa_GenerateMipmap(GLenum target);
+ 
++extern void GLAPIENTRY
++_mesa_GenerateMipmapEXT(GLenum target);
+ 
+ #endif /* GENMIPMAP_H */
+-- 
+1.9.1
+
