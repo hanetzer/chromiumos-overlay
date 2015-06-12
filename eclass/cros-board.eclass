@@ -106,6 +106,7 @@ ALL_BOARDS=(
 	gnawty
 	#gnawty_freon
 	guado
+	guado_moblab
 	heli
 	hsb
 	ironhide
