@@ -164,6 +164,8 @@ src_compile() {
 	# reasoning is that the firmware may need more than one to build
 	# and boot.
 	export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
+	# For coreboot.org upstream architecture naming.
+	export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
 	export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
 	# aarch64: used on chromeos-2013.04
 	export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
