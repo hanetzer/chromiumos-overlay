@@ -38,6 +38,8 @@ EC_BOARD_NAMES=(
 	host
 	llama
 	minimuffin
+	oak
+	oak_pd
 	pinky
 	pit
 	plankton
