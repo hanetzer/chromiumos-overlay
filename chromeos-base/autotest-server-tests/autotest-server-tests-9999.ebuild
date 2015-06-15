@@ -24,12 +24,15 @@ DEPEND="${RDEPEND}
 "
 
 SERVER_IUSE_TESTS="
+	+tests_audio_AudioAfterSuspend
+	+tests_audio_AudioBasicBluetoothPlayback
+	+tests_audio_AudioBasicBluetoothPlaybackRecord
+	+tests_audio_AudioBasicBluetoothRecord
+	+tests_audio_AudioBasicExternalMicrophone
 	+tests_audio_AudioBasicHDMI
 	+tests_audio_AudioBasicHeadphone
-	+tests_audio_AudioBasicInternalSpeaker
-	+tests_audio_AudioBasicExternalMicrophone
 	+tests_audio_AudioBasicInternalMicrophone
-	+tests_audio_AudioAfterSuspend
+	+tests_audio_AudioBasicInternalSpeaker
 	+tests_audio_PowerConsumption
 	+tests_autoupdate_CatchBadSignatures
 	+tests_autoupdate_Rollback
