@@ -24,6 +24,7 @@ RDEPEND="
 	chromeos-base/autotest-deps-graphics
 	tests_graphics_GLMark2? ( chromeos-base/autotest-deps-glmark2 )
 	tests_graphics_SanAngeles? ( media-libs/waffle )
+	tests_graphics_Sanity? ( x11-libs/libdrm )
 "
 DEPEND="${RDEPEND}"
 
