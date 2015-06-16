@@ -14,7 +14,7 @@
 # eclass centralizes the logic used to depend on libchrome and sets up the
 # environment variables to reduce the amount of change needed.
 
-[[ -z ${LIBCHROME_VERS} ]] && LIBCHROME_VERS=( 323904 )
+[[ -z ${LIBCHROME_VERS} ]] && LIBCHROME_VERS=( 334380 )
 export BASE_VER="${LIBCHROME_VERS[0]}"
 
 RDEPEND=$(
