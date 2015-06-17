@@ -67,6 +67,7 @@ ALL_BOARDS=(
 	cosmos
 	cranky
 	cyan
+	cyclone
 	daisy
 	daisy_freon
 	#daisy-drm
