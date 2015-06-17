@@ -7,18 +7,21 @@ CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/arm-trusted-firmware"
 	"chromiumos/platform/vboot_reference"
 	"chromiumos/third_party/coreboot/blobs"
+	"chromiumos/third_party/cbootimage"
 )
 CROS_WORKON_LOCALNAME=(
 	"coreboot"
 	"arm-trusted-firmware"
 	"../platform/vboot_reference"
 	"coreboot/3rdparty"
+	"cbootimage"
 )
 CROS_WORKON_DESTDIR=(
 	"${S}"
 	"${S}/3rdparty/arm-trusted-firmware"
 	"${S}/3rdparty/vboot"
 	"${S}/3rdparty/blobs"
+	"${S}/util/nvidia/cbootimage"
 )
 
 inherit cros-board cros-workon toolchain-funcs
