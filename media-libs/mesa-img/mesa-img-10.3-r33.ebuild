@@ -168,6 +168,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/0001-GL_EXT_robustness-entry-points.patch
 	epatch "${FILESDIR}"/0049-egl-dri-Add-a-bad-access-error-code-to-the-DRI-inter.patch
 	epatch "${FILESDIR}"/0050-dri-Add-MT12-DRI-fourcc.patch
+	epatch "${FILESDIR}"/0046-GL_KHR_robustness-entry-points.patch
+	epatch "${FILESDIR}"/0030-GL_KHR_blend_equation_advanced-entry-points.patch
 
 	base_src_prepare
 
