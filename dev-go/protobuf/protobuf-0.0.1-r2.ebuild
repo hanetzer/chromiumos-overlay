@@ -13,7 +13,6 @@ CROS_WORKON_DESTDIR="${S}/src/github.com/golang/protobuf"
 
 CROS_GO_PACKAGES=(
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go"
 )
 
 inherit cros-workon cros-go
@@ -29,3 +28,12 @@ RESTRICT="binchecks strip"
 
 DEPEND=""
 RDEPEND=""
+
+src_compile() {
+	cros_go build -v "github.com/golang/protobuf/protoc-gen-go"
+}
+
+src_install() {
+	dobin protoc-gen-go
+	cros-go_src_install
+}
