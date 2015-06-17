@@ -44,6 +44,10 @@ cros-go_src_install() {
 				local srcdir="${workspace}/src/${pkg}"
 				insinto "/usr/lib/gopath/src/${pkg}"
 
+				if [[ ! -d "${srcdir}" ]] ; then
+					die "Package not found: \"${pkg}\""
+				fi
+
 				local file
 				while read -d $'\0' -r file ; do
 					doins "${file}"
