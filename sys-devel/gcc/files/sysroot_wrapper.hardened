@@ -374,6 +374,13 @@ if invoke_clang and not skip_clang:
   else:
     clang_cmdline += ['-target', arch]
 
+  # All armv7a systems are built with hardfp, unlike gcc, which has
+  # "-mfloat-abi" baked in compiler binaries in configuration phase, for clang,
+  # we share the same binary for all backends, so here we enfore hardfp via
+  # command line.
+  if arch == "armv7a-cros-linux-gnueabi":
+    clang_cmdline += ['-mfloat-abi=hard']
+
   if not clang_codegen:
     clang_cmdline.append('-fsyntax-only')
 
