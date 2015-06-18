@@ -23,10 +23,10 @@ REQUIRED_USE="wifi_bootstrapping? ( peerd )"
 
 IUSE_TESTS="
 	+tests_apmanager_CheckAPProcesses
+	+tests_buffet_PrivetInfo
+	+tests_buffet_PrivetSetupFlow
+	+tests_buffet_WebServerSanity
 	+tests_platform_CheckWiFiBootstrappingProcesses
-	+tests_privetd_PrivetInfo
-	+tests_privetd_PrivetSetupFlow
-	+tests_privetd_WebServerSanity
 "
 
 IUSE="${IUSE} ${IUSE_TESTS}"
