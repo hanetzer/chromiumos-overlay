@@ -153,6 +153,8 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-Implement-EGL_EXT_image_dma_buf_import.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
+	epatch "${FILESDIR}"/10.5-Mesa-Advertise-GL_OES_texture_-float-extensions-supp.patch
+	epatch "${FILESDIR}"/10.5-Mesa-Add-support-for-GL_OES_texture_-float-extension.patch
 
 	base_src_prepare
 
