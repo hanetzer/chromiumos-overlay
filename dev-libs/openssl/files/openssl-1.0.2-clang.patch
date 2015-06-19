@@ -1,0 +1,49 @@
+Fix openssl clang compilation error.
+
+"openssl-1.0.2" is not buildable using clang, the clang-assembler does
+not recognize some arm assembly.
+
+One of them is "ldrplb", this must be re-written to "ldrbpl" for clang-assmebler.
+Similarly, "vmov.32" must be re-writtent to "vmov". (see bug)
+
+Upstream CL 313e6ec1, which aims at providing support for
+Apple Ios contains fix for this. This CL is part of the upstream CL -
+313e6ec1.
+
+diff -U5 -r openssl-1.0.2a/crypto/bn/asm/armv4-gf2m.pl openssl-1.0.2a.new/crypto/bn/asm/armv4-gf2m.pl
+--- openssl-1.0.2a/crypto/bn/asm/armv4-gf2m.pl	2015-03-19 06:30:36.000000000 -0700
++++ openssl-1.0.2a.new/crypto/bn/asm/armv4-gf2m.pl	2015-06-18 17:09:19.806253552 -0700
+@@ -211,12 +211,12 @@
+ .fpu	neon
+ 
+ .align	5
+ .LNEON:
+ 	ldr		r12, [sp]		@ 5th argument
+-	vmov.32		$a, r2, r1
+-	vmov.32		$b, r12, r3
++	vmov		$a, r2, r1
++	vmov		$b, r12, r3
+ 	vmov.i64	$k48, #0x0000ffffffffffff
+ 	vmov.i64	$k32, #0x00000000ffffffff
+ 	vmov.i64	$k16, #0x000000000000ffff
+ 
+ 	vext.8		$t0#lo, $a, $a, #1	@ A1
+diff -U5 -r openssl-1.0.2a/crypto/modes/asm/ghash-armv4.pl openssl-1.0.2a.new/crypto/modes/asm/ghash-armv4.pl
+--- openssl-1.0.2a/crypto/modes/asm/ghash-armv4.pl	2015-03-19 06:30:36.000000000 -0700
++++ openssl-1.0.2a.new/crypto/modes/asm/ghash-armv4.pl	2015-06-18 17:08:11.251185168 -0700
+@@ -124,10 +124,15 @@
+ #include "arm_arch.h"
+ 
+ .text
+ .code	32
+ 
++#ifdef  __clang__
++#define ldrplb  ldrbpl
++#define ldrneb  ldrbne
++#endif
++
+ .type	rem_4bit,%object
+ .align	5
+ rem_4bit:
+ .short	0x0000,0x1C20,0x3840,0x2460
+ .short	0x7080,0x6CA0,0x48C0,0x54E0

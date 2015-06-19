@@ -63,6 +63,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-1.0.2-ipv6.patch
 		epatch "${FILESDIR}"/${PN}-1.0.2-s_client-verify.patch #472584
 		epatch "${FILESDIR}"/${PN}-1.0.2-blacklist-by-sha1.patch
+		epatch "${FILESDIR}"/${PN}-1.0.2-clang.patch
 
 		epatch_user #332661
 	fi
