@@ -24,6 +24,7 @@
 # - CHROMEBOOK
 # - CHROMEBOX
 # - REFERENCE
+# - OTHER
 doappid() {
 	# TODO(jdufault): Make the argument verification more strict once all of the
 	#                 doappid usage CLs land.
@@ -35,9 +36,10 @@ doappid() {
 	[[ ($# -eq 1 || $# -eq 2) && -n $1 ]] ||
 		die "Usage: ${FUNCNAME} <appid> <devicetype>"
 	[[ -z $2 || $2 == CHROMEBIT || $2 == CHROMEBASE || $2 == CHROMEBOOK ||
-		$2 == CHROMEBOX || $2 == REFERENCE ]] || die "Usage: ${FUNCNAME} \
+		$2 == CHROMEBOX || $2 == REFERENCE || $2 == OTHER ]] ||
+		die "Usage: ${FUNCNAME} \
 		<appid> <devicetype>, where <devicetype> is one of CHROMEBIT, \
-		CHROMEBASE, CHROMEBOOK, CHROMEBOX, REFERENCE (not $2)"
+		CHROMEBASE, CHROMEBOOK, CHROMEBOX, REFERENCE, OTHER (not $2)"
 	local appid=$1
 	local devicetype=$2
 
