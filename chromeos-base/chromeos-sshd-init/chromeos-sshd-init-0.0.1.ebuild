@@ -16,4 +16,7 @@ S="${WORKDIR}"
 src_install() {
 	insinto /usr/share/chromeos-ssh-config/init
 	doins "${FILESDIR}"/*.conf
+
+	insinto /etc/init
+	doins "${FILESDIR}"/*.conf.README
 }
