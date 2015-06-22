@@ -44,6 +44,10 @@ import os
 import re
 import sys
 
+# Get target architecture, 'armv7a-cros-linux-gnueabi' or
+# 'x86_64-cros-linux-gnu', etc.
+gcc_comp = os.path.basename(sys.argv[0])
+arch = '-'.join(gcc_comp.split('-')[0:-1])
 
 # Full hardening. Some/all of these may be discarded depending on
 # other flags.
@@ -148,6 +152,13 @@ else:
                            '-mno-movbe',])
   clang_unsupported_prefixes = ('-Wstrict-aliasing=', '-finline-limit=')
 
+  # clang with '-ftrapv' generates 'call __mulodi4', which is only implemented
+  # in compiler-rt library. However compiler-rt library only has i386/x86_64
+  # backends (see '/usr/lib/clang/3.7.0/lib/linux/libclang_rt.*'). Gcc, on the
+  # other hand, generate 'call __mulvdi3', which is implemented in libgcc. See
+  # bug chromium:503229.
+  clang_arm_options_to_be_discarded = set(['-ftrapv'])
+
   # Clang may use different options for the same or similar functionality.
   gcc_to_clang = {
       '-Wno-error=unused-but-set-variable': '-Wno-error=unused-variable',
@@ -186,7 +197,8 @@ else:
         continue
       elif flag in gcc_to_clang.keys():
         clang_cmdline.append(gcc_to_clang[flag])
-      else:
+      elif (not (arch == 'armv7a-cros-linux-gnueabi' and
+                 flag in clang_arm_options_to_be_discarded)):
         clang_cmdline.append(flag)
     gcc_cmdline.append(flag)
 
@@ -359,8 +371,6 @@ if invoke_clang and not skip_clang:
     clang_comp += '++'
 
   # Specify the target for clang.
-  gcc_comp = os.path.basename(sys.argv[0])
-  arch = '-'.join(gcc_comp.split('-')[0:-1])
   linker = arch + '-ld'
   linker_path = get_linker_path(linker)
   clang_cmdline += ['-B' + linker_path]
