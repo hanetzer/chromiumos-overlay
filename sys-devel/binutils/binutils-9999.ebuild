@@ -4,7 +4,7 @@
 EAPI="4"
 
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
-NEXT_BINUTILS=cros/mobile_toolchain_v18_release_branch
+NEXT_BINUTILS=cros/binutils-2_25-google
 
 inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-constants cros-workon
 
@@ -83,6 +83,12 @@ src_unpack() {
 			einfo "  TREEHASH= \"${CROS_WORKON_TREE}\""
 		fi
 		cros-workon_src_unpack
+		# cros_workon_src_unpack set vcsid (the version hash) to
+		# cros/master, this is not correct when we override
+		# GITHASH. Correct VCSID here.
+		if use next_binutils ; then
+			export VCSID=${CROS_WORKON_COMMIT}
+		fi
 	fi
 
 	mkdir -p "${MY_BUILDDIR}"
