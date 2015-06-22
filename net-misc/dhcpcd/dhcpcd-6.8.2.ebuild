@@ -43,7 +43,7 @@ src_prepare()
 	epatch "${FILESDIR}"/patches/${P}-Improve-debugability.patch
 	epatch "${FILESDIR}"/patches/${P}-Add-DBus-RPC-support.patch
 	epatch "${FILESDIR}"/patches/${P}-ChromiumOS-DHCPv6-support.patch
-	epatch "${FILESDIR}"/patches/${P}-ChromiumOS-fix-env.patch
+	epatch "${FILESDIR}"/patches/${P}-UPSTREAM-Zero-Length-Embedded-Option.patch
 }
 
 src_configure()
