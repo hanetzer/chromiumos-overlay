@@ -52,6 +52,7 @@ ALL_BOARDS=(
 	bobcat
 	bolt
 	bruteus
+	buddy
 	#buranku
 	butterfly
 	butterfly_freon
