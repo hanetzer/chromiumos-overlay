@@ -44,7 +44,6 @@ SERVER_IUSE_TESTS="
 		)
 	)
 	+tests_display_EdidStress
-	+tests_display_EndToEnd
 	+tests_display_HDCPScreen
 	+tests_display_HotPlugAtBoot
 	+tests_display_HotPlugAtSuspend
