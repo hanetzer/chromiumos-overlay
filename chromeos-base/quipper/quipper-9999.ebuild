@@ -59,6 +59,7 @@ platform_pkg_test() {
 		perf_reader_test
 		perf_recorder_test
 		perf_serializer_test
+		perf_stat_parser_test
 		run_command_test
 		scoped_temp_path_test
 		utils_test
