@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=ChromeOS auth virtual package. This package will RDEPEND on the actual package that installs the ChromeOS PAM configs.
+EAPI=4
+HOMEPAGE=http://src.chromium.org
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=chromeos-base/chromeos-auth-config
+SLOT=0
+_md5_=432998b76c2dee5d88f3b27dd74a027e
