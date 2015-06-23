@@ -1,6 +1,6 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-libs/libevent/libevent-2.0.21-r2.ebuild,v 1.1 2014/06/13 21:28:12 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/dev-libs/libevent/libevent-2.0.22.ebuild,v 1.10 2015/01/16 08:08:37 ago Exp $
 
 EAPI=5
 inherit eutils libtool multilib-minimal
@@ -9,14 +9,14 @@ MY_P="${P}-stable"
 
 DESCRIPTION="A library to execute a function when a specific event occurs on a file descriptor"
 HOMEPAGE="http://libevent.org/"
-SRC_URI="mirror://github/${PN}/${PN}/${MY_P}.tar.gz"
+SRC_URI="mirror://sourceforge/levent/files/${MY_P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="*"
 IUSE="debug +ssl static-libs test +threads"
 
-DEPEND="ssl? ( dev-libs/openssl[${MULTILIB_USEDEP}] )"
+DEPEND="ssl? ( >=dev-libs/openssl-1.0.1h-r2[${MULTILIB_USEDEP}] )"
 RDEPEND="
 	${DEPEND}
 	!<=dev-libs/9libs-1.0
@@ -35,7 +35,7 @@ src_prepare() {
 
 	# This patch is unique to Chromium OS until we can sort out:
 	# https://github.com/libevent/libevent/pull/142
-	epatch "${FILESDIR}"/${P}-libevent-shrink.patch
+	epatch "${FILESDIR}"/${PN}-2.0.21-libevent-shrink.patch
 
 	# don't waste time building tests/samples
 	# https://github.com/libevent/libevent/pull/143
