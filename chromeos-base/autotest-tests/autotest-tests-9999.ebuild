@@ -123,7 +123,6 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_StorageWearoutDetect
 	+tests_hardware_TouchScreenPowerCycles
 	tests_hardware_TouchScreenPresent
-	+tests_hardware_Trackpad
 	+tests_hardware_TrackpadFunction
 	+tests_hardware_TrimIntegrity
 	+tests_hardware_VideoDecodeCapable
