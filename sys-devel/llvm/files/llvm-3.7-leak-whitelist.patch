@@ -37,7 +37,7 @@ new file mode 100644
 index 0000000..91aa484
 --- /dev/null
 +++ b/llvm/projects/compiler-rt/lib/lsan/lsan_default_suppression.h
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +namespace __lsan {
 +
 +char kLSanDefaultSuppressions[] =
@@ -61,6 +61,8 @@ index 0000000..91aa484
 +// xrandr leak. http://crbug.com/119677
 +"leak:XRRFindDisplay\n"
 +
++// leak on buffet. http://crbug.com/473700
++"leak:/usr/bin/buffet\n"
 +// End of suppressions.
 +;  // Please keep this semicolon.
 +}
