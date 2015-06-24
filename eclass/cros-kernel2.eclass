@@ -469,6 +469,7 @@ CONFIG_RESOURCE_COUNTERS=y
 CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
 CONFIG_MACVLAN=y
 CONFIG_POSIX_MQUEUE=y
+CONFIG_BRIDGE_NETFILTER=y
 "
 
 # Firmware binaries selected by USE flags.  Selected firmware binaries will
