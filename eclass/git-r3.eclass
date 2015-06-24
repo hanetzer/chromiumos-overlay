@@ -412,7 +412,8 @@ git-r3_fetch() {
 		einfo "Fetching ${remote_ref} from ${r} ..."
 
 		local is_branch lookup_ref
-		if [[ ${remote_ref} == refs/heads/* || ${remote_ref} == HEAD ]]
+		if [[ ( ${remote_ref} == refs/* && ${remote_ref} != refs/tags/* ) \
+		      || ${remote_ref} == HEAD ]]
 		then
 			is_branch=1
 			lookup_ref=${remote_ref}
