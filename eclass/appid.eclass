@@ -26,20 +26,12 @@
 # - REFERENCE
 # - OTHER
 doappid() {
-	# TODO(jdufault): Make the argument verification more strict once all of the
-	#                 doappid usage CLs land.
-	# Here are the changes to make the argument processing more strict:
-	# -The usage check should be replaced with:
-	#   [[ $# -eq 2 && -n $1 && -n $2 ]] ||
-	# -The devicetype check should have the -z $2 removed.
-
-	[[ ($# -eq 1 || $# -eq 2) && -n $1 ]] ||
+	[[ $# -eq 2 && -n $1 && -n $2 ]] ||
 		die "Usage: ${FUNCNAME} <appid> <devicetype>"
-	[[ -z $2 || $2 == CHROMEBIT || $2 == CHROMEBASE || $2 == CHROMEBOOK ||
+	[[ $2 == CHROMEBIT || $2 == CHROMEBASE || $2 == CHROMEBOOK ||
 		$2 == CHROMEBOX || $2 == REFERENCE || $2 == OTHER ]] ||
-		die "Usage: ${FUNCNAME} \
-		<appid> <devicetype>, where <devicetype> is one of CHROMEBIT, \
-		CHROMEBASE, CHROMEBOOK, CHROMEBOX, REFERENCE, OTHER (not $2)"
+		die "Usage: ${FUNCNAME} <appid> <devicetype>, where <devicetype> is one of \
+CHROMEBIT, CHROMEBASE, CHROMEBOOK, CHROMEBOX, REFERENCE, OTHER (not $2)"
 	local appid=$1
 	local devicetype=$2
 
