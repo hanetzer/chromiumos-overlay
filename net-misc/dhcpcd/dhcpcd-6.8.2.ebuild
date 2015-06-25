@@ -65,6 +65,8 @@ src_configure()
 		${dev} \
 		CC="$(tc-getCC)" \
 		${hooks}
+	# Update DUID file path so it is writable by dhcp user.
+	echo '#define DUID DBDIR "/" PACKAGE ".duid"' >> "${S}/config.h"
 }
 
 src_install()
