@@ -51,11 +51,11 @@ CONFIG_PLATFORM_USES_FSP=y
 
 # SPI Descriptor
 CONFIG_HAVE_IFD_BIN=y
-CONFIG_IFD_BIN_PATH="3rdparty/blobs/mainboard/intel/kunimitsu/descriptor.bin"
+CONFIG_IFD_BIN_PATH="3rdparty/blobs/mainboard/intel/kunimitsu/d0/descriptor.bin"
 
 # Management Engine
 CONFIG_HAVE_ME_BIN=y
-CONFIG_ME_BIN_PATH="3rdparty/blobs/mainboard/intel/kunimitsu/me.bin"
+CONFIG_ME_BIN_PATH="3rdparty/blobs/mainboard/intel/kunimitsu/d0/me.bin"
 
 # Video
 CONFIG_FRAMEBUFFER_KEEP_VESA_MODE=y
