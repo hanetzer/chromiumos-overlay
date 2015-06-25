@@ -17,7 +17,7 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x dhcpv6"
+IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x dhcpv6 chromeos_dbus"
 KEYWORDS="*"
 
 RDEPEND="
