@@ -71,6 +71,7 @@ RDEPEND="${RDEPEND}
 
 # Needed to run setup crossdev, run build scripts, and make a bootable image.
 RDEPEND="${RDEPEND}
+	app-arch/lz4
 	app-arch/lzop
 	app-arch/pigz
 	app-admin/sudo

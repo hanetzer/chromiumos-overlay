@@ -660,6 +660,7 @@ emit_its_script() {
 	local kernel_arch=${CHROMEOS_KERNEL_ARCH:-$(tc-arch-kernel)}
 	local image_name
 	local iter=1
+	local compression="none"
 	local its_out=${1}
 	shift
 	local kernel_path=${1}
@@ -668,6 +669,7 @@ emit_its_script() {
 	case ${kernel_arch} in
 		arm64)
 			image_name="arch/${kernel_arch}/boot/Image"
+			compression="lz4"
 			;;
 		mips)
 			image_name="vmlinuz.bin"
@@ -676,6 +678,14 @@ emit_its_script() {
 			image_name="arch/${kernel_arch}/boot/zImage"
 			;;
 	esac
+
+	if [[ "${compression}" == "lzma" ]]; then
+		lzma -9 -z -f -k "${kernel_path}/${image_name}" || die
+		image_name="${image_name}.lzma"
+	elif [[ "${compression}" == "lz4" ]]; then
+		lz4 -20 -z -f "${kernel_path}/${image_name}" || die
+		image_name="${image_name}.lz4"
+	fi
 
 	cat > "${its_out}" <<-EOF || die
 	/dts-v1/;
@@ -690,7 +700,7 @@ emit_its_script() {
 				type = "kernel_noload";
 				arch = "${kernel_arch}";
 				os = "linux";
-				compression = "none";
+				compression = "${compression}";
 				load = <0>;
 				entry = <0>;
 			};
