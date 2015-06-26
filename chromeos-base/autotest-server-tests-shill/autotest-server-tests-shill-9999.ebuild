@@ -44,6 +44,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_DisableEnable
 	+tests_network_WiFi_DisconnectClearsIP
 	+tests_network_WiFi_DTIMPeriod
+	+tests_network_WiFi_FastReconnectInDarkResume
 	+tests_network_WiFi_GTK
 	+tests_network_WiFi_HiddenRemains
 	+tests_network_WiFi_HiddenScan
