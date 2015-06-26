@@ -30,6 +30,14 @@ src_compile() {
 	emake BOARD="${PUNYARCH}"
 }
 
+# Exclude punybench from clang build. Clang generates deprecated symbol
+# "mcount", resulting in unresolved symbol error. Upstream bug -
+# https://llvm.org/bugs/show_bug.cgi?id=23969
+cros_pre_src_prepare_use_gcc() {
+	cros_use_gcc
+	filter_clang_syntax
+}
+
 src_configure() {
 	cros-workon_src_configure
 }
