@@ -80,6 +80,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_VisibleScan
 	+tests_network_WiFi_WakeOnDisconnect
 	+tests_network_WiFi_WakeOnSSID
+	+tests_network_WiFi_WakeOnWiFiThrottling
 	+tests_network_WiFi_WoWLAN
 	+tests_network_WiFi_WMM
 "
