@@ -1,0 +1,26 @@
+From 9991802fffecf9181052a7bbd78868f4835e5f30 Mon Sep 17 00:00:00 2001
+From: Milton Chiang <milton.chiang@mediatek.com>
+Date: Tue, 5 May 2015 17:18:17 +0800
+Subject: [PATCH] ARM: Use generic assembly nop and barrier code for armv8-a
+
+Signed-off-by: Milton Chiang <milton.chiang@mediatek.com>
+---
+ arch/arch-arm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arch-arm.h b/arch/arch-arm.h
+index bab886e..93268d2 100644
+--- a/arch/arch-arm.h
++++ b/arch/arch-arm.h
+@@ -25,7 +25,7 @@
+ #define nop             __asm__ __volatile__("mov\tr0,r0\t@ nop\n\t")
+ #define read_barrier()	__asm__ __volatile__ ("" : : : "memory")
+ #define write_barrier()	__asm__ __volatile__ ("" : : : "memory")
+-#elif defined(__ARM_ARCH_7A__)
++#elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_8A__)
+ #define	nop		__asm__ __volatile__ ("nop")
+ #define read_barrier()	__sync_synchronize()
+ #define write_barrier()	__sync_synchronize()
+-- 
+2.4.3.573.g4eafbef
+
