@@ -72,6 +72,7 @@ src_configure() {
 		$(use_enable libkms)
 		$(use_enable manpages)
 		$(use_enable udev)
+		--disable-cairo-tests
 	)
 	xorg-2_src_configure
 }
