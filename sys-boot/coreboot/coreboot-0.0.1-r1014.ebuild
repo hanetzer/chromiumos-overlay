@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT=("59a0bcd97e8d0f5ce5ac1301910e11b01e2d24b1" "84f95bed549eab4ca40fbd0505e0e3720384880c" "dc600e8b129327e4f5a8cfbbe5343630f0f65b68" "5f33d05693f14d13a532b465ac01bfcc6134cb61" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("ea6a5a45d8a2822e3731a82ed38dfaa2254ce976" "024e625474533cb0bd8928dae8321be9060736db" "cb741d3b7a0475e0837748036a77bc3e5dfdce5b" "9094872ac0fbbd14102aa98872b35d298bafdf91" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("4bdfffe515d9beebad77ae07fd3aeaf11ad9623d" "84f95bed549eab4ca40fbd0505e0e3720384880c" "dc600e8b129327e4f5a8cfbbe5343630f0f65b68" "5f33d05693f14d13a532b465ac01bfcc6134cb61" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("70034914dfaabbba20848684e9003476d36a6d29" "024e625474533cb0bd8928dae8321be9060736db" "cb741d3b7a0475e0837748036a77bc3e5dfdce5b" "9094872ac0fbbd14102aa98872b35d298bafdf91" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -76,6 +76,12 @@ src_prepare() {
 		done < <(find "${privdir}" -maxdepth 1 -mindepth 1 -print0)
 	fi
 
+	for blob in mrc.bin mrc.elf efi.elf; do
+		if [[ -r "${SYSROOT}/firmware/${blob}" ]]; then
+			cp "${SYSROOT}/firmware/${blob}" 3rdparty/blobs/
+		fi
+	done
+
 	local board=$(get_current_board_with_variant)
 	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
@@ -103,12 +109,6 @@ src_prepare() {
 			echo "CONFIG_BOARD_ID_STRING=\"${BOARD_USE}\"" >> .config
 		fi
 	fi
-
-	# Replace the hard coded /build/<board>/ in the config with the actual
-	# sysroot.
-	# TODO: crbug.com/388888 coreboot configs should not hardcode the
-	# sysroot path.
-	sed -i 's#/build/[^/]*#${SYSROOT}#' .config || die
 
 	if use rmt; then
 		echo "CONFIG_MRC_RMT=y" >> .config
