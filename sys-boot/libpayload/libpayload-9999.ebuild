@@ -23,31 +23,25 @@ inherit cros-workon cros-board toolchain-funcs
 
 src_compile() {
 	tc-getCC
+	local src_root="payloads/libpayload"
 	local board=$(get_current_board_with_variant)
 
-	# Firmware related binaries are compiled with a 32-bit toolchain
-	# on 64-bit platforms
-	if use amd64 ; then
-		export CROSS_COMPILE="i686-pc-linux-gnu-"
-		export CC="${CROSS_COMPILE}gcc"
-	else
-		export CROSS_COMPILE=${CHOST}-
-	fi
+	# Export the known cross compilers so there isn't a reliance
+	# on what the default profile is for exporting a compiler. The
+	# reasoning is that the firmware may need more than one to build
+	# and boot.
+	export CROSS_COMPILE_i386="i686-pc-linux-gnu-"
+	# For coreboot.org upstream architecture naming.
+	export CROSS_COMPILE_x86="i686-pc-linux-gnu-"
+	export CROSS_COMPILE_mipsel="mipsel-cros-linux-gnu-"
+	# aarch64: used on chromeos-2013.04
+	export CROSS_COMPILE_aarch64="aarch64-cros-linux-gnu-"
+	# arm64: used on coreboot upstream
+	export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
+	export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
 
-	local extra_flags="-ffunction-sections"
-	if use x86 || use amd64 ; then
-		extra_flags+=" -mpreferred-stack-boundary=2"
-	elif use arm || use arm64 ; then
-		# Export the known cross compilers for ARM systems. Include
-		# both v7a and 64-bit armv8 compilers so there isn't a reliance
-		# on what the default profile is for exporting a compiler. The
-		# reasoning is that the firmware may need both to build and
-		# and boot.
-		export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
-		export CROSS_COMPILE_arm="armv7a-cros-linux-gnu-"
-	fi
+	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
 
-	local libpayloaddir="payloads/libpayload"
 	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
@@ -57,20 +51,22 @@ src_compile() {
 	[ -f "${board_config}" ] || die "${board_config} does not exist"
 
 	# get into the source directory
-	pushd "${libpayloaddir}"
+	pushd "${src_root}"
 
 	# nuke build artifacts potentially present in the source directory
 	emake distclean
+
+	# Configure and build
 	cp "${board_config}" .config
-	emake oldconfig
-	emake obj="build" EXTRA_CFLAGS="${extra_flags}"
+	yes "" | emake oldconfig
+	emake obj="build"
 	cp .config build
 
 	# Build a second set of libraries with GDB support for developers
 	cp "${board_config}" .config
 	sed -i "s/# CONFIG_LP_REMOTEGDB is not set/CONFIG_LP_REMOTEGDB=y/" .config
-	emake oldconfig
-	emake obj="build_gdb" EXTRA_CFLAGS="${extra_flags}"
+	yes "" | emake oldconfig
+	emake obj="build_gdb"
 	cp .config build_gdb
 
 	popd
@@ -78,49 +74,48 @@ src_compile() {
 
 install_libpayload() {
 	local suffix="$1"
-	local src_root="payloads/libpayload/"
+	local src_root="payloads/libpayload"
 	local build_root="${src_root}/build${suffix}"
 	local destdir="/firmware/libpayload${suffix}"
-
 	local archdir=""
 
 	if [[ -n "${CHROMEOS_LIBPAYLOAD_ARCH_DIR}" ]] ; then
 	      	archdir="${CHROMEOS_LIBPAYLOAD_ARCH_DIR}"
 	else
-		case ${ARCH} in
+		case "${ARCH}" in
 		amd64) archdir="x86";;
 		*) archdir=${ARCH};;
 		esac
 	fi
 
-	insinto "${destdir}"/lib
-	doins "${build_root}"/libpayload.a
-	if [ -f "${src_root}"/lib/libpayload.ldscript ]; then
-		doins "${src_root}"/lib/libpayload.ldscript
+	insinto ${destdir}/lib
+	doins ${build_root}/libpayload.a
+	if [ -f ${src_root}/lib/libpayload.ldscript ]; then
+		doins ${src_root}/lib/libpayload.ldscript
 	fi
-	if [ -f "${src_root}"/arch/${archdir}/libpayload.ldscript ]; then
-		doins "${src_root}"/arch/${archdir}/libpayload.ldscript
+	if [ -f ${src_root}/arch/${archdir}/libpayload.ldscript ]; then
+		doins ${src_root}/arch/${archdir}/libpayload.ldscript
 	fi
 
-	insinto "${destdir}"/lib/"${archdir}"
-	doins "${build_root}"/head.o
+	insinto ${destdir}/lib/${archdir}
+	doins ${build_root}/head.o
 
-	insinto "${destdir}"/include
-	doins "${build_root}"/libpayload-config.h
+	insinto ${destdir}/include
+	doins ${build_root}/libpayload-config.h
 	for file in `cd ${src_root} && find include -name *.h -type f`; do \
-		insinto "${destdir}"/`dirname ${file}`; \
-		doins "${src_root}"/"${file}"; \
+		insinto ${destdir}/`dirname ${file}`; \
+		doins ${src_root}/${file}; \
 	done
 
-	exeinto "${destdir}"/bin
-	insinto "${destdir}"/bin
-	doexe "${src_root}"/bin/lpgcc
-	doexe "${src_root}"/bin/lpas
-	doins "${src_root}"/bin/lp.functions
+	exeinto ${destdir}/bin
+	insinto ${destdir}/bin
+	doexe ${src_root}/bin/lpgcc
+	doexe ${src_root}/bin/lpas
+	doins ${src_root}/bin/lp.functions
 
-	insinto "${destdir}"
-	newins "${src_root}"/.xcompile libpayload.xcompile
-	newins "${build_root}"/.config libpayload.config
+	insinto ${destdir}
+	newins ${src_root}/.xcompile libpayload.xcompile
+	newins ${build_root}/.config libpayload.config
 }
 
 src_install() {
