@@ -20,4 +20,6 @@ src_install() {
 	insinto /firmware/coreboot-private/3rdparty/blobs/mainboard/google/${board}
 	doins mts_preboot_si
 	doins mts_si
+	newins mts_preboot_si preboot_cr.bin
+	newins mts_si mts_cr.bin
 }
