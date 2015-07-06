@@ -291,9 +291,10 @@ RDEPEND="${RDEPEND}
 	>=app-misc/ca-certificates-20090709-r6
 	"
 
-# Host dependencies that are needed for delta_generator.
+# Host dependencies that are needed for cros_generate_update_payload.
 RDEPEND="${RDEPEND}
 	chromeos-base/update_engine
+	sys-fs/e2tools
 	"
 
 # Host dependencies to run unit tests within the chroot
