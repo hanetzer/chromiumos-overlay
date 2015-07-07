@@ -17,6 +17,7 @@ RDEPEND="
 	!<chromeos-base/autotest-chrome-0.0.1-r1788
 	!<chromeos-base/autotest-tests-0.0.1-r3291
 	!<chromeos-base/autotest-deps-0.0.2
+	virtual/autotest-libs
 "
 
 # We don't want Python on the base image, however, there're several base
