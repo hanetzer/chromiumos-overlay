@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile configure info install prepare setup test unpack
+DEPEND=>=dev-embedded/libftdi-0.18 dev-python/numpy dev-python/pexpect dev-python/pyserial dev-python/pyusb virtual/libusb:1 app-misc/screen app-text/htmltidy dev-vcs/git python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) dev-lang/python-exec:2[python_targets_python2_7(-)?,-python_single_target_python2_7(-)] virtual/pkgconfig
+DESCRIPTION=Software to communicate with servo/miniservo debug boards
+EAPI=4
+IUSE=cros_host cros_host cros_workon_tree_a783dd88cb4cf6fbf95a02da3558e2e199e923db profiling python_targets_python2_7
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=>=dev-embedded/libftdi-0.18 dev-python/numpy dev-python/pexpect dev-python/pyserial dev-python/pyusb virtual/libusb:1 app-misc/screen python_targets_python2_7? ( >=dev-lang/python-2.7.3-r2:2.7 ) dev-lang/python-exec:2[python_targets_python2_7(-)?,-python_single_target_python2_7(-)]
+REQUIRED_USE=|| ( python_targets_python2_7 )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	distutils-r1	c01d5c4af34f4a37a51fc9638299c222	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multibuild	6d4858dc00f8bc51caf3f957f8430eb0	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	python-r1	331701099758706863819fe3ff6ddc8a	python-utils-r1	42cc5b750abbcf9d4389848380bbef91	toolchain-funcs	95c4dad3f5198d5d2424243926d47899	udev	a9a8d051efb42bfe884c1db82ce161de
+_md5_=467d0f22070f671379ad50fa4e6ee229
