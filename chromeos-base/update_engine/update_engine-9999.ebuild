@@ -31,7 +31,6 @@ COMMON_DEPEND="app-arch/bzip2
 	dev-libs/dbus-glib
 	dev-libs/expat
 	dev-libs/glib
-	dev-libs/libpcre
 	dev-libs/openssl
 	dev-libs/protobuf
 	dev-util/bsdiff
