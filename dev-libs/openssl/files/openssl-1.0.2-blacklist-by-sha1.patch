@@ -10,9 +10,9 @@ TEST=`FEATURES=test emerge openssl`
 
 --- a/crypto/x509/x509_vfy.c
 +++ b/crypto/x509/x509_vfy.c
-@@ -150,6 +150,126 @@ static int x509_subject_cmp(X509 **a, X509 **b)
-     }
- #endif
+@@ -150,6 +150,125 @@
+     return xtmp;
+ }
  
 +/* A version of fgets() that returns the first sz - 1 characters of the next
 + * line from 'in'. The rest of the line is discarded. */
@@ -125,22 +125,22 @@ TEST=`FEATURES=test emerge openssl`
 +	int i;
 +	X509 *x;
 +
-+	for (i = 0; i < ctx->last_untrusted; i++)
-+		{
++	for (i = 0; i < ctx->last_untrusted; i++) {
 +		x = sk_X509_value(ctx->chain, i);
 +		if (is_blacklisted(x))
 +			return 0;
-+		}
++	}
 +	return 1;
 +}
 +
  int X509_verify_cert(X509_STORE_CTX *ctx)
-     {
-     X509 *x,*xtmp,*chain_ss=NULL;
-@@ -307,6 +427,13 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
+ {
+     X509 *x, *xtmp, *xtmp2, *chain_ss = NULL;
+@@ -307,6 +426,14 @@ int X509_verify_cert(X509_STORE_CTX *ctx)
+         }
  
-     /* we now have our chain, lets check it... */
- 
+         /* we now have our chain, lets check it... */
++
 +	ok = check_blacklist(ctx);
 +
 +	if (!ok) {
@@ -148,9 +148,9 @@ TEST=`FEATURES=test emerge openssl`
 +		goto end;
 +	}
 +
-     i = check_trust(ctx);
+         i = check_trust(ctx);
  
-     /* If explicitly rejected error */
+         /* If explicitly rejected error */
 --- a/test/Makefile
 +++ b/test/Makefile
 @@ -218,6 +218,10 @@
