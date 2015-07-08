@@ -57,8 +57,10 @@ src_install() {
 	doins client/dbus_proxy.h
 	insinto /usr/include/attestation/common
 	doins common/attestation_interface.h
-	doins "${OUT}"/gen/include/attestation/common/interface.pb.h
+	doins common/print_common_proto.h
+	doins common/print_interface_proto.h
 	doins "${OUT}"/gen/include/attestation/common/common.pb.h
+	doins "${OUT}"/gen/include/attestation/common/interface.pb.h
 	insinto /usr/share/protofiles/attestation
 	doins common/common.proto
 	doins common/interface.proto
