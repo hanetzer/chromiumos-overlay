@@ -5,5 +5,5 @@ HOMEPAGE=http://wireless.kernel.org/en/users/Drivers/ath10k/firmware
 KEYWORDS=*
 LICENSE=LICENSE.qca_firmware
 SLOT=0
-SRC_URI=http://github.com/kvalo/ath10k-firmware/archive/b46f3e01a6c1f9150fb4612ef53611d714565842.tar.gz -> ath10k-firmware-b46f3e.tar.gz
-_md5_=9f682f6f8db2becc057bed8161881456
+SRC_URI=http://github.com/kvalo/ath10k-firmware/archive/70c1d279b05e6e9a182d0034badf82536e7255f8.tar.gz -> ath10k-firmware-70c1d27.tar.gz
+_md5_=35df65622c4373cbd25d1a9e9f476e29
