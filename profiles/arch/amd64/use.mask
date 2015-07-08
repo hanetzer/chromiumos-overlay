@@ -94,7 +94,6 @@ doomsday
 
 # 2006/06/07 - Danny van Dyk <kugelfang@gentoo.org>
 # Profile cleanup: No info about these
-asm
 drac
 vidix
 
