@@ -1112,9 +1112,16 @@ cros-kernel2_src_install() {
 	# with the original filename.  e.g. we will install:
 	#  /lib/modules/3.8.11/vdso/vdso32-syscall.so/linux-gate.so
 	if use x86 || use amd64; then
-		local d f soname
+		local vdso_dir d f soname
+		vdso_dir="$(cros-workon_get_build_dir)/arch/x86/vdso"
+		if [[ ! -d ${vdso_dir} ]]; then
+			# Use new path with newer (>= v4.2-rc1) kernels
+			vdso_dir="$(cros-workon_get_build_dir)/arch/x86/entry/vdso"
+		fi
+		[[ -d ${vdso_dir} ]] || die "could not find x86 vDSO dir"
+
 		# Use the debug versions (.so.dbg) so portage can run splitdebug on them.
-		for f in "$(cros-workon_get_build_dir)/arch/x86/vdso"/vdso*.so.dbg; do
+		for f in "${vdso_dir}"/vdso*.so.dbg; do
 			d="/lib/modules/${version}/vdso/${f##*/}"
 
 			exeinto "${d}"
