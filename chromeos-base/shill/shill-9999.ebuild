@@ -60,7 +60,7 @@ get_dependent_services() {
 	if use wifi || use wired_8021x; then
 		dependent_services+=(wpasupplicant)
 	fi
-	echo "started boot-services ${dependent_services[*]/#/and started }"
+	echo "started network-services ${dependent_services[*]/#/and started }"
 }
 
 src_install() {
