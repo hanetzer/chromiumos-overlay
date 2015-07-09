@@ -1,0 +1,13 @@
+--- laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
++++ laptop-mode-tools-1.59/usr/share/laptop-mode-tools/modules/wifi-nl80211-powermgmt
+@@ -3,7 +3,9 @@
+ if [ ! -x $IW ]; then
+     log "VERBOSE" "No $IW program, WiFi power setting is disabled."
+ elif [ x$CONTROL_WIFI_POWER = x1 ] ; then
+-    if [ $ON_AC -eq 1 ] ; then
++    if [ x$FORCE_WIFI_POWERSAVE = x1 ] ; then
++        power_mgmt="on"
++    elif [ $ON_AC -eq 1 ] ; then
+         power_mgmt="off"
+     else
+         power_mgmt="on"

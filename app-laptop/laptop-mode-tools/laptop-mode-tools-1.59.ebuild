@@ -13,7 +13,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="-acpi -apm bluetooth -hal -pmu -scsi"
+IUSE="-acpi -apm bluetooth -hal -pmu -scsi wifi_force_powersave"
 
 DEPEND=""
 
@@ -56,6 +56,7 @@ PATCHES=( "0001-Enabled-laptop-mode-power-management-control-of.patch" \
           "0027-ac-supply-not-battery.patch" \
           "0028-usb-autosuspend-on-ac.patch" \
           "0029-Enable-SATA-min_power-on-AC-mode.patch" \
+          "0030-Allow-WiFi-PowerSave-Override.patch" \
         )
 
 src_prepare() {
@@ -89,6 +90,9 @@ src_install() {
 
 	insinto /etc/laptop-mode/conf.d/board-specific
 	doins "${FILESDIR}/usb-autosuspend-cros.conf"
+	if use wifi_force_powersave ; then
+		doins "${FILESDIR}/wifi-force-powersave.conf"
+	fi
 
 	insinto /etc/init
 	doins "${FILESDIR}"/laptop-mode-boot.conf
