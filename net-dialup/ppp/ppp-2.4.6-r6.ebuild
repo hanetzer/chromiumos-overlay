@@ -37,6 +37,8 @@ src_prepare() {
 	epatch "${FILESDIR}/${P}-systemconfig.patch"
 	# Upstream fix for parsing options in config file (crbug.com/390709).
 	epatch "${FILESDIR}/${P}-options-fix.patch"
+	# Upstream fix for buffer overflow fix in radius (crbug.com/481874).
+	epatch "${FILESDIR}/${P}-buffer-overflow-in-radius.patch"
 
 	if use atm ; then
 		einfo "Enabling PPPoATM support"
