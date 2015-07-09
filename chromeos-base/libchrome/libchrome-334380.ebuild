@@ -7,7 +7,7 @@
 
 EAPI="4"
 CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto" "chromium/src/sandbox")
-CROS_WORKON_COMMIT=("23911a0c34e67963090f08eb01bb41cd84a63fb4" "d04f83ef62afd958fa243cc1434041cc02e1fbcf" "3b5d1294b3169b9b0152e9ab176544efd61f4866" "50337f60e1d99b85f1593ffc4ef32b9577720832")
+CROS_WORKON_COMMIT=("23911a0c34e67963090f08eb01bb41cd84a63fb4" "c1a556bff88c44a8273ba82f171c6a72e6c8ce0c" "3b5d1294b3169b9b0152e9ab176544efd61f4866" "50337f60e1d99b85f1593ffc4ef32b9577720832")
 CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto" "${S}/sandbox")
 CROS_WORKON_BLACKLIST="1"
 
