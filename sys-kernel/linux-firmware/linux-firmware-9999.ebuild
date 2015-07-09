@@ -51,6 +51,7 @@ IUSE_LINUX_FIRMWARE=(
 	cros-pd
 	fw_sst
 	fw_sst2
+	i915_skl
 	ibt-hw
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
@@ -69,6 +70,7 @@ LICENSE="
 	linux_firmware_cros-pd? ( BSD-Google )
 	linux_firmware_fw_sst? ( LICENCE.fw_sst )
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
+	linux_firmware_i915_skl? ( LICENSE.i915 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	linux_firmware_nvidia-xusb? ( LICENCE.nvidia )
@@ -124,6 +126,7 @@ src_install() {
 	use_fw cros-pd && doins_subdir cros-pd/*
 	use_fw fw_sst && doins_subdir intel/fw_sst*
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
+	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
