@@ -63,6 +63,14 @@ get_dependent_services() {
 	echo "started network-services ${dependent_services[*]/#/and started }"
 }
 
+load_cfg80211() {
+	if use wifi; then
+		echo "modprobe cfg80211"
+	else
+		echo true
+	fi
+}
+
 src_install() {
 	# Install libshill-net library.
 	insinto "/usr/$(get_libdir)/pkgconfig"
@@ -141,6 +149,10 @@ src_install() {
 		"s,@expected_started_services@,$(get_dependent_services)," \
 		init/shill.conf.in \
 		> "${D}/etc/init/shill.conf"
+	sed \
+		"s,@load_cfg80211@,$(load_cfg80211)," \
+		init/network-services.conf.in \
+		> "${D}/etc/init/network-services.conf"
 
 	udev_dorules udev/*.rules
 }
