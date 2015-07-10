@@ -26,6 +26,7 @@ src_install() {
 	find '(' -name '*.pyc' -o -name '*unittest.py' ')' -delete
 	rm -rf lib/datafiles/
 	rm -rf third_party/pyelftools/test
+	rm -rf mobmonitor
 }
 
 src_test() {
