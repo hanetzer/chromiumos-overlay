@@ -316,9 +316,6 @@ set_build_defines() {
 	case "${ARCH}" in
 	x86)
 		BUILD_DEFINES+=( target_arch=ia32 )
-		# TODO(vapier): Drop this once this lands:
-		# https://codereview.chromium.org/1142793003
-		append-flags -Wno-poison-system-directories
 		;;
 	arm)
 		BUILD_DEFINES+=(
