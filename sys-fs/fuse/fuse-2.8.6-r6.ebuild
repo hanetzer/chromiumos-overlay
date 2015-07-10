@@ -3,7 +3,7 @@
 # $Header: /var/cvsroot/gentoo-x86/sys-fs/fuse/fuse-2.8.5.ebuild,v 1.11 2011/07/26 00:09:54 zmedico Exp $
 
 EAPI=3
-inherit eutils libtool linux-info
+inherit eutils libtool linux-info fcaps
 
 MY_P=${P/_/-}
 DESCRIPTION="An interface for filesystems implemented in userspace."
@@ -38,6 +38,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/fuse-2.8.6-user-option.patch
 	epatch "${FILESDIR}"/fuse-2.8.6-kernel-types.patch
 	epatch "${FILESDIR}"/fuse-2.8.6-fix-gnusource.patch
+	epatch "${FILESDIR}"/fuse-2.8.6-remove-setuid.patch
 
 	elibtoolize
 }
@@ -86,4 +87,8 @@ src_install() {
 		#
 		user_allow_other
 	EOF
+}
+
+pkg_postinst() {
+	fcaps cap_sys_admin usr/bin/fusermount
 }
