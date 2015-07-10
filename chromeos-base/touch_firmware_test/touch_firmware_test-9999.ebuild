@@ -33,7 +33,7 @@ src_install() {
 
 	# install the webplot script
 	exeinto /usr/local/bin
-	newexe webplot.sh webplot
+	newexe webplot/chromeos_wrapper.sh webplot
 
 	# install to autotest deps directory for dependency
 	DESTDIR="${D}${AUTOTEST_BASE}/client/deps/touchpad-tests/touch_firmware_test"
