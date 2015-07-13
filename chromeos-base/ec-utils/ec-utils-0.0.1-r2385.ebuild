@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="-asan -clang"
+IUSE="-asan -clang static"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND="dev-embedded/libftdi"
@@ -47,7 +47,7 @@ src_compile() {
 	# and we may want to build it so it can
 	# be executed on target devices (i.e., arm/x86/amd64), not the build
 	# host (BUILDCC, amd64). So we need to override HOSTCC by target "CC".
-	export HOSTCC="${CC}"
+	export HOSTCC="${CC} $(usex static '-static' '')"
 	set_board
 	emake utils-host
 }
