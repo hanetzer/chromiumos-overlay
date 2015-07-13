@@ -42,8 +42,6 @@ src_compile() {
 	export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
 	export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
 
-	elog "Toolchain:\n$(sh util/xcompile/xcompile)\n"
-
 	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
@@ -60,67 +58,22 @@ src_compile() {
 
 	# Configure and build
 	cp "${board_config}" .config
-	yes "" | emake oldconfig
+	yes "" | emake obj="build" oldconfig
 	emake obj="build"
-	cp .config build
 
 	# Build a second set of libraries with GDB support for developers
-	cp "${board_config}" .config
-	sed -i "s/# CONFIG_LP_REMOTEGDB is not set/CONFIG_LP_REMOTEGDB=y/" .config
-	yes "" | emake oldconfig
-	emake obj="build_gdb"
-	cp .config build_gdb
+	( cat .config; echo "CONFIG_LP_REMOTEGDB=y" ) > .config.gdb
+	yes "" | emake obj="build_gdb" DOTCONFIG=.config.gdb oldconfig
+	emake obj="build_gdb" DOTCONFIG=.config.gdb
 
 	popd
 }
 
-install_libpayload() {
-	local suffix="$1"
-	local src_root="payloads/libpayload"
-	local build_root="${src_root}/build${suffix}"
-	local destdir="/firmware/libpayload${suffix}"
-	local archdir=""
-
-	if [[ -n "${CHROMEOS_LIBPAYLOAD_ARCH_DIR}" ]] ; then
-	      	archdir="${CHROMEOS_LIBPAYLOAD_ARCH_DIR}"
-	else
-		case "${ARCH}" in
-		amd64) archdir="x86";;
-		*) archdir=${ARCH};;
-		esac
-	fi
-
-	insinto ${destdir}/lib
-	doins ${build_root}/libpayload.a
-	if [ -f ${src_root}/lib/libpayload.ldscript ]; then
-		doins ${src_root}/lib/libpayload.ldscript
-	fi
-	if [ -f ${src_root}/arch/${archdir}/libpayload.ldscript ]; then
-		doins ${src_root}/arch/${archdir}/libpayload.ldscript
-	fi
-
-	insinto ${destdir}/lib/${archdir}
-	doins ${build_root}/head.o
-
-	insinto ${destdir}/include
-	doins ${build_root}/libpayload-config.h
-	for file in `cd ${src_root} && find include -name *.h -type f`; do \
-		insinto ${destdir}/`dirname ${file}`; \
-		doins ${src_root}/${file}; \
-	done
-
-	exeinto ${destdir}/bin
-	insinto ${destdir}/bin
-	doexe ${src_root}/bin/lpgcc
-	doexe ${src_root}/bin/lpas
-	doins ${src_root}/bin/lp.functions
-
-	insinto ${destdir}
-	newins ${src_root}/.xcompile libpayload.xcompile
-	newins ${build_root}/.config libpayload.config
-}
-
 src_install() {
-	install_libpayload ""
-	install_libpayload "_gdb"
+	local src_root="payloads/libpayload"
+	pushd "${src_root}"
+
+	emake obj="build_gdb" DESTDIR="${D}/firmware" DOTCONFIG=.config.gdb install
+	mv "${D}/firmware/libpayload" "${D}/firmware/libpayload_gdb"
+	emake obj="build" DESTDIR="${D}/firmware" install
 }
