@@ -40,6 +40,10 @@ src_compile() {
 	export CROSS_COMPILE_arm64="aarch64-cros-linux-gnu-"
 	export CROSS_COMPILE_arm="armv7a-cros-linux-gnu- armv7a-cros-linux-gnueabi-"
 
+	# we have all kinds of userland-cruft in CFLAGS that has no place in firmware.
+	# coreboot ignores CFLAGS, libpayload doesn't, so prune it.
+	unset CFLAGS
+
 	if [[ ! -s "${FILESDIR}/configs/config.${board}" ]]; then
 		board=$(get_current_board_no_variant)
 	fi
