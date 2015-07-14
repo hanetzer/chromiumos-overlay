@@ -13,16 +13,30 @@ KEYWORDS="*"
 
 S="${WORKDIR}"
 
+IUSE="-generated_ssh_key"
+KEYSDIR="${FILESDIR}"
+
+generate_key_pair() {
+	einfo "Generating ssh key pair in ${S} ..."
+	ssh-keygen -t rsa -b 4096 -C "ChromeOS test key" -N "" \
+		-f "${S}"/testing_rsa
+	KEYSDIR="${S}"
+}
+
+src_compile() {
+	use generated_ssh_key && generate_key_pair
+}
+
 src_install() {
 	local install_dir=/usr/share/chromeos-ssh-config/keys
 
 	# Create authorized_keys file using all public keys
 	dodir "${install_dir}"
-	cat "${FILESDIR}"/*.pub > "${D}"/"${install_dir}"/authorized_keys || die
+	cat "${KEYSDIR}"/*.pub > "${D}"/"${install_dir}"/authorized_keys || die
 
 	# Install the SSH key files
 	insinto "${install_dir}"
-	newins "${FILESDIR}"/testing_rsa id_rsa
-	newins "${FILESDIR}"/testing_rsa.pub id_rsa.pub
+	newins "${KEYSDIR}"/testing_rsa id_rsa
+	newins "${KEYSDIR}"/testing_rsa.pub id_rsa.pub
 	fperms 600 "${install_dir}"/id_rsa
 }
