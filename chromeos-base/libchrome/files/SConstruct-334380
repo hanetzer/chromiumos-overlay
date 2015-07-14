@@ -231,8 +231,7 @@ base_libs = [
   {
     'name' : 'timers',
     'sources' : """
-                alarm_timer.cc
-                rtc_alarm.cc
+                alarm_timer_chromeos.cc
                 """,
     'prefix' : 'components/timers',
     'libs' : '',

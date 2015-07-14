@@ -6,9 +6,9 @@
 # the last change actually made to the base subdir.
 
 EAPI="4"
-CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto" "chromium/src/sandbox")
-CROS_WORKON_COMMIT=("23911a0c34e67963090f08eb01bb41cd84a63fb4" "c1a556bff88c44a8273ba82f171c6a72e6c8ce0c" "3b5d1294b3169b9b0152e9ab176544efd61f4866" "50337f60e1d99b85f1593ffc4ef32b9577720832")
-CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto" "${S}/sandbox")
+CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto" "chromium/src/sandbox" "chromium/src/components/timers")
+CROS_WORKON_COMMIT=("23911a0c34e67963090f08eb01bb41cd84a63fb4" "c1a556bff88c44a8273ba82f171c6a72e6c8ce0c" "3b5d1294b3169b9b0152e9ab176544efd61f4866" "50337f60e1d99b85f1593ffc4ef32b9577720832" "7eba189565d79f88e251fade32f85894c097135c")
+CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto" "${S}/sandbox" "${S}/components/timers")
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug flag-o-matic toolchain-funcs scons-utils
@@ -63,8 +63,6 @@ src_prepare() {
 	# This trips -Wnon-virtual-dtor warning on CrOS side.
 	# TODO(avakulenko): Remove this when Chrome version of this header is fixed.
 	epatch "${FILESDIR}"/base-${SLOT}-file-tracing-provider-virt-dtor.patch
-
-	cp -r "${FILESDIR}"/components .
 
 	# Add stub headers for a few files that are usually checked out to locations
 	# outside of base/ in the Chrome repository.
