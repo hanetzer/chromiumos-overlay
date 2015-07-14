@@ -19,12 +19,12 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE="ftdi_tpm test"
 
 RDEPEND="
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
-	cros_host? ( dev-embedded/libftdi )
+	ftdi_tpm? ( dev-embedded/libftdi )
 	"
 
 DEPEND="
