@@ -18,7 +18,7 @@ DESCRIPTION="Base library for Chromium OS"
 HOMEPAGE="http://dev.chromium.org/chromium-os/platform"
 SRC_URI=""
 
-LICENSE="BSD-Google BSD"
+LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="cros_host"
@@ -42,6 +42,7 @@ DEPEND="
 	${COMMON_DEPEND}
 	chromeos-base/protofiles
 	dev-cpp/gtest
+	dev-libs/modp_b64
 	test? (
 		app-shells/dash
 		dev-cpp/gmock
