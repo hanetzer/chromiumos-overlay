@@ -55,7 +55,9 @@ platform_pkg_test() {
 		address_mapper_test
 		buffer_reader_test
 		buffer_writer_test
+		conversion_utils_test
 		file_reader_test
+		perf_option_parser_test
 		perf_parser_test
 		perf_reader_test
 		perf_recorder_test
