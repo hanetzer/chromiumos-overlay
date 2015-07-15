@@ -60,12 +60,26 @@ src_compile() {
 board_install() {
 	insinto $2
 	pushd build/$1 >/dev/null || die
-	doins ec{,.RW}.bin
-	grep -q "^CONFIG_FW_INCLUDE_RO=y" .config && newins ec.RO.flat ec.RO.bin
+	doins ec.bin
+	newins RW/ec.RW.flat ec.RW.bin
+	# Intermediate file for debugging.
+	doins RW/ec.RW.elf
+
+	if [ `grep "^CONFIG_FW_INCLUDE_RO=y" .config` ];
+		then
+			newins RO/ec.RO.flat ec.RO.bin
+			# Intermediate file for debugging.
+			doins RO/ec.RO.elf
+	fi
+
+	# The shared objects library is not built by default.
+	if [ `grep "^CONFIG_SHAREDLIB=y" .config` ];
+		then
+		doins libsharedobjs/libsharedobjs.elf
+	fi
+
 	# EC test binaries
 	nonfatal doins test-*.bin || ewarn "No test binaries found"
-	# Intermediate files for debugging
-	doins ec.*.elf
 	popd > /dev/null
 	newins build/$1_shifted/ec.bin ec_autest_image.bin
 }
