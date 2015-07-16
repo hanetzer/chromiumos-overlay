@@ -61,3 +61,7 @@ gnome-base/librsvg gtk
 dev-libs/openssl bindist
 # openssh tracks USE=bindist only because openssl does.
 net-misc/openssh bindist
+
+# Resolve circular dependency between libcap and pam.
+# http://crbug.com/508630 (see #8)
+sys-libs/libcap pam

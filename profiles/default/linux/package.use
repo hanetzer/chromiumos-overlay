@@ -65,3 +65,6 @@ dev-java/icedtea-bin -alsa -cups -X
 # that we don't have.
 media-libs/freetype     png -bzip2
 dev-embedded/openocd  ftdi
+# Resolve circular dependency between libcap and pam.
+# http://crbug.com/508630 (see #8)
+sys-libs/libcap	-pam
