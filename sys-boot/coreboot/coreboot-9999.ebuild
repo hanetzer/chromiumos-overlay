@@ -13,7 +13,7 @@ CROS_WORKON_LOCALNAME=(
 	"coreboot"
 	"arm-trusted-firmware"
 	"../platform/vboot_reference"
-	"coreboot/3rdparty"
+	"coreboot/3rdparty/blobs"
 	"cbootimage"
 )
 CROS_WORKON_DESTDIR=(
