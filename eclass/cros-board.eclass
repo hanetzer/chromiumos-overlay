@@ -253,6 +253,7 @@ ALL_BOARDS=(
 	#waluigi
 	whirlwind
 	winky
+	wizpig
 	#winky_freon
 	wolf
 	wsb
