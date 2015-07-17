@@ -11,7 +11,7 @@ CROS_WORKON_DESTDIR="${S}/platform2"
 
 PLATFORM_SUBDIR="metrics"
 
-inherit cros-constants cros-workon git-2 platform
+inherit cros-constants cros-workon platform
 
 DESCRIPTION="Metrics aggregation service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
@@ -34,16 +34,6 @@ DEPEND="
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
-
-src_unpack() {
-	platform_src_unpack
-
-	EGIT_SOURCEDIR="${S}/components/metrics"
-	EGIT_REPO_URI="${CROS_GIT_HOST_URL}/chromium/src/components/metrics.git" \
-	EGIT_PROJECT="metrics" \
-	EGIT_COMMIT="9f8d4f96900b543e191234c04f182c6de5f9869d" \
-	git-2_src_unpack
-}
 
 src_install() {
 	dobin "${OUT}"/metrics_client syslog_parser.sh
@@ -73,7 +63,7 @@ src_install() {
 
 	# Install the protobuf so that autotests can have access to it.
 	insinto /usr/include/metrics/proto
-	doins components/metrics/proto/*.proto
+	doins uploader/proto/*.proto
 }
 
 platform_pkg_test() {
