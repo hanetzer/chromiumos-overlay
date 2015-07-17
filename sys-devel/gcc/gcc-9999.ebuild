@@ -7,6 +7,10 @@ CROS_WORKON_LOCALNAME=gcc
 CROS_WORKON_PROJECT=chromiumos/third_party/gcc
 NEXT_GCC="origin/svn-mirror/google/gcc-4_9"
 
+# By default, PREV_GCC points to the parent of current tip of origin/master.
+# If that is a bad commit, override this to point to the last known good commit.
+PREV_GCC="origin/master^"
+
 inherit eutils cros-workon binutils-funcs
 
 GCC_FILESDIR="${PORTDIR}/sys-devel/gcc/files"
@@ -62,7 +66,8 @@ RESTRICT="mirror strip"
 
 IUSE="gcj git_gcc +go graphite gtk hardened hardfp mounted_gcc multilib multislot
       nls cxx openmp tests +thumb upstream_gcc vanilla vtable_verify +wrapper_ccache
-      next_gcc"
+      next_gcc prev_gcc"
+REQUIRED_USE="next_gcc? ( !prev_gcc )"
 
 is_crosscompile() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
@@ -91,10 +96,13 @@ src_unpack() {
 		GCC_TARBALL=${GCC_MIRROR}/${P}/${P}.tar.bz2
 		wget $GCC_TARBALL
 		tar xf ${GCC_TARBALL##*/}
-	elif use git_gcc || use next_gcc ; then
+	elif use git_gcc || use next_gcc || use prev_gcc ; then
 		git clone "${CROS_WORKON_REPO}/${CROS_WORKON_PROJECT}.git" "${S}"
 		if use next_gcc ; then
 		    GCC_GITHASH=${NEXT_GCC}
+		fi
+		if use prev_gcc ; then
+		    GCC_GITHASH=${PREV_GCC}
 		fi
 		if [[ -n ${GCC_GITHASH} ]] ; then
 			einfo "Checking out: ${GCC_GITHASH}"
