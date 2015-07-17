@@ -6,6 +6,10 @@ EAPI="4"
 CROS_WORKON_PROJECT=chromiumos/third_party/binutils
 NEXT_BINUTILS=cros/binutils-2_25-google
 
+# By default, PREV_BINUTILS points to the parent of current tip of cros/master.
+# If that is a bad commit, override this to point to the last known good commit.
+PREV_BINUTILS="cros/master^"
+
 inherit eutils libtool flag-o-matic gnuconfig multilib versionator cros-constants cros-workon
 
 KEYWORDS="~*"
@@ -25,7 +29,9 @@ DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="http://sources.redhat.com/binutils/"
 LICENSE="|| ( GPL-3 LGPL-3 )"
 IUSE="hardened mounted_binutils multislot multitarget nls test vanilla
-      next_binutils"
+      next_binutils prev_binutils"
+REQUIRED_USE="next_binutils? ( !prev_binutils )"
+
 if use multislot ; then
 	SLOT="${CTARGET}-${BVER}"
 elif is_cross ; then
@@ -82,11 +88,17 @@ src_unpack() {
 			einfo "  GITHASH= \"${CROS_WORKON_COMMIT}\""
 			einfo "  TREEHASH= \"${CROS_WORKON_TREE}\""
 		fi
+		if use prev_binutils ; then
+			githash_for_branch ${PREV_BINUTILS}
+			einfo "Using prev binutils: \"${PREV_BINUTILS}\""
+			einfo "  GITHASH= \"${CROS_WORKON_COMMIT}\""
+			einfo "  TREEHASH= \"${CROS_WORKON_TREE}\""
+		fi
 		cros-workon_src_unpack
 		# cros_workon_src_unpack set vcsid (the version hash) to
 		# cros/master, this is not correct when we override
 		# GITHASH. Correct VCSID here.
-		if use next_binutils ; then
+		if use next_binutils || use prev_binutils ; then
 			export VCSID=${CROS_WORKON_COMMIT}
 		fi
 	fi
@@ -95,7 +107,9 @@ src_unpack() {
 }
 
 src_prepare() {
-	if ! use mounted_binutils && ! use next_binutils ; then
+	if ! use mounted_binutils \
+		&& ! use next_binutils \
+		&& ! use prev_binutils ; then
 		epatch "${FILESDIR}"/2.24-silence_mapping_symbols.patch
 	fi
 }
