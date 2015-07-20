@@ -61,6 +61,7 @@ ALL_BOARDS=(
 	candy
 	#candy_freon
 	cardhu
+	celes
 	#chronos
 	cid
 	clapper
