@@ -238,6 +238,7 @@ RDEPEND="${RDEPEND}
 	app-shells/bash-completion
 	dev-lang/go
 	dev-python/ipython
+	dev-util/patchutils
 	dev-util/perf
 	sys-apps/less
 	sys-apps/man-pages
