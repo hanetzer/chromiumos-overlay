@@ -237,6 +237,8 @@ RDEPEND="${RDEPEND}
 	app-portage/gentoolkit
 	app-portage/portage-utils
 	app-shells/bash-completion
+	dev-go/go-tools
+	dev-go/golint
 	dev-lang/go
 	dev-python/ipython
 	dev-util/patchutils
