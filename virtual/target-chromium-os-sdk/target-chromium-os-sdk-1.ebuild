@@ -361,7 +361,6 @@ RDEPEND="${RDEPEND}
 # Host dependencies for building the Brillo Services Framework.
 RDEPEND="${RDEPEND}
 	brillo-base/bidl
-	brillo-base/sandbox-spec-gen
 	"
 
 # Host dependencies for building Chromium code (libmojo)
