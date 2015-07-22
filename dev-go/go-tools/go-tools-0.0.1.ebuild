@@ -18,6 +18,11 @@ CROS_GO_PACKAGES=(
 	"golang.org/x/tools/go/gcimporter"
 )
 
+CROS_GO_BINARIES=(
+	"golang.org/x/tools/cmd/godoc"
+	"golang.org/x/tools/cmd/vet:govet"
+)
+
 inherit cros-workon cros-go
 
 DESCRIPTION="Packages and tools that support the Go programming language"
@@ -31,13 +36,3 @@ RESTRICT="binchecks strip"
 
 DEPEND=""
 RDEPEND=""
-
-src_compile() {
-	cros_go build -v "golang.org/x/tools/cmd/godoc"
-	cros_go build -v -o govet "golang.org/x/tools/cmd/vet"
-}
-
-src_install() {
-	dobin godoc govet
-	cros-go_src_install
-}

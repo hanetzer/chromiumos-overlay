@@ -11,6 +11,10 @@ CROS_WORKON_TREE="d46153dbbdc68ef1dde6c6661cccdb7eac1072b0"
 CROS_WORKON_PROJECT="external/github.com/golang/lint"
 CROS_WORKON_DESTDIR="${S}/src/github.com/golang/lint"
 
+CROS_GO_BINARIES=(
+	"github.com/golang/lint/golint"
+)
+
 inherit cros-workon cros-go
 
 DESCRIPTION="A linter for Go source code"
@@ -24,11 +28,3 @@ RESTRICT="binchecks strip"
 
 DEPEND="dev-go/go-tools"
 RDEPEND=""
-
-src_compile() {
-	cros_go build -v "github.com/golang/lint/golint"
-}
-
-src_install() {
-	dobin golint
-}

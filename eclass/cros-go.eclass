@@ -10,6 +10,21 @@
 # @DESCRIPTION:
 # Path to the Go workspace, default is ${S}
 
+# @ECLASS-VARIABLE: CROS_GO_BINARIES
+# @DESCRIPTION:
+# Go executable binaries to build and install
+# Package paths are relative to ${CROS_GO_WORKSPACE}/src
+# Each path must contain a package "main". The last component
+# of the package path will become the name of the executable.
+# The executable name can be overridden by appending a colon
+# to the package path, followed by an alternate name.
+# For example:
+#   CROS_GO_BINARIES=(
+#     "golang.org/x/tools/cmd/godoc"
+#     "golang.org/x/tools/cmd/vet:govet"
+#   )
+# will build and install "godoc" and "govet" binaries.
+
 # @ECLASS-VARIABLE: CROS_GO_PACKAGES
 # @DESCRIPTION:
 # Go packages to install in /usr/lib/gopath
@@ -18,13 +33,13 @@
 # can be imported later from Go code using the exact paths
 # listed here. For example:
 #   CROS_GO_PACKAGES=(
-#     "chromiumos/seccomp"
+#     "golang.org/x/tools/go/types"
 #   )
-# will install seccomp package files
-#   from "${CROS_GO_WORKSPACE}/src/chromiumos/seccomp"
-#   to "/usr/lib/gopath/src/chromiumos/seccomp"
+# will install package files
+#   from "${CROS_GO_WORKSPACE}/src/golang.org/x/tools/go/types"
+#   to "/usr/lib/gopath/src/golang.org/x/tools/go/types"
 # and other Go projects can use the package with
-#   import "chromiumos/seccomp"
+#   import "golang.org/x/tools/go/types"
 
 inherit toolchain-funcs
 
@@ -34,27 +49,39 @@ cros_go() {
 		$(tc-getGO) "$@" || die
 }
 
-cros-go_src_install() {
-	local workspace="${CROS_GO_WORKSPACE:-${S}}"
-	if [[ ${#CROS_GO_PACKAGES[@]} -gt 0 ]] ; then
-		# Run in sub-shell so we do not modify env.
-		(
-			local pkg
-			for pkg in "${CROS_GO_PACKAGES[@]}" ; do
-				local srcdir="${workspace}/src/${pkg}"
-				insinto "/usr/lib/gopath/src/${pkg}"
-
-				if [[ ! -d "${srcdir}" ]] ; then
-					die "Package not found: \"${pkg}\""
-				fi
-
-				local file
-				while read -d $'\0' -r file ; do
-					doins "${file}"
-				done < <(find "${srcdir}" -maxdepth 1 ! -type d -print0)
-			done
-		)
-	fi
+cros-go_src_compile() {
+	local bin
+	for bin in "${CROS_GO_BINARIES[@]}" ; do
+		local name="${bin##*/}"
+		name="${name#*:}"
+		bin="${bin%:*}"
+		cros_go build -v -o "${name}" "${bin}"
+	done
 }
 
-EXPORT_FUNCTIONS src_install
+cros-go_src_install() {
+	local workspace="${CROS_GO_WORKSPACE:-${S}}"
+
+	local bin
+	for bin in "${CROS_GO_BINARIES[@]}" ; do
+		local name="${bin##*/}"
+		name="${name#*:}"
+		dobin "${name}"
+	done
+
+	local pkg
+	for pkg in "${CROS_GO_PACKAGES[@]}" ; do
+		local pkgdir="${workspace}/src/${pkg}"
+		[[ -d "${pkgdir}" ]] || die "Package not found: \"${pkg}\""
+		(
+			# Run in sub-shell so we do not modify env.
+			insinto "/usr/lib/gopath/src/${pkg}"
+			local file
+			while read -d $'\0' -r file ; do
+				doins "${file}"
+			done < <(find "${pkgdir}" -maxdepth 1 ! -type d -print0)
+		)
+	done
+}
+
+EXPORT_FUNCTIONS src_compile src_install
