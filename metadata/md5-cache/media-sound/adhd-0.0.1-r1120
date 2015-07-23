@@ -9,4 +9,4 @@ LICENSE=BSD-Google
 RDEPEND=>=media-libs/alsa-lib-1.0.27 media-sound/alsa-utils media-plugins/alsa-plugins media-libs/sbc media-libs/speex dev-libs/iniparser >=sys-apps/dbus-1.4.12 dev-libs/libpthread-stubs sys-fs/udev sys-apps/baselayout
 SLOT=0
 _eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-board	f9a1fb77db94e086b9eea5588e2cc3b1	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899	user	428413d4784b5a07274949c8354647d8
-_md5_=6525a4a2d53b7fe75364937c9e3398d1
+_md5_=a3b615c6d86514ce1b409c803b195eae
