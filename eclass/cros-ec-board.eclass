@@ -36,11 +36,11 @@ EC_BOARD_NAMES=(
 	hadoken
 	hoho
 	host
+	jerry
 	llama
 	minimuffin
 	oak
 	oak_pd
-	pinky
 	pit
 	plankton
 	rambi
