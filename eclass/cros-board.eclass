@@ -189,10 +189,12 @@ ALL_BOARDS=(
 	#ricochet
 	rikku
 	rizer
+	rotor
 	rush
 	rush_ryu
 	sama5d3
 	samus
+	shogun
 	sklrvp
 	slippy
 	smaug
