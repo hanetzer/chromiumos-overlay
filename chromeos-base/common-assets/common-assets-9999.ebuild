@@ -106,6 +106,10 @@ LINK_CURSORS="
 	ur_angle:top_right_corner
 	watch:left_ptr"
 
+# Languages for which we preinstall text to speech voice data.
+TTS_LANGUAGES="de-DE en-GB en-IN en-US es-ES es-US fr-FR hi-IN id-ID it-IT
+	ko-KR nl-NL pt-BR"
+
 CROS_WORKON_LOCALNAME="assets"
 
 src_install() {
@@ -200,39 +204,10 @@ src_install() {
 	doins "${S}"/speech_synthesis/patts/tts_service.nmf
 
 	# Speech synthesis voice data
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_de-DE_2.zip
-	doins -r "${S}"/voice_data_hmm_de-DE_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-GB_2.zip
-	doins -r "${S}"/voice_data_hmm_en-GB_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-IN_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-IN_2.zip
-	doins -r "${S}"/voice_data_hmm_en-IN_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_en-US_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_en-US_2.zip
-	doins -r "${S}"/voice_data_hmm_en-US_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_es-ES_2.zip
-	doins -r "${S}"/voice_data_hmm_es-ES_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_es-US_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_es-US_2.zip
-	doins -r "${S}"/voice_data_hmm_es-US_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_fr-FR_2.zip
-	doins -r "${S}"/voice_data_hmm_fr-FR_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_it-IT_2.zip
-	doins -r "${S}"/voice_data_hmm_it-IT_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_ko-KR_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_ko-KR_2.zip
-	doins -r "${S}"/voice_data_hmm_ko-KR_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_nl-NL_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_nl-NL_2.zip
-	doins -r "${S}"/voice_data_hmm_nl-NL_2
-	doins "${S}"/speech_synthesis/patts/voice_data_hmm_pt-BR_2.js
-	unzip "${S}"/speech_synthesis/patts/voice_data_hmm_pt-BR_2.zip
-	doins -r "${S}"/voice_data_hmm_pt-BR_2
+	for i in ${TTS_LANGUAGES}; do
+		doins "${S}"/speech_synthesis/patts/voice_data_hmm_${i}.js
+		doins "${S}"/speech_synthesis/patts/voice_data_hmm_${i}.zvoice
+	done
 
 	# Speech synthesis engine (platform-specific native client module)
 	if use arm ; then
