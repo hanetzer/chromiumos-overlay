@@ -136,7 +136,7 @@ EOF
 make_coreboot() {
 	local builddir="$1"
 
-	yes "" | emake oldconfig
+	yes "" | emake oldconfig obj="${builddir}"
 	emake obj="${builddir}"
 
 	# Modify firmware descriptor if building for the EM100 emulator.
