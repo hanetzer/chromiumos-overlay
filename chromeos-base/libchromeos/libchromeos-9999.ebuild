@@ -6,9 +6,10 @@ EAPI="4"
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_DESTDIR="${S}/platform2"
+CROS_WORKON_LOCALNAME=("platform2" "aosp/external/libchromeos")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/libchromeos")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/libchromeos")
 
 PLATFORM_SUBDIR="libchromeos"
 PLATFORM_NATIVE_TEST="yes"

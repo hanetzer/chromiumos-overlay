@@ -3,14 +3,15 @@
 
 EAPI="4"
 
+CROS_WORKON_COMMIT=("0ed7532ff14fca1b74d600778b420df92b4c5716" "92d2cebf70919c9b1d0e6779837d245859736c98")
+CROS_WORKON_TREE=("76a5808aeaea5e663a4ecdb259b815192f2d294c" "1700fb71b91265c02355cc1ecd19876e7396012d")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="fba8c48ee6b97a4db2eff55fa891c43cb232c444"
-CROS_WORKON_TREE="841aba308ae7fd2a90da04675855dd6158103748"
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_DESTDIR="${S}/platform2"
+CROS_WORKON_LOCALNAME=("platform2" "aosp/external/libchromeos")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/libchromeos")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/libchromeos")
 
 PLATFORM_SUBDIR="libchromeos"
 PLATFORM_NATIVE_TEST="yes"
