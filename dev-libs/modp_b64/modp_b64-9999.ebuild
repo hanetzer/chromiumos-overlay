@@ -31,6 +31,6 @@ src_compile() {
 src_install() {
 	newlib.a libmodpb64.pie.a libmodp_b64.a
 
-	insinto /usr/include/modp_b64
-	doins modp_b64.h
+	insinto /usr/include
+	doins -r modp_b64
 }

@@ -4,7 +4,7 @@
 EAPI="4"
 
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="cd5ed19e85c8de365ba7ac081525f0d51267b371"
+CROS_WORKON_COMMIT="b1e6e2024f4b05e9747556c0937d6770da74ba13"
 CROS_WORKON_DESTDIR="${S}"
 CROS_WORKON_LOCALNAME="modp_b64"
 CROS_WORKON_PROJECT="platform/external/modp_b64"
@@ -32,6 +32,6 @@ src_compile() {
 src_install() {
 	newlib.a libmodpb64.pie.a libmodp_b64.a
 
-	insinto /usr/include/modp_b64
-	doins modp_b64.h
+	insinto /usr/include
+	doins -r modp_b64
 }
