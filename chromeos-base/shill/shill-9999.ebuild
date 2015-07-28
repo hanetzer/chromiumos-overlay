@@ -26,7 +26,6 @@ RDEPEND="
 	chromeos-base/metrics
 	wimax? ( chromeos-base/wimax_manager )
 	dev-libs/dbus-c++
-	dev-libs/libnl:3
 	cellular? ( net-dialup/ppp )
 	pppoe? ( net-dialup/ppp )
 	vpn? ( net-dialup/ppp )
