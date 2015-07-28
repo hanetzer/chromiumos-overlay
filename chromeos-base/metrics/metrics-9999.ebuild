@@ -36,7 +36,7 @@ DEPEND="
 	"
 
 src_install() {
-	dobin "${OUT}"/metrics_client syslog_parser.sh
+	dobin "${OUT}"/metrics_client
 
 	if use passive_metrics; then
 		dobin "${OUT}"/metrics_daemon
