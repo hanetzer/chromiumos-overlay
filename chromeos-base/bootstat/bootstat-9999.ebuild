@@ -7,7 +7,9 @@ CROS_WORKON_LOCALNAME="platform2"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_DESTDIR="${S}/platform2"
 
-inherit cros-workon
+PLATFORM_SUBDIR="bootstat"
+
+inherit cros-workon platform
 
 DESCRIPTION="Chrome OS Boot Time Statistics Utilities"
 HOMEPAGE="http://www.chromium.org/"
@@ -19,25 +21,25 @@ KEYWORDS="~*"
 IUSE="-asan -clang"
 REQUIRED_USE="asan? ( clang )"
 
-RDEPEND="sys-apps/rootdev"
+RDEPEND="
+	sys-apps/rootdev
+	!<chromeos-base/libchromeos-0.0.2
+	"
 DEPEND="${RDEPEND}
 	dev-cpp/gtest"
 
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/platform2/libchromeos/chromeos/bootstat"
-}
-
-src_configure() {
-	clang-setup-env
-	cros-workon_src_configure
-	tc-export CC CXX AR PKG_CONFIG
-}
-
 src_install() {
-	into /
-	dosbin bootstat
+	dosbin "${OUT}"/bootstat
 	dosbin bootstat_archive
 	dosbin bootstat_get_last
 	dobin bootstat_summary
+
+	dolib.so "${OUT}"/lib/libbootstat.so
+
+	insinto /usr/include/metrics
+	doins bootstat.h
+}
+
+platform_pkg_test() {
+	platform_test "run" "${OUT}/libbootstat_unittests"
 }
