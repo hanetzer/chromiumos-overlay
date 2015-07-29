@@ -17,6 +17,9 @@ KEYWORDS="~*"
 DEPEND="dev-libs/openssl"
 
 src_compile() {
+	if [ "${ARCH}" == "arm" ]; then
+		export CROSS_COMPILE=arm-none-eabi-
+	fi
 	emake
 }
 
