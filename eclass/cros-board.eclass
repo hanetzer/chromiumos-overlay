@@ -269,6 +269,7 @@ ALL_BOARDS=(
 	#x86-fruitloop
 	x86-generic
 	x86-generic_embedded
+	x86-generic_freon
 	x86-mario
 	x86-mario_freon
 	x86-mario64
