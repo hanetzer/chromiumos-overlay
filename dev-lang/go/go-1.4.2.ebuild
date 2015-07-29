@@ -59,6 +59,7 @@ get_gochar() {
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-no-strict-overflow.patch"
+	epatch "${FILESDIR}/${P}-net-if-fix.patch"
 }
 
 src_configure() {

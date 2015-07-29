@@ -1,0 +1,177 @@
+From 258bf65d8b157bfe311ce70c93dd854022a25c9d Mon Sep 17 00:00:00 2001
+From: Mikio Hara <mikioh.mikioh@gmail.com>
+Date: Tue, 23 Jun 2015 21:40:33 +0900
+Subject: [PATCH] net: relax IP interface address determination on linux
+
+Linux allows to have a peer IP address on IP interface over ethernet
+link encapsulation, though it only installs a static route with the peer
+address as an on-link nexthop.
+
+Fixes #11338.
+
+Change-Id: Ie2583737e4c7cec39baabb89dd732463d3f10a61
+Reviewed-on: https://go-review.googlesource.com/11352
+Reviewed-by: Russ Cox <rsc@golang.org>
+---
+
+diff --git a/src/net/interface_bsd_test.go b/src/net/interface_bsd_test.go
+index 88daf73..43ccc89 100644
+--- a/src/net/interface_bsd_test.go
++++ b/src/net/interface_bsd_test.go
+@@ -28,10 +28,8 @@
+ 	return nil
+ }
+ 
+-func (ti *testInterface) setPointToPoint(suffix int, local, remote string) error {
++func (ti *testInterface) setPointToPoint(suffix int) error {
+ 	ti.name = fmt.Sprintf("gif%d", suffix)
+-	ti.local = local
+-	ti.remote = remote
+ 	xname, err := exec.LookPath("ifconfig")
+ 	if err != nil {
+ 		return err
+diff --git a/src/net/interface_linux.go b/src/net/interface_linux.go
+index 6551a35..ef20429 100644
+--- a/src/net/interface_linux.go
++++ b/src/net/interface_linux.go
+@@ -176,17 +176,15 @@
+ 	var ipPointToPoint bool
+ 	// Seems like we need to make sure whether the IP interface
+ 	// stack consists of IP point-to-point numbered or unnumbered
+-	// addressing over point-to-point link encapsulation.
+-	if ifi.Flags&FlagPointToPoint != 0 {
+-		for _, a := range attrs {
+-			if a.Attr.Type == syscall.IFA_LOCAL {
+-				ipPointToPoint = true
+-				break
+-			}
++	// addressing.
++	for _, a := range attrs {
++		if a.Attr.Type == syscall.IFA_LOCAL {
++			ipPointToPoint = true
++			break
+ 		}
+ 	}
+ 	for _, a := range attrs {
+-		if ipPointToPoint && a.Attr.Type == syscall.IFA_ADDRESS || !ipPointToPoint && a.Attr.Type == syscall.IFA_LOCAL {
++		if ipPointToPoint && a.Attr.Type == syscall.IFA_ADDRESS {
+ 			continue
+ 		}
+ 		switch ifam.Family {
+diff --git a/src/net/interface_linux_test.go b/src/net/interface_linux_test.go
+index 059bde1..6251b26 100644
+--- a/src/net/interface_linux_test.go
++++ b/src/net/interface_linux_test.go
+@@ -20,6 +20,14 @@
+ 		Path: xname,
+ 		Args: []string{"ip", "link", "add", ti.name, "type", "dummy"},
+ 	})
++	ti.setupCmds = append(ti.setupCmds, &exec.Cmd{
++		Path: xname,
++		Args: []string{"ip", "address", "add", ti.local, "peer", ti.remote, "dev", ti.name},
++	})
++	ti.teardownCmds = append(ti.teardownCmds, &exec.Cmd{
++		Path: xname,
++		Args: []string{"ip", "address", "del", ti.local, "peer", ti.remote, "dev", ti.name},
++	})
+ 	ti.teardownCmds = append(ti.teardownCmds, &exec.Cmd{
+ 		Path: xname,
+ 		Args: []string{"ip", "link", "delete", ti.name, "type", "dummy"},
+@@ -27,29 +35,27 @@
+ 	return nil
+ }
+ 
+-func (ti *testInterface) setPointToPoint(suffix int, local, remote string) error {
++func (ti *testInterface) setPointToPoint(suffix int) error {
+ 	ti.name = fmt.Sprintf("gotest%d", suffix)
+-	ti.local = local
+-	ti.remote = remote
+ 	xname, err := exec.LookPath("ip")
+ 	if err != nil {
+ 		return err
+ 	}
+ 	ti.setupCmds = append(ti.setupCmds, &exec.Cmd{
+ 		Path: xname,
+-		Args: []string{"ip", "tunnel", "add", ti.name, "mode", "gre", "local", local, "remote", remote},
++		Args: []string{"ip", "tunnel", "add", ti.name, "mode", "gre", "local", ti.local, "remote", ti.remote},
++	})
++	ti.setupCmds = append(ti.setupCmds, &exec.Cmd{
++		Path: xname,
++		Args: []string{"ip", "address", "add", ti.local, "peer", ti.remote, "dev", ti.name},
+ 	})
+ 	ti.teardownCmds = append(ti.teardownCmds, &exec.Cmd{
+ 		Path: xname,
+-		Args: []string{"ip", "tunnel", "del", ti.name, "mode", "gre", "local", local, "remote", remote},
++		Args: []string{"ip", "address", "del", ti.local, "peer", ti.remote, "dev", ti.name},
+ 	})
+-	xname, err = exec.LookPath("ifconfig")
+-	if err != nil {
+-		return err
+-	}
+-	ti.setupCmds = append(ti.setupCmds, &exec.Cmd{
++	ti.teardownCmds = append(ti.teardownCmds, &exec.Cmd{
+ 		Path: xname,
+-		Args: []string{"ifconfig", ti.name, "inet", local, "dstaddr", remote},
++		Args: []string{"ip", "tunnel", "del", ti.name, "mode", "gre", "local", ti.local, "remote", ti.remote},
+ 	})
+ 	return nil
+ }
+diff --git a/src/net/interface_unix_test.go b/src/net/interface_unix_test.go
+index 84bf06c..93b3b79 100644
+--- a/src/net/interface_unix_test.go
++++ b/src/net/interface_unix_test.go
+@@ -55,8 +55,8 @@
+ 	local, remote := "169.254.0.1", "169.254.0.254"
+ 	ip := ParseIP(remote)
+ 	for i := 0; i < 3; i++ {
+-		ti := &testInterface{}
+-		if err := ti.setPointToPoint(5963+i, local, remote); err != nil {
++		ti := &testInterface{local: local, remote: remote}
++		if err := ti.setPointToPoint(5963 + i); err != nil {
+ 			t.Skipf("test requries external command: %v", err)
+ 		}
+ 		if err := ti.setup(); err != nil {
+@@ -100,12 +100,14 @@
+ 		t.Skip("skipping test; must be root")
+ 	}
+ 
++	local, remote := "169.254.0.1", "169.254.0.254"
++	ip := ParseIP(remote)
+ 	for i := 0; i < 3; i++ {
+ 		ift1, err := Interfaces()
+ 		if err != nil {
+ 			t.Fatalf("Interfaces failed: %v", err)
+ 		}
+-		ti := &testInterface{}
++		ti := &testInterface{local: local, remote: remote}
+ 		if err := ti.setBroadcast(5682 + i); err != nil {
+ 			t.Skipf("test requires external command: %v", err)
+ 		}
+@@ -129,6 +131,22 @@
+ 			ti.teardown()
+ 			t.Fatalf("got %v; want gt %v", len(ift2), len(ift1))
+ 		}
++		for _, ifi := range ift2 {
++			if ti.name != ifi.Name {
++				continue
++			}
++			ifat, err := ifi.Addrs()
++			if err != nil {
++				ti.teardown()
++				t.Fatal(err)
++			}
++			for _, ifa := range ifat {
++				if ip.Equal(ifa.(*IPNet).IP) {
++					ti.teardown()
++					t.Fatalf("got %v", ifa)
++				}
++			}
++		}
+ 		if err := ti.teardown(); err != nil {
+ 			t.Fatalf("testInterface.teardown failed: %v", err)
+ 		} else {
+@@ -149,3 +167,4 @@
+ 		}
+ 	}
+ }
++
