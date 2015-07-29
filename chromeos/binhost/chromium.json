@@ -134,6 +134,53 @@
   }, 
   {
     "compat_id": {
+      "arch": "arm", 
+      "cflags": [
+        "-O2", 
+        "-O2", 
+        "-pipe", 
+        "-march=armv7-a", 
+        "-mtune=cortex-a15", 
+        "-mfpu=neon", 
+        "-mfloat-abi=hard", 
+        "-g", 
+        "-fno-exceptions", 
+        "-fno-unwind-tables", 
+        "-fno-asynchronous-unwind-tables"
+      ], 
+      "useflags": [
+        "accessibility", 
+        "autotest", 
+        "build_tests", 
+        "buildcheck", 
+        "chrome_debug", 
+        "chrome_remoting", 
+        "evdev_gestures", 
+        "gold", 
+        "hardfp", 
+        "highdpi", 
+        "nacl", 
+        "neon", 
+        "opengles", 
+        "ozone", 
+        "ozone_platform_default_gbm", 
+        "ozone_platform_drm", 
+        "ozone_platform_gbm", 
+        "runhooks", 
+        "v4l2_codec", 
+        "v4lplugin", 
+        "xkbcommon"
+      ]
+    }, 
+    "key": {
+      "board": "veyron_minnie", 
+      "useflags": [
+        "-chrome_internal"
+      ]
+    }
+  }, 
+  {
+    "compat_id": {
       "arch": "mips", 
       "cflags": [
         "-O2", 
