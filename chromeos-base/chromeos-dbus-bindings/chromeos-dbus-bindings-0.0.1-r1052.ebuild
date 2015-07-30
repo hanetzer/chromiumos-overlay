@@ -3,15 +3,17 @@
 
 EAPI="4"
 
+CROS_WORKON_COMMIT=("31d42cf6bebc02a681cf68dbb97994a056b1bfe4" "a0a75b2804a64ef1415d05ef77dfb1ad58f178b0")
+CROS_WORKON_TREE=("cb2e898964211b0303648496a9c51e4e47222904" "5f9082151c18d91e552aa653349b30e1829b6f7f")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="5a5a86ffd0d3d99528893eac40555928ec74035d"
-CROS_WORKON_TREE="47bce7aa0c1af512e228d1ec8a4071eac09d9194"
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/dbus-binding-generator")
+CROS_WORKON_LOCALNAME=("platform2" "aosp/external/dbus-binding-generator")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/dbus-binding-generator")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 
-PLATFORM_SUBDIR="chromeos-dbus-bindings"
+PLATFORM_SUBDIR="dbus-binding-generator/chromeos-dbus-bindings"
+PLATFORM_GYP_FILE="chromeos-dbus-bindings.gyp"
 PLATFORM_NATIVE_TEST="yes"
 
 inherit cros-workon platform

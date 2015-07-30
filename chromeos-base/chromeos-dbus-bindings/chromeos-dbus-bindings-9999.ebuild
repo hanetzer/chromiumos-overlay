@@ -5,11 +5,13 @@ EAPI="4"
 
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/dbus-binding-generator")
+CROS_WORKON_LOCALNAME=("platform2" "aosp/external/dbus-binding-generator")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/external/dbus-binding-generator")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 
-PLATFORM_SUBDIR="chromeos-dbus-bindings"
+PLATFORM_SUBDIR="dbus-binding-generator/chromeos-dbus-bindings"
+PLATFORM_GYP_FILE="chromeos-dbus-bindings.gyp"
 PLATFORM_NATIVE_TEST="yes"
 
 inherit cros-workon platform
