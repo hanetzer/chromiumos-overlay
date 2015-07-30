@@ -17,16 +17,16 @@ EGIT_REPO_URIS=(
 		""
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"25103832b272eaa009fd56d3fc9eb98ebb7c2f1a" # EGIT_COMMIT
+		"4a3c9fcd83999679b54e05b5fc738600f18c80b1" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
-		"${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"290c1b6df573851666f4887867f94c77996dcce0" # EGIT_COMMIT
+		 "${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
+		"2199e3918996381a1e5ad707e919a0f8c5cba4c0" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"8f0271771bd348fc5a8ebfd9a30d9f67e9d298ea"  # EGIT_COMMIT
+		"fa5d0d4ae431b05e6eaa73b3e0029fc63921a800"  # EGIT_COMMIT
 )
 
 EGIT_REPO_URI="http://llvm.org/git/llvm.git
