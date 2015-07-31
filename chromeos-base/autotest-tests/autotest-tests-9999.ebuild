@@ -134,6 +134,7 @@ CLIENT_IUSE_TESTS="
 	+tests_kernel_CpufreqMinMax
 	+tests_kernel_CrosECSysfs
 	+tests_kernel_CrosECSysfsAccel
+	+tests_kernel_CryptoAPI
 	+tests_kernel_Delay
 	+tests_kernel_fs_Inplace
 	+tests_kernel_fs_Punybench
