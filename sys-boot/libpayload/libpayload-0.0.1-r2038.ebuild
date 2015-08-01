@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
-CROS_WORKON_COMMIT="e86ed25b3ca742e4ae1701491a1dbbc14ae6801e"
-CROS_WORKON_TREE="e0a5e853597933707d166eff96af0d28fb0c5fa1"
+CROS_WORKON_COMMIT="5457b34a4b6512b878b9639334745e57b46c9f91"
+CROS_WORKON_TREE="97fea9d8e7602d3ceedd0f14538f5f208cd1e820"
 CROS_WORKON_PROJECT="chromiumos/third_party/coreboot"
 
 DESCRIPTION="coreboot's libpayload library"
