@@ -109,7 +109,6 @@ SERVER_IUSE_TESTS="
 	tpm? ( +tests_firmware_TPMExtend )
 	tpm? ( +tests_firmware_TPMVersionCheck )
 	+tests_firmware_TryFwB
-	+tests_firmware_UpdateECBin
 	+tests_firmware_UpdateFirmwareDataKeyVersion
 	+tests_firmware_UpdateFirmwareVersion
 	+tests_firmware_UpdateKernelDataKeyVersion
