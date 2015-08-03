@@ -26,7 +26,6 @@ RDEPEND="chromeos-base/bootstat
 	chromeos-base/cryptohome
 	chromeos-base/libchromeos
 	chromeos-base/metrics
-	dev-libs/glib
 	dev-libs/nss
 	dev-libs/protobuf
 	sys-apps/util-linux"
