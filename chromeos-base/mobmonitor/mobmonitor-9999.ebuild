@@ -38,4 +38,8 @@ src_install() {
 
 	# Create the Mob* Monitor check file directory.
 	dodir "/etc/mobmonitor/checkfiles/"
+
+	# Copy the static content for the web interface.
+	insinto "/etc/mobmonitor/static/"
+	doins -r "${S}/mobmonitor/static/"*
 }
