@@ -21,6 +21,7 @@ IUSE="examples wifi_bootstrapping"
 
 COMMON_DEPEND="
 	chromeos-base/libchromeos
+	chromeos-base/libweave
 	chromeos-base/webserver
 "
 
