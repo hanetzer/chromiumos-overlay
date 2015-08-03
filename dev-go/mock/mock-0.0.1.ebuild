@@ -13,6 +13,7 @@ CROS_WORKON_DESTDIR="${S}/src/github.com/golang/mock"
 
 CROS_GO_PACKAGES=(
 	"github.com/golang/mock/gomock"
+	"github.com/golang/mock/mockgen/model"
 )
 
 CROS_GO_BINARIES=(
