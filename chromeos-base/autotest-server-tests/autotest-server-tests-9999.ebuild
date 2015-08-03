@@ -60,7 +60,6 @@ SERVER_IUSE_TESTS="
 	+tests_dummy_FlakyTestServer
 	+tests_enterprise_RemoraRequisitionServer
 	+tests_factory_Basic
-	+tests_firmware_CgptState
 	+tests_firmware_CgptStress
 	+tests_firmware_CompareInstalledToShellBall
 	+tests_firmware_ConsecutiveBoot
