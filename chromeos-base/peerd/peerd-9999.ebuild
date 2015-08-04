@@ -43,6 +43,22 @@ src_install() {
 	# Install DBus configuration files.
 	insinto /etc/dbus-1/system.d
 	doins dbus/org.chromium.peerd.conf
+
+	local client_includes=/usr/include/peerd-client
+	local client_test_includes=/usr/include/peerd-client-test
+
+	# Install DBus proxy headers
+	insinto "${client_includes}/peerd"
+	doins "${OUT}/gen/include/peerd/dbus-proxies.h"
+	insinto "${client_test_includes}/peerd"
+	doins "${OUT}/gen/include/peerd/dbus-proxy-mocks.h"
+
+	# Install pkg-config for client libraries.
+	./generate_pc_file.sh "${OUT}" libpeerd-client "${client_includes}"
+	./generate_pc_file.sh "${OUT}" libpeerd-client-test "${client_test_includes}"
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins "${OUT}/libpeerd-client.pc"
+	doins "${OUT}/libpeerd-client-test.pc"
 }
 
 platform_pkg_test() {
