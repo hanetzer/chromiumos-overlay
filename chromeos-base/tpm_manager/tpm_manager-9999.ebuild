@@ -19,9 +19,15 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="test"
+IUSE="test -tpm2"
 
 RDEPEND="
+	!tpm2? (
+		app-crypt/trousers
+	)
+	tpm2? (
+		chromeos-base/trunks
+	)
 	chromeos-base/chromeos-minijail
 	chromeos-base/libchromeos
 	"
