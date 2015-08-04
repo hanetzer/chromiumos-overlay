@@ -119,12 +119,13 @@ RDEPEND="${RDEPEND}
 	chromeos-base/cros-devutils[cros_host]
 	chromeos-base/cros-testutils
 	chromeos-base/ec-devutils
-	dev-lang/python:2.7
-	dev-lang/python:3.3
 	dev-db/m17n-contrib
 	dev-db/m17n-db
+	dev-go/protobuf
 	dev-lang/closure-compiler-bin
 	dev-lang/nasm
+	dev-lang/python:2.7
+	dev-lang/python:3.3
 	dev-lang/swig
 	dev-lang/yasm
 	dev-libs/dbus-c++
@@ -304,6 +305,7 @@ RDEPEND="${RDEPEND}
 # Host dependencies to run unit tests within the chroot
 RDEPEND="${RDEPEND}
 	dev-cpp/gflags
+	dev-go/mock
 	dev-python/mock
 	dev-python/mox
 	dev-python/unittest2
