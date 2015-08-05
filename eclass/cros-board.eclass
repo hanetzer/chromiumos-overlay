@@ -229,6 +229,7 @@ ALL_BOARDS=(
 	tidus
 	tricky
 	#tricky_freon
+	ultima
 	#urara
 	veyron
 	veyron_brain
