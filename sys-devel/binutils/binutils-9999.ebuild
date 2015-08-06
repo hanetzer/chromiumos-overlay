@@ -123,6 +123,15 @@ toolchain-binutils_pkgversion() {
 	printf "binutils-${VCSID}_cos_gg"
 }
 
+toolchain_mips_use_sysv_gnuhash() {
+	if [[ ${CTARGET} == mips* ]] ; then
+		# For mips targets, GNU hash cannot work due to ABI constraints.
+		sed -i \
+			-e 's:--hash-style=gnu:--hash-style=sysv:' \
+			"${D}/${BINPATH}/$1" || die
+	fi
+}
+
 src_configure() {
 	# make sure we filter $LINGUAS so that only ones that
 	# actually work make it through #42033
@@ -309,12 +318,7 @@ src_install() {
 	mv "${D}/${BINPATH}/ld.bfd" "${D}/${BINPATH}/ld.bfd.real" || die
 	exeinto "${BINPATH}"
 	newexe "${FILESDIR}/${LDWRAPPER}" "ld.bfd" || die
-	if [[ ${CTARGET} == mips* ]] ; then
-		# For mips targets, GNU hash cannot work due to ABI constraints.
-		sed -i \
-			-e 's:--hash-style=gnu:--hash-style=sysv:' \
-			"${D}/${BINPATH}/ld.bfd" || die
-	fi
+	toolchain_mips_use_sysv_gnuhash "ld.bfd"
 
 	# Set default to be ld.bfd in regular installation
 	dosym ld.bfd "${BINPATH}/ld"
@@ -334,6 +338,7 @@ src_install() {
 		mv "${D}/${BINPATH}/ld.gold" "${D}/${BINPATH}/ld.gold.real" || die
 		exeinto "${BINPATH}"
 		newexe "${FILESDIR}/${LDWRAPPER}" "ld.gold" || die
+		toolchain_mips_use_sysv_gnuhash "ld.gold"
 
 		# Make a fake installation for gold with gold as the default linker
 		# so we can turn gold on/off with binutils-config
