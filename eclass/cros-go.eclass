@@ -43,6 +43,8 @@
 
 inherit toolchain-funcs
 
+DEPEND="dev-lang/go"
+
 cros_go() {
 	local workspace="${CROS_GO_WORKSPACE:-${S}}"
 	GOPATH="${workspace}:${SYSROOT}/usr/lib/gopath" \
