@@ -5,7 +5,7 @@ EAPI="5"
 
 inherit font
 
-DESCRIPTION="Noto fonts developed by Monotype"
+DESCRIPTION="Noto Pan Unicode fonts developed by Monotype"
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 LICENSE="Apache-2.0"
