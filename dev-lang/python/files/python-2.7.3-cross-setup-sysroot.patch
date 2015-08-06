@@ -2,7 +2,7 @@ Change setup.py to respect the SYSROOT environment variable
 
 --- a/setup.py
 +++ b/setup.py
-@@ -455,10 +455,14 @@
+@@ -337,9 +337,13 @@
  
      def detect_modules(self):
          global disable_ssl
@@ -11,15 +11,14 @@ Change setup.py to respect the SYSROOT environment variable
 +        sysroot = os.getenv('SYSROOT', '')
 +
          # Ensure that /usr/local is always used
-         if not cross_compiling:
--            add_dir_to_list(self.compiler.library_dirs, '/usr/local/@@GENTOO_LIBDIR@@')
--            add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
-+            add_dir_to_list(self.compiler.library_dirs, sysroot + '/usr/local/@@GENTOO_LIBDIR@@')
-+            add_dir_to_list(self.compiler.include_dirs, sysroot + '/usr/local/include')
-         if cross_compiling:
-             self.add_gcc_paths()
+-        add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
+-        add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
++        add_dir_to_list(self.compiler.library_dirs, sysroot + '/usr/local/lib')
++        add_dir_to_list(self.compiler.include_dirs, sysroot + '/usr/local/include')
          self.add_multiarch_paths()
-@@ -504,9 +508,15 @@
+ 
+         # Add paths specified in the environment variables LDFLAGS and
+@@ -375,10 +379,16 @@
              # building a framework with different architectures than
              # the one that is currently installed (issue #7473)
              add_dir_to_list(self.compiler.library_dirs,
@@ -28,26 +27,27 @@ Change setup.py to respect the SYSROOT environment variable
              add_dir_to_list(self.compiler.include_dirs,
 -                            sysconfig.get_config_var("INCLUDEDIR"))
 +                            sysroot + sysconfig.get_config_var("INCLUDEDIR"))
-+
+ 
 +        # We should always look into sysroot/usr/include and consider
 +        # also the lib dirs there for searching for files
 +        add_dir_to_list(self.compiler.include_dirs, sysroot + '/usr/include')
 +        add_dir_to_list(self.compiler.library_dirs, sysroot + '/@@GENTOO_LIBDIR@@')
 +        add_dir_to_list(self.compiler.library_dirs, sysroot + '/usr/@@GENTOO_LIBDIR@@')
- 
++
          try:
              have_unicode = unicode
-@@ -527,6 +537,9 @@
-                 '/@@GENTOO_LIBDIR@@', '/usr/@@GENTOO_LIBDIR@@',
-                 ):
-                 add_dir_to_list(lib_dirs, d)
+         except NameError:
+@@ -389,6 +399,9 @@
+             '/lib', '/usr/lib',
+             ]
+         inc_dirs = self.compiler.include_dirs + ['/usr/include']
 +        # Ignore previous settings.
 +        lib_dirs = self.compiler.library_dirs
 +        inc_dirs = self.compiler.include_dirs
          exts = []
          missing = []
  
-@@ -778,11 +791,11 @@
+@@ -613,11 +626,11 @@
              elif curses_library:
                  readline_libs.append(curses_library)
              elif self.compiler.find_library_file(lib_dirs +
@@ -61,8 +61,8 @@ Change setup.py to respect the SYSROOT environment variable
                                     extra_link_args=readline_extra_link_args,
                                     libraries=readline_libs) )
          else:
-@@ -805,20 +818,20 @@
-                                libraries=math_libs) )
+@@ -642,20 +655,20 @@
+                                depends = ['socketmodule.h']) )
          # Detect SSL support for the socket module (via _ssl)
          search_for_ssl_incs_in = [
 -                              '/usr/local/ssl/include',
@@ -87,32 +87,31 @@ Change setup.py to respect the SYSROOT environment variable
                                       ] )
  
          if (ssl_incs is not None and
-@@ -968,6 +981,7 @@
+@@ -773,6 +786,7 @@
              db_inc_paths.append('/usr/local/include/db3%d' % x)
              db_inc_paths.append('/pkg/db-3.%d/include' % x)
              db_inc_paths.append('/opt/db-3.%d/include' % x)
 +        db_inc_paths = [sysroot + x for x in db_inc_paths]
  
-         if cross_compiling:
-             db_inc_paths = []
-@@ -1121,6 +1135,7 @@
+         # Add some common subdirectories for Sleepycat DB to the list,
+         # based on the standard include directories. This way DB3/4 gets
+@@ -921,5 +935,6 @@
+                              '/usr/local/include/sqlite',
+                              '/usr/local/include/sqlite3',
                             ]
-         if cross_compiling:
-             sqlite_inc_paths = []
 +        sqlite_inc_paths = [sysroot + x for x in sqlite_inc_paths]
          MIN_SQLITE_VERSION_NUMBER = (3, 0, 8)
          MIN_SQLITE_VERSION = ".".join([str(x)
-                                     for x in MIN_SQLITE_VERSION_NUMBER])
-@@ -1222,7 +1237,7 @@
+@@ -1021,7 +1036,7 @@
          # we do not build this one.  Otherwise this build will pick up
          # the more recent berkeleydb's db.h file first in the include path
          # when attempting to compile and it will fail.
 -        f = "/usr/include/db.h"
 +        f = sysroot + "/usr/include/db.h"
  
-         if host_platform == 'darwin':
+         if sys.platform == 'darwin':
              if is_macosx_sdk_path(f):
-@@ -1835,7 +1850,7 @@
+@@ -1546,7 +1561,7 @@
          # For 8.4a2, the X11 headers are not included. Rather than include a
          # complicated search, this is a hard-coded path. It could bail out
          # if X11 libs are not found...
@@ -121,9 +120,9 @@ Change setup.py to respect the SYSROOT environment variable
          frameworks = ['-framework', 'Tcl', '-framework', 'Tk']
  
          # All existing framework builds of Tcl/Tk don't support 64-bit
-@@ -1879,6 +1894,9 @@
-         if self.detect_tkinter_explicitly():
-             return
+@@ -1579,6 +1594,9 @@
+     def detect_tkinter(self, inc_dirs, lib_dirs):
+         # The _tkinter module.
  
 +        # We must respect the user specified sysroot!
 +        sysroot = os.getenv('SYSROOT', '')
@@ -131,28 +130,30 @@ Change setup.py to respect the SYSROOT environment variable
          # Rather than complicate the code below, detecting and building
          # AquaTk is a separate method. Only one Tkinter will be built on
          # Darwin - either AquaTk, if it is found, or X11 based Tk.
-@@ -1934,16 +1952,16 @@
-         if host_platform == 'sunos5':
+@@ -1633,17 +1651,17 @@
+         if platform == 'sunos5':
              include_dirs.append('/usr/openwin/include')
              added_lib_dirs.append('/usr/openwin/lib')
 -        elif os.path.exists('/usr/X11R6/include'):
 -            include_dirs.append('/usr/X11R6/include')
--            added_lib_dirs.append('/usr/X11R6/@@GENTOO_LIBDIR@@')
+-            added_lib_dirs.append('/usr/X11R6/lib64')
+-            added_lib_dirs.append('/usr/X11R6/lib')
 -        elif os.path.exists('/usr/X11R5/include'):
 -            include_dirs.append('/usr/X11R5/include')
--            added_lib_dirs.append('/usr/X11R5/@@GENTOO_LIBDIR@@')
+-            added_lib_dirs.append('/usr/X11R5/lib')
 +        elif os.path.exists(sysroot + '/usr/X11R6/include'):
 +            include_dirs.append(sysroot + '/usr/X11R6/include')
-+            added_lib_dirs.append(sysroot + '/usr/X11R6/@@GENTOO_LIBDIR@@')
++            added_lib_dirs.append(sysroot + '/usr/X11R6/lib64')
++            added_lib_dirs.append(sysroot + '/usr/X11R6/lib')
 +        elif os.path.exists(sysroot + '/usr/X11R5/include'):
 +            include_dirs.append(sysroot + '/usr/X11R5/include')
-+            added_lib_dirs.append(sysroot + '/usr/X11R5/@@GENTOO_LIBDIR@@')
++            added_lib_dirs.append(sysroot + '/usr/X11R5/lib')
          else:
              # Assume default location for X11
 -            include_dirs.append('/usr/X11/include')
--            added_lib_dirs.append('/usr/X11/@@GENTOO_LIBDIR@@')
+-            added_lib_dirs.append('/usr/X11/lib')
 +            include_dirs.append(sysroot + '/usr/X11/include')
-+            added_lib_dirs.append(sysroot + '/usr/X11/@@GENTOO_LIBDIR@@')
++            added_lib_dirs.append(sysroot + '/usr/X11/lib')
  
          # If Cygwin, then verify that X is installed before proceeding
-         if host_platform == 'cygwin':
+         if platform == 'cygwin':
