@@ -1,13 +1,13 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-libs/harfbuzz/harfbuzz-0.9.37.ebuild,v 1.1 2014/12/27 20:47:26 dilfridge Exp $
+# $Header: /var/cvsroot/gentoo-x86/media-libs/harfbuzz/harfbuzz-0.9.41.ebuild,v 1.1 2015/07/05 08:18:38 pacho Exp $
 
 EAPI=5
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/harfbuzz"
 [[ ${PV} == 9999 ]] && inherit git-r3 autotools
 
-PYTHON_COMPAT=( python{2_6,2_7} )
+PYTHON_COMPAT=( python2_7 )
 
 inherit eutils libtool multilib-minimal python-any-r1
 
@@ -19,11 +19,13 @@ LICENSE="Old-MIT ISC icu"
 SLOT="0/0.9.18" # 0.9.18 introduced the harfbuzz-icu split; bug #472416
 [[ ${PV} == 9999 ]] || \
 KEYWORDS="*"
-IUSE="+cairo +glib +graphite icu +introspection static-libs test +truetype"
+
+IUSE="+cairo fontconfig +glib +graphite icu +introspection static-libs test +truetype"
 REQUIRED_USE="introspection? ( glib )"
 
 RDEPEND="
 	cairo? ( x11-libs/cairo:= )
+	fontconfig? ( media-libs/fontconfig:1.0[${MULTILIB_USEDEP}] )
 	glib? ( >=dev-libs/glib-2.34.3:2[${MULTILIB_USEDEP}] )
 	graphite? ( >=media-gfx/graphite2-1.2.1:=[${MULTILIB_USEDEP}] )
 	icu? ( >=dev-libs/icu-51.2-r1:=[${MULTILIB_USEDEP}] )
@@ -64,16 +66,22 @@ src_prepare() {
 
 	[[ ${PV} == 9999 ]] && eautoreconf
 	elibtoolize # for Solaris
+
+	# failing test, https://bugs.freedesktop.org/show_bug.cgi?id=89190
+	sed -e 's#tests/arabic-fallback-shaping.tests##' -i test/shaping/Makefile.in || die "sed failed"
 }
 
 multilib_src_configure() {
 	ECONF_SOURCE="${S}" \
+	# harfbuzz-gobject only used for instrospection, bug #535852
 	econf \
 		--without-coretext \
 		--without-uniscribe \
 		$(use_enable static-libs static) \
 		$(multilib_native_use_with cairo) \
+		$(use_with fontconfig) \
 		$(use_with glib) \
+		$(use_with introspection gobject) \
 		$(use_with graphite graphite2) \
 		$(use_with icu) \
 		$(multilib_native_use_enable introspection) \
