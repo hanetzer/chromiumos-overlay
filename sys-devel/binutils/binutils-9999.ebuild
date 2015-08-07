@@ -148,10 +148,14 @@ src_configure() {
 	echo
 
 	cd "${MY_BUILDDIR}"
-	local myconf=()
+	local myconf=( --enable-plugins )
 
 	# enable gold if available (installed as ld.gold)
-	myconf+=( --enable-gold --enable-plugins )
+	if [[ ${CTARGET} == mips* ]] ; then
+		myconf+=( --disable-gold )
+	else
+		myconf+=( --enable-gold )
+	fi
 
 	use nls \
 		&& myconf+=( --without-included-gettext ) \
