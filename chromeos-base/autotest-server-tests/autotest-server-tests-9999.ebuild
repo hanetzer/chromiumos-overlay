@@ -63,6 +63,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_CgptStress
 	+tests_firmware_CompareInstalledToShellBall
 	+tests_firmware_ConsecutiveBoot
+	+tests_firmware_ConsecutiveBootPowerButton
 	+tests_firmware_CorruptBothFwBodyAB
 	+tests_firmware_CorruptBothFwSigAB
 	+tests_firmware_CorruptBothKernelAB
@@ -82,6 +83,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_ECCharging
 	+tests_firmware_ECHash
 	+tests_firmware_ECKeyboard
+	+tests_firmware_ECKeyboardReboot
 	+tests_firmware_ECLidSwitch
 	+tests_firmware_ECPeci
 	+tests_firmware_ECPowerButton
@@ -97,6 +99,7 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_FAFTSetup
 	+tests_firmware_FwScreenCloseLid
 	+tests_firmware_FwScreenPressPower
+	+tests_firmware_FWtries
 	+tests_firmware_InvalidUSB
 	+tests_firmware_LegacyRecovery
 	+tests_firmware_Mosys
@@ -108,7 +111,10 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_SoftwareSync
 	tpm? ( +tests_firmware_TPMExtend )
 	tpm? ( +tests_firmware_TPMVersionCheck )
+	tpm? ( +tests_firmware_TPMKernelVersion )
 	+tests_firmware_TryFwB
+	+tests_firmware_TypeCCharging
+	+tests_firmware_TypeCProbeUSB3
 	+tests_firmware_UpdateFirmwareDataKeyVersion
 	+tests_firmware_UpdateFirmwareVersion
 	+tests_firmware_UpdateKernelDataKeyVersion
