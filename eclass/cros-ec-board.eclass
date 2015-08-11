@@ -37,6 +37,8 @@ EC_BOARD_NAMES=(
 	hoho
 	host
 	jerry
+	kunimitsu
+	kunimitsu_pd
 	llama
 	minimuffin
 	oak
