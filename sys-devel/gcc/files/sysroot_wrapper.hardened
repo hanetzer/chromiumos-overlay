@@ -53,19 +53,19 @@ arch = '-'.join(gcc_comp.split('-')[0:-1])
 # other flags.
 # Temporarily disable function splitting because of chromium:434751.
 flags_to_add = set(['-fstack-protector-strong', '-fPIE', '-pie',
-                    '-D_FORTIFY_SOURCE=2', '-frecord-gcc-switches',
-                    '-fno-reorder-blocks-and-partition',
+                    '-D_FORTIFY_SOURCE=2',
                     '-fno-omit-frame-pointer',
-                    '-Wno-unused-local-typedefs',
-                    '-Wno-maybe-uninitialized',
                     '-Wno-deprecated-declarations'])
 x86_disable_flags = set(['-mno-movbe'])
 
+gcc_flags = ['-frecord-gcc-switches',
+             '-fno-reorder-blocks-and-partition',
+             '-Wno-unused-local-typedefs',
+             '-Wno-maybe-uninitialized',
+            ]
+
 # Only FORTIFY_SOURCE hardening flag is applicable for clang.
-clang_flags = set(['-Qunused-arguments',
-                   '-D_FORTIFY_SOURCE=2',
-                   '-fPIE',
-                   '-Wno-deprecated-declarations'])
+clang_flags = ['-Qunused-arguments']
 
 # If -clang-syntax is present or the command line uses clang instead of gcc.
 invoke_clang = False
@@ -95,11 +95,11 @@ if fstack.intersection(myargs):
   flags_to_add.add('-fno-stack-protector')
 if fPIE.intersection(myargs):
   flags_to_add.remove('-fPIE')
-  clang_flags.remove('-fPIE')
 if pie.intersection(myargs):
   flags_to_add.remove('-pie')
 print_cmdline = '-print-cmdline' in myargs
-clang_cmdline = list(clang_flags)
+clang_cmdline = clang_flags + list(flags_to_add)
+gcc_flags += list(flags_to_add)
 clang_codegen = sys.argv[0].split('-')[-1] in ('clang', 'clang++')
 
 # We will start to enable ASAN for cros-workon packages.
@@ -255,8 +255,7 @@ def get_linker_path(cmd):
 def link_asan():
   """link process when '-fsanitize=address' appears in a gcc command."""
   orig_gcc_cmdline = [x for x in gcc_cmdline if ASAN_FLAG not in x]
-  gcc_execargs = (execargs + [real_gcc] +
-                  list(flags_to_add) + orig_gcc_cmdline)
+  gcc_execargs = (execargs + [real_gcc] + gcc_flags + orig_gcc_cmdline)
 
   p = subprocess.Popen(gcc_execargs,
                        stdout=subprocess.PIPE,
@@ -466,7 +465,7 @@ if clang_codegen:
   execargs += [clang_comp] + clang_cmdline
   argv0 = clang_comp
 else:
-  execargs += [real_gcc] + list(flags_to_add) + gcc_cmdline
+  execargs += [real_gcc] + gcc_flags + gcc_cmdline
 
 if print_cmdline:
   print('[%s] %s' % (argv0, ' '.join(execargs)))
