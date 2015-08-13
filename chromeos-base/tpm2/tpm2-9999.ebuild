@@ -25,4 +25,18 @@ src_compile() {
 
 src_install() {
 	dolib.a build/libtpm2.a
+	insinto /usr/include/tpm2
+	doins BaseTypes.h
+	doins ExecCommand_fp.h
+	doins Implementation.h
+	doins Platform.h
+	doins TPMB.h
+	doins TPM_Types.h
+	doins Tpm.h
+	doins TpmBuildSwitches.h
+	doins TpmError.h
+	doins _TPM_Init_fp.h
+	doins bool.h
+	doins swap.h
+	doins tpm_generated.h
 }
