@@ -5,6 +5,7 @@
 EAPI="4"
 PYTHON_DEPEND="test-programs? 2"
 CROS_WORKON_PROJECT="chromiumos/third_party/bluez"
+CROS_WORKON_BLACKLIST="1"
 
 inherit autotools multilib eutils systemd python udev user cros-workon
 

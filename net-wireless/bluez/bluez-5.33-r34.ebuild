@@ -7,6 +7,7 @@ CROS_WORKON_COMMIT="94813da9b2bd9ecad4816acd4f972a2aaf810496"
 CROS_WORKON_TREE="27d5e58ffe9178f9517f87b7e277103778579760"
 PYTHON_DEPEND="test-programs? 2"
 CROS_WORKON_PROJECT="chromiumos/third_party/bluez"
+CROS_WORKON_BLACKLIST="1"
 
 inherit autotools multilib eutils systemd python udev user cros-workon
 
