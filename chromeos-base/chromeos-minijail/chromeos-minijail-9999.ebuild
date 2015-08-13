@@ -58,6 +58,12 @@ src_install() {
 	dolib.so libminijail.so
 	dolib.so libminijailpreload.so
 
-	insinto /usr/include/chromeos
+	local include_dir="/usr/include/chromeos"
+
+	"${S}"/platform2_preinstall.sh "${PV}" "${include_dir}"
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins libminijail.pc
+
+	insinto "${include_dir}"
 	doins libminijail.h
 }
