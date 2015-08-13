@@ -333,52 +333,5 @@
         "-chrome_internal"
       ]
     }
-  }, 
-  {
-    "compat_id": {
-      "arch": "x86", 
-      "cflags": [
-        "-O2", 
-        "-march=i686", 
-        "-pipe", 
-        "-O2", 
-        "-pipe", 
-        "-march=i686", 
-        "-mfpmath=sse", 
-        "-mmmx", 
-        "-msse", 
-        "-msse2", 
-        "-msse3", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "accessibility", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "evdev_gestures", 
-        "gold", 
-        "highdpi", 
-        "nacl", 
-        "opengles", 
-        "ozone", 
-        "ozone_platform_default_gbm", 
-        "ozone_platform_drm", 
-        "ozone_platform_gbm", 
-        "runhooks", 
-        "v4l2_codec", 
-        "vaapi", 
-        "xkbcommon"
-      ]
-    }, 
-    "key": {
-      "board": "x86-generic_freon", 
-      "useflags": []
-    }
   }
 ]
