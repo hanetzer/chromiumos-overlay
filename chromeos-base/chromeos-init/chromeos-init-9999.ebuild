@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded +encrypted_stateful frecon +udev vtconsole"
+IUSE="cros_embedded +encrypted_stateful frecon systemd +udev vtconsole"
 
 # shunit2 should be a dependency only if USE=test, but cros_run_unit_test
 # doesn't calculate dependencies when emerging packages.
@@ -106,7 +106,9 @@ src_install() {
 		doins syslog.conf system-services.conf
 		doins uinput.conf
 
-		use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
+		if use !systemd && use udev; then
+			doins udev.conf udev-trigger.conf udev-trigger-early.conf
+		fi
 	else
 		doins *.conf
 
