@@ -4,21 +4,22 @@
 EAPI=4
 
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="0ed7532ff14fca1b74d600778b420df92b4c5716"
-CROS_WORKON_TREE="76a5808aeaea5e663a4ecdb259b815192f2d294c"
+CROS_WORKON_COMMIT=("c4947d52507c438286df8fe1ff9b83a02fb046e8" "f574c1ddb14a628bebd7c9988f5cb1332d9c839e")
+CROS_WORKON_TREE=("4193881e7e1d046024ab0dcfc7174a505c21db50" "6a63da9b38c446f4a402bb949424879816ff8dcf")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/firewalld")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/firewalld")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/firewalld")
 
 PLATFORM_SUBDIR="firewalld"
 
 inherit cros-workon platform
 
-DESCRIPTION="System service for handling firewall rules in Chromium OS"
+DESCRIPTION="System service for handling firewall rules"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT=0
 KEYWORDS="*"
 

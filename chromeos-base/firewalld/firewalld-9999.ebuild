@@ -5,18 +5,19 @@ EAPI=4
 
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/firewalld")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/firewalld")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/firewalld")
 
 PLATFORM_SUBDIR="firewalld"
 
 inherit cros-workon platform
 
-DESCRIPTION="System service for handling firewall rules in Chromium OS"
+DESCRIPTION="System service for handling firewall rules"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT=0
 KEYWORDS="~*"
 
