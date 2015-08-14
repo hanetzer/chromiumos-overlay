@@ -28,6 +28,7 @@ src_install() {
 	insinto /usr/include/tpm2
 	doins BaseTypes.h
 	doins ExecCommand_fp.h
+	doins GetCommandCodeString_fp.h
 	doins Implementation.h
 	doins Platform.h
 	doins TPMB.h
