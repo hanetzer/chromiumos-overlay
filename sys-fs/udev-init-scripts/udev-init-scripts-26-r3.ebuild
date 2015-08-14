@@ -25,11 +25,9 @@ fi
 
 RESTRICT="test"
 
-# TODO(stevefung): Once dependency on udev-171 no longer remains, change
-#   the rdepends back to original '!<sys-fs/udev-186' and move the package
-#   back to portage-stable
+# TODO(stevefung): move the package back to portage-stable
 RDEPEND=">=virtual/udev-180
-	>=sys-fs/udev-186"
+	!<sys-fs/udev-186"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 

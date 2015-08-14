@@ -20,7 +20,7 @@ REQUIRED_USE="asan? ( clang )"
 RDEPEND="chromeos-base/gestures-conf
 	chromeos-base/libevdev
 	dev-libs/jsoncpp
-	sys-fs/udev"
+	virtual/udev"
 DEPEND="dev-cpp/gtest
 	X? ( x11-libs/libXi )
 	${RDEPEND}"

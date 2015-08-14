@@ -27,7 +27,7 @@ RDEPEND="
 	dev-libs/glib
 	sys-apps/dbus
 	dev-libs/dbus-glib
-	sys-fs/udev"
+	virtual/udev"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api

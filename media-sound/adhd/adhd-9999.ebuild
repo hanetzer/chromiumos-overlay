@@ -25,7 +25,7 @@ RDEPEND=">=media-libs/alsa-lib-1.0.27
 	dev-libs/iniparser
 	>=sys-apps/dbus-1.4.12
 	dev-libs/libpthread-stubs
-	sys-fs/udev"
+	virtual/udev"
 DEPEND="${RDEPEND}
 	media-libs/ladspa-sdk"
 

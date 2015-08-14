@@ -40,7 +40,7 @@ RDEPEND="${RDEPEND}
 		dev-libs/protobuf-python
 	)
 	tests_platform_RootPartitionsNotMounted? ( sys-apps/rootdev )
-	tests_platform_RootPartitionsNotMounted? ( sys-fs/udev )
+	tests_platform_RootPartitionsNotMounted? ( virtual/udev )
 	tests_hardware_MemoryLatency? ( app-benchmarks/lmbench )
 	tests_hardware_MemoryThroughput? ( app-benchmarks/lmbench )
 	tests_kernel_Lmbench? ( app-benchmarks/lmbench )

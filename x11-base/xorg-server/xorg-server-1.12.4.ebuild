@@ -54,7 +54,7 @@ RDEPEND="
 		opengl? ( >=media-libs/mesa-7.8_rc[nptl=] )
 	)
 	tslib? ( >=x11-libs/tslib-1.0 )
-	udev? ( >=sys-fs/udev-150 )
+	udev? ( virtual/udev )
 	selinux? ( sec-policy/selinux-xserver )"
 
 DEPEND="${RDEPEND}

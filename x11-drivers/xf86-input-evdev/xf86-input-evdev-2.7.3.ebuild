@@ -12,8 +12,8 @@ KEYWORDS="*"
 IUSE=""
 RDEPEND="chromeos-base/touch_noise_filter
 	>=x11-base/xorg-server-1.10[udev]
-	sys-fs/udev
-	sys-libs/mtdev"
+	sys-libs/mtdev
+	virtual/udev"
 DEPEND="${RDEPEND}
 	>=x11-proto/inputproto-2.1.99.3
 	>=sys-kernel/linux-headers-2.6"

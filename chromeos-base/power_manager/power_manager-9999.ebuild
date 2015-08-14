@@ -24,7 +24,7 @@ RDEPEND="
 	chromeos-base/metrics
 	dev-libs/protobuf
 	cras? ( media-sound/adhd )
-	sys-fs/udev"
+	virtual/udev"
 
 DEPEND="${RDEPEND}
 	chromeos-base/system_api

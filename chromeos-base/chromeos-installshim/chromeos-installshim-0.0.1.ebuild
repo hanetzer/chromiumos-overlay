@@ -56,7 +56,6 @@ RDEPEND="
 	sys-apps/which
 	sys-auth/pam_pwdfile
 	sys-fs/e2fsprogs
-	sys-fs/udev
 	sys-libs/gcc-libs
 	sys-process/lsof
 	sys-process/procps
@@ -64,6 +63,7 @@ RDEPEND="
 	virtual/chromeos-bsp
 	virtual/chromeos-factoryinstall-bsp
 	virtual/modutils
+	virtual/udev
 "
 
 S=${WORKDIR}

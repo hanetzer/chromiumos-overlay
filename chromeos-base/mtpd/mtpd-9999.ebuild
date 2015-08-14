@@ -23,7 +23,7 @@ RDEPEND="
 	>=dev-libs/glib-2.30
 	dev-libs/protobuf
 	media-libs/libmtp
-	sys-fs/udev
+	virtual/udev
 "
 
 DEPEND="${RDEPEND}

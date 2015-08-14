@@ -186,7 +186,7 @@ RDEPEND="${RDEPEND}
 	opengl? ( virtual/opengl )
 	opengles? ( virtual/opengles )
 	sys-apps/pciutils
-	sys-fs/udev
+	virtual/udev
 	sys-libs/libcap
 	chrome_remoting? ( sys-libs/pam )
 	sys-libs/zlib
