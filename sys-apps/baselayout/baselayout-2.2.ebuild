@@ -1,6 +1,6 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/baselayout/baselayout-2.0.1.ebuild,v 1.1 2009/05/24 19:47:02 vapier Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/baselayout/baselayout-2.2.ebuild,v 1.17 2014/01/18 09:05:09 vapier Exp $
 
 EAPI="4"
 
@@ -22,7 +22,7 @@ src_prepare() {
 
 src_install() {
 	emake \
-		OS=$(use kernel_FreeBSD && echo BSD || echo Linux) \
+		OS=$(usex kernel_FreeBSD BSD Linux) \
 		DESTDIR="${D}" \
 		install
 
@@ -40,7 +40,7 @@ src_install() {
 	echo "LDPATH='${ldpaths#:}'" >> "${D}"/etc/env.d/00basic
 
 	# Remove files that don't make sense for Chromium OS
-	for x in issue issue.logo ; do
+	for x in issue issue.logo os-release; do
 		rm -f "${D}/etc/${x}"
 	done
 
@@ -70,6 +70,6 @@ pkg_postinst() {
 
 	# Force shadow permissions to not be world-readable #260993
 	for x in shadow ; do
-		[ -e "${ROOT}etc/${x}" ] && chmod 0600 "${ROOT}etc/${x}"
+		[ -e "${ROOT}etc/${x}" ] && chmod o-rwx "${ROOT}etc/${x}"
 	done
 }
