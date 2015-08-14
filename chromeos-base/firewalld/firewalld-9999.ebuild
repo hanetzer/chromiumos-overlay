@@ -41,6 +41,22 @@ src_install() {
 	# Install Upstart configuration.
 	insinto /etc/init
 	doins firewalld.conf
+
+	local client_includes=/usr/include/firewalld-client
+	local client_test_includes=/usr/include/firewalld-client-test
+
+	# Install DBus proxy header.
+	insinto "${client_includes}/firewalld"
+	doins "${OUT}/gen/include/firewalld/dbus-proxies.h"
+	insinto "${client_test_includes}/firewalld"
+	doins "${OUT}/gen/include/firewalld/dbus-mocks.h"
+
+	# Generate and install pkg-config for client libraries.
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	./generate_pc_file.sh "${OUT}" libfirewalld-client "${client_includes}"
+	doins "${OUT}/libfirewalld-client.pc"
+	./generate_pc_file.sh "${OUT}" libfirewalld-client-test "${client_test_includes}"
+	doins "${OUT}/libfirewalld-client-test.pc"
 }
 
 platform_pkg_test() {
