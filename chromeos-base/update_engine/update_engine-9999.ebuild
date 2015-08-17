@@ -98,12 +98,32 @@ src_install() {
 
 	use delta_generator && dobin "${OUT}"/delta_generator
 
-	insinto /etc/dbus-1/system.d
-	doins UpdateEngine.conf
-
 	insinto /etc
 	doins update_engine.conf
 
+	# Install upstart script
 	insinto /etc/init
 	doins init/update-engine.conf
+
+	# Install DBus configuration
+	insinto /etc/dbus-1/system.d
+	doins UpdateEngine.conf
+
+	local client_includes=/usr/include/update_engine-client
+	local client_test_includes=/usr/include/update_engine-client-test
+
+	# Install DBus proxy headers
+	insinto "${client_includes}/update_engine"
+	doins "${OUT}/gen/include/update_engine/dbus-proxies.h"
+	insinto "${client_test_includes}/update_engine"
+	doins "${OUT}/gen/include/update_engine/dbus-proxy-mocks.h"
+
+	# Install pkg-config for client libraries.
+	./generate_pc_file.sh "${OUT}" libupdate_engine-client "${client_includes}" ||
+		die "Error generating libupdate_engine-client.pc file"
+	./generate_pc_file.sh "${OUT}" libupdate_engine-client-test "${client_test_includes}" ||
+		die "Error generating libupdate_engine-client-test.pc file"
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins "${OUT}/libupdate_engine-client.pc"
+	doins "${OUT}/libupdate_engine-client-test.pc"
 }
