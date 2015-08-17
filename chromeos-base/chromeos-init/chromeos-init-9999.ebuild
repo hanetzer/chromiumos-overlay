@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded +encrypted_stateful frecon systemd +udev vtconsole"
+IUSE="cros_embedded +encrypted_stateful frecon -s3halt systemd +udev vtconsole"
 
 # shunit2 should be a dependency only if USE=test, but cros_run_unit_test
 # doesn't calculate dependencies when emerging packages.
@@ -100,7 +100,7 @@ src_install() {
 
 		doins report-boot-complete.conf
 		doins cgroups.conf
-		doins failsafe-delay.conf failsafe.conf halt.conf
+		doins failsafe-delay.conf failsafe.conf
 		doins log-rotate.conf
 		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
@@ -114,6 +114,12 @@ src_install() {
 		doins *.conf
 
 		dosbin display_low_battery_alert
+	fi
+
+	if use s3halt; then
+		doins halt/s3halt.conf
+	else
+		doins halt/halt.conf
 	fi
 
 	use vtconsole && doins vtconsole/*.conf
