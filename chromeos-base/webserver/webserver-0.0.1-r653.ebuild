@@ -3,13 +3,13 @@
 
 EAPI=4
 
+CROS_WORKON_COMMIT=("0ed7532ff14fca1b74d600778b420df92b4c5716" "0a3014622b51445b2464b7a9b73f651e3173766d")
+CROS_WORKON_TREE=("76a5808aeaea5e663a4ecdb259b815192f2d294c" "25efd26168246f2a0bd0bb67729e433115aabf48")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="fba8c48ee6b97a4db2eff55fa891c43cb232c444"
-CROS_WORKON_TREE="841aba308ae7fd2a90da04675855dd6158103748"
-CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/webservd")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/webservd")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/webserver")
 
 PLATFORM_SUBDIR="webserver"
 
