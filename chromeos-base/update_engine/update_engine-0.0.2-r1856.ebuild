@@ -3,14 +3,14 @@
 
 EAPI="4"
 
+CROS_WORKON_COMMIT=("5a5a86ffd0d3d99528893eac40555928ec74035d" "d2956cc4b5c60d3d670eb7bf0f1ba800c8a16d62")
+CROS_WORKON_TREE=("47bce7aa0c1af512e228d1ec8a4071eac09d9194" "b85ce127cf95cb774cbf7178022c7db8ec9099b9")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="a4d9218ffd269de9227c634b85886ebe7b33a55d"
-CROS_WORKON_TREE="dcaf5113389b7efe0d1a6714c3027800004d379f"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/update_engine")
 CROS_WORKON_USE_VCSID=1
-CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="update_engine"
 
