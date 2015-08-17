@@ -15,9 +15,10 @@ DESCRIPTION="Shill Connection Manager for Chromium OS"
 HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
-IUSE="+cellular pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x dhcpv6 chromeos_dbus"
+IUSE="+cellular chromeos_dbus dhcpv6 pppoe +seccomp test +tpm +vpn wake_on_wifi +wifi wimax +wired_8021x"
 KEYWORDS="~*"
 
+# Sorted by the package we depend on. (Not by use flag!)
 RDEPEND="
 	chromeos-base/bootstat
 	tpm? ( chromeos-base/chaps )
@@ -34,12 +35,12 @@ RDEPEND="
 	net-libs/libnetfilter_queue
 	net-libs/libnfnetlink
 	net-misc/dhcpcd
-	sys-apps/rootdev
+	dhcpv6? ( net-misc/dhcpcd[ipv6] )
 	vpn? ( net-misc/openvpn )
 	wifi? ( net-wireless/wpa_supplicant[dbus] )
 	wired_8021x? ( net-wireless/wpa_supplicant[dbus] )
+	sys-apps/rootdev
 	cellular? ( virtual/modemmanager )
-	dhcpv6? ( net-misc/dhcpcd[ipv6] )
 "
 
 DEPEND="${RDEPEND}
