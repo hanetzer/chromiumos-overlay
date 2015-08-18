@@ -118,6 +118,7 @@ src_install() {
 	# Install DBus proxy headers
 	insinto "${client_includes}/update_engine"
 	doins "${OUT}/gen/include/update_engine/dbus-proxies.h"
+	doins "${S}/dbus_constants.h"
 	insinto "${client_test_includes}/update_engine"
 	doins "${OUT}/gen/include/update_engine/dbus-proxy-mocks.h"
 
