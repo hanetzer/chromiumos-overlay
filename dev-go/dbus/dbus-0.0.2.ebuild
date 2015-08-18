@@ -3,13 +3,13 @@
 
 EAPI=5
 
-GITHUB_PATH="github.com/guelfey/go.dbus"
+GITHUB_PATH="github.com/godbus/dbus"
 
 # Disable cros-workon auto-uprev since this is an external package.
 # Must manage commit/tree hashes manually.
 CROS_WORKON_BLACKLIST="1"
-CROS_WORKON_COMMIT="f6a3a2366cc39b8479cadc499d3c735fb10fbdda"
-CROS_WORKON_TREE="c252d5e5bcae7590b6cf913187f91eadd73ab1a8"
+CROS_WORKON_COMMIT="25c3068a42a0b50b877953fb249dbcffc6bd1bca"
+CROS_WORKON_TREE="9de3ae512491f80bd387ed687ce943259acadd13"
 CROS_WORKON_PROJECT="external/${GITHUB_PATH}"
 CROS_WORKON_DESTDIR="${S}/src/${GITHUB_PATH}"
 
