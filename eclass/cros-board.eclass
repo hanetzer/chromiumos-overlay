@@ -55,17 +55,14 @@ ALL_BOARDS=(
 	buddy
 	#buranku
 	butterfly
-	butterfly_freon
 	bwtm2
 	bxt-rvp
 	candy
-	#candy_freon
 	cardhu
 	celes
 	#chronos
 	cid
 	clapper
-	#clapper_freon
 	cosmos
 	cranky
 	cyan
@@ -84,12 +81,9 @@ ALL_BOARDS=(
 	duck
 	#emeraldlake2
 	enguarde
-	#enguarde_freon
 	envoy-jerry
 	expresso
-	#expresso_freon
 	falco
-	#falco_freon
 	falco_gles
 	falco_li
 	fb1
@@ -102,9 +96,7 @@ ALL_BOARDS=(
 	gizmo
 	glados
 	glimmer
-	#glimmer_freon
 	gnawty
-	#gnawty_freon
 	guado
 	guado_moblab
 	heli
@@ -116,7 +108,6 @@ ALL_BOARDS=(
 	#kennet
 	#kiev
 	kip
-	#kip_freon
 	klang
 	kunimitsu
 	lakitu
@@ -126,16 +117,13 @@ ALL_BOARDS=(
 	#lemmings_external
 	leon
 	link
-	#link_freon
 	lulu
 	lumpy
-	lumpy_freon
 	mappy
 	mappy-envoy
 	mappy_flashstation
 	marble
 	mccloud
-	#mccloud_freon
 	minnowboard
 	mipseb-o32-generic
 	mipseb-n32-generic
@@ -144,7 +132,6 @@ ALL_BOARDS=(
 	mipsel-n32-generic
 	mipsel-n64-generic
 	monroe
-	#monroe_freon
 	moose
 	ninja
 	nyan
@@ -158,13 +145,10 @@ ALL_BOARDS=(
 	panda
 	panther
 	panther_embedded
-	#panther_freon
 	panther_goofy
 	panther_moblab
 	parrot
-	parrot_freon
 	parrot_ivb
-	#parrot_ivb-freon
 	parrot32
 	parrot64
 	#parry
@@ -173,7 +157,6 @@ ALL_BOARDS=(
 	peach_pi
 	peach_pit
 	peppy
-	#peppy_freon
 	ppcbe-32-generic
 	ppcbe-64-generic
 	ppcle-32-generic
@@ -181,9 +164,7 @@ ALL_BOARDS=(
 	puppy
 	purin
 	quawks
-	quawks_freon
 	rambi
-	#rambi_freon
 	raspberrypi
 	reptile
 	#ricochet
@@ -201,20 +182,16 @@ ALL_BOARDS=(
 	sonic
 	#space
 	squawks
-	#squawks_freon
 	storm
 	storm_nand
 	stout
-	stout_freon
 	#stout32
 	strago
 	stumpy
-	stumpy_freon
 	stumpy_moblab
 	stumpy_pico
 	sumo
 	swanky
-	#swanky_freon
 	tails
 	#tegra2
 	#tegra2_aebl
@@ -228,7 +205,6 @@ ALL_BOARDS=(
 	tegra3-generic
 	tidus
 	tricky
-	#tricky_freon
 	ultima
 	#urara
 	veyron
@@ -253,15 +229,12 @@ ALL_BOARDS=(
 	whirlwind
 	winky
 	wizpig
-	#winky_freon
 	wolf
 	wsb
 	x32-generic
 	x86-agz
 	x86-alex
-	x86-alex_freon
 	x86-alex_he
-	x86-alex_he-freon
 	x86-alex_hubble
 	x86-alex32
 	x86-alex32_he
@@ -272,18 +245,14 @@ ALL_BOARDS=(
 	x86-generic_embedded
 	x86-generic_freon
 	x86-mario
-	x86-mario_freon
 	x86-mario64
 	#x86-pineview
 	#x86-wayland
 	x86-zgb
-	x86-zgb_freon
 	x86-zgb_he
-	x86-zgb_he-freon
 	x86-zgb32
 	x86-zgb32_he
 	zako
-	#zako_freon
 )
 
 # Use the CROS_BOARDS defined by ebuild, otherwise use ALL_BOARDS.
