@@ -34,6 +34,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_ChaosLongConnect
 	!chromeless_tty (
 		!app_shell (
+			+tests_cellular_ChromeEndToEnd
 			+tests_network_WiFi_ChromeEndToEnd
 			+tests_network_WiFi_RoamEndToEnd
                         +tests_network_WiFi_RoamSuspendEndToEnd
