@@ -100,14 +100,15 @@ src_install() {
 
 		doins report-boot-complete.conf
 		doins cgroups.conf
-		doins dbus.conf failsafe-delay.conf failsafe.conf halt.conf
+		doins failsafe-delay.conf failsafe.conf halt.conf
 		doins log-rotate.conf
 		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
 		doins syslog.conf system-services.conf
 		doins uinput.conf
 
-		if use !systemd && use udev; then
-			doins udev.conf udev-trigger.conf udev-trigger-early.conf
+		if use !systemd; then
+			doins dbus.conf
+			use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
 		fi
 	else
 		doins *.conf
