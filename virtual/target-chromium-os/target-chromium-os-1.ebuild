@@ -126,6 +126,7 @@ CROS_COMMON_RDEPEND+="
 	watchdog? ( sys-apps/daisydog )
 	coreboot? ( sys-boot/coreboot )
 	mtd? ( sys-fs/mtd-utils )
+	chromeos-base/chromeos-machine-id-regen
 	sys-kernel/linux-firmware
 	virtual/chromeos-bsp
 	virtual/chromeos-firewall
