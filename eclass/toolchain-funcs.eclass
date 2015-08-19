@@ -773,8 +773,12 @@ clang-setup-env() {
 	esac
 
 	if use asan; then
-		append-flags -fsanitize=address -fno-omit-frame-pointer
-		append-ldflags -fsanitize=address
+		local asan_flags=(
+			-fsanitize=address
+			-fsanitize=alignment
+		)
+		append-flags "${asan_flags[@]}"
+		append-ldflags "${asan_flags[@]}"
 	fi
 }
 
