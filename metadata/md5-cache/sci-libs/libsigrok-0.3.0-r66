@@ -1,0 +1,12 @@
+DEFINED_PHASES=configure info install prepare setup test unpack
+DEPEND=>=dev-libs/glib-2.32.0 >=dev-libs/libzip-0.8 ftdi? ( >=dev-embedded/libftdi-0.16 ) serial? ( dev-libs/libserialport ) usb? ( virtual/libusb:1 ) test? ( >=dev-libs/check-0.9.4 ) virtual/pkgconfig dev-vcs/git !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
+DESCRIPTION=provide basic hardware drivers for logic analyzers and input/output file format support
+EAPI=5
+HOMEPAGE=http://sigrok.org/wiki/Libsigrok
+IUSE=ftdi serial static-libs test usb cros_host cros_workon_tree_50ba20d32fd049efea35a0ff9e81c513521b1be3 profiling
+KEYWORDS=*
+LICENSE=GPL-3
+RDEPEND=!static-libs? ( >=dev-libs/glib-2.32.0 >=dev-libs/libzip-0.8 ftdi? ( >=dev-embedded/libftdi-0.16 ) serial? ( dev-libs/libserialport ) usb? ( virtual/libusb:1 ) ) static-libs? ( >=dev-libs/glib-2.32.0[static-libs(+)] >=dev-libs/libzip-0.8[static-libs(+)] ftdi? ( >=dev-embedded/libftdi-0.16[static-libs(+)] ) serial? ( dev-libs/libserialport[static-libs(+)] ) usb? ( virtual/libusb:1[static-libs(+)] ) )
+SLOT=0
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_md5_=4c49f2b25f380f8f4e3c6e217560c37c
