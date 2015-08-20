@@ -53,4 +53,5 @@ src_install() {
 
 platform_pkg_test() {
   platform_test "run" "${OUT}/libweave_testrunner"
+  platform_test "run" "${OUT}/libweave_base_testrunner"
 }
