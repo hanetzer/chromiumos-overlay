@@ -47,6 +47,9 @@ src_install() {
   # Install header files.
   insinto /usr/include/weave
   doins include/weave/*.h
+
+  insinto /usr/include/weave/test
+  doins include/weave/test/*.h
 }
 
 platform_pkg_test() {
