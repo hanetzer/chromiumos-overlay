@@ -24,13 +24,18 @@ cat ${IIO_DEVICES}/iio_sysfs_trigger/trigger0/name > \
     ${IIO_DEVICE_PATH}/trigger/current_trigger
 
 # Set up fields to probe on trigger.
+# Original fields for backwards compatibility with older kernel
 echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_x_base_en
 echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_y_base_en
 echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_z_base_en
 echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_x_lid_en
 echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_y_lid_en
 echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_z_lid_en
+# Fields for current kernel
 echo 0 > ${IIO_DEVICE_PATH}/scan_elements/in_timestamp_en
+echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_x_en
+echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_y_en
+echo 1 > ${IIO_DEVICE_PATH}/scan_elements/in_accel_z_en
 
 # We only fetch 1 sample at a time as Chrome is the only consumer.
 echo 1 > ${IIO_DEVICE_PATH}/buffer/length
