@@ -26,9 +26,10 @@ SRC_URI=""
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="static"
 
 src_configure() {
+	use static && append-ldflags -static
 	cros-workon_src_configure
 	tc-export CC
 	export prefix=/usr
