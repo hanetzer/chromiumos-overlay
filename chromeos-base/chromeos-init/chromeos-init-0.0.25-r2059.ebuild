@@ -101,7 +101,6 @@ src_install() {
 		doins embedded-init/boot-services.conf
 
 		doins report-boot-complete.conf
-		doins cgroups.conf
 		doins failsafe-delay.conf failsafe.conf
 		doins log-rotate.conf
 		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
@@ -109,6 +108,7 @@ src_install() {
 		doins uinput.conf
 
 		if use !systemd; then
+			doins cgroups.conf
 			doins dbus.conf
 			use udev && doins udev.conf udev-trigger.conf udev-trigger-early.conf
 		fi
