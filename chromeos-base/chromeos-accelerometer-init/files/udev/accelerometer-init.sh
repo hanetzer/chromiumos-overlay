@@ -8,6 +8,7 @@
 DEVICE=$1
 IIO_DEVICES=/sys/bus/iio/devices
 IIO_DEVICE_PATH=${IIO_DEVICES}/${DEVICE}
+LOCATION=$(cat "${IIO_DEVICE_PATH}/location")
 
 # Sets pre-determined calibration values for the accelerometers.
 # The calibration values are fetched from the VPD.
@@ -17,6 +18,15 @@ dump_vpd_log --full --stdout | \
     CALIBRATION_NAME=$(echo ${key_value} | cut -d= -f1)
     CALIBRATION_VALUE=$(echo ${key_value} | cut -d= -f2)
     echo ${CALIBRATION_VALUE} > ${IIO_DEVICE_PATH}/${CALIBRATION_NAME}
+    # After kernel 3.18, it has separated iio:device for each acceleroemter.
+    # It needs to read values from in_accel_[xyz]_(lid|base)_calibbias in
+    # VPD and writes it into in_accel_[xyz]_calibbias in sysfs.
+    # _caliscale is not required now.
+    if (echo ${CALIBRATION_NAME} | grep -q "${LOCATION}_calibbias"); then
+      NEW_CALIBRATION_NAME=$(echo ${CALIBRATION_NAME} |
+                             sed 's/'"${LOCATION}"'_//;')
+      echo ${CALIBRATION_VALUE} > ${IIO_DEVICE_PATH}/${NEW_CALIBRATION_NAME}
+    fi
   done
 
 echo 0 > ${IIO_DEVICES}/iio_sysfs_trigger/add_trigger
