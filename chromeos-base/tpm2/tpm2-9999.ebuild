@@ -5,7 +5,7 @@ EAPI="4"
 CROS_WORKON_PROJECT="chromiumos/third_party/tpm2"
 CROS_WORKON_LOCALNAME="../third_party/tpm2"
 
-inherit cros-workon
+inherit cros-workon toolchain-funcs
 
 DESCRIPTION="TPM2.0 library"
 HOMEPAGE="http://www.chromium.org/"
@@ -17,9 +17,7 @@ KEYWORDS="~*"
 DEPEND="dev-libs/openssl"
 
 src_compile() {
-	if [ "${ARCH}" == "arm" ]; then
-		export CROSS_COMPILE=arm-none-eabi-
-	fi
+	tc-export CC AR RANLIB
 	emake
 }
 

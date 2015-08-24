@@ -21,11 +21,11 @@ KEYWORDS="~*"
 
 RDEPEND="
 	dev-libs/openssl
-	chromeos-base/tpm2
 	chromeos-base/libchromeos
 	"
 
 DEPEND="
+	chromeos-base/tpm2
 	${RDEPEND}
 	"
 
