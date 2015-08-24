@@ -111,6 +111,7 @@ src_prepare() {
 	fi
 	epatch "${FILESDIR}"/python-2.7.3-cross-distutils.patch
 	epatch "${FILESDIR}"/python-2.7.3-unique-semaphore-name.patch
+	epatch "${FILESDIR}"/python-2.7.3-ldshared.patch
 	# Undo the @libdir@ change for portage's pym folder as it is always
 	# installed into /usr/lib/ and not the abi libdir.
 	sed -i \
