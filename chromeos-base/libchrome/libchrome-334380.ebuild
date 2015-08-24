@@ -6,9 +6,10 @@
 # the last change actually made to the base subdir.
 
 EAPI="4"
-CROS_WORKON_PROJECT=("chromium/src/base" "chromium/src/dbus" "chromium/src/crypto" "chromium/src/sandbox" "chromium/src/components/timers")
-CROS_WORKON_COMMIT=("23911a0c34e67963090f08eb01bb41cd84a63fb4" "c1a556bff88c44a8273ba82f171c6a72e6c8ce0c" "3b5d1294b3169b9b0152e9ab176544efd61f4866" "50337f60e1d99b85f1593ffc4ef32b9577720832" "7eba189565d79f88e251fade32f85894c097135c")
-CROS_WORKON_DESTDIR=("${S}/base" "${S}/dbus" "${S}/crypto" "${S}/sandbox" "${S}/components/timers")
+
+CROS_WORKON_REPO="https://android.googlesource.com"
+CROS_WORKON_PROJECT="platform/external/libchrome"
+CROS_WORKON_COMMIT="65f5398574f1a8dbdcc15b19459c5266526a8dae"
 CROS_WORKON_BLACKLIST="1"
 
 inherit cros-workon cros-debug flag-o-matic toolchain-funcs scons-utils
@@ -35,52 +36,6 @@ DEPEND="${RDEPEND}
 	cros_host? ( dev-util/scons )"
 
 src_prepare() {
-	mkdir -p build
-	cp -p "${FILESDIR}/build_config.h-${SLOT}" build/build_config.h || die
-	cp -p "${FILESDIR}/SConstruct-${SLOT}" SConstruct || die
-
-	# Temporarily patch base::MessageLoopForUI to use base::MessagePumpGlib
-	# so that daemons like shill can be upgraded to libchrome:293168.
-	# TODO(benchan): Remove this workaround (crbug.com/361635).
-	epatch "${FILESDIR}"/base-${SLOT}-message-loop-for-ui.patch
-
-	# Temporarily revert base::WriteFile to the behavior in older revision
-	# of libchrome until we sort out the expected file permissions at all
-	# call sites of base::WriteFile in Chrome OS code.
-	# TODO(benchan): Remove this workaround (crbug.com/412057).
-	epatch "${FILESDIR}"/base-${SLOT}-revert-writefile-permissions.patch
-
-	# Add support for std::unique_ptr in base::Bind/base::Callback.
-	# TODO(avakulenko): Remove this when Chorme supports it (crbug.com/482079).
-	epatch "${FILESDIR}"/base-${SLOT}-bind-unique_ptr.patch
-
-	# Chrome is using BoringSSL while CrOS is still on OpenSSL.
-	# OpenSSL doesn't have <openssl/mem.h> header file.
-	# TODO(avakulenko): Remove this when CrOS moves to BoringSSL.
-	epatch "${FILESDIR}"/base-${SLOT}-boringssl.patch
-
-	# base::FileTracing::Provider has virtual functions but no virtual dtor.
-	# This trips -Wnon-virtual-dtor warning on CrOS side.
-	# TODO(avakulenko): Remove this when Chrome version of this header is fixed.
-	epatch "${FILESDIR}"/base-${SLOT}-file-tracing-provider-virt-dtor.patch
-
-	# Add stub headers for a few files that are usually checked out to locations
-	# outside of base/ in the Chrome repository.
-	mkdir -p third_party/libevent
-	echo '#include <event.h>' > third_party/libevent/event.h
-
-	mkdir -p third_party/protobuf/src/google/protobuf
-	echo '#include <google/protobuf/message_lite.h>' > \
-		third_party/protobuf/src/google/protobuf/message_lite.h
-
-	mkdir -p testing/gtest/include/gtest
-	echo '#include <gtest/gtest_prod.h>' > \
-		testing/gtest/include/gtest/gtest_prod.h
-
-	mkdir -p testing/gmock/include/gmock
-	echo '#include <gmock/gmock.h>' > \
-		testing/gmock/include/gmock/gmock.h
-
 	# base/files/file_posix.cc expects 64-bit off_t, which requires
 	# enabling large file support.
 	append-lfs-flags
