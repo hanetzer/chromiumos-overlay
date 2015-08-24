@@ -7,8 +7,9 @@ CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/update_engine")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
 CROS_WORKON_USE_VCSID=1
+CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_SUBDIR="update_engine"
 
@@ -50,6 +51,12 @@ RDEPEND="
 	delta_generator? ( sys-fs/e2fsprogs )
 	virtual/update-policy
 "
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/update_engine"
+}
 
 platform_pkg_test() {
 	local unittests_binary="${OUT}"/update_engine_unittests

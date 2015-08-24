@@ -3,14 +3,15 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("31d42cf6bebc02a681cf68dbb97994a056b1bfe4" "aea4c1cea20dda7ae7e85fc8924a2d784f70d806")
-CROS_WORKON_TREE=("cb2e898964211b0303648496a9c51e4e47222904" "a8934ac4c258cf942ecc2423fe94f1458acfa64f")
+CROS_WORKON_COMMIT=("5deacc703881caaaaa5fbaf8cb81cba5c1df21b8" "a7a34d80adcc67b51f337c8d58034cf43bd882a9")
+CROS_WORKON_TREE=("1440996879b9973e604a30d2d1df602722784f76" "c12755d5029137f1f730978cdb8217ff7d345d47")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
-CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/update_engine")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/update_engine")
 CROS_WORKON_USE_VCSID=1
+CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_SUBDIR="update_engine"
 
@@ -52,6 +53,12 @@ RDEPEND="
 	delta_generator? ( sys-fs/e2fsprogs )
 	virtual/update-policy
 "
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/update_engine"
+}
 
 platform_pkg_test() {
 	local unittests_binary="${OUT}"/update_engine_unittests
