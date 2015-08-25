@@ -87,7 +87,6 @@ CLIENT_IUSE_TESTS="
 	+tests_dummy_Fail
 	+tests_dummy_Pass
 	tests_example_UnitTest
-	+tests_firmware_FMap
 	+tests_firmware_RomSize
 	+tests_firmware_TouchMTB
 	+tests_firmware_VbootCrypto
