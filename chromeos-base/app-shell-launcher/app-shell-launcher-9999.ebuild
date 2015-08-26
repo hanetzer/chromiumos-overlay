@@ -20,7 +20,11 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-DEPEND="chromeos-base/libchromeos"
+DEPEND="
+	chromeos-base/libchromeos
+	chromeos-base/libchromeos-ui
+	"
+
 RDEPEND="${DEPEND}
 	chromeos-base/chromeos-chrome[app_shell]"
 
