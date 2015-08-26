@@ -109,7 +109,7 @@ qemu_run() {
 generate_font_cache() {
 	mkdir -p "${ROOT}/usr/share/fontconfig" || die
 	# fc-cache needs the font files to be located in their final resting place.
-	qemu_run /usr/bin/fc-cache -f
+	qemu_run /usr/bin/fc-cache -f -v
 }
 
 pkg_preinst() {
