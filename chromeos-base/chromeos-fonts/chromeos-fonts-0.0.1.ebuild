@@ -71,23 +71,23 @@ RDEPEND="
 qemu_run() {
 	# Run the emulator to execute command. It needs to be copied
 	# temporarily into the sysroot because we chroot to it.
-	local qemu
+	local qemu=()
 	case "${ARCH}" in
 		amd64)
 			# Note that qemu is not actually run below in this case.
-			qemu="qemu-x86_64"
+			qemu=( qemu-x86_64 -cpu Broadwell )
 			;;
 		arm)
-			qemu="qemu-arm"
+			qemu=( qemu-arm )
 			;;
 		arm64)
-			qemu="qemu-aarch64"
+			qemu=( qemu-aarch64 )
 			;;
 		mips)
-			qemu="qemu-mipsel"
+			qemu=( qemu-mipsel )
 			;;
 		x86)
-			qemu="qemu-i386"
+			qemu=( qemu-i386 -cpu Broadwell )
 			;;
 		*)
 			die "Unable to determine QEMU from ARCH."
@@ -97,12 +97,17 @@ qemu_run() {
 	# chroot or use qemu.
 	if [ "${ROOT:-/}" = "/" ]; then
 		"$@" || die
-	elif [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "x86" ]; then
-		chroot "${ROOT}" "$@" || die
 	else
-		cp "/usr/bin/${qemu}" "${ROOT}/tmp" || die
-		chroot "${ROOT}" "/tmp/${qemu}" "$@" || die
-		rm "${ROOT}/tmp/${qemu}" || die
+		# Try to run it natively first as it should be fast.
+		if [ "${ARCH}" = "amd64" ] || [ "${ARCH}" = "x86" ]; then
+			if chroot "${ROOT}" "$@" ; then
+				return
+			fi
+			ewarn "Native crashed; falling back to qemu"
+		fi
+		cp "/usr/bin/${qemu[0]}" "${ROOT}/tmp" || die
+		chroot "${ROOT}" "/tmp/${qemu[0]}" "${qemu[@]:1}" "$@" || die
+		rm "${ROOT}/tmp/${qemu[0]}" || die
 	fi
 }
 
