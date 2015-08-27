@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/dbus-1.6.8.ebuild,v 1.10 2013/01/20 11:21:03 pinkbyte Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/dbus/Attic/dbus-1.6.8-r1.ebuild,v 1.5 2013/08/24 11:46:12 ssuominen dead $
 
 EAPI=4
 inherit autotools eutils linux-info flag-o-matic python virtualx user
@@ -12,13 +12,14 @@ SRC_URI="http://dbus.freedesktop.org/releases/dbus/${P}.tar.gz"
 LICENSE="|| ( AFL-2.1 GPL-2 )"
 SLOT="0"
 KEYWORDS="*"
-IUSE="debug doc selinux static-libs test X"
+IUSE="debug doc selinux static-libs systemd test X"
 
 RDEPEND=">=dev-libs/expat-2
 	selinux? (
 		sec-policy/selinux-dbus
 		sys-libs/libselinux
 		)
+	systemd? ( >=sys-apps/systemd-44-r1 )
 	X? (
 		x11-libs/libX11
 		x11-libs/libXt
@@ -32,7 +33,7 @@ DEPEND="${RDEPEND}
 		)
 	test? (
 		>=dev-libs/glib-2.24
-		dev-lang/python:2.7
+		${PYTHON_DEPS}
 		)"
 
 # out of sources build directory
@@ -44,10 +45,7 @@ pkg_setup() {
 	enewgroup messagebus
 	enewuser messagebus -1 -1 -1 messagebus
 
-	if use test; then
-		python_set_active_version 2
-		python_pkg_setup
-	fi
+	use test && python-any-r1_pkg_setup
 
 	if use kernel_linux; then
 		CONFIG_CHECK="~EPOLL"
@@ -64,8 +62,23 @@ src_prepare() {
 		-e '/"dispatch"/d' \
 		bus/test-main.c || die
 
-	# required for asneeded patch but also for bug 263909, cross-compile so
-	# don't remove eautoreconf
+	epatch "${FILESDIR}"/${P}-_dbus_printf_string_upper_bound-copy-t.patch
+	epatch "${FILESDIR}"/${P}-send-print-fixed.patch
+	epatch "${FILESDIR}"/${PN}-1.4.12-send-unix-fd.patch
+	epatch "${FILESDIR}"/${PN}-1.4.12-send-variant-dict.patch
+
+	# chromium-os:36381
+	epatch "${FILESDIR}"/${PN}-1.4.12-match-rules.patch
+
+	# Add ability for dbus-send to escape commas in string elements in an
+	# array. (chromium:240540)
+	epatch "${FILESDIR}"/${P}-send-allow-escaped-commas-in-argument-strings.patch
+
+	# Dynamically link the binaries to save some space.
+	epatch "${FILESDIR}"/${P}-dynamically-link-libdbus.patch
+
+	# required for asneeded and dynamically-link-libdbus patches but also for
+	# bug 263909, cross-compile so don't remove eautoreconf
 	eautoreconf
 }
 
@@ -85,12 +98,11 @@ src_configure() {
 		$(use_enable static-libs static)
 		$(use_enable debug verbose-mode)
 		--disable-asserts
-		--disable-checks
 		$(use_enable selinux)
 		$(use_enable selinux libaudit)
 		$(use_enable kernel_linux inotify)
 		$(use_enable kernel_FreeBSD kqueue)
-		--disable-systemd
+		$(use_enable systemd)
 		--disable-embedded-tests
 		--disable-modular-tests
 		$(use_enable debug stats)
@@ -100,6 +112,7 @@ src_configure() {
 		--with-system-socket=/var/run/dbus/system_bus_socket
 		--with-dbus-user=messagebus
 		$(use_with X x)
+		"$(systemd_with_unitdir)"
 		)
 
 	mkdir "${BD}"
@@ -159,6 +172,10 @@ src_install() {
 	# machine-id symlink from pkg_postinst()
 	keepdir /var/lib/dbus
 
+	# http://crosbug.com/23839
+	insinto /usr/share/dbus-1/interfaces
+	doins "${FILESDIR}"/org.freedesktop.DBus.Properties.xml
+
 	dodoc AUTHORS ChangeLog HACKING NEWS README doc/TODO
 
 	cd "${BD}"
@@ -168,20 +185,27 @@ src_install() {
 }
 
 pkg_postinst() {
-	elog "To start the D-Bus system-wide messagebus by default"
-	elog "you should add it to the default runlevel :"
-	elog "\`rc-update add dbus default\`"
-	elog
+	if [ "$(rc-config list default | grep dbus)" = "" ] ; then
+		elog "To start the D-Bus system-wide messagebus by default"
+		elog "you should add it to the default runlevel :"
+		elog "\`rc-update add dbus default\`"
+		elog
+	fi
+
 	elog "Some applications require a session bus in addition to the system"
 	elog "bus. Please see \`man dbus-launch\` for more information."
 	elog
-	ewarn "You must restart D-Bus \`/etc/init.d/dbus restart\` to run"
-	ewarn "the new version of the daemon."
-	ewarn "Don't do this while X is running because it will restart your X as well."
+
+	if [ "$(rc-status | grep dbus | grep started)" ] ; then
+		ewarn "You must restart D-Bus \`/etc/init.d/dbus restart\` to run"
+		ewarn "the new version of the daemon."
+		ewarn "Don't do this while X is running because it will restart your X as well."
+	fi
 
 	# Ensure unique id is generated and put it in /etc wrt #370451 but symlink
 	# for DBUS_MACHINE_UUID_FILE (see tools/dbus-launch.c) and reverse
 	# dependencies with hardcoded paths (although the known ones got fixed already)
-	dbus-uuidgen --ensure="${EROOT}"/etc/machine-id
-	ln -sf "${EROOT}"/etc/machine-id "${EROOT}"/var/lib/dbus/machine-id
+	# This is handled at runtime on Chrome OS.
+	# dbus-uuidgen --ensure="${EROOT}"/etc/machine-id
+	# ln -sf "${EROOT}"/etc/machine-id "${EROOT}"/var/lib/dbus/machine-id
 }
