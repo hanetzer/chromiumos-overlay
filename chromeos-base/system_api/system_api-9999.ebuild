@@ -52,7 +52,27 @@ src_install() {
 	insinto /usr/include/chromeos
 	doins -r dbus switches constants
 
-	local dir dirs=( cryptohome power_manager system_api )
+	# Install the dbus-constants.h files in the respective daemons' client library
+	# include directory. Users will need to include the corresponding client
+	# library to access these files.
+	local dir dirs=(
+		apmanager
+		cros-disks
+		cryptohome
+		debugd
+		login_manager
+		lorgnette
+		permission_broker
+		power_manager
+		shill
+		update_engine
+	)
+	for dir in "${dirs[@]}"; do
+		insinto /usr/include/"${dir}"-client/"${dir}"
+		doins dbus/"${dir}"/dbus-constants.h
+	done
+
+	dirs=( cryptohome power_manager system_api )
 	for dir in "${dirs[@]}"; do
 		insinto /usr/include/"${dir}"/proto_bindings
 		doins -r "${OUT}"/gen/include/"${dir}"/proto_bindings/*.h
