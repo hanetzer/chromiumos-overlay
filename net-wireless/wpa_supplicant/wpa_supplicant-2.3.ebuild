@@ -78,6 +78,7 @@ src_prepare() {
 	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-bgscan-simple-priority-debug.patch
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-clear-blacklist-on-connect.patch
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-FAST-peer-Stop-immediately-on-key-derivation-failure.patch
+	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-dbus-new-Adds-Roam.patch
 	popd >/dev/null
 }
 
