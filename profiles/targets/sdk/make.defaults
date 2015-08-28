@@ -30,6 +30,9 @@ USE="${USE} -filecaps"
 # No need to track power in the sdk.
 USE="${USE} -power_management"
 
+# We don't boot things inside the sdk.
+USE="${USE} -openrc"
+
 # Various runtime features that control emerge behavior.
 # See "man 5 make.conf" for details.
 FEATURES="allow-missing-manifests buildpkg clean-logs -collision-protect
