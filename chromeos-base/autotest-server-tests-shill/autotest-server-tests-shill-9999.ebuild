@@ -72,6 +72,7 @@ SERVER_IUSE_TESTS="
 	+tests_network_WiFi_Regulatory
 	+tests_network_WiFi_RegDomain
 	+tests_network_WiFi_Roam
+	+tests_network_WiFi_RoamDbus
 	+tests_network_WiFi_RoamSuspendTimeout
 	+tests_network_WiFi_RxFrag
 	+tests_network_WiFi_ScanPerformance
