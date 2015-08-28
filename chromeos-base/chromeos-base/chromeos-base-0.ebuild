@@ -3,7 +3,7 @@
 
 EAPI="4"
 
-inherit user
+inherit user udev
 
 DESCRIPTION="ChromeOS specific system setup"
 HOMEPAGE="http://src.chromium.org/"
@@ -121,8 +121,7 @@ src_install() {
 		dodir /bin /usr/bin
 
 		# Install all the udev rules.
-		insinto /lib/udev/rules.d
-		doins "${FILESDIR}"/udev-rules/*.rules
+		udev_dorules "${FILESDIR}"/udev-rules/*.rules
 
 		# Symlink /etc/localtime to something on the stateful
 		# partition. At runtime, the system will take care of
