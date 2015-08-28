@@ -113,15 +113,16 @@ src_install() {
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/xauthority.sh
 
-	insinto /lib/udev/rules.d
-	doins "${FILESDIR}"/udev-rules/*.rules
-
 	insinto /etc/avahi
 	doins "${FILESDIR}"/avahi-daemon.conf
 
 	# target-specific fun
 	if ! use cros_host ; then
 		dodir /bin /usr/bin
+
+		# Install all the udev rules.
+		insinto /lib/udev/rules.d
+		doins "${FILESDIR}"/udev-rules/*.rules
 
 		# Symlink /etc/localtime to something on the stateful
 		# partition. At runtime, the system will take care of
