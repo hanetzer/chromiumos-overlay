@@ -94,7 +94,7 @@ index bb5ccca..4a0ca18 100644
  
  intllibs = @LTLIBINTL@
  
-@@ -259,38 +255,24 @@ DBUS_UTIL_SOURCES=				\
+@@ -259,38 +255,23 @@ DBUS_UTIL_SOURCES=				\
  
  libdbus_1_la_SOURCES=				\
  	$(DBUS_LIB_SOURCES)			\
@@ -116,8 +116,8 @@ index bb5ccca..4a0ca18 100644
  	$(AM_CPPFLAGS) \
  	-Ddbus_1_EXPORTS \
  	$(NULL)
-+
- libdbus_1_la_LIBADD= $(LIBDBUS_LIBS)
+-libdbus_1_la_LIBADD= $(LIBDBUS_LIBS)
++libdbus_1_la_LIBADD= $(LIBDBUS_LIBS) $(SYSTEMD_LIBS)
  libdbus_1_la_LDFLAGS = \
  	$(AM_LDFLAGS) \
 -	$(export_symbols) \
@@ -135,7 +135,7 @@ index bb5ccca..4a0ca18 100644
  noinst_PROGRAMS =
  
  if DBUS_BUILD_TESTS
-@@ -301,7 +283,7 @@ endif
+@@ -301,7 +282,7 @@ endif
  dbus_test_SOURCES=				\
  	dbus-test-main.c
  
