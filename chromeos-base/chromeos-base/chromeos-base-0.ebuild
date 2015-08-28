@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE="chromeless_tty cros_embedded cros_host pam"
+IUSE="chromeless_tty cros_embedded cros_host pam vtconsole"
 
 # We need to make sure timezone-data is merged before us.
 # See pkg_setup below as well as http://crosbug.com/27413
@@ -122,6 +122,7 @@ src_install() {
 
 		# Install all the udev rules.
 		udev_dorules "${FILESDIR}"/udev-rules/*.rules
+		use vtconsole && udev_dorules "${FILESDIR}"/60-X-tty1-tty2-group-rw.rules
 
 		# Symlink /etc/localtime to something on the stateful
 		# partition. At runtime, the system will take care of

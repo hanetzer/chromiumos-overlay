@@ -134,7 +134,6 @@ src_prepare() {
 		eval export {MSG{FMT,MERGE},XGETTEXT}=/bin/true
 	fi
 
-	epatch "${FILESDIR}"/udev-208-tty12rw.patch
 	# prevent probing of zram (causes swapon to fail)
 	# chromium:265568
 	epatch "${FILESDIR}"/udev-208-no-probe-zram.patch
