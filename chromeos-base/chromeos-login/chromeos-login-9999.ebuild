@@ -74,11 +74,15 @@ src_install() {
 	dosbin "${OUT}/keygen"
 	dosbin "${OUT}/session_manager"
 
+	# Install DBus configuration.
 	insinto /usr/share/dbus-1/interfaces
-	doins org.chromium.SessionManagerInterface.xml
+	doins dbus_bindings/org.chromium.SessionManagerInterface.xml
 
 	insinto /etc/dbus-1/system.d
 	doins SessionManager.conf
+
+	# Install DBus client library.
+	platform_install_dbus_client_lib "session_manager"
 
 	# Adding init scripts
 	insinto /etc/init

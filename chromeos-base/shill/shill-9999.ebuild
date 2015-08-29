@@ -44,6 +44,8 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
+	chromeos-base/permission_broker-client
+	chromeos_dbus? ( chromeos-base/power_manager )
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
@@ -141,6 +143,9 @@ src_install() {
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.flimflam.*.xml
+
+	# Install DBus client library.
+	platform_install_dbus_client_lib
 
 	# Install init scripts
 	insinto /etc/init

@@ -19,10 +19,12 @@ IUSE="cellular test wimax"
 KEYWORDS="~*"
 
 RDEPEND="
+	chromeos-base/chromeos-login
 	chromeos-base/chromeos-minijail
 	chromeos-base/chromeos-ssh-testkeys
 	chromeos-base/chromeos-sshd-init
 	chromeos-base/libchromeos
+	chromeos-base/shill
 	chromeos-base/system_api
 	chromeos-base/vboot_reference
 	dev-libs/dbus-c++
@@ -37,6 +39,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	chromeos-base/chromeos-login
+	chromeos-base/debugd-client
 	chromeos-base/shill
 	sys-apps/dbus
 	virtual/modemmanager"
@@ -72,6 +75,7 @@ src_install() {
 	doexe src/helpers/{capture_utility,minijail-setuid-hack,systrace}.sh
 	use cellular && doexe src/helpers/send_at_command.sh
 
+	# Install DBus configuration.
 	insinto /etc/dbus-1/system.d
 	doins share/org.chromium.debugd.conf
 

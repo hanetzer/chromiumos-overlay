@@ -30,6 +30,7 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	chromeos-base/permission_broker-client
 	chromeos-base/shill
 	test? (
 		dev-cpp/gmock
@@ -42,9 +43,14 @@ src_install() {
 	# Install init scripts.
 	insinto /etc/init
 	doins init/apmanager.conf
+
 	# DBus configuration.
 	insinto /etc/dbus-1/system.d
 	doins dbus_permissions/org.chromium.apmanager.conf
+
+	# Install DBus client library.
+	platform_install_dbus_client_lib
+
 	# Install seccomp file.
 	insinto /usr/share/policy
 	newins init/apmanager-seccomp-${ARCH}.policy apmanager-seccomp.policy

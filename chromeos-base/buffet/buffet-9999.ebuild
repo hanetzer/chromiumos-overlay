@@ -35,6 +35,8 @@ RDEPEND="
 
 DEPEND="
 	${COMMON_DEPEND}
+	chromeos-base/apmanager
+	chromeos-base/shill
 	test? (
 		dev-cpp/gmock
 		dev-cpp/gtest

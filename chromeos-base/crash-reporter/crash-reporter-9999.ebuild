@@ -34,6 +34,8 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
+	chromeos-base/chromeos-login
+	chromeos-base/debugd-client
 	chromeos-base/system_api
 	dev-cpp/gtest
 	test? (

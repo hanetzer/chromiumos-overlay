@@ -27,6 +27,7 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
+	chromeos-base/permission_broker-client
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest

@@ -149,4 +149,28 @@ platform_src_test() {
 	platform_test "post_test"
 }
 
+platform_install_dbus_client_lib() {
+	local libname=${1:-${PN}}
+
+	local client_includes=/usr/include/${libname}-client
+	local client_test_includes=/usr/include/${libname}-client-test
+
+	# Install DBus proxy headers.
+	insinto "${client_includes}/${libname}"
+	doins "${OUT}/gen/include/${libname}/dbus-proxies.h"
+	insinto "${client_test_includes}/${libname}"
+	doins "${OUT}/gen/include/${libname}/dbus-proxy-mocks.h"
+
+	# Install pkg-config for client libraries.
+	"${PLATFORM_TOOLDIR}/generate_pc_file.sh" \
+		"${OUT}" lib${libname}-client "${client_includes}" ||
+		die "Error generating lib${libname}-client.pc file"
+	"${PLATFORM_TOOLDIR}/generate_pc_file.sh" \
+		"${OUT}" lib${libname}-client-test "${client_test_includes}" ||
+		die "Error generating lib${libname}-client-test.pc file"
+	insinto "/usr/$(get_libdir)/pkgconfig"
+	doins "${OUT}/lib${libname}-client.pc"
+	doins "${OUT}/lib${libname}-client-test.pc"
+}
+
 EXPORT_FUNCTIONS src_compile src_test src_configure src_unpack

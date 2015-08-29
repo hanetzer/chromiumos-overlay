@@ -14,8 +14,9 @@ PLATFORM_GYP_FILE="${PN}.gyp"
 
 inherit cros-workon platform
 
-DESCRIPTION="Permission Broker DBus client library for Chromium OS"
+DESCRIPTION="Chrome OS debugd client library"
 HOMEPAGE="http://www.chromium.org/"
+SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -23,6 +24,6 @@ KEYWORDS="~*"
 IUSE=""
 
 src_install() {
-	# Install DBus client library.
-	platform_install_dbus_client_lib "permission_broker"
+  # Install DBus client library.
+  platform_install_dbus_client_lib "debugd"
 }
