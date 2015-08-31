@@ -43,11 +43,7 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	epatch "${FILESDIR}"/no_explicit_sync_in_va_sync_surface.patch
 	epatch "${FILESDIR}"/Avoid-GPU-crash-with-malformed-streams.patch
-	epatch "${FILESDIR}"/check-that-intel-gen4asm-tool-is-actually-present.patch
 	epatch "${FILESDIR}"/set_multisample_state_for_gen6.patch
-	epatch "${FILESDIR}"/vpp-add-support-for-low-power-mode.patch
-	epatch "${FILESDIR}"/free-surface-used-by-JPEG-decode.patch
-	epatch "${FILESDIR}"/dec-vp8-fix-segmentation-update.patch
 	eautoreconf
 }
 
