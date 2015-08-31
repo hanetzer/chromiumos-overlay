@@ -117,7 +117,7 @@ src_install() {
 	fi
 
 	if use s3halt; then
-		doins halt/s3halt.conf
+		newins halt/s3halt.conf halt.conf
 	else
 		doins halt/halt.conf
 	fi
