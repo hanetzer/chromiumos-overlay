@@ -11,7 +11,6 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE_KERNEL_VERS=(
-	kernel-3_4
 	kernel-3_8
 	kernel-3_10
 	kernel-3_14
@@ -23,7 +22,6 @@ IUSE="${IUSE_KERNEL_VERS[*]}"
 REQUIRED_USE="?? ( ${IUSE_KERNEL_VERS[*]} )"
 
 RDEPEND="
-	kernel-3_4? ( sys-kernel/chromeos-kernel )
 	kernel-3_8? ( sys-kernel/chromeos-kernel-3_8 )
 	kernel-3_10? ( sys-kernel/chromeos-kernel-3_10 )
 	kernel-3_14? ( sys-kernel/chromeos-kernel-3_14 )
@@ -38,9 +36,8 @@ RDEPEND+="
 	$(for v in "${IUSE_KERNEL_VERS[@]}"; do echo "!${v}? ( !sys-kernel/chromeos-${v} )"; done)
 "
 
-# Default to the 3.4 kernel if none has been selected. In the future,
-# this should point to the latest kernel.
-RDEPEND_DEFAULT="sys-kernel/chromeos-kernel"
+# Default to the latest kernel if none has been selected.
+RDEPEND_DEFAULT="sys-kernel/chromeos-kernel-3_18"
 # Here be dragons!
 RDEPEND+="
 	$(printf '!%s? ( ' "${IUSE_KERNEL_VERS[@]}")
