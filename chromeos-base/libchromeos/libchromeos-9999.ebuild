@@ -63,16 +63,14 @@ src_install() {
 
 	# Install all the header files from libchromeos/chromeos/*.h into
 	# /usr/include/chromeos (recursively, with sub-directories).
-	# Exclude the following sub-directories though (they are handled separately):
-	#   chromeos/policy
 	local dir
 	while read -d $'\0' -r dir; do
 		insinto "/usr/include/${dir}"
 		doins "${dir}"/*.h
-	done < <(find chromeos -type d -not -path "chromeos/policy*" -print0)
+	done < <(find chromeos -type d -print0)
 
 	insinto /usr/include/policy
-	doins chromeos/policy/*.h
+	doins policy/*.h
 }
 
 platform_pkg_test() {

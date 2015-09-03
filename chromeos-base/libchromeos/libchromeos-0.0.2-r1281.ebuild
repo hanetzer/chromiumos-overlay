@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("2e2317a3319afee2342cd19fe9fdaa3412b1f4d3" "238da575cbad80fb7ffb0e89b9ccb33c7889a0ba")
-CROS_WORKON_TREE=("1e63372f360b9280dacd119c9061786bdfbc6d83" "79ead835f4ad6df05877ef0d26af193346cbb1d1")
+CROS_WORKON_COMMIT=("d412b6b8c92e1a900e9e2f64899dafbe7c964c98" "532fcf2cd6071fba8b73eb08ef053b41785bc035")
+CROS_WORKON_TREE=("534ecdf660d002ede49ab0ed253f615e5ed74d51" "83113ef0144f8fa165c2a482b4cd7fcc1c94514d")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_USE_VCSID=1
@@ -65,16 +65,14 @@ src_install() {
 
 	# Install all the header files from libchromeos/chromeos/*.h into
 	# /usr/include/chromeos (recursively, with sub-directories).
-	# Exclude the following sub-directories though (they are handled separately):
-	#   chromeos/policy
 	local dir
 	while read -d $'\0' -r dir; do
 		insinto "/usr/include/${dir}"
 		doins "${dir}"/*.h
-	done < <(find chromeos -type d -not -path "chromeos/policy*" -print0)
+	done < <(find chromeos -type d -print0)
 
 	insinto /usr/include/policy
-	doins chromeos/policy/*.h
+	doins policy/*.h
 }
 
 platform_pkg_test() {
