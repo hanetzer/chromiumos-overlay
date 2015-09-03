@@ -304,8 +304,11 @@ set_build_defines() {
 				BUILD_DEFINES+=("ozone_platform=${platform}")
 			fi
 		done
-		BUILD_DEFINES+=("use_mesa_platform_null=1")
-		BUILD_DEFINES+=("ozone_auto_platforms=0")
+		BUILD_DEFINES+=(
+			"use_vgem_map=1"
+			"use_mesa_platform_null=1"
+			"ozone_auto_platforms=0"
+		)
 		for platform in ${IUSE_OZONE_PLATFORMS}; do
 			if use "${platform}"; then
 				BUILD_DEFINES+=("${platform}=1")
