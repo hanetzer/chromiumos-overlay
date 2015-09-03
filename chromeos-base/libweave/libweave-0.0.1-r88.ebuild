@@ -3,6 +3,8 @@
 
 EAPI="4"
 
+CROS_WORKON_COMMIT=("0300bc511808a350fdc882f37e0639fef1c8fb72" "8461669d86d5fcf97e8a15aa2919e4338b9f3741")
+CROS_WORKON_TREE=("3f6da8984b7dd21bde458d69bb23d8903e8fe2d6" "57b909488ba199638fcf1000de2f2d61a2f1c421")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "weave/libweave")
@@ -19,7 +21,7 @@ DESCRIPTION="Weave device library"
 HOMEPAGE="http://dev.chromium.org/chromium-os/platform"
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 
 COMMON_DEPEND="
 	chromeos-base/libchromeos
