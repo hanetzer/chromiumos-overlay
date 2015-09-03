@@ -19,7 +19,7 @@ DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
@@ -38,6 +38,11 @@ COMMON_DEPEND="app-arch/bzip2
 	sys-apps/rootdev"
 
 DEPEND="chromeos-base/system_api
+	chromeos-base/debugd-client
+	chromeos-base/power_manager-client
+	chromeos-base/session_manager-client
+	chromeos-base/shill-client
+	chromeos-base/update_engine-client
 	dev-cpp/gmock
 	dev-cpp/gtest
 	mtd? ( dev-embedded/android_mtdutils )
@@ -116,23 +121,4 @@ src_install() {
 	# Install DBus configuration
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
-
-	local client_includes=/usr/include/update_engine-client
-	local client_test_includes=/usr/include/update_engine-client-test
-
-	# Install DBus proxy headers
-	insinto "${client_includes}/update_engine"
-	doins "${OUT}/gen/include/update_engine/dbus-proxies.h"
-	doins "${S}/dbus_constants.h"
-	insinto "${client_test_includes}/update_engine"
-	doins "${OUT}/gen/include/update_engine/dbus-proxy-mocks.h"
-
-	# Install pkg-config for client libraries.
-	./generate_pc_file.sh "${OUT}" libupdate_engine-client "${client_includes}" ||
-		die "Error generating libupdate_engine-client.pc file"
-	./generate_pc_file.sh "${OUT}" libupdate_engine-client-test "${client_test_includes}" ||
-		die "Error generating libupdate_engine-client-test.pc file"
-	insinto "/usr/$(get_libdir)/pkgconfig"
-	doins "${OUT}/libupdate_engine-client.pc"
-	doins "${OUT}/libupdate_engine-client-test.pc"
 }

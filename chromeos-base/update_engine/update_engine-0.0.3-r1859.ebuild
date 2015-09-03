@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("5deacc703881caaaaa5fbaf8cb81cba5c1df21b8" "a7a34d80adcc67b51f337c8d58034cf43bd882a9")
-CROS_WORKON_TREE=("1440996879b9973e604a30d2d1df602722784f76" "c12755d5029137f1f730978cdb8217ff7d345d47")
+CROS_WORKON_COMMIT=("0300bc511808a350fdc882f37e0639fef1c8fb72" "749c176a9ef80204e967d420a6cdc9164f2f8f3e")
+CROS_WORKON_TREE=("3f6da8984b7dd21bde458d69bb23d8903e8fe2d6" "5bcc437163f85678912d932df5bb09e5ab942fe9")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/update_engine")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/update_engine")
@@ -21,7 +21,7 @@ DESCRIPTION="Chrome OS Update Engine"
 HOMEPAGE="http://www.chromium.org/"
 SRC_URI=""
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
 IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
@@ -40,6 +40,11 @@ COMMON_DEPEND="app-arch/bzip2
 	sys-apps/rootdev"
 
 DEPEND="chromeos-base/system_api
+	chromeos-base/debugd-client
+	chromeos-base/power_manager-client
+	chromeos-base/session_manager-client
+	chromeos-base/shill-client
+	chromeos-base/update_engine-client
 	dev-cpp/gmock
 	dev-cpp/gtest
 	mtd? ( dev-embedded/android_mtdutils )
@@ -118,23 +123,4 @@ src_install() {
 	# Install DBus configuration
 	insinto /etc/dbus-1/system.d
 	doins UpdateEngine.conf
-
-	local client_includes=/usr/include/update_engine-client
-	local client_test_includes=/usr/include/update_engine-client-test
-
-	# Install DBus proxy headers
-	insinto "${client_includes}/update_engine"
-	doins "${OUT}/gen/include/update_engine/dbus-proxies.h"
-	doins "${S}/dbus_constants.h"
-	insinto "${client_test_includes}/update_engine"
-	doins "${OUT}/gen/include/update_engine/dbus-proxy-mocks.h"
-
-	# Install pkg-config for client libraries.
-	./generate_pc_file.sh "${OUT}" libupdate_engine-client "${client_includes}" ||
-		die "Error generating libupdate_engine-client.pc file"
-	./generate_pc_file.sh "${OUT}" libupdate_engine-client-test "${client_test_includes}" ||
-		die "Error generating libupdate_engine-client-test.pc file"
-	insinto "/usr/$(get_libdir)/pkgconfig"
-	doins "${OUT}/libupdate_engine-client.pc"
-	doins "${OUT}/libupdate_engine-client-test.pc"
 }
