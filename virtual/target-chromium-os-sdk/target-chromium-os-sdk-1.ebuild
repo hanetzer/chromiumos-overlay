@@ -112,6 +112,7 @@ RDEPEND="${RDEPEND}
 	app-emulation/qemu-binfmt-wrapper
 	!app-emulation/qemu-kvm
 	!app-emulation/qemu-user
+	app-text/asciidoc
 	app-text/texi2html
 	chromeos-base/google-breakpad
 	chromeos-base/chromeos-base
@@ -136,6 +137,7 @@ RDEPEND="${RDEPEND}
 	dev-libs/libyaml
 	dev-libs/m17n-lib
 	dev-libs/protobuf
+	dev-libs/protobuf-c
 	dev-python/cffi
 	dev-python/cherrypy
 	dev-python/ctypesgen
