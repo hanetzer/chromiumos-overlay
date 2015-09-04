@@ -142,6 +142,7 @@ SERVER_IUSE_TESTS="
 	+tests_platform_ExternalUsbPeripherals
 	+tests_platform_HWwatchdog
 	+tests_platform_InstallTestImage
+        +tests_platform_InternalDisplay
 	+tests_platform_KernelErrorPaths
 	power_management? (
 		+tests_platform_PowerStatusStress
