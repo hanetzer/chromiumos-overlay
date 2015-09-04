@@ -153,6 +153,7 @@ IUSE_TESTS_SHILL="
 	shill? (
 		+tests_network_ChromeWifiEndToEnd
 		+tests_network_FirewallHolePunch
+		+tests_network_RackWiFiConnect
 		+tests_network_RoamWifiEndToEnd
 		+tests_network_RoamSuspendEndToEnd
 	)

@@ -37,7 +37,7 @@ SERVER_IUSE_TESTS="
 			+tests_cellular_ChromeEndToEnd
 			+tests_network_WiFi_ChromeEndToEnd
 			+tests_network_WiFi_RoamEndToEnd
-                        +tests_network_WiFi_RoamSuspendEndToEnd
+			+tests_network_WiFi_RoamSuspendEndToEnd
 		)
 	)
 	+tests_network_WiFi_ConnectionIdentifier
