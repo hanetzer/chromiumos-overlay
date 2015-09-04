@@ -96,9 +96,6 @@ src_install() {
 		insinto /etc/buffet/commands
 		doins powerd/buffet/*.json
 	fi
-
-	# Install DBus client library.
-	platform_install_dbus_client_lib
 }
 
 platform_pkg_test() {
