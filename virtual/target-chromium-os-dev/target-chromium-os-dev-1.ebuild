@@ -136,6 +136,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/gdb
 	sys-fs/fuse
 	sys-fs/lvm2
+	sys-fs/mtd-utils
 	sys-fs/sshfs-fuse
 	power_management? ( sys-power/powertop )
 	sys-process/procps
