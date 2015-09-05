@@ -27,4 +27,8 @@ src_compile() {
 src_install() {
 	insinto /lib/firmware/nvidia/tegra210/
 	doins src/soc/nvidia/tegra210/lp0/tegra_lp0_resume.fw
+
+	# Also install into /firmware so it can be picked up for signing
+	insinto /firmware
+	doins src/soc/nvidia/tegra210/lp0/tegra_lp0_resume.fw
 }
