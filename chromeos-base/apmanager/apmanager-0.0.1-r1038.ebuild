@@ -3,13 +3,14 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="52d9736cdfc4a9881eaa1055a64a85e288be34a4"
-CROS_WORKON_TREE="57791c53b22c06db622103f73bc6ebc0271231c2"
+CROS_WORKON_COMMIT=("d3baeaa83b41bdc1face8bc3955a50a02b00a20f" "8ca0ef780768bfa7a5f5d9ecdf5e237c5e5e1e51")
+CROS_WORKON_TREE=("0a86d8db27772b7c00415afddc514dd4146164db" "f63ddc64b9d4b2536599aba3dd20f4037fd3c957")
 CROS_WORKON_BLACKLIST=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/apmanager")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/apmanager")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/connectivity/apmanager")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="apmanager"
 
@@ -40,6 +41,12 @@ DEPEND="
 		dev-cpp/gtest
 	)
 "
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/connectivity/apmanager"
+}
 
 src_install() {
 	dobin "${OUT}"/apmanager
