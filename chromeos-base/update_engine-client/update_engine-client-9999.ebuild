@@ -39,9 +39,4 @@ src_unpack() {
 src_install() {
 	# Install DBus client library.
 	platform_install_dbus_client_lib "update_engine"
-
-	# TODO(deymo): Remove dbus_constants.h once it is not used anymore.
-	local client_includes=/usr/include/update_engine-client
-	insinto "${client_includes}/update_engine"
-	doins "${S}/dbus_constants.h"
 }
