@@ -65,6 +65,7 @@ CONFIG_FRAGMENTS=(
 	ca0132
 	cifs
 	cros_ec_mec
+	debug
 	dwc2_dual_role
 	dyndebug
 	fbconsole
@@ -221,6 +222,11 @@ CONFIG_HIGHMEM64G=y
 i2cdev_desc="I2C device interface"
 i2cdev_config="
 CONFIG_I2C_CHARDEV=y
+"
+
+debug_desc="Miscellaneous debug extensions"
+debug_config="
+CONFIG_DRM_POWERVR_ROGUE_DEBUG=y
 "
 
 kgdb_desc="Enable kgdb"
