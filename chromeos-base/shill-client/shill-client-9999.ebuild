@@ -29,4 +29,8 @@ RDEPEND="
 src_install() {
 	# Install DBus client library.
 	platform_install_dbus_client_lib "shill"
+
+	# Install dbus-c++ client library.
+	insinto /usr/include/shill-client/shill/dbus_proxies
+	doins ${OUT}/gen/include/shill/dbus_proxies/*.h
 }
