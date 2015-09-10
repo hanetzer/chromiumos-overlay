@@ -26,7 +26,11 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="cros_host"
+
+DEPEND="
+	cros_host? ( chromeos-base/chromeos-dbus-bindings )
+"
 
 RDEPEND="
 	!<chromeos-base/update_engine-0.0.3

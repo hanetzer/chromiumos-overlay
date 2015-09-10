@@ -20,7 +20,11 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE=""
+IUSE="cros_host"
+
+DEPEND="
+	cros_host? ( chromeos-base/chromeos-dbus-bindings )
+"
 
 RDEPEND="
 	!<chromeos-base/shill-0.0.2
