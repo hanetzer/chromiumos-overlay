@@ -1,0 +1,12 @@
+DEFINED_PHASES=compile info install setup unpack
+DEPEND=dev-vcs/git
+DESCRIPTION=Chrome OS command-line shell
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=X cros_host cros_workon_tree_0a86d8db27772b7c00415afddc514dd4146164db profiling
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=app-admin/sudo X? ( chromeos-base/salsa ) chromeos-base/vboot_reference chromeos-base/workarounds net-misc/iputils net-misc/openssh net-wireless/iw sys-apps/net-tools
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_md5_=87b803f1a1ded5399c848955d4278328
