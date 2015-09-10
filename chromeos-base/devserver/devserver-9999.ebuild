@@ -28,4 +28,8 @@ src_install() {
 	doins $(printf '%s\n' host/lib/update_payload/*.py | grep -v unittest)
 	doins host/lib/update_payload/update-payload-key.pub.pem
 	dobin host/start_devserver
+
+	# Install Mob* Monitor checkfiles for the devserver.
+	insinto "/etc/mobmonitor/checkfiles/devserver/"
+	doins -r "${S}/checkfiles/devserver/"*
 }
