@@ -31,7 +31,7 @@ HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc"
+IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 
 PER_BOARD_BOARDS=(
 	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
@@ -125,6 +125,9 @@ EOF
 	fi
 	if use mocktpm; then
 		echo "CONFIG_VBOOT2_MOCK_SECDATA=y" >> .config
+	fi
+	if use mma; then
+		echo "CONFIG_MMA=y" >> .config
 	fi
 
 	cp .config .config_serial
