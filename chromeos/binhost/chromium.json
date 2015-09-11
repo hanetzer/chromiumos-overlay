@@ -181,38 +181,6 @@
   }, 
   {
     "compat_id": {
-      "arch": "mips", 
-      "cflags": [
-        "-O2", 
-        "-pipe", 
-        "-march=mips32", 
-        "-g", 
-        "-fno-exceptions", 
-        "-fno-unwind-tables", 
-        "-fno-asynchronous-unwind-tables"
-      ], 
-      "useflags": [
-        "X", 
-        "autotest", 
-        "build_tests", 
-        "buildcheck", 
-        "chrome_debug", 
-        "chrome_remoting", 
-        "highdpi", 
-        "opengl", 
-        "runhooks", 
-        "v4l2_codec"
-      ]
-    }, 
-    "key": {
-      "board": "mipsel-o32-generic", 
-      "useflags": [
-        "-chrome_internal"
-      ]
-    }
-  }, 
-  {
-    "compat_id": {
       "arch": "amd64", 
       "cflags": [
         "-O2", 
