@@ -26,7 +26,7 @@ HOMEPAGE="http://coreboot.org"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_host"
+IUSE="cros_host mma"
 
 src_configure() {
 	cros-workon_src_configure
@@ -51,6 +51,10 @@ src_compile() {
 			emake -C util/inteltool CC="${CC}"
 			emake -C util/nvramtool CC="${CC}"
 		fi
+		if use mma; then
+			emake -C util/cbfstool obj="${PWD}/util/cbfstool"
+			emake -C util/cbmem CC="${CC}"
+		fi
 	fi
 }
 
@@ -67,6 +71,11 @@ src_install() {
 			dobin util/superiotool/superiotool
 			dobin util/inteltool/inteltool
 			dobin util/nvramtool/nvramtool
+		fi
+		if use mma; then
+			dobin util/mma/mma_setup_test.sh
+			dobin util/mma/mma_get_result.sh
+			dobin util/cbfstool/cbfstool
 		fi
 	fi
 }
