@@ -1,0 +1,52 @@
+From ab998587da8704920a00713516277924d6db9946 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Tue, 21 Jul 2015 13:46:45 +0100
+Subject: [PATCH 3/3] drm: Detect no-op drmModeAtomicRequest and return early
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If the number of items to process in the request is zero, we can forgo
+duplicating, sorting the request and feeding it into the kernel and
+instead report success immediately.  This prevents a NULL dereference of
+the sorted->items for the no-op request.
+
+Fixes: ed44e0b9585c563905447eceed12af9c1c7ca8d4
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Cc: Rob Clark <robclark@freedesktop.org>
+Cc: Daniel Stone <daniels@collabora.com>
+Cc: Emil Velikov <emil.l.velikov@gmail.com>
+Reviewed-by: Emil Velikov <emil.l.velikov@gmail.com>
+---
+ xf86drmMode.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/xf86drmMode.c b/xf86drmMode.c
+index 73c8695..0695c23 100644
+--- a/xf86drmMode.c
++++ b/xf86drmMode.c
+@@ -1293,7 +1293,7 @@ static int sort_req_list(const void *misc, const void *other)
+ int drmModeAtomicCommit(int fd, drmModeAtomicReqPtr req, uint32_t flags,
+			void *user_data)
+ {
+-	drmModeAtomicReqPtr sorted = drmModeAtomicDuplicate(req);
++	drmModeAtomicReqPtr sorted;
+	struct drm_mode_atomic atomic;
+	uint32_t *objs_ptr = NULL;
+	uint32_t *count_props_ptr = NULL;
+@@ -1304,7 +1304,11 @@ int drmModeAtomicCommit(int fd, drmModeAtomicReqPtr req, uint32_t flags,
+	int obj_idx = -1;
+	int ret = -1;
+
+-	if (!sorted)
++	if (req->cursor == 0)
++		return 0;
++
++	sorted = drmModeAtomicDuplicate(req);
++	if (sorted == NULL)
+		return -ENOMEM;
+
+	memclear(atomic);
+--
+1.9.1
