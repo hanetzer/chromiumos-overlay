@@ -80,6 +80,7 @@ src_prepare() {
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-EAP-FAST-peer-Stop-immediately-on-key-derivation-failure.patch
 	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-dbus-new-Adds-Roam.patch
 	epatch ${FILESDIR}/patches/${P}-UPSTREAM-do-not-add-blacklists-on-normal-disconnection.patch
+	epatch ${FILESDIR}/patches/${P}-CHROMIUMOS-dbus-new-Adds-expect-disconnect.patch
 	popd >/dev/null
 }
 
