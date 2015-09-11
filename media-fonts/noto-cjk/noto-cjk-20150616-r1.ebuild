@@ -1,1 +1,0 @@
-noto-cjk-20150616.ebuild
