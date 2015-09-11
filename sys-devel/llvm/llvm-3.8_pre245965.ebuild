@@ -17,16 +17,16 @@ EGIT_REPO_URIS=(
 		""
 		#"http://llvm.org/git/llvm.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/llvm.git"
-		"4a3c9fcd83999679b54e05b5fc738600f18c80b1" # EGIT_COMMIT
+		"89ea38c62f187893298efaea88bc156ecd4c518d" # EGIT_COMMIT
 	"compiler-rt"
 		"projects/compiler-rt"
 		 "${CROS_GIT_HOST_URL}/chromiumos/third_party/compiler-rt.git"
-		"2199e3918996381a1e5ad707e919a0f8c5cba4c0" # EGIT_COMMIT
+		"c8d471a1692b1ad92b494d8ba1e7a93199eb5b55" # EGIT_COMMIT
 	"clang"
 		"tools/clang"
 		#"http://llvm.org/git/clang.git"
 		"${CROS_GIT_HOST_URL}/chromiumos/third_party/clang.git"
-		"fa5d0d4ae431b05e6eaa73b3e0029fc63921a800"  # EGIT_COMMIT
+		"3cf9e81e9f1cfa8cc17a13e4dec00c3e754644e8"  # EGIT_COMMIT
 )
 
 EGIT_REPO_URI="http://llvm.org/git/llvm.git
@@ -160,6 +160,20 @@ src_prepare() {
 	epatch "${FILESDIR}"/clang-3.7-gnueabihf.patch
 	epatch "${FILESDIR}"/llvm-3.7-leak-whitelist.patch
 
+	# Make it possible to override Sphinx HTML install dirs
+	# https://llvm.org/bugs/show_bug.cgi?id=23780
+	epatch "${FILESDIR}"/cmake/0002-cmake-Support-overriding-Sphinx-HTML-doc-install-dir.patch
+
+	# Prevent race conditions with parallel Sphinx runs
+	# https://llvm.org/bugs/show_bug.cgi?id=23781
+	epatch "${FILESDIR}"/cmake/0003-cmake-Add-an-ordering-dep-between-HTML-man-Sphinx-ta.patch
+
+	# Prevent installing libgtest
+	# https://llvm.org/bugs/show_bug.cgi?id=18341
+	epatch "${FILESDIR}"/cmake/0004-cmake-Do-not-install-libgtest.patch
+
+	# Allow custom cmake build types (like 'Gentoo')
+	epatch "${FILESDIR}"/cmake/${PN}-3.8-allow_custom_cmake_build_types.patch
 
 	if use clang; then
 		# Automatically select active system GCC's libraries, bugs #406163 and #417913
