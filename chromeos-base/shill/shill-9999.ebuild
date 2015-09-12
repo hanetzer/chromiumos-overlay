@@ -4,10 +4,11 @@
 EAPI=4
 
 CROS_WORKON_BLACKLIST=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/shill")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/connectivity/shill")
 CROS_WORKON_INCREMENTAL_BUILD="1"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="shill"
 
@@ -48,7 +49,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/permission_broker-client
 	chromeos-base/shill-client
-	chromeos_dbus? ( chromeos-base/power_manager )
+	chromeos-base/power_manager-client
 	chromeos-base/system_api
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest"
@@ -74,6 +75,12 @@ load_cfg80211() {
 	else
 		echo true
 	fi
+}
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/connectivity/shill"
 }
 
 src_install() {

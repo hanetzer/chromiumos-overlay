@@ -4,10 +4,11 @@
 EAPI="4"
 
 CROS_WORKON_BLACKLIST=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/shill")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/connectivity/shill")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="${PN%-client}"
@@ -30,6 +31,12 @@ DEPEND="
 RDEPEND="
 	!<chromeos-base/shill-0.0.2
 "
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/connectivity/shill"
+}
 
 src_install() {
 	# Install DBus client library.

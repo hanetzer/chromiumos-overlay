@@ -4,9 +4,10 @@
 EAPI=4
 
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_DESTDIR="${S}"
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/shill")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/shill")
 
 inherit cros-workon
 
@@ -30,7 +31,7 @@ RDEPEND="${DEPEND}
 
 src_unpack() {
 	cros-workon_src_unpack
-	S+="/shill"
+	S+="/platform2/shill"
 }
 
 src_compile() {
