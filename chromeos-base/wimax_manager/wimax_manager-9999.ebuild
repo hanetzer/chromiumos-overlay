@@ -45,9 +45,8 @@ src_install() {
 	insinto /usr/share/dbus-1/interfaces
 	doins dbus_bindings/org.chromium.WiMaxManager*.xml
 
-	# Install the dbus proxies needed by shill.
-	insinto /usr/include/wimax_manager
-	doins -r "${OUT}"/gen/include/wimax_manager/dbus_proxies
+	# Install D-Bus client library.
+	platform_install_dbus_client_lib
 
 	# Skip the rest of the files unless USE=gdmwimax is specified.
 	use gdmwimax || return 0
