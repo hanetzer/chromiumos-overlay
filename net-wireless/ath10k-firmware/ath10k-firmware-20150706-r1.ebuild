@@ -1,1 +1,0 @@
-ath10k-firmware-20150706.ebuild
