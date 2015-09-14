@@ -3,13 +3,14 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("e6bebd36a8cb0db343d0895a3f6508aa2638f343" "d156962a4627350b47b5878a93821f7bffbabff1")
-CROS_WORKON_TREE=("b9e418e7d7d77a0e2dcc9274bf22f119b2580de7" "8270384b5efa8b29ef280b608e6c02bfac49e363")
+CROS_WORKON_COMMIT=("507cf47af043b57f347b4f93b28ca1ff20d3ee6e" "bd335110439d524bd5c09867419b30e4a06cdc62")
+CROS_WORKON_TREE=("fdc1282753c93d9f67a8eeae073b905c2c0dde71" "12ccc351624c6916a584e467d9e202e0b5223e39")
+CROS_WORKON_BLACKLIST=1
 CROS_WORKON_LOCALNAME=("platform2" "aosp/system/connectivity/shill")
 CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/connectivity/shill")
 CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/connectivity/shill")
-CROS_WORKON_BLACKLIST=1
+CROS_WORKON_INCREMENTAL_BUILD=1
 
 PLATFORM_NATIVE_TEST="yes"
 PLATFORM_SUBDIR="${PN%-client}"
