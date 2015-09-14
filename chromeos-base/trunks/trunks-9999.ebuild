@@ -4,11 +4,12 @@
 EAPI=4
 
 CROS_WORKON_BLACKLIST=1
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/trunks")
 CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/trunks")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/trunks")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 CROS_WORKON_USE_VCSID=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="trunks"
 
@@ -17,7 +18,7 @@ inherit cros-workon platform user
 DESCRIPTION="Trunks service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="ftdi_tpm test"
@@ -33,6 +34,12 @@ DEPEND="
 	test? ( dev-cpp/gmock )
 	dev-cpp/gtest
 	"
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/trunks"
+}
 
 src_install() {
 	insinto /etc/dbus-1/system.d

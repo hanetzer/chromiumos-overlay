@@ -4,11 +4,12 @@
 EAPI=4
 
 CROS_WORKON_BLACKLIST=1
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/tpm_manager")
 CROS_WORKON_INCREMENTAL_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/tpm_manager")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/tpm_manager")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 CROS_WORKON_USE_VCSID=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
 
 PLATFORM_SUBDIR="tpm_manager"
 
@@ -17,7 +18,7 @@ inherit cros-workon platform user
 DESCRIPTION="Daemon to manage TPM ownership."
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~*"
 IUSE="test -tpm2"
@@ -42,6 +43,12 @@ DEPEND="
 pkg_preinst() {
 	enewuser tpm_manager
 	enewgroup tpm_manager
+}
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/tpm_manager"
 }
 
 src_install() {

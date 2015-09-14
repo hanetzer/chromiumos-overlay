@@ -3,13 +3,14 @@
 
 EAPI=4
 
+CROS_WORKON_COMMIT=("14b8b017f0be975254a30867a67bf3a1ff423d83" "23672a810694f5532c2b57bfa1e92ea9fc3b5568")
+CROS_WORKON_TREE=("f91dde34517d964ffe98a2836fda4356fdc70e2d" "ddc41473e2166f4657d0c901206a626f85d7f35b")
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="c4124c4187f79eb8296526652b1d0c3db3bd460e"
-CROS_WORKON_TREE="d37ccd4f7485d702ca761aa1efda18ff81b0b83d"
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/attestation")
 CROS_WORKON_INCREMENTAL_BUILD=1
-CROS_WORKON_LOCALNAME="platform2"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_OUTOFTREE_BUILD=1
+CROS_WORKON_LOCALNAME=("platform2" "aosp/system/attestation")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "platform/system/attestation")
+CROS_WORKON_REPO=("https://chromium.googlesource.com" "https://android.googlesource.com")
 
 PLATFORM_SUBDIR="attestation"
 
@@ -18,7 +19,7 @@ inherit cros-workon libchrome platform user
 DESCRIPTION="Attestation service for Chromium OS"
 HOMEPAGE="http://www.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
@@ -40,6 +41,12 @@ pkg_preinst() {
 	# Create user and group for attestation.
 	enewuser "attestation"
 	enewgroup "attestation"
+}
+
+src_unpack() {
+	local s="${S}"
+	platform_src_unpack
+	S="${s}/aosp/system/attestation"
 }
 
 src_install() {
