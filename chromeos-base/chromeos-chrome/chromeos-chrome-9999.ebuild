@@ -284,6 +284,7 @@ set_build_defines() {
 		"disable_nacl=$(! use_nacl; echo10)"
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
+		"use_system_minigbm=1"
 
 		# Clang features.
 		asan=$(use10 asan)
