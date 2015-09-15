@@ -45,6 +45,9 @@ MULTILIB_WRAPPED_HEADERS=(
 )
 
 src_prepare() {
+	# Clang-built openssl crashes on arm - crbug.com/532648
+	use arm && cros_use_gcc
+
 	SSL_CNF_DIR="/etc/ssl"
 	sed \
 		-e "/^DIR=/s:=.*:=${EPREFIX}${SSL_CNF_DIR}:" \
