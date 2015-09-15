@@ -51,9 +51,13 @@ src_install() {
 	dosbin "${OUT}"/trunks_client
 	dosbin "${OUT}"/trunksd
 	dolib.so "${OUT}"/lib/libtrunks.so
+	dolib.a "${OUT}"/libtrunks_test.a
 
 	insinto /usr/share/policy
 	newins trunksd-seccomp-${ARCH}.policy trunksd-seccomp.policy
+
+	insinto /usr/include/trunks
+	doins *.h
 }
 
 platform_pkg_test() {

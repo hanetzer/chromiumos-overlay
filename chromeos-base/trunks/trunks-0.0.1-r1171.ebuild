@@ -3,8 +3,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT=("14b8b017f0be975254a30867a67bf3a1ff423d83" "52513d3e03bcefe0d9fe2248cfdd39f955f328ec")
-CROS_WORKON_TREE=("f91dde34517d964ffe98a2836fda4356fdc70e2d" "09e02829225deb52d33216303151bcd74427a389")
+CROS_WORKON_COMMIT=("ceee48dc568571696af0a86e2b301e6a9120bc72" "343cb530db4edbc0f09718af0a96ddb6c5430b18")
+CROS_WORKON_TREE=("04f962b04cc98fa2e7c89b88afc62f1490341088" "aa3cec545378d993f158eb4b1fc9fc0ec7848381")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/aosp/system/trunks")
 CROS_WORKON_INCREMENTAL_BUILD=1
@@ -53,9 +53,13 @@ src_install() {
 	dosbin "${OUT}"/trunks_client
 	dosbin "${OUT}"/trunksd
 	dolib.so "${OUT}"/lib/libtrunks.so
+	dolib.a "${OUT}"/libtrunks_test.a
 
 	insinto /usr/share/policy
 	newins trunksd-seccomp-${ARCH}.policy trunksd-seccomp.policy
+
+	insinto /usr/include/trunks
+	doins *.h
 }
 
 platform_pkg_test() {
