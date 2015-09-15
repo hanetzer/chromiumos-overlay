@@ -1,7 +1,7 @@
-From 889df75a88d29ab38f19ffa595ebb7f1fb9dfcfb Mon Sep 17 00:00:00 2001
+From 188310adf977454c9cce48464441840ac3022272 Mon Sep 17 00:00:00 2001
 From: Corbin Simpson <simpsoco@chromium.org>
 Date: Thu, 28 Aug 2014 14:48:31 -0700
-Subject: [PATCH] drivers/dri/i965/gen6: Clamp scissor state instead of
+Subject: [PATCH 17/27] drivers/dri/i965/gen6: Clamp scissor state instead of
  truncating.
 
 Replaces one undefined behavior with another, slightly more friendly,
@@ -17,7 +17,7 @@ Signed-off-by: Corbin Simpson <simpsoco@chromium.org>
  1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/src/mesa/drivers/dri/i965/gen6_scissor_state.c b/src/mesa/drivers/dri/i965/gen6_scissor_state.c
-index 6b01cd1..1d52e95 100644
+index 0111f15..244678c 100644
 --- a/src/mesa/drivers/dri/i965/gen6_scissor_state.c
 +++ b/src/mesa/drivers/dri/i965/gen6_scissor_state.c
 @@ -32,6 +32,13 @@
@@ -61,5 +61,5 @@ index 6b01cd1..1d52e95 100644
     }
     BEGIN_BATCH(2);
 -- 
-2.1.0.rc2.206.gedb03e5
+2.3.1
 

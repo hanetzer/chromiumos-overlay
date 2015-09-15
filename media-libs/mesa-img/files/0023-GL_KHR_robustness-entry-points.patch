@@ -1,0 +1,242 @@
+From 8fde84f17ad8b3295da82451922cc5e165ce09df Mon Sep 17 00:00:00 2001
+From: Rufus Hamade <rufus.hamade@imgtec.com>
+Date: Thu, 11 Jun 2015 18:05:18 +0100
+Subject: [PATCH 23/23] GL_KHR_robustness entry points
+
+---
+ src/mapi/glapi/gen/KHR_robustness.xml | 62 +++++++++++++++++++++++++++++++++++
+ src/mapi/glapi/gen/es_EXT.xml         |  4 +++
+ src/mesa/main/get.h                   |  4 +++
+ src/mesa/main/getstring.c             | 10 ++++++
+ src/mesa/main/readpix.c               |  9 +++++
+ src/mesa/main/readpix.h               |  5 +++
+ src/mesa/main/uniforms.c              | 24 ++++++++++++++
+ src/mesa/main/uniforms.h              |  6 ++++
+ 8 files changed, 124 insertions(+)
+ create mode 100644 src/mapi/glapi/gen/KHR_robustness.xml
+
+diff --git a/src/mapi/glapi/gen/KHR_robustness.xml b/src/mapi/glapi/gen/KHR_robustness.xml
+new file mode 100644
+index 0000000..f51460a
+--- /dev/null
++++ b/src/mapi/glapi/gen/KHR_robustness.xml
+@@ -0,0 +1,62 @@
++<?xml version="1.0"?>
++<!DOCTYPE OpenGLAPI SYSTEM "gl_API.dtd">
++
++<OpenGLAPI>
++
++<category name="GL_EXT_robustness" number="107">
++
++    <enum name="GUILTY_CONTEXT_RESET_EXT"                 value="0x8253"/>
++    <enum name="INNOCENT_CONTEXT_RESET_EXT"               value="0x8254"/>
++    <enum name="UNKNOWN_CONTEXT_RESET_EXT"                value="0x8255"/>
++
++    <enum name="CONTEXT_ROBUST_ACCESS_EXT"       count="1" value="0x90F3">
++        <size name="Get" mode="get"/>
++    </enum>
++    <enum name="RESET_NOTIFICATION_STRATEGY_EXT" count="1" value="0x8256">
++        <size name="Get" mode="get"/>
++    </enum>
++
++    <enum name="LOSE_CONTEXT_ON_RESET_EXT"                value="0x8252"/>
++    <enum name="NO_RESET_NOTIFICATION_EXT"                value="0x8261"/>
++
++
++    <function name="GetGraphicsResetStatusKHR" offset="assign" es1="1.1" es2="2.0">
++        <return type="GLenum"/>
++    </function>
++
++    <function name="ReadnPixelsKHR" offset="assign" es1="1.1" es2="2.0">
++        <param name="x" type="GLint"/>
++        <param name="y" type="GLint"/>
++        <param name="width" type="GLsizei"/>
++        <param name="height" type="GLsizei"/>
++        <param name="format" type="GLenum"/>
++        <param name="type" type="GLenum"/>
++        <param name="bufSize" type="GLsizei"/>
++        <param name="data" type="GLvoid *" output="true"/>
++    </function>
++
++    <function name="GetnUniformfvKHR" offset="assign" es1="1.1" es2="2.0">
++        <param name="program" type="GLuint"/>
++        <param name="location" type="GLint"/>
++        <param name="bufSize" type="GLsizei"/>
++        <param name="params" type="GLfloat *" output="true"/>
++    </function>
++
++    <function name="GetnUniformivKHR" offset="assign" es1="1.1" es2="2.0">
++        <param name="program" type="GLuint"/>
++        <param name="location" type="GLint"/>
++        <param name="bufSize" type="GLsizei"/>
++        <param name="params" type="GLint *" output="true"/>
++    </function>
++
++    <function name="GetnUniformuivKHR" offset="assign" es1="1.1" es2="2.0">
++        <param name="program" type="GLuint"/>
++        <param name="location" type="GLint"/>
++        <param name="bufSize" type="GLsizei"/>
++        <param name="params" type="GLuint *" output="true"/>
++    </function>
++
++</category>
++
++
++</OpenGLAPI>
+diff --git a/src/mapi/glapi/gen/es_EXT.xml b/src/mapi/glapi/gen/es_EXT.xml
+index c8aa6bc..428b703 100644
+--- a/src/mapi/glapi/gen/es_EXT.xml
++++ b/src/mapi/glapi/gen/es_EXT.xml
+@@ -852,4 +852,8 @@
+ <!-- 168. GL_KHR_blend_equation_advanced -->
+ <xi:include href="KHR_blend_equation_advanced.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+ 
++<!-- 190. GL_KHR_robustness -->
++<xi:include href="KHR_robustness.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
++
++
+ </OpenGLAPI>
+diff --git a/src/mesa/main/get.h b/src/mesa/main/get.h
+index 756bccf..df1a197 100644
+--- a/src/mesa/main/get.h
++++ b/src/mesa/main/get.h
+@@ -88,4 +88,8 @@ _mesa_GetGraphicsResetStatusARB( void );
+ extern GLenum GLAPIENTRY
+ _mesa_GetGraphicsResetStatusEXT( void );
+ 
++/* GL_EXT_robustness */
++extern GLenum GLAPIENTRY
++_mesa_GetGraphicsResetStatusKHR( void );
++
+ #endif
+diff --git a/src/mesa/main/getstring.c b/src/mesa/main/getstring.c
+index 0bca243..7ecf02b 100644
+--- a/src/mesa/main/getstring.c
++++ b/src/mesa/main/getstring.c
+@@ -363,3 +363,13 @@ _mesa_GetGraphicsResetStatusEXT( void )
+ 
+    return GL_NO_ERROR;
+ }
++
++GLenum GLAPIENTRY
++_mesa_GetGraphicsResetStatusKHR( void )
++{
++   GET_CURRENT_CONTEXT(ctx);
++
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetGraphicsResetStatusEXT");
++
++   return GL_NO_ERROR;
++}
+diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
+index 01b5369..0e7c699 100644
+--- a/src/mesa/main/readpix.c
++++ b/src/mesa/main/readpix.c
+@@ -1098,6 +1098,15 @@ _mesa_ReadnPixelsEXT( GLint x, GLint y, GLsizei width, GLsizei height,
+ }
+ 
+ void GLAPIENTRY
++_mesa_ReadnPixelsKHR( GLint x, GLint y, GLsizei width, GLsizei height,
++		      GLenum format, GLenum type, GLsizei bufSize,
++                      GLvoid *pixels )
++{
++   _mesa_ReadnPixelsARB(x, y, width, height, format, type, bufSize, pixels);
++}
++
++
++void GLAPIENTRY
+ _mesa_ReadPixels( GLint x, GLint y, GLsizei width, GLsizei height,
+ 		  GLenum format, GLenum type, GLvoid *pixels )
+ {
+diff --git a/src/mesa/main/readpix.h b/src/mesa/main/readpix.h
+index 47c11ce..2ed98c5 100644
+--- a/src/mesa/main/readpix.h
++++ b/src/mesa/main/readpix.h
+@@ -58,4 +58,9 @@ _mesa_ReadnPixelsEXT( GLint x, GLint y, GLsizei width, GLsizei height,
+ 		      GLenum format, GLenum type, GLsizei bufSize,
+                       GLvoid *pixels );
+ 
++extern void GLAPIENTRY
++_mesa_ReadnPixelsKHR( GLint x, GLint y, GLsizei width, GLsizei height,
++		      GLenum format, GLenum type, GLsizei bufSize,
++                      GLvoid *pixels );
++
+ #endif
+diff --git a/src/mesa/main/uniforms.c b/src/mesa/main/uniforms.c
+index 891a6d5..a2c66b9 100644
+--- a/src/mesa/main/uniforms.c
++++ b/src/mesa/main/uniforms.c
+@@ -852,6 +852,14 @@ _mesa_GetnUniformfvEXT(GLuint program, GLint location,
+ }
+ 
+ void GLAPIENTRY
++_mesa_GetnUniformfvKHR(GLuint program, GLint location,
++                       GLsizei bufSize, GLfloat *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetnUniformfvKHR");
++}
++
++void GLAPIENTRY
+ _mesa_GetUniformfv(GLuint program, GLint location, GLfloat *params)
+ {
+    _mesa_GetnUniformfvARB(program, location, INT_MAX, params);
+@@ -875,6 +883,14 @@ _mesa_GetnUniformivEXT(GLuint program, GLint location,
+ }
+ 
+ void GLAPIENTRY
++_mesa_GetnUniformivKHR(GLuint program, GLint location,
++                       GLsizei bufSize, GLint *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetnUniformivKHR");
++}
++
++void GLAPIENTRY
+ _mesa_GetUniformiv(GLuint program, GLint location, GLint *params)
+ {
+    _mesa_GetnUniformivARB(program, location, INT_MAX, params);
+@@ -891,6 +907,14 @@ _mesa_GetnUniformuivARB(GLuint program, GLint location,
+ }
+ 
+ void GLAPIENTRY
++_mesa_GetnUniformuivKHR(GLuint program, GLint location,
++                        GLsizei bufSize, GLuint *params)
++{
++   GET_CURRENT_CONTEXT(ctx);
++   _mesa_error(ctx, GL_INVALID_OPERATION, "glGetnUniformuivKHR");
++}
++
++void GLAPIENTRY
+ _mesa_GetUniformuiv(GLuint program, GLint location, GLuint *params)
+ {
+    _mesa_GetnUniformuivARB(program, location, INT_MAX, params);
+diff --git a/src/mesa/main/uniforms.h b/src/mesa/main/uniforms.h
+index 4ec2d90..7001df3 100644
+--- a/src/mesa/main/uniforms.h
++++ b/src/mesa/main/uniforms.h
+@@ -199,16 +199,22 @@ _mesa_GetnUniformfvARB(GLuint, GLint, GLsizei, GLfloat *);
+ void GLAPIENTRY
+ _mesa_GetnUniformfvEXT(GLuint, GLint, GLsizei, GLfloat *);
+ void GLAPIENTRY
++_mesa_GetnUniformfvKHR(GLuint, GLint, GLsizei, GLfloat *);
++void GLAPIENTRY
+ _mesa_GetUniformfv(GLuint, GLint, GLfloat *);
+ void GLAPIENTRY
+ _mesa_GetnUniformivARB(GLuint, GLint, GLsizei, GLint *);
+ void GLAPIENTRY
+ _mesa_GetnUniformivEXT(GLuint, GLint, GLsizei, GLint *);
+ void GLAPIENTRY
++_mesa_GetnUniformivKHR(GLuint, GLint, GLsizei, GLint *);
++void GLAPIENTRY
+ _mesa_GetUniformuiv(GLuint, GLint, GLuint *);
+ void GLAPIENTRY
+ _mesa_GetnUniformuivARB(GLuint, GLint, GLsizei, GLuint *);
+ void GLAPIENTRY
++_mesa_GetnUniformuivKHR(GLuint, GLint, GLsizei, GLuint *);
++void GLAPIENTRY
+ _mesa_GetUniformuiv(GLuint program, GLint location, GLuint *params);
+ void GLAPIENTRY
+ _mesa_GetnUniformdvARB(GLuint, GLint, GLsizei, GLdouble *);
+-- 
+1.9.1
+

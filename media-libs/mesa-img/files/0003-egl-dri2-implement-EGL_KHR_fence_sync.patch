@@ -1,0 +1,268 @@
+From 140d267c7517eb8f8ddcd59507f733ba6521f0c6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>
+Date: Fri, 10 Apr 2015 10:56:02 +0200
+Subject: [PATCH 3/5] egl/dri2: implement EGL_KHR_fence_sync
+
+---
+ src/egl/drivers/dri2/egl_dri2.c | 96 +++++++++++++++++++++++++++++++++++++++++
+ src/egl/drivers/dri2/egl_dri2.h |  9 ++++
+ src/egl/main/eglapi.c           | 34 ++++++++++++---
+ 3 files changed, 134 insertions(+), 5 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 988b95c..bd68136 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -51,6 +51,7 @@
+ #endif
+ 
+ #include "egl_dri2.h"
++#include "../util/u_atomic.h"
+ 
+ const __DRIuseInvalidateExtension use_invalidate = {
+    .base = { __DRI_USE_INVALIDATE, 1 }
+@@ -521,6 +522,10 @@ dri2_setup_screen(_EGLDisplay *disp)
+          disp->Extensions.IMG_context_priority = EGL_TRUE;
+    }
+ 
++   if (dri2_dpy->fence) {
++      disp->Extensions.KHR_fence_sync = EGL_TRUE;
++   }
++
+    if (dri2_dpy->image) {
+       if (dri2_dpy->image->base.version >= 10 &&
+           dri2_dpy->image->getCapabilities != NULL) {
+@@ -606,6 +611,7 @@ dri2_create_screen(_EGLDisplay *disp)
+ 
+       if (!dri2_bind_extensions(dri2_dpy, dri2_core_extensions, extensions))
+          goto cleanup_dri_screen;
++
+    } else {
+       assert(dri2_dpy->swrast);
+       if (!dri2_bind_extensions(dri2_dpy, swrast_core_extensions, extensions))
+@@ -619,6 +625,9 @@ dri2_create_screen(_EGLDisplay *disp)
+       if (strcmp(extensions[i]->name, __DRI2_CONFIG_QUERY) == 0) {
+          dri2_dpy->config = (__DRI2configQueryExtension *) extensions[i];
+       }
++      if (strcmp(extensions[i]->name, __DRI2_FENCE) == 0) {
++         dri2_dpy->fence = (__DRI2fenceExtension *) extensions[i];
++      }
+       if (strcmp(extensions[i]->name, __DRI_IMAGE) == 0) {
+          dri2_dpy->image = (__DRIimageExtension *) extensions[i];
+       }
+@@ -2216,6 +2225,90 @@ dri2_query_wayland_buffer_wl(_EGLDriver *drv, _EGLDisplay *disp,
+ #endif
+ 
+ static void
++dri2_egl_ref_sync(struct dri2_egl_sync *sync)
++{
++   p_atomic_inc(&sync->refcount);
++}
++
++static void
++dri2_egl_unref_sync(struct dri2_egl_display *dri2_dpy,
++                    struct dri2_egl_sync *dri2_sync)
++{
++   if (p_atomic_dec_zero(&dri2_sync->refcount)) {
++      dri2_dpy->fence->destroy_fence(dri2_dpy->dri_screen, dri2_sync->fence);
++      free(dri2_sync);
++   }
++}
++
++static _EGLSync *
++dri2_create_sync(_EGLDriver *drv, _EGLDisplay *dpy,
++                 EGLenum type, const EGLint *attrib_list)
++{
++   _EGLContext *ctx = _eglGetCurrentContext();
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(dpy);
++   struct dri2_egl_context *dri2_ctx = dri2_egl_context(ctx);
++   struct dri2_egl_sync *dri2_sync;
++
++   dri2_sync = calloc(1, sizeof(struct dri2_egl_sync));
++   if (!dri2_sync) {
++      _eglError(EGL_BAD_ALLOC, "eglCreateSyncKHR");
++      return NULL;
++   }
++
++   if (!_eglInitSync(&dri2_sync->base, dpy, type, attrib_list)) {
++      free(dri2_sync);
++      return NULL;
++   }
++
++   switch (type) {
++   case EGL_SYNC_FENCE_KHR:
++      dri2_sync->fence = dri2_dpy->fence->create_fence(dri2_ctx->dri_context);
++      break;
++   }
++
++   p_atomic_set(&dri2_sync->refcount, 1);
++   return &dri2_sync->base;
++}
++
++static EGLBoolean
++dri2_destroy_sync(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync)
++{
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(dpy);
++   struct dri2_egl_sync *dri2_sync = dri2_egl_sync(sync);
++
++   dri2_egl_unref_sync(dri2_dpy, dri2_sync);
++   return EGL_TRUE;
++}
++
++static EGLint
++dri2_client_wait_sync(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync,
++                      EGLint flags, EGLTimeKHR timeout)
++{
++   _EGLContext *ctx = _eglGetCurrentContext();
++   struct dri2_egl_display *dri2_dpy = dri2_egl_display(dpy);
++   struct dri2_egl_context *dri2_ctx = dri2_egl_context(ctx);
++   struct dri2_egl_sync *dri2_sync = dri2_egl_sync(sync);
++   unsigned wait_flags = 0;
++   EGLint ret = EGL_CONDITION_SATISFIED_KHR;
++
++   if (flags & EGL_SYNC_FLUSH_COMMANDS_BIT_KHR)
++      wait_flags |= __DRI2_FENCE_FLAG_FLUSH_COMMANDS;
++
++   /* the sync object should take a reference while waiting */
++   dri2_egl_ref_sync(dri2_sync);
++
++   if (dri2_dpy->fence->client_wait_sync(dri2_ctx->dri_context,
++                                         dri2_sync->fence, wait_flags,
++                                         timeout))
++      dri2_sync->base.SyncStatus = EGL_SIGNALED_KHR;
++   else
++      ret = EGL_TIMEOUT_EXPIRED_KHR;
++
++   dri2_egl_unref_sync(dri2_dpy, dri2_sync);
++   return ret;
++}
++
++static void
+ dri2_unload(_EGLDriver *drv)
+ {
+    struct dri2_egl_driver *dri2_drv = dri2_egl_driver(drv);
+@@ -2327,6 +2420,9 @@ _eglBuiltInDriverDRI2(const char *args)
+    dri2_drv->base.API.QueryWaylandBufferWL = dri2_query_wayland_buffer_wl;
+ #endif
+    dri2_drv->base.API.GetSyncValuesCHROMIUM = dri2_get_sync_values_chromium;
++   dri2_drv->base.API.CreateSyncKHR = dri2_create_sync;
++   dri2_drv->base.API.ClientWaitSyncKHR = dri2_client_wait_sync;
++   dri2_drv->base.API.DestroySyncKHR = dri2_destroy_sync;
+ 
+    dri2_drv->base.Name = "DRI2";
+    dri2_drv->base.Unload = dri2_unload;
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index 73da18d..09e7b15 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -74,6 +74,7 @@
+ #include "egllog.h"
+ #include "eglsurface.h"
+ #include "eglimage.h"
++#include "eglsync.h"
+ 
+ #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+ 
+@@ -164,6 +165,7 @@ struct dri2_egl_display
+    const __DRIimageExtension      *image;
+    const __DRIrobustnessExtension *robustness;
+    const __DRI2configQueryExtension *config;
++   const __DRI2fenceExtension *fence;
+    const __DRIpriorityExtension   *priority;
+    int                       fd;
+ 
+@@ -284,6 +286,12 @@ struct dri2_egl_image
+    __DRIimage *dri_image;
+ };
+ 
++struct dri2_egl_sync {
++   _EGLSync base;
++   int refcount;
++   void *fence;
++};
++
+ /* From xmlpool/options.h, user exposed so should be stable */
+ #define DRI_CONF_VBLANK_NEVER 0
+ #define DRI_CONF_VBLANK_DEF_INTERVAL_0 1
+@@ -293,6 +301,7 @@ struct dri2_egl_image
+ /* standard typecasts */
+ _EGL_DRIVER_STANDARD_TYPECASTS(dri2_egl)
+ _EGL_DRIVER_TYPECAST(dri2_egl_image, _EGLImage, obj)
++_EGL_DRIVER_TYPECAST(dri2_egl_sync, _EGLSync, obj)
+ 
+ extern const __DRIimageLookupExtension image_lookup_extension;
+ extern const __DRIuseInvalidateExtension use_invalidate;
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index c9e06c2..6b2c2ac 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -1659,13 +1659,30 @@ EGLSyncKHR EGLAPIENTRY
+ eglCreateSyncKHR(EGLDisplay dpy, EGLenum type, const EGLint *attrib_list)
+ {
+    _EGLDisplay *disp = _eglLockDisplay(dpy);
++   _EGLContext *ctx = _eglGetCurrentContext();
+    _EGLDriver *drv;
+    _EGLSync *sync;
+    EGLSyncKHR ret;
+ 
+    _EGL_CHECK_DISPLAY(disp, EGL_NO_SYNC_KHR, drv);
+-   if (!disp->Extensions.KHR_reusable_sync)
+-      RETURN_EGL_EVAL(disp, EGL_NO_SYNC_KHR);
++
++   /* return an error if the client API doesn't support GL_OES_EGL_sync */
++   if (!ctx || ctx->Resource.Display != dpy ||
++       ctx->ClientAPI != EGL_OPENGL_ES_API)
++      RETURN_EGL_ERROR(disp, EGL_BAD_MATCH, EGL_NO_SYNC_KHR);
++
++   switch (type) {
++   case EGL_SYNC_FENCE_KHR:
++      if (!disp->Extensions.KHR_fence_sync)
++         RETURN_EGL_ERROR(disp, EGL_BAD_ATTRIBUTE, EGL_NO_SYNC_KHR);
++      break;
++   case EGL_SYNC_REUSABLE_KHR:
++      if (!disp->Extensions.KHR_reusable_sync)
++         RETURN_EGL_ERROR(disp, EGL_BAD_ATTRIBUTE, EGL_NO_SYNC_KHR);
++      break;
++   default:
++      RETURN_EGL_ERROR(disp, EGL_BAD_ATTRIBUTE, EGL_NO_SYNC_KHR);
++   }
+ 
+    sync = drv->API.CreateSyncKHR(drv, disp, type, attrib_list);
+    ret = (sync) ? _eglLinkSync(sync) : EGL_NO_SYNC_KHR;
+@@ -1683,7 +1700,8 @@ eglDestroySyncKHR(EGLDisplay dpy, EGLSyncKHR sync)
+    EGLBoolean ret;
+ 
+    _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
+-   assert(disp->Extensions.KHR_reusable_sync);
++   assert(disp->Extensions.KHR_reusable_sync ||
++          disp->Extensions.KHR_fence_sync);
+ 
+    _eglUnlinkSync(s);
+    ret = drv->API.DestroySyncKHR(drv, disp, s);
+@@ -1701,7 +1719,12 @@ eglClientWaitSyncKHR(EGLDisplay dpy, EGLSyncKHR sync, EGLint flags, EGLTimeKHR t
+    EGLint ret;
+ 
+    _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
+-   assert(disp->Extensions.KHR_reusable_sync);
++   assert(disp->Extensions.KHR_reusable_sync ||
++          disp->Extensions.KHR_fence_sync);
++
++   if (s->SyncStatus == EGL_SIGNALED_KHR)
++      RETURN_EGL_EVAL(disp, EGL_CONDITION_SATISFIED_KHR);
++
+    ret = drv->API.ClientWaitSyncKHR(drv, disp, s, flags, timeout);
+ 
+    RETURN_EGL_EVAL(disp, ret);
+@@ -1733,7 +1756,8 @@ eglGetSyncAttribKHR(EGLDisplay dpy, EGLSyncKHR sync, EGLint attribute, EGLint *v
+    EGLBoolean ret;
+ 
+    _EGL_CHECK_SYNC(disp, s, EGL_FALSE, drv);
+-   assert(disp->Extensions.KHR_reusable_sync);
++   assert(disp->Extensions.KHR_reusable_sync ||
++          disp->Extensions.KHR_fence_sync);
+    ret = drv->API.GetSyncAttribKHR(drv, disp, s, attribute, value);
+ 
+    RETURN_EGL_EVAL(disp, ret);
+-- 
+1.9.1
+

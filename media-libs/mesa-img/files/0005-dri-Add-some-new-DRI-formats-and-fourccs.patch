@@ -1,0 +1,62 @@
+From b8d926fda883d1cc0cabdcab704752995f3ad661 Mon Sep 17 00:00:00 2001
+From: Frank Binns <frank.binns@imgtec.com>
+Date: Thu, 5 Jun 2014 12:07:01 +0100
+Subject: [PATCH 05/52] dri: Add some new DRI formats and fourccs
+
+Add ARGB4444 and ARGB1555 DRI formats and fourccs.
+---
+ include/GL/internal/dri_interface.h    | 4 ++++
+ src/mesa/drivers/dri/common/dri_util.c | 8 ++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 6674af0..0e5aa1f 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1093,6 +1093,8 @@ struct __DRIdri2ExtensionRec {
+ #define __DRI_IMAGE_FORMAT_XRGB2101010  0x1009
+ #define __DRI_IMAGE_FORMAT_ARGB2101010  0x100a
+ #define __DRI_IMAGE_FORMAT_SARGB8       0x100b
++#define __DRI_IMAGE_FORMAT_ARGB4444     0x100c
++#define __DRI_IMAGE_FORMAT_ARGB1555     0x100d
+ 
+ #define __DRI_IMAGE_USE_SHARE		0x0001
+ #define __DRI_IMAGE_USE_SCANOUT		0x0002
+@@ -1107,6 +1109,8 @@ struct __DRIdri2ExtensionRec {
+  * \since 5
+  */
+ 
++#define __DRI_IMAGE_FOURCC_ARGB4444	0x32315241
++#define __DRI_IMAGE_FOURCC_ARGB1555	0x35315241
+ #define __DRI_IMAGE_FOURCC_RGB565	0x36314752
+ #define __DRI_IMAGE_FOURCC_ARGB8888	0x34325241
+ #define __DRI_IMAGE_FOURCC_XRGB8888	0x34325258
+diff --git a/src/mesa/drivers/dri/common/dri_util.c b/src/mesa/drivers/dri/common/dri_util.c
+index d6e875f..f679f28 100644
+--- a/src/mesa/drivers/dri/common/dri_util.c
++++ b/src/mesa/drivers/dri/common/dri_util.c
+@@ -835,6 +835,10 @@ driGLFormatToImageFormat(mesa_format format)
+       return __DRI_IMAGE_FORMAT_NONE;
+    case MESA_FORMAT_B8G8R8A8_SRGB:
+       return __DRI_IMAGE_FORMAT_SARGB8;
++   case MESA_FORMAT_B4G4R4A4_UNORM:
++      return __DRI_IMAGE_FORMAT_ARGB4444;
++   case MESA_FORMAT_B5G5R5A1_UNORM:
++      return __DRI_IMAGE_FORMAT_ARGB1555;
+    default:
+       return 0;
+    }
+@@ -866,6 +870,10 @@ driImageFormatToGLFormat(uint32_t image_format)
+       return MESA_FORMAT_B8G8R8A8_SRGB;
+    case __DRI_IMAGE_FORMAT_NONE:
+       return MESA_FORMAT_NONE;
++   case __DRI_IMAGE_FORMAT_ARGB4444:
++      return MESA_FORMAT_B4G4R4A4_UNORM;
++   case __DRI_IMAGE_FORMAT_ARGB1555:
++      return MESA_FORMAT_B5G5R5A1_UNORM;
+    default:
+       return MESA_FORMAT_NONE;
+    }
+-- 
+1.8.5.4.gfdaaaa2
+

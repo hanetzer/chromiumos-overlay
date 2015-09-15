@@ -1,0 +1,46 @@
+From f90381f96087dfc085fbf14eb24db791d7d40d9b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>
+Date: Fri, 10 Apr 2015 23:35:39 +0200
+Subject: [PATCH 5/5] egl/dri2: return the latest sync status in
+ eglGetSyncAttribKHR
+
+---
+ src/egl/main/eglsync.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/egl/main/eglsync.c b/src/egl/main/eglsync.c
+index 9d0067c..93f3107 100644
+--- a/src/egl/main/eglsync.c
++++ b/src/egl/main/eglsync.c
+@@ -30,6 +30,7 @@
+ 
+ #include "eglsync.h"
+ #include "eglcurrent.h"
++#include "egldriver.h"
+ #include "egllog.h"
+ 
+ 
+@@ -93,13 +94,19 @@ _eglGetSyncAttribKHR(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync,
+                      EGLint attribute, EGLint *value)
+ {
+    if (!value)
+-      return _eglError(EGL_BAD_PARAMETER, "eglGetConfigs");
++      return _eglError(EGL_BAD_PARAMETER, "eglGetSyncAttribKHR");
+ 
+    switch (attribute) {
+    case EGL_SYNC_TYPE_KHR:
+       *value = sync->Type;
+       break;
+    case EGL_SYNC_STATUS_KHR:
++      /* update the sync status */
++      if (sync->SyncStatus != EGL_SIGNALED_KHR &&
++          (sync->Type == EGL_SYNC_FENCE_KHR ||
++           sync->Type == EGL_SYNC_CL_EVENT_KHR))
++         drv->API.ClientWaitSyncKHR(drv, dpy, sync, 0, 0);
++
+       *value = sync->SyncStatus;
+       break;
+    case EGL_SYNC_CONDITION_KHR:
+-- 
+1.9.1
+

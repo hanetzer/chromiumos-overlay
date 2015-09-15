@@ -1,7 +1,7 @@
-From b23c4472c7cc269d2145b3ca3e8976a494608a38 Mon Sep 17 00:00:00 2001
+From 955daca0759768bed387daf403dbe10c63bde535 Mon Sep 17 00:00:00 2001
 From: Haixia Shi <hshi@chromium.org>
 Date: Fri, 5 Dec 2014 11:00:59 -0800
-Subject: [PATCH] egl/dri2: implement platform_null.
+Subject: [PATCH 20/27] egl/dri2: implement platform_null.
 
 BUG=chromium:432325
 TEST=force mesa to use platform_null and verify with test app.
@@ -16,23 +16,24 @@ Change-Id: If72f8a49dd9b7370c90619bf52ca8c773d6ce377
  create mode 100644 src/egl/drivers/dri2/platform_null.c
 
 diff --git a/src/egl/drivers/dri2/Makefile.am b/src/egl/drivers/dri2/Makefile.am
-index e589056..182679b 100644
+index f589600..47f0bb8 100644
 --- a/src/egl/drivers/dri2/Makefile.am
 +++ b/src/egl/drivers/dri2/Makefile.am
-@@ -63,3 +63,8 @@ if HAVE_EGL_PLATFORM_DRM
- libegl_dri2_la_SOURCES += platform_drm.c
+@@ -65,4 +65,9 @@ libegl_dri2_la_SOURCES += platform_drm.c
  AM_CFLAGS += -DHAVE_DRM_PLATFORM
  endif
-+
+ 
 +if HAVE_EGL_PLATFORM_NULL
 +libegl_dri2_la_SOURCES += platform_null.c
 +AM_CFLAGS += -DHAVE_NULL_PLATFORM
 +endif
++
+ EXTRA_DIST = SConscript
 diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
-index d795a2f..e59709f 100644
+index a428f28..79d02f7 100644
 --- a/src/egl/drivers/dri2/egl_dri2.c
 +++ b/src/egl/drivers/dri2/egl_dri2.c
-@@ -632,6 +632,13 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
+@@ -639,6 +639,13 @@ dri2_initialize(_EGLDriver *drv, _EGLDisplay *disp)
        return EGL_FALSE;
  
     switch (disp->Platform) {
@@ -46,31 +47,31 @@ index d795a2f..e59709f 100644
  #ifdef HAVE_X11_PLATFORM
     case _EGL_PLATFORM_X11:
        if (disp->Options.TestOnly)
-@@ -1534,7 +1541,7 @@ dri2_create_wayland_buffer_from_image(_EGLDriver *drv, _EGLDisplay *dpy,
+@@ -1578,7 +1585,7 @@ dri2_create_wayland_buffer_from_image(_EGLDriver *drv, _EGLDisplay *dpy,
     return dri2_dpy->vtbl->create_wayland_buffer_from_image(drv, dpy, img);
  }
  
--#ifdef HAVE_DRM_PLATFORM
-+#if defined(HAVE_DRM_PLATFORM) || defined(HAVE_NULL_PLATFORM)
+-#ifdef HAVE_LIBDRM
++#if defined(HAVE_LIBDRM) || defined(HAVE_NULL_PLATFORM)
  static EGLBoolean
  dri2_check_dma_buf_attribs(const _EGLImageAttribs *attrs)
  {
-@@ -1792,7 +1799,7 @@ dri2_create_image_khr(_EGLDriver *drv, _EGLDisplay *disp,
+@@ -1836,7 +1843,7 @@ dri2_create_image_khr(_EGLDriver *drv, _EGLDisplay *disp,
     case EGL_WAYLAND_BUFFER_WL:
        return dri2_create_image_wayland_wl_buffer(disp, ctx, buffer, attr_list);
  #endif
--#ifdef HAVE_DRM_PLATFORM
-+#if defined(HAVE_DRM_PLATFORM) || defined(HAVE_NULL_PLATFORM)
+-#ifdef HAVE_LIBDRM
++#if defined(HAVE_LIBDRM) || defined(HAVE_NULL_PLATFORM)
     case EGL_LINUX_DMA_BUF_EXT:
        return dri2_create_image_dma_buf(disp, ctx, buffer, attr_list);
  #endif
 diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
-index 52f05fb..8521885 100644
+index 167b3b1..a856c95 100644
 --- a/src/egl/drivers/dri2/egl_dri2.h
 +++ b/src/egl/drivers/dri2/egl_dri2.h
-@@ -332,4 +332,7 @@ dri2_initialize_wayland(_EGLDriver *drv, _EGLDisplay *disp);
- EGLBoolean
- dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *disp);
+@@ -337,4 +337,7 @@ dri2_initialize_android(_EGLDriver *drv, _EGLDisplay *disp);
+ void
+ dri2_flush_drawable_for_swapbuffers(_EGLDisplay *disp, _EGLSurface *draw);
  
 +EGLBoolean
 +dri2_initialize_null(_EGLDriver *drv, _EGLDisplay *disp);
@@ -226,5 +227,5 @@ index 0000000..ab5ef49
 +   return _eglError(EGL_NOT_INITIALIZED, err);
 +}
 -- 
-2.1.2
+2.3.1
 

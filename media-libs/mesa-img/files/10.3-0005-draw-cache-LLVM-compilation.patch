@@ -1,7 +1,7 @@
-From 7f940a584eea85fe537b1ff751ad068248ad3520 Mon Sep 17 00:00:00 2001
+From f0aee913e172d441540368deacb4e4bc35fbe3bd Mon Sep 17 00:00:00 2001
 From: Frank Henigman <fjhenigman@chromium.org>
 Date: Wed, 28 May 2014 20:24:47 -0700
-Subject: [PATCH] draw: cache LLVM compilation
+Subject: [PATCH 10/27] draw: cache LLVM compilation
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -15,12 +15,12 @@ Change-Id: Ib8b31497b7fc634a677a67145e9a21f15ae39480
 Signed-off-by: Frank Henigman <fjhenigman@chromium.org>
 Signed-off-by: Stéphane Marchesin <marcheu@chromium.org>
 ---
- src/gallium/auxiliary/draw/draw_llvm.c |  126 +++++++++++++++++++++++++++++++-
- src/gallium/auxiliary/draw/draw_llvm.h |   15 ++++
+ src/gallium/auxiliary/draw/draw_llvm.c | 126 +++++++++++++++++++++++++++++++--
+ src/gallium/auxiliary/draw/draw_llvm.h |  15 ++++
  2 files changed, 137 insertions(+), 4 deletions(-)
 
 diff --git a/src/gallium/auxiliary/draw/draw_llvm.c b/src/gallium/auxiliary/draw/draw_llvm.c
-index f253623..59c95cd 100644
+index 0ca9665..18bd13c 100644
 --- a/src/gallium/auxiliary/draw/draw_llvm.c
 +++ b/src/gallium/auxiliary/draw/draw_llvm.c
 @@ -50,7 +50,10 @@
@@ -182,16 +182,16 @@ index f253623..59c95cd 100644
     return item;
  }
  
-@@ -595,7 +712,7 @@ draw_llvm_create_variant(struct draw_llvm *llvm,
- 
-    memcpy(&variant->key, key, shader->variant_key_size);
+@@ -600,7 +717,7 @@ draw_llvm_create_variant(struct draw_llvm *llvm,
+       draw_llvm_dump_variant_key(&variant->key);
+    }
  
 -   variant->llvm_item = llvm_cache_item_create(variant, num_inputs);
 +   variant->llvm_item = llvm_cache_item_get(variant, num_inputs);
     if (variant->llvm_item == NULL) {
        FREE(variant);
        return NULL;
-@@ -2013,13 +2130,14 @@ llvm_cache_item_destroy(struct llvm_cache_item *item)
+@@ -2016,13 +2133,14 @@ llvm_cache_item_destroy(struct llvm_cache_item *item)
  {
     gallivm_destroy(item->gallivm);
     FREE(item->gallivm);
@@ -208,7 +208,7 @@ index f253623..59c95cd 100644
     remove_from_list(&variant->list_item_local);
     variant->shader->variants_cached--;
 diff --git a/src/gallium/auxiliary/draw/draw_llvm.h b/src/gallium/auxiliary/draw/draw_llvm.h
-index b002688..38c30b6 100644
+index 5797326..86772c5 100644
 --- a/src/gallium/auxiliary/draw/draw_llvm.h
 +++ b/src/gallium/auxiliary/draw/draw_llvm.h
 @@ -388,12 +388,27 @@ struct draw_gs_llvm_variant_list_item
@@ -240,5 +240,5 @@ index b002688..38c30b6 100644
  
  struct draw_llvm_variant
 -- 
-1.7.9.5
+2.3.1
 

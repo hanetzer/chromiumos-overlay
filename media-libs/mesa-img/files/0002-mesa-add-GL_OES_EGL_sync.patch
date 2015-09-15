@@ -1,0 +1,26 @@
+From 7de331ed55480b6b6f0be1eaff22f5c0f83aea4b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>
+Date: Thu, 9 Apr 2015 23:26:14 +0200
+Subject: [PATCH 2/5] mesa: add GL_OES_EGL_sync
+
+This is an empty extension whose presence means that EGL sync objects can be
+used with ES contexts.
+---
+ src/mesa/main/extensions.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/mesa/main/extensions.c b/src/mesa/main/extensions.c
+index f212015..81c5bea 100644
+--- a/src/mesa/main/extensions.c
++++ b/src/mesa/main/extensions.c
+@@ -296,6 +296,7 @@ static const struct extension extension_table[] = {
+    { "GL_OES_depth_texture",                       o(ARB_depth_texture),                                  ES2, 2006 },
+    { "GL_OES_depth_texture_cube_map",              o(OES_depth_texture_cube_map),                         ES2, 2012 },
+    { "GL_OES_draw_texture",                        o(OES_draw_texture),                             ES1,       2004 },
++   { "GL_OES_EGL_sync",                            o(dummy_true),                                   ES1 | ES2, 2010 },
+    /*  FIXME: Mesa expects GL_OES_EGL_image to be available in OpenGL contexts. */
+    { "GL_OES_EGL_image",                           o(OES_EGL_image),                           GL | ES1 | ES2, 2006 },
+    { "GL_OES_EGL_image_external",                  o(OES_EGL_image_external),                       ES1 | ES2, 2010 },
+-- 
+1.9.1
+

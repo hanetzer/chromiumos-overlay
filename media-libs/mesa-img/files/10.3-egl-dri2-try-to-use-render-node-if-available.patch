@@ -1,7 +1,7 @@
-From 0a7438a87787d33717e57c13b3346c4239fb9f64 Mon Sep 17 00:00:00 2001
+From 80f02496a1ae93a504a74b12e224fad6eee63e27 Mon Sep 17 00:00:00 2001
 From: Haixia Shi <hshi@chromium.org>
 Date: Thu, 15 Jan 2015 17:41:05 -0800
-Subject: [PATCH] egl/dri2: try to use render node if available.
+Subject: [PATCH 21/27] egl/dri2: try to use render node if available.
 
 Let mesa platform_null try render node first (/dev/dri/renderD%d) and
 use it if available. If not then fall back to the normal nodes
@@ -16,7 +16,7 @@ Change-Id: I3eb2087ea70307a36613b884645fab428fb5c203
  1 file changed, 31 insertions(+), 18 deletions(-)
 
 diff --git a/src/egl/drivers/dri2/platform_null.c b/src/egl/drivers/dri2/platform_null.c
-index ab5ef49..9d4742a 100644
+index ab5ef49..9c59809 100644
 --- a/src/egl/drivers/dri2/platform_null.c
 +++ b/src/egl/drivers/dri2/platform_null.c
 @@ -55,12 +55,16 @@ null_get_buffers_with_format(__DRIdrawable * driDrawable,
@@ -91,5 +91,5 @@ index ab5ef49..9d4742a 100644
        goto cleanup_display;
     }
 -- 
-2.1.2
+2.3.1
 
