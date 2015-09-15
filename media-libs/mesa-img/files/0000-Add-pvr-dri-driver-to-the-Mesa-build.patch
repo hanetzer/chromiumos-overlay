@@ -4590,7 +4590,7 @@ diff -Naur a/src/mesa/drivers/dri/pvr/pvrdri.c b/src/mesa/drivers/dri/pvr/pvrdri
 +			     GLboolean bMakeUnCurrent,
 +			     GLboolean bMarkSurfaceInvalid)
 +{
-+	if (psPVRContext->psPVRDrawable != NULL)
++	if (bMakeUnCurrent || psPVRContext->psPVRDrawable != NULL)
 +	{
 +		(void) PVRDRIFlushBuffersGC(psPVRContext);
 +	}
