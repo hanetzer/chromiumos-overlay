@@ -737,6 +737,9 @@ setup_compile_flags() {
 	# Enable std::vector []-operator bounds checking.
 	append-cxxflags -D__google_stl_debug_vector=1
 
+	# crbug.com/532532
+	filter-flags "-Wl,--fix-cortex-a53-843419"
+
 	use vtable_verify && append-ldflags -fvtable-verify=preinit
 
 	local flags
