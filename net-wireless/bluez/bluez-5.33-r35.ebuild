@@ -23,7 +23,7 @@ IUSE="cups debug test-programs readline"
 CDEPEND="
 	>=dev-libs/glib-2.14:2
 	sys-apps/dbus
-	>=sys-fs/udev-169
+	virtual/udev
 	cups? ( net-print/cups )
 	readline? ( sys-libs/readline )
 "

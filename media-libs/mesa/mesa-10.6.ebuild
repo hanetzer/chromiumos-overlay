@@ -70,7 +70,7 @@ RDEPEND="
 		x11-libs/libXxf86vm
 	)
 	dev-libs/expat
-	sys-fs/udev
+	virtual/udev
 	${LIBDRM_DEPSTRING}
 "
 

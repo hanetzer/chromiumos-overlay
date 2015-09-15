@@ -232,7 +232,7 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	sys-apps/rootdev
 	sys-apps/upstart
 	sys-fs/e2fsprogs
-	sys-fs/udev
+	virtual/udev
 	touchview? ( chromeos-base/chromeos-accelerometer-init )
 	virtual/assets
 "

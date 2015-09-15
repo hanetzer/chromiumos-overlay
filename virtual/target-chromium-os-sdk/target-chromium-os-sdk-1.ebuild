@@ -181,7 +181,7 @@ RDEPEND="${RDEPEND}
 	sys-devel/bc
 	sys-devel/clang
 	sys-fs/sshfs-fuse
-	sys-fs/udev
+	virtual/udev
 	sys-libs/libnih
 	sys-power/iasl
 	virtual/modutils
