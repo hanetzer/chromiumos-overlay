@@ -29,7 +29,7 @@ RDEPEND="!<chromeos-base/autotest-deps-0.0.3"
 
 # deps/fakegudev
 RDEPEND="${RDEPEND}
-	sys-fs/udev[gudev]
+	virtual/libgudev
 "
 
 # deps/fakemodem

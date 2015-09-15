@@ -29,7 +29,7 @@ RDEPEND=">=dev-libs/glib-2.32
 	!net-misc/modemmanager"
 
 DEPEND="${RDEPEND}
-	>=sys-fs/udev-147[gudev]
+	virtual/libgudev
 	dev-util/pkgconfig
 	dev-util/intltool
 	>=dev-util/gtk-doc-1.13

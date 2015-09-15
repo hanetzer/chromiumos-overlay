@@ -16,7 +16,7 @@ IUSE="-asan -clang doc static-libs"
 REQUIRED_USE="asan? ( clang )"
 
 RDEPEND=">=dev-libs/glib-2.32
-	>=sys-fs/udev-147[gudev]"
+	virtual/libgudev"
 
 DEPEND="${RDEPEND}
 	doc? ( dev-util/gtk-doc )
