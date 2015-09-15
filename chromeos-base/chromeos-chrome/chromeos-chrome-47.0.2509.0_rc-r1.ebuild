@@ -128,9 +128,9 @@ AFDO_LOCATION=${AFDO_GS_DIRECTORY:-"gs://chromeos-prebuilt/afdo-job/canonicals/"
 declare -A AFDO_FILE
 # The following entries into the AFDO_FILE dictionary are set automatically
 # by the PFQ builder. Don't change the format of the lines or modify by hand.
-AFDO_FILE["amd64"]="chromeos-chrome-amd64-47.0.2508.0_rc-r1.afdo"
-AFDO_FILE["x86"]="chromeos-chrome-amd64-47.0.2508.0_rc-r1.afdo"
-AFDO_FILE["arm"]="chromeos-chrome-amd64-47.0.2508.0_rc-r1.afdo"
+AFDO_FILE["amd64"]="chromeos-chrome-amd64-47.0.2509.0_rc-r1.afdo"
+AFDO_FILE["x86"]="chromeos-chrome-amd64-47.0.2509.0_rc-r1.afdo"
+AFDO_FILE["arm"]="chromeos-chrome-amd64-47.0.2509.0_rc-r1.afdo"
 
 # This dictionary can be used to manually override the setting for the
 # AFDO profile file. Any non-empty values in this array will take precedence
@@ -284,6 +284,7 @@ set_build_defines() {
 		"disable_nacl=$(! use_nacl; echo10)"
 		"icu_use_data_file_flag=1"
 		"use_cras=1"
+		"use_system_minigbm=1"
 
 		# Clang features.
 		asan=$(use10 asan)
