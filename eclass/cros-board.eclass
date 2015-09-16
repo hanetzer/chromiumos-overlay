@@ -112,6 +112,7 @@ ALL_BOARDS=(
 	kunimitsu
 	lakitu
 	lakitu_mobbuild
+	lakitu_next
 	laser
 	#lemmings
 	#lemmings_external
