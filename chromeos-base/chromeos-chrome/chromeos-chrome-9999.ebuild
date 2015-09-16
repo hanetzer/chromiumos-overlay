@@ -66,7 +66,7 @@ IUSE="
 REQUIRED_USE="asan? ( clang )"
 
 OZONE_PLATFORM_PREFIX=ozone_platform_
-OZONE_PLATFORMS=(drm test egltest caca gbm eglmarzone)
+OZONE_PLATFORMS=(gbm cast test egltest caca)
 IUSE_OZONE_PLATFORMS="${OZONE_PLATFORMS[@]/#/${OZONE_PLATFORM_PREFIX}}"
 IUSE+=" ${IUSE_OZONE_PLATFORMS}"
 OZONE_PLATFORM_DEFAULT_PREFIX=ozone_platform_default_
