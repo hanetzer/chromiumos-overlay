@@ -52,6 +52,10 @@ DEPEND="${RDEPEND}
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}"/0001-Support-oak-board.patch
+)
+
 src_configure() {
 	if use opengles && use X; then
 		waffle_has_x11_egl=ON
