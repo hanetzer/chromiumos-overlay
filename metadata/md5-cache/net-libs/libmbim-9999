@@ -1,13 +1,13 @@
 DEFINED_PHASES=configure info install prepare setup test unpack
-DEPEND=>=dev-libs/glib-2.32 >=sys-fs/udev-147[gudev] doc? ( dev-util/gtk-doc ) virtual/pkgconfig !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 dev-vcs/git
+DEPEND=>=dev-libs/glib-2.32 virtual/libgudev doc? ( dev-util/gtk-doc ) virtual/pkgconfig !<sys-devel/gettext-0.18.1.1-r3 || ( >=sys-devel/automake-1.13:1.13 >=sys-devel/automake-1.15:1.15 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 dev-vcs/git
 DESCRIPTION=MBIM modem protocol helper library
 EAPI=4
 HOMEPAGE=http://cgit.freedesktop.org/libmbim/
 IUSE=-asan -clang doc static-libs cros_host cros_workon_tree_ profiling
 KEYWORDS=~*
 LICENSE=GPL-2
-RDEPEND=>=dev-libs/glib-2.32 >=sys-fs/udev-147[gudev]
+RDEPEND=>=dev-libs/glib-2.32 virtual/libgudev
 REQUIRED_USE=asan? ( clang )
 SLOT=0
 _eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
-_md5_=68b5429f0873f0665a3d8e9856b13b08
+_md5_=66b29da7ab9051ef2124bc22fa8c5554
