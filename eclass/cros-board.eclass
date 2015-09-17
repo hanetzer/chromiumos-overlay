@@ -32,6 +32,7 @@ ALL_BOARDS=(
 	amd64-generic_mobbuild
 	amd64-host
 	#anglar
+	aplrvp
 	#app-shell-panther
 	aries
 	arkham
@@ -56,7 +57,7 @@ ALL_BOARDS=(
 	#buranku
 	butterfly
 	bwtm2
-	bxt-rvp
+	#bxt-rvp
 	candy
 	cardhu
 	celes
