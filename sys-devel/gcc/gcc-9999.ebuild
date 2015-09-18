@@ -68,6 +68,7 @@ src_unpack() {
 		if [[ ! -d "$(get_gcc_dir)" ]] ; then
 			die "gcc dir not mounted/present at: $(get_gcc_dir)"
 		fi
+		S=$(get_gcc_dir)
 	elif use upstream_gcc ; then
 		GCC_MIRROR=ftp://mirrors.kernel.org/gnu/gcc
 		GCC_TARBALL=${GCC_MIRROR}/${P}/${P}.tar.bz2
