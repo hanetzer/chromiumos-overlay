@@ -167,6 +167,7 @@ ALL_BOARDS=(
 	quawks
 	rambi
 	raspberrypi
+	reks
 	reptile
 	#ricochet
 	rikku
