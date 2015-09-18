@@ -56,6 +56,7 @@ IUSE_LINUX_FIRMWARE=(
 	"${IUSE_ATH3K[@]}"
 	"${IUSE_IWLWIFI[@]}"
 	"${IUSE_BRCMWIFI[@]}"
+	marvell-mwlwifi
 	marvell-pcie8897
 	nvidia-xusb
 	rt2870
@@ -72,6 +73,7 @@ LICENSE="
 	linux_firmware_fw_sst2? ( LICENCE.IntcSST2 )
 	linux_firmware_i915_skl? ( LICENSE.i915 )
 	linux_firmware_ibt-hw? ( LICENCE.ibt_firmware )
+	linux_firmware_marvell-mwlwifi? ( LICENCE.Marvell )
 	linux_firmware_marvell-pcie8897? ( LICENCE.Marvell )
 	linux_firmware_nvidia-xusb? ( LICENCE.nvidia )
 	linux_firmware_rt2870? ( LICENCE.ralink-firmware.txt LICENCE.ralink_a_mediatek_company_firmware )
@@ -128,6 +130,7 @@ src_install() {
 	use_fw fw_sst2 && doins_subdir intel/IntcSST2.bin
 	use_fw i915_skl && doins_subdir i915/skl*
 	use_fw ibt-hw && doins_subdir intel/ibt-hw-*.bseq
+	use_fw marvell-mwlwifi && doins_subdir mwlwifi/*.bin
 	use_fw marvell-pcie8897 && doins_subdir mrvl/pcie8897_uapsta.bin
 	use_fw nvidia-xusb && doins_subdir nvidia/tegra*/xusb.bin
 	use video_cards_radeon && doins_subdir radeon/*
