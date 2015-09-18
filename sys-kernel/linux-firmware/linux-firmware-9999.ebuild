@@ -44,6 +44,7 @@ IUSE_BRCMWIFI=(
 	brcmfmac-all
 	brcmfmac4354-sdio
 	brcmfmac4356-pcie
+	brcmfmac4371-pcie
 )
 IUSE_LINUX_FIRMWARE=(
 	ath9k_htc
@@ -166,6 +167,7 @@ src_install() {
 		brcmfmac-all)      doins_subdir brcm/brcmfmac* ;;
 		brcmfmac4354-sdio) doins_subdir brcm/brcmfmac4354-sdio.* ;;
 		brcmfmac4356-pcie) doins_subdir brcm/brcmfmac4356-pcie.* ;;
+		brcmfmac4371-pcie) doins_subdir brcm/brcmfmac4371-pcie.* ;;
 		esac
 	done
 }
