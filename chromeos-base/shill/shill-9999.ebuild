@@ -125,7 +125,6 @@ src_install() {
 
 	local shims_dir=/usr/$(get_libdir)/shill/shims
 	exeinto "${shims_dir}"
-	doexe "${OUT}"/net-diags-upload
 	doexe "${OUT}"/crypto-util
 
 	use vpn && doexe "${OUT}"/openvpn-script
@@ -152,7 +151,7 @@ src_install() {
 
 	# Install introspection XML
 	insinto /usr/share/dbus-1/interfaces
-	doins dbus_bindings/org.chromium.flimflam.*.xml
+	doins dbus_bindings/org.chromium.flimflam.*.dbus-xml
 
 	# Install init scripts
 	insinto /etc/init
