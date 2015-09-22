@@ -219,6 +219,7 @@ ALL_BOARDS=(
 	veyron_mickey
 	veyron_mighty
 	veyron_minnie
+	veyron_minnie-cheets
 	veyron_nicky
 	veyron_pinky
 	veyron_remy
