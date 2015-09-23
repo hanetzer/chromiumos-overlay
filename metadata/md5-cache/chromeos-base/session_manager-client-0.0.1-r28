@@ -1,0 +1,13 @@
+DEFINED_PHASES=compile configure info install setup test unpack
+DEPEND=cros_host? ( chromeos-base/chromeos-dbus-bindings ) dev-vcs/git dev-vcs/git chromeos-base/libchrome:334380[cros-debug=]
+DESCRIPTION=Session manager (chromeos-login) DBus client library for Chromium OS
+EAPI=4
+HOMEPAGE=http://www.chromium.org/
+IUSE=cros_host cros_host cros_workon_tree_b260b26d62de92da95adeeaf8356b8d12b39d92a profiling cros-debug cros_host cros_workon_tree_b260b26d62de92da95adeeaf8356b8d12b39d92a profiling asan clang cros_host
+KEYWORDS=*
+LICENSE=BSD-Google
+RDEPEND=!<chromeos-base/chromeos-login-0.0.2 chromeos-base/libchrome:334380[cros-debug=]
+REQUIRED_USE=asan? ( clang )
+SLOT=0
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-debug	d2750757005d6a444f8eb12bb9eb9944	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	libchrome	11ad35f75c7dc30d2877e5601e4c0616	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	multiprocessing	d7f2985a2c76c365ee20269db5261414	platform	1e7764ecac7379378bec8aff45fafd3c	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_md5_=5e43332a281fcc70e6d4f87b569e8ee2
