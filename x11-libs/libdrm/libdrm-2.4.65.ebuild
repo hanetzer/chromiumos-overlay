@@ -20,12 +20,12 @@ fi
 # the Xorg copyright holders and allows license generation to pick them up.
 LICENSE="|| ( MIT X )"
 KEYWORDS="*"
-VIDEO_CARDS="exynos freedreno intel mediatek nouveau omap radeon vmware rockchip"
+VIDEO_CARDS="amdgpu exynos freedreno intel mediatek nouveau omap radeon vmware rockchip"
 for card in ${VIDEO_CARDS}; do
 	IUSE_VIDEO_CARDS+=" video_cards_${card}"
 done
 
-IUSE="${IUSE_VIDEO_CARDS} drm_atomic libkms manpages +udev"
+IUSE="${IUSE_VIDEO_CARDS} libkms manpages +udev"
 REQUIRED_USE="video_cards_exynos? ( libkms )
 	video_cards_mediatek? ( libkms )
 	video_cards_rockchip? ( libkms )"
@@ -52,14 +52,12 @@ PATCHES=(
 
 src_prepare() {
 	xorg-2_src_prepare
-	if use drm_atomic; then
-		epatch ${FILESDIR}/drm_atomic-*.patch
-	fi
 }
 
 src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
 		--enable-install-test-programs
+		$(use_enable video_cards_amdgpu amdgpu)
 		$(use_enable video_cards_exynos exynos-experimental-api)
 		$(use_enable video_cards_freedreno freedreno)
 		$(use_enable video_cards_intel intel)
