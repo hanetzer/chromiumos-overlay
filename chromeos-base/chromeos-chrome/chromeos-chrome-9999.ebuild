@@ -786,6 +786,8 @@ src_configure() {
 	export BOTO_CONFIG=/home/$(whoami)/.boto
 	export PATH=${PATH}:/home/$(whoami)/depot_tools
 
+	export DEPOT_TOOLS_GSUTIL_BIN_DIR="${CHROME_CACHE_DIR}/gsutil_bin"
+
 	# TODO(rcui): crosbug.com/20435. Investigate removal of runhooks
 	# useflag when chrome build switches to Ninja inside the chroot.
 	if use runhooks; then
