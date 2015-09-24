@@ -26,7 +26,9 @@ SLOT="0"
 KEYWORDS="*"
 IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
 
-COMMON_DEPEND="app-arch/bzip2
+COMMON_DEPEND="
+	app-arch/bzip2
+	app-arch/xz-utils
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchromeos
 	chromeos-base/metrics
