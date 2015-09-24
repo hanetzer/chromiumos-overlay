@@ -56,6 +56,7 @@ src_install() {
 	# Install DPTF policy shared libraries
 	local policy_build_dir="${BUILD_DIR}"/$(usex amd64 x64 x32)
 	dolib.so "${policy_build_dir}/Dptf.so"
-	dolib.so ${policy_build_dir}/DptfPolicyPassive.so
+	dolib.so ${policy_build_dir}/DptfPolicyActive.so
 	dolib.so ${policy_build_dir}/DptfPolicyCritical.so
+	dolib.so ${policy_build_dir}/DptfPolicyPassive.so
 }
