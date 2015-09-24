@@ -1,0 +1,44 @@
+From patchwork Sun Sep 27 18:21:33 2015
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: [Mesa-dev] egl/dri2: don't require a context for ClientWaitSync (v2)
+From: =?utf-8?b?TWFyZWsgT2zFocOhaw==?= <maraeo@gmail.com>
+X-Patchwork-Id: 60496
+Message-Id: <1443378093-15560-1-git-send-email-maraeo@gmail.com>
+To: mesa-dev@lists.freedesktop.org
+Date: Sun, 27 Sep 2015 20:21:33 +0200
+
+From: Marek Olšák <marek.olsak@amd.com>
+
+The spec doesn't require it. This fixes a crash on Android.
+
+v2: don't set any flags if ctx == NULL
+
+Cc: 10.6 11.0 <mesa-stable@lists.freedesktop.org>
+Reviewed-by: Frank Binns <frank.binns@imgtec.com>
+
+---
+src/egl/drivers/dri2/egl_dri2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 1740ee3..4072a02 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -2424,13 +2424,13 @@ dri2_client_wait_sync(_EGLDriver *drv, _EGLDisplay *dpy, _EGLSync *sync,
+    unsigned wait_flags = 0;
+    EGLint ret = EGL_CONDITION_SATISFIED_KHR;
+ 
+-   if (flags & EGL_SYNC_FLUSH_COMMANDS_BIT_KHR)
++   if (dri2_ctx && flags & EGL_SYNC_FLUSH_COMMANDS_BIT_KHR)
+       wait_flags |= __DRI2_FENCE_FLAG_FLUSH_COMMANDS;
+ 
+    /* the sync object should take a reference while waiting */
+    dri2_egl_ref_sync(dri2_sync);
+ 
+-   if (dri2_dpy->fence->client_wait_sync(dri2_ctx->dri_context,
++   if (dri2_dpy->fence->client_wait_sync(dri2_ctx ? dri2_ctx->dri_context : NULL,
+                                          dri2_sync->fence, wait_flags,
+                                          timeout))
+       dri2_sync->base.SyncStatus = EGL_SIGNALED_KHR;

@@ -173,6 +173,7 @@ src_prepare() {
 	epatch "${FILESDIR}"/0003-egl-dri2-implement-EGL_KHR_fence_sync.patch
 	epatch "${FILESDIR}"/0004-egl-dri2-implement-EGL_KHR_wait_sync.patch
 	epatch "${FILESDIR}"/0005-egl-dri2-return-the-latest-sync-status-in-eglGetSync.patch
+	epatch "${FILESDIR}"/0006-egl-dri2-don-t-require-a-context-for-ClientWaitSync-v2.patch
 
 	base_src_prepare
 
