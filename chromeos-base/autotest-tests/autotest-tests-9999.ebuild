@@ -120,6 +120,7 @@ CLIENT_IUSE_TESTS="
 	+tests_hardware_StorageFio
 	+tests_hardware_StorageTrim
 	+tests_hardware_StorageWearoutDetect
+	+tests_hardware_TLBMissCost
 	+tests_hardware_TouchScreenPowerCycles
 	tests_hardware_TouchScreenPresent
 	+tests_hardware_TrackpadFunction
