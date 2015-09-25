@@ -66,6 +66,7 @@ ALL_BOARDS=(
 	cosmos
 	cranky
 	cyan
+	cyan-cheets
 	cyclone
 	daisy
 	#daisy-drm
