@@ -341,6 +341,8 @@ src_compile_depthcharge() {
 		common+=( --skip-bmpblk )
 	fi
 
+	common+=( --cbfs-files "${froot}/cbfs" )
+
 	einfo "Building production image."
 	cros_bundle_firmware ${common[@]} ${silent[@]} \
 		--outdir "out.ro" --output "image.bin" \
