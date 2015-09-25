@@ -143,8 +143,10 @@ CROS_RDEPEND="${CROS_RDEPEND}
 	media-gfx/zbar
 	media-libs/opencv
 	ozone? ( media-gfx/deqp )
-	opengles? ( media-libs/piglit[waffle] )
-	opengl? ( media-libs/piglit )
+	!ozone? (
+		opengles? ( media-libs/piglit[waffle] )
+		opengl? ( media-libs/piglit )
+	)
 	media-libs/tiff
 	opengles? ( media-libs/waffle )
 	opengl? ( media-libs/waffle )
