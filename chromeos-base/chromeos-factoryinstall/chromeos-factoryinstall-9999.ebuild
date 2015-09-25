@@ -32,6 +32,7 @@ PROVIDED_DEPEND="
 	app-arch/gzip
 	app-arch/sharutils
 	app-arch/tar
+	app-misc/figlet
 	chromeos-base/vboot_reference
 	sys-apps/mosys
 	sys-apps/util-linux"
