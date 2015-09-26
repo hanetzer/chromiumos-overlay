@@ -71,4 +71,8 @@ platform_pkg_test() {
 	for test_bin in "${tests[@]}"; do
 		platform_test "run" "${OUT}/${test_bin}" "1"
 	done
+
+	# Test external makefile build.
+	emake -f Makefile.external CC="$(tc-getCC)" CXX="$(tc-getCXX)" \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)"
 }
