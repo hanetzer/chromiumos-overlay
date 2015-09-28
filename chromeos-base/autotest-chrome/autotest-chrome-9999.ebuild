@@ -111,6 +111,8 @@ IUSE_TESTS=(
 	+tests_touch_ScrollDirection
 	+tests_touch_TapSettings
 	+tests_touch_TabSwitch
+	+tests_touch_TouchscreenScroll
+	+tests_touch_TouchscreenTaps
 	+tests_ui_AppLauncher
 	+tests_ui_SettingsPage
 	+tests_ui_SystemTray
