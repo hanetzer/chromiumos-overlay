@@ -3,8 +3,8 @@
 
 EAPI="4"
 
-CROS_WORKON_COMMIT=("874cb1e64a610a4a4b84b1667cd7b8dbf1acb855" "6c5c99d492bcc6e26ff14fcb79f621118d0ef10b")
-CROS_WORKON_TREE=("334780b426a6ca829bd20fb00fcc4290271f069f" "ed605d8b424e5a5eb58dd99a327bcb8fff83b09b")
+CROS_WORKON_COMMIT=("13b93fcdbcfc4dec24ec0d1e94659774c1de112f" "35f317dacc5176ccc8a7b2b80eeb518ed1f632cd")
+CROS_WORKON_TREE=("90f37412e75a351ac9e75cdd3c01e9b752608640" "1a03b724151e7f304125652dd03a7bfdd0f4e047")
 CROS_WORKON_BLACKLIST=1
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_LOCALNAME=("platform2" "weave/libweave")
@@ -56,11 +56,8 @@ src_install() {
 	done
 
 	# Install header files.
-	insinto /usr/include/weave
-	doins include/weave/*.h
-
-	insinto /usr/include/weave/test
-	doins include/weave/test/*.h
+	insinto /usr/include/weave/
+	doins -r include/weave/*
 }
 
 platform_pkg_test() {
