@@ -14,7 +14,7 @@ SRC_URI="https://github.com/${PN}/${PN}/tarball/${PV} -> ${P}.tar.gz"
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="*"
-IUSE="+cli opengl opengles qt4"
+IUSE="+cli opengl opengles qt4 X"
 
 RDEPEND="${PYTHON_DEPS}
 	app-arch/snappy[${MULTILIB_USEDEP}]
@@ -23,7 +23,7 @@ RDEPEND="${PYTHON_DEPS}
 	opengles? ( virtual/opengles )
 	media-libs/libpng:0=
 	sys-process/procps
-	x11-libs/libX11
+	X? ( x11-libs/libX11 )
 	qt4? (
 		>=dev-qt/qtcore-4.7:4
 		>=dev-qt/qtgui-4.7:4
@@ -40,6 +40,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-multilib.patch
 	"${FILESDIR}"/${P}-disable-multiarch.patch
 	"${FILESDIR}"/${P}-memcpy.patch
+	"${FILESDIR}"/${P}-x11-toggle.patch
 )
 
 src_prepare() {
@@ -64,6 +65,7 @@ src_configure() {
 			mycmakeargs+=(
 				$(cmake-utils_use_enable cli CLI)
 				$(cmake-utils_use_enable qt4 GUI)
+				$(cmake-utils_use_enable X X11)
 			)
 		else
 			mycmakeargs+=(
