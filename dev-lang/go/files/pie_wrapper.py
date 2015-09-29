@@ -44,19 +44,18 @@ def main(argv):
           '-linkmode=external -extld ' + CC + ' -extldflags "-pie"'
       ]
       argv = argv[1:]
-    elif argv[0] == 'tool':
-      # Handle direct linker invocations, e.g. "go tool 6l <args>".
-      if len(argv) > 1 and len(argv[1]) == 2 and argv[1][1] == 'l':
-        pie_flags = [
-            argv[0],
-            argv[1],
-            '-linkmode=external',
-            '-extld',
-            CC,
-            '-extldflags',
-            '-pie'
-        ]
-        argv = argv[2:]
+    elif argv[0] == 'tool' and len(argv) > 1 and argv[1] == 'link':
+      # Handle direct linker invocations ("go tool link <args>").
+      pie_flags = [
+          argv[0],
+          argv[1],
+          '-linkmode=external',
+          '-extld',
+          CC,
+          '-extldflags',
+          '-pie'
+      ]
+      argv = argv[2:]
 
   os.environ['GOOS'] = 'linux'
   os.environ['GOARCH'] = GOARCH

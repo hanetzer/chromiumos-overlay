@@ -5,10 +5,13 @@ EAPI=5
 
 inherit eutils toolchain-funcs
 
+# Version used to bootstrap the build.
+BOOTSTRAP="1.4.2"
+
 DESCRIPTION="An expressive, concurrent, garbage-collected programming language"
 HOMEPAGE="http://golang.org/"
-SRC_URI="https://storage.googleapis.com/golang/go${PV}.src.tar.gz"
-S="${WORKDIR}/${PN}"
+SRC_URI="https://storage.googleapis.com/golang/go${PV}.src.tar.gz
+	https://storage.googleapis.com/golang/go${BOOTSTRAP}.src.tar.gz"
 
 LICENSE="BSD-Google"
 SLOT="0"
@@ -49,25 +52,24 @@ get_goarch() {
 	esac
 }
 
-get_gochar() {
-	case "$(get_goarch $1)" in
-		amd64) echo "6" ;;
-		386) echo "8" ;;
-		arm) echo "5" ;;
-	esac
-}
-
-src_prepare() {
-	epatch "${FILESDIR}/${P}-no-strict-overflow.patch"
-	epatch "${FILESDIR}/${P}-net-if-fix.patch"
+src_unpack() {
+	unpack "go${PV}.src.tar.gz"
+	mv go "go-${PV}"
+	unpack "go${BOOTSTRAP}.src.tar.gz"
+	mv go "go-${BOOTSTRAP}"
+	epatch "${FILESDIR}/go-${BOOTSTRAP}-no-strict-overflow.patch"
 }
 
 src_configure() {
+	export GOROOT_BOOTSTRAP="${WORKDIR}/go-${BOOTSTRAP}"
 	export GOROOT_FINAL="${EPREFIX}$(get_goroot)"
 }
 
 src_compile() {
-	cd src
+	cd "${GOROOT_BOOTSTRAP}/src"
+	./make.bash || die
+
+	cd "${S}/src"
 	GOOS="linux" GOARCH="$(get_goarch ${CTARGET})" CGO_ENABLED="1" \
 		CC_FOR_TARGET="$(tc-getCC ${CTARGET})" \
 		CXX_FOR_TARGET="$(tc-getCXX ${CTARGET})" \
@@ -85,11 +87,14 @@ src_install() {
 	doexe bin/{go,gofmt}
 
 	insinto "${goroot}/pkg"
+	doins -r "pkg/include"
 	doins -r "pkg/linux_$(get_goarch ${CTARGET})"
 
 	exeinto "${goroot}/${tooldir}"
-	doexe "${tooldir}/$(get_gochar ${CTARGET})"{a,c,g,l}
-	doexe "${tooldir}/"{addr2line,cgo,fix,nm,objdump,pack,pprof,yacc}
+	doexe "${tooldir}/"{asm,cgo,compile,link,pack}
+	doexe "${tooldir}/"{doc,fix,vet,yacc}
+	doexe "${tooldir}/"{cover,pprof,trace}
+	doexe "${tooldir}/"{addr2line,nm,objdump}
 
 	# Fix timestamps of precompiled standard library packages.
 	#
