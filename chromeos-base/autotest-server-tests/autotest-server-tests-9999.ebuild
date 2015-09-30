@@ -102,6 +102,8 @@ SERVER_IUSE_TESTS="
 	+tests_firmware_EventLog
 	+tests_firmware_FAFTPrepare
 	+tests_firmware_FAFTSetup
+	+tests_firmware_FastbootErase
+	+tests_firmware_FastbootReboot
 	+tests_firmware_FMap
 	+tests_firmware_FwScreenCloseLid
 	+tests_firmware_FwScreenPressPower
