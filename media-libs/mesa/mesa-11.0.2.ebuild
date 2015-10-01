@@ -4,8 +4,8 @@
 
 EAPI=4
 
-CROS_WORKON_COMMIT="c2a0600d5b0645533ba442b5ab879b23c2564a4d"
-CROS_WORKON_TREE="1a3cb3ffa016a1e453b5b5c7b6f93ad4050f1e96"
+CROS_WORKON_COMMIT="51e0b06d9916e126060c0d218de1aaa4e5a4ce26"
+CROS_WORKON_TREE="286d9bc36c9a9302b6578a2d791a97f70c98ff74"
 
 EGIT_REPO_URI="git://anongit.freedesktop.org/mesa/mesa"
 CROS_WORKON_PROJECT="chromiumos/third_party/mesa"
@@ -121,7 +121,6 @@ src_prepare() {
 	fi
 
 	epatch "${FILESDIR}"/10.0-cross-compile.patch
-	epatch "${FILESDIR}"/10.6-mapi-Adding-missing-string.h-include.patch
 	epatch "${FILESDIR}"/9.1-mesa-st-no-flush-front.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer.patch
 	epatch "${FILESDIR}"/10.3-state_tracker-gallium-fix-crash-with-st_renderbuffer-freedreno.patch
@@ -138,23 +137,14 @@ src_prepare() {
 	epatch "${FILESDIR}"/10.3-dri-i965-Return-NULL-if-we-don-t-have-a-miptree.patch
 	epatch "${FILESDIR}"/10.3-Fix-workaround-corner-cases.patch
 	epatch "${FILESDIR}"/10.3-drivers-dri-i965-gen6-Clamp-scissor-state-instead-of.patch
-	epatch "${FILESDIR}"/10.3-gbm-dlopen-libglapi-so-gbm_create_device-works.patch
 	epatch "${FILESDIR}"/10.3-i965-remove-read-only-restriction-of-imported-buffer.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-implement-platform_null.patch
-	epatch "${FILESDIR}"/10.3-egl-dri2-try-to-use-render-node-if-available.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-report-EXT_image_dma_buf_import-extension.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-add-support-for-image-config-query.patch
 	epatch "${FILESDIR}"/10.3-egl-dri2-platform_drm-should-also-try-rende.patch
 	epatch "${FILESDIR}"/10.3-dri-add-swrast-support-on-top-of-prime-imported.patch
 	epatch "${FILESDIR}"/10.3-dri-in-swrast-use-render-nodes-and-custom-VGEM-dump-.patch
 	epatch "${FILESDIR}"/10.5-i915g-force-tile-x.patch
-	epatch "${FILESDIR}"/10.6-mesa-do-not-use-_glapi_new_nop_table-for-DRI-builds.patch	
-	epatch "${FILESDIR}"/10.6-i965-do-not-round-line-width-when-multisampling-or-a.patch
-	epatch "${FILESDIR}"/10.6-mesa-add-GL_RED-GL_RG-support-for-floating-point-tex.patch
-	epatch "${FILESDIR}"/10.6-mesa-teximage-use-correct-extension-for-accept-stenc.patch
-	epatch "${FILESDIR}"/10.6-i965-Momentarily-pretend-to-support-ARB_texture_sten.patch
-	epatch "${FILESDIR}"/10.6-Revert-i965-Advertise-a-line-width-of-40.0-on-Cherry.patch
-	epatch "${FILESDIR}"/10.6-i965-gen9-Use-custom-MOCS-entries-set-up-by.patch
+	epatch "${FILESDIR}"/11.0-mesa-Correctly-handle-GL_BGRA_EXT-in-ES3-format_and_.patch
 	base_src_prepare
 
 	eautoreconf
@@ -232,7 +222,7 @@ src_configure() {
 		$(use_enable !xlib-glx dri) \
 		--with-dri-drivers=${DRI_DRIVERS} \
 		--with-gallium-drivers=${GALLIUM_DRIVERS} \
-		$(use egl && echo "--with-egl-platforms=null")
+		$(use egl && echo "--with-egl-platforms=surfaceless")
 }
 
 src_install() {

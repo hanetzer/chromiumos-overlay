@@ -1,7 +1,7 @@
-From 1b06d18cecebe99839b02658f25f1d6d7cf79f0c Mon Sep 17 00:00:00 2001
+From 8aa418e5897353a3b93a6ac540f667feab863385 Mon Sep 17 00:00:00 2001
 From: Zach Reizner <zachr@chromium.org>
 Date: Fri, 23 Jan 2015 10:43:26 -0800
-Subject: [PATCH 25/27] dri: add swrast support on top of prime imported
+Subject: [PATCH 22/24] dri: add swrast support on top of prime imported
  buffers
 
 TEST=null_platform_test /dev/dri/card0
@@ -17,7 +17,7 @@ Change-Id: I89cc8b4ba8e7120a1a1e7ed8b76c34632488aa88
  4 files changed, 337 insertions(+), 15 deletions(-)
 
 diff --git a/src/gallium/state_trackers/dri/Makefile.am b/src/gallium/state_trackers/dri/Makefile.am
-index d2c7a82..a4041e8 100644
+index 9f4deba0c1ec..838ff81b8c3d 100644
 --- a/src/gallium/state_trackers/dri/Makefile.am
 +++ b/src/gallium/state_trackers/dri/Makefile.am
 @@ -30,6 +30,7 @@ AM_CPPFLAGS = \
@@ -29,7 +29,7 @@ index d2c7a82..a4041e8 100644
  	-I$(top_builddir)/src/mesa/drivers/dri/common \
  	$(GALLIUM_CFLAGS) \
 diff --git a/src/gallium/state_trackers/dri/drisw.c b/src/gallium/state_trackers/dri/drisw.c
-index 5f69a2d..9738e44 100644
+index 4ec6992643a2..c14269ee4c07 100644
 --- a/src/gallium/state_trackers/dri/drisw.c
 +++ b/src/gallium/state_trackers/dri/drisw.c
 @@ -47,6 +47,8 @@
@@ -167,17 +167,17 @@ index 5f69a2d..9738e44 100644
  /*
   * Backend function for init_screen.
   */
-@@ -333,6 +454,9 @@ drisw_update_tex_buffer(struct dri_drawable *drawable,
- static const __DRIextension *drisw_screen_extensions[] = {
+@@ -334,6 +455,9 @@ static const __DRIextension *drisw_screen_extensions[] = {
     &driTexBufferExtension.base,
     &dri2RendererQueryExtension.base,
+    &dri2ConfigQueryExtension.base,
 +#ifdef HAVE_LIBDRM
 +   &dri2ImageExtension.base,
 +#endif
     NULL
  };
  
-@@ -367,6 +491,8 @@ drisw_init_screen(__DRIscreen * sPriv)
+@@ -368,6 +492,8 @@ drisw_init_screen(__DRIscreen * sPriv)
     if (!configs)
        goto fail;
  
@@ -187,7 +187,7 @@ index 5f69a2d..9738e44 100644
  fail:
     dri_destroy_screen_helper(screen);
 diff --git a/src/gallium/winsys/sw/dri/Makefile.am b/src/gallium/winsys/sw/dri/Makefile.am
-index a7d3253..a0fe9d3 100644
+index a7d325383c9d..a0fe9d3f1728 100644
 --- a/src/gallium/winsys/sw/dri/Makefile.am
 +++ b/src/gallium/winsys/sw/dri/Makefile.am
 @@ -24,8 +24,13 @@ include Makefile.sources
@@ -205,7 +205,7 @@ index a7d3253..a0fe9d3 100644
  
  libswdri_la_SOURCES = $(C_SOURCES)
 diff --git a/src/gallium/winsys/sw/dri/dri_sw_winsys.c b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
-index 6fed22b..4e8b4cb 100644
+index 8451d832806b..f50ec2ec9956 100644
 --- a/src/gallium/winsys/sw/dri/dri_sw_winsys.c
 +++ b/src/gallium/winsys/sw/dri/dri_sw_winsys.c
 @@ -26,6 +26,17 @@
@@ -325,7 +325,7 @@ index 6fed22b..4e8b4cb 100644
 +
 +#endif
 +
- static INLINE struct dri_sw_displaytarget *
+ static inline struct dri_sw_displaytarget *
  dri_sw_displaytarget( struct sw_displaytarget *dt )
  {
 @@ -92,6 +181,7 @@ dri_sw_displaytarget_create(struct sw_winsys *winsys,
@@ -518,5 +518,5 @@ index 6fed22b..4e8b4cb 100644
  
     ws->base.is_displaytarget_format_supported = dri_sw_is_displaytarget_format_supported;
 -- 
-2.3.1
+2.5.1
 
