@@ -39,7 +39,7 @@ src_prepare() {
 
 src_configure() {
 	cros-workon_src_configure
-	GENTOO_LIBDIR=$(get_libdir)
+	export GENTOO_LIBDIR=$(get_libdir)
 	tc-export CC
 }
 
