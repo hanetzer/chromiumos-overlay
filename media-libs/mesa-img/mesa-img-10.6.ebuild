@@ -72,6 +72,7 @@ RDEPEND="
 		x11-libs/libXxf86vm
 	)
 	dev-libs/expat
+	dev-libs/libgcrypt
 	virtual/udev
 	${LIBDRM_DEPSTRING}
 "
