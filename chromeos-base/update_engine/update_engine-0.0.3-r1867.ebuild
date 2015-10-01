@@ -28,7 +28,6 @@ IUSE="cros_p2p -delta_generator -hwid_override mtd +power_management"
 
 COMMON_DEPEND="
 	app-arch/bzip2
-	app-arch/xz-utils
 	chromeos-base/chromeos-ca-certificates
 	chromeos-base/libchromeos
 	chromeos-base/metrics
@@ -37,11 +36,14 @@ COMMON_DEPEND="
 	dev-libs/expat
 	dev-libs/openssl
 	dev-libs/protobuf
+	dev-libs/xz-embedded
 	dev-util/bsdiff
 	net-misc/curl
 	sys-apps/rootdev"
 
-DEPEND="chromeos-base/system_api
+DEPEND="
+	app-arch/xz-utils
+	chromeos-base/system_api
 	chromeos-base/debugd-client
 	chromeos-base/power_manager-client
 	chromeos-base/session_manager-client
@@ -54,6 +56,7 @@ DEPEND="chromeos-base/system_api
 	${COMMON_DEPEND}"
 
 RDEPEND="
+	delta_generator? ( app-arch/xz-utils )
 	chromeos-base/chromeos-installer
 	${COMMON_DEPEND}
 	power_management? ( chromeos-base/power_manager )
