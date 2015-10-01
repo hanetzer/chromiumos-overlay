@@ -113,6 +113,7 @@ ALL_BOARDS=(
 	lakitu
 	lakitu_mobbuild
 	lakitu_next
+	lars
 	laser
 	#lemmings
 	#lemmings_external
