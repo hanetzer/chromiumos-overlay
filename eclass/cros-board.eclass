@@ -82,6 +82,7 @@ ALL_BOARDS=(
 	danger_embedded
 	#derwent
 	duck
+	edgar
 	#emeraldlake2
 	enguarde
 	envoy-jerry
