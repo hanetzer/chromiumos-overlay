@@ -18,7 +18,7 @@ KEYWORDS="~*"
 BOARDS="alex auron bayleybay beltino bolt butterfly cyan emeraldlake2 falco fox"
 BOARDS="${BOARDS} gizmo glados jecht kunimitsu link lumpy lumpy64 mario panther parrot"
 BOARDS="${BOARDS} peppy rambi samus sklrvp slippy squawks stout strago stumpy sumo"
-IUSE="${BOARDS} +bmpblk build-all-fw cb_legacy_seabios cb_legacy_uboot"
+IUSE="${BOARDS} +bmpblk bitmap_in_cbfs build-all-fw cb_legacy_seabios cb_legacy_uboot"
 IUSE="${IUSE} cros_ec depthcharge efs exynos u_boot_netboot fsp"
 IUSE="${IUSE} memtest pd_sync spring tegra unified_depthcharge vboot2 fastboot"
 
@@ -335,7 +335,7 @@ src_compile_depthcharge() {
 		common+=( --pd "${froot}/${PD_FIRMWARE}/ec.RW.bin")
 	fi
 
-	if use bmpblk; then
+	if use bmpblk && ! use bitmap_in_cbfs; then
 		common+=( --bmpblk "${froot}/bmpblk.bin" )
 	else
 		common+=( --skip-bmpblk )
