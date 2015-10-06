@@ -17,7 +17,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
-IUSE="cros_embedded +encrypted_stateful frecon -s3halt systemd +udev vtconsole"
+IUSE="cros_embedded +encrypted_stateful frecon -s3halt +syslog systemd +udev vtconsole"
 
 # shunit2 should be a dependency only if USE=test, but cros_run_unit_test
 # doesn't calculate dependencies when emerging packages.
@@ -57,7 +57,7 @@ platform_pkg_test() {
 }
 
 src_test() {
-	if use x86 || use amd64 ; then
+	if use x86 || use amd64; then
 		cros-workon_src_test
 	else
 		einfo "Skipping unit tests on non-x86 platform"
@@ -72,8 +72,10 @@ src_install() {
 	dosbin chromeos-cleanup-logs
 	dosbin simple-rotate
 
-	insinto /etc
-	doins rsyslog.chromeos
+	if use syslog; then
+		insinto /etc
+		doins rsyslog.chromeos
+	fi
 
 	insinto /usr/share/cros
 	doins factory_utils.sh
@@ -102,9 +104,12 @@ src_install() {
 		doins failsafe-delay.conf failsafe.conf
 		doins log-rotate.conf
 		doins pre-shutdown.conf pre-startup.conf pstore.conf reboot.conf
-		doins syslog.conf system-services.conf
+		doins system-services.conf
 		doins uinput.conf
 
+		if use syslog; then
+			doins syslog.conf
+		fi
 		if use !systemd; then
 			doins cgroups.conf
 			doins dbus.conf
