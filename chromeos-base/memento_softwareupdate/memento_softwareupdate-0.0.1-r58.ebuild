@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="4"
-CROS_WORKON_COMMIT="39885d0ba23b341649e75e09747a194e891aa757"
-CROS_WORKON_TREE="263565a3c690460d2300e0dacb15bf636ce6be7f"
+CROS_WORKON_COMMIT="31136c1bc85e3f58d5a6cbc0acd973c123df33cb"
+CROS_WORKON_TREE="95580c3093b6c1eac3bdca434701b7e3739f7058"
 CROS_WORKON_PROJECT="chromiumos/platform/memento_softwareupdate"
 
 inherit cros-workon toolchain-funcs
@@ -51,4 +51,9 @@ src_install() {
 	doexe \
 		src/split_write \
 		src/memento_updater
+
+	# Install factory cutoff scripts
+
+	exeinto /usr/local/factory/sh
+	doexe battery_cutoff/*.sh
 }
