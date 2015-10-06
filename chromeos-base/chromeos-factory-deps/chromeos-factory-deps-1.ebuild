@@ -92,6 +92,12 @@ FACTORY_TEST_RDEPEND+="
 FACTORY_TEST_RDEPEND+="
 	sys-apps/busybox
 "
+
+# Packages used by factory software and factory installer for battery cutoff.
+FACTORY_TEST_RDEPEND+="
+  chromeos-base/memento_softwareupdate
+"
+
 ################################################################################
 # Assemble the final RDEPEND variable for portage
 ################################################################################
