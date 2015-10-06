@@ -11,53 +11,69 @@ DESCRIPTION="GNU GRUB 2 boot loader"
 HOMEPAGE="http://www.gnu.org/software/grub/"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="-* ~amd64"
 IUSE=""
 
 PROVIDE="virtual/bootloader"
 
 export STRIP_MASK="*.img *.mod *.module"
 
+# The ordering doesn't seem to matter.
+PLATFORMS=( "efi" "pc" )
+TARGETS=( "i386" "x86_64" )
+
 src_configure() {
-	local target
+	local platform target
 	# Fix timestamps to prevent unnecessary rebuilding
 	find "${S}" -exec touch -r "${S}/configure" {} +
 	multijob_init
-	for target in i386 x86_64 ; do
-		mkdir -p ${target}-build
-		pushd ${target}-build >/dev/null
-                # GRUB defaults to a --program-prefix set based on target
-                # platform; explicitly set it to nothing to install unprefixed
-                # tools.  https://savannah.gnu.org/bugs/?39818
-		ECONF_SOURCE="${S}" multijob_child_init econf \
-			--disable-werror \
-			--disable-grub-mkfont \
-			--disable-grub-mount \
-			--disable-device-mapper \
-			--disable-efiemu \
-			--disable-libzfs \
-			--disable-nls \
-			--sbindir=/sbin \
-			--bindir=/bin \
-			--libdir=/$(get_libdir) \
-			--with-platform=efi \
-			--target=${target} \
-			--program-prefix=
-		popd >/dev/null
+	for platform in "${PLATFORMS[@]}" ; do
+		for target in "${TARGETS[@]}" ; do
+			mkdir -p ${target}-${platform}-build
+			pushd ${target}-${platform}-build >/dev/null
+			# GRUB defaults to a --program-prefix set based on target
+			# platform; explicitly set it to nothing to install unprefixed
+			# tools.  https://savannah.gnu.org/bugs/?39818
+			ECONF_SOURCE="${S}" multijob_child_init econf \
+				--disable-werror \
+				--disable-grub-mkfont \
+				--disable-grub-mount \
+				--disable-device-mapper \
+				--disable-efiemu \
+				--disable-libzfs \
+				--disable-nls \
+				--sbindir=/sbin \
+				--bindir=/bin \
+				--libdir=/$(get_libdir) \
+				--with-platform=${platform} \
+				--target=${target} \
+				--program-prefix=
+			popd >/dev/null
+		done
 	done
 	multijob_finish
 }
 
 src_compile() {
+	local platform target
 	multijob_init
-	multijob_child_init emake -C i386-build -j1
-	multijob_child_init emake -C x86_64-build -j1
+	for platform in "${PLATFORMS[@]}" ; do
+		for target in "${TARGETS[@]}" ; do
+			multijob_child_init \
+				emake -C ${target}-${platform}-build -j1
+		done
+	done
 	multijob_finish
 }
 
 src_install() {
-	# The two installations have several file conflicts that prevent
+	local platform target
+	# The installations have several file conflicts that prevent
 	# parallel installation.
-	emake -C i386-build DESTDIR="${D}" install
-	emake -C x86_64-build DESTDIR="${D}" install
+	for platform in "${PLATFORMS[@]}" ; do
+		for target in "${TARGETS[@]}" ; do
+			emake -C ${target}-${platform}-build DESTDIR="${D}" \
+				install
+		done
+	done
 }
