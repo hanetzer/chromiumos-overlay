@@ -18,7 +18,7 @@ else
 					https://dev.gentoo.org/~ssuominen/${P}-patches-${patchset}.tar.xz
 					https://dev.gentoo.org/~williamh/dist/${P}-patches-${patchset}.tar.xz"
 			fi
-	KEYWORDS="*"
+	KEYWORDS=""
 fi
 
 DESCRIPTION="Linux dynamic and persistent device naming support (aka userspace devfs)"
@@ -26,7 +26,7 @@ HOMEPAGE="http://www.freedesktop.org/wiki/Software/systemd"
 
 LICENSE="LGPL-2.1 MIT GPL-2"
 SLOT="0"
-IUSE="acl doc +firmware-loader gudev introspection +kmod openrc selinux static-libs"
+IUSE="acl doc +firmware-loader gudev introspection +kmod selinux static-libs"
 
 RESTRICT="test"
 
@@ -62,10 +62,11 @@ if [[ ${PV} = 9999* ]]; then
 		dev-libs/libxslt"
 fi
 RDEPEND="${COMMON_DEPEND}
+	!<sys-fs/lvm2-2.02.103
 	!<sec-policy/selinux-base-2.20120725-r10
 	gudev? ( !dev-libs/libgudev )"
 PDEPEND=">=sys-apps/hwids-20140304[udev]
-	openrc? ( >=sys-fs/udev-init-scripts-26 )"
+	>=sys-fs/udev-init-scripts-26"
 
 S=${WORKDIR}/systemd-${PV}
 
@@ -332,10 +333,6 @@ multilib_src_install() {
 			)
 		emake -j1 DESTDIR="${D}" "${targets[@]}"
 	fi
-
-	# Move back to the old path since we filter out */systemd/* from images.
-	dodir /sbin
-	mv "${ED}"/lib/systemd/systemd-udevd "${ED}"/sbin/udevd || die
 }
 
 multilib_src_install_all() {
