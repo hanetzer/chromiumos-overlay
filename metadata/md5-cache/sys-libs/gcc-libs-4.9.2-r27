@@ -1,12 +1,11 @@
 DEFINED_PHASES=compile configure info install setup unpack
 DEPEND=dev-vcs/git
-DESCRIPTION=Host development utilities for Chromium OS EC
+DESCRIPTION=The GNU Compiler Collection. This builds and installs the libgcc, libstdc++, and libgo libraries. It is board-specific.
 EAPI=4
-HOMEPAGE=http://www.chromium.org/
-IUSE=cros_host cros_workon_tree_11890018c81576b7c589700e57294a465ce8e196 profiling
+IUSE=go hardened hardfp mounted_gcc +thumb vtable_verify cros_host cros_workon_tree_2b886f25d87ff98f0846bc59c0fae812aea19945 profiling
 KEYWORDS=*
-LICENSE=BSD-Google
-RDEPEND=sys-apps/flashrom
+LICENSE=GPL-3 LGPL-3 FDL-1.2
+RESTRICT=strip
 SLOT=0
 _eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	cros-constants	812fda50b6b8c2b7f9164b4d7a7a46c7	cros-workon	e6b77841268a8b3cb9958b032dfb510f	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	git-2	d8721ae80a433d74914c59b01337e601	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
-_md5_=b37a5bb68688461477872aa2abea24d9
+_md5_=04fbffbc642a4b8e8d9ca4723df97347
