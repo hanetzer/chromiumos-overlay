@@ -28,6 +28,8 @@ EC_BOARD_NAMES=(
 	auron
 	bds
 	big
+	chell
+	chell_pd
 	cr50
 	cyan
 	dingdong
@@ -39,6 +41,8 @@ EC_BOARD_NAMES=(
 	jerry
 	kunimitsu
 	kunimitsu_pd
+	lars
+	lars_pd
 	llama
 	minimuffin
 	oak

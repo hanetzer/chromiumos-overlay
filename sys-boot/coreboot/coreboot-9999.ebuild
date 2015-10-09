@@ -34,9 +34,9 @@ KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc"
 
 PER_BOARD_BOARDS=(
-	bayleybay beltino bolt butterfly cyan daisy falco fox gizmo glados kunimitsu
-	link lumpy nyan panther parrot peppy rambi samus sklrvp slippy stout stout32
-	strago stumpy urara variant-peach-pit
+	bayleybay beltino bolt butterfly chell cyan daisy falco fox gizmo glados
+	kunimitsu lars link lumpy nyan panther parrot peppy rambi samus sklrvp
+	slippy stout stout32 strago stumpy urara variant-peach-pit
 )
 
 DEPEND_BLOCKERS="${PER_BOARD_BOARDS[@]/#/!sys-boot/chromeos-coreboot-}"
