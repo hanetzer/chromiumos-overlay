@@ -62,10 +62,6 @@ src_install() {
 	insinto /etc/dbus-1/system.d
 	doins etc/dbus-1/org.chromium.Buffet.conf
 
-	# GCD command implemented by buffet.
-	insinto /etc/buffet/commands
-	doins etc/buffet/commands/buffet.json
-
 	# Upstart script.
 	insinto /etc/init
 	doins etc/init/buffet.conf
