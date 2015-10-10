@@ -17,7 +17,7 @@ HOMEPAGE="http://www.chromium.org/"
 LICENSE="BSD-Google"
 SLOT=0
 KEYWORDS="~*"
-IUSE="examples wifi_bootstrapping"
+IUSE="wifi_bootstrapping"
 
 COMMON_DEPEND="
 	chromeos-base/libchromeos
@@ -52,14 +52,6 @@ pkg_preinst() {
 	enewgroup "peerd"
 }
 
-src_install_test_daemon() {
-	dobin "${OUT}"/buffet_test_daemon
-
-	# Base GCD command and state definitions.
-	insinto /etc/buffet/commands
-	doins etc/buffet/commands/test.json
-}
-
 src_install() {
 	insinto "/usr/$(get_libdir)/pkgconfig"
 
@@ -80,10 +72,6 @@ src_install() {
 	if ! use wifi_bootstrapping ; then
 		sed -i 's/\(BUFFET_DISABLE_PRIVET=\).*$/\1true/g' \
 			"${ED}"/etc/init/buffet.conf
-	fi
-
-	if use examples ; then
-		src_install_test_daemon
 	fi
 }
 
