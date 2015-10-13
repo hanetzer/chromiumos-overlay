@@ -2,11 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=4
+
+CROS_WORKON_COMMIT="b7901001ad665559de7e04e33d807715de727ddb"
+CROS_WORKON_TREE="ea9c019448dbff63c0d668a6dbb226854681a2b2"
 CROS_WORKON_BLACKLIST=1
-CROS_WORKON_COMMIT="20f5a8c6886cadf0fede0837848737e6d92bcde1"
-CROS_WORKON_TREE="93313e0c49ee71d3c9ffb426a4d236f716912afe"
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="platform2"
+CROS_WORKON_LOCALNAME="aosp/external/minijail"
+CROS_WORKON_PROJECT="platform/external/minijail"
+CROS_WORKON_REPO="https://android.googlesource.com"
 CROS_WORKON_DESTDIR="${S}"
 
 inherit cros-debug cros-workon eutils toolchain-funcs
@@ -24,11 +26,6 @@ RDEPEND="sys-libs/libcap"
 DEPEND="test? ( dev-cpp/gtest )
 	test? ( dev-cpp/gmock )
 	${RDEPEND}"
-
-src_unpack() {
-	cros-workon_src_unpack
-	S+="/minijail"
-}
 
 src_compile() {
 	tc-export CC CXX AR RANLIB LD NM PKG_CONFIG
