@@ -9,5 +9,5 @@ LICENSE=as-is
 RDEPEND=icu? ( dev-libs/icu ) readline? ( sys-libs/readline ) tcl? ( dev-lang/tcl )
 SLOT=3
 SRC_URI=tcl? ( http://www.sqlite.org/sqlite-3.6.22.tar.gz ) !tcl? ( test? ( http://www.sqlite.org/sqlite-3.6.22.tar.gz ) !test? ( http://www.sqlite.org/sqlite-amalgamation-3.6.22.tar.gz ) ) doc? ( http://www.sqlite.org/sqlite_docs_3_6_22.zip )
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	flag-o-matic	5d5921a298e95441da2f85be419894c0	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee	versionator	865bc8b2fc9fcfb6d520bdf5a110f5ed
 _md5_=0d02bd1659593ea9e7188c01bea77293

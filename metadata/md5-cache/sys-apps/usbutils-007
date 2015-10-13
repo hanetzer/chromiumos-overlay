@@ -10,5 +10,5 @@ RDEPEND=virtual/libusb:1= zlib? ( sys-libs/zlib:= ) sys-apps/hwids python? ( >=d
 REQUIRED_USE=python? ( python_targets_python2_7 )
 SLOT=0
 SRC_URI=mirror://kernel/linux/utils/usb/usbutils/usbutils-007.tar.xz
-_eclasses_=base	ec46b36a6f6fd1d0b505a33e0b74e413	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python-single-r1	f782db6207752efeca1d59c016d8c813	python-utils-r1	42cc5b750abbcf9d4389848380bbef91	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_eclasses_=base	ec46b36a6f6fd1d0b505a33e0b74e413	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	python-single-r1	f782db6207752efeca1d59c016d8c813	python-utils-r1	42cc5b750abbcf9d4389848380bbef91	toolchain-funcs	d9301a744271fddba4c92a94717168ee
 _md5_=88a046f0ef70a2680dd84568fb1ca327

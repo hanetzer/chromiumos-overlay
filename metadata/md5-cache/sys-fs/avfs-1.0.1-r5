@@ -9,5 +9,5 @@ LICENSE=GPL-2
 RDEPEND=>=sys-fs/fuse-2.4 sys-libs/zlib app-arch/bzip2 lzma? ( app-arch/xz-utils )
 SLOT=0
 SRC_URI=mirror://sourceforge/avf/avfs-1.0.1.tar.bz2
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee
 _md5_=15953ab04d74fe33e08caa73569deb57

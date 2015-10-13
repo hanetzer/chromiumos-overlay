@@ -9,5 +9,5 @@ LICENSE=BSD-2
 RDEPEND=udev? ( virtual/udev ) dbus? ( sys-apps/dbus ) sys-apps/baselayout
 SLOT=0
 SRC_URI=http://roy.marples.name/downloads/dhcpcd/dhcpcd-6.8.2.tar.bz2
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	95c4dad3f5198d5d2424243926d47899	user	428413d4784b5a07274949c8354647d8
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	eutils	06133990e861be0fe60c2b428fd025d9	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	systemd	9f063b2cc19c5e8030911372aa246c4e	toolchain-funcs	d9301a744271fddba4c92a94717168ee	user	428413d4784b5a07274949c8354647d8
 _md5_=60b1b9afe44176b090f689bf21e28747

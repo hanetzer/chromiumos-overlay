@@ -8,5 +8,5 @@ LICENSE=Apache-2.0
 RDEPEND=dev-libs/openssl sys-libs/zlib
 SLOT=0
 SRC_URI=https://github.com/google/autofdo/archive/v0.13.tar.gz -> autofdo-0.13.tar.gz
-_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_eclasses_=autotools	999c8f6cf5d91495cb0779588f20716c	binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	libtool	52d0e17251d04645ffaa61bfdd858944	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee
 _md5_=cc69774fc6952e9e93a74fb101dabeef

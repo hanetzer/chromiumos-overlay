@@ -6,5 +6,5 @@ KEYWORDS=*
 LICENSE=public-domain
 SLOT=0
 SRC_URI=http://tukaani.org/xz/xz-embedded-20130513.tar.gz
-_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	95c4dad3f5198d5d2424243926d47899
+_eclasses_=binutils-funcs	73669d0b20960c1cc54cf381a4b89e77	multilib	3bf24e6abb9b76d9f6c20600f0b716bf	toolchain-funcs	d9301a744271fddba4c92a94717168ee
 _md5_=79d76f51b1727a301ce72df146785af6
