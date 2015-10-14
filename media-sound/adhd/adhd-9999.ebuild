@@ -110,6 +110,8 @@ src_install() {
 			break
 		fi
 	done
+	# install common ucm config files.
+	doins -r ucm-config/for_all_boards/*
 
 	# install cras config files
 	insinto /etc/cras
@@ -119,6 +121,8 @@ src_install() {
 			break
 		fi
 	done
+	# install common cras config files.
+	doins -r cras-config/for_all_boards/*
 
 	# install dbus config allowing cras access
 	insinto /etc/dbus-1/system.d
