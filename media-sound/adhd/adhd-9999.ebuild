@@ -77,8 +77,7 @@ src_install() {
 	# Search the boards that are relevant to this board. E.g.
 	# for daisy_spring-freon, search in this order:
 	# daisy_spring-freon, daisy_spring, daisy to find the files.
-	local board_all=( ${board} ${board_no_freon} ${board_no_variant} \
-			  "for_all_boards" )
+	local board_all=( ${board} ${board_no_freon} ${board_no_variant} )
 	emake BOARD=${board} DESTDIR="${D}" install
 
 	# install alsa config files
