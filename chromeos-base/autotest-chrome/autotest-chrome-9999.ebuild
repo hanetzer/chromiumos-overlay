@@ -89,6 +89,7 @@ IUSE_TESTS=(
 	+tests_platform_ChromeCgroups
 	+tests_platform_SessionManagerBlockDevmodeSetting
 	+tests_policy_EditBookmarksEnabled
+	+tests_policy_ImagesBlockedForUrls
 	+tests_policy_RestoreOnStartupURLs
 	+tests_power_AudioDetector
 	+tests_power_Consumption
